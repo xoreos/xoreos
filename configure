@@ -4520,6 +4520,9 @@ $as_echo "#define AC_APPLE_UNIVERSAL_BUILD 1" >>confdefs.h
  esac
 
 
+EOS_CXXFLAGS="-DUNIX"
+EOS_LIBS=""
+
 
 
 

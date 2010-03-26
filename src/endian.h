@@ -1,0 +1,457 @@
+/* eos 0.0.1
+ * Copyright (c) 2010 Sven Hesse (DrMcCoy)
+ *
+ * This file is part of eos and is distributed under the terms of
+ * the GNU General Public Licence. See COPYING for more informations.
+ */
+
+#ifndef EOS_ENDIAN_H
+#define EOS_ENDIAN_H
+
+#include "system.h"
+#include "types.h"
+
+// Sanity check
+#if !defined(EOS_LITTLE_ENDIAN) && !defined(EOS_BIG_ENDIAN)
+	#error No endianness defined
+#endif
+
+#define SWAP_CONSTANT_64(a) \
+	((uint64)((((a) >> 56) & 0x000000FF) | \
+	          (((a) >> 40) & 0x0000FF00) | \
+	          (((a) >> 24) & 0x00FF0000) | \
+	          (((a) >>  8) & 0xFF000000) | \
+	          (((a) & 0xFF000000) <<  8) | \
+	          (((a) & 0x00FF0000) << 24) | \
+	          (((a) & 0x0000FF00) << 40) | \
+	          (((a) & 0x000000FF) << 56) ))
+
+#define SWAP_CONSTANT_32(a) \
+	((uint32)((((a) >> 24) & 0x00FF) | \
+	          (((a) >>  8) & 0xFF00) | \
+	          (((a) & 0xFF00) <<  8) | \
+	          (((a) & 0x00FF) << 24) ))
+
+#define SWAP_CONSTANT_16(a) \
+	((uint16)((((a) >>  8) & 0x00FF) | \
+	          (((a) <<  8) & 0xFF00) ))
+
+// Test for GCC >= 4.3.0 as this version added the bswap builtin
+#if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
+
+	FORCEINLINE uint64 SWAP_BYTES_64(uint64 a) {
+		return __builtin_bswap64(a);
+	}
+
+	FORCEINLINE uint32 SWAP_BYTES_32(uint32 a) {
+		return __builtin_bswap32(a);
+	}
+
+// test for MSVC 7 or newer
+#elif defined(_MSC_VER) && _MSC_VER >= 1300
+
+	FORCEINLINE uint64 SWAP_BYTES_64(uint64 a) {
+		return _byteswap_uint64(a);
+	}
+
+	FORCEINLINE uint32 SWAP_BYTES_32(uint32 a) {
+		return _byteswap_ulong(a);
+	}
+
+// generic fallback
+#else
+
+	inline uint64 SWAP_BYTES_64(uint64 a) {
+		const uint16 lowlow   = (uint16) a;
+		const uint16 low      = (uint16) (a >> 16);
+		const uint16 high     = (uint16) (a >> 32);
+		const uint16 highhigh = (uint16) (a >> 48);
+
+		return (((uint64)(((uint32)(uint16)((lowlow >> 8) | (lowlow << 8)) << 16)
+			     | (uint16)((low >> 8) | (low << 8)))) << 32)
+			   | ((uint32)(uint16)((high >> 8) | (high << 8)) << 16)
+			     | (uint16)((highhigh >> 8) | (highhigh << 8));
+	}
+
+	inline uint32 SWAP_BYTES_32(uint32 a) {
+		const uint16 low = (uint16)a, high = (uint16)(a >> 16);
+		return ((uint32)(uint16)((low >> 8) | (low << 8)) << 16)
+			   | (uint16)((high >> 8) | (high << 8));
+	}
+
+#endif
+
+inline uint16 SWAP_BYTES_16(const uint16 a) {
+	return (a >> 8) | (a << 8);
+}
+
+/**
+ * A wrapper macro used around four character constants, like 'DATA', to
+ * ensure portability. Typical usage: MKID_BE('DATA').
+ *
+ * Why is this necessary? The C/C++ standard does not define the endianess to
+ * be used for character constants. Hence if one uses multi-byte character
+ * constants, a potential portability problem opens up.
+ *
+ * Fortunately, a semi-standard has been established: On almost all systems
+ * and compilers, multi-byte character constants are encoded using the big
+ * endian convention (probably in analogy to the encoding of string constants).
+ * Still some systems differ. This is why we provide the MKID_BE macro. If
+ * you wrap your four character constants with it, the result will always be
+ * BE encoded, even on systems which differ from the default BE encoding.
+ *
+ * For the latter systems we provide the INVERSE_MKID override.
+ */
+#if defined(INVERSE_MKID)
+	#define MKID_BE(a) SWAP_CONSTANT_32(a)
+#else
+	#define MKID_BE(a) ((uint32)(a))
+#endif
+
+// Functions for reading/writing native Integers,
+// this transparently handles the need for alignment
+
+#if !defined(EOS_NEED_ALIGNMENT)
+
+	FORCEINLINE uint16 READ_UINT16(const void *ptr) {
+		return *(const uint16 *)(ptr);
+	}
+
+	FORCEINLINE uint32 READ_UINT32(const void *ptr) {
+		return *(const uint32 *)(ptr);
+	}
+
+	FORCEINLINE uint64 READ_UINT64(const void *ptr) {
+		return *(const uint64 *)(ptr);
+	}
+
+	FORCEINLINE void WRITE_UINT16(void *ptr, uint16 value) {
+		*(uint16 *)(ptr) = value;
+	}
+
+	FORCEINLINE void WRITE_UINT32(void *ptr, uint32 value) {
+		*(uint32 *)(ptr) = value;
+	}
+
+	FORCEINLINE void WRITE_UINT64(void *ptr, uint64 value) {
+		*(uint64 *)(ptr) = value;
+	}
+
+// test for GCC >= 4.0. these implementations will automatically use CPU-specific
+// instructions for unaligned data when they are available (eg. MIPS)
+#elif defined(__GNUC__) && (__GNUC__ >= 4)
+
+	FORCEINLINE uint16 READ_UINT16(const void *ptr) {
+		struct Unaligned16 { uint16 val; } __attribute__ ((__packed__));
+		return ((const Unaligned16 *)ptr)->val;
+	}
+
+	FORCEINLINE uint32 READ_UINT32(const void *ptr) {
+		struct Unaligned32 { uint32 val; } __attribute__ ((__packed__));
+		return ((const Unaligned32 *)ptr)->val;
+	}
+
+	FORCEINLINE uint64 READ_UINT64(const void *ptr) {
+		struct Unaligned64 { uint64 val; } __attribute__ ((__packed__));
+		return ((const Unaligned64 *)ptr)->val;
+	}
+
+	FORCEINLINE void WRITE_UINT16(void *ptr, uint16 value) {
+		struct Unaligned16 { uint16 val; } __attribute__ ((__packed__));
+		((Unaligned16 *)ptr)->val = value;
+	}
+
+	FORCEINLINE void WRITE_UINT32(void *ptr, uint32 value) {
+		struct Unaligned32 { uint32 val; } __attribute__ ((__packed__));
+		((Unaligned32 *)ptr)->val = value;
+	}
+
+	FORCEINLINE void WRITE_UINT64(void *ptr, uint64 value) {
+		struct Unaligned64 { uint64 val; } __attribute__ ((__packed__));
+		((Unaligned64 *)ptr)->val = value;
+	}
+
+// use software fallback by loading each byte explicitely
+#else
+
+	#if defined(EOS_LITTLE_ENDIAN)
+
+		inline uint16 READ_UINT16(const void *ptr) {
+			const uint8 *b = (const uint8 *)ptr;
+			return (b[1] << 8) | b[0];
+		}
+		inline uint32 READ_UINT32(const void *ptr) {
+			const uint8 *b = (const uint8 *)ptr;
+			return (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | (b[0]);
+		}
+		inline uint64 READ_UINT64(const void *ptr) {
+			const uint8 *b = (const uint8 *)ptr;
+			return (b[7] << 56) | (b[6] << 48) | (b[5] << 40) | (b[4] << 32) |
+			       (b[3] << 24) | (b[2] << 16) | (b[1] <<  8) | (b[0]);
+		}
+		inline void WRITE_UINT16(void *ptr, uint16 value) {
+			uint8 *b = (uint8 *)ptr;
+			b[0] = (uint8)(value >> 0);
+			b[1] = (uint8)(value >> 8);
+		}
+		inline void WRITE_UINT32(void *ptr, uint32 value) {
+			uint8 *b = (uint8 *)ptr;
+			b[0] = (uint8)(value >>  0);
+			b[1] = (uint8)(value >>  8);
+			b[2] = (uint8)(value >> 16);
+			b[3] = (uint8)(value >> 24);
+		}
+		inline void WRITE_UINT64(void *ptr, uint64 value) {
+			uint8 *b = (uint8 *)ptr;
+			b[0] = (uint8)(value >>  0);
+			b[1] = (uint8)(value >>  8);
+			b[2] = (uint8)(value >> 16);
+			b[3] = (uint8)(value >> 24);
+			b[4] = (uint8)(value >> 32);
+			b[5] = (uint8)(value >> 40);
+			b[6] = (uint8)(value >> 48);
+			b[7] = (uint8)(value >> 56);
+		}
+
+	#elif defined(EOS_BIG_ENDIAN)
+
+		inline uint16 READ_UINT16(const void *ptr) {
+			const uint8 *b = (const uint8 *)ptr;
+			return (b[0] << 8) | b[1];
+		}
+		inline uint32 READ_UINT32(const void *ptr) {
+			const uint8 *b = (const uint8 *)ptr;
+			return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3]);
+		}
+		inline uint64 READ_UINT64(const void *ptr) {
+			const uint8 *b = (const uint8 *)ptr;
+			return (b[0] << 56) | (b[1] << 48) | (b[2] << 40) | (b[3] << 32) |
+			       (b[4] << 24) | (b[5] << 16) | (b[6] <<  8) | (b[7]);
+		}
+		inline void WRITE_UINT16(void *ptr, uint16 value) {
+			uint8 *b = (uint8 *)ptr;
+			b[0] = (uint8)(value >> 8);
+			b[1] = (uint8)(value >> 0);
+		}
+		inline void WRITE_UINT32(void *ptr, uint32 value) {
+			uint8 *b = (uint8 *)ptr;
+			b[0] = (uint8)(value >> 24);
+			b[1] = (uint8)(value >> 16);
+			b[2] = (uint8)(value >>  8);
+			b[3] = (uint8)(value >>  0);
+		}
+		inline void WRITE_UINT64(void *ptr, uint64 value) {
+			uint8 *b = (uint8 *)ptr;
+			b[0] = (uint8)(value >> 56);
+			b[1] = (uint8)(value >> 48);
+			b[2] = (uint8)(value >> 40);
+			b[3] = (uint8)(value >> 32);
+			b[4] = (uint8)(value >> 24);
+			b[5] = (uint8)(value >> 16);
+			b[6] = (uint8)(value >>  8);
+			b[7] = (uint8)(value >>  0);
+		}
+
+	#endif
+
+#endif
+
+//  Map Funtions for reading/writing BE/LE integers depending on native endianess
+#if defined(EOS_LITTLE_ENDIAN)
+
+	#define READ_LE_UINT16(a) READ_UINT16(a)
+	#define READ_LE_UINT32(a) READ_UINT32(a)
+	#define READ_LE_UINT64(a) READ_UINT64(a)
+
+	#define WRITE_LE_UINT16(a, v) WRITE_UINT16(a, v)
+	#define WRITE_LE_UINT32(a, v) WRITE_UINT32(a, v)
+	#define WRITE_LE_UINT64(a, v) WRITE_UINT64(a, v)
+
+	#define FROM_LE_16(a) ((uint16)(a))
+	#define FROM_LE_32(a) ((uint32)(a))
+	#define FROM_LE_64(a) ((uint64)(a))
+
+	#define FROM_BE_16(a) SWAP_BYTES_16(a)
+	#define FROM_BE_32(a) SWAP_BYTES_32(a)
+	#define FROM_BE_64(a) SWAP_BYTES_64(a)
+
+	#define TO_LE_16(a) ((uint16)(a))
+	#define TO_LE_32(a) ((uint32)(a))
+	#define TO_LE_64(a) ((uint64)(a))
+
+	#define TO_BE_16(a) SWAP_BYTES_16(a)
+	#define TO_BE_32(a) SWAP_BYTES_32(a)
+	#define TO_BE_64(a) SWAP_BYTES_64(a)
+
+	#define CONSTANT_LE_16(a) ((uint16)(a))
+	#define CONSTANT_LE_32(a) ((uint32)(a))
+	#define CONSTANT_LE_64(a) ((uint64)(a))
+
+	#define CONSTANT_BE_16(a) SWAP_CONSTANT_16(a)
+	#define CONSTANT_BE_32(a) SWAP_CONSTANT_32(a)
+	#define CONSTANT_BE_64(a) SWAP_CONSTANT_64(a)
+
+// if the unaligned load and the byteswap take alot instructions its better to directly read and invert
+	#if defined(EOS_NEED_ALIGNMENT) && !defined(__mips__)
+
+		inline uint16 READ_BE_UINT16(const void *ptr) {
+			const uint8 *b = (const uint8 *)ptr;
+			return (b[0] << 8) | b[1];
+		}
+		inline uint32 READ_BE_UINT32(const void *ptr) {
+			const uint8 *b = (const uint8 *)ptr;
+			return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3]);
+		}
+		inline uint32 READ_BE_UINT64(const void *ptr) {
+			const uint8 *b = (const uint8 *)ptr;
+			return (b[0] << 56) | (b[1] << 48) | (b[2] << 40) | (b[3] << 32) |
+			       (b[4] << 24) | (b[5] << 16) | (b[6] <<  8) | (b[7]);
+		}
+		inline void WRITE_BE_UINT16(void *ptr, uint16 value) {
+			uint8 *b = (uint8 *)ptr;
+			b[0] = (uint8)(value >> 8);
+			b[1] = (uint8)(value >> 0);
+		}
+		inline void WRITE_BE_UINT32(void *ptr, uint32 value) {
+			uint8 *b = (uint8 *)ptr;
+			b[0] = (uint8)(value >> 24);
+			b[1] = (uint8)(value >> 16);
+			b[2] = (uint8)(value >>  8);
+			b[3] = (uint8)(value >>  0);
+		}
+		inline void WRITE_BE_UINT64(void *ptr, uint64 value) {
+			uint8 *b = (uint8 *)ptr;
+			b[0] = (uint8)(value >> 56);
+			b[1] = (uint8)(value >> 48);
+			b[2] = (uint8)(value >> 40);
+			b[3] = (uint8)(value >> 32);
+			b[4] = (uint8)(value >> 24);
+			b[5] = (uint8)(value >> 16);
+			b[6] = (uint8)(value >>  8);
+			b[7] = (uint8)(value >>  0);
+		}
+
+	#else
+
+		inline uint16 READ_BE_UINT16(const void *ptr) {
+			return SWAP_BYTES_16(READ_UINT16(ptr));
+		}
+		inline uint32 READ_BE_UINT32(const void *ptr) {
+			return SWAP_BYTES_32(READ_UINT32(ptr));
+		}
+		inline uint64 READ_BE_UINT64(const void *ptr) {
+			return SWAP_BYTES_64(READ_UINT64(ptr));
+		}
+		inline void WRITE_BE_UINT16(void *ptr, uint16 value) {
+			WRITE_UINT16(ptr, SWAP_BYTES_16(value));
+		}
+		inline void WRITE_BE_UINT32(void *ptr, uint32 value) {
+			WRITE_UINT32(ptr, SWAP_BYTES_32(value));
+		}
+		inline void WRITE_BE_UINT64(void *ptr, uint64 value) {
+			WRITE_UINT64(ptr, SWAP_BYTES_64(value));
+		}
+
+	#endif // if defined(EOS_NEED_ALIGNMENT)
+
+#elif defined(EOS_BIG_ENDIAN)
+
+	#define MKID_BE(a) ((uint32)(a))
+
+	#define READ_BE_UINT16(a) READ_UINT16(a)
+	#define READ_BE_UINT32(a) READ_UINT32(a)
+	#define READ_BE_UINT64(a) READ_UINT64(a)
+
+	#define WRITE_BE_UINT16(a, v) WRITE_UINT16(a, v)
+	#define WRITE_BE_UINT32(a, v) WRITE_UINT32(a, v)
+	#define WRITE_BE_UINT64(a, v) WRITE_UINT64(a, v)
+
+	#define FROM_LE_16(a) SWAP_BYTES_16(a)
+	#define FROM_LE_32(a) SWAP_BYTES_32(a)
+	#define FROM_LE_64(a) SWAP_BYTES_64(a)
+
+	#define FROM_BE_16(a) ((uint16)(a))
+	#define FROM_BE_32(a) ((uint32)(a))
+	#define FROM_BE_64(a) ((uint64)(a))
+
+	#define TO_LE_16(a) SWAP_BYTES_16(a)
+	#define TO_LE_32(a) SWAP_BYTES_32(a)
+	#define TO_LE_64(a) SWAP_BYTES_64(a)
+
+	#define TO_BE_16(a) ((uint16)(a))
+	#define TO_BE_32(a) ((uint32)(a))
+	#define TO_BE_64(a) ((uint64)(a))
+
+	#define CONSTANT_LE_16(a) SWAP_CONSTANT_16(a)
+	#define CONSTANT_LE_32(a) SWAP_CONSTANT_32(a)
+	#define CONSTANT_LE_64(a) SWAP_CONSTANT_64(a)
+
+	#define CONSTANT_BE_16(a) ((uint16)(a))
+	#define CONSTANT_BE_32(a) ((uint32)(a))
+	#define CONSTANT_BE_64(a) ((uint64)(a))
+
+// if the unaligned load and the byteswap take alot instructions its better to directly read and invert
+#	if defined(EOS_NEED_ALIGNMENT) && !defined(__mips__)
+
+	inline uint16 READ_LE_UINT16(const void *ptr) {
+		const uint8 *b = (const uint8 *)ptr;
+		return (b[1] << 8) | b[0];
+	}
+	inline uint32 READ_LE_UINT32(const void *ptr) {
+		const uint8 *b = (const uint8 *)ptr;
+		return (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | (b[0]);
+	}
+	inline uint64 READ_LE_UINT64(const void *ptr) {
+		const uint8 *b = (const uint8 *)ptr;
+		return (b[7] << 56) | (b[6] << 48) | (b[5] << 40) | (b[4] << 32) |
+		       (b[3] << 24) | (b[2] << 16) | (b[1] <<  8) | (b[0]);
+	}
+	inline void WRITE_LE_UINT16(void *ptr, uint16 value) {
+		uint8 *b = (uint8 *)ptr;
+		b[0] = (uint8)(value >> 0);
+		b[1] = (uint8)(value >> 8);
+	}
+	inline void WRITE_LE_UINT32(void *ptr, uint32 value) {
+		uint8 *b = (uint8 *)ptr;
+		b[0] = (uint8)(value >>  0);
+		b[1] = (uint8)(value >>  8);
+		b[2] = (uint8)(value >> 16);
+		b[3] = (uint8)(value >> 24);
+	}
+	inline void WRITE_LE_UINT64(void *ptr, uint64 value) {
+		uint8 *b = (uint8 *)ptr;
+		b[0] = (uint8)(value >>  0);
+		b[1] = (uint8)(value >>  8);
+		b[2] = (uint8)(value >> 16);
+		b[3] = (uint8)(value >> 24);
+		b[4] = (uint8)(value >> 32);
+		b[5] = (uint8)(value >> 40);
+		b[6] = (uint8)(value >> 48);
+		b[7] = (uint8)(value >> 56);
+	}
+#	else
+
+	inline uint16 READ_LE_UINT16(const void *ptr) {
+		return SWAP_BYTES_16(READ_UINT16(ptr));
+	}
+	inline uint32 READ_LE_UINT32(const void *ptr) {
+		return SWAP_BYTES_32(READ_UINT32(ptr));
+	}
+	inline uint64 READ_LE_UINT64(const void *ptr) {
+		return SWAP_BYTES_64(READ_UINT64(ptr));
+	}
+	inline void WRITE_LE_UINT16(void *ptr, uint16 value) {
+		WRITE_UINT16(ptr, SWAP_BYTES_16(value));
+	}
+	inline void WRITE_LE_UINT32(void *ptr, uint32 value) {
+		WRITE_UINT32(ptr, SWAP_BYTES_32(value));
+	}
+	inline void WRITE_LE_UINT64(void *ptr, uint64 value) {
+		WRITE_UINT64(ptr, SWAP_BYTES_64(value));
+	}
+
+	#endif // if defined(EOS_NEED_ALIGNMENT)
+
+#endif	// if defined(EOS_LITTLE_ENDIAN)
+
+#endif // EOS_ENDIAN_H

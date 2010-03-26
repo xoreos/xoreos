@@ -1,3 +1,8 @@
+#include "endian.h"
+
 int main() {
-	return 0;
+	byte *ptr = 0;
+
+	uint64 a = READ_LE_UINT64(ptr);
+	return a;
 }

@@ -54,4 +54,6 @@
 	#error No way to derive fixed-width variable types
 #endif
 
+typedef uint8 byte;
+
 #endif // EOS_TYPES_H
