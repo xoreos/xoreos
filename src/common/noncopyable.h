@@ -1,9 +1,14 @@
-/* eos 0.0.1
+/* eos - A reimplementation of BioWare's Aurora engine
  * Copyright (c) 2010 Sven Hesse (DrMcCoy)
+ *
+ * The Infinity, Aurora, Odyssey and Eclipse engines, Copyright (c) BioWare corp.
+ * The Electron engine, Copyright (c) Obsidian Entertainment and Bioware corp.
  *
  * This file is part of eos and is distributed under the terms of
  * the GNU General Public Licence. See COPYING for more informations.
  */
+
+// Copied verbatim from ScummVM
 
 #ifndef COMMON_NONCOPYABLE_H
 #define COMMON_NONCOPYABLE_H
