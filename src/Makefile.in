@@ -160,7 +160,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
 AM_CXXFLAGS = -I../lib -ggdb -Wall -Wpointer-arith -Werror @EOS_CXXFLAGS@
 eos_SOURCES = eos.cpp
-noinst_HEADERS = system.h types.h endian.h util.h
+noinst_HEADERS = common/system.h common/types.h common/endian.h common/util.h
 all: all-am
 
 .SUFFIXES:
