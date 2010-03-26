@@ -1,0 +1,4 @@
+1. Untar the source archive
+2. ./configure
+3. make
+4. make install

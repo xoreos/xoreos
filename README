@@ -1,0 +1,6 @@
+eos 0.0.1 by Sven Hesse (DrMcCoy)
+=================================
+
+eos will be a reimplementation of BioWare's Aurora engine (and derivatives),
+its direct goal being having Star Wars: Knights of the Old Republic working in
+a portable manner. Other games might follow.
