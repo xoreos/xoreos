@@ -47,7 +47,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_eos_OBJECTS = eos.$(OBJEXT)
+am_eos_OBJECTS = eos.$(OBJEXT) stream.$(OBJEXT) file.$(OBJEXT)
 eos_OBJECTS = $(am_eos_OBJECTS)
 eos_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -159,8 +159,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
 AM_CXXFLAGS = -I../lib -ggdb -Wall -Wpointer-arith -Werror @EOS_CXXFLAGS@
-eos_SOURCES = eos.cpp
-noinst_HEADERS = common/system.h common/types.h common/endian.h common/util.h
+eos_SOURCES = eos.cpp common/stream.cpp common/file.cpp
+noinst_HEADERS = common/system.h common/types.h common/endian.h common/util.h common/stream.h common/file.h
 all: all-am
 
 .SUFFIXES:
@@ -243,6 +243,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eos.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stream.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -257,6 +259,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+stream.o: common/stream.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT stream.o -MD -MP -MF $(DEPDIR)/stream.Tpo -c -o stream.o `test -f 'common/stream.cpp' || echo '$(srcdir)/'`common/stream.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/stream.Tpo $(DEPDIR)/stream.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='common/stream.cpp' object='stream.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o stream.o `test -f 'common/stream.cpp' || echo '$(srcdir)/'`common/stream.cpp
+
+stream.obj: common/stream.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT stream.obj -MD -MP -MF $(DEPDIR)/stream.Tpo -c -o stream.obj `if test -f 'common/stream.cpp'; then $(CYGPATH_W) 'common/stream.cpp'; else $(CYGPATH_W) '$(srcdir)/common/stream.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/stream.Tpo $(DEPDIR)/stream.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='common/stream.cpp' object='stream.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o stream.obj `if test -f 'common/stream.cpp'; then $(CYGPATH_W) 'common/stream.cpp'; else $(CYGPATH_W) '$(srcdir)/common/stream.cpp'; fi`
+
+file.o: common/file.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT file.o -MD -MP -MF $(DEPDIR)/file.Tpo -c -o file.o `test -f 'common/file.cpp' || echo '$(srcdir)/'`common/file.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/file.Tpo $(DEPDIR)/file.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='common/file.cpp' object='file.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o file.o `test -f 'common/file.cpp' || echo '$(srcdir)/'`common/file.cpp
+
+file.obj: common/file.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT file.obj -MD -MP -MF $(DEPDIR)/file.Tpo -c -o file.obj `if test -f 'common/file.cpp'; then $(CYGPATH_W) 'common/file.cpp'; else $(CYGPATH_W) '$(srcdir)/common/file.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/file.Tpo $(DEPDIR)/file.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='common/file.cpp' object='file.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o file.obj `if test -f 'common/file.cpp'; then $(CYGPATH_W) 'common/file.cpp'; else $(CYGPATH_W) '$(srcdir)/common/file.cpp'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \

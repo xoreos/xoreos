@@ -5,8 +5,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-#ifndef EOS_ENDIAN_H
-#define EOS_ENDIAN_H
+#ifndef COMMON_ENDIAN_H
+#define COMMON_ENDIAN_H
 
 #include "common/system.h"
 #include "common/types.h"
@@ -454,4 +454,4 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 #endif	// if defined(EOS_LITTLE_ENDIAN)
 
-#endif // EOS_ENDIAN_H
+#endif // COMMON_ENDIAN_H

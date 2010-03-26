@@ -5,8 +5,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-#ifndef EOS_UTIL_H
-#define EOS_UTIL_H
+#ifndef COMMON_UTIL_H
+#define COMMON_UTIL_H
 
 #include "common/endian.h"
 
@@ -38,4 +38,4 @@ template<typename T> inline void SWAP(T &a, T &b) { T tmp = a; a = b; b = tmp; }
  */
 #define ARRAYSIZE(x) ((int)(sizeof(x) / sizeof(x[0])))
 
-#endif // EOS_UTIL_H
+#endif // COMMON_UTIL_H

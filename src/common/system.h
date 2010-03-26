@@ -5,8 +5,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-#ifndef EOS_SYSTEM_H
-#define EOS_SYSTEM_H
+#ifndef COMMON_SYSTEM_H
+#define COMMON_SYSTEM_H
 
 #if defined(HAVE_CONFIG_H)
 	#include "config.h"
@@ -93,4 +93,4 @@
 #define MAXPATHLEN 256
 #endif
 
-#endif // EOS_SYSTEM_H
+#endif // COMMON_SYSTEM_H

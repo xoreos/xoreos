@@ -5,8 +5,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-#ifndef EOS_TYPES_H
-#define EOS_TYPES_H
+#ifndef COMMON_TYPES_H
+#define COMMON_TYPES_H
 
 #ifdef HAVE_CONFIG_H
 	#include <config.h>
@@ -56,4 +56,8 @@
 
 typedef uint8 byte;
 
-#endif // EOS_TYPES_H
+namespace DisposeAfterUse {
+	enum Flag { NO, YES };
+}
+
+#endif // COMMON_TYPES_H
