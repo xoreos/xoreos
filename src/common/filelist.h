@@ -62,9 +62,19 @@ public:
 	 */
 	bool getSubMap(const std::string &glob, std::list<std::string> &list) const;
 
-	/** Does the list contain this file? */
+	/** Does the list contain this file?
+	 *
+	 *  @param  fileName The file too look for.
+	 *  @return true if the file is in the list, false otherwise.
+	 */
 	bool constains(const std::string &fileName) const;
-	/** Open the specified file. */
+
+	/** Open the specified file.
+	 *
+	 *  @param  fileName the file to open.
+	 *  @return A SeekableReadStream of the file, or 0 if the file is not
+	 *          in the list.
+	 */
 	SeekableReadStream *openFile(const std::string &fileName) const;
 
 private:
