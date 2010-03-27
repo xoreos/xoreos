@@ -26,15 +26,25 @@ class SeekableReadStream;
 class FileList {
 public:
 	FileList();
+	FileList(const FileList &list);
 	~FileList();
+
+	FileList &operator=(const FileList &list);
+	FileList &operator+=(const FileList &list);
+
+	/** Clear the list. */
+	void clear();
 
 	/** Is the list empty? */
 	bool isEmpty() const;
 	/** Return the number of files in the list. */
 	uint32 getSize() const;
 
-	/** Clear the list. */
-	void clear();
+	/** Copy the names of the files in the FileList into a list.
+	 *
+	 *  @param list The list into which to copy the file names.
+	 */
+	void getFileNames(std::list<std::string> &list) const;
 
 	/** Add a directory to the list
 	 *
@@ -65,20 +75,33 @@ public:
 	/** Does the list contain this file?
 	 *
 	 *  @param  fileName The file too look for.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return true if the file is in the list, false otherwise.
 	 */
-	bool constains(const std::string &fileName) const;
+	bool constains(const std::string &fileName, bool caseInsensitive = false) const;
 
 	/** Open the specified file.
 	 *
 	 *  @param  fileName the file to open.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return A SeekableReadStream of the file, or 0 if the file is not
 	 *          in the list.
 	 */
-	SeekableReadStream *openFile(const std::string &fileName) const;
+	SeekableReadStream *openFile(const std::string &fileName, bool caseInsensitive = false) const;
 
 private:
-	std::list<boost::filesystem::path> _files; ///< The files.
+	/** A file path. */
+	struct FilePath {
+		std::string baseDir;              ///< The base directory from which the path was added.
+		boost::filesystem::path filePath; ///< The complete real path.
+
+		FilePath(std::string b, boost::filesystem::path p);
+		FilePath(const FilePath &p);
+	};
+
+	std::list<FilePath> _files; ///< The files.
+
+	bool addDirectory(const std::string &base, const boost::filesystem::path &directory, int recurseDepth);
 };
 
 } // End of namespace Common
