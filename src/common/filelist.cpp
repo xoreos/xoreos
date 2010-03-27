@@ -8,6 +8,9 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+#include "boost/algorithm/string.hpp"
+#include "boost/regex.hpp"
+
 #include "filelist.h"
 #include "file.h"
 #include "stream.h"
@@ -25,7 +28,7 @@ using boost::iequals;
 
 namespace Common {
 
-FileList::FilePath::FilePath(std::string b, boost::filesystem::path p) : baseDir(b), filePath(p) {
+FileList::FilePath::FilePath(std::string b, path p) : baseDir(b), filePath(p) {
 }
 
 FileList::FilePath::FilePath(const FilePath &p) : baseDir(p.baseDir), filePath(p.filePath) {
@@ -94,11 +97,9 @@ bool FileList::addDirectory(const std::string &base, const path &directory, int 
 					if (!addDirectory(base, itDir->path(), (recurseDepth == -1) ? -1 : (recurseDepth - 1)))
 						return false;
 
-			} else {
-				// It's a path, add it to the list and map
-				_files.push_back(FilePath(base, itDir->path()));
-				_fileMap.insert(std::make_pair(to_lower_copy(itDir->path().stem()), --_files.end()));
-			}
+			} else
+				// It's a path, add it to the list
+				addPath(base, itDir->path());
 		}
 	} catch (...) {
 		return false;
@@ -107,12 +108,49 @@ bool FileList::addDirectory(const std::string &base, const path &directory, int 
 	return true;
 }
 
-bool FileList::getSubMap(const std::string &glob, FileList &subMap) const {
-	return false;
+void FileList::addPath(const FilePath &p) {
+	_files.push_back(p);
+	_fileMap.insert(std::make_pair(to_lower_copy(p.filePath.stem()), --_files.end()));
 }
 
-bool FileList::getSubMap(const std::string &glob, std::list<std::string> &list) const {
-	return false;
+void FileList::addPath(const std::string &base, const path &p) {
+	addPath(FilePath(base, p));
+}
+
+bool FileList::getSubList(const std::string &glob, FileList &subList, bool caseInsensitive) const {
+	boost::regex::flag_type type = boost::regex::perl;
+	if (caseInsensitive)
+		type |= boost::regex::icase;
+	boost::regex expression(glob, type);
+
+	bool foundMatch = false;
+
+	// Iterate through the whole list, adding the matches to the sub list
+	for (std::list<FilePath>::const_iterator it = _files.begin(); it != _files.end(); ++it)
+		if (boost::regex_match(it->filePath.string(), expression)) {
+			subList.addPath(*it);
+			foundMatch = true;
+		}
+
+	return foundMatch;
+}
+
+bool FileList::getSubList(const std::string &glob, std::list<std::string> &list, bool caseInsensitive) const {
+	boost::regex::flag_type type = boost::regex::perl;
+	if (caseInsensitive)
+		type |= boost::regex::icase;
+	boost::regex expression(glob, type);
+
+	bool foundMatch = false;
+
+	// Iterate through the whole list, adding the matches to the sub list
+	for (std::list<FilePath>::const_iterator it = _files.begin(); it != _files.end(); ++it)
+		if (boost::regex_match(it->filePath.string(), expression)) {
+			list.push_back(it->filePath.string());
+			foundMatch = true;
+		}
+
+	return foundMatch;
 }
 
 bool FileList::contains(const std::string &fileName, bool caseInsensitive) const {

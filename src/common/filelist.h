@@ -16,7 +16,6 @@
 #include <map>
 
 #include "boost/filesystem.hpp"
-#include "boost/algorithm/string.hpp"
 
 #include "types.h"
 
@@ -61,18 +60,20 @@ public:
 	/** Add the files matching the given regex into another FileList.
 	 *
 	 *  @param  glob A perl regular expression to match the file names against.
-	 *  @param  subMap The FileList to where to add the matching files.
+	 *  @param  subList The FileList to where to add the matching files.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return true if at least one matching file was found.
 	 */
-	bool getSubMap(const std::string &glob, FileList &subMap) const;
+	bool getSubList(const std::string &glob, FileList &subList, bool caseInsensitive = false) const;
 
 	/** Add the files matching the given regex into a list of file names.
 	 *
 	 *  @param  glob A perl regular expression to match the file names against.
 	 *  @param  list The list to where to add the matching file names.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return true if at least one matching file was found.
 	 */
-	bool getSubMap(const std::string &glob, std::list<std::string> &list) const;
+	bool getSubList(const std::string &glob, std::list<std::string> &list, bool caseInsensitive = false) const;
 
 	/** Does the list contain this file?
 	 *
@@ -109,6 +110,9 @@ private:
 	FileMap _fileMap;
 
 	bool addDirectory(const std::string &base, const boost::filesystem::path &directory, int recurseDepth);
+
+	void addPath(const std::string &base, const boost::filesystem::path &p);
+	void addPath(const FilePath &p);
 
 	const FilePath *getPath(const std::string &fileName, bool caseInsensitive = false) const;
 };
