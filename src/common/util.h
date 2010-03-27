@@ -13,7 +13,7 @@
 #ifndef COMMON_UTIL_H
 #define COMMON_UTIL_H
 
-#include "common/endian.h"
+#include "endianness.h"
 
 #ifdef MIN
 #undef MIN

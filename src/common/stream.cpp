@@ -10,8 +10,8 @@
 
 // Largely based on the stream implementation found in ScummVM.
 
-#include "common/stream.h"
-#include "common/util.h"
+#include "stream.h"
+#include "util.h"
 
 namespace Common {
 
