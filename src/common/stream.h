@@ -56,8 +56,8 @@ public:
 	 * Write data into the stream. Subclasses must implement this
 	 * method; all other write methods are implemented using it.
 	 *
-	 * @param dataPtr pointer to the data to be written
-	 * @param dataSize number of bytes to be written
+	 * @param  dataPtr pointer to the data to be written.
+	 * @param  dataSize number of bytes to be written.
 	 * @return the number of bytes which were actually written.
 	 */
 	virtual uint32 write(const void *dataPtr, uint32 dataSize) = 0;
@@ -67,7 +67,7 @@ public:
 	 * storage medium; unbuffered streams can use the default
 	 * implementation.
 	 *
-	 * @return true on success, false in case of a failure
+	 * @return true on success, false in case of a failure.
 	 */
 	virtual bool flush() { return true; }
 
@@ -176,8 +176,8 @@ public:
 	 * Read data from the stream. Subclasses must implement this
 	 * method; all other read methods are implemented using it.
 	 *
-	 * @param dataPtr pointer to a buffer into which the data is read
-	 * @param dataSize number of bytes to be read
+	 * @param  dataPtr pointer to a buffer into which the data is read.
+	 * @param  dataSize number of bytes to be read.
 	 * @return the number of bytes which were actually read.
 	 */
 	virtual uint32 read(void *dataPtr, uint32 dataSize) = 0;
@@ -385,7 +385,7 @@ public:
 	 * Obtains the total size of the stream, measured in bytes.
 	 * If this value is unknown or can not be computed, -1 is returned.
 	 *
-	 * @return the size of the stream, or -1 if an error occurred
+	 * @return the size of the stream, or -1 if an error occurred.
 	 */
 	virtual int32 size() const = 0;
 
@@ -397,9 +397,9 @@ public:
 	 * position indicator, or end-of-file, respectively. A successful call
 	 * to the seek() method clears the end-of-file indicator for the stream.
 	 *
-	 * @param offset the relative offset in bytes
-	 * @param whence the seek reference: SEEK_SET, SEEK_CUR, or SEEK_END
-	 * @return true on success, false in case of a failure
+	 * @param  offset the relative offset in bytes.
+	 * @param  whence the seek reference: SEEK_SET, SEEK_CUR, or SEEK_END.
+	 * @return true on success, false in case of a failure.
 	 */
 	virtual bool seek(int32 offset, int whence = SEEK_SET) = 0;
 
@@ -408,8 +408,8 @@ public:
 	 * position in the stream. A successful call to the skip() method clears
 	 * the end-of-file indicator for the stream.
 	 *
-	 * @param offset the number of bytes to skip
-	 * @return true on success, false in case of a failure
+	 * @param  offset the number of bytes to skip.
+	 * @return true on success, false in case of a failure.
 	 */
 	virtual bool skip(uint32 offset) { return seek(offset, SEEK_CUR); }
 
@@ -432,9 +432,9 @@ public:
 	 * @note This methods is closely modeled after the standard fgets()
 	 *       function from stdio.h.
 	 *
-	 * @param buf the buffer to store into
-	 * @param bufSize the size of the buffer
-	 * @return a pointer to the read string, or NULL if an error occurred
+	 * @param  buf the buffer to store into.
+	 * @param  bufSize the size of the buffer.
+	 * @return a pointer to the read string, or NULL if an error occurred.
 	 */
 	virtual char *readLine(char *buf, size_t bufSize);
 
