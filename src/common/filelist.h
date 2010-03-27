@@ -38,15 +38,28 @@ public:
 
 	/** Add a directory to the list
 	 *
-	 *  @param directory The directory to add.
-	 *  @param recurseDepth The number of levels to recurse into subdirectories. 0
-	 *         for ignoring subdirectories, -1 for a limitless recursion.
+	 *  @param  directory The directory to add.
+	 *  @param  recurseDepth The number of levels to recurse into subdirectories. 0
+	 *          for ignoring subdirectories, -1 for a limitless recursion.
+	 *  @return true if the directory was successfully added to the list,
+	 *          false otherwise.
 	 */
 	bool addDirectory(const std::string &directory, int recurseDepth = 0);
 
-	/** Add the files matching the given regex into another FileList. */
+	/** Add the files matching the given regex into another FileList.
+	 *
+	 *  @param  glob A perl regular expression to match the file names against.
+	 *  @param  subMap The FileList to where to add the matching files.
+	 *  @return true if at least one matching file was found.
+	 */
 	bool getSubMap(const std::string &glob, FileList &subMap) const;
-	/** Add the files matching the given regex into a list of file names. */
+
+	/** Add the files matching the given regex into a list of file names.
+	 *
+	 *  @param  glob A perl regular expression to match the file names against.
+	 *  @param  list The list to where to add the matching file names.
+	 *  @return true if at least one matching file was found.
+	 */
 	bool getSubMap(const std::string &glob, std::list<std::string> &list) const;
 
 	/** Does the list contain this file? */
