@@ -92,6 +92,16 @@ public:
 	 */
 	SeekableReadStream *openFile(const std::string &fileName, bool caseInsensitive = false) const;
 
+	/** Find a directory's subdirectory.
+	 *
+	 *  @param  directory The directory in which to look.
+	 *  @param  subDirectory The subdirectory to find.
+	 *  @param  caseInsensitive Should the case of the subdirectory be ignored?
+	 *  @return The path of the subdirectory or "" if not found.
+	 */
+	static std::string findSubDirectory(const std::string &directory, const std::string &subDirectory,
+	                                    bool caseInsensitive = false);
+
 private:
 	/** A file path. */
 	struct FilePath {
