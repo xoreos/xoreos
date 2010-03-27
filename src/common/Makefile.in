@@ -51,8 +51,11 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcommon_la_LIBADD =
-am_libcommon_la_OBJECTS = stream.lo file.lo
+am_libcommon_la_OBJECTS = libcommon_la-stream.lo libcommon_la-file.lo
 libcommon_la_OBJECTS = $(am_libcommon_la_OBJECTS)
+libcommon_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(libcommon_la_CXXFLAGS) \
+	$(CXXFLAGS) $(libcommon_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -203,6 +206,9 @@ AM_CXXFLAGS = -ggdb -Wall -Wpointer-arith -Werror @EOS_CXXFLAGS@
 noinst_HEADERS = system.h types.h endianness.h util.h stream.h file.h
 noinst_LTLIBRARIES = libcommon.la
 libcommon_la_SOURCES = stream.cpp file.cpp
+libcommon_la_CXXFLAGS = $(AM_CXXFLAGS) $(BOOST_CPPFLAGS)
+libcommon_la_LDFLAGS = $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_REGEX_LDFLAGS)
+libcommon_la_LIBS = $(BOOST_FILESYSTEM_LIBS) $(BOOST_REGEX_LIBS)
 all: all-am
 
 .SUFFIXES:
@@ -247,7 +253,7 @@ clean-noinstLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libcommon.la: $(libcommon_la_OBJECTS) $(libcommon_la_DEPENDENCIES) 
-	$(CXXLINK)  $(libcommon_la_OBJECTS) $(libcommon_la_LIBADD) $(LIBS)
+	$(libcommon_la_LINK)  $(libcommon_la_OBJECTS) $(libcommon_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -255,8 +261,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stream.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcommon_la-file.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcommon_la-stream.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -278,6 +284,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libcommon_la-stream.lo: stream.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcommon_la_CXXFLAGS) $(CXXFLAGS) -MT libcommon_la-stream.lo -MD -MP -MF $(DEPDIR)/libcommon_la-stream.Tpo -c -o libcommon_la-stream.lo `test -f 'stream.cpp' || echo '$(srcdir)/'`stream.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libcommon_la-stream.Tpo $(DEPDIR)/libcommon_la-stream.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='stream.cpp' object='libcommon_la-stream.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcommon_la_CXXFLAGS) $(CXXFLAGS) -c -o libcommon_la-stream.lo `test -f 'stream.cpp' || echo '$(srcdir)/'`stream.cpp
+
+libcommon_la-file.lo: file.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcommon_la_CXXFLAGS) $(CXXFLAGS) -MT libcommon_la-file.lo -MD -MP -MF $(DEPDIR)/libcommon_la-file.Tpo -c -o libcommon_la-file.lo `test -f 'file.cpp' || echo '$(srcdir)/'`file.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libcommon_la-file.Tpo $(DEPDIR)/libcommon_la-file.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='file.cpp' object='libcommon_la-file.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcommon_la_CXXFLAGS) $(CXXFLAGS) -c -o libcommon_la-file.lo `test -f 'file.cpp' || echo '$(srcdir)/'`file.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
