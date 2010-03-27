@@ -9,6 +9,7 @@
  */
 
 #include "filelist.h"
+#include "file.h"
 #include "stream.h"
 
 // boost-filesystem stuff
@@ -16,6 +17,11 @@ using boost::filesystem::path;
 using boost::filesystem::exists;
 using boost::filesystem::is_directory;
 using boost::filesystem::directory_iterator;
+
+// boost-string_algo
+using boost::to_lower_copy;
+using boost::equals;
+using boost::iequals;
 
 namespace Common {
 
@@ -38,18 +44,21 @@ FileList::~FileList() {
 
 FileList &FileList::operator=(const FileList &list) {
 	_files = list._files;
+	_fileMap = list._fileMap;
 
 	return *this;
 }
 
 FileList &FileList::operator+=(const FileList &list) {
 	_files.insert(_files.end(), list._files.begin(), list._files.end());
+	_fileMap.insert(list._fileMap.begin(), list._fileMap.end());
 
 	return *this;
 }
 
 void FileList::clear() {
 	_files.clear();
+	_fileMap.clear();
 }
 
 bool FileList::isEmpty() const {
@@ -85,9 +94,11 @@ bool FileList::addDirectory(const std::string &base, const path &directory, int 
 					if (!addDirectory(base, itDir->path(), (recurseDepth == -1) ? -1 : (recurseDepth - 1)))
 						return false;
 
-			} else
-				// It's a path, add it to the list
+			} else {
+				// It's a path, add it to the list and map
 				_files.push_back(FilePath(base, itDir->path()));
+				_fileMap.insert(std::make_pair(to_lower_copy(itDir->path().stem()), --_files.end()));
+			}
 		}
 	} catch (...) {
 		return false;
@@ -104,11 +115,57 @@ bool FileList::getSubMap(const std::string &glob, std::list<std::string> &list) 
 	return false;
 }
 
-bool FileList::constains(const std::string &fileName, bool caseInsensitive) const {
+bool FileList::contains(const std::string &fileName, bool caseInsensitive) const {
+	if (getPath(fileName, caseInsensitive))
+		return true;
+
 	return false;
 }
 
 SeekableReadStream *FileList::openFile(const std::string &fileName, bool caseInsensitive) const {
+	const FilePath *p = getPath(fileName, caseInsensitive);
+	if (!p)
+		return 0;
+
+	File *file = new File;
+	if (!file->open(p->filePath.string())) {
+		delete file;
+		return 0;
+	}
+
+	return file;
+}
+
+const FileList::FilePath *FileList::getPath(const std::string &fileName, bool caseInsensitive) const {
+	// Find the files matching the lowercase stem
+	std::pair<FileMap::const_iterator, FileMap::const_iterator> files;
+	files = _fileMap.equal_range(to_lower_copy(path(fileName).stem()));
+
+	// Iterate through those files, looking for a real match
+	for (; files.first != files.second; ++files.first) {
+		if (caseInsensitive) {
+			// Does the complete path match?
+			if (iequals(files.first->second->filePath.string(), fileName))
+				return &*files.first->second;
+			// Does the relative path match?
+			if (iequals(files.first->second->filePath.string(), (path(files.first->second->baseDir) / fileName).string()))
+				return &*files.first->second;
+			// Does the file name match?
+			if (iequals(files.first->second->filePath.filename(), fileName))
+				return &*files.first->second;
+		} else {
+			// Does the complete path match?
+			if (equals(files.first->second->filePath.string(), fileName))
+				return &*files.first->second;
+			// Does the relative path match?
+			if (equals(files.first->second->filePath.string(), (path(files.first->second->baseDir) / fileName).string()))
+				return &*files.first->second;
+			// Does the file name match?
+			if (equals(files.first->second->filePath.filename(), fileName))
+				return &*files.first->second;
+		}
+	}
+
 	return 0;
 }
 

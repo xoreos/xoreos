@@ -13,8 +13,10 @@
 
 #include <string>
 #include <list>
+#include <map>
 
 #include "boost/filesystem.hpp"
+#include "boost/algorithm/string.hpp"
 
 #include "types.h"
 
@@ -78,7 +80,7 @@ public:
 	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return true if the file is in the list, false otherwise.
 	 */
-	bool constains(const std::string &fileName, bool caseInsensitive = false) const;
+	bool contains(const std::string &fileName, bool caseInsensitive = false) const;
 
 	/** Open the specified file.
 	 *
@@ -99,9 +101,16 @@ private:
 		FilePath(const FilePath &p);
 	};
 
+	typedef std::multimap<std::string, std::list<FilePath>::const_iterator> FileMap;
+
 	std::list<FilePath> _files; ///< The files.
 
+	/** The files mapped by extensionless, lowercase filename. */
+	FileMap _fileMap;
+
 	bool addDirectory(const std::string &base, const boost::filesystem::path &directory, int recurseDepth);
+
+	const FilePath *getPath(const std::string &fileName, bool caseInsensitive = false) const;
 };
 
 } // End of namespace Common
