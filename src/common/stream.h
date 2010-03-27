@@ -13,9 +13,9 @@
 #ifndef COMMON_STREAM_H
 #define COMMON_STREAM_H
 
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
 
 #include <string>
 
@@ -631,7 +631,7 @@ public:
 
 	~MemoryReadStream() {
 		if (_disposeMemory)
-			free(const_cast<byte *>(_ptrOrig));
+			std::free(const_cast<byte *>(_ptrOrig));
 	}
 
 	void setEnc(byte value) { _encbyte = value; }
@@ -706,7 +706,7 @@ public:
 		// Write at most as many bytes as are still available...
 		if (dataSize > _bufSize - _pos)
 			dataSize = _bufSize - _pos;
-		memcpy(_ptr, dataPtr, dataSize);
+		std::memcpy(_ptr, dataPtr, dataSize);
 		_ptr += dataSize;
 		_pos += dataSize;
 		return dataSize;
@@ -736,13 +736,13 @@ private:
 		byte *old_data = _data;
 
 		_capacity = new_len + 32;
-		_data = (byte *)malloc(_capacity);
+		_data = (byte *)std::malloc(_capacity);
 		_ptr = _data + _pos;
 
 		if (old_data) {
 			// Copy old data
-			memcpy(_data, old_data, _size);
-			free(old_data);
+			std::memcpy(_data, old_data, _size);
+			std::free(old_data);
 		}
 
 		_size = new_len;
@@ -752,12 +752,12 @@ public:
 
 	~MemoryWriteStreamDynamic() {
 		if (_disposeMemory)
-			free(_data);
+			std::free(_data);
 	}
 
 	uint32 write(const void *dataPtr, uint32 dataSize) {
 		ensureCapacity(_pos + dataSize);
-		memcpy(_ptr, dataPtr, dataSize);
+		std::memcpy(_ptr, dataPtr, dataSize);
 		_ptr += dataSize;
 		_pos += dataSize;
 		if (_pos > _size)

@@ -11,7 +11,7 @@
 #ifndef COMMON_FILE_H
 #define COMMON_FILE_H
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "types.h"
 #include "stream.h"
@@ -64,7 +64,7 @@ public:
 	uint32 read(void *dataPtr, uint32 dataSize);  // implement abstract SeekableReadStream method
 
 protected:
-	FILE *_handle; ///< The actual file handle.
+	std::FILE *_handle; ///< The actual file handle.
 	int32 _size;   ///< The file's size.
 };
 

@@ -32,7 +32,7 @@ bool File::exists(const std::string &fileName) {
 }
 
 bool File::open(const std::string &fileName) {
-	if (!(_handle = fopen(fileName.c_str(), "rb")))
+	if (!(_handle = std::fopen(fileName.c_str(), "rb")))
 		return false;
 
 	seek(0, SEEK_END);
@@ -58,28 +58,28 @@ bool File::err() const {
 	if (!_handle)
 		return false;
 
-	return ferror(_handle) != 0;
+	return std::ferror(_handle) != 0;
 }
 
 void File::clearErr() {
 	if (!_handle)
 		return;
 
-	clearerr(_handle);
+	std::clearerr(_handle);
 }
 
 bool File::eos() const {
 	if (!_handle)
 		return true;
 
-	return feof(_handle) != 0;
+	return std::feof(_handle) != 0;
 }
 
 int32 File::pos() const {
 	if (!_handle)
 		return -1;
 
-	return ftell(_handle);
+	return std::ftell(_handle);
 }
 
 int32 File::size() const {
@@ -90,14 +90,14 @@ bool File::seek(int32 offs, int whence) {
 	if (!_handle)
 		return false;
 
-	return fseek(_handle, offs, whence) == 0;
+	return std::fseek(_handle, offs, whence) == 0;
 }
 
 uint32 File::read(void *ptr, uint32 len) {
 	if (!_handle)
 		return 0;
 
-	return fread(ptr, 1, len, _handle);
+	return std::fread(ptr, 1, len, _handle);
 }
 
 } // End of namespace Common

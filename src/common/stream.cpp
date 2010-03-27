@@ -20,7 +20,7 @@ void WriteStream::writeString(const std::string &str) {
 }
 
 MemoryReadStream *ReadStream::readStream(uint32 dataSize) {
-	void *buf = malloc(dataSize);
+	void *buf = std::malloc(dataSize);
 	dataSize = read(buf, dataSize);
 	assert(dataSize > 0);
 	return new MemoryReadStream((byte *)buf, dataSize, DisposeAfterUse::YES);
@@ -33,7 +33,7 @@ uint32 MemoryReadStream::read(void *dataPtr, uint32 dataSize) {
 		dataSize = _size - _pos;
 		_eos = true;
 	}
-	memcpy(dataPtr, _ptr, dataSize);
+	std::memcpy(dataPtr, _ptr, dataSize);
 
 	if (_encbyte) {
 		byte *p = (byte *)dataPtr;
@@ -236,7 +236,7 @@ uint32 BufferedReadStream::read(void *dataPtr, uint32 dataSize) {
 
 		// First, flush the buffer, if it is non-empty
 		if (0 < bufBytesLeft) {
-			memcpy(dataPtr, _buf + _pos, bufBytesLeft);
+			std::memcpy(dataPtr, _buf + _pos, bufBytesLeft);
 			_pos = _bufSize;
 			alreadyRead += bufBytesLeft;
 			dataPtr = (byte *)dataPtr + bufBytesLeft;
@@ -260,7 +260,7 @@ uint32 BufferedReadStream::read(void *dataPtr, uint32 dataSize) {
 	}
 
 	// Satisfy the request from the buffer
-	memcpy(dataPtr, _buf + _pos, dataSize);
+	std::memcpy(dataPtr, _buf + _pos, dataSize);
 	_pos += dataSize;
 	return alreadyRead + dataSize;
 }
