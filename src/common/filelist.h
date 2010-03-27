@@ -39,8 +39,8 @@ public:
 	/** Add a directory to the list
 	 *
 	 *  @param directory The directory to add.
-	 *  @param recurseDepth The number of levels to recurse into subdirectories, 0
-	 *         for ignoring subdirectories.
+	 *  @param recurseDepth The number of levels to recurse into subdirectories. 0
+	 *         for ignoring subdirectories, -1 for a limitless recursion.
 	 */
 	bool addDirectory(const std::string &directory, int recurseDepth = 0);
 
