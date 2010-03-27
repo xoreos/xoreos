@@ -1,3 +1,3 @@
 #!/bin/sh
 
-aclocal && autoheader && automake && autoconf
+aclocal -I m4 && autoheader && automake && autoconf
