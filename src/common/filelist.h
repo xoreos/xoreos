@@ -125,6 +125,28 @@ private:
 	void addPath(const FilePath &p);
 
 	const FilePath *getPath(const std::string &fileName, bool caseInsensitive = false) const;
+
+public:
+	class const_iterator {
+	public:
+		const_iterator(const const_iterator &i);
+		const_iterator(const std::list<FilePath>::const_iterator &i);
+
+		const_iterator &operator++();
+		const_iterator operator++(int);
+		const_iterator &operator--();
+		const_iterator operator--(int);
+		const std::string &operator*() const;
+		const std::string *operator->() const;
+		bool operator==(const const_iterator &x) const;
+		bool operator!=(const const_iterator &x) const;
+
+	private:
+		std::list<FilePath>::const_iterator it;
+	};
+
+	const_iterator begin() const;
+	const_iterator end() const;
 };
 
 } // End of namespace Common

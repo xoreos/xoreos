@@ -35,6 +35,55 @@ FileList::FilePath::FilePath(const FilePath &p) : baseDir(p.baseDir), filePath(p
 }
 
 
+FileList::const_iterator::const_iterator(const const_iterator &i) {
+	it = i.it;
+}
+
+FileList::const_iterator::const_iterator(const std::list<FilePath>::const_iterator &i) {
+	it = i;
+}
+
+FileList::const_iterator &FileList::const_iterator::operator++() {
+	++it;
+
+	return *this;
+}
+
+FileList::const_iterator FileList::const_iterator::operator++(int) {
+	const_iterator tmp(*this);
+	++(*this);
+	return tmp;
+}
+
+FileList::const_iterator &FileList::const_iterator::operator--() {
+	--it;
+
+	return *this;
+}
+
+FileList::const_iterator FileList::const_iterator::operator--(int) {
+	const_iterator tmp(*this);
+	--(*this);
+	return tmp;
+}
+
+const std::string &FileList::const_iterator::operator*() const {
+	return it->filePath.string();
+}
+
+const std::string *FileList::const_iterator::operator->() const {
+	return &(it->filePath.string());
+}
+
+bool FileList::const_iterator::operator==(const const_iterator &x) const {
+	return it == x.it;
+}
+
+bool FileList::const_iterator::operator!=(const const_iterator &x) const {
+	return it != x.it;
+}
+
+
 FileList::FileList() {
 }
 
@@ -205,6 +254,14 @@ const FileList::FilePath *FileList::getPath(const std::string &fileName, bool ca
 	}
 
 	return 0;
+}
+
+FileList::const_iterator FileList::begin() const {
+	return const_iterator(_files.begin());
+}
+
+FileList::const_iterator FileList::end() const {
+	return const_iterator(_files.end());
 }
 
 std::string FileList::findSubDirectory(const std::string &directory, const std::string &subDirectory,
