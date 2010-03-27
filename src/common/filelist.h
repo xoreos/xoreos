@@ -39,7 +39,7 @@ public:
 	/** Is the list empty? */
 	bool isEmpty() const;
 	/** Return the number of files in the list. */
-	uint32 getSize() const;
+	uint32 size() const;
 
 	/** Copy the names of the files in the FileList into a list.
 	 *
