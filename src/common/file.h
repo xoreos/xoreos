@@ -19,6 +19,7 @@
 
 namespace Common {
 
+/** A simple streaming file class. */
 class File : public SeekableReadStream, public NonCopyable {
 public:
 	File();
