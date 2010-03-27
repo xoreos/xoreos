@@ -1,4 +1,4 @@
-AM_CXXFLAGS = -I../lib -ggdb -Wall -Wpointer-arith -Werror @EOS_CXXFLAGS@
+include $(top_srcdir)/Makefile.common
 
 noinst_HEADERS = system.h types.h endianness.h util.h stream.h file.h
 noinst_LTLIBRARIES = libcommon.la

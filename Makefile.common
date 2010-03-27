@@ -1,0 +1,1 @@
+AM_CXXFLAGS = -ggdb -Wall -Wpointer-arith -Werror @EOS_CXXFLAGS@

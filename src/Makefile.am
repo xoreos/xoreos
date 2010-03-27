@@ -1,4 +1,4 @@
-AM_CXXFLAGS = -I../lib -ggdb -Wall -Wpointer-arith -Werror @EOS_CXXFLAGS@
+include $(top_srcdir)/Makefile.common
 
 SUBDIRS = common
 
