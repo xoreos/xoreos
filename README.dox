@@ -1,0 +1,22 @@
+/**
+
+@mainpage eos
+
+@author Sven Hesse (DrMcCoy)
+
+@section README
+@verbinclude README
+
+@section Credits
+@verbinclude AUTHORS
+
+@section Installation
+@verbinclude INSTALL
+
+@section FAQ
+@verbinclude FAQ
+
+@section License
+@verbinclude COPYING
+
+*/
