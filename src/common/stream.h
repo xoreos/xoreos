@@ -488,7 +488,7 @@ public:
 	virtual uint32 read(void *dataPtr, uint32 dataSize);
 };
 
-/*
+/**
  * SeekableSubReadStream provides access to a SeekableReadStream restricted to
  * the range [begin, end).
  * The same caveats apply to SeekableSubReadStream as do to SeekableReadStream.
