@@ -9,9 +9,11 @@ noinst_HEADERS = system.h \
                  stream.h \
                  file.h \
                  filepath.h \
-                 filelist.h
+                 filelist.h \
+                 config-file.h
 
 libcommon_la_SOURCES = stream.cpp \
                        file.cpp \
                        filepath.cpp \
-                       filelist.cpp
+                       filelist.cpp \
+                       config-file.cpp
