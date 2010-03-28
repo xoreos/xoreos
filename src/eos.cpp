@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 		Aurora::KeyFile key;
 
 		bool success = key.load(*keyStream);
-		warning("Success? %d", success);
+		warning("Success? %d - # bif: %d - # res: %d", success, (int) key.getBifs().size(), (int) key.getResources().size());
 	} else {
 		warning("Nope...");
 	}

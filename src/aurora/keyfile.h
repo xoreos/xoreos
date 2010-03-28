@@ -11,7 +11,6 @@
 #ifndef AURORA_KEYFILE_H
 #define AURORA_KEYFILE_H
 
-#include <list>
 #include <vector>
 
 #include "common/types.h"
@@ -36,7 +35,7 @@ public:
 		uint32 resIndex; ///< Index into the bif's resource table.
 	};
 
-	typedef std::list<Resource> ResourceList;
+	typedef std::vector<Resource> ResourceList;
 	typedef std::vector<std::string> BifList;
 
 	KeyFile();
@@ -62,6 +61,9 @@ public:
 private:
 	BifList      _bifs;      ///< All managed bifs.
 	ResourceList _resources; ///< All containing resources.
+
+	bool readBifList(Common::SeekableReadStream &key, uint32 bifCount);
+	bool readKeyList(Common::SeekableReadStream &key, uint32 keyCount);
 };
 
 } // End of namespace Aurora
