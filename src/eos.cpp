@@ -1,9 +1,17 @@
+/* eos - A reimplementation of BioWare's Aurora engine
+ * Copyright (c) 2010 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)
+ *
+ * The Infinity, Aurora, Odyssey and Eclipse engines, Copyright (c) BioWare corp.
+ * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
+ *
+ * This file is part of eos and is distributed under the terms of
+ * the GNU General Public Licence. See COPYING for more informations.
+ */
+
 #include <cstdio>
 
 #include "common/filepath.h"
 #include "common/filelist.h"
-#include "common/stream.h"
-#include "common/config-file.h"
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -34,17 +42,6 @@ int main(int argc, char **argv) {
 			std::printf("-> %s\n", it->c_str());
 	} else {
 		std::printf("No KEY or BIF files found. Path most probably does not contain an Aurora game.\n");
-	}
-
-	Common::ConfigFile conf;
-
-	if (conf.load("/home/drmccoy/.scummvmrc")) {
-		std::string k;
-
-		std::printf("%d, %d\n", conf.hasKey("sfx_volume", "scummvm"), conf.getKey("sfx_volume", "scummvm", k));
-		std::printf("%s\n", k.c_str());
-	} else {
-		std::printf("Couldn't load config\n");
 	}
 
 	return 0;
