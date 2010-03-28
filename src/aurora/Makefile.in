@@ -37,7 +37,7 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/Makefile.common
-subdir = src/common
+subdir = src/aurora
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/boost.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
@@ -50,9 +50,9 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libcommon_la_LIBADD =
-am_libcommon_la_OBJECTS = stream.lo file.lo filepath.lo filelist.lo
-libcommon_la_OBJECTS = $(am_libcommon_la_OBJECTS)
+libaurora_la_LIBADD =
+am_libaurora_la_OBJECTS = keybif.lo
+libaurora_la_OBJECTS = $(am_libaurora_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -66,8 +66,8 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libcommon_la_SOURCES)
-DIST_SOURCES = $(libcommon_la_SOURCES)
+SOURCES = $(libaurora_la_SOURCES)
+DIST_SOURCES = $(libaurora_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -201,21 +201,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CXXFLAGS = -I$(top_srcdir)/src/ -I- -ggdb -Wall -Wpointer-arith -Werror $(EOS_CXXFLAGS) $(BOOST_CPPFLAGS)
 AM_LDFLAGS = $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_REGEX_LDFLAGS)
-noinst_LTLIBRARIES = libcommon.la
-noinst_HEADERS = system.h \
-                 types.h \
-                 endianness.h \
-                 util.h \
-                 stream.h \
-                 file.h \
-                 filepath.h \
-                 filelist.h
+noinst_LTLIBRARIES = libaurora.la
+noinst_HEADERS = types.h \
+                 keybif.h
 
-libcommon_la_SOURCES = stream.cpp \
-                       file.cpp \
-                       filepath.cpp \
-                       filelist.cpp
-
+libaurora_la_SOURCES = keybif.cpp
 all: all-am
 
 .SUFFIXES:
@@ -229,9 +219,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/Makefile.common $(am
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/common/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/aurora/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/common/Makefile
+	  $(AUTOMAKE) --gnu src/aurora/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -259,8 +249,8 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libcommon.la: $(libcommon_la_OBJECTS) $(libcommon_la_DEPENDENCIES) 
-	$(CXXLINK)  $(libcommon_la_OBJECTS) $(libcommon_la_LIBADD) $(LIBS)
+libaurora.la: $(libaurora_la_OBJECTS) $(libaurora_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libaurora_la_OBJECTS) $(libaurora_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -268,10 +258,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filelist.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filepath.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stream.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keybif.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

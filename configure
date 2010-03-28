@@ -15960,7 +15960,7 @@ EOS_LIBS=""
 
 
 
-ac_config_files="$ac_config_files src/common/Makefile src/Makefile Makefile"
+ac_config_files="$ac_config_files src/common/Makefile src/aurora/Makefile src/Makefile Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17036,6 +17036,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "src/common/Makefile") CONFIG_FILES="$CONFIG_FILES src/common/Makefile" ;;
+    "src/aurora/Makefile") CONFIG_FILES="$CONFIG_FILES src/aurora/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 

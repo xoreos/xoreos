@@ -11,9 +11,9 @@
 #include "boost/algorithm/string.hpp"
 #include "boost/regex.hpp"
 
-#include "filelist.h"
-#include "file.h"
-#include "stream.h"
+#include "common/filelist.h"
+#include "common/file.h"
+#include "common/stream.h"
 
 // boost-filesystem stuff
 using boost::filesystem::path;

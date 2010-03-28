@@ -19,8 +19,8 @@
 
 #include <string>
 
-#include "types.h"
-#include "endianness.h"
+#include "common/types.h"
+#include "common/endianness.h"
 
 namespace Common {
 

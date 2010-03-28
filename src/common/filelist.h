@@ -17,7 +17,7 @@
 
 #include "boost/filesystem.hpp"
 
-#include "types.h"
+#include "common/types.h"
 
 namespace Common {
 

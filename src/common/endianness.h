@@ -13,8 +13,8 @@
 #ifndef COMMON_ENDIAN_H
 #define COMMON_ENDIAN_H
 
-#include "system.h"
-#include "types.h"
+#include "common/system.h"
+#include "common/types.h"
 
 // Sanity check
 #if !defined(EOS_LITTLE_ENDIAN) && !defined(EOS_BIG_ENDIAN)

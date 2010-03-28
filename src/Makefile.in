@@ -53,7 +53,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_eos_OBJECTS = eos.$(OBJEXT)
 eos_OBJECTS = $(am_eos_OBJECTS)
-eos_DEPENDENCIES = common/libcommon.la
+eos_DEPENDENCIES = common/libcommon.la aurora/libaurora.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -237,11 +237,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CXXFLAGS = -ggdb -Wall -Wpointer-arith -Werror $(EOS_CXXFLAGS) $(BOOST_CPPFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/src/ -I- -ggdb -Wall -Wpointer-arith -Werror $(EOS_CXXFLAGS) $(BOOST_CPPFLAGS)
 AM_LDFLAGS = $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_REGEX_LDFLAGS)
-SUBDIRS = common
+SUBDIRS = common aurora
 eos_SOURCES = eos.cpp
-eos_LDADD = common/libcommon.la
+eos_LDADD = common/libcommon.la aurora/libaurora.la
 all: all-recursive
 
 .SUFFIXES:

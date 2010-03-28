@@ -11,7 +11,7 @@
 #include "boost/filesystem.hpp"
 #include "boost/algorithm/string.hpp"
 
-#include "filepath.h"
+#include "common/filepath.h"
 
 // boost-filesystem stuff
 using boost::filesystem::path;

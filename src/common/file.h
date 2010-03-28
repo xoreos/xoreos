@@ -13,9 +13,9 @@
 
 #include <cstdio>
 
-#include "types.h"
-#include "stream.h"
-#include "noncopyable.h"
+#include "common/types.h"
+#include "common/stream.h"
+#include "common/noncopyable.h"
 
 namespace Common {
 
