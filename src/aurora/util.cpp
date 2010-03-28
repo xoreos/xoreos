@@ -13,7 +13,7 @@
 #include "common/util.h"
 #include "common/filepath.h"
 
-#include "aurora/types.h"
+#include "aurora/util.h"
 
 // boost-string_algo
 using boost::iequals;
