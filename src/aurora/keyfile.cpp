@@ -8,14 +8,34 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-#include "aurora/keybif.h"
+#include "common/stream.h"
+#include "common/util.h"
+
+#include "aurora/keyfile.h"
 
 namespace Aurora {
 
-KeyBif::KeyBif() {
+KeyFile::KeyFile() {
 }
 
-KeyBif::~KeyBif() {
+KeyFile::~KeyFile() {
+}
+
+void KeyFile::clear() {
+	_bifs.clear();
+	_resources.clear();
+}
+
+bool KeyFile::load(Common::SeekableReadStream &key) {
+	return false;
+}
+
+const KeyFile::BifList &KeyFile::getBifs() const {
+	return _bifs;
+}
+
+const KeyFile::ResourceList &KeyFile::getResources() const {
+	return _resources;
 }
 
 } // End of namespace Aurora

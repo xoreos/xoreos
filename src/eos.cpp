@@ -10,8 +10,11 @@
 
 #include <cstdio>
 
+#include "common/stream.h"
 #include "common/filepath.h"
 #include "common/filelist.h"
+
+#include "aurora/keyfile.h"
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -27,21 +30,24 @@ int main(int argc, char **argv) {
 	Common::FileList files;
 	files.addDirectory(argv[1], -1);
 
-	std::printf("# files: %d\n", files.size());
-
 	Common::FileList keyFiles, bifFiles;
 	files.getSubList(".*\\.key", keyFiles, true);
 	files.getSubList(".*\\.bif", bifFiles, true);
 
-	if (!keyFiles.isEmpty() || !bifFiles.isEmpty()) {
-		std::printf("# key files: %d\n", keyFiles.size());
-		for (Common::FileList::const_iterator it = keyFiles.begin(); it != keyFiles.end(); ++it)
-			std::printf("-> %s\n", it->c_str());
-		std::printf("# bif files: %d\n", bifFiles.size());
-		for (Common::FileList::const_iterator it = bifFiles.begin(); it != bifFiles.end(); ++it)
-			std::printf("-> %s\n", it->c_str());
-	} else {
+	if (keyFiles.isEmpty() || bifFiles.isEmpty()) {
 		std::printf("No KEY or BIF files found. Path most probably does not contain an Aurora game.\n");
+		return 0;
+	}
+
+	std::printf("Opening \"%s\"\n", keyFiles.begin()->c_str());
+	Common::SeekableReadStream *keyStream = keyFiles.openFile(*keyFiles.begin());
+	if (keyStream) {
+		Aurora::KeyFile key;
+
+		bool success = key.load(*keyStream);
+		std::printf("Success? %d\n", success);
+	} else {
+		std::printf("Nope...\n");
 	}
 
 	return 0;
