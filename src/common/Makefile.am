@@ -12,7 +12,8 @@ noinst_HEADERS = system.h \
                  filelist.h \
                  config-file.h
 
-libcommon_la_SOURCES = stream.cpp \
+libcommon_la_SOURCES = util.cpp \
+                       stream.cpp \
                        file.cpp \
                        filepath.cpp \
                        filelist.cpp \

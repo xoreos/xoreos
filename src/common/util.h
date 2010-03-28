@@ -43,4 +43,15 @@ template<typename T> inline void SWAP(T &a, T &b) { T tmp = a; a = b; b = tmp; }
  */
 #define ARRAYSIZE(x) ((int)(sizeof(x) / sizeof(x[0])))
 
+#ifdef DISABLE_TEXT_CONSOLE
+inline void warning(const char *s, ...) {}
+#else
+/**
+* Print a warning message to the text console (stderr).
+* Automatically prepends the text "WARNING: " and appends
+* an exclamation mark and a newline.
+*/
+void warning(const char *s, ...) GCC_PRINTF(1, 2);
+#endif
+
 #endif // COMMON_UTIL_H
