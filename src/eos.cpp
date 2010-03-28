@@ -16,6 +16,7 @@
 #include "common/filelist.h"
 
 #include "aurora/keyfile.h"
+#include "aurora/biffile.h"
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -46,10 +47,34 @@ int main(int argc, char **argv) {
 		Aurora::KeyFile key;
 
 		bool success = key.load(*keyStream);
-		warning("Success? %d - # bif: %d - # res: %d", success, (int) key.getBifs().size(), (int) key.getResources().size());
+
+		const Aurora::KeyFile::BifList &bifs     = key.getBifs();
+		const Aurora::KeyFile::ResourceList &res = key.getResources();
+
+		warning("Success? %d - # bif: %d - # res: %d", success, (int) bifs.size(), (int) res.size());
+
 	} else {
-		warning("Nope...");
+		warning("Fail :(");
 	}
+
+	delete keyStream;
+
+	warning("Opening \"%s\"", bifFiles.begin()->c_str());
+	Common::SeekableReadStream *bifStream = bifFiles.openFile(*bifFiles.begin());
+	if (bifStream) {
+		Aurora::BifFile bif;
+
+		bool success = bif.load(*bifStream);
+
+		const Aurora::BifFile::ResourceList &res = bif.getResources();
+
+		warning("Success? %d - # res: %d", success, (int) res.size());
+
+	} else {
+		warning("Fail :(");
+	}
+
+	delete bifStream;
 
 	return 0;
 }
