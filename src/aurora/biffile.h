@@ -46,7 +46,6 @@ public:
 	 *
 	 *  @param  bif A stream of a data bif file.
 	 *  @return true if loading was successful, false otherwise.
-	 *
 	 */
 	bool load(Common::SeekableReadStream &bif);
 

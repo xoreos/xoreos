@@ -48,7 +48,6 @@ public:
 	 *
 	 *  @param  key A stream of an indexing key file.
 	 *  @return true if loading was successful, false otherwise.
-	 *
 	 */
 	bool load(Common::SeekableReadStream &key);
 
