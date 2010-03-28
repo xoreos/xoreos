@@ -75,9 +75,9 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 				p++;
 
 			if (*p == '\0')
-				std::fprintf(stderr, "ConfigFile::load: missing ] in line %d\n", lineno);
+				warning("ConfigFile::load: missing ] in line %d", lineno);
 			else if (*p != ']')
-				std::fprintf(stderr, "ConfigFile::load: Invalid character '%c' occured in section name in line %d\n", *p, lineno);
+				warning("ConfigFile::load: Invalid character '%c' occured in section name in line %d", *p, lineno);
 
 			section = std::string(line.c_str() + 1, p - line.c_str() - 1);
 			assert(isValidName(section));
@@ -95,12 +95,12 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 
 			// If no section has been set, this config stream is invalid!
 			if (section.empty())
-				std::fprintf(stderr, "ConfigFile::load: Key/value pair found outside a section in line %d\n", lineno);
+				warning("ConfigFile::load: Key/value pair found outside a section in line %d", lineno);
 
 			// Split string at '=' into 'key' and 'value'. First, find the "=" delimeter.
 			const char *p = strchr(t, '=');
 			if (!p)
-				std::fprintf(stderr, "Config stream buggy: Junk found in line line %d: '%s'\n", lineno, t);
+				warning("Config stream buggy: Junk found in line line %d: '%s'", lineno, t);
 
 			// Extract the key/value pair
 			std::string key = std::string(t, p);
