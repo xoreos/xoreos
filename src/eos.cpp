@@ -11,6 +11,7 @@
 #include <cstdio>
 
 #include "common/stream.h"
+#include "common/util.h"
 #include "common/filepath.h"
 #include "common/filelist.h"
 
@@ -23,7 +24,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (!Common::FilePath::isDirectory(argv[1])) {
-		std::printf("No such directory \"%s\"\n", argv[1]);
+		warning("No such directory \"%s\"", argv[1]);
 		return 0;
 	}
 
@@ -35,19 +36,19 @@ int main(int argc, char **argv) {
 	files.getSubList(".*\\.bif", bifFiles, true);
 
 	if (keyFiles.isEmpty() || bifFiles.isEmpty()) {
-		std::printf("No KEY or BIF files found. Path most probably does not contain an Aurora game.\n");
+		warning("No KEY or BIF files found. Path most probably does not contain an Aurora game.");
 		return 0;
 	}
 
-	std::printf("Opening \"%s\"\n", keyFiles.begin()->c_str());
+	warning("Opening \"%s\"", keyFiles.begin()->c_str());
 	Common::SeekableReadStream *keyStream = keyFiles.openFile(*keyFiles.begin());
 	if (keyStream) {
 		Aurora::KeyFile key;
 
 		bool success = key.load(*keyStream);
-		std::printf("Success? %d\n", success);
+		warning("Success? %d", success);
 	} else {
-		std::printf("Nope...\n");
+		warning("Nope...");
 	}
 
 	return 0;
