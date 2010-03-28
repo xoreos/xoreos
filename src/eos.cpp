@@ -1,11 +1,17 @@
 #include <cstdio>
 
+#include "common/filepath.h"
 #include "common/filelist.h"
 #include "common/stream.h"
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
 		std::printf("Usage: %s </path/to/aurora/game>\n", argv[0]);
+		return 0;
+	}
+
+	if (!Common::FilePath::isDirectory(argv[1])) {
+		std::printf("No such directory \"%s\"\n", argv[1]);
 		return 0;
 	}
 
