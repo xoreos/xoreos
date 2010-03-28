@@ -3,6 +3,7 @@
 #include "common/filepath.h"
 #include "common/filelist.h"
 #include "common/stream.h"
+#include "common/config-file.h"
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -33,6 +34,17 @@ int main(int argc, char **argv) {
 			std::printf("-> %s\n", it->c_str());
 	} else {
 		std::printf("No KEY or BIF files found. Path most probably does not contain an Aurora game.\n");
+	}
+
+	Common::ConfigFile conf;
+
+	if (conf.load("/home/drmccoy/.scummvmrc")) {
+		std::string k;
+
+		std::printf("%d, %d\n", conf.hasKey("sfx_volume", "scummvm"), conf.getKey("sfx_volume", "scummvm", k));
+		std::printf("%s\n", k.c_str());
+	} else {
+		std::printf("Couldn't load config\n");
 	}
 
 	return 0;
