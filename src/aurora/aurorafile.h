@@ -40,6 +40,9 @@ public:
 	 *  @return The string.
 	 */
 	static std::string readRawString(Common::SeekableReadStream &stream, uint32 length, uint32 offset);
+
+	/** Clean up a path string for portable use. */
+	static void cleanupPath(std::string &path);
 };
 
 } // End of namespace Aurora

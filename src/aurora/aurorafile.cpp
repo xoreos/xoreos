@@ -9,6 +9,7 @@
  */
 
 #include "common/stream.h"
+#include "common/util.h"
 
 #include "aurora/aurorafile.h"
 
@@ -39,6 +40,10 @@ std::string AuroraFile::readRawString(Common::SeekableReadStream &stream, uint32
 	stream.seek(pos);
 
 	return str;
+}
+
+void AuroraFile::cleanupPath(std::string &path) {
+	Common::replaceAll(path, '\\', '/');
 }
 
 } // End of namespace Aurora
