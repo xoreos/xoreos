@@ -107,19 +107,8 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 			std::string value = std::string(p + 1);
 
 			// Trim off spaces
-			for (uint i = 0; i < key.size(); i++) {
-				if (key[i] == ' ') {
-					key.erase(i, 1);
-					i--;
-				}
-			}
-
-			for (uint i = 0; i < value.size(); i++) {
-				if (value[i] == ' ') {
-					value.erase(i, 1);
-					i--;
-				}
-			}
+			boost::trim(key);
+			boost::trim(value);
 
 			assert(isValidName(key));
 			setKey(key, section, value);
