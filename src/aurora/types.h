@@ -95,7 +95,10 @@ enum FileType {
 	kFileTypeKEY  =  9999
 };
 
+/** Return the file type of a file name, detected by its extension. */
 FileType getFileType(const std::string &path);
+
+/** Return the file name with a swapped extensions according to the specified file type. */
 std::string setFileType(const std::string &path, FileType type);
 
 } // End of namespace Aurora
