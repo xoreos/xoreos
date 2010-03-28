@@ -13,6 +13,9 @@
 
 #include "aurora/keyfile.h"
 
+static const uint32 kKeyID    = MKID_BE('KEY ');
+static const uint32 kVersion1 = MKID_BE('V1  ');
+
 namespace Aurora {
 
 KeyFile::KeyFile() {
@@ -27,7 +30,16 @@ void KeyFile::clear() {
 }
 
 bool KeyFile::load(Common::SeekableReadStream &key) {
-	return false;
+	if (key.readUint32BE() != kKeyID) {
+		warning("KeyFile::load(): Not a KEY file");
+		return false;
+	}
+	if (key.readUint32BE() != kVersion1) {
+		warning("KeyFile::load(): Unsupported file version");
+		return false;
+	}
+
+	return true;
 }
 
 const KeyFile::BifList &KeyFile::getBifs() const {
