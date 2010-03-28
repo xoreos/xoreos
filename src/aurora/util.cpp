@@ -97,6 +97,15 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeNDB, ".ndb"},
 	{kFileTypePTM, ".ptm"},
 	{kFileTypePTT, ".ptt"},
+	{kFileType000, ".000"}, // Unknown
+	{kFileType001, ".001"}, // Unknown
+	{kFileType002, ".002"}, // Unknown
+	{kFileType003, ".003"}, // Unknown
+	{kFileType004, ".004"}, // Unknown
+	{kFileType005, ".005"}, // Unknown
+	{kFileType006, ".006"}, // Unknown
+	{kFileType007, ".007"}, // Unknown
+	{kFileType008, ".008"}, // Unknown
 	{kFileType1DA, ".1da"},
 	{kFileTypeERF, ".erf"},
 	{kFileTypeBIF, ".bif"},

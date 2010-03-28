@@ -89,6 +89,15 @@ enum FileType {
 	kFileTypeNDB  =  2064,
 	kFileTypePTM  =  2065,
 	kFileTypePTT  =  2066,
+	kFileType000  =  3000, // Unknown
+	kFileType001  =  3001, // Unknown
+	kFileType002  =  3002, // Unknown
+	kFileType003  =  3003, // Unknown
+	kFileType004  =  3004, // Unknown
+	kFileType005  =  3005, // Unknown
+	kFileType006  =  3006, // Unknown
+	kFileType007  =  3007, // Unknown
+	kFileType008  =  3008, // Unknown
 	kFileType1DA  =  9996,
 	kFileTypeERF  =  9997,
 	kFileTypeBIF  =  9998,
