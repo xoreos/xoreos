@@ -34,6 +34,34 @@ public:
 	 */
 	static bool isDirectory(const std::string &p);
 
+	/** Return a file name's stem.
+	 *
+	 *  Example: "/path/to/file.ext" -> "file"
+	 *
+	 *  @param  p The path to manipulate.
+	 *  @return The path's stem.
+	 */
+	static std::string getStem(const std::string &p);
+
+	/** Return a file name's extension.
+	 *
+	 *  Example: "/path/to/file.ext" -> ".ext"
+	 *
+	 *  @param  p The path to manipulate.
+	 *  @return The path's extension.
+	 */
+	static std::string getExtension(const std::string &p);
+
+	/** Change a file name's extension.
+	 *
+	 *  Example: "/path/to/file.ext", ".bar" -> "/path/to/file.bar"
+	 *
+	 *  @param  p The path to manipulate.
+	 *  @param  ext The path's new extension.
+	 *  @return The new path.
+	 */
+	static std::string changeExtension(const std::string &p, const std::string &ext = "");
+
 	/** Find a directory's subdirectory.
 	 *
 	 *  @param  directory The directory in which to look.

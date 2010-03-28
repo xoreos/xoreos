@@ -34,6 +34,26 @@ bool FilePath::isDirectory(const std::string &p) {
 	return (exists(p) && is_directory(p));
 }
 
+std::string FilePath::getStem(const std::string &p) {
+	path file(p);
+
+	return file.stem();
+}
+
+std::string FilePath::getExtension(const std::string &p) {
+	path file(p);
+
+	return file.extension();
+}
+
+std::string FilePath::changeExtension(const std::string &p, const std::string &ext) {
+	path file(p);
+
+	file.replace_extension(ext);
+
+	return file.string();
+}
+
 std::string FilePath::findSubDirectory(const std::string &directory, const std::string &subDirectory,
 		bool caseInsensitive) {
 
