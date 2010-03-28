@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-#include "keybif.h"
+#include "aurora/keybif.h"
 
 namespace Aurora {
 
