@@ -23,7 +23,7 @@ namespace Common {
 class File : public SeekableReadStream, public NonCopyable {
 public:
 	File();
-	virtual ~File();
+	~File();
 
 	/**
 	 * Checks if a given file exists.
@@ -65,7 +65,49 @@ public:
 
 protected:
 	std::FILE *_handle; ///< The actual file handle.
-	int32 _size;   ///< The file's size.
+	int32 _size;        ///< The file's size.
+};
+
+/** For quickly dumping data into a file.
+ *
+ *  @note Use only for testing purposes!
+ */
+class DumpFile : public WriteStream, public NonCopyable {
+public:
+	DumpFile();
+	~DumpFile();
+
+	/**
+	 * Try to open the file with the given fileName.
+	 * @note Must not be called if this file already is open (i.e. if isOpen returns true).
+	 *
+	 * @param  fileName the name of the file to open
+	 * @return true if file was opened successfully, false otherwise
+	 */
+	bool open(const std::string &fileName);
+
+	/**
+	 * Close the file, if open.
+	 */
+	void close();
+
+	/**
+	 * Checks if the object opened a file successfully.
+	 *
+	 * @return true if any file is opened, false otherwise.
+	 */
+	bool isOpen() const;
+
+	bool err() const; // implement abstract Stream method
+	void clearErr();  // implement abstract Stream method
+
+	bool flush(); // implement abstract WriteStream method
+
+	uint32 write(const void *dataPtr, uint32 dataSize); // implement abstract WriteStream method
+
+protected:
+	std::FILE *_handle; ///< The actual file handle.
+	int32 _size;        ///< The file's size.
 };
 
 } // End of namespace Common

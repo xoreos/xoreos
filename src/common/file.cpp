@@ -44,7 +44,7 @@ bool File::open(const std::string &fileName) {
 
 void File::close() {
 	if (_handle)
-		fclose(_handle);
+		std::fclose(_handle);
 
 	_handle =  0;
 	_size   = -1;
@@ -93,11 +93,69 @@ bool File::seek(int32 offs, int whence) {
 	return std::fseek(_handle, offs, whence) == 0;
 }
 
-uint32 File::read(void *ptr, uint32 len) {
+uint32 File::read(void *dataPtr, uint32 dataSize) {
 	if (!_handle)
 		return 0;
 
-	return std::fread(ptr, 1, len, _handle);
+	return std::fread(dataPtr, 1, dataSize, _handle);
+}
+
+
+DumpFile::DumpFile() : _handle(0), _size(-1) {
+}
+
+DumpFile::~DumpFile() {
+	close();
+}
+
+bool DumpFile::open(const std::string &fileName) {
+	if (!(_handle = std::fopen(fileName.c_str(), "wb")))
+		return false;
+
+	_size = 0;
+
+	return true;
+}
+
+void DumpFile::close() {
+	flush();
+
+	if (_handle)
+		std::fclose(_handle);
+
+	_handle =  0;
+	_size   = -1;
+}
+
+bool DumpFile::isOpen() const {
+	return _handle != 0;
+}
+
+bool DumpFile::err() const {
+		return false;
+
+	return std::ferror(_handle) != 0;
+}
+
+void DumpFile::clearErr() {
+	if (!_handle)
+		return;
+
+	std::clearerr(_handle);
+}
+
+bool DumpFile::flush() {
+	if (!_handle)
+		return true;
+
+	return std::fflush(_handle) == 0;
+}
+
+uint32 DumpFile::write(const void *dataPtr, uint32 dataSize) {
+	if (!_handle)
+		return 0;
+
+	return std::fwrite(dataPtr, 1, dataSize, _handle);
 }
 
 } // End of namespace Common
