@@ -13,8 +13,6 @@
 namespace Aurora {
 
 KeyBif::KeyBif() {
-	a = kFileTypeERF;
-	b = 23;
 }
 
 KeyBif::~KeyBif() {
