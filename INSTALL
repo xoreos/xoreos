@@ -1,4 +1,5 @@
 1. Untar the source archive
-2. ./configure
-3. make
-4. make install
+2. ./autogen.sh
+3. ./configure
+4. make
+5. make install
