@@ -264,36 +264,4 @@ FileList::const_iterator FileList::end() const {
 	return const_iterator(_files.end());
 }
 
-std::string FileList::findSubDirectory(const std::string &directory, const std::string &subDirectory,
-		bool caseInsensitive) {
-
-	if (!exists(directory) || !is_directory(directory))
-		// Path is either no directory or doesn't exist
-		return "";
-
-	try {
-		path dirPath(directory);
-		path subDirPath(subDirectory);
-
-		// Iterator over the directory's contents
-		directory_iterator itEnd;
-		for (directory_iterator itDir(dirPath); itDir != itEnd; ++itDir) {
-			if (is_directory(itDir->status())) {
-				// It's a directory. Recurse into it if the depth limit wasn't yet reached
-
-				if (caseInsensitive) {
-					if (iequals(itDir->path().filename(), subDirectory))
-						return itDir->path().string();
-				} else {
-					if (equals(itDir->path().filename(), subDirectory))
-						return itDir->path().string();
-				}
-			}
-		}
-	} catch (...) {
-	}
-
-	return "";
-}
-
 } // End of namespace Common

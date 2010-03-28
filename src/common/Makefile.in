@@ -51,7 +51,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcommon_la_LIBADD =
-am_libcommon_la_OBJECTS = stream.lo file.lo filelist.lo
+am_libcommon_la_OBJECTS = stream.lo file.lo filepath.lo filelist.lo
 libcommon_la_OBJECTS = $(am_libcommon_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -201,9 +201,21 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CXXFLAGS = -ggdb -Wall -Wpointer-arith -Werror $(EOS_CXXFLAGS) $(BOOST_CPPFLAGS)
 AM_LDFLAGS = $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_REGEX_LDFLAGS)
-noinst_HEADERS = system.h types.h endianness.h util.h stream.h file.h filelist.h
 noinst_LTLIBRARIES = libcommon.la
-libcommon_la_SOURCES = stream.cpp file.cpp filelist.cpp
+noinst_HEADERS = system.h \
+                 types.h \
+                 endianness.h \
+                 util.h \
+                 stream.h \
+                 file.h \
+                 filepath.h \
+                 filelist.h
+
+libcommon_la_SOURCES = stream.cpp \
+                       file.cpp \
+                       filepath.cpp \
+                       filelist.cpp
+
 all: all-am
 
 .SUFFIXES:
@@ -258,6 +270,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filelist.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filepath.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stream.Plo@am__quote@
 
 .cpp.o:
