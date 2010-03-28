@@ -8,8 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-#ifndef COMMON_FILEMAP_H
-#define COMMON_FILEMAP_H
+#ifndef COMMON_FILELIST_H
+#define COMMON_FILELIST_H
 
 #include <string>
 #include <list>
@@ -151,4 +151,4 @@ public:
 
 } // End of namespace Common
 
-#endif // COMMON_FILEMAP_H
+#endif // COMMON_FILELIST_H
