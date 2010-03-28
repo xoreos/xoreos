@@ -29,3 +29,14 @@ void warning(const char *s, ...) {
 }
 
 #endif
+
+namespace Common {
+
+void replaceAll(std::string &str, char what, char with) {
+	int pos = 0;
+
+	while ((pos = str.find(what, pos)) != (int) std::string::npos)
+		str[pos++] = with;
+}
+
+} // End of namespace Common

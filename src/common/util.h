@@ -13,6 +13,8 @@
 #ifndef COMMON_UTIL_H
 #define COMMON_UTIL_H
 
+#include <string>
+
 #include "common/endianness.h"
 
 #ifdef MIN
@@ -53,5 +55,10 @@ inline void warning(const char *s, ...) {}
 */
 void warning(const char *s, ...) GCC_PRINTF(1, 2);
 #endif
+
+namespace Common {
+	/** Replace all occurences of one character in a string with another. */
+	void replaceAll(std::string &str, char what, char with);
+} // End of namespace Common
 
 #endif // COMMON_UTIL_H
