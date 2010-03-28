@@ -5,4 +5,4 @@ SUBDIRS = common aurora
 bin_PROGRAMS = eos
 
 eos_SOURCES = eos.cpp
-eos_LDADD = common/libcommon.la aurora/libaurora.la
+eos_LDADD = aurora/libaurora.la common/libcommon.la
