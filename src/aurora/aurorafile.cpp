@@ -16,10 +16,12 @@
 namespace Aurora {
 
 std::string AuroraFile::readRawString(Common::SeekableReadStream &stream, uint32 length) {
-	char buf[length];
+	char buf[length + 1];
 
 	if (stream.read(buf, length) != length)
 		return "";
+
+	buf[length] = '\0';
 
 	return buf;
 }
