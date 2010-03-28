@@ -14,7 +14,6 @@
 #define COMMON_STREAM_H
 
 #include <cassert>
-#include <cstdlib>
 #include <cstring>
 
 #include <string>
@@ -353,7 +352,7 @@ public:
 	}
 
 	/**
-	 * Read the specified amount of data into a malloc'ed buffer
+	 * Read the specified amount of data into a new[]'ed buffer
 	 * which then is wrapped into a MemoryReadStream.
 	 * The returned stream might contain less data than requested,
 	 * if reading more failed, because of an I/O error or because
@@ -618,7 +617,7 @@ public:
 	/**
 	 * This constructor takes a pointer to a memory buffer and a length, and
 	 * wraps it. If disposeMemory is true, the MemoryReadStream takes ownership
-	 * of the buffer and hence free's it when destructed.
+	 * of the buffer and hence delete[]'s it when destructed.
 	 */
 	MemoryReadStream(const byte *dataPtr, uint32 dataSize, DisposeAfterUse::Flag disposeMemory = DisposeAfterUse::NO) :
 		_ptrOrig(dataPtr),
@@ -631,7 +630,7 @@ public:
 
 	~MemoryReadStream() {
 		if (_disposeMemory)
-			std::free(const_cast<byte *>(_ptrOrig));
+			delete[] _ptrOrig;
 	}
 
 	void setEnc(byte value) { _encbyte = value; }
@@ -736,13 +735,13 @@ private:
 		byte *old_data = _data;
 
 		_capacity = new_len + 32;
-		_data = (byte *)std::malloc(_capacity);
+		_data = new byte[_capacity];
 		_ptr = _data + _pos;
 
 		if (old_data) {
 			// Copy old data
 			std::memcpy(_data, old_data, _size);
-			std::free(old_data);
+			delete[] old_data;
 		}
 
 		_size = new_len;
@@ -752,7 +751,7 @@ public:
 
 	~MemoryWriteStreamDynamic() {
 		if (_disposeMemory)
-			std::free(_data);
+			delete[] _data;
 	}
 
 	uint32 write(const void *dataPtr, uint32 dataSize) {

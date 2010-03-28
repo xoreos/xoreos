@@ -20,10 +20,12 @@ void WriteStream::writeString(const std::string &str) {
 }
 
 MemoryReadStream *ReadStream::readStream(uint32 dataSize) {
-	void *buf = std::malloc(dataSize);
+	byte *buf = new byte[dataSize];
+
 	dataSize = read(buf, dataSize);
 	assert(dataSize > 0);
-	return new MemoryReadStream((byte *)buf, dataSize, DisposeAfterUse::YES);
+
+	return new MemoryReadStream(buf, dataSize, DisposeAfterUse::YES);
 }
 
 
