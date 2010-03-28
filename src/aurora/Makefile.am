@@ -5,4 +5,5 @@ noinst_LTLIBRARIES = libaurora.la
 noinst_HEADERS = types.h \
                  keybif.h
 
-libaurora_la_SOURCES = keybif.cpp
+libaurora_la_SOURCES = types.cpp \
+                       keybif.cpp

@@ -11,21 +11,23 @@
 #ifndef AURORA_TYPES_H
 #define AURORA_TYPES_H
 
+#include <string>
+
 namespace Aurora {
 
 /** Various file types used by the Aurora engine and found in archives. */
 enum FileType {
-	kFileTypeNone =  -1,
-	kFileTypeRES  =  0,
-	kFileTypeBMP  =  1,
-	kFileTypeMVE  =  2,
-	kFileTypeTGA  =  3,
-	kFileTypeWAV  =  4,
-	kFileTypePLT  =  6,
-	kFileTypeINI  =  7,
-	kFileTypeBMU  =  8,
-	kFileTypeMPG  =  9,
-	kFileTypeTXT  =  10,
+	kFileTypeNone = -   1,
+	kFileTypeRES  =     0,
+	kFileTypeBMP  =     1,
+	kFileTypeMVE  =     2,
+	kFileTypeTGA  =     3,
+	kFileTypeWAV  =     4,
+	kFileTypePLT  =     6,
+	kFileTypeINI  =     7,
+	kFileTypeBMU  =     8,
+	kFileTypeMPG  =     9,
+	kFileTypeTXT  =    10,
 	kFileTypePLH  =  2000,
 	kFileTypeTEX  =  2001,
 	kFileTypeMDL  =  2002,
@@ -92,6 +94,9 @@ enum FileType {
 	kFileTypeBIF  =  9998,
 	kFileTypeKEY  =  9999
 };
+
+FileType getFileType(const std::string &path);
+std::string setFileType(const std::string &path, FileType type);
 
 } // End of namespace Aurora
 

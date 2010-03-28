@@ -23,8 +23,6 @@ public:
 	~KeyBif();
 
 private:
-	FileType a;
-	int32 b;
 };
 
 } // End of namespace Aurora
