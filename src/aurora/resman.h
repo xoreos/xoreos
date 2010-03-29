@@ -27,6 +27,9 @@ namespace Common {
 
 namespace Aurora {
 
+class KeyFile;
+class BifFile;
+
 /** A resource manager holding information about and handling all request for all
  *  resources useable by the game.
  */
@@ -59,6 +62,15 @@ public:
 
 	/** Return the list of key files found in the base data directory. */
 	const Common::FileList &getKeyList() const;
+
+	/** Load a key index.
+	 *
+	 *  Add all resources found in the key and its bif to the manager.
+	 *
+	 *  @param  key The key file to index.
+	 *  @return true on success, false otherwise.
+	 */
+	bool loadKey(Common::SeekableReadStream &key);
 
 	/** Does a specific resource exists?
 	 *
@@ -115,6 +127,12 @@ private:
 
 	Common::FileList _keyFiles; ///< List of all key files in the base directory.
 	Common::FileList _bifFiles; ///< List of all bif files in the base directory.
+
+	// Key/Bif loading helpers
+	bool findBifPaths(const KeyFile &keyFile, uint32 &bifStart);
+	bool mergeKeyBifResources(const KeyFile &keyFile, uint32 bifStart);
+
+	void addResource(const Resource &resource, const std::string &name);
 
 	const Resource *getRes(const std::string &name, FileType type) const;
 };
