@@ -32,8 +32,16 @@ AC_CHECK_FUNC(SDL_Init, , AC_CHECK_LIB(SDL, SDL_Init, SDL_LIBS="$SDL_LIBS -lSDL"
 LIBS="$save_LIBS"
 
 if test -n "$nosdl"; then
-	AC_MSG_WARN([SDL is required and could not be found!])
-	missing_required=yes
+	AC_MSG_ERROR([SDL is required and could not be found!])
+fi
+
+CPPFLAGSBAK="$CPPFLAGS"
+CPPFLAGS=`$SDL_CONFIG --cflags`
+AC_CHECK_HEADER("SDL_mixer.h", , nosdlmixer=1)
+CPPFLAGS="$CPPFLAGSBAK"
+
+if test -n "$nosdlmixer"; then
+	AC_MSG_ERROR([SDL_Mixer is required and could not be found!])
 fi
 
 AC_C_CONST
@@ -47,8 +55,8 @@ BOOST_SYSTEM
 BOOST_FILESYSTEM
 BOOST_REGEX
 
-EOS_CXXFLAGS="-DUNIX"
-EOS_LIBS="`sdl-config --static-libs`"
+EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
+EOS_LIBS="`sdl-config --static-libs` -lSDL_mixer"
 
 AC_SUBST(SDL_MAIN_OBJ, [$SDL_MAIN_OBJ])
 AC_SUBST(SDL_LIBS, [$SDL_LIBS])
