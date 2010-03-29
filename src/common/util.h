@@ -56,6 +56,8 @@ inline void warning(const char *s, ...) {}
 void warning(const char *s, ...) GCC_PRINTF(1, 2);
 #endif
 
+void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
+
 namespace Common {
 	/** Replace all occurences of one character in a string with another. */
 	void replaceAll(std::string &str, char what, char with);

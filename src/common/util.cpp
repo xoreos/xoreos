@@ -14,6 +14,7 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <cstdlib>
 
 void warning(const char *s, ...) {
 	char buf[STRINGBUFLEN];
@@ -29,6 +30,21 @@ void warning(const char *s, ...) {
 }
 
 #endif
+
+void NORETURN_PRE error(const char *s, ...) {
+	char buf[STRINGBUFLEN];
+	va_list va;
+
+	va_start(va, s);
+	std::vsnprintf(buf, STRINGBUFLEN, s, va);
+	va_end(va);
+
+	std::fputs("ERROR: ", stderr);
+	std::fputs(buf, stderr);
+	std::fputs("!\n", stderr);
+
+	std::exit(1);
+}
 
 namespace Common {
 
