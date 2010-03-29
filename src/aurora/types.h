@@ -17,7 +17,7 @@ namespace Aurora {
 
 /** Various file types used by the Aurora engine and found in archives. */
 enum FileType {
-	kFileTypeNone = -   1,
+	kFileTypeNone           = -   1,
 	kFileTypeRES            =     0, ///< Generic GFF.
 	kFileTypeBMP            =     1, ///< Image, Windows bitmap.
 	kFileTypeMVE            =     2,
