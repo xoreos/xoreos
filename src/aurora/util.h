@@ -22,6 +22,11 @@ bool isMale(Language language);
 /** Does the language ID describe a female viewpoint? */
 bool isFemale(Language language);
 
+/** Is the language ID of the standard variety? */
+bool isLanguageStandard(Language language);
+/** Is the language ID of the new variety found in The Witcher? */
+bool isLanguageTheWitcher(Language language);
+
 /** Return the file type of a file name, detected by its extension. */
 FileType getFileType(const std::string &path);
 

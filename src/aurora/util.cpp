@@ -201,4 +201,46 @@ bool isFemale(Language language) {
 	       (language == kLanguageJapaneseFemale);
 }
 
+bool isLanguageStandard(Language language) {
+	return (language == kLanguageEnglishMale)              ||
+	       (language == kLanguageEnglishMale)              ||
+	       (language == kLanguageEnglishFemale)            ||
+	       (language == kLanguageFrenchMale)               ||
+	       (language == kLanguageFrenchFemale)             ||
+	       (language == kLanguageGermanMale)               ||
+	       (language == kLanguageGermanFemale)             ||
+	       (language == kLanguageItalianMale)              ||
+	       (language == kLanguageItalianFemale)            ||
+	       (language == kLanguageSpanishMale)              ||
+	       (language == kLanguageSpanishFemale)            ||
+	       (language == kLanguagePolishMale)               ||
+	       (language == kLanguagePolishFemale)             ||
+	       (language == kLanguageKoreanMale)               ||
+	       (language == kLanguageKoreanFemale)             ||
+	       (language == kLanguageChineseTraditionalMale)   ||
+	       (language == kLanguageChineseTraditionalFemale) ||
+	       (language == kLanguageChineseSimplifiedMale)    ||
+	       (language == kLanguageChineseSimplifiedFemale)  ||
+	       (language == kLanguageJapaneseMale)             ||
+	       (language == kLanguageJapaneseFemale);
+}
+
+bool isLanguageTheWitcher(Language language) {
+	return (language == kLanguageWitcherDefault)            ||
+	       (language == kLanguageWitcherEnglish)            ||
+	       (language == kLanguageWitcherFinalEnglish)       ||
+	       (language == kLanguageWitcherFinalEnglishShort)  ||
+	       (language == kLanguageWitcherPolish)             ||
+	       (language == kLanguageWitcherGerman)             ||
+	       (language == kLanguageWitcherFrench)             ||
+	       (language == kLanguageWitcherSpanish)            ||
+	       (language == kLanguageWitcherItalian)            ||
+	       (language == kLanguageWitcherRussian)            ||
+	       (language == kLanguageWitcherCzech)              ||
+	       (language == kLanguageWitcherHungarian)          ||
+	       (language == kLanguageWitcherKorean)             ||
+	       (language == kLanguageWitcherChineseTraditional) ||
+	       (language == kLanguageWitcherChineseSimplified);
+}
+
 } // End of namespace Aurora
