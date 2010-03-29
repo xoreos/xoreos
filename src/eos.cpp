@@ -42,7 +42,19 @@ int main(int argc, char **argv) {
 
 	bool success = resMan.registerDataBaseDir(argv[1]);
 
-	warning("Useful base dir? %s - %d keys", success ? "Yes" : "No", (int) resMan.getKeyList().size());
+	const Common::FileList &keyList = resMan.getKeyList();
+
+	warning("Useful base dir? %s - %d keys", success ? "Yes" : "No", (int) keyList.size());
+
+	if (success) {
+		Common::SeekableReadStream *chitinKey = keyList.openFile(".*/chitin.key", true);
+		if (chitinKey) {
+			warning("And has a chitin.key");
+		} else
+			warning("But has no chitin.key");
+
+		delete chitinKey;
+	}
 
 	return 0;
 }
