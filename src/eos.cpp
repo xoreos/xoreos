@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 			bool loaded = resMan.loadKEY(*chitinKEY);
 			warning("Could load chitin.key? %s", loaded ? "Yes" : "No");
 
-			Common::SeekableReadStream *wav1 = resMan.getResource("p_zaalbar_tia", Aurora::kFileTypeWAV);
+			Common::SeekableReadStream *wav1 = resMan.getResource("p_hk-47_tia", Aurora::kFileTypeWAV);
 			Common::SeekableReadStream *wav2 = resMan.getResource("as_pl_evanglstm1", Aurora::kFileTypeWAV);
 
 			if (wav1 || wav2) {
