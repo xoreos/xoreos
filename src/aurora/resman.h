@@ -36,6 +36,22 @@ public:
 	/** Clear all resource information. */
 	void clear();
 
+	/** Does a specific resource exists?
+	 *
+	 *  @param  name The name (resref) of the resource.
+	 *  @param  type The resource's type.
+	 *  @return true if the resource exists, fale otherwise.
+	 */
+	bool hasResource(const std::string &name, FileType type) const;
+
+	/** Return a resource.
+	 *
+	 *  @param  name The name (resref) of the resource.
+	 *  @param  type The resource's type.
+	 *  @return The resource stream or 0 if the resource doesn't exist.
+	 */
+	Common::SeekableReadStream *getResource(const std::string &name, FileType type) const;
+
 private:
 	/** Where a resource can be found. */
 	enum Source {
@@ -69,6 +85,8 @@ private:
 	BifList _bifs; ///< Bifs used by the game resources.
 
 	ResourceMap _resources; ///< All game-usable resources.
+
+	Resource *getRes(const std::string &name, FileType type) const;
 };
 
 } // End of namespace Aurora
