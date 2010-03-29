@@ -56,7 +56,7 @@ BOOST_FILESYSTEM
 BOOST_REGEX
 
 EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
-EOS_LIBS="`sdl-config --static-libs` -lSDL_mixer"
+EOS_LIBS="`sdl-config --libs` -lSDL_mixer"
 
 AC_SUBST(SDL_MAIN_OBJ, [$SDL_MAIN_OBJ])
 AC_SUBST(SDL_LIBS, [$SDL_LIBS])
