@@ -20,7 +20,6 @@ static const uint32 kVersion3  = MKID_BE('V3.0');
 namespace Aurora {
 
 TalkTable::TalkTable() {
-	_stream = 0;
 }
 
 TalkTable::~TalkTable() {
@@ -29,7 +28,6 @@ TalkTable::~TalkTable() {
 
 void TalkTable::clear() {
 	_entryList.clear();
-	delete _stream; _stream = 0;
 }
 
 bool TalkTable::load(Common::SeekableReadStream &stream) {
@@ -50,14 +48,21 @@ bool TalkTable::load(Common::SeekableReadStream &stream) {
 
 	_entryList.resize(stringCount);
 
+	// First, read in all the table data
 	for (uint32 i = 0; i < stringCount; i++) {
 		_entryList[i].flags = (EntryFlags)stream.readUint32LE();
 		_entryList[i].soundResRef = AuroraFile::readRawString(stream, 16);
 		_entryList[i].volumeVariance = stream.readUint32LE();
 		_entryList[i].pitchVariance = stream.readUint32LE();
-		_entryList[i].offset = stream.readUint32LE() + tableOffset;
+		_entryList[i].offset = stream.readUint32LE();
 		_entryList[i].length = stream.readUint32LE();
 		_entryList[i].soundLength = AuroraFile::readFloat(stream);
+	}
+
+	// Now go and pick up all the strings
+	for (uint32 i = 0; i < stringCount; i++) {
+		stream.seek(_entryList[i].offset + tableOffset);
+		_entryList[i].text = AuroraFile::readRawString(stream, _entryList[i].length);
 	}
 
 	if (stream.err()) {
@@ -65,17 +70,7 @@ bool TalkTable::load(Common::SeekableReadStream &stream) {
 		return false;
 	}
 
-	_stream = &stream;
 	return true;
-}
-
-std::string TalkTable::getString(uint32 stringRef) {
-	// If invalid or not loaded, return an empty string
-	if (stringRef >= _entryList.size())
-		return "";
-
-	_stream->seek(_entryList[stringRef].offset);
-	return AuroraFile::readRawString(*_stream, _entryList[stringRef].length);
 }
 
 const TalkTable::Entry *TalkTable::getEntry(uint32 stringRef) const {

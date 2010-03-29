@@ -56,6 +56,7 @@ public:
 		uint32 offset;
 		uint32 length;
 		float soundLength; // In seconds
+		std::string text;
 	};
 
 	typedef std::vector<Entry> EntryList;
@@ -73,13 +74,6 @@ public:
 	 */
 	bool load(Common::SeekableReadStream &stream);
 
-	/** Get a string
-	 *
-	 *  @param stringRef a handle to a string (index).
-	 *  @return an empty string if stringRef is invalid, otherwise a string from the TLK file.
-	 */
-	std::string getString(uint32 stringRef);
-
 	/** Get an entry.
 	 *
 	 *  @param stringRef a handle to a string (index).
@@ -88,10 +82,7 @@ public:
 	const Entry *getEntry(uint32 stringRef) const;
 
 private:
-	Common::SeekableReadStream *_stream;
-
 	uint32 _version; ///< The version of the file.
-
 	Language _language;
 	EntryList _entryList;
 };
