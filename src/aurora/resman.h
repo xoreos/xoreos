@@ -13,6 +13,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 #include <map>
 
 #include "common/types.h"
@@ -35,6 +36,17 @@ public:
 
 	/** Clear all resource information. */
 	void clear();
+
+	/** Save the list of resources.
+	 *
+	 *  So that the manager can be quickly restored to an initial game state.
+	 */
+	void save();
+	/** Restore the list of resources.
+	 *
+	 *  To quickly restore the manager to an initial game state.
+	 */
+	void restore();
 
 	/** Does a specific resource exists?
 	 *
@@ -66,7 +78,7 @@ private:
 		Source source; ///< Where can the resource be found? */
 
 		// For kSourceBIF
-		std::string *bif;    ///< Pointer to the bif path.
+		uint32       bif;    ///< Index into the bif vector.
 		uint32       offset; ///< The offset within the bif file.
 		uint32       size;   ///< The size of the resource data.
 
@@ -75,16 +87,18 @@ private:
 	};
 
 	/** A list of bif files. */
-	typedef std::list<std::string> BifList;
+	typedef std::vector<std::string> BifList;
 
 	/** Map over resources with the same name but different type. */
 	typedef std::map<FileType,    Resource>        ResourceTypeMap;
 	/** Map over resources, indexed by name. */
 	typedef std::map<std::string, ResourceTypeMap> ResourceMap;
 
-	BifList _bifs; ///< Bifs used by the game resources.
-
+	BifList     _bifs;      ///< Bifs used by the game resources.
 	ResourceMap _resources; ///< All game-usable resources.
+
+	BifList     _bifsSaved;      ///< Saved list of bifs used by the game resources.
+	ResourceMap _resourcesSaved; ///< Saved list of game-usable resources.
 
 	const Resource *getRes(const std::string &name, FileType type) const;
 };

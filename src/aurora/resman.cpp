@@ -24,6 +24,19 @@ ResourceManager::~ResourceManager() {
 void ResourceManager::clear() {
 	_bifs.clear();
 	_resources.clear();
+
+	_bifsSaved.clear();
+	_resourcesSaved.clear();
+}
+
+void ResourceManager::save() {
+	_bifsSaved      = _bifs;
+	_resourcesSaved = _resources;
+}
+
+void ResourceManager::restore() {
+	_bifs      = _bifsSaved;
+	_resources = _resourcesSaved;
 }
 
 bool ResourceManager::hasResource(const std::string &name, FileType type) const {
@@ -41,11 +54,11 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 	if        (res->source == kSourceBIF) {
 		// Read the data out of the bif and return a MemoryReadStream
 
-		if (!res->bif)
+		if (res->bif >= _bifs.size())
 			return 0;
 
 		Common::File file;
-		if (!file.open(*res->bif))
+		if (!file.open(_bifs[res->bif]))
 			return 0;
 
 		if (!file.seek(res->offset))
