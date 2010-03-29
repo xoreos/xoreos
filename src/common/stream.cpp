@@ -19,6 +19,16 @@ void WriteStream::writeString(const std::string &str) {
 	write(str.c_str(), str.size());
 }
 
+void WriteStream::writeStream(ReadStream &stream) {
+	byte buf[4096];
+
+	while (!stream.eos()) {
+		uint32 n = stream.read(buf, 4096);
+
+		write(buf, n);
+	}
+}
+
 MemoryReadStream *ReadStream::readStream(uint32 dataSize) {
 	byte *buf = new byte[dataSize];
 

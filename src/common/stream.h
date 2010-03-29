@@ -24,6 +24,7 @@
 namespace Common {
 
 class MemoryReadStream;
+class ReadStream;
 
 /**
  * Virtual base class for both ReadStream and WriteStream.
@@ -156,6 +157,9 @@ public:
 	 * This writes str.size() characters, but no terminating zero byte.
 	 */
 	void writeString(const std::string &str);
+
+	/** Copy the complete contents of the given stream. */
+	void writeStream(ReadStream &stream);
 };
 
 
