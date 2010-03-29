@@ -42,8 +42,8 @@ public:
 	 *
 	 *  So that the manager can be quickly restored to an initial game state.
 	 */
-
 	void save();
+
 	/** Restore the list of resources.
 	 *
 	 *  To quickly restore the manager to an initial game state.
