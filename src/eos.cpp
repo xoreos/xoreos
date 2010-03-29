@@ -9,6 +9,7 @@
  */
 
 #include <cstdio>
+#include <SDL/SDL.h>
 
 #include "common/stream.h"
 #include "common/util.h"

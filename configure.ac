@@ -36,15 +36,6 @@ if test -n "$nosdl"; then
 	missing_required=yes
 fi
 
-save_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS -x objective-c"
-AC_CHECK_HEADERS(Cocoa/Cocoa.h)
-CFLAGS="$save_CFLAGS"
-
-if test "$ac_cv_header_Cocoa_Cocoa_h" = "yes"; then
-	SDL_MAIN_OBJ="src/platform/macosx/SDLMain.o"
-fi
-
 AC_C_CONST
 AC_HEADER_STDC
 
@@ -57,13 +48,7 @@ BOOST_FILESYSTEM
 BOOST_REGEX
 
 EOS_CXXFLAGS="-DUNIX"
-EOS_LIBS="-lSDL"
-
-if test "$ac_cv_header_Cocoa_Cocoa_h" = "yes"; then
-	EOS_CXXFLAGS="$EOS_CXXFLAGS -DMACOSX"
-else
-	EOS_LIBS="$EOS_LIBS -lSDLmain"
-fi
+EOS_LIBS="`sdl-config --static-libs`"
 
 AC_SUBST(SDL_MAIN_OBJ, [$SDL_MAIN_OBJ])
 AC_SUBST(SDL_LIBS, [$SDL_LIBS])
