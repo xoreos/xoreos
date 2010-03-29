@@ -9,6 +9,7 @@
  */
 
 #include "common/stream.h"
+#include "common/file.h"
 
 #include "aurora/resman.h"
 
@@ -36,6 +37,41 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 	Resource *res = getRes(name, type);
 	if (!res)
 		return 0;
+
+	if        (res->source == kSourceBIF) {
+		// Read the data out of the bif and return a MemoryReadStream.
+
+		if (!res->bif)
+			return 0;
+
+		Common::File file;
+		if (!file.open(*res->bif))
+			return 0;
+
+		if (!file.seek(res->offset))
+			return 0;
+
+		byte *data = new byte[res->size];
+
+		if (file.read(data, res->size) != res->size) {
+			delete[] data;
+			return 0;
+		}
+
+		return new Common::MemoryReadStream(data, res->size, DisposeAfterUse::YES);
+
+	} else if (res->source == kSourceFile) {
+		// Open the file and return that
+
+		Common::File *file = new Common::File;
+
+		if (!file->open(res->path)) {
+			delete file;
+			return 0;
+		}
+
+		return file;
+	}
 
 	return 0;
 }
