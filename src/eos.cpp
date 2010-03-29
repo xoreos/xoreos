@@ -22,6 +22,7 @@
 #include "aurora/keyfile.h"
 #include "aurora/biffile.h"
 #include "aurora/resman.h"
+#include "aurora/talktable.h"
 
 bool initSDL();
 void playWav(Common::SeekableReadStream &wavStream);

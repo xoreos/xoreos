@@ -8,11 +8,15 @@ noinst_HEADERS = types.h \
                  keyfile.h \
                  biffile.h \
                  resman.h \
-                 talktable.h
+                 talktable.h \
+                 locstring.h \
+                 gfffile.h
 
 libaurora_la_SOURCES = util.cpp \
                        aurorafile.cpp \
                        keyfile.cpp \
                        biffile.cpp \
                        resman.cpp \
-                       talktable.cpp
+                       talktable.cpp \
+                       locstring.cpp \
+                       gfffile.cpp
