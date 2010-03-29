@@ -25,4 +25,23 @@ void ResourceManager::clear() {
 	_resources.clear();
 }
 
+bool ResourceManager::hasResource(const std::string &name, FileType type) const {
+	if (getRes(name, type))
+		return true;
+
+	return false;
+}
+
+Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
+	Resource *res = getRes(name, type);
+	if (!res)
+		return 0;
+
+	return 0;
+}
+
+ResourceManager::Resource *ResourceManager::getRes(const std::string &name, FileType type) const {
+	return 0;
+}
+
 } // End of namespace Aurora
