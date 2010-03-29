@@ -14,31 +14,31 @@
 #include "aurora/biffile.h"
 #include "aurora/aurorafile.h"
 
-static const uint32 kBifID     = MKID_BE('BIFF');
+static const uint32 kBIFID     = MKID_BE('BIFF');
 static const uint32 kVersion1  = MKID_BE('V1  ');
 static const uint32 kVersion11 = MKID_BE('V1.1');
 
 namespace Aurora {
 
-BifFile::BifFile() {
+BIFFile::BIFFile() {
 }
 
-BifFile::~BifFile() {
+BIFFile::~BIFFile() {
 }
 
-void BifFile::clear() {
+void BIFFile::clear() {
 	_resources.clear();
 }
 
-bool BifFile::load(Common::SeekableReadStream &bif) {
-	if (bif.readUint32BE() != kBifID) {
-		warning("BifFile::load(): Not a BIF file");
+bool BIFFile::load(Common::SeekableReadStream &bif) {
+	if (bif.readUint32BE() != kBIFID) {
+		warning("BIFFile::load(): Not a BIF file");
 		return false;
 	}
 
 	_version = bif.readUint32BE();
 	if (_version != kVersion1 && _version != kVersion11) {
-		warning("BifFile::load(): Unsupported file version");
+		warning("BIFFile::load(): Unsupported file version");
 		return false;
 	}
 
@@ -46,7 +46,7 @@ bool BifFile::load(Common::SeekableReadStream &bif) {
 	uint32 fixResCount = bif.readUint32LE();
 
 	if (fixResCount != 0) {
-		warning("BifFile::load(): TODO: Fixed resources");
+		warning("BIFFile::load(): TODO: Fixed resources");
 		return false;
 	}
 
@@ -59,14 +59,14 @@ bool BifFile::load(Common::SeekableReadStream &bif) {
 		return false;
 
 	if (bif.err()) {
-		warning("BifFile::load(): Read error");
+		warning("BIFFile::load(): Read error");
 		return false;
 	}
 
 	return true;
 }
 
-bool BifFile::readVarResTable(Common::SeekableReadStream &bif, uint32 varResCount) {
+bool BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 varResCount) {
 	for (uint32 i = 0; i < varResCount; i++) {
 		Resource resource;
 
@@ -85,7 +85,7 @@ bool BifFile::readVarResTable(Common::SeekableReadStream &bif, uint32 varResCoun
 	return true;
 }
 
-const BifFile::ResourceList &BifFile::getResources() const {
+const BIFFile::ResourceList &BIFFile::getResources() const {
 	return _resources;
 }
 

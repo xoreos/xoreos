@@ -76,19 +76,19 @@ const Common::FileList &ResourceManager::getKeyList() const {
 	return _keyFiles;
 }
 
-bool ResourceManager::findBifPaths(const KeyFile &keyFile, uint32 &bifStart) {
+bool ResourceManager::findBIFPaths(const KeyFile &keyFile, uint32 &bifStart) {
 	bifStart = _bifs.size();
 
-	uint32 keyBifCount = keyFile.getBifs().size();
+	uint32 keyBIFCount = keyFile.getBIFs().size();
 
-	_bifs.resize(bifStart + keyBifCount);
+	_bifs.resize(bifStart + keyBIFCount);
 
 	// Go through all bif names the key wants, trying to find a match in our bif list
-	for (uint32 i = 0; i < keyBifCount; i++) {
+	for (uint32 i = 0; i < keyBIFCount; i++) {
 		bool found = false;
 
 		// All our bifs are in _baseDir/, and the bif names in the key should be relative to that
-		_bifs[bifStart + i] = Common::FilePath::normalize(_baseDir + "/" + keyFile.getBifs()[i]);
+		_bifs[bifStart + i] = Common::FilePath::normalize(_baseDir + "/" + keyFile.getBIFs()[i]);
 
 		// Look through all our bifs, looking for a match
 		for (Common::FileList::const_iterator it = _bifFiles.begin(); it != _bifFiles.end(); ++it) {
@@ -101,7 +101,7 @@ bool ResourceManager::findBifPaths(const KeyFile &keyFile, uint32 &bifStart) {
 
 		// Did we find it?
 		if (!found) {
-			warning("ResourceManager::getBifPaths(): \"%s\" not found", _bifs[bifStart + i].c_str());
+			warning("ResourceManager::getBIFPaths(): \"%s\" not found", _bifs[bifStart + i].c_str());
 			_bifs.resize(bifStart);
 			return false;
 		}
@@ -111,20 +111,20 @@ bool ResourceManager::findBifPaths(const KeyFile &keyFile, uint32 &bifStart) {
 	return true;
 }
 
-bool ResourceManager::mergeKeyBifResources(const KeyFile &keyFile, uint32 bifStart) {
-	uint32 keyBifCount = keyFile.getBifs().size();
+bool ResourceManager::mergeKeyBIFResources(const KeyFile &keyFile, uint32 bifStart) {
+	uint32 keyBIFCount = keyFile.getBIFs().size();
 
-	std::vector<BifFile> keyBifFiles;
+	std::vector<BIFFile> keyBIFFiles;
 
-	keyBifFiles.resize(keyBifCount);
+	keyBIFFiles.resize(keyBIFCount);
 
 	// Try to load all needed bif files
-	for (uint32 i = 0; i < keyBifCount; i++) {
-		Common::File keyBifFile;
-		if (!keyBifFile.open(_bifs[bifStart + i]))
+	for (uint32 i = 0; i < keyBIFCount; i++) {
+		Common::File keyBIFFile;
+		if (!keyBIFFile.open(_bifs[bifStart + i]))
 			return false;
 
-		if (!keyBifFiles[i].load(keyBifFile))
+		if (!keyBIFFiles[i].load(keyBIFFile))
 			return false;
 	}
 
@@ -132,19 +132,19 @@ bool ResourceManager::mergeKeyBifResources(const KeyFile &keyFile, uint32 bifSta
 	KeyFile::ResourceList::const_iterator keyRes;
 	for (keyRes = keyFile.getResources().begin(); keyRes != keyFile.getResources().end(); ++keyRes) {
 
-		// Bif index in range?
-		if (keyRes->bifIndex >= keyBifFiles.size())
+		// BIF index in range?
+		if (keyRes->bifIndex >= keyBIFFiles.size())
 			return false;
 
 		// Resource index within the bif in range?
-		const BifFile::ResourceList &bifRess = keyBifFiles[keyRes->bifIndex].getResources();
+		const BIFFile::ResourceList &bifRess = keyBIFFiles[keyRes->bifIndex].getResources();
 		if (keyRes->resIndex >= bifRess.size())
 			return false;
 
 		// Type has to match
-		const BifFile::Resource &bifRes = bifRess[keyRes->resIndex];
+		const BIFFile::Resource &bifRes = bifRess[keyRes->resIndex];
 		if (keyRes->type != bifRes.type) {
-			warning("ResourceManager::mergeKeyBifResources(): Type mismatch on resource \"%s\" (%d, %d)",
+			warning("ResourceManager::mergeKeyBIFResources(): Type mismatch on resource \"%s\" (%d, %d)",
 					keyRes->name.c_str(), keyRes->type, bifRes.type);
 			return false;
 		}
@@ -177,11 +177,11 @@ bool ResourceManager::loadKey(Common::SeekableReadStream &key) {
 
 	// Search for the correct bifs
 	uint32 bifStart;
-	if (!findBifPaths(keyFile, bifStart))
+	if (!findBIFPaths(keyFile, bifStart))
 		return false;
 
 	// Merge the resource information of the key file and its bif files into our resource map
-	if (!mergeKeyBifResources(keyFile, bifStart))
+	if (!mergeKeyBIFResources(keyFile, bifStart))
 		return false;
 
 	return true;

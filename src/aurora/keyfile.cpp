@@ -60,7 +60,7 @@ bool KeyFile::load(Common::SeekableReadStream &key) {
 	key.skip(32); // Reserved
 
 	key.seek(offFileTable);
-	if (!readBifList(key, bifCount))
+	if (!readBIFList(key, bifCount))
 		return false;
 
 	key.seek(offKeyTable);
@@ -75,7 +75,7 @@ bool KeyFile::load(Common::SeekableReadStream &key) {
 	return true;
 }
 
-bool KeyFile::readBifList(Common::SeekableReadStream &key, uint32 bifCount) {
+bool KeyFile::readBIFList(Common::SeekableReadStream &key, uint32 bifCount) {
 	for (uint32 i = 0; i < bifCount; i++) {
 		key.skip(4); // File size of the bif
 
@@ -126,7 +126,7 @@ bool KeyFile::readKeyList(Common::SeekableReadStream &key, uint32 keyCount) {
 	return true;
 }
 
-const KeyFile::BifList &KeyFile::getBifs() const {
+const KeyFile::BIFList &KeyFile::getBIFs() const {
 	return _bifs;
 }
 

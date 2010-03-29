@@ -28,7 +28,7 @@ namespace Common {
 namespace Aurora {
 
 class KeyFile;
-class BifFile;
+class BIFFile;
 
 /** A resource manager holding information about and handling all request for all
  *  resources useable by the game.
@@ -111,14 +111,14 @@ private:
 	};
 
 	/** A list of bif files. */
-	typedef std::vector<std::string> BifList;
+	typedef std::vector<std::string> BIFList;
 
 	/** Map over resources with the same name but different type. */
 	typedef std::map<FileType,    Resource>        ResourceTypeMap;
 	/** Map over resources, indexed by name. */
 	typedef std::map<std::string, ResourceTypeMap> ResourceMap;
 
-	BifList     _bifs;      ///< Bifs used by the game resources.
+	BIFList     _bifs;      ///< BIFs used by the game resources.
 	ResourceMap _resources; ///< All game-usable resources.
 
 	ResourceMap _resourcesSaved; ///< Saved list of game-usable resources.
@@ -128,9 +128,9 @@ private:
 	Common::FileList _keyFiles; ///< List of all key files in the base directory.
 	Common::FileList _bifFiles; ///< List of all bif files in the base directory.
 
-	// Key/Bif loading helpers
-	bool findBifPaths(const KeyFile &keyFile, uint32 &bifStart);
-	bool mergeKeyBifResources(const KeyFile &keyFile, uint32 bifStart);
+	// Key/BIF loading helpers
+	bool findBIFPaths(const KeyFile &keyFile, uint32 &bifStart);
+	bool mergeKeyBIFResources(const KeyFile &keyFile, uint32 bifStart);
 
 	void addResource(const Resource &resource, const std::string &name);
 

@@ -36,7 +36,7 @@ public:
 	};
 
 	typedef std::vector<Resource> ResourceList;
-	typedef std::vector<std::string> BifList;
+	typedef std::vector<std::string> BIFList;
 
 	KeyFile();
 	~KeyFile();
@@ -52,17 +52,17 @@ public:
 	bool load(Common::SeekableReadStream &key);
 
 	/** Return a list of all managed bifs. */
-	const BifList &getBifs() const;
+	const BIFList &getBIFs() const;
 
 	/** Return a list of all containing resources. */
 	const ResourceList &getResources() const;
 
 private:
-	BifList      _bifs;      ///< All managed bifs.
+	BIFList      _bifs;      ///< All managed bifs.
 	ResourceList _resources; ///< All containing resources.
 	uint32       _version;   ///< The version of the file
 
-	bool readBifList(Common::SeekableReadStream &key, uint32 bifCount);
+	bool readBIFList(Common::SeekableReadStream &key, uint32 bifCount);
 	bool readKeyList(Common::SeekableReadStream &key, uint32 keyCount);
 };
 

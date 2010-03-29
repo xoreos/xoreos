@@ -24,7 +24,7 @@ namespace Common {
 namespace Aurora {
 
 /** Class to hold resource data information of a bif file. */
-class BifFile {
+class BIFFile {
 public:
 	/** A bif resource index. */
 	struct Resource {
@@ -36,8 +36,8 @@ public:
 
 	typedef std::vector<Resource> ResourceList;
 
-	BifFile();
-	~BifFile();
+	BIFFile();
+	~BIFFile();
 
 	/** Clear all resource information. */
 	void clear();
