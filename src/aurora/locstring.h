@@ -8,8 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-#ifndef AURORA_GFFFILE_H
-#define AURORA_GFFFILE_H
+#ifndef AURORA_LOCSTRING_H
+#define AURORA_LOCSTRING_H
 
 #include <string>
 
@@ -57,4 +57,4 @@ private:
 
 } // End of namespace Aurora
 
-#endif // AURORA_GFFFILE_H
+#endif // AURORA_LOCSTRING_H
