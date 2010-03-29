@@ -17,6 +17,7 @@
 #include <map>
 
 #include "common/types.h"
+#include "common/filelist.h"
 
 #include "aurora/types.h"
 
@@ -41,12 +42,20 @@ public:
 	 *
 	 *  So that the manager can be quickly restored to an initial game state.
 	 */
+
 	void save();
 	/** Restore the list of resources.
 	 *
 	 *  To quickly restore the manager to an initial game state.
 	 */
 	void restore();
+
+	/** Register a path to be the base data directory.
+	 *
+	 *  @param  path The path to a base data directory.
+	 *  @return true if the path is a useable base data directory, false otherwise.
+	 */
+	bool registerDataBaseDir(const std::string &path);
 
 	/** Does a specific resource exists?
 	 *
@@ -98,6 +107,11 @@ private:
 	ResourceMap _resources; ///< All game-usable resources.
 
 	ResourceMap _resourcesSaved; ///< Saved list of game-usable resources.
+
+	std::string _baseDir; ///< The data base directory.
+
+	Common::FileList _keyFiles; ///< List of all key files in the base directory.
+	Common::FileList _bifFiles; ///< List of all bif files in the base directory.
 
 	const Resource *getRes(const std::string &name, FileType type) const;
 };

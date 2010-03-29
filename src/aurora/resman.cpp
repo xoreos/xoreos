@@ -26,6 +26,8 @@ void ResourceManager::clear() {
 	_resources.clear();
 
 	_resourcesSaved.clear();
+
+	_baseDir.clear();
 }
 
 void ResourceManager::save() {
@@ -34,6 +36,31 @@ void ResourceManager::save() {
 
 void ResourceManager::restore() {
 	_resources = _resourcesSaved;
+}
+
+bool ResourceManager::registerDataBaseDir(const std::string &path) {
+	_baseDir = path;
+
+	Common::FileList rootFiles;
+	if (!rootFiles.addDirectory(path))
+		// Can't read the path
+		return false;
+
+	if (!rootFiles.getSubList(".*\\.key", _keyFiles, true))
+		// No key files in the path's root
+		return false;
+
+	Common::FileList allFiles;
+	if (!allFiles.addDirectory(path, -1))
+		// Failed reading the complete directory tree
+		return false;
+
+	if (!allFiles.getSubList(".*\\.bif", _bifFiles, true))
+		// No bif files in the path
+		return false;
+
+	// There's key and bif files, so it's probably a useable data base directory.
+	return true;
 }
 
 bool ResourceManager::hasResource(const std::string &name, FileType type) const {
