@@ -11,7 +11,13 @@
 #ifndef AURORA_RESMAN_H
 #define AURORA_RESMAN_H
 
+#include <string>
+#include <list>
+#include <map>
+
 #include "common/types.h"
+
+#include "aurora/types.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -19,7 +25,50 @@ namespace Common {
 
 namespace Aurora {
 
+/** A resource manager holding information about and handling all request for all
+ *  resources useable by the game.
+ */
 class ResourceManager {
+public:
+	ResourceManager();
+	~ResourceManager();
+
+	/** Clear all resource information. */
+	void clear();
+
+private:
+	/** Where a resource can be found. */
+	enum Source {
+		kSourceBIF,  ///< Within a bif file. */
+		kSourceFile  ///< A direct file. */
+	};
+
+	/** A resource. */
+	struct Resource {
+		FileType type; ///< The resource's type.
+
+		Source source; ///< Where can the resource be found? */
+
+		// For kSourceBIF
+		std::string *bif;    ///< Pointer to the bif path.
+		uint32       offset; ///< The offset within the bif file.
+		uint32       size;   ///< The size of the resource data.
+
+		// For kSourceFile
+		std::string path; ///< The file's path.
+	};
+
+	/** A list of bif files. */
+	typedef std::list<std::string> BifList;
+
+	/** Map over resources with the same name but different type. */
+	typedef std::map<FileType,    Resource>        ResourceTypeMap;
+	/** Map over resources, indexed by name. */
+	typedef std::map<std::string, ResourceTypeMap> ResourceMap;
+
+	BifList _bifs; ///< Bifs used by the game resources.
+
+	ResourceMap _resources; ///< All game-usable resources.
 };
 
 } // End of namespace Aurora

@@ -14,4 +14,15 @@
 
 namespace Aurora {
 
+ResourceManager::ResourceManager() {
+}
+
+ResourceManager::~ResourceManager() {
+}
+
+void ResourceManager::clear() {
+	_bifs.clear();
+	_resources.clear();
+}
+
 } // End of namespace Aurora
