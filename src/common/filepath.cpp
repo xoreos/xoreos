@@ -8,7 +8,6 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-#include "boost/filesystem.hpp"
 #include "boost/algorithm/string.hpp"
 
 #include "common/filepath.h"
@@ -52,6 +51,42 @@ std::string FilePath::changeExtension(const std::string &p, const std::string &e
 	file.replace_extension(ext);
 
 	return file.string();
+}
+
+path FilePath::normalize(const path &p) {
+	return path(normalize(p.string()));
+}
+
+std::string FilePath::normalize(const std::string &p) {
+	std::string norm;
+
+	// To at least the path + "./"
+	norm.reserve(p.size() + 3);
+
+	// Make sure there's a path qualifier
+	const char *s = p.c_str();
+	if (!((s[0] == '/') || ((s[0] == '.') && (s[1] == '/'))))
+		norm += "./";
+
+	// Remove consecutive '/'
+	bool hasSlash = !norm.empty();
+	for (; *s; s++) {
+		if (*s == '/') {
+			// Only append the '/' if the last character wasn't one as well
+
+			if (!hasSlash)
+				norm += *s;
+
+			hasSlash = true;
+			continue;
+		}
+
+		// Append the character
+		norm += *s;
+		hasSlash = false;
+	}
+
+	return norm;
 }
 
 std::string FilePath::findSubDirectory(const std::string &directory, const std::string &subDirectory,

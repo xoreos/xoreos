@@ -13,6 +13,8 @@
 
 #include <string>
 
+#include "boost/filesystem.hpp"
+
 #include "common/types.h"
 
 namespace Common {
@@ -61,6 +63,24 @@ public:
 	 *  @return The new path.
 	 */
 	static std::string changeExtension(const std::string &p, const std::string &ext = "");
+
+	/** Normalize a path.
+	 *
+	 *  A normalized path contains no consecutive '/' and starts with either "/" or "./".
+	 *
+	 *  @param  p The path to normalize.
+	 *  @return The normalized path.
+	 */
+	static boost::filesystem::path normalize(const boost::filesystem::path &p);
+
+	/** Normalize a path.
+	 *
+	 *  A normalized path contains no consecutive '/' and starts with either "/" or "./".
+	 *
+	 *  @param  p The path to normalize.
+	 *  @return The normalized path.
+	 */
+	static std::string normalize(const std::string &p);
 
 	/** Find a directory's subdirectory.
 	 *
