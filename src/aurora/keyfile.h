@@ -41,7 +41,7 @@ public:
 	KeyFile();
 	~KeyFile();
 
-	/** Clear all resource informations. */
+	/** Clear all resource information. */
 	void clear();
 
 	/** Load a resource index.
