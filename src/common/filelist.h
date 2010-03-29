@@ -133,6 +133,7 @@ private:
 	const FilePath *getPath(const std::string &glob, bool caseInsensitive) const;
 
 public:
+	/** Iterator over all files in a FileList. */
 	class const_iterator {
 	public:
 		const_iterator(const const_iterator &i);

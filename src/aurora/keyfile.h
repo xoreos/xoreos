@@ -26,7 +26,7 @@ namespace Aurora {
 /** Class to hold resource index information of a key file. */
 class KeyFile {
 public:
-	/** A resource. */
+	/** A key resource index. */
 	struct Resource {
 		std::string name; ///< The resource's name.
 		FileType    type; ///< The resource's type.

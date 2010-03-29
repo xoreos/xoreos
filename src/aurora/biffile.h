@@ -26,7 +26,7 @@ namespace Aurora {
 /** Class to hold resource data information of a bif file. */
 class BifFile {
 public:
-	/** A resource. */
+	/** A bif resource index. */
 	struct Resource {
 		FileType type; ///< The resource's type.
 

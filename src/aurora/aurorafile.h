@@ -19,6 +19,7 @@ namespace Common {
 
 namespace Aurora {
 
+/** Utility class for handling data found in Aurora files. */
 class AuroraFile {
 public:
 	/** Read a raw, not \\0-terminated string from the stream.

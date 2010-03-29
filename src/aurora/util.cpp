@@ -20,6 +20,7 @@ using boost::iequals;
 
 namespace Aurora {
 
+/** File type <-> extension mapping. */
 struct FileExtension {
 	FileType type;
 	const char *extension;
