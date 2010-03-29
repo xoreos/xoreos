@@ -184,4 +184,21 @@ std::string setFileType(const std::string &path, FileType type) {
 	return Common::FilePath::changeExtension(path, ext);
 }
 
+bool isMale(Language language) {
+	return !isFemale(language);
+}
+
+bool isFemale(Language language) {
+	return (language == kLanguageEnglishFemale)            ||
+	       (language == kLanguageFrenchFemale)             ||
+	       (language == kLanguageGermanFemale)             ||
+	       (language == kLanguageItalianFemale)            ||
+	       (language == kLanguageSpanishFemale)            ||
+	       (language == kLanguagePolishFemale)             ||
+	       (language == kLanguageKoreanFemale)             ||
+	       (language == kLanguageChineseTraditionalFemale) ||
+	       (language == kLanguageChineseSimplifiedFemale)  ||
+	       (language == kLanguageJapaneseFemale);
+}
+
 } // End of namespace Aurora
