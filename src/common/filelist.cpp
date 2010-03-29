@@ -202,15 +202,22 @@ bool FileList::getSubList(const std::string &glob, std::list<std::string> &list,
 	return foundMatch;
 }
 
-bool FileList::contains(const std::string &fileName, bool caseInsensitive) const {
-	if (getPath(fileName, caseInsensitive))
+bool FileList::contains(const std::string &fileName) const {
+	if (getPath(fileName))
 		return true;
 
 	return false;
 }
 
-SeekableReadStream *FileList::openFile(const std::string &fileName, bool caseInsensitive) const {
-	const FilePath *p = getPath(fileName, caseInsensitive);
+bool FileList::contains(const std::string &glob, bool caseInsensitive) const {
+	if (getPath(glob, caseInsensitive))
+		return true;
+
+	return false;
+}
+
+SeekableReadStream *FileList::openFile(const std::string &fileName) const {
+	const FilePath *p = getPath(fileName);
 	if (!p)
 		return 0;
 
@@ -223,35 +230,39 @@ SeekableReadStream *FileList::openFile(const std::string &fileName, bool caseIns
 	return file;
 }
 
-const FileList::FilePath *FileList::getPath(const std::string &fileName, bool caseInsensitive) const {
-	// Find the files matching the lowercase stem
-	std::pair<FileMap::const_iterator, FileMap::const_iterator> files;
-	files = _fileMap.equal_range(to_lower_copy(path(fileName).stem()));
+SeekableReadStream *FileList::openFile(const std::string &glob, bool caseInsensitive) const {
+	const FilePath *p = getPath(glob, caseInsensitive);
+	if (!p)
+		return 0;
 
-	// Iterate through those files, looking for a real match
-	for (; files.first != files.second; ++files.first) {
-		if (caseInsensitive) {
-			// Does the complete path match?
-			if (iequals(files.first->second->filePath.string(), fileName))
-				return &*files.first->second;
-			// Does the relative path match?
-			if (iequals(files.first->second->filePath.string(), (path(files.first->second->baseDir) / fileName).string()))
-				return &*files.first->second;
-			// Does the file name match?
-			if (iequals(files.first->second->filePath.filename(), fileName))
-				return &*files.first->second;
-		} else {
-			// Does the complete path match?
-			if (equals(files.first->second->filePath.string(), fileName))
-				return &*files.first->second;
-			// Does the relative path match?
-			if (equals(files.first->second->filePath.string(), (path(files.first->second->baseDir) / fileName).string()))
-				return &*files.first->second;
-			// Does the file name match?
-			if (equals(files.first->second->filePath.filename(), fileName))
-				return &*files.first->second;
-		}
+	File *file = new File;
+	if (!file->open(p->filePath.string())) {
+		delete file;
+		return 0;
 	}
+
+	return file;
+}
+
+const FileList::FilePath *FileList::getPath(const std::string &fileName) const {
+	// Iterate through the whole list, looking for a match
+	for (std::list<FilePath>::const_iterator it = _files.begin(); it != _files.end(); ++it)
+		if (it->filePath.string() == fileName)
+			return &*it;
+
+	return 0;
+}
+
+const FileList::FilePath *FileList::getPath(const std::string &glob, bool caseInsensitive) const {
+	boost::regex::flag_type type = boost::regex::perl;
+	if (caseInsensitive)
+		type |= boost::regex::icase;
+	boost::regex expression(glob, type);
+
+	// Iterate through the whole list, looking for a match
+	for (std::list<FilePath>::const_iterator it = _files.begin(); it != _files.end(); ++it)
+		if (boost::regex_match(it->filePath.string(), expression))
+			return &*it;
 
 	return 0;
 }

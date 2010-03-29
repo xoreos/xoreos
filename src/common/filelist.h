@@ -75,22 +75,37 @@ public:
 	 */
 	bool getSubList(const std::string &glob, std::list<std::string> &list, bool caseInsensitive = false) const;
 
-	/** Does the list contain this file?
+	/** Does the list contain the specified file?
 	 *
-	 *  @param  fileName The file too look for.
-	 *  @param  caseInsensitive Should the case of the file name be ignored?
-	 *  @return true if the file is in the list, false otherwise.
+	 *  @param  fileName The file to look for.
+	 *  @return true if the file is in the list, fale if not.
 	 */
-	bool contains(const std::string &fileName, bool caseInsensitive = false) const;
+	bool contains(const std::string &fileName) const;
+
+	/** Does the list contain at least one file matching the given regex?
+	 *
+	 *  @param  glob A perl regular expression to match the file names against.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
+	 *  @return true if at least one matching file is found, false otherwise.
+	 */
+	bool contains(const std::string &glob, bool caseInsensitive) const;
 
 	/** Open the specified file.
 	 *
-	 *  @param  fileName the file to open.
-	 *  @param  caseInsensitive Should the case of the file name be ignored?
-	 *  @return A SeekableReadStream of the file, or 0 if the file is not
+	 *  @param  fileName The file to open.
+	 *  @return A SeekableReadStream of the file, or 0 if the file not
 	 *          in the list.
 	 */
-	SeekableReadStream *openFile(const std::string &fileName, bool caseInsensitive = false) const;
+	SeekableReadStream *openFile(const std::string &fileName) const;
+
+	/** Open the first file matching the given regex.
+	 *
+	 *  @param  glob A perl regular expression to match the file names against.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
+	 *  @return A SeekableReadStream of the file, or 0 if such a file is not
+	 *          in the list.
+	 */
+	SeekableReadStream *openFile(const std::string &glob, bool caseInsensitive) const;
 
 private:
 	/** A file path. */
@@ -114,7 +129,8 @@ private:
 	void addPath(const std::string &base, const boost::filesystem::path &p);
 	void addPath(const FilePath &p);
 
-	const FilePath *getPath(const std::string &fileName, bool caseInsensitive = false) const;
+	const FilePath *getPath(const std::string &fileName) const;
+	const FilePath *getPath(const std::string &glob, bool caseInsensitive) const;
 
 public:
 	class const_iterator {
