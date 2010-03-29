@@ -60,6 +60,7 @@ public:
 private:
 	BifList      _bifs;      ///< All managed bifs.
 	ResourceList _resources; ///< All containing resources.
+	uint32       _version;   ///< The version of the file
 
 	bool readBifList(Common::SeekableReadStream &key, uint32 bifCount);
 	bool readKeyList(Common::SeekableReadStream &key, uint32 keyCount);

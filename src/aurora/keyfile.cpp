@@ -14,8 +14,9 @@
 #include "aurora/keyfile.h"
 #include "aurora/aurorafile.h"
 
-static const uint32 kKeyID    = MKID_BE('KEY ');
-static const uint32 kVersion1 = MKID_BE('V1  ');
+static const uint32 kKeyID     = MKID_BE('KEY ');
+static const uint32 kVersion1  = MKID_BE('V1  ');
+static const uint32 kVersion11 = MKID_BE('V1.1');
 
 namespace Aurora {
 
@@ -36,8 +37,8 @@ bool KeyFile::load(Common::SeekableReadStream &key) {
 		return false;
 	}
 
-	// TODO: Version 1.1. Found in The Witcher and not directly compatible with Version 1
-	if (key.readUint32BE() != kVersion1) {
+	_version = key.readUint32BE();
+	if (_version != kVersion1 && _version != kVersion11) {
 		warning("KeyFile::load(): Unsupported file version");
 		return false;
 	}
@@ -47,6 +48,10 @@ bool KeyFile::load(Common::SeekableReadStream &key) {
 
 	_bifs.reserve(bifCount);
 	_resources.reserve(keyCount);
+
+	// Version 1.1 has some NULL bytes here
+	if (_version == kVersion11)
+		key.skip(4);
 
 	uint32 offFileTable     = key.readUint32LE();
 	uint32 offKeyTable      = key.readUint32LE();
@@ -75,9 +80,15 @@ bool KeyFile::readBifList(Common::SeekableReadStream &key, uint32 bifCount) {
 		key.skip(4); // File size of the bif
 
 		uint32 nameOffset = key.readUint32LE();
-		uint32 nameSize   = key.readUint16LE();
-
-		key.skip(2); // Location of the bif (HD, CD, ...)
+		uint32 nameSize   = 0;
+		
+		// nameSize is expanded to 4 bytes in 1.1 and the location is dropped
+		if (_version == kVersion11) {
+			nameSize = key.readUint32LE();
+		} else {
+			nameSize = key.readUint16LE();
+			key.skip(2); // Location of the bif (HD, CD, ...)
+		}
 
 		std::string name = AuroraFile::readRawString(key, nameSize, nameOffset);
 
@@ -98,9 +109,15 @@ bool KeyFile::readKeyList(Common::SeekableReadStream &key, uint32 keyCount) {
 
 		uint32 id = key.readUint32LE();
 
-		// TODO: Fixed resources?
+		// The new flags field holds the bifIndex now. The rest contains fixed
+		// resource info.
+		if (_version == kVersion11) {
+			uint32 flags = key.readUint32LE();
+			resource.bifIndex = (flags & 0xFFF00000) >> 20;
+		} else
+			resource.bifIndex = id >> 20;
 
-		resource.bifIndex = id >> 20;
+		// TODO: Fixed resources?
 		resource.resIndex = id & 0xFFFFF;
 
 		_resources.push_back(resource);

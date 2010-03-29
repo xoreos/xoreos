@@ -14,8 +14,9 @@
 #include "aurora/biffile.h"
 #include "aurora/aurorafile.h"
 
-static const uint32 kBifID    = MKID_BE('BIFF');
-static const uint32 kVersion1 = MKID_BE('V1  ');
+static const uint32 kBifID     = MKID_BE('BIFF');
+static const uint32 kVersion1  = MKID_BE('V1  ');
+static const uint32 kVersion11 = MKID_BE('V1.1');
 
 namespace Aurora {
 
@@ -31,12 +32,12 @@ void BifFile::clear() {
 
 bool BifFile::load(Common::SeekableReadStream &bif) {
 	if (bif.readUint32BE() != kBifID) {
-		warning("BifFile::load(): Not a KEY file");
+		warning("BifFile::load(): Not a BIF file");
 		return false;
 	}
 
-	// TODO: Version 1.1. Found in The Witcher and not directly compatible with Version 1
-	if (bif.readUint32BE() != kVersion1) {
+	_version = bif.readUint32BE();
+	if (_version != kVersion1 && _version != kVersion11) {
 		warning("BifFile::load(): Unsupported file version");
 		return false;
 	}
@@ -70,6 +71,9 @@ bool BifFile::readVarResTable(Common::SeekableReadStream &bif, uint32 varResCoun
 		Resource resource;
 
 		bif.skip(4); // ID
+
+		if (_version == kVersion11)
+			bif.skip(4); // Flags
 
 		resource.offset = bif.readUint32LE();
 		resource.size   = bif.readUint32LE();
