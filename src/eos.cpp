@@ -9,7 +9,9 @@
  */
 
 #include <cstdio>
-#include <SDL/SDL.h>
+
+#include <SDL.h>
+#include <SDL_mixer.h>
 
 #include "common/stream.h"
 #include "common/util.h"
@@ -20,6 +22,9 @@
 #include "aurora/keyfile.h"
 #include "aurora/biffile.h"
 #include "aurora/resman.h"
+
+bool initSDL();
+void playWav(Common::SeekableReadStream &wavStream);
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -32,12 +37,8 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	// Some quick SDL initialization tests
-	// TODO: Move SDL initialization elsewhere? But, the SDL.h include must remain either way.
-	if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO) < 0)
-		error("Failed to initialize SDL: %s", SDL_GetError());
-
-	atexit(SDL_Quit);
+	if (!initSDL())
+		error("Fatal");
 
 	Aurora::ResourceManager resMan;
 
@@ -59,15 +60,18 @@ int main(int argc, char **argv) {
 			Common::SeekableReadStream *wav2 = resMan.getResource("as_pl_evanglstm1", Aurora::kFileTypeWAV);
 
 			if (wav1 || wav2) {
+				warning("Found a wav. Trying to play it. Turn up your speakers");
+
 				Common::SeekableReadStream *wavR = (wav1) ? wav1 : wav2;
 
-				warning("Found a WAV. Writing it to foo.wav. Play it and smile :)");
+				playWav(*wavR);
+/*				warning("Found a WAV. Writing it to foo.wav. Play it and smile :)");
 				Common::DumpFile wav;
 				if (wav.open("foo.wav")) {
 					wav.writeStream(*wavR);
 					wav.close();
 				} else
-					warning("Failed to write foo.wav :(");
+					warning("Failed to write foo.wav :(");*/
 
 			}
 
@@ -81,4 +85,54 @@ int main(int argc, char **argv) {
 	}
 
 	return 0;
+}
+
+bool initSDL() {
+	if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO) < 0) {
+		warning("initSDL(): Failed to initialize SDL: %s", SDL_GetError());
+		return false;
+	}
+
+	if (Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 4096) != 0) {
+		warning("initSDL(): Unable to initialize audio: %s", Mix_GetError());
+		return false;
+	}
+
+	atexit(SDL_Quit);
+
+	return true;
+}
+
+void playWav(Common::SeekableReadStream &wavStream) {
+	uint32 size = wavStream.size();
+	byte *buf = new byte[size];
+
+	wavStream.read(buf, size);
+
+	SDL_RWops *rw = SDL_RWFromMem(buf, size);
+
+	Mix_Chunk *wav = Mix_LoadWAV_RW(rw, true);
+	if (!wav) {
+		warning("Unable to load WAV file: %s", Mix_GetError());
+		delete[] buf;
+		return;
+	}
+
+	int channel = Mix_PlayChannel(-1, wav, 0);
+	if(channel == -1) {
+		warning("Unable to play WAV file: %s", Mix_GetError());
+		delete[] buf;
+		return;
+	}
+
+	warning("And smile :)");
+
+	while (Mix_Playing(channel)) {
+		sleep(1);
+	}
+
+	Mix_FreeChunk(wav);
+	Mix_CloseAudio();
+
+	delete[] buf;
 }
