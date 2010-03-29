@@ -42,6 +42,10 @@ public:
 	 */
 	static std::string readRawString(Common::SeekableReadStream &stream, uint32 length, uint32 offset);
 
+	/** Read a float (IEEE 754-1985)
+	 */
+	static float readFloat(Common::SeekableReadStream &stream);
+
 	/** Clean up a path string for portable use. */
 	static void cleanupPath(std::string &path);
 };

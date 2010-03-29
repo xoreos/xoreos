@@ -44,6 +44,16 @@ std::string AuroraFile::readRawString(Common::SeekableReadStream &stream, uint32
 	return str;
 }
 
+float AuroraFile::readFloat(Common::SeekableReadStream &stream) {
+	uint32 data = stream.readUint32LE();
+
+	// We just cast here because most systems have float in 754-1985 format anyway.
+	// However, should we find another system that has this differently, we might
+	// have to do something more here...
+
+	return (float)data;
+}
+
 void AuroraFile::cleanupPath(std::string &path) {
 	Common::replaceAll(path, '\\', '/');
 }

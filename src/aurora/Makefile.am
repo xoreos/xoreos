@@ -7,10 +7,12 @@ noinst_HEADERS = types.h \
                  aurorafile.h \
                  keyfile.h \
                  biffile.h \
-                 resman.h
+                 resman.h \
+                 talktable.h
 
 libaurora_la_SOURCES = util.cpp \
                        aurorafile.cpp \
                        keyfile.cpp \
                        biffile.cpp \
-                       resman.cpp
+                       resman.cpp \
+                       talktable.cpp
