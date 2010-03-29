@@ -78,9 +78,9 @@ private:
 		Source source; ///< Where can the resource be found? */
 
 		// For kSourceBIF
-		uint32       bif;    ///< Index into the bif vector.
-		uint32       offset; ///< The offset within the bif file.
-		uint32       size;   ///< The size of the resource data.
+		uint32 bif;    ///< Index into the bif vector.
+		uint32 offset; ///< The offset within the bif file.
+		uint32 size;   ///< The size of the resource data.
 
 		// For kSourceFile
 		std::string path; ///< The file's path.
