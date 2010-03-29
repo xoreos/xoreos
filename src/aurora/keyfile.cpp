@@ -14,47 +14,47 @@
 #include "aurora/keyfile.h"
 #include "aurora/aurorafile.h"
 
-static const uint32 kKeyID     = MKID_BE('KEY ');
+static const uint32 kKEYID     = MKID_BE('KEY ');
 static const uint32 kVersion1  = MKID_BE('V1  ');
 static const uint32 kVersion11 = MKID_BE('V1.1');
 
 namespace Aurora {
 
-KeyFile::KeyFile() {
+KEYFile::KEYFile() {
 }
 
-KeyFile::~KeyFile() {
+KEYFile::~KEYFile() {
 }
 
-void KeyFile::clear() {
+void KEYFile::clear() {
 	_bifs.clear();
 	_resources.clear();
 }
 
-bool KeyFile::load(Common::SeekableReadStream &key) {
-	if (key.readUint32BE() != kKeyID) {
-		warning("KeyFile::load(): Not a KEY file");
+bool KEYFile::load(Common::SeekableReadStream &key) {
+	if (key.readUint32BE() != kKEYID) {
+		warning("KEYFile::load(): Not a KEY file");
 		return false;
 	}
 
 	_version = key.readUint32BE();
 	if (_version != kVersion1 && _version != kVersion11) {
-		warning("KeyFile::load(): Unsupported file version");
+		warning("KEYFile::load(): Unsupported file version");
 		return false;
 	}
 
 	uint32 bifCount = key.readUint32LE();
-	uint32 keyCount = key.readUint32LE();
+	uint32 resCount = key.readUint32LE();
 
 	_bifs.reserve(bifCount);
-	_resources.reserve(keyCount);
+	_resources.reserve(resCount);
 
 	// Version 1.1 has some NULL bytes here
 	if (_version == kVersion11)
 		key.skip(4);
 
 	uint32 offFileTable     = key.readUint32LE();
-	uint32 offKeyTable      = key.readUint32LE();
+	uint32 offResTable      = key.readUint32LE();
 
 	key.skip( 8); // Build year and day
 	key.skip(32); // Reserved
@@ -63,19 +63,19 @@ bool KeyFile::load(Common::SeekableReadStream &key) {
 	if (!readBIFList(key, bifCount))
 		return false;
 
-	key.seek(offKeyTable);
-	if (!readKeyList(key, keyCount))
+	key.seek(offResTable);
+	if (!readResList(key, resCount))
 		return false;
 
 	if (key.err()) {
-		warning("KeyFile::load(): Read error");
+		warning("KEYFile::load(): Read error");
 		return false;
 	}
 
 	return true;
 }
 
-bool KeyFile::readBIFList(Common::SeekableReadStream &key, uint32 bifCount) {
+bool KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 bifCount) {
 	for (uint32 i = 0; i < bifCount; i++) {
 		key.skip(4); // File size of the bif
 
@@ -100,8 +100,8 @@ bool KeyFile::readBIFList(Common::SeekableReadStream &key, uint32 bifCount) {
 	return true;
 }
 
-bool KeyFile::readKeyList(Common::SeekableReadStream &key, uint32 keyCount) {
-	for (uint32 i = 0; i < keyCount; i++) {
+bool KEYFile::readResList(Common::SeekableReadStream &key, uint32 resCount) {
+	for (uint32 i = 0; i < resCount; i++) {
 		Resource resource;
 
 		resource.name = AuroraFile::readRawString(key, 16);
@@ -126,11 +126,11 @@ bool KeyFile::readKeyList(Common::SeekableReadStream &key, uint32 keyCount) {
 	return true;
 }
 
-const KeyFile::BIFList &KeyFile::getBIFs() const {
+const KEYFile::BIFList &KEYFile::getBIFs() const {
 	return _bifs;
 }
 
-const KeyFile::ResourceList &KeyFile::getResources() const {
+const KEYFile::ResourceList &KEYFile::getResources() const {
 	return _resources;
 }
 

@@ -72,11 +72,11 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 	return true;
 }
 
-const Common::FileList &ResourceManager::getKeyList() const {
+const Common::FileList &ResourceManager::getKEYList() const {
 	return _keyFiles;
 }
 
-bool ResourceManager::findBIFPaths(const KeyFile &keyFile, uint32 &bifStart) {
+bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
 	bifStart = _bifs.size();
 
 	uint32 keyBIFCount = keyFile.getBIFs().size();
@@ -111,7 +111,7 @@ bool ResourceManager::findBIFPaths(const KeyFile &keyFile, uint32 &bifStart) {
 	return true;
 }
 
-bool ResourceManager::mergeKeyBIFResources(const KeyFile &keyFile, uint32 bifStart) {
+bool ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart) {
 	uint32 keyBIFCount = keyFile.getBIFs().size();
 
 	std::vector<BIFFile> keyBIFFiles;
@@ -129,7 +129,7 @@ bool ResourceManager::mergeKeyBIFResources(const KeyFile &keyFile, uint32 bifSta
 	}
 
 	// Now cycle through all resource in the key, augmenting the information its bif provides
-	KeyFile::ResourceList::const_iterator keyRes;
+	KEYFile::ResourceList::const_iterator keyRes;
 	for (keyRes = keyFile.getResources().begin(); keyRes != keyFile.getResources().end(); ++keyRes) {
 
 		// BIF index in range?
@@ -144,7 +144,7 @@ bool ResourceManager::mergeKeyBIFResources(const KeyFile &keyFile, uint32 bifSta
 		// Type has to match
 		const BIFFile::Resource &bifRes = bifRess[keyRes->resIndex];
 		if (keyRes->type != bifRes.type) {
-			warning("ResourceManager::mergeKeyBIFResources(): Type mismatch on resource \"%s\" (%d, %d)",
+			warning("ResourceManager::mergeKEYBIFResources(): Type mismatch on resource \"%s\" (%d, %d)",
 					keyRes->name.c_str(), keyRes->type, bifRes.type);
 			return false;
 		}
@@ -164,13 +164,13 @@ bool ResourceManager::mergeKeyBIFResources(const KeyFile &keyFile, uint32 bifSta
 	return true;
 }
 
-bool ResourceManager::loadKey(Common::SeekableReadStream &key) {
+bool ResourceManager::loadKEY(Common::SeekableReadStream &key) {
 	if (_baseDir.empty()) {
-		warning("ResourceManager::loadKey(): No base data directory registered");
+		warning("ResourceManager::loadKEY(): No base data directory registered");
 		return false;
 	}
 
-	KeyFile keyFile;
+	KEYFile keyFile;
 
 	if (!keyFile.load(key))
 		return false;
@@ -181,7 +181,7 @@ bool ResourceManager::loadKey(Common::SeekableReadStream &key) {
 		return false;
 
 	// Merge the resource information of the key file and its bif files into our resource map
-	if (!mergeKeyBIFResources(keyFile, bifStart))
+	if (!mergeKEYBIFResources(keyFile, bifStart))
 		return false;
 
 	return true;

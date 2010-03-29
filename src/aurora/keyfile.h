@@ -24,7 +24,7 @@ namespace Common {
 namespace Aurora {
 
 /** Class to hold resource index information of a key file. */
-class KeyFile {
+class KEYFile {
 public:
 	/** A key resource index. */
 	struct Resource {
@@ -38,8 +38,8 @@ public:
 	typedef std::vector<Resource> ResourceList;
 	typedef std::vector<std::string> BIFList;
 
-	KeyFile();
-	~KeyFile();
+	KEYFile();
+	~KEYFile();
 
 	/** Clear all resource information. */
 	void clear();
@@ -63,7 +63,7 @@ private:
 	uint32       _version;   ///< The version of the file
 
 	bool readBIFList(Common::SeekableReadStream &key, uint32 bifCount);
-	bool readKeyList(Common::SeekableReadStream &key, uint32 keyCount);
+	bool readResList(Common::SeekableReadStream &key, uint32 resCount);
 };
 
 } // End of namespace Aurora

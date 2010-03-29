@@ -44,16 +44,16 @@ int main(int argc, char **argv) {
 
 	bool success = resMan.registerDataBaseDir(argv[1]);
 
-	const Common::FileList &keyList = resMan.getKeyList();
+	const Common::FileList &keyList = resMan.getKEYList();
 
 	warning("Useful base dir? %s - %d keys", success ? "Yes" : "No", (int) keyList.size());
 
 	if (success) {
-		Common::SeekableReadStream *chitinKey = keyList.openFile(".*/chitin.key", true);
-		if (chitinKey) {
+		Common::SeekableReadStream *chitinKEY = keyList.openFile(".*/chitin.key", true);
+		if (chitinKEY) {
 			warning("And has a chitin.key");
 
-			bool loaded = resMan.loadKey(*chitinKey);
+			bool loaded = resMan.loadKEY(*chitinKEY);
 			warning("Could load chitin.key? %s", loaded ? "Yes" : "No");
 
 			Common::SeekableReadStream *wav1 = resMan.getResource("p_zaalbar_tia", Aurora::kFileTypeWAV);
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 		} else
 			warning("But has no chitin.key");
 
-		delete chitinKey;
+		delete chitinKEY;
 	}
 
 	return 0;
