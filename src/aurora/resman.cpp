@@ -34,7 +34,7 @@ bool ResourceManager::hasResource(const std::string &name, FileType type) const 
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
-	Resource *res = getRes(name, type);
+	const Resource *res = getRes(name, type);
 	if (!res)
 		return 0;
 
@@ -76,8 +76,18 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 	return 0;
 }
 
-ResourceManager::Resource *ResourceManager::getRes(const std::string &name, FileType type) const {
-	return 0;
+const ResourceManager::Resource *ResourceManager::getRes(const std::string &name, FileType type) const {
+	// Find the resources with the same name
+	ResourceMap::const_iterator resFamily = _resources.find(name);
+	if (resFamily == _resources.end())
+		return 0;
+
+	// Find the specific resource of the given type
+	ResourceTypeMap::const_iterator res = resFamily->second.find(type);
+	if (res == resFamily->second.end())
+		return 0;
+
+	return &res->second;
 }
 
 } // End of namespace Aurora

@@ -86,7 +86,7 @@ private:
 
 	ResourceMap _resources; ///< All game-usable resources.
 
-	Resource *getRes(const std::string &name, FileType type) const;
+	const Resource *getRes(const std::string &name, FileType type) const;
 };
 
 } // End of namespace Aurora
