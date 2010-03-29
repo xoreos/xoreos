@@ -1,0 +1,175 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>The KEY file in Neverwinter Nights</title>
+</head>
+
+<body>
+
+<h3>What is a KEY File?</h3>
+
+<p>The KEY file in Neverwinter Nights (NWN) is used to provide the game with a
+centralized location for locating resources contained in the BIF files. To the
+best of my knowledge, only one file, &quot;chitin.key&quot; uses this file
+format.</p>
+<p>The KEY file format is very basic.&nbsp; It consists a header and two large
+tables.&nbsp; At the start of the file is the header.&nbsp; It provides
+information about the file format, the file format version, offset and size
+information about the two tables.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th>Offset</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0x0000</td>
+      <td>char [4]</td>
+      <td>4 byte signature (&quot;KEY &quot;)</td>
+    </tr>
+    <tr>
+      <td>0x0004</td>
+      <td>char [4]</td>
+      <td>4 byte version (&quot;V1&nbsp; &quot;)</td>
+    </tr>
+    <tr>
+      <td>0x0008</td>
+      <td>UINT32</td>
+      <td>Number of BIF files referenced in the key file</td>
+    </tr>
+    <tr>
+      <td>0x000C</td>
+      <td>UINT32</td>
+      <td>Number of resources (RES) contained in the key file</td>
+    </tr>
+    <tr>
+      <td>0x0010</td>
+      <td>UINT32</td>
+      <td>Offset from the start of the file to the first BIF entry</td>
+    </tr>
+    <tr>
+      <td>0x0014</td>
+      <td>UINT32</td>
+      <td>Offset from the start of the file to the first RES entry</td>
+    </tr>
+    <tr>
+      <td>0x0018</td>
+      <td>UINT32 [10]</td>
+      <td>Unknown</td>
+    </tr>
+    <tr>
+      <td>0x0040</td>
+      <td colspan="2">Total Structure Size</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>One of the two tables of interest to us is the BIF table.&nbsp; This table
+lists the all of the BIF files contained in the NWN data directory.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th>Offset</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0x0000</td>
+      <td>UINT32</td>
+      <td>Length of the BIF file in bytes</td>
+    </tr>
+    <tr>
+      <td>0x0004</td>
+      <td>UINT32</td>
+      <td>Offset from the start of the KEY file to the BIF file name</td>
+    </tr>
+    <tr>
+      <td>0x0008</td>
+      <td>UINT16</td>
+      <td>Length of the BIF file name in bytes.&nbsp; Not including the
+        terminating 0.</td>
+    </tr>
+    <tr>
+      <td>0x000A</td>
+      <td>UINT16</td>
+      <td>Unknown</td>
+    </tr>
+    <tr>
+      <td>0x000C</td>
+      <td colspan="2">Total Structure Size</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The final table lists all of the resources contained within the BIF
+files.&nbsp;</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td>Offset</td>
+      <td>Type</td>
+      <td>Description</td>
+    </tr>
+    <tr>
+      <td>0x0000</td>
+      <td>char [16]</td>
+      <td>Name of the resource</td>
+    </tr>
+    <tr>
+      <td>0x0010</td>
+      <td>UINT16</td>
+      <td>Type of the resource</td>
+    </tr>
+    <tr>
+      <td>0x0012</td>
+      <td>UINT32</td>
+      <td>BIF id of the resource</td>
+    </tr>
+    <tr>
+      <td>0x0016</td>
+      <td colspan="2">Total Structure Size</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>NOTE: It is very important that the structure packing for this structure is
+set to BYTE or WORD alignment.&nbsp; Failure to do so will cause the UINT32 at
+offset 0x0012 to be placed at 0x0014 and thus yield buggy functionality.&nbsp;
+On non-Intel platforms, this alignment will cause alignment faults unless the
+compiler has a &quot;unaligned&quot; type or special care is made when accessing
+the UINT32.</p>
+<p>When NWN needs to locate a resource, it can be done just using the resource
+name.&nbsp; If the name is used by more than one resource type, then the type
+would also be required to locate the resource.&nbsp; To locate the resource, the
+RES table is be searched for a match.&nbsp; Once a match has been located, the
+BIF id of the resource gives the exact location of the resource.</p>
+<p>A BIF id is actually two numbers combined into one UINT32.&nbsp; The first 20
+bits starting from bit 0 specify the resource index inside the bif.&nbsp; The
+final 12 bits specify the BIF in the BIF table contained within the KEY
+file.&nbsp; </p>
+<p>Example: Suppose NWN needed to locate the resource
+&quot;IT_GOLD001&quot;.&nbsp; It would start by searching the RES table for the
+entry &quot;IT_GOLD001&quot;.&nbsp; Once located in the RES table, the BIF id is
+examined.&nbsp; Suppose with BIF id is 0x00400029.&nbsp; The lower 20 bits of
+the BIF id tell NWN that the &quot;IT_GOLD001&quot; resource is the 0x29th or
+41st resource in the BIF file.&nbsp; From the upper 12 bits, NWN knows that the
+4th BIF file contains the resource.&nbsp; So, the 4th record is examined in the
+BIF table.&nbsp; This yields the file name for the BIF.&nbsp; The BIF can then
+be opened and the 41st resource read from the file.&nbsp; (Information on how
+the 41st resource in the BIF file is located will be covered in the BIF file
+paper.)</p>
+
+<p>For more information on the resource types, see <a href="http://www.torlack.com/index.html?topics=nwndata_basics">NWN
+Data File Basics</a>.</p>
+
+</body>
+
+</html>

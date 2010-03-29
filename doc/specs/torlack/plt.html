@@ -1,0 +1,220 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>NWN Texture Palette File</title>
+</head>
+
+<body>
+
+<h3>What is a Texture Palette File (PLT)?</h3>
+
+<p>A texture palette file is a variant on a standard texture.&nbsp; However,
+instead of being a fixed texture where all the colors are constant, a texture
+palette file allows the content creator to select from a wide range of color
+palettes for preset areas in the texture.</p>
+
+<p>There are four basic elements that go into converting a PLT to a real texture
+at runtime.&nbsp; Some elements are supplied by the PLT file while others are
+supplied by the game itself and the content creator.</p>
+<ul>
+  <li>Palette Group - An index value from 0 to 9 that selects which palette
+    group is to be used (from PLT file).</li>
+  <li>Palette Index&nbsp; - An index value from 0 to 255 that selects which
+    palette to use in a palette group (from the content creator).</li>
+  <li>Color Index - An index value from 0 to 255 that selects a specific color
+    from the given palette (from PLT file).</li>
+  <li>Palette File - A file that contains the actual color values for each
+    palette in a group (supplied by game).</li>
+</ul>
+
+<h3>Palette Groups&nbsp;</h3>
+
+<p>There are a total of ten different palette groups. The palette name is a
+human readable name displayed in the user interface.&nbsp; The group index is
+the index of the palette group.&nbsp; This matches the indices found in the PLT
+files.&nbsp; The UI graphic is the palette as it is presented to the content
+creator.&nbsp; Each UI graphic contains 256 different selections that corresponds
+directly to a row in the actual palette file in the last column of the table.</p>
+
+<div align="center">
+  <center>
+
+<table border="1">
+  <tr>
+    <th>Name</th>
+    <th>Group Index</th>
+    <th>UI</th>
+    <th>Palette File</th>
+  </tr>
+  <tr>
+    <td valign="top">Skin</td>
+    <td valign="top">0</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_skin.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_skin01.jpg" width="256" height="64"></td>
+  </tr>
+  <tr>
+    <td valign="top">Hair</td>
+    <td valign="top">1</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_hair.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_hair01.jpg" width="256" height="64"></td>
+  </tr>
+  <tr>
+    <td valign="top">Metal 1</td>
+    <td valign="top">2</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_armor.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_armor01.jpg" width="256" height="64"></td>
+  </tr>
+  <tr>
+    <td valign="top">Metal 2</td>
+    <td valign="top">3</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_armor.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_armor02.jpg" width="256" height="64"></td>
+  </tr>
+  <tr>
+    <td valign="top">Cloth 1</td>
+    <td valign="top">4</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_cloth.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_cloth01.jpg" width="256" height="64"></td>
+  </tr>
+  <tr>
+    <td valign="top">Cloth 2</td>
+    <td valign="top">5</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_cloth.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_cloth01.jpg" width="256" height="64"></td>
+  </tr>
+  <tr>
+    <td valign="top">Leather 1</td>
+    <td valign="top">6</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_leather.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_leath01.jpg" width="256" height="64"></td>
+  </tr>
+  <tr>
+    <td valign="top">Leather 2</td>
+    <td valign="top">7</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_leather.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_leath01.jpg" width="256" height="64"></td>
+  </tr>
+  <tr>
+    <td valign="top">Tattoo 1</td>
+    <td valign="top">8</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_tattoo.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_tattoo01.jpg" width="256" height="64"></td>
+  </tr>
+  <tr>
+    <td valign="top">Tattoo 2</td>
+    <td valign="top">9</td>
+    <td valign="top"><img border="0" src="/nwndata/mvpal_tattoo.jpg" width="128" height="128"></td>
+    <td valign="top"><img border="0" src="/nwndata/pal_tattoo01.jpg" width="256" height="64"></td>
+  </tr>
+</table>
+
+  </center>
+</div>
+
+<h3>Texture Palette File Format</h3>
+
+<p>The PLT file beings with a fixed header that defines the attributes of the
+texture.&nbsp; Following the header is pixel information.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th>Offset</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0x0000</td>
+      <td>char [4]</td>
+      <td>4 byte signature (&quot;PLT &quot;)</td>
+    </tr>
+    <tr>
+      <td>0x0004</td>
+      <td>char [4]</td>
+      <td>4 byte version (&quot;V1&nbsp; &quot;)</td>
+    </tr>
+    <tr>
+      <td>0x0008</td>
+      <td>UINT32</td>
+      <td>Unknown</td>
+    </tr>
+    <tr>
+      <td>0x000C</td>
+      <td>UINT32</td>
+      <td>Unknown</td>
+    </tr>
+    <tr>
+      <td>0x0010</td>
+      <td>UINT32</td>
+      <td>Width of the texture in pixels</td>
+    </tr>
+    <tr>
+      <td>0x0014</td>
+      <td>UINT32</td>
+      <td>Height of the texture in pixels</td>
+    </tr>
+    <tr>
+      <td>0x0018</td>
+      <td colspan="2">Total Structure Size</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The actual pixel data is an array of the following structure.&nbsp; There are
+(width X height) instances of this structure in a palette file.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th>Offset</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0x0000</td>
+      <td>UINT8</td>
+      <td>Color Index</td>
+    </tr>
+    <tr>
+      <td>0x0001</td>
+      <td>UINT8</td>
+      <td>Palette Group Index</td>
+    </tr>
+    <tr>
+      <td>0x0002</td>
+      <td colspan="2">Total Structure Size</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>Example</h3>
+<p>Imagine one of the body textures used to skin a model.&nbsp; From this PLT
+file, we have the width and height of the texture.&nbsp; When NWN started, it
+loads the palette files into memory.&nbsp; Finally, for a specific creature, we
+have 10 different values, one for each of the different palette groups.&nbsp;
+These values specify which palette is to be used.&nbsp; These values are
+supplied by the content creator.</p>
+<p>For each of the pixels in the PLT texture, we have a color index and a
+palette group index.&nbsp; To locate the actual color value for that pixel, the
+following process is used.</p>
+<ol>
+  <li>Using the palette group index for the pixel in the texture, get the
+    palette index for that palette group as specified by the 10 values supplied
+    by the content creator.</li>
+  <li>The palette index corresponds to a row in the palette file for given
+    palette group.&nbsp; This row become our palette for the pixel.</li>
+  <li>Take the color index for the pixel in question and retrieve the color from
+    the selected palette.</li>
+</ol>
+<h3>Credits</h3>
+<p>I have no idea who originally decoded the PLT file format.&nbsp; It wasn't
+me.&nbsp; I read a very sketchy description on the Bioware forums and then
+filled in the blanks.&nbsp; Thanks whoever you are.</p>
+
+</body>
+
+</html>

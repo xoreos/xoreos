@@ -1,0 +1,235 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>What are Module File</title>
+</head>
+
+<body>
+
+<h3>Official BioWare Documentation</h3>
+<p>ERF Format Document: <a href="http://nwn.bioware.com/developers/erf.html">http://nwn.bioware.com/developers/erf.html<br>
+</a>BioWare's &quot;For Developers&quot; site: <a href="http://nwn.bioware.com/developers/">http://nwn.bioware.com/developers/</a></p>
+
+<h3>What are ERF Files?</h3>
+<p>First off, the ERF file format is a file format used by many different 
+files in NWN.&nbsp; This include files such as saved games (SAV), HAK packs (HAK), 
+exported resource files (ERF), Neverwinter Nights modules (NWM), and of course, 
+module files (MOD).&nbsp; ERF stands for Encapsulated Resource File.</p>
+<p>ERF files are relatively simple files that contain a collection of other 
+game resources.&nbsp; They also provide space for a textual description of the 
+contents of the file.&nbsp; In the case of modules, this is the module 
+description.</p>
+<h3>ERF File Header</h3>
+<p>Like almost all data files in NWN, the ERF file begins with a header.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th valign="top">Offset</th>
+      <th valign="top">Type</th>
+      <th valign="top">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">CHAR [4]</td>
+      <td valign="top">File type signature.&nbsp; Depending on the file type, 
+      this value varies.</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0004</td>
+      <td valign="top">CHAR [4]</td>
+      <td valign="top">Version number</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0008</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Number of strings in the description</td>
+    </tr>
+    <tr>
+      <td valign="top">0x000C</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Total length of the strings in bytes</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0010</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Number of resources in the file</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0014</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Offset from the start of file to the first string</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0018</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Offset from the start of file to the first resource 
+      structure</td>
+    </tr>
+    <tr>
+      <td valign="top">0x001C</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Offset from the start of file to the first position
+        structure</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0020</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Year the file was created with 1900 being 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0024</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Day of the year the file was created with Jan 1st being 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0028</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">String reference for the description.<br>
+        Varies depending on the file type:<br>
+      MOD = -1, SAV = 0, NWM = -1<br>
+      For ERF and HAK, this value is unpredictable</td>
+    </tr>
+    <tr>
+      <td valign="top">0x002C</td>
+      <td valign="top">UINT32 [29]</td>
+      <td valign="top">Spare values all initialized to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00A0</td>
+      <td valign="top" colspan="2">Total size of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>Strings in the ERF Files</h3>
+
+<p>Utilities such as the module editing tool and HAK pack editor from Bioware 
+allow the user to specify strings that describe the contents of the module or 
+HAK pack.&nbsp; These utilities also allow the user to supply this information 
+in multiple languages.&nbsp; Each string is stored sequentially starting at the 
+offset specified in the ERF file header.</p>
+
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th valign="top">Offset</th>
+      <th valign="top">Type</th>
+      <th valign="top">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Language Identifier (See the document on data file 
+      basics)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0004</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Length of the string in characters</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0008</td>
+      <td valign="top">CHAR [*]</td>
+      <td valign="top">String data</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0008+Length</td>
+      <td valign="top" colspan="2">Total size of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+<h3>Resource Structures</h3>
+<p>For each resource contained in an ERF, there is a corresponding entry in 
+the resource list.&nbsp; This list begins in the file at the offset specified in 
+the header.&nbsp; The resource structures are stored sequentially in the ERF file.&nbsp; The
+ERF header specifies the number of resources.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th valign="top">Offset</th>
+      <th valign="top">Type</th>
+      <th valign="top">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">CHAR [16]</td>
+      <td valign="top">Name of the resource</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0010</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Index of the resource</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0014</td>
+      <td valign="top">UINT16</td>
+      <td valign="top">Resource type (See the document on data file basics)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0016</td>
+      <td valign="top">UINT16</td>
+      <td valign="top">Reserved and zero</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0018</td>
+      <td valign="top" colspan="2">Total size of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The name of the resource is padded with NULLs however they are not 
+necessarily NULL terminated.&nbsp; In the case of a resource name that is 16 
+characters long, no NULL will exist.&nbsp; It can be mixed case, but most all resources 
+names are lowercase.</p>
+<h3>Position Structures</h3>
+<p>For each resource, there is a corresponding position structure that defines 
+where the resource is located in the ERF.&nbsp; This list begins in the file 
+at the offset specified in the header.&nbsp; It is also sequentially stored in 
+the ERF file.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th valign="top">Offset</th>
+      <th valign="top">Type</th>
+      <th valign="top">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Offset from the start of the file to the given resource</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0004</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Length of the resource in bytes</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0008</td>
+      <td valign="top" colspan="2">Total size of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+<h3>Strange Blank Data</h3>
+<p>The people at the <a href="http://openknights.sourceforge.net/">OpenKnights</a> 
+project noticed that for MOD and NWM files only, there exists a strange block of data 
+between the resource structures and the position structures.&nbsp; The size of 
+the block seems to be eight bytes per resource.&nbsp; In my tests, all the data 
+seemed to be NULL.&nbsp; What is strange about this data is that there doesn't 
+exist an offset in the ERF file header.&nbsp; Having a block of data that 
+contains no offset in the file header is very uncharacteristic for Bioware.</p>
+
+</body>
+
+</html>

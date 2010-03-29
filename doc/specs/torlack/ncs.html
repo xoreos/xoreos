@@ -1,0 +1,1845 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>NWN Data Files - NCS File</title>
+</head>
+
+<body>
+
+<h3>NWScript Basics</h3>
+<p>Before we can really being discussing the actual contents of the NWScript 
+Compiled Script (NCS) file, we first must go over some of the basic concepts of 
+the NWScript engine.</p>
+<p>NWScript is a small instruction set byte code engine.&nbsp; This means that 
+instead of compiling the script into x86 machine instructions, the compiler 
+generates a series of platform independent commands.&nbsp; Languages such as 
+Forth or Java use similar techniques to store their compiled source.&nbsp; When 
+a script needs to be executed, current byte code is fetched from the compiled 
+script and then depending on the value of the byte code, the script engine 
+executes some predefined operation.</p>
+<h3>NWScript Stack Basics</h3>
+<p>In a real machine code program, local variables can be stored in specific memory 
+locations, memory relative to a stack pointer, or even in the CPU registers.&nbsp; 
+Byte code engines don't have the luxury of using CPU registers.&nbsp; Thus they 
+are limited to variables being stored in specific memory locations or relative 
+to a stack pointer.&nbsp; In the case of NWScript, all variables are accessed 
+relative to a stack pointer.&nbsp; Global variables don't exist in the 
+traditional sense.</p>
+<p>Since variables are all accessed off the stack without CPU registers, then 
+operators such as addition must operate differently.&nbsp; In machine code, if 
+you wished to add two values, the values would be loaded into registers and then 
+the operator is executed.&nbsp; (Note: That is a drastic simplification)&nbsp; With NWScript, operators always use the top most variable or variables on the stack.&nbsp; 
+Once the operation is complete, the variables are removed and the result is 
+placed on the stack.&nbsp; Thus, if you have a variable called &quot;nValue&quot; that you 
+wished to negate but not lose &quot;nValue&quot; on the stack, you would first have make a 
+copy of the variable onto the top of the stack and then invoke the operator.</p>
+<p>Let us look at an example program:</p>
+<blockquote>
+  <pre>void main ()
+{
+    int i = 12;
+    int j = 1;
+    i = i + j;
+}</pre>
+</blockquote>
+<p>The first two lines of the program declare two variables &quot;i&quot; and &quot;j&quot;.&nbsp; 
+Once these two statements are complete, the stack looks as follows:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center"><b>Top of Stack (SP)</b></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Offset</b></td>
+      <td align="center"><b>Contents</b></td>
+    </tr>
+    <tr>
+      <td align="center">-4</td>
+      <td align="center">j: 1</td>
+    </tr>
+    <tr>
+      <td align="center">-8</td>
+      <td align="center">i: 12</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><b>Bottom of Stack</b></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>It is important to note that the NWScript stack builds up in increments of 4.&nbsp; 
+Thus when accessing values on the stack, they must be referenced using negative 
+offsets where &quot;-4&quot; points to the top most element on the stack.</p>
+<p>The next step is to make a copy of &quot;i&quot; so that we can operate on it.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center"><b>Top of Stack (SP)</b></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Offset</b></td>
+      <td align="center"><b>Contents</b></td>
+    </tr>
+    <tr>
+      <td align="center">-4</td>
+      <td align="center">i: 12</td>
+    </tr>
+    <tr>
+      <td align="center">-8</td>
+      <td align="center">j: 1</td>
+    </tr>
+    <tr>
+      <td align="center">-12</td>
+      <td align="center">i: 12</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><b>Bottom of Stack</b></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>Next, we need to make a copy of &quot;j&quot;.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center"><b>Top of Stack (SP)</b></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Offset</b></td>
+      <td align="center"><b>Contents</b></td>
+    </tr>
+    <tr>
+      <td align="center">-4</td>
+      <td align="center">j: 1</td>
+    </tr>
+    <tr>
+      <td align="center">-8</td>
+      <td align="center">i: 12</td>
+    </tr>
+    <tr>
+      <td align="center">-12</td>
+      <td align="center">j: 1</td>
+    </tr>
+    <tr>
+      <td align="center">-16</td>
+      <td align="center">i: 12</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><b>Bottom of Stack</b></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>Now that we have the two values on the top of the stack, we can invoke the 
+operator to compute the results.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center"><b>Top of Stack (SP)</b></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Offset</b></td>
+      <td align="center"><b>Contents</b></td>
+    </tr>
+    <tr>
+      <td align="center">-4</td>
+      <td align="center">results: 13</td>
+    </tr>
+    <tr>
+      <td align="center">-8</td>
+      <td align="center">j: 1</td>
+    </tr>
+    <tr>
+      <td align="center">-12</td>
+      <td align="center">i: 12</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><b>Bottom of Stack</b></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The final step is the assignment.&nbsp; To do this, we copy the top of the 
+stack down to the variable and then remove the top of the stack.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center"><b>Top of Stack (SP)</b></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Offset</b></td>
+      <td align="center"><b>Contents</b></td>
+    </tr>
+    <tr>
+      <td align="center">-4</td>
+      <td align="center">j: 1</td>
+    </tr>
+    <tr>
+      <td align="center">-8</td>
+      <td align="center">i: 13</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><b>Bottom of Stack</b></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The current top of stack is also known as the stack pointer (SP).</p>
+<h3>NWScript Global Variables</h3>
+<p>As stated previously, NWScript does not have global variables in the 
+tradition sense where the values a stored in a known region of memory.&nbsp; In 
+NWScript, global variables are placed onto the stack by a dummy shell routine.&nbsp; 
+This routine wraps the &quot;main&quot; or &quot;StartingConditional&quot; routine.&nbsp; So when a 
+script is executed with global variables, &quot;main&quot; and &quot;StartingConditional&quot; are 
+not the first routines to be invoked.&nbsp; The &quot;#globals&quot; routine is invoked to 
+place the globals onto the stack and then it invokes &quot;main&quot; or &quot;StartingConditional&quot;.</p>
+<p>However, placing global variables on the stack is only half the problem.&nbsp; 
+Routines inside the script must be able to know how to reference the variables.&nbsp; 
+For a routine such as &quot;main&quot; that is invoked directly from &quot;#globals&quot;, it knows 
+how deep down in the stack the global variables would be.&nbsp; If it had two 
+local variables and needed to access the top global variable, it could use an 
+offset of -12 (3 variables down time -4).&nbsp; However, subroutines called by 
+&quot;main&quot; would have no idea how deep down the stack the global variables exist.&nbsp;
+</p>
+<p>To solve this problem, Bioware created a second stack pointer called &quot;BP&quot; 
+which is traditionally called base pointer for Intel processors.&nbsp; Inside 
+the &quot;#globals&quot; routine just prior to invoking &quot;main&quot; or &quot;StartingConditional&quot;, 
+the current stack pointer (SP) is saved and becomes the new value of BP.&nbsp; 
+Then when &quot;main&quot; or and subroutine needs to access a global variable, it just 
+needs to access them relative to BP.</p>
+<p>For simplicity, there are not many operations that can be done to a variable 
+relative to BP.&nbsp; A copy of a variable can be placed on the top of the 
+stack.&nbsp; The current top of stack can be assigned to a variable relative to 
+BP.&nbsp; And a variable relative to BP can be incremented or decremented.</p>
+<h3>Calling Subroutines and Engine Routines (ACTIONS)</h3>
+<p>Invoking subroutines or engine routines is done basically in the same manner.&nbsp; 
+Arguments are placed on the stack in reverse order.&nbsp; The call is then made 
+and the callee removes all the arguments from the stack prior to returning.</p>
+<p>However, return values are handled differently.&nbsp; In the case of a script 
+subroutine that returns a value, space for the return value is reserved, then 
+the arguments are placed on the stack and finally the subroutine is invoked.&nbsp; 
+In the case of an engine routine, it is the job of the engine routine to place 
+the return value on the stack after the calling arguments are removed.</p>
+<p>Here is an example of a call to a subroutine:</p>
+<blockquote>
+  <pre>int j = DoSomeScriptSubroutine (12, 14); </pre>
+</blockquote>
+<p>Prior to the call, the stack looks as follows:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center"><b>Top of Stack (SP)</b></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Offset</b></td>
+      <td align="center"><b>Contents</b></td>
+    </tr>
+    <tr>
+      <td align="center">-4</td>
+      <td align="center">Arg1: 12</td>
+    </tr>
+    <tr>
+      <td align="center">-8</td>
+      <td align="center">Arg2: 14</td>
+    </tr>
+    <tr>
+      <td align="center">-12</td>
+      <td align="center">Return: ??</td>
+    </tr>
+    <tr>
+      <td align="center">-16</td>
+      <td align="center">j: ??</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><b>Bottom of Stack</b></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>After the call, the stack looks as follows:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center"><b>Top of Stack (SP)</b></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Offset</b></td>
+      <td align="center"><b>Contents</b></td>
+    </tr>
+    <tr>
+      <td align="center">-4</td>
+      <td align="center">Return: ??</td>
+    </tr>
+    <tr>
+      <td align="center">-8</td>
+      <td align="center">j: ??</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><b>Bottom of Stack</b></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>Here is an example of a call to an engine routine:</p>
+<blockquote>
+  <pre>int j = DoSomeEngineRoutine (12, 14); </pre>
+</blockquote>
+<p>Prior to the call, the stack looks as follows:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center"><b>Top of Stack (SP)</b></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Offset</b></td>
+      <td align="center"><b>Contents</b></td>
+    </tr>
+    <tr>
+      <td align="center">-4</td>
+      <td align="center">Arg1: 12</td>
+    </tr>
+    <tr>
+      <td align="center">-8</td>
+      <td align="center">Arg2: 14</td>
+    </tr>
+    <tr>
+      <td align="center">-12</td>
+      <td align="center">j: ??</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><b>Bottom of Stack</b></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>After the call, the stack looks as follows:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center"><b>Top of Stack (SP)</b></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Offset</b></td>
+      <td align="center"><b>Contents</b></td>
+    </tr>
+    <tr>
+      <td align="center">-4</td>
+      <td align="center">Return: ??</td>
+    </tr>
+    <tr>
+      <td align="center">-8</td>
+      <td align="center">j: ??</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><b>Bottom of Stack</b></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>Byte Code Basics</h3>
+<p>All NWScript byte codes start with two bytes.&nbsp; The first byte is the 
+instruction such as &quot;RETN&quot; or &quot;JSR&quot;.&nbsp; The second byte is the type of the 
+instruction such as an integer or floating point operation.</p>
+<p>Following is a list of all the different types:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th colspan="2">Unary Types</th>
+    </tr>
+    <tr>
+      <th>Value</th>
+      <th>Type</th>
+    </tr>
+    <tr>
+      <td>3 (0x03)</td>
+      <td>Integer (I)</td>
+    </tr>
+    <tr>
+      <td>4 (0x04)</td>
+      <td>Float (F)</td>
+    </tr>
+    <tr>
+      <td>5 (0x05)</td>
+      <td>String (S)</td>
+    </tr>
+    <tr>
+      <td>6 (0x06)</td>
+      <td>Object (O)</td>
+    </tr>
+    <tr>
+      <td valign="top">16-31<br>
+      (0x10-0x1F)</td>
+      <td>Engine Types <br>
+      16 = Effect<br>
+      17 = Event<br>
+      18 = Location<br>
+      19 = Talent</td>
+    </tr>
+    <tr>
+      <th colspan="2">Binary Types</th>
+    </tr>
+    <tr>
+      <th>Value</th>
+      <th>Type</th>
+    </tr>
+    <tr>
+      <td>32 (0x20)</td>
+      <td>Integer, Integer (II)</td>
+    </tr>
+    <tr>
+      <td>33 (0x21)</td>
+      <td>Float, Float (FF)</td>
+    </tr>
+    <tr>
+      <td>34 (0x22)</td>
+      <td>Object, Object (OO)</td>
+    </tr>
+    <tr>
+      <td>35 (0x23)</td>
+      <td>String, String (SS)</td>
+    </tr>
+    <tr>
+      <td>36 (0x24)</td>
+      <td>Structure, Structure (TT)</td>
+    </tr>
+    <tr>
+      <td>37 (0x25)</td>
+      <td>Integer, Float (IF)</td>
+    </tr>
+    <tr>
+      <td>38 (0x26)</td>
+      <td>Float, Integer (FI)</td>
+    </tr>
+    <tr>
+      <td valign="top">48-57<br>
+      (0x30-0x39)</td>
+      <td>Engine Types<br>
+      48 = Effect, Effect<br>
+      49 = Event, Event<br>
+      50 = Location, Location<br>
+      51 = Talent, Talent</td>
+    </tr>
+    <tr>
+      <td>58 (0x3A)</td>
+      <td>Vector, Vector (VV)</td>
+    </tr>
+    <tr>
+      <td>59 (0x3B)</td>
+      <td>Vector, Float (VF)</td>
+    </tr>
+    <tr>
+      <td>60 (0x3C)</td>
+      <td>Float, Vector (FV)</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The value listed in parenthesis next to the type name is the short hand name 
+used to identify different byte codes.&nbsp; For example ADDII would add two 
+integer values.</p>
+<p>The TT opcode type is used to compare ranges of elements on the stack.&nbsp; 
+More specifically, it is used for structures and vectors.</p>
+<h3>Byte Codes</h3>
+<p>Following is a list and description of all the known byte codes.&nbsp; </p>
+<p>NOTE: All multi-byte values are stored in big endian order.</p>
+<h4>CPDOWNSP - Copy Down Stack Pointer</h4>
+<p>Copy the given number of bytes from the top of the stack down to the location 
+specified.</p>
+<p>The value of SP remains unchanged.</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <th>Bytes</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0x01</td>
+      <td>Byte Code</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0x01</td>
+      <td>Type</td>
+    </tr>
+    <tr>
+      <td>2-5</td>
+      <td>Offset </td>
+      <td>Destination of the copy relative to the top of the stack. </td>
+    </tr>
+    <tr>
+      <td>6-7</td>
+      <td>Size</td>
+      <td>Number of bytes to copy</td>
+    </tr>
+  </table>
+</div>
+<h4>RSADDx- Reserve Space on Stack<br>
+RSADDI- Reserve Integer Space on Stack<br>
+RSADDF- Reserve Float Space on Stack<br>
+RSADDS- Reserve String Space on Stack<br>
+RSADDO- Reserve Object Space on Stack</h4>
+<p>Reserve space on the stack for the given variable type.</p>
+<p>The value of SP is increased by the size of the type reserved.&nbsp; (Always 
+4)</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x02</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x03<br>
+    0x04<br>
+    0x05<br>
+    0x06</td>
+    <td valign="top">RSADDI type<br>
+    RSADDF type<br>
+    RSADDS type<br>
+    RSADDO type</td>
+  </tr>
+</table>
+<h4>CPTOPSP - Copy Top Stack Pointer</h4>
+<p>Add the given number of bytes from the location specified in the stack to the 
+top of the stack.</p>
+<p>The value of SP is increased by the number of copied bytes.</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <th>Bytes</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0x03</td>
+      <td>Byte Code</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0x01</td>
+      <td>Type</td>
+    </tr>
+    <tr>
+      <td>2-5</td>
+      <td>Offset </td>
+      <td>Source of the copy relative to the top of the stack. </td>
+    </tr>
+    <tr>
+      <td>6-7</td>
+      <td>Size</td>
+      <td>Number of bytes to copy</td>
+    </tr>
+  </table>
+</div>
+<h4>CONSTI - Place Constant Integer Onto the Stack</h4>
+<p>Place the constant integer onto the top of the stack.</p>
+<p>The value of SP is increased by the size of the type reserved.&nbsp; (Always 
+4)</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <th>Bytes</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0x04</td>
+      <td>Byte Code</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0x03</td>
+      <td>Type</td>
+    </tr>
+    <tr>
+      <td>2-5</td>
+      <td>Integer</td>
+      <td>Integer value of the constant</td>
+    </tr>
+    </table>
+</div>
+<h4>CONSTF - Place Constant Float Onto the Stack</h4>
+<p>Place the constant float onto the top of the stack.</p>
+<p>The value of SP is increased by the size of the type reserved.&nbsp; (Always 
+4)</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <th>Bytes</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0x04</td>
+      <td>Byte Code</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0x04</td>
+      <td>Type</td>
+    </tr>
+    <tr>
+      <td>2-5</td>
+      <td>Float</td>
+      <td>Float value of the constant</td>
+    </tr>
+    </table>
+</div>
+<h4>CONSTS - Place Constant String Onto the Stack</h4>
+<p>Place the constant string onto the top of the stack.</p>
+<p>The value of SP is increased by the size of the type reserved.&nbsp; (Always 
+4)</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <th>Bytes</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0x04</td>
+      <td>Byte Code</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0x05</td>
+      <td>Type</td>
+    </tr>
+    <tr>
+      <td>2-3</td>
+      <td>String Length</td>
+      <td>Length of the string</td>
+    </tr>
+    <tr>
+      <td>4-n</td>
+      <td>String Data</td>
+      <td>Text of the string</td>
+    </tr>
+  </table>
+</div>
+<h4>CONSTO - Place Constant Object ID Onto the Stack</h4>
+<p>Place the constant object ID onto the top of the stack.</p>
+<p>The value of SP is increased by the size of the type reserved.&nbsp; (Always 
+4)</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <th>Bytes</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0x04</td>
+      <td>Byte Code</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0x06</td>
+      <td>Type</td>
+    </tr>
+    <tr>
+      <td>2-5</td>
+      <td>Object</td>
+      <td>When the type is an object, these bytes contain the OID</td>
+    </tr>
+    </table>
+</div>
+<h4>ACTION - Call an Engine Routine</h4>
+<p>Invoke the engine routine specified.&nbsp; All arguments must be placed on 
+the stack in reverse order prior to this byte code.&nbsp; The arguments will be 
+removed by the engine routine and any return value then placed on the stack.</p>
+<p>The value of SP is increased by the size of the return value and decreased by 
+the total size of the arguments.&nbsp; It is important to note that the total 
+size of the arguments might be different than the number of arguments.&nbsp; 
+Structures and vectors are take up more space than normal types.</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <th>Bytes</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0x05</td>
+      <td>Byte Code</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0x00</td>
+      <td>Type</td>
+    </tr>
+    <tr>
+      <td>2-3</td>
+      <td>Routine #</td>
+      <td>Number of the action routine.&nbsp; NWSCIPT.NSS lists engine routines 
+      in order starting at 0</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Arg Count</td>
+      <td>Number of arguments</td>
+    </tr>
+  </table>
+</div>
+<h4>LOGANDII - Logical AND Two Integers</h4>
+<p>Compute the logical AND of two integer values.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x06</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x20</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>LOGORII - Logical OR Two Integers</h4>
+<p>Compute the logical OR of two integer values.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x07</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x20</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>INCORII - Bitwise Inclusive OR Two Integers</h4>
+<p>Compute the inclusive OR of two integer values.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x08</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x20</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>EXCORII - Bitwise Exclusive OR Two Integers</h4>
+<p>Compute the exclusive OR of two integers.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x09</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x20</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>BOOLANDII - Boolean or Bitwise AND Two Integers</h4>
+<p>Compute the boolean AND of two integers. </p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x0A</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x20</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>EQUALxx - Test for Logical Equality<br>
+EQUALII - Test for Logical Equality Two Integers<br>
+EQUALFF - Test for Logical Equality Two Floats<br>
+EQUALSS - Test for Logical Equality Two Strings<br>
+EQUALOO - Test for Logical Equality Two Object IDs</h4>
+<p>Test the two operand for logical equality.&nbsp; This operator supports the 
+comparison or all the basic types and then engine types as long as both operands 
+have the same type.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x0B</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x21<br>
+    0x22<br>
+    0x23<br>
+    0x30-0x39</td>
+    <td valign="top">EQUALII Type<br>
+    EQUALFF Type<br>
+    EQUALOO Type<br>
+    EQUALSS Type<br>
+    For engine types</td>
+  </tr>
+</table>
+<h4>EQUALTT - Test for Logical Equality Two Structures</h4>
+<p>Test the two operand for logical equality.&nbsp; This operator supports the 
+comparison or all the basic types and then engine types as long as both operands 
+have the same type.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x0B</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x24</td>
+    <td valign="top">Type</td>
+  </tr>
+  <tr>
+    <td valign="top">2-3</td>
+    <td valign="top">Size</td>
+    <td valign="top">Size of structure</td>
+  </tr>
+</table>
+<h4>NEQUALxx - Test for Logical Inequality<br>
+NEQUALII - Test for Logical Inequality Two Integers<br>
+NEQUALFF - Test for Logical Inequality Two Floats<br>
+NEQUALSS - Test for Logical Inequality Two Strings<br>
+NEQUALOO - Test for Logical Inequality Two Object IDs</h4>
+<p>Test the two operand for logical inequality.&nbsp; This operator supports the 
+comparison or all the basic types and then engine types as long as both operands 
+have the same type.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x0C</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x21<br>
+    0x22<br>
+    0x23<br>
+    0x30-0x39</td>
+    <td valign="top">EQUALII Type<br>
+    EQUALFF Type<br>
+    EQUALOO Type<br>
+    EQUALSS Type<br>
+    For engine types</td>
+  </tr>
+</table>
+<h4>NEQUALTT - Test for Logical Inequality Two Structures</h4>
+<p>Test the two operand for logical inequality.&nbsp; This operator supports the 
+comparison or all the basic types and then engine types as long as both operands 
+have the same type.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x0C</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x24</td>
+    <td valign="top">Type</td>
+  </tr>
+  <tr>
+    <td valign="top">2-3</td>
+    <td valign="top">Size</td>
+    <td valign="top">Size of the structure</td>
+  </tr>
+</table>
+<h4>GEQxx - Test for Greater Than or Equal<br>
+GEQII - Test for Greater Than or Equal Two Integers<br>
+GEQFF - Test for Greater Than or Equal Two Floats</h4>
+<p>Test the two operand for logically greater than or equal.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x0D</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x21</td>
+    <td valign="top">GEQII Type<br>
+    GEQFF Type</td>
+  </tr>
+</table>
+<h4>GTxx - Test for Greater Than<br>
+GTII - Test for Greater Than Two Integers<br>
+GTFF - Test for Greater Than Two Floats</h4>
+<p>Test the two operand for logically greater than.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x0E</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x21</td>
+    <td valign="top">GTII Type<br>
+    GTFF Type</td>
+  </tr>
+</table>
+<h4>LTxx - Test for Less Than<br>
+LTII - Test for Less Than Two Integers<br>
+LTFF - Test for Less Than Two Floats</h4>
+<p>Test the two operand for logically less than.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x0F</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x21</td>
+    <td valign="top">LTII Type<br>
+    LTFF Type</td>
+  </tr>
+</table>
+<h4>LEQxx - Test for Less Than or Equal<br>
+LEQII - Test for Less Than or Equal Two Integers<br>
+LEQFF - Test for Less Than or Equal Two Floats</h4>
+<p>Test the two operand for logically less than or equal.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x10</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x21</td>
+    <td valign="top">LEQII Type<br>
+    LEQFF Type</td>
+  </tr>
+</table>
+<h4>SHLEFTII - Shift the Integer Value Left</h4>
+<p>Shift the value left be the given number of bits.&nbsp; Operand one is the 
+value to shift while operand two is the number of bits to shift.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x11</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x20</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>SHRIGHTII - Shift the Integer Value Right</h4>
+<p>Shift the value right be the given number of bits.&nbsp;  Operand one is the value to shift while operand two is the 
+number of bits to shift.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x12</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x20</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>USHRIGHTII - Unsigned Shift the Integer Value Right</h4>
+<p>Shift the value right be the given number of bits as if it was an unsigned 
+integer and not a signed integer.&nbsp;  Operand one is the value to shift while operand two is the number of bits to 
+shift.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x13</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x20</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>ADDxx - Add Two Values<br>
+ADDII - Add Two Integer Values<br>
+ADDIF - Add an Integer and Float Values<br>
+ADDFI - Add a Float and Integer Values<br>
+ADDFF - Add Two Float Values<br>
+ADDSS - Add Two String Values<br>
+ADDVV - Add Two Vector Values</h4>
+<p>Add the two operands.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x14</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x25<br>
+    0x26<br>
+    0x21<br>
+    0x23<br>
+    0x3A</td>
+    <td valign="top">ADDII Type<br>
+    ADDIF Type<br>
+    ADDFI Type<br>
+    ADDFF Type<br>
+    ADDSS Type<br>
+    ADDVV Type</td>
+  </tr>
+</table>
+<h4>SUBxx - Subtract Two Values<br>
+SUBII - Subtract Two Integer Values<br>
+SUBIF - Subtract an Integer and Float Values<br>
+SUBFI - Subtract a Float and Integer Values<br>
+SUBFF - Subtract Two Float Values<br>
+SUBVV - Subtract Two Vector Values</h4>
+<p>Subtract the two operands.&nbsp; </p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x15</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x25<br>
+    0x26<br>
+    0x21<br>
+    0x3A</td>
+    <td valign="top">SUBII Type<br>
+    SUBIF Type<br>
+    SUBFI Type<br>
+    SUBFF Type<br>
+    SUBVV Type</td>
+  </tr>
+</table>
+<h4>MULxx - Multiply Two Values<br>
+MULII - Multiply Two Integer Values<br>
+MULIF - Multiply an Integer and Float Values<br>
+MULFI - Multiply a Float and Integer Values<br>
+MULFF - Multiply Two Float Values<br>
+MULVF - Multiply a Vector and Float Values<br>
+MULFV - Multiply a Float and Vector Values</h4>
+<p>Multiply the two operands.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x16</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x25<br>
+    0x26<br>
+    0x21<br>
+    0x3B<br>
+    0x3C</td>
+    <td valign="top">MULII Type<br>
+    MULIF Type<br>
+    MULFI Type<br>
+    MULFF Type<br>
+    MULVF Type<br>
+    MULFV Type</td>
+  </tr>
+</table>
+<h4>DIVxx - Divide Two Values<br>
+DIVII - Divide Two Integer Values<br>
+DIVLIF - Divide an Integer and Float Values<br>
+DIVFI - Divide a Float and Integer Values<br>
+DIVFF - Divide Two Float Values<br>
+DIVVF - Divide a Vector and Float Values</h4>
+<p>Divide the two operands.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x17</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x20<br>
+    0x25<br>
+    0x26<br>
+    0x21<br>
+    0x3B</td>
+    <td valign="top">DIVII Type<br>
+    DIVIF Type<br>
+    DIVFI Type<br>
+    DIVFF Type<br>
+    DIVVF Type</td>
+  </tr>
+</table>
+<h4>MODII- Compute the Modulus of Two Integer Values</h4>
+<p>Computes the modulus of two values.</p>
+<p>The value of SP is increased by the size of the result while decreased by the 
+size of both operands.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x18</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x20</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>NEGx - Compute the Negation of a Value<br>
+NEGI - Compute the Negation of an Integer Value<br>
+NEGF - Compute the Negation of a Float Value</h4>
+<p>Computes the negation of a value.</p>
+<p>The value of SP remains unchanged since the operand and result are of the 
+same size.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x19</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td valign="top">1</td>
+    <td valign="top">0x03<br>
+    0x04</td>
+    <td valign="top">NEGI Type<br>
+    NEGF Type</td>
+  </tr>
+</table>
+<h4>COMPI - Compute the One's Complement of an Integer Value</h4>
+<p>Computes the one's complement of a value.</p>
+<p>The value of SP remains unchanged since the operand and result are of the 
+same size.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x1A</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x03</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>MOVSP - Adjust the Stack Pointer</h4>
+<p>Add the value specified in the instruction to the stack pointer.</p>
+<p>The value of SP is adjusted by the value specified.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x1B</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x00</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Offset</td>
+    <td>Value to add to the stack pointer. </td>
+  </tr>
+</table>
+<h4>STORE_STATEALL - Store the Current State of the Stack (Obsolete)</h4>
+<p><i>Obsolete</i> instruction to store the state of the stack and save a 
+pointer to a block of code to later be used as an &quot;action&quot; argument.&nbsp; This 
+byte code is always followed by a JMP and then a block of code to be executed by 
+a later function such as a DelayCommand. </p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x1C</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x08</td>
+    <td>Offset to the block of code for an &quot;action&quot; argument</td>
+  </tr>
+</table>
+<h4>JMP - Jump to a New Location</h4>
+<p>Change the current execution address to the relative address given in the 
+instruction.</p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x1D</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x00</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Offset</td>
+    <td>Offset to the new program location from the start of this instruction</td>
+  </tr>
+</table>
+<h4>JSR - Jump to Subroutine</h4>
+<p>Jump to the subroutine at the relative address given in the instruction.&nbsp; 
+If the routine returns a value, the RSADDx instruction should first be used to 
+allocate space for the return value.&nbsp; Then all arguments to the subroutine 
+should be pushed in reverse order.</p>
+<p>The value of SP remains unchanged.&nbsp; The return value is NOT placed on 
+the stack.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x1E</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x00</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Offset</td>
+    <td>Offset to the new program location from the start of this instruction</td>
+  </tr>
+</table>
+<h4>JZ - Jump if Top of Stack is Zero</h4>
+<p>Change the current execution address to the relative address given in the 
+instruction if the integer on the top of the stack is zero.</p>
+<p>The value of SP is decremented by the size of the integer.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x1F</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x00</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Offset</td>
+    <td>Offset to the new program location from the start of this instruction</td>
+  </tr>
+</table>
+<h4>RETN - Return from a JSR</h4>
+<p>Return from a JSR.&nbsp; All arguments used to invoke the subroutine should 
+be removed prior to the RETN.&nbsp; This leaves any return value on the top of 
+the stack.&nbsp; The return value must be allocated by the caller prior to 
+invoking the subroutine.</p>
+<p>The value of SP remains unchanged.&nbsp; The return value is NOT placed on 
+the stack.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x20</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x00</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>DESTRUCT - Destroy Element on the Stack</h4>
+<p>Given a stack size, destroy all elements in that size excluding the given 
+stack element and element size.</p>
+<p>The value of SP decremented by the given stack size minus the element size.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x21</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x01</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-3</td>
+    <td>Size</td>
+    <td>Total number of bytes to remove off the top of the stack</td>
+  </tr>
+  <tr>
+    <td>4-5</td>
+    <td>Offset</td>
+    <td>Offset from the start of the bytes to remove to the element not to 
+    destroy</td>
+  </tr>
+  <tr>
+    <td>6-7</td>
+    <td>Size</td>
+    <td>Size of the element not to destroy</td>
+  </tr>
+</table>
+<h4>NOTI - Compute the logical NOT of an Integer Value</h4>
+<p>Computes the logical not of the value.</p>
+<p>The value of SP remains unchanged since the operand and result are of the 
+same size.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x22</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x03</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>DECISP - Decrement Integer Value Relative to Stack Pointer</h4>
+<p>Decrements an integer relative to the current stack pointer.</p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x23</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x03</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Offset</td>
+    <td>Offset of the integer relative to the stack pointer</td>
+  </tr>
+</table>
+<h4>INCISP - Increment Integer Value Relative to Stack Pointer</h4>
+<p>Increments an integer relative to the current stack pointer.</p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x24</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x03</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Offset</td>
+    <td>Offset of the integer relative to the stack pointer</td>
+  </tr>
+</table>
+<h4>JNZ - Jump if Top of Stack is Non-Zero</h4>
+<p>Change the current execution address to the relative address given in the 
+instruction if the integer on the top of the stack is non-zero.</p>
+<p>The value of SP is decremented by the size of the integer.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x25</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x00</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Offset</td>
+    <td>Offset to the new program location from the start of this instruction</td>
+  </tr>
+</table>
+<h4>CPDOWNBP - Copy Down Base Pointer</h4>
+<p>Copy the given number of bytes from the base pointer down to the location 
+specified. This instruction is used to assign new values to global variables.</p>
+<p>The value of SP remains unchanged.</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <th>Bytes</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0x26</td>
+      <td>Byte Code</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0x01</td>
+      <td>Type</td>
+    </tr>
+    <tr>
+      <td>2-5</td>
+      <td>Offset </td>
+      <td>Destination of the copy relative to the base pointer </td>
+    </tr>
+    <tr>
+      <td>6-7</td>
+      <td>Size</td>
+      <td>Number of bytes to copy</td>
+    </tr>
+  </table>
+</div>
+<h4>CPTOPBP - Copy Top Base Pointer</h4>
+<p>Add the given number of bytes from the location specified relative to the 
+base pointer to the 
+top of the stack.&nbsp; This instruction is used to retrieve the current value 
+of global variables.</p>
+<p>The value of SP is increased by the number of copied bytes.</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <th>Bytes</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0x27</td>
+      <td>Byte Code</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0x01</td>
+      <td>Type</td>
+    </tr>
+    <tr>
+      <td>2-5</td>
+      <td>Offset </td>
+      <td>Source of the copy relative to the base pointer</td>
+    </tr>
+    <tr>
+      <td>6-7</td>
+      <td>Size</td>
+      <td>Number of bytes to copy</td>
+    </tr>
+  </table>
+</div>
+<h4>DECIBP - Decrement Integer Value Relative to Base Pointer</h4>
+<p>Decrements an integer relative to the current base pointer.&nbsp; This 
+instruction is used to decrement the value of global variables.</p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x28</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x03</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Offset</td>
+    <td>Offset of the integer relative to the base pointer</td>
+  </tr>
+</table>
+<h4>INCIBP - Increment Integer Value Relative to Base Pointer</h4>
+<p>Increments an integer relative to the current base pointer.&nbsp; This 
+instruction is used to increment the value of global variables.</p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x29</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x03</td>
+    <td>Type</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Offset</td>
+    <td>Offset of the integer relative to the base pointer</td>
+  </tr>
+</table>
+<h4>SAVEBP&nbsp; - Set a New Base Pointer Value</h4>
+<p>Save the current value of the base pointer and set BP to the current stack 
+position.</p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x2A</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x00</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>RESTOREBP - Restored the BP</h4>
+<p>Restore the BP from a previous SAVEBP instruction.</p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x2B</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x00</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>STORE_STATE - Store the Current Stack State</h4>
+<p>Store the state of the stack and save a 
+pointer to a block of code to later be used as an &quot;action&quot; argument.&nbsp; This 
+byte code is always followed by a JMP and then a block of code to be executed by 
+a later function such as a DelayCommand. </p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x2C</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x10</td>
+    <td>Offset to the block of code for an &quot;action&quot; argument</td>
+  </tr>
+  <tr>
+    <td>2-5</td>
+    <td>Size</td>
+    <td>Size of the variables to save relative to BP.&nbsp; This would be all 
+    the global variables.</td>
+  </tr>
+  <tr>
+    <td>6-9</td>
+    <td>Size</td>
+    <td>Size of the local routine variables to save relative to SP.</td>
+  </tr>
+</table>
+<h4>NOP - No-operation</h4>
+<p>Perform no program function.&nbsp; This opcode is used as a placeholder for
+the debugger.</p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x2D</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>0x00</td>
+    <td>Type</td>
+  </tr>
+</table>
+<h4>T - Program Size</h4>
+<p>This byte code isn't a real instruction and is always found at offset 8 in 
+the NCS file.</p>
+<p>The value of SP remains unchanged.</p>
+<table border="1">
+  <tr>
+    <th>Bytes</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x42</td>
+    <td>Byte Code</td>
+  </tr>
+  <tr>
+    <td>1-4</td>
+    <td>Size</td>
+    <td>Size of the NCS file</td>
+  </tr>
+</table>
+
+</body>
+
+</html>

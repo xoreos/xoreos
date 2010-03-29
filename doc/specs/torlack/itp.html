@@ -1,0 +1,618 @@
+<html>
+	<head>
+		<title>What is an ITP File</title>
+		<meta http-equiv="Content-Language" content="en-us">
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+		<meta name="ProgId" content="FrontPage.Editor.Document">
+	</head>
+	<body>
+		<h3>What is an ITP File?</h3>
+		<p>(Note: ITP files are more correctly known as the GFF and BioWare's
+        documentation can be found <a href="http://nwn.bioware.com/developers/gff.html">here</a>.)</p>
+		<p>An ITP file can be thought of as a hierarchical collection variables.</p>
+		<p>That cleared it up, didn't it.</p>
+		<p>In an ITP file, you have a series of what can be considered variable assignments 
+			such as '<i>PlayerName = "Francis"'</i>. There can practically be an infinite 
+			number of variable assignments in one file.&nbsp; Also, ITP files allow you to 
+			nest variable assignments much the way a programmer might nest structures.</p>
+		<p>ITP files are very common in NWN.&nbsp; The format is used for a wide collection 
+			of files such as; ITP, BIC, DLG, GIT, GFF, FAC, UTI, UTC, UTT, UTS, UTE, UTD, 
+			UTP, UTM, and UTW.&nbsp; All of these different files share the same common 
+			file format.&nbsp; So in reality calling the file format ITP is inaccurate, but 
+			it is the name we all know best.</p>
+		<h3>Data Stored in an ITP File</h3>
+		<p>ITP files contain seven sections of data.&nbsp; The sections are as follows:</p>
+		<ol>
+			<li>
+				<i>File Header</i>
+			- Gives us enough information to begin decoding the remaining sections.
+			<li>
+				<i>Entry Table</i>
+			- Provides us with our collections of variables and their nesting.
+			<li>
+				<i>Element Table</i>
+			- Provides the information about all the variables contained within an entry.
+			<li>
+				<i>Variable Names Table</i>
+			- List of all the different variables names.
+			<li>
+				<i>Variable Data Section </i>
+			-&nbsp; Depending on the element in question, this data block can contain a 
+			assortment of data.
+			<li>
+				<i>Multiple Element Map (MultiMap)</i>
+			- Used to list which elements are contained within an entry when that entry 
+			contains more than one element.
+			<li>
+				<i>List Section</i> - Provides a method for an element to have one or more 
+				entries as children.</li>
+		</ol>
+		<h3>The File Header</h3>
+		<div align="center">
+			<center>
+				<table border="1">
+					<tr>
+						<th>
+							Offset</th>
+						<th>
+							Type</th>
+						<th>
+							Description</th>
+					</tr>
+					<tr>
+						<td>0x0000</td>
+						<td>char [4]</td>
+						<td>4 byte signature.</td>
+					</tr>
+					<tr>
+						<td>0x0004</td>
+						<td>char [4]</td>
+						<td>4 byte version.</td>
+					</tr>
+					<tr>
+						<td>0x0008</td>
+						<td>UINT32</td>
+						<td>Offset from start of the file to the first entry</td>
+					</tr>
+					<tr>
+						<td>0x000C</td>
+						<td>UINT32</td>
+						<td>Number of entries in the file</td>
+					</tr>
+					<tr>
+						<td>0x0010</td>
+						<td>UINT32</td>
+						<td>Offset from start of the file to the first element</td>
+					</tr>
+					<tr>
+						<td>0x0014</td>
+						<td>UINT32</td>
+						<td>Number of elements in the file</td>
+					</tr>
+					<tr>
+						<td>0x0018</td>
+						<td>UINT32</td>
+						<td>Offset from start of the file to the first variable name</td>
+					</tr>
+					<tr>
+						<td>0x001C</td>
+						<td>UINT32</td>
+						<td>Number of names in the variable name block</td>
+					</tr>
+					<tr>
+						<td>0x0020</td>
+						<td>UINT32</td>
+						<td>Offset from start of the file to the first variable data</td>
+					</tr>
+					<tr>
+						<td>0x0024</td>
+						<td>UINT32</td>
+						<td>Number of bytes in the variable data block</td>
+					</tr>
+					<tr>
+						<td>0x0028</td>
+						<td>UINT32</td>
+						<td>Offset from start of the file to the first multimap</td>
+					</tr>
+					<tr>
+						<td>0x002C</td>
+						<td>UINT32</td>
+						<td>Number of bytes in the multimap table</td>
+					</tr>
+					<tr>
+						<td>0x0030</td>
+						<td>UINT32</td>
+						<td>Offset from start of the file to the first list</td>
+					</tr>
+					<tr>
+						<td>0x0034</td>
+						<td>UINT32</td>
+						<td>Number of bytes in the list table</td>
+					</tr>
+					<tr>
+						<td>0x0038</td>
+						<td colspan="2">Total length of the structure</td>
+					</tr>
+				</table>
+			</center>
+		</div>
+		<p>All offsets in the file header are from the start of the file.&nbsp; The file 
+			header is always at offset zero.&nbsp; It seems that the offset to the first 
+			entry is always 0x0038.&nbsp; But please note that for entries and elements, we 
+			are given the number of entries or elements.&nbsp; For the four remaining data 
+			sections, the total section length is given in bytes.</p>
+		<h3>The Entity Table</h3>
+		<p>The entity table is an array of structures of the following form:</p>
+		<div align="center">
+			<center>
+				<table border="1">
+					<tr>
+						<th>
+							Offset</th>
+						<th>
+							Type</th>
+						<th>
+							Description</th>
+					</tr>
+					<tr>
+						<td>0x0000</td>
+						<td>UINT32</td>
+						<td>Entity code (Use unknown)</td>
+					</tr>
+					<tr>
+						<td>0x0004</td>
+						<td>UINT32</td>
+						<td>Element index or MultiMap offset</td>
+					</tr>
+					<tr>
+						<td>0x0008</td>
+						<td>UINT32</td>
+						<td>Number of elements in this entry</td>
+					</tr>
+					<tr>
+						<td>0x000C</td>
+						<td colspan="2">Total length of the structure</td>
+					</tr>
+				</table>
+			</center>
+		</div>
+		<p>The first entry in the entry table is the root of whole hierarchy.&nbsp; From 
+			that one entry, all other entries and elements can be accessed in a logical 
+			form.</p>
+		<p>Entries only serve one function, to contain one or more elements.&nbsp; 
+			Depending on the number of elements contained in an entry, accessing the 
+			elements can either be easy or require indirect referencing.&nbsp; When an 
+			entry contains only one element, and thus the value at offset 0x0008 is one, 
+			then the value at offset 0x0004 is the index in the element table of the only 
+			child.&nbsp; When an entry contains more than one element, then the value at 
+			offset 0x0004 contains a byte offset into the multimap table.&nbsp; This offset 
+			points to an array of element numbers stored as UINT32 values.&nbsp;
+		</p>
+		<p>Here is an example of how you might iterate through the list of elements for an 
+			entity.&nbsp; This code assumes that the whole file is resident in memory in a 
+			contiguous buffer.</p>
+		<blockquote>
+			<pre>char *pFileData = <i>AddressOfTheITPDataInMemory</i>;
+Header *pHeader = (Header *) pFileData;
+Entry *pEntryTable = (Entry *) &amp;pFileData [pHeader -&gt;EntryOffset];
+Element *pElementTable = (Element *) &amp;pFileData [pHeader -&gt;ElementOffset];
+
+Entry *pEntry = &amp;pEntryTable [0]; // For this example, use root entry
+
+if (pEntry -&gt;Count == 1) // We have one element
+{
+    Element *pElement = &amp;pElementTable [pEntry -&gt;Offset];
+    // Do something with the element
+}
+else //more than one
+{
+    UINT32 *pMMap = (UINT32 *) &amp;pFileData [pHeader -&gt;MultiMapOffset + pEntry -&gt;Offset];
+    for (int i = 0; i &lt; pEntry -&gt;Count; i++)
+    {
+        Element *pElement = &amp;pElementTable [pMMap [i]];
+        // Do something with the element
+    }
+}</pre>
+		</blockquote>
+		<p>There is one trick you can use to reduce duplicated code.&nbsp; I use this trick 
+			in my software.</p>
+		<blockquote>
+			<pre>char *pFileData = <i>AddressOfTheITPDataInMemory</i>;
+Header *pHeader = (Header *) pFileData;
+Entry *pEntryTable = (Entry *) &amp;pFileData [pHeader -&gt;EntryOffset];
+Element *pElementTable = (Element *) &amp;pFileData [pHeader -&gt;ElementOffset];
+
+Entry *pEntry = &amp;pEntryTable [0]; // For this example, use root entry
+
+UINT32 *pMMap;
+if (pEntry -&gt;Count == 1)
+    pMMap = &amp;pEntry -&gt;Offset;
+else
+    pMMap = (UINT32 *) &amp;pFileData [pHeader -&gt;MultiMapOffset + pEntry -&gt;Offset];</pre>
+			<pre>for (int i = 0; i &lt; pEntry -&gt;Count; i++)
+{
+    Element *pElement = &amp;pElementTable [pMMap [i]];
+    // Do something with the element
+}</pre>
+		</blockquote>
+		<h3>The Element Table
+		</h3>
+		<p>The element table is an array of structures of the following form:
+		</p>
+		<div align="center">
+			<center>
+				<table border="1">
+					<tr>
+						<th>
+							Offset</th>
+						<th>
+							Type</th>
+						<th>
+							Description</th>
+					</tr>
+					<tr>
+						<td>0x0000</td>
+						<td>UINT32</td>
+						<td>Variable type (0-15)</td>
+					</tr>
+					<tr>
+						<td>0x0004</td>
+						<td>UINT32</td>
+						<td>Variable name index</td>
+					</tr>
+					<tr>
+						<td>0x0008</td>
+						<td>VARIES</td>
+						<td>Data for the variable</td>
+					</tr>
+					<tr>
+						<td>0x000C</td>
+						<td colspan="2">Total length of the structure</td>
+					</tr>
+				</table>
+			</center>
+		</div>
+		<p>As you can see, the element structure is very basic.&nbsp; From the structure we 
+			know the name of the variable, the type of the variable, and the assigned value 
+			of the variable.&nbsp; The only difficult part is extracting the value from the 
+			structure.
+		</p>
+		<p>There are 16 know variable types supported by the ITP format.&nbsp; They are as 
+			follows:
+		</p>
+		<div align="center">
+			<center>
+				<table border="1">
+					<tr>
+						<th valign="top">
+							Value</th>
+						<th valign="top">
+							Type</th>
+						<th valign="top">
+							Access</th>
+						<th valign="top">
+							Data</th>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">0</td>
+						<td valign="top">UINT8</td>
+						<td valign="top">Direct</td>
+						<td valign="top">Unsigned byte</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">1</td>
+						<td valign="top">INT8</td>
+						<td valign="top">Direct</td>
+						<td valign="top">Signed byte</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">2</td>
+						<td valign="top">UINT16</td>
+						<td valign="top">Direct</td>
+						<td valign="top">Unsigned word</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">3</td>
+						<td valign="top">INT16</td>
+						<td valign="top">Direct</td>
+						<td valign="top">Signed word&nbsp;</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">4</td>
+						<td valign="top">UINT32</td>
+						<td valign="top">Direct</td>
+						<td valign="top">Unsigned longword&nbsp;</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">5</td>
+						<td valign="top">INT32</td>
+						<td valign="top">Direct</td>
+						<td valign="top">Signed longword&nbsp;</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">6</td>
+						<td valign="top">UINT64</td>
+						<td valign="top">Indirect</td>
+						<td valign="top">Unsigned quadword&nbsp;</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">7</td>
+						<td valign="top">INT64</td>
+						<td valign="top">Indirect</td>
+						<td valign="top">Signed quadword</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">8</td>
+						<td valign="top">FLOAT</td>
+						<td valign="top">Indirect</td>
+						<td valign="top">Four byte floating point value</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">9</td>
+						<td valign="top">DOUBLE</td>
+						<td valign="top">Indirect</td>
+						<td valign="top">Eight byte floating point value</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">10</td>
+						<td valign="top">STRING</td>
+						<td valign="top">Indirect</td>
+						<td valign="top">Counted string</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">11</td>
+						<td valign="top">RESREF</td>
+						<td valign="top">Indirect</td>
+						<td valign="top">Counted resource name</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">12</td>
+						<td valign="top">STRREF</td>
+						<td valign="top">Complex</td>
+						<td valign="top">Multilingual capable string</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">13</td>
+						<td valign="top">DATREF</td>
+						<td valign="top">Complex</td>
+						<td valign="top">Counted binary data&nbsp;</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">14</td>
+						<td valign="top">CAPREF</td>
+						<td valign="top">Complex</td>
+						<td valign="top">List of child elements</td>
+					</tr>
+					<tr>
+						<td valign="top" align="middle">15</td>
+						<td valign="top">LIST</td>
+						<td valign="top">Complex</td>
+						<td valign="top">List of child entries</td>
+					</tr>
+				</table>
+			</center>
+		</div>
+		<p>For the simple data types, UINT8, INT8, UINT16, INT16, UINT32, INT32 and FLOAT, 
+			the value is just stored directly into offset 0x0008.&nbsp; Since NWN is for 
+			Intel systems, all the data values are stored in little endian format.&nbsp; 
+			Thus, for UINT8 and INT8, the value is a single byte stored literally at offset 
+			0x0008 in the element structure.&nbsp; A UINT16 or INT16 takes up the first two 
+			bytes.&nbsp; The remaining three basic data types take up all four bytes.&nbsp; 
+			Access to the different values of the element can be done with this structure.
+		</p>
+		<blockquote>
+			<pre>struct Element
+{
+    UINT32 Type;
+    UINT32 NameIndex;
+    union 
+    {
+        UINT8 ui8;
+        INT8 si8;
+        UINT16 ui16;
+        INT16 si16;
+        UINT32 ui32;
+        INT32 si32;
+        FLOAT flt;
+        UINT32 Offset;
+    };
+};</pre>
+			<p>Note: The "<i>Offset</i>" member can be used to access the indirect and complex 
+				data stored in the variable data section..
+			</p>
+		</blockquote>
+		<p>
+			In the case of UINT64, INT64 and DOUBLE, the value stored at offset 0x0008 is a 
+			byte offset into the variable data region.&nbsp; Starting at that address would 
+			be stored the value in question.
+		</p>
+		<blockquote>
+			<pre>char *pFileData = <i>AddressOfTheITPDataInMemory</i>;
+Header *pHeader = (Header *) pFileData;
+Element *pElementTable = (Element *) &amp;pFileData [pHeader -&gt;ElementOffset];
+
+Element *pElement = &amp;pElementTable [0]; // For this example, use first element</pre>
+			<pre>if (pElement -&gt;Type == 6)
+{
+    UINT64 ul64 = *((UINT64 *) &amp;pFileData [
+        pHeader -&gt;VarDataOffset + pElement -&gt;Offset]);
+}
+else if (pElement -&gt;Type == 7)
+{
+    INT64 l64 = *((INT64 *) &amp;pFileData [
+        pHeader -&gt;VarDataOffset + pElement -&gt;Offset]);
+}
+else if (pElement -&gt;Type == 9)
+{
+    double d = *((double *) &amp;pFileData [
+        pHeader -&gt;VarDataOffset + pElement -&gt;Offset]);
+}</pre>
+		</blockquote>
+		<p>The STRING and RESREF types are two more indirect types but require a bit more 
+			work to access.&nbsp; For both the STRING and RESREF the actual data is stored 
+			in the variable data section starting at the given offset.&nbsp; They both 
+			being with the length of string.&nbsp; Following the length, are the actual 
+			bytes of the string.&nbsp; The string is not NULL terminated.&nbsp; However, 
+			STRING and RESREF do differ.&nbsp; In the case of STRING, the string length is 
+			stored as a UINT32 value.&nbsp; In the case of RESREF, the string length is 
+			stored as a UINT8 value.</p>
+		<blockquote>
+			<pre>char *pFileData = <i>AddressOfTheITPDataInMemory</i>;
+Header *pHeader = (Header *) pFileData;
+Element *pElementTable = (Element *) &amp;pFileData [pHeader -&gt;ElementOffset];
+
+Element *pElement = &amp;pElementTable [0]; // For this example, use first element</pre>
+			<pre>if (pElement -&gt;Type == 10) //STRING
+{
+    UINT32 Length = *((UINT32 *) &amp;pFileData [
+        pHeader -&gt;VarDataOffset + pElement -&gt;Offset]);
+    char *String = (char *) &amp;pFileData [
+        pHeader -&gt;VarDataOffset + pElement -&gt;Offset + 
+        sizeof (UINT32)]
+}
+else if (pElement -&gt;Type == 11) //RESREF
+{
+    UINT8 Length = *((UINT8 *) &amp;pFileData [
+        pHeader -&gt;VarDataOffset + pElement -&gt;Offset]);
+    char *String = (char *) &amp;pFileData [
+        pHeader -&gt;VarDataOffset + pElement -&gt;Offset + 
+        sizeof (UINT8)]
+}</pre>
+		</blockquote>
+		<p>The STRREF has two uses.&nbsp; First, it references a string in the dialog.tlk 
+			file.&nbsp; Second, it provides localized (human language specific) version of 
+			the string.&nbsp; The offset in the element points to a variable length 
+			structure that begins with the following 12 bytes of data.
+		</p>
+		<div align="center">
+			<center>
+				<table border="1">
+					<tr>
+						<th>
+							Offset</th>
+						<th>
+							Type</th>
+						<th>
+							Description</th>
+					</tr>
+					<tr>
+						<td>0x0000</td>
+						<td>UINT32</td>
+						<td>Number of bytes included in the STRREF not including this count.</td>
+					</tr>
+					<tr>
+						<td>0x0004</td>
+						<td>INT32</td>
+						<td>ID of the string in the in the dialog.tlk file.&nbsp; If none, then -1.</td>
+					</tr>
+					<tr>
+						<td>0x0008</td>
+						<td>UINT32</td>
+						<td>Number of language specific strings.&nbsp; This value is usually zero.</td>
+					</tr>
+					<tr>
+						<td>0x000C</td>
+						<td colspan="2">Total length of the structure</td>
+					</tr>
+				</table>
+			</center>
+		</div>
+		<p>If the number of language specific strings is zero, then the length of the total 
+			STRREF is only 12 bytes.&nbsp;&nbsp; The text of the string can be retrieved 
+			from dialog.tlk.&nbsp; The value stored as the size of the STRREF will be 8 
+			since the 4 bytes in the count aren't included.&nbsp; However, if the number of 
+			language specific strings is not zero, then there will be the given number of 
+			the following structure following the initial STRREF structure.
+		</p>
+		<div align="center">
+			<center>
+				<table border="1">
+					<tr>
+						<th>
+							Offset</th>
+						<th>
+							Type</th>
+						<th>
+							Description</th>
+					</tr>
+					<tr>
+						<td>0x0000</td>
+						<td>UINT32</td>
+						<td>Language of the string (values unknown)</td>
+					</tr>
+					<tr>
+						<td>0x0004</td>
+						<td>UINT32</td>
+						<td>Number of bytes in the following string</td>
+					</tr>
+					<tr>
+						<td>0x0008</td>
+						<td>CHAR []</td>
+						<td>Variable length string</td>
+					</tr>
+					<tr>
+						<td>VARIES</td>
+						<td colspan="2">Total length of the structure will always be 8 plus the length of 
+							the string</td>
+					</tr>
+				</table>
+			</center>
+		</div>
+		<p>The DATREF associates a block of arbitrary binary data with the element in 
+			question.&nbsp; At the offset in the variable data section given in the element 
+			is a UINT32 that has the number of bytes in the DATREF.&nbsp; Following the 
+			UINT32 is the binary data.
+		</p>
+		<p>The CAPREF element type allows for an element to contain an array of other 
+			elements by referencing a single entry.&nbsp; The offset in the element 
+			structure specifies the entry number.&nbsp; All the elements that entry 
+			references can be considered as the children of the element.
+		</p>
+		<p>The LIST element type allows for an element to contain an array of other 
+			entries.&nbsp; For a LIST type, the offset in the element structure specifies 
+			an offset into the list table.&nbsp; This is a byte offset even though the 
+			table itself is just a series of UINT32 values.&nbsp; At the first UINT32 
+			pointed to by the offset will be the number of entries referenced by the 
+			element.&nbsp; Following this count will be the actual entry 
+			numbers.&nbsp;&nbsp;
+		</p>
+		<blockquote>
+			<pre>char *pFileData = <i>AddressOfTheITPDataInMemory</i>;
+Header *pHeader = (Header *) pFileData;
+Element *pElementTable = (Element *) &amp;pFileData [pHeader -&gt;ElementOffset];
+
+Element *pElement = &amp;pElementTable [0]; // For this example, use first element</pre>
+			<pre>if (pElement -&gt;Type == 15) //LIST
+{
+    UINT32 *List = *((UINT32 *) &amp;pFileData [
+        pHeader -&gt;ListDataOffset + pElement -&gt;Offset]);
+    UINT32 EntryCount = List [0];
+    for (int i = 0; i &lt; (int) EntryCount; i++)
+    {
+        UINT32 EntryIndex = List [i + 1];
+        // do something with Entry
+    }
+}</pre>
+		</blockquote>
+		<h3>The Variable Name Table</h3>
+		<p>The variable name table is a series of variable names stored in 16 byte long 
+			character strings.&nbsp; Care should be taken when processing the variable name 
+			strings.&nbsp; If the string is less than 16 characters in length, it will be 
+			NULL terminated.&nbsp; However, if the variable name is 16 characters long, 
+			then it will not.&nbsp; The easiest thing to do is copy the string into a 17 
+			byte character string and then set the 17th character to NULL.&nbsp; Thus, if 
+			the string is 16 characters long, the 17th character will force a NULL 
+			termination.</p>
+		<h3>The Remaining Tables</h3>
+		<p>All other data tables are purely subservient to the entry and element 
+			tables.&nbsp;See the section on the elements to see how this information is 
+			interpreted.</p>
+		<h3>Credits</h3>
+		<p>Even though I was able to decode much of the ITP format soon after the game was 
+			released, I want to thank <font size="2">Logxen, </font>Seg Falt and Chanteur 
+			for the information they published about the file format.&nbsp; Their 
+			information filled in some very important missing elements such as CAPREF, 
+			DATREF and elements of STRREF.</p>
+	</body>
+</html>

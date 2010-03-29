@@ -1,0 +1,189 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>NWN Data File Basics</title>
+</head>
+
+<body>
+
+<h3>NWN Data File Basics</h3>
+
+<p>It isn't too shocking that a game with the complexity of Neverwinter Nights
+(NWN) requires a large assortment of different data files. These files
+define everything from the basic mechanics of the game all the way to the videos
+played during the introduction.</p>
+<p>Assuming that you installed the game in the default directories, the data
+files are spread out in the following directories.</p>
+<ul>
+  <li>C:\NeverwinterNights\NWN - Game executables and key data files</li>
+  <li>C:\NeverwinterNights\NWN\ambient - Ambient sounds</li>
+  <li>C:\NeverwinterNights\NWN\data - Primary data files</li>
+  <li>C:\NeverwinterNights\NWN\dmvault - Dungeon master characters</li>
+  <li>C:\NeverwinterNights\NWN\hak - Hak packs to augment game data</li>
+  <li>C:\NeverwinterNights\NWN\localvault - Your local characters</li>
+  <li>C:\NeverwinterNights\NWN\modules - User created modules</li>
+  <li>C:\NeverwinterNights\NWN\movies - Cut scene and introduction movies</li>
+  <li>C:\NeverwinterNights\NWN\music - Game music files</li>
+  <li>C:\NeverwinterNights\NWN\nwm - NWN game modules</li>
+  <li>C:\NeverwinterNights\NWN\override - Collection of resources that replace
+    resources contained in the &quot;data&quot; directory.</li>
+  <li>C:\NeverwinterNights\NWN\saves - Saved games</li>
+  <li>C:\NeverwinterNights\NWN\servervault - Server characters for multiplayer
+    games run on your computer</li>
+  <li>C:\NeverwinterNights\NWN\texturepacks - Texture packs</li>
+</ul>
+<p>When NWN starts, it has available several methods to locate the data
+files. Depending on the working directory or more probably the directory
+of the executable, NWN can locate three key files, &quot;chitin.key&quot;,
+&quot;dialog.tlk&quot;, and &quot;nwn.ini&quot;.</p>
+<p>Chitin.key contains a listing of all the resources available to NWN at
+runtime. Given a resource name, chitin.key can be used to locate the name
+of the master data file (.BIF) containing the resource.</p>
+<p>Dialog.tlk is textual resource file. Given an number, dialog.tlk can
+return the text associated with that number. This method has at least two benefits.
+First, common strings can be stored in a central location instead of spread out amongst
+many script files. This makes it possible to change the text without
+having to modify or recompile the scripts that reference the string. The
+second benefit is that depending on the language of the user, a different
+dialog.tlk can be installed. For the French, the French dialog.tlk is
+installed. (Note: I haven't actually seen exactly how Bioware does
+language support. It is an assumption on my part that they just use different
+dialog.tlk files. They could have dialog.tlk reserved as the common English
+and then a different file name for each of the other languages.)</p>
+<p>Nwn.ini is a standard format Windows ini file. It contains much of the
+game configuration information. The section of most interest to us however
+is the &quot;[Alias]&quot; section. This section provides a mapping
+between logical directory names and their physical counterparts. This
+allowed the developers to not have to worry about the how the NWN installation
+would look at release time. As long as the group producing the
+installation system properly set the different keys in the &quot;[Alias]&quot;
+section, NWN will file the data files without modification.</p>
+<p>For add on programs such as my NWN Explorer, Bioware stored NWN's
+installation directory in the registry. The registry key
+&quot;HKEY_LOCAL_MACHINE\SOFTWARE\BioWare\NWN\Neverwinter\Location&quot;
+contains the installation directory. However, I would like to add that
+anyone who wishes to develop 3rd party application for NWN should also allow the
+user to specify the location of NWN. Even though I don't foresee Bioware
+removing this registry key, there is always the chance that it might be missing
+or invalid. Thus, it would be a shame if a user couldn't use your 3rd
+party application because you were too lazy to add this simple feature.</p>
+
+<h3>Resource Types</h3>
+
+<p>NWN has a wide range of resource types.&nbsp; The following table lists most
+of these types.&nbsp; (Many of these resource types might not be used by NWN but
+were present in earlier Bioware games.)</p>
+
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th>Resource Name</th>
+      <th>Resource Type</th>
+    </tr>
+<tr><td>RES</td><td>0x0000</td></tr>
+<tr><td>BMP</td><td>0x0001</td></tr>
+<tr><td>MVE</td><td>0x0002</td></tr>
+<tr><td>TGA</td><td>0x0003</td></tr>
+<tr><td>WAV</td><td>0x0004</td></tr>
+<tr><td>PLT</td><td>0x0006</td></tr>
+<tr><td>INI</td><td>0x0007</td></tr>
+<tr><td>BMU</td><td>0x0008</td></tr>
+<tr><td>MPG</td><td>0x0009</td></tr>
+<tr><td>TXT</td><td>0x000A</td></tr>
+<tr><td>PLH</td><td>0x07D0</td></tr>
+<tr><td>TEX</td><td>0x07D1</td></tr>
+<tr><td>MDL</td><td>0x07D2</td></tr>
+<tr><td>THG</td><td>0x07D3</td></tr>
+<tr><td>FNT</td><td>0x07D5</td></tr>
+<tr><td>LUA</td><td>0x07D7</td></tr>
+<tr><td>SLT</td><td>0x07D8</td></tr>
+<tr><td>NSS</td><td>0x07D9</td></tr>
+<tr><td>NCS</td><td>0x07DA</td></tr>
+<tr><td>MOD</td><td>0x07DB</td></tr>
+<tr><td>ARE</td><td>0x07DC</td></tr>
+<tr><td>SET</td><td>0x07DD</td></tr>
+<tr><td>IFO</td><td>0x07DE</td></tr>
+<tr><td>BIC</td><td>0x07DF</td></tr>
+<tr><td>WOK</td><td>0x07E0</td></tr>
+<tr><td>2DA</td><td>0x07E1</td></tr>
+<tr><td>TLK</td><td>0x07E2</td></tr>
+<tr><td>TXI</td><td>0x07E6</td></tr>
+<tr><td>GIT</td><td>0x07E7</td></tr>
+<tr><td>BTI</td><td>0x07E8</td></tr>
+<tr><td>UTI</td><td>0x07E9</td></tr>
+<tr><td>BTC</td><td>0x07EA</td></tr>
+<tr><td>UTC</td><td>0x07EB</td></tr>
+<tr><td>DLG</td><td>0x07ED</td></tr>
+<tr><td>ITP</td><td>0x07EE</td></tr>
+<tr><td>BTT</td><td>0x07EF</td></tr>
+<tr><td>UTT</td><td>0x07F0</td></tr>
+<tr><td>DDS</td><td>0x07F1</td></tr>
+<tr><td>UTS</td><td>0x07F3</td></tr>
+<tr><td>LTR</td><td>0x07F4</td></tr>
+<tr><td>GFF</td><td>0x07F5</td></tr>
+<tr><td>FAC</td><td>0x07F6</td></tr>
+<tr><td>BTE</td><td>0x07F7</td></tr>
+<tr><td>UTE</td><td>0x07F8</td></tr>
+<tr><td>BTD</td><td>0x07F9</td></tr>
+<tr><td>UTD</td><td>0x07FA</td></tr>
+<tr><td>BTP</td><td>0x07FB</td></tr>
+<tr><td>UTP</td><td>0x07FC</td></tr>
+<tr><td>DTF</td><td>0x07FD</td></tr>
+<tr><td>GIC</td><td>0x07FE</td></tr>
+<tr><td>GUI</td><td>0x07FF</td></tr>
+<tr><td>CSS</td><td>0x0800</td></tr>
+<tr><td>CCS</td><td>0x0801</td></tr>
+<tr><td>BTM</td><td>0x0802</td></tr>
+<tr><td>UTM</td><td>0x0803</td></tr>
+<tr><td>DWK</td><td>0x0804</td></tr>
+<tr><td>PWK</td><td>0x0805</td></tr>
+<tr><td>BTG</td><td>0x0806</td></tr>
+<tr><td>UTG</td><td>0x0807</td></tr>
+<tr><td>JRL</td><td>0x0808</td></tr>
+<tr><td>SAV</td><td>0x0809</td></tr>
+<tr><td>UTW</td><td>0x080A</td></tr>
+<tr><td>4PC</td><td>0x080B</td></tr>
+<tr><td>SSF</td><td>0x080C</td></tr>
+<tr><td>HAK</td><td>0x080D</td></tr>
+<tr><td>NWM</td><td>0x080E</td></tr>
+<tr><td>BIK</td><td>0x080F</td></tr>
+<tr><td>PTM</td><td>0x0811</td></tr>
+<tr><td>PTT</td><td>0x0812</td></tr>
+<tr><td>ERF</td><td>0x270D</td></tr>
+<tr><td>BIF</td><td>0x270E</td></tr>
+<tr><td>KEY</td><td>0x270F</td></tr>
+  </table>
+  </center>
+</div>
+<h3>Languages</h3>
+<p>NWN has built-in support for different languages.&nbsp; Each of these
+languages also has a male and female version.&nbsp; These languages are commonly
+used in names, descriptions, and dialogs.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th>Language</th>
+      <th>ID</th>
+    </tr>
+<tr><td>English</td><td align="center">0</td></tr>
+<tr><td>French, Male</td><td align="center">2</td></tr>
+<tr><td>French, Female</td><td align="center">3</td></tr>
+<tr><td>German, Male</td><td align="center">4</td></tr>
+<tr><td>German, Female</td><td align="center">5</td></tr>
+<tr><td>Italian, Male</td><td align="center">6</td></tr>
+<tr><td>Italian, Female</td><td align="center">7</td></tr>
+<tr><td>Spanish, Male</td><td align="center">8</td></tr>
+<tr><td>Spanish, Female</td><td align="center">9</td></tr>
+  </table>
+  </center>
+</div>
+<p>&nbsp;</p>
+</body>
+
+</html>

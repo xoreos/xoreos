@@ -1,0 +1,1979 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>NWN Binary Model Files Basics</title>
+</head>
+
+<body>
+
+<h3>NWN Binary Model Files Basics</h3>
+<p>The binary format of the model files contains 3 main sections, the header,
+the model data and the vertex or raw data.</p>
+<p>The header is a only twelve bytes long.&nbsp; It provides us with the offset
+and size of the raw data, and a 32 bit value of 0.&nbsp; The value of 0 is
+important since it can be used to tell the difference between an ASCII model
+file and a binary one.&nbsp; The chances of an ASCII model file starting with 4
+bytes of 0 is somewhere between zero and none.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Value of 0 for binary models</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0004</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Offset to the raw data/Size of the model data</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0008</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Size of the raw data</td>
+    </tr>
+    <tr>
+      <td valign="top">0x000C</td>
+      <td colspan="2" valign="top">Total length of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The model data follows the header in the file.&nbsp; Immediately following
+the model data is the raw data.&nbsp; Thus, the second value in the header can
+be either the model size or the offset from the start of the model data to the
+raw data.&nbsp; Either interpretation works since they are the exact same value.</p>
+<h3>Arrays and Pointers in a Model File</h3>
+<p>The structure of the model is reasonably complex.&nbsp; Not only does it
+contain structures of data, but those structures reference other
+structures.&nbsp; This is accomplished using arrays and pointers.&nbsp;&nbsp;</p>
+<p>There are two types of pointers inside of a model file, model data pointer
+and raw data pointer.&nbsp; Each of these pointers are stored as a 32 bit
+value.&nbsp; In the case of model data pointers, the pointer will contain an
+offset from the start of the model data to the data in question.&nbsp; A value
+of zero represents a &quot;NULL&quot; pointer or a pointer that doesn't
+reference anything.&nbsp; For raw data pointers, the pointer will contain an
+offset from the start of the raw data to the data in question.&nbsp; A value of
+0xFFFFFFFF (unsigned) or -1 (signed) represents a &quot;NULL&quot; pointer or a
+pointer that doesn't reference anything.&nbsp; The reason the raw data uses a
+value of -1 is that an offset of zero is a valid pointer into the raw
+data.&nbsp; Excluding one special case, this isn't true for model data
+pointers.&nbsp; (Only one element in a binary model file points to the data at
+offset zero in the model data.&nbsp; However, this value is transient and isn't
+actually stored in the model file.)</p>
+<p>Some of you might be wondering why I am referring to these offsets as
+pointers.&nbsp; After all, in the binary model format, they are always offsets
+and never actually a real pointer.&nbsp; That is very true for the disk image of
+a model.&nbsp; However, on 32 bit address processors (or processors such as the
+Alpha that can run in 32 bit address mode with sign extend), after the model is
+loaded from disk, all the offsets can be converted to pointers.&nbsp; This
+improves greatly the run time performance.</p>
+<p>Arrays in models are a slightly more complicated beast.&nbsp; They
+consist of the following three elements.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Pointer/Offset to the first elements of the array</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0004</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Number of used entries in the array</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0008</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Number of allocated entries in the array</td>
+    </tr>
+    <tr>
+      <td valign="top">0x000C</td>
+      <td colspan="2" valign="top">Total length of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>For binary model files, the number of used entries and number of allocated
+entries will always be the same.&nbsp; During run time or complication time,
+these value will usually differ since these arrays by nature will grow as more
+elements are added.</p>
+
+<p>Arrays can contain most anything as long as the elements are all the same
+type.&nbsp; Examples of common arrays in model files would be arrays of vertices,
+faces, and even pointers.&nbsp; In the case of pointers, these arrays are
+commonly used to represent a model hierarchy.</p>
+
+<h3>Controllers</h3>
+
+<p>Each node (to be defined later), in a model can contain zero or more
+controllers.&nbsp; Controllers can be considered as attributes of a node.&nbsp;
+They defined certain aspects of the node.&nbsp; One of the most common
+controller is the <i>position</i> controller.&nbsp; This controller dictates the
+position of the node relative to the parent node.</p>
+
+<p>One of the first obvious questions about controllers is why isn't this
+information included as part of the standard node structures.&nbsp; There are
+two reasons for this.&nbsp; The first reason is that controllers are
+optional.&nbsp; In the case of an emitter node, there are around 50 different
+controllers that can be specified.&nbsp; Having to dedicate storage space to all
+of these controllers, used or not, would be a waste of space.&nbsp; The second
+and more important reason is that controllers can be animated.</p>
+
+<p>To animate a model, the model must change over time.&nbsp; The way to do this
+is with time keyed controllers.&nbsp; All animations take a given amount of time
+from start to finish.&nbsp; For example, the swing of a sword might take 1
+second of total animation time.&nbsp; In order to draw the model properly,
+controllers have different that are time keyed.&nbsp; For example, normally, the
+position controller would be specified as follows.</p>
+
+<blockquote>
+
+<pre>position 0.2 1.0 0.124</pre>
+
+</blockquote>
+
+<p>However, in the case of a time keyed position, it would be specified as
+follows.</p>
+
+<blockquote>
+
+<pre>positionkey 3
+  0.0 0.2 1.0 0.124
+  0.4 0.4 1.0 0.510
+  0.8 0.6 1.0 0.516</pre>
+
+</blockquote>
+
+<p>When specifying a time keyed controller, the first value is the start time
+for that value.&nbsp; Following the start time is the actual value.&nbsp; In
+this case, during animation time 0.0 through 0.4, the first position will be
+used.&nbsp; Between 0.4 and 0.8, the second position will be used.&nbsp; Between
+0.8 and the animation time for the given animation, the 3rd value will be used.</p>
+
+<p>To provide smoother animations, the values will be interpolated.&nbsp;
+For example, given our previous data, if the current animation time was 0.2,
+then that would be half way between the first and second positions.&nbsp; Thus
+each position will contribute equally to the actual position used.&nbsp; If the
+animation time was earlier, then the first position would be given more
+weight.&nbsp; The opposite is true if the animation time was later.&nbsp; </p>
+
+<p>To provide an even smoother animation, a second style of interpolation is
+available.&nbsp; It is know as &quot;bezier&quot; interpolation.&nbsp; Bezier
+interpolation is used when you specify &quot;bezierkey&quot; as the suffix to
+the controller name.&nbsp; (Note: At this time, I have not verified that any
+Bioware model uses bezier interpolation.&nbsp; I don't even know if the
+rendering engine supports this option.)</p>
+
+<p>Inside a binary model file, controllers are stored as two arrays in the model
+data.&nbsp; The first array is an array of a controller structure.&nbsp; The
+second array is a simple array of floating point numbers.&nbsp; The second array
+contains the actual controller data while the first tells us about all the
+controllers in the array.&nbsp; The controller structure is as follows.</p>
+
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">INT32</td>
+      <td valign="top">Type of controller</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0004</td>
+      <td valign="top">INT16</td>
+      <td valign="top">Number of rows of controller data</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0006</td>
+      <td valign="top">INT16</td>
+      <td valign="top">Index into the float array of the first time key</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0008</td>
+      <td valign="top">INT16</td>
+      <td valign="top">Index into the float array of the first controller data value</td>
+    </tr>
+    <tr>
+      <td valign="top">0x000A</td>
+      <td valign="top">INT8</td>
+      <td valign="top">Number of columns excluding the time key column</td>
+    </tr>
+    <tr>
+      <td valign="top">0x000B</td>
+      <td valign="top">INT8</td>
+      <td valign="top">Pad, not used</td>
+    </tr>
+    <tr>
+      <td valign="top">0x000C</td>
+      <td colspan="2" valign="top">Total length of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>There are a few important notes about the controller structure.&nbsp; The
+first thing of note is that for controllers that aren't time keyed, they are
+still stored as if they are time keyed but with a single row and a time key
+value of zero.&nbsp; Thus, it is impossible to tell the difference between a
+controller that isn't time keyed, and a time keyed controller with a single row
+and a time key value of zero.&nbsp; The second important note is that if the
+controller is actually bezier keyed, then the value of 0x10 is ORed in with the
+number of columns.&nbsp; This is how you can tell the difference between a
+normal keyed controller and a bezier keyed controller.&nbsp; Finally, all key
+values are stored continuously and all the data values are stored
+contiguously.&nbsp; Thus, if a keyed controller had 3 rows with the time keys
+starting at floating point value 5, then the time keys for the other two rows
+would be value 6 and value 7.&nbsp; Also, it appears that for some models, the
+controller &quot;detonate&quot; when used as a key controller doesn't even list
+a time key.&nbsp; Thus, the number of columns listed is -1.</p>
+<p>Following is a list of all controllers:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Name</th>
+      <th align="center">Value</th>
+      <th align="center">Used in nodes</th>
+    </tr>
+    <tr>
+      <td valign="top">Position</td>
+      <td valign="top">8</td>
+      <td valign="top">All</td>
+    </tr>
+    <tr>
+      <td valign="top">Orientation</td>
+      <td valign="top">20</td>
+      <td valign="top">All</td>
+    </tr>
+    <tr>
+      <td valign="top">Scale</td>
+      <td valign="top">36</td>
+      <td valign="top">All</td>
+    </tr>
+    <tr>
+      <td valign="top">Color</td>
+      <td valign="top">76</td>
+      <td valign="top">Light</td>
+    </tr>
+    <tr>
+      <td valign="top">Radius</td>
+      <td valign="top">88</td>
+      <td valign="top">Light</td>
+    </tr>
+    <tr>
+      <td valign="top">ShadowRadius</td>
+      <td valign="top">96</td>
+      <td valign="top">Light</td>
+    </tr>
+    <tr>
+      <td valign="top">VerticalDisplacement</td>
+      <td valign="top">100</td>
+      <td valign="top">Light</td>
+    </tr>
+    <tr>
+      <td valign="top">Multiplier</td>
+      <td valign="top">140</td>
+      <td valign="top">Light</td>
+    </tr>
+    <tr>
+      <td valign="top">AlphaEnd</td>
+      <td valign="top">80</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">AlphaStart</td>
+      <td valign="top">84</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">BirthRate</td>
+      <td valign="top">88</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">Bounce_Co</td>
+      <td valign="top">92</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">ColorEnd</td>
+      <td valign="top">96</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">ColorStart</td>
+      <td valign="top">108</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">CombineTime</td>
+      <td valign="top">120</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">Drag</td>
+      <td valign="top">124</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">FPS</td>
+      <td valign="top">128</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">FrameEnd</td>
+      <td valign="top">132</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">FrameStart</td>
+      <td valign="top">136</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">Grav</td>
+      <td valign="top">140</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">LifeExp</td>
+      <td valign="top">144</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">Mass</td>
+      <td valign="top">148</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">P2P_Bezier2</td>
+      <td valign="top">152</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">P2P_Bezier3</td>
+      <td valign="top">156</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">ParticleRot</td>
+      <td valign="top">160</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">RandVel&nbsp;</td>
+      <td valign="top">164</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">SizeStart</td>
+      <td valign="top">168</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">SizeEnd</td>
+      <td valign="top">172</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">SizeStart_Y</td>
+      <td valign="top">176</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">SizeEnd_Y</td>
+      <td valign="top">180</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">Spread</td>
+      <td valign="top">184</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">Threshold</td>
+      <td valign="top">188</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">Velocity</td>
+      <td valign="top">192</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">XSize</td>
+      <td valign="top">196</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">YSize</td>
+      <td valign="top">200</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">BlurLength</td>
+      <td valign="top">204</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">LightningDelay</td>
+      <td valign="top">208</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">LightningRadius</td>
+      <td valign="top">212</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">LightningScale</td>
+      <td valign="top">216</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">Detonate</td>
+      <td valign="top">228</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">AlphaMid</td>
+      <td valign="top">464</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">ColorMid</td>
+      <td valign="top">468</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">PercentStart</td>
+      <td valign="top">480</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">PercentMid</td>
+      <td valign="top">481</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">PercentEnd</td>
+      <td valign="top">482</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">SizeMid</td>
+      <td valign="top">484</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">SizeMid_Y</td>
+      <td valign="top">488</td>
+      <td valign="top">Emitter</td>
+    </tr>
+    <tr>
+      <td valign="top">SelfIllumColor</td>
+      <td valign="top">100</td>
+      <td valign="top">All Meshes</td>
+    </tr>
+    <tr>
+      <td valign="top">Alpha</td>
+      <td valign="top">128</td>
+      <td valign="top">All Meshes</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>Model Routines and the Node types</h3>
+<p>All nodes in a model begin with six values which have also been called
+&quot;tokens&quot;.&nbsp; During the early process of decoding the binary
+models, many people including myself made the mistake that these tokens were
+used to identify the different types of nodes.&nbsp; As silly as it sounds, this
+was the best we could do at the time.&nbsp; These six tokens did uniquely
+identify each of the nodes.&nbsp; However, I and I would imagine most others
+knew there had to be a deeper meaning to these tokens.&nbsp; Nobody uses 6
+4-byte values to uniquely identify a handful of different nodes.&nbsp; All of
+these tokens were values in the range of 0x00400000 and 0x00500000.&nbsp; There
+was no apparent bit mask to the values.&nbsp; However, the difference between
+the token values was interesting since it was usually either 0x10 or 0x20.&nbsp;
+Now, if someone was really had everything on the ball and had a reasonable
+knowledge of the Win32 image loader, they would have realized something that
+eluded everyone, including myself for the longest time.&nbsp; These tokens were
+not tokens, they were routine addresses.&nbsp; You see, the Win32/NT image
+loader loads images at 0x0041000.&nbsp; Thus, the funny start to all the
+numbers.&nbsp;&nbsp;</p>
+<p>So, as of now, these &quot;tokens&quot; should be consider unreliable as a
+method of identifying model node types.&nbsp; What if Bioware releases new
+models using a new build of their model compiler and these routine addresses
+change.&nbsp; All the existing software that utilizes these &quot;tokens&quot;
+would fail.</p>
+<p>Luckily, the proper way to identify the node type has been located.&nbsp;
+Every node contains a 32 bit bit mask that identifies which structures make up
+the node.&nbsp; Following is a list of all the flags.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Name</th>
+      <th align="center">Value</th>
+    </tr>
+    <tr>
+      <td>HasHeader</td>
+      <td>0x00000001</td>
+    </tr>
+    <tr>
+      <td>HasLight </td>
+      <td>0x00000002</td>
+    </tr>
+    <tr>
+      <td>HasEmitter</td>
+      <td>0x00000004</td>
+    </tr>
+    <tr>
+      <td>HasReference</td>
+      <td>0x00000010</td>
+    </tr>
+    <tr>
+      <td>HasMesh</td>
+      <td>0x00000020</td>
+    </tr>
+    <tr>
+      <td>HasSkin</td>
+      <td>0x00000040</td>
+    </tr>
+    <tr>
+      <td>HasAnim</td>
+      <td>0x00000080</td>
+    </tr>
+    <tr>
+      <td>HasDangly</td>
+      <td>0x00000100</td>
+    </tr>
+    <tr>
+      <td>HasAABB</td>
+      <td>0x00000200</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>Every node contains a node header.&nbsp; In the case of a dummy node, only a
+node header is required. All mesh nodes also contain a mesh structure.&nbsp; In
+the case of a trimesh node, only the node header and the mesh header is
+required.&nbsp; By looking at a combination of flags, not only do we know what
+structures make up the node, but we know what the node type is.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Name</th>
+      <th align="center">Value</th>
+    </tr>
+    <tr>
+      <td>Dummy</td>
+      <td>0x00000001</td>
+    </tr>
+    <tr>
+      <td>Light</td>
+      <td>0x00000003</td>
+    </tr>
+    <tr>
+      <td>Emitter</td>
+      <td>0x00000005</td>
+    </tr>
+    <tr>
+      <td>Reference</td>
+      <td>0x00000011</td>
+    </tr>
+    <tr>
+      <td>TriMesh</td>
+      <td>0x00000021</td>
+    </tr>
+    <tr>
+      <td>SkinMesh</td>
+      <td>0x00000061</td>
+    </tr>
+    <tr>
+      <td>AnimMesh</td>
+      <td>0x000000A1</td>
+    </tr>
+    <tr>
+      <td>DanglyMesh</td>
+      <td>0x00000121</td>
+    </tr>
+    <tr>
+      <td>AABBMesh</td>
+      <td>0x00000221</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>As you can see, each of the different node types contains one or more flags.</p>
+
+<h3>Part Numbers</h3>
+
+<p>Part numbers are values assigned to nodes as the model compiler creates
+them.&nbsp; However, after the complete geometry has been compiled, these values
+are adjusted.</p>
+
+<p>If a model has a super model, then the geometry for the model is compared
+against the geometry for the super model.&nbsp; Any node that matches the name
+of a node in the super model will be given the part number assigned to the node
+in the super model.&nbsp; If a node in the model isn't found in the super model,
+then it receives a part number of -1.&nbsp; If a model doesn't have a super
+model, then the part numbers are left as is.</p>
+
+<p>After the geometry for an animation has been compiled, the same process is
+used to match the nodes in the animation with the nodes in the main model
+geometry.&nbsp; It is important to note that the animation geometry is compare
+against the model's geometry and not the model's super model geometry.</p>
+
+<h3>Layout of the Binary Model File</h3>
+<p>The basic layout of the binary model file is as follows:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <td colspan="2" align="center">File Header</td>
+    </tr>
+    <tr>
+      <td rowspan="16" align="center">Model<br>
+        Data</td>
+      <td>Model Geometry Header</td>
+    </tr>
+    <tr>
+      <td>Node 1</td>
+    </tr>
+    <tr>
+      <td>Node 2</td>
+    </tr>
+    <tr>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>Node N</td>
+    </tr>
+    <tr>
+      <td>Animation Geometry Header 1</td>
+    </tr>
+    <tr>
+      <td>Node 1</td>
+    </tr>
+    <tr>
+      <td>Node 2</td>
+    </tr>
+    <tr>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>Node N</td>
+    </tr>
+    <tr>
+      <td>Animation Geometry Header 2</td>
+    </tr>
+    <tr>
+      <td>Node 1</td>
+    </tr>
+    <tr>
+      <td>Node 2</td>
+    </tr>
+    <tr>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>Node N</td>
+    </tr>
+    <tr>
+      <td>Animation Geometry Header N</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center">Raw Data</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+<p>Not all models contain animation headers.&nbsp; Also, in many models, there
+might be no raw data.&nbsp; It is also important to remember that this diagram
+is a simplification of the real model layout.&nbsp; For example, to fully
+defined a node, it might take 100 bytes of data or 10,000 bytes of data.&nbsp;
+This information might be scattered in sections throughout the model data.</p>
+<h3>The Geometry Header</h3>
+<p>All models contain at least one geometry header.&nbsp; This header is part of
+the larger model geometry header.&nbsp; If the model contains animations, then
+there will be a geometry header in each of the animation geometry headers.&nbsp;
+</p>
+<p>The format of the geometry header is as follows:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top" nowrap>Function Pointer</td>
+      <td valign="top">Pointer to a function</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0004</td>
+      <td valign="top" nowrap>Function Pointer</td>
+      <td valign="top">Pointer to the function to parse a ASCII model line</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0008</td>
+      <td valign="top" nowrap>CHAR [64]</td>
+      <td valign="top">Geometry Name (model or animation name)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0048</td>
+      <td valign="top" nowrap>Node Header Pointer</td>
+      <td valign="top">Pointer/Offset to the root node of the geometry</td>
+    </tr>
+    <tr>
+      <td valign="top">0x004C</td>
+      <td valign="top" nowrap>UINT32</td>
+      <td valign="top">Number of nodes in the geometry.&nbsp; In the case of the
+        model geometry, if the model has a super mode defined, then this value
+        also includes the number of nodes in the super model plus one.</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0050</td>
+      <td valign="top" nowrap>Pointer Array</td>
+      <td valign="top">Array of unknown data (probably runtime only)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x005C</td>
+      <td valign="top" nowrap>Pointer Array</td>
+      <td valign="top">Array of unknown data (probably runtime only)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0068</td>
+      <td valign="top" nowrap>UINT32</td>
+      <td valign="top">Reference count, initialized to 0.&nbsp; When another
+        model references this model, then this value is incremented.&nbsp; When
+        the referencing model dereferences this model the count is
+        decremented.&nbsp; When this count goes to zero, the model can be
+        deleted since it is no longer needed.</td>
+    </tr>
+    <tr>
+      <td valign="top">0x006C</td>
+      <td valign="top" nowrap>UINT8</td>
+      <td valign="top">Geometry Type<br>
+        0x01 = Basic geometry header (not in models)<br>
+        0x02 = Model geometry header<br>
+        0x05 = Animation geometry header<br>
+        0x80 = If bit is set, then model is a compiled binary model loaded from
+        disk and converted to absolute addresses.</td>
+    </tr>
+    <tr>
+      <td valign="top">0x006D</td>
+      <td valign="top">UINT8 [3]</td>
+      <td valign="top">Padding</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0070</td>
+      <td colspan="2" valign="top">Total length of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+<p>As noted, the two arrays at 0x50 and 0x5C, and the data at 0x68 is unknown at
+this time.&nbsp;&nbsp;</p>
+<h3>The Model Header</h3>
+<p>There is only one model header per model file.&nbsp; This header always
+starts at offset 0 in the model data section or offset 12 from the start of the
+file.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Geometry Header</td>
+      <td valign="top">Geometry Header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0070</td>
+      <td valign="top">UINT8</td>
+      <td valign="top">Unknown value initialized to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0071</td>
+      <td valign="top">UINT8</td>
+      <td valign="top">Unknown value initialized to 1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0072</td>
+      <td valign="top">UINT8</td>
+      <td valign="top">Model classification:<br>
+        0x01 = Effect<br>
+        0x02 = Tile<br>
+        0x04 = Character<br>
+        0x08 = Door</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0073</td>
+      <td valign="top">UINT8</td>
+      <td valign="top">If non-zero, model should be fogged</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0074</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Unknown value initialized to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0078</td>
+      <td valign="top">Animation Header Pointer Array</td>
+      <td valign="top">Array of pointers to all the animation geometries</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0084</td>
+      <td valign="top">Pointer to parent model</td>
+      <td valign="top">Pointer to the parent model, always 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0088</td>
+      <td valign="top">FLOAT [3]</td>
+      <td valign="top">Bounding box min for the model, defaults to (-5, -5, -1)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0094</td>
+      <td valign="top">FLOAT [3]</td>
+      <td valign="top">Bounding box max for the model., defaults to (5, 5, 10)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00A0</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Radius of the model, defaults to 7.0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00A4</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Animation scale, defaults to 1.0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00A8</td>
+      <td valign="top">CHAR [64]</td>
+      <td valign="top">Super model name, defaults to &quot;&quot;</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00E8</td>
+      <td valign="top" colspan="2">Total length of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>The Animation Header</h3>
+<p>There are zero or more animation headers per model, one header for each
+animation.&nbsp; All animations contain their own geometry information.&nbsp;
+However, this usually consists of dummy nodes containing controller information.</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Geometry Header</td>
+      <td valign="top">Geometry Header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0070</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Animation length, defaults to 1.0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0074</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Trans time, defaults to 0.25</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0078</td>
+      <td valign="top">CHAR [64]</td>
+      <td valign="top">Animation root, defaults to &quot;&quot;</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00B8</td>
+      <td valign="top">Animation Event Array</td>
+      <td valign="top">Array of all the events associated with this animation</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00C4</td>
+      <td colspan="2" valign="top">Total length of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>Each animation can have zero or more events.&nbsp; Unlike other arrays that
+contain pointers to the structures, the animation event array is an array of the
+actual structure.&nbsp; The structure is as follows:</p>
+<div align="center">
+  <center>
+  <table border="1">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td>0x0000</td>
+      <td>FLOAT</td>
+      <td>After</td>
+    </tr>
+    <tr>
+      <td>0x0004</td>
+      <td>CHAR [32]</td>
+      <td>Event name</td>
+    </tr>
+    <tr>
+      <td>0x0024</td>
+      <td colspan="2">Total length of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>Nodes</h3>
+<p>Currently, there are nine different nodes types that make up a model's
+geometry.&nbsp; These nodes specify such elements as lighting, animated graphics
+emitters, and different types of meshes.&nbsp; Each node type share a common
+header that supplies us with enough information to tell what type of node it is
+and information about controllers and children.</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Function Pointer</td>
+      <td valign="top">Unknown function</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0004</td>
+      <td valign="top">Function Pointer</td>
+      <td valign="top">Function to parse a line of an ASCII model file</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0008</td>
+      <td valign="top">Function Pointer</td>
+      <td valign="top">Function to perform post node processing</td>
+    </tr>
+    <tr>
+      <td valign="top">0x000C</td>
+      <td valign="top">Function Pointer</td>
+      <td valign="top">Unknown function</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0010</td>
+      <td valign="top">Function Pointer</td>
+      <td valign="top">Unknown function</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0014</td>
+      <td valign="top">Function Pointer</td>
+      <td valign="top">Unknown function</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0018</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Inherit color flag</td>
+    </tr>
+    <tr>
+      <td valign="top">0x001C</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Part number/Node number</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0020</td>
+      <td valign="top">CHAR [32]</td>
+      <td valign="top">Node name</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0040</td>
+      <td valign="top">Geometry Pointer</td>
+      <td valign="top">Pointer to the parent geometry, always zero</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0044</td>
+      <td valign="top">Parent Node Pointer</td>
+      <td valign="top">Pointer to the parent node, always zero</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0048</td>
+      <td valign="top">Node Header Pointer Array</td>
+      <td valign="top">Array of pointer to the children nodes</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0054</td>
+      <td valign="top">Controller Key Array</td>
+      <td valign="top">Array of controller key structures</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0060</td>
+      <td valign="top">FLOAT Array</td>
+      <td valign="top">Array of controller data values</td>
+    </tr>
+    <tr>
+      <td valign="top">0x006C</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Node flags/type</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0070</td>
+      <td colspan="2" valign="top">Total length of the structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>Mesh Nodes</h3>
+<p>All nodes that contain mesh information share a common header.&nbsp; The
+header is as follows:</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top" nowrap>Node Header</td>
+      <td valign="top">Common node header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0070</td>
+      <td valign="top" nowrap>Function Pointer</td>
+      <td valign="top">Function to prepare the mesh information</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0074</td>
+      <td valign="top" nowrap>Function Pointer</td>
+      <td valign="top">Function to cleanup after mesh has been built</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0078</td>
+      <td valign="top" nowrap>Face Array</td>
+      <td valign="top">Array of face structures</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0084</td>
+      <td valign="top" nowrap>FLOAT [3]</td>
+      <td valign="top">Bounding box min, defaults to (0, 0, 0), computed</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0090</td>
+      <td valign="top" nowrap>FLOAT [3]</td>
+      <td valign="top">Bounding box max, defaults to (0, 0, 0), computed</td>
+    </tr>
+    <tr>
+      <td valign="top">0x009C</td>
+      <td valign="top" nowrap>FLOAT</td>
+      <td valign="top">Mesh radius, defaults to 0, computed</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00A0</td>
+      <td valign="top" nowrap>FLOAT [3]</td>
+      <td valign="top">Average of all points in the mesh, defaults to (0, 0, 0), computed</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00AC</td>
+      <td valign="top" nowrap>FLOAT [3]</td>
+      <td valign="top">Diffuse color, defaults to (0.8, 0.8, 0.8)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00B8</td>
+      <td valign="top" nowrap>FLOAT [3]</td>
+      <td valign="top">Ambient color, defaults to (0.2, 0.2, 0.2)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00C4</td>
+      <td valign="top" nowrap>FLOAT [3]</td>
+      <td valign="top">Specular color, defaults to (0, 0, 0)</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00D0</td>
+      <td valign="top" nowrap>FLOAT</td>
+      <td valign="top">Shininess, defaults to 1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00D4</td>
+      <td valign="top" nowrap>UINT32</td>
+      <td valign="top">Shadow flag, defaults to 1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00D8</td>
+      <td valign="top" nowrap>UINT32</td>
+      <td valign="top">Beaming flag, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00DC</td>
+      <td valign="top" nowrap>UINT32</td>
+      <td valign="top">Render flag, defaults to 1 excluding AABB mesh where it defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00E0</td>
+      <td valign="top" nowrap>UINT32</td>
+      <td valign="top">Transparency hint, defaults to 0 excluding AABB mesh where it defaults
+        to 1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00E4</td>
+      <td valign="top" nowrap>UINT32</td>
+      <td valign="top">Unknown value, defaults to 0.&nbsp; Known values probably
+        0, 1, 2, and 4.</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00E8</td>
+      <td valign="top" nowrap>CHAR [64]</td>
+      <td valign="top">Texture0/Bitmap</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0128</td>
+      <td valign="top" nowrap>CHAR [64]</td>
+      <td valign="top">Texture1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0168</td>
+      <td valign="top" nowrap>CHAR [64]</td>
+      <td valign="top">Texture2</td>
+    </tr>
+    <tr>
+      <td valign="top">0x01A8</td>
+      <td valign="top" nowrap>CHAR [64]</td>
+      <td valign="top">Texture3</td>
+    </tr>
+    <tr>
+      <td valign="top">0x01E8</td>
+      <td valign="top" nowrap>UINT32</td>
+      <td valign="top">Tile fade, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x01EC</td>
+      <td valign="top" nowrap>UINT32 Pointer Array</td>
+      <td valign="top">Vertex Indices, compile only, not stored in binary</td>
+    </tr>
+    <tr>
+      <td valign="top">0x01F8</td>
+      <td valign="top" nowrap>UINT32 Array</td>
+      <td valign="top">Left over faces, compile only, not stored in binary??</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0204</td>
+      <td valign="top" nowrap>UINT32 Array</td>
+      <td valign="top">Vertex Indices count array</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0210</td>
+      <td valign="top" nowrap>Raw UINT16 Pointer Array</td>
+      <td valign="top">Vertex Indices offset array (The pointers exist in the
+        model data, however, the list of UINT16 that they point to exist in the
+        raw data.</td>
+    </tr>
+    <tr>
+      <td valign="top">0x021C</td>
+      <td valign="top" nowrap>Raw Data Pointer</td>
+      <td valign="top">Unknown, probably used with triangle strips, initialized to -1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0220</td>
+      <td valign="top" nowrap>UINT32</td>
+      <td valign="top">Unknown, probably used with triangle strips, initialized to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0224</td>
+      <td valign="top" nowrap>UINT8</td>
+      <td valign="top">Triangle mode<br>
+        0x03 = Triangle<br>
+        0x04 = Triangle Strips</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0225</td>
+      <td valign="top" nowrap>UINT8 [3]</td>
+      <td valign="top">Padding</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0228</td>
+      <td valign="top" nowrap>Pointer</td>
+      <td valign="top">Pointer to a compile only structure, always zero</td>
+    </tr>
+    <tr>
+      <td valign="top">0x022C</td>
+      <td valign="top" nowrap>Raw FLOAT [3] Pointer</td>
+      <td valign="top">Pointer to the vertex data, stored in the raw data region, -1 if not
+        present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0230</td>
+      <td valign="top" nowrap>UINT16</td>
+      <td valign="top">Vertex count</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0232</td>
+      <td valign="top" nowrap>UINT16</td>
+      <td valign="top">Texture count, usually 1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0234</td>
+      <td valign="top" nowrap>Raw FLOAT [2] Pointer</td>
+      <td valign="top">Pointer to the texture 0 vertex data, stored in the raw data region,
+        -1 if not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0238</td>
+      <td valign="top" nowrap>Raw FLOAT [2] Pointer</td>
+      <td valign="top">Pointer to the texture 1 vertex data, stored in the raw data region,
+        -1 if not present </td>
+    </tr>
+    <tr>
+      <td valign="top">0x023C</td>
+      <td valign="top" nowrap>Raw FLOAT [2] Pointer</td>
+      <td valign="top">Pointer to the texture 2 vertex data, stored in the raw data region,
+        -1 if not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0240</td>
+      <td valign="top" nowrap>Raw FLOAT [2] Pointer</td>
+      <td valign="top">Pointer to the texture 3 vertex data, stored in the raw data region,
+        -1 if not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0244</td>
+      <td valign="top" nowrap>Raw FLOAT [3] Pointer</td>
+      <td valign="top">Pointer to the vertex normals, stored in the raw data region, -1 if
+        not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0248</td>
+      <td valign="top" nowrap>Raw UINT32 Pointer</td>
+      <td valign="top">Pointer to the vertex RGBA colors, stored in the raw data region, -1
+        is not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x024C</td>
+      <td valign="top" nowrap>Raw FLOAT [3] Pointer</td>
+      <td valign="top">Pointer to texture animation data, stored in the raw data region, -1
+        if not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0250</td>
+      <td valign="top" nowrap>Raw FLOAT [3] Pointer</td>
+      <td valign="top">Pointer to texture animation data, stored in the raw data region, -1
+        if not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0254</td>
+      <td valign="top" nowrap>Raw FLOAT [3] Pointer</td>
+      <td valign="top">Pointer to texture animation data, stored in the raw data region, -1
+        if not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0258</td>
+      <td valign="top" nowrap>Raw FLOAT [3] Pointer</td>
+      <td valign="top">Pointer to texture animation data, stored in the raw data region, -1
+        if not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x025C</td>
+      <td valign="top" nowrap>Raw FLOAT [3] Pointer</td>
+      <td valign="top">Pointer to texture animation data, stored in the raw data region, -1
+        if not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0260</td>
+      <td valign="top" nowrap>Raw FLOAT? Pointer</td>
+      <td valign="top">Pointer to texture animation data, stored in the raw data region, -1
+        if not present</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0264</td>
+      <td valign="top" nowrap>UINT8</td>
+      <td valign="top">Light mapped flag, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0265</td>
+      <td valign="top" nowrap>UINT8</td>
+      <td valign="top">Rotate texture flag, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0266</td>
+      <td valign="top" nowrap>UINT16</td>
+      <td valign="top">Padding</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0268</td>
+      <td valign="top" nowrap>FLOAT</td>
+      <td valign="top">Vertex normal sum divided by 2, initialized to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x026C</td>
+      <td valign="top" nowrap>UINT32/FLOAT</td>
+      <td valign="top">Unknown, initialized to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0270</td>
+      <td colspan="2" valign="top">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+<p>The two arrays at 0x0210 and 0x0204 are interrelated. The array at 0x0210
+isn't an array of UINT16s, it is an array of pointers to lists of UINT16.&nbsp;
+The number of UINT16s in each of the lists is specified by the elements of the
+array at 0x0204.&nbsp; For the second entry in both 0x0210 and 0x0204, the array
+0x0204 might tell us the there are 14 vertices in the list while the 0x0210
+array gives us the pointer to the list.</p>
+<p>All the pointers 0x022C through 0x0248 point to lists of data.&nbsp; The
+number of elements in these list is specified by the UINT16 at 0x0230 which is
+the vertex count.</p>
+<p>The face structure is as follows:</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">FLOAT [3]</td>
+      <td valign="top">Plane normal</td>
+    </tr>
+    <tr>
+      <td valign="top">0x000C</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Plane distance</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0010</td>
+      <td valign="top">INT32</td>
+      <td valign="top">Surface ID</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0014</td>
+      <td valign="top">INT16 [3]</td>
+      <td valign="top">Adjacent face number or -1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x001A</td>
+      <td valign="top">INT16 [3]</td>
+      <td valign="top">Vertex indices</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0020</td>
+      <td valign="top" colspan="2">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>The Dummy Node&nbsp;</h3>
+<p>The dummy node is a default node in a geometry that only contains children
+nodes and controller information.&nbsp; It has no other data associated with it.</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Node Header</td>
+      <td valign="top">Common node header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0070</td>
+      <td valign="top" colspan="2">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>The Light Node</h3>
+<p>The light node specifies light sources in the geometry of the model.</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Node Header</td>
+      <td valign="top">Common node header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0070</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Flare radius</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0074</td>
+      <td valign="top">UINT32 Array</td>
+      <td valign="top">Array of unknown information</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0080</td>
+      <td valign="top">FLOAT Array</td>
+      <td valign="top">Flare sizes</td>
+    </tr>
+    <tr>
+      <td valign="top">0x008C</td>
+      <td valign="top">FLOAT Array</td>
+      <td valign="top">Flare positions</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0098</td>
+      <td valign="top">FLOAT [3] Array</td>
+      <td valign="top">Flare color shifts</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00A4</td>
+      <td valign="top">CHAR Pointer Array</td>
+      <td valign="top">Array of pointers to the flare texture names</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00B0</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Light priority, defaults to 5</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00B4</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Ambient only flag, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00B8</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Dynamic type, defaults to 1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00BC</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Affect dynamic flag, defaults to 1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00C0</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Shadow flag, defaults to 1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00C4</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Generate flare flag, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00C8</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Fading light flag, defaults to 1</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00CC</td>
+      <td valign="top" colspan="2">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>The Emitter Node</h3>
+<p>The emitter node specifies dynamic graphical elements that are emitted from
+the model such as smoke or sparkles.</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Node Header</td>
+      <td valign="top">Common node header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0070</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Dead space</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0074</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Blast radius, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0078</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Blast length, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x007C</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">X grid</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0080</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Y grid</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0084</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Space type, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0088</td>
+      <td valign="top">CHAR [32]</td>
+      <td valign="top">Update</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00A8</td>
+      <td valign="top">CHAR [32]</td>
+      <td valign="top">Render</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00C8</td>
+      <td valign="top">CHAR [32]</td>
+      <td valign="top">Blend</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00E8</td>
+      <td valign="top">CHAR [64]</td>
+      <td valign="top">Texture</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0128</td>
+      <td valign="top">CHAR [16]</td>
+      <td valign="top">Chunk name</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0138</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Two sided texture flag, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x013C</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Loop flag, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0140</td>
+      <td valign="top">UINT16</td>
+      <td valign="top">Render order, defaults to 0</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0142</td>
+      <td valign="top">UINT16</td>
+      <td valign="top">Padding</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0144</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Emitter flags<br>
+        0x0001 = P2P<br>
+        0x0002 = P2P Sel<br>
+        0x0004 = Affected by Wind<br>
+        0x0008 = Is Tinted<br>
+        0x0010 = Bounce<br>
+        0x0020 = Random<br>
+        0x0040 = Inherit<br>
+        0x0080 = Inherit Vel<br>
+        0x0100 = Inherit Local<br>
+        0x0200 = Splat<br>
+        0x0400 = Inherit Part</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0148</td>
+      <td valign="top" colspan="2">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+<h3>The Reference Node</h3>
+<p>The reference node... TBD</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Node Header</td>
+      <td valign="top">Common node header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0070</td>
+      <td valign="top">CHAR [64]</td>
+      <td valign="top">Ref model</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00B0</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Reattachable flag</td>
+    </tr>
+    <tr>
+      <td valign="top">0x00B4</td>
+      <td valign="top" colspan="2">Total Length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>The TriMesh Node</h3>
+<p>The trimesh node provides the basic drawing mesh used to render elements of
+the game.</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Mesh Header</td>
+      <td valign="top">Common mesh header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0270</td>
+      <td valign="top" colspan="2">Total Length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<h3>The Skin mesh Node</h3>
+<p>The skin mesh node provides a specialized mesh where the texture is stretched
+and contorted as the model moves to provide a more realistic look to skin.&nbsp;
+It is mostly used just for things such as dragon wings.&nbsp;&nbsp;</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Mesh Header</td>
+      <td valign="top">Common mesh header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0270</td>
+      <td valign="top">Weight Array</td>
+      <td valign="top">Used during compile time to store weight information</td>
+    </tr>
+    <tr>
+      <td valign="top">0x027C</td>
+      <td valign="top">Raw FLOAT [4] Pointer</td>
+      <td valign="top">Compiled weight information for each vertex</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0280</td>
+      <td valign="top">Raw UINT16 [4] Pointer</td>
+      <td valign="top">Reference index for bones</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0284</td>
+      <td valign="top">Raw UINT16 Pointer</td>
+      <td valign="top">Bone reference mapping array</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0288</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Number of entries in the mapping array</td>
+    </tr>
+    <tr>
+      <td valign="top">0x028C</td>
+      <td valign="top">Quaternion Array</td>
+      <td valign="top">QBone ref inv</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0298</td>
+      <td valign="top">FLOAT [3] Array</td>
+      <td valign="top">TBome ref inv</td>
+    </tr>
+    <tr>
+      <td valign="top">0x02A4</td>
+      <td valign="top">UINT32 Array</td>
+      <td valign="top">Bone constant indices</td>
+    </tr>
+    <tr>
+      <td valign="top">0x02B0</td>
+      <td valign="top">UINT16 [17]</td>
+      <td valign="top">Bone part numbers</td>
+    </tr>
+    <tr>
+      <td valign="top">0x02D2</td>
+      <td valign="top">UINT16</td>
+      <td valign="top">Spare</td>
+    </tr>
+    <tr>
+      <td valign="top">0x02D4</td>
+      <td valign="top" colspan="2">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+<p>Most all skin data is computed from the weights array.</p>
+<h3>The Animmesh node</h3>
+<p>The animmesh nodes are used for the game's GUI</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Mesh Header</td>
+      <td valign="top">Common mesh header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0270</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Sample Period</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0274</td>
+      <td valign="top">FLOAT [3] Array</td>
+      <td valign="top">Animation vertices, not stored in binary</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0280</td>
+      <td valign="top">FLOAT [3] Array</td>
+      <td valign="top">Animation texture vertices, not stored in binary</td>
+    </tr>
+    <tr>
+      <td valign="top">0x028C</td>
+      <td valign="top">FLOAT [3] Array</td>
+      <td valign="top">Animation vertex normals, not stored in binary</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0298</td>
+      <td valign="top">FLOAT [3] Pointer</td>
+      <td valign="top">Pointer to the stored animation vertex information</td>
+    </tr>
+    <tr>
+      <td valign="top">0x029C</td>
+      <td valign="top">FLOAT [2] Pointer</td>
+      <td valign="top">Pointer to the stored animation texture vertex
+        information</td>
+    </tr>
+    <tr>
+      <td valign="top">0x02A0</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Number of vertex sets</td>
+    </tr>
+    <tr>
+      <td valign="top">0x02A4</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Number of texture vertex sets</td>
+    </tr>
+    <tr>
+      <td valign="top">0x02A8</td>
+      <td valign="top" colspan="2">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The stored arrays are much like the other stored vertex arrays.&nbsp; There
+size is the number of sets times the number of mesh vertices.&nbsp; There is
+also a difference between how this information is parsed from the ASCII version
+and stored in the binary.&nbsp; In the ASCII version, each vertex is listed sequentially
+for each vertex or texture vertex&nbsp; sets.&nbsp; However, in the binary
+version, each vertex is store with the different sets store sequentially.</p>
+<h3>The Danglymesh node</h3>
+<p>The danglymesh node provides a model with the look of movement by allowing
+faces to move due to momentum even after the whole model has stopped.&nbsp; Thus
+is much like how a car passenger jerks forward in a car when it stops suddenly.</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Mesh Header</td>
+      <td valign="top">Common mesh header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0270</td>
+      <td valign="top">FLOAT Array</td>
+      <td valign="top">Vertex constraints</td>
+    </tr>
+    <tr>
+      <td valign="top">0x027C</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Displacement value</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0280</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Tightness value</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0284</td>
+      <td valign="top">FLOAT</td>
+      <td valign="top">Period value</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0288</td>
+      <td valign="top" colspan="2">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>Much like the vertex information for the mesh, the constrains are expanded to
+match the vertex list stored in the model.</p>
+<h3>The AABB node</h3>
+<p>The aabb node provides the game with the ability to test for collisions.</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">Mesh Header</td>
+      <td valign="top">Common mesh header</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0270</td>
+      <td valign="top">AABB Entry Pointer</td>
+      <td valign="top">AABB table root pointer</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0274</td>
+      <td valign="top" colspan="2">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>The following is the layout of the AABB entry structure.</p>
+<div align="center">
+  <center>
+  <table border="1" height="69">
+    <tr>
+      <th align="center">Offset</th>
+      <th align="center">Type</th>
+      <th align="center">Description</th>
+    </tr>
+    <tr>
+      <td valign="top">0x0000</td>
+      <td valign="top">FLOAT [3]</td>
+      <td valign="top">Min bounding box</td>
+    </tr>
+    <tr>
+      <td valign="top">0x000C</td>
+      <td valign="top">FLOAT [3]</td>
+      <td valign="top">Max bounding box</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0018</td>
+      <td valign="top">AABB Entry Pointer</td>
+      <td valign="top">Left node</td>
+    </tr>
+    <tr>
+      <td valign="top">0x001C</td>
+      <td valign="top">AABB Entry Pointer</td>
+      <td valign="top">Right node</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0020</td>
+      <td valign="top">INT32</td>
+      <td valign="top">Leaf face part number or -1 if not a leaf</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0020</td>
+      <td valign="top">UINT32</td>
+      <td valign="top">Most significant plane???<br>
+        0x01 = Positive X<br>
+        0x02 = Positive Y<br>
+        0x04 = Positive Z<br>
+        0x08 = Negative X<br>
+        0x10 = Negative Y<br>
+        0x20 = Negative Z</td>
+    </tr>
+    <tr>
+      <td valign="top">0x0024</td>
+      <td valign="top" colspan="2">Total length of structure</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+<h3>Update - 09/29/2002</h3>
+<ol>
+  <li>Cleaned up the definition of the AABB entry slighly.</li>
+  <li>Updated the skin node.</li>
+</ol>
+<h3>Update - 08/22/2002</h3>
+<ol>
+  <li>Corrected assorted typos and minor errors</li>
+  <li>&quot;Triangle fan&quot; changed to &quot;Triangle strip&quot;.</li>
+  <li>Corrected the type on the offset in the mesh header at 0x0210.&nbsp; The
+    array exists in model data, but the actual data that the array points to
+    exists in the raw data.</li>
+  <li>Added a missing unknown value in the mesh header at 0x00E4.&nbsp;
+    Corrected the offset of texture0/bitmap.</li>
+  <li>Updated information on the part numbers and the node counts.</li>
+  <li>The value at 0x0068 in the geometry header is now known.</li>
+  <li>Another flag in the geometry header discovered.</li>
+</ol>
+
+<h3>Credits</h3>
+<p>I wanted to thank Zaddix and Revinor.&nbsp; Their information about the
+binary model formats provided an excellent starting point for my work.</p>
+
+</body>
+
+</html>
