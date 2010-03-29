@@ -39,7 +39,7 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 		return 0;
 
 	if        (res->source == kSourceBIF) {
-		// Read the data out of the bif and return a MemoryReadStream.
+		// Read the data out of the bif and return a MemoryReadStream
 
 		if (!res->bif)
 			return 0;
