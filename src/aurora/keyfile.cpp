@@ -81,7 +81,7 @@ bool KeyFile::readBifList(Common::SeekableReadStream &key, uint32 bifCount) {
 
 		uint32 nameOffset = key.readUint32LE();
 		uint32 nameSize   = 0;
-		
+
 		// nameSize is expanded to 4 bytes in 1.1 and the location is dropped
 		if (_version == kVersion11) {
 			nameSize = key.readUint32LE();
