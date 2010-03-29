@@ -17,6 +17,11 @@
 
 namespace Aurora {
 
+/** Does the language ID describe a male viewpoint? */
+bool isMale(Language language);
+/** Does the language ID describe a female viewpoint? */
+bool isFemale(Language language);
+
 /** Return the file type of a file name, detected by its extension. */
 FileType getFileType(const std::string &path);
 
