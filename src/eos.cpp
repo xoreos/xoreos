@@ -30,6 +30,13 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
+	// Some quick SDL initialization tests
+	// TODO: Move SDL initialization elsewhere? But, the SDL.h include must remain either way.
+	if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO) < 0)
+		error("Failed to initialize SDL: %s", SDL_GetError());
+
+	atexit(SDL_Quit);
+
 	Common::FileList files;
 	files.addDirectory(argv[1], -1);
 
