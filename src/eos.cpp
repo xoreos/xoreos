@@ -56,28 +56,32 @@ int main(int argc, char **argv) {
 			bool loaded = resMan.loadKEY(*chitinKEY);
 			warning("Could load chitin.key? %s", loaded ? "Yes" : "No");
 
-			Common::SeekableReadStream *wav1 = resMan.getResource("p_hk-47_tia", Aurora::kFileTypeWAV);
-			Common::SeekableReadStream *wav2 = resMan.getResource("as_pl_evanglstm1", Aurora::kFileTypeWAV);
+			// Try a KotOR Sound
+			Common::SeekableReadStream *wav = resMan.getResource("p_hk-47_tia", Aurora::kFileTypeWAV);
 
-			if (wav1 || wav2) {
+			// Try a NWN Sound
+			if (!wav)
+				wav = resMan.getResource("as_pl_evanglstm1", Aurora::kFileTypeWAV);
+
+			// Try a KotOR2 Sound
+			if (!wav)
+				wav = resMan.getResource("p_hk47_tia", Aurora::kFileTypeWAV);
+
+			if (wav) {
 				warning("Found a wav. Trying to play it. Turn up your speakers");
+				playWav(*wav);
 
-				Common::SeekableReadStream *wavR = (wav1) ? wav1 : wav2;
-
-				playWav(*wavR);
 /*				warning("Found a WAV. Writing it to foo.wav. Play it and smile :)");
 				Common::DumpFile wav;
 				if (wav.open("foo.wav")) {
-					wav.writeStream(*wavR);
+					wav.writeStream(*wav);
 					wav.close();
 				} else
 					warning("Failed to write foo.wav :(");*/
 
 			}
 
-			delete wav1;
-			delete wav2;
-
+			delete wav;
 		} else
 			warning("But has no chitin.key");
 
