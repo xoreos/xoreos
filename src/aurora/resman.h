@@ -97,7 +97,6 @@ private:
 	BifList     _bifs;      ///< Bifs used by the game resources.
 	ResourceMap _resources; ///< All game-usable resources.
 
-	BifList     _bifsSaved;      ///< Saved list of bifs used by the game resources.
 	ResourceMap _resourcesSaved; ///< Saved list of game-usable resources.
 
 	const Resource *getRes(const std::string &name, FileType type) const;

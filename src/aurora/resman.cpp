@@ -25,17 +25,14 @@ void ResourceManager::clear() {
 	_bifs.clear();
 	_resources.clear();
 
-	_bifsSaved.clear();
 	_resourcesSaved.clear();
 }
 
 void ResourceManager::save() {
-	_bifsSaved      = _bifs;
 	_resourcesSaved = _resources;
 }
 
 void ResourceManager::restore() {
-	_bifs      = _bifsSaved;
 	_resources = _resourcesSaved;
 }
 
