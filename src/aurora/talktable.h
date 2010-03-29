@@ -23,10 +23,10 @@ namespace Common {
 
 namespace Aurora {
 
-/** Class to hold resource index information of a key file. */
+/** Class to hold string resoures. */
 class TalkTable {
 public:
-	/** The language IDs */
+	/** The language IDs. */
 	enum Language {
 		kLanguageEnglish = 0,
 		kLanguageFrench = 1,
@@ -40,7 +40,7 @@ public:
 		kLanguageJapanese = 131
 	};
 
-	/** The entries' flags */
+	/** The entries' flags. */
 	enum EntryFlags {
 		kTextPresent = (1 << 0),
 		kSoundPresent = (1 << 1),
@@ -63,34 +63,35 @@ public:
 	TalkTable();
 	~TalkTable();
 
-	/** Clear all resource information. */
+	/** Clear all string information. */
 	void clear();
 
-	/** Load a resource index.
+	/** Load a talk table.
 	 *
-	 *  @param  stream A stream of an indexing key file.
+	 *  @param  stream A stream of talk table.
 	 *  @return true if loading was successful, false otherwise.
 	 */
 	bool load(Common::SeekableReadStream &stream);
 
 	/** Get a string
 	 *
-	 *  @param stringRef a handle to a string (index)
-	 *  @return an empty string if stringRef is invalid, otherwise a string from the TLK file
+	 *  @param stringRef a handle to a string (index).
+	 *  @return an empty string if stringRef is invalid, otherwise a string from the TLK file.
 	 */
 	std::string getString(uint32 stringRef);
 
-	/** Get an entry
+	/** Get an entry.
 	 *
-	 *  @param stringRef a handle to a string (index)
-	 *  @return 0 if stringRef is invalid, otherwise the Entry from the list
+	 *  @param stringRef a handle to a string (index).
+	 *  @return 0 if stringRef is invalid, otherwise the Entry from the list.
 	 */
 	const Entry *getEntry(uint32 stringRef) const;
 
 private:
 	Common::SeekableReadStream *_stream;
 
-	uint32       _version;   ///< The version of the file
+	uint32 _version; ///< The version of the file.
+
 	Language _language;
 	EntryList _entryList;
 };
