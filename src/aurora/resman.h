@@ -57,6 +57,9 @@ public:
 	 */
 	bool registerDataBaseDir(const std::string &path);
 
+	/** Return the list of key files found in the base data directory. */
+	const Common::FileList &getKeyList() const;
+
 	/** Does a specific resource exists?
 	 *
 	 *  @param  name The name (resref) of the resource.

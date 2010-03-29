@@ -63,6 +63,10 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 	return true;
 }
 
+const Common::FileList &ResourceManager::getKeyList() const {
+	return _keyFiles;
+}
+
 bool ResourceManager::hasResource(const std::string &name, FileType type) const {
 	if (getRes(name, type))
 		return true;
