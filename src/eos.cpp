@@ -13,6 +13,7 @@
 
 #include "common/stream.h"
 #include "common/util.h"
+#include "common/file.h"
 #include "common/filepath.h"
 #include "common/filelist.h"
 
@@ -50,6 +51,29 @@ int main(int argc, char **argv) {
 		Common::SeekableReadStream *chitinKey = keyList.openFile(".*/chitin.key", true);
 		if (chitinKey) {
 			warning("And has a chitin.key");
+
+			bool loaded = resMan.loadKey(*chitinKey);
+			warning("Could load chitin.key? %s", loaded ? "Yes" : "No");
+
+			Common::SeekableReadStream *wav1 = resMan.getResource("p_zaalbar_tia", Aurora::kFileTypeWAV);
+			Common::SeekableReadStream *wav2 = resMan.getResource("as_pl_evanglstm1", Aurora::kFileTypeWAV);
+
+			if (wav1 || wav2) {
+				Common::SeekableReadStream *wavR = (wav1) ? wav1 : wav2;
+
+				warning("Found a WAV. Writing it to foo.wav. Play it and smile :)");
+				Common::DumpFile wav;
+				if (wav.open("foo.wav")) {
+					wav.writeStream(*wavR);
+					wav.close();
+				} else
+					warning("Failed to write foo.wav :(");
+
+			}
+
+			delete wav1;
+			delete wav2;
+
 		} else
 			warning("But has no chitin.key");
 
