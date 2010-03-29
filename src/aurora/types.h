@@ -153,6 +153,46 @@ enum FileType {
 	kFileTypeKEY            =  9999  ///< Game resource index.
 };
 
+enum Language {
+	kLanguageEnglishMale              =   0,
+	kLanguageEnglishFemale            =   1,
+	kLanguageFrenchMale               =   2,
+	kLanguageFrenchFemale             =   3,
+	kLanguageGermanMale               =   4,
+	kLanguageGermanFemale             =   5,
+	kLanguageItalianMale              =   6,
+	kLanguageItalianFemale            =   7,
+	kLanguageSpanishMale              =   8,
+	kLanguageSpanishFemale            =   9,
+	kLanguagePolishMale               =  10,
+	kLanguagePolishFemale             =  11,
+	kLanguageKoreanMale               = 256,
+	kLanguageKoreanFemale             = 257,
+	kLanguageChineseTraditionalMale   = 258,
+	kLanguageChineseTraditionalFemale = 259,
+	kLanguageChineseSimplifiedMale    = 260,
+	kLanguageChineseSimplifiedFemale  = 261,
+	kLanguageJapaneseMale             = 262,
+	kLanguageJapaneseFemale           = 263,
+
+	// As used by The Witcher, but +1000
+	kLanguageWitcherDefault            = 1000,
+	kLanguageWitcherEnglish            = 1001,
+	kLanguageWitcherFinalEnglish       = 1002,
+	kLanguageWitcherFinalEnglishShort  = 1003,
+	kLanguageWitcherPolish             = 1005,
+	kLanguageWitcherGerman             = 1010,
+	kLanguageWitcherFrench             = 1011,
+	kLanguageWitcherSpanish            = 1012,
+	kLanguageWitcherItalian            = 1013,
+	kLanguageWitcherRussian            = 1014,
+	kLanguageWitcherCzech              = 1015,
+	kLanguageWitcherHungarian          = 1016,
+	kLanguageWitcherKorean             = 1020, // UTF8
+	kLanguageWitcherChineseTraditional = 1021, // UTF8
+	kLanguageWitcherChineseSimplified  = 1022  // UTF8
+};
+
 /** Return the file type of a file name, detected by its extension. */
 FileType getFileType(const std::string &path);
 
