@@ -26,20 +26,6 @@ namespace Aurora {
 /** Class to hold string resoures. */
 class TalkTable {
 public:
-	/** The language IDs. */
-	enum Language {
-		kLanguageEnglish = 0,
-		kLanguageFrench = 1,
-		kLanguageGerman = 2,
-		kLanguageItalian = 3,
-		kLanguageSpanish = 4,
-		kLanguagePolish = 5,
-		kLanguageKorean = 128,
-		kLanguageChineseTraditional = 129,
-		kLanguageChineseSimplified = 130,
-		kLanguageJapanese = 131
-	};
-
 	/** The entries' flags. */
 	enum EntryFlags {
 		kTextPresent = (1 << 0),
@@ -83,7 +69,6 @@ public:
 
 private:
 	uint32 _version; ///< The version of the file.
-	Language _language;
 	EntryList _entryList;
 };
 

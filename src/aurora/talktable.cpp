@@ -42,7 +42,7 @@ bool TalkTable::load(Common::SeekableReadStream &stream) {
 		return false;
 	}
 
-	_language = (Language)stream.readUint32LE();
+	stream.readUint32LE(); // Skip language
 	uint32 stringCount = stream.readUint32LE();
 	uint32 tableOffset = stream.readUint32LE();
 
