@@ -25,6 +25,7 @@
 #include "aurora/talktable.h"
 
 bool initSDL();
+void deinitSDL();
 
 void doAuroraStuff(Aurora::ResourceManager &resMan);
 void playWav(Common::SeekableReadStream *wavStream);
@@ -51,6 +52,8 @@ int main(int argc, char **argv) {
 
 	if (success)
 		doAuroraStuff(resMan);
+
+	deinitSDL();
 
 	return 0;
 }
