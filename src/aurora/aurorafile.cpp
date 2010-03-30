@@ -44,9 +44,7 @@ std::string AuroraFile::readRawString(Common::SeekableReadStream &stream, uint32
 	return str;
 }
 
-float AuroraFile::readFloat(Common::SeekableReadStream &stream) {
-	uint32 data = stream.readUint32LE();
-
+float AuroraFile::convertFloat(uint32 data) {
 	// We just cast here because most systems have float in 754-1985 format anyway.
 	// However, should we find another system that has this differently, we might
 	// have to do something more here...
@@ -54,14 +52,20 @@ float AuroraFile::readFloat(Common::SeekableReadStream &stream) {
 	return (float) data;
 }
 
-double AuroraFile::readDouble(Common::SeekableReadStream &stream) {
-	uint64 data = stream.readUint64LE();
-
+double AuroraFile::convertDouble(uint64 data) {
 	// We just cast here because most systems have double in 754-1985 format anyway.
 	// However, should we find another system that has this differently, we might
 	// have to do something more here...
 
 	return (double) data;
+}
+
+float AuroraFile::readFloat(Common::SeekableReadStream &stream) {
+	return convertFloat(stream.readUint32LE());
+}
+
+double AuroraFile::readDouble(Common::SeekableReadStream &stream) {
+	return convertDouble(stream.readUint64LE());
 }
 
 void AuroraFile::cleanupPath(std::string &path) {
