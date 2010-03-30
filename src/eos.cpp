@@ -25,7 +25,9 @@
 #include "aurora/talktable.h"
 
 bool initSDL();
-void playWav(Common::SeekableReadStream &wavStream);
+
+void doAuroraStuff(Aurora::ResourceManager &resMan);
+void playWav(Common::SeekableReadStream *wavStream);
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -45,49 +47,10 @@ int main(int argc, char **argv) {
 
 	bool success = resMan.registerDataBaseDir(argv[1]);
 
-	const Common::FileList &keyList = resMan.getKEYList();
+	warning("Useful base dir? %s - %d keys", success ? "Yes" : "No", (int) resMan.getKEYList().size());
 
-	warning("Useful base dir? %s - %d keys", success ? "Yes" : "No", (int) keyList.size());
-
-	if (success) {
-		Common::SeekableReadStream *chitinKEY = keyList.openFile(".*/chitin.key", true);
-		if (chitinKEY) {
-			warning("And has a chitin.key");
-
-			bool loaded = resMan.loadKEY(*chitinKEY);
-			warning("Could load chitin.key? %s", loaded ? "Yes" : "No");
-
-			// Try a KotOR Sound
-			Common::SeekableReadStream *wav = resMan.getResource("p_hk-47_tia", Aurora::kFileTypeWAV);
-
-			// Try a NWN Sound
-			if (!wav)
-				wav = resMan.getResource("as_pl_evanglstm1", Aurora::kFileTypeWAV);
-
-			// Try a KotOR2 Sound
-			if (!wav)
-				wav = resMan.getResource("p_hk47_tia", Aurora::kFileTypeWAV);
-
-			if (wav) {
-				warning("Found a wav. Trying to play it. Turn up your speakers");
-				playWav(*wav);
-
-/*				warning("Found a WAV. Writing it to foo.wav. Play it and smile :)");
-				Common::DumpFile wav;
-				if (wav.open("foo.wav")) {
-					wav.writeStream(*wav);
-					wav.close();
-				} else
-					warning("Failed to write foo.wav :(");*/
-
-			}
-
-			delete wav;
-		} else
-			warning("But has no chitin.key");
-
-		delete chitinKEY;
-	}
+	if (success)
+		doAuroraStuff(resMan);
 
 	return 0;
 }
@@ -103,30 +66,118 @@ bool initSDL() {
 		return false;
 	}
 
-	atexit(SDL_Quit);
-
 	return true;
 }
 
-void playWav(Common::SeekableReadStream &wavStream) {
-	uint32 size = wavStream.size();
-	byte *buf = new byte[size];
+void deinitSDL() {
+	Mix_CloseAudio();
+	SDL_Quit();
+}
 
-	wavStream.read(buf, size);
+static const char *wavFiles[] = {"p_hk-47_tia", "p_hk47_tia", "as_pl_evanglstm1"};
 
-	SDL_RWops *rw = SDL_RWFromMem(buf, size);
+void doAuroraStuff(Aurora::ResourceManager &resMan) {
+	const Common::FileList &keyList = resMan.getKEYList();
+
+	Common::SeekableReadStream *chitinKEY = keyList.openFile(".*/chitin.key", true);
+	if (!chitinKEY) {
+		warning("But has no chitin.key");
+		return ;
+	}
+
+	warning("And has a chitin.key");
+
+	if (!resMan.loadKEY(*chitinKEY)) {
+		warning("But loading it failed");
+		return;
+	}
+
+	Common::SeekableReadStream *wav = 0;
+	for (int i = 0; i < ARRAYSIZE(wavFiles); i++)
+		if ((wav = resMan.getResource(wavFiles[i], Aurora::kFileTypeWAV)))
+			break;
+
+	if (wav) {
+		warning("Found a wav. Trying to play it. Turn up your speakers");
+		playWav(wav);
+	}
+
+	delete chitinKEY;
+}
+
+static int RWStreamSeek(SDL_RWops *context, int offset, int whence) {
+	if (context->type != 0xc0ffeeee)
+		return -1;
+
+	return ((Common::SeekableReadStream *) context->hidden.unknown.data1)->seek(offset, whence);
+}
+
+static int RWStreamRead(SDL_RWops *context, void *ptr, int size, int maxnum) {
+	if (context->type != 0xc0ffeeee)
+		return 0;
+
+	int n = ((Common::SeekableReadStream *) context->hidden.unknown.data1)->read(ptr, size * maxnum);
+
+	return n / size;
+}
+
+static int RWStreamWrite(SDL_RWops *context, const void *ptr, int size, int num) {
+	return 0;
+}
+
+static int RWStreamClose(SDL_RWops *context) {
+	if (context->type != 0xc0ffeeee)
+		return -1;
+
+	Common::SeekableReadStream *stream = (Common::SeekableReadStream *) context->hidden.unknown.data1;
+	delete stream;
+
+	SDL_FreeRW(context);
+	return 0;
+}
+
+SDL_RWops *RW_FromStream(Common::SeekableReadStream *stream) {
+	if (!stream)
+		return 0;
+
+	SDL_RWops *rw = SDL_AllocRW();
+
+	rw->seek  = RWStreamSeek;
+	rw->read  = RWStreamRead;
+	rw->write = RWStreamWrite;
+	rw->close = RWStreamClose;
+
+	rw->type = 0xc0ffeeee;
+	rw->hidden.unknown.data1 = stream;
+
+	return rw;
+}
+
+void FreeRW_FromStream(SDL_RWops *rw) {
+	if (rw->type != 0xc0ffeeee)
+		return;
+
+	rw->close(rw);
+}
+
+void playWav(Common::SeekableReadStream *wavStream) {
+	SDL_RWops *rw = RW_FromStream(wavStream);
+	if (!rw) {
+		warning("Failed to create SDL_RWops from wav stream");
+		return;
+	}
 
 	Mix_Chunk *wav = Mix_LoadWAV_RW(rw, true);
 	if (!wav) {
 		warning("Unable to load WAV file: %s", Mix_GetError());
-		delete[] buf;
+		FreeRW_FromStream(rw);
 		return;
 	}
 
 	int channel = Mix_PlayChannel(-1, wav, 0);
 	if(channel == -1) {
 		warning("Unable to play WAV file: %s", Mix_GetError());
-		delete[] buf;
+		Mix_FreeChunk(wav);
 		return;
 	}
 
@@ -137,7 +188,4 @@ void playWav(Common::SeekableReadStream &wavStream) {
 	}
 
 	Mix_FreeChunk(wav);
-	Mix_CloseAudio();
-
-	delete[] buf;
 }
