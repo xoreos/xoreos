@@ -49,7 +49,7 @@ float AuroraFile::convertFloat(uint32 data) {
 	// However, should we find another system that has this differently, we might
 	// have to do something more here...
 
-	return (float) data;
+	return *reinterpret_cast<float *>(&data);
 }
 
 double AuroraFile::convertDouble(uint64 data) {
@@ -57,7 +57,7 @@ double AuroraFile::convertDouble(uint64 data) {
 	// However, should we find another system that has this differently, we might
 	// have to do something more here...
 
-	return (double) data;
+	return *reinterpret_cast<double *>(&data);
 }
 
 float AuroraFile::readFloat(Common::SeekableReadStream &stream) {
