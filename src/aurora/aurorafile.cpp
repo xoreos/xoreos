@@ -51,7 +51,17 @@ float AuroraFile::readFloat(Common::SeekableReadStream &stream) {
 	// However, should we find another system that has this differently, we might
 	// have to do something more here...
 
-	return (float)data;
+	return (float) data;
+}
+
+double AuroraFile::readDouble(Common::SeekableReadStream &stream) {
+	uint64 data = stream.readUint64LE();
+
+	// We just cast here because most systems have double in 754-1985 format anyway.
+	// However, should we find another system that has this differently, we might
+	// have to do something more here...
+
+	return (double) data;
 }
 
 void AuroraFile::cleanupPath(std::string &path) {

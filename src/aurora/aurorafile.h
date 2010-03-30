@@ -46,6 +46,10 @@ public:
 	 */
 	static float readFloat(Common::SeekableReadStream &stream);
 
+	/** Read a double (IEEE 754-1985)
+	 */
+	static double readDouble(Common::SeekableReadStream &stream);
+
 	/** Clean up a path string for portable use. */
 	static void cleanupPath(std::string &path);
 };
