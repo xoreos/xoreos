@@ -25,6 +25,7 @@ namespace Aurora {
 
 class LocString;
 
+/** A GFF header. */
 struct GFFHeader {
 	uint32 id;
 	uint32 version;
@@ -43,13 +44,17 @@ struct GFFHeader {
 
 	GFFHeader();
 
+	/** Clear the header. */
 	void clear();
 
+	/** Read the header out of a stream. */
 	bool read(Common::SeekableReadStream &gff);
 };
 
+/** A data field found in a GFF. */
 class GFFField {
 public:
+	/** The general type of the field's value. */
 	enum Type {
 		kTypeNone        = 0,
 		kTypeChar        = 1,
@@ -68,10 +73,13 @@ public:
 	GFFField();
 	~GFFField();
 
+	/** Clear the field. */
 	void clear();
 
+	/** Return the field's type. */
 	Type getType() const;
 
+	/** Get the field's label. */
 	const std::string &getLabel() const;
 
 	char   getChar() const;
@@ -90,39 +98,42 @@ public:
 
 	const uint32 getIndex() const;
 
+	/** Read the field out of a stream. */
 	bool read(Common::SeekableReadStream &gff, const GFFHeader &header);
 
 private:
+	/** The actual type of the field, as found in the GFF. */
 	enum GFFType {
-		kGFFTypeNone        = - 1,
-		kGFFTypeByte        =   0,
-		kGFFTypeChar        =   1,
-		kGFFTypeUint16      =   2,
-		kGFFTypeSint16      =   3,
-		kGFFTypeUint32      =   4,
-		kGFFTypeSint32      =   5,
-		kGFFTypeUint64      =   6,
-		kGFFTypeSint64      =   7,
-		kGFFTypeFloat       =   8,
-		kGFFTypeDouble      =   9,
-		kGFFTypeExoString   =  10,
+		kGFFTypeNone        = - 1, ///< Invalid type.
+		kGFFTypeByte        =   0, ///< A single byte.
+		kGFFTypeChar        =   1, ///< A single character.
+		kGFFTypeUint16      =   2, ///< Unsigned 16bit integer.
+		kGFFTypeSint16      =   3, ///< Signed 16bit integer.
+		kGFFTypeUint32      =   4, ///< Unsigned 32bit integer.
+		kGFFTypeSint32      =   5, ///< Signed 32bit integer.
+		kGFFTypeUint64      =   6, ///< Unsigned 64bit integer.
+		kGFFTypeSint64      =   7, ///< Signed 64bit integer.
+		kGFFTypeFloat       =   8, ///< IEEE float.
+		kGFFTypeDouble      =   9, ///< IEEE double.
+		kGFFTypeExoString   =  10, ///< String.
 		kGFFTypeResRef      =  11, ///< String, max. 16 characters.
 		kGFFTypeLocString   =  12, ///< Localized string.
 		kGFFTypeVoid        =  13, ///< Random data of variable length.
 		kGFFTypeStruct      =  14, ///< Struct containing a number of fields.
 		kGFFTypeList        =  15, ///< List containing a number of structs.
-		kGFFTypeOrientation =  16, // TODO: New in KotOR
-		kGFFTypeVector      =  17, ///< A vector of 3 floats
+		kGFFTypeOrientation =  16, ///< An object orientation.
+		kGFFTypeVector      =  17, ///< A vector of 3 floats.
 		kGFFTypeStrRef      =  18  // TODO: New in Jade Empire
 	};
 
-	GFFType _gffType;
-	   Type _type;
+	GFFType _gffType; ///< The field's actual type.
+	   Type _type;    ///< The field's general type.
 
-	std::string _label;
+	std::string _label; ///< The field's label.
 
-	uint32 _dataSize;
+	uint32 _dataSize; ///< The size of the field's data, if applicable.
 
+	/** The field's value. */
 	union {
 		uint64 typeInt;
 		double typeDouble;
@@ -136,6 +147,8 @@ private:
 
 		uint32 typeIndex;
 	} _value;
+
+	// Reading helpers
 
 	bool convertData(Common::SeekableReadStream &gff, const GFFHeader &header, uint32 data);
 
@@ -159,16 +172,20 @@ private:
 	inline bool seekGFFData(Common::SeekableReadStream &gff,
 			const GFFHeader &header, uint32 data, uint32 &curPos);
 
+	/** Convert an actual GFF field type to a general type. */
 	static inline Type toType(GFFType type);
 };
 
+/** A GFF, BioWare's General File Format. */
 class GFFFile {
 public:
 	GFFFile();
 	~GFFFile();
 
+	/** Clear all information. */
 	void clear();
 
+	/** Load the GFF out of a stream. */
 	bool load(Common::SeekableReadStream &gff);
 
 private:
@@ -182,6 +199,7 @@ private:
 	GFFStructArray _structArray;
 	GFFListArray   _listArray;
 
+	// Reading helpers
 	bool readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex);
 	bool readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint32 fieldIndicesIndex);
 };

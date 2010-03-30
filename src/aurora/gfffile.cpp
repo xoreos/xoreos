@@ -80,6 +80,7 @@ void GFFField::clear() {
 	if (_type == kTypeNone)
 		return;
 
+	// Free memory if we need to
 	if      (_type == kTypeString)
 		delete _value.typeString;
 	else if (_type == kTypeLocString)
@@ -146,24 +147,30 @@ const uint32 GFFField::getIndex() const {
 bool GFFField::read(Common::SeekableReadStream &gff, const GFFHeader &header) {
 	clear();
 
+	// Read the data
+
 	_gffType = (GFFType) gff.readUint32LE();
 
 	uint32 labelIndex = gff.readUint32LE();
 	uint32 data       = gff.readUint32LE();
 
+	// Supported type?
 	_type = toType(_gffType);
 	if (_type == kTypeNone) {
 		warning("GFFField::read(): Unknown field type %d", _gffType);
 		return false;
 	}
 
+	// Sanity check
 	if (labelIndex >= header.labelCount) {
 		warning("GFFField::read(): Label index out of range (%d/%d)", labelIndex, header.labelCount);
 		return false;
 	}
 
+	// Read the label
 	_label = AuroraFile::readRawString(gff, 16, header.labelOffset + labelIndex * 16);
 
+	// Fill in the correct data
 	if (!convertData(gff, header, data))
 		return false;
 
@@ -171,20 +178,26 @@ bool GFFField::read(Common::SeekableReadStream &gff, const GFFHeader &header) {
 }
 
 bool GFFField::convertData(Common::SeekableReadStream &gff, const GFFHeader &header, uint32 data) {
+	// Do the correct conversion/reading for each data type
+
 	switch (_gffType) {
 		case kGFFTypeChar:
+			// Correct sign extension
 			_value.typeInt = (uint64) ((char) data);
 			break;
 
 		case kGFFTypeByte:
+			// Correct sign extension
 			_value.typeInt = (uint64) ((byte) data);
 			break;
 
 		case kGFFTypeUint16:
+			// Correct sign extension
 			_value.typeInt = (uint64) ((uint16) data);
 			break;
 
 		case kGFFTypeUint32:
+			// Correct sign extension
 			_value.typeInt = (uint64) ((uint32) data);
 			break;
 
@@ -194,10 +207,12 @@ bool GFFField::convertData(Common::SeekableReadStream &gff, const GFFHeader &hea
 			break;
 
 		case kGFFTypeSint16:
+			// Correct sign extension
 			_value.typeInt = (uint64) ((int64) ((int16) ((uint16) data)));
 			break;
 
 		case kGFFTypeSint32:
+			// Correct sign extension
 			_value.typeInt = (uint64) ((int64) ((int32) ((uint32) data)));
 			break;
 
@@ -236,10 +251,12 @@ bool GFFField::convertData(Common::SeekableReadStream &gff, const GFFHeader &hea
 			break;
 
 		case kGFFTypeStruct:
+			// Direct index into the struct array
 			_value.typeIndex = data;
 			break;
 
 		case kGFFTypeList:
+			// Byte index into the list area, all 32bit values.
 			_value.typeIndex = data / 4;
 			break;
 
@@ -401,24 +418,27 @@ inline GFFField::Type GFFField::toType(GFFType type) {
 		case kGFFTypeChar:
 			return kTypeChar;
 
+		// This is all an unsigned integer value
 		case kGFFTypeByte:
 		case kGFFTypeUint16:
 		case kGFFTypeUint32:
 		case kGFFTypeUint64:
 			return kTypeUint;
 
+		// This is all a signed integer value
 		case kGFFTypeSint16:
 		case kGFFTypeSint32:
 		case kGFFTypeSint64:
 			return kTypeSint;
 
+		// Float/Double type
 		case kGFFTypeFloat:
 		case kGFFTypeDouble:
 			return kTypeDouble;
 
+		// All strings
 		case kGFFTypeExoString:
 		case kGFFTypeResRef:
-		case kGFFTypeStrRef:
 			return kTypeString;
 
 		case kGFFTypeLocString:
@@ -498,12 +518,15 @@ bool GFFFile::load(Common::SeekableReadStream &gff) {
 }
 
 bool GFFFile::readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex) {
+	// Sanity check
 	if (fieldIndex > _header.fieldCount)
 		return false;
 
+	// Seek
 	if (!gff.seek(_header.fieldOffset + fieldIndex * 12))
 		return false;
 
+	// Read
 	if (!field.read(gff, _header))
 		return false;
 
@@ -511,20 +534,25 @@ bool GFFFile::readField(Common::SeekableReadStream &gff, GFFField &field, uint32
 }
 
 bool GFFFile::readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint32 fieldIndicesIndex) {
+	// Sanity check
 	if (fieldIndicesIndex > _header.fieldIndicesCount)
 		return false;
 
+	// Seek
 	if (!gff.seek(_header.fieldIndicesOffset + fieldIndicesIndex))
 		return false;
 
+	// Get the number of structs in the list
 	uint32 count = strct.size();
 
 	std::vector<uint32> indices;
 
+	// Read all struct indices
 	indices.resize(count);
 	for (uint32 i = 0; i < count; i++)
 		indices[i] = gff.readUint32LE();
 
+	// Read the structs
 	for (uint32 i = 0; i < count; i++)
 		if (!readField(gff, strct[i], indices[i]))
 			return false;
