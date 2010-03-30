@@ -240,7 +240,7 @@ bool GFFField::convertData(Common::SeekableReadStream &gff, const GFFHeader &hea
 			break;
 
 		case kGFFTypeList:
-			_value.typeIndex = data;
+			_value.typeIndex = data / 4;
 			break;
 
 		case kGFFTypeOrientation:
@@ -455,12 +455,16 @@ GFFFile::~GFFFile() {
 
 void GFFFile::clear() {
 	_header.clear();
+
+	_structArray.clear();
+	_listArray.clear();
 }
 
 bool GFFFile::load(Common::SeekableReadStream &gff) {
 	if (!_header.read(gff))
 		return false;
 
+	// Read structs
 	_structArray.resize(_header.structCount);
 	for (uint32 i = 0; i < _header.structCount; i++) {
 		gff.skip(4); // Programmer-defined ID
@@ -480,6 +484,15 @@ bool GFFFile::load(Common::SeekableReadStream &gff) {
 
 		gff.seek(curPos);
 	}
+
+	if (!gff.seek(_header.listIndicesOffset))
+		return false;
+
+	// Read list array
+	uint32 listArrayCount = _header.listIndicesCount / 4;
+	_listArray.resize(listArrayCount);
+	for (uint32 i = 0; i < listArrayCount; i++)
+		_listArray[i] = gff.readUint32LE();
 
 	return true;
 }

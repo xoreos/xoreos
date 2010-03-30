@@ -175,9 +175,12 @@ private:
 	typedef std::vector<GFFField>  GFFStruct;
 	typedef std::vector<GFFStruct> GFFStructArray;
 
+	typedef std::vector<uint32> GFFListArray;
+
 	GFFHeader _header;
 
 	GFFStructArray _structArray;
+	GFFListArray   _listArray;
 
 	bool readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex);
 	bool readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint32 fieldIndicesIndex);
