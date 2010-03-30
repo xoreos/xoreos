@@ -44,6 +44,8 @@ int main(int argc, char **argv) {
 	if (!initSDL())
 		error("Fatal");
 
+	atexit(deinitSDL);
+
 	Aurora::ResourceManager resMan;
 
 	bool success = resMan.registerDataBaseDir(argv[1]);
@@ -52,8 +54,6 @@ int main(int argc, char **argv) {
 
 	if (success)
 		doAuroraStuff(resMan);
-
-	deinitSDL();
 
 	return 0;
 }
