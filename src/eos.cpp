@@ -164,6 +164,17 @@ void FreeRW_FromStream(SDL_RWops *rw) {
 }
 
 void playWav(Common::SeekableReadStream *wavStream) {
+	if (!wavStream) {
+		warning("Attempting to play NULL wavStream");
+		return;
+	}
+
+	if (wavStream->readUint32BE() == 0xfff360c4) {
+		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
+		wavStream->seek(0x1D6);
+	} else
+		wavStream->seek(0);
+
 	SDL_RWops *rw = RW_FromStream(wavStream);
 	if (!rw) {
 		warning("Failed to create SDL_RWops from wav stream");
