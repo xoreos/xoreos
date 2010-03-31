@@ -63,4 +63,4 @@ AC_SUBST(SDL_LIBS, [$SDL_LIBS])
 AC_SUBST(EOS_CXXFLAGS)
 AC_SUBST(EOS_LIBS)
 
-AC_OUTPUT(src/common/Makefile src/aurora/Makefile src/Makefile Makefile)
+AC_OUTPUT(src/common/Makefile src/aurora/Makefile src/sound/Makefile src/Makefile Makefile)

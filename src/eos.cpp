@@ -11,7 +11,6 @@
 #include <cstdio>
 
 #include <SDL.h>
-#include <SDL_mixer.h>
 
 #include "common/stream.h"
 #include "common/util.h"
@@ -24,11 +23,12 @@
 #include "aurora/resman.h"
 #include "aurora/talktable.h"
 
+#include "sound/sound.h"
+
 bool initSDL();
 void deinitSDL();
 
 void doAuroraStuff(Aurora::ResourceManager &resMan);
-void playWav(Common::SeekableReadStream *wavStream);
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -64,8 +64,8 @@ bool initSDL() {
 		return false;
 	}
 
-	if (Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 4096) != 0) {
-		warning("initSDL(): Unable to initialize audio: %s", Mix_GetError());
+	if (!Sound::initMixer()) {
+		warning("initSDL(): Unable to initialize audio: %s", Sound::getMixerError());
 		return false;
 	}
 
@@ -73,7 +73,7 @@ bool initSDL() {
 }
 
 void deinitSDL() {
-	Mix_CloseAudio();
+	Sound::deinitMixer();
 	SDL_Quit();
 }
 
@@ -102,104 +102,8 @@ void doAuroraStuff(Aurora::ResourceManager &resMan) {
 
 	if (wav) {
 		warning("Found a wav. Trying to play it. Turn up your speakers");
-		playWav(wav);
+		Sound::playSoundFile(wav);
 	}
 
 	delete chitinKEY;
-}
-
-static int RWStreamSeek(SDL_RWops *context, int offset, int whence) {
-	if (context->type != 0xc0ffeeee)
-		return -1;
-
-	return ((Common::SeekableReadStream *) context->hidden.unknown.data1)->seek(offset, whence);
-}
-
-static int RWStreamRead(SDL_RWops *context, void *ptr, int size, int maxnum) {
-	if (context->type != 0xc0ffeeee)
-		return 0;
-
-	int n = ((Common::SeekableReadStream *) context->hidden.unknown.data1)->read(ptr, size * maxnum);
-
-	return n / size;
-}
-
-static int RWStreamWrite(SDL_RWops *context, const void *ptr, int size, int num) {
-	return 0;
-}
-
-static int RWStreamClose(SDL_RWops *context) {
-	if (context->type != 0xc0ffeeee)
-		return -1;
-
-	Common::SeekableReadStream *stream = (Common::SeekableReadStream *) context->hidden.unknown.data1;
-	delete stream;
-
-	SDL_FreeRW(context);
-	return 0;
-}
-
-SDL_RWops *RW_FromStream(Common::SeekableReadStream *stream) {
-	if (!stream)
-		return 0;
-
-	SDL_RWops *rw = SDL_AllocRW();
-
-	rw->seek  = RWStreamSeek;
-	rw->read  = RWStreamRead;
-	rw->write = RWStreamWrite;
-	rw->close = RWStreamClose;
-
-	rw->type = 0xc0ffeeee;
-	rw->hidden.unknown.data1 = stream;
-
-	return rw;
-}
-
-void FreeRW_FromStream(SDL_RWops *rw) {
-	if (rw->type != 0xc0ffeeee)
-		return;
-
-	rw->close(rw);
-}
-
-void playWav(Common::SeekableReadStream *wavStream) {
-	if (!wavStream) {
-		warning("Attempting to play NULL wavStream");
-		return;
-	}
-
-	if (wavStream->readUint32BE() == 0xfff360c4) {
-		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
-		wavStream->seek(0x1D6);
-	} else
-		wavStream->seek(0);
-
-	SDL_RWops *rw = RW_FromStream(wavStream);
-	if (!rw) {
-		warning("Failed to create SDL_RWops from wav stream");
-		return;
-	}
-
-	Mix_Chunk *wav = Mix_LoadWAV_RW(rw, true);
-	if (!wav) {
-		warning("Unable to load WAV file: %s", Mix_GetError());
-		FreeRW_FromStream(rw);
-		return;
-	}
-
-	int channel = Mix_PlayChannel(-1, wav, 0);
-	if(channel == -1) {
-		warning("Unable to play WAV file: %s", Mix_GetError());
-		Mix_FreeChunk(wav);
-		return;
-	}
-
-	warning("And smile :)");
-
-	while (Mix_Playing(channel)) {
-		sleep(1);
-	}
-
-	Mix_FreeChunk(wav);
 }
