@@ -30,17 +30,25 @@ const char *getMixerError() {
 }
 
 static int RWStreamSeek(SDL_RWops *context, int offset, int whence) {
-	if (context->type != 0xc0ffeeee)
+	if (!context || (context->type != 0xc0ffeeee))
 		return -1;
 
-	return ((Common::SeekableReadStream *) context->hidden.unknown.data1)->seek(offset, whence);
+	Common::SeekableReadStream *stream = (Common::SeekableReadStream *) context->hidden.unknown.data1;
+	if (!stream)
+		return -1;
+
+	return stream->seek(offset, whence);
 }
 
 static int RWStreamRead(SDL_RWops *context, void *ptr, int size, int maxnum) {
-	if (context->type != 0xc0ffeeee)
+	if (!context || (context->type != 0xc0ffeeee))
 		return 0;
 
-	int n = ((Common::SeekableReadStream *) context->hidden.unknown.data1)->read(ptr, size * maxnum);
+	Common::SeekableReadStream *stream = (Common::SeekableReadStream *) context->hidden.unknown.data1;
+	if (!stream)
+		return 0;
+
+	int n = stream->read(ptr, size * maxnum);
 
 	return n / size;
 }
@@ -50,7 +58,7 @@ static int RWStreamWrite(SDL_RWops *context, const void *ptr, int size, int num)
 }
 
 static int RWStreamClose(SDL_RWops *context) {
-	if (context->type != 0xc0ffeeee)
+	if (!context || (context->type != 0xc0ffeeee))
 		return -1;
 
 	Common::SeekableReadStream *stream = (Common::SeekableReadStream *) context->hidden.unknown.data1;
@@ -65,6 +73,8 @@ SDL_RWops *RW_FromStream(Common::SeekableReadStream *stream) {
 		return 0;
 
 	SDL_RWops *rw = SDL_AllocRW();
+	if (!rw)
+		return 0;
 
 	rw->seek  = RWStreamSeek;
 	rw->read  = RWStreamRead;
@@ -78,7 +88,7 @@ SDL_RWops *RW_FromStream(Common::SeekableReadStream *stream) {
 }
 
 void FreeRW_FromStream(SDL_RWops *rw) {
-	if (rw->type != 0xc0ffeeee)
+	if (!rw || (rw->type != 0xc0ffeeee))
 		return;
 
 	rw->close(rw);
