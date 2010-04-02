@@ -33,8 +33,9 @@ class GFFField;
 /** A GFF, BioWare's General File Format. */
 class GFFFile {
 public:
-	typedef std::vector<GFFField>  Struct;
-	typedef Struct::const_iterator StructIterator;
+	class StructIterator;
+
+	typedef std::vector<GFFField> Struct;
 
 	typedef std::pair<StructIterator, StructIterator> StructRange;
 
@@ -42,6 +43,28 @@ public:
 	typedef List::const_iterator     ListIterator;
 
 	typedef std::pair<ListIterator, ListIterator> ListRange;
+
+	class StructIterator {
+	public:
+		StructIterator(const StructIterator &it);
+		StructIterator(const Struct::const_iterator &it, const GFFFile &gff);
+
+		StructIterator &operator++();
+		StructIterator operator++(int);
+		StructIterator &operator--();
+		StructIterator operator--(int);
+		const GFFField &operator*() const;
+		const GFFField *operator->() const;
+		bool operator==(const StructIterator &x) const;
+		bool operator!=(const StructIterator &x) const;
+
+		StructRange structRange(uint32 structID = 0) const;
+		ListRange listRange(uint32 listID = 0) const;
+
+	private:
+		Struct::const_iterator _it;
+		const GFFFile *_gff;
+	};
 
 	/** A GFF header. */
 	struct Header {

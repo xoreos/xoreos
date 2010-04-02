@@ -25,6 +25,65 @@ static const uint32 kVersion33 = MKID_BE('V3.3'); // Found in The Witcher, diffe
 
 namespace Aurora {
 
+GFFFile::StructIterator::StructIterator(const StructIterator &it) {
+	_it  = it._it;
+	_gff = it._gff;
+}
+
+GFFFile::StructIterator::StructIterator(const Struct::const_iterator &it, const GFFFile &gff) {
+	_it  =  it;
+	_gff = &gff;
+}
+
+GFFFile::StructIterator &GFFFile::StructIterator::operator++() {
+	++_it;
+
+	return *this;
+}
+
+GFFFile::StructIterator GFFFile::StructIterator::operator++(int) {
+	StructIterator tmp(*this);
+	++(*this);
+	return tmp;
+}
+
+GFFFile::StructIterator &GFFFile::StructIterator::operator--() {
+	--_it;
+
+	return *this;
+}
+
+GFFFile::StructIterator GFFFile::StructIterator::operator--(int) {
+	StructIterator tmp(*this);
+	--(*this);
+	return tmp;
+}
+
+const GFFField &GFFFile::StructIterator::operator*() const {
+	return *_it;
+}
+
+const GFFField *GFFFile::StructIterator::operator->() const {
+	return &*_it;
+}
+
+bool GFFFile::StructIterator::operator==(const StructIterator &x) const {
+	return _it == x._it;
+}
+
+bool GFFFile::StructIterator::operator!=(const StructIterator &x) const {
+	return _it != x._it;
+}
+
+GFFFile::StructRange GFFFile::StructIterator::structRange(uint32 structID) const {
+	return _gff->structRange(structID);
+}
+
+GFFFile::ListRange GFFFile::StructIterator::listRange(uint32 listID) const {
+	return _gff->listRange(listID);
+}
+
+
 GFFFile::Header::Header() {
 	clear();
 }
@@ -151,7 +210,8 @@ bool GFFFile::load(Common::SeekableReadStream &gff) {
 
 			_rawListToListMap[i + 1 + j] = _listArray.end();
 
-			list.push_back(std::make_pair(_structArray[k].begin(), _structArray[k].end()));
+			list.push_back(std::make_pair(StructIterator(_structArray[k].begin(), *this),
+			                              StructIterator(_structArray[k].end()  , *this)));
 		}
 
 		_listArray.push_back(list);
@@ -214,7 +274,8 @@ uint32 GFFFile::getVersion() const {
 }
 
 GFFFile::StructRange GFFFile::structRange(uint32 structID) const {
-	return std::make_pair(_structArray[structID].begin(), _structArray[structID].end());
+	return std::make_pair(StructIterator(_structArray[structID].begin(), *this),
+	                      StructIterator(_structArray[structID].end()  , *this));
 }
 
 GFFFile::ListRange GFFFile::listRange(uint32 listID) const {
