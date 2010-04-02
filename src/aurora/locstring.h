@@ -30,6 +30,8 @@ namespace Aurora {
 /** A localized string. */
 class LocString {
 public:
+	static const int kStringCount = 23;
+
 	LocString();
 	~LocString();
 
@@ -46,6 +48,9 @@ public:
 	/** Set the string of that language. */
 	void setString(Language language, const std::string &str);
 
+	/** Get the first available string. */
+	const std::string &getFirstString() const;
+
 	/** Read a string out of a stream. */
 	void readString(Language language, Common::SeekableReadStream &stream);
 	/** Read a LocSubString (substring of a LocString in game data) out of a stream. */
@@ -58,7 +63,7 @@ public:
 private:
 	uint32 _id; ///< The string's ID / StringRef. */
 
-	std::string _strings[23]; /** The localized strings. */
+	std::string _strings[kStringCount]; /** The localized strings. */
 };
 
 } // End of namespace Aurora

@@ -78,7 +78,11 @@ static inline int mapLanguageToStorage(Aurora::Language language) {
 	if (((int) language) >= ARRAYSIZE(languageToStorage))
 		return 0;
 
-	return languageToStorage[(int) language];
+	int n = languageToStorage[(int) language];
+	if ((n < 0) || (n >= Aurora::LocString::kStringCount))
+		return 0;
+
+	return n;
 }
 
 namespace Aurora {
@@ -108,6 +112,14 @@ const std::string &LocString::getString(Language language) const {
 
 void LocString::setString(Language language, const std::string &str) {
 	_strings[mapLanguageToStorage(language)] = str;
+}
+
+const std::string &LocString::getFirstString() const {
+	for (int i = 0; i < kStringCount; i++)
+		if (!_strings[i].empty())
+			return _strings[i];
+
+	return _strings[0];
 }
 
 void LocString::readString(Language language, Common::SeekableReadStream &stream) {
