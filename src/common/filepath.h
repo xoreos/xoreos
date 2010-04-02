@@ -86,6 +86,13 @@ public:
 	 */
 	static std::string normalize(const std::string &p);
 
+	/** Is the given string an absolute path?
+	 *
+	 *  @param  p The path to check.
+	 *  @return true if the string describes an absolute path, false otherwise.
+	 */
+	static bool isAbsolute(const std::string &p);
+
 	/** Find a directory's subdirectory.
 	 *
 	 *  @param  directory The directory in which to look.

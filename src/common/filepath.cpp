@@ -93,6 +93,16 @@ std::string FilePath::normalize(const std::string &p) {
 	return norm;
 }
 
+bool FilePath::isAbsolute(const std::string &p) {
+	if (p.empty())
+		return false;
+
+	if (p[0] == '/')
+		return true;
+
+	return false;
+}
+
 std::string FilePath::findSubDirectory(const std::string &directory, const std::string &subDirectory,
 		bool caseInsensitive) {
 
