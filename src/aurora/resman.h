@@ -64,21 +64,31 @@ public:
 	 */
 	bool registerDataBaseDir(const std::string &path);
 
-	/** Return the list of key files found in the base data directory. */
+	/** Return the list of KEY files found in the base data directory. */
 	const Common::FileList &getKEYList() const;
 
-	/** Load a key index.
+	/** Return the list of ERF files found in the base data directory. */
+	const Common::FileList &getERFList() const;
+
+	/** Load a KEY index.
 	 *
-	 *  Add all resources found in the key and its bif to the manager.
+	 *  Add all resources found in the KEY and its BIF to the manager.
 	 *
-	 *  @param  key The key file to index.
+	 *  @param  key The KEY file to index.
 	 *  @return true on success, false otherwise.
 	 */
 	bool loadKEY(Common::SeekableReadStream &key);
 
+	/** Add resources found in the ERF file to the manager.
+	 *
+	 *  @param  erf The name of the ERF file within a valid ERF directory in the base dir.
+	 *  @return true on success, false otherwise.
+	 */
+	bool addERF(const std::string &erf);
+
 	/** Does a specific resource exists?
 	 *
-	 *  @param  name The name (resref) of the resource.
+	 *  @param  name The name (ResRef) of the resource.
 	 *  @param  type The resource's type.
 	 *  @return true if the resource exists, fale otherwise.
 	 */
@@ -86,7 +96,7 @@ public:
 
 	/** Return a resource.
 	 *
-	 *  @param  name The name (resref) of the resource.
+	 *  @param  name The name (ResRef) of the resource.
 	 *  @param  type The resource's type.
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
@@ -95,27 +105,30 @@ public:
 private:
 	/** Where a resource can be found. */
 	enum Source {
-		kSourceBIF,  ///< Within a bif file. */
-		kSourceFile  ///< A direct file. */
+		kSourceBIF,  ///< Within a BIF file.
+		kSourceERF,  ///< Within an ERF file.
+		kSourceFile  ///< A direct file.
 	};
 
 	/** A resource. */
 	struct Resource {
 		FileType type; ///< The resource's type.
 
-		Source source; ///< Where can the resource be found? */
+		Source source; ///< Where can the resource be found?
 
-		// For kSourceBIF
-		uint32 bif;    ///< Index into the bif vector.
-		uint32 offset; ///< The offset within the bif file.
+		// For kSourceBIF / kSourceERF
+		uint32 idx;    ///< Index into the BIF/ERF vector.
+		uint32 offset; ///< The offset within the BIF/ERF file.
 		uint32 size;   ///< The size of the resource data.
 
 		// For kSourceFile
 		std::string path; ///< The file's path.
 	};
 
-	/** A list of bif files. */
+	/** A list of BIF files. */
 	typedef std::vector<std::string> BIFList;
+	/** A list of ERF files. */
+	typedef std::vector<Common::SeekableReadStream *> ERFList;
 
 	/** Map over resources with the same name but different type. */
 	typedef std::map<FileType,    Resource>        ResourceTypeMap;
@@ -123,14 +136,18 @@ private:
 	typedef std::map<std::string, ResourceTypeMap> ResourceMap;
 
 	BIFList     _bifs;      ///< BIFs used by the game resources.
+	ERFList     _erfs;      ///< ERFs currently searched for game resources.
 	ResourceMap _resources; ///< All game-usable resources.
 
 	ResourceMap _resourcesSaved; ///< Saved list of game-usable resources.
 
 	std::string _baseDir; ///< The data base directory.
+	std::string _modDir;  ///< The data directory for .mod files.
+	std::string _hakDir;  ///< The data directory for .hak files.
 
-	Common::FileList _keyFiles; ///< List of all key files in the base directory.
-	Common::FileList _bifFiles; ///< List of all bif files in the base directory.
+	Common::FileList _keyFiles; ///< List of all KEY files in the base directory.
+	Common::FileList _bifFiles; ///< List of all BIF files in the base directory.
+	Common::FileList _erfFiles; ///< List of all ERF files in the base directory.
 
 	// KEY/BIF loading helpers
 	bool findBIFPaths(const KEYFile &keyFile, uint32 &bifStart);

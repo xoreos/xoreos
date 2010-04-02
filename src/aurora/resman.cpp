@@ -22,6 +22,7 @@
 #include "aurora/resman.h"
 #include "aurora/keyfile.h"
 #include "aurora/biffile.h"
+#include "aurora/erffile.h"
 
 // boost-string_algo
 using boost::iequals;
@@ -41,6 +42,12 @@ void ResourceManager::clear() {
 	_resourcesSaved.clear();
 
 	_baseDir.clear();
+	_modDir.clear();
+	_hakDir.clear();
+
+	_keyFiles.clear();
+	_bifFiles.clear();
+	_erfFiles.clear();
 }
 
 void ResourceManager::save() {
@@ -52,6 +59,8 @@ void ResourceManager::restore() {
 }
 
 bool ResourceManager::registerDataBaseDir(const std::string &path) {
+	clear();
+
 	_baseDir = path;
 
 	Common::FileList rootFiles;
@@ -69,15 +78,30 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 		return false;
 
 	if (!allFiles.getSubList(".*\\.bif", _bifFiles, true))
-		// No bif files in the path
+		// No BIF files in the path
 		return false;
 
-	// There's key and bif files, so it's probably a useable data base directory.
+	// Find all .mod and .hak in the respective directories
+	_modDir = Common::FilePath::normalize(_baseDir + "/modules/");
+	_hakDir = Common::FilePath::normalize(_baseDir + "/hak/");
+
+	Common::FileList modFiles, hakFiles;
+	modFiles.addDirectory(_modDir);
+	hakFiles.addDirectory(_hakDir);
+
+	modFiles.getSubList(".*\\.mod", _erfFiles, true);
+	hakFiles.getSubList(".*\\.hak", _erfFiles, true);
+
+	// There's KEY and BIF files, so it's probably a useable data base directory.
 	return true;
 }
 
 const Common::FileList &ResourceManager::getKEYList() const {
 	return _keyFiles;
+}
+
+const Common::FileList &ResourceManager::getERFList() const {
+	return _erfFiles;
 }
 
 bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
@@ -87,14 +111,14 @@ bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
 
 	_bifs.resize(bifStart + keyBIFCount);
 
-	// Go through all bif names the key wants, trying to find a match in our bif list
+	// Go through all BIF names the KEY wants, trying to find a match in our BIF list
 	for (uint32 i = 0; i < keyBIFCount; i++) {
 		bool found = false;
 
-		// All our bifs are in _baseDir/, and the bif names in the key should be relative to that
+		// All our BIFs are in _baseDir/, and the BIF names in the KEY should be relative to that
 		_bifs[bifStart + i] = Common::FilePath::normalize(_baseDir + "/" + keyFile.getBIFs()[i]);
 
-		// Look through all our bifs, looking for a match
+		// Look through all our BIFs, looking for a match
 		for (Common::FileList::const_iterator it = _bifFiles.begin(); it != _bifFiles.end(); ++it) {
 			if (iequals(*it, _bifs[bifStart + i])) {
 				_bifs[bifStart + i] = *it;
@@ -122,7 +146,7 @@ bool ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifSta
 
 	keyBIFFiles.resize(keyBIFCount);
 
-	// Try to load all needed bif files
+	// Try to load all needed BIF files
 	for (uint32 i = 0; i < keyBIFCount; i++) {
 		Common::File keyBIFFile;
 		if (!keyBIFFile.open(_bifs[bifStart + i]))
@@ -132,7 +156,7 @@ bool ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifSta
 			return false;
 	}
 
-	// Now cycle through all resource in the key, augmenting the information its bif provides
+	// Now cycle through all resource in the KEY, augmenting the information its BIF provides
 	KEYFile::ResourceList::const_iterator keyRes;
 	for (keyRes = keyFile.getResources().begin(); keyRes != keyFile.getResources().end(); ++keyRes) {
 
@@ -140,7 +164,7 @@ bool ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifSta
 		if (keyRes->bifIndex >= keyBIFFiles.size())
 			return false;
 
-		// Resource index within the bif in range?
+		// Resource index within the BIF in range?
 		const BIFFile::ResourceList &bifRess = keyBIFFiles[keyRes->bifIndex].getResources();
 		if (keyRes->resIndex >= bifRess.size())
 			return false;
@@ -156,7 +180,7 @@ bool ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifSta
 		// Build the complete resource record
 		Resource res;
 		res.source = kSourceBIF;
-		res.bif    = bifStart + keyRes->bifIndex;
+		res.idx    = bifStart + keyRes->bifIndex;
 		res.type   = keyRes->type;
 		res.offset = bifRes.offset;
 		res.size   = bifRes.size;
@@ -179,14 +203,66 @@ bool ResourceManager::loadKEY(Common::SeekableReadStream &key) {
 	if (!keyFile.load(key))
 		return false;
 
-	// Search for the correct bifs
+	// Search for the correct BIFs
 	uint32 bifStart;
 	if (!findBIFPaths(keyFile, bifStart))
 		return false;
 
-	// Merge the resource information of the key file and its bif files into our resource map
+	// Merge the resource information of the KEY file and its BIF files into our resource map
 	if (!mergeKEYBIFResources(keyFile, bifStart))
 		return false;
+
+	return true;
+}
+
+bool ResourceManager::addERF(const std::string &erf) {
+	Common::SeekableReadStream *erfFile = 0;
+
+	if (Common::FilePath::isAbsolute(erf)) {
+		// Absolute path to an ERF, open it from our ERF list
+
+		erfFile = _erfFiles.openFile(Common::FilePath::normalize(erf), true);
+
+		if (!erfFile)
+			// Does not exist
+			return false;
+	}
+
+	// Try to open from the .mod directory
+	if (!erfFile)
+		erfFile = _erfFiles.openFile(Common::FilePath::normalize(_modDir + "/" + erf));
+	// Try to open from the .hak directory
+	if (!erfFile)
+		erfFile = _erfFiles.openFile(Common::FilePath::normalize(_hakDir + "/" + erf));
+
+	if (!erfFile)
+		// Does not exist
+		return false;
+
+	ERFFile erfIndex;
+
+	if (!erfIndex.load(*erfFile)) {
+		delete erfFile;
+		return false;
+	}
+
+	int erfIdx = _erfs.size();
+
+	_erfs.push_back(erfFile);
+
+	const ERFFile::ResourceList &resources = erfIndex.getResources();
+	for (ERFFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
+		// Build the resource record
+		Resource res;
+		res.source = kSourceERF;
+		res.idx    = erfIdx;
+		res.type   = resource->type;
+		res.offset = resource->offset;
+		res.size   = resource->size;
+
+		// And add it to our list
+		addResource(res, resource->name);
+	}
 
 	return true;
 }
@@ -204,13 +280,13 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 		return 0;
 
 	if        (res->source == kSourceBIF) {
-		// Read the data out of the bif and return a MemoryReadStream
+		// Read the data out of the BIF and return a MemoryReadStream
 
-		if (res->bif >= _bifs.size())
+		if (res->idx >= _bifs.size())
 			return 0;
 
 		Common::File file;
-		if (!file.open(_bifs[res->bif]))
+		if (!file.open(_bifs[res->idx]))
 			return 0;
 
 		if (!file.seek(res->offset))
@@ -219,6 +295,26 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 		byte *data = new byte[res->size];
 
 		if (file.read(data, res->size) != res->size) {
+			delete[] data;
+			return 0;
+		}
+
+		return new Common::MemoryReadStream(data, res->size, DisposeAfterUse::YES);
+
+	} else if (res->source == kSourceERF) {
+		// Read the data out of the ERF and return a MemoryReadStream
+
+		if ((res->idx >= _erfs.size()) || !_erfs[res->idx])
+			return 0;
+
+		Common::SeekableReadStream &stream = *_erfs[res->idx];
+
+		if (!stream.seek(res->offset))
+			return 0;
+
+		byte *data = new byte[res->size];
+
+		if (stream.read(data, res->size) != res->size) {
 			delete[] data;
 			return 0;
 		}
