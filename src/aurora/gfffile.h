@@ -29,6 +29,17 @@ class GFFField;
 /** A GFF, BioWare's General File Format. */
 class GFFFile {
 public:
+	typedef std::vector<GFFField> Struct;
+	typedef std::vector<Struct>   StructArray;
+
+	typedef Struct::const_iterator StructIterator;
+
+	typedef std::pair<StructIterator, StructIterator> ListEntry;
+	typedef std::vector<ListEntry>                    List;
+	typedef std::vector<List>                         ListArray;
+
+	typedef List::const_iterator ListIterator;
+
 	/** A GFF header. */
 	struct Header {
 		uint32 id;
@@ -53,14 +64,6 @@ public:
 
 		/** Read the header out of a stream. */
 		bool read(Common::SeekableReadStream &gff);
-	};
-
-	/** A class to iterator over all fields in a struct. */
-	class StructIterator {
-	};
-
-	/** A class to iterator over all structs in a list. */
-	class ListIterator {
 	};
 
 	GFFFile();
@@ -101,15 +104,13 @@ public:
 	ListIterator endList(uint32 listID) const;
 
 private:
-	typedef std::vector<GFFField> Struct;
-	typedef std::vector<Struct>   StructArray;
+	Header _header; ///< The GFF's header
 
-	typedef std::vector<uint32> ListArray;
+	StructArray _structArray; ///< All structs in the GFF.
+	ListArray   _listArray;   ///< All lists in the GFF.
 
-	Header _header;
-
-	StructArray _structArray;
-	ListArray   _listArray;
+	/** To convert "raw" list indices found in GFFs an iterator into our ListArray. */
+	std::vector<ListArray::const_iterator> _rawListToListMap;
 
 	// Reading helpers
 	bool readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex);

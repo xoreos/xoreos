@@ -109,10 +109,50 @@ bool GFFFile::load(Common::SeekableReadStream &gff) {
 		return false;
 
 	// Read list array
+	std::vector<uint32> rawListArray;
 	uint32 listArrayCount = _header.listIndicesCount / 4;
-	_listArray.resize(listArrayCount);
+	rawListArray.resize(listArrayCount);
 	for (uint32 i = 0; i < listArrayCount; i++)
-		_listArray[i] = gff.readUint32LE();
+		rawListArray[i] = gff.readUint32LE();
+
+	// Counting the actual amount of lists
+	uint32 realListCount = 0;
+	for (uint32 i = 0; i < listArrayCount; i++) {
+		uint32 n = rawListArray[i];
+
+		if ((i + n) > listArrayCount) {
+			warning("GFFFile::load(): List indices broken");
+			return false;
+		}
+
+		i += n;
+		realListCount++;
+	}
+
+	// Converting the raw list to an useable list
+	_listArray.reserve(realListCount);
+	_rawListToListMap.resize(listArrayCount);
+	for (uint32 i = 0; i < listArrayCount; ) {
+		List list;
+
+		uint32 n = rawListArray[i];
+		for (uint32 j = 0; j < n; j++) {
+			uint32 k = rawListArray[i + 1 + j];
+
+			if (k >= _structArray.size()) {
+				warning("GFFFile::load(): List indices broken");
+				return false;
+			}
+
+			_rawListToListMap[i + 1 + j] = _listArray.end();
+
+			list.push_back(std::make_pair(_structArray[k].begin(), _structArray[k].end()));
+		}
+
+		_listArray.push_back(list);
+		_rawListToListMap[i] = --_listArray.end();
+		i += n + 1;
+	}
 
 	return true;
 }
@@ -161,19 +201,19 @@ bool GFFFile::readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 
 }
 
 GFFFile::StructIterator GFFFile::beginStruct(uint32 structID) const {
-	return StructIterator();
+	return _structArray[structID].begin();
 }
 
 GFFFile::StructIterator GFFFile::endStruct(uint32 structID) const {
-	return StructIterator();
+	return _structArray[structID].end();
 }
 
 GFFFile::ListIterator GFFFile::beginList(uint32 listID) const {
-	return ListIterator();
+	return _rawListToListMap[listID]->begin();
 }
 
 GFFFile::ListIterator GFFFile::endList(uint32 listID) const {
-	return ListIterator();
+	return _rawListToListMap[listID]->end();
 }
 
 
