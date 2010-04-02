@@ -37,7 +37,10 @@ static int RWStreamSeek(SDL_RWops *context, int offset, int whence) {
 	if (!stream)
 		return -1;
 
-	return stream->seek(offset, whence);
+	if (!stream->seek(offset, whence))
+		return -1;
+
+	return stream->pos();
 }
 
 static int RWStreamRead(SDL_RWops *context, void *ptr, int size, int maxnum) {
