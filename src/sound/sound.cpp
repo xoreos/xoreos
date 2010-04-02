@@ -9,6 +9,7 @@
  */
 
 #include <SDL_mixer.h>
+#include <SDL_sound.h>
 
 #include "common/stream.h"
 #include "common/util.h"
@@ -17,11 +18,17 @@
 
 namespace Sound {
 
+#define NUM_CHANNELS 2
+#define SAMPLE_RATE 44100
+#define BUFFER_SIZE 4096
+
 bool initMixer() {
-	return Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 4096) == 0;
+	Sound_Init();
+	return Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, NUM_CHANNELS, BUFFER_SIZE) == 0;
 }
 
 void deinitMixer() {
+	Sound_Quit();
 	Mix_CloseAudio();
 }
 
@@ -90,11 +97,41 @@ void playSoundFile(Common::SeekableReadStream *wavStream) {
 		return;
 	}
 
-	if (wavStream->readUint32BE() == 0xfff360c4) {
+	bool isMP3 = false;
+	uint32 tag = wavStream->readUint32BE();
+	if (tag == 0xfff360c4) {
 		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
 		wavStream->seek(0x1D6);
-	} else
-		wavStream->seek(0);
+	} else if (tag == MKID_BE('RIFF')) {
+		wavStream->seek(12);
+		tag = wavStream->readUint32BE();
+		if (tag != MKID_BE('fmt ')) {
+			warning("Not a valid WAVE file");
+			return;
+		}
+
+		// Skip fmt chunk
+		wavStream->skip(wavStream->readUint32LE());
+		tag = wavStream->readUint32BE();
+
+		if (tag == MKID_BE('fact')) {
+			// Skip useless chunk and dummied 'data' header
+			wavStream->skip(wavStream->readUint32LE());
+			tag = wavStream->readUint32BE();
+		}
+		
+		if (tag != MKID_BE('data'))
+			warning("Not a valid WAVE file: %x", tag);
+
+		uint32 dataSize = wavStream->readUint32LE();
+		if (dataSize == 0)
+			isMP3 = true;
+		else
+			wavStream->seek(0);
+	} else {
+		warning("Could not detect sound type");
+		return;
+	}
 
 	SDL_RWops *rw = RW_FromStream(wavStream);
 	if (!rw) {
@@ -102,26 +139,41 @@ void playSoundFile(Common::SeekableReadStream *wavStream) {
 		return;
 	}
 
-	Mix_Chunk *wav = Mix_LoadWAV_RW(rw, true);
+	Sound_AudioInfo audioInfo;
+	audioInfo.channels = NUM_CHANNELS;
+	audioInfo.format = AUDIO_S16SYS;
+	audioInfo.rate = SAMPLE_RATE;
+
+	Sound_Sample *sound = Sound_NewSample(rw, isMP3 ? "mp3" : "wav", &audioInfo, BUFFER_SIZE);
+	if (!sound) {
+		warning("Unable to load sound file: %s", Sound_GetError());
+		return;
+	}
+
+	// Decode all samples
+	Sound_DecodeAll(sound);
+
+	Mix_Chunk *wav = Mix_QuickLoad_RAW((byte *)sound->buffer, sound->buffer_size);
 	if (!wav) {
 		warning("Unable to load WAV file: %s", Mix_GetError());
-		FreeRW_FromStream(rw);
+		Sound_FreeSample(sound);
 		return;
 	}
 
 	int channel = Mix_PlayChannel(-1, wav, 0);
 	if(channel == -1) {
 		warning("Unable to play WAV file: %s", Mix_GetError());
+		Sound_FreeSample(sound);
 		Mix_FreeChunk(wav);
 		return;
 	}
 
 	warning("And smile :)");
 
-	while (Mix_Playing(channel)) {
+	while (Mix_Playing(channel))
 		sleep(1);
-	}
 
+	Sound_FreeSample(sound);
 	Mix_FreeChunk(wav);
 }
 

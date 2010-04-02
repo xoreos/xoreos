@@ -44,6 +44,15 @@ if test -n "$nosdlmixer"; then
 	AC_MSG_ERROR([SDL_Mixer is required and could not be found!])
 fi
 
+CPPFLAGSBAK="$CPPFLAGS"
+CPPFLAGS=`$SDL_CONFIG --cflags`
+AC_CHECK_HEADER("SDL_sound.h", , nosdlsound=1)
+CPPFLAGS="$CPPFLAGSBAK"
+
+if test -n "$nosdlsound"; then
+	AC_MSG_ERROR([SDL_Sound is required and could not be found!])
+fi
+
 AC_C_CONST
 AC_HEADER_STDC
 
@@ -56,7 +65,7 @@ BOOST_FILESYSTEM
 BOOST_REGEX
 
 EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
-EOS_LIBS="`sdl-config --libs` -lSDL_mixer"
+EOS_LIBS="`sdl-config --libs` -lSDL_mixer -lSDL_sound"
 
 AC_SUBST(SDL_MAIN_OBJ, [$SDL_MAIN_OBJ])
 AC_SUBST(SDL_LIBS, [$SDL_LIBS])
