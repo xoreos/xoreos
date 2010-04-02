@@ -11,7 +11,8 @@ noinst_HEADERS = types.h \
                  resman.h \
                  talktable.h \
                  locstring.h \
-                 gfffile.h
+                 gfffile.h \
+                 gffstructs.h
 
 libaurora_la_SOURCES = error.cpp \
                        util.cpp \
@@ -21,4 +22,5 @@ libaurora_la_SOURCES = error.cpp \
                        resman.cpp \
                        talktable.cpp \
                        locstring.cpp \
-                       gfffile.cpp
+                       gfffile.cpp \
+                       gffstructs.cpp
