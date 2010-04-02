@@ -15,6 +15,9 @@
 #ifndef AURORA_GFFSTRUCTS_H
 #define AURORA_GFFSTRUCTS_H
 
+#include <string>
+#include <map>
+
 #include "common/types.h"
 
 #include "aurora/types.h"
@@ -53,10 +56,77 @@ private:
 
 /** A scripting variable and its value. */
 class GFFVariable {
+public:
+	enum Type {
+		kTypeNone     = 0,
+		kTypeInt      = 1,
+		kTypeFloat    = 2,
+		kTypeString   = 3,
+		kTypeObjectID = 4,
+		kTypeLocation = 5,
+	};
+
+	GFFVariable();
+	GFFVariable(const GFFVariable &var);
+	~GFFVariable();
+
+	GFFVariable &operator=(const GFFVariable &var);
+
+	void clear();
+
+	Type getType() const;
+
+				int32        getInt     () const;
+				float        getFloat   () const;
+				uint32       getObjectID() const;
+	const std::string &getString  () const;
+	const GFFLocation &getLocation() const;
+
+	GFFLocation &getLocation();
+
+	void setInt     (      int32        v);
+	void setFloat   (      float        v);
+	void setObjectID(      uint32       v);
+	void setString  (const std::string &v);
+	void setLocation(const GFFLocation &v);
+
+	/** Read the variable out of a GFF struct. */
+	bool read(const GFFFile::StructRange &range, std::string &name);
+
+private:
+	Type _type;
+
+	union {
+		int32  typeInt;
+		float  typeFloat;
+		uint32 typeObjectID;
+
+		std::string *typeString;
+		GFFLocation *typeLocation;
+	} _value;
 };
 
 /** A list of scripting variables and their values. */
 class GFFVarTable {
+public:
+	GFFVarTable();
+	~GFFVarTable();
+
+	void clear();
+
+	bool has(const std::string &name) const;
+
+	const GFFVariable *get(const std::string &name) const;
+	GFFVariable *get(const std::string &name);
+
+	void set(const std::string &name, const GFFVariable &variable);
+
+	bool read(const GFFFile::ListRange &range);
+
+private:
+	typedef std::map<std::string, GFFVariable *> VarMap;
+
+	VarMap _variables;
 };
 
 /** An effect on an object. */

@@ -14,7 +14,10 @@
 
 #include <cstring>
 
+#include "common/util.h"
+
 #include "aurora/gffstructs.h"
+#include "aurora/error.h"
 
 namespace Aurora {
 
@@ -91,6 +94,219 @@ bool GFFLocation::read(const GFFFile::StructRange &range) {
 	}
 
 	return true;
+}
+
+
+GFFVariable::GFFVariable() {
+	_type = kTypeNone;
+}
+
+GFFVariable::GFFVariable(const GFFVariable &var) {
+	_type = kTypeNone;
+
+	*this = var;
+}
+
+GFFVariable::~GFFVariable() {
+	clear();
+}
+
+GFFVariable &GFFVariable::operator=(const GFFVariable &var) {
+	clear();
+
+	_type  = var._type;
+	_value = var._value;
+
+	if      (_type == kTypeString)
+		_value.typeString = new std::string(*_value.typeString);
+	else if (_type == kTypeLocation)
+		_value.typeLocation = new GFFLocation(*_value.typeLocation);
+
+	return *this;
+}
+
+void GFFVariable::clear() {
+	if      (_type == kTypeString)
+		delete _value.typeString;
+	else if (_type == kTypeLocation)
+		delete _value.typeLocation;
+
+	_type = kTypeNone;
+}
+
+GFFVariable::Type GFFVariable::getType() const {
+	return _type;
+}
+
+int32 GFFVariable::getInt() const {
+	if (_type != kTypeInt)
+		throw gffFieldTypeError;
+
+	return _value.typeInt;
+}
+
+float GFFVariable::getFloat() const {
+	if (_type != kTypeFloat)
+		throw gffFieldTypeError;
+
+	return _value.typeFloat;
+}
+
+uint32 GFFVariable::getObjectID() const {
+	if (_type != kTypeObjectID)
+		throw gffFieldTypeError;
+
+	return _value.typeObjectID;
+}
+
+const std::string &GFFVariable::getString() const {
+	if (_type != kTypeString)
+		throw gffFieldTypeError;
+
+	return *_value.typeString;
+}
+
+const GFFLocation &GFFVariable::getLocation() const {
+	if (_type != kTypeLocation)
+		throw gffFieldTypeError;
+
+	return *_value.typeLocation;
+}
+
+GFFLocation &GFFVariable::getLocation() {
+	if (_type != kTypeLocation)
+		throw gffFieldTypeError;
+
+	return *_value.typeLocation;
+}
+
+void GFFVariable::setInt(int32 v) {
+	clear();
+
+	_type = kTypeInt;
+	_value.typeInt = v;
+}
+
+void GFFVariable::setFloat(float v) {
+	clear();
+
+	_type = kTypeFloat;
+	_value.typeFloat = v;
+}
+
+void GFFVariable::setObjectID(uint32 v) {
+	clear();
+
+	_type = kTypeObjectID;
+	_value.typeObjectID = v;
+}
+
+void GFFVariable::setString(const std::string &v) {
+	clear();
+
+	_type = kTypeString;
+	_value.typeString = new std::string(v);
+}
+
+void GFFVariable::setLocation(const GFFLocation &v) {
+	clear();
+
+	_type = kTypeLocation;
+	_value.typeLocation = new GFFLocation(v);
+}
+
+bool GFFVariable::read(const GFFFile::StructRange &range, std::string &name) {
+	clear();
+
+	Type type = kTypeNone;
+
+	for (GFFFile::StructIterator it = range.first; it != range.second; ++it) {
+		if      (it->getLabel() == "Name")
+			name = it->getString();
+		else if (it->getLabel() == "Type")
+			type = (Type) it->getUint();
+	}
+
+	if ((type <= kTypeNone) || (type > kTypeLocation)) {
+		warning("GFFVariable::read(): Unknown variable type %d", _type);
+		return false;
+	}
+
+	for (GFFFile::StructIterator it = range.first; it != range.second; ++it) {
+		if (it->getLabel() == "Value") {
+			if        (type == kTypeInt) {
+				setInt(it->getSint());
+			} else if (type == kTypeFloat) {
+				setFloat(it->getDouble());
+			} else if (type == kTypeString) {
+				setString(it->getString());
+			} else if (type == kTypeObjectID) {
+				setObjectID(it->getUint());
+			} else if (type == kTypeLocation) {
+				_type = kTypeLocation;
+				_value.typeLocation = new GFFLocation();
+				if (!_value.typeLocation->read(it.structRange(it->getStructIndex())))
+					return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+
+GFFVarTable::GFFVarTable() {
+}
+
+GFFVarTable::~GFFVarTable() {
+	clear();
+}
+
+void GFFVarTable::clear() {
+	for (VarMap::iterator it = _variables.begin(); it != _variables.end(); ++it)
+		delete it->second;
+
+	_variables.clear();
+}
+
+bool GFFVarTable::has(const std::string &name) const {
+	return _variables.find(name) != _variables.end();
+}
+
+const GFFVariable *GFFVarTable::get(const std::string &name) const {
+	VarMap::const_iterator it = _variables.find(name);
+	if (it == _variables.end())
+		return 0;
+
+	return it->second;
+}
+
+GFFVariable *GFFVarTable::get(const std::string &name) {
+	VarMap::iterator it = _variables.find(name);
+	if (it == _variables.end())
+		return 0;
+
+	return it->second;
+}
+
+void GFFVarTable::set(const std::string &name, const GFFVariable &variable) {
+	_variables.insert(std::make_pair(name, new GFFVariable(variable)));
+}
+
+bool GFFVarTable::read(const GFFFile::ListRange &range) {
+	for (GFFFile::ListIterator it = range.first; it != range.second; ++it) {
+		GFFVariable *variable = new GFFVariable;
+
+		std::string name;
+		if (!variable->read(*it, name)) {
+			delete variable;
+			return false;
+		}
+
+		_variables.insert(std::make_pair(name, variable));
+	}
+
+	return false;
 }
 
 } // End of namespace Aurora
