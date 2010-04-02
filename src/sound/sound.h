@@ -11,22 +11,31 @@
 #ifndef SOUND_H
 #define SOUND_H
 
+#include "common/singleton.h"
+
 namespace Common {
 	class SeekableReadStream;
 } // End of namespace Common
 
 namespace Sound {
 
-// Yeah, put a class here eventually or something :P
+class SoundManager : public Common::Singleton<SoundManager> {
+public:
+	// Initialize/deinitialize the mixer
+	bool initMixer();
+	void deinitMixer();
+	const char *getMixerError();
 
-// Initialize/deinitialize the mixer
-bool initMixer();
-void deinitMixer();
-const char *getMixerError();
+	// Play a wave file (and eventually MP3)
+	void playSoundFile(Common::SeekableReadStream *wavStream);
 
-// Play a wave file (and eventually MP3)
-void playSoundFile(Common::SeekableReadStream *wavStream);
+private:
+	friend class Common::Singleton<SingletonBaseType>;
+};
 
 } // End of namespace Sound
+
+/** Shortcut for accessing the sound manager. */
+#define SoundMan Sound::SoundManager::instance()
 
 #endif

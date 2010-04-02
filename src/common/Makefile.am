@@ -10,7 +10,8 @@ noinst_HEADERS = system.h \
                  file.h \
                  filepath.h \
                  filelist.h \
-                 config-file.h
+                 config-file.h \
+                 singleton.h
 
 libcommon_la_SOURCES = util.cpp \
                        stream.cpp \

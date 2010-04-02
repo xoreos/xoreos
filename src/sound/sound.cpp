@@ -16,23 +16,25 @@
 
 #include "sound/sound.h"
 
+DECLARE_SINGLETON(Sound::SoundManager)
+
 namespace Sound {
 
 #define NUM_CHANNELS 2
 #define SAMPLE_RATE 44100
 #define BUFFER_SIZE 4096
 
-bool initMixer() {
+bool SoundManager::initMixer() {
 	Sound_Init();
 	return Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, NUM_CHANNELS, BUFFER_SIZE) == 0;
 }
 
-void deinitMixer() {
+void SoundManager::deinitMixer() {
 	Sound_Quit();
 	Mix_CloseAudio();
 }
 
-const char *getMixerError() {
+const char *SoundManager::getMixerError() {
 	return Mix_GetError();
 }
 
@@ -104,7 +106,7 @@ void FreeRW_FromStream(SDL_RWops *rw) {
 	rw->close(rw);
 }
 
-void playSoundFile(Common::SeekableReadStream *wavStream) {
+void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	if (!wavStream) {
 		warning("Attempting to play NULL wavStream");
 		return;

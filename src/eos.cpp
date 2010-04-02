@@ -64,8 +64,8 @@ bool initSDL() {
 		return false;
 	}
 
-	if (!Sound::initMixer()) {
-		warning("initSDL(): Unable to initialize audio: %s", Sound::getMixerError());
+	if (!SoundMan.initMixer()) {
+		warning("initSDL(): Unable to initialize audio: %s", SoundMan.getMixerError());
 		return false;
 	}
 
@@ -73,7 +73,7 @@ bool initSDL() {
 }
 
 void deinitSDL() {
-	Sound::deinitMixer();
+	SoundMan.deinitMixer();
 	SDL_Quit();
 }
 
@@ -102,7 +102,7 @@ void doAuroraStuff(Aurora::ResourceManager &resMan) {
 
 	if (wav) {
 		warning("Found a wav. Trying to play it. Turn up your speakers");
-		Sound::playSoundFile(wav);
+		SoundMan.playSoundFile(wav);
 	}
 
 	delete chitinKEY;
