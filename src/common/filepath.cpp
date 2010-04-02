@@ -53,7 +53,7 @@ std::string FilePath::changeExtension(const std::string &p, const std::string &e
 	return file.string();
 }
 
-path FilePath::normalize(const path &p) {
+path FilePath::normalize(const boost::filesystem::path &p) {
 	return path(normalize(p.string()));
 }
 
