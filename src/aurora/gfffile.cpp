@@ -160,6 +160,22 @@ bool GFFFile::readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint
 	return true;
 }
 
+GFFFile::StructIterator GFFFile::beginStruct(uint32 structID) const {
+	return StructIterator();
+}
+
+GFFFile::StructIterator GFFFile::endStruct(uint32 structID) const {
+	return StructIterator();
+}
+
+GFFFile::ListIterator GFFFile::beginList(uint32 listID) const {
+	return ListIterator();
+}
+
+GFFFile::ListIterator GFFFile::endList(uint32 listID) const {
+	return ListIterator();
+}
+
 
 GFFField::GFFField() {
 	_gffType = kGFFTypeNone;

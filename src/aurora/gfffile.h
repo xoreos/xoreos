@@ -55,6 +55,14 @@ public:
 		bool read(Common::SeekableReadStream &gff);
 	};
 
+	/** A class to iterator over all fields in a struct. */
+	class StructIterator {
+	};
+
+	/** A class to iterator over all structs in a list. */
+	class ListIterator {
+	};
+
 	GFFFile();
 	~GFFFile();
 
@@ -63,6 +71,34 @@ public:
 
 	/** Load the GFF out of a stream. */
 	bool load(Common::SeekableReadStream &gff);
+
+	/** Create a StructIterator pointing to the start of a GFFStruct.
+	 *
+	 *  @param  structID The ID of the struct. 0 is the ID of the top-level struct.
+	 *  @return The StructIterator to the start of the GFFStruct.
+	 */
+	StructIterator beginStruct(uint32 structID = 0) const;
+
+	/** Create a StructIterator pointing to the end of a GFFStruct.
+	 *
+	 *  @param  structID The ID of the struct. 0 is the ID of the top-level struct.
+	 *  @return The StructIterator to the end of the GFFStruct.
+	 */
+	StructIterator endStruct(uint32 structID = 0) const;
+
+	/** Create a ListIterator pointing to the start of a GFFList.
+	 *
+	 *  @param  listID The ID of the list.
+	 *  @return The ListIterator to the start of the GFFList.
+	 */
+	ListIterator beginList(uint32 listID) const;
+
+	/** Create a ListIterator pointing to the end of a GFFList.
+	 *
+	 *  @param  listID The ID of the list.
+	 *  @return The ListIterator to the end of the GFFList.
+	 */
+	ListIterator endList(uint32 listID) const;
 
 private:
 	typedef std::vector<GFFField>  GFFStruct;
