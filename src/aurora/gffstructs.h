@@ -129,28 +129,54 @@ private:
 	VarMap _variables;
 };
 
-/** An effect on an object. */
+/** An effect on an object.
+ *
+ *  @todo Implement this.
+ */
 class GFFEffect {
 };
 
-/** A list of effects on an object. */
+/** A list of effects on an object.
+ *
+ *  @todo Implement this.
+ */
 class GFFEffectsList {
 };
 
-/** A game event. */
+/** A game event.
+ *
+ *  @todo Implement this.
+ */
 class GFFEvent {
 };
 
-/** A queue of game events. */
+/** A queue of game events.
+ *
+ *  @todo Implement this.
+ */
 class GFFEventQueue {
 };
 
-/** An action on objects. */
+/** An action on objects.
+ *
+ *  @todo Implement this.
+ */
 class GFFAction {
 };
 
-/** A list of actions on objects. */
+/** A list of actions on objects.
+ *
+ *  @todo Implement this.
+ */
 class GFFActionList {
+};
+
+/** A situation state for the scripting virtual machine.
+ *
+ *  @todo Implement this.
+ *  @todo Implement the lot of structs/lists contained in a GFFScriptSituation.
+ */
+class GFFScriptSituation {
 };
 
 } // End of namespace Aurora
