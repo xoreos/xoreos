@@ -51,6 +51,8 @@ public:
 	/** Read a LocSubString (substring of a LocString in game data) out of a stream. */
 	void readLocSubString(Common::SeekableReadStream &stream);
 	/** Read a LocString out of a stream. */
+	void readLocString(Common::SeekableReadStream &stream, uint32 id, uint32 count);
+	/** Read a LocString out of a stream. */
 	void readLocString(Common::SeekableReadStream &stream);
 
 private:

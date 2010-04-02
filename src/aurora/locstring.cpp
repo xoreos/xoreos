@@ -122,12 +122,18 @@ void LocString::readLocSubString(Common::SeekableReadStream &stream) {
 	readString(language, stream);
 }
 
-void LocString::readLocString(Common::SeekableReadStream &stream) {
-	_id = stream.readUint32LE();
+void LocString::readLocString(Common::SeekableReadStream &stream, uint32 id, uint32 count) {
+	_id = id;
 
-	uint32 count = stream.readUint32LE();
 	while (count-- > 0)
 		readLocSubString(stream);
+}
+
+void LocString::readLocString(Common::SeekableReadStream &stream) {
+	uint32 id    = stream.readUint32LE();
+	uint32 count = stream.readUint32LE();
+
+	readLocString(stream, id, count);
 }
 
 } // End of namespace Aurora
