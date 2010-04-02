@@ -30,13 +30,11 @@ class GFFField;
 class GFFFile {
 public:
 	typedef std::vector<GFFField> Struct;
-	typedef std::vector<Struct>   StructArray;
 
 	typedef Struct::const_iterator StructIterator;
 
 	typedef std::pair<StructIterator, StructIterator> ListEntry;
 	typedef std::vector<ListEntry>                    List;
-	typedef std::vector<List>                         ListArray;
 
 	typedef List::const_iterator ListIterator;
 
@@ -110,6 +108,9 @@ public:
 	ListIterator endList(uint32 listID) const;
 
 private:
+	typedef std::vector<Struct> StructArray;
+	typedef std::vector<List>   ListArray;
+
 	Header _header; ///< The GFF's header
 
 	StructArray _structArray; ///< All structs in the GFF.
