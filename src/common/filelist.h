@@ -94,6 +94,15 @@ public:
 	 */
 	bool contains(const std::string &glob, bool caseInsensitive) const;
 
+	/** Find the first file matching the given regex.
+	 *
+	 *  @param  glob A perl regular expression to match the file names against.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
+	 *  @return The path of the first matching file, or "" if such a file is not
+	 *          in the list.
+	 */
+	std::string findFirst(const std::string &glob, bool caseInsensitive) const;
+
 	/** Open the specified file.
 	 *
 	 *  @param  fileName The file to open.

@@ -222,6 +222,14 @@ bool FileList::contains(const std::string &glob, bool caseInsensitive) const {
 	return false;
 }
 
+std::string FileList::findFirst(const std::string &glob, bool caseInsensitive) const {
+	const FilePath *p = getPath(glob, caseInsensitive);
+	if (!p)
+		return "";
+
+	return p->filePath.string();
+}
+
 SeekableReadStream *FileList::openFile(const std::string &fileName) const {
 	const FilePath *p = getPath(fileName);
 	if (!p)
