@@ -12,6 +12,7 @@
 #include "common/util.h"
 
 #include "aurora/gfffile.h"
+#include "aurora/error.h"
 #include "aurora/aurorafile.h"
 #include "aurora/locstring.h"
 
@@ -263,42 +264,72 @@ const std::string &GFFField::getLabel() const {
 }
 
 char GFFField::getChar() const {
+	if (_type != kTypeChar)
+		throw gffFieldTypeError;
+
 	return (char) _value.typeInt;
 }
 
 uint64 GFFField::getUint() const {
+	if ((_type != kTypeUint) && (_type != kTypeSint))
+		throw gffFieldTypeError;
+
 	return (uint64) _value.typeInt;
 }
 
 int64 GFFField::getSint() const {
+	if ((_type != kTypeUint) && (_type != kTypeSint))
+		throw gffFieldTypeError;
+
 	return (int64) _value.typeInt;
 }
 
 double GFFField::getDouble() const {
+	if (_type != kTypeDouble)
+		throw gffFieldTypeError;
+
 	return _value.typeDouble;
 }
 
 const std::string &GFFField::getString() const {
+	if (_type != kTypeString)
+		throw gffFieldTypeError;
+
 	return *_value.typeString;
 }
 
 const LocString &GFFField::getLocString() const {
+	if (_type != kTypeLocString)
+		throw gffFieldTypeError;
+
 	return *_value.typeLocString;
 }
 
 uint32 GFFField::getDataSize() const {
+	if (_type != kTypeData)
+		throw gffFieldTypeError;
+
 	return _dataSize;
 }
 
-const float *GFFField::getVector() const {
-	return _value.typeVector;
-}
-
 const byte *GFFField::getData() const {
+	if (_type != kTypeData)
+		throw gffFieldTypeError;
+
 	return (const byte *) *_value.typeData;
 }
 
+const float *GFFField::getVector() const {
+	if (_type != kTypeVector)
+		throw gffFieldTypeError;
+
+	return _value.typeVector;
+}
+
 const uint32 GFFField::getIndex() const {
+	if ((_type != kTypeStruct) && (_type != kTypeList))
+		throw gffFieldTypeError;
+
 	return _value.typeIndex;
 }
 

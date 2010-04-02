@@ -3,6 +3,7 @@ include $(top_srcdir)/Makefile.common
 noinst_LTLIBRARIES = libaurora.la
 
 noinst_HEADERS = types.h \
+                 error.h \
                  util.h \
                  aurorafile.h \
                  keyfile.h \
@@ -12,7 +13,8 @@ noinst_HEADERS = types.h \
                  locstring.h \
                  gfffile.h
 
-libaurora_la_SOURCES = util.cpp \
+libaurora_la_SOURCES = error.cpp \
+                       util.cpp \
                        aurorafile.cpp \
                        keyfile.cpp \
                        biffile.cpp \
