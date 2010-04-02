@@ -33,14 +33,15 @@ class GFFField;
 /** A GFF, BioWare's General File Format. */
 class GFFFile {
 public:
-	typedef std::vector<GFFField> Struct;
-
+	typedef std::vector<GFFField>  Struct;
 	typedef Struct::const_iterator StructIterator;
 
-	typedef std::pair<StructIterator, StructIterator> ListEntry;
-	typedef std::vector<ListEntry>                    List;
+	typedef std::pair<StructIterator, StructIterator> StructRange;
 
-	typedef List::const_iterator ListIterator;
+	typedef std::vector<StructRange> List;
+	typedef List::const_iterator     ListIterator;
+
+	typedef std::pair<ListIterator, ListIterator> ListRange;
 
 	/** A GFF header. */
 	struct Header {
@@ -83,33 +84,19 @@ public:
 	/** Return the file's version. */
 	uint32 getVersion() const;
 
-	/** Create a StructIterator pointing to the start of a GFF's Struct.
+	/** Create a StructRange of two StructIterators pointing to the start and end of a GFF's struct.
 	 *
 	 *  @param  structID The ID of the struct. 0 is the ID of the top-level struct.
-	 *  @return The StructIterator to the start of the Struct.
+	 *  @return The range of the struct.
 	 */
-	StructIterator beginStruct(uint32 structID = 0) const;
+	StructRange structRange(uint32 structID = 0) const;
 
-	/** Create a StructIterator pointing to the end of a GFF's Struct.
-	 *
-	 *  @param  structID The ID of the struct. 0 is the ID of the top-level struct.
-	 *  @return The StructIterator to the end of the Struct.
-	 */
-	StructIterator endStruct(uint32 structID = 0) const;
-
-	/** Create a ListIterator pointing to the start of a GFF's List.
+	/** Create a ListRange of two ListIterators pointing to the start and end of a GFF's list.
 	 *
 	 *  @param  listID The ID of the list.
-	 *  @return The ListIterator to the start of the List.
+	 *  @return The range of the list.
 	 */
-	ListIterator beginList(uint32 listID) const;
-
-	/** Create a ListIterator pointing to the end of a GFF's List.
-	 *
-	 *  @param  listID The ID of the list.
-	 *  @return The ListIterator to the end of the List.
-	 */
-	ListIterator endList(uint32 listID) const;
+	ListRange listRange(uint32 listID = 0) const;
 
 private:
 	typedef std::vector<Struct> StructArray;

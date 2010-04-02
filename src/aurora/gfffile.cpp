@@ -213,20 +213,12 @@ uint32 GFFFile::getVersion() const {
 	return _header.version;
 }
 
-GFFFile::StructIterator GFFFile::beginStruct(uint32 structID) const {
-	return _structArray[structID].begin();
+GFFFile::StructRange GFFFile::structRange(uint32 structID) const {
+	return std::make_pair(_structArray[structID].begin(), _structArray[structID].end());
 }
 
-GFFFile::StructIterator GFFFile::endStruct(uint32 structID) const {
-	return _structArray[structID].end();
-}
-
-GFFFile::ListIterator GFFFile::beginList(uint32 listID) const {
-	return _rawListToListMap[listID]->begin();
-}
-
-GFFFile::ListIterator GFFFile::endList(uint32 listID) const {
-	return _rawListToListMap[listID]->end();
+GFFFile::ListRange GFFFile::listRange(uint32 listID) const {
+	return std::make_pair(_rawListToListMap[listID]->begin(), _rawListToListMap[listID]->end());
 }
 
 
