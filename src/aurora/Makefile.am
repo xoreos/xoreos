@@ -8,6 +8,7 @@ noinst_HEADERS = types.h \
                  aurorafile.h \
                  keyfile.h \
                  biffile.h \
+                 erffile.h \
                  resman.h \
                  talktable.h \
                  locstring.h \
@@ -19,6 +20,7 @@ libaurora_la_SOURCES = error.cpp \
                        aurorafile.cpp \
                        keyfile.cpp \
                        biffile.cpp \
+                       erffile.cpp \
                        resman.cpp \
                        talktable.cpp \
                        locstring.cpp \
