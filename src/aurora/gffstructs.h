@@ -17,12 +17,38 @@
 
 #include "common/types.h"
 
+#include "aurora/types.h"
 #include "aurora/gfffile.h"
 
 namespace Aurora {
 
 /** A location in a module. */
 class GFFLocation {
+public:
+	GFFLocation(      uint32  area        = kObjectIDInvalid,
+	            const double *position    = 0,
+	            const double *orientation = 0);
+
+	void clear(); ///< Clear the location.
+
+	      uint32  getArea       () const; ///< Return the ObjectID of the area.
+	const double *getPosition   () const; ///< Return the coordinates of the location.
+	const double *getOrientation() const; ///< Return the direction vector.
+
+	void setArea       (uint32 area);               ///< Set the ObjectID of the area.
+	void setPosition   (const double *position);    ///< Set the coordinates of the location.
+	void setOrientation(const double *orientation); ///< Set the direction vector.
+
+	/** Read the location out of a GFF struct. */
+	bool read(const GFFFile::StructRange &range);
+
+private:
+	uint32 _area;           ///< ObjectID of the area containing the location.
+	double _position[3];    ///< (x,y,z) coordinates of the location.
+	double _orientation[3]; ///< (x,y,z) components of the direction vector the location faces.
+
+	void clearPosition();
+	void clearOrientation();
 };
 
 /** A scripting variable and its value. */
