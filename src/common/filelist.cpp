@@ -28,7 +28,7 @@ using boost::iequals;
 
 namespace Common {
 
-FileList::FilePath::FilePath(std::string b, path p) : baseDir(b), filePath(p) {
+FileList::FilePath::FilePath(std::string b, boost::filesystem::path p) : baseDir(b), filePath(p) {
 }
 
 FileList::FilePath::FilePath(const FilePath &p) : baseDir(p.baseDir), filePath(p.filePath) {
@@ -130,7 +130,9 @@ bool FileList::addDirectory(const std::string &directory, int recurseDepth) {
 	return addDirectory(directory, path(directory), recurseDepth);
 }
 
-bool FileList::addDirectory(const std::string &base, const path &directory, int recurseDepth) {
+bool FileList::addDirectory(const std::string &base,
+		const boost::filesystem::path &directory, int recurseDepth) {
+
 	if (!exists(directory) || !is_directory(directory))
 		// Path is either no directory or doesn't exist
 		return false;
@@ -162,7 +164,7 @@ void FileList::addPath(const FilePath &p) {
 	_fileMap.insert(std::make_pair(to_lower_copy(p.filePath.stem()), --_files.end()));
 }
 
-void FileList::addPath(const std::string &base, const path &p) {
+void FileList::addPath(const std::string &base, const boost::filesystem::path &p) {
 	addPath(FilePath(base, p));
 }
 
