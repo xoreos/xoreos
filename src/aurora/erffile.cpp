@@ -37,8 +37,97 @@ ERFFile::~ERFFile() {
 void ERFFile::clear() {
 }
 
-bool ERFFile::load(Common::SeekableReadStream &bif) {
+bool ERFFile::load(Common::SeekableReadStream &erf) {
+	_id = erf.readUint32BE();
+	if ((_id != kERFID) && (_id != kMODID) && (_id != kHAKID) && (_id != kSAVID)) {
+		warning("ERFFile::load(): Not a ERF file");
+		return false;
+	}
+
+	_version = erf.readUint32BE();
+	if (_version != kVersion1) {
+		warning("ERFFile::load(): Unsupported file version");
+		return false;
+	}
+
+	uint32 langCount = erf.readUint32LE(); // Number of languages for the description
+	erf.skip(4);                           // Number of bytes in the description
+	uint32 resCount  = erf.readUint32LE(); // Number of resources in the ERF
+
+	uint32 offDescription = erf.readUint32LE();
+	uint32 offKeyList     = erf.readUint32LE();
+	uint32 offResList     = erf.readUint32LE();
+
+	erf.skip(4 + 4); // Build year and day
+
+	uint32 descriptionID = erf.readUint32LE();
+
+	erf.skip(116); // Reserved
+
+	// Read description string(s)
+	if (!erf.seek(offDescription))
+		return false;
+
+	_description.readLocString(erf, descriptionID, langCount);
+
+	_resources.resize(resCount);
+
+	// Read name and type part of the resource list
+	if (!readKeyList(erf, offKeyList))
+		return false;
+
+	// Read offset and size part of the resource list
+	if (!readResList(erf, offResList))
+		return false;
+
+	if (erf.err()) {
+		warning("ERFFile::load(): Read error");
+		return false;
+	}
+
 	return true;
+}
+
+bool ERFFile::readKeyList(Common::SeekableReadStream &erf, uint32 offset) {
+	if (!erf.seek(offset))
+		return false;
+
+	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+		res->name = AuroraFile::readRawString(erf, 16);
+		erf.skip(4); // Resource ID
+		res->type = (FileType) erf.readUint16LE();
+		erf.skip(2); // Reserved
+	}
+
+	return true;
+}
+
+bool ERFFile::readResList(Common::SeekableReadStream &erf, uint32 offset) {
+	if (!erf.seek(offset))
+		return false;
+
+	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+		res->offset = erf.readUint32LE();
+		res->size   = erf.readUint32LE();
+	}
+
+	return true;
+}
+
+uint32 ERFFile::getID() const {
+return _id;
+}
+
+uint32 ERFFile::getVersion() const {
+	return _version;
+}
+
+const LocString &ERFFile::getDescription() const {
+	return _description;
+}
+
+const ERFFile::ResourceList &ERFFile::getResources() const {
+	return _resources;
 }
 
 } // End of namespace Aurora

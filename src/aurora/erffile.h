@@ -15,9 +15,12 @@
 #ifndef AURORA_ERFFILE_H
 #define AURORA_ERFFILE_H
 
+#include <vector>
+
 #include "common/types.h"
 
 #include "aurora/types.h"
+#include "aurora/locstring.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -25,25 +28,55 @@ namespace Common {
 
 namespace Aurora {
 
-/** Class to hold resource data of an erf file. */
+/** Class to hold resource data of an ERF file. */
 class ERFFile {
 public:
+	/** A resource. */
+	struct Resource {
+		std::string name; ///< The resource's name.
+		FileType    type; ///< The resource's type.
+
+		uint32 offset; ///< The resource's offset within the ERF.
+		uint32 size;   ///< The resource's size.
+	};
+
+	typedef std::vector<Resource> ResourceList;
+
 	ERFFile();
 	~ERFFile();
 
 	/** Clear all resource information. */
 	void clear();
 
-	/** Load an erf file.
+	/** Load an ERF file.
 	 *
-	 *  @param  erf A stream of an erf file.
+	 *  @param  erf A stream of an ERF file.
 	 *  @return true if loading was successful, false otherwise.
 	 */
 	bool load(Common::SeekableReadStream &erf);
 
+	/** Return the file's ID. */
+	uint32 getID() const;
+
+	/** Return the file's version. */
+	uint32 getVersion() const;
+
+	/** Return the description. */
+	const LocString &getDescription() const;
+
+	/** Return a list of all containing resources. */
+	const ResourceList &getResources() const;
+
 private:
 	uint32 _id;
 	uint32 _version;
+
+	LocString _description; ///< The ERF's description.
+
+	ResourceList _resources; ///< All containing resources.
+
+	bool readKeyList(Common::SeekableReadStream &erf, uint32 offset);
+	bool readResList(Common::SeekableReadStream &erf, uint32 offset);
 };
 
 } // End of namespace Aurora
