@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/locstring.cpp
+ *  Handling BioWare's localized strings.
+ */
+
 #include "common/util.h"
 #include "common/stream.h"
 

@@ -10,6 +10,10 @@
 
 // Mostly based on ScummVM's config file code
 
+/** @file common/config-file.h
+ *  A class storing a basic configuration file.
+ */
+
 #ifndef COMMON_CONFIG_FILE_H
 #define COMMON_CONFIG_FILE_H
 

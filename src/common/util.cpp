@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/util.cpp
+ *  Utility templates and functions.
+ */
+
 #include "common/util.h"
 
 #ifndef DISABLE_TEXT_CONSOLE

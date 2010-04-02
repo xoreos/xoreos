@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/locstring.h
+ *  Handling BioWare's localized strings.
+ */
+
 #ifndef AURORA_LOCSTRING_H
 #define AURORA_LOCSTRING_H
 

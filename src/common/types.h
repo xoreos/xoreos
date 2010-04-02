@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/types.h
+ *  Low-level type definitions to handle fixed width types portably.
+ */
+
 #ifndef COMMON_TYPES_H
 #define COMMON_TYPES_H
 

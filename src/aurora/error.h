@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/error.h
+ *  Basic exceptions to throw when handling files used in Bioware's Aurora engine.
+ */
+
 #ifndef AURORA_ERROR_H
 #define AURORA_ERROR_H
 

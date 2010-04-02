@@ -10,6 +10,10 @@
 
 // Mostly copied verbatim from ScummVM's
 
+/** @file common/util.h
+ *  Utility templates and functions.
+ */
+
 #ifndef COMMON_UTIL_H
 #define COMMON_UTIL_H
 

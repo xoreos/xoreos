@@ -10,6 +10,10 @@
 
 // Mostly based on ScummVM's endian code
 
+/** @file common/endianness.h
+ *  Low-level macros and functions to handle different endianness portably.
+ */
+
 #ifndef COMMON_ENDIAN_H
 #define COMMON_ENDIAN_H
 

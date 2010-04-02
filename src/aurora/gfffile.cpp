@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/gfffile.cpp
+ *  Handling BioWare's GFFs (generic file format).
+ */
+
 #include "common/stream.h"
 #include "common/util.h"
 

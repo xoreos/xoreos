@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/config-file.cpp
+ *  A class storing a basic configuration file.
+ */
+
 #include "boost/algorithm/string.hpp"
 
 #include "common/config-file.h"

@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/talktable.h
+ *  Handling BioWare's TLKs (talk tables).
+ */
+
 #ifndef AURORA_TALKTABLE_H
 #define AURORA_TALKTABLE_H
 

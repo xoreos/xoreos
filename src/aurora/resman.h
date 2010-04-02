@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/resman.h
+ *  The global resource manager for Aurora resources.
+ */
+
 #ifndef AURORA_RESMAN_H
 #define AURORA_RESMAN_H
 

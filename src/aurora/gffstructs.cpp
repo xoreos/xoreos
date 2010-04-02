@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/gffstructs.cpp
+ *  %Common structures found in BioWare's GFF files.
+ */
+
 #include "aurora/gffstructs.h"
 
 namespace Aurora {

@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/aurorafile.cpp
+ *  Utility class for handling special data structures found in BioWare's Aurora files.
+ */
+
 #include "common/stream.h"
 #include "common/util.h"
 

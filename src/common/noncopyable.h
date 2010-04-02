@@ -10,6 +10,10 @@
 
 // Copied verbatim from ScummVM
 
+/** @file common/noncopyable.h
+ *  Simple base class for classes that can't be copied.
+ */
+
 #ifndef COMMON_NONCOPYABLE_H
 #define COMMON_NONCOPYABLE_H
 

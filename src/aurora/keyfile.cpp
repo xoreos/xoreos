@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/keyfile.cpp
+ *  Handling BioWare's KEYs (resource index files).
+ */
+
 #include "common/stream.h"
 #include "common/util.h"
 

@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/singleton.h
+ *  Class and macro for implementing singletons.
+ */
+
 #ifndef COMMON_SINGLETON_H
 #define COMMON_SINGLETON_H
 

@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/gfffile.h
+ *  Handling BioWare's GFFs (generic file format).
+ */
+
 #ifndef AURORA_GFFFILE_H
 #define AURORA_GFFFILE_H
 

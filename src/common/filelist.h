@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/filelist.h
+ *  A list of files.
+ */
+
 #ifndef COMMON_FILELIST_H
 #define COMMON_FILELIST_H
 

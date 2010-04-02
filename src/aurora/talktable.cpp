@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/talktable.cpp
+ *  Handling BioWare's TLKs (talk tables).
+ */
+
 #include "common/stream.h"
 #include "common/util.h"
 

@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/file.h
+ *  File classes implementing the stream interfaces.
+ */
+
 #ifndef COMMON_FILE_H
 #define COMMON_FILE_H
 

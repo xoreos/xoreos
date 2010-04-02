@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file eos.cpp
+ *  The project's main entry point.
+ */
+
 #include <cstdio>
 
 #include <SDL.h>

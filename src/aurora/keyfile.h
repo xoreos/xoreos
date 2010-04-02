@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/keyfile.h
+ *  Handling BioWare's KEYs (resource index files).
+ */
+
 #ifndef AURORA_KEYFILE_H
 #define AURORA_KEYFILE_H
 

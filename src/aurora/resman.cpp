@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/resman.cpp
+ *  The global resource manager for Aurora resources.
+ */
+
 #include "boost/algorithm/string.hpp"
 
 #include "common/stream.h"

@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/util.cpp
+ *  Utility functions to handle files used in BioWare's Aurora engine.
+ */
+
 #include "boost/algorithm/string.hpp"
 
 #include "common/util.h"

@@ -10,6 +10,10 @@
 
 // Mostly based on ScummVM's architecture/system checks
 
+/** @file common/system.h
+ *  Low-level detection of architecture/system properties.
+ */
+
 #ifndef COMMON_SYSTEM_H
 #define COMMON_SYSTEM_H
 

@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/biffile.h
+ *  Handling BioWare's BIFs (resource data files).
+ */
+
 #ifndef AURORA_BIFFILE_H
 #define AURORA_BIFFILE_H
 

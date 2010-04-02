@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/file.cpp
+ *  File classes implementing the stream interfaces.
+ */
+
 #include <string>
 
 #include "common/file.h"

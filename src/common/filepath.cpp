@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/filepath.cpp
+ *  Utility class for manipulating file paths.
+ */
+
 #include "boost/algorithm/string.hpp"
 
 #include "common/filepath.h"

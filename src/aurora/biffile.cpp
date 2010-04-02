@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/biffile.cpp
+ *  Handling BioWare's BIFs (resource data files).
+ */
+
 #include "common/stream.h"
 #include "common/util.h"
 

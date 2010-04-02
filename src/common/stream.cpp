@@ -10,6 +10,10 @@
 
 // Largely based on the stream implementation found in ScummVM.
 
+/** @file stream.cpp
+ *  Basic stream interfaces.
+ */
+
 #include "common/stream.h"
 #include "common/util.h"
 

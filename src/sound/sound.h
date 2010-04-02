@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file sound/sound.h
+ *  The global sound manager, handling all sound output.
+ */
+
 #ifndef SOUND_H
 #define SOUND_H
 

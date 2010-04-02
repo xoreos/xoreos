@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file sound/sound.cpp
+ *  The global sound manager, handling all sound output.
+ */
+
 #include <SDL_mixer.h>
 #include <SDL_sound.h>
 

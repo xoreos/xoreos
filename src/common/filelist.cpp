@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/filelist.cpp
+ *  A list of files.
+ */
+
 #include "boost/algorithm/string.hpp"
 #include "boost/regex.hpp"
 

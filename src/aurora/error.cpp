@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/error.cpp
+ *  Basic exceptions to throw when handling files used in Bioware's Aurora engine.
+ */
+
 #include "aurora/error.h"
 
 namespace Aurora {

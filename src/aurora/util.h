@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/util.h
+ *  Utility functions to handle files used in BioWare's Aurora engine.
+ */
+
 #ifndef AURORA_UTIL_H
 #define AURORA_UTIL_H
 

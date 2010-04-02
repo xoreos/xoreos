@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file aurora/aurorafile.h
+ *  Utility class for handling special data structures found in BioWare's Aurora files.
+ */
+
 #ifndef AURORA_AURORAFILE_H
 #define AURORA_AURORAFILE_H
 
