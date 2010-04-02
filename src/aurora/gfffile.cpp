@@ -200,6 +200,14 @@ bool GFFFile::readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 
 	return true;
 }
 
+uint32 GFFFile::getID() const {
+	return _header.id;
+}
+
+uint32 GFFFile::getVersion() const {
+	return _header.version;
+}
+
 GFFFile::StructIterator GFFFile::beginStruct(uint32 structID) const {
 	return _structArray[structID].begin();
 }

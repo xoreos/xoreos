@@ -75,6 +75,12 @@ public:
 	/** Load the GFF out of a stream. */
 	bool load(Common::SeekableReadStream &gff);
 
+	/** Return the file's ID. */
+	uint32 getID() const;
+
+	/** Return the file's version. */
+	uint32 getVersion() const;
+
 	/** Create a StructIterator pointing to the start of a GFF's Struct.
 	 *
 	 *  @param  structID The ID of the struct. 0 is the ID of the top-level struct.
