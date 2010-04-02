@@ -20,11 +20,11 @@ static const uint32 kVersion33 = MKID_BE('V3.3'); // Found in The Witcher, diffe
 
 namespace Aurora {
 
-GFFHeader::GFFHeader() {
+GFFFile::Header::Header() {
 	clear();
 }
 
-void GFFHeader::clear() {
+void GFFFile::Header::clear() {
 	id                 = 0;
 	version            = 0;
 	structOffset       = 0;
@@ -41,12 +41,12 @@ void GFFHeader::clear() {
 	listIndicesCount   = 0;
 }
 
-bool GFFHeader::read(Common::SeekableReadStream &gff) {
+bool GFFFile::Header::read(Common::SeekableReadStream &gff) {
 	id      = gff.readUint32BE();
 	version = gff.readUint32BE();
 
 	if ((version != kVersion32) && (version != kVersion33)) {
-		warning("GFFHeader::read(): Unsupported file version");
+		warning("GFFFile::Header::read(): Unsupported file version");
 		return false;
 	}
 
@@ -62,6 +62,100 @@ bool GFFHeader::read(Common::SeekableReadStream &gff) {
 	fieldIndicesCount  = gff.readUint32LE();
 	listIndicesOffset  = gff.readUint32LE();
 	listIndicesCount   = gff.readUint32LE();
+
+	return true;
+}
+
+
+GFFFile::GFFFile() {
+}
+
+GFFFile::~GFFFile() {
+}
+
+void GFFFile::clear() {
+	_header.clear();
+
+	_structArray.clear();
+	_listArray.clear();
+}
+
+bool GFFFile::load(Common::SeekableReadStream &gff) {
+	if (!_header.read(gff))
+		return false;
+
+	// Read structs
+	_structArray.resize(_header.structCount);
+	for (uint32 i = 0; i < _header.structCount; i++) {
+		gff.skip(4); // Programmer-defined ID
+
+		uint32 data  = gff.readUint32LE();
+		uint32 count = gff.readUint32LE();
+
+		uint32 curPos = gff.pos();
+
+		_structArray[i].resize(count);
+		if (count > 1) {
+			if (!readFields(gff, _structArray[i], data))
+				return false;
+		} else
+			if (!readField(gff, _structArray[i][0], data))
+				return false;
+
+		gff.seek(curPos);
+	}
+
+	if (!gff.seek(_header.listIndicesOffset))
+		return false;
+
+	// Read list array
+	uint32 listArrayCount = _header.listIndicesCount / 4;
+	_listArray.resize(listArrayCount);
+	for (uint32 i = 0; i < listArrayCount; i++)
+		_listArray[i] = gff.readUint32LE();
+
+	return true;
+}
+
+bool GFFFile::readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex) {
+	// Sanity check
+	if (fieldIndex > _header.fieldCount)
+		return false;
+
+	// Seek
+	if (!gff.seek(_header.fieldOffset + fieldIndex * 12))
+		return false;
+
+	// Read
+	if (!field.read(gff, _header))
+		return false;
+
+	return true;
+}
+
+bool GFFFile::readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint32 fieldIndicesIndex) {
+	// Sanity check
+	if (fieldIndicesIndex > _header.fieldIndicesCount)
+		return false;
+
+	// Seek
+	if (!gff.seek(_header.fieldIndicesOffset + fieldIndicesIndex))
+		return false;
+
+	// Get the number of structs in the list
+	uint32 count = strct.size();
+
+	std::vector<uint32> indices;
+
+	// Read all struct indices
+	indices.resize(count);
+	for (uint32 i = 0; i < count; i++)
+		indices[i] = gff.readUint32LE();
+
+	// Read the structs
+	for (uint32 i = 0; i < count; i++)
+		if (!readField(gff, strct[i], indices[i]))
+			return false;
 
 	return true;
 }
@@ -144,7 +238,7 @@ const uint32 GFFField::getIndex() const {
 	return _value.typeIndex;
 }
 
-bool GFFField::read(Common::SeekableReadStream &gff, const GFFHeader &header) {
+bool GFFField::read(Common::SeekableReadStream &gff, const GFFFile::Header &header) {
 	clear();
 
 	// Read the data
@@ -177,7 +271,7 @@ bool GFFField::read(Common::SeekableReadStream &gff, const GFFHeader &header) {
 	return true;
 }
 
-bool GFFField::convertData(Common::SeekableReadStream &gff, const GFFHeader &header, uint32 data) {
+bool GFFField::convertData(Common::SeekableReadStream &gff, const GFFFile::Header &header, uint32 data) {
 	// Do the correct conversion/reading for each data type
 
 	switch (_gffType) {
@@ -277,7 +371,7 @@ bool GFFField::convertData(Common::SeekableReadStream &gff, const GFFHeader &hea
 }
 
 inline bool GFFField::seekGFFData(Common::SeekableReadStream &gff,
-		const GFFHeader &header, uint32 data, uint32 &curPos) {
+		const GFFFile::Header &header, uint32 data, uint32 &curPos) {
 
 	if (data >= header.fieldDataCount)
 		return false;
@@ -290,7 +384,7 @@ inline bool GFFField::seekGFFData(Common::SeekableReadStream &gff,
 }
 
 inline bool GFFField::readUint64(Common::SeekableReadStream &gff,
-		const GFFHeader &header, uint32 data) {
+		const GFFFile::Header &header, uint32 data) {
 
 	uint32 curPos;
 	if (!seekGFFData(gff, header, data, curPos))
@@ -303,7 +397,7 @@ inline bool GFFField::readUint64(Common::SeekableReadStream &gff,
 }
 
 inline bool GFFField::readSint64(Common::SeekableReadStream &gff,
-		const GFFHeader &header, uint32 data) {
+		const GFFFile::Header &header, uint32 data) {
 
 	uint32 curPos;
 	if (!seekGFFData(gff, header, data, curPos))
@@ -316,7 +410,7 @@ inline bool GFFField::readSint64(Common::SeekableReadStream &gff,
 }
 
 inline bool GFFField::readDouble(Common::SeekableReadStream &gff,
-		const GFFHeader &header, uint32 data) {
+		const GFFFile::Header &header, uint32 data) {
 
 	uint32 curPos;
 	if (!seekGFFData(gff, header, data, curPos))
@@ -329,7 +423,7 @@ inline bool GFFField::readDouble(Common::SeekableReadStream &gff,
 }
 
 inline bool GFFField::readExoString(Common::SeekableReadStream &gff,
-		const GFFHeader &header, uint32 data) {
+		const GFFFile::Header &header, uint32 data) {
 
 	uint32 curPos;
 	if (!seekGFFData(gff, header, data, curPos))
@@ -346,7 +440,7 @@ inline bool GFFField::readExoString(Common::SeekableReadStream &gff,
 }
 
 inline bool GFFField::readResRef(Common::SeekableReadStream &gff,
-		const GFFHeader &header, uint32 data) {
+		const GFFFile::Header &header, uint32 data) {
 
 	uint32 curPos;
 	if (!seekGFFData(gff, header, data, curPos))
@@ -363,7 +457,7 @@ inline bool GFFField::readResRef(Common::SeekableReadStream &gff,
 }
 
 inline bool GFFField::readLocString(Common::SeekableReadStream &gff,
-		const GFFHeader &header, uint32 data) {
+		const GFFFile::Header &header, uint32 data) {
 
 	uint32 curPos;
 	if (!seekGFFData(gff, header, data, curPos))
@@ -379,7 +473,7 @@ inline bool GFFField::readLocString(Common::SeekableReadStream &gff,
 }
 
 inline bool GFFField::readVoid(Common::SeekableReadStream &gff,
-		const GFFHeader &header, uint32 data) {
+		const GFFFile::Header &header, uint32 data) {
 
 	uint32 curPos;
 	if (!seekGFFData(gff, header, data, curPos))
@@ -403,7 +497,7 @@ inline bool GFFField::readVoid(Common::SeekableReadStream &gff,
 }
 
 inline bool GFFField::readVector(Common::SeekableReadStream &gff,
-		const GFFHeader &header, uint32 data) {
+		const GFFFile::Header &header, uint32 data) {
 
 	uint32 curPos;
 	if (!seekGFFData(gff, header, data, curPos))
@@ -464,100 +558,6 @@ inline GFFField::Type GFFField::toType(GFFType type) {
 	}
 
 	return kTypeNone;
-}
-
-
-GFFFile::GFFFile() {
-}
-
-GFFFile::~GFFFile() {
-}
-
-void GFFFile::clear() {
-	_header.clear();
-
-	_structArray.clear();
-	_listArray.clear();
-}
-
-bool GFFFile::load(Common::SeekableReadStream &gff) {
-	if (!_header.read(gff))
-		return false;
-
-	// Read structs
-	_structArray.resize(_header.structCount);
-	for (uint32 i = 0; i < _header.structCount; i++) {
-		gff.skip(4); // Programmer-defined ID
-
-		uint32 data  = gff.readUint32LE();
-		uint32 count = gff.readUint32LE();
-
-		uint32 curPos = gff.pos();
-
-		_structArray[i].resize(count);
-		if (count > 1) {
-			if (!readFields(gff, _structArray[i], data))
-				return false;
-		} else
-			if (!readField(gff, _structArray[i][0], data))
-				return false;
-
-		gff.seek(curPos);
-	}
-
-	if (!gff.seek(_header.listIndicesOffset))
-		return false;
-
-	// Read list array
-	uint32 listArrayCount = _header.listIndicesCount / 4;
-	_listArray.resize(listArrayCount);
-	for (uint32 i = 0; i < listArrayCount; i++)
-		_listArray[i] = gff.readUint32LE();
-
-	return true;
-}
-
-bool GFFFile::readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex) {
-	// Sanity check
-	if (fieldIndex > _header.fieldCount)
-		return false;
-
-	// Seek
-	if (!gff.seek(_header.fieldOffset + fieldIndex * 12))
-		return false;
-
-	// Read
-	if (!field.read(gff, _header))
-		return false;
-
-	return true;
-}
-
-bool GFFFile::readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint32 fieldIndicesIndex) {
-	// Sanity check
-	if (fieldIndicesIndex > _header.fieldIndicesCount)
-		return false;
-
-	// Seek
-	if (!gff.seek(_header.fieldIndicesOffset + fieldIndicesIndex))
-		return false;
-
-	// Get the number of structs in the list
-	uint32 count = strct.size();
-
-	std::vector<uint32> indices;
-
-	// Read all struct indices
-	indices.resize(count);
-	for (uint32 i = 0; i < count; i++)
-		indices[i] = gff.readUint32LE();
-
-	// Read the structs
-	for (uint32 i = 0; i < count; i++)
-		if (!readField(gff, strct[i], indices[i]))
-			return false;
-
-	return true;
 }
 
 } // End of namespace Aurora

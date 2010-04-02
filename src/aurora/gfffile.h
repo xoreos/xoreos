@@ -24,31 +24,60 @@ namespace Common {
 namespace Aurora {
 
 class LocString;
+class GFFField;
 
-/** A GFF header. */
-struct GFFHeader {
-	uint32 id;
-	uint32 version;
-	uint32 structOffset;
-	uint32 structCount;
-	uint32 fieldOffset;
-	uint32 fieldCount;
-	uint32 labelOffset;
-	uint32 labelCount;
-	uint32 fieldDataOffset;
-	uint32 fieldDataCount;
-	uint32 fieldIndicesOffset;
-	uint32 fieldIndicesCount;
-	uint32 listIndicesOffset;
-	uint32 listIndicesCount;
+/** A GFF, BioWare's General File Format. */
+class GFFFile {
+public:
+	/** A GFF header. */
+	struct Header {
+		uint32 id;
+		uint32 version;
+		uint32 structOffset;
+		uint32 structCount;
+		uint32 fieldOffset;
+		uint32 fieldCount;
+		uint32 labelOffset;
+		uint32 labelCount;
+		uint32 fieldDataOffset;
+		uint32 fieldDataCount;
+		uint32 fieldIndicesOffset;
+		uint32 fieldIndicesCount;
+		uint32 listIndicesOffset;
+		uint32 listIndicesCount;
 
-	GFFHeader();
+		Header();
 
-	/** Clear the header. */
+		/** Clear the header. */
+		void clear();
+
+		/** Read the header out of a stream. */
+		bool read(Common::SeekableReadStream &gff);
+	};
+
+	GFFFile();
+	~GFFFile();
+
+	/** Clear all information. */
 	void clear();
 
-	/** Read the header out of a stream. */
-	bool read(Common::SeekableReadStream &gff);
+	/** Load the GFF out of a stream. */
+	bool load(Common::SeekableReadStream &gff);
+
+private:
+	typedef std::vector<GFFField>  GFFStruct;
+	typedef std::vector<GFFStruct> GFFStructArray;
+
+	typedef std::vector<uint32> GFFListArray;
+
+	Header _header;
+
+	GFFStructArray _structArray;
+	GFFListArray   _listArray;
+
+	// Reading helpers
+	bool readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex);
+	bool readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint32 fieldIndicesIndex);
 };
 
 /** A data field found in a GFF. */
@@ -99,7 +128,7 @@ public:
 	const uint32 getIndex() const;
 
 	/** Read the field out of a stream. */
-	bool read(Common::SeekableReadStream &gff, const GFFHeader &header);
+	bool read(Common::SeekableReadStream &gff, const GFFFile::Header &header);
 
 private:
 	/** The actual type of the field, as found in the GFF. */
@@ -150,58 +179,30 @@ private:
 
 	// Reading helpers
 
-	bool convertData(Common::SeekableReadStream &gff, const GFFHeader &header, uint32 data);
+	bool convertData(Common::SeekableReadStream &gff, const GFFFile::Header &header, uint32 data);
 
 	inline bool readUint64   (Common::SeekableReadStream &gff,
-			const GFFHeader &header, uint32 data);
+			const GFFFile::Header &header, uint32 data);
 	inline bool readSint64   (Common::SeekableReadStream &gff,
-			const GFFHeader &header, uint32 data);
+			const GFFFile::Header &header, uint32 data);
 	inline bool readDouble   (Common::SeekableReadStream &gff,
-			const GFFHeader &header, uint32 data);
+			const GFFFile::Header &header, uint32 data);
 	inline bool readExoString(Common::SeekableReadStream &gff,
-			const GFFHeader &header, uint32 data);
+			const GFFFile::Header &header, uint32 data);
 	inline bool readResRef   (Common::SeekableReadStream &gff,
-			const GFFHeader &header, uint32 data);
+			const GFFFile::Header &header, uint32 data);
 	inline bool readLocString(Common::SeekableReadStream &gff,
-			const GFFHeader &header, uint32 data);
+			const GFFFile::Header &header, uint32 data);
 	inline bool readVoid     (Common::SeekableReadStream &gff,
-			const GFFHeader &header, uint32 data);
+			const GFFFile::Header &header, uint32 data);
 	inline bool readVector   (Common::SeekableReadStream &gff,
-			const GFFHeader &header, uint32 data);
+			const GFFFile::Header &header, uint32 data);
 
 	inline bool seekGFFData(Common::SeekableReadStream &gff,
-			const GFFHeader &header, uint32 data, uint32 &curPos);
+			const GFFFile::Header &header, uint32 data, uint32 &curPos);
 
 	/** Convert an actual GFF field type to a general type. */
 	static inline Type toType(GFFType type);
-};
-
-/** A GFF, BioWare's General File Format. */
-class GFFFile {
-public:
-	GFFFile();
-	~GFFFile();
-
-	/** Clear all information. */
-	void clear();
-
-	/** Load the GFF out of a stream. */
-	bool load(Common::SeekableReadStream &gff);
-
-private:
-	typedef std::vector<GFFField>  GFFStruct;
-	typedef std::vector<GFFStruct> GFFStructArray;
-
-	typedef std::vector<uint32> GFFListArray;
-
-	GFFHeader _header;
-
-	GFFStructArray _structArray;
-	GFFListArray   _listArray;
-
-	// Reading helpers
-	bool readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex);
-	bool readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint32 fieldIndicesIndex);
 };
 
 } // End of namespace Aurora
