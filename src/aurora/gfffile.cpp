@@ -383,8 +383,15 @@ const float *GFFField::getVector() const {
 	return _value.typeVector;
 }
 
-const uint32 GFFField::getIndex() const {
-	if ((_type != kTypeStruct) && (_type != kTypeList))
+const uint32 GFFField::getStructIndex() const {
+	if (_type != kTypeStruct)
+		throw gffFieldTypeError;
+
+	return _value.typeIndex;
+}
+
+const uint32 GFFField::getListIndex() const {
+	if (_type != kTypeList)
 		throw gffFieldTypeError;
 
 	return _value.typeIndex;

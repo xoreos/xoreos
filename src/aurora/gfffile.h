@@ -183,7 +183,8 @@ public:
 
 	const float *getVector() const;
 
-	const uint32 getIndex() const;
+	const uint32 getStructIndex() const;
+	const uint32 getListIndex() const;
 
 	/** Read the field out of a stream. */
 	bool read(Common::SeekableReadStream &gff, const GFFFile::Header &header);
