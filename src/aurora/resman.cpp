@@ -36,10 +36,9 @@ ResourceManager::~ResourceManager() {
 }
 
 void ResourceManager::clear() {
-	_bifs.clear();
-	_resources.clear();
-
-	_resourcesSaved.clear();
+	_state.resources.clear();
+	_state.bifs.clear();
+	_state.erfs.clear();
 
 	_baseDir.clear();
 	_modDir.clear();
@@ -50,12 +49,21 @@ void ResourceManager::clear() {
 	_erfFiles.clear();
 }
 
-void ResourceManager::save() {
-	_resourcesSaved = _resources;
+void ResourceManager::stackPush() {
+	_stateStack.push(_state);
 }
 
-void ResourceManager::restore() {
-	_resources = _resourcesSaved;
+void ResourceManager::stackPop() {
+	stackApply();
+	stackDrop();
+}
+
+void ResourceManager::stackApply() {
+	_state = _stateStack.top();
+}
+
+void ResourceManager::stackDrop() {
+	_stateStack.pop();
 }
 
 bool ResourceManager::registerDataBaseDir(const std::string &path) {
@@ -105,23 +113,23 @@ const Common::FileList &ResourceManager::getERFList() const {
 }
 
 bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
-	bifStart = _bifs.size();
+	bifStart = _state.bifs.size();
 
 	uint32 keyBIFCount = keyFile.getBIFs().size();
 
-	_bifs.resize(bifStart + keyBIFCount);
+	_state.bifs.resize(bifStart + keyBIFCount);
 
 	// Go through all BIF names the KEY wants, trying to find a match in our BIF list
 	for (uint32 i = 0; i < keyBIFCount; i++) {
 		bool found = false;
 
 		// All our BIFs are in _baseDir/, and the BIF names in the KEY should be relative to that
-		_bifs[bifStart + i] = Common::FilePath::normalize(_baseDir + "/" + keyFile.getBIFs()[i]);
+		_state.bifs[bifStart + i] = Common::FilePath::normalize(_baseDir + "/" + keyFile.getBIFs()[i]);
 
 		// Look through all our BIFs, looking for a match
 		for (Common::FileList::const_iterator it = _bifFiles.begin(); it != _bifFiles.end(); ++it) {
-			if (iequals(*it, _bifs[bifStart + i])) {
-				_bifs[bifStart + i] = *it;
+			if (iequals(*it, _state.bifs[bifStart + i])) {
+				_state.bifs[bifStart + i] = *it;
 				found = true;
 				break;
 			}
@@ -129,8 +137,8 @@ bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
 
 		// Did we find it?
 		if (!found) {
-			warning("ResourceManager::getBIFPaths(): \"%s\" not found", _bifs[bifStart + i].c_str());
-			_bifs.resize(bifStart);
+			warning("ResourceManager::getBIFPaths(): \"%s\" not found", _state.bifs[bifStart + i].c_str());
+			_state.bifs.resize(bifStart);
 			return false;
 		}
 
@@ -149,7 +157,7 @@ bool ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifSta
 	// Try to load all needed BIF files
 	for (uint32 i = 0; i < keyBIFCount; i++) {
 		Common::File keyBIFFile;
-		if (!keyBIFFile.open(_bifs[bifStart + i]))
+		if (!keyBIFFile.open(_state.bifs[bifStart + i]))
 			return false;
 
 		if (!keyBIFFiles[i].load(keyBIFFile))
@@ -216,39 +224,39 @@ bool ResourceManager::loadKEY(Common::SeekableReadStream &key) {
 }
 
 bool ResourceManager::addERF(const std::string &erf) {
-	Common::SeekableReadStream *erfFile = 0;
+	std::string erfFileName;
 
 	if (Common::FilePath::isAbsolute(erf)) {
 		// Absolute path to an ERF, open it from our ERF list
 
-		erfFile = _erfFiles.openFile(Common::FilePath::normalize(erf), true);
+		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(erf), true);
 
-		if (!erfFile)
+		if (erfFileName.empty())
 			// Does not exist
 			return false;
 	}
 
-	// Try to open from the .mod directory
-	if (!erfFile)
-		erfFile = _erfFiles.openFile(Common::FilePath::normalize(_modDir + "/" + erf));
-	// Try to open from the .hak directory
-	if (!erfFile)
-		erfFile = _erfFiles.openFile(Common::FilePath::normalize(_hakDir + "/" + erf));
+	if (erfFileName.empty())
+		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(_modDir + "/" + erf), true);
+	if (erfFileName.empty())
+		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(_hakDir + "/" + erf), true);
 
-	if (!erfFile)
+	if (erfFileName.empty())
 		// Does not exist
+		return false;
+
+	Common::File erfFile;
+	if (!erfFile.open(erfFileName))
 		return false;
 
 	ERFFile erfIndex;
 
-	if (!erfIndex.load(*erfFile)) {
-		delete erfFile;
+	if (!erfIndex.load(erfFile))
 		return false;
-	}
 
-	int erfIdx = _erfs.size();
+	int erfIdx = _state.erfs.size();
 
-	_erfs.push_back(erfFile);
+	_state.erfs.push_back(erfFileName);
 
 	const ERFFile::ResourceList &resources = erfIndex.getResources();
 	for (ERFFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
@@ -274,6 +282,29 @@ bool ResourceManager::hasResource(const std::string &name, FileType type) const 
 	return false;
 }
 
+Common::SeekableReadStream *ResourceManager::getOffResFile(const ResFileList &list, const Resource &res) const {
+	// Read the data out of the file and return a MemoryReadStream
+
+	if (res.idx >= list.size())
+		return 0;
+
+	Common::File file;
+	if (!file.open(list[res.idx]))
+		return 0;
+
+	if (!file.seek(res.offset))
+		return 0;
+
+	byte *data = new byte[res.size];
+
+	if (file.read(data, res.size) != res.size) {
+		delete[] data;
+		return 0;
+	}
+
+	return new Common::MemoryReadStream(data, res.size, DisposeAfterUse::YES);
+}
+
 Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
 	const Resource *res = getRes(name, type);
 	if (!res)
@@ -281,46 +312,9 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 
 	if        (res->source == kSourceBIF) {
 		// Read the data out of the BIF and return a MemoryReadStream
-
-		if (res->idx >= _bifs.size())
-			return 0;
-
-		Common::File file;
-		if (!file.open(_bifs[res->idx]))
-			return 0;
-
-		if (!file.seek(res->offset))
-			return 0;
-
-		byte *data = new byte[res->size];
-
-		if (file.read(data, res->size) != res->size) {
-			delete[] data;
-			return 0;
-		}
-
-		return new Common::MemoryReadStream(data, res->size, DisposeAfterUse::YES);
-
+		return getOffResFile(_state.bifs, *res);
 	} else if (res->source == kSourceERF) {
-		// Read the data out of the ERF and return a MemoryReadStream
-
-		if ((res->idx >= _erfs.size()) || !_erfs[res->idx])
-			return 0;
-
-		Common::SeekableReadStream &stream = *_erfs[res->idx];
-
-		if (!stream.seek(res->offset))
-			return 0;
-
-		byte *data = new byte[res->size];
-
-		if (stream.read(data, res->size) != res->size) {
-			delete[] data;
-			return 0;
-		}
-
-		return new Common::MemoryReadStream(data, res->size, DisposeAfterUse::YES);
-
+		return getOffResFile(_state.erfs, *res);
 	} else if (res->source == kSourceFile) {
 		// Open the file and return it
 
@@ -338,13 +332,13 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 }
 
 void ResourceManager::addResource(const Resource &resource, const std::string &name) {
-	ResourceMap::iterator resTypeMap = _resources.find(name);
-	if (resTypeMap == _resources.end()) {
+	ResourceMap::iterator resTypeMap = _state.resources.find(name);
+	if (resTypeMap == _state.resources.end()) {
 		// We don't yet have a resource with this name, create a new type map for it
 
 		std::pair<ResourceMap::iterator, bool> result;
 
-		result = _resources.insert(std::make_pair(name, ResourceTypeMap()));
+		result = _state.resources.insert(std::make_pair(name, ResourceTypeMap()));
 
 		resTypeMap = result.first;
 	}
@@ -355,8 +349,8 @@ void ResourceManager::addResource(const Resource &resource, const std::string &n
 
 const ResourceManager::Resource *ResourceManager::getRes(const std::string &name, FileType type) const {
 	// Find the resources with the same name
-	ResourceMap::const_iterator resFamily = _resources.find(name);
-	if (resFamily == _resources.end())
+	ResourceMap::const_iterator resFamily = _state.resources.find(name);
+	if (resFamily == _state.resources.end())
 		return 0;
 
 	// Find the specific resource of the given type

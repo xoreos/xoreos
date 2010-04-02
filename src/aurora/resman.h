@@ -16,6 +16,7 @@
 #define AURORA_RESMAN_H
 
 #include <string>
+#include <stack>
 #include <list>
 #include <vector>
 #include <map>
@@ -45,17 +46,14 @@ public:
 	/** Clear all resource information. */
 	void clear();
 
-	/** Save the list of resources.
-	 *
-	 *  So that the manager can be quickly restored to an initial game state.
-	 */
-	void save();
-
-	/** Restore the list of resources.
-	 *
-	 *  To quickly restore the manager to an initial game state.
-	 */
-	void restore();
+	/** Save the current resource index onto the stack. */
+	void stackPush();
+	/** Pop the top-most resource index to the current state. */
+	void stackPop();
+	/** Apply the top-most resource index to the current state. */
+	void stackApply();
+	/** Drop the top-most resource index. */
+	void stackDrop();
 
 	/** Register a path to be the base data directory.
 	 *
@@ -125,21 +123,23 @@ private:
 		std::string path; ///< The file's path.
 	};
 
-	/** A list of BIF files. */
-	typedef std::vector<std::string> BIFList;
-	/** A list of ERF files. */
-	typedef std::vector<Common::SeekableReadStream *> ERFList;
+	typedef std::vector<std::string> ResFileList;
 
 	/** Map over resources with the same name but different type. */
 	typedef std::map<FileType,    Resource>        ResourceTypeMap;
 	/** Map over resources, indexed by name. */
 	typedef std::map<std::string, ResourceTypeMap> ResourceMap;
 
-	BIFList     _bifs;      ///< BIFs used by the game resources.
-	ERFList     _erfs;      ///< ERFs currently searched for game resources.
-	ResourceMap _resources; ///< All game-usable resources.
+	/** A state of the resource manager. */
+	struct State {
+		ResFileList bifs;      ///< BIFs used by the game resources.
+		ResFileList erfs;      ///< ERFs currently searched for game resources.
+		ResourceMap resources; ///< All game-usable resources.
+	};
 
-	ResourceMap _resourcesSaved; ///< Saved list of game-usable resources.
+	State _state; ///< The current state of the resource manager's index. */
+
+	std::stack<State> _stateStack; ///< A stack with saved states. */
 
 	std::string _baseDir; ///< The data base directory.
 	std::string _modDir;  ///< The data directory for .mod files.
@@ -156,6 +156,8 @@ private:
 	void addResource(const Resource &resource, const std::string &name);
 
 	const Resource *getRes(const std::string &name, FileType type) const;
+
+	Common::SeekableReadStream *getOffResFile(const ResFileList &list, const Resource &res) const;
 };
 
 } // End of namespace Aurora
