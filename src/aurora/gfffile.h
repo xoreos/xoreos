@@ -72,48 +72,48 @@ public:
 	/** Load the GFF out of a stream. */
 	bool load(Common::SeekableReadStream &gff);
 
-	/** Create a StructIterator pointing to the start of a GFFStruct.
+	/** Create a StructIterator pointing to the start of a GFF's Struct.
 	 *
 	 *  @param  structID The ID of the struct. 0 is the ID of the top-level struct.
-	 *  @return The StructIterator to the start of the GFFStruct.
+	 *  @return The StructIterator to the start of the Struct.
 	 */
 	StructIterator beginStruct(uint32 structID = 0) const;
 
-	/** Create a StructIterator pointing to the end of a GFFStruct.
+	/** Create a StructIterator pointing to the end of a GFF's Struct.
 	 *
 	 *  @param  structID The ID of the struct. 0 is the ID of the top-level struct.
-	 *  @return The StructIterator to the end of the GFFStruct.
+	 *  @return The StructIterator to the end of the Struct.
 	 */
 	StructIterator endStruct(uint32 structID = 0) const;
 
-	/** Create a ListIterator pointing to the start of a GFFList.
+	/** Create a ListIterator pointing to the start of a GFF's List.
 	 *
 	 *  @param  listID The ID of the list.
-	 *  @return The ListIterator to the start of the GFFList.
+	 *  @return The ListIterator to the start of the List.
 	 */
 	ListIterator beginList(uint32 listID) const;
 
-	/** Create a ListIterator pointing to the end of a GFFList.
+	/** Create a ListIterator pointing to the end of a GFF's List.
 	 *
 	 *  @param  listID The ID of the list.
-	 *  @return The ListIterator to the end of the GFFList.
+	 *  @return The ListIterator to the end of the List.
 	 */
 	ListIterator endList(uint32 listID) const;
 
 private:
-	typedef std::vector<GFFField>  GFFStruct;
-	typedef std::vector<GFFStruct> GFFStructArray;
+	typedef std::vector<GFFField> Struct;
+	typedef std::vector<Struct>   StructArray;
 
-	typedef std::vector<uint32> GFFListArray;
+	typedef std::vector<uint32> ListArray;
 
 	Header _header;
 
-	GFFStructArray _structArray;
-	GFFListArray   _listArray;
+	StructArray _structArray;
+	ListArray   _listArray;
 
 	// Reading helpers
 	bool readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex);
-	bool readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint32 fieldIndicesIndex);
+	bool readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 fieldIndicesIndex);
 };
 
 /** A data field found in a GFF. */

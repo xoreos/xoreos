@@ -133,7 +133,7 @@ bool GFFFile::readField(Common::SeekableReadStream &gff, GFFField &field, uint32
 	return true;
 }
 
-bool GFFFile::readFields(Common::SeekableReadStream &gff, GFFStruct &strct, uint32 fieldIndicesIndex) {
+bool GFFFile::readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 fieldIndicesIndex) {
 	// Sanity check
 	if (fieldIndicesIndex > _header.fieldIndicesCount)
 		return false;
