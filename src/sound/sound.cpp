@@ -138,7 +138,7 @@ void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 			wavStream->skip(wavStream->readUint32LE());
 			tag = wavStream->readUint32BE();
 		}
-		
+
 		if (tag != MKID_BE('data'))
 			warning("Not a valid WAVE file: %x", tag);
 
