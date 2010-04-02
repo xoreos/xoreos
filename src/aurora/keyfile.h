@@ -66,8 +66,8 @@ private:
 	ResourceList _resources; ///< All containing resources.
 	uint32       _version;   ///< The version of the file
 
-	bool readBIFList(Common::SeekableReadStream &key, uint32 bifCount);
-	bool readResList(Common::SeekableReadStream &key, uint32 resCount);
+	bool readBIFList(Common::SeekableReadStream &key, uint32 offset);
+	bool readResList(Common::SeekableReadStream &key, uint32 offset);
 };
 
 } // End of namespace Aurora

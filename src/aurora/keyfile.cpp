@@ -63,12 +63,14 @@ bool KEYFile::load(Common::SeekableReadStream &key) {
 	key.skip( 8); // Build year and day
 	key.skip(32); // Reserved
 
-	key.seek(offFileTable);
-	if (!readBIFList(key, bifCount))
+	_bifs.resize(bifCount);
+
+	if (!readBIFList(key, offFileTable))
 		return false;
 
-	key.seek(offResTable);
-	if (!readResList(key, resCount))
+	_resources.resize(resCount);
+
+	if (!readResList(key, offResTable))
 		return false;
 
 	if (key.err()) {
@@ -79,8 +81,11 @@ bool KEYFile::load(Common::SeekableReadStream &key) {
 	return true;
 }
 
-bool KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 bifCount) {
-	for (uint32 i = 0; i < bifCount; i++) {
+bool KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
+	if (!key.seek(offset))
+		return false;
+
+	for (BIFList::iterator bif = _bifs.begin(); bif != _bifs.end(); ++bif) {
 		key.skip(4); // File size of the bif
 
 		uint32 nameOffset = key.readUint32LE();
@@ -94,22 +99,21 @@ bool KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 bifCount) {
 			key.skip(2); // Location of the bif (HD, CD, ...)
 		}
 
-		std::string name = AuroraFile::readRawString(key, nameSize, nameOffset);
+		*bif = AuroraFile::readRawString(key, nameSize, nameOffset);
 
-		AuroraFile::cleanupPath(name);
-
-		_bifs.push_back(name);
+		AuroraFile::cleanupPath(*bif);
 	}
 
 	return true;
 }
 
-bool KEYFile::readResList(Common::SeekableReadStream &key, uint32 resCount) {
-	for (uint32 i = 0; i < resCount; i++) {
-		Resource resource;
+bool KEYFile::readResList(Common::SeekableReadStream &key, uint32 offset) {
+	if (!key.seek(offset))
+		return false;
 
-		resource.name = AuroraFile::readRawString(key, 16);
-		resource.type = (FileType) key.readUint16LE();
+	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+		res->name = AuroraFile::readRawString(key, 16);
+		res->type = (FileType) key.readUint16LE();
 
 		uint32 id = key.readUint32LE();
 
@@ -117,14 +121,12 @@ bool KEYFile::readResList(Common::SeekableReadStream &key, uint32 resCount) {
 		// resource info.
 		if (_version == kVersion11) {
 			uint32 flags = key.readUint32LE();
-			resource.bifIndex = (flags & 0xFFF00000) >> 20;
+			res->bifIndex = (flags & 0xFFF00000) >> 20;
 		} else
-			resource.bifIndex = id >> 20;
+			res->bifIndex = id >> 20;
 
 		// TODO: Fixed resources?
-		resource.resIndex = id & 0xFFFFF;
-
-		_resources.push_back(resource);
+		res->resIndex = id & 0xFFFFF;
 	}
 
 	return true;

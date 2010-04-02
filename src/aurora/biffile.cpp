@@ -54,12 +54,10 @@ bool BIFFile::load(Common::SeekableReadStream &bif) {
 		return false;
 	}
 
-	_resources.reserve(varResCount);
+	_resources.resize(varResCount);
 
 	uint32 offVarResTable = bif.readUint32LE();
-
-	bif.seek(offVarResTable);
-	if (!readVarResTable(bif, varResCount))
+	if (!readVarResTable(bif, offVarResTable))
 		return false;
 
 	if (bif.err()) {
@@ -70,20 +68,19 @@ bool BIFFile::load(Common::SeekableReadStream &bif) {
 	return true;
 }
 
-bool BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 varResCount) {
-	for (uint32 i = 0; i < varResCount; i++) {
-		Resource resource;
+bool BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
+	if (!bif.seek(offset))
+		return false;
 
+	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		bif.skip(4); // ID
 
 		if (_version == kVersion11)
 			bif.skip(4); // Flags
 
-		resource.offset = bif.readUint32LE();
-		resource.size   = bif.readUint32LE();
-		resource.type   = (FileType) bif.readUint32LE();
-
-		_resources.push_back(resource);
+		res->offset = bif.readUint32LE();
+		res->size   = bif.readUint32LE();
+		res->type   = (FileType) bif.readUint32LE();
 	}
 
 	return true;

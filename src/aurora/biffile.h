@@ -60,7 +60,7 @@ private:
 	ResourceList _resources; ///< All resources within the bif.
 	uint32       _version;   ///< The version of this bif file.
 
-	bool readVarResTable(Common::SeekableReadStream &bif, uint32 varResCount);
+	bool readVarResTable(Common::SeekableReadStream &bif, uint32 offset);
 };
 
 } // End of namespace Aurora
