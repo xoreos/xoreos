@@ -48,20 +48,38 @@ std::string AuroraFile::readRawString(Common::SeekableReadStream &stream, uint32
 	return str;
 }
 
-float AuroraFile::convertFloat(uint32 data) {
-	// We just cast here because most systems have float in 754-1985 format anyway.
-	// However, should we find another system that has this differently, we might
-	// have to do something more here...
+union floatConvert {
+	uint32 dInt;
+	float dFloat;
+};
 
-	return *reinterpret_cast<float *>(&data);
+float AuroraFile::convertFloat(uint32 data) {
+	// We just directly convert here because most systems have float in IEEE 754-1985
+	// format anyway. However, should we find another system that has this differently,
+	// we might have to do something more here...
+
+	floatConvert conv;
+
+	conv.dInt = data;
+
+	return conv.dFloat;
 }
 
-double AuroraFile::convertDouble(uint64 data) {
-	// We just cast here because most systems have double in 754-1985 format anyway.
-	// However, should we find another system that has this differently, we might
-	// have to do something more here...
+union doubleConvert {
+	uint64 dInt;
+	double dDouble;
+};
 
-	return *reinterpret_cast<double *>(&data);
+double AuroraFile::convertDouble(uint64 data) {
+	// We just directly convert here because most systems have double in IEE 754-1985
+	// format anyway. However, should we find another system that has this differently,
+	// we might have to do something more here...
+
+	doubleConvert conv;
+
+	conv.dInt = data;
+
+	return conv.dDouble;
 }
 
 float AuroraFile::readFloat(Common::SeekableReadStream &stream) {
