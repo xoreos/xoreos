@@ -94,6 +94,13 @@ LocString::LocString() {
 LocString::~LocString() {
 }
 
+void LocString::clear() {
+	_id = 0xFFFFFFFF;
+
+	for (int i = 0; i < kStringCount; i++)
+		_strings[i].clear();
+}
+
 uint32 LocString::getID() const {
 	return _id;
 }

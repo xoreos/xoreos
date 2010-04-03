@@ -35,6 +35,8 @@ public:
 	LocString();
 	~LocString();
 
+	void clear();
+
 	/** Return the string ID / StringRef. */
 	uint32 getID() const;
 	/** Set the string ID / StringRef. */
