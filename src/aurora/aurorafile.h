@@ -62,6 +62,26 @@ public:
 	static void cleanupPath(std::string &path);
 };
 
+/** Base class for most files found in games using BioWare's Aurora engine. */
+class AuroraBase {
+public:
+	AuroraBase();
+
+	void clear();
+
+	/** Return the file's ID. */
+	uint32 getID() const;
+
+	/** Return the file's version. */
+	uint32 getVersion() const;
+
+protected:
+	uint32 _id;      ///< The file's ID.
+	uint32 _version; ///< The file's version.
+
+	void readHeader(Common::SeekableReadStream &stream);
+};
+
 } // End of namespace Aurora
 
 #endif // AURORA_AURORAFILE_H

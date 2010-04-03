@@ -94,4 +94,27 @@ void AuroraFile::cleanupPath(std::string &path) {
 	Common::replaceAll(path, '\\', '/');
 }
 
+
+AuroraBase::AuroraBase() {
+	clear();
+}
+
+void AuroraBase::clear() {
+	_id      = 0;
+	_version = 0;
+}
+
+uint32 AuroraBase::getID() const {
+	return _id;
+}
+
+uint32 AuroraBase::getVersion() const {
+	return _version;
+}
+
+void AuroraBase::readHeader(Common::SeekableReadStream &stream) {
+	_id      = stream.readUint32BE();
+	_version = stream.readUint32BE();
+}
+
 } // End of namespace Aurora
