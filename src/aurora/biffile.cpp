@@ -35,6 +35,8 @@ void BIFFile::clear() {
 }
 
 bool BIFFile::load(Common::SeekableReadStream &bif) {
+	clear();
+
 	if (bif.readUint32BE() != kBIFID) {
 		warning("BIFFile::load(): Not a BIF file");
 		return false;

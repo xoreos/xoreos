@@ -36,6 +36,8 @@ void KEYFile::clear() {
 }
 
 bool KEYFile::load(Common::SeekableReadStream &key) {
+	clear();
+
 	if (key.readUint32BE() != kKEYID) {
 		warning("KEYFile::load(): Not a KEY file");
 		return false;
