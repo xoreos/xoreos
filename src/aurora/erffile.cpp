@@ -35,9 +35,16 @@ ERFFile::~ERFFile() {
 }
 
 void ERFFile::clear() {
+	_id      = 0;
+	_version = 0;
+
+	_description.clear();
+	_resources.clear();
 }
 
 bool ERFFile::load(Common::SeekableReadStream &erf) {
+	clear();
+
 	_id = erf.readUint32BE();
 	if ((_id != kERFID) && (_id != kMODID) && (_id != kHAKID) && (_id != kSAVID)) {
 		warning("ERFFile::load(): Not a ERF file");
