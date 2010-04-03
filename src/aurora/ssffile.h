@@ -33,8 +33,8 @@ namespace Aurora {
 class SSFFile : public AuroraBase {
 public:
 	struct Sound {
-		std::string fileName;  ///< The name of the sound file to play.
-		uint32      stringRef; ///< StringRef of the text to display.
+		std::string fileName; ///< The name of the sound file to play.
+		uint32      strRef;   ///< StrRef of the text to display.
 	};
 
 	typedef std::vector<Sound> SoundSet;

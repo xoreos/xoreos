@@ -37,9 +37,9 @@ public:
 
 	void clear();
 
-	/** Return the string ID / StringRef. */
+	/** Return the string ID / StrRef. */
 	uint32 getID() const;
-	/** Set the string ID / StringRef. */
+	/** Set the string ID / StrRef. */
 	void setID(uint32 id);
 
 	/** Does the LocString have a string of this language? */
@@ -63,7 +63,7 @@ public:
 	void readLocString(Common::SeekableReadStream &stream);
 
 private:
-	uint32 _id; ///< The string's ID / StringRef. */
+	uint32 _id; ///< The string's ID / StrRef. */
 
 	std::string _strings[kStringCount]; /** The localized strings. */
 };

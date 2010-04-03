@@ -86,7 +86,7 @@ bool SSFFile::readEntries(Common::SeekableReadStream &ssf, uint32 offset) {
 
 bool SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 	// V1.0 begins with a list of offsets to the data entries.
-	// Each data entry has a ResRef of a sound file and a StringRef of a text.
+	// Each data entry has a ResRef of a sound file and a StrRef of a text.
 
 	uint32 count = _soundSet.size();
 
@@ -101,18 +101,18 @@ bool SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 		if (!ssf.seek(offsets[i]))
 			return false;
 
-		_soundSet[i].fileName  = AuroraFile::readRawString(ssf, 16);
-		_soundSet[i].stringRef = ssf.readUint32LE();
+		_soundSet[i].fileName = AuroraFile::readRawString(ssf, 16);
+		_soundSet[i].strRef   = ssf.readUint32LE();
 	}
 
 	return true;
 }
 
 bool SSFFile::readEntries11(Common::SeekableReadStream &ssf) {
-	// V1.1 is just a list of StringRef
+	// V1.1 is just a list of StrRef
 
 	for (SoundSet::iterator sound = _soundSet.begin(); sound != _soundSet.end(); ++sound)
-		sound->stringRef = ssf.readUint32LE();
+		sound->strRef = ssf.readUint32LE();
 
 	return true;
 }

@@ -197,8 +197,8 @@ enum Language {
 	kLanguageWitcherChineseSimplified  = 1022  // UTF8
 };
 
-static const uint32 kObjectIDInvalid  = 0xFFFFFFFF;
-static const uint32 kStringRefInvalid = 0xFFFFFFFF;
+static const uint32 kObjectIDInvalid = 0xFFFFFFFF;
+static const uint32 kStrRefInvalid   = 0xFFFFFFFF;
 
 } // End of namespace Aurora
 

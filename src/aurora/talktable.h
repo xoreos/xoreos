@@ -67,10 +67,10 @@ public:
 
 	/** Get an entry.
 	 *
-	 *  @param stringRef a handle to a string (index).
-	 *  @return 0 if stringRef is invalid, otherwise the Entry from the list.
+	 *  @param strRef a handle to a string (index).
+	 *  @return 0 if strRef is invalid, otherwise the Entry from the list.
 	 */
-	const Entry *getEntry(uint32 stringRef) const;
+	const Entry *getEntry(uint32 strRef) const;
 
 private:
 	EntryList _entryList;

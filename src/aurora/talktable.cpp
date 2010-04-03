@@ -79,12 +79,12 @@ bool TalkTable::load(Common::SeekableReadStream &stream) {
 	return true;
 }
 
-const TalkTable::Entry *TalkTable::getEntry(uint32 stringRef) const {
+const TalkTable::Entry *TalkTable::getEntry(uint32 strRef) const {
 	// If invalid or not loaded, return 0
-	if (stringRef >= _entryList.size())
+	if (strRef >= _entryList.size())
 		return 0;
 
-	return &_entryList[stringRef];
+	return &_entryList[strRef];
 }
 
 } // End of namespace Aurora
