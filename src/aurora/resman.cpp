@@ -23,11 +23,20 @@
 #include "aurora/keyfile.h"
 #include "aurora/biffile.h"
 #include "aurora/erffile.h"
+#include "aurora/rimfile.h"
 
 // boost-string_algo
 using boost::iequals;
 
 namespace Aurora {
+
+void ResourceManager::State::clear() {
+	resources.clear();
+	bifs.clear();
+	erfs.clear();
+	rims.clear();
+}
+
 
 ResourceManager::ResourceManager() {
 }
@@ -36,17 +45,17 @@ ResourceManager::~ResourceManager() {
 }
 
 void ResourceManager::clear() {
-	_state.resources.clear();
-	_state.bifs.clear();
-	_state.erfs.clear();
+	_state.clear();
 
 	_baseDir.clear();
 	_modDir.clear();
 	_hakDir.clear();
+	_rimDir.clear();
 
 	_keyFiles.clear();
 	_bifFiles.clear();
 	_erfFiles.clear();
+	_rimFiles.clear();
 }
 
 void ResourceManager::stackPush() {
@@ -89,18 +98,24 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 		// No BIF files in the path
 		return false;
 
+	// There's KEY and BIF files, so it's probably a useable data base directory.
+	// Now find other resource sources.
+
 	// Find all .mod and .hak in the respective directories
 	_modDir = Common::FilePath::normalize(_baseDir + "/modules/");
 	_hakDir = Common::FilePath::normalize(_baseDir + "/hak/");
+	_rimDir = Common::FilePath::normalize(_baseDir + "/rims/");
 
-	Common::FileList modFiles, hakFiles;
+	Common::FileList modFiles, hakFiles, rimFiles;
 	modFiles.addDirectory(_modDir);
 	hakFiles.addDirectory(_hakDir);
+	rimFiles.addDirectory(_rimDir);
 
 	modFiles.getSubList(".*\\.mod", _erfFiles, true);
 	hakFiles.getSubList(".*\\.hak", _erfFiles, true);
+	modFiles.getSubList(".*\\.rim", _rimFiles, true);
+	rimFiles.getSubList(".*\\.rim", _rimFiles, true);
 
-	// There's KEY and BIF files, so it's probably a useable data base directory.
 	return true;
 }
 
@@ -237,8 +252,10 @@ bool ResourceManager::addERF(const std::string &erf) {
 	}
 
 	if (erfFileName.empty())
+		// Try to open from the .mod directory
 		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(_modDir + "/" + erf), true);
 	if (erfFileName.empty())
+		// Try to open from the .hak directory
 		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(_hakDir + "/" + erf), true);
 
 	if (erfFileName.empty())
@@ -264,6 +281,60 @@ bool ResourceManager::addERF(const std::string &erf) {
 		Resource res;
 		res.source = kSourceERF;
 		res.idx    = erfIdx;
+		res.type   = resource->type;
+		res.offset = resource->offset;
+		res.size   = resource->size;
+
+		// And add it to our list
+		addResource(res, resource->name);
+	}
+
+	return true;
+}
+
+bool ResourceManager::addRIM(const std::string &rim) {
+	std::string rimFileName;
+
+	if (Common::FilePath::isAbsolute(rim)) {
+		// Absolute path to an RIM, open it from our RIM list
+
+		rimFileName = _rimFiles.findFirst(Common::FilePath::normalize(rim), true);
+
+		if (rimFileName.empty())
+			// Does not exist
+			return false;
+	}
+
+	if (rimFileName.empty())
+		// Try to open from the .rim directory
+		rimFileName = _rimFiles.findFirst(Common::FilePath::normalize(_rimDir + "/" + rim), true);
+	if (rimFileName.empty())
+		// Try to open from the module directory
+		rimFileName = _rimFiles.findFirst(Common::FilePath::normalize(_modDir + "/" + rim), true);
+
+	if (rimFileName.empty())
+		// Does not exist
+		return false;
+
+	Common::File rimFile;
+	if (!rimFile.open(rimFileName))
+		return false;
+
+	RIMFile rimIndex;
+
+	if (!rimIndex.load(rimFile))
+		return false;
+
+	int rimIdx = _state.rims.size();
+
+	_state.rims.push_back(rimFileName);
+
+	const RIMFile::ResourceList &resources = rimIndex.getResources();
+	for (RIMFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
+		// Build the resource record
+		Resource res;
+		res.source = kSourceRIM;
+		res.idx    = rimIdx;
 		res.type   = resource->type;
 		res.offset = resource->offset;
 		res.size   = resource->size;
@@ -315,6 +386,8 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 		return getOffResFile(_state.bifs, *res);
 	} else if (res->source == kSourceERF) {
 		return getOffResFile(_state.erfs, *res);
+	} else if (res->source == kSourceRIM) {
+		return getOffResFile(_state.rims, *res);
 	} else if (res->source == kSourceFile) {
 		// Open the file and return it
 

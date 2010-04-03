@@ -68,6 +68,9 @@ public:
 	/** Return the list of ERF files found in the base data directory. */
 	const Common::FileList &getERFList() const;
 
+	/** Return the list of RIM files found in the base data directory. */
+	const Common::FileList &getRIMList() const;
+
 	/** Load a KEY index.
 	 *
 	 *  Add all resources found in the KEY and its BIF to the manager.
@@ -83,6 +86,13 @@ public:
 	 *  @return true on success, false otherwise.
 	 */
 	bool addERF(const std::string &erf);
+
+	/** Add resources found in the RIM file to the manager.
+	 *
+	 *  @param  rim The name of the RIM file within a valid RIM directory in the base dir.
+	 *  @return true on success, false otherwise.
+	 */
+	bool addRIM(const std::string &rim);
 
 	/** Does a specific resource exists?
 	 *
@@ -105,6 +115,7 @@ private:
 	enum Source {
 		kSourceBIF,  ///< Within a BIF file.
 		kSourceERF,  ///< Within an ERF file.
+		kSourceRIM,  ///< Within a RIM file.
 		kSourceFile  ///< A direct file.
 	};
 
@@ -134,7 +145,10 @@ private:
 	struct State {
 		ResFileList bifs;      ///< BIFs used by the game resources.
 		ResFileList erfs;      ///< ERFs currently searched for game resources.
+		ResFileList rims;      ///< RIMs currently searched for game resources.
 		ResourceMap resources; ///< All game-usable resources.
+
+		void clear();
 	};
 
 	State _state; ///< The current state of the resource manager's index. */
@@ -144,10 +158,12 @@ private:
 	std::string _baseDir; ///< The data base directory.
 	std::string _modDir;  ///< The data directory for .mod files.
 	std::string _hakDir;  ///< The data directory for .hak files.
+	std::string _rimDir;  ///< The data directory for .rim files.
 
 	Common::FileList _keyFiles; ///< List of all KEY files in the base directory.
 	Common::FileList _bifFiles; ///< List of all BIF files in the base directory.
 	Common::FileList _erfFiles; ///< List of all ERF files in the base directory.
+	Common::FileList _rimFiles; ///< List of all RIM files in the base directory.
 
 	// KEY/BIF loading helpers
 	bool findBIFPaths(const KEYFile &keyFile, uint32 &bifStart);
