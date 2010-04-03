@@ -50,13 +50,14 @@ bool SSFFile::load(Common::SeekableReadStream &ssf) {
 		return false;
 	}
 
-	if (_version == kVersion11) {
-		warning("SSFFile::load(): TODO: V1.1, found in KotOR");
-		return false;
-	}
+	uint32 entryCount = 0;
+	if (_version == kVersion1)
+		entryCount = ssf.readUint32LE();
 
-	uint32 entryCount    = ssf.readUint32LE();
 	uint32 offEntryTable = ssf.readUint32LE();
+
+	if (_version == kVersion11)
+		entryCount = (ssf.size() - offEntryTable) / 4;
 
 	_soundSet.resize(entryCount);
 
@@ -75,6 +76,18 @@ bool SSFFile::readEntries(Common::SeekableReadStream &ssf, uint32 offset) {
 	if (!ssf.seek(offset))
 		return false;
 
+	if      (_version == kVersion1)
+		return readEntries1(ssf);
+	else if (_version == kVersion11)
+		return readEntries11(ssf);
+	else
+		return false;
+}
+
+bool SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
+	// V1.0 begins with a list of offsets to the data entries.
+	// Each data entry has a ResRef of a sound file and a StringRef of a text.
+
 	uint32 count = _soundSet.size();
 
 	std::vector<uint32> offsets;
@@ -91,6 +104,15 @@ bool SSFFile::readEntries(Common::SeekableReadStream &ssf, uint32 offset) {
 		_soundSet[i].fileName  = AuroraFile::readRawString(ssf, 16);
 		_soundSet[i].stringRef = ssf.readUint32LE();
 	}
+
+	return true;
+}
+
+bool SSFFile::readEntries11(Common::SeekableReadStream &ssf) {
+	// V1.1 is just a list of StringRef
+
+	for (SoundSet::iterator sound = _soundSet.begin(); sound != _soundSet.end(); ++sound)
+		sound->stringRef = ssf.readUint32LE();
 
 	return true;
 }

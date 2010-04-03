@@ -57,6 +57,8 @@ private:
 	SoundSet _soundSet;
 
 	bool readEntries(Common::SeekableReadStream &ssf, uint32 offset);
+	bool readEntries1(Common::SeekableReadStream &ssf);
+	bool readEntries11(Common::SeekableReadStream &ssf);
 };
 
 } // End of namespace Aurora
