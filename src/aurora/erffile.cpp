@@ -16,7 +16,6 @@
 #include "common/util.h"
 
 #include "aurora/erffile.h"
-#include "aurora/aurorafile.h"
 
 static const uint32 kERFID     = MKID_BE('ERF ');
 static const uint32 kMODID     = MKID_BE('MOD ');
@@ -27,16 +26,13 @@ static const uint32 kVersion1  = MKID_BE('V1.0');
 namespace Aurora {
 
 ERFFile::ERFFile() {
-	_id      = 0;
-	_version = 0;
 }
 
 ERFFile::~ERFFile() {
 }
 
 void ERFFile::clear() {
-	_id      = 0;
-	_version = 0;
+	AuroraBase::clear();
 
 	_description.clear();
 	_resources.clear();
@@ -45,13 +41,13 @@ void ERFFile::clear() {
 bool ERFFile::load(Common::SeekableReadStream &erf) {
 	clear();
 
-	_id = erf.readUint32BE();
+	readHeader(erf);
+
 	if ((_id != kERFID) && (_id != kMODID) && (_id != kHAKID) && (_id != kSAVID)) {
 		warning("ERFFile::load(): Not a ERF file");
 		return false;
 	}
 
-	_version = erf.readUint32BE();
 	if (_version != kVersion1) {
 		warning("ERFFile::load(): Unsupported file version");
 		return false;
@@ -119,14 +115,6 @@ bool ERFFile::readResList(Common::SeekableReadStream &erf, uint32 offset) {
 	}
 
 	return true;
-}
-
-uint32 ERFFile::getID() const {
-return _id;
-}
-
-uint32 ERFFile::getVersion() const {
-	return _version;
 }
 
 const LocString &ERFFile::getDescription() const {

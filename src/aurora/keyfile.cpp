@@ -16,7 +16,6 @@
 #include "common/util.h"
 
 #include "aurora/keyfile.h"
-#include "aurora/aurorafile.h"
 
 static const uint32 kKEYID     = MKID_BE('KEY ');
 static const uint32 kVersion1  = MKID_BE('V1  ');
@@ -31,6 +30,8 @@ KEYFile::~KEYFile() {
 }
 
 void KEYFile::clear() {
+	AuroraBase::clear();
+
 	_bifs.clear();
 	_resources.clear();
 }
@@ -38,13 +39,14 @@ void KEYFile::clear() {
 bool KEYFile::load(Common::SeekableReadStream &key) {
 	clear();
 
-	if (key.readUint32BE() != kKEYID) {
+	readHeader(key);
+
+	if (_id != kKEYID) {
 		warning("KEYFile::load(): Not a KEY file");
 		return false;
 	}
 
-	_version = key.readUint32BE();
-	if (_version != kVersion1 && _version != kVersion11) {
+	if ((_version != kVersion1) && (_version != kVersion11)) {
 		warning("KEYFile::load(): Unsupported file version");
 		return false;
 	}

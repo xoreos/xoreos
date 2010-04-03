@@ -20,6 +20,7 @@
 #include "common/types.h"
 
 #include "aurora/types.h"
+#include "aurora/aurorafile.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -28,7 +29,7 @@ namespace Common {
 namespace Aurora {
 
 /** Class to hold string resoures. */
-class TalkTable {
+class TalkTable : public AuroraBase {
 public:
 	/** The entries' flags. */
 	enum EntryFlags {
@@ -72,7 +73,6 @@ public:
 	const Entry *getEntry(uint32 stringRef) const;
 
 private:
-	uint32 _version; ///< The version of the file.
 	EntryList _entryList;
 };
 

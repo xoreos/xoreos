@@ -20,6 +20,7 @@
 #include "common/types.h"
 
 #include "aurora/types.h"
+#include "aurora/aurorafile.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -31,7 +32,7 @@ class LocString;
 class GFFField;
 
 /** A GFF, BioWare's General File Format. */
-class GFFFile {
+class GFFFile : public AuroraBase {
 public:
 	class StructIterator;
 
@@ -68,8 +69,6 @@ public:
 
 	/** A GFF header. */
 	struct Header {
-		uint32 id;
-		uint32 version;
 		uint32 structOffset;
 		uint32 structCount;
 		uint32 fieldOffset;
@@ -89,7 +88,7 @@ public:
 		void clear();
 
 		/** Read the header out of a stream. */
-		bool read(Common::SeekableReadStream &gff);
+		void read(Common::SeekableReadStream &gff);
 	};
 
 	GFFFile();
@@ -100,12 +99,6 @@ public:
 
 	/** Load the GFF out of a stream. */
 	bool load(Common::SeekableReadStream &gff);
-
-	/** Return the file's ID. */
-	uint32 getID() const;
-
-	/** Return the file's version. */
-	uint32 getVersion() const;
 
 	/** Create a StructRange of two StructIterators pointing to the start and end of a GFF's struct.
 	 *

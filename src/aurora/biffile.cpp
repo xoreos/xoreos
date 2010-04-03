@@ -16,7 +16,6 @@
 #include "common/util.h"
 
 #include "aurora/biffile.h"
-#include "aurora/aurorafile.h"
 
 static const uint32 kBIFID     = MKID_BE('BIFF');
 static const uint32 kVersion1  = MKID_BE('V1  ');
@@ -31,19 +30,22 @@ BIFFile::~BIFFile() {
 }
 
 void BIFFile::clear() {
+	AuroraBase::clear();
+
 	_resources.clear();
 }
 
 bool BIFFile::load(Common::SeekableReadStream &bif) {
 	clear();
 
-	if (bif.readUint32BE() != kBIFID) {
+	readHeader(bif);
+
+	if (_id != kBIFID) {
 		warning("BIFFile::load(): Not a BIF file");
 		return false;
 	}
 
-	_version = bif.readUint32BE();
-	if (_version != kVersion1 && _version != kVersion11) {
+	if ((_version != kVersion1) && (_version != kVersion11)) {
 		warning("BIFFile::load(): Unsupported file version");
 		return false;
 	}

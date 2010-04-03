@@ -17,7 +17,6 @@
 
 #include "aurora/gfffile.h"
 #include "aurora/error.h"
-#include "aurora/aurorafile.h"
 #include "aurora/locstring.h"
 
 static const uint32 kVersion32 = MKID_BE('V3.2');
@@ -89,8 +88,6 @@ GFFFile::Header::Header() {
 }
 
 void GFFFile::Header::clear() {
-	id                 = 0;
-	version            = 0;
 	structOffset       = 0;
 	structCount        = 0;
 	fieldOffset        = 0;
@@ -105,15 +102,7 @@ void GFFFile::Header::clear() {
 	listIndicesCount   = 0;
 }
 
-bool GFFFile::Header::read(Common::SeekableReadStream &gff) {
-	id      = gff.readUint32BE();
-	version = gff.readUint32BE();
-
-	if ((version != kVersion32) && (version != kVersion33)) {
-		warning("GFFFile::Header::read(): Unsupported file version");
-		return false;
-	}
-
+void GFFFile::Header::read(Common::SeekableReadStream &gff) {
 	structOffset       = gff.readUint32LE();
 	structCount        = gff.readUint32LE();
 	fieldOffset        = gff.readUint32LE();
@@ -126,8 +115,6 @@ bool GFFFile::Header::read(Common::SeekableReadStream &gff) {
 	fieldIndicesCount  = gff.readUint32LE();
 	listIndicesOffset  = gff.readUint32LE();
 	listIndicesCount   = gff.readUint32LE();
-
-	return true;
 }
 
 
@@ -145,8 +132,16 @@ void GFFFile::clear() {
 }
 
 bool GFFFile::load(Common::SeekableReadStream &gff) {
-	if (!_header.read(gff))
+	clear();
+
+	readHeader(gff);
+
+	if ((_version != kVersion32) && (_version != kVersion33)) {
+		warning("GFFFile::load::: Unsupported file version");
 		return false;
+	}
+
+	_header.read(gff);
 
 	// Read structs
 	_structArray.resize(_header.structCount);
@@ -263,14 +258,6 @@ bool GFFFile::readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 
 			return false;
 
 	return true;
-}
-
-uint32 GFFFile::getID() const {
-	return _header.id;
-}
-
-uint32 GFFFile::getVersion() const {
-	return _header.version;
 }
 
 GFFFile::StructRange GFFFile::structRange(uint32 structID) const {

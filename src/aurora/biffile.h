@@ -20,6 +20,7 @@
 #include "common/types.h"
 
 #include "aurora/types.h"
+#include "aurora/aurorafile.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -28,7 +29,7 @@ namespace Common {
 namespace Aurora {
 
 /** Class to hold resource data information of a bif file. */
-class BIFFile {
+class BIFFile : public AuroraBase {
 public:
 	/** A bif resource index. */
 	struct Resource {
@@ -58,7 +59,6 @@ public:
 
 private:
 	ResourceList _resources; ///< All resources within the bif.
-	uint32       _version;   ///< The version of this bif file.
 
 	bool readVarResTable(Common::SeekableReadStream &bif, uint32 offset);
 };

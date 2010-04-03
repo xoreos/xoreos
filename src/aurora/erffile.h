@@ -20,6 +20,7 @@
 #include "common/types.h"
 
 #include "aurora/types.h"
+#include "aurora/aurorafile.h"
 #include "aurora/locstring.h"
 
 namespace Common {
@@ -29,7 +30,7 @@ namespace Common {
 namespace Aurora {
 
 /** Class to hold resource data of an ERF file. */
-class ERFFile {
+class ERFFile : public AuroraBase {
 public:
 	/** A resource. */
 	struct Resource {
@@ -55,12 +56,6 @@ public:
 	 */
 	bool load(Common::SeekableReadStream &erf);
 
-	/** Return the file's ID. */
-	uint32 getID() const;
-
-	/** Return the file's version. */
-	uint32 getVersion() const;
-
 	/** Return the description. */
 	const LocString &getDescription() const;
 
@@ -68,9 +63,6 @@ public:
 	const ResourceList &getResources() const;
 
 private:
-	uint32 _id;
-	uint32 _version;
-
 	LocString _description; ///< The ERF's description.
 
 	ResourceList _resources; ///< All containing resources.

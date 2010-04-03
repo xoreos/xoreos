@@ -16,7 +16,6 @@
 #include "common/util.h"
 
 #include "aurora/talktable.h"
-#include "aurora/aurorafile.h"
 
 static const uint32 kTLKID     = MKID_BE('TLK ');
 static const uint32 kVersion3  = MKID_BE('V3.0');
@@ -27,6 +26,8 @@ TalkTable::TalkTable() {
 }
 
 TalkTable::~TalkTable() {
+	AuroraBase::clear();
+
 	clear();
 }
 
@@ -35,12 +36,13 @@ void TalkTable::clear() {
 }
 
 bool TalkTable::load(Common::SeekableReadStream &stream) {
-	if (stream.readUint32BE() != kTLKID) {
+	readHeader(stream);
+
+	if (_id != kTLKID) {
 		warning("TalkTable::load(): Not a TLK file");
 		return false;
 	}
 
-	_version = stream.readUint32BE();
 	if (_version != kVersion3) {
 		warning("TalkTable::load(): Unsupported file version");
 		return false;
