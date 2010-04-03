@@ -9,7 +9,7 @@
  */
 
 /** @file aurora/rimfile.cpp
- *  Handling BioWare's RIMs (encapsulated resource file).
+ *  Handling BioWare's RIMs (resource archives).
  */
 
 #include "common/stream.h"

@@ -9,7 +9,7 @@
  */
 
 /** @file aurora/rimfile.h
- *  Handling BioWare's RIMs (encapsulated resource file).
+ *  Handling BioWare's RIMs (resource archives).
  */
 
 #ifndef AURORA_RIMFILE_H
