@@ -15,6 +15,7 @@
 #ifndef AURORA_ERFFILE_H
 #define AURORA_ERFFILE_H
 
+#include <string>
 #include <vector>
 
 #include "common/types.h"

@@ -15,6 +15,7 @@
 #ifndef AURORA_KEYFILE_H
 #define AURORA_KEYFILE_H
 
+#include <string>
 #include <vector>
 
 #include "common/types.h"

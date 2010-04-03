@@ -15,6 +15,7 @@
 #ifndef AURORA_RIMFILE_H
 #define AURORA_RIMFILE_H
 
+#include <string>
 #include <vector>
 
 #include "common/types.h"
