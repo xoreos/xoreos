@@ -88,14 +88,14 @@ static inline int mapLanguageToStorage(Aurora::Language language) {
 namespace Aurora {
 
 LocString::LocString() {
-	_id = 0xFFFFFFFF;
+	_id = kStringRefInvalid;
 }
 
 LocString::~LocString() {
 }
 
 void LocString::clear() {
-	_id = 0xFFFFFFFF;
+	_id = kStringRefInvalid;
 
 	for (int i = 0; i < kStringCount; i++)
 		_strings[i].clear();
