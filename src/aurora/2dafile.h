@@ -100,9 +100,19 @@ private:
 	HeaderMap _headerMap;
 
 	// Loading helpers
-	void readDefault(Common::SeekableReadStream &twoda);
-	void readHeaders(Common::SeekableReadStream &twoda);
-	void readRows(Common::SeekableReadStream &twoda);
+	bool read2a(Common::SeekableReadStream &twoda);
+	bool read2b(Common::SeekableReadStream &twoda);
+
+	// ASCII loading helpers
+	bool readDefault2a(Common::SeekableReadStream &twoda);
+	bool readHeaders2a(Common::SeekableReadStream &twoda);
+	bool readRows2a(Common::SeekableReadStream &twoda);
+
+	// Binary loading helpers
+	bool readHeaders2b(Common::SeekableReadStream &twoda);
+	bool skipRowNames2b(Common::SeekableReadStream &twoda);
+	bool readRows2b(Common::SeekableReadStream &twoda);
+
 	void createHeaderMap();
 
 	/** Split a string into distinct fields, as described by the 2DA specifications. */

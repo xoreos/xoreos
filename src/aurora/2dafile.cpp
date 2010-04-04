@@ -22,7 +22,8 @@
 #include "aurora/2dafile.h"
 
 static const uint32 k2DAID     = MKID_BE('2DA ');
-static const uint32 kVersion2  = MKID_BE('V2.0');
+static const uint32 kVersion2a = MKID_BE('V2.0');
+static const uint32 kVersion2b = MKID_BE('V2.b');
 
 namespace Aurora {
 
@@ -58,17 +59,25 @@ bool TwoDAFile::load(Common::SeekableReadStream &twoda) {
 		return false;
 	}
 
-	if (_version != kVersion2) {
+	if ((_version != kVersion2a) && (_version != kVersion2b)) {
 		warning("TwoDAFile::load(): Unsupported file version");
+		return false;
+	}
+
+	if (_version == kVersion2b) {
+		warning("TODO: Binary version");
 		return false;
 	}
 
 	twoda.readLine(); // Skip the rest of the line
 
-	// Read the rest of the 2DA's features
-	readDefault(twoda);
-	readHeaders(twoda);
-	readRows(twoda);
+	if      (_version == kVersion2a) {
+		if (!read2a(twoda))
+			return false;
+	} else if (_version == kVersion2b) {
+		if (!read2b(twoda))
+			return false;
+	}
 
 	// Create the map to quickly translate headers to column indices
 	createHeaderMap();
@@ -76,7 +85,29 @@ bool TwoDAFile::load(Common::SeekableReadStream &twoda) {
 	return true;
 }
 
-void TwoDAFile::readDefault(Common::SeekableReadStream &twoda) {
+bool TwoDAFile::read2a(Common::SeekableReadStream &twoda) {
+	if (!readDefault2a(twoda))
+		return false;
+	if (!readHeaders2a(twoda))
+		return false;
+	if (!readRows2a(twoda))
+		return false;
+
+	return true;
+}
+
+bool TwoDAFile::read2b(Common::SeekableReadStream &twoda) {
+	if (!readHeaders2b(twoda))
+		return false;
+	if (!skipRowNames2b(twoda))
+		return false;
+	if (!readRows2b(twoda))
+		return false;
+
+	return true;
+}
+
+bool TwoDAFile::readDefault2a(Common::SeekableReadStream &twoda) {
 	std::string defaultList = twoda.readLine();
 
 	Row defaultRow;
@@ -88,14 +119,18 @@ void TwoDAFile::readDefault(Common::SeekableReadStream &twoda) {
 
 	_defaultInt   = parseInt(_defaultString);
 	_defaultFloat = parseFloat(_defaultString);
+
+	return true;
 }
 
-void TwoDAFile::readHeaders(Common::SeekableReadStream &twoda) {
+bool TwoDAFile::readHeaders2a(Common::SeekableReadStream &twoda) {
 	std::string headerLine = twoda.readLine();
 	split(headerLine, _headers);
+
+	return true;
 }
 
-void TwoDAFile::readRows(Common::SeekableReadStream &twoda) {
+bool TwoDAFile::readRows2a(Common::SeekableReadStream &twoda) {
 	uint32 columnCount = _headers.size();
 
 	std::string line;
@@ -111,6 +146,20 @@ void TwoDAFile::readRows(Common::SeekableReadStream &twoda) {
 
 		_array.push_back(row);
 	}
+
+	return true;
+}
+
+bool TwoDAFile::readHeaders2b(Common::SeekableReadStream &twoda) {
+	return true;
+}
+
+bool TwoDAFile::skipRowNames2b(Common::SeekableReadStream &twoda) {
+	return true;
+}
+
+bool TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
+	return true;
 }
 
 void TwoDAFile::createHeaderMap() {
