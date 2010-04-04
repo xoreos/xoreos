@@ -32,6 +32,8 @@
 bool initSDL();
 void deinitSDL();
 
+void dumpStream(Common::SeekableReadStream &stream, const std::string &fileName);
+
 void doAuroraStuff(Aurora::ResourceManager &resMan);
 
 int main(int argc, char **argv) {
@@ -79,6 +81,23 @@ bool initSDL() {
 void deinitSDL() {
 	SoundMan.deinitMixer();
 	SDL_Quit();
+}
+
+void dumpStream(Common::SeekableReadStream &stream, const std::string &fileName) {
+	uint32 pos = stream.pos();
+
+	stream.seek(0);
+
+	Common::DumpFile file;
+	if (!file.open(fileName)) {
+		stream.seek(pos);
+		return;
+	}
+
+	file.writeStream(stream);
+	file.close();
+
+	stream.seek(pos);
 }
 
 static const char *wavFiles[] = {"p_hk-47_tia", "p_hk47_tia", "as_pl_evanglstm1"};
