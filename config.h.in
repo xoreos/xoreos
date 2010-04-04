@@ -18,9 +18,6 @@
 /* Define to 1 if you have <boost/system/error_code.hpp> */
 #undef HAVE_BOOST_SYSTEM_ERROR_CODE_HPP
 
-/* Define to 1 if you have <boost/tokenizer.hpp> */
-#undef HAVE_BOOST_TOKENIZER_HPP
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 

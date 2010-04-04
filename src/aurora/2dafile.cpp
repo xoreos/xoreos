@@ -12,9 +12,6 @@
  *  Handling BioWare's 2DAs (two-dimensional array).
  */
 
-#include "boost/algorithm/string.hpp"
-#include "boost/tokenizer.hpp"
-
 #include "common/stream.h"
 #include "common/util.h"
 #include "common/strutil.h"
@@ -28,6 +25,10 @@ static const uint32 kVersion2b = MKID_BE('V2.b');
 namespace Aurora {
 
 TwoDAFile::TwoDAFile() {
+	_splitCharsA.push_back(' ');
+	_endCharsA.push_back('\n');
+	_quoteCharsA.push_back('\"');
+	_ignoreCharsA.push_back('\r');
 }
 
 TwoDAFile::~TwoDAFile() {
@@ -56,7 +57,7 @@ bool TwoDAFile::load(Common::SeekableReadStream &twoda) {
 
 	if (_id != k2DAID) {
 		warning("TwoDAFile::load(): Not a 2DA file");
-		return false;
+		//return false;
 	}
 
 	if ((_version != kVersion2a) && (_version != kVersion2b)) {
@@ -71,7 +72,7 @@ bool TwoDAFile::load(Common::SeekableReadStream &twoda) {
 
 	twoda.readLine(); // Skip the rest of the line
 
-	if      (_version == kVersion2a) {
+	if        (_version == kVersion2a) {
 		if (!read2a(twoda))
 			return false;
 	} else if (_version == kVersion2b) {
@@ -108,12 +109,10 @@ bool TwoDAFile::read2b(Common::SeekableReadStream &twoda) {
 }
 
 bool TwoDAFile::readDefault2a(Common::SeekableReadStream &twoda) {
-	std::string defaultList = twoda.readLine();
-
 	Row defaultRow;
 	defaultRow.reserve(2);
 
-	split(defaultList, defaultRow);
+	tokenize(twoda, defaultRow);
 	if ((defaultRow.size() >= 2) && (defaultRow[0] == "Default:"))
 		_defaultString = defaultRow[1];
 
@@ -124,8 +123,7 @@ bool TwoDAFile::readDefault2a(Common::SeekableReadStream &twoda) {
 }
 
 bool TwoDAFile::readHeaders2a(Common::SeekableReadStream &twoda) {
-	std::string headerLine = twoda.readLine();
-	split(headerLine, _headers);
+	tokenize(twoda, _headers);
 
 	return true;
 }
@@ -140,9 +138,7 @@ bool TwoDAFile::readRows2a(Common::SeekableReadStream &twoda) {
 		// We can expect that amount of fields
 		row->reserve(columnCount);
 
-		// Read the row
-		line = twoda.readLine();
-		split(line, *row, 1);
+		tokenize(twoda, *row, 1);
 
 		_array.push_back(row);
 	}
@@ -167,12 +163,11 @@ void TwoDAFile::createHeaderMap() {
 		_headerMap.insert(std::make_pair(_headers[i], i));
 }
 
-void TwoDAFile::split(const std::string &str, Row &row, uint32 skip) {
-	// Create a tokenizer over the string, splitting at spaces, but accept spaces within quotes
-	boost::tokenizer<boost::escaped_list_separator<char> > tok(str, boost::escaped_list_separator<char>("", " ", "\""));
+void TwoDAFile::tokenize(Common::SeekableReadStream &stream, Row &row, uint32 skip) {
+	std::string token;
 
-	for(boost::tokenizer<boost::escaped_list_separator<char> >::iterator it = tok.begin(); it != tok.end(); ++it) {
-		if (it->empty())
+	while (Common::parseToken(stream, token, _splitCharsA, _endCharsA, _quoteCharsA, _ignoreCharsA)) {
+		if (token.empty())
 			// Skip empty tokens
 			continue;
 
@@ -182,7 +177,7 @@ void TwoDAFile::split(const std::string &str, Row &row, uint32 skip) {
 			continue;
 		}
 
-		row.push_back(*it);
+		row.push_back(token);
 	}
 }
 

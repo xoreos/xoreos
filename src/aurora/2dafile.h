@@ -20,6 +20,7 @@
 #include <map>
 
 #include "common/types.h"
+#include "common/streamtokenizer.h"
 
 #include "aurora/types.h"
 #include "aurora/aurorafile.h"
@@ -99,6 +100,12 @@ private:
 	/** Map to translate a column header to an index. */
 	HeaderMap _headerMap;
 
+	// For tokenizing the ASCII format
+	Common::CharList _splitCharsA;
+	Common::CharList _endCharsA;
+	Common::CharList _quoteCharsA;
+	Common::CharList _ignoreCharsA;
+
 	// Loading helpers
 	bool read2a(Common::SeekableReadStream &twoda);
 	bool read2b(Common::SeekableReadStream &twoda);
@@ -115,8 +122,7 @@ private:
 
 	void createHeaderMap();
 
-	/** Split a string into distinct fields, as described by the 2DA specifications. */
-	void split(const std::string &str, Row &row, uint32 skip = 0);
+	void tokenize(Common::SeekableReadStream &stream, Row &row, uint32 skip = 0);
 
 	const std::string *getCell(uint32 row, uint32 column) const;
 

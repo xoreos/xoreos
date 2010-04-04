@@ -8,6 +8,7 @@ noinst_HEADERS = system.h \
                  util.h \
                  strutil.h \
                  stream.h \
+                 streamtokenizer.h \
                  file.h \
                  filepath.h \
                  filelist.h \
@@ -17,6 +18,7 @@ noinst_HEADERS = system.h \
 libcommon_la_SOURCES = util.cpp \
                        strutil.cpp \
                        stream.cpp \
+                       streamtokenizer.cpp \
                        file.cpp \
                        filepath.cpp \
                        filelist.cpp \
