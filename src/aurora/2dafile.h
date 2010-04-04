@@ -122,7 +122,10 @@ private:
 
 	void createHeaderMap();
 
-	void tokenize(Common::SeekableReadStream &stream, Row &row, uint32 skip = 0);
+	void tokenize(Common::SeekableReadStream &stream, Row &row,
+	              const Common::CharList &splitChars, const Common::CharList &endChars,
+	              const Common::CharList &quoteChars, const Common::CharList &ignoreChars,
+	              uint32 skip = 0, int n = -1);
 
 	const std::string *getCell(uint32 row, uint32 column) const;
 
