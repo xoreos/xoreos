@@ -17,9 +17,6 @@
 #ifndef COMMON_UTIL_H
 #define COMMON_UTIL_H
 
-#include <string>
-#include <sstream>
-
 #include "common/endianness.h"
 
 #ifdef MIN
@@ -62,20 +59,5 @@ void warning(const char *s, ...) GCC_PRINTF(1, 2);
 #endif
 
 void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
-
-namespace Common {
-	/** Replace all occurences of one character in a string with another. */
-	void replaceAll(std::string &str, char what, char with);
-
-	template<typename T> bool stringConvert(const std::string &str, T &v) {
-		std::stringstream ss(str);
-
-		if ((ss >> v).fail())
-			return false;
-
-		return true;
-	}
-
-} // End of namespace Common
 
 #endif // COMMON_UTIL_H

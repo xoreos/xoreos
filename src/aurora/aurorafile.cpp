@@ -13,7 +13,7 @@
  */
 
 #include "common/stream.h"
-#include "common/util.h"
+#include "common/strutil.h"
 
 #include "aurora/aurorafile.h"
 

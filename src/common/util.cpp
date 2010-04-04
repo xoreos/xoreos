@@ -49,14 +49,3 @@ void NORETURN_PRE error(const char *s, ...) {
 
 	std::exit(1);
 }
-
-namespace Common {
-
-void replaceAll(std::string &str, char what, char with) {
-	int pos = 0;
-
-	while ((pos = str.find(what, pos)) != (int) std::string::npos)
-		str[pos++] = with;
-}
-
-} // End of namespace Common

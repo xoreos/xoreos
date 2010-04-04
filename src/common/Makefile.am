@@ -6,6 +6,7 @@ noinst_HEADERS = system.h \
                  types.h \
                  endianness.h \
                  util.h \
+                 strutil.h \
                  stream.h \
                  file.h \
                  filepath.h \
@@ -14,6 +15,7 @@ noinst_HEADERS = system.h \
                  singleton.h
 
 libcommon_la_SOURCES = util.cpp \
+                       strutil.cpp \
                        stream.cpp \
                        file.cpp \
                        filepath.cpp \
