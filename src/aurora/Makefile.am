@@ -13,6 +13,7 @@ noinst_HEADERS = types.h \
                  resman.h \
                  talktable.h \
                  ssffile.h \
+                 2dafile.h \
                  locstring.h \
                  gfffile.h \
                  gffstructs.h
@@ -27,6 +28,7 @@ libaurora_la_SOURCES = error.cpp \
                        resman.cpp \
                        talktable.cpp \
                        ssffile.cpp \
+                       2dafile.cpp \
                        locstring.cpp \
                        gfffile.cpp \
                        gffstructs.cpp
