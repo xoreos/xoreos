@@ -70,7 +70,8 @@ public:
 
 	/** Normalize a path.
 	 *
-	 *  A normalized path contains no consecutive '/' and starts with either "/" or "./".
+	 *  A normalized path contains no consecutive '/', uses '/' as a directory path separator
+	 *  and and starts either "/", "[A-Za-z]:/" or "./".
 	 *
 	 *  @param  p The path to normalize.
 	 *  @return The normalized path.
@@ -79,7 +80,8 @@ public:
 
 	/** Normalize a path.
 	 *
-	 *  A normalized path contains no consecutive '/' and starts with either "/" or "./".
+	 *  A normalized path contains no consecutive '/', uses '/' as a directory path separator
+	 *  and and starts either "/", "[A-Za-z]:/" or "./".
 	 *
 	 *  @param  p The path to normalize.
 	 *  @return The normalized path.

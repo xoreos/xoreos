@@ -13,6 +13,7 @@
  */
 
 #include "boost/algorithm/string.hpp"
+#include "boost/system/config.hpp"
 
 #include "common/filepath.h"
 
@@ -69,17 +70,19 @@ std::string FilePath::normalize(const std::string &p) {
 
 	// Make sure there's a path qualifier
 	const char *s = p.c_str();
-	if (!((s[0] == '/') || ((s[0] == '.') && (s[1] == '/'))))
-		norm += "./";
+	if (!isAbsolute(p)) {
+		if ((s[0] != '.') || (s[1] != '/'))
+			norm += "./";
+	}
 
 	// Remove consecutive '/'
 	bool hasSlash = !norm.empty();
 	for (; *s; s++) {
-		if (*s == '/') {
+		if ((*s == '/') || (*s == '\\')) {
 			// Only append the '/' if the last character wasn't one as well
 
 			if (!hasSlash)
-				norm += *s;
+				norm += '/';
 
 			hasSlash = true;
 			continue;
@@ -97,8 +100,15 @@ bool FilePath::isAbsolute(const std::string &p) {
 	if (p.empty())
 		return false;
 
+#if defined(BOOST_WINDOWS_API)
+	if ((p.size() >= 3) && isalpha(p[0]) && (p[1] == ':') && ((p[2] == '/') || (p[2] == '\\')))
+		return true;
+#elif defined(BOOST_POSIX_API)
 	if (p[0] == '/')
 		return true;
+#else
+	#error Neither BOOST_WINDOWS_API nor BOOST_POSIX_API defined
+#endif
 
 	return false;
 }
