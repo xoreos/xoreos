@@ -20,6 +20,7 @@
 #include "common/util.h"
 
 #include "aurora/resman.h"
+#include "aurora/util.h"
 #include "aurora/keyfile.h"
 #include "aurora/biffile.h"
 #include "aurora/erffile.h"
@@ -122,11 +123,15 @@ bool ResourceManager::initSecondaryResources() {
 	modFiles.getSubList(".*\\.rim", _rimFiles, true);
 	rimFiles.getSubList(".*\\.rim", _rimFiles, true);
 
+	Common::FileList musicFiles;
+
 	std::string musicDir;
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
-		_musicFiles.addDirectory(musicDir);
+		musicFiles.addDirectory(musicDir);
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
-		_musicFiles.addDirectory(musicDir);
+		musicFiles.addDirectory(musicDir);
+
+	addResources(musicFiles);
 
 	return true;
 }
@@ -141,10 +146,6 @@ const Common::FileList &ResourceManager::getERFList() const {
 
 const Common::FileList &ResourceManager::getRIMList() const {
 	return _rimFiles;
-}
-
-const Common::FileList &ResourceManager::getMusicList() const {
-	return _musicFiles;
 }
 
 bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
@@ -425,31 +426,7 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 }
 
 Common::SeekableReadStream *ResourceManager::getMusic(const std::string &name) const {
-	if (Common::FilePath::isAbsolute(name)) {
-		// Absolute path to a music file, open it directly
-
-		Common::File *musicFile = new Common::File;
-		if (musicFile->open(name))
-			return musicFile;
-
-		// Failed opening
-		delete musicFile;
-		return 0;
-	}
-
-	// Trying to open as a file from the music directories
-	std::string musicFileName = _musicFiles.findFirst(".*/" + name + "\\.(wav|mp3|bmu|ogg)", true);
-	if (!musicFileName.empty()) {
-		Common::File *musicFile = new Common::File;
-		if (musicFile->open(musicFileName))
-			return musicFile;
-
-		// Failed opening
-		delete musicFile;
-		return 0;
-	}
-
-	// Trying to open as a normal resource.
+	// Try every known music file type
 	Common::SeekableReadStream *res;
 	if ((res = getResource(name, kFileTypeWAV)))
 		return res;
@@ -476,6 +453,17 @@ void ResourceManager::addResource(const Resource &resource, const std::string &n
 
 	// Add the resource to the type map
 	resTypeMap->second.insert(std::make_pair(resource.type, resource));
+}
+
+void ResourceManager::addResources(const Common::FileList &files) {
+	for (Common::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
+		Resource res;
+		res.source = kSourceFile;
+		res.path   = *file;
+		res.type   = getFileType(*file);
+
+		addResource(res, Common::FilePath::getStem(*file));
+	}
 }
 
 const ResourceManager::Resource *ResourceManager::getRes(const std::string &name, FileType type) const {

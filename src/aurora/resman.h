@@ -71,9 +71,6 @@ public:
 	/** Return the list of RIM files found in the base data directory. */
 	const Common::FileList &getRIMList() const;
 
-	/** Return the list of music files found in the base data directory. */
-	const Common::FileList &getMusicList() const;
-
 	/** Load a KEY index.
 	 *
 	 *  Add all resources found in the KEY and its BIF to the manager.
@@ -175,8 +172,6 @@ private:
 	Common::FileList _erfFiles; ///< List of all ERF files in the base directory.
 	Common::FileList _rimFiles; ///< List of all RIM files in the base directory.
 
-	Common::FileList _musicFiles; ///< List of all music files in the base directory.
-
 	bool initSecondaryResources();
 
 	// KEY/BIF loading helpers
@@ -184,6 +179,7 @@ private:
 	bool mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart);
 
 	void addResource(const Resource &resource, const std::string &name);
+	void addResources(const Common::FileList &files);
 
 	const Resource *getRes(const std::string &name, FileType type) const;
 
