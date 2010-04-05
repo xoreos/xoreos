@@ -127,6 +127,10 @@ const Common::FileList &ResourceManager::getERFList() const {
 	return _erfFiles;
 }
 
+const Common::FileList &ResourceManager::getRIMList() const {
+	return _rimFiles;
+}
+
 bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
 	bifStart = _state.bifs.size();
 
