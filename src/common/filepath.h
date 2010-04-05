@@ -95,6 +95,26 @@ public:
 	 */
 	static bool isAbsolute(const std::string &p);
 
+	/** Return the absolute path.
+	 *
+	 *  If the path is already absolute, just return that path. If not, interpret it
+	 *  as relative to the program starting path and then return an absolute path of that.
+	 *
+	 *  @param  p The path to absolutize.
+	 *  @return The absolutized path.
+	 */
+	static boost::filesystem::path makeAbsolute(const boost::filesystem::path &p);
+
+	/** Return the absolute path.
+	 *
+	 *  If the path is already absolute, just return that path. If not, interpret it
+	 *  as relative to the program starting path and then return an absolute path of that.
+	 *
+	 *  @param  p The path to absolutize.
+	 *  @return The absolutized path.
+	 */
+	static std::string makeAbsolute(const std::string &p);
+
 	/** Find a directory's subdirectory.
 	 *
 	 *  @param  directory The directory in which to look.

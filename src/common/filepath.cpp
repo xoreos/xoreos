@@ -113,6 +113,21 @@ bool FilePath::isAbsolute(const std::string &p) {
 	return false;
 }
 
+boost::filesystem::path FilePath::makeAbsolute(const boost::filesystem::path &p) {
+	return path(makeAbsolute(p.string()));
+}
+
+std::string FilePath::makeAbsolute(const std::string &p) {
+	std::string absolute;
+
+	if (isAbsolute(p))
+		absolute = p;
+	else
+		absolute = boost::filesystem::initial_path().string() + "/" + p;
+
+	return normalize(absolute);
+}
+
 std::string FilePath::findSubDirectory(const std::string &directory, const std::string &subDirectory,
 		bool caseInsensitive) {
 
