@@ -148,7 +148,7 @@ void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		else
 			wavStream->seek(0);
 	} else if ((tag == MKID_BE('BMU ')) && (wavStream->readUint32BE() == MKID_BE('V1.0'))) {
-			isMP3 = true;
+		isMP3 = true;
 	} else {
 		warning("Could not detect sound type");
 		return;
