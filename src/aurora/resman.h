@@ -136,6 +136,13 @@ public:
 	 */
 	Common::SeekableReadStream *getMusic(const std::string &name) const;
 
+	/** Return a sound resource.
+	 *
+	 *  @param  name The name (ResRef or path) of the resource.
+	 *  @return The sound resource stream or 0 if the sound resource doesn't exist.
+	 */
+	Common::SeekableReadStream *getSound(const std::string &name) const;
+
 private:
 	/** Where a resource can be found. */
 	enum Source {
@@ -194,15 +201,16 @@ private:
 	bool initSecondaryResources();
 
 	std::vector<FileType> _musicTypes; ///< All valid music file types.
+	std::vector<FileType> _soundTypes; ///< All valid sound file types.
 
 	// KEY/BIF loading helpers
 	bool findBIFPaths(const KEYFile &keyFile, uint32 &bifStart);
 	bool mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart);
 
-	void addResource(const Resource &resource, const std::string &name);
+	void addResource(const Resource &resource, std::string name);
 	void addResources(const Common::FileList &files);
 
-	const Resource *getRes(const std::string &name, const std::vector<FileType> &types) const;
+	const Resource *getRes(std::string name, const std::vector<FileType> &types) const;
 
 	Common::SeekableReadStream *getOffResFile(const ResFileList &list, const Resource &res) const;
 };

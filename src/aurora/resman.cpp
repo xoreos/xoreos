@@ -43,6 +43,8 @@ ResourceManager::ResourceManager() {
 	_musicTypes.push_back(kFileTypeWAV);
 	_musicTypes.push_back(kFileTypeBMU);
 	_musicTypes.push_back(kFileTypeOGG);
+
+	_soundTypes.push_back(kFileTypeWAV);
 }
 
 ResourceManager::~ResourceManager() {
@@ -117,9 +119,9 @@ bool ResourceManager::initSecondaryResources() {
 	_rimDir = Common::FilePath::findSubDirectory(_baseDir, "rims"   , true);
 
 	Common::FileList modFiles, hakFiles, rimFiles;
-	modFiles.addDirectory(_modDir);
-	hakFiles.addDirectory(_hakDir);
-	rimFiles.addDirectory(_rimDir);
+	modFiles.addDirectory(_modDir, -1);
+	hakFiles.addDirectory(_hakDir, -1);
+	rimFiles.addDirectory(_rimDir, -1);
 
 	modFiles.getSubList(".*\\.mod", _erfFiles, true);
 	hakFiles.getSubList(".*\\.hak", _erfFiles, true);
@@ -127,14 +129,29 @@ bool ResourceManager::initSecondaryResources() {
 	rimFiles.getSubList(".*\\.rim", _rimFiles, true);
 
 	Common::FileList musicFiles;
-
 	std::string musicDir;
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
-		musicFiles.addDirectory(musicDir);
+		musicFiles.addDirectory(musicDir, -1);
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
-		musicFiles.addDirectory(musicDir);
+		musicFiles.addDirectory(musicDir, -1);
 
 	addResources(musicFiles);
+
+	Common::FileList soundFiles;
+
+	std::string soundDir;
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient"     , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "sounds"      , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamsounds", true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamwaves" , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamvoice" , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+
+	addResources(soundFiles);
 
 	return true;
 }
@@ -456,7 +473,19 @@ Common::SeekableReadStream *ResourceManager::getMusic(const std::string &name) c
 	return 0;
 }
 
-void ResourceManager::addResource(const Resource &resource, const std::string &name) {
+Common::SeekableReadStream *ResourceManager::getSound(const std::string &name) const {
+	// Try every known sound file type
+	Common::SeekableReadStream *res;
+	if ((res = getResource(name, _soundTypes)))
+		return res;
+
+	// No such sound
+	return 0;
+}
+
+void ResourceManager::addResource(const Resource &resource, std::string name) {
+	boost::to_lower(name);
+
 	ResourceMap::iterator resTypeMap = _state.resources.find(name);
 	if (resTypeMap == _state.resources.end()) {
 		// We don't yet have a resource with this name, create a new type map for it
@@ -478,13 +507,18 @@ void ResourceManager::addResources(const Common::FileList &files) {
 		res.source = kSourceFile;
 		res.path   = *file;
 		res.type   = getFileType(*file);
+		res.idx    = 0xFFFFFFFF;
+		res.offset = 0xFFFFFFFF;
+		res.size   = 0xFFFFFFFF;
 
 		addResource(res, Common::FilePath::getStem(*file));
 	}
 }
 
-const ResourceManager::Resource *ResourceManager::getRes(const std::string &name,
+const ResourceManager::Resource *ResourceManager::getRes(std::string name,
 		const std::vector<FileType> &types) const {
+
+	boost::to_lower(name);
 
 	// Find the resources with the same name
 	ResourceMap::const_iterator resFamily = _state.resources.find(name);
