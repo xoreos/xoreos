@@ -102,6 +102,14 @@ public:
 	 */
 	bool hasResource(const std::string &name, FileType type) const;
 
+	/** Does a specific resource exists?
+	 *
+	 *  @param  name The name (ResRef) of the resource.
+	 *  @param  type The resource's types.
+	 *  @return true if the resource exists, fale otherwise.
+	 */
+	bool hasResource(const std::string &name, const std::vector<FileType> &types) const;
+
 	/** Return a resource.
 	 *
 	 *  @param  name The name (ResRef) of the resource.
@@ -109,6 +117,17 @@ public:
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
 	Common::SeekableReadStream *getResource(const std::string &name, FileType type) const;
+
+	/** Return a resource.
+	 *
+	 *  This only returns one stream, even if more than one of the specified file types exist
+	 *  for the given name.
+	 *
+	 *  @param  name The name (ResRef) of the resource.
+	 *  @param  types A list of file types to look for.
+	 *  @return The resource stream or 0 if the resource doesn't exist.
+	 */
+	Common::SeekableReadStream *getResource(const std::string &name, const std::vector<FileType> &types) const;
 
 	/** Return a music resource.
 	 *
@@ -174,6 +193,8 @@ private:
 
 	bool initSecondaryResources();
 
+	std::vector<FileType> _musicTypes; ///< All valid music file types.
+
 	// KEY/BIF loading helpers
 	bool findBIFPaths(const KEYFile &keyFile, uint32 &bifStart);
 	bool mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart);
@@ -181,7 +202,7 @@ private:
 	void addResource(const Resource &resource, const std::string &name);
 	void addResources(const Common::FileList &files);
 
-	const Resource *getRes(const std::string &name, FileType type) const;
+	const Resource *getRes(const std::string &name, const std::vector<FileType> &types) const;
 
 	Common::SeekableReadStream *getOffResFile(const ResFileList &list, const Resource &res) const;
 };

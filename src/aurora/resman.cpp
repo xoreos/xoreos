@@ -40,6 +40,9 @@ void ResourceManager::State::clear() {
 
 
 ResourceManager::ResourceManager() {
+	_musicTypes.push_back(kFileTypeWAV);
+	_musicTypes.push_back(kFileTypeBMU);
+	_musicTypes.push_back(kFileTypeOGG);
 }
 
 ResourceManager::~ResourceManager() {
@@ -368,7 +371,15 @@ bool ResourceManager::addRIM(const std::string &rim) {
 }
 
 bool ResourceManager::hasResource(const std::string &name, FileType type) const {
-	if (getRes(name, type))
+	std::vector<FileType> types;
+
+	types.push_back(type);
+
+	return hasResource(name, types);
+}
+
+bool ResourceManager::hasResource(const std::string &name, const std::vector<FileType> &types) const {
+	if (getRes(name, types))
 		return true;
 
 	return false;
@@ -398,7 +409,17 @@ Common::SeekableReadStream *ResourceManager::getOffResFile(const ResFileList &li
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
-	const Resource *res = getRes(name, type);
+	std::vector<FileType> types;
+
+	types.push_back(type);
+
+	return getResource(name, types);
+}
+
+Common::SeekableReadStream *ResourceManager::getResource(const std::string &name,
+		const std::vector<FileType> &types) const {
+
+	const Resource *res = getRes(name, types);
 	if (!res)
 		return 0;
 
@@ -428,11 +449,7 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 Common::SeekableReadStream *ResourceManager::getMusic(const std::string &name) const {
 	// Try every known music file type
 	Common::SeekableReadStream *res;
-	if ((res = getResource(name, kFileTypeWAV)))
-		return res;
-	if ((res = getResource(name, kFileTypeBMU)))
-		return res;
-	if ((res = getResource(name, kFileTypeOGG)))
+	if ((res = getResource(name, _musicTypes)))
 		return res;
 
 	// No such music
@@ -466,18 +483,22 @@ void ResourceManager::addResources(const Common::FileList &files) {
 	}
 }
 
-const ResourceManager::Resource *ResourceManager::getRes(const std::string &name, FileType type) const {
+const ResourceManager::Resource *ResourceManager::getRes(const std::string &name,
+		const std::vector<FileType> &types) const {
+
 	// Find the resources with the same name
 	ResourceMap::const_iterator resFamily = _state.resources.find(name);
 	if (resFamily == _state.resources.end())
 		return 0;
 
-	// Find the specific resource of the given type
-	ResourceTypeMap::const_iterator res = resFamily->second.find(type);
-	if (res == resFamily->second.end())
-		return 0;
+	for (std::vector<FileType>::const_iterator type = types.begin(); type != types.end(); ++type) {
+		// Find the specific resource of the given type
+		ResourceTypeMap::const_iterator res = resFamily->second.find(*type);
+		if (res != resFamily->second.end())
+			return &res->second;
+	}
 
-	return &res->second;
+	return 0;
 }
 
 } // End of namespace Aurora
