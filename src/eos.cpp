@@ -97,23 +97,30 @@ void dumpStream(Common::SeekableReadStream &stream, const std::string &fileName)
 	stream.seek(pos);
 }
 
-static const char *wavFiles[] = {"p_hk-47_tia", "p_hk47_tia", "as_pl_evanglstm1"};
+static const char *mainKEYFiles[] = {".*/chitin.key", ".*/main.key"};
+static const char *wavFiles[] = {"p_hk-47_tia", "p_hk47_tia", "as_pl_evanglstm1", "hello"};
 
 void doAuroraStuff(Aurora::ResourceManager &resMan) {
 	const Common::FileList &keyList = resMan.getKEYList();
 
-	Common::SeekableReadStream *chitinKEY = keyList.openFile(".*/chitin.key", true);
-	if (!chitinKEY) {
-		warning("But has no chitin.key");
+	Common::SeekableReadStream *mainKEY = 0;
+	for (int i = 0; i < ARRAYSIZE(mainKEYFiles); i++)
+		if ((mainKEY = keyList.openFile(mainKEYFiles[i], true)))
+			break;
+
+	if (!mainKEY) {
+		warning("But has no main KEY file");
 		return ;
 	}
 
-	warning("And has a chitin.key");
+	warning("And has a main KEY file");
 
-	if (!resMan.loadKEY(*chitinKEY)) {
+	if (!resMan.loadKEY(*mainKEY)) {
 		warning("But loading it failed");
 		return;
 	}
+
+	delete mainKEY;
 
 	Common::SeekableReadStream *wav = 0;
 	for (int i = 0; i < ARRAYSIZE(wavFiles); i++)
@@ -124,6 +131,4 @@ void doAuroraStuff(Aurora::ResourceManager &resMan) {
 		warning("Found a wav. Trying to play it. Turn up your speakers");
 		SoundMan.playSoundFile(wav);
 	}
-
-	delete chitinKEY;
 }
