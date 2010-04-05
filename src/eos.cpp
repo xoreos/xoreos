@@ -98,7 +98,7 @@ void dumpStream(Common::SeekableReadStream &stream, const std::string &fileName)
 }
 
 static const char *mainKEYFiles[] = {".*/chitin.key", ".*/main.key"};
-static const char *wavFiles[] = {"p_hk-47_tia", "p_hk47_tia", "as_pl_evanglstm1", "hello"};
+static const char *wavFiles[] = {"nm35aahhkd07134_", "p_hk47_tia", "as_pl_evanglstm1", "hello"};
 
 void doAuroraStuff(Aurora::ResourceManager &resMan) {
 	const Common::FileList &keyList = resMan.getKEYList();
@@ -124,7 +124,7 @@ void doAuroraStuff(Aurora::ResourceManager &resMan) {
 
 	Common::SeekableReadStream *wav = 0;
 	for (int i = 0; i < ARRAYSIZE(wavFiles); i++)
-		if ((wav = resMan.getResource(wavFiles[i], Aurora::kFileTypeWAV)))
+		if ((wav = resMan.getSound(wavFiles[i])))
 			break;
 
 	if (wav) {
