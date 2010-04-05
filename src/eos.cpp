@@ -39,8 +39,10 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	if (!Common::FilePath::isDirectory(argv[1])) {
-		warning("No such directory \"%s\"", argv[1]);
+	std::string baseDir = Common::FilePath::makeAbsolute((const std::string &) argv[1]);
+
+	if (!Common::FilePath::isDirectory(baseDir)) {
+		warning("No such directory \"%s\"", baseDir.c_str());
 		return 0;
 	}
 
@@ -51,7 +53,7 @@ int main(int argc, char **argv) {
 
 	Aurora::ResourceManager resMan;
 
-	bool success = resMan.registerDataBaseDir(argv[1]);
+	bool success = resMan.registerDataBaseDir(baseDir);
 
 	warning("Useful base dir? %s - %d keys", success ? "Yes" : "No", (int) resMan.getKEYList().size());
 
