@@ -71,6 +71,9 @@ public:
 	/** Return the list of RIM files found in the base data directory. */
 	const Common::FileList &getRIMList() const;
 
+	/** Return the list of music files found in the base data directory. */
+	const Common::FileList &getMusicList() const;
+
 	/** Load a KEY index.
 	 *
 	 *  Add all resources found in the KEY and its BIF to the manager.
@@ -109,6 +112,13 @@ public:
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
 	Common::SeekableReadStream *getResource(const std::string &name, FileType type) const;
+
+	/** Return a music resource.
+	 *
+	 *  @param  name The name (ResRef or path) of the resource.
+	 *  @return The music resource stream or 0 if the music resource doesn't exist.
+	 */
+	Common::SeekableReadStream *getMusic(const std::string &name) const;
 
 private:
 	/** Where a resource can be found. */
@@ -164,6 +174,8 @@ private:
 	Common::FileList _bifFiles; ///< List of all BIF files in the base directory.
 	Common::FileList _erfFiles; ///< List of all ERF files in the base directory.
 	Common::FileList _rimFiles; ///< List of all RIM files in the base directory.
+
+	Common::FileList _musicFiles; ///< List of all music files in the base directory.
 
 	bool initSecondaryResources();
 

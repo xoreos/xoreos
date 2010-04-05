@@ -122,6 +122,12 @@ bool ResourceManager::initSecondaryResources() {
 	modFiles.getSubList(".*\\.rim", _rimFiles, true);
 	rimFiles.getSubList(".*\\.rim", _rimFiles, true);
 
+	std::string musicDir;
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
+		_musicFiles.addDirectory(musicDir);
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
+		_musicFiles.addDirectory(musicDir);
+
 	return true;
 }
 
@@ -135,6 +141,10 @@ const Common::FileList &ResourceManager::getERFList() const {
 
 const Common::FileList &ResourceManager::getRIMList() const {
 	return _rimFiles;
+}
+
+const Common::FileList &ResourceManager::getMusicList() const {
+	return _musicFiles;
 }
 
 bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
@@ -411,6 +421,44 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 		return file;
 	}
 
+	return 0;
+}
+
+Common::SeekableReadStream *ResourceManager::getMusic(const std::string &name) const {
+	if (Common::FilePath::isAbsolute(name)) {
+		// Absolute path to a music file, open it directly
+
+		Common::File *musicFile = new Common::File;
+		if (musicFile->open(name))
+			return musicFile;
+
+		// Failed opening
+		delete musicFile;
+		return 0;
+	}
+
+	// Trying to open as a file from the music directories
+	std::string musicFileName = _musicFiles.findFirst(".*/" + name + "\\.(wav|mp3|bmu|ogg)", true);
+	if (!musicFileName.empty()) {
+		Common::File *musicFile = new Common::File;
+		if (musicFile->open(musicFileName))
+			return musicFile;
+
+		// Failed opening
+		delete musicFile;
+		return 0;
+	}
+
+	// Trying to open as a normal resource.
+	Common::SeekableReadStream *res;
+	if ((res = getResource(name, kFileTypeWAV)))
+		return res;
+	if ((res = getResource(name, kFileTypeBMU)))
+		return res;
+	if ((res = getResource(name, kFileTypeOGG)))
+		return res;
+
+	// No such music
 	return 0;
 }
 
