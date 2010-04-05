@@ -103,6 +103,8 @@ static const char *mainKEYFiles[] = {".*/chitin.key", ".*/main.key"};
 static const char *wavFiles[] = {"nm35aahhkd07134_", "298hk50mun003", "as_pl_evanglstm1", "hello"};
 
 void doAuroraStuff(Aurora::ResourceManager &resMan) {
+	warning("Detected game ID %d", resMan.getGameID());
+
 	const Common::FileList &keyList = resMan.getKEYList();
 
 	Common::SeekableReadStream *mainKEY = 0;

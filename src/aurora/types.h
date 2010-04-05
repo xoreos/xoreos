@@ -157,6 +157,15 @@ enum FileType {
 	kFileTypeKEY            =  9999  ///< Game resource index.
 };
 
+enum GameID {
+	kGameIDUnknown    = 0, ///< Unknown game.
+	kGameIDNWN        = 1, ///< Neverwinter Nights.
+	kGameIDNWN2       = 2, ///< Neverwinter Nights 2.
+	kGameIDKotOR      = 3, ///< Star Wars: Knights of the Old Republic.
+	kGameIDKotOR2     = 4, ///< Star Wars: Knights of the Old Republic II - The Sith Lords.
+	kGameIDTheWitcher = 5  ///< The Witcher.
+};
+
 enum Language {
 	kLanguageEnglishMale              =   0,
 	kLanguageEnglishFemale            =   1,

@@ -46,6 +46,9 @@ public:
 	/** Clear all resource information. */
 	void clear();
 
+	/** Return the detected game ID. */
+	GameID getGameID() const;
+
 	/** Save the current resource index onto the stack. */
 	void stackPush();
 	/** Pop the top-most resource index to the current state. */
@@ -184,6 +187,8 @@ private:
 		void clear();
 	};
 
+	GameID _gameID;
+
 	State _state; ///< The current state of the resource manager's index. */
 
 	std::stack<State> _stateStack; ///< A stack with saved states. */
@@ -197,6 +202,8 @@ private:
 	Common::FileList _bifFiles; ///< List of all BIF files in the base directory.
 	Common::FileList _erfFiles; ///< List of all ERF files in the base directory.
 	Common::FileList _rimFiles; ///< List of all RIM files in the base directory.
+
+	void detectGameID(const Common::FileList &rootFiles);
 
 	bool initSecondaryResources();
 
