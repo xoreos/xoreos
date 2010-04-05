@@ -108,9 +108,9 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 
 bool ResourceManager::initSecondaryResources() {
 	// Find all .mod, .hak and .rim in the respective directories
-	_modDir = Common::FilePath::findSubDirectory(_baseDir, "/modules/", true);
-	_hakDir = Common::FilePath::findSubDirectory(_baseDir, "/hak/"    , true);
-	_rimDir = Common::FilePath::findSubDirectory(_baseDir, "/rims/"   , true);
+	_modDir = Common::FilePath::findSubDirectory(_baseDir, "modules", true);
+	_hakDir = Common::FilePath::findSubDirectory(_baseDir, "hak"    , true);
+	_rimDir = Common::FilePath::findSubDirectory(_baseDir, "rims"   , true);
 
 	Common::FileList modFiles, hakFiles, rimFiles;
 	modFiles.addDirectory(_modDir);
