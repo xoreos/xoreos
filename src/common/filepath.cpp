@@ -118,7 +118,7 @@ std::string FilePath::findSubDirectory(const std::string &directory, const std::
 		directory_iterator itEnd;
 		for (directory_iterator itDir(dirPath); itDir != itEnd; ++itDir) {
 			if (is_directory(itDir->status())) {
-				// It's a directory. Recurse into it if the depth limit wasn't yet reached
+				// It's a directory. Check if it's the one we're looking for
 
 				if (caseInsensitive) {
 					if (iequals(itDir->path().filename(), subDirectory))
