@@ -100,8 +100,14 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 
 	// There's KEY and BIF files, so it's probably a useable data base directory.
 	// Now find other resource sources.
+	if (!initSecondaryResources())
+		return false;
 
-	// Find all .mod and .hak in the respective directories
+	return true;
+}
+
+bool ResourceManager::initSecondaryResources() {
+	// Find all .mod, .hak and .rim in the respective directories
 	_modDir = Common::FilePath::normalize(_baseDir + "/modules/");
 	_hakDir = Common::FilePath::normalize(_baseDir + "/hak/");
 	_rimDir = Common::FilePath::normalize(_baseDir + "/rims/");

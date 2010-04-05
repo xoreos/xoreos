@@ -165,6 +165,8 @@ private:
 	Common::FileList _erfFiles; ///< List of all ERF files in the base directory.
 	Common::FileList _rimFiles; ///< List of all RIM files in the base directory.
 
+	bool initSecondaryResources();
+
 	// KEY/BIF loading helpers
 	bool findBIFPaths(const KEYFile &keyFile, uint32 &bifStart);
 	bool mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart);
