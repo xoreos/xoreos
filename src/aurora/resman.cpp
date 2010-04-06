@@ -179,6 +179,7 @@ void ResourceManager::detectGameID(const Common::FileList &rootFiles) {
 
 bool ResourceManager::loadSecondaryResources() {
 	// Find all .mod, .hak and .rim in the respective directories
+
 	_modDir = Common::FilePath::findSubDirectory(_baseDir, "modules", true);
 	_hakDir = Common::FilePath::findSubDirectory(_baseDir, "hak"    , true);
 	_rimDir = Common::FilePath::findSubDirectory(_baseDir, "rims"   , true);
@@ -193,6 +194,8 @@ bool ResourceManager::loadSecondaryResources() {
 	modFiles.getSubList(".*\\.rim", _rimFiles, true);
 	rimFiles.getSubList(".*\\.rim", _rimFiles, true);
 
+	// Find all music files
+
 	Common::FileList musicFiles;
 	std::string musicDir;
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
@@ -201,6 +204,8 @@ bool ResourceManager::loadSecondaryResources() {
 		musicFiles.addDirectory(musicDir, -1);
 
 	addResources(musicFiles);
+
+	// Find all sound files
 
 	Common::FileList soundFiles;
 
@@ -217,6 +222,16 @@ bool ResourceManager::loadSecondaryResources() {
 		soundFiles.addDirectory(soundDir, -1);
 
 	addResources(soundFiles);
+
+	// Add the override directory, which has priority over all other base sources
+
+	Common::FileList overrideFiles;
+
+	std::string overrideDir;
+	if (!(overrideDir = Common::FilePath::findSubDirectory(_baseDir, "override", true)).empty())
+		overrideFiles.addDirectory(overrideDir, -1);
+
+	addResources(overrideFiles);
 
 	return true;
 }
