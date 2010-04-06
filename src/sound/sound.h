@@ -12,14 +12,14 @@
  *  The global sound manager, handling all sound output.
  */
 
-#ifndef SOUND_H
-#define SOUND_H
+#ifndef SOUND_SOUND_H
+#define SOUND_SOUND_H
 
 #include "common/singleton.h"
 
 namespace Common {
 	class SeekableReadStream;
-} // End of namespace Common
+}
 
 namespace Sound {
 
@@ -42,4 +42,4 @@ private:
 /** Shortcut for accessing the sound manager. */
 #define SoundMan Sound::SoundManager::instance()
 
-#endif
+#endif // SOUND_SOUND_H
