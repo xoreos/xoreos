@@ -19,15 +19,19 @@
 
 namespace Graphics {
 
+/** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager> {
 public:
+	/** Initialize the graphics subsystem. */
 	bool init();
+	/** Deinitialize the graphics subsystem. */
 	void deinit();
 
+	/** Was the graphics subsystem successfully initialized? */
 	bool ready() const;
 
 private:
-	bool _ready;
+	bool _ready; ///< Was the graphics subsystem successfully initialized?
 };
 
 } // End of namespace Graphics

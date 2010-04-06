@@ -23,18 +23,22 @@ namespace Common {
 
 namespace Sound {
 
+/** The sound manager. */
 class SoundManager : public Common::Singleton<SoundManager> {
 public:
+	/** Initialize the sound subsystem. */
 	bool init();
+	/** Deinitialize the sound subsystem. */
 	void deinit();
 
+	/** Was the sound subsystem successfully initialized? */
 	bool ready() const;
 
-	// Play a wave file (and eventually MP3)
+	/** Play a sound file. */
 	void playSoundFile(Common::SeekableReadStream *wavStream);
 
 private:
-	bool _ready;
+	bool _ready; ///< Was the sound subsystem successfully initialized?
 };
 
 } // End of namespace Sound
