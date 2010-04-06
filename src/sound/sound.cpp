@@ -15,10 +15,12 @@
 #include <SDL_mixer.h>
 #include <SDL_sound.h>
 
+#include "sound/sound.h"
+
 #include "common/stream.h"
 #include "common/util.h"
 
-#include "sound/sound.h"
+#include "graphics/graphics.h"
 
 DECLARE_SINGLETON(Sound::SoundManager)
 
@@ -28,18 +30,35 @@ namespace Sound {
 #define SAMPLE_RATE 44100
 #define BUFFER_SIZE 4096
 
-bool SoundManager::initMixer() {
+bool SoundManager::init() {
+	if (!GfxMan.ready()) {
+		warning("SoundManager::init(): The GraphicsManager needs to be initialized first");
+		return false;
+	}
+
 	Sound_Init();
-	return Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, NUM_CHANNELS, BUFFER_SIZE) == 0;
+
+	if (Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, NUM_CHANNELS, BUFFER_SIZE)) {
+		warning("SoundManager::init(): Unable to initialize audio: %s", Mix_GetError());
+		return false;
+	}
+
+	_ready = true;
+	return true;
 }
 
-void SoundManager::deinitMixer() {
-	Sound_Quit();
+void SoundManager::deinit() {
+	if (!_ready)
+		return;
+
 	Mix_CloseAudio();
+	Sound_Quit();
+
+	_ready = false;
 }
 
-const char *SoundManager::getMixerError() {
-	return Mix_GetError();
+bool SoundManager::ready() const {
+	return _ready;
 }
 
 static int RWStreamSeek(SDL_RWops *context, int offset, int whence) {

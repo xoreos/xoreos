@@ -14,17 +14,16 @@
 
 #include <cstdio>
 
-#include <SDL.h>
-
 #include "common/util.h"
 #include "common/filepath.h"
 
-#include "engines/enginemanager.h"
+#include "graphics/graphics.h"
 
 #include "sound/sound.h"
 
-bool initSDL();
-void deinitSDL();
+#include "engines/enginemanager.h"
+
+void deinit();
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -37,10 +36,13 @@ int main(int argc, char **argv) {
 	if (!Common::FilePath::isDirectory(baseDir))
 		error("No such directory \"%s\"", baseDir.c_str());
 
-	if (!initSDL())
+	atexit(deinit);
+
+	if (!GfxMan.init())
 		error("Fatal");
 
-	atexit(deinitSDL);
+	if (!SoundMan.init())
+		error("Fatal");
 
 	// Detecting an running the game
 
@@ -59,21 +61,7 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-bool initSDL() {
-	if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO) < 0) {
-		warning("initSDL(): Failed to initialize SDL: %s", SDL_GetError());
-		return false;
-	}
-
-	if (!SoundMan.initMixer()) {
-		warning("initSDL(): Unable to initialize audio: %s", SoundMan.getMixerError());
-		return false;
-	}
-
-	return true;
-}
-
-void deinitSDL() {
-	SoundMan.deinitMixer();
-	SDL_Quit();
+void deinit() {
+	SoundMan.deinit();
+	GfxMan.deinit();
 }

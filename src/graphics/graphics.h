@@ -8,38 +8,31 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file sound/sound.h
- *  The global sound manager, handling all sound output.
+/** @file graphics/graphics.h
+ *  The global graphics manager.
  */
 
-#ifndef SOUND_SOUND_H
-#define SOUND_SOUND_H
+#ifndef GRAPHICS_GRAPHICS_H
+#define GRAPHICS_GRAPHICS_H
 
 #include "common/singleton.h"
 
-namespace Common {
-	class SeekableReadStream;
-}
+namespace Graphics {
 
-namespace Sound {
-
-class SoundManager : public Common::Singleton<SoundManager> {
+class GraphicsManager : public Common::Singleton<GraphicsManager> {
 public:
 	bool init();
 	void deinit();
 
 	bool ready() const;
 
-	// Play a wave file (and eventually MP3)
-	void playSoundFile(Common::SeekableReadStream *wavStream);
-
 private:
 	bool _ready;
 };
 
-} // End of namespace Sound
+} // End of namespace Graphics
 
-/** Shortcut for accessing the sound manager. */
-#define SoundMan Sound::SoundManager::instance()
+/** Shortcut for accessing the graphics manager. */
+#define GfxMan Graphics::GraphicsManager::instance()
 
-#endif // SOUND_SOUND_H
+#endif // GRAPHICS_GRAPHICS_H
