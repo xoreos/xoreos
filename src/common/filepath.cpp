@@ -79,9 +79,10 @@ std::string FilePath::normalize(const std::string &p) {
 	bool hasSlash = !norm.empty();
 	for (; *s; s++) {
 		if ((*s == '/') || (*s == '\\')) {
-			// Only append the '/' if the last character wasn't one as well
+			// Only append the '/' if the last character wasn't one as well and this
+			// is not the final character.
 
-			if (!hasSlash)
+			if (!hasSlash && (s[1] != '\0'))
 				norm += '/';
 
 			hasSlash = true;
