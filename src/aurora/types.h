@@ -17,6 +17,8 @@
 
 #include <string>
 
+#include "common/types.h"
+
 namespace Aurora {
 
 /** Various file types used by the Aurora engine and found in archives. */
