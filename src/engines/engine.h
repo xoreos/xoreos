@@ -23,11 +23,13 @@ namespace Common {
 
 namespace Engines {
 
+/** The base class for an engine within BioWare's Aurora family. */
 class Engine {
 public:
 	Engine();
 	virtual ~Engine();
 
+	/** Run the game. */
 	virtual bool run(const std::string &directory) = 0;
 
 protected:

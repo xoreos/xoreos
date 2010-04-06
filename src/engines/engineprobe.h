@@ -28,12 +28,16 @@ namespace Engines {
 
 class Engine;
 
+/** A probe able to detect one specific game. */
 class EngineProbe {
 public:
+	/** Get the GameID that probe is able to detect. */
 	virtual Aurora::GameID getGameID() const = 0;
 
+	/** Check for the game in that directory, containing these files. */
 	virtual bool probe(const std::string &directory, const Common::FileList &rootFiles) const = 0;
 
+	/** Create the respective engine for the GameID. */
 	virtual Engine *createEngine() const = 0;
 };
 

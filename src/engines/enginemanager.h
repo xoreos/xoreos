@@ -23,10 +23,17 @@
 
 namespace Engines {
 
+/** The global engine manager. */
 class EngineManager : public Common::Singleton<EngineManager> {
 public:
+	/** Find an engine capable of running the game found in the directory.
+	 *
+	 *  @param  directory The directory containing game data.
+	 *  @return A GameID of the game found in that directory, or kGameIDUnknown.
+	 */
 	Aurora::GameID probeGameID(const std::string &directory);
 
+	/** Run the specified game found in that directory. */
 	bool run(Aurora::GameID gameID, const std::string &directory);
 };
 
