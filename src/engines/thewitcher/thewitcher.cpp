@@ -64,7 +64,7 @@ bool TheWitcherEngine::run(const std::string &directory) {
 
 	warning("Successfully initialized the engine");
 
-	Common::SeekableReadStream *wav = ResMan.getSound("hello");
+	Common::SeekableReadStream *wav = ResMan.getSound("m1_axem00020005");
 	if (wav) {
 		warning("Found a wav. Trying to play it. Turn up your speakers");
 		SoundMan.playSoundFile(wav);
