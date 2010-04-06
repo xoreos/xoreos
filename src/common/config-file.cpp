@@ -204,4 +204,4 @@ void ConfigFile::setKey(const std::string &key, const std::string &section, cons
 		it->second[key] = value;
 }
 
-}	// End of namespace Common
+} // End of namespace Common

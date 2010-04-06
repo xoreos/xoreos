@@ -79,27 +79,27 @@
 // Fallbacks / default values for various special macros
 //
 #ifndef FORCEINLINE
-#define FORCEINLINE inline
+	#define FORCEINLINE inline
 #endif
 
 #ifndef NORETURN_PRE
-#define NORETURN_PRE
+	#define NORETURN_PRE
 #endif
 
 #ifndef NORETURN_POST
-#define NORETURN_POST
+	#define NORETURN_POST
 #endif
 
 #ifndef STRINGBUFLEN
-#define STRINGBUFLEN 1024
+	#define STRINGBUFLEN 1024
 #endif
 
 #ifndef PI
-#define PI 3.14159265358979323846
+	#define PI 3.14159265358979323846
 #endif
 
 #ifndef MAXPATHLEN
-#define MAXPATHLEN 256
+	#define MAXPATHLEN 256
 #endif
 
 #endif // COMMON_SYSTEM_H

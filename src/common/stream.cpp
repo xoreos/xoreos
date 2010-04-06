@@ -88,7 +88,7 @@ bool MemoryReadStream::seek(int32 offs, int whence) {
 
 	// Reset end-of-stream flag on a successful seek
 	_eos = false;
-	return true;	// FIXME: STREAM REWRITE
+	return true; // FIXME: STREAM REWRITE
 }
 
 enum {
@@ -302,7 +302,7 @@ bool BufferedSeekableReadStream::seek(int32 offset, int whence) {
 		_parentStream->seek(offset, whence);
 	}
 
-	return true;	// FIXME: STREAM REWRITE
+	return true; // FIXME: STREAM REWRITE
 }
 
-}	// End of namespace Common
+} // End of namespace Common

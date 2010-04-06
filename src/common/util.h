@@ -20,15 +20,15 @@
 #include "common/endianness.h"
 
 #ifdef MIN
-#undef MIN
+	#undef MIN
 #endif
 
 #ifdef MAX
-#undef MAX
+	#undef MAX
 #endif
 
 #ifdef ARRAYSIZE
-#undef ARRAYSIZE
+	#undef ARRAYSIZE
 #endif
 
 template<typename T> inline T ABS (T x)      { return (x>=0) ? x : -x; }

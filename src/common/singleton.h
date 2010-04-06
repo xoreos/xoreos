@@ -89,6 +89,6 @@ protected:
 	template<> T *Singleton<T>::_singleton = 0; \
 	} // End of namespace Common
 
-}	// End of namespace Common
+} // End of namespace Common
 
 #endif

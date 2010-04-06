@@ -399,8 +399,8 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#define CONSTANT_BE_32(a) ((uint32)(a))
 	#define CONSTANT_BE_64(a) ((uint64)(a))
 
-// if the unaligned load and the byteswap take alot instructions its better to directly read and invert
-#	if defined(EOS_NEED_ALIGNMENT) && !defined(__mips__)
+	// if the unaligned load and the byteswap take alot instructions its better to directly read and invert
+	#if defined(EOS_NEED_ALIGNMENT) && !defined(__mips__)
 
 	inline uint16 READ_LE_UINT16(const void *ptr) {
 		const uint8 *b = (const uint8 *)ptr;
@@ -438,7 +438,8 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 		b[6] = (uint8)(value >> 48);
 		b[7] = (uint8)(value >> 56);
 	}
-#	else
+
+	#else
 
 	inline uint16 READ_LE_UINT16(const void *ptr) {
 		return SWAP_BYTES_16(READ_UINT16(ptr));
@@ -461,6 +462,6 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 	#endif // if defined(EOS_NEED_ALIGNMENT)
 
-#endif	// if defined(EOS_LITTLE_ENDIAN)
+#endif // if defined(EOS_LITTLE_ENDIAN)
 
 #endif // COMMON_ENDIAN_H
