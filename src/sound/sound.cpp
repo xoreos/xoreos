@@ -117,7 +117,6 @@ void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	}
 
 	bool isMP3 = false;
-	bool isOgg = false;
 	uint32 tag = wavStream->readUint32BE();
 	if (tag == 0xfff360c4) {
 		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
@@ -148,14 +147,11 @@ void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 			isMP3 = true;
 		else
 			wavStream->seek(0);
-	} else if (tag == MKID_BE('OggS')) {
-		isOgg = true;
-		wavStream->seek(0);
 	} else if ((tag == MKID_BE('BMU ')) && (wavStream->readUint32BE() == MKID_BE('V1.0'))) {
 		isMP3 = true;
 	} else {
-		warning("Could not detect sound type");
-		return;
+		// Let SDL_sound sort it out
+		wavStream->seek(0);
 	}
 
 	SDL_RWops *rw = RW_FromStream(wavStream);
@@ -169,7 +165,7 @@ void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	audioInfo.format = AUDIO_S16SYS;
 	audioInfo.rate = SAMPLE_RATE;
 
-	Sound_Sample *sound = Sound_NewSample(rw, isOgg ? "ogg" : (isMP3 ? "mp3" : "wav"), &audioInfo, BUFFER_SIZE);
+	Sound_Sample *sound = Sound_NewSample(rw, isMP3 ? "mp3" : "wav", &audioInfo, BUFFER_SIZE);
 	if (!sound) {
 		warning("Unable to load sound file: %s", Sound_GetError());
 		return;
