@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/graphics.h
+/** @file graphics/graphics.cpp
  *  The global graphics manager.
  */
 
