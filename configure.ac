@@ -72,4 +72,14 @@ AC_SUBST(SDL_LIBS, [$SDL_LIBS])
 AC_SUBST(EOS_CXXFLAGS)
 AC_SUBST(EOS_LIBS)
 
-AC_OUTPUT(src/common/Makefile src/aurora/Makefile src/sound/Makefile src/Makefile Makefile)
+AC_OUTPUT(src/common/Makefile \
+          src/sound/Makefile \
+          src/aurora/Makefile \
+          src/engines/Makefile \
+          src/engines/nwn/Makefile \
+          src/engines/nwn2/Makefile \
+          src/engines/kotor/Makefile \
+          src/engines/kotor2/Makefile \
+          src/engines/thewitcher/Makefile \
+          src/Makefile \
+          Makefile)

@@ -1,8 +1,8 @@
 include $(top_srcdir)/Makefile.common
 
-SUBDIRS = common aurora sound
+SUBDIRS = common sound aurora engines
 
 bin_PROGRAMS = eos
 
 eos_SOURCES = eos.cpp
-eos_LDADD = aurora/libaurora.la common/libcommon.la sound/libsound.la
+eos_LDADD = engines/libengines.la aurora/libaurora.la sound/libsound.la common/libcommon.la

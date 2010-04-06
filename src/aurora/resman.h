@@ -22,6 +22,7 @@
 #include <map>
 
 #include "common/types.h"
+#include "common/singleton.h"
 #include "common/filelist.h"
 
 #include "aurora/types.h"
@@ -38,16 +39,13 @@ class BIFFile;
 /** A resource manager holding information about and handling all request for all
  *  resources useable by the game.
  */
-class ResourceManager {
+class ResourceManager : public Common::Singleton<ResourceManager> {
 public:
 	ResourceManager();
 	~ResourceManager();
 
 	/** Clear all resource information. */
 	void clear();
-
-	/** Return the detected game ID. */
-	GameID getGameID() const;
 
 	/** Save the current resource index onto the stack. */
 	void stackPush();
@@ -203,8 +201,6 @@ private:
 		void clear();
 	};
 
-	GameID _gameID;
-
 	State _state; ///< The current state of the resource manager's index. */
 
 	std::stack<State> _stateStack; ///< A stack with saved states. */
@@ -220,8 +216,6 @@ private:
 	Common::FileList _bifFiles; ///< List of all BIF files in the base directory.
 	Common::FileList _erfFiles; ///< List of all ERF files in the base directory.
 	Common::FileList _rimFiles; ///< List of all RIM files in the base directory.
-
-	void detectGameID(const Common::FileList &rootFiles);
 
 	std::vector<FileType> _musicTypes; ///< All valid music file types.
 	std::vector<FileType> _soundTypes; ///< All valid sound file types.
@@ -239,5 +233,8 @@ private:
 };
 
 } // End of namespace Aurora
+
+/** Shortcut for accessing the sound manager. */
+#define ResMan Aurora::ResourceManager::instance()
 
 #endif // AURORA_RESMAN_H

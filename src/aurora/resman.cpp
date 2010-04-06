@@ -29,6 +29,8 @@
 // boost-string_algo
 using boost::iequals;
 
+DECLARE_SINGLETON(Aurora::ResourceManager)
+
 namespace Aurora {
 
 void ResourceManager::State::clear() {
@@ -40,8 +42,6 @@ void ResourceManager::State::clear() {
 
 
 ResourceManager::ResourceManager() {
-	_gameID = kGameIDUnknown;
-
 	_musicTypes.push_back(kFileTypeWAV);
 	_musicTypes.push_back(kFileTypeBMU);
 	_musicTypes.push_back(kFileTypeOGG);
@@ -66,10 +66,6 @@ void ResourceManager::clear() {
 	_rimFiles.clear();
 
 	_bifSourceDir.clear();
-}
-
-GameID ResourceManager::getGameID() const {
-	return _gameID;
 }
 
 void ResourceManager::stackPush() {
@@ -100,9 +96,6 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 		return false;
 	}
 
-	// Try to detect the game
-	detectGameID(rootFiles);
-
 	if (!rootFiles.getSubList(".*\\.key", _keyFiles, true)) {
 		warning("ResourceManager::registerDataBaseDir(): No KEY files found");
 		return false;
@@ -132,49 +125,6 @@ bool ResourceManager::addBIFSourceDir(const std::string &dir) {
 
 	_bifSourceDir.push_back(Common::FilePath::normalize(bifDir));
 	return true;
-}
-
-void ResourceManager::detectGameID(const Common::FileList &rootFiles) {
-	Common::FileList iniFiles;
-
-	// Get all .ini files
-	rootFiles.getSubList(".*\\.ini", iniFiles, true);
-
-	// Get all .ini files in ../system/
-	std::string systemDir;
-	Common::FileList systemFiles;
-
-	if (!(systemDir = Common::FilePath::findSubDirectory(_baseDir + "/../", "system", true)).empty())
-		if (systemFiles.addDirectory(systemDir))
-			systemFiles.getSubList(".*\\.ini", iniFiles, true);
-
-	// Look for the relevant ini-Files
-	if      (iniFiles.contains(".*/nwn2.ini", true))
-		_gameID = kGameIDNWN2;
-	else if (iniFiles.contains(".*/nwn.ini", true))
-		_gameID = kGameIDNWN;
-	else if (iniFiles.contains(".*/swkotor.ini", true))
-		_gameID = kGameIDKotOR;
-	else if (iniFiles.contains(".*/swkotor2.ini", true))
-		_gameID = kGameIDKotOR2;
-	else if (iniFiles.contains(".*/witcher.ini", true))
-		_gameID = kGameIDTheWitcher;
-
-	// None found, look for executables
-	if (_gameID == kGameIDUnknown) {
-		if      (rootFiles.contains(".*/nwn2main.exe", true))
-			_gameID = kGameIDNWN2;
-		else if (rootFiles.contains(".*/nwmain.exe", true))
-			_gameID = kGameIDNWN;
-		else if (rootFiles.contains(".*/nwmain", true))
-			_gameID = kGameIDNWN;
-		else if (rootFiles.contains(".*/swkotor.exe", true))
-			_gameID = kGameIDKotOR;
-		else if (rootFiles.contains(".*/swkotor2.exe", true))
-			_gameID = kGameIDKotOR2;
-		else if (systemFiles.contains(".*/witcher.exe", true))
-			_gameID = kGameIDTheWitcher;
-	}
 }
 
 bool ResourceManager::loadSecondaryResources() {
