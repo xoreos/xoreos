@@ -65,6 +65,16 @@ public:
 	 */
 	bool registerDataBaseDir(const std::string &path);
 
+	/** Add a directory to be searched for BIF files.
+	 *
+	 *  Relative to the base directory. Only direct subdirectories of the base
+	 *  directory are supported.
+	 *
+	 *  @param  dir A direct subdirectory of the base directory to search for BIFs.
+	 *  @return true if the directory exists and has been added, false if not.
+	 */
+	bool addBIFSourceDir(const std::string &dir);
+
 	/** Load secondary resources.
 	 *
 	 *  Secondary resources are plain files found in the data directory structure.
@@ -203,6 +213,8 @@ private:
 	std::string _modDir;  ///< The data directory for .mod files.
 	std::string _hakDir;  ///< The data directory for .hak files.
 	std::string _rimDir;  ///< The data directory for .rim files.
+
+	std::vector<std::string> _bifSourceDir; ///< All directories containing BIFs.
 
 	Common::FileList _keyFiles; ///< List of all KEY files in the base directory.
 	Common::FileList _bifFiles; ///< List of all BIF files in the base directory.

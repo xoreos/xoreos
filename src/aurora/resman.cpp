@@ -64,6 +64,8 @@ void ResourceManager::clear() {
 	_bifFiles.clear();
 	_erfFiles.clear();
 	_rimFiles.clear();
+
+	_bifSourceDir.clear();
 }
 
 GameID ResourceManager::getGameID() const {
@@ -90,10 +92,10 @@ void ResourceManager::stackDrop() {
 bool ResourceManager::registerDataBaseDir(const std::string &path) {
 	clear();
 
-	_baseDir = path;
+	_baseDir = Common::FilePath::normalize(path);
 
 	Common::FileList rootFiles;
-	if (!rootFiles.addDirectory(path)) {
+	if (!rootFiles.addDirectory(_baseDir)) {
 		warning("ResourceManager::registerDataBaseDir(): Can't read path");
 		return false;
 	}
@@ -107,7 +109,7 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 	}
 
 	Common::FileList allFiles;
-	if (!allFiles.addDirectory(path, -1)) {
+	if (!allFiles.addDirectory(_baseDir, -1)) {
 		warning("ResourceManager::registerDataBaseDir(): Failed reading the complete directory");
 		return false;
 	}
@@ -117,7 +119,18 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 		return false;
 	}
 
+	_bifSourceDir.push_back(_baseDir);
+
 	// Found KEY and BIF files, this looks like a useable data directory
+	return true;
+}
+
+bool ResourceManager::addBIFSourceDir(const std::string &dir) {
+	std::string bifDir = Common::FilePath::findSubDirectory(_baseDir, dir, true);
+	if (bifDir.empty())
+		return false;
+
+	_bifSourceDir.push_back(Common::FilePath::normalize(bifDir));
 	return true;
 }
 
@@ -231,16 +244,22 @@ bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
 	for (uint32 i = 0; i < keyBIFCount; i++) {
 		bool found = false;
 
-		// All our BIFs are in _baseDir/, and the BIF names in the KEY should be relative to that
-		_state.bifs[bifStart + i] = Common::FilePath::normalize(_baseDir + "/" + keyFile.getBIFs()[i]);
+		// Look through all BIF base directories
+		for (std::vector<std::string>::const_iterator bifBase = _bifSourceDir.begin(); bifBase != _bifSourceDir.end(); ++bifBase) {
+			// The BIF names in the KEY are relative to a BIF base directory
+			_state.bifs[bifStart + i] = Common::FilePath::normalize(*bifBase + "/" + keyFile.getBIFs()[i]);
 
-		// Look through all our BIFs, looking for a match
-		for (Common::FileList::const_iterator it = _bifFiles.begin(); it != _bifFiles.end(); ++it) {
-			if (iequals(*it, _state.bifs[bifStart + i])) {
-				_state.bifs[bifStart + i] = *it;
-				found = true;
-				break;
+			// Look through all our BIFs, looking for a match
+			for (Common::FileList::const_iterator it = _bifFiles.begin(); it != _bifFiles.end(); ++it) {
+				if (iequals(*it, _state.bifs[bifStart + i])) {
+					_state.bifs[bifStart + i] = *it;
+					found = true;
+					break;
+				}
 			}
+
+			if (found)
+				break;
 		}
 
 		// Did we find it?

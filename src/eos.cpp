@@ -181,6 +181,8 @@ bool initResKEYs(Aurora::ResourceManager &resMan) {
 		if (!loadResKEY(resMan, ".*/localized.key"))
 			return false;
 
+		resMan.addBIFSourceDir("voices");
+
 		warning("Loading the English language KEYs");
 		if (!loadResKEY(resMan, ".*/lang_3.key"))
 			return false;
