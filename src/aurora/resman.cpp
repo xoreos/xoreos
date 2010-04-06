@@ -93,31 +93,31 @@ bool ResourceManager::registerDataBaseDir(const std::string &path) {
 	_baseDir = path;
 
 	Common::FileList rootFiles;
-	if (!rootFiles.addDirectory(path))
-		// Can't read the path
+	if (!rootFiles.addDirectory(path)) {
+		warning("ResourceManager::registerDataBaseDir(): Can't read path");
 		return false;
+	}
 
 	// Try to detect the game
 	detectGameID(rootFiles);
 
-	if (!rootFiles.getSubList(".*\\.key", _keyFiles, true))
-		// No key files in the path's root
+	if (!rootFiles.getSubList(".*\\.key", _keyFiles, true)) {
+		warning("ResourceManager::registerDataBaseDir(): No KEY files found");
 		return false;
+	}
 
 	Common::FileList allFiles;
-	if (!allFiles.addDirectory(path, -1))
-		// Failed reading the complete directory tree
+	if (!allFiles.addDirectory(path, -1)) {
+		warning("ResourceManager::registerDataBaseDir(): Failed reading the complete directory");
 		return false;
+	}
 
-	if (!allFiles.getSubList(".*\\.bif", _bifFiles, true))
-		// No BIF files in the path
+	if (!allFiles.getSubList(".*\\.bif", _bifFiles, true)) {
+		warning("ResourceManager::registerDataBaseDir(): No BIF files found");
 		return false;
+	}
 
-	// There's KEY and BIF files, so it's probably a useable data base directory.
-	// Now find other resource sources.
-	if (!initSecondaryResources())
-		return false;
-
+	// Found KEY and BIF files, this looks like a useable data directory
 	return true;
 }
 
@@ -164,7 +164,7 @@ void ResourceManager::detectGameID(const Common::FileList &rootFiles) {
 	}
 }
 
-bool ResourceManager::initSecondaryResources() {
+bool ResourceManager::loadSecondaryResources() {
 	// Find all .mod, .hak and .rim in the respective directories
 	_modDir = Common::FilePath::findSubDirectory(_baseDir, "modules", true);
 	_hakDir = Common::FilePath::findSubDirectory(_baseDir, "hak"    , true);

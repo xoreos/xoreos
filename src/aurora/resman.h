@@ -65,6 +65,12 @@ public:
 	 */
 	bool registerDataBaseDir(const std::string &path);
 
+	/** Load secondary resources.
+	 *
+	 *  Secondary resources are plain files found in the data directory structure.
+	 */
+	bool loadSecondaryResources();
+
 	/** Return the list of KEY files found in the base data directory. */
 	const Common::FileList &getKEYList() const;
 
@@ -204,8 +210,6 @@ private:
 	Common::FileList _rimFiles; ///< List of all RIM files in the base directory.
 
 	void detectGameID(const Common::FileList &rootFiles);
-
-	bool initSecondaryResources();
 
 	std::vector<FileType> _musicTypes; ///< All valid music file types.
 	std::vector<FileType> _soundTypes; ///< All valid sound file types.
