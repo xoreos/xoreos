@@ -35,7 +35,7 @@ public:
 	bool ready() const;
 
 	/** Play a sound file. */
-	void playSoundFile(Common::SeekableReadStream *wavStream);
+	bool playSoundFile(Common::SeekableReadStream *wavStream);
 
 private:
 	bool _ready; ///< Was the sound subsystem successfully initialized?

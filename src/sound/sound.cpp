@@ -129,23 +129,26 @@ void FreeRW_FromStream(SDL_RWops *rw) {
 	rw->close(rw);
 }
 
-void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
+bool SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	if (!wavStream) {
-		warning("Attempting to play NULL wavStream");
-		return;
+		warning("SoundManager::playSoundFile(): No stream");
+		return false;
 	}
 
 	bool isMP3 = false;
 	uint32 tag = wavStream->readUint32BE();
 	if (tag == 0xfff360c4) {
+
 		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
 		wavStream->seek(0x1D6);
+
 	} else if (tag == MKID_BE('RIFF')) {
+
 		wavStream->seek(12);
 		tag = wavStream->readUint32BE();
 		if (tag != MKID_BE('fmt ')) {
-			warning("Not a valid WAVE file");
-			return;
+			warning("SoundManager::playSoundFile(): Broken WAVE file");
+			return false;
 		}
 
 		// Skip fmt chunk
@@ -158,25 +161,30 @@ void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 			tag = wavStream->readUint32BE();
 		}
 
-		if (tag != MKID_BE('data'))
-			warning("Not a valid WAVE file: %x", tag);
+		if (tag != MKID_BE('data')) {
+			warning("SoundManager::playSoundFile(): Found invalid tag in WAVE file: %x", tag);
+			return false;
+		}
 
 		uint32 dataSize = wavStream->readUint32LE();
 		if (dataSize == 0)
 			isMP3 = true;
 		else
 			wavStream->seek(0);
+
 	} else if ((tag == MKID_BE('BMU ')) && (wavStream->readUint32BE() == MKID_BE('V1.0'))) {
+
+		// BMU files, MP3 with extra header
 		isMP3 = true;
-	} else {
+
+	} else
 		// Let SDL_sound sort it out
 		wavStream->seek(0);
-	}
 
 	SDL_RWops *rw = RW_FromStream(wavStream);
 	if (!rw) {
-		warning("Failed to create SDL_RWops from wav stream");
-		return;
+		warning("SoundManager::playSoundFile(): Failed to create SDL_RWops from wav stream");
+		return false;
 	}
 
 	Sound_AudioInfo audioInfo;
@@ -186,8 +194,8 @@ void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 
 	Sound_Sample *sound = Sound_NewSample(rw, isMP3 ? "mp3" : "wav", &audioInfo, BUFFER_SIZE);
 	if (!sound) {
-		warning("Unable to load sound file: %s", Sound_GetError());
-		return;
+		warning("SoundManager::playSoundFile(): Unable to load sound file: %s", Sound_GetError());
+		return false;
 	}
 
 	// Decode all samples
@@ -195,26 +203,26 @@ void SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 
 	Mix_Chunk *wav = Mix_QuickLoad_RAW((byte *)sound->buffer, sound->buffer_size);
 	if (!wav) {
-		warning("Unable to load WAV file: %s", Mix_GetError());
+		warning("SoundManager::playSoundFile(): Unable to load WAV file: %s", Mix_GetError());
 		Sound_FreeSample(sound);
-		return;
+		return false;
 	}
 
 	int channel = Mix_PlayChannel(-1, wav, 0);
 	if(channel == -1) {
-		warning("Unable to play WAV file: %s", Mix_GetError());
+		warning("SoundManager::playSoundFile(): Unable to play WAV file: %s", Mix_GetError());
 		Sound_FreeSample(sound);
 		Mix_FreeChunk(wav);
-		return;
+		return false;
 	}
-
-	warning("And smile :)");
 
 	while (Mix_Playing(channel))
 		sleep(1);
 
 	Sound_FreeSample(sound);
 	Mix_FreeChunk(wav);
+
+	return true;
 }
 
 } // End of namespace Sound
