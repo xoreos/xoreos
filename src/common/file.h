@@ -116,4 +116,4 @@ protected:
 
 } // End of namespace Common
 
-#endif
+#endif // COMMON_FILE_H

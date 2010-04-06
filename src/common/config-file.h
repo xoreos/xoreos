@@ -81,4 +81,4 @@ private:
 
 } // End of namespace Common
 
-#endif
+#endif // COMMON_CONFIG_FILE_H

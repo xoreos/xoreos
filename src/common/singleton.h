@@ -91,4 +91,4 @@ protected:
 
 } // End of namespace Common
 
-#endif
+#endif // COMMON_SINGLETON_H

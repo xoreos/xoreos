@@ -780,4 +780,4 @@ public:
 
 } // End of namespace Common
 
-#endif
+#endif // COMMON_STREAM_H
