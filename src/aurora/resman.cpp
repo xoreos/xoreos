@@ -47,6 +47,7 @@ ResourceManager::ResourceManager() {
 	_musicTypes.push_back(kFileTypeOGG);
 
 	_soundTypes.push_back(kFileTypeWAV);
+	_soundTypes.push_back(kFileTypeOGG);
 }
 
 ResourceManager::~ResourceManager() {
