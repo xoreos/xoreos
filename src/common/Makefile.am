@@ -5,6 +5,9 @@ noinst_LTLIBRARIES = libcommon.la
 noinst_HEADERS = system.h \
                  types.h \
                  endianness.h \
+                 noncopyable.h \
+                 singleton.h \
+                 thread.h \
                  util.h \
                  strutil.h \
                  stream.h \
@@ -12,10 +15,10 @@ noinst_HEADERS = system.h \
                  file.h \
                  filepath.h \
                  filelist.h \
-                 config-file.h \
-                 singleton.h
+                 config-file.h
 
-libcommon_la_SOURCES = util.cpp \
+libcommon_la_SOURCES = thread.cpp \
+                       util.cpp \
                        strutil.cpp \
                        stream.cpp \
                        streamtokenizer.cpp \

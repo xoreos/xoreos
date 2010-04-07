@@ -63,9 +63,6 @@ public:
 	 */
 	bool pushEvent(Event &event);
 
-	/** Update the subsystems. Should be called regularily. */
-	void update();
-
 private:
 	bool _ready; ///< Was the events subsystem successfully initialized?
 

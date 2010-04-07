@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "common/singleton.h"
+#include "common/thread.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -29,7 +30,7 @@ namespace Common {
 namespace Sound {
 
 /** The sound manager. */
-class SoundManager : public Common::Singleton<SoundManager> {
+class SoundManager : public Common::Singleton<SoundManager>, public Common::Thread {
 public:
 	SoundManager();
 
@@ -51,9 +52,6 @@ public:
 	 */
 	int playSoundFile(Common::SeekableReadStream *wavStream);
 
-	/** Update the sound information. Should be called regularily. */
-	void update();
-
 private:
 	struct Channel {
 		Sound_Sample *sound;
@@ -64,8 +62,13 @@ private:
 
 	std::vector<Channel> _channels;
 
+	/** Update the sound information. Called regularily from within the thread method. */
+	void update();
+
 	void freeChannel(int channel);
 	void setChannel(int channel, Sound_Sample *sound, Mix_Chunk *wav);
+
+	void threadMethod();
 };
 
 } // End of namespace Sound

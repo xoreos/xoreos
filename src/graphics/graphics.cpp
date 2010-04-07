@@ -32,6 +32,11 @@ bool GraphicsManager::init() {
 		return false;
 	}
 
+	if (!createThread()) {
+		warning("GraphicsManager::init(): Failed to create graphics thread: %s", SDL_GetError());
+		return false;
+	}
+
 	_ready = true;
 	return true;
 }
@@ -39,6 +44,9 @@ bool GraphicsManager::init() {
 void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
+
+	if (!destroyThread())
+		warning("GraphicsManager::deinit(): Graphics thread had to be killed");
 
 	SDL_Quit();
 
@@ -88,6 +96,13 @@ bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
 		return false;
 
 	return true;
+}
+
+void GraphicsManager::threadMethod() {
+	while (!_killThread) {
+		// Nothing yet
+		SDL_Delay(100);
+	}
 }
 
 } // End of namespace Graphics

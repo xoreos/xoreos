@@ -102,8 +102,4 @@ void EventsManager::requestQuit() {
 	_quitRequested = true;
 }
 
-void EventsManager::update() {
-	SoundMan.update();
-}
-
 } // End of namespace Events

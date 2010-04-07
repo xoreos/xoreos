@@ -70,7 +70,6 @@ bool KotOREngine::run(const std::string &directory) {
 		Events::Event event;
 		while (EventMan.pollEvent(event));
 
-		EventMan.update();
 		EventMan.delay(10);
 	}
 

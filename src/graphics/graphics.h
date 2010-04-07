@@ -18,11 +18,12 @@
 #include <SDL.h>
 
 #include "common/singleton.h"
+#include "common/thread.h"
 
 namespace Graphics {
 
 /** The graphics manager. */
-class GraphicsManager : public Common::Singleton<GraphicsManager> {
+class GraphicsManager : public Common::Singleton<GraphicsManager>, public Common::Thread {
 public:
 	GraphicsManager();
 
@@ -42,6 +43,8 @@ private:
 	SDL_Surface *_screen;
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
+
+	void threadMethod();
 };
 
 } // End of namespace Graphics

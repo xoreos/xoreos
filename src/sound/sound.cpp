@@ -50,6 +50,11 @@ bool SoundManager::init() {
 		_channels[i].wav   = 0;
 	}
 
+	if (!createThread()) {
+		warning("SoundManager::init(): Failed to create sound thread: %s", SDL_GetError());
+		return false;
+	}
+
 	_ready = true;
 	return true;
 }
@@ -57,6 +62,9 @@ bool SoundManager::init() {
 void SoundManager::deinit() {
 	if (!_ready)
 		return;
+
+	if (!destroyThread())
+		warning("SoundManager::deinit(): Sound thread had to be killed");
 
 	Mix_CloseAudio();
 	Sound_Quit();
@@ -271,6 +279,13 @@ void SoundManager::setChannel(int channel, Sound_Sample *sound, Mix_Chunk *wav) 
 
 	c.sound = sound;
 	c.wav   = wav;
+}
+
+void SoundManager::threadMethod() {
+	while (!_killThread) {
+		update();
+		SDL_Delay(100);
+	}
 }
 
 } // End of namespace Sound
