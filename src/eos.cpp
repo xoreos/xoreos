@@ -49,6 +49,9 @@ int main(int argc, char **argv) {
 	if (!EventMan.init())
 		error("Fatal");
 
+	if (!GfxMan.initSize(800, 600, false))
+		error("Fatal");
+
 	// Detecting an running the game
 
 	Aurora::GameID gameID = EngineMan.probeGameID(baseDir);

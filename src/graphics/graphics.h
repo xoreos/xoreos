@@ -15,6 +15,8 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
+#include <SDL.h>
+
 #include "common/singleton.h"
 
 namespace Graphics {
@@ -29,11 +31,17 @@ public:
 	/** Deinitialize the graphics subsystem. */
 	void deinit();
 
+	bool initSize(int width, int height, bool fullscreen);
+
 	/** Was the graphics subsystem successfully initialized? */
 	bool ready() const;
 
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
+
+	SDL_Surface *_screen;
+
+	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 };
 
 } // End of namespace Graphics
