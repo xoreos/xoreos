@@ -160,6 +160,8 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		return -1;
 	}
 
+	Common::StackLock lock(_mutex);
+
 	bool isMP3 = false;
 	uint32 tag = wavStream->readUint32BE();
 	if (tag == 0xfff360c4) {
@@ -247,6 +249,8 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 }
 
 void SoundManager::update() {
+	Common::StackLock lock(_mutex);
+
 	for (uint i = 0; i < MIX_CHANNELS; i++)
 		if (!Mix_Playing(i))
 			freeChannel(i);

@@ -22,6 +22,7 @@
 
 #include "common/singleton.h"
 #include "common/thread.h"
+#include "common/mutex.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -61,6 +62,8 @@ private:
 	bool _ready; ///< Was the sound subsystem successfully initialized?
 
 	std::vector<Channel> _channels;
+
+	Common::Mutex _mutex;
 
 	/** Update the sound information. Called regularily from within the thread method. */
 	void update();

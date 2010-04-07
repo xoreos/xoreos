@@ -8,6 +8,7 @@ noinst_HEADERS = system.h \
                  noncopyable.h \
                  singleton.h \
                  thread.h \
+                 mutex.h \
                  util.h \
                  strutil.h \
                  stream.h \
@@ -18,6 +19,7 @@ noinst_HEADERS = system.h \
                  config-file.h
 
 libcommon_la_SOURCES = thread.cpp \
+                       mutex.cpp \
                        util.cpp \
                        strutil.cpp \
                        stream.cpp \
