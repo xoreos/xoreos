@@ -26,6 +26,8 @@ namespace Sound {
 /** The sound manager. */
 class SoundManager : public Common::Singleton<SoundManager> {
 public:
+	SoundManager();
+
 	/** Initialize the sound subsystem. */
 	bool init();
 	/** Deinitialize the sound subsystem. */

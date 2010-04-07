@@ -22,8 +22,12 @@ DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
 
+GraphicsManager::GraphicsManager() {
+	_ready = false;
+}
+
 bool GraphicsManager::init() {
-	if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO) < 0) {
+	if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0) {
 		warning("GraphicsManager::init(): Failed to initialize SDL: %s", SDL_GetError());
 		return false;
 	}

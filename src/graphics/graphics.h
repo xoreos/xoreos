@@ -22,6 +22,8 @@ namespace Graphics {
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager> {
 public:
+	GraphicsManager();
+
 	/** Initialize the graphics subsystem. */
 	bool init();
 	/** Deinitialize the graphics subsystem. */

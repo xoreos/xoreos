@@ -30,6 +30,10 @@ namespace Sound {
 #define SAMPLE_RATE 44100
 #define BUFFER_SIZE 4096
 
+SoundManager::SoundManager() {
+	_ready = false;
+}
+
 bool SoundManager::init() {
 	if (!GfxMan.ready()) {
 		warning("SoundManager::init(): The GraphicsManager needs to be initialized first");
