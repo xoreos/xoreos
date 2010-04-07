@@ -152,7 +152,7 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		return -1;
 	}
 
-	bool isMP3 = -1;
+	bool isMP3 = false;
 	uint32 tag = wavStream->readUint32BE();
 	if (tag == 0xfff360c4) {
 
