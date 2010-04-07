@@ -15,16 +15,24 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
+#include <list>
+
 #include <SDL.h>
 
+#include "common/types.h"
 #include "common/singleton.h"
 #include "common/thread.h"
 
 namespace Graphics {
 
+class Renderable;
+
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager>, public Common::Thread {
 public:
+	typedef std::list<Renderable *> RenderQueue;
+	typedef RenderQueue::iterator RenderQueueRef;
+
 	GraphicsManager();
 
 	/** Initialize the graphics subsystem. */
@@ -37,10 +45,28 @@ public:
 	/** Was the graphics subsystem successfully initialized? */
 	bool ready() const;
 
+	/** Clear the rendering queue. */
+	void clearRenderQueue();
+
+	/** Add an object to the rendering queue.
+	 *
+	 *  @param  renderable The object to add.
+	 *  @return A reference to that object in the queue.
+	 */
+	RenderQueueRef addToRenderQueue(Renderable &renderable);
+
+	/** Remove an object from to rendering queue.
+	 *
+	 *  @param ref A reference to an object in the queue.
+	 */
+	void removeFromRenderQueue(RenderQueueRef &ref);
+
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
-	SDL_Surface *_screen;
+	SDL_Surface *_screen; ///< The OpenGL hardware surface.
+
+	RenderQueue _renderQueue; ///< The global rendering queue.
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 

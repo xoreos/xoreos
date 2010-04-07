@@ -15,6 +15,7 @@
 #include "common/util.h"
 
 #include "graphics/graphics.h"
+#include "graphics/renderable.h"
 
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
@@ -44,6 +45,8 @@ bool GraphicsManager::init() {
 void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
+
+	clearRenderQueue();
 
 	if (!destroyThread())
 		warning("GraphicsManager::deinit(): Graphics thread had to be killed");
@@ -96,6 +99,25 @@ bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
 		return false;
 
 	return true;
+}
+
+void GraphicsManager::clearRenderQueue() {
+	// Notify all objects in the queue that they have been kicked out
+	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it)
+		(*it)->kickedOutOfRenderQueue();
+
+	// Clear the queue
+	_renderQueue.clear();
+}
+
+GraphicsManager::RenderQueueRef GraphicsManager::addToRenderQueue(Renderable &renderable) {
+	_renderQueue.push_back(&renderable);
+
+	return --_renderQueue.end();
+}
+
+void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
+	_renderQueue.erase(ref);
 }
 
 void GraphicsManager::threadMethod() {
