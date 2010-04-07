@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file common/thread.h
+/** @file common/thread.cpp
  *  Threading helpers.
  */
 
