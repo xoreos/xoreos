@@ -15,6 +15,11 @@
 #ifndef SOUND_SOUND_H
 #define SOUND_SOUND_H
 
+#include <SDL_mixer.h>
+#include <SDL_sound.h>
+
+#include <vector>
+
 #include "common/singleton.h"
 
 namespace Common {
@@ -36,11 +41,31 @@ public:
 	/** Was the sound subsystem successfully initialized? */
 	bool ready() const;
 
-	/** Play a sound file. */
-	bool playSoundFile(Common::SeekableReadStream *wavStream);
+	/** Is that channel currently playing a sound? */
+	bool isPlaying(int channel) const;
+
+	/** Play a sound file.
+	 *
+	 *  @param  wavStream The stream to play. Will be taken over.
+	 *  @return The channel the sound has been assigned to, or -1 on error.
+	 */
+	int playSoundFile(Common::SeekableReadStream *wavStream);
+
+	/** Update the sound information. Should be called regularily. */
+	void update();
 
 private:
+	struct Channel {
+		Sound_Sample *sound;
+		Mix_Chunk *wav;
+	};
+
 	bool _ready; ///< Was the sound subsystem successfully initialized?
+
+	std::vector<Channel> _channels;
+
+	void freeChannel(int channel);
+	void setChannel(int channel, Sound_Sample *sound, Mix_Chunk *wav);
 };
 
 } // End of namespace Sound

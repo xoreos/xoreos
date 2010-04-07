@@ -75,6 +75,7 @@ AC_SUBST(EOS_LIBS)
 AC_OUTPUT(src/common/Makefile \
           src/graphics/Makefile \
           src/sound/Makefile \
+          src/events/Makefile \
           src/aurora/Makefile \
           src/engines/Makefile \
           src/engines/nwn/Makefile \

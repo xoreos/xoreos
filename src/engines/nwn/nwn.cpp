@@ -19,6 +19,8 @@
 
 #include "sound/sound.h"
 
+#include "events/events.h"
+
 #include "aurora/resman.h"
 
 namespace NWN {
@@ -69,10 +71,23 @@ bool NWNEngine::run(const std::string &directory) {
 
 	warning("Successfully initialized the engine");
 
+	int channel = -1;
+
 	Common::SeekableReadStream *wav = ResMan.getSound("as_pl_evanglstm1");
 	if (wav) {
 		warning("Found a wav. Trying to play it. Turn up your speakers");
-		SoundMan.playSoundFile(wav);
+		channel = SoundMan.playSoundFile(wav);
+	}
+
+	while (!EventMan.quitRequested()) {
+		if (!SoundMan.isPlaying(channel))
+			EventMan.requestQuit();
+
+		Events::Event event;
+		while (EventMan.pollEvent(event));
+
+		EventMan.update();
+		EventMan.delay(10);
 	}
 
 	return true;

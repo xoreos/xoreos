@@ -17,8 +17,6 @@
 #include "common/util.h"
 #include "common/filelist.h"
 
-#include "sound/sound.h"
-
 #include "aurora/resman.h"
 
 namespace NWN2 {

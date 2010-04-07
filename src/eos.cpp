@@ -21,6 +21,8 @@
 
 #include "sound/sound.h"
 
+#include "events/events.h"
+
 #include "engines/enginemanager.h"
 
 void deinit();
@@ -44,6 +46,9 @@ int main(int argc, char **argv) {
 	if (!SoundMan.init())
 		error("Fatal");
 
+	if (!EventMan.init())
+		error("Fatal");
+
 	// Detecting an running the game
 
 	Aurora::GameID gameID = EngineMan.probeGameID(baseDir);
@@ -62,6 +67,7 @@ int main(int argc, char **argv) {
 }
 
 void deinit() {
+	EventMan.deinit();
 	SoundMan.deinit();
 	GfxMan.deinit();
 }

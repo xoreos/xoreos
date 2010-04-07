@@ -12,9 +12,6 @@
  *  The global sound manager, handling all sound output.
  */
 
-#include <SDL_mixer.h>
-#include <SDL_sound.h>
-
 #include "sound/sound.h"
 
 #include "common/stream.h"
@@ -47,6 +44,12 @@ bool SoundManager::init() {
 		return false;
 	}
 
+	_channels.resize(MIX_CHANNELS);
+	for (uint i = 0; i < MIX_CHANNELS; i++) {
+		_channels[i].sound = 0;
+		_channels[i].wav   = 0;
+	}
+
 	_ready = true;
 	return true;
 }
@@ -63,6 +66,13 @@ void SoundManager::deinit() {
 
 bool SoundManager::ready() const {
 	return _ready;
+}
+
+bool SoundManager::isPlaying(int channel) const {
+	if ((channel < 0) || (channel >= MIX_CHANNELS))
+		return false;
+
+	return Mix_Playing(channel);
 }
 
 static int RWStreamSeek(SDL_RWops *context, int offset, int whence) {
@@ -133,13 +143,16 @@ void FreeRW_FromStream(SDL_RWops *rw) {
 	rw->close(rw);
 }
 
-bool SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
+int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
+	if (!_ready)
+		return -1;
+
 	if (!wavStream) {
 		warning("SoundManager::playSoundFile(): No stream");
-		return false;
+		return -1;
 	}
 
-	bool isMP3 = false;
+	bool isMP3 = -1;
 	uint32 tag = wavStream->readUint32BE();
 	if (tag == 0xfff360c4) {
 
@@ -152,7 +165,7 @@ bool SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		tag = wavStream->readUint32BE();
 		if (tag != MKID_BE('fmt ')) {
 			warning("SoundManager::playSoundFile(): Broken WAVE file");
-			return false;
+			return -1;
 		}
 
 		// Skip fmt chunk
@@ -167,7 +180,7 @@ bool SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 
 		if (tag != MKID_BE('data')) {
 			warning("SoundManager::playSoundFile(): Found invalid tag in WAVE file: %x", tag);
-			return false;
+			return -1;
 		}
 
 		uint32 dataSize = wavStream->readUint32LE();
@@ -188,7 +201,7 @@ bool SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	SDL_RWops *rw = RW_FromStream(wavStream);
 	if (!rw) {
 		warning("SoundManager::playSoundFile(): Failed to create SDL_RWops from wav stream");
-		return false;
+		return -1;
 	}
 
 	Sound_AudioInfo audioInfo;
@@ -199,7 +212,7 @@ bool SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	Sound_Sample *sound = Sound_NewSample(rw, isMP3 ? "mp3" : "wav", &audioInfo, BUFFER_SIZE);
 	if (!sound) {
 		warning("SoundManager::playSoundFile(): Unable to load sound file: %s", Sound_GetError());
-		return false;
+		return -1;
 	}
 
 	// Decode all samples
@@ -209,7 +222,7 @@ bool SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	if (!wav) {
 		warning("SoundManager::playSoundFile(): Unable to load WAV file: %s", Mix_GetError());
 		Sound_FreeSample(sound);
-		return false;
+		return -1;
 	}
 
 	int channel = Mix_PlayChannel(-1, wav, 0);
@@ -217,16 +230,47 @@ bool SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		warning("SoundManager::playSoundFile(): Unable to play WAV file: %s", Mix_GetError());
 		Sound_FreeSample(sound);
 		Mix_FreeChunk(wav);
-		return false;
+		return -1;
 	}
 
-	while (Mix_Playing(channel))
-		sleep(1);
+	setChannel(channel, sound, wav);
 
-	Sound_FreeSample(sound);
-	Mix_FreeChunk(wav);
+	return channel;
+}
 
-	return true;
+void SoundManager::update() {
+	for (uint i = 0; i < MIX_CHANNELS; i++)
+		if (!Mix_Playing(i))
+			freeChannel(i);
+}
+
+void SoundManager::freeChannel(int channel) {
+	if ((channel < 0) || (channel >= MIX_CHANNELS))
+		return;
+
+	Channel &c = _channels[channel];
+
+	if (c.sound) {
+		Sound_FreeSample(c.sound);
+		c.sound = 0;
+	}
+
+	if (c.wav) {
+		Mix_FreeChunk(c.wav);
+		c.wav = 0;
+	}
+}
+
+void SoundManager::setChannel(int channel, Sound_Sample *sound, Mix_Chunk *wav) {
+	if ((channel < 0) || (channel >= MIX_CHANNELS))
+		return;
+
+	freeChannel(channel);
+
+	Channel &c = _channels[channel];
+
+	c.sound = sound;
+	c.wav   = wav;
 }
 
 } // End of namespace Sound
