@@ -30,7 +30,7 @@ public:
 	bool destroyThread();
 
 protected:
-	bool _killThread;
+	volatile bool _killThread;
 
 private:
 	SDL_Thread *_thread;
