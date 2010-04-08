@@ -53,13 +53,13 @@ bool KotOR2Engine::run(const std::string &directory) {
 	if (!init())
 		return false;
 
-	warning("Successfully initialized the engine");
+	status("Successfully initialized the engine");
 
 	int channel = -1;
 
 	Common::SeekableReadStream *wav = ResMan.getSound("298hk50mun003");
 	if (wav) {
-		warning("Found a wav. Trying to play it. Turn up your speakers");
+		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);
 	}
 
@@ -80,11 +80,11 @@ bool KotOR2Engine::init() {
 	if (!ResMan.registerDataBaseDir(_baseDirectory))
 		return false;
 
-	warning("Loading main KEY");
+	status("Loading main KEY");
 	if (!indexMandatoryKEY(".*/chitin.key"))
 		return false;
 
-	warning("Loading secondary resources");
+	status("Loading secondary resources");
 	if (!ResMan.loadSecondaryResources())
 		return false;
 

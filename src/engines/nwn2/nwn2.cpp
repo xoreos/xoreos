@@ -54,7 +54,7 @@ bool NWN2Engine::run(const std::string &directory) {
 	if (!init())
 		return false;
 
-	warning("Successfully initialized the engine");
+	status("Successfully initialized the engine");
 	return true;
 }
 

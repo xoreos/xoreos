@@ -14,11 +14,11 @@
 
 #include "common/util.h"
 
-#ifndef DISABLE_TEXT_CONSOLE
-
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
+
+#ifndef DISABLE_TEXT_CONSOLE
 
 void warning(const char *s, ...) {
 	char buf[STRINGBUFLEN];
@@ -33,6 +33,17 @@ void warning(const char *s, ...) {
 	std::fputs("!\n", stderr);
 }
 
+void status(const char *s, ...) {
+	char buf[STRINGBUFLEN];
+	va_list va;
+
+	va_start(va, s);
+	std::vsnprintf(buf, STRINGBUFLEN, s, va);
+	va_end(va);
+
+	std::fputs(buf, stderr);
+	std::fputs("\n", stderr);
+}
 #endif
 
 void NORETURN_PRE error(const char *s, ...) {

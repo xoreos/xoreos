@@ -49,6 +49,7 @@ template<typename T> inline void SWAP(T &a, T &b) { T tmp = a; a = b; b = tmp; }
 
 #ifdef DISABLE_TEXT_CONSOLE
 inline void warning(const char *s, ...) {}
+inline void status(const char *s, ...) {}
 #else
 /**
 * Print a warning message to the text console (stderr).
@@ -56,6 +57,11 @@ inline void warning(const char *s, ...) {}
 * an exclamation mark and a newline.
 */
 void warning(const char *s, ...) GCC_PRINTF(1, 2);
+/**
+* Print a status message to the text console (stderr).
+* Automatically appends a newline.
+*/
+void status(const char *s, ...) GCC_PRINTF(1, 2);
 #endif
 
 void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;

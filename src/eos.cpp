@@ -40,17 +40,17 @@ int main(int argc, char **argv) {
 
 	atexit(deinit);
 
-	warning("Initialing the graphics subsystem");
+	status("Initialing the graphics subsystem");
 	if (!GfxMan.init())
 		error("Fatal");
-	warning("Initialing the sound subsystem");
+	status("Initialing the sound subsystem");
 	if (!SoundMan.init())
 		error("Fatal");
-	warning("Initialing the event subsystem");
+	status("Initialing the event subsystem");
 	if (!EventMan.init())
 		error("Fatal");
 
-	warning("Setting up graphics");
+	status("Setting up graphics");
 	// Initialize graphics
 	if (!GfxMan.initSize(800, 600, false))
 		error("Fatal");
@@ -61,14 +61,14 @@ int main(int argc, char **argv) {
 	if (gameID == Aurora::kGameIDUnknown)
 		error("Unable to detect the game ID");
 
-	warning("Detected game ID %d", gameID);
+	status("Detected game ID %d", gameID);
 
-	warning("Trying to run the game");
+	status("Trying to run the game");
 
 	if (!EngineMan.run(gameID, baseDir))
 		error("Engine failed");
 
-	warning("Engine returned success");
+	status("Engine returned success");
 	return 0;
 }
 

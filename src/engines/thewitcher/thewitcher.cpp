@@ -64,13 +64,13 @@ bool TheWitcherEngine::run(const std::string &directory) {
 	if (!init())
 		return false;
 
-	warning("Successfully initialized the engine");
+	status("Successfully initialized the engine");
 
 	int channel = -1;
 
 	Common::SeekableReadStream *wav = ResMan.getSound("m1_axem00020005");
 	if (wav) {
-		warning("Found a wav. Trying to play it. Turn up your speakers");
+		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);
 	}
 
@@ -91,17 +91,17 @@ bool TheWitcherEngine::init() {
 	if (!ResMan.registerDataBaseDir(_baseDirectory))
 		return false;
 
-	warning("Loading main KEY");
+	status("Loading main KEY");
 	if (!indexMandatoryKEY(".*/main.key"))
 		return false;
 
-	warning("Loading the localized base KEY");
+	status("Loading the localized base KEY");
 	if (!indexMandatoryKEY(".*/localized.key"))
 		return false;
 
 	ResMan.addBIFSourceDir("voices");
 
-	warning("Loading the English language KEYs");
+	status("Loading the English language KEYs");
 	if (!indexMandatoryKEY(".*/lang_3.key"))
 		return false;
 	if (!indexMandatoryKEY(".*/M1_3.key"))
@@ -109,7 +109,7 @@ bool TheWitcherEngine::init() {
 	if (!indexMandatoryKEY(".*/M2_3.key"))
 		return false;
 
-	warning("Loading secondary resources");
+	status("Loading secondary resources");
 	if (!ResMan.loadSecondaryResources())
 		return false;
 
