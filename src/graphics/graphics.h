@@ -15,10 +15,22 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
+#if defined(HAVE_CONFIG_H)
+	#include "config.h"
+#endif
+
 #include <string>
 #include <list>
 
 #include <SDL.h>
+
+#if defined(HAVE_GL_GL_H)
+	#include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+	#include <OpenGL/gl.h>
+#else
+	#error OpenGL header not found
+#endif
 
 #include "common/types.h"
 #include "common/singleton.h"
@@ -50,6 +62,8 @@ public:
 	/** That the window's title. */
 	void setWindowTitle(const std::string &title);
 
+	void setupScene();
+
 	/** Clear the rendering queue. */
 	void clearRenderQueue();
 
@@ -76,6 +90,8 @@ private:
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 
 	void threadMethod();
+
+	void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
 };
 
 } // End of namespace Graphics

@@ -12,6 +12,8 @@
  *  The global graphics manager.
  */
 
+#include <cmath>
+
 #include "common/util.h"
 
 #include "graphics/graphics.h"
@@ -107,6 +109,9 @@ void GraphicsManager::setWindowTitle(const std::string &title) {
 	SDL_WM_SetCaption(title.c_str(), 0);
 }
 
+void GraphicsManager::setupScene() {
+}
+
 void GraphicsManager::clearRenderQueue() {
 	// Notify all objects in the queue that they have been kicked out
 	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it)
@@ -131,6 +136,15 @@ void GraphicsManager::threadMethod() {
 		// Nothing yet
 		EventMan.delay(100);
 	}
+}
+
+void GraphicsManager::perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar) {
+	// Basically implements gluPerspective
+
+	GLdouble halfHeight = zNear * std::tan(fovy * 0.5 * ((PI * 2) / 360));
+	GLdouble halfWidth  = halfHeight * aspect;
+
+	glFrustum(-halfWidth, halfWidth, -halfHeight, halfHeight, zNear, zFar);
 }
 
 } // End of namespace Graphics
