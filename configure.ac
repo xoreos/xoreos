@@ -64,6 +64,8 @@ BOOST_SYSTEM
 BOOST_FILESYSTEM
 BOOST_REGEX
 
+AX_CHECK_GL
+
 EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
 EOS_LIBS="`sdl-config --libs` -lSDL_mixer -lSDL_sound"
 
