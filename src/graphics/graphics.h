@@ -40,10 +40,10 @@ public:
 	/** Deinitialize the graphics subsystem. */
 	void deinit();
 
-	bool initSize(int width, int height, bool fullscreen);
-
 	/** Was the graphics subsystem successfully initialized? */
 	bool ready() const;
+
+	bool initSize(int width, int height, bool fullscreen);
 
 	/** Clear the rendering queue. */
 	void clearRenderQueue();
