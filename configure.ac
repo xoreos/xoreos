@@ -3,6 +3,7 @@ AC_PREREQ([2.65])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_INIT(eos, 0.0.1)
+AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE(eos, 0.0.1)
@@ -64,10 +65,26 @@ BOOST_SYSTEM
 BOOST_FILESYSTEM
 BOOST_REGEX
 
-AX_CHECK_GL
+dnl Do not run the OpenGL checks on OS X, they will incorrectly find the X11 OpenGL libraries which we do not want.
+dnl TODO: Eventually add a test for OS X for OpenGL
+case "$target" in
+	*darwin*)
+		;;
+	*)
+		AX_CHECK_GL
+		;;
+esac;
 
 EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
 EOS_LIBS="`sdl-config --libs` -lSDL_mixer -lSDL_sound"
+
+dnl Add the OpenGL framework on Mac OS X
+case "$target" in
+	*darwin*)
+		EOS_LIBS="$EOS_LIBS  -framework OpenGL"
+		;;
+esac;
+
 
 AC_SUBST(SDL_MAIN_OBJ, [$SDL_MAIN_OBJ])
 AC_SUBST(SDL_LIBS, [$SDL_LIBS])
