@@ -19,6 +19,8 @@
 
 #include "graphics/graphics.h"
 
+#include "events/events.h"
+
 DECLARE_SINGLETON(Sound::SoundManager)
 
 namespace Sound {
@@ -288,7 +290,7 @@ void SoundManager::setChannel(int channel, Sound_Sample *sound, Mix_Chunk *wav) 
 void SoundManager::threadMethod() {
 	while (!_killThread) {
 		update();
-		SDL_Delay(100);
+		EventMan.delay(100);
 	}
 }
 

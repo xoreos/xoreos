@@ -17,6 +17,8 @@
 #include "graphics/graphics.h"
 #include "graphics/renderable.h"
 
+#include "events/events.h"
+
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
@@ -127,7 +129,7 @@ void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
 void GraphicsManager::threadMethod() {
 	while (!_killThread) {
 		// Nothing yet
-		SDL_Delay(100);
+		EventMan.delay(100);
 	}
 }
 
