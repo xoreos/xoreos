@@ -40,15 +40,18 @@ int main(int argc, char **argv) {
 
 	atexit(deinit);
 
+	warning("Initialing the graphics subsystem");
 	if (!GfxMan.init())
 		error("Fatal");
-
+	warning("Initialing the sound subsystem");
 	if (!SoundMan.init())
 		error("Fatal");
-
+	warning("Initialing the event subsystem");
 	if (!EventMan.init())
 		error("Fatal");
 
+	warning("Setting up graphics");
+	// Initialize graphics
 	if (!GfxMan.initSize(800, 600, false))
 		error("Fatal");
 
