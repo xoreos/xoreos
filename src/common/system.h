@@ -33,6 +33,10 @@
 	#define NORETURN_PRE __declspec(noreturn)
 	#define PLUGIN_EXPORT __declspec(dllexport)
 
+	#ifndef WIN32
+		#define WIN32
+	#endif
+
 #elif defined(__MINGW32__)
 
 	#define scumm_stricmp stricmp
@@ -41,6 +45,10 @@
 	#define EOS_LITTLE_ENDIAN
 
 	#define PLUGIN_EXPORT __declspec(dllexport)
+
+	#ifndef WIN32
+		#define WIN32
+	#endif
 
 #elif defined(UNIX)
 
