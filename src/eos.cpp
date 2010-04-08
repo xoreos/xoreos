@@ -42,18 +42,18 @@ int main(int argc, char **argv) {
 
 	status("Initialing the graphics subsystem");
 	if (!GfxMan.init())
-		error("Fatal");
+		error("Initializing the graphics subsystem failed");
 	status("Initialing the sound subsystem");
 	if (!SoundMan.init())
-		error("Fatal");
+		error("Initialing the sound subsystem failed");
 	status("Initialing the event subsystem");
 	if (!EventMan.init())
-		error("Fatal");
+		error("Initialing the event subsystem failed");
 
 	status("Setting up graphics");
 	// Initialize graphics
 	if (!GfxMan.initSize(800, 600, false))
-		error("Fatal");
+		error("Setting up graphics failed");
 
 	// Detecting an running the game
 
