@@ -3,7 +3,9 @@ include $(top_srcdir)/Makefile.common
 noinst_LTLIBRARIES = libgraphics.la
 
 noinst_HEADERS = graphics.h \
-                 renderable.h
+                 renderable.h \
+                 cube.h
 
 libgraphics_la_SOURCES = graphics.cpp \
-                         renderable.cpp
+                         renderable.cpp \
+                         cube.cpp

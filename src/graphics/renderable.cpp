@@ -33,6 +33,8 @@ void Renderable::addToRenderQueue() {
 		// Already in the render queue
 		return;
 
+	_renderQueueRef = GfxMan.addToRenderQueue(*this);
+
 	_inRenderQueue = true;
 }
 
@@ -40,6 +42,8 @@ void Renderable::removeFromRenderQueue() {
 	if (!_inRenderQueue)
 		// Not in the render queue anyway
 		return;
+
+	GfxMan.removeFromRenderQueue(_renderQueueRef);
 
 	_inRenderQueue = false;
 }

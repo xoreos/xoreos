@@ -18,6 +18,7 @@
 #include "common/filepath.h"
 
 #include "graphics/graphics.h"
+#include "graphics/cube.h"
 
 #include "sound/sound.h"
 
@@ -54,6 +55,8 @@ int main(int argc, char **argv) {
 	// Initialize graphics
 	if (!GfxMan.initSize(800, 600, false))
 		error("Setting up graphics failed");
+	if (!GfxMan.setupScene())
+		error("Failed setting up the 3D scene");
 
 	GfxMan.setWindowTitle(PACKAGE_STRING);
 

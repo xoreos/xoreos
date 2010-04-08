@@ -18,6 +18,7 @@
 
 #include "graphics/graphics.h"
 #include "graphics/renderable.h"
+#include "graphics/cube.h"
 
 #include "events/events.h"
 
@@ -26,7 +27,8 @@ DECLARE_SINGLETON(Graphics::GraphicsManager)
 namespace Graphics {
 
 GraphicsManager::GraphicsManager() {
-	_ready = false;
+	_ready    = false;
+	_initedGL = false;
 
 	_screen = 0;
 }
@@ -49,7 +51,6 @@ bool GraphicsManager::init() {
 void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
-
 	clearRenderQueue();
 
 	if (!destroyThread())
@@ -57,7 +58,8 @@ void GraphicsManager::deinit() {
 
 	SDL_Quit();
 
-	_ready = false;
+	_ready    = false;
+	_initedGL = false;
 }
 
 bool GraphicsManager::ready() const {
@@ -71,7 +73,7 @@ bool GraphicsManager::initSize(int width, int height, bool fullscreen) {
 		return false;
 	}
 
-	uint32 flags = SDL_HWSURFACE | SDL_OPENGL | SDL_OPENGLBLIT;
+	uint32 flags = SDL_OPENGL;
 
 	if (fullscreen)
 		flags |= SDL_FULLSCREEN;
@@ -109,7 +111,30 @@ void GraphicsManager::setWindowTitle(const std::string &title) {
 	SDL_WM_SetCaption(title.c_str(), 0);
 }
 
-void GraphicsManager::setupScene() {
+bool GraphicsManager::setupScene() {
+	if (!_screen)
+		return false;
+
+	glClearColor( 0, 0, 0, 0 );
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glViewport(0, 0, _screen->w, _screen->h);
+
+	perspective(60.0, ((GLdouble) _screen->w) / ((GLdouble) _screen->h), 1.0, 1000.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glShadeModel(GL_SMOOTH);
+	glClearColor(0.0, 0.0, 0.0, 0.5);
+	glClearDepth(1.0);
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+	_initedGL = true;
+	return true;
 }
 
 void GraphicsManager::clearRenderQueue() {
@@ -133,9 +158,17 @@ void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
 
 void GraphicsManager::threadMethod() {
 	while (!_killThread) {
-		// Nothing yet
+		if (!_initedGL) {
+			EventMan.delay(100);
+			continue;
+		}
+
+		renderScene();
 		EventMan.delay(100);
 	}
+}
+
+void GraphicsManager::renderScene() {
 }
 
 void GraphicsManager::perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar) {
