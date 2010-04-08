@@ -31,13 +31,13 @@ public:
 	 *  @param  directory The directory containing game data.
 	 *  @return A GameID of the game found in that directory, or kGameIDUnknown.
 	 */
-	Aurora::GameID probeGameID(const std::string &directory);
+	Aurora::GameID probeGameID(const std::string &directory) const;
 
 	/** Return the full game name to that game ID. */
 	const std::string &getGameName(Aurora::GameID gameID) const;
 
 	/** Run the specified game found in that directory. */
-	bool run(Aurora::GameID gameID, const std::string &directory);
+	bool run(Aurora::GameID gameID, const std::string &directory) const;
 };
 
 } // End of namespace Engines

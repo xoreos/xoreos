@@ -39,7 +39,7 @@ static const EngineProbe *kProbes[] = {
 	&TheWitcher::kTheWitcherEngineProbe
 };
 
-Aurora::GameID EngineManager::probeGameID(const std::string &directory) {
+Aurora::GameID EngineManager::probeGameID(const std::string &directory) const {
 	Common::FileList rootFiles;
 
 	if (!rootFiles.addDirectory(directory))
@@ -65,7 +65,7 @@ const std::string &EngineManager::getGameName(Aurora::GameID gameID) const {
 	return kEmptyString;
 }
 
-bool EngineManager::run(Aurora::GameID gameID, const std::string &directory) {
+bool EngineManager::run(Aurora::GameID gameID, const std::string &directory) const {
 	// Try to find the first engine able to handle that game ID
 	Engine *engine = 0;
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
