@@ -30,6 +30,8 @@ class TheWitcherEngineProbe : public Engines::EngineProbe {
 public:
 	Aurora::GameID getGameID() const;
 
+	const std::string &getGameName() const;
+
 	bool probe(const std::string &directory, const Common::FileList &rootFiles) const;
 
 	Engines::Engine *createEngine() const;

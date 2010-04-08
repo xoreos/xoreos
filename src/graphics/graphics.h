@@ -15,6 +15,7 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
+#include <string>
 #include <list>
 
 #include <SDL.h>
@@ -43,7 +44,11 @@ public:
 	/** Was the graphics subsystem successfully initialized? */
 	bool ready() const;
 
+	/** Create a window of that size. */
 	bool initSize(int width, int height, bool fullscreen);
+
+	/** That the window's title. */
+	void setWindowTitle(const std::string &title);
 
 	/** Clear the rendering queue. */
 	void clearRenderQueue();

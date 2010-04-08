@@ -56,6 +56,15 @@ Aurora::GameID EngineManager::probeGameID(const std::string &directory) {
 	return Aurora::kGameIDUnknown;
 }
 
+static const std::string kEmptyString;
+const std::string &EngineManager::getGameName(Aurora::GameID gameID) const {
+	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
+		if (kProbes[i]->getGameID() == gameID)
+			return kProbes[i]->getGameName();
+
+	return kEmptyString;
+}
+
 bool EngineManager::run(Aurora::GameID gameID, const std::string &directory) {
 	// Try to find the first engine able to handle that game ID
 	Engine *engine = 0;

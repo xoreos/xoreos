@@ -33,6 +33,9 @@ public:
 	 */
 	Aurora::GameID probeGameID(const std::string &directory);
 
+	/** Return the full game name to that game ID. */
+	const std::string &getGameName(Aurora::GameID gameID) const;
+
 	/** Run the specified game found in that directory. */
 	bool run(Aurora::GameID gameID, const std::string &directory);
 };

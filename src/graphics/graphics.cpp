@@ -101,6 +101,10 @@ bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
 	return true;
 }
 
+void GraphicsManager::setWindowTitle(const std::string &title) {
+	SDL_WM_SetCaption(title.c_str(), 0);
+}
+
 void GraphicsManager::clearRenderQueue() {
 	// Notify all objects in the queue that they have been kicked out
 	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it)

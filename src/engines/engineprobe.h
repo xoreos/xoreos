@@ -34,6 +34,9 @@ public:
 	/** Get the GameID that probe is able to detect. */
 	virtual Aurora::GameID getGameID() const = 0;
 
+	/** Return a string of the full game name. */
+	virtual const std::string &getGameName() const = 0;
+
 	/** Check for the game in that directory, containing these files. */
 	virtual bool probe(const std::string &directory, const Common::FileList &rootFiles) const = 0;
 

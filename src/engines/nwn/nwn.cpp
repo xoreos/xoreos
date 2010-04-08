@@ -25,10 +25,16 @@
 
 namespace NWN {
 
+static const std::string kGameName = "Neverwinter Nights";
+
 const NWNEngineProbe kNWNEngineProbe;
 
 Aurora::GameID NWNEngineProbe::getGameID() const {
 	return Aurora::kGameIDNWN;
+}
+
+const std::string &NWNEngineProbe::getGameName() const {
+	return kGameName;
 }
 
 bool NWNEngineProbe::probe(const std::string &directory, const Common::FileList &rootFiles) const {

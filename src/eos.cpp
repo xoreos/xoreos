@@ -55,13 +55,17 @@ int main(int argc, char **argv) {
 	if (!GfxMan.initSize(800, 600, false))
 		error("Setting up graphics failed");
 
+	GfxMan.setWindowTitle(PACKAGE_STRING);
+
 	// Detecting an running the game
 
 	Aurora::GameID gameID = EngineMan.probeGameID(baseDir);
 	if (gameID == Aurora::kGameIDUnknown)
 		error("Unable to detect the game ID");
 
-	status("Detected game ID %d", gameID);
+	GfxMan.setWindowTitle(PACKAGE_STRING " -- " + EngineMan.getGameName(gameID));
+
+	status("Detected game ID %d -- %s", gameID, EngineMan.getGameName(gameID).c_str());
 
 	status("Trying to run the game");
 
