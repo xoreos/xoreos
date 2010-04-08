@@ -41,15 +41,15 @@ int main(int argc, char **argv) {
 
 	atexit(deinit);
 
-	status("Initialing the graphics subsystem");
+	status("Initializing the graphics subsystem");
 	if (!GfxMan.init())
 		error("Initializing the graphics subsystem failed");
-	status("Initialing the sound subsystem");
+	status("Initializing the sound subsystem");
 	if (!SoundMan.init())
-		error("Initialing the sound subsystem failed");
-	status("Initialing the event subsystem");
+		error("Initializing the sound subsystem failed");
+	status("Initializing the event subsystem");
 	if (!EventMan.init())
-		error("Initialing the event subsystem failed");
+		error("Initializing the event subsystem failed");
 
 	status("Setting up graphics");
 	// Initialize graphics

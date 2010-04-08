@@ -71,7 +71,7 @@ case "$target" in
 	*darwin*)
 		;;
 	*)
-		AX_CHECK_GL
+		AX_HAVE_OPENGL
 		;;
 esac;
 

@@ -34,7 +34,14 @@ GraphicsManager::GraphicsManager() {
 }
 
 bool GraphicsManager::init() {
-	if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0) {
+	uint32 sdlInitFlags = SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO;
+
+// Might be needed on unixoid OS, but it crashes Windows. Nice.
+#ifndef WIN32
+	sdlInitFlags |= SDL_INIT_EVENTTHREAD;
+#endif
+
+	if (SDL_Init(sdlInitFlags) < 0) {
 		warning("GraphicsManager::init(): Failed to initialize SDL: %s", SDL_GetError());
 		return false;
 	}
