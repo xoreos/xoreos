@@ -48,8 +48,13 @@ void EventsManager::reset() {
 	if (!_ready)
 		return;
 
-	// Clear the events queue
+	Common::StackLock lock(_eventQueueMutex);
+
+	// Clear the SDL event queue
 	while (SDL_PollEvent(0));
+
+	// Clear our event queue
+	_eventQueue.clear();
 }
 
 bool EventsManager::ready() const {
@@ -64,30 +69,43 @@ uint32 EventsManager::getTimestamp() const {
 	return SDL_GetTicks();
 }
 
+void EventsManager::processEvents() {
+	Common::StackLock lock(_eventQueueMutex);
+
+	Event event;
+	while (SDL_PollEvent(&event)) {
+
+		// Check for quit events
+		if ((event.type == SDL_QUIT) ||
+		    ((event.type == SDL_KEYDOWN) &&
+		     (event.key.keysym.mod & (KMOD_CTRL | KMOD_META)) &&
+		     (event.key.keysym.sym == SDLK_q))) {
+
+			requestQuit();
+			continue;
+		}
+
+		// Push the event to the back of the list
+		_eventQueue.push_back(event);
+	}
+}
+
 bool EventsManager::pollEvent(Event &event) {
-	// Filter quit events
-	bool isQuit   = false;
-	bool hasEvent = SDL_PollEvent(&event);
+	Common::StackLock lock(_eventQueueMutex);
 
-	if (hasEvent) {
+	if (_eventQueue.empty())
+		return false;
 
-		if (event.type == SDL_KEYDOWN) {
-			if ((event.key.keysym.mod & (KMOD_CTRL | KMOD_META)) && (event.key.keysym.sym == SDLK_q))
-				isQuit = true;
-		} else if (event.type == SDL_QUIT)
-				isQuit = true;
+	// Return an event from the front of the list
+	event = _eventQueue.front();
+	_eventQueue.pop_front();
 
-	}
-
-	if (isQuit) {
-		requestQuit();
-		hasEvent = SDL_PollEvent(&event);
-	}
-
-	return hasEvent;
+	return true;
 }
 
 bool EventsManager::pushEvent(Event &event) {
+	Common::StackLock lock(_eventQueueMutex);
+
 	return SDL_PushEvent(&event) != 0;
 }
 
@@ -117,13 +135,13 @@ void EventsManager::initMainLoop() {
 }
 
 void EventsManager::runMainLoop() {
-	Event event;
-
 	uint32 lastFPS = getTimestamp();
 
 	while (!quitRequested()) {
-		while (pollEvent(event));
+		// (Pre)Process all events
+		processEvents();
 
+		// Render a frame
 		GfxMan.renderScene();
 
 		// Display a FPS counter every second

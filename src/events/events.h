@@ -16,10 +16,12 @@
 #define EVENTS_EVENTS_H
 
 #include <string>
+#include <list>
 
 #include <SDL_events.h>
 
 #include "common/singleton.h"
+#include "common/mutex.h"
 
 namespace Events {
 
@@ -71,9 +73,16 @@ public:
 	void runMainLoop();
 
 private:
+	typedef std::list<Event> EventQueue;
+
 	bool _ready; ///< Was the events subsystem successfully initialized?
 
 	bool _quitRequested; ///< Was an engine quit requested?
+
+	EventQueue _eventQueue;
+	Common::Mutex _eventQueueMutex;
+
+	void processEvents();
 };
 
 } // End of namespace Events
