@@ -92,6 +92,14 @@ void Cube::render() {
 		glColor3f(1.00, 0.00, 1.00);
 		glVertex3f( 1.00,  1.00, -1.00);
 	glEnd();
+
+	glBegin(GL_POLYGON);
+		glColor4f(1.00, 1.00, 0.00, 0.75);
+		glVertex3f(-1.00, -1.00,  1.00);
+		glVertex3f( 1.00, -1.00,  1.00);
+		glVertex3f( 1.00, -1.00, -1.00);
+		glVertex3f(-1.00, -1.00, -1.00);
+	glEnd();
 }
 
 } // End of namespace Graphics
