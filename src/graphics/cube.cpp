@@ -43,53 +43,55 @@ void Cube::render() {
 			_rotate = 0.0;
 	}
 
-	glTranslatef(0.0, 0.0, -2.0);
+	glTranslatef(0.0, 0.0, -3.0);
 	glRotatef(-_rotate, 1.0, 0.0, 0.0);
 	glRotatef( _rotate, 0.0, 1.0, 0.0);
 	glRotatef( _rotate, 0.0, 0.0, 1.0);
 
+	glScalef(0.5, 0.5, 0.5);
+
 	glBegin(GL_POLYGON);
 		glColor3f(1.00, 0.00, 0.00);
-		glVertex3f(-0.25, -0.25,  0.25);
+		glVertex3f(-1.00, -1.00,  1.00);
 		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f( 0.25, -0.25,  0.25);
+		glVertex3f( 1.00, -1.00,  1.00);
 		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f( 0.25,  0.25,  0.25);
+		glVertex3f( 1.00,  1.00,  1.00);
 		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f(-0.25,  0.25,  0.25);
+		glVertex3f(-1.00,  1.00,  1.00);
 	glEnd();
 
 	glBegin(GL_POLYGON);
 		glColor3f(1.00, 0.00, 0.00);
-		glVertex3f(-0.25, -0.25, -0.25);
+		glVertex3f(-1.00, -1.00, -1.00);
 		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f( 0.25, -0.25, -0.25);
+		glVertex3f( 1.00, -1.00, -1.00);
 		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f( 0.25,  0.25, -0.25);
+		glVertex3f( 1.00,  1.00, -1.00);
 		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f(-0.25,  0.25, -0.25);
+		glVertex3f(-1.00,  1.00, -1.00);
 	glEnd();
 
 	glBegin(GL_POLYGON);
 		glColor3f(1.00, 0.00, 0.00);
-		glVertex3f(-0.25, -0.25, -0.25);
+		glVertex3f(-1.00, -1.00, -1.00);
 		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f(-0.25, -0.25,  0.25);
+		glVertex3f(-1.00, -1.00,  1.00);
 		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f(-0.25,  0.25,  0.25);
+		glVertex3f(-1.00,  1.00,  1.00);
 		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f(-0.25,  0.25, -0.25);
+		glVertex3f(-1.00,  1.00, -1.00);
 	glEnd();
 
 	glBegin(GL_POLYGON);
 		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f( 0.25, -0.25, -0.25);
+		glVertex3f( 1.00, -1.00, -1.00);
 		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f( 0.25, -0.25,  0.25);
+		glVertex3f( 1.00, -1.00,  1.00);
 		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f( 0.25,  0.25,  0.25);
+		glVertex3f( 1.00,  1.00,  1.00);
 		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f( 0.25,  0.25, -0.25);
+		glVertex3f( 1.00,  1.00, -1.00);
 	glEnd();
 }
 
