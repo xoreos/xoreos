@@ -117,12 +117,12 @@ void EventsManager::initMainLoop() {
 }
 
 void EventsManager::runMainLoop() {
-	while (!quitRequested()) {
-		Event event;
+	Event event;
 
+	while (!quitRequested()) {
 		while (pollEvent(event));
 
-		delay(10);
+		GfxMan.renderScene();
 	}
 }
 

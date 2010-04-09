@@ -26,6 +26,32 @@ Cube::~Cube() {
 }
 
 void Cube::render() {
+	glColor3f(0.2,1.0,0.2);
+
+	glTranslatef(0.0, 0.0, -2.0);
+	glRotatef(45.0, 0.0, 1.0, 0.0);
+	glRotatef(-45.0, 1.0, 0.0, 0.0);
+
+	glBegin(GL_POLYGON);
+		glVertex3f(-0.25, -0.25, 0.25);
+		glVertex3f( 0.25, -0.25, 0.25);
+		glVertex3f( 0.25,  0.25, 0.25);
+		glVertex3f(-0.25,  0.25, 0.25);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glVertex3f(-0.25, -0.25, -0.25);
+		glVertex3f( 0.25, -0.25, -0.25);
+		glVertex3f( 0.25,  0.25, -0.25);
+		glVertex3f(-0.25,  0.25, -0.25);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glVertex3f(-0.25, -0.25, -0.25);
+		glVertex3f(-0.25, -0.25,  0.25);
+		glVertex3f(-0.25,  0.25,  0.25);
+		glVertex3f(-0.25,  0.25, -0.25);
+	glEnd();
 }
 
 } // End of namespace Graphics

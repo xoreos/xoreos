@@ -68,6 +68,9 @@ public:
 	 */
 	void removeFromRenderQueue(RenderQueueRef &ref);
 
+	/** Render one complete frame of the scene. */
+	void renderScene();
+
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 	bool _initedGL;
