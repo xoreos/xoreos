@@ -16,6 +16,7 @@
 #include "common/util.h"
 
 #include "aurora/talktable.h"
+#include "aurora/error.h"
 
 static const uint32 kTLKID     = MKID_BE('TLK ');
 static const uint32 kVersion3  = MKID_BE('V3.0');
@@ -35,48 +36,58 @@ void TalkTable::clear() {
 	_entryList.clear();
 }
 
-bool TalkTable::load(Common::SeekableReadStream &stream) {
-	readHeader(stream);
+void TalkTable::load(Common::SeekableReadStream &tlk) {
+	readHeader(tlk);
 
-	if (_id != kTLKID) {
-		warning("TalkTable::load(): Not a TLK file");
-		return false;
-	}
+	if (_id != kTLKID)
+		throw Common::Exception("Not a TLK file");
 
-	if (_version != kVersion3) {
-		warning("TalkTable::load(): Unsupported file version");
-		return false;
-	}
+	if (_version != kVersion3)
+		throw Common::Exception("Unsupported TLK file version %08X", _version);
 
-	stream.readUint32LE(); // Skip language
-	uint32 stringCount = stream.readUint32LE();
-	uint32 tableOffset = stream.readUint32LE();
+	tlk.readUint32LE(); // Skip language
+	uint32 stringCount = tlk.readUint32LE();
+	uint32 tableOffset = tlk.readUint32LE();
 
 	_entryList.resize(stringCount);
 
-	// First, read in all the table data
-	for (uint32 i = 0; i < stringCount; i++) {
-		_entryList[i].flags = (EntryFlags)stream.readUint32LE();
-		_entryList[i].soundResRef = AuroraFile::readRawString(stream, 16);
-		_entryList[i].volumeVariance = stream.readUint32LE();
-		_entryList[i].pitchVariance = stream.readUint32LE();
-		_entryList[i].offset = stream.readUint32LE();
-		_entryList[i].length = stream.readUint32LE();
-		_entryList[i].soundLength = AuroraFile::readFloat(stream);
+	try {
+
+		// First, read in all the table data
+		readEntryTable(tlk);
+
+		// Now go and pick up all the strings
+		readStrings(tlk, tableOffset);
+
+		if (tlk.err())
+			throw Common::Exception(kReadError);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed reading TLK file");
+		throw e;
 	}
 
-	// Now go and pick up all the strings
-	for (uint32 i = 0; i < stringCount; i++) {
-		stream.seek(_entryList[i].offset + tableOffset);
-		_entryList[i].text = AuroraFile::readRawString(stream, _entryList[i].length);
-	}
+}
 
-	if (stream.err()) {
-		warning("TalkTable::load(): Read error");
-		return false;
+void TalkTable::readEntryTable(Common::SeekableReadStream &tlk) {
+	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
+		entry->flags          = (EntryFlags) tlk.readUint32LE();
+		entry->soundResRef    = AuroraFile::readRawString(tlk, 16);
+		entry->volumeVariance = tlk.readUint32LE();
+		entry->pitchVariance  = tlk.readUint32LE();
+		entry->offset         = tlk.readUint32LE();
+		entry->length         = tlk.readUint32LE();
+		entry->soundLength    = AuroraFile::readFloat(tlk);
 	}
+}
 
-	return true;
+void TalkTable::readStrings(Common::SeekableReadStream &tlk, uint32 dataOffset) {
+	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
+		if (!tlk.seek(dataOffset + entry->offset))
+			throw Common::Exception(kSeekError);
+
+		entry->text = AuroraFile::readRawString(tlk, entry->length);
+	}
 }
 
 const TalkTable::Entry *TalkTable::getEntry(uint32 strRef) const {

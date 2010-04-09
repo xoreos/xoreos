@@ -16,6 +16,7 @@
 #include "common/util.h"
 
 #include "aurora/biffile.h"
+#include "aurora/error.h"
 
 static const uint32 kBIFID     = MKID_BE('BIFF');
 static const uint32 kVersion1  = MKID_BE('V1  ');
@@ -35,46 +36,44 @@ void BIFFile::clear() {
 	_resources.clear();
 }
 
-bool BIFFile::load(Common::SeekableReadStream &bif) {
+void BIFFile::load(Common::SeekableReadStream &bif) {
 	clear();
 
 	readHeader(bif);
 
-	if (_id != kBIFID) {
-		warning("BIFFile::load(): Not a BIF file");
-		return false;
-	}
+	if (_id != kBIFID)
+		throw Common::Exception("Not a BIF file");
 
-	if ((_version != kVersion1) && (_version != kVersion11)) {
-		warning("BIFFile::load(): Unsupported file version");
-		return false;
-	}
+	if ((_version != kVersion1) && (_version != kVersion11))
+		throw Common::Exception("Unsupported BIF file version %08X", _version);
 
 	uint32 varResCount = bif.readUint32LE();
 	uint32 fixResCount = bif.readUint32LE();
 
-	if (fixResCount != 0) {
-		warning("BIFFile::load(): TODO: Fixed resources");
-		return false;
-	}
+	if (fixResCount != 0)
+		throw Common::Exception("TODO: Fixed BIF resources");
 
 	_resources.resize(varResCount);
 
 	uint32 offVarResTable = bif.readUint32LE();
-	if (!readVarResTable(bif, offVarResTable))
-		return false;
 
-	if (bif.err()) {
-		warning("BIFFile::load(): Read error");
-		return false;
+	try {
+
+		readVarResTable(bif, offVarResTable);
+
+		if (bif.err())
+			throw Common::Exception(kReadError);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed reading BIF file");
+		throw e;
 	}
 
-	return true;
 }
 
-bool BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
+void BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
 	if (!bif.seek(offset))
-		return false;
+		throw Common::Exception(kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		bif.skip(4); // ID
@@ -86,8 +85,6 @@ bool BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
 		res->size   = bif.readUint32LE();
 		res->type   = (FileType) bif.readUint32LE();
 	}
-
-	return true;
 }
 
 const BIFFile::ResourceList &BIFFile::getResources() const {

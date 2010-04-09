@@ -52,10 +52,9 @@ public:
 
 	/** Load an ERF file.
 	 *
-	 *  @param  erf A stream of an ERF file.
-	 *  @return true if loading was successful, false otherwise.
+	 *  @param erf A stream of an ERF file.
 	 */
-	bool load(Common::SeekableReadStream &erf);
+	void load(Common::SeekableReadStream &erf);
 
 	/** Return the description. */
 	const LocString &getDescription() const;
@@ -68,8 +67,9 @@ private:
 
 	ResourceList _resources; ///< All containing resources.
 
-	bool readKeyList(Common::SeekableReadStream &erf, uint32 offset);
-	bool readResList(Common::SeekableReadStream &erf, uint32 offset);
+	void readDescription(Common::SeekableReadStream &erf, uint32 offset, uint32 id, uint32 count);
+	void readKeyList(Common::SeekableReadStream &erf, uint32 offset);
+	void readResList(Common::SeekableReadStream &erf, uint32 offset);
 };
 
 } // End of namespace Aurora

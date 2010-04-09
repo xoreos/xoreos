@@ -16,8 +16,10 @@
 
 namespace Aurora {
 
-const char *GFFFieldTypeError::what() const throw() {
-	return "GFF field type does not match the requested type";
-}
+const Common::Exception kGFFFieldTypeError("GFF field type does not match the requested type");
+
+const Common::Exception kOpenError("Can't open file");
+const Common::Exception kReadError("Read error");
+const Common::Exception kSeekError("Seek error");
 
 } // End of namespace Aurora

@@ -22,6 +22,7 @@
 #include "events/events.h"
 
 #include "aurora/resman.h"
+#include "aurora/error.h"
 
 namespace NWN {
 
@@ -69,11 +70,10 @@ NWNEngine::NWNEngine() {
 NWNEngine::~NWNEngine() {
 }
 
-bool NWNEngine::run(const std::string &directory) {
+void NWNEngine::run(const std::string &directory) {
 	_baseDirectory = directory;
 
-	if (!init())
-		return false;
+	init();
 
 	status("Successfully initialized the engine");
 
@@ -94,47 +94,33 @@ bool NWNEngine::run(const std::string &directory) {
 
 		EventMan.delay(10);
 	}
-
-	return true;
 }
 
-bool NWNEngine::init() {
-	if (!ResMan.registerDataBaseDir(_baseDirectory))
-		return false;
+void NWNEngine::init() {
+	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Loading main KEY");
-	if (!indexMandatoryKEY(".*/chitin.key"))
-		return false;
+	indexMandatoryKEY(".*/chitin.key");
 
 	status("Loading expansions and patch KEYs");
 
 	// Base game patch
-	if (!indexOptionalKEY(".*/patch.key"))
-		return false;
+	indexOptionalKEY(".*/patch.key");
 
 	// Expansion 1: Shadows of Undrentide (SoU)
-	if (!indexOptionalKEY(".*/xp1.key"))
-		return false;
-	if (!indexOptionalKEY(".*/xp1patch.key"))
-		return false;
+	indexOptionalKEY(".*/xp1.key");
+	indexOptionalKEY(".*/xp1patch.key");
 
 	// Expansion 2: Hordes of the Underdark (HotU)
-	if (!indexOptionalKEY(".*/xp2.key"))
-		return false;
-	if (!indexOptionalKEY(".*/xp2patch.key"))
-		return false;
+	indexOptionalKEY(".*/xp2.key");
+	indexOptionalKEY(".*/xp2patch.key");
 
 	// Expansion 3: Kingmaker (resources also included in the final 1.69 patch)
-	if (!indexOptionalKEY(".*/xp3.key"))
-		return false;
-	if (!indexOptionalKEY(".*/xp3patch.key"))
-		return false;
+	indexOptionalKEY(".*/xp3.key");
+	indexOptionalKEY(".*/xp3patch.key");
 
 	status("Loading secondary resources");
-	if (!ResMan.loadSecondaryResources())
-		return false;
-
-	return true;
+	ResMan.loadSecondaryResources();
 }
 
 } // End of namespace NWN

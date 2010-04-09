@@ -22,6 +22,7 @@
 #include "events/events.h"
 
 #include "aurora/resman.h"
+#include "aurora/error.h"
 
 namespace KotOR2 {
 
@@ -53,11 +54,10 @@ KotOR2Engine::KotOR2Engine() {
 KotOR2Engine::~KotOR2Engine() {
 }
 
-bool KotOR2Engine::run(const std::string &directory) {
+void KotOR2Engine::run(const std::string &directory) {
 	_baseDirectory = directory;
 
-	if (!init())
-		return false;
+	init();
 
 	status("Successfully initialized the engine");
 
@@ -78,23 +78,16 @@ bool KotOR2Engine::run(const std::string &directory) {
 
 		EventMan.delay(10);
 	}
-
-	return true;
 }
 
-bool KotOR2Engine::init() {
-	if (!ResMan.registerDataBaseDir(_baseDirectory))
-		return false;
+void KotOR2Engine::init() {
+	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Loading main KEY");
-	if (!indexMandatoryKEY(".*/chitin.key"))
-		return false;
+	indexMandatoryKEY(".*/chitin.key");
 
 	status("Loading secondary resources");
-	if (!ResMan.loadSecondaryResources())
-		return false;
-
-	return true;
+	ResMan.loadSecondaryResources();
 }
 
 } // End of namespace KotOR2

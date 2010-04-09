@@ -16,6 +16,7 @@
 #include "common/util.h"
 
 #include "aurora/keyfile.h"
+#include "aurora/error.h"
 
 static const uint32 kKEYID     = MKID_BE('KEY ');
 static const uint32 kVersion1  = MKID_BE('V1  ');
@@ -36,20 +37,16 @@ void KEYFile::clear() {
 	_resources.clear();
 }
 
-bool KEYFile::load(Common::SeekableReadStream &key) {
+void KEYFile::load(Common::SeekableReadStream &key) {
 	clear();
 
 	readHeader(key);
 
-	if (_id != kKEYID) {
-		warning("KEYFile::load(): Not a KEY file");
-		return false;
-	}
+	if (_id != kKEYID)
+		throw Common::Exception("Not a KEY file");
 
-	if ((_version != kVersion1) && (_version != kVersion11)) {
-		warning("KEYFile::load(): Unsupported file version");
-		return false;
-	}
+	if ((_version != kVersion1) && (_version != kVersion11))
+		throw Common::Exception("Unsupported KEY file version %08X", _version);
 
 	uint32 bifCount = key.readUint32LE();
 	uint32 resCount = key.readUint32LE();
@@ -67,27 +64,27 @@ bool KEYFile::load(Common::SeekableReadStream &key) {
 	key.skip( 8); // Build year and day
 	key.skip(32); // Reserved
 
-	_bifs.resize(bifCount);
+	try {
 
-	if (!readBIFList(key, offFileTable))
-		return false;
+		_bifs.resize(bifCount);
+		readBIFList(key, offFileTable);
 
-	_resources.resize(resCount);
+		_resources.resize(resCount);
+		readResList(key, offResTable);
 
-	if (!readResList(key, offResTable))
-		return false;
+		if (key.err())
+			throw Common::Exception(kReadError);
 
-	if (key.err()) {
-		warning("KEYFile::load(): Read error");
-		return false;
+	} catch (Common::Exception &e) {
+		e.add("Failed reading KEY file");
+		throw e;
 	}
 
-	return true;
 }
 
-bool KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
+void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 	if (!key.seek(offset))
-		return false;
+		throw Common::Exception(kSeekError);
 
 	for (BIFList::iterator bif = _bifs.begin(); bif != _bifs.end(); ++bif) {
 		key.skip(4); // File size of the bif
@@ -107,13 +104,11 @@ bool KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 
 		AuroraFile::cleanupPath(*bif);
 	}
-
-	return true;
 }
 
-bool KEYFile::readResList(Common::SeekableReadStream &key, uint32 offset) {
+void KEYFile::readResList(Common::SeekableReadStream &key, uint32 offset) {
 	if (!key.seek(offset))
-		return false;
+		throw Common::Exception(kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->name = AuroraFile::readRawString(key, 16);
@@ -132,8 +127,6 @@ bool KEYFile::readResList(Common::SeekableReadStream &key, uint32 offset) {
 		// TODO: Fixed resources?
 		res->resIndex = id & 0xFFFFF;
 	}
-
-	return true;
 }
 
 const KEYFile::BIFList &KEYFile::getBIFs() const {

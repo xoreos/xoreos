@@ -60,10 +60,9 @@ public:
 
 	/** Load a talk table.
 	 *
-	 *  @param  stream A stream of talk table.
-	 *  @return true if loading was successful, false otherwise.
+	 *  @param stream A stream of talk table.
 	 */
-	bool load(Common::SeekableReadStream &stream);
+	void load(Common::SeekableReadStream &tlk);
 
 	/** Get an entry.
 	 *
@@ -74,6 +73,9 @@ public:
 
 private:
 	EntryList _entryList;
+
+	void readEntryTable(Common::SeekableReadStream &tlk);
+	void readStrings(Common::SeekableReadStream &tlk, uint32 dataOffset);
 };
 
 } // End of namespace Aurora

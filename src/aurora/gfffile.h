@@ -97,8 +97,11 @@ public:
 	/** Clear all information. */
 	void clear();
 
-	/** Load the GFF out of a stream. */
-	bool load(Common::SeekableReadStream &gff);
+	/** Load a GFF file.
+	 *
+	 *  @param gff A stream of an GFF file.
+	 */
+	void load(Common::SeekableReadStream &twoda);
 
 	/** Create a StructRange of two StructIterators pointing to the start and end of a GFF's struct.
 	 *
@@ -127,8 +130,8 @@ private:
 	std::vector<ListArray::const_iterator> _rawListToListMap;
 
 	// Reading helpers
-	bool readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex);
-	bool readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 fieldIndicesIndex);
+	void readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex);
+	void readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 fieldIndicesIndex);
 };
 
 /** A data field found in a GFF. */
@@ -180,7 +183,7 @@ public:
 	const uint32 getListIndex() const;
 
 	/** Read the field out of a stream. */
-	bool read(Common::SeekableReadStream &gff, const GFFFile::Header &header);
+	void read(Common::SeekableReadStream &gff, const GFFFile::Header &header);
 
 private:
 	/** The actual type of the field, as found in the GFF. */
@@ -231,26 +234,26 @@ private:
 
 	// Reading helpers
 
-	bool convertData(Common::SeekableReadStream &gff, const GFFFile::Header &header, uint32 data);
+	void convertData(Common::SeekableReadStream &gff, const GFFFile::Header &header, uint32 data);
 
-	inline bool readUint64   (Common::SeekableReadStream &gff,
+	inline void readUint64   (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline bool readSint64   (Common::SeekableReadStream &gff,
+	inline void readSint64   (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline bool readDouble   (Common::SeekableReadStream &gff,
+	inline void readDouble   (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline bool readExoString(Common::SeekableReadStream &gff,
+	inline void readExoString(Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline bool readResRef   (Common::SeekableReadStream &gff,
+	inline void readResRef   (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline bool readLocString(Common::SeekableReadStream &gff,
+	inline void readLocString(Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline bool readVoid     (Common::SeekableReadStream &gff,
+	inline void readVoid     (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline bool readVector   (Common::SeekableReadStream &gff,
+	inline void readVector   (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
 
-	inline bool seekGFFData(Common::SeekableReadStream &gff,
+	inline void seekGFFData(Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data, uint32 &curPos);
 
 	/** Convert an actual GFF field type to a general type. */

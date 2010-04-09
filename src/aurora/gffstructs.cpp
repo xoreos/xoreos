@@ -75,30 +75,23 @@ void GFFLocation::setOrientation(const double *orientation) {
 	std::memcpy(_orientation, orientation, 3 * sizeof(double));
 }
 
-bool GFFLocation::read(const GFFFile::StructRange &range) {
-	try {
-		for (GFFFile::StructIterator it = range.first; it != range.second; ++it) {
-			if      (it->getLabel() == "Area")
-				_area           = it->getUint();
-			else if (it->getLabel() == "PositionX")
-				_position[0]    = it->getDouble();
-			else if (it->getLabel() == "PositionY")
-				_position[1]    = it->getDouble();
-			else if (it->getLabel() == "PositionZ")
-				_position[2]    = it->getDouble();
-			else if (it->getLabel() == "OrientationX")
-				_orientation[0] = it->getDouble();
-			else if (it->getLabel() == "OrientationY")
-				_orientation[1] = it->getDouble();
-			else if (it->getLabel() == "OrientationZ")
-				_orientation[2] = it->getDouble();
-		}
-	} catch (GFFFieldTypeError &e) {
-		warning("GFFLocation::read(): %s", e.what());
-		return false;
+void GFFLocation::read(const GFFFile::StructRange &range) {
+	for (GFFFile::StructIterator it = range.first; it != range.second; ++it) {
+		if      (it->getLabel() == "Area")
+			_area           = it->getUint();
+		else if (it->getLabel() == "PositionX")
+			_position[0]    = it->getDouble();
+		else if (it->getLabel() == "PositionY")
+			_position[1]    = it->getDouble();
+		else if (it->getLabel() == "PositionZ")
+			_position[2]    = it->getDouble();
+		else if (it->getLabel() == "OrientationX")
+			_orientation[0] = it->getDouble();
+		else if (it->getLabel() == "OrientationY")
+			_orientation[1] = it->getDouble();
+		else if (it->getLabel() == "OrientationZ")
+			_orientation[2] = it->getDouble();
 	}
-
-	return true;
 }
 
 
@@ -145,42 +138,42 @@ GFFVariable::Type GFFVariable::getType() const {
 
 int32 GFFVariable::getInt() const {
 	if (_type != kTypeInt)
-		throw gffFieldTypeError;
+		throw kGFFFieldTypeError;
 
 	return _value.typeInt;
 }
 
 float GFFVariable::getFloat() const {
 	if (_type != kTypeFloat)
-		throw gffFieldTypeError;
+		throw kGFFFieldTypeError;
 
 	return _value.typeFloat;
 }
 
 uint32 GFFVariable::getObjectID() const {
 	if (_type != kTypeObjectID)
-		throw gffFieldTypeError;
+		throw kGFFFieldTypeError;
 
 	return _value.typeObjectID;
 }
 
 const std::string &GFFVariable::getString() const {
 	if (_type != kTypeString)
-		throw gffFieldTypeError;
+		throw kGFFFieldTypeError;
 
 	return *_value.typeString;
 }
 
 const GFFLocation &GFFVariable::getLocation() const {
 	if (_type != kTypeLocation)
-		throw gffFieldTypeError;
+		throw kGFFFieldTypeError;
 
 	return *_value.typeLocation;
 }
 
 GFFLocation &GFFVariable::getLocation() {
 	if (_type != kTypeLocation)
-		throw gffFieldTypeError;
+		throw kGFFFieldTypeError;
 
 	return *_value.typeLocation;
 }
@@ -220,48 +213,39 @@ void GFFVariable::setLocation(const GFFLocation &v) {
 	_value.typeLocation = new GFFLocation(v);
 }
 
-bool GFFVariable::read(const GFFFile::StructRange &range, std::string &name) {
+void GFFVariable::read(const GFFFile::StructRange &range, std::string &name) {
 	clear();
 
 	Type type = kTypeNone;
 
-	try {
-		for (GFFFile::StructIterator it = range.first; it != range.second; ++it) {
-			if      (it->getLabel() == "Name")
-				name = it->getString();
-			else if (it->getLabel() == "Type")
-				type = (Type) it->getUint();
-		}
-
-		if ((type <= kTypeNone) || (type > kTypeLocation)) {
-			warning("GFFVariable::read(): Unknown variable type %d", _type);
-			return false;
-		}
-
-		for (GFFFile::StructIterator it = range.first; it != range.second; ++it) {
-			if (it->getLabel() == "Value") {
-				if        (type == kTypeInt) {
-					setInt(it->getSint());
-				} else if (type == kTypeFloat) {
-					setFloat(it->getDouble());
-				} else if (type == kTypeString) {
-					setString(it->getString());
-				} else if (type == kTypeObjectID) {
-					setObjectID(it->getUint());
-				} else if (type == kTypeLocation) {
-					_type = kTypeLocation;
-					_value.typeLocation = new GFFLocation();
-					if (!_value.typeLocation->read(it.structRange(it->getStructIndex())))
-						return false;
-				}
-			}
-		}
-	} catch (GFFFieldTypeError &e) {
-		warning("GFFVariable::read(): %s", e.what());
-		return false;
+	for (GFFFile::StructIterator it = range.first; it != range.second; ++it) {
+		if      (it->getLabel() == "Name")
+			name = it->getString();
+		else if (it->getLabel() == "Type")
+			type = (Type) it->getUint();
 	}
 
-	return true;
+	if ((type <= kTypeNone) || (type > kTypeLocation))
+		throw Common::Exception("GFFVariable::read(): Unknown variable type %d", _type);
+
+	for (GFFFile::StructIterator it = range.first; it != range.second; ++it) {
+		if (it->getLabel() == "Value") {
+			if        (type == kTypeInt) {
+				setInt(it->getSint());
+			} else if (type == kTypeFloat) {
+				setFloat(it->getDouble());
+			} else if (type == kTypeString) {
+				setString(it->getString());
+			} else if (type == kTypeObjectID) {
+				setObjectID(it->getUint());
+			} else if (type == kTypeLocation) {
+				_type = kTypeLocation;
+				_value.typeLocation = new GFFLocation();
+				_value.typeLocation->read(it.structRange(it->getStructIndex()));
+			}
+		}
+	}
+
 }
 
 
@@ -303,20 +287,20 @@ void GFFVarTable::set(const std::string &name, const GFFVariable &variable) {
 	_variables.insert(std::make_pair(name, new GFFVariable(variable)));
 }
 
-bool GFFVarTable::read(const GFFFile::ListRange &range) {
+void GFFVarTable::read(const GFFFile::ListRange &range) {
 	for (GFFFile::ListIterator it = range.first; it != range.second; ++it) {
 		GFFVariable *variable = new GFFVariable;
 
 		std::string name;
-		if (!variable->read(*it, name)) {
+		try {
+			variable->read(*it, name);
+		} catch(...) {
 			delete variable;
-			return false;
+			throw;
 		}
 
 		_variables.insert(std::make_pair(name, variable));
 	}
-
-	return false;
 }
 
 } // End of namespace Aurora

@@ -52,10 +52,9 @@ public:
 
 	/** Load a resource index.
 	 *
-	 *  @param  key A stream of an indexing key file.
-	 *  @return true if loading was successful, false otherwise.
+	 *  @param key A stream of an indexing key file.
 	 */
-	bool load(Common::SeekableReadStream &key);
+	void load(Common::SeekableReadStream &key);
 
 	/** Return a list of all managed bifs. */
 	const BIFList &getBIFs() const;
@@ -67,8 +66,8 @@ private:
 	BIFList      _bifs;      ///< All managed bifs.
 	ResourceList _resources; ///< All containing resources.
 
-	bool readBIFList(Common::SeekableReadStream &key, uint32 offset);
-	bool readResList(Common::SeekableReadStream &key, uint32 offset);
+	void readBIFList(Common::SeekableReadStream &key, uint32 offset);
+	void readResList(Common::SeekableReadStream &key, uint32 offset);
 };
 
 } // End of namespace Aurora

@@ -52,10 +52,9 @@ public:
 
 	/** Load a RIM file.
 	 *
-	 *  @param  rim A stream of a RIM file.
-	 *  @return true if loading was successful, false otherwise.
+	 *  @param rim A stream of a RIM file.
 	 */
-	bool load(Common::SeekableReadStream &rim);
+	void load(Common::SeekableReadStream &rim);
 
 	/** Return a list of all containing resources. */
 	const ResourceList &getResources() const;
@@ -63,7 +62,7 @@ public:
 private:
 	ResourceList _resources; ///< All containing resources.
 
-	bool readResList(Common::SeekableReadStream &rim, uint32 offset);
+	void readResList(Common::SeekableReadStream &rim, uint32 offset);
 };
 
 } // End of namespace Aurora

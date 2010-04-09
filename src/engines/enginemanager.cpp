@@ -16,6 +16,7 @@
 #include "common/filelist.h"
 
 #include "aurora/resman.h"
+#include "aurora/error.h"
 
 #include "engines/enginemanager.h"
 #include "engines/engineprobe.h"
@@ -65,7 +66,7 @@ const std::string &EngineManager::getGameName(Aurora::GameID gameID) const {
 	return kEmptyString;
 }
 
-bool EngineManager::run(Aurora::GameID gameID, const std::string &directory) const {
+void EngineManager::run(Aurora::GameID gameID, const std::string &directory) const {
 	// Try to find the first engine able to handle that game ID
 	Engine *engine = 0;
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
@@ -74,17 +75,23 @@ bool EngineManager::run(Aurora::GameID gameID, const std::string &directory) con
 
 	if (!engine)
 		// None found
-		return false;
+		throw Common::Exception("No engine handling GameID %d found", gameID);
 
-	// Run it
-	bool success = engine->run(directory);
+	try {
+		engine->run(directory);
+	} catch(...) {
+
+		delete engine;
+		// Clean up after the engine
+		ResMan.clear();
+
+		throw;
+	}
 
 	delete engine;
 
 	// Clean up after the engine
 	ResMan.clear();
-
-	return success;
 }
 
 } // End of namespace Engines

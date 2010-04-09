@@ -49,10 +49,9 @@ public:
 
 	/** Load a resource data file.
 	 *
-	 *  @param  bif A stream of a data bif file.
-	 *  @return true if loading was successful, false otherwise.
+	 *  @param bif A stream of a data bif file.
 	 */
-	bool load(Common::SeekableReadStream &bif);
+	void load(Common::SeekableReadStream &bif);
 
 	/** Return a list of all containing resources. */
 	const ResourceList &getResources() const;
@@ -60,7 +59,7 @@ public:
 private:
 	ResourceList _resources; ///< All resources within the bif.
 
-	bool readVarResTable(Common::SeekableReadStream &bif, uint32 offset);
+	void readVarResTable(Common::SeekableReadStream &bif, uint32 offset);
 };
 
 } // End of namespace Aurora

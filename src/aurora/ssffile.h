@@ -46,19 +46,18 @@ public:
 
 	/** Load a SSF file.
 	 *
-	 *  @param  ssf A stream of a SSF file.
-	 *  @return true if loading was successful, false otherwise.
+	 *  @param ssf A stream of a SSF file.
 	 */
-	bool load(Common::SeekableReadStream &ssf);
+	void load(Common::SeekableReadStream &ssf);
 
 	const SoundSet &getSounds() const;
 
 private:
 	SoundSet _soundSet;
 
-	bool readEntries(Common::SeekableReadStream &ssf, uint32 offset);
-	bool readEntries1(Common::SeekableReadStream &ssf);
-	bool readEntries11(Common::SeekableReadStream &ssf);
+	void readEntries(Common::SeekableReadStream &ssf, uint32 offset);
+	void readEntries1(Common::SeekableReadStream &ssf);
+	void readEntries11(Common::SeekableReadStream &ssf);
 };
 
 } // End of namespace Aurora

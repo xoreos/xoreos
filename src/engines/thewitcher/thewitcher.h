@@ -44,12 +44,12 @@ public:
 	TheWitcherEngine();
 	~TheWitcherEngine();
 
-	bool run(const std::string &directory);
+	void run(const std::string &directory);
 
 private:
 	std::string _baseDirectory;
 
-	bool init();
+	void init();
 };
 
 } // End of namespace TheWitcher

@@ -58,26 +58,24 @@ public:
 
 	/** Register a path to be the base data directory.
 	 *
-	 *  @param  path The path to a base data directory.
-	 *  @return true if the path is a useable base data directory, false otherwise.
+	 *  @param path The path to a base data directory.
 	 */
-	bool registerDataBaseDir(const std::string &path);
+	void registerDataBaseDir(const std::string &path);
 
 	/** Add a directory to be searched for BIF files.
 	 *
 	 *  Relative to the base directory. Only direct subdirectories of the base
 	 *  directory are supported.
 	 *
-	 *  @param  dir A direct subdirectory of the base directory to search for BIFs.
-	 *  @return true if the directory exists and has been added, false if not.
+	 *  @param dir A direct subdirectory of the base directory to search for BIFs.
 	 */
-	bool addBIFSourceDir(const std::string &dir);
+	void addBIFSourceDir(const std::string &dir);
 
 	/** Load secondary resources.
 	 *
 	 *  Secondary resources are plain files found in the data directory structure.
 	 */
-	bool loadSecondaryResources();
+	void loadSecondaryResources();
 
 	/** Return the list of KEY files found in the base data directory. */
 	const Common::FileList &getKEYList() const;
@@ -92,30 +90,27 @@ public:
 	 *
 	 *  Add all resources found in the KEY and its BIF to the manager.
 	 *
-	 *  @param  key The KEY file to index.
-	 *  @return true on success, false otherwise.
+	 *  @param key The KEY file to index.
 	 */
-	bool loadKEY(Common::SeekableReadStream &key);
+	void loadKEY(Common::SeekableReadStream &key);
 
 	/** Add resources found in the ERF file to the manager.
 	 *
-	 *  @param  erf The name of the ERF file within a valid ERF directory in the base dir.
-	 *  @return true on success, false otherwise.
+	 *  @param erf The name of the ERF file within a valid ERF directory in the base dir.
 	 */
-	bool addERF(const std::string &erf);
+	void addERF(const std::string &erf);
 
 	/** Add resources found in the RIM file to the manager.
 	 *
-	 *  @param  rim The name of the RIM file within a valid RIM directory in the base dir.
-	 *  @return true on success, false otherwise.
+	 *  @param rim The name of the RIM file within a valid RIM directory in the base dir.
 	 */
-	bool addRIM(const std::string &rim);
+	void addRIM(const std::string &rim);
 
 	/** Does a specific resource exists?
 	 *
 	 *  @param  name The name (ResRef) of the resource.
 	 *  @param  type The resource's type.
-	 *  @return true if the resource exists, fale otherwise.
+	 *  @return true if the resource exists, false otherwise.
 	 */
 	bool hasResource(const std::string &name, FileType type) const;
 
@@ -123,7 +118,7 @@ public:
 	 *
 	 *  @param  name The name (ResRef) of the resource.
 	 *  @param  type The resource's types.
-	 *  @return true if the resource exists, fale otherwise.
+	 *  @return true if the resource exists, false otherwise.
 	 */
 	bool hasResource(const std::string &name, const std::vector<FileType> &types) const;
 
@@ -221,8 +216,8 @@ private:
 	std::vector<FileType> _soundTypes; ///< All valid sound file types.
 
 	// KEY/BIF loading helpers
-	bool findBIFPaths(const KEYFile &keyFile, uint32 &bifStart);
-	bool mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart);
+	void findBIFPaths(const KEYFile &keyFile, uint32 &bifStart);
+	void mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart);
 
 	void addResource(const Resource &resource, std::string name);
 	void addResources(const Common::FileList &files);

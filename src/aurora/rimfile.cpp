@@ -16,6 +16,7 @@
 #include "common/util.h"
 
 #include "aurora/rimfile.h"
+#include "aurora/error.h"
 
 static const uint32 kRIMID     = MKID_BE('RIM ');
 static const uint32 kVersion1  = MKID_BE('V1.0');
@@ -34,20 +35,16 @@ void RIMFile::clear() {
 	_resources.clear();
 }
 
-bool RIMFile::load(Common::SeekableReadStream &rim) {
+void RIMFile::load(Common::SeekableReadStream &rim) {
 	clear();
 
 	readHeader(rim);
 
-	if (_id != kRIMID) {
-		warning("RIMFile::load(): Not a RIM file");
-		return false;
-	}
+	if (_id != kRIMID)
+		throw Common::Exception("Not a RIM file");
 
-	if (_version != kVersion1) {
-		warning("RIMFile::load(): Unsupported file version");
-		return false;
-	}
+	if (_version != kVersion1)
+		throw Common::Exception("Unsupported RIM file version %08X", _version);
 
 	rim.skip(4);                            // Reserved
 	uint32 resCount   = rim.readUint32LE(); // Number of resources in the RIM
@@ -57,21 +54,24 @@ bool RIMFile::load(Common::SeekableReadStream &rim) {
 
 	_resources.resize(resCount);
 
-	// Read the resource list
-	if (!readResList(rim, offResList))
-		return false;
+	try {
 
-	if (rim.err()) {
-		warning("RIMFile::load(): Read error");
-		return false;
+	// Read the resource list
+	readResList(rim, offResList);
+
+	if (rim.err())
+		throw Common::Exception(kReadError);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed reading RIM file");
+		throw e;
 	}
 
-	return true;
 }
 
-bool RIMFile::readResList(Common::SeekableReadStream &rim, uint32 offset) {
+void RIMFile::readResList(Common::SeekableReadStream &rim, uint32 offset) {
 	if (!rim.seek(offset))
-		return false;
+		throw Common::Exception(kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->name   = AuroraFile::readRawString(rim, 16);
@@ -80,8 +80,6 @@ bool RIMFile::readResList(Common::SeekableReadStream &rim, uint32 offset) {
 		res->offset = rim.readUint32LE();
 		res->size   = rim.readUint32LE();
 	}
-
-	return true;
 }
 
 const RIMFile::ResourceList &RIMFile::getResources() const {

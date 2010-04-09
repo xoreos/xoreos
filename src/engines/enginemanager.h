@@ -37,7 +37,7 @@ public:
 	const std::string &getGameName(Aurora::GameID gameID) const;
 
 	/** Run the specified game found in that directory. */
-	bool run(Aurora::GameID gameID, const std::string &directory) const;
+	void run(Aurora::GameID gameID, const std::string &directory) const;
 };
 
 } // End of namespace Engines

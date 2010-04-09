@@ -23,6 +23,7 @@
 #include "events/events.h"
 
 #include "aurora/resman.h"
+#include "aurora/error.h"
 
 namespace TheWitcher {
 
@@ -64,11 +65,10 @@ TheWitcherEngine::TheWitcherEngine() {
 TheWitcherEngine::~TheWitcherEngine() {
 }
 
-bool TheWitcherEngine::run(const std::string &directory) {
+void TheWitcherEngine::run(const std::string &directory) {
 	_baseDirectory = directory;
 
-	if (!init())
-		return false;
+	init();
 
 	status("Successfully initialized the engine");
 
@@ -89,37 +89,26 @@ bool TheWitcherEngine::run(const std::string &directory) {
 
 		EventMan.delay(10);
 	}
-
-	return true;
 }
 
-bool TheWitcherEngine::init() {
-	if (!ResMan.registerDataBaseDir(_baseDirectory))
-		return false;
+void TheWitcherEngine::init() {
+	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Loading main KEY");
-	if (!indexMandatoryKEY(".*/main.key"))
-		return false;
+	indexMandatoryKEY(".*/main.key");
 
 	status("Loading the localized base KEY");
-	if (!indexMandatoryKEY(".*/localized.key"))
-		return false;
+	indexMandatoryKEY(".*/localized.key");
 
 	ResMan.addBIFSourceDir("voices");
 
 	status("Loading the English language KEYs");
-	if (!indexMandatoryKEY(".*/lang_3.key"))
-		return false;
-	if (!indexMandatoryKEY(".*/M1_3.key"))
-		return false;
-	if (!indexMandatoryKEY(".*/M2_3.key"))
-		return false;
+	indexMandatoryKEY(".*/lang_3.key");
+	indexMandatoryKEY(".*/M1_3.key");
+	indexMandatoryKEY(".*/M2_3.key");
 
 	status("Loading secondary resources");
-	if (!ResMan.loadSecondaryResources())
-		return false;
-
-	return true;
+	ResMan.loadSecondaryResources();
 }
 
 } // End of namespace TheWitcher

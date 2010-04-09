@@ -18,6 +18,7 @@
 #include "common/filelist.h"
 
 #include "aurora/resman.h"
+#include "aurora/error.h"
 
 namespace NWN2 {
 
@@ -54,23 +55,18 @@ NWN2Engine::NWN2Engine() {
 NWN2Engine::~NWN2Engine() {
 }
 
-bool NWN2Engine::run(const std::string &directory) {
+void NWN2Engine::run(const std::string &directory) {
 	_baseDirectory = directory;
 
-	if (!init())
-		return false;
+	init();
 
 	status("Successfully initialized the engine");
-	return true;
 }
 
-bool NWN2Engine::init() {
-	if (!ResMan.registerDataBaseDir(_baseDirectory))
-		return false;
+void NWN2Engine::init() {
+	ResMan.registerDataBaseDir(_baseDirectory);
 
 	warning("TODO: NWN2's resource stuff");
-
-	return false;
 }
 
 } // End of namespace NWN2

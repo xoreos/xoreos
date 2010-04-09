@@ -21,6 +21,7 @@
 
 #include "aurora/resman.h"
 #include "aurora/util.h"
+#include "aurora/error.h"
 #include "aurora/keyfile.h"
 #include "aurora/biffile.h"
 #include "aurora/erffile.h"
@@ -86,49 +87,38 @@ void ResourceManager::stackDrop() {
 	_stateStack.pop();
 }
 
-bool ResourceManager::registerDataBaseDir(const std::string &path) {
+void ResourceManager::registerDataBaseDir(const std::string &path) {
 	clear();
 
 	_baseDir = Common::FilePath::normalize(path);
 
 	Common::FileList rootFiles;
-	if (!rootFiles.addDirectory(_baseDir)) {
-		warning("ResourceManager::registerDataBaseDir(): Can't read path");
-		return false;
-	}
+	if (!rootFiles.addDirectory(_baseDir))
+		throw Common::Exception("Can't read path");
 
-	if (!rootFiles.getSubList(".*\\.key", _keyFiles, true)) {
-		warning("ResourceManager::registerDataBaseDir(): No KEY files found");
-		return false;
-	}
+	if (!rootFiles.getSubList(".*\\.key", _keyFiles, true))
+		throw Common::Exception("No KEY files found");
 
 	Common::FileList allFiles;
-	if (!allFiles.addDirectory(_baseDir, -1)) {
-		warning("ResourceManager::registerDataBaseDir(): Failed reading the complete directory");
-		return false;
-	}
+	if (!allFiles.addDirectory(_baseDir, -1))
+		throw Common::Exception("Failed reading the complete directory");
 
-	if (!allFiles.getSubList(".*\\.bif", _bifFiles, true)) {
-		warning("ResourceManager::registerDataBaseDir(): No BIF files found");
-		return false;
-	}
-
-	_bifSourceDir.push_back(_baseDir);
+	if (!allFiles.getSubList(".*\\.bif", _bifFiles, true))
+		throw Common::Exception("No BIF files found");
 
 	// Found KEY and BIF files, this looks like a useable data directory
-	return true;
+	_bifSourceDir.push_back(_baseDir);
 }
 
-bool ResourceManager::addBIFSourceDir(const std::string &dir) {
+void ResourceManager::addBIFSourceDir(const std::string &dir) {
 	std::string bifDir = Common::FilePath::findSubDirectory(_baseDir, dir, true);
 	if (bifDir.empty())
-		return false;
+		throw Common::Exception("No such directory");
 
 	_bifSourceDir.push_back(Common::FilePath::normalize(bifDir));
-	return true;
 }
 
-bool ResourceManager::loadSecondaryResources() {
+void ResourceManager::loadSecondaryResources() {
 	// Find all .mod, .hak and .rim in the respective directories
 
 	_modDir = Common::FilePath::findSubDirectory(_baseDir, "modules", true);
@@ -183,8 +173,6 @@ bool ResourceManager::loadSecondaryResources() {
 		overrideFiles.addDirectory(overrideDir, -1);
 
 	addResources(overrideFiles);
-
-	return true;
 }
 
 const Common::FileList &ResourceManager::getKEYList() const {
@@ -199,7 +187,7 @@ const Common::FileList &ResourceManager::getRIMList() const {
 	return _rimFiles;
 }
 
-bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
+void ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
 	bifStart = _state.bifs.size();
 
 	uint32 keyBIFCount = keyFile.getBIFs().size();
@@ -229,18 +217,13 @@ bool ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
 		}
 
 		// Did we find it?
-		if (!found) {
-			warning("ResourceManager::getBIFPaths(): \"%s\" not found", _state.bifs[bifStart + i].c_str());
-			_state.bifs.resize(bifStart);
-			return false;
-		}
+		if (!found)
+			throw Common::Exception("BIF \"%s\" not found", _state.bifs[bifStart + i].c_str());
 
 	}
-
-	return true;
 }
 
-bool ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart) {
+void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart) {
 	uint32 keyBIFCount = keyFile.getBIFs().size();
 
 	std::vector<BIFFile> keyBIFFiles;
@@ -248,75 +231,78 @@ bool ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifSta
 	keyBIFFiles.resize(keyBIFCount);
 
 	// Try to load all needed BIF files
-	for (uint32 i = 0; i < keyBIFCount; i++) {
-		Common::File keyBIFFile;
-		if (!keyBIFFile.open(_state.bifs[bifStart + i]))
-			return false;
+	try {
 
-		if (!keyBIFFiles[i].load(keyBIFFile))
-			return false;
-	}
+		for (uint32 i = 0; i < keyBIFCount; i++) {
+			Common::File keyBIFFile;
+			if (!keyBIFFile.open(_state.bifs[bifStart + i]))
+				throw Common::Exception("Can't open file \"%s\"", _state.bifs[bifStart + i].c_str());
 
-	// Now cycle through all resource in the KEY, augmenting the information its BIF provides
-	KEYFile::ResourceList::const_iterator keyRes;
-	for (keyRes = keyFile.getResources().begin(); keyRes != keyFile.getResources().end(); ++keyRes) {
-
-		// BIF index in range?
-		if (keyRes->bifIndex >= keyBIFFiles.size())
-			return false;
-
-		// Resource index within the BIF in range?
-		const BIFFile::ResourceList &bifRess = keyBIFFiles[keyRes->bifIndex].getResources();
-		if (keyRes->resIndex >= bifRess.size())
-			return false;
-
-		// Type has to match
-		const BIFFile::Resource &bifRes = bifRess[keyRes->resIndex];
-		if (keyRes->type != bifRes.type) {
-			warning("ResourceManager::mergeKEYBIFResources(): Type mismatch on resource \"%s\" (%d, %d)",
-					keyRes->name.c_str(), keyRes->type, bifRes.type);
-			return false;
+			keyBIFFiles[i].load(keyBIFFile);
 		}
 
-		// Build the complete resource record
-		Resource res;
-		res.source = kSourceBIF;
-		res.idx    = bifStart + keyRes->bifIndex;
-		res.type   = keyRes->type;
-		res.offset = bifRes.offset;
-		res.size   = bifRes.size;
-
-		// And add it to our list
-		addResource(res, keyRes->name);
+	} catch (Common::Exception &e) {
+		e.add("Failed opening needed BIFs");
+		throw e;
 	}
 
-	return true;
+	try {
+
+		// Now cycle through all resource in the KEY, augmenting the information its BIF provides
+		KEYFile::ResourceList::const_iterator keyRes;
+		for (keyRes = keyFile.getResources().begin(); keyRes != keyFile.getResources().end(); ++keyRes) {
+
+			// BIF index in range?
+			if (keyRes->bifIndex >= keyBIFFiles.size())
+				throw Common::Exception("No such BIF");
+
+			// Resource index within the BIF in range?
+			const BIFFile::ResourceList &bifRess = keyBIFFiles[keyRes->bifIndex].getResources();
+			if (keyRes->resIndex >= bifRess.size())
+				throw Common::Exception("Resource index out of range");
+
+			// Type has to match
+			const BIFFile::Resource &bifRes = bifRess[keyRes->resIndex];
+			if (keyRes->type != bifRes.type)
+				throw Common::Exception("Type mismatch on resource \"%s\" (%d, %d)",
+						keyRes->name.c_str(), keyRes->type, bifRes.type);
+
+			// Build the complete resource record
+			Resource res;
+			res.source = kSourceBIF;
+			res.idx    = bifStart + keyRes->bifIndex;
+			res.type   = keyRes->type;
+			res.offset = bifRes.offset;
+			res.size   = bifRes.size;
+
+			// And add it to our list
+			addResource(res, keyRes->name);
+		}
+
+	} catch (Common::Exception &e) {
+		e.add("Failed indexing resource");
+		throw e;
+	}
+
 }
 
-bool ResourceManager::loadKEY(Common::SeekableReadStream &key) {
-	if (_baseDir.empty()) {
-		warning("ResourceManager::loadKEY(): No base data directory registered");
-		return false;
-	}
+void ResourceManager::loadKEY(Common::SeekableReadStream &key) {
+	if (_baseDir.empty())
+		throw Common::Exception("No base data directory registered");
 
 	KEYFile keyFile;
 
-	if (!keyFile.load(key))
-		return false;
+	keyFile.load(key);
 
 	// Search for the correct BIFs
 	uint32 bifStart;
-	if (!findBIFPaths(keyFile, bifStart))
-		return false;
+	findBIFPaths(keyFile, bifStart);
 
 	// Merge the resource information of the KEY file and its BIF files into our resource map
-	if (!mergeKEYBIFResources(keyFile, bifStart))
-		return false;
-
-	return true;
+	mergeKEYBIFResources(keyFile, bifStart);
 }
 
-bool ResourceManager::addERF(const std::string &erf) {
+void ResourceManager::addERF(const std::string &erf) {
 	std::string erfFileName;
 
 	if (Common::FilePath::isAbsolute(erf)) {
@@ -326,7 +312,7 @@ bool ResourceManager::addERF(const std::string &erf) {
 
 		if (erfFileName.empty())
 			// Does not exist
-			return false;
+			throw Common::Exception("No such ERF");
 	}
 
 	if (erfFileName.empty())
@@ -338,16 +324,15 @@ bool ResourceManager::addERF(const std::string &erf) {
 
 	if (erfFileName.empty())
 		// Does not exist
-		return false;
+		throw Common::Exception("No such ERF");
 
 	Common::File erfFile;
 	if (!erfFile.open(erfFileName))
-		return false;
+		throw Common::Exception(kOpenError);
 
 	ERFFile erfIndex;
 
-	if (!erfIndex.load(erfFile))
-		return false;
+	erfIndex.load(erfFile);
 
 	int erfIdx = _state.erfs.size();
 
@@ -366,11 +351,9 @@ bool ResourceManager::addERF(const std::string &erf) {
 		// And add it to our list
 		addResource(res, resource->name);
 	}
-
-	return true;
 }
 
-bool ResourceManager::addRIM(const std::string &rim) {
+void ResourceManager::addRIM(const std::string &rim) {
 	std::string rimFileName;
 
 	if (Common::FilePath::isAbsolute(rim)) {
@@ -380,7 +363,7 @@ bool ResourceManager::addRIM(const std::string &rim) {
 
 		if (rimFileName.empty())
 			// Does not exist
-			return false;
+			throw Common::Exception("No such RIM");
 	}
 
 	if (rimFileName.empty())
@@ -392,16 +375,15 @@ bool ResourceManager::addRIM(const std::string &rim) {
 
 	if (rimFileName.empty())
 		// Does not exist
-		return false;
+		throw Common::Exception("No such RIM");
 
 	Common::File rimFile;
 	if (!rimFile.open(rimFileName))
-		return false;
+		throw Common::Exception(kOpenError);
 
 	RIMFile rimIndex;
 
-	if (!rimIndex.load(rimFile))
-		return false;
+	rimIndex.load(rimFile);
 
 	int rimIdx = _state.rims.size();
 
@@ -420,8 +402,6 @@ bool ResourceManager::addRIM(const std::string &rim) {
 		// And add it to our list
 		addResource(res, resource->name);
 	}
-
-	return true;
 }
 
 bool ResourceManager::hasResource(const std::string &name, FileType type) const {

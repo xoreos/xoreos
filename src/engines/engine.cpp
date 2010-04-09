@@ -19,6 +19,7 @@
 #include "common/file.h"
 
 #include "aurora/resman.h"
+#include "aurora/error.h"
 
 namespace Engines {
 
@@ -28,34 +29,34 @@ Engine::Engine() {
 Engine::~Engine() {
 }
 
-bool Engine::indexMandatoryKEY(const std::string &key) {
-	Common::SeekableReadStream *keyFile = ResMan.getKEYList().openFile(key, true);
-	if (!keyFile) {
-		warning("No such KEY");
-		return false;
-	}
-
-	if (!ResMan.loadKEY(*keyFile)) {
-		delete keyFile;
-		return false;
-	}
-
-	delete keyFile;
-	return true;
-}
-
-bool Engine::indexOptionalKEY(const std::string &key) {
+void Engine::indexMandatoryKEY(const std::string &key) {
 	Common::SeekableReadStream *keyFile = ResMan.getKEYList().openFile(key, true);
 	if (!keyFile)
-		return true;
+		throw Common::Exception("No such KEY");
 
-	if (!ResMan.loadKEY(*keyFile)) {
+	try {
+		ResMan.loadKEY(*keyFile);
+	} catch(...) {
 		delete keyFile;
-		return false;
+		throw;
 	}
 
 	delete keyFile;
-	return true;
+}
+
+void Engine::indexOptionalKEY(const std::string &key) {
+	Common::SeekableReadStream *keyFile = ResMan.getKEYList().openFile(key, true);
+	if (!keyFile)
+		return;
+
+	try {
+		ResMan.loadKEY(*keyFile);
+	} catch(...) {
+		delete keyFile;
+		throw;
+	}
+
+	delete keyFile;
 }
 
 void Engine::dumpStream(Common::SeekableReadStream &stream, const std::string &fileName) {

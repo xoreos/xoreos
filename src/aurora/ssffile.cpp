@@ -16,6 +16,7 @@
 #include "common/util.h"
 
 #include "aurora/ssffile.h"
+#include "aurora/error.h"
 
 static const uint32 kSSFID     = MKID_BE('SSF ');
 static const uint32 kVersion1  = MKID_BE('V1.0');
@@ -35,20 +36,16 @@ void SSFFile::clear() {
 	_soundSet.clear();
 }
 
-bool SSFFile::load(Common::SeekableReadStream &ssf) {
+void SSFFile::load(Common::SeekableReadStream &ssf) {
 	clear();
 
 	readHeader(ssf);
 
-	if (_id != kSSFID) {
-		warning("SSFFile::load(): Not a SSF file");
-		return false;
-	}
+	if (_id != kSSFID)
+		throw Common::Exception("Not a SSF file");
 
-	if ((_version != kVersion1) && (_version != kVersion11)) {
-		warning("SSFFile::load(): Unsupported file version");
-		return false;
-	}
+	if ((_version != kVersion1) && (_version != kVersion11))
+		throw Common::Exception("Unsupported SSF file version %08X", _version);
 
 	uint32 entryCount = 0;
 	if (_version == kVersion1)
@@ -61,30 +58,31 @@ bool SSFFile::load(Common::SeekableReadStream &ssf) {
 
 	_soundSet.resize(entryCount);
 
-	if (!readEntries(ssf, offEntryTable))
-		return false;
+	try {
 
-	if (ssf.err()) {
-		warning("SSFFile::load(): Read error");
-		return false;
+		readEntries(ssf, offEntryTable);
+
+		if (ssf.err())
+			throw Common::Exception(kReadError);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed reading SSF file");
+		throw e;
 	}
 
-	return true;
 }
 
-bool SSFFile::readEntries(Common::SeekableReadStream &ssf, uint32 offset) {
+void SSFFile::readEntries(Common::SeekableReadStream &ssf, uint32 offset) {
 	if (!ssf.seek(offset))
-		return false;
+		throw Common::Exception(kSeekError);
 
 	if      (_version == kVersion1)
-		return readEntries1(ssf);
+		readEntries1(ssf);
 	else if (_version == kVersion11)
-		return readEntries11(ssf);
-	else
-		return false;
+		readEntries11(ssf);
 }
 
-bool SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
+void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 	// V1.0 begins with a list of offsets to the data entries.
 	// Each data entry has a ResRef of a sound file and a StrRef of a text.
 
@@ -99,22 +97,18 @@ bool SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 
 	for (uint32 i = 0; i < count; i++) {
 		if (!ssf.seek(offsets[i]))
-			return false;
+			throw Common::Exception(kSeekError);
 
 		_soundSet[i].fileName = AuroraFile::readRawString(ssf, 16);
 		_soundSet[i].strRef   = ssf.readUint32LE();
 	}
-
-	return true;
 }
 
-bool SSFFile::readEntries11(Common::SeekableReadStream &ssf) {
+void SSFFile::readEntries11(Common::SeekableReadStream &ssf) {
 	// V1.1 is just a list of StrRef
 
 	for (SoundSet::iterator sound = _soundSet.begin(); sound != _soundSet.end(); ++sound)
 		sound->strRef = ssf.readUint32LE();
-
-	return true;
 }
 
 const SSFFile::SoundSet &SSFFile::getSounds() const {

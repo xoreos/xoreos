@@ -30,14 +30,14 @@ public:
 	virtual ~Engine();
 
 	/** Run the game. */
-	virtual bool run(const std::string &directory) = 0;
+	virtual void run(const std::string &directory) = 0;
 
 protected:
 	/** Add a KEY file to the resource manager, erroring out if the file does not exist. */
-	bool indexMandatoryKEY(const std::string &key);
+	void indexMandatoryKEY(const std::string &key);
 
 	/** Add a KEY file to the resource manager, if it exists. */
-	bool indexOptionalKEY(const std::string &key);
+	void indexOptionalKEY(const std::string &key);
 
 	/** Debug method to quickly dump a stream to disk. */
 	void dumpStream(Common::SeekableReadStream &stream, const std::string &fileName);

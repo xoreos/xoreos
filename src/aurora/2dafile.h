@@ -46,10 +46,9 @@ public:
 
 	/** Load a 2DA file.
 	 *
-	 *  @param  twoda A stream of an TwoDA file.
-	 *  @return true if loading was successful, false otherwise.
+	 *  @param twoda A stream of an 2DA file.
 	 */
-	bool load(Common::SeekableReadStream &twoda);
+	void load(Common::SeekableReadStream &twoda);
 
 	/** Return the number of rows in the array. */
 	uint32 rowCount() const;
@@ -107,18 +106,18 @@ private:
 	Common::CharList _ignoreCharsA;
 
 	// Loading helpers
-	bool read2a(Common::SeekableReadStream &twoda);
-	bool read2b(Common::SeekableReadStream &twoda);
+	void read2a(Common::SeekableReadStream &twoda);
+	void read2b(Common::SeekableReadStream &twoda);
 
 	// ASCII loading helpers
-	bool readDefault2a(Common::SeekableReadStream &twoda);
-	bool readHeaders2a(Common::SeekableReadStream &twoda);
-	bool readRows2a(Common::SeekableReadStream &twoda);
+	void readDefault2a(Common::SeekableReadStream &twoda);
+	void readHeaders2a(Common::SeekableReadStream &twoda);
+	void readRows2a(Common::SeekableReadStream &twoda);
 
 	// Binary loading helpers
-	bool readHeaders2b(Common::SeekableReadStream &twoda);
-	bool skipRowNames2b(Common::SeekableReadStream &twoda);
-	bool readRows2b(Common::SeekableReadStream &twoda);
+	void readHeaders2b(Common::SeekableReadStream &twoda);
+	void skipRowNames2b(Common::SeekableReadStream &twoda);
+	void readRows2b(Common::SeekableReadStream &twoda);
 
 	void createHeaderMap();
 

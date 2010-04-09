@@ -16,6 +16,7 @@
 #include "common/util.h"
 
 #include "aurora/erffile.h"
+#include "aurora/error.h"
 
 static const uint32 kERFID     = MKID_BE('ERF ');
 static const uint32 kMODID     = MKID_BE('MOD ');
@@ -38,20 +39,16 @@ void ERFFile::clear() {
 	_resources.clear();
 }
 
-bool ERFFile::load(Common::SeekableReadStream &erf) {
+void ERFFile::load(Common::SeekableReadStream &erf) {
 	clear();
 
 	readHeader(erf);
 
-	if ((_id != kERFID) && (_id != kMODID) && (_id != kHAKID) && (_id != kSAVID)) {
-		warning("ERFFile::load(): Not a ERF file");
-		return false;
-	}
+	if ((_id != kERFID) && (_id != kMODID) && (_id != kHAKID) && (_id != kSAVID))
+		throw Common::Exception("Not an ERF file");
 
-	if (_version != kVersion1) {
-		warning("ERFFile::load(): Unsupported file version");
-		return false;
-	}
+	if (_version != kVersion1)
+		throw Common::Exception("Unsupported ERF file version %08X", _version);
 
 	uint32 langCount = erf.readUint32LE(); // Number of languages for the description
 	erf.skip(4);                           // Number of bytes in the description
@@ -67,33 +64,39 @@ bool ERFFile::load(Common::SeekableReadStream &erf) {
 
 	erf.skip(116); // Reserved
 
-	// Read description string(s)
-	if (!erf.seek(offDescription))
-		return false;
+	try {
 
-	_description.readLocString(erf, descriptionID, langCount);
+		// Read description string(s)
+		readDescription(erf, offDescription, descriptionID, langCount);
 
-	_resources.resize(resCount);
+		_resources.resize(resCount);
 
-	// Read name and type part of the resource list
-	if (!readKeyList(erf, offKeyList))
-		return false;
+		// Read name and type part of the resource list
+		readKeyList(erf, offKeyList);
 
-	// Read offset and size part of the resource list
-	if (!readResList(erf, offResList))
-		return false;
+		// Read offset and size part of the resource list
+		readResList(erf, offResList);
 
-	if (erf.err()) {
-		warning("ERFFile::load(): Read error");
-		return false;
+		if (erf.err())
+			throw Common::Exception(kReadError);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed reading ERF file");
+		throw e;
 	}
 
-	return true;
 }
 
-bool ERFFile::readKeyList(Common::SeekableReadStream &erf, uint32 offset) {
+void ERFFile::readDescription(Common::SeekableReadStream &erf, uint32 offset, uint32 id, uint32 count) {
 	if (!erf.seek(offset))
-		return false;
+		throw Common::Exception(kSeekError);
+
+	_description.readLocString(erf, id, count);
+}
+
+void ERFFile::readKeyList(Common::SeekableReadStream &erf, uint32 offset) {
+	if (!erf.seek(offset))
+		throw Common::Exception(kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->name = AuroraFile::readRawString(erf, 16);
@@ -101,20 +104,16 @@ bool ERFFile::readKeyList(Common::SeekableReadStream &erf, uint32 offset) {
 		res->type = (FileType) erf.readUint16LE();
 		erf.skip(2); // Reserved
 	}
-
-	return true;
 }
 
-bool ERFFile::readResList(Common::SeekableReadStream &erf, uint32 offset) {
+void ERFFile::readResList(Common::SeekableReadStream &erf, uint32 offset) {
 	if (!erf.seek(offset))
-		return false;
+		throw Common::Exception(kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->offset = erf.readUint32LE();
 		res->size   = erf.readUint32LE();
 	}
-
-	return true;
 }
 
 const LocString &ERFFile::getDescription() const {

@@ -15,16 +15,15 @@
 #ifndef AURORA_ERROR_H
 #define AURORA_ERROR_H
 
-#include <exception>
+#include "common/error.h"
 
 namespace Aurora {
 
-class GFFFieldTypeError : public std::exception {
-public:
-	const char *what() const throw();
-};
+extern const Common::Exception kGFFFieldTypeError;
 
-static const GFFFieldTypeError gffFieldTypeError;
+extern const Common::Exception kOpenError;
+extern const Common::Exception kReadError;
+extern const Common::Exception kSeekError;
 
 } // End of namespace Aurora
 

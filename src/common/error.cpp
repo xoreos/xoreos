@@ -31,6 +31,11 @@ StackException::StackException(const char *s, ...) {
 	_stack.push(buf);
 }
 
+StackException::StackException(const StackException &e) {
+	if (!e._stack.empty())
+		_stack.push(e._stack.top());
+}
+
 void StackException::add(const char *s, ...) {
 	char buf[STRINGBUFLEN];
 	va_list va;

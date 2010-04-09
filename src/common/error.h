@@ -26,6 +26,7 @@ public:
 	typedef std::stack<std::string> Stack;
 
 	StackException(const char *s, ...);
+	StackException(const StackException &e);
 
 	void add(const char *s, ...);
 
