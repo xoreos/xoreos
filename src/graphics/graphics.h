@@ -50,13 +50,8 @@ public:
 	/** How many frames per second to we render at the moments? */
 	uint32 getFPS() const;
 
-	/** Create a window of that size. */
-	void initSize(int width, int height, bool fullscreen);
-
 	/** That the window's title. */
 	void setWindowTitle(const std::string &title);
-
-	void setupScene();
 
 	/** Clear the rendering queue. */
 	void clearRenderQueue();
@@ -74,12 +69,6 @@ public:
 	 */
 	void removeFromRenderQueue(RenderQueueRef &ref);
 
-	/** Render one complete frame of the scene. */
-	void renderScene();
-
-	/** Toggle between full screen and windowed modes. */
-	void toggleFullScreen();
-
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 	bool _initedGL;
@@ -94,6 +83,20 @@ private:
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
+
+
+// Thread-unsafe functions. Should only ever be called from the main thread.
+public:
+	/** Create a window of that size. */
+	void initSize(int width, int height, bool fullscreen);
+
+	void setupScene();
+
+	/** Render one complete frame of the scene. */
+	void renderScene();
+
+	/** Toggle between full screen and windowed modes. */
+	void toggleFullScreen();
 };
 
 } // End of namespace Graphics
