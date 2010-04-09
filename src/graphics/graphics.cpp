@@ -132,6 +132,8 @@ void GraphicsManager::setupScene() {
 }
 
 void GraphicsManager::clearRenderQueue() {
+	Common::StackLock lock(_queueMutex);
+
 	// Notify all objects in the queue that they have been kicked out
 	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it)
 		(*it)->kickedOutOfRenderQueue();
@@ -141,16 +143,22 @@ void GraphicsManager::clearRenderQueue() {
 }
 
 GraphicsManager::RenderQueueRef GraphicsManager::addToRenderQueue(Renderable &renderable) {
+	Common::StackLock lock(_queueMutex);
+
 	_renderQueue.push_back(&renderable);
 
 	return --_renderQueue.end();
 }
 
 void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
+	Common::StackLock lock(_queueMutex);
+
 	_renderQueue.erase(ref);
 }
 
 void GraphicsManager::renderScene() {
+	Common::StackLock lock(_queueMutex);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glPushMatrix();

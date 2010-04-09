@@ -23,6 +23,7 @@
 
 #include "common/types.h"
 #include "common/singleton.h"
+#include "common/mutex.h"
 
 namespace Graphics {
 
@@ -78,6 +79,8 @@ private:
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
 	RenderQueue _renderQueue; ///< The global rendering queue.
+
+	Common::Mutex _queueMutex; ///< A mutex for the render queue.
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
