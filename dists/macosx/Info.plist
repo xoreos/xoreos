@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDisplayName</key>
+	<string>Eos</string>
+	<key>CFBundleExecutable</key>
+	<string>eos</string>
+	<key>CFBundleGetInfoString</key>
+	<string>0.0.1, Copyright 2010 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.eos.eos</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Eos</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.0.1</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.1</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright 2010 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)</string>
+</dict>
+</plist>
