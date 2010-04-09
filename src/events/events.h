@@ -67,6 +67,16 @@ public:
 	 */
 	bool pushEvent(Event &event);
 
+	/** Enable/Disable translating unicode translation for key events. */
+	void enableUnicode(bool enable);
+
+	/** Return the ASCII character of the pressed key.
+	 *
+	 *  Requirements: enableUnicode must be enabled and the event must
+	 *                be a keydown or keyup event.
+	 */
+	char getPressedCharacter(const Event &event);
+
 	/** Initialize the main loop. */
 	void initMainLoop();
 	/** Run the main loop. */

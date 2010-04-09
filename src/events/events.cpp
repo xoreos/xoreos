@@ -109,6 +109,19 @@ bool EventsManager::pushEvent(Event &event) {
 	return SDL_PushEvent(&event) != 0;
 }
 
+void EventsManager::enableUnicode(bool enable) {
+	Common::StackLock lock(_eventQueueMutex);
+
+	SDL_EnableUNICODE(enable ? 1 : 0);
+}
+
+char EventsManager::getPressedCharacter(const Event &event) {
+	if ((event.type != SDL_KEYDOWN) && (event.type != SDL_KEYUP))
+		return 0;
+
+	return event.key.keysym.unicode & 0x7F;
+}
+
 bool EventsManager::quitRequested() const {
 	return _quitRequested;
 }
