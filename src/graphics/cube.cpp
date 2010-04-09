@@ -34,14 +34,13 @@ void Cube::render() {
 	if (_lastRotateTime == 0)
 		_lastRotateTime = EventMan.getTimestamp();
 
-	uint32 curTime = EventMan.getTimestamp();
-	if ((curTime - _lastRotateTime) > 5) {
-		_rotate += 0.5;
-		_lastRotateTime = curTime;
+	uint32 curTime  = EventMan.getTimestamp();
+	uint32 diffTime = curTime - _lastRotateTime;
 
-		if (_rotate >= 360.0)
-			_rotate = 0.0;
-	}
+	_rotate = diffTime * 0.1;
+
+	if (diffTime > 3600)
+		curTime += 3600;
 
 	glTranslatef(0.0, 0.0, -3.0);
 	glRotatef(-_rotate, 1.0, 0.0, 0.0);
