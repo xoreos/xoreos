@@ -104,7 +104,7 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 			// Split string at '=' into 'key' and 'value'. First, find the "=" delimeter.
 			const char *p = strchr(t, '=');
 			if (!p)
-				warning("Config stream buggy: Junk found in line line %d: '%s'", lineno, t);
+				warning("Config stream buggy: Junk found in line %d: '%s'", lineno, t);
 
 			// Extract the key/value pair
 			std::string key = std::string(t, p);
