@@ -74,7 +74,7 @@ bool EventsManager::pollEvent(Event &event) {
 
 	if (hasEvent) {
 
-		if (event.type == SDL_KEYUP) {
+		if (event.type == SDL_KEYDOWN) {
 			if ((event.key.keysym.mod & (KMOD_CTRL | KMOD_META)) && (event.key.keysym.sym == SDLK_q))
 				isQuit = true;
 		} else if (event.type == SDL_QUIT)
@@ -100,6 +100,33 @@ bool EventsManager::quitRequested() const {
 
 void EventsManager::requestQuit() {
 	_quitRequested = true;
+}
+
+bool EventsManager::initMainLoop() {
+	status("Setting up graphics");
+	if (!GfxMan.initSize(800, 600, false)) {
+		warning("Setting up graphics failed");
+		return false;
+	}
+	if (!GfxMan.setupScene()) {
+		warning("Failed setting up the 3D scene");
+		return false;
+	}
+
+	// Set the window title to our name
+	GfxMan.setWindowTitle(PACKAGE_STRING);
+
+	return true;
+}
+
+void EventsManager::runMainLoop() {
+	while (!quitRequested()) {
+		Event event;
+
+		while (pollEvent(event));
+
+		delay(10);
+	}
 }
 
 } // End of namespace Events

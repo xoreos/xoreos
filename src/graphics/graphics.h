@@ -23,14 +23,13 @@
 
 #include "common/types.h"
 #include "common/singleton.h"
-#include "common/thread.h"
 
 namespace Graphics {
 
 class Renderable;
 
 /** The graphics manager. */
-class GraphicsManager : public Common::Singleton<GraphicsManager>, public Common::Thread {
+class GraphicsManager : public Common::Singleton<GraphicsManager> {
 public:
 	typedef std::list<Renderable *> RenderQueue;
 	typedef RenderQueue::iterator RenderQueueRef;
@@ -76,9 +75,6 @@ private:
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
 	RenderQueue _renderQueue; ///< The global rendering queue.
-
-	void threadMethod();
-	void renderScene();
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);

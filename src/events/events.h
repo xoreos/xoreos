@@ -15,6 +15,8 @@
 #ifndef EVENTS_EVENTS_H
 #define EVENTS_EVENTS_H
 
+#include <string>
+
 #include <SDL_events.h>
 
 #include "common/singleton.h"
@@ -62,6 +64,11 @@ public:
 	 *  @return true on success, false otherwise.
 	 */
 	bool pushEvent(Event &event);
+
+	/** Initialize the main loop. */
+	bool initMainLoop();
+	/** Run the main loop. */
+	void runMainLoop();
 
 private:
 	bool _ready; ///< Was the events subsystem successfully initialized?

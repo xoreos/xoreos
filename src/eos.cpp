@@ -25,7 +25,9 @@
 #include "events/events.h"
 
 #include "engines/enginemanager.h"
+#include "engines/gamethread.h"
 
+void init();
 void deinit();
 
 int main(int argc, char **argv) {
@@ -41,6 +43,26 @@ int main(int argc, char **argv) {
 
 	atexit(deinit);
 
+	init();
+
+	if (!EventMan.initMainLoop())
+		error("Failed initializing the main loop");
+
+	Engines::GameThread gameThread;
+
+	if (!gameThread.init(baseDir))
+		error("Failed initializing the game thread");
+
+	if (!gameThread.run())
+		error("Failed running the game thread");
+
+	EventMan.runMainLoop();
+
+	status("Shutting down");
+	return 0;
+}
+
+void init() {
 	status("Initializing the graphics subsystem");
 	if (!GfxMan.init())
 		error("Initializing the graphics subsystem failed");
@@ -50,33 +72,6 @@ int main(int argc, char **argv) {
 	status("Initializing the event subsystem");
 	if (!EventMan.init())
 		error("Initializing the event subsystem failed");
-
-	status("Setting up graphics");
-	// Initialize graphics
-	if (!GfxMan.initSize(800, 600, false))
-		error("Setting up graphics failed");
-	if (!GfxMan.setupScene())
-		error("Failed setting up the 3D scene");
-
-	GfxMan.setWindowTitle(PACKAGE_STRING);
-
-	// Detecting an running the game
-
-	Aurora::GameID gameID = EngineMan.probeGameID(baseDir);
-	if (gameID == Aurora::kGameIDUnknown)
-		error("Unable to detect the game ID");
-
-	GfxMan.setWindowTitle(PACKAGE_STRING " -- " + EngineMan.getGameName(gameID));
-
-	status("Detected game ID %d -- %s", gameID, EngineMan.getGameName(gameID).c_str());
-
-	status("Trying to run the game");
-
-	if (!EngineMan.run(gameID, baseDir))
-		error("Engine failed");
-
-	status("Engine returned success");
-	return 0;
 }
 
 void deinit() {

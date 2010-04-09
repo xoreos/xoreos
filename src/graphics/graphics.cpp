@@ -46,11 +46,6 @@ bool GraphicsManager::init() {
 		return false;
 	}
 
-	if (!createThread()) {
-		warning("GraphicsManager::init(): Failed to create graphics thread: %s", SDL_GetError());
-		return false;
-	}
-
 	_ready = true;
 	return true;
 }
@@ -59,9 +54,6 @@ void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
 	clearRenderQueue();
-
-	if (!destroyThread())
-		warning("GraphicsManager::deinit(): Graphics thread had to be killed");
 
 	SDL_Quit();
 
@@ -161,21 +153,6 @@ GraphicsManager::RenderQueueRef GraphicsManager::addToRenderQueue(Renderable &re
 
 void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
 	_renderQueue.erase(ref);
-}
-
-void GraphicsManager::threadMethod() {
-	while (!_killThread) {
-		if (!_initedGL) {
-			EventMan.delay(100);
-			continue;
-		}
-
-		renderScene();
-		EventMan.delay(100);
-	}
-}
-
-void GraphicsManager::renderScene() {
 }
 
 void GraphicsManager::perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar) {

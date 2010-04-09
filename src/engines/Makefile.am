@@ -6,9 +6,11 @@ noinst_LTLIBRARIES = libengines.la
 
 noinst_HEADERS = engine.h \
                  engineprobe.h \
-                 enginemanager.h
+                 enginemanager.h \
+                 gamethread.h
 
 libengines_la_SOURCES = engine.cpp \
-                        enginemanager.cpp
+                        enginemanager.cpp \
+                        gamethread.cpp
 
 libengines_la_LIBADD = nwn/libnwn.la nwn2/libnwn2.la kotor/libkotor.la kotor2/libkotor2.la thewitcher/libthewitcher.la
