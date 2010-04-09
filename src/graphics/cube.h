@@ -28,7 +28,7 @@ public:
 
 private:
 	uint32 _lastRotateTime;
-	float  _rotateX;
+	float  _rotate;
 };
 
 } // End of namespace Graphics
