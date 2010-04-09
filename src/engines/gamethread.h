@@ -29,9 +29,9 @@ public:
 	GameThread();
 	~GameThread();
 
-	bool init(const std::string &baseDir);
+	void init(const std::string &baseDir);
 
-	bool run();
+	void run();
 
 private:
 	std::string _baseDir;

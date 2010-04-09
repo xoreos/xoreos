@@ -36,7 +36,7 @@ public:
 	SoundManager();
 
 	/** Initialize the sound subsystem. */
-	bool init();
+	void init();
 	/** Deinitialize the sound subsystem. */
 	void deinit();
 

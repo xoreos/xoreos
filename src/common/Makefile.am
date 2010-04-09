@@ -9,6 +9,7 @@ noinst_HEADERS = system.h \
                  singleton.h \
                  thread.h \
                  mutex.h \
+                 error.h \
                  util.h \
                  strutil.h \
                  stream.h \
@@ -20,6 +21,7 @@ noinst_HEADERS = system.h \
 
 libcommon_la_SOURCES = thread.cpp \
                        mutex.cpp \
+                       error.cpp \
                        util.cpp \
                        strutil.cpp \
                        stream.cpp \

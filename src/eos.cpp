@@ -15,6 +15,7 @@
 #include <cstdio>
 
 #include "common/util.h"
+#include "common/error.h"
 #include "common/filepath.h"
 
 #include "graphics/graphics.h"
@@ -30,6 +31,8 @@
 void init();
 void deinit();
 
+void printException(Common::Exception &e);
+
 int main(int argc, char **argv) {
 	if (argc < 2) {
 		std::printf("Usage: %s </path/to/aurora/game>\n", argv[0]);
@@ -43,39 +46,55 @@ int main(int argc, char **argv) {
 
 	atexit(deinit);
 
-	init();
+	try {
+		init();
 
-	if (!EventMan.initMainLoop())
-		error("Failed initializing the main loop");
+		EventMan.initMainLoop();
 
-	Engines::GameThread gameThread;
+		Engines::GameThread gameThread;
 
-	if (!gameThread.init(baseDir))
-		error("Failed initializing the game thread");
+		gameThread.init(baseDir);
+		gameThread.run();
 
-	if (!gameThread.run())
-		error("Failed running the game thread");
-
-	EventMan.runMainLoop();
+		EventMan.runMainLoop();
+	} catch (Common::Exception &e) {
+		printException(e);
+		std::exit(1);
+	}
 
 	status("Shutting down");
 	return 0;
 }
 
 void init() {
-	status("Initializing the graphics subsystem");
-	if (!GfxMan.init())
-		error("Initializing the graphics subsystem failed");
-	status("Initializing the sound subsystem");
-	if (!SoundMan.init())
-		error("Initializing the sound subsystem failed");
-	status("Initializing the event subsystem");
-	if (!EventMan.init())
-		error("Initializing the event subsystem failed");
+	GfxMan.init();
+	status("Graphics subsystem initialized");
+	SoundMan.init();
+	status("Sound subsystem initialized");
+	EventMan.init();
+	status("Event subsystem initialized");
 }
 
 void deinit() {
 	EventMan.deinit();
 	SoundMan.deinit();
 	GfxMan.deinit();
+}
+
+void printException(Common::Exception &e) {
+	Common::Exception::Stack &stack = e.getStack();
+
+	if (stack.empty()) {
+		status("FATAL ERROR");
+		return;
+	}
+
+	status("ERROR: %s", stack.top().c_str());
+
+	stack.pop();
+
+	while (!stack.empty()) {
+		status("    Because: %s", stack.top().c_str());
+		stack.pop();
+	}
 }

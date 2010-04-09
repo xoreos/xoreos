@@ -37,7 +37,7 @@ public:
 	GraphicsManager();
 
 	/** Initialize the graphics subsystem. */
-	bool init();
+	void init();
 	/** Deinitialize the graphics subsystem. */
 	void deinit();
 
@@ -45,12 +45,12 @@ public:
 	bool ready() const;
 
 	/** Create a window of that size. */
-	bool initSize(int width, int height, bool fullscreen);
+	void initSize(int width, int height, bool fullscreen);
 
 	/** That the window's title. */
 	void setWindowTitle(const std::string &title);
 
-	bool setupScene();
+	void setupScene();
 
 	/** Clear the rendering queue. */
 	void clearRenderQueue();

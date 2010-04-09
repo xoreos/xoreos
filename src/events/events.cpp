@@ -15,6 +15,7 @@
 #include <SDL_timer.h>
 
 #include "common/util.h"
+#include "common/error.h"
 
 #include "events/events.h"
 
@@ -32,15 +33,11 @@ EventsManager::EventsManager() {
 	_quitRequested = false;
 }
 
-bool EventsManager::init() {
-	if (!GfxMan.ready()) {
-		warning("EventsManager::init(): The GraphicsManager needs to be initialized first");
-		return false;
-	}
+void EventsManager::init() {
+	if (!GfxMan.ready())
+		throw Common::Exception("The GraphicsManager needs to be initialized first");
 
 	_ready = true;
-
-	return true;
 }
 
 void EventsManager::deinit() {
@@ -102,21 +99,21 @@ void EventsManager::requestQuit() {
 	_quitRequested = true;
 }
 
-bool EventsManager::initMainLoop() {
-	status("Setting up graphics");
-	if (!GfxMan.initSize(800, 600, false)) {
-		warning("Setting up graphics failed");
-		return false;
+void EventsManager::initMainLoop() {
+	try {
+
+		GfxMan.initSize(800, 600, false);
+		GfxMan.setupScene();
+
+	} catch (Common::Exception &e) {
+		e.add("Failed setting up graphics");
+		throw e;
 	}
-	if (!GfxMan.setupScene()) {
-		warning("Failed setting up the 3D scene");
-		return false;
-	}
+
+	status("Graphics set up");
 
 	// Set the window title to our name
 	GfxMan.setWindowTitle(PACKAGE_STRING);
-
-	return true;
 }
 
 void EventsManager::runMainLoop() {

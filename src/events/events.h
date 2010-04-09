@@ -31,7 +31,7 @@ public:
 	EventsManager();
 
 	/** Initialize the events subsystem. */
-	bool init();
+	void init();
 	/** Deinitialize the events subsystem. */
 	void deinit();
 
@@ -66,7 +66,7 @@ public:
 	bool pushEvent(Event &event);
 
 	/** Initialize the main loop. */
-	bool initMainLoop();
+	void initMainLoop();
 	/** Run the main loop. */
 	void runMainLoop();
 

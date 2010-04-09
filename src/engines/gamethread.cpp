@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/error.h"
 
 #include "engines/gamethread.h"
 #include "engines/enginemanager.h"
@@ -28,33 +29,25 @@ GameThread::GameThread() {
 GameThread::~GameThread() {
 }
 
-bool GameThread::init(const std::string &baseDir) {
+void GameThread::init(const std::string &baseDir) {
 	// Detecting the game
 
 	_baseDir = baseDir;
 
 	_gameID = EngineMan.probeGameID(_baseDir);
 
-	if (_gameID == Aurora::kGameIDUnknown) {
-		warning("Unable to detect the game ID");
-		return false;
-	}
+	if (_gameID == Aurora::kGameIDUnknown)
+		throw Common::Exception("Unable to detect the game ID");
 
 	// Set the window title to our and the detected game's name
 	GfxMan.setWindowTitle(PACKAGE_STRING " -- " + EngineMan.getGameName(_gameID));
 
 	status("Detected game ID %d -- %s", _gameID, EngineMan.getGameName(_gameID).c_str());
-
-	return true;
 }
 
-bool GameThread::run() {
-	if (!createThread()) {
-		warning("Failed creating game logic thread");
-		return false;
-	}
-
-	return true;
+void GameThread::run() {
+	if (!createThread())
+		throw Common::Exception("Failed creating game logic thread");
 }
 
 void GameThread::threadMethod() {

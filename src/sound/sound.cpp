@@ -16,6 +16,7 @@
 
 #include "common/stream.h"
 #include "common/util.h"
+#include "common/error.h"
 
 #include "graphics/graphics.h"
 
@@ -33,18 +34,14 @@ SoundManager::SoundManager() {
 	_ready = false;
 }
 
-bool SoundManager::init() {
-	if (!GfxMan.ready()) {
-		warning("SoundManager::init(): The GraphicsManager needs to be initialized first");
-		return false;
-	}
+void SoundManager::init() {
+	if (!GfxMan.ready())
+		throw Common::Exception("The GraphicsManager needs to be initialized first");
 
 	Sound_Init();
 
-	if (Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, NUM_CHANNELS, BUFFER_SIZE)) {
-		warning("SoundManager::init(): Unable to initialize audio: %s", Mix_GetError());
-		return false;
-	}
+	if (Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, NUM_CHANNELS, BUFFER_SIZE))
+		throw Common::Exception("Unable to initialize audio: %s", Mix_GetError());
 
 	_channels.resize(MIX_CHANNELS);
 	for (uint i = 0; i < MIX_CHANNELS; i++) {
@@ -52,13 +49,10 @@ bool SoundManager::init() {
 		_channels[i].wav   = 0;
 	}
 
-	if (!createThread()) {
-		warning("SoundManager::init(): Failed to create sound thread: %s", SDL_GetError());
-		return false;
-	}
+	if (!createThread())
+		throw Common::Exception("Failed to create sound thread: %s", SDL_GetError());
 
 	_ready = true;
-	return true;
 }
 
 void SoundManager::deinit() {

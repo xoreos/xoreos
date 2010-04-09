@@ -15,6 +15,7 @@
 #include <cmath>
 
 #include "common/util.h"
+#include "common/error.h"
 
 #include "graphics/graphics.h"
 #include "graphics/renderable.h"
@@ -33,7 +34,7 @@ GraphicsManager::GraphicsManager() {
 	_screen = 0;
 }
 
-bool GraphicsManager::init() {
+void GraphicsManager::init() {
 	uint32 sdlInitFlags = SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO;
 
 // Might be needed on unixoid OS, but it crashes Windows. Nice.
@@ -41,18 +42,16 @@ bool GraphicsManager::init() {
 	sdlInitFlags |= SDL_INIT_EVENTTHREAD;
 #endif
 
-	if (SDL_Init(sdlInitFlags) < 0) {
-		warning("GraphicsManager::init(): Failed to initialize SDL: %s", SDL_GetError());
-		return false;
-	}
+	if (SDL_Init(sdlInitFlags) < 0)
+		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
 
 	_ready = true;
-	return true;
 }
 
 void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
+
 	clearRenderQueue();
 
 	SDL_Quit();
@@ -65,12 +64,10 @@ bool GraphicsManager::ready() const {
 	return _ready;
 }
 
-bool GraphicsManager::initSize(int width, int height, bool fullscreen) {
+void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	int bpp = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
-	if ((bpp != 24) && (bpp != 32)) {
-		warning("GraphicsManager::initSize(): Need 24 or 32 bits per pixel");
-		return false;
-	}
+	if ((bpp != 24) && (bpp != 32))
+		throw Common::Exception("Need 24 or 32 bits per pixel");
 
 	uint32 flags = SDL_OPENGL;
 
@@ -78,18 +75,17 @@ bool GraphicsManager::initSize(int width, int height, bool fullscreen) {
 		flags |= SDL_FULLSCREEN;
 
 	if (setupSDLGL(width, height, bpp, flags))
-		return true;
+		return;
 
 	// Could not initialize OpenGL, trying a different bpp value
 
 	bpp = (bpp == 32) ? 24 : 32;
 
 	if (setupSDLGL(width, height, bpp, flags))
-		return true;
+		return;
 
 	// Still couldn't initialize OpenGL, erroring out
-	warning("GraphicsManager::initSize(): Failed setting the video mode: %s", SDL_GetError());
-	return false;
+	throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
 }
 
 bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
@@ -110,9 +106,9 @@ void GraphicsManager::setWindowTitle(const std::string &title) {
 	SDL_WM_SetCaption(title.c_str(), 0);
 }
 
-bool GraphicsManager::setupScene() {
+void GraphicsManager::setupScene() {
 	if (!_screen)
-		return false;
+		throw Common::Exception("No screen initialized");
 
 	glClearColor( 0, 0, 0, 0 );
 	glMatrixMode(GL_PROJECTION);
@@ -133,7 +129,6 @@ bool GraphicsManager::setupScene() {
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	_initedGL = true;
-	return true;
 }
 
 void GraphicsManager::clearRenderQueue() {
