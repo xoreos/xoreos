@@ -22,12 +22,89 @@ namespace Graphics {
 
 Cube::Cube() {
 	_lastRotateTime = 0;
-	_rotate        = 0.0;
 
 	addToRenderQueue();
 }
 
 Cube::~Cube() {
+}
+
+void Cube::doCubeSolid() {
+	glBegin(GL_POLYGON);
+		glColor3f(1.00, 0.00, 0.00);
+		glVertex3f(-1.00, -1.00,  1.00);
+		glColor3f(0.00, 1.00, 0.00);
+		glVertex3f( 1.00, -1.00,  1.00);
+		glColor3f(0.00, 0.00, 1.00);
+		glVertex3f( 1.00,  1.00,  1.00);
+		glColor3f(1.00, 0.00, 1.00);
+		glVertex3f(-1.00,  1.00,  1.00);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glColor3f(1.00, 0.00, 0.00);
+		glVertex3f(-1.00, -1.00, -1.00);
+		glColor3f(1.00, 0.00, 1.00);
+		glVertex3f( 1.00, -1.00, -1.00);
+		glColor3f(0.00, 1.00, 0.00);
+		glVertex3f( 1.00,  1.00, -1.00);
+		glColor3f(0.00, 0.00, 1.00);
+		glVertex3f(-1.00,  1.00, -1.00);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glColor3f(1.00, 0.00, 0.00);
+		glVertex3f(-1.00, -1.00, -1.00);
+		glColor3f(0.00, 1.00, 0.00);
+		glVertex3f(-1.00, -1.00,  1.00);
+		glColor3f(1.00, 0.00, 1.00);
+		glVertex3f(-1.00,  1.00,  1.00);
+		glColor3f(0.00, 0.00, 1.00);
+		glVertex3f(-1.00,  1.00, -1.00);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glColor3f(1.00, 0.00, 1.00);
+		glVertex3f( 1.00, -1.00, -1.00);
+		glColor3f(0.00, 1.00, 0.00);
+		glVertex3f( 1.00, -1.00,  1.00);
+		glColor3f(0.00, 0.00, 1.00);
+		glVertex3f( 1.00,  1.00,  1.00);
+		glColor3f(1.00, 0.00, 1.00);
+		glVertex3f( 1.00,  1.00, -1.00);
+	glEnd();
+}
+
+void Cube::doCubeTrans() {
+	glBegin(GL_POLYGON);
+		glColor4f(1.00, 1.00, 0.00, 0.75);
+		glVertex3f(-1.00, -1.00,  1.00);
+		glVertex3f( 1.00, -1.00,  1.00);
+		glVertex3f( 1.00, -1.00, -1.00);
+		glVertex3f(-1.00, -1.00, -1.00);
+	glEnd();
+}
+
+void Cube::setRotate(float rotate) {
+	glRotatef(-rotate, 1.0, 0.0, 0.0);
+	glRotatef( rotate, 0.0, 1.0, 0.0);
+	glRotatef( rotate, 0.0, 0.0, 1.0);
+}
+
+void Cube::doCubeSolid(uint32 time) {
+	glPushMatrix();
+	setRotate(time * 0.1);
+	glScalef(0.5, 0.5, 0.5);
+	doCubeSolid();
+	glPopMatrix();
+}
+
+void Cube::doCubeTrans(uint32 time) {
+	glPushMatrix();
+	setRotate(time * 0.1);
+	glScalef(0.5, 0.5, 0.5);
+	doCubeTrans();
+	glPopMatrix();
 }
 
 void Cube::render() {
@@ -37,69 +114,16 @@ void Cube::render() {
 	uint32 curTime  = EventMan.getTimestamp();
 	uint32 diffTime = curTime - _lastRotateTime;
 
-	_rotate = diffTime * 0.1;
-
 	if (diffTime > 3600)
 		curTime += 3600;
 
 	glTranslatef(0.0, 0.0, -3.0);
-	glRotatef(-_rotate, 1.0, 0.0, 0.0);
-	glRotatef( _rotate, 0.0, 1.0, 0.0);
-	glRotatef( _rotate, 0.0, 0.0, 1.0);
 
-	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < 90; i++)
+		doCubeSolid(diffTime + (i * 10));
 
-	glBegin(GL_POLYGON);
-		glColor3f(1.00, 0.00, 0.00);
-		glVertex3f(-1.00, -1.00,  1.00);
-		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f( 1.00, -1.00,  1.00);
-		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f( 1.00,  1.00,  1.00);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f(-1.00,  1.00,  1.00);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-		glColor3f(1.00, 0.00, 0.00);
-		glVertex3f(-1.00, -1.00, -1.00);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f( 1.00, -1.00, -1.00);
-		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f( 1.00,  1.00, -1.00);
-		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f(-1.00,  1.00, -1.00);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-		glColor3f(1.00, 0.00, 0.00);
-		glVertex3f(-1.00, -1.00, -1.00);
-		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f(-1.00, -1.00,  1.00);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f(-1.00,  1.00,  1.00);
-		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f(-1.00,  1.00, -1.00);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f( 1.00, -1.00, -1.00);
-		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f( 1.00, -1.00,  1.00);
-		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f( 1.00,  1.00,  1.00);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f( 1.00,  1.00, -1.00);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-		glColor4f(1.00, 1.00, 0.00, 0.75);
-		glVertex3f(-1.00, -1.00,  1.00);
-		glVertex3f( 1.00, -1.00,  1.00);
-		glVertex3f( 1.00, -1.00, -1.00);
-		glVertex3f(-1.00, -1.00, -1.00);
-	glEnd();
+	for (int i = 0; i < 90; i++)
+		doCubeTrans(diffTime + (i * 10));
 }
 
 } // End of namespace Graphics

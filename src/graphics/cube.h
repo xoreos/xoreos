@@ -28,7 +28,13 @@ public:
 
 private:
 	uint32 _lastRotateTime;
-	float  _rotate;
+
+	void setRotate(float rotate);
+	void doCubeSolid();
+	void doCubeTrans();
+
+	void doCubeSolid(uint32 time);
+	void doCubeTrans(uint32 time);
 };
 
 } // End of namespace Graphics
