@@ -1,0 +1,91 @@
+/* eos - A reimplementation of BioWare's Aurora engine
+ * Copyright (c) 2010 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)
+ *
+ * The Infinity, Aurora, Odyssey and Eclipse engines, Copyright (c) BioWare corp.
+ * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
+ *
+ * This file is part of eos and is distributed under the terms of
+ * the GNU General Public Licence. See COPYING for more informations.
+ */
+
+/** @file graphics/fpscounter.cpp
+ *  Counting FPS.
+ */
+
+#include <cassert>
+
+#include "common/util.h"
+
+#include "graphics/fpscounter.h"
+
+#include "events/events.h"
+
+namespace Graphics {
+
+FPSCounter::FPSCounter(uint32 secs) : _seconds(secs) {
+	assert(_seconds > 0);
+
+	_frames = new uint32[_seconds];
+
+	reset();
+}
+
+FPSCounter::~FPSCounter() {
+	delete[] _frames;
+}
+
+uint32 FPSCounter::getFPS() const {
+	return _fps;
+}
+
+void FPSCounter::reset() {
+	_lastSampled = 0;
+
+	_currentSecond = 0;
+
+	_hasFullSeconds = false;
+
+	_fps = 0.0;
+
+	for (uint32 i = 0; i < _seconds; i++)
+		_frames[i] = 0;
+}
+
+void FPSCounter::finishedFrame() {
+	uint32 now = EventMan.getTimestamp();
+
+	if (_lastSampled == 0)
+		_lastSampled = now;
+
+	if ((now - _lastSampled) >= 1000) {
+		// We had one second worth of frames
+
+		// Advance to the next second
+		_currentSecond = (_currentSecond + 1) % _seconds;
+		_lastSampled = now;
+
+		// We filled all samples
+		if (_currentSecond == 0)
+			_hasFullSeconds = true;
+
+		// Calculate the new FPS value
+		calculateFPS();
+
+		// Reset the counter
+		_frames[_currentSecond] = 0;
+	}
+
+	// Another frame!
+	_frames[_currentSecond]++;
+}
+
+void FPSCounter::calculateFPS() {
+	uint32 seconds = _hasFullSeconds ? _seconds : _currentSecond;
+	uint32 frames = 0;
+	for (uint32 i = 0; i < seconds; i++)
+		frames += _frames[i];
+
+	_fps = frames / seconds;
+}
+
+} // End of namespace Graphics

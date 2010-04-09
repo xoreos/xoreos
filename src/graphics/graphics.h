@@ -28,6 +28,7 @@
 namespace Graphics {
 
 class Renderable;
+class FPSCounter;
 
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager> {
@@ -36,6 +37,7 @@ public:
 	typedef RenderQueue::iterator RenderQueueRef;
 
 	GraphicsManager();
+	~GraphicsManager();
 
 	/** Initialize the graphics subsystem. */
 	void init();
@@ -44,6 +46,9 @@ public:
 
 	/** Was the graphics subsystem successfully initialized? */
 	bool ready() const;
+
+	/** How many frames per second to we render at the moments? */
+	uint32 getFPS() const;
 
 	/** Create a window of that size. */
 	void initSize(int width, int height, bool fullscreen);
@@ -81,6 +86,8 @@ private:
 	RenderQueue _renderQueue; ///< The global rendering queue.
 
 	Common::Mutex _queueMutex; ///< A mutex for the render queue.
+
+	FPSCounter *_fpsCounter;
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);

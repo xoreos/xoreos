@@ -119,10 +119,20 @@ void EventsManager::initMainLoop() {
 void EventsManager::runMainLoop() {
 	Event event;
 
+	uint32 lastFPS = getTimestamp();
+
 	while (!quitRequested()) {
 		while (pollEvent(event));
 
 		GfxMan.renderScene();
+
+		// Display a FPS counter every second
+		uint32 now = getTimestamp();
+		if ((now - lastFPS) >= 1000) {
+			status("%d fps", GfxMan.getFPS());
+
+			lastFPS = now;
+		}
 	}
 }
 

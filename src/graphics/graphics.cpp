@@ -18,6 +18,7 @@
 #include "common/error.h"
 
 #include "graphics/graphics.h"
+#include "graphics/fpscounter.h"
 #include "graphics/renderable.h"
 #include "graphics/cube.h"
 
@@ -32,6 +33,12 @@ GraphicsManager::GraphicsManager() {
 	_initedGL = false;
 
 	_screen = 0;
+
+	_fpsCounter = new FPSCounter(3);
+}
+
+GraphicsManager::~GraphicsManager() {
+	delete _fpsCounter;
 }
 
 void GraphicsManager::init() {
@@ -66,6 +73,10 @@ void GraphicsManager::deinit() {
 
 bool GraphicsManager::ready() const {
 	return _ready;
+}
+
+uint32 GraphicsManager::getFPS() const {
+	return _fpsCounter->getFPS();
 }
 
 void GraphicsManager::initSize(int width, int height, bool fullscreen) {
@@ -174,6 +185,8 @@ void GraphicsManager::renderScene() {
 	}
 
 	SDL_GL_SwapBuffers();
+
+	_fpsCounter->finishedFrame();
 }
 
 void GraphicsManager::perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar) {
