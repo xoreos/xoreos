@@ -25,6 +25,10 @@ public:
 	~Cube();
 
 	void render();
+
+private:
+	uint32 _lastRotateTime;
+	float  _rotateX;
 };
 
 } // End of namespace Graphics

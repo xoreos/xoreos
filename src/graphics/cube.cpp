@@ -16,9 +16,14 @@
 
 #include "graphics/cube.h"
 
+#include "events/events.h"
+
 namespace Graphics {
 
 Cube::Cube() {
+	_lastRotateTime = 0;
+	_rotateX        = 0.0;
+
 	addToRenderQueue();
 }
 
@@ -26,10 +31,22 @@ Cube::~Cube() {
 }
 
 void Cube::render() {
-	glColor3f(0.2,1.0,0.2);
+	if (_lastRotateTime == 0)
+		_lastRotateTime = EventMan.getTimestamp();
+
+	uint32 curTime = EventMan.getTimestamp();
+	if ((curTime - _lastRotateTime) > 5) {
+		_rotateX += 0.5;
+		_lastRotateTime = curTime;
+
+		if (_rotateX >= 360.0)
+			_rotateX = 0.0;
+	}
+
+	glColor3f(0.2, 1.0, 0.2);
 
 	glTranslatef(0.0, 0.0, -2.0);
-	glRotatef(45.0, 0.0, 1.0, 0.0);
+	glRotatef(_rotateX, 0.0, 1.0, 0.0);
 	glRotatef(-45.0, 1.0, 0.0, 0.0);
 
 	glBegin(GL_POLYGON);

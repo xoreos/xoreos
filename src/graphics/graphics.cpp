@@ -161,8 +161,6 @@ void GraphicsManager::renderScene() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glPushMatrix();
-
 	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it) {
 		glPushMatrix();
 
@@ -170,8 +168,6 @@ void GraphicsManager::renderScene() {
 
 		glPopMatrix();
 	}
-
-	glPopMatrix();
 
 	SDL_GL_SwapBuffers();
 }
