@@ -77,6 +77,9 @@ public:
 	/** Render one complete frame of the scene. */
 	void renderScene();
 
+	/** Toggle between full screen and windowed modes. */
+	void toggleFullScreen();
+
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 	bool _initedGL;

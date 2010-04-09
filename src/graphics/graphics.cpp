@@ -201,4 +201,24 @@ void GraphicsManager::perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear
 	glFrustum(-halfWidth, halfWidth, -halfHeight, halfHeight, zNear, zFar);
 }
 
+void GraphicsManager::toggleFullScreen() {
+	// Save the flags
+	uint32 flags = _screen->flags;
+
+	// Now try to change modes
+	_screen = SDL_SetVideoMode(0, 0, 0, flags ^ SDL_FULLSCREEN);
+
+	if (!_screen) {
+		// Could not go full screen, revert back.
+		_screen = SDL_SetVideoMode(0, 0, 0, flags);
+	}
+
+	// There's no reason how this could possibly fail, but ok...
+	if (!_screen)
+		throw Common::Exception("Failed going to fullscreen and then failed reverting.");
+
+	// Reintroduce OpenGL to the surface
+	setupScene();
+}
+
 } // End of namespace Graphics
