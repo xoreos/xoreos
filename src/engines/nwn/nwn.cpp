@@ -86,12 +86,6 @@ void NWNEngine::run(const std::string &directory) {
 	}
 
 	while (!EventMan.quitRequested()) {
-		if (!SoundMan.isPlaying(channel))
-			EventMan.requestQuit();
-
-		Events::Event event;
-		while (EventMan.pollEvent(event));
-
 		EventMan.delay(10);
 	}
 }
