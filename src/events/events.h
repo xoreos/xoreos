@@ -16,10 +16,12 @@
 #define EVENTS_EVENTS_H
 
 #include <string>
+#include <list>
 
 #include <SDL_events.h>
 
 #include "common/singleton.h"
+#include "common/mutex.h"
 
 namespace Events {
 
@@ -65,15 +67,32 @@ public:
 	 */
 	bool pushEvent(Event &event);
 
+	/** Enable/Disable translating unicode translation for key events. */
+	void enableUnicode(bool enable);
+
+	/** Return the ASCII character of the pressed key.
+	 *
+	 *  Requirements: enableUnicode must be enabled and the event must
+	 *                be a keydown or keyup event.
+	 */
+	char getPressedCharacter(const Event &event);
+
 	/** Initialize the main loop. */
 	void initMainLoop();
 	/** Run the main loop. */
 	void runMainLoop();
 
 private:
+	typedef std::list<Event> EventQueue;
+
 	bool _ready; ///< Was the events subsystem successfully initialized?
 
 	bool _quitRequested; ///< Was an engine quit requested?
+
+	EventQueue _eventQueue;
+	Common::Mutex _eventQueueMutex;
+
+	void processEvents();
 };
 
 } // End of namespace Events
