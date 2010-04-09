@@ -23,9 +23,9 @@
 #include "common/singleton.h"
 #include "common/mutex.h"
 
-namespace Events {
+#include "events/types.h"
 
-typedef SDL_Event Event;
+namespace Events {
 
 /** The events manager. */
 class EventsManager : public Common::Singleton<EventsManager> {
@@ -93,6 +93,9 @@ private:
 	Common::Mutex _eventQueueMutex;
 
 	void processEvents();
+
+	bool parseEventQuit(const Event &event);
+	bool parseEventGraphics(const Event &event);
 };
 
 } // End of namespace Events

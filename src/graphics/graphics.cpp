@@ -23,6 +23,7 @@
 #include "graphics/cube.h"
 
 #include "events/events.h"
+#include "events/types.h"
 
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
@@ -174,6 +175,18 @@ void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
 	_renderQueue.erase(ref);
 }
 
+void GraphicsManager::requestFullScreen(bool fullScreen) {
+	Events::Event event;
+
+	event.type = Events::kEventTypeGraphics;
+
+	event.user.code =
+		fullScreen ? Events::kEventTypeGraphicsFullScreen :
+		             Events::kEventTypeGraphicsWindowed;
+
+	EventMan.pushEvent(event);
+}
+
 void GraphicsManager::renderScene() {
 	Common::StackLock lock(_queueMutex);
 
@@ -202,6 +215,14 @@ void GraphicsManager::perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear
 }
 
 void GraphicsManager::toggleFullScreen() {
+	setFullScreen(!_fullScreen);
+}
+
+void GraphicsManager::setFullScreen(bool fullScreen) {
+	if (_fullScreen == fullScreen)
+		// Nothing to do
+		return;
+
 	// Save the flags
 	uint32 flags = _screen->flags;
 
@@ -219,6 +240,8 @@ void GraphicsManager::toggleFullScreen() {
 
 	// Reintroduce OpenGL to the surface
 	setupScene();
+
+	_fullScreen = fullScreen;
 }
 
 } // End of namespace Graphics

@@ -69,6 +69,39 @@ uint32 EventsManager::getTimestamp() const {
 	return SDL_GetTicks();
 }
 
+bool EventsManager::parseEventQuit(const Event &event) {
+	if ((event.type == SDL_QUIT) ||
+			((event.type == SDL_KEYDOWN) &&
+			 (event.key.keysym.mod & (KMOD_CTRL | KMOD_META)) &&
+			 (event.key.keysym.sym == SDLK_q))) {
+
+		requestQuit();
+		return true;
+	}
+
+	return false;
+}
+
+bool EventsManager::parseEventGraphics(const Event &event) {
+	if (event.type == SDL_KEYDOWN && (event.key.keysym.mod & KMOD_ALT)
+			&& event.key.keysym.sym == SDLK_RETURN) {
+
+		GfxMan.toggleFullScreen();
+		return true;
+	}
+
+	if (event.type == kEventTypeGraphics) {
+		if      (event.user.code == kEventTypeGraphicsFullScreen)
+			GfxMan.setFullScreen(true);
+		else if (event.user.code == kEventTypeGraphicsWindowed)
+			GfxMan.setFullScreen(false);
+
+		return true;
+	}
+
+	return false;
+}
+
 void EventsManager::processEvents() {
 	Common::StackLock lock(_eventQueueMutex);
 
@@ -76,22 +109,12 @@ void EventsManager::processEvents() {
 	while (SDL_PollEvent(&event)) {
 
 		// Check for quit events
-		if ((event.type == SDL_QUIT) ||
-		    ((event.type == SDL_KEYDOWN) &&
-		     (event.key.keysym.mod & (KMOD_CTRL | KMOD_META)) &&
-		     (event.key.keysym.sym == SDLK_q))) {
-
-			requestQuit();
+		if (parseEventQuit(event))
 			continue;
-		}
 
-		// Check for full screen toggle event
-		if (event.type == SDL_KEYDOWN && (event.key.keysym.mod & KMOD_ALT)
-				&& event.key.keysym.sym == SDLK_RETURN) {
-
-			GfxMan.toggleFullScreen();
+		// Check for graphics events
+		if (parseEventGraphics(event))
 			continue;
-		}
 
 		// Push the event to the back of the list
 		_eventQueue.push_back(event);

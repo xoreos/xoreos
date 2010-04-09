@@ -69,9 +69,14 @@ public:
 	 */
 	void removeFromRenderQueue(RenderQueueRef &ref);
 
+	/** Request full screen / windowed mode toggle. */
+	void requestFullScreen(bool fullScreen);
+
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 	bool _initedGL;
+
+	bool _fullScreen;
 
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
@@ -97,6 +102,9 @@ public:
 
 	/** Toggle between full screen and windowed modes. */
 	void toggleFullScreen();
+
+	/** Set full screen / windowed mode. */
+	void setFullScreen(bool fullScreen);
 };
 
 } // End of namespace Graphics
