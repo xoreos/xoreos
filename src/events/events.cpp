@@ -85,6 +85,14 @@ void EventsManager::processEvents() {
 			continue;
 		}
 
+		// Check for full screen toggle event
+		if (event.type == SDL_KEYDOWN && (event.key.keysym.mod & KMOD_ALT)
+				&& event.key.keysym.sym == SDLK_RETURN) {
+
+			GfxMan.toggleFullScreen();
+			continue;
+		}
+
 		// Push the event to the back of the list
 		_eventQueue.push_back(event);
 	}
