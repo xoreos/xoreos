@@ -128,34 +128,6 @@ void GraphicsManager::setupScene() {
 	glDepthFunc(GL_LEQUAL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-/*	glClearColor(0.0,0.0,0.0,0.0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0,1.0,0.0,1.0,-1.0,1.0);*/
-
-	/*
- static GLfloat pos[4] = {5.0, 5.0, 10.0, 0.0};
-
-	glLightfv(GL_LIGHT0, GL_POSITION, pos);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_DEPTH_TEST);
-
-	uint32 height = _screen->h;
-	uint32 width  = _screen->w;
-
-	GLfloat h = (GLfloat) height / (GLfloat) width;
-
-	glViewport(0, 0, (GLint) width, (GLint) height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glFrustum(-1.0, 1.0, -h, h, 5.0, 60.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glTranslatef(0.0, 0.0, -40.0);
-	*/
-
 	_initedGL = true;
 }
 
