@@ -229,10 +229,12 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 	// Now try to change modes
 	_screen = SDL_SetVideoMode(0, 0, 0, flags ^ SDL_FULLSCREEN);
 
-	if (!_screen) {
-		// Could not go full screen, revert back.
+	// If we could not go full screen, revert back.
+	if (!_screen)
 		_screen = SDL_SetVideoMode(0, 0, 0, flags);
-	}
+	else
+		_fullScreen = fullScreen;
+
 
 	// There's no reason how this could possibly fail, but ok...
 	if (!_screen)
@@ -240,8 +242,14 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 
 	// Reintroduce OpenGL to the surface
 	setupScene();
+}
 
-	_fullScreen = fullScreen;
+void GraphicsManager::toggleMouseGrab() {
+	// Same as ScummVM's OSystem_SDL::toggleMouseGrab()
+	if (SDL_WM_GrabInput(SDL_GRAB_QUERY) == SDL_GRAB_OFF)
+		SDL_WM_GrabInput(SDL_GRAB_ON);
+	else
+		SDL_WM_GrabInput(SDL_GRAB_OFF);
 }
 
 } // End of namespace Graphics

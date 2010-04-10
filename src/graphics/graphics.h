@@ -103,8 +103,11 @@ public:
 	/** Toggle between full screen and windowed modes. */
 	void toggleFullScreen();
 
-	/** Set full screen / windowed mode. */
+	/** Set full screen/windowed mode. */
 	void setFullScreen(bool fullScreen);
+
+	/** Toggle mouse grab */
+	void toggleMouseGrab();
 };
 
 } // End of namespace Graphics
