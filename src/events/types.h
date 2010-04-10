@@ -21,16 +21,17 @@ typedef SDL_Event Event;
 
 /** Custom event types. */
 enum EventType {
-	kEventNone      = SDL_NOEVENT,         ///< Nothing.
-	kEventKeyDown   = SDL_KEYDOWN,         ///< Keyboard key was pressed.
-	kEventKeyUp     = SDL_KEYUP,           ///< Keyboard key was released.
-	kEventMouseMove = SDL_MOUSEMOTION,     ///< Mouse was moved.
+	kEventNone      = SDL_NOEVENT        , ///< Nothing.
+	kEventKeyDown   = SDL_KEYDOWN        , ///< Keyboard key was pressed.
+	kEventKeyUp     = SDL_KEYUP          , ///< Keyboard key was released.
+	kEventMouseMove = SDL_MOUSEMOTION    , ///< Mouse was moved.
 	kEventMouseDown = SDL_MOUSEBUTTONDOWN, ///< Mouse button was pressed.
-	kEventMouseUp   = SDL_MOUSEBUTTONUP,   ///< Mouse button was released.
-	kEventQuit      = SDL_QUIT,            ///< Application quit was requested.
-	kEventUserMin   = SDL_USEREVENT - 1,   ///< For range checks.
-	kEventGraphics  = SDL_USEREVENT    ,   ///< Inter-thread communications regarding graphics.
-	kEventSound                        ,   ///< Inter-thread communications regarding sound.
+	kEventMouseUp   = SDL_MOUSEBUTTONUP  , ///< Mouse button was released.
+	kEventQuit      = SDL_QUIT           , ///< Application quit was requested.
+	kEventResize    = SDL_VIDEORESIZE    , ///< Resize the window.
+	kEventUserMin   = SDL_USEREVENT - 1  , ///< For range checks.
+	kEventGraphics  = SDL_USEREVENT      , ///< Inter-thread communications regarding graphics.
+	kEventSound                          , ///< Inter-thread communications regarding sound.
 	kEventUserMax   = SDL_NUMEVENTS        ///< For range checks.
 };
 

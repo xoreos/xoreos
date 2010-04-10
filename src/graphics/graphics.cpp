@@ -187,6 +187,17 @@ void GraphicsManager::requestFullScreen(bool fullScreen) {
 	EventMan.pushEvent(event);
 }
 
+void GraphicsManager::requestSizeChange(int width, int height) {
+	Events::Event event;
+
+	event.type = Events::kEventResize;
+
+	event.resize.w = width;
+	event.resize.h = height;
+
+	EventMan.pushEvent(event);
+}
+
 void GraphicsManager::renderScene() {
 	Common::StackLock lock(_queueMutex);
 
@@ -250,6 +261,29 @@ void GraphicsManager::toggleMouseGrab() {
 		SDL_WM_GrabInput(SDL_GRAB_ON);
 	else
 		SDL_WM_GrabInput(SDL_GRAB_OFF);
+}
+
+void GraphicsManager::changeSize(int width, int height) {
+	// Save properties
+	uint32 flags     = _screen->flags;
+	int    bpp       = _screen->format->BitsPerPixel;
+	int    oldWidth  = _screen->w;
+	int    oldHeight = _screen->h;
+
+	// Now try to change modes
+	_screen = SDL_SetVideoMode(width, height, bpp, flags);
+
+	if (!_screen) {
+		// Could not change mode, revert back.
+		_screen = SDL_SetVideoMode(oldWidth, oldHeight, bpp, flags);
+	}
+
+	// There's no reason how this could possibly fail, but ok...
+	if (!_screen)
+		throw Common::Exception("Failed going to fullscreen and then failed reverting.");
+
+	// Reintroduce OpenGL to the surface
+	setupScene();
 }
 
 } // End of namespace Graphics

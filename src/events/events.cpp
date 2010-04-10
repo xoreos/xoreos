@@ -102,6 +102,11 @@ bool EventsManager::parseEventGraphics(const Event &event) {
 		return true;
 	}
 
+	if (event.type == kEventResize) {
+		GfxMan.changeSize(event.resize.w, event.resize.h);
+		return true;
+	}
+
 	return false;
 }
 
