@@ -97,11 +97,14 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 
 	bpp = (bpp == 32) ? 24 : 32;
 
-	if (setupSDLGL(width, height, bpp, flags))
-		return;
+	if (!setupSDLGL(width, height, bpp, flags))
+		// Still couldn't initialize OpenGL, erroring out
+		throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
 
-	// Still couldn't initialize OpenGL, erroring out
-	throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
+	// Initialize glew, for the extension entry points
+	GLenum glewErr = glewInit();
+	if (glewErr != GLEW_OK)
+		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
 }
 
 bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
@@ -246,10 +249,14 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 	else
 		_fullScreen = fullScreen;
 
-
 	// There's no reason how this could possibly fail, but ok...
 	if (!_screen)
 		throw Common::Exception("Failed going to fullscreen and then failed reverting.");
+
+	// Reintroduce glew to the surface
+	GLenum glewErr = glewInit();
+	if (glewErr != GLEW_OK)
+		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
 
 	// Reintroduce OpenGL to the surface
 	setupScene();
@@ -281,6 +288,11 @@ void GraphicsManager::changeSize(int width, int height) {
 	// There's no reason how this could possibly fail, but ok...
 	if (!_screen)
 		throw Common::Exception("Failed going to fullscreen and then failed reverting.");
+
+	// Reintroduce glew to the surface
+	GLenum glewErr = glewInit();
+	if (glewErr != GLEW_OK)
+		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
 
 	// Reintroduce OpenGL to the surface
 	setupScene();
