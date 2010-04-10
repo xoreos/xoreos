@@ -19,7 +19,8 @@
 #include <list>
 
 #include <SDL.h>
-#include <SDL_opengl.h>
+
+#include "graphics/glew/glew.h"
 
 #include "common/types.h"
 #include "common/singleton.h"

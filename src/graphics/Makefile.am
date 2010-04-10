@@ -2,12 +2,16 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libgraphics.la
 
-noinst_HEADERS = graphics.h \
+noinst_HEADERS = glew/glew.h \
+                 glew/glxew.h \
+                 glew/wglew.h \
+                 graphics.h \
                  fpscounter.h \
                  renderable.h \
                  cube.h
 
-libgraphics_la_SOURCES = graphics.cpp \
+libgraphics_la_SOURCES = glew/glew.c \
+                         graphics.cpp \
                          fpscounter.cpp \
                          renderable.cpp \
                          cube.cpp

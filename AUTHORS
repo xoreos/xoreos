@@ -2,6 +2,15 @@ Sven Hesse (DrMcCoy) <drmccoy@drmccoy.de>
 Matthew Hoops (clone2727) <clone2727@gmail.com>
 
 
+glew
+****
+   eos uses glew, The OpenGL Extension Wrangler Library
+   (<<http://glew.sourceforge.net/>), to safely check for and use OpenGL 1.2+
+   features and extensions. To minimize dependencies on "uncommon" libraries,
+   eos completely includes the glew code, one of its suggested use methods.
+   glew is licensed under the Modified BSD License, the Mesa 3-D License
+   (MIT License), and the Khronos License (MIT License).
+
 ScummVM code
 ************
    eos uses some ScummVM code. For copyright information, please visit the
