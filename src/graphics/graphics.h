@@ -72,6 +72,9 @@ public:
 	/** Request full screen / windowed mode toggle. */
 	void requestFullScreen(bool fullScreen);
 
+	/** Request a window size change. */
+	void requestSizeChange(int width, int height);
+
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 	bool _initedGL;
@@ -105,6 +108,9 @@ public:
 
 	/** Set full screen / windowed mode. */
 	void setFullScreen(bool fullScreen);
+
+	/** Change the window size. */
+	void changeSize(int width, int height);
 };
 
 } // End of namespace Graphics
