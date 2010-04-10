@@ -69,9 +69,9 @@ void SoundManager::deinit() {
 	_channels.clear();
 
 	alcMakeContextCurrent(NULL);
-    alcDestroyContext(_ctx);
-    alcCloseDevice(_dev);
-	
+	alcDestroyContext(_ctx);
+	alcCloseDevice(_dev);
+
 	Sound_Quit();
 
 	_ready = false;
@@ -255,7 +255,7 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		if (i == channel->numBuffers - 1 && sound->buffer_size % BUFFER_SIZE != 0)
 			alBufferData(channel->buffers[i], AL_FORMAT_STEREO16, (byte *)sound->buffer + BUFFER_SIZE * i, sound->buffer_size % BUFFER_SIZE, SAMPLE_RATE);
 		else
-			alBufferData(channel->buffers[i], AL_FORMAT_STEREO16, (byte *)sound->buffer + BUFFER_SIZE * i, BUFFER_SIZE, SAMPLE_RATE); 
+			alBufferData(channel->buffers[i], AL_FORMAT_STEREO16, (byte *)sound->buffer + BUFFER_SIZE * i, BUFFER_SIZE, SAMPLE_RATE);
 	}
 
 	alSourceQueueBuffers(channel->source, channel->numBuffers, channel->buffers);
