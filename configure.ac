@@ -83,7 +83,7 @@ case "$target" in
 		EOS_LIBS="$EOS_LIBS -framework OpenGL -framework OpenAL"
 		;;
 	*)
-		EOS_LIBS="$EOS_LIBS -lal"
+		EOS_LIBS="$EOS_LIBS -lopenal"
 		;;
 esac;
 
