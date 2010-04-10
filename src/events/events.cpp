@@ -70,8 +70,8 @@ uint32 EventsManager::getTimestamp() const {
 }
 
 bool EventsManager::parseEventQuit(const Event &event) {
-	if ((event.type == SDL_QUIT) ||
-			((event.type == SDL_KEYDOWN) &&
+	if ((event.type == kEventQuit) ||
+			((event.type == kEventKeyDown) &&
 			 (event.key.keysym.mod & (KMOD_CTRL | KMOD_META)) &&
 			 (event.key.keysym.sym == SDLK_q))) {
 
@@ -83,17 +83,17 @@ bool EventsManager::parseEventQuit(const Event &event) {
 }
 
 bool EventsManager::parseEventGraphics(const Event &event) {
-	if (event.type == SDL_KEYDOWN && (event.key.keysym.mod & KMOD_ALT)
+	if (event.type == kEventKeyDown && (event.key.keysym.mod & KMOD_ALT)
 			&& event.key.keysym.sym == SDLK_RETURN) {
 
 		GfxMan.toggleFullScreen();
 		return true;
 	}
 
-	if (event.type == kEventTypeGraphics) {
-		if      (event.user.code == kEventTypeGraphicsFullScreen)
+	if (event.type == kEventGraphics) {
+		if      (event.user.code == kEventGraphicsFullScreen)
 			GfxMan.setFullScreen(true);
-		else if (event.user.code == kEventTypeGraphicsWindowed)
+		else if (event.user.code == kEventGraphicsWindowed)
 			GfxMan.setFullScreen(false);
 
 		return true;
@@ -147,7 +147,7 @@ void EventsManager::enableUnicode(bool enable) {
 }
 
 char EventsManager::getPressedCharacter(const Event &event) {
-	if ((event.type != SDL_KEYDOWN) && (event.type != SDL_KEYUP))
+	if ((event.type != kEventKeyDown) && (event.type != kEventKeyUp))
 		return 0;
 
 	return event.key.keysym.unicode & 0x7F;

@@ -178,11 +178,11 @@ void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
 void GraphicsManager::requestFullScreen(bool fullScreen) {
 	Events::Event event;
 
-	event.type = Events::kEventTypeGraphics;
+	event.type = Events::kEventGraphics;
 
 	event.user.code =
-		fullScreen ? Events::kEventTypeGraphicsFullScreen :
-		             Events::kEventTypeGraphicsWindowed;
+		fullScreen ? Events::kEventGraphicsFullScreen :
+		             Events::kEventGraphicsWindowed;
 
 	EventMan.pushEvent(event);
 }

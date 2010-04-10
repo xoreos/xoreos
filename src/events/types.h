@@ -21,15 +21,22 @@ typedef SDL_Event Event;
 
 /** Custom event types. */
 enum EventType {
-	kEvenTypeMin       = SDL_USEREVENT - 1, ///< For range checks.
-	kEventTypeGraphics = SDL_USEREVENT    , ///< Inter-thread communications regarding graphics.
-	kEventTypeSound                       , ///< Inter-thread communications regarding sound.
-	kEventTypeMax      = SDL_NUMEVENTS      ///< For range checks.
+	kEventNone      = SDL_NOEVENT,         ///< Nothing.
+	kEventKeyDown   = SDL_KEYDOWN,         ///< Keyboard key was pressed.
+	kEventKeyUp     = SDL_KEYUP,           ///< Keyboard key was released.
+	kEventMouseMove = SDL_MOUSEMOTION,     ///< Mouse was moved.
+	kEventMouseDown = SDL_MOUSEBUTTONDOWN, ///< Mouse button was pressed.
+	kEventMouseUp   = SDL_MOUSEBUTTONUP,   ///< Mouse button was released.
+	kEventQuit      = SDL_QUIT,            ///< Application quit was requested.
+	kEventUserMin   = SDL_USEREVENT - 1,   ///< For range checks.
+	kEventGraphics  = SDL_USEREVENT    ,   ///< Inter-thread communications regarding graphics.
+	kEventSound                        ,   ///< Inter-thread communications regarding sound.
+	kEventUserMax   = SDL_NUMEVENTS        ///< For range checks.
 };
 
 enum EventTypeGraphics {
-	kEventTypeGraphicsFullScreen = 0,
-	kEventTypeGraphicsWindowed
+	kEventGraphicsFullScreen = 0,
+	kEventGraphicsWindowed
 };
 
 } // End of namespace Events
