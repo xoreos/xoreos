@@ -15,14 +15,24 @@
 #ifndef SOUND_SOUND_H
 #define SOUND_SOUND_H
 
-#include <SDL_mixer.h>
 #include <SDL_sound.h>
+
+// Mac OS X has to have this set up separately because of the include
+// path for the OpenAL framework.
+#ifdef MACOSX
+#	include <al.h>
+#	include <alc.h>
+#else
+#	include <AL/al.h>
+#	include <AL/alc.h>
+#endif
 
 #include <vector>
 
 #include "common/singleton.h"
 #include "common/thread.h"
 #include "common/mutex.h"
+#include "common/types.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -44,7 +54,7 @@ public:
 	bool ready() const;
 
 	/** Is that channel currently playing a sound? */
-	bool isPlaying(int channel) const;
+	bool isPlaying(uint32 channel) const;
 
 	/** Play a sound file.
 	 *
@@ -56,22 +66,26 @@ public:
 private:
 	struct Channel {
 		Sound_Sample *sound;
-		Mix_Chunk *wav;
+		ALuint source;
+		ALuint numBuffers;
+		ALuint *buffers;
 	};
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?
 
-	std::vector<Channel> _channels;
+	std::vector<Channel*> _channels;
 
 	Common::Mutex _mutex;
 
 	/** Update the sound information. Called regularily from within the thread method. */
 	void update();
 
-	void freeChannel(int channel);
-	void setChannel(int channel, Sound_Sample *sound, Mix_Chunk *wav);
+	void freeChannel(uint32 channel);
 
 	void threadMethod();
+
+	ALCdevice *_dev;
+    ALCcontext *_ctx;
 };
 
 } // End of namespace Sound

@@ -40,14 +40,14 @@ void SoundManager::init() {
 
 	Sound_Init();
 
-	if (Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, NUM_CHANNELS, BUFFER_SIZE))
-		throw Common::Exception("Unable to initialize audio: %s", Mix_GetError());
+	_dev = alcOpenDevice(NULL);
+	if (!_dev)
+		throw Common::Exception("Could not open OpenAL device");
 
-	_channels.resize(MIX_CHANNELS);
-	for (uint i = 0; i < MIX_CHANNELS; i++) {
-		_channels[i].sound = 0;
-		_channels[i].wav   = 0;
-	}
+	_ctx = alcCreateContext(_dev, NULL);
+	alcMakeContextCurrent(_ctx);
+	if (!_ctx)
+		throw Common::Exception("Could not create OpenAL context");
 
 	if (!createThread())
 		throw Common::Exception("Failed to create sound thread: %s", SDL_GetError());
@@ -62,7 +62,16 @@ void SoundManager::deinit() {
 	if (!destroyThread())
 		warning("SoundManager::deinit(): Sound thread had to be killed");
 
-	Mix_CloseAudio();
+	for (uint32 i = 0; i < _channels.size(); i++)
+		if (_channels[i])
+			freeChannel(i);
+
+	_channels.clear();
+
+	alcMakeContextCurrent(NULL);
+    alcDestroyContext(_ctx);
+    alcCloseDevice(_dev);
+	
 	Sound_Quit();
 
 	_ready = false;
@@ -72,11 +81,14 @@ bool SoundManager::ready() const {
 	return _ready;
 }
 
-bool SoundManager::isPlaying(int channel) const {
-	if ((channel < 0) || (channel >= MIX_CHANNELS))
+bool SoundManager::isPlaying(uint32 channel) const {
+	if (channel >= _channels.size() || !_channels[channel])
 		return false;
 
-	return Mix_Playing(channel);
+	ALint val;
+	alGetSourcei(_channels[channel]->source, AL_SOURCE_STATE, &val);
+
+	return val == AL_PLAYING;
 }
 
 static int RWStreamSeek(SDL_RWops *context, int offset, int whence) {
@@ -224,61 +236,70 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	// Decode all samples
 	Sound_DecodeAll(sound);
 
-	Mix_Chunk *wav = Mix_QuickLoad_RAW((byte *)sound->buffer, sound->buffer_size);
-	if (!wav) {
-		warning("SoundManager::playSoundFile(): Unable to load WAV file: %s", Mix_GetError());
-		Sound_FreeSample(sound);
-		return -1;
+	Channel *channel = new Channel;
+	channel->sound = sound;
+	channel->numBuffers = sound->buffer_size / BUFFER_SIZE;
+
+	if (channel->numBuffers % BUFFER_SIZE)
+		channel->numBuffers++;
+
+	channel->buffers = new ALuint[channel->numBuffers];
+
+	alGenSources(1, &channel->source);
+	alGenBuffers(channel->numBuffers, channel->buffers);
+
+	if (alGetError() != AL_NO_ERROR)
+		throw Common::Exception("AL Error of some sort");
+
+	for (uint32 i = 0; i < channel->numBuffers; i++) {
+		if (i == channel->numBuffers - 1 && sound->buffer_size % BUFFER_SIZE != 0)
+			alBufferData(channel->buffers[i], AL_FORMAT_STEREO16, (byte *)sound->buffer + BUFFER_SIZE * i, sound->buffer_size % BUFFER_SIZE, SAMPLE_RATE);
+		else
+			alBufferData(channel->buffers[i], AL_FORMAT_STEREO16, (byte *)sound->buffer + BUFFER_SIZE * i, BUFFER_SIZE, SAMPLE_RATE); 
 	}
 
-	int channel = Mix_PlayChannel(-1, wav, 0);
-	if(channel == -1) {
-		warning("SoundManager::playSoundFile(): Unable to play WAV file: %s", Mix_GetError());
-		Sound_FreeSample(sound);
-		Mix_FreeChunk(wav);
-		return -1;
+	alSourceQueueBuffers(channel->source, channel->numBuffers, channel->buffers);
+	alSourcePlay(channel->source);
+
+	for (uint32 i = 0; i < _channels.size(); i++) {
+		if (_channels[i] == 0) {
+			_channels[i] = channel;
+			return i;
+		}
 	}
 
-	setChannel(channel, sound, wav);
-
-	return channel;
+	_channels.push_back(channel);
+	return _channels.size() - 1;
 }
 
 void SoundManager::update() {
 	Common::StackLock lock(_mutex);
 
-	for (uint i = 0; i < MIX_CHANNELS; i++)
-		if (!Mix_Playing(i))
+	for (uint i = 0; i < _channels.size(); i++) {
+		if (!_channels[i])
+			continue;
+
+		if (!isPlaying(i))
 			freeChannel(i);
-}
-
-void SoundManager::freeChannel(int channel) {
-	if ((channel < 0) || (channel >= MIX_CHANNELS))
-		return;
-
-	Channel &c = _channels[channel];
-
-	if (c.sound) {
-		Sound_FreeSample(c.sound);
-		c.sound = 0;
-	}
-
-	if (c.wav) {
-		Mix_FreeChunk(c.wav);
-		c.wav = 0;
 	}
 }
 
-void SoundManager::setChannel(int channel, Sound_Sample *sound, Mix_Chunk *wav) {
-	if ((channel < 0) || (channel >= MIX_CHANNELS))
+void SoundManager::freeChannel(uint32 channel) {
+	if (channel >= _channels.size() || !_channels[channel])
 		return;
 
-	freeChannel(channel);
+	Channel *c = _channels[channel];
 
-	Channel &c = _channels[channel];
+	if (c->sound) {
+		Sound_FreeSample(c->sound);
+		c->sound = 0;
+	}
 
-	c.sound = sound;
-	c.wav   = wav;
+	alDeleteSources(1, &c->source);
+	alDeleteBuffers(c->numBuffers, c->buffers);
+
+	delete c;
+	_channels[channel] = 0;
 }
 
 void SoundManager::threadMethod() {

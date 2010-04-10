@@ -23,7 +23,7 @@ if test -n "$SDL_CONFIG"; then
 		SDL_CFLAGS=`$SDL_CONFIG --cflags`
 	fi
 	if test -z "$SDL_LIBS"; then
-	SDL_LIBS=`$SDL_CONFIG --libs`
+		SDL_LIBS=`$SDL_CONFIG --libs`
 	fi
 fi
 
@@ -34,15 +34,6 @@ LIBS="$save_LIBS"
 
 if test -n "$nosdl"; then
 	AC_MSG_ERROR([SDL is required and could not be found!])
-fi
-
-CPPFLAGSBAK="$CPPFLAGS"
-CPPFLAGS=`$SDL_CONFIG --cflags`
-AC_CHECK_HEADER("SDL_mixer.h", , nosdlmixer=1)
-CPPFLAGS="$CPPFLAGSBAK"
-
-if test -n "$nosdlmixer"; then
-	AC_MSG_ERROR([SDL_Mixer is required and could not be found!])
 fi
 
 CPPFLAGSBAK="$CPPFLAGS"
@@ -67,21 +58,32 @@ BOOST_REGEX
 
 dnl Do not run the OpenGL checks on OS X, they will incorrectly find the X11 OpenGL libraries which we do not want.
 dnl TODO: Eventually add a test for OS X for OpenGL
+dnl TODO: Add OpenAL tests on non OS X systems
 case "$target" in
 	*darwin*)
 		;;
 	*)
 		AX_HAVE_OPENGL
+		AC_CHECK_HEADER("AL/al.h", , noopenal=1)
+		AC_CHECK_HEADER("AL/alc.h", , noopenal=1)
+
+		if test -n "$noopenal"; then
+			AC_MSG_ERROR([OpenAL is required and could not be found!])
+		fi
 		;;
 esac;
 
 EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
-EOS_LIBS="`sdl-config --libs` -lSDL_mixer -lSDL_sound"
+EOS_LIBS="`sdl-config --libs` -lSDL_sound"
 
-dnl Add the OpenGL framework on Mac OS X
+dnl Add the OpenAL and OpenGL frameworks on Mac OS X
 case "$target" in
 	*darwin*)
-		EOS_LIBS="$EOS_LIBS  -framework OpenGL"
+		EOS_CXXFLAGS="$EOS_CXXFLAGS -DMACOSX -I/System/Library/Frameworks/OpenAL.framework/Headers"
+		EOS_LIBS="$EOS_LIBS -framework OpenGL -framework OpenAL"
+		;;
+	*)
+		EOS_LIBS="$EOS_LIBS -lal"
 		;;
 esac;
 
