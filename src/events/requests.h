@@ -39,6 +39,9 @@ namespace Events {
  *  the request. That way, the actual fulfilling of the request can happen
  *  asynchronously, without it unnecessarily blocking further execution of the
  *  game thread.
+ *
+ *  WARNING: Since function stacks are thread-local, NEVER put requests onto
+ *           the stack. ALWAYS allocate them on the heap.
  */
 class Request {
 // To be used by the game thread
