@@ -31,8 +31,6 @@
 void init();
 void deinit();
 
-void printException(Common::Exception &e);
-
 int main(int argc, char **argv) {
 	if (argc < 2) {
 		std::printf("Usage: %s </path/to/aurora/game>\n", argv[0]);
@@ -58,7 +56,7 @@ int main(int argc, char **argv) {
 
 		EventMan.runMainLoop();
 	} catch (Common::Exception &e) {
-		printException(e);
+		Common::printException(e);
 		std::exit(1);
 	}
 
@@ -79,22 +77,4 @@ void deinit() {
 	EventMan.deinit();
 	SoundMan.deinit();
 	GfxMan.deinit();
-}
-
-void printException(Common::Exception &e) {
-	Common::Exception::Stack &stack = e.getStack();
-
-	if (stack.empty()) {
-		status("FATAL ERROR");
-		return;
-	}
-
-	status("ERROR: %s", stack.top().c_str());
-
-	stack.pop();
-
-	while (!stack.empty()) {
-		status("    Because: %s", stack.top().c_str());
-		stack.pop();
-	}
 }

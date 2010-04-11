@@ -44,6 +44,8 @@ extern const Exception kOpenError;
 extern const Exception kReadError;
 extern const Exception kSeekError;
 
+void printException(Exception &e);
+
 } // End of namespace Common
 
 #endif // COMMON_ERROR_H

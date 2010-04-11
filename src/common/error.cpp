@@ -62,4 +62,23 @@ const Exception kOpenError("Can't open file");
 const Exception kReadError("Read error");
 const Exception kSeekError("Seek error");
 
+
+void printException(Exception &e) {
+	Exception::Stack &stack = e.getStack();
+
+	if (stack.empty()) {
+		status("FATAL ERROR");
+		return;
+	}
+
+	status("ERROR: %s", stack.top().c_str());
+
+	stack.pop();
+
+	while (!stack.empty()) {
+		status("    Because: %s", stack.top().c_str());
+		stack.pop();
+	}
+}
+
 } // End of namespace Common
