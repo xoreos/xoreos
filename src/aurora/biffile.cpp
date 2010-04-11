@@ -62,7 +62,7 @@ void BIFFile::load(Common::SeekableReadStream &bif) {
 		readVarResTable(bif, offVarResTable);
 
 		if (bif.err())
-			throw Common::Exception(kReadError);
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading BIF file");
@@ -73,7 +73,7 @@ void BIFFile::load(Common::SeekableReadStream &bif) {
 
 void BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
 	if (!bif.seek(offset))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		bif.skip(4); // ID

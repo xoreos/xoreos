@@ -328,7 +328,7 @@ void ResourceManager::addERF(const std::string &erf) {
 
 	Common::File erfFile;
 	if (!erfFile.open(erfFileName))
-		throw Common::Exception(kOpenError);
+		throw Common::Exception(Common::kOpenError);
 
 	ERFFile erfIndex;
 
@@ -379,7 +379,7 @@ void ResourceManager::addRIM(const std::string &rim) {
 
 	Common::File rimFile;
 	if (!rimFile.open(rimFileName))
-		throw Common::Exception(kOpenError);
+		throw Common::Exception(Common::kOpenError);
 
 	RIMFile rimIndex;
 

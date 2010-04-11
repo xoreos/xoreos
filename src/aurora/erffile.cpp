@@ -78,7 +78,7 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 		readResList(erf, offResList);
 
 		if (erf.err())
-			throw Common::Exception(kReadError);
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading ERF file");
@@ -89,14 +89,14 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 
 void ERFFile::readDescription(Common::SeekableReadStream &erf, uint32 offset, uint32 id, uint32 count) {
 	if (!erf.seek(offset))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	_description.readLocString(erf, id, count);
 }
 
 void ERFFile::readKeyList(Common::SeekableReadStream &erf, uint32 offset) {
 	if (!erf.seek(offset))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->name = AuroraFile::readRawString(erf, 16);
@@ -108,7 +108,7 @@ void ERFFile::readKeyList(Common::SeekableReadStream &erf, uint32 offset) {
 
 void ERFFile::readResList(Common::SeekableReadStream &erf, uint32 offset) {
 	if (!erf.seek(offset))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->offset = erf.readUint32LE();

@@ -60,7 +60,7 @@ void TalkTable::load(Common::SeekableReadStream &tlk) {
 		readStrings(tlk, tableOffset);
 
 		if (tlk.err())
-			throw Common::Exception(kReadError);
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TLK file");
@@ -84,7 +84,7 @@ void TalkTable::readEntryTable(Common::SeekableReadStream &tlk) {
 void TalkTable::readStrings(Common::SeekableReadStream &tlk, uint32 dataOffset) {
 	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
 		if (!tlk.seek(dataOffset + entry->offset))
-			throw Common::Exception(kSeekError);
+			throw Common::Exception(Common::kSeekError);
 
 		entry->text = AuroraFile::readRawString(tlk, entry->length);
 	}

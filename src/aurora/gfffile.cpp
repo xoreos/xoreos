@@ -163,7 +163,7 @@ void GFFFile::load(Common::SeekableReadStream &gff) {
 		}
 
 		if (!gff.seek(_header.listIndicesOffset))
-			throw Common::Exception(kSeekError);
+			throw Common::Exception(Common::kSeekError);
 
 		// Read list array
 		std::vector<uint32> rawListArray;
@@ -222,7 +222,7 @@ void GFFFile::readField(Common::SeekableReadStream &gff, GFFField &field, uint32
 
 	// Seek
 	if (!gff.seek(_header.fieldOffset + fieldIndex * 12))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	field.read(gff, _header);
 }
@@ -235,7 +235,7 @@ void GFFFile::readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 
 
 	// Seek
 	if (!gff.seek(_header.fieldIndicesOffset + fieldIndicesIndex))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	// Get the number of structs in the list
 	uint32 count = strct.size();
@@ -500,7 +500,7 @@ inline void GFFField::seekGFFData(Common::SeekableReadStream &gff,
 
 	curPos = gff.pos();
 	if (!gff.seek(header.fieldDataOffset + data))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 }
 
 inline void GFFField::readUint64(Common::SeekableReadStream &gff,
@@ -596,7 +596,7 @@ inline void GFFField::readVoid(Common::SeekableReadStream &gff,
 		_value.typeData = 0;
 		_dataSize = 0;
 
-		throw Common::Exception(kReadError);
+		throw Common::Exception(Common::kReadError);
 	}
 
 	gff.seek(curPos);

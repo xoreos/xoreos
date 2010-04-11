@@ -40,6 +40,10 @@ private:
 
 typedef StackException Exception;
 
+extern const Exception kOpenError;
+extern const Exception kReadError;
+extern const Exception kSeekError;
+
 } // End of namespace Common
 
 #endif // COMMON_ERROR_H

@@ -21,10 +21,6 @@ namespace Aurora {
 
 extern const Common::Exception kGFFFieldTypeError;
 
-extern const Common::Exception kOpenError;
-extern const Common::Exception kReadError;
-extern const Common::Exception kSeekError;
-
 } // End of namespace Aurora
 
 #endif // AURORA_ERROR_H

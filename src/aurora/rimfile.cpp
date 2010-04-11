@@ -60,7 +60,7 @@ void RIMFile::load(Common::SeekableReadStream &rim) {
 	readResList(rim, offResList);
 
 	if (rim.err())
-		throw Common::Exception(kReadError);
+		throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading RIM file");
@@ -71,7 +71,7 @@ void RIMFile::load(Common::SeekableReadStream &rim) {
 
 void RIMFile::readResList(Common::SeekableReadStream &rim, uint32 offset) {
 	if (!rim.seek(offset))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->name   = AuroraFile::readRawString(rim, 16);

@@ -63,7 +63,7 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 		readEntries(ssf, offEntryTable);
 
 		if (ssf.err())
-			throw Common::Exception(kReadError);
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading SSF file");
@@ -74,7 +74,7 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 
 void SSFFile::readEntries(Common::SeekableReadStream &ssf, uint32 offset) {
 	if (!ssf.seek(offset))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	if      (_version == kVersion1)
 		readEntries1(ssf);
@@ -97,7 +97,7 @@ void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 
 	for (uint32 i = 0; i < count; i++) {
 		if (!ssf.seek(offsets[i]))
-			throw Common::Exception(kSeekError);
+			throw Common::Exception(Common::kSeekError);
 
 		_soundSet[i].fileName = AuroraFile::readRawString(ssf, 16);
 		_soundSet[i].strRef   = ssf.readUint32LE();

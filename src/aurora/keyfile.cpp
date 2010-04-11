@@ -73,7 +73,7 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 		readResList(key, offResTable);
 
 		if (key.err())
-			throw Common::Exception(kReadError);
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading KEY file");
@@ -84,7 +84,7 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 
 void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 	if (!key.seek(offset))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	for (BIFList::iterator bif = _bifs.begin(); bif != _bifs.end(); ++bif) {
 		key.skip(4); // File size of the bif
@@ -108,7 +108,7 @@ void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 
 void KEYFile::readResList(Common::SeekableReadStream &key, uint32 offset) {
 	if (!key.seek(offset))
-		throw Common::Exception(kSeekError);
+		throw Common::Exception(Common::kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->name = AuroraFile::readRawString(key, 16);

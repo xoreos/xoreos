@@ -58,4 +58,9 @@ StackException::Stack &StackException::getStack() {
 	return _stack;
 }
 
+
+const Exception kOpenError("Can't open file");
+const Exception kReadError("Read error");
+const Exception kSeekError("Seek error");
+
 } // End of namespace Common

@@ -75,7 +75,7 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 		createHeaderMap();
 
 		if (twoda.err())
-			throw Common::Exception(kReadError);
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading 2DA file");
@@ -191,7 +191,7 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 
 			if (!twoda.seek(offset)) {
 				delete[] offsets;
-				throw Common::Exception(kSeekError);
+				throw Common::Exception(Common::kSeekError);
 			}
 
 			Common::parseToken(twoda, (*_array[i])[j], splitChars, endChars, quoteChars, ignoreChars);
