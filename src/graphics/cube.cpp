@@ -13,15 +13,20 @@
  */
 
 #include "common/util.h"
+#include "common/stream.h"
 
 #include "graphics/cube.h"
+#include "graphics/images/tga.h"
 
 #include "events/events.h"
+#include "events/requests.h"
 
 namespace Graphics {
 
-Cube::Cube() {
+Cube::Cube(Common::SeekableReadStream &tgaTexture) {
 	_lastRotateTime = 0;
+
+	initTexture(tgaTexture);
 
 	addToRenderQueue();
 }
@@ -29,59 +34,90 @@ Cube::Cube() {
 Cube::~Cube() {
 }
 
-void Cube::doCubeSolid() {
-	glBegin(GL_POLYGON);
-		glColor3f(1.00, 0.00, 0.00);
-		glVertex3f(-1.00, -1.00,  1.00);
-		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f( 1.00, -1.00,  1.00);
-		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f( 1.00,  1.00,  1.00);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f(-1.00,  1.00,  1.00);
-	glEnd();
+void Cube::initTexture(Common::SeekableReadStream &tgaTexture) {
+	Events::RequestCreateTextures *createTex = new Events::RequestCreateTextures(1, &_texture);
 
-	glBegin(GL_POLYGON);
-		glColor3f(1.00, 0.00, 0.00);
-		glVertex3f(-1.00, -1.00, -1.00);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f( 1.00, -1.00, -1.00);
-		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f( 1.00,  1.00, -1.00);
-		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f(-1.00,  1.00, -1.00);
-	glEnd();
+	createTex->dispatch();
 
-	glBegin(GL_POLYGON);
-		glColor3f(1.00, 0.00, 0.00);
-		glVertex3f(-1.00, -1.00, -1.00);
-		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f(-1.00, -1.00,  1.00);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f(-1.00,  1.00,  1.00);
-		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f(-1.00,  1.00, -1.00);
-	glEnd();
+	TGA tga(tgaTexture);
 
-	glBegin(GL_POLYGON);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f( 1.00, -1.00, -1.00);
-		glColor3f(0.00, 1.00, 0.00);
-		glVertex3f( 1.00, -1.00,  1.00);
-		glColor3f(0.00, 0.00, 1.00);
-		glVertex3f( 1.00,  1.00,  1.00);
-		glColor3f(1.00, 0.00, 1.00);
-		glVertex3f( 1.00,  1.00, -1.00);
-	glEnd();
+	createTex->waitReply();
+
+	Events::RequestLoadTexture *loadTex = new Events::RequestLoadTexture(_texture, &tga);
+
+	loadTex->dispatchAndWait();
+
+	delete loadTex;
+	delete createTex;
 }
 
-void Cube::doCubeTrans() {
+void Cube::doCubeSolid() {
+	glColor3f(1.00, 1.00, 1.00);
+
 	glBegin(GL_POLYGON);
-		glColor4f(1.00, 1.00, 0.00, 0.75);
+		glTexCoord2f(0.0, 0.0);
 		glVertex3f(-1.00, -1.00,  1.00);
+		glTexCoord2f(1.0, 0.0);
 		glVertex3f( 1.00, -1.00,  1.00);
-		glVertex3f( 1.00, -1.00, -1.00);
+		glTexCoord2f(1.0, 1.0);
+		glVertex3f( 1.00,  1.00,  1.00);
+		glTexCoord2f(0.0, 1.0);
+		glVertex3f(-1.00,  1.00,  1.00);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0.0, 0.0);
 		glVertex3f(-1.00, -1.00, -1.00);
+		glTexCoord2f(1.0, 0.0);
+		glVertex3f( 1.00, -1.00, -1.00);
+		glTexCoord2f(1.0, 1.0);
+		glVertex3f( 1.00,  1.00, -1.00);
+		glTexCoord2f(0.0, 1.0);
+		glVertex3f(-1.00,  1.00, -1.00);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0.0, 0.0);
+		glVertex3f(-1.00, -1.00, -1.00);
+		glTexCoord2f(1.0, 0.0);
+		glVertex3f(-1.00, -1.00,  1.00);
+		glTexCoord2f(1.0, 1.0);
+		glVertex3f(-1.00,  1.00,  1.00);
+		glTexCoord2f(0.0, 1.0);
+		glVertex3f(-1.00,  1.00, -1.00);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0.0, 0.0);
+		glVertex3f( 1.00, -1.00, -1.00);
+		glTexCoord2f(1.0, 0.0);
+		glVertex3f( 1.00, -1.00,  1.00);
+		glTexCoord2f(1.0, 1.0);
+		glVertex3f( 1.00,  1.00,  1.00);
+		glTexCoord2f(0.0, 1.0);
+		glVertex3f( 1.00,  1.00, -1.00);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0.0, 0.0);
+		glVertex3f(-1.00, -1.00,  1.00);
+		glTexCoord2f(1.0, 0.0);
+		glVertex3f( 1.00, -1.00,  1.00);
+		glTexCoord2f(1.0, 1.0);
+		glVertex3f( 1.00, -1.00, -1.00);
+		glTexCoord2f(0.0, 1.0);
+		glVertex3f(-1.00, -1.00, -1.00);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0.0, 0.0);
+		glVertex3f(-1.00,  1.00,  1.00);
+		glTexCoord2f(1.0, 0.0);
+		glVertex3f( 1.00,  1.00,  1.00);
+		glTexCoord2f(1.0, 1.0);
+		glVertex3f( 1.00,  1.00, -1.00);
+		glTexCoord2f(0.0, 1.0);
+		glVertex3f(-1.00,  1.00, -1.00);
 	glEnd();
 }
 
@@ -89,22 +125,6 @@ void Cube::setRotate(float rotate) {
 	glRotatef(-rotate, 1.0, 0.0, 0.0);
 	glRotatef( rotate, 0.0, 1.0, 0.0);
 	glRotatef( rotate, 0.0, 0.0, 1.0);
-}
-
-void Cube::doCubeSolid(uint32 time) {
-	glPushMatrix();
-	setRotate(time * 0.1);
-	glScalef(0.5, 0.5, 0.5);
-	doCubeSolid();
-	glPopMatrix();
-}
-
-void Cube::doCubeTrans(uint32 time) {
-	glPushMatrix();
-	setRotate(time * 0.1);
-	glScalef(0.5, 0.5, 0.5);
-	doCubeTrans();
-	glPopMatrix();
 }
 
 void Cube::render() {
@@ -119,11 +139,14 @@ void Cube::render() {
 
 	glTranslatef(0.0, 0.0, -3.0);
 
-	for (int i = 0; i < 90; i++)
-		doCubeSolid(diffTime + (i * 10));
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, _texture);
 
-	for (int i = 0; i < 90; i++)
-		doCubeTrans(diffTime + (i * 10));
+	glPushMatrix();
+	setRotate(diffTime * 0.1);
+	glScalef(0.5, 0.5, 0.5);
+	doCubeSolid();
+	glPopMatrix();
 }
 
 } // End of namespace Graphics

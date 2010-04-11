@@ -18,8 +18,6 @@
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
-#include "graphics/cube.h"
-
 #include "engines/enginemanager.h"
 #include "engines/engineprobe.h"
 
@@ -69,8 +67,6 @@ const std::string &EngineManager::getGameName(Aurora::GameID gameID) const {
 }
 
 void EngineManager::run(Aurora::GameID gameID, const std::string &directory) const {
-	Graphics::Cube cube;
-
 	// Try to find the first engine able to handle that game ID
 	Engine *engine = 0;
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++)

@@ -16,6 +16,10 @@
 
 #include "common/util.h"
 #include "common/filelist.h"
+#include "common/stream.h"
+
+#include "graphics/images/tga.h"
+#include "graphics/cube.h"
 
 #include "sound/sound.h"
 
@@ -69,9 +73,30 @@ void KotOREngine::run(const std::string &directory) {
 		channel = SoundMan.playSoundFile(wav);
 	}
 
+	Graphics::Cube *cube = 0;
+
+	try {
+		Common::SeekableReadStream *tga = ResMan.getResource("chrome1", Aurora::kFileTypeTGA);
+		if (tga) {
+			status("Found a TGA, using it as a texture for a cube");
+
+			cube = new Graphics::Cube(*tga);
+
+			delete tga;
+		}
+	} catch (Common::Exception &e) {
+		Common::printException(e);
+	}
+
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
+
+	while (!EventMan.quitRequested()) {
+		EventMan.delay(10);
+	}
+
+	delete cube;
 }
 
 void KotOREngine::init() {

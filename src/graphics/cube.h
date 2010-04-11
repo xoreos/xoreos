@@ -15,13 +15,18 @@
 #ifndef GRAPHICS_CUBE_H
 #define GRAPHICS_CUBE_H
 
+#include "graphics/types.h"
 #include "graphics/renderable.h"
+
+namespace Common {
+	class SeekableReadStream;
+}
 
 namespace Graphics {
 
 class Cube : public Renderable {
 public:
-	Cube();
+	Cube(Common::SeekableReadStream &tgaTexture);
 	~Cube();
 
 	void render();
@@ -29,12 +34,12 @@ public:
 private:
 	uint32 _lastRotateTime;
 
+	TextureID _texture;
+
+	void initTexture(Common::SeekableReadStream &tgaTexture);
+
 	void setRotate(float rotate);
 	void doCubeSolid();
-	void doCubeTrans();
-
-	void doCubeSolid(uint32 time);
-	void doCubeTrans(uint32 time);
 };
 
 } // End of namespace Graphics
