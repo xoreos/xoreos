@@ -13,6 +13,7 @@
  */
 
 #include "common/error.h"
+#include "common/util.h"
 
 #include "events/requests.h"
 #include "events/events.h"
@@ -25,6 +26,12 @@ Request::Request() {
 	_event.type = kEventNone;
 
 	_dispatched = false;
+
+	_hasReply = new Common::Condition(_mutexReply);
+}
+
+Request::~Request() {
+	delete _hasReply;
 }
 
 void Request::dispatch() {
@@ -34,31 +41,43 @@ void Request::dispatch() {
 		// We are already waiting for an answer
 		return;
 
-	// Lock the mutex, so that it can be waited upon
-	_mutexReply.lock();
+	// Set state
+	_dispatched = true;
 
 	// And send the event
 	if (!EventMan.pushEvent(_event))
 		throw Common::Exception("Failed dispatching request");
-
-	// Set state
-	_dispatched = true;
 }
 
 void Request::waitReply() {
-	Common::StackLock lock(_mutexUse);
+	// Locking our use mutex, to prevent race conditions
+	_mutexUse.lock();
 
-	if (!_dispatched)
+	if (!_dispatched) {
 		// The request either wasn't yet dispatched, or we've already gotten a reply
+		_mutexUse.unlock();
 		return;
+	}
 
-	// Lock the mutex, to wait for its release
+	// Lock the mutex for the condition
 	_mutexReply.lock();
 
-	// Could lock the mutex, so it was released => We had a reply
+	// We don't need our use mutex now
+	_mutexUse.unlock();
 
-	// No unlock the mutex again, as we're not actually using it
+	// Wait for a reply
+	_hasReply->wait();
+
+	// Got a reply
+
+	// Now we need the use mutex again
+	_mutexUse.lock();
+
+	// Unlock the relocked reply mutex
 	_mutexReply.unlock();
+
+	// And finally give the use mutex free again
+	_mutexUse.unlock();
 }
 
 void Request::dispatchAndWait() {
@@ -69,11 +88,11 @@ void Request::dispatchAndWait() {
 void Request::signalReply() {
 	Common::StackLock lock(_mutexUse);
 
-	// Unlock the mutex, signaling a reply
-	_mutexReply.unlock();
-
 	// Set state
 	_dispatched = false;
+
+	// Signaling a reply
+	_hasReply->signal();
 }
 
 void Request::createEvent(ITCEvent itcType) {

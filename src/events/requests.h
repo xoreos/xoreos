@@ -44,6 +44,7 @@ class Request {
 // To be used by the game thread
 public:
 	Request();
+	~Request();
 
 	/** Dispatch the request. */
 	void dispatch();
@@ -60,7 +61,9 @@ protected:
 
 private:
 	Common::Mutex _mutexUse;   ///< The mutex preventing race condition in the use.
-	Common::Mutex _mutexReply; ///< The mutex signaling a reply.
+
+	Common::Condition *_hasReply;   ///< The condition signaling a reply.
+	Common::Mutex      _mutexReply; ///< The reply condition's mutex.
 
 	Event _event; ///< The actual event.
 
@@ -137,10 +140,10 @@ public:
 	RequestLoadTexture(Graphics::TextureID id, const Graphics::ImageDecoder *image);
 
 private:
-	Graphics::TextureID _id;
+	volatile Graphics::TextureID _id;
 	const byte *_data;
-	int _width, _height;
-	Graphics::PixelFormat _format;
+	volatile int _width, _height;
+	volatile Graphics::PixelFormat _format;
 
 
 // To be used by the event thread
