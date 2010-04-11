@@ -30,6 +30,8 @@ public:
 
 private:
 	SDL_mutex *_mutex;
+
+	friend class Condition;
 };
 
 /** Convenience class that locks a mutex on creation and unlocks it on destruction. */
@@ -40,6 +42,20 @@ public:
 
 private:
 	Mutex *_mutex;
+};
+
+/** A condition. */
+class Condition {
+public:
+	Condition(Mutex &mutex);
+	~Condition();
+
+	void wait();
+	void signal();
+
+private:
+	Mutex *_mutex;
+	SDL_cond *_condition;
 };
 
 } // End of namespace Common

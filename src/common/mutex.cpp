@@ -49,4 +49,23 @@ StackLock::~StackLock() {
 	_mutex->unlock();
 }
 
+
+Condition::Condition(Mutex &mutex) : _mutex(&mutex) {
+	_condition = SDL_CreateCond();
+
+	assert(_condition);
+}
+
+Condition::~Condition() {
+	SDL_DestroyCond(_condition);
+}
+
+void Condition::wait() {
+	SDL_CondWait(_condition, _mutex->_mutex);
+}
+
+void Condition::signal() {
+	SDL_CondSignal(_condition);
+}
+
 } // End of namespace Common
