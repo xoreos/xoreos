@@ -280,11 +280,11 @@ void GraphicsManager::destroyTextures(GLsizei n, const TextureID *ids) {
 	glDeleteTextures(n, ids);
 }
 
-void GraphicsManager::loadTexture(TextureID id, const byte *data, int width, int height, bool hasAlpha) {
+void GraphicsManager::loadTexture(TextureID id, const byte *data, int width, int height, PixelFormat format) {
 	glBindTexture(GL_TEXTURE_2D, id);
 
-	GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, hasAlpha ? 4 : 3, width, height,
-			hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, data);
+	GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, getBytesPerPixel(format),
+			width, height,format, GL_UNSIGNED_BYTE, data);
 
 	if (err != 0)
 		throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));

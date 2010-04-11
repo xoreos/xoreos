@@ -130,8 +130,8 @@ const Graphics::TextureID *RequestDestroyTextures::getIDs() const {
 
 
 RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id, const byte *data,
-		int width, int height, bool hasAlpha) :
-		_id(id), _data(data), _width(width), _height(height), _hasAlpha(hasAlpha) {
+		int width, int height, Graphics::PixelFormat format) :
+		_id(id), _data(data), _width(width), _height(height), _format(format) {
 
 	if ((_width <= 0) || (_height <= 0) || !_data)
 		throw Common::Exception("Invalid image data (%dx%d %d)", _width, _height, _data != 0);
@@ -139,14 +139,16 @@ RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id, const byte *dat
 	createEvent(kITCEventLoadTextures);
 }
 
-RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id, const Graphics::ImageDecoder *image) : _id(id) {
+RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id,
+		const Graphics::ImageDecoder *image) : _id(id) {
+
 	if (!image)
 		throw Common::Exception("image == 0");
 
-	_width    = image->getWidth();
-	_height   = image->getHeight();
-	_data     = image->getData();
-	_hasAlpha = image->hasAlpha();
+	_width  = image->getWidth();
+	_height = image->getHeight();
+	_data   = image->getData();
+	_format = image->getFormat();
 
 	if ((_width <= 0) || (_height <= 0) || !_data)
 		throw Common::Exception("Invalid image data (%dx%d %d)", _width, _height, _data != 0);
@@ -170,8 +172,8 @@ int RequestLoadTextures::getHeight() const {
 	return _height;
 }
 
-bool RequestLoadTextures::hasAlpha() const {
-	return _hasAlpha;
+Graphics::PixelFormat RequestLoadTextures::getFormat() const {
+	return _format;
 }
 
 } // End of namespace Events

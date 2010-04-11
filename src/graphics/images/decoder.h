@@ -17,6 +17,8 @@
 
 #include "common/types.h"
 
+#include "graphics/types.h"
+
 namespace Graphics {
 
 /** A generic interface for image decoders. */
@@ -25,7 +27,7 @@ public:
 	virtual int getWidth() const = 0;
 	virtual int getHeight() const = 0;
 
-	virtual bool hasAlpha() const = 0;
+	virtual PixelFormat getFormat() const = 0;
 
 	virtual const byte *getData() const = 0;
 };

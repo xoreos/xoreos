@@ -22,12 +22,22 @@
 
 namespace Graphics {
 
-void dumpPPM(const std::string &fileName, const byte *data, int width, int height, bool hasAlpha) {
+static void writePixel(Common::DumpFile &file, const byte *data, PixelFormat format) {
+	if (format == kPixelFormatRGB) {
+		file.writeByte(data[0]);
+		file.writeByte(data[1]);
+		file.writeByte(data[2]);
+	} else if (format == kPixelFormatBGR) {
+		file.writeByte(data[2]);
+		file.writeByte(data[1]);
+		file.writeByte(data[0]);
+	} else
+		throw Common::Exception("Unsupported pixel format: %d", (int) format);
+}
+
+void dumpPPM(const std::string &fileName, const byte *data, int width, int height, PixelFormat format) {
 	if ((width <= 0) || (height <= 0) || !data)
 		throw Common::Exception("Invalid image data (%dx%d %d)", width, height, data != 0);
-
-	if (hasAlpha)
-		throw Common::Exception("TODO: Alpha");
 
 	Common::DumpFile file;
 
@@ -41,9 +51,9 @@ void dumpPPM(const std::string &fileName, const byte *data, int width, int heigh
 
 	file.write(header, std::strlen(header));
 
-	uint32 count = width * height * 3;
-	while (count-- > 0)
-		file.writeByte(*data++);
+	uint32 count = width * height;
+	for (uint32 i = 0; i < count; i++, data += 3)
+		writePixel(file, data, format);
 
 	if (file.err())
 		throw Common::Exception("Write error");
@@ -55,7 +65,7 @@ void dumpPPM(const std::string &fileName, const ImageDecoder *image) {
 	if (!image)
 		throw Common::Exception("image == 0");
 
-	dumpPPM(fileName, image->getData(), image->getWidth(), image->getHeight(), image->hasAlpha());
+	dumpPPM(fileName, image->getData(), image->getWidth(), image->getHeight(), image->getFormat());
 }
 
 } // End of namespace Graphics

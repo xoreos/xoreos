@@ -19,11 +19,13 @@
 
 #include "common/types.h"
 
+#include "graphics/types.h"
+
 namespace Graphics {
 
 class ImageDecoder;
 
-void dumpPPM(const std::string &fileName, const byte *data, int width, int height, bool hasAlpha);
+void dumpPPM(const std::string &fileName, const byte *data, int width, int height, PixelFormat format);
 void dumpPPM(const std::string &fileName, const ImageDecoder *image);
 
 } // End of namespace Graphics

@@ -35,7 +35,7 @@ public:
 	int getWidth() const;
 	int getHeight() const;
 
-	bool hasAlpha() const;
+	PixelFormat getFormat() const;
 
 	const byte *getData() const;
 
@@ -43,7 +43,7 @@ private:
 	int _width;
 	int _height;
 
-	bool _hasAlpha;
+	PixelFormat _format;
 
 	byte *_data;
 

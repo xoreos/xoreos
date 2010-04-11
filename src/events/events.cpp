@@ -258,7 +258,7 @@ void EventsManager::requestLoadTextures(void *event) {
 	RequestLoadTextures &request = *((RequestLoadTextures *) event);
 
 	GfxMan.loadTexture(request.getID(), request.getData(),
-			request.getWidth(), request.getHeight(), request.hasAlpha());
+			request.getWidth(), request.getHeight(), request.getFormat());
 }
 
 } // End of namespace Events

@@ -129,14 +129,15 @@ public:
 /** Request the loading of texture image data. */
 class RequestLoadTextures : public Request {
 public:
-	RequestLoadTextures(Graphics::TextureID id, const byte *data, int width, int height, bool hasAlpha = false);
+	RequestLoadTextures(Graphics::TextureID id, const byte *data,
+			int width, int height, Graphics::PixelFormat format);
 	RequestLoadTextures(Graphics::TextureID id, const Graphics::ImageDecoder *image);
 
 private:
 	Graphics::TextureID _id;
 	const byte *_data;
 	int _width, _height;
-	bool _hasAlpha;
+	Graphics::PixelFormat _format;
 
 
 // To be used by the event thread
@@ -145,7 +146,7 @@ public:
 	const byte *getData() const;
 	int getWidth() const;
 	int getHeight() const;
-	bool hasAlpha() const;
+	Graphics::PixelFormat getFormat() const;
 };
 
 } // End of namespace Events

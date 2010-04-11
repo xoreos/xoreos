@@ -23,6 +23,20 @@ namespace Graphics {
 
 typedef GLuint TextureID;
 
+enum PixelFormat {
+	kPixelFormatRGB  = GL_RGB ,
+	kPixelFormatRGBA = GL_RGBA,
+	kPixelFormatBGR  = GL_BGR ,
+	kPixelFormatBGRA = GL_BGRA
+};
+
+inline int getBytesPerPixel(PixelFormat format) {
+	if ((format == kPixelFormatRGBA) || (format == kPixelFormatBGRA))
+		return 4;
+
+	return 3;
+}
+
 } // End of namespace Graphics
 
 #endif // GRAPHICS_TYPES_H

@@ -19,7 +19,7 @@
 
 namespace Graphics {
 
-TGA::TGA() : _width(0), _height(0), _hasAlpha(false), _data(0) {
+TGA::TGA() : _width(0), _height(0), _format(kPixelFormatRGB), _data(0) {
 }
 
 TGA::~TGA() {
@@ -32,7 +32,7 @@ void TGA::clear() {
 	_width  = 0;
 	_height = 0;
 
-	_hasAlpha = false;
+	_format = kPixelFormatRGB;
 
 	_data = 0;
 }
@@ -101,20 +101,21 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 }
 
 void TGA::readData(Common::SeekableReadStream &tga) {
-	_data = new byte[_width * _height * 3];
+	uint32 rowBytes = _width * 3;
 
-	byte *data = _data + (((_height - 1) * _width) * 3);
+	_data = new byte[rowBytes * _height];
+
+	byte *data = _data + ((_height - 1) * rowBytes);
 	for (int i = 0; i < _height; i++) {
 		byte *rowData = data;
 
-		for (int j = 0; j < _width; j++, rowData += 3) {
-			rowData[2] = tga.readByte();
-			rowData[1] = tga.readByte();
-			rowData[0] = tga.readByte();
-		}
+		if (tga.read(rowData, rowBytes) != rowBytes)
+			throw Common::Exception(Common::kReadError);
 
-		data -= _width * 3;
+		data -= rowBytes;
 	}
+
+	_format = kPixelFormatBGR;
 }
 
 int TGA::getWidth() const {
@@ -125,8 +126,8 @@ int TGA::getHeight() const {
 	return _height;
 }
 
-bool TGA::hasAlpha() const {
-	return _hasAlpha;
+PixelFormat TGA::getFormat() const {
+	return _format;
 }
 
 const byte *TGA::getData() const {

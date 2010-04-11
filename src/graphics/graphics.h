@@ -112,7 +112,7 @@ public:
 	/** Destroy textures. */
 	void destroyTextures(GLsizei n, const TextureID *ids);
 	/** Load texture image data. */
-	void loadTexture(TextureID id, const byte *data, int width, int height, bool hasAlpha = false);
+	void loadTexture(TextureID id, const byte *data, int width, int height, PixelFormat format);
 };
 
 } // End of namespace Graphics
