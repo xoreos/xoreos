@@ -154,6 +154,9 @@ RequestLoadTextures::RequestLoadTextures(uint32 id, const byte *data,
 }
 
 RequestLoadTextures::RequestLoadTextures(uint32 id, const Graphics::ImageDecoder *image) : _id(id) {
+	if (!image)
+		throw Common::Exception("image == 0");
+
 	_width    = image->getWidth();
 	_height   = image->getHeight();
 	_data     = image->getData();
