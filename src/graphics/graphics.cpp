@@ -311,8 +311,4 @@ void GraphicsManager::loadTexture(TextureID id, const byte *data, int width, int
 		throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));
 }
 
-void GraphicsManager::loadTexture(TextureID id, const ImageDecoder *image) {
-	loadTexture(id, image->getData(), image->getWidth(), image->getHeight(), image->getFormat());
-}
-
 } // End of namespace Graphics

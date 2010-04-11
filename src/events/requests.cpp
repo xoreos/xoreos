@@ -47,6 +47,10 @@ void Request::dispatch() {
 	// And send the event
 	if (!EventMan.pushEvent(_event))
 		throw Common::Exception("Failed dispatching request");
+
+	if (EventMan.isMainThread())
+		// If we're currently in the main thread, to avoid a dead-lock, process events now
+		EventMan.processEvents();
 }
 
 void Request::waitReply() {

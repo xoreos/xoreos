@@ -59,8 +59,17 @@ void Cube::reloadTextures() {
 		// No need to reload
 		return;
 
-	GfxMan.createTextures(1, &_texture);
-	GfxMan.loadTexture(_texture, _textureImage);
+	Events::RequestCreateTextures *createTex = new Events::RequestCreateTextures(1, &_texture);
+
+	createTex->dispatchAndWait();
+
+	delete createTex;
+
+	Events::RequestLoadTexture *loadTex = new Events::RequestLoadTexture(_texture, _textureImage);
+
+	loadTex->dispatchAndWait();
+
+	delete loadTex;
 }
 
 void Cube::doCubeSolid() {

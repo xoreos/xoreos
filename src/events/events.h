@@ -76,6 +76,9 @@ public:
 	 */
 	char getPressedCharacter(const Event &event);
 
+	/** Are we currently in the main thread? */
+	bool isMainThread() const;
+
 	/** Initialize the main loop. */
 	void initMainLoop();
 	/** Run the main loop. */
@@ -92,10 +95,10 @@ private:
 
 	bool _quitRequested; ///< Was an engine quit requested?
 
+	uint32 _mainThreadID; ///< The ID of the main thread.
+
 	EventQueue _eventQueue;
 	Common::Mutex _eventQueueMutex;
-
-	void processEvents();
 
 	/** Look for quit events. */
 	bool parseEventQuit(const Event &event);
@@ -111,6 +114,10 @@ private:
 	void requestCreateTextures(void *event);
 	void requestDestroyTextures(void *event);
 	void requestLoadTextures(void *event);
+
+
+public:
+	void processEvents();
 };
 
 } // End of namespace Events

@@ -50,6 +50,8 @@ void EventsManager::init() {
 		throw Common::Exception("The GraphicsManager needs to be initialized first");
 
 	_ready = true;
+
+	_mainThreadID = SDL_ThreadID();
 }
 
 void EventsManager::deinit() {
@@ -71,6 +73,10 @@ void EventsManager::reset() {
 
 bool EventsManager::ready() const {
 	return _ready;
+}
+
+bool EventsManager::isMainThread() const {
+	return SDL_ThreadID() == _mainThreadID;
 }
 
 void EventsManager::delay(uint32 ms) {
