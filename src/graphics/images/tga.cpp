@@ -22,6 +22,10 @@ namespace Graphics {
 TGA::TGA() : _width(0), _height(0), _format(kPixelFormatRGB), _data(0) {
 }
 
+TGA::TGA(Common::SeekableReadStream &tga) : _width(0), _height(0), _format(kPixelFormatRGB), _data(0) {
+	load(tga);
+}
+
 TGA::~TGA() {
 	delete[] _data;
 }

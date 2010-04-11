@@ -26,6 +26,7 @@ namespace Graphics {
 class TGA : public ImageDecoder {
 public:
 	TGA();
+	TGA(Common::SeekableReadStream &tga);
 	~TGA();
 
 	void clear();
