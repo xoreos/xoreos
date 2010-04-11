@@ -101,7 +101,7 @@ public:
 	 *
 	 *  @param gff A stream of an GFF file.
 	 */
-	void load(Common::SeekableReadStream &twoda);
+	void load(Common::SeekableReadStream &gff);
 
 	/** Create a StructRange of two StructIterators pointing to the start and end of a GFF's struct.
 	 *

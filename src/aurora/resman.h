@@ -117,7 +117,7 @@ public:
 	/** Does a specific resource exists?
 	 *
 	 *  @param  name The name (ResRef) of the resource.
-	 *  @param  type The resource's types.
+	 *  @param  types The resource's types.
 	 *  @return true if the resource exists, false otherwise.
 	 */
 	bool hasResource(const std::string &name, const std::vector<FileType> &types) const;

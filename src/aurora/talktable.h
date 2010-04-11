@@ -60,7 +60,7 @@ public:
 
 	/** Load a talk table.
 	 *
-	 *  @param stream A stream of talk table.
+	 *  @param tlk A stream of a talk table.
 	 */
 	void load(Common::SeekableReadStream &tlk);
 
