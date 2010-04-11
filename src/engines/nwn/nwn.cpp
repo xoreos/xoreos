@@ -17,6 +17,9 @@
 #include "common/util.h"
 #include "common/filelist.h"
 
+#include "graphics/images/tga.h"
+#include "graphics/images/dumpppm.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -83,6 +86,19 @@ void NWNEngine::run(const std::string &directory) {
 	if (wav) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);
+	}
+
+	Common::SeekableReadStream *tga = ResMan.getResource("gui_pre_bkgnd", Aurora::kFileTypeTGA);
+	if (tga) {
+		dumpStream(*tga, "foo.tga");
+
+		Graphics::TGA tgaFile;
+
+		tgaFile.load(*tga);
+
+		status("Found a TGA: %dx%d", tgaFile.getWidth(), tgaFile.getHeight());
+
+		Graphics::dumpPPM("foo.ppm", &tgaFile);
 	}
 
 	while (!EventMan.quitRequested()) {

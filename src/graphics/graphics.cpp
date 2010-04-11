@@ -272,15 +272,15 @@ void GraphicsManager::changeSize(int width, int height) {
 	setupScene();
 }
 
-void GraphicsManager::createTextures(GLsizei n, GLuint *ids) {
+void GraphicsManager::createTextures(GLsizei n, TextureID *ids) {
 	glGenTextures(n, ids);
 }
 
-void GraphicsManager::destroyTextures(GLsizei n, const GLuint *ids) {
+void GraphicsManager::destroyTextures(GLsizei n, const TextureID *ids) {
 	glDeleteTextures(n, ids);
 }
 
-void GraphicsManager::loadTexture(GLuint id, const byte *data, int width, int height, bool hasAlpha) {
+void GraphicsManager::loadTexture(TextureID id, const byte *data, int width, int height, bool hasAlpha) {
 	glBindTexture(GL_TEXTURE_2D, id);
 
 	GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, hasAlpha ? 4 : 3, width, height,

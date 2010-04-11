@@ -20,6 +20,7 @@
 #include "events/events.h"
 #include "events/requests.h"
 
+#include "graphics/types.h"
 #include "graphics/graphics.h"
 
 #include "sound/sound.h"
@@ -244,30 +245,13 @@ void EventsManager::requestResize(void *event) {
 void EventsManager::requestCreateTextures(void *event) {
 	RequestCreateTextures &request = *((RequestCreateTextures *) event);
 
-	uint32 n = request.getCount();
-
-	GLuint *ids = new GLuint[n];
-
-	GfxMan.createTextures(n, ids);
-
-	for (uint32 i = 0; i < n; i++)
-		request.getIDs()[i] = ids[i];
-
-	delete[] ids;
+	GfxMan.createTextures(request.getCount(), request.getIDs());
 }
 
 void EventsManager::requestDestroyTextures(void *event) {
 	RequestDestroyTextures &request = *((RequestDestroyTextures *) event);
 
-	uint32 n = request.getCount();
-
-	GLuint *ids = new GLuint[n];
-	for (uint32 i = 0; i < n; i++)
-		ids[i] = request.getIDs()[i];
-
-	GfxMan.destroyTextures(n, ids);
-
-	delete[] ids;
+	GfxMan.destroyTextures(request.getCount(), request.getIDs());
 }
 
 void EventsManager::requestLoadTextures(void *event) {

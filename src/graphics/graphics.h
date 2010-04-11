@@ -18,9 +18,7 @@
 #include <string>
 #include <list>
 
-#include <SDL.h>
-
-#include "graphics/glew/glew.h"
+#include "graphics/types.h"
 
 #include "common/types.h"
 #include "common/singleton.h"
@@ -110,11 +108,11 @@ public:
 
 	// Textures
 	/** Create textures. */
-	void createTextures(GLsizei n, GLuint *ids);
+	void createTextures(GLsizei n, TextureID *ids);
 	/** Destroy textures. */
-	void destroyTextures(GLsizei n, const GLuint *ids);
+	void destroyTextures(GLsizei n, const TextureID *ids);
 	/** Load texture image data. */
-	void loadTexture(GLuint id, const byte *data, int width, int height, bool hasAlpha = false);
+	void loadTexture(TextureID id, const byte *data, int width, int height, bool hasAlpha = false);
 };
 
 } // End of namespace Graphics

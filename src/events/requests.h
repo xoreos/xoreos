@@ -17,6 +17,8 @@
 
 #include "events/types.h"
 
+#include "graphics/types.h"
+
 #ifndef EVENTS_REQUESTS_H
 #define EVENTS_REQUESTS_H
 
@@ -93,49 +95,45 @@ public:
 /** Request the creation of textures. */
 class RequestCreateTextures : public Request {
 public:
-	RequestCreateTextures(uint32 n);
-	~RequestCreateTextures();
-
-	const uint32 *getIDs() const;
+	RequestCreateTextures(uint32 n, Graphics::TextureID *ids);
 
 private:
 	uint32 _count;
-	uint32 *_ids;
+	Graphics::TextureID *_ids;
 
 
 // To be used by the event thread
 public:
 	uint32 getCount() const;
 
-	uint32 *getIDs();
+	Graphics::TextureID *getIDs();
 };
 
 /** Request the destruction of textures. */
 class RequestDestroyTextures : public Request {
 public:
-	RequestDestroyTextures(uint32 n, uint32 *ids);
-	~RequestDestroyTextures();
+	RequestDestroyTextures(uint32 n, const Graphics::TextureID *ids);
 
 private:
 	uint32 _count;
-	uint32 *_ids;
+	const Graphics::TextureID *_ids;
 
 
 // To be used by the event thread
 public:
 	uint32 getCount() const;
 
-	const uint32 *getIDs() const;
+	const Graphics::TextureID *getIDs() const;
 };
 
 /** Request the loading of texture image data. */
 class RequestLoadTextures : public Request {
 public:
-	RequestLoadTextures(uint32 id, const byte *data, int width, int height, bool hasAlpha = false);
-	RequestLoadTextures(uint32 id, const Graphics::ImageDecoder *image);
+	RequestLoadTextures(Graphics::TextureID id, const byte *data, int width, int height, bool hasAlpha = false);
+	RequestLoadTextures(Graphics::TextureID id, const Graphics::ImageDecoder *image);
 
 private:
-	uint32 _id;
+	Graphics::TextureID _id;
 	const byte *_data;
 	int _width, _height;
 	bool _hasAlpha;
@@ -143,7 +141,7 @@ private:
 
 // To be used by the event thread
 public:
-	uint32 getID() const;
+	Graphics::TextureID getID() const;
 	const byte *getData() const;
 	int getWidth() const;
 	int getHeight() const;

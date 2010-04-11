@@ -99,51 +99,37 @@ int RequestResize::getHeight() const {
 }
 
 
-RequestCreateTextures::RequestCreateTextures(uint32 n) : _count(n) {
-	_ids = new uint32[_count];
+RequestCreateTextures::RequestCreateTextures(uint32 n, Graphics::TextureID *ids) :
+	_count(n), _ids(ids) {
 
 	createEvent(kITCEventCreateTextures);
-}
-
-RequestCreateTextures::~RequestCreateTextures() {
-	delete[] _ids;
-}
-
-const uint32 *RequestCreateTextures::getIDs() const {
-	return _ids;
 }
 
 uint32 RequestCreateTextures::getCount() const {
 	return _count;
 }
 
-uint32 *RequestCreateTextures::getIDs() {
+Graphics::TextureID *RequestCreateTextures::getIDs() {
 	return _ids;
 }
 
 
-RequestDestroyTextures::RequestDestroyTextures(uint32 n, uint32 *ids) : _count(n) {
-	_ids = new uint32[_count];
-
-	memcpy(_ids, ids, _count * sizeof(uint32));
+RequestDestroyTextures::RequestDestroyTextures(uint32 n, const Graphics::TextureID *ids) :
+	_count(n) , _ids(ids) {
 
 	createEvent(kITCEventDestroyTextures);
-}
-
-RequestDestroyTextures::~RequestDestroyTextures() {
-	delete[] _ids;
 }
 
 uint32 RequestDestroyTextures::getCount() const {
 	return _count;
 }
 
-const uint32 *RequestDestroyTextures::getIDs() const {
+const Graphics::TextureID *RequestDestroyTextures::getIDs() const {
 	return _ids;
 }
 
 
-RequestLoadTextures::RequestLoadTextures(uint32 id, const byte *data,
+RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id, const byte *data,
 		int width, int height, bool hasAlpha) :
 		_id(id), _data(data), _width(width), _height(height), _hasAlpha(hasAlpha) {
 
@@ -153,7 +139,7 @@ RequestLoadTextures::RequestLoadTextures(uint32 id, const byte *data,
 	createEvent(kITCEventLoadTextures);
 }
 
-RequestLoadTextures::RequestLoadTextures(uint32 id, const Graphics::ImageDecoder *image) : _id(id) {
+RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id, const Graphics::ImageDecoder *image) : _id(id) {
 	if (!image)
 		throw Common::Exception("image == 0");
 
@@ -168,7 +154,7 @@ RequestLoadTextures::RequestLoadTextures(uint32 id, const Graphics::ImageDecoder
 	createEvent(kITCEventLoadTextures);
 }
 
-uint32 RequestLoadTextures::getID() const {
+Graphics::TextureID RequestLoadTextures::getID() const {
 	return _id;
 }
 

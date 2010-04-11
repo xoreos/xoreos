@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libgraphics.la
 
-noinst_HEADERS = glew/glew.h \
+noinst_HEADERS = types.h \
+                 glew/glew.h \
                  glew/glxew.h \
                  glew/wglew.h \
                  images/decoder.h \
