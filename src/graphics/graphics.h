@@ -29,6 +29,8 @@ namespace Graphics {
 class Renderable;
 class FPSCounter;
 
+class ImageDecoder;
+
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager> {
 public:
@@ -114,6 +116,8 @@ public:
 	void destroyTextures(GLsizei n, const TextureID *ids);
 	/** Load texture image data. */
 	void loadTexture(TextureID id, const byte *data, int width, int height, PixelFormat format);
+	/** Load texture image data. */
+	void loadTexture(TextureID id, const ImageDecoder *image);
 };
 
 } // End of namespace Graphics
