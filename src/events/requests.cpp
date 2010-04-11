@@ -147,6 +147,9 @@ RequestLoadTextures::RequestLoadTextures(uint32 id, const byte *data,
 		int width, int height, bool hasAlpha) :
 		_id(id), _data(data), _width(width), _height(height), _hasAlpha(hasAlpha) {
 
+	if ((_width <= 0) || (_height <= 0) || !_data)
+		throw Common::Exception("Invalid image data (%dx%d %d)", _width, _height, _data != 0);
+
 	createEvent(kITCEventLoadTextures);
 }
 
@@ -155,6 +158,9 @@ RequestLoadTextures::RequestLoadTextures(uint32 id, const Graphics::ImageDecoder
 	_height   = image->getHeight();
 	_data     = image->getData();
 	_hasAlpha = image->hasAlpha();
+
+	if ((_width <= 0) || (_height <= 0) || !_data)
+		throw Common::Exception("Invalid image data (%dx%d %d)", _width, _height, _data != 0);
 
 	createEvent(kITCEventLoadTextures);
 }
