@@ -272,4 +272,22 @@ void GraphicsManager::changeSize(int width, int height) {
 	setupScene();
 }
 
+void GraphicsManager::createTextures(GLsizei n, GLuint *ids) {
+	glGenTextures(n, ids);
+}
+
+void GraphicsManager::destroyTextures(GLsizei n, const GLuint *ids) {
+	glDeleteTextures(n, ids);
+}
+
+void GraphicsManager::loadTexture(GLuint id, const byte *data, int width, int height, bool hasAlpha) {
+	glBindTexture(GL_TEXTURE_2D, id);
+
+	GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, hasAlpha ? 4 : 3, width, height,
+			hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, data);
+
+	if (err != 0)
+		throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));
+}
+
 } // End of namespace Graphics

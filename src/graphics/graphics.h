@@ -100,15 +100,21 @@ public:
 
 	/** Toggle between full screen and windowed modes. */
 	void toggleFullScreen();
-
 	/** Set full screen/windowed mode. */
 	void setFullScreen(bool fullScreen);
-
 	/** Change the window size. */
 	void changeSize(int width, int height);
 
 	/** Toggle mouse grab */
 	void toggleMouseGrab();
+
+	// Textures
+	/** Create textures. */
+	void createTextures(GLsizei n, GLuint *ids);
+	/** Destroy textures. */
+	void destroyTextures(GLsizei n, const GLuint *ids);
+	/** Load texture image data. */
+	void loadTexture(GLuint id, const byte *data, int width, int height, bool hasAlpha = false);
 };
 
 } // End of namespace Graphics

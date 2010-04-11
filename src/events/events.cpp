@@ -31,7 +31,10 @@ namespace Events {
 const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX] = {
 	&EventsManager::requestFullscreen,
 	&EventsManager::requestWindowed,
-	&EventsManager::requerstResize
+	&EventsManager::requestResize,
+	&EventsManager::requestCreateTextures,
+	&EventsManager::requestDestroyTextures,
+	&EventsManager::requestLoadTextures
 };
 
 
@@ -232,10 +235,46 @@ void EventsManager::requestWindowed(void *event) {
 	GfxMan.setFullScreen(false);
 }
 
-void EventsManager::requerstResize(void *event) {
+void EventsManager::requestResize(void *event) {
 	RequestResize &request = *((RequestResize *) event);
 
 	GfxMan.changeSize(request.getWidth(), request.getHeight());
+}
+
+void EventsManager::requestCreateTextures(void *event) {
+	RequestCreateTextures &request = *((RequestCreateTextures *) event);
+
+	uint32 n = request.getCount();
+
+	GLuint *ids = new GLuint[n];
+
+	GfxMan.createTextures(n, ids);
+
+	for (uint32 i = 0; i < n; i++)
+		request.getIDs()[i] = ids[i];
+
+	delete[] ids;
+}
+
+void EventsManager::requestDestroyTextures(void *event) {
+	RequestDestroyTextures &request = *((RequestDestroyTextures *) event);
+
+	uint32 n = request.getCount();
+
+	GLuint *ids = new GLuint[n];
+	for (uint32 i = 0; i < n; i++)
+		ids[i] = request.getIDs()[i];
+
+	GfxMan.destroyTextures(n, ids);
+
+	delete[] ids;
+}
+
+void EventsManager::requestLoadTextures(void *event) {
+	RequestLoadTextures &request = *((RequestLoadTextures *) event);
+
+	GfxMan.loadTexture(request.getID(), request.getData(),
+			request.getWidth(), request.getHeight(), request.hasAlpha());
 }
 
 } // End of namespace Events

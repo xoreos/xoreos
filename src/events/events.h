@@ -107,7 +107,10 @@ private:
 	// Request handler
 	void requestFullscreen(void *event);
 	void requestWindowed(void *event);
-	void requerstResize(void *event);
+	void requestResize(void *event);
+	void requestCreateTextures(void *event);
+	void requestDestroyTextures(void *event);
+	void requestLoadTextures(void *event);
 };
 
 } // End of namespace Events

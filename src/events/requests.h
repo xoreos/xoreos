@@ -12,6 +12,7 @@
  *  Inter-thread request events.
  */
 
+#include "common/types.h"
 #include "common/mutex.h"
 
 #include "events/types.h"
@@ -70,7 +71,7 @@ public:
 };
 
 /** Requesting display size change. */
-class RequestResize: public Request {
+class RequestResize : public Request {
 public:
 	RequestResize(int width, int height);
 
@@ -83,6 +84,65 @@ private:
 public:
 	int getWidth()  const;
 	int getHeight() const;
+};
+
+/** Request the creation of textures. */
+class RequestCreateTextures : public Request {
+public:
+	RequestCreateTextures(uint32 n);
+	~RequestCreateTextures();
+
+	const uint32 *getIDs() const;
+
+private:
+	uint32 _count;
+	uint32 *_ids;
+
+
+// To be used by the event thread
+public:
+	uint32 getCount() const;
+
+	uint32 *getIDs();
+};
+
+/** Request the destruction of textures. */
+class RequestDestroyTextures : public Request {
+public:
+	RequestDestroyTextures(uint32 n, uint32 *ids);
+	~RequestDestroyTextures();
+
+private:
+	uint32 _count;
+	uint32 *_ids;
+
+
+// To be used by the event thread
+public:
+	uint32 getCount() const;
+
+	const uint32 *getIDs() const;
+};
+
+/** Request the loading of texture image data. */
+class RequestLoadTextures : public Request {
+public:
+	RequestLoadTextures(uint32 id, const byte *data, int width, int height, bool hasAlpha = false);
+
+private:
+	uint32 _id;
+	const byte *_data;
+	int _width, _height;
+	bool _hasAlpha;
+
+
+// To be used by the event thread
+public:
+	uint32 getID() const;
+	const byte *getData() const;
+	int getWidth() const;
+	int getHeight() const;
+	bool hasAlpha() const;
 };
 
 } // End of namespace Events
