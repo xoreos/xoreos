@@ -101,7 +101,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 }
 
 void TGA::readData(Common::SeekableReadStream &tga) {
-	uint32 dataLength = _width * _height;
+	uint32 dataLength = _width * _height * 3;
 
 	_data = new byte[dataLength];
 
