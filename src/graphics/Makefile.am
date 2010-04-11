@@ -7,6 +7,7 @@ noinst_HEADERS = glew/glew.h \
                  glew/wglew.h \
                  images/decoder.h \
                  images/tga.h \
+                 images/dumpppm.h \
                  graphics.h \
                  fpscounter.h \
                  renderable.h \
@@ -14,6 +15,7 @@ noinst_HEADERS = glew/glew.h \
 
 libgraphics_la_SOURCES = glew/glew.c \
                          images/tga.cpp \
+                         images/dumpppm.cpp \
                          graphics.cpp \
                          fpscounter.cpp \
                          renderable.cpp \
