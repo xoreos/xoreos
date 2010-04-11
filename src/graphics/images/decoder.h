@@ -24,6 +24,9 @@ namespace Graphics {
 /** A generic interface for image decoders. */
 class ImageDecoder {
 public:
+	ImageDecoder() { }
+	virtual ~ImageDecoder() { }
+
 	virtual int getWidth() const = 0;
 	virtual int getHeight() const = 0;
 
