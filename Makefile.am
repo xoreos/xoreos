@@ -4,6 +4,14 @@ EXTRA_DIST = FAQ TODO
 
 SUBDIRS = src
 
+doxygen:
+	doxygen
+
+doxygen-clean:
+	rm -rf doc/doxygen/html/
+	rm -rf doc/doxygen/latex/
+	rm -rf doc/doxygen/man/
+
 dnl TODO: Make a static target for this (would involve changing sdl-config to use static libs, static versions of SDL_sound and SDL_mixer, and creating a framework folder for OpenGL).
 BUNDLE_NAME = Eos.app
 bundle: all
