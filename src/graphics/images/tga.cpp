@@ -71,8 +71,10 @@ void TGA::load(Common::SeekableReadStream &tga) {
 }
 
 void TGA::readHeader(Common::SeekableReadStream &tga) {
-	if (!tga.seek(1))
+	if (!tga.seek(0))
 		throw Common::Exception(Common::kSeekError);
+
+	uint32 idLength = tga.readByte();
 
 	if (tga.readByte() != 0)
 		throw Common::Exception("Unsupported feature: Color map");
@@ -94,6 +96,8 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	byte imageDescriptor = tga.readByte();
 	if (imageDescriptor != 0)
 		throw Common::Exception("Unsupported image descriptor: 0x%02X", imageDescriptor);
+
+	tga.skip(idLength);
 }
 
 void TGA::readData(Common::SeekableReadStream &tga) {
