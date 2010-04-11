@@ -25,13 +25,10 @@ namespace Graphics {
 
 class TGA : public ImageDecoder {
 public:
-	TGA();
-	TGA(Common::SeekableReadStream &tga);
+	TGA(Common::SeekableReadStream *tga);
 	~TGA();
 
-	void clear();
-
-	void load(Common::SeekableReadStream &tga);
+	void load();
 
 	int getWidth() const;
 	int getHeight() const;
@@ -41,6 +38,8 @@ public:
 	const byte *getData() const;
 
 private:
+	Common::SeekableReadStream *_tga;
+
 	int _width;
 	int _height;
 

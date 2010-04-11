@@ -19,52 +19,39 @@
 
 namespace Graphics {
 
-TGA::TGA() : _width(0), _height(0), _format(kPixelFormatRGB), _data(0) {
-}
-
-TGA::TGA(Common::SeekableReadStream &tga) : _width(0), _height(0), _format(kPixelFormatRGB), _data(0) {
-	load(tga);
+TGA::TGA(Common::SeekableReadStream *tga) : _tga(tga), _width(0), _height(0), _format(kPixelFormatRGB), _data(0) {
+	assert(_tga);
 }
 
 TGA::~TGA() {
 	delete[] _data;
 }
 
-void TGA::clear() {
-	delete[] _data;
+void TGA::load() {
+	if (!_tga)
+		return;
 
-	_width  = 0;
-	_height = 0;
-
-	_format = kPixelFormatRGB;
-
-	_data = 0;
-}
-
-void TGA::load(Common::SeekableReadStream &tga) {
-	clear();
-
-	uint32 size = tga.size();
-	if (tga.size() < 26)
+	uint32 size = _tga->size();
+	if (_tga->size() < 26)
 		throw Common::Exception("Not a TGA file");
 
 	try {
 
-		if (!tga.seek(size - 18))
+		if (!_tga->seek(size - 18))
 			throw Common::Exception(Common::kSeekError);
 
 		char buf[17];
 
-		if (tga.read(buf, 17) != 17)
+		if (_tga->read(buf, 17) != 17)
 			throw Common::Exception(Common::kReadError);
 
 		if (strncmp(buf, "TRUEVISION-XFILE.", 17))
 			throw Common::Exception("Signature not found");
 
-		readHeader(tga);
-		readData(tga);
+		readHeader(*_tga);
+		readData(*_tga);
 
-		if (tga.err())
+		if (_tga->err())
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
@@ -72,6 +59,8 @@ void TGA::load(Common::SeekableReadStream &tga) {
 		throw e;
 	}
 
+	delete _tga;
+	_tga = 0;
 }
 
 void TGA::readHeader(Common::SeekableReadStream &tga) {

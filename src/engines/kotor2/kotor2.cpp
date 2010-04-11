@@ -80,9 +80,9 @@ void KotOR2Engine::run(const std::string &directory) {
 		if (tga) {
 			status("Found a TGA, using it as a texture for a cube");
 
-			cube = new Graphics::Cube(*tga);
+			Graphics::ImageDecoder *texture = new Graphics::TGA(tga);
 
-			delete tga;
+			cube = new Graphics::Cube(texture);
 		}
 	} catch (Common::Exception &e) {
 		Common::printException(e);

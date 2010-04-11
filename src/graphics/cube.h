@@ -28,7 +28,7 @@ class ImageDecoder;
 
 class Cube : public Renderable {
 public:
-	Cube(Common::SeekableReadStream &tgaTexture);
+	Cube(ImageDecoder *texture);
 	~Cube();
 
 	void reloadTextures();

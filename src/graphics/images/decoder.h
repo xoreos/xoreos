@@ -27,6 +27,8 @@ public:
 	ImageDecoder() { }
 	virtual ~ImageDecoder() { }
 
+	virtual void load() = 0;
+
 	virtual int getWidth() const = 0;
 	virtual int getHeight() const = 0;
 

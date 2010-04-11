@@ -23,50 +23,36 @@
 
 namespace Graphics {
 
-Cube::Cube(Common::SeekableReadStream &tgaTexture) {
+Cube::Cube(ImageDecoder *texture) : _textureImage(texture) {
 	_lastRotateTime = 0;
 
-	_textureImage = 0;
+	_texture = 0xFFFFFFFF;
 
-	initTexture(tgaTexture);
+	reloadTextures();
 
 	addToRenderQueue();
 }
 
 Cube::~Cube() {
+	Events::RequestDestroyTextures *destroyTex = new Events::RequestDestroyTextures(1, &_texture);
+
+	destroyTex->dispatchAndWait();
+
+	delete destroyTex;
 	delete _textureImage;
 }
 
-void Cube::initTexture(Common::SeekableReadStream &tgaTexture) {
+void Cube::reloadTextures() {
 	Events::RequestCreateTextures *createTex = new Events::RequestCreateTextures(1, &_texture);
-
 	createTex->dispatch();
 
-	_textureImage = new TGA(tgaTexture);
+	_textureImage->load();
 
 	createTex->waitReply();
 
-	Events::RequestLoadTexture *loadTex = new Events::RequestLoadTexture(_texture, _textureImage);
-
-	loadTex->dispatchAndWait();
-
-	delete loadTex;
-	delete createTex;
-}
-
-void Cube::reloadTextures() {
-	if (glIsTexture(_texture))
-		// No need to reload
-		return;
-
-	Events::RequestCreateTextures *createTex = new Events::RequestCreateTextures(1, &_texture);
-
-	createTex->dispatchAndWait();
-
 	delete createTex;
 
 	Events::RequestLoadTexture *loadTex = new Events::RequestLoadTexture(_texture, _textureImage);
-
 	loadTex->dispatchAndWait();
 
 	delete loadTex;
