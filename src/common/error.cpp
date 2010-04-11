@@ -32,8 +32,7 @@ StackException::StackException(const char *s, ...) {
 }
 
 StackException::StackException(const StackException &e) {
-	if (!e._stack.empty())
-		_stack.push(e._stack.top());
+	_stack = e._stack;
 }
 
 void StackException::add(const char *s, ...) {
