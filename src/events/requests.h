@@ -20,6 +20,10 @@
 #ifndef EVENTS_REQUESTS_H
 #define EVENTS_REQUESTS_H
 
+namespace Graphics {
+	class ImageDecoder;
+}
+
 namespace Events {
 
 /** Base class for request events.
@@ -128,6 +132,7 @@ public:
 class RequestLoadTextures : public Request {
 public:
 	RequestLoadTextures(uint32 id, const byte *data, int width, int height, bool hasAlpha = false);
+	RequestLoadTextures(uint32 id, const Graphics::ImageDecoder *image);
 
 private:
 	uint32 _id;

@@ -17,6 +17,8 @@
 #include "events/requests.h"
 #include "events/events.h"
 
+#include "graphics/images/decoder.h"
+
 namespace Events {
 
 Request::Request() {
@@ -144,6 +146,15 @@ const uint32 *RequestDestroyTextures::getIDs() const {
 RequestLoadTextures::RequestLoadTextures(uint32 id, const byte *data,
 		int width, int height, bool hasAlpha) :
 		_id(id), _data(data), _width(width), _height(height), _hasAlpha(hasAlpha) {
+
+	createEvent(kITCEventLoadTextures);
+}
+
+RequestLoadTextures::RequestLoadTextures(uint32 id, const Graphics::ImageDecoder *image) : _id(id) {
+	_width    = image->getWidth();
+	_height   = image->getHeight();
+	_data     = image->getData();
+	_hasAlpha = image->hasAlpha();
 
 	createEvent(kITCEventLoadTextures);
 }
