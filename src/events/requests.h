@@ -51,6 +51,9 @@ public:
 	/** Wait until the request has been answered. */
 	void waitReply();
 
+	/** Dispatch the event and wait for a reply. */
+	void dispatchAndWait();
+
 protected:
 	/** Create the event for this request. */
 	void createEvent(ITCEvent itcType);

@@ -61,6 +61,11 @@ void Request::waitReply() {
 	_mutexReply.unlock();
 }
 
+void Request::dispatchAndWait() {
+	dispatch();
+	waitReply();
+}
+
 void Request::signalReply() {
 	Common::StackLock lock(_mutexUse);
 
