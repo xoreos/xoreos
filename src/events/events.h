@@ -85,6 +85,7 @@ private:
 	typedef std::list<Event> EventQueue;
 	typedef void (EventsManager::*RequestHandler)(void *);
 
+	/** Pointer to the request handler. */
 	static const RequestHandler _requestHandler[kITCEventMAX];
 
 	bool _ready; ///< Was the events subsystem successfully initialized?
@@ -103,6 +104,7 @@ private:
 	/** Look for inter-thread communication. */
 	bool parseITC(const Event &event);
 
+	// Request handler
 	void requestFullscreen(void *event);
 	void requestWindowed(void *event);
 	void requerstResize(void *event);
