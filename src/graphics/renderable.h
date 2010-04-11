@@ -24,6 +24,9 @@ public:
 	Renderable();
 	virtual ~Renderable();
 
+	/** Signal the object that it needs to reload its textures. */
+	virtual void reloadTextures() = 0;
+
 	/** Render the object. */
 	virtual void render() = 0;
 
@@ -31,6 +34,8 @@ public:
 	void kickedOutOfRenderQueue();
 
 protected:
+	volatile bool _justAddedToQueue; ///< Was the object just added to the queue?
+
 	/** Add the object to the render queue. */
 	void addToRenderQueue();
 	/** Remove the object from the render queue. */

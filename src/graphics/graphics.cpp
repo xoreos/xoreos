@@ -202,6 +202,13 @@ void GraphicsManager::perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear
 	glFrustum(-halfWidth, halfWidth, -halfHeight, halfHeight, zNear, zFar);
 }
 
+void GraphicsManager::reloadTextures() {
+	Common::StackLock lock(_queueMutex);
+
+	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it)
+		(*it)->reloadTextures();
+}
+
 void GraphicsManager::toggleFullScreen() {
 	setFullScreen(!_fullScreen);
 }
@@ -234,6 +241,9 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 
 	// Reintroduce OpenGL to the surface
 	setupScene();
+
+	// Reload the objects' textures.
+	reloadTextures();
 }
 
 void GraphicsManager::toggleMouseGrab() {
@@ -270,6 +280,9 @@ void GraphicsManager::changeSize(int width, int height) {
 
 	// Reintroduce OpenGL to the surface
 	setupScene();
+
+	// Reload the objects' textures.
+	reloadTextures();
 }
 
 void GraphicsManager::createTextures(GLsizei n, TextureID *ids) {

@@ -24,10 +24,14 @@ namespace Common {
 
 namespace Graphics {
 
+class ImageDecoder;
+
 class Cube : public Renderable {
 public:
 	Cube(Common::SeekableReadStream &tgaTexture);
 	~Cube();
+
+	void reloadTextures();
 
 	void render();
 
@@ -35,6 +39,8 @@ private:
 	uint32 _lastRotateTime;
 
 	TextureID _texture;
+
+	ImageDecoder *_textureImage;
 
 	void initTexture(Common::SeekableReadStream &tgaTexture);
 

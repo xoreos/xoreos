@@ -26,12 +26,15 @@ namespace Graphics {
 Cube::Cube(Common::SeekableReadStream &tgaTexture) {
 	_lastRotateTime = 0;
 
+	_textureImage = 0;
+
 	initTexture(tgaTexture);
 
 	addToRenderQueue();
 }
 
 Cube::~Cube() {
+	delete _textureImage;
 }
 
 void Cube::initTexture(Common::SeekableReadStream &tgaTexture) {
@@ -39,16 +42,34 @@ void Cube::initTexture(Common::SeekableReadStream &tgaTexture) {
 
 	createTex->dispatch();
 
-	TGA tga(tgaTexture);
+	_textureImage = new TGA(tgaTexture);
 
 	createTex->waitReply();
 
-	Events::RequestLoadTexture *loadTex = new Events::RequestLoadTexture(_texture, &tga);
+	Events::RequestLoadTexture *loadTex = new Events::RequestLoadTexture(_texture, _textureImage);
 
 	loadTex->dispatchAndWait();
 
 	delete loadTex;
 	delete createTex;
+}
+
+void Cube::reloadTextures() {
+	if (glIsTexture(_texture))
+		// No need to reload
+		return;
+
+	Events::RequestCreateTextures *createTex = new Events::RequestCreateTextures(1, &_texture);
+
+	createTex->dispatchAndWait();
+
+	delete createTex;
+
+	Events::RequestLoadTexture *loadTex = new Events::RequestLoadTexture(_texture, _textureImage);
+
+	loadTex->dispatchAndWait();
+
+	delete loadTex;
 }
 
 void Cube::doCubeSolid() {
@@ -128,6 +149,12 @@ void Cube::setRotate(float rotate) {
 }
 
 void Cube::render() {
+	// If we were just added to the queue, look if we need to reload our textures
+	if (_justAddedToQueue) {
+		reloadTextures();
+		_justAddedToQueue = false;
+	}
+
 	if (_lastRotateTime == 0)
 		_lastRotateTime = EventMan.getTimestamp();
 

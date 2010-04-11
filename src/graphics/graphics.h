@@ -85,6 +85,7 @@ private:
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
 
+	void reloadTextures();
 
 // Thread-unsafe functions. Should only ever be called from the main thread.
 public:
