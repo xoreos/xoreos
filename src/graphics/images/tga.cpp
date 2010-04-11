@@ -94,18 +94,28 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	_height = tga.readUint16LE();
 
 	byte pixelDepth = tga.readByte();
-	if (pixelDepth != 24)
+
+	if      (pixelDepth == 24)
+		_format = kPixelFormatBGR;
+	else if (pixelDepth == 32)
+		_format = kPixelFormatBGRA;
+	else
 		throw Common::Exception("Unsupported pixel depth: %d", pixelDepth);
 
 	byte imageDescriptor = tga.readByte();
-	if (imageDescriptor != 0)
+	if (((pixelDepth == 24) && (imageDescriptor != 0)) ||
+	    ((pixelDepth == 32) && (imageDescriptor != 8)))
 		throw Common::Exception("Unsupported image descriptor: 0x%02X", imageDescriptor);
 
 	tga.skip(idLength);
 }
 
 void TGA::readData(Common::SeekableReadStream &tga) {
-	uint32 rowBytes = _width * 3;
+	uint32 rowBytes = _width;
+	if      (_format == kPixelFormatBGR)
+		rowBytes *= 3;
+	else if (_format == kPixelFormatBGRA)
+		rowBytes *= 4;
 
 	_data = new byte[rowBytes * _height];
 
@@ -118,8 +128,6 @@ void TGA::readData(Common::SeekableReadStream &tga) {
 
 		data -= rowBytes;
 	}
-
-	_format = kPixelFormatBGR;
 }
 
 int TGA::getWidth() const {
