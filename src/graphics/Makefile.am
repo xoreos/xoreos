@@ -5,12 +5,15 @@ noinst_LTLIBRARIES = libgraphics.la
 noinst_HEADERS = glew/glew.h \
                  glew/glxew.h \
                  glew/wglew.h \
+                 images/decoder.h \
+                 images/tga.h \
                  graphics.h \
                  fpscounter.h \
                  renderable.h \
                  cube.h
 
 libgraphics_la_SOURCES = glew/glew.c \
+                         images/tga.cpp \
                          graphics.cpp \
                          fpscounter.cpp \
                          renderable.cpp \
