@@ -101,12 +101,20 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 }
 
 void TGA::readData(Common::SeekableReadStream &tga) {
-	uint32 dataLength = _width * _height * 3;
+	_data = new byte[_width * _height * 3];
 
-	_data = new byte[dataLength];
+	byte *data = _data + (((_height - 1) * _width) * 3);
+	for (int i = 0; i < _height; i++) {
+		byte *rowData = data;
 
-	if (tga.read(_data, dataLength) != dataLength)
-		throw Common::Exception(Common::kReadError);
+		for (int j = 0; j < _width; j++, rowData += 3) {
+			rowData[2] = tga.readByte();
+			rowData[1] = tga.readByte();
+			rowData[0] = tga.readByte();
+		}
+
+		data -= _width * 3;
+	}
 }
 
 int TGA::getWidth() const {
