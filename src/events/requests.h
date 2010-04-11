@@ -21,7 +21,18 @@
 
 namespace Events {
 
-/** Base class for request events. */
+/** Base class for request events.
+ *
+ *  Requests are the main scheme of communication between the game thread and
+ *  the main thread, which handles all low-level event and graphics operations.
+ *
+ *  The idea behind requests is that, as soon as the game thread knows exactly
+ *  what it needs, it creates and dispatches a specific request. Then it does
+ *  other things, until it needs what it requested for, issuing a waitReply on
+ *  the request. That way, the actual fulfilling of the request can happen
+ *  asynchronously, without it unnecessarily blocking further execution of the
+ *  game thread.
+ */
 class Request {
 // To be used by the game thread
 public:
