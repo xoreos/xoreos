@@ -22,9 +22,6 @@
 #include "graphics/renderable.h"
 #include "graphics/cube.h"
 
-#include "events/events.h"
-#include "events/types.h"
-
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
@@ -176,29 +173,6 @@ void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
 	Common::StackLock lock(_queueMutex);
 
 	_renderQueue.erase(ref);
-}
-
-void GraphicsManager::requestFullScreen(bool fullScreen) {
-	Events::Event event;
-
-	event.type = Events::kEventGraphics;
-
-	event.user.code =
-		fullScreen ? Events::kEventGraphicsFullScreen :
-		             Events::kEventGraphicsWindowed;
-
-	EventMan.pushEvent(event);
-}
-
-void GraphicsManager::requestSizeChange(int width, int height) {
-	Events::Event event;
-
-	event.type = Events::kEventResize;
-
-	event.resize.w = width;
-	event.resize.h = height;
-
-	EventMan.pushEvent(event);
 }
 
 void GraphicsManager::renderScene() {

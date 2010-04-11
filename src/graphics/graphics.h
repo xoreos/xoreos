@@ -70,12 +70,6 @@ public:
 	 */
 	void removeFromRenderQueue(RenderQueueRef &ref);
 
-	/** Request full screen / windowed mode toggle. */
-	void requestFullScreen(bool fullScreen);
-
-	/** Request a window size change. */
-	void requestSizeChange(int width, int height);
-
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 	bool _initedGL;

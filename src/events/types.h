@@ -12,6 +12,8 @@
  *  Basic event types.
  */
 
+#include <SDL_events.h>
+
 #ifndef EVENTS_TYPES_H
 #define EVENTS_TYPES_H
 
@@ -29,15 +31,17 @@ enum EventType {
 	kEventMouseUp   = SDL_MOUSEBUTTONUP  , ///< Mouse button was released.
 	kEventQuit      = SDL_QUIT           , ///< Application quit was requested.
 	kEventResize    = SDL_VIDEORESIZE    , ///< Resize the window.
-	kEventUserMin   = SDL_USEREVENT - 1  , ///< For range checks.
-	kEventGraphics  = SDL_USEREVENT      , ///< Inter-thread communications regarding graphics.
-	kEventSound                          , ///< Inter-thread communications regarding sound.
-	kEventUserMax   = SDL_NUMEVENTS        ///< For range checks.
+	kEventUserMIN   = SDL_USEREVENT - 1  , ///< For range checks.
+	kEventITC       = SDL_USEREVENT      , ///< Inter-thread communication
+	kEventUserMAX   = SDL_NUMEVENTS        ///< For range checks.
 };
 
-enum EventTypeGraphics {
-	kEventGraphicsFullScreen = 0,
-	kEventGraphicsWindowed
+/** Specific type of the inter-thread communication. */
+enum ITCEvent {
+	kITCEventFullscreen = 0, ///< Request switching to fullscreen mode.
+	kITCEventWindowed,       ///< Request switching to windowed mode.
+	kITCEventResize,         ///< Request changing the display size.
+	kITCEventMAX             ///< For range checks.
 };
 
 } // End of namespace Events

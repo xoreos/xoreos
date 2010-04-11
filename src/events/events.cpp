@@ -18,6 +18,7 @@
 #include "common/error.h"
 
 #include "events/events.h"
+#include "events/requests.h"
 
 #include "graphics/graphics.h"
 
@@ -26,6 +27,13 @@
 DECLARE_SINGLETON(Events::EventsManager)
 
 namespace Events {
+
+const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX] = {
+	&EventsManager::requestFullscreen,
+	&EventsManager::requestWindowed,
+	&EventsManager::requerstResize
+};
+
 
 EventsManager::EventsManager() {
 	_ready = false;
@@ -93,21 +101,28 @@ bool EventsManager::parseEventGraphics(const Event &event) {
 		}
 	}
 
-	if (event.type == kEventGraphics) {
-		if      (event.user.code == kEventGraphicsFullScreen)
-			GfxMan.setFullScreen(true);
-		else if (event.user.code == kEventGraphicsWindowed)
-			GfxMan.setFullScreen(false);
-
-		return true;
-	}
-
 	if (event.type == kEventResize) {
 		GfxMan.changeSize(event.resize.w, event.resize.h);
 		return true;
 	}
 
 	return false;
+}
+
+bool EventsManager::parseITC(const Event &event) {
+	if (event.type != kEventITC)
+		return false;
+
+	// Get the specific ITC type
+	ITCEvent itcEvent = (ITCEvent) event.user.code;
+
+	// Call its request handler
+	if ((itcEvent >= 0) || (itcEvent < kITCEventMAX))
+		(this->*_requestHandler[itcEvent])(event.user.data1);
+
+	// And signal a reply
+	((Request *) event.user.data1)->signalReply();
+	return true;
 }
 
 void EventsManager::processEvents() {
@@ -122,6 +137,9 @@ void EventsManager::processEvents() {
 
 		// Check for graphics events
 		if (parseEventGraphics(event))
+			continue;
+
+		if (parseITC(event))
 			continue;
 
 		// Push the event to the back of the list
@@ -145,7 +163,7 @@ bool EventsManager::pollEvent(Event &event) {
 bool EventsManager::pushEvent(Event &event) {
 	Common::StackLock lock(_eventQueueMutex);
 
-	return SDL_PushEvent(&event) != 0;
+	return SDL_PushEvent(&event) == 0;
 }
 
 void EventsManager::enableUnicode(bool enable) {
@@ -204,6 +222,20 @@ void EventsManager::runMainLoop() {
 			lastFPS = now;
 		}
 	}
+}
+
+void EventsManager::requestFullscreen(void *event) {
+	GfxMan.setFullScreen(true);
+}
+
+void EventsManager::requestWindowed(void *event) {
+	GfxMan.setFullScreen(false);
+}
+
+void EventsManager::requerstResize(void *event) {
+	RequestResize &request = *((RequestResize *) event);
+
+	GfxMan.changeSize(request.getWidth(), request.getHeight());
 }
 
 } // End of namespace Events

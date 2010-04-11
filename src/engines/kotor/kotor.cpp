@@ -20,6 +20,7 @@
 #include "sound/sound.h"
 
 #include "events/events.h"
+#include "events/requests.h"
 
 #include "aurora/resman.h"
 #include "aurora/error.h"

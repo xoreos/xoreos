@@ -18,8 +18,7 @@
 #include <string>
 #include <list>
 
-#include <SDL_events.h>
-
+#include "common/types.h"
 #include "common/singleton.h"
 #include "common/mutex.h"
 
@@ -84,6 +83,9 @@ public:
 
 private:
 	typedef std::list<Event> EventQueue;
+	typedef void (EventsManager::*RequestHandler)(void *);
+
+	static const RequestHandler _requestHandler[kITCEventMAX];
 
 	bool _ready; ///< Was the events subsystem successfully initialized?
 
@@ -94,8 +96,16 @@ private:
 
 	void processEvents();
 
+	/** Look for quit events. */
 	bool parseEventQuit(const Event &event);
+	/** Look for graphics events. */
 	bool parseEventGraphics(const Event &event);
+	/** Look for inter-thread communication. */
+	bool parseITC(const Event &event);
+
+	void requestFullscreen(void *event);
+	void requestWindowed(void *event);
+	void requerstResize(void *event);
 };
 
 } // End of namespace Events
