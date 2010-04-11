@@ -129,7 +129,7 @@ const Graphics::TextureID *RequestDestroyTextures::getIDs() const {
 }
 
 
-RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id, const byte *data,
+RequestLoadTexture::RequestLoadTexture(Graphics::TextureID id, const byte *data,
 		int width, int height, Graphics::PixelFormat format) :
 		_id(id), _data(data), _width(width), _height(height), _format(format) {
 
@@ -139,7 +139,7 @@ RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id, const byte *dat
 	createEvent(kITCEventLoadTextures);
 }
 
-RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id,
+RequestLoadTexture::RequestLoadTexture(Graphics::TextureID id,
 		const Graphics::ImageDecoder *image) : _id(id) {
 
 	if (!image)
@@ -156,23 +156,23 @@ RequestLoadTextures::RequestLoadTextures(Graphics::TextureID id,
 	createEvent(kITCEventLoadTextures);
 }
 
-Graphics::TextureID RequestLoadTextures::getID() const {
+Graphics::TextureID RequestLoadTexture::getID() const {
 	return _id;
 }
 
-const byte *RequestLoadTextures::getData() const {
+const byte *RequestLoadTexture::getData() const {
 	return _data;
 }
 
-int RequestLoadTextures::getWidth() const {
+int RequestLoadTexture::getWidth() const {
 	return _width;
 }
 
-int RequestLoadTextures::getHeight() const {
+int RequestLoadTexture::getHeight() const {
 	return _height;
 }
 
-Graphics::PixelFormat RequestLoadTextures::getFormat() const {
+Graphics::PixelFormat RequestLoadTexture::getFormat() const {
 	return _format;
 }
 

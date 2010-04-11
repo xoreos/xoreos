@@ -255,7 +255,7 @@ void EventsManager::requestDestroyTextures(void *event) {
 }
 
 void EventsManager::requestLoadTextures(void *event) {
-	RequestLoadTextures &request = *((RequestLoadTextures *) event);
+	RequestLoadTexture &request = *((RequestLoadTexture *) event);
 
 	GfxMan.loadTexture(request.getID(), request.getData(),
 			request.getWidth(), request.getHeight(), request.getFormat());

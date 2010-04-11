@@ -127,11 +127,11 @@ public:
 };
 
 /** Request the loading of texture image data. */
-class RequestLoadTextures : public Request {
+class RequestLoadTexture : public Request {
 public:
-	RequestLoadTextures(Graphics::TextureID id, const byte *data,
+	RequestLoadTexture(Graphics::TextureID id, const byte *data,
 			int width, int height, Graphics::PixelFormat format);
-	RequestLoadTextures(Graphics::TextureID id, const Graphics::ImageDecoder *image);
+	RequestLoadTexture(Graphics::TextureID id, const Graphics::ImageDecoder *image);
 
 private:
 	Graphics::TextureID _id;
