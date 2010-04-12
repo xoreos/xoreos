@@ -21,6 +21,8 @@
 #include "events/events.h"
 #include "events/requests.h"
 
+using Events::RequestID;
+
 namespace Graphics {
 
 Cube::Cube(ImageDecoder *texture) : _textureImage(texture) {
@@ -34,39 +36,26 @@ Cube::Cube(ImageDecoder *texture) : _textureImage(texture) {
 }
 
 Cube::~Cube() {
-	Events::RequestDestroyTextures *destroyTex = new Events::RequestDestroyTextures(1, &_texture);
-
-	destroyTex->dispatchAndWait();
-
-	delete destroyTex;
-	delete _textureImage;
+	RequestID destroyTex = RequestMan.destroyTextures(1, &_texture);
+	RequestMan.dispatchAndWait(destroyTex);
 }
 
 void Cube::reloadTextures() {
-	Events::RequestIsTexture *isTex = new Events::RequestIsTexture(_texture);
-
-	isTex->dispatchAndWait();
-
-	if (isTex->isTexture()) {
-		delete isTex;
+	bool noReload;
+	RequestID isTexture = RequestMan.isTexture(_texture, &noReload);
+	RequestMan.dispatchAndWait(isTexture);
+	if (noReload)
 		return;
-	}
 
-	delete isTex;
-
-	Events::RequestCreateTextures *createTex = new Events::RequestCreateTextures(1, &_texture);
-	createTex->dispatch();
+	RequestID createTex = RequestMan.createTextures(1, &_texture);
+	RequestMan.dispatch(createTex);
 
 	_textureImage->load();
 
-	createTex->waitReply();
+	RequestMan.waitReply(createTex);
 
-	delete createTex;
-
-	Events::RequestLoadTexture *loadTex = new Events::RequestLoadTexture(_texture, _textureImage);
-	loadTex->dispatchAndWait();
-
-	delete loadTex;
+	RequestID loadTex = RequestMan.loadTexture(_texture, _textureImage);
+	RequestMan.dispatchAndWait(loadTex);
 }
 
 void Cube::doCubeSolid() {

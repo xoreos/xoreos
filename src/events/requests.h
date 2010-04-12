@@ -12,15 +12,17 @@
  *  Inter-thread request events.
  */
 
-#include "common/types.h"
-#include "common/mutex.h"
+#ifndef EVENTS_REQUESTS_H
+#define EVENTS_REQUESTS_H
 
-#include "events/types.h"
+#include <list>
+
+#include "common/types.h"
+#include "common/singleton.h"
 
 #include "graphics/types.h"
 
-#ifndef EVENTS_REQUESTS_H
-#define EVENTS_REQUESTS_H
+#include "events/requesttypes.h"
 
 namespace Graphics {
 	class ImageDecoder;
@@ -28,9 +30,12 @@ namespace Graphics {
 
 namespace Events {
 
-/** Base class for request events.
+typedef std::list<Request *>  RequestList;
+typedef RequestList::iterator RequestID;
+
+/** The request manager, handling all requests.
  *
- *  Requests are the main scheme of communication between the game thread and
+ *  Requests are the main means of communication between the game thread and
  *  the main thread, which handles all low-level event and graphics operations.
  *
  *  The idea behind requests is that, as soon as the game thread knows exactly
@@ -39,142 +44,47 @@ namespace Events {
  *  the request. That way, the actual fulfilling of the request can happen
  *  asynchronously, without it unnecessarily blocking further execution of the
  *  game thread.
- *
- *  WARNING: Since function stacks are thread-local, NEVER put requests onto
- *           the stack. ALWAYS allocate them on the heap.
  */
-class Request {
-// To be used by the game thread
+class RequestManager : public Common::Singleton<RequestManager> {
 public:
-	Request();
-	~Request();
+	void init();
 
-	/** Dispatch the request. */
-	void dispatch();
+	/** Dispatch a request. */
+	void dispatch(RequestID request);
+	/** Wait for a request to be answered. */
+	void waitReply(RequestID request);
 
-	/** Wait until the request has been answered. */
-	void waitReply();
+	/** Dispatch a request and wait for the answer. */
+	void dispatchAndWait(RequestID request);
 
-	/** Dispatch the event and wait for a reply. */
-	void dispatchAndWait();
+	// Screen mode
+	/** Request that the display shall be switched to fullscreen or windowed mode. */
+	RequestID fullscreen(bool fullscreen);
+	/** Request that the display shall be resized. */
+	RequestID resize(int width, int height);
 
-protected:
-	/** Create the event for this request. */
-	void createEvent(ITCEvent itcType);
+	// Textures
+	/** Request the creation of textures. */
+	RequestID createTextures(uint32 n, Graphics::TextureID *ids);
+	/** Request the destruction of textures. */
+	RequestID destroyTextures(uint32 n, Graphics::TextureID *ids);
+	/** Request the loading of texture image data. */
+	RequestID loadTexture(Graphics::TextureID id, const Graphics::ImageDecoder *image);
+	/** Ask if a texture ID is a real, working texture. */
+	RequestID isTexture(Graphics::TextureID id, bool *answer);
 
 private:
-	Common::Mutex _mutexUse;   ///< The mutex preventing race condition in the use.
+	Common::Mutex _mutexUse; ///< The mutex locking the use of the manager.
 
-	Common::Condition *_hasReply;   ///< The condition signaling a reply.
-	Common::Mutex      _mutexReply; ///< The reply condition's mutex.
+	RequestList _requests; ///< All currently active requests.
 
-	Event _event; ///< The actual event.
-
-	volatile bool _dispatched; ///< Was the event dispatched?
-
-
-// To be used by the event thread
-public:
-	/** Signal that the request has been answered. */
-	void signalReply();
-};
-
-/** Requesting fullscreen/windowed mode. */
-class RequestFullscreen : public Request {
-public:
-	RequestFullscreen(bool fullscreen);
-};
-
-/** Requesting display size change. */
-class RequestResize : public Request {
-public:
-	RequestResize(int width, int height);
-
-private:
-	int _width;
-	int _height;
-
-
-// To be used by the event thread
-public:
-	int getWidth()  const;
-	int getHeight() const;
-};
-
-/** Request the creation of textures. */
-class RequestCreateTextures : public Request {
-public:
-	RequestCreateTextures(uint32 n, Graphics::TextureID *ids);
-
-private:
-	uint32 _count;
-	Graphics::TextureID *_ids;
-
-
-// To be used by the event thread
-public:
-	uint32 getCount() const;
-
-	Graphics::TextureID *getIDs();
-};
-
-/** Request the destruction of textures. */
-class RequestDestroyTextures : public Request {
-public:
-	RequestDestroyTextures(uint32 n, const Graphics::TextureID *ids);
-
-private:
-	uint32 _count;
-	const Graphics::TextureID *_ids;
-
-
-// To be used by the event thread
-public:
-	uint32 getCount() const;
-
-	const Graphics::TextureID *getIDs() const;
-};
-
-/** Request the loading of texture image data. */
-class RequestLoadTexture : public Request {
-public:
-	RequestLoadTexture(Graphics::TextureID id, const byte *data,
-			int width, int height, Graphics::PixelFormat format);
-	RequestLoadTexture(Graphics::TextureID id, const Graphics::ImageDecoder *image);
-
-private:
-	Graphics::TextureID _id;
-	const byte *_data;
-	int _width, _height;
-	Graphics::PixelFormat _format;
-
-
-// To be used by the event thread
-public:
-	Graphics::TextureID getID() const;
-	const byte *getData() const;
-	int getWidth() const;
-	int getHeight() const;
-	Graphics::PixelFormat getFormat() const;
-};
-
-class RequestIsTexture : public Request {
-public:
-	RequestIsTexture(Graphics::TextureID id);
-
-	bool isTexture();
-
-private:
-	Graphics::TextureID _id;
-	bool _isTexture;
-
-
-// To be used by the event thread
-public:
-	Graphics::TextureID getID() const;
-	void setIsTexture(bool is);
+	/** Create a new, empty request of that type. */
+	RequestID newRequest(ITCEvent type);
 };
 
 } // End of namespace Events
+
+/** Shortcut for accessing the request manager. */
+#define RequestMan Events::RequestManager::instance()
 
 #endif // EVENTS_REQUESTS_H

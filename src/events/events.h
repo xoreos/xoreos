@@ -26,6 +26,8 @@
 
 namespace Events {
 
+class Request;
+
 /** The events manager. */
 class EventsManager : public Common::Singleton<EventsManager> {
 public:
@@ -86,7 +88,7 @@ public:
 
 private:
 	typedef std::list<Event> EventQueue;
-	typedef void (EventsManager::*RequestHandler)(void *);
+	typedef void (EventsManager::*RequestHandler)(Request &);
 
 	/** Pointer to the request handler. */
 	static const RequestHandler _requestHandler[kITCEventMAX];
@@ -108,13 +110,13 @@ private:
 	bool parseITC(const Event &event);
 
 	// Request handler
-	void requestFullscreen(void *event);
-	void requestWindowed(void *event);
-	void requestResize(void *event);
-	void requestCreateTextures(void *event);
-	void requestDestroyTextures(void *event);
-	void requestLoadTexture(void *event);
-	void requestIsTexture(void *event);
+	void requestFullscreen(Request &request);
+	void requestWindowed(Request &request);
+	void requestResize(Request &request);
+	void requestCreateTextures(Request &request);
+	void requestDestroyTextures(Request &request);
+	void requestLoadTexture(Request &request);
+	void requestIsTexture(Request &request);
 
 
 public:

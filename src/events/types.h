@@ -12,10 +12,10 @@
  *  Basic event types.
  */
 
-#include <SDL_events.h>
-
 #ifndef EVENTS_TYPES_H
 #define EVENTS_TYPES_H
+
+#include <SDL_events.h>
 
 namespace Events {
 

@@ -13,39 +13,31 @@
  */
 
 #include "common/error.h"
-#include "common/util.h"
 
 #include "events/requests.h"
 #include "events/events.h"
 
 #include "graphics/images/decoder.h"
 
+DECLARE_SINGLETON(Events::RequestManager);
+
 namespace Events {
 
-Request::Request() {
-	_event.type = kEventNone;
-
-	_dispatched = false;
-
-	_hasReply = new Common::Condition(_mutexReply);
+void RequestManager::init() {
 }
 
-Request::~Request() {
-	delete _hasReply;
-}
-
-void Request::dispatch() {
+void RequestManager::dispatch(RequestID request) {
 	Common::StackLock lock(_mutexUse);
 
-	if (_dispatched)
+	if ((*request)->_dispatched)
 		// We are already waiting for an answer
 		return;
 
 	// Set state
-	_dispatched = true;
+	(*request)->_dispatched = true;
 
 	// And send the event
-	if (!EventMan.pushEvent(_event))
+	if (!EventMan.pushEvent((*request)->_event))
 		throw Common::Exception("Failed dispatching request");
 
 	if (EventMan.isMainThread())
@@ -53,24 +45,24 @@ void Request::dispatch() {
 		EventMan.processEvents();
 }
 
-void Request::waitReply() {
+void RequestManager::waitReply(RequestID request) {
 	// Locking our use mutex, to prevent race conditions
 	_mutexUse.lock();
 
-	if (!_dispatched) {
+	if (!(*request)->_dispatched) {
 		// The request either wasn't yet dispatched, or we've already gotten a reply
 		_mutexUse.unlock();
 		return;
 	}
 
 	// Lock the mutex for the condition
-	_mutexReply.lock();
+	(*request)->_mutexReply.lock();
 
 	// We don't need our use mutex now
 	_mutexUse.unlock();
 
 	// Wait for a reply
-	_hasReply->wait();
+	(*request)->_hasReply->wait();
 
 	// Got a reply
 
@@ -78,147 +70,82 @@ void Request::waitReply() {
 	_mutexUse.lock();
 
 	// Unlock the relocked reply mutex
-	_mutexReply.unlock();
+	(*request)->_mutexReply.unlock();
+
+	// We can now destroy the request
+	delete *request;
+
+	// And remove it from the list
+	_requests.erase(request);
 
 	// And finally give the use mutex free again
 	_mutexUse.unlock();
 }
 
-void Request::dispatchAndWait() {
-	dispatch();
-	waitReply();
+void RequestManager::dispatchAndWait(RequestID request) {
+	dispatch(request);
+	waitReply(request);
 }
 
-void Request::signalReply() {
-	Common::StackLock lock(_mutexUse);
-
-	// Set state
-	_dispatched = false;
-
-	// Signaling a reply
-	_hasReply->signal();
+RequestID RequestManager::fullscreen(bool fullscreen) {
+	return newRequest(kITCEventFullscreen);
 }
 
-void Request::createEvent(ITCEvent itcType) {
-	_event.type       = kEventITC;
-	_event.user.code  = (int) itcType;
-	_event.user.data1 = (void *) this;
+RequestID RequestManager::resize(int width, int height) {
+	return newRequest(kITCEventWindowed);
 }
 
+RequestID RequestManager::createTextures(uint32 n, Graphics::TextureID *ids) {
+	RequestID rID = newRequest(kITCEventCreateTextures);
 
-RequestFullscreen::RequestFullscreen(bool fullscreen) {
-	if (fullscreen)
-		createEvent(kITCEventFullscreen);
-	else
-		createEvent(kITCEventWindowed);
+	(*rID)->_createTextures.count    = n;
+	(*rID)->_createTextures.replyIDs = ids;
+
+	(*rID)->_createTextures.ids = new Graphics::TextureID[n];
+
+	return rID;
 }
 
+RequestID RequestManager::destroyTextures(uint32 n, Graphics::TextureID *ids) {
+	RequestID rID = newRequest(kITCEventDestroyTextures);
 
-RequestResize::RequestResize(int width, int height) : _width(width), _height(height) {
-	createEvent(kITCEventResize);
+	(*rID)->_destroyTextures.count = n;
+
+	(*rID)->_destroyTextures.ids = new Graphics::TextureID[n];
+	memcpy((*rID)->_destroyTextures.ids, ids, n * sizeof(Graphics::TextureID));
+
+	return rID;
 }
 
-int RequestResize::getWidth() const {
-	return _width;
+RequestID RequestManager::loadTexture(Graphics::TextureID id, const Graphics::ImageDecoder *image) {
+	RequestID rID = newRequest(kITCEventLoadTexture);
+
+	(*rID)->_loadTexture.id     = id;
+	(*rID)->_loadTexture.width  = image->getWidth();
+	(*rID)->_loadTexture.height = image->getHeight();
+	(*rID)->_loadTexture.data   = image->getData();
+	(*rID)->_loadTexture.format = image->getFormat();
+
+	return rID;
 }
 
-int RequestResize::getHeight() const {
-	return _height;
+RequestID RequestManager::isTexture(Graphics::TextureID id, bool *answer) {
+	RequestID rID = newRequest(kITCEventIsTexture);
+
+	(*rID)->_isTexture.id          = id;
+	(*rID)->_isTexture.replyAnswer = answer;
+
+	return rID;
 }
 
+RequestID RequestManager::newRequest(ITCEvent type) {
+	_requests.push_back(new Request(type));
 
-RequestCreateTextures::RequestCreateTextures(uint32 n, Graphics::TextureID *ids) :
-	_count(n), _ids(ids) {
+	RequestID rID = --_requests.end();
 
-	createEvent(kITCEventCreateTextures);
-}
+	(*rID)->create();
 
-uint32 RequestCreateTextures::getCount() const {
-	return _count;
-}
-
-Graphics::TextureID *RequestCreateTextures::getIDs() {
-	return _ids;
-}
-
-
-RequestDestroyTextures::RequestDestroyTextures(uint32 n, const Graphics::TextureID *ids) :
-	_count(n) , _ids(ids) {
-
-	createEvent(kITCEventDestroyTextures);
-}
-
-uint32 RequestDestroyTextures::getCount() const {
-	return _count;
-}
-
-const Graphics::TextureID *RequestDestroyTextures::getIDs() const {
-	return _ids;
-}
-
-
-RequestLoadTexture::RequestLoadTexture(Graphics::TextureID id, const byte *data,
-		int width, int height, Graphics::PixelFormat format) :
-		_id(id), _data(data), _width(width), _height(height), _format(format) {
-
-	if ((_width <= 0) || (_height <= 0) || !_data)
-		throw Common::Exception("Invalid image data (%dx%d %d)", _width, _height, _data != 0);
-
-	createEvent(kITCEventLoadTexture);
-}
-
-RequestLoadTexture::RequestLoadTexture(Graphics::TextureID id,
-		const Graphics::ImageDecoder *image) : _id(id) {
-
-	if (!image)
-		throw Common::Exception("image == 0");
-
-	_width  = image->getWidth();
-	_height = image->getHeight();
-	_data   = image->getData();
-	_format = image->getFormat();
-
-	if ((_width <= 0) || (_height <= 0) || !_data)
-		throw Common::Exception("Invalid image data (%dx%d %d)", _width, _height, _data != 0);
-
-	createEvent(kITCEventLoadTexture);
-}
-
-Graphics::TextureID RequestLoadTexture::getID() const {
-	return _id;
-}
-
-const byte *RequestLoadTexture::getData() const {
-	return _data;
-}
-
-int RequestLoadTexture::getWidth() const {
-	return _width;
-}
-
-int RequestLoadTexture::getHeight() const {
-	return _height;
-}
-
-Graphics::PixelFormat RequestLoadTexture::getFormat() const {
-	return _format;
-}
-
-
-RequestIsTexture::RequestIsTexture(Graphics::TextureID id) : _id(id), _isTexture(false) {
-	createEvent(kITCEventIsTexture);
-}
-
-bool RequestIsTexture::isTexture() {
-	return _isTexture;
-}
-
-Graphics::TextureID RequestIsTexture::getID() const {
-	return _id;
-}
-
-void RequestIsTexture::setIsTexture(bool is) {
-	_isTexture = is;
+	return rID;
 }
 
 } // End of namespace Events

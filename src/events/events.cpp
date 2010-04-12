@@ -50,6 +50,8 @@ void EventsManager::init() {
 	if (!GfxMan.ready())
 		throw Common::Exception("The GraphicsManager needs to be initialized first");
 
+	RequestMan.init();
+
 	_ready = true;
 
 	_mainThreadID = SDL_ThreadID();
@@ -127,12 +129,16 @@ bool EventsManager::parseITC(const Event &event) {
 	// Get the specific ITC type
 	ITCEvent itcEvent = (ITCEvent) event.user.code;
 
+	Request &request = *((Request *) event.user.data1);
+
+	if (request._type != itcEvent)
+		throw Common::Exception("Request type does not match the ITC type");
+
 	// Call its request handler
 	if ((itcEvent >= 0) || (itcEvent < kITCEventMAX))
-		(this->*_requestHandler[itcEvent])(event.user.data1);
+		(this->*_requestHandler[itcEvent])(request);
 
-	// And signal a reply
-	((Request *) event.user.data1)->signalReply();
+	request.signalReply();
 	return true;
 }
 
@@ -235,43 +241,34 @@ void EventsManager::runMainLoop() {
 	}
 }
 
-void EventsManager::requestFullscreen(void *event) {
+void EventsManager::requestFullscreen(Request &request) {
 	GfxMan.setFullScreen(true);
 }
 
-void EventsManager::requestWindowed(void *event) {
+void EventsManager::requestWindowed(Request &request) {
 	GfxMan.setFullScreen(false);
 }
 
-void EventsManager::requestResize(void *event) {
-	RequestResize &request = *((RequestResize *) event);
-
-	GfxMan.changeSize(request.getWidth(), request.getHeight());
+void EventsManager::requestResize(Request &request) {
+	GfxMan.changeSize(request._resize.width, request._resize.height);
 }
 
-void EventsManager::requestCreateTextures(void *event) {
-	RequestCreateTextures &request = *((RequestCreateTextures *) event);
-
-	GfxMan.createTextures(request.getCount(), request.getIDs());
+void EventsManager::requestCreateTextures(Request &request) {
+	GfxMan.createTextures(request._createTextures.count, request._createTextures.ids);
 }
 
-void EventsManager::requestDestroyTextures(void *event) {
-	RequestDestroyTextures &request = *((RequestDestroyTextures *) event);
-
-	GfxMan.destroyTextures(request.getCount(), request.getIDs());
+void EventsManager::requestDestroyTextures(Request &request) {
+	GfxMan.destroyTextures(request._destroyTextures.count, request._destroyTextures.ids);
 }
 
-void EventsManager::requestLoadTexture(void *event) {
-	RequestLoadTexture &request = *((RequestLoadTexture *) event);
-
-	GfxMan.loadTexture(request.getID(), request.getData(),
-			request.getWidth(), request.getHeight(), request.getFormat());
+void EventsManager::requestLoadTexture(Request &request) {
+	GfxMan.loadTexture(request._loadTexture.id, request._loadTexture.data,
+	                   request._loadTexture.width, request._loadTexture.height,
+	                   request._loadTexture.format);
 }
 
-void EventsManager::requestIsTexture(void *event) {
-	RequestIsTexture &request = *((RequestIsTexture *) event);
-
-	request.setIsTexture(GfxMan.isTexture(request.getID()));
+void EventsManager::requestIsTexture(Request &request) {
+	request._isTexture.answer = GfxMan.isTexture(request._isTexture.id);
 }
 
 } // End of namespace Events
