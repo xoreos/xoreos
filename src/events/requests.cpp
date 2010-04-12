@@ -13,6 +13,7 @@
  */
 
 #include "common/error.h"
+#include "common/util.h"
 
 #include "events/requests.h"
 #include "events/events.h"
@@ -23,7 +24,22 @@ DECLARE_SINGLETON(Events::RequestManager);
 
 namespace Events {
 
+RequestManager::~RequestManager() {
+	clearList();
+}
+
 void RequestManager::init() {
+	clearList();
+
+	if (!createThread())
+		throw Common::Exception("Failed to create requests thread: %s", SDL_GetError());
+}
+
+void RequestManager::deinit() {
+	if (!destroyThread())
+		warning("RequestManager::deinit(): Requests thread had to be killed");
+
+	clearList();
 }
 
 void RequestManager::dispatch(RequestID request) {
@@ -51,6 +67,10 @@ void RequestManager::waitReply(RequestID request) {
 
 	if (!(*request)->_dispatched) {
 		// The request either wasn't yet dispatched, or we've already gotten a reply
+
+		// Copy the reply (if any) to the reply memory
+		(*request)->copyToReply();
+
 		_mutexUse.unlock();
 		return;
 	}
@@ -72,19 +92,30 @@ void RequestManager::waitReply(RequestID request) {
 	// Unlock the relocked reply mutex
 	(*request)->_mutexReply.unlock();
 
-	// We can now destroy the request
-	delete *request;
+	// Copy the reply (if any) to the reply memory
+	(*request)->copyToReply();
 
-	// And remove it from the list
-	_requests.erase(request);
+	// And mark the request as garbage, so that it may be collected
+	(*request)->setGarbage();
 
 	// And finally give the use mutex free again
 	_mutexUse.unlock();
 }
 
+void RequestManager::forget(RequestID request) {
+	Common::StackLock lock(_mutexUse);
+
+	(*request)->setGarbage();
+}
+
 void RequestManager::dispatchAndWait(RequestID request) {
 	dispatch(request);
 	waitReply(request);
+}
+
+void RequestManager::dispatchAndForget(RequestID request) {
+	dispatch(request);
+	forget(request);
 }
 
 RequestID RequestManager::fullscreen(bool fullscreen) {
@@ -139,6 +170,8 @@ RequestID RequestManager::isTexture(Graphics::TextureID id, bool *answer) {
 }
 
 RequestID RequestManager::newRequest(ITCEvent type) {
+	Common::StackLock lock(_mutexUse);
+
 	_requests.push_back(new Request(type));
 
 	RequestID rID = --_requests.end();
@@ -146,6 +179,38 @@ RequestID RequestManager::newRequest(ITCEvent type) {
 	(*rID)->create();
 
 	return rID;
+}
+
+void RequestManager::clearList() {
+	Common::StackLock lock(_mutexUse);
+
+	for (RequestList::iterator request = _requests.begin(); request != _requests.begin(); ++request) {
+		warning("Clear request: %d", (*request)->_type);
+		delete *request;
+	}
+
+	_requests.clear();
+}
+
+void RequestManager::collectGarbage() {
+	Common::StackLock lock(_mutexUse);
+
+	RequestList::iterator request = _requests.begin();
+	while (request != _requests.end()) {
+		if ((*request)->isGarbage()) {
+			warning("Claiming request: %d", (*request)->_type);
+			delete *request;
+			request = _requests.erase(request);
+		} else
+			++request;
+	}
+}
+
+void RequestManager::threadMethod() {
+	while (!_killThread) {
+		collectGarbage();
+		EventMan.delay(100);
+	}
 }
 
 } // End of namespace Events

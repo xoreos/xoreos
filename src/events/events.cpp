@@ -58,6 +58,11 @@ void EventsManager::init() {
 }
 
 void EventsManager::deinit() {
+	if (!_ready)
+		return;
+
+	RequestMan.deinit();
+
 	_ready = false;
 }
 

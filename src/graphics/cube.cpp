@@ -37,7 +37,7 @@ Cube::Cube(ImageDecoder *texture) : _textureImage(texture) {
 
 Cube::~Cube() {
 	RequestID destroyTex = RequestMan.destroyTextures(1, &_texture);
-	RequestMan.dispatchAndWait(destroyTex);
+	RequestMan.dispatchAndForget(destroyTex);
 }
 
 void Cube::reloadTextures() {

@@ -19,6 +19,7 @@
 
 #include "common/types.h"
 #include "common/singleton.h"
+#include "common/thread.h"
 
 #include "graphics/types.h"
 
@@ -44,18 +45,28 @@ typedef RequestList::iterator RequestID;
  *  the request. That way, the actual fulfilling of the request can happen
  *  asynchronously, without it unnecessarily blocking further execution of the
  *  game thread.
+ *
+ *  @note: As soon as waitReply(), forget(), dispatchAndWait() or
+ *         dispatchAndForget() was called, the RequestID expires.
  */
-class RequestManager : public Common::Singleton<RequestManager> {
+class RequestManager : public Common::Singleton<RequestManager>, public Common::Thread {
 public:
+	~RequestManager();
+
 	void init();
+	void deinit();
 
 	/** Dispatch a request. */
 	void dispatch(RequestID request);
 	/** Wait for a request to be answered. */
 	void waitReply(RequestID request);
+	/** Ignore any answer we get. */
+	void forget(RequestID request);
 
 	/** Dispatch a request and wait for the answer. */
 	void dispatchAndWait(RequestID request);
+	/** Dispatch a request and ignore the answer. */
+	void dispatchAndForget(RequestID request);
 
 	// Screen mode
 	/** Request that the display shall be switched to fullscreen or windowed mode. */
@@ -80,6 +91,12 @@ private:
 
 	/** Create a new, empty request of that type. */
 	RequestID newRequest(ITCEvent type);
+
+	void clearList();
+
+	void collectGarbage();
+
+	void threadMethod();
 };
 
 } // End of namespace Events

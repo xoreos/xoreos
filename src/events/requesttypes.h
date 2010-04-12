@@ -65,13 +65,13 @@ public:
 	Request(ITCEvent type);
 	~Request();
 
-	/** Copy reply data to the reply address. */
-	void copyToReply();
+	bool isGarbage() const;
 
 private:
 	ITCEvent _type;
 
 	bool _dispatched; ///< Was the request dispatched?
+	bool _garbage;
 
 	Common::Condition *_hasReply;   ///< The condition signaling a reply.
 	Common::Mutex      _mutexReply; ///< The reply condition's mutex.
@@ -90,8 +90,13 @@ private:
 	/** Create the empty request frame. */
 	void create();
 
+	/** Copy reply data to the reply address. */
+	void copyToReply();
+
 	/** Signal that the request was answered. */
 	void signalReply();
+
+	void setGarbage();
 
 	friend class EventsManager;
 	friend class RequestManager;
