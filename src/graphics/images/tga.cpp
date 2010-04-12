@@ -100,23 +100,15 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 }
 
 void TGA::readData(Common::SeekableReadStream &tga) {
-	uint32 rowBytes = _width;
+	uint32 bytes = _width * _height;
 	if      (_format == kPixelFormatBGR)
-		rowBytes *= 3;
+		bytes *= 3;
 	else if (_format == kPixelFormatBGRA)
-		rowBytes *= 4;
+		bytes *= 4;
 
-	_data = new byte[rowBytes * _height];
+	_data = new byte[bytes];
 
-	byte *data = _data + ((_height - 1) * rowBytes);
-	for (int i = 0; i < _height; i++) {
-		byte *rowData = data;
-
-		if (tga.read(rowData, rowBytes) != rowBytes)
-			throw Common::Exception(Common::kReadError);
-
-		data -= rowBytes;
-	}
+	tga.read(_data, bytes);
 }
 
 int TGA::getWidth() const {
