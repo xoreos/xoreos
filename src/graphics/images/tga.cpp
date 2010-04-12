@@ -12,6 +12,7 @@
  *  Decoding TGA (TarGa) images.
  */
 
+#include "common/util.h"
 #include "common/stream.h"
 #include "common/error.h"
 
@@ -31,22 +32,7 @@ void TGA::load() {
 	if (!_tga)
 		return;
 
-	uint32 size = _tga->size();
-	if (_tga->size() < 26)
-		throw Common::Exception("Not a TGA file");
-
 	try {
-
-		if (!_tga->seek(size - 18))
-			throw Common::Exception(Common::kSeekError);
-
-		char buf[17];
-
-		if (_tga->read(buf, 17) != 17)
-			throw Common::Exception(Common::kReadError);
-
-		if (strncmp(buf, "TRUEVISION-XFILE.", 17))
-			throw Common::Exception("Signature not found");
 
 		readHeader(*_tga);
 		readData(*_tga);
@@ -83,6 +69,9 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	_height = tga.readUint16LE();
 
 	byte pixelDepth = tga.readByte();
+	byte imageDescriptor = tga.readByte();
+
+	warning("--> %d, %d", pixelDepth, imageDescriptor);
 
 	if      (pixelDepth == 24)
 		_format = kPixelFormatBGR;
@@ -90,11 +79,6 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 		_format = kPixelFormatBGRA;
 	else
 		throw Common::Exception("Unsupported pixel depth: %d", pixelDepth);
-
-	byte imageDescriptor = tga.readByte();
-	if (((pixelDepth == 24) && (imageDescriptor != 0)) ||
-	    ((pixelDepth == 32) && (imageDescriptor != 8)))
-		throw Common::Exception("Unsupported image descriptor: 0x%02X", imageDescriptor);
 
 	tga.skip(idLength);
 }
