@@ -184,11 +184,8 @@ RequestID RequestManager::newRequest(ITCEvent type) {
 void RequestManager::clearList() {
 	Common::StackLock lock(_mutexUse);
 
-	for (RequestList::iterator request = _requests.begin(); request != _requests.begin(); ++request) {
-		warning("Clear request: %d", (*request)->_type);
+	for (RequestList::iterator request = _requests.begin(); request != _requests.begin(); ++request)
 		delete *request;
-	}
-
 	_requests.clear();
 }
 
@@ -198,7 +195,6 @@ void RequestManager::collectGarbage() {
 	RequestList::iterator request = _requests.begin();
 	while (request != _requests.end()) {
 		if ((*request)->isGarbage()) {
-			warning("Claiming request: %d", (*request)->_type);
 			delete *request;
 			request = _requests.erase(request);
 		} else
