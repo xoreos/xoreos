@@ -69,9 +69,6 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	_height = tga.readUint16LE();
 
 	byte pixelDepth = tga.readByte();
-	byte imageDescriptor = tga.readByte();
-
-	warning("--> %d, %d", pixelDepth, imageDescriptor);
 
 	if      (pixelDepth == 24)
 		_format = kPixelFormatBGR;
@@ -79,6 +76,9 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 		_format = kPixelFormatBGRA;
 	else
 		throw Common::Exception("Unsupported pixel depth: %d", pixelDepth);
+
+	// Image descriptor
+	tga.skip(1);
 
 	tga.skip(idLength);
 }
