@@ -43,7 +43,8 @@ enum ITCEvent {
 	kITCEventResize         , ///< Request changing the display size.
 	kITCEventCreateTextures , ///< Request the creation of textures.
 	kITCEventDestroyTextures, ///< Request the destruction of textures.
-	kITCEventLoadTextures   , ///< Request the loading of texture image data.
+	kITCEventLoadTexture    , ///< Request the loading of texture image data.
+	kITCEventIsTexture      , ///< Request if that ID is a real texture.
 	kITCEventMAX              ///< For range checks.
 };
 

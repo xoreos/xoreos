@@ -116,6 +116,8 @@ public:
 	void destroyTextures(GLsizei n, const TextureID *ids);
 	/** Load texture image data. */
 	void loadTexture(TextureID id, const byte *data, int width, int height, PixelFormat format);
+	/** Is that ID a real texture? */
+	bool isTexture(TextureID id);
 };
 
 } // End of namespace Graphics

@@ -164,7 +164,7 @@ RequestLoadTexture::RequestLoadTexture(Graphics::TextureID id, const byte *data,
 	if ((_width <= 0) || (_height <= 0) || !_data)
 		throw Common::Exception("Invalid image data (%dx%d %d)", _width, _height, _data != 0);
 
-	createEvent(kITCEventLoadTextures);
+	createEvent(kITCEventLoadTexture);
 }
 
 RequestLoadTexture::RequestLoadTexture(Graphics::TextureID id,
@@ -181,7 +181,7 @@ RequestLoadTexture::RequestLoadTexture(Graphics::TextureID id,
 	if ((_width <= 0) || (_height <= 0) || !_data)
 		throw Common::Exception("Invalid image data (%dx%d %d)", _width, _height, _data != 0);
 
-	createEvent(kITCEventLoadTextures);
+	createEvent(kITCEventLoadTexture);
 }
 
 Graphics::TextureID RequestLoadTexture::getID() const {
@@ -202,6 +202,23 @@ int RequestLoadTexture::getHeight() const {
 
 Graphics::PixelFormat RequestLoadTexture::getFormat() const {
 	return _format;
+}
+
+
+RequestIsTexture::RequestIsTexture(Graphics::TextureID id) : _id(id), _isTexture(false) {
+	createEvent(kITCEventIsTexture);
+}
+
+bool RequestIsTexture::isTexture() {
+	return _isTexture;
+}
+
+Graphics::TextureID RequestIsTexture::getID() const {
+	return _id;
+}
+
+void RequestIsTexture::setIsTexture(bool is) {
+	_isTexture = is;
 }
 
 } // End of namespace Events

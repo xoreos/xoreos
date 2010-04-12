@@ -113,7 +113,8 @@ private:
 	void requestResize(void *event);
 	void requestCreateTextures(void *event);
 	void requestDestroyTextures(void *event);
-	void requestLoadTextures(void *event);
+	void requestLoadTexture(void *event);
+	void requestIsTexture(void *event);
 
 
 public:

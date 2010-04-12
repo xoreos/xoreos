@@ -35,7 +35,8 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 	&EventsManager::requestResize,
 	&EventsManager::requestCreateTextures,
 	&EventsManager::requestDestroyTextures,
-	&EventsManager::requestLoadTextures
+	&EventsManager::requestLoadTexture,
+	&EventsManager::requestIsTexture
 };
 
 
@@ -260,11 +261,17 @@ void EventsManager::requestDestroyTextures(void *event) {
 	GfxMan.destroyTextures(request.getCount(), request.getIDs());
 }
 
-void EventsManager::requestLoadTextures(void *event) {
+void EventsManager::requestLoadTexture(void *event) {
 	RequestLoadTexture &request = *((RequestLoadTexture *) event);
 
 	GfxMan.loadTexture(request.getID(), request.getData(),
 			request.getWidth(), request.getHeight(), request.getFormat());
+}
+
+void EventsManager::requestIsTexture(void *event) {
+	RequestIsTexture &request = *((RequestIsTexture *) event);
+
+	request.setIsTexture(GfxMan.isTexture(request.getID()));
 }
 
 } // End of namespace Events

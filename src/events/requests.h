@@ -143,10 +143,10 @@ public:
 	RequestLoadTexture(Graphics::TextureID id, const Graphics::ImageDecoder *image);
 
 private:
-	volatile Graphics::TextureID _id;
+	Graphics::TextureID _id;
 	const byte *_data;
-	volatile int _width, _height;
-	volatile Graphics::PixelFormat _format;
+	int _width, _height;
+	Graphics::PixelFormat _format;
 
 
 // To be used by the event thread
@@ -156,6 +156,23 @@ public:
 	int getWidth() const;
 	int getHeight() const;
 	Graphics::PixelFormat getFormat() const;
+};
+
+class RequestIsTexture : public Request {
+public:
+	RequestIsTexture(Graphics::TextureID id);
+
+	bool isTexture();
+
+private:
+	Graphics::TextureID _id;
+	bool _isTexture;
+
+
+// To be used by the event thread
+public:
+	Graphics::TextureID getID() const;
+	void setIsTexture(bool is);
 };
 
 } // End of namespace Events

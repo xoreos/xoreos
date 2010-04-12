@@ -43,6 +43,17 @@ Cube::~Cube() {
 }
 
 void Cube::reloadTextures() {
+	Events::RequestIsTexture *isTex = new Events::RequestIsTexture(_texture);
+
+	isTex->dispatchAndWait();
+
+	if (isTex->isTexture()) {
+		delete isTex;
+		return;
+	}
+
+	delete isTex;
+
 	Events::RequestCreateTextures *createTex = new Events::RequestCreateTextures(1, &_texture);
 	createTex->dispatch();
 
