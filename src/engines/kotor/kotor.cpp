@@ -102,6 +102,16 @@ void KotOREngine::init() {
 	status("Finding further resource archives directories");
 	ResMan.findSourceDirs();
 
+	status("Loading global auxiliary resources");
+	indexMandatoryRIM("mainmenu.rim");
+	indexMandatoryRIM("mainmenudx.rim");
+	indexMandatoryRIM("legal.rim");
+	indexMandatoryRIM("legaldx.rim");
+	indexMandatoryRIM("global.rim");
+	indexMandatoryRIM("globaldx.rim");
+	indexMandatoryRIM("chargen.rim");
+	indexMandatoryRIM("chargendx.rim");
+
 	status("Loading high-res texture packs");
 	indexMandatoryERF("swpc_tex_gui.erf");
 	indexMandatoryERF("swpc_tex_tpa.erf");

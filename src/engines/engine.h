@@ -45,6 +45,12 @@ protected:
 	/** Add an ERF file to the resource manager, if it exists. */
 	void indexOptionalERF(const std::string &erf);
 
+	/** Add a RIM file to the resource manager, erroring out if the file does not exist. */
+	void indexMandatoryRIM(const std::string &rim);
+
+	/** Add a RIM file to the resource manager, if it exists. */
+	void indexOptionalRIM(const std::string &rim);
+
 	/** Debug method to quickly dump a stream to disk. */
 	void dumpStream(Common::SeekableReadStream &stream, const std::string &fileName);
 };

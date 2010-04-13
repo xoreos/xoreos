@@ -70,6 +70,17 @@ void Engine::indexOptionalERF(const std::string &erf) {
 	}
 }
 
+void Engine::indexMandatoryRIM(const std::string &rim) {
+	ResMan.addRIM(rim);
+}
+
+void Engine::indexOptionalRIM(const std::string &rim) {
+	try {
+		ResMan.addRIM(rim);
+	} catch (Common::Exception &e) {
+	}
+}
+
 void Engine::dumpStream(Common::SeekableReadStream &stream, const std::string &fileName) {
 	uint32 pos = stream.pos();
 
