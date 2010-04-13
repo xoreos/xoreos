@@ -40,21 +40,64 @@ class BIFFile;
  *  resources useable by the game.
  */
 class ResourceManager : public Common::Singleton<ResourceManager> {
+// Type definitions
+private:
+	typedef std::list<std::string> ResFileList;
+	typedef ResFileList::const_iterator ResFileRef;
+
+	/** Where a resource can be found. */
+	enum Source {
+		kSourceBIF,  ///< Within a BIF file.
+		kSourceERF,  ///< Within an ERF file.
+		kSourceRIM,  ///< Within a RIM file.
+		kSourceFile  ///< A direct file.
+	};
+
+	/** A resource. */
+	struct Resource {
+		FileType type; ///< The resource's type.
+
+		Source source; ///< Where can the resource be found?
+
+		// For kSourceBIF / kSourceERF / kSourceRI / kSourceRIMM
+		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM list.
+		uint32 offset;      ///< The offset within the BIF/ERF/RIM file.
+		uint32 size;        ///< The size of the resource data.
+
+		// For kSourceFile
+		std::string path; ///< The file's path.
+	};
+
+	/** List of resources, sorted by priority. */
+	typedef std::list<Resource>                    ResourceList;
+	/** Map over resources with the same name but different type. */
+	typedef std::map<FileType,    ResourceList>    ResourceTypeMap;
+	/** Map over resources, indexed by name. */
+	typedef std::map<std::string, ResourceTypeMap> ResourceMap;
+
+	struct ResourceChange {
+		ResourceMap::iterator     nameIt;
+		ResourceTypeMap::iterator typeIt;
+		ResourceList::iterator    resIt;
+	};
+
+	struct ChangeSet {
+		std::list<ResFileList::iterator> bifs;
+		std::list<ResFileList::iterator> erfs;
+		std::list<ResFileList::iterator> rims;
+		std::list<ResourceChange>        resources;
+	};
+
+	typedef std::list<ChangeSet> ChangeSetList;
+
 public:
+	typedef ChangeSetList::iterator ChangeID;
+
 	ResourceManager();
 	~ResourceManager();
 
 	/** Clear all resource information. */
 	void clear();
-
-	/** Save the current resource index onto the stack. */
-	void stackPush();
-	/** Pop the top-most resource index to the current state. */
-	void stackPop();
-	/** Apply the top-most resource index to the current state. */
-	void stackApply();
-	/** Drop the top-most resource index. */
-	void stackDrop();
 
 	/** Register a path to be the base data directory.
 	 *
@@ -74,8 +117,10 @@ public:
 	/** Load secondary resources.
 	 *
 	 *  Secondary resources are plain files found in the data directory structure.
+
+	 *  @return An ID for all collective changes done by loading the secondary resources.
 	 */
-	void loadSecondaryResources();
+	ChangeID loadSecondaryResources();
 
 	/** Return the list of KEY files found in the base data directory. */
 	const Common::FileList &getKEYList() const;
@@ -88,23 +133,29 @@ public:
 
 	/** Load a KEY index.
 	 *
-	 *  Add all resources found in the KEY and its BIF to the manager.
+	 *  Add all resources found in the KEY and its BIFs to the manager.
 	 *
-	 *  @param key The KEY file to index.
+	 *  @param  key The KEY file to index.
+	 *  @return An ID for all collective changes done by loading the KEY and its BIFs.
 	 */
-	void loadKEY(Common::SeekableReadStream &key);
+	ChangeID loadKEY(Common::SeekableReadStream &key);
 
 	/** Add resources found in the ERF file to the manager.
 	 *
-	 *  @param erf The name of the ERF file within a valid ERF directory in the base dir.
+	 *  @param  erf The name of the ERF file within a valid ERF directory in the base dir.
+	 *  @return An ID for all collective changes done by loading the ERF.
 	 */
-	void addERF(const std::string &erf);
+	ChangeID addERF(const std::string &erf);
 
 	/** Add resources found in the RIM file to the manager.
 	 *
-	 *  @param rim The name of the RIM file within a valid RIM directory in the base dir.
+	 *  @param  rim The name of the RIM file within a valid RIM directory in the base dir.
+	 *  @return An ID for all collective changes done by loading the RIM.
 	 */
-	void addRIM(const std::string &rim);
+	ChangeID addRIM(const std::string &rim);
+
+	/** Undo the changes done in the specified change ID. */
+	void undo(ChangeID &change);
 
 	/** Does a specific resource exists?
 	 *
@@ -168,49 +219,12 @@ public:
 	Common::SeekableReadStream *getImage(const std::string &name, FileType *type = 0) const;
 
 private:
-	/** Where a resource can be found. */
-	enum Source {
-		kSourceBIF,  ///< Within a BIF file.
-		kSourceERF,  ///< Within an ERF file.
-		kSourceRIM,  ///< Within a RIM file.
-		kSourceFile  ///< A direct file.
-	};
+	ResFileList _bifs;
+	ResFileList _erfs;
+	ResFileList _rims;
+	ResourceMap _resources;
 
-	/** A resource. */
-	struct Resource {
-		FileType type; ///< The resource's type.
-
-		Source source; ///< Where can the resource be found?
-
-		// For kSourceBIF / kSourceERF
-		uint32 idx;    ///< Index into the BIF/ERF vector.
-		uint32 offset; ///< The offset within the BIF/ERF file.
-		uint32 size;   ///< The size of the resource data.
-
-		// For kSourceFile
-		std::string path; ///< The file's path.
-	};
-
-	typedef std::vector<std::string> ResFileList;
-
-	/** Map over resources with the same name but different type. */
-	typedef std::map<FileType,    Resource>        ResourceTypeMap;
-	/** Map over resources, indexed by name. */
-	typedef std::map<std::string, ResourceTypeMap> ResourceMap;
-
-	/** A state of the resource manager. */
-	struct State {
-		ResFileList bifs;      ///< BIFs used by the game resources.
-		ResFileList erfs;      ///< ERFs currently searched for game resources.
-		ResFileList rims;      ///< RIMs currently searched for game resources.
-		ResourceMap resources; ///< All game-usable resources.
-
-		void clear();
-	};
-
-	State _state; ///< The current state of the resource manager's index. */
-
-	std::stack<State> _stateStack; ///< A stack with saved states. */
+	ChangeSetList _changes;
 
 	std::string _baseDir; ///< The data base directory.
 	std::string _modDir;  ///< The data directory for .mod files.
@@ -229,15 +243,15 @@ private:
 	std::vector<FileType> _imageTypes; ///< All valid image file types.
 
 	// KEY/BIF loading helpers
-	void findBIFPaths(const KEYFile &keyFile, uint32 &bifStart);
-	void mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart);
+	ResFileRef findBIFPaths(const KEYFile &keyFile, ChangeID &change);
+	void mergeKEYBIFResources(const KEYFile &keyFile, const ResFileRef &bifStart, ChangeID &change);
 
-	void addResource(const Resource &resource, std::string name);
-	void addResources(const Common::FileList &files);
+	void addResource(const Resource &resource, std::string name, ChangeID &change);
+	void addResources(const Common::FileList &files, ChangeID &change);
 
 	const Resource *getRes(std::string name, const std::vector<FileType> &types) const;
 
-	Common::SeekableReadStream *getOffResFile(const ResFileList &list, const Resource &res) const;
+	Common::SeekableReadStream *getOffResFile(const Resource &res) const;
 };
 
 } // End of namespace Aurora

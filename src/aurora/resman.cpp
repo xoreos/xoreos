@@ -34,14 +34,6 @@ DECLARE_SINGLETON(Aurora::ResourceManager)
 
 namespace Aurora {
 
-void ResourceManager::State::clear() {
-	resources.clear();
-	bifs.clear();
-	erfs.clear();
-	rims.clear();
-}
-
-
 ResourceManager::ResourceManager() {
 	_musicTypes.push_back(kFileTypeWAV);
 	_musicTypes.push_back(kFileTypeBMU);
@@ -61,7 +53,10 @@ ResourceManager::~ResourceManager() {
 }
 
 void ResourceManager::clear() {
-	_state.clear();
+	_resources.clear();
+	_bifs.clear();
+	_erfs.clear();
+	_rims.clear();
 
 	_baseDir.clear();
 	_modDir.clear();
@@ -74,23 +69,6 @@ void ResourceManager::clear() {
 	_rimFiles.clear();
 
 	_bifSourceDir.clear();
-}
-
-void ResourceManager::stackPush() {
-	_stateStack.push(_state);
-}
-
-void ResourceManager::stackPop() {
-	stackApply();
-	stackDrop();
-}
-
-void ResourceManager::stackApply() {
-	_state = _stateStack.top();
-}
-
-void ResourceManager::stackDrop() {
-	_stateStack.pop();
 }
 
 void ResourceManager::registerDataBaseDir(const std::string &path) {
@@ -124,7 +102,7 @@ void ResourceManager::addBIFSourceDir(const std::string &dir) {
 	_bifSourceDir.push_back(Common::FilePath::normalize(bifDir));
 }
 
-void ResourceManager::loadSecondaryResources() {
+ResourceManager::ChangeID ResourceManager::loadSecondaryResources() {
 	// Find all .mod, .hak and .rim in the respective directories
 
 	_modDir = Common::FilePath::findSubDirectory(_baseDir, "modules", true);
@@ -141,6 +119,10 @@ void ResourceManager::loadSecondaryResources() {
 	modFiles.getSubList(".*\\.rim", _rimFiles, true);
 	rimFiles.getSubList(".*\\.rim", _rimFiles, true);
 
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
+
 	// Find all music files
 
 	Common::FileList musicFiles;
@@ -150,7 +132,7 @@ void ResourceManager::loadSecondaryResources() {
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
 		musicFiles.addDirectory(musicDir, -1);
 
-	addResources(musicFiles);
+	addResources(musicFiles, change);
 
 	// Find all sound files
 
@@ -168,7 +150,7 @@ void ResourceManager::loadSecondaryResources() {
 	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamvoice" , true)).empty())
 		soundFiles.addDirectory(soundDir, -1);
 
-	addResources(soundFiles);
+	addResources(soundFiles, change);
 
 	// Add the override directory, which has priority over all other base sources
 
@@ -178,7 +160,9 @@ void ResourceManager::loadSecondaryResources() {
 	if (!(overrideDir = Common::FilePath::findSubDirectory(_baseDir, "override", true)).empty())
 		overrideFiles.addDirectory(overrideDir, -1);
 
-	addResources(overrideFiles);
+	addResources(overrideFiles, change);
+
+	return change;
 }
 
 const Common::FileList &ResourceManager::getKEYList() const {
@@ -193,26 +177,26 @@ const Common::FileList &ResourceManager::getRIMList() const {
 	return _rimFiles;
 }
 
-void ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
-	bifStart = _state.bifs.size();
+ResourceManager::ResFileRef ResourceManager::findBIFPaths(const KEYFile &keyFile, ChangeID &change) {
+	ResFileRef bifStart = _bifs.end();
 
 	uint32 keyBIFCount = keyFile.getBIFs().size();
-
-	_state.bifs.resize(bifStart + keyBIFCount);
 
 	// Go through all BIF names the KEY wants, trying to find a match in our BIF list
 	for (uint32 i = 0; i < keyBIFCount; i++) {
 		bool found = false;
 
+		_bifs.push_back("");
+
 		// Look through all BIF base directories
 		for (std::vector<std::string>::const_iterator bifBase = _bifSourceDir.begin(); bifBase != _bifSourceDir.end(); ++bifBase) {
 			// The BIF names in the KEY are relative to a BIF base directory
-			_state.bifs[bifStart + i] = Common::FilePath::normalize(*bifBase + "/" + keyFile.getBIFs()[i]);
+			_bifs.back() = Common::FilePath::normalize(*bifBase + "/" + keyFile.getBIFs()[i]);
 
 			// Look through all our BIFs, looking for a match
 			for (Common::FileList::const_iterator it = _bifFiles.begin(); it != _bifFiles.end(); ++it) {
-				if (iequals(*it, _state.bifs[bifStart + i])) {
-					_state.bifs[bifStart + i] = *it;
+				if (iequals(*it, _bifs.back())) {
+					_bifs.back() = *it;
 					found = true;
 					break;
 				}
@@ -224,12 +208,20 @@ void ResourceManager::findBIFPaths(const KEYFile &keyFile, uint32 &bifStart) {
 
 		// Did we find it?
 		if (!found)
-			throw Common::Exception("BIF \"%s\" not found", _state.bifs[bifStart + i].c_str());
+			throw Common::Exception("BIF \"%s\" not found", _bifs.back().c_str());
 
+		// Add the information of the new BIF to the change set
+		change->bifs.push_back(--_bifs.end());
+
+		// If we didn't yet remember the start of the BIF sequence, do it now
+		if (bifStart == _bifs.end())
+			--bifStart;
 	}
+
+	return bifStart;
 }
 
-void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifStart) {
+void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, const ResFileRef &bifStart, ChangeID &change) {
 	uint32 keyBIFCount = keyFile.getBIFs().size();
 
 	std::vector<BIFFile> keyBIFFiles;
@@ -239,10 +231,11 @@ void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifSta
 	// Try to load all needed BIF files
 	try {
 
-		for (uint32 i = 0; i < keyBIFCount; i++) {
+		ResFileList::const_iterator curBIF = bifStart;
+		for (uint32 i = 0; i < keyBIFCount; i++, ++curBIF) {
 			Common::File keyBIFFile;
-			if (!keyBIFFile.open(_state.bifs[bifStart + i]))
-				throw Common::Exception("Can't open file \"%s\"", _state.bifs[bifStart + i].c_str());
+			if (!keyBIFFile.open(*curBIF))
+				throw Common::Exception("Can't open file \"%s\"", curBIF->c_str());
 
 			keyBIFFiles[i].load(keyBIFFile);
 		}
@@ -275,14 +268,17 @@ void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifSta
 
 			// Build the complete resource record
 			Resource res;
-			res.source = kSourceBIF;
-			res.idx    = bifStart + keyRes->bifIndex;
-			res.type   = keyRes->type;
-			res.offset = bifRes.offset;
-			res.size   = bifRes.size;
+			res.source  = kSourceBIF;
+			res.resFile = bifStart;
+			res.type    = keyRes->type;
+			res.offset  = bifRes.offset;
+			res.size    = bifRes.size;
+
+			// Advance the resFile iterator
+			for (uint32 i = 0; i < keyRes->bifIndex; i++, ++res.resFile);
 
 			// And add it to our list
-			addResource(res, keyRes->name);
+			addResource(res, keyRes->name, change);
 		}
 
 	} catch (Common::Exception &e) {
@@ -292,7 +288,7 @@ void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, uint32 bifSta
 
 }
 
-void ResourceManager::loadKEY(Common::SeekableReadStream &key) {
+ResourceManager::ChangeID ResourceManager::loadKEY(Common::SeekableReadStream &key) {
 	if (_baseDir.empty())
 		throw Common::Exception("No base data directory registered");
 
@@ -300,15 +296,20 @@ void ResourceManager::loadKEY(Common::SeekableReadStream &key) {
 
 	keyFile.load(key);
 
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
+
 	// Search for the correct BIFs
-	uint32 bifStart;
-	findBIFPaths(keyFile, bifStart);
+	ResFileRef bifStart = findBIFPaths(keyFile, change);
 
 	// Merge the resource information of the KEY file and its BIF files into our resource map
-	mergeKEYBIFResources(keyFile, bifStart);
+	mergeKEYBIFResources(keyFile, bifStart, change);
+
+	return change;
 }
 
-void ResourceManager::addERF(const std::string &erf) {
+ResourceManager::ChangeID ResourceManager::addERF(const std::string &erf) {
 	std::string erfFileName;
 
 	if (Common::FilePath::isAbsolute(erf)) {
@@ -340,26 +341,33 @@ void ResourceManager::addERF(const std::string &erf) {
 
 	erfIndex.load(erfFile);
 
-	int erfIdx = _state.erfs.size();
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
 
-	_state.erfs.push_back(erfFileName);
+	_erfs.push_back(erfFileName);
+
+	// Add the information of the new ERF to the change set
+	change->erfs.push_back(--_erfs.end());
 
 	const ERFFile::ResourceList &resources = erfIndex.getResources();
 	for (ERFFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
 		// Build the resource record
 		Resource res;
-		res.source = kSourceERF;
-		res.idx    = erfIdx;
-		res.type   = resource->type;
-		res.offset = resource->offset;
-		res.size   = resource->size;
+		res.source  = kSourceERF;
+		res.resFile = --_erfs.end();
+		res.type    = resource->type;
+		res.offset  = resource->offset;
+		res.size    = resource->size;
 
 		// And add it to our list
-		addResource(res, resource->name);
+		addResource(res, resource->name, change);
 	}
+
+	return change;
 }
 
-void ResourceManager::addRIM(const std::string &rim) {
+ResourceManager::ChangeID ResourceManager::addRIM(const std::string &rim) {
 	std::string rimFileName;
 
 	if (Common::FilePath::isAbsolute(rim)) {
@@ -391,23 +399,69 @@ void ResourceManager::addRIM(const std::string &rim) {
 
 	rimIndex.load(rimFile);
 
-	int rimIdx = _state.rims.size();
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
 
-	_state.rims.push_back(rimFileName);
+	_rims.push_back(rimFileName);
+
+	// Add the information of the new RIM to the change set
+	change->rims.push_back(--_rims.end());
 
 	const RIMFile::ResourceList &resources = rimIndex.getResources();
 	for (RIMFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
 		// Build the resource record
 		Resource res;
-		res.source = kSourceRIM;
-		res.idx    = rimIdx;
-		res.type   = resource->type;
-		res.offset = resource->offset;
-		res.size   = resource->size;
+		res.source  = kSourceRIM;
+		res.resFile = --_rims.end();
+		res.type    = resource->type;
+		res.offset  = resource->offset;
+		res.size    = resource->size;
 
 		// And add it to our list
-		addResource(res, resource->name);
+		addResource(res, resource->name, change);
 	}
+
+	return change;
+}
+
+void ResourceManager::undo(ChangeID &change) {
+	if (change == _changes.end())
+		// Nothing to do
+		return;
+
+	// Go through all changes in the resource map
+	for (std::list<ResourceChange>::iterator resChange = change->resources.begin(); resChange != change->resources.end(); ++resChange) {
+
+		// Remove the resource
+		resChange->typeIt->second.erase(resChange->resIt);
+
+		// If the resource list is empty, remove that one too
+		if (resChange->typeIt->second.empty())
+			resChange->nameIt->second.erase(resChange->typeIt);
+
+		// And if the type map is empty too, remove that one as well
+		if (resChange->nameIt->second.empty())
+			_resources.erase(resChange->nameIt);
+	}
+
+	// Removing all changes in the BIF list
+	for (std::list<ResFileList::iterator>::iterator bifChange = change->bifs.begin(); bifChange != change->bifs.end(); ++bifChange)
+		_bifs.erase(*bifChange);
+
+	// Removing all changes in the ERF list
+	for (std::list<ResFileList::iterator>::iterator erfChange = change->erfs.begin(); erfChange != change->erfs.end(); ++erfChange)
+		_erfs.erase(*erfChange);
+
+	// Removing all changes in the RIM list
+	for (std::list<ResFileList::iterator>::iterator rimChange = change->rims.begin(); rimChange != change->rims.end(); ++rimChange)
+		_rims.erase(*rimChange);
+
+	// Now we can remove the change set from our list of change sets
+	_changes.erase(change);
+
+	// And finally set the change ID to a defined empty state
+	change = _changes.end();
 }
 
 bool ResourceManager::hasResource(const std::string &name, FileType type) const {
@@ -425,14 +479,14 @@ bool ResourceManager::hasResource(const std::string &name, const std::vector<Fil
 	return false;
 }
 
-Common::SeekableReadStream *ResourceManager::getOffResFile(const ResFileList &list, const Resource &res) const {
+Common::SeekableReadStream *ResourceManager::getOffResFile(const Resource &res) const {
 	// Read the data out of the file and return a MemoryReadStream
 
-	if (res.idx >= list.size())
+	if (res.resFile == _bifs.end())
 		return 0;
 
 	Common::File file;
-	if (!file.open(list[res.idx]))
+	if (!file.open(*res.resFile))
 		return 0;
 
 	if (!file.seek(res.offset))
@@ -469,11 +523,11 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 
 	if        (res->source == kSourceBIF) {
 		// Read the data out of the BIF and return a MemoryReadStream
-		return getOffResFile(_state.bifs, *res);
+		return getOffResFile(*res);
 	} else if (res->source == kSourceERF) {
-		return getOffResFile(_state.erfs, *res);
+		return getOffResFile(*res);
 	} else if (res->source == kSourceRIM) {
-		return getOffResFile(_state.rims, *res);
+		return getOffResFile(*res);
 	} else if (res->source == kSourceFile) {
 		// Open the file and return it
 
@@ -520,35 +574,52 @@ Common::SeekableReadStream *ResourceManager::getImage(const std::string &name, F
 	return 0;
 }
 
-void ResourceManager::addResource(const Resource &resource, std::string name) {
+void ResourceManager::addResource(const Resource &resource, std::string name, ChangeID &change) {
 	boost::to_lower(name);
 
-	ResourceMap::iterator resTypeMap = _state.resources.find(name);
-	if (resTypeMap == _state.resources.end()) {
+	ResourceMap::iterator resTypeMap = _resources.find(name);
+	if (resTypeMap == _resources.end()) {
 		// We don't yet have a resource with this name, create a new type map for it
 
 		std::pair<ResourceMap::iterator, bool> result;
 
-		result = _state.resources.insert(std::make_pair(name, ResourceTypeMap()));
+		result = _resources.insert(std::make_pair(name, ResourceTypeMap()));
 
 		resTypeMap = result.first;
 	}
 
-	// Add the resource to the type map
-	resTypeMap->second.insert(std::make_pair(resource.type, resource));
+	ResourceTypeMap::iterator resList = resTypeMap->second.find(resource.type);
+	if (resList == resTypeMap->second.end()) {
+		// We don't yet have a resource with that name and type, create a new resource list for it
+
+		std::pair<ResourceTypeMap::iterator, bool> result;
+
+		result = resTypeMap->second.insert(std::make_pair(resource.type, ResourceList()));
+
+		resList = result.first;
+	}
+
+	// Add the resource to the list
+	resList->second.push_back(resource);
+
+	// Remember the resource in the change set
+	change->resources.push_back(ResourceChange());
+	change->resources.back().nameIt = resTypeMap;
+	change->resources.back().typeIt = resList;
+	change->resources.back().resIt  = --resList->second.end();
 }
 
-void ResourceManager::addResources(const Common::FileList &files) {
+void ResourceManager::addResources(const Common::FileList &files, ChangeID &change) {
 	for (Common::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
 		Resource res;
-		res.source = kSourceFile;
-		res.path   = *file;
-		res.type   = getFileType(*file);
-		res.idx    = 0xFFFFFFFF;
-		res.offset = 0xFFFFFFFF;
-		res.size   = 0xFFFFFFFF;
+		res.source  = kSourceFile;
+		res.path    = *file;
+		res.type    = getFileType(*file);
+		res.resFile = _bifs.end();
+		res.offset  = 0xFFFFFFFF;
+		res.size    = 0xFFFFFFFF;
 
-		addResource(res, Common::FilePath::getStem(*file));
+		addResource(res, Common::FilePath::getStem(*file), change);
 	}
 }
 
@@ -558,15 +629,15 @@ const ResourceManager::Resource *ResourceManager::getRes(std::string name,
 	boost::to_lower(name);
 
 	// Find the resources with the same name
-	ResourceMap::const_iterator resFamily = _state.resources.find(name);
-	if (resFamily == _state.resources.end())
+	ResourceMap::const_iterator resFamily = _resources.find(name);
+	if (resFamily == _resources.end())
 		return 0;
 
 	for (std::vector<FileType>::const_iterator type = types.begin(); type != types.end(); ++type) {
 		// Find the specific resource of the given type
 		ResourceTypeMap::const_iterator res = resFamily->second.find(*type);
-		if (res != resFamily->second.end())
-			return &res->second;
+		if ((res != resFamily->second.end()) && !res->second.empty())
+			return &res->second.back();
 	}
 
 	return 0;
