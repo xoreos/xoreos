@@ -652,4 +652,17 @@ const ResourceManager::Resource *ResourceManager::getRes(std::string name,
 	return 0;
 }
 
+void ResourceManager::listResources() const {
+	for (ResourceMap::const_iterator itName = _resources.begin(); itName != _resources.end(); ++itName) {
+		for (ResourceTypeMap::const_iterator itType = itName->second.begin(); itType != itName->second.end(); ++itType) {
+			if (itType->second.empty())
+				continue;
+
+			const Resource &resource = itType->second.back();
+
+			status("%32s%4s %10d", itName->first.c_str(), setFileType("", resource.type).c_str(), resource.size);
+		}
+	}
+}
+
 } // End of namespace Aurora

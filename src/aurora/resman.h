@@ -221,6 +221,9 @@ public:
 	 */
 	Common::SeekableReadStream *getImage(const std::string &name, FileType *type = 0) const;
 
+	/** Small debug method that lists all indexed resources. */
+	void listResources() const;
+
 private:
 	ResFileList _bifs;
 	ResFileList _erfs;
