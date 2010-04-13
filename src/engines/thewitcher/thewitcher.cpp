@@ -94,6 +94,8 @@ void TheWitcherEngine::init() {
 	status("Loading the localized base KEY");
 	indexMandatoryKEY(".*/localized.key");
 
+	status("Finding further resource archives directories");
+	ResMan.findSourceDirs();
 	ResMan.addBIFSourceDir("voices");
 
 	status("Loading the English language KEYs");

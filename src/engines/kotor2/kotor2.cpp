@@ -95,6 +95,13 @@ void KotOR2Engine::init() {
 	status("Loading main KEY");
 	indexMandatoryKEY(".*/chitin.key");
 
+	status("Finding further resource archives directories");
+	ResMan.findSourceDirs();
+
+	status("Loading high-res texture packs");
+	indexMandatoryERF("swpc_tex_gui.erf");
+	indexMandatoryERF("swpc_tex_tpa.erf");
+
 	status("Loading secondary resources");
 	ResMan.loadSecondaryResources();
 }

@@ -114,6 +114,9 @@ public:
 	 */
 	void addBIFSourceDir(const std::string &dir);
 
+	/** Find source directories for resource archives. */
+	void findSourceDirs();
+
 	/** Load secondary resources.
 	 *
 	 *  Secondary resources are plain files found in the data directory structure.
@@ -226,10 +229,11 @@ private:
 
 	ChangeSetList _changes;
 
-	std::string _baseDir; ///< The data base directory.
-	std::string _modDir;  ///< The data directory for .mod files.
-	std::string _hakDir;  ///< The data directory for .hak files.
-	std::string _rimDir;  ///< The data directory for .rim files.
+	std::string _baseDir;     ///< The data base directory.
+	std::string _modDir;      ///< The data directory for .mod files.
+	std::string _hakDir;      ///< The data directory for .hak files.
+	std::string _textureDir;  ///< The data directory for textures-related files.
+	std::string _rimDir;      ///< The data directory for .rim files.
 
 	std::vector<std::string> _bifSourceDir; ///< All directories containing BIFs.
 

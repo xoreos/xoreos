@@ -59,6 +59,17 @@ void Engine::indexOptionalKEY(const std::string &key) {
 	delete keyFile;
 }
 
+void Engine::indexMandatoryERF(const std::string &erf) {
+	ResMan.addERF(erf);
+}
+
+void Engine::indexOptionalERF(const std::string &erf) {
+	try {
+		ResMan.addERF(erf);
+	} catch (Common::Exception &e) {
+	}
+}
+
 void Engine::dumpStream(Common::SeekableReadStream &stream, const std::string &fileName) {
 	uint32 pos = stream.pos();
 

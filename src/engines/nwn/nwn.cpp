@@ -128,6 +128,18 @@ void NWNEngine::init() {
 	indexOptionalKEY(".*/xp3.key");
 	indexOptionalKEY(".*/xp3patch.key");
 
+	status("Finding further resource archives directories");
+	ResMan.findSourceDirs();
+
+	status("Loading high-res texture packs");
+	indexMandatoryERF("gui_32bit.erf");
+	indexOptionalERF("xp1_gui.erf");
+	indexOptionalERF("xp2_gui.erf");
+	indexMandatoryERF("textures_tpa.erf");
+	indexMandatoryERF("tiles_tpa.erf");
+	indexOptionalERF("xp1_tex_tpa.erf");
+	indexOptionalERF("xp2_tex_tpa.erf");
+
 	status("Loading secondary resources");
 	ResMan.loadSecondaryResources();
 }

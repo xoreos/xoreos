@@ -39,6 +39,12 @@ protected:
 	/** Add a KEY file to the resource manager, if it exists. */
 	void indexOptionalKEY(const std::string &key);
 
+	/** Add an ERF file to the resource manager, erroring out if the file does not exist. */
+	void indexMandatoryERF(const std::string &erf);
+
+	/** Add an ERF file to the resource manager, if it exists. */
+	void indexOptionalERF(const std::string &erf);
+
 	/** Debug method to quickly dump a stream to disk. */
 	void dumpStream(Common::SeekableReadStream &stream, const std::string &fileName);
 };

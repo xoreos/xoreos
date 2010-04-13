@@ -61,6 +61,7 @@ void ResourceManager::clear() {
 	_baseDir.clear();
 	_modDir.clear();
 	_hakDir.clear();
+	_textureDir.clear();
 	_rimDir.clear();
 
 	_keyFiles.clear();
@@ -102,23 +103,28 @@ void ResourceManager::addBIFSourceDir(const std::string &dir) {
 	_bifSourceDir.push_back(Common::FilePath::normalize(bifDir));
 }
 
-ResourceManager::ChangeID ResourceManager::loadSecondaryResources() {
+void ResourceManager::findSourceDirs() {
 	// Find all .mod, .hak and .rim in the respective directories
 
-	_modDir = Common::FilePath::findSubDirectory(_baseDir, "modules", true);
-	_hakDir = Common::FilePath::findSubDirectory(_baseDir, "hak"    , true);
-	_rimDir = Common::FilePath::findSubDirectory(_baseDir, "rims"   , true);
+	_modDir     = Common::FilePath::findSubDirectory(_baseDir, "modules"     , true);
+	_hakDir     = Common::FilePath::findSubDirectory(_baseDir, "hak"         , true);
+	_textureDir = Common::FilePath::findSubDirectory(_baseDir, "texturepacks", true);
+	_rimDir     = Common::FilePath::findSubDirectory(_baseDir, "rims"        , true);
 
-	Common::FileList modFiles, hakFiles, rimFiles;
+	Common::FileList modFiles, hakFiles, textureFiles, rimFiles;
 	modFiles.addDirectory(_modDir, -1);
 	hakFiles.addDirectory(_hakDir, -1);
+	textureFiles.addDirectory(_textureDir, -1);
 	rimFiles.addDirectory(_rimDir, -1);
 
 	modFiles.getSubList(".*\\.mod", _erfFiles, true);
 	hakFiles.getSubList(".*\\.hak", _erfFiles, true);
+	textureFiles.getSubList(".*\\.erf", _erfFiles, true);
 	modFiles.getSubList(".*\\.rim", _rimFiles, true);
 	rimFiles.getSubList(".*\\.rim", _rimFiles, true);
+}
 
+ResourceManager::ChangeID ResourceManager::loadSecondaryResources() {
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
@@ -328,6 +334,9 @@ ResourceManager::ChangeID ResourceManager::addERF(const std::string &erf) {
 	if (erfFileName.empty())
 		// Try to open from the .hak directory
 		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(_hakDir + "/" + erf), true);
+	if (erfFileName.empty())
+		// Try to open from the textures directory
+		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(_textureDir + "/" + erf), true);
 
 	if (erfFileName.empty())
 		// Does not exist
