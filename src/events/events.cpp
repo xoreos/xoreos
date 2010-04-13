@@ -22,6 +22,7 @@
 
 #include "graphics/types.h"
 #include "graphics/graphics.h"
+#include "graphics/texture.h"
 
 #include "sound/sound.h"
 
@@ -33,10 +34,8 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 	&EventsManager::requestFullscreen,
 	&EventsManager::requestWindowed,
 	&EventsManager::requestResize,
-	&EventsManager::requestCreateTextures,
-	&EventsManager::requestDestroyTextures,
 	&EventsManager::requestLoadTexture,
-	&EventsManager::requestIsTexture
+	&EventsManager::requestDestroyTexture
 };
 
 
@@ -258,22 +257,15 @@ void EventsManager::requestResize(Request &request) {
 	GfxMan.changeSize(request._resize.width, request._resize.height);
 }
 
-void EventsManager::requestCreateTextures(Request &request) {
-	GfxMan.createTextures(request._createTextures.count, request._createTextures.ids);
-}
-
-void EventsManager::requestDestroyTextures(Request &request) {
-	GfxMan.destroyTextures(request._destroyTextures.count, request._destroyTextures.ids);
-}
-
 void EventsManager::requestLoadTexture(Request &request) {
-	GfxMan.loadTexture(request._loadTexture.id, request._loadTexture.data,
-	                   request._loadTexture.width, request._loadTexture.height,
-	                   request._loadTexture.format);
+	request._loadTexture.texture->reload();
 }
 
-void EventsManager::requestIsTexture(Request &request) {
-	request._isTexture.answer = GfxMan.isTexture(request._isTexture.id);
+void EventsManager::requestDestroyTexture(Request &request) {
+	if (request._destroyTexture.texture)
+		request._destroyTexture.texture->destroy();
+	else
+		GfxMan.destroyTexture(request._destroyTexture.textureID);
 }
 
 } // End of namespace Events

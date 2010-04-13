@@ -113,11 +113,8 @@ private:
 	void requestFullscreen(Request &request);
 	void requestWindowed(Request &request);
 	void requestResize(Request &request);
-	void requestCreateTextures(Request &request);
-	void requestDestroyTextures(Request &request);
 	void requestLoadTexture(Request &request);
-	void requestIsTexture(Request &request);
-
+	void requestDestroyTexture(Request &request);
 
 public:
 	void processEvents();

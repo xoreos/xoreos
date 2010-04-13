@@ -19,6 +19,7 @@
 
 #include "graphics/graphics.h"
 #include "graphics/fpscounter.h"
+#include "graphics/texture.h"
 #include "graphics/renderable.h"
 #include "graphics/cube.h"
 
@@ -67,6 +68,7 @@ void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
 
+	clearTextureList();
 	clearRenderQueue();
 
 	SDL_Quit();
@@ -181,6 +183,20 @@ void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
 	_renderQueue.erase(ref);
 }
 
+GraphicsManager::TextureRef GraphicsManager::registerTexture(Texture &texture) {
+	Common::StackLock lock(_textureMutex);
+
+	_textures.push_back(&texture);
+
+	return --_textures.end();
+}
+
+void GraphicsManager::unregisterTexture(TextureRef &texture) {
+	Common::StackLock lock(_textureMutex);
+
+	_textures.erase(texture);
+}
+
 void GraphicsManager::renderScene() {
 	Common::StackLock lock(_queueMutex);
 
@@ -213,11 +229,21 @@ void GraphicsManager::perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear
 	glFrustum(-halfWidth, halfWidth, -halfHeight, halfHeight, zNear, zFar);
 }
 
-void GraphicsManager::reloadTextures() {
-	Common::StackLock lock(_queueMutex);
+void GraphicsManager::clearTextureList() {
+	for (TextureRef texture = _textures.begin(); texture != _textures.end(); ++texture)
+		(*texture)->removedFromList();
 
-	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it)
-		(*it)->reloadTextures();
+	_textures.clear();
+}
+
+void GraphicsManager::destroyTextures() {
+	for (TextureRef texture = _textures.begin(); texture != _textures.end(); ++texture)
+		(*texture)->destroy();
+}
+
+void GraphicsManager::reloadTextures() {
+	for (TextureRef texture = _textures.begin(); texture != _textures.end(); ++texture)
+		(*texture)->reload();
 }
 
 void GraphicsManager::toggleFullScreen() {
@@ -228,6 +254,9 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 	if (_fullScreen == fullScreen)
 		// Nothing to do
 		return;
+
+	// Destroying all textures, since we need to reload them anywhen when the context is recreated
+	destroyTextures();
 
 	// Save the flags
 	uint32 flags = _screen->flags;
@@ -253,7 +282,7 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 	// Reintroduce OpenGL to the surface
 	setupScene();
 
-	// Reload the objects' textures.
+	// And reloading all textures
 	reloadTextures();
 }
 
@@ -271,6 +300,9 @@ void GraphicsManager::changeSize(int width, int height) {
 	int    bpp       = _screen->format->BitsPerPixel;
 	int    oldWidth  = _screen->w;
 	int    oldHeight = _screen->h;
+
+	// Destroying all textures, since we need to reload them anywhen when the context is recreated
+	destroyTextures();
 
 	// Now try to change modes
 	_screen = SDL_SetVideoMode(width, height, bpp, flags);
@@ -292,36 +324,12 @@ void GraphicsManager::changeSize(int width, int height) {
 	// Reintroduce OpenGL to the surface
 	setupScene();
 
-	// Reload the objects' textures.
+	// And reloading all textures
 	reloadTextures();
 }
 
-void GraphicsManager::createTextures(GLsizei n, TextureID *ids) {
-	glGenTextures(n, ids);
-}
-
-void GraphicsManager::destroyTextures(GLsizei n, const TextureID *ids) {
-	glDeleteTextures(n, ids);
-}
-
-void GraphicsManager::loadTexture(TextureID id, const byte *data, int width, int height, PixelFormat format) {
-	glBindTexture(GL_TEXTURE_2D, id);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, getBytesPerPixel(format),
-			width, height,format, GL_UNSIGNED_BYTE, data);
-
-	if (err != 0)
-		throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));
-}
-
-bool GraphicsManager::isTexture(TextureID id) {
-	return glIsTexture(id);
+void GraphicsManager::destroyTexture(TextureID id) {
+	glDeleteTextures(1, &id);
 }
 
 } // End of namespace Graphics

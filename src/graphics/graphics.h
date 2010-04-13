@@ -27,15 +27,17 @@
 namespace Graphics {
 
 class Renderable;
+class Texture;
 class FPSCounter;
-
-class ImageDecoder;
 
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager> {
 public:
 	typedef std::list<Renderable *> RenderQueue;
 	typedef RenderQueue::iterator RenderQueueRef;
+
+	typedef std::list<Texture *> TextureList;
+	typedef TextureList::iterator TextureRef;
 
 	GraphicsManager();
 	~GraphicsManager();
@@ -70,6 +72,12 @@ public:
 	 */
 	void removeFromRenderQueue(RenderQueueRef &ref);
 
+	/** Register a texture. */
+	TextureRef registerTexture(Texture &texture);
+
+	/** Unregister a texture. */
+	void unregisterTexture(TextureRef &texture);
+
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 	bool _initedGL;
@@ -79,14 +87,18 @@ private:
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
 	RenderQueue _renderQueue; ///< The global rendering queue.
+	TextureList _textures;    ///< The globally known list of textures.
 
-	Common::Mutex _queueMutex; ///< A mutex for the render queue.
+	Common::Mutex _queueMutex;   ///< A mutex for the render queue.
+	Common::Mutex _textureMutex; ///< A mutex for the texture queue.
 
 	FPSCounter *_fpsCounter;
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
 
+	void clearTextureList();
+	void destroyTextures();
 	void reloadTextures();
 
 // Thread-unsafe functions. Should only ever be called from the main thread.
@@ -110,14 +122,8 @@ public:
 	void toggleMouseGrab();
 
 	// Textures
-	/** Create textures. */
-	void createTextures(GLsizei n, TextureID *ids);
-	/** Destroy textures. */
-	void destroyTextures(GLsizei n, const TextureID *ids);
-	/** Load texture image data. */
-	void loadTexture(TextureID id, const byte *data, int width, int height, PixelFormat format);
-	/** Is that ID a real texture? */
-	bool isTexture(TextureID id);
+	/** Destroy a texture. */
+	void destroyTexture(TextureID id);
 };
 
 } // End of namespace Graphics

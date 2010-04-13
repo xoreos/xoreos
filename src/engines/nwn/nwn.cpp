@@ -18,7 +18,6 @@
 #include "common/filelist.h"
 #include "common/stream.h"
 
-#include "graphics/images/tga.h"
 #include "graphics/cube.h"
 
 #include "sound/sound.h"
@@ -93,14 +92,7 @@ void NWNEngine::run(const std::string &directory) {
 
 	try {
 
-		Common::SeekableReadStream *tga = ResMan.getResource("fnt_console", Aurora::kFileTypeTGA);
-		if (tga) {
-			status("Found a TGA, using it as a texture for a cube");
-
-			Graphics::ImageDecoder *texture = new Graphics::TGA(tga);
-
-			cube = new Graphics::Cube(texture);
-		}
+		cube = new Graphics::Cube("fnt_console");
 
 	} catch (Common::Exception &e) {
 		Common::printException(e);

@@ -27,19 +27,6 @@ Request::Request(ITCEvent type) : _type(type), _dispatched(false), _garbage(fals
 }
 
 Request::~Request() {
-	switch (_type) {
-		case kITCEventCreateTextures:
-			delete[] _createTextures.ids;
-			break;
-
-		case kITCEventDestroyTextures:
-			delete[] _destroyTextures.ids;
-			break;
-
-		default:
-			break;
-	}
-
 	delete _hasReply;
 }
 
@@ -53,19 +40,6 @@ void Request::setGarbage() {
 }
 
 void Request::create() {
-	switch (_type) {
-		case kITCEventCreateTextures:
-			_createTextures.ids = 0;
-			break;
-
-		case kITCEventDestroyTextures:
-			_destroyTextures.ids = 0;
-			break;
-
-		default:
-			break;
-	}
-
 	_event.type       = kEventITC;
 	_event.user.code  = (int) _type;
 	_event.user.data1 = (void *) this;
@@ -77,18 +51,6 @@ void Request::signalReply() {
 }
 
 void Request::copyToReply() {
-	switch (_type) {
-		case kITCEventCreateTextures:
-			memcpy(_createTextures.replyIDs, _createTextures.ids, _createTextures.count * sizeof(Graphics::TextureID));
-			break;
-
-		case kITCEventIsTexture:
-			*_isTexture.replyAnswer = _isTexture.answer;
-			break;
-
-		default:
-			break;
-	}
 }
 
 } // End of namespace Events

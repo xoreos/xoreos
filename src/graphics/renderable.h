@@ -27,20 +27,16 @@ public:
 	/** Signal the object that we're rendering a new frame. */
 	virtual void newFrame() = 0;
 
-	/** Signal the object that it needs to reload its textures. */
-	virtual void reloadTextures() = 0;
-
 	/** Render the object. */
 	virtual void render() = 0;
 
 	/** Notify the object that it has been kicked out of the render queue. */
 	void kickedOutOfRenderQueue();
 
+	/** Get the distance of the object from the viewer. */
 	double getDistance() const;
 
 protected:
-	volatile bool _justAddedToQueue; ///< Was the object just added to the queue?
-
 	double _distance; ///< The distance of the object from the viewer.
 
 	/** Add the object to the render queue. */

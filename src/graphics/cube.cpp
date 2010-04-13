@@ -16,6 +16,7 @@
 #include "common/stream.h"
 
 #include "graphics/cube.h"
+#include "graphics/texture.h"
 #include "graphics/images/tga.h"
 
 #include "events/events.h"
@@ -38,10 +39,6 @@ void CubeSide::newFrame() {
 	glPopMatrix();
 }
 
-void CubeSide::reloadTextures() {
-	_parent->reloadTextures();
-}
-
 void CubeSide::render() {
 	_parent->applyTransformation(_n);
 	_parent->setTexture();
@@ -61,52 +58,19 @@ void CubeSide::render() {
 }
 
 
-Cube::Cube(ImageDecoder *texture) : _textureImage(texture) {
-	_lastRotateTime = 0;
-
-	_texture = 0xFFFFFFFF;
-
-	reloadTextures();
+Cube::Cube(const std::string &texture) : _lastRotateTime(0) {
+	_texture = new Texture(texture);
 
 	for (int i = 0; i < 6; i++)
 		_sides[i] = new CubeSide(*this, i);
 }
 
 Cube::~Cube() {
-	RequestID destroyTex = RequestMan.destroyTextures(1, &_texture);
-	RequestMan.dispatchAndForget(destroyTex);
-
-	delete _textureImage;
+	delete _texture;
 
 	for (int i = 0; i < 6; i++)
 		delete _sides[i];
 }
-
-void Cube::reloadTextures() {
-	bool noReload;
-	RequestID isTexture = RequestMan.isTexture(_texture, &noReload);
-	RequestMan.dispatchAndWait(isTexture);
-	if (noReload)
-		return;
-
-	RequestID createTex = RequestMan.createTextures(1, &_texture);
-	RequestMan.dispatch(createTex);
-
-	_textureImage->load();
-
-	RequestMan.waitReply(createTex);
-
-	RequestID loadTex = RequestMan.loadTexture(_texture, _textureImage);
-	RequestMan.dispatchAndWait(loadTex);
-}
-
-	/*
-	GLfloat modelView[16];
-
-	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
-
-	status("%f", modelView[12] * modelView[12] + modelView[13] * modelView[13] + modelView[14] * modelView[14]);
-	*/
 
 void Cube::setRotate(float rotate) {
 	glRotatef(-rotate, 1.0, 0.0, 0.0);
@@ -159,13 +123,8 @@ void Cube::applyTransformation(int n) {
 }
 
 void Cube::setTexture() {
-	if (_sides[0]->_justAddedToQueue) {
-		reloadTextures();
-		_sides[0]->_justAddedToQueue = false;
-	}
-
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, _texture);
+	glBindTexture(GL_TEXTURE_2D, _texture->getID());
 }
 
 } // End of namespace Graphics

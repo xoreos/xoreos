@@ -17,8 +17,7 @@
 namespace Graphics {
 
 Renderable::Renderable() {
-	_inRenderQueue    = false;
-	_justAddedToQueue = false;
+	_inRenderQueue = false;
 
 	_distance = 0.0;
 }
@@ -28,8 +27,7 @@ Renderable::~Renderable() {
 }
 
 void Renderable::kickedOutOfRenderQueue() {
-	_inRenderQueue    = false;
-	_justAddedToQueue = false;
+	_inRenderQueue = false;
 }
 
 double Renderable::getDistance() const {
@@ -50,8 +48,7 @@ void Renderable::addToRenderQueue() {
 
 	_renderQueueRef = GfxMan.addToRenderQueue(*this);
 
-	_inRenderQueue    = true;
-	_justAddedToQueue = true;
+	_inRenderQueue = true;
 }
 
 void Renderable::removeFromRenderQueue() {
@@ -61,8 +58,7 @@ void Renderable::removeFromRenderQueue() {
 
 	GfxMan.removeFromRenderQueue(_renderQueueRef);
 
-	_inRenderQueue    = false;
-	_justAddedToQueue = false;
+	_inRenderQueue = false;
 }
 
 } // End of namespace Graphics

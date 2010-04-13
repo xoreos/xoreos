@@ -24,7 +24,7 @@ namespace Common {
 
 namespace Graphics {
 
-class ImageDecoder;
+class Texture;
 
 class Cube;
 
@@ -47,7 +47,7 @@ private:
 
 class Cube {
 public:
-	Cube(ImageDecoder *texture);
+	Cube(const std::string &texture);
 	~Cube();
 
 private:
@@ -56,11 +56,7 @@ private:
 	uint32 _lastRotateTime;
 	float  _rotation;
 
-	TextureID _texture;
-
-	ImageDecoder *_textureImage;
-
-	void initTexture(Common::SeekableReadStream &tgaTexture);
+	Texture *_texture;
 
 	void setRotate(float rotate);
 

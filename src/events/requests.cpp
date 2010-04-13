@@ -126,45 +126,28 @@ RequestID RequestManager::resize(int width, int height) {
 	return newRequest(kITCEventWindowed);
 }
 
-RequestID RequestManager::createTextures(uint32 n, Graphics::TextureID *ids) {
-	RequestID rID = newRequest(kITCEventCreateTextures);
-
-	(*rID)->_createTextures.count    = n;
-	(*rID)->_createTextures.replyIDs = ids;
-
-	(*rID)->_createTextures.ids = new Graphics::TextureID[n];
-
-	return rID;
-}
-
-RequestID RequestManager::destroyTextures(uint32 n, Graphics::TextureID *ids) {
-	RequestID rID = newRequest(kITCEventDestroyTextures);
-
-	(*rID)->_destroyTextures.count = n;
-
-	(*rID)->_destroyTextures.ids = new Graphics::TextureID[n];
-	memcpy((*rID)->_destroyTextures.ids, ids, n * sizeof(Graphics::TextureID));
-
-	return rID;
-}
-
-RequestID RequestManager::loadTexture(Graphics::TextureID id, const Graphics::ImageDecoder *image) {
+RequestID RequestManager::loadTexture(Graphics::Texture *texture) {
 	RequestID rID = newRequest(kITCEventLoadTexture);
 
-	(*rID)->_loadTexture.id     = id;
-	(*rID)->_loadTexture.width  = image->getWidth();
-	(*rID)->_loadTexture.height = image->getHeight();
-	(*rID)->_loadTexture.data   = image->getData();
-	(*rID)->_loadTexture.format = image->getFormat();
+	(*rID)->_loadTexture.texture = texture;
 
 	return rID;
 }
 
-RequestID RequestManager::isTexture(Graphics::TextureID id, bool *answer) {
-	RequestID rID = newRequest(kITCEventIsTexture);
+RequestID RequestManager::destroyTexture(Graphics::Texture *texture) {
+	RequestID rID = newRequest(kITCEventDestroyTexture);
 
-	(*rID)->_isTexture.id          = id;
-	(*rID)->_isTexture.replyAnswer = answer;
+	(*rID)->_destroyTexture.texture   = texture;
+	(*rID)->_destroyTexture.textureID = 0xFFFFFFFF;
+
+	return rID;
+}
+
+RequestID RequestManager::destroyTexture(Graphics::TextureID textureID) {
+	RequestID rID = newRequest(kITCEventDestroyTexture);
+
+	(*rID)->_destroyTexture.texture   = 0;
+	(*rID)->_destroyTexture.textureID = textureID;
 
 	return rID;
 }

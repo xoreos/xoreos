@@ -26,7 +26,7 @@
 #include "events/requesttypes.h"
 
 namespace Graphics {
-	class ImageDecoder;
+	class Texture;
 }
 
 namespace Events {
@@ -75,14 +75,12 @@ public:
 	RequestID resize(int width, int height);
 
 	// Textures
-	/** Request the creation of textures. */
-	RequestID createTextures(uint32 n, Graphics::TextureID *ids);
-	/** Request the destruction of textures. */
-	RequestID destroyTextures(uint32 n, Graphics::TextureID *ids);
-	/** Request the loading of texture image data. */
-	RequestID loadTexture(Graphics::TextureID id, const Graphics::ImageDecoder *image);
-	/** Ask if a texture ID is a real, working texture. */
-	RequestID isTexture(Graphics::TextureID id, bool *answer);
+	/** Request the loading of a texture. */
+	RequestID loadTexture(Graphics::Texture *texture);
+	/** Request the destruction of a texture. */
+	RequestID destroyTexture(Graphics::Texture *texture);
+	/** Request the destruction of a texture. */
+	RequestID destroyTexture(Graphics::TextureID textureID);
 
 private:
 	Common::Mutex _mutexUse; ///< The mutex locking the use of the manager.

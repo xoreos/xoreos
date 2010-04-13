@@ -11,6 +11,7 @@ noinst_HEADERS = types.h \
                  images/dumpppm.h \
                  graphics.h \
                  fpscounter.h \
+                 texture.h \
                  renderable.h \
                  cube.h
 
@@ -19,5 +20,6 @@ libgraphics_la_SOURCES = glew/glew.c \
                          images/dumpppm.cpp \
                          graphics.cpp \
                          fpscounter.cpp \
+                         texture.cpp \
                          renderable.cpp \
                          cube.cpp

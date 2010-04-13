@@ -23,7 +23,7 @@
 #include "graphics/types.h"
 
 namespace Graphics {
-	class ImageDecoder;
+	class Texture;
 }
 
 namespace Events {
@@ -35,28 +35,13 @@ struct RequestDataResize {
 	int height;
 };
 
-struct RequestDataCreateTexture {
-	uint32 count;
-	Graphics::TextureID *ids;
-	Graphics::TextureID *replyIDs;
+struct RequestDataLoadTexture {
+	Graphics::Texture *texture;
 };
 
 struct RequestDataDestroyTexture {
-	uint32 count;
-	Graphics::TextureID *ids;
-};
-
-struct RequestDataLoadTexture {
-	Graphics::TextureID id;
-	int width, height;
-	const byte *data;
-	Graphics::PixelFormat format;
-};
-
-struct RequestDataIsTexture {
-	Graphics::TextureID id;
-	bool answer;
-	bool *replyAnswer;
+	Graphics::Texture  *texture;
+	Graphics::TextureID textureID;
 };
 
 /** A request, carrying inter-thread communication. */
@@ -81,10 +66,8 @@ private:
 	/** Request data. */
 	union {
 		RequestDataResize         _resize;
-		RequestDataCreateTexture  _createTextures;
-		RequestDataDestroyTexture _destroyTextures;
 		RequestDataLoadTexture    _loadTexture;
-		RequestDataIsTexture      _isTexture;
+		RequestDataDestroyTexture _destroyTexture;
 	};
 
 	/** Create the empty request frame. */
