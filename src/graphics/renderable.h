@@ -24,6 +24,9 @@ public:
 	Renderable();
 	virtual ~Renderable();
 
+	/** Signal the object that we're rendering a new frame. */
+	virtual void newFrame() = 0;
+
 	/** Signal the object that it needs to reload its textures. */
 	virtual void reloadTextures() = 0;
 
@@ -33,13 +36,20 @@ public:
 	/** Notify the object that it has been kicked out of the render queue. */
 	void kickedOutOfRenderQueue();
 
+	double getDistance() const;
+
 protected:
 	volatile bool _justAddedToQueue; ///< Was the object just added to the queue?
+
+	double _distance; ///< The distance of the object from the viewer.
 
 	/** Add the object to the render queue. */
 	void addToRenderQueue();
 	/** Remove the object from the render queue. */
 	void removeFromRenderQueue();
+
+	/** Set the distance to the distance between the origin and the current object-space origin. */
+	void setCurrentDistance();
 
 private:
 	bool _inRenderQueue; ///< Is the object in the render queue?

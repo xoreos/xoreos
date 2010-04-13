@@ -93,7 +93,7 @@ void NWNEngine::run(const std::string &directory) {
 
 	try {
 
-		Common::SeekableReadStream *tga = ResMan.getResource("tsw01_molten01", Aurora::kFileTypeTGA);
+		Common::SeekableReadStream *tga = ResMan.getResource("fnt_console", Aurora::kFileTypeTGA);
 		if (tga) {
 			status("Found a TGA, using it as a texture for a cube");
 

@@ -26,17 +26,35 @@ namespace Graphics {
 
 class ImageDecoder;
 
-class Cube : public Renderable {
+class Cube;
+
+class CubeSide : public Renderable {
 public:
-	Cube(ImageDecoder *texture);
-	~Cube();
+	CubeSide(Cube &parent, int n);
+
+	void newFrame();
 
 	void reloadTextures();
 
 	void render();
 
 private:
+	Cube *_parent;
+	int _n;
+
+	friend class Cube;
+};
+
+class Cube {
+public:
+	Cube(ImageDecoder *texture);
+	~Cube();
+
+private:
+	CubeSide *_sides[6];
+
 	uint32 _lastRotateTime;
+	float  _rotation;
 
 	TextureID _texture;
 
@@ -45,7 +63,14 @@ private:
 	void initTexture(Common::SeekableReadStream &tgaTexture);
 
 	void setRotate(float rotate);
-	void doCubeSolid();
+
+	void applyTransformation(int n);
+	void setTexture();
+
+	void newFrame();
+	void reloadTextures();
+
+	friend class CubeSide;
 };
 
 } // End of namespace Graphics

@@ -19,6 +19,8 @@ namespace Graphics {
 Renderable::Renderable() {
 	_inRenderQueue    = false;
 	_justAddedToQueue = false;
+
+	_distance = 0.0;
 }
 
 Renderable::~Renderable() {
@@ -28,6 +30,17 @@ Renderable::~Renderable() {
 void Renderable::kickedOutOfRenderQueue() {
 	_inRenderQueue    = false;
 	_justAddedToQueue = false;
+}
+
+double Renderable::getDistance() const {
+	return _distance;
+}
+
+void Renderable::setCurrentDistance() {
+	GLfloat modelView[16];
+
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
+	_distance = modelView[12] * modelView[12] + modelView[13] * modelView[13] + modelView[14] * modelView[14];
 }
 
 void Renderable::addToRenderQueue() {

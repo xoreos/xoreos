@@ -25,6 +25,40 @@ using Events::RequestID;
 
 namespace Graphics {
 
+CubeSide::CubeSide(Cube &parent, int n) : _parent(&parent), _n(n) {
+	addToRenderQueue();
+}
+
+void CubeSide::newFrame() {
+	_parent->newFrame();
+
+	glPushMatrix();
+	_parent->applyTransformation(_n);
+	setCurrentDistance();
+	glPopMatrix();
+}
+
+void CubeSide::reloadTextures() {
+	_parent->reloadTextures();
+}
+
+void CubeSide::render() {
+	_parent->applyTransformation(_n);
+	_parent->setTexture();
+
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0.0, 0.0);
+		glVertex3f(-1.00, -1.00,  0.00);
+		glTexCoord2f(1.0, 0.0);
+		glVertex3f( 1.00, -1.00,  0.00);
+		glTexCoord2f(1.0, 1.0);
+		glVertex3f( 1.00,  1.00,  0.00);
+		glTexCoord2f(0.0, 1.0);
+		glVertex3f(-1.00,  1.00,  0.00);
+	glEnd();
+}
+
+
 Cube::Cube(ImageDecoder *texture) : _textureImage(texture) {
 	_lastRotateTime = 0;
 
@@ -32,7 +66,8 @@ Cube::Cube(ImageDecoder *texture) : _textureImage(texture) {
 
 	reloadTextures();
 
-	addToRenderQueue();
+	for (int i = 0; i < 6; i++)
+		_sides[i] = new CubeSide(*this, i);
 }
 
 Cube::~Cube() {
@@ -40,6 +75,9 @@ Cube::~Cube() {
 	RequestMan.dispatchAndForget(destroyTex);
 
 	delete _textureImage;
+
+	for (int i = 0; i < 6; i++)
+		delete _sides[i];
 }
 
 void Cube::reloadTextures() {
@@ -60,75 +98,13 @@ void Cube::reloadTextures() {
 	RequestMan.dispatchAndWait(loadTex);
 }
 
-void Cube::doCubeSolid() {
-	glColor3f(1.00, 1.00, 1.00);
+	/*
+	GLfloat modelView[16];
 
-	glBegin(GL_POLYGON);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-1.00, -1.00,  1.00);
-		glTexCoord2f(1.0, 0.0);
-		glVertex3f( 1.00, -1.00,  1.00);
-		glTexCoord2f(1.0, 1.0);
-		glVertex3f( 1.00,  1.00,  1.00);
-		glTexCoord2f(0.0, 1.0);
-		glVertex3f(-1.00,  1.00,  1.00);
-	glEnd();
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
 
-	glBegin(GL_POLYGON);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-1.00, -1.00, -1.00);
-		glTexCoord2f(1.0, 0.0);
-		glVertex3f( 1.00, -1.00, -1.00);
-		glTexCoord2f(1.0, 1.0);
-		glVertex3f( 1.00,  1.00, -1.00);
-		glTexCoord2f(0.0, 1.0);
-		glVertex3f(-1.00,  1.00, -1.00);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-1.00, -1.00, -1.00);
-		glTexCoord2f(1.0, 0.0);
-		glVertex3f(-1.00, -1.00,  1.00);
-		glTexCoord2f(1.0, 1.0);
-		glVertex3f(-1.00,  1.00,  1.00);
-		glTexCoord2f(0.0, 1.0);
-		glVertex3f(-1.00,  1.00, -1.00);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f( 1.00, -1.00, -1.00);
-		glTexCoord2f(1.0, 0.0);
-		glVertex3f( 1.00, -1.00,  1.00);
-		glTexCoord2f(1.0, 1.0);
-		glVertex3f( 1.00,  1.00,  1.00);
-		glTexCoord2f(0.0, 1.0);
-		glVertex3f( 1.00,  1.00, -1.00);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-1.00, -1.00,  1.00);
-		glTexCoord2f(1.0, 0.0);
-		glVertex3f( 1.00, -1.00,  1.00);
-		glTexCoord2f(1.0, 1.0);
-		glVertex3f( 1.00, -1.00, -1.00);
-		glTexCoord2f(0.0, 1.0);
-		glVertex3f(-1.00, -1.00, -1.00);
-	glEnd();
-
-	glBegin(GL_POLYGON);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-1.00,  1.00,  1.00);
-		glTexCoord2f(1.0, 0.0);
-		glVertex3f( 1.00,  1.00,  1.00);
-		glTexCoord2f(1.0, 1.0);
-		glVertex3f( 1.00,  1.00, -1.00);
-		glTexCoord2f(0.0, 1.0);
-		glVertex3f(-1.00,  1.00, -1.00);
-	glEnd();
-}
+	status("%f", modelView[12] * modelView[12] + modelView[13] * modelView[13] + modelView[14] * modelView[14]);
+	*/
 
 void Cube::setRotate(float rotate) {
 	glRotatef(-rotate, 1.0, 0.0, 0.0);
@@ -136,13 +112,7 @@ void Cube::setRotate(float rotate) {
 	glRotatef( rotate, 0.0, 0.0, 1.0);
 }
 
-void Cube::render() {
-	// If we were just added to the queue, look if we need to reload our textures
-	if (_justAddedToQueue) {
-		reloadTextures();
-		_justAddedToQueue = false;
-	}
-
+void Cube::newFrame() {
 	if (_lastRotateTime == 0)
 		_lastRotateTime = EventMan.getTimestamp();
 
@@ -152,16 +122,48 @@ void Cube::render() {
 	if (diffTime > 3600)
 		curTime += 3600;
 
+	_rotation = diffTime * 0.1;
+}
+
+void Cube::applyTransformation(int n) {
 	glTranslatef(0.0, 0.0, -3.0);
+	setRotate(_rotation);
+	glScalef(0.5, 0.5, 0.5);
+
+	switch (n) {
+		case 0:
+			glTranslatef(0.0, 0.0, 1.0);
+			break;
+		case 1:
+			glTranslatef(0.0, 0.0, -1.0);
+			break;
+		case 2:
+			glRotatef(90.0, 0.0, 1.0, 0.0);
+			glTranslatef(0.0, 0.0, 1.0);
+			break;
+		case 3:
+			glRotatef(90.0, 0.0, 1.0, 0.0);
+			glTranslatef(0.0, 0.0, -1.0);
+			break;
+		case 4:
+			glRotatef(90.0, 1.0, 0.0, 0.0);
+			glTranslatef(0.0, 0.0, 1.0);
+			break;
+		case 5:
+			glRotatef(90.0, 1.0, 0.0, 0.0);
+			glTranslatef(0.0, 0.0, -1.0);
+			break;
+	}
+}
+
+void Cube::setTexture() {
+	if (_sides[0]->_justAddedToQueue) {
+		reloadTextures();
+		_sides[0]->_justAddedToQueue = false;
+	}
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _texture);
-
-	glPushMatrix();
-	setRotate(diffTime * 0.1);
-	glScalef(0.5, 0.5, 0.5);
-	doCubeSolid();
-	glPopMatrix();
 }
 
 } // End of namespace Graphics

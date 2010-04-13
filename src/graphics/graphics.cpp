@@ -28,6 +28,10 @@ DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
 
+static bool queueComp(Renderable *a, Renderable *b) {
+	return a->getDistance() > b->getDistance();
+}
+
 GraphicsManager::GraphicsManager() {
 	_ready    = false;
 	_initedGL = false;
@@ -181,6 +185,11 @@ void GraphicsManager::renderScene() {
 	Common::StackLock lock(_queueMutex);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it)
+		(*it)->newFrame();
+
+	_renderQueue.sort(queueComp);
 
 	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it) {
 		glPushMatrix();
