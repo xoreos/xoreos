@@ -137,23 +137,35 @@ public:
 	 *
 	 *  @param  name The name (ResRef) of the resource.
 	 *  @param  types A list of file types to look for.
+	 *  @param  foundType If != 0, that's where the actually found type is stored.
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getResource(const std::string &name, const std::vector<FileType> &types) const;
+	Common::SeekableReadStream *getResource(const std::string &name,
+			const std::vector<FileType> &types, FileType *foundType = 0) const;
 
 	/** Return a music resource.
 	 *
 	 *  @param  name The name (ResRef or path) of the resource.
+	 *  @param  type If != 0, that's where the resource's type is stored.
 	 *  @return The music resource stream or 0 if the music resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getMusic(const std::string &name) const;
+	Common::SeekableReadStream *getMusic(const std::string &name, FileType *type = 0) const;
 
 	/** Return a sound resource.
 	 *
 	 *  @param  name The name (ResRef or path) of the resource.
+	 *  @param  type If != 0, that's where the resource's type is stored.
 	 *  @return The sound resource stream or 0 if the sound resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getSound(const std::string &name) const;
+	Common::SeekableReadStream *getSound(const std::string &name, FileType *type = 0) const;
+
+	/** Return an image resource.
+	 *
+	 *  @param  name The name (ResRef or path) of the resource.
+	 *  @param  type If != 0, that's where the resource's type is stored.
+	 *  @return The image resource stream or 0 if the image resource doesn't exist.
+	 */
+	Common::SeekableReadStream *getImage(const std::string &name, FileType *type = 0) const;
 
 private:
 	/** Where a resource can be found. */
@@ -214,6 +226,7 @@ private:
 
 	std::vector<FileType> _musicTypes; ///< All valid music file types.
 	std::vector<FileType> _soundTypes; ///< All valid sound file types.
+	std::vector<FileType> _imageTypes; ///< All valid image file types.
 
 	// KEY/BIF loading helpers
 	void findBIFPaths(const KEYFile &keyFile, uint32 &bifStart);

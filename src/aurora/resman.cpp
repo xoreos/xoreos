@@ -49,6 +49,12 @@ ResourceManager::ResourceManager() {
 
 	_soundTypes.push_back(kFileTypeWAV);
 	_soundTypes.push_back(kFileTypeOGG);
+
+	_imageTypes.push_back(kFileTypeTGA);
+	_imageTypes.push_back(kFileTypeDDS);
+	_imageTypes.push_back(kFileTypePNG);
+	_imageTypes.push_back(kFileTypeBMP);
+	_imageTypes.push_back(kFileTypeJPG);
 }
 
 ResourceManager::~ResourceManager() {
@@ -451,11 +457,15 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const std::string &name,
-		const std::vector<FileType> &types) const {
+		const std::vector<FileType> &types, FileType *foundType) const {
 
 	const Resource *res = getRes(name, types);
 	if (!res)
 		return 0;
+
+	// Return the actually found type
+	if (foundType)
+		*foundType = res->type;
 
 	if        (res->source == kSourceBIF) {
 		// Read the data out of the BIF and return a MemoryReadStream
@@ -480,23 +490,33 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 	return 0;
 }
 
-Common::SeekableReadStream *ResourceManager::getMusic(const std::string &name) const {
+Common::SeekableReadStream *ResourceManager::getMusic(const std::string &name, FileType *type) const {
 	// Try every known music file type
 	Common::SeekableReadStream *res;
-	if ((res = getResource(name, _musicTypes)))
+	if ((res = getResource(name, _musicTypes, type)))
 		return res;
 
 	// No such music
 	return 0;
 }
 
-Common::SeekableReadStream *ResourceManager::getSound(const std::string &name) const {
+Common::SeekableReadStream *ResourceManager::getSound(const std::string &name, FileType *type) const {
 	// Try every known sound file type
 	Common::SeekableReadStream *res;
-	if ((res = getResource(name, _soundTypes)))
+	if ((res = getResource(name, _soundTypes, type)))
 		return res;
 
 	// No such sound
+	return 0;
+}
+
+Common::SeekableReadStream *ResourceManager::getImage(const std::string &name, FileType *type) const {
+	// Try every known image file type
+	Common::SeekableReadStream *res;
+	if ((res = getResource(name, _imageTypes, type)))
+		return res;
+
+	// No such image
 	return 0;
 }
 
