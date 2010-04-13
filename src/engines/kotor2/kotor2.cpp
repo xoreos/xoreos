@@ -93,20 +93,20 @@ void KotOR2Engine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Loading main KEY");
-	indexMandatoryKEY(".*/chitin.key");
+	indexMandatoryKEY(".*/chitin.key", 0);
 
 	status("Finding further resource archives directories");
 	ResMan.findSourceDirs();
 
 	status("Loading high-res texture packs");
-	indexMandatoryERF("swpc_tex_gui.erf");
-	indexMandatoryERF("swpc_tex_tpa.erf");
+	indexMandatoryERF("swpc_tex_gui.erf", 10);
+	indexMandatoryERF("swpc_tex_tpa.erf", 11);
 
 	status("Loading secondary resources");
-	ResMan.loadSecondaryResources();
+	ResMan.loadSecondaryResources(20);
 
 	status("Loading override files");
-	ResMan.loadOverrideFiles();
+	ResMan.loadOverrideFiles(30);
 }
 
 } // End of namespace KotOR2

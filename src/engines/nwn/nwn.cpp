@@ -109,42 +109,42 @@ void NWNEngine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Loading main KEY");
-	indexMandatoryKEY(".*/chitin.key");
+	indexMandatoryKEY(".*/chitin.key", 0);
 
 	status("Loading expansions and patch KEYs");
 
 	// Base game patch
-	indexOptionalKEY(".*/patch.key");
+	indexOptionalKEY(".*/patch.key", 1);
 
 	// Expansion 1: Shadows of Undrentide (SoU)
-	indexOptionalKEY(".*/xp1.key");
-	indexOptionalKEY(".*/xp1patch.key");
+	indexOptionalKEY(".*/xp1.key"     , 2);
+	indexOptionalKEY(".*/xp1patch.key", 3);
 
 	// Expansion 2: Hordes of the Underdark (HotU)
-	indexOptionalKEY(".*/xp2.key");
-	indexOptionalKEY(".*/xp2patch.key");
+	indexOptionalKEY(".*/xp2.key"     , 4);
+	indexOptionalKEY(".*/xp2patch.key", 5);
 
 	// Expansion 3: Kingmaker (resources also included in the final 1.69 patch)
-	indexOptionalKEY(".*/xp3.key");
-	indexOptionalKEY(".*/xp3patch.key");
+	indexOptionalKEY(".*/xp3.key"     , 6);
+	indexOptionalKEY(".*/xp3patch.key", 7);
 
 	status("Finding further resource archives directories");
 	ResMan.findSourceDirs();
 
 	status("Loading high-res texture packs");
-	indexMandatoryERF("gui_32bit.erf");
-	indexOptionalERF("xp1_gui.erf");
-	indexOptionalERF("xp2_gui.erf");
-	indexMandatoryERF("textures_tpa.erf");
-	indexMandatoryERF("tiles_tpa.erf");
-	indexOptionalERF("xp1_tex_tpa.erf");
-	indexOptionalERF("xp2_tex_tpa.erf");
+	indexMandatoryERF("gui_32bit.erf"   , 10);
+	indexOptionalERF ("xp1_gui.erf"     , 11);
+	indexOptionalERF ("xp2_gui.erf"     , 12);
+	indexMandatoryERF("textures_tpa.erf", 13);
+	indexMandatoryERF("tiles_tpa.erf"   , 14);
+	indexOptionalERF ("xp1_tex_tpa.erf" , 15);
+	indexOptionalERF ("xp2_tex_tpa.erf" , 16);
 
 	status("Loading secondary resources");
-	ResMan.loadSecondaryResources();
+	ResMan.loadSecondaryResources(20);
 
 	status("Loading override files");
-	ResMan.loadOverrideFiles();
+	ResMan.loadOverrideFiles(30);
 }
 
 } // End of namespace NWN

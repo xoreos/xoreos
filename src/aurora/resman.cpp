@@ -34,6 +34,11 @@ DECLARE_SINGLETON(Aurora::ResourceManager)
 
 namespace Aurora {
 
+bool ResourceManager::Resource::operator<(const Resource &right) const {
+	return priority < right.priority;
+}
+
+
 ResourceManager::ResourceManager() {
 	_musicTypes.push_back(kFileTypeWAV);
 	_musicTypes.push_back(kFileTypeBMU);
@@ -124,7 +129,7 @@ void ResourceManager::findSourceDirs() {
 	rimFiles.getSubList(".*\\.rim", _rimFiles, true);
 }
 
-ResourceManager::ChangeID ResourceManager::loadSecondaryResources() {
+ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priority) {
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
@@ -138,7 +143,7 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources() {
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
 		musicFiles.addDirectory(musicDir, -1);
 
-	addResources(musicFiles, change);
+	addResources(musicFiles, change, priority);
 
 	// Find all sound files
 
@@ -156,12 +161,12 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources() {
 	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamvoice" , true)).empty())
 		soundFiles.addDirectory(soundDir, -1);
 
-	addResources(soundFiles, change);
+	addResources(soundFiles, change, priority);
 
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::loadOverrideFiles() {
+ResourceManager::ChangeID ResourceManager::loadOverrideFiles(uint32 priority) {
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
@@ -174,7 +179,7 @@ ResourceManager::ChangeID ResourceManager::loadOverrideFiles() {
 	if (!(overrideDir = Common::FilePath::findSubDirectory(_baseDir, "override", true)).empty())
 		overrideFiles.addDirectory(overrideDir, -1);
 
-	addResources(overrideFiles, change);
+	addResources(overrideFiles, change, priority);
 
 	return change;
 }
@@ -235,7 +240,9 @@ ResourceManager::ResFileRef ResourceManager::findBIFPaths(const KEYFile &keyFile
 	return bifStart;
 }
 
-void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, const ResFileRef &bifStart, ChangeID &change) {
+void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, const ResFileRef &bifStart,
+		ChangeID &change, uint32 priority) {
+
 	uint32 keyBIFCount = keyFile.getBIFs().size();
 
 	std::vector<BIFFile> keyBIFFiles;
@@ -282,11 +289,12 @@ void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, const ResFile
 
 			// Build the complete resource record
 			Resource res;
-			res.source  = kSourceBIF;
-			res.resFile = bifStart;
-			res.type    = keyRes->type;
-			res.offset  = bifRes.offset;
-			res.size    = bifRes.size;
+			res.priority = priority;
+			res.source   = kSourceBIF;
+			res.resFile  = bifStart;
+			res.type     = keyRes->type;
+			res.offset   = bifRes.offset;
+			res.size     = bifRes.size;
 
 			// Advance the resFile iterator
 			for (uint32 i = 0; i < keyRes->bifIndex; i++, ++res.resFile);
@@ -302,7 +310,7 @@ void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, const ResFile
 
 }
 
-ResourceManager::ChangeID ResourceManager::loadKEY(Common::SeekableReadStream &key) {
+ResourceManager::ChangeID ResourceManager::loadKEY(Common::SeekableReadStream &key, uint32 priority) {
 	if (_baseDir.empty())
 		throw Common::Exception("No base data directory registered");
 
@@ -318,12 +326,12 @@ ResourceManager::ChangeID ResourceManager::loadKEY(Common::SeekableReadStream &k
 	ResFileRef bifStart = findBIFPaths(keyFile, change);
 
 	// Merge the resource information of the KEY file and its BIF files into our resource map
-	mergeKEYBIFResources(keyFile, bifStart, change);
+	mergeKEYBIFResources(keyFile, bifStart, change, priority);
 
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addERF(const std::string &erf) {
+ResourceManager::ChangeID ResourceManager::addERF(const std::string &erf, uint32 priority) {
 	std::string erfFileName;
 
 	if (Common::FilePath::isAbsolute(erf)) {
@@ -371,11 +379,12 @@ ResourceManager::ChangeID ResourceManager::addERF(const std::string &erf) {
 	for (ERFFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
 		// Build the resource record
 		Resource res;
-		res.source  = kSourceERF;
-		res.resFile = --_erfs.end();
-		res.type    = resource->type;
-		res.offset  = resource->offset;
-		res.size    = resource->size;
+		res.priority = priority;
+		res.source   = kSourceERF;
+		res.resFile  = --_erfs.end();
+		res.type     = resource->type;
+		res.offset   = resource->offset;
+		res.size     = resource->size;
 
 		// And add it to our list
 		addResource(res, resource->name, change);
@@ -384,7 +393,7 @@ ResourceManager::ChangeID ResourceManager::addERF(const std::string &erf) {
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addRIM(const std::string &rim) {
+ResourceManager::ChangeID ResourceManager::addRIM(const std::string &rim, uint32 priority) {
 	std::string rimFileName;
 
 	if (Common::FilePath::isAbsolute(rim)) {
@@ -429,11 +438,12 @@ ResourceManager::ChangeID ResourceManager::addRIM(const std::string &rim) {
 	for (RIMFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
 		// Build the resource record
 		Resource res;
-		res.source  = kSourceRIM;
-		res.resFile = --_rims.end();
-		res.type    = resource->type;
-		res.offset  = resource->offset;
-		res.size    = resource->size;
+		res.priority = priority;
+		res.source   = kSourceRIM;
+		res.resFile  = --_rims.end();
+		res.type     = resource->type;
+		res.offset   = resource->offset;
+		res.size     = resource->size;
 
 		// And add it to our list
 		addResource(res, resource->name, change);
@@ -619,6 +629,9 @@ void ResourceManager::addResource(const Resource &resource, std::string name, Ch
 	// Add the resource to the list
 	resList->second.push_back(resource);
 
+	// And sort the list by priority
+	resList->second.sort();
+
 	// Remember the resource in the change set
 	change->resources.push_back(ResourceChange());
 	change->resources.back().nameIt = resTypeMap;
@@ -626,15 +639,16 @@ void ResourceManager::addResource(const Resource &resource, std::string name, Ch
 	change->resources.back().resIt  = --resList->second.end();
 }
 
-void ResourceManager::addResources(const Common::FileList &files, ChangeID &change) {
+void ResourceManager::addResources(const Common::FileList &files, ChangeID &change, uint32 priority) {
 	for (Common::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
 		Resource res;
-		res.source  = kSourceFile;
-		res.path    = *file;
-		res.type    = getFileType(*file);
-		res.resFile = _bifs.end();
-		res.offset  = 0xFFFFFFFF;
-		res.size    = 0xFFFFFFFF;
+		res.priority = priority;
+		res.source   = kSourceFile;
+		res.path     = *file;
+		res.type     = getFileType(*file);
+		res.resFile  = _bifs.end();
+		res.offset   = 0xFFFFFFFF;
+		res.size     = 0xFFFFFFFF;
 
 		addResource(res, Common::FilePath::getStem(*file), change);
 	}

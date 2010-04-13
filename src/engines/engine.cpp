@@ -29,13 +29,13 @@ Engine::Engine() {
 Engine::~Engine() {
 }
 
-void Engine::indexMandatoryKEY(const std::string &key) {
+void Engine::indexMandatoryKEY(const std::string &key, uint32 priority) {
 	Common::SeekableReadStream *keyFile = ResMan.getKEYList().openFile(key, true);
 	if (!keyFile)
 		throw Common::Exception("No such KEY");
 
 	try {
-		ResMan.loadKEY(*keyFile);
+		ResMan.loadKEY(*keyFile, priority);
 	} catch(...) {
 		delete keyFile;
 		throw;
@@ -44,13 +44,13 @@ void Engine::indexMandatoryKEY(const std::string &key) {
 	delete keyFile;
 }
 
-void Engine::indexOptionalKEY(const std::string &key) {
+void Engine::indexOptionalKEY(const std::string &key, uint32 priority) {
 	Common::SeekableReadStream *keyFile = ResMan.getKEYList().openFile(key, true);
 	if (!keyFile)
 		return;
 
 	try {
-		ResMan.loadKEY(*keyFile);
+		ResMan.loadKEY(*keyFile, priority);
 	} catch(...) {
 		delete keyFile;
 		throw;
@@ -59,24 +59,24 @@ void Engine::indexOptionalKEY(const std::string &key) {
 	delete keyFile;
 }
 
-void Engine::indexMandatoryERF(const std::string &erf) {
-	ResMan.addERF(erf);
+void Engine::indexMandatoryERF(const std::string &erf, uint32 priority) {
+	ResMan.addERF(erf, priority);
 }
 
-void Engine::indexOptionalERF(const std::string &erf) {
+void Engine::indexOptionalERF(const std::string &erf, uint32 priority) {
 	try {
-		ResMan.addERF(erf);
+		ResMan.addERF(erf, priority);
 	} catch (Common::Exception &e) {
 	}
 }
 
-void Engine::indexMandatoryRIM(const std::string &rim) {
-	ResMan.addRIM(rim);
+void Engine::indexMandatoryRIM(const std::string &rim, uint32 priority) {
+	ResMan.addRIM(rim, priority);
 }
 
-void Engine::indexOptionalRIM(const std::string &rim) {
+void Engine::indexOptionalRIM(const std::string &rim, uint32 priority) {
 	try {
-		ResMan.addRIM(rim);
+		ResMan.addRIM(rim, priority);
 	} catch (Common::Exception &e) {
 	}
 }

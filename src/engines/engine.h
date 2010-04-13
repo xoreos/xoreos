@@ -17,6 +17,8 @@
 
 #include <string>
 
+#include "common/types.h"
+
 namespace Common {
 	class SeekableReadStream;
 }
@@ -34,22 +36,22 @@ public:
 
 protected:
 	/** Add a KEY file to the resource manager, erroring out if the file does not exist. */
-	void indexMandatoryKEY(const std::string &key);
+	void indexMandatoryKEY(const std::string &key, uint32 priority = 10);
 
 	/** Add a KEY file to the resource manager, if it exists. */
-	void indexOptionalKEY(const std::string &key);
+	void indexOptionalKEY(const std::string &key, uint32 priority = 10);
 
 	/** Add an ERF file to the resource manager, erroring out if the file does not exist. */
-	void indexMandatoryERF(const std::string &erf);
+	void indexMandatoryERF(const std::string &erf, uint32 priority = 100);
 
 	/** Add an ERF file to the resource manager, if it exists. */
-	void indexOptionalERF(const std::string &erf);
+	void indexOptionalERF(const std::string &erf, uint32 priority = 100);
 
 	/** Add a RIM file to the resource manager, erroring out if the file does not exist. */
-	void indexMandatoryRIM(const std::string &rim);
+	void indexMandatoryRIM(const std::string &rim, uint32 priority = 100);
 
 	/** Add a RIM file to the resource manager, if it exists. */
-	void indexOptionalRIM(const std::string &rim);
+	void indexOptionalRIM(const std::string &rim, uint32 priority = 100);
 
 	/** Debug method to quickly dump a stream to disk. */
 	void dumpStream(Common::SeekableReadStream &stream, const std::string &fileName);

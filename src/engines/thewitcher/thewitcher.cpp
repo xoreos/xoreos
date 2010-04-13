@@ -89,25 +89,25 @@ void TheWitcherEngine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Loading main KEY");
-	indexMandatoryKEY(".*/main.key");
+	indexMandatoryKEY(".*/main.key", 0);
 
 	status("Loading the localized base KEY");
-	indexMandatoryKEY(".*/localized.key");
+	indexMandatoryKEY(".*/localized.key", 10);
 
 	status("Finding further resource archives directories");
 	ResMan.findSourceDirs();
 	ResMan.addBIFSourceDir("voices");
 
 	status("Loading the English language KEYs");
-	indexMandatoryKEY(".*/lang_3.key");
-	indexMandatoryKEY(".*/M1_3.key");
-	indexMandatoryKEY(".*/M2_3.key");
+	indexMandatoryKEY(".*/lang_3.key", 20);
+	indexMandatoryKEY(".*/M1_3.key"  , 21);
+	indexMandatoryKEY(".*/M2_3.key"  , 22);
 
 	status("Loading secondary resources");
-	ResMan.loadSecondaryResources();
+	ResMan.loadSecondaryResources(30);
 
 	status("Loading override files");
-	ResMan.loadOverrideFiles();
+	ResMan.loadOverrideFiles(40);
 }
 
 } // End of namespace TheWitcher

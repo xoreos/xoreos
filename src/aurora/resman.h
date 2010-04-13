@@ -57,6 +57,8 @@ private:
 	struct Resource {
 		FileType type; ///< The resource's type.
 
+		uint32 priority; ///< The resource's priority over others with the same name and type.
+
 		Source source; ///< Where can the resource be found?
 
 		// For kSourceBIF / kSourceERF / kSourceRI / kSourceRIMM
@@ -66,6 +68,8 @@ private:
 
 		// For kSourceFile
 		std::string path; ///< The file's path.
+
+		bool operator<(const Resource &right) const;
 	};
 
 	/** List of resources, sorted by priority. */
@@ -121,18 +125,20 @@ public:
 	 *
 	 *  Secondary resources are plain files found in the data directory structure.
 	 *
+	 *  @param  priority The priority these files have over others of the same name and type.
 	 *  @return An ID for all collective changes done by loading the secondary resources.
 	 */
-	ChangeID loadSecondaryResources();
+	ChangeID loadSecondaryResources(uint32 priority = 400);
 
 	/** Load override files.
 	 *
 	 *  Override files are commonly found in an override/ directory, overriding basic
 	 *  resource files.
 	 *
+	 *  @param  priority The priority these files have over others of the same name and type.
 	 *  @return An ID for all collective changes done by loading the override files.
 	 */
-	ChangeID loadOverrideFiles();
+	ChangeID loadOverrideFiles(uint32 priority = 500);
 
 	/** Return the list of KEY files found in the base data directory. */
 	const Common::FileList &getKEYList() const;
@@ -148,23 +154,26 @@ public:
 	 *  Add all resources found in the KEY and its BIFs to the manager.
 	 *
 	 *  @param  key The KEY file to index.
+	 *  @param  priority The priority the resources have over others of the same name and type.
 	 *  @return An ID for all collective changes done by loading the KEY and its BIFs.
 	 */
-	ChangeID loadKEY(Common::SeekableReadStream &key);
+	ChangeID loadKEY(Common::SeekableReadStream &key, uint32 priority = 10);
 
 	/** Add resources found in the ERF file to the manager.
 	 *
 	 *  @param  erf The name of the ERF file within a valid ERF directory in the base dir.
+	 *  @param  priority The priority the resources have over others of the same name and type.
 	 *  @return An ID for all collective changes done by loading the ERF.
 	 */
-	ChangeID addERF(const std::string &erf);
+	ChangeID addERF(const std::string &erf, uint32 priority = 100);
 
 	/** Add resources found in the RIM file to the manager.
 	 *
 	 *  @param  rim The name of the RIM file within a valid RIM directory in the base dir.
+	 *  @param  priority The priority the resources have over others of the same name and type.
 	 *  @return An ID for all collective changes done by loading the RIM.
 	 */
-	ChangeID addRIM(const std::string &rim);
+	ChangeID addRIM(const std::string &rim, uint32 priority = 100);
 
 	/** Undo the changes done in the specified change ID. */
 	void undo(ChangeID &change);
@@ -260,10 +269,11 @@ private:
 
 	// KEY/BIF loading helpers
 	ResFileRef findBIFPaths(const KEYFile &keyFile, ChangeID &change);
-	void mergeKEYBIFResources(const KEYFile &keyFile, const ResFileRef &bifStart, ChangeID &change);
+	void mergeKEYBIFResources(const KEYFile &keyFile, const ResFileRef &bifStart,
+			ChangeID &change, uint32 priority);
 
 	void addResource(const Resource &resource, std::string name, ChangeID &change);
-	void addResources(const Common::FileList &files, ChangeID &change);
+	void addResources(const Common::FileList &files, ChangeID &change, uint32 priority);
 
 	const Resource *getRes(std::string name, const std::vector<FileType> &types) const;
 

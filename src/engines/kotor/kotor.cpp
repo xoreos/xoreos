@@ -97,30 +97,30 @@ void KotOREngine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Loading main KEY");
-	indexMandatoryKEY(".*/chitin.key");
+	indexMandatoryKEY(".*/chitin.key", 0);
 
 	status("Finding further resource archives directories");
 	ResMan.findSourceDirs();
 
 	status("Loading global auxiliary resources");
-	indexMandatoryRIM("mainmenu.rim");
-	indexMandatoryRIM("mainmenudx.rim");
-	indexMandatoryRIM("legal.rim");
-	indexMandatoryRIM("legaldx.rim");
-	indexMandatoryRIM("global.rim");
-	indexMandatoryRIM("globaldx.rim");
-	indexMandatoryRIM("chargen.rim");
-	indexMandatoryRIM("chargendx.rim");
+	indexMandatoryRIM("mainmenu.rim"  , 10);
+	indexMandatoryRIM("mainmenudx.rim", 11);
+	indexMandatoryRIM("legal.rim"     , 12);
+	indexMandatoryRIM("legaldx.rim"   , 13);
+	indexMandatoryRIM("global.rim"    , 14);
+	indexMandatoryRIM("globaldx.rim"  , 15);
+	indexMandatoryRIM("chargen.rim"   , 16);
+	indexMandatoryRIM("chargendx.rim" , 17);
 
 	status("Loading high-res texture packs");
-	indexMandatoryERF("swpc_tex_gui.erf");
-	indexMandatoryERF("swpc_tex_tpa.erf");
+	indexMandatoryERF("swpc_tex_gui.erf", 20);
+	indexMandatoryERF("swpc_tex_tpa.erf", 21);
 
 	status("Loading secondary resources");
-	ResMan.loadSecondaryResources();
+	ResMan.loadSecondaryResources(30);
 
 	status("Loading override files");
-	ResMan.loadOverrideFiles();
+	ResMan.loadOverrideFiles(40);
 }
 
 } // End of namespace KotOR
