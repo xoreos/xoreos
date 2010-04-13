@@ -47,8 +47,8 @@ ResourceManager::ResourceManager() {
 	_soundTypes.push_back(kFileTypeWAV);
 	_soundTypes.push_back(kFileTypeOGG);
 
-	_imageTypes.push_back(kFileTypeTGA);
 	_imageTypes.push_back(kFileTypeDDS);
+	_imageTypes.push_back(kFileTypeTGA);
 	_imageTypes.push_back(kFileTypePNG);
 	_imageTypes.push_back(kFileTypeBMP);
 	_imageTypes.push_back(kFileTypeJPG);
