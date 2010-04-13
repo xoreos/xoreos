@@ -142,6 +142,9 @@ void NWNEngine::init() {
 
 	status("Loading secondary resources");
 	ResMan.loadSecondaryResources();
+
+	status("Loading override files");
+	ResMan.loadOverrideFiles();
 }
 
 } // End of namespace NWN

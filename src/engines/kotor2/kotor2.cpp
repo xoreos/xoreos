@@ -104,6 +104,9 @@ void KotOR2Engine::init() {
 
 	status("Loading secondary resources");
 	ResMan.loadSecondaryResources();
+
+	status("Loading override files");
+	ResMan.loadOverrideFiles();
 }
 
 } // End of namespace KotOR2

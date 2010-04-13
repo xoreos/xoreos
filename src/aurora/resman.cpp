@@ -158,6 +158,14 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources() {
 
 	addResources(soundFiles, change);
 
+	return change;
+}
+
+ResourceManager::ChangeID ResourceManager::loadOverrideFiles() {
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
+
 	// Add the override directory, which has priority over all other base sources
 
 	Common::FileList overrideFiles;

@@ -120,10 +120,19 @@ public:
 	/** Load secondary resources.
 	 *
 	 *  Secondary resources are plain files found in the data directory structure.
-
+	 *
 	 *  @return An ID for all collective changes done by loading the secondary resources.
 	 */
 	ChangeID loadSecondaryResources();
+
+	/** Load override files.
+	 *
+	 *  Override files are commonly found in an override/ directory, overriding basic
+	 *  resource files.
+	 *
+	 *  @return An ID for all collective changes done by loading the override files.
+	 */
+	ChangeID loadOverrideFiles();
 
 	/** Return the list of KEY files found in the base data directory. */
 	const Common::FileList &getKEYList() const;
