@@ -95,6 +95,7 @@ private:
 	FPSCounter *_fpsCounter;
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
+	void checkGLExtensions();
 	void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
 
 	void clearTextureList();

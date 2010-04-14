@@ -110,6 +110,9 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	GLenum glewErr = glewInit();
 	if (glewErr != GLEW_OK)
 		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
+
+	// Check if we have all needed OpenGL extensions
+	checkGLExtensions();
 }
 
 bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
@@ -124,6 +127,12 @@ bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
 		return false;
 
 	return true;
+}
+
+void GraphicsManager::checkGLExtensions() {
+	if (!GLEW_EXT_texture_compression_s3tc)
+		throw Common::Exception("Your graphics cards does not support the needed extension "
+				"for S3TC DXT1, DXT3 and DXT5 texture compression");
 }
 
 void GraphicsManager::setWindowTitle(const std::string &title) {
