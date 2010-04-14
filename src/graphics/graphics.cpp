@@ -34,8 +34,9 @@ static bool queueComp(Renderable *a, Renderable *b) {
 }
 
 GraphicsManager::GraphicsManager() {
-	_ready    = false;
-	_initedGL = false;
+	_ready = false;
+
+	_needManualDeS3TC = false;
 
 	_screen = 0;
 
@@ -73,12 +74,17 @@ void GraphicsManager::deinit() {
 
 	SDL_Quit();
 
-	_ready    = false;
-	_initedGL = false;
+	_ready = false;
+
+	_needManualDeS3TC = false;
 }
 
 bool GraphicsManager::ready() const {
 	return _ready;
+}
+
+bool GraphicsManager::needManualDeS3TC() const {
+	return _needManualDeS3TC;
 }
 
 uint32 GraphicsManager::getFPS() const {
@@ -130,9 +136,15 @@ bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
 }
 
 void GraphicsManager::checkGLExtensions() {
-	if (!GLEW_EXT_texture_compression_s3tc)
-		throw Common::Exception("Your graphics cards does not support the needed extension "
-				"for S3TC DXT1, DXT3 and DXT5 texture compression");
+	if (!GLEW_EXT_texture_compression_s3tc) {
+		warning("Your graphics cards does not support the needed extension "
+		        "for S3TC DXT1, DXT3 and DXT5 texture compression");
+		warning("Switching to manual S3TC DXTn decompression. "
+		        "This will be slower and will take up more video memory");
+		_needManualDeS3TC = true;
+
+		throw Common::Exception("TODO: Manual S3TC DXTn decompression.");
+	}
 }
 
 void GraphicsManager::setWindowTitle(const std::string &title) {
@@ -163,8 +175,6 @@ void GraphicsManager::setupScene() {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	_initedGL = true;
 }
 
 void GraphicsManager::clearRenderQueue() {

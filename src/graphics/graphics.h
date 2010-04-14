@@ -50,6 +50,9 @@ public:
 	/** Was the graphics subsystem successfully initialized? */
 	bool ready() const;
 
+	/** Do we need to do manual S3TC DXTn decompression? */
+	bool needManualDeS3TC() const;
+
 	/** How many frames per second to we render at the moments? */
 	uint32 getFPS() const;
 
@@ -80,7 +83,8 @@ public:
 
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
-	bool _initedGL;
+
+	bool _needManualDeS3TC; ///< Do we need to do manual S3TC DXTn decompression?
 
 	bool _fullScreen;
 
