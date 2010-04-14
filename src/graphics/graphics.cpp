@@ -146,7 +146,7 @@ void GraphicsManager::checkGLExtensions() {
 	}
 
 	if (!GLEW_ARB_texture_compression) {
-		warning("Your graphics card doesn't support compressed texture API");
+		warning("Your graphics card doesn't support the compressed texture API");
 		warning("Switching to manual S3TC DXTn decompression. "
 		        "This will be slower and will take up more video memory");
 
