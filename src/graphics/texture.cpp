@@ -22,6 +22,7 @@
 #include "graphics/images/decoder.h"
 #include "graphics/images/tga.h"
 #include "graphics/images/dds.h"
+#include "graphics/images/tpc.h"
 
 #include "events/requests.h"
 
@@ -66,6 +67,8 @@ void Texture::load(const std::string &name) {
 		_image = new TGA(img);
 	else if (_type == Aurora::kFileTypeDDS)
 		_image = new DDS(img);
+	else if (_type == Aurora::kFileTypeTPC)
+		_image = new TPC(img);
 	else
 		throw Common::Exception("Unsupported image resource type %d", (int) _type);
 
@@ -94,8 +97,7 @@ void Texture::reload() {
 	_image->load();
 
 	if (_image->getMipMapCount() < 1)
-		// Not a single picture in this image...
-		return;
+		throw Common::Exception("Texture has no images");
 
 	// Generate the texture ID
 	glGenTextures(1, &_textureID);
@@ -111,6 +113,8 @@ void Texture::reload() {
 	if (_image->isCompressed()) {
 		// Compressed image
 		// (No chance of building mip maps ourselves should the image not provide any)
+
+		// TODO: GL_TEXTURE_BASE_LEVEL_SGIS?
 
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);

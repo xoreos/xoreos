@@ -43,7 +43,7 @@ void CubeSide::render() {
 	_parent->applyTransformation(_n);
 	_parent->setTexture();
 
-	glColor4f(1.0, 1.0, 1.0, 0.5);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
 
 	glBegin(GL_POLYGON);
 		glTexCoord2f(0.0, 0.0);

@@ -76,7 +76,7 @@ void KotOREngine::run(const std::string &directory) {
 
 	try {
 
-		cube = new Graphics::Cube("chrome1");
+		cube = new Graphics::Cube("po_phk47");
 
 	} catch (Common::Exception &e) {
 		Common::printException(e);

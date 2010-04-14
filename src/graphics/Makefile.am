@@ -9,6 +9,7 @@ noinst_HEADERS = types.h \
                  images/decoder.h \
                  images/tga.h \
                  images/dds.h \
+                 images/tpc.h \
                  images/dumpppm.h \
                  graphics.h \
                  fpscounter.h \
@@ -19,6 +20,7 @@ noinst_HEADERS = types.h \
 libgraphics_la_SOURCES = glew/glew.c \
                          images/tga.cpp \
                          images/dds.cpp \
+                         images/tpc.cpp \
                          images/dumpppm.cpp \
                          graphics.cpp \
                          fpscounter.cpp \
