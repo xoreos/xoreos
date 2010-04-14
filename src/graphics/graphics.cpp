@@ -145,6 +145,9 @@ void GraphicsManager::checkGLExtensions() {
 
 		throw Common::Exception("TODO: Manual S3TC DXTn decompression.");
 	}
+
+	if (!GLEW_ARB_texture_compression)
+		throw Common::Exception("You're graphics card doesn't support the texture compressed API");
 }
 
 void GraphicsManager::setWindowTitle(const std::string &title) {
