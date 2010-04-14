@@ -92,7 +92,7 @@ void NWNEngine::run(const std::string &directory) {
 
 	try {
 
-		cube = new Graphics::Cube("fnt_console");
+		cube = new Graphics::Cube("ashlw_066");
 
 	} catch (Common::Exception &e) {
 		Common::printException(e);

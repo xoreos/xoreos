@@ -74,6 +74,8 @@ private:
 	std::vector<MipMap> _mipMaps;
 
 	void readHeader(Common::SeekableReadStream &dds);
+	void readStandardHeader(Common::SeekableReadStream &dds);
+	void readBioWareHeader(Common::SeekableReadStream &dds);
 	void readData(Common::SeekableReadStream &dds);
 
 	void detectFormat(const DDSPixelFormat &format);
