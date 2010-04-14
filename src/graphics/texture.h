@@ -42,8 +42,7 @@ private:
 
 	Aurora::FileType _type;
 
-	ImageDecoder *_plainImage;
-	DDS          *_ddsImage;
+	ImageDecoder *_image;
 
 	void load(const std::string &name);
 

@@ -30,22 +30,23 @@ public:
 
 	void load();
 
-	int getWidth() const;
-	int getHeight() const;
+	bool isCompressed() const;
 
-	PixelFormat getFormat() const;
+	PixelFormat    getFormat() const;
+	PixelFormatRaw getFormatRaw() const;
+	PixelDataType  getDataType() const;
 
-	const byte *getData() const;
+	int getMipMapCount() const;
+
+	const MipMap &getMipMap(int mipMap) const;
 
 private:
 	Common::SeekableReadStream *_tga;
 
-	int _width;
-	int _height;
+	PixelFormat    _format;
+	PixelFormatRaw _formatRaw;
 
-	PixelFormat _format;
-
-	byte *_data;
+	MipMap _image;
 
 	void readHeader(Common::SeekableReadStream &tga);
 	void readData(Common::SeekableReadStream &tga);

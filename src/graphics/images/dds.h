@@ -17,9 +17,7 @@
 
 #include <vector>
 
-#include "common/types.h"
-
-#include "graphics/types.h"
+#include "graphics/images/decoder.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -27,15 +25,8 @@ namespace Common {
 
 namespace Graphics {
 
-class DDS {
+class DDS : public ImageDecoder {
 public:
-	struct MipMap {
-		int    width;
-		int    height;
-		uint32 size;
-		byte  *data;
-	};
-
 	DDS(Common::SeekableReadStream *dds);
 	~DDS();
 

@@ -20,12 +20,14 @@
 
 namespace Graphics {
 
-TGA::TGA(Common::SeekableReadStream *tga) : _tga(tga), _width(0), _height(0), _format(kPixelFormatRGB), _data(0) {
+TGA::TGA(Common::SeekableReadStream *tga) : _tga(tga), _format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8) {
+	_image.data = 0;
+
 	assert(_tga);
 }
 
 TGA::~TGA() {
-	delete[] _data;
+	delete[] _image.data;
 }
 
 void TGA::load() {
@@ -65,16 +67,18 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	// Color map specifications + X + Y
 	tga.skip(5 + 2 + 2);
 
-	_width  = tga.readUint16LE();
-	_height = tga.readUint16LE();
+	_image.width  = tga.readUint16LE();
+	_image.height = tga.readUint16LE();
 
 	byte pixelDepth = tga.readByte();
 
-	if      (pixelDepth == 24)
-		_format = kPixelFormatBGR;
-	else if (pixelDepth == 32)
-		_format = kPixelFormatBGRA;
-	else
+	if      (pixelDepth == 24) {
+		_format    = kPixelFormatBGR;
+		_formatRaw = kPixelFormatRGB8;
+	} else if (pixelDepth == 32) {
+		_format    = kPixelFormatBGRA;
+		_formatRaw = kPixelFormatRGBA8;
+	} else
 		throw Common::Exception("Unsupported pixel depth: %d", pixelDepth);
 
 	// Image descriptor
@@ -84,31 +88,39 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 }
 
 void TGA::readData(Common::SeekableReadStream &tga) {
-	uint32 bytes = _width * _height;
+	_image.size = _image.width * _image.height;
 	if      (_format == kPixelFormatBGR)
-		bytes *= 3;
+		_image.size *= 3;
 	else if (_format == kPixelFormatBGRA)
-		bytes *= 4;
+		_image.size *= 4;
 
-	_data = new byte[bytes];
+	_image.data = new byte[_image.size];
 
-	tga.read(_data, bytes);
+	tga.read(_image.data, _image.size);
 }
 
-int TGA::getWidth() const {
-	return _width;
-}
-
-int TGA::getHeight() const {
-	return _height;
+bool TGA::isCompressed() const {
+	return false;
 }
 
 PixelFormat TGA::getFormat() const {
 	return _format;
 }
 
-const byte *TGA::getData() const {
-	return _data;
+PixelFormatRaw TGA::getFormatRaw() const {
+	return _formatRaw;
+}
+
+PixelDataType TGA::getDataType() const {
+	return kPixelDataType8;
+}
+
+int TGA::getMipMapCount() const {
+	return 1;
+}
+
+const TGA::MipMap &TGA::getMipMap(int mipMap) const {
+	return _image;
 }
 
 } // End of namespace Graphics

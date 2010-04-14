@@ -62,10 +62,12 @@ void dumpPPM(const std::string &fileName, const byte *data, int width, int heigh
 }
 
 void dumpPPM(const std::string &fileName, const ImageDecoder *image) {
-	if (!image)
-		throw Common::Exception("image == 0");
+	if (!image || (image->getMipMapCount() < 1))
+		throw Common::Exception("No image");
 
-	dumpPPM(fileName, image->getData(), image->getWidth(), image->getHeight(), image->getFormat());
+	const ImageDecoder::MipMap &mipMap = image->getMipMap(0);
+
+	dumpPPM(fileName, mipMap.data, mipMap.width, mipMap.height, image->getFormat());
 }
 
 } // End of namespace Graphics

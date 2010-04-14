@@ -27,14 +27,24 @@ public:
 	ImageDecoder() { }
 	virtual ~ImageDecoder() { }
 
+	struct MipMap {
+		int    width;
+		int    height;
+		uint32 size;
+		byte  *data;
+	};
+
 	virtual void load() = 0;
 
-	virtual int getWidth() const = 0;
-	virtual int getHeight() const = 0;
+	virtual bool isCompressed() const = 0;
 
-	virtual PixelFormat getFormat() const = 0;
+	virtual PixelFormat    getFormat() const = 0;
+	virtual PixelFormatRaw getFormatRaw() const = 0;
+	virtual PixelDataType  getDataType() const = 0;
 
-	virtual const byte *getData() const = 0;
+	virtual int getMipMapCount() const = 0;
+
+	virtual const MipMap &getMipMap(int mipMap) const = 0;
 };
 
 } // End of namespace Graphics

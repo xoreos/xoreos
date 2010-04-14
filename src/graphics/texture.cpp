@@ -32,8 +32,7 @@ using Events::RequestID;
 namespace Graphics {
 
 Texture::Texture(const std::string &name) :
-	_inTextureList(false), _textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone),
-	_plainImage(0), _ddsImage(0) {
+	_inTextureList(false), _textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone), _image(0) {
 
 	load(name);
 
@@ -48,8 +47,7 @@ Texture::~Texture() {
 	if (_textureID != 0xFFFFFFFF)
 		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_textureID));
 
-	delete _plainImage;
-	delete _ddsImage;
+	delete _image;
 }
 
 TextureID Texture::getID() const {
@@ -65,9 +63,9 @@ void Texture::load(const std::string &name) {
 		throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
 	if      (_type == Aurora::kFileTypeTGA)
-		_plainImage = new TGA(img);
+		_image = new TGA(img);
 	else if (_type == Aurora::kFileTypeDDS)
-		_ddsImage   = new DDS(img);
+		_image = new DDS(img);
 	else
 		throw Common::Exception("Unsupported image resource type %d", (int) _type);
 
@@ -88,8 +86,21 @@ void Texture::destroy() {
 }
 
 void Texture::reload() {
+	if (!_image)
+		// No image
+		return;
+
+	// If we didn't already, let the image load
+	_image->load();
+
+	if (_image->getMipMapCount() < 1)
+		// Not a single picture in this image...
+		return;
+
+	// Generate the texture ID
 	glGenTextures(1, &_textureID);
 
+	// Set some parameters
 	glBindTexture(GL_TEXTURE_2D, _textureID);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
@@ -97,40 +108,55 @@ void Texture::reload() {
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	if (_plainImage) {
-		_plainImage->load();
-
-		PixelFormat format = _plainImage->getFormat();
-
-		GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, getBytesPerPixel(format),
-		                              _plainImage->getWidth(), _plainImage->getHeight(),
-		                              format, GL_UNSIGNED_BYTE, _plainImage->getData());
-
-		if (err != 0)
-			throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));
-	}
-
-	if (_ddsImage) {
-		_ddsImage->load();
+	if (_image->isCompressed()) {
+		// Compressed image
+		// (No chance of building mip maps ourselves should the image not provide any)
 
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _ddsImage->getMipMapCount() - 1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 
-		for (int i = 0; i < _ddsImage->getMipMapCount(); i++) {
-			const DDS::MipMap &mipMap = _ddsImage->getMipMap(i);
+		for (int i = 0; i < _image->getMipMapCount(); i++) {
+			const DDS::MipMap &mipMap = _image->getMipMap(i);
 
-			if (_ddsImage->isCompressed()) {
-				glCompressedTexImage2D(GL_TEXTURE_2D, i, _ddsImage->getFormatRaw(),
-						mipMap.width, mipMap.height, 0, mipMap.size, mipMap.data);
-			} else {
-				glTexImage2D(GL_TEXTURE_2D, i, _ddsImage->getFormatRaw(),
-						mipMap.width, mipMap.height, 0, _ddsImage->getFormat(), _ddsImage->getDataType(),
-						mipMap.data);
-			}
+			glCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
+			                       mipMap.width, mipMap.height, 0,
+			                       mipMap.size, mipMap.data);
 		}
 
+		return;
 	}
+
+	if (_image->getMipMapCount() > 1) {
+		// The image gives us mip maps, use them
+
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+
+		for (int i = 0; i < _image->getMipMapCount(); i++) {
+			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
+
+			glTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
+			             mipMap.width, mipMap.height, 0, _image->getFormat(),
+			             _image->getDataType(), mipMap.data);
+
+		}
+
+		return;
+	}
+
+	// The image does not give us mip maps, build them ourselves
+
+	const ImageDecoder::MipMap &mipMap = _image->getMipMap(0);
+
+	GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, _image->getFormatRaw(),
+	                              mipMap.width, mipMap.height, _image->getFormat(),
+	                              _image->getDataType(), mipMap.data);
+
+	if (err != 0)
+		throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));
+
 }
 
 } // End of namespace Graphics
