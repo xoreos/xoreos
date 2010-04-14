@@ -41,7 +41,7 @@ DDS::DDS(Common::SeekableReadStream *dds) : _dds(dds), _compressed(false),
 
 DDS::~DDS() {
 	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
-		delete[] *mipMap;
+		delete *mipMap;
 }
 
 void DDS::load() {
@@ -203,9 +203,11 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 
 		setSize(*mipMap);
 
-		if (fullDataSize < mipMap->size)
+		if (fullDataSize < mipMap->size) {
 			// Wouldn't fit
+			delete mipMap;
 			break;
+		}
 
 		fullDataSize -= mipMap->size;
 

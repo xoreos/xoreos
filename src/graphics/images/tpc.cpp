@@ -32,7 +32,7 @@ TPC::TPC(Common::SeekableReadStream *tpc) : _tpc(tpc), _compressed(true),
 
 TPC::~TPC() {
 	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
-		delete[] *mipMap;
+		delete *mipMap;
 }
 
 void TPC::load() {
@@ -164,9 +164,11 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 
 		mipMap->data = 0;
 
-		if (fullDataSize < mipMap->size)
+		if (fullDataSize < mipMap->size) {
 			// Wouldn't fit
+			delete mipMap;
 			break;
+		}
 
 		fullDataSize -= mipMap->size;
 
