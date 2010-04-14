@@ -98,14 +98,14 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 		_compressed = false;
 
 		if        (encoding == kEncodingRGB) {
-			_format     = kPixelFormatBGR;
+			_format     = kPixelFormatRGB;
 			_formatRaw  = kPixelFormatRGB8;
 			_dataType   = kPixelDataType8;
 
 			minDataSize = 3;
 			dataSize    = width * height * 3;
 		} else if (encoding == kEncodingRGBA) {
-			_format     = kPixelFormatBGRA;
+			_format     = kPixelFormatRGBA;
 			_formatRaw  = kPixelFormatRGBA8;
 			_dataType   = kPixelDataType8;
 
