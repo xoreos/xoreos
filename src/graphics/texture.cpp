@@ -13,6 +13,7 @@
  */
 
 #include "common/types.h"
+#include "common/util.h"
 #include "common/error.h"
 #include "common/stream.h"
 
@@ -20,6 +21,7 @@
 #include "graphics/graphics.h"
 #include "graphics/images/decoder.h"
 #include "graphics/images/tga.h"
+#include "graphics/images/dds.h"
 
 #include "events/requests.h"
 
@@ -30,7 +32,8 @@ using Events::RequestID;
 namespace Graphics {
 
 Texture::Texture(const std::string &name) :
-	_inTextureList(false), _textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone), _plainImage(0) {
+	_inTextureList(false), _textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone),
+	_plainImage(0), _ddsImage(0) {
 
 	load(name);
 
@@ -44,6 +47,9 @@ Texture::~Texture() {
 
 	if (_textureID != 0xFFFFFFFF)
 		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_textureID));
+
+	delete _plainImage;
+	delete _ddsImage;
 }
 
 TextureID Texture::getID() const {
@@ -58,8 +64,10 @@ void Texture::load(const std::string &name) {
 	if (!img)
 		throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
-	if (_type == Aurora::kFileTypeTGA)
+	if      (_type == Aurora::kFileTypeTGA)
 		_plainImage = new TGA(img);
+	else if (_type == Aurora::kFileTypeDDS)
+		_ddsImage   = new DDS(img);
 	else
 		throw Common::Exception("Unsupported image resource type %d", (int) _type);
 
@@ -83,15 +91,15 @@ void Texture::reload() {
 	glGenTextures(1, &_textureID);
 
 	glBindTexture(GL_TEXTURE_2D, _textureID);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	if (_plainImage) {
 		_plainImage->load();
 
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		PixelFormat format = _plainImage->getFormat();
 
@@ -101,6 +109,28 @@ void Texture::reload() {
 
 		if (err != 0)
 			throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));
+	}
+
+	if (_ddsImage) {
+		_ddsImage->load();
+
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _ddsImage->getMipMapCount() - 1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+
+		for (int i = 0; i < _ddsImage->getMipMapCount(); i++) {
+			const DDS::MipMap &mipMap = _ddsImage->getMipMap(i);
+
+			if (_ddsImage->isCompressed()) {
+				glCompressedTexImage2D(GL_TEXTURE_2D, i, _ddsImage->getFormatRaw(),
+						mipMap.width, mipMap.height, 0, mipMap.size, mipMap.data);
+			} else {
+				glTexImage2D(GL_TEXTURE_2D, i, _ddsImage->getFormatRaw(),
+						mipMap.width, mipMap.height, 0, _ddsImage->getFormat(), _ddsImage->getDataType(),
+						mipMap.data);
+			}
+		}
+
 	}
 }
 

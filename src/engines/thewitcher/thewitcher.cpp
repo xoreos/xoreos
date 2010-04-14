@@ -18,6 +18,8 @@
 #include "common/filelist.h"
 #include "common/filepath.h"
 
+#include "graphics/cube.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -72,6 +74,7 @@ void TheWitcherEngine::run(const std::string &directory) {
 
 	status("Successfully initialized the engine");
 
+/*
 	int channel = -1;
 
 	Common::SeekableReadStream *wav = ResMan.getSound("m1_axem00020005");
@@ -79,10 +82,23 @@ void TheWitcherEngine::run(const std::string &directory) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);
 	}
+*/
+
+	Graphics::Cube *cube = 0;
+
+	try {
+
+		cube = new Graphics::Cube("wilk");
+
+	} catch (Common::Exception &e) {
+		Common::printException(e);
+	}
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
+
+	delete cube;
 }
 
 void TheWitcherEngine::init() {

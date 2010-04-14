@@ -27,7 +27,23 @@ enum PixelFormat {
 	kPixelFormatRGB  = GL_RGB ,
 	kPixelFormatRGBA = GL_RGBA,
 	kPixelFormatBGR  = GL_BGR ,
-	kPixelFormatBGRA = GL_BGRA
+	kPixelFormatBGRA = GL_BGRA,
+};
+
+enum PixelFormatRaw {
+	kPixelFormatRGBA8  = GL_RGBA8,
+	kPixelFormatRGB8   = GL_RGB8,
+	kPixelFormatRGB5A1 = GL_RGB5_A1,
+	kPixelFormatRGB5   = GL_RGB5,
+	kPixelFormatDXT1   = GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
+	kPixelFormatDXT3   = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
+	kPixelFormatDXT5   = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
+};
+
+enum PixelDataType {
+	kPixelDataType8    = GL_UNSIGNED_BYTE,
+	kPixelDataType1555 = GL_UNSIGNED_SHORT_1_5_5_5_REV,
+	kPixelDataType565  = GL_UNSIGNED_SHORT_5_6_5
 };
 
 inline int getBytesPerPixel(PixelFormat format) {

@@ -25,6 +25,7 @@
 namespace Graphics {
 
 class ImageDecoder;
+class DDS;
 
 class Texture {
 public:
@@ -42,6 +43,7 @@ private:
 	Aurora::FileType _type;
 
 	ImageDecoder *_plainImage;
+	DDS          *_ddsImage;
 
 	void load(const std::string &name);
 
