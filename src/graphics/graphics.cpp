@@ -148,7 +148,7 @@ void GraphicsManager::setupScene() {
 	glLoadIdentity();
 	glViewport(0, 0, _screen->w, _screen->h);
 
-	perspective(60.0, ((GLdouble) _screen->w) / ((GLdouble) _screen->h), 1.0, 1000.0);
+	gluPerspective(60.0, ((GLdouble) _screen->w) / ((GLdouble) _screen->h), 1.0, 1000.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -227,15 +227,6 @@ void GraphicsManager::renderScene() {
 	SDL_GL_SwapBuffers();
 
 	_fpsCounter->finishedFrame();
-}
-
-void GraphicsManager::perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar) {
-	// Basically implements gluPerspective
-
-	GLdouble halfHeight = zNear * std::tan(fovy * 0.5 * ((PI * 2) / 360));
-	GLdouble halfWidth  = halfHeight * aspect;
-
-	glFrustum(-halfWidth, halfWidth, -halfHeight, halfHeight, zNear, zFar);
 }
 
 void GraphicsManager::clearTextureList() {
