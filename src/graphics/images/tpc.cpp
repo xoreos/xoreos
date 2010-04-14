@@ -30,8 +30,8 @@ TPC::TPC(Common::SeekableReadStream *tpc) : _tpc(tpc), _compressed(true),
 }
 
 TPC::~TPC() {
-	for (std::vector<MipMap>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
-		delete[] mipMap->data;
+	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
+		delete[] *mipMap;
 }
 
 void TPC::load() {
@@ -76,7 +76,7 @@ int TPC::getMipMapCount() const {
 }
 
 const TPC::MipMap &TPC::getMipMap(int mipMap) const {
-	return _mipMaps[mipMap];
+	return *_mipMaps[mipMap];
 }
 
 void TPC::readHeader(Common::SeekableReadStream &tpc) {
@@ -141,20 +141,20 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 	uint32 fullDataSize = tpc.size() - 128;
 
 	do {
-		MipMap mipMap;
+		MipMap *mipMap = new MipMap;
 
-		mipMap.width  = MAX<uint32>(width,  1);
-		mipMap.height = MAX<uint32>(height, 1);
+		mipMap->width  = MAX<uint32>(width,  1);
+		mipMap->height = MAX<uint32>(height, 1);
 
-		mipMap.size = MAX<uint32>(dataSize, minDataSize);
+		mipMap->size = MAX<uint32>(dataSize, minDataSize);
 
-		mipMap.data = 0;
+		mipMap->data = 0;
 
-		if (fullDataSize < mipMap.size)
+		if (fullDataSize < mipMap->size)
 			// Wouldn't fit
 			break;
 
-		fullDataSize -= mipMap.size;
+		fullDataSize -= mipMap->size;
 
 		_mipMaps.push_back(mipMap);
 
@@ -166,10 +166,10 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 }
 
 void TPC::readData(Common::SeekableReadStream &tpc) {
-	for (std::vector<MipMap>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
-		mipMap->data = new byte[mipMap->size];
+	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
+		(*mipMap)->data = new byte[(*mipMap)->size];
 
-		if (tpc.read(mipMap->data, mipMap->size) != mipMap->size)
+		if (tpc.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
 			throw Common::Exception(Common::kReadError);
 	}
 }

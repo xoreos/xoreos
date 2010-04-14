@@ -62,7 +62,7 @@ private:
 	PixelFormatRaw _formatRaw;
 	PixelDataType  _dataType;
 
-	std::vector<MipMap> _mipMaps;
+	std::vector<MipMap *> _mipMaps;
 
 	void readHeader(Common::SeekableReadStream &dds);
 	void readStandardHeader(Common::SeekableReadStream &dds);

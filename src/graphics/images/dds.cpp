@@ -39,8 +39,8 @@ DDS::DDS(Common::SeekableReadStream *dds) : _dds(dds), _compressed(false),
 }
 
 DDS::~DDS() {
-	for (std::vector<MipMap>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
-		delete[] mipMap->data;
+	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
+		delete[] *mipMap;
 }
 
 void DDS::load() {
@@ -85,7 +85,7 @@ int DDS::getMipMapCount() const {
 }
 
 const DDS::MipMap &DDS::getMipMap(int mipMap) const {
-	return _mipMaps[mipMap];
+	return *_mipMaps[mipMap];
 }
 
 void DDS::readHeader(Common::SeekableReadStream &dds) {
@@ -114,8 +114,10 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds) {
 
 	dds.skip(44); // Reserved
 
-	_mipMaps.resize(mipMapCount);
-	for (std::vector<MipMap>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
+	_mipMaps.reserve(mipMapCount);
+	for (uint32 i = 0; i < mipMapCount; i++) {
+		MipMap *mipMap = new MipMap;
+
 		if (width == 0)
 			width = 1;
 		if (height == 0)
@@ -128,6 +130,8 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds) {
 
 		width  = MAX<int>(width  >> 1, 1);
 		height = MAX<int>(height >> 1, 1);
+
+		_mipMaps.push_back(mipMap);
 	}
 
 	DDSPixelFormat format;
@@ -144,8 +148,8 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds) {
 
 	dds.skip(16 + 4); // DDCAPS2 + Reserved
 
-	for (std::vector<MipMap>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
-		setSize(*mipMap);
+	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
+		setSize(**mipMap);
 }
 
 #define IsPower2(x) ((x) && (((x) & ((x) - 1)) == 0))
@@ -178,18 +182,18 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 	uint32 fullDataSize = dds.size() - dds.pos();
 
 	do {
-		MipMap mipMap;
+		MipMap *mipMap = new MipMap;
 
-		mipMap.width  = MAX<uint32>(width,  1);
-		mipMap.height = MAX<uint32>(height, 1);
+		mipMap->width  = MAX<uint32>(width,  1);
+		mipMap->height = MAX<uint32>(height, 1);
 
-		setSize(mipMap);
+		setSize(*mipMap);
 
-		if (fullDataSize < mipMap.size)
+		if (fullDataSize < mipMap->size)
 			// Wouldn't fit
 			break;
 
-		fullDataSize -= mipMap.size;
+		fullDataSize -= mipMap->size;
 
 		_mipMaps.push_back(mipMap);
 
@@ -221,10 +225,10 @@ void DDS::setSize(MipMap &mipMap) {
 void DDS::readData(Common::SeekableReadStream &dds) {
 	// TODO: Do we need to flip the data?
 
-	for (std::vector<MipMap>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
-		mipMap->data = new byte[mipMap->size];
+	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
+		(*mipMap)->data = new byte[(*mipMap)->size];
 
-		if (dds.read(mipMap->data, mipMap->size) != mipMap->size)
+		if (dds.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
 			throw Common::Exception(Common::kReadError);
 	}
 }

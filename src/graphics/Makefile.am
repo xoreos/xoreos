@@ -18,6 +18,7 @@ noinst_HEADERS = types.h \
                  cube.h
 
 libgraphics_la_SOURCES = glew/glew.c \
+                         images/decoder.cpp \
                          images/tga.cpp \
                          images/dds.cpp \
                          images/tpc.cpp \

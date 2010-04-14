@@ -21,13 +21,10 @@
 namespace Graphics {
 
 TGA::TGA(Common::SeekableReadStream *tga) : _tga(tga), _format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8) {
-	_image.data = 0;
-
 	assert(_tga);
 }
 
 TGA::~TGA() {
-	delete[] _image.data;
 }
 
 void TGA::load() {

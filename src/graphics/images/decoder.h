@@ -24,14 +24,17 @@ namespace Graphics {
 /** A generic interface for image decoders. */
 class ImageDecoder {
 public:
-	ImageDecoder() { }
-	virtual ~ImageDecoder() { }
+	ImageDecoder();
+	virtual ~ImageDecoder();
 
 	struct MipMap {
 		int    width;
 		int    height;
 		uint32 size;
 		byte  *data;
+
+		MipMap();
+		~MipMap();
 	};
 
 	virtual void load() = 0;
