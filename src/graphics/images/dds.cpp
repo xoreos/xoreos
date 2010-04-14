@@ -196,7 +196,6 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 		width  >>= 1;
 		height >>= 1;
 
-		break;
 	} while ((width >= 1) && (height >= 1));
 }
 
