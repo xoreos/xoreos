@@ -100,7 +100,6 @@ void Texture::reload() {
 	if (_plainImage) {
 		_plainImage->load();
 
-
 		PixelFormat format = _plainImage->getFormat();
 
 		GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, getBytesPerPixel(format),
