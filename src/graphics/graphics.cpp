@@ -136,8 +136,8 @@ bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
 
 void GraphicsManager::checkGLExtensions() {
 	if (!GLEW_EXT_texture_compression_s3tc) {
-		warning("Your graphics cards does not support the needed extension "
-		        "for S3TC DXT1, DXT3 and DXT5 texture compression");
+		warning("Your graphics card does not support the needed extension "
+		        "for S3TC DXT1, DXT3 and DXT5 texture decompression");
 		warning("Switching to manual S3TC DXTn decompression. "
 		        "This will be slower and will take up more video memory");
 		_needManualDeS3TC = true;
@@ -145,8 +145,15 @@ void GraphicsManager::checkGLExtensions() {
 		throw Common::Exception("TODO: Manual S3TC DXTn decompression.");
 	}
 
-	if (!GLEW_ARB_texture_compression)
-		throw Common::Exception("You're graphics card doesn't support the texture compressed API");
+	if (!GLEW_ARB_texture_compression) {
+		warning("Your graphics card doesn't support compressed texture API");
+		warning("Switching to manual S3TC DXTn decompression. "
+		        "This will be slower and will take up more video memory");
+
+		_needManualDeS3TC = true;
+
+		throw Common::Exception("TODO: Manual S3TC DXTn decompression.");
+	}
 }
 
 void GraphicsManager::setWindowTitle(const std::string &title) {
