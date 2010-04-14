@@ -53,6 +53,10 @@ private:
 
 	std::vector<MipMap *> _mipMaps;
 
+	MipMap &getMipMap(int mipMap);
+
+	void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
+
 	void readHeader(Common::SeekableReadStream &tpc);
 	void readData(Common::SeekableReadStream &tpc);
 };

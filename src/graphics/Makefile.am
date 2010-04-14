@@ -6,6 +6,7 @@ noinst_HEADERS = types.h \
                  glew/glew.h \
                  glew/glxew.h \
                  glew/wglew.h \
+                 images/s3tc.h \
                  images/decoder.h \
                  images/tga.h \
                  images/dds.h \
@@ -18,6 +19,7 @@ noinst_HEADERS = types.h \
                  cube.h
 
 libgraphics_la_SOURCES = glew/glew.c \
+                         images/s3tc.cpp \
                          images/decoder.cpp \
                          images/tga.cpp \
                          images/dds.cpp \

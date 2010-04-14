@@ -121,7 +121,7 @@ void Texture::reload() {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 
 		for (int i = 0; i < _image->getMipMapCount(); i++) {
-			const DDS::MipMap &mipMap = _image->getMipMap(i);
+			const DDS::MipMap &mipMap = ((const ImageDecoder *) _image)->getMipMap(i);
 
 			glCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
 			                       mipMap.width, mipMap.height, 0,
@@ -139,7 +139,7 @@ void Texture::reload() {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 
 		for (int i = 0; i < _image->getMipMapCount(); i++) {
-			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
+			const ImageDecoder::MipMap &mipMap = ((const ImageDecoder *) _image)->getMipMap(i);
 
 			glTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
 			             mipMap.width, mipMap.height, 0, _image->getFormat(),
@@ -152,7 +152,7 @@ void Texture::reload() {
 
 	// The image does not give us mip maps, build them ourselves
 
-	const ImageDecoder::MipMap &mipMap = _image->getMipMap(0);
+	const ImageDecoder::MipMap &mipMap = ((const ImageDecoder *) _image)->getMipMap(0);
 
 	GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, _image->getFormatRaw(),
 	                              mipMap.width, mipMap.height, _image->getFormat(),

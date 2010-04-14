@@ -120,4 +120,8 @@ const TGA::MipMap &TGA::getMipMap(int mipMap) const {
 	return _image;
 }
 
+TGA::MipMap &TGA::getMipMap(int mipMap) {
+	return _image;
+}
+
 } // End of namespace Graphics

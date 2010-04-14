@@ -12,25 +12,78 @@
  *  Generic image decoder interface.
  */
 
+#include "common/error.h"
+
 #include "graphics/images/decoder.h"
+#include "graphics/images/s3tc.h"
 
 namespace Graphics {
 
 ImageDecoder::MipMap::MipMap() {
-	width  = 0;
-	height = 0;
-	size   = 0;
-	data   = 0;
+	width    = 0;
+	height   = 0;
+	size     = 0;
+	data     = 0;
+	dataOrig = 0;
 }
 
 ImageDecoder::MipMap::~MipMap() {
 	delete[] data;
+	delete[] dataOrig;
 }
+
 
 ImageDecoder::ImageDecoder() {
 }
 
 ImageDecoder::~ImageDecoder() {
+}
+
+void ImageDecoder::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
+	throw Common::Exception("Setting the format is not implemented for this image decoder");
+}
+
+void ImageDecoder::uncompress() {
+	int count = getMipMapCount();
+	for (int i = 0; i < count; i++) {
+		MipMap &mipMap = getMipMap(i);
+
+		if        (getFormatRaw() == kPixelFormatDXT1) {
+			uint32 origSize = mipMap.size;
+
+			mipMap.size     = mipMap.width * mipMap.height * 3;
+			mipMap.dataOrig = mipMap.data;
+			mipMap.data     = new byte[mipMap.size];
+
+			decompressDXT1(mipMap.data, mipMap.dataOrig, mipMap.size);
+
+			setFormat(kPixelFormatBGR, kPixelFormatRGB8, kPixelDataType8);
+
+		} else if (getFormatRaw() == kPixelFormatDXT3) {
+			uint32 origSize = mipMap.size;
+
+			mipMap.size     = mipMap.width * mipMap.height * 4;
+			mipMap.dataOrig = mipMap.data;
+			mipMap.data     = new byte[mipMap.size];
+
+			decompressDXT3(mipMap.data, mipMap.dataOrig, mipMap.size);
+
+			setFormat(kPixelFormatBGRA, kPixelFormatRGBA8, kPixelDataType8);
+
+		} else if (getFormatRaw() == kPixelFormatDXT5) {
+			uint32 origSize = mipMap.size;
+
+			mipMap.size     = mipMap.width * mipMap.height * 4;
+			mipMap.dataOrig = mipMap.data;
+			mipMap.data     = new byte[mipMap.size];
+
+			decompressDXT5(mipMap.data, mipMap.dataOrig, mipMap.size);
+
+			setFormat(kPixelFormatBGRA, kPixelFormatRGBA8, kPixelDataType8);
+
+		}
+
+	}
 }
 
 } // End of namespace Graphics

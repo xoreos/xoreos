@@ -32,6 +32,7 @@ public:
 		int    height;
 		uint32 size;
 		byte  *data;
+		byte  *dataOrig;
 
 		MipMap();
 		~MipMap();
@@ -48,6 +49,13 @@ public:
 	virtual int getMipMapCount() const = 0;
 
 	virtual const MipMap &getMipMap(int mipMap) const = 0;
+
+protected:
+	virtual MipMap &getMipMap(int mipMap) = 0;
+
+	virtual void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
+
+	void uncompress();
 };
 
 } // End of namespace Graphics

@@ -64,6 +64,10 @@ private:
 
 	std::vector<MipMap *> _mipMaps;
 
+	MipMap &getMipMap(int mipMap);
+
+	void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
+
 	void readHeader(Common::SeekableReadStream &dds);
 	void readStandardHeader(Common::SeekableReadStream &dds);
 	void readBioWareHeader(Common::SeekableReadStream &dds);

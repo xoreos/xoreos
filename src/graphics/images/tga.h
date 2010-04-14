@@ -48,6 +48,8 @@ private:
 
 	MipMap _image;
 
+	MipMap &getMipMap(int mipMap);
+
 	void readHeader(Common::SeekableReadStream &tga);
 	void readData(Common::SeekableReadStream &tga);
 };

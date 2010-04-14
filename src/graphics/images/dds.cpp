@@ -17,6 +17,7 @@
 #include "common/stream.h"
 
 #include "graphics/images/dds.h"
+#include "graphics/graphics.h"
 
 static const uint32 kDDSID  = MKID_BE('DDS ');
 static const uint32 kDXT1ID = MKID_BE('DXT1');
@@ -55,6 +56,9 @@ void DDS::load() {
 		if (_dds->err())
 			throw Common::Exception(Common::kReadError);
 
+		if (GfxMan.needManualDeS3TC())
+			uncompress();
+
 	} catch (Common::Exception &e) {
 		e.add("Failed reading DDS file");
 		throw e;
@@ -86,6 +90,16 @@ int DDS::getMipMapCount() const {
 
 const DDS::MipMap &DDS::getMipMap(int mipMap) const {
 	return *_mipMaps[mipMap];
+}
+
+DDS::MipMap &DDS::getMipMap(int mipMap) {
+	return *_mipMaps[mipMap];
+}
+
+void DDS::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
+	_format    = format;
+	_formatRaw = formatRaw;
+	_dataType  = dataType;
 }
 
 void DDS::readHeader(Common::SeekableReadStream &dds) {

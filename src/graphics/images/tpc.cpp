@@ -17,6 +17,7 @@
 #include "common/stream.h"
 
 #include "graphics/images/tpc.h"
+#include "graphics/graphics.h"
 
 static const byte kEncodingRGB  = 0x02;
 static const byte kEncodingRGBA = 0x04;
@@ -45,6 +46,9 @@ void TPC::load() {
 
 		if (_tpc->err())
 			throw Common::Exception(Common::kReadError);
+
+		if (GfxMan.needManualDeS3TC())
+			uncompress();
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TPC file");
@@ -77,6 +81,16 @@ int TPC::getMipMapCount() const {
 
 const TPC::MipMap &TPC::getMipMap(int mipMap) const {
 	return *_mipMaps[mipMap];
+}
+
+TPC::MipMap &TPC::getMipMap(int mipMap) {
+	return *_mipMaps[mipMap];
+}
+
+void TPC::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
+	_format    = format;
+	_formatRaw = formatRaw;
+	_dataType  = dataType;
 }
 
 void TPC::readHeader(Common::SeekableReadStream &tpc) {
