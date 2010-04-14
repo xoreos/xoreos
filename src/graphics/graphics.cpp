@@ -101,16 +101,15 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	if (fullscreen)
 		flags |= SDL_FULLSCREEN;
 
-	if (setupSDLGL(width, height, bpp, flags))
-		return;
+	if (!setupSDLGL(width, height, bpp, flags)) {
+		// Could not initialize OpenGL, trying a different bpp value
 
-	// Could not initialize OpenGL, trying a different bpp value
+		bpp = (bpp == 32) ? 24 : 32;
 
-	bpp = (bpp == 32) ? 24 : 32;
-
-	if (!setupSDLGL(width, height, bpp, flags))
-		// Still couldn't initialize OpenGL, erroring out
-		throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
+		if (!setupSDLGL(width, height, bpp, flags))
+			// Still couldn't initialize OpenGL, erroring out
+			throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
+	}
 
 	// Initialize glew, for the extension entry points
 	GLenum glewErr = glewInit();
