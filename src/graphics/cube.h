@@ -53,6 +53,8 @@ public:
 private:
 	CubeSide *_sides[6];
 
+	bool _firstTime;
+
 	uint32 _lastRotateTime;
 	float  _rotation;
 

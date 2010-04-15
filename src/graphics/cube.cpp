@@ -58,7 +58,7 @@ void CubeSide::render() {
 }
 
 
-Cube::Cube(const std::string &texture) : _lastRotateTime(0) {
+Cube::Cube(const std::string &texture) : _firstTime(true), _lastRotateTime(0) {
 	_texture = new Texture(texture);
 
 	for (int i = 0; i < 6; i++)
@@ -123,8 +123,11 @@ void Cube::applyTransformation(int n) {
 }
 
 void Cube::setTexture() {
-	// Sync, to make sure that the texture has finished loading
-	RequestMan.sync();
+	if (_firstTime) {
+		// Sync, to make sure that the texture has finished loading
+		RequestMan.sync();
+		_firstTime = false;
+	}
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _texture->getID());
