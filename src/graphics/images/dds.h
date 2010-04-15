@@ -25,6 +25,10 @@ namespace Common {
 
 namespace Graphics {
 
+/** DirectDraw Surface.
+ *
+ *  Both standard DDS files and BioWare's own version are supported.
+ */
 class DDS : public ImageDecoder {
 public:
 	DDS(Common::SeekableReadStream *dds);
@@ -43,15 +47,16 @@ public:
 	const MipMap &getMipMap(int mipMap) const;
 
 private:
+	/** The specific pixel format of the included image data. */
 	struct DDSPixelFormat {
-		uint32 size;
-		uint32 flags;
-		uint32 fourCC;
-		uint32 bitCount;
-		uint32 rBitMask;
-		uint32 gBitMask;
-		uint32 bBitMask;
-		uint32 aBitMask;
+		uint32 size;     ///< The size of the image data in bytes.
+		uint32 flags;    ///< Features of the image data.
+		uint32 fourCC;   ///< The FourCC to detect the format by.
+		uint32 bitCount; ///< Number of bits per pixel.
+		uint32 rBitMask; ///< Bit mask for the red color component.
+		uint32 gBitMask; ///< Bit mask for the green color component.
+		uint32 bBitMask; ///< Bit mask for the blue color component.
+		uint32 aBitMask; ///< Bit mask for the alpha component.
 	};
 
 	Common::SeekableReadStream *_dds;
@@ -68,6 +73,7 @@ private:
 
 	void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
 
+	// Loading helpers
 	void readHeader(Common::SeekableReadStream &dds);
 	void readStandardHeader(Common::SeekableReadStream &dds);
 	void readBioWareHeader(Common::SeekableReadStream &dds);

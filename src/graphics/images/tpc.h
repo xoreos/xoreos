@@ -25,6 +25,7 @@ namespace Common {
 
 namespace Graphics {
 
+/** BioWare's own texture format, TPC. */
 class TPC : public ImageDecoder {
 public:
 	TPC(Common::SeekableReadStream *tpc);
@@ -42,6 +43,7 @@ public:
 
 	const MipMap &getMipMap(int mipMap) const;
 
+	/** Return the enclosed TXI data. */
 	Common::SeekableReadStream *getTXI() const;
 
 private:
@@ -62,6 +64,7 @@ private:
 
 	void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
 
+	// Loading helpers
 	void readHeader(Common::SeekableReadStream &tpc);
 	void readData(Common::SeekableReadStream &tpc);
 	void readTXIData(Common::SeekableReadStream &tpc);

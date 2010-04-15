@@ -105,14 +105,18 @@ void TPC::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType 
 }
 
 void TPC::readHeader(Common::SeekableReadStream &tpc) {
+	// Number of bytes for the pixel data in one full image
 	uint32 dataSize = tpc.readUint32LE();
 
 	tpc.skip(4); // Some float
 
+	// Image dimensions
 	uint32 width  = tpc.readUint16LE();
 	uint32 height = tpc.readUint16LE();
 
+	// How's the pixel data encoded?
 	byte encoding    = tpc.readByte();
+	// Number of mip maps in the image
 	byte mipMapCount = tpc.readByte();
 
 	tpc.skip(114); // Reserved
@@ -124,6 +128,8 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 		_compressed = false;
 
 		if        (encoding == kEncodingRGB) {
+			// RGB, no alpha channel
+
 			_format     = kPixelFormatRGB;
 			_formatRaw  = kPixelFormatRGB8;
 			_dataType   = kPixelDataType8;
@@ -131,6 +137,8 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 			minDataSize = 3;
 			dataSize    = width * height * 3;
 		} else if (encoding == kEncodingRGBA) {
+			// RGBA, alpha channel
+
 			_format     = kPixelFormatRGBA;
 			_formatRaw  = kPixelFormatRGBA8;
 			_dataType   = kPixelDataType8;
@@ -139,7 +147,6 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 			dataSize    = width * height * 4;
 		} else
 			throw Common::Exception("Unkown TPC raw encoding: %d (%d)", encoding, dataSize);
-
 
 	} else if (encoding == kEncodingRGB) {
 		// S3TC DXT1

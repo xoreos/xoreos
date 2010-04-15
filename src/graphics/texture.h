@@ -31,11 +31,13 @@ namespace Graphics {
 class ImageDecoder;
 class DDS;
 
+/** A texture. */
 class Texture {
 public:
 	Texture(const std::string &name);
 	~Texture();
 
+	/** Return the ID of the texture for use with OpenGL. */
 	TextureID getID() const;
 
 private:

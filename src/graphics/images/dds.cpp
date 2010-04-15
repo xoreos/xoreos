@@ -104,17 +104,22 @@ void DDS::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType 
 
 void DDS::readHeader(Common::SeekableReadStream &dds) {
 	if (dds.readUint32BE() == kDDSID)
+		// We found the FourCC of a standard DDS
 		readStandardHeader(dds);
 	else
+		// FourCC not found, should be a BioWare DDS then
 		readBioWareHeader(dds);
 }
 
 void DDS::readStandardHeader(Common::SeekableReadStream &dds) {
+	// All DDS header should be 124 bytes (+ 4 for the FourCC) big
 	if (dds.readUint32LE() != 124)
 		throw Common::Exception("Header size invalid");
 
+	// DDS features
 	uint32 flags = dds.readUint32LE();
 
+	// Image dimensions
 	uint32 height = dds.readUint32LE();
 	uint32 width  = dds.readUint32LE();
 
@@ -123,31 +128,13 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds) {
 	//uint32 depth           = dds.readUint32LE();
 	uint32 mipMapCount     = dds.readUint32LE();
 
+	// DDS doesn't provide any mip maps, only one full-size image
 	if ((flags & kHeaderFlagsHasMipMaps) == 0)
 		mipMapCount = 1;
 
 	dds.skip(44); // Reserved
 
-	_mipMaps.reserve(mipMapCount);
-	for (uint32 i = 0; i < mipMapCount; i++) {
-		MipMap *mipMap = new MipMap;
-
-		if (width == 0)
-			width = 1;
-		if (height == 0)
-			height = 1;
-
-		mipMap->width  = width;
-		mipMap->height = height;
-
-		mipMap->data = 0;
-
-		width  = MAX<int>(width  >> 1, 1);
-		height = MAX<int>(height >> 1, 1);
-
-		_mipMaps.push_back(mipMap);
-	}
-
+	// Read the pixel data format
 	DDSPixelFormat format;
 	format.size     = dds.readUint32LE();
 	format.flags    = dds.readUint32LE();
@@ -158,26 +145,46 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds) {
 	format.bBitMask = dds.readUint32LE();
 	format.aBitMask = dds.readUint32LE();
 
+	// Detect which specific format it describes
 	detectFormat(format);
 
 	dds.skip(16 + 4); // DDCAPS2 + Reserved
 
-	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
-		setSize(**mipMap);
+	_mipMaps.reserve(mipMapCount);
+	for (uint32 i = 0; i < mipMapCount; i++) {
+		MipMap *mipMap = new MipMap;
+
+		mipMap->width  = MAX<uint32>(width , 1);
+		mipMap->height = MAX<uint32>(height, 1);
+
+		setSize(*mipMap);
+
+		mipMap->data = 0;
+
+		width  >>= 1;
+		height >>= 1;
+
+		_mipMaps.push_back(mipMap);
+	}
+
 }
 
 #define IsPower2(x) ((x) && (((x) & ((x) - 1)) == 0))
 void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 	dds.seek(0);
 
+	// Image dimensions
 	uint32 width  = dds.readUint32LE();
 	uint32 height = dds.readUint32LE();
 
+	// Check that the width and height are really powers of 2
 	if (!IsPower2(width) || !IsPower2(height))
 		throw Common::Exception("Width and height must be powers of 2");
 
+	// Always compressed
 	_compressed = true;
 
+	// Check which compression
 	uint32 bpp = dds.readUint32LE();
 	if      (bpp == 3)
 		_formatRaw = kPixelFormatDXT1;
@@ -186,6 +193,7 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 	else
 		throw Common::Exception("Unsupported bytes per pixel value (%d)", bpp);
 
+	// Sanity check for the image data size
 	uint32 dataSize = dds.readUint32LE();
 	if (((bpp == 3) && (dataSize != ((width * height) / 2))) ||
 		  ((bpp == 4) && (dataSize != ((width * height)    ))))
@@ -193,8 +201,10 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 
 	dds.skip(4); // Some float
 
+	// Number of bytes left for the image data
 	uint32 fullDataSize = dds.size() - dds.pos();
 
+	// Detect how many mip maps are in the DDS
 	do {
 		MipMap *mipMap = new MipMap;
 
@@ -220,6 +230,8 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 }
 
 void DDS::setSize(MipMap &mipMap) {
+	// Depending on the pixel format, set the image data size in bytes
+
 	if (_formatRaw == kPixelFormatDXT1) {
 		mipMap.size = ((mipMap.width + 3) / 4) * ((mipMap.height + 3) / 4) *  8;
 	} else if (_formatRaw == kPixelFormatDXT3) {
@@ -250,6 +262,8 @@ void DDS::readData(Common::SeekableReadStream &dds) {
 }
 
 void DDS::detectFormat(const DDSPixelFormat &format) {
+	// Big, ugly big pixel format description => format mapping
+
 	if        ((format.flags & kPixelFlagsHasFourCC) && (format.fourCC == kDXT1ID)) {
 		_compressed = true;
 		_format     = kPixelFormatBGRA;
@@ -307,8 +321,10 @@ void DDS::detectFormat(const DDSPixelFormat &format) {
 		warning("Found untested DDS RGB5 data");
 
 	} else if (format.flags & kPixelFlagsIsIndexed)
+		// Hopefully, we'll never need to support that :P
 		throw Common::Exception("Unsupported feature: Palette");
 	else
+		// We'll see if there's more formats in the data files :P
 		throw Common::Exception("Unknown pixel format");
 }
 

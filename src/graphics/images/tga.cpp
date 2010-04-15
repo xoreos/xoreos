@@ -52,11 +52,14 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	if (!tga.seek(0))
 		throw Common::Exception(Common::kSeekError);
 
+	// TGAs have an optional "id" string in the header
 	uint32 idLength = tga.readByte();
 
+	// Number of colors in the color map / palette
 	if (tga.readByte() != 0)
 		throw Common::Exception("Unsupported feature: Color map");
 
+	// Image type. 2 == umapped RGB
 	byte imageType = tga.readByte();
 	if (imageType != 2)
 		throw Common::Exception("Unsupported image type: %d", imageType);
@@ -64,9 +67,11 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	// Color map specifications + X + Y
 	tga.skip(5 + 2 + 2);
 
+	// Image dimensions
 	_image.width  = tga.readUint16LE();
 	_image.height = tga.readUint16LE();
 
+	// Bits per pixel
 	byte pixelDepth = tga.readByte();
 
 	if      (pixelDepth == 24) {
@@ -81,10 +86,12 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	// Image descriptor
 	tga.skip(1);
 
+	// Skip the id string
 	tga.skip(idLength);
 }
 
 void TGA::readData(Common::SeekableReadStream &tga) {
+	// Size of image data in bytes
 	_image.size = _image.width * _image.height;
 	if      (_format == kPixelFormatBGR)
 		_image.size *= 3;
@@ -97,6 +104,7 @@ void TGA::readData(Common::SeekableReadStream &tga) {
 }
 
 bool TGA::isCompressed() const {
+	// TGAs are never compressed
 	return false;
 }
 
@@ -109,10 +117,12 @@ PixelFormatRaw TGA::getFormatRaw() const {
 }
 
 PixelDataType TGA::getDataType() const {
+	// TGA pixels always 888(8)
 	return kPixelDataType8;
 }
 
 int TGA::getMipMapCount() const {
+	// Just one image in TGAs
 	return 1;
 }
 

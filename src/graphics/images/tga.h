@@ -23,6 +23,7 @@ namespace Common {
 
 namespace Graphics {
 
+/** TarGa image. */
 class TGA : public ImageDecoder {
 public:
 	TGA(Common::SeekableReadStream *tga);
@@ -50,6 +51,7 @@ private:
 
 	MipMap &getMipMap(int mipMap);
 
+	// Loading helpers
 	void readHeader(Common::SeekableReadStream &tga);
 	void readData(Common::SeekableReadStream &tga);
 };

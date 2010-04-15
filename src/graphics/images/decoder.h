@@ -31,36 +31,48 @@ public:
 	ImageDecoder();
 	virtual ~ImageDecoder();
 
+	/** A mip map. */
 	struct MipMap {
-		int    width;
-		int    height;
-		uint32 size;
-		byte  *data;
-		byte  *dataOrig;
+		int    width;    ///< The mip map's width.
+		int    height;   ///< The mip map's height.
+		uint32 size;     ///< The mip map's size in bytes.
+		byte  *data;     ///< The mip map's data.
+		byte  *dataOrig; ///< The mip map's original data.
 
 		MipMap();
 		~MipMap();
 	};
 
+	/** Load the image. */
 	virtual void load() = 0;
 
+	/** Is the image data compressed? */
 	virtual bool isCompressed() const = 0;
 
+	/** Return the image data's general format. */
 	virtual PixelFormat    getFormat() const = 0;
+	/** Return the image data's raw format. */
 	virtual PixelFormatRaw getFormatRaw() const = 0;
+	/** Return the image data pixel's type. */
 	virtual PixelDataType  getDataType() const = 0;
 
+	/** Return the number of mip maps contained in the image. */
 	virtual int getMipMapCount() const = 0;
 
+	/** Return a mip map. */
 	virtual const MipMap &getMipMap(int mipMap) const = 0;
 
+	/** Return TXI data, if embedded in the image. */
 	virtual Common::SeekableReadStream *getTXI() const;
 
 protected:
+	/** Return a mip map. */
 	virtual MipMap &getMipMap(int mipMap) = 0;
 
+	/** Set the format. */
 	virtual void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
 
+	/** Manually uncompress texture image data. */
 	void uncompress();
 };
 

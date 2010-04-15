@@ -40,28 +40,34 @@ void printDataHex(Common::SeekableReadStream &stream) {
 	byte rowData[16];
 
 	while (size > 0) {
+		// At max 16 bytes printed per row
 		uint32 n = MIN<uint32>(size, 16);
-
-		std::fprintf(stderr, "%08X  ", offset);
-
 		if (stream.read(rowData, n) != n)
 			throw Common::Exception(Common::kReadError);
 
+		// Print an offset
+		std::fprintf(stderr, "%08X  ", offset);
+
+		// 2 "blobs" of each 8 bytes per row
 		for (uint32 i = 0; i < 2; i++) {
 			for (uint32 j = 0; j < 8; j++) {
 				uint32 m = i * 8 + j;
 
 				if (m < n)
+					// Print the data
 					std::fprintf(stderr, "%02X ", rowData[m]);
 				else
+					// Last row, data count not aligned to 16
 					std::fprintf(stderr, "   ");
 			}
 
+			// Separate the blobs by an extra space
 			std::fprintf(stderr, " ");
 		}
 
 		std::fprintf(stderr, "|");
 
+		// If the data byte is a printable character, print it. If not, substitute a '.'
 		for (uint32 i = 0; i < n; i++)
 			std::fprintf(stderr, "%c", std::isprint(rowData[i]) ? rowData[i] : '.');
 
@@ -71,6 +77,7 @@ void printDataHex(Common::SeekableReadStream &stream) {
 		offset += n;
 	}
 
+	// Seek back
 	if (!stream.seek(pos))
 		throw Common::Exception(Common::kSeekError);
 }

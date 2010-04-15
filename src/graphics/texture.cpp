@@ -53,6 +53,7 @@ Texture::~Texture() {
 }
 
 TextureID Texture::getID() const {
+	// TODO: Just for debugging, take it out eventually :P
 	if (_textureID == 0xFFFFFFFF)
 		throw Common::Exception("Non-existing texture ID");
 
@@ -64,6 +65,7 @@ void Texture::load(const std::string &name) {
 	if (!img)
 		throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
+	// Loading the different image formats
 	if      (_type == Aurora::kFileTypeTGA)
 		_image = new TGA(img);
 	else if (_type == Aurora::kFileTypeDDS)

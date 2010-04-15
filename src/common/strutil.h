@@ -37,7 +37,9 @@ template<typename T> bool stringConvert(const std::string &str, T &v) {
 	return true;
 }
 
+/** Print a quick hex dump of the given data. */
 void printDataHex(Common::SeekableReadStream &stream);
+/** Print a quick hex dump of the given data. */
 void printDataHex(const byte *data, uint32 size);
 
 } // End of namespace Common
