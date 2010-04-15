@@ -17,6 +17,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
+#include <cctype>
 
 #ifndef DISABLE_TEXT_CONSOLE
 
@@ -59,4 +60,41 @@ void NORETURN_PRE error(const char *s, ...) {
 	std::fputs("!\n", stderr);
 
 	std::exit(1);
+}
+
+void printDataHex(const byte *data, uint32 size) {
+	size = 110;
+
+	uint32 offset = 0;
+
+	while (size > 0) {
+		uint32 n = MIN<uint32>(size, 16);
+
+		std::fprintf(stderr, "%08X  ", offset);
+
+		for (uint32 i = 0; i < 2; i++) {
+			for (uint32 j = 0; j < 8; j++) {
+				uint32 m = i * 8 + j;
+
+				if (m < n)
+					std::fprintf(stderr, "%02X ", data[m]);
+				else
+					std::fprintf(stderr, "   ");
+			}
+
+			std::fprintf(stderr, " ");
+		}
+
+		std::fprintf(stderr, "|");
+
+		for (uint32 i = 0; i < n; i++)
+			std::fprintf(stderr, "%c", std::isprint(data[i]) ? data[i] : '.');
+
+		std::fprintf(stderr, "|\n");
+
+		data   += n;
+		size   -= n;
+		offset += n;
+	}
+
 }
