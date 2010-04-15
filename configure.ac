@@ -63,15 +63,17 @@ case "$target" in
 	*darwin*)
 		;;
 	*)
-		AX_HAVE_OPENGL
+		AX_CHECK_GL
+		AX_CHECK_GLU
+
 		AC_CHECK_HEADER("AL/al.h", , noopenal=1)
 		AC_CHECK_HEADER("AL/alc.h", , noopenal=1)
 
-		if test "x$have_GL" != "xyes"; then
+		if test -n "$no_gl"; then
 			AC_MSG_ERROR([OpenGL is required and could not be found!])
 		fi
 
-		if test "x$have_GLU" != "xyes"; then
+		if test -n "$no_glu"; then
 			AC_MSG_ERROR([GLU is required and could not be found!])
 		fi
 
