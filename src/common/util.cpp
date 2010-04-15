@@ -63,6 +63,9 @@ void NORETURN_PRE error(const char *s, ...) {
 }
 
 void printDataHex(const byte *data, uint32 size) {
+	if (!data || (size == 0))
+		return;
+
 	uint32 offset = 0;
 
 	while (size > 0) {
