@@ -114,7 +114,7 @@ void Texture::reload() {
 		// Compressed image
 		// (No chance of building mip maps ourselves should the image not provide any)
 
-		// TODO: GL_TEXTURE_BASE_LEVEL_SGIS?
+		// TODO: GL_GENERATE_MIPMAP_SGIS?
 
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
