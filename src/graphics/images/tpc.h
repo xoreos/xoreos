@@ -42,6 +42,9 @@ public:
 
 	const MipMap &getMipMap(int mipMap) const;
 
+	const byte *getTXIData() const;
+	uint32 getTXIDataSize() const;
+
 private:
 	Common::SeekableReadStream *_tpc;
 
@@ -53,12 +56,16 @@ private:
 
 	std::vector<MipMap *> _mipMaps;
 
+	byte  *_txiData;
+	uint32 _txiDataSize;
+
 	MipMap &getMipMap(int mipMap);
 
 	void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
 
 	void readHeader(Common::SeekableReadStream &tpc);
 	void readData(Common::SeekableReadStream &tpc);
+	void readTXIData(Common::SeekableReadStream &tpc);
 };
 
 } // End of namespace Graphics

@@ -25,12 +25,15 @@ static const byte kEncodingRGBA = 0x04;
 namespace Graphics {
 
 TPC::TPC(Common::SeekableReadStream *tpc) : _tpc(tpc), _compressed(true),
-	_format(kPixelFormatRGB), _formatRaw(kPixelFormatDXT1), _dataType(kPixelDataType8) {
+	_format(kPixelFormatRGB), _formatRaw(kPixelFormatDXT1), _dataType(kPixelDataType8),
+	_txiData(0), _txiDataSize(0) {
 
 	assert(_tpc);
 }
 
 TPC::~TPC() {
+	delete[] _txiData;
+
 	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
 		delete *mipMap;
 }
@@ -43,6 +46,7 @@ void TPC::load() {
 
 		readHeader(*_tpc);
 		readData(*_tpc);
+		readTXIData(*_tpc);
 
 		if (_tpc->err())
 			throw Common::Exception(Common::kReadError);
@@ -87,6 +91,14 @@ TPC::MipMap &TPC::getMipMap(int mipMap) {
 	return *_mipMaps[mipMap];
 }
 
+const byte *TPC::getTXIData() const {
+	return _txiData;
+}
+
+uint32 TPC::getTXIDataSize() const {
+	return _txiDataSize;
+}
+
 void TPC::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
 	_format    = format;
 	_formatRaw = formatRaw;
@@ -96,14 +108,15 @@ void TPC::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType 
 void TPC::readHeader(Common::SeekableReadStream &tpc) {
 	uint32 dataSize = tpc.readUint32LE();
 
-	tpc.skip(4); // Reserved
+	tpc.skip(4); // Some float
 
 	uint32 width  = tpc.readUint16LE();
 	uint32 height = tpc.readUint16LE();
 
-	byte encoding = tpc.readByte();
+	byte encoding    = tpc.readByte();
+	byte mipMapCount = tpc.readByte();
 
-	tpc.skip(115); // Reserved / TXI?
+	tpc.skip(114); // Reserved
 
 	uint32 minDataSize = 0;
 	if (dataSize == 0) {
@@ -154,7 +167,8 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 
 	uint32 fullDataSize = tpc.size() - 128;
 
-	do {
+	_mipMaps.reserve(mipMapCount);
+	for (uint32 i = 0; i < mipMapCount; i++) {
 		MipMap *mipMap = new MipMap;
 
 		mipMap->width  = MAX<uint32>(width,  1);
@@ -178,7 +192,10 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 		height   >>= 1;
 		dataSize >>= 2;
 
-	} while ((width >= 1) && (height >= 1));
+		if ((width < 1) && (height < 1))
+			break;
+	}
+
 }
 
 void TPC::readData(Common::SeekableReadStream &tpc) {
@@ -188,6 +205,19 @@ void TPC::readData(Common::SeekableReadStream &tpc) {
 		if (tpc.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
 			throw Common::Exception(Common::kReadError);
 	}
+}
+
+void TPC::readTXIData(Common::SeekableReadStream &tpc) {
+	// TXI data for the rest of the TPC
+	_txiDataSize = tpc.size() - tpc.pos();
+
+	if (_txiDataSize == 0)
+		return;
+
+	_txiData = new byte[_txiDataSize];
+
+	if (tpc.read(_txiData, _txiDataSize) != _txiDataSize)
+		throw Common::Exception(Common::kReadError);
 }
 
 } // End of namespace Graphics
