@@ -39,6 +39,10 @@ ImageDecoder::ImageDecoder() {
 ImageDecoder::~ImageDecoder() {
 }
 
+Common::SeekableReadStream *ImageDecoder::getTXI() const {
+	return 0;
+}
+
 void ImageDecoder::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
 	throw Common::Exception("Setting the format is not implemented for this image decoder");
 }

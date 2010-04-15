@@ -19,6 +19,10 @@
 
 #include "graphics/types.h"
 
+namespace Common {
+	class SeekableReadStream;
+}
+
 namespace Graphics {
 
 /** A generic interface for image decoders. */
@@ -49,6 +53,8 @@ public:
 	virtual int getMipMapCount() const = 0;
 
 	virtual const MipMap &getMipMap(int mipMap) const = 0;
+
+	virtual Common::SeekableReadStream *getTXI() const;
 
 protected:
 	virtual MipMap &getMipMap(int mipMap) = 0;

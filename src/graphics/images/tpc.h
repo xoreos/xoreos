@@ -42,8 +42,7 @@ public:
 
 	const MipMap &getMipMap(int mipMap) const;
 
-	const byte *getTXIData() const;
-	uint32 getTXIDataSize() const;
+	Common::SeekableReadStream *getTXI() const;
 
 private:
 	Common::SeekableReadStream *_tpc;

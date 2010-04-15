@@ -48,6 +48,7 @@ Texture::~Texture() {
 	if (_textureID != 0xFFFFFFFF)
 		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_textureID));
 
+	delete _txi;
 	delete _image;
 }
 
@@ -71,6 +72,9 @@ void Texture::load(const std::string &name) {
 		_image = new TPC(img);
 	else
 		throw Common::Exception("Unsupported image resource type %d", (int) _type);
+
+	// Get the TXI if availabe
+	_txi = ResMan.getResource(name, Aurora::kFileTypeTXI);
 
 	RequestMan.dispatchAndForget(RequestMan.loadTexture(this));
 }
@@ -98,6 +102,10 @@ void Texture::reload() {
 
 	if (_image->getMipMapCount() < 1)
 		throw Common::Exception("Texture has no images");
+
+	// If we didn't find any "loose" TXI resource, look if the image provides TXI data
+	if (!_txi)
+		_txi = _image->getTXI();
 
 	// Generate the texture ID
 	glGenTextures(1, &_textureID);

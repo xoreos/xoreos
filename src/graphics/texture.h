@@ -22,6 +22,10 @@
 
 #include "aurora/types.h"
 
+namespace Common {
+	class SeekableReadStream;
+}
+
 namespace Graphics {
 
 class ImageDecoder;
@@ -43,6 +47,7 @@ private:
 	Aurora::FileType _type;
 
 	ImageDecoder *_image;
+	Common::SeekableReadStream *_txi;
 
 	void load(const std::string &name);
 

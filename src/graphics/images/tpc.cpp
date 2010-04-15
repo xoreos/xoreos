@@ -91,12 +91,11 @@ TPC::MipMap &TPC::getMipMap(int mipMap) {
 	return *_mipMaps[mipMap];
 }
 
-const byte *TPC::getTXIData() const {
-	return _txiData;
-}
+Common::SeekableReadStream *TPC::getTXI() const {
+	if (!_txiData || (_txiDataSize == 0))
+		return 0;
 
-uint32 TPC::getTXIDataSize() const {
-	return _txiDataSize;
+	return new Common::MemoryReadStream(_txiData, _txiDataSize);
 }
 
 void TPC::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
