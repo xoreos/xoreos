@@ -18,20 +18,27 @@
 #include <string>
 #include <sstream>
 
+#include "common/types.h"
+
 namespace Common {
 
-	/** Replace all occurences of one character in a string with another. */
-	void replaceAll(std::string &str, char what, char with);
+class SeekableReadStream;
 
-	/** Convert/Parse a string into different types. */
-	template<typename T> bool stringConvert(const std::string &str, T &v) {
-		std::stringstream ss(str);
+/** Replace all occurences of one character in a string with another. */
+void replaceAll(std::string &str, char what, char with);
 
-		if ((ss >> v).fail())
-			return false;
+/** Convert/Parse a string into different types. */
+template<typename T> bool stringConvert(const std::string &str, T &v) {
+	std::stringstream ss(str);
 
-		return true;
-	}
+	if ((ss >> v).fail())
+		return false;
+
+	return true;
+}
+
+void printDataHex(Common::SeekableReadStream &stream);
+void printDataHex(const byte *data, uint32 size);
 
 } // End of namespace Common
 

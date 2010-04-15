@@ -18,7 +18,6 @@
 #define COMMON_UTIL_H
 
 #include "common/endianness.h"
-#include "common/types.h"
 
 #ifdef MIN
 	#undef MIN
@@ -66,7 +65,5 @@ void status(const char *s, ...) GCC_PRINTF(1, 2);
 #endif
 
 void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
-
-void printDataHex(const byte *data, uint32 size);
 
 #endif // COMMON_UTIL_H
