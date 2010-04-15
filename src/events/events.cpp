@@ -31,6 +31,7 @@ DECLARE_SINGLETON(Events::EventsManager)
 namespace Events {
 
 const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX] = {
+	0,
 	&EventsManager::requestFullscreen,
 	&EventsManager::requestWindowed,
 	&EventsManager::requestResize,
@@ -139,8 +140,12 @@ bool EventsManager::parseITC(const Event &event) {
 		throw Common::Exception("Request type does not match the ITC type");
 
 	// Call its request handler
-	if ((itcEvent >= 0) || (itcEvent < kITCEventMAX))
-		(this->*_requestHandler[itcEvent])(request);
+	if ((itcEvent >= 0) || (itcEvent < kITCEventMAX)) {
+		RequestHandler handler = _requestHandler[itcEvent];
+
+		if (handler)
+			(this->*handler)(request);
+	}
 
 	request.signalReply();
 	return true;

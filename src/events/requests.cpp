@@ -118,6 +118,12 @@ void RequestManager::dispatchAndForget(RequestID request) {
 	forget(request);
 }
 
+void RequestManager::sync() {
+	RequestID syncID = newRequest(kITCEventSync);
+
+	dispatchAndWait(syncID);
+}
+
 RequestID RequestManager::fullscreen(bool fullscreen) {
 	return newRequest(kITCEventFullscreen);
 }

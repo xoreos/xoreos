@@ -68,6 +68,9 @@ public:
 	/** Dispatch a request and ignore the answer. */
 	void dispatchAndForget(RequestID request);
 
+	/** Request a sync, letting all prior requests finish. */
+	void sync();
+
 	// Screen mode
 	/** Request that the display shall be switched to fullscreen or windowed mode. */
 	RequestID fullscreen(bool fullscreen);

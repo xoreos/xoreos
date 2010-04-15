@@ -123,6 +123,9 @@ void Cube::applyTransformation(int n) {
 }
 
 void Cube::setTexture() {
+	// Sync, to make sure that the texture has finished loading
+	RequestMan.sync();
+
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _texture->getID());
 }

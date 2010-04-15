@@ -38,12 +38,13 @@ enum EventType {
 
 /** Specific type of the inter-thread communication. */
 enum ITCEvent {
-	kITCEventFullscreen = 0, ///< Request switching to fullscreen mode.
-	kITCEventWindowed      , ///< Request switching to windowed mode.
-	kITCEventResize        , ///< Request changing the display size.
-	kITCEventLoadTexture   , ///< Request the loading of a texture.
-	kITCEventDestroyTexture, ///< Request the destruction of a texture.
-	kITCEventMAX             ///< For range checks.
+	kITCEventSync           = 0, ///< Request a sync, letting all prior requests finish.
+	kITCEventFullscreen        , ///< Request switching to fullscreen mode.
+	kITCEventWindowed          , ///< Request switching to windowed mode.
+	kITCEventResize            , ///< Request changing the display size.
+	kITCEventLoadTexture       , ///< Request the loading of a texture.
+	kITCEventDestroyTexture    , ///< Request the destruction of a texture.
+	kITCEventMAX                 ///< For range checks.
 };
 
 } // End of namespace Events
