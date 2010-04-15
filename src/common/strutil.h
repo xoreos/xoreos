@@ -37,6 +37,20 @@ template<typename T> bool stringConvert(const std::string &str, T &v) {
 	return true;
 }
 
+template<bool &> bool stringConvert(const std::string &str, bool &v) {
+	int i;
+	if (!stringConvert(str, i))
+		return false;
+
+	v = (i == 1);
+	return true;
+}
+
+template<std::string &> bool stringConvert(const std::string &str, std::string &v) {
+	v = str;
+	return true;
+}
+
 /** Print a quick hex dump of the given data. */
 void printDataHex(Common::SeekableReadStream &stream);
 /** Print a quick hex dump of the given data. */
