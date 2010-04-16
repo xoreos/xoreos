@@ -56,9 +56,16 @@ ResourceManager::ResourceManager() {
 }
 
 ResourceManager::~ResourceManager() {
+	clear();
+
+	_musicTypes.clear();
+	_soundTypes.clear();
+	_imageTypes.clear();
 }
 
 void ResourceManager::clear() {
+	_changes.clear();
+
 	_resources.clear();
 	_bifs.clear();
 	_erfs.clear();
