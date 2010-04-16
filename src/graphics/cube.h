@@ -16,6 +16,7 @@
 #define GRAPHICS_CUBE_H
 
 #include "graphics/types.h"
+#include "graphics/listcontainer.h"
 #include "graphics/renderable.h"
 
 namespace Common {
@@ -43,10 +44,15 @@ private:
 	friend class Cube;
 };
 
-class Cube {
+class Cube : public ListContainer {
 public:
 	Cube(const std::string &texture);
 	~Cube();
+
+// ListContainer
+public:
+	void rebuild();
+	void destroy();
 
 private:
 	CubeSide *_sides[6];
@@ -56,12 +62,15 @@ private:
 	uint32 _lastRotateTime;
 	float  _rotation;
 
+	ListID _list;
+
 	Texture *_texture;
 
 	void setRotate(float rotate);
 
 	void applyTransformation(int n);
 	void setTexture();
+	void callList();
 
 	void newFrame();
 	void reloadTextures();

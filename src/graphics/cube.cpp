@@ -42,23 +42,13 @@ void CubeSide::newFrame() {
 void CubeSide::render() {
 	_parent->applyTransformation(_n);
 	_parent->setTexture();
-
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-
-	glBegin(GL_POLYGON);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-1.00, -1.00,  0.00);
-		glTexCoord2f(1.0, 0.0);
-		glVertex3f( 1.00, -1.00,  0.00);
-		glTexCoord2f(1.0, 1.0);
-		glVertex3f( 1.00,  1.00,  0.00);
-		glTexCoord2f(0.0, 1.0);
-		glVertex3f(-1.00,  1.00,  0.00);
-	glEnd();
+	_parent->callList();
 }
 
 
-Cube::Cube(const std::string &texture) : _firstTime(true), _lastRotateTime(0) {
+Cube::Cube(const std::string &texture) : _firstTime(true), _lastRotateTime(0), _list(0) {
+	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
+
 	_texture = new Texture(texture);
 
 	for (int i = 0; i < 6; i++)
@@ -66,10 +56,43 @@ Cube::Cube(const std::string &texture) : _firstTime(true), _lastRotateTime(0) {
 }
 
 Cube::~Cube() {
+	if (_list != 0)
+		RequestMan.dispatchAndForget(RequestMan.destroyLists(&_list, 1));
+
 	delete _texture;
 
 	for (int i = 0; i < 6; i++)
 		delete _sides[i];
+}
+
+void Cube::rebuild() {
+	_list = glGenLists(1);
+
+	glNewList(_list, GL_COMPILE);
+
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0, 0.0);
+			glVertex3f(-1.00, -1.00,  0.00);
+			glTexCoord2f(1.0, 0.0);
+			glVertex3f( 1.00, -1.00,  0.00);
+			glTexCoord2f(1.0, 1.0);
+			glVertex3f( 1.00,  1.00,  0.00);
+			glTexCoord2f(0.0, 1.0);
+			glVertex3f(-1.00,  1.00,  0.00);
+		glEnd();
+
+	glEndList();
+}
+
+void Cube::destroy() {
+	if (_list == 0)
+		return;
+
+	glDeleteLists(_list, 1);
+
+	_list = 0;
 }
 
 void Cube::setRotate(float rotate) {
@@ -131,6 +154,10 @@ void Cube::setTexture() {
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _texture->getID());
+}
+
+void Cube::callList() {
+	glCallList(_list);
 }
 
 } // End of namespace Graphics
