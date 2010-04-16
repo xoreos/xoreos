@@ -19,6 +19,8 @@
 #include <list>
 
 #include "graphics/types.h"
+#include "graphics/texture.h"
+#include "graphics/listcontainer.h"
 
 #include "common/types.h"
 #include "common/singleton.h"
@@ -27,7 +29,6 @@
 namespace Graphics {
 
 class Renderable;
-class Texture;
 class FPSCounter;
 
 /** The graphics manager. */
@@ -35,9 +36,6 @@ class GraphicsManager : public Common::Singleton<GraphicsManager> {
 public:
 	typedef std::list<Renderable *> RenderQueue;
 	typedef RenderQueue::iterator RenderQueueRef;
-
-	typedef std::list<Texture *> TextureList;
-	typedef TextureList::iterator TextureRef;
 
 	GraphicsManager();
 	~GraphicsManager();
@@ -75,12 +73,6 @@ public:
 	 */
 	void removeFromRenderQueue(RenderQueueRef &ref);
 
-	/** Register a texture. */
-	TextureRef registerTexture(Texture &texture);
-
-	/** Unregister a texture. */
-	void unregisterTexture(TextureRef &texture);
-
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
@@ -91,12 +83,13 @@ private:
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
 	RenderQueue _renderQueue; ///< The global rendering queue.
-	TextureList _textures;    ///< The globally known list of textures.
 
 	Common::Mutex _queueMutex;   ///< A mutex for the render queue.
-	Common::Mutex _textureMutex; ///< A mutex for the texture queue.
 
 	FPSCounter *_fpsCounter;
+
+	Texture::Queue _textures;
+	ListContainer::Queue _listContainerQueue;
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void checkGLExtensions();
@@ -128,6 +121,9 @@ public:
 	// Textures
 	/** Destroy a texture. */
 	void destroyTexture(TextureID id);
+
+	Texture::Queue &getTextureQueue();
+	ListContainer::Queue &getListContainerQueue();
 };
 
 } // End of namespace Graphics

@@ -19,7 +19,6 @@
 
 #include "graphics/graphics.h"
 #include "graphics/fpscounter.h"
-#include "graphics/texture.h"
 #include "graphics/renderable.h"
 #include "graphics/cube.h"
 
@@ -211,20 +210,6 @@ void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
 	_renderQueue.erase(ref);
 }
 
-GraphicsManager::TextureRef GraphicsManager::registerTexture(Texture &texture) {
-	Common::StackLock lock(_textureMutex);
-
-	_textures.push_back(&texture);
-
-	return --_textures.end();
-}
-
-void GraphicsManager::unregisterTexture(TextureRef &texture) {
-	Common::StackLock lock(_textureMutex);
-
-	_textures.erase(texture);
-}
-
 void GraphicsManager::renderScene() {
 	Common::StackLock lock(_queueMutex);
 
@@ -249,19 +234,27 @@ void GraphicsManager::renderScene() {
 }
 
 void GraphicsManager::clearTextureList() {
-	for (TextureRef texture = _textures.begin(); texture != _textures.end(); ++texture)
-		(*texture)->removedFromList();
+	Common::StackLock lock(_textures.mutex);
 
-	_textures.clear();
+	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture) {
+		(*texture)->destroy();
+		(*texture)->kickedOut();
+	}
+
+	_textures.list.clear();
 }
 
 void GraphicsManager::destroyTextures() {
-	for (TextureRef texture = _textures.begin(); texture != _textures.end(); ++texture)
+	Common::StackLock lock(_textures.mutex);
+
+	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture)
 		(*texture)->destroy();
 }
 
 void GraphicsManager::reloadTextures() {
-	for (TextureRef texture = _textures.begin(); texture != _textures.end(); ++texture)
+	Common::StackLock lock(_textures.mutex);
+
+	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture)
 		(*texture)->reload();
 }
 
@@ -349,6 +342,14 @@ void GraphicsManager::changeSize(int width, int height) {
 
 void GraphicsManager::destroyTexture(TextureID id) {
 	glDeleteTextures(1, &id);
+}
+
+Texture::Queue &GraphicsManager::getTextureQueue() {
+	return _textures;
+}
+
+ListContainer::Queue &GraphicsManager::getListContainerQueue() {
+	return _listContainerQueue;
 }
 
 } // End of namespace Graphics

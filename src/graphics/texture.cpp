@@ -32,19 +32,13 @@ using Events::RequestID;
 
 namespace Graphics {
 
-Texture::Texture(const std::string &name) :
-	_inTextureList(false), _textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone), _image(0) {
+Texture::Texture(const std::string &name) : Queueable(GfxMan.getTextureQueue()),
+	_textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone), _image(0) {
 
 	load(name);
-
-	_textureRef    = GfxMan.registerTexture(*this);
-	_inTextureList = true;
 }
 
 Texture::~Texture() {
-	if (_inTextureList)
-		GfxMan.unregisterTexture(_textureRef);
-
 	if (_textureID != 0xFFFFFFFF)
 		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_textureID));
 
@@ -79,10 +73,6 @@ void Texture::load(const std::string &name) {
 	_txi = ResMan.getResource(name, Aurora::kFileTypeTXI);
 
 	RequestMan.dispatchAndForget(RequestMan.loadTexture(this));
-}
-
-void Texture::removedFromList() {
-	destroy();
 }
 
 void Texture::destroy() {

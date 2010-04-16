@@ -18,7 +18,7 @@
 #include <string>
 
 #include "graphics/types.h"
-#include "graphics/graphics.h"
+#include "graphics/queueable.h"
 
 #include "aurora/types.h"
 
@@ -32,7 +32,7 @@ class ImageDecoder;
 class DDS;
 
 /** A texture. */
-class Texture {
+class Texture : public Queueable<Texture> {
 public:
 	Texture(const std::string &name);
 	~Texture();
@@ -41,9 +41,6 @@ public:
 	TextureID getID() const;
 
 private:
-	bool                        _inTextureList;
-	GraphicsManager::TextureRef _textureRef;
-
 	TextureID _textureID;
 
 	Aurora::FileType _type;
@@ -56,8 +53,6 @@ private:
 
 // To be called from the main/events/graphics thread
 public:
-	void removedFromList();
-
 	void reload();
 	void destroy();
 };

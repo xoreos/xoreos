@@ -10,6 +10,8 @@ noinst_HEADERS = types.h \
                  glew/wglew.h \
                  graphics.h \
                  fpscounter.h \
+                 queueable.h \
+                 listcontainer.h \
                  texture.h \
                  renderable.h \
                  cube.h
@@ -17,6 +19,7 @@ noinst_HEADERS = types.h \
 libgraphics_la_SOURCES = glew/glew.c \
                          graphics.cpp \
                          fpscounter.cpp \
+                         listcontainer.cpp \
                          texture.cpp \
                          renderable.cpp \
                          cube.cpp
