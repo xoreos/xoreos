@@ -21,7 +21,7 @@ namespace Graphics {
 
 class Renderable : public Queueable<Renderable> {
 public:
-	Renderable();
+	Renderable(Queueable<Renderable>::Queue &queue);
 	virtual ~Renderable();
 
 	/** Signal the object that we're rendering a new frame. */

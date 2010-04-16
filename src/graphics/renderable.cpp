@@ -13,11 +13,11 @@
  */
 
 #include "graphics/renderable.h"
-#include "graphics/graphics.h"
+#include "graphics/types.h"
 
 namespace Graphics {
 
-Renderable::Renderable() : Queueable<Renderable>(GfxMan.getRenderQueue()) {
+Renderable::Renderable(Queueable<Renderable>::Queue &queue) : Queueable<Renderable>(queue) {
 	_distance = 0.0;
 }
 

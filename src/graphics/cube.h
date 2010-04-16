@@ -17,7 +17,7 @@
 
 #include "graphics/types.h"
 #include "graphics/listcontainer.h"
-#include "graphics/renderable.h"
+#include "graphics/object.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -29,7 +29,7 @@ class Texture;
 
 class Cube;
 
-class CubeSide : public Renderable {
+class CubeSide : public Object {
 public:
 	CubeSide(Cube &parent, int n);
 

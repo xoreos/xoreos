@@ -65,9 +65,10 @@ private:
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 
-	Texture::Queue       _textures;       ///< All existing textures.
-	Renderable::Queue    _renderables;    ///< The current render queue.
-	ListContainer::Queue _listContainers; ///< All existing list containers.
+	Texture::Queue       _textures;        ///< All existing textures.
+	Renderable::Queue    _objects;         ///< Normal game objects currently in the render queue.
+	Renderable::Queue    _guiFrontObjects; ///< GUI front elements currently in the render queue.
+	ListContainer::Queue _listContainers;  ///< All existing list containers.
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void checkGLExtensions();
@@ -86,7 +87,8 @@ private:
 // For Queueables
 public:
 	Texture::Queue &getTextureQueue();
-	Renderable::Queue &getRenderQueue();
+	Renderable::Queue &getObjectQueue();
+	Renderable::Queue &getGUIFrontQueue();
 	ListContainer::Queue &getListContainerQueue();
 
 

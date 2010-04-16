@@ -72,7 +72,7 @@ void Cube::rebuild() {
 
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 
-		glBegin(GL_POLYGON);
+		glBegin(GL_QUADS);
 			glTexCoord2f(0.0, 0.0);
 			glVertex3f(-1.00, -1.00,  0.00);
 			glTexCoord2f(1.0, 0.0);

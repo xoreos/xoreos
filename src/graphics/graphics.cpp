@@ -190,31 +190,50 @@ void GraphicsManager::setupScene() {
 }
 
 void GraphicsManager::clearRenderQueue() {
-	Common::StackLock lock(_renderables.mutex);
+	Common::StackLock lockObjects(_objects.mutex);
+	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
 
 	// Notify all objects in the queue that they have been kicked out
-	for (Renderable::QueueRef obj = _renderables.list.begin(); obj != _renderables.list.end(); ++obj)
+	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj)
 		(*obj)->kickedOut();
 
-	// Clear the queue
-	_renderables.list.clear();
+	// Notify all front GUI objects in the queue that they have been kicked out
+	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj)
+		(*obj)->kickedOut();
+
+	// Clear the queues
+	_objects.list.clear();
+	_guiFrontObjects.list.clear();
 }
 
 void GraphicsManager::renderScene() {
-	Common::StackLock lock(_renderables.mutex);
+	Common::StackLock lockObjects(_objects.mutex);
+	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
 
+	// Clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (Renderable::QueueRef obj = _renderables.list.begin(); obj != _renderables.list.end(); ++obj)
+	// Notify all objects that we're now in a new frame
+	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj)
+		(*obj)->newFrame();
+	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj)
 		(*obj)->newFrame();
 
-	_renderables.list.sort(queueComp);
+	// Sort the queues
+	_objects.list.sort(queueComp);
+	_guiFrontObjects.list.sort(queueComp);
 
-	for (Renderable::QueueRef obj = _renderables.list.begin(); obj != _renderables.list.end(); ++obj) {
+	// Draw normal objects
+	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj) {
 		glPushMatrix();
-
 		(*obj)->render();
+		glPopMatrix();
+	}
 
+	// Draw the front part of the GUI
+	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj) {
+		glPushMatrix();
+		(*obj)->render();
 		glPopMatrix();
 	}
 
@@ -370,8 +389,12 @@ Texture::Queue &GraphicsManager::getTextureQueue() {
 	return _textures;
 }
 
-Renderable::Queue &GraphicsManager::getRenderQueue() {
-	return _renderables;
+Renderable::Queue &GraphicsManager::getObjectQueue() {
+	return _objects;
+}
+
+Renderable::Queue &GraphicsManager::getGUIFrontQueue() {
+	return _guiFrontObjects;
 }
 
 ListContainer::Queue &GraphicsManager::getListContainerQueue() {
