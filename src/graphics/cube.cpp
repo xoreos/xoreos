@@ -27,7 +27,7 @@ using Events::RequestID;
 namespace Graphics {
 
 CubeSide::CubeSide(Cube &parent, int n) : _parent(&parent), _n(n) {
-	addToRenderQueue();
+	addToQueue();
 }
 
 void CubeSide::newFrame() {

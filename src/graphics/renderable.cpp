@@ -13,21 +13,15 @@
  */
 
 #include "graphics/renderable.h"
+#include "graphics/graphics.h"
 
 namespace Graphics {
 
-Renderable::Renderable() {
-	_inRenderQueue = false;
-
+Renderable::Renderable() : Queueable<Renderable>(GfxMan.getRenderQueue()) {
 	_distance = 0.0;
 }
 
 Renderable::~Renderable() {
-	removeFromRenderQueue();
-}
-
-void Renderable::kickedOutOfRenderQueue() {
-	_inRenderQueue = false;
 }
 
 double Renderable::getDistance() const {
@@ -39,26 +33,6 @@ void Renderable::setCurrentDistance() {
 
 	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
 	_distance = modelView[12] * modelView[12] + modelView[13] * modelView[13] + modelView[14] * modelView[14];
-}
-
-void Renderable::addToRenderQueue() {
-	if (_inRenderQueue)
-		// Already in the render queue
-		return;
-
-	_renderQueueRef = GfxMan.addToRenderQueue(*this);
-
-	_inRenderQueue = true;
-}
-
-void Renderable::removeFromRenderQueue() {
-	if (!_inRenderQueue)
-		// Not in the render queue anyway
-		return;
-
-	GfxMan.removeFromRenderQueue(_renderQueueRef);
-
-	_inRenderQueue = false;
 }
 
 } // End of namespace Graphics

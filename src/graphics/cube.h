@@ -34,8 +34,6 @@ public:
 
 	void newFrame();
 
-	void reloadTextures();
-
 	void render();
 
 private:
