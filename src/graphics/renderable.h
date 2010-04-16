@@ -15,11 +15,11 @@
 #ifndef GRAPHICS_RENDERABLE_H
 #define GRAPHICS_RENDERABLE_H
 
-#include "graphics/graphics.h"
+#include "graphics/queueable.h"
 
 namespace Graphics {
 
-class Renderable {
+class Renderable : public Queueable<Renderable> {
 public:
 	Renderable();
 	virtual ~Renderable();
@@ -30,28 +30,14 @@ public:
 	/** Render the object. */
 	virtual void render() = 0;
 
-	/** Notify the object that it has been kicked out of the render queue. */
-	void kickedOutOfRenderQueue();
-
 	/** Get the distance of the object from the viewer. */
 	double getDistance() const;
 
 protected:
 	double _distance; ///< The distance of the object from the viewer.
 
-	/** Add the object to the render queue. */
-	void addToRenderQueue();
-	/** Remove the object from the render queue. */
-	void removeFromRenderQueue();
-
 	/** Set the distance to the distance between the origin and the current object-space origin. */
 	void setCurrentDistance();
-
-private:
-	bool _inRenderQueue; ///< Is the object in the render queue?
-
-	/** A reference to the object's position in the render queue. */
-	GraphicsManager::RenderQueueRef _renderQueueRef;
 };
 
 } // End of namespace Graphics

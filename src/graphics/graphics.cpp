@@ -32,6 +32,7 @@ static bool queueComp(Renderable *a, Renderable *b) {
 	return a->getDistance() > b->getDistance();
 }
 
+
 GraphicsManager::GraphicsManager() {
 	_ready = false;
 
@@ -43,6 +44,8 @@ GraphicsManager::GraphicsManager() {
 }
 
 GraphicsManager::~GraphicsManager() {
+	deinit();
+
 	delete _fpsCounter;
 }
 
@@ -186,44 +189,30 @@ void GraphicsManager::setupScene() {
 }
 
 void GraphicsManager::clearRenderQueue() {
-	Common::StackLock lock(_queueMutex);
+	Common::StackLock lock(_renderables.mutex);
 
 	// Notify all objects in the queue that they have been kicked out
-	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it)
-		(*it)->kickedOutOfRenderQueue();
+	for (Renderable::QueueRef obj = _renderables.list.begin(); obj != _renderables.list.end(); ++obj)
+		(*obj)->kickedOut();
 
 	// Clear the queue
-	_renderQueue.clear();
-}
-
-GraphicsManager::RenderQueueRef GraphicsManager::addToRenderQueue(Renderable &renderable) {
-	Common::StackLock lock(_queueMutex);
-
-	_renderQueue.push_back(&renderable);
-
-	return --_renderQueue.end();
-}
-
-void GraphicsManager::removeFromRenderQueue(RenderQueueRef &ref) {
-	Common::StackLock lock(_queueMutex);
-
-	_renderQueue.erase(ref);
+	_renderables.list.clear();
 }
 
 void GraphicsManager::renderScene() {
-	Common::StackLock lock(_queueMutex);
+	Common::StackLock lock(_renderables.mutex);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it)
-		(*it)->newFrame();
+	for (Renderable::QueueRef obj = _renderables.list.begin(); obj != _renderables.list.end(); ++obj)
+		(*obj)->newFrame();
 
-	_renderQueue.sort(queueComp);
+	_renderables.list.sort(queueComp);
 
-	for (RenderQueue::iterator it = _renderQueue.begin(); it != _renderQueue.end(); ++it) {
+	for (Renderable::QueueRef obj = _renderables.list.begin(); obj != _renderables.list.end(); ++obj) {
 		glPushMatrix();
 
-		(*it)->render();
+		(*obj)->render();
 
 		glPopMatrix();
 	}
@@ -348,8 +337,12 @@ Texture::Queue &GraphicsManager::getTextureQueue() {
 	return _textures;
 }
 
+Renderable::Queue &GraphicsManager::getRenderQueue() {
+	return _renderables;
+}
+
 ListContainer::Queue &GraphicsManager::getListContainerQueue() {
-	return _listContainerQueue;
+	return _listContainers;
 }
 
 } // End of namespace Graphics

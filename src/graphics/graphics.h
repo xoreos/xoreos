@@ -20,6 +20,7 @@
 
 #include "graphics/types.h"
 #include "graphics/texture.h"
+#include "graphics/renderable.h"
 #include "graphics/listcontainer.h"
 
 #include "common/types.h"
@@ -28,15 +29,11 @@
 
 namespace Graphics {
 
-class Renderable;
 class FPSCounter;
 
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager> {
 public:
-	typedef std::list<Renderable *> RenderQueue;
-	typedef RenderQueue::iterator RenderQueueRef;
-
 	GraphicsManager();
 	~GraphicsManager();
 
@@ -57,46 +54,37 @@ public:
 	/** That the window's title. */
 	void setWindowTitle(const std::string &title);
 
-	/** Clear the rendering queue. */
-	void clearRenderQueue();
-
-	/** Add an object to the rendering queue.
-	 *
-	 *  @param  renderable The object to add.
-	 *  @return A reference to that object in the queue.
-	 */
-	RenderQueueRef addToRenderQueue(Renderable &renderable);
-
-	/** Remove an object from to rendering queue.
-	 *
-	 *  @param ref A reference to an object in the queue.
-	 */
-	void removeFromRenderQueue(RenderQueueRef &ref);
-
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
 	bool _needManualDeS3TC; ///< Do we need to do manual S3TC DXTn decompression?
 
-	bool _fullScreen;
+	bool _fullScreen; ///< Are we currently in fullscreen mode?
 
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
-	RenderQueue _renderQueue; ///< The global rendering queue.
+	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 
-	Common::Mutex _queueMutex;   ///< A mutex for the render queue.
-
-	FPSCounter *_fpsCounter;
-
-	Texture::Queue _textures;
-	ListContainer::Queue _listContainerQueue;
+	Texture::Queue       _textures;       ///< All existing textures.
+	Renderable::Queue    _renderables;    ///< The current render queue.
+	ListContainer::Queue _listContainers; ///< All existing list containers.
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void checkGLExtensions();
 
+	void clearRenderQueue();
+
 	void clearTextureList();
 	void destroyTextures();
 	void reloadTextures();
+
+
+// For Queueables
+public:
+	Texture::Queue &getTextureQueue();
+	Renderable::Queue &getRenderQueue();
+	ListContainer::Queue &getListContainerQueue();
+
 
 // Thread-unsafe functions. Should only ever be called from the main thread.
 public:
@@ -121,9 +109,6 @@ public:
 	// Textures
 	/** Destroy a texture. */
 	void destroyTexture(TextureID id);
-
-	Texture::Queue &getTextureQueue();
-	ListContainer::Queue &getListContainerQueue();
 };
 
 } // End of namespace Graphics
