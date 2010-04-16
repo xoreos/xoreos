@@ -32,8 +32,10 @@ using Events::RequestID;
 
 namespace Graphics {
 
-Texture::Texture(const std::string &name) : Queueable<Texture>(GfxMan.getTextureQueue()),
+Texture::Texture(const std::string &name) : Queueable(GfxMan.getTextureQueue()),
 	_textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone), _image(0) {
+
+	addToQueue();
 
 	load(name);
 }
