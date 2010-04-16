@@ -54,6 +54,11 @@ public:
 	/** That the window's title. */
 	void setWindowTitle(const std::string &title);
 
+	/** Lock the frame mutex. */
+	void lockFrame();
+	/** Unlock the frame mutex. */
+	void unlockFrame();
+
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
@@ -64,6 +69,8 @@ private:
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
+
+	Common::Mutex _frameMutex; ///< A mutex locked for each frame.
 
 	Texture::Queue       _textures;        ///< All existing textures.
 	Renderable::Queue    _objects;         ///< Normal game objects currently in the render queue.

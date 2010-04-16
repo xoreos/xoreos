@@ -189,6 +189,14 @@ void GraphicsManager::setupScene() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+void GraphicsManager::lockFrame() {
+	_frameMutex.lock();
+}
+
+void GraphicsManager::unlockFrame() {
+	_frameMutex.unlock();
+}
+
 void GraphicsManager::clearRenderQueue() {
 	Common::StackLock lockObjects(_objects.mutex);
 	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
@@ -207,6 +215,7 @@ void GraphicsManager::clearRenderQueue() {
 }
 
 void GraphicsManager::renderScene() {
+	Common::StackLock lockFrame(_frameMutex);
 	Common::StackLock lockObjects(_objects.mutex);
 	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
 
