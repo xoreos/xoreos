@@ -92,7 +92,9 @@ public:
 	/** Request the destruction of lists. */
 	RequestID destroyLists(Graphics::ListContainer *lists);
 	/** Request the destruction of lists. */
-	RequestID destroyLists(Graphics::ListID *listsIDs, uint32 count);
+	RequestID destroyLists(Graphics::ListID listID, uint32 count);
+	/** Request the destruction of lists. */
+	RequestID destroyLists(Graphics::ListID *listIDs, uint32 count);
 
 private:
 	Common::Mutex _mutexUse; ///< The mutex locking the use of the manager.

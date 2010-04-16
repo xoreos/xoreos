@@ -57,7 +57,7 @@ Cube::Cube(const std::string &texture) : _firstTime(true), _lastRotateTime(0), _
 
 Cube::~Cube() {
 	if (_list != 0)
-		RequestMan.dispatchAndForget(RequestMan.destroyLists(&_list, 1));
+		RequestMan.dispatchAndForget(RequestMan.destroyLists(_list, 1));
 
 	delete _texture;
 
