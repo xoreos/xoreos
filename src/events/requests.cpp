@@ -158,16 +158,38 @@ RequestID RequestManager::destroyTexture(Graphics::TextureID textureID) {
 	return rID;
 }
 
+RequestID RequestManager::buildLists(Graphics::ListContainer *lists) {
+	RequestID rID = newRequest(kITCEventBuildLists);
+
+	(*rID)->_buildLists.lists = lists;
+
+	return rID;
+}
+
+RequestID RequestManager::destroyLists(Graphics::ListContainer *lists) {
+	RequestID rID = newRequest(kITCEventDestroyLists);
+
+	(*rID)->_buildLists.lists = lists;
+
+	return rID;
+}
+
+RequestID RequestManager::destroyLists(Graphics::ListID *listsIDs, uint32 count) {
+	RequestID rID = newRequest(kITCEventDestroyLists);
+
+	(*rID)->_destroyLists.count = count;
+	(*rID)->_destroyLists.listIDs = new Graphics::ListID[count];
+	memcpy((*rID)->_destroyLists.listIDs, listsIDs, count * sizeof(Graphics::ListID));
+
+	return rID;
+}
+
 RequestID RequestManager::newRequest(ITCEvent type) {
 	Common::StackLock lock(_mutexUse);
 
 	_requests.push_back(new Request(type));
 
-	RequestID rID = --_requests.end();
-
-	(*rID)->create();
-
-	return rID;
+	return --_requests.end();
 }
 
 void RequestManager::clearList() {

@@ -22,6 +22,7 @@
 namespace Graphics {
 
 typedef GLuint TextureID;
+typedef GLuint ListID;
 
 enum PixelFormat {
 	kPixelFormatRGB  = GL_RGB ,

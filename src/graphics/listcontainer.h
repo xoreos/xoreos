@@ -23,6 +23,14 @@ class ListContainer : public Queueable<ListContainer> {
 public:
 	ListContainer();
 	~ListContainer();
+
+
+// To be called from the main/events/graphics thread
+public:
+	/** Rebuild the OpenGL lists. */
+	virtual void rebuild() = 0;
+	/** Destroy the OpenGL lists. */
+	virtual void destroy() = 0;
 };
 
 } // End of namespace Graphics

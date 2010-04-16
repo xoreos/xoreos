@@ -78,6 +78,10 @@ private:
 	void destroyTextures();
 	void reloadTextures();
 
+	void clearListsQueue();
+	void destroyLists();
+	void rebuildLists();
+
 
 // For Queueables
 public:
@@ -109,6 +113,10 @@ public:
 	// Textures
 	/** Destroy a texture. */
 	void destroyTexture(TextureID id);
+
+	// Lists
+	/** Destroy lists. */
+	void destroyLists(ListID *listIDs, uint32 count);
 };
 
 } // End of namespace Graphics

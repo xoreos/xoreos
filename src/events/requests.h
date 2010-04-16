@@ -27,6 +27,7 @@
 
 namespace Graphics {
 	class Texture;
+	class ListContainer;
 }
 
 namespace Events {
@@ -84,6 +85,14 @@ public:
 	RequestID destroyTexture(Graphics::Texture *texture);
 	/** Request the destruction of a texture. */
 	RequestID destroyTexture(Graphics::TextureID textureID);
+
+	// Lists
+	/** Request the building of lists. */
+	RequestID buildLists(Graphics::ListContainer *lists);
+	/** Request the destruction of lists. */
+	RequestID destroyLists(Graphics::ListContainer *lists);
+	/** Request the destruction of lists. */
+	RequestID destroyLists(Graphics::ListID *listsIDs, uint32 count);
 
 private:
 	Common::Mutex _mutexUse; ///< The mutex locking the use of the manager.

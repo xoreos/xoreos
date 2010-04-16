@@ -115,6 +115,8 @@ private:
 	void requestResize(Request &request);
 	void requestLoadTexture(Request &request);
 	void requestDestroyTexture(Request &request);
+	void requestBuildLists(Request &request);
+	void requestDestroyLists(Request &request);
 
 public:
 	void processEvents();

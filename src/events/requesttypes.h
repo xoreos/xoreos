@@ -24,6 +24,7 @@
 
 namespace Graphics {
 	class Texture;
+	class ListContainer;
 }
 
 namespace Events {
@@ -42,6 +43,16 @@ struct RequestDataLoadTexture {
 struct RequestDataDestroyTexture {
 	Graphics::Texture  *texture;
 	Graphics::TextureID textureID;
+};
+
+struct RequestDataBuildLists {
+	Graphics::ListContainer *lists;
+};
+
+struct RequestDataDestroyLists {
+	Graphics::ListContainer *lists;
+	Graphics::ListID *listIDs;
+	uint32 count;
 };
 
 /** A request, carrying inter-thread communication. */
@@ -68,6 +79,8 @@ private:
 		RequestDataResize         _resize;
 		RequestDataLoadTexture    _loadTexture;
 		RequestDataDestroyTexture _destroyTexture;
+		RequestDataBuildLists     _buildLists;
+		RequestDataDestroyLists   _destroyLists;
 	};
 
 	/** Create the empty request frame. */

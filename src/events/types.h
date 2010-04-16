@@ -44,6 +44,8 @@ enum ITCEvent {
 	kITCEventResize            , ///< Request changing the display size.
 	kITCEventLoadTexture       , ///< Request the loading of a texture.
 	kITCEventDestroyTexture    , ///< Request the destruction of a texture.
+	kITCEventBuildLists        , ///< Request the building of OpenGL display lists.
+	kITCEventDestroyLists      , ///< Request the destruction of OpenGL display lists.
 	kITCEventMAX                 ///< For range checks.
 };
 

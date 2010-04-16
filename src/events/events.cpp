@@ -23,6 +23,7 @@
 #include "graphics/types.h"
 #include "graphics/graphics.h"
 #include "graphics/texture.h"
+#include "graphics/listcontainer.h"
 
 #include "sound/sound.h"
 
@@ -36,7 +37,9 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 	&EventsManager::requestWindowed,
 	&EventsManager::requestResize,
 	&EventsManager::requestLoadTexture,
-	&EventsManager::requestDestroyTexture
+	&EventsManager::requestDestroyTexture,
+	&EventsManager::requestBuildLists,
+	&EventsManager::requestDestroyLists
 };
 
 
@@ -271,6 +274,17 @@ void EventsManager::requestDestroyTexture(Request &request) {
 		request._destroyTexture.texture->destroy();
 	else
 		GfxMan.destroyTexture(request._destroyTexture.textureID);
+}
+
+void EventsManager::requestBuildLists(Request &request) {
+	request._buildLists.lists->rebuild();
+}
+
+void EventsManager::requestDestroyLists(Request &request) {
+	if (request._destroyLists.lists)
+		request._destroyLists.lists->destroy();
+	else if (request._destroyLists.listIDs)
+		GfxMan.destroyLists(request._destroyLists.listIDs, request._destroyLists.count);
 }
 
 } // End of namespace Events

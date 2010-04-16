@@ -71,6 +71,7 @@ void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
 
+	clearListsQueue();
 	clearTextureList();
 	clearRenderQueue();
 
@@ -247,6 +248,31 @@ void GraphicsManager::reloadTextures() {
 		(*texture)->reload();
 }
 
+void GraphicsManager::clearListsQueue() {
+	Common::StackLock lock(_listContainers.mutex);
+
+	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists) {
+		(*lists)->destroy();
+		(*lists)->kickedOut();
+	}
+
+	_listContainers.list.clear();
+}
+
+void GraphicsManager::destroyLists() {
+	Common::StackLock lock(_listContainers.mutex);
+
+	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists)
+		(*lists)->destroy();
+}
+
+void GraphicsManager::rebuildLists() {
+	Common::StackLock lock(_listContainers.mutex);
+
+	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists)
+		(*lists)->rebuild();
+}
+
 void GraphicsManager::toggleFullScreen() {
 	setFullScreen(!_fullScreen);
 }
@@ -256,7 +282,8 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 		// Nothing to do
 		return;
 
-	// Destroying all textures, since we need to reload them anywhen when the context is recreated
+	// Destroying all textures and lists, since we need to reload/rebuild them anywhen when the context is recreated
+	destroyLists();
 	destroyTextures();
 
 	// Save the flags
@@ -283,8 +310,9 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 	// Reintroduce OpenGL to the surface
 	setupScene();
 
-	// And reloading all textures
+	// And reloading/rebuilding all textures and lists
 	reloadTextures();
+	rebuildLists();
 }
 
 void GraphicsManager::toggleMouseGrab() {
@@ -331,6 +359,11 @@ void GraphicsManager::changeSize(int width, int height) {
 
 void GraphicsManager::destroyTexture(TextureID id) {
 	glDeleteTextures(1, &id);
+}
+
+void GraphicsManager::destroyLists(ListID *listIDs, uint32 count) {
+	while (count-- > 0)
+		glDeleteLists(*listIDs++, 1);
 }
 
 Texture::Queue &GraphicsManager::getTextureQueue() {
