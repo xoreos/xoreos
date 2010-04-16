@@ -24,6 +24,7 @@ ListContainer::ListContainer() : Queueable<ListContainer>(GfxMan.getListContaine
 }
 
 ListContainer::~ListContainer() {
+
 }
 
 } // End of namespace Graphics
