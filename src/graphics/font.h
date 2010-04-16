@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 
+#include "common/types.h"
+
 #include "graphics/types.h"
 #include "graphics/listcontainer.h"
 

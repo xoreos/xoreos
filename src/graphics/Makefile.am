@@ -16,6 +16,8 @@ noinst_HEADERS = types.h \
                  font.h \
                  renderable.h \
                  object.h \
+                 guifrontelement.h \
+                 text.h \
                  cube.h
 
 libgraphics_la_SOURCES = glew/glew.c \
@@ -26,6 +28,8 @@ libgraphics_la_SOURCES = glew/glew.c \
                          font.cpp \
                          renderable.cpp \
                          object.cpp \
+                         guifrontelement.cpp \
+                         text.cpp \
                          cube.cpp
 
 libgraphics_la_LIBADD = images/libimages.la
