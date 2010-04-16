@@ -55,7 +55,7 @@ TXI::Features::Features() {
 	downsampleMax       = 0;
 	downsampleMin       = 0;
 	fileRange           = 0;
-	filter              = false;
+	filter              = true;
 	fontHeight          = 0.0;
 	fontWidth           = 0.0;
 	fps                 = 0;
@@ -86,11 +86,18 @@ TXI::Features::Features() {
 }
 
 
-TXI::TXI(Common::SeekableReadStream &stream) : _mode(kModeNormal), _curCoords(0) {
+TXI::TXI() : _empty(true), _mode(kModeNormal), _curCoords(0) {
+}
+
+TXI::TXI(Common::SeekableReadStream &stream) : _empty(false), _mode(kModeNormal), _curCoords(0) {
 	load(stream);
 }
 
 TXI::~TXI() {
+}
+
+bool TXI::isEmpty() const {
+	return _empty;
 }
 
 void TXI::load(Common::SeekableReadStream &stream) {

@@ -232,6 +232,9 @@ void GraphicsManager::renderScene() {
 	_objects.list.sort(queueComp);
 	_guiFrontObjects.list.sort(queueComp);
 
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
 	// Draw normal objects
 	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj) {
 		glPushMatrix();
@@ -239,12 +242,18 @@ void GraphicsManager::renderScene() {
 		glPopMatrix();
 	}
 
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+
 	// Draw the front part of the GUI
 	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj) {
 		glPushMatrix();
 		(*obj)->render();
 		glPopMatrix();
 	}
+
+	glPopMatrix();
 
 	SDL_GL_SwapBuffers();
 

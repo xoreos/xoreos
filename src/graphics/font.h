@@ -33,6 +33,16 @@ public:
 	Font(const std::string &name);
 	~Font();
 
+	/** Set the font's texture. */
+	void setTexture() const;
+
+	/** Draw a character and return its width. */
+	double drawCharacter(char c) const;
+
+	double getScale() const;
+	double getSpaceR() const;
+	double getSpaceB() const;
+
 // ListContainer
 public:
 	void rebuild();
@@ -41,16 +51,22 @@ public:
 private:
 	struct Char {
 		ListID listID;
+		double width;
 		double tX[4], tY[4];
 		double vX[4], vY[4];
 	};
 
+	bool _firstTime;
+
 	Texture *_texture;
 
-	uint32 _charCount;
 	ListID _listStart;
 
 	std::vector<Char> _chars;
+
+	double _scale;
+	double _spaceR;
+	double _spaceB;
 
 	void load();
 };

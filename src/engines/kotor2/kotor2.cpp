@@ -15,10 +15,14 @@
 #include "engines/kotor2/kotor2.h"
 
 #include "common/util.h"
+#include "common/strutil.h"
 #include "common/filelist.h"
 #include "common/stream.h"
 
+#include "graphics/graphics.h"
 #include "graphics/cube.h"
+#include "graphics/font.h"
+#include "graphics/text.h"
 
 #include "sound/sound.h"
 
@@ -82,9 +86,20 @@ void KotOR2Engine::run(const std::string &directory) {
 		Common::printException(e);
 	}
 
+	Graphics::Font *font = new Graphics::Font("fnt_console");
+	Graphics::Text *text = 0;
+
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
+
+		GfxMan.lockFrame();
+		delete text;
+		text = new Graphics::Text(*font, -1.0, 1.0, Common::sprintf("%d fps", GfxMan.getFPS()));
+		GfxMan.unlockFrame();
 	}
+
+	delete text;
+	delete font;
 
 	delete cube;
 }

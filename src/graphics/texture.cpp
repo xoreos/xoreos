@@ -36,6 +36,8 @@ namespace Graphics {
 Texture::Texture(const std::string &name) : Queueable<Texture>(GfxMan.getTextureQueue()),
 	_textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone), _image(0), _txi(0) {
 
+	_txi = new TXI();
+
 	addToQueue();
 
 	load(name);
@@ -75,6 +77,7 @@ void Texture::load(const std::string &name) {
 	// Get the TXI if availabe
 	Common::SeekableReadStream *txiStream = ResMan.getResource(name, Aurora::kFileTypeTXI);
 	if (txiStream) {
+		delete _txi;
 		_txi = new TXI(*txiStream);
 		delete txiStream;
 	}
@@ -103,9 +106,10 @@ void Texture::reload() {
 		throw Common::Exception("Texture has no images");
 
 	// If we didn't find any "loose" TXI resource, look if the image provides TXI data
-	if (!_txi) {
+	if (_txi->isEmpty()) {
 		Common::SeekableReadStream *txiStream = _image->getTXI();
 		if (txiStream) {
+			delete _txi;
 			_txi = new TXI(*txiStream);
 			delete txiStream;
 		}
@@ -117,10 +121,17 @@ void Texture::reload() {
 	// Set some parameters
 	glBindTexture(GL_TEXTURE_2D, _textureID);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	const TXI::Features &features = _txi->getFeatures();
+	if (features.filter) {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	} else {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
 
 	if (_image->isCompressed()) {
 		// Compressed image
@@ -173,10 +184,6 @@ void Texture::reload() {
 	if (err != 0)
 		throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));
 
-}
-
-bool Texture::hasTXI() const {
-	return _txi != 0;
 }
 
 const TXI &Texture::getTXI() const {

@@ -40,8 +40,6 @@ public:
 	/** Return the ID of the texture for use with OpenGL. */
 	TextureID getID() const;
 
-	/** Does the texture have a TXI? */
-	bool hasTXI() const;
 	/** Return the TXI. */
 	const TXI &getTXI() const;
 
