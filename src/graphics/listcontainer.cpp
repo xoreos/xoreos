@@ -19,7 +19,7 @@
 
 namespace Graphics {
 
-ListContainer::ListContainer() : Queueable(GfxMan.getListContainerQueue()) {
+ListContainer::ListContainer() : Queueable<ListContainer>(GfxMan.getListContainerQueue()) {
 	addToQueue();
 }
 
