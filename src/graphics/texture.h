@@ -29,7 +29,7 @@ namespace Common {
 namespace Graphics {
 
 class ImageDecoder;
-class DDS;
+class TXI;
 
 /** A texture. */
 class Texture : public Queueable<Texture> {
@@ -40,13 +40,18 @@ public:
 	/** Return the ID of the texture for use with OpenGL. */
 	TextureID getID() const;
 
+	/** Does the texture have a TXI? */
+	bool hasTXI() const;
+	/** Return the TXI. */
+	const TXI &getTXI() const;
+
 private:
-	TextureID _textureID;
+	TextureID _textureID; ///< OpenGL texture ID.
 
-	Aurora::FileType _type;
+	Aurora::FileType _type; ///< The texture's image's file type.
 
-	ImageDecoder *_image;
-	Common::SeekableReadStream *_txi;
+	ImageDecoder *_image; ///< The actual image.
+	TXI *_txi;            ///< The TXI.
 
 	void load(const std::string &name);
 

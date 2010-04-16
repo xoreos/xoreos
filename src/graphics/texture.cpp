@@ -19,6 +19,7 @@
 
 #include "graphics/texture.h"
 #include "graphics/graphics.h"
+#include "graphics/images/txi.h"
 #include "graphics/images/decoder.h"
 #include "graphics/images/tga.h"
 #include "graphics/images/dds.h"
@@ -33,7 +34,7 @@ using Events::RequestID;
 namespace Graphics {
 
 Texture::Texture(const std::string &name) : Queueable<Texture>(GfxMan.getTextureQueue()),
-	_textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone), _image(0) {
+	_textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone), _image(0), _txi(0) {
 
 	addToQueue();
 
@@ -72,7 +73,11 @@ void Texture::load(const std::string &name) {
 		throw Common::Exception("Unsupported image resource type %d", (int) _type);
 
 	// Get the TXI if availabe
-	_txi = ResMan.getResource(name, Aurora::kFileTypeTXI);
+	Common::SeekableReadStream *txiStream = ResMan.getResource(name, Aurora::kFileTypeTXI);
+	if (txiStream) {
+		_txi = new TXI(*txiStream);
+		delete txiStream;
+	}
 
 	RequestMan.dispatchAndForget(RequestMan.loadTexture(this));
 }
@@ -98,8 +103,13 @@ void Texture::reload() {
 		throw Common::Exception("Texture has no images");
 
 	// If we didn't find any "loose" TXI resource, look if the image provides TXI data
-	if (!_txi)
-		_txi = _image->getTXI();
+	if (!_txi) {
+		Common::SeekableReadStream *txiStream = _image->getTXI();
+		if (txiStream) {
+			_txi = new TXI(*txiStream);
+			delete txiStream;
+		}
+	}
 
 	// Generate the texture ID
 	glGenTextures(1, &_textureID);
@@ -163,6 +173,14 @@ void Texture::reload() {
 	if (err != 0)
 		throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));
 
+}
+
+bool Texture::hasTXI() const {
+	return _txi != 0;
+}
+
+const TXI &Texture::getTXI() const {
+	return *_txi;
 }
 
 } // End of namespace Graphics

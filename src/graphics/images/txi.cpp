@@ -17,7 +17,6 @@
 #include <string>
 
 #include "common/error.h"
-#include "common/util.h"
 #include "common/strutil.h"
 #include "common/stream.h"
 
