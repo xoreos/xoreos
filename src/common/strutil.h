@@ -51,6 +51,8 @@ template<std::string &> bool stringConvert(const std::string &str, std::string &
 	return true;
 }
 
+std::string sprintf(const char *s, ...);
+
 /** Print a quick hex dump of the given data. */
 void printDataHex(Common::SeekableReadStream &stream);
 /** Print a quick hex dump of the given data. */

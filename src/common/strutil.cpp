@@ -12,6 +12,7 @@
  *  Utility templates and functions for working with strings.
  */
 
+#include <cstdarg>
 #include <cstdio>
 #include <cctype>
 
@@ -27,6 +28,17 @@ void replaceAll(std::string &str, char what, char with) {
 
 	while ((pos = str.find(what, pos)) != (int) std::string::npos)
 		str[pos++] = with;
+}
+
+std::string sprintf(const char *s, ...) {
+	char buf[STRINGBUFLEN];
+	va_list va;
+
+	va_start(va, s);
+	std::vsnprintf(buf, STRINGBUFLEN, s, va);
+	va_end(va);
+
+	return buf;
 }
 
 void printDataHex(Common::SeekableReadStream &stream) {
