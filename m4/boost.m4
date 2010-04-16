@@ -489,17 +489,19 @@ AC_DEFUN([BOOST_FILESYSTEM],
 if test $boost_major_version -ge 135; then
 BOOST_SYSTEM([$1])
 fi # end of the Boost.System check.
+AC_REQUIRE([_BOOST_PTHREAD_FLAG])
 boost_filesystem_save_LIBS=$LIBS
 boost_filesystem_save_LDFLAGS=$LDFLAGS
 m4_pattern_allow([^BOOST_SYSTEM_(LIBS|LDFLAGS)$])dnl
-LIBS="$LIBS $BOOST_SYSTEM_LIBS"
+LIBS="$LIBS $BOOST_SYSTEM_LIBS $boost_cv_pthread_flag"
 LDFLAGS="$LDFLAGS $BOOST_SYSTEM_LDFLAGS"
 BOOST_FIND_LIB([filesystem], [$1],
                 [boost/filesystem/path.hpp], [boost::filesystem::path p;])
+BOOST_FILESYSTEM_LIBS="$BOOST_FILESYSTEM_LIBS $boost_cv_pthread_flag"
+BOOST_CPPFLAGS="$BOOST_CPPFLAGS $boost_cv_pthread_flag"
 LIBS=$boost_filesystem_save_LIBS
 LDFLAGS=$boost_filesystem_save_LDFLAGS
 ])# BOOST_FILESYSTEM
-
 
 # BOOST_FOREACH()
 # ---------------
@@ -911,8 +913,9 @@ if test x$boost_cv_inc_path != xno; then
   #   como, edg, kcc, bck, mp, sw, tru, xlc
   # I'm not sure about my test for `il' (be careful: Intel's ICC pre-defines
   # the same defines as GCC's).
-  # TODO: Move the test on GCC 4.4 up once it's released.
   for i in \
+    _BOOST_gcc_test(4, 5) \
+    _BOOST_gcc_test(4, 4) \
     _BOOST_gcc_test(4, 3) \
     _BOOST_gcc_test(4, 2) \
     _BOOST_gcc_test(4, 1) \
@@ -932,7 +935,6 @@ if test x$boost_cv_inc_path != xno; then
     "defined __ICC && (defined __unix || defined __unix__) @ il" \
     "defined __ICL @ iw" \
     "defined _MSC_VER && _MSC_VER == 1300 @ vc7" \
-    _BOOST_gcc_test(4, 4) \
     _BOOST_gcc_test(2, 95) \
     "defined __MWERKS__ && __MWERKS__ <= 0x32FF @ cw9" \
     "defined _MSC_VER && _MSC_VER < 1300 && !defined UNDER_CE @ vc6" \
