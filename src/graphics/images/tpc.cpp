@@ -52,7 +52,7 @@ void TPC::load() {
 			throw Common::Exception(Common::kReadError);
 
 		if (GfxMan.needManualDeS3TC()) {
-			uncompress();
+			decompress();
 			_compressed = false;
 		}
 

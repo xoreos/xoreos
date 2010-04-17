@@ -48,7 +48,7 @@ void ImageDecoder::setFormat(PixelFormat format, PixelFormatRaw formatRaw, Pixel
 	throw Common::Exception("Setting the format is not implemented for this image decoder");
 }
 
-void ImageDecoder::uncompress() {
+void ImageDecoder::decompress() {
 	int count = getMipMapCount();
 	PixelFormatRaw format = getFormatRaw();
 

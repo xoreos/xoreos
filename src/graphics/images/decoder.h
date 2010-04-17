@@ -72,8 +72,8 @@ protected:
 	/** Set the format. */
 	virtual void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
 
-	/** Manually uncompress texture image data. */
-	void uncompress();
+	/** Manually decompress texture image data. */
+	void decompress();
 };
 
 } // End of namespace Graphics
