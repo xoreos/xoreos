@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/error.h"
 
 #include "graphics/video/decoder.h"
 #include "graphics/graphics.h"
@@ -35,6 +36,9 @@ VideoDecoder::~VideoDecoder() {
 }
 
 void VideoDecoder::createData(uint32 width, uint32 height) {
+	if (_data)
+		throw Common::Exception("VideoDecoder::createData() called twice?!?");
+
 	_width  = width;
 	_height = height;
 
@@ -84,8 +88,10 @@ void VideoDecoder::destroy() {
 }
 
 void VideoDecoder::copyData() {
-	if (!_data || (_texture == 0))
-		return;
+	if (!_data)
+		throw Common::Exception("No video data while trying to copy");
+	if (_texture == 0)
+		throw Common::Exception("No texture while trying to copy");
 
 	glBindTexture(GL_TEXTURE_2D, _texture);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _realWidth, _realHeight, GL_BGRA, GL_UNSIGNED_BYTE, _data);
