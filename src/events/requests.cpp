@@ -169,7 +169,7 @@ RequestID RequestManager::buildLists(Graphics::ListContainer *lists) {
 RequestID RequestManager::destroyLists(Graphics::ListContainer *lists) {
 	RequestID rID = newRequest(kITCEventDestroyLists);
 
-	(*rID)->_buildLists.lists = lists;
+	(*rID)->_destroyLists.lists = lists;
 
 	return rID;
 }
@@ -177,6 +177,7 @@ RequestID RequestManager::destroyLists(Graphics::ListContainer *lists) {
 RequestID RequestManager::destroyLists(Graphics::ListID listID, uint32 count) {
 	RequestID rID = newRequest(kITCEventDestroyLists);
 
+	(*rID)->_destroyLists.lists   = 0;
 	(*rID)->_destroyLists.count = count;
 	(*rID)->_destroyLists.listIDs = new Graphics::ListID[count];
 	for (uint32 i = 0; i < count; i++)
@@ -188,6 +189,7 @@ RequestID RequestManager::destroyLists(Graphics::ListID listID, uint32 count) {
 RequestID RequestManager::destroyLists(Graphics::ListID *listIDs, uint32 count) {
 	RequestID rID = newRequest(kITCEventDestroyLists);
 
+	(*rID)->_destroyLists.lists   = 0;
 	(*rID)->_destroyLists.count = count;
 	(*rID)->_destroyLists.listIDs = new Graphics::ListID[count];
 	memcpy((*rID)->_destroyLists.listIDs, listIDs, count * sizeof(Graphics::ListID));
