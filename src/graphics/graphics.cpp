@@ -75,6 +75,7 @@ void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
 
+	clearVideoQueue();
 	clearListsQueue();
 	clearTextureList();
 	clearRenderQueue();
@@ -217,6 +218,19 @@ void GraphicsManager::clearRenderQueue() {
 
 void GraphicsManager::renderScene() {
 	Common::StackLock lockFrame(_frameMutex);
+	Common::StackLock lockVideos(_videos.mutex);
+
+	if (!_videos.list.empty()) {
+		// Got videos, just play those
+
+		for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video) {
+			(*video)->update();
+			(*video)->render();
+		}
+
+		return;
+	}
+
 	Common::StackLock lockObjects(_objects.mutex);
 	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
 
@@ -333,6 +347,31 @@ void GraphicsManager::rebuildLists() {
 	glPopMatrix();
 }
 
+void GraphicsManager::clearVideoQueue() {
+	Common::StackLock lock(_videos.mutex);
+
+	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video) {
+		(*video)->destroy();
+		(*video)->kickedOut();
+	}
+
+	_videos.list.clear();
+}
+
+void GraphicsManager::destroyVideos() {
+	Common::StackLock lock(_videos.mutex);
+
+	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video)
+		(*video)->destroy();
+}
+
+void GraphicsManager::rebuildVideos() {
+	Common::StackLock lock(_videos.mutex);
+
+	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video)
+		(*video)->rebuild();
+}
+
 void GraphicsManager::toggleFullScreen() {
 	setFullScreen(!_fullScreen);
 }
@@ -342,7 +381,9 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 		// Nothing to do
 		return;
 
-	// Destroying all textures and lists, since we need to reload/rebuild them anywhen when the context is recreated
+	// Destroying all videos, textures and lists, since we need to
+	// reload/rebuild them anyway when the context is recreated
+	destroyVideos();
 	destroyLists();
 	destroyTextures();
 
@@ -370,9 +411,10 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 	// Reintroduce OpenGL to the surface
 	setupScene();
 
-	// And reloading/rebuilding all textures and lists
+	// And reload/rebuild all textures, lists and videos
 	reloadTextures();
 	rebuildLists();
+	rebuildVideos();
 
 	// Wait for everything to settle
 	RequestMan.sync();
@@ -393,7 +435,9 @@ void GraphicsManager::changeSize(int width, int height) {
 	int    oldWidth  = _screen->w;
 	int    oldHeight = _screen->h;
 
-	// Destroying all textures and lists, since we need to reload/rebuild them anywhen when the context is recreated
+	// Destroying all videos, textures and lists, since we need to
+	// reload/rebuild them anyway when the context is recreated
+	destroyVideos();
 	destroyLists();
 	destroyTextures();
 
@@ -417,9 +461,10 @@ void GraphicsManager::changeSize(int width, int height) {
 	// Reintroduce OpenGL to the surface
 	setupScene();
 
-	// And reloading/rebuilding all textures and lists
+	// And reload/rebuild all textures, lists and videos
 	reloadTextures();
 	rebuildLists();
+	rebuildVideos();
 
 	// Wait for everything to settle
 	RequestMan.sync();
@@ -448,6 +493,10 @@ Renderable::Queue &GraphicsManager::getGUIFrontQueue() {
 
 ListContainer::Queue &GraphicsManager::getListContainerQueue() {
 	return _listContainers;
+}
+
+VideoDecoder::Queue &GraphicsManager::getVideoQueue() {
+	return _videos;
 }
 
 } // End of namespace Graphics

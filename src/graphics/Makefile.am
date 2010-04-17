@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.common
 
-SUBDIRS = images
+SUBDIRS = images video
 
 noinst_LTLIBRARIES = libgraphics.la
 
@@ -32,4 +32,4 @@ libgraphics_la_SOURCES = glew/glew.c \
                          text.cpp \
                          cube.cpp
 
-libgraphics_la_LIBADD = images/libimages.la
+libgraphics_la_LIBADD = images/libimages.la video/libvideo.la

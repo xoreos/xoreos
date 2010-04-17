@@ -22,6 +22,7 @@
 #include "graphics/texture.h"
 #include "graphics/renderable.h"
 #include "graphics/listcontainer.h"
+#include "graphics/video/decoder.h"
 
 #include "common/types.h"
 #include "common/singleton.h"
@@ -76,6 +77,7 @@ private:
 	Renderable::Queue    _objects;         ///< Normal game objects currently in the render queue.
 	Renderable::Queue    _guiFrontObjects; ///< GUI front elements currently in the render queue.
 	ListContainer::Queue _listContainers;  ///< All existing list containers.
+	VideoDecoder::Queue  _videos;          ///< Currently playing videos.
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void checkGLExtensions();
@@ -90,6 +92,10 @@ private:
 	void destroyLists();
 	void rebuildLists();
 
+	void clearVideoQueue();
+	void destroyVideos();
+	void rebuildVideos();
+
 
 // For Queueables
 public:
@@ -97,6 +103,7 @@ public:
 	Renderable::Queue &getObjectQueue();
 	Renderable::Queue &getGUIFrontQueue();
 	ListContainer::Queue &getListContainerQueue();
+	VideoDecoder::Queue &getVideoQueue();
 
 
 // Thread-unsafe functions. Should only ever be called from the main thread.
