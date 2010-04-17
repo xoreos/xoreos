@@ -45,9 +45,23 @@ protected:
 
 	uint32 _width;
 	uint32 _height;
+	uint32 _pitch;
 
+	byte *_data;
+
+	/** Create a data area for a video of these dimensions. */
+	void createData(uint32 width, uint32 height);
+	/** Copy the video image data to the texture. */
+	void copyData();
+
+private:
 	TextureID _texture;
 
+	uint32 _realWidth;
+	uint32 _realHeight;
+
+	float _textureWidth;
+	float _textureHeight;
 
 // To be called from the main/events/graphics thread
 public:

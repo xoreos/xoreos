@@ -223,11 +223,29 @@ void GraphicsManager::renderScene() {
 	if (!_videos.list.empty()) {
 		// Got videos, just play those
 
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
+
 		for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video) {
+			glPushMatrix();
+
 			(*video)->update();
 			(*video)->render();
+
+			if (!(*video)->isPlaying()) {
+				// Finished playing, kick the video out of the queue
+
+				(*video)->destroy();
+				(*video)->kickedOut();
+				video = _videos.list.erase(video);
+			}
+
+			glPopMatrix();
 		}
 
+		glPopMatrix();
 		return;
 	}
 
