@@ -49,6 +49,9 @@ void ImageDecoder::setFormat(PixelFormat format, PixelFormatRaw formatRaw, Pixel
 }
 
 void ImageDecoder::decompress() {
+	if (!isCompressed())
+		return;
+
 	int count = getMipMapCount();
 	PixelFormatRaw format = getFormatRaw();
 
