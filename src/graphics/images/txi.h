@@ -34,20 +34,20 @@ public:
 	};
 
 	struct Coords {
-		double x, y, z;
+		float x, y, z;
 	};
 
 	struct Features {
 		float alphaMean;
 		uint8 arturoHeight;
 		uint8 arturoWidth;
-		double baselineHeight;
+		float baselineHeight;
 		Blending blending;
 		float bumpMapScaling;
 		std::string bumpMapTexture;
 		std::string bumpyShinyTexture;
 		bool canDownsample;
-		double caretIndent;
+		float caretIndent;
 		uint8 channelScale;
 		uint8 channelTranslate;
 		uint8 clamp;
@@ -70,8 +70,8 @@ public:
 		std::string envMapTexture;
 		uint8 fileRange;
 		bool filter;
-		double fontHeight;
-		double fontWidth;
+		float fontHeight;
+		float fontWidth;
 		uint8 fps;
 		bool isBumpMap;
 		bool isDoubleByte;
@@ -89,11 +89,11 @@ public:
 		float priority;
 		std::string procedureType;
 		uint8 rows;
-		double spacingB;
-		double spacingR;
+		float spacingB;
+		float spacingR;
 		uint8 speed;
 		bool temporary;
-		double textureWidth;
+		float textureWidth;
 		bool unique;
 		uint8 waterHeight;
 		uint8 waterWidth;

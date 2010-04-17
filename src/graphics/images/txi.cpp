@@ -107,7 +107,7 @@ void TXI::load(Common::SeekableReadStream &stream) {
 			break;
 
 		if (_mode == kModeUpperLeftCoords) {
-			std::sscanf(line.c_str(), "%lf %lf %lf",
+			std::sscanf(line.c_str(), "%f %f %f",
 					&_features.upperLeftCoords[_curCoords].x,
 					&_features.upperLeftCoords[_curCoords].y,
 					&_features.upperLeftCoords[_curCoords].z);
@@ -117,7 +117,7 @@ void TXI::load(Common::SeekableReadStream &stream) {
 			continue;
 		}
 		if (_mode == kModeLowerRightCoords) {
-			std::sscanf(line.c_str(), "%lf %lf %lf",
+			std::sscanf(line.c_str(), "%f %f %f",
 					&_features.lowerRightCoords[_curCoords].x,
 					&_features.lowerRightCoords[_curCoords].y,
 					&_features.lowerRightCoords[_curCoords].z);

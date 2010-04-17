@@ -41,7 +41,7 @@ void Font::setTexture() const {
 	glBindTexture(GL_TEXTURE_2D, _texture->getID());
 }
 
-double Font::drawCharacter(char c) const {
+float Font::drawCharacter(char c) const {
 	if (((uint32) c) >= _chars.size())
 		return 0.0;
 
@@ -69,8 +69,8 @@ void Font::rebuild() {
 		glNewList(c.listID, GL_COMPILE);
 		glBegin(GL_QUADS);
 		for (int j = 0; j < 4; j++) {
-			glTexCoord2d(c.tX[j], c.tY[j]);
-			glVertex3d(c.vX[j], c.vY[j], 0.0);
+			glTexCoord2f(c.tX[j], c.tY[j]);
+			glVertex3f(c.vX[j], c.vY[j], 0.0);
 		}
 		glEnd();
 		glEndList();
@@ -140,15 +140,15 @@ void Font::load() {
 	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
 }
 
-double Font::getScale() const {
+float Font::getScale() const {
 	return _scale;
 }
 
-double Font::getSpaceR() const {
+float Font::getSpaceR() const {
 	return _spaceR;
 }
 
-double Font::getSpaceB() const {
+float Font::getSpaceB() const {
 	return _spaceB;
 }
 

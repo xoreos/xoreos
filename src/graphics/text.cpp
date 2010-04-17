@@ -20,7 +20,7 @@
 
 namespace Graphics {
 
-Text::Text(const Font &font, double x, double y, const std::string &str) :
+Text::Text(const Font &font, float x, float y, const std::string &str) :
 	_firstTime(true), _font(&font), _x(x), _y(y), _str(str) {
 
 	addToQueue();
@@ -33,7 +33,7 @@ void Text::newFrame() {
 }
 
 void Text::render() {
-	glTranslated(_x * (GfxMan.getScreenWidth() / 2.0), _y * (GfxMan.getScreenHeight() / 2.0) - _font->getScale(), -1.0);
+	glTranslatef(_x * (GfxMan.getScreenWidth() / 2.0), _y * (GfxMan.getScreenHeight() / 2.0) - _font->getScale(), -1.0);
 	glScalef(_font->getScale(), _font->getScale(), 0.0);
 
 	if (_firstTime) {
@@ -46,7 +46,7 @@ void Text::render() {
 
 	const char *str = _str.c_str();
 	while (*str) {
-		double w = _font->drawCharacter(*str++);
+		float w = _font->drawCharacter(*str++);
 		glTranslatef(w + _font->getSpaceR(), 0.0, 0.0);
 	}
 }

@@ -174,7 +174,7 @@ void GraphicsManager::setupScene() {
 	glLoadIdentity();
 	glViewport(0, 0, _screen->w, _screen->h);
 
-	gluPerspective(60.0, ((GLdouble) _screen->w) / ((GLdouble) _screen->h), 1.0, 1000.0);
+	gluPerspective(60.0, ((GLfloat) _screen->w) / ((GLfloat) _screen->h), 1.0, 1000.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -263,7 +263,7 @@ void GraphicsManager::renderScene() {
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	glScaled(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
+	glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
 
 	// Draw the front part of the GUI
 	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj) {

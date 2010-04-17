@@ -37,11 +37,11 @@ public:
 	void setTexture() const;
 
 	/** Draw a character and return its width. */
-	double drawCharacter(char c) const;
+	float drawCharacter(char c) const;
 
-	double getScale() const;
-	double getSpaceR() const;
-	double getSpaceB() const;
+	float getScale()  const;
+	float getSpaceR() const;
+	float getSpaceB() const;
 
 // ListContainer
 public:
@@ -51,9 +51,9 @@ public:
 private:
 	struct Char {
 		ListID listID;
-		double width;
-		double tX[4], tY[4];
-		double vX[4], vY[4];
+		float width;
+		float tX[4], tY[4];
+		float vX[4], vY[4];
 	};
 
 	bool _firstTime;
@@ -64,9 +64,9 @@ private:
 
 	std::vector<Char> _chars;
 
-	double _scale;
-	double _spaceR;
-	double _spaceB;
+	float _scale;
+	float _spaceR;
+	float _spaceB;
 
 	void load();
 };

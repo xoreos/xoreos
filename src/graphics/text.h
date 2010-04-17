@@ -25,7 +25,7 @@ class Font;
 
 class Text : public GUIFrontElement {
 public:
-	Text(const Font &font, double x, double y, const std::string &str);
+	Text(const Font &font, float x, float y, const std::string &str);
 	~Text();
 
 	void newFrame();
@@ -37,8 +37,8 @@ private:
 
 	const Font *_font;
 
-	double _x;
-	double _y;
+	float _x;
+	float _y;
 
 	std::string _str;
 };
