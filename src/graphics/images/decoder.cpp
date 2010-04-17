@@ -13,6 +13,7 @@
  */
 
 #include "common/error.h"
+#include "common/stream.h"
 
 #include "graphics/images/decoder.h"
 #include "graphics/images/s3tc.h"
@@ -49,44 +50,26 @@ void ImageDecoder::setFormat(PixelFormat format, PixelFormatRaw formatRaw, Pixel
 
 void ImageDecoder::uncompress() {
 	int count = getMipMapCount();
+	PixelFormatRaw format = getFormatRaw();
+
 	for (int i = 0; i < count; i++) {
 		MipMap &mipMap = getMipMap(i);
 
-		if        (getFormatRaw() == kPixelFormatDXT1) {
-			uint32 origSize = mipMap.size;
+		Common::MemoryReadStream *stream = new Common::MemoryReadStream(mipMap.data, mipMap.size);
 
-			mipMap.size     = mipMap.width * mipMap.height * 3;
-			mipMap.dataOrig = mipMap.data;
-			mipMap.data     = new byte[mipMap.size];
+		mipMap.size     = mipMap.width * mipMap.height * 4;
+		mipMap.dataOrig = mipMap.data;
+		mipMap.data     = new byte[mipMap.size];
 
-			decompressDXT1(mipMap.data, mipMap.dataOrig, mipMap.size);
+		if (format == kPixelFormatDXT1)
+			decompressDXT1(mipMap.data, *stream, mipMap.width, mipMap.height, mipMap.width * 4);
+		else if (format == kPixelFormatDXT3)
+			decompressDXT3(mipMap.data, *stream, mipMap.width, mipMap.height, mipMap.width * 4);
+		else if (format == kPixelFormatDXT5)
+			decompressDXT5(mipMap.data, *stream, mipMap.width, mipMap.height, mipMap.width * 4);
 
-			setFormat(kPixelFormatBGR, kPixelFormatRGB8, kPixelDataType8);
-
-		} else if (getFormatRaw() == kPixelFormatDXT3) {
-			uint32 origSize = mipMap.size;
-
-			mipMap.size     = mipMap.width * mipMap.height * 4;
-			mipMap.dataOrig = mipMap.data;
-			mipMap.data     = new byte[mipMap.size];
-
-			decompressDXT3(mipMap.data, mipMap.dataOrig, mipMap.size);
-
-			setFormat(kPixelFormatBGRA, kPixelFormatRGBA8, kPixelDataType8);
-
-		} else if (getFormatRaw() == kPixelFormatDXT5) {
-			uint32 origSize = mipMap.size;
-
-			mipMap.size     = mipMap.width * mipMap.height * 4;
-			mipMap.dataOrig = mipMap.data;
-			mipMap.data     = new byte[mipMap.size];
-
-			decompressDXT5(mipMap.data, mipMap.dataOrig, mipMap.size);
-
-			setFormat(kPixelFormatBGRA, kPixelFormatRGBA8, kPixelDataType8);
-
-		}
-
+		setFormat(kPixelFormatRGBA, kPixelFormatRGBA8, kPixelDataType8);
+		delete stream;
 	}
 }
 

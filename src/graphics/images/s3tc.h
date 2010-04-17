@@ -17,11 +17,15 @@
 
 #include "common/types.h"
 
+namespace Common {
+	class SeekableReadStream;
+}
+
 namespace Graphics {
 
-void decompressDXT1(byte *dest, const byte *src, uint32 size);
-void decompressDXT3(byte *dest, const byte *src, uint32 size);
-void decompressDXT5(byte *dest, const byte *src, uint32 size);
+void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch);
+void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch);
+void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch);
 
 } // End of namespace Graphics
 

@@ -51,8 +51,10 @@ void TPC::load() {
 		if (_tpc->err())
 			throw Common::Exception(Common::kReadError);
 
-		if (GfxMan.needManualDeS3TC())
+		if (GfxMan.needManualDeS3TC()) {
 			uncompress();
+			_compressed = false;
+		}
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TPC file");
@@ -146,7 +148,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 			minDataSize = 4;
 			dataSize    = width * height * 4;
 		} else
-			throw Common::Exception("Unkown TPC raw encoding: %d (%d)", encoding, dataSize);
+			throw Common::Exception("Unknown TPC raw encoding: %d (%d)", encoding, dataSize);
 
 	} else if (encoding == kEncodingRGB) {
 		// S3TC DXT1
@@ -169,7 +171,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 		minDataSize = 16;
 
 	} else
-		throw Common::Exception("Unkown TPC encoding: %d (%d)", encoding, dataSize);
+		throw Common::Exception("Unknown TPC encoding: %d (%d)", encoding, dataSize);
 
 	uint32 fullDataSize = tpc.size() - 128;
 

@@ -56,8 +56,10 @@ void DDS::load() {
 		if (_dds->err())
 			throw Common::Exception(Common::kReadError);
 
-		if (GfxMan.needManualDeS3TC())
+		if (GfxMan.needManualDeS3TC()) {
 			uncompress();
+			_compressed = false;
+		}
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading DDS file");

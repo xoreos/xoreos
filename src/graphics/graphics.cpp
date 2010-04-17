@@ -144,8 +144,6 @@ void GraphicsManager::checkGLExtensions() {
 		warning("Switching to manual S3TC DXTn decompression. "
 		        "This will be slower and will take up more video memory");
 		_needManualDeS3TC = true;
-
-		throw Common::Exception("TODO: Manual S3TC DXTn decompression.");
 	}
 
 	if (!GLEW_ARB_texture_compression) {
@@ -154,8 +152,6 @@ void GraphicsManager::checkGLExtensions() {
 		        "This will be slower and will take up more video memory");
 
 		_needManualDeS3TC = true;
-
-		throw Common::Exception("TODO: Manual S3TC DXTn decompression.");
 	}
 }
 
