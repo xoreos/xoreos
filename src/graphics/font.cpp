@@ -127,7 +127,7 @@ void Font::load() {
 	}
 
 	// Get features
-	_scale  = txiFeatures.fontHeight;
+	_scale  = txiFeatures.fontHeight * 100;
 	_spaceR = txiFeatures.spacingR;
 	_spaceB = txiFeatures.spacingB;
 

@@ -249,6 +249,7 @@ void GraphicsManager::renderScene() {
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
+	glScaled(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
 
 	// Draw the front part of the GUI
 	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj) {
@@ -262,6 +263,20 @@ void GraphicsManager::renderScene() {
 	SDL_GL_SwapBuffers();
 
 	_fpsCounter->finishedFrame();
+}
+
+int GraphicsManager::getScreenWidth() const {
+	if (!_screen)
+		return 0;
+
+	return _screen->w;
+}
+
+int GraphicsManager::getScreenHeight() const {
+	if (!_screen)
+		return 0;
+
+	return _screen->h;
 }
 
 void GraphicsManager::clearTextureList() {

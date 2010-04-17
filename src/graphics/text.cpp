@@ -14,6 +14,7 @@
 
 #include "events/requests.h"
 
+#include "graphics/graphics.h"
 #include "graphics/text.h"
 #include "graphics/font.h"
 
@@ -32,8 +33,8 @@ void Text::newFrame() {
 }
 
 void Text::render() {
-	glTranslated(_x, _y - _font->getScale(), -1.0);
-	glScalef(_font->getScale(), _font->getScale(), _font->getScale());
+	glTranslated(_x * (GfxMan.getScreenWidth() / 2.0), _y * (GfxMan.getScreenHeight() / 2.0) - _font->getScale(), -1.0);
+	glScalef(_font->getScale(), _font->getScale(), 0.0);
 
 	if (_firstTime) {
 		// Sync, to make sure that the texture has finished loading

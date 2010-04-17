@@ -109,6 +109,9 @@ public:
 	/** Render one complete frame of the scene. */
 	void renderScene();
 
+	int getScreenWidth() const;
+	int getScreenHeight() const;
+
 	/** Toggle between full screen and windowed modes. */
 	void toggleFullScreen();
 	/** Set full screen/windowed mode. */
