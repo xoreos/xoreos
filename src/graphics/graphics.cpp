@@ -223,6 +223,9 @@ void GraphicsManager::renderScene() {
 	// Clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
 	// Notify all objects that we're now in a new frame
 	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj)
 		(*obj)->newFrame();
@@ -307,8 +310,12 @@ void GraphicsManager::destroyLists() {
 void GraphicsManager::rebuildLists() {
 	Common::StackLock lock(_listContainers.mutex);
 
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
 	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists)
 		(*lists)->rebuild();
+	glPopMatrix();
 }
 
 void GraphicsManager::toggleFullScreen() {
