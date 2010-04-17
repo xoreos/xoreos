@@ -46,6 +46,7 @@ enum ITCEvent {
 	kITCEventDestroyTexture    , ///< Request the destruction of a texture.
 	kITCEventBuildLists        , ///< Request the building of OpenGL display lists.
 	kITCEventDestroyLists      , ///< Request the destruction of OpenGL display lists.
+	kITCEventBuildVideo        , ///< Request the creation of a video texture.
 	kITCEventMAX                 ///< For range checks.
 };
 

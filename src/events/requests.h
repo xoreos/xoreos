@@ -96,6 +96,9 @@ public:
 	/** Request the destruction of lists. */
 	RequestID destroyLists(Graphics::ListID *listIDs, uint32 count);
 
+	// Videos
+	RequestID buildVideo(Graphics::VideoDecoder *video);
+
 private:
 	Common::Mutex _mutexUse; ///< The mutex locking the use of the manager.
 

@@ -25,6 +25,7 @@
 namespace Graphics {
 	class Texture;
 	class ListContainer;
+	class VideoDecoder;
 }
 
 namespace Events {
@@ -55,6 +56,10 @@ struct RequestDataDestroyLists {
 	uint32 count;
 };
 
+struct RequestDataBuildVideo {
+	Graphics::VideoDecoder *video;
+};
+
 /** A request, carrying inter-thread communication. */
 class Request {
 public:
@@ -81,6 +86,7 @@ private:
 		RequestDataDestroyTexture _destroyTexture;
 		RequestDataBuildLists     _buildLists;
 		RequestDataDestroyLists   _destroyLists;
+		RequestDataBuildVideo     _buildVideo;
 	};
 
 	/** Create the empty request frame. */

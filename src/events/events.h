@@ -117,6 +117,7 @@ private:
 	void requestDestroyTexture(Request &request);
 	void requestBuildLists(Request &request);
 	void requestDestroyLists(Request &request);
+	void requestBuildVideo(Request &request);
 
 public:
 	void processEvents();

@@ -56,6 +56,8 @@ void VideoDecoder::createData(uint32 width, uint32 height) {
 	// Create and initialize the image data memory
 	_data = new byte[_realWidth * _realHeight * 4];
 	memset(_data, 0, _realWidth * _realHeight * 4);
+
+	RequestMan.dispatchAndWait(RequestMan.buildVideo(this));
 }
 
 void VideoDecoder::rebuild() {

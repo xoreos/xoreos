@@ -39,7 +39,8 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 	&EventsManager::requestLoadTexture,
 	&EventsManager::requestDestroyTexture,
 	&EventsManager::requestBuildLists,
-	&EventsManager::requestDestroyLists
+	&EventsManager::requestDestroyLists,
+	&EventsManager::requestBuildVideo
 };
 
 
@@ -275,6 +276,10 @@ void EventsManager::requestDestroyLists(Request &request) {
 		request._destroyLists.lists->destroy();
 	else if (request._destroyLists.listIDs)
 		GfxMan.destroyLists(request._destroyLists.listIDs, request._destroyLists.count);
+}
+
+void EventsManager::requestBuildVideo(Request &request) {
+	request._buildVideo.video->rebuild();
 }
 
 } // End of namespace Events
