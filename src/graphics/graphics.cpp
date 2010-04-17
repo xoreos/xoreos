@@ -17,6 +17,8 @@
 #include "common/util.h"
 #include "common/error.h"
 
+#include "events/requests.h"
+
 #include "graphics/graphics.h"
 #include "graphics/fpscounter.h"
 #include "graphics/renderable.h"
@@ -349,6 +351,9 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 	// And reloading/rebuilding all textures and lists
 	reloadTextures();
 	rebuildLists();
+
+	// Wait for everything to settle
+	RequestMan.sync();
 }
 
 void GraphicsManager::toggleMouseGrab() {
@@ -366,7 +371,8 @@ void GraphicsManager::changeSize(int width, int height) {
 	int    oldWidth  = _screen->w;
 	int    oldHeight = _screen->h;
 
-	// Destroying all textures, since we need to reload them anywhen when the context is recreated
+	// Destroying all textures and lists, since we need to reload/rebuild them anywhen when the context is recreated
+	destroyLists();
 	destroyTextures();
 
 	// Now try to change modes
@@ -389,8 +395,12 @@ void GraphicsManager::changeSize(int width, int height) {
 	// Reintroduce OpenGL to the surface
 	setupScene();
 
-	// And reloading all textures
+	// And reloading/rebuilding all textures and lists
 	reloadTextures();
+	rebuildLists();
+
+	// Wait for everything to settle
+	RequestMan.sync();
 }
 
 void GraphicsManager::destroyTexture(TextureID id) {
