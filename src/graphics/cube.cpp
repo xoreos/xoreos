@@ -108,10 +108,9 @@ void Cube::newFrame() {
 	uint32 curTime  = EventMan.getTimestamp();
 	uint32 diffTime = curTime - _lastRotateTime;
 
-	if (diffTime > 3600)
-		curTime += 3600;
-
 	_rotation = diffTime * 0.1;
+	if (_rotation >= 360)
+		_lastRotateTime = curTime;
 }
 
 void Cube::applyTransformation(int n) {
