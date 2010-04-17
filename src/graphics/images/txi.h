@@ -105,8 +105,11 @@ public:
 		Features();
 	};
 
+	TXI();
 	TXI(Common::SeekableReadStream &stream);
 	~TXI();
+
+	bool isEmpty() const;
 
 	const Features &getFeatures() const;
 
@@ -116,6 +119,8 @@ private:
 		kModeUpperLeftCoords,
 		kModeLowerRightCoords
 	};
+
+	bool _empty;
 
 	Mode _mode;
 

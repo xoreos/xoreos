@@ -234,22 +234,12 @@ void EventsManager::initMainLoop() {
 }
 
 void EventsManager::runMainLoop() {
-	uint32 lastFPS = getTimestamp();
-
 	while (!quitRequested()) {
 		// (Pre)Process all events
 		processEvents();
 
 		// Render a frame
 		GfxMan.renderScene();
-
-		// Display a FPS counter every second
-		uint32 now = getTimestamp();
-		if ((now - lastFPS) >= 1000) {
-			status("%d fps", GfxMan.getFPS());
-
-			lastFPS = now;
-		}
 	}
 }
 
