@@ -34,7 +34,7 @@ using Events::RequestID;
 namespace Graphics {
 
 Texture::Texture(const std::string &name) : Queueable<Texture>(GfxMan.getTextureQueue()),
-	_textureID(0xFFFFFFFF), _type(Aurora::kFileTypeNone), _image(0), _txi(0) {
+	_textureID(0), _type(Aurora::kFileTypeNone), _image(0), _txi(0) {
 
 	_txi = new TXI();
 
@@ -44,7 +44,7 @@ Texture::Texture(const std::string &name) : Queueable<Texture>(GfxMan.getTexture
 }
 
 Texture::~Texture() {
-	if (_textureID != 0xFFFFFFFF)
+	if (_textureID != 0)
 		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_textureID));
 
 	delete _txi;
@@ -53,7 +53,7 @@ Texture::~Texture() {
 
 TextureID Texture::getID() const {
 	// TODO: Just for debugging, take it out eventually :P
-	if (_textureID == 0xFFFFFFFF)
+	if (_textureID == 0)
 		throw Common::Exception("Non-existing texture ID");
 
 	return _textureID;
@@ -86,12 +86,12 @@ void Texture::load(const std::string &name) {
 }
 
 void Texture::destroy() {
-	if (_textureID == 0xFFFFFFFF)
+	if (_textureID == 0)
 		return;
 
 	glDeleteTextures(1, &_textureID);
 
-	_textureID = 0xFFFFFFFF;
+	_textureID = 0;
 }
 
 void Texture::reload() {
