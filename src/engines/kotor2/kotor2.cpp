@@ -86,6 +86,14 @@ void KotOR2Engine::run(const std::string &directory) {
 		Common::printException(e);
 	}
 
+	// Play leclogo.bik
+	// Play obsidianent.bik
+	// Play legal.bik
+
+	// Menu
+
+	// Intro: Play permov01.bik
+
 	Graphics::Font *font = new Graphics::Font("dialogfont32x32b");
 	Graphics::Text *text = 0;
 

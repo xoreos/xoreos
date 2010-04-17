@@ -86,6 +86,14 @@ void KotOREngine::run(const std::string &directory) {
 		Common::printException(e);
 	}
 
+	// Play leclogo.bik
+	// Play biologo.bik
+	// Play legal.bik
+
+	// Menu
+
+	// Intro: Play 01a.bik
+
 	Graphics::Font *font = new Graphics::Font("dialogfont32x32");
 	Graphics::Text *text = 0;
 

@@ -102,6 +102,14 @@ void NWNEngine::run(const std::string &directory) {
 		Common::printException(e);
 	}
 
+	// Play atarilogo.bik
+	// Play biowarelogo.bik
+	// Play wotclogo.bik
+	// Play fge_logo_black.bik
+	// Play nwnintro.bik
+
+	// Menu
+
 	Graphics::Font *font = new Graphics::Font("fnt_galahad14");
 	Graphics::Text *text = 0;
 

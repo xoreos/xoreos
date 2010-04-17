@@ -61,6 +61,14 @@ void NWN2Engine::run(const std::string &directory) {
 	init();
 
 	status("Successfully initialized the engine");
+
+	// Play atarilogo.bik
+	// Play oeilogo.bik
+	// Play wotclogo.bik
+	// Play nvidialogo.bik
+	// Play legal.bik
+
+	// Menu
 }
 
 void NWN2Engine::init() {
