@@ -38,6 +38,8 @@ GraphicsManager::GraphicsManager() {
 
 	_needManualDeS3TC = false;
 
+	_fullScreen = false;
+
 	_screen = 0;
 
 	_fpsCounter = new FPSCounter(3);
@@ -101,7 +103,8 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 
 	uint32 flags = SDL_OPENGL;
 
-	if (fullscreen)
+	_fullScreen = fullscreen;
+	if (_fullScreen)
 		flags |= SDL_FULLSCREEN;
 
 	if (!setupSDLGL(width, height, bpp, flags)) {
