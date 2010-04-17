@@ -86,7 +86,7 @@ void KotOR2Engine::run(const std::string &directory) {
 		Common::printException(e);
 	}
 
-	Graphics::Font *font = new Graphics::Font("fnt_console");
+	Graphics::Font *font = new Graphics::Font("dialogfont32x32b");
 	Graphics::Text *text = 0;
 
 	while (!EventMan.quitRequested()) {

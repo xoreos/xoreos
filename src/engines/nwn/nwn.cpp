@@ -102,7 +102,7 @@ void NWNEngine::run(const std::string &directory) {
 		Common::printException(e);
 	}
 
-	Graphics::Font *font = new Graphics::Font("fnt_floaty_smal");
+	Graphics::Font *font = new Graphics::Font("fnt_galahad14");
 	Graphics::Text *text = 0;
 
 	while (!EventMan.quitRequested()) {

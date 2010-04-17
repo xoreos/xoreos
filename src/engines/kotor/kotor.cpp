@@ -86,7 +86,7 @@ void KotOREngine::run(const std::string &directory) {
 		Common::printException(e);
 	}
 
-	Graphics::Font *font = new Graphics::Font("dialogfont16x16a");
+	Graphics::Font *font = new Graphics::Font("dialogfont32x32");
 	Graphics::Text *text = 0;
 
 	while (!EventMan.quitRequested()) {
