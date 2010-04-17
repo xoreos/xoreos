@@ -125,11 +125,19 @@ void RequestManager::sync() {
 }
 
 RequestID RequestManager::fullscreen(bool fullscreen) {
-	return newRequest(kITCEventFullscreen);
+	if (fullscreen)
+		return newRequest(kITCEventFullscreen);
+	else
+		return newRequest(kITCEventWindowed);
 }
 
 RequestID RequestManager::resize(int width, int height) {
-	return newRequest(kITCEventWindowed);
+	RequestID rID = newRequest(kITCEventResize);
+
+	(*rID)->_resize.width  = width;
+	(*rID)->_resize.height = height;
+
+	return rID;
 }
 
 RequestID RequestManager::loadTexture(Graphics::Texture *texture) {
