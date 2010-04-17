@@ -129,49 +129,50 @@ void Texture::reload() {
 
 	// Generate the texture ID
 	glGenTextures(1, &_textureID);
-
-	// Set some parameters
+	// Bind the texture
 	glBindTexture(GL_TEXTURE_2D, _textureID);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	// Texture wrapping
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	// Filter?
 	const TXI::Features &features = _txi->getFeatures();
 	if (features.filter) {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	} else {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
 
-	if (_image->isCompressed()) {
-		// Compressed image
-		// (No chance of building mip maps ourselves should the image not provide any)
+	if (_image->getMipMapCount() == 1) {
+		// Texture doesn't specify any mip maps, generate our own
 
-		// TODO: GL_GENERATE_MIPMAP_SGIS?
-
-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 9);
+	} else {
+		// Texture does specify mip maps, use these
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
+	}
+
+	// Texture image data
+	if (_image->isCompressed()) {
+		// Compressed texture data
 
 		for (int i = 0; i < _image->getMipMapCount(); i++) {
-			const DDS::MipMap &mipMap = ((const ImageDecoder *) _image)->getMipMap(i);
+			const ImageDecoder::MipMap &mipMap = ((const ImageDecoder *) _image)->getMipMap(i);
 
 			glCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
 			                       mipMap.width, mipMap.height, 0,
 			                       mipMap.size, mipMap.data);
 		}
 
-		return;
-	}
-
-	if (_image->getMipMapCount() > 1) {
-		// The image gives us mip maps, use them
-
-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	} else {
+		// Uncompressed texture data
 
 		for (int i = 0; i < _image->getMipMapCount(); i++) {
 			const ImageDecoder::MipMap &mipMap = ((const ImageDecoder *) _image)->getMipMap(i);
@@ -179,22 +180,9 @@ void Texture::reload() {
 			glTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
 			             mipMap.width, mipMap.height, 0, _image->getFormat(),
 			             _image->getDataType(), mipMap.data);
-
 		}
 
-		return;
 	}
-
-	// The image does not give us mip maps, build them ourselves
-
-	const ImageDecoder::MipMap &mipMap = ((const ImageDecoder *) _image)->getMipMap(0);
-
-	GLint err = gluBuild2DMipmaps(GL_TEXTURE_2D, _image->getFormatRaw(),
-	                              mipMap.width, mipMap.height, _image->getFormat(),
-	                              _image->getDataType(), mipMap.data);
-
-	if (err != 0)
-		throw Common::Exception("Failed loading texture data: %s", gluErrorString(err));
 
 }
 
