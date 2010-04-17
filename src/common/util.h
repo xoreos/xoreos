@@ -42,6 +42,28 @@ template<typename T> inline T CLIP (T v, T amin, T amax)
  */
 template<typename T> inline void SWAP(T &a, T &b) { T tmp = a; a = b; b = tmp; }
 
+inline uint32 NEXTPOWER2(uint32 x) {
+	if (x == 0)
+		return 1;
+
+	x--;
+
+	x |= x >> 1; x |= x >> 2; x |= x >> 4; x |= x >> 8; x |= x >> 16;
+
+	return x + 1;
+}
+
+inline uint64 NEXTPOWER2(uint64 x) {
+	if (x == 0)
+		return 1;
+
+	x--;
+
+	x |= x >> 1; x |= x >> 2; x |= x >> 4; x |= x >> 8; x |= x >> 16; x |= x >> 32;
+
+	return x + 1;
+}
+
 /**
  * Macro which determines the number of entries in a fixed size array.
  */
