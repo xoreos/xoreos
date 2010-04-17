@@ -40,6 +40,9 @@ public:
 	/** Return the ID of the texture for use with OpenGL. */
 	TextureID getID() const;
 
+	const uint32 getWidth()  const;
+	const uint32 getHeight() const;
+
 	/** Return the TXI. */
 	const TXI &getTXI() const;
 
@@ -50,6 +53,9 @@ private:
 
 	ImageDecoder *_image; ///< The actual image.
 	TXI *_txi;            ///< The TXI.
+
+	uint32 _width;
+	uint32 _height;
 
 	void load(const std::string &name);
 

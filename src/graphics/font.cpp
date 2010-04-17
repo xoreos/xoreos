@@ -100,6 +100,11 @@ void Font::load() {
 	if ((uls.size() < charCount) || (lrs.size() < charCount))
 		throw Common::Exception("Texture defines not enough character coordinates");
 
+	if ((_texture->getWidth() == 0) || (_texture->getHeight() == 0))
+		throw Common::Exception("Invalid texture dimensions (%dx%d)", _texture->getWidth(), _texture->getHeight());
+
+	double textureRatio = ((double) _texture->getWidth()) / ((double) _texture->getHeight());
+
 	// Build the character texture and vertex coordinates
 	_chars.resize(charCount);
 	for (uint32 i = 0; i < charCount; i++) {
@@ -115,7 +120,7 @@ void Font::load() {
 
 		double height = ABS(lr.y - ul.y);
 		double width  = ABS(lr.x - ul.x);
-		double ratio  = (height != 0.0) ? (width / height) : 0.0;
+		double ratio  = ((height != 0.0) ? (width / height) : 0.0) * textureRatio;
 
 		// Vertex coordinates. Fixed height of 1.00, width to fit the texture ratio
 		c.vX[0] = 0.00;         c.vY[0] = 0.00;

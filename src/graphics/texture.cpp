@@ -34,7 +34,7 @@ using Events::RequestID;
 namespace Graphics {
 
 Texture::Texture(const std::string &name) : Queueable<Texture>(GfxMan.getTextureQueue()),
-	_textureID(0), _type(Aurora::kFileTypeNone), _image(0), _txi(0) {
+	_textureID(0), _type(Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
 
 	_txi = new TXI();
 
@@ -57,6 +57,14 @@ TextureID Texture::getID() const {
 		throw Common::Exception("Non-existing texture ID");
 
 	return _textureID;
+}
+
+const uint32 Texture::getWidth() const {
+	return _width;
+}
+
+const uint32 Texture::getHeight() const {
+	return _height;
 }
 
 void Texture::load(const std::string &name) {
@@ -114,6 +122,10 @@ void Texture::reload() {
 			delete txiStream;
 		}
 	}
+
+	// Set dimensions
+	_width  = ((const ImageDecoder *) _image)->getMipMap(0).width;
+	_height = ((const ImageDecoder *) _image)->getMipMap(0).height;
 
 	// Generate the texture ID
 	glGenTextures(1, &_textureID);
