@@ -38,8 +38,6 @@ void SoundManager::init() {
 	if (!GfxMan.ready())
 		throw Common::Exception("The GraphicsManager needs to be initialized first");
 
-	Sound_Init();
-
 	_dev = alcOpenDevice(NULL);
 	if (!_dev)
 		throw Common::Exception("Could not open OpenAL device");
@@ -72,8 +70,6 @@ void SoundManager::deinit() {
 	alcDestroyContext(_ctx);
 	alcCloseDevice(_dev);
 
-	Sound_Quit();
-
 	_ready = false;
 }
 
@@ -91,74 +87,6 @@ bool SoundManager::isPlaying(uint32 channel) const {
 	return val == AL_PLAYING;
 }
 
-static int RWStreamSeek(SDL_RWops *context, int offset, int whence) {
-	if (!context || (context->type != 0xc0ffeeee))
-		return -1;
-
-	Common::SeekableReadStream *stream = (Common::SeekableReadStream *) context->hidden.unknown.data1;
-	if (!stream)
-		return -1;
-
-	if (!stream->seek(offset, whence))
-		return -1;
-
-	return stream->pos();
-}
-
-static int RWStreamRead(SDL_RWops *context, void *ptr, int size, int maxnum) {
-	if (!context || (context->type != 0xc0ffeeee))
-		return 0;
-
-	Common::SeekableReadStream *stream = (Common::SeekableReadStream *) context->hidden.unknown.data1;
-	if (!stream)
-		return 0;
-
-	int n = stream->read(ptr, size * maxnum);
-
-	return n / size;
-}
-
-static int RWStreamWrite(SDL_RWops *context, const void *ptr, int size, int num) {
-	return 0;
-}
-
-static int RWStreamClose(SDL_RWops *context) {
-	if (!context || (context->type != 0xc0ffeeee))
-		return -1;
-
-	Common::SeekableReadStream *stream = (Common::SeekableReadStream *) context->hidden.unknown.data1;
-	delete stream;
-
-	SDL_FreeRW(context);
-	return 0;
-}
-
-SDL_RWops *RW_FromStream(Common::SeekableReadStream *stream) {
-	if (!stream)
-		return 0;
-
-	SDL_RWops *rw = SDL_AllocRW();
-	if (!rw)
-		return 0;
-
-	rw->seek  = RWStreamSeek;
-	rw->read  = RWStreamRead;
-	rw->write = RWStreamWrite;
-	rw->close = RWStreamClose;
-
-	rw->type = 0xc0ffeeee;
-	rw->hidden.unknown.data1 = stream;
-
-	return rw;
-}
-
-void FreeRW_FromStream(SDL_RWops *rw) {
-	if (!rw || (rw->type != 0xc0ffeeee))
-		return;
-
-	rw->close(rw);
-}
-
 int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	if (!_ready)
 		return -1;
@@ -167,6 +95,11 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		warning("SoundManager::playSoundFile(): No stream");
 		return -1;
 	}
+
+	// For now, just ignore any streams until clone2727 gets off his ass
+	// and finishes AudioStream support.
+	delete wavStream;
+	return -1;
 
 	Common::StackLock lock(_mutex);
 
@@ -216,25 +149,9 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		// Let SDL_sound sort it out
 		wavStream->seek(0);
 
-	SDL_RWops *rw = RW_FromStream(wavStream);
-	if (!rw) {
-		warning("SoundManager::playSoundFile(): Failed to create SDL_RWops from wav stream");
-		return -1;
-	}
-
-	Sound_AudioInfo audioInfo;
-	audioInfo.channels = NUM_CHANNELS;
-	audioInfo.format = AUDIO_S16SYS;
-	audioInfo.rate = SAMPLE_RATE;
-
-	Sound_Sample *sound = Sound_NewSample(rw, isMP3 ? "mp3" : "wav", &audioInfo, BUFFER_SIZE);
-	if (!sound) {
-		warning("SoundManager::playSoundFile(): Unable to load sound file: %s", Sound_GetError());
-		return -1;
-	}
-
-	// Decode all samples
-	Sound_DecodeAll(sound);
+#if 0
+	// This code won't be used in future iterations of the SoundManager, but it is
+	// particularly useful for reference, etc.
 
 	Channel *channel = new Channel;
 	channel->sound = sound;
@@ -270,6 +187,9 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 
 	_channels.push_back(channel);
 	return _channels.size() - 1;
+#endif
+
+	return -1;
 }
 
 void SoundManager::update() {
@@ -289,11 +209,6 @@ void SoundManager::freeChannel(uint32 channel) {
 		return;
 
 	Channel *c = _channels[channel];
-
-	if (c->sound) {
-		Sound_FreeSample(c->sound);
-		c->sound = 0;
-	}
 
 	alDeleteSources(1, &c->source);
 	alDeleteBuffers(c->numBuffers, c->buffers);

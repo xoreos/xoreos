@@ -36,15 +36,6 @@ if test -n "$nosdl"; then
 	AC_MSG_ERROR([SDL is required and could not be found!])
 fi
 
-CPPFLAGSBAK="$CPPFLAGS"
-CPPFLAGS=`$SDL_CONFIG --cflags`
-AC_CHECK_HEADER("SDL_sound.h", , nosdlsound=1)
-CPPFLAGS="$CPPFLAGSBAK"
-
-if test -n "$nosdlsound"; then
-	AC_MSG_ERROR([SDL_Sound is required and could not be found!])
-fi
-
 AC_C_CONST
 AC_HEADER_STDC
 
@@ -84,7 +75,7 @@ case "$target" in
 esac;
 
 EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
-EOS_LIBS="`sdl-config --libs` -lSDL_sound"
+EOS_LIBS="`sdl-config --libs`"
 
 dnl Add the OpenAL and OpenGL frameworks on Mac OS X
 case "$target" in

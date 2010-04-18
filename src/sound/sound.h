@@ -15,8 +15,6 @@
 #ifndef SOUND_SOUND_H
 #define SOUND_SOUND_H
 
-#include <SDL_sound.h>
-
 // Mac OS X has to have this set up separately because of the include
 // path for the OpenAL framework.
 #ifdef MACOSX
@@ -65,7 +63,6 @@ public:
 
 private:
 	struct Channel {
-		Sound_Sample *sound;
 		ALuint source;
 		ALuint numBuffers;
 		ALuint *buffers;
