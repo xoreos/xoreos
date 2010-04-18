@@ -36,6 +36,12 @@ if test -n "$nosdl"; then
 	AC_MSG_ERROR([SDL is required and could not be found!])
 fi
 
+AC_CHECK_HEADER("mad.h", , nolibmad=1)
+
+if test -n "$nolibmad"; then
+	AC_MSG_ERROR([libMAD is required and could not be found])
+fi
+
 AC_C_CONST
 AC_HEADER_STDC
 
@@ -75,7 +81,7 @@ case "$target" in
 esac;
 
 EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
-EOS_LIBS="`sdl-config --libs`"
+EOS_LIBS="`sdl-config --libs` -lmad"
 
 dnl Add the OpenAL and OpenGL frameworks on Mac OS X
 case "$target" in
@@ -99,6 +105,7 @@ AC_OUTPUT(src/common/Makefile \
           src/graphics/images/Makefile \
           src/graphics/video/Makefile \
           src/sound/Makefile \
+          src/sound/decoders/Makefile \
           src/events/Makefile \
           src/aurora/Makefile \
           src/engines/Makefile \

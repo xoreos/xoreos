@@ -1,0 +1,7 @@
+include $(top_srcdir)/Makefile.common
+
+noinst_LTLIBRARIES = libdecoders.la
+
+noinst_HEADERS = mp3.h
+
+libdecoders_la_SOURCES = mp3.cpp
