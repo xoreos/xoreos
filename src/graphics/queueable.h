@@ -42,16 +42,18 @@ public:
 
 	/** Notify the object that it has been kicked out of its queue. */
 	void kickedOut() {
+		Common::StackLock lock(_queue->mutex);
+
 		_inQueue = false;
 	}
 
 protected:
 	/** Add the object to its queue. */
 	void addToQueue() {
+		Common::StackLock lock(_queue->mutex);
+
 		if (_inQueue)
 			return;
-
-		Common::StackLock lock(_queue->mutex);
 
 		_queue->list.push_back((T *) this);
 		_queueRef = --_queue->list.end();
@@ -61,10 +63,10 @@ protected:
 
 	/** Remove the object from its queue. */
 	void removeFromQueue() {
+		Common::StackLock lock(_queue->mutex);
+
 		if (!_inQueue)
 			return;
-
-		Common::StackLock lock(_queue->mutex);
 
 		_queue->list.erase(_queueRef);
 
