@@ -15,6 +15,8 @@
 #ifndef GRAPHICS_VIDEO_BIK_H
 #define GRAPHICS_VIDEO_BIK_H
 
+#include <vector>
+
 #include "graphics/video/decoder.h"
 
 namespace Common {
@@ -35,7 +37,34 @@ protected:
 	void processData();
 
 private:
+	struct AudioTrack {
+		uint16 sampleRate;
+		uint16 flags;
+	};
+
+	struct VideoFrame {
+		bool keyFrame;
+		uint32 offset;
+	};
+
 	Common::SeekableReadStream *_bik;
+
+	uint32 _id;
+
+	uint32 _fpsNum;
+	uint32 _fpsDen;
+
+	uint32 _videoFlags;
+
+	uint32 _curFrame;
+
+	uint32 _startTime;
+	uint32 _lastFrameTime;
+
+	std::vector<AudioTrack> _audioTracks;
+	std::vector<VideoFrame> _frames;
+
+	void load();
 };
 
 } // End of namespace Graphics
