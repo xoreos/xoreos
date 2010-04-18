@@ -131,6 +131,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		isMP3 = true;
 		stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), DisposeAfterUse::YES);
 	} else if (tag == MKID_BE('OggS')) {
+		stream->seek(0);
 		return makeVorbisStream(stream, DisposeAfterUse::YES);
 	} else {
 		warning("Unknown sound format.");
