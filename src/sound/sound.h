@@ -63,6 +63,13 @@ public:
 	 */
 	int playSoundFile(Common::SeekableReadStream *wavStream);
 
+	/** Play an audio stream.
+	 *
+	 *  @param  audStream The stream to play. Will be taken over.
+	 *  @return The channel the sound has been assigned to, or -1 on error.
+	 */
+	int playAudioStream(AudioStream *audStream);
+
 private:
 	struct Channel {
 		AudioStream *stream;

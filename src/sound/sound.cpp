@@ -148,19 +148,19 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 	return 0;
 }
 
-int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
+int SoundManager::playAudioStream(AudioStream *audStream) {
 	if (!_ready)
 		return -1;
 
-	if (!wavStream) {
-		warning("SoundManager::playSoundFile(): No stream");
+	if (!audStream) {
+		warning("SoundManager::playAudioStream(): No stream");
 		return -1;
 	}
 
 	Common::StackLock lock(_mutex);
 
 	Channel *channel = new Channel;
-	channel->stream = makeAudioStream(wavStream);
+	channel->stream = audStream;
 
 	if (!channel->stream) {
 		warning("SoundManager::playSoundFile(): Could not detect stream type");
@@ -209,6 +209,18 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 
 	_channels.push_back(channel);
 	return _channels.size() - 1;
+}
+
+int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
+	if (!_ready)
+		return -1;
+
+	if (!wavStream) {
+		warning("SoundManager::playSoundFile(): No stream");
+		return -1;
+	}
+
+	return playAudioStream(makeAudioStream(wavStream));
 }
 
 void SoundManager::update() {
