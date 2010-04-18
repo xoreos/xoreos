@@ -84,6 +84,12 @@ void NWNEngine::run(const std::string &directory) {
 
 	status("Successfully initialized the engine");
 
+	playVideo("atarilogo");
+	playVideo("biowarelogo");
+	playVideo("wotclogo");
+	playVideo("fge_logo_black");
+	playVideo("nwnintro");
+
 	int channel = -1;
 
 	Common::SeekableReadStream *wav = ResMan.getSound("as_pl_evanglstm1");
@@ -101,14 +107,6 @@ void NWNEngine::run(const std::string &directory) {
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
-
-	// Play atarilogo.bik
-	// Play biowarelogo.bik
-	// Play wotclogo.bik
-	// Play fge_logo_black.bik
-	// Play nwnintro.bik
-
-	// Menu
 
 	Graphics::Font *font = new Graphics::Font("fnt_galahad14");
 	Graphics::Text *text = 0;

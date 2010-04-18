@@ -13,11 +13,12 @@
  */
 
 #include "common/error.h"
+#include "common/util.h"
 #include "common/stream.h"
 
 #include "graphics/video/player.h"
 #include "graphics/video/decoder.h"
-#include "graphics/video/fader.h"
+#include "graphics/video/bik.h"
 
 #include "events/events.h"
 #include "events/requests.h"
@@ -35,19 +36,18 @@ VideoPlayer::~VideoPlayer() {
 }
 
 void VideoPlayer::load(const std::string &name) {
-	_video = new Fader(320, 240, 2);
-	return;
-
 	Aurora::FileType type;
-	Common::SeekableReadStream *video = ResMan.getImage(name, &type);
+	Common::SeekableReadStream *video = ResMan.getVideo(name, &type);
 	if (!video)
 		throw Common::Exception("No such video resource \"%s\"", name.c_str());
 
 	// Loading the different image formats
 	if      (type == Aurora::kFileTypeBIK)
-		throw Common::Exception("TODO: BIK");
-	else
+		_video = new BIK(video);
+	else {
+		delete video;
 		throw Common::Exception("Unsupported video resource type %d", (int) type);
+	}
 }
 
 void VideoPlayer::play() {

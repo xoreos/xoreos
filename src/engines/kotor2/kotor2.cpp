@@ -68,6 +68,11 @@ void KotOR2Engine::run(const std::string &directory) {
 
 	status("Successfully initialized the engine");
 
+	playVideo("leclogo");
+	playVideo("obsidianent");
+	playVideo("legal");
+	// Intro movie: "permov01"
+
 	int channel = -1;
 
 	Common::SeekableReadStream *wav = ResMan.getSound("298hk50mun003");
@@ -85,14 +90,6 @@ void KotOR2Engine::run(const std::string &directory) {
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
-
-	// Play leclogo.bik
-	// Play obsidianent.bik
-	// Play legal.bik
-
-	// Menu
-
-	// Intro: Play permov01.bik
 
 	Graphics::Font *font = new Graphics::Font("dialogfont32x32b");
 	Graphics::Text *text = 0;

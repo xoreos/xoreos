@@ -74,6 +74,12 @@ void TheWitcherEngine::run(const std::string &directory) {
 
 	status("Successfully initialized the engine");
 
+	playVideo("publisher");
+	playVideo("developer");
+	playVideo("engine");
+	playVideo("intro");
+	playVideo("title");
+
 /*
 	int channel = -1;
 
@@ -93,14 +99,6 @@ void TheWitcherEngine::run(const std::string &directory) {
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
-
-	// Play publisher.bik
-	// Play developer.bik
-	// Play engine.bik
-	// Play intro.bik
-	// Play title.bik
-
-	// Menu
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);

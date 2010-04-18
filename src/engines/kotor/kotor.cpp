@@ -68,6 +68,11 @@ void KotOREngine::run(const std::string &directory) {
 
 	status("Successfully initialized the engine");
 
+	playVideo("leclogo");
+	playVideo("biologo");
+	playVideo("legal");
+	// Intro movie: "01a"
+
 	int channel = -1;
 
 	Common::SeekableReadStream *wav = ResMan.getSound("nm35aahhkd07134_");
@@ -75,8 +80,6 @@ void KotOREngine::run(const std::string &directory) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);
 	}
-
-	playVideo("foo");
 
 	Graphics::Cube *cube = 0;
 
@@ -87,14 +90,6 @@ void KotOREngine::run(const std::string &directory) {
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
-
-	// Play leclogo.bik
-	// Play biologo.bik
-	// Play legal.bik
-
-	// Menu
-
-	// Intro: Play 01a.bik
 
 	Graphics::Font *font = new Graphics::Font("dialogfont32x32");
 	Graphics::Text *text = 0;

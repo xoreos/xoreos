@@ -89,6 +89,7 @@ void Engine::playVideo(const std::string &video) {
 
 		videoPlayer.play();
 	} catch (Common::Exception &e) {
+		Common::printException(e, "WARNING: ");
 	}
 }
 
