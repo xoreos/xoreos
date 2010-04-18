@@ -79,8 +79,10 @@ void Texture::load(const std::string &name) {
 		_image = new DDS(img);
 	else if (_type == Aurora::kFileTypeTPC)
 		_image = new TPC(img);
-	else
+	else {
+		delete img;
 		throw Common::Exception("Unsupported image resource type %d", (int) _type);
+	}
 
 	// Get the TXI if availabe
 	Common::SeekableReadStream *txiStream = ResMan.getResource(name, Aurora::kFileTypeTXI);
