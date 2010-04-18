@@ -163,42 +163,50 @@ int SoundManager::playAudioStream(AudioStream *audStream) {
 	channel->stream = audStream;
 
 	if (!channel->stream) {
-		warning("SoundManager::playSoundFile(): Could not detect stream type");
+		warning("SoundManager::playAudioStream(): Could not detect stream type");
 		return -1;
 	}
-
-	// For now, just ignore any streams until clone2727 gets off his ass
-	// and finishes AudioStream support.
+	
+	// If sound is problematic for whatever reason, just enable this code.
+#if 0
 	delete channel->stream;
 	delete channel;
 	return -1;
-
-#if 0
-	// This code won't be used in future iterations of the SoundManager, but it is
-	// particularly useful for reference, etc.
-	channel->numBuffers = sound->buffer_size / BUFFER_SIZE;
-
-	if (channel->numBuffers % BUFFER_SIZE)
-		channel->numBuffers++;
-
-	channel->buffers = new ALuint[channel->numBuffers];
+#endif
 
 	alGenSources(1, &channel->source);
-	alGenBuffers(channel->numBuffers, channel->buffers);
+
+	// OK, here's where the major hacking begins. Actually streaming the audio isn't supported
+	// yet, so we're just copying the decoded data into the alBuffers. Of course, we don't
+	// have the total length of the audio stream, so I use a std::vector hack to get the
+	// number of buffers. Everything from here down to the alSourcePlay() call will be changed
+	// really soon. But, I'd rather have *some* sound than *no* sound.
+
+	std::vector<ALuint> bufferArray;
+	uint32 numSamples = BUFFER_SIZE / 2;
+
+	if (channel->stream->isStereo())
+		numSamples /= 2;
+
+	byte *buffer = new byte[BUFFER_SIZE];
+	memset(buffer, 0, BUFFER_SIZE);
+
+	while (!channel->stream->endOfData()) {
+		ALuint alBuffer;
+		channel->stream->readBuffer((int16 *)buffer, numSamples);
+		alGenBuffers(1, &alBuffer);
+		alBufferData(alBuffer, channel->stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, BUFFER_SIZE, channel->stream->getRate());
+		bufferArray.push_back(alBuffer);
+	}
 
 	if (alGetError() != AL_NO_ERROR)
 		throw Common::Exception("AL Error of some sort");
 
-	for (uint32 i = 0; i < channel->numBuffers; i++) {
-		if (i == channel->numBuffers - 1 && sound->buffer_size % BUFFER_SIZE != 0)
-			alBufferData(channel->buffers[i], AL_FORMAT_STEREO16, (byte *)sound->buffer + BUFFER_SIZE * i, sound->buffer_size % BUFFER_SIZE, SAMPLE_RATE);
-		else
-			alBufferData(channel->buffers[i], AL_FORMAT_STEREO16, (byte *)sound->buffer + BUFFER_SIZE * i, BUFFER_SIZE, SAMPLE_RATE);
-	}
+	channel->numBuffers = bufferArray.size();
+	channel->buffers = &bufferArray[0];
 
 	alSourceQueueBuffers(channel->source, channel->numBuffers, channel->buffers);
 	alSourcePlay(channel->source);
-#endif
 
 	for (uint32 i = 0; i < _channels.size(); i++) {
 		if (_channels[i] == 0) {
@@ -241,6 +249,7 @@ void SoundManager::freeChannel(uint32 channel) {
 
 	Channel *c = _channels[channel];
 
+	delete c->stream;
 	alDeleteSources(1, &c->source);
 	alDeleteBuffers(c->numBuffers, c->buffers);
 
