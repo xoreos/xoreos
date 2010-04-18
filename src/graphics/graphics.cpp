@@ -246,6 +246,10 @@ void GraphicsManager::renderScene() {
 		}
 
 		glPopMatrix();
+
+		SDL_GL_SwapBuffers();
+
+		_fpsCounter->finishedFrame();
 		return;
 	}
 
