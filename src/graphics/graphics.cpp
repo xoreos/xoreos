@@ -237,7 +237,6 @@ void GraphicsManager::renderScene() {
 		for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video) {
 			glPushMatrix();
 
-			(*video)->update();
 			(*video)->render();
 
 			if (!(*video)->isPlaying()) {

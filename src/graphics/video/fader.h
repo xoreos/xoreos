@@ -25,13 +25,15 @@ public:
 	Fader(uint32 width, uint32 height, int n);
 	~Fader();
 
-	void update();
+	bool gotTime() const;
+
+protected:
+	void processData();
 
 private:
 	byte _c;
 	int _n;
 
-	bool _firstFrame;
 	uint32 _lastUpdate;
 };
 

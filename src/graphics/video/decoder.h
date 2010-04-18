@@ -16,6 +16,7 @@
 #define GRAPHICS_VIDEO_DECODER_H
 
 #include "common/types.h"
+#include "common/mutex.h"
 
 #include "graphics/types.h"
 #include "graphics/queueable.h"
@@ -31,12 +32,8 @@ public:
 	/** Is the video currently playing? */
 	bool isPlaying() const;
 
-	/** Update the video.
-	 *
-	 *  Draws the next video frame onto the texture and queues the next audio frame,
-	 *  if necessary.
-	 */
-	virtual void update() = 0;
+	/** Update the video. */
+	void update();
 
 	/** Render the video to OpenGL. */
 	void render();
@@ -44,8 +41,13 @@ public:
 	/** Abort the playing of the video. */
 	void abort();
 
+	/** Got enough time to spare to sleep for 10ms? */
+	virtual bool gotTime() const = 0;
+
 protected:
+	volatile bool _started;
 	volatile bool _finished;
+	volatile bool _needCopy;
 
 	uint32 _width;
 	uint32 _height;
@@ -55,8 +57,9 @@ protected:
 
 	/** Create a data area for a video of these dimensions. */
 	void createData(uint32 width, uint32 height);
-	/** Copy the video image data to the texture. */
-	void copyData();
+
+	/** Process the video's image and sound data further. */
+	virtual void processData() = 0;
 
 private:
 	TextureID _texture;
@@ -66,6 +69,12 @@ private:
 
 	float _textureWidth;
 	float _textureHeight;
+
+	Common::Mutex _canUpdate;
+	Common::Mutex _canCopy;
+
+	/** Copy the video image data to the texture. */
+	void copyData();
 
 // To be called from the main/events/graphics thread
 public:

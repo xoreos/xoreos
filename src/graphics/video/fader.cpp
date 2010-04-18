@@ -20,7 +20,7 @@
 
 namespace Graphics {
 
-Fader::Fader(uint32 width, uint32 height, int n) : _c(0), _n(n), _firstFrame(true), _lastUpdate(0) {
+Fader::Fader(uint32 width, uint32 height, int n) : _c(0), _n(n), _lastUpdate(0) {
 	createData(width, height);
 
 	addToQueue();
@@ -29,21 +29,31 @@ Fader::Fader(uint32 width, uint32 height, int n) : _c(0), _n(n), _firstFrame(tru
 Fader::~Fader() {
 }
 
-void Fader::update() {
+bool Fader::gotTime() const {
+	if (!_started)
+		return true;
+
+	if ((EventMan.getTimestamp() - _lastUpdate) < 20)
+		return true;
+
+	return false;
+}
+
+void Fader::processData() {
 	uint32 curTime  = EventMan.getTimestamp();
 	uint32 diffTime = curTime - _lastUpdate;
-	if (!_firstFrame && (diffTime < 10))
+	if (_started && (diffTime < 20))
 		return;
 
-	if (_firstFrame) {
+	if (!_started) {
 		diffTime = 0;
 
 		_lastUpdate = curTime;
-		_firstFrame = false;
+		_started    = true;
 
 		_c = 0;
 	} else
-		_c++;
+		_c += 2;
 
 	// Fade from black to green
 	byte *data = _data;
@@ -74,13 +84,13 @@ void Fader::update() {
 		dPos += _pitch * 4;
 	}
 
-	copyData();
-
 	_lastUpdate = curTime;
 
 	if (_c == 0)
 		if (_n-- <= 0)
 			_finished = true;
+
+	_needCopy = true;
 }
 
 } // End of namespace Graphics

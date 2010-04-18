@@ -23,13 +23,15 @@
 namespace Graphics {
 
 VideoDecoder::VideoDecoder() : Queueable<VideoDecoder>(GfxMan.getVideoQueue()),
-	_finished(false), _width(0), _height(0), _pitch(0), _data(0), _texture(0),
-	_realWidth(0), _realHeight(0), _textureWidth(0.0), _textureHeight(0.0) {
+	_started(false), _finished(false), _needCopy(false), _width(0), _height(0), _pitch(0),
+	_data(0), _texture(0), _realWidth(0), _realHeight(0), _textureWidth(0.0), _textureHeight(0.0) {
 
+	// No data at the start, lock the mutex
+	_canCopy.lock();
 }
 
 VideoDecoder::~VideoDecoder() {
-	delete _data;
+	delete[] _data;
 
 	if (_texture != 0)
 		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_texture));
@@ -90,22 +92,48 @@ void VideoDecoder::destroy() {
 }
 
 void VideoDecoder::copyData() {
+	// Wait until we can copy
+	_canCopy.lock();
+
 	if (!_data)
 		throw Common::Exception("No video data while trying to copy");
 	if (_texture == 0)
 		throw Common::Exception("No texture while trying to copy");
 
-	glBindTexture(GL_TEXTURE_2D, _texture);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _realWidth, _realHeight, GL_BGRA, GL_UNSIGNED_BYTE, _data);
+	if (_needCopy && !_finished) {
+		glBindTexture(GL_TEXTURE_2D, _texture);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _realWidth, _realHeight, GL_BGRA, GL_UNSIGNED_BYTE, _data);
+
+		_needCopy = false;
+	}
+
+	// Signal that we update the data again
+	_canUpdate.unlock();
 }
 
 bool VideoDecoder::isPlaying() const {
 	return !_finished;
 }
 
+void VideoDecoder::update() {
+	// Wait until we can update
+	_canUpdate.lock();
+
+	processData();
+
+	// Signal that we can copy the data again
+	_canCopy.unlock();
+}
+
 void VideoDecoder::render() {
 	if (_texture == 0)
 		return;
+
+	if (!_started)
+		return;
+
+	// Copy the data to the texture, if necessary
+	copyData();
 
 	// Create a textured quad with the video's dimensions
 
