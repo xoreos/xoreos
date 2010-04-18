@@ -42,6 +42,12 @@ if test -n "$nolibmad"; then
 	AC_MSG_ERROR([libMAD is required and could not be found])
 fi
 
+AC_CHECK_HEADER("vorbis/vorbisfile.h", , novorbis=1)
+
+if test -n "$novorbis"; then
+	AC_MSG_ERROR([libOgg and libVorbis are required and could not be found])
+fi
+
 AC_C_CONST
 AC_HEADER_STDC
 
@@ -81,7 +87,7 @@ case "$target" in
 esac;
 
 EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
-EOS_LIBS="`sdl-config --libs` -lmad"
+EOS_LIBS="`sdl-config --libs` -lmad -logg -lvorbis -lvorbisfile"
 
 dnl Add the OpenAL and OpenGL frameworks on Mac OS X
 case "$target" in

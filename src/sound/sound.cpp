@@ -15,6 +15,7 @@
 #include "sound/sound.h"
 #include "sound/audiostream.h"
 #include "sound/decoders/mp3.h"
+#include "sound/decoders/vorbis.h"
 
 #include "common/stream.h"
 #include "common/util.h"
@@ -129,8 +130,10 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		// BMU files: MP3 with extra header
 		isMP3 = true;
 		stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), DisposeAfterUse::YES);
+	} else if (tag == MKID_BE('OggS')) {
+		return makeVorbisStream(stream, DisposeAfterUse::YES);
 	} else {
-		warning("Unknown sound format. If this is Ogg, tell DrMcCoy to add detection.");
+		warning("Unknown sound format.");
 		return 0;
 	}
 
