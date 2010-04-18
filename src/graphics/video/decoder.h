@@ -28,6 +28,7 @@ public:
 	VideoDecoder();
 	~VideoDecoder();
 
+	/** Is the video currently playing? */
 	bool isPlaying() const;
 
 	/** Update the video.
@@ -39,6 +40,9 @@ public:
 
 	/** Render the video to OpenGL. */
 	void render();
+
+	/** Abort the playing of the video. */
+	void abort();
 
 protected:
 	volatile bool _finished;

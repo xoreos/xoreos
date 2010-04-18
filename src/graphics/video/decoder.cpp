@@ -125,4 +125,8 @@ void VideoDecoder::render() {
 	glEnd();
 }
 
+void VideoDecoder::abort() {
+	removeFromQueue();
+}
+
 } // End of namespace Graphics

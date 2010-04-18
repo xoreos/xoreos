@@ -24,8 +24,6 @@
 #include "graphics/font.h"
 #include "graphics/text.h"
 
-#include "graphics/video/fader.h"
-
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -96,10 +94,10 @@ void KotOREngine::run(const std::string &directory) {
 
 	// Intro: Play 01a.bik
 
+	playVideo("foo");
+
 	Graphics::Font *font = new Graphics::Font("dialogfont32x32");
 	Graphics::Text *text = 0;
-
-	Graphics::Fader *fader = new Graphics::Fader(320, 240, 2);
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
@@ -107,16 +105,8 @@ void KotOREngine::run(const std::string &directory) {
 		GfxMan.lockFrame();
 		delete text;
 		text = new Graphics::Text(*font, -1.0, 1.0, Common::sprintf("%d fps", GfxMan.getFPS()));
-
-		if (fader && !fader->isPlaying()) {
-			delete fader;
-			fader = 0;
-		}
-
 		GfxMan.unlockFrame();
 	}
-
-	delete fader;
 
 	delete text;
 	delete font;

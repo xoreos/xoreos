@@ -220,6 +220,12 @@ void GraphicsManager::renderScene() {
 	Common::StackLock lockFrame(_frameMutex);
 	Common::StackLock lockVideos(_videos.mutex);
 
+	// Clear
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
 	if (!_videos.list.empty()) {
 		// Got videos, just play those
 
@@ -255,9 +261,6 @@ void GraphicsManager::renderScene() {
 
 	Common::StackLock lockObjects(_objects.mutex);
 	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
-
-	// Clear
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

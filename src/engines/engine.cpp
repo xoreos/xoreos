@@ -18,6 +18,8 @@
 #include "common/stream.h"
 #include "common/file.h"
 
+#include "graphics/video/player.h"
+
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
@@ -77,6 +79,15 @@ void Engine::indexMandatoryRIM(const std::string &rim, uint32 priority) {
 void Engine::indexOptionalRIM(const std::string &rim, uint32 priority) {
 	try {
 		ResMan.addRIM(rim, priority);
+	} catch (Common::Exception &e) {
+	}
+}
+
+void Engine::playVideo(const std::string &video) {
+	try {
+		Graphics::VideoPlayer videoPlayer(video);
+
+		videoPlayer.play();
 	} catch (Common::Exception &e) {
 	}
 }

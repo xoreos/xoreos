@@ -53,6 +53,9 @@ protected:
 	/** Add a RIM file to the resource manager, if it exists. */
 	void indexOptionalRIM(const std::string &rim, uint32 priority = 100);
 
+	/** Play this video resource. */
+	void playVideo(const std::string &video);
+
 	/** Debug method to quickly dump a stream to disk. */
 	void dumpStream(Common::SeekableReadStream &stream, const std::string &fileName);
 };
