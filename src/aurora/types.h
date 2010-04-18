@@ -94,7 +94,7 @@ enum FileType {
 	kFileTypeSSF            =  2060, ///< Sound Set File.
 	kFileTypeHAK            =  2061, ///< Resource hak pak, ERF.
 	kFileTypeNWM            =  2062, ///< Neverwinter Nights original campaign module, ERF.
-	kFileTypeBIK            =  2063, ///< Movie, RAD Game Tools Bink.
+	kFileTypeBIK            =  2063, ///< Video, RAD Game Tools Bink.
 	kFileTypeNDB            =  2064, ///< Script debugger file.
 	kFileTypePTM            =  2065, ///< Plot instance/manager, GFF.
 	kFileTypePTT            =  2066, ///< Plot wizard blueprint, GFF.

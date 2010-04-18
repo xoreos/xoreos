@@ -53,6 +53,10 @@ ResourceManager::ResourceManager() {
 	_imageTypes.push_back(kFileTypePNG);
 	_imageTypes.push_back(kFileTypeBMP);
 	_imageTypes.push_back(kFileTypeJPG);
+
+	_videoTypes.push_back(kFileTypeBIK);
+	_videoTypes.push_back(kFileTypeMPG);
+	_videoTypes.push_back(kFileTypeWMV);
 }
 
 ResourceManager::~ResourceManager() {
@@ -61,6 +65,7 @@ ResourceManager::~ResourceManager() {
 	_musicTypes.clear();
 	_soundTypes.clear();
 	_imageTypes.clear();
+	_videoTypes.clear();
 }
 
 void ResourceManager::clear() {
@@ -170,6 +175,24 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priorit
 		soundFiles.addDirectory(soundDir, -1);
 
 	addResources(soundFiles, change, priority);
+
+	// Find all video files
+
+	Common::FileList movieFiles, rootFiles;
+
+	std::string videoDir;
+	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "movies"   , true)).empty())
+		movieFiles.addDirectory(videoDir, -1);
+	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "cutscenes", true)).empty())
+		movieFiles.addDirectory(videoDir, -1);
+	rootFiles.addDirectory(_baseDir);
+
+	Common::FileList videoFiles;
+
+	movieFiles.getSubList(".*\\.(bik|mpg|wmv)", videoFiles, true);
+	rootFiles.getSubList (".*\\.(bik|mpg|wmv)", videoFiles, true);
+
+	addResources(videoFiles, change, priority);
 
 	return change;
 }
@@ -606,6 +629,16 @@ Common::SeekableReadStream *ResourceManager::getImage(const std::string &name, F
 		return res;
 
 	// No such image
+	return 0;
+}
+
+Common::SeekableReadStream *ResourceManager::getVideo(const std::string &name, FileType *type) const {
+	// Try every known video file type
+	Common::SeekableReadStream *res;
+	if ((res = getResource(name, _videoTypes, type)))
+		return res;
+
+	// No such video
 	return 0;
 }
 

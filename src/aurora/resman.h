@@ -239,6 +239,14 @@ public:
 	 */
 	Common::SeekableReadStream *getImage(const std::string &name, FileType *type = 0) const;
 
+	/** Return an video resource.
+	 *
+	 *  @param  name The name (ResRef or path) of the resource.
+	 *  @param  type If != 0, that's where the resource's type is stored.
+	 *  @return The video resource stream or 0 if the video resource doesn't exist.
+	 */
+	Common::SeekableReadStream *getVideo(const std::string &name, FileType *type = 0) const;
+
 	/** Small debug method that lists all indexed resources. */
 	void listResources() const;
 
@@ -266,6 +274,7 @@ private:
 	std::vector<FileType> _musicTypes; ///< All valid music file types.
 	std::vector<FileType> _soundTypes; ///< All valid sound file types.
 	std::vector<FileType> _imageTypes; ///< All valid image file types.
+	std::vector<FileType> _videoTypes; ///< All valid video file types.
 
 	// KEY/BIF loading helpers
 	ResFileRef findBIFPaths(const KEYFile &keyFile, ChangeID &change);
