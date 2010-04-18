@@ -13,6 +13,8 @@
  */
 
 #include "sound/sound.h"
+#include "sound/audiostream.h"
+#include "sound/decoders/mp3.h"
 
 #include "common/stream.h"
 #include "common/util.h"
@@ -108,7 +110,7 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	if (tag == 0xfff360c4) {
 
 		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
-		wavStream->seek(0x1D6);
+		wavStream = new Common::SeekableSubReadStream(wavStream, 0x1D6, wavStream->size(), DisposeAfterUse::YES);
 
 	} else if (tag == MKID_BE('RIFF')) {
 
@@ -135,26 +137,33 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		}
 
 		uint32 dataSize = wavStream->readUint32LE();
-		if (dataSize == 0)
+		if (dataSize == 0) {
 			isMP3 = true;
-		else
+			wavStream = new Common::SeekableSubReadStream(wavStream, wavStream->pos(), wavStream->size(), DisposeAfterUse::YES);
+		} else // Just a regular WAVE
 			wavStream->seek(0);
 
 	} else if ((tag == MKID_BE('BMU ')) && (wavStream->readUint32BE() == MKID_BE('V1.0'))) {
 
 		// BMU files, MP3 with extra header
 		isMP3 = true;
+		wavStream = new Common::SeekableSubReadStream(wavStream, wavStream->pos(), wavStream->size(), DisposeAfterUse::YES);
 
 	} else
-		// Let SDL_sound sort it out
-		wavStream->seek(0);
+		throw Common::Exception("Unknown sound format. If this is Ogg, tell DrMcCoy to add detection.");
+
+	Channel *channel = new Channel;
+
+	if (isMP3) {
+		channel->stream = makeMP3Stream(wavStream, DisposeAfterUse::YES);
+	} else {
+		// TODO: WAVE/OGG
+		throw Common::Exception("TODO: WAVE/Ogg");
+	}
 
 #if 0
 	// This code won't be used in future iterations of the SoundManager, but it is
 	// particularly useful for reference, etc.
-
-	Channel *channel = new Channel;
-	channel->sound = sound;
 	channel->numBuffers = sound->buffer_size / BUFFER_SIZE;
 
 	if (channel->numBuffers % BUFFER_SIZE)
@@ -177,6 +186,7 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 
 	alSourceQueueBuffers(channel->source, channel->numBuffers, channel->buffers);
 	alSourcePlay(channel->source);
+#endif
 
 	for (uint32 i = 0; i < _channels.size(); i++) {
 		if (_channels[i] == 0) {
@@ -187,9 +197,6 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 
 	_channels.push_back(channel);
 	return _channels.size() - 1;
-#endif
-
-	return -1;
 }
 
 void SoundManager::update() {
