@@ -63,7 +63,7 @@ const Exception kReadError("Read error");
 const Exception kSeekError("Seek error");
 
 
-void printException(Exception &e) {
+void printException(Exception &e, const std::string &prefix) {
 	Exception::Stack &stack = e.getStack();
 
 	if (stack.empty()) {
@@ -71,7 +71,7 @@ void printException(Exception &e) {
 		return;
 	}
 
-	status("ERROR: %s", stack.top().c_str());
+	status("%s%s", prefix.c_str(), stack.top().c_str());
 
 	stack.pop();
 

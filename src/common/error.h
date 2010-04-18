@@ -44,7 +44,7 @@ extern const Exception kOpenError;
 extern const Exception kReadError;
 extern const Exception kSeekError;
 
-void printException(Exception &e);
+void printException(Exception &e, const std::string &prefix = "ERROR: ");
 
 } // End of namespace Common
 
