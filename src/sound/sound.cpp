@@ -89,6 +89,61 @@ bool SoundManager::isPlaying(uint32 channel) const {
 	return val == AL_PLAYING;
 }
 
+AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
+	bool isMP3 = false;
+	uint32 tag = stream->readUint32BE();
+
+	if (tag == 0xfff360c4) {
+		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
+		stream = new Common::SeekableSubReadStream(stream, 0x1D6, stream->size(), DisposeAfterUse::YES);
+	} else if (tag == MKID_BE('RIFF')) {
+		stream->seek(12);
+		tag = stream->readUint32BE();
+		if (tag != MKID_BE('fmt ')) {
+			warning("SoundManager::makeAudioStream(): Broken WAVE file");
+			return 0;
+		}
+
+		// Skip fmt chunk
+		stream->skip(stream->readUint32LE());
+		tag = stream->readUint32BE();
+
+		if (tag == MKID_BE('fact')) {
+			// Skip useless chunk and dummied 'data' header
+			stream->skip(stream->readUint32LE());
+			tag = stream->readUint32BE();
+		}
+
+		if (tag != MKID_BE('data')) {
+			warning("SoundManager::makeAudioStream(): Found invalid tag in WAVE file: %x", tag);
+			return 0;
+		}
+
+		uint32 dataSize = stream->readUint32LE();
+		if (dataSize == 0) {
+			isMP3 = true;
+			stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), DisposeAfterUse::YES);
+		} else // Just a regular WAVE
+			stream->seek(0);
+	} else if ((tag == MKID_BE('BMU ')) && (stream->readUint32BE() == MKID_BE('V1.0'))) {
+		// BMU files: MP3 with extra header
+		isMP3 = true;
+		stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), DisposeAfterUse::YES);
+	} else {
+		warning("Unknown sound format. If this is Ogg, tell DrMcCoy to add detection.");
+		return 0;
+	}
+
+	if (isMP3)
+		return makeMP3Stream(stream, DisposeAfterUse::YES);
+
+	// TODO: WAVE/OGG
+	warning("TODO: WAVE/Ogg");
+	delete stream;
+
+	return 0;
+}
+
 int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	if (!_ready)
 		return -1;
@@ -98,68 +153,21 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		return -1;
 	}
 
-	// For now, just ignore any streams until clone2727 gets off his ass
-	// and finishes AudioStream support.
-	delete wavStream;
-	return -1;
-
 	Common::StackLock lock(_mutex);
 
-	bool isMP3 = false;
-	uint32 tag = wavStream->readUint32BE();
-	if (tag == 0xfff360c4) {
-
-		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
-		wavStream = new Common::SeekableSubReadStream(wavStream, 0x1D6, wavStream->size(), DisposeAfterUse::YES);
-
-	} else if (tag == MKID_BE('RIFF')) {
-
-		wavStream->seek(12);
-		tag = wavStream->readUint32BE();
-		if (tag != MKID_BE('fmt ')) {
-			warning("SoundManager::playSoundFile(): Broken WAVE file");
-			return -1;
-		}
-
-		// Skip fmt chunk
-		wavStream->skip(wavStream->readUint32LE());
-		tag = wavStream->readUint32BE();
-
-		if (tag == MKID_BE('fact')) {
-			// Skip useless chunk and dummied 'data' header
-			wavStream->skip(wavStream->readUint32LE());
-			tag = wavStream->readUint32BE();
-		}
-
-		if (tag != MKID_BE('data')) {
-			warning("SoundManager::playSoundFile(): Found invalid tag in WAVE file: %x", tag);
-			return -1;
-		}
-
-		uint32 dataSize = wavStream->readUint32LE();
-		if (dataSize == 0) {
-			isMP3 = true;
-			wavStream = new Common::SeekableSubReadStream(wavStream, wavStream->pos(), wavStream->size(), DisposeAfterUse::YES);
-		} else // Just a regular WAVE
-			wavStream->seek(0);
-
-	} else if ((tag == MKID_BE('BMU ')) && (wavStream->readUint32BE() == MKID_BE('V1.0'))) {
-
-		// BMU files, MP3 with extra header
-		isMP3 = true;
-		wavStream = new Common::SeekableSubReadStream(wavStream, wavStream->pos(), wavStream->size(), DisposeAfterUse::YES);
-
-	} else
-		throw Common::Exception("Unknown sound format. If this is Ogg, tell DrMcCoy to add detection.");
-
 	Channel *channel = new Channel;
+	channel->stream = makeAudioStream(wavStream);
 
-	if (isMP3) {
-		channel->stream = makeMP3Stream(wavStream, DisposeAfterUse::YES);
-	} else {
-		// TODO: WAVE/OGG
-		throw Common::Exception("TODO: WAVE/Ogg");
+	if (!channel->stream) {
+		warning("SoundManager::playSoundFile(): Could not detect stream type");
+		return -1;
 	}
+
+	// For now, just ignore any streams until clone2727 gets off his ass
+	// and finishes AudioStream support.
+	delete channel->stream;
+	delete channel;
+	return -1;
 
 #if 0
 	// This code won't be used in future iterations of the SoundManager, but it is

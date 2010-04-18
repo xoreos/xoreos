@@ -81,8 +81,8 @@ private:
 	void update();
 
 	void freeChannel(uint32 channel);
-
 	void threadMethod();
+	AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
 
 	ALCdevice *_dev;
     ALCcontext *_ctx;
