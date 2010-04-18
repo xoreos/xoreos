@@ -76,6 +76,8 @@ void KotOREngine::run(const std::string &directory) {
 		channel = SoundMan.playSoundFile(wav);
 	}
 
+	playVideo("foo");
+
 	Graphics::Cube *cube = 0;
 
 	try {
@@ -93,8 +95,6 @@ void KotOREngine::run(const std::string &directory) {
 	// Menu
 
 	// Intro: Play 01a.bik
-
-	playVideo("foo");
 
 	Graphics::Font *font = new Graphics::Font("dialogfont32x32");
 	Graphics::Text *text = 0;
