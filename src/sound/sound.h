@@ -38,6 +38,8 @@ namespace Common {
 
 namespace Sound {
 
+class AudioStream;
+
 /** The sound manager. */
 class SoundManager : public Common::Singleton<SoundManager>, public Common::Thread {
 public:
@@ -63,6 +65,7 @@ public:
 
 private:
 	struct Channel {
+		AudioStream *stream;
 		ALuint source;
 		ALuint numBuffers;
 		ALuint *buffers;
