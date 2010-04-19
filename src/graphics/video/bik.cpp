@@ -12,6 +12,8 @@
  *  Decoding RAD Game Tools' Bink videos.
  */
 
+#include <cmath>
+
 #include "common/util.h"
 #include "common/error.h"
 #include "common/stream.h"
@@ -25,13 +27,23 @@ static const uint32 kBIKgID = MKID_BE('BIKg');
 static const uint32 kBIKhID = MKID_BE('BIKh');
 static const uint32 kBIKiID = MKID_BE('BIKi');
 
+static const uint32 kVideoFlagAlpha = 0x00100000;
+
 namespace Graphics {
 
 BIK::BIK(Common::SeekableReadStream *bik) : _bik(bik), _curFrame(0) {
+	for (int i = 0; i < kSourceMAX; i++) {
+		_bundles[i].data    = 0;
+		_bundles[i].dataEnd = 0;
+		_bundles[i].curDec  = 0;
+		_bundles[i].curPtr  = 0;
+	}
+
 	load();
 }
 
 BIK::~BIK() {
+	freeBundles();
 }
 
 bool BIK::gotTime() const {
@@ -129,6 +141,51 @@ void BIK::load() {
 		it->offset &= ~1;
 	}
 
+	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
+	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID);
+
+	initBundles();
+}
+
+void BIK::initBundles() {
+	uint32 bw = (_width  + 7) >> 3;
+	uint32 bh = (_height + 7) >> 3;
+
+	uint32 blocks = bw * bh;
+
+	for (int i = 0; i < kSourceMAX; i++) {
+		_bundles[i].data    = new byte[blocks * 64];
+		_bundles[i].dataEnd = _bundles[i].data + blocks * 64;
+	}
+}
+
+void BIK::freeBundles() {
+	for (int i = 0; i < kSourceMAX; i++) {
+		delete[] _bundles[i].data;
+
+		_bundles[i].data    = 0;
+		_bundles[i].dataEnd = 0;
+		_bundles[i].curDec  = 0;
+		_bundles[i].curPtr  = 0;
+	}
+}
+
+// TODO: Don't use the standard slow log2()?
+void BIK::initLengths(uint32 width, uint32 bw) {
+	_bundles[kSourceBlockTypes].length    = log2((width >> 3)    + 511) + 1;
+
+	_bundles[kSourceSubBlockTypes].length = log2((width >> 4)    + 511) + 1;
+
+	_bundles[kSourceColors].length        = log2((width >> 3)*64 + 511) + 1;
+
+	_bundles[kSourceIntraDC].length       = log2((width >> 3)    + 511) + 1;
+	_bundles[kSourceInterDC].length       = log2((width >> 3)    + 511) + 1;
+	_bundles[kSourceXOff].length          = log2((width >> 3)    + 511) + 1;
+	_bundles[kSourceYOff].length          = log2((width >> 3)    + 511) + 1;
+
+	_bundles[kSourcePattern].length       = log2((bw    << 3)    + 511) + 1;
+
+	_bundles[kSourceRun].length           = log2((width >> 3)*48 + 511) + 1;
 }
 
 } // End of namespace Graphics
