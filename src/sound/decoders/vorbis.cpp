@@ -52,13 +52,6 @@ static ov_callbacks g_stream_wrap = {
 	read_stream_wrap, seek_stream_wrap, close_stream_wrap, tell_stream_wrap
 };
 
-
-
-#pragma mark -
-#pragma mark --- Ogg Vorbis stream ---
-#pragma mark -
-
-
 class VorbisStream : public RewindableAudioStream {
 protected:
 	Common::SeekableReadStream *_inStream;
@@ -191,11 +184,6 @@ bool VorbisStream::refill() {
 
 	return true;
 }
-
-
-#pragma mark -
-#pragma mark --- Ogg Vorbis factory functions ---
-#pragma mark -
 
 RewindableAudioStream *makeVorbisStream(
 	Common::SeekableReadStream *stream,

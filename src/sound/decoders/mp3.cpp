@@ -22,12 +22,6 @@
 
 namespace Sound {
 
-
-#pragma mark -
-#pragma mark --- MP3 (MAD) stream ---
-#pragma mark -
-
-
 class MP3Stream : public RewindableAudioStream {
 protected:
 	enum State {
@@ -300,11 +294,6 @@ int MP3Stream::readBuffer(int16 *buffer, const int numSamples) {
 	}
 	return samples;
 }
-
-
-#pragma mark -
-#pragma mark --- MP3 factory functions ---
-#pragma mark -
 
 RewindableAudioStream *makeMP3Stream(
 	Common::SeekableReadStream *stream,

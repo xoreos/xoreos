@@ -14,10 +14,6 @@
 
 namespace Sound {
 
-#pragma mark -
-#pragma mark --- LoopingAudioStream ---
-#pragma mark -
-
 LoopingAudioStream::LoopingAudioStream(RewindableAudioStream *stream, uint loops, DisposeAfterUse::Flag disposeAfterUse)
     : _parent(stream), _disposeAfterUse(disposeAfterUse), _loops(loops), _completeIterations(0) {
 }
