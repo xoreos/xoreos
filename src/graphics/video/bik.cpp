@@ -44,6 +44,8 @@ BIK::BIK(Common::SeekableReadStream *bik) : _bik(bik), _curFrame(0) {
 
 BIK::~BIK() {
 	freeBundles();
+
+	delete _bik;
 }
 
 bool BIK::gotTime() const {
