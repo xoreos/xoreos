@@ -6,7 +6,8 @@ noinst_HEADERS = decoder.h \
                  player.h \
                  bik.h \
                  fader.h \
-                 get_bits.h
+                 get_bits.h \
+                 binkdata.h
 
 libvideo_la_SOURCES = decoder.cpp \
                       player.cpp \
