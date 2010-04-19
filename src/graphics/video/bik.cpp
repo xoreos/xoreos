@@ -70,16 +70,38 @@ void BIK::processData() {
 		return;
 	}
 
-	if (!_bik->seek(_frames[_curFrame].offset))
+	VideoFrame &frame = _frames[_curFrame];
+
+	if (!_bik->seek(frame.offset))
 		throw Common::Exception(Common::kSeekError);
 
-	uint32 audioPacketLength = _bik->readUint32LE();
-	if (audioPacketLength != 0) {
-		audioPacket();
-		_bik->skip(audioPacketLength);
+	uint32 frameSize = frame.size;
+
+	byte *frameData = new byte[frameSize];
+	if (_bik->read(frameData, frameSize) != frameSize)
+		throw Common::Exception(Common::kReadError);
+
+	frame.data     = frameData;
+	frame.dataSize = frameSize;
+
+	for (std::vector<AudioTrack>::iterator audio = _audioTracks.begin(); audio != _audioTracks.end(); ++audio) {
+		uint32 audioPacketLength = READ_LE_UINT32(frame.data);
+
+		frame.data     += 4;
+		frame.dataSize -= 4;
+
+		if (audioPacketLength != 0) {
+			audio->data     = frame.data;
+			audio->dataSize = audioPacketLength;
+
+			frame.data     += audioPacketLength;
+			frame.dataSize -= audioPacketLength;
+
+			audioPacket(*audio);
+		}
 	}
 
-	videoPacket();
+	videoPacket(frame);
 
 	_needCopy = true;
 
@@ -88,10 +110,10 @@ void BIK::processData() {
 	_curFrame++;
 }
 
-void BIK::audioPacket() {
+void BIK::audioPacket(AudioTrack &audio) {
 }
 
-void BIK::videoPacket() {
+void BIK::videoPacket(VideoFrame &video) {
 }
 
 void BIK::load() {
@@ -144,6 +166,9 @@ void BIK::load() {
 
 		if (i != 0)
 			_frames[i - 1].size = _frames[i].offset - _frames[i - 1].offset;
+
+		_frames[i].data     = 0;
+		_frames[i].dataSize = 0;
 	}
 
 	_frames[frameCount - 1].size = _bik->size() - _frames[frameCount - 1].offset;

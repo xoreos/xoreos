@@ -86,13 +86,20 @@ private:
 	struct AudioTrack {
 		uint16 sampleRate;
 		uint16 flags;
+
+		byte  *data;
+		uint32 dataSize;
 	};
 
 	/** A video frame. */
 	struct VideoFrame {
 		bool keyFrame;
+
 		uint32 offset;
 		uint32 size;
+
+		byte  *data;
+		uint32 dataSize;
 	};
 
 	Common::SeekableReadStream *_bik;
@@ -120,9 +127,9 @@ private:
 	void load();
 
 	/** Decode an audio packet. */
-	void audioPacket();
+	void audioPacket(AudioTrack &audio);
 	/** Decode a video packet. */
-	void videoPacket();
+	void videoPacket(VideoFrame &video);
 
 	/** Allocates memory for bundles. */
 	void initBundles();
