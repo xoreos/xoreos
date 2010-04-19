@@ -92,6 +92,7 @@ private:
 	struct VideoFrame {
 		bool keyFrame;
 		uint32 offset;
+		uint32 size;
 	};
 
 	Common::SeekableReadStream *_bik;

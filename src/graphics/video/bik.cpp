@@ -134,12 +134,17 @@ void BIK::load() {
 	}
 
 	_frames.resize(frameCount);
-	for (std::vector<VideoFrame>::iterator it = _frames.begin(); it != _frames.end(); ++it) {
-		it->offset   = _bik->readUint32LE();
-		it->keyFrame = it->offset & 1;
+	for (uint32 i = 0; i < frameCount; i++) {
+		_frames[i].offset   = _bik->readUint32LE();
+		_frames[i].keyFrame = _frames[i].offset & 1;
 
-		it->offset &= ~1;
+		_frames[i].offset &= ~1;
+
+		if (i != 0)
+			_frames[i - 1].size = _frames[i].offset - _frames[i - 1].offset;
 	}
+
+	_frames[frameCount - 1].size = _bik->size() - _frames[frameCount - 1].offset;
 
 	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
 	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID);
