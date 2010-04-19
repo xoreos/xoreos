@@ -166,47 +166,22 @@ int SoundManager::playAudioStream(AudioStream *audStream) {
 		warning("SoundManager::playAudioStream(): Could not detect stream type");
 		return -1;
 	}
-	
-	// If sound is problematic for whatever reason, just enable this code.
-#if 0
-	delete channel->stream;
-	delete channel;
-	return -1;
-#endif
 
+	// Create the source and buffers and then begin playing the sound.
 	alGenSources(1, &channel->source);
 
-	// OK, here's where the major hacking begins. Actually streaming the audio isn't supported
-	// yet, so we're just copying the decoded data into the alBuffers. Of course, we don't
-	// have the total length of the audio stream, so I use a std::vector hack to get the
-	// number of buffers. Everything from here down to the alSourcePlay() call will be changed
-	// really soon. But, I'd rather have *some* sound than *no* sound.
+	channel->buffers = new ALuint[NUM_OPENAL_BUFFERS];
+	alGenBuffers(NUM_OPENAL_BUFFERS, channel->buffers);
 
-	std::vector<ALuint> bufferArray;
-	uint32 numSamples = BUFFER_SIZE / 2;
+	// Fill the initial buffers with data.
+	for (int i = 0; i < NUM_OPENAL_BUFFERS; i++)
+		fillBuffer(channel->source, channel->buffers[i], channel->stream);
 
-	if (channel->stream->isStereo())
-		numSamples /= 2;
-
-	byte *buffer = new byte[BUFFER_SIZE];
-	memset(buffer, 0, BUFFER_SIZE);
-
-	while (!channel->stream->endOfData()) {
-		ALuint alBuffer;
-		channel->stream->readBuffer((int16 *)buffer, numSamples);
-		alGenBuffers(1, &alBuffer);
-		alBufferData(alBuffer, channel->stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, BUFFER_SIZE, channel->stream->getRate());
-		bufferArray.push_back(alBuffer);
-	}
+	alSourceQueueBuffers(channel->source, NUM_OPENAL_BUFFERS, channel->buffers);
+	alSourcePlay(channel->source);
 
 	if (alGetError() != AL_NO_ERROR)
-		throw Common::Exception("AL Error of some sort");
-
-	channel->numBuffers = bufferArray.size();
-	channel->buffers = &bufferArray[0];
-
-	alSourceQueueBuffers(channel->source, channel->numBuffers, channel->buffers);
-	alSourcePlay(channel->source);
+		throw Common::Exception("OpenAL error while attempting to play");
 
 	for (uint32 i = 0; i < _channels.size(); i++) {
 		if (_channels[i] == 0) {
@@ -231,15 +206,74 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 	return playAudioStream(makeAudioStream(wavStream));
 }
 
+void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
+	if (!stream)
+		throw Common::Exception("SoundManager::fillBuffer(): stream is 0");
+
+	if (stream->endOfData())
+		return;
+
+	// Read in the required amount of samples
+	uint32 numSamples = BUFFER_SIZE / 2;
+
+	if (stream->isStereo())
+		numSamples /= 2;
+
+	byte *buffer = new byte[BUFFER_SIZE];
+	memset(buffer, 0, BUFFER_SIZE);
+	stream->readBuffer((int16 *)buffer, numSamples);
+
+	alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, BUFFER_SIZE, stream->getRate());
+
+	if (alGetError() != AL_NO_ERROR)
+		throw Common::Exception("OpenAL error while filling buffer");
+}
+
+void SoundManager::bufferData(uint32 channel) {
+	if (!_channels[channel])
+		return;
+
+	bufferData(_channels[channel]);
+}
+
+void SoundManager::bufferData(Channel *channel) {
+	if (!channel || !channel->stream || channel->stream->endOfData())
+		return;
+
+	// Here we check how many buffers have been processed by OpenAL.
+	// If we have any that haven't been processed, fill them with
+	// more data from the AudioStream.
+
+	ALint buffersProcessed = 0;
+	alGetSourcei(channel->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
+
+	if (buffersProcessed <= 0)
+		return;
+
+	while (buffersProcessed--) {
+		// Pull off the unused buffer from the queue, fill it, and throw it back on
+		ALuint alBuffer;
+		alSourceUnqueueBuffers(channel->source, 1, &alBuffer);
+		fillBuffer(channel->source, alBuffer, channel->stream);
+		alSourceQueueBuffers(channel->source, 1, &alBuffer);
+	}
+}
+
 void SoundManager::update() {
 	Common::StackLock lock(_mutex);
 
 	for (uint i = 0; i < _channels.size(); i++) {
-		if (!_channels[i])
+		if (!_channels[i] || !_channels[i]->stream)
 			continue;
 
-		if (!isPlaying(i))
+		// Free the channel if it is no longer playing
+		if (!isPlaying(i)) {
 			freeChannel(i);
+			continue;
+		}
+
+		// Try to buffer some more data
+		bufferData(i);
 	}
 }
 
@@ -251,7 +285,8 @@ void SoundManager::freeChannel(uint32 channel) {
 
 	delete c->stream;
 	alDeleteSources(1, &c->source);
-	alDeleteBuffers(c->numBuffers, c->buffers);
+	alDeleteBuffers(NUM_OPENAL_BUFFERS, c->buffers);
+	delete[] c->buffers;
 
 	delete c;
 	_channels[channel] = 0;

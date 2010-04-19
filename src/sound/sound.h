@@ -38,6 +38,10 @@ namespace Common {
 
 namespace Sound {
 
+// Control how many buffers per sound OpenAL will create
+// clone2727 says: 5 is just a safe number. Mine only reached a max of 2.
+#define NUM_OPENAL_BUFFERS 5
+
 class AudioStream;
 
 /** The sound manager. */
@@ -74,7 +78,6 @@ private:
 	struct Channel {
 		AudioStream *stream;
 		ALuint source;
-		ALuint numBuffers;
 		ALuint *buffers;
 	};
 
@@ -86,6 +89,11 @@ private:
 
 	/** Update the sound information. Called regularily from within the thread method. */
 	void update();
+
+	/** Buffer more sound from the channel to the OpenAL buffers. */
+	void bufferData(Channel *channel);
+	void bufferData(uint32 channel);
+	void fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream);
 
 	void freeChannel(uint32 channel);
 	void threadMethod();
