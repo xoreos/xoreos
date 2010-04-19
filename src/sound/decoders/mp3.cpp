@@ -8,6 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+// Largely based on the MP3 implementation found in ScummVM.
+
 #include "sound/decoders/mp3.h"
 
 #include "common/stream.h"

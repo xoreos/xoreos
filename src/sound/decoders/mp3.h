@@ -8,6 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+// Largely based on the MP3 implementation found in ScummVM.
+
 #ifndef SOUND_DECODERS_MP3_H
 #define SOUND_DECODERS_MP3_H
 

@@ -8,6 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+// Largely based on the AudioStream implementation found in ScummVM.
+
 #include "sound/audiostream.h"
 
 namespace Sound {

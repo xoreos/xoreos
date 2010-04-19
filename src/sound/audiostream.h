@@ -8,6 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+// Largely based on the AudioStream implementation found in ScummVM.
+
 #ifndef SOUND_AUDIOSTREAM_H
 #define SOUND_AUDIOSTREAM_H
 

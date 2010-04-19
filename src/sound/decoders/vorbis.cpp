@@ -8,6 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+// Largely based on the Ogg Vorbis implementation found in ScummVM.
+
 #include "sound/decoders/vorbis.h"
 
 #include "common/stream.h"

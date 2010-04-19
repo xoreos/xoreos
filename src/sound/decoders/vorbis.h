@@ -8,6 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+// Largely based on the Ogg Vorbis implementation found in ScummVM.
+
 #ifndef SOUND_DECODERS_VORBIS_H
 #define SOUND_DECODERS_VORBIS_H
 
