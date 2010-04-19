@@ -65,6 +65,9 @@ private:
 	std::vector<VideoFrame> _frames;
 
 	void load();
+
+	void audioPacket();
+	void videoPacket();
 };
 
 } // End of namespace Graphics

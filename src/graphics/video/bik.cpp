@@ -56,11 +56,28 @@ void BIK::processData() {
 		return;
 	}
 
+	if (!_bik->seek(_frames[_curFrame].offset))
+		throw Common::Exception(Common::kSeekError);
+
+	uint32 audioPacketLength = _bik->readUint32LE();
+	if (audioPacketLength != 0) {
+		audioPacket();
+		_bik->skip(audioPacketLength);
+	}
+
+	videoPacket();
+
 	_needCopy = true;
 
-	warning("Frame %d / %d", _curFrame, _frames.size());
+	warning("Frame %d / %d", _curFrame, (int) _frames.size());
 
 	_curFrame++;
+}
+
+void BIK::audioPacket() {
+}
+
+void BIK::videoPacket() {
 }
 
 void BIK::load() {
