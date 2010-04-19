@@ -16,6 +16,7 @@
 #include "sound/audiostream.h"
 #include "sound/decoders/mp3.h"
 #include "sound/decoders/vorbis.h"
+#include "sound/decoders/wave.h"
 
 #include "common/stream.h"
 #include "common/util.h"
@@ -141,11 +142,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 	if (isMP3)
 		return makeMP3Stream(stream, DisposeAfterUse::YES);
 
-	// TODO: WAVE/OGG
-	warning("TODO: WAVE/Ogg");
-	delete stream;
-
-	return 0;
+	return makeWAVStream(stream, DisposeAfterUse::YES);
 }
 
 int SoundManager::playAudioStream(AudioStream *audStream) {

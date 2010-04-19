@@ -4,8 +4,11 @@ noinst_LTLIBRARIES = libdecoders.la
 
 noinst_HEADERS = mp3.h \
                  vorbis.h \
-                 adpcm.h
+                 adpcm.h \
+                 wave.h \
+                 pcm.h
 
 libdecoders_la_SOURCES = mp3.cpp \
                          vorbis.cpp \
-                         adpcm.cpp
+                         adpcm.cpp \
+                         wave.cpp
