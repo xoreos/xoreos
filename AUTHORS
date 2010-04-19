@@ -19,5 +19,6 @@ Bink
 
 ScummVM code
 ************
-   eos uses some ScummVM code. For copyright information, please visit the
+   eos uses some ScummVM code, most prominently the endian, singleton, stream
+   and audio stream code. For copyright information, please visit the
    ScummVM website <http://scummvm.org/>.
