@@ -103,6 +103,8 @@ void BIK::processData() {
 
 	videoPacket(frame);
 
+	delete[] frameData;
+
 	_needCopy = true;
 
 	warning("Frame %d / %d", _curFrame, (int) _frames.size());
