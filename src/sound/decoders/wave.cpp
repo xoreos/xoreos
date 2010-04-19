@@ -154,27 +154,15 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, Dispose
 		return 0;
 	}
 
+	Common::SeekableSubReadStream *subStream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), disposeAfterUse);
+
 	if (type == 17) // MS IMA ADPCM
-		return makeADPCMStream(stream, disposeAfterUse, size, kADPCMMSIma, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
+		return makeADPCMStream(subStream, DisposeAfterUse::YES, size, kADPCMMSIma, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
 	else if (type == 2) // MS ADPCM
-		return makeADPCMStream(stream, disposeAfterUse, size, kADPCMMS, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
+		return makeADPCMStream(subStream, DisposeAfterUse::YES, size, kADPCMMS, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
 
-	// TODO
-#if 0
-	// Raw PCM. Just read everything at once.
-	// TODO: More elegant would be to wrap the stream.
-	byte *data = (byte *)malloc(size);
-	assert(data);
-	stream->read(data, size);
-
-	if (disposeAfterUse == DisposeAfterUse::YES)
-		delete stream;
-
-	return makeRawStream(data, size, rate, flags);
-#endif
-
-	warning("PCM in WAVE files not yet supported. Tell clone2727 to get off his ass and finish that.");
-	return 0;
+	// Raw PCM
+	return makePCMStream(subStream, rate, flags, DisposeAfterUse::YES);
 }
 
 } // End of namespace Sound

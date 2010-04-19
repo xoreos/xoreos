@@ -11,4 +11,5 @@ noinst_HEADERS = mp3.h \
 libdecoders_la_SOURCES = mp3.cpp \
                          vorbis.cpp \
                          adpcm.cpp \
-                         wave.cpp
+                         wave.cpp \
+                         pcm.cpp

@@ -38,7 +38,6 @@ enum PCMFlags {
 	FLAG_STEREO = 1 << 3
 };
 
-#if 0
 /**
  * Creates an audio stream, which plays from the given stream.
  *
@@ -49,10 +48,9 @@ enum PCMFlags {
  * @param disposeAfterUse Whether to delete the stream after use.
  * @return The new SeekableAudioStream (or 0 on failure).
  */
-RewindableAudioStream *makeRawStream(Common::SeekableReadStream *stream,
+RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
                                    int rate, byte flags,
                                    DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
-#endif
 
 } // End of namespace Sound
 
