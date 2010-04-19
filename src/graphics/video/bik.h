@@ -19,6 +19,9 @@
 
 #include "graphics/video/decoder.h"
 
+#define ALT_BITSTREAM_READER_LE
+#include "graphics/video/get_bits.h"
+
 namespace Common {
 	class SeekableReadStream;
 }
@@ -124,12 +127,17 @@ private:
 
 	Bundle _bundles[kSourceMAX]; ///< Bundles for decoding all data types.
 
+	VLC _trees[16];
+	VLC_TYPE _table[16 * 128][2];
+
 	void load();
 
 	/** Decode an audio packet. */
 	void audioPacket(AudioTrack &audio);
 	/** Decode a video packet. */
 	void videoPacket(VideoFrame &video);
+
+	void initTrees();
 
 	/** Allocates memory for bundles. */
 	void initBundles();

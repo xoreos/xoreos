@@ -19,6 +19,7 @@
 #include "common/stream.h"
 
 #include "graphics/video/bik.h"
+#include "graphics/video/binkdata.h"
 
 #include "events/events.h"
 
@@ -116,6 +117,8 @@ void BIK::audioPacket(AudioTrack &audio) {
 }
 
 void BIK::videoPacket(VideoFrame &video) {
+	uint32 bitCount = video.dataSize << 3;
+
 }
 
 void BIK::load() {
@@ -178,7 +181,22 @@ void BIK::load() {
 	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
 	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID);
 
+	initTrees();
 	initBundles();
+}
+
+void BIK::initTrees() {
+	if (!_trees[15].table) {
+		for (int i = 0; i < 16; i++) {
+			const int maxbits = binkTreeLens[i][15];
+			_trees[i].table = _table + i*128;
+			_trees[i].table_allocated = 1 << maxbits;
+			init_vlc(&_trees[i], maxbits, 16,
+			         binkTreeLens[i], 1, 1,
+			         binkTreeBits[i], 1, 1,
+			         INIT_VLC_USE_NEW_STATIC | INIT_VLC_LE);
+		}
+	}
 }
 
 void BIK::initBundles() {
