@@ -20,8 +20,6 @@
 
 #include "events/events.h"
 
-static const uint32 kBIKbID = MKID_BE('BIKb');
-static const uint32 kBIKdID = MKID_BE('BIKd');
 static const uint32 kBIKfID = MKID_BE('BIKf');
 static const uint32 kBIKgID = MKID_BE('BIKg');
 static const uint32 kBIKhID = MKID_BE('BIKh');
@@ -67,8 +65,7 @@ void BIK::processData() {
 
 void BIK::load() {
 	_id = _bik->readUint32BE();
-	if ((_id != kBIKbID) && (_id != kBIKdID) && (_id != kBIKfID) &&
-	    (_id != kBIKgID) && (_id != kBIKhID) && (_id != kBIKiID))
+	if ((_id != kBIKfID) && (_id != kBIKgID) && (_id != kBIKhID) && (_id != kBIKiID))
 		throw Common::Exception("Unknown BIK FourCC %04X", _id);
 
 	uint32 fileSize         = _bik->readUint32LE() + 8;
