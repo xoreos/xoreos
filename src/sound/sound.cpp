@@ -221,9 +221,11 @@ void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 
 	byte *buffer = new byte[BUFFER_SIZE];
 	memset(buffer, 0, BUFFER_SIZE);
-	stream->readBuffer((int16 *)buffer, numSamples);
+	numSamples = stream->readBuffer((int16 *)buffer, numSamples);
 
-	alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, BUFFER_SIZE, stream->getRate());
+	uint32 bufferSize = numSamples * 2 * (stream->isStereo() ? 2 : 1);
+
+	alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, bufferSize, stream->getRate());
 
 	if (alGetError() != AL_NO_ERROR)
 		throw Common::Exception("OpenAL error while filling buffer");
