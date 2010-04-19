@@ -19,6 +19,7 @@ noinst_HEADERS = system.h \
                  file.h \
                  filepath.h \
                  filelist.h \
+                 bitstream.h \
                  config-file.h \
                  zipfile.h
 
@@ -34,5 +35,6 @@ libcommon_la_SOURCES = thread.cpp \
                        file.cpp \
                        filepath.cpp \
                        filelist.cpp \
+                       bitstream.cpp \
                        config-file.cpp \
                        zipfile.cpp
