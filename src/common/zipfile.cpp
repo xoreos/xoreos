@@ -60,14 +60,22 @@ ZipFile::ZipFile(SeekableReadStream *stream) {
 				_stream->skip(4 + _stream->readUint32LE());
 			}
 
-			// Convert to lowercase for simple comparisons later
-			boost::to_lower(filename);
+			// HACK: Skip any filename with a trailing slash because it's
+			// a directory. The proper solution would be to dump this code
+			// and read from the central directory and interpret the external
+			// file attributes. Since neither DrMcCoy nor I want to do this,
+			// we're sticking with this hack.
 
-			// Add it to our file list
-			_fileList.push_front(filename);
+			if (filename[filename.size() - 1] != '/') {
+				// Convert to lowercase for simple comparisons later
+				boost::to_lower(filename);
 
-			// Add it to the map as well
-			_fileMap[filename] = fileRecord;
+				// Add it to our file list
+				_fileList.push_front(filename);
+
+				// Add it to the map as well
+				_fileMap[filename] = fileRecord;
+			}
 		} else
 			throw Exception("Unknown Zip file chunk");
 
