@@ -18,7 +18,8 @@ noinst_HEADERS = system.h \
                  file.h \
                  filepath.h \
                  filelist.h \
-                 config-file.h
+                 config-file.h \
+                 zipfile.h
 
 libcommon_la_SOURCES = thread.cpp \
                        mutex.cpp \
@@ -31,4 +32,5 @@ libcommon_la_SOURCES = thread.cpp \
                        file.cpp \
                        filepath.cpp \
                        filelist.cpp \
-                       config-file.cpp
+                       config-file.cpp \
+                       zipfile.cpp
