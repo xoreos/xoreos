@@ -17,6 +17,10 @@
 #include "common/util.h"
 #include "common/filelist.h"
 
+#include "sound/sound.h"
+
+#include "events/events.h"
+
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
@@ -67,6 +71,19 @@ void NWN2Engine::run(const std::string &directory) {
 	playVideo("wotclogo");
 	playVideo("nvidialogo");
 	playVideo("legal");
+
+	int channel = -1;
+
+	Common::SeekableReadStream *wav = ResMan.getMusic("mus_mulsantir");
+	if (wav) {
+		status("Found a wav. Trying to play it. Turn up your speakers");
+		channel = SoundMan.playSoundFile(wav);
+	}
+
+	while (!EventMan.quitRequested()) {
+		EventMan.delay(10);
+	}
+
 }
 
 void NWN2Engine::init() {
