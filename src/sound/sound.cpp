@@ -142,7 +142,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		stream->seek(0);
 		return makeVorbisStream(stream, DisposeAfterUse::YES);
 	} else {
-		warning("Unknown sound format.");
+		warning("Unknown sound format");
 		return 0;
 	}
 
@@ -198,7 +198,7 @@ int SoundManager::playAudioStream(AudioStream *audStream) {
 	return _channels.size() - 1;
 }
 
-int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
+int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream, bool loop) {
 	if (!_ready)
 		return -1;
 
@@ -207,7 +207,20 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream) {
 		return -1;
 	}
 
-	return playAudioStream(makeAudioStream(wavStream));
+	AudioStream *audioStream = makeAudioStream(wavStream);
+
+	if (!audioStream)
+		return -1;
+
+	if (loop) {
+		RewindableAudioStream *reAudStream = dynamic_cast<RewindableAudioStream *>(audioStream);
+		if (!reAudStream)
+			warning("SoundManager::playSoundFile(): The input stream cannot be rewound, this will not loop.");
+		else
+			audioStream = makeLoopingAudioStream(reAudStream, 0);
+	}
+
+	return playAudioStream(audioStream);
 }
 
 void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
