@@ -76,6 +76,9 @@ void ResourceManager::clear() {
 	_bifs.clear();
 	_erfs.clear();
 	_rims.clear();
+
+	for (ResZipList::iterator zip = _zips.begin(); zip != _zips.end(); ++zip)
+		delete *zip;
 	_zips.clear();
 
 	_baseDir.clear();
@@ -531,24 +534,24 @@ ResourceManager::ChangeID ResourceManager::addZIP(const std::string &zip, uint32
 	if (!zipFile->open(zipFileName))
 		throw Common::Exception(Common::kOpenError);
 
-	Common::ZipFile zipIndex(zipFile);
+	Common::ZipFile *zipIndex = new Common::ZipFile(zipFile);
 
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
 
-	_zips.push_back(zipFileName);
+	_zips.push_back(zipIndex);
 
 	// Add the information of the new ZIP to the change set
 	change->zips.push_back(--_zips.end());
 
-	const Common::ZipFile::FileList &files = zipIndex.getFileList();
+	const Common::ZipFile::FileList &files = zipIndex->getFileList();
 	for (Common::ZipFile::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
 		// Build the resource record
 		Resource res;
 		res.priority = priority;
 		res.source   = kSourceZIP;
-		res.resFile  = --_zips.end();
+		res.resZip   = --_zips.end();
 		res.type     = getFileType(*file);
 		res.path     = *file;
 
@@ -592,8 +595,10 @@ void ResourceManager::undo(ChangeID &change) {
 		_rims.erase(*rimChange);
 
 	// Removing all changes in the ZIP list
-	for (std::list<ResFileList::iterator>::iterator zipChange = change->zips.begin(); zipChange != change->zips.end(); ++zipChange)
+	for (std::list<ResZipList::iterator>::iterator zipChange = change->zips.begin(); zipChange != change->zips.end(); ++zipChange) {
+		delete **zipChange;
 		_zips.erase(*zipChange);
+	}
 
 	// Now we can remove the change set from our list of change sets
 	_changes.erase(change);
@@ -641,16 +646,10 @@ Common::SeekableReadStream *ResourceManager::getOffResFile(const Resource &res) 
 }
 
 Common::SeekableReadStream *ResourceManager::getZipResFile(const Resource &res) const {
-	if (res.resFile == _bifs.end())
+	if ((res.resZip == _zips.end() || !*res.resZip))
 		return 0;
 
-	Common::File *file = new Common::File;
-	if (!file->open(*res.resFile))
-		return 0;
-
-	Common::ZipFile zip(file);
-
-	return zip.open(res.path);
+	return (*res.resZip)->open(res.path);
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
@@ -785,6 +784,7 @@ void ResourceManager::addResources(const Common::FileList &files, ChangeID &chan
 		res.path     = *file;
 		res.type     = getFileType(*file);
 		res.resFile  = _bifs.end();
+		res.resZip   = _zips.end();
 		res.offset   = 0xFFFFFFFF;
 		res.size     = 0xFFFFFFFF;
 

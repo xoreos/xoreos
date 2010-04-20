@@ -29,6 +29,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class ZipFile;
 }
 
 namespace Aurora {
@@ -44,6 +45,8 @@ class ResourceManager : public Common::Singleton<ResourceManager> {
 private:
 	typedef std::list<std::string> ResFileList;
 	typedef ResFileList::const_iterator ResFileRef;
+	typedef std::list<Common::ZipFile *> ResZipList;
+	typedef ResZipList::const_iterator ResZipRef;
 
 	/** Where a resource can be found. */
 	enum Source {
@@ -62,10 +65,13 @@ private:
 
 		Source source; ///< Where can the resource be found?
 
-		// For kSourceBIF / kSourceERF / kSourceRIM / kSourceZIP
-		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM/ZIP list.
+		// For kSourceBIF / kSourceERF / kSourceRIM
+		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM list.
 		uint32 offset;      ///< The offset within the BIF/ERF/RIM file.
 		uint32 size;        ///< The size of the resource data.
+
+		// For kSourceZIP
+		ResZipRef resZip; ///< Iterator into the ZIP list.
 
 		// For kSourceFile / kSourceZIP
 		std::string path; ///< The file's path.
@@ -90,7 +96,7 @@ private:
 		std::list<ResFileList::iterator> bifs;
 		std::list<ResFileList::iterator> erfs;
 		std::list<ResFileList::iterator> rims;
-		std::list<ResFileList::iterator> zips;
+		std::list<ResZipList::iterator>  zips;
 		std::list<ResourceChange>        resources;
 	};
 
@@ -267,7 +273,7 @@ private:
 	ResFileList _bifs;
 	ResFileList _erfs;
 	ResFileList _rims;
-	ResFileList _zips;
+	ResZipList  _zips;
 	ResourceMap _resources;
 
 	ChangeSetList _changes;
