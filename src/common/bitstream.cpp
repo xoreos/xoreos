@@ -38,6 +38,11 @@ uint64 BitStream::getBits(int n) {
 	return v;
 }
 
+void BitStream::skip(uint32 n) {
+	while (n-- > 0)
+		getBit();
+}
+
 
 BitStreamBE::BitStreamBE(SeekableReadStream &stream, uint32 bitCount) : _value(0), _inValue(0) {
 	if ((bitCount % 8) != 0)

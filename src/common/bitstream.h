@@ -30,6 +30,9 @@ public:
 	/** Read a number of bits. */
 	uint64 getBits(int n);
 
+	/** Skip a number of bits. */
+	void skip(uint32 n);
+
 	/** Get the current position. */
 	virtual uint32 pos()  const = 0;
 	/** Return the number of bits in the stream. */
