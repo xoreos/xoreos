@@ -10,7 +10,7 @@
 
 #include "boost/algorithm/string.hpp"
 
-#include "common/error.h";
+#include "common/error.h"
 #include "common/stream.h"
 #include "common/zipfile.h"
 
