@@ -151,6 +151,9 @@ public:
 	/** Return the list of RIM files found in the base data directory. */
 	const Common::FileList &getRIMList() const;
 
+	/** Return the list of ZIP files found in the base data directory. */
+	const Common::FileList &getZIPList() const;
+
 	/** Load a KEY index.
 	 *
 	 *  Add all resources found in the KEY and its BIFs to the manager.
@@ -176,6 +179,14 @@ public:
 	 *  @return An ID for all collective changes done by loading the RIM.
 	 */
 	ChangeID addRIM(const std::string &rim, uint32 priority = 100);
+
+	/** Add resources found in the ZIP file to the manager.
+	 *
+	 *  @param  zip The name of the ZIP file within a valid ZIP directory in the base dir.
+	 *  @param  priority The priority the resources have over others of the same name and type.
+	 *  @return An ID for all collective changes done by loading the ZIP.
+	 */
+	ChangeID addZIP(const std::string &zip, uint32 priority = 100);
 
 	/** Undo the changes done in the specified change ID. */
 	void undo(ChangeID &change);
@@ -266,6 +277,7 @@ private:
 	std::string _hakDir;      ///< The data directory for .hak files.
 	std::string _textureDir;  ///< The data directory for textures-related files.
 	std::string _rimDir;      ///< The data directory for .rim files.
+	std::string _zipDir;      ///< The data directory for .zip files.
 
 	std::vector<std::string> _bifSourceDir; ///< All directories containing BIFs.
 
@@ -273,6 +285,7 @@ private:
 	Common::FileList _bifFiles; ///< List of all BIF files in the base directory.
 	Common::FileList _erfFiles; ///< List of all ERF files in the base directory.
 	Common::FileList _rimFiles; ///< List of all RIM files in the base directory.
+	Common::FileList _zipFiles; ///< List of all ZIP files in the base directory.
 
 	std::vector<FileType> _musicTypes; ///< All valid music file types.
 	std::vector<FileType> _soundTypes; ///< All valid sound file types.

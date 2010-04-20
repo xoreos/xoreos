@@ -82,11 +82,13 @@ void ResourceManager::clear() {
 	_hakDir.clear();
 	_textureDir.clear();
 	_rimDir.clear();
+	_zipDir.clear();
 
 	_keyFiles.clear();
 	_bifFiles.clear();
 	_erfFiles.clear();
 	_rimFiles.clear();
+	_zipFiles.clear();
 
 	_bifSourceDir.clear();
 }
@@ -100,17 +102,24 @@ void ResourceManager::registerDataBaseDir(const std::string &path) {
 	if (!rootFiles.addDirectory(_baseDir))
 		throw Common::Exception("Can't read path");
 
-	if (!rootFiles.getSubList(".*\\.key", _keyFiles, true))
-		throw Common::Exception("No KEY files found");
+	// Find KEY files
+	rootFiles.getSubList(".*\\.key", _keyFiles, true);
 
 	Common::FileList allFiles;
 	if (!allFiles.addDirectory(_baseDir, -1))
 		throw Common::Exception("Failed reading the complete directory");
 
-	if (!allFiles.getSubList(".*\\.bif", _bifFiles, true))
-		throw Common::Exception("No BIF files found");
+	// Find BIF files
+	allFiles.getSubList(".*\\.bif", _bifFiles, true);
 
-	// Found KEY and BIF files, this looks like a useable data directory
+	// Find ZIP files
+	_zipDir = Common::FilePath::findSubDirectory(_baseDir, "data", true);
+	allFiles.getSubList(".*\\.zip", _zipFiles, true);
+
+	if (!((!_keyFiles.isEmpty() && !_bifFiles.isEmpty()) || !_zipFiles.isEmpty()))
+		throw Common::Exception("No KEY/BIF files and no ZIP files found");
+
+	// Found KEY and BIF files, or ZIP files, this looks like a useable data directory
 	_bifSourceDir.push_back(_baseDir);
 }
 
@@ -226,6 +235,10 @@ const Common::FileList &ResourceManager::getERFList() const {
 
 const Common::FileList &ResourceManager::getRIMList() const {
 	return _rimFiles;
+}
+
+const Common::FileList &ResourceManager::getZIPList() const {
+	return _zipFiles;
 }
 
 ResourceManager::ResFileRef ResourceManager::findBIFPaths(const KEYFile &keyFile, ChangeID &change) {
@@ -480,6 +493,14 @@ ResourceManager::ChangeID ResourceManager::addRIM(const std::string &rim, uint32
 		// And add it to our list
 		addResource(res, resource->name, change);
 	}
+
+	return change;
+}
+
+ResourceManager::ChangeID ResourceManager::addZIP(const std::string &zip, uint32 priority) {
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
 
 	return change;
 }
