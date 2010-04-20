@@ -85,8 +85,8 @@ SeekableReadStream *ZipFile::open(const std::string &filename) {
 	return decompressFile(it->second);
 }
 
-const ZipFile::FileList *ZipFile::getFileList() const {
-	return &_fileList;
+const ZipFile::FileList &ZipFile::getFileList() const {
+	return _fileList;
 }
 
 SeekableReadStream *ZipFile::decompressFile(const FileRecord &fileRecord) {

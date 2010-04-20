@@ -29,7 +29,7 @@ public:
 	typedef std::list<std::string> FileList;
 
 	SeekableReadStream *open(const std::string &filename);
-	const FileList *getFileList() const;
+	const FileList &getFileList() const;
 
 private:
 	SeekableReadStream *_stream;
