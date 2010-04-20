@@ -169,7 +169,9 @@ enum FileType {
 	kFileTypeTFX            = 20007,
 	kFileTypeIFX            = 20008,
 	kFileTypeLFX            = 20009,
-	kFileTypeBBX            = 20010
+	kFileTypeBBX            = 20010,
+	kFileTypePFB            = 20011,
+	kFileTypeGR2            = 20012
 };
 
 enum GameID {

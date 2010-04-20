@@ -175,7 +175,9 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeTFX,            ".tfx"},
 	{kFileTypeIFX,            ".ifx"},
 	{kFileTypeLFX,            ".lfx"},
-	{kFileTypeBBX,            ".bbx"}
+	{kFileTypeBBX,            ".bbx"},
+	{kFileTypePFB,            ".pfb"},
+	{kFileTypeGR2,            ".gr2"}
 };
 
 FileType getFileType(const std::string &path) {
