@@ -14,10 +14,11 @@
 
 #include "boost/algorithm/string.hpp"
 
+#include "common/util.h"
 #include "common/stream.h"
 #include "common/filepath.h"
 #include "common/file.h"
-#include "common/util.h"
+#include "common/zipfile.h"
 
 #include "aurora/resman.h"
 #include "aurora/util.h"
@@ -498,9 +499,54 @@ ResourceManager::ChangeID ResourceManager::addRIM(const std::string &rim, uint32
 }
 
 ResourceManager::ChangeID ResourceManager::addZIP(const std::string &zip, uint32 priority) {
+	std::string zipFileName;
+
+	if (Common::FilePath::isAbsolute(zip)) {
+		// Absolute path to an ZIP, open it from our ZIP list
+
+		zipFileName = _zipFiles.findFirst(Common::FilePath::normalize(zip), true);
+
+		if (zipFileName.empty())
+			// Does not exist
+			throw Common::Exception("No such ZIP");
+	}
+
+	if (zipFileName.empty())
+		// Try to open from the .zip directory
+		zipFileName = _zipFiles.findFirst(Common::FilePath::normalize(_zipDir + "/" + zip), true);
+
+	if (zipFileName.empty())
+		// Does not exist
+		throw Common::Exception("No such ZIP");
+
+	Common::File *zipFile = new Common::File;
+	if (!zipFile->open(zipFileName))
+		throw Common::Exception(Common::kOpenError);
+
+	Common::ZipFile zipIndex(zipFile);
+
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
+
+	_zips.push_back(zipFileName);
+
+	// Add the information of the new ZIP to the change set
+	change->zips.push_back(--_zips.end());
+
+	const Common::ZipFile::FileList &files = zipIndex.getFileList();
+	for (Common::ZipFile::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
+		// Build the resource record
+		Resource res;
+		res.priority = priority;
+		res.source   = kSourceZIP;
+		res.resFile  = --_zips.end();
+		res.type     = getFileType(*file);
+		res.path     = *file;
+
+		// And add it to our list
+		addResource(res, Common::FilePath::getStem(*file), change);
+	}
 
 	return change;
 }
