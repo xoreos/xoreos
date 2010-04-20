@@ -83,6 +83,17 @@ void Engine::indexOptionalRIM(const std::string &rim, uint32 priority) {
 	}
 }
 
+void Engine::indexMandatoryZIP(const std::string &zip, uint32 priority) {
+	ResMan.addZIP(zip, priority);
+}
+
+void Engine::indexOptionalZIP(const std::string &zip, uint32 priority) {
+	try {
+		ResMan.addZIP(zip, priority);
+	} catch (Common::Exception &e) {
+	}
+}
+
 void Engine::playVideo(const std::string &video) {
 	try {
 		Graphics::VideoPlayer videoPlayer(video);
