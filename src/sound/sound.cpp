@@ -32,7 +32,7 @@ namespace Sound {
 
 #define NUM_CHANNELS 2
 #define SAMPLE_RATE 44100
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 32768
 
 SoundManager::SoundManager() {
 	_ready = false;
@@ -88,7 +88,14 @@ bool SoundManager::isPlaying(uint32 channel) const {
 	ALint val;
 	alGetSourcei(_channels[channel]->source, AL_SOURCE_STATE, &val);
 
-	return val == AL_PLAYING;
+	if (val != AL_PLAYING) {
+		if (!_channels[channel]->stream || _channels[channel]->stream->endOfData())
+			return false;
+
+		alSourcePlay(_channels[channel]->source);
+	}
+
+	return true;
 }
 
 AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
@@ -220,7 +227,7 @@ void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 	memset(buffer, 0, BUFFER_SIZE);
 	numSamples = stream->readBuffer((int16 *)buffer, numSamples);
 
-	uint32 bufferSize = numSamples * 2 * (stream->isStereo() ? 2 : 1);
+	uint32 bufferSize = numSamples * 2;
 
 	alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, bufferSize, stream->getRate());
 

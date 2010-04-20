@@ -61,7 +61,7 @@ private:
 
 		Source source; ///< Where can the resource be found?
 
-		// For kSourceBIF / kSourceERF / kSourceRI / kSourceRIMM
+		// For kSourceBIF / kSourceERF / kSourceRIM
 		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM list.
 		uint32 offset;      ///< The offset within the BIF/ERF/RIM file.
 		uint32 size;        ///< The size of the resource data.
