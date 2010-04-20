@@ -716,6 +716,8 @@ Common::SeekableReadStream *ResourceManager::getVideo(const std::string &name, F
 
 void ResourceManager::addResource(const Resource &resource, std::string name, ChangeID &change) {
 	boost::to_lower(name);
+	if (name.empty())
+		return;
 
 	ResourceMap::iterator resTypeMap = _resources.find(name);
 	if (resTypeMap == _resources.end()) {
