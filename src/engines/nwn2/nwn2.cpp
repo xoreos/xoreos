@@ -15,7 +15,14 @@
 #include "engines/nwn2/nwn2.h"
 
 #include "common/util.h"
+#include "common/strutil.h"
 #include "common/filelist.h"
+#include "common/stream.h"
+
+#include "graphics/graphics.h"
+#include "graphics/cube.h"
+#include "graphics/font.h"
+#include "graphics/text.h"
 
 #include "sound/sound.h"
 
@@ -80,10 +87,21 @@ void NWN2Engine::run(const std::string &directory) {
 		channel = SoundMan.playSoundFile(wav);
 	}
 
+	Graphics::Cube *cube = 0;
+
+	try {
+
+		cube = new Graphics::Cube("wt_lake01_n");
+
+	} catch (Common::Exception &e) {
+		Common::printException(e);
+	}
+
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
 
+	delete cube;
 }
 
 void NWN2Engine::init() {
