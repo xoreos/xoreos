@@ -23,17 +23,15 @@ class SeekableReadStream;
 
 class ZipFile {
 public:
+	typedef std::list<std::string> FileList;
+
 	ZipFile(SeekableReadStream *stream);
 	~ZipFile();
-
-	typedef std::list<std::string> FileList;
 
 	SeekableReadStream *open(const std::string &filename);
 	const FileList &getFileList() const;
 
 private:
-	SeekableReadStream *_stream;
-
 	struct FileRecord {
 		uint16 compMethod;
 		uint32 compSize;
@@ -41,12 +39,14 @@ private:
 		uint32 offset;
 	};
 
-	SeekableReadStream *decompressFile(const FileRecord &fileRecord);
-
 	typedef std::map<std::string, FileRecord> FileMap;
 
-	FileMap _fileMap;
+	SeekableReadStream *_stream;
+
 	FileList _fileList;
+	FileMap  _fileMap;
+
+	SeekableReadStream *decompressFile(const FileRecord &fileRecord);
 };
 
 } // End of namespace Common
