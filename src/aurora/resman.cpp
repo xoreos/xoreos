@@ -14,10 +14,11 @@
 
 #include "boost/algorithm/string.hpp"
 
+#include "common/util.h"
 #include "common/stream.h"
 #include "common/filepath.h"
 #include "common/file.h"
-#include "common/util.h"
+#include "common/zipfile.h"
 
 #include "aurora/resman.h"
 #include "aurora/util.h"
@@ -82,11 +83,13 @@ void ResourceManager::clear() {
 	_hakDir.clear();
 	_textureDir.clear();
 	_rimDir.clear();
+	_zipDir.clear();
 
 	_keyFiles.clear();
 	_bifFiles.clear();
 	_erfFiles.clear();
 	_rimFiles.clear();
+	_zipFiles.clear();
 
 	_bifSourceDir.clear();
 }
@@ -100,17 +103,24 @@ void ResourceManager::registerDataBaseDir(const std::string &path) {
 	if (!rootFiles.addDirectory(_baseDir))
 		throw Common::Exception("Can't read path");
 
-	if (!rootFiles.getSubList(".*\\.key", _keyFiles, true))
-		throw Common::Exception("No KEY files found");
+	// Find KEY files
+	rootFiles.getSubList(".*\\.key", _keyFiles, true);
 
 	Common::FileList allFiles;
 	if (!allFiles.addDirectory(_baseDir, -1))
 		throw Common::Exception("Failed reading the complete directory");
 
-	if (!allFiles.getSubList(".*\\.bif", _bifFiles, true))
-		throw Common::Exception("No BIF files found");
+	// Find BIF files
+	allFiles.getSubList(".*\\.bif", _bifFiles, true);
 
-	// Found KEY and BIF files, this looks like a useable data directory
+	// Find ZIP files
+	_zipDir = Common::FilePath::findSubDirectory(_baseDir, "data", true);
+	allFiles.getSubList(".*\\.zip", _zipFiles, true);
+
+	if (!((!_keyFiles.isEmpty() && !_bifFiles.isEmpty()) || !_zipFiles.isEmpty()))
+		throw Common::Exception("No KEY/BIF files and no ZIP files found");
+
+	// Found KEY and BIF files, or ZIP files, this looks like a useable data directory
 	_bifSourceDir.push_back(_baseDir);
 }
 
@@ -154,6 +164,10 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priorit
 	std::string musicDir;
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
 		musicFiles.addDirectory(musicDir, -1);
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x1"   , true)).empty())
+		musicFiles.addDirectory(musicDir, -1);
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x2"   , true)).empty())
+		musicFiles.addDirectory(musicDir, -1);
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
 		musicFiles.addDirectory(musicDir, -1);
 
@@ -165,6 +179,10 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priorit
 
 	std::string soundDir;
 	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient"     , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x1"  , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x2"  , true)).empty())
 		soundFiles.addDirectory(soundDir, -1);
 	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "sounds"      , true)).empty())
 		soundFiles.addDirectory(soundDir, -1);
@@ -226,6 +244,10 @@ const Common::FileList &ResourceManager::getERFList() const {
 
 const Common::FileList &ResourceManager::getRIMList() const {
 	return _rimFiles;
+}
+
+const Common::FileList &ResourceManager::getZIPList() const {
+	return _zipFiles;
 }
 
 ResourceManager::ResFileRef ResourceManager::findBIFPaths(const KEYFile &keyFile, ChangeID &change) {
@@ -484,6 +506,59 @@ ResourceManager::ChangeID ResourceManager::addRIM(const std::string &rim, uint32
 	return change;
 }
 
+ResourceManager::ChangeID ResourceManager::addZIP(const std::string &zip, uint32 priority) {
+	std::string zipFileName;
+
+	if (Common::FilePath::isAbsolute(zip)) {
+		// Absolute path to an ZIP, open it from our ZIP list
+
+		zipFileName = _zipFiles.findFirst(Common::FilePath::normalize(zip), true);
+
+		if (zipFileName.empty())
+			// Does not exist
+			throw Common::Exception("No such ZIP");
+	}
+
+	if (zipFileName.empty())
+		// Try to open from the .zip directory
+		zipFileName = _zipFiles.findFirst(Common::FilePath::normalize(_zipDir + "/" + zip), true);
+
+	if (zipFileName.empty())
+		// Does not exist
+		throw Common::Exception("No such ZIP");
+
+	Common::File *zipFile = new Common::File;
+	if (!zipFile->open(zipFileName))
+		throw Common::Exception(Common::kOpenError);
+
+	Common::ZipFile zipIndex(zipFile);
+
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
+
+	_zips.push_back(zipFileName);
+
+	// Add the information of the new ZIP to the change set
+	change->zips.push_back(--_zips.end());
+
+	const Common::ZipFile::FileList &files = zipIndex.getFileList();
+	for (Common::ZipFile::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
+		// Build the resource record
+		Resource res;
+		res.priority = priority;
+		res.source   = kSourceZIP;
+		res.resFile  = --_zips.end();
+		res.type     = getFileType(*file);
+		res.path     = *file;
+
+		// And add it to our list
+		addResource(res, Common::FilePath::getStem(*file), change);
+	}
+
+	return change;
+}
+
 void ResourceManager::undo(ChangeID &change) {
 	if (change == _changes.end())
 		// Nothing to do
@@ -565,6 +640,19 @@ Common::SeekableReadStream *ResourceManager::getOffResFile(const Resource &res) 
 	return new Common::MemoryReadStream(data, res.size, DisposeAfterUse::YES);
 }
 
+Common::SeekableReadStream *ResourceManager::getZipResFile(const Resource &res) const {
+	if (res.resFile == _bifs.end())
+		return 0;
+
+	Common::File *file = new Common::File;
+	if (!file->open(*res.resFile))
+		return 0;
+
+	Common::ZipFile zip(file);
+
+	return zip.open(res.path);
+}
+
 Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
 	std::vector<FileType> types;
 
@@ -591,6 +679,8 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 		return getOffResFile(*res);
 	} else if (res->source == kSourceRIM) {
 		return getOffResFile(*res);
+	} else if (res->source == kSourceZIP) {
+		return getZipResFile(*res);
 	} else if (res->source == kSourceFile) {
 		// Open the file and return it
 
@@ -649,6 +739,8 @@ Common::SeekableReadStream *ResourceManager::getVideo(const std::string &name, F
 
 void ResourceManager::addResource(const Resource &resource, std::string name, ChangeID &change) {
 	boost::to_lower(name);
+	if (name.empty())
+		return;
 
 	ResourceMap::iterator resTypeMap = _resources.find(name);
 	if (resTypeMap == _resources.end()) {

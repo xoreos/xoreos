@@ -156,7 +156,12 @@ enum FileType {
 	kFileType1DA            =  9996, ///< Table data, 1-dimensional text array
 	kFileTypeERF            =  9997, ///< Module resources.
 	kFileTypeBIF            =  9998, ///< Game resource data.
-	kFileTypeKEY            =  9999  ///< Game resource index.
+	kFileTypeKEY            =  9999, ///< Game resource index.
+
+	// Found in NWN2's ZIP files
+	kFileTypeFXE            = 20000,
+	kFileTypeFXM            = 20001,
+	kFileTypeXML            = 20002
 };
 
 enum GameID {

@@ -53,6 +53,12 @@ protected:
 	/** Add a RIM file to the resource manager, if it exists. */
 	void indexOptionalRIM(const std::string &rim, uint32 priority = 100);
 
+	/** Add a ZIP file to the resource manager, erroring out if the file does not exist. */
+	void indexMandatoryZIP(const std::string &zip, uint32 priority = 100);
+
+	/** Add a ZIP file to the resource manager, if it exists. */
+	void indexOptionalZIP(const std::string &zip, uint32 priority = 100);
+
 	/** Play this video resource. */
 	void playVideo(const std::string &video);
 

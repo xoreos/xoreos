@@ -163,7 +163,11 @@ static const FileExtension fileExtensions[] = {
 	{kFileType1DA,            ".1da"},
 	{kFileTypeERF,            ".erf"},
 	{kFileTypeBIF,            ".bif"},
-	{kFileTypeKEY,            ".key"}
+	{kFileTypeKEY,            ".key"},
+
+	{kFileTypeFXE,            ".fxe"},
+	{kFileTypeFXM,            ".fxm"},
+	{kFileTypeXML,            ".xml"}
 };
 
 FileType getFileType(const std::string &path) {
