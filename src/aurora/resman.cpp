@@ -164,6 +164,10 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priorit
 	std::string musicDir;
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
 		musicFiles.addDirectory(musicDir, -1);
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x1"   , true)).empty())
+		musicFiles.addDirectory(musicDir, -1);
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x2"   , true)).empty())
+		musicFiles.addDirectory(musicDir, -1);
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
 		musicFiles.addDirectory(musicDir, -1);
 
@@ -175,6 +179,10 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priorit
 
 	std::string soundDir;
 	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient"     , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x1"  , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x2"  , true)).empty())
 		soundFiles.addDirectory(soundDir, -1);
 	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "sounds"      , true)).empty())
 		soundFiles.addDirectory(soundDir, -1);
