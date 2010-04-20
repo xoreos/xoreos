@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file common/zipfile.h
+/** @file common/zipfile.cpp
  *  ZIP file decompresssion.
  */
 
