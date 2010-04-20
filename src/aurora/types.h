@@ -162,7 +162,14 @@ enum FileType {
 	kFileTypeFXE            = 20000,
 	kFileTypeFXM            = 20001,
 	kFileTypeXML            = 20002, ///< Extensible Markup Language.
-	kFileTypeWLK            = 20003  ///< Walk mesh.
+	kFileTypeWLK            = 20003, ///< Walk mesh.
+	kFileTypeUTR            = 20004,
+	kFileTypeSEF            = 20005,
+	kFileTypePFX            = 20006,
+	kFileTypeTFX            = 20007,
+	kFileTypeIFX            = 20008,
+	kFileTypeLFX            = 20009,
+	kFileTypeBBX            = 20010
 };
 
 enum GameID {

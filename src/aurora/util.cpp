@@ -168,7 +168,14 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeFXE,            ".fxe"},
 	{kFileTypeFXM,            ".fxm"},
 	{kFileTypeXML,            ".xml"},
-	{kFileTypeWLK,            ".wlk"}
+	{kFileTypeWLK,            ".wlk"},
+	{kFileTypeUTR,            ".utr"},
+	{kFileTypeSEF,            ".sef"},
+	{kFileTypePFX,            ".pfx"},
+	{kFileTypeTFX,            ".tfx"},
+	{kFileTypeIFX,            ".ifx"},
+	{kFileTypeLFX,            ".lfx"},
+	{kFileTypeBBX,            ".bbx"}
 };
 
 FileType getFileType(const std::string &path) {
