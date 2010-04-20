@@ -161,7 +161,8 @@ enum FileType {
 	// Found in NWN2's ZIP files
 	kFileTypeFXE            = 20000,
 	kFileTypeFXM            = 20001,
-	kFileTypeXML            = 20002
+	kFileTypeXML            = 20002, ///< Extensible Markup Language.
+	kFileTypeWLK            = 20003  ///< Walk mesh.
 };
 
 enum GameID {
