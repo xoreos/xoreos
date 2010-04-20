@@ -159,19 +159,23 @@ enum FileType {
 	kFileTypeKEY            =  9999, ///< Game resource index.
 
 	// Found in NWN2's ZIP files
-	kFileTypeFXE            = 20000,
-	kFileTypeFXM            = 20001,
-	kFileTypeXML            = 20002, ///< Extensible Markup Language.
-	kFileTypeWLK            = 20003, ///< Walk mesh.
-	kFileTypeUTR            = 20004,
-	kFileTypeSEF            = 20005,
-	kFileTypePFX            = 20006,
-	kFileTypeTFX            = 20007,
-	kFileTypeIFX            = 20008,
-	kFileTypeLFX            = 20009,
-	kFileTypeBBX            = 20010,
-	kFileTypePFB            = 20011,
-	kFileTypeGR2            = 20012
+	kFileTypeFXA            = 20000,
+	kFileTypeFXE            = 20001,
+	kFileTypeFXM            = 20002,
+	kFileTypeFXS            = 20003,
+	kFileTypeXML            = 20004, ///< Extensible Markup Language.
+	kFileTypeWLK            = 20005, ///< Walk mesh.
+	kFileTypeUTR            = 20006,
+	kFileTypeSEF            = 20007,
+	kFileTypePFX            = 20008,
+	kFileTypeTFX            = 20009,
+	kFileTypeIFX            = 20010,
+	kFileTypeLFX            = 20011,
+	kFileTypeBBX            = 20012,
+	kFileTypePFB            = 20013,
+	kFileTypeGR2            = 20014,
+	kFileTypeUPE            = 20015,
+	kFileTypeUSC            = 20016
 };
 
 enum GameID {

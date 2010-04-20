@@ -165,8 +165,10 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeBIF,            ".bif"},
 	{kFileTypeKEY,            ".key"},
 
+	{kFileTypeFXA,            ".fxa"},
 	{kFileTypeFXE,            ".fxe"},
 	{kFileTypeFXM,            ".fxm"},
+	{kFileTypeFXS,            ".fxs"},
 	{kFileTypeXML,            ".xml"},
 	{kFileTypeWLK,            ".wlk"},
 	{kFileTypeUTR,            ".utr"},
@@ -177,7 +179,9 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeLFX,            ".lfx"},
 	{kFileTypeBBX,            ".bbx"},
 	{kFileTypePFB,            ".pfb"},
-	{kFileTypeGR2,            ".gr2"}
+	{kFileTypeGR2,            ".gr2"},
+	{kFileTypeUPE,            ".upe"},
+	{kFileTypeUSC,            ".usc"}
 };
 
 FileType getFileType(const std::string &path) {
