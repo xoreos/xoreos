@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/zipfile.h
+ *  ZIP file decompresssion.
+ */
+
 #ifndef COMMON_ZIPFILE_H
 #define COMMON_ZIPFILE_H
 
@@ -21,6 +25,7 @@ namespace Common {
 
 class SeekableReadStream;
 
+/** A class encapsulating ZIP file access. */
 class ZipFile {
 public:
 	typedef std::list<std::string> FileList;
@@ -28,8 +33,11 @@ public:
 	ZipFile(SeekableReadStream *stream);
 	~ZipFile();
 
-	SeekableReadStream *open(const std::string &filename);
+	/** Return the list of files contained in the ZIP archive. */
 	const FileList &getFileList() const;
+
+	/** Open a file contained in the archive. */
+	SeekableReadStream *open(const std::string &filename);
 
 private:
 	struct FileRecord {
@@ -43,8 +51,8 @@ private:
 
 	SeekableReadStream *_stream;
 
-	FileList _fileList;
-	FileMap  _fileMap;
+	FileList _fileList; ///< List of file names.
+	FileMap  _fileMap;  ///< Map of files.
 
 	SeekableReadStream *decompressFile(const FileRecord &fileRecord);
 };

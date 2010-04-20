@@ -8,6 +8,10 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+/** @file common/zipfile.h
+ *  ZIP file decompresssion.
+ */
+
 #include "boost/algorithm/string.hpp"
 
 #include "common/error.h"
