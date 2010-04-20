@@ -181,7 +181,12 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypePFB,            ".pfb"},
 	{kFileTypeGR2,            ".gr2"},
 	{kFileTypeUPE,            ".upe"},
-	{kFileTypeUSC,            ".usc"}
+	{kFileTypeUSC,            ".usc"},
+	{kFileTypeULT,            ".ult"},
+	{kFileTypeFX ,            ".fx" },
+	{kFileTypeMAX,            ".max"},
+	{kFileTypeDOC,            ".doc"},
+	{kFileTypeSCC,            ".scc"}
 };
 
 FileType getFileType(const std::string &path) {

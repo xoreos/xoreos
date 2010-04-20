@@ -175,7 +175,12 @@ enum FileType {
 	kFileTypePFB            = 20013,
 	kFileTypeGR2            = 20014,
 	kFileTypeUPE            = 20015,
-	kFileTypeUSC            = 20016
+	kFileTypeUSC            = 20016,
+	kFileTypeULT            = 20017,
+	kFileTypeFX             = 20018,
+	kFileTypeMAX            = 20019,
+	kFileTypeDOC            = 20020,
+	kFileTypeSCC            = 20021
 };
 
 enum GameID {
