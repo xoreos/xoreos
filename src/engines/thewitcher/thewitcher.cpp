@@ -29,9 +29,9 @@
 
 namespace TheWitcher {
 
-static const std::string kGameName = "The Witcher";
-
 const TheWitcherEngineProbe kTheWitcherEngineProbe;
+
+const std::string TheWitcherEngineProbe::kGameName = "The Witcher";
 
 Aurora::GameID TheWitcherEngineProbe::getGameID() const {
 	return Aurora::kGameIDTheWitcher;

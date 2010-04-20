@@ -33,9 +33,9 @@
 
 namespace KotOR {
 
-static const std::string kGameName = "Star Wars: Knights of the Old Republic";
-
 const KotOREngineProbe kKotOREngineProbe;
+
+const std::string KotOREngineProbe::kGameName = "Star Wars: Knights of the Old Republic";
 
 Aurora::GameID KotOREngineProbe::getGameID() const {
 	return Aurora::kGameIDKotOR;

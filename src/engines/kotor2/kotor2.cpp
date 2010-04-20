@@ -33,9 +33,9 @@
 
 namespace KotOR2 {
 
-static const std::string kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
-
 const KotOR2EngineProbe kKotOR2EngineProbe;
+
+const std::string KotOR2EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
 
 Aurora::GameID KotOR2EngineProbe::getGameID() const {
 	return Aurora::kGameIDKotOR2;

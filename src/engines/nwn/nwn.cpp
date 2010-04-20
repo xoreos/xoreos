@@ -33,9 +33,9 @@
 
 namespace NWN {
 
-static const std::string kGameName = "Neverwinter Nights";
-
 const NWNEngineProbe kNWNEngineProbe;
+
+const std::string NWNEngineProbe::kGameName = "Neverwinter Nights";
 
 Aurora::GameID NWNEngineProbe::getGameID() const {
 	return Aurora::kGameIDNWN;

@@ -35,6 +35,9 @@ public:
 	bool probe(const std::string &directory, const Common::FileList &rootFiles) const;
 
 	Engines::Engine *createEngine() const;
+
+private:
+	static const std::string kGameName;
 };
 
 extern const NWNEngineProbe kNWNEngineProbe;
