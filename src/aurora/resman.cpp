@@ -632,6 +632,19 @@ Common::SeekableReadStream *ResourceManager::getOffResFile(const Resource &res) 
 	return new Common::MemoryReadStream(data, res.size, DisposeAfterUse::YES);
 }
 
+Common::SeekableReadStream *ResourceManager::getZipResFile(const Resource &res) const {
+	if (res.resFile == _bifs.end())
+		return 0;
+
+	Common::File *file = new Common::File;
+	if (!file->open(*res.resFile))
+		return 0;
+
+	Common::ZipFile zip(file);
+
+	return zip.open(res.path);
+}
+
 Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
 	std::vector<FileType> types;
 
@@ -658,6 +671,8 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 		return getOffResFile(*res);
 	} else if (res->source == kSourceRIM) {
 		return getOffResFile(*res);
+	} else if (res->source == kSourceZIP) {
+		return getZipResFile(*res);
 	} else if (res->source == kSourceFile) {
 		// Open the file and return it
 

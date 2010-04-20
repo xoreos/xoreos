@@ -303,6 +303,7 @@ private:
 	const Resource *getRes(std::string name, const std::vector<FileType> &types) const;
 
 	Common::SeekableReadStream *getOffResFile(const Resource &res) const;
+	Common::SeekableReadStream *getZipResFile(const Resource &res) const;
 };
 
 } // End of namespace Aurora
