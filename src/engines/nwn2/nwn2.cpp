@@ -84,7 +84,7 @@ void NWN2Engine::run(const std::string &directory) {
 	Common::SeekableReadStream *wav = ResMan.getMusic("mus_mulsantir");
 	if (wav) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
-		channel = SoundMan.playSoundFile(wav);
+		channel = SoundMan.playSoundFile(wav, true);
 	}
 
 	Graphics::Cube *cube = 0;
