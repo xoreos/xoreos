@@ -38,7 +38,7 @@ ZipFile::ZipFile(SeekableReadStream *stream) {
 		if (tag == 0x08064b50) {          // Archive extra data record
 			// Ignore!
 			_stream->skip(_stream->readUint32LE());
-		} else if (tag == 0x04034B50) {
+		} else if (tag == 0x04034b50) {
 			FileRecord fileRecord;
 
 			_stream->readUint16LE();
@@ -54,11 +54,14 @@ ZipFile::ZipFile(SeekableReadStream *stream) {
 			fileRecord.offset = _stream->pos();
 			_stream->skip(fileRecord.compSize);
 
-			// Skip over the data descriptor, if present.
-			if (gpbFlag & (1 << 3)) {
-				_stream->skip(4);
-				_stream->skip(4 + _stream->readUint32LE());
-			}
+			// If we have a data descriptor, we've gotten screwed. That means
+			// that the system the zip file encoder was run on didn't support
+			// rb+ mode and couldn't seek while writing. This means that the
+			// compressed size from above is 9. Fortunately, BioWare didn't
+			// use a sucky system like that. On the other hand, take a look
+			// at some of their own formats...
+			if (gpbFlag & (1 << 3))
+				throw Common::Exception("Unhandled: Data descriptor present in zip file");
 
 			// HACK: Skip any filename with a trailing slash because it's
 			// a directory. The proper solution would be to dump this code
