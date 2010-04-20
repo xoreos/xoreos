@@ -50,6 +50,7 @@ private:
 		kSourceBIF,  ///< Within a BIF file.
 		kSourceERF,  ///< Within an ERF file.
 		kSourceRIM,  ///< Within a RIM file.
+		kSourceZIP,  ///< Within a ZIP file.
 		kSourceFile  ///< A direct file.
 	};
 
@@ -61,12 +62,12 @@ private:
 
 		Source source; ///< Where can the resource be found?
 
-		// For kSourceBIF / kSourceERF / kSourceRIM
-		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM list.
+		// For kSourceBIF / kSourceERF / kSourceRIM / kSourceZIP
+		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM/ZIP list.
 		uint32 offset;      ///< The offset within the BIF/ERF/RIM file.
 		uint32 size;        ///< The size of the resource data.
 
-		// For kSourceFile
+		// For kSourceFile / kSourceZIP
 		std::string path; ///< The file's path.
 
 		bool operator<(const Resource &right) const;
@@ -89,6 +90,7 @@ private:
 		std::list<ResFileList::iterator> bifs;
 		std::list<ResFileList::iterator> erfs;
 		std::list<ResFileList::iterator> rims;
+		std::list<ResFileList::iterator> zips;
 		std::list<ResourceChange>        resources;
 	};
 
@@ -254,6 +256,7 @@ private:
 	ResFileList _bifs;
 	ResFileList _erfs;
 	ResFileList _rims;
+	ResFileList _zips;
 	ResourceMap _resources;
 
 	ChangeSetList _changes;

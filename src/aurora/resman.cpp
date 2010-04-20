@@ -75,6 +75,7 @@ void ResourceManager::clear() {
 	_bifs.clear();
 	_erfs.clear();
 	_rims.clear();
+	_zips.clear();
 
 	_baseDir.clear();
 	_modDir.clear();
@@ -514,6 +515,10 @@ void ResourceManager::undo(ChangeID &change) {
 	// Removing all changes in the RIM list
 	for (std::list<ResFileList::iterator>::iterator rimChange = change->rims.begin(); rimChange != change->rims.end(); ++rimChange)
 		_rims.erase(*rimChange);
+
+	// Removing all changes in the ZIP list
+	for (std::list<ResFileList::iterator>::iterator zipChange = change->zips.begin(); zipChange != change->zips.end(); ++zipChange)
+		_zips.erase(*zipChange);
 
 	// Now we can remove the change set from our list of change sets
 	_changes.erase(change);
