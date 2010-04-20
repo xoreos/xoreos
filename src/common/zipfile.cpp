@@ -54,7 +54,7 @@ ZipFile::ZipFile(SeekableReadStream *stream) {
 			fileRecord.offset = _stream->pos();
 			_stream->skip(fileRecord.compSize);
 
-			// clone2727 says: I forget what this is, but I know it's useless.
+			// Skip over the data descriptor, if present.
 			if (gpbFlag & (1 << 3)) {
 				_stream->skip(4);
 				_stream->skip(4 + _stream->readUint32LE());
