@@ -697,7 +697,10 @@ Common::SeekableReadStream *ResourceManager::getZipResFile(const Resource &res) 
 }
 
 Common::SeekableReadStream *ResourceManager::getNDSResFile(const Resource &res) const {
-	return 0;
+	if ((res.resNDS == _ndss.end() || !*res.resNDS))
+		return 0;
+
+	return (*res.resNDS)->open(res.path);
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
