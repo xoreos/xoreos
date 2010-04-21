@@ -73,6 +73,16 @@ public:
 	/** Read Latin9 out of a stream. */
 	void readLatin9(SeekableReadStream &stream, uint32 length);
 
+	/** Read UTF-16LE out of a stream. */
+	void readUTF16LE(SeekableReadStream &stream);
+	/** Read UTF-16LE out of a stream. */
+	void readUTF16LE(SeekableReadStream &stream, uint32 length);
+
+	/** Read UTF-16BE out of a stream. */
+	void readUTF16BE(SeekableReadStream &stream);
+	/** Read UTF-16BE out of a stream. */
+	void readUTF16BE(SeekableReadStream &stream, uint32 length);
+
 private:
 	std::string _string; ///< Internal string holding the actual data.
 
@@ -80,6 +90,16 @@ private:
 	void readSingleByte(SeekableReadStream &stream, std::vector<char> &data);
 	/** Read single-byte data. */
 	void readSingleByte(SeekableReadStream &stream, std::vector<char> &data, uint32 length);
+
+	/** Read little-endian double-byte data. */
+	void readDoubleByteLE(SeekableReadStream &stream, std::vector<uint16> &data);
+	/** Read little-endian double-byte data. */
+	void readDoubleByteLE(SeekableReadStream &stream, std::vector<uint16> &data, uint32 length);
+
+	/** Read big-endian double-byte data. */
+	void readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data);
+	/** Read big-endian double-byte data. */
+	void readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data, uint32 length);
 };
 
 } // End of namespace Common

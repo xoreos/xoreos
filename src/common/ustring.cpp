@@ -176,6 +176,50 @@ void UString::readLatin9(SeekableReadStream &stream, uint32 length) {
 	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
 }
 
+void UString::readUTF16LE(SeekableReadStream &stream) {
+	_string.clear();
+
+	std::vector<uint16> data;
+	readDoubleByteLE(stream, data);
+	if (data.empty())
+		return;
+
+	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+}
+
+void UString::readUTF16LE(SeekableReadStream &stream, uint32 length) {
+	_string.clear();
+
+	std::vector<uint16> data;
+	readDoubleByteLE(stream, data, length);
+	if (data.empty())
+		return;
+
+	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+}
+
+void UString::readUTF16BE(SeekableReadStream &stream) {
+	_string.clear();
+
+	std::vector<uint16> data;
+	readDoubleByteBE(stream, data);
+	if (data.empty())
+		return;
+
+	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+}
+
+void UString::readUTF16BE(SeekableReadStream &stream, uint32 length) {
+	_string.clear();
+
+	std::vector<uint16> data;
+	readDoubleByteBE(stream, data, length);
+	if (data.empty())
+		return;
+
+	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+}
+
 void UString::readSingleByte(SeekableReadStream &stream, std::vector<char> &data) {
 	char c;
 	while ((c = stream.readByte()) != 0)
@@ -189,6 +233,44 @@ void UString::readSingleByte(SeekableReadStream &stream, std::vector<char> &data
 	data.resize(length);
 
 	if (stream.read((byte *) &data[0], length) != length)
+		throw Exception(kReadError);
+}
+
+void UString::readDoubleByteLE(SeekableReadStream &stream, std::vector<uint16> &data) {
+	uint16 c;
+	while ((c = stream.readUint16LE()) != 0)
+		data.push_back(c);
+
+	if (stream.err())
+		throw Exception(kReadError);
+}
+
+void UString::readDoubleByteLE(SeekableReadStream &stream, std::vector<uint16> &data, uint32 length) {
+	data.reserve(length);
+
+	while (length-- > 0)
+		data.push_back(stream.readUint16LE());
+
+	if (stream.err())
+		throw Exception(kReadError);
+}
+
+void UString::readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data) {
+	uint16 c;
+	while ((c = stream.readUint16BE()) != 0)
+		data.push_back(c);
+
+	if (stream.err())
+		throw Exception(kReadError);
+}
+
+void UString::readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data, uint32 length) {
+	data.reserve(length);
+
+	while (length-- > 0)
+		data.push_back(stream.readUint16BE());
+
+	if (stream.err())
 		throw Exception(kReadError);
 }
 
