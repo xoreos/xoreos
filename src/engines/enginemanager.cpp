@@ -29,6 +29,7 @@
 #include "engines/kotor/kotor.h"
 #include "engines/kotor2/kotor2.h"
 #include "engines/thewitcher/thewitcher.h"
+#include "engines/sonic/sonic.h"
 
 DECLARE_SINGLETON(Engines::EngineManager)
 
@@ -39,7 +40,8 @@ static const EngineProbe *kProbes[] = {
 	&NWN2::kNWN2EngineProbe,
 	&KotOR::kKotOREngineProbe,
 	&KotOR2::kKotOR2EngineProbe,
-	&TheWitcher::kTheWitcherEngineProbe
+	&TheWitcher::kTheWitcherEngineProbe,
+	&Sonic::kSonicEngineProbe
 };
 
 Aurora::GameID EngineManager::probeGameID(const std::string &target) const {

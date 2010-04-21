@@ -30,6 +30,7 @@
 
 #include "aurora/resman.h"
 #include "aurora/error.h"
+#include "aurora/ndsrom.h"
 
 namespace Sonic {
 
@@ -50,7 +51,7 @@ bool SonicEngineProbe::probe(const std::string &directory, const Common::FileLis
 }
 
 bool SonicEngineProbe::probe(Common::SeekableReadStream &stream) const {
-	return false;
+	return Aurora::NDSFile::isNDS(stream);
 }
 
 Engines::Engine *SonicEngineProbe::createEngine() const {
