@@ -568,9 +568,34 @@ ResourceManager::ChangeID ResourceManager::addZIP(const std::string &zip, uint32
 }
 
 ResourceManager::ChangeID ResourceManager::addNDS(const std::string &nds, uint32 priority) {
+	Common::File *ndsFile = new Common::File;
+	if (!ndsFile->open(nds))
+		throw Common::Exception(Common::kOpenError);
+
+	NDSFile *ndsIndex = new NDSFile(ndsFile);
+
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
+
+	_ndss.push_back(ndsIndex);
+
+	// Add the information of the new NDS to the change set
+	change->ndss.push_back(--_ndss.end());
+
+	const NDSFile::FileList &files = ndsIndex->getFileList();
+	for (NDSFile::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
+		// Build the resource record
+		Resource res;
+		res.priority = priority;
+		res.source   = kSourceNDS;
+		res.resNDS   = --_ndss.end();
+		res.type     = getFileType(*file);
+		res.path     = *file;
+
+		// And add it to our list
+		addResource(res, Common::FilePath::getStem(*file), change);
+	}
 
 	return change;
 }
