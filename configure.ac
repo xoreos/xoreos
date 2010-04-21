@@ -59,6 +59,12 @@ AC_HEADER_STDC
 
 AC_C_BIGENDIAN()
 
+AM_ICONV
+
+if test "x$am_cv_func_iconv" != "xyes"; then
+	AC_MSG_ERROR([No useable iconv() function found])
+fi
+
 BOOST_REQUIRE
 BOOST_STRING_ALGO
 BOOST_SYSTEM
