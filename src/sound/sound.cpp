@@ -22,8 +22,6 @@
 #include "common/util.h"
 #include "common/error.h"
 
-#include "graphics/graphics.h"
-
 #include "events/events.h"
 
 DECLARE_SINGLETON(Sound::SoundManager)
@@ -37,9 +35,6 @@ SoundManager::SoundManager() {
 }
 
 void SoundManager::init() {
-	if (!GfxMan.ready())
-		throw Common::Exception("The GraphicsManager needs to be initialized first");
-
 	_dev = alcOpenDevice(NULL);
 	if (!_dev)
 		throw Common::Exception("Could not open OpenAL device");

@@ -54,7 +54,7 @@ GraphicsManager::~GraphicsManager() {
 }
 
 void GraphicsManager::init() {
-	uint32 sdlInitFlags = SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO;
+	uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO;
 
 	// TODO: Is this actually needed on any systems? It seems to make MacOS X fail to
 	//       receive any events, too.
