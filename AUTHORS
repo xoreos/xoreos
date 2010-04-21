@@ -21,6 +21,11 @@ boost.m4
    libraries. boost.m4 is licensed under version 3 or later of the GNU General
    Public License.
 
+ax_check_gl.m4 / ax_check_glu.m4
+********************************
+   eos uses Braden McDaniel's autoconf macros to check for OpenGL and GLU,
+   licensed under version 2 or later of the GNU General Public License.
+
 glew
 ****
    eos uses glew, The OpenGL Extension Wrangler Library
