@@ -180,7 +180,16 @@ enum FileType {
 	kFileTypeFX             = 20018,
 	kFileTypeMAX            = 20019,
 	kFileTypeDOC            = 20020,
-	kFileTypeSCC            = 20021
+	kFileTypeSCC            = 20021,
+
+	// Found in Sonic's ROM
+	kFileTypePAL            = 21000,
+	kFileTypeCBGT           = 21001,
+	kFileTypeCDPTH          = 21002,
+	kFileTypeVX             = 21003,
+	kFileTypeHERF           = 21004,
+	kFileTypeSADL           = 21005,
+	kFileTypeSDAT           = 21006  ///< Nintendo Sound Data File.
 };
 
 enum GameID {

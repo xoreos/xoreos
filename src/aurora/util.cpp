@@ -186,7 +186,15 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeFX ,            ".fx" },
 	{kFileTypeMAX,            ".max"},
 	{kFileTypeDOC,            ".doc"},
-	{kFileTypeSCC,            ".scc"}
+	{kFileTypeSCC,            ".scc"},
+
+	{kFileTypePAL,            ".pal"},
+	{kFileTypeCBGT,           ".cbgt"},
+	{kFileTypeCDPTH,          ".cdpth"},
+	{kFileTypeVX ,            ".vx" },
+	{kFileTypeHERF,           ".herf"},
+	{kFileTypeSADL,           ".sadl"},
+	{kFileTypeSDAT,           ".sdat"}
 };
 
 FileType getFileType(const std::string &path) {
