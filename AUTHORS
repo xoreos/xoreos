@@ -43,6 +43,12 @@ UTF-8 CPP
    UTF-8 CPP is licensed under a copyleft license. See utf8cpp/utf8.h for
    details.
 
+Bink
+****
+   The Bink decoder used in eos is based on the Bink decoder in FFmpeg
+   (<http://ffmpeg.org/>), licensed under the GNU Lesser General Public
+   License (LGPL) version 2.1 or later.
+
 ScummVM code
 ************
    eos uses some ScummVM code, most prominently the endian, singleton, stream
