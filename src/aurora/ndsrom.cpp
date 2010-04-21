@@ -30,8 +30,7 @@ NDSFile::NDSFile(Common::SeekableReadStream *stream) : _stream(0) {
 
 	_stream = stream;
 
-	std::string gameName = AuroraFile::readRawString(*_stream, 12);
-	if (gameName != "SONICCHRON") // Should be the only game we will accept.
+	if (!isNDS(*_stream))
 		throw Common::Exception("NDSFile::NDSFile(): ROM is not Sonic");
 
 	_stream->seek(0x40);
@@ -80,6 +79,20 @@ Common::SeekableReadStream *NDSFile::open(const std::string &filename) {
 
 const NDSFile::FileList &NDSFile::getFileList() const {
 	return _fileList;
+}
+
+bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
+	if (!stream.seek(0))
+		return false;
+
+	std::string gameName = AuroraFile::readRawString(stream, 12);
+	if (gameName != "SONICCHRON") // Should be the only game we will accept.
+		return false;
+
+	if (stream.seek(0x40))
+		return false;
+
+	return true;
 }
 
 } // End of namespace Aurora

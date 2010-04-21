@@ -39,6 +39,9 @@ public:
 	/** Open a file contained in the ROM. */
 	Common::SeekableReadStream *open(const std::string &filename);
 
+	/** Check if a stream is a valid Nintendo DS ROM. */
+	static bool isNDS(Common::SeekableReadStream &stream);
+
 private:
 	struct FileRecord {
 		uint32 offset;
