@@ -189,7 +189,8 @@ enum GameID {
 	kGameIDNWN2       = 2, ///< Neverwinter Nights 2.
 	kGameIDKotOR      = 3, ///< Star Wars: Knights of the Old Republic.
 	kGameIDKotOR2     = 4, ///< Star Wars: Knights of the Old Republic II - The Sith Lords.
-	kGameIDTheWitcher = 5  ///< The Witcher.
+	kGameIDTheWitcher = 5, ///< The Witcher.
+	kGameIDSonic      = 6  ///< Sonic Chronicles: The Dark Brotherhood.
 };
 
 enum Language {

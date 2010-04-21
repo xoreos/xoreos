@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.common
 
-SUBDIRS = nwn nwn2 kotor kotor2 thewitcher
+SUBDIRS = nwn nwn2 kotor kotor2 thewitcher sonic
 
 noinst_LTLIBRARIES = libengines.la
 
@@ -13,4 +13,4 @@ libengines_la_SOURCES = engine.cpp \
                         enginemanager.cpp \
                         gamethread.cpp
 
-libengines_la_LIBADD = nwn/libnwn.la nwn2/libnwn2.la kotor/libkotor.la kotor2/libkotor2.la thewitcher/libthewitcher.la
+libengines_la_LIBADD = nwn/libnwn.la nwn2/libnwn2.la kotor/libkotor.la kotor2/libkotor2.la thewitcher/libthewitcher.la sonic/libsonic.la

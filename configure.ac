@@ -126,5 +126,6 @@ AC_OUTPUT(src/common/Makefile \
           src/engines/kotor/Makefile \
           src/engines/kotor2/Makefile \
           src/engines/thewitcher/Makefile \
+          src/engines/sonic/Makefile \
           src/Makefile \
           Makefile)
