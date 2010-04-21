@@ -81,7 +81,7 @@ bool SoundManager::ready() const {
 	return _ready;
 }
 
-bool SoundManager::isPlaying(uint32 channel) const {
+bool SoundManager::isPlaying(ChannelHandle channel) const {
 	if (channel >= _channels.size() || !_channels[channel])
 		return false;
 
@@ -152,7 +152,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 	return makeWAVStream(stream, DisposeAfterUse::YES);
 }
 
-int SoundManager::playAudioStream(AudioStream *audStream) {
+ChannelHandle SoundManager::playAudioStream(AudioStream *audStream) {
 	if (!_ready)
 		return -1;
 
@@ -198,7 +198,7 @@ int SoundManager::playAudioStream(AudioStream *audStream) {
 	return _channels.size() - 1;
 }
 
-int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream, bool loop) {
+ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream, bool loop) {
 	if (!_ready)
 		return -1;
 
@@ -221,6 +221,26 @@ int SoundManager::playSoundFile(Common::SeekableReadStream *wavStream, bool loop
 	}
 
 	return playAudioStream(audioStream);
+}
+
+void SoundManager::setChannelPosition(ChannelHandle channel, float x, float y, float z) {
+	if (!_channels[channel] || !_channels[channel]->stream)
+		throw Common::Exception("SoundManager::setChannelPosition(): Invalid channel");
+
+	if (_channels[channel]->stream->isStereo())
+		throw Common::Exception("SoundManager::setChannelPosition(): Cannot set position on a stereo sound.");
+
+	alSource3f(_channels[channel]->source, AL_POSITION, x, y, z);
+}
+
+void SoundManager::getChannelPosition(ChannelHandle channel, float &x, float &y, float &z) {
+	if (!_channels[channel] || !_channels[channel]->stream)
+		throw Common::Exception("SoundManager::getChannelPosition(): Invalid channel");
+
+	if (_channels[channel]->stream->isStereo())
+		throw Common::Exception("SoundManager::getChannelPosition(): Stereo sounds cannot have a position.");
+
+	alGetSource3f(_channels[channel]->source, AL_POSITION, &x, &y, &z);
 }
 
 void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {

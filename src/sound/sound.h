@@ -44,6 +44,8 @@ namespace Sound {
 
 class AudioStream;
 
+typedef uint32 ChannelHandle;
+
 /** The sound manager. */
 class SoundManager : public Common::Singleton<SoundManager>, public Common::Thread {
 public:
@@ -58,21 +60,27 @@ public:
 	bool ready() const;
 
 	/** Is that channel currently playing a sound? */
-	bool isPlaying(uint32 channel) const;
+	bool isPlaying(ChannelHandle channel) const;
 
 	/** Play a sound file.
 	 *
 	 *  @param  wavStream The stream to play. Will be taken over.
 	 *  @return The channel the sound has been assigned to, or -1 on error.
 	 */
-	int playSoundFile(Common::SeekableReadStream *wavStream, bool loop = false);
+	ChannelHandle playSoundFile(Common::SeekableReadStream *wavStream, bool loop = false);
 
 	/** Play an audio stream.
 	 *
 	 *  @param  audStream The stream to play. Will be taken over.
 	 *  @return The channel the sound has been assigned to, or -1 on error.
 	 */
-	int playAudioStream(AudioStream *audStream);
+	ChannelHandle playAudioStream(AudioStream *audStream);
+
+	/** Set the position the channel is being played. */
+	void setChannelPosition(ChannelHandle channel, float x, float y, float z);
+
+	/** Get the position of the channel. */
+	void getChannelPosition(ChannelHandle channel, float &x, float &y, float &z);
 
 private:
 	struct Channel {
