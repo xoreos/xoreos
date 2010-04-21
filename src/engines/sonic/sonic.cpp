@@ -66,12 +66,15 @@ SonicEngine::~SonicEngine() {
 }
 
 void SonicEngine::run(const std::string &target) {
+	_romFile = target;
+
 	init();
 
 	status("Successfully initialized the engine");
 }
 
 void SonicEngine::init() {
+	ResMan.addNDS(_romFile);
 }
 
 } // End of namespace Sonic

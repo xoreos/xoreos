@@ -51,7 +51,7 @@ public:
 	void run(const std::string &target);
 
 private:
-	std::string _baseDirectory;
+	std::string _romFile;
 
 	void init();
 };
