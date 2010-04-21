@@ -89,7 +89,7 @@ bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
 	if (gameName != "SONICCHRON") // Should be the only game we will accept.
 		return false;
 
-	if (stream.seek(0x40))
+	if (!stream.seek(0x40))
 		return false;
 
 	return true;
