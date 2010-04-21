@@ -9,7 +9,7 @@
  */
 
 /** @file aurora/ndsrom.cpp
- *  Nintendo DS rom parsing.
+ *  Nintendo DS ROM parsing.
  */
 
 // Based on http://dsibrew.org/wiki/NDS_Format

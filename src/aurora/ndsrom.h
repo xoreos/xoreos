@@ -9,7 +9,7 @@
  */
 
 /** @file aurora/ndsrom.h
- *  Nintendo DS rom parsing.
+ *  Nintendo DS ROM parsing.
  */
 
 #ifndef AURORA_NDSROM_H
