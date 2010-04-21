@@ -17,8 +17,8 @@
 #include "common/ustring.h"
 #include "common/error.h"
 #include "common/singleton.h"
+#include "common/stream.h"
 #include "common/util.h"
-
 
 namespace Common {
 
@@ -27,7 +27,7 @@ public:
 	ConversionManager() : _fromLatin9((iconv_t) -1) {
 		_fromLatin9 = iconv_open("UTF-8", "ISO-8859-15");
 		if (_fromLatin9 == ((iconv_t) -1))
-			throw Common::Exception("Failed to initialize ISO-8859-15 -> UTF-8 conversion");
+			throw Exception("Failed to initialize ISO-8859-15 -> UTF-8 conversion");
 	}
 
 	~ConversionManager() {
@@ -37,7 +37,7 @@ public:
 
 	std::string fromLatin9(byte *data, uint32 n) {
 		if (_fromLatin9 == ((iconv_t) -1))
-			throw Common::Exception("No iconv context");
+			throw Exception("No iconv context");
 
 		size_t inBytes  = n;
 		size_t outBytes = n * 4; // Should be enough;
@@ -126,6 +126,70 @@ UString::iterator UString::begin() const {
 
 UString::iterator UString::end() const {
 	return iterator(_string.end(), _string.begin(), _string.end());
+}
+
+void UString::readASCII(SeekableReadStream &stream) {
+	std::vector<char> data;
+	readSingleByte(stream, data);
+
+	if (data.empty()) {
+		_string.clear();
+		return;
+	}
+
+	_string = (const char *) &data[0];
+}
+
+void UString::readASCII(SeekableReadStream &stream, uint32 length) {
+	std::vector<char> data;
+	readSingleByte(stream, data, length);
+
+	if (data.empty()) {
+		_string.clear();
+		return;
+	}
+
+	_string = (const char *) &data[0];
+}
+
+void UString::readLatin9(SeekableReadStream &stream) {
+	std::vector<char> data;
+	readSingleByte(stream, data);
+
+	if (data.empty()) {
+		_string.clear();
+		return;
+	}
+
+	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
+}
+
+void UString::readLatin9(SeekableReadStream &stream, uint32 length) {
+	std::vector<char> data;
+	readSingleByte(stream, data, length);
+
+	if (data.empty()) {
+		_string.clear();
+		return;
+	}
+
+	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
+}
+
+void UString::readSingleByte(SeekableReadStream &stream, std::vector<char> &data) {
+	char c;
+	while ((c = stream.readByte()) != 0)
+		data.push_back(c);
+
+	if (stream.err())
+		throw Exception(kReadError);
+}
+
+void UString::readSingleByte(SeekableReadStream &stream, std::vector<char> &data, uint32 length) {
+	data.resize(length);
+
+	if (stream.read((byte *) &data[0], length) != length)
+		throw Exception(kReadError);
 }
 
 } // End of namespace Common

@@ -16,12 +16,15 @@
 #define COMMON_USTRING_H
 
 #include <string>
+#include <vector>
 
 #include "common/types.h"
 
 #include "utf8.h"
 
 namespace Common {
+
+class SeekableReadStream;
 
 /** A class holding an UTF-8 string.
  *
@@ -60,8 +63,23 @@ public:
 	iterator begin() const;
 	iterator end() const;
 
+	/** Read clean non-extended ASCII out of a stream. */
+	void readASCII(SeekableReadStream &stream);
+	/** Read clean non-extended ASCII out of a stream. */
+	void readASCII(SeekableReadStream &stream, uint32 length);
+
+	/** Read Latin9 out of a stream. */
+	void readLatin9(SeekableReadStream &stream);
+	/** Read Latin9 out of a stream. */
+	void readLatin9(SeekableReadStream &stream, uint32 length);
+
 private:
 	std::string _string; ///< Internal string holding the actual data.
+
+	/** Read single-byte data. */
+	void readSingleByte(SeekableReadStream &stream, std::vector<char> &data);
+	/** Read single-byte data. */
+	void readSingleByte(SeekableReadStream &stream, std::vector<char> &data, uint32 length);
 };
 
 } // End of namespace Common
