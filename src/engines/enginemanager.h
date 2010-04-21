@@ -46,7 +46,7 @@ public:
 
 private:
 	Aurora::GameID probeGameID(const std::string &directory, const Common::FileList &rootFiles) const;
-	Aurora::GameID probeGameID(Common::SeekableReadStream &stream) const;
+	Aurora::GameID probeGameID(Common::SeekableReadStream *stream) const;
 };
 
 } // End of namespace Engines

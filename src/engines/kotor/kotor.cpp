@@ -50,7 +50,8 @@ bool KotOREngineProbe::probe(const std::string &directory, const Common::FileLis
 	return rootFiles.contains(".*/swkotor.(exe|ini)", true);
 }
 
-bool KotOREngineProbe::probe(Common::SeekableReadStream &stream) const {
+bool KotOREngineProbe::probe(Common::SeekableReadStream *stream) const {
+	delete stream;
 	return false;
 }
 
