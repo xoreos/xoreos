@@ -66,8 +66,7 @@ bool NWNEngineProbe::probe(const std::string &directory, const Common::FileList 
 	return false;
 }
 
-bool NWNEngineProbe::probe(Common::SeekableReadStream *stream) const {
-	delete stream;
+bool NWNEngineProbe::probe(Common::SeekableReadStream &stream) const {
 	return false;
 }
 

@@ -15,7 +15,6 @@
 #include "engines/thewitcher/thewitcher.h"
 
 #include "common/util.h"
-#include "common/stream.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
 
@@ -57,8 +56,7 @@ bool TheWitcherEngineProbe::probe(const std::string &directory, const Common::Fi
 	return systemFiles.contains(".*/witcher.(exe|ini)", true);
 }
 
-bool TheWitcherEngineProbe::probe(Common::SeekableReadStream *stream) const {
-	delete stream;
+bool TheWitcherEngineProbe::probe(Common::SeekableReadStream &stream) const {
 	return false;
 }
 

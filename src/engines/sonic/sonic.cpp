@@ -49,8 +49,7 @@ bool SonicEngineProbe::probe(const std::string &directory, const Common::FileLis
 	return false;
 }
 
-bool SonicEngineProbe::probe(Common::SeekableReadStream *stream) const {
-	delete stream;
+bool SonicEngineProbe::probe(Common::SeekableReadStream &stream) const {
 	return false;
 }
 

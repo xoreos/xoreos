@@ -58,11 +58,9 @@ Aurora::GameID EngineManager::probeGameID(const std::string &target) const {
 	if (Common::FilePath::isRegularFile(target)) {
 		// Try to probe from that file
 
-		Common::File *file = new Common::File;
-		if (file->open(target))
+		Common::File file;
+		if (file.open(target))
 			return probeGameID(file);
-		else
-			delete file;
 	}
 
 	return Aurora::kGameIDUnknown;
@@ -79,7 +77,7 @@ Aurora::GameID EngineManager::probeGameID(const std::string &directory, const Co
 	return Aurora::kGameIDUnknown;
 }
 
-Aurora::GameID EngineManager::probeGameID(Common::SeekableReadStream *stream) const {
+Aurora::GameID EngineManager::probeGameID(Common::SeekableReadStream &stream) const {
 	// Try to find the first engine able to handle the directory's data
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
 		if (kProbes[i]->probe(stream))
@@ -87,7 +85,6 @@ Aurora::GameID EngineManager::probeGameID(Common::SeekableReadStream *stream) co
 			return kProbes[i]->getGameID();
 
 	// None found
-	delete stream;
 	return Aurora::kGameIDUnknown;
 }
 

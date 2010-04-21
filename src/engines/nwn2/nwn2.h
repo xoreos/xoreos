@@ -33,7 +33,7 @@ public:
 	const std::string &getGameName() const;
 
 	bool probe(const std::string &directory, const Common::FileList &rootFiles) const;
-	bool probe(Common::SeekableReadStream *stream) const;
+	bool probe(Common::SeekableReadStream &stream) const;
 
 	Engines::Engine *createEngine() const;
 

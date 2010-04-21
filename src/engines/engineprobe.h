@@ -42,7 +42,7 @@ public:
 	virtual bool probe(const std::string &directory, const Common::FileList &rootFiles) const = 0;
 
 	/** Check for the game in that file. */
-	virtual bool probe(Common::SeekableReadStream *stream) const = 0;
+	virtual bool probe(Common::SeekableReadStream &stream) const = 0;
 
 	/** Create the respective engine for the GameID. */
 	virtual Engine *createEngine() const = 0;
