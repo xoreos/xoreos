@@ -118,7 +118,8 @@ AC_SUBST(SDL_LIBS, [$SDL_LIBS])
 AC_SUBST(EOS_CXXFLAGS)
 AC_SUBST(EOS_LIBS)
 
-AC_OUTPUT(src/common/Makefile \
+AC_OUTPUT(utf8cpp/Makefile \
+          src/common/Makefile \
           src/graphics/Makefile \
           src/graphics/images/Makefile \
           src/graphics/video/Makefile \
