@@ -24,7 +24,7 @@
 
 namespace Aurora {
 
-NDSFile::NDSFile(Common::SeekableReadStream *stream) {
+NDSFile::NDSFile(Common::SeekableReadStream *stream) : _stream(0) {
 	if (!stream)
 		throw Common::Exception("NDSFile::NDSFile(): stream is 0");
 
