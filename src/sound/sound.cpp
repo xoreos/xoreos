@@ -30,8 +30,6 @@ DECLARE_SINGLETON(Sound::SoundManager)
 
 namespace Sound {
 
-#define NUM_CHANNELS 2
-#define SAMPLE_RATE 44100
 #define BUFFER_SIZE 32768
 
 SoundManager::SoundManager() {
