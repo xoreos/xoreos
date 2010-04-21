@@ -25,7 +25,7 @@ namespace Aurora {
 
 class SeekableReadStream;
 
-/** A class encapsulating ZIP file access. */
+/** A class encapsulating Nintendo DS ROM access. */
 class NDSFile {
 public:
 	typedef std::list<std::string> FileList;
@@ -33,10 +33,10 @@ public:
 	NDSFile(Common::SeekableReadStream *stream);
 	~NDSFile();
 
-	/** Return the list of files contained in the ZIP archive. */
+	/** Return the list of files contained in the ROM. */
 	const FileList &getFileList() const;
 
-	/** Open a file contained in the archive. */
+	/** Open a file contained in the ROM. */
 	Common::SeekableReadStream *open(const std::string &filename);
 
 private:
