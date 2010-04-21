@@ -65,8 +65,8 @@ KotOR2Engine::KotOR2Engine() {
 KotOR2Engine::~KotOR2Engine() {
 }
 
-void KotOR2Engine::run(const std::string &directory) {
-	_baseDirectory = directory;
+void KotOR2Engine::run(const std::string &target) {
+	_baseDirectory = target;
 
 	init();
 

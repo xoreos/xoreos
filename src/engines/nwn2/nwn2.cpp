@@ -70,8 +70,8 @@ NWN2Engine::NWN2Engine() {
 NWN2Engine::~NWN2Engine() {
 }
 
-void NWN2Engine::run(const std::string &directory) {
-	_baseDirectory = directory;
+void NWN2Engine::run(const std::string &target) {
+	_baseDirectory = target;
 
 	init();
 

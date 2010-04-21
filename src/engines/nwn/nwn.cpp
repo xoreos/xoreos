@@ -81,8 +81,8 @@ NWNEngine::NWNEngine() {
 NWNEngine::~NWNEngine() {
 }
 
-void NWNEngine::run(const std::string &directory) {
-	_baseDirectory = directory;
+void NWNEngine::run(const std::string &target) {
+	_baseDirectory = target;
 
 	init();
 

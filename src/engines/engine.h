@@ -32,7 +32,7 @@ public:
 	virtual ~Engine();
 
 	/** Run the game. */
-	virtual void run(const std::string &directory) = 0;
+	virtual void run(const std::string &target) = 0;
 
 protected:
 	/** Add a KEY file to the resource manager, erroring out if the file does not exist. */

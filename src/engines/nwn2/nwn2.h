@@ -48,7 +48,7 @@ public:
 	NWN2Engine();
 	~NWN2Engine();
 
-	void run(const std::string &directory);
+	void run(const std::string &target);
 
 private:
 	std::string _baseDirectory;

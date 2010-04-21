@@ -65,8 +65,8 @@ KotOREngine::KotOREngine() {
 KotOREngine::~KotOREngine() {
 }
 
-void KotOREngine::run(const std::string &directory) {
-	_baseDirectory = directory;
+void KotOREngine::run(const std::string &target) {
+	_baseDirectory = target;
 
 	init();
 

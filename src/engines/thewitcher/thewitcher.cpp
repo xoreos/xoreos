@@ -71,8 +71,8 @@ TheWitcherEngine::TheWitcherEngine() {
 TheWitcherEngine::~TheWitcherEngine() {
 }
 
-void TheWitcherEngine::run(const std::string &directory) {
-	_baseDirectory = directory;
+void TheWitcherEngine::run(const std::string &target) {
+	_baseDirectory = target;
 
 	init();
 

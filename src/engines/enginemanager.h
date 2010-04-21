@@ -41,8 +41,8 @@ public:
 	/** Return the full game name to that game ID. */
 	const std::string &getGameName(Aurora::GameID gameID) const;
 
-	/** Run the specified game found in that directory. */
-	void run(Aurora::GameID gameID, const std::string &directory) const;
+	/** Run the specified game found in that directory or file. */
+	void run(Aurora::GameID gameID, const std::string &target) const;
 
 private:
 	Aurora::GameID probeGameID(const std::string &directory, const Common::FileList &rootFiles) const;

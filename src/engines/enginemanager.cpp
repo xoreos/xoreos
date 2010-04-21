@@ -97,7 +97,7 @@ const std::string &EngineManager::getGameName(Aurora::GameID gameID) const {
 	return kEmptyString;
 }
 
-void EngineManager::run(Aurora::GameID gameID, const std::string &directory) const {
+void EngineManager::run(Aurora::GameID gameID, const std::string &target) const {
 	// Try to find the first engine able to handle that game ID
 	Engine *engine = 0;
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
@@ -109,7 +109,7 @@ void EngineManager::run(Aurora::GameID gameID, const std::string &directory) con
 		throw Common::Exception("No engine handling GameID %d found", gameID);
 
 	try {
-		engine->run(directory);
+		engine->run(target);
 	} catch(...) {
 
 		delete engine;

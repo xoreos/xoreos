@@ -48,7 +48,7 @@ public:
 	KotOR2Engine();
 	~KotOR2Engine();
 
-	void run(const std::string &directory);
+	void run(const std::string &target);
 
 private:
 	std::string _baseDirectory;
