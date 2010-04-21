@@ -39,8 +39,8 @@ int main(int argc, char **argv) {
 
 	std::string baseDir = Common::FilePath::makeAbsolute((const std::string &) argv[1]);
 
-	if (!Common::FilePath::isDirectory(baseDir))
-		error("No such directory \"%s\"", baseDir.c_str());
+	if (!Common::FilePath::isDirectory(baseDir) && !Common::FilePath::isRegularFile(baseDir))
+		error("No such file or directory \"%s\"", baseDir.c_str());
 
 	atexit(deinit);
 
