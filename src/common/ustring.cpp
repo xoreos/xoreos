@@ -12,7 +12,63 @@
  *  Unicode string handling.
  */
 
+#include <iconv.h>
+
 #include "common/ustring.h"
+#include "common/error.h"
+#include "common/singleton.h"
+#include "common/util.h"
+
+
+namespace Common {
+
+class ConversionManager : public Singleton<ConversionManager> {
+public:
+	ConversionManager() : _fromLatin9((iconv_t) -1) {
+		_fromLatin9 = iconv_open("UTF-8", "ISO-8859-15");
+		if (_fromLatin9 == ((iconv_t) -1))
+			throw Common::Exception("Failed to initialize ISO-8859-15 -> UTF-8 conversion");
+	}
+
+	~ConversionManager() {
+		if (_fromLatin9 != ((iconv_t) -1))
+			iconv_close(_fromLatin9);
+	}
+
+	std::string fromLatin9(byte *data, uint32 n) {
+		if (_fromLatin9 == ((iconv_t) -1))
+			throw Common::Exception("No iconv context");
+
+		size_t inBytes  = n;
+		size_t outBytes = n * 4; // Should be enough;
+
+		byte *convData = new byte[outBytes];
+		byte *outBuf = convData;
+
+		// Reset the converter's state
+		iconv(_fromLatin9, 0, 0, 0, 0);
+
+		// Convert
+		if (iconv(_fromLatin9, (char **) &data, &inBytes, (char **) &outBuf, &outBytes) == ((size_t) -1))
+			warning("Failed completely converting a latin9 string");
+
+		// And this should be our converted string
+		std::string convStr((const char *) convData, (n * 4) - outBytes);
+
+		delete[] convData;
+
+		return convStr;
+	}
+
+private:
+	iconv_t _fromLatin9;
+};
+
+}
+
+#define ConvMan Common::ConversionManager::instance()
+
+DECLARE_SINGLETON(Common::ConversionManager)
 
 namespace Common {
 
