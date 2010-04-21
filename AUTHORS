@@ -14,6 +14,13 @@ The Witcher, Copyright (c) CD Projekt and Atari.
 Sonic Chronicles: The Dark Brotherhood, Copyright (c) BioWare corp. and Sega.
 
 
+boost.m4
+********
+   eos uses Benoit Sigoure's boost.m4 autoconf macros
+   (<http://github.com/tsuna/boost.m4>) to check for the needed Boost
+   libraries. boost.m4 is licensed under version 3 or later of the GNU General
+   Public License.
+
 glew
 ****
    eos uses glew, The OpenGL Extension Wrangler Library
