@@ -24,7 +24,7 @@
 
 namespace Common {
 
-ZipFile::ZipFile(SeekableReadStream *stream) {
+ZipFile::ZipFile(SeekableReadStream *stream) : _stream(0) {
 	if (!stream)
 		throw Exception("ZipFile: stream is 0");
 
