@@ -50,6 +50,10 @@ bool KotOR2EngineProbe::probe(const std::string &directory, const Common::FileLi
 	return rootFiles.contains(".*/swkotor2.(exe|ini)", true);
 }
 
+bool KotOR2EngineProbe::probe(Common::SeekableReadStream &stream) const {
+	return false;
+}
+
 Engines::Engine *KotOR2EngineProbe::createEngine() const {
 	return new KotOR2Engine;
 }

@@ -56,6 +56,10 @@ bool TheWitcherEngineProbe::probe(const std::string &directory, const Common::Fi
 	return systemFiles.contains(".*/witcher.(exe|ini)", true);
 }
 
+bool TheWitcherEngineProbe::probe(Common::SeekableReadStream &stream) const {
+	return false;
+}
+
 Engines::Engine *TheWitcherEngineProbe::createEngine() const {
 	return new TheWitcherEngine;
 }

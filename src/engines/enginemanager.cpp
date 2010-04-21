@@ -13,7 +13,9 @@
  */
 
 #include "common/util.h"
+#include "common/file.h"
 #include "common/filelist.h"
+#include "common/filepath.h"
 
 #include "aurora/resman.h"
 #include "aurora/error.h"
@@ -40,16 +42,45 @@ static const EngineProbe *kProbes[] = {
 	&TheWitcher::kTheWitcherEngineProbe
 };
 
-Aurora::GameID EngineManager::probeGameID(const std::string &directory) const {
-	Common::FileList rootFiles;
+Aurora::GameID EngineManager::probeGameID(const std::string &target) const {
+	if (Common::FilePath::isDirectory(target)) {
+		// Try to probe from that directory
 
-	if (!rootFiles.addDirectory(directory))
-		// Fatal: can't read the directory
-		return Aurora::kGameIDUnknown;
+		Common::FileList rootFiles;
 
+		if (!rootFiles.addDirectory(target))
+			// Fatal: can't read the directory
+			return Aurora::kGameIDUnknown;
+
+		return probeGameID(target, rootFiles);
+	}
+
+	if (Common::FilePath::isRegularFile(target)) {
+		// Try to probe from that file
+
+		Common::File file;
+		if (file.open(target))
+			return probeGameID(file);
+	}
+
+	return Aurora::kGameIDUnknown;
+}
+
+Aurora::GameID EngineManager::probeGameID(const std::string &directory, const Common::FileList &rootFiles) const {
 	// Try to find the first engine able to handle the directory's data
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
 		if (kProbes[i]->probe(directory, rootFiles))
+			// Found one, return the game ID
+			return kProbes[i]->getGameID();
+
+	// None found
+	return Aurora::kGameIDUnknown;
+}
+
+Aurora::GameID EngineManager::probeGameID(Common::SeekableReadStream &stream) const {
+	// Try to find the first engine able to handle the directory's data
+	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
+		if (kProbes[i]->probe(stream))
 			// Found one, return the game ID
 			return kProbes[i]->getGameID();
 

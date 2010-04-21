@@ -55,6 +55,10 @@ bool NWN2EngineProbe::probe(const std::string &directory, const Common::FileList
 	return false;
 }
 
+bool NWN2EngineProbe::probe(Common::SeekableReadStream &stream) const {
+	return false;
+}
+
 Engines::Engine *NWN2EngineProbe::createEngine() const {
 	return new NWN2Engine;
 }

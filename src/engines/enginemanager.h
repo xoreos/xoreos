@@ -21,23 +21,32 @@
 
 #include "aurora/types.h"
 
+namespace Common {
+	class SeekableReadStream;
+	class FileList;
+}
+
 namespace Engines {
 
 /** The global engine manager. */
 class EngineManager : public Common::Singleton<EngineManager> {
 public:
-	/** Find an engine capable of running the game found in the directory.
+	/** Find an engine capable of running the game found in the directory or file.
 	 *
-	 *  @param  directory The directory containing game data.
-	 *  @return A GameID of the game found in that directory, or kGameIDUnknown.
+	 *  @param  target The directory or file containing game data.
+	 *  @return A GameID of the game found in that directory or file, or kGameIDUnknown.
 	 */
-	Aurora::GameID probeGameID(const std::string &directory) const;
+	Aurora::GameID probeGameID(const std::string &target) const;
 
 	/** Return the full game name to that game ID. */
 	const std::string &getGameName(Aurora::GameID gameID) const;
 
 	/** Run the specified game found in that directory. */
 	void run(Aurora::GameID gameID, const std::string &directory) const;
+
+private:
+	Aurora::GameID probeGameID(const std::string &directory, const Common::FileList &rootFiles) const;
+	Aurora::GameID probeGameID(Common::SeekableReadStream &stream) const;
 };
 
 } // End of namespace Engines
