@@ -20,6 +20,8 @@
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
+#include "events/events.h"
+
 #include "engines/enginemanager.h"
 #include "engines/engineprobe.h"
 
@@ -112,6 +114,7 @@ void EngineManager::run(Aurora::GameID gameID, const std::string &target) const 
 
 	try {
 		engine->run(target);
+		EventMan.requestQuit();
 	} catch(...) {
 
 		delete engine;
