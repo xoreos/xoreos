@@ -224,6 +224,8 @@ ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream,
 }
 
 void SoundManager::setChannelPosition(ChannelHandle channel, float x, float y, float z) {
+	Common::StackLock lock(_mutex);
+
 	if (!_channels[channel] || !_channels[channel]->stream)
 		throw Common::Exception("SoundManager::setChannelPosition(): Invalid channel");
 
@@ -234,6 +236,8 @@ void SoundManager::setChannelPosition(ChannelHandle channel, float x, float y, f
 }
 
 void SoundManager::getChannelPosition(ChannelHandle channel, float &x, float &y, float &z) {
+	Common::StackLock lock(_mutex);
+
 	if (!_channels[channel] || !_channels[channel]->stream)
 		throw Common::Exception("SoundManager::getChannelPosition(): Invalid channel");
 
