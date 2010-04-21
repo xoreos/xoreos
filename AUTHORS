@@ -23,12 +23,6 @@ glew
    glew is licensed under the Modified BSD License, the Mesa 3-D License
    (MIT License), and the Khronos License (MIT License).
 
-Bink
-****
-   The Bink decoder used in eos is based (very closely) on the Bink decoder in
-   FFmpeg (<http://ffmpeg.org/>), licensed under the GNU Lesser General Public
-   License (LGPL) version 2.1 or later.
-
 ScummVM code
 ************
    eos uses some ScummVM code, most prominently the endian, singleton, stream
