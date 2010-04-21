@@ -36,6 +36,7 @@ namespace Aurora {
 
 class KEYFile;
 class BIFFile;
+class NDSFile;
 
 /** A resource manager holding information about and handling all request for all
  *  resources useable by the game.
@@ -47,6 +48,8 @@ private:
 	typedef ResFileList::const_iterator ResFileRef;
 	typedef std::list<Common::ZipFile *> ResZipList;
 	typedef ResZipList::const_iterator ResZipRef;
+	typedef std::list<NDSFile *> ResNDSList;
+	typedef ResNDSList::const_iterator ResNDSRef;
 
 	/** Where a resource can be found. */
 	enum Source {
@@ -54,6 +57,7 @@ private:
 		kSourceERF,  ///< Within an ERF file.
 		kSourceRIM,  ///< Within a RIM file.
 		kSourceZIP,  ///< Within a ZIP file.
+		kSourceNDS,  ///< Within a Nintendo DS ROM file.
 		kSourceFile  ///< A direct file.
 	};
 
@@ -73,7 +77,10 @@ private:
 		// For kSourceZIP
 		ResZipRef resZip; ///< Iterator into the ZIP list.
 
-		// For kSourceFile / kSourceZIP
+		// For kSourceNDS
+		ResNDSRef resNDS; ///< Iterator into the NDS list.
+
+		// For kSourceFile / kSourceZIP / kSourceNDS
 		std::string path; ///< The file's path.
 
 		bool operator<(const Resource &right) const;
@@ -97,6 +104,7 @@ private:
 		std::list<ResFileList::iterator> erfs;
 		std::list<ResFileList::iterator> rims;
 		std::list<ResZipList::iterator>  zips;
+		std::list<ResNDSList::iterator>  ndss;
 		std::list<ResourceChange>        resources;
 	};
 
@@ -194,6 +202,14 @@ public:
 	 */
 	ChangeID addZIP(const std::string &zip, uint32 priority = 100);
 
+	/** Add resources found in the NDS file to the manager.
+	 *
+	 *  @param  nds The name of the NDS file within a valid NDS directory in the base dir.
+	 *  @param  priority The priority the resources have over others of the same name and type.
+	 *  @return An ID for all collective changes done by loading the NDS.
+	 */
+	ChangeID addNDS(const std::string &nds, uint32 priority = 100);
+
 	/** Undo the changes done in the specified change ID. */
 	void undo(ChangeID &change);
 
@@ -274,6 +290,7 @@ private:
 	ResFileList _erfs;
 	ResFileList _rims;
 	ResZipList  _zips;
+	ResNDSList  _ndss;
 	ResourceMap _resources;
 
 	ChangeSetList _changes;
@@ -310,6 +327,7 @@ private:
 
 	Common::SeekableReadStream *getOffResFile(const Resource &res) const;
 	Common::SeekableReadStream *getZipResFile(const Resource &res) const;
+	Common::SeekableReadStream *getNDSResFile(const Resource &res) const;
 };
 
 } // End of namespace Aurora

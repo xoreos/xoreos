@@ -27,6 +27,7 @@
 #include "aurora/biffile.h"
 #include "aurora/erffile.h"
 #include "aurora/rimfile.h"
+#include "aurora/ndsrom.h"
 
 // boost-string_algo
 using boost::iequals;
@@ -80,6 +81,10 @@ void ResourceManager::clear() {
 	for (ResZipList::iterator zip = _zips.begin(); zip != _zips.end(); ++zip)
 		delete *zip;
 	_zips.clear();
+
+	for (ResNDSList::iterator nds = _ndss.begin(); nds != _ndss.end(); ++nds)
+		delete *nds;
+	_ndss.clear();
 
 	_baseDir.clear();
 	_modDir.clear();
@@ -562,6 +567,14 @@ ResourceManager::ChangeID ResourceManager::addZIP(const std::string &zip, uint32
 	return change;
 }
 
+ResourceManager::ChangeID ResourceManager::addNDS(const std::string &nds, uint32 priority) {
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
+
+	return change;
+}
+
 void ResourceManager::undo(ChangeID &change) {
 	if (change == _changes.end())
 		// Nothing to do
@@ -598,6 +611,12 @@ void ResourceManager::undo(ChangeID &change) {
 	for (std::list<ResZipList::iterator>::iterator zipChange = change->zips.begin(); zipChange != change->zips.end(); ++zipChange) {
 		delete **zipChange;
 		_zips.erase(*zipChange);
+	}
+
+	// Removing all changes in the NDS list
+	for (std::list<ResNDSList::iterator>::iterator ndsChange = change->ndss.begin(); ndsChange != change->ndss.end(); ++ndsChange) {
+		delete **ndsChange;
+		_ndss.erase(*ndsChange);
 	}
 
 	// Now we can remove the change set from our list of change sets
@@ -652,6 +671,10 @@ Common::SeekableReadStream *ResourceManager::getZipResFile(const Resource &res) 
 	return (*res.resZip)->open(res.path);
 }
 
+Common::SeekableReadStream *ResourceManager::getNDSResFile(const Resource &res) const {
+	return 0;
+}
+
 Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
 	std::vector<FileType> types;
 
@@ -680,6 +703,8 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 		return getOffResFile(*res);
 	} else if (res->source == kSourceZIP) {
 		return getZipResFile(*res);
+	} else if (res->source == kSourceNDS) {
+		return getNDSResFile(*res);
 	} else if (res->source == kSourceFile) {
 		// Open the file and return it
 
@@ -785,6 +810,7 @@ void ResourceManager::addResources(const Common::FileList &files, ChangeID &chan
 		res.type     = getFileType(*file);
 		res.resFile  = _bifs.end();
 		res.resZip   = _zips.end();
+		res.resNDS   = _ndss.end();
 		res.offset   = 0xFFFFFFFF;
 		res.size     = 0xFFFFFFFF;
 
