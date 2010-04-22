@@ -302,7 +302,7 @@ UString::iterator UString::findFirst(uint32 c) const {
 }
 
 void UString::truncate(const iterator &it) {
-	_string.resize(std::distance(it.base(), (std::string::const_iterator) _string.end()));
+	_string.resize(std::distance((std::string::const_iterator) _string.begin(), it.base()));
 }
 
 void UString::replaceAll(uint32 what, uint32 with) {
