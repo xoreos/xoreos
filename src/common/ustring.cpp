@@ -286,6 +286,18 @@ UString::iterator UString::end() const {
 	return iterator(_string.end(), _string.begin(), _string.end());
 }
 
+UString::iterator UString::findFirst(uint32 c) const {
+	for (iterator it = begin(); it != end(); ++it)
+		if (*it == c)
+			return it;
+
+	return end();
+}
+
+void UString::truncate(const iterator &it) {
+	_string.resize(std::distance(it.base(), (std::string::const_iterator) _string.end()));
+}
+
 void UString::replaceAll(uint32 what, uint32 with) {
 	// The new string with characters replaced
 	std::string newString;

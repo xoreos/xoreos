@@ -88,6 +88,10 @@ public:
 	iterator begin() const;
 	iterator end() const;
 
+	iterator findFirst(uint32 c) const;
+
+	void truncate(const iterator &it);
+
 	/** Replace all occurences of a character with another character. */
 	void replaceAll(uint32 what, uint32 with);
 
