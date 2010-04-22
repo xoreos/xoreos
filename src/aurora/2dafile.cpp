@@ -62,7 +62,8 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 	if ((_version != kVersion2a) && (_version != kVersion2b))
 		throw Common::Exception("Unsupported 2DA file version %08X", _version);
 
-	twoda.readLine(); // Skip the rest of the line
+	Common::UString lineRest;
+	lineRest.readLineASCII(twoda); // Skip the rest of the line
 
 	try {
 
