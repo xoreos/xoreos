@@ -26,6 +26,67 @@
 
 namespace Common {
 
+static int readSingleByte(SeekableReadStream &stream, uint32 &c) {
+	c = stream.readByte();
+	return 1;
+}
+
+static int readDoubleByteLE(SeekableReadStream &stream, uint32 &c) {
+	c = stream.readUint16LE();
+	return 2;
+}
+
+static int readDoubleByteBE(SeekableReadStream &stream, uint32 &c) {
+	c = stream.readUint16BE();
+	return 2;
+}
+
+template<typename T>
+static void readLine(SeekableReadStream &stream, std::vector<T> &data,
+		int (*readFunc)(SeekableReadStream &, uint32 &c)) {
+
+	uint32 c = 0;
+	int cLen = 0;
+
+	// If end-of-file occurs before any characters are read, return
+	// and the buffer contents remain unchanged.
+	if (stream.eos() || stream.err())
+		return;
+
+	// Loop as long as the line has not ended
+	while (c != '\n') {
+		(*readFunc)(stream, c);
+
+		// If an error occurs, return
+		if (stream.eos() || stream.err())
+			return;
+
+		// Check for CR or CR/LF
+		// * DOS and Windows use CRLF line breaks
+		// * Unix and OS X use LF line breaks
+		// * Macintosh before OS X used CR line breaks
+		if (c == '\r') {
+			// Look at the next char -- is it LF? If not, seek back
+			cLen = (*readFunc)(stream, c);
+
+			if (stream.err())
+				return; // error: the buffer contents are indeterminate
+
+			if (stream.eos()) {
+				// The CR was the last character in the file.
+				// Reset the eos() flag since we successfully finished a line
+				stream.clearErr();
+			} else if (c != '\n')
+				stream.seek(-cLen, SEEK_CUR);
+
+			// Treat CR & CR/LF as plain LF
+			c = '\n';
+		}
+
+		data.push_back((T) c);
+	}
+}
+
 class ConversionManager : public Singleton<ConversionManager> {
 public:
 	ConversionManager() : _fromLatin9((iconv_t) -1) {
@@ -291,6 +352,18 @@ void UString::readASCII(SeekableReadStream &stream, uint32 length) {
 	_string = (const char *) &data[0];
 }
 
+void UString::readLineASCII(SeekableReadStream &stream) {
+	std::vector<char> data;
+	readLine(stream, data, &Common::readSingleByte);
+
+	if (data.empty()) {
+		_string.clear();
+		return;
+	}
+
+	_string = (const char *) &data[0];
+}
+
 void UString::readLatin9(SeekableReadStream &stream) {
 	std::vector<char> data;
 	readSingleByte(stream, data);
@@ -306,6 +379,18 @@ void UString::readLatin9(SeekableReadStream &stream) {
 void UString::readLatin9(SeekableReadStream &stream, uint32 length) {
 	std::vector<char> data;
 	readSingleByte(stream, data, length);
+
+	if (data.empty()) {
+		_string.clear();
+		return;
+	}
+
+	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
+}
+
+void UString::readLineLatin9(SeekableReadStream &stream) {
+	std::vector<char> data;
+	readLine(stream, data, &Common::readSingleByte);
 
 	if (data.empty()) {
 		_string.clear();
@@ -337,6 +422,17 @@ void UString::readUTF16LE(SeekableReadStream &stream, uint32 length) {
 	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
 }
 
+void UString::readLineUTF16LE(SeekableReadStream &stream) {
+	_string.clear();
+
+	std::vector<uint16> data;
+	readLine(stream, data, &Common::readDoubleByteLE);
+	if (data.empty())
+		return;
+
+	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+}
+
 void UString::readUTF16BE(SeekableReadStream &stream) {
 	_string.clear();
 
@@ -353,6 +449,17 @@ void UString::readUTF16BE(SeekableReadStream &stream, uint32 length) {
 
 	std::vector<uint16> data;
 	readDoubleByteBE(stream, data, length);
+	if (data.empty())
+		return;
+
+	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+}
+
+void UString::readLineUTF16BE(SeekableReadStream &stream) {
+	_string.clear();
+
+	std::vector<uint16> data;
+	readLine(stream, data, &Common::readDoubleByteBE);
 	if (data.empty())
 		return;
 
