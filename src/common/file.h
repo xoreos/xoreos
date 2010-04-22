@@ -23,6 +23,8 @@
 
 namespace Common {
 
+class UString;
+
 /** A simple streaming file class. */
 class File : public SeekableReadStream, public NonCopyable {
 public:
@@ -35,7 +37,7 @@ public:
 	 * @param  fileName the file to check for
 	 * @return true if the file exists, false otherwise
 	 */
-	static bool exists(const std::string &fileName);
+	static bool exists(const UString &fileName);
 
 	/**
 	 * Try to open the file with the given fileName.
@@ -44,7 +46,7 @@ public:
 	 * @param  fileName the name of the file to open
 	 * @return true if file was opened successfully, false otherwise
 	 */
-	bool open(const std::string &fileName);
+	bool open(const UString &fileName);
 
 	/**
 	 * Close the file, if open.
@@ -88,7 +90,7 @@ public:
 	 * @param  fileName the name of the file to open
 	 * @return true if file was opened successfully, false otherwise
 	 */
-	bool open(const std::string &fileName);
+	bool open(const UString &fileName);
 
 	/**
 	 * Close the file, if open.

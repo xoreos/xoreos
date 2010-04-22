@@ -15,13 +15,12 @@
 #ifndef ENGINES_ENGINEMANAGER_H
 #define ENGINES_ENGINEMANAGER_H
 
-#include <string>
-
 #include "common/singleton.h"
 
 #include "aurora/types.h"
 
 namespace Common {
+	class UString;
 	class SeekableReadStream;
 	class FileList;
 }
@@ -36,16 +35,16 @@ public:
 	 *  @param  target The directory or file containing game data.
 	 *  @return A GameID of the game found in that directory or file, or kGameIDUnknown.
 	 */
-	Aurora::GameID probeGameID(const std::string &target) const;
+	Aurora::GameID probeGameID(const Common::UString &target) const;
 
 	/** Return the full game name to that game ID. */
-	const std::string &getGameName(Aurora::GameID gameID) const;
+	const Common::UString &getGameName(Aurora::GameID gameID) const;
 
 	/** Run the specified game found in that directory or file. */
-	void run(Aurora::GameID gameID, const std::string &target) const;
+	void run(Aurora::GameID gameID, const Common::UString &target) const;
 
 private:
-	Aurora::GameID probeGameID(const std::string &directory, const Common::FileList &rootFiles) const;
+	Aurora::GameID probeGameID(const Common::UString &directory, const Common::FileList &rootFiles) const;
 	Aurora::GameID probeGameID(Common::SeekableReadStream &stream) const;
 };
 

@@ -15,6 +15,7 @@
 #include "boost/algorithm/string.hpp"
 
 #include "common/util.h"
+#include "common/ustring.h"
 #include "common/filepath.h"
 
 #include "aurora/util.h"
@@ -197,18 +198,18 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeSDAT,           ".sdat"}
 };
 
-FileType getFileType(const std::string &path) {
-	const std::string ext = Common::FilePath::getExtension(path);
+FileType getFileType(const Common::UString &path) {
+	const Common::UString ext = Common::FilePath::getExtension(path);
 
 	for (int i = 0; i < ARRAYSIZE(fileExtensions); i++)
-		if (iequals(ext, fileExtensions[i].extension))
+		if (iequals(ext.c_str(), fileExtensions[i].extension))
 			return fileExtensions[i].type;
 
 	return kFileTypeNone;
 }
 
-std::string setFileType(const std::string &path, FileType type) {
-	std::string ext;
+Common::UString setFileType(const Common::UString &path, FileType type) {
+	Common::UString ext;
 
 	for (int i = 0; i < ARRAYSIZE(fileExtensions); i++)
 		if (fileExtensions[i].type == type) {

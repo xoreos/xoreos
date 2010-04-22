@@ -22,6 +22,7 @@
 #include "boost/filesystem.hpp"
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 namespace Common {
 
@@ -49,7 +50,7 @@ public:
 	 *
 	 *  @param list The list into which to copy the file names.
 	 */
-	void getFileNames(std::list<std::string> &list) const;
+	void getFileNames(std::list<UString> &list) const;
 
 	/** Add a directory to the list
 	 *
@@ -59,7 +60,7 @@ public:
 	 *  @return true if the directory was successfully added to the list,
 	 *          false otherwise.
 	 */
-	bool addDirectory(const std::string &directory, int recurseDepth = 0);
+	bool addDirectory(const UString &directory, int recurseDepth = 0);
 
 	/** Add the files matching the given regex into another FileList.
 	 *
@@ -68,7 +69,7 @@ public:
 	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return true if at least one matching file was found.
 	 */
-	bool getSubList(const std::string &glob, FileList &subList, bool caseInsensitive = false) const;
+	bool getSubList(const UString &glob, FileList &subList, bool caseInsensitive = false) const;
 
 	/** Add the files matching the given regex into a list of file names.
 	 *
@@ -77,14 +78,14 @@ public:
 	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return true if at least one matching file was found.
 	 */
-	bool getSubList(const std::string &glob, std::list<std::string> &list, bool caseInsensitive = false) const;
+	bool getSubList(const UString &glob, std::list<UString> &list, bool caseInsensitive = false) const;
 
 	/** Does the list contain the specified file?
 	 *
 	 *  @param  fileName The file to look for.
 	 *  @return true if the file is in the list, fale if not.
 	 */
-	bool contains(const std::string &fileName) const;
+	bool contains(const UString &fileName) const;
 
 	/** Does the list contain at least one file matching the given regex?
 	 *
@@ -92,7 +93,7 @@ public:
 	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return true if at least one matching file is found, false otherwise.
 	 */
-	bool contains(const std::string &glob, bool caseInsensitive) const;
+	bool contains(const UString &glob, bool caseInsensitive) const;
 
 	/** Find the first file matching the given regex.
 	 *
@@ -101,7 +102,7 @@ public:
 	 *  @return The path of the first matching file, or "" if such a file is not
 	 *          in the list.
 	 */
-	std::string findFirst(const std::string &glob, bool caseInsensitive) const;
+	UString findFirst(const UString &glob, bool caseInsensitive) const;
 
 	/** Open the specified file.
 	 *
@@ -109,7 +110,7 @@ public:
 	 *  @return A SeekableReadStream of the file, or 0 if the file not
 	 *          in the list.
 	 */
-	SeekableReadStream *openFile(const std::string &fileName) const;
+	SeekableReadStream *openFile(const UString &fileName) const;
 
 	/** Open the first file matching the given regex.
 	 *
@@ -118,32 +119,33 @@ public:
 	 *  @return A SeekableReadStream of the file, or 0 if such a file is not
 	 *          in the list.
 	 */
-	SeekableReadStream *openFile(const std::string &glob, bool caseInsensitive) const;
+	SeekableReadStream *openFile(const UString &glob, bool caseInsensitive) const;
 
 private:
 	/** A file path. */
 	struct FilePath {
-		std::string baseDir;              ///< The base directory from which the path was added.
+		UString baseDir;          ///< The base directory from which the path was added.
+		UString pathString;       ///< The complete path string form.
 		boost::filesystem::path filePath; ///< The complete real path.
 
-		FilePath(std::string b, boost::filesystem::path p);
+		FilePath(UString b, boost::filesystem::path p);
 		FilePath(const FilePath &p);
 	};
 
-	typedef std::multimap<std::string, std::list<FilePath>::const_iterator> FileMap;
+	typedef std::multimap<UString, std::list<FilePath>::const_iterator> FileMap;
 
 	std::list<FilePath> _files; ///< The files.
 
 	/** The files mapped by extensionless, lowercase filename. */
 	FileMap _fileMap;
 
-	bool addDirectory(const std::string &base, const boost::filesystem::path &directory, int recurseDepth);
+	bool addDirectory(const UString &base, const boost::filesystem::path &directory, int recurseDepth);
 
-	void addPath(const std::string &base, const boost::filesystem::path &p);
+	void addPath(const UString &base, const boost::filesystem::path &p);
 	void addPath(const FilePath &p);
 
-	const FilePath *getPath(const std::string &fileName) const;
-	const FilePath *getPath(const std::string &glob, bool caseInsensitive) const;
+	const FilePath *getPath(const UString &fileName) const;
+	const FilePath *getPath(const UString &glob, bool caseInsensitive) const;
 
 public:
 	/** Iterator over all files in a FileList. */
@@ -156,8 +158,8 @@ public:
 		const_iterator operator++(int);
 		const_iterator &operator--();
 		const_iterator operator--(int);
-		const std::string &operator*() const;
-		const std::string *operator->() const;
+		const UString &operator*() const;
+		const UString *operator->() const;
 		bool operator==(const const_iterator &x) const;
 		bool operator!=(const const_iterator &x) const;
 

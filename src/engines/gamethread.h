@@ -15,8 +15,7 @@
 #ifndef ENGINES_GAMETHREAD_H
 #define ENGINES_GAMETHREAD_H
 
-#include <string>
-
+#include "common/ustring.h"
 #include "common/thread.h"
 
 #include "aurora/types.h"
@@ -29,12 +28,12 @@ public:
 	GameThread();
 	~GameThread();
 
-	void init(const std::string &baseDir);
+	void init(const Common::UString &baseDir);
 
 	void run();
 
 private:
-	std::string _baseDir;
+	Common::UString _baseDir;
 	Aurora::GameID _gameID;
 
 	void threadMethod();

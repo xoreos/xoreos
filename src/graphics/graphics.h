@@ -15,7 +15,6 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
-#include <string>
 #include <list>
 
 #include "graphics/types.h"
@@ -27,6 +26,10 @@
 #include "common/types.h"
 #include "common/singleton.h"
 #include "common/mutex.h"
+
+namespace Common {
+	class UString;
+}
 
 namespace Graphics {
 
@@ -53,7 +56,7 @@ public:
 	uint32 getFPS() const;
 
 	/** That the window's title. */
-	void setWindowTitle(const std::string &title);
+	void setWindowTitle(const Common::UString &title);
 
 	/** Lock the frame mutex. */
 	void lockFrame();

@@ -100,7 +100,9 @@ void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 			key.skip(2); // Location of the bif (HD, CD, ...)
 		}
 
-		*bif = AuroraFile::readRawString(key, nameSize, nameOffset);
+		uint32 curPos = key.seekTo(nameOffset);
+		bif->readASCII(key, nameSize);
+		key.seekTo(curPos);
 
 		AuroraFile::cleanupPath(*bif);
 	}
@@ -111,7 +113,7 @@ void KEYFile::readResList(Common::SeekableReadStream &key, uint32 offset) {
 		throw Common::Exception(Common::kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
-		res->name = AuroraFile::readRawString(key, 16);
+		res->name.readASCII(key, 16);
 		res->type = (FileType) key.readUint16LE();
 
 		uint32 id = key.readUint32LE();

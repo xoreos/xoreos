@@ -15,7 +15,7 @@
 #ifndef GRAPHICS_TEXT_H
 #define GRAPHICS_TEXT_H
 
-#include <string>
+#include "common/ustring.h"
 
 #include "graphics/guifrontelement.h"
 
@@ -25,7 +25,7 @@ class Font;
 
 class Text : public GUIFrontElement {
 public:
-	Text(const Font &font, float x, float y, const std::string &str);
+	Text(const Font &font, float x, float y, const Common::UString &str);
 	~Text();
 
 	void newFrame();
@@ -40,7 +40,7 @@ private:
 	float _x;
 	float _y;
 
-	std::string _str;
+	Common::UString _str;
 };
 
 } // End of namespace Graphics

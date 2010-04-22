@@ -16,8 +16,8 @@
 #define COMMON_ZIPFILE_H
 
 #include "common/types.h"
+#include "common/ustring.h"
 
-#include <string>
 #include <map>
 #include <list>
 
@@ -28,7 +28,7 @@ class SeekableReadStream;
 /** A class encapsulating ZIP file access. */
 class ZipFile {
 public:
-	typedef std::list<std::string> FileList;
+	typedef std::list<UString> FileList;
 
 	ZipFile(SeekableReadStream *stream);
 	~ZipFile();
@@ -37,7 +37,7 @@ public:
 	const FileList &getFileList() const;
 
 	/** Open a file contained in the archive. */
-	SeekableReadStream *open(const std::string &filename);
+	SeekableReadStream *open(UString filename);
 
 private:
 	struct FileRecord {
@@ -47,7 +47,7 @@ private:
 		uint32 offset;
 	};
 
-	typedef std::map<std::string, FileRecord> FileMap;
+	typedef std::map<UString, FileRecord> FileMap;
 
 	SeekableReadStream *_stream;
 

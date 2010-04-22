@@ -35,17 +35,17 @@ namespace NWN2 {
 
 const NWN2EngineProbe kNWN2EngineProbe;
 
-const std::string NWN2EngineProbe::kGameName = "Neverwinter Nights 2";
+const Common::UString NWN2EngineProbe::kGameName = "Neverwinter Nights 2";
 
 Aurora::GameID NWN2EngineProbe::getGameID() const {
 	return Aurora::kGameIDNWN2;
 }
 
-const std::string &NWN2EngineProbe::getGameName() const {
+const Common::UString &NWN2EngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool NWN2EngineProbe::probe(const std::string &directory, const Common::FileList &rootFiles) const {
+bool NWN2EngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If either the ini file or the binary is found, this should be a valid path
 	if (rootFiles.contains(".*/nwn2.ini", true))
 		return true;
@@ -70,7 +70,7 @@ NWN2Engine::NWN2Engine() {
 NWN2Engine::~NWN2Engine() {
 }
 
-void NWN2Engine::run(const std::string &target) {
+void NWN2Engine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();

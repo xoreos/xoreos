@@ -14,6 +14,7 @@
 
 #include "common/types.h"
 #include "common/error.h"
+#include "common/ustring.h"
 #include "common/util.h"
 
 #include "events/requests.h"
@@ -26,7 +27,7 @@ namespace Graphics {
 
 // TODO: Multibyte fonts
 
-Font::Font(const std::string &name) : _listStart(0), _scale(1.0), _spaceR(0.0), _spaceB(0.0) {
+Font::Font(const Common::UString &name) : _listStart(0), _scale(1.0), _spaceR(0.0), _spaceB(0.0) {
 	_texture = new Texture(name);
 
 	load();

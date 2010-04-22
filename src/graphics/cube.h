@@ -20,6 +20,7 @@
 #include "graphics/object.h"
 
 namespace Common {
+	class UString;
 	class SeekableReadStream;
 }
 
@@ -46,7 +47,7 @@ private:
 
 class Cube : public ListContainer {
 public:
-	Cube(const std::string &texture);
+	Cube(const Common::UString &texture);
 	~Cube();
 
 // ListContainer

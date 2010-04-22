@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 #include "aurora/types.h"
 #include "aurora/aurorafile.h"
@@ -41,13 +42,13 @@ public:
 	/** A talk resource entry. */
 	struct Entry {
 		EntryFlags flags;
-		std::string soundResRef;
+		Common::UString soundResRef;
 		uint32 volumeVariance; // Unused
 		uint32 pitchVariance; // Unused
 		uint32 offset;
 		uint32 length;
 		float soundLength; // In seconds
-		std::string text;
+		Common::UString text;
 	};
 
 	typedef std::vector<Entry> EntryList;

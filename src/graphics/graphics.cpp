@@ -16,6 +16,7 @@
 
 #include "common/util.h"
 #include "common/error.h"
+#include "common/ustring.h"
 
 #include "events/requests.h"
 
@@ -161,7 +162,7 @@ void GraphicsManager::checkGLExtensions() {
 	}
 }
 
-void GraphicsManager::setWindowTitle(const std::string &title) {
+void GraphicsManager::setWindowTitle(const Common::UString &title) {
 	SDL_WM_SetCaption(title.c_str(), 0);
 }
 

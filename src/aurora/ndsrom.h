@@ -16,8 +16,8 @@
 #define AURORA_NDSROM_H
 
 #include "common/types.h"
+#include "common/ustring.h"
 
-#include <string>
 #include <map>
 #include <list>
 
@@ -28,7 +28,7 @@ class SeekableReadStream;
 /** A class encapsulating Nintendo DS ROM access. */
 class NDSFile {
 public:
-	typedef std::list<std::string> FileList;
+	typedef std::list<Common::UString> FileList;
 
 	NDSFile(Common::SeekableReadStream *stream);
 	~NDSFile();
@@ -37,7 +37,7 @@ public:
 	const FileList &getFileList() const;
 
 	/** Open a file contained in the ROM. */
-	Common::SeekableReadStream *open(const std::string &filename);
+	Common::SeekableReadStream *open(Common::UString filename);
 
 	/** Check if a stream is a valid Nintendo DS ROM. */
 	static bool isNDS(Common::SeekableReadStream &stream);
@@ -48,7 +48,7 @@ private:
 		uint32 size;
 	};
 
-	typedef std::map<std::string, FileRecord> FileMap;
+	typedef std::map<Common::UString, FileRecord> FileMap;
 
 	Common::SeekableReadStream *_stream;
 

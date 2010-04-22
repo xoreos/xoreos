@@ -16,6 +16,7 @@
 #include <cstring>
 
 #include "common/error.h"
+#include "common/ustring.h"
 #include "common/file.h"
 
 #include "graphics/images/decoder.h"
@@ -35,7 +36,7 @@ static void writePixel(Common::DumpFile &file, const byte *data, PixelFormat for
 		throw Common::Exception("Unsupported pixel format: %d", (int) format);
 }
 
-void dumpPPM(const std::string &fileName, const byte *data, int width, int height, PixelFormat format) {
+void dumpPPM(const Common::UString &fileName, const byte *data, int width, int height, PixelFormat format) {
 	if ((width <= 0) || (height <= 0) || !data)
 		throw Common::Exception("Invalid image data (%dx%d %d)", width, height, data != 0);
 
@@ -61,7 +62,7 @@ void dumpPPM(const std::string &fileName, const byte *data, int width, int heigh
 	file.close();
 }
 
-void dumpPPM(const std::string &fileName, const ImageDecoder *image) {
+void dumpPPM(const Common::UString &fileName, const ImageDecoder *image) {
 	if (!image || (image->getMipMapCount() < 1))
 		throw Common::Exception("No image");
 

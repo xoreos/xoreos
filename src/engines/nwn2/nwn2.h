@@ -15,6 +15,8 @@
 #ifndef ENGINES_NWN2_NWN2_H
 #define ENGINES_NWN2_NWN2_H
 
+#include "common/ustring.h"
+
 #include "aurora/types.h"
 
 #include "engines/engine.h"
@@ -30,15 +32,15 @@ class NWN2EngineProbe : public Engines::EngineProbe {
 public:
 	Aurora::GameID getGameID() const;
 
-	const std::string &getGameName() const;
+	const Common::UString &getGameName() const;
 
-	bool probe(const std::string &directory, const Common::FileList &rootFiles) const;
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
 	bool probe(Common::SeekableReadStream &stream) const;
 
 	Engines::Engine *createEngine() const;
 
 private:
-	static const std::string kGameName;
+	static const Common::UString kGameName;
 };
 
 extern const NWN2EngineProbe kNWN2EngineProbe;
@@ -48,10 +50,10 @@ public:
 	NWN2Engine();
 	~NWN2Engine();
 
-	void run(const std::string &target);
+	void run(const Common::UString &target);
 
 private:
-	std::string _baseDirectory;
+	Common::UString _baseDirectory;
 
 	void init();
 };

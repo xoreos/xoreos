@@ -12,9 +12,8 @@
  *  File classes implementing the stream interfaces.
  */
 
-#include <string>
-
 #include "common/file.h"
+#include "common/ustring.h"
 
 namespace Common {
 
@@ -25,7 +24,7 @@ File::~File() {
 	close();
 }
 
-bool File::exists(const std::string &fileName) {
+bool File::exists(const UString &fileName) {
 	File file;
 
 	if (!file.open(fileName))
@@ -35,7 +34,7 @@ bool File::exists(const std::string &fileName) {
 	return true;
 }
 
-bool File::open(const std::string &fileName) {
+bool File::open(const UString &fileName) {
 	if (!(_handle = std::fopen(fileName.c_str(), "rb")))
 		return false;
 
@@ -112,7 +111,7 @@ DumpFile::~DumpFile() {
 	close();
 }
 
-bool DumpFile::open(const std::string &fileName) {
+bool DumpFile::open(const UString &fileName) {
 	if (!(_handle = std::fopen(fileName.c_str(), "wb")))
 		return false;
 

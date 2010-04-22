@@ -15,6 +15,8 @@
 #ifndef ENGINES_THEWITCHER_THEWITCHER_H
 #define ENGINES_THEWITCHER_THEWITCHER_H
 
+#include "common/ustring.h"
+
 #include "aurora/types.h"
 
 #include "engines/engine.h"
@@ -30,15 +32,15 @@ class TheWitcherEngineProbe : public Engines::EngineProbe {
 public:
 	Aurora::GameID getGameID() const;
 
-	const std::string &getGameName() const;
+	const Common::UString &getGameName() const;
 
-	bool probe(const std::string &directory, const Common::FileList &rootFiles) const;
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
 	bool probe(Common::SeekableReadStream &stream) const;
 
 	Engines::Engine *createEngine() const;
 
 private:
-	static const std::string kGameName;
+	static const Common::UString kGameName;
 };
 
 extern const TheWitcherEngineProbe kTheWitcherEngineProbe;
@@ -48,10 +50,10 @@ public:
 	TheWitcherEngine();
 	~TheWitcherEngine();
 
-	void run(const std::string &target);
+	void run(const Common::UString &target);
 
 private:
-	std::string _baseDirectory;
+	Common::UString _baseDirectory;
 
 	void init();
 };

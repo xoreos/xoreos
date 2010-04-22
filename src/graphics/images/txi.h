@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -44,8 +45,8 @@ public:
 		float baselineHeight;
 		Blending blending;
 		float bumpMapScaling;
-		std::string bumpMapTexture;
-		std::string bumpyShinyTexture;
+		Common::UString bumpMapTexture;
+		Common::UString bumpyShinyTexture;
 		bool canDownsample;
 		float caretIndent;
 		uint8 channelScale;
@@ -54,7 +55,7 @@ public:
 		uint32 codepage;
 		uint8 cols;
 		bool compressTexture;
-		std::string controllerScript;
+		Common::UString controllerScript;
 		bool cube;
 		uint32 dbMapping;
 		bool decal;
@@ -67,7 +68,7 @@ public:
 		uint8 downsampleFactor;
 		uint8 downsampleMax;
 		uint8 downsampleMin;
-		std::string envMapTexture;
+		Common::UString envMapTexture;
 		uint8 fileRange;
 		bool filter;
 		float fontHeight;
@@ -87,7 +88,7 @@ public:
 		uint8 numY;
 		bool onDemand;
 		float priority;
-		std::string procedureType;
+		Common::UString procedureType;
 		uint8 rows;
 		float spacingB;
 		float spacingR;

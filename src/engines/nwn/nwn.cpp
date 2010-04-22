@@ -35,17 +35,17 @@ namespace NWN {
 
 const NWNEngineProbe kNWNEngineProbe;
 
-const std::string NWNEngineProbe::kGameName = "Neverwinter Nights";
+const Common::UString NWNEngineProbe::kGameName = "Neverwinter Nights";
 
 Aurora::GameID NWNEngineProbe::getGameID() const {
 	return Aurora::kGameIDNWN;
 }
 
-const std::string &NWNEngineProbe::getGameName() const {
+const Common::UString &NWNEngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool NWNEngineProbe::probe(const std::string &directory, const Common::FileList &rootFiles) const {
+bool NWNEngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// Don't accidentally trigger on NWN2
 	if (rootFiles.contains(".*/nwn2.ini", true))
 		return false;
@@ -81,7 +81,7 @@ NWNEngine::NWNEngine() {
 NWNEngine::~NWNEngine() {
 }
 
-void NWNEngine::run(const std::string &target) {
+void NWNEngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();

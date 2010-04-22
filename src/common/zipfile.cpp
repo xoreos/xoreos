@@ -18,8 +18,6 @@
 #include "common/stream.h"
 #include "common/zipfile.h"
 
-#include "aurora/aurorafile.h"
-
 #include <zlib.h>
 
 namespace Common {
@@ -49,7 +47,10 @@ ZipFile::ZipFile(SeekableReadStream *stream) : _stream(0) {
 			fileRecord.size = _stream->readUint32LE();
 			uint16 fileNameLength = _stream->readUint16LE();
 			uint16 extraFieldLength = _stream->readUint16LE();
-			std::string filename = Aurora::AuroraFile::readRawString(*_stream, fileNameLength);
+
+			UString filename;
+			filename.readASCII(*_stream, fileNameLength);
+
 			_stream->skip(extraFieldLength);
 			fileRecord.offset = _stream->pos();
 			_stream->skip(fileRecord.compSize);
@@ -69,9 +70,9 @@ ZipFile::ZipFile(SeekableReadStream *stream) : _stream(0) {
 			// file attributes. Since neither DrMcCoy nor I want to do this,
 			// we're sticking with this hack.
 
-			if (filename[filename.size() - 1] != '/') {
+			if (!filename.empty() && (*(--filename.end()) != '/')) {
 				// Convert to lowercase for simple comparisons later
-				boost::to_lower(filename);
+				filename.tolower();
 
 				// Add it to our file list
 				_fileList.push_front(filename);
@@ -90,8 +91,8 @@ ZipFile::~ZipFile() {
 	delete _stream;
 }
 
-SeekableReadStream *ZipFile::open(const std::string &filename) {
-	std::string lowercaseString = boost::to_lower_copy(filename);
+SeekableReadStream *ZipFile::open(UString filename) {
+	filename.tolower();
 
 	FileMap::const_iterator it = _fileMap.find(filename);
 	if (it == _fileMap.end())

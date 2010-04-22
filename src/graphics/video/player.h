@@ -15,7 +15,9 @@
 #ifndef GRAPHICS_VIDEO_PLAYER_H
 #define GRAPHICS_VIDEO_PLAYER_H
 
-#include <string>
+namespace Common {
+	class UString;
+}
 
 namespace Graphics {
 
@@ -23,7 +25,7 @@ class VideoDecoder;
 
 class VideoPlayer {
 public:
-	VideoPlayer(const std::string &video);
+	VideoPlayer(const Common::UString &video);
 	~VideoPlayer();
 
 	void play();
@@ -31,7 +33,7 @@ public:
 private:
 	VideoDecoder *_video;
 
-	void load(const std::string &name);
+	void load(const Common::UString &name);
 };
 
 } // End of namespace Graphics

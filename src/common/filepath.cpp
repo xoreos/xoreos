@@ -30,59 +30,64 @@ using boost::iequals;
 
 namespace Common {
 
-bool FilePath::isRegularFile(const std::string &p) {
-	return (exists(p) && is_regular_file(p));
+bool FilePath::isRegularFile(const UString &p) {
+	return (exists(p.c_str()) && is_regular_file(p.c_str()));
 }
 
-bool FilePath::isDirectory(const std::string &p) {
-	return (exists(p) && is_directory(p));
+bool FilePath::isDirectory(const UString &p) {
+	return (exists(p.c_str()) && is_directory(p.c_str()));
 }
 
-std::string FilePath::getStem(const std::string &p) {
-	path file(p);
+UString FilePath::getStem(const UString &p) {
+	path file(p.c_str());
 
 	return file.stem();
 }
 
-std::string FilePath::getExtension(const std::string &p) {
-	path file(p);
+UString FilePath::getExtension(const UString &p) {
+	path file(p.c_str());
 
 	return file.extension();
 }
 
-std::string FilePath::changeExtension(const std::string &p, const std::string &ext) {
-	path file(p);
+UString FilePath::changeExtension(const UString &p, const UString &ext) {
+	path file(p.c_str());
 
-	file.replace_extension(ext);
+	file.replace_extension(ext.c_str());
 
 	return file.string();
 }
 
 path FilePath::normalize(const boost::filesystem::path &p) {
-	return path(normalize(p.string()));
+	UString ustring = p.string();
+
+	return path(normalize(ustring).c_str());
 }
 
-std::string FilePath::normalize(const std::string &p) {
-	std::string norm;
-
-	// To at least the path + "./"
-	norm.reserve(p.size() + 3);
+UString FilePath::normalize(const UString &p) {
+	UString norm;
 
 	// Make sure there's a path qualifier
-	const char *s = p.c_str();
 	if (!isAbsolute(p)) {
-		if ((s[0] != '.') || (s[1] != '/'))
+		UString::iterator it = p.begin();
+
+		if ((it == p.end()) || (*it != '.')) {
 			norm += "./";
+		} else {
+			++it;
+			if ((it == p.end()) || (*it != '/'))
+				norm += "./";
+		}
 	}
 
 	// Remove consecutive '/'
 	bool hasSlash = !norm.empty();
-	for (; *s; s++) {
-		if ((*s == '/') || (*s == '\\')) {
+	for (UString::iterator it = p.begin(); it != p.end(); ++it) {
+		if ((*it == '/') || (*it == '\\')) {
 			// Only append the '/' if the last character wasn't one as well and this
 			// is not the final character.
 
-			if (!hasSlash && (s[1] != '\0'))
+			if (!hasSlash && (it != --p.end()))
 				norm += '/';
 
 			hasSlash = true;
@@ -90,22 +95,29 @@ std::string FilePath::normalize(const std::string &p) {
 		}
 
 		// Append the character
-		norm += *s;
+		norm += *it;
 		hasSlash = false;
 	}
 
 	return norm;
 }
 
-bool FilePath::isAbsolute(const std::string &p) {
+bool FilePath::isAbsolute(const UString &p) {
 	if (p.empty())
 		return false;
 
 #if defined(BOOST_WINDOWS_API)
-	if ((p.size() >= 3) && isalpha(p[0]) && (p[1] == ':') && ((p[2] == '/') || (p[2] == '\\')))
-		return true;
+	if (p.size() >= 3) {
+		UString::iterator it = p.begin();
+		if (isalpha(*it))
+			if (*++it == ':') {
+				++it;
+				if ((*it == '/') || (*it == '\\'))
+					return true;
+			}
+	}
 #elif defined(BOOST_POSIX_API)
-	if (p[0] == '/')
+	if (*p.begin() == '/')
 		return true;
 #else
 	#error Neither BOOST_WINDOWS_API nor BOOST_POSIX_API defined
@@ -115,30 +127,32 @@ bool FilePath::isAbsolute(const std::string &p) {
 }
 
 boost::filesystem::path FilePath::makeAbsolute(const boost::filesystem::path &p) {
-	return path(makeAbsolute(p.string()));
+	UString ustring = p.string();
+
+	return path(makeAbsolute(ustring).c_str());
 }
 
-std::string FilePath::makeAbsolute(const std::string &p) {
-	std::string absolute;
+UString FilePath::makeAbsolute(const UString &p) {
+	UString absolute;
 
 	if (isAbsolute(p))
 		absolute = p;
 	else
-		absolute = boost::filesystem::initial_path().string() + "/" + p;
+		absolute = boost::filesystem::initial_path().string() + "/" + p.c_str();
 
 	return normalize(absolute);
 }
 
-std::string FilePath::findSubDirectory(const std::string &directory, const std::string &subDirectory,
+UString FilePath::findSubDirectory(const UString &directory, const UString &subDirectory,
 		bool caseInsensitive) {
 
-	if (!exists(directory) || !is_directory(directory))
+	if (!exists(directory.c_str()) || !is_directory(directory.c_str()))
 		// Path is either no directory or doesn't exist
 		return "";
 
 	try {
-		path dirPath(directory);
-		path subDirPath(subDirectory);
+		path dirPath(directory.c_str());
+		path subDirPath(subDirectory.c_str());
 
 		// Iterator over the directory's contents
 		directory_iterator itEnd;
@@ -147,10 +161,10 @@ std::string FilePath::findSubDirectory(const std::string &directory, const std::
 				// It's a directory. Check if it's the one we're looking for
 
 				if (caseInsensitive) {
-					if (iequals(itDir->path().filename(), subDirectory))
+					if (iequals(itDir->path().filename(), subDirectory.c_str()))
 						return itDir->path().string();
 				} else {
-					if (equals(itDir->path().filename(), subDirectory))
+					if (equals(itDir->path().filename(), subDirectory.c_str()))
 						return itDir->path().string();
 				}
 			}

@@ -29,7 +29,7 @@ GameThread::GameThread() {
 GameThread::~GameThread() {
 }
 
-void GameThread::init(const std::string &baseDir) {
+void GameThread::init(const Common::UString &baseDir) {
 	// Detecting the game
 
 	_baseDir = baseDir;
@@ -40,7 +40,7 @@ void GameThread::init(const std::string &baseDir) {
 		throw Common::Exception("Unable to detect the game ID");
 
 	// Set the window title to our and the detected game's name
-	GfxMan.setWindowTitle(PACKAGE_STRING " -- " + EngineMan.getGameName(_gameID));
+	GfxMan.setWindowTitle(Common::UString(PACKAGE_STRING " -- ") + EngineMan.getGameName(_gameID));
 
 	status("Detected game ID %d -- %s", _gameID, EngineMan.getGameName(_gameID).c_str());
 }

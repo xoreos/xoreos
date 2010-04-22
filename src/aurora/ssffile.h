@@ -15,10 +15,10 @@
 #ifndef AURORA_SSFFILE_H
 #define AURORA_SSFFILE_H
 
-#include <string>
 #include <vector>
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 #include "aurora/types.h"
 #include "aurora/aurorafile.h"
@@ -33,8 +33,8 @@ namespace Aurora {
 class SSFFile : public AuroraBase {
 public:
 	struct Sound {
-		std::string fileName; ///< The name of the sound file to play.
-		uint32      strRef;   ///< StrRef of the text to display.
+		Common::UString fileName; ///< The name of the sound file to play.
+		uint32          strRef;   ///< StrRef of the text to display.
 	};
 
 	typedef std::vector<Sound> SoundSet;

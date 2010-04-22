@@ -14,6 +14,7 @@
 
 #include "common/error.h"
 #include "common/util.h"
+#include "common/ustring.h"
 #include "common/stream.h"
 
 #include "graphics/video/player.h"
@@ -27,7 +28,7 @@
 
 namespace Graphics {
 
-VideoPlayer::VideoPlayer(const std::string &video) : _video(0) {
+VideoPlayer::VideoPlayer(const Common::UString &video) : _video(0) {
 	load(video);
 }
 
@@ -35,7 +36,7 @@ VideoPlayer::~VideoPlayer() {
 	delete _video;
 }
 
-void VideoPlayer::load(const std::string &name) {
+void VideoPlayer::load(const Common::UString &name) {
 	Aurora::FileType type;
 	Common::SeekableReadStream *video = ResMan.getVideo(name, &type);
 	if (!video)

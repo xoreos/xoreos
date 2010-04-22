@@ -20,7 +20,7 @@
 
 namespace Graphics {
 
-Text::Text(const Font &font, float x, float y, const std::string &str) :
+Text::Text(const Font &font, float x, float y, const Common::UString &str) :
 	_firstTime(true), _font(&font), _x(x), _y(y), _str(str) {
 
 	addToQueue();

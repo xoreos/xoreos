@@ -36,17 +36,17 @@ namespace Sonic {
 
 const SonicEngineProbe kSonicEngineProbe;
 
-const std::string SonicEngineProbe::kGameName = "Sonic Chronicles: The Dark Brotherhood";
+const Common::UString SonicEngineProbe::kGameName = "Sonic Chronicles: The Dark Brotherhood";
 
 Aurora::GameID SonicEngineProbe::getGameID() const {
 	return Aurora::kGameIDSonic;
 }
 
-const std::string &SonicEngineProbe::getGameName() const {
+const Common::UString &SonicEngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool SonicEngineProbe::probe(const std::string &directory, const Common::FileList &rootFiles) const {
+bool SonicEngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	return false;
 }
 
@@ -65,7 +65,7 @@ SonicEngine::SonicEngine() {
 SonicEngine::~SonicEngine() {
 }
 
-void SonicEngine::run(const std::string &target) {
+void SonicEngine::run(const Common::UString &target) {
 	_romFile = target;
 
 	init();

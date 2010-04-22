@@ -15,11 +15,10 @@
 #ifndef COMMON_FILEPATH_H
 #define COMMON_FILEPATH_H
 
-#include <string>
-
 #include "boost/filesystem.hpp"
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 namespace Common {
 
@@ -31,14 +30,14 @@ public:
 	 *  @param  p The path to look up.
 	 *  @return true if the path exists and is a regular file, false otherwise.
 	 */
-	static bool isRegularFile(const std::string &p);
+	static bool isRegularFile(const UString &p);
 
 	/** Does specified path exist and is it a directory?
 	 *
 	 *  @param  p The path to look up.
 	 *  @return true if the path exists and is a directory, false otherwise.
 	 */
-	static bool isDirectory(const std::string &p);
+	static bool isDirectory(const UString &p);
 
 	/** Return a file name's stem.
 	 *
@@ -47,7 +46,7 @@ public:
 	 *  @param  p The path to manipulate.
 	 *  @return The path's stem.
 	 */
-	static std::string getStem(const std::string &p);
+	static UString getStem(const UString &p);
 
 	/** Return a file name's extension.
 	 *
@@ -56,7 +55,7 @@ public:
 	 *  @param  p The path to manipulate.
 	 *  @return The path's extension.
 	 */
-	static std::string getExtension(const std::string &p);
+	static UString getExtension(const UString &p);
 
 	/** Change a file name's extension.
 	 *
@@ -66,7 +65,7 @@ public:
 	 *  @param  ext The path's new extension.
 	 *  @return The new path.
 	 */
-	static std::string changeExtension(const std::string &p, const std::string &ext = "");
+	static UString changeExtension(const UString &p, const UString &ext = "");
 
 	/** Normalize a path.
 	 *
@@ -86,14 +85,14 @@ public:
 	 *  @param  p The path to normalize.
 	 *  @return The normalized path.
 	 */
-	static std::string normalize(const std::string &p);
+	static UString normalize(const UString &p);
 
 	/** Is the given string an absolute path?
 	 *
 	 *  @param  p The path to check.
 	 *  @return true if the string describes an absolute path, false otherwise.
 	 */
-	static bool isAbsolute(const std::string &p);
+	static bool isAbsolute(const UString &p);
 
 	/** Return the absolute path.
 	 *
@@ -113,7 +112,7 @@ public:
 	 *  @param  p The path to absolutize.
 	 *  @return The absolutized path.
 	 */
-	static std::string makeAbsolute(const std::string &p);
+	static UString makeAbsolute(const UString &p);
 
 	/** Find a directory's subdirectory.
 	 *
@@ -122,8 +121,8 @@ public:
 	 *  @param  caseInsensitive Should the case of the subdirectory be ignored?
 	 *  @return The path of the subdirectory or "" if not found.
 	 */
-	static std::string findSubDirectory(const std::string &directory, const std::string &subDirectory,
-	                                    bool caseInsensitive = false);
+	static UString findSubDirectory(const UString &directory, const UString &subDirectory,
+	                                bool caseInsensitive = false);
 };
 
 } // End of namespace Common

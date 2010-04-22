@@ -15,10 +15,10 @@
 #ifndef AURORA_KEYFILE_H
 #define AURORA_KEYFILE_H
 
-#include <string>
 #include <vector>
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 #include "aurora/types.h"
 #include "aurora/aurorafile.h"
@@ -34,15 +34,15 @@ class KEYFile : public AuroraBase {
 public:
 	/** A key resource index. */
 	struct Resource {
-		std::string name; ///< The resource's name.
-		FileType    type; ///< The resource's type.
+		Common::UString name; ///< The resource's name.
+		FileType        type; ///< The resource's type.
 
 		uint32 bifIndex; ///< Index into the bif list.
 		uint32 resIndex; ///< Index into the bif's resource table.
 	};
 
 	typedef std::vector<Resource> ResourceList;
-	typedef std::vector<std::string> BIFList;
+	typedef std::vector<Common::UString> BIFList;
 
 	KEYFile();
 	~KEYFile();

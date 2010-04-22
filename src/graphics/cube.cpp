@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/ustring.h"
 #include "common/stream.h"
 
 #include "graphics/cube.h"
@@ -46,7 +47,7 @@ void CubeSide::render() {
 }
 
 
-Cube::Cube(const std::string &texture) : _firstTime(true), _lastRotateTime(0), _list(0) {
+Cube::Cube(const Common::UString &texture) : _firstTime(true), _lastRotateTime(0), _list(0) {
 	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
 
 	_texture = new Texture(texture);

@@ -17,6 +17,7 @@
 #include "common/config-file.h"
 #include "common/file.h"
 #include "common/system.h"
+#include "common/ustring.h"
 #include "common/util.h"
 
 namespace Common {
@@ -47,7 +48,7 @@ void ConfigFile::clear() {
 
 bool ConfigFile::load(const std::string &fileName) {
 	File file;
-	if (!file.open(fileName))
+	if (!file.open(UString(fileName)))
 		return false;
 
 	return load(file);

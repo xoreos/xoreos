@@ -15,18 +15,20 @@
 #ifndef GRAPHICS_IMAGESDUMPPPM_H
 #define GRAPHICS_IMAGESDUMPPPM_H
 
-#include <string>
-
 #include "common/types.h"
 
 #include "graphics/types.h"
+
+namespace Common {
+	class UString;
+}
 
 namespace Graphics {
 
 class ImageDecoder;
 
-void dumpPPM(const std::string &fileName, const byte *data, int width, int height, PixelFormat format);
-void dumpPPM(const std::string &fileName, const ImageDecoder *image);
+void dumpPPM(const Common::UString &fileName, const byte *data, int width, int height, PixelFormat format);
+void dumpPPM(const Common::UString &fileName, const ImageDecoder *image);
 
 } // End of namespace Graphics
 

@@ -99,8 +99,8 @@ void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 		if (!ssf.seek(offsets[i]))
 			throw Common::Exception(Common::kSeekError);
 
-		_soundSet[i].fileName = AuroraFile::readRawString(ssf, 16);
-		_soundSet[i].strRef   = ssf.readUint32LE();
+		_soundSet[i].fileName.readASCII(ssf, 16);
+		_soundSet[i].strRef = ssf.readUint32LE();
 	}
 }
 

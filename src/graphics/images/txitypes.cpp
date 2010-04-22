@@ -13,6 +13,7 @@
  */
 
 #include "common/strwordmap.h"
+#include "common/ustring.h"
 
 #include "graphics/images/txitypes.h"
 
@@ -85,8 +86,14 @@ static Common::StrWordMap kTXICommandMap(kTXICommands, ARRAYSIZE(kTXICommands));
 
 namespace Graphics {
 
-TXICommand parseTXICommand(const char *&str) {
-	return (TXICommand) kTXICommandMap.find(str, &str);
+TXICommand parseTXICommand(const Common::UString &str, int &skip) {
+	const char *s = str.c_str();
+
+	TXICommand command = (TXICommand) kTXICommandMap.find(s, &s);
+
+	skip = s - str.c_str();
+
+	return command;
 }
 
 } // End of namespace Graphics

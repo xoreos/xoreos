@@ -15,14 +15,13 @@
 #ifndef GRAPHICS_TEXTURE_H
 #define GRAPHICS_TEXTURE_H
 
-#include <string>
-
 #include "graphics/types.h"
 #include "graphics/queueable.h"
 
 #include "aurora/types.h"
 
 namespace Common {
+	class UString;
 	class SeekableReadStream;
 }
 
@@ -34,7 +33,7 @@ class TXI;
 /** A texture. */
 class Texture : public Queueable<Texture> {
 public:
-	Texture(const std::string &name);
+	Texture(const Common::UString &name);
 	~Texture();
 
 	/** Return the ID of the texture for use with OpenGL. */
@@ -57,7 +56,7 @@ private:
 	uint32 _width;
 	uint32 _height;
 
-	void load(const std::string &name);
+	void load(const Common::UString &name);
 
 
 // To be called from the main/events/graphics thread

@@ -74,7 +74,7 @@ void RIMFile::readResList(Common::SeekableReadStream &rim, uint32 offset) {
 		throw Common::Exception(Common::kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
-		res->name   = AuroraFile::readRawString(rim, 16);
+		res->name.readASCII(rim, 16);
 		res->type   = (FileType) rim.readUint16LE();
 		rim.skip(4 + 2); // Resource ID + Reserved
 		res->offset = rim.readUint32LE();

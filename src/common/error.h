@@ -15,15 +15,16 @@
 #ifndef COMMON_ERROR_H
 #define COMMON_ERROR_H
 
-#include <string>
 #include <stack>
 #include <exception>
+
+#include "common/ustring.h"
 
 namespace Common {
 
 class StackException : public std::exception {
 public:
-	typedef std::stack<std::string> Stack;
+	typedef std::stack<UString> Stack;
 
 	StackException(const char *s, ...);
 	StackException(const StackException &e);
@@ -44,7 +45,7 @@ extern const Exception kOpenError;
 extern const Exception kReadError;
 extern const Exception kSeekError;
 
-void printException(Exception &e, const std::string &prefix = "ERROR: ");
+void printException(Exception &e, const UString &prefix = "ERROR: ");
 
 } // End of namespace Common
 

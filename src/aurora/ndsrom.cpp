@@ -43,8 +43,9 @@ NDSFile::NDSFile(Common::SeekableReadStream *stream) : _stream(0) {
 
 	while ((uint32)_stream->pos() < fileNameTableOffset + fileNameTableLength) {
 		byte stringLength = _stream->readByte();
-		std::string filename = AuroraFile::readRawString(*_stream, stringLength);
-		boost::to_lower(filename);
+		Common::UString filename;
+		filename.readASCII(*_stream, stringLength);
+		filename.tolower();
 		_fileList.push_front(filename);
 	}
 
@@ -66,8 +67,8 @@ NDSFile::~NDSFile() {
 	delete _stream;
 }
 
-Common::SeekableReadStream *NDSFile::open(const std::string &filename) {
-	std::string lowercaseString = boost::to_lower_copy(filename);
+Common::SeekableReadStream *NDSFile::open(Common::UString filename) {
+	filename.tolower();
 
 	FileMap::const_iterator it = _fileMap.find(filename);
 	if (it == _fileMap.end())
@@ -85,7 +86,7 @@ bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
 	if (!stream.seek(0))
 		return false;
 
-	std::string gameName = AuroraFile::readRawString(stream, 12);
+	Common::UString gameName = AuroraFile::readRawString(stream, 12);
 	if (gameName != "SONICCHRON") // Should be the only game we will accept.
 		return false;
 

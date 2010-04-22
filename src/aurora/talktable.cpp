@@ -72,7 +72,7 @@ void TalkTable::load(Common::SeekableReadStream &tlk) {
 void TalkTable::readEntryTable(Common::SeekableReadStream &tlk) {
 	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
 		entry->flags          = (EntryFlags) tlk.readUint32LE();
-		entry->soundResRef    = AuroraFile::readRawString(tlk, 16);
+		entry->soundResRef.readASCII(tlk, 16);
 		entry->volumeVariance = tlk.readUint32LE();
 		entry->pitchVariance  = tlk.readUint32LE();
 		entry->offset         = tlk.readUint32LE();
@@ -86,7 +86,7 @@ void TalkTable::readStrings(Common::SeekableReadStream &tlk, uint32 dataOffset) 
 		if (!tlk.seek(dataOffset + entry->offset))
 			throw Common::Exception(Common::kSeekError);
 
-		entry->text = AuroraFile::readRawString(tlk, entry->length);
+		entry->text.readASCII(tlk, entry->length);
 	}
 }
 

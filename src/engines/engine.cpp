@@ -15,6 +15,7 @@
 #include "engines/engine.h"
 
 #include "common/util.h"
+#include "common/ustring.h"
 #include "common/stream.h"
 #include "common/file.h"
 
@@ -31,7 +32,7 @@ Engine::Engine() {
 Engine::~Engine() {
 }
 
-void Engine::indexMandatoryKEY(const std::string &key, uint32 priority) {
+void Engine::indexMandatoryKEY(const Common::UString &key, uint32 priority) {
 	Common::SeekableReadStream *keyFile = ResMan.getKEYList().openFile(key, true);
 	if (!keyFile)
 		throw Common::Exception("No such KEY");
@@ -46,7 +47,7 @@ void Engine::indexMandatoryKEY(const std::string &key, uint32 priority) {
 	delete keyFile;
 }
 
-void Engine::indexOptionalKEY(const std::string &key, uint32 priority) {
+void Engine::indexOptionalKEY(const Common::UString &key, uint32 priority) {
 	Common::SeekableReadStream *keyFile = ResMan.getKEYList().openFile(key, true);
 	if (!keyFile)
 		return;
@@ -61,40 +62,40 @@ void Engine::indexOptionalKEY(const std::string &key, uint32 priority) {
 	delete keyFile;
 }
 
-void Engine::indexMandatoryERF(const std::string &erf, uint32 priority) {
+void Engine::indexMandatoryERF(const Common::UString &erf, uint32 priority) {
 	ResMan.addERF(erf, priority);
 }
 
-void Engine::indexOptionalERF(const std::string &erf, uint32 priority) {
+void Engine::indexOptionalERF(const Common::UString &erf, uint32 priority) {
 	try {
 		ResMan.addERF(erf, priority);
 	} catch (Common::Exception &e) {
 	}
 }
 
-void Engine::indexMandatoryRIM(const std::string &rim, uint32 priority) {
+void Engine::indexMandatoryRIM(const Common::UString &rim, uint32 priority) {
 	ResMan.addRIM(rim, priority);
 }
 
-void Engine::indexOptionalRIM(const std::string &rim, uint32 priority) {
+void Engine::indexOptionalRIM(const Common::UString &rim, uint32 priority) {
 	try {
 		ResMan.addRIM(rim, priority);
 	} catch (Common::Exception &e) {
 	}
 }
 
-void Engine::indexMandatoryZIP(const std::string &zip, uint32 priority) {
+void Engine::indexMandatoryZIP(const Common::UString &zip, uint32 priority) {
 	ResMan.addZIP(zip, priority);
 }
 
-void Engine::indexOptionalZIP(const std::string &zip, uint32 priority) {
+void Engine::indexOptionalZIP(const Common::UString &zip, uint32 priority) {
 	try {
 		ResMan.addZIP(zip, priority);
 	} catch (Common::Exception &e) {
 	}
 }
 
-void Engine::playVideo(const std::string &video) {
+void Engine::playVideo(const Common::UString &video) {
 	try {
 		Graphics::VideoPlayer videoPlayer(video);
 
@@ -104,7 +105,7 @@ void Engine::playVideo(const std::string &video) {
 	}
 }
 
-void Engine::dumpStream(Common::SeekableReadStream &stream, const std::string &fileName) {
+void Engine::dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName) {
 	uint32 pos = stream.pos();
 
 	stream.seek(0);

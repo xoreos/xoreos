@@ -15,13 +15,16 @@
 #ifndef GRAPHICS_FONT_H
 #define GRAPHICS_FONT_H
 
-#include <string>
 #include <vector>
 
 #include "common/types.h"
 
 #include "graphics/types.h"
 #include "graphics/listcontainer.h"
+
+namespace Common {
+	class UString;
+}
 
 namespace Graphics {
 
@@ -30,7 +33,7 @@ class Texture;
 /** A font. */
 class Font : public ListContainer {
 public:
-	Font(const std::string &name);
+	Font(const Common::UString &name);
 	~Font();
 
 	/** Set the font's texture. */

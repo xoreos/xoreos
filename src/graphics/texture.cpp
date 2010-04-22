@@ -15,6 +15,7 @@
 #include "common/types.h"
 #include "common/util.h"
 #include "common/error.h"
+#include "common/ustring.h"
 #include "common/stream.h"
 
 #include "graphics/texture.h"
@@ -33,7 +34,7 @@ using Events::RequestID;
 
 namespace Graphics {
 
-Texture::Texture(const std::string &name) : Queueable<Texture>(GfxMan.getTextureQueue()),
+Texture::Texture(const Common::UString &name) : Queueable<Texture>(GfxMan.getTextureQueue()),
 	_textureID(0), _type(Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
 
 	_txi = new TXI();
@@ -67,7 +68,7 @@ const uint32 Texture::getHeight() const {
 	return _height;
 }
 
-void Texture::load(const std::string &name) {
+void Texture::load(const Common::UString &name) {
 	Common::SeekableReadStream *img = ResMan.getImage(name, &_type);
 	if (!img)
 		throw Common::Exception("No such image resource \"%s\"", name.c_str());

@@ -17,6 +17,10 @@
 
 #include "common/util.h"
 
+namespace Common {
+	class UString;
+}
+
 namespace Graphics {
 
 enum TXICommand {
@@ -84,7 +88,7 @@ enum TXICommand {
 	TXICommandXBoxDownsample      = 61
 };
 
-TXICommand parseTXICommand(const char *&str);
+TXICommand parseTXICommand(const Common::UString &str, int &skip);
 
 } // End of namespace Graphics
 

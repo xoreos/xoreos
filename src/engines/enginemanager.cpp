@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/ustring.h"
 #include "common/file.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
@@ -46,7 +47,7 @@ static const EngineProbe *kProbes[] = {
 	&Sonic::kSonicEngineProbe
 };
 
-Aurora::GameID EngineManager::probeGameID(const std::string &target) const {
+Aurora::GameID EngineManager::probeGameID(const Common::UString &target) const {
 	if (Common::FilePath::isDirectory(target)) {
 		// Try to probe from that directory
 
@@ -70,7 +71,7 @@ Aurora::GameID EngineManager::probeGameID(const std::string &target) const {
 	return Aurora::kGameIDUnknown;
 }
 
-Aurora::GameID EngineManager::probeGameID(const std::string &directory, const Common::FileList &rootFiles) const {
+Aurora::GameID EngineManager::probeGameID(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// Try to find the first engine able to handle the directory's data
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
 		if (kProbes[i]->probe(directory, rootFiles))
@@ -92,8 +93,8 @@ Aurora::GameID EngineManager::probeGameID(Common::SeekableReadStream &stream) co
 	return Aurora::kGameIDUnknown;
 }
 
-static const std::string kEmptyString;
-const std::string &EngineManager::getGameName(Aurora::GameID gameID) const {
+static const Common::UString kEmptyString;
+const Common::UString &EngineManager::getGameName(Aurora::GameID gameID) const {
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
 		if (kProbes[i]->getGameID() == gameID)
 			return kProbes[i]->getGameName();
@@ -101,7 +102,7 @@ const std::string &EngineManager::getGameName(Aurora::GameID gameID) const {
 	return kEmptyString;
 }
 
-void EngineManager::run(Aurora::GameID gameID, const std::string &target) const {
+void EngineManager::run(Aurora::GameID gameID, const Common::UString &target) const {
 	// Try to find the first engine able to handle that game ID
 	Engine *engine = 0;
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++)

@@ -15,13 +15,13 @@
 #ifndef AURORA_RESMAN_H
 #define AURORA_RESMAN_H
 
-#include <string>
 #include <stack>
 #include <list>
 #include <vector>
 #include <map>
 
 #include "common/types.h"
+#include "common/ustring.h"
 #include "common/singleton.h"
 #include "common/filelist.h"
 
@@ -44,7 +44,7 @@ class NDSFile;
 class ResourceManager : public Common::Singleton<ResourceManager> {
 // Type definitions
 private:
-	typedef std::list<std::string> ResFileList;
+	typedef std::list<Common::UString> ResFileList;
 	typedef ResFileList::const_iterator ResFileRef;
 	typedef std::list<Common::ZipFile *> ResZipList;
 	typedef ResZipList::const_iterator ResZipRef;
@@ -81,7 +81,7 @@ private:
 		ResNDSRef resNDS; ///< Iterator into the NDS list.
 
 		// For kSourceFile / kSourceZIP / kSourceNDS
-		std::string path; ///< The file's path.
+		Common::UString path; ///< The file's path.
 
 		bool operator<(const Resource &right) const;
 	};
@@ -91,7 +91,7 @@ private:
 	/** Map over resources with the same name but different type. */
 	typedef std::map<FileType,    ResourceList>    ResourceTypeMap;
 	/** Map over resources, indexed by name. */
-	typedef std::map<std::string, ResourceTypeMap> ResourceMap;
+	typedef std::map<Common::UString, ResourceTypeMap> ResourceMap;
 
 	struct ResourceChange {
 		ResourceMap::iterator     nameIt;
@@ -123,7 +123,7 @@ public:
 	 *
 	 *  @param path The path to a base data directory.
 	 */
-	void registerDataBaseDir(const std::string &path);
+	void registerDataBaseDir(const Common::UString &path);
 
 	/** Add a directory to be searched for BIF files.
 	 *
@@ -132,7 +132,7 @@ public:
 	 *
 	 *  @param dir A direct subdirectory of the base directory to search for BIFs.
 	 */
-	void addBIFSourceDir(const std::string &dir);
+	void addBIFSourceDir(const Common::UString &dir);
 
 	/** Find source directories for resource archives. */
 	void findSourceDirs();
@@ -184,7 +184,7 @@ public:
 	 *  @param  priority The priority the resources have over others of the same name and type.
 	 *  @return An ID for all collective changes done by loading the ERF.
 	 */
-	ChangeID addERF(const std::string &erf, uint32 priority = 100);
+	ChangeID addERF(const Common::UString &erf, uint32 priority = 100);
 
 	/** Add resources found in the RIM file to the manager.
 	 *
@@ -192,7 +192,7 @@ public:
 	 *  @param  priority The priority the resources have over others of the same name and type.
 	 *  @return An ID for all collective changes done by loading the RIM.
 	 */
-	ChangeID addRIM(const std::string &rim, uint32 priority = 100);
+	ChangeID addRIM(const Common::UString &rim, uint32 priority = 100);
 
 	/** Add resources found in the ZIP file to the manager.
 	 *
@@ -200,7 +200,7 @@ public:
 	 *  @param  priority The priority the resources have over others of the same name and type.
 	 *  @return An ID for all collective changes done by loading the ZIP.
 	 */
-	ChangeID addZIP(const std::string &zip, uint32 priority = 100);
+	ChangeID addZIP(const Common::UString &zip, uint32 priority = 100);
 
 	/** Add resources found in the NDS file to the manager.
 	 *
@@ -208,7 +208,7 @@ public:
 	 *  @param  priority The priority the resources have over others of the same name and type.
 	 *  @return An ID for all collective changes done by loading the NDS.
 	 */
-	ChangeID addNDS(const std::string &nds, uint32 priority = 100);
+	ChangeID addNDS(const Common::UString &nds, uint32 priority = 100);
 
 	/** Undo the changes done in the specified change ID. */
 	void undo(ChangeID &change);
@@ -219,7 +219,7 @@ public:
 	 *  @param  type The resource's type.
 	 *  @return true if the resource exists, false otherwise.
 	 */
-	bool hasResource(const std::string &name, FileType type) const;
+	bool hasResource(const Common::UString &name, FileType type) const;
 
 	/** Does a specific resource exists?
 	 *
@@ -227,7 +227,7 @@ public:
 	 *  @param  types The resource's types.
 	 *  @return true if the resource exists, false otherwise.
 	 */
-	bool hasResource(const std::string &name, const std::vector<FileType> &types) const;
+	bool hasResource(const Common::UString &name, const std::vector<FileType> &types) const;
 
 	/** Return a resource.
 	 *
@@ -235,7 +235,7 @@ public:
 	 *  @param  type The resource's type.
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getResource(const std::string &name, FileType type) const;
+	Common::SeekableReadStream *getResource(const Common::UString &name, FileType type) const;
 
 	/** Return a resource.
 	 *
@@ -247,7 +247,7 @@ public:
 	 *  @param  foundType If != 0, that's where the actually found type is stored.
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getResource(const std::string &name,
+	Common::SeekableReadStream *getResource(const Common::UString &name,
 			const std::vector<FileType> &types, FileType *foundType = 0) const;
 
 	/** Return a music resource.
@@ -256,7 +256,7 @@ public:
 	 *  @param  type If != 0, that's where the resource's type is stored.
 	 *  @return The music resource stream or 0 if the music resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getMusic(const std::string &name, FileType *type = 0) const;
+	Common::SeekableReadStream *getMusic(const Common::UString &name, FileType *type = 0) const;
 
 	/** Return a sound resource.
 	 *
@@ -264,7 +264,7 @@ public:
 	 *  @param  type If != 0, that's where the resource's type is stored.
 	 *  @return The sound resource stream or 0 if the sound resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getSound(const std::string &name, FileType *type = 0) const;
+	Common::SeekableReadStream *getSound(const Common::UString &name, FileType *type = 0) const;
 
 	/** Return an image resource.
 	 *
@@ -272,7 +272,7 @@ public:
 	 *  @param  type If != 0, that's where the resource's type is stored.
 	 *  @return The image resource stream or 0 if the image resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getImage(const std::string &name, FileType *type = 0) const;
+	Common::SeekableReadStream *getImage(const Common::UString &name, FileType *type = 0) const;
 
 	/** Return an video resource.
 	 *
@@ -280,7 +280,7 @@ public:
 	 *  @param  type If != 0, that's where the resource's type is stored.
 	 *  @return The video resource stream or 0 if the video resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getVideo(const std::string &name, FileType *type = 0) const;
+	Common::SeekableReadStream *getVideo(const Common::UString &name, FileType *type = 0) const;
 
 	/** Small debug method that lists all indexed resources. */
 	void listResources() const;
@@ -295,14 +295,14 @@ private:
 
 	ChangeSetList _changes;
 
-	std::string _baseDir;     ///< The data base directory.
-	std::string _modDir;      ///< The data directory for .mod files.
-	std::string _hakDir;      ///< The data directory for .hak files.
-	std::string _textureDir;  ///< The data directory for textures-related files.
-	std::string _rimDir;      ///< The data directory for .rim files.
-	std::string _zipDir;      ///< The data directory for .zip files.
+	Common::UString _baseDir;     ///< The data base directory.
+	Common::UString _modDir;      ///< The data directory for .mod files.
+	Common::UString _hakDir;      ///< The data directory for .hak files.
+	Common::UString _textureDir;  ///< The data directory for textures-related files.
+	Common::UString _rimDir;      ///< The data directory for .rim files.
+	Common::UString _zipDir;      ///< The data directory for .zip files.
 
-	std::vector<std::string> _bifSourceDir; ///< All directories containing BIFs.
+	std::vector<Common::UString> _bifSourceDir; ///< All directories containing BIFs.
 
 	Common::FileList _keyFiles; ///< List of all KEY files in the base directory.
 	Common::FileList _bifFiles; ///< List of all BIF files in the base directory.
@@ -320,10 +320,10 @@ private:
 	void mergeKEYBIFResources(const KEYFile &keyFile, const ResFileRef &bifStart,
 			ChangeID &change, uint32 priority);
 
-	void addResource(const Resource &resource, std::string name, ChangeID &change);
+	void addResource(const Resource &resource, Common::UString name, ChangeID &change);
 	void addResources(const Common::FileList &files, ChangeID &change, uint32 priority);
 
-	const Resource *getRes(std::string name, const std::vector<FileType> &types) const;
+	const Resource *getRes(Common::UString name, const std::vector<FileType> &types) const;
 
 	Common::SeekableReadStream *getOffResFile(const Resource &res) const;
 	Common::SeekableReadStream *getZipResFile(const Resource &res) const;

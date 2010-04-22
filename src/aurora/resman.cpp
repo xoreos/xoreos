@@ -102,7 +102,7 @@ void ResourceManager::clear() {
 	_bifSourceDir.clear();
 }
 
-void ResourceManager::registerDataBaseDir(const std::string &path) {
+void ResourceManager::registerDataBaseDir(const Common::UString &path) {
 	clear();
 
 	_baseDir = Common::FilePath::normalize(path);
@@ -132,8 +132,8 @@ void ResourceManager::registerDataBaseDir(const std::string &path) {
 	_bifSourceDir.push_back(_baseDir);
 }
 
-void ResourceManager::addBIFSourceDir(const std::string &dir) {
-	std::string bifDir = Common::FilePath::findSubDirectory(_baseDir, dir, true);
+void ResourceManager::addBIFSourceDir(const Common::UString &dir) {
+	Common::UString bifDir = Common::FilePath::findSubDirectory(_baseDir, dir, true);
 	if (bifDir.empty())
 		throw Common::Exception("No such directory");
 
@@ -169,7 +169,7 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priorit
 	// Find all music files
 
 	Common::FileList musicFiles;
-	std::string musicDir;
+	Common::UString musicDir;
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
 		musicFiles.addDirectory(musicDir, -1);
 	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x1"   , true)).empty())
@@ -185,7 +185,7 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priorit
 
 	Common::FileList soundFiles;
 
-	std::string soundDir;
+	Common::UString soundDir;
 	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient"     , true)).empty())
 		soundFiles.addDirectory(soundDir, -1);
 	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x1"  , true)).empty())
@@ -207,7 +207,7 @@ ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priorit
 
 	Common::FileList movieFiles, rootFiles;
 
-	std::string videoDir;
+	Common::UString videoDir;
 	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "movies"   , true)).empty())
 		movieFiles.addDirectory(videoDir, -1);
 	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "cutscenes", true)).empty())
@@ -233,7 +233,7 @@ ResourceManager::ChangeID ResourceManager::loadOverrideFiles(uint32 priority) {
 
 	Common::FileList overrideFiles;
 
-	std::string overrideDir;
+	Common::UString overrideDir;
 	if (!(overrideDir = Common::FilePath::findSubDirectory(_baseDir, "override", true)).empty())
 		overrideFiles.addDirectory(overrideDir, -1);
 
@@ -270,13 +270,13 @@ ResourceManager::ResFileRef ResourceManager::findBIFPaths(const KEYFile &keyFile
 		_bifs.push_back("");
 
 		// Look through all BIF base directories
-		for (std::vector<std::string>::const_iterator bifBase = _bifSourceDir.begin(); bifBase != _bifSourceDir.end(); ++bifBase) {
+		for (std::vector<Common::UString>::const_iterator bifBase = _bifSourceDir.begin(); bifBase != _bifSourceDir.end(); ++bifBase) {
 			// The BIF names in the KEY are relative to a BIF base directory
-			_bifs.back() = Common::FilePath::normalize(*bifBase + "/" + keyFile.getBIFs()[i]);
+			_bifs.back() = Common::FilePath::normalize(((Common::UString) *bifBase) + "/" + keyFile.getBIFs()[i]);
 
 			// Look through all our BIFs, looking for a match
 			for (Common::FileList::const_iterator it = _bifFiles.begin(); it != _bifFiles.end(); ++it) {
-				if (iequals(*it, _bifs.back())) {
+				if (iequals(it->c_str(), _bifs.back().c_str())) {
 					_bifs.back() = *it;
 					found = true;
 					break;
@@ -362,7 +362,7 @@ void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, const ResFile
 			for (uint32 i = 0; i < keyRes->bifIndex; i++, ++res.resFile);
 
 			// And add it to our list
-			addResource(res, keyRes->name, change);
+			addResource(res, keyRes->name.c_str(), change);
 		}
 
 	} catch (Common::Exception &e) {
@@ -393,8 +393,8 @@ ResourceManager::ChangeID ResourceManager::loadKEY(Common::SeekableReadStream &k
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addERF(const std::string &erf, uint32 priority) {
-	std::string erfFileName;
+ResourceManager::ChangeID ResourceManager::addERF(const Common::UString &erf, uint32 priority) {
+	Common::UString erfFileName;
 
 	if (Common::FilePath::isAbsolute(erf)) {
 		// Absolute path to an ERF, open it from our ERF list
@@ -455,8 +455,8 @@ ResourceManager::ChangeID ResourceManager::addERF(const std::string &erf, uint32
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addRIM(const std::string &rim, uint32 priority) {
-	std::string rimFileName;
+ResourceManager::ChangeID ResourceManager::addRIM(const Common::UString &rim, uint32 priority) {
+	Common::UString rimFileName;
 
 	if (Common::FilePath::isAbsolute(rim)) {
 		// Absolute path to an RIM, open it from our RIM list
@@ -514,8 +514,8 @@ ResourceManager::ChangeID ResourceManager::addRIM(const std::string &rim, uint32
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addZIP(const std::string &zip, uint32 priority) {
-	std::string zipFileName;
+ResourceManager::ChangeID ResourceManager::addZIP(const Common::UString &zip, uint32 priority) {
+	Common::UString zipFileName;
 
 	if (Common::FilePath::isAbsolute(zip)) {
 		// Absolute path to an ZIP, open it from our ZIP list
@@ -567,7 +567,7 @@ ResourceManager::ChangeID ResourceManager::addZIP(const std::string &zip, uint32
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addNDS(const std::string &nds, uint32 priority) {
+ResourceManager::ChangeID ResourceManager::addNDS(const Common::UString &nds, uint32 priority) {
 	Common::File *ndsFile = new Common::File;
 	if (!ndsFile->open(nds))
 		throw Common::Exception(Common::kOpenError);
@@ -651,7 +651,7 @@ void ResourceManager::undo(ChangeID &change) {
 	change = _changes.end();
 }
 
-bool ResourceManager::hasResource(const std::string &name, FileType type) const {
+bool ResourceManager::hasResource(const Common::UString &name, FileType type) const {
 	std::vector<FileType> types;
 
 	types.push_back(type);
@@ -659,7 +659,7 @@ bool ResourceManager::hasResource(const std::string &name, FileType type) const 
 	return hasResource(name, types);
 }
 
-bool ResourceManager::hasResource(const std::string &name, const std::vector<FileType> &types) const {
+bool ResourceManager::hasResource(const Common::UString &name, const std::vector<FileType> &types) const {
 	if (getRes(name, types))
 		return true;
 
@@ -703,7 +703,7 @@ Common::SeekableReadStream *ResourceManager::getNDSResFile(const Resource &res) 
 	return (*res.resNDS)->open(res.path);
 }
 
-Common::SeekableReadStream *ResourceManager::getResource(const std::string &name, FileType type) const {
+Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name, FileType type) const {
 	std::vector<FileType> types;
 
 	types.push_back(type);
@@ -711,7 +711,7 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 	return getResource(name, types);
 }
 
-Common::SeekableReadStream *ResourceManager::getResource(const std::string &name,
+Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name,
 		const std::vector<FileType> &types, FileType *foundType) const {
 
 	const Resource *res = getRes(name, types);
@@ -749,7 +749,7 @@ Common::SeekableReadStream *ResourceManager::getResource(const std::string &name
 	return 0;
 }
 
-Common::SeekableReadStream *ResourceManager::getMusic(const std::string &name, FileType *type) const {
+Common::SeekableReadStream *ResourceManager::getMusic(const Common::UString &name, FileType *type) const {
 	// Try every known music file type
 	Common::SeekableReadStream *res;
 	if ((res = getResource(name, _musicTypes, type)))
@@ -759,7 +759,7 @@ Common::SeekableReadStream *ResourceManager::getMusic(const std::string &name, F
 	return 0;
 }
 
-Common::SeekableReadStream *ResourceManager::getSound(const std::string &name, FileType *type) const {
+Common::SeekableReadStream *ResourceManager::getSound(const Common::UString &name, FileType *type) const {
 	// Try every known sound file type
 	Common::SeekableReadStream *res;
 	if ((res = getResource(name, _soundTypes, type)))
@@ -769,7 +769,7 @@ Common::SeekableReadStream *ResourceManager::getSound(const std::string &name, F
 	return 0;
 }
 
-Common::SeekableReadStream *ResourceManager::getImage(const std::string &name, FileType *type) const {
+Common::SeekableReadStream *ResourceManager::getImage(const Common::UString &name, FileType *type) const {
 	// Try every known image file type
 	Common::SeekableReadStream *res;
 	if ((res = getResource(name, _imageTypes, type)))
@@ -779,7 +779,7 @@ Common::SeekableReadStream *ResourceManager::getImage(const std::string &name, F
 	return 0;
 }
 
-Common::SeekableReadStream *ResourceManager::getVideo(const std::string &name, FileType *type) const {
+Common::SeekableReadStream *ResourceManager::getVideo(const Common::UString &name, FileType *type) const {
 	// Try every known video file type
 	Common::SeekableReadStream *res;
 	if ((res = getResource(name, _videoTypes, type)))
@@ -789,8 +789,8 @@ Common::SeekableReadStream *ResourceManager::getVideo(const std::string &name, F
 	return 0;
 }
 
-void ResourceManager::addResource(const Resource &resource, std::string name, ChangeID &change) {
-	boost::to_lower(name);
+void ResourceManager::addResource(const Resource &resource, Common::UString name, ChangeID &change) {
+	name.tolower();
 	if (name.empty())
 		return;
 
@@ -846,10 +846,10 @@ void ResourceManager::addResources(const Common::FileList &files, ChangeID &chan
 	}
 }
 
-const ResourceManager::Resource *ResourceManager::getRes(std::string name,
+const ResourceManager::Resource *ResourceManager::getRes(Common::UString name,
 		const std::vector<FileType> &types) const {
 
-	boost::to_lower(name);
+	name.tolower();
 
 	// Find the resources with the same name
 	ResourceMap::const_iterator resFamily = _resources.find(name);

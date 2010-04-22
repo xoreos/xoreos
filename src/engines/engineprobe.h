@@ -16,11 +16,10 @@
 #ifndef ENGINES_ENGINEPROBE_H
 #define ENGINES_ENGINEPROBE_H
 
-#include <string>
-
 #include "aurora/types.h"
 
 namespace Common {
+	class UString;
 	class SeekableReadStream;
 	class FileList;
 }
@@ -36,10 +35,10 @@ public:
 	virtual Aurora::GameID getGameID() const = 0;
 
 	/** Return a string of the full game name. */
-	virtual const std::string &getGameName() const = 0;
+	virtual const Common::UString &getGameName() const = 0;
 
 	/** Check for the game in that directory, containing these files. */
-	virtual bool probe(const std::string &directory, const Common::FileList &rootFiles) const = 0;
+	virtual bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const = 0;
 
 	/** Check for the game in that file. */
 	virtual bool probe(Common::SeekableReadStream &stream) const = 0;

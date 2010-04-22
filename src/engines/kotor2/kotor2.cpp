@@ -35,17 +35,17 @@ namespace KotOR2 {
 
 const KotOR2EngineProbe kKotOR2EngineProbe;
 
-const std::string KotOR2EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
+const Common::UString KotOR2EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
 
 Aurora::GameID KotOR2EngineProbe::getGameID() const {
 	return Aurora::kGameIDKotOR2;
 }
 
-const std::string &KotOR2EngineProbe::getGameName() const {
+const Common::UString &KotOR2EngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool KotOR2EngineProbe::probe(const std::string &directory, const Common::FileList &rootFiles) const {
+bool KotOR2EngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If either swkotor2.ini or swkotor2.exe exists, this should be a valid path
 	return rootFiles.contains(".*/swkotor2.(exe|ini)", true);
 }
@@ -65,7 +65,7 @@ KotOR2Engine::KotOR2Engine() {
 KotOR2Engine::~KotOR2Engine() {
 }
 
-void KotOR2Engine::run(const std::string &target) {
+void KotOR2Engine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();

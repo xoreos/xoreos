@@ -15,11 +15,11 @@
 #ifndef AURORA_UTIL_H
 #define AURORA_UTIL_H
 
-#include <string>
-
 #include "aurora/types.h"
 
 namespace Aurora {
+
+class UString;
 
 /** Does the language ID describe a male viewpoint? */
 bool isMale(Language language);
@@ -32,10 +32,10 @@ bool isLanguageStandard(Language language);
 bool isLanguageTheWitcher(Language language);
 
 /** Return the file type of a file name, detected by its extension. */
-FileType getFileType(const std::string &path);
+FileType getFileType(const Common::UString &path);
 
 /** Return the file name with a swapped extensions according to the specified file type. */
-std::string setFileType(const std::string &path, FileType type);
+Common::UString setFileType(const Common::UString &path, FileType type);
 
 } // End of namespace Aurora
 

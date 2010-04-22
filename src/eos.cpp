@@ -14,6 +14,7 @@
 
 #include <cstdio>
 
+#include "common/ustring.h"
 #include "common/util.h"
 #include "common/error.h"
 #include "common/filepath.h"
@@ -37,7 +38,7 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	std::string baseDir = Common::FilePath::makeAbsolute((const std::string &) argv[1]);
+	Common::UString baseDir = Common::FilePath::makeAbsolute((const Common::UString &) argv[1]);
 
 	if (!Common::FilePath::isDirectory(baseDir) && !Common::FilePath::isRegularFile(baseDir))
 		error("No such file or directory \"%s\"", baseDir.c_str());

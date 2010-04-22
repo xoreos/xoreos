@@ -14,8 +14,6 @@
 
 #include <cstdio>
 
-#include <string>
-
 #include "common/error.h"
 #include "common/strutil.h"
 #include "common/stream.h"
@@ -102,7 +100,9 @@ bool TXI::isEmpty() const {
 
 void TXI::load(Common::SeekableReadStream &stream) {
 	while (!stream.eos()) {
-		std::string line = stream.readLine();
+		Common::UString line;
+
+		line.readLineASCII(stream);
 		if (line.empty())
 			break;
 
@@ -127,143 +127,143 @@ void TXI::load(Common::SeekableReadStream &stream) {
 			continue;
 		}
 
-		const char *lineStr = line.c_str();
-		TXICommand command = parseTXICommand(lineStr);
+		int skip = 0;
+		TXICommand command = parseTXICommand(line, skip);
 
 		if      (command == TXICommandAlphaMean)
-			Common::stringConvert(lineStr, _features.alphaMean);
+			line.parse(_features.alphaMean, skip);
 		else if (command == TXICommandArturoHeight)
-			Common::stringConvert(lineStr, _features.arturoHeight);
+			line.parse(_features.arturoHeight, skip);
 		else if (command == TXICommandArturoWidth)
-			Common::stringConvert(lineStr, _features.arturoWidth);
+			line.parse(_features.arturoWidth, skip);
 		else if (command == TXICommandBaselineHeight)
-			Common::stringConvert(lineStr, _features.baselineHeight);
+			line.parse(_features.baselineHeight, skip);
 		else if (command == TXICommandBlending)
-			_features.blending = parseBlending(lineStr);
+			_features.blending = parseBlending(line.c_str() + skip);
 		else if (command == TXICommandBumpMapScaling)
-			Common::stringConvert(lineStr, _features.bumpMapScaling);
+			line.parse(_features.bumpMapScaling, skip);
 		else if (command == TXICommandBumpMapTexture)
-			Common::stringConvert(lineStr, _features.bumpMapTexture);
+			_features.bumpMapTexture = line.c_str() + skip;
 		else if (command == TXICommandBumpyShinyTexture)
-			Common::stringConvert(lineStr, _features.bumpyShinyTexture);
+			_features.bumpyShinyTexture = line.c_str() + skip;
 		else if (command == TXICommandCanDownsample)
-			Common::stringConvert(lineStr, _features.canDownsample);
+			line.parse(_features.canDownsample, skip);
 		else if (command == TXICommandCaretIndent)
-			Common::stringConvert(lineStr, _features.caretIndent);
+			line.parse(_features.caretIndent, skip);
 		else if (command == TXICommandChannelScale)
-			Common::stringConvert(lineStr, _features.channelScale);
+			line.parse(_features.channelScale, skip);
 		else if (command == TXICommandChannelTranslate)
-			Common::stringConvert(lineStr, _features.channelTranslate);
+			line.parse(_features.channelTranslate, skip);
 		else if (command == TXICommandClamp)
-			Common::stringConvert(lineStr, _features.clamp);
+			line.parse(_features.clamp, skip);
 		else if (command == TXICommandCodepage)
-			Common::stringConvert(lineStr, _features.codepage);
+			line.parse(_features.codepage, skip);
 		else if (command == TXICommandCols)
-			Common::stringConvert(lineStr, _features.cols);
+			line.parse(_features.cols, skip);
 		else if (command == TXICommandCompressTexture)
-			Common::stringConvert(lineStr, _features.compressTexture);
+			line.parse(_features.compressTexture, skip);
 		else if (command == TXICommandControllerScript)
-			Common::stringConvert(lineStr, _features.controllerScript);
+			_features.controllerScript = line.c_str() + skip;
 		else if (command == TXICommandCube)
-			Common::stringConvert(lineStr, _features.cube);
+			line.parse(_features.cube, skip);
 		else if (command == TXICommandDBMapping)
-			Common::stringConvert(lineStr, _features.dbMapping);
+			line.parse(_features.dbMapping, skip);
 		else if (command == TXICommandDecal)
-			Common::stringConvert(lineStr, _features.decal);
+			line.parse(_features.decal, skip);
 		else if (command == TXICommandDefaultBPP)
-			Common::stringConvert(lineStr, _features.defaultBPP);
+			line.parse(_features.defaultBPP, skip);
 		else if (command == TXICommandDefaultHeight)
-			Common::stringConvert(lineStr, _features.defaultHeight);
+			line.parse(_features.defaultHeight, skip);
 		else if (command == TXICommandDefaultWidth)
-			Common::stringConvert(lineStr, _features.defaultWidth);
+			line.parse(_features.defaultWidth, skip);
 		else if (command == TXICommandDistort)
-			Common::stringConvert(lineStr, _features.distort);
+			line.parse(_features.distort, skip);
 		else if (command == TXICommandDistortAngle)
-			Common::stringConvert(lineStr, _features.distortAngle);
+			line.parse(_features.distortAngle, skip);
 		else if (command == TXICommandDistortionAmplitude)
-			Common::stringConvert(lineStr, _features.distortionAmplitude);
+			line.parse(_features.distortionAmplitude, skip);
 		else if (command == TXICommandDownsampleFactor)
-			Common::stringConvert(lineStr, _features.downsampleFactor);
+			line.parse(_features.downsampleFactor, skip);
 		else if (command == TXICommandDownsampleMax)
-			Common::stringConvert(lineStr, _features.downsampleMax);
+			line.parse(_features.downsampleMax, skip);
 		else if (command == TXICommandDownsampleMin)
-			Common::stringConvert(lineStr, _features.downsampleMin);
+			line.parse(_features.downsampleMin, skip);
 		else if (command == TXICommandEnvMapTexture)
-			Common::stringConvert(lineStr, _features.envMapTexture);
+			_features.envMapTexture = line.c_str() + skip;
 		else if (command == TXICommandFileRange)
-			Common::stringConvert(lineStr, _features.fileRange);
+			line.parse(_features.fileRange, skip);
 		else if (command == TXICommandFilter)
-			Common::stringConvert(lineStr, _features.filter);
+			line.parse(_features.filter, skip);
 		else if (command == TXICommandFontHeight)
-			Common::stringConvert(lineStr, _features.fontHeight);
+			line.parse(_features.fontHeight, skip);
 		else if (command == TXICommandFontWidth)
-			Common::stringConvert(lineStr, _features.fontWidth);
+			line.parse(_features.fontWidth, skip);
 		else if (command == TXICommandFPS)
-			Common::stringConvert(lineStr, _features.fps);
+			line.parse(_features.fps, skip);
 		else if (command == TXICommandIsBumpMap)
-			Common::stringConvert(lineStr, _features.isBumpMap);
+			line.parse(_features.isBumpMap, skip);
 		else if (command == TXICommandIsDoubleByte)
-			Common::stringConvert(lineStr, _features.isDoubleByte);
+			line.parse(_features.isDoubleByte, skip);
 		else if (command == TXICommandIsLightMap)
-			Common::stringConvert(lineStr, _features.isLightMap);
+			line.parse(_features.isLightMap, skip);
 		else if (command == TXICommandLowerRightCoords) {
 			int count;
-			Common::stringConvert(lineStr, count);
+			line.parse(count, skip);
 
 			_mode      = kModeLowerRightCoords;
 			_curCoords = 0;
 			_features.lowerRightCoords.resize(count);
 		} else if (command == TXICommandMaxSizeHQ)
-			Common::stringConvert(lineStr, _features.maxSizeHQ);
+			line.parse(_features.maxSizeHQ, skip);
 		else if (command == TXICommandMaxSizeLQ)
-			Common::stringConvert(lineStr, _features.maxSizeLQ);
+			line.parse(_features.maxSizeLQ, skip);
 		else if (command == TXICommandMinSizeHQ)
-			Common::stringConvert(lineStr, _features.minSizeHQ);
+			line.parse(_features.minSizeHQ, skip);
 		else if (command == TXICommandMinSizeLQ)
-			Common::stringConvert(lineStr, _features.minSizeLQ);
+			line.parse(_features.minSizeLQ, skip);
 		else if (command == TXICommandMipMap)
-			Common::stringConvert(lineStr, _features.mipMap);
+			line.parse(_features.mipMap, skip);
 		else if (command == TXICommandNumChars)
-			Common::stringConvert(lineStr, _features.numChars);
+			line.parse(_features.numChars, skip);
 		else if (command == TXICommandNumCharsPerSheet)
-			Common::stringConvert(lineStr, _features.numCharsPerSheet);
+			line.parse(_features.numCharsPerSheet, skip);
 		else if (command == TXICommandNumX)
-			Common::stringConvert(lineStr, _features.numX);
+			line.parse(_features.numX, skip);
 		else if (command == TXICommandNumY)
-			Common::stringConvert(lineStr, _features.numY);
+			line.parse(_features.numY, skip);
 		else if (command == TXICommandOnDemand)
-			Common::stringConvert(lineStr, _features.onDemand);
+			line.parse(_features.onDemand, skip);
 		else if (command == TXICommandPriority)
-			Common::stringConvert(lineStr, _features.priority);
+			line.parse(_features.priority, skip);
 		else if (command == TXICommandProcedureType)
-			Common::stringConvert(lineStr, _features.procedureType);
+			_features.procedureType = line.c_str() + skip;
 		else if (command == TXICommandRows)
-			Common::stringConvert(lineStr, _features.rows);
+			line.parse(_features.rows, skip);
 		else if (command == TXICommandSpacingB)
-			Common::stringConvert(lineStr, _features.spacingB);
+			line.parse(_features.spacingB, skip);
 		else if (command == TXICommandSpacingR)
-			Common::stringConvert(lineStr, _features.spacingR);
+			line.parse(_features.spacingR, skip);
 		else if (command == TXICommandSpeed)
-			Common::stringConvert(lineStr, _features.speed);
+			line.parse(_features.speed, skip);
 		else if (command == TXICommandTemporary)
-			Common::stringConvert(lineStr, _features.temporary);
+			line.parse(_features.temporary, skip);
 		else if (command == TXICommandTextureWidth)
-			Common::stringConvert(lineStr, _features.textureWidth);
+			line.parse(_features.textureWidth, skip);
 		else if (command == TXICommandUnique)
-			Common::stringConvert(lineStr, _features.unique);
+			line.parse(_features.unique, skip);
 		else if (command == TXICommandUpperLeftCoords) {
 			int count;
-			Common::stringConvert(lineStr, count);
+			line.parse(count, skip);
 
 			_mode      = kModeUpperLeftCoords;
 			_curCoords = 0;
 			_features.upperLeftCoords.resize(count);
 		} else if (command == TXICommandWaterHeight)
-			Common::stringConvert(lineStr, _features.waterHeight);
+			line.parse(_features.waterHeight, skip);
 		else if (command == TXICommandWaterWidth)
-			Common::stringConvert(lineStr, _features.waterWidth);
+			line.parse(_features.waterWidth, skip);
 		else if (command == TXICommandXBoxDownsample)
-			Common::stringConvert(lineStr, _features.xBoxDownsample);
+			line.parse(_features.xBoxDownsample, skip);
 	}
 
 }

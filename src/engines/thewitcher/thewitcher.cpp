@@ -31,19 +31,19 @@ namespace TheWitcher {
 
 const TheWitcherEngineProbe kTheWitcherEngineProbe;
 
-const std::string TheWitcherEngineProbe::kGameName = "The Witcher";
+const Common::UString TheWitcherEngineProbe::kGameName = "The Witcher";
 
 Aurora::GameID TheWitcherEngineProbe::getGameID() const {
 	return Aurora::kGameIDTheWitcher;
 }
 
-const std::string &TheWitcherEngineProbe::getGameName() const {
+const Common::UString &TheWitcherEngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool TheWitcherEngineProbe::probe(const std::string &directory, const Common::FileList &rootFiles) const {
+bool TheWitcherEngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// There should be a system directory
-	std::string systemDir = Common::FilePath::findSubDirectory(directory, "system", true);
+	Common::UString systemDir = Common::FilePath::findSubDirectory(directory, "system", true);
 	if (systemDir.empty())
 		return false;
 
@@ -71,7 +71,7 @@ TheWitcherEngine::TheWitcherEngine() {
 TheWitcherEngine::~TheWitcherEngine() {
 }
 
-void TheWitcherEngine::run(const std::string &target) {
+void TheWitcherEngine::run(const Common::UString &target) {
 	_baseDirectory = Common::FilePath::findSubDirectory(target, "data", true);
 	if (_baseDirectory.empty())
 		throw Common::Exception("No data directory");

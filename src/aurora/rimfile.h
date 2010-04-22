@@ -15,10 +15,10 @@
 #ifndef AURORA_RIMFILE_H
 #define AURORA_RIMFILE_H
 
-#include <string>
 #include <vector>
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 #include "aurora/types.h"
 #include "aurora/aurorafile.h"
@@ -35,8 +35,8 @@ class RIMFile : public AuroraBase {
 public:
 	/** A resource. */
 	struct Resource {
-		std::string name; ///< The resource's name.
-		FileType    type; ///< The resource's type.
+		Common::UString name; ///< The resource's name.
+		FileType        type; ///< The resource's type.
 
 		uint32 offset; ///< The resource's offset within the RIM.
 		uint32 size;   ///< The resource's size.

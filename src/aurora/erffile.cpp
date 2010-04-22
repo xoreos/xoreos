@@ -99,7 +99,7 @@ void ERFFile::readKeyList(Common::SeekableReadStream &erf, uint32 offset) {
 		throw Common::Exception(Common::kSeekError);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
-		res->name = AuroraFile::readRawString(erf, 16);
+		res->name.readASCII(erf, 16);
 		erf.skip(4); // Resource ID
 		res->type = (FileType) erf.readUint16LE();
 		erf.skip(2); // Reserved
