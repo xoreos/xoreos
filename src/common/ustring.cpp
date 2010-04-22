@@ -49,9 +49,10 @@ static void readLine(SeekableReadStream &stream, std::vector<T> &data,
 	int cLen = 0;
 
 	// If end-of-file occurs before any characters are read, return
-	// and the buffer contents remain unchanged.
-	if (stream.eos() || stream.err())
+	if (stream.eos() || stream.err()) {
+		data.push_back(0);
 		return;
+	}
 
 	// Loop as long as the line has not ended
 	while (c != '\n') {
@@ -59,7 +60,7 @@ static void readLine(SeekableReadStream &stream, std::vector<T> &data,
 
 		// If an error occurs, return
 		if (stream.eos() || stream.err())
-			return;
+			break;
 
 		// Check for CR or CR/LF
 		// * DOS and Windows use CRLF line breaks
@@ -70,7 +71,7 @@ static void readLine(SeekableReadStream &stream, std::vector<T> &data,
 			cLen = (*readFunc)(stream, c);
 
 			if (stream.err())
-				return; // error: the buffer contents are indeterminate
+				break; // error: the buffer contents are indeterminate
 
 			if (stream.eos()) {
 				// The CR was the last character in the file.
@@ -85,6 +86,12 @@ static void readLine(SeekableReadStream &stream, std::vector<T> &data,
 
 		data.push_back((T) c);
 	}
+
+	// Remove any end-of-line characters and 0-terminate the string
+	if (!data.empty() && (data.back() == '\n'))
+		data.back() = '\0';
+	else
+		data.push_back('\0');
 }
 
 class ConversionManager : public Singleton<ConversionManager> {
