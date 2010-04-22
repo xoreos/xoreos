@@ -47,6 +47,14 @@ public:
 
 	bool operator<(const UString &str) const;
 
+	UString operator+(const UString &str) const;
+	UString operator+(const std::string &str) const;
+	UString operator+(const char *str) const;
+
+	UString &operator+=(const UString &str);
+	UString &operator+=(const std::string &str);
+	UString &operator+=(const char *str);
+
 	/** Return the size of the string, in characters.
 	 *
 	 *  Since this has to iterate through the whole string, this runs in O(n).

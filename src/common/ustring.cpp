@@ -111,6 +111,48 @@ bool UString::operator<(const UString &str) const {
 	return _string < str._string;
 }
 
+UString UString::operator+(const UString &str) const {
+	UString tmp(*this);
+
+	tmp += str;
+
+	return tmp;
+}
+
+UString UString::operator+(const std::string &str) const {
+	UString tmp(*this);
+
+	tmp += str;
+
+	return tmp;
+}
+
+UString UString::operator+(const char *str) const {
+	UString tmp(*this);
+
+	tmp += str;
+
+	return tmp;
+}
+
+UString &UString::operator+=(const UString &str) {
+	_string += str._string;
+
+	return *this;
+}
+
+UString &UString::operator+=(const std::string &str) {
+	_string += str;
+
+	return *this;
+}
+
+UString &UString::operator+=(const char *str) {
+	_string += str;
+
+	return *this;
+}
+
 uint32 UString::size() const {
 	// Calculate the "distance" in characters from the beginning and end
 	return utf8::distance(_string.begin(), _string.end());
