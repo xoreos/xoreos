@@ -16,6 +16,7 @@
 #define COMMON_USTRING_H
 
 #include <string>
+#include <sstream>
 #include <vector>
 
 #include "common/types.h"
@@ -77,6 +78,32 @@ public:
 
 	void tolower();
 	void toupper();
+
+	/** Parse a string into different types. */
+	template<typename T> bool parse(T &v) const {
+		std::stringstream ss(_string);
+
+		if ((ss >> v).fail())
+			return false;
+
+		return true;
+	}
+
+	/** Parse a string into a bool. */
+	template<bool &> bool parse(bool &v) const {
+		int i;
+		if (!parse(i))
+			return false;
+
+		v = (i == 1);
+		return true;
+	}
+
+	/** Parse a string into a string. */
+	template<UString &> bool parse(UString &v) const {
+		v = *this;
+		return true;
+	}
 
 	/** Read clean non-extended ASCII out of a stream. */
 	void readASCII(SeekableReadStream &stream);
