@@ -220,6 +220,14 @@ UString UString::operator+(const char *str) const {
 	return tmp;
 }
 
+UString UString::operator+(uint32 c) const {
+	UString tmp(*this);
+
+	tmp += c;
+
+	return tmp;
+}
+
 UString &UString::operator+=(const UString &str) {
 	_string += str._string;
 
@@ -234,6 +242,12 @@ UString &UString::operator+=(const std::string &str) {
 
 UString &UString::operator+=(const char *str) {
 	_string += str;
+
+	return *this;
+}
+
+UString &UString::operator+=(uint32 c) {
+	utf8::append(c, std::back_inserter(_string));
 
 	return *this;
 }
