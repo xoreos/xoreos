@@ -422,44 +422,6 @@ public:
 
 	/** Seek to the specified position, returning the previous position. */
 	virtual uint32 seekTo(uint32 offset);
-
-	/**
-	 * Reads at most one less than the number of characters specified
-	 * by bufSize from the and stores them in the string buf. Reading
-	 * stops when the end of a line is reached (CR, CR/LF or LF), and
-	 * at end-of-file or error. The newline, if any, is retained (CR
-	 * and CR/LF are translated to LF = 0xA = '\\n'). If any characters
-	 * are read and there is no error, a '\\0' character is appended
-	 * to end the string.
-	 *
-	 * Upon successful completion, return a pointer to the string. If
-	 * end-of-file occurs before any characters are read, returns NULL
-	 * and the buffer contents remain unchanged.  If an error occurs,
-	 * returns NULL and the buffer contents are indeterminate.
-	 * This method does not distinguish between end-of-file and error;
-	 * callers must use err() or eos() to determine which occurred.
-	 *
-	 * @note This methods is closely modeled after the standard fgets()
-	 *       function from stdio.h.
-	 *
-	 * @param  buf the buffer to store into.
-	 * @param  bufSize the size of the buffer.
-	 * @return a pointer to the read string, or NULL if an error occurred.
-	 */
-	virtual char *readLine(char *buf, size_t bufSize);
-
-
-	/**
-	 * Reads a full line and returns it as a std::string. Reading
-	 * stops when the end of a line is reached (CR, CR/LF or LF), and
-	 * at end-of-file or error.
-	 *
-	 * Upon successful completion, return a string with the content
-	 * of the line, *without* the end of a line marker. This method
-	 * does not indicate whether an error occurred. Callers must use
-	 * err() or eos() to determine whether an exception occurred.
-	 */
-	virtual std::string readLine();
 };
 
 

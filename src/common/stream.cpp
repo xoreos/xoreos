@@ -92,10 +92,6 @@ bool MemoryReadStream::seek(int32 offs, int whence) {
 	return true; // FIXME: STREAM REWRITE
 }
 
-enum {
-	LF = 0x0A,
-	CR = 0x0D
-};
 
 uint32 SeekableReadStream::seekTo(uint32 offset) {
 	uint32 curPos = pos();
@@ -105,86 +101,6 @@ uint32 SeekableReadStream::seekTo(uint32 offset) {
 
 	return curPos;
 }
-
-char *SeekableReadStream::readLine(char *buf, size_t bufSize) {
-	assert(buf != 0 && bufSize > 1);
-	char *p = buf;
-	size_t len = 0;
-	char c = 0;
-
-	// If end-of-file occurs before any characters are read, return NULL
-	// and the buffer contents remain unchanged.
-	if (eos() || err()) {
-		return 0;
-	}
-
-	// Loop as long as there is still free space in the buffer,
-	// and the line has not ended
-	while (len + 1 < bufSize && c != LF) {
-		c = readByte();
-
-		if (eos()) {
-			// If end-of-file occurs before any characters are read, return
-			// NULL and the buffer contents remain unchanged.
-			if (len == 0)
-				return 0;
-
-			break;
-		}
-
-		// If an error occurs, return NULL and the buffer contents
-		// are indeterminate.
-		if (err())
-			return 0;
-
-		// Check for CR or CR/LF
-		// * DOS and Windows use CRLF line breaks
-		// * Unix and OS X use LF line breaks
-		// * Macintosh before OS X used CR line breaks
-		if (c == CR) {
-			// Look at the next char -- is it LF? If not, seek back
-			c = readByte();
-
-			if (err()) {
-				return 0; // error: the buffer contents are indeterminate
-			}
-			if (eos()) {
-				// The CR was the last character in the file.
-				// Reset the eos() flag since we successfully finished a line
-				clearErr();
-			} else if (c != LF) {
-				seek(-1, SEEK_CUR);
-			}
-
-			// Treat CR & CR/LF as plain LF
-			c = LF;
-		}
-
-		*p++ = c;
-		len++;
-	}
-
-	// We always terminate the buffer if no error occured
-	*p = 0;
-	return buf;
-}
-
-std::string SeekableReadStream::readLine() {
-	// Read a line
-	std::string line;
-	while (line[line.size() - 1] != '\n') {
-		char buf[256];
-		if (!readLine(buf, 256))
-			break;
-		line += buf;
-	}
-
-	if (line[line.size() - 1] == '\n')
-		line.erase(line.size() - 1);
-
-	return line;
-}
-
 
 
 uint32 SubReadStream::read(void *dataPtr, uint32 dataSize) {
