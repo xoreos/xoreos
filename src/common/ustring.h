@@ -75,6 +75,9 @@ public:
 
 	void replaceAll(uint32 what, uint32 with);
 
+	void tolower();
+	void toupper();
+
 	/** Read clean non-extended ASCII out of a stream. */
 	void readASCII(SeekableReadStream &stream);
 	/** Read clean non-extended ASCII out of a stream. */

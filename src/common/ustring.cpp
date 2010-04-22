@@ -12,6 +12,8 @@
  *  Unicode string handling.
  */
 
+#include <cctype>
+
 #include <iconv.h>
 
 #include "common/ustring.h"
@@ -194,6 +196,60 @@ void UString::replaceAll(uint32 what, uint32 with) {
 		} else
 			// It's what we're looking for, insert the replacement instead
 			utf8::append(with, std::back_inserter(newString));
+
+	}
+
+	// And set the new string's contents
+	_string.swap(newString);
+}
+
+void UString::tolower() {
+	// The new string with characters replaced
+	std::string newString;
+	newString.reserve(_string.size());
+
+	// Run through the whole string
+	std::string::iterator it = _string.begin();
+	while (it != _string.end()) {
+		std::string::iterator prev = it;
+
+		// Get the codepoint
+		uint32 c = utf8::next(it, _string.end());
+
+		if ((c & 0xFFFFFF80) != 0) {
+			// It's not a clean ASCII character, just copy it
+			for (; prev != it; ++prev)
+				newString.push_back(*prev);
+		} else
+			// It's a clean ASCII character, try to lowercase it
+			utf8::append(std::tolower(c), std::back_inserter(newString));
+
+	}
+
+	// And set the new string's contents
+	_string.swap(newString);
+}
+
+void UString::toupper() {
+	// The new string with characters replaced
+	std::string newString;
+	newString.reserve(_string.size());
+
+	// Run through the whole string
+	std::string::iterator it = _string.begin();
+	while (it != _string.end()) {
+		std::string::iterator prev = it;
+
+		// Get the codepoint
+		uint32 c = utf8::next(it, _string.end());
+
+		if ((c & 0xFFFFFF80) != 0) {
+			// It's not a clean ASCII character, just copy it
+			for (; prev != it; ++prev)
+				newString.push_back(*prev);
+		} else
+			// It's a clean ASCII character, try to uppercase it
+			utf8::append(std::toupper(c), std::back_inserter(newString));
 
 	}
 
