@@ -15,9 +15,8 @@
 #ifndef AURORA_LOCSTRING_H
 #define AURORA_LOCSTRING_H
 
-#include <string>
-
 #include "common/types.h"
+#include "common/ustring.h"
 
 #include "aurora/types.h"
 
@@ -46,12 +45,12 @@ public:
 	bool hasString(Language language) const;
 
 	/** Get the string of that language. */
-	const std::string &getString(Language language) const;
+	const Common::UString &getString(Language language) const;
 	/** Set the string of that language. */
-	void setString(Language language, const std::string &str);
+	void setString(Language language, const Common::UString &str);
 
 	/** Get the first available string. */
-	const std::string &getFirstString() const;
+	const Common::UString &getFirstString() const;
 
 	/** Read a string out of a stream. */
 	void readString(Language language, Common::SeekableReadStream &stream);
@@ -65,7 +64,7 @@ public:
 private:
 	uint32 _id; ///< The string's ID / StrRef. */
 
-	std::string _strings[kStringCount]; /** The localized strings. */
+	Common::UString _strings[kStringCount]; /** The localized strings. */
 };
 
 } // End of namespace Aurora

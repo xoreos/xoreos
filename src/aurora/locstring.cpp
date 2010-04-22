@@ -113,15 +113,15 @@ bool LocString::hasString(Language language) const {
 	return !_strings[mapLanguageToStorage(language)].empty();
 }
 
-const std::string &LocString::getString(Language language) const {
+const Common::UString &LocString::getString(Language language) const {
 	return _strings[mapLanguageToStorage(language)];
 }
 
-void LocString::setString(Language language, const std::string &str) {
+void LocString::setString(Language language, const Common::UString &str) {
 	_strings[mapLanguageToStorage(language)] = str;
 }
 
-const std::string &LocString::getFirstString() const {
+const Common::UString &LocString::getFirstString() const {
 	for (int i = 0; i < kStringCount; i++)
 		if (!_strings[i].empty())
 			return _strings[i];
@@ -132,7 +132,7 @@ const std::string &LocString::getFirstString() const {
 void LocString::readString(Language language, Common::SeekableReadStream &stream) {
 	uint32 length = stream.readUint32LE();
 
-	_strings[mapLanguageToStorage(language)] = AuroraFile::readRawString(stream, length);
+	_strings[mapLanguageToStorage(language)].readASCII(stream, length);
 }
 
 void LocString::readLocSubString(Common::SeekableReadStream &stream) {
