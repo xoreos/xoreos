@@ -157,7 +157,7 @@ UString::UString(const char *str) {
 }
 
 UString::UString(const char *str, int n) {
-	_string = std::string(str, n);
+	*this = std::string(str, n);
 }
 
 UString::~UString() {
