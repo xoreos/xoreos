@@ -420,6 +420,9 @@ public:
 	 */
 	virtual bool skip(uint32 offset) { return seek(offset, SEEK_CUR); }
 
+	/** Seek to the specified position, returning the previous position. */
+	virtual uint32 seekTo(uint32 offset);
+
 	/**
 	 * Reads at most one less than the number of characters specified
 	 * by bufSize from the and stores them in the string buf. Reading

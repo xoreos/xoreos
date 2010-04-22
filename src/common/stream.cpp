@@ -15,6 +15,7 @@
  */
 
 #include "common/stream.h"
+#include "common/error.h"
 #include "common/util.h"
 
 namespace Common {
@@ -95,6 +96,15 @@ enum {
 	LF = 0x0A,
 	CR = 0x0D
 };
+
+uint32 SeekableReadStream::seekTo(uint32 offset) {
+	uint32 curPos = pos();
+
+	if (!seek(offset))
+		throw Exception(kSeekError);
+
+	return curPos;
+}
 
 char *SeekableReadStream::readLine(char *buf, size_t bufSize) {
 	assert(buf != 0 && bufSize > 1);
