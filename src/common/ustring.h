@@ -63,6 +63,8 @@ public:
 	iterator begin() const;
 	iterator end() const;
 
+	void replaceAll(uint32 what, uint32 with);
+
 	/** Read clean non-extended ASCII out of a stream. */
 	void readASCII(SeekableReadStream &stream);
 	/** Read clean non-extended ASCII out of a stream. */

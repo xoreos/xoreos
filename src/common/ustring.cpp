@@ -128,6 +128,33 @@ UString::iterator UString::end() const {
 	return iterator(_string.end(), _string.begin(), _string.end());
 }
 
+void UString::replaceAll(uint32 what, uint32 with) {
+	// The new string with characters replaced
+	std::string newString;
+	newString.reserve(_string.size());
+
+	// Run through the whole string
+	std::string::iterator it = _string.begin();
+	while (it != _string.end()) {
+		std::string::iterator prev = it;
+
+		// Get the codepoint
+		uint32 c = utf8::next(it, _string.end());
+
+		if (c != what) {
+			// It's not what we're looking for, copy it
+			for (; prev != it; ++prev)
+				newString.push_back(*prev);
+		} else
+			// It's what we're looking for, insert the replacement instead
+			utf8::append(with, std::back_inserter(newString));
+
+	}
+
+	// And set the new string's contents
+	_string.swap(newString);
+}
+
 void UString::readASCII(SeekableReadStream &stream) {
 	std::vector<char> data;
 	readSingleByte(stream, data);
