@@ -159,9 +159,14 @@ UString &UString::operator=(const UString &str) {
 }
 
 UString &UString::operator=(const std::string &str) {
+	std::string::const_iterator itEnd = utf8::find_invalid(str.begin(), str.end());
+
+	if (itEnd != str.end())
+		warning("Invalid UTF8 string: \"%s\"", str.c_str());
+
 	// Create the string for the valid utf8 portion of the string.
-	// Will work for clean non-extended ASCII strings.
-	_string = std::string(str.begin(), utf8::find_invalid(str.begin(), str.end()));
+	// Will work for clean non-extended ASCII strings, too.
+	_string = std::string(str.begin(), itEnd);
 
 	return *this;
 }
@@ -495,13 +500,17 @@ void UString::readSingleByte(SeekableReadStream &stream, std::vector<char> &data
 
 	if (stream.err())
 		throw Exception(kReadError);
+
+	data.push_back('\0');
 }
 
 void UString::readSingleByte(SeekableReadStream &stream, std::vector<char> &data, uint32 length) {
-	data.resize(length);
+	data.resize(length + 1);
 
 	if (stream.read((byte *) &data[0], length) != length)
 		throw Exception(kReadError);
+
+	data.push_back('\0');
 }
 
 void UString::readDoubleByteLE(SeekableReadStream &stream, std::vector<uint16> &data) {
@@ -511,16 +520,20 @@ void UString::readDoubleByteLE(SeekableReadStream &stream, std::vector<uint16> &
 
 	if (stream.err())
 		throw Exception(kReadError);
+
+	data.push_back('\0');
 }
 
 void UString::readDoubleByteLE(SeekableReadStream &stream, std::vector<uint16> &data, uint32 length) {
-	data.reserve(length);
+	data.reserve(length + 1);
 
 	while (length-- > 0)
 		data.push_back(stream.readUint16LE());
 
 	if (stream.err())
 		throw Exception(kReadError);
+
+	data.push_back('\0');
 }
 
 void UString::readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data) {
@@ -530,16 +543,20 @@ void UString::readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &
 
 	if (stream.err())
 		throw Exception(kReadError);
+
+	data.push_back('\0');
 }
 
 void UString::readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data, uint32 length) {
-	data.reserve(length);
+	data.reserve(length + 1);
 
 	while (length-- > 0)
 		data.push_back(stream.readUint16BE());
 
 	if (stream.err())
 		throw Exception(kReadError);
+
+	data.push_back('\0');
 }
 
 UString UString::sprintf(const char *s, ...) {
