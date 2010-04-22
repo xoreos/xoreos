@@ -92,6 +92,7 @@ public:
 	iterator findFirst(uint32 c) const;
 
 	void truncate(const iterator &it);
+	void trim();
 
 	/** Replace all occurences of a character with another character. */
 	void replaceAll(uint32 what, uint32 with);

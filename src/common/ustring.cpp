@@ -309,6 +309,29 @@ void UString::truncate(const iterator &it) {
 	_string.resize(std::distance((std::string::const_iterator) _string.begin(), it.base()));
 }
 
+void UString::trim() {
+	if (_string.empty())
+		// Nothing to do
+		return;
+
+	// Find the last space, from the end
+	iterator itEnd = --end();
+	for (; itEnd != begin(); --itEnd) {
+		uint32 c = *itEnd;
+		if ((c != '\0') && (c != ' ')) {
+			++itEnd;
+			break;
+		}
+	}
+
+	iterator itStart = begin();
+	for (; itStart != itEnd; ++itStart)
+		if (*itStart != ' ')
+			break;
+
+	_string = std::string(itStart.base(), itEnd.base());
+}
+
 void UString::replaceAll(uint32 what, uint32 with) {
 	// The new string with characters replaced
 	std::string newString;
