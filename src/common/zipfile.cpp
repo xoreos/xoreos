@@ -62,7 +62,7 @@ ZipFile::ZipFile(SeekableReadStream *stream) : _stream(0) {
 			// use a sucky system like that. On the other hand, take a look
 			// at some of their own formats...
 			if (gpbFlag & (1 << 3))
-				throw Common::Exception("Unhandled: Data descriptor present in zip file");
+				throw Exception("Unhandled: Data descriptor present in zip file");
 
 			// HACK: Skip any filename with a trailing slash because it's
 			// a directory. The proper solution would be to dump this code

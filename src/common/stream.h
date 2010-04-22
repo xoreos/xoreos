@@ -662,7 +662,7 @@ public:
  * This is a wrapper around MemoryReadStream, but it adds non-endian
  * read methods whose endianness is set on the stream creation.
  */
-class MemoryReadStreamEndian : public Common::MemoryReadStream {
+class MemoryReadStreamEndian : public MemoryReadStream {
 private:
 	const bool _bigEndian;
 
@@ -730,7 +730,7 @@ public:
  * A sort of hybrid between MemoryWriteStream and Array classes. A stream
  * that grows as it's written to.
  */
-class MemoryWriteStreamDynamic : public Common::WriteStream {
+class MemoryWriteStreamDynamic : public WriteStream {
 private:
 	uint32 _capacity;
 	uint32 _size;

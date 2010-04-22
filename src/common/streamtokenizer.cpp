@@ -30,7 +30,7 @@ static bool isIn(const CharList &list, char c) {
 
 static const uint32 kSpliceSize = 32;
 
-bool parseToken(Common::SeekableReadStream &stream, std::string &string,
+bool parseToken(SeekableReadStream &stream, std::string &string,
                 const CharList &splitChars, const CharList &endChars,
                 const CharList &quoteChars, const CharList &ignoreChars) {
 

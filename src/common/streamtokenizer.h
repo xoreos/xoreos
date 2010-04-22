@@ -38,7 +38,7 @@ typedef std::vector<char> CharList;
  *  @return true if there's still tokens left in the list (no end character was reached), false
  *          otherwise.
  */
-bool parseToken(Common::SeekableReadStream &stream, std::string &string,
+bool parseToken(SeekableReadStream &stream, std::string &string,
                 const CharList &splitChars, const CharList &endChars,
                 const CharList &quoteChars, const CharList &ignoreChars);
 

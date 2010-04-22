@@ -41,7 +41,7 @@ std::string sprintf(const char *s, ...) {
 	return buf;
 }
 
-void printDataHex(Common::SeekableReadStream &stream) {
+void printDataHex(SeekableReadStream &stream) {
 	uint32 pos  = stream.pos();
 	uint32 size = stream.size() - pos;
 
@@ -55,7 +55,7 @@ void printDataHex(Common::SeekableReadStream &stream) {
 		// At max 16 bytes printed per row
 		uint32 n = MIN<uint32>(size, 16);
 		if (stream.read(rowData, n) != n)
-			throw Common::Exception(Common::kReadError);
+			throw Exception(kReadError);
 
 		// Print an offset
 		std::fprintf(stderr, "%08X  ", offset);
@@ -91,14 +91,14 @@ void printDataHex(Common::SeekableReadStream &stream) {
 
 	// Seek back
 	if (!stream.seek(pos))
-		throw Common::Exception(Common::kSeekError);
+		throw Exception(kSeekError);
 }
 
 void printDataHex(const byte *data, uint32 size) {
 	if (!data || (size == 0))
 		return;
 
-	Common::MemoryReadStream stream(data, size);
+	MemoryReadStream stream(data, size);
 }
 
 } // End of namespace Common
