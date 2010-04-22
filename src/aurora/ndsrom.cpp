@@ -86,7 +86,8 @@ bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
 	if (!stream.seek(0))
 		return false;
 
-	Common::UString gameName = AuroraFile::readRawString(stream, 12);
+	Common::UString gameName;
+	gameName.readASCII(stream, 12);
 	if (gameName != "SONICCHRON") // Should be the only game we will accept.
 		return false;
 
