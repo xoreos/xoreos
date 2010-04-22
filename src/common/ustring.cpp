@@ -12,6 +12,8 @@
  *  Unicode string handling.
  */
 
+#include <cstdarg>
+#include <cstdio>
 #include <cctype>
 
 #include <iconv.h>
@@ -389,6 +391,17 @@ void UString::readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &
 
 	if (stream.err())
 		throw Exception(kReadError);
+}
+
+UString UString::sprintf(const char *s, ...) {
+	char buf[STRINGBUFLEN];
+	va_list va;
+
+	va_start(va, s);
+	std::vsnprintf(buf, STRINGBUFLEN, s, va);
+	va_end(va);
+
+	return UString(buf);
 }
 
 uint32 UString::tolower(uint32 c) {

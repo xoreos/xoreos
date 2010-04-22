@@ -128,6 +128,9 @@ public:
 	/** Read UTF-16BE out of a stream. */
 	void readUTF16BE(SeekableReadStream &stream, uint32 length);
 
+	/** Formatted printer, works like sprintf(). */
+	static UString sprintf(const char *s, ...);
+
 private:
 	std::string _string; ///< Internal string holding the actual data.
 
