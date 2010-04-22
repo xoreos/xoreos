@@ -19,8 +19,7 @@
 
 #include <cassert>
 #include <cstring>
-
-#include <string>
+#include <cstdio>
 
 #include "common/types.h"
 #include "common/endianness.h"
@@ -155,12 +154,6 @@ public:
 	FORCEINLINE void writeSint64BE(int64 value) {
 		writeUint64BE((uint64)value);
 	}
-
-	/**
-	 * Write the given string to the stream.
-	 * This writes str.size() characters, but no terminating zero byte.
-	 */
-	void writeString(const std::string &str);
 
 	/** Copy the complete contents of the given stream. */
 	void writeStream(ReadStream &stream);

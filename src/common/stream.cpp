@@ -20,10 +20,6 @@
 
 namespace Common {
 
-void WriteStream::writeString(const std::string &str) {
-	write(str.c_str(), str.size());
-}
-
 void WriteStream::writeStream(ReadStream &stream) {
 	byte buf[4096];
 
