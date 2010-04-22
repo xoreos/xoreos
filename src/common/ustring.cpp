@@ -256,6 +256,10 @@ void UString::swap(UString &str) {
 	_string.swap(str._string);
 }
 
+void UString::clear() {
+	_string.clear();
+}
+
 uint32 UString::size() const {
 	// Calculate the "distance" in characters from the beginning and end
 	return utf8::distance(_string.begin(), _string.end());

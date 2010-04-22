@@ -66,6 +66,9 @@ public:
 	/** Swap the contents of the string with this string's. */
 	void swap(UString &str);
 
+	/** Clear the string's contents. */
+	void clear();
+
 	/** Return the size of the string, in characters.
 	 *
 	 *  Since this has to iterate through the whole string, this runs in O(n).
@@ -93,8 +96,8 @@ public:
 	void toupper();
 
 	/** Parse a string into different types. */
-	template<typename T> bool parse(T &v) const {
-		std::stringstream ss(_string);
+	template<typename T> bool parse(T &v, int skip = 0) const {
+		std::stringstream ss(_string.c_str() + skip);
 
 		if ((ss >> v).fail())
 			return false;
@@ -103,9 +106,9 @@ public:
 	}
 
 	/** Parse a string into a bool. */
-	template<bool &> bool parse(bool &v) const {
+	template<bool &> bool parse(bool &v, int skip = 0) const {
 		int i;
-		if (!parse(i))
+		if (!parse(i, skip))
 			return false;
 
 		v = (i == 1);
@@ -113,8 +116,8 @@ public:
 	}
 
 	/** Parse a string into a string. */
-	template<UString &> bool parse(UString &v) const {
-		v = *this;
+	template<UString &> bool parse(UString &v, int skip = 0) const {
+		v = this->c_str() + skip;
 		return true;
 	}
 
