@@ -116,7 +116,7 @@ GFFVariable &GFFVariable::operator=(const GFFVariable &var) {
 	_value = var._value;
 
 	if      (_type == kTypeString)
-		_value.typeString = new std::string(*_value.typeString);
+		_value.typeString = new Common::UString(*_value.typeString);
 	else if (_type == kTypeLocation)
 		_value.typeLocation = new GFFLocation(*_value.typeLocation);
 
@@ -157,7 +157,7 @@ uint32 GFFVariable::getObjectID() const {
 	return _value.typeObjectID;
 }
 
-const std::string &GFFVariable::getString() const {
+const Common::UString &GFFVariable::getString() const {
 	if (_type != kTypeString)
 		throw kGFFFieldTypeError;
 
@@ -199,11 +199,11 @@ void GFFVariable::setObjectID(uint32 v) {
 	_value.typeObjectID = v;
 }
 
-void GFFVariable::setString(const std::string &v) {
+void GFFVariable::setString(const Common::UString &v) {
 	clear();
 
 	_type = kTypeString;
-	_value.typeString = new std::string(v);
+	_value.typeString = new Common::UString(v);
 }
 
 void GFFVariable::setLocation(const GFFLocation &v) {
@@ -213,7 +213,7 @@ void GFFVariable::setLocation(const GFFLocation &v) {
 	_value.typeLocation = new GFFLocation(v);
 }
 
-void GFFVariable::read(const GFFFile::StructRange &range, std::string &name) {
+void GFFVariable::read(const GFFFile::StructRange &range, Common::UString &name) {
 	clear();
 
 	Type type = kTypeNone;
@@ -263,11 +263,11 @@ void GFFVarTable::clear() {
 	_variables.clear();
 }
 
-bool GFFVarTable::has(const std::string &name) const {
+bool GFFVarTable::has(const Common::UString &name) const {
 	return _variables.find(name) != _variables.end();
 }
 
-const GFFVariable *GFFVarTable::get(const std::string &name) const {
+const GFFVariable *GFFVarTable::get(const Common::UString &name) const {
 	VarMap::const_iterator it = _variables.find(name);
 	if (it == _variables.end())
 		return 0;
@@ -275,7 +275,7 @@ const GFFVariable *GFFVarTable::get(const std::string &name) const {
 	return it->second;
 }
 
-GFFVariable *GFFVarTable::get(const std::string &name) {
+GFFVariable *GFFVarTable::get(const Common::UString &name) {
 	VarMap::iterator it = _variables.find(name);
 	if (it == _variables.end())
 		return 0;
@@ -283,7 +283,7 @@ GFFVariable *GFFVarTable::get(const std::string &name) {
 	return it->second;
 }
 
-void GFFVarTable::set(const std::string &name, const GFFVariable &variable) {
+void GFFVarTable::set(const Common::UString &name, const GFFVariable &variable) {
 	_variables.insert(std::make_pair(name, new GFFVariable(variable)));
 }
 
@@ -291,7 +291,7 @@ void GFFVarTable::read(const GFFFile::ListRange &range) {
 	for (GFFFile::ListIterator it = range.first; it != range.second; ++it) {
 		GFFVariable *variable = new GFFVariable;
 
-		std::string name;
+		Common::UString name;
 		try {
 			variable->read(*it, name);
 		} catch(...) {

@@ -295,7 +295,7 @@ GFFField::Type GFFField::getType() const {
 	return _type;
 }
 
-const std::string &GFFField::getLabel() const {
+const Common::UString &GFFField::getLabel() const {
 	return _label;
 }
 
@@ -327,7 +327,7 @@ double GFFField::getDouble() const {
 	return _value.typeDouble;
 }
 
-const std::string &GFFField::getString() const {
+const Common::UString &GFFField::getString() const {
 	if (_type != kTypeString)
 		throw kGFFFieldTypeError;
 
@@ -396,7 +396,9 @@ void GFFField::read(Common::SeekableReadStream &gff, const GFFFile::Header &head
 		throw Common::Exception("Label index out of range (%d/%d)", labelIndex, header.labelCount);
 
 	// Read the label
-	_label = AuroraFile::readRawString(gff, 16, header.labelOffset + labelIndex * 16);
+	uint32 curPos = gff.seekTo(header.labelOffset + labelIndex * 16);
+	_label.readASCII(gff, 16);
+	gff.seekTo(curPos);
 
 	// Fill in the correct data
 	convertData(gff, header, data);
@@ -544,9 +546,9 @@ inline void GFFField::readExoString(Common::SeekableReadStream &gff,
 
 	uint32 length = gff.readUint32LE();
 
-	_value.typeString = new std::string;
+	_value.typeString = new Common::UString;
 
-	*_value.typeString = AuroraFile::readRawString(gff, length);
+	_value.typeString->readASCII(gff, length);
 
 	gff.seek(curPos);
 }
@@ -559,9 +561,9 @@ inline void GFFField::readResRef(Common::SeekableReadStream &gff,
 
 	uint32 length = gff.readByte();
 
-	_value.typeString = new std::string;
+	_value.typeString = new Common::UString;
 
-	*_value.typeString = AuroraFile::readRawString(gff, length);
+	_value.typeString->readASCII(gff, length);
 
 	gff.seek(curPos);
 }

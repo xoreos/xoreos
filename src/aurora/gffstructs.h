@@ -15,10 +15,10 @@
 #ifndef AURORA_GFFSTRUCTS_H
 #define AURORA_GFFSTRUCTS_H
 
-#include <string>
 #include <map>
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 #include "aurora/types.h"
 #include "aurora/gfffile.h"
@@ -76,22 +76,22 @@ public:
 
 	Type getType() const;
 
-				int32        getInt     () const;
-				float        getFloat   () const;
-				uint32       getObjectID() const;
-	const std::string &getString  () const;
-	const GFFLocation &getLocation() const;
+				int32            getInt     () const;
+				float            getFloat   () const;
+				uint32           getObjectID() const;
+	const Common::UString &getString  () const;
+	const GFFLocation     &getLocation() const;
 
 	GFFLocation &getLocation();
 
-	void setInt     (      int32        v);
-	void setFloat   (      float        v);
-	void setObjectID(      uint32       v);
-	void setString  (const std::string &v);
-	void setLocation(const GFFLocation &v);
+	void setInt     (      int32            v);
+	void setFloat   (      float            v);
+	void setObjectID(      uint32           v);
+	void setString  (const Common::UString &v);
+	void setLocation(const GFFLocation     &v);
 
 	/** Read the variable out of a GFF struct. */
-	void read(const GFFFile::StructRange &range, std::string &name);
+	void read(const GFFFile::StructRange &range, Common::UString &name);
 
 private:
 	Type _type;
@@ -101,8 +101,8 @@ private:
 		float  typeFloat;
 		uint32 typeObjectID;
 
-		std::string *typeString;
-		GFFLocation *typeLocation;
+		Common::UString *typeString;
+		GFFLocation     *typeLocation;
 	} _value;
 };
 
@@ -114,17 +114,17 @@ public:
 
 	void clear();
 
-	bool has(const std::string &name) const;
+	bool has(const Common::UString &name) const;
 
-	const GFFVariable *get(const std::string &name) const;
-	GFFVariable *get(const std::string &name);
+	const GFFVariable *get(const Common::UString &name) const;
+	GFFVariable *get(const Common::UString &name);
 
-	void set(const std::string &name, const GFFVariable &variable);
+	void set(const Common::UString &name, const GFFVariable &variable);
 
 	void read(const GFFFile::ListRange &range);
 
 private:
-	typedef std::map<std::string, GFFVariable *> VarMap;
+	typedef std::map<Common::UString, GFFVariable *> VarMap;
 
 	VarMap _variables;
 };

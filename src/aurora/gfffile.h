@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 #include "aurora/types.h"
 #include "aurora/aurorafile.h"
@@ -163,7 +164,7 @@ public:
 	Type getType() const;
 
 	/** Get the field's label. */
-	const std::string &getLabel() const;
+	const Common::UString &getLabel() const;
 
 	char   getChar() const;
 	uint64 getUint() const;
@@ -171,8 +172,8 @@ public:
 
 	double getDouble() const;
 
-	const std::string &getString()    const;
-	const LocString   &getLocString() const;
+	const Common::UString &getString()    const;
+	const LocString       &getLocString() const;
 
 	uint32 getDataSize() const;
 	const byte *getData() const;
@@ -213,7 +214,7 @@ private:
 	GFFType _gffType; ///< The field's actual type.
 	   Type _type;    ///< The field's general type.
 
-	std::string _label; ///< The field's label.
+	Common::UString _label; ///< The field's label.
 
 	uint32 _dataSize; ///< The size of the field's data, if applicable.
 
@@ -222,8 +223,8 @@ private:
 		uint64 typeInt;
 		double typeDouble;
 
-		std::string *typeString;
-		LocString   *typeLocString;
+		Common::UString *typeString;
+		LocString       *typeLocString;
 
 		byte *typeData;
 
