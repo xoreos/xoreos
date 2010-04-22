@@ -74,6 +74,7 @@ AuroraBase::AuroraBase() {
 void AuroraBase::clear() {
 	_id      = 0;
 	_version = 0;
+	_utf16le = false;
 }
 
 uint32 AuroraBase::getID() const {
@@ -84,9 +85,34 @@ uint32 AuroraBase::getVersion() const {
 	return _version;
 }
 
+bool AuroraBase::isUTF16LE() const {
+	return _utf16le;
+}
+
 void AuroraBase::readHeader(Common::SeekableReadStream &stream) {
 	_id      = stream.readUint32BE();
 	_version = stream.readUint32BE();
+
+	if (((_id & 0x00FF00FF) == 0) && ((_version & 0x00FF00FF) == 0)) {
+		// There's 0-bytes in the ID and version, this looks like little-endian UTF-16
+
+		_utf16le = true;
+
+		_id = convertUTF16LE(_id, _version);
+
+		uint32 version1 = stream.readUint32BE();
+		uint32 version2 = stream.readUint32BE();
+
+		_version = convertUTF16LE(version1, version2);
+	} else
+		_utf16le = false;
+}
+
+uint32 AuroraBase::convertUTF16LE(uint32 x1, uint32 x2) {
+	// Take 8 byte and remove every second byte
+
+	return ((x1 & 0xFF000000)      ) | ((x1 & 0x0000FF00) << 8) |
+	       ((x2 & 0xFF000000) >> 16) | ((x2 & 0x0000FF00) >> 8);
 }
 
 } // End of namespace Aurora
