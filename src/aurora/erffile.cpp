@@ -23,6 +23,7 @@ static const uint32 kMODID     = MKID_BE('MOD ');
 static const uint32 kHAKID     = MKID_BE('HAK ');
 static const uint32 kSAVID     = MKID_BE('SAV ');
 static const uint32 kVersion1  = MKID_BE('V1.0');
+static const uint32 kVersion2  = MKID_BE('V2.0');
 
 namespace Aurora {
 
@@ -47,8 +48,14 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 	if ((_id != kERFID) && (_id != kMODID) && (_id != kHAKID) && (_id != kSAVID))
 		throw Common::Exception("Not an ERF file");
 
-	if (_version != kVersion1)
+	if ((_version != kVersion1) && (_version != kVersion2))
 		throw Common::Exception("Unsupported ERF file version %08X", _version);
+
+	if ((_version == kVersion2) && !_utf16le)
+		throw Common::Exception("ERF file version 2.0, but not UTF-16LE");
+
+	if (_version == kVersion2)
+		throw Common::Exception("TODO: ERF V2.0");
 
 	uint32 langCount = erf.readUint32LE(); // Number of languages for the description
 	erf.skip(4);                           // Number of bytes in the description
