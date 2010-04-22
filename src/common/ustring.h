@@ -74,9 +74,12 @@ public:
 	iterator begin() const;
 	iterator end() const;
 
+	/** Replace all occurences of a character with another character. */
 	void replaceAll(uint32 what, uint32 with);
 
+	/** Convert the string to lowercase. */
 	void tolower();
+	/** Convert the string to uppercase. */
 	void toupper();
 
 	/** Parse a string into different types. */
