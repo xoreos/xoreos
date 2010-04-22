@@ -107,6 +107,10 @@ UString &UString::operator=(const char *str) {
 	return *this;
 }
 
+bool UString::operator<(const UString &str) const {
+	return _string < str._string;
+}
+
 uint32 UString::size() const {
 	// Calculate the "distance" in characters from the beginning and end
 	return utf8::distance(_string.begin(), _string.end());
