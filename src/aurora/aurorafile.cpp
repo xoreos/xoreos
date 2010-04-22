@@ -14,6 +14,7 @@
 
 #include "common/stream.h"
 #include "common/strutil.h"
+#include "common/ustring.h"
 
 #include "aurora/aurorafile.h"
 
@@ -92,6 +93,10 @@ double AuroraFile::readDouble(Common::SeekableReadStream &stream) {
 
 void AuroraFile::cleanupPath(std::string &path) {
 	Common::replaceAll(path, '\\', '/');
+}
+
+void AuroraFile::cleanupPath(Common::UString &path) {
+	path.replaceAll('\\', '/');
 }
 
 

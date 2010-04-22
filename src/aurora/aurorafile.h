@@ -19,6 +19,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class UString;
 }
 
 namespace Aurora {
@@ -60,6 +61,9 @@ public:
 
 	/** Clean up a path string for portable use. */
 	static void cleanupPath(std::string &path);
+
+	/** Clean up a path string for portable use. */
+	static void cleanupPath(Common::UString &path);
 };
 
 /** Base class for most files found in games using BioWare's Aurora engine. */
