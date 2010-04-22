@@ -173,6 +173,14 @@ private:
 	void recalculateSize();
 };
 
+inline Common::UString operator+(const std::string &left, const Common::UString &right) {
+	return Common::UString(left) + right;
+}
+
+inline Common::UString operator+(const char *left, const Common::UString &right) {
+	return Common::UString(left) + right;
+}
+
 } // End of namespace Common
 
 #endif // COMMON_USTRING_H
