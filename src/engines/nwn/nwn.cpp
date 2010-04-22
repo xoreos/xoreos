@@ -120,7 +120,7 @@ void NWNEngine::run(const Common::UString &target) {
 
 		GfxMan.lockFrame();
 		delete text;
-		text = new Graphics::Text(*font, -1.0, 1.0, Common::sprintf("%d fps", GfxMan.getFPS()));
+		text = new Graphics::Text(*font, -1.0, 1.0, Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 		GfxMan.unlockFrame();
 	}
 
