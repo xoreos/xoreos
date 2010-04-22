@@ -15,8 +15,9 @@
 #ifndef COMMON_STRWORDMAP_H
 #define COMMON_STRWORDMAP_H
 
-#include <string>
 #include <map>
+
+#include "common/ustring.h"
 
 namespace Common {
 
@@ -39,10 +40,10 @@ public:
 	 *  @param  match If != 0, the position after the match will be stored here.
 	 *  @return The index of the matched string in the original list, or -1 if not found.
 	 */
-	int find(const std::string &str, const char **match) const;
+	int find(const Common::UString &str, const char **match) const;
 
 private:
-	std::map<std::string, int> _map; ///< The map.
+	std::map<Common::UString, int> _map; ///< The map.
 };
 
 } // End of namespace Common

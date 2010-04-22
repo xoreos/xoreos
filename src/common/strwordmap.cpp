@@ -21,17 +21,17 @@ namespace Common {
 
 StrWordMap::StrWordMap(const char **strings, int count) {
 	for (int i = 0; i < count; i++)
-		_map.insert(std::make_pair(std::string(strings[i]), i));
+		_map.insert(std::make_pair(Common::UString(strings[i]), i));
 }
 
 int StrWordMap::find(const char *str, const char **match) const {
-	std::string sStr = str;
+	Common::UString sStr = str;
 
-	const char *space = std::strchr(str, ' ');
-	if (space)
-		sStr.resize(space - str);
+	Common::UString::iterator space = sStr.findFirst(' ');
+	if (space != sStr.end())
+		sStr.truncate(space);
 
-	std::map<std::string, int>::const_iterator s = _map.find(sStr);
+	std::map<Common::UString, int>::const_iterator s = _map.find(sStr);
 	if (s == _map.end())
 		return -1;
 
@@ -40,14 +40,14 @@ int StrWordMap::find(const char *str, const char **match) const {
 	return s->second;
 }
 
-int StrWordMap::find(const std::string &str, const char **match) const {
-	std::string sStr = str;
+int StrWordMap::find(const Common::UString &str, const char **match) const {
+	Common::UString sStr = str;
 
-	const char *space = std::strchr(str.c_str(), ' ');
-	if (space)
-		sStr.resize(space - str.c_str());
+	Common::UString::iterator space = sStr.findFirst(' ');
+	if (space != sStr.end())
+		sStr.truncate(space);
 
-	std::map<std::string, int>::const_iterator s = _map.find(sStr);
+	std::map<Common::UString, int>::const_iterator s = _map.find(sStr);
 	if (s == _map.end())
 		return -1;
 
