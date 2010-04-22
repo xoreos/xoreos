@@ -71,16 +71,10 @@ public:
 	/** Clear the string's contents. */
 	void clear();
 
-	/** Return the size of the string, in characters.
-	 *
-	 *  Since this has to iterate through the whole string, this runs in O(n).
-	 */
+	/** Return the size of the string, in characters. */
 	uint32 size() const;
 
-	/** Is the string empty?
-	 *
-	 *  Does not iterate over the whole string; runs in O(1).
-	 */
+	/** Is the string empty? */
 	bool empty() const;
 
 	/** Return the (utf8 encoded) string data. */
@@ -156,6 +150,8 @@ public:
 private:
 	std::string _string; ///< Internal string holding the actual data.
 
+	uint32 _size;
+
 	/** Read single-byte data. */
 	void readSingleByte(SeekableReadStream &stream, std::vector<char> &data);
 	/** Read single-byte data. */
@@ -173,6 +169,8 @@ private:
 
 	static uint32 tolower(uint32 c);
 	static uint32 toupper(uint32 c);
+
+	void recalculateSize();
 };
 
 } // End of namespace Common

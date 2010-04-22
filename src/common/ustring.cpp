@@ -165,6 +165,7 @@ UString::~UString() {
 
 UString &UString::operator=(const UString &str) {
 	_string = str._string;
+	_size   = str._size;
 
 	return *this;
 }
@@ -178,6 +179,8 @@ UString &UString::operator=(const std::string &str) {
 	// Create the string for the valid utf8 portion of the string.
 	// Will work for clean non-extended ASCII strings, too.
 	_string = std::string(str.begin(), itEnd);
+
+	recalculateSize();
 
 	return *this;
 }
@@ -246,39 +249,44 @@ UString UString::operator+(uint32 c) const {
 
 UString &UString::operator+=(const UString &str) {
 	_string += str._string;
+	_size   += str._size;
 
 	return *this;
 }
 
 UString &UString::operator+=(const std::string &str) {
-	_string += str;
+	UString ustr(str);
 
-	return *this;
+	return *this += ustr;
 }
 
 UString &UString::operator+=(const char *str) {
-	_string += str;
+	UString ustr(str);
 
-	return *this;
+	return *this += ustr;
 }
 
 UString &UString::operator+=(uint32 c) {
 	utf8::append(c, std::back_inserter(_string));
+
+	_size++;
 
 	return *this;
 }
 
 void UString::swap(UString &str) {
 	_string.swap(str._string);
+
+	SWAP(_size, str._size);
 }
 
 void UString::clear() {
 	_string.clear();
+	_size = 0;
 }
 
 uint32 UString::size() const {
-	// Calculate the "distance" in characters from the beginning and end
-	return utf8::distance(_string.begin(), _string.end());
+	return _size;
 }
 
 bool UString::empty() const {
@@ -307,6 +315,7 @@ UString::iterator UString::findFirst(uint32 c) const {
 
 void UString::truncate(const iterator &it) {
 	_string.resize(std::distance((std::string::const_iterator) _string.begin(), it.base()));
+	recalculateSize();
 }
 
 void UString::trim() {
@@ -330,6 +339,7 @@ void UString::trim() {
 			break;
 
 	_string = std::string(itStart.base(), itEnd.base());
+	recalculateSize();
 }
 
 void UString::replaceAll(uint32 what, uint32 with) {
@@ -402,79 +412,80 @@ void UString::toupper() {
 }
 
 void UString::readASCII(SeekableReadStream &stream) {
+	clear();
+
 	std::vector<char> data;
 	readSingleByte(stream, data);
-
-	if (data.empty()) {
-		_string.clear();
+	if (data.empty())
 		return;
-	}
 
 	_string = (const char *) &data[0];
+	recalculateSize();
 }
 
 void UString::readASCII(SeekableReadStream &stream, uint32 length) {
+	clear();
+
 	std::vector<char> data;
 	readSingleByte(stream, data, length);
-
-	if (data.empty()) {
-		_string.clear();
+	if (data.empty())
 		return;
-	}
 
 	_string = (const char *) &data[0];
+	recalculateSize();
 }
 
 void UString::readLineASCII(SeekableReadStream &stream) {
+	clear();
+
 	std::vector<char> data;
 	readLine(stream, data, &Common::readSingleByte);
-
-	if (data.empty()) {
-		_string.clear();
+	if (data.empty())
 		return;
-	}
 
 	_string = (const char *) &data[0];
+	recalculateSize();
 }
 
 void UString::readLatin9(SeekableReadStream &stream) {
+	clear();
+
 	std::vector<char> data;
 	readSingleByte(stream, data);
-
-	if (data.empty()) {
-		_string.clear();
+	if (data.empty())
 		return;
-	}
 
 	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
+	recalculateSize();
 }
 
 void UString::readLatin9(SeekableReadStream &stream, uint32 length) {
+	clear();
+
 	std::vector<char> data;
 	readSingleByte(stream, data, length);
-
-	if (data.empty()) {
-		_string.clear();
+	if (data.empty())
 		return;
-	}
 
 	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
+	recalculateSize();
 }
 
 void UString::readLineLatin9(SeekableReadStream &stream) {
+	clear();
+
 	std::vector<char> data;
 	readLine(stream, data, &Common::readSingleByte);
 
-	if (data.empty()) {
-		_string.clear();
+	if (data.empty())
 		return;
-	}
 
 	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
+	recalculateSize();
 }
 
 void UString::readUTF16LE(SeekableReadStream &stream) {
-	_string.clear();
+	clear();
 
 	std::vector<uint16> data;
 	readDoubleByteLE(stream, data);
@@ -482,10 +493,11 @@ void UString::readUTF16LE(SeekableReadStream &stream) {
 		return;
 
 	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	recalculateSize();
 }
 
 void UString::readUTF16LE(SeekableReadStream &stream, uint32 length) {
-	_string.clear();
+	clear();
 
 	std::vector<uint16> data;
 	readDoubleByteLE(stream, data, length);
@@ -493,10 +505,11 @@ void UString::readUTF16LE(SeekableReadStream &stream, uint32 length) {
 		return;
 
 	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	recalculateSize();
 }
 
 void UString::readLineUTF16LE(SeekableReadStream &stream) {
-	_string.clear();
+	clear();
 
 	std::vector<uint16> data;
 	readLine(stream, data, &Common::readDoubleByteLE);
@@ -504,10 +517,11 @@ void UString::readLineUTF16LE(SeekableReadStream &stream) {
 		return;
 
 	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	recalculateSize();
 }
 
 void UString::readUTF16BE(SeekableReadStream &stream) {
-	_string.clear();
+	clear();
 
 	std::vector<uint16> data;
 	readDoubleByteBE(stream, data);
@@ -515,10 +529,11 @@ void UString::readUTF16BE(SeekableReadStream &stream) {
 		return;
 
 	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	recalculateSize();
 }
 
 void UString::readUTF16BE(SeekableReadStream &stream, uint32 length) {
-	_string.clear();
+	clear();
 
 	std::vector<uint16> data;
 	readDoubleByteBE(stream, data, length);
@@ -526,10 +541,11 @@ void UString::readUTF16BE(SeekableReadStream &stream, uint32 length) {
 		return;
 
 	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	recalculateSize();
 }
 
 void UString::readLineUTF16BE(SeekableReadStream &stream) {
-	_string.clear();
+	clear();
 
 	std::vector<uint16> data;
 	readLine(stream, data, &Common::readDoubleByteBE);
@@ -537,6 +553,7 @@ void UString::readLineUTF16BE(SeekableReadStream &stream) {
 		return;
 
 	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	recalculateSize();
 }
 
 void UString::readSingleByte(SeekableReadStream &stream, std::vector<char> &data) {
@@ -614,6 +631,11 @@ UString UString::sprintf(const char *s, ...) {
 	va_end(va);
 
 	return UString(buf);
+}
+
+void UString::recalculateSize() {
+	// Calculate the "distance" in characters from the beginning and end
+	_size = utf8::distance(_string.begin(), _string.end());
 }
 
 uint32 UString::tolower(uint32 c) {
