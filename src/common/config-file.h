@@ -18,7 +18,8 @@
 #define COMMON_CONFIG_FILE_H
 
 #include <map>
-#include <string>
+
+#include "common/ustring.h"
 
 namespace Common {
 
@@ -53,28 +54,28 @@ public:
 	 * underscores. In particular, white space and "#", "=", "[", "]"
 	 * are not valid!
 	 */
-	static bool isValidName(const std::string &name);
+	static bool isValidName(const Common::UString &name);
 
 	/** Reset everything stored in this config file. */
 	void clear();
 
 	bool load(SeekableReadStream &stream);
-	bool load(const std::string &fileName);
+	bool load(const Common::UString &fileName);
 
-	//bool saveToFile(const std::string &filename);
+	//bool saveToFile(const Common::UString &filename);
 
-	bool hasSection(const std::string &section) const;
-	void removeSection(const std::string &section);
-	void renameSection(const std::string &oldName, const std::string &newName);
+	bool hasSection(const Common::UString &section) const;
+	void removeSection(const Common::UString &section);
+	void renameSection(const Common::UString &oldName, const Common::UString &newName);
 
-	bool hasKey(const std::string &key, const std::string &section) const;
-	bool getKey(const std::string &key, const std::string &section, std::string &value) const;
-	void setKey(const std::string &key, const std::string &section, const std::string &value);
-	void removeKey(const std::string &key, const std::string &section);
+	bool hasKey(const Common::UString &key, const Common::UString &section) const;
+	bool getKey(const Common::UString &key, const Common::UString &section, Common::UString &value) const;
+	void setKey(const Common::UString &key, const Common::UString &section, const Common::UString &value);
+	void removeKey(const Common::UString &key, const Common::UString &section);
 
 private:
-	typedef std::map<std::string, std::string> StringMap;
-	typedef std::map<std::string, StringMap> ConfigFileMap;
+	typedef std::map<Common::UString, Common::UString> StringMap;
+	typedef std::map<Common::UString, StringMap> ConfigFileMap;
 
 	ConfigFileMap _map;
 };

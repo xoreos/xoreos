@@ -28,7 +28,7 @@ namespace Common {
  * underscores. In particular, white space and "#", "=", "[", "]"
  * are not valid!
  */
-bool ConfigFile::isValidName(const std::string &name) {
+bool ConfigFile::isValidName(const Common::UString &name) {
 	const char *p = name.c_str();
 	while (*p && (isalnum(*p) || *p == '-' || *p == '_' || *p == '.'))
 		p++;
@@ -46,7 +46,7 @@ void ConfigFile::clear() {
 	_map.clear();
 }
 
-bool ConfigFile::load(const std::string &fileName) {
+bool ConfigFile::load(const Common::UString &fileName) {
 	File file;
 	if (!file.open(UString(fileName)))
 		return false;
@@ -55,21 +55,22 @@ bool ConfigFile::load(const std::string &fileName) {
 }
 
 bool ConfigFile::load(SeekableReadStream &stream) {
-	std::string section;
-	std::string keyValue;
+	Common::UString section;
+	Common::UString keyValue;
 
 	// TODO: Detect if a section occurs multiple times (or likewise, if
 	// a key occurs multiple times inside one section).
 
 	for (int lineno = 1; !stream.eos() && !stream.err(); lineno++) {
 		// Read a line
-		std::string line = stream.readLine();
+		Common::UString line;
+		line.readLineASCII(stream);
 
-		if (line.size() == 0) {
+		if (line.empty()) {
 			// Do nothing
-		} else if (line[0] == '#' || line[0] == ';') {
+		} else if (*line.begin() == '#' || *line.begin() == ';') {
 			// Ignore comments
-		} else if (line[0] == '[') {
+		} else if (*line.begin() == '[') {
 			// It's a new section which begins here.
 			const char *p = line.c_str() + 1;
 			// Get the section name, and check whether it's valid (that
@@ -84,7 +85,7 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 			else if (*p != ']')
 				warning("ConfigFile::load: Invalid character '%c' occured in section name in line %d", *p, lineno);
 
-			section = std::string(line.c_str() + 1, p - line.c_str() - 1);
+			section = Common::UString(line.c_str() + 1, p - line.c_str() - 1);
 			assert(isValidName(section));
 		} else {
 			// This line should be a line with a 'key=value' pair, or an empty one.
@@ -108,12 +109,12 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 				warning("Config stream buggy: Junk found in line %d: '%s'", lineno, t);
 
 			// Extract the key/value pair
-			std::string key = std::string(t, p);
-			std::string value = std::string(p + 1);
+			Common::UString key = Common::UString(t, p - t);
+			Common::UString value = Common::UString(p + 1);
 
 			// Trim off spaces
-			boost::trim(key);
-			boost::trim(value);
+			key.trim();
+			value.trim();
 
 			assert(isValidName(key));
 			setKey(key, section, value);
@@ -123,7 +124,7 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 	return (!stream.err() || stream.eos());
 }
 
-void ConfigFile::removeSection(const std::string &section) {
+void ConfigFile::removeSection(const Common::UString &section) {
 	assert(isValidName(section));
 
 	ConfigFileMap::iterator it = _map.find(section);
@@ -131,12 +132,12 @@ void ConfigFile::removeSection(const std::string &section) {
 		_map.erase(it);
 }
 
-bool ConfigFile::hasSection(const std::string &section) const {
+bool ConfigFile::hasSection(const Common::UString &section) const {
 	assert(isValidName(section));
 	return _map.find(section) != _map.end();
 }
 
-void ConfigFile::renameSection(const std::string &oldName, const std::string &newName) {
+void ConfigFile::renameSection(const Common::UString &oldName, const Common::UString &newName) {
 	assert(isValidName(oldName));
 	assert(isValidName(newName));
 
@@ -153,7 +154,7 @@ void ConfigFile::renameSection(const std::string &oldName, const std::string &ne
 	// - merge the two sections "oldName" and "newName"
 }
 
-bool ConfigFile::hasKey(const std::string &key, const std::string &section) const {
+bool ConfigFile::hasKey(const Common::UString &key, const Common::UString &section) const {
 	assert(isValidName(key));
 	assert(isValidName(section));
 
@@ -164,7 +165,7 @@ bool ConfigFile::hasKey(const std::string &key, const std::string &section) cons
 	return false;
 }
 
-void ConfigFile::removeKey(const std::string &key, const std::string &section) {
+void ConfigFile::removeKey(const Common::UString &key, const Common::UString &section) {
 	assert(isValidName(key));
 	assert(isValidName(section));
 
@@ -173,7 +174,7 @@ void ConfigFile::removeKey(const std::string &key, const std::string &section) {
 		it->second.erase(key);
 }
 
-bool ConfigFile::getKey(const std::string &key, const std::string &section, std::string &value) const {
+bool ConfigFile::getKey(const Common::UString &key, const Common::UString &section, Common::UString &value) const {
 	assert(isValidName(key));
 	assert(isValidName(section));
 
@@ -189,7 +190,7 @@ bool ConfigFile::getKey(const std::string &key, const std::string &section, std:
 	return true;
 }
 
-void ConfigFile::setKey(const std::string &key, const std::string &section, const std::string &value) {
+void ConfigFile::setKey(const Common::UString &key, const Common::UString &section, const Common::UString &value) {
 	assert(isValidName(key));
 	assert(isValidName(section));
 	// TODO: Verify that value is valid, too. In particular, it shouldn't
