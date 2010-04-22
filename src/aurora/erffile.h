@@ -63,13 +63,27 @@ public:
 	const ResourceList &getResources() const;
 
 private:
+	uint32 _langCount;     ///< Number of language strings in the description.
+	uint32 _descriptionID; ///< ID of the description.
+
+	uint32 _offDescription; ///< Offset to the description.
+	uint32 _offKeyList;     ///< Offset to the key list.
+	uint32 _offResList;     ///< Offset to the resource list.
+
 	LocString _description; ///< The ERF's description.
 
 	ResourceList _resources; ///< All containing resources.
 
-	void readDescription(Common::SeekableReadStream &erf, uint32 offset, uint32 id, uint32 count);
-	void readKeyList(Common::SeekableReadStream &erf, uint32 offset);
-	void readResList(Common::SeekableReadStream &erf, uint32 offset);
+	void readERFHeader  (Common::SeekableReadStream &erf);
+	void readDescription(Common::SeekableReadStream &erf);
+	void readResources  (Common::SeekableReadStream &erf);
+
+	// V1.0
+	void readV1ResList(Common::SeekableReadStream &erf);
+	void readV1KeyList(Common::SeekableReadStream &erf);
+
+	// V2.0
+	void readV2ResList(Common::SeekableReadStream &erf);
 };
 
 } // End of namespace Aurora
