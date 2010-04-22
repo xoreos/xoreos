@@ -41,6 +41,7 @@ public:
 	UString(const UString &str);
 	UString(const std::string &str);
 	UString(const char *str = "");
+	UString(const char *str, int n);
 	~UString();
 
 	UString &operator=(const UString &str);
