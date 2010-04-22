@@ -27,26 +27,6 @@ namespace Aurora {
 /** Utility class for handling data found in Aurora files. */
 class AuroraFile {
 public:
-	/** Read a raw, not \\0-terminated string from the stream.
-	 *
-	 *  @param  stream The stream from where to read.
-	 *  @param  length The length of the string in bytes.
-	 *  @return The string.
-	 */
-	static std::string readRawString(Common::SeekableReadStream &stream, uint32 length);
-
-	/** Read a raw, not \\0-terminated string from the stream at a given position.
-	 *
-	 *  Seeks the stream to the position, reads the string and seeks back to the
-	 *  the original position.
-	 *
-	 *  @param  stream The stream from where to read.
-	 *  @param  length The length of the string in bytes.
-	 *  @param  offset The offset from where to read.
-	 *  @return The string.
-	 */
-	static std::string readRawString(Common::SeekableReadStream &stream, uint32 length, uint32 offset);
-
 	/** Convert a binary representation of an IEEE 754-1985 float into a system-useable format. */
 	static float convertFloat(uint32 data);
 
@@ -58,9 +38,6 @@ public:
 
 	/** Read a double (IEEE 754-1985) */
 	static double readDouble(Common::SeekableReadStream &stream);
-
-	/** Clean up a path string for portable use. */
-	static void cleanupPath(std::string &path);
 
 	/** Clean up a path string for portable use. */
 	static void cleanupPath(Common::UString &path);

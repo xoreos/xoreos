@@ -15,43 +15,11 @@
 #ifndef COMMON_STRUTIL_H
 #define COMMON_STRUTIL_H
 
-#include <string>
-#include <sstream>
-
 #include "common/types.h"
 
 namespace Common {
 
 class SeekableReadStream;
-
-/** Replace all occurences of one character in a string with another. */
-void replaceAll(std::string &str, char what, char with);
-
-/** Convert/Parse a string into different types. */
-template<typename T> bool stringConvert(const std::string &str, T &v) {
-	std::stringstream ss(str);
-
-	if ((ss >> v).fail())
-		return false;
-
-	return true;
-}
-
-template<bool &> bool stringConvert(const std::string &str, bool &v) {
-	int i;
-	if (!stringConvert(str, i))
-		return false;
-
-	v = (i == 1);
-	return true;
-}
-
-template<std::string &> bool stringConvert(const std::string &str, std::string &v) {
-	v = str;
-	return true;
-}
-
-std::string sprintf(const char *s, ...);
 
 /** Print a quick hex dump of the given data. */
 void printDataHex(SeekableReadStream &stream);

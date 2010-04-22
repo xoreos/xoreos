@@ -20,35 +20,6 @@
 
 namespace Aurora {
 
-std::string AuroraFile::readRawString(Common::SeekableReadStream &stream, uint32 length) {
-	char buf[length + 1];
-
-	if (stream.read(buf, length) != length)
-		return "";
-
-	buf[length] = '\0';
-
-	return buf;
-}
-
-std::string AuroraFile::readRawString(Common::SeekableReadStream &stream, uint32 length, uint32 offset) {
-	int32 pos = stream.pos();
-
-	if (pos == -1)
-		return "";
-
-	if (!stream.seek(offset)) {
-		stream.seek(pos);
-		return "";
-	}
-
-	std::string str = readRawString(stream, length);
-
-	stream.seek(pos);
-
-	return str;
-}
-
 union floatConvert {
 	uint32 dInt;
 	float dFloat;
@@ -89,10 +60,6 @@ float AuroraFile::readFloat(Common::SeekableReadStream &stream) {
 
 double AuroraFile::readDouble(Common::SeekableReadStream &stream) {
 	return convertDouble(stream.readUint64LE());
-}
-
-void AuroraFile::cleanupPath(std::string &path) {
-	Common::replaceAll(path, '\\', '/');
 }
 
 void AuroraFile::cleanupPath(Common::UString &path) {

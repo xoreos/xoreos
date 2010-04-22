@@ -12,9 +12,7 @@
  *  Utility templates and functions for working with strings.
  */
 
-#include <cstdarg>
 #include <cstdio>
-#include <cctype>
 
 #include "common/strutil.h"
 #include "common/util.h"
@@ -22,24 +20,6 @@
 #include "common/stream.h"
 
 namespace Common {
-
-void replaceAll(std::string &str, char what, char with) {
-	int pos = 0;
-
-	while ((pos = str.find(what, pos)) != (int) std::string::npos)
-		str[pos++] = with;
-}
-
-std::string sprintf(const char *s, ...) {
-	char buf[STRINGBUFLEN];
-	va_list va;
-
-	va_start(va, s);
-	std::vsnprintf(buf, STRINGBUFLEN, s, va);
-	va_end(va);
-
-	return buf;
-}
 
 void printDataHex(SeekableReadStream &stream) {
 	uint32 pos  = stream.pos();
