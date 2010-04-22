@@ -32,6 +32,7 @@ struct FileExtension {
 };
 
 static const FileExtension fileExtensions[] = {
+	{kFileTypeNone,           ""    },
 	{kFileTypeRES,            ".res"},
 	{kFileTypeBMP,            ".bmp"},
 	{kFileTypeMVE,            ".mve"},
