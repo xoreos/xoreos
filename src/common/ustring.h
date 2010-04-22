@@ -31,7 +31,8 @@ class SeekableReadStream;
  *
  *  WARNING:
  *  Copy constructors and assignment operators copying from std::string and
- *  const char * assume the data is clean (non-extended) ASCII.
+ *  const char * assume the data is either clean (non-extended) ASCII or
+ *  already UTF-8.
  */
 class UString {
 public:
