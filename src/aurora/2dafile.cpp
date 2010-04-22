@@ -115,7 +115,7 @@ void TwoDAFile::readHeaders2a(Common::SeekableReadStream &twoda) {
 void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda) {
 	uint32 columnCount = _headers.size();
 
-	std::string line;
+	Common::UString line;
 	while (!twoda.eos()) {
 		Row *row = new Row;
 
@@ -211,7 +211,7 @@ void TwoDAFile::tokenize(Common::SeekableReadStream &stream, Row &row,
                          const Common::CharList &quoteChars, const Common::CharList &ignoreChars,
                          uint32 skip, int n) {
 
-	std::string token;
+	Common::UString token;
 
 	while (Common::parseToken(stream, token, splitChars, endChars, quoteChars, ignoreChars)) {
 		if (token.empty())
@@ -243,7 +243,7 @@ const TwoDAFile::Row &TwoDAFile::getHeaders() const {
 	return _headers;
 }
 
-uint32 TwoDAFile::headerToColumn(const std::string &header) const {
+uint32 TwoDAFile::headerToColumn(const Common::UString &header) const {
 	HeaderMap::const_iterator column = _headerMap.find(header);
 	if (column == _headerMap.end())
 		// No such header
@@ -260,7 +260,7 @@ const TwoDAFile::Row *TwoDAFile::getRow(uint32 row) const {
 	return _array[row];
 }
 
-const std::string *TwoDAFile::getCell(uint32 row, uint32 column) const {
+const Common::UString *TwoDAFile::getCell(uint32 row, uint32 column) const {
 	const Row *r = getRow(row);
 	if (!r)
 		// No such row
@@ -273,10 +273,10 @@ const std::string *TwoDAFile::getCell(uint32 row, uint32 column) const {
 	return &(*r)[column];
 }
 
-static const std::string kEmptyString;
+static const Common::UString kEmptyString;
 
-const std::string &TwoDAFile::getCellString(uint32 row, uint32 column) const {
-	const std::string *cell = getCell(row, column);
+const Common::UString &TwoDAFile::getCellString(uint32 row, uint32 column) const {
+	const Common::UString *cell = getCell(row, column);
 	if (!cell)
 		// Cell does not exist, return default value
 		return _defaultString;
@@ -288,12 +288,12 @@ const std::string &TwoDAFile::getCellString(uint32 row, uint32 column) const {
 	return *cell;
 }
 
-const std::string &TwoDAFile::getCellString(uint32 row, const std::string &column) const {
+const Common::UString &TwoDAFile::getCellString(uint32 row, const Common::UString &column) const {
 	return getCellString(row, headerToColumn(column));
 }
 
 const int32 TwoDAFile::getCellInt(uint32 row, uint32 column) const {
-	const std::string *cell = getCell(row, column);
+	const Common::UString *cell = getCell(row, column);
 	if (!cell)
 		// Cell does not exist, return default value
 		return _defaultInt;
@@ -305,12 +305,12 @@ const int32 TwoDAFile::getCellInt(uint32 row, uint32 column) const {
 	return parseInt(*cell);
 }
 
-const int32 TwoDAFile::getCellInt(uint32 row, const std::string &column) const {
+const int32 TwoDAFile::getCellInt(uint32 row, const Common::UString &column) const {
 	return getCellInt(row, headerToColumn(column));
 }
 
 const float TwoDAFile::getCellFloat(uint32 row, uint32 column) const {
-	const std::string *cell = getCell(row, column);
+	const Common::UString *cell = getCell(row, column);
 	if (!cell)
 		// Cell does not exist, return default value
 		return _defaultFloat;
@@ -322,27 +322,27 @@ const float TwoDAFile::getCellFloat(uint32 row, uint32 column) const {
 	return parseFloat(*cell);
 }
 
-const float TwoDAFile::getCellFloat(uint32 row, const std::string &column) const {
+const float TwoDAFile::getCellFloat(uint32 row, const Common::UString &column) const {
 	return getCellFloat(row, headerToColumn(column));
 }
 
-int32 TwoDAFile::parseInt(const std::string &str) {
+int32 TwoDAFile::parseInt(const Common::UString &str) {
 	if (str.empty())
 		return 0;
 
 	int v;
-	if (!Common::stringConvert(str, v))
+	if (!str.parse(v))
 		return 0;
 
 	return v;
 }
 
-float TwoDAFile::parseFloat(const std::string &str) {
+float TwoDAFile::parseFloat(const Common::UString &str) {
 	if (str.empty())
 		return 0;
 
 	float v;
-	if (!Common::stringConvert(str, v))
+	if (!str.parse(v))
 		return 0.0;
 
 	return v;

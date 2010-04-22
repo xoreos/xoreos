@@ -15,12 +15,13 @@
 #include <list>
 
 #include "common/streamtokenizer.h"
+#include "common/ustring.h"
 #include "common/stream.h"
 #include "common/util.h"
 
 namespace Common {
 
-static bool isIn(const CharList &list, char c) {
+static bool isIn(const CharList &list, uint32 c) {
 	for (CharList::const_iterator it = list.begin(); it != list.end(); ++it)
 		if (c == *it)
 			return true;
@@ -30,19 +31,13 @@ static bool isIn(const CharList &list, char c) {
 
 static const uint32 kSpliceSize = 32;
 
-bool parseToken(SeekableReadStream &stream, std::string &string,
+bool parseToken(SeekableReadStream &stream, Common::UString &string,
                 const CharList &splitChars, const CharList &endChars,
                 const CharList &quoteChars, const CharList &ignoreChars) {
 
 	// Init
-	uint32 spliceCount    = 1;
-	uint32 lastSpliceSize = 0;
-	std::list<char *> splices;
-
 	bool endCharFound = false;
 	bool inQuote      = false;
-
-	splices.push_back(new char[kSpliceSize]);
 
 	// Run through the stream, character by character
 	while (!stream.eos()) {
@@ -69,39 +64,11 @@ bool parseToken(SeekableReadStream &stream, std::string &string,
 			continue;
 
 		// A normal character, add it to our buffer
-
-		char *curSplice = splices.back();
-
-		curSplice[lastSpliceSize++] = c;
-
-		// We need to allocate a new splice
-		if (lastSpliceSize >= kSpliceSize) {
-			splices.push_back(new char[kSpliceSize]);
-
-			lastSpliceSize = 0;
-			spliceCount++;
-		}
-	}
-
-	// The number of characters we found in the end
-	string.resize(((spliceCount - 1) * kSpliceSize) + lastSpliceSize);
-
-	// Run through all splices
-	uint32 spliceN = 0;
-	uint32 charN   = 0;
-	for (std::list<char *>::iterator splice = splices.begin(); splice != splices.end(); ++splice, spliceN++) {
-		uint32 count = (spliceN == (spliceCount - 1)) ? lastSpliceSize : kSpliceSize;
-
-		// Add it to our string
-		for (uint32 i = 0; i < count; i++)
-			string[charN++] = (*splice)[i];
-
-		// And free the splice
-		delete[] *splice;
+		string += c;
 	}
 
 	// Is the string actually empty?
-	if ((string.size() > 0) && (string[0] == '\0'))
+	if ((string.size() > 0) && (*string.begin() == '\0'))
 		string.clear();
 
 	// And return if we're at the token list's end

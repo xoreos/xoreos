@@ -15,11 +15,11 @@
 #ifndef AURORA_2DAFILE_H
 #define AURORA_2DAFILE_H
 
-#include <string>
 #include <vector>
 #include <map>
 
 #include "common/types.h"
+#include "common/ustring.h"
 #include "common/streamtokenizer.h"
 
 #include "aurora/types.h"
@@ -36,7 +36,7 @@ class TwoDAFile : public AuroraBase {
 public:
 	static const int kColumnInvalid = 0xFFFFFFFF;
 
-	typedef std::vector<std::string> Row;
+	typedef std::vector<Common::UString> Row;
 
 	TwoDAFile();
 	~TwoDAFile();
@@ -60,7 +60,7 @@ public:
 	const Row &getHeaders() const;
 
 	/** Translate a column header to a column index. */
-	uint32 headerToColumn(const std::string &header) const;
+	uint32 headerToColumn(const Common::UString &header) const;
 
 	/** Get a complete row.
 	 *
@@ -70,28 +70,28 @@ public:
 	const Row *getRow(uint32 row) const;
 
 	/** Return the contents of a cell as a string. */
-	const std::string &getCellString(uint32 row, uint32 column) const;
+	const Common::UString &getCellString(uint32 row, uint32 column) const;
 	/** Return the contents of a cell as a string. */
-	const std::string &getCellString(uint32 row, const std::string &column) const;
+	const Common::UString &getCellString(uint32 row, const Common::UString &column) const;
 
 	/** Return the contents of a cell as an int. */
 	const int32 getCellInt(uint32 row, uint32 column) const;
 	/** Return the contents of a cell as an int. */
-	const int32 getCellInt(uint32 row, const std::string &column) const;
+	const int32 getCellInt(uint32 row, const Common::UString &column) const;
 
 	/** Return the contents of a cell as a float. */
 	const float getCellFloat(uint32 row, uint32 column) const;
 	/** Return the contents of a cell as a float. */
-	const float getCellFloat(uint32 row, const std::string &column) const;
+	const float getCellFloat(uint32 row, const Common::UString &column) const;
 
 private:
 	typedef std::vector<Row *> Array;
 
-	typedef std::map<std::string, uint32> HeaderMap;
+	typedef std::map<Common::UString, uint32> HeaderMap;
 
-	std::string _defaultString; ///< The default string to return should a cell not exist.
-	int32       _defaultInt;    ///< The default int to return should a cell not exist.
-	float       _defaultFloat;  ///< The default float to return should a cell not exist.
+	Common::UString _defaultString; ///< The default string to return should a cell not exist.
+	int32           _defaultInt;    ///< The default int to return should a cell not exist.
+	float           _defaultFloat;  ///< The default float to return should a cell not exist.
 
 	Row _headers; ///< The columns' headers.
 	Array _array; ///< The array itself.
@@ -126,10 +126,10 @@ private:
 	              const Common::CharList &quoteChars, const Common::CharList &ignoreChars,
 	              uint32 skip = 0, int n = -1);
 
-	const std::string *getCell(uint32 row, uint32 column) const;
+	const Common::UString *getCell(uint32 row, uint32 column) const;
 
-	static int32 parseInt(const std::string &str);
-	static float parseFloat(const std::string &str);
+	static int32 parseInt(const Common::UString &str);
+	static float parseFloat(const Common::UString &str);
 };
 
 } // End of namespace Aurora

@@ -15,16 +15,16 @@
 #ifndef COMMON_STREAMTOKENIZER_H
 #define COMMON_STREAMTOKENIZER_H
 
-#include <string>
 #include <vector>
 
 #include "common/types.h"
 
 namespace Common {
 
+class UString;
 class SeekableReadStream;
 
-typedef std::vector<char> CharList;
+typedef std::vector<uint32> CharList;
 
 /** Parse tokens oput of a stream.
  *
@@ -38,7 +38,7 @@ typedef std::vector<char> CharList;
  *  @return true if there's still tokens left in the list (no end character was reached), false
  *          otherwise.
  */
-bool parseToken(SeekableReadStream &stream, std::string &string,
+bool parseToken(SeekableReadStream &stream, Common::UString &string,
                 const CharList &splitChars, const CharList &endChars,
                 const CharList &quoteChars, const CharList &ignoreChars);
 
