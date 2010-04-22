@@ -111,8 +111,28 @@ UString &UString::operator=(const char *str) {
 	return *this;
 }
 
+bool UString::operator==(const UString &str) const {
+	return _string == str._string;
+}
+
+bool UString::operator!=(const UString &str) const {
+	return _string != str._string;
+}
+
 bool UString::operator<(const UString &str) const {
 	return _string < str._string;
+}
+
+bool UString::operator<=(const UString &str) const {
+	return _string <= str._string;
+}
+
+bool UString::operator>(const UString &str) const {
+	return _string > str._string;
+}
+
+bool UString::operator>=(const UString &str) const {
+	return _string >= str._string;
 }
 
 UString UString::operator+(const UString &str) const {

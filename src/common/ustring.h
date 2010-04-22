@@ -46,7 +46,12 @@ public:
 	UString &operator=(const std::string &str);
 	UString &operator=(const char *str);
 
+	bool operator==(const UString &str) const;
+	bool operator!=(const UString &str) const;
 	bool operator<(const UString &str) const;
+	bool operator<=(const UString &str) const;
+	bool operator>(const UString &str) const;
+	bool operator>=(const UString &str) const;
 
 	UString operator+(const UString &str) const;
 	UString operator+(const std::string &str) const;
