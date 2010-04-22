@@ -115,12 +115,6 @@ public:
 		return true;
 	}
 
-	/** Parse a string into a string. */
-	template<UString &> bool parse(UString &v, int skip = 0) const {
-		v = this->c_str() + skip;
-		return true;
-	}
-
 	/** Read clean non-extended ASCII out of a stream. */
 	void readASCII(SeekableReadStream &stream);
 	/** Read clean non-extended ASCII out of a stream. */
