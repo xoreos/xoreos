@@ -63,6 +63,9 @@ public:
 	UString &operator+=(const char *str);
 	UString &operator+=(uint32 c);
 
+	/** Swap the contents of the string with this string's. */
+	void swap(UString &str);
+
 	/** Return the size of the string, in characters.
 	 *
 	 *  Since this has to iterate through the whole string, this runs in O(n).

@@ -252,6 +252,10 @@ UString &UString::operator+=(uint32 c) {
 	return *this;
 }
 
+void UString::swap(UString &str) {
+	_string.swap(str._string);
+}
+
 uint32 UString::size() const {
 	// Calculate the "distance" in characters from the beginning and end
 	return utf8::distance(_string.begin(), _string.end());
