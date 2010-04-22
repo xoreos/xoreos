@@ -79,7 +79,7 @@ void KotOREngine::run(const Common::UString &target) {
 
 	int channel = -1;
 
-	Common::SeekableReadStream *wav = ResMan.getSound("nm35aahhkd07134_");
+	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "nm35aahhkd07134_");
 	if (wav) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);

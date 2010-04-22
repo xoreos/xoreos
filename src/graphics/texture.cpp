@@ -69,7 +69,7 @@ const uint32 Texture::getHeight() const {
 }
 
 void Texture::load(const Common::UString &name) {
-	Common::SeekableReadStream *img = ResMan.getImage(name, &_type);
+	Common::SeekableReadStream *img = ResMan.getResource(Aurora::kResourceImage, name, &_type);
 	if (!img)
 		throw Common::Exception("No such image resource \"%s\"", name.c_str());
 

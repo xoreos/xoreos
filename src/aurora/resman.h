@@ -45,6 +45,7 @@ class ResourceManager : public Common::Singleton<ResourceManager> {
 // Type definitions
 private:
 	typedef std::list<Common::UString> DirectoryList;
+	typedef std::vector<FileType> FileTypeList;
 
 	typedef std::list<Common::UString> ResFileList;
 	typedef ResFileList::const_iterator ResFileRef;
@@ -205,37 +206,15 @@ public:
 	Common::SeekableReadStream *getResource(const Common::UString &name,
 			const std::vector<FileType> &types, FileType *foundType = 0) const;
 
-	/** Return a music resource.
+	/** Return a resource of a specific type.
 	 *
+	 *  @param  resType The type of the resource.
 	 *  @param  name The name (ResRef or path) of the resource.
 	 *  @param  type If != 0, that's where the resource's type is stored.
-	 *  @return The music resource stream or 0 if the music resource doesn't exist.
+	 *  @return The resource stream or 0 if the music resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getMusic(const Common::UString &name, FileType *type = 0) const;
-
-	/** Return a sound resource.
-	 *
-	 *  @param  name The name (ResRef or path) of the resource.
-	 *  @param  type If != 0, that's where the resource's type is stored.
-	 *  @return The sound resource stream or 0 if the sound resource doesn't exist.
-	 */
-	Common::SeekableReadStream *getSound(const Common::UString &name, FileType *type = 0) const;
-
-	/** Return an image resource.
-	 *
-	 *  @param  name The name (ResRef or path) of the resource.
-	 *  @param  type If != 0, that's where the resource's type is stored.
-	 *  @return The image resource stream or 0 if the image resource doesn't exist.
-	 */
-	Common::SeekableReadStream *getImage(const Common::UString &name, FileType *type = 0) const;
-
-	/** Return an video resource.
-	 *
-	 *  @param  name The name (ResRef or path) of the resource.
-	 *  @param  type If != 0, that's where the resource's type is stored.
-	 *  @return The video resource stream or 0 if the video resource doesn't exist.
-	 */
-	Common::SeekableReadStream *getVideo(const Common::UString &name, FileType *type = 0) const;
+	Common::SeekableReadStream *getResource(ResourceType resType,
+			const Common::UString &name, FileType *foundType = 0) const;
 
 	/** Small debug method that lists all indexed resources. */
 	void listResources() const;
@@ -258,10 +237,7 @@ private:
 
 	ChangeSetList _changes;
 
-	std::vector<FileType> _musicTypes; ///< All valid music file types.
-	std::vector<FileType> _soundTypes; ///< All valid sound file types.
-	std::vector<FileType> _imageTypes; ///< All valid image file types.
-	std::vector<FileType> _videoTypes; ///< All valid video file types.
+	FileTypeList _resourceTypeTypes[kResourceMAX]; ///< All valid resource type file types.
 
 	Common::UString findArchive(const Common::UString &file,
 			const DirectoryList &dirs, const Common::FileList &files);

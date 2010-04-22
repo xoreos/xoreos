@@ -38,7 +38,7 @@ VideoPlayer::~VideoPlayer() {
 
 void VideoPlayer::load(const Common::UString &name) {
 	Aurora::FileType type;
-	Common::SeekableReadStream *video = ResMan.getVideo(name, &type);
+	Common::SeekableReadStream *video = ResMan.getResource(Aurora::kResourceVideo, name, &type);
 	if (!video)
 		throw Common::Exception("No such video resource \"%s\"", name.c_str());
 

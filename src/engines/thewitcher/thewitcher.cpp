@@ -86,15 +86,13 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	playVideo("intro");
 	playVideo("title");
 
-/*
 	int channel = -1;
 
-	Common::SeekableReadStream *wav = ResMan.getSound("m1_axem00020005");
+	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "m1_axem00020005");
 	if (wav) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);
 	}
-*/
 
 	Graphics::Cube *cube = 0;
 

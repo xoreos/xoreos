@@ -46,32 +46,30 @@ bool ResourceManager::Resource::operator<(const Resource &right) const {
 
 
 ResourceManager::ResourceManager() {
-	_musicTypes.push_back(kFileTypeWAV);
-	_musicTypes.push_back(kFileTypeBMU);
-	_musicTypes.push_back(kFileTypeOGG);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypeDDS);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTPC);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTGA);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypePNG);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypeBMP);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypeJPG);
 
-	_soundTypes.push_back(kFileTypeWAV);
-	_soundTypes.push_back(kFileTypeOGG);
+	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeBIK);
+	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeMPG);
+	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeWMV);
 
-	_imageTypes.push_back(kFileTypeDDS);
-	_imageTypes.push_back(kFileTypeTPC);
-	_imageTypes.push_back(kFileTypeTGA);
-	_imageTypes.push_back(kFileTypePNG);
-	_imageTypes.push_back(kFileTypeBMP);
-	_imageTypes.push_back(kFileTypeJPG);
+	_resourceTypeTypes[kResourceSound].push_back(kFileTypeWAV);
+	_resourceTypeTypes[kResourceSound].push_back(kFileTypeOGG);
 
-	_videoTypes.push_back(kFileTypeBIK);
-	_videoTypes.push_back(kFileTypeMPG);
-	_videoTypes.push_back(kFileTypeWMV);
+	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeWAV);
+	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeBMU);
+	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeOGG);
 }
 
 ResourceManager::~ResourceManager() {
 	clear();
 
-	_musicTypes.clear();
-	_soundTypes.clear();
-	_imageTypes.clear();
-	_videoTypes.clear();
+	for (int i = 0; i < kResourceMAX; i++)
+		_resourceTypeTypes[i].clear();
 }
 
 void ResourceManager::clear() {
@@ -652,43 +650,17 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	return 0;
 }
 
-Common::SeekableReadStream *ResourceManager::getMusic(const Common::UString &name, FileType *type) const {
-	// Try every known music file type
+Common::SeekableReadStream *ResourceManager::getResource(ResourceType resType,
+		const Common::UString &name, FileType *foundType) const {
+
+	assert((resType >= 0) && (resType < kResourceMAX));
+
+	// Try every known file type for that resource type
 	Common::SeekableReadStream *res;
-	if ((res = getResource(name, _musicTypes, type)))
+	if ((res = getResource(name, _resourceTypeTypes[resType], foundType)))
 		return res;
 
-	// No such music
-	return 0;
-}
-
-Common::SeekableReadStream *ResourceManager::getSound(const Common::UString &name, FileType *type) const {
-	// Try every known sound file type
-	Common::SeekableReadStream *res;
-	if ((res = getResource(name, _soundTypes, type)))
-		return res;
-
-	// No such sound
-	return 0;
-}
-
-Common::SeekableReadStream *ResourceManager::getImage(const Common::UString &name, FileType *type) const {
-	// Try every known image file type
-	Common::SeekableReadStream *res;
-	if ((res = getResource(name, _imageTypes, type)))
-		return res;
-
-	// No such image
-	return 0;
-}
-
-Common::SeekableReadStream *ResourceManager::getVideo(const Common::UString &name, FileType *type) const {
-	// Try every known video file type
-	Common::SeekableReadStream *res;
-	if ((res = getResource(name, _videoTypes, type)))
-		return res;
-
-	// No such video
+	// No such resource
 	return 0;
 }
 

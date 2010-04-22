@@ -96,7 +96,7 @@ void NWNEngine::run(const Common::UString &target) {
 
 	int channel = -1;
 
-	Common::SeekableReadStream *wav = ResMan.getSound("as_pl_evanglstm1");
+	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "as_pl_evanglstm1");
 	if (wav) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);

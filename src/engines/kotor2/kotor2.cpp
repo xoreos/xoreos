@@ -79,7 +79,7 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	int channel = -1;
 
-	Common::SeekableReadStream *wav = ResMan.getSound("298hk50mun003");
+	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "298hk50mun003");
 	if (wav) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);

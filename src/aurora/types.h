@@ -242,14 +242,22 @@ enum Language {
 	kLanguageWitcherChineseSimplified  = 1022  // UTF8
 };
 
+enum ResourceType {
+	kResourceImage, ///< A music resource.
+	kResourceVideo, ///< A video resource.
+	kResourceSound, ///< A sound resource.
+	kResourceMusic, ///< A music resource.
+	kResourceMAX
+};
+
 enum Archive {
-	kArchiveKEY = 0,
-	kArchiveBIF,
-	kArchiveERF,
-	kArchiveRIM,
-	kArchiveZIP,
+	kArchiveKEY = 0, ///< KEY archive.
+	kArchiveBIF,     ///< BIF archive.
+	kArchiveERF,     ///< ERF archive.
+	kArchiveRIM,     ///< RIM archive.
+	kArchiveZIP,     ///< ZIP archive.
 	kArchiveMAX,
-	kArchiveNDS
+	kArchiveNDS      ///< Nintendo DS ROM.
 };
 
 static const uint32 kObjectIDInvalid = 0xFFFFFFFF;

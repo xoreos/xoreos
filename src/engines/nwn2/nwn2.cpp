@@ -85,7 +85,7 @@ void NWN2Engine::run(const Common::UString &target) {
 
 	int channel = -1;
 
-	Common::SeekableReadStream *wav = ResMan.getMusic("mus_mulsantir");
+	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceMusic, "mus_mulsantir");
 	if (wav) {
 		// Cutting off the long silence at the end of mus_mulsantir :P
 		wav = new Common::SeekableSubReadStream(wav, 0, 3545548, DisposeAfterUse::YES);
