@@ -216,14 +216,8 @@ void UString::tolower() {
 		// Get the codepoint
 		uint32 c = utf8::next(it, _string.end());
 
-		if ((c & 0xFFFFFF80) != 0) {
-			// It's not a clean ASCII character, just copy it
-			for (; prev != it; ++prev)
-				newString.push_back(*prev);
-		} else
-			// It's a clean ASCII character, try to lowercase it
-			utf8::append(std::tolower(c), std::back_inserter(newString));
-
+		// And append the lowercase version to the new string
+		utf8::append(UString::tolower(c), std::back_inserter(newString));
 	}
 
 	// And set the new string's contents
@@ -243,14 +237,8 @@ void UString::toupper() {
 		// Get the codepoint
 		uint32 c = utf8::next(it, _string.end());
 
-		if ((c & 0xFFFFFF80) != 0) {
-			// It's not a clean ASCII character, just copy it
-			for (; prev != it; ++prev)
-				newString.push_back(*prev);
-		} else
-			// It's a clean ASCII character, try to uppercase it
-			utf8::append(std::toupper(c), std::back_inserter(newString));
-
+		// And append the uppercase version to the new string
+		utf8::append(UString::toupper(c), std::back_inserter(newString));
 	}
 
 	// And set the new string's contents
@@ -401,6 +389,22 @@ void UString::readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &
 
 	if (stream.err())
 		throw Exception(kReadError);
+}
+
+uint32 UString::tolower(uint32 c) {
+	if ((c & 0xFFFFFF80) != 0)
+		// It's not a clean ASCII character, so we don't know how to lowercase it
+		return c;
+
+	return std::tolower(c);
+}
+
+uint32 UString::toupper(uint32 c) {
+	if ((c & 0xFFFFFF80) != 0)
+		// It's not a clean ASCII character, so we don't know how to uppercase it
+		return c;
+
+	return std::toupper(c);
 }
 
 } // End of namespace Common

@@ -145,6 +145,9 @@ private:
 	void readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data);
 	/** Read big-endian double-byte data. */
 	void readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data, uint32 length);
+
+	static uint32 tolower(uint32 c);
+	static uint32 toupper(uint32 c);
 };
 
 } // End of namespace Common
