@@ -116,23 +116,18 @@ void TheWitcherEngine::run(const Common::UString &target) {
 void TheWitcherEngine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
+	ResMan.addArchiveDir(Aurora::kArchiveBIF, "voices");
+
 	status("Loading main KEY");
-	indexMandatoryKEY(".*/main.key", 0);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 0);
 
 	status("Loading the localized base KEY");
-	indexMandatoryKEY(".*/localized.key", 10);
-
-	status("Finding further resource archives directories");
-	ResMan.findSourceDirs();
-	ResMan.addBIFSourceDir("voices");
+	indexMandatoryArchive(Aurora::kArchiveKEY, "localized.key", 10);
 
 	status("Loading the English language KEYs");
-	indexMandatoryKEY(".*/lang_3.key", 20);
-	indexMandatoryKEY(".*/M1_3.key"  , 21);
-	indexMandatoryKEY(".*/M2_3.key"  , 22);
-
-	status("Loading secondary resources");
-	ResMan.loadSecondaryResources(30);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "lang_3.key", 20);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "M1_3.key"  , 21);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "M2_3.key"  , 22);
 
 	status("Loading override files");
 	ResMan.loadOverrideFiles(40);

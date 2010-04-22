@@ -17,6 +17,8 @@
 
 #include "common/types.h"
 
+#include "aurora/types.h"
+
 namespace Common {
 	class UString;
 	class SeekableReadStream;
@@ -34,29 +36,11 @@ public:
 	virtual void run(const Common::UString &target) = 0;
 
 protected:
-	/** Add a KEY file to the resource manager, erroring out if the file does not exist. */
-	void indexMandatoryKEY(const Common::UString &key, uint32 priority = 10);
+	/** Add an archive file to the resource manager, erroring out if the file does not exist. */
+	void indexMandatoryArchive(Aurora::Archive archive, const Common::UString &file, uint32 priority = 10);
 
-	/** Add a KEY file to the resource manager, if it exists. */
-	void indexOptionalKEY(const Common::UString &key, uint32 priority = 10);
-
-	/** Add an ERF file to the resource manager, erroring out if the file does not exist. */
-	void indexMandatoryERF(const Common::UString &erf, uint32 priority = 100);
-
-	/** Add an ERF file to the resource manager, if it exists. */
-	void indexOptionalERF(const Common::UString &erf, uint32 priority = 100);
-
-	/** Add a RIM file to the resource manager, erroring out if the file does not exist. */
-	void indexMandatoryRIM(const Common::UString &rim, uint32 priority = 100);
-
-	/** Add a RIM file to the resource manager, if it exists. */
-	void indexOptionalRIM(const Common::UString &rim, uint32 priority = 100);
-
-	/** Add a ZIP file to the resource manager, erroring out if the file does not exist. */
-	void indexMandatoryZIP(const Common::UString &zip, uint32 priority = 100);
-
-	/** Add a ZIP file to the resource manager, if it exists. */
-	void indexOptionalZIP(const Common::UString &zip, uint32 priority = 100);
+	/** Add an archive file to the resource manager, if it exists. */
+	void indexOptionalArchive(Aurora::Archive archive, const Common::UString &file, uint32 priority = 10);
 
 	/** Play this video resource. */
 	void playVideo(const Common::UString &video);

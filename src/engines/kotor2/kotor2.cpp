@@ -116,15 +116,16 @@ void KotOR2Engine::run(const Common::UString &target) {
 void KotOR2Engine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
-	status("Loading main KEY");
-	indexMandatoryKEY(".*/chitin.key", 0);
+	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
+	ResMan.addArchiveDir(Aurora::kArchiveRIM, "rims");
 
-	status("Finding further resource archives directories");
-	ResMan.findSourceDirs();
+	status("Loading main KEY");
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
 
 	status("Loading high-res texture packs");
-	indexMandatoryERF("swpc_tex_gui.erf", 10);
-	indexMandatoryERF("swpc_tex_tpa.erf", 11);
+	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 10);
+	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 11);
 
 	status("Loading secondary resources");
 	ResMan.loadSecondaryResources(20);

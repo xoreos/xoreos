@@ -116,25 +116,26 @@ void KotOREngine::run(const Common::UString &target) {
 void KotOREngine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
-	status("Loading main KEY");
-	indexMandatoryKEY(".*/chitin.key", 0);
+	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
+	ResMan.addArchiveDir(Aurora::kArchiveRIM, "rims");
 
-	status("Finding further resource archives directories");
-	ResMan.findSourceDirs();
+	status("Loading main KEY");
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
 
 	status("Loading global auxiliary resources");
-	indexMandatoryRIM("mainmenu.rim"  , 10);
-	indexMandatoryRIM("mainmenudx.rim", 11);
-	indexMandatoryRIM("legal.rim"     , 12);
-	indexMandatoryRIM("legaldx.rim"   , 13);
-	indexMandatoryRIM("global.rim"    , 14);
-	indexMandatoryRIM("globaldx.rim"  , 15);
-	indexMandatoryRIM("chargen.rim"   , 16);
-	indexMandatoryRIM("chargendx.rim" , 17);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenu.rim"  , 10);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenudx.rim", 11);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "legal.rim"     , 12);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "legaldx.rim"   , 13);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "global.rim"    , 14);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "globaldx.rim"  , 15);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "chargen.rim"   , 16);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "chargendx.rim" , 17);
 
 	status("Loading high-res texture packs");
-	indexMandatoryERF("swpc_tex_gui.erf", 20);
-	indexMandatoryERF("swpc_tex_tpa.erf", 21);
+	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 20);
+	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 21);
 
 	status("Loading secondary resources");
 	ResMan.loadSecondaryResources(30);

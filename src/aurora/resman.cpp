@@ -34,6 +34,10 @@ using boost::iequals;
 
 DECLARE_SINGLETON(Aurora::ResourceManager)
 
+static const char *kArchiveGlob[Aurora::kArchiveMAX] = {
+	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak)", ".*\\.rim", ".*\\.zip"
+};
+
 namespace Aurora {
 
 bool ResourceManager::Resource::operator<(const Resource &right) const {
@@ -71,9 +75,13 @@ ResourceManager::~ResourceManager() {
 }
 
 void ResourceManager::clear() {
-	_changes.clear();
+	_baseDir.clear();
 
-	_resources.clear();
+	for (int i = 0; i < kArchiveMAX; i++) {
+		_archiveDirs[i].clear();
+		_archiveFiles[i].clear();
+	}
+
 	_bifs.clear();
 	_erfs.clear();
 	_rims.clear();
@@ -86,20 +94,9 @@ void ResourceManager::clear() {
 		delete *nds;
 	_ndss.clear();
 
-	_baseDir.clear();
-	_modDir.clear();
-	_hakDir.clear();
-	_textureDir.clear();
-	_rimDir.clear();
-	_zipDir.clear();
+	_resources.clear();
 
-	_keyFiles.clear();
-	_bifFiles.clear();
-	_erfFiles.clear();
-	_rimFiles.clear();
-	_zipFiles.clear();
-
-	_bifSourceDir.clear();
+	_changes.clear();
 }
 
 void ResourceManager::registerDataBaseDir(const Common::UString &path) {
@@ -107,155 +104,68 @@ void ResourceManager::registerDataBaseDir(const Common::UString &path) {
 
 	_baseDir = Common::FilePath::normalize(path);
 
-	Common::FileList rootFiles;
-	if (!rootFiles.addDirectory(_baseDir))
-		throw Common::Exception("Can't read path");
-
-	// Find KEY files
-	rootFiles.getSubList(".*\\.key", _keyFiles, true);
-
-	Common::FileList allFiles;
-	if (!allFiles.addDirectory(_baseDir, -1))
-		throw Common::Exception("Failed reading the complete directory");
-
-	// Find BIF files
-	allFiles.getSubList(".*\\.bif", _bifFiles, true);
-
-	// Find ZIP files
-	_zipDir = Common::FilePath::findSubDirectory(_baseDir, "data", true);
-	allFiles.getSubList(".*\\.zip", _zipFiles, true);
-
-	if (!((!_keyFiles.isEmpty() && !_bifFiles.isEmpty()) || !_zipFiles.isEmpty()))
-		throw Common::Exception("No KEY/BIF files and no ZIP files found");
-
-	// Found KEY and BIF files, or ZIP files, this looks like a useable data directory
-	_bifSourceDir.push_back(_baseDir);
+	for (int i = 0; i < kArchiveMAX; i++)
+		addArchiveDir((Archive) i, "");
 }
 
-void ResourceManager::addBIFSourceDir(const Common::UString &dir) {
-	Common::UString bifDir = Common::FilePath::findSubDirectory(_baseDir, dir, true);
-	if (bifDir.empty())
-		throw Common::Exception("No such directory");
+void ResourceManager::addArchiveDir(Archive archive, const Common::UString &dir) {
+	if (archive == kArchiveNDS)
+		return;
 
-	_bifSourceDir.push_back(Common::FilePath::normalize(bifDir));
+	assert((archive >= 0) && (archive < kArchiveMAX));
+
+	Common::UString directory = Common::FilePath::findSubDirectory(_baseDir, dir, true);
+	if (directory.empty())
+		throw Common::Exception("No such directory \"%s\"", dir.c_str());
+
+	Common::FileList dirFiles;
+	if (!dirFiles.addDirectory(directory))
+		throw Common::Exception("Can't read directory \"%s\"", directory.c_str());
+
+	dirFiles.getSubList(kArchiveGlob[archive], _archiveFiles[archive], true);
+	_archiveDirs[archive].push_back(directory);
 }
 
-void ResourceManager::findSourceDirs() {
-	// Find all .mod, .hak and .rim in the respective directories
+Common::UString ResourceManager::findArchive(const Common::UString &file,
+		const DirectoryList &dirs, const Common::FileList &files) {
 
-	_modDir     = Common::FilePath::findSubDirectory(_baseDir, "modules"     , true);
-	_hakDir     = Common::FilePath::findSubDirectory(_baseDir, "hak"         , true);
-	_textureDir = Common::FilePath::findSubDirectory(_baseDir, "texturepacks", true);
-	_rimDir     = Common::FilePath::findSubDirectory(_baseDir, "rims"        , true);
+	Common::FileList nameMatch;
+	if (!files.getSubList(".*/" + file, nameMatch, true))
+		return "";
 
-	Common::FileList modFiles, hakFiles, textureFiles, rimFiles;
-	modFiles.addDirectory(_modDir, -1);
-	hakFiles.addDirectory(_hakDir, -1);
-	textureFiles.addDirectory(_textureDir, -1);
-	rimFiles.addDirectory(_rimDir, -1);
+	Common::UString realName;
+	for (DirectoryList::const_iterator dir = dirs.begin(); dir != dirs.end(); ++dir)
+		if (!(realName = nameMatch.findFirst(Common::FilePath::normalize(*dir + "/" + file), true)).empty())
+			return realName;
 
-	modFiles.getSubList(".*\\.mod", _erfFiles, true);
-	hakFiles.getSubList(".*\\.hak", _erfFiles, true);
-	textureFiles.getSubList(".*\\.erf", _erfFiles, true);
-	modFiles.getSubList(".*\\.rim", _rimFiles, true);
-	rimFiles.getSubList(".*\\.rim", _rimFiles, true);
+	return "";
 }
 
-ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priority) {
-	// Generate a new change set
-	_changes.push_back(ChangeSet());
-	ChangeID change = --_changes.end();
+ResourceManager::ChangeID ResourceManager::addArchive(Archive archive,
+		const Common::UString &file, uint32 priority) {
 
-	// Find all music files
+	if (archive == kArchiveNDS)
+		return indexNDS(file, priority);
 
-	Common::FileList musicFiles;
-	Common::UString musicDir;
-	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
-		musicFiles.addDirectory(musicDir, -1);
-	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x1"   , true)).empty())
-		musicFiles.addDirectory(musicDir, -1);
-	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x2"   , true)).empty())
-		musicFiles.addDirectory(musicDir, -1);
-	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
-		musicFiles.addDirectory(musicDir, -1);
+	assert((archive >= 0) && (archive < kArchiveMAX));
 
-	addResources(musicFiles, change, priority);
+	if (archive == kArchiveBIF)
+		throw Common::Exception("Attempted to index a lone BIF");
 
-	// Find all sound files
+	Common::UString realName = findArchive(file, _archiveDirs[archive], _archiveFiles[archive]);
+	if (realName.empty())
+		throw Common::Exception("No such archive file \"%s\"", file.c_str());
 
-	Common::FileList soundFiles;
+	if (archive == kArchiveKEY)
+		return indexKEY(realName, priority);
+	if (archive == kArchiveERF)
+		return indexERF(realName, priority);
+	if (archive == kArchiveRIM)
+		return indexRIM(realName, priority);
+	if (archive == kArchiveZIP)
+		return indexZIP(realName, priority);
 
-	Common::UString soundDir;
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient"     , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x1"  , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x2"  , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "sounds"      , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamsounds", true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamwaves" , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamvoice" , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-
-	addResources(soundFiles, change, priority);
-
-	// Find all video files
-
-	Common::FileList movieFiles, rootFiles;
-
-	Common::UString videoDir;
-	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "movies"   , true)).empty())
-		movieFiles.addDirectory(videoDir, -1);
-	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "cutscenes", true)).empty())
-		movieFiles.addDirectory(videoDir, -1);
-	rootFiles.addDirectory(_baseDir);
-
-	Common::FileList videoFiles;
-
-	movieFiles.getSubList(".*\\.(bik|mpg|wmv)", videoFiles, true);
-	rootFiles.getSubList (".*\\.(bik|mpg|wmv)", videoFiles, true);
-
-	addResources(videoFiles, change, priority);
-
-	return change;
-}
-
-ResourceManager::ChangeID ResourceManager::loadOverrideFiles(uint32 priority) {
-	// Generate a new change set
-	_changes.push_back(ChangeSet());
-	ChangeID change = --_changes.end();
-
-	// Add the override directory, which has priority over all other base sources
-
-	Common::FileList overrideFiles;
-
-	Common::UString overrideDir;
-	if (!(overrideDir = Common::FilePath::findSubDirectory(_baseDir, "override", true)).empty())
-		overrideFiles.addDirectory(overrideDir, -1);
-
-	addResources(overrideFiles, change, priority);
-
-	return change;
-}
-
-const Common::FileList &ResourceManager::getKEYList() const {
-	return _keyFiles;
-}
-
-const Common::FileList &ResourceManager::getERFList() const {
-	return _erfFiles;
-}
-
-const Common::FileList &ResourceManager::getRIMList() const {
-	return _rimFiles;
-}
-
-const Common::FileList &ResourceManager::getZIPList() const {
-	return _zipFiles;
+	return _changes.end();
 }
 
 ResourceManager::ResFileRef ResourceManager::findBIFPaths(const KEYFile &keyFile, ChangeID &change) {
@@ -265,31 +175,11 @@ ResourceManager::ResFileRef ResourceManager::findBIFPaths(const KEYFile &keyFile
 
 	// Go through all BIF names the KEY wants, trying to find a match in our BIF list
 	for (uint32 i = 0; i < keyBIFCount; i++) {
-		bool found = false;
+		Common::UString realName = findArchive(keyFile.getBIFs()[i], _archiveDirs[kArchiveBIF], _archiveFiles[kArchiveBIF]);
+		if (realName.empty())
+			throw Common::Exception("BIF \"%s\" not found", keyFile.getBIFs()[i].c_str());
 
-		_bifs.push_back("");
-
-		// Look through all BIF base directories
-		for (std::vector<Common::UString>::const_iterator bifBase = _bifSourceDir.begin(); bifBase != _bifSourceDir.end(); ++bifBase) {
-			// The BIF names in the KEY are relative to a BIF base directory
-			_bifs.back() = Common::FilePath::normalize(((Common::UString) *bifBase) + "/" + keyFile.getBIFs()[i]);
-
-			// Look through all our BIFs, looking for a match
-			for (Common::FileList::const_iterator it = _bifFiles.begin(); it != _bifFiles.end(); ++it) {
-				if (iequals(it->c_str(), _bifs.back().c_str())) {
-					_bifs.back() = *it;
-					found = true;
-					break;
-				}
-			}
-
-			if (found)
-				break;
-		}
-
-		// Did we find it?
-		if (!found)
-			throw Common::Exception("BIF \"%s\" not found", _bifs.back().c_str());
+		_bifs.push_back(realName);
 
 		// Add the information of the new BIF to the change set
 		change->bifs.push_back(--_bifs.end());
@@ -372,56 +262,31 @@ void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, const ResFile
 
 }
 
-ResourceManager::ChangeID ResourceManager::loadKEY(Common::SeekableReadStream &key, uint32 priority) {
-	if (_baseDir.empty())
-		throw Common::Exception("No base data directory registered");
+ResourceManager::ChangeID ResourceManager::indexKEY(const Common::UString &file, uint32 priority) {
+	Common::File keyFile;
+	if (!keyFile.open(file))
+		throw Common::Exception(Common::kOpenError);
 
-	KEYFile keyFile;
+	KEYFile keyIndex;
 
-	keyFile.load(key);
+	keyIndex.load(keyFile);
 
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
 
 	// Search for the correct BIFs
-	ResFileRef bifStart = findBIFPaths(keyFile, change);
+	ResFileRef bifStart = findBIFPaths(keyIndex, change);
 
 	// Merge the resource information of the KEY file and its BIF files into our resource map
-	mergeKEYBIFResources(keyFile, bifStart, change, priority);
+	mergeKEYBIFResources(keyIndex, bifStart, change, priority);
 
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addERF(const Common::UString &erf, uint32 priority) {
-	Common::UString erfFileName;
-
-	if (Common::FilePath::isAbsolute(erf)) {
-		// Absolute path to an ERF, open it from our ERF list
-
-		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(erf), true);
-
-		if (erfFileName.empty())
-			// Does not exist
-			throw Common::Exception("No such ERF");
-	}
-
-	if (erfFileName.empty())
-		// Try to open from the .mod directory
-		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(_modDir + "/" + erf), true);
-	if (erfFileName.empty())
-		// Try to open from the .hak directory
-		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(_hakDir + "/" + erf), true);
-	if (erfFileName.empty())
-		// Try to open from the textures directory
-		erfFileName = _erfFiles.findFirst(Common::FilePath::normalize(_textureDir + "/" + erf), true);
-
-	if (erfFileName.empty())
-		// Does not exist
-		throw Common::Exception("No such ERF");
-
+ResourceManager::ChangeID ResourceManager::indexERF(const Common::UString &file, uint32 priority) {
 	Common::File erfFile;
-	if (!erfFile.open(erfFileName))
+	if (!erfFile.open(file))
 		throw Common::Exception(Common::kOpenError);
 
 	ERFFile erfIndex;
@@ -432,7 +297,7 @@ ResourceManager::ChangeID ResourceManager::addERF(const Common::UString &erf, ui
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
 
-	_erfs.push_back(erfFileName);
+	_erfs.push_back(file);
 
 	// Add the information of the new ERF to the change set
 	change->erfs.push_back(--_erfs.end());
@@ -455,32 +320,9 @@ ResourceManager::ChangeID ResourceManager::addERF(const Common::UString &erf, ui
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addRIM(const Common::UString &rim, uint32 priority) {
-	Common::UString rimFileName;
-
-	if (Common::FilePath::isAbsolute(rim)) {
-		// Absolute path to an RIM, open it from our RIM list
-
-		rimFileName = _rimFiles.findFirst(Common::FilePath::normalize(rim), true);
-
-		if (rimFileName.empty())
-			// Does not exist
-			throw Common::Exception("No such RIM");
-	}
-
-	if (rimFileName.empty())
-		// Try to open from the .rim directory
-		rimFileName = _rimFiles.findFirst(Common::FilePath::normalize(_rimDir + "/" + rim), true);
-	if (rimFileName.empty())
-		// Try to open from the module directory
-		rimFileName = _rimFiles.findFirst(Common::FilePath::normalize(_modDir + "/" + rim), true);
-
-	if (rimFileName.empty())
-		// Does not exist
-		throw Common::Exception("No such RIM");
-
+ResourceManager::ChangeID ResourceManager::indexRIM(const Common::UString &file, uint32 priority) {
 	Common::File rimFile;
-	if (!rimFile.open(rimFileName))
+	if (!rimFile.open(file))
 		throw Common::Exception(Common::kOpenError);
 
 	RIMFile rimIndex;
@@ -491,7 +333,7 @@ ResourceManager::ChangeID ResourceManager::addRIM(const Common::UString &rim, ui
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
 
-	_rims.push_back(rimFileName);
+	_rims.push_back(file);
 
 	// Add the information of the new RIM to the change set
 	change->rims.push_back(--_rims.end());
@@ -514,29 +356,9 @@ ResourceManager::ChangeID ResourceManager::addRIM(const Common::UString &rim, ui
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addZIP(const Common::UString &zip, uint32 priority) {
-	Common::UString zipFileName;
-
-	if (Common::FilePath::isAbsolute(zip)) {
-		// Absolute path to an ZIP, open it from our ZIP list
-
-		zipFileName = _zipFiles.findFirst(Common::FilePath::normalize(zip), true);
-
-		if (zipFileName.empty())
-			// Does not exist
-			throw Common::Exception("No such ZIP");
-	}
-
-	if (zipFileName.empty())
-		// Try to open from the .zip directory
-		zipFileName = _zipFiles.findFirst(Common::FilePath::normalize(_zipDir + "/" + zip), true);
-
-	if (zipFileName.empty())
-		// Does not exist
-		throw Common::Exception("No such ZIP");
-
+ResourceManager::ChangeID ResourceManager::indexZIP(const Common::UString &file, uint32 priority) {
 	Common::File *zipFile = new Common::File;
-	if (!zipFile->open(zipFileName))
+	if (!zipFile->open(file))
 		throw Common::Exception(Common::kOpenError);
 
 	Common::ZipFile *zipIndex = new Common::ZipFile(zipFile);
@@ -567,9 +389,9 @@ ResourceManager::ChangeID ResourceManager::addZIP(const Common::UString &zip, ui
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addNDS(const Common::UString &nds, uint32 priority) {
+ResourceManager::ChangeID ResourceManager::indexNDS(const Common::UString &file, uint32 priority) {
 	Common::File *ndsFile = new Common::File;
-	if (!ndsFile->open(nds))
+	if (!ndsFile->open(file))
 		throw Common::Exception(Common::kOpenError);
 
 	NDSFile *ndsIndex = new NDSFile(ndsFile);
@@ -596,6 +418,87 @@ ResourceManager::ChangeID ResourceManager::addNDS(const Common::UString &nds, ui
 		// And add it to our list
 		addResource(res, Common::FilePath::getStem(*file), change);
 	}
+
+	return change;
+}
+
+ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priority) {
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
+
+	// Find all music files
+
+	Common::FileList musicFiles;
+	Common::UString musicDir;
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
+		musicFiles.addDirectory(musicDir, -1);
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x1"   , true)).empty())
+		musicFiles.addDirectory(musicDir, -1);
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x2"   , true)).empty())
+		musicFiles.addDirectory(musicDir, -1);
+	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
+		musicFiles.addDirectory(musicDir, -1);
+
+	addResources(musicFiles, change, priority);
+
+	// Find all sound files
+
+	Common::FileList soundFiles;
+
+	Common::UString soundDir;
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient"     , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x1"  , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x2"  , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "sounds"      , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamsounds", true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamwaves" , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamvoice" , true)).empty())
+		soundFiles.addDirectory(soundDir, -1);
+
+	addResources(soundFiles, change, priority);
+
+	// Find all video files
+
+	Common::FileList movieFiles, rootFiles;
+
+	Common::UString videoDir;
+	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "movies"   , true)).empty())
+		movieFiles.addDirectory(videoDir, -1);
+	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "cutscenes", true)).empty())
+		movieFiles.addDirectory(videoDir, -1);
+	rootFiles.addDirectory(_baseDir);
+
+	Common::FileList videoFiles;
+
+	movieFiles.getSubList(".*\\.(bik|mpg|wmv)", videoFiles, true);
+	rootFiles.getSubList (".*\\.(bik|mpg|wmv)", videoFiles, true);
+
+	addResources(videoFiles, change, priority);
+
+	return change;
+}
+
+ResourceManager::ChangeID ResourceManager::loadOverrideFiles(uint32 priority) {
+	// Generate a new change set
+	_changes.push_back(ChangeSet());
+	ChangeID change = --_changes.end();
+
+	// Add the override directory, which has priority over all other base sources
+
+	Common::FileList overrideFiles;
+
+	Common::UString overrideDir;
+	if (!(overrideDir = Common::FilePath::findSubDirectory(_baseDir, "override", true)).empty())
+		overrideFiles.addDirectory(overrideDir, -1);
+
+	addResources(overrideFiles, change, priority);
 
 	return change;
 }

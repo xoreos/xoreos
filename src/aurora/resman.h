@@ -44,6 +44,8 @@ class NDSFile;
 class ResourceManager : public Common::Singleton<ResourceManager> {
 // Type definitions
 private:
+	typedef std::list<Common::UString> DirectoryList;
+
 	typedef std::list<Common::UString> ResFileList;
 	typedef ResFileList::const_iterator ResFileRef;
 	typedef std::list<Common::ZipFile *> ResZipList;
@@ -125,17 +127,24 @@ public:
 	 */
 	void registerDataBaseDir(const Common::UString &path);
 
-	/** Add a directory to be searched for BIF files.
+	/** Add a directory to be searched for these archives files.
 	 *
 	 *  Relative to the base directory. Only direct subdirectories of the base
 	 *  directory are supported.
 	 *
-	 *  @param dir A direct subdirectory of the base directory to search for BIFs.
+	 *  @param archive The type of archive to look for.
+	 *  @param dir A direct subdirectory of the base directory to search for archives files.
 	 */
-	void addBIFSourceDir(const Common::UString &dir);
+	void addArchiveDir(Archive archive, const Common::UString &dir);
 
-	/** Find source directories for resource archives. */
-	void findSourceDirs();
+	/** Add an archive file and all its resources to the resource manager.
+	 *
+	 *  @param  archive The type of archive to add.
+	 *  @param  The name of the archive file to index.
+	 *  @param  priority The priority these files have over others of the same name and type.
+	 *  @return An ID for all collective changes done by adding the archive file.
+	 */
+	ChangeID addArchive(Archive archive, const Common::UString &file, uint32 priority = 0);
 
 	/** Load secondary resources.
 	 *
@@ -155,60 +164,6 @@ public:
 	 *  @return An ID for all collective changes done by loading the override files.
 	 */
 	ChangeID loadOverrideFiles(uint32 priority = 500);
-
-	/** Return the list of KEY files found in the base data directory. */
-	const Common::FileList &getKEYList() const;
-
-	/** Return the list of ERF files found in the base data directory. */
-	const Common::FileList &getERFList() const;
-
-	/** Return the list of RIM files found in the base data directory. */
-	const Common::FileList &getRIMList() const;
-
-	/** Return the list of ZIP files found in the base data directory. */
-	const Common::FileList &getZIPList() const;
-
-	/** Load a KEY index.
-	 *
-	 *  Add all resources found in the KEY and its BIFs to the manager.
-	 *
-	 *  @param  key The KEY file to index.
-	 *  @param  priority The priority the resources have over others of the same name and type.
-	 *  @return An ID for all collective changes done by loading the KEY and its BIFs.
-	 */
-	ChangeID loadKEY(Common::SeekableReadStream &key, uint32 priority = 10);
-
-	/** Add resources found in the ERF file to the manager.
-	 *
-	 *  @param  erf The name of the ERF file within a valid ERF directory in the base dir.
-	 *  @param  priority The priority the resources have over others of the same name and type.
-	 *  @return An ID for all collective changes done by loading the ERF.
-	 */
-	ChangeID addERF(const Common::UString &erf, uint32 priority = 100);
-
-	/** Add resources found in the RIM file to the manager.
-	 *
-	 *  @param  rim The name of the RIM file within a valid RIM directory in the base dir.
-	 *  @param  priority The priority the resources have over others of the same name and type.
-	 *  @return An ID for all collective changes done by loading the RIM.
-	 */
-	ChangeID addRIM(const Common::UString &rim, uint32 priority = 100);
-
-	/** Add resources found in the ZIP file to the manager.
-	 *
-	 *  @param  zip The name of the ZIP file within a valid ZIP directory in the base dir.
-	 *  @param  priority The priority the resources have over others of the same name and type.
-	 *  @return An ID for all collective changes done by loading the ZIP.
-	 */
-	ChangeID addZIP(const Common::UString &zip, uint32 priority = 100);
-
-	/** Add resources found in the NDS file to the manager.
-	 *
-	 *  @param  nds The name of the NDS file within a valid NDS directory in the base dir.
-	 *  @param  priority The priority the resources have over others of the same name and type.
-	 *  @return An ID for all collective changes done by loading the NDS.
-	 */
-	ChangeID addNDS(const Common::UString &nds, uint32 priority = 100);
 
 	/** Undo the changes done in the specified change ID. */
 	void undo(ChangeID &change);
@@ -286,34 +241,36 @@ public:
 	void listResources() const;
 
 private:
-	ResFileList _bifs;
-	ResFileList _erfs;
-	ResFileList _rims;
-	ResZipList  _zips;
-	ResNDSList  _ndss;
+	Common::UString _baseDir;     ///< The data base directory.
+
+	DirectoryList    _archiveDirs [kArchiveMAX]; ///< Archive directories.
+	Common::FileList _archiveFiles[kArchiveMAX]; ///< Archive files.
+
+	ResFileList _bifs; ///< List of currently used BIF files.
+	ResFileList _erfs; ///< List of currently used ERF files.
+	ResFileList _rims; ///< List of currently used RIM files.
+
+	ResZipList  _zips; ///< List of currently used ZIP files.
+
+	ResNDSList  _ndss; ///< List of currently used NDS files.
+
 	ResourceMap _resources;
 
 	ChangeSetList _changes;
-
-	Common::UString _baseDir;     ///< The data base directory.
-	Common::UString _modDir;      ///< The data directory for .mod files.
-	Common::UString _hakDir;      ///< The data directory for .hak files.
-	Common::UString _textureDir;  ///< The data directory for textures-related files.
-	Common::UString _rimDir;      ///< The data directory for .rim files.
-	Common::UString _zipDir;      ///< The data directory for .zip files.
-
-	std::vector<Common::UString> _bifSourceDir; ///< All directories containing BIFs.
-
-	Common::FileList _keyFiles; ///< List of all KEY files in the base directory.
-	Common::FileList _bifFiles; ///< List of all BIF files in the base directory.
-	Common::FileList _erfFiles; ///< List of all ERF files in the base directory.
-	Common::FileList _rimFiles; ///< List of all RIM files in the base directory.
-	Common::FileList _zipFiles; ///< List of all ZIP files in the base directory.
 
 	std::vector<FileType> _musicTypes; ///< All valid music file types.
 	std::vector<FileType> _soundTypes; ///< All valid sound file types.
 	std::vector<FileType> _imageTypes; ///< All valid image file types.
 	std::vector<FileType> _videoTypes; ///< All valid video file types.
+
+	Common::UString findArchive(const Common::UString &file,
+			const DirectoryList &dirs, const Common::FileList &files);
+
+	ChangeID indexKEY(const Common::UString &file, uint32 priority);
+	ChangeID indexERF(const Common::UString &file, uint32 priority);
+	ChangeID indexRIM(const Common::UString &file, uint32 priority);
+	ChangeID indexZIP(const Common::UString &file, uint32 priority);
+	ChangeID indexNDS(const Common::UString &file, uint32 priority);
 
 	// KEY/BIF loading helpers
 	ResFileRef findBIFPaths(const KEYFile &keyFile, ChangeID &change);

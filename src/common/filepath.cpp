@@ -150,6 +150,10 @@ UString FilePath::findSubDirectory(const UString &directory, const UString &subD
 		// Path is either no directory or doesn't exist
 		return "";
 
+	if (subDirectory.empty())
+		// Subdirectory to look for is empty, return the directory instead
+		return directory;
+
 	try {
 		path dirPath(directory.c_str());
 		path subDirPath(subDirectory.c_str());

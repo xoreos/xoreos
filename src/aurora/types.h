@@ -242,6 +242,16 @@ enum Language {
 	kLanguageWitcherChineseSimplified  = 1022  // UTF8
 };
 
+enum Archive {
+	kArchiveKEY = 0,
+	kArchiveBIF,
+	kArchiveERF,
+	kArchiveRIM,
+	kArchiveZIP,
+	kArchiveMAX,
+	kArchiveNDS
+};
+
 static const uint32 kObjectIDInvalid = 0xFFFFFFFF;
 static const uint32 kStrRefInvalid   = 0xFFFFFFFF;
 

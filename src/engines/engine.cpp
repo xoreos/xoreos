@@ -32,65 +32,13 @@ Engine::Engine() {
 Engine::~Engine() {
 }
 
-void Engine::indexMandatoryKEY(const Common::UString &key, uint32 priority) {
-	Common::SeekableReadStream *keyFile = ResMan.getKEYList().openFile(key, true);
-	if (!keyFile)
-		throw Common::Exception("No such KEY");
+void Engine::indexMandatoryArchive(Aurora::Archive archive, const Common::UString &file, uint32 priority) {
+	ResMan.addArchive(archive, file, priority);
+}
 
+void Engine::indexOptionalArchive(Aurora::Archive archive, const Common::UString &file, uint32 priority) {
 	try {
-		ResMan.loadKEY(*keyFile, priority);
-	} catch(...) {
-		delete keyFile;
-		throw;
-	}
-
-	delete keyFile;
-}
-
-void Engine::indexOptionalKEY(const Common::UString &key, uint32 priority) {
-	Common::SeekableReadStream *keyFile = ResMan.getKEYList().openFile(key, true);
-	if (!keyFile)
-		return;
-
-	try {
-		ResMan.loadKEY(*keyFile, priority);
-	} catch(...) {
-		delete keyFile;
-		throw;
-	}
-
-	delete keyFile;
-}
-
-void Engine::indexMandatoryERF(const Common::UString &erf, uint32 priority) {
-	ResMan.addERF(erf, priority);
-}
-
-void Engine::indexOptionalERF(const Common::UString &erf, uint32 priority) {
-	try {
-		ResMan.addERF(erf, priority);
-	} catch (Common::Exception &e) {
-	}
-}
-
-void Engine::indexMandatoryRIM(const Common::UString &rim, uint32 priority) {
-	ResMan.addRIM(rim, priority);
-}
-
-void Engine::indexOptionalRIM(const Common::UString &rim, uint32 priority) {
-	try {
-		ResMan.addRIM(rim, priority);
-	} catch (Common::Exception &e) {
-	}
-}
-
-void Engine::indexMandatoryZIP(const Common::UString &zip, uint32 priority) {
-	ResMan.addZIP(zip, priority);
-}
-
-void Engine::indexOptionalZIP(const Common::UString &zip, uint32 priority) {
-	try {
-		ResMan.addZIP(zip, priority);
+		ResMan.addArchive(archive, file, priority);
 	} catch (Common::Exception &e) {
 	}
 }

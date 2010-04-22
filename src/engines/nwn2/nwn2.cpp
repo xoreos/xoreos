@@ -114,71 +114,70 @@ void NWN2Engine::run(const Common::UString &target) {
 void NWN2Engine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
+	ResMan.addArchiveDir(Aurora::kArchiveZIP, "data");
+
 	status("Loading main resource files");
 
-	indexMandatoryZIP("2da.zip"           ,  0);
-	indexMandatoryZIP("actors.zip"        ,  1);
-	indexMandatoryZIP("animtags.zip"      ,  2);
-	indexMandatoryZIP("convo.zip"         ,  3);
-	indexMandatoryZIP("ini.zip"           ,  4);
-	indexMandatoryZIP("lod-merged.zip"    ,  5);
-	indexMandatoryZIP("music.zip"         ,  6);
-	indexMandatoryZIP("nwn2_materials.zip",  7);
-	indexMandatoryZIP("nwn2_models.zip"   ,  8);
-	indexMandatoryZIP("nwn2_vfx.zip"      ,  9);
-	indexMandatoryZIP("prefabs.zip"       , 10);
-	indexMandatoryZIP("scripts.zip"       , 11);
-	indexMandatoryZIP("sounds.zip"        , 12);
-	indexMandatoryZIP("soundsets.zip"     , 13);
-	indexMandatoryZIP("speedtree.zip"     , 14);
-	indexMandatoryZIP("templates.zip"     , 15);
-	indexMandatoryZIP("vo.zip"            , 16);
-	indexMandatoryZIP("walkmesh.zip"      , 17);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "2da.zip"           ,  0);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "actors.zip"        ,  1);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "animtags.zip"      ,  2);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "convo.zip"         ,  3);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "ini.zip"           ,  4);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "lod-merged.zip"    ,  5);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "music.zip"         ,  6);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "nwn2_materials.zip",  7);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "nwn2_models.zip"   ,  8);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "nwn2_vfx.zip"      ,  9);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "prefabs.zip"       , 10);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "scripts.zip"       , 11);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "sounds.zip"        , 12);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "soundsets.zip"     , 13);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "speedtree.zip"     , 14);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "templates.zip"     , 15);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "vo.zip"            , 16);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "walkmesh.zip"      , 17);
 
 	status("Loading expansions resource files");
 
 	// Expansion 1: Mask of the Betrayer (MotB)
-	indexOptionalZIP("2da_x1.zip"           , 20);
-	indexOptionalZIP("actors_x1.zip"        , 21);
-	indexOptionalZIP("animtags_x1.zip"      , 22);
-	indexOptionalZIP("convo_x1.zip"         , 23);
-	indexOptionalZIP("ini_x1.zip"           , 24);
-	indexOptionalZIP("lod-merged_x1.zip"    , 25);
-	indexOptionalZIP("music_x1.zip"         , 26);
-	indexOptionalZIP("nwn2_materials_x1.zip", 27);
-	indexOptionalZIP("nwn2_models_x1.zip"   , 28);
-	indexOptionalZIP("nwn2_models_x2.zip"   , 29);
-	indexOptionalZIP("nwn2_vfx_x1.zip"      , 30);
-	indexOptionalZIP("prefabs_x1.zip"       , 31);
-	indexOptionalZIP("scripts_x1.zip"       , 32);
-	indexOptionalZIP("soundsets_x1.zip"     , 33);
-	indexOptionalZIP("sounds_x1.zip"        , 34);
-	indexOptionalZIP("speedtree_x1.zip"     , 35);
-	indexOptionalZIP("templates_x1.zip"     , 36);
-	indexOptionalZIP("vo_x1.zip"            , 37);
-	indexOptionalZIP("walkmesh_x1.zip"      , 38);
+	indexOptionalArchive(Aurora::kArchiveZIP, "2da_x1.zip"           , 20);
+	indexOptionalArchive(Aurora::kArchiveZIP, "actors_x1.zip"        , 21);
+	indexOptionalArchive(Aurora::kArchiveZIP, "animtags_x1.zip"      , 22);
+	indexOptionalArchive(Aurora::kArchiveZIP, "convo_x1.zip"         , 23);
+	indexOptionalArchive(Aurora::kArchiveZIP, "ini_x1.zip"           , 24);
+	indexOptionalArchive(Aurora::kArchiveZIP, "lod-merged_x1.zip"    , 25);
+	indexOptionalArchive(Aurora::kArchiveZIP, "music_x1.zip"         , 26);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_x1.zip", 27);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_x1.zip"   , 28);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_x2.zip"   , 29);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_vfx_x1.zip"      , 30);
+	indexOptionalArchive(Aurora::kArchiveZIP, "prefabs_x1.zip"       , 31);
+	indexOptionalArchive(Aurora::kArchiveZIP, "scripts_x1.zip"       , 32);
+	indexOptionalArchive(Aurora::kArchiveZIP, "soundsets_x1.zip"     , 33);
+	indexOptionalArchive(Aurora::kArchiveZIP, "sounds_x1.zip"        , 34);
+	indexOptionalArchive(Aurora::kArchiveZIP, "speedtree_x1.zip"     , 35);
+	indexOptionalArchive(Aurora::kArchiveZIP, "templates_x1.zip"     , 36);
+	indexOptionalArchive(Aurora::kArchiveZIP, "vo_x1.zip"            , 37);
+	indexOptionalArchive(Aurora::kArchiveZIP, "walkmesh_x1.zip"      , 38);
 
 	// Expansion 2: Storm of Zehir (SoZ)
-	indexOptionalZIP("2da_x2.zip"           , 40);
-	indexOptionalZIP("actors_x2.zip"        , 41);
-	indexOptionalZIP("animtags_x2.zip"      , 42);
-	indexOptionalZIP("lod-merged_x2.zip"    , 43);
-	indexOptionalZIP("music_x2.zip"         , 44);
-	indexOptionalZIP("nwn2_materials_x2.zip", 45);
-	indexOptionalZIP("nwn2_vfx_x2.zip"      , 46);
-	indexOptionalZIP("prefabs_x2.zip"       , 47);
-	indexOptionalZIP("scripts_x2.zip"       , 48);
-	indexOptionalZIP("soundsets_x2.zip"     , 49);
-	indexOptionalZIP("sounds_x2.zip"        , 50);
-	indexOptionalZIP("speedtree_x2.zip"     , 51);
-	indexOptionalZIP("templates_x2.zip"     , 52);
-	indexOptionalZIP("vo_x2.zip"            , 53);
+	indexOptionalArchive(Aurora::kArchiveZIP, "2da_x2.zip"           , 40);
+	indexOptionalArchive(Aurora::kArchiveZIP, "actors_x2.zip"        , 41);
+	indexOptionalArchive(Aurora::kArchiveZIP, "animtags_x2.zip"      , 42);
+	indexOptionalArchive(Aurora::kArchiveZIP, "lod-merged_x2.zip"    , 43);
+	indexOptionalArchive(Aurora::kArchiveZIP, "music_x2.zip"         , 44);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_x2.zip", 45);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_vfx_x2.zip"      , 46);
+	indexOptionalArchive(Aurora::kArchiveZIP, "prefabs_x2.zip"       , 47);
+	indexOptionalArchive(Aurora::kArchiveZIP, "scripts_x2.zip"       , 48);
+	indexOptionalArchive(Aurora::kArchiveZIP, "soundsets_x2.zip"     , 49);
+	indexOptionalArchive(Aurora::kArchiveZIP, "sounds_x2.zip"        , 50);
+	indexOptionalArchive(Aurora::kArchiveZIP, "speedtree_x2.zip"     , 51);
+	indexOptionalArchive(Aurora::kArchiveZIP, "templates_x2.zip"     , 52);
+	indexOptionalArchive(Aurora::kArchiveZIP, "vo_x2.zip"            , 53);
 
 	warning("TODO: Mysteries of Westgate (MoW) resource files");
 	warning("TODO: Patch resource files");
-
-	status("Finding further resource archives directories");
-	ResMan.findSourceDirs();
 
 	status("Loading secondary resources");
 	ResMan.loadSecondaryResources(60);

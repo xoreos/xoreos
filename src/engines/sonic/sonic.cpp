@@ -74,7 +74,7 @@ void SonicEngine::run(const Common::UString &target) {
 }
 
 void SonicEngine::init() {
-	ResMan.addNDS(_romFile);
+	indexMandatoryArchive(Aurora::kArchiveNDS, _romFile, 0);
 }
 
 } // End of namespace Sonic
