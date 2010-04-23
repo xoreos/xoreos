@@ -117,7 +117,7 @@ void TheWitcherEngine::init() {
 
 	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "voices");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/!final");
 
 	status("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 0);
