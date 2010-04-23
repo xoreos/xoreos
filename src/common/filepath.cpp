@@ -12,10 +12,13 @@
  *  Utility class for manipulating file paths.
  */
 
+#include <list>
+
 #include "boost/algorithm/string.hpp"
 #include "boost/system/config.hpp"
 
 #include "common/filepath.h"
+#include "common/util.h"
 
 // boost-filesystem stuff
 using boost::filesystem::path;
@@ -143,16 +146,34 @@ UString FilePath::makeAbsolute(const UString &p) {
 	return normalize(absolute);
 }
 
-UString FilePath::findSubDirectory(const UString &directory, const UString &subDirectory,
+static void splitDirectories(const UString &directory, std::list<UString> &dirs) {
+	UString curDir;
+
+	for (UString::iterator it = directory.begin(); it != directory.end(); ++it) {
+		uint32 c = *it;
+
+		if (c == '/') {
+			// Found a directory separator, split here
+
+			// Got a real directory, add it to our list
+			if (!curDir.empty())
+				dirs.push_back(curDir);
+
+			curDir.clear();
+
+		} else
+			// Otherwise, just append the current character
+			curDir += c;
+
+	}
+
+	// Got trailing data, add it to our list
+	if (!curDir.empty())
+		dirs.push_back(curDir);
+}
+
+static UString findSubDirectory_internal(const UString &directory, const UString &subDirectory,
 		bool caseInsensitive) {
-
-	if (!exists(directory.c_str()) || !is_directory(directory.c_str()))
-		// Path is either no directory or doesn't exist
-		return "";
-
-	if (subDirectory.empty())
-		// Subdirectory to look for is empty, return the directory instead
-		return directory;
 
 	try {
 		path dirPath(directory.c_str());
@@ -177,6 +198,30 @@ UString FilePath::findSubDirectory(const UString &directory, const UString &subD
 	}
 
 	return "";
+}
+
+UString FilePath::findSubDirectory(const UString &directory, const UString &subDirectory,
+		bool caseInsensitive) {
+
+	if (!exists(directory.c_str()) || !is_directory(directory.c_str()))
+		// Path is either no directory or doesn't exist
+		return "";
+
+	if (subDirectory.empty())
+		// Subdirectory to look for is empty, return the directory instead
+		return directory;
+
+	// Split the subDirectory string into actual directories
+	std::list<UString> dirs;
+	splitDirectories(subDirectory, dirs);
+
+	// Iterate over the directory list to find each successive subdirectory
+	UString curDir = directory;
+	for (std::list<UString>::iterator it = dirs.begin(); it != dirs.end(); ++it)
+		if ((curDir = findSubDirectory_internal(curDir, *it, caseInsensitive)).empty())
+			return "";
+
+	return curDir;
 }
 
 } // End of namespace Common
