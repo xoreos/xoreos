@@ -45,7 +45,7 @@ bool ResourceManager::Resource::operator<(const Resource &right) const {
 }
 
 
-ResourceManager::ResourceManager() {
+ResourceManager::ResourceManager() : _rimsAreERFs(false) {
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeDDS);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTPC);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTGA);
@@ -97,6 +97,10 @@ void ResourceManager::clear() {
 	_changes.clear();
 }
 
+void ResourceManager::setRIMsAreERFs(bool rimsAreERFs) {
+	_rimsAreERFs = rimsAreERFs;
+}
+
 void ResourceManager::registerDataBaseDir(const Common::UString &path) {
 	clear();
 
@@ -121,6 +125,11 @@ void ResourceManager::addArchiveDir(Archive archive, const Common::UString &dir)
 		throw Common::Exception("Can't read directory \"%s\"", directory.c_str());
 
 	dirFiles.getSubList(kArchiveGlob[archive], _archiveFiles[archive], true);
+
+	// If we're adding an ERF directory and .rim files are actually ERFs, add those too
+	if ((archive == kArchiveERF) && _rimsAreERFs)
+		dirFiles.getSubList(kArchiveGlob[kArchiveRIM], _archiveFiles[archive], true);
+
 	_archiveDirs[archive].push_back(directory);
 }
 

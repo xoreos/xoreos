@@ -122,6 +122,9 @@ public:
 	/** Clear all resource information. */
 	void clear();
 
+	/** Are .rim files actually ERF files? */
+	void setRIMsAreERFs(bool rimsAreERFs);
+
 	/** Register a path to be the base data directory.
 	 *
 	 *  @param path The path to a base data directory.
@@ -214,6 +217,8 @@ public:
 	void listResources() const;
 
 private:
+	bool _rimsAreERFs; ///< Are .rim files actually ERF files?
+
 	Common::UString _baseDir;     ///< The data base directory.
 
 	DirectoryList    _archiveDirs [kArchiveMAX]; ///< Archive directories.
