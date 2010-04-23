@@ -114,11 +114,16 @@ void KotOR2Engine::run(const Common::UString &target) {
 }
 
 void KotOR2Engine::init() {
+	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
+	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "lips");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "rims");
+	ResMan.addArchiveDir(Aurora::kArchiveRIM, "modules");
 
 	status("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
@@ -127,11 +132,17 @@ void KotOR2Engine::init() {
 	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 10);
 	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 11);
 
-	status("Loading secondary resources");
-	ResMan.loadSecondaryResources(20);
+	status("Indexing extra sound resources");
+	indexMandatoryDirectory("streamsounds", 0, -1, 20);
+	status("Indexing extra voice resources");
+	indexMandatoryDirectory("streamvoice" , 0, -1, 21);
+	status("Indexing extra music resources");
+	indexMandatoryDirectory("streammusic" , 0, -1, 22);
+	status("Indexing extra movie resources");
+	indexMandatoryDirectory("movies"      , 0, -1, 23);
 
-	status("Loading override files");
-	ResMan.loadOverrideFiles(30);
+	status("Indexing override files");
+	indexOptionalDirectory("override", 0, 0, 30);
 }
 
 } // End of namespace KotOR2

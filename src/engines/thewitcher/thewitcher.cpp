@@ -112,9 +112,12 @@ void TheWitcherEngine::run(const Common::UString &target) {
 }
 
 void TheWitcherEngine::init() {
+	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
+	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "voices");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
 
 	status("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 0);
@@ -127,8 +130,21 @@ void TheWitcherEngine::init() {
 	indexMandatoryArchive(Aurora::kArchiveKEY, "M1_3.key"  , 21);
 	indexMandatoryArchive(Aurora::kArchiveKEY, "M2_3.key"  , 22);
 
-	status("Loading override files");
-	ResMan.loadOverrideFiles(40);
+	status("Indexing extra resources");
+	indexOptionalDirectory("movies"   , 0, -1, 30);
+	indexOptionalDirectory("music"    , 0, -1, 31);
+	indexOptionalDirectory("sounds"   , 0, -1, 32);
+	indexOptionalDirectory("cutscenes", 0, -1, 33);
+	indexOptionalDirectory("dialogues", 0, -1, 34);
+	indexOptionalDirectory("fx"       , 0, -1, 35);
+	indexOptionalDirectory("meshes"   , 0, -1, 36);
+	indexOptionalDirectory("quests"   , 0, -1, 37);
+	indexOptionalDirectory("scripts"  , 0, -1, 38);
+	indexOptionalDirectory("templates", 0, -1, 39);
+	indexOptionalDirectory("textures" , 0, -1, 40);
+
+	status("Indexing override files");
+	indexOptionalDirectory("override", 0, 0, 50);
 }
 
 } // End of namespace TheWitcher

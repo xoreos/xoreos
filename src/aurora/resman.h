@@ -147,24 +147,20 @@ public:
 	 */
 	ChangeID addArchive(Archive archive, const Common::UString &file, uint32 priority = 0);
 
-	/** Load secondary resources.
+	/** Add a directory's contents to the resource manager.
 	 *
-	 *  Secondary resources are plain files found in the data directory structure.
+	 *  Relative to the base directory. Only direct subdirectories of the base
+	 *  directory are supported.
 	 *
+	 *  @param  dir A direct subdirectory of the base directory to search for resource files.
+	 *  @param  glob A pattern of which files to look for.
+	 *  @param  depth The number of levels to recurse into subdirectories. 0
+	 *                for ignoring subdirectories, -1 for a limitless recursion.
 	 *  @param  priority The priority these files have over others of the same name and type.
-	 *  @return An ID for all collective changes done by loading the secondary resources.
+	 *  @return An ID for all collective changes done by adding the directory.
 	 */
-	ChangeID loadSecondaryResources(uint32 priority = 400);
-
-	/** Load override files.
-	 *
-	 *  Override files are commonly found in an override/ directory, overriding basic
-	 *  resource files.
-	 *
-	 *  @param  priority The priority these files have over others of the same name and type.
-	 *  @return An ID for all collective changes done by loading the override files.
-	 */
-	ChangeID loadOverrideFiles(uint32 priority = 500);
+	ChangeID addResourceDir(const Common::UString &dir, const char *glob = 0,
+	                        int depth = -1, uint32 priority = 100);
 
 	/** Undo the changes done in the specified change ID. */
 	void undo(ChangeID &change);

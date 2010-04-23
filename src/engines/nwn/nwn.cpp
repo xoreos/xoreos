@@ -131,9 +131,14 @@ void NWNEngine::run(const Common::UString &target) {
 }
 
 void NWNEngine::init() {
+	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
+	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "nwm");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "hak");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
 
 	status("Loading main KEY");
@@ -165,11 +170,21 @@ void NWNEngine::init() {
 	indexOptionalArchive (Aurora::kArchiveERF, "xp1_tex_tpa.erf" , 15);
 	indexOptionalArchive (Aurora::kArchiveERF, "xp2_tex_tpa.erf" , 16);
 
-	status("Loading secondary resources");
-	ResMan.loadSecondaryResources(20);
+	status("Indexing extra sound resources");
+	indexMandatoryDirectory("ambient"   , 0, 0, 20);
+	status("Indexing extra music resources");
+	indexMandatoryDirectory("music"     , 0, 0, 21);
+	status("Indexing extra movie resources");
+	indexMandatoryDirectory("movies"    , 0, 0, 22);
+	status("Indexing extra image resources");
+	indexMandatoryDirectory("portraits" , 0, 0, 23);
+	status("Indexing extra character resources");
+	indexMandatoryDirectory("localvault", 0, 0, 24);
+	status("Indexing extra talktables");
+	indexOptionalDirectory ("tlk"       , 0, 0, 25);
 
-	status("Loading override files");
-	ResMan.loadOverrideFiles(30);
+	status("Indexing override files");
+	indexOptionalDirectory("override", 0, 0, 30);
 }
 
 } // End of namespace NWN

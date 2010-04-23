@@ -112,9 +112,12 @@ void NWN2Engine::run(const Common::UString &target) {
 }
 
 void NWN2Engine::init() {
+	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
+	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveZIP, "data");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
 
 	status("Loading main resource files");
 
@@ -179,11 +182,25 @@ void NWN2Engine::init() {
 	warning("TODO: Mysteries of Westgate (MoW) resource files");
 	warning("TODO: Patch resource files");
 
-	status("Loading secondary resources");
-	ResMan.loadSecondaryResources(60);
+	status("Indexing extra sound resources");
+	indexMandatoryDirectory("ambient"   , 0,  0, 60);
+	indexOptionalDirectory ("ambient_x1", 0,  0, 61);
+	indexOptionalDirectory ("ambient_x2", 0,  0, 62);
+	status("Indexing extra music resources");
+	indexMandatoryDirectory("music"     , 0,  0, 63);
+	indexOptionalDirectory ("music_x1"  , 0,  0, 64);
+	indexOptionalDirectory ("music_x2"  , 0,  0, 65);
+	status("Indexing extra movie resources");
+	indexMandatoryDirectory("movies"    , 0,  0, 66);
+	status("Indexing extra effects resources");
+	indexMandatoryDirectory("effects"   , 0,  0, 67);
+	status("Indexing extra character resources");
+	indexMandatoryDirectory("localvault", 0,  0, 68);
+	status("Indexing extra UI resources");
+	indexMandatoryDirectory("ui"        , 0, -1, 69);
 
-	status("Loading override files");
-	ResMan.loadOverrideFiles(70);
+	status("Indexing override files");
+	indexOptionalDirectory("override", 0, 0, 100);
 }
 
 } // End of namespace NWN2

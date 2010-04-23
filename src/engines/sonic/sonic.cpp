@@ -74,6 +74,7 @@ void SonicEngine::run(const Common::UString &target) {
 }
 
 void SonicEngine::init() {
+	status("Indexing the ROM file");
 	indexMandatoryArchive(Aurora::kArchiveNDS, _romFile, 0);
 }
 

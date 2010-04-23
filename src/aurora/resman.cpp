@@ -420,84 +420,34 @@ ResourceManager::ChangeID ResourceManager::indexNDS(const Common::UString &file,
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::loadSecondaryResources(uint32 priority) {
+ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString &dir,
+		const char *glob, int depth, uint32 priority) {
+
+	// Find the directory
+	Common::UString directory = Common::FilePath::findSubDirectory(_baseDir, dir, true);
+	if (directory.empty())
+		throw Common::Exception("No such directory \"%s\"", dir.c_str());
+
+	// Find files
+	Common::FileList files;
+	files.addDirectory(directory, depth);
+
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
 
-	// Find all music files
+	if (!glob) {
+		// Add the files
+		addResources(files, change, priority);
+		return change;
+	}
 
-	Common::FileList musicFiles;
-	Common::UString musicDir;
-	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music"      , true)).empty())
-		musicFiles.addDirectory(musicDir, -1);
-	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x1"   , true)).empty())
-		musicFiles.addDirectory(musicDir, -1);
-	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "music_x2"   , true)).empty())
-		musicFiles.addDirectory(musicDir, -1);
-	if (!(musicDir = Common::FilePath::findSubDirectory(_baseDir, "streammusic", true)).empty())
-		musicFiles.addDirectory(musicDir, -1);
+	// Find files matching the glob pattern
+	Common::FileList globFiles;
+	files.getSubList(glob, globFiles, true);
 
-	addResources(musicFiles, change, priority);
-
-	// Find all sound files
-
-	Common::FileList soundFiles;
-
-	Common::UString soundDir;
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient"     , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x1"  , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "ambient_x2"  , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "sounds"      , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamsounds", true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamwaves" , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-	if (!(soundDir = Common::FilePath::findSubDirectory(_baseDir, "streamvoice" , true)).empty())
-		soundFiles.addDirectory(soundDir, -1);
-
-	addResources(soundFiles, change, priority);
-
-	// Find all video files
-
-	Common::FileList movieFiles, rootFiles;
-
-	Common::UString videoDir;
-	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "movies"   , true)).empty())
-		movieFiles.addDirectory(videoDir, -1);
-	if (!(videoDir = Common::FilePath::findSubDirectory(_baseDir, "cutscenes", true)).empty())
-		movieFiles.addDirectory(videoDir, -1);
-	rootFiles.addDirectory(_baseDir);
-
-	Common::FileList videoFiles;
-
-	movieFiles.getSubList(".*\\.(bik|mpg|wmv)", videoFiles, true);
-	rootFiles.getSubList (".*\\.(bik|mpg|wmv)", videoFiles, true);
-
-	addResources(videoFiles, change, priority);
-
-	return change;
-}
-
-ResourceManager::ChangeID ResourceManager::loadOverrideFiles(uint32 priority) {
-	// Generate a new change set
-	_changes.push_back(ChangeSet());
-	ChangeID change = --_changes.end();
-
-	// Add the override directory, which has priority over all other base sources
-
-	Common::FileList overrideFiles;
-
-	Common::UString overrideDir;
-	if (!(overrideDir = Common::FilePath::findSubDirectory(_baseDir, "override", true)).empty())
-		overrideFiles.addDirectory(overrideDir, -1);
-
-	addResources(overrideFiles, change, priority);
-
+	// Add the files
+	addResources(globFiles, change, priority);
 	return change;
 }
 

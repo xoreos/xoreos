@@ -42,6 +42,14 @@ protected:
 	/** Add an archive file to the resource manager, if it exists. */
 	void indexOptionalArchive(Aurora::Archive archive, const Common::UString &file, uint32 priority = 10);
 
+	/** Add a directory to the resource manager, erroring out if it does not exist. */
+	void indexMandatoryDirectory(const Common::UString &dir,
+			const char *glob = 0, int depth = -1, uint32 priority = 10);
+
+	/** Add a directory to the resource manager, if it exists. */
+	void indexOptionalDirectory(const Common::UString &dir,
+			const char *glob = 0, int depth = -1, uint32 priority = 10);
+
 	/** Play this video resource. */
 	void playVideo(const Common::UString &video);
 

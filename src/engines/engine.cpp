@@ -43,6 +43,21 @@ void Engine::indexOptionalArchive(Aurora::Archive archive, const Common::UString
 	}
 }
 
+void Engine::indexMandatoryDirectory(const Common::UString &dir,
+		const char *glob, int depth, uint32 priority) {
+
+	ResMan.addResourceDir(dir, glob, depth, priority);
+}
+
+void Engine::indexOptionalDirectory(const Common::UString &dir,
+		const char *glob, int depth, uint32 priority) {
+
+	try {
+		ResMan.addResourceDir(dir, glob, depth, priority);
+	} catch (Common::Exception &e) {
+	}
+}
+
 void Engine::playVideo(const Common::UString &video) {
 	try {
 		Graphics::VideoPlayer videoPlayer(video);
