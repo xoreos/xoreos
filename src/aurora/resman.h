@@ -130,11 +130,10 @@ public:
 
 	/** Add a directory to be searched for these archives files.
 	 *
-	 *  Relative to the base directory. Only direct subdirectories of the base
-	 *  directory are supported.
+	 *  Relative to the base directory.
 	 *
 	 *  @param archive The type of archive to look for.
-	 *  @param dir A direct subdirectory of the base directory to search for archives files.
+	 *  @param dir A subdirectory of the base directory to search for archives files.
 	 */
 	void addArchiveDir(Archive archive, const Common::UString &dir);
 
@@ -149,10 +148,9 @@ public:
 
 	/** Add a directory's contents to the resource manager.
 	 *
-	 *  Relative to the base directory. Only direct subdirectories of the base
-	 *  directory are supported.
+	 *  Relative to the base directory.
 	 *
-	 *  @param  dir A direct subdirectory of the base directory to search for resource files.
+	 *  @param  dir A subdirectory of the base directory to search for resource files.
 	 *  @param  glob A pattern of which files to look for.
 	 *  @param  depth The number of levels to recurse into subdirectories. 0
 	 *                for ignoring subdirectories, -1 for a limitless recursion.
