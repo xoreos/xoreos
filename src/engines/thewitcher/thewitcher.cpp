@@ -143,6 +143,8 @@ void TheWitcherEngine::init() {
 	indexOptionalDirectory("templates", 0, -1, 39);
 	indexOptionalDirectory("textures" , 0, -1, 40);
 
+	indexOptionalDirectory("", ".*\\.bik", 0, 41);
+
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 50);
 }
