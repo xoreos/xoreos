@@ -196,7 +196,37 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeVX ,            ".vx" },
 	{kFileTypeHERF,           ".herf"},
 	{kFileTypeSADL,           ".sadl"},
-	{kFileTypeSDAT,           ".sdat"}
+	{kFileTypeSDAT,           ".sdat"},
+
+	{kFileTypeANB,            ".anb"},
+	{kFileTypeANI,            ".ani"},
+	{kFileTypeCNS,            ".cns"},
+	{kFileTypeCUR,            ".cur"},
+	{kFileTypeEVT,            ".evt"},
+	{kFileTypeFDL,            ".fdl"},
+	{kFileTypeFXO,            ".fxo"},
+	{kFileTypeGAD,            ".gad"},
+	{kFileTypeGDA,            ".gda"},
+	{kFileTypeGFX,            ".gfx"},
+	{kFileTypeLDF,            ".ldf"},
+	{kFileTypeLST,            ".lst"},
+	{kFileTypeMAL,            ".mal"},
+	{kFileTypeMAO,            ".mao"},
+	{kFileTypeMMH,            ".mmh"},
+	{kFileTypeMOP,            ".mop"},
+	{kFileTypeMOR,            ".mor"},
+	{kFileTypeMSH,            ".msh"},
+	{kFileTypeMTX,            ".mtx"},
+	{kFileTypeNCC,            ".ncc"},
+	{kFileTypePHY,            ".phy"},
+	{kFileTypePLO,            ".plo"},
+	{kFileTypeSTG,            ".stg"},
+	{kFileTypeTBI,            ".tbi"},
+	{kFileTypeTNT,            ".tnt"},
+	{kFileTypeARL,            ".arl"},
+	{kFileTypeFEV,            ".fev"},
+	{kFileTypeFSB,            ".fsb"},
+	{kFileTypeOPF,            ".opf"}
 };
 
 FileType getFileType(const Common::UString &path) {

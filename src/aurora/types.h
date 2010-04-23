@@ -189,7 +189,38 @@ enum FileType {
 	kFileTypeVX             = 21003,
 	kFileTypeHERF           = 21004,
 	kFileTypeSADL           = 21005,
-	kFileTypeSDAT           = 21006  ///< Nintendo Sound Data File.
+	kFileTypeSDAT           = 21006, ///< Nintendo Sound Data File.
+
+	// Found in Dragon Age: Origins
+	kFileTypeANB            = 22000,
+	kFileTypeANI            = 22001, ///< Animation?
+	kFileTypeCNS            = 22002,
+	kFileTypeCUR            = 22003, ///< Cursor?
+	kFileTypeEVT            = 22004,
+	kFileTypeFDL            = 22005,
+	kFileTypeFXO            = 22006,
+	kFileTypeGAD            = 22007,
+	kFileTypeGDA            = 22008, ///< Table data, GFF'd 2DA, 2-dimensional text array.
+	kFileTypeGFX            = 22009,
+	kFileTypeLDF            = 22010,
+	kFileTypeLST            = 22011,
+	kFileTypeMAL            = 22012,
+	kFileTypeMAO            = 22013,
+	kFileTypeMMH            = 22014,
+	kFileTypeMOP            = 22015,
+	kFileTypeMOR            = 22016,
+	kFileTypeMSH            = 22017,
+	kFileTypeMTX            = 22018,
+	kFileTypeNCC            = 22019,
+	kFileTypePHY            = 22020,
+	kFileTypePLO            = 22021,
+	kFileTypeSTG            = 22022,
+	kFileTypeTBI            = 22023,
+	kFileTypeTNT            = 22024,
+	kFileTypeARL            = 22025,
+	kFileTypeFEV            = 22026, ///< FMOD Event.
+	kFileTypeFSB            = 22027, ///< Audio, FMOD FSB.
+	kFileTypeOPF            = 22028
 };
 
 enum GameID {
