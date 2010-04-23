@@ -32,11 +32,11 @@ Engine::Engine() {
 Engine::~Engine() {
 }
 
-void Engine::indexMandatoryArchive(Aurora::Archive archive, const Common::UString &file, uint32 priority) {
+void Engine::indexMandatoryArchive(Aurora::ArchiveType archive, const Common::UString &file, uint32 priority) {
 	ResMan.addArchive(archive, file, priority);
 }
 
-void Engine::indexOptionalArchive(Aurora::Archive archive, const Common::UString &file, uint32 priority) {
+void Engine::indexOptionalArchive(Aurora::ArchiveType archive, const Common::UString &file, uint32 priority) {
 	try {
 		ResMan.addArchive(archive, file, priority);
 	} catch (Common::Exception &e) {

@@ -37,10 +37,10 @@ public:
 
 protected:
 	/** Add an archive file to the resource manager, erroring out if the file does not exist. */
-	void indexMandatoryArchive(Aurora::Archive archive, const Common::UString &file, uint32 priority = 10);
+	void indexMandatoryArchive(Aurora::ArchiveType archive, const Common::UString &file, uint32 priority = 10);
 
 	/** Add an archive file to the resource manager, if it exists. */
-	void indexOptionalArchive(Aurora::Archive archive, const Common::UString &file, uint32 priority = 10);
+	void indexOptionalArchive(Aurora::ArchiveType archive, const Common::UString &file, uint32 priority = 10);
 
 	/** Add a directory to the resource manager, erroring out if it does not exist. */
 	void indexMandatoryDirectory(const Common::UString &dir,

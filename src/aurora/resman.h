@@ -126,7 +126,7 @@ public:
 	 *  @param archive The type of archive to look for.
 	 *  @param dir A subdirectory of the base directory to search for archives files.
 	 */
-	void addArchiveDir(Archive archive, const Common::UString &dir);
+	void addArchiveDir(ArchiveType archive, const Common::UString &dir);
 
 	/** Add an archive file and all its resources to the resource manager.
 	 *
@@ -135,7 +135,7 @@ public:
 	 *  @param  priority The priority these files have over others of the same name and type.
 	 *  @return An ID for all collective changes done by adding the archive file.
 	 */
-	ChangeID addArchive(Archive archive, const Common::UString &file, uint32 priority = 0);
+	ChangeID addArchive(ArchiveType archive, const Common::UString &file, uint32 priority = 0);
 
 	/** Add a directory's contents to the resource manager.
 	 *

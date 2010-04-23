@@ -282,7 +282,7 @@ enum ResourceType {
 	kResourceMAX
 };
 
-enum Archive {
+enum ArchiveType {
 	kArchiveKEY = 0, ///< KEY archive.
 	kArchiveBIF,     ///< BIF archive.
 	kArchiveERF,     ///< ERF archive.

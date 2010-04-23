@@ -101,10 +101,10 @@ void ResourceManager::registerDataBaseDir(const Common::UString &path) {
 	_baseDir = Common::FilePath::normalize(path);
 
 	for (int i = 0; i < kArchiveMAX; i++)
-		addArchiveDir((Archive) i, "");
+		addArchiveDir((ArchiveType) i, "");
 }
 
-void ResourceManager::addArchiveDir(Archive archive, const Common::UString &dir) {
+void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &dir) {
 	if (archive == kArchiveNDS)
 		return;
 
@@ -142,7 +142,7 @@ Common::UString ResourceManager::findArchive(const Common::UString &file,
 	return "";
 }
 
-ResourceManager::ChangeID ResourceManager::addArchive(Archive archive,
+ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 		const Common::UString &file, uint32 priority) {
 
 	if (archive == kArchiveNDS)
