@@ -134,5 +134,6 @@ AC_OUTPUT(utf8cpp/Makefile \
           src/engines/kotor2/Makefile \
           src/engines/thewitcher/Makefile \
           src/engines/sonic/Makefile \
+          src/engines/dragonage/Makefile \
           src/Makefile \
           Makefile)
