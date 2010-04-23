@@ -36,7 +36,6 @@ namespace Aurora {
 
 class KEYFile;
 class BIFFile;
-class NDSFile;
 
 /** A resource manager holding information about and handling all request for all
  *  resources useable by the game.
@@ -51,16 +50,14 @@ private:
 	typedef ResFileList::const_iterator ResFileRef;
 	typedef std::list<Common::ZipFile *> ResZipList;
 	typedef ResZipList::const_iterator ResZipRef;
-	typedef std::list<NDSFile *> ResNDSList;
-	typedef ResNDSList::const_iterator ResNDSRef;
 
 	/** Where a resource can be found. */
 	enum Source {
 		kSourceBIF,  ///< Within a BIF file.
 		kSourceERF,  ///< Within an ERF file.
 		kSourceRIM,  ///< Within a RIM file.
-		kSourceZIP,  ///< Within a ZIP file.
 		kSourceNDS,  ///< Within a Nintendo DS ROM file.
+		kSourceZIP,  ///< Within a ZIP file.
 		kSourceFile  ///< A direct file.
 	};
 
@@ -72,18 +69,15 @@ private:
 
 		Source source; ///< Where can the resource be found?
 
-		// For kSourceBIF / kSourceERF / kSourceRIM
-		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM list.
-		uint32 offset;      ///< The offset within the BIF/ERF/RIM file.
+		// For kSourceBIF / kSourceERF / kSourceRIM / kSourceNDS
+		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM/NDS list.
+		uint32 offset;      ///< The offset within the BIF/ERF/RIM/NDS file.
 		uint32 size;        ///< The size of the resource data.
 
 		// For kSourceZIP
 		ResZipRef resZip; ///< Iterator into the ZIP list.
 
-		// For kSourceNDS
-		ResNDSRef resNDS; ///< Iterator into the NDS list.
-
-		// For kSourceFile / kSourceZIP / kSourceNDS
+		// For kSourceFile / kSourceZIP
 		Common::UString path; ///< The file's path.
 
 		bool operator<(const Resource &right) const;
@@ -106,8 +100,8 @@ private:
 		std::list<ResFileList::iterator> bifs;
 		std::list<ResFileList::iterator> erfs;
 		std::list<ResFileList::iterator> rims;
+		std::list<ResFileList::iterator> ndss;
 		std::list<ResZipList::iterator>  zips;
-		std::list<ResNDSList::iterator>  ndss;
 		std::list<ResourceChange>        resources;
 	};
 
@@ -227,10 +221,9 @@ private:
 	ResFileList _bifs; ///< List of currently used BIF files.
 	ResFileList _erfs; ///< List of currently used ERF files.
 	ResFileList _rims; ///< List of currently used RIM files.
+	ResFileList _ndss; ///< List of currently used NDS files.
 
 	ResZipList  _zips; ///< List of currently used ZIP files.
-
-	ResNDSList  _ndss; ///< List of currently used NDS files.
 
 	ResourceMap _resources;
 
@@ -244,8 +237,8 @@ private:
 	ChangeID indexKEY(const Common::UString &file, uint32 priority);
 	ChangeID indexERF(const Common::UString &file, uint32 priority);
 	ChangeID indexRIM(const Common::UString &file, uint32 priority);
-	ChangeID indexZIP(const Common::UString &file, uint32 priority);
 	ChangeID indexNDS(const Common::UString &file, uint32 priority);
+	ChangeID indexZIP(const Common::UString &file, uint32 priority);
 
 	// KEY/BIF loading helpers
 	ResFileRef findBIFPaths(const KEYFile &keyFile, ChangeID &change);
@@ -259,7 +252,6 @@ private:
 
 	Common::SeekableReadStream *getOffResFile(const Resource &res) const;
 	Common::SeekableReadStream *getZipResFile(const Resource &res) const;
-	Common::SeekableReadStream *getNDSResFile(const Resource &res) const;
 };
 
 } // End of namespace Aurora

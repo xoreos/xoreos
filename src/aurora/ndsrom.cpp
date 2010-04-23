@@ -16,70 +16,100 @@
 
 #include "boost/algorithm/string.hpp"
 
-#include "common/error.h"
 #include "common/stream.h"
+#include "common/util.h"
 
-#include "aurora/aurorafile.h"
 #include "aurora/ndsrom.h"
+#include "aurora/error.h"
+#include "aurora/util.h"
 
 namespace Aurora {
 
-NDSFile::NDSFile(Common::SeekableReadStream *stream) : _stream(0) {
-	if (!stream)
-		throw Common::Exception("NDSFile::NDSFile(): stream is 0");
-
-	_stream = stream;
-
-	if (!isNDS(*_stream))
-		throw Common::Exception("NDSFile::NDSFile(): ROM is not Sonic");
-
-	_stream->seek(0x40);
-	uint32 fileNameTableOffset = _stream->readUint32LE();
-	uint32 fileNameTableLength = _stream->readUint32LE();
-	uint32 fatOffset = _stream->readUint32LE();
-	//uint32 fatLength = _stream->readUint32LE();
-
-	_stream->seek(fileNameTableOffset + 8);
-
-	while ((uint32)_stream->pos() < fileNameTableOffset + fileNameTableLength) {
-		byte stringLength = _stream->readByte();
-		Common::UString filename;
-		filename.readASCII(*_stream, stringLength);
-		filename.tolower();
-		_fileList.push_front(filename);
-	}
-
-	// Reverse so it will be easy to add the offsets/sizes
-	_fileList.reverse();
-
-	_stream->seek(fatOffset);
-	for (FileList::const_iterator it = _fileList.begin(); it != _fileList.end(); it++) {
-		FileRecord record;
-
-		record.offset = _stream->readUint32LE();
-		record.size = _stream->readUint32LE() - record.offset; // The value is the end offset
-
-		_fileMap[*it] = record;
-	}
+NDSFile::NDSFile() {
 }
 
 NDSFile::~NDSFile() {
-	delete _stream;
 }
 
-Common::SeekableReadStream *NDSFile::open(Common::UString filename) {
-	filename.tolower();
+void NDSFile::clear() {
+	_resources.clear();
+}
 
-	FileMap::const_iterator it = _fileMap.find(filename);
-	if (it == _fileMap.end())
+void NDSFile::load(Common::SeekableReadStream &nds) {
+	if (!isNDS(nds))
+		throw Common::Exception("Not a support NDS ROM file");
+
+	nds.seek(0x40);
+
+	uint32 fileNameTableOffset = nds.readUint32LE();
+	uint32 fileNameTableLength = nds.readUint32LE();
+	uint32 fatOffset           = nds.readUint32LE();
+	//uint32 fatLength = nds.readUint32LE();
+
+	try {
+
+		readNames(nds, fileNameTableOffset, fileNameTableLength);
+		readFAT(nds, fatOffset);
+
+	if (nds.err())
+		throw Common::Exception(Common::kReadError);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed reading NDS file");
+		throw e;
+	}
+
+}
+
+void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 length) {
+	if (!nds.seek(offset + 8))
+		throw Common::Exception(Common::kSeekError);
+
+	while (((uint32) nds.pos()) < (offset + length)) {
+		Resource res;
+
+		byte nameLength = nds.readByte();
+
+		Common::UString name;
+
+		name.readASCII(nds, nameLength);
+		name.tolower();
+
+		res.name = setFileType(name, kFileTypeNone);
+		res.type = getFileType(name);
+
+		_resources.push_back(res);
+	}
+}
+
+void NDSFile::readFAT(Common::SeekableReadStream &nds, uint32 offset) {
+	if (!nds.seek(offset))
+		throw Common::Exception(Common::kSeekError);
+
+	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+		res->offset = nds.readUint32LE();
+		res->size   = nds.readUint32LE() - res->offset; // Value is the end offset
+	}
+}
+
+const NDSFile::ResourceList &NDSFile::getResources() const {
+	return _resources;
+}
+
+Common::SeekableReadStream *NDSFile::getResource(Common::SeekableReadStream &stream,
+		uint32 offset, uint32 size) {
+
+	if (!stream.seek(offset))
 		return 0;
 
-	_stream->seek(it->second.offset);
-	return _stream->readStream(it->second.size);
-}
+	byte *data = new byte[size];
 
-const NDSFile::FileList &NDSFile::getFileList() const {
-	return _fileList;
+	if (stream.read(data, size) != size) {
+		delete[] data;
+		return 0;
+	}
+
+	return new Common::MemoryReadStream(data, size, DisposeAfterUse::YES);
 }
 
 bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
