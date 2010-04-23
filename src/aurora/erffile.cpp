@@ -179,4 +179,20 @@ const ERFFile::ResourceList &ERFFile::getResources() const {
 	return _resources;
 }
 
+Common::SeekableReadStream *ERFFile::getResource(Common::SeekableReadStream &stream,
+		uint32 offset, uint32 size) {
+
+	if (!stream.seek(offset))
+		return 0;
+
+	byte *data = new byte[size];
+
+	if (stream.read(data, size) != size) {
+		delete[] data;
+		return 0;
+	}
+
+	return new Common::MemoryReadStream(data, size, DisposeAfterUse::YES);
+}
+
 } // End of namespace Aurora

@@ -62,6 +62,10 @@ public:
 	/** Return a list of all containing resources. */
 	const ResourceList &getResources() const;
 
+	/** Return a stream of the resource found at this offset. */
+	static Common::SeekableReadStream *getResource(Common::SeekableReadStream &stream,
+			uint32 offset, uint32 size);
+
 private:
 	uint32 _langCount;     ///< Number of language strings in the description.
 	uint32 _descriptionID; ///< ID of the description.

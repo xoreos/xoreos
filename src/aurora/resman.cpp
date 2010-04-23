@@ -527,8 +527,6 @@ bool ResourceManager::hasResource(const Common::UString &name, const std::vector
 }
 
 Common::SeekableReadStream *ResourceManager::getOffResFile(const Resource &res) const {
-	// Read the data out of the file and return a MemoryReadStream
-
 	if (res.resFile == _bifs.end())
 		return 0;
 
@@ -536,17 +534,14 @@ Common::SeekableReadStream *ResourceManager::getOffResFile(const Resource &res) 
 	if (!file.open(*res.resFile))
 		return 0;
 
-	if (!file.seek(res.offset))
-		return 0;
+	if      (res.source == kSourceBIF)
+		return BIFFile::getResource(file, res.offset, res.size);
+	else if (res.source == kSourceERF)
+		return ERFFile::getResource(file, res.offset, res.size);
+	else if (res.source == kSourceRIM)
+		return RIMFile::getResource(file, res.offset, res.size);
 
-	byte *data = new byte[res.size];
-
-	if (file.read(data, res.size) != res.size) {
-		delete[] data;
-		return 0;
-	}
-
-	return new Common::MemoryReadStream(data, res.size, DisposeAfterUse::YES);
+	return 0;
 }
 
 Common::SeekableReadStream *ResourceManager::getZipResFile(const Resource &res) const {
@@ -583,7 +578,6 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 		*foundType = res->type;
 
 	if        (res->source == kSourceBIF) {
-		// Read the data out of the BIF and return a MemoryReadStream
 		return getOffResFile(*res);
 	} else if (res->source == kSourceERF) {
 		return getOffResFile(*res);
