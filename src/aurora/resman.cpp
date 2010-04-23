@@ -84,9 +84,6 @@ void ResourceManager::clear() {
 	_erfs.clear();
 	_rims.clear();
 	_ndss.clear();
-
-	for (ResZipList::iterator zip = _zips.begin(); zip != _zips.end(); ++zip)
-		delete *zip;
 	_zips.clear();
 
 	_resources.clear();
@@ -397,33 +394,36 @@ ResourceManager::ChangeID ResourceManager::indexNDS(const Common::UString &file,
 }
 
 ResourceManager::ChangeID ResourceManager::indexZIP(const Common::UString &file, uint32 priority) {
-	Common::File *zipFile = new Common::File;
-	if (!zipFile->open(file))
+	Common::File zipFile;
+	if (!zipFile.open(file))
 		throw Common::Exception(Common::kOpenError);
 
-	Common::ZipFile *zipIndex = new Common::ZipFile(zipFile);
+	Common::ZipFile zipIndex;
+
+	zipIndex.load(zipFile);
 
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
 
-	_zips.push_back(zipIndex);
+	_zips.push_back(file);
 
 	// Add the information of the new ZIP to the change set
 	change->zips.push_back(--_zips.end());
 
-	const Common::ZipFile::FileList &files = zipIndex->getFileList();
-	for (Common::ZipFile::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
+	const Common::ZipFile::FileList &files = zipIndex.getFiles();
+	for (Common::ZipFile::FileList::const_iterator rFile = files.begin(); rFile != files.end(); ++rFile) {
 		// Build the resource record
 		Resource res;
 		res.priority = priority;
 		res.source   = kSourceZIP;
-		res.resZip   = --_zips.end();
-		res.type     = getFileType(*file);
-		res.path     = *file;
+		res.resFile  = --_zips.end();
+		res.type     = getFileType(rFile->name);
+		res.offset   = rFile->offset;
+		res.size     = rFile->size;
 
 		// And add it to our list
-		addResource(res, Common::FilePath::getStem(*file), change);
+		addResource(res, Common::FilePath::getStem(rFile->name), change);
 	}
 
 	return change;
@@ -497,10 +497,8 @@ void ResourceManager::undo(ChangeID &change) {
 		_ndss.erase(*ndsChange);
 
 	// Removing all changes in the ZIP list
-	for (std::list<ResZipList::iterator>::iterator zipChange = change->zips.begin(); zipChange != change->zips.end(); ++zipChange) {
-		delete **zipChange;
+	for (std::list<ResFileList::iterator>::iterator zipChange = change->zips.begin(); zipChange != change->zips.end(); ++zipChange)
 		_zips.erase(*zipChange);
-	}
 
 	// Now we can remove the change set from our list of change sets
 	_changes.erase(change);
@@ -524,7 +522,7 @@ bool ResourceManager::hasResource(const Common::UString &name, const std::vector
 	return false;
 }
 
-Common::SeekableReadStream *ResourceManager::getOffResFile(const Resource &res) const {
+Common::SeekableReadStream *ResourceManager::getResFile(const Resource &res) const {
 	if (res.resFile == _bifs.end())
 		return 0;
 
@@ -540,15 +538,10 @@ Common::SeekableReadStream *ResourceManager::getOffResFile(const Resource &res) 
 		return RIMFile::getResource(file, res.offset, res.size);
 	else if (res.source == kSourceNDS)
 		return NDSFile::getResource(file, res.offset, res.size);
+	else if (res.source == kSourceZIP)
+		return Common::ZipFile::getFile(file, res.offset);
 
 	return 0;
-}
-
-Common::SeekableReadStream *ResourceManager::getZipResFile(const Resource &res) const {
-	if ((res.resZip == _zips.end() || !*res.resZip))
-		return 0;
-
-	return (*res.resZip)->open(res.path);
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name, FileType type) const {
@@ -571,15 +564,15 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 		*foundType = res->type;
 
 	if        (res->source == kSourceBIF) {
-		return getOffResFile(*res);
+		return getResFile(*res);
 	} else if (res->source == kSourceERF) {
-		return getOffResFile(*res);
+		return getResFile(*res);
 	} else if (res->source == kSourceRIM) {
-		return getOffResFile(*res);
+		return getResFile(*res);
 	} else if (res->source == kSourceNDS) {
-		return getOffResFile(*res);
+		return getResFile(*res);
 	} else if (res->source == kSourceZIP) {
-		return getZipResFile(*res);
+		return getResFile(*res);
 	} else if (res->source == kSourceFile) {
 		// Open the file and return it
 
@@ -658,7 +651,6 @@ void ResourceManager::addResources(const Common::FileList &files, ChangeID &chan
 		res.path     = *file;
 		res.type     = getFileType(*file);
 		res.resFile  = _bifs.end();
-		res.resZip   = _zips.end();
 		res.offset   = 0xFFFFFFFF;
 		res.size     = 0xFFFFFFFF;
 

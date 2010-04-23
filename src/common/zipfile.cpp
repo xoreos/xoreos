@@ -15,6 +15,7 @@
 #include "boost/algorithm/string.hpp"
 
 #include "common/error.h"
+#include "common/util.h"
 #include "common/stream.h"
 #include "common/zipfile.h"
 
@@ -22,128 +23,201 @@
 
 namespace Common {
 
-ZipFile::ZipFile(SeekableReadStream *stream) : _stream(0) {
-	if (!stream)
-		throw Exception("ZipFile: stream is 0");
-
-	_stream = stream;
-
-	uint32 tag = _stream->readUint32LE();
-	if (tag != 0x04034B50)
-		throw Exception("Invalid Zip file");
-
-	while (tag != 0x02014b50 && _stream->pos() < _stream->size()) {
-		if (tag == 0x08064b50) {          // Archive extra data record
-			// Ignore!
-			_stream->skip(_stream->readUint32LE());
-		} else if (tag == 0x04034b50) {
-			FileRecord fileRecord;
-
-			_stream->readUint16LE();
-			uint16 gpbFlag = _stream->readUint16LE();
-			fileRecord.compMethod = _stream->readUint16LE();
-			_stream->skip(8);
-			fileRecord.compSize = _stream->readUint32LE();
-			fileRecord.size = _stream->readUint32LE();
-			uint16 fileNameLength = _stream->readUint16LE();
-			uint16 extraFieldLength = _stream->readUint16LE();
-
-			UString filename;
-			filename.readASCII(*_stream, fileNameLength);
-
-			_stream->skip(extraFieldLength);
-			fileRecord.offset = _stream->pos();
-			_stream->skip(fileRecord.compSize);
-
-			// If we have a data descriptor, we've gotten screwed. That means
-			// that the system the zip file encoder was run on didn't support
-			// rb+ mode and couldn't seek while writing. This means that the
-			// compressed size from above is 9. Fortunately, BioWare didn't
-			// use a sucky system like that. On the other hand, take a look
-			// at some of their own formats...
-			if (gpbFlag & (1 << 3))
-				throw Exception("Unhandled: Data descriptor present in zip file");
-
-			// HACK: Skip any filename with a trailing slash because it's
-			// a directory. The proper solution would be to dump this code
-			// and read from the central directory and interpret the external
-			// file attributes. Since neither DrMcCoy nor I want to do this,
-			// we're sticking with this hack.
-
-			if (!filename.empty() && (*(--filename.end()) != '/')) {
-				// Convert to lowercase for simple comparisons later
-				filename.tolower();
-
-				// Add it to our file list
-				_fileList.push_front(filename);
-
-				// Add it to the map as well
-				_fileMap[filename] = fileRecord;
-			}
-		} else
-			throw Exception("Unknown Zip file chunk");
-
-		tag = _stream->readUint32LE();
-	}
+ZipFile::ZipFile() {
 }
 
 ZipFile::~ZipFile() {
-	delete _stream;
 }
 
-SeekableReadStream *ZipFile::open(UString filename) {
-	filename.tolower();
-
-	FileMap::const_iterator it = _fileMap.find(filename);
-	if (it == _fileMap.end())
-		return 0;
-
-	return decompressFile(it->second);
+void ZipFile::clear() {
+	_files.clear();
 }
 
-const ZipFile::FileList &ZipFile::getFileList() const {
-	return _fileList;
-}
+void ZipFile::load(Common::SeekableReadStream &zip) {
+	clear();
 
-SeekableReadStream *ZipFile::decompressFile(const FileRecord &fileRecord) {
-	_stream->seek(fileRecord.offset);
+	uint32 endPos = findCentralDirectoryEnd(zip);
+	if (endPos == 0)
+		throw Exception("End of central directory record not found");
 
-	if (fileRecord.compMethod == 0) {
-		// Uncompressed
-		return _stream->readStream(fileRecord.compSize);
-	} else if (fileRecord.compMethod == 8) {
-		// Allocate the decompressed data
-		byte *decompressedData = new byte[fileRecord.size];
+	zip.seek(endPos);
 
-		// Read in the compressed data
-		byte *compressedData = new byte[fileRecord.compSize];
-		_stream->read(compressedData, fileRecord.compSize);
+	zip.skip(4); // Header, already checked
 
-		z_stream strm;
-		strm.zalloc = Z_NULL;
-		strm.zfree = Z_NULL;
-		strm.opaque = Z_NULL;
-		strm.avail_in = fileRecord.compSize;
-		strm.next_in = compressedData;
+	uint16 curDisk        = zip.readUint16LE();
+	uint16 centralDirDisk = zip.readUint16LE();
 
-		// Negative windows bits means there is no zlib header present in the data.
-		int zResult = inflateInit2(&strm, -MAX_WBITS);
-		if (zResult != Z_OK)
-			throw Exception("Could not initialize zlib inflate");
+	if ((curDisk != 0) || (curDisk != centralDirDisk))
+		throw Exception("Unsupported multi-disk ZIP file");
 
-		strm.avail_out = fileRecord.size;
-		strm.next_out = decompressedData;
+	// Number of central directory records on this disk and total + size of central directory
+	zip.skip(2 + 2 + 4);
 
-		zResult = inflate(&strm, Z_SYNC_FLUSH);
-		if (zResult != Z_OK && zResult != Z_STREAM_END)
-			throw Exception("Failed to inflate: %d", zResult);
+	uint32 centralDirPos = zip.readUint32LE();
+	if (!zip.seek(centralDirPos))
+		throw Exception(kSeekError);
 
-		delete[] compressedData;
-		return new MemoryReadStream(decompressedData, fileRecord.size, DisposeAfterUse::YES);
+	uint32 tag = zip.readUint32LE();
+	if (tag != 0x02014B50)
+		throw Exception("Unknown ZIP record %08X", tag);
+
+	while (tag == 0x02014B50) {
+		File file;
+
+		zip.skip(20);
+
+		file.size = zip.readUint32LE();
+
+		uint16 nameLength    = zip.readUint16LE();
+		uint16 extraLength   = zip.readUint16LE();
+		uint16 commentLength = zip.readUint16LE();
+		uint16 diskNum       = zip.readUint16LE();
+
+		if (diskNum != 0)
+			throw Exception("Unsupported multi-disk ZIP file");
+
+		zip.skip(6);
+
+		file.offset = zip.readUint32LE();
+
+		file.name.readASCII(zip, nameLength);
+		file.name.tolower();
+
+		zip.skip(extraLength);
+		zip.skip(commentLength);
+
+		tag = zip.readUint32LE();
+		if ((tag != 0x02014B50) && (tag != 0x06054B50))
+			throw Exception("Unknown ZIP record %08X", tag);
+
+		_files.push_back(file);
 	}
 
-	throw Exception("Unhandled Zip compression %d", fileRecord.compMethod);
-	return 0;
+	if (zip.err())
+		throw Exception(kReadError);
+}
+
+const ZipFile::FileList &ZipFile::getFiles() const {
+	return _files;
+}
+
+SeekableReadStream *ZipFile::getFile(SeekableReadStream &stream, uint32 offset) {
+	if (!stream.seek(offset))
+		return 0;
+
+	uint32 tag = stream.readUint32LE();
+	if (tag != 0x04034B50)
+		return 0;
+
+	stream.skip(4);
+
+	uint16 compMethod = stream.readUint16LE();
+
+	stream.skip(8);
+
+	uint32 compSize = stream.readUint32LE();
+	uint32 realSize = stream.readUint32LE();
+
+	uint16 nameLength  = stream.readUint16LE();
+	uint16 extraLength = stream.readUint16LE();
+
+	stream.skip(nameLength);
+	stream.skip(extraLength);
+
+	if (stream.err())
+		return 0;
+
+	return decompressFile(stream, compMethod, compSize, realSize);
+}
+
+SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 method,
+		uint32 compSize, uint32 realSize) {
+
+	if (method == 0) {
+		// Uncompressed
+
+		return zip.readStream(compSize);
+	}
+
+	if (method != 8)
+		throw Exception("Unhandled Zip compression %d", method);
+
+	// Allocate the decompressed data
+	byte *decompressedData = new byte[realSize];
+
+	// Read in the compressed data
+	byte *compressedData = new byte[compSize];
+	if (zip.read(compressedData, compSize) != compSize) {
+		delete[] decompressedData;
+		delete[] compressedData;
+
+		return 0;
+	}
+
+	z_stream strm;
+	strm.zalloc   = Z_NULL;
+	strm.zfree    = Z_NULL;
+	strm.opaque   = Z_NULL;
+	strm.avail_in = compSize;
+	strm.next_in  = compressedData;
+
+	// Negative windows bits means there is no zlib header present in the data.
+	int zResult = inflateInit2(&strm, -MAX_WBITS);
+	if (zResult != Z_OK)
+		throw Exception("Could not initialize zlib inflate");
+
+	strm.avail_out = realSize;
+	strm.next_out = decompressedData;
+
+	zResult = inflate(&strm, Z_SYNC_FLUSH);
+	if (zResult != Z_OK && zResult != Z_STREAM_END)
+		throw Exception("Failed to inflate: %d", zResult);
+
+	delete[] compressedData;
+	return new MemoryReadStream(decompressedData, realSize, DisposeAfterUse::YES);
+}
+
+#define BUFREADCOMMENT (0x400)
+uint32 ZipFile::findCentralDirectoryEnd(SeekableReadStream &zip) {
+	uint32 uSizeFile = zip.size();
+	if (zip.err())
+		return 0;
+
+	uint32 uMaxBack = MIN<uint32>(0xFFFF, uSizeFile); // Maximum size of global comment
+
+	byte *buf = new byte[BUFREADCOMMENT + 4];
+
+	uint32 uPosFound = 0;
+	uint32 uBackRead = 4;
+	while ((uPosFound == 0) && (uBackRead < uMaxBack)) {
+		uint32 uReadSize, uReadPos;
+
+		uBackRead = MIN<uint32>(uMaxBack, uBackRead + BUFREADCOMMENT);
+
+		uReadPos  = uSizeFile - uBackRead;
+
+		uReadSize = MIN<uint32>(BUFREADCOMMENT + 4, uSizeFile - uReadPos);
+
+		if (!zip.seek(uReadPos)) {
+			uPosFound = 0;
+			break;
+		}
+
+		if (zip.read(buf, uReadSize) != uReadSize) {
+			uPosFound = 0;
+			break;
+		}
+
+		for (int i = (uReadSize - 3); (i--) > 0;)
+			if (READ_LE_UINT32(buf + i) == 0x06054B50) {
+				uPosFound = uReadPos + i;
+				break;
+			}
+
+	}
+
+	delete[] buf;
+	return uPosFound;
 }
 
 } // End of namespace Common

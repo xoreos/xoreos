@@ -29,7 +29,6 @@
 
 namespace Common {
 	class SeekableReadStream;
-	class ZipFile;
 }
 
 namespace Aurora {
@@ -48,8 +47,6 @@ private:
 
 	typedef std::list<Common::UString> ResFileList;
 	typedef ResFileList::const_iterator ResFileRef;
-	typedef std::list<Common::ZipFile *> ResZipList;
-	typedef ResZipList::const_iterator ResZipRef;
 
 	/** Where a resource can be found. */
 	enum Source {
@@ -69,15 +66,12 @@ private:
 
 		Source source; ///< Where can the resource be found?
 
-		// For kSourceBIF / kSourceERF / kSourceRIM / kSourceNDS
-		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM/NDS list.
-		uint32 offset;      ///< The offset within the BIF/ERF/RIM/NDS file.
+		// For kSourceBIF / kSourceERF / kSourceRIM / kSourceNDS / kSourceZIP
+		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM/NDS/ZIP list.
+		uint32 offset;      ///< The offset within the BIF/ERF/RIM/NDS/ZIP file.
 		uint32 size;        ///< The size of the resource data.
 
 		// For kSourceZIP
-		ResZipRef resZip; ///< Iterator into the ZIP list.
-
-		// For kSourceFile / kSourceZIP
 		Common::UString path; ///< The file's path.
 
 		bool operator<(const Resource &right) const;
@@ -101,7 +95,7 @@ private:
 		std::list<ResFileList::iterator> erfs;
 		std::list<ResFileList::iterator> rims;
 		std::list<ResFileList::iterator> ndss;
-		std::list<ResZipList::iterator>  zips;
+		std::list<ResFileList::iterator> zips;
 		std::list<ResourceChange>        resources;
 	};
 
@@ -222,8 +216,7 @@ private:
 	ResFileList _erfs; ///< List of currently used ERF files.
 	ResFileList _rims; ///< List of currently used RIM files.
 	ResFileList _ndss; ///< List of currently used NDS files.
-
-	ResZipList  _zips; ///< List of currently used ZIP files.
+	ResFileList _zips; ///< List of currently used ZIP files.
 
 	ResourceMap _resources;
 
@@ -250,8 +243,7 @@ private:
 
 	const Resource *getRes(Common::UString name, const std::vector<FileType> &types) const;
 
-	Common::SeekableReadStream *getOffResFile(const Resource &res) const;
-	Common::SeekableReadStream *getZipResFile(const Resource &res) const;
+	Common::SeekableReadStream *getResFile(const Resource &res) const;
 };
 
 } // End of namespace Aurora
