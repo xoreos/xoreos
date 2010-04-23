@@ -76,7 +76,7 @@ void ZipFile::load(Common::SeekableReadStream &zip) {
 		if (diskNum != 0)
 			throw Exception("Unsupported multi-disk ZIP file");
 
-		zip.skip(6);
+		zip.skip(6); // File attributes
 
 		file.offset = zip.readUint32LE();
 
@@ -90,7 +90,15 @@ void ZipFile::load(Common::SeekableReadStream &zip) {
 		if ((tag != 0x02014B50) && (tag != 0x06054B50))
 			throw Exception("Unknown ZIP record %08X", tag);
 
-		_files.push_back(file);
+		// Ignore empty file names
+		if (!file.name.empty()) {
+			// HACK: Skip any filename with a trailing slash because it's
+			// a directory. The proper solution would be to interpret the
+			// file attributes.
+
+			if (*(--file.name.end()) != '/')
+				_files.push_back(file);
+		}
 	}
 
 	if (zip.err())
