@@ -36,6 +36,8 @@ void NDSFile::clear() {
 }
 
 void NDSFile::load(Common::SeekableReadStream &nds) {
+	clear();
+
 	if (!isNDS(nds))
 		throw Common::Exception("Not a support NDS ROM file");
 
