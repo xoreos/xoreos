@@ -185,14 +185,7 @@ Common::SeekableReadStream *ERFFile::getResource(Common::SeekableReadStream &str
 	if (!stream.seek(offset))
 		return 0;
 
-	byte *data = new byte[size];
-
-	if (stream.read(data, size) != size) {
-		delete[] data;
-		return 0;
-	}
-
-	return new Common::MemoryReadStream(data, size, DisposeAfterUse::YES);
+	return stream.readStream(size);
 }
 
 } // End of namespace Aurora
