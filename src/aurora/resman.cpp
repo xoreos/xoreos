@@ -40,6 +40,10 @@ static const char *kArchiveGlob[Aurora::kArchiveMAX] = {
 
 namespace Aurora {
 
+ResourceManager::Resource::Resource() : type(kFileTypeNone), priority(0), source(kSourceNone),
+		offset(0xFFFFFFFF), size(0xFFFFFFFF), archive(0), archiveIndex(0xFFFFFFFF) {
+}
+
 bool ResourceManager::Resource::operator<(const Resource &right) const {
 	return priority < right.priority;
 }
@@ -82,9 +86,12 @@ void ResourceManager::clear() {
 
 	_bifs.clear();
 	_erfs.clear();
-	_rims.clear();
 	_ndss.clear();
 	_zips.clear();
+
+	for (ArchiveList::iterator archive = _archives.begin(); archive != _archives.end(); ++archive)
+		delete *archive;
+	_archives.end();
 
 	_resources.clear();
 
@@ -161,9 +168,11 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 		return indexKEY(realName, priority);
 	if (archive == kArchiveERF)
 		return indexERF(realName, priority);
-	if (archive == kArchiveRIM)
-		return indexRIM(realName, priority);
-	if (archive == kArchiveZIP)
+	if (archive == kArchiveRIM) {
+		RIMFile *rim = new RIMFile(realName);
+
+		return indexArchive(rim, priority);
+	} if (archive == kArchiveZIP)
 		return indexZIP(realName, priority);
 
 	return _changes.end();
@@ -321,38 +330,31 @@ ResourceManager::ChangeID ResourceManager::indexERF(const Common::UString &file,
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::indexRIM(const Common::UString &file, uint32 priority) {
-	Common::File rimFile;
-	if (!rimFile.open(file))
-		throw Common::Exception(Common::kOpenError);
-
-	RIMFile rimIndex;
-
-	rimIndex.load(rimFile);
-
+ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32 priority) {
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
 
-	_rims.push_back(file);
+	_archives.push_back(archive);
 
-	// Add the information of the new RIM to the change set
-	change->rims.push_back(--_rims.end());
+	// Add the information of the new archive to the change set
+	change->archives.push_back(--_archives.end());
 
-	const RIMFile::ResourceList &resources = rimIndex.getResources();
-	for (RIMFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
+	const Archive::ResourceList &resources = archive->getResources();
+	for (Archive::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
 		// Build the resource record
 		Resource res;
-		res.priority = priority;
-		res.source   = kSourceRIM;
-		res.resFile  = --_rims.end();
-		res.type     = resource->type;
-		res.offset   = resource->offset;
-		res.size     = resource->size;
+		res.priority     = priority;
+		res.source       = kSourceArchive;
+		res.archive      = archive;
+		res.archiveIndex = resource->index;
+		res.type         = resource->type;
 
 		// And add it to our list
 		addResource(res, resource->name, change);
 	}
+
+	archive->clear();
 
 	return change;
 }
@@ -488,10 +490,6 @@ void ResourceManager::undo(ChangeID &change) {
 	for (std::list<ResFileList::iterator>::iterator erfChange = change->erfs.begin(); erfChange != change->erfs.end(); ++erfChange)
 		_erfs.erase(*erfChange);
 
-	// Removing all changes in the RIM list
-	for (std::list<ResFileList::iterator>::iterator rimChange = change->rims.begin(); rimChange != change->rims.end(); ++rimChange)
-		_rims.erase(*rimChange);
-
 	// Removing all changes in the NDS list
 	for (std::list<ResFileList::iterator>::iterator ndsChange = change->ndss.begin(); ndsChange != change->ndss.end(); ++ndsChange)
 		_ndss.erase(*ndsChange);
@@ -499,6 +497,12 @@ void ResourceManager::undo(ChangeID &change) {
 	// Removing all changes in the ZIP list
 	for (std::list<ResFileList::iterator>::iterator zipChange = change->zips.begin(); zipChange != change->zips.end(); ++zipChange)
 		_zips.erase(*zipChange);
+
+	// Removing all changes in the archive list
+	for (std::list<ArchiveList::iterator>::iterator archiveChange = change->archives.begin(); archiveChange != change->archives.end(); ++archiveChange) {
+		delete **archiveChange;
+		_archives.erase(*archiveChange);
+	}
 
 	// Now we can remove the change set from our list of change sets
 	_changes.erase(change);
@@ -522,6 +526,13 @@ bool ResourceManager::hasResource(const Common::UString &name, const std::vector
 	return false;
 }
 
+Common::SeekableReadStream *ResourceManager::getArchiveResource(const Resource &res) const {
+	if ((res.archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
+		throw Common::Exception("Archive resource has no archive");
+
+	return res.archive->getResource(res.archiveIndex);
+}
+
 Common::SeekableReadStream *ResourceManager::getResFile(const Resource &res) const {
 	if (res.resFile == _bifs.end())
 		return 0;
@@ -534,8 +545,6 @@ Common::SeekableReadStream *ResourceManager::getResFile(const Resource &res) con
 		return BIFFile::getResource(file, res.offset, res.size);
 	else if (res.source == kSourceERF)
 		return ERFFile::getResource(file, res.offset, res.size);
-	else if (res.source == kSourceRIM)
-		return RIMFile::getResource(file, res.offset, res.size);
 	else if (res.source == kSourceNDS)
 		return NDSFile::getResource(file, res.offset, res.size);
 	else if (res.source == kSourceZIP)
@@ -563,16 +572,18 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	if (foundType)
 		*foundType = res->type;
 
-	if        (res->source == kSourceBIF) {
+	if        (res->source == kSourceNone) {
+		throw Common::Exception("Invalid resource source");
+	} else if (res->source == kSourceBIF) {
 		return getResFile(*res);
 	} else if (res->source == kSourceERF) {
-		return getResFile(*res);
-	} else if (res->source == kSourceRIM) {
 		return getResFile(*res);
 	} else if (res->source == kSourceNDS) {
 		return getResFile(*res);
 	} else if (res->source == kSourceZIP) {
 		return getResFile(*res);
+	} else if (res->source == kSourceArchive) {
+		return getArchiveResource(*res);
 	} else if (res->source == kSourceFile) {
 		// Open the file and return it
 
@@ -650,9 +661,6 @@ void ResourceManager::addResources(const Common::FileList &files, ChangeID &chan
 		res.source   = kSourceFile;
 		res.path     = *file;
 		res.type     = getFileType(*file);
-		res.resFile  = _bifs.end();
-		res.offset   = 0xFFFFFFFF;
-		res.size     = 0xFFFFFFFF;
 
 		addResource(res, Common::FilePath::getStem(*file), change);
 	}

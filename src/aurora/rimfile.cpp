@@ -23,20 +23,20 @@ static const uint32 kVersion1  = MKID_BE('V1.0');
 
 namespace Aurora {
 
-RIMFile::RIMFile() {
+RIMFile::RIMFile(const Common::UString &fileName) : _fileName(fileName) {
+	load();
 }
 
 RIMFile::~RIMFile() {
 }
 
 void RIMFile::clear() {
-	AuroraBase::clear();
-
 	_resources.clear();
 }
 
-void RIMFile::load(Common::SeekableReadStream &rim) {
-	clear();
+void RIMFile::load() {
+	Common::File rim;
+	open(rim);
 
 	readHeader(rim);
 
@@ -53,6 +53,7 @@ void RIMFile::load(Common::SeekableReadStream &rim) {
 	rim.skip(116); // Reserved
 
 	_resources.resize(resCount);
+	_iResources.resize(resCount);
 
 	try {
 
@@ -73,26 +74,48 @@ void RIMFile::readResList(Common::SeekableReadStream &rim, uint32 offset) {
 	if (!rim.seek(offset))
 		throw Common::Exception(Common::kSeekError);
 
-	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+	uint32 index = 0;
+	ResourceList::iterator   res = _resources.begin();
+	IResourceList::iterator iRes = _iResources.begin();
+	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
 		res->name.readASCII(rim, 16);
-		res->type   = (FileType) rim.readUint16LE();
+		res->type    = (FileType) rim.readUint16LE();
+		res->index   = index;
 		rim.skip(4 + 2); // Resource ID + Reserved
-		res->offset = rim.readUint32LE();
-		res->size   = rim.readUint32LE();
+		iRes->offset = rim.readUint32LE();
+		iRes->size   = rim.readUint32LE();
 	}
 }
 
-const RIMFile::ResourceList &RIMFile::getResources() const {
+const Archive::ResourceList &RIMFile::getResources() const {
 	return _resources;
 }
 
-Common::SeekableReadStream *RIMFile::getResource(Common::SeekableReadStream &stream,
-		uint32 offset, uint32 size) {
+Common::SeekableReadStream *RIMFile::getResource(uint32 index) const {
+	if (index >= _iResources.size())
+		throw Common::Exception("Resource index out of range (%d/%d)", index, _iResources.size());
 
-	if (!stream.seek(offset))
-		return 0;
+	Common::File rim;
+	open(rim);
 
-	return stream.readStream(size);
+	const IResource &res = _iResources[index];
+
+	if (!rim.seek(res.offset))
+		throw Common::Exception(Common::kSeekError);
+
+	Common::SeekableReadStream *resStream = rim.readStream(res.size);
+
+	if (!resStream || (((uint32) resStream->size()) != res.size)) {
+		delete resStream;
+		throw Common::Exception(Common::kReadError);
+	}
+
+	return resStream;
+}
+
+void RIMFile::open(Common::File &file) const {
+	if (!file.open(_fileName))
+		throw Common::Exception(Common::kOpenError);
 }
 
 } // End of namespace Aurora

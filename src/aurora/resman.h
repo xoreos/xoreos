@@ -33,6 +33,7 @@ namespace Common {
 
 namespace Aurora {
 
+class Archive;
 class KEYFile;
 class BIFFile;
 
@@ -48,14 +49,18 @@ private:
 	typedef std::list<Common::UString> ResFileList;
 	typedef ResFileList::const_iterator ResFileRef;
 
+	typedef std::list<Archive *> ArchiveList;
+	typedef ArchiveList::const_iterator ArchiveRef;
+
 	/** Where a resource can be found. */
 	enum Source {
-		kSourceBIF,  ///< Within a BIF file.
-		kSourceERF,  ///< Within an ERF file.
-		kSourceRIM,  ///< Within a RIM file.
-		kSourceNDS,  ///< Within a Nintendo DS ROM file.
-		kSourceZIP,  ///< Within a ZIP file.
-		kSourceFile  ///< A direct file.
+		kSourceNone   , ///< Invalid source.
+		kSourceBIF    , ///< Within a BIF file.
+		kSourceERF    , ///< Within an ERF file.
+		kSourceNDS    , ///< Within a Nintendo DS ROM file.
+		kSourceZIP    , ///< Within a ZIP file.
+		kSourceArchive, ///< Within an archive.
+		kSourceFile     ///< A direct file.
 	};
 
 	/** A resource. */
@@ -66,13 +71,19 @@ private:
 
 		Source source; ///< Where can the resource be found?
 
-		// For kSourceBIF / kSourceERF / kSourceRIM / kSourceNDS / kSourceZIP
-		ResFileRef resFile; ///< Iterator into the BIF/ERF/RIM/NDS/ZIP list.
-		uint32 offset;      ///< The offset within the BIF/ERF/RIM/NDS/ZIP file.
+		// For kSourceBIF / kSourceERF / kSourceNDS / kSourceZIP
+		ResFileRef resFile; ///< Iterator into the BIF/ERF/NDS/ZIP list.
+		uint32 offset;      ///< The offset within the BIF/ERF/NDS/ZIP file.
 		uint32 size;        ///< The size of the resource data.
+
+		// For kSourceArchive
+		Archive *archive;      ///< Pointer to the archive.
+		uint32   archiveIndex; ///< Index into the archive.
 
 		// For kSourceZIP
 		Common::UString path; ///< The file's path.
+
+		Resource();
 
 		bool operator<(const Resource &right) const;
 	};
@@ -93,9 +104,9 @@ private:
 	struct ChangeSet {
 		std::list<ResFileList::iterator> bifs;
 		std::list<ResFileList::iterator> erfs;
-		std::list<ResFileList::iterator> rims;
 		std::list<ResFileList::iterator> ndss;
 		std::list<ResFileList::iterator> zips;
+		std::list<ArchiveList::iterator> archives;
 		std::list<ResourceChange>        resources;
 	};
 
@@ -214,9 +225,10 @@ private:
 
 	ResFileList _bifs; ///< List of currently used BIF files.
 	ResFileList _erfs; ///< List of currently used ERF files.
-	ResFileList _rims; ///< List of currently used RIM files.
 	ResFileList _ndss; ///< List of currently used NDS files.
 	ResFileList _zips; ///< List of currently used ZIP files.
+
+	ArchiveList _archives; ///< List of currently used archives.
 
 	ResourceMap _resources;
 
@@ -227,9 +239,10 @@ private:
 	Common::UString findArchive(const Common::UString &file,
 			const DirectoryList &dirs, const Common::FileList &files);
 
+	ChangeID indexArchive(Archive *archive, uint32 priority);
+
 	ChangeID indexKEY(const Common::UString &file, uint32 priority);
 	ChangeID indexERF(const Common::UString &file, uint32 priority);
-	ChangeID indexRIM(const Common::UString &file, uint32 priority);
 	ChangeID indexNDS(const Common::UString &file, uint32 priority);
 	ChangeID indexZIP(const Common::UString &file, uint32 priority);
 
@@ -242,6 +255,8 @@ private:
 	void addResources(const Common::FileList &files, ChangeID &change, uint32 priority);
 
 	const Resource *getRes(Common::UString name, const std::vector<FileType> &types) const;
+
+	Common::SeekableReadStream *getArchiveResource(const Resource &res) const;
 
 	Common::SeekableReadStream *getResFile(const Resource &res) const;
 };

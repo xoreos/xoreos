@@ -19,53 +19,55 @@
 
 #include "common/types.h"
 #include "common/ustring.h"
+#include "common/file.h"
 
 #include "aurora/types.h"
+#include "aurora/archive.h"
 #include "aurora/aurorafile.h"
-#include "aurora/locstring.h"
 
 namespace Common {
 	class SeekableReadStream;
+	class File;
 }
 
 namespace Aurora {
 
 /** Class to hold resource data of a RIM file. */
-class RIMFile : public AuroraBase {
+class RIMFile : public Archive, public AuroraBase {
 public:
-	/** A resource. */
-	struct Resource {
-		Common::UString name; ///< The resource's name.
-		FileType        type; ///< The resource's type.
+	RIMFile(const Common::UString &fileName);
+	~RIMFile();
 
-		uint32 offset; ///< The resource's offset within the RIM.
+	/** Clear the resource list. */
+	void clear();
+
+	/** Return the list of resources. */
+	const ResourceList &getResources() const;
+
+	/** Return a stream of the resource's contents. */
+	Common::SeekableReadStream *getResource(uint32 index) const;
+
+private:
+	/** Internal resource information. */
+	struct IResource {
+		uint32 offset; ///< The offset of the resource within the BIF.
 		uint32 size;   ///< The resource's size.
 	};
 
-	typedef std::vector<Resource> ResourceList;
+	typedef std::vector<IResource> IResourceList;
 
-	RIMFile();
-	~RIMFile();
+	/** External list of resource names and types. */
+	ResourceList _resources;
 
-	/** Clear all resource information. */
-	void clear();
+	/** Internal list of resource offsets and sizes. */
+	IResourceList _iResources;
 
-	/** Load a RIM file.
-	 *
-	 *  @param rim A stream of a RIM file.
-	 */
-	void load(Common::SeekableReadStream &rim);
+	/** The name of the RIM file. */
+	Common::UString _fileName;
 
-	/** Return a list of all containing resources. */
-	const ResourceList &getResources() const;
+	void open(Common::File &file) const;
 
-	/** Return a stream of the resource found at this offset. */
-	static Common::SeekableReadStream *getResource(Common::SeekableReadStream &stream,
-			uint32 offset, uint32 size);
-
-private:
-	ResourceList _resources; ///< All containing resources.
-
+	void load();
 	void readResList(Common::SeekableReadStream &rim, uint32 offset);
 };
 
