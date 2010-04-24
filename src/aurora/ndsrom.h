@@ -15,60 +15,64 @@
 #ifndef AURORA_NDSROM_H
 #define AURORA_NDSROM_H
 
-#include <list>
+#include <vector>
 
 #include "common/types.h"
 #include "common/ustring.h"
 
 #include "aurora/types.h"
+#include "aurora/archive.h"
+
+namespace Common {
+	class SeekableReadStream;
+	class File;
+}
 
 namespace Aurora {
 
-class SeekableReadStream;
-
 /** A class encapsulating Nintendo DS ROM access. */
-class NDSFile {
+class NDSFile : public Archive {
 public:
-	/** A resource. */
-	struct Resource {
-		Common::UString name; ///< The resource's name.
-		FileType        type; ///< The resource's type.
-
-		uint32 offset; ///< The resource's offset within the NDS.
-		uint32 size;   ///< The resource's size.
-	};
-
-	typedef std::list<Resource> ResourceList;
-
-	NDSFile();
+	NDSFile(const Common::UString &fileName);
 	~NDSFile();
 
-	/** Clear all resource information. */
+	/** Clear the resource list. */
 	void clear();
 
-	/** Load an NDS file.
-	 *
-	 *  @param nds A stream of an NDS file.
-	 */
-	void load(Common::SeekableReadStream &nds);
-
-	/** Return a list of all containing resources. */
+	/** Return the list of resources. */
 	const ResourceList &getResources() const;
 
-	/** Return a stream of the resource found at this offset. */
-	static Common::SeekableReadStream *getResource(Common::SeekableReadStream &stream,
-			uint32 offset, uint32 size);
+	/** Return a stream of the resource's contents. */
+	Common::SeekableReadStream *getResource(uint32 index) const;
 
 	/** Check if a stream is a valid Nintendo DS ROM. */
 	static bool isNDS(Common::SeekableReadStream &stream);
 
 private:
-	ResourceList _resources; ///< All containing resources.
+	/** Internal resource information. */
+	struct IResource {
+		uint32 offset; ///< The offset of the resource within the NDS.
+		uint32 size;   ///< The resource's size.
+	};
 
+	typedef std::vector<IResource> IResourceList;
+
+	/** External list of resource names and types. */
+	ResourceList _resources;
+
+	/** Internal list of resource offsets and sizes. */
+	IResourceList _iResources;
+
+	/** The name of the NDS file. */
+	Common::UString _fileName;
+
+	void open(Common::File &file) const;
+
+	void load();
 	void readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 length);
 	void readFAT(Common::SeekableReadStream &nds, uint32 offset);
 };
 
 } // End of namespace Aurora
 
-#endif
+#endif // AURORA_NDSROM_H

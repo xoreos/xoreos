@@ -85,7 +85,6 @@ void ResourceManager::clear() {
 	}
 
 	_bifs.clear();
-	_ndss.clear();
 	_zips.clear();
 
 	for (ArchiveList::iterator archive = _archives.begin(); archive != _archives.end(); ++archive)
@@ -151,8 +150,12 @@ Common::UString ResourceManager::findArchive(const Common::UString &file,
 ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 		const Common::UString &file, uint32 priority) {
 
-	if (archive == kArchiveNDS)
-		return indexNDS(file, priority);
+	// NDS aren't found in resource directories, they are used /instead/ of directories
+	if (archive == kArchiveNDS) {
+		NDSFile *nds = new NDSFile(file);
+
+		return indexArchive(nds, priority);
+	}
 
 	assert((archive >= 0) && (archive < kArchiveMAX));
 
@@ -329,42 +332,6 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::indexNDS(const Common::UString &file, uint32 priority) {
-	Common::File ndsFile;
-	if (!ndsFile.open(file))
-		throw Common::Exception(Common::kOpenError);
-
-	NDSFile ndsIndex;
-
-	ndsIndex.load(ndsFile);
-
-	// Generate a new change set
-	_changes.push_back(ChangeSet());
-	ChangeID change = --_changes.end();
-
-	_ndss.push_back(file);
-
-	// Add the information of the new NDS to the change set
-	change->ndss.push_back(--_ndss.end());
-
-	const NDSFile::ResourceList &resources = ndsIndex.getResources();
-	for (NDSFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
-		// Build the resource record
-		Resource res;
-		res.priority = priority;
-		res.source   = kSourceNDS;
-		res.resFile  = --_ndss.end();
-		res.type     = resource->type;
-		res.offset   = resource->offset;
-		res.size     = resource->size;
-
-		// And add it to our list
-		addResource(res, resource->name, change);
-	}
-
-	return change;
-}
-
 ResourceManager::ChangeID ResourceManager::indexZIP(const Common::UString &file, uint32 priority) {
 	Common::File zipFile;
 	if (!zipFile.open(file))
@@ -456,10 +423,6 @@ void ResourceManager::undo(ChangeID &change) {
 	for (std::list<ResFileList::iterator>::iterator bifChange = change->bifs.begin(); bifChange != change->bifs.end(); ++bifChange)
 		_bifs.erase(*bifChange);
 
-	// Removing all changes in the NDS list
-	for (std::list<ResFileList::iterator>::iterator ndsChange = change->ndss.begin(); ndsChange != change->ndss.end(); ++ndsChange)
-		_ndss.erase(*ndsChange);
-
 	// Removing all changes in the ZIP list
 	for (std::list<ResFileList::iterator>::iterator zipChange = change->zips.begin(); zipChange != change->zips.end(); ++zipChange)
 		_zips.erase(*zipChange);
@@ -509,8 +472,6 @@ Common::SeekableReadStream *ResourceManager::getResFile(const Resource &res) con
 
 	if      (res.source == kSourceBIF)
 		return BIFFile::getResource(file, res.offset, res.size);
-	else if (res.source == kSourceNDS)
-		return NDSFile::getResource(file, res.offset, res.size);
 	else if (res.source == kSourceZIP)
 		return Common::ZipFile::getFile(file, res.offset);
 
@@ -539,8 +500,6 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	if        (res->source == kSourceNone) {
 		throw Common::Exception("Invalid resource source");
 	} else if (res->source == kSourceBIF) {
-		return getResFile(*res);
-	} else if (res->source == kSourceNDS) {
 		return getResFile(*res);
 	} else if (res->source == kSourceZIP) {
 		return getResFile(*res);

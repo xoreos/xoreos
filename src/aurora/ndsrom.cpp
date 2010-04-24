@@ -16,8 +16,9 @@
 
 #include "boost/algorithm/string.hpp"
 
-#include "common/stream.h"
 #include "common/util.h"
+#include "common/file.h"
+#include "common/stream.h"
 
 #include "aurora/ndsrom.h"
 #include "aurora/error.h"
@@ -25,7 +26,8 @@
 
 namespace Aurora {
 
-NDSFile::NDSFile() {
+NDSFile::NDSFile(const Common::UString &fileName) : _fileName(fileName) {
+	load();
 }
 
 NDSFile::~NDSFile() {
@@ -35,8 +37,9 @@ void NDSFile::clear() {
 	_resources.clear();
 }
 
-void NDSFile::load(Common::SeekableReadStream &nds) {
-	clear();
+void NDSFile::load() {
+	Common::File nds;
+	open(nds);
 
 	if (!isNDS(nds))
 		throw Common::Exception("Not a support NDS ROM file");
@@ -67,6 +70,7 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 	if (!nds.seek(offset + 8))
 		throw Common::Exception(Common::kSeekError);
 
+	uint32 index = 0;
 	while (((uint32) nds.pos()) < (offset + length)) {
 		Resource res;
 
@@ -77,8 +81,9 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 		name.readASCII(nds, nameLength);
 		name.tolower();
 
-		res.name = setFileType(name, kFileTypeNone);
-		res.type = getFileType(name);
+		res.name  = setFileType(name, kFileTypeNone);
+		res.type  = getFileType(name);
+		res.index = index++;
 
 		_resources.push_back(res);
 	}
@@ -88,23 +93,11 @@ void NDSFile::readFAT(Common::SeekableReadStream &nds, uint32 offset) {
 	if (!nds.seek(offset))
 		throw Common::Exception(Common::kSeekError);
 
-	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+	_iResources.resize(_resources.size());
+	for (IResourceList::iterator res = _iResources.begin(); res != _iResources.end(); ++res) {
 		res->offset = nds.readUint32LE();
 		res->size   = nds.readUint32LE() - res->offset; // Value is the end offset
 	}
-}
-
-const NDSFile::ResourceList &NDSFile::getResources() const {
-	return _resources;
-}
-
-Common::SeekableReadStream *NDSFile::getResource(Common::SeekableReadStream &stream,
-		uint32 offset, uint32 size) {
-
-	if (!stream.seek(offset))
-		return 0;
-
-	return stream.readStream(size);
 }
 
 bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
@@ -120,6 +113,37 @@ bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
 		return false;
 
 	return true;
+}
+
+const Archive::ResourceList &NDSFile::getResources() const {
+	return _resources;
+}
+
+Common::SeekableReadStream *NDSFile::getResource(uint32 index) const {
+	if (index >= _iResources.size())
+		throw Common::Exception("Resource index out of range (%d/%d)", index, _iResources.size());
+
+	Common::File nds;
+	open(nds);
+
+	const IResource &res = _iResources[index];
+
+	if (!nds.seek(res.offset))
+		throw Common::Exception(Common::kSeekError);
+
+	Common::SeekableReadStream *resStream = nds.readStream(res.size);
+
+	if (!resStream || (((uint32) resStream->size()) != res.size)) {
+		delete resStream;
+		throw Common::Exception(Common::kReadError);
+	}
+
+	return resStream;
+}
+
+void NDSFile::open(Common::File &file) const {
+	if (!file.open(_fileName))
+		throw Common::Exception(Common::kOpenError);
 }
 
 } // End of namespace Aurora
