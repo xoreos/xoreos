@@ -28,7 +28,7 @@ public:
 	virtual ~BitStream();
 
 	/** Read a number of bits. */
-	uint64 getBits(int n);
+	uint64 getBits(int n = 1);
 
 	/** Skip a number of bits. */
 	void skip(uint32 n);
