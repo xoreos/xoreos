@@ -57,8 +57,8 @@ void RIMFile::load() {
 
 	try {
 
-	// Read the resource list
-	readResList(rim, offResList);
+		// Read the resource list
+		readResList(rim, offResList);
 
 	if (rim.err())
 		throw Common::Exception(Common::kReadError);
