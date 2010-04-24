@@ -18,16 +18,17 @@
 #include "common/stream.h"
 #include "common/filepath.h"
 #include "common/file.h"
-#include "common/zipfile.h"
 
 #include "aurora/resman.h"
 #include "aurora/util.h"
 #include "aurora/error.h"
+
 #include "aurora/keyfile.h"
 #include "aurora/biffile.h"
 #include "aurora/erffile.h"
 #include "aurora/rimfile.h"
 #include "aurora/ndsrom.h"
+#include "aurora/zipfile.h"
 
 // boost-string_algo
 using boost::iequals;
@@ -85,7 +86,6 @@ void ResourceManager::clear() {
 	}
 
 	_bifs.clear();
-	_zips.clear();
 
 	for (ArchiveList::iterator archive = _archives.begin(); archive != _archives.end(); ++archive)
 		delete *archive;
@@ -181,8 +181,11 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 		return indexArchive(rim, priority);
 	}
 
-	if (archive == kArchiveZIP)
-		return indexZIP(realName, priority);
+	if (archive == kArchiveZIP) {
+		ZIPFile *zip = new ZIPFile(realName);
+
+		return indexArchive(zip, priority);
+	}
 
 	return _changes.end();
 }
@@ -332,42 +335,6 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::indexZIP(const Common::UString &file, uint32 priority) {
-	Common::File zipFile;
-	if (!zipFile.open(file))
-		throw Common::Exception(Common::kOpenError);
-
-	Common::ZipFile zipIndex;
-
-	zipIndex.load(zipFile);
-
-	// Generate a new change set
-	_changes.push_back(ChangeSet());
-	ChangeID change = --_changes.end();
-
-	_zips.push_back(file);
-
-	// Add the information of the new ZIP to the change set
-	change->zips.push_back(--_zips.end());
-
-	const Common::ZipFile::FileList &files = zipIndex.getFiles();
-	for (Common::ZipFile::FileList::const_iterator rFile = files.begin(); rFile != files.end(); ++rFile) {
-		// Build the resource record
-		Resource res;
-		res.priority = priority;
-		res.source   = kSourceZIP;
-		res.resFile  = --_zips.end();
-		res.type     = getFileType(rFile->name);
-		res.offset   = rFile->offset;
-		res.size     = rFile->size;
-
-		// And add it to our list
-		addResource(res, Common::FilePath::getStem(rFile->name), change);
-	}
-
-	return change;
-}
-
 ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString &dir,
 		const char *glob, int depth, uint32 priority) {
 
@@ -423,10 +390,6 @@ void ResourceManager::undo(ChangeID &change) {
 	for (std::list<ResFileList::iterator>::iterator bifChange = change->bifs.begin(); bifChange != change->bifs.end(); ++bifChange)
 		_bifs.erase(*bifChange);
 
-	// Removing all changes in the ZIP list
-	for (std::list<ResFileList::iterator>::iterator zipChange = change->zips.begin(); zipChange != change->zips.end(); ++zipChange)
-		_zips.erase(*zipChange);
-
 	// Removing all changes in the archive list
 	for (std::list<ArchiveList::iterator>::iterator archiveChange = change->archives.begin(); archiveChange != change->archives.end(); ++archiveChange) {
 		delete **archiveChange;
@@ -470,10 +433,8 @@ Common::SeekableReadStream *ResourceManager::getResFile(const Resource &res) con
 	if (!file.open(*res.resFile))
 		return 0;
 
-	if      (res.source == kSourceBIF)
+	if (res.source == kSourceBIF)
 		return BIFFile::getResource(file, res.offset, res.size);
-	else if (res.source == kSourceZIP)
-		return Common::ZipFile::getFile(file, res.offset);
 
 	return 0;
 }
@@ -500,8 +461,6 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	if        (res->source == kSourceNone) {
 		throw Common::Exception("Invalid resource source");
 	} else if (res->source == kSourceBIF) {
-		return getResFile(*res);
-	} else if (res->source == kSourceZIP) {
 		return getResFile(*res);
 	} else if (res->source == kSourceArchive) {
 		return getArchiveResource(*res);

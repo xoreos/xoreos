@@ -14,16 +14,18 @@
 
 #include "boost/algorithm/string.hpp"
 
+#include "common/zipfile.h"
 #include "common/error.h"
 #include "common/util.h"
 #include "common/stream.h"
-#include "common/zipfile.h"
+#include "common/file.h"
 
 #include <zlib.h>
 
 namespace Common {
 
-ZipFile::ZipFile() {
+ZipFile::ZipFile(const Common::UString &fileName) : _fileName(fileName) {
+	load();
 }
 
 ZipFile::~ZipFile() {
@@ -33,8 +35,9 @@ void ZipFile::clear() {
 	_files.clear();
 }
 
-void ZipFile::load(Common::SeekableReadStream &zip) {
-	clear();
+void ZipFile::load() {
+	Common::File zip;
+	open(zip);
 
 	uint32 endPos = findCentralDirectoryEnd(zip);
 	if (endPos == 0)
@@ -47,11 +50,13 @@ void ZipFile::load(Common::SeekableReadStream &zip) {
 	uint16 curDisk        = zip.readUint16LE();
 	uint16 centralDirDisk = zip.readUint16LE();
 
-	if ((curDisk != 0) || (curDisk != centralDirDisk))
+	uint16 curDiskDirs = zip.readUint16LE();
+	uint16 totalDirs   = zip.readUint16LE();
+
+	if ((curDisk != 0) || (curDisk != centralDirDisk) || (curDiskDirs != totalDirs))
 		throw Exception("Unsupported multi-disk ZIP file");
 
-	// Number of central directory records on this disk and total + size of central directory
-	zip.skip(2 + 2 + 4);
+	zip.skip(4); // Size of central directory
 
 	uint32 centralDirPos = zip.readUint32LE();
 	if (!zip.seek(centralDirPos))
@@ -61,12 +66,14 @@ void ZipFile::load(Common::SeekableReadStream &zip) {
 	if (tag != 0x02014B50)
 		throw Exception("Unknown ZIP record %08X", tag);
 
+	_iFiles.reserve(totalDirs);
 	while (tag == 0x02014B50) {
-		File file;
+		 File  file;
+		IFile iFile;
 
 		zip.skip(20);
 
-		file.size = zip.readUint32LE();
+		iFile.size = zip.readUint32LE();
 
 		uint16 nameLength    = zip.readUint16LE();
 		uint16 extraLength   = zip.readUint16LE();
@@ -78,7 +85,7 @@ void ZipFile::load(Common::SeekableReadStream &zip) {
 
 		zip.skip(6); // File attributes
 
-		file.offset = zip.readUint32LE();
+		iFile.offset = zip.readUint32LE();
 
 		file.name.readASCII(zip, nameLength);
 		file.name.tolower();
@@ -96,8 +103,12 @@ void ZipFile::load(Common::SeekableReadStream &zip) {
 			// a directory. The proper solution would be to interpret the
 			// file attributes.
 
-			if (*(--file.name.end()) != '/')
+			if (*(--file.name.end()) != '/') {
+				file.index = _iFiles.size();
+
 				_files.push_back(file);
+				_iFiles.push_back(iFile);
+			}
 		}
 	}
 
@@ -109,33 +120,46 @@ const ZipFile::FileList &ZipFile::getFiles() const {
 	return _files;
 }
 
-SeekableReadStream *ZipFile::getFile(SeekableReadStream &stream, uint32 offset) {
-	if (!stream.seek(offset))
-		return 0;
+SeekableReadStream *ZipFile::getFile(uint32 index) const {
+	if (index >= _iFiles.size())
+		throw Common::Exception("File index out of range (%d/%d)", index, _iFiles.size());
 
-	uint32 tag = stream.readUint32LE();
+	Common::File zip;
+	open(zip);
+
+	const IFile &file = _iFiles[index];
+
+	if (!zip.seek(file.offset))
+		throw Common::Exception(Common::kSeekError);
+
+	uint32 tag = zip.readUint32LE();
 	if (tag != 0x04034B50)
 		return 0;
 
-	stream.skip(4);
+	zip.skip(4);
 
-	uint16 compMethod = stream.readUint16LE();
+	uint16 compMethod = zip.readUint16LE();
 
-	stream.skip(8);
+	zip.skip(8);
 
-	uint32 compSize = stream.readUint32LE();
-	uint32 realSize = stream.readUint32LE();
+	uint32 compSize = zip.readUint32LE();
+	uint32 realSize = zip.readUint32LE();
 
-	uint16 nameLength  = stream.readUint16LE();
-	uint16 extraLength = stream.readUint16LE();
+	uint16 nameLength  = zip.readUint16LE();
+	uint16 extraLength = zip.readUint16LE();
 
-	stream.skip(nameLength);
-	stream.skip(extraLength);
+	zip.skip(nameLength);
+	zip.skip(extraLength);
 
-	if (stream.err())
+	if (zip.err())
 		return 0;
 
-	return decompressFile(stream, compMethod, compSize, realSize);
+	return decompressFile(zip, compMethod, compSize, realSize);
+}
+
+void ZipFile::open(Common::File &file) const {
+	if (!file.open(_fileName))
+		throw Common::Exception(Common::kOpenError);
 }
 
 SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 method,

@@ -19,49 +19,61 @@
 #include "common/ustring.h"
 
 #include <list>
+#include <vector>
 
 namespace Common {
 
 class SeekableReadStream;
+class File;
 
 /** A class encapsulating ZIP file access. */
 class ZipFile {
 public:
 	/** A file. */
 	struct File {
-		UString name;  ///< The file's name.
-
-		uint32 offset; ///< The file's offset within the ZIP.
-		uint32 size;   ///< The file's size.
+		UString name; ///< The file's name.
+		uint32 index; ///< The file's local index within the ZIP.
 	};
 
 	typedef std::list<File> FileList;
 
-	ZipFile();
+	ZipFile(const Common::UString &fileName);
 	~ZipFile();
 
-	/** Clear all file information. */
+	/** Clear the file list. */
 	void clear();
 
-	/** Load a ZIP file.
-	 *
-	 *  @param zip A stream of a ZIP file.
-	 */
-	void load(SeekableReadStream &zip);
-
-	/** Return a list of all containing files. */
+	/** Return the list of files. */
 	const FileList &getFiles() const;
 
-	/** Return a stream of the file found at this offset. */
-	static SeekableReadStream *getFile(SeekableReadStream &stream, uint32 offset);
+	/** Return a stream of the files's contents. */
+	SeekableReadStream *getFile(uint32 index) const;
 
 private:
-	FileList _files; ///< All containing files.
+	/** Internal file information. */
+	struct IFile {
+		uint32 offset; ///< The offset of the file within the ZIP.
+		uint32 size;   ///< The file's size.
+	};
+
+	typedef std::vector<IFile> IFileList;
+
+	/** External list of file names and types. */
+	FileList _files;
+
+	/** Internal list of file offsets and sizes. */
+	IFileList _iFiles;
+
+	/** The name of the ZIP file. */
+	Common::UString _fileName;
+
+	void open(Common::File &file) const;
+
+	void load();
+	uint32 findCentralDirectoryEnd(SeekableReadStream &zip);
 
 	static SeekableReadStream *decompressFile(SeekableReadStream &zip, uint32 method,
 			uint32 compSize, uint32 realSize);
-
-	uint32 findCentralDirectoryEnd(SeekableReadStream &zip);
 };
 
 } // End of namespace Common

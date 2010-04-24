@@ -11,14 +11,15 @@ noinst_HEADERS = types.h \
                  biffile.h \
                  erffile.h \
                  rimfile.h \
+                 ndsrom.h \
+                 zipfile.h \
                  resman.h \
                  talktable.h \
                  ssffile.h \
                  2dafile.h \
                  locstring.h \
                  gfffile.h \
-                 gffstructs.h \
-                 ndsrom.h
+                 gffstructs.h
 
 libaurora_la_SOURCES = error.cpp \
                        util.cpp \
@@ -28,11 +29,12 @@ libaurora_la_SOURCES = error.cpp \
                        biffile.cpp \
                        erffile.cpp \
                        rimfile.cpp \
+                       ndsrom.cpp \
+                       zipfile.cpp \
                        resman.cpp \
                        talktable.cpp \
                        ssffile.cpp \
                        2dafile.cpp \
                        locstring.cpp \
                        gfffile.cpp \
-                       gffstructs.cpp \
-                       ndsrom.cpp
+                       gffstructs.cpp

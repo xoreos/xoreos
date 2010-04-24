@@ -56,7 +56,6 @@ private:
 	enum Source {
 		kSourceNone   , ///< Invalid source.
 		kSourceBIF    , ///< Within a BIF file.
-		kSourceZIP    , ///< Within a ZIP file.
 		kSourceArchive, ///< Within an archive.
 		kSourceFile     ///< A direct file.
 	};
@@ -69,16 +68,16 @@ private:
 
 		Source source; ///< Where can the resource be found?
 
-		// For kSourceBIF / kSourceZIP
-		ResFileRef resFile; ///< Iterator into the BIF/ZIP list.
-		uint32 offset;      ///< The offset within the BIF/ZIP file.
+		// For kSourceBIF
+		ResFileRef resFile; ///< Iterator into the BIF list.
+		uint32 offset;      ///< The offset within the BIF file.
 		uint32 size;        ///< The size of the resource data.
 
 		// For kSourceArchive
 		Archive *archive;      ///< Pointer to the archive.
 		uint32   archiveIndex; ///< Index into the archive.
 
-		// For kSourceZIP
+		// For kSourceFile
 		Common::UString path; ///< The file's path.
 
 		Resource();
@@ -101,7 +100,6 @@ private:
 
 	struct ChangeSet {
 		std::list<ResFileList::iterator> bifs;
-		std::list<ResFileList::iterator> zips;
 		std::list<ArchiveList::iterator> archives;
 		std::list<ResourceChange>        resources;
 	};
@@ -220,7 +218,6 @@ private:
 	Common::FileList _archiveFiles[kArchiveMAX]; ///< Archive files.
 
 	ResFileList _bifs; ///< List of currently used BIF files.
-	ResFileList _zips; ///< List of currently used ZIP files.
 
 	ArchiveList _archives; ///< List of currently used archives.
 
@@ -236,7 +233,6 @@ private:
 	ChangeID indexArchive(Archive *archive, uint32 priority);
 
 	ChangeID indexKEY(const Common::UString &file, uint32 priority);
-	ChangeID indexZIP(const Common::UString &file, uint32 priority);
 
 	// KEY/BIF loading helpers
 	ResFileRef findBIFPaths(const KEYFile &keyFile, ChangeID &change);
