@@ -50,7 +50,7 @@ public:
 private:
 	/** Internal resource information. */
 	struct IResource {
-		uint32 offset; ///< The offset of the resource within the BIF.
+		uint32 offset; ///< The offset of the resource within the RIM.
 		uint32 size;   ///< The resource's size.
 	};
 
