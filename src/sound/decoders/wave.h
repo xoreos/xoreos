@@ -10,6 +10,10 @@
 
 // Largely based on the Wave implementation found in ScummVM.
 
+/** @file sound/decoders/wave.h
+ *  Decoding RIFF WAVE (Resource Interchange File Format Waveform).
+ */
+
 #ifndef SOUND_DECODERS_WAVE_H
 #define SOUND_DECODERS_WAVE_H
 

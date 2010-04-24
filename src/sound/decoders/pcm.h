@@ -10,6 +10,10 @@
 
 // Largely based on the PCM implementation found in ScummVM.
 
+/** @file sound/decoders/pcm.h
+ *  Decoding PCM (Pulse Code Modulation).
+ */
+
 #ifndef SOUND_DECODERS_RAW_H
 #define SOUND_DECODERS_RAW_H
 

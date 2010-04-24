@@ -8,8 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file events/requests.cpp
- *  Inter-thread request events.
+/** @file events/requesttypes.cpp
+ *  Inter-thread request event types.
  */
 
 #include "common/error.h"

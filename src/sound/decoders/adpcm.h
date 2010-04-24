@@ -10,6 +10,10 @@
 
 // Largely based on the ADPCM implementation found in ScummVM.
 
+/** @file sound/decoders/adpcm.h
+ *  Decoding ADPCM (Adaptive Differential Pulse Code Modulation).
+ */
+
 #ifndef SOUND_DECODERS_ADPCM_H
 #define SOUND_DECODERS_ADPCM_H
 

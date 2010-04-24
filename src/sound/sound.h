@@ -65,6 +65,7 @@ public:
 	/** Play a sound file.
 	 *
 	 *  @param  wavStream The stream to play. Will be taken over.
+	 *  @param  loop Should the sound loop?
 	 *  @return The channel the sound has been assigned to, or -1 on error.
 	 */
 	ChannelHandle playSoundFile(Common::SeekableReadStream *wavStream, bool loop = false);

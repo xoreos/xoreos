@@ -10,6 +10,10 @@
 
 // Largely based on the MP3 implementation found in ScummVM.
 
+/** @file sound/decoders/mp3.h
+ *  Decoding MP3 (MPEG-1 Audio Layer 3).
+ */
+
 #ifndef SOUND_DECODERS_MP3_H
 #define SOUND_DECODERS_MP3_H
 

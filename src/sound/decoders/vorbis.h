@@ -10,6 +10,10 @@
 
 // Largely based on the Ogg Vorbis implementation found in ScummVM.
 
+/** @file sound/decoders/vorbis.h
+ *  Decoding Ogg Vorbis.
+ */
+
 #ifndef SOUND_DECODERS_VORBIS_H
 #define SOUND_DECODERS_VORBIS_H
 

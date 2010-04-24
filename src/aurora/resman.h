@@ -126,7 +126,7 @@ public:
 	/** Add an archive file and all its resources to the resource manager.
 	 *
 	 *  @param  archive The type of archive to add.
-	 *  @param  The name of the archive file to index.
+	 *  @param  file The name of the archive file to index.
 	 *  @param  priority The priority these files have over others of the same name and type.
 	 *  @return An ID for all collective changes done by adding the archive file.
 	 */
@@ -190,7 +190,7 @@ public:
 	 *
 	 *  @param  resType The type of the resource.
 	 *  @param  name The name (ResRef or path) of the resource.
-	 *  @param  type If != 0, that's where the resource's type is stored.
+	 *  @param  foundType If != 0, that's where the actually found type is stored.
 	 *  @return The resource stream or 0 if the music resource doesn't exist.
 	 */
 	Common::SeekableReadStream *getResource(ResourceType resType,

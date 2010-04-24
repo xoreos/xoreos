@@ -10,6 +10,10 @@
 
 // Largely based on the ADPCM implementation found in ScummVM.
 
+/** @file sound/decoders/adpcm.cpp
+ *  Decoding ADPCM (Adaptive Differential Pulse Code Modulation).
+ */
+
 #include "common/endianness.h"
 
 #include "sound/decoders/adpcm.h"

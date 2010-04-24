@@ -10,6 +10,10 @@
 
 // Largely based on the AudioStream implementation found in ScummVM.
 
+/** @file sound/audiostream.h
+ *  Streaming audio.
+ */
+
 #ifndef SOUND_AUDIOSTREAM_H
 #define SOUND_AUDIOSTREAM_H
 
@@ -106,10 +110,7 @@ public:
 	bool isStereo() const { return _parent->isStereo(); }
 	int getRate() const { return _parent->getRate(); }
 
-	/**
-	 * Returns number of loops the stream has played.
-	 * @param numLoops number of loops to play, 0 - infinite
-	 */
+	/** Returns number of loops the stream has played. */
 	uint getCompleteIterations() const { return _completeIterations; }
 private:
 	RewindableAudioStream *_parent;

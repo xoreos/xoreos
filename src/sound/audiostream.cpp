@@ -10,6 +10,10 @@
 
 // Largely based on the AudioStream implementation found in ScummVM.
 
+/** @file sound/audiostream.cpp
+ *  Streaming audio.
+ */
+
 #include <queue>
 
 #include "common/error.h"

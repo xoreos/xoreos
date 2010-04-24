@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/images/tga.h
+/** @file graphics/images/tga.cpp
  *  Decoding TGA (TarGa) images.
  */
 

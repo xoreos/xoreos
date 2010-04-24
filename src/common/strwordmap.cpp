@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file common/strwordmap.h
+/** @file common/strwordmap.cpp
  *  A map to quickly match word strings from a list.
  */
 

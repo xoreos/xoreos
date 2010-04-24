@@ -8,8 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file events/requests.h
- *  Inter-thread request events.
+/** @file events/requesttypes.h
+ *  Inter-thread request event types.
  */
 
 #ifndef EVENTS_REQUESTTYPES_H

@@ -10,6 +10,10 @@
 
 // Largely based on the PCM implementation found in ScummVM.
 
+/** @file sound/decoders/pcm.cpp
+ *  Decoding PCM (Pulse Code Modulation).
+ */
+
 #include "common/stream.h"
 
 #include "sound/audiostream.h"
