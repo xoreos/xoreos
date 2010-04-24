@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libaurora.la
 noinst_HEADERS = types.h \
                  error.h \
                  util.h \
+                 archive.h \
                  aurorafile.h \
                  keyfile.h \
                  biffile.h \
@@ -21,6 +22,7 @@ noinst_HEADERS = types.h \
 
 libaurora_la_SOURCES = error.cpp \
                        util.cpp \
+                       archive.cpp \
                        aurorafile.cpp \
                        keyfile.cpp \
                        biffile.cpp \
