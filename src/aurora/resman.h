@@ -46,16 +46,12 @@ private:
 	typedef std::list<Common::UString> DirectoryList;
 	typedef std::vector<FileType> FileTypeList;
 
-	typedef std::list<Common::UString> ResFileList;
-	typedef ResFileList::const_iterator ResFileRef;
-
 	typedef std::list<Archive *> ArchiveList;
 	typedef ArchiveList::const_iterator ArchiveRef;
 
 	/** Where a resource can be found. */
 	enum Source {
 		kSourceNone   , ///< Invalid source.
-		kSourceBIF    , ///< Within a BIF file.
 		kSourceArchive, ///< Within an archive.
 		kSourceFile     ///< A direct file.
 	};
@@ -67,11 +63,6 @@ private:
 		uint32 priority; ///< The resource's priority over others with the same name and type.
 
 		Source source; ///< Where can the resource be found?
-
-		// For kSourceBIF
-		ResFileRef resFile; ///< Iterator into the BIF list.
-		uint32 offset;      ///< The offset within the BIF file.
-		uint32 size;        ///< The size of the resource data.
 
 		// For kSourceArchive
 		Archive *archive;      ///< Pointer to the archive.
@@ -86,9 +77,9 @@ private:
 	};
 
 	/** List of resources, sorted by priority. */
-	typedef std::list<Resource>                    ResourceList;
+	typedef std::list<Resource> ResourceList;
 	/** Map over resources with the same name but different type. */
-	typedef std::map<FileType,    ResourceList>    ResourceTypeMap;
+	typedef std::map<FileType, ResourceList> ResourceTypeMap;
 	/** Map over resources, indexed by name. */
 	typedef std::map<Common::UString, ResourceTypeMap> ResourceMap;
 
@@ -99,7 +90,6 @@ private:
 	};
 
 	struct ChangeSet {
-		std::list<ResFileList::iterator> bifs;
 		std::list<ArchiveList::iterator> archives;
 		std::list<ResourceChange>        resources;
 	};
@@ -217,8 +207,6 @@ private:
 	DirectoryList    _archiveDirs [kArchiveMAX]; ///< Archive directories.
 	Common::FileList _archiveFiles[kArchiveMAX]; ///< Archive files.
 
-	ResFileList _bifs; ///< List of currently used BIF files.
-
 	ArchiveList _archives; ///< List of currently used archives.
 
 	ResourceMap _resources;
@@ -230,14 +218,12 @@ private:
 	Common::UString findArchive(const Common::UString &file,
 			const DirectoryList &dirs, const Common::FileList &files);
 
-	ChangeID indexArchive(Archive *archive, uint32 priority);
-
 	ChangeID indexKEY(const Common::UString &file, uint32 priority);
+	ChangeID indexArchive(Archive *archive, uint32 priority, ChangeID *change = 0);
 
 	// KEY/BIF loading helpers
-	ResFileRef findBIFPaths(const KEYFile &keyFile, ChangeID &change);
-	void mergeKEYBIFResources(const KEYFile &keyFile, const ResFileRef &bifStart,
-			ChangeID &change, uint32 priority);
+	void findBIFs   (const KEYFile &key, std::vector<Common::UString> &bifs);
+	void mergeKEYBIF(const KEYFile &key, std::vector<Common::UString> &bifs, std::vector<BIFFile *> &bifFiles);
 
 	void addResource(const Resource &resource, Common::UString name, ChangeID &change);
 	void addResources(const Common::FileList &files, ChangeID &change, uint32 priority);
@@ -245,8 +231,6 @@ private:
 	const Resource *getRes(Common::UString name, const std::vector<FileType> &types) const;
 
 	Common::SeekableReadStream *getArchiveResource(const Resource &res) const;
-
-	Common::SeekableReadStream *getResFile(const Resource &res) const;
 };
 
 } // End of namespace Aurora

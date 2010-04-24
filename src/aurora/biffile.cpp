@@ -12,10 +12,13 @@
  *  Handling BioWare's BIFs (resource data files).
  */
 
-#include "common/stream.h"
 #include "common/util.h"
+#include "common/error.h"
+#include "common/stream.h"
+#include "common/file.h"
 
 #include "aurora/biffile.h"
+#include "aurora/keyfile.h"
 #include "aurora/error.h"
 
 static const uint32 kBIFID     = MKID_BE('BIFF');
@@ -24,20 +27,20 @@ static const uint32 kVersion11 = MKID_BE('V1.1');
 
 namespace Aurora {
 
-BIFFile::BIFFile() {
+BIFFile::BIFFile(const Common::UString &fileName) : _fileName(fileName) {
+	load();
 }
 
 BIFFile::~BIFFile() {
 }
 
 void BIFFile::clear() {
-	AuroraBase::clear();
-
 	_resources.clear();
 }
 
-void BIFFile::load(Common::SeekableReadStream &bif) {
-	clear();
+void BIFFile::load() {
+	Common::File bif;
+	open(bif);
 
 	readHeader(bif);
 
@@ -53,7 +56,7 @@ void BIFFile::load(Common::SeekableReadStream &bif) {
 	if (fixResCount != 0)
 		throw Common::Exception("TODO: Fixed BIF resources");
 
-	_resources.resize(varResCount);
+	_iResources.resize(varResCount);
 
 	uint32 offVarResTable = bif.readUint32LE();
 
@@ -75,7 +78,7 @@ void BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
 	if (!bif.seek(offset))
 		throw Common::Exception(Common::kSeekError);
 
-	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+	for (IResourceList::iterator res = _iResources.begin(); res != _iResources.end(); ++res) {
 		bif.skip(4); // ID
 
 		if (_version == kVersion11)
@@ -87,17 +90,60 @@ void BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
 	}
 }
 
-const BIFFile::ResourceList &BIFFile::getResources() const {
+void BIFFile::mergeKEY(const KEYFile &key, uint32 bifIndex) {
+	const KEYFile::ResourceList &keyResList = key.getResources();
+
+	for (KEYFile::ResourceList::const_iterator keyRes = keyResList.begin(); keyRes != keyResList.end(); ++keyRes) {
+		if (keyRes->bifIndex != bifIndex)
+			continue;
+
+		if (keyRes->resIndex >= _iResources.size())
+			throw Common::Exception("Resource index out of range (%d/%d)", keyRes->resIndex, _iResources.size());
+
+		if (keyRes->type != _iResources[keyRes->resIndex].type)
+			throw Common::Exception("Type mismatch while merging KEY with BIF (%d, %d)",
+					keyRes->type, _iResources[keyRes->resIndex].type);
+
+		Resource res;
+
+		res.name  = keyRes->name;
+		res.type  = keyRes->type;
+		res.index = keyRes->resIndex;
+
+		_resources.push_back(res);
+	}
+
+}
+
+const Archive::ResourceList &BIFFile::getResources() const {
 	return _resources;
 }
 
-Common::SeekableReadStream *BIFFile::getResource(Common::SeekableReadStream &stream,
-		uint32 offset, uint32 size) {
+Common::SeekableReadStream *BIFFile::getResource(uint32 index) const {
+	if (index >= _iResources.size())
+		throw Common::Exception("Resource index out of range (%d/%d)", index, _iResources.size());
 
-	if (!stream.seek(offset))
-		return 0;
+	Common::File bif;
+	open(bif);
 
-	return stream.readStream(size);
+	const IResource &res = _iResources[index];
+
+	if (!bif.seek(res.offset))
+		throw Common::Exception(Common::kSeekError);
+
+	Common::SeekableReadStream *resStream = bif.readStream(res.size);
+
+	if (!resStream || (((uint32) resStream->size()) != res.size)) {
+		delete resStream;
+		throw Common::Exception(Common::kReadError);
+	}
+
+	return resStream;
+}
+
+void BIFFile::open(Common::File &file) const {
+	if (!file.open(_fileName))
+		throw Common::Exception(Common::kOpenError);
 }
 
 } // End of namespace Aurora

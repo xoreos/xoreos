@@ -12,8 +12,10 @@
  *  Handling BioWare's KEYs (resource index files).
  */
 
-#include "common/stream.h"
 #include "common/util.h"
+#include "common/error.h"
+#include "common/stream.h"
+#include "common/file.h"
 
 #include "aurora/keyfile.h"
 #include "aurora/error.h"
@@ -24,22 +26,18 @@ static const uint32 kVersion11 = MKID_BE('V1.1');
 
 namespace Aurora {
 
-KEYFile::KEYFile() {
+KEYFile::KEYFile(const Common::UString &fileName) {
+	Common::File key;
+	if (!key.open(fileName))
+		throw Common::Exception(Common::kOpenError);
+
+	load(key);
 }
 
 KEYFile::~KEYFile() {
 }
 
-void KEYFile::clear() {
-	AuroraBase::clear();
-
-	_bifs.clear();
-	_resources.clear();
-}
-
 void KEYFile::load(Common::SeekableReadStream &key) {
-	clear();
-
 	readHeader(key);
 
 	if (_id != kKEYID)

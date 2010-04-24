@@ -41,8 +41,8 @@ static const char *kArchiveGlob[Aurora::kArchiveMAX] = {
 
 namespace Aurora {
 
-ResourceManager::Resource::Resource() : type(kFileTypeNone), priority(0), source(kSourceNone),
-		offset(0xFFFFFFFF), size(0xFFFFFFFF), archive(0), archiveIndex(0xFFFFFFFF) {
+ResourceManager::Resource::Resource() : type(kFileTypeNone), priority(0),
+		source(kSourceNone), archive(0), archiveIndex(0xFFFFFFFF) {
 }
 
 bool ResourceManager::Resource::operator<(const Resource &right) const {
@@ -84,8 +84,6 @@ void ResourceManager::clear() {
 		_archiveDirs[i].clear();
 		_archiveFiles[i].clear();
 	}
-
-	_bifs.clear();
 
 	for (ArchiveList::iterator archive = _archives.begin(); archive != _archives.end(); ++archive)
 		delete *archive;
@@ -190,131 +188,81 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 	return _changes.end();
 }
 
-ResourceManager::ResFileRef ResourceManager::findBIFPaths(const KEYFile &keyFile, ChangeID &change) {
-	ResFileRef bifStart = _bifs.end();
+void ResourceManager::findBIFs(const KEYFile &key, std::vector<Common::UString> &bifs) {
+	const KEYFile::BIFList &keyBIFs = key.getBIFs();
 
-	uint32 keyBIFCount = keyFile.getBIFs().size();
+	bifs.resize(keyBIFs.size());
 
-	// Go through all BIF names the KEY wants, trying to find a match in our BIF list
-	for (uint32 i = 0; i < keyBIFCount; i++) {
-		Common::UString realName = findArchive(keyFile.getBIFs()[i], _archiveDirs[kArchiveBIF], _archiveFiles[kArchiveBIF]);
-		if (realName.empty())
-			throw Common::Exception("BIF \"%s\" not found", keyFile.getBIFs()[i].c_str());
+	KEYFile::BIFList::const_iterator       keyBIF = keyBIFs.begin();
+	std::vector<Common::UString>::iterator bif    = bifs.begin();
+	for (; (keyBIF != keyBIFs.end()) && (bif != bifs.end()); ++keyBIF, ++bif) {
 
-		_bifs.push_back(realName);
+		*bif = findArchive(*keyBIF, _archiveDirs[kArchiveBIF], _archiveFiles[kArchiveBIF]);
+		if (bif->empty())
+			throw Common::Exception("BIF \"%s\" not found", keyBIF->c_str());
 
-		// Add the information of the new BIF to the change set
-		change->bifs.push_back(--_bifs.end());
-
-		// If we didn't yet remember the start of the BIF sequence, do it now
-		if (bifStart == _bifs.end())
-			--bifStart;
 	}
-
-	return bifStart;
 }
 
-void ResourceManager::mergeKEYBIFResources(const KEYFile &keyFile, const ResFileRef &bifStart,
-		ChangeID &change, uint32 priority) {
+void ResourceManager::mergeKEYBIF(const KEYFile &key, std::vector<Common::UString> &bifs,
+		std::vector<BIFFile *> &bifFiles) {
 
-	uint32 keyBIFCount = keyFile.getBIFs().size();
+	bifFiles.reserve(bifs.size());
 
-	std::vector<BIFFile> keyBIFFiles;
-
-	keyBIFFiles.resize(keyBIFCount);
+	BIFFile *curBIF = 0;
 
 	// Try to load all needed BIF files
 	try {
 
-		ResFileList::const_iterator curBIF = bifStart;
-		for (uint32 i = 0; i < keyBIFCount; i++, ++curBIF) {
-			Common::File keyBIFFile;
-			if (!keyBIFFile.open(*curBIF))
-				throw Common::Exception("Can't open file \"%s\"", curBIF->c_str());
+		uint32 index = 0;
+		for (std::vector<Common::UString>::const_iterator bif = bifs.begin(); bif != bifs.end(); ++index, ++bif) {
+			curBIF = new BIFFile(*bif);
 
-			keyBIFFiles[i].load(keyBIFFile);
+			curBIF->mergeKEY(key, index);
+
+			bifFiles.push_back(curBIF);
 		}
 
 	} catch (Common::Exception &e) {
+		delete curBIF;
+
 		e.add("Failed opening needed BIFs");
-		throw e;
-	}
-
-	try {
-
-		// Now cycle through all resource in the KEY, augmenting the information its BIF provides
-		KEYFile::ResourceList::const_iterator keyRes;
-		for (keyRes = keyFile.getResources().begin(); keyRes != keyFile.getResources().end(); ++keyRes) {
-
-			// BIF index in range?
-			if (keyRes->bifIndex >= keyBIFFiles.size())
-				throw Common::Exception("No such BIF");
-
-			// Resource index within the BIF in range?
-			const BIFFile::ResourceList &bifRess = keyBIFFiles[keyRes->bifIndex].getResources();
-			if (keyRes->resIndex >= bifRess.size())
-				throw Common::Exception("Resource index out of range");
-
-			// Type has to match
-			const BIFFile::Resource &bifRes = bifRess[keyRes->resIndex];
-			if (keyRes->type != bifRes.type)
-				throw Common::Exception("Type mismatch on resource \"%s\" (%d, %d)",
-						keyRes->name.c_str(), keyRes->type, bifRes.type);
-
-			// Build the complete resource record
-			Resource res;
-			res.priority = priority;
-			res.source   = kSourceBIF;
-			res.resFile  = bifStart;
-			res.type     = keyRes->type;
-			res.offset   = bifRes.offset;
-			res.size     = bifRes.size;
-
-			// Advance the resFile iterator
-			for (uint32 i = 0; i < keyRes->bifIndex; i++, ++res.resFile);
-
-			// And add it to our list
-			addResource(res, keyRes->name.c_str(), change);
-		}
-
-	} catch (Common::Exception &e) {
-		e.add("Failed indexing resource");
 		throw e;
 	}
 
 }
 
 ResourceManager::ChangeID ResourceManager::indexKEY(const Common::UString &file, uint32 priority) {
-	Common::File keyFile;
-	if (!keyFile.open(file))
-		throw Common::Exception(Common::kOpenError);
-
-	KEYFile keyIndex;
-
-	keyIndex.load(keyFile);
+	KEYFile key(file);
 
 	// Generate a new change set
 	_changes.push_back(ChangeSet());
 	ChangeID change = --_changes.end();
 
-	// Search for the correct BIFs
-	ResFileRef bifStart = findBIFPaths(keyIndex, change);
+	// Search the correct BIFs
+	std::vector<Common::UString> bifs;
+	findBIFs(key, bifs);
 
-	// Merge the resource information of the KEY file and its BIF files into our resource map
-	mergeKEYBIFResources(keyIndex, bifStart, change, priority);
+	std::vector<BIFFile *> bifFiles;
+	mergeKEYBIF(key, bifs, bifFiles);
+
+	for (std::vector<BIFFile *>::iterator bifFile = bifFiles.begin(); bifFile != bifFiles.end(); ++bifFile)
+		indexArchive(*bifFile, priority, &change);
 
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32 priority) {
-	// Generate a new change set
-	_changes.push_back(ChangeSet());
-	ChangeID change = --_changes.end();
+ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32 priority, ChangeID *change) {
+	if (change == 0) {
+		// Generate a new change set
+		_changes.push_back(ChangeSet());
+		change = new ChangeID(--_changes.end());
+	}
 
 	_archives.push_back(archive);
 
 	// Add the information of the new archive to the change set
-	change->archives.push_back(--_archives.end());
+	(*change)->archives.push_back(--_archives.end());
 
 	const Archive::ResourceList &resources = archive->getResources();
 	for (Archive::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
@@ -327,12 +275,12 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 		res.type         = resource->type;
 
 		// And add it to our list
-		addResource(res, resource->name, change);
+		addResource(res, resource->name, *change);
 	}
 
 	archive->clear();
 
-	return change;
+	return *change;
 }
 
 ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString &dir,
@@ -386,10 +334,6 @@ void ResourceManager::undo(ChangeID &change) {
 			_resources.erase(resChange->nameIt);
 	}
 
-	// Removing all changes in the BIF list
-	for (std::list<ResFileList::iterator>::iterator bifChange = change->bifs.begin(); bifChange != change->bifs.end(); ++bifChange)
-		_bifs.erase(*bifChange);
-
 	// Removing all changes in the archive list
 	for (std::list<ArchiveList::iterator>::iterator archiveChange = change->archives.begin(); archiveChange != change->archives.end(); ++archiveChange) {
 		delete **archiveChange;
@@ -425,20 +369,6 @@ Common::SeekableReadStream *ResourceManager::getArchiveResource(const Resource &
 	return res.archive->getResource(res.archiveIndex);
 }
 
-Common::SeekableReadStream *ResourceManager::getResFile(const Resource &res) const {
-	if (res.resFile == _bifs.end())
-		return 0;
-
-	Common::File file;
-	if (!file.open(*res.resFile))
-		return 0;
-
-	if (res.source == kSourceBIF)
-		return BIFFile::getResource(file, res.offset, res.size);
-
-	return 0;
-}
-
 Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name, FileType type) const {
 	std::vector<FileType> types;
 
@@ -460,8 +390,6 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 
 	if        (res->source == kSourceNone) {
 		throw Common::Exception("Invalid resource source");
-	} else if (res->source == kSourceBIF) {
-		return getResFile(*res);
 	} else if (res->source == kSourceArchive) {
 		return getArchiveResource(*res);
 	} else if (res->source == kSourceFile) {
@@ -574,7 +502,7 @@ void ResourceManager::listResources() const {
 
 			const Resource &resource = itType->second.back();
 
-			status("%32s%4s %10d", itName->first.c_str(), setFileType("", resource.type).c_str(), resource.size);
+			status("%32s%4s", itName->first.c_str(), setFileType("", resource.type).c_str());
 		}
 	}
 }

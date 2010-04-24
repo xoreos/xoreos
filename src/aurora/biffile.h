@@ -20,49 +20,59 @@
 #include "common/types.h"
 
 #include "aurora/types.h"
+#include "aurora/archive.h"
 #include "aurora/aurorafile.h"
 
 namespace Common {
 	class SeekableReadStream;
+	class File;
 }
 
 namespace Aurora {
 
+class KEYFile;
+
 /** Class to hold resource data information of a bif file. */
-class BIFFile : public AuroraBase {
+class BIFFile : public Archive, public AuroraBase {
 public:
-	/** A bif resource index. */
-	struct Resource {
+	BIFFile(const Common::UString &fileName);
+	~BIFFile();
+
+	/** Clear the resource list. */
+	void clear();
+
+	/** Return the list of resources. */
+	const ResourceList &getResources() const;
+
+	/** Return a stream of the resource's contents. */
+	Common::SeekableReadStream *getResource(uint32 index) const;
+
+	/** Merge information from the KEY into the BIF. */
+	void mergeKEY(const KEYFile &key, uint32 bifIndex);
+
+private:
+	/** Internal resource information. */
+	struct IResource {
 		FileType type; ///< The resource's type.
 
-		uint32 offset; ///< The resource's offset into this bif file.
+		uint32 offset; ///< The offset of the resource within the BIF.
 		uint32 size;   ///< The resource's size.
 	};
 
-	typedef std::vector<Resource> ResourceList;
+	typedef std::vector<IResource> IResourceList;
 
-	BIFFile();
-	~BIFFile();
+	/** External list of resource names and types. */
+	ResourceList _resources;
 
-	/** Clear all resource information. */
-	void clear();
+	/** Internal list of resource offsets and sizes. */
+	IResourceList _iResources;
 
-	/** Load a resource data file.
-	 *
-	 *  @param bif A stream of a data bif file.
-	 */
-	void load(Common::SeekableReadStream &bif);
+	/** The name of the BIF file. */
+	Common::UString _fileName;
 
-	/** Return a list of all containing resources. */
-	const ResourceList &getResources() const;
+	void open(Common::File &file) const;
 
-	/** Return a stream of the resource found at this offset. */
-	static Common::SeekableReadStream *getResource(Common::SeekableReadStream &stream,
-			uint32 offset, uint32 size);
-
-private:
-	ResourceList _resources; ///< All resources within the bif.
-
+	void load();
 	void readVarResTable(Common::SeekableReadStream &bif, uint32 offset);
 };
 

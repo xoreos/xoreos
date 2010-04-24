@@ -25,6 +25,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class File;
 }
 
 namespace Aurora {
@@ -44,17 +45,8 @@ public:
 	typedef std::vector<Resource> ResourceList;
 	typedef std::vector<Common::UString> BIFList;
 
-	KEYFile();
+	KEYFile(const Common::UString &fileName);
 	~KEYFile();
-
-	/** Clear all resource information. */
-	void clear();
-
-	/** Load a resource index.
-	 *
-	 *  @param key A stream of an indexing key file.
-	 */
-	void load(Common::SeekableReadStream &key);
 
 	/** Return a list of all managed bifs. */
 	const BIFList &getBIFs() const;
@@ -65,6 +57,8 @@ public:
 private:
 	BIFList      _bifs;      ///< All managed bifs.
 	ResourceList _resources; ///< All containing resources.
+
+	void load(Common::SeekableReadStream &key);
 
 	void readBIFList(Common::SeekableReadStream &key, uint32 offset);
 	void readResList(Common::SeekableReadStream &key, uint32 offset);
