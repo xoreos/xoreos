@@ -85,7 +85,6 @@ void ResourceManager::clear() {
 	}
 
 	_bifs.clear();
-	_erfs.clear();
 	_ndss.clear();
 	_zips.clear();
 
@@ -166,13 +165,20 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 
 	if (archive == kArchiveKEY)
 		return indexKEY(realName, priority);
-	if (archive == kArchiveERF)
-		return indexERF(realName, priority);
+
+	if (archive == kArchiveERF) {
+		ERFFile *erf = new ERFFile(realName);
+
+		return indexArchive(erf, priority);
+	}
+
 	if (archive == kArchiveRIM) {
 		RIMFile *rim = new RIMFile(realName);
 
 		return indexArchive(rim, priority);
-	} if (archive == kArchiveZIP)
+	}
+
+	if (archive == kArchiveZIP)
 		return indexZIP(realName, priority);
 
 	return _changes.end();
@@ -290,42 +296,6 @@ ResourceManager::ChangeID ResourceManager::indexKEY(const Common::UString &file,
 
 	// Merge the resource information of the KEY file and its BIF files into our resource map
 	mergeKEYBIFResources(keyIndex, bifStart, change, priority);
-
-	return change;
-}
-
-ResourceManager::ChangeID ResourceManager::indexERF(const Common::UString &file, uint32 priority) {
-	Common::File erfFile;
-	if (!erfFile.open(file))
-		throw Common::Exception(Common::kOpenError);
-
-	ERFFile erfIndex;
-
-	erfIndex.load(erfFile);
-
-	// Generate a new change set
-	_changes.push_back(ChangeSet());
-	ChangeID change = --_changes.end();
-
-	_erfs.push_back(file);
-
-	// Add the information of the new ERF to the change set
-	change->erfs.push_back(--_erfs.end());
-
-	const ERFFile::ResourceList &resources = erfIndex.getResources();
-	for (ERFFile::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
-		// Build the resource record
-		Resource res;
-		res.priority = priority;
-		res.source   = kSourceERF;
-		res.resFile  = --_erfs.end();
-		res.type     = resource->type;
-		res.offset   = resource->offset;
-		res.size     = resource->size;
-
-		// And add it to our list
-		addResource(res, resource->name, change);
-	}
 
 	return change;
 }
@@ -486,10 +456,6 @@ void ResourceManager::undo(ChangeID &change) {
 	for (std::list<ResFileList::iterator>::iterator bifChange = change->bifs.begin(); bifChange != change->bifs.end(); ++bifChange)
 		_bifs.erase(*bifChange);
 
-	// Removing all changes in the ERF list
-	for (std::list<ResFileList::iterator>::iterator erfChange = change->erfs.begin(); erfChange != change->erfs.end(); ++erfChange)
-		_erfs.erase(*erfChange);
-
 	// Removing all changes in the NDS list
 	for (std::list<ResFileList::iterator>::iterator ndsChange = change->ndss.begin(); ndsChange != change->ndss.end(); ++ndsChange)
 		_ndss.erase(*ndsChange);
@@ -543,8 +509,6 @@ Common::SeekableReadStream *ResourceManager::getResFile(const Resource &res) con
 
 	if      (res.source == kSourceBIF)
 		return BIFFile::getResource(file, res.offset, res.size);
-	else if (res.source == kSourceERF)
-		return ERFFile::getResource(file, res.offset, res.size);
 	else if (res.source == kSourceNDS)
 		return NDSFile::getResource(file, res.offset, res.size);
 	else if (res.source == kSourceZIP)
@@ -575,8 +539,6 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	if        (res->source == kSourceNone) {
 		throw Common::Exception("Invalid resource source");
 	} else if (res->source == kSourceBIF) {
-		return getResFile(*res);
-	} else if (res->source == kSourceERF) {
 		return getResFile(*res);
 	} else if (res->source == kSourceNDS) {
 		return getResFile(*res);

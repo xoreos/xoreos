@@ -13,6 +13,7 @@
  */
 
 #include "common/stream.h"
+#include "common/file.h"
 #include "common/util.h"
 
 #include "aurora/erffile.h"
@@ -28,21 +29,20 @@ static const uint32 kVersion2  = MKID_BE('V2.0');
 
 namespace Aurora {
 
-ERFFile::ERFFile() : _langCount(0), _descriptionID(0), _offDescription(0), _offKeyList(0), _offResList(0) {
+ERFFile::ERFFile(const Common::UString &fileName) : _fileName(fileName) {
+	load();
 }
 
 ERFFile::~ERFFile() {
 }
 
 void ERFFile::clear() {
-	AuroraBase::clear();
-
-	_description.clear();
 	_resources.clear();
 }
 
-void ERFFile::load(Common::SeekableReadStream &erf) {
-	clear();
+void ERFFile::load() {
+	Common::File erf;
+	open(erf);
 
 	readHeader(erf);
 
@@ -57,9 +57,11 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 
 	try {
 
-		readERFHeader(erf);
-		readDescription(erf);
-		readResources(erf);
+		ERFHeader erfHeader;
+
+		readERFHeader  (erf, erfHeader);
+		readDescription(erf, erfHeader);
+		readResources  (erf, erfHeader);
 
 		if (erf.err())
 			throw Common::Exception(Common::kReadError);
@@ -71,102 +73,109 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 
 }
 
-void ERFFile::readERFHeader(Common::SeekableReadStream &erf) {
+void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header) {
 	uint32 resCount = 0;
 
 	if        (_version == kVersion1) {
 
-		_langCount = erf.readUint32LE(); // Number of languages for the description
-		erf.skip(4);                     // Number of bytes in the description
-		resCount   = erf.readUint32LE(); // Number of resources in the ERF
+		header.langCount = erf.readUint32LE(); // Number of languages for the description
+		erf.skip(4);                           // Number of bytes in the description
+		resCount         = erf.readUint32LE(); // Number of resources in the ERF
 
-		_offDescription = erf.readUint32LE();
-		_offKeyList     = erf.readUint32LE();
-		_offResList     = erf.readUint32LE();
+		header.offDescription = erf.readUint32LE();
+		header.offKeyList     = erf.readUint32LE();
+		header.offResList     = erf.readUint32LE();
 
 		erf.skip(4 + 4); // Build year and day
 
-		_descriptionID = erf.readUint32LE();
+		header.descriptionID = erf.readUint32LE();
 
 		erf.skip(116); // Reserved
 
 	} else if (_version == kVersion2) {
 
-		_langCount = 0;                  // No description in ERF V2.0
-		resCount   = erf.readUint32LE(); // Number of resources in the ERF
+		header.langCount = 0;                  // No description in ERF V2.0
+		resCount         = erf.readUint32LE(); // Number of resources in the ERF
 
-		_descriptionID  = 0;    // No description in ERF V2.0
-		_offDescription = 0;    // No description in ERF V2.0
-		_offKeyList     = 0;    // No separate key list in ERF V2.0
-		_offResList     = 0x20; // Resource list always starts at 0x20 in ERF V2.0
+		header.descriptionID  = 0;    // No description in ERF V2.0
+		header.offDescription = 0;    // No description in ERF V2.0
+		header.offKeyList     = 0;    // No separate key list in ERF V2.0
+		header.offResList     = 0x20; // Resource list always starts at 0x20 in ERF V2.0
 
 		erf.skip(4 + 4); // Build year and day
 		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
 	}
 
 	_resources.resize(resCount);
+	_iResources.resize(resCount);
 }
 
-void ERFFile::readDescription(Common::SeekableReadStream &erf) {
+void ERFFile::readDescription(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	if (_version == kVersion1) {
-		if (!erf.seek(_offDescription))
+		if (!erf.seek(header.offDescription))
 			throw Common::Exception(Common::kSeekError);
 
-		_description.readLocString(erf, _descriptionID, _langCount);
+		_description.readLocString(erf, header.descriptionID, header.langCount);
 	}
 }
 
-void ERFFile::readResources(Common::SeekableReadStream &erf) {
+void ERFFile::readResources(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	if        (_version == kVersion1) {
 
-		readV1KeyList(erf); // Read name and type part of the resource list
-		readV1ResList(erf); // Read offset and size part of the resource list
+		readV1KeyList(erf, header); // Read name and type part of the resource list
+		readV1ResList(erf, header); // Read offset and size part of the resource list
 
 	} else if (_version == kVersion2) {
 
 		// Read the resource list
-		readV2ResList(erf);
+		readV2ResList(erf, header);
 
 	}
 
 }
 
-void ERFFile::readV1KeyList(Common::SeekableReadStream &erf) {
-	if (!erf.seek(_offKeyList))
+void ERFFile::readV1KeyList(Common::SeekableReadStream &erf, const ERFHeader &header) {
+	if (!erf.seek(header.offKeyList))
 		throw Common::Exception(Common::kSeekError);
 
-	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+	uint32 index = 0;
+	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++index, ++res) {
 		res->name.readASCII(erf, 16);
 		erf.skip(4); // Resource ID
 		res->type = (FileType) erf.readUint16LE();
 		erf.skip(2); // Reserved
+		res->index = index;
 	}
 }
 
-void ERFFile::readV1ResList(Common::SeekableReadStream &erf) {
-	if (!erf.seek(_offResList))
+void ERFFile::readV1ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
+	if (!erf.seek(header.offResList))
 		throw Common::Exception(Common::kSeekError);
 
-	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+	for (IResourceList::iterator res = _iResources.begin(); res != _iResources.end(); ++res) {
 		res->offset = erf.readUint32LE();
 		res->size   = erf.readUint32LE();
 	}
 }
 
-void ERFFile::readV2ResList(Common::SeekableReadStream &erf) {
-	if (!erf.seek(_offResList))
+void ERFFile::readV2ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
+	if (!erf.seek(header.offResList))
 		throw Common::Exception(Common::kSeekError);
 
-	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
+	uint32 index = 0;
+	ResourceList::iterator   res = _resources.begin();
+	IResourceList::iterator iRes = _iResources.begin();
+	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
 		Common::UString name;
 
 		name.readUTF16LE(erf, 32);
 
-		res->name = setFileType(name, kFileTypeNone);
-		res->type = getFileType(name);
+		res->name  = setFileType(name, kFileTypeNone);
+		res->type  = getFileType(name);
+		res->index = index;
 
-		res->offset = erf.readUint32LE();
-		res->size   = erf.readUint32LE();
+		iRes->offset = erf.readUint32LE();
+		iRes->size   = erf.readUint32LE();
 	}
 
 }
@@ -175,17 +184,35 @@ const LocString &ERFFile::getDescription() const {
 	return _description;
 }
 
-const ERFFile::ResourceList &ERFFile::getResources() const {
+const Archive::ResourceList &ERFFile::getResources() const {
 	return _resources;
 }
 
-Common::SeekableReadStream *ERFFile::getResource(Common::SeekableReadStream &stream,
-		uint32 offset, uint32 size) {
+Common::SeekableReadStream *ERFFile::getResource(uint32 index) const {
+	if (index >= _iResources.size())
+		throw Common::Exception("Resource index out of range (%d/%d)", index, _iResources.size());
 
-	if (!stream.seek(offset))
-		return 0;
+	Common::File erf;
+	open(erf);
 
-	return stream.readStream(size);
+	const IResource &res = _iResources[index];
+
+	if (!erf.seek(res.offset))
+		throw Common::Exception(Common::kSeekError);
+
+	Common::SeekableReadStream *resStream = erf.readStream(res.size);
+
+	if (!resStream || (((uint32) resStream->size()) != res.size)) {
+		delete resStream;
+		throw Common::Exception(Common::kReadError);
+	}
+
+	return resStream;
+}
+
+void ERFFile::open(Common::File &file) const {
+	if (!file.open(_fileName))
+		throw Common::Exception(Common::kOpenError);
 }
 
 } // End of namespace Aurora

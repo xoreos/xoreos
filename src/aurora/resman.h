@@ -56,7 +56,6 @@ private:
 	enum Source {
 		kSourceNone   , ///< Invalid source.
 		kSourceBIF    , ///< Within a BIF file.
-		kSourceERF    , ///< Within an ERF file.
 		kSourceNDS    , ///< Within a Nintendo DS ROM file.
 		kSourceZIP    , ///< Within a ZIP file.
 		kSourceArchive, ///< Within an archive.
@@ -71,9 +70,9 @@ private:
 
 		Source source; ///< Where can the resource be found?
 
-		// For kSourceBIF / kSourceERF / kSourceNDS / kSourceZIP
-		ResFileRef resFile; ///< Iterator into the BIF/ERF/NDS/ZIP list.
-		uint32 offset;      ///< The offset within the BIF/ERF/NDS/ZIP file.
+		// For kSourceBIF / kSourceNDS / kSourceZIP
+		ResFileRef resFile; ///< Iterator into the BIF/NDS/ZIP list.
+		uint32 offset;      ///< The offset within the BIF/NDS/ZIP file.
 		uint32 size;        ///< The size of the resource data.
 
 		// For kSourceArchive
@@ -103,7 +102,6 @@ private:
 
 	struct ChangeSet {
 		std::list<ResFileList::iterator> bifs;
-		std::list<ResFileList::iterator> erfs;
 		std::list<ResFileList::iterator> ndss;
 		std::list<ResFileList::iterator> zips;
 		std::list<ArchiveList::iterator> archives;
@@ -224,7 +222,6 @@ private:
 	Common::FileList _archiveFiles[kArchiveMAX]; ///< Archive files.
 
 	ResFileList _bifs; ///< List of currently used BIF files.
-	ResFileList _erfs; ///< List of currently used ERF files.
 	ResFileList _ndss; ///< List of currently used NDS files.
 	ResFileList _zips; ///< List of currently used ZIP files.
 
@@ -242,7 +239,6 @@ private:
 	ChangeID indexArchive(Archive *archive, uint32 priority);
 
 	ChangeID indexKEY(const Common::UString &file, uint32 priority);
-	ChangeID indexERF(const Common::UString &file, uint32 priority);
 	ChangeID indexNDS(const Common::UString &file, uint32 priority);
 	ChangeID indexZIP(const Common::UString &file, uint32 priority);
 

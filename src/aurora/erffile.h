@@ -21,73 +21,80 @@
 #include "common/ustring.h"
 
 #include "aurora/types.h"
+#include "aurora/archive.h"
 #include "aurora/aurorafile.h"
 #include "aurora/locstring.h"
 
 namespace Common {
 	class SeekableReadStream;
+	class File;
 }
 
 namespace Aurora {
 
 /** Class to hold resource data of an ERF file. */
-class ERFFile : public AuroraBase {
+class ERFFile : public Archive, public AuroraBase {
 public:
-	/** A resource. */
-	struct Resource {
-		Common::UString name; ///< The resource's name.
-		FileType        type; ///< The resource's type.
-
-		uint32 offset; ///< The resource's offset within the ERF.
-		uint32 size;   ///< The resource's size.
-	};
-
-	typedef std::vector<Resource> ResourceList;
-
-	ERFFile();
+	ERFFile(const Common::UString &fileName);
 	~ERFFile();
 
-	/** Clear all resource information. */
+	/** Clear the resource list. */
 	void clear();
 
-	/** Load an ERF file.
-	 *
-	 *  @param erf A stream of an ERF file.
-	 */
-	void load(Common::SeekableReadStream &erf);
+	/** Return the list of resources. */
+	const ResourceList &getResources() const;
+
+	/** Return a stream of the resource's contents. */
+	Common::SeekableReadStream *getResource(uint32 index) const;
 
 	/** Return the description. */
 	const LocString &getDescription() const;
 
-	/** Return a list of all containing resources. */
-	const ResourceList &getResources() const;
-
-	/** Return a stream of the resource found at this offset. */
-	static Common::SeekableReadStream *getResource(Common::SeekableReadStream &stream,
-			uint32 offset, uint32 size);
-
 private:
-	uint32 _langCount;     ///< Number of language strings in the description.
-	uint32 _descriptionID; ///< ID of the description.
+	/** The header of an ERF file. */
+	struct ERFHeader {
+		uint32 langCount;      ///< Number of language strings in the description.
+		uint32 descriptionID;  ///< ID of the description.
 
-	uint32 _offDescription; ///< Offset to the description.
-	uint32 _offKeyList;     ///< Offset to the key list.
-	uint32 _offResList;     ///< Offset to the resource list.
+		uint32 offDescription; ///< Offset to the description.
+		uint32 offKeyList;     ///< Offset to the key list.
+		uint32 offResList;     ///< Offset to the resource list.
+	};
 
-	LocString _description; ///< The ERF's description.
+	/** Internal resource information. */
+	struct IResource {
+		uint32 offset; ///< The offset of the resource within the BIF.
+		uint32 size;   ///< The resource's size.
+	};
 
-	ResourceList _resources; ///< All containing resources.
+	typedef std::vector<IResource> IResourceList;
 
-	void readERFHeader  (Common::SeekableReadStream &erf);
-	void readDescription(Common::SeekableReadStream &erf);
-	void readResources  (Common::SeekableReadStream &erf);
+	/** The ERF's description. */
+	LocString _description;
+
+	/** External list of resource names and types. */
+	ResourceList _resources;
+
+	/** Internal list of resource offsets and sizes. */
+	IResourceList _iResources;
+
+	/** The name of the ERF file. */
+	Common::UString _fileName;
+
+	void open(Common::File &file) const;
+
+	void load();
+
+	void readERFHeader  (Common::SeekableReadStream &erf,       ERFHeader &header);
+	void readDescription(Common::SeekableReadStream &erf, const ERFHeader &header);
+	void readResources  (Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V1.0
-	void readV1ResList(Common::SeekableReadStream &erf);
-	void readV1KeyList(Common::SeekableReadStream &erf);
+	void readV1ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	void readV1KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V2.0
-	void readV2ResList(Common::SeekableReadStream &erf);
+	void readV2ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 };
 
 } // End of namespace Aurora
