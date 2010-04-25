@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/video/bik.h
+/** @file graphics/video/bink.h
  *  Decoding RAD Game Tools' Bink videos.
  */
 
-#ifndef GRAPHICS_VIDEO_BIK_H
-#define GRAPHICS_VIDEO_BIK_H
+#ifndef GRAPHICS_VIDEO_BINK_H
+#define GRAPHICS_VIDEO_BINK_H
 
 #include <vector>
 
@@ -27,10 +27,10 @@ namespace Common {
 namespace Graphics {
 
 /** A generic interface for video decoders. */
-class BIK : public VideoDecoder {
+class Bink : public VideoDecoder {
 public:
-	BIK(Common::SeekableReadStream *bik);
-	~BIK();
+	Bink(Common::SeekableReadStream *bink);
+	~Bink();
 
 	bool gotTime() const;
 
@@ -58,7 +58,7 @@ private:
 		Common::BitStream *bits;
 	};
 
-	Common::SeekableReadStream *_bik;
+	Common::SeekableReadStream *_bink;
 
 	uint32 _id; ///< The BIK FourCC.
 
@@ -88,4 +88,4 @@ private:
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_VIDEO_BIK_H
+#endif // GRAPHICS_VIDEO_BINK_H

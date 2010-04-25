@@ -4,10 +4,10 @@ noinst_LTLIBRARIES = libvideo.la
 
 noinst_HEADERS = decoder.h \
                  player.h \
-                 bik.h \
+                 bink.h \
                  fader.h
 
 libvideo_la_SOURCES = decoder.cpp \
                       player.cpp \
-                      bik.cpp \
+                      bink.cpp \
                       fader.cpp

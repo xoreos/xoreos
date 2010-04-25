@@ -19,7 +19,7 @@
 
 #include "graphics/video/player.h"
 #include "graphics/video/decoder.h"
-#include "graphics/video/bik.h"
+#include "graphics/video/bink.h"
 
 #include "events/events.h"
 #include "events/requests.h"
@@ -44,7 +44,7 @@ void VideoPlayer::load(const Common::UString &name) {
 
 	// Loading the different image formats
 	if      (type == Aurora::kFileTypeBIK)
-		_video = new BIK(video);
+		_video = new Bink(video);
 	else {
 		delete video;
 		throw Common::Exception("Unsupported video resource type %d", (int) type);

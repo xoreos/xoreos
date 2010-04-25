@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/video/bik.cpp
+/** @file graphics/video/bink.cpp
  *  Decoding RAD Game Tools' Bink videos.
  */
 
@@ -19,7 +19,7 @@
 #include "common/stream.h"
 #include "common/bitstream.h"
 
-#include "graphics/video/bik.h"
+#include "graphics/video/bink.h"
 
 #include "events/events.h"
 
@@ -32,19 +32,19 @@ static const uint32 kVideoFlagAlpha = 0x00100000;
 
 namespace Graphics {
 
-BIK::BIK(Common::SeekableReadStream *bik) : _bik(bik), _curFrame(0) {
+Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _curFrame(0) {
 	load();
 }
 
-BIK::~BIK() {
-	delete _bik;
+Bink::~Bink() {
+	delete _bink;
 }
 
-bool BIK::gotTime() const {
+bool Bink::gotTime() const {
 	return true;
 }
 
-void BIK::processData() {
+void Bink::processData() {
 	uint32 curTime = EventMan.getTimestamp();
 
 	if (!_started) {
@@ -64,21 +64,21 @@ void BIK::processData() {
 
 	VideoFrame &frame = _frames[_curFrame];
 
-	if (!_bik->seek(frame.offset))
+	if (!_bink->seek(frame.offset))
 		throw Common::Exception(Common::kSeekError);
 
 	uint32 frameSize = frame.size;
 
 	for (std::vector<AudioTrack>::iterator audio = _audioTracks.begin(); audio != _audioTracks.end(); ++audio) {
-		uint32 audioPacketLength = _bik->readUint32LE();
+		uint32 audioPacketLength = _bink->readUint32LE();
 
 		if (frameSize < (audioPacketLength + 4))
 			throw Common::Exception("Audio packet too big for the frame");
 
 		if (audioPacketLength >= 4) {
-			audio->sampleCount = _bik->readUint32LE();
+			audio->sampleCount = _bink->readUint32LE();
 
-			audio->bits = new Common::BitStream32LE(*_bik, (audioPacketLength - 4) * 8);
+			audio->bits = new Common::BitStream32LE(*_bink, (audioPacketLength - 4) * 8);
 
 			audioPacket(*audio);
 
@@ -89,7 +89,7 @@ void BIK::processData() {
 		}
 	}
 
-	frame.bits = new Common::BitStream32LE(*_bik, frameSize);
+	frame.bits = new Common::BitStream32LE(*_bink, frameSize);
 
 	videoPacket(frame);
 
@@ -103,58 +103,58 @@ void BIK::processData() {
 	_curFrame++;
 }
 
-void BIK::audioPacket(AudioTrack &audio) {
+void Bink::audioPacket(AudioTrack &audio) {
 }
 
-void BIK::videoPacket(VideoFrame &video) {
+void Bink::videoPacket(VideoFrame &video) {
 }
 
-void BIK::load() {
-	_id = _bik->readUint32BE();
+void Bink::load() {
+	_id = _bink->readUint32BE();
 	if ((_id != kBIKfID) && (_id != kBIKgID) && (_id != kBIKhID) && (_id != kBIKiID))
-		throw Common::Exception("Unknown BIK FourCC %04X", _id);
+		throw Common::Exception("Unknown Bink FourCC %04X", _id);
 
-	uint32 fileSize         = _bik->readUint32LE() + 8;
-	uint32 frameCount       = _bik->readUint32LE();
-	uint32 largestFrameSize = _bik->readUint32LE();
+	uint32 fileSize         = _bink->readUint32LE() + 8;
+	uint32 frameCount       = _bink->readUint32LE();
+	uint32 largestFrameSize = _bink->readUint32LE();
 
 	if (largestFrameSize > fileSize)
 		throw Common::Exception("Largest frame size greater than file size");
 
-	_bik->skip(4);
+	_bink->skip(4);
 
-	uint32 width  = _bik->readUint32LE();
-	uint32 height = _bik->readUint32LE();
+	uint32 width  = _bink->readUint32LE();
+	uint32 height = _bink->readUint32LE();
 
 	createData(width, height);
 
-	_fpsNum = _bik->readUint32LE();
-	_fpsDen = _bik->readUint32LE();
+	_fpsNum = _bink->readUint32LE();
+	_fpsDen = _bink->readUint32LE();
 
 	if ((_fpsNum == 0) || (_fpsDen == 0))
 		throw Common::Exception("Invalid FPS (%d/%d)", _fpsNum, _fpsDen);
 
-	_videoFlags = _bik->readUint32LE();
+	_videoFlags = _bink->readUint32LE();
 
-	uint32 audioTrackCount = _bik->readUint32LE();
+	uint32 audioTrackCount = _bink->readUint32LE();
 	if (audioTrackCount > 0) {
 		_audioTracks.resize(audioTrackCount);
 
-		_bik->skip(4 * audioTrackCount);
+		_bink->skip(4 * audioTrackCount);
 
 		for (std::vector<AudioTrack>::iterator it = _audioTracks.begin(); it != _audioTracks.end(); ++it) {
-			it->sampleRate  = _bik->readUint16LE();
-			it->flags       = _bik->readUint16LE();
+			it->sampleRate  = _bink->readUint16LE();
+			it->flags       = _bink->readUint16LE();
 			it->sampleCount = 0;
 			it->bits        = 0;
 		}
 
-		_bik->skip(4 * audioTrackCount);
+		_bink->skip(4 * audioTrackCount);
 	}
 
 	_frames.resize(frameCount);
 	for (uint32 i = 0; i < frameCount; i++) {
-		_frames[i].offset   = _bik->readUint32LE();
+		_frames[i].offset   = _bink->readUint32LE();
 		_frames[i].keyFrame = _frames[i].offset & 1;
 
 		_frames[i].offset &= ~1;
@@ -165,7 +165,7 @@ void BIK::load() {
 		_frames[i].bits = 0;
 	}
 
-	_frames[frameCount - 1].size = _bik->size() - _frames[frameCount - 1].offset;
+	_frames[frameCount - 1].size = _bink->size() - _frames[frameCount - 1].offset;
 
 	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
 	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID);
