@@ -22,6 +22,7 @@
 namespace Common {
 	class SeekableReadStream;
 	class BitStream;
+	class Huffman;
 }
 
 namespace Graphics {
@@ -38,6 +39,40 @@ protected:
 	void processData();
 
 private:
+	/** IDs for different data types used in Bink video codec. */
+	enum Source {
+		kSourceBlockTypes    = 0, ///< 8x8 block types.
+		kSourceSubBlockTypes    , ///< 16x16 block types (a subset of 8x8 block types).
+		kSourceColors           , ///< Pixel values used for different block types.
+		kSourcePattern          , ///< 8-bit values for 2-colour pattern fill.
+		kSourceXOff             , ///< X components of motion value.
+		kSourceYOff             , ///< Y components of motion value.
+		kSourceIntraDC          , ///< DC values for intrablocks with DCT.
+		kSourceInterDC          , ///< DC values for interblocks with DCT.
+		kSourceRun              , ///< Run lengths for special fill block.
+
+		kSourceMAX
+	};
+
+	/** Bink video block types. */
+	enum BlockTypes {
+		kBlockSkip    = 0,  ///< Skipped block.
+		kBlockScaled     ,  ///< Block has size 16x16.
+		kBlockMotion     ,  ///< Block is copied from previous frame with some offset.
+		kBlockRun        ,  ///< Block is composed from runs of colours with custom scan order.
+		kBlockResidue    ,  ///< Motion block with some difference added.
+		kBlockIntra      ,  ///< Intra DCT block.
+		kBlockFill       ,  ///< Block is filled with single colour.
+		kBlockInter      ,  ///< Motion block with DCT applied to the difference.
+		kBlockPattern    ,  ///< Block is filled with two colours following custom pattern.
+		kBlockRaw        ,  ///< Uncoded 8x8 block.
+	};
+
+	/** Data structure used for decoding a single Bink data type. */
+	struct Bundle {
+		int huffman; ///< Index of the Huffman codebook to use.
+	};
+
 	/** An audio track. */
 	struct AudioTrack {
 		uint16 sampleRate;
@@ -78,12 +113,23 @@ private:
 	std::vector<AudioTrack> _audioTracks; ///< All audio tracks.
 	std::vector<VideoFrame> _frames;      ///< All video frames.
 
+	Common::Huffman *_huffman[16]; ///< The 16 Huffman codebooks used in Bink decoding.
+
+	Bundle _bundles[kSourceMAX]; ///< Bundles for decoding all data types.
+
+	/** Indices of the Huffman codebooks to use for decoding high nibbles in color data types. */
+	int _colHighHuffman[16];
+	/** Value of the last decoded high nibble in color data types. */
+	int _colLastVal;
+
 	void load();
 
 	/** Decode an audio packet. */
 	void audioPacket(AudioTrack &audio);
 	/** Decode a video packet. */
 	void videoPacket(VideoFrame &video);
+
+	void decodePlane(VideoFrame &video, int planeIdx, bool isChroma);
 };
 
 } // End of namespace Graphics

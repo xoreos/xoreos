@@ -18,6 +18,7 @@
 #include "common/error.h"
 #include "common/stream.h"
 #include "common/bitstream.h"
+#include "common/huffman.h"
 
 #include "graphics/video/bink.h"
 
@@ -33,10 +34,18 @@ static const uint32 kVideoFlagAlpha = 0x00100000;
 namespace Graphics {
 
 Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _curFrame(0) {
+	assert(_bink);
+
+	for (int i = 0; i < 16; i++)
+		_huffman[i] = 0;
+
 	load();
 }
 
 Bink::~Bink() {
+	for (int i = 0; i < 16; i++)
+		delete _huffman[i];
+
 	delete _bink;
 }
 
@@ -107,6 +116,30 @@ void Bink::audioPacket(AudioTrack &audio) {
 }
 
 void Bink::videoPacket(VideoFrame &video) {
+	assert(video.bits);
+
+	if (_hasAlpha) {
+		if (_id == kBIKiID)
+			video.bits->skip(32);
+
+		decodePlane(video, 3, false);
+	}
+
+	if (_id == kBIKiID)
+		video.bits->skip(32);
+
+	for (int i = 0; i < 3; i++) {
+		int planeIdx = ((i == 0) || !_swapPlanes) ? i : (i ^ 3);
+
+		decodePlane(video, planeIdx, i == 0);
+
+		if (video.bits->pos() >= video.bits->size())
+			break;
+	}
+
+}
+
+void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 }
 
 void Bink::load() {
