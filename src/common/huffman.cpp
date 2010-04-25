@@ -25,7 +25,7 @@ Huffman::Symbol::Symbol(uint32 c, uint32 s) : code(c), symbol(s) {
 }
 
 
-Huffman::Huffman(uint8 maxLength, uint32 codeCount, uint32 *codes, uint8 *lengths, uint32 *symbols) {
+Huffman::Huffman(uint8 maxLength, uint32 codeCount, const uint32 *codes, const uint8 *lengths, const uint32 *symbols) {
 	assert(maxLength > 0);
 	assert(codeCount > 0);
 
@@ -50,7 +50,7 @@ Huffman::Huffman(uint8 maxLength, uint32 codeCount, uint32 *codes, uint8 *length
 Huffman::~Huffman() {
 }
 
-void Huffman::setSymbols(uint32 *symbols) {
+void Huffman::setSymbols(const uint32 *symbols) {
 	uint32 i = 0;
 	for (SymbolList::iterator symbol = _symbols.begin(); symbol != _symbols.end(); ++symbols)
 		(*symbol)->symbol = symbols ? *symbols++ : i++;
