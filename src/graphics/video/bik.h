@@ -21,6 +21,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class BitStream;
 }
 
 namespace Graphics {
@@ -42,8 +43,9 @@ private:
 		uint16 sampleRate;
 		uint16 flags;
 
-		byte  *data;
-		uint32 dataSize;
+		uint32 sampleCount;
+
+		Common::BitStream *bits;
 	};
 
 	/** A video frame. */
@@ -53,8 +55,7 @@ private:
 		uint32 offset;
 		uint32 size;
 
-		byte  *data;
-		uint32 dataSize;
+		Common::BitStream *bits;
 	};
 
 	Common::SeekableReadStream *_bik;

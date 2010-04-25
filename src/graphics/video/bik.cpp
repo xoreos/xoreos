@@ -17,6 +17,7 @@
 #include "common/util.h"
 #include "common/error.h"
 #include "common/stream.h"
+#include "common/bitstream.h"
 
 #include "graphics/video/bik.h"
 
@@ -68,33 +69,32 @@ void BIK::processData() {
 
 	uint32 frameSize = frame.size;
 
-	byte *frameData = new byte[frameSize];
-	if (_bik->read(frameData, frameSize) != frameSize)
-		throw Common::Exception(Common::kReadError);
-
-	frame.data     = frameData;
-	frame.dataSize = frameSize;
-
 	for (std::vector<AudioTrack>::iterator audio = _audioTracks.begin(); audio != _audioTracks.end(); ++audio) {
-		uint32 audioPacketLength = READ_LE_UINT32(frame.data);
+		uint32 audioPacketLength = _bik->readUint32LE();
 
-		frame.data     += 4;
-		frame.dataSize -= 4;
+		if (frameSize < (audioPacketLength + 4))
+			throw Common::Exception("Audio packet too big for the frame");
 
-		if (audioPacketLength != 0) {
-			audio->data     = frame.data;
-			audio->dataSize = audioPacketLength;
+		if (audioPacketLength >= 4) {
+			audio->sampleCount = _bik->readUint32LE();
 
-			frame.data     += audioPacketLength;
-			frame.dataSize -= audioPacketLength;
+			audio->bits = new Common::BitStream32LE(*_bik, (audioPacketLength - 4) * 8);
 
 			audioPacket(*audio);
+
+			delete audio->bits;
+			audio->bits = 0;
+
+			frameSize -= audioPacketLength + 4;
 		}
 	}
 
+	frame.bits = new Common::BitStream32LE(*_bik, frameSize);
+
 	videoPacket(frame);
 
-	delete[] frameData;
+	delete frame.bits;
+	frame.bits = 0;
 
 	_needCopy = true;
 
@@ -107,8 +107,6 @@ void BIK::audioPacket(AudioTrack &audio) {
 }
 
 void BIK::videoPacket(VideoFrame &video) {
-	uint32 bitCount = video.dataSize << 3;
-
 }
 
 void BIK::load() {
@@ -145,8 +143,10 @@ void BIK::load() {
 		_bik->skip(4 * audioTrackCount);
 
 		for (std::vector<AudioTrack>::iterator it = _audioTracks.begin(); it != _audioTracks.end(); ++it) {
-			it->sampleRate = _bik->readUint16LE();
-			it->flags      = _bik->readUint16LE();
+			it->sampleRate  = _bik->readUint16LE();
+			it->flags       = _bik->readUint16LE();
+			it->sampleCount = 0;
+			it->bits        = 0;
 		}
 
 		_bik->skip(4 * audioTrackCount);
@@ -162,8 +162,7 @@ void BIK::load() {
 		if (i != 0)
 			_frames[i - 1].size = _frames[i].offset - _frames[i - 1].offset;
 
-		_frames[i].data     = 0;
-		_frames[i].dataSize = 0;
+		_frames[i].bits = 0;
 	}
 
 	_frames[frameCount - 1].size = _bik->size() - _frames[frameCount - 1].offset;
