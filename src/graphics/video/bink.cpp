@@ -99,7 +99,7 @@ void Bink::processData() {
 		}
 	}
 
-	frame.bits = new Common::BitStream32LE(*_bink, frameSize);
+	frame.bits = new Common::BitStream32LE(*_bink, frameSize * 8);
 
 	videoPacket(frame);
 
