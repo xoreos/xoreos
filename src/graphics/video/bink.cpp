@@ -21,6 +21,7 @@
 #include "common/huffman.h"
 
 #include "graphics/video/bink.h"
+#include "graphics/video/binkdata.h"
 
 #include "events/events.h"
 
@@ -202,6 +203,13 @@ void Bink::load() {
 
 	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
 	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID);
+
+	initHuffman();
+}
+
+void Bink::initHuffman() {
+	for (int i = 0; i < 16; i++)
+		_huffman[i] = new Common::Huffman(binkHuffmanLengths[i][15], 16, binkHuffmanCodes[i], binkHuffmanLengths[i]);
 }
 
 } // End of namespace Graphics

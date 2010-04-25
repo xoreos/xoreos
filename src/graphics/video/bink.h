@@ -17,6 +17,7 @@
 
 #include <vector>
 
+#include "common/types.h"
 #include "graphics/video/decoder.h"
 
 namespace Common {
@@ -123,6 +124,8 @@ private:
 	int _colLastVal;
 
 	void load();
+
+	void initHuffman();
 
 	/** Decode an audio packet. */
 	void audioPacket(AudioTrack &audio);
