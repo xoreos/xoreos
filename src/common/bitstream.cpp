@@ -17,6 +17,7 @@
 #include "common/bitstream.h"
 #include "common/stream.h"
 #include "common/error.h"
+#include "common/util.h"
 
 namespace Common {
 
@@ -24,18 +25,6 @@ BitStream::BitStream() {
 }
 
 BitStream::~BitStream() {
-}
-
-uint64 BitStream::getBits(int n) {
-	if (n > 64)
-		throw Common::Exception("Too many bits requested to be read");
-
-	// Read the number of bits
-	uint64 v = 0;
-	while (n-- > 0)
-		v = (v << 1) | getBit();
-
-	return v;
 }
 
 void BitStream::skip(uint32 n) {
@@ -79,7 +68,7 @@ BitStreamBE::~BitStreamBE() {
 	delete _stream;
 }
 
-int BitStreamBE::getBit() {
+uint32 BitStreamBE::getBit() {
 	if (_inValue == 0) {
 		// Need to get new byte
 
@@ -99,6 +88,22 @@ int BitStreamBE::getBit() {
 	_inValue = (_inValue + 1) % 8;
 
 	return b;
+}
+
+uint32 BitStreamBE::getBits(uint32 n) {
+	if (n > 32)
+		throw Common::Exception("Too many bits requested to be read");
+
+	// Read the number of bits
+	uint32 v = 0;
+	while (n-- > 0)
+		v = (v << 1) | getBit();
+
+	return v;
+}
+
+void BitStreamBE::addBit(uint32 &x, uint32 n) {
+	x = (x << 1) | getBit();
 }
 
 uint32 BitStreamBE::pos() const {
@@ -149,7 +154,7 @@ BitStream32LE::~BitStream32LE() {
 	delete _stream;
 }
 
-int BitStream32LE::getBit() {
+uint32 BitStream32LE::getBit() {
 	if (_inValue == 0) {
 		// Need to get new 32bit value
 
@@ -160,15 +165,32 @@ int BitStream32LE::getBit() {
 	}
 
 	// Get the current bit
-	int b = ((_value & 0x80) == 0) ? 0 : 1;
+	int b = ((_value & 1) == 0) ? 0 : 1;
 
 	// Shift to the next bit
-	_value <<= 1;
+	_value >>= 1;
 
 	// Increase the position within the current byte
 	_inValue = (_inValue + 1) % 32;
 
 	return b;
+}
+
+uint32 BitStream32LE::getBits(uint32 n) {
+	if (n > 32)
+		throw Common::Exception("Too many bits requested to be read");
+
+	// Read the number of bits
+	uint32 v = 0;
+	for (uint32 i = 0; i < n; i++)
+		v = (v >> 1) | (((uint32) getBit()) << 31);
+
+	v >>= (32 - n);
+	return v;
+}
+
+void BitStream32LE::addBit(uint32 &x, uint32 n) {
+	x = (x & ~(1 << n)) | (getBit() << n);
 }
 
 uint32 BitStream32LE::pos() const {

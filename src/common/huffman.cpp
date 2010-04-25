@@ -58,10 +58,10 @@ void Huffman::setSymbols(const uint32 *symbols) {
 uint32 Huffman::getSymbol(BitStream &bits) {
 	uint32 code = 0;
 
-	for (CodeLists::const_iterator codes = _codes.begin(); codes != _codes.end(); ++codes) {
-		code = (code << 1) | bits.getBits();
+	for (uint32 i = 0; i < _codes.size(); i++) {
+		bits.addBit(code, i);
 
-		for (CodeList::const_iterator cCode = codes->begin(); cCode != codes->end(); ++cCode)
+		for (CodeList::const_iterator cCode = _codes[i].begin(); cCode != _codes[i].end(); ++cCode)
 			if (code == cCode->code)
 				return cCode->symbol;
 	}

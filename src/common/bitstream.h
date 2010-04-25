@@ -27,8 +27,14 @@ public:
 	BitStream();
 	virtual ~BitStream();
 
+	/** Read a bit. */
+	virtual uint32 getBit() = 0;
+
 	/** Read a number of bits. */
-	uint64 getBits(int n = 1);
+	virtual uint32 getBits(uint32 n) = 0;
+
+	/** Adding another bit. */
+	virtual void addBit(uint32 &x, uint32 n) = 0;
 
 	/** Skip a number of bits. */
 	void skip(uint32 n);
@@ -37,10 +43,6 @@ public:
 	virtual uint32 pos()  const = 0;
 	/** Return the number of bits in the stream. */
 	virtual uint32 size() const = 0;
-
-protected:
-	/** Read a bit. */
-	virtual int getBit() = 0;
 };
 
 /** A big endian bit stream. */
@@ -50,11 +52,12 @@ public:
 	BitStreamBE(const byte *data, uint32 bitCount);
 	~BitStreamBE();
 
+	uint32 getBit();
+	uint32 getBits(uint32 n);
+	void addBit(uint32 &x, uint32 n);
+
 	uint32 pos()  const;
 	uint32 size() const;
-
-protected:
-	int getBit();
 
 private:
 	SeekableReadStream *_stream;
@@ -70,11 +73,12 @@ public:
 	BitStream32LE(const byte *data, uint32 bitCount);
 	~BitStream32LE();
 
+	uint32 getBit();
+	uint32 getBits(uint32 n);
+	void addBit(uint32 &x, uint32 n);
+
 	uint32 pos()  const;
 	uint32 size() const;
-
-protected:
-	int getBit();
 
 private:
 	SeekableReadStream *_stream;
