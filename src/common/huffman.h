@@ -29,19 +29,17 @@ class Huffman {
 public:
 	/** Construct a Huffman decoder.
 	 *
-	 *  @param bits The bitstream to read the codes out of.
 	 *  @param maxLength Maximal code length.
 	 *  @param codeCount Number of codes.
 	 *  @param codes The actual codes.
 	 *  @param lengths Lengths of the individual codes.
 	 *  @param symbols The symbols. If 0, assume they are identical to the code indices.
 	 */
-	Huffman(BitStream *bits, uint8 maxLength, uint32 codeCount,
-			uint32 *codes, uint8 *lengths, uint32 *symbols = 0);
+	Huffman(uint8 maxLength, uint32 codeCount, uint32 *codes, uint8 *lengths, uint32 *symbols = 0);
 	~Huffman();
 
 	/** Return the next symbol in the bitstream. */
-	uint32 getSymbol();
+	uint32 getSymbol(BitStream &bits);
 
 private:
 	struct Symbol {
@@ -51,10 +49,8 @@ private:
 		Symbol(uint32 c, uint32 s);
 	};
 
-	BitStream *_bits; ///< The stream to read the coded bits out of.
-
-	typedef std::list<Symbol> CodeList;
-	typedef std::vector< CodeList > CodeLists;
+	typedef std::list<Symbol>     CodeList;
+	typedef std::vector<CodeList> CodeLists;
 
 	/** Lists of codes and their symbols, sorted by code length. */
 	CodeLists _codes;

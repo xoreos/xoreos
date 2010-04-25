@@ -25,13 +25,9 @@ Huffman::Symbol::Symbol(uint32 c, uint32 s) : code(c), symbol(s) {
 }
 
 
-Huffman::Huffman(BitStream *bits, uint8 maxLength, uint32 codeCount,
-		uint32 *codes, uint8 *lengths, uint32 *symbols) : _bits(0) {
-
+Huffman::Huffman(uint8 maxLength, uint32 codeCount, uint32 *codes, uint8 *lengths, uint32 *symbols) {
 	assert(maxLength > 0);
 	assert(codeCount > 0);
-
-	_bits = bits;
 
 	_codes.resize(maxLength);
 
@@ -45,14 +41,13 @@ Huffman::Huffman(BitStream *bits, uint8 maxLength, uint32 codeCount,
 }
 
 Huffman::~Huffman() {
-	delete _bits;
 }
 
-uint32 Huffman::getSymbol() {
+uint32 Huffman::getSymbol(BitStream &bits) {
 	uint32 code = 0;
 
 	for (CodeLists::const_iterator codes = _codes.begin(); codes != _codes.end(); ++codes) {
-		code = (code << 1) | _bits->getBits();
+		code = (code << 1) | bits.getBits();
 
 		for (CodeList::const_iterator cCode = codes->begin(); cCode != codes->end(); ++cCode)
 			if (code == cCode->code)
