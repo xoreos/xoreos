@@ -72,6 +72,12 @@ private:
 	/** Data structure used for decoding a single Bink data type. */
 	struct Bundle {
 		int huffman; ///< Index of the Huffman codebook to use.
+
+		byte *data;    ///< Buffer for decoded symbols.
+		byte *dataEnd; ///< Buffer end.
+
+		byte *curDec; ///< Pointer to the data that wasn't yet decoded.
+		byte *curPtr; ///< Pointer to the data that wasn't yet read.
 	};
 
 	/** An audio track. */
@@ -125,6 +131,9 @@ private:
 
 	void load();
 
+	void initBundles();
+	void deinitBundles();
+
 	void initHuffman();
 
 	/** Decode an audio packet. */
@@ -133,6 +142,11 @@ private:
 	void videoPacket(VideoFrame &video);
 
 	void decodePlane(VideoFrame &video, int planeIdx, bool isChroma);
+
+	void readBundle(VideoFrame &video, int bundle);
+
+	void readHuffman(VideoFrame &video, int &huffman);
+	void mergeHuffmanSymbols(VideoFrame &video, uint32 *dst, uint32 *src, int size);
 };
 
 } // End of namespace Graphics

@@ -40,10 +40,20 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _curFrame(0) {
 	for (int i = 0; i < 16; i++)
 		_huffman[i] = 0;
 
+	for (int i = 0; i < kSourceMAX; i++) {
+		_bundles[i].huffman = 0;
+		_bundles[i].data    = 0;
+		_bundles[i].dataEnd = 0;
+		_bundles[i].curDec  = 0;
+		_bundles[i].curPtr  = 0;
+	}
+
 	load();
 }
 
 Bink::~Bink() {
+	deinitBundles();
+
 	for (int i = 0; i < 16; i++)
 		delete _huffman[i];
 
@@ -141,6 +151,95 @@ void Bink::videoPacket(VideoFrame &video) {
 }
 
 void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
+	for (int i = 0; i < kSourceMAX; i++)
+		readBundle(video, i);
+}
+
+void Bink::readBundle(VideoFrame &video, int bundle) {
+	if (bundle == kSourceColors) {
+		for (int i = 0; i < 16; i++)
+			readHuffman(video, _colHighHuffman[i]);
+
+		_colLastVal = 0;
+	}
+
+	if ((bundle != kSourceIntraDC) && (bundle != kSourceInterDC))
+		readHuffman(video, _bundles[bundle].huffman);
+
+	_bundles[bundle].curDec = _bundles[bundle].data;
+	_bundles[bundle].curPtr = _bundles[bundle].data;
+}
+
+void Bink::readHuffman(VideoFrame &video, int &huffman) {
+	uint32 symbols[16];
+	byte   hasSymbol[16];
+
+	huffman = video.bits->getBits(4);
+
+	if (huffman == 0)
+		// The first tree never changes symbols
+		return;
+
+	if (video.bits->getBits()) {
+		// Symbol selection
+
+		memset(hasSymbol, 0, 16);
+
+		uint8 length = video.bits->getBits(3);
+		for (int i = 0; i <= length; i++) {
+			symbols[i] = video.bits->getBits(4);
+			hasSymbol[symbols[i]] = 1;
+		}
+
+		for (int i = 0; i < 16; i++)
+			if (hasSymbol[i] == 0)
+				symbols[++length] = i;
+
+		_huffman[huffman]->setSymbols(symbols);
+		return;
+	}
+
+	// Symbol shuffling
+
+	uint32 tmp1[16], tmp2[16];
+	uint32 *in = tmp1, *out = tmp2;
+
+	uint8 depth = video.bits->getBits(2);
+
+	for (int i = 0; i < 16; i++)
+		in[i] = i;
+
+	for (int i = 0; i <= depth; i++) {
+		int size = 1 << i;
+
+		for (int j = 0; j < 16; j += (size << 1))
+			mergeHuffmanSymbols(video, out + j, in + j, size);
+
+		SWAP(in, out);
+	}
+
+	_huffman[huffman]->setSymbols(in);
+}
+
+void Bink::mergeHuffmanSymbols(VideoFrame &video, uint32 *dst, uint32 *src, int size) {
+	uint32 *src2  = src + size;
+	int     size2 = size;
+
+	do {
+		if (video.bits->getBits()) {
+			*dst++ = *src++;
+			size--;
+		} else {
+			*dst++ = *src2++;
+			size2--;
+		}
+
+	} while (size && size2);
+
+	while (size--)
+		*dst++ = *src++;
+	while (size2--)
+		*dst++ = *src2++;
 }
 
 void Bink::load() {
@@ -204,7 +303,24 @@ void Bink::load() {
 	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
 	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID);
 
+	initBundles();
 	initHuffman();
+}
+
+void Bink::initBundles() {
+	uint32 bw     = (_width  + 7) >> 3;
+	uint32 bh     = (_height + 7) >> 3;
+	uint32 blocks = bw * bh;
+
+	for (int i = 0; i < kSourceMAX; i++) {
+		_bundles[i].data    = new byte[blocks * 64];
+		_bundles[i].dataEnd = _bundles[i].data + blocks * 64;
+	}
+}
+
+void Bink::deinitBundles() {
+	for (int i = 0; i < kSourceMAX; i++)
+		delete[] _bundles[i].data;
 }
 
 void Bink::initHuffman() {
