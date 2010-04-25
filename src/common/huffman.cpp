@@ -51,9 +51,8 @@ Huffman::~Huffman() {
 }
 
 void Huffman::setSymbols(const uint32 *symbols) {
-	uint32 i = 0;
-	for (SymbolList::iterator symbol = _symbols.begin(); symbol != _symbols.end(); ++symbols)
-		(*symbol)->symbol = symbols ? *symbols++ : i++;
+	for (uint32 i = 0; i < _symbols.size(); i++)
+		_symbols[i]->symbol = symbols ? *symbols++ : i;
 }
 
 uint32 Huffman::getSymbol(BitStream &bits) {
