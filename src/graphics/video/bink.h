@@ -56,7 +56,7 @@ private:
 	};
 
 	/** Bink video block types. */
-	enum BlockTypes {
+	enum BlockType {
 		kBlockSkip    = 0,  ///< Skipped block.
 		kBlockScaled     ,  ///< Block has size 16x16.
 		kBlockMotion     ,  ///< Block is copied from previous frame with some offset.
@@ -69,9 +69,16 @@ private:
 		kBlockRaw        ,  ///< Uncoded 8x8 block.
 	};
 
+	struct Huffman {
+		int  index;       ///< Index of the Huffman codebook to use.
+		byte symbols[16]; ///< Huffman symbol => Bink symbol tranlation list.
+	};
+
 	/** Data structure used for decoding a single Bink data type. */
 	struct Bundle {
-		int huffman; ///< Index of the Huffman codebook to use.
+		int countLength; ///< Length of number of entries to decode (in bits).
+
+		Huffman huffman; ///< Huffman codebook.
 
 		byte *data;    ///< Buffer for decoded symbols.
 		byte *dataEnd; ///< Buffer end.
@@ -124,8 +131,8 @@ private:
 
 	Bundle _bundles[kSourceMAX]; ///< Bundles for decoding all data types.
 
-	/** Indices of the Huffman codebooks to use for decoding high nibbles in color data types. */
-	int _colHighHuffman[16];
+	/** Huffman codebooks to use for decoding high nibbles in color data types. */
+	Huffman _colHighHuffman[16];
 	/** Value of the last decoded high nibble in color data types. */
 	int _colLastVal;
 
@@ -136,6 +143,8 @@ private:
 
 	void initHuffman();
 
+	void initLengths(uint32 width, uint32 bw);
+
 	/** Decode an audio packet. */
 	void audioPacket(AudioTrack &audio);
 	/** Decode a video packet. */
@@ -145,8 +154,39 @@ private:
 
 	void readBundle(VideoFrame &video, int bundle);
 
-	void readHuffman(VideoFrame &video, int &huffman);
-	void mergeHuffmanSymbols(VideoFrame &video, uint32 *dst, uint32 *src, int size);
+	void readHuffman(VideoFrame &video, Huffman &huffman);
+	void mergeHuffmanSymbols(VideoFrame &video, byte *dst, byte *src, int size);
+
+	byte getHuffmanSymbol(VideoFrame &video, Huffman &huffman);
+
+	int32 getBundleValue(Source source);
+
+	void blockSkip         (VideoFrame &video);
+	void blockScaledRun    (VideoFrame &video);
+	void blockScaledIntra  (VideoFrame &video);
+	void blockScaledFill   (VideoFrame &video);
+	void blockScaledPattern(VideoFrame &video);
+	void blockScaledRaw    (VideoFrame &video);
+	void blockScaled       (VideoFrame &video, uint32 &bx);
+	void blockMotion       (VideoFrame &video);
+	void blockRun          (VideoFrame &video);
+	void blockResidue      (VideoFrame &video);
+	void blockIntra        (VideoFrame &video);
+	void blockFill         (VideoFrame &video);
+	void blockInter        (VideoFrame &video);
+	void blockPattern      (VideoFrame &video);
+	void blockRaw          (VideoFrame &video);
+
+	uint32 readBundleCount(VideoFrame &video, Bundle &bundle);
+
+	void readRuns        (VideoFrame &video, Bundle &bundle);
+	void readMotionValues(VideoFrame &video, Bundle &bundle);
+	void readBlockTypes  (VideoFrame &video, Bundle &bundle);
+	void readPatterns    (VideoFrame &video, Bundle &bundle);
+	void readColors      (VideoFrame &video, Bundle &bundle);
+	void readDCS         (VideoFrame &video, Bundle &bundle, int startBits, bool hasSign);
+	void readDCTCoeffs   (VideoFrame &video, void *block, void *scan, int isIntra);
+	void readResidue     (VideoFrame &video, void *block, int masksCount);
 };
 
 } // End of namespace Graphics

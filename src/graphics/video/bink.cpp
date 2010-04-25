@@ -32,6 +32,9 @@ static const uint32 kBIKiID = MKID_BE('BIKi');
 
 static const uint32 kVideoFlagAlpha = 0x00100000;
 
+// Number of bits used to store first DC value in bundle
+static const uint32 kDCStartBits = 11;
+
 namespace Graphics {
 
 Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _curFrame(0) {
@@ -41,11 +44,22 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _curFrame(0) {
 		_huffman[i] = 0;
 
 	for (int i = 0; i < kSourceMAX; i++) {
-		_bundles[i].huffman = 0;
-		_bundles[i].data    = 0;
-		_bundles[i].dataEnd = 0;
-		_bundles[i].curDec  = 0;
-		_bundles[i].curPtr  = 0;
+		_bundles[i].countLength = 0;
+
+		_bundles[i].huffman.index = 0;
+		for (int j = 0; j < 16; j++)
+			_bundles[i].huffman.symbols[j] = j;
+
+		_bundles[i].data     = 0;
+		_bundles[i].dataEnd  = 0;
+		_bundles[i].curDec   = 0;
+		_bundles[i].curPtr   = 0;
+	}
+
+	for (int i = 0; i < 16; i++) {
+		_colHighHuffman[i].index = 0;
+		for (int j = 0; j < 16; j++)
+			_colHighHuffman[i].symbols[j] = j;
 	}
 
 	load();
@@ -142,7 +156,7 @@ void Bink::videoPacket(VideoFrame &video) {
 	for (int i = 0; i < 3; i++) {
 		int planeIdx = ((i == 0) || !_swapPlanes) ? i : (i ^ 3);
 
-		decodePlane(video, planeIdx, i == 0);
+		decodePlane(video, planeIdx, i != 0);
 
 		if (video.bits->pos() >= video.bits->size())
 			break;
@@ -151,8 +165,107 @@ void Bink::videoPacket(VideoFrame &video) {
 }
 
 void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
+
+	uint32 bw    = isChroma ? ((_width  + 15) >> 4) : ((_width  + 7) >> 3);
+	uint32 bh    = isChroma ? ((_height + 15) >> 4) : ((_height + 7) >> 3);
+	uint32 width = isChroma ?  (_width        >> 1) :   _width;
+
+	// const int stride = c->pic.linesize[plane_idx];
+
+	// ref_start = c->last.data[plane_idx];
+	// ref_end   = c->last.data[plane_idx] + (bw - 1 + c->last.linesize[plane_idx] * (bh - 1)) * 8;
+
+	// int coordmap[64];
+	// for (int i = 0; i < 64; i++)
+		// coordmap[i] = (i & 7) + (i >> 3) * stride;
+
+	// const uint8_t *scan;
+	// DECLARE_ALIGNED(16, DCTELEM, block[64]);
+	// DECLARE_ALIGNED(16, uint8_t, ublock[64]);
+
+	initLengths(MAX<uint32>(width, 8), bw);
 	for (int i = 0; i < kSourceMAX; i++)
 		readBundle(video, i);
+
+	for (uint32 by = 0; by < bh; by++) {
+		readBlockTypes  (video, _bundles[kSourceBlockTypes]);
+		readBlockTypes  (video, _bundles[kSourceSubBlockTypes]);
+		readColors      (video, _bundles[kSourceColors]);
+		readPatterns    (video, _bundles[kSourcePattern]);
+		readMotionValues(video, _bundles[kSourceXOff]);
+		readMotionValues(video, _bundles[kSourceYOff]);
+		readDCS         (video, _bundles[kSourceIntraDC], kDCStartBits, false);
+		readDCS         (video, _bundles[kSourceInterDC], kDCStartBits, true);
+		readRuns        (video, _bundles[kSourceRun]);
+
+		// dst  = c->pic.data[plane_idx]  + 8*by*stride;
+		// prev = c->last.data[plane_idx] + 8*by*stride;
+
+		for (uint32 bx = 0; bx < bw; bx++) { // dst += 8, prev += 8;
+			BlockType blockType = (BlockType) getBundleValue(kSourceBlockTypes);
+
+			// warning("%d.%d: %d", by, bx, blockType);
+
+			// 16x16 block type on odd line means part of the already decoded block, so skip it
+			if ((by & 1) && (blockType == kBlockScaled)) {
+				bx++;
+				// dst  += 8;
+				// prev += 8;
+				continue;
+			}
+
+			switch (blockType) {
+				case kBlockSkip:
+					blockSkip(video);
+					break;
+
+				case kBlockScaled:
+					blockScaled(video, bx);
+					break;
+
+				case kBlockMotion:
+					blockMotion(video);
+					break;
+
+				case kBlockRun:
+					blockRun(video);
+					break;
+
+				case kBlockResidue:
+					blockResidue(video);
+					break;
+
+				case kBlockIntra:
+					blockIntra(video);
+					break;
+
+				case kBlockFill:
+					blockFill(video);
+					break;
+
+				case kBlockInter:
+					blockInter(video);
+					break;
+
+				case kBlockPattern:
+					blockPattern(video);
+					break;
+
+				case kBlockRaw:
+					blockRaw(video);
+					break;
+
+				default:
+					throw Common::Exception("Unknown block type: %d", blockType);
+			}
+
+		}
+
+	}
+
+	if (video.bits->pos() & 0x1F) // next plane data starts at 32-bit boundary
+		video.bits->skip(32 - (video.bits->pos() & 0x1F));
+
 }
 
 void Bink::readBundle(VideoFrame &video, int bundle) {
@@ -170,39 +283,42 @@ void Bink::readBundle(VideoFrame &video, int bundle) {
 	_bundles[bundle].curPtr = _bundles[bundle].data;
 }
 
-void Bink::readHuffman(VideoFrame &video, int &huffman) {
-	uint32 symbols[16];
-	byte   hasSymbol[16];
+void Bink::readHuffman(VideoFrame &video, Huffman &huffman) {
+	huffman.index = video.bits->getBits(4);
 
-	huffman = video.bits->getBits(4);
+	if (huffman.index == 0) {
+		// The first tree always gives raw nibbles
 
-	if (huffman == 0)
-		// The first tree never changes symbols
+		for (int i = 0; i < 16; i++)
+			huffman.symbols[i] = i;
+
 		return;
+	}
 
-	if (video.bits->getBits()) {
+	byte hasSymbol[16];
+
+	if (video.bits->getBit()) {
 		// Symbol selection
 
 		memset(hasSymbol, 0, 16);
 
 		uint8 length = video.bits->getBits(3);
 		for (int i = 0; i <= length; i++) {
-			symbols[i] = video.bits->getBits(4);
-			hasSymbol[symbols[i]] = 1;
+			huffman.symbols[i] = video.bits->getBits(4);
+			hasSymbol[huffman.symbols[i]] = 1;
 		}
 
 		for (int i = 0; i < 16; i++)
 			if (hasSymbol[i] == 0)
-				symbols[++length] = i;
+				huffman.symbols[++length] = i;
 
-		_huffman[huffman]->setSymbols(symbols);
 		return;
 	}
 
 	// Symbol shuffling
 
-	uint32 tmp1[16], tmp2[16];
-	uint32 *in = tmp1, *out = tmp2;
+	byte tmp1[16], tmp2[16];
+	byte *in = tmp1, *out = tmp2;
 
 	uint8 depth = video.bits->getBits(2);
 
@@ -218,15 +334,15 @@ void Bink::readHuffman(VideoFrame &video, int &huffman) {
 		SWAP(in, out);
 	}
 
-	_huffman[huffman]->setSymbols(in);
+	memcpy(huffman.symbols, in, 16);
 }
 
-void Bink::mergeHuffmanSymbols(VideoFrame &video, uint32 *dst, uint32 *src, int size) {
-	uint32 *src2  = src + size;
-	int     size2 = size;
+void Bink::mergeHuffmanSymbols(VideoFrame &video, byte *dst, byte *src, int size) {
+	byte *src2  = src + size;
+	int   size2 = size;
 
 	do {
-		if (video.bits->getBits()) {
+		if (video.bits->getBit()) {
 			*dst++ = *src++;
 			size--;
 		} else {
@@ -326,6 +442,468 @@ void Bink::deinitBundles() {
 void Bink::initHuffman() {
 	for (int i = 0; i < 16; i++)
 		_huffman[i] = new Common::Huffman(binkHuffmanLengths[i][15], 16, binkHuffmanCodes[i], binkHuffmanLengths[i]);
+}
+
+void Bink::initLengths(uint32 width, uint32 bw) {
+	_bundles[kSourceBlockTypes   ].countLength = log2((width >> 3)    + 511) + 1;
+	_bundles[kSourceSubBlockTypes].countLength = log2((width >> 4)    + 511) + 1;
+	_bundles[kSourceColors       ].countLength = log2((width >> 3)*64 + 511) + 1;
+	_bundles[kSourceIntraDC      ].countLength = log2((width >> 3)    + 511) + 1;
+	_bundles[kSourceInterDC      ].countLength = log2((width >> 3)    + 511) + 1;
+	_bundles[kSourceXOff         ].countLength = log2((width >> 3)    + 511) + 1;
+	_bundles[kSourceYOff         ].countLength = log2((width >> 3)    + 511) + 1;
+	_bundles[kSourcePattern      ].countLength = log2((bw    << 3)    + 511) + 1;
+	_bundles[kSourceRun          ].countLength = log2((width >> 3)*48 + 511) + 1;
+}
+
+byte Bink::getHuffmanSymbol(VideoFrame &video, Huffman &huffman) {
+	return huffman.symbols[_huffman[huffman.index]->getSymbol(*video.bits)];
+}
+
+int32 Bink::getBundleValue(Source source) {
+	if ((source < kSourceXOff) || (source == kSourceRun))
+		return *_bundles[source].curPtr++;
+
+	if ((source == kSourceXOff) || (source == kSourceYOff))
+		return (int8) *_bundles[source].curPtr++;
+
+	int16 ret = *((int16 *) _bundles[source].curPtr);
+
+	_bundles[source].curPtr += 2;
+
+	return ret;
+}
+
+void Bink::blockSkip(VideoFrame &video) {
+	// c->dsp.put_pixels_tab[1][0](dst, prev, stride, 8);
+}
+
+void Bink::blockScaledRun(VideoFrame &video) {
+	video.bits->getBits(4); //scan = bink_patterns[get_bits(gb, 4)];
+
+	int i = 0;
+	do {
+		int run = getBundleValue(kSourceRun) + 1;
+
+		i += run;
+		if (i > 64)
+			throw Common::Exception("Run went out of bounds");
+
+		if (video.bits->getBit()) {
+
+			byte v = getBundleValue(kSourceColors);
+			for (int j = 0; j < run; j++)
+				; // ublock[*scan++] = v;
+
+		} else
+			for (int j = 0; j < run; j++)
+				getBundleValue(kSourceColors); // ublock[*scan++] = get_value(c, BINK_SRC_COLORS);
+
+	} while (i < 63);
+
+	if (i == 63)
+		getBundleValue(kSourceColors); // ublock[*scan++] = get_value(c, BINK_SRC_COLORS);
+}
+
+void Bink::blockScaledIntra(VideoFrame &video) {
+	// c->dsp.clear_block(block);
+	getBundleValue(kSourceIntraDC); //block[0] = get_value(c, BINK_SRC_INTRA_DC);
+	readDCTCoeffs(video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
+	// c->dsp.idct(block);
+	// c->dsp.put_pixels_nonclamped(block, ublock, 8);
+}
+
+void Bink::blockScaledFill(VideoFrame &video) {
+	byte v = getBundleValue(kSourceColors);
+	// c->dsp.fill_block_tab[0](dst, v, stride, 16);
+}
+
+void Bink::blockScaledPattern(VideoFrame &video) {
+	byte col[2];
+
+	for (int i = 0; i < 2; i++)
+		col[i] = getBundleValue(kSourceColors);
+
+	for (int j = 0; j < 8; j++) {
+		byte v = getBundleValue(kSourcePattern);
+
+		for (int i = 0; i < 8; i++, v >>= 1)
+			; // ublock[i + j*8] = col[v & 1];
+	}
+}
+
+void Bink::blockScaledRaw(VideoFrame &video) {
+	for (int j = 0; j < 8; j++)
+		for (int i = 0; i < 8; i++)
+			getBundleValue(kSourceColors); // ublock[i + j*8] = get_value(c, BINK_SRC_COLORS);
+}
+
+void Bink::blockScaled(VideoFrame &video, uint32 &bx) {
+	BlockType blockType = (BlockType) getBundleValue(kSourceSubBlockTypes);
+	// warning("blockScaled: %d", blockType);
+
+	switch (blockType) {
+		case kBlockRun:
+			blockScaledRun(video);
+			break;
+
+		case kBlockIntra:
+			blockScaledIntra(video);
+			break;
+
+		case kBlockFill:
+			blockScaledFill(video);
+			break;
+
+		case kBlockPattern:
+			blockScaledPattern(video);
+			break;
+
+		case kBlockRaw:
+			blockScaledRaw(video);
+			break;
+
+		default:
+			throw Common::Exception("Invalid 16x16 block type: %d\n", blockType);
+	}
+
+	if (blockType != kBlockFill)
+		; // c->dsp.scale_blockType(ublockType, dst, stride);
+
+	bx++;
+
+	// dst  += 8;
+	// prev += 8;
+}
+
+void Bink::blockMotion(VideoFrame &video) {
+	int8 xOff = getBundleValue(kSourceXOff);
+	int8 yOff = getBundleValue(kSourceYOff);
+
+	// ref = prev + xoff + yoff * stride;
+
+	// if (ref < ref_start || ref > ref_end)
+		// throw Common::Exception("Copy out of bounds (%d | %d)", bx * 8 + xOff, by * 8 + yOff);
+
+	// c->dsp.put_pixels_tab[1][0](dst, ref, stride, 8);
+}
+
+void Bink::blockRun(VideoFrame &video) {
+	video.bits->getBits(4); // scan = bink_patterns[get_bits(gb, 4)];
+
+	int i = 0;
+	do {
+		int run = getBundleValue(kSourceRun) + 1;
+
+		i += run;
+		if (i > 64)
+			throw Common::Exception("Run went out of bounds");
+
+		if (video.bits->getBit()) {
+
+			byte v = getBundleValue(kSourceColors);
+			for (int j = 0; j < run; j++)
+				; // dst[coordmap[*scan++]] = v;
+
+		} else
+			for (int j = 0; j < run; j++)
+				getBundleValue(kSourceColors); // dst[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
+
+	} while (i < 63);
+
+	if (i == 63)
+		getBundleValue(kSourceColors); // dst[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
+}
+
+void Bink::blockResidue(VideoFrame &video) {
+	int8 xOff = getBundleValue(kSourceXOff);
+	int8 yOff = getBundleValue(kSourceYOff);
+
+	// ref = prev + xoff + yoff * stride;
+
+	// if (ref < ref_start || ref > ref_end)
+		// throw Common::Exception("Copy out of bounds (%d | %d)", bx * 8 + xOff, by * 8 + yOff);
+
+	// c->dsp.put_pixels_tab[1][0](dst, ref, stride, 8);
+	// c->dsp.clear_block(block);
+
+	byte v = video.bits->getBits(7);
+
+	readResidue(video, 0, v); // read_residue(gb, block, v);
+	// c->dsp.add_pixels8(dst, block, stride);
+}
+
+void Bink::blockIntra(VideoFrame &video) {
+	// c->dsp.clear_block(block);
+
+	getBundleValue(kSourceIntraDC); // block[0] = get_value(c, BINK_SRC_INTRA_DC);
+
+	readDCTCoeffs(video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
+
+	// c->dsp.idct_put(dst, stride, block);
+}
+
+void Bink::blockFill(VideoFrame &video) {
+	byte v = getBundleValue(kSourceColors);
+
+	// c->dsp.fill_block_tab[1](dst, v, stride, 8);
+}
+
+void Bink::blockInter(VideoFrame &video) {
+	int8 xOff = getBundleValue(kSourceXOff);
+	int8 yOff = getBundleValue(kSourceYOff);
+
+	// ref = prev + xoff + yoff * stride;
+	// c->dsp.put_pixels_tab[1][0](dst, ref, stride, 8);
+	// c->dsp.clear_block(block);
+
+	getBundleValue(kSourceInterDC); // block[0] = get_value(c, BINK_SRC_INTER_DC);
+
+	readDCTCoeffs(video, 0, 0, 0); // read_dct_coeffs(gb, block, c->scantable.permutated, 0);
+
+	// c->dsp.idct_add(dst, stride, block);
+}
+
+void Bink::blockPattern(VideoFrame &video) {
+	byte col[2];
+
+	for (int i = 0; i < 2; i++)
+		col[i] = getBundleValue(kSourceColors);
+
+
+	for (int i = 0; i < 8; i++) {
+		byte v = getBundleValue(kSourcePattern);
+
+		for (int j = 0; j < 8; j++, v >>= 1)
+			; // dst[i*stride + j] = col[v & 1];
+	}
+}
+
+void Bink::blockRaw(VideoFrame &video) {
+	for (int i = 0; i < 8; i++)
+		; // memcpy(dst + i*stride, c->bundle[BINK_SRC_COLORS].cur_ptr + i*8, 8);
+
+	_bundles[kSourceColors].curPtr += 64;
+}
+
+uint32 Bink::readBundleCount(VideoFrame &video, Bundle &bundle) {
+	if (!bundle.curDec || (bundle.curDec > bundle.curPtr))
+		return 0;
+
+	uint32 n = video.bits->getBits(bundle.countLength);
+	if (n == 0)
+		bundle.curDec = 0;
+
+	return n;
+}
+
+void Bink::readRuns(VideoFrame &video, Bundle &bundle) {
+	uint32 n = readBundleCount(video, bundle);
+	if (n == 0)
+		return;
+
+	byte *decEnd = bundle.curDec + n;
+	if (decEnd > bundle.dataEnd)
+		throw Common::Exception("Run value went out of bounds");
+
+	if (video.bits->getBit()) {
+		byte v = video.bits->getBits(4);
+
+		memset(bundle.curDec, v, n);
+		bundle.curDec += n;
+
+	} else
+		while (bundle.curDec < decEnd)
+			*bundle.curDec++ = getHuffmanSymbol(video, bundle.huffman);
+}
+
+void Bink::readMotionValues(VideoFrame &video, Bundle &bundle) {
+	uint32 n = readBundleCount(video, bundle);
+	if (n == 0)
+		return;
+
+	byte *decEnd = bundle.curDec + n;
+	if (decEnd > bundle.dataEnd)
+		throw Common::Exception("Too many motion values");
+
+	if (video.bits->getBit()) {
+		byte v = video.bits->getBits(4);
+
+		if (v) {
+			int sign = -video.bits->getBit();
+			v = (v ^ sign) - sign;
+		}
+
+		memset(bundle.curDec, v, n);
+		return;
+	}
+
+	do {
+		byte v = getHuffmanSymbol(video, bundle.huffman);
+
+		if (v) {
+			int sign = -video.bits->getBit();
+			v = (v ^ sign) - sign;
+		}
+
+		*bundle.curDec++ = v;
+
+	} while (bundle.curDec < decEnd);
+}
+
+const uint8 rleLens[4] = { 4, 8, 12, 32 };
+void Bink::readBlockTypes(VideoFrame &video, Bundle &bundle) {
+	uint32 n = readBundleCount(video, bundle);
+	if (n == 0)
+		return;
+
+	byte *decEnd = bundle.curDec + n;
+	if (decEnd > bundle.dataEnd)
+		throw Common::Exception("Too many block type values");
+
+	if (video.bits->getBit()) {
+		byte v = video.bits->getBits(4);
+
+		memset(bundle.curDec, v, n);
+
+		bundle.curDec += n;
+		return;
+	}
+
+	byte last = 0;
+	do {
+
+		byte v = getHuffmanSymbol(video, bundle.huffman);
+
+		if (v < 12) {
+			last = v;
+			*bundle.curDec++ = v;
+		} else {
+			int run = rleLens[v - 12];
+
+			memset(bundle.curDec, last, run);
+
+			bundle.curDec += run;
+		}
+
+	} while (bundle.curDec < decEnd);
+}
+
+void Bink::readPatterns(VideoFrame &video, Bundle &bundle) {
+	uint32 n = readBundleCount(video, bundle);
+	if (n == 0)
+		return;
+
+	byte *decEnd = bundle.curDec + n;
+	if (decEnd > bundle.dataEnd)
+		throw Common::Exception("Too many pattern values");
+
+	byte v;
+	while (bundle.curDec < decEnd) {
+		v  = getHuffmanSymbol(video, bundle.huffman);
+		v |= getHuffmanSymbol(video, bundle.huffman) << 4;
+		*bundle.curDec++ = v;
+	}
+}
+
+
+void Bink::readColors(VideoFrame &video, Bundle &bundle) {
+	uint32 n = readBundleCount(video, bundle);
+	if (n == 0)
+		return;
+
+	byte *decEnd = bundle.curDec + n;
+	if (decEnd > bundle.dataEnd)
+		throw Common::Exception("Too many color values");
+
+	if (video.bits->getBit()) {
+		_colLastVal = getHuffmanSymbol(video, _colHighHuffman[_colLastVal]);
+
+		byte v;
+		v = getHuffmanSymbol(video, bundle.huffman);
+		v = (_colLastVal << 4) | v;
+
+		if (_id != kBIKiID) {
+			int sign = ((int8) v) >> 7;
+			v = ((v & 0x7F) ^ sign) - sign;
+			v += 0x80;
+		}
+
+		memset(bundle.curDec, v, n);
+		bundle.curDec += n;
+
+		return;
+	}
+
+	while (bundle.curDec < decEnd) {
+		_colLastVal = getHuffmanSymbol(video, _colHighHuffman[_colLastVal]);
+
+		byte v;
+		v = getHuffmanSymbol(video, bundle.huffman);
+		v = (_colLastVal << 4) | v;
+
+		if (_id != kBIKiID) {
+			int sign = ((int8) v) >> 7;
+			v = ((v & 0x7F) ^ sign) - sign;
+			v += 0x80;
+		}
+		*bundle.curDec++ = v;
+	}
+}
+
+void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSign) {
+	uint32 length = readBundleCount(video, bundle);
+	if (length == 0)
+		return;
+
+	int16 *dst = (int16 *) bundle.curDec;
+
+	int32 v = video.bits->getBits(startBits - (hasSign ? 1 : 0));
+	if (v && hasSign) {
+		int sign = -video.bits->getBit();
+		v = (v ^ sign) - sign;
+	}
+
+	*dst++ = v;
+	length--;
+
+	for (uint32 i = 0; i < length; i += 8) {
+		uint32 length2 = MIN<uint32>(length - i, 8);
+
+		byte bSize = video.bits->getBits(4);
+
+		if (bSize) {
+
+			for (uint32 j = 0; j < length2; j++) {
+				int16 v2 = video.bits->getBits(bSize);
+				if (v2) {
+					int sign = -video.bits->getBit();
+					v2 = (v2 ^ sign) - sign;
+				}
+
+				v += v2;
+				*dst++ = v;
+
+				if ((v < -32768) || (v > 32767))
+					throw Common::Exception("DC value went out of bounds: %d", v);
+			}
+
+		} else
+			for (uint32 j = 0; j < length2; j++)
+				*dst++ = v;
+	}
+
+	bundle.curDec = (byte *) dst;
+}
+
+/** Reads 8x8 block of DCT coefficients. */
+void Bink::readDCTCoeffs(VideoFrame &video, void *block, void *scan, int isIntra) {
+	throw Common::Exception("TODO: readDCTCoeffs");
+}
+
+/** Reads 8x8 block with residue after motion compensation. */
+void Bink::readResidue(VideoFrame &video, void *block, int masksCount) {
+	throw Common::Exception("TODO: readResidue");
 }
 
 } // End of namespace Graphics
