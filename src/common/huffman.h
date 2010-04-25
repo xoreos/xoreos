@@ -38,6 +38,9 @@ public:
 	Huffman(uint8 maxLength, uint32 codeCount, uint32 *codes, uint8 *lengths, uint32 *symbols = 0);
 	~Huffman();
 
+	/** Modify the codes' symbols. */
+	void setSymbols(uint32 *symbols = 0);
+
 	/** Return the next symbol in the bitstream. */
 	uint32 getSymbol(BitStream &bits);
 
@@ -51,9 +54,13 @@ private:
 
 	typedef std::list<Symbol>     CodeList;
 	typedef std::vector<CodeList> CodeLists;
+	typedef std::vector<Symbol *> SymbolList;
 
 	/** Lists of codes and their symbols, sorted by code length. */
 	CodeLists _codes;
+
+	/** Sorted list of pointers to the symbols. */
+	SymbolList _symbols;
 };
 
 } // End of namespace Common

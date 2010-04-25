@@ -29,7 +29,11 @@ Huffman::Huffman(uint8 maxLength, uint32 codeCount, uint32 *codes, uint8 *length
 	assert(maxLength > 0);
 	assert(codeCount > 0);
 
+	assert(codes);
+	assert(lengths);
+
 	_codes.resize(maxLength);
+	_symbols.resize(codeCount);
 
 	for (uint32 i = 0; i < codeCount; i++) {
 		// The symbol. If none were specified, just assume it's identical to the code index
@@ -37,10 +41,19 @@ Huffman::Huffman(uint8 maxLength, uint32 codeCount, uint32 *codes, uint8 *length
 
 		// Put the code and symbol into the correct list
 		_codes[lengths[i] - 1].push_back(Symbol(codes[i], symbol));
+
+		// And put the pointer to the symbol/code struct into the symbol list.
+		_symbols[i] = &_codes[lengths[i] - 1].back();
 	}
 }
 
 Huffman::~Huffman() {
+}
+
+void Huffman::setSymbols(uint32 *symbols) {
+	uint32 i = 0;
+	for (SymbolList::iterator symbol = _symbols.begin(); symbol != _symbols.end(); ++symbols)
+		(*symbol)->symbol = symbols ? *symbols++ : i++;
 }
 
 uint32 Huffman::getSymbol(BitStream &bits) {
