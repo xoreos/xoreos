@@ -342,7 +342,7 @@ void Bink::mergeHuffmanSymbols(VideoFrame &video, byte *dst, byte *src, int size
 	int   size2 = size;
 
 	do {
-		if (video.bits->getBit()) {
+		if (!video.bits->getBit()) {
 			*dst++ = *src++;
 			size--;
 		} else {
