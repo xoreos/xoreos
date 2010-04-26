@@ -64,16 +64,20 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _curFrame(0) {
 			_colHighHuffman[i].symbols[j] = j;
 	}
 
-	for (int i = 0; i < 4; i++)
-		_planes[i] = 0;
+	for (int i = 0; i < 4; i++) {
+		_curPlanes[i] = 0;
+		_oldPlanes[i] = 0;
+	}
 
 	load();
 	addToQueue();
 }
 
 Bink::~Bink() {
-	for (int i = 0; i < 4; i++)
-		delete[] _planes[i];
+	for (int i = 0; i < 4; i++) {
+		delete[] _curPlanes[i];
+		delete[] _oldPlanes[i];
+	}
 
 	deinitBundles();
 
@@ -152,12 +156,12 @@ void Bink::processData() {
 }
 
 void Bink::yuva2bgra() {
-	assert(_data && _planes[0] && _planes[1] && _planes[2] && _planes[3]);
+	assert(_data && _curPlanes[0] && _curPlanes[1] && _curPlanes[2] && _curPlanes[3]);
 
-	const byte *planeY = _planes[0];
-	const byte *planeU = _planes[1];
-	const byte *planeV = _planes[2];
-	const byte *planeA = _planes[3];
+	const byte *planeY = _curPlanes[0];
+	const byte *planeU = _curPlanes[1];
+	const byte *planeV = _curPlanes[2];
+	const byte *planeA = _curPlanes[3];
 	byte *data = _data + (_height - 1) * _pitch * 4;
 	for (uint32 y = 0; y < _height; y++) {
 		byte *rowData = data;
@@ -212,20 +216,30 @@ void Bink::videoPacket(VideoFrame &video) {
 			break;
 	}
 
-	// And convert the YUVA data we have to BGRA
+	// Convert the YUVA data we have to BGRA
 	yuva2bgra();
+
+	// And swap the planes with the reference planes
+	for (int i = 0; i < 4; i++)
+		SWAP(_curPlanes[i], _oldPlanes[i]);
 }
 
 void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 
-	uint32 bw    = isChroma ? ((_width  + 15) >> 4) : ((_width  + 7) >> 3);
-	uint32 bh    = isChroma ? ((_height + 15) >> 4) : ((_height + 7) >> 3);
-	uint32 width = isChroma ?  (_width        >> 1) :   _width;
+	uint32 blockWidth  = isChroma ? ((_width  + 15) >> 4) : ((_width  + 7) >> 3);
+	uint32 blockHeight = isChroma ? ((_height + 15) >> 4) : ((_height + 7) >> 3);
+	uint32 width       = isChroma ?  (_width        >> 1) :   _width;
+	uint32 height      = isChroma ?  (_height       >> 1) :   _height;
 
-	// const int stride = c->pic.linesize[plane_idx];
+	DecodeContext ctx;
 
-	// ref_start = c->last.data[plane_idx];
-	// ref_end   = c->last.data[plane_idx] + (bw - 1 + c->last.linesize[plane_idx] * (bh - 1)) * 8;
+	ctx.video     = &video;
+	ctx.planeIdx  = planeIdx;
+	ctx.destStart = _curPlanes[planeIdx];
+	ctx.destEnd   = _curPlanes[planeIdx] + width * height;
+	ctx.prevStart = _oldPlanes[planeIdx];
+	ctx.prevEnd   = _oldPlanes[planeIdx] + width * height;
+	ctx.pitch     = width;
 
 	// int coordmap[64];
 	// for (int i = 0; i < 64; i++)
@@ -235,11 +249,11 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 	// DECLARE_ALIGNED(16, DCTELEM, block[64]);
 	// DECLARE_ALIGNED(16, uint8_t, ublock[64]);
 
-	initLengths(MAX<uint32>(width, 8), bw);
+	initLengths(MAX<uint32>(width, 8), blockWidth);
 	for (int i = 0; i < kSourceMAX; i++)
 		readBundle(video, (Source) i);
 
-	for (uint32 by = 0; by < bh; by++) {
+	for (ctx.blockY = 0; ctx.blockY < blockHeight; ctx.blockY++) {
 		readBlockTypes  (video, _bundles[kSourceBlockTypes]);
 		readBlockTypes  (video, _bundles[kSourceSubBlockTypes]);
 		readColors      (video, _bundles[kSourceColors]);
@@ -250,62 +264,62 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 		readDCS         (video, _bundles[kSourceInterDC], kDCStartBits, true);
 		readRuns        (video, _bundles[kSourceRun]);
 
-		byte *dst = _planes[planeIdx] + 8 * by * width;
+		ctx.dest = ctx.destStart + 8 * ctx.blockY * ctx.pitch;
+		ctx.prev = ctx.prevStart + 8 * ctx.blockY * ctx.pitch;
 
-		// prev = c->last.data[plane_idx] + 8*by*stride;
-
-		for (uint32 bx = 0; bx < bw; bx++, dst += 8) { // prev += 8;
+		for (ctx.blockX = 0; ctx.blockX < blockWidth; ctx.blockX++, ctx.dest += 8, ctx.prev += 8) {
 			BlockType blockType = (BlockType) getBundleValue(kSourceBlockTypes);
 
+			// warning("
 			// warning("%d.%d.%d: %d (%d)", planeIdx, by, bx, blockType, video.bits->pos());
 
 			// 16x16 block type on odd line means part of the already decoded block, so skip it
-			if ((by & 1) && (blockType == kBlockScaled)) {
-				bx++;
-				dst += 8;
-				// prev += 8;
+			if ((ctx.blockY & 1) && (blockType == kBlockScaled)) {
+				ctx.blockX += 1;
+				ctx.dest   += 8;
+				ctx.prev   += 8;
 				continue;
 			}
 
 			switch (blockType) {
 				case kBlockSkip:
-					blockSkip(video);
+					blockSkip(ctx);
 					break;
 
 				case kBlockScaled:
-					blockScaled(video, bx, dst, width);
+					blockScaled(ctx);
 					break;
 
 				case kBlockMotion:
-					blockMotion(video);
+					blockMotion(ctx);
 					break;
 
 				case kBlockRun:
-					blockRun(video);
+					blockRun(ctx);
 					break;
 
 				case kBlockResidue:
-					blockResidue(video);
+					blockResidue(ctx);
 					break;
 
 				case kBlockIntra:
-					blockIntra(video);
+					blockIntra(ctx);
 					break;
 
 				case kBlockFill:
-					blockFill(video, dst, width);
+					blockFill(ctx);
 					break;
 
 				case kBlockInter:
-					blockInter(video);
+					blockInter(ctx);
 					break;
 
 				case kBlockPattern:
-					blockPattern(video, dst, width);
+					blockPattern(ctx);
 					break;
 
 				case kBlockRaw:
-					blockRaw(video, dst, width);
+					blockRaw(ctx);
 					break;
 
 				default:
@@ -390,9 +404,9 @@ void Bink::readHuffman(VideoFrame &video, Huffman &huffman) {
 	memcpy(huffman.symbols, in, 16);
 }
 
-void Bink::mergeHuffmanSymbols(VideoFrame &video, byte *dst, byte *src, int size) {
-	byte *src2  = src + size;
-	int   size2 = size;
+void Bink::mergeHuffmanSymbols(VideoFrame &video, byte *dst, const byte *src, int size) {
+	const byte *src2  = src + size;
+	int         size2 = size;
 
 	do {
 		if (!video.bits->getBit()) {
@@ -474,16 +488,24 @@ void Bink::load() {
 	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
 	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID); // BIKh and BIKi swap the chroma planes
 
-	_planes[0] = new byte[ _width       *  _height      ]; // Y
-	_planes[1] = new byte[(_width >> 1) * (_height >> 1)]; // U, 1/4 resolution
-	_planes[2] = new byte[(_width >> 1) * (_height >> 1)]; // V, 1/4 resolution
-	_planes[3] = new byte[ _width       *  _height      ]; // A
+	_curPlanes[0] = new byte[ _width       *  _height      ]; // Y
+	_curPlanes[1] = new byte[(_width >> 1) * (_height >> 1)]; // U, 1/4 resolution
+	_curPlanes[2] = new byte[(_width >> 1) * (_height >> 1)]; // V, 1/4 resolution
+	_curPlanes[3] = new byte[ _width       *  _height      ]; // A
+	_oldPlanes[0] = new byte[ _width       *  _height      ]; // Y
+	_oldPlanes[1] = new byte[(_width >> 1) * (_height >> 1)]; // U, 1/4 resolution
+	_oldPlanes[2] = new byte[(_width >> 1) * (_height >> 1)]; // V, 1/4 resolution
+	_oldPlanes[3] = new byte[ _width       *  _height      ]; // A
 
 	// Initialize the video with solid black
-	memset(_planes[0],   0,  _width       *  _height      );
-	memset(_planes[1],   0, (_width >> 1) * (_height >> 1));
-	memset(_planes[2],   0, (_width >> 1) * (_height >> 1));
-	memset(_planes[3], 255,  _width       *  _height      );
+	memset(_curPlanes[0],   0,  _width       *  _height      );
+	memset(_curPlanes[1],   0, (_width >> 1) * (_height >> 1));
+	memset(_curPlanes[2],   0, (_width >> 1) * (_height >> 1));
+	memset(_curPlanes[3], 255,  _width       *  _height      );
+	memset(_oldPlanes[0],   0,  _width       *  _height      );
+	memset(_oldPlanes[1],   0, (_width >> 1) * (_height >> 1));
+	memset(_oldPlanes[2],   0, (_width >> 1) * (_height >> 1));
+	memset(_oldPlanes[3], 255,  _width       *  _height      );
 
 	initBundles();
 	initHuffman();
@@ -552,12 +574,18 @@ uint32 Bink::readBundleCount(VideoFrame &video, Bundle &bundle) {
 	return n;
 }
 
-void Bink::blockSkip(VideoFrame &video) {
-	// c->dsp.put_pixels_tab[1][0](dst, prev, stride, 8);
+void Bink::blockSkip(DecodeContext &ctx) {
+	byte *dest = ctx.dest;
+	byte *prev = ctx.prev;
+
+	for (int j = 0; j < 8; j++, dest += ctx.pitch, prev += ctx.pitch)
+		memcpy(dest, prev, 8);
 }
 
-void Bink::blockScaledRun(VideoFrame &video) {
-	video.bits->getBits(4); //scan = bink_patterns[get_bits(gb, 4)];
+void Bink::blockScaledRun(DecodeContext &ctx) {
+	warning("blockScaledRun");
+
+	ctx.video->bits->getBits(4); //scan = bink_patterns[get_bits(gb, 4)];
 
 	int i = 0;
 	do {
@@ -567,7 +595,7 @@ void Bink::blockScaledRun(VideoFrame &video) {
 		if (i > 64)
 			throw Common::Exception("Run went out of bounds");
 
-		if (video.bits->getBit()) {
+		if (ctx.video->bits->getBit()) {
 
 			byte v = getBundleValue(kSourceColors);
 			for (int j = 0; j < run; j++)
@@ -583,98 +611,106 @@ void Bink::blockScaledRun(VideoFrame &video) {
 		getBundleValue(kSourceColors); // ublock[*scan++] = get_value(c, BINK_SRC_COLORS);
 }
 
-void Bink::blockScaledIntra(VideoFrame &video) {
+void Bink::blockScaledIntra(DecodeContext &ctx) {
 	// c->dsp.clear_block(block);
 	getBundleValue(kSourceIntraDC); //block[0] = get_value(c, BINK_SRC_INTRA_DC);
-	readDCTCoeffs(video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
+	readDCTCoeffs(*ctx.video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
 	// c->dsp.idct(block);
 	// c->dsp.put_pixels_nonclamped(block, ublock, 8);
 }
 
-void Bink::blockScaledFill(VideoFrame &video, byte *dst, uint32 pitch) {
+void Bink::blockScaledFill(DecodeContext &ctx) {
 	byte v = getBundleValue(kSourceColors);
 
-	for (int i = 0; i < 16; i++, dst += pitch)
-		memset(dst, v, 16);
+	byte *dest = ctx.dest;
+	for (int i = 0; i < 16; i++, dest += ctx.pitch)
+		memset(dest, v, 16);
 }
 
-void Bink::blockScaledPattern(VideoFrame &video, byte *dst, uint32 pitch) {
+void Bink::blockScaledPattern(DecodeContext &ctx) {
 	byte col[2];
 
 	for (int i = 0; i < 2; i++)
 		col[i] = getBundleValue(kSourceColors);
 
-	byte *dst2 = dst + pitch;
-	for (int j = 0; j < 8; j++, dst += (pitch << 1) - 16, dst2 += (pitch << 1) - 16) {
+	byte *dest1 = ctx.dest;
+	byte *dest2 = ctx.dest + ctx.pitch;
+	for (int j = 0; j < 8; j++, dest1 += (ctx.pitch << 1) - 16, dest2 += (ctx.pitch << 1) - 16) {
 		byte v = getBundleValue(kSourcePattern);
 
 		for (int i = 0; i < 8; i++, v >>= 1)
-			dst[0] = dst[1] = dst2[0] = dst2[1] = col[v & 1];
+			dest1[0] = dest1[1] = dest2[0] = dest2[1] = col[v & 1];
 	}
 }
 
-void Bink::blockScaledRaw(VideoFrame &video, byte *dst, uint32 pitch) {
+void Bink::blockScaledRaw(DecodeContext &ctx) {
 	byte row[8];
 
-	byte *dst2 = dst + pitch;
-	for (int j = 0; j < 8; j++, dst += (pitch << 1) - 16, dst2 += (pitch << 1) - 16) {
+	byte *dest1 = ctx.dest;
+	byte *dest2 = ctx.dest + ctx.pitch;
+	for (int j = 0; j < 8; j++, dest1 += (ctx.pitch << 1) - 16, dest2 += (ctx.pitch << 1) - 16) {
 		memcpy(row, _bundles[kSourceColors].curPtr, 8);
 
-		for (int i = 0; i < 8; i++, dst += 2)
-			dst[0] = dst[1] = dst2[0] = dst2[1] = row[i];
+		for (int i = 0; i < 8; i++, dest1 += 2, dest2 += 2)
+			dest1[0] = dest1[1] = dest2[0] = dest2[1] = row[i];
 
 		_bundles[kSourceColors].curPtr += 8;
 	}
 }
 
-void Bink::blockScaled(VideoFrame &video, uint32 &bx, byte *&dst, uint32 pitch) {
+void Bink::blockScaled(DecodeContext &ctx) {
 	BlockType blockType = (BlockType) getBundleValue(kSourceSubBlockTypes);
 	// warning("blockScaled: %d", blockType);
 
 	switch (blockType) {
 		case kBlockRun:
-			blockScaledRun(video);
+			blockScaledRun(ctx);
 			break;
 
 		case kBlockIntra:
-			blockScaledIntra(video);
+			blockScaledIntra(ctx);
 			break;
 
 		case kBlockFill:
-			blockScaledFill(video, dst, pitch);
+			blockScaledFill(ctx);
 			break;
 
 		case kBlockPattern:
-			blockScaledPattern(video, dst, pitch);
+			blockScaledPattern(ctx);
 			break;
 
 		case kBlockRaw:
-			blockScaledRaw(video, dst, pitch);
+			blockScaledRaw(ctx);
 			break;
 
 		default:
 			throw Common::Exception("Invalid 16x16 block type: %d\n", blockType);
 	}
 
-	bx++;
-	dst += 8;
-	// prev += 8;
+	ctx.blockX += 1;
+	ctx.dest   += 8;
+	ctx.prev   += 8;
 }
 
-void Bink::blockMotion(VideoFrame &video) {
+void Bink::blockMotion(DecodeContext &ctx) {
+	warning("blockMotion");
+
 	int8 xOff = getBundleValue(kSourceXOff);
 	int8 yOff = getBundleValue(kSourceYOff);
 
+	blockSkip(ctx);
 	// ref = prev + xoff + yoff * stride;
 
 	// if (ref < ref_start || ref > ref_end)
 		// throw Common::Exception("Copy out of bounds (%d | %d)", bx * 8 + xOff, by * 8 + yOff);
 
-	// c->dsp.put_pixels_tab[1][0](dst, ref, stride, 8);
+	// c->dsp.put_pixels_tab[1][0](dest, ref, stride, 8);
 }
 
-void Bink::blockRun(VideoFrame &video) {
-	video.bits->getBits(4); // scan = bink_patterns[get_bits(gb, 4)];
+void Bink::blockRun(DecodeContext &ctx) {
+	warning("blockRun");
+
+	ctx.video->bits->getBits(4); // scan = bink_patterns[get_bits(gb, 4)];
 
 	int i = 0;
 	do {
@@ -684,23 +720,25 @@ void Bink::blockRun(VideoFrame &video) {
 		if (i > 64)
 			throw Common::Exception("Run went out of bounds");
 
-		if (video.bits->getBit()) {
+		if (ctx.video->bits->getBit()) {
 
 			byte v = getBundleValue(kSourceColors);
 			for (int j = 0; j < run; j++)
-				; // dst[coordmap[*scan++]] = v;
+				; // dest[coordmap[*scan++]] = v;
 
 		} else
 			for (int j = 0; j < run; j++)
-				getBundleValue(kSourceColors); // dst[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
+				getBundleValue(kSourceColors); // dest[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
 
 	} while (i < 63);
 
 	if (i == 63)
-		getBundleValue(kSourceColors); // dst[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
+		getBundleValue(kSourceColors); // dest[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
 }
 
-void Bink::blockResidue(VideoFrame &video) {
+void Bink::blockResidue(DecodeContext &ctx) {
+	warning("blockResidue");
+
 	int8 xOff = getBundleValue(kSourceXOff);
 	int8 yOff = getBundleValue(kSourceYOff);
 
@@ -709,65 +747,68 @@ void Bink::blockResidue(VideoFrame &video) {
 	// if (ref < ref_start || ref > ref_end)
 		// throw Common::Exception("Copy out of bounds (%d | %d)", bx * 8 + xOff, by * 8 + yOff);
 
-	// c->dsp.put_pixels_tab[1][0](dst, ref, stride, 8);
+	// c->dsp.put_pixels_tab[1][0](dest, ref, stride, 8);
 	// c->dsp.clear_block(block);
 
-	byte v = video.bits->getBits(7);
+	byte v = ctx.video->bits->getBits(7);
 
-	readResidue(video, 0, v); // read_residue(gb, block, v);
-	// c->dsp.add_pixels8(dst, block, stride);
+	readResidue(*ctx.video, 0, v); // read_residue(gb, block, v);
+	// c->dsp.add_pixels8(dest, block, stride);
 }
 
-void Bink::blockIntra(VideoFrame &video) {
+void Bink::blockIntra(DecodeContext &ctx) {
 	// c->dsp.clear_block(block);
 
 	getBundleValue(kSourceIntraDC); // block[0] = get_value(c, BINK_SRC_INTRA_DC);
 
-	readDCTCoeffs(video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
+	readDCTCoeffs(*ctx.video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
 
-	// c->dsp.idct_put(dst, stride, block);
+	// c->dsp.idct_put(dest, stride, block);
 }
 
-void Bink::blockFill(VideoFrame &video, byte *dst, uint32 pitch) {
+void Bink::blockFill(DecodeContext &ctx) {
 	byte v = getBundleValue(kSourceColors);
 
-	for (int i = 0; i < 8; i++, dst += pitch)
-		memset(dst, v, 8);
+	byte *dest = ctx.dest;
+	for (int i = 0; i < 8; i++, dest += ctx.pitch)
+		memset(dest, v, 8);
 }
 
-void Bink::blockInter(VideoFrame &video) {
+void Bink::blockInter(DecodeContext &ctx) {
 	int8 xOff = getBundleValue(kSourceXOff);
 	int8 yOff = getBundleValue(kSourceYOff);
 
 	// ref = prev + xoff + yoff * stride;
-	// c->dsp.put_pixels_tab[1][0](dst, ref, stride, 8);
+	// c->dsp.put_pixels_tab[1][0](dest, ref, stride, 8);
 	// c->dsp.clear_block(block);
 
 	getBundleValue(kSourceInterDC); // block[0] = get_value(c, BINK_SRC_INTER_DC);
 
-	readDCTCoeffs(video, 0, 0, 0); // read_dct_coeffs(gb, block, c->scantable.permutated, 0);
+	readDCTCoeffs(*ctx.video, 0, 0, 0); // read_dct_coeffs(gb, block, c->scantable.permutated, 0);
 
-	// c->dsp.idct_add(dst, stride, block);
+	// c->dsp.idct_add(dest, stride, block);
 }
 
-void Bink::blockPattern(VideoFrame &video, byte *dst, uint32 pitch) {
+void Bink::blockPattern(DecodeContext &ctx) {
 	byte col[2];
 
 	for (int i = 0; i < 2; i++)
 		col[i] = getBundleValue(kSourceColors);
 
-
-	for (int i = 0; i < 8; i++) {
+	byte *dest = ctx.dest;
+	for (int i = 0; i < 8; i++, dest += ctx.pitch - 8) {
 		byte v = getBundleValue(kSourcePattern);
 
 		for (int j = 0; j < 8; j++, v >>= 1)
-			dst[i * pitch + j] = col[v & 1];
+			*dest++ = col[v & 1];
 	}
 }
 
-void Bink::blockRaw(VideoFrame &video, byte *dst, uint32 pitch) {
-	for (int i = 0; i < 8; i++)
-		memcpy(dst + i * pitch, _bundles[kSourceColors].curPtr + i * 8, 8);
+void Bink::blockRaw(DecodeContext &ctx) {
+	byte *dest = ctx.dest;
+	byte *data = _bundles[kSourceColors].curPtr;
+	for (int i = 0; i < 8; i++, dest += ctx.pitch, data += 8)
+		memcpy(dest, data, 8);
 
 	_bundles[kSourceColors].curPtr += 64;
 }
@@ -933,7 +974,7 @@ void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSig
 	if (length == 0)
 		return;
 
-	int16 *dst = (int16 *) bundle.curDec;
+	int16 *dest = (int16 *) bundle.curDec;
 
 	int32 v = video.bits->getBits(startBits - (hasSign ? 1 : 0));
 	if (v && hasSign) {
@@ -941,7 +982,7 @@ void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSig
 		v = (v ^ sign) - sign;
 	}
 
-	*dst++ = v;
+	*dest++ = v;
 	length--;
 
 	for (uint32 i = 0; i < length; i += 8) {
@@ -959,7 +1000,7 @@ void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSig
 				}
 
 				v += v2;
-				*dst++ = v;
+				*dest++ = v;
 
 				if ((v < -32768) || (v > 32767))
 					throw Common::Exception("DC value went out of bounds: %d", v);
@@ -967,10 +1008,10 @@ void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSig
 
 		} else
 			for (uint32 j = 0; j < length2; j++)
-				*dst++ = v;
+				*dest++ = v;
 	}
 
-	bundle.curDec = (byte *) dst;
+	bundle.curDec = (byte *) dest;
 }
 
 /** Reads 8x8 block of DCT coefficients. */

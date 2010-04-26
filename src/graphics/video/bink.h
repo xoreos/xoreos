@@ -108,6 +108,23 @@ private:
 		Common::BitStream *bits;
 	};
 
+	struct DecodeContext {
+		VideoFrame *video;
+
+		uint32 planeIdx;
+
+		uint32 blockX;
+		uint32 blockY;
+
+		byte *dest;
+		byte *prev;
+
+		byte *destStart, *destEnd;
+		byte *prevStart, *prevEnd;
+
+		uint32 pitch;
+	};
+
 	Common::SeekableReadStream *_bink;
 
 	uint32 _id; ///< The BIK FourCC.
@@ -137,7 +154,8 @@ private:
 	/** Value of the last decoded high nibble in color data types. */
 	int _colLastVal;
 
-	byte *_planes[4]; ///< The 4 color planes, YUVA.
+	byte *_curPlanes[4]; ///< The 4 color planes, YUVA, current frame.
+	byte *_oldPlanes[4]; ///< The 4 color planes, YUVA, last frame.
 
 	/** Load a Bink file. */
 	void load();
@@ -170,7 +188,7 @@ private:
 	/** Read the symbols for a Huffman code. */
 	void readHuffman(VideoFrame &video, Huffman &huffman);
 	/** Merge two Huffman symbol lists. */
-	void mergeHuffmanSymbols(VideoFrame &video, byte *dst, byte *src, int size);
+	void mergeHuffmanSymbols(VideoFrame &video, byte *dst, const byte *src, int size);
 
 	/** Read and translate a symbol out of a Huffman code. */
 	byte getHuffmanSymbol(VideoFrame &video, Huffman &huffman);
@@ -181,21 +199,21 @@ private:
 	uint32 readBundleCount(VideoFrame &video, Bundle &bundle);
 
 	// Handle the block types
-	void blockSkip         (VideoFrame &video);
-	void blockScaledRun    (VideoFrame &video);
-	void blockScaledIntra  (VideoFrame &video);
-	void blockScaledFill   (VideoFrame &video, byte *dst, uint32 pitch);
-	void blockScaledPattern(VideoFrame &video, byte *dst, uint32 pitch);
-	void blockScaledRaw    (VideoFrame &video, byte *dst, uint32 pitch);
-	void blockScaled       (VideoFrame &video, uint32 &bx, byte *&dst, uint32 pitch);
-	void blockMotion       (VideoFrame &video);
-	void blockRun          (VideoFrame &video);
-	void blockResidue      (VideoFrame &video);
-	void blockIntra        (VideoFrame &video);
-	void blockFill         (VideoFrame &video, byte *dst, uint32 pitch);
-	void blockInter        (VideoFrame &video);
-	void blockPattern      (VideoFrame &video, byte *dst, uint32 pitch);
-	void blockRaw          (VideoFrame &video, byte *dst, uint32 pitch);
+	void blockSkip         (DecodeContext &ctx);
+	void blockScaledRun    (DecodeContext &ctx);
+	void blockScaledIntra  (DecodeContext &ctx);
+	void blockScaledFill   (DecodeContext &ctx);
+	void blockScaledPattern(DecodeContext &ctx);
+	void blockScaledRaw    (DecodeContext &ctx);
+	void blockScaled       (DecodeContext &ctx);
+	void blockMotion       (DecodeContext &ctx);
+	void blockRun          (DecodeContext &ctx);
+	void blockResidue      (DecodeContext &ctx);
+	void blockIntra        (DecodeContext &ctx);
+	void blockFill         (DecodeContext &ctx);
+	void blockInter        (DecodeContext &ctx);
+	void blockPattern      (DecodeContext &ctx);
+	void blockRaw          (DecodeContext &ctx);
 
 	// Read the bundles
 	void readRuns        (VideoFrame &video, Bundle &bundle);
