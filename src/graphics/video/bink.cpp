@@ -124,7 +124,9 @@ void Bink::processData() {
 	for (std::vector<AudioTrack>::iterator audio = _audioTracks.begin(); audio != _audioTracks.end(); ++audio) {
 		uint32 audioPacketLength = _bink->readUint32LE();
 
-		if (frameSize < (audioPacketLength + 4))
+		frameSize -= 4;
+
+		if (frameSize < audioPacketLength)
 			throw Common::Exception("Audio packet too big for the frame");
 
 		if (audioPacketLength >= 4) {
@@ -137,7 +139,7 @@ void Bink::processData() {
 			delete audio->bits;
 			audio->bits = 0;
 
-			frameSize -= audioPacketLength + 4;
+			frameSize -= audioPacketLength;
 		}
 	}
 
