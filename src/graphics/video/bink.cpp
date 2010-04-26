@@ -270,7 +270,6 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 		for (ctx.blockX = 0; ctx.blockX < blockWidth; ctx.blockX++, ctx.dest += 8, ctx.prev += 8) {
 			BlockType blockType = (BlockType) getBundleValue(kSourceBlockTypes);
 
-			// warning("
 			// warning("%d.%d.%d: %d (%d)", planeIdx, by, bx, blockType, video.bits->pos());
 
 			// 16x16 block type on odd line means part of the already decoded block, so skip it
@@ -583,8 +582,6 @@ void Bink::blockSkip(DecodeContext &ctx) {
 }
 
 void Bink::blockScaledRun(DecodeContext &ctx) {
-	warning("blockScaledRun");
-
 	ctx.video->bits->getBits(4); //scan = bink_patterns[get_bits(gb, 4)];
 
 	int i = 0;
@@ -706,8 +703,6 @@ void Bink::blockMotion(DecodeContext &ctx) {
 }
 
 void Bink::blockRun(DecodeContext &ctx) {
-	warning("blockRun");
-
 	ctx.video->bits->getBits(4); // scan = bink_patterns[get_bits(gb, 4)];
 
 	int i = 0;
@@ -735,8 +730,6 @@ void Bink::blockRun(DecodeContext &ctx) {
 }
 
 void Bink::blockResidue(DecodeContext &ctx) {
-	warning("blockResidue");
-
 	int8 xOff = getBundleValue(kSourceXOff);
 	int8 yOff = getBundleValue(kSourceYOff);
 
@@ -1014,12 +1007,194 @@ void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSig
 
 /** Reads 8x8 block of DCT coefficients. */
 void Bink::readDCTCoeffs(VideoFrame &video, void *block, void *scan, int isIntra) {
-	throw Common::Exception("TODO: readDCTCoeffs");
+	int coefCount = 0;
+	int coefIdx[64];
+
+	int listStart = 64;
+	int listEnd   = 64;
+
+	int coefList[128];      int modeList[128];
+	coefList[listEnd] = 4;  modeList[listEnd++] = 0;
+	coefList[listEnd] = 24; modeList[listEnd++] = 0;
+	coefList[listEnd] = 44; modeList[listEnd++] = 0;
+	coefList[listEnd] = 1;  modeList[listEnd++] = 3;
+	coefList[listEnd] = 2;  modeList[listEnd++] = 3;
+	coefList[listEnd] = 3;  modeList[listEnd++] = 3;
+
+	int bits = video.bits->getBits(4) - 1;
+	for (int mask = 1 << bits; bits >= 0; mask >>= 1, bits--) {
+		int listPos = listStart;
+
+		while (listPos < listEnd) {
+
+			if (!(modeList[listPos] | coefList[listPos]) || !video.bits->getBit()) {
+				listPos++;
+				continue;
+			}
+
+			int ccoef = coefList[listPos];
+			int mode  = modeList[listPos];
+
+			switch (mode) {
+			case 0:
+				coefList[listPos] = ccoef + 4;
+				modeList[listPos] = 1;
+			case 2:
+				if (mode == 2) {
+					coefList[listPos]   = 0;
+					modeList[listPos++] = 0;
+				}
+				for (int i = 0; i < 4; i++, ccoef++) {
+					if (video.bits->getBit()) {
+						coefList[--listStart] = ccoef;
+						modeList[  listStart] = 3;
+					} else {
+						int t;
+						if (!bits) {
+							t = 1 - (video.bits->getBit() << 1);
+						} else {
+							t = video.bits->getBits(bits) | mask;
+
+							int sign = -video.bits->getBit();
+							t = (t ^ sign) - sign;
+						}
+						//block[scan[ccoef]] = t;
+						coefIdx[coefCount++] = ccoef;
+					}
+				}
+				break;
+
+			case 1:
+				modeList[listPos] = 2;
+				for (int i = 0; i < 3; i++) {
+					ccoef += 4;
+					coefList[listEnd]   = ccoef;
+					modeList[listEnd++] = 2;
+				}
+				break;
+
+			case 3:
+				int t;
+				if (!bits) {
+					t = 1 - (video.bits->getBit() << 1);
+				} else {
+					t = video.bits->getBits(bits) | mask;
+
+					int sign = -video.bits->getBit();
+					t = (t ^ sign) - sign;
+				}
+				// block[scan[ccoef]]   = t;
+				coefIdx[coefCount++] = ccoef;
+				coefList[listPos]    = 0;
+				modeList[listPos++]  = 0;
+				break;
+			}
+		}
+	}
+
+	uint8 quantIdx = video.bits->getBits(4);
+	const uint32 *quant = isIntra ? binkIntraQuant[quantIdx] : binkInterQuant[quantIdx];
+	//block[0] = (block[0] * quant[0]) >> 11;
+
+	for (int i = 0; i < coefCount; i++) {
+		int idx = coefIdx[i];
+		//block[scan[idx]] = (block[scan[idx]] * quant[idx]) >> 11;
+	}
+
 }
 
 /** Reads 8x8 block with residue after motion compensation. */
 void Bink::readResidue(VideoFrame &video, void *block, int masksCount) {
-	throw Common::Exception("TODO: readResidue");
+	int nzCoeff[64];
+	int nzCoeffCount = 0;
+
+	int listStart = 64;
+	int listEnd   = 64;
+
+	int coefList[128];      int modeList[128];
+	coefList[listEnd] =  4; modeList[listEnd++] = 0;
+	coefList[listEnd] = 24; modeList[listEnd++] = 0;
+	coefList[listEnd] = 44; modeList[listEnd++] = 0;
+	coefList[listEnd] =  0; modeList[listEnd++] = 2;
+
+	for (int mask = 1 << video.bits->getBits(3); mask; mask >>= 1) {
+
+		for (int i = 0; i < nzCoeffCount; i++) {
+			if (!video.bits->getBit())
+				continue;
+			/*
+			if (block[nzCoeff[i]] < 0)
+				block[nzCoeff[i]] -= mask;
+			else
+				block[nzCoeff[i]] += mask;
+			*/
+			masksCount--;
+			if (masksCount < 0)
+				return;
+		}
+
+		int listPos = listStart;
+		while (listPos < listEnd) {
+
+			if (!(coefList[listPos] | modeList[listPos]) || !video.bits->getBit()) {
+				listPos++;
+				continue;
+			}
+
+			int ccoef = coefList[listPos];
+			int mode  = modeList[listPos];
+
+			switch (mode) {
+			case 0:
+				coefList[listPos] = ccoef + 4;
+				modeList[listPos] = 1;
+			case 2:
+				if (mode == 2) {
+					coefList[listPos]   = 0;
+					modeList[listPos++] = 0;
+				}
+
+				for (int i = 0; i < 4; i++, ccoef++) {
+					if (video.bits->getBit()) {
+						coefList[--listStart] = ccoef;
+						modeList[  listStart] = 3;
+					} else {
+						nzCoeff[nzCoeffCount++] = binkScan[ccoef];
+
+						int sign = -video.bits->getBit();
+						//block[bink_scan[ccoef]] = (mask ^ sign) - sign;
+
+						masksCount--;
+						if (masksCount < 0)
+							return;
+					}
+				}
+				break;
+
+			case 1:
+				modeList[listPos] = 2;
+				for (int i = 0; i < 3; i++) {
+					ccoef += 4;
+					coefList[listEnd]   = ccoef;
+					modeList[listEnd++] = 2;
+				}
+				break;
+
+			case 3:
+				nzCoeff[nzCoeffCount++] = binkScan[ccoef];
+
+				int sign = -video.bits->getBit();
+				//block[bink_scan[ccoef]] = (mask ^ sign) - sign;
+
+				coefList[listPos]   = 0;
+				modeList[listPos++] = 0;
+				masksCount--;
+				if (masksCount < 0)
+					return;
+				break;
+			}
+		}
+	}
 }
 
 } // End of namespace Graphics
