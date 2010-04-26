@@ -769,12 +769,18 @@ void Bink::blockRun(DecodeContext &ctx) {
 void Bink::blockResidue(DecodeContext &ctx) {
 	blockMotion(ctx);
 
-	// c->dsp.clear_block(block);
-
 	byte v = ctx.video->bits->getBits(7);
 
-	readResidue(*ctx.video, 0, v); // read_residue(gb, block, v);
-	// c->dsp.add_pixels8(dest, block, stride);
+	int16 block[64];
+	memset(block, 0, 64 * sizeof(int16));
+
+	readResidue(*ctx.video, block, v);
+
+	byte  *dst = ctx.dest;
+	int16 *src = block;
+	for (int i = 0; i < 8; i++, dst += ctx.pitch, src += 8)
+		for (int j = 0; j < 8; j++)
+			dst[j] += src[j];
 }
 
 void Bink::blockIntra(DecodeContext &ctx) {
@@ -1133,7 +1139,7 @@ void Bink::readDCTCoeffs(VideoFrame &video, void *block, void *scan, int isIntra
 }
 
 /** Reads 8x8 block with residue after motion compensation. */
-void Bink::readResidue(VideoFrame &video, void *block, int masksCount) {
+void Bink::readResidue(VideoFrame &video, int16 *block, int masksCount) {
 	int nzCoeff[64];
 	int nzCoeffCount = 0;
 
@@ -1151,12 +1157,10 @@ void Bink::readResidue(VideoFrame &video, void *block, int masksCount) {
 		for (int i = 0; i < nzCoeffCount; i++) {
 			if (!video.bits->getBit())
 				continue;
-			/*
 			if (block[nzCoeff[i]] < 0)
 				block[nzCoeff[i]] -= mask;
 			else
 				block[nzCoeff[i]] += mask;
-			*/
 			masksCount--;
 			if (masksCount < 0)
 				return;
@@ -1191,7 +1195,7 @@ void Bink::readResidue(VideoFrame &video, void *block, int masksCount) {
 						nzCoeff[nzCoeffCount++] = binkScan[ccoef];
 
 						int sign = -video.bits->getBit();
-						//block[bink_scan[ccoef]] = (mask ^ sign) - sign;
+						block[binkScan[ccoef]] = (mask ^ sign) - sign;
 
 						masksCount--;
 						if (masksCount < 0)
@@ -1213,7 +1217,7 @@ void Bink::readResidue(VideoFrame &video, void *block, int masksCount) {
 				nzCoeff[nzCoeffCount++] = binkScan[ccoef];
 
 				int sign = -video.bits->getBit();
-				//block[bink_scan[ccoef]] = (mask ^ sign) - sign;
+				block[binkScan[ccoef]] = (mask ^ sign) - sign;
 
 				coefList[listPos]   = 0;
 				modeList[listPos++] = 0;

@@ -228,7 +228,7 @@ private:
 	void readColors      (VideoFrame &video, Bundle &bundle);
 	void readDCS         (VideoFrame &video, Bundle &bundle, int startBits, bool hasSign);
 	void readDCTCoeffs   (VideoFrame &video, void *block, void *scan, int isIntra);
-	void readResidue     (VideoFrame &video, void *block, int masksCount);
+	void readResidue     (VideoFrame &video, int16 *block, int masksCount);
 };
 
 } // End of namespace Graphics
