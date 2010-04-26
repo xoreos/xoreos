@@ -693,18 +693,16 @@ void Bink::blockScaled(DecodeContext &ctx) {
 }
 
 void Bink::blockMotion(DecodeContext &ctx) {
-	warning("blockMotion");
-
 	int8 xOff = getBundleValue(kSourceXOff);
 	int8 yOff = getBundleValue(kSourceYOff);
 
-	blockSkip(ctx);
-	// ref = prev + xoff + yoff * stride;
+	byte *dest = ctx.dest;
+	byte *prev = ctx.prev + yOff * ((int32) ctx.pitch) + xOff;
+	if ((prev < ctx.prevStart) || (prev > ctx.prevEnd))
+		throw Common::Exception("Copy out of bounds (%d | %d)", ctx.blockX * 8 + xOff, ctx.blockY * 8 + yOff);
 
-	// if (ref < ref_start || ref > ref_end)
-		// throw Common::Exception("Copy out of bounds (%d | %d)", bx * 8 + xOff, by * 8 + yOff);
-
-	// c->dsp.put_pixels_tab[1][0](dest, ref, stride, 8);
+	for (int j = 0; j < 8; j++, dest += ctx.pitch, prev += ctx.pitch)
+		memcpy(dest, prev, 8);
 }
 
 void Bink::blockRun(DecodeContext &ctx) {
