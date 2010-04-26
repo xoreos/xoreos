@@ -92,8 +92,14 @@ void VideoDecoder::destroy() {
 }
 
 void VideoDecoder::copyData() {
+	if (!isPlaying())
+		return;
+
 	// Wait until we can copy
 	_canCopy.lock();
+
+	if (!isPlaying())
+		return;
 
 	if (!_data)
 		throw Common::Exception("No video data while trying to copy");
@@ -116,8 +122,14 @@ bool VideoDecoder::isPlaying() const {
 }
 
 void VideoDecoder::update() {
+	if (!isPlaying())
+		return;
+
 	// Wait until we can update
 	_canUpdate.lock();
+
+	if (!isPlaying())
+		return;
 
 	processData();
 
@@ -126,6 +138,9 @@ void VideoDecoder::update() {
 }
 
 void VideoDecoder::render() {
+	if (!isPlaying())
+		return;
+
 	if (_texture == 0)
 		return;
 
@@ -155,6 +170,11 @@ void VideoDecoder::render() {
 }
 
 void VideoDecoder::abort() {
+	_finished = true;
+
+	_canUpdate.unlock();
+	_canCopy.unlock();
+
 	removeFromQueue();
 }
 

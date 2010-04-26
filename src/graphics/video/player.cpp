@@ -56,20 +56,25 @@ void VideoPlayer::play() {
 
 	bool brk = false;
 
-	Events::Event event;
-	while (!EventMan.quitRequested()) {
-		_video->update();
+	try {
+		Events::Event event;
+		while (!EventMan.quitRequested()) {
+			_video->update();
 
-		while (EventMan.pollEvent(event)) {
-			if ((event.type == Events::kEventKeyDown) && (event.key.keysym.sym == SDLK_ESCAPE))
-				brk = true;
+			while (EventMan.pollEvent(event)) {
+				if ((event.type == Events::kEventKeyDown) && (event.key.keysym.sym == SDLK_ESCAPE))
+					brk = true;
+			}
+
+			if (brk || !_video->isPlaying())
+				break;
+
+			if (_video->gotTime())
+				EventMan.delay(10);
 		}
-
-		if (brk || !_video->isPlaying())
-			break;
-
-		if (_video->gotTime())
-			EventMan.delay(10);
+	} catch (...) {
+		_video->abort();
+		throw;
 	}
 
 	_video->abort();
