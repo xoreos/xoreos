@@ -204,6 +204,7 @@ private:
 
 	// Handle the block types
 	void blockSkip         (DecodeContext &ctx);
+	void blockScaledSkip   (DecodeContext &ctx);
 	void blockScaledRun    (DecodeContext &ctx);
 	void blockScaledIntra  (DecodeContext &ctx);
 	void blockScaledFill   (DecodeContext &ctx);

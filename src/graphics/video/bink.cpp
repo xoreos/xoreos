@@ -599,6 +599,14 @@ void Bink::blockSkip(DecodeContext &ctx) {
 		memcpy(dest, prev, 8);
 }
 
+void Bink::blockScaledSkip(DecodeContext &ctx) {
+	byte *dest = ctx.dest;
+	byte *prev = ctx.prev;
+
+	for (int j = 0; j < 16; j++, dest += ctx.pitch, prev += ctx.pitch)
+		memcpy(dest, prev, 16);
+}
+
 void Bink::blockScaledRun(DecodeContext &ctx) {
 	const uint8 *scan = binkPatterns[ctx.video->bits->getBits(4)];
 
@@ -641,6 +649,8 @@ void Bink::blockScaledIntra(DecodeContext &ctx) {
 	readDCTCoeffs(*ctx.video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
 	// c->dsp.idct(block);
 	// c->dsp.put_pixels_nonclamped(block, ublock, 8);
+
+	blockScaledSkip(ctx);
 }
 
 void Bink::blockScaledFill(DecodeContext &ctx) {
@@ -757,15 +767,8 @@ void Bink::blockRun(DecodeContext &ctx) {
 }
 
 void Bink::blockResidue(DecodeContext &ctx) {
-	int8 xOff = getBundleValue(kSourceXOff);
-	int8 yOff = getBundleValue(kSourceYOff);
+	blockMotion(ctx);
 
-	// ref = prev + xoff + yoff * stride;
-
-	// if (ref < ref_start || ref > ref_end)
-		// throw Common::Exception("Copy out of bounds (%d | %d)", bx * 8 + xOff, by * 8 + yOff);
-
-	// c->dsp.put_pixels_tab[1][0](dest, ref, stride, 8);
 	// c->dsp.clear_block(block);
 
 	byte v = ctx.video->bits->getBits(7);
@@ -782,6 +785,8 @@ void Bink::blockIntra(DecodeContext &ctx) {
 	readDCTCoeffs(*ctx.video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
 
 	// c->dsp.idct_put(dest, stride, block);
+
+	blockSkip(ctx);
 }
 
 void Bink::blockFill(DecodeContext &ctx) {
@@ -793,11 +798,8 @@ void Bink::blockFill(DecodeContext &ctx) {
 }
 
 void Bink::blockInter(DecodeContext &ctx) {
-	int8 xOff = getBundleValue(kSourceXOff);
-	int8 yOff = getBundleValue(kSourceYOff);
+	blockMotion(ctx);
 
-	// ref = prev + xoff + yoff * stride;
-	// c->dsp.put_pixels_tab[1][0](dest, ref, stride, 8);
 	// c->dsp.clear_block(block);
 
 	getBundleValue(kSourceInterDC); // block[0] = get_value(c, BINK_SRC_INTER_DC);
