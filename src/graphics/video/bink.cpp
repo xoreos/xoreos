@@ -204,7 +204,7 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 		for (uint32 bx = 0; bx < bw; bx++) { // dst += 8, prev += 8;
 			BlockType blockType = (BlockType) getBundleValue(kSourceBlockTypes);
 
-			// warning("%d.%d: %d", by, bx, blockType);
+			// warning("%d.%d.%d: %d (%d)", planeIdx, by, bx, blockType, video.bits->pos());
 
 			// 16x16 block type on odd line means part of the already decoded block, so skip it
 			if ((by & 1) && (blockType == kBlockScaled)) {
@@ -735,6 +735,8 @@ void Bink::readMotionValues(VideoFrame &video, Bundle &bundle) {
 		}
 
 		memset(bundle.curDec, v, n);
+
+		bundle.curDec += n;
 		return;
 	}
 
