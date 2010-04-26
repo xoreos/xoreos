@@ -184,18 +184,18 @@ private:
 	void blockSkip         (VideoFrame &video);
 	void blockScaledRun    (VideoFrame &video);
 	void blockScaledIntra  (VideoFrame &video);
-	void blockScaledFill   (VideoFrame &video);
-	void blockScaledPattern(VideoFrame &video);
-	void blockScaledRaw    (VideoFrame &video);
-	void blockScaled       (VideoFrame &video, uint32 &bx);
+	void blockScaledFill   (VideoFrame &video, byte *dst, uint32 pitch);
+	void blockScaledPattern(VideoFrame &video, byte *dst, uint32 pitch);
+	void blockScaledRaw    (VideoFrame &video, byte *dst, uint32 pitch);
+	void blockScaled       (VideoFrame &video, uint32 &bx, byte *&dst, uint32 pitch);
 	void blockMotion       (VideoFrame &video);
 	void blockRun          (VideoFrame &video);
 	void blockResidue      (VideoFrame &video);
 	void blockIntra        (VideoFrame &video);
-	void blockFill         (VideoFrame &video);
+	void blockFill         (VideoFrame &video, byte *dst, uint32 pitch);
 	void blockInter        (VideoFrame &video);
-	void blockPattern      (VideoFrame &video);
-	void blockRaw          (VideoFrame &video);
+	void blockPattern      (VideoFrame &video, byte *dst, uint32 pitch);
+	void blockRaw          (VideoFrame &video, byte *dst, uint32 pitch);
 
 	// Read the bundles
 	void readRuns        (VideoFrame &video, Bundle &bundle);

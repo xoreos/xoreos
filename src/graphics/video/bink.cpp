@@ -175,6 +175,30 @@ void Bink::yuva2bgra() {
 		planeV += _width >> 1;
 		planeA += _width;
 	}
+
+
+/*
+	byte tmpg[4] = {   0, 255,   0, 255 };
+	byte tmpr[4] = {   0,   0, 255, 255 };
+	byte tmpb[4] = { 255,   0,   0, 255 };
+	byte tmps[4] = { 255,   0, 255, 255 };
+	data = _data;
+
+	for (uint32 i = 0; i < _width; i++, data += 4)
+		memcpy(data, tmpg, 4);
+
+	data = _data + (_height - 1 ) * _pitch * 4;
+	for (uint32 i = 0; i < _width; i++, data += 4)
+		memcpy(data, tmpr, 4);
+
+	data = _data;
+	for (uint32 i = 0; i < _height; i++, data += _pitch * 4)
+		memcpy(data, tmpb, 4);
+
+	data = _data + (_width - 1) * 4;
+	for (uint32 i = 0; i < _height; i++, data += _pitch * 4)
+		memcpy(data, tmps, 4);
+*/
 }
 
 void Bink::audioPacket(AudioTrack &audio) {
@@ -240,10 +264,11 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 		readDCS         (video, _bundles[kSourceInterDC], kDCStartBits, true);
 		readRuns        (video, _bundles[kSourceRun]);
 
-		// dst  = c->pic.data[plane_idx]  + 8*by*stride;
+		byte *dst = _planes[planeIdx] + 8 * by * width;
+
 		// prev = c->last.data[plane_idx] + 8*by*stride;
 
-		for (uint32 bx = 0; bx < bw; bx++) { // dst += 8, prev += 8;
+		for (uint32 bx = 0; bx < bw; bx++, dst += 8) { // prev += 8;
 			BlockType blockType = (BlockType) getBundleValue(kSourceBlockTypes);
 
 			// warning("%d.%d.%d: %d (%d)", planeIdx, by, bx, blockType, video.bits->pos());
@@ -251,7 +276,7 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 			// 16x16 block type on odd line means part of the already decoded block, so skip it
 			if ((by & 1) && (blockType == kBlockScaled)) {
 				bx++;
-				// dst  += 8;
+				dst += 8;
 				// prev += 8;
 				continue;
 			}
@@ -262,7 +287,7 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 					break;
 
 				case kBlockScaled:
-					blockScaled(video, bx);
+					blockScaled(video, bx, dst, width);
 					break;
 
 				case kBlockMotion:
@@ -282,7 +307,7 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 					break;
 
 				case kBlockFill:
-					blockFill(video);
+					blockFill(video, dst, width);
 					break;
 
 				case kBlockInter:
@@ -290,11 +315,11 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 					break;
 
 				case kBlockPattern:
-					blockPattern(video);
+					blockPattern(video, dst, width);
 					break;
 
 				case kBlockRaw:
-					blockRaw(video);
+					blockRaw(video, dst, width);
 					break;
 
 				default:
@@ -469,7 +494,7 @@ void Bink::load() {
 	_planes[3] = new byte[ _width       *  _height      ]; // A
 
 	// Initialize the video with solid black
-	memset(_planes[0], 255,  _width       *  _height      );
+	memset(_planes[0],   0,  _width       *  _height      );
 	memset(_planes[1],   0, (_width >> 1) * (_height >> 1));
 	memset(_planes[2],   0, (_width >> 1) * (_height >> 1));
 	memset(_planes[3], 255,  _width       *  _height      );
@@ -580,32 +605,43 @@ void Bink::blockScaledIntra(VideoFrame &video) {
 	// c->dsp.put_pixels_nonclamped(block, ublock, 8);
 }
 
-void Bink::blockScaledFill(VideoFrame &video) {
+void Bink::blockScaledFill(VideoFrame &video, byte *dst, uint32 pitch) {
 	byte v = getBundleValue(kSourceColors);
-	// c->dsp.fill_block_tab[0](dst, v, stride, 16);
+
+	for (int i = 0; i < 16; i++, dst += pitch)
+		memset(dst, v, 16);
 }
 
-void Bink::blockScaledPattern(VideoFrame &video) {
+void Bink::blockScaledPattern(VideoFrame &video, byte *dst, uint32 pitch) {
 	byte col[2];
 
 	for (int i = 0; i < 2; i++)
 		col[i] = getBundleValue(kSourceColors);
 
-	for (int j = 0; j < 8; j++) {
+	byte *dst2 = dst + pitch;
+	for (int j = 0; j < 8; j++, dst += (pitch << 1) - 16, dst2 += (pitch << 1) - 16) {
 		byte v = getBundleValue(kSourcePattern);
 
 		for (int i = 0; i < 8; i++, v >>= 1)
-			; // ublock[i + j*8] = col[v & 1];
+			dst[0] = dst[1] = dst2[0] = dst2[1] = col[v & 1];
 	}
 }
 
-void Bink::blockScaledRaw(VideoFrame &video) {
-	for (int j = 0; j < 8; j++)
-		for (int i = 0; i < 8; i++)
-			getBundleValue(kSourceColors); // ublock[i + j*8] = get_value(c, BINK_SRC_COLORS);
+void Bink::blockScaledRaw(VideoFrame &video, byte *dst, uint32 pitch) {
+	byte row[8];
+
+	byte *dst2 = dst + pitch;
+	for (int j = 0; j < 8; j++, dst += (pitch << 1) - 16, dst2 += (pitch << 1) - 16) {
+		memcpy(row, _bundles[kSourceColors].curPtr, 8);
+
+		for (int i = 0; i < 8; i++, dst += 2)
+			dst[0] = dst[1] = dst2[0] = dst2[1] = row[i];
+
+		_bundles[kSourceColors].curPtr += 8;
+	}
 }
 
-void Bink::blockScaled(VideoFrame &video, uint32 &bx) {
+void Bink::blockScaled(VideoFrame &video, uint32 &bx, byte *&dst, uint32 pitch) {
 	BlockType blockType = (BlockType) getBundleValue(kSourceSubBlockTypes);
 	// warning("blockScaled: %d", blockType);
 
@@ -619,27 +655,23 @@ void Bink::blockScaled(VideoFrame &video, uint32 &bx) {
 			break;
 
 		case kBlockFill:
-			blockScaledFill(video);
+			blockScaledFill(video, dst, pitch);
 			break;
 
 		case kBlockPattern:
-			blockScaledPattern(video);
+			blockScaledPattern(video, dst, pitch);
 			break;
 
 		case kBlockRaw:
-			blockScaledRaw(video);
+			blockScaledRaw(video, dst, pitch);
 			break;
 
 		default:
 			throw Common::Exception("Invalid 16x16 block type: %d\n", blockType);
 	}
 
-	if (blockType != kBlockFill)
-		; // c->dsp.scale_blockType(ublockType, dst, stride);
-
 	bx++;
-
-	// dst  += 8;
+	dst += 8;
 	// prev += 8;
 }
 
@@ -710,10 +742,11 @@ void Bink::blockIntra(VideoFrame &video) {
 	// c->dsp.idct_put(dst, stride, block);
 }
 
-void Bink::blockFill(VideoFrame &video) {
+void Bink::blockFill(VideoFrame &video, byte *dst, uint32 pitch) {
 	byte v = getBundleValue(kSourceColors);
 
-	// c->dsp.fill_block_tab[1](dst, v, stride, 8);
+	for (int i = 0; i < 8; i++, dst += pitch)
+		memset(dst, v, 8);
 }
 
 void Bink::blockInter(VideoFrame &video) {
@@ -731,7 +764,7 @@ void Bink::blockInter(VideoFrame &video) {
 	// c->dsp.idct_add(dst, stride, block);
 }
 
-void Bink::blockPattern(VideoFrame &video) {
+void Bink::blockPattern(VideoFrame &video, byte *dst, uint32 pitch) {
 	byte col[2];
 
 	for (int i = 0; i < 2; i++)
@@ -742,13 +775,13 @@ void Bink::blockPattern(VideoFrame &video) {
 		byte v = getBundleValue(kSourcePattern);
 
 		for (int j = 0; j < 8; j++, v >>= 1)
-			; // dst[i*stride + j] = col[v & 1];
+			dst[i * pitch + j] = col[v & 1];
 	}
 }
 
-void Bink::blockRaw(VideoFrame &video) {
+void Bink::blockRaw(VideoFrame &video, byte *dst, uint32 pitch) {
 	for (int i = 0; i < 8; i++)
-		; // memcpy(dst + i*stride, c->bundle[BINK_SRC_COLORS].cur_ptr + i*8, 8);
+		memcpy(dst + i * pitch, _bundles[kSourceColors].curPtr + i * 8, 8);
 
 	_bundles[kSourceColors].curPtr += 64;
 }
