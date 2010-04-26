@@ -62,10 +62,17 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _curFrame(0) {
 			_colHighHuffman[i].symbols[j] = j;
 	}
 
+	for (int i = 0; i < 4; i++)
+		_planes[i] = 0;
+
 	load();
+	addToQueue();
 }
 
 Bink::~Bink() {
+	for (int i = 0; i < 4; i++)
+		delete[] _planes[i];
+
 	deinitBundles();
 
 	for (int i = 0; i < 16; i++)
@@ -75,7 +82,12 @@ Bink::~Bink() {
 }
 
 bool Bink::gotTime() const {
-	return true;
+	uint32 curTime = EventMan.getTimestamp();
+	uint32 frameTime = ((uint64) (_curFrame * 1000 * ((uint64) _fpsDen))) / _fpsNum;
+	if ((curTime - _startTime + 11) < frameTime)
+		return true;
+
+	return false;
 }
 
 void Bink::processData() {
@@ -137,6 +149,34 @@ void Bink::processData() {
 	_curFrame++;
 }
 
+void Bink::yuva2bgra() {
+	assert(_planes[0] && _planes[1] && _planes[2] && _planes[3]);
+
+	// TODO: :P
+
+	const byte *planeY = _planes[0];
+	const byte *planeU = _planes[1];
+	const byte *planeV = _planes[2];
+	const byte *planeA = _planes[3];
+	byte *data = _data;
+	for (uint32 y = 0; y < _height; y++) {
+		byte *rowData = data;
+
+		for (uint32 x = 0; x < _width; x++, rowData += 4) {
+			rowData[0] = planeY[x];
+			rowData[1] = planeY[x];
+			rowData[2] = planeY[x];
+			rowData[3] = planeA[x];
+		}
+
+		data   += _pitch * 4;
+		planeY += _width;
+		planeU += _width >> 1;
+		planeV += _width >> 1;
+		planeA += _width;
+	}
+}
+
 void Bink::audioPacket(AudioTrack &audio) {
 }
 
@@ -162,6 +202,8 @@ void Bink::videoPacket(VideoFrame &video) {
 			break;
 	}
 
+	// And convert the YUVA data we have to BGRA
+	yuva2bgra();
 }
 
 void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
@@ -185,7 +227,7 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 
 	initLengths(MAX<uint32>(width, 8), bw);
 	for (int i = 0; i < kSourceMAX; i++)
-		readBundle(video, i);
+		readBundle(video, (Source) i);
 
 	for (uint32 by = 0; by < bh; by++) {
 		readBlockTypes  (video, _bundles[kSourceBlockTypes]);
@@ -268,19 +310,19 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 
 }
 
-void Bink::readBundle(VideoFrame &video, int bundle) {
-	if (bundle == kSourceColors) {
+void Bink::readBundle(VideoFrame &video, Source source) {
+	if (source == kSourceColors) {
 		for (int i = 0; i < 16; i++)
 			readHuffman(video, _colHighHuffman[i]);
 
 		_colLastVal = 0;
 	}
 
-	if ((bundle != kSourceIntraDC) && (bundle != kSourceInterDC))
-		readHuffman(video, _bundles[bundle].huffman);
+	if ((source != kSourceIntraDC) && (source != kSourceInterDC))
+		readHuffman(video, _bundles[source].huffman);
 
-	_bundles[bundle].curDec = _bundles[bundle].data;
-	_bundles[bundle].curPtr = _bundles[bundle].data;
+	_bundles[source].curDec = _bundles[source].data;
+	_bundles[source].curPtr = _bundles[source].data;
 }
 
 void Bink::readHuffman(VideoFrame &video, Huffman &huffman) {
@@ -391,6 +433,7 @@ void Bink::load() {
 
 		_bink->skip(4 * audioTrackCount);
 
+		// Reading audio track properties
 		for (std::vector<AudioTrack>::iterator it = _audioTracks.begin(); it != _audioTracks.end(); ++it) {
 			it->sampleRate  = _bink->readUint16LE();
 			it->flags       = _bink->readUint16LE();
@@ -401,6 +444,7 @@ void Bink::load() {
 		_bink->skip(4 * audioTrackCount);
 	}
 
+	// Reading video frame properties
 	_frames.resize(frameCount);
 	for (uint32 i = 0; i < frameCount; i++) {
 		_frames[i].offset   = _bink->readUint32LE();
@@ -417,7 +461,18 @@ void Bink::load() {
 	_frames[frameCount - 1].size = _bink->size() - _frames[frameCount - 1].offset;
 
 	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
-	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID);
+	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID); // BIKh and BIKi swap the chroma planes
+
+	_planes[0] = new byte[ _width       *  _height      ]; // Y
+	_planes[1] = new byte[(_width >> 1) * (_height >> 1)]; // U, 1/4 resolution
+	_planes[2] = new byte[(_width >> 1) * (_height >> 1)]; // V, 1/4 resolution
+	_planes[3] = new byte[ _width       *  _height      ]; // A
+
+	// Initialize the video with solid black
+	memset(_planes[0], 255,  _width       *  _height      );
+	memset(_planes[1],   0, (_width >> 1) * (_height >> 1));
+	memset(_planes[2],   0, (_width >> 1) * (_height >> 1));
+	memset(_planes[3], 255,  _width       *  _height      );
 
 	initBundles();
 	initHuffman();
@@ -444,6 +499,7 @@ void Bink::initHuffman() {
 		_huffman[i] = new Common::Huffman(binkHuffmanLengths[i][15], 16, binkHuffmanCodes[i], binkHuffmanLengths[i]);
 }
 
+// TODO: Don't use the slow standard log2()
 void Bink::initLengths(uint32 width, uint32 bw) {
 	_bundles[kSourceBlockTypes   ].countLength = log2((width >> 3)    + 511) + 1;
 	_bundles[kSourceSubBlockTypes].countLength = log2((width >> 4)    + 511) + 1;
@@ -472,6 +528,17 @@ int32 Bink::getBundleValue(Source source) {
 	_bundles[source].curPtr += 2;
 
 	return ret;
+}
+
+uint32 Bink::readBundleCount(VideoFrame &video, Bundle &bundle) {
+	if (!bundle.curDec || (bundle.curDec > bundle.curPtr))
+		return 0;
+
+	uint32 n = video.bits->getBits(bundle.countLength);
+	if (n == 0)
+		bundle.curDec = 0;
+
+	return n;
 }
 
 void Bink::blockSkip(VideoFrame &video) {
@@ -684,17 +751,6 @@ void Bink::blockRaw(VideoFrame &video) {
 		; // memcpy(dst + i*stride, c->bundle[BINK_SRC_COLORS].cur_ptr + i*8, 8);
 
 	_bundles[kSourceColors].curPtr += 64;
-}
-
-uint32 Bink::readBundleCount(VideoFrame &video, Bundle &bundle) {
-	if (!bundle.curDec || (bundle.curDec > bundle.curPtr))
-		return 0;
-
-	uint32 n = video.bits->getBits(bundle.countLength);
-	if (n == 0)
-		bundle.curDec = 0;
-
-	return n;
 }
 
 void Bink::readRuns(VideoFrame &video, Bundle &bundle) {

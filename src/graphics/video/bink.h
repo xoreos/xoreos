@@ -69,6 +69,7 @@ private:
 		kBlockRaw        ,  ///< Uncoded 8x8 block.
 	};
 
+	/** Data structure for decoding and tranlating Huffman'd data. */
 	struct Huffman {
 		int  index;       ///< Index of the Huffman codebook to use.
 		byte symbols[16]; ///< Huffman symbol => Bink symbol tranlation list.
@@ -117,7 +118,7 @@ private:
 	uint32 _videoFlags; ///< Video frame features.
 
 	bool _hasAlpha;   ///< Do video frames have alpha?
-	bool _swapPlanes;
+	bool _swapPlanes; ///< Are the planes ordered (A)YVU instead of (A)YUV?
 
 	uint32 _curFrame; ///< Current Frame.
 
@@ -136,31 +137,50 @@ private:
 	/** Value of the last decoded high nibble in color data types. */
 	int _colLastVal;
 
+	byte *_planes[4]; ///< The 4 color planes, YUVA.
+
+	/** Load a Bink file. */
 	void load();
 
+	/** Initialize the bundles. */
 	void initBundles();
+	/** Deinitialize the bundles. */
 	void deinitBundles();
 
+	/** Initialize the Huffman decoders. */
 	void initHuffman();
 
+	/** Initialize the bundles' count lengths. */
 	void initLengths(uint32 width, uint32 bw);
+
+	/** Convert the YUVA420p data we get to BGRA. */
+	void yuva2bgra();
 
 	/** Decode an audio packet. */
 	void audioPacket(AudioTrack &audio);
 	/** Decode a video packet. */
 	void videoPacket(VideoFrame &video);
 
+	/** Decode a plane. */
 	void decodePlane(VideoFrame &video, int planeIdx, bool isChroma);
 
-	void readBundle(VideoFrame &video, int bundle);
+	/** Read/Initialize a bundle for decoding a plane. */
+	void readBundle(VideoFrame &video, Source source);
 
+	/** Read the symbols for a Huffman code. */
 	void readHuffman(VideoFrame &video, Huffman &huffman);
+	/** Merge two Huffman symbol lists. */
 	void mergeHuffmanSymbols(VideoFrame &video, byte *dst, byte *src, int size);
 
+	/** Read and translate a symbol out of a Huffman code. */
 	byte getHuffmanSymbol(VideoFrame &video, Huffman &huffman);
 
+	/** Get a direct value out of a bundle. */
 	int32 getBundleValue(Source source);
+	/** Read a count value out of a bundle. */
+	uint32 readBundleCount(VideoFrame &video, Bundle &bundle);
 
+	// Handle the block types
 	void blockSkip         (VideoFrame &video);
 	void blockScaledRun    (VideoFrame &video);
 	void blockScaledIntra  (VideoFrame &video);
@@ -177,8 +197,7 @@ private:
 	void blockPattern      (VideoFrame &video);
 	void blockRaw          (VideoFrame &video);
 
-	uint32 readBundleCount(VideoFrame &video, Bundle &bundle);
-
+	// Read the bundles
 	void readRuns        (VideoFrame &video, Bundle &bundle);
 	void readMotionValues(VideoFrame &video, Bundle &bundle);
 	void readBlockTypes  (VideoFrame &video, Bundle &bundle);
