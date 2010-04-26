@@ -251,9 +251,11 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 	// DECLARE_ALIGNED(16, DCTELEM, block[64]);
 	// DECLARE_ALIGNED(16, uint8_t, ublock[64]);
 
-	initLengths(MAX<uint32>(width, 8), blockWidth);
-	for (int i = 0; i < kSourceMAX; i++)
+	for (int i = 0; i < kSourceMAX; i++) {
+		_bundles[i].countLength = _bundles[i].countLengths[isChroma ? 1 : 0];
+
 		readBundle(video, (Source) i);
+	}
 
 	for (ctx.blockY = 0; ctx.blockY < blockHeight; ctx.blockY++) {
 		readBlockTypes  (video, _bundles[kSourceBlockTypes]);
@@ -521,6 +523,24 @@ void Bink::initBundles() {
 		_bundles[i].data    = new byte[blocks * 64];
 		_bundles[i].dataEnd = _bundles[i].data + blocks * 64;
 	}
+
+	uint32 cbw[2] = { (_width + 7) >> 3, (_width  + 15) >> 4 };
+	uint32 cw [2] = {  _width          ,  _width        >> 1 };
+
+	// Calculate the lengths of an element count in bits
+	for (int i = 0; i < 2; i++) {
+		int width = MAX<uint32>(cw[i], 8);
+
+		_bundles[kSourceBlockTypes   ].countLengths[i] = log2((width  >> 3)    + 511) + 1;
+		_bundles[kSourceSubBlockTypes].countLengths[i] = log2((width  >> 4)    + 511) + 1;
+		_bundles[kSourceColors       ].countLengths[i] = log2((width  >> 3)*64 + 511) + 1;
+		_bundles[kSourceIntraDC      ].countLengths[i] = log2((width  >> 3)    + 511) + 1;
+		_bundles[kSourceInterDC      ].countLengths[i] = log2((width  >> 3)    + 511) + 1;
+		_bundles[kSourceXOff         ].countLengths[i] = log2((width  >> 3)    + 511) + 1;
+		_bundles[kSourceYOff         ].countLengths[i] = log2((width  >> 3)    + 511) + 1;
+		_bundles[kSourcePattern      ].countLengths[i] = log2((cbw[i] << 3)    + 511) + 1;
+		_bundles[kSourceRun          ].countLengths[i] = log2((width  >> 3)*48 + 511) + 1;
+	}
 }
 
 void Bink::deinitBundles() {
@@ -531,19 +551,6 @@ void Bink::deinitBundles() {
 void Bink::initHuffman() {
 	for (int i = 0; i < 16; i++)
 		_huffman[i] = new Common::Huffman(binkHuffmanLengths[i][15], 16, binkHuffmanCodes[i], binkHuffmanLengths[i]);
-}
-
-// TODO: Don't use the slow standard log2()
-void Bink::initLengths(uint32 width, uint32 bw) {
-	_bundles[kSourceBlockTypes   ].countLength = log2((width >> 3)    + 511) + 1;
-	_bundles[kSourceSubBlockTypes].countLength = log2((width >> 4)    + 511) + 1;
-	_bundles[kSourceColors       ].countLength = log2((width >> 3)*64 + 511) + 1;
-	_bundles[kSourceIntraDC      ].countLength = log2((width >> 3)    + 511) + 1;
-	_bundles[kSourceInterDC      ].countLength = log2((width >> 3)    + 511) + 1;
-	_bundles[kSourceXOff         ].countLength = log2((width >> 3)    + 511) + 1;
-	_bundles[kSourceYOff         ].countLength = log2((width >> 3)    + 511) + 1;
-	_bundles[kSourcePattern      ].countLength = log2((bw    << 3)    + 511) + 1;
-	_bundles[kSourceRun          ].countLength = log2((width >> 3)*48 + 511) + 1;
 }
 
 byte Bink::getHuffmanSymbol(VideoFrame &video, Huffman &huffman) {

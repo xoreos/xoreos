@@ -77,7 +77,8 @@ private:
 
 	/** Data structure used for decoding a single Bink data type. */
 	struct Bundle {
-		int countLength; ///< Length of number of entries to decode (in bits).
+		int countLengths[2]; ///< Lengths of number of entries to decode (in bits).
+		int countLength;     ///< Length of number of entries to decode (in bits) for the current plane.
 
 		Huffman huffman; ///< Huffman codebook.
 
@@ -167,9 +168,6 @@ private:
 
 	/** Initialize the Huffman decoders. */
 	void initHuffman();
-
-	/** Initialize the bundles' count lengths. */
-	void initLengths(uint32 width, uint32 bw);
 
 	/** Convert the YUVA420p data we get to BGRA. */
 	void yuva2bgra();
