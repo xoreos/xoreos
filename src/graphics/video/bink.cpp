@@ -20,6 +20,8 @@
 #include "common/bitstream.h"
 #include "common/huffman.h"
 
+#include "graphics/util.h"
+
 #include "graphics/video/bink.h"
 #include "graphics/video/binkdata.h"
 
@@ -150,9 +152,7 @@ void Bink::processData() {
 }
 
 void Bink::yuva2bgra() {
-	assert(_planes[0] && _planes[1] && _planes[2] && _planes[3]);
-
-	// TODO: :P
+	assert(_data && _planes[0] && _planes[1] && _planes[2] && _planes[3]);
 
 	const byte *planeY = _planes[0];
 	const byte *planeU = _planes[1];
@@ -163,42 +163,28 @@ void Bink::yuva2bgra() {
 		byte *rowData = data;
 
 		for (uint32 x = 0; x < _width; x++, rowData += 4) {
-			rowData[0] = planeY[x];
-			rowData[1] = planeY[x];
-			rowData[2] = planeY[x];
+			const byte y = planeY[x];
+			const byte u = planeU[x >> 1];
+			const byte v = planeV[x >> 1];
+
+			byte r = 0, g = 0, b = 0;
+			YUV2RGB(y, u, v, r, g, b);
+
+			rowData[0] = b;
+			rowData[1] = g;
+			rowData[2] = r;
 			rowData[3] = planeA[x];
 		}
 
 		data   -= _pitch * 4;
 		planeY += _width;
-		planeU += _width >> 1;
-		planeV += _width >> 1;
 		planeA += _width;
+
+		if ((y & 1) == 1) {
+			planeU += _width >> 1;
+			planeV += _width >> 1;
+		}
 	}
-
-
-/*
-	byte tmpg[4] = {   0, 255,   0, 255 };
-	byte tmpr[4] = {   0,   0, 255, 255 };
-	byte tmpb[4] = { 255,   0,   0, 255 };
-	byte tmps[4] = { 255,   0, 255, 255 };
-	data = _data;
-
-	for (uint32 i = 0; i < _width; i++, data += 4)
-		memcpy(data, tmpg, 4);
-
-	data = _data + (_height - 1 ) * _pitch * 4;
-	for (uint32 i = 0; i < _width; i++, data += 4)
-		memcpy(data, tmpr, 4);
-
-	data = _data;
-	for (uint32 i = 0; i < _height; i++, data += _pitch * 4)
-		memcpy(data, tmpb, 4);
-
-	data = _data + (_width - 1) * 4;
-	for (uint32 i = 0; i < _height; i++, data += _pitch * 4)
-		memcpy(data, tmps, 4);
-*/
 }
 
 void Bink::audioPacket(AudioTrack &audio) {

@@ -8,6 +8,7 @@ noinst_HEADERS = types.h \
                  glew/glew.h \
                  glew/glxew.h \
                  glew/wglew.h \
+                 util.h \
                  graphics.h \
                  fpscounter.h \
                  queueable.h \
