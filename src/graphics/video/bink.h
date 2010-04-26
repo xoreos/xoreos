@@ -123,9 +123,13 @@ private:
 		byte *destStart, *destEnd;
 		byte *prevStart, *prevEnd;
 
-		int coordMap[64];
-
 		uint32 pitch;
+
+		int coordMap[64];
+		int coordScaledMap1[64];
+		int coordScaledMap2[64];
+		int coordScaledMap3[64];
+		int coordScaledMap4[64];
 	};
 
 	Common::SeekableReadStream *_bink;

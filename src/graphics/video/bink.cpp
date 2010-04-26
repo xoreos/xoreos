@@ -243,8 +243,14 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 	ctx.prevEnd   = _oldPlanes[planeIdx] + width * height;
 	ctx.pitch     = width;
 
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i < 64; i++) {
 		ctx.coordMap[i] = (i & 7) + (i >> 3) * ctx.pitch;
+
+		ctx.coordScaledMap1[i] = ((i & 7) * 2 + 0) + (((i >> 3) * 2 + 0) * ctx.pitch);
+		ctx.coordScaledMap2[i] = ((i & 7) * 2 + 1) + (((i >> 3) * 2 + 0) * ctx.pitch);
+		ctx.coordScaledMap3[i] = ((i & 7) * 2 + 0) + (((i >> 3) * 2 + 1) * ctx.pitch);
+		ctx.coordScaledMap4[i] = ((i & 7) * 2 + 1) + (((i >> 3) * 2 + 1) * ctx.pitch);
+	}
 
 	// const uint8_t *scan;
 	// DECLARE_ALIGNED(16, DCTELEM, block[64]);
@@ -594,7 +600,7 @@ void Bink::blockSkip(DecodeContext &ctx) {
 }
 
 void Bink::blockScaledRun(DecodeContext &ctx) {
-	ctx.video->bits->getBits(4); //scan = bink_patterns[get_bits(gb, 4)];
+	const uint8 *scan = binkPatterns[ctx.video->bits->getBits(4)];
 
 	int i = 0;
 	do {
@@ -607,17 +613,26 @@ void Bink::blockScaledRun(DecodeContext &ctx) {
 		if (ctx.video->bits->getBit()) {
 
 			byte v = getBundleValue(kSourceColors);
-			for (int j = 0; j < run; j++)
-				; // ublock[*scan++] = v;
+			for (int j = 0; j < run; j++, scan++)
+				ctx.dest[ctx.coordScaledMap1[*scan]] =
+				ctx.dest[ctx.coordScaledMap2[*scan]] =
+				ctx.dest[ctx.coordScaledMap3[*scan]] =
+				ctx.dest[ctx.coordScaledMap4[*scan]] = v;
 
 		} else
-			for (int j = 0; j < run; j++)
-				getBundleValue(kSourceColors); // ublock[*scan++] = get_value(c, BINK_SRC_COLORS);
+			for (int j = 0; j < run; j++, scan++)
+				ctx.dest[ctx.coordScaledMap1[*scan]] =
+				ctx.dest[ctx.coordScaledMap2[*scan]] =
+				ctx.dest[ctx.coordScaledMap3[*scan]] =
+				ctx.dest[ctx.coordScaledMap4[*scan]] = getBundleValue(kSourceColors);
 
 	} while (i < 63);
 
 	if (i == 63)
-		getBundleValue(kSourceColors); // ublock[*scan++] = get_value(c, BINK_SRC_COLORS);
+		ctx.dest[ctx.coordScaledMap1[*scan]] =
+		ctx.dest[ctx.coordScaledMap2[*scan]] =
+		ctx.dest[ctx.coordScaledMap3[*scan]] =
+		ctx.dest[ctx.coordScaledMap4[*scan]] = getBundleValue(kSourceColors);
 }
 
 void Bink::blockScaledIntra(DecodeContext &ctx) {
