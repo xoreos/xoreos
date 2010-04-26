@@ -158,7 +158,7 @@ void Bink::yuva2bgra() {
 	const byte *planeU = _planes[1];
 	const byte *planeV = _planes[2];
 	const byte *planeA = _planes[3];
-	byte *data = _data;
+	byte *data = _data + (_height - 1) * _pitch * 4;
 	for (uint32 y = 0; y < _height; y++) {
 		byte *rowData = data;
 
@@ -169,7 +169,7 @@ void Bink::yuva2bgra() {
 			rowData[3] = planeA[x];
 		}
 
-		data   += _pitch * 4;
+		data   -= _pitch * 4;
 		planeY += _width;
 		planeU += _width >> 1;
 		planeV += _width >> 1;
