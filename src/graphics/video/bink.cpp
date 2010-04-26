@@ -490,24 +490,28 @@ void Bink::load() {
 	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
 	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID); // BIKh and BIKi swap the chroma planes
 
-	_curPlanes[0] = new byte[ _width       *  _height      ]; // Y
-	_curPlanes[1] = new byte[(_width >> 1) * (_height >> 1)]; // U, 1/4 resolution
-	_curPlanes[2] = new byte[(_width >> 1) * (_height >> 1)]; // V, 1/4 resolution
-	_curPlanes[3] = new byte[ _width       *  _height      ]; // A
-	_oldPlanes[0] = new byte[ _width       *  _height      ]; // Y
-	_oldPlanes[1] = new byte[(_width >> 1) * (_height >> 1)]; // U, 1/4 resolution
-	_oldPlanes[2] = new byte[(_width >> 1) * (_height >> 1)]; // V, 1/4 resolution
-	_oldPlanes[3] = new byte[ _width       *  _height      ]; // A
+	// Give the planes a bit extra space
+	width  = _width  + 32;
+	height = _height + 32;
+
+	_curPlanes[0] = new byte[ width       *  height      ]; // Y
+	_curPlanes[1] = new byte[(width >> 1) * (height >> 1)]; // U, 1/4 resolution
+	_curPlanes[2] = new byte[(width >> 1) * (height >> 1)]; // V, 1/4 resolution
+	_curPlanes[3] = new byte[ width       *  height      ]; // A
+	_oldPlanes[0] = new byte[ width       *  height      ]; // Y
+	_oldPlanes[1] = new byte[(width >> 1) * (height >> 1)]; // U, 1/4 resolution
+	_oldPlanes[2] = new byte[(width >> 1) * (height >> 1)]; // V, 1/4 resolution
+	_oldPlanes[3] = new byte[ width       *  height      ]; // A
 
 	// Initialize the video with solid black
-	memset(_curPlanes[0],   0,  _width       *  _height      );
-	memset(_curPlanes[1],   0, (_width >> 1) * (_height >> 1));
-	memset(_curPlanes[2],   0, (_width >> 1) * (_height >> 1));
-	memset(_curPlanes[3], 255,  _width       *  _height      );
-	memset(_oldPlanes[0],   0,  _width       *  _height      );
-	memset(_oldPlanes[1],   0, (_width >> 1) * (_height >> 1));
-	memset(_oldPlanes[2],   0, (_width >> 1) * (_height >> 1));
-	memset(_oldPlanes[3], 255,  _width       *  _height      );
+	memset(_curPlanes[0],   0,  width       *  height      );
+	memset(_curPlanes[1],   0, (width >> 1) * (height >> 1));
+	memset(_curPlanes[2],   0, (width >> 1) * (height >> 1));
+	memset(_curPlanes[3], 255,  width       *  height      );
+	memset(_oldPlanes[0],   0,  width       *  height      );
+	memset(_oldPlanes[1],   0, (width >> 1) * (height >> 1));
+	memset(_oldPlanes[2],   0, (width >> 1) * (height >> 1));
+	memset(_oldPlanes[3], 255,  width       *  height      );
 
 	initBundles();
 	initHuffman();
