@@ -123,6 +123,8 @@ private:
 		byte *destStart, *destEnd;
 		byte *prevStart, *prevEnd;
 
+		int coordMap[64];
+
 		uint32 pitch;
 	};
 

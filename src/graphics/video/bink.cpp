@@ -243,9 +243,8 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 	ctx.prevEnd   = _oldPlanes[planeIdx] + width * height;
 	ctx.pitch     = width;
 
-	// int coordmap[64];
-	// for (int i = 0; i < 64; i++)
-		// coordmap[i] = (i & 7) + (i >> 3) * stride;
+	for (int i = 0; i < 64; i++)
+		ctx.coordMap[i] = (i & 7) + (i >> 3) * ctx.pitch;
 
 	// const uint8_t *scan;
 	// DECLARE_ALIGNED(16, DCTELEM, block[64]);
@@ -712,7 +711,7 @@ void Bink::blockMotion(DecodeContext &ctx) {
 }
 
 void Bink::blockRun(DecodeContext &ctx) {
-	ctx.video->bits->getBits(4); // scan = bink_patterns[get_bits(gb, 4)];
+	const uint8 *scan = binkPatterns[ctx.video->bits->getBits(4)];
 
 	int i = 0;
 	do {
@@ -726,16 +725,16 @@ void Bink::blockRun(DecodeContext &ctx) {
 
 			byte v = getBundleValue(kSourceColors);
 			for (int j = 0; j < run; j++)
-				; // dest[coordmap[*scan++]] = v;
+				ctx.dest[ctx.coordMap[*scan++]] = v;
 
 		} else
 			for (int j = 0; j < run; j++)
-				getBundleValue(kSourceColors); // dest[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
+				ctx.dest[ctx.coordMap[*scan++]] = getBundleValue(kSourceColors);
 
 	} while (i < 63);
 
 	if (i == 63)
-		getBundleValue(kSourceColors); // dest[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
+		ctx.dest[ctx.coordMap[*scan++]] = getBundleValue(kSourceColors);
 }
 
 void Bink::blockResidue(DecodeContext &ctx) {
