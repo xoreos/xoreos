@@ -220,7 +220,7 @@ void EventsManager::requestQuit() {
 void EventsManager::initMainLoop() {
 	try {
 
-		GfxMan.initSize(800, 600, false);
+		GfxMan.initSize(1080, 720, false);
 		GfxMan.setupScene();
 
 	} catch (Common::Exception &e) {
