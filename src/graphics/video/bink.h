@@ -227,7 +227,7 @@ private:
 	void readPatterns    (VideoFrame &video, Bundle &bundle);
 	void readColors      (VideoFrame &video, Bundle &bundle);
 	void readDCS         (VideoFrame &video, Bundle &bundle, int startBits, bool hasSign);
-	void readDCTCoeffs   (VideoFrame &video, void *block, void *scan, int isIntra);
+	void readDCTCoeffs   (VideoFrame &video, int16 *block, bool isIntra);
 	void readResidue     (VideoFrame &video, int16 *block, int masksCount);
 };
 

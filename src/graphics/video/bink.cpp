@@ -644,9 +644,13 @@ void Bink::blockScaledRun(DecodeContext &ctx) {
 }
 
 void Bink::blockScaledIntra(DecodeContext &ctx) {
-	// c->dsp.clear_block(block);
-	getBundleValue(kSourceIntraDC); //block[0] = get_value(c, BINK_SRC_INTRA_DC);
-	readDCTCoeffs(*ctx.video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
+	int16 block[64];
+	memset(block, 0, 64 * sizeof(int16));
+
+	block[0] = getBundleValue(kSourceIntraDC);
+
+	readDCTCoeffs(*ctx.video, block, true);
+
 	// c->dsp.idct(block);
 	// c->dsp.put_pixels_nonclamped(block, ublock, 8);
 
@@ -784,11 +788,12 @@ void Bink::blockResidue(DecodeContext &ctx) {
 }
 
 void Bink::blockIntra(DecodeContext &ctx) {
-	// c->dsp.clear_block(block);
+	int16 block[64];
+	memset(block, 0, 64 * sizeof(int16));
 
-	getBundleValue(kSourceIntraDC); // block[0] = get_value(c, BINK_SRC_INTRA_DC);
+	block[0] = getBundleValue(kSourceIntraDC);
 
-	readDCTCoeffs(*ctx.video, 0, 0, 1); // read_dct_coeffs(gb, block, c->scantable.permutated, 1);
+	readDCTCoeffs(*ctx.video, block, true);
 
 	// c->dsp.idct_put(dest, stride, block);
 
@@ -806,11 +811,12 @@ void Bink::blockFill(DecodeContext &ctx) {
 void Bink::blockInter(DecodeContext &ctx) {
 	blockMotion(ctx);
 
-	// c->dsp.clear_block(block);
+	int16 block[64];
+	memset(block, 0, 64 * sizeof(int16));
 
-	getBundleValue(kSourceInterDC); // block[0] = get_value(c, BINK_SRC_INTER_DC);
+	block[0] = getBundleValue(kSourceInterDC);
 
-	readDCTCoeffs(*ctx.video, 0, 0, 0); // read_dct_coeffs(gb, block, c->scantable.permutated, 0);
+	readDCTCoeffs(*ctx.video, block, false);
 
 	// c->dsp.idct_add(dest, stride, block);
 }
@@ -1041,7 +1047,7 @@ void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSig
 }
 
 /** Reads 8x8 block of DCT coefficients. */
-void Bink::readDCTCoeffs(VideoFrame &video, void *block, void *scan, int isIntra) {
+void Bink::readDCTCoeffs(VideoFrame &video, int16 *block, bool isIntra) {
 	int coefCount = 0;
 	int coefIdx[64];
 
@@ -1093,8 +1099,8 @@ void Bink::readDCTCoeffs(VideoFrame &video, void *block, void *scan, int isIntra
 							int sign = -video.bits->getBit();
 							t = (t ^ sign) - sign;
 						}
-						//block[scan[ccoef]] = t;
-						coefIdx[coefCount++] = ccoef;
+						block[binkScan[ccoef]] = t;
+						coefIdx[coefCount++]   = ccoef;
 					}
 				}
 				break;
@@ -1118,10 +1124,10 @@ void Bink::readDCTCoeffs(VideoFrame &video, void *block, void *scan, int isIntra
 					int sign = -video.bits->getBit();
 					t = (t ^ sign) - sign;
 				}
-				// block[scan[ccoef]]   = t;
-				coefIdx[coefCount++] = ccoef;
-				coefList[listPos]    = 0;
-				modeList[listPos++]  = 0;
+				block[binkScan[ccoef]] = t;
+				coefIdx[coefCount++]   = ccoef;
+				coefList[listPos]      = 0;
+				modeList[listPos++]    = 0;
 				break;
 			}
 		}
@@ -1129,11 +1135,11 @@ void Bink::readDCTCoeffs(VideoFrame &video, void *block, void *scan, int isIntra
 
 	uint8 quantIdx = video.bits->getBits(4);
 	const uint32 *quant = isIntra ? binkIntraQuant[quantIdx] : binkInterQuant[quantIdx];
-	//block[0] = (block[0] * quant[0]) >> 11;
+	block[0] = (block[0] * quant[0]) >> 11;
 
 	for (int i = 0; i < coefCount; i++) {
 		int idx = coefIdx[i];
-		//block[scan[idx]] = (block[scan[idx]] * quant[idx]) >> 11;
+		block[binkScan[idx]] = (block[binkScan[idx]] * quant[idx]) >> 11;
 	}
 
 }
