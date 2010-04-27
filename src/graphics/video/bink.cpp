@@ -682,7 +682,7 @@ void Bink::blockScaledPattern(DecodeContext &ctx) {
 	for (int j = 0; j < 8; j++, dest1 += (ctx.pitch << 1) - 16, dest2 += (ctx.pitch << 1) - 16) {
 		byte v = getBundleValue(kSourcePattern);
 
-		for (int i = 0; i < 8; i++, v >>= 1)
+		for (int i = 0; i < 8; i++, dest1 += 2, dest2 += 2, v >>= 1)
 			dest1[0] = dest1[1] = dest2[0] = dest2[1] = col[v & 1];
 	}
 }
