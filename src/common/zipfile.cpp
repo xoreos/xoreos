@@ -206,7 +206,7 @@ SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 meth
 		throw Exception("Failed to inflate: %d", zResult);
 
 	delete[] compressedData;
-	return new MemoryReadStream(decompressedData, realSize, DisposeAfterUse::YES);
+	return new MemoryReadStream(decompressedData, realSize, true);
 }
 
 #define BUFREADCOMMENT (0x400)

@@ -35,7 +35,7 @@ protected:
 	};
 
 	Common::SeekableReadStream *_inStream;
-	DisposeAfterUse::Flag _disposeAfterUse;
+	bool _disposeAfterUse;
 
 	uint _posInFrame;
 	State _state;
@@ -55,7 +55,7 @@ protected:
 
 public:
 	MP3Stream(Common::SeekableReadStream *inStream,
-	               DisposeAfterUse::Flag dispose);
+	               bool dispose);
 	~MP3Stream();
 
 	int readBuffer(int16 *buffer, const int numSamples);
@@ -74,7 +74,7 @@ protected:
 	void deinitStream();
 };
 
-MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, DisposeAfterUse::Flag dispose) :
+MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
 	_inStream(inStream),
 	_disposeAfterUse(dispose),
 	_posInFrame(0),
@@ -105,7 +105,7 @@ MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, DisposeAfterUse::Flag
 MP3Stream::~MP3Stream() {
 	deinitStream();
 
-	if (_disposeAfterUse == DisposeAfterUse::YES)
+	if (_disposeAfterUse)
 		delete _inStream;
 }
 
@@ -301,7 +301,7 @@ int MP3Stream::readBuffer(int16 *buffer, const int numSamples) {
 
 RewindableAudioStream *makeMP3Stream(
 	Common::SeekableReadStream *stream,
-	DisposeAfterUse::Flag disposeAfterUse) {
+	bool disposeAfterUse) {
 	RewindableAudioStream *s = new MP3Stream(stream, disposeAfterUse);
 	if (s && s->endOfData()) {
 		delete s;

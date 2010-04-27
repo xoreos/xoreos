@@ -38,7 +38,7 @@ class RewindableAudioStream;
  */
 RewindableAudioStream *makeWAVStream(
 	Common::SeekableReadStream *stream,
-	DisposeAfterUse::Flag disposeAfterUse);
+	bool disposeAfterUse);
 
 } // End of namespace Sound
 

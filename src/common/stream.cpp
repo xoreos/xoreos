@@ -36,7 +36,7 @@ MemoryReadStream *ReadStream::readStream(uint32 dataSize) {
 	dataSize = read(buf, dataSize);
 	assert(dataSize > 0);
 
-	return new MemoryReadStream(buf, dataSize, DisposeAfterUse::YES);
+	return new MemoryReadStream(buf, dataSize, true);
 }
 
 
@@ -112,7 +112,7 @@ uint32 SubReadStream::read(void *dataPtr, uint32 dataSize) {
 	return dataSize;
 }
 
-SeekableSubReadStream::SeekableSubReadStream(SeekableReadStream *parentStream, uint32 begin, uint32 end, DisposeAfterUse::Flag disposeParentStream)
+SeekableSubReadStream::SeekableSubReadStream(SeekableReadStream *parentStream, uint32 begin, uint32 end, bool disposeParentStream)
 	: SubReadStream(parentStream, end, disposeParentStream),
 	_parentStream(parentStream),
 	_begin(begin) {
@@ -146,7 +146,7 @@ bool SeekableSubReadStream::seek(int32 offset, int whence) {
 	return ret;
 }
 
-BufferedReadStream::BufferedReadStream(ReadStream *parentStream, uint32 bufSize, DisposeAfterUse::Flag disposeParentStream)
+BufferedReadStream::BufferedReadStream(ReadStream *parentStream, uint32 bufSize, bool disposeParentStream)
 	: _parentStream(parentStream),
 	_disposeParentStream(disposeParentStream),
 	_pos(0),
@@ -203,7 +203,7 @@ uint32 BufferedReadStream::read(void *dataPtr, uint32 dataSize) {
 	return alreadyRead + dataSize;
 }
 
-BufferedSeekableReadStream::BufferedSeekableReadStream(SeekableReadStream *parentStream, uint32 bufSize, DisposeAfterUse::Flag disposeParentStream)
+BufferedSeekableReadStream::BufferedSeekableReadStream(SeekableReadStream *parentStream, uint32 bufSize, bool disposeParentStream)
 	: BufferedReadStream(parentStream, bufSize, disposeParentStream),
 	_parentStream(parentStream) {
 }

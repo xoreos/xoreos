@@ -97,7 +97,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 
 	if (tag == 0xfff360c4) {
 		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
-		stream = new Common::SeekableSubReadStream(stream, 0x1D6, stream->size(), DisposeAfterUse::YES);
+		stream = new Common::SeekableSubReadStream(stream, 0x1D6, stream->size(), true);
 	} else if (tag == MKID_BE('RIFF')) {
 		stream->seek(12);
 		tag = stream->readUint32BE();
@@ -124,25 +124,25 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		uint32 dataSize = stream->readUint32LE();
 		if (dataSize == 0) {
 			isMP3 = true;
-			stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), DisposeAfterUse::YES);
+			stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), true);
 		} else // Just a regular WAVE
 			stream->seek(0);
 	} else if ((tag == MKID_BE('BMU ')) && (stream->readUint32BE() == MKID_BE('V1.0'))) {
 		// BMU files: MP3 with extra header
 		isMP3 = true;
-		stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), DisposeAfterUse::YES);
+		stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), true);
 	} else if (tag == MKID_BE('OggS')) {
 		stream->seek(0);
-		return makeVorbisStream(stream, DisposeAfterUse::YES);
+		return makeVorbisStream(stream, true);
 	} else {
 		warning("Unknown sound format");
 		return 0;
 	}
 
 	if (isMP3)
-		return makeMP3Stream(stream, DisposeAfterUse::YES);
+		return makeMP3Stream(stream, true);
 
-	return makeWAVStream(stream, DisposeAfterUse::YES);
+	return makeWAVStream(stream, true);
 }
 
 ChannelHandle SoundManager::playAudioStream(AudioStream *audStream) {

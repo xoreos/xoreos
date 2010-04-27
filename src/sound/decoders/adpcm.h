@@ -47,12 +47,12 @@ enum ADPCMTypes {
  * @return   a new RewindableAudioStream, or NULL, if an error occured
  */
 RewindableAudioStream *makeADPCMStream(
-    Common::SeekableReadStream *stream,
-    DisposeAfterUse::Flag disposeAfterUse,
-    uint32 size, ADPCMTypes type,
-    int rate,
-    int channels,
-    uint32 blockAlign = 0);
+	Common::SeekableReadStream *stream,
+	bool disposeAfterUse,
+	uint32 size, ADPCMTypes type,
+	int rate,
+	int channels,
+	uint32 blockAlign = 0);
 
 }
 

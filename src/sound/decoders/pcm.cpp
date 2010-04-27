@@ -42,16 +42,16 @@ protected:
 	const bool _isStereo;                          ///< Whether this is an stereo stream
 
 	Common::SeekableReadStream *_stream;           ///< Stream to read data from
-	const DisposeAfterUse::Flag _disposeAfterUse;  ///< Indicates whether the stream object should be deleted when this RawStream is destructed
+	const bool _disposeAfterUse;  ///< Indicates whether the stream object should be deleted when this RawStream is destructed
 
 public:
-	PCMStream(int rate, bool stereo, DisposeAfterUse::Flag disposeStream, Common::SeekableReadStream *stream)
+	PCMStream(int rate, bool stereo, bool disposeStream, Common::SeekableReadStream *stream)
 		: _rate(rate), _isStereo(stereo), _stream(stream), _disposeAfterUse(disposeStream) {
 
 	}
 
 	virtual ~PCMStream() {
-		if (_disposeAfterUse == DisposeAfterUse::YES)
+		if (_disposeAfterUse)
 			delete _stream;
 	}
 
@@ -100,7 +100,7 @@ bool PCMStream<is16Bit, isUnsigned, isLE>::rewind() {
 
 RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
                                    int rate, byte flags,
-                                   DisposeAfterUse::Flag disposeAfterUse) {
+                                   bool disposeAfterUse) {
 
 
 	const bool isStereo   = (flags & FLAG_STEREO) != 0;

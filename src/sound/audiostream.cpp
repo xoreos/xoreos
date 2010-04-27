@@ -23,12 +23,12 @@
 
 namespace Sound {
 
-LoopingAudioStream::LoopingAudioStream(RewindableAudioStream *stream, uint loops, DisposeAfterUse::Flag disposeAfterUse)
+LoopingAudioStream::LoopingAudioStream(RewindableAudioStream *stream, uint loops, bool disposeAfterUse)
     : _parent(stream), _disposeAfterUse(disposeAfterUse), _loops(loops), _completeIterations(0) {
 }
 
 LoopingAudioStream::~LoopingAudioStream() {
-	if (_disposeAfterUse == DisposeAfterUse::YES)
+	if (_disposeAfterUse)
 		delete _parent;
 }
 
@@ -79,8 +79,8 @@ private:
 	 */
 	struct StreamHolder {
 		AudioStream *_stream;
-		DisposeAfterUse::Flag _disposeAfterUse;
-		StreamHolder(AudioStream *stream, DisposeAfterUse::Flag disposeAfterUse)
+		bool _disposeAfterUse;
+		StreamHolder(AudioStream *stream, bool disposeAfterUse)
 		    : _stream(stream),
 		      _disposeAfterUse(disposeAfterUse) {}
 	};
@@ -127,7 +127,7 @@ public:
 	virtual bool endOfStream() const { return _finished && _queue.empty(); }
 
 	// Implement the QueuingAudioStream API
-	virtual void queueAudioStream(AudioStream *stream, DisposeAfterUse::Flag disposeAfterUse);
+	virtual void queueAudioStream(AudioStream *stream, bool disposeAfterUse);
 	virtual void finish() { _finished = true; }
 
 	uint32 numQueuedStreams() const {
@@ -140,12 +140,12 @@ QueuingAudioStreamImpl::~QueuingAudioStreamImpl() {
 	while (!_queue.empty()) {
 		StreamHolder tmp = _queue.front();
 		_queue.pop();
-		if (tmp._disposeAfterUse == DisposeAfterUse::YES)
+		if (tmp._disposeAfterUse)
 			delete tmp._stream;
 	}
 }
 
-void QueuingAudioStreamImpl::queueAudioStream(AudioStream *stream, DisposeAfterUse::Flag disposeAfterUse) {
+void QueuingAudioStreamImpl::queueAudioStream(AudioStream *stream, bool disposeAfterUse) {
 	if (_finished)
 		throw Common::Exception("QueuingAudioStreamImpl::queueAudioStream(): Trying to queue another audio stream, but the QueuingAudioStream is finished.");
 
@@ -167,7 +167,7 @@ int QueuingAudioStreamImpl::readBuffer(int16 *buffer, const int numSamples) {
 		if (stream->endOfData()) {
 			StreamHolder tmp = _queue.front();
 			_queue.pop();
-			if (tmp._disposeAfterUse == DisposeAfterUse::YES)
+			if (tmp._disposeAfterUse)
 				delete stream;
 		}
 	}

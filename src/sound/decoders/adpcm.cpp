@@ -24,7 +24,7 @@ namespace Sound {
 class ADPCMStream : public RewindableAudioStream {
 protected:
 	Common::SeekableReadStream *_stream;
-	const DisposeAfterUse::Flag _disposeAfterUse;
+	const bool _disposeAfterUse;
 	const int32 _startpos;
 	const int32 _endpos;
 	const int _channels;
@@ -44,7 +44,7 @@ protected:
 	int16 stepAdjust(byte);
 
 public:
-	ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign);
+	ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign);
 	~ADPCMStream();
 
 	virtual bool endOfData() const { return (_stream->eos() || _stream->pos() >= _endpos); }
@@ -61,7 +61,7 @@ public:
 // In addition, also MS IMA ADPCM is supported. See
 //   <http://wiki.multimedia.cx/index.php?title=Microsoft_IMA_ADPCM>.
 
-ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
 	: _stream(stream),
 		_disposeAfterUse(disposeAfterUse),
 		_startpos(stream->pos()),
@@ -74,7 +74,7 @@ ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Fl
 }
 
 ADPCMStream::~ADPCMStream() {
-	if (_disposeAfterUse == DisposeAfterUse::YES)
+	if (_disposeAfterUse)
 		delete _stream;
 }
 
@@ -95,7 +95,7 @@ protected:
 	int16 decodeIMA(byte code, int channel = 0); // Default to using the left channel/using one channel
 
 public:
-	Ima_ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+	Ima_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
 		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
 		memset(&_status, 0, sizeof(_status));
 	}
@@ -119,7 +119,7 @@ int Ima_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
 
 class MSIma_ADPCMStream : public Ima_ADPCMStream {
 public:
-	MSIma_ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+	MSIma_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
 		: Ima_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
 		if (blockAlign == 0)
 			error("ADPCMStream(): blockAlign isn't specified for MS IMA ADPCM");
@@ -226,7 +226,7 @@ protected:
 	}
 
 public:
-	MS_ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+	MS_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
 		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
 		if (blockAlign == 0)
 			error("MS_ADPCMStream(): blockAlign isn't specified for MS ADPCM");
@@ -333,7 +333,7 @@ int16 Ima_ADPCMStream::decodeIMA(byte code, int channel) {
 	return samp;
 }
 
-RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, ADPCMTypes type, int rate, int channels, uint32 blockAlign) {
+RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, ADPCMTypes type, int rate, int channels, uint32 blockAlign) {
 	switch (type) {
 	case kADPCMMSIma:
 		return new MSIma_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);

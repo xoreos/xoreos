@@ -146,14 +146,14 @@ bool loadWAVFromStream(Common::SeekableReadStream &stream, int &size, int &rate,
 	return true;
 }
 
-RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse) {
+RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
 	int size, rate;
 	byte flags;
 	uint16 type;
 	int blockAlign;
 
 	if (!loadWAVFromStream(*stream, size, rate, flags, &type, &blockAlign)) {
-		if (disposeAfterUse == DisposeAfterUse::YES)
+		if (disposeAfterUse)
 			delete stream;
 		return 0;
 	}
@@ -161,12 +161,12 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, Dispose
 	Common::SeekableSubReadStream *subStream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), disposeAfterUse);
 
 	if (type == 17) // MS IMA ADPCM
-		return makeADPCMStream(subStream, DisposeAfterUse::YES, size, kADPCMMSIma, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
+		return makeADPCMStream(subStream, true, size, kADPCMMSIma, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
 	else if (type == 2) // MS ADPCM
-		return makeADPCMStream(subStream, DisposeAfterUse::YES, size, kADPCMMS, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
+		return makeADPCMStream(subStream, true, size, kADPCMMS, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
 
 	// Raw PCM
-	return makePCMStream(subStream, rate, flags, DisposeAfterUse::YES);
+	return makePCMStream(subStream, rate, flags, true);
 }
 
 } // End of namespace Sound

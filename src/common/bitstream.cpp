@@ -47,7 +47,7 @@ BitStreamBE::BitStreamBE(SeekableReadStream &stream, uint32 bitCount) : _value(0
 		throw Exception(kReadError);
 	}
 
-	_stream = new MemoryReadStream(data, byteSize, DisposeAfterUse::YES);
+	_stream = new MemoryReadStream(data, byteSize, true);
 }
 
 BitStreamBE::BitStreamBE(const byte *data, uint32 bitCount) : _value(0), _inValue(0) {
@@ -61,7 +61,7 @@ BitStreamBE::BitStreamBE(const byte *data, uint32 bitCount) : _value(0), _inValu
 
 	std::memcpy(dataN, data, byteSize);
 
-	_stream = new MemoryReadStream(dataN, byteSize, DisposeAfterUse::YES);
+	_stream = new MemoryReadStream(dataN, byteSize, true);
 }
 
 BitStreamBE::~BitStreamBE() {
@@ -133,7 +133,7 @@ BitStream32LE::BitStream32LE(SeekableReadStream &stream, uint32 bitCount) : _val
 		throw Exception(kReadError);
 	}
 
-	_stream = new MemoryReadStream(data, byteSize, DisposeAfterUse::YES);
+	_stream = new MemoryReadStream(data, byteSize, true);
 }
 
 BitStream32LE::BitStream32LE(const byte *data, uint32 bitCount) : _value(0), _inValue(0) {
@@ -147,7 +147,7 @@ BitStream32LE::BitStream32LE(const byte *data, uint32 bitCount) : _value(0), _in
 
 	std::memcpy(dataN, data, byteSize);
 
-	_stream = new MemoryReadStream(dataN, byteSize, DisposeAfterUse::YES);
+	_stream = new MemoryReadStream(dataN, byteSize, true);
 }
 
 BitStream32LE::~BitStream32LE() {

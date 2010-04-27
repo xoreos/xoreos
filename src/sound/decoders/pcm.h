@@ -54,7 +54,7 @@ enum PCMFlags {
  */
 RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
                                    int rate, byte flags,
-                                   DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
+                                   bool disposeAfterUse = true);
 
 } // End of namespace Sound
 

@@ -101,7 +101,7 @@ public:
 	 * @param loops How often to loop (0 = infinite)
 	 * @param disposeAfterUse Destroy the stream after the LoopingAudioStream has finished playback.
 	 */
-	LoopingAudioStream(RewindableAudioStream *stream, uint loops, DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
+	LoopingAudioStream(RewindableAudioStream *stream, uint loops, bool disposeAfterUse = true);
 	~LoopingAudioStream();
 
 	int readBuffer(int16 *buffer, const int numSamples);
@@ -114,7 +114,7 @@ public:
 	uint getCompleteIterations() const { return _completeIterations; }
 private:
 	RewindableAudioStream *_parent;
-	DisposeAfterUse::Flag _disposeAfterUse;
+	bool _disposeAfterUse;
 
 	uint _loops;
 	uint _completeIterations;
@@ -144,7 +144,7 @@ public:
 	 * contained in it has been played.
 	 */
 	virtual void queueAudioStream(AudioStream *audStream,
-						DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES) = 0;
+						bool disposeAfterUse = true) = 0;
 
 	/**
 	 * Mark this stream as finished. That is, signal that no further data

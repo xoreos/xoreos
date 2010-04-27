@@ -63,8 +63,4 @@
 
 typedef uint8 byte;
 
-namespace DisposeAfterUse {
-	enum Flag { NO, YES };
-}
-
 #endif // COMMON_TYPES_H
