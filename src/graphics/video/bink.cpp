@@ -155,8 +155,6 @@ void Bink::processData() {
 
 	_needCopy = true;
 
-	warning("Frame %d / %d", _curFrame, (int) _frames.size());
-
 	_curFrame++;
 }
 
