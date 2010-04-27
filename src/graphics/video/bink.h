@@ -232,6 +232,10 @@ private:
 	void readDCS         (VideoFrame &video, Bundle &bundle, int startBits, bool hasSign);
 	void readDCTCoeffs   (VideoFrame &video, int16 *block, bool isIntra);
 	void readResidue     (VideoFrame &video, int16 *block, int masksCount);
+
+	void IDCT(int16 *block);
+	void IDCTPut(DecodeContext &ctx, int16 *block);
+	void IDCTAdd(DecodeContext &ctx, int16 *block);
 };
 
 } // End of namespace Graphics
