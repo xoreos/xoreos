@@ -26,8 +26,17 @@ namespace Graphics {
 /** A generic interface for video decoders. */
 class VideoDecoder : public Queueable<VideoDecoder> {
 public:
+	enum Scale {
+		kScaleNone,  ///< Don't scale the video.
+		kScaleUp,    ///< Only scale the video up, if necessary.
+		kScaleDown,  ///< Only scale the video down, if necessary.
+		kScaleUpDown ///< Scale the video up and down, if necessary.
+	};
+
 	VideoDecoder();
 	~VideoDecoder();
+
+	void setScale(Scale scale);
 
 	/** Is the video currently playing? */
 	bool isPlaying() const;
@@ -70,11 +79,16 @@ private:
 	float _textureWidth;
 	float _textureHeight;
 
+	Scale _scale;
+
 	Common::Mutex _canUpdate;
 	Common::Mutex _canCopy;
 
 	/** Copy the video image data to the texture. */
 	void copyData();
+
+	/** Get the dimensions of the quad to draw the texture on. */
+	void getQuadDimensions(float &width, float &height) const;
 
 // To be called from the main/events/graphics thread
 public:

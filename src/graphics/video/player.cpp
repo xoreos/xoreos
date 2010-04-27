@@ -49,6 +49,8 @@ void VideoPlayer::load(const Common::UString &name) {
 		delete video;
 		throw Common::Exception("Unsupported video resource type %d", (int) type);
 	}
+
+	_video->setScale(VideoDecoder::kScaleUpDown);
 }
 
 void VideoPlayer::play() {
