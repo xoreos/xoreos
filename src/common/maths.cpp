@@ -14,9 +14,16 @@
 
 #include <cassert>
 
+#include "common/sinetables.h"
 #include "common/cosinetables.h"
 
 namespace Common {
+
+const float *getSineTable(int bits) {
+	assert((bits >= 4) && (bits <= 16));
+
+	return sinTables[bits];
+}
 
 const float *getCosineTable(int bits) {
 	assert((bits >= 4) && (bits <= 16));
