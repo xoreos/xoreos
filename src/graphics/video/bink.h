@@ -92,10 +92,19 @@ private:
 		byte *curPtr; ///< Pointer to the data that wasn't yet read.
 	};
 
+	enum AudioCodec {
+		kAudioCodecDCT,
+		kAudioCodecRDFT
+	};
+
 	/** An audio track. */
 	struct AudioTrack {
-		uint16 sampleRate;
 		uint16 flags;
+
+		uint16 sampleRate;
+		uint8  channels;
+
+		AudioCodec codec;
 
 		uint32 sampleCount;
 
@@ -147,6 +156,8 @@ private:
 	bool _hasAlpha;   ///< Do video frames have alpha?
 	bool _swapPlanes; ///< Are the planes ordered (A)YVU instead of (A)YUV?
 
+	bool _disableAudio; ///< Should the sound be disabled?
+
 	uint32 _curFrame; ///< Current Frame.
 
 	uint32 _startTime;     ///< Timestamp of when the video was started.
@@ -154,6 +165,8 @@ private:
 
 	std::vector<AudioTrack> _audioTracks; ///< All audio tracks.
 	std::vector<VideoFrame> _frames;      ///< All video frames.
+
+	uint32 _audioTrack; ///< Audio track to use.
 
 	Common::Huffman *_huffman[16]; ///< The 16 Huffman codebooks used in Bink decoding.
 
@@ -185,6 +198,11 @@ private:
 	void audioPacket(AudioTrack &audio);
 	/** Decode a video packet. */
 	void videoPacket(VideoFrame &video);
+
+	/** Decode a DCT'd audio packet. */
+	void audioPacketDCT (AudioTrack &audio);
+	/** Decode a RDFT'd audio packet. */
+	void audioPacketRDFT(AudioTrack &audio);
 
 	/** Decode a plane. */
 	void decodePlane(VideoFrame &video, int planeIdx, bool isChroma);
@@ -233,6 +251,7 @@ private:
 	void readDCTCoeffs   (VideoFrame &video, int16 *block, bool isIntra);
 	void readResidue     (VideoFrame &video, int16 *block, int masksCount);
 
+	// Bink video IDCT
 	void IDCT(int16 *block);
 	void IDCTPut(DecodeContext &ctx, int16 *block);
 	void IDCTAdd(DecodeContext &ctx, int16 *block);

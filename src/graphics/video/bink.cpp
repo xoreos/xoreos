@@ -37,12 +37,17 @@ static const uint32 kBIKiID = MKID_BE('BIKi');
 
 static const uint32 kVideoFlagAlpha = 0x00100000;
 
+static const uint16 kAudioFlagDCT    = 0x1000;
+static const uint16 kAudioFlagStereo = 0x2000;
+
 // Number of bits used to store first DC value in bundle
 static const uint32 kDCStartBits = 11;
 
 namespace Graphics {
 
-Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _curFrame(0) {
+Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false),
+	_curFrame(0), _audioTrack(0) {
+
 	assert(_bink);
 
 	for (int i = 0; i < 16; i++)
@@ -124,7 +129,9 @@ void Bink::processData() {
 
 	uint32 frameSize = frame.size;
 
-	for (std::vector<AudioTrack>::iterator audio = _audioTracks.begin(); audio != _audioTracks.end(); ++audio) {
+	for (uint32 i = 0; i < _audioTracks.size(); i++) {
+		AudioTrack &audio = _audioTracks[i];
+
 		uint32 audioPacketLength = _bink->readUint32LE();
 
 		frameSize -= 4;
@@ -133,14 +140,22 @@ void Bink::processData() {
 			throw Common::Exception("Audio packet too big for the frame");
 
 		if (audioPacketLength >= 4) {
-			audio->sampleCount = _bink->readUint32LE();
+			if (i == _audioTrack) {
+				// Only play one audio track
 
-			audio->bits = new Common::BitStream32LE(*_bink, (audioPacketLength - 4) * 8);
+				//                  Number of samples in bytes
+				audio.sampleCount = _bink->readUint32LE() / (2 * audio.channels);
 
-			audioPacket(*audio);
+				audio.bits = new Common::BitStream32LE(*_bink, (audioPacketLength - 4) * 8);
 
-			delete audio->bits;
-			audio->bits = 0;
+				audioPacket(audio);
+
+				delete audio.bits;
+				audio.bits = 0;
+
+			} else
+				// Skip the rest
+				_bink->skip(audioPacketLength);
 
 			frameSize -= audioPacketLength;
 		}
@@ -195,6 +210,23 @@ void Bink::yuva2bgra() {
 }
 
 void Bink::audioPacket(AudioTrack &audio) {
+	if (_disableAudio)
+		return;
+
+	if      (audio.codec == kAudioCodecDCT)
+		audioPacketDCT(audio);
+	else if (audio.codec == kAudioCodecRDFT)
+		audioPacketRDFT(audio);
+}
+
+void Bink::audioPacketDCT(AudioTrack &audio) {
+	warning("TODO: audioPacketDCT");
+	_disableAudio = true;
+}
+
+void Bink::audioPacketRDFT(AudioTrack &audio) {
+	warning("TODO: audioPacketRDFT");
+	_disableAudio = true;
 }
 
 void Bink::videoPacket(VideoFrame &video) {
@@ -456,6 +488,13 @@ void Bink::load() {
 	_videoFlags = _bink->readUint32LE();
 
 	uint32 audioTrackCount = _bink->readUint32LE();
+
+	if (audioTrackCount > 1) {
+		warning("More than one audio track found. Using the first one");
+
+		_audioTrack = 0;
+	}
+
 	if (audioTrackCount > 0) {
 		_audioTracks.resize(audioTrackCount);
 
@@ -467,6 +506,9 @@ void Bink::load() {
 			it->flags       = _bink->readUint16LE();
 			it->sampleCount = 0;
 			it->bits        = 0;
+
+			it->channels = ((it->flags & kAudioFlagStereo) != 0) ? 2 : 1;
+			it->codec    = ((it->flags & kAudioFlagDCT   ) != 0) ? kAudioCodecDCT : kAudioCodecRDFT;
 		}
 
 		_bink->skip(4 * audioTrackCount);
