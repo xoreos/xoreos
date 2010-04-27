@@ -43,6 +43,9 @@ protected:
 	void processData();
 
 private:
+	static const int kAudioChannelsMax  = 2;
+	static const int kAudioBlockSizeMax = (kAudioChannelsMax << 11);
+
 	/** IDs for different data types used in Bink video codec. */
 	enum Source {
 		kSourceBlockTypes    = 0, ///< 8x8 block types.
@@ -109,6 +112,23 @@ private:
 		uint32 sampleCount;
 
 		Common::BitStream *bits;
+
+		bool first;
+
+		uint32 frameLen;
+		uint32 overlapLen;
+
+		uint32 blockSize;
+
+		uint32  bandCount;
+		uint32 *bands;
+
+		float root;
+
+		float coeffs[16 * kAudioBlockSizeMax];
+		int16 prevCoeffs[kAudioBlockSizeMax];
+
+		float *coeffsPtr[kAudioChannelsMax];
 	};
 
 	/** A video frame. */
@@ -199,11 +219,6 @@ private:
 	/** Decode a video packet. */
 	void videoPacket(VideoFrame &video);
 
-	/** Decode a DCT'd audio packet. */
-	void audioPacketDCT (AudioTrack &audio);
-	/** Decode a RDFT'd audio packet. */
-	void audioPacketRDFT(AudioTrack &audio);
-
 	/** Decode a plane. */
 	void decodePlane(VideoFrame &video, int planeIdx, bool isChroma);
 
@@ -250,6 +265,19 @@ private:
 	void readDCS         (VideoFrame &video, Bundle &bundle, int startBits, bool hasSign);
 	void readDCTCoeffs   (VideoFrame &video, int16 *block, bool isIntra);
 	void readResidue     (VideoFrame &video, int16 *block, int masksCount);
+
+	void initAudioTrack(AudioTrack &audio);
+
+	float getFloat(AudioTrack &audio);
+
+	/** Decode a DCT'd audio block. */
+	void audioBlockDCT (AudioTrack &audio);
+	/** Decode a RDFT'd audio block. */
+	void audioBlockRDFT(AudioTrack &audio);
+
+	void readAudioCoeffs(AudioTrack &audio, float *coeffs);
+
+	void floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels);
 
 	// Bink video IDCT
 	void IDCT(int16 *block);

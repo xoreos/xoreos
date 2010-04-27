@@ -17,6 +17,13 @@
 
 #include "common/types.h"
 
+const uint16 binkCriticalFreqs[25] = {
+	  100,  200,  300,  400,  510,  630,   770,   920,
+	 1080, 1270, 1480, 1720, 2000, 2320,  2700,  3150,
+	 3700, 4400, 5300, 6400, 7700, 9500, 12000, 15500,
+	24500,
+};
+
 /** Bink DCT and residue 8x8 block scan order */
 static const uint8 binkScan[64] = {
 	 0,  1,  8,  9,  2,  3, 10, 11,

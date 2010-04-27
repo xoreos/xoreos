@@ -213,20 +213,16 @@ void Bink::audioPacket(AudioTrack &audio) {
 	if (_disableAudio)
 		return;
 
-	if      (audio.codec == kAudioCodecDCT)
-		audioPacketDCT(audio);
-	else if (audio.codec == kAudioCodecRDFT)
-		audioPacketRDFT(audio);
-}
+	while (!_disableAudio && (audio.bits->pos() < audio.bits->size())) {
 
-void Bink::audioPacketDCT(AudioTrack &audio) {
-	warning("TODO: audioPacketDCT");
-	_disableAudio = true;
-}
+		if      (audio.codec == kAudioCodecDCT)
+			audioBlockDCT(audio);
+		else if (audio.codec == kAudioCodecRDFT)
+			audioBlockRDFT(audio);
 
-void Bink::audioPacketRDFT(AudioTrack &audio) {
-	warning("TODO: audioPacketRDFT");
-	_disableAudio = true;
+		if (audio.bits->pos() & 0x1F) // next data block starts at 32-bit boundary
+			audio.bits->skip(32 - (audio.bits->pos() & 0x1F));
+	}
 }
 
 void Bink::videoPacket(VideoFrame &video) {
@@ -504,11 +500,8 @@ void Bink::load() {
 		for (std::vector<AudioTrack>::iterator it = _audioTracks.begin(); it != _audioTracks.end(); ++it) {
 			it->sampleRate  = _bink->readUint16LE();
 			it->flags       = _bink->readUint16LE();
-			it->sampleCount = 0;
-			it->bits        = 0;
 
-			it->channels = ((it->flags & kAudioFlagStereo) != 0) ? 2 : 1;
-			it->codec    = ((it->flags & kAudioFlagDCT   ) != 0) ? kAudioCodecDCT : kAudioCodecRDFT;
+			initAudioTrack(*it);
 		}
 
 		_bink->skip(4 * audioTrackCount);
@@ -558,6 +551,52 @@ void Bink::load() {
 
 	initBundles();
 	initHuffman();
+}
+
+void Bink::initAudioTrack(AudioTrack &audio) {
+	audio.sampleCount = 0;
+	audio.bits        = 0;
+
+	audio.channels = ((audio.flags & kAudioFlagStereo) != 0) ? 2 : 1;
+	audio.codec    = ((audio.flags & kAudioFlagDCT   ) != 0) ? kAudioCodecDCT : kAudioCodecRDFT;
+
+	if (audio.channels > kAudioChannelsMax)
+		throw Common::Exception("Too many audio channels: %d", audio.channels);
+
+	uint32 frameLenBits;
+	// Calculate frame length
+	if     (audio.sampleRate < 22050)
+		frameLenBits =  9;
+	else if(audio.sampleRate < 44100)
+		frameLenBits = 10;
+	else
+		frameLenBits = 11;
+
+	audio.frameLen = 1 << frameLenBits;
+
+	audio.overlapLen = audio.frameLen / 16;
+	audio.blockSize  = (audio.frameLen - audio.overlapLen) * audio.channels;
+	audio.root       = 2.0 / sqrt(audio.frameLen);
+
+	uint32 sampleRateHalf = (audio.sampleRate + 1) / 2;
+
+	// Calculate number of bands
+	for (audio.bandCount = 1; audio.bandCount < 25; audio.bandCount++)
+		if (sampleRateHalf <= binkCriticalFreqs[audio.bandCount - 1])
+			break;
+
+	audio.bands = new uint32[audio.bandCount + 1];
+
+	// Populate bands
+	audio.bands[0] = 1;
+	for (uint32 i = 1; i < audio.bandCount; i++)
+		audio.bands[i] = binkCriticalFreqs[i - 1] * (audio.frameLen / 2) / sampleRateHalf;
+	audio.bands[audio.bandCount] = audio.frameLen / 2;
+
+	audio.first = true;
+
+	for (uint8 i = 0; i < audio.channels; i++)
+		audio.coeffsPtr[i] = audio.coeffs + i + audio.frameLen;
 }
 
 void Bink::initBundles() {
@@ -1275,6 +1314,164 @@ void Bink::readResidue(VideoFrame &video, int16 *block, int masksCount) {
 			}
 		}
 	}
+}
+
+float Bink::getFloat(AudioTrack &audio) {
+	int power = audio.bits->getBits(5);
+
+	float f = ldexpf(audio.bits->getBits(23), power - 23);
+
+	if (audio.bits->getBit())
+		f = -f;
+
+	return f;
+}
+
+void Bink::audioBlockDCT(AudioTrack &audio) {
+	int16 *out;
+
+	out = new int16[audio.frameLen * audio.channels];
+
+	audio.bits->skip(2);
+
+	for (uint8 i = 0; i < audio.channels; i++) {
+		float *coeffs = audio.coeffsPtr[i];
+
+		readAudioCoeffs(audio, coeffs);
+
+		coeffs[0] /= 0.5;
+
+		// ff_dct_calc (&s->trans.dct,  coeffs);
+
+		for (uint32 j = 0; j < audio.frameLen; j++)
+			coeffs[i] *= audio.frameLen / 2;
+	}
+
+	for (uint32 i = 0; i < audio.channels; i++)
+		for (uint32 j = 0; j < audio.frameLen; j++)
+			audio.coeffsPtr[i][j] = 385.0 + audio.coeffsPtr[i][j] * (1.0 / 32767.0);
+
+	floatToInt16Interleave(out, (const float **) audio.coeffsPtr, audio.frameLen, audio.channels);
+
+	if (!audio.first) {
+		int count = audio.overlapLen * audio.channels;
+		int shift = log2(count);
+		for (int i = 0; i < count; i++) {
+			out[i] = (audio.prevCoeffs[i] * (count - i) + out[i] * i) >> shift;
+		}
+	}
+
+	memcpy(audio.prevCoeffs, out + audio.blockSize, audio.overlapLen * audio.channels * sizeof(*out));
+
+	audio.first = false;
+
+	delete[] out;
+}
+
+void Bink::audioBlockRDFT(AudioTrack &audio) {
+	warning("TODO: audioBlockRDFT");
+	_disableAudio = true;
+
+	return;
+
+	for (uint8 i = 0; i < audio.channels; i++) {
+		float *coeffs = audio.coeffsPtr[i];
+
+		readAudioCoeffs(audio, coeffs);
+
+		// ff_rdft_calc(&audio.trans.rdft, coeffs);
+	}
+}
+
+static const uint8 rleLengthTab[16] = {
+	2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32, 64
+};
+
+void Bink::readAudioCoeffs(AudioTrack &audio, float *coeffs) {
+	coeffs[0] = getFloat(audio) * audio.root;
+	coeffs[1] = getFloat(audio) * audio.root;
+
+	float quant[25];
+
+	for (uint32 i = 0; i < audio.bandCount; i++) {
+		int value = audio.bits->getBits(8);
+
+		//                               0.066399999 / log10(M_E)
+		quant[i] = expf(MIN(value, 95) * 0.15289164787221953823f) * audio.root;
+	}
+
+	float q = 0.0;
+
+	// Find band (k)
+	int k;
+	for (k = 0; audio.bands[k] < 1; k++)
+		q = quant[k];
+
+	// Parse coefficients
+	uint32 i = 2;
+	while (i < audio.frameLen) {
+
+		uint32 j = 0;
+		if (audio.bits->getBit())
+			j = i + rleLengthTab[audio.bits->getBits(4)] * 8;
+		else
+			j = i + 8;
+
+		j = MIN(j, audio.frameLen);
+
+		int width = audio.bits->getBits(4);
+		if (width == 0) {
+
+			memset(coeffs + i, 0, (j - i) * sizeof(*coeffs));
+			i = j;
+			while (audio.bands[k] * 2 < i)
+				q = quant[k++];
+
+		} else {
+
+			while (i < j) {
+				if (audio.bands[k] * 2 == i)
+					q = quant[k++];
+
+				int coeff = audio.bits->getBits(width);
+				if (coeff) {
+
+					if (audio.bits->getBit())
+						coeffs[i] = -q * coeff;
+					else
+						coeffs[i] =  q * coeff;
+
+				} else {
+					coeffs[i] = 0.0;
+				}
+				i++;
+			}
+
+		}
+
+	}
+
+}
+
+static inline int floatToInt16One(const float *src) {
+	int32 tmp = *(const int32 *) src;
+
+	if (tmp & 0xF000)
+		tmp = (0x43C0FFFF - tmp) >> 31;
+
+	return tmp - 0x8000;
+}
+
+void Bink::floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels) {
+	if(channels == 2) {
+		for(uint32 i = 0; i < length; i++) {
+			dst[2*i  ] = floatToInt16One(src[0] + i);
+			dst[2*i+1] = floatToInt16One(src[1] + i);
+		}
+	} else
+		for (uint8 c = 0; c < channels; c++)
+			for(uint32 i = 0, j = c; i < length; i++, j += channels)
+				dst[j] = floatToInt16One(src[c] + i);
 }
 
 #define A1  2896 /* (1/sqrt(2))<<12 */
