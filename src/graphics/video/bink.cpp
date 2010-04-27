@@ -278,8 +278,6 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 		for (ctx.blockX = 0; ctx.blockX < blockWidth; ctx.blockX++, ctx.dest += 8, ctx.prev += 8) {
 			BlockType blockType = (BlockType) getBundleValue(kSourceBlockTypes);
 
-			// warning("%d.%d.%d: %d (%d)", planeIdx, by, bx, blockType, video.bits->pos());
-
 			// 16x16 block type on odd line means part of the already decoded block, so skip it
 			if ((ctx.blockY & 1) && (blockType == kBlockScaled)) {
 				ctx.blockX += 1;
@@ -704,7 +702,6 @@ void Bink::blockScaledRaw(DecodeContext &ctx) {
 
 void Bink::blockScaled(DecodeContext &ctx) {
 	BlockType blockType = (BlockType) getBundleValue(kSourceSubBlockTypes);
-	// warning("blockScaled: %d", blockType);
 
 	switch (blockType) {
 		case kBlockRun:
