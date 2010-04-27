@@ -75,7 +75,7 @@ public:
 	 *  @param  audStream The stream to play. Will be taken over.
 	 *  @return The channel the sound has been assigned to, or -1 on error.
 	 */
-	ChannelHandle playAudioStream(AudioStream *audStream);
+	ChannelHandle playAudioStream(AudioStream *audStream, bool disposeAfterUse = true);
 
 	/** Set the position the channel is being played. */
 	void setChannelPosition(ChannelHandle channel, float x, float y, float z);
@@ -89,6 +89,7 @@ public:
 private:
 	struct Channel {
 		AudioStream *stream;
+		bool disposeAfterUse;
 		ALuint source;
 		ALuint *buffers;
 	};

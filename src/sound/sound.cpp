@@ -145,7 +145,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 	return makeWAVStream(stream, true);
 }
 
-ChannelHandle SoundManager::playAudioStream(AudioStream *audStream) {
+ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool disposeAfterUse) {
 	if (!_ready)
 		return -1;
 
@@ -158,6 +158,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream) {
 
 	Channel *channel = new Channel;
 	channel->stream = audStream;
+	channel->disposeAfterUse = disposeAfterUse;
 
 	if (!channel->stream) {
 		warning("SoundManager::playAudioStream(): Could not detect stream type");
@@ -319,7 +320,9 @@ void SoundManager::freeChannel(ChannelHandle channel) {
 
 	Channel *c = _channels[channel];
 
-	delete c->stream;
+	if (c->disposeAfterUse)
+		delete c->stream;
+
 	alDeleteSources(1, &c->source);
 	alDeleteBuffers(NUM_OPENAL_BUFFERS, c->buffers);
 	delete[] c->buffers;
