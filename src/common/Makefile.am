@@ -7,8 +7,12 @@ noinst_HEADERS = system.h \
                  endianness.h \
                  noncopyable.h \
                  singleton.h \
-                 maths.h \
+                 sinetables.h \
                  cosinetables.h \
+                 maths.h \
+                 fft.h \
+                 rdft.h \
+                 dct.h \
                  thread.h \
                  mutex.h \
                  ustring.h \
@@ -27,6 +31,9 @@ noinst_HEADERS = system.h \
                  zipfile.h
 
 libcommon_la_SOURCES = maths.cpp \
+                       fft.cpp \
+                       rdft.cpp \
+                       dct.cpp \
                        thread.cpp \
                        mutex.cpp \
                        ustring.cpp \
