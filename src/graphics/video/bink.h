@@ -8,6 +8,9 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
+// Based quite heavily on the Bink decoder found in FFmpeg.
+// Many thanks to Kostya Shishkov for doing the hard work.
+
 /** @file graphics/video/bink.h
  *  Decoding RAD Game Tools' Bink videos.
  */
