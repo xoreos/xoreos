@@ -313,7 +313,7 @@ void SoundManager::update() {
 	}
 }
 
-void SoundManager::freeChannel(uint32 channel) {
+void SoundManager::freeChannel(ChannelHandle channel) {
 	if (channel >= _channels.size() || !_channels[channel])
 		return;
 
