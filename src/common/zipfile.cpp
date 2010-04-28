@@ -195,15 +195,21 @@ SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 meth
 
 	// Negative windows bits means there is no zlib header present in the data.
 	int zResult = inflateInit2(&strm, -MAX_WBITS);
-	if (zResult != Z_OK)
+	if (zResult != Z_OK) {
+		delete[] decompressedData;
+		delete[] compressedData;
 		throw Exception("Could not initialize zlib inflate");
+	}
 
 	strm.avail_out = realSize;
 	strm.next_out = decompressedData;
 
 	zResult = inflate(&strm, Z_SYNC_FLUSH);
-	if (zResult != Z_OK && zResult != Z_STREAM_END)
+	if (zResult != Z_OK && zResult != Z_STREAM_END) {
+		delete[] decompressedData;
+		delete[] compressedData;
 		throw Exception("Failed to inflate: %d", zResult);
+	}
 
 	delete[] compressedData;
 	return new MemoryReadStream(decompressedData, realSize, true);
