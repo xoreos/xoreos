@@ -284,14 +284,15 @@ void SoundManager::triggerUpdate() {
 
 void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
 	if (!stream)
-		throw Common::Exception("SoundManager::fillBuffer(): stream is 0");
+		throw Common::Exception("No stream");
 
 	if (stream->endOfData()) {
-		// Fill the buffer to make sure that we don't have any buffers that are empty
-		// and going to OpenAL.
-		byte *buffer = new byte[BUFFER_SIZE];
-		memset(buffer, 0, BUFFER_SIZE);
-		alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, BUFFER_SIZE, stream->getRate());
+		// Create a dummy buffer for OpenAL
+
+		byte *buffer = new byte[8];
+		memset(buffer, 0, 8);
+
+		alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, 0, stream->getRate());
 		return;
 	}
 
