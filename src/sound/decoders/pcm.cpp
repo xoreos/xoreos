@@ -66,8 +66,10 @@ template<bool is16Bit, bool isUnsigned, bool isLE>
 int PCMStream<is16Bit, isUnsigned, isLE>::readBuffer(int16 *buffer, const int numSamples) {
 	int samples = numSamples;
 
-	while (samples > 0 && !endOfData())
+	while (samples > 0 && !endOfData()) {
 		*buffer++ = READ_ENDIAN_SAMPLE(is16Bit, isUnsigned, _ptr, isLE);
+		samples--;
+	}
 
 	return numSamples - samples;
 }
