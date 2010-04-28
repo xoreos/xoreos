@@ -75,7 +75,8 @@ void KotOREngine::run(const Common::UString &target) {
 	playVideo("leclogo");
 	playVideo("biologo");
 	playVideo("legal");
-	// Intro movie: "01a"
+
+	playVideo("01a");
 
 	int channel = -1;
 

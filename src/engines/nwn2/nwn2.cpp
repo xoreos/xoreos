@@ -83,6 +83,8 @@ void NWN2Engine::run(const Common::UString &target) {
 	playVideo("nvidialogo");
 	playVideo("legal");
 
+	playVideo("intro");
+
 	int channel = -1;
 
 	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceMusic, "mus_mulsantir");

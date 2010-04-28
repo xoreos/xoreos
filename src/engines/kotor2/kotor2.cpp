@@ -75,7 +75,8 @@ void KotOR2Engine::run(const Common::UString &target) {
 	playVideo("leclogo");
 	playVideo("obsidianent");
 	playVideo("legal");
-	// Intro movie: "permov01"
+
+	playVideo("permov01");
 
 	int channel = -1;
 
