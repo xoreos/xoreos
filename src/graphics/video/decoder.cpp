@@ -31,7 +31,7 @@ namespace Graphics {
 VideoDecoder::VideoDecoder() : Queueable<VideoDecoder>(GfxMan.getVideoQueue()),
 	_started(false), _finished(false), _needCopy(false), _width(0), _height(0), _pitch(0),
 	_data(0), _texture(0), _realWidth(0), _realHeight(0), _textureWidth(0.0), _textureHeight(0.0),
-	_scale(kScaleNone), _sound(0), _soundHandle(-1), _soundRate(0), _soundFlags(0) {
+	_scale(kScaleNone), _sound(0), _soundRate(0), _soundFlags(0) {
 
 	// No data at the start, lock the mutex
 	_canCopy.lock();
