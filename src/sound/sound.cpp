@@ -245,8 +245,14 @@ void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 	if (!stream)
 		throw Common::Exception("SoundManager::fillBuffer(): stream is 0");
 
-	if (stream->endOfData())
+	if (stream->endOfData()) {
+		// Fill the buffer to make sure that we don't have any buffers that are empty
+		// and going to OpenAL.
+		byte *buffer = new byte[BUFFER_SIZE];
+		memset(buffer, 0, BUFFER_SIZE);
+		alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, BUFFER_SIZE, stream->getRate());
 		return;
+	}
 
 	// Read in the required amount of samples
 	uint32 numSamples = BUFFER_SIZE / 2;
