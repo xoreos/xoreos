@@ -162,6 +162,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool dispose
 
 	if (!channel->stream) {
 		warning("SoundManager::playAudioStream(): Could not detect stream type");
+		delete channel;
 		return -1;
 	}
 
