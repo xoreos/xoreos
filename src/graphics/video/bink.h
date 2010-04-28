@@ -21,8 +21,6 @@
 #include <vector>
 
 #include "common/types.h"
-#include "common/rdft.h"
-#include "common/dct.h"
 
 #include "graphics/video/decoder.h"
 
@@ -30,6 +28,9 @@ namespace Common {
 	class SeekableReadStream;
 	class BitStream;
 	class Huffman;
+
+	class RDFT;
+	class DCT;
 }
 
 namespace Graphics {

@@ -24,6 +24,8 @@
 #include "common/ustring.h"
 #include "common/bitstream.h"
 #include "common/huffman.h"
+#include "common/rdft.h"
+#include "common/dct.h"
 
 #include "graphics/util.h"
 
