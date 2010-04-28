@@ -85,7 +85,7 @@ void NWN2Engine::run(const Common::UString &target) {
 
 	playVideo("intro");
 
-	int channel = -1;
+	Sound::ChannelHandle channel;
 
 	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceMusic, "mus_mulsantir");
 	if (wav) {

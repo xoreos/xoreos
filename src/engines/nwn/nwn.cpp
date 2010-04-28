@@ -94,7 +94,7 @@ void NWNEngine::run(const Common::UString &target) {
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
 
-	int channel = -1;
+	Sound::ChannelHandle channel;
 
 	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "as_pl_evanglstm1");
 	if (wav) {

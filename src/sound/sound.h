@@ -44,7 +44,12 @@ namespace Sound {
 
 class AudioStream;
 
-typedef uint32 ChannelHandle;
+struct ChannelHandle {
+	uint16 channel;
+	uint32 id;
+
+	ChannelHandle();
+};
 
 /** The sound manager. */
 class SoundManager : public Common::Singleton<SoundManager>, public Common::Thread {
@@ -60,7 +65,7 @@ public:
 	bool ready() const;
 
 	/** Is that channel currently playing a sound? */
-	bool isPlaying(ChannelHandle channel) const;
+	bool isPlaying(const ChannelHandle &handle) const;
 
 	/** Play a sound file.
 	 *
@@ -79,19 +84,23 @@ public:
 	ChannelHandle playAudioStream(AudioStream *audStream, bool disposeAfterUse = true);
 
 	/** Set the position the channel is being played. */
-	void setChannelPosition(ChannelHandle channel, float x, float y, float z);
+	void setChannelPosition(const ChannelHandle &handle, float x, float y, float z);
 
 	/** Get the position of the channel. */
-	void getChannelPosition(ChannelHandle channel, float &x, float &y, float &z);
+	void getChannelPosition(const ChannelHandle &handle, float &x, float &y, float &z);
 
 	/** Stop the channel. */
-	void stopChannel(ChannelHandle channel);
+	void stopChannel(ChannelHandle &handle);
 
 	/** Signal that one of streams currently being played has changed and should be updated immediately. */
 	void triggerUpdate();
 
 private:
+	static const int kChannelCount = 65535;
+
 	struct Channel {
+		uint32 id;
+
 		AudioStream *stream;
 		bool disposeAfterUse;
 		ALuint source;
@@ -100,28 +109,38 @@ private:
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?
 
-	std::vector<Channel*> _channels;
+	Channel *_channels[kChannelCount];
+
+	uint16 _curChannel;
+	uint32 _curID;
 
 	Common::Mutex _mutex;
 
 	Common::Condition _needUpdate;
 
+	ALCdevice *_dev;
+	ALCcontext *_ctx;
+
 	/** Update the sound information. Called regularily from within the thread method. */
 	void update();
 
+	ChannelHandle newChannel();
+
 	/** Buffer more sound from the channel to the OpenAL buffers. */
-	void bufferData(Channel *channel);
-	void bufferData(uint32 channel);
+	void bufferData(Channel &channel);
+	void bufferData(uint16 channel);
 	void fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream);
 
+	bool isPlaying(uint16 channel) const;
+
 	/** Stop and free a channel. */
-	void freeChannel(ChannelHandle channel);
+	void freeChannel(ChannelHandle &handle);
+	void freeChannel(uint16 channel);
+
+	Channel *getChannel(const ChannelHandle &handle);
 
 	void threadMethod();
 	AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
-
-	ALCdevice *_dev;
-	ALCcontext *_ctx;
 };
 
 } // End of namespace Sound
