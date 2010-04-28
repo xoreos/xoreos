@@ -14,7 +14,6 @@
 
 #include <cassert>
 
-#include "common/util.h"
 #include "common/error.h"
 #include "common/stream.h"
 
@@ -111,6 +110,9 @@ void VideoDecoder::queueSound(const byte *data, uint32 dataSize) {
 	Sound::RewindableAudioStream *dataPCM = Sound::makePCMStream(dataStream, _soundRate, _soundFlags);
 
 	_sound->queueAudioStream(dataPCM);
+
+	if (_sound->numQueuedStreams() <= 1)
+		SoundMan.triggerUpdate();
 }
 
 void VideoDecoder::rebuild() {
