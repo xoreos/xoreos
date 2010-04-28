@@ -21,12 +21,21 @@
 #include <vector>
 
 #include "common/types.h"
+#include "common/rdft.h"
+#include "common/dct.h"
+
 #include "graphics/video/decoder.h"
+
+#include "sound/sound.h"
 
 namespace Common {
 	class SeekableReadStream;
 	class BitStream;
 	class Huffman;
+}
+
+namespace Sound {
+	class QueuingAudioStream;
 }
 
 namespace Graphics {
@@ -129,6 +138,12 @@ private:
 		int16 prevCoeffs[kAudioBlockSizeMax];
 
 		float *coeffsPtr[kAudioChannelsMax];
+
+		Common::RDFT *rdft;
+		Common::DCT  *dct;
+
+		AudioTrack();
+		~AudioTrack();
 	};
 
 	/** A video frame. */
@@ -139,6 +154,9 @@ private:
 		uint32 size;
 
 		Common::BitStream *bits;
+
+		VideoFrame();
+		~VideoFrame();
 	};
 
 	struct DecodeContext {
@@ -179,6 +197,7 @@ private:
 	bool _disableAudio; ///< Should the sound be disabled?
 
 	uint32 _curFrame; ///< Current Frame.
+	uint32 _audioFrame;
 
 	uint32 _startTime;     ///< Timestamp of when the video was started.
 	uint32 _lastFrameTime; ///< Timestamp of when the last frame was decoded.
@@ -199,6 +218,9 @@ private:
 
 	byte *_curPlanes[4]; ///< The 4 color planes, YUVA, current frame.
 	byte *_oldPlanes[4]; ///< The 4 color planes, YUVA, last frame.
+
+	Sound::QueuingAudioStream *_sound;
+	Sound::ChannelHandle       _soundHandle;
 
 	/** Load a Bink file. */
 	void load();
@@ -271,13 +293,15 @@ private:
 	float getFloat(AudioTrack &audio);
 
 	/** Decode a DCT'd audio block. */
-	void audioBlockDCT (AudioTrack &audio);
+	void audioBlockDCT (AudioTrack &audio, int16 *out);
 	/** Decode a RDFT'd audio block. */
-	void audioBlockRDFT(AudioTrack &audio);
+	void audioBlockRDFT(AudioTrack &audio, int16 *out);
 
 	void readAudioCoeffs(AudioTrack &audio, float *coeffs);
 
 	void floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels);
+
+	void queueAudioData(int16 *data, uint32 dataSize, uint16 sampleRate);
 
 	// Bink video IDCT
 	void IDCT(int16 *block);

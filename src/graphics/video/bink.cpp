@@ -20,6 +20,8 @@
 #include "common/util.h"
 #include "common/error.h"
 #include "common/stream.h"
+#include "common/file.h"
+#include "common/ustring.h"
 #include "common/bitstream.h"
 #include "common/huffman.h"
 
@@ -27,6 +29,9 @@
 
 #include "graphics/video/bink.h"
 #include "graphics/video/binkdata.h"
+
+#include "sound/audiostream.h"
+#include "sound/decoders/pcm.h"
 
 #include "events/events.h"
 
@@ -45,8 +50,29 @@ static const uint32 kDCStartBits = 11;
 
 namespace Graphics {
 
+Bink::VideoFrame::VideoFrame() : bits(0) {
+}
+
+Bink::VideoFrame::~VideoFrame() {
+	delete bits;
+}
+
+
+Bink::AudioTrack::AudioTrack() : bits(0), bands(0), rdft(0), dct(0) {
+}
+
+Bink::AudioTrack::~AudioTrack() {
+	delete bits;
+
+	delete[] bands;
+
+	delete rdft;
+	delete dct;
+}
+
+
 Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false),
-	_curFrame(0), _audioTrack(0) {
+	_curFrame(0), _audioTrack(0), _sound(0), _soundHandle(-1) {
 
 	assert(_bink);
 
@@ -82,6 +108,12 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false)
 }
 
 Bink::~Bink() {
+	if (SoundMan.isPlaying(_soundHandle))
+		SoundMan.freeChannel(_soundHandle);
+
+		_soundHandle = SoundMan.playAudioStream(_sound, false);
+	delete _sound;
+
 	for (int i = 0; i < 4; i++) {
 		delete[] _curPlanes[i];
 		delete[] _oldPlanes[i];
@@ -209,18 +241,40 @@ void Bink::yuva2bgra() {
 	}
 }
 
+void Bink::queueAudioData(int16 *data, uint32 dataSize, uint16 sampleRate) {
+	assert(_sound);
+
+	Common::MemoryReadStream *dataStream =
+		new Common::MemoryReadStream((const byte *) data, dataSize * 2, true);
+
+	Sound::RewindableAudioStream *dataPCM =
+		Sound::makePCMStream(dataStream, sampleRate, Sound::FLAG_LITTLE_ENDIAN | Sound::FLAG_16BITS | Sound::FLAG_STEREO);
+
+	_sound->queueAudioStream(dataPCM);
+}
+
 void Bink::audioPacket(AudioTrack &audio) {
 	if (_disableAudio)
 		return;
 
+	int outSize = audio.frameLen * audio.channels;
 	while (!_disableAudio && (audio.bits->pos() < audio.bits->size())) {
+		int16 *out = new int16[outSize];
+		memset(out, 0, outSize * 2);
 
 		if      (audio.codec == kAudioCodecDCT)
-			audioBlockDCT(audio);
+			audioBlockDCT(audio, out);
 		else if (audio.codec == kAudioCodecRDFT)
-			audioBlockRDFT(audio);
+			audioBlockRDFT(audio, out);
 
-		if (audio.bits->pos() & 0x1F) // next data block starts at 32-bit boundary
+		if (_disableAudio) {
+			delete[] out;
+			return;
+		}
+
+		queueAudioData(out, audio.blockSize, audio.sampleRate);
+
+		if (audio.bits->pos() & 0x1F) // next data block starts at a 32-bit boundary
 			audio.bits->skip(32 - (audio.bits->pos() & 0x1F));
 	}
 }
@@ -505,6 +559,10 @@ void Bink::load() {
 		}
 
 		_bink->skip(4 * audioTrackCount);
+
+		_sound = Sound::makeQueuingAudioStream(_audioTracks[_audioTrack].sampleRate,
+		                                       _audioTracks[_audioTrack].channels == 2);
+		_soundHandle = SoundMan.playAudioStream(_sound, false);
 	}
 
 	// Reading video frame properties
@@ -596,7 +654,13 @@ void Bink::initAudioTrack(AudioTrack &audio) {
 	audio.first = true;
 
 	for (uint8 i = 0; i < audio.channels; i++)
-		audio.coeffsPtr[i] = audio.coeffs + i + audio.frameLen;
+		audio.coeffsPtr[i] = audio.coeffs + i * audio.frameLen;
+
+	audio.codec    = ((audio.flags & kAudioFlagDCT   ) != 0) ? kAudioCodecDCT : kAudioCodecRDFT;
+	if      (audio.codec == kAudioCodecRDFT)
+		audio.rdft = new Common::RDFT(frameLenBits, Common::RDFT::DFT_C2R);
+	else if (audio.codec == kAudioCodecDCT)
+		audio.dct  = new Common::DCT(frameLenBits, Common::DCT::DCT_III);
 }
 
 void Bink::initBundles() {
@@ -1327,11 +1391,7 @@ float Bink::getFloat(AudioTrack &audio) {
 	return f;
 }
 
-void Bink::audioBlockDCT(AudioTrack &audio) {
-	int16 *out;
-
-	out = new int16[audio.frameLen * audio.channels];
-
+void Bink::audioBlockDCT(AudioTrack &audio, int16 *out) {
 	audio.bits->skip(2);
 
 	for (uint8 i = 0; i < audio.channels; i++) {
@@ -1341,10 +1401,10 @@ void Bink::audioBlockDCT(AudioTrack &audio) {
 
 		coeffs[0] /= 0.5;
 
-		// ff_dct_calc (&s->trans.dct,  coeffs);
+		audio.dct->calc(coeffs);
 
 		for (uint32 j = 0; j < audio.frameLen; j++)
-			coeffs[i] *= audio.frameLen / 2;
+			coeffs[j] *= (audio.frameLen / 2.0);
 	}
 
 	for (uint32 i = 0; i < audio.channels; i++)
@@ -1364,11 +1424,9 @@ void Bink::audioBlockDCT(AudioTrack &audio) {
 	memcpy(audio.prevCoeffs, out + audio.blockSize, audio.overlapLen * audio.channels * sizeof(*out));
 
 	audio.first = false;
-
-	delete[] out;
 }
 
-void Bink::audioBlockRDFT(AudioTrack &audio) {
+void Bink::audioBlockRDFT(AudioTrack &audio, int16 *out) {
 	warning("TODO: audioBlockRDFT");
 	_disableAudio = true;
 
@@ -1379,7 +1437,7 @@ void Bink::audioBlockRDFT(AudioTrack &audio) {
 
 		readAudioCoeffs(audio, coeffs);
 
-		// ff_rdft_calc(&audio.trans.rdft, coeffs);
+		audio.rdft->calc(coeffs);
 	}
 }
 
@@ -1456,22 +1514,23 @@ void Bink::readAudioCoeffs(AudioTrack &audio, float *coeffs) {
 static inline int floatToInt16One(const float *src) {
 	int32 tmp = *(const int32 *) src;
 
-	if (tmp & 0xF000)
+	if (tmp & 0xF0000)
 		tmp = (0x43C0FFFF - tmp) >> 31;
 
 	return tmp - 0x8000;
 }
 
 void Bink::floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels) {
-	if(channels == 2) {
-		for(uint32 i = 0; i < length; i++) {
-			dst[2*i  ] = floatToInt16One(src[0] + i);
-			dst[2*i+1] = floatToInt16One(src[1] + i);
+	if (channels == 2) {
+		for (uint32 i = 0; i < length; i++) {
+			dst[2 * i    ] = TO_LE_16(floatToInt16One(src[0] + i));
+			dst[2 * i + 1] = TO_LE_16(floatToInt16One(src[1] + i));
 		}
-	} else
-		for (uint8 c = 0; c < channels; c++)
+	} else {
+		for(uint8 c = 0; c < channels; c++)
 			for(uint32 i = 0, j = c; i < length; i++, j += channels)
-				dst[j] = floatToInt16One(src[c] + i);
+				dst[j] = TO_LE_16(floatToInt16One(src[c] + i));
+	}
 }
 
 #define A1  2896 /* (1/sqrt(2))<<12 */
