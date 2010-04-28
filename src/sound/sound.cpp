@@ -248,6 +248,10 @@ void SoundManager::stopChannel(ChannelHandle channel) {
 	freeChannel(channel);
 }
 
+void SoundManager::triggerUpdate() {
+	_needUpdate.signal();
+}
+
 void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
 	if (!stream)
 		throw Common::Exception("SoundManager::fillBuffer(): stream is 0");
@@ -347,7 +351,7 @@ void SoundManager::freeChannel(ChannelHandle channel) {
 void SoundManager::threadMethod() {
 	while (!_killThread) {
 		update();
-		EventMan.delay(100);
+		_needUpdate.wait(100);
 	}
 }
 

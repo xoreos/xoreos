@@ -87,6 +87,9 @@ public:
 	/** Stop the channel. */
 	void stopChannel(ChannelHandle channel);
 
+	/** Signal that one of streams currently being played has changed and should be updated immediately. */
+	void triggerUpdate();
+
 private:
 	struct Channel {
 		AudioStream *stream;
@@ -100,6 +103,8 @@ private:
 	std::vector<Channel*> _channels;
 
 	Common::Mutex _mutex;
+
+	Common::Condition _needUpdate;
 
 	/** Update the sound information. Called regularily from within the thread method. */
 	void update();
@@ -116,7 +121,7 @@ private:
 	AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
 
 	ALCdevice *_dev;
-    ALCcontext *_ctx;
+	ALCcontext *_ctx;
 };
 
 } // End of namespace Sound
