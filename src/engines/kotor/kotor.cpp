@@ -78,7 +78,7 @@ void KotOREngine::run(const Common::UString &target) {
 
 	playVideo("01a");
 
-	int channel = -1;
+	Sound::ChannelHandle channel;
 
 	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "nm35aahhkd07134_");
 	if (wav) {

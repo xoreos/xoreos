@@ -30,16 +30,26 @@ namespace Sound {
 
 #define BUFFER_SIZE 32768
 
+ChannelHandle::ChannelHandle() : channel(0), id(0) {
+}
+
+
 SoundManager::SoundManager() {
 	_ready = false;
 }
 
 void SoundManager::init() {
-	_dev = alcOpenDevice(NULL);
+	for (int i = 0; i < kChannelCount; i++)
+		_channels[i] = 0;
+
+	_curChannel = 1;
+	_curID      = 1;
+
+	_dev = alcOpenDevice(0);
 	if (!_dev)
 		throw Common::Exception("Could not open OpenAL device");
 
-	_ctx = alcCreateContext(_dev, NULL);
+	_ctx = alcCreateContext(_dev, 0);
 	alcMakeContextCurrent(_ctx);
 	if (!_ctx)
 		throw Common::Exception("Could not create OpenAL context");
@@ -57,13 +67,10 @@ void SoundManager::deinit() {
 	if (!destroyThread())
 		warning("SoundManager::deinit(): Sound thread had to be killed");
 
-	for (uint32 i = 0; i < _channels.size(); i++)
-		if (_channels[i])
-			freeChannel(i);
+	for (uint16 i = 1; i < kChannelCount; i++)
+		freeChannel(i);
 
-	_channels.clear();
-
-	alcMakeContextCurrent(NULL);
+	alcMakeContextCurrent(0);
 	alcDestroyContext(_ctx);
 	alcCloseDevice(_dev);
 
@@ -74,8 +81,18 @@ bool SoundManager::ready() const {
 	return _ready;
 }
 
-bool SoundManager::isPlaying(ChannelHandle channel) const {
-	if (channel >= _channels.size() || !_channels[channel])
+bool SoundManager::isPlaying(const ChannelHandle &handle) const {
+	if ((handle.channel == 0) || (handle.id == 0) || !_channels[handle.channel])
+		return false;
+
+	if (_channels[handle.channel]->id != handle.id)
+		return false;
+
+	return isPlaying(handle.channel);
+}
+
+bool SoundManager::isPlaying(uint16 channel) const {
+	if ((channel == 0) || !_channels[channel])
 		return false;
 
 	ALint val;
@@ -98,13 +115,13 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 	if (tag == 0xfff360c4) {
 		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
 		stream = new Common::SeekableSubReadStream(stream, 0x1D6, stream->size(), true);
+
 	} else if (tag == MKID_BE('RIFF')) {
 		stream->seek(12);
 		tag = stream->readUint32BE();
-		if (tag != MKID_BE('fmt ')) {
-			warning("SoundManager::makeAudioStream(): Broken WAVE file");
-			return 0;
-		}
+
+		if (tag != MKID_BE('fmt '))
+			throw Common::Exception("Broken WAVE file");
 
 		// Skip fmt chunk
 		stream->skip(stream->readUint32LE());
@@ -116,28 +133,30 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 			tag = stream->readUint32BE();
 		}
 
-		if (tag != MKID_BE('data')) {
-			warning("SoundManager::makeAudioStream(): Found invalid tag in WAVE file: %x", tag);
-			return 0;
-		}
+		if (tag != MKID_BE('data'))
+			throw Common::Exception("Found invalid tag in WAVE file: %x", tag);
 
 		uint32 dataSize = stream->readUint32LE();
 		if (dataSize == 0) {
 			isMP3 = true;
 			stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), true);
-		} else // Just a regular WAVE
+		} else
+			// Just a regular WAVE
 			stream->seek(0);
+
 	} else if ((tag == MKID_BE('BMU ')) && (stream->readUint32BE() == MKID_BE('V1.0'))) {
+
 		// BMU files: MP3 with extra header
 		isMP3 = true;
 		stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), true);
+
 	} else if (tag == MKID_BE('OggS')) {
+
 		stream->seek(0);
 		return makeVorbisStream(stream, true);
-	} else {
-		warning("Unknown sound format");
-		return 0;
-	}
+
+	} else
+		throw Common::Exception("Unknown sound format");
 
 	if (isMP3)
 		return makeMP3Stream(stream, true);
@@ -147,65 +166,61 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 
 ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool disposeAfterUse) {
 	if (!_ready)
-		return -1;
+		throw Common::Exception("SoundManager not ready");
 
-	if (!audStream) {
-		warning("SoundManager::playAudioStream(): No stream");
-		return -1;
-	}
+	if (!audStream)
+		throw Common::Exception("No audio stream");
 
 	Common::StackLock lock(_mutex);
 
-	Channel *channel = new Channel;
-	channel->stream = audStream;
-	channel->disposeAfterUse = disposeAfterUse;
+	ChannelHandle handle = newChannel();
 
-	if (!channel->stream) {
-		warning("SoundManager::playAudioStream(): Could not detect stream type");
-		delete channel;
-		return -1;
+	_channels[handle.channel] = new Channel;
+	Channel &channel = *_channels[handle.channel];
+
+	channel.id              = handle.id;
+	channel.stream          = audStream;
+	channel.source          = 0;
+	channel.buffers         = 0;
+	channel.disposeAfterUse = disposeAfterUse;
+
+	if (!channel.stream) {
+		freeChannel(handle);
+		throw Common::Exception("Could not detect stream type");
 	}
 
-	// Create the source and buffers and then begin playing the sound.
-	alGenSources(1, &channel->source);
+	try {
+		// Create the source and buffers and then begin playing the sound.
+		alGenSources(1, &channel.source);
 
-	channel->buffers = new ALuint[NUM_OPENAL_BUFFERS];
-	alGenBuffers(NUM_OPENAL_BUFFERS, channel->buffers);
+		channel.buffers = new ALuint[NUM_OPENAL_BUFFERS];
+		alGenBuffers(NUM_OPENAL_BUFFERS, channel.buffers);
 
-	// Fill the initial buffers with data.
-	for (int i = 0; i < NUM_OPENAL_BUFFERS; i++)
-		fillBuffer(channel->source, channel->buffers[i], channel->stream);
+		// Fill the initial buffers with data.
+		for (int i = 0; i < NUM_OPENAL_BUFFERS; i++)
+			fillBuffer(channel.source, channel.buffers[i], channel.stream);
 
-	alSourceQueueBuffers(channel->source, NUM_OPENAL_BUFFERS, channel->buffers);
-	alSourcePlay(channel->source);
+		alSourceQueueBuffers(channel.source, NUM_OPENAL_BUFFERS, channel.buffers);
+		alSourcePlay(channel.source);
 
-	if (alGetError() != AL_NO_ERROR)
-		throw Common::Exception("OpenAL error while attempting to play");
-
-	for (uint32 i = 0; i < _channels.size(); i++) {
-		if (_channels[i] == 0) {
-			_channels[i] = channel;
-			return i;
-		}
+		if (alGetError() != AL_NO_ERROR)
+			throw Common::Exception("OpenAL error while attempting to play");
+	} catch (...) {
+		freeChannel(handle);
+		throw;
 	}
 
-	_channels.push_back(channel);
-	return _channels.size() - 1;
+	return handle;
 }
 
 ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream, bool loop) {
 	if (!_ready)
-		return -1;
+		throw Common::Exception("SoundManager not ready");
 
-	if (!wavStream) {
-		warning("SoundManager::playSoundFile(): No stream");
-		return -1;
-	}
+	if (!wavStream)
+		throw Common::Exception("No stream");
 
 	AudioStream *audioStream = makeAudioStream(wavStream);
-
-	if (!audioStream)
-		return -1;
 
 	if (loop) {
 		RewindableAudioStream *reAudStream = dynamic_cast<RewindableAudioStream *>(audioStream);
@@ -218,34 +233,49 @@ ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream,
 	return playAudioStream(audioStream);
 }
 
-void SoundManager::setChannelPosition(ChannelHandle channel, float x, float y, float z) {
-	Common::StackLock lock(_mutex);
+SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handle) {
+	if ((handle.channel == 0) || (handle.id == 0))
+		return 0;
 
-	if (!_channels[channel] || !_channels[channel]->stream)
-		throw Common::Exception("SoundManager::setChannelPosition(): Invalid channel");
+	if (!_channels[handle.channel])
+		return 0;
 
-	if (_channels[channel]->stream->isStereo())
-		throw Common::Exception("SoundManager::setChannelPosition(): Cannot set position on a stereo sound.");
+	if (_channels[handle.channel]->id != handle.id)
+		return 0;
 
-	alSource3f(_channels[channel]->source, AL_POSITION, x, y, z);
+	return _channels[handle.channel];
 }
 
-void SoundManager::getChannelPosition(ChannelHandle channel, float &x, float &y, float &z) {
+void SoundManager::setChannelPosition(const ChannelHandle &handle, float x, float y, float z) {
 	Common::StackLock lock(_mutex);
 
-	if (!_channels[channel] || !_channels[channel]->stream)
-		throw Common::Exception("SoundManager::getChannelPosition(): Invalid channel");
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
 
-	if (_channels[channel]->stream->isStereo())
-		throw Common::Exception("SoundManager::getChannelPosition(): Stereo sounds cannot have a position.");
+	if (channel->stream->isStereo())
+		throw Common::Exception("Cannot set position on a stereo sound.");
 
-	alGetSource3f(_channels[channel]->source, AL_POSITION, &x, &y, &z);
+	alSource3f(channel->source, AL_POSITION, x, y, z);
 }
 
-void SoundManager::stopChannel(ChannelHandle channel) {
+void SoundManager::getChannelPosition(const ChannelHandle &handle, float &x, float &y, float &z) {
 	Common::StackLock lock(_mutex);
 
-	freeChannel(channel);
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	if (channel->stream->isStereo())
+		throw Common::Exception("Cannot get position on a stereo sound.");
+
+	alGetSource3f(channel->source, AL_POSITION, &x, &y, &z);
+}
+
+void SoundManager::stopChannel(ChannelHandle &handle) {
+	Common::StackLock lock(_mutex);
+
+	freeChannel(handle);
 }
 
 void SoundManager::triggerUpdate() {
@@ -283,15 +313,15 @@ void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 		throw Common::Exception("OpenAL error while filling buffer");
 }
 
-void SoundManager::bufferData(uint32 channel) {
-	if (!_channels[channel])
+void SoundManager::bufferData(uint16 channel) {
+	if ((channel == 0) || !_channels[channel])
 		return;
 
-	bufferData(_channels[channel]);
+	bufferData(*_channels[channel]);
 }
 
-void SoundManager::bufferData(Channel *channel) {
-	if (!channel || !channel->stream || channel->stream->endOfData())
+void SoundManager::bufferData(Channel &channel) {
+	if (!channel.stream || channel.stream->endOfData())
 		return;
 
 	// Here we check how many buffers have been processed by OpenAL.
@@ -299,7 +329,7 @@ void SoundManager::bufferData(Channel *channel) {
 	// more data from the AudioStream.
 
 	ALint buffersProcessed = 0;
-	alGetSourcei(channel->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
+	alGetSourcei(channel.source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 
 	if (buffersProcessed <= 0)
 		return;
@@ -307,17 +337,17 @@ void SoundManager::bufferData(Channel *channel) {
 	while (buffersProcessed--) {
 		// Pull off the unused buffer from the queue, fill it, and throw it back on
 		ALuint alBuffer;
-		alSourceUnqueueBuffers(channel->source, 1, &alBuffer);
-		fillBuffer(channel->source, alBuffer, channel->stream);
-		alSourceQueueBuffers(channel->source, 1, &alBuffer);
+		alSourceUnqueueBuffers(channel.source, 1, &alBuffer);
+		fillBuffer(channel.source, alBuffer, channel.stream);
+		alSourceQueueBuffers(channel.source, 1, &alBuffer);
 	}
 }
 
 void SoundManager::update() {
 	Common::StackLock lock(_mutex);
 
-	for (uint i = 0; i < _channels.size(); i++) {
-		if (!_channels[i] || !_channels[i]->stream)
+	for (int i = 1; i < kChannelCount; i++) {
+		if (!_channels[i])
 			continue;
 
 		// Free the channel if it is no longer playing
@@ -331,18 +361,60 @@ void SoundManager::update() {
 	}
 }
 
-void SoundManager::freeChannel(ChannelHandle channel) {
-	if (channel >= _channels.size() || !_channels[channel])
+ChannelHandle SoundManager::newChannel() {
+	uint16 foundChannel = 0;
+
+	for (int i = 0; (i < kChannelCount) && !foundChannel; i++) {
+		if (!_channels[i])
+			foundChannel = i;
+
+		// Channel 0 is reserved for "invalid channel"
+		_curChannel = (_curChannel >= kChannelCount) ? 1 : (_curChannel + 1);
+	}
+
+	if (!foundChannel)
+		throw Common::Exception("All sound channels occupied");
+
+	ChannelHandle handle;
+
+	handle.channel = foundChannel;
+	handle.id      = _curID++;
+
+	// ID 0 is reserved for "invalid ID"
+	if (_curID == 0)
+		_curID++;
+
+	return handle;
+}
+
+void SoundManager::freeChannel(ChannelHandle &handle) {
+	if ((handle.channel != 0) && (handle.id != 0) && _channels[handle.channel])
+		// Only free if there is a channel to free
+		if (handle.id == _channels[handle.channel]->id)
+			// Only free if the IDs match
+			freeChannel(handle.channel);
+
+	handle.channel = 0;
+	handle.id      = 0;
+}
+
+void SoundManager::freeChannel(uint16 channel) {
+	if (channel == 0)
 		return;
 
 	Channel *c = _channels[channel];
+	if (!c)
+		return;
 
 	if (c->disposeAfterUse)
 		delete c->stream;
 
-	alDeleteSources(1, &c->source);
-	alDeleteBuffers(NUM_OPENAL_BUFFERS, c->buffers);
-	delete[] c->buffers;
+	if (c->buffers) {
+		alDeleteSources(1, &c->source);
+		alDeleteBuffers(NUM_OPENAL_BUFFERS, c->buffers);
+
+		delete[] c->buffers;
+	}
 
 	delete c;
 	_channels[channel] = 0;
