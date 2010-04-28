@@ -26,16 +26,10 @@
 
 #include "graphics/video/decoder.h"
 
-#include "sound/sound.h"
-
 namespace Common {
 	class SeekableReadStream;
 	class BitStream;
 	class Huffman;
-}
-
-namespace Sound {
-	class QueuingAudioStream;
 }
 
 namespace Graphics {
@@ -219,9 +213,6 @@ private:
 	byte *_curPlanes[4]; ///< The 4 color planes, YUVA, current frame.
 	byte *_oldPlanes[4]; ///< The 4 color planes, YUVA, last frame.
 
-	Sound::QueuingAudioStream *_sound;
-	Sound::ChannelHandle       _soundHandle;
-
 	/** Load a Bink file. */
 	void load();
 
@@ -300,8 +291,6 @@ private:
 	void readAudioCoeffs(AudioTrack &audio, float *coeffs);
 
 	void floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels);
-
-	void queueAudioData(int16 *data, uint32 dataSize, uint16 sampleRate);
 
 	// Bink video IDCT
 	void IDCT(int16 *block);

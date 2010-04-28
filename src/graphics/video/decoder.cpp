@@ -12,11 +12,17 @@
  *  Generic video decoder interface.
  */
 
+#include <cassert>
+
 #include "common/util.h"
 #include "common/error.h"
+#include "common/stream.h"
 
 #include "graphics/video/decoder.h"
 #include "graphics/graphics.h"
+
+#include "sound/audiostream.h"
+#include "sound/decoders/pcm.h"
 
 #include "events/requests.h"
 
@@ -25,7 +31,7 @@ namespace Graphics {
 VideoDecoder::VideoDecoder() : Queueable<VideoDecoder>(GfxMan.getVideoQueue()),
 	_started(false), _finished(false), _needCopy(false), _width(0), _height(0), _pitch(0),
 	_data(0), _texture(0), _realWidth(0), _realHeight(0), _textureWidth(0.0), _textureHeight(0.0),
-	_scale(kScaleNone) {
+	_scale(kScaleNone), _sound(0), _soundHandle(-1), _soundRate(0), _soundFlags(0) {
 
 	// No data at the start, lock the mutex
 	_canCopy.lock();
@@ -33,6 +39,8 @@ VideoDecoder::VideoDecoder() : Queueable<VideoDecoder>(GfxMan.getVideoQueue()),
 
 VideoDecoder::~VideoDecoder() {
 	delete[] _data;
+
+	deinitSound();
 
 	if (_texture != 0)
 		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_texture));
@@ -61,6 +69,48 @@ void VideoDecoder::createData(uint32 width, uint32 height) {
 	memset(_data, 0, _realWidth * _realHeight * 4);
 
 	RequestMan.dispatchAndWait(RequestMan.buildVideo(this));
+}
+
+void VideoDecoder::initSound(uint16 rate, bool stereo, bool is16) {
+	deinitSound();
+
+	_soundRate  = rate;
+	_soundFlags = Sound::FLAG_LITTLE_ENDIAN;
+
+	if (stereo)
+		_soundFlags |= Sound::FLAG_STEREO;
+	if (is16)
+		_soundFlags |= Sound::FLAG_16BITS;
+
+	_sound = Sound::makeQueuingAudioStream(_soundRate, stereo);
+
+	_soundHandle = SoundMan.playAudioStream(_sound, false);
+}
+
+void VideoDecoder::deinitSound() {
+	if (!_sound)
+		return;
+
+	_sound->finish();
+
+	if (SoundMan.isPlaying(_soundHandle))
+		SoundMan.freeChannel(_soundHandle);
+
+	delete _sound;
+
+	_sound = 0;
+}
+
+void VideoDecoder::queueSound(const byte *data, uint32 dataSize) {
+	if (!_sound)
+		return;
+
+	assert(data && dataSize);
+
+	Common::MemoryReadStream *dataStream = new Common::MemoryReadStream(data, dataSize, true);
+	Sound::RewindableAudioStream *dataPCM = Sound::makePCMStream(dataStream, _soundRate, _soundFlags);
+
+	_sound->queueAudioStream(dataPCM);
 }
 
 void VideoDecoder::rebuild() {
@@ -209,6 +259,8 @@ void VideoDecoder::render() {
 }
 
 void VideoDecoder::abort() {
+	deinitSound();
+
 	_finished = true;
 
 	_canUpdate.unlock();

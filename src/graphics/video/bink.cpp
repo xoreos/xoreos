@@ -30,9 +30,6 @@
 #include "graphics/video/bink.h"
 #include "graphics/video/binkdata.h"
 
-#include "sound/audiostream.h"
-#include "sound/decoders/pcm.h"
-
 #include "events/events.h"
 
 static const uint32 kBIKfID = MKID_BE('BIKf');
@@ -72,7 +69,7 @@ Bink::AudioTrack::~AudioTrack() {
 
 
 Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false),
-	_curFrame(0), _audioTrack(0), _sound(0), _soundHandle(-1) {
+	_curFrame(0), _audioTrack(0) {
 
 	assert(_bink);
 
@@ -108,12 +105,6 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false)
 }
 
 Bink::~Bink() {
-	if (SoundMan.isPlaying(_soundHandle))
-		SoundMan.freeChannel(_soundHandle);
-
-		_soundHandle = SoundMan.playAudioStream(_sound, false);
-	delete _sound;
-
 	for (int i = 0; i < 4; i++) {
 		delete[] _curPlanes[i];
 		delete[] _oldPlanes[i];
@@ -241,18 +232,6 @@ void Bink::yuva2bgra() {
 	}
 }
 
-void Bink::queueAudioData(int16 *data, uint32 dataSize, uint16 sampleRate) {
-	assert(_sound);
-
-	Common::MemoryReadStream *dataStream =
-		new Common::MemoryReadStream((const byte *) data, dataSize * 2, true);
-
-	Sound::RewindableAudioStream *dataPCM =
-		Sound::makePCMStream(dataStream, sampleRate, Sound::FLAG_LITTLE_ENDIAN | Sound::FLAG_16BITS | Sound::FLAG_STEREO);
-
-	_sound->queueAudioStream(dataPCM);
-}
-
 void Bink::audioPacket(AudioTrack &audio) {
 	if (_disableAudio)
 		return;
@@ -272,7 +251,7 @@ void Bink::audioPacket(AudioTrack &audio) {
 			return;
 		}
 
-		queueAudioData(out, audio.blockSize, audio.sampleRate);
+		queueSound((const byte *) out, audio.blockSize * 2);
 
 		if (audio.bits->pos() & 0x1F) // next data block starts at a 32-bit boundary
 			audio.bits->skip(32 - (audio.bits->pos() & 0x1F));
@@ -559,10 +538,6 @@ void Bink::load() {
 		}
 
 		_bink->skip(4 * audioTrackCount);
-
-		_sound = Sound::makeQueuingAudioStream(_audioTracks[_audioTrack].sampleRate,
-		                                       _audioTracks[_audioTrack].channels == 2);
-		_soundHandle = SoundMan.playAudioStream(_sound, false);
 	}
 
 	// Reading video frame properties
@@ -609,6 +584,12 @@ void Bink::load() {
 
 	initBundles();
 	initHuffman();
+
+	if (_audioTrack < _audioTracks.size()) {
+		const AudioTrack &audio = _audioTracks[_audioTrack];
+
+		initSound(audio.sampleRate, audio.channels == 2, true);
+	}
 }
 
 void Bink::initAudioTrack(AudioTrack &audio) {

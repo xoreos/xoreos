@@ -21,6 +21,12 @@
 #include "graphics/types.h"
 #include "graphics/queueable.h"
 
+#include "sound/sound.h"
+
+namespace Sound {
+	class QueuingAudioStream;
+}
+
 namespace Graphics {
 
 /** A generic interface for video decoders. */
@@ -67,6 +73,11 @@ protected:
 	/** Create a data area for a video of these dimensions. */
 	void createData(uint32 width, uint32 height);
 
+	void initSound(uint16 rate, bool stereo, bool is16);
+	void deinitSound();
+
+	void queueSound(const byte *data, uint32 dataSize);
+
 	/** Process the video's image and sound data further. */
 	virtual void processData() = 0;
 
@@ -83,6 +94,11 @@ private:
 
 	Common::Mutex _canUpdate;
 	Common::Mutex _canCopy;
+
+	Sound::QueuingAudioStream *_sound;
+	Sound::ChannelHandle       _soundHandle;
+	uint16                     _soundRate;
+	byte                       _soundFlags;
 
 	/** Copy the video image data to the texture. */
 	void copyData();
