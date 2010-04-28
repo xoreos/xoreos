@@ -83,8 +83,8 @@ public:
 	/** Get the position of the channel. */
 	void getChannelPosition(ChannelHandle channel, float &x, float &y, float &z);
 
-	/** Stop and free a channel. */
-	void freeChannel(ChannelHandle channel);
+	/** Stop the channel. */
+	void stopChannel(ChannelHandle channel);
 
 private:
 	struct Channel {
@@ -107,6 +107,9 @@ private:
 	void bufferData(Channel *channel);
 	void bufferData(uint32 channel);
 	void fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream);
+
+	/** Stop and free a channel. */
+	void freeChannel(ChannelHandle channel);
 
 	void threadMethod();
 	AudioStream *makeAudioStream(Common::SeekableReadStream *stream);

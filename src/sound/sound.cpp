@@ -242,6 +242,12 @@ void SoundManager::getChannelPosition(ChannelHandle channel, float &x, float &y,
 	alGetSource3f(_channels[channel]->source, AL_POSITION, &x, &y, &z);
 }
 
+void SoundManager::stopChannel(ChannelHandle channel) {
+	Common::StackLock lock(_mutex);
+
+	freeChannel(channel);
+}
+
 void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
 	if (!stream)
 		throw Common::Exception("SoundManager::fillBuffer(): stream is 0");
