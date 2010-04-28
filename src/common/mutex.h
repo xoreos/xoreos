@@ -17,6 +17,8 @@
 
 #include <SDL_thread.h>
 
+#include "common/types.h"
+
 namespace Common {
 
 /** A mutex. */
@@ -47,13 +49,16 @@ private:
 /** A condition. */
 class Condition {
 public:
+	Condition();
 	Condition(Mutex &mutex);
 	~Condition();
 
-	void wait();
+	bool wait(uint32 timeout = 0);
 	void signal();
 
 private:
+	bool _ownMutex;
+
 	Mutex *_mutex;
 	SDL_cond *_condition;
 };

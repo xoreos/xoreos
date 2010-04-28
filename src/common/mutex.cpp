@@ -50,7 +50,15 @@ StackLock::~StackLock() {
 }
 
 
-Condition::Condition(Mutex &mutex) : _mutex(&mutex) {
+Condition::Condition() : _ownMutex(true) {
+	_mutex = new Mutex;
+
+	_condition = SDL_CreateCond();
+
+	assert(_condition);
+}
+
+Condition::Condition(Mutex &mutex) : _ownMutex(false), _mutex(&mutex) {
 	_condition = SDL_CreateCond();
 
 	assert(_condition);
@@ -58,10 +66,26 @@ Condition::Condition(Mutex &mutex) : _mutex(&mutex) {
 
 Condition::~Condition() {
 	SDL_DestroyCond(_condition);
+
+	if (_ownMutex)
+		delete _mutex;
 }
 
-void Condition::wait() {
-	SDL_CondWait(_condition, _mutex->_mutex);
+bool Condition::wait(uint32 timeout) {
+	int gotSignal;
+
+	if (_ownMutex)
+		_mutex->lock();
+
+	if (timeout == 0)
+		gotSignal = SDL_CondWait(_condition, _mutex->_mutex);
+	else
+		gotSignal = SDL_CondWaitTimeout(_condition, _mutex->_mutex, timeout);
+
+	if (_ownMutex)
+		_mutex->unlock();
+
+	return gotSignal == 0;
 }
 
 void Condition::signal() {
