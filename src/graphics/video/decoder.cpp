@@ -90,11 +90,12 @@ void VideoDecoder::deinitSound() {
 	if (!_sound)
 		return;
 
-	if (SoundMan.isPlaying(_soundHandle))
-		SoundMan.stopChannel(_soundHandle);
+	_sound->finish();
+	SoundMan.triggerUpdate();
+
+	SoundMan.stopChannel(_soundHandle);
 
 	delete _sound;
-
 	_sound = 0;
 }
 
