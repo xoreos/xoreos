@@ -181,30 +181,47 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool dispose
 	channel.id              = handle.id;
 	channel.stream          = audStream;
 	channel.source          = 0;
-	channel.buffers         = 0;
 	channel.disposeAfterUse = disposeAfterUse;
 
-	if (!channel.stream) {
-		freeChannel(handle);
-		throw Common::Exception("Could not detect stream type");
-	}
-
 	try {
-		// Create the source and buffers and then begin playing the sound.
+
+		if (!channel.stream)
+			throw Common::Exception("Could not detect stream type");
+
+		ALenum error = AL_NO_ERROR;
+
+		// Create the source
 		alGenSources(1, &channel.source);
+		if ((error = alGetError()) != AL_NO_ERROR)
+			throw Common::Exception("OpenAL error while generating sources: %X", error);
 
-		channel.buffers = new ALuint[NUM_OPENAL_BUFFERS];
-		alGenBuffers(NUM_OPENAL_BUFFERS, channel.buffers);
+		// Create all needed buffers
+		for (int i = 0; i < NUM_OPENAL_BUFFERS; i++) {
+			ALuint buffer;
 
-		// Fill the initial buffers with data.
-		for (int i = 0; i < NUM_OPENAL_BUFFERS; i++)
-			fillBuffer(channel.source, channel.buffers[i], channel.stream);
+			alGenBuffers(1, &buffer);
+			if ((error = alGetError()) != AL_NO_ERROR)
+				throw Common::Exception("OpenAL error while generating buffers: %X", error);
 
-		alSourceQueueBuffers(channel.source, NUM_OPENAL_BUFFERS, channel.buffers);
+			if (fillBuffer(channel.source, buffer, channel.stream)) {
+				// If we could fill the buffer with data, queue it
+
+				alSourceQueueBuffers(channel.source, 1, &buffer);
+				if ((error = alGetError()) != AL_NO_ERROR)
+					throw Common::Exception("OpenAL error while queueing buffers: %X", error);
+
+			} else
+				// If not, put it into our free list
+				channel.freeBuffers.push_back(buffer);
+
+			channel.buffers.push_back(buffer);
+		}
+
+		// Start playing the sound
 		alSourcePlay(channel.source);
+		if ((error = alGetError()) != AL_NO_ERROR)
+			throw Common::Exception("OpenAL error while attempting to play: %X", error);
 
-		if (alGetError() != AL_NO_ERROR)
-			throw Common::Exception("OpenAL error while attempting to play");
 	} catch (...) {
 		freeChannel(handle);
 		throw;
@@ -282,19 +299,12 @@ void SoundManager::triggerUpdate() {
 	_needUpdate.signal();
 }
 
-void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
+bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
 	if (!stream)
 		throw Common::Exception("No stream");
 
-	if (stream->endOfData()) {
-		// Create a dummy buffer for OpenAL
-
-		byte *buffer = new byte[8];
-		memset(buffer, 0, 8);
-
-		alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, 0, stream->getRate());
-		return;
-	}
+	if (stream->endOfData())
+		return false;
 
 	// Read in the required amount of samples
 	uint32 numSamples = BUFFER_SIZE / 2;
@@ -312,6 +322,8 @@ void SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 
 	if (alGetError() != AL_NO_ERROR)
 		throw Common::Exception("OpenAL error while filling buffer");
+
+	return true;
 }
 
 void SoundManager::bufferData(uint16 channel) {
@@ -325,22 +337,28 @@ void SoundManager::bufferData(Channel &channel) {
 	if (!channel.stream || channel.stream->endOfData())
 		return;
 
-	// Here we check how many buffers have been processed by OpenAL.
-	// If we have any that haven't been processed, fill them with
-	// more data from the AudioStream.
-
-	ALint buffersProcessed = 0;
+	// Get the number of buffers that have been processed
+	ALint buffersProcessed;
 	alGetSourcei(channel.source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 
-	if (buffersProcessed <= 0)
-		return;
-
+	// Pull all processed buffers from the queue and put them into our free list
 	while (buffersProcessed--) {
-		// Pull off the unused buffer from the queue, fill it, and throw it back on
 		ALuint alBuffer;
+
 		alSourceUnqueueBuffers(channel.source, 1, &alBuffer);
-		fillBuffer(channel.source, alBuffer, channel.stream);
-		alSourceQueueBuffers(channel.source, 1, &alBuffer);
+
+		channel.freeBuffers.push_back(alBuffer);
+	}
+
+	// Buffer as long as we still have data and free buffers
+	std::list<ALuint>::iterator buffer = channel.freeBuffers.begin();
+	while (buffer != channel.freeBuffers.end()) {
+		if (!fillBuffer(channel.source, *buffer, channel.stream))
+			break;
+
+		alSourceQueueBuffers(channel.source, 1, &*buffer);
+
+		buffer = channel.freeBuffers.erase(buffer);
 	}
 }
 
@@ -410,12 +428,11 @@ void SoundManager::freeChannel(uint16 channel) {
 	if (c->disposeAfterUse)
 		delete c->stream;
 
-	if (c->buffers) {
+	if (c->source)
 		alDeleteSources(1, &c->source);
-		alDeleteBuffers(NUM_OPENAL_BUFFERS, c->buffers);
 
-		delete[] c->buffers;
-	}
+	for (std::list<ALuint>::iterator buffer = c->buffers.begin(); buffer != c->buffers.end(); ++buffer)
+		alDeleteBuffers(1, &*buffer);
 
 	delete c;
 	_channels[channel] = 0;

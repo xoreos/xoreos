@@ -26,6 +26,7 @@
 #endif
 
 #include <vector>
+#include <list>
 
 #include "common/singleton.h"
 #include "common/thread.h"
@@ -99,12 +100,17 @@ private:
 	static const int kChannelCount = 65535;
 
 	struct Channel {
-		uint32 id;
+		uint32 id; ///< The channel's ID.
 
-		AudioStream *stream;
-		bool disposeAfterUse;
-		ALuint source;
-		ALuint *buffers;
+		AudioStream *stream;  ///< The actual audio stream.
+		bool disposeAfterUse; ///< Delete the audio stream when done playing?
+
+		ALuint source; ///< OpenAL source for this channel.
+
+		/** List of buffers for that channel. */
+		std::list<ALuint> buffers;
+		/** List of free buffers not filled with data. */
+		std::list<ALuint> freeBuffers;
 	};
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?
@@ -128,19 +134,26 @@ private:
 
 	/** Buffer more sound from the channel to the OpenAL buffers. */
 	void bufferData(Channel &channel);
+	/** Buffer more sound from the channel to the OpenAL buffers. */
 	void bufferData(uint16 channel);
-	void fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream);
 
+	/** Is that channel currently playing a sound? */
 	bool isPlaying(uint16 channel) const;
 
 	/** Stop and free a channel. */
 	void freeChannel(ChannelHandle &handle);
+	/** Stop and free a channel. */
 	void freeChannel(uint16 channel);
 
 	Channel *getChannel(const ChannelHandle &handle);
 
 	void threadMethod();
-	AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
+
+	static AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
+
+	/** Fill the buffer with data from the audio stream. */
+	static bool fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream);
+
 };
 
 } // End of namespace Sound
