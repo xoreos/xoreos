@@ -66,6 +66,9 @@ public:
 
 	/** Play a sound file.
 	 *
+	 *  This only allocate a channel for the sound, to actually start playing it,
+	 *  call startChannel().
+	 *
 	 *  @param  wavStream The stream to play. Will be taken over.
 	 *  @param  loop Should the sound loop?
 	 *  @return The channel the sound has been assigned to, or -1 on error.
@@ -73,6 +76,9 @@ public:
 	ChannelHandle playSoundFile(Common::SeekableReadStream *wavStream, bool loop = false);
 
 	/** Play an audio stream.
+	 *
+	 *  This only allocate a channel for the sound, to actually start playing it,
+	 *  call startChannel().
 	 *
 	 *  @param  audStream The stream to play.
 	 *  @param  disposeAfterUse Should the stream be taken over and discarded once it finshed?
@@ -86,7 +92,13 @@ public:
 	/** Get the position of the channel. */
 	void getChannelPosition(const ChannelHandle &handle, float &x, float &y, float &z);
 
-	/** Stop the channel. */
+	/** Start the channel. */
+	void startChannel(ChannelHandle &handle);
+
+	/** Pause the channel. */
+	void pauseChannel(ChannelHandle &handle, bool pause);
+
+	/** Stop and free the channel. */
 	void stopChannel(ChannelHandle &handle);
 
 	/** Signal that one of streams currently being played has changed and should be updated immediately. */
@@ -97,6 +109,8 @@ private:
 
 	struct Channel {
 		uint32 id; ///< The channel's ID.
+
+		ALint state; ///< The sound's state.
 
 		AudioStream *stream;  ///< The actual audio stream.
 		bool disposeAfterUse; ///< Delete the audio stream when done playing?

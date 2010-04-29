@@ -110,8 +110,7 @@ void VideoDecoder::queueSound(const byte *data, uint32 dataSize) {
 
 	_sound->queueAudioStream(dataPCM);
 
-	if (_sound->numQueuedStreams() <= 1)
-		SoundMan.triggerUpdate();
+	SoundMan.startChannel(_soundHandle);
 }
 
 void VideoDecoder::rebuild() {

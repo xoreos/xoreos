@@ -115,6 +115,9 @@ bool SoundManager::isPlaying(uint16 channel) const {
 		if (!_channels[channel]->stream || _channels[channel]->stream->endOfData())
 			return false;
 
+		if (_channels[channel]->state != AL_PLAYING)
+			return true;
+
 		alSourcePlay(_channels[channel]->source);
 	}
 
@@ -192,6 +195,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool dispose
 	Channel &channel = *_channels[handle.channel];
 
 	channel.id              = handle.id;
+	channel.state           = AL_PAUSED;
 	channel.stream          = audStream;
 	channel.source          = 0;
 	channel.disposeAfterUse = disposeAfterUse;
@@ -229,11 +233,6 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool dispose
 
 			channel.buffers.push_back(buffer);
 		}
-
-		// Start playing the sound
-		alSourcePlay(channel.source);
-		if ((error = alGetError()) != AL_NO_ERROR)
-			throw Common::Exception("OpenAL error while attempting to play: %X", error);
 
 	} catch (...) {
 		freeChannel(handle);
@@ -300,6 +299,38 @@ void SoundManager::getChannelPosition(const ChannelHandle &handle, float &x, flo
 		throw Common::Exception("Cannot get position on a stereo sound.");
 
 	alGetSource3f(channel->source, AL_POSITION, &x, &y, &z);
+}
+
+void SoundManager::startChannel(ChannelHandle &handle) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	channel->state = AL_PLAYING;
+
+	triggerUpdate();
+}
+
+void SoundManager::pauseChannel(ChannelHandle &handle, bool pause) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	ALenum error = AL_NO_ERROR;
+	if (pause) {
+		alSourcePause(channel->source);
+		if ((error = alGetError()) != AL_NO_ERROR)
+			throw Common::Exception("OpenAL error while attempting to pause: %X", error);
+
+		channel->state = AL_PAUSED;
+	} else
+		channel->state = AL_PLAYING;
+
+	triggerUpdate();
 }
 
 void SoundManager::stopChannel(ChannelHandle &handle) {

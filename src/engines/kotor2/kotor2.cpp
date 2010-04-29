@@ -84,6 +84,8 @@ void KotOR2Engine::run(const Common::UString &target) {
 	if (wav) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav);
+
+		SoundMan.startChannel(channel);
 	}
 
 	Graphics::Cube *cube = 0;
