@@ -18,30 +18,26 @@
 // Mac OS X has to have this set up separately because of the include
 // path for the OpenAL framework.
 #ifdef MACOSX
-#	include <al.h>
-#	include <alc.h>
+	#include <al.h>
+	#include <alc.h>
 #else
-#	include <AL/al.h>
-#	include <AL/alc.h>
+	#include <AL/al.h>
+	#include <AL/alc.h>
 #endif
 
 #include <vector>
 #include <list>
 
+#include "common/types.h"
 #include "common/singleton.h"
 #include "common/thread.h"
 #include "common/mutex.h"
-#include "common/types.h"
 
 namespace Common {
 	class SeekableReadStream;
 }
 
 namespace Sound {
-
-// Control how many buffers per sound OpenAL will create
-// clone2727 says: 5 is just a safe number. Mine only reached a max of 2.
-#define NUM_OPENAL_BUFFERS 5
 
 class AudioStream;
 
@@ -97,7 +93,7 @@ public:
 	void triggerUpdate();
 
 private:
-	static const int kChannelCount = 65535;
+	static const int kChannelCount = 65535; ///< Maximal number of channels.
 
 	struct Channel {
 		uint32 id; ///< The channel's ID.
@@ -115,13 +111,15 @@ private:
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?
 
+	/** Our channels. */
 	Channel *_channels[kChannelCount];
 
-	uint16 _curChannel;
-	uint32 _curID;
+	uint16 _curChannel; ///< Position to start looking for a free channel.
+	uint32 _curID;      ///< The ID the next sound will get.
 
 	Common::Mutex _mutex;
 
+	/** Condition to signal that an update is needed. */
 	Common::Condition _needUpdate;
 
 	ALCdevice *_dev;
@@ -130,6 +128,7 @@ private:
 	/** Update the sound information. Called regularily from within the thread method. */
 	void update();
 
+	/** Look for a free place in the channel vector. */
 	ChannelHandle newChannel();
 
 	/** Buffer more sound from the channel to the OpenAL buffers. */
@@ -145,6 +144,7 @@ private:
 	/** Stop and free a channel. */
 	void freeChannel(uint16 channel);
 
+	/** Return the channel the handle refers to. */
 	Channel *getChannel(const ChannelHandle &handle);
 
 	void threadMethod();

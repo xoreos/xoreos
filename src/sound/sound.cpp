@@ -26,9 +26,20 @@
 
 DECLARE_SINGLETON(Sound::SoundManager)
 
-namespace Sound {
+/** Control how many buffers per sound OpenAL will create.
+ *
+ *  @note: clone2727 says: 5 is just a safe number. Mine only reached a max of 2.
+ */
+static const int kOpenALBufferCount = 5;
 
-#define BUFFER_SIZE 32768
+/** Number of bytes per OpenAL buffer.
+ *
+ *  @note: Needs to be high enough to prevent stuttering, but low enough to
+ *         prevent a noticable lag. 32768 seems to work just fine.
+ */
+static const int kOpenALBufferSize = 32768;
+
+namespace Sound {
 
 ChannelHandle::ChannelHandle() : channel(0), id(0) {
 }
@@ -196,7 +207,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool dispose
 			throw Common::Exception("OpenAL error while generating sources: %X", error);
 
 		// Create all needed buffers
-		for (int i = 0; i < NUM_OPENAL_BUFFERS; i++) {
+		for (int i = 0; i < kOpenALBufferCount; i++) {
 			ALuint buffer;
 
 			alGenBuffers(1, &buffer);
@@ -307,13 +318,13 @@ bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 		return false;
 
 	// Read in the required amount of samples
-	uint32 numSamples = BUFFER_SIZE / 2;
+	uint32 numSamples = kOpenALBufferSize / 2;
 
 	if (stream->isStereo())
 		numSamples /= 2;
 
-	byte *buffer = new byte[BUFFER_SIZE];
-	memset(buffer, 0, BUFFER_SIZE);
+	byte *buffer = new byte[kOpenALBufferSize];
+	memset(buffer, 0, kOpenALBufferSize);
 	numSamples = stream->readBuffer((int16 *)buffer, numSamples);
 
 	uint32 bufferSize = numSamples * 2;
