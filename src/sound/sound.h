@@ -61,6 +61,9 @@ public:
 	/** Was the sound subsystem successfully initialized? */
 	bool ready() const;
 
+	/** Does this channel handle point to an existing channel? */
+	bool isValidChannel(const ChannelHandle &handle) const;
+
 	/** Is that channel currently playing a sound? */
 	bool isPlaying(const ChannelHandle &handle);
 
