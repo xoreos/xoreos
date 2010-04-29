@@ -92,7 +92,9 @@ bool SoundManager::ready() const {
 	return _ready;
 }
 
-bool SoundManager::isPlaying(const ChannelHandle &handle) const {
+bool SoundManager::isPlaying(const ChannelHandle &handle) {
+	Common::StackLock lock(_mutex);
+
 	if ((handle.channel == 0) || (handle.id == 0) || !_channels[handle.channel])
 		return false;
 

@@ -62,7 +62,7 @@ public:
 	bool ready() const;
 
 	/** Is that channel currently playing a sound? */
-	bool isPlaying(const ChannelHandle &handle) const;
+	bool isPlaying(const ChannelHandle &handle);
 
 	/** Play a sound file.
 	 *

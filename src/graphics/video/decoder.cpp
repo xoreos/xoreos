@@ -90,8 +90,6 @@ void VideoDecoder::deinitSound() {
 	if (!_sound)
 		return;
 
-	_sound->finish();
-
 	if (SoundMan.isPlaying(_soundHandle))
 		SoundMan.stopChannel(_soundHandle);
 
