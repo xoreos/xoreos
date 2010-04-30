@@ -33,6 +33,8 @@
 #include "common/thread.h"
 #include "common/mutex.h"
 
+#include "sound/types.h"
+
 namespace Common {
 	class SeekableReadStream;
 }
@@ -40,13 +42,6 @@ namespace Common {
 namespace Sound {
 
 class AudioStream;
-
-struct ChannelHandle {
-	uint16 channel;
-	uint32 id;
-
-	ChannelHandle();
-};
 
 /** The sound manager. */
 class SoundManager : public Common::Singleton<SoundManager>, public Common::Thread {

@@ -4,7 +4,8 @@ SUBDIRS = decoders
 
 noinst_LTLIBRARIES = libsound.la
 
-noinst_HEADERS = sound.h \
+noinst_HEADERS = types.h \
+                 sound.h \
                  audiostream.h
 
 libsound_la_SOURCES = sound.cpp \

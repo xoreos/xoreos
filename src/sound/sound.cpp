@@ -41,10 +41,6 @@ static const int kOpenALBufferSize = 32768;
 
 namespace Sound {
 
-ChannelHandle::ChannelHandle() : channel(0), id(0) {
-}
-
-
 SoundManager::SoundManager() : _ready(false) {
 }
 

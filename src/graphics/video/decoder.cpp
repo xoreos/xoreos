@@ -20,6 +20,7 @@
 #include "graphics/video/decoder.h"
 #include "graphics/graphics.h"
 
+#include "sound/sound.h"
 #include "sound/audiostream.h"
 #include "sound/decoders/pcm.h"
 

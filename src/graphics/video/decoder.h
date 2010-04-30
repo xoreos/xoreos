@@ -21,7 +21,7 @@
 #include "graphics/types.h"
 #include "graphics/queueable.h"
 
-#include "sound/sound.h"
+#include "sound/types.h"
 
 namespace Sound {
 	class QueuingAudioStream;
