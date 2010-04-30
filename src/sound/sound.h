@@ -61,11 +61,19 @@ public:
 	/** Was the sound subsystem successfully initialized? */
 	bool ready() const;
 
+
+	/** Signal that one of streams currently being played has changed and should be updated immediately. */
+	void triggerUpdate();
+
+
 	/** Does this channel handle point to an existing channel? */
 	bool isValidChannel(const ChannelHandle &handle) const;
 
 	/** Is that channel currently playing a sound? */
 	bool isPlaying(const ChannelHandle &handle);
+
+
+	// Playing sounds
 
 	/** Play a sound file.
 	 *
@@ -89,11 +97,8 @@ public:
 	 */
 	ChannelHandle playAudioStream(AudioStream *audStream, bool disposeAfterUse = true);
 
-	/** Set the position the channel is being played. */
-	void setChannelPosition(const ChannelHandle &handle, float x, float y, float z);
 
-	/** Get the position of the channel. */
-	void getChannelPosition(const ChannelHandle &handle, float &x, float &y, float &z);
+	// Starting/Pausing/Stopping channels
 
 	/** Start the channel. */
 	void startChannel(ChannelHandle &handle);
@@ -104,8 +109,14 @@ public:
 	/** Stop and free the channel. */
 	void stopChannel(ChannelHandle &handle);
 
-	/** Signal that one of streams currently being played has changed and should be updated immediately. */
-	void triggerUpdate();
+
+	// Channel properties
+
+	/** Set the position the channel is being played. */
+	void setChannelPosition(const ChannelHandle &handle, float x, float y, float z);
+
+	/** Get the position of the channel. */
+	void getChannelPosition(const ChannelHandle &handle, float &x, float &y, float &z);
 
 private:
 	static const int kChannelCount = 65535; ///< Maximal number of channels.

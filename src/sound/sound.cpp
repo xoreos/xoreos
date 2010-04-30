@@ -92,6 +92,10 @@ bool SoundManager::ready() const {
 	return _ready;
 }
 
+void SoundManager::triggerUpdate() {
+	_needUpdate.signal();
+}
+
 bool SoundManager::isValidChannel(const ChannelHandle &handle) const {
 	if ((handle.channel == 0) || (handle.id == 0) || !_channels[handle.channel])
 		return false;
@@ -285,32 +289,6 @@ SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handle) {
 	return _channels[handle.channel];
 }
 
-void SoundManager::setChannelPosition(const ChannelHandle &handle, float x, float y, float z) {
-	Common::StackLock lock(_mutex);
-
-	Channel *channel = getChannel(handle);
-	if (!channel || !channel->stream)
-		throw Common::Exception("Invalid channel");
-
-	if (channel->stream->isStereo())
-		throw Common::Exception("Cannot set position on a stereo sound.");
-
-	alSource3f(channel->source, AL_POSITION, x, y, z);
-}
-
-void SoundManager::getChannelPosition(const ChannelHandle &handle, float &x, float &y, float &z) {
-	Common::StackLock lock(_mutex);
-
-	Channel *channel = getChannel(handle);
-	if (!channel || !channel->stream)
-		throw Common::Exception("Invalid channel");
-
-	if (channel->stream->isStereo())
-		throw Common::Exception("Cannot get position on a stereo sound.");
-
-	alGetSource3f(channel->source, AL_POSITION, &x, &y, &z);
-}
-
 void SoundManager::startChannel(ChannelHandle &handle) {
 	Common::StackLock lock(_mutex);
 
@@ -349,8 +327,30 @@ void SoundManager::stopChannel(ChannelHandle &handle) {
 	freeChannel(handle);
 }
 
-void SoundManager::triggerUpdate() {
-	_needUpdate.signal();
+void SoundManager::setChannelPosition(const ChannelHandle &handle, float x, float y, float z) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	if (channel->stream->isStereo())
+		throw Common::Exception("Cannot set position on a stereo sound.");
+
+	alSource3f(channel->source, AL_POSITION, x, y, z);
+}
+
+void SoundManager::getChannelPosition(const ChannelHandle &handle, float &x, float &y, float &z) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	if (channel->stream->isStereo())
+		throw Common::Exception("Cannot get position on a stereo sound.");
+
+	alGetSource3f(channel->source, AL_POSITION, &x, &y, &z);
 }
 
 bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
