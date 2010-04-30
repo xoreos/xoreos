@@ -48,6 +48,9 @@ void SoundManager::init() {
 	for (int i = 0; i < kChannelCount; i++)
 		_channels[i] = 0;
 
+	for (int i = 0; i < kSoundTypeMAX; i++)
+		_types[i].gain = 1.0;
+
 	_curChannel = 1;
 	_curID      = 1;
 
@@ -191,7 +194,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 	return makeWAVStream(stream, true);
 }
 
-ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool disposeAfterUse) {
+ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType type, bool disposeAfterUse) {
 	checkReady();
 
 	if (!audStream)
@@ -209,6 +212,8 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool dispose
 	channel.stream          = audStream;
 	channel.source          = 0;
 	channel.disposeAfterUse = disposeAfterUse;
+	channel.type            = type;
+	channel.typeIt          = _types[channel.type].list.end();
 
 	try {
 
@@ -244,6 +249,13 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool dispose
 			channel.buffers.push_back(buffer);
 		}
 
+		// Set the gain to the current sound type gain
+		alSourcef(channel.source, AL_GAIN, _types[channel.type].gain);
+
+		// Add the channel to the correct type list
+		_types[channel.type].list.push_back(&channel);
+		channel.typeIt = --_types[channel.type].list.end();
+
 	} catch (...) {
 		freeChannel(handle);
 		throw;
@@ -252,7 +264,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool dispose
 	return handle;
 }
 
-ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream, bool loop) {
+ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream, SoundType type, bool loop) {
 	checkReady();
 
 	if (!wavStream)
@@ -268,7 +280,7 @@ ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream,
 			audioStream = makeLoopingAudioStream(reAudStream, 0);
 	}
 
-	return playAudioStream(audioStream);
+	return playAudioStream(audioStream, type);
 }
 
 SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handle) {
@@ -498,17 +510,26 @@ void SoundManager::freeChannel(uint16 channel) {
 
 	Channel *c = _channels[channel];
 	if (!c)
+		// Nothing to do
 		return;
 
+	// Discard the stream, if requested
 	if (c->disposeAfterUse)
 		delete c->stream;
 
+	// Delete the channel's OpenAL source
 	if (c->source)
 		alDeleteSources(1, &c->source);
 
+	// Delete the OpenAL buffers
 	for (std::list<ALuint>::iterator buffer = c->buffers.begin(); buffer != c->buffers.end(); ++buffer)
 		alDeleteBuffers(1, &*buffer);
 
+	// Remove the channel from the type list
+	if (c->typeIt != _types[c->type].list.end())
+		_types[c->type].list.erase(c->typeIt);
+
+	// And finally delete the channel itself
 	delete c;
 	_channels[channel] = 0;
 }

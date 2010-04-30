@@ -25,6 +25,16 @@ struct ChannelHandle {
 	ChannelHandle() : channel(0), id(0) { }
 };
 
+/** The type of a sound. */
+enum SoundType {
+	kSoundTypeMusic = 0, ///< Music.
+	kSoundTypeSFX   = 1, ///< Sound effect.
+	kSoundTypeVoice = 2, ///< Voice/Speech.
+	kSoundTypeVideo = 3, ///< Video/Movie.
+
+	kSoundTypeMAX   = 4
+};
+
 } // End of namespace Sound
 
 #endif // SOUND_TYPES_H

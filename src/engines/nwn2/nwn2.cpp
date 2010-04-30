@@ -93,7 +93,7 @@ void NWN2Engine::run(const Common::UString &target) {
 		wav = new Common::SeekableSubReadStream(wav, 0, 3545548, true);
 
 		status("Found a wav. Trying to play it. Turn up your speakers");
-		channel = SoundMan.playSoundFile(wav, true);
+		channel = SoundMan.playSoundFile(wav, Sound::kSoundTypeMusic, true);
 
 		SoundMan.startChannel(channel);
 	}

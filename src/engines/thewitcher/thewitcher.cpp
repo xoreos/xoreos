@@ -91,7 +91,7 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "m1_axem00020005");
 	if (wav) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
-		channel = SoundMan.playSoundFile(wav);
+		channel = SoundMan.playSoundFile(wav, Sound::kSoundTypeVoice);
 
 		SoundMan.startChannel(channel);
 	}

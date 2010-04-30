@@ -76,10 +76,12 @@ public:
 	 *  call startChannel().
 	 *
 	 *  @param  wavStream The stream to play. Will be taken over.
+	 *  @param  type The type of the sound.
 	 *  @param  loop Should the sound loop?
 	 *  @return The channel the sound has been assigned to, or -1 on error.
 	 */
-	ChannelHandle playSoundFile(Common::SeekableReadStream *wavStream, bool loop = false);
+	ChannelHandle playSoundFile(Common::SeekableReadStream *wavStream,
+	                            SoundType type, bool loop = false);
 
 	/** Play an audio stream.
 	 *
@@ -87,10 +89,12 @@ public:
 	 *  call startChannel().
 	 *
 	 *  @param  audStream The stream to play.
+	 *  @param  type The type of the sound.
 	 *  @param  disposeAfterUse Should the stream be taken over and discarded once it finshed?
 	 *  @return The channel the sound has been assigned to, or -1 on error.
 	 */
-	ChannelHandle playAudioStream(AudioStream *audStream, bool disposeAfterUse = true);
+	ChannelHandle playAudioStream(AudioStream *audStream,
+	                              SoundType type, bool disposeAfterUse = true);
 
 
 	// Starting/Pausing/Stopping channels
@@ -125,6 +129,14 @@ public:
 private:
 	static const int kChannelCount = 65535; ///< Maximal number of channels.
 
+	struct Channel;
+	typedef std::list<Channel *> TypeList;
+
+	struct Type {
+		float    gain; ///< The sound type's current gain.
+		TypeList list; ///< The list of channels for that type.
+	};
+
 	struct Channel {
 		uint32 id; ///< The channel's ID.
 
@@ -135,16 +147,17 @@ private:
 
 		ALuint source; ///< OpenAL source for this channel.
 
-		/** List of buffers for that channel. */
-		std::list<ALuint> buffers;
-		/** List of free buffers not filled with data. */
-		std::list<ALuint> freeBuffers;
+		std::list<ALuint> buffers;     ///< List of buffers for that channel.
+		std::list<ALuint> freeBuffers; ///< List of free buffers not filled with data.
+
+		SoundType type;            ///< The channel's sound type.
+		TypeList::iterator typeIt; ///< Iterator into the type list.
 	};
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?
 
-	/** Our channels. */
-	Channel *_channels[kChannelCount];
+	Channel *_channels[kChannelCount]; ///< The sound channels.
+	Type     _types   [kSoundTypeMAX]; ///< The sound types.
 
 	uint16 _curChannel; ///< Position to start looking for a free channel.
 	uint32 _curID;      ///< The ID the next sound will get.

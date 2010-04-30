@@ -84,7 +84,7 @@ void VideoDecoder::initSound(uint16 rate, bool stereo, bool is16) {
 
 	_sound = Sound::makeQueuingAudioStream(_soundRate, stereo);
 
-	_soundHandle = SoundMan.playAudioStream(_sound, false);
+	_soundHandle = SoundMan.playAudioStream(_sound, Sound::kSoundTypeVideo, false);
 }
 
 void VideoDecoder::deinitSound() {

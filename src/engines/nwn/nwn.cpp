@@ -99,7 +99,7 @@ void NWNEngine::run(const Common::UString &target) {
 	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "as_pl_evanglstm1");
 	if (wav) {
 		status("Found a wav. Trying to play it. Turn up your speakers");
-		channel = SoundMan.playSoundFile(wav);
+		channel = SoundMan.playSoundFile(wav, Sound::kSoundTypeSFX);
 
 		SoundMan.startChannel(channel);
 	}
