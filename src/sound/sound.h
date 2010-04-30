@@ -126,6 +126,12 @@ public:
 	/** Set the gain/volume of the channel. */
 	void setChannelGain(const ChannelHandle &handle, float gain);
 
+
+	// Type properties
+
+	/** Set the gain/volume of all channels of a specific type. */
+	void setTypeGain(SoundType type, float gain);
+
 private:
 	static const int kChannelCount = 65535; ///< Maximal number of channels.
 

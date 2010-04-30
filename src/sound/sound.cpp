@@ -195,6 +195,8 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 }
 
 ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType type, bool disposeAfterUse) {
+	assert((type >= 0) && (type < kSoundTypeMAX));
+
 	checkReady();
 
 	if (!audStream)
@@ -379,6 +381,22 @@ void SoundManager::setChannelGain(const ChannelHandle &handle, float gain) {
 		throw Common::Exception("Cannot set position on a stereo sound.");
 
 	alSourcef(channel->source, AL_GAIN, gain);
+}
+
+void SoundManager::setTypeGain(SoundType type, float gain) {
+	assert((type >= 0) && (type < kSoundTypeMAX));
+
+	Common::StackLock lock(_mutex);
+
+	// Set the new type gain
+	_types[type].gain = gain;
+
+	// Update all currently playing channels of that type
+	for (TypeList::iterator t = _types[type].list.begin(); t != _types[type].list.end(); ++t) {
+		assert(*t);
+
+		alSourcef((*t)->source, AL_GAIN, gain);
+	}
 }
 
 bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
