@@ -322,6 +322,14 @@ void SoundManager::stopChannel(ChannelHandle &handle) {
 	freeChannel(handle);
 }
 
+void SoundManager::setListenerGain(float gain) {
+	checkReady();
+
+	Common::StackLock lock(_mutex);
+
+	alListenerf(AL_GAIN, gain);
+}
+
 void SoundManager::setChannelPosition(const ChannelHandle &handle, float x, float y, float z) {
 	Common::StackLock lock(_mutex);
 

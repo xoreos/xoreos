@@ -105,6 +105,12 @@ public:
 	void stopChannel(ChannelHandle &handle);
 
 
+	// Listener properties
+
+	/** Set the gain of the listener (= the global master volume). */
+	void setListenerGain(float gain);
+
+
 	// Channel properties
 
 	/** Set the position the channel is being played. */
