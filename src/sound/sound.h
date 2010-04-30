@@ -119,6 +119,9 @@ public:
 	/** Get the position of the channel. */
 	void getChannelPosition(const ChannelHandle &handle, float &x, float &y, float &z);
 
+	/** Set the gain/volume of the channel. */
+	void setChannelGain(const ChannelHandle &handle, float gain);
+
 private:
 	static const int kChannelCount = 65535; ///< Maximal number of channels.
 

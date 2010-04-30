@@ -356,6 +356,19 @@ void SoundManager::getChannelPosition(const ChannelHandle &handle, float &x, flo
 	alGetSource3f(channel->source, AL_POSITION, &x, &y, &z);
 }
 
+void SoundManager::setChannelGain(const ChannelHandle &handle, float gain) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	if (channel->stream->isStereo())
+		throw Common::Exception("Cannot set position on a stereo sound.");
+
+	alSourcef(channel->source, AL_GAIN, gain);
+}
+
 bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
 	if (!stream)
 		throw Common::Exception("No stream");
