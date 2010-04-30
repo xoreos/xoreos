@@ -25,8 +25,6 @@
 #include "graphics/texture.h"
 #include "graphics/listcontainer.h"
 
-#include "sound/sound.h"
-
 DECLARE_SINGLETON(Events::EventsManager)
 
 namespace Events {
