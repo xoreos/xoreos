@@ -45,8 +45,7 @@ ChannelHandle::ChannelHandle() : channel(0), id(0) {
 }
 
 
-SoundManager::SoundManager() {
-	_ready = false;
+SoundManager::SoundManager() : _ready(false) {
 }
 
 void SoundManager::init() {
@@ -93,6 +92,8 @@ bool SoundManager::ready() const {
 }
 
 void SoundManager::triggerUpdate() {
+	checkReady();
+
 	_needUpdate.signal();
 }
 
@@ -195,8 +196,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 }
 
 ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool disposeAfterUse) {
-	if (!_ready)
-		throw Common::Exception("SoundManager not ready");
+	checkReady();
 
 	if (!audStream)
 		throw Common::Exception("No audio stream");
@@ -257,8 +257,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, bool dispose
 }
 
 ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream, bool loop) {
-	if (!_ready)
-		throw Common::Exception("SoundManager not ready");
+	checkReady();
 
 	if (!wavStream)
 		throw Common::Exception("No stream");
@@ -414,6 +413,11 @@ void SoundManager::bufferData(Channel &channel) {
 
 		buffer = channel.freeBuffers.erase(buffer);
 	}
+}
+
+void SoundManager::checkReady() {
+	if (!_ready)
+		throw Common::Exception("SoundManager not ready");
 }
 
 void SoundManager::update() {

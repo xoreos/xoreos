@@ -153,6 +153,9 @@ private:
 	ALCdevice *_dev;
 	ALCcontext *_ctx;
 
+	/** Check that the SoundManager was properly initialized. */
+	void checkReady();
+
 	/** Update the sound information. Called regularily from within the thread method. */
 	void update();
 
