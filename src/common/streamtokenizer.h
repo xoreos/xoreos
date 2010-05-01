@@ -25,24 +25,6 @@ namespace Common {
 
 class SeekableReadStream;
 
-typedef std::vector<uint32> CharList;
-
-/** Parse tokens oput of a stream.
- *
- *  @param  stream The stream to parse out of.
- *  @param  string The string to parse into.
- *  @param  splitChars A vector containing all characters on where to split.
- *  @param  endChars A vector containing all characters signaling a token list end.
- *  @param  quoteChars A vector containing all characters able to surround a split character
- *                     within a token.
- *  @param  ignoreChars A vector containing all characters to be ignored.
- *  @return true if there's still tokens left in the list (no end character was reached), false
- *          otherwise.
- */
-bool parseToken(SeekableReadStream &stream, Common::UString &string,
-                const CharList &splitChars, const CharList &endChars,
-                const CharList &quoteChars, const CharList &ignoreChars);
-
 /** Tokenizes a stream.
  *
  *  @note Only works with clean (non-extended ASCII) and UTF-8 streams right now.
