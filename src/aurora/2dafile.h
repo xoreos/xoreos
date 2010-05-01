@@ -99,11 +99,8 @@ private:
 	/** Map to translate a column header to an index. */
 	HeaderMap _headerMap;
 
-	// For tokenizing the ASCII format
-	Common::CharList _splitCharsA;
-	Common::CharList _endCharsA;
-	Common::CharList _quoteCharsA;
-	Common::CharList _ignoreCharsA;
+	/** Tokenizer for the ASCII file format. */
+	Common::StreamTokenizer *_tokenizeASCII;
 
 	// Loading helpers
 	void read2a(Common::SeekableReadStream &twoda);
@@ -120,11 +117,6 @@ private:
 	void readRows2b(Common::SeekableReadStream &twoda);
 
 	void createHeaderMap();
-
-	void tokenize(Common::SeekableReadStream &stream, Row &row,
-	              const Common::CharList &splitChars, const Common::CharList &endChars,
-	              const Common::CharList &quoteChars, const Common::CharList &ignoreChars,
-	              uint32 skip = 0, int n = -1);
 
 	const Common::UString *getCell(uint32 row, uint32 column) const;
 

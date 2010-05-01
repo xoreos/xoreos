@@ -15,6 +15,7 @@
 #include "common/stream.h"
 #include "common/util.h"
 #include "common/strutil.h"
+#include "common/streamtokenizer.h"
 
 #include "aurora/2dafile.h"
 #include "aurora/error.h"
@@ -26,13 +27,16 @@ static const uint32 kVersion2b = MKID_BE('V2.b');
 namespace Aurora {
 
 TwoDAFile::TwoDAFile() {
-	_splitCharsA.push_back(' ');
-	_endCharsA.push_back('\n');
-	_quoteCharsA.push_back('\"');
-	_ignoreCharsA.push_back('\r');
+	_tokenizeASCII = new Common::StreamTokenizer(Common::StreamTokenizer::kRuleIgnoreAll);
+
+	_tokenizeASCII->addSeparator(' ');
+	_tokenizeASCII->addQuote('\"');
+	_tokenizeASCII->addChunkEnd('\n');
+	_tokenizeASCII->addIgnore('\r');
 }
 
 TwoDAFile::~TwoDAFile() {
+	delete _tokenizeASCII;
 }
 
 void TwoDAFile::clear() {
@@ -98,47 +102,52 @@ void TwoDAFile::read2b(Common::SeekableReadStream &twoda) {
 }
 
 void TwoDAFile::readDefault2a(Common::SeekableReadStream &twoda) {
-	Row defaultRow;
-	defaultRow.reserve(2);
+	std::vector<Common::UString> defaultRow;
+	_tokenizeASCII->getTokens(twoda, defaultRow, 2);
 
-	tokenize(twoda, defaultRow, _splitCharsA, _endCharsA, _quoteCharsA, _ignoreCharsA);
-	if ((defaultRow.size() >= 2) && (defaultRow[0] == "Default:"))
+	if (defaultRow[0] == "Default:")
 		_defaultString = defaultRow[1];
 
 	_defaultInt   = parseInt(_defaultString);
 	_defaultFloat = parseFloat(_defaultString);
+
+	_tokenizeASCII->nextChunk(twoda);
 }
 
 void TwoDAFile::readHeaders2a(Common::SeekableReadStream &twoda) {
-	tokenize(twoda, _headers, _splitCharsA, _endCharsA, _quoteCharsA, _ignoreCharsA);
+	_tokenizeASCII->getTokens(twoda, _headers);
+
+	_tokenizeASCII->nextChunk(twoda);
 }
 
 void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda) {
 	uint32 columnCount = _headers.size();
 
-	Common::UString line;
 	while (!twoda.eos()) {
 		Row *row = new Row;
 
-		// We can expect that amount of fields
-		row->reserve(columnCount);
+		_tokenizeASCII->skipToken(twoda);
 
-		tokenize(twoda, *row, _splitCharsA, _endCharsA, _quoteCharsA, _ignoreCharsA, 1);
+		int count = _tokenizeASCII->getTokens(twoda, *row, columnCount);
+
+		_tokenizeASCII->nextChunk(twoda);
+
+		if (count == 0)
+			// Ignore empty lines
+			continue;
 
 		_array.push_back(row);
 	}
 }
 
 void TwoDAFile::readHeaders2b(Common::SeekableReadStream &twoda) {
-	Common::CharList splitChars;
-	Common::CharList endChars;
-	Common::CharList quoteChars;
-	Common::CharList ignoreChars;
+	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
-	splitChars.push_back('\t');
-	endChars.push_back('\0');
+	tokenize.addSeparator('\t');
+	tokenize.addChunkEnd('\0');
 
-	tokenize(twoda, _headers, splitChars, endChars, quoteChars, ignoreChars);
+	tokenize.getTokens(twoda, _headers);
+	tokenize.nextChunk(twoda);
 }
 
 void TwoDAFile::skipRowNames2b(Common::SeekableReadStream &twoda) {
@@ -148,17 +157,14 @@ void TwoDAFile::skipRowNames2b(Common::SeekableReadStream &twoda) {
 	for (uint32 i = 0; i < rowCount; i++)
 		_array.push_back(0);
 
-	Common::CharList splitChars;
-	Common::CharList endChars;
-	Common::CharList quoteChars;
-	Common::CharList ignoreChars;
+	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
-	splitChars.push_back('\t');
+	tokenize.addSeparator('\t');
 
 	Row rowNames;
 	rowNames.reserve(rowCount);
 
-	tokenize(twoda, rowNames, splitChars, endChars, quoteChars, ignoreChars, 0, rowCount);
+	tokenize.getTokens(twoda, rowNames, rowCount, rowCount);
 }
 
 void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
@@ -168,12 +174,9 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 
 	uint32 *offsets = new uint32[cellCount];
 
-	Common::CharList splitChars;
-	Common::CharList endChars;
-	Common::CharList quoteChars;
-	Common::CharList ignoreChars;
+	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
-	splitChars.push_back('\0');
+	tokenize.addSeparator('\0');
 
 	for (uint32 i = 0; i < cellCount; i++)
 		offsets[i] = twoda.readUint16LE();
@@ -195,7 +198,7 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 				throw Common::Exception(Common::kSeekError);
 			}
 
-			Common::parseToken(twoda, (*_array[i])[j], splitChars, endChars, quoteChars, ignoreChars);
+			(*_array[i])[j] = tokenize.getToken(twoda);
 		}
 	}
 
@@ -205,31 +208,6 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 void TwoDAFile::createHeaderMap() {
 	for (uint32 i = 0; i < _headers.size(); i++)
 		_headerMap.insert(std::make_pair(_headers[i], i));
-}
-
-void TwoDAFile::tokenize(Common::SeekableReadStream &stream, Row &row,
-                         const Common::CharList &splitChars, const Common::CharList &endChars,
-                         const Common::CharList &quoteChars, const Common::CharList &ignoreChars,
-                         uint32 skip, int n) {
-
-	Common::UString token;
-
-	while (Common::parseToken(stream, token, splitChars, endChars, quoteChars, ignoreChars)) {
-		if (token.empty())
-			// Skip empty tokens
-			continue;
-
-		if (skip > 0) {
-			// Skip the specified amount of real tokens
-			skip--;
-			continue;
-		}
-
-		row.push_back(token);
-
-		if ((n != -1) && (--n == 0))
-			break;
-	}
 }
 
 uint32 TwoDAFile::rowCount() const {
