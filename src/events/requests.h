@@ -47,7 +47,7 @@ typedef RequestList::iterator RequestID;
  *  asynchronously, without it unnecessarily blocking further execution of the
  *  game thread.
  *
- *  @note: As soon as waitReply(), forget(), dispatchAndWait() or
+ *  @note As soon as waitReply(), forget(), dispatchAndWait() or
  *         dispatchAndForget() was called, the RequestID expires.
  */
 class RequestManager : public Common::Singleton<RequestManager>, public Common::Thread {
