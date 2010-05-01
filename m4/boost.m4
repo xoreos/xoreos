@@ -556,6 +556,15 @@ AC_DEFUN([BOOST_HASH],
 [BOOST_FIND_HEADER([boost/functional/hash.hpp])])
 
 
+# BOOST_UNORDERED()
+# ------------
+# Look for Boost.Unordered
+AC_DEFUN([BOOST_UNORDERED],
+[BOOST_FIND_HEADER([boost/unordered_map.hpp])
+BOOST_FIND_HEADER([boost/unordered_set.hpp])
+])
+
+
 # BOOST_LAMBDA()
 # --------------
 # Look for Boost.Lambda
