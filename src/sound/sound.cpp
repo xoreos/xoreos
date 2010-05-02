@@ -126,7 +126,7 @@ bool SoundManager::isPlaying(uint16 channel) const {
 	alGetSourcei(_channels[channel]->source, AL_SOURCE_STATE, &val);
 
 	if (val != AL_PLAYING) {
-		if (!_channels[channel]->stream || _channels[channel]->stream->endOfData())
+		if (!_channels[channel]->stream || _channels[channel]->stream->endOfStream())
 			return false;
 
 		if (_channels[channel]->state != AL_PLAYING)
