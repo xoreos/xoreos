@@ -19,6 +19,8 @@
 #include <sstream>
 #include <vector>
 
+#include "boost/functional/hash.hpp"
+
 #include "common/types.h"
 
 #include "utf8.h"
@@ -147,6 +149,9 @@ public:
 	/** Formatted printer, works like sprintf(). */
 	static UString sprintf(const char *s, ...);
 
+	static uint32 tolower(uint32 c);
+	static uint32 toupper(uint32 c);
+
 private:
 	std::string _string; ///< Internal string holding the actual data.
 
@@ -167,19 +172,43 @@ private:
 	/** Read big-endian double-byte data. */
 	void readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data, uint32 length);
 
-	static uint32 tolower(uint32 c);
-	static uint32 toupper(uint32 c);
-
 	void recalculateSize();
 };
 
-inline Common::UString operator+(const std::string &left, const Common::UString &right) {
-	return Common::UString(left) + right;
+
+// Right-binding concatenation operators
+inline UString operator+(const std::string &left, const UString &right) {
+	return UString(left) + right;
 }
 
-inline Common::UString operator+(const char *left, const Common::UString &right) {
-	return Common::UString(left) + right;
+inline UString operator+(const char *left, const UString &right) {
+	return UString(left) + right;
 }
+
+
+// Hash functions
+
+struct hashUStringCaseSensitive {
+	std::size_t operator()(const UString &str) const {
+		std::size_t seed = 0;
+
+		for (UString::iterator it = str.begin(); it != str.end(); ++it)
+			boost::hash_combine<uint32>(seed, *it);
+
+		return seed;
+	}
+};
+
+struct hashUStringCaseInsensitive {
+	std::size_t operator()(const UString &str) const {
+		std::size_t seed = 0;
+
+		for (UString::iterator it = str.begin(); it != str.end(); ++it)
+			boost::hash_combine<uint32>(seed, UString::tolower(*it));
+
+		return seed;
+	}
+};
 
 } // End of namespace Common
 
