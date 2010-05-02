@@ -29,7 +29,7 @@ Fader::Fader(uint32 width, uint32 height, int n) : _c(0), _n(n), _lastUpdate(0) 
 Fader::~Fader() {
 }
 
-bool Fader::gotTime() const {
+bool Fader::hasTime() const {
 	if (!_started)
 		return true;
 

@@ -121,7 +121,7 @@ Bink::~Bink() {
 	delete _bink;
 }
 
-bool Bink::gotTime() const {
+bool Bink::hasTime() const {
 	uint32 curTime = EventMan.getTimestamp();
 	uint32 frameTime = ((uint64) (_curFrame * 1000 * ((uint64) _fpsDen))) / _fpsNum;
 	if ((curTime - _startTime + 11) < frameTime)

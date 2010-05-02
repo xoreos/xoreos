@@ -25,7 +25,7 @@ public:
 	Fader(uint32 width, uint32 height, int n);
 	~Fader();
 
-	bool gotTime() const;
+	bool hasTime() const;
 
 protected:
 	void processData();

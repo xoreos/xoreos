@@ -71,7 +71,7 @@ void VideoPlayer::play() {
 			if (brk || !_video->isPlaying())
 				break;
 
-			if (_video->gotTime())
+			if (_video->hasTime())
 				EventMan.delay(10);
 		}
 	} catch (...) {

@@ -41,7 +41,7 @@ public:
 	Bink(Common::SeekableReadStream *bink);
 	~Bink();
 
-	bool gotTime() const;
+	bool hasTime() const;
 
 protected:
 	void processData();

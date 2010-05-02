@@ -56,8 +56,8 @@ public:
 	/** Abort the playing of the video. */
 	void abort();
 
-	/** Got enough time to spare to sleep for 10ms? */
-	virtual bool gotTime() const = 0;
+	/** Is there enough time to spare to sleep for 10ms? */
+	virtual bool hasTime() const = 0;
 
 protected:
 	volatile bool _started;
