@@ -12,7 +12,7 @@
  *  Texture information types.
  */
 
-#include "common/strwordmap.h"
+#include "common/stringmap.h"
 #include "common/ustring.h"
 
 #include "graphics/images/txitypes.h"
@@ -82,7 +82,7 @@ static const char *kTXICommands[] = {
 	"xbox_downsample"
 };
 
-static Common::StrWordMap kTXICommandMap(kTXICommands, ARRAYSIZE(kTXICommands));
+static Common::StringMap kTXICommandMap(kTXICommands, ARRAYSIZE(kTXICommands), true);
 
 namespace Graphics {
 

@@ -8,23 +8,23 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file common/strwordmap.h
- *  A map to quickly match word strings from a list.
+/** @file common/stringmap.h
+ *  A map to quickly match strings from a list.
  */
 
 #ifndef COMMON_STRWORDMAP_H
 #define COMMON_STRWORDMAP_H
 
-#include <map>
+#include "boost/unordered/unordered_map.hpp"
 
 #include "common/ustring.h"
 
 namespace Common {
 
-class StrWordMap {
+class StringMap {
 public:
-	/** Build a string map to match a list of word strings against. */
-	StrWordMap(const char **strings, int count);
+	/** Build a string map to match a list of strings against. */
+	StringMap(const char **strings, int count, bool onlyFirstWord = false);
 
 	/** Match a string against the map.
 	 *
@@ -43,7 +43,12 @@ public:
 	int find(const Common::UString &str, const char **match) const;
 
 private:
-	std::map<Common::UString, int> _map; ///< The map.
+	bool _onlyFirstWord;
+
+	typedef boost::unordered_map<Common::UString, int, Common::hashUStringCaseInsensitive> StrMap;
+
+	StrMap _map;
+
 };
 
 } // End of namespace Common

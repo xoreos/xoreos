@@ -21,7 +21,7 @@ noinst_HEADERS = system.h \
                  strutil.h \
                  stream.h \
                  streamtokenizer.h \
-                 strwordmap.h \
+                 stringmap.h \
                  file.h \
                  filepath.h \
                  filelist.h \
@@ -42,7 +42,7 @@ libcommon_la_SOURCES = maths.cpp \
                        strutil.cpp \
                        stream.cpp \
                        streamtokenizer.cpp \
-                       strwordmap.cpp \
+                       stringmap.cpp \
                        file.cpp \
                        filepath.cpp \
                        filelist.cpp \

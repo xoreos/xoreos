@@ -8,30 +8,32 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file common/strwordmap.cpp
- *  A map to quickly match word strings from a list.
+/** @file common/stringmap.cpp
+ *  A map to quickly match strings from a list.
  */
 
 #include <cstring>
 
-#include "common/strwordmap.h"
+#include "common/stringmap.h"
 #include "common/util.h"
 
 namespace Common {
 
-StrWordMap::StrWordMap(const char **strings, int count) {
+StringMap::StringMap(const char **strings, int count, bool onlyFirstWord) : _onlyFirstWord(onlyFirstWord) {
 	for (int i = 0; i < count; i++)
 		_map.insert(std::make_pair(Common::UString(strings[i]), i));
 }
 
-int StrWordMap::find(const char *str, const char **match) const {
+int StringMap::find(const char *str, const char **match) const {
 	Common::UString sStr = str;
 
-	Common::UString::iterator space = sStr.findFirst(' ');
-	if (space != sStr.end())
-		sStr.truncate(space);
+	if (_onlyFirstWord) {
+		Common::UString::iterator space = sStr.findFirst(' ');
+		if (space != sStr.end())
+			sStr.truncate(space);
+	}
 
-	std::map<Common::UString, int>::const_iterator s = _map.find(sStr);
+	StrMap::const_iterator s = _map.find(sStr);
 	if (s == _map.end())
 		return -1;
 
@@ -40,14 +42,16 @@ int StrWordMap::find(const char *str, const char **match) const {
 	return s->second;
 }
 
-int StrWordMap::find(const Common::UString &str, const char **match) const {
+int StringMap::find(const Common::UString &str, const char **match) const {
 	Common::UString sStr = str;
 
-	Common::UString::iterator space = sStr.findFirst(' ');
-	if (space != sStr.end())
-		sStr.truncate(space);
+	if (_onlyFirstWord) {
+		Common::UString::iterator space = sStr.findFirst(' ');
+		if (space != sStr.end())
+			sStr.truncate(space);
+	}
 
-	std::map<Common::UString, int>::const_iterator s = _map.find(sStr);
+	StrMap::const_iterator s = _map.find(sStr);
 	if (s == _map.end())
 		return -1;
 
