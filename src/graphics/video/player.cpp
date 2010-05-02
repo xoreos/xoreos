@@ -64,7 +64,7 @@ void VideoPlayer::play() {
 			_video->update();
 
 			while (EventMan.pollEvent(event)) {
-				if ((event.type == Events::kEventKeyDown) && (event.key.keysym.sym == SDLK_ESCAPE))
+				if ((event.type == Events::kEventKeyDown && event.key.keysym.sym == SDLK_ESCAPE) || event.type == Events::kEventMouseUp)
 					brk = true;
 			}
 
