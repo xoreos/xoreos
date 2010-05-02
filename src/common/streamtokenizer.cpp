@@ -12,8 +12,6 @@
  *  Parse tokens out of a stream.
  */
 
-#include <list>
-
 #include "common/streamtokenizer.h"
 #include "common/stream.h"
 #include "common/error.h"
@@ -183,11 +181,17 @@ void StreamTokenizer::skipChunk(SeekableReadStream &stream) {
 void StreamTokenizer::nextChunk(SeekableReadStream &stream) {
 	skipChunk(stream);
 
+	byte c = stream.readByte();
+
 	if (stream.eos() || stream.err())
 		return;
 
-	if (!isIn(stream.readByte(), _chunkEnds))
+	if (!isIn(c, _chunkEnds))
 		stream.seek(-1, SEEK_CUR);
+	else
+		if (stream.pos() == stream.size())
+			// This actually the last character, read one more byte to properly set the EOS state
+			stream.readByte();
 }
 
 bool StreamTokenizer::isChunkEnd(SeekableReadStream &stream) {
