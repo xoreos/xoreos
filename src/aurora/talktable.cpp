@@ -77,7 +77,7 @@ void TalkTable::readEntryTable(Common::SeekableReadStream &tlk) {
 		entry->pitchVariance  = tlk.readUint32LE();
 		entry->offset         = tlk.readUint32LE();
 		entry->length         = tlk.readUint32LE();
-		entry->soundLength    = AuroraFile::readFloat(tlk);
+		entry->soundLength    = tlk.readIEEEFloatLE();
 	}
 }
 

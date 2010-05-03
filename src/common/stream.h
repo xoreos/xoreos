@@ -23,6 +23,7 @@
 
 #include "common/types.h"
 #include "common/endianness.h"
+#include "common/util.h"
 
 namespace Common {
 
@@ -350,6 +351,50 @@ public:
 	 */
 	FORCEINLINE int64 readSint64BE() {
 		return (int64)readUint64BE();
+	}
+
+	/**
+	 * Read a 32-bit IEEE float stored in little endian (LSB first) order
+	 * from the stream and return it.
+	 * Performs no error checking. The return value is undefined
+	 * if a read error occurred (for which client code can check by
+	 * calling err() and eos() ).
+	 */
+	FORCEINLINE float readIEEEFloatLE() {
+		return convertIEEEFloat(readUint32LE());
+	}
+
+	/**
+	 * Read a 32-bit IEEE float stored in big endian (MSB first) order
+	 * from the stream and return it.
+	 * Performs no error checking. The return value is undefined
+	 * if a read error occurred (for which client code can check by
+	 * calling err() and eos() ).
+	 */
+	FORCEINLINE float readIEEEFloatBE() {
+		return convertIEEEFloat(readUint32BE());
+	}
+
+	/**
+	 * Read a 64-bit IEEE double stored in little endian (LSB first) order
+	 * from the stream and return it.
+	 * Performs no error checking. The return value is undefined
+	 * if a read error occurred (for which client code can check by
+	 * calling err() and eos() ).
+	 */
+	FORCEINLINE double readIEEEDoubleLE() {
+		return convertIEEEDouble(readUint32LE());
+	}
+
+	/**
+	 * Read a 64-bit IEEE double stored in big endian (MSB first) order
+	 * from the stream and return it.
+	 * Performs no error checking. The return value is undefined
+	 * if a read error occurred (for which client code can check by
+	 * calling err() and eos() ).
+	 */
+	FORCEINLINE double readIEEEDoubleBE() {
+		return convertIEEEDouble(readUint32BE());
 	}
 
 	/**

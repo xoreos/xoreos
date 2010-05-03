@@ -88,4 +88,7 @@ void status(const char *s, ...) GCC_PRINTF(1, 2);
 
 void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
 
+float  convertIEEEFloat(uint32 data);
+double convertIEEEDouble(uint64 data);
+
 #endif // COMMON_UTIL_H

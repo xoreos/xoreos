@@ -60,3 +60,37 @@ void NORETURN_PRE error(const char *s, ...) {
 
 	std::exit(1);
 }
+
+union floatConvert {
+	uint32 dInt;
+	float dFloat;
+};
+
+float convertIEEEFloat(uint32 data) {
+	// We just directly convert here because most systems have float in IEEE 754-1985
+	// format anyway. However, should we find another system that has this differently,
+	// we might have to do something more here...
+
+	floatConvert conv;
+
+	conv.dInt = data;
+
+	return conv.dFloat;
+}
+
+union doubleConvert {
+	uint64 dInt;
+	double dDouble;
+};
+
+double convertIEEEDouble(uint64 data) {
+	// We just directly convert here because most systems have double in IEEE 754-1985
+	// format anyway. However, should we find another system that has this differently,
+	// we might have to do something more here...
+
+	doubleConvert conv;
+
+	conv.dInt = data;
+
+	return conv.dDouble;
+}

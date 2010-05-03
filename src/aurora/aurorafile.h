@@ -27,18 +27,6 @@ namespace Aurora {
 /** Utility class for handling data found in Aurora files. */
 class AuroraFile {
 public:
-	/** Convert a binary representation of an IEEE 754-1985 float into a system-useable format. */
-	static float convertFloat(uint32 data);
-
-	/** Convert a binary representation of an IEEE 754-1985 double into a system-useable format. */
-	static double convertDouble(uint64 data);
-
-	/** Read a float (IEEE 754-1985) */
-	static float readFloat(Common::SeekableReadStream &stream);
-
-	/** Read a double (IEEE 754-1985) */
-	static double readDouble(Common::SeekableReadStream &stream);
-
 	/** Clean up a path string for portable use. */
 	static void cleanupPath(Common::UString &path);
 };

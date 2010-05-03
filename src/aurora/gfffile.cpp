@@ -447,7 +447,7 @@ void GFFField::convertData(Common::SeekableReadStream &gff, const GFFFile::Heade
 			break;
 
 		case kGFFTypeFloat:
-			_value.typeDouble = (double) AuroraFile::convertFloat(data);
+			_value.typeDouble = (double) convertIEEEFloat(data);
 			break;
 
 		case kGFFTypeDouble:
@@ -533,7 +533,7 @@ inline void GFFField::readDouble(Common::SeekableReadStream &gff,
 	uint32 curPos;
 	seekGFFData(gff, header, data, curPos);
 
-	_value.typeDouble = AuroraFile::readDouble(gff);
+	_value.typeDouble = gff.readIEEEFloatLE();
 
 	gff.seek(curPos);
 }
