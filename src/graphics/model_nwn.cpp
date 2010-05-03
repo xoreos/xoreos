@@ -22,6 +22,16 @@
 #include "graphics/model_nwn.h"
 #include "graphics/texture.h"
 
+static const int kNodeFlagHasHeader    = 0x00000001;
+static const int kNodeFlagHasLight     = 0x00000002;
+static const int kNodeFlagHasEmitter   = 0x00000004;
+static const int kNodeFlagHasReference = 0x00000010;
+static const int kNodeFlagHasMesh      = 0x00000020;
+static const int kNodeFlagHasSkin      = 0x00000040;
+static const int kNodeFlagHasAnim      = 0x00000080;
+static const int kNodeFlagHasDangly    = 0x00000100;
+static const int kNodeFlagHasAABB      = 0x00000200;
+
 namespace Graphics {
 
 Model_NWN::Model_NWN(Common::SeekableReadStream &mdl) {
@@ -467,7 +477,107 @@ void Model_NWN::loadBinary(Common::SeekableReadStream &mdl) {
 
 	warning("\"%s\", %d, %X, %d, \"%s\"", _name.c_str(), nodeCount, classification, fogged, superModelName.c_str());
 
+	parseNodeBinary(mdl, nodeHeadPointer + 12);
+
 	throw Common::Exception("TODO: Binary format");
+}
+
+void Model_NWN::parseNodeBinary(Common::SeekableReadStream &mdl, uint32 offset) {
+	mdl.seekTo(offset);
+
+	mdl.skip(24); // Function pointers
+
+	uint32 inheritColorFlag = mdl.readUint32LE();
+	uint32 partNumber       = mdl.readUint32LE();
+
+	Common::UString name;
+
+	name.readASCII(mdl, 32);
+
+	mdl.skip(8); // Parent pointers
+
+	uint32 childrenStart, childrenCount;
+	readArray(mdl, childrenStart, childrenCount);
+
+	std::vector<uint32> children;
+	readOffsetArray(mdl, childrenStart + 12, childrenCount, children);
+
+	mdl.skip(12); // Controller keys
+	mdl.skip(12); // Controller data values
+
+	uint32 flags = mdl.readUint32LE();
+
+	if ((flags & 0xFFFFFC00) != 0)
+		throw Common::Exception("Unknown node flags %08X", flags);
+
+	if (flags & kNodeFlagHasLight) {
+		// TODO: Light
+		mdl.skip(0x5C);
+	}
+
+	if (flags & kNodeFlagHasEmitter) {
+		// TODO: Emitter
+		mdl.skip(0xD8);
+	}
+
+	if (flags & kNodeFlagHasReference) {
+		// TODO: Reference
+		mdl.skip(0x44);
+	}
+
+	if (flags & kNodeFlagHasMesh) {
+		// TODO: Mesh
+		mdl.skip(0x200);
+	}
+
+	if (flags & kNodeFlagHasSkin) {
+		// TODO: Skin
+		mdl.skip(0x64);
+	}
+
+	if (flags & kNodeFlagHasAnim) {
+		// TODO: Anim
+		mdl.skip(0x38);
+	}
+
+	if (flags & kNodeFlagHasDangly) {
+		// TODO: Dangly
+		mdl.skip(0x18);
+	}
+
+	if (flags & kNodeFlagHasAABB) {
+		// TODO: AABB
+		mdl.skip(0x4);
+	}
+
+	warning("%d: \"%s\", %X, %d", partNumber, name.c_str(), flags, childrenCount);
+
+	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child)
+		parseNodeBinary(mdl, *child + 12);
+}
+
+void Model_NWN::readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count) {
+	start = mdl.readUint32LE();
+
+	uint32 usedCount      = mdl.readUint32LE();
+	uint32 allocatedCount = mdl.readUint32LE();
+
+	if (usedCount != allocatedCount)
+		warning("Model_NWN::readArray(): usedCount != allocatedCount (%d, %d)", usedCount, allocatedCount);
+
+	count = usedCount;
+}
+
+void Model_NWN::readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
+		std::vector<uint32> &offsets) {
+
+	uint32 pos = mdl.seekTo(start);
+
+	offsets.reserve(count);
+	while (count-- > 0)
+		offsets.push_back(mdl.readUint32LE());
+
+	mdl.seekTo(pos);
 }
 
 } // End of namespace Graphics

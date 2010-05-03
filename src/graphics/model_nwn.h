@@ -59,6 +59,12 @@ private:
 	void parseFacesASCII(Common::SeekableReadStream &mdl, std::vector<FaceASCII> &faces, int n);
 	void parseConstraintsASCII(Common::SeekableReadStream &mdl, std::vector<float> &constraints, int n);
 	void parseWeightsASCII(Common::SeekableReadStream &mdl, int n);
+
+	void parseNodeBinary(Common::SeekableReadStream &mdl, uint32 offset);
+
+	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);
+	void readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
+			std::vector<uint32> &offsets);
 };
 
 } // End of namespace Graphics
