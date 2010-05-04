@@ -430,6 +430,8 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	uint8 classification = ctx.mdl->readByte();
 	uint8 fogged         = ctx.mdl->readByte();
 
+	ctx.mdl->skip(4); // Unknown
+
 	ctx.mdl->skip(12); // TODO: Animation Header Pointer Array
 
 	ctx.mdl->skip(4); // Parent model pointer
