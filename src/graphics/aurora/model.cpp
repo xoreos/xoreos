@@ -21,7 +21,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model::Node::Node() : parent(0), texture(0), dangly(false), displacement(0) {
+Model::Node::Node() : parent(0), texture(0), dangly(false), displacement(0), render(true) {
 }
 
 
@@ -29,8 +29,13 @@ Model::Model() : _superModel(0), _class(kClassOther), _scale(1.0) {
 }
 
 Model::~Model() {
-	for (NodeMap::iterator node = _nodes.begin(); node != _nodes.end(); ++node)
-		delete node->second;
+	for (NodeMap::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
+		if (node->second) {
+			delete node->second->texture;
+
+			delete node->second;
+		}
+	}
 }
 
 void Model::show() {
@@ -59,8 +64,15 @@ void Model::render() {
 
 	for (NodeMap::const_iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
 
+		if (!node->second->render)
+			continue;
+
 		if (node->second->texture)
 			glBindTexture(GL_TEXTURE_2D, node->second->texture->getID());
+
+		glPushMatrix();
+
+		glTranslatef(node->second->position[0], node->second->position[1], node->second->position[2]);
 
 		glBegin(GL_TRIANGLES);
 
@@ -75,6 +87,7 @@ void Model::render() {
 
 		glEnd();
 
+		glPopMatrix();
 	}
 }
 

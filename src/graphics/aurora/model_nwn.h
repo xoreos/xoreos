@@ -36,13 +36,16 @@ public:
 	~Model_NWN();
 
 private:
-	struct FaceASCII {
+	struct FaceNWN {
 		int vertices[3];
 		int verticesTexture[3];
 
 		int smoothGroup;
 		int material;
 	};
+
+	uint32 _offModelData;
+	uint32 _offRawData;
 
 	Common::StreamTokenizer *_tokenizeASCII;
 
@@ -58,15 +61,21 @@ private:
 	void parseFloats(const std::vector<Common::UString> &strings, float *floats, int n, int start);
 
 	void parseVerticesASCII(Common::SeekableReadStream &mdl, std::vector<float> &vertices, int n);
-	void parseFacesASCII(Common::SeekableReadStream &mdl, std::vector<FaceASCII> &faces, int n);
+	void parseFacesASCII(Common::SeekableReadStream &mdl, std::vector<FaceNWN> &faces, int n);
 	void parseConstraintsASCII(Common::SeekableReadStream &mdl, std::vector<float> &constraints, int n);
 	void parseWeightsASCII(Common::SeekableReadStream &mdl, int n);
 
 	void parseNodeBinary(Common::SeekableReadStream &mdl, uint32 offset);
+	void parseMeshBinary(Common::SeekableReadStream &mdl, Node &node,
+			std::vector<float> &vertices, std::vector<float> &verticesTexture,
+			std::vector<FaceNWN> &faces);
 
 	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);
 	void readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
 			std::vector<uint32> &offsets);
+
+	void processNode(Node &node, const std::vector<float> &vertices,
+			const std::vector<float> &verticesTexture, const std::vector<FaceNWN> &faces);
 };
 
 } // End of namespace Aurora
