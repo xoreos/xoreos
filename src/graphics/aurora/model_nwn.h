@@ -85,6 +85,10 @@ private:
 	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);
 	void readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
 			std::vector<uint32> &offsets);
+	void readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
+			std::vector<float> &floats);
+
+	void parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
 
 	void processNode(ParserContext &ctx);
 };

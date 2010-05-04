@@ -33,6 +33,56 @@ static const int kNodeFlagHasAnim      = 0x00000080;
 static const int kNodeFlagHasDangly    = 0x00000100;
 static const int kNodeFlagHasAABB      = 0x00000200;
 
+static const int kControllerTypePosition             = 8;
+static const int kControllerTypeOrientation          = 20;
+static const int kControllerTypeScale                = 36;
+static const int kControllerTypeColor                = 76;
+static const int kControllerTypeRadius               = 88;
+static const int kControllerTypeShadowRadius         = 96;
+static const int kControllerTypeVerticalDisplacement = 100;
+static const int kControllerTypeMultiplier           = 140;
+static const int kControllerTypeAlphaEnd             = 80;
+static const int kControllerTypeAlphaStart           = 84;
+static const int kControllerTypeBirthRate            = 88;
+static const int kControllerTypeBounce_Co            = 92;
+static const int kControllerTypeColorEnd             = 96;
+static const int kControllerTypeColorStart           = 108;
+static const int kControllerTypeCombineTime          = 120;
+static const int kControllerTypeDrag                 = 124;
+static const int kControllerTypeFPS                  = 128;
+static const int kControllerTypeFrameEnd             = 132;
+static const int kControllerTypeFrameStart           = 136;
+static const int kControllerTypeGrav                 = 140;
+static const int kControllerTypeLifeExp              = 144;
+static const int kControllerTypeMass                 = 148;
+static const int kControllerTypeP2P_Bezier2          = 152;
+static const int kControllerTypeP2P_Bezier3          = 156;
+static const int kControllerTypeParticleRot          = 160;
+static const int kControllerTypeRandVel              = 164;
+static const int kControllerTypeSizeStart            = 168;
+static const int kControllerTypeSizeEnd              = 172;
+static const int kControllerTypeSizeStart_Y          = 176;
+static const int kControllerTypeSizeEnd_Y            = 180;
+static const int kControllerTypeSpread               = 184;
+static const int kControllerTypeThreshold            = 188;
+static const int kControllerTypeVelocity             = 192;
+static const int kControllerTypeXSize                = 196;
+static const int kControllerTypeYSize                = 200;
+static const int kControllerTypeBlurLength           = 204;
+static const int kControllerTypeLightningDelay       = 208;
+static const int kControllerTypeLightningRadius      = 212;
+static const int kControllerTypeLightningScale       = 216;
+static const int kControllerTypeDetonate             = 228;
+static const int kControllerTypeAlphaMid             = 464;
+static const int kControllerTypeColorMid             = 468;
+static const int kControllerTypePercentStart         = 480;
+static const int kControllerTypePercentMid           = 481;
+static const int kControllerTypePercentEnd           = 482;
+static const int kControllerTypeSizeMid              = 484;
+static const int kControllerTypeSizeMid_Y            = 488;
+static const int kControllerTypeSelfIllumColor       = 100;
+static const int kControllerTypeAlpha                = 128;
+
 namespace Graphics {
 
 namespace Aurora {
@@ -487,8 +537,16 @@ void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent)
 	std::vector<uint32> children;
 	readOffsetArray(*ctx.mdl, childrenStart + ctx.offModelData, childrenCount, children);
 
-	ctx.mdl->skip(12); // Controller keys
-	ctx.mdl->skip(12); // Controller data values
+	uint32 controllerKeyStart, controllerKeyCount;
+	readArray(*ctx.mdl, controllerKeyStart, controllerKeyCount);
+
+	uint32 controllerDataStart, controllerDataCount;
+	readArray(*ctx.mdl, controllerDataStart, controllerDataCount);
+
+	std::vector<float> controllerData;
+	readFloatsArray(*ctx.mdl, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
+
+	parseNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
 
 	uint32 flags = ctx.mdl->readUint32LE();
 
@@ -705,6 +763,57 @@ void Model_NWN::readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, u
 		offsets.push_back(mdl.readUint32LE());
 
 	mdl.seekTo(pos);
+}
+
+void Model_NWN::readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
+		std::vector<float> &floats) {
+
+	uint32 pos = mdl.seekTo(start);
+
+	floats.reserve(count);
+	while (count-- > 0)
+		floats.push_back(mdl.readIEEEFloatLE());
+
+	mdl.seekTo(pos);
+}
+
+void Model_NWN::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
+	uint32 pos = ctx.mdl->seekTo(offset);
+
+	// TODO: Implement this properly :P
+
+	for (uint32 i = 0; i < count; i++) {
+		uint32 type        = ctx.mdl->readUint32LE();
+		uint16 rowCount    = ctx.mdl->readUint16LE();
+		uint16 timeIndex   = ctx.mdl->readUint16LE();
+		uint16 dataIndex   = ctx.mdl->readUint16LE();
+		uint8  columnCount = ctx.mdl->readByte();
+		ctx.mdl->skip(1);
+
+		if (columnCount == 0xFF)
+			throw Common::Exception("TODO: Model_NWN::parseNodeControllers(): columnCount == 0xFF");
+
+		if        (type == kControllerTypePosition) {
+			if (columnCount != 3)
+				throw Common::Exception("Position controller with %d values", columnCount);
+
+			ctx.node->position[0] = data[dataIndex + 0];
+			ctx.node->position[1] = data[dataIndex + 1];
+			ctx.node->position[2] = data[dataIndex + 2];
+
+		} else if (type == kControllerTypeOrientation) {
+			if (columnCount != 4)
+				throw Common::Exception("Orientation controller with %d values", columnCount);
+
+			ctx.node->orientation[0] = data[dataIndex + 0];
+			ctx.node->orientation[1] = data[dataIndex + 1];
+			ctx.node->orientation[2] = data[dataIndex + 2];
+			ctx.node->orientation[3] = data[dataIndex + 3];
+		}
+
+	}
+
+	ctx.mdl->seekTo(pos);
 }
 
 void Model_NWN::processNode(ParserContext &ctx) {
