@@ -44,38 +44,49 @@ private:
 		int material;
 	};
 
-	uint32 _offModelData;
-	uint32 _offRawData;
+	struct ParserContext {
+		Common::SeekableReadStream *mdl;
+
+		Node *node;
+
+		std::vector<float> vertices;
+		std::vector<float> verticesTexture;
+		std::vector<FaceNWN> faces;
+
+		uint32 offModelData;
+		uint32 offRawData;
+
+		ParserContext(Common::SeekableReadStream &stream);
+		~ParserContext();
+	};
 
 	Common::StreamTokenizer *_tokenizeASCII;
 
 	void load(Common::SeekableReadStream &mdl);
 
-	void loadASCII(Common::SeekableReadStream &mdl);
-	void loadBinary(Common::SeekableReadStream &mdl);
+	void loadASCII(ParserContext &ctx);
+	void loadBinary(ParserContext &ctx);
 
-	void parseNodeASCII(Common::SeekableReadStream &mdl, const Common::UString &type, const Common::UString &name);
-	void parseAnimASCII(Common::SeekableReadStream &mdl);
+	void parseNodeASCII(ParserContext &ctx, const Common::UString &type, const Common::UString &name);
+	void parseAnimASCII(ParserContext &ctx);
 
 	Classification parseClassification(Common::UString classification);
 	void parseFloats(const std::vector<Common::UString> &strings, float *floats, int n, int start);
 
-	void parseVerticesASCII(Common::SeekableReadStream &mdl, std::vector<float> &vertices, int n);
-	void parseFacesASCII(Common::SeekableReadStream &mdl, std::vector<FaceNWN> &faces, int n);
-	void parseConstraintsASCII(Common::SeekableReadStream &mdl, std::vector<float> &constraints, int n);
-	void parseWeightsASCII(Common::SeekableReadStream &mdl, int n);
+	void parseVerticesASCII(ParserContext &ctx, std::vector<float> &vertices, int n);
+	void parseFacesASCII   (ParserContext &ctx, int n);
+	void parseWeightsASCII (ParserContext &ctx, int n);
 
-	void parseNodeBinary(Common::SeekableReadStream &mdl, uint32 offset);
-	void parseMeshBinary(Common::SeekableReadStream &mdl, Node &node,
-			std::vector<float> &vertices, std::vector<float> &verticesTexture,
-			std::vector<FaceNWN> &faces);
+	void parseConstraintsASCII(ParserContext &ctx, std::vector<float> &constraints, int n);
+
+	void parseNodeBinary(ParserContext &ctx, uint32 offset);
+	void parseMeshBinary(ParserContext &ctx);
 
 	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);
 	void readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
 			std::vector<uint32> &offsets);
 
-	void processNode(Node &node, const std::vector<float> &vertices,
-			const std::vector<float> &verticesTexture, const std::vector<FaceNWN> &faces);
+	void processNode(ParserContext &ctx);
 };
 
 } // End of namespace Aurora

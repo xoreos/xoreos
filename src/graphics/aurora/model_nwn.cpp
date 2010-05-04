@@ -36,6 +36,14 @@ namespace Graphics {
 
 namespace Aurora {
 
+Model_NWN::ParserContext::ParserContext(Common::SeekableReadStream &stream) : mdl(&stream), node(0) {
+}
+
+Model_NWN::ParserContext::~ParserContext() {
+	delete node;
+}
+
+
 Model_NWN::Model_NWN(Common::SeekableReadStream &mdl) {
 	_tokenizeASCII = new Common::StreamTokenizer(Common::StreamTokenizer::kRuleIgnoreAll);
 
@@ -53,21 +61,23 @@ Model_NWN::~Model_NWN() {
 }
 
 void Model_NWN::load(Common::SeekableReadStream &mdl) {
-	if (mdl.readUint32LE() == 0)
-		loadBinary(mdl);
+	ParserContext ctx(mdl);
+
+	if (ctx.mdl->readUint32LE() == 0)
+		loadBinary(ctx);
 	else
-		loadASCII(mdl);
+		loadASCII(ctx);
 }
 
-void Model_NWN::loadASCII(Common::SeekableReadStream &mdl) {
-	mdl.seek(0);
+void Model_NWN::loadASCII(ParserContext &ctx) {
+	ctx.mdl->seek(0);
 
-	while (!mdl.eos() && !mdl.err()) {
+	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenizeASCII->getTokens(mdl, line);
+		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
 
-		_tokenizeASCII->nextChunk(mdl);
+		_tokenizeASCII->nextChunk(*ctx.mdl);
 
 		// Ignore empty lines and comments
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
@@ -93,9 +103,9 @@ void Model_NWN::loadASCII(Common::SeekableReadStream &mdl) {
 			if (line[1] != _name)
 				throw Common::Exception("beginmodelgeom with an invalid name");
 		} else if (line[0] == "node") {
-			parseNodeASCII(mdl, line[1], line[2]);
+			parseNodeASCII(ctx, line[1], line[2]);
 		} else if (line[0] == "newanim") {
-			parseAnimASCII(mdl);
+			parseAnimASCII(ctx);
 		} else if (line[0] == "filedependancy") {
 		} else if (line[0] == "endmodelgeom") {
 		} else if (line[0] == "donemodel") {
@@ -105,14 +115,13 @@ void Model_NWN::loadASCII(Common::SeekableReadStream &mdl) {
 	}
 }
 
-void Model_NWN::parseNodeASCII(Common::SeekableReadStream &mdl,
-		const Common::UString &type, const Common::UString &name) {
+void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, const Common::UString &name) {
 
 	bool end = false;
 
 	bool skipNode = false;
 
-	Node *node = new Node;
+	ctx.node = new Node;
 
 	if ((type == "emitter") || (type == "reference")) {
 		warning("TODO: Node type %s", type.c_str());
@@ -120,149 +129,140 @@ void Model_NWN::parseNodeASCII(Common::SeekableReadStream &mdl,
 	}
 
 	if (type == "danglymesh")
-		node->dangly = true;
+		ctx.node->dangly = true;
 
-	std::vector<float> vertices;
-	std::vector<float> verticesTexture;
-	std::vector<FaceNWN> faces;
+	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
+		std::vector<Common::UString> line;
 
-	try {
-		while (!mdl.eos() && !mdl.err()) {
-			std::vector<Common::UString> line;
+		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
 
-			int count = _tokenizeASCII->getTokens(mdl, line);
+		_tokenizeASCII->nextChunk(*ctx.mdl);
 
-			_tokenizeASCII->nextChunk(mdl);
+		// Ignore empty lines and comments
+		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
+			continue;
 
-			// Ignore empty lines and comments
-			if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-				continue;
+		line[0].tolower();
 
-			line[0].tolower();
+		if        (line[0] == "endnode") {
+			end = true;
+			break;
+		} else if (skipNode) {
+			continue;
+		} else if (line[0] == "parent") {
+			if (line[1] != "NULL") {
+				NodeMap::iterator it = _nodes.find(line[1]);
+				if (it == _nodes.end())
+					throw Common::Exception("Non-existent parent node");
 
-			if        (line[0] == "endnode") {
-				end = true;
-				break;
-			} else if (skipNode) {
-				continue;
-			} else if (line[0] == "parent") {
-				if (line[1] != "NULL") {
-					NodeMap::iterator it = _nodes.find(line[1]);
-					if (it == _nodes.end())
-						throw Common::Exception("Non-existent parent node");
-
-					node->parent = it->second;
-				} else
-					node->parent = 0;
-			} else if (line[0] == "position") {
-				parseFloats(line, node->position, 3, 1);
-			} else if (line[0] == "orientation") {
-				parseFloats(line, node->orientation, 4, 1);
-			} else if (line[0] == "wirecolor") {
-				parseFloats(line, node->wirecolor, 3, 1);
-			} else if (line[0] == "ambient") {
-				parseFloats(line, node->ambient, 3, 1);
-			} else if (line[0] == "diffuse") {
-				parseFloats(line, node->diffuse, 3, 1);
-			} else if (line[0] == "specular") {
-				parseFloats(line, node->specular, 3, 1);
-			} else if (line[0] == "shininess") {
-				parseFloats(line, &node->shininess, 1, 1);
-			} else if (line[0] == "period") {
-				parseFloats(line, &node->period, 1, 1);
-			} else if (line[0] == "tightness") {
-				parseFloats(line, &node->tightness, 1, 1);
-			} else if (line[0] == "displacement") {
-				parseFloats(line, &node->displacement, 1, 1);
-			} else if (line[0] == "showdispl") {
-				line[1].parse(node->showdispl);
-			} else if (line[0] == "displtype") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "center") {
-				if (line[1] == "undefined")
-					warning("TODO: center == undefined");
-				else
-					parseFloats(line, node->center, 3, 1);
-			} else if (line[0] == "tilefade") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "scale") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "render") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "shadow") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "beaming") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "inheritcolor") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "rotatetexture") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "alpha") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "transparencyhint") {
-				line[1].parse(node->displtype);
-			} else if (line[0] == "selfillumcolor") {
-				parseFloats(line, node->selfillumcolor, 3, 1);
-			} else if (line[0] == "danglymesh") {
-				line[1].parse(node->dangly);
-			} else if (line[0] == "gizmo") {
-				warning("TODO: gizmo \"%s\"", line[1].c_str());
-			} else if (line[0] == "constraints") {
-				int n;
-
-				line[1].parse(n);
-				parseConstraintsASCII(mdl, node->constraints, n);
-			} else if (line[0] == "weights") {
-				warning("TODO: Weights");
-
-				int n;
-
-				line[1].parse(n);
-				parseWeightsASCII(mdl, n);
-			} else if (line[0] == "bitmap") {
-				node->bitmap = line[1];
-			} else if (line[0] == "verts") {
-				int n;
-
-				line[1].parse(n);
-				parseVerticesASCII(mdl, vertices, n);
-			} else if (line[0] == "tverts") {
-				int n;
-
-				line[1].parse(n);
-				parseVerticesASCII(mdl, verticesTexture, n);
-			} else if (line[0] == "faces") {
-				int n;
-
-				line[1].parse(n);
-				parseFacesASCII(mdl, faces, n);
+				ctx.node->parent = it->second;
 			} else
-				throw Common::Exception("Unknown MDL node command \"%s\"", line[0].c_str());
-		}
+				ctx.node->parent = 0;
+		} else if (line[0] == "position") {
+			parseFloats(line, ctx.node->position, 3, 1);
+		} else if (line[0] == "orientation") {
+			parseFloats(line, ctx.node->orientation, 4, 1);
+		} else if (line[0] == "wirecolor") {
+			parseFloats(line, ctx.node->wirecolor, 3, 1);
+		} else if (line[0] == "ambient") {
+			parseFloats(line, ctx.node->ambient, 3, 1);
+		} else if (line[0] == "diffuse") {
+			parseFloats(line, ctx.node->diffuse, 3, 1);
+		} else if (line[0] == "specular") {
+			parseFloats(line, ctx.node->specular, 3, 1);
+		} else if (line[0] == "shininess") {
+			parseFloats(line, &ctx.node->shininess, 1, 1);
+		} else if (line[0] == "period") {
+			parseFloats(line, &ctx.node->period, 1, 1);
+		} else if (line[0] == "tightness") {
+			parseFloats(line, &ctx.node->tightness, 1, 1);
+		} else if (line[0] == "displacement") {
+			parseFloats(line, &ctx.node->displacement, 1, 1);
+		} else if (line[0] == "showdispl") {
+			line[1].parse(ctx.node->showdispl);
+		} else if (line[0] == "displtype") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "center") {
+			if (line[1] == "undefined")
+				warning("TODO: center == undefined");
+			else
+				parseFloats(line, ctx.node->center, 3, 1);
+		} else if (line[0] == "tilefade") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "scale") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "render") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "shadow") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "beaming") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "inheritcolor") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "rotatetexture") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "alpha") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "transparencyhint") {
+			line[1].parse(ctx.node->displtype);
+		} else if (line[0] == "selfillumcolor") {
+			parseFloats(line, ctx.node->selfillumcolor, 3, 1);
+		} else if (line[0] == "danglymesh") {
+			line[1].parse(ctx.node->dangly);
+		} else if (line[0] == "gizmo") {
+			warning("TODO: gizmo \"%s\"", line[1].c_str());
+		} else if (line[0] == "constraints") {
+			int n;
 
-		if (!end)
-			throw Common::Exception("node without endnode");
+			line[1].parse(n);
+			parseConstraintsASCII(ctx, ctx.node->constraints, n);
+		} else if (line[0] == "weights") {
+			warning("TODO: Weights");
 
-	} catch (...) {
-		delete node;
-		throw;
+			int n;
+
+			line[1].parse(n);
+			parseWeightsASCII(ctx, n);
+		} else if (line[0] == "bitmap") {
+			ctx.node->bitmap = line[1];
+		} else if (line[0] == "verts") {
+			int n;
+
+			line[1].parse(n);
+			parseVerticesASCII(ctx, ctx.vertices, n);
+		} else if (line[0] == "tverts") {
+			int n;
+
+			line[1].parse(n);
+			parseVerticesASCII(ctx, ctx.verticesTexture, n);
+		} else if (line[0] == "faces") {
+			int n;
+
+			line[1].parse(n);
+			parseFacesASCII(ctx, n);
+		} else
+			throw Common::Exception("Unknown MDL node command \"%s\"", line[0].c_str());
 	}
 
-	processNode(*node, vertices, verticesTexture, faces);
+	if (!end)
+		throw Common::Exception("node without endnode");
 
-	_nodes.insert(std::make_pair(name, node));
+	processNode(ctx);
+
+	_nodes.insert(std::make_pair(name, ctx.node));
+	ctx.node = 0;
 }
 
-void Model_NWN::parseVerticesASCII(Common::SeekableReadStream &mdl, std::vector<float> &vertices, int n) {
+void Model_NWN::parseVerticesASCII(ParserContext &ctx, std::vector<float> &vertices, int n) {
 	vertices.resize(3 * n);
 
 	float *verts = &vertices[0];
 	while (n > 0) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenizeASCII->getTokens(mdl, line);
+		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
 
-		_tokenizeASCII->nextChunk(mdl);
+		_tokenizeASCII->nextChunk(*ctx.mdl);
 
 		// Ignore empty lines and comments
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
@@ -275,21 +275,21 @@ void Model_NWN::parseVerticesASCII(Common::SeekableReadStream &mdl, std::vector<
 	}
 }
 
-void Model_NWN::parseFacesASCII(Common::SeekableReadStream &mdl, std::vector<FaceNWN> &faces, int n) {
-	faces.resize(n);
+void Model_NWN::parseFacesASCII(ParserContext &ctx, int n) {
+	ctx.faces.resize(n);
 
 	for (int i = 0; i < n; ) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenizeASCII->getTokens(mdl, line);
+		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
 
-		_tokenizeASCII->nextChunk(mdl);
+		_tokenizeASCII->nextChunk(*ctx.mdl);
 
 		// Ignore empty lines and comments
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
-		FaceNWN &face = faces[i++];
+		FaceNWN &face = ctx.faces[i++];
 
 		line[0].parse(face.vertices[0]);
 		line[1].parse(face.vertices[1]);
@@ -305,17 +305,15 @@ void Model_NWN::parseFacesASCII(Common::SeekableReadStream &mdl, std::vector<Fac
 	}
 }
 
-void Model_NWN::parseConstraintsASCII(Common::SeekableReadStream &mdl,
-		std::vector<float> &constraints, int n) {
-
+void Model_NWN::parseConstraintsASCII(ParserContext &ctx, std::vector<float> &constraints, int n) {
 	constraints.resize(n);
 
 	for (int i = 0; i < n; ) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenizeASCII->getTokens(mdl, line);
+		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
 
-		_tokenizeASCII->nextChunk(mdl);
+		_tokenizeASCII->nextChunk(*ctx.mdl);
 
 		// Ignore empty lines and comments
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
@@ -325,13 +323,13 @@ void Model_NWN::parseConstraintsASCII(Common::SeekableReadStream &mdl,
 	}
 }
 
-void Model_NWN::parseWeightsASCII(Common::SeekableReadStream &mdl, int n) {
+void Model_NWN::parseWeightsASCII(ParserContext &ctx, int n) {
 	for (int i = 0; i < n; ) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenizeASCII->getTokens(mdl, line);
+		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
 
-		_tokenizeASCII->nextChunk(mdl);
+		_tokenizeASCII->nextChunk(*ctx.mdl);
 
 		// Ignore empty lines and comments
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
@@ -341,36 +339,30 @@ void Model_NWN::parseWeightsASCII(Common::SeekableReadStream &mdl, int n) {
 	}
 }
 
-void Model_NWN::parseAnimASCII(Common::SeekableReadStream &mdl) {
+void Model_NWN::parseAnimASCII(ParserContext &ctx) {
 	bool end = false;
 
-	try {
-		while (!mdl.eos() && !mdl.err()) {
-			std::vector<Common::UString> line;
+	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
+		std::vector<Common::UString> line;
 
-			int count = _tokenizeASCII->getTokens(mdl, line);
+		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
 
-			_tokenizeASCII->nextChunk(mdl);
+		_tokenizeASCII->nextChunk(*ctx.mdl);
 
-			// Ignore empty lines and comments
-			if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-				continue;
+		// Ignore empty lines and comments
+		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
+			continue;
 
-			line[0].tolower();
+		line[0].tolower();
 
-			if        (line[0] == "doneanim") {
-				end = true;
-				break;
-			}
+		if (line[0] == "doneanim") {
+			end = true;
+			break;
 		}
-
-		if (!end)
-			throw Common::Exception("anim without doneanim");
-
-	} catch (...) {
-		throw;
 	}
 
+	if (!end)
+		throw Common::Exception("anim without doneanim");
 }
 
 Model_NWN::Classification Model_NWN::parseClassification(Common::UString classification) {
@@ -402,282 +394,275 @@ void Model_NWN::parseFloats(const std::vector<Common::UString> &strings, float *
 		strings[start + i].parse(floats[i]);
 }
 
-void Model_NWN::loadBinary(Common::SeekableReadStream &mdl) {
-	uint32 sizeModelData = mdl.readUint32LE();
-	uint32 sizeRawData   = mdl.readUint32LE();
+void Model_NWN::loadBinary(ParserContext &ctx) {
+	uint32 sizeModelData = ctx.mdl->readUint32LE();
+	uint32 sizeRawData   = ctx.mdl->readUint32LE();
 
-	_offModelData = 12;
-	_offRawData   = _offModelData + sizeModelData;
+	ctx.offModelData = 12;
+	ctx.offRawData   = ctx.offModelData + sizeModelData;
 
-	mdl.skip(8); // Function pointers
+	ctx.mdl->skip(8); // Function pointers
 
-	_name.readASCII(mdl, 64);
+	_name.readASCII(*ctx.mdl, 64);
 
-	uint32 nodeHeadPointer = mdl.readUint32LE();
-	uint32 nodeCount       = mdl.readUint32LE();
+	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
+	uint32 nodeCount       = ctx.mdl->readUint32LE();
 
-	mdl.skip(24 + 4); // Unknown + Reference count
+	ctx.mdl->skip(24 + 4); // Unknown + Reference count
 
-	uint8 type = mdl.readByte();
+	uint8 type = ctx.mdl->readByte();
 
-	mdl.skip(3 + 2); // Padding + Unknown
+	ctx.mdl->skip(3 + 2); // Padding + Unknown
 
-	uint8 classification = mdl.readByte();
-	uint8 fogged         = mdl.readByte();
+	uint8 classification = ctx.mdl->readByte();
+	uint8 fogged         = ctx.mdl->readByte();
 
-	mdl.skip(12); // TODO: Animation Header Pointer Array
+	ctx.mdl->skip(12); // TODO: Animation Header Pointer Array
 
-	mdl.skip(4); // Parent model pointer
+	ctx.mdl->skip(4); // Parent model pointer
 
 	float boundingMin[3], boundingMax[3];
 
-	boundingMin[0] = mdl.readIEEEFloatLE();
-	boundingMin[1] = mdl.readIEEEFloatLE();
-	boundingMin[2] = mdl.readIEEEFloatLE();
+	boundingMin[0] = ctx.mdl->readIEEEFloatLE();
+	boundingMin[1] = ctx.mdl->readIEEEFloatLE();
+	boundingMin[2] = ctx.mdl->readIEEEFloatLE();
 
-	boundingMax[0] = mdl.readIEEEFloatLE();
-	boundingMax[1] = mdl.readIEEEFloatLE();
-	boundingMax[2] = mdl.readIEEEFloatLE();
+	boundingMax[0] = ctx.mdl->readIEEEFloatLE();
+	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
+	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
-	float radius = mdl.readIEEEFloatLE();
+	float radius = ctx.mdl->readIEEEFloatLE();
 
-	_scale = mdl.readIEEEFloatLE();
+	_scale = ctx.mdl->readIEEEFloatLE();
 
 	Common::UString superModelName;
 
-	superModelName.readASCII(mdl, 64);
+	superModelName.readASCII(*ctx.mdl, 64);
 
 	warning("\"%s\", %d, %X, %d, \"%s\"", _name.c_str(), nodeCount, classification, fogged, superModelName.c_str());
 
-	parseNodeBinary(mdl, nodeHeadPointer + _offModelData);
+	parseNodeBinary(ctx, nodeHeadPointer + ctx.offModelData);
 }
 
-void Model_NWN::parseNodeBinary(Common::SeekableReadStream &mdl, uint32 offset) {
-	mdl.seekTo(offset);
+void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset) {
+	ctx.mdl->seekTo(offset);
 
-	Node *node = new Node;
+	ctx.node = new Node;
 
-	node->position[0] = 0;
-	node->position[1] = 0;
-	node->position[2] = 0;
-	node->orientation[0] = 0;
-	node->orientation[1] = 0;
-	node->orientation[2] = 0;
-	node->orientation[3] = 0;
+	ctx.node->position[0] = 0;
+	ctx.node->position[1] = 0;
+	ctx.node->position[2] = 0;
+	ctx.node->orientation[0] = 0;
+	ctx.node->orientation[1] = 0;
+	ctx.node->orientation[2] = 0;
+	ctx.node->orientation[3] = 0;
 
-	mdl.skip(24); // Function pointers
+	ctx.mdl->skip(24); // Function pointers
 
-	uint32 inheritColorFlag = mdl.readUint32LE();
-	uint32 partNumber       = mdl.readUint32LE();
+	uint32 inheritColorFlag = ctx.mdl->readUint32LE();
+	uint32 partNumber       = ctx.mdl->readUint32LE();
 
 	Common::UString name;
 
-	name.readASCII(mdl, 32);
+	name.readASCII(*ctx.mdl, 32);
 
-	mdl.skip(8); // Parent pointers
+	ctx.mdl->skip(8); // Parent pointers
 
 	uint32 childrenStart, childrenCount;
-	readArray(mdl, childrenStart, childrenCount);
+	readArray(*ctx.mdl, childrenStart, childrenCount);
 
 	std::vector<uint32> children;
-	readOffsetArray(mdl, childrenStart + _offModelData, childrenCount, children);
+	readOffsetArray(*ctx.mdl, childrenStart + ctx.offModelData, childrenCount, children);
 
-	mdl.skip(12); // Controller keys
-	mdl.skip(12); // Controller data values
+	ctx.mdl->skip(12); // Controller keys
+	ctx.mdl->skip(12); // Controller data values
 
-	uint32 flags = mdl.readUint32LE();
+	uint32 flags = ctx.mdl->readUint32LE();
 
 	if ((flags & 0xFFFFFC00) != 0)
 		throw Common::Exception("Unknown node flags %08X", flags);
 
-	std::vector<float> vertices;
-	std::vector<float> verticesTexture;
-	std::vector<FaceNWN> faces;
-
 	if (flags & kNodeFlagHasLight) {
 		// TODO: Light
-		mdl.skip(0x5C);
+		ctx.mdl->skip(0x5C);
 	}
 
 	if (flags & kNodeFlagHasEmitter) {
 		// TODO: Emitter
-		mdl.skip(0xD8);
+		ctx.mdl->skip(0xD8);
 	}
 
 	if (flags & kNodeFlagHasReference) {
 		// TODO: Reference
-		mdl.skip(0x44);
+		ctx.mdl->skip(0x44);
 	}
 
 	if (flags & kNodeFlagHasMesh) {
-		parseMeshBinary(mdl, *node, vertices, verticesTexture, faces);
+		parseMeshBinary(ctx);
 	}
 
 	if (flags & kNodeFlagHasSkin) {
 		// TODO: Skin
-		mdl.skip(0x64);
+		ctx.mdl->skip(0x64);
 	}
 
 	if (flags & kNodeFlagHasAnim) {
 		// TODO: Anim
-		mdl.skip(0x38);
+		ctx.mdl->skip(0x38);
 	}
 
 	if (flags & kNodeFlagHasDangly) {
 		// TODO: Dangly
-		mdl.skip(0x18);
+		ctx.mdl->skip(0x18);
 	}
 
 	if (flags & kNodeFlagHasAABB) {
 		// TODO: AABB
-		mdl.skip(0x4);
+		ctx.mdl->skip(0x4);
 	}
 
 	warning("%d: \"%s\", %X, %d", partNumber, name.c_str(), flags, childrenCount);
 
-	processNode(*node, vertices, verticesTexture, faces);
+	processNode(ctx);
 
-	_nodes.insert(std::make_pair(name, node));
+	_nodes.insert(std::make_pair(name, ctx.node));
+	ctx.node = 0;
 
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child)
-		parseNodeBinary(mdl, *child + _offModelData);
+		parseNodeBinary(ctx, *child + ctx.offModelData);
 }
 
-void Model_NWN::parseMeshBinary(Common::SeekableReadStream &mdl, Node &node,
-		std::vector<float> &vertices, std::vector<float> &verticesTexture,
-		std::vector<FaceNWN> &faces) {
-
-	mdl.skip(8); // Function pointers
+void Model_NWN::parseMeshBinary(ParserContext &ctx) {
+	ctx.mdl->skip(8); // Function pointers
 
 	uint32 facesStart, facesCount;
-	readArray(mdl, facesStart, facesCount);
+	readArray(*ctx.mdl, facesStart, facesCount);
 
 	float boundingMin[3], boundingMax[3];
 
-	boundingMin[0] = mdl.readIEEEFloatLE();
-	boundingMin[1] = mdl.readIEEEFloatLE();
-	boundingMin[2] = mdl.readIEEEFloatLE();
+	boundingMin[0] = ctx.mdl->readIEEEFloatLE();
+	boundingMin[1] = ctx.mdl->readIEEEFloatLE();
+	boundingMin[2] = ctx.mdl->readIEEEFloatLE();
 
-	boundingMax[0] = mdl.readIEEEFloatLE();
-	boundingMax[1] = mdl.readIEEEFloatLE();
-	boundingMax[2] = mdl.readIEEEFloatLE();
+	boundingMax[0] = ctx.mdl->readIEEEFloatLE();
+	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
+	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
-	float radius = mdl.readIEEEFloatLE();
+	float radius = ctx.mdl->readIEEEFloatLE();
 
 	float pointsAverage[3];
-	pointsAverage[0] = mdl.readIEEEFloatLE();
-	pointsAverage[1] = mdl.readIEEEFloatLE();
-	pointsAverage[2] = mdl.readIEEEFloatLE();
+	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
-	node.ambient[0] = mdl.readIEEEFloatLE();
-	node.ambient[1] = mdl.readIEEEFloatLE();
-	node.ambient[2] = mdl.readIEEEFloatLE();
+	ctx.node->ambient[0] = ctx.mdl->readIEEEFloatLE();
+	ctx.node->ambient[1] = ctx.mdl->readIEEEFloatLE();
+	ctx.node->ambient[2] = ctx.mdl->readIEEEFloatLE();
 
-	node.diffuse[0] = mdl.readIEEEFloatLE();
-	node.diffuse[1] = mdl.readIEEEFloatLE();
-	node.diffuse[2] = mdl.readIEEEFloatLE();
+	ctx.node->diffuse[0] = ctx.mdl->readIEEEFloatLE();
+	ctx.node->diffuse[1] = ctx.mdl->readIEEEFloatLE();
+	ctx.node->diffuse[2] = ctx.mdl->readIEEEFloatLE();
 
-	node.specular[0] = mdl.readIEEEFloatLE();
-	node.specular[1] = mdl.readIEEEFloatLE();
-	node.specular[2] = mdl.readIEEEFloatLE();
+	ctx.node->specular[0] = ctx.mdl->readIEEEFloatLE();
+	ctx.node->specular[1] = ctx.mdl->readIEEEFloatLE();
+	ctx.node->specular[2] = ctx.mdl->readIEEEFloatLE();
 
-	node.shininess = mdl.readIEEEFloatLE();
+	ctx.node->shininess = ctx.mdl->readIEEEFloatLE();
 
-	node.shadow  = mdl.readUint32LE() == 1;
-	node.beaming = mdl.readUint32LE() == 1;
-	node.render  = mdl.readUint32LE() == 1;
+	ctx.node->shadow  = ctx.mdl->readUint32LE() == 1;
+	ctx.node->beaming = ctx.mdl->readUint32LE() == 1;
+	ctx.node->render  = ctx.mdl->readUint32LE() == 1;
 
-	node.transparencyhint = mdl.readUint32LE();
+	ctx.node->transparencyhint = ctx.mdl->readUint32LE();
 
-	mdl.skip(4); // Unknown
+	ctx.mdl->skip(4); // Unknown
 
 	Common::UString textures[4];
-	textures[0].readASCII(mdl, 64);
-	textures[1].readASCII(mdl, 64);
-	textures[2].readASCII(mdl, 64);
-	textures[3].readASCII(mdl, 64);
+	textures[0].readASCII(*ctx.mdl, 64);
+	textures[1].readASCII(*ctx.mdl, 64);
+	textures[2].readASCII(*ctx.mdl, 64);
+	textures[3].readASCII(*ctx.mdl, 64);
 
-	node.tilefade = mdl.readUint32LE();
+	ctx.node->tilefade = ctx.mdl->readUint32LE();
 
-	mdl.skip(12); // Vertex indices
-	mdl.skip(12); // Left over faces
+	ctx.mdl->skip(12); // Vertex indices
+	ctx.mdl->skip(12); // Left over faces
 
-	mdl.skip(12); // Vertex indices counts
-	mdl.skip(12); // Vertex indices offsets
+	ctx.mdl->skip(12); // Vertex indices counts
+	ctx.mdl->skip(12); // Vertex indices offsets
 
-	mdl.skip(8); // Unknown
+	ctx.mdl->skip(8); // Unknown
 
-	byte triangleMode = mdl.readByte();
+	byte triangleMode = ctx.mdl->readByte();
 
-	mdl.skip(3 + 4); // Padding + Unknown
+	ctx.mdl->skip(3 + 4); // Padding + Unknown
 
-	uint32 vertexOffset = mdl.readUint32LE();
-	uint16 vertexCount  = mdl.readUint16LE();
-	uint16 textureCount = mdl.readUint16LE();
+	uint32 vertexOffset = ctx.mdl->readUint32LE();
+	uint16 vertexCount  = ctx.mdl->readUint16LE();
+	uint16 textureCount = ctx.mdl->readUint16LE();
 
-	uint32 texture0VertexOffset = mdl.readUint32LE();
-	mdl.skip(3 * 4); // Texture vertex data
+	uint32 texture0VertexOffset = ctx.mdl->readUint32LE();
+	ctx.mdl->skip(3 * 4); // Texture vertex data
 
-	mdl.skip(4); // Vertex normals
-	mdl.skip(4); // Vertex RGBA colors
+	ctx.mdl->skip(4); // Vertex normals
+	ctx.mdl->skip(4); // Vertex RGBA colors
 
-	mdl.skip(6 * 4); // Texture animation data
+	ctx.mdl->skip(6 * 4); // Texture animation data
 
-	bool lightMapped = mdl.readByte() == 1;
+	bool lightMapped = ctx.mdl->readByte() == 1;
 
-	node.rotatetexture = mdl.readByte() == 1;
+	ctx.node->rotatetexture = ctx.mdl->readByte() == 1;
 
-	mdl.skip(2); // Padding
+	ctx.mdl->skip(2); // Padding
 
-	mdl.skip(4); // Normal sum / 2
+	ctx.mdl->skip(4); // Normal sum / 2
 
-	mdl.skip(4); // Unknown
+	ctx.mdl->skip(4); // Unknown
 
 	if (textureCount > 1)
 		warning("Model_NWN::parseMeshBinary(): textureCount == %d", textureCount);
 
-	node.bitmap = textures[0];
+	ctx.node->bitmap = textures[0];
 
 	if (vertexOffset != 0xFFFFFFFF) {
-		mdl.seekTo(vertexOffset + _offRawData);
+		ctx.mdl->seekTo(vertexOffset + ctx.offRawData);
 
-		vertices.resize(3 * vertexCount);
+		ctx.vertices.resize(3 * vertexCount);
 
 		for (int i = 0; i < (3 * vertexCount); i++)
-			vertices[i] = mdl.readIEEEFloatLE();
+			ctx.vertices[i] = ctx.mdl->readIEEEFloatLE();
 	}
 
-	verticesTexture.resize(3 * vertexCount);
+	ctx.verticesTexture.resize(3 * vertexCount);
 	if (texture0VertexOffset != 0xFFFFFFFF) {
 
-		mdl.seekTo(texture0VertexOffset + _offRawData);
+		ctx.mdl->seekTo(texture0VertexOffset + ctx.offRawData);
 
 		for (int i = 0; i < vertexCount; i++) {
-			verticesTexture[3 * i + 0] = mdl.readIEEEFloatLE();
-			verticesTexture[3 * i + 1] = mdl.readIEEEFloatLE();
-			verticesTexture[3 * i + 2] = 0;
+			ctx.verticesTexture[3 * i + 0] = ctx.mdl->readIEEEFloatLE();
+			ctx.verticesTexture[3 * i + 1] = ctx.mdl->readIEEEFloatLE();
+			ctx.verticesTexture[3 * i + 2] = 0;
 		}
 	} else
 		for (int i = 0; i < (3 * vertexCount); i++)
-			verticesTexture[i] = 0;
+			ctx.verticesTexture[i] = 0;
 
-	faces.resize(facesCount);
+	ctx.faces.resize(facesCount);
 	if ((facesStart != 0) && (facesCount > 0)) {
-		mdl.seekTo(facesStart + _offModelData);
+		ctx.mdl->seekTo(facesStart + ctx.offModelData);
 
 		for (uint32 i = 0; i < facesCount; i++) {
-			mdl.skip(3 * 4); // Normal
-			mdl.skip(    4); // Distance
-			mdl.skip(    4); // ID
-			mdl.skip(3 * 2); // Adjacent face number
+			ctx.mdl->skip(3 * 4); // Normal
+			ctx.mdl->skip(    4); // Distance
+			ctx.mdl->skip(    4); // ID
+			ctx.mdl->skip(3 * 2); // Adjacent face number
 
-
-			faces[i].vertices[0] = mdl.readUint16LE();
-			faces[i].vertices[1] = mdl.readUint16LE();
-			faces[i].vertices[2] = mdl.readUint16LE();
-			faces[i].verticesTexture[0] = faces[i].vertices[0];
-			faces[i].verticesTexture[1] = faces[i].vertices[1];
-			faces[i].verticesTexture[2] = faces[i].vertices[2];
+			ctx.faces[i].vertices[0] = ctx.mdl->readUint16LE();
+			ctx.faces[i].vertices[1] = ctx.mdl->readUint16LE();
+			ctx.faces[i].vertices[2] = ctx.mdl->readUint16LE();
+			ctx.faces[i].verticesTexture[0] = ctx.faces[i].vertices[0];
+			ctx.faces[i].verticesTexture[1] = ctx.faces[i].vertices[1];
+			ctx.faces[i].verticesTexture[2] = ctx.faces[i].vertices[2];
 		}
 	}
 
@@ -707,43 +692,64 @@ void Model_NWN::readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, u
 	mdl.seekTo(pos);
 }
 
-void Model_NWN::processNode(Node &node, const std::vector<float> &vertices,
-		const std::vector<float> &verticesTexture, const std::vector<FaceNWN> &faces) {
+void Model_NWN::processNode(ParserContext &ctx) {
+	ctx.node->faces.resize(ctx.faces.size());
 
-	node.faces.resize(faces.size());
-	for (uint i = 0; i < faces.size(); i++) {
-		node.faces[i].vertices[0][0] = vertices[3 * faces[i].vertices[0] + 0];
-		node.faces[i].vertices[0][1] = vertices[3 * faces[i].vertices[0] + 1];
-		node.faces[i].vertices[0][2] = vertices[3 * faces[i].vertices[0] + 2];
-		node.faces[i].vertices[1][0] = vertices[3 * faces[i].vertices[1] + 0];
-		node.faces[i].vertices[1][1] = vertices[3 * faces[i].vertices[1] + 1];
-		node.faces[i].vertices[1][2] = vertices[3 * faces[i].vertices[1] + 2];
-		node.faces[i].vertices[2][0] = vertices[3 * faces[i].vertices[2] + 0];
-		node.faces[i].vertices[2][1] = vertices[3 * faces[i].vertices[2] + 1];
-		node.faces[i].vertices[2][2] = vertices[3 * faces[i].vertices[2] + 2];
+	for (uint i = 0; i < ctx.faces.size(); i++) {
+		Face &face = ctx.node->faces[i];
 
-		if (faces[i].verticesTexture[0] >= (verticesTexture.size() * 3)) {
-			for (int j = 0; j < 3; j++)
-				for (int k = 0; k < 3; k++)
-					node.faces[i].verticesTexture[j][k] = 0;
+		const float *verts = &ctx.vertices[0];
+		const int    vert0 = ctx.faces[i].vertices[0];
+		const int    vert1 = ctx.faces[i].vertices[1];
+		const int    vert2 = ctx.faces[i].vertices[2];
+
+		face.vertices[0][0] = verts[3 * vert0 + 0];
+		face.vertices[0][1] = verts[3 * vert0 + 1];
+		face.vertices[0][2] = verts[3 * vert0 + 2];
+		face.vertices[1][0] = verts[3 * vert1 + 0];
+		face.vertices[1][1] = verts[3 * vert1 + 1];
+		face.vertices[1][2] = verts[3 * vert1 + 2];
+		face.vertices[2][0] = verts[3 * vert2 + 0];
+		face.vertices[2][1] = verts[3 * vert2 + 1];
+		face.vertices[2][2] = verts[3 * vert2 + 2];
+
+		const float *tverts = &ctx.verticesTexture[0];
+		const int    tvert0 = ctx.faces[i].verticesTexture[0];
+		const int    tvert1 = ctx.faces[i].verticesTexture[1];
+		const int    tvert2 = ctx.faces[i].verticesTexture[2];
+
+		if (ctx.faces[i].verticesTexture[0] >= (ctx.verticesTexture.size() * 3)) {
+			face.verticesTexture[0][0] = 0;
+			face.verticesTexture[0][1] = 0;
+			face.verticesTexture[0][2] = 0;
+			face.verticesTexture[1][0] = 0;
+			face.verticesTexture[1][1] = 0;
+			face.verticesTexture[1][2] = 0;
+			face.verticesTexture[2][0] = 0;
+			face.verticesTexture[2][1] = 0;
+			face.verticesTexture[2][2] = 0;
 		} else {
-			node.faces[i].verticesTexture[0][0] = verticesTexture[3 * faces[i].verticesTexture[0] + 0];
-			node.faces[i].verticesTexture[0][1] = verticesTexture[3 * faces[i].verticesTexture[0] + 1];
-			node.faces[i].verticesTexture[0][2] = verticesTexture[3 * faces[i].verticesTexture[0] + 2];
-			node.faces[i].verticesTexture[1][0] = verticesTexture[3 * faces[i].verticesTexture[1] + 0];
-			node.faces[i].verticesTexture[1][1] = verticesTexture[3 * faces[i].verticesTexture[1] + 1];
-			node.faces[i].verticesTexture[1][2] = verticesTexture[3 * faces[i].verticesTexture[1] + 2];
-			node.faces[i].verticesTexture[2][0] = verticesTexture[3 * faces[i].verticesTexture[2] + 0];
-			node.faces[i].verticesTexture[2][1] = verticesTexture[3 * faces[i].verticesTexture[2] + 1];
-			node.faces[i].verticesTexture[2][2] = verticesTexture[3 * faces[i].verticesTexture[2] + 2];
+			face.verticesTexture[0][0] = tverts[3 * tvert0 + 0];
+			face.verticesTexture[0][1] = tverts[3 * tvert0 + 1];
+			face.verticesTexture[0][2] = tverts[3 * tvert0 + 2];
+			face.verticesTexture[1][0] = tverts[3 * tvert1 + 0];
+			face.verticesTexture[1][1] = tverts[3 * tvert1 + 1];
+			face.verticesTexture[1][2] = tverts[3 * tvert1 + 2];
+			face.verticesTexture[2][0] = tverts[3 * tvert2 + 0];
+			face.verticesTexture[2][1] = tverts[3 * tvert2 + 1];
+			face.verticesTexture[2][2] = tverts[3 * tvert2 + 2];
 		}
 
-		node.faces[i].smoothGroup = faces[i].smoothGroup;
-		node.faces[i].material    = faces[i].material;
+		face.smoothGroup = ctx.faces[i].smoothGroup;
+		face.material    = ctx.faces[i].material;
 	}
 
-	if (!node.bitmap.empty() && (node.bitmap != "NULL"))
-		node.texture = new Texture(node.bitmap);
+	if (!ctx.node->bitmap.empty() && (ctx.node->bitmap != "NULL"))
+		ctx.node->texture = new Texture(ctx.node->bitmap);
+
+	ctx.vertices.clear();
+	ctx.verticesTexture.clear();
+	ctx.faces.clear();
 }
 
 } // End of namespace Aurora
