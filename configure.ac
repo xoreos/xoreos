@@ -125,6 +125,7 @@ AC_OUTPUT(utf8cpp/Makefile \
           src/graphics/Makefile \
           src/graphics/images/Makefile \
           src/graphics/video/Makefile \
+          src/graphics/aurora/Makefile \
           src/sound/Makefile \
           src/sound/decoders/Makefile \
           src/events/Makefile \

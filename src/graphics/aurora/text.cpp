@@ -8,17 +8,20 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/text.cpp
+/** @file graphics/aurora/text.cpp
  *  A text object.
  */
 
 #include "events/requests.h"
 
 #include "graphics/graphics.h"
-#include "graphics/text.h"
-#include "graphics/font.h"
+
+#include "graphics/aurora/text.h"
+#include "graphics/aurora/font.h"
 
 namespace Graphics {
+
+namespace Aurora {
 
 Text::Text(const Font &font, float x, float y, const Common::UString &str) :
 	_firstTime(true), _font(&font), _x(x), _y(y), _str(str) {
@@ -50,5 +53,7 @@ void Text::render() {
 		glTranslatef(w + _font->getSpaceR(), 0.0, 0.0);
 	}
 }
+
+} // End of namespace Aurora
 
 } // End of namespace Graphics

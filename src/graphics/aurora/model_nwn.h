@@ -8,18 +8,18 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/model_nwn.h
+/** @file graphics/aurora/model_nwn.h
  *  Loading MDL files found in Neverwinter Nights.
  */
 
-#ifndef GRAPHICS_MODEL_NWN_H
-#define GRAPHICS_MODEL_NWN_H
+#ifndef GRAPHICS_AURORA_MODEL_NWN_H
+#define GRAPHICS_AURORA_MODEL_NWN_H
 
 #include <vector>
 
 #include "common/ustring.h"
 
-#include "graphics/model.h"
+#include "graphics/aurora/model.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -27,6 +27,8 @@ namespace Common {
 }
 
 namespace Graphics {
+
+namespace Aurora {
 
 class Model_NWN : public Model {
 public:
@@ -67,6 +69,8 @@ private:
 			std::vector<uint32> &offsets);
 };
 
+} // End of namespace Aurora
+
 } // End of namespace Graphics
 
-#endif // GRAPHICS_MODEL_NWN_H
+#endif // GRAPHICS_AURORA_MODEL_NWN_H

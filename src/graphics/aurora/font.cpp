@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/font.cpp
+/** @file graphics/aurora/font.cpp
  *  A font.
  */
 
@@ -19,11 +19,14 @@
 
 #include "events/requests.h"
 
-#include "graphics/font.h"
-#include "graphics/texture.h"
 #include "graphics/images/txi.h"
 
+#include "graphics/aurora/font.h"
+#include "graphics/aurora/texture.h"
+
 namespace Graphics {
+
+namespace Aurora {
 
 // TODO: Multibyte fonts
 
@@ -152,5 +155,7 @@ float Font::getSpaceR() const {
 float Font::getSpaceB() const {
 	return _spaceB;
 }
+
+} // End of namespace Aurora
 
 } // End of namespace Graphics

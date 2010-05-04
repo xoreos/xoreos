@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/video/player.cpp
+/** @file graphics/aurora/videoplayer.cpp
  *  A video player.
  */
 
@@ -17,9 +17,10 @@
 #include "common/ustring.h"
 #include "common/stream.h"
 
-#include "graphics/video/player.h"
 #include "graphics/video/decoder.h"
 #include "graphics/video/bink.h"
+
+#include "graphics/aurora/videoplayer.h"
 
 #include "events/events.h"
 #include "events/requests.h"
@@ -27,6 +28,8 @@
 #include "aurora/resman.h"
 
 namespace Graphics {
+
+namespace Aurora {
 
 VideoPlayer::VideoPlayer(const Common::UString &video) : _video(0) {
 	load(video);
@@ -37,13 +40,13 @@ VideoPlayer::~VideoPlayer() {
 }
 
 void VideoPlayer::load(const Common::UString &name) {
-	Aurora::FileType type;
-	Common::SeekableReadStream *video = ResMan.getResource(Aurora::kResourceVideo, name, &type);
+	::Aurora::FileType type;
+	Common::SeekableReadStream *video = ResMan.getResource(::Aurora::kResourceVideo, name, &type);
 	if (!video)
 		throw Common::Exception("No such video resource \"%s\"", name.c_str());
 
 	// Loading the different image formats
-	if      (type == Aurora::kFileTypeBIK)
+	if      (type == ::Aurora::kFileTypeBIK)
 		_video = new Bink(video);
 	else {
 		delete video;
@@ -81,5 +84,7 @@ void VideoPlayer::play() {
 
 	_video->abort();
 }
+
+} // End of namespace Aurora
 
 } // End of namespace Graphics

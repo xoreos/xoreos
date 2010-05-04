@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/cube.cpp
+/** @file graphics/aurora/cube.cpp
  *  A simple cube object, for testing.
  */
 
@@ -16,9 +16,10 @@
 #include "common/ustring.h"
 #include "common/stream.h"
 
-#include "graphics/cube.h"
-#include "graphics/texture.h"
 #include "graphics/images/tga.h"
+
+#include "graphics/aurora/cube.h"
+#include "graphics/aurora/texture.h"
 
 #include "events/events.h"
 #include "events/requests.h"
@@ -26,6 +27,8 @@
 using Events::RequestID;
 
 namespace Graphics {
+
+namespace Aurora {
 
 CubeSide::CubeSide(Cube &parent, int n) : _parent(&parent), _n(n) {
 	addToQueue();
@@ -159,5 +162,7 @@ void Cube::setTexture() {
 void Cube::callList() {
 	glCallList(_list);
 }
+
+} // End of namespace Aurora
 
 } // End of namespace Graphics

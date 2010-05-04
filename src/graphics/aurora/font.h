@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/font.h
+/** @file graphics/aurora/font.h
  *  A font.
  */
 
-#ifndef GRAPHICS_FONT_H
-#define GRAPHICS_FONT_H
+#ifndef GRAPHICS_AURORA_FONT_H
+#define GRAPHICS_AURORA_FONT_H
 
 #include <vector>
 
@@ -27,6 +27,8 @@ namespace Common {
 }
 
 namespace Graphics {
+
+namespace Aurora {
 
 class Texture;
 
@@ -74,6 +76,8 @@ private:
 	void load();
 };
 
+} // End of namespace Aurora
+
 } // End of namespace Graphics
 
-#endif // GRAPHICS_FONT_H
+#endif // GRAPHICS_AURORA_FONT_H

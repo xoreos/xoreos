@@ -238,6 +238,6 @@ private:
 } // End of namespace Aurora
 
 /** Shortcut for accessing the sound manager. */
-#define ResMan Aurora::ResourceManager::instance()
+#define ResMan ::Aurora::ResourceManager::instance()
 
 #endif // AURORA_RESMAN_H

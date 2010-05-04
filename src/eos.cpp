@@ -20,7 +20,6 @@
 #include "common/filepath.h"
 
 #include "graphics/graphics.h"
-#include "graphics/cube.h"
 
 #include "sound/sound.h"
 

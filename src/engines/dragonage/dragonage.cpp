@@ -18,7 +18,7 @@
 #include "common/filelist.h"
 #include "common/filepath.h"
 
-#include "graphics/cube.h"
+#include "graphics/aurora/cube.h"
 
 #include "sound/sound.h"
 
@@ -74,11 +74,11 @@ void DragonAgeEngine::run(const Common::UString &target) {
 	playVideo("dragon_age_ea_logo");
 	playVideo("dragon_age_main");
 
-	Graphics::Cube *cube = 0;
+	Graphics::Aurora::Cube *cube = 0;
 
 	try {
 
-		cube = new Graphics::Cube("ach_abi_accomplish_rog");
+		cube = new Graphics::Aurora::Cube("ach_abi_accomplish_rog");
 
 	} catch (Common::Exception &e) {
 		Common::printException(e);

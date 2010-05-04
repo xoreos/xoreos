@@ -23,7 +23,6 @@
 #include "graphics/graphics.h"
 #include "graphics/fpscounter.h"
 #include "graphics/renderable.h"
-#include "graphics/cube.h"
 
 #include "graphics/images/decoder.h"
 

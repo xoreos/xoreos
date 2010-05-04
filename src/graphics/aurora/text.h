@@ -8,18 +8,20 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/text.h
+/** @file graphics/aurora/text.h
  *  A text object.
  */
 
-#ifndef GRAPHICS_TEXT_H
-#define GRAPHICS_TEXT_H
+#ifndef GRAPHICS_AURORA_TEXT_H
+#define GRAPHICS_AURORA_TEXT_H
 
 #include "common/ustring.h"
 
 #include "graphics/guifrontelement.h"
 
 namespace Graphics {
+
+namespace Aurora {
 
 class Font;
 
@@ -43,6 +45,8 @@ private:
 	Common::UString _str;
 };
 
+} // End of namespace Aurora
+
 } // End of namespace Graphics
 
-#endif // GRAPHICS_TEXT_H
+#endif // GRAPHICS_AURORA_TEXT_H

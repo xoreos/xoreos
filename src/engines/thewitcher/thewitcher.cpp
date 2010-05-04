@@ -18,7 +18,7 @@
 #include "common/filelist.h"
 #include "common/filepath.h"
 
-#include "graphics/cube.h"
+#include "graphics/aurora/cube.h"
 
 #include "sound/sound.h"
 
@@ -96,11 +96,11 @@ void TheWitcherEngine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
-	Graphics::Cube *cube = 0;
+	Graphics::Aurora::Cube *cube = 0;
 
 	try {
 
-		cube = new Graphics::Cube("wilk");
+		cube = new Graphics::Aurora::Cube("wilk");
 
 	} catch (Common::Exception &e) {
 		Common::printException(e);

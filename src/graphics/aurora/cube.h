@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/cube.h
+/** @file graphics/aurora/cube.h
  *  A simple cube object, for testing.
  */
 
-#ifndef GRAPHICS_CUBE_H
-#define GRAPHICS_CUBE_H
+#ifndef GRAPHICS_AURORA_CUBE_H
+#define GRAPHICS_AURORA_CUBE_H
 
 #include "graphics/types.h"
 #include "graphics/listcontainer.h"
@@ -25,6 +25,8 @@ namespace Common {
 }
 
 namespace Graphics {
+
+namespace Aurora {
 
 class Texture;
 
@@ -79,6 +81,8 @@ private:
 	friend class CubeSide;
 };
 
+} // End of namespace Aurora
+
 } // End of namespace Graphics
 
-#endif // GRAPHICS_CUBE_H
+#endif // GRAPHICS_AURORA_CUBE_H

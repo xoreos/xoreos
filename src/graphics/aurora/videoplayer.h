@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/video/player.h
+/** @file graphics/aurora/videoplayer.h
  *  A video player.
  */
 
-#ifndef GRAPHICS_VIDEO_PLAYER_H
-#define GRAPHICS_VIDEO_PLAYER_H
+#ifndef GRAPHICS_AURORA_VIDEOPLAYER_H
+#define GRAPHICS_AURORA_VIDEOPLAYER_H
 
 namespace Common {
 	class UString;
@@ -22,6 +22,8 @@ namespace Common {
 namespace Graphics {
 
 class VideoDecoder;
+
+namespace Aurora {
 
 class VideoPlayer {
 public:
@@ -36,6 +38,8 @@ private:
 	void load(const Common::UString &name);
 };
 
+} // End of namespace Aurora
+
 } // End of namespace Graphics
 
-#endif // GRAPHICS_VIDEO_PLAYER_H
+#endif // GRAPHICS_AURORA_VIDEOPLAYER_H

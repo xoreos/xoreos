@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.common
 
-SUBDIRS = images video
+SUBDIRS = images video aurora
 
 noinst_LTLIBRARIES = libgraphics.la
 
@@ -14,27 +14,17 @@ noinst_HEADERS = types.h \
                  queueable.h \
                  listcontainer.h \
                  texture.h \
-                 font.h \
                  renderable.h \
                  object.h \
-                 guifrontelement.h \
-                 text.h \
-                 cube.h \
-                 model.h \
-                 model_nwn.h
+                 guifrontelement.h
 
 libgraphics_la_SOURCES = glew/glew.c \
                          graphics.cpp \
                          fpscounter.cpp \
                          listcontainer.cpp \
                          texture.cpp \
-                         font.cpp \
                          renderable.cpp \
                          object.cpp \
-                         guifrontelement.cpp \
-                         text.cpp \
-                         cube.cpp \
-                         model.cpp \
-                         model_nwn.cpp
+                         guifrontelement.cpp
 
-libgraphics_la_LIBADD = images/libimages.la video/libvideo.la
+libgraphics_la_LIBADD = images/libimages.la video/libvideo.la aurora/libaurora.la

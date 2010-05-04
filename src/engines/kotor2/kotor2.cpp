@@ -20,9 +20,10 @@
 #include "common/stream.h"
 
 #include "graphics/graphics.h"
-#include "graphics/cube.h"
-#include "graphics/font.h"
-#include "graphics/text.h"
+
+#include "graphics/aurora/cube.h"
+#include "graphics/aurora/font.h"
+#include "graphics/aurora/text.h"
 
 #include "sound/sound.h"
 
@@ -88,25 +89,25 @@ void KotOR2Engine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
-	Graphics::Cube *cube = 0;
+	Graphics::Aurora::Cube *cube = 0;
 
 	try {
 
-		cube = new Graphics::Cube("tel_hk51_front");
+		cube = new Graphics::Aurora::Cube("tel_hk51_front");
 
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
 
-	Graphics::Font *font = new Graphics::Font("dialogfont32x32b");
-	Graphics::Text *text = 0;
+	Graphics::Aurora::Font *font = new Graphics::Aurora::Font("dialogfont32x32b");
+	Graphics::Aurora::Text *text = 0;
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 
 		GfxMan.lockFrame();
 		delete text;
-		text = new Graphics::Text(*font, -1.0, 1.0, Common::UString::sprintf("%d fps", GfxMan.getFPS()));
+		text = new Graphics::Aurora::Text(*font, -1.0, 1.0, Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 		GfxMan.unlockFrame();
 	}
 

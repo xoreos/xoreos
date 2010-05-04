@@ -8,16 +8,18 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/model.cpp
+/** @file graphics/aurora/model.cpp
  *  A 3D model of an object.
  */
 
 #include "events/events.h"
 
-#include "graphics/model.h"
-#include "graphics/texture.h"
+#include "graphics/aurora/model.h"
+#include "graphics/aurora/texture.h"
 
 namespace Graphics {
+
+namespace Aurora {
 
 Model::Node::Node() : parent(0), texture(0), dangly(false), displacement(0) {
 }
@@ -75,5 +77,7 @@ void Model::render() {
 
 	}
 }
+
+} // End of namespace Aurora
 
 } // End of namespace Graphics

@@ -9,7 +9,7 @@
  */
 
 /** @file graphics/texture.h
- *  A texture.
+ *  Virtual baseclass of a texture.
  */
 
 #ifndef GRAPHICS_TEXTURE_H
@@ -18,51 +18,25 @@
 #include "graphics/types.h"
 #include "graphics/queueable.h"
 
-#include "aurora/types.h"
-
-namespace Common {
-	class UString;
-	class SeekableReadStream;
-}
-
 namespace Graphics {
-
-class ImageDecoder;
-class TXI;
 
 /** A texture. */
 class Texture : public Queueable<Texture> {
 public:
-	Texture(const Common::UString &name);
-	~Texture();
+	Texture();
+	virtual ~Texture();
 
 	/** Return the ID of the texture for use with OpenGL. */
-	TextureID getID() const;
+	virtual TextureID getID() const = 0;
 
-	const uint32 getWidth()  const;
-	const uint32 getHeight() const;
-
-	/** Return the TXI. */
-	const TXI &getTXI() const;
-
-private:
-	TextureID _textureID; ///< OpenGL texture ID.
-
-	Aurora::FileType _type; ///< The texture's image's file type.
-
-	ImageDecoder *_image; ///< The actual image.
-	TXI *_txi;            ///< The TXI.
-
-	uint32 _width;
-	uint32 _height;
-
-	void load(const Common::UString &name);
+	virtual const uint32 getWidth()  const = 0;
+	virtual const uint32 getHeight() const = 0;
 
 
 // To be called from the main/events/graphics thread
 public:
-	void reload();
-	void destroy();
+	virtual void reload()  = 0;
+	virtual void destroy() = 0;
 };
 
 } // End of namespace Graphics

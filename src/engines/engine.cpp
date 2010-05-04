@@ -19,7 +19,7 @@
 #include "common/stream.h"
 #include "common/file.h"
 
-#include "graphics/video/player.h"
+#include "graphics/aurora/videoplayer.h"
 
 #include "aurora/resman.h"
 #include "aurora/error.h"
@@ -60,7 +60,7 @@ void Engine::indexOptionalDirectory(const Common::UString &dir,
 
 void Engine::playVideo(const Common::UString &video) {
 	try {
-		Graphics::VideoPlayer videoPlayer(video);
+		Graphics::Aurora::VideoPlayer videoPlayer(video);
 
 		videoPlayer.play();
 	} catch (Common::Exception &e) {

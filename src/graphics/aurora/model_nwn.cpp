@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/model_nwn.cpp
+/** @file graphics/aurora/model_nwn.cpp
  *  Loading MDL files found in Neverwinter Nights.
  */
 
@@ -19,8 +19,8 @@
 
 #include "events/requests.h"
 
-#include "graphics/model_nwn.h"
-#include "graphics/texture.h"
+#include "graphics/aurora/model_nwn.h"
+#include "graphics/aurora/texture.h"
 
 static const int kNodeFlagHasHeader    = 0x00000001;
 static const int kNodeFlagHasLight     = 0x00000002;
@@ -33,6 +33,8 @@ static const int kNodeFlagHasDangly    = 0x00000100;
 static const int kNodeFlagHasAABB      = 0x00000200;
 
 namespace Graphics {
+
+namespace Aurora {
 
 Model_NWN::Model_NWN(Common::SeekableReadStream &mdl) {
 	_tokenizeASCII = new Common::StreamTokenizer(Common::StreamTokenizer::kRuleIgnoreAll);
@@ -579,5 +581,7 @@ void Model_NWN::readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, u
 
 	mdl.seekTo(pos);
 }
+
+} // End of namespace Aurora
 
 } // End of namespace Graphics

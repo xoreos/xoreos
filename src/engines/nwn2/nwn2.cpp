@@ -20,9 +20,10 @@
 #include "common/stream.h"
 
 #include "graphics/graphics.h"
-#include "graphics/cube.h"
-#include "graphics/font.h"
-#include "graphics/text.h"
+
+#include "graphics/aurora/cube.h"
+#include "graphics/aurora/font.h"
+#include "graphics/aurora/text.h"
 
 #include "sound/sound.h"
 
@@ -98,11 +99,11 @@ void NWN2Engine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
-	Graphics::Cube *cube = 0;
+	Graphics::Aurora::Cube *cube = 0;
 
 	try {
 
-		cube = new Graphics::Cube("wt_lake01_n");
+		cube = new Graphics::Aurora::Cube("wt_lake01_n");
 
 	} catch (Common::Exception &e) {
 		Common::printException(e);

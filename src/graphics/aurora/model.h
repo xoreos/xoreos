@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/model.h
+/** @file graphics/aurora/model.h
  *  A 3D model of an object.
  */
 
-#ifndef GRAPHICS_MODEL_H
-#define GRAPHICS_MODEL_H
+#ifndef GRAPHICS_AURORA_MODEL_H
+#define GRAPHICS_AURORA_MODEL_H
 
 #include <map>
 #include <vector>
@@ -24,6 +24,8 @@
 #include "graphics/object.h"
 
 namespace Graphics {
+
+namespace Aurora {
 
 class Texture;
 
@@ -123,6 +125,8 @@ protected:
 	NodeMap _nodes;
 };
 
+} // End of namespace Aurora
+
 } // End of namespace Graphics
 
-#endif // GRAPHICS_MODEL_H
+#endif // GRAPHICS_AURORA_MODEL_H

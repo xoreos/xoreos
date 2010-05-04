@@ -20,9 +20,10 @@
 #include "common/stream.h"
 
 #include "graphics/graphics.h"
-#include "graphics/cube.h"
-#include "graphics/font.h"
-#include "graphics/text.h"
+
+#include "graphics/aurora/cube.h"
+#include "graphics/aurora/font.h"
+#include "graphics/aurora/text.h"
 
 #include "sound/sound.h"
 
