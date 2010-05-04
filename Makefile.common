@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = subdir-objects
+
 AM_CXXFLAGS = -iquote $(top_srcdir)/src/ -iquote $(top_srcdir)/utf8cpp/ -ggdb -Wall -Wno-multichar -Wpointer-arith $(EOS_CXXFLAGS) $(BOOST_CPPFLAGS) $(GL_CFLAGS) $(GLU_CFLAGS) -DGLEW_STATIC
 AM_CFLAGS = $(AM_CXXFLAGS)
 AM_LDFLAGS = $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_REGEX_LDFLAGS) $(GL_LIBS) $(GLU_LIBS) $(EOS_LIBS)
