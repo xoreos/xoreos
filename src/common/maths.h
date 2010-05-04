@@ -82,6 +82,10 @@ inline uint32 log2(uint32 v) {
 		return (t =  v >> 8) ?  8 + LogTable256[t] : LogTable256[v];
 }
 
+inline float rad2deg(float rad) {
+	return rad * 180 / M_PI;
+}
+
 } // End of namespace Common
 
 #endif // COMMON_MATHS_H

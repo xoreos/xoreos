@@ -79,7 +79,7 @@ private:
 
 	void parseConstraintsASCII(ParserContext &ctx, std::vector<float> &constraints, int n);
 
-	void parseNodeBinary(ParserContext &ctx, uint32 offset);
+	void parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent);
 	void parseMeshBinary(ParserContext &ctx);
 
 	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);

@@ -14,6 +14,7 @@
 
 #include "common/util.h"
 #include "common/error.h"
+#include "common/maths.h"
 #include "common/stream.h"
 #include "common/streamtokenizer.h"
 
@@ -123,6 +124,11 @@ void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, 
 
 	ctx.node = new Node;
 
+	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin"))
+		ctx.node->render = true;
+	else
+		ctx.node->render = false;
+
 	if ((type == "emitter") || (type == "reference")) {
 		warning("TODO: Node type %s", type.c_str());
 		skipNode = true;
@@ -156,12 +162,19 @@ void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, 
 					throw Common::Exception("Non-existent parent node");
 
 				ctx.node->parent = it->second;
-			} else
+
+				ctx.node->parent->children.push_back(ctx.node);
+			} else {
 				ctx.node->parent = 0;
+				_rootNode = ctx.node;
+			}
 		} else if (line[0] == "position") {
 			parseFloats(line, ctx.node->position, 3, 1);
 		} else if (line[0] == "orientation") {
 			parseFloats(line, ctx.node->orientation, 4, 1);
+
+			ctx.node->orientation[3] = Common::rad2deg(ctx.node->orientation[3]);
+			warning("%f, %f, %f, %f", ctx.node->orientation[3], ctx.node->orientation[0], ctx.node->orientation[1], ctx.node->orientation[2]);
 		} else if (line[0] == "wirecolor") {
 			parseFloats(line, ctx.node->wirecolor, 3, 1);
 		} else if (line[0] == "ambient") {
@@ -188,23 +201,23 @@ void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, 
 			else
 				parseFloats(line, ctx.node->center, 3, 1);
 		} else if (line[0] == "tilefade") {
-			line[1].parse(ctx.node->displtype);
+			line[1].parse(ctx.node->tilefade);
 		} else if (line[0] == "scale") {
-			line[1].parse(ctx.node->displtype);
+			line[1].parse(ctx.node->scale);
 		} else if (line[0] == "render") {
-			line[1].parse(ctx.node->displtype);
+			line[1].parse(ctx.node->render);
 		} else if (line[0] == "shadow") {
-			line[1].parse(ctx.node->displtype);
+			line[1].parse(ctx.node->shadow);
 		} else if (line[0] == "beaming") {
-			line[1].parse(ctx.node->displtype);
+			line[1].parse(ctx.node->beaming);
 		} else if (line[0] == "inheritcolor") {
-			line[1].parse(ctx.node->displtype);
+			line[1].parse(ctx.node->inheritcolor);
 		} else if (line[0] == "rotatetexture") {
-			line[1].parse(ctx.node->displtype);
+			line[1].parse(ctx.node->rotatetexture);
 		} else if (line[0] == "alpha") {
-			line[1].parse(ctx.node->displtype);
+			line[1].parse(ctx.node->alpha);
 		} else if (line[0] == "transparencyhint") {
-			line[1].parse(ctx.node->displtype);
+			line[1].parse(ctx.node->transparencyhint);
 		} else if (line[0] == "selfillumcolor") {
 			parseFloats(line, ctx.node->selfillumcolor, 3, 1);
 		} else if (line[0] == "danglymesh") {
@@ -441,21 +454,19 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	warning("\"%s\", %d, %X, %d, \"%s\"", _name.c_str(), nodeCount, classification, fogged, superModelName.c_str());
 
-	parseNodeBinary(ctx, nodeHeadPointer + ctx.offModelData);
+	parseNodeBinary(ctx, nodeHeadPointer + ctx.offModelData, 0);
 }
 
-void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset) {
+void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent) {
 	ctx.mdl->seekTo(offset);
 
 	ctx.node = new Node;
 
-	ctx.node->position[0] = 0;
-	ctx.node->position[1] = 0;
-	ctx.node->position[2] = 0;
-	ctx.node->orientation[0] = 0;
-	ctx.node->orientation[1] = 0;
-	ctx.node->orientation[2] = 0;
-	ctx.node->orientation[3] = 0;
+	if (parent) {
+		ctx.node->parent = parent;
+		parent->children.push_back(ctx.node);
+	} else
+		_rootNode = ctx.node;
 
 	ctx.mdl->skip(24); // Function pointers
 
@@ -525,11 +536,13 @@ void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset) {
 
 	processNode(ctx);
 
+	parent = ctx.node;
+
 	_nodes.insert(std::make_pair(name, ctx.node));
 	ctx.node = 0;
 
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child)
-		parseNodeBinary(ctx, *child + ctx.offModelData);
+		parseNodeBinary(ctx, *child + ctx.offModelData, parent);
 }
 
 void Model_NWN::parseMeshBinary(ParserContext &ctx) {
@@ -744,8 +757,13 @@ void Model_NWN::processNode(ParserContext &ctx) {
 		face.material    = ctx.faces[i].material;
 	}
 
-	if (!ctx.node->bitmap.empty() && (ctx.node->bitmap != "NULL"))
-		ctx.node->texture = new Texture(ctx.node->bitmap);
+	try {
+		if (!ctx.node->bitmap.empty() && (ctx.node->bitmap != "NULL"))
+			ctx.node->texture = new Texture(ctx.node->bitmap);
+	} catch (...) {
+		ctx.node->bitmap.clear();
+		ctx.node->texture = 0;
+	}
 
 	ctx.vertices.clear();
 	ctx.verticesTexture.clear();

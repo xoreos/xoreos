@@ -17,6 +17,7 @@
 
 #include <map>
 #include <vector>
+#include <list>
 
 #include "common/ustring.h"
 
@@ -66,6 +67,7 @@ protected:
 
 	struct Node {
 		Node *parent;
+		std::list<Node *> children;
 
 		float position[3];
 		float orientation[4];
@@ -123,6 +125,10 @@ protected:
 	float _scale;
 
 	NodeMap _nodes;
+
+	Node *_rootNode;
+
+	void renderNode(const Node &node);
 };
 
 } // End of namespace Aurora
