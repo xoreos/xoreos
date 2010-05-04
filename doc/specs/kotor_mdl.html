@@ -1,0 +1,2174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>mdl info</title>
+</head>
+<body vlink="#551a8b" alink="#0000ee" link="#0000ee"
+ style="background-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">
+<span style="color: rgb(192, 192, 192);">Geometry header</span><br
+ style="color: rgb(192, 192, 192);">
+<table
+ style="text-align: left; width: 644px; height: 256px; color: rgb(192, 192, 192);"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">#<br>
+      </td>
+      <td style="vertical-align: top;">item<br>
+      </td>
+      <td style="vertical-align: top;">offset<br>
+      </td>
+      <td style="vertical-align: top;">size (bytes)<br>
+      </td>
+      <td style="vertical-align: top;">data type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">unknown</td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long?<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long?<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">model name<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">null terminated string<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">location of root node<br>
+      </td>
+      <td style="vertical-align: top;">40<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">5<br>
+      </td>
+      <td style="vertical-align: top;">number of nodes<br>
+      </td>
+      <td style="vertical-align: top;">44<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">unknown bytes<br>
+      </td>
+      <td style="vertical-align: top;">48<br>
+      </td>
+      <td style="vertical-align: top;">28<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">7<br>
+      </td>
+      <td style="vertical-align: top;">geometry type?<br>
+      </td>
+      <td style="vertical-align: top;">76<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">char<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">padding?<br>
+      </td>
+      <td style="vertical-align: top;">77<br>
+      </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">char<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);">Total length of geometry
+header: 80 bytes</span><br style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">Model header</span><br
+ style="color: rgb(192, 192, 192);">
+<table style="text-align: left; width: 100%; color: rgb(192, 192, 192);"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">#<br>
+      </td>
+      <td style="vertical-align: top;">item<br>
+      </td>
+      <td style="vertical-align: top;">offset<br>
+      </td>
+      <td style="vertical-align: top;">size (bytes)<br>
+      </td>
+      <td style="vertical-align: top;">data type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">char<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">unknown bytes<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">char<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">char<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long?<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">5<br>
+      </td>
+      <td style="vertical-align: top;">location of the start of
+animation data<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">number of animations<br>
+      </td>
+      <td style="vertical-align: top;">12<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">7<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 6<br>
+      </td>
+      <td style="vertical-align: top;">16<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">20<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long?<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">9<br>
+      </td>
+      <td style="vertical-align: top;">bounding box min. x<br>
+      </td>
+      <td style="vertical-align: top;">24<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">10<br>
+      </td>
+      <td style="vertical-align: top;">bounding box min. y<br>
+      </td>
+      <td style="vertical-align: top;">28<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">11<br>
+      </td>
+      <td style="vertical-align: top;">bounding box min. z<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">12<br>
+      </td>
+      <td style="vertical-align: top;">bounding box max. x<br>
+      </td>
+      <td style="vertical-align: top;">36<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">13<br>
+      </td>
+      <td style="vertical-align: top;">bounding box max. y<br>
+      </td>
+      <td style="vertical-align: top;">40<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">14<br>
+      </td>
+      <td style="vertical-align: top;">bounding box max. z<br>
+      </td>
+      <td style="vertical-align: top;">44<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">15<br>
+      </td>
+      <td style="vertical-align: top;">radius<br>
+      </td>
+      <td style="vertical-align: top;">48<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">16<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">52<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">17<br>
+      </td>
+      <td style="vertical-align: top;">super model<br>
+      </td>
+      <td style="vertical-align: top;">56<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">null terminated string<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);">Total length of model
+header: 88 bytes</span><br style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">Names array header</span><br
+ style="color: rgb(192, 192, 192);">
+<table style="text-align: left; width: 100%; color: rgb(192, 192, 192);"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">#<br>
+      </td>
+      <td style="vertical-align: top;">item<br>
+      </td>
+      <td style="vertical-align: top;">offset<br>
+      </td>
+      <td style="vertical-align: top;">size (bytes)<br>
+      </td>
+      <td style="vertical-align: top;">data type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">location of root node<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long?<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">size of mdx data?<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">12<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long?<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">5<br>
+      </td>
+      <td style="vertical-align: top;">location of names<br>
+      </td>
+      <td style="vertical-align: top;">16<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">number of names<br>
+      </td>
+      <td style="vertical-align: top;">20<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">7<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 6<br>
+      </td>
+      <td style="vertical-align: top;">24<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);">Total length of names array
+header: 28 bytes</span><br style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">The names are stored in the
+array one after the other seperated only by the null values.</span><br
+ style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">Animation header</span><br
+ style="color: rgb(192, 192, 192);">
+<table style="text-align: left; width: 100%; color: rgb(192, 192, 192);"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">#<br>
+      </td>
+      <td style="vertical-align: top;">item<br>
+      </td>
+      <td style="vertical-align: top;">offset<br>
+      </td>
+      <td style="vertical-align: top;">size (bytes)<br>
+      </td>
+      <td style="vertical-align: top;">data type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">animation length<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">trans time<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">model name<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">null terminated string<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">location of events<br>
+      </td>
+      <td style="vertical-align: top;">40<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">5<br>
+      </td>
+      <td style="vertical-align: top;">number of events<br>
+      </td>
+      <td style="vertical-align: top;">44<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 5<br>
+      </td>
+      <td style="vertical-align: top;">48<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">7 <br>
+      </td>
+      <td style="vertical-align: top;">unknown bytes<br>
+      </td>
+      <td style="vertical-align: top;">52<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);">Total length of animation
+header: 56 bytes</span><br style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">Events structure:<br>
+</span>
+<table style="text-align: left; width: 100%; color: rgb(192, 192, 192);"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">#<br>
+      </td>
+      <td style="vertical-align: top;">item<br>
+      </td>
+      <td style="vertical-align: top;">offset<br>
+      </td>
+      <td style="vertical-align: top;">size (bytes)<br>
+      </td>
+      <td style="vertical-align: top;">data type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">activation time?<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">event<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">null terminated string<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);"><span
+ style="color: rgb(192, 192, 192);">Total length of 1 structure: 36
+bytes</span><br>
+</span><br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">Node header</span><br
+ style="color: rgb(192, 192, 192);">
+<table style="text-align: left; width: 100%; color: rgb(192, 192, 192);"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">#<br>
+      </td>
+      <td style="vertical-align: top;">item<br>
+      </td>
+      <td style="vertical-align: top;">offset<br>
+      </td>
+      <td style="vertical-align: top;">size (bytes)<br>
+      </td>
+      <td style="vertical-align: top;">data type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">node type<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">supernode<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">node number<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">5<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">location of parent node<br>
+      </td>
+      <td style="vertical-align: top;">12<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">7<br>
+      </td>
+      <td style="vertical-align: top;">position X (same value as
+position controller)<br>
+      </td>
+      <td style="vertical-align: top;">16<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">position Y (same value as
+position controller)</td>
+      <td style="vertical-align: top;">20<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">9<br>
+      </td>
+      <td style="vertical-align: top;">position Z (same value as
+position controller)</td>
+      <td style="vertical-align: top;">24<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">10<br>
+      </td>
+      <td style="vertical-align: top;">rotation W (same value as
+rotation controller)</td>
+      <td style="vertical-align: top;">28<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">11<br>
+      </td>
+      <td style="vertical-align: top;">rotation X (same value as
+rotation controller)</td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">12<br>
+      </td>
+      <td style="vertical-align: top;">rotation Y (same value as
+rotation controller)</td>
+      <td style="vertical-align: top;">36<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">13<br>
+      </td>
+      <td style="vertical-align: top;">rotation Z (same value as
+rotation controller)</td>
+      <td style="vertical-align: top;">40<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">14<br>
+      </td>
+      <td style="vertical-align: top;">location of the array of child
+node locations<br>
+      </td>
+      <td style="vertical-align: top;">44<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">15<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array in item
+8<br>
+      </td>
+      <td style="vertical-align: top;">48<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">16<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 9<br>
+      </td>
+      <td style="vertical-align: top;">52<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">17<br>
+      </td>
+      <td style="vertical-align: top;">location of the array of
+controllers<br>
+      </td>
+      <td style="vertical-align: top;">56<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">18<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array in item
+11<br>
+      </td>
+      <td style="vertical-align: top;">60<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">19<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 12<br>
+      </td>
+      <td style="vertical-align: top;">64<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">20<br>
+      </td>
+      <td style="vertical-align: top;">location of the array of
+controller data<br>
+      </td>
+      <td style="vertical-align: top;">68<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">21<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array in item
+14<br>
+      </td>
+      <td style="vertical-align: top;">72<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">22<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 15<br>
+      </td>
+      <td style="vertical-align: top;">76<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);">Total length of node header:
+80 bytes</span><br style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">The array of child node
+locations is simply a list of long integers.<br>
+<br>
+controller structure:<br style="color: rgb(192, 192, 192);">
+</span>
+<table style="text-align: left; width: 100%; color: rgb(192, 192, 192);"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">#<br>
+      </td>
+      <td style="vertical-align: top;">item<br>
+      </td>
+      <td style="vertical-align: top;">offset<br>
+      </td>
+      <td style="vertical-align: top;">size (bytes)<br>
+      </td>
+      <td style="vertical-align: top;">data type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">controller type<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">number of rows of controller data<br>
+      </td>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">offset of first time key<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">5<br>
+      </td>
+      <td style="vertical-align: top;">offset of first data byte<br>
+      </td>
+      <td style="vertical-align: top;">10<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">columns of data<br>
+      </td>
+      <td style="vertical-align: top;">12<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">char<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">7<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">13<br>
+      </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">char<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);"><span
+ style="color: rgb(192, 192, 192);">Total length of controller
+structure: 16 bytes</span><br>
+</span><br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">controller data structure:<br>
+Ok, the controller data structure is not fixed.&nbsp; It has to be
+figured out from the controller itself.<br>
+<br>
+Example:<br>
+controller:&nbsp;&nbsp;&nbsp; 1) 8 -1 2 0 2 3<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+&nbsp;&nbsp; 2) 20 -1 2 8 10 4<br>
+<br>
+data: <span style="color: rgb(0, 153, 0);">0 1</span> <span
+ style="color: rgb(51, 255, 51);">0 0 0 1 2 3</span> <span
+ style="color: rgb(204, 0, 0);">0 1</span> <span
+ style="color: rgb(255, 102, 102);">0 0 0 1 0 0 0 1</span><br>
+<br>
+<span style="color: rgb(0, 153, 0);">dark green</span> =&nbsp;
+controller 1 time keys, <span style="color: rgb(51, 255, 51);">light
+green</span> = controller 1 data, <span style="color: rgb(204, 0, 0);">dark
+red</span> = controller 2 time keys, <span
+ style="color: rgb(255, 102, 102);">light red</span> = controller 2 data<br>
+<br>
+So, controller 1 is a position controller (8 = position).&nbsp; It has
+2 rows of data, first time key is at offset 0, first data byte is at
+offset 2, the data is 3 values long.<br
+ style="color: rgb(192, 192, 192);">
+</span><span style="color: rgb(192, 192, 192);">Controller 2 is an
+orientation
+controller (20 = orientation).&nbsp; It has 2 rows of data, first time
+key is at
+offset 8, first data byte is at offset 10, the data is 4 values long.<br>
+<br>
+<span style="color: rgb(192, 192, 192);">Taking the data string and
+formatting it according to the controller info gives:</span><br
+ style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">controller 1 data:</span><br
+ style="color: rgb(192, 192, 192);">
+</span>
+<table
+ style="text-align: left; color: rgb(192, 192, 192); width: 622px; height: 88px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">time<br>
+      </td>
+      <td style="vertical-align: top;">x position<br>
+      </td>
+      <td style="vertical-align: top;">y position<br>
+      </td>
+      <td style="vertical-align: top;">z position<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);"><br>
+<span style="color: rgb(192, 192, 192);">controller 2 data:</span><br
+ style="color: rgb(192, 192, 192);">
+</span>
+<table
+ style="text-align: left; color: rgb(192, 192, 192); width: 756px; height: 92px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">time<br>
+      </td>
+      <td style="vertical-align: top;">x<br>
+      </td>
+      <td style="vertical-align: top;">y<br>
+      </td>
+      <td style="vertical-align: top;">z<br>
+      </td>
+      <td style="vertical-align: top;">w<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);"><br>
+What the heck is that x,y,z,w for orientation?&nbsp; That is a
+quaternion.&nbsp; For some models oreintation (i.e. rotation) is stored
+as quaternions.&nbsp; Too much for me to explain, Google it.<br
+ style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+</span><span style="color: rgb(192, 192, 192);">common mesh header</span><br
+ style="color: rgb(192, 192, 192);">
+<table style="text-align: left; width: 100%; color: rgb(192, 192, 192);"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">#<br>
+      </td>
+      <td style="vertical-align: top;">item<br>
+      </td>
+      <td style="vertical-align: top;">offset<br>
+      </td>
+      <td style="vertical-align: top;">size (bytes)<br>
+      </td>
+      <td style="vertical-align: top;">data type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">location of the face array<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">number of faces in the face array<br>
+      </td>
+      <td style="vertical-align: top;">12<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">5<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 4<br>
+      </td>
+      <td style="vertical-align: top;">16<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">bounding box min X<br>
+      </td>
+      <td style="vertical-align: top;">20<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">7<br>
+      </td>
+      <td style="vertical-align: top;">bounding box min Y</td>
+      <td style="vertical-align: top;">24<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">bounding box min Z</td>
+      <td style="vertical-align: top;">28<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">9<br>
+      </td>
+      <td style="vertical-align: top;">bounding box max X</td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">10<br>
+      </td>
+      <td style="vertical-align: top;">bounding box max Y<br>
+      </td>
+      <td style="vertical-align: top;">36<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">11<br>
+      </td>
+      <td style="vertical-align: top;">bounding box max Z<br>
+      </td>
+      <td style="vertical-align: top;">40<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">12<br>
+      </td>
+      <td style="vertical-align: top;">mesh radius<br>
+      </td>
+      <td style="vertical-align: top;">44<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">13<br>
+      </td>
+      <td style="vertical-align: top;">mesh points average X<br>
+      </td>
+      <td style="vertical-align: top;">48<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">14<br>
+      </td>
+      <td style="vertical-align: top;">mesh points average Y<br>
+      </td>
+      <td style="vertical-align: top;">52<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">15<br>
+      </td>
+      <td style="vertical-align: top;">mesh points average Z<br>
+      </td>
+      <td style="vertical-align: top;">56<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">16<br>
+      </td>
+      <td style="vertical-align: top;">diffuse red<br>
+      </td>
+      <td style="vertical-align: top;">60<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">17<br>
+      </td>
+      <td style="vertical-align: top;">diffuse green<br>
+      </td>
+      <td style="vertical-align: top;">64<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">18<br>
+      </td>
+      <td style="vertical-align: top;">diffuse blue<br>
+      </td>
+      <td style="vertical-align: top;">68<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">19<br>
+      </td>
+      <td style="vertical-align: top;">ambient red<br>
+      </td>
+      <td style="vertical-align: top;">72<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">20<br>
+      </td>
+      <td style="vertical-align: top;">ambient green<br>
+      </td>
+      <td style="vertical-align: top;">76<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">21<br>
+      </td>
+      <td style="vertical-align: top;">ambient blue<br>
+      </td>
+      <td style="vertical-align: top;">80<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">22<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">84<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">float?</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">23<br>
+      </td>
+      <td style="vertical-align: top;">name for texture map 1<br>
+      </td>
+      <td style="vertical-align: top;">88<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">null terminated string<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">24<br>
+      </td>
+      <td style="vertical-align: top;">name for texture map 2<br>
+      </td>
+      <td style="vertical-align: top;">120<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">null terminated string</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">25<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">152<br>
+      </td>
+      <td style="vertical-align: top;">24<br>
+      </td>
+      <td style="vertical-align: top;">???<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">26<br>
+      </td>
+      <td style="vertical-align: top;">location of number of verts<br>
+      </td>
+      <td style="vertical-align: top;">176<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">27<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array 10
+(always 1)<br>
+      </td>
+      <td style="vertical-align: top;">180<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">28<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 11<br>
+      </td>
+      <td style="vertical-align: top;">184<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">29<br>
+      </td>
+      <td style="vertical-align: top;">location of location of verts<br>
+      </td>
+      <td style="vertical-align: top;">188<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">30<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array 13
+(always 1)<br>
+      </td>
+      <td style="vertical-align: top;">192<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">31<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 14<br>
+      </td>
+      <td style="vertical-align: top;">196<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">location of unknown array<br>
+      </td>
+      <td style="vertical-align: top;">200<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">33<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array 16
+(always 1)<br>
+      </td>
+      <td style="vertical-align: top;">204<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">34<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 17<br>
+      </td>
+      <td style="vertical-align: top;">208<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">35<br>
+      </td>
+      <td style="vertical-align: top;">unknown (always -1)<br>
+      </td>
+      <td style="vertical-align: top;">212<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">36<br>
+      </td>
+      <td style="vertical-align: top;">unknown (always -1)<br>
+      </td>
+      <td style="vertical-align: top;">216<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">37<br>
+      </td>
+      <td style="vertical-align: top;">unknown (always 0)<br>
+      </td>
+      <td style="vertical-align: top;">220<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">38<br>
+      </td>
+      <td style="vertical-align: top;">unknown (always 3)<br>
+      </td>
+      <td style="vertical-align: top;">224<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">39<br>
+      </td>
+      <td style="vertical-align: top;">unknown (always 0)</td>
+      <td style="vertical-align: top;">228<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">40<br>
+      </td>
+      <td style="vertical-align: top;">unknown (always 0)</td>
+      <td style="vertical-align: top;">232<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">41<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">236<br>
+      </td>
+      <td style="vertical-align: top;">16<br>
+      </td>
+      <td style="vertical-align: top;">long?<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">42<br>
+      </td>
+      <td style="vertical-align: top;">size of 1 MDX structure<br>
+      </td>
+      <td style="vertical-align: top;">252<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">43<br>
+      </td>
+      <td style="vertical-align: top;">unknown (has something to do
+with textures)<br>
+      </td>
+      <td style="vertical-align: top;">256<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">44<br>
+      </td>
+      <td style="vertical-align: top;">unknown (always 0)<br>
+      </td>
+      <td style="vertical-align: top;">260<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">45<br>
+      </td>
+      <td style="vertical-align: top;">offset to vertex normals in MDX
+data in bytes (always 12)<br>
+      </td>
+      <td style="vertical-align: top;">264<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">46<br>
+      </td>
+      <td style="vertical-align: top;">unknown (always -1)<br>
+      </td>
+      <td style="vertical-align: top;">268<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">47<br>
+      </td>
+      <td style="vertical-align: top;">offset to UV coordinates in MDX
+data in bytes (24 if present)<br>
+      </td>
+      <td style="vertical-align: top;">272<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">48<br>
+      </td>
+      <td style="vertical-align: top;">unknown (each value always -1)<br>
+      </td>
+      <td style="vertical-align: top;">276<br>
+      </td>
+      <td style="vertical-align: top;">28<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">49<br>
+      </td>
+      <td style="vertical-align: top;">number of vertices<br>
+      </td>
+      <td style="vertical-align: top;">304<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">50<br>
+      </td>
+      <td style="vertical-align: top;">number of textures<br>
+      </td>
+      <td style="vertical-align: top;">306<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">51<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">308<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">52<br>
+      </td>
+      <td style="vertical-align: top;">shadow flag (value of 256 = cast
+shadow)<br>
+      </td>
+      <td style="vertical-align: top;">310<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">53<br>
+      </td>
+      <td style="vertical-align: top;">render flag (value of 256 =
+render this node)</td>
+      <td style="vertical-align: top;">312<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">54<br>
+      </td>
+      <td style="vertical-align: top;">unknown</td>
+      <td style="vertical-align: top;">314<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">short</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">55<br>
+      </td>
+      <td style="vertical-align: top;">unknown</td>
+      <td style="vertical-align: top;">316<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">long?<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">56<br>
+      </td>
+      <td style="vertical-align: top;">location of this nodes data in
+mdx<br>
+      </td>
+      <td style="vertical-align: top;">324<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">57<br>
+      </td>
+      <td style="vertical-align: top;">location of vertex coordinates
+array<br>
+      </td>
+      <td style="vertical-align: top;">328<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);"><span
+ style="color: rgb(192, 192, 192);">Total length of common mesh header:
+332 bytes</span></span><br style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">skin mesh header</span><br
+ style="color: rgb(192, 192, 192);">
+<table style="text-align: left; width: 100%; color: rgb(192, 192, 192);"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">#<br>
+      </td>
+      <td style="vertical-align: top;">item<br>
+      </td>
+      <td style="vertical-align: top;">offset<br>
+      </td>
+      <td style="vertical-align: top;">size (bytes)<br>
+      </td>
+      <td style="vertical-align: top;">data type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;">20<br>
+      </td>
+      <td style="vertical-align: top;">long?<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;">location of bone map array<br>
+      </td>
+      <td style="vertical-align: top;">20<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">3<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array 2<br>
+      </td>
+      <td style="vertical-align: top;">24<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">location of an unknown array<br>
+      </td>
+      <td style="vertical-align: top;">28<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">5<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array 4<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 5<br>
+      </td>
+      <td style="vertical-align: top;">36<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">7<br>
+      </td>
+      <td style="vertical-align: top;">location of an unknown array<br>
+      </td>
+      <td style="vertical-align: top;">40<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">8<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array 7<br>
+      </td>
+      <td style="vertical-align: top;">44<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">9<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 8<br>
+      </td>
+      <td style="vertical-align: top;">48<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">10<br>
+      </td>
+      <td style="vertical-align: top;">location of an unknown array<br>
+      </td>
+      <td style="vertical-align: top;">52<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">11<br>
+      </td>
+      <td style="vertical-align: top;">number of items in array 10<br>
+      </td>
+      <td style="vertical-align: top;">56<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">12<br>
+      </td>
+      <td style="vertical-align: top;">duplicate of item 11<br>
+      </td>
+      <td style="vertical-align: top;">60<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+      <td style="vertical-align: top;">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">13<br>
+      </td>
+      <td style="vertical-align: top;">list of nodes that can affect
+verticies of this node (i.e. bones)<br>
+      </td>
+      <td style="vertical-align: top;">64<br>
+      </td>
+      <td style="vertical-align: top;">30<br>
+      </td>
+      <td style="vertical-align: top;">short<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">14<br>
+      </td>
+      <td style="vertical-align: top;">unknown<br>
+      </td>
+      <td style="vertical-align: top;">94<br>
+      </td>
+      <td style="vertical-align: top;">6<br>
+      </td>
+      <td style="vertical-align: top;">short?<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);"><span
+ style="color: rgb(192, 192, 192);">Total length of skin mesh header:
+100 bytes</span></span><br>
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">Bone maps work like this:</span><br
+ style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">-For each vertex in the MDX
+there are 4 bone indexes and the corresponding bone weights</span><br
+ style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">-You take the bone index from
+the MDX and match it to an entry in the bone map array</span><br
+ style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">-The entry number that matches
+is the node number that affects the vertex</span><br
+ style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">Example:</span><br
+ style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">MDX data:&nbsp; 0.1 0.2 0.3
+0.4 0.5 0.6 0.7 0.8 </span><span
+ style="background-color: rgb(0, 0, 0); color: rgb(255, 255, 0);">0.5
+0.5 0 0</span><span style="color: rgb(192, 192, 192);"> <span
+ style="color: rgb(255, 0, 0);">1 2 -1 -1</span></span><br
+ style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">Bone map array:</span><br
+ style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">0 =&gt; 1</span><br
+ style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">1 =&gt; -1</span><br
+ style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">2 =&gt; -1</span><br
+ style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">3 =&gt; 2</span><br
+ style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">The yellow numbers in the MDX
+data are the weights.&nbsp; The red numbers are the bone indicies. The
+white numbers are coordinates, uv map coordinates, etc.</span><br
+ style="color: rgb(192, 192, 192);">
+<br style="color: rgb(192, 192, 192);">
+<span style="color: rgb(192, 192, 192);">We take bone index 1 from the
+MDX and look for it in the bone map array.&nbsp; We see that it is at
+position 0 in the list.&nbsp; This means that node 0 has a bone weight
+of 0.5 when affecting the vertex described in the MDX data.&nbsp;
+Taking bone index 2 we see that it is at position 3 in the list.&nbsp;
+So, node 3 has a bone weight of 0.5 when affecting the vertex described
+in the MDX data.&nbsp; The remaining bone indexs in the MDX are -1,
+meaning no other nodes affect this vertex.&nbsp; The total of&nbsp; the
+bone weights for a vertex must equal 1.<br>
+<br style="color: rgb(192, 192, 192);">
+dangly mesh header<br>
+</span>
+<table style="text-align: left; width: 100%;" border="1" cellspacing="2"
+ cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">#<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">item<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">offset<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">size
+(bytes)<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">data
+type<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">1<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">location
+of constraints<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">0<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">4<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">2<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">number
+of items in array 1<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">4<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">4<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">3<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">duplicate
+of item 2<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">8<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">4<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">long<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">4<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">displacement<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">12<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">4<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">5<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">tightness<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">16<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">4<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">6<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">period<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">20<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">4<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">float<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">7<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">unknown<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">24<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">4<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(192, 192, 192);">long?<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="color: rgb(192, 192, 192);"><span
+ style="color: rgb(192, 192, 192);"><span
+ style="color: rgb(192, 192, 192);">Total length of dangly mesh header:
+28 bytes</span></span></span>
+</body>
+</html>
