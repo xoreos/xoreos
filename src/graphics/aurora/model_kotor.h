@@ -31,7 +31,7 @@ namespace Aurora {
 
 class Model_KotOR : public Model {
 public:
-	Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx);
+	Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx, bool kotor2);
 	~Model_KotOR();
 
 private:
@@ -59,6 +59,8 @@ private:
 		ParserContext(Common::SeekableReadStream &mdlStream, Common::SeekableReadStream &mdxStream);
 		~ParserContext();
 	};
+
+	bool _kotor2;
 
 	std::vector<Common::UString> _names;
 

@@ -24,6 +24,7 @@
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/font.h"
 #include "graphics/aurora/text.h"
+#include "graphics/aurora/model_kotor.h"
 
 #include "sound/sound.h"
 
@@ -67,17 +68,21 @@ KotOR2Engine::~KotOR2Engine() {
 }
 
 void KotOR2Engine::run(const Common::UString &target) {
+	SoundMan.setListenerGain(0);
+
 	_baseDirectory = target;
 
 	init();
 
 	status("Successfully initialized the engine");
 
+	/*
 	playVideo("leclogo");
 	playVideo("obsidianent");
 	playVideo("legal");
 
 	playVideo("permov01");
+	*/
 
 	Sound::ChannelHandle channel;
 
@@ -89,8 +94,13 @@ void KotOR2Engine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
+	Graphics::Aurora::Model *model = loadModel("n_yoda");
+
+	model->show();
+
 	Graphics::Aurora::Cube *cube = 0;
 
+	/*
 	try {
 
 		cube = new Graphics::Aurora::Cube("tel_hk51_front");
@@ -98,6 +108,7 @@ void KotOR2Engine::run(const Common::UString &target) {
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
+	*/
 
 	Graphics::Aurora::Font *font = new Graphics::Aurora::Font("dialogfont32x32b");
 	Graphics::Aurora::Text *text = 0;
@@ -147,6 +158,31 @@ void KotOR2Engine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
+}
+
+Graphics::Aurora::Model *KotOR2Engine::loadModel(const Common::UString &resref) {
+	Common::SeekableReadStream *mdl = 0, *mdx = 0;
+
+	Graphics::Aurora::Model *model = 0;
+
+	try {
+		mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
+		if (!mdl)
+			throw Common::Exception("No such model");
+
+		mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX);
+		if (!mdx)
+			throw Common::Exception("No such model data");
+
+		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, true);
+	} catch(...) {
+		delete mdl;
+		delete mdx;
+		delete model;
+		throw;
+	}
+
+	return model;
 }
 
 } // End of namespace KotOR2

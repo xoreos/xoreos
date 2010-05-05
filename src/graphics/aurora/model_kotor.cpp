@@ -95,7 +95,9 @@ Model_KotOR::ParserContext::~ParserContext() {
 }
 
 
-Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx) {
+Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl,
+		Common::SeekableReadStream &mdx, bool kotor2) : _kotor2(kotor2) {
+
 	load(mdl, mdx);
 
 	_names.clear();
@@ -352,6 +354,9 @@ void Model_KotOR::parseMesh(ParserContext &ctx) {
 	ctx.node->render  = ctx.mdl->readByte() == 1;
 
 	ctx.mdl->skip(10);
+
+	if (_kotor2)
+		ctx.mdl->skip(8);
 
 	uint32 offNodeData = ctx.mdl->readUint32LE();
 

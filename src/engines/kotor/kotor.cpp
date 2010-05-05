@@ -184,7 +184,7 @@ Graphics::Aurora::Model *KotOREngine::loadModel(const Common::UString &resref) {
 		if (!mdx)
 			throw Common::Exception("No such model data");
 
-		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx);
+		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, false);
 	} catch(...) {
 		delete mdl;
 		delete mdx;
