@@ -26,6 +26,12 @@ namespace Common {
 	class FileList;
 }
 
+namespace Graphics {
+	namespace Aurora {
+		class Model;
+	}
+}
+
 namespace NWN {
 
 class NWNEngineProbe : public Engines::EngineProbe {
@@ -56,6 +62,8 @@ private:
 	Common::UString _baseDirectory;
 
 	void init();
+
+	Graphics::Aurora::Model *loadModel(const Common::UString &resref);
 };
 
 } // End of namespace NWN

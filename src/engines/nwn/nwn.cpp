@@ -24,6 +24,7 @@
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/font.h"
 #include "graphics/aurora/text.h"
+#include "graphics/aurora/model_nwn.h"
 
 #include "sound/sound.h"
 
@@ -83,17 +84,21 @@ NWNEngine::~NWNEngine() {
 }
 
 void NWNEngine::run(const Common::UString &target) {
+	SoundMan.setListenerGain(0);
+
 	_baseDirectory = target;
 
 	init();
 
 	status("Successfully initialized the engine");
 
+	/*
 	playVideo("atarilogo");
 	playVideo("biowarelogo");
 	playVideo("wotclogo");
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
+	*/
 
 	Sound::ChannelHandle channel;
 
@@ -105,8 +110,13 @@ void NWNEngine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
+	Graphics::Aurora::Model *model = loadModel("pnl_mainmenu");
+
+	model->show();
+
 	Graphics::Aurora::Cube *cube = 0;
 
+/*
 	try {
 
 		cube = new Graphics::Aurora::Cube("ashlw_066");
@@ -114,6 +124,7 @@ void NWNEngine::run(const Common::UString &target) {
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
+*/
 
 	Graphics::Aurora::Font *font = new Graphics::Aurora::Font("fnt_galahad14");
 	Graphics::Aurora::Text *text = 0;
@@ -188,6 +199,14 @@ void NWNEngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
+}
+
+Graphics::Aurora::Model *NWNEngine::loadModel(const Common::UString &resref) {
+	Common::SeekableReadStream *mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
+	if (!mdl)
+		throw Common::Exception("No such model");
+
+	return new Graphics::Aurora::Model_NWN(*mdl);
 }
 
 } // End of namespace NWN

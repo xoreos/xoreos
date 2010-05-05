@@ -38,11 +38,11 @@ Model::Model() : _superModel(0), _class(kClassOther), _scale(1.0), _rootNode(0) 
 }
 
 Model::~Model() {
-	for (NodeMap::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
-		if (node->second) {
-			delete node->second->texture;
+	for (std::list<Node *>::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
+		if (*node) {
+			delete (*node)->texture;
 
-			delete node->second;
+			delete *node;
 		}
 	}
 }
@@ -62,12 +62,12 @@ void Model::render() {
 	if (!_rootNode)
 		return;
 
-	glTranslatef(0.0, -1.0, -3.0);
+	glTranslatef(0.0, -0.0, -3.0);
 
 	float rotate = EventMan.getTimestamp() * 0.1;
 
 	glRotatef(rotate, 0.0, 1.0, 0.0);
-	glScalef(1.0, 1.0, 1.0);
+	glScalef(2.0, 2.0, 2.0);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 

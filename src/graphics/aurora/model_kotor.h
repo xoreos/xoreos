@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/aurora/model_nwn.h
- *  Loading MDL files found in Neverwinter Nights.
+/** @file graphics/aurora/model_kotor.h
+ *  Loading MDL files found in Star Wars: Knights of the Old Republic.
  */
 
-#ifndef GRAPHICS_AURORA_MODEL_NWN_H
-#define GRAPHICS_AURORA_MODEL_NWN_H
+#ifndef GRAPHICS_AURORA_MODEL_KOTOR_H
+#define GRAPHICS_AURORA_MODEL_KOTOR_H
 
 #include <vector>
 
@@ -23,20 +23,19 @@
 
 namespace Common {
 	class SeekableReadStream;
-	class StreamTokenizer;
 }
 
 namespace Graphics {
 
 namespace Aurora {
 
-class Model_NWN : public Model {
+class Model_KotOR : public Model {
 public:
-	Model_NWN(Common::SeekableReadStream &mdl);
-	~Model_NWN();
+	Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx);
+	~Model_KotOR();
 
 private:
-	struct FaceNWN {
+	struct FaceKotOR {
 		int vertices[3];
 		int verticesTexture[3];
 
@@ -46,51 +45,36 @@ private:
 
 	struct ParserContext {
 		Common::SeekableReadStream *mdl;
+		Common::SeekableReadStream *mdx;
 
 		Node *node;
 
 		std::vector<float> vertices;
 		std::vector<float> verticesTexture;
-		std::vector<FaceNWN> faces;
+		std::vector<FaceKotOR> faces;
 
 		uint32 offModelData;
 		uint32 offRawData;
 
-		ParserContext(Common::SeekableReadStream &stream);
+		ParserContext(Common::SeekableReadStream &mdlStream, Common::SeekableReadStream &mdxStream);
 		~ParserContext();
 	};
 
-	typedef std::map<Common::UString, Node *> NodeMap;
+	std::vector<Common::UString> _names;
 
-	NodeMap _nodeMap;
+	void load(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx);
 
-	Common::StreamTokenizer *_tokenizeASCII;
-
-	void load(Common::SeekableReadStream &mdl);
-
-	void loadASCII(ParserContext &ctx);
-	void loadBinary(ParserContext &ctx);
-
-	void parseNodeASCII(ParserContext &ctx, const Common::UString &type, const Common::UString &name);
-	void parseAnimASCII(ParserContext &ctx);
-
-	Classification parseClassification(Common::UString classification);
-	void parseFloats(const std::vector<Common::UString> &strings, float *floats, int n, int start);
-
-	void parseVerticesASCII(ParserContext &ctx, std::vector<float> &vertices, int n);
-	void parseFacesASCII   (ParserContext &ctx, int n);
-	void parseWeightsASCII (ParserContext &ctx, int n);
-
-	void parseConstraintsASCII(ParserContext &ctx, std::vector<float> &constraints, int n);
-
-	void parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent);
-	void parseMeshBinary(ParserContext &ctx);
+	void parseNode(ParserContext &ctx, uint32 offset, Node *parent);
+	void parseMesh(ParserContext &ctx);
 
 	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);
 	void readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
 			std::vector<uint32> &offsets);
 	void readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
 			std::vector<float> &floats);
+
+	void readStrings(Common::SeekableReadStream &mdl, const std::vector<uint32> &offsets,
+			uint32 offset, std::vector<Common::UString> &strings);
 
 	void parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
 
@@ -101,4 +85,4 @@ private:
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_MODEL_NWN_H
+#endif // GRAPHICS_AURORA_MODEL_KOTOR_H

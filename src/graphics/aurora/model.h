@@ -69,6 +69,8 @@ protected:
 		Node *parent;
 		std::list<Node *> children;
 
+		Common::UString name;
+
 		float position[3];
 		float orientation[4];
 
@@ -116,15 +118,13 @@ protected:
 		Node();
 	};
 
-	typedef std::map<Common::UString, Node *> NodeMap;
-
 	Common::UString _name;
 
 	Model *_superModel;
 	Classification _class;
 	float _scale;
 
-	NodeMap _nodes;
+	std::list<Node *> _nodes;
 
 	Node *_rootNode;
 

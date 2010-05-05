@@ -104,6 +104,8 @@ Model_NWN::Model_NWN(Common::SeekableReadStream &mdl) {
 
 	load(mdl);
 
+	_nodeMap.clear();
+
 	RequestMan.sync();
 }
 
@@ -174,6 +176,8 @@ void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, 
 
 	ctx.node = new Node;
 
+	ctx.node->name = name;
+
 	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin"))
 		ctx.node->render = true;
 	else
@@ -207,8 +211,8 @@ void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, 
 			continue;
 		} else if (line[0] == "parent") {
 			if (line[1] != "NULL") {
-				NodeMap::iterator it = _nodes.find(line[1]);
-				if (it == _nodes.end())
+				NodeMap::iterator it = _nodeMap.find(line[1]);
+				if (it == _nodeMap.end())
 					throw Common::Exception("Non-existent parent node");
 
 				ctx.node->parent = it->second;
@@ -312,7 +316,8 @@ void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, 
 
 	processNode(ctx);
 
-	_nodes.insert(std::make_pair(name, ctx.node));
+	_nodes.push_back(ctx.node);
+	_nodeMap.insert(std::make_pair(name, ctx.node));
 	ctx.node = 0;
 }
 
@@ -525,9 +530,7 @@ void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent)
 	uint32 inheritColorFlag = ctx.mdl->readUint32LE();
 	uint32 partNumber       = ctx.mdl->readUint32LE();
 
-	Common::UString name;
-
-	name.readASCII(*ctx.mdl, 32);
+	ctx.node->name.readASCII(*ctx.mdl, 32);
 
 	ctx.mdl->skip(8); // Parent pointers
 
@@ -592,13 +595,13 @@ void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent)
 		ctx.mdl->skip(0x4);
 	}
 
-	warning("%d: \"%s\", %X, %d", partNumber, name.c_str(), flags, childrenCount);
+	warning("%d: \"%s\", %X, %d", partNumber, ctx.node->name.c_str(), flags, childrenCount);
 
 	processNode(ctx);
 
 	parent = ctx.node;
 
-	_nodes.insert(std::make_pair(name, ctx.node));
+	_nodes.push_back(ctx.node);
 	ctx.node = 0;
 
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child)
