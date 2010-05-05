@@ -67,14 +67,14 @@ void Model::render() {
 	float rotate = EventMan.getTimestamp() * 0.1;
 
 	glRotatef(rotate, 0.0, 1.0, 0.0);
-	glScalef(2.0, 2.0, 2.0);
+	glScalef(0.05, 0.05, 0.05);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glRotatef(90.0, -1.0, 0.0, 0.0);
+	glRotatef(60.0, -1.0, 0.0, 0.0);
 
 	glPushMatrix();
 
