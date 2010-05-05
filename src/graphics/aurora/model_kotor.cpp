@@ -170,7 +170,7 @@ void Model_KotOR::load(Common::SeekableReadStream &mdl, Common::SeekableReadStre
 
 	readStrings(*ctx.mdl, nameOffset, ctx.offModelData, _names);
 
-	warning("\"%s\", %d, %X, %d, \"%s\"", _name.c_str(), nodeCount, classification, fogged, superModelName.c_str());
+	//warning("\"%s\", %d, %X, %d, \"%s\"", _name.c_str(), nodeCount, classification, fogged, superModelName.c_str());
 
 	parseNode(ctx, nodeHeadPointer + ctx.offModelData, 0);
 }
@@ -195,10 +195,10 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	ctx.node->position   [0] = ctx.mdl->readIEEEFloatLE();
 	ctx.node->position   [1] = ctx.mdl->readIEEEFloatLE();
 	ctx.node->position   [2] = ctx.mdl->readIEEEFloatLE();
+	ctx.node->orientation[3] = Common::rad2deg(acos(ctx.mdl->readIEEEFloatLE()) * 2.0);
 	ctx.node->orientation[0] = ctx.mdl->readIEEEFloatLE();
 	ctx.node->orientation[1] = ctx.mdl->readIEEEFloatLE();
 	ctx.node->orientation[2] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->orientation[3] = ctx.mdl->readIEEEFloatLE();
 
 	uint32 childrenStart, childrenCount;
 	readArray(*ctx.mdl, childrenStart, childrenCount);
@@ -215,7 +215,7 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	std::vector<float> controllerData;
 	readFloatsArray(*ctx.mdl, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
 
-	// parseNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
+	parseNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
 
 	if ((flags & 0xFC00) != 0)
 		throw Common::Exception("Unknown node flags %04X", flags);
@@ -262,7 +262,7 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	if (nodeNumber < _names.size())
 		ctx.node->name = _names[nodeNumber];
 
-	warning("%d: \"%s\", %X, %d, %d", nodeNumber, ctx.node->name.c_str(), flags, childrenCount, ctx.node->render);
+	//warning("%d: \"%s\", %X, %d, %d", nodeNumber, ctx.node->name.c_str(), flags, childrenCount, ctx.node->render);
 
 	processNode(ctx);
 
@@ -464,6 +464,7 @@ void Model_KotOR::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32
 
 	// TODO: Implement this properly :P
 
+	warning("Keys: %d, Data: %d", count, data.size());
 	for (uint32 i = 0; i < count; i++) {
 		uint32 type        = ctx.mdl->readUint32LE();
 		uint16 rowCount    = ctx.mdl->readUint16LE();
@@ -472,9 +473,11 @@ void Model_KotOR::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32
 		uint8  columnCount = ctx.mdl->readByte();
 		ctx.mdl->skip(1);
 
-		if (columnCount == 0xFF)
-			throw Common::Exception("TODO: Model_KotOR::parseNodeControllers(): columnCount == 0xFF");
+		warning("%3d: %8d, %8dx%8d, %8d; %8d", i, type, rowCount, columnCount, timeIndex, dataIndex);
+		if (columnCount == 0xFFFF)
+			throw Common::Exception("TODO: Model_KotOR::parseNodeControllers(): columnCount == 0xFFFF");
 
+		/*
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)
 				throw Common::Exception("Position controller with %d values", columnCount);
@@ -492,6 +495,7 @@ void Model_KotOR::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32
 			ctx.node->orientation[2] = data[dataIndex + 2];
 			ctx.node->orientation[3] = data[dataIndex + 3];
 		}
+		*/
 
 	}
 
