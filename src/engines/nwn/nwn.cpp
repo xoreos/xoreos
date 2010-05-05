@@ -84,21 +84,17 @@ NWNEngine::~NWNEngine() {
 }
 
 void NWNEngine::run(const Common::UString &target) {
-	SoundMan.setListenerGain(0);
-
 	_baseDirectory = target;
 
 	init();
 
 	status("Successfully initialized the engine");
 
-	/*
 	playVideo("atarilogo");
 	playVideo("biowarelogo");
 	playVideo("wotclogo");
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
-	*/
 
 	Sound::ChannelHandle channel;
 

@@ -68,21 +68,17 @@ KotOREngine::~KotOREngine() {
 }
 
 void KotOREngine::run(const Common::UString &target) {
-	SoundMan.setListenerGain(0);
-
 	_baseDirectory = target;
 
 	init();
 
 	status("Successfully initialized the engine");
 
-	/*
 	playVideo("leclogo");
 	playVideo("biologo");
 	playVideo("legal");
 
 	playVideo("01a");
-	*/
 
 	Sound::ChannelHandle channel;
 

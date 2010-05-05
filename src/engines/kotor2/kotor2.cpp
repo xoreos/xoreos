@@ -68,21 +68,17 @@ KotOR2Engine::~KotOR2Engine() {
 }
 
 void KotOR2Engine::run(const Common::UString &target) {
-	SoundMan.setListenerGain(0);
-
 	_baseDirectory = target;
 
 	init();
 
 	status("Successfully initialized the engine");
 
-	/*
 	playVideo("leclogo");
 	playVideo("obsidianent");
 	playVideo("legal");
 
 	playVideo("permov01");
-	*/
 
 	Sound::ChannelHandle channel;
 
