@@ -811,7 +811,7 @@ void Model_NWN::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 c
 			ctx.node->orientation[0] = data[dataIndex + 0];
 			ctx.node->orientation[1] = data[dataIndex + 1];
 			ctx.node->orientation[2] = data[dataIndex + 2];
-			ctx.node->orientation[3] = data[dataIndex + 3];
+			ctx.node->orientation[3] = Common::rad2deg(acos(data[dataIndex + 3]) * 2.0);
 		}
 
 	}
