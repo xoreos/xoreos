@@ -170,8 +170,6 @@ void Model_KotOR::load(Common::SeekableReadStream &mdl, Common::SeekableReadStre
 
 	readStrings(*ctx.mdl, nameOffset, ctx.offModelData, _names);
 
-	//warning("\"%s\", %d, %X, %d, \"%s\"", _name.c_str(), nodeCount, classification, fogged, superModelName.c_str());
-
 	parseNode(ctx, nodeHeadPointer + ctx.offModelData, 0);
 }
 
@@ -261,8 +259,6 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 
 	if (nodeNumber < _names.size())
 		ctx.node->name = _names[nodeNumber];
-
-	//warning("%d: \"%s\", %X, %d, %d", nodeNumber, ctx.node->name.c_str(), flags, childrenCount, ctx.node->render);
 
 	processNode(ctx);
 
@@ -364,7 +360,7 @@ void Model_KotOR::parseMesh(ParserContext &ctx) {
 	uint32 endPos = ctx.mdl->pos();
 
 	if (textureCount > 1)
-		warning("Model_KotOR::parseMesh(): textureCount == %d (\"%s\" \"%s\")", textureCount,
+		warning("Model_KotOR::parseMesh(): textureCount == %d (\"%s\", \"%s\")", textureCount,
 				textures[0].c_str(), textures[1].c_str());
 
 	ctx.node->bitmap = textures[0];
@@ -464,7 +460,6 @@ void Model_KotOR::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32
 
 	// TODO: Implement this properly :P
 
-	warning("Keys: %d, Data: %d", count, data.size());
 	for (uint32 i = 0; i < count; i++) {
 		uint32 type        = ctx.mdl->readUint32LE();
 		uint16 rowCount    = ctx.mdl->readUint16LE();
@@ -473,7 +468,6 @@ void Model_KotOR::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32
 		uint8  columnCount = ctx.mdl->readByte();
 		ctx.mdl->skip(1);
 
-		warning("%3d: %8d, %8dx%8d, %8d; %8d", i, type, rowCount, columnCount, timeIndex, dataIndex);
 		if (columnCount == 0xFFFF)
 			throw Common::Exception("TODO: Model_KotOR::parseNodeControllers(): columnCount == 0xFFFF");
 

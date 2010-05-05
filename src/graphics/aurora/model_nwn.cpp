@@ -228,7 +228,6 @@ void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, 
 			parseFloats(line, ctx.node->orientation, 4, 1);
 
 			ctx.node->orientation[3] = Common::rad2deg(ctx.node->orientation[3]);
-			warning("%f, %f, %f, %f", ctx.node->orientation[3], ctx.node->orientation[0], ctx.node->orientation[1], ctx.node->orientation[2]);
 		} else if (line[0] == "wirecolor") {
 			parseFloats(line, ctx.node->wirecolor, 3, 1);
 		} else if (line[0] == "ambient") {
@@ -509,8 +508,6 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	superModelName.readASCII(*ctx.mdl, 64);
 
-	warning("\"%s\", %d, %X, %d, \"%s\"", _name.c_str(), nodeCount, classification, fogged, superModelName.c_str());
-
 	parseNodeBinary(ctx, nodeHeadPointer + ctx.offModelData, 0);
 }
 
@@ -594,8 +591,6 @@ void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent)
 		// TODO: AABB
 		ctx.mdl->skip(0x4);
 	}
-
-	warning("%d: \"%s\", %X, %d", partNumber, ctx.node->name.c_str(), flags, childrenCount);
 
 	processNode(ctx);
 
@@ -696,7 +691,8 @@ void Model_NWN::parseMeshBinary(ParserContext &ctx) {
 	ctx.mdl->skip(4); // Unknown
 
 	if (textureCount > 1)
-		warning("Model_NWN::parseMeshBinary(): textureCount == %d", textureCount);
+		warning("Model_NWN::parseMeshBinary(): textureCount == %d (\"%s\", \"%s\", \"%s\", \"%s\")",
+				textureCount, textures[0].c_str(), textures[1].c_str(), textures[2].c_str(), textures[3].c_str());
 
 	ctx.node->bitmap = textures[0];
 
@@ -793,8 +789,8 @@ void Model_NWN::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 c
 		uint8  columnCount = ctx.mdl->readByte();
 		ctx.mdl->skip(1);
 
-		if (columnCount == 0xFF)
-			throw Common::Exception("TODO: Model_NWN::parseNodeControllers(): columnCount == 0xFF");
+		if (columnCount == 0xFFFF)
+			throw Common::Exception("TODO: Model_NWN::parseNodeControllers(): columnCount == 0xFFFF");
 
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)
