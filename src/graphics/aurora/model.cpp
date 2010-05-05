@@ -62,19 +62,19 @@ void Model::render() {
 	if (!_rootNode)
 		return;
 
-	glTranslatef(0.0, -0.0, -3.0);
+	glTranslatef(0.0, -1.0, -3.0);
 
 	float rotate = EventMan.getTimestamp() * 0.1;
 
 	glRotatef(rotate, 0.0, 1.0, 0.0);
-	glScalef(0.05, 0.05, 0.05);
+	glScalef(1.0, 1.0, 1.0);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glRotatef(60.0, -1.0, 0.0, 0.0);
+	glRotatef(90.0, -1.0, 0.0, 0.0);
 
 	glPushMatrix();
 
