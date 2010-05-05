@@ -127,6 +127,8 @@ Common::SeekableReadStream *NDSFile::getResource(uint32 index) const {
 	open(nds);
 
 	const IResource &res = _iResources[index];
+	if (res.size == 0)
+		return 0;
 
 	if (!nds.seek(res.offset))
 		throw Common::Exception(Common::kSeekError);

@@ -127,6 +127,8 @@ Common::SeekableReadStream *BIFFile::getResource(uint32 index) const {
 	open(bif);
 
 	const IResource &res = _iResources[index];
+	if (res.size == 0)
+		return 0;
 
 	if (!bif.seek(res.offset))
 		throw Common::Exception(Common::kSeekError);

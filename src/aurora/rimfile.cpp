@@ -99,6 +99,8 @@ Common::SeekableReadStream *RIMFile::getResource(uint32 index) const {
 	open(rim);
 
 	const IResource &res = _iResources[index];
+	if (res.size == 0)
+		return 0;
 
 	if (!rim.seek(res.offset))
 		throw Common::Exception(Common::kSeekError);
