@@ -9,6 +9,7 @@ noinst_HEADERS = videoplayer.h \
                  cube.h \
                  model.h \
                  model_nwn.h \
+                 model_nwn2.h \
                  model_kotor.h
 
 libaurora_la_SOURCES = videoplayer.cpp \
@@ -18,4 +19,5 @@ libaurora_la_SOURCES = videoplayer.cpp \
                        cube.cpp \
                        model.cpp \
                        model_nwn.cpp \
+                       model_nwn2.cpp \
                        model_kotor.cpp

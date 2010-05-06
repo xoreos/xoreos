@@ -24,6 +24,7 @@
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/font.h"
 #include "graphics/aurora/text.h"
+#include "graphics/aurora/model_nwn2.h"
 
 #include "sound/sound.h"
 
@@ -99,8 +100,13 @@ void NWN2Engine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
+	Graphics::Aurora::Model *model = loadModel("plc_br_mulsantirhouse05");
+
+	model->show();
+
 	Graphics::Aurora::Cube *cube = 0;
 
+	/*
 	try {
 
 		cube = new Graphics::Aurora::Cube("wt_lake01_n");
@@ -108,6 +114,7 @@ void NWN2Engine::run(const Common::UString &target) {
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
+	*/
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
@@ -206,6 +213,14 @@ void NWN2Engine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 100);
+}
+
+Graphics::Aurora::Model *NWN2Engine::loadModel(const Common::UString &resref) {
+	Common::SeekableReadStream *mdb = ResMan.getResource(resref, Aurora::kFileTypeMDB);
+	if (!mdb)
+		throw Common::Exception("No such model");
+
+	return new Graphics::Aurora::Model_NWN2(*mdb);
 }
 
 } // End of namespace NWN2

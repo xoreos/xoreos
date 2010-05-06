@@ -125,8 +125,7 @@ protected:
 	float _scale;
 
 	std::list<Node *> _nodes;
-
-	Node *_rootNode;
+	std::list<Node *> _rootNodes;
 
 	void renderNode(const Node &node);
 };

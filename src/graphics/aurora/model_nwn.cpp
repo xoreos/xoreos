@@ -220,7 +220,7 @@ void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, 
 				ctx.node->parent->children.push_back(ctx.node);
 			} else {
 				ctx.node->parent = 0;
-				_rootNode = ctx.node;
+				_rootNodes.push_back(ctx.node);
 			}
 		} else if (line[0] == "position") {
 			parseFloats(line, ctx.node->position, 3, 1);
@@ -520,7 +520,7 @@ void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent)
 		ctx.node->parent = parent;
 		parent->children.push_back(ctx.node);
 	} else
-		_rootNode = ctx.node;
+		_rootNodes.push_back(ctx.node);
 
 	ctx.mdl->skip(24); // Function pointers
 

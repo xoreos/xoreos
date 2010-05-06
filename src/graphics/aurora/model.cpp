@@ -34,7 +34,7 @@ Model::Node::Node() : parent(0), texture(0), dangly(false), displacement(0), ren
 }
 
 
-Model::Model() : _superModel(0), _class(kClassOther), _scale(1.0), _rootNode(0) {
+Model::Model() : _superModel(0), _class(kClassOther), _scale(1.0) {
 }
 
 Model::~Model() {
@@ -59,15 +59,12 @@ void Model::newFrame() {
 }
 
 void Model::render() {
-	if (!_rootNode)
-		return;
-
 	glTranslatef(0.0, -1.0, -3.0);
 
 	float rotate = EventMan.getTimestamp() * 0.1;
 
 	glRotatef(rotate, 0.0, 1.0, 0.0);
-	glScalef(1.0, 1.0, 1.0);
+	glScalef(0.1, 0.1, 0.1);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 
@@ -76,11 +73,11 @@ void Model::render() {
 
 	glRotatef(90.0, -1.0, 0.0, 0.0);
 
-	glPushMatrix();
-
-	renderNode(*_rootNode);
-
-	glPopMatrix();
+	for (std::list<Node *>::const_iterator node = _rootNodes.begin(); node != _rootNodes.end(); ++node) {
+		glPushMatrix();
+		renderNode(**node);
+		glPopMatrix();
+	}
 }
 
 void Model::renderNode(const Node &node) {

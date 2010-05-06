@@ -184,7 +184,7 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 		ctx.node->parent = parent;
 		parent->children.push_back(ctx.node);
 	} else
-		_rootNode = ctx.node;
+		_rootNodes.push_back(ctx.node);
 
 	uint16 flags      = ctx.mdl->readUint16LE();
 	uint16 superNode  = ctx.mdl->readUint16LE();
