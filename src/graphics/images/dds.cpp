@@ -21,7 +21,7 @@
 
 static const uint32 kDDSID  = MKID_BE('DDS ');
 static const uint32 kDXT1ID = MKID_BE('DXT1');
-static const uint32 kDXT3ID = MKID_BE('DX13');
+static const uint32 kDXT3ID = MKID_BE('DXT3');
 static const uint32 kDXT5ID = MKID_BE('DXT5');
 
 static const uint32 kHeaderFlagsHasMipMaps = 0x00020000;
