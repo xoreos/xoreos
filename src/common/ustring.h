@@ -87,6 +87,8 @@ public:
 
 	iterator findFirst(uint32 c) const;
 
+	bool endsWith(const Common::UString &with) const;
+
 	void truncate(const iterator &it);
 	void trim();
 

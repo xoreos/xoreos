@@ -313,6 +313,26 @@ UString::iterator UString::findFirst(uint32 c) const {
 	return end();
 }
 
+bool UString::endsWith(const Common::UString &with) const {
+	if (with.empty())
+		return true;
+
+	if (empty())
+		return false;
+
+	UString::iterator myIt   = --end();
+	UString::iterator withIt = --with.end();
+
+	while ((myIt != begin()) && (withIt != with.begin()))
+		if (*myIt-- != *withIt--)
+			return false;
+
+	if (withIt == with.begin())
+		return (*myIt == *withIt);
+
+	return false;
+}
+
 void UString::truncate(const iterator &it) {
 	_string.resize(std::distance((std::string::const_iterator) _string.begin(), it.base()));
 	recalculateSize();
