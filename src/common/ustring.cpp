@@ -313,6 +313,26 @@ UString::iterator UString::findFirst(uint32 c) const {
 	return end();
 }
 
+bool UString::beginsWith(const Common::UString &with) const {
+	if (with.empty())
+		return true;
+
+	if (empty())
+		return false;
+
+	UString::iterator myIt   = begin();
+	UString::iterator withIt = with.begin();
+
+	while ((myIt != end()) && (withIt != with.end()))
+		if (*myIt++ != *withIt++)
+			return false;
+
+	if ((myIt == end()) && (withIt != with.end()))
+		return false;
+
+	return true;
+}
+
 bool UString::endsWith(const Common::UString &with) const {
 	if (with.empty())
 		return true;
