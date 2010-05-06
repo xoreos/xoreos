@@ -327,7 +327,9 @@ void DDS::detectFormat(const DDSPixelFormat &format) {
 		throw Common::Exception("Unsupported feature: Palette");
 	else
 		// We'll see if there's more formats in the data files :P
-		throw Common::Exception("Unknown pixel format");
+		throw Common::Exception("Unknown pixel format (%X, %X, %d, %X, %X, %X, %X)",
+				format.flags, format.fourCC, format.bitCount,
+				format.rBitMask, format.gBitMask, format.bBitMask, format.aBitMask);
 }
 
 } // End of namespace Graphics
