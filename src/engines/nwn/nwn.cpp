@@ -96,31 +96,14 @@ void NWNEngine::run(const Common::UString &target) {
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
 
-	Sound::ChannelHandle channel;
+	showLegal();
+	if (EventMan.quitRequested())
+		return;
 
-	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "as_pl_evanglstm1");
-	if (wav) {
-		status("Found a wav. Trying to play it. Turn up your speakers");
-		channel = SoundMan.playSoundFile(wav, Sound::kSoundTypeSFX);
-
-		SoundMan.startChannel(channel);
-	}
-
-	Graphics::Aurora::Model *model = loadModel("pnl_mainmenu");
-
-	model->show();
-
-	Graphics::Aurora::Cube *cube = 0;
-
-/*
-	try {
-
-		cube = new Graphics::Aurora::Cube("ashlw_066");
-
-	} catch (Common::Exception &e) {
-		Common::printException(e);
-	}
-*/
+	// => pre_main.gui
+	Graphics::Aurora::Model *mainMenu = loadModel("pnl_mainmenu", Graphics::Aurora::kModelTypeGUIFront);
+	mainMenu->setPosition(4.760000, 1.370000, 0.000000);
+	mainMenu->show();
 
 	Graphics::Aurora::Font *font = new Graphics::Aurora::Font("fnt_galahad14");
 	Graphics::Aurora::Text *text = 0;
@@ -134,12 +117,12 @@ void NWNEngine::run(const Common::UString &target) {
 		GfxMan.unlockFrame();
 	}
 
-	delete model;
+	mainMenu->hide();
+
+	delete mainMenu;
 
 	delete text;
 	delete font;
-
-	delete cube;
 }
 
 void NWNEngine::init() {
@@ -199,12 +182,38 @@ void NWNEngine::init() {
 	indexOptionalDirectory("override", 0, 0, 30);
 }
 
-Graphics::Aurora::Model *NWNEngine::loadModel(const Common::UString &resref) {
+void NWNEngine::showLegal() {
+	Graphics::Aurora::Model *legal = loadModel("load_legal", Graphics::Aurora::kModelTypeGUIFront);
+	legal->setPosition(4.760000, 1.370000, 0.000000);
+	legal->fadeIn(1000);
+
+	bool end = false;
+	while (!end) {
+		Events::Event event;
+		while (EventMan.pollEvent(event))
+			if (event.type == Events::kEventMouseDown)
+				end = true;
+
+		if (EventMan.quitRequested())
+			end = true;
+
+		if (!end)
+			EventMan.delay(10);
+	}
+
+	legal->hide();
+
+	delete legal;
+}
+
+Graphics::Aurora::Model *NWNEngine::loadModel(const Common::UString &resref,
+		Graphics::Aurora::ModelType type) {
+
 	Common::SeekableReadStream *mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
 	if (!mdl)
 		throw Common::Exception("No such model");
 
-	return new Graphics::Aurora::Model_NWN(*mdl);
+	return new Graphics::Aurora::Model_NWN(*mdl, type);
 }
 
 } // End of namespace NWN

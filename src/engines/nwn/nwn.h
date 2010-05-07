@@ -21,6 +21,7 @@
 
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
+#include "graphics/aurora/model_nwn.h"
 
 namespace Common {
 	class FileList;
@@ -63,7 +64,10 @@ private:
 
 	void init();
 
-	Graphics::Aurora::Model *loadModel(const Common::UString &resref);
+	void showLegal();
+
+	Graphics::Aurora::Model *loadModel(const Common::UString &resref,
+			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject);
 };
 
 } // End of namespace NWN
