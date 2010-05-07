@@ -158,7 +158,7 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool di
 		return 0;
 	}
 
-	Common::SeekableSubReadStream *subStream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), disposeAfterUse);
+	Common::SeekableSubReadStream *subStream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->pos() + size, disposeAfterUse);
 
 	if (type == 17) // MS IMA ADPCM
 		return makeADPCMStream(subStream, true, size, kADPCMMSIma, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
