@@ -76,7 +76,14 @@ void Model::fadeIn(uint32 length) {
 	show();
 }
 
+void Model::fadeOut(uint32 length) {
+	_fadeStart = EventMan.getTimestamp();
+	_fadeStep  = - (1.0 / 100);
+	_fade      = true;
+}
+
 void Model::newFrame() {
+	_distance = -_position[2];
 }
 
 void Model::render() {
@@ -99,11 +106,19 @@ void Model::render() {
 	glColor4f(1.0, 1.0, 1.0, _fadeValue);
 
 	if (_fade) {
-		_fadeValue = (_fadeStep * (EventMan.getTimestamp() - _fadeStart) / 10.0);
+		uint32 now = EventMan.getTimestamp();
+		if ((now - _fadeStart) >= 10) {
+			_fadeValue += _fadeStep * ((now - _fadeStart) / 10.0);
 
-		if (_fadeValue >= 1.0) {
+			_fadeStart = now;
+		}
+
+		if        (_fadeValue > 1.0) {
 			_fade      = false;
 			_fadeValue = 1.0;
+		} else if (_fadeValue < 0.0) {
+			_fade      = false;
+			_fadeValue = 0.0;
 		}
 	}
 

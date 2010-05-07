@@ -59,6 +59,8 @@ public:
 
 	/** Fade in the model for length ms. */
 	void fadeIn(uint32 length);
+	/** Fade out the model for length ms. */
+	void fadeOut(uint32 length);
 
 	// Renderable
 	void newFrame();
