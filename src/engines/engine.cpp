@@ -19,6 +19,8 @@
 #include "common/stream.h"
 #include "common/file.h"
 
+#include "sound/sound.h"
+
 #include "graphics/aurora/videoplayer.h"
 
 #include "aurora/resman.h"
@@ -36,11 +38,14 @@ void Engine::indexMandatoryArchive(Aurora::ArchiveType archive, const Common::US
 	ResMan.addArchive(archive, file, priority);
 }
 
-void Engine::indexOptionalArchive(Aurora::ArchiveType archive, const Common::UString &file, uint32 priority) {
+bool Engine::indexOptionalArchive(Aurora::ArchiveType archive, const Common::UString &file, uint32 priority) {
 	try {
 		ResMan.addArchive(archive, file, priority);
 	} catch (Common::Exception &e) {
+		return false;
 	}
+
+	return true;
 }
 
 void Engine::indexMandatoryDirectory(const Common::UString &dir,
@@ -49,13 +54,16 @@ void Engine::indexMandatoryDirectory(const Common::UString &dir,
 	ResMan.addResourceDir(dir, glob, depth, priority);
 }
 
-void Engine::indexOptionalDirectory(const Common::UString &dir,
+bool Engine::indexOptionalDirectory(const Common::UString &dir,
 		const char *glob, int depth, uint32 priority) {
 
 	try {
 		ResMan.addResourceDir(dir, glob, depth, priority);
 	} catch (Common::Exception &e) {
+		return false;
 	}
+
+	return true;
 }
 
 void Engine::playVideo(const Common::UString &video) {
@@ -66,6 +74,28 @@ void Engine::playVideo(const Common::UString &video) {
 	} catch (Common::Exception &e) {
 		Common::printException(e, "WARNING: ");
 	}
+}
+
+Sound::ChannelHandle Engine::playSound(const Common::UString &sound, Sound::SoundType soundType) {
+	Aurora::ResourceType resType =
+		(soundType == Sound::kSoundTypeMusic) ? Aurora::kResourceMusic : Aurora::kResourceSound;
+
+	Sound::ChannelHandle channel;
+
+	try {
+		Common::SeekableReadStream *soundStream = ResMan.getResource(resType, sound);
+		if (!soundStream)
+			return channel;
+
+		channel = SoundMan.playSoundFile(soundStream, soundType);
+
+		SoundMan.startChannel(channel);
+
+	} catch (Common::Exception &e) {
+		Common::printException(e, "WARNING: ");
+	}
+
+	return channel;
 }
 
 void Engine::dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName) {

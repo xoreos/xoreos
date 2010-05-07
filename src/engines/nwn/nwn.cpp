@@ -90,13 +90,17 @@ void NWNEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	/*
 	playVideo("atarilogo");
 	playVideo("biowarelogo");
 	playVideo("wotclogo");
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
-	*/
+
+	Sound::ChannelHandle menuMusic = _hasXP2 ?
+		playSound("mus_x2theme"   , Sound::kSoundTypeMusic) :
+		playSound("mus_theme_main", Sound::kSoundTypeMusic);
+
+	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
 	Graphics::Aurora::Model *legal = showLegal();
 	if (EventMan.quitRequested()) {
@@ -151,15 +155,15 @@ void NWNEngine::init() {
 	indexOptionalArchive(Aurora::kArchiveKEY, "patch.key", 1);
 
 	// Expansion 1: Shadows of Undrentide (SoU)
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp1.key"     , 2);
+	_hasXP1 = indexOptionalArchive(Aurora::kArchiveKEY, "xp1.key", 2);
 	indexOptionalArchive(Aurora::kArchiveKEY, "xp1patch.key", 3);
 
 	// Expansion 2: Hordes of the Underdark (HotU)
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp2.key"     , 4);
+	_hasXP2 = indexOptionalArchive(Aurora::kArchiveKEY, "xp2.key", 4);
 	indexOptionalArchive(Aurora::kArchiveKEY, "xp2patch.key", 5);
 
 	// Expansion 3: Kingmaker (resources also included in the final 1.69 patch)
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key"     , 6);
+	_hasXP3 = indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key", 6);
 	indexOptionalArchive(Aurora::kArchiveKEY, "xp3patch.key", 7);
 
 	status("Loading high-res texture packs");
