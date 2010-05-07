@@ -22,6 +22,7 @@ namespace Graphics {
 namespace Aurora {
 
 ManagedTexture::ManagedTexture(const Common::UString &name) {
+	referenceCount = 0;
 	texture = new Texture(name);
 }
 
