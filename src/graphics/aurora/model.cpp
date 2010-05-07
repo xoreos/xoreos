@@ -35,7 +35,8 @@ Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true) {
 
 
 Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::RenderableQueue) type)),
-                               _type(type), _superModel(0), _class(kClassOther), _scale(1.0) {
+	_type(type), _superModel(0), _class(kClassOther), _scale(1.0), _fade(false), _fadeStart(0),
+	_fadeValue(1.0), _fadeStep(0.0) {
 
 	_position[0] = 0.0;
 	_position[1] = 0.0;
@@ -66,6 +67,15 @@ void Model::hide() {
 	removeFromQueue();
 }
 
+void Model::fadeIn(uint32 length) {
+	_fade      = true;
+	_fadeStart = EventMan.getTimestamp();
+	_fadeValue = 0.0;
+	_fadeStep  = 1.0 / 100;
+
+	show();
+}
+
 void Model::newFrame() {
 }
 
@@ -86,7 +96,16 @@ void Model::render() {
 
 	glTranslatef(_position[0], _position[1], _position[2]);
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glColor4f(1.0, 1.0, 1.0, _fadeValue);
+
+	if (_fade) {
+		_fadeValue = (_fadeStep * (EventMan.getTimestamp() - _fadeStart) / 10.0);
+
+		if (_fadeValue >= 1.0) {
+			_fade      = false;
+			_fadeValue = 1.0;
+		}
+	}
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);

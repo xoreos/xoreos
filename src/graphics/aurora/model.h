@@ -57,6 +57,9 @@ public:
 	void show(); ///< The model should be rendered.
 	void hide(); ///< The model should not be rendered.
 
+	/** Fade in the model for length ms. */
+	void fadeIn(uint32 length);
+
 	// Renderable
 	void newFrame();
 	void render();
@@ -130,6 +133,11 @@ protected:
 	Model *_superModel;
 	Classification _class;
 	float _scale;
+
+	bool   _fade;
+	uint32 _fadeStart;
+	float  _fadeValue;
+	float  _fadeStep;
 
 	float _position[3];
 
