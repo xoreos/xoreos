@@ -90,13 +90,11 @@ void NWNEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	/*
 	playVideo("atarilogo");
 	playVideo("biowarelogo");
 	playVideo("wotclogo");
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
-	*/
 
 	// Menu music
 	Sound::ChannelHandle menuMusic = _hasXP2 ?
