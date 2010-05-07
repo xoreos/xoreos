@@ -31,7 +31,7 @@ namespace Aurora {
 
 class Model_NWN2 : public Model {
 public:
-	Model_NWN2(Common::SeekableReadStream &mdb);
+	Model_NWN2(Common::SeekableReadStream &mdb, ModelType type = kModelTypeObject);
 	~Model_NWN2();
 
 private:

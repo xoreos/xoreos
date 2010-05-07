@@ -31,7 +31,8 @@ namespace Aurora {
 
 class Model_KotOR : public Model {
 public:
-	Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx, bool kotor2);
+	Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx, bool kotor2,
+			ModelType type = kModelTypeObject);
 	~Model_KotOR();
 
 private:

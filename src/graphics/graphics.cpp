@@ -169,7 +169,7 @@ void GraphicsManager::setupScene() {
 	if (!_screen)
 		throw Common::Exception("No screen initialized");
 
-	glClearColor( 0, 0, 0, 0 );
+	glClearColor(0, 0, 0, 0);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glViewport(0, 0, _screen->w, _screen->h);
@@ -223,19 +223,13 @@ void GraphicsManager::renderScene() {
 	// Clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
 	if (!_videos.list.empty()) {
 		// Got videos, just play those
 
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
-
 		for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video) {
-			glPushMatrix();
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
 
 			(*video)->render();
 
@@ -247,10 +241,7 @@ void GraphicsManager::renderScene() {
 				video = _videos.list.erase(video);
 			}
 
-			glPopMatrix();
 		}
-
-		glPopMatrix();
 
 		SDL_GL_SwapBuffers();
 
@@ -260,6 +251,12 @@ void GraphicsManager::renderScene() {
 
 	Common::StackLock lockObjects(_objects.mutex);
 	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glViewport(0, 0, _screen->w, _screen->h);
+
+	gluPerspective(60.0, ((GLfloat) _screen->w) / ((GLfloat) _screen->h), 1.0, 1000.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -285,18 +282,14 @@ void GraphicsManager::renderScene() {
 	}
 
 	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
 
 	// Draw the front part of the GUI
 	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj) {
-		glPushMatrix();
-		(*obj)->render();
-		glPopMatrix();
-	}
+		glLoadIdentity();
+		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
 
-	glPopMatrix();
+		(*obj)->render();
+	}
 
 	SDL_GL_SwapBuffers();
 
@@ -521,6 +514,15 @@ ListContainer::Queue &GraphicsManager::getListContainerQueue() {
 
 VideoDecoder::Queue &GraphicsManager::getVideoQueue() {
 	return _videos;
+}
+
+Queueable<Renderable>::Queue &GraphicsManager::getRenderableQueue(RenderableQueue queue) {
+	if      (queue == kRenderableQueueObject)
+		return getObjectQueue();
+	else if (queue == kRenderableQueueGUIFront)
+		return getGUIFrontQueue();
+	else
+		throw Common::Exception("Unknown queue");
 }
 
 } // End of namespace Graphics

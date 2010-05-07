@@ -108,6 +108,8 @@ public:
 	ListContainer::Queue &getListContainerQueue();
 	VideoDecoder::Queue &getVideoQueue();
 
+	Queueable<Renderable>::Queue &getRenderableQueue(RenderableQueue queue);
+
 
 // Thread-unsafe functions. Should only ever be called from the main thread.
 public:

@@ -47,6 +47,11 @@ enum PixelDataType {
 	kPixelDataType565  = GL_UNSIGNED_SHORT_5_6_5
 };
 
+enum RenderableQueue {
+	kRenderableQueueObject,
+	kRenderableQueueGUIFront
+};
+
 inline int getBytesPerPixel(PixelFormat format) {
 	if ((format == kPixelFormatRGBA) || (format == kPixelFormatBGRA))
 		return 4;

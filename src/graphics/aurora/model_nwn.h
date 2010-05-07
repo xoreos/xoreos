@@ -32,7 +32,7 @@ namespace Aurora {
 
 class Model_NWN : public Model {
 public:
-	Model_NWN(Common::SeekableReadStream &mdl);
+	Model_NWN(Common::SeekableReadStream &mdl, ModelType type = kModelTypeObject);
 	~Model_NWN();
 
 private:

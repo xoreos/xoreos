@@ -16,6 +16,7 @@
 
 #include "events/events.h"
 
+#include "graphics/graphics.h"
 #include "graphics/aurora/model.h"
 
 namespace Graphics {
@@ -33,7 +34,12 @@ Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true) {
 }
 
 
-Model::Model() : _superModel(0), _class(kClassOther), _scale(1.0) {
+Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::RenderableQueue) type)),
+                               _type(type), _superModel(0), _class(kClassOther), _scale(1.0) {
+
+	_position[0] = 0.0;
+	_position[1] = 0.0;
+	_position[2] = 0.0;
 }
 
 Model::~Model() {
@@ -44,6 +50,12 @@ Model::~Model() {
 			delete *node;
 		}
 	}
+}
+
+void Model::setPosition(float x, float y, float z) {
+	_position[0] = x;
+	_position[1] = y;
+	_position[2] = z;
 }
 
 void Model::show() {
@@ -58,22 +70,34 @@ void Model::newFrame() {
 }
 
 void Model::render() {
-	glTranslatef(0.0, -1.0, -3.0);
+	if (_type == kModelTypeObject) {
+		glTranslatef(0.0, -1.0, -3.0);
 
-	float rotate = EventMan.getTimestamp() * 0.1;
+		float rotate = EventMan.getTimestamp() * 0.1;
 
-	glRotatef(rotate, 0.0, 1.0, 0.0);
-	glScalef(1.2, 1.2, 1.2);
+		glRotatef(rotate, 0.0, 1.0, 0.0);
+		glScalef(1.2, 1.2, 1.2);
+	}
+
+	if (_type == kModelTypeGUIFront) {
+		glScalef(100, 100, 100);
+		glTranslatef(-4.76, -1.37, 0.0);
+	}
+
+	glTranslatef(_position[0], _position[1], _position[2]);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glRotatef(90.0, -1.0, 0.0, 0.0);
+	if (_type == kModelTypeObject)
+		glRotatef(90.0, -1.0, 0.0, 0.0);
 
 	for (std::list<Node *>::const_iterator node = _rootNodes.begin(); node != _rootNodes.end(); ++node) {
 		glPushMatrix();
+		glTranslatef((*node)->position[0], (*node)->position[1], (*node)->position[2]);
+		glRotatef((*node)->orientation[3], (*node)->orientation[0], (*node)->orientation[1], (*node)->orientation[2]);
 		renderNode(**node);
 		glPopMatrix();
 	}

@@ -96,7 +96,7 @@ Model_KotOR::ParserContext::~ParserContext() {
 
 
 Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl,
-		Common::SeekableReadStream &mdx, bool kotor2) : _kotor2(kotor2) {
+		Common::SeekableReadStream &mdx, bool kotor2, ModelType type) : Model(type), _kotor2(kotor2) {
 
 	load(mdl, mdx);
 

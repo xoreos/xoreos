@@ -40,7 +40,7 @@ Model_NWN2::ParserContext::~ParserContext() {
 }
 
 
-Model_NWN2::Model_NWN2(Common::SeekableReadStream &mdb) {
+Model_NWN2::Model_NWN2(Common::SeekableReadStream &mdb, ModelType type) : Model(type) {
 	load(mdb);
 
 	RequestMan.sync();

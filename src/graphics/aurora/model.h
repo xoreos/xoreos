@@ -22,7 +22,7 @@
 #include "common/ustring.h"
 
 #include "graphics/types.h"
-#include "graphics/object.h"
+#include "graphics/renderable.h"
 
 #include "graphics/aurora/textureman.h"
 
@@ -30,7 +30,12 @@ namespace Graphics {
 
 namespace Aurora {
 
-class Model : public Object {
+enum ModelType {
+	kModelTypeObject   = kRenderableQueueObject,
+	kModelTypeGUIFront = kRenderableQueueGUIFront
+};
+
+class Model : public Renderable {
 public:
 	enum Classification {
 		kClassOther     = 0,
@@ -44,8 +49,10 @@ public:
 		kClassMAX
 	};
 
-	Model();
+	Model(ModelType type = kModelTypeObject);
 	~Model();
+
+	void setPosition(float x, float y, float z);
 
 	void show(); ///< The model should be rendered.
 	void hide(); ///< The model should not be rendered.
@@ -116,11 +123,15 @@ protected:
 		Node();
 	};
 
+	ModelType _type;
+
 	Common::UString _name;
 
 	Model *_superModel;
 	Classification _class;
 	float _scale;
+
+	float _position[3];
 
 	std::list<Node *> _nodes;
 	std::list<Node *> _rootNodes;

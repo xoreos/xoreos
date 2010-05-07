@@ -31,7 +31,7 @@ namespace Aurora {
 
 class Model_Witcher : public Model {
 public:
-	Model_Witcher(Common::SeekableReadStream &mdb);
+	Model_Witcher(Common::SeekableReadStream &mdb, ModelType type = kModelTypeObject);
 	~Model_Witcher();
 
 private:

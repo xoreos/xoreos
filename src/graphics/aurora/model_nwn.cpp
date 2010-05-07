@@ -94,7 +94,7 @@ Model_NWN::ParserContext::~ParserContext() {
 }
 
 
-Model_NWN::Model_NWN(Common::SeekableReadStream &mdl) {
+Model_NWN::Model_NWN(Common::SeekableReadStream &mdl, ModelType type) : Model(type) {
 	_tokenizeASCII = new Common::StreamTokenizer(Common::StreamTokenizer::kRuleIgnoreAll);
 
 	_tokenizeASCII->addSeparator(' ');

@@ -55,7 +55,7 @@ Model_Witcher::ParserContext::~ParserContext() {
 }
 
 
-Model_Witcher::Model_Witcher(Common::SeekableReadStream &mdb) {
+Model_Witcher::Model_Witcher(Common::SeekableReadStream &mdb, ModelType type) : Model(type) {
 	load(mdb);
 
 	RequestMan.sync();
