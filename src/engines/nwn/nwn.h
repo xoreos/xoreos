@@ -67,6 +67,7 @@ private:
 
 	Graphics::Aurora::Model *loadModel(const Common::UString &resref,
 			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject);
+	void freeModel(Graphics::Aurora::Model *&model);
 };
 
 } // End of namespace NWN

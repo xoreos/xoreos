@@ -90,11 +90,13 @@ void NWNEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
+	/*
 	playVideo("atarilogo");
 	playVideo("biowarelogo");
 	playVideo("wotclogo");
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
+	*/
 
 	// Menu music
 	Sound::ChannelHandle menuMusic = _hasXP2 ?
@@ -106,8 +108,20 @@ void NWNEngine::run(const Common::UString &target) {
 
 	Graphics::Aurora::Model *legal = showLegal();
 	if (EventMan.quitRequested()) {
-		delete legal;
+		freeModel(legal);
 		return;
+	}
+
+	Graphics::Aurora::Model *xp1Text = 0, *xp2Text = 0;
+	if (_hasXP1) {
+		xp1Text = loadModel("ctl_xp1_text", Graphics::Aurora::kModelTypeGUIFront);
+		xp1Text->setPosition(6.0, 1.38, 0.5);
+		xp1Text->show();
+	}
+	if (_hasXP2) {
+		xp2Text = loadModel("ctl_xp2_text", Graphics::Aurora::kModelTypeGUIFront);
+		xp2Text->setPosition(6.0, -0.10, 0.5);
+		xp2Text->show();
 	}
 
 	// => pre_main.gui
@@ -127,11 +141,12 @@ void NWNEngine::run(const Common::UString &target) {
 		GfxMan.unlockFrame();
 	}
 
-	mainMenu->hide();
+	freeModel(xp1Text);
+	freeModel(xp2Text);
 
-	delete legal;
+	freeModel(legal);
 
-	delete mainMenu;
+	freeModel(mainMenu);
 
 	delete text;
 	delete font;
@@ -205,9 +220,7 @@ Graphics::Aurora::Model *NWNEngine::showLegal() {
 		Events::Event event;
 		while (EventMan.pollEvent(event)) {
 			if (event.type == Events::kEventMouseDown) {
-				legal->hide();
-
-				delete legal;
+				freeModel(legal);
 				return 0;
 			}
 		}
@@ -236,6 +249,16 @@ Graphics::Aurora::Model *NWNEngine::loadModel(const Common::UString &resref,
 		throw Common::Exception("No such model");
 
 	return new Graphics::Aurora::Model_NWN(*mdl, type);
+}
+
+void NWNEngine::freeModel(Graphics::Aurora::Model *&model) {
+	if (!model)
+		return;
+
+	model->hide();
+	delete model;
+
+	model = 0;
 }
 
 } // End of namespace NWN
