@@ -120,6 +120,8 @@ void NWN2Engine::run(const Common::UString &target) {
 		EventMan.delay(10);
 	}
 
+	delete model;
+
 	delete cube;
 }
 

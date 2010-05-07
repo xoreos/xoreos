@@ -118,6 +118,8 @@ void KotOREngine::run(const Common::UString &target) {
 		GfxMan.unlockFrame();
 	}
 
+	delete model;
+
 	delete text;
 	delete font;
 
