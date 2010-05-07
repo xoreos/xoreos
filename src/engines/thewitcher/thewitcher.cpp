@@ -19,6 +19,7 @@
 #include "common/filepath.h"
 
 #include "graphics/aurora/cube.h"
+#include "graphics/aurora/model_witcher.h"
 
 #include "sound/sound.h"
 
@@ -96,8 +97,13 @@ void TheWitcherEngine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
+	Graphics::Aurora::Model *model = loadModel("cm_naked3");
+
+	model->show();
+
 	Graphics::Aurora::Cube *cube = 0;
 
+	/*
 	try {
 
 		cube = new Graphics::Aurora::Cube("wilk");
@@ -105,6 +111,7 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
+	*/
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
@@ -149,6 +156,14 @@ void TheWitcherEngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 50);
+}
+
+Graphics::Aurora::Model *TheWitcherEngine::loadModel(const Common::UString &resref) {
+	Common::SeekableReadStream *mdb = ResMan.getResource(resref, Aurora::kFileTypeMDB);
+	if (!mdb)
+		throw Common::Exception("No such model");
+
+	return new Graphics::Aurora::Model_Witcher(*mdb);
 }
 
 } // End of namespace TheWitcher

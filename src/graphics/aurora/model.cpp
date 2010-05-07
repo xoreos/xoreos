@@ -64,7 +64,7 @@ void Model::render() {
 	float rotate = EventMan.getTimestamp() * 0.1;
 
 	glRotatef(rotate, 0.0, 1.0, 0.0);
-	glScalef(0.1, 0.1, 0.1);
+	glScalef(1.2, 1.2, 1.2);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 
