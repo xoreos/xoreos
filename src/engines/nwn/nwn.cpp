@@ -96,10 +96,12 @@ void NWNEngine::run(const Common::UString &target) {
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
 
+	// Menu music
 	Sound::ChannelHandle menuMusic = _hasXP2 ?
-		playSound("mus_x2theme"   , Sound::kSoundTypeMusic) :
-		playSound("mus_theme_main", Sound::kSoundTypeMusic);
+		playSound("mus_x2theme"   , Sound::kSoundTypeMusic, true) :
+		playSound("mus_theme_main", Sound::kSoundTypeMusic, true);
 
+	// Start sound
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
 	Graphics::Aurora::Model *legal = showLegal();

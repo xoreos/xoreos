@@ -76,7 +76,7 @@ void Engine::playVideo(const Common::UString &video) {
 	}
 }
 
-Sound::ChannelHandle Engine::playSound(const Common::UString &sound, Sound::SoundType soundType) {
+Sound::ChannelHandle Engine::playSound(const Common::UString &sound, Sound::SoundType soundType, bool loop) {
 	Aurora::ResourceType resType =
 		(soundType == Sound::kSoundTypeMusic) ? Aurora::kResourceMusic : Aurora::kResourceSound;
 
@@ -87,7 +87,7 @@ Sound::ChannelHandle Engine::playSound(const Common::UString &sound, Sound::Soun
 		if (!soundStream)
 			return channel;
 
-		channel = SoundMan.playSoundFile(soundStream, soundType);
+		channel = SoundMan.playSoundFile(soundStream, soundType, loop);
 
 		SoundMan.startChannel(channel);
 

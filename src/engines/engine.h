@@ -56,7 +56,7 @@ protected:
 	void playVideo(const Common::UString &video);
 
 	/** Play this sound resource. */
-	Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType soundType);
+	Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType soundType, bool loop = false);
 
 	/** Debug method to quickly dump a stream to disk. */
 	void dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName);
