@@ -24,11 +24,11 @@
 #include "graphics/types.h"
 #include "graphics/object.h"
 
+#include "graphics/aurora/textureman.h"
+
 namespace Graphics {
 
 namespace Aurora {
-
-class Texture;
 
 class Model : public Object {
 public:
@@ -80,9 +80,7 @@ protected:
 		float specular[3];
 		float shininess;
 
-		Common::UString bitmap;
-
-		Texture *texture;
+		TextureHandle texture;
 
 		bool dangly;
 

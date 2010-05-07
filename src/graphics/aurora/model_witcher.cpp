@@ -373,9 +373,9 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 				while (n-- > 0)
 					it++;
 
-				ctx.node->bitmap.clear();
+				ctx.texture.clear();
 				while (it != line->end())
-					ctx.node->bitmap += *it++;
+					ctx.texture += *it++;
 			}
 		}
 
@@ -413,13 +413,13 @@ void Model_Witcher::processNode(ParserContext &ctx) {
 	}
 
 	try {
-		if (!ctx.node->bitmap.empty() && (ctx.node->bitmap != "NULL"))
-			ctx.node->texture = new Texture(ctx.node->bitmap);
+		if (!ctx.texture.empty() && (ctx.texture != "NULL"))
+			ctx.node->texture = TextureMan.get(ctx.texture);
 	} catch (...) {
-		ctx.node->bitmap.clear();
-		ctx.node->texture = 0;
+		ctx.node->texture.clear();
 	}
 
+	ctx.texture.clear();
 	ctx.vertices.clear();
 	ctx.verticesTexture.clear();
 	ctx.faces.clear();

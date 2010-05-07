@@ -51,6 +51,8 @@ private:
 		uint32 offTexData;
 		uint32 texDatasize;
 
+		Common::UString texture;
+
 		std::vector<float>  vertices;
 		std::vector<float>  verticesTexture;
 		std::vector<uint32> faces;

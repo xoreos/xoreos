@@ -17,13 +17,12 @@
 #include "events/events.h"
 
 #include "graphics/aurora/model.h"
-#include "graphics/aurora/texture.h"
 
 namespace Graphics {
 
 namespace Aurora {
 
-Model::Node::Node() : parent(0), texture(0), dangly(false), displacement(0), render(true) {
+Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true) {
 	position   [0] = 0;
 	position   [1] = 0;
 	position   [2] = 0;
@@ -40,7 +39,7 @@ Model::Model() : _superModel(0), _class(kClassOther), _scale(1.0) {
 Model::~Model() {
 	for (std::list<Node *>::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
 		if (*node) {
-			delete (*node)->texture;
+			TextureMan.release((*node)->texture);
 
 			delete *node;
 		}
@@ -82,10 +81,7 @@ void Model::render() {
 
 void Model::renderNode(const Node &node) {
 	if (node.render) {
-		if (node.texture)
-			glBindTexture(GL_TEXTURE_2D, node.texture->getID());
-		else
-			glBindTexture(GL_TEXTURE_2D, 0);
+		TextureMan.set(node.texture);
 
 		glBegin(GL_TRIANGLES);
 

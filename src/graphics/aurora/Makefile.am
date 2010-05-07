@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libaurora.la
 
 noinst_HEADERS = videoplayer.h \
                  texture.h \
+                 textureman.h \
                  font.h \
                  text.h \
                  cube.h \
@@ -15,6 +16,7 @@ noinst_HEADERS = videoplayer.h \
 
 libaurora_la_SOURCES = videoplayer.cpp \
                        texture.cpp \
+                       textureman.cpp \
                        font.cpp \
                        text.cpp \
                        cube.cpp \

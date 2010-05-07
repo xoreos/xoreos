@@ -21,7 +21,6 @@
 #include "events/requests.h"
 
 #include "graphics/aurora/model_nwn.h"
-#include "graphics/aurora/texture.h"
 
 static const int kNodeFlagHasHeader    = 0x00000001;
 static const int kNodeFlagHasLight     = 0x00000002;
@@ -290,7 +289,7 @@ void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, 
 			line[1].parse(n);
 			parseWeightsASCII(ctx, n);
 		} else if (line[0] == "bitmap") {
-			ctx.node->bitmap = line[1];
+			ctx.texture = line[1];
 		} else if (line[0] == "verts") {
 			int n;
 
@@ -694,7 +693,7 @@ void Model_NWN::parseMeshBinary(ParserContext &ctx) {
 		warning("Model_NWN::parseMeshBinary(): textureCount == %d (\"%s\", \"%s\", \"%s\", \"%s\")",
 				textureCount, textures[0].c_str(), textures[1].c_str(), textures[2].c_str(), textures[3].c_str());
 
-	ctx.node->bitmap = textures[0];
+	ctx.texture = textures[0];
 
 	if (vertexOffset != 0xFFFFFFFF) {
 		ctx.mdl->seekTo(vertexOffset + ctx.offRawData);
@@ -868,13 +867,13 @@ void Model_NWN::processNode(ParserContext &ctx) {
 	}
 
 	try {
-		if (!ctx.node->bitmap.empty() && (ctx.node->bitmap != "NULL"))
-			ctx.node->texture = new Texture(ctx.node->bitmap);
+		if (!ctx.texture.empty() && (ctx.texture != "NULL"))
+			ctx.node->texture = TextureMan.get(ctx.texture);
 	} catch (...) {
-		ctx.node->bitmap.clear();
-		ctx.node->texture = 0;
+		ctx.node->texture.clear();
 	}
 
+	ctx.texture.clear();
 	ctx.vertices.clear();
 	ctx.verticesTexture.clear();
 	ctx.faces.clear();

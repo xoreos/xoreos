@@ -368,7 +368,7 @@ void Model_KotOR::parseMesh(ParserContext &ctx) {
 		warning("Model_KotOR::parseMesh(): textureCount == %d (\"%s\", \"%s\")", textureCount,
 				textures[0].c_str(), textures[1].c_str());
 
-	ctx.node->bitmap = textures[0];
+	ctx.texture = textures[0];
 
 	ctx.vertices.resize(3 * vertexCount);
 	ctx.verticesTexture.resize(3 * vertexCount);
@@ -554,13 +554,13 @@ void Model_KotOR::processNode(ParserContext &ctx) {
 	}
 
 	try {
-		if (!ctx.node->bitmap.empty() && (ctx.node->bitmap != "NULL"))
-			ctx.node->texture = new Texture(ctx.node->bitmap);
+		if (!ctx.texture.empty() && (ctx.texture != "NULL"))
+			ctx.node->texture = TextureMan.get(ctx.texture);
 	} catch (...) {
-		ctx.node->bitmap.clear();
-		ctx.node->texture = 0;
+		ctx.node->texture.clear();
 	}
 
+	ctx.texture.clear();
 	ctx.vertices.clear();
 	ctx.verticesTexture.clear();
 	ctx.faces.clear();

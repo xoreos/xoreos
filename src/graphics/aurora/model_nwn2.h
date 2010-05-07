@@ -45,6 +45,8 @@ private:
 
 		Node *node;
 
+		Common::UString texture;
+
 		std::vector<float>  vertices;
 		std::vector<float>  verticesTexture;
 		std::vector<uint16> faces;

@@ -21,6 +21,8 @@
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
+#include "graphics/aurora/textureman.h"
+
 #include "events/events.h"
 
 #include "engines/enginemanager.h"
@@ -123,6 +125,7 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target) co
 		delete engine;
 		// Clean up after the engine
 		ResMan.clear();
+		TextureMan.clear();
 
 		throw;
 	}
@@ -131,6 +134,7 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target) co
 
 	// Clean up after the engine
 	ResMan.clear();
+	TextureMan.clear();
 }
 
 } // End of namespace Engines

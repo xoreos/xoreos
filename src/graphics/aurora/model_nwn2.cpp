@@ -141,7 +141,7 @@ void Model_NWN2::parseRigid(ParserContext &ctx, uint32 offset) {
 		ctx.faces.push_back(ctx.mdb->readUint16LE());
 	}
 
-	ctx.node->bitmap = diffuseMap;
+	ctx.texture = diffuseMap;
 
 	processNode(ctx);
 
@@ -224,7 +224,7 @@ void Model_NWN2::parseSkin(ParserContext &ctx, uint32 offset) {
 		ctx.faces.push_back(ctx.mdb->readUint16LE());
 	}
 
-	ctx.node->bitmap = diffuseMap;
+	ctx.texture = diffuseMap;
 
 	processNode(ctx);
 
@@ -261,13 +261,13 @@ void Model_NWN2::processNode(ParserContext &ctx) {
 	}
 
 	try {
-		if (!ctx.node->bitmap.empty() && (ctx.node->bitmap != "NULL"))
-			ctx.node->texture = new Texture(ctx.node->bitmap);
+		if (!ctx.texture.empty() && (ctx.texture != "NULL"))
+			ctx.node->texture = TextureMan.get(ctx.texture);
 	} catch (...) {
-		ctx.node->bitmap.clear();
-		ctx.node->texture = 0;
+		ctx.node->texture.clear();
 	}
 
+	ctx.texture.clear();
 	ctx.vertices.clear();
 	ctx.verticesTexture.clear();
 	ctx.faces.clear();
