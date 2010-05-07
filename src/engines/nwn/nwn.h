@@ -21,16 +21,11 @@
 
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
-#include "graphics/aurora/model_nwn.h"
+
+#include "graphics/aurora/types.h"
 
 namespace Common {
 	class FileList;
-}
-
-namespace Graphics {
-	namespace Aurora {
-		class Model;
-	}
 }
 
 namespace NWN {

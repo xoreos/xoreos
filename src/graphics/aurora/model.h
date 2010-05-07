@@ -24,16 +24,12 @@
 #include "graphics/types.h"
 #include "graphics/renderable.h"
 
+#include "graphics/aurora/types.h"
 #include "graphics/aurora/textureman.h"
 
 namespace Graphics {
 
 namespace Aurora {
-
-enum ModelType {
-	kModelTypeObject   = kRenderableQueueObject,
-	kModelTypeGUIFront = kRenderableQueueGUIFront
-};
 
 class Model : public Renderable {
 public:

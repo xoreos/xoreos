@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libaurora.la
 
-noinst_HEADERS = videoplayer.h \
+noinst_HEADERS = types.h \
+                 videoplayer.h \
                  texture.h \
                  textureman.h \
                  font.h \

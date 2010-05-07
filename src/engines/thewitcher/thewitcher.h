@@ -22,14 +22,10 @@
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
+#include "graphics/aurora/types.h"
+
 namespace Common {
 	class FileList;
-}
-
-namespace Graphics {
-	namespace Aurora {
-		class Model;
-	}
 }
 
 namespace TheWitcher {
