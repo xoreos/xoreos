@@ -64,7 +64,7 @@ private:
 
 	void init();
 
-	void showLegal();
+	Graphics::Aurora::Model *showLegal();
 
 	Graphics::Aurora::Model *loadModel(const Common::UString &resref,
 			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject);

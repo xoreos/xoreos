@@ -90,15 +90,19 @@ void NWNEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
+	/*
 	playVideo("atarilogo");
 	playVideo("biowarelogo");
 	playVideo("wotclogo");
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
+	*/
 
-	showLegal();
-	if (EventMan.quitRequested())
+	Graphics::Aurora::Model *legal = showLegal();
+	if (EventMan.quitRequested()) {
+		delete legal;
 		return;
+	}
 
 	// => pre_main.gui
 	Graphics::Aurora::Model *mainMenu = loadModel("pnl_mainmenu", Graphics::Aurora::kModelTypeGUIFront);
@@ -118,6 +122,8 @@ void NWNEngine::run(const Common::UString &target) {
 	}
 
 	mainMenu->hide();
+
+	delete legal;
 
 	delete mainMenu;
 
@@ -182,28 +188,38 @@ void NWNEngine::init() {
 	indexOptionalDirectory("override", 0, 0, 30);
 }
 
-void NWNEngine::showLegal() {
+Graphics::Aurora::Model *NWNEngine::showLegal() {
 	Graphics::Aurora::Model *legal = loadModel("load_legal", Graphics::Aurora::kModelTypeGUIFront);
-	legal->setPosition(4.760000, 1.370000, 0.000000);
+	legal->setPosition(4.760000, 1.370000, 1.000000);
 	legal->fadeIn(1000);
 
-	bool end = false;
+	uint32 start = EventMan.getTimestamp();
+	bool fadeOut = false, end = false;
 	while (!end) {
 		Events::Event event;
-		while (EventMan.pollEvent(event))
-			if (event.type == Events::kEventMouseDown)
-				end = true;
+		while (EventMan.pollEvent(event)) {
+			if (event.type == Events::kEventMouseDown) {
+				legal->hide();
+
+				delete legal;
+				return 0;
+			}
+		}
 
 		if (EventMan.quitRequested())
 			end = true;
+
+		if        (!fadeOut && ((EventMan.getTimestamp() - start) >= 5000)) {
+			legal->fadeOut(1000);
+			fadeOut = true;
+			end = true;
+		}
 
 		if (!end)
 			EventMan.delay(10);
 	}
 
-	legal->hide();
-
-	delete legal;
+	return legal;
 }
 
 Graphics::Aurora::Model *NWNEngine::loadModel(const Common::UString &resref,
