@@ -12,6 +12,9 @@
  *  Loading MDL files found in Star Wars: Knights of the Old Republic.
  */
 
+// Disable the "unused variable" warnings while most stuff is still stubbed
+#pragma GCC diagnostic ignored "-Wunused-variable"
+
 #include "common/util.h"
 #include "common/error.h"
 #include "common/maths.h"
@@ -87,11 +90,12 @@ namespace Graphics {
 namespace Aurora {
 
 Model_KotOR::ParserContext::ParserContext(Common::SeekableReadStream &mdlStream,
-		Common::SeekableReadStream &mdxStream) : mdl(&mdlStream), mdx(&mdxStream), node(0) {
+		Common::SeekableReadStream &mdxStream) : mdl(&mdlStream), mdx(&mdxStream), state(0), node(0) {
 }
 
 Model_KotOR::ParserContext::~ParserContext() {
 	delete node;
+	delete state;
 }
 
 
@@ -99,6 +103,7 @@ Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl,
 		Common::SeekableReadStream &mdx, bool kotor2, ModelType type) : Model(type), _kotor2(kotor2) {
 
 	load(mdl, mdx);
+	setState();
 
 	_names.clear();
 
@@ -172,7 +177,12 @@ void Model_KotOR::load(Common::SeekableReadStream &mdl, Common::SeekableReadStre
 
 	readStrings(*ctx.mdl, nameOffset, ctx.offModelData, _names);
 
+	ctx.state = new State;
+
 	parseNode(ctx, nodeHeadPointer + ctx.offModelData, 0);
+
+	_states.insert(std::make_pair(ctx.state->name, ctx.state));
+	ctx.state = 0;
 }
 
 void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
@@ -184,7 +194,7 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 		ctx.node->parent = parent;
 		parent->children.push_back(ctx.node);
 	} else
-		_rootNodes.push_back(ctx.node);
+		ctx.state->nodes.push_back(ctx.node);
 
 	uint16 flags      = ctx.mdl->readUint16LE();
 	uint16 superNode  = ctx.mdl->readUint16LE();
@@ -398,7 +408,7 @@ void Model_KotOR::parseMesh(ParserContext &ctx) {
 	ctx.mdl->seekTo(offVerts + ctx.offModelData);
 
 	ctx.faces.resize(facesCount);
-	for (int i = 0; i < facesCount; i++) {
+	for (uint32 i = 0; i < facesCount; i++) {
 		ctx.faces[i].vertices[0] = ctx.mdl->readUint16LE();
 		ctx.faces[i].vertices[1] = ctx.mdl->readUint16LE();
 		ctx.faces[i].vertices[2] = ctx.mdl->readUint16LE();

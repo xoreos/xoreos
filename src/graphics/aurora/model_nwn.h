@@ -37,8 +37,8 @@ public:
 
 private:
 	struct FaceNWN {
-		int vertices[3];
-		int verticesTexture[3];
+		uint32 vertices[3];
+		uint32 verticesTexture[3];
 
 		int smoothGroup;
 		int material;
@@ -47,7 +47,8 @@ private:
 	struct ParserContext {
 		Common::SeekableReadStream *mdl;
 
-		Node *node;
+		State *state;
+		Node  *node;
 
 		Common::UString texture;
 
@@ -57,6 +58,9 @@ private:
 
 		uint32 offModelData;
 		uint32 offRawData;
+
+		bool hasPosition;
+		bool hasOrientation;
 
 		ParserContext(Common::SeekableReadStream &stream);
 		~ParserContext();
@@ -85,8 +89,11 @@ private:
 
 	void parseConstraintsASCII(ParserContext &ctx, std::vector<float> &constraints, int n);
 
-	void parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent);
+	void parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent, bool rootState);
 	void parseMeshBinary(ParserContext &ctx);
+	void parseAnimBinary(ParserContext &ctx);
+
+	void parseAnimGeometryBinary(ParserContext &ctx, uint32 offset);
 
 	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);
 	void readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,

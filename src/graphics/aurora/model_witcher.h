@@ -38,7 +38,8 @@ private:
 	struct ParserContext {
 		Common::SeekableReadStream *mdb;
 
-		Node *node;
+		State *state;
+		Node  *node;
 
 		uint16 fileVersion;
 

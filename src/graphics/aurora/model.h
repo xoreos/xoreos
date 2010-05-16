@@ -48,7 +48,14 @@ public:
 	Model(ModelType type = kModelTypeObject);
 	~Model();
 
+	/** Set the current position of the model. */
 	void setPosition(float x, float y, float z);
+
+	/** Return a list of all animation state names. */
+	const std::list<Common::UString> &getStates() const;
+
+	/** Set the current animation state. */
+	void setState(const Common::UString &name = "");
 
 	void show(); ///< The model should be rendered.
 	void hide(); ///< The model should not be rendered.
@@ -124,6 +131,16 @@ protected:
 		Node();
 	};
 
+	typedef std::list<Node *> NodeList;
+
+	struct State {
+		Common::UString name;
+
+		NodeList nodes;
+	};
+
+	typedef std::map<Common::UString, State *> StateMap;
+
 	ModelType _type;
 
 	Common::UString _name;
@@ -139,9 +156,17 @@ protected:
 
 	float _position[3];
 
-	std::list<Node *> _nodes;
-	std::list<Node *> _rootNodes;
+	NodeList _nodes;
 
+	StateMap _states;
+	State   *_currentState;
+
+	std::list<Common::UString> _stateNames;
+
+	void createStateNameList();
+
+private:
+	void renderState(const State &state);
 	void renderNode(const Node &node);
 };
 

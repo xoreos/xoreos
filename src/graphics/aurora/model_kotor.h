@@ -37,8 +37,8 @@ public:
 
 private:
 	struct FaceKotOR {
-		int vertices[3];
-		int verticesTexture[3];
+		uint32 vertices[3];
+		uint32 verticesTexture[3];
 
 		int smoothGroup;
 		int material;
@@ -48,7 +48,8 @@ private:
 		Common::SeekableReadStream *mdl;
 		Common::SeekableReadStream *mdx;
 
-		Node *node;
+		State *state;
+		Node  *node;
 
 		Common::UString texture;
 

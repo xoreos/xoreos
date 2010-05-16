@@ -36,7 +36,7 @@ Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true) {
 
 Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::RenderableQueue) type)),
 	_type(type), _superModel(0), _class(kClassOther), _scale(1.0), _fade(false), _fadeStart(0),
-	_fadeValue(1.0), _fadeStep(0.0) {
+	_fadeValue(1.0), _fadeStep(0.0), _currentState(0) {
 
 	_position[0] = 0.0;
 	_position[1] = 0.0;
@@ -44,7 +44,7 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 }
 
 Model::~Model() {
-	for (std::list<Node *>::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
+	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
 		if (*node) {
 			TextureMan.release((*node)->texture);
 
@@ -53,10 +53,37 @@ Model::~Model() {
 	}
 }
 
+void Model::createStateNameList() {
+	_stateNames.clear();
+
+	for (StateMap::const_iterator state = _states.begin(); state != _states.end(); ++state)
+		_stateNames.push_back(state->first);
+}
+
 void Model::setPosition(float x, float y, float z) {
 	_position[0] = x;
 	_position[1] = y;
 	_position[2] = z;
+}
+
+const std::list<Common::UString> &Model::getStates() const {
+	return _stateNames;
+}
+
+void Model::setState(const Common::UString &name) {
+	if (_states.empty())
+		return;
+
+	StateMap::iterator state = _states.find(name);
+	if (state == _states.end())
+		state = _states.find("");
+
+	if (state == _states.end()) {
+		_currentState = 0;
+		return;
+	}
+
+	_currentState = state->second;
 }
 
 void Model::show() {
@@ -87,6 +114,9 @@ void Model::newFrame() {
 }
 
 void Model::render() {
+	if (!_currentState)
+		return;
+
 	if (_type == kModelTypeObject) {
 		glTranslatef(0.0, -1.0, -3.0);
 
@@ -128,7 +158,14 @@ void Model::render() {
 	if (_type == kModelTypeObject)
 		glRotatef(90.0, -1.0, 0.0, 0.0);
 
-	for (std::list<Node *>::const_iterator node = _rootNodes.begin(); node != _rootNodes.end(); ++node) {
+	renderState(*_currentState);
+}
+
+void Model::renderState(const State &state) {
+	//warning("====");
+	//warning("State: \"%s\", %d", state.name.c_str(), state.nodes.size());
+
+	for (NodeList::const_iterator node = state.nodes.begin(); node != state.nodes.end(); ++node) {
 		glPushMatrix();
 		glTranslatef((*node)->position[0], (*node)->position[1], (*node)->position[2]);
 		glRotatef((*node)->orientation[3], (*node)->orientation[0], (*node)->orientation[1], (*node)->orientation[2]);
@@ -139,6 +176,8 @@ void Model::render() {
 
 void Model::renderNode(const Node &node) {
 	if (node.render) {
+		//warning("\"%s\"", node.name.c_str());
+
 		TextureMan.set(node.texture);
 
 		glBegin(GL_TRIANGLES);
@@ -155,7 +194,7 @@ void Model::renderNode(const Node &node) {
 		glEnd();
 	}
 
-	for (std::list<Node *>::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
+	for (NodeList::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
 		if (!*child)
 			continue;
 

@@ -12,6 +12,8 @@
  *  Loading MDB files found in Neverwinter Nights 2
  */
 
+// Disable the "unused variable" warnings while most stuff is still stubbed
+#pragma GCC diagnostic ignored "-Wunused-variable"
 
 #include "common/util.h"
 #include "common/error.h"
@@ -32,16 +34,18 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_NWN2::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) : mdb(&mdbStream), node(0) {
+Model_NWN2::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) : mdb(&mdbStream), state(0), node(0) {
 }
 
 Model_NWN2::ParserContext::~ParserContext() {
 	delete node;
+	delete state;
 }
 
 
 Model_NWN2::Model_NWN2(Common::SeekableReadStream &mdb, ModelType type) : Model(type) {
 	load(mdb);
+	setState();
 
 	RequestMan.sync();
 }
@@ -67,6 +71,8 @@ void Model_NWN2::load(Common::SeekableReadStream &mdb) {
 		packetKey->offset    = ctx.mdb->readUint32LE();
 	}
 
+	ctx.state = new State;
+
 	warning("%d.%d: %d", verMajor, verMinor, packetCount);
 	for (std::vector<PacketKey>::const_iterator packetKey = packetKeys.begin(); packetKey != packetKeys.end(); ++packetKey) {
 		if      (packetKey->signature == kRigidID)
@@ -74,6 +80,9 @@ void Model_NWN2::load(Common::SeekableReadStream &mdb) {
 		else if (packetKey->signature == kSkinID)
 			parseSkin (ctx, packetKey->offset);
 	}
+
+	_states.insert(std::make_pair(ctx.state->name, ctx.state));
+	ctx.state = 0;
 }
 
 void Model_NWN2::parseRigid(ParserContext &ctx, uint32 offset) {
@@ -116,7 +125,7 @@ void Model_NWN2::parseRigid(ParserContext &ctx, uint32 offset) {
 	uint32 faceCount   = ctx.mdb->readUint32LE();
 
 	warning("\"%s\" (%8d) - %d, %d - %08X (%d)", ctx.node->name.c_str(),
-			packetSize, vertexCount, faceCount, textureFlags);
+			packetSize, vertexCount, faceCount, textureFlags, textureFlags);
 
 	ctx.vertices.resize(3 * vertexCount);
 	ctx.verticesTexture.resize(3 * vertexCount);
@@ -145,7 +154,7 @@ void Model_NWN2::parseRigid(ParserContext &ctx, uint32 offset) {
 
 	processNode(ctx);
 
-	_rootNodes.push_back(ctx.node);
+	ctx.state->nodes.push_back(ctx.node);
 
 	ctx.node = 0;
 }
@@ -228,7 +237,7 @@ void Model_NWN2::parseSkin(ParserContext &ctx, uint32 offset) {
 
 	processNode(ctx);
 
-	_rootNodes.push_back(ctx.node);
+	ctx.state->nodes.push_back(ctx.node);
 
 	ctx.node = 0;
 }

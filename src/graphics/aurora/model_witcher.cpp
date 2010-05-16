@@ -12,6 +12,9 @@
  *  Loading MDB files found in The Witcher
  */
 
+// Disable the "unused variable" warnings while most stuff is still stubbed
+#pragma GCC diagnostic ignored "-Wunused-variable"
+
 #include "common/util.h"
 #include "common/error.h"
 #include "common/maths.h"
@@ -40,23 +43,25 @@ static const int kNodeFlagHasUnknown6  = 0x00008000;
 static const int kNodeFlagHasUnknown7  = 0x00010000;
 static const int kNodeFlagHasUnknown8  = 0x00020000;
 
-static const int kControllerTypePosition    = 84;
-static const int kControllerTypeOrientation = 96;
+static const uint32 kControllerTypePosition    = 84;
+static const uint32 kControllerTypeOrientation = 96;
 
 namespace Graphics {
 
 namespace Aurora {
 
-Model_Witcher::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) : mdb(&mdbStream), node(0) {
+Model_Witcher::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) : mdb(&mdbStream), state(0), node(0) {
 }
 
 Model_Witcher::ParserContext::~ParserContext() {
 	delete node;
+	delete state;
 }
 
 
 Model_Witcher::Model_Witcher(Common::SeekableReadStream &mdb, ModelType type) : Model(type) {
 	load(mdb);
+	setState();
 
 	RequestMan.sync();
 }
@@ -137,7 +142,12 @@ void Model_Witcher::load(Common::SeekableReadStream &mdb) {
 	warning("\"%s\", %d, %d, %d, %d, %f, \"%s\", \"%s\"", name.c_str(), ctx.fileVersion, ctx.modelDataSize, offsetRootNode,
 			type, _scale, detailMap.c_str(), superModel.c_str());
 
+	ctx.state = new State;
+
 	readNode(ctx, offsetRootNode + ctx.offModelData, 0);
+
+	_states.insert(std::make_pair(ctx.state->name, ctx.state));
+	ctx.state = 0;
 }
 
 void Model_Witcher::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
@@ -149,7 +159,7 @@ void Model_Witcher::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 		ctx.node->parent = parent;
 		parent->children.push_back(ctx.node);
 	} else
-		_rootNodes.push_back(ctx.node);
+		ctx.state->nodes.push_back(ctx.node);
 
 	ctx.mdb->skip(24);
 
