@@ -45,12 +45,7 @@ private:
 
 		State *state;
 		Node  *node;
-
-		Common::UString texture;
-
-		std::vector<float>  vertices;
-		std::vector<float>  verticesTexture;
-		std::vector<uint16> faces;
+		Mesh  *mesh;
 
 		ParserContext(Common::SeekableReadStream &mdbStream);
 		~ParserContext();
@@ -58,8 +53,8 @@ private:
 
 	void load(Common::SeekableReadStream &mdb);
 
-	void parseRigid(ParserContext &ctx, uint32 offset);
-	void parseSkin (ParserContext &ctx, uint32 offset);
+	void readRigid(ParserContext &ctx, uint32 offset);
+	void readSkin (ParserContext &ctx, uint32 offset);
 
 	void processNode(ParserContext &ctx);
 };

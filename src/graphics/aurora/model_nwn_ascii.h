@@ -38,25 +38,12 @@ public:
 	static bool isASCII(Common::SeekableReadStream &mdl);
 
 private:
-	struct FaceNWN {
-		uint32 vertices[3];
-		uint32 verticesTexture[3];
-
-		int smoothGroup;
-		int material;
-	};
-
 	struct ParserContext {
 		Common::SeekableReadStream *mdl;
 
 		State *state;
 		Node  *node;
-
-		Common::UString texture;
-
-		std::vector<float> vertices;
-		std::vector<float> verticesTexture;
-		std::vector<FaceNWN> faces;
+		Mesh  *mesh;
 
 		ParserContext(Common::SeekableReadStream &stream);
 		~ParserContext();
@@ -70,21 +57,17 @@ private:
 
 	void load(Common::SeekableReadStream &mdl);
 
-	void load(ParserContext &ctx);
+	void readNode(ParserContext &ctx, const Common::UString &type, const Common::UString &name);
+	void readAnim(ParserContext &ctx);
 
-	void parseNode(ParserContext &ctx, const Common::UString &type, const Common::UString &name);
-	void parseAnim(ParserContext &ctx);
+	Classification readClassification(Common::UString classification);
+	void readFloats(const std::vector<Common::UString> &strings, float *floats, int n, int start);
 
-	Classification parseClassification(Common::UString classification);
-	void parseFloats(const std::vector<Common::UString> &strings, float *floats, int n, int start);
+	void readVertices(ParserContext &ctx, std::vector<float> &vertices, int n);
+	void readFaces   (ParserContext &ctx, int n);
+	void readWeights (ParserContext &ctx, int n);
 
-	void parseVertices(ParserContext &ctx, std::vector<float> &vertices, int n);
-	void parseFaces   (ParserContext &ctx, int n);
-	void parseWeights (ParserContext &ctx, int n);
-
-	void parseConstraints(ParserContext &ctx, std::vector<float> &constraints, int n);
-
-	void processNode(ParserContext &ctx);
+	void readConstraints(ParserContext &ctx, std::vector<float> &constraints, int n);
 };
 
 } // End of namespace Aurora

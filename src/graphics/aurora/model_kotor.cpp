@@ -90,10 +90,11 @@ namespace Graphics {
 namespace Aurora {
 
 Model_KotOR::ParserContext::ParserContext(Common::SeekableReadStream &mdlStream,
-		Common::SeekableReadStream &mdxStream) : mdl(&mdlStream), mdx(&mdxStream), state(0), node(0) {
+		Common::SeekableReadStream &mdxStream) : mdl(&mdlStream), mdx(&mdxStream), state(0), node(0), mesh(0) {
 }
 
 Model_KotOR::ParserContext::~ParserContext() {
+	delete mesh;
 	delete node;
 	delete state;
 }
@@ -173,21 +174,22 @@ void Model_KotOR::load(Common::SeekableReadStream &mdl, Common::SeekableReadStre
 	readArray(*ctx.mdl, nameStart, nameCount);
 
 	std::vector<uint32> nameOffset;
-	readOffsetArray(*ctx.mdl, nameStart + ctx.offModelData, nameCount, nameOffset);
+	readArrayOffsets(*ctx.mdl, nameStart + ctx.offModelData, nameCount, nameOffset);
 
 	readStrings(*ctx.mdl, nameOffset, ctx.offModelData, _names);
 
 	ctx.state = new State;
 
-	parseNode(ctx, nodeHeadPointer + ctx.offModelData, 0);
+	readNode(ctx, nodeHeadPointer + ctx.offModelData, 0);
 
 	_states.insert(std::make_pair(ctx.state->name, ctx.state));
 	ctx.state = 0;
 }
 
-void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
+void Model_KotOR::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	ctx.mdl->seekTo(offset);
 
+	ctx.mesh = new Mesh;
 	ctx.node = new Node;
 
 	if (parent) {
@@ -214,7 +216,7 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	readArray(*ctx.mdl, childrenStart, childrenCount);
 
 	std::vector<uint32> children;
-	readOffsetArray(*ctx.mdl, childrenStart + ctx.offModelData, childrenCount, children);
+	readArrayOffsets(*ctx.mdl, childrenStart + ctx.offModelData, childrenCount, children);
 
 	uint32 controllerKeyStart, controllerKeyCount;
 	readArray(*ctx.mdl, controllerKeyStart, controllerKeyCount);
@@ -223,9 +225,9 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	readArray(*ctx.mdl, controllerDataStart, controllerDataCount);
 
 	std::vector<float> controllerData;
-	readFloatsArray(*ctx.mdl, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
+	readArrayFloats(*ctx.mdl, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
 
-	parseNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
+	readNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
 
 	if ((flags & 0xFC00) != 0)
 		throw Common::Exception("Unknown node flags %04X", flags);
@@ -246,7 +248,7 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	}
 
 	if (flags & kNodeFlagHasMesh) {
-		parseMesh(ctx);
+		readMesh(ctx);
 	}
 
 	if (flags & kNodeFlagHasSkin) {
@@ -272,7 +274,9 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	if (nodeNumber < _names.size())
 		ctx.node->name = _names[nodeNumber];
 
-	processNode(ctx);
+	processMesh(*ctx.mesh, *ctx.node);
+	delete ctx.mesh;
+	ctx.mesh = 0;
 
 	parent = ctx.node;
 
@@ -280,10 +284,10 @@ void Model_KotOR::parseNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	ctx.node = 0;
 
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child)
-		parseNode(ctx, *child + ctx.offModelData, parent);
+		readNode(ctx, *child + ctx.offModelData, parent);
 }
 
-void Model_KotOR::parseMesh(ParserContext &ctx) {
+void Model_KotOR::readMesh(ParserContext &ctx) {
 	uint32 P = ctx.mdl->pos();
 
 	ctx.mdl->skip(8); // Function pointers
@@ -330,12 +334,11 @@ void Model_KotOR::parseMesh(ParserContext &ctx) {
 
 	ctx.mdl->skip(12); // Vertex indices counts
 
-	uint32 offOffVerts       = ctx.mdl->readUint32LE();
-	uint32 offOffVertsCount1 = ctx.mdl->readUint32LE();
-	uint32 offOffVertsCount2 = ctx.mdl->readUint32LE();
+	uint32 offOffVerts, offOffVertsCount;
+	readArray(*ctx.mdl, offOffVerts, offOffVertsCount);
 
-	if ((offOffVertsCount1 != 1) || (offOffVertsCount2 != 1))
-		throw Common::Exception("Face offsets offsets counts wrong");
+	if (offOffVertsCount != 1)
+		throw Common::Exception("Face offsets offsets count wrong");
 
 	ctx.mdl->skip(12); // Unknown
 
@@ -375,30 +378,30 @@ void Model_KotOR::parseMesh(ParserContext &ctx) {
 	uint32 endPos = ctx.mdl->pos();
 
 	if (textureCount > 1)
-		warning("Model_KotOR::parseMesh(): textureCount == %d (\"%s\", \"%s\")", textureCount,
+		warning("Model_KotOR::readMesh(): textureCount == %d (\"%s\", \"%s\")", textureCount,
 				textures[0].c_str(), textures[1].c_str());
 
-	ctx.texture = textures[0];
+	ctx.mesh->texture = textures[0];
 
-	ctx.vertices.resize(3 * vertexCount);
-	ctx.verticesTexture.resize(3 * vertexCount);
+	ctx.mesh-> verts.resize(3 * vertexCount);
+	ctx.mesh->tverts.resize(3 * vertexCount);
 	for (int i = 0; i < vertexCount; i++) {
 		ctx.mdx->seekTo(offNodeData + i * mdxStructSize);
 
-		ctx.vertices[3 * i + 0] = ctx.mdx->readIEEEFloatLE();
-		ctx.vertices[3 * i + 1] = ctx.mdx->readIEEEFloatLE();
-		ctx.vertices[3 * i + 2] = ctx.mdx->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 0] = ctx.mdx->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 1] = ctx.mdx->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 2] = ctx.mdx->readIEEEFloatLE();
 
 		if (offUV != 0xFFFFFFFF) {
 			ctx.mdx->seekTo(offNodeData + i * mdxStructSize + offUV);
 
-			ctx.verticesTexture[3 * i + 0] = ctx.mdx->readIEEEFloatLE();
-			ctx.verticesTexture[3 * i + 1] = ctx.mdx->readIEEEFloatLE();
-			ctx.verticesTexture[3 * i + 2] = 0;
+			ctx.mesh->tverts[3 * i + 0] = ctx.mdx->readIEEEFloatLE();
+			ctx.mesh->tverts[3 * i + 1] = ctx.mdx->readIEEEFloatLE();
+			ctx.mesh->tverts[3 * i + 2] = 0.0;
 		} else {
-			ctx.verticesTexture[3 * i + 0] = 0;
-			ctx.verticesTexture[3 * i + 1] = 0;
-			ctx.verticesTexture[3 * i + 2] = 0;
+			ctx.mesh->tverts[3 * i + 0] = 0.0;
+			ctx.mesh->tverts[3 * i + 1] = 0.0;
+			ctx.mesh->tverts[3 * i + 2] = 0.0;
 		}
 	}
 
@@ -407,53 +410,16 @@ void Model_KotOR::parseMesh(ParserContext &ctx) {
 
 	ctx.mdl->seekTo(offVerts + ctx.offModelData);
 
-	ctx.faces.resize(facesCount);
+	ctx.mesh->faces.resize(facesCount);
 	for (uint32 i = 0; i < facesCount; i++) {
-		ctx.faces[i].vertices[0] = ctx.mdl->readUint16LE();
-		ctx.faces[i].vertices[1] = ctx.mdl->readUint16LE();
-		ctx.faces[i].vertices[2] = ctx.mdl->readUint16LE();
-		ctx.faces[i].verticesTexture[0] = ctx.faces[i].vertices[0];
-		ctx.faces[i].verticesTexture[1] = ctx.faces[i].vertices[1];
-		ctx.faces[i].verticesTexture[2] = ctx.faces[i].vertices[2];
+		MeshFace &face = ctx.mesh->faces[i];
+
+		face.tverts[0] = face.verts[0] = ctx.mdl->readUint16LE();
+		face.tverts[1] = face.verts[1] = ctx.mdl->readUint16LE();
+		face.tverts[2] = face.verts[2] = ctx.mdl->readUint16LE();
 	}
 
 	ctx.mdl->seekTo(endPos);
-}
-
-void Model_KotOR::readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count) {
-	start = mdl.readUint32LE();
-
-	uint32 usedCount      = mdl.readUint32LE();
-	uint32 allocatedCount = mdl.readUint32LE();
-
-	if (usedCount != allocatedCount)
-		warning("Model_KotOR::readArray(): usedCount != allocatedCount (%d, %d)", usedCount, allocatedCount);
-
-	count = usedCount;
-}
-
-void Model_KotOR::readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
-		std::vector<uint32> &offsets) {
-
-	uint32 pos = mdl.seekTo(start);
-
-	offsets.reserve(count);
-	while (count-- > 0)
-		offsets.push_back(mdl.readUint32LE());
-
-	mdl.seekTo(pos);
-}
-
-void Model_KotOR::readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
-		std::vector<float> &floats) {
-
-	uint32 pos = mdl.seekTo(start);
-
-	floats.reserve(count);
-	while (count-- > 0)
-		floats.push_back(mdl.readIEEEFloatLE());
-
-	mdl.seekTo(pos);
 }
 
 void Model_KotOR::readStrings(Common::SeekableReadStream &mdl, const std::vector<uint32> &offsets,
@@ -470,7 +436,7 @@ void Model_KotOR::readStrings(Common::SeekableReadStream &mdl, const std::vector
 	mdl.seekTo(pos);
 }
 
-void Model_KotOR::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
+void Model_KotOR::readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
 	uint32 pos = ctx.mdl->seekTo(offset);
 
 	// TODO: Implement this properly :P
@@ -484,7 +450,7 @@ void Model_KotOR::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32
 		ctx.mdl->skip(1);
 
 		if (columnCount == 0xFFFF)
-			throw Common::Exception("TODO: Model_KotOR::parseNodeControllers(): columnCount == 0xFFFF");
+			throw Common::Exception("TODO: Model_KotOR::readNodeControllers(): columnCount == 0xFFFF");
 
 		/*
 		if        (type == kControllerTypePosition) {
@@ -509,71 +475,6 @@ void Model_KotOR::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32
 	}
 
 	ctx.mdl->seekTo(pos);
-}
-
-void Model_KotOR::processNode(ParserContext &ctx) {
-	ctx.node->faces.resize(ctx.faces.size());
-
-	for (uint i = 0; i < ctx.faces.size(); i++) {
-		Face &face = ctx.node->faces[i];
-
-		const float *verts = &ctx.vertices[0];
-		const int    vert0 = ctx.faces[i].vertices[0];
-		const int    vert1 = ctx.faces[i].vertices[1];
-		const int    vert2 = ctx.faces[i].vertices[2];
-
-		face.vertices[0][0] = verts[3 * vert0 + 0];
-		face.vertices[0][1] = verts[3 * vert0 + 1];
-		face.vertices[0][2] = verts[3 * vert0 + 2];
-		face.vertices[1][0] = verts[3 * vert1 + 0];
-		face.vertices[1][1] = verts[3 * vert1 + 1];
-		face.vertices[1][2] = verts[3 * vert1 + 2];
-		face.vertices[2][0] = verts[3 * vert2 + 0];
-		face.vertices[2][1] = verts[3 * vert2 + 1];
-		face.vertices[2][2] = verts[3 * vert2 + 2];
-
-		const float *tverts = &ctx.verticesTexture[0];
-		const int    tvert0 = ctx.faces[i].verticesTexture[0];
-		const int    tvert1 = ctx.faces[i].verticesTexture[1];
-		const int    tvert2 = ctx.faces[i].verticesTexture[2];
-
-		if (ctx.faces[i].verticesTexture[0] >= (ctx.verticesTexture.size() * 3)) {
-			face.verticesTexture[0][0] = 0;
-			face.verticesTexture[0][1] = 0;
-			face.verticesTexture[0][2] = 0;
-			face.verticesTexture[1][0] = 0;
-			face.verticesTexture[1][1] = 0;
-			face.verticesTexture[1][2] = 0;
-			face.verticesTexture[2][0] = 0;
-			face.verticesTexture[2][1] = 0;
-			face.verticesTexture[2][2] = 0;
-		} else {
-			face.verticesTexture[0][0] = tverts[3 * tvert0 + 0];
-			face.verticesTexture[0][1] = tverts[3 * tvert0 + 1];
-			face.verticesTexture[0][2] = tverts[3 * tvert0 + 2];
-			face.verticesTexture[1][0] = tverts[3 * tvert1 + 0];
-			face.verticesTexture[1][1] = tverts[3 * tvert1 + 1];
-			face.verticesTexture[1][2] = tverts[3 * tvert1 + 2];
-			face.verticesTexture[2][0] = tverts[3 * tvert2 + 0];
-			face.verticesTexture[2][1] = tverts[3 * tvert2 + 1];
-			face.verticesTexture[2][2] = tverts[3 * tvert2 + 2];
-		}
-
-		face.smoothGroup = ctx.faces[i].smoothGroup;
-		face.material    = ctx.faces[i].material;
-	}
-
-	try {
-		if (!ctx.texture.empty() && (ctx.texture != "NULL"))
-			ctx.node->texture = TextureMan.get(ctx.texture);
-	} catch (...) {
-		ctx.node->texture.clear();
-	}
-
-	ctx.texture.clear();
-	ctx.vertices.clear();
-	ctx.verticesTexture.clear();
-	ctx.faces.clear();
 }
 
 } // End of namespace Aurora

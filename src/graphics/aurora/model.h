@@ -27,6 +27,10 @@
 #include "graphics/aurora/types.h"
 #include "graphics/aurora/textureman.h"
 
+namespace Common {
+	class SeekableReadStream;
+}
+
 namespace Graphics {
 
 namespace Aurora {
@@ -70,9 +74,29 @@ public:
 	void render();
 
 protected:
+	// Representation found in the raw files
+	struct MeshFace {
+		uint32  verts[3];
+		uint32 tverts[3];
+
+		int smoothGroup;
+		int material;
+	};
+
+	struct Mesh {
+		Common::UString texture;
+
+		std::vector<float>  verts;
+		std::vector<float> tverts;
+
+		std::vector<MeshFace> faces;
+	};
+
+
+	// Representation we use
 	struct Face {
-		float vertices[3][3];
-		float verticesTexture[3][3];
+		float  verts[3][3];
+		float tverts[3][3];
 
 		int smoothGroup;
 		int material;
@@ -164,6 +188,13 @@ protected:
 	std::list<Common::UString> _stateNames;
 
 	void createStateNameList();
+
+	void readArray(Common::SeekableReadStream &stream, uint32 &start, uint32 &count);
+
+	void readArrayOffsets(Common::SeekableReadStream &stream, uint32 start, uint32 count, std::vector<uint32> &offsets);
+	void readArrayFloats (Common::SeekableReadStream &stream, uint32 start, uint32 count, std::vector<float>  &floats);
+
+	void processMesh(const Mesh &mesh, Node &node);
 
 private:
 	void renderState(const State &state);

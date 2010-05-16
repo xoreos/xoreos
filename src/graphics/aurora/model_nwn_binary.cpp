@@ -89,10 +89,12 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_NWN_Binary::ParserContext::ParserContext(Common::SeekableReadStream &stream) : mdl(&stream), state(0), node(0) {
+Model_NWN_Binary::ParserContext::ParserContext(Common::SeekableReadStream &stream) :
+	mdl(&stream), state(0), node(0), mesh(0) {
 }
 
 Model_NWN_Binary::ParserContext::~ParserContext() {
+	delete mesh;
 	delete node;
 	delete state;
 }
@@ -174,28 +176,29 @@ void Model_NWN_Binary::load(Common::SeekableReadStream &mdl) {
 	ctx.hasOrientation = false;
 	ctx.state = new State;
 
-	parseNode(ctx, nodeHeadPointer + ctx.offModelData, 0, true);
+	readNode(ctx, nodeHeadPointer + ctx.offModelData, 0, true);
 
 	_states.insert(std::make_pair(ctx.state->name, ctx.state));
 	_currentState = ctx.state;
 	ctx.state = 0;
 
 	std::vector<uint32> animOffsets;
-	readOffsetArray(*ctx.mdl, animStart + ctx.offModelData, animCount, animOffsets);
+	readArrayOffsets(*ctx.mdl, animStart + ctx.offModelData, animCount, animOffsets);
 
 	for (std::vector<uint32>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
 		ctx.state = new State;
 
-		parseAnimGeometry(ctx, *offset + ctx.offModelData);
+		readAnimGeometry(ctx, *offset + ctx.offModelData);
 
 		_states.insert(std::make_pair(ctx.state->name, ctx.state));
 		ctx.state = 0;
 	}
 }
 
-void Model_NWN_Binary::parseNode(ParserContext &ctx, uint32 offset, Node *parent, bool rootState) {
+void Model_NWN_Binary::readNode(ParserContext &ctx, uint32 offset, Node *parent, bool rootState) {
 	ctx.mdl->seekTo(offset);
 
+	ctx.mesh = new Mesh;
 	ctx.node = new Node;
 
 	// Correctly anchor the node
@@ -221,7 +224,7 @@ void Model_NWN_Binary::parseNode(ParserContext &ctx, uint32 offset, Node *parent
 	readArray(*ctx.mdl, childrenStart, childrenCount);
 
 	std::vector<uint32> children;
-	readOffsetArray(*ctx.mdl, childrenStart + ctx.offModelData, childrenCount, children);
+	readArrayOffsets(*ctx.mdl, childrenStart + ctx.offModelData, childrenCount, children);
 
 	uint32 controllerKeyStart, controllerKeyCount;
 	readArray(*ctx.mdl, controllerKeyStart, controllerKeyCount);
@@ -230,7 +233,7 @@ void Model_NWN_Binary::parseNode(ParserContext &ctx, uint32 offset, Node *parent
 	readArray(*ctx.mdl, controllerDataStart, controllerDataCount);
 
 	std::vector<float> controllerData;
-	readFloatsArray(*ctx.mdl, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
+	readArrayFloats(*ctx.mdl, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
 
 	uint32 flags = ctx.mdl->readUint32LE();
 
@@ -253,7 +256,7 @@ void Model_NWN_Binary::parseNode(ParserContext &ctx, uint32 offset, Node *parent
 	}
 
 	if (flags & kNodeFlagHasMesh) {
-		parseMesh(ctx);
+		readMesh(ctx);
 	}
 
 	if (flags & kNodeFlagHasSkin) {
@@ -262,7 +265,7 @@ void Model_NWN_Binary::parseNode(ParserContext &ctx, uint32 offset, Node *parent
 	}
 
 	if (flags & kNodeFlagHasAnim) {
-		parseAnim(ctx);
+		readAnim(ctx);
 	}
 
 	if (flags & kNodeFlagHasDangly) {
@@ -275,7 +278,7 @@ void Model_NWN_Binary::parseNode(ParserContext &ctx, uint32 offset, Node *parent
 		ctx.mdl->skip(0x4);
 	}
 
-	parseNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
+	readNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
 
 	// If the node has no own position controller, inherit the position from the root state
 	if (!rootState && !ctx.hasPosition) {
@@ -298,7 +301,9 @@ void Model_NWN_Binary::parseNode(ParserContext &ctx, uint32 offset, Node *parent
 		}
 	}
 
-	processNode(ctx);
+	processMesh(*ctx.mesh, *ctx.node);
+	delete ctx.mesh;
+	ctx.mesh = 0;
 
 	parent = ctx.node;
 
@@ -308,11 +313,11 @@ void Model_NWN_Binary::parseNode(ParserContext &ctx, uint32 offset, Node *parent
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ctx.hasPosition    = false;
 		ctx.hasOrientation = false;
-		parseNode(ctx, *child + ctx.offModelData, parent, rootState);
+		readNode(ctx, *child + ctx.offModelData, parent, rootState);
 	}
 }
 
-void Model_NWN_Binary::parseMesh(ParserContext &ctx) {
+void Model_NWN_Binary::readMesh(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	uint32 facesStart, facesCount;
@@ -400,10 +405,10 @@ void Model_NWN_Binary::parseMesh(ParserContext &ctx) {
 	ctx.mdl->skip(4); // Unknown
 
 	if (textureCount > 1)
-		warning("Model_NWN_Binary::parseMesh(): textureCount == %d (\"%s\", \"%s\", \"%s\", \"%s\")",
+		warning("Model_NWN_Binary::readMesh(): textureCount == %d (\"%s\", \"%s\", \"%s\", \"%s\")",
 				textureCount, textures[0].c_str(), textures[1].c_str(), textures[2].c_str(), textures[3].c_str());
 
-	ctx.texture = textures[0];
+	ctx.mesh->texture = textures[0];
 
 	uint32 endPos = ctx.mdl->pos();
 
@@ -411,29 +416,29 @@ void Model_NWN_Binary::parseMesh(ParserContext &ctx) {
 	if (vertexOffset != 0xFFFFFFFF) {
 		ctx.mdl->seekTo(vertexOffset + ctx.offRawData);
 
-		ctx.vertices.resize(3 * vertexCount);
+		ctx.mesh->verts.resize(3 * vertexCount);
 
 		for (int i = 0; i < (3 * vertexCount); i++)
-			ctx.vertices[i] = ctx.mdl->readIEEEFloatLE();
+			ctx.mesh->verts[i] = ctx.mdl->readIEEEFloatLE();
 	}
 
 	// Read texture vertices
-	ctx.verticesTexture.resize(3 * vertexCount);
+	ctx.mesh->tverts.resize(3 * vertexCount);
 	if (texture0VertexOffset != 0xFFFFFFFF) {
 
 		ctx.mdl->seekTo(texture0VertexOffset + ctx.offRawData);
 
 		for (int i = 0; i < vertexCount; i++) {
-			ctx.verticesTexture[3 * i + 0] = ctx.mdl->readIEEEFloatLE();
-			ctx.verticesTexture[3 * i + 1] = ctx.mdl->readIEEEFloatLE();
-			ctx.verticesTexture[3 * i + 2] = 0;
+			ctx.mesh->tverts[3 * i + 0] = ctx.mdl->readIEEEFloatLE();
+			ctx.mesh->tverts[3 * i + 1] = ctx.mdl->readIEEEFloatLE();
+			ctx.mesh->tverts[3 * i + 2] = 0;
 		}
 	} else
 		for (int i = 0; i < (3 * vertexCount); i++)
-			ctx.verticesTexture[i] = 0;
+			ctx.mesh->tverts[i] = 0;
 
 	// Read faces
-	ctx.faces.resize(facesCount);
+	ctx.mesh->faces.resize(facesCount);
 	if ((facesStart != 0) && (facesCount > 0)) {
 		ctx.mdl->seekTo(facesStart + ctx.offModelData);
 
@@ -443,19 +448,18 @@ void Model_NWN_Binary::parseMesh(ParserContext &ctx) {
 			ctx.mdl->skip(    4); // ID
 			ctx.mdl->skip(3 * 2); // Adjacent face number
 
-			ctx.faces[i].vertices[0] = ctx.mdl->readUint16LE();
-			ctx.faces[i].vertices[1] = ctx.mdl->readUint16LE();
-			ctx.faces[i].vertices[2] = ctx.mdl->readUint16LE();
-			ctx.faces[i].verticesTexture[0] = ctx.faces[i].vertices[0];
-			ctx.faces[i].verticesTexture[1] = ctx.faces[i].vertices[1];
-			ctx.faces[i].verticesTexture[2] = ctx.faces[i].vertices[2];
+			MeshFace &face = ctx.mesh->faces[i];
+
+			face.tverts[0] = face.verts[0] = ctx.mdl->readUint16LE();
+			face.tverts[1] = face.verts[1] = ctx.mdl->readUint16LE();
+			face.tverts[2] = face.verts[2] = ctx.mdl->readUint16LE();
 		}
 	}
 
 	ctx.mdl->seekTo(endPos);
 }
 
-void Model_NWN_Binary::parseAnim(ParserContext &ctx) {
+void Model_NWN_Binary::readAnim(ParserContext &ctx) {
 	float samplePeriod = ctx.mdl->readIEEEFloatLE();
 
 	uint32 a0S, a0C;
@@ -474,43 +478,7 @@ void Model_NWN_Binary::parseAnim(ParserContext &ctx) {
 	uint32 textureVerticesCount = ctx.mdl->readUint32LE();
 }
 
-void Model_NWN_Binary::readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count) {
-	start = mdl.readUint32LE();
-
-	uint32 usedCount      = mdl.readUint32LE();
-	uint32 allocatedCount = mdl.readUint32LE();
-
-	if (usedCount != allocatedCount)
-		warning("Model_NWN_Binary::readArray(): usedCount != allocatedCount (%d, %d)", usedCount, allocatedCount);
-
-	count = usedCount;
-}
-
-void Model_NWN_Binary::readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
-		std::vector<uint32> &offsets) {
-
-	uint32 pos = mdl.seekTo(start);
-
-	offsets.reserve(count);
-	while (count-- > 0)
-		offsets.push_back(mdl.readUint32LE());
-
-	mdl.seekTo(pos);
-}
-
-void Model_NWN_Binary::readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
-		std::vector<float> &floats) {
-
-	uint32 pos = mdl.seekTo(start);
-
-	floats.reserve(count);
-	while (count-- > 0)
-		floats.push_back(mdl.readIEEEFloatLE());
-
-	mdl.seekTo(pos);
-}
-
-void Model_NWN_Binary::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
+void Model_NWN_Binary::readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
 	uint32 pos = ctx.mdl->seekTo(offset);
 
 	// TODO: Implement this properly :P
@@ -524,7 +492,7 @@ void Model_NWN_Binary::parseNodeControllers(ParserContext &ctx, uint32 offset, u
 		ctx.mdl->skip(1);
 
 		if (columnCount == 0xFFFF)
-			throw Common::Exception("TODO: Model_NWN_Binary::parseNodeControllers(): columnCount == 0xFFFF");
+			throw Common::Exception("TODO: Model_NWN_Binary::readNodeControllers(): columnCount == 0xFFFF");
 
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)
@@ -569,7 +537,7 @@ void Model_NWN_Binary::parseNodeControllers(ParserContext &ctx, uint32 offset, u
 	ctx.mdl->seekTo(pos);
 }
 
-void Model_NWN_Binary::parseAnimGeometry(ParserContext &ctx, uint32 offset) {
+void Model_NWN_Binary::readAnimGeometry(ParserContext &ctx, uint32 offset) {
 	ctx.mdl->seekTo(offset);
 
 	ctx.mdl->skip(8); // Function pointers
@@ -605,76 +573,7 @@ void Model_NWN_Binary::parseAnimGeometry(ParserContext &ctx, uint32 offset) {
 
 	ctx.hasPosition    = false;
 	ctx.hasOrientation = false;
-	parseNode(ctx, nodeHeadPointer + ctx.offModelData, 0, false);
-}
-
-void Model_NWN_Binary::processNode(ParserContext &ctx) {
-	ctx.node->faces.resize(ctx.faces.size());
-
-	// Go over each face and assign the actual coordinates
-	for (uint i = 0; i < ctx.faces.size(); i++) {
-		Face &face = ctx.node->faces[i];
-
-		const float *verts = &ctx.vertices[0];
-		const int    vert0 = ctx.faces[i].vertices[0];
-		const int    vert1 = ctx.faces[i].vertices[1];
-		const int    vert2 = ctx.faces[i].vertices[2];
-
-		// Real face coordinates
-		face.vertices[0][0] = verts[3 * vert0 + 0];
-		face.vertices[0][1] = verts[3 * vert0 + 1];
-		face.vertices[0][2] = verts[3 * vert0 + 2];
-		face.vertices[1][0] = verts[3 * vert1 + 0];
-		face.vertices[1][1] = verts[3 * vert1 + 1];
-		face.vertices[1][2] = verts[3 * vert1 + 2];
-		face.vertices[2][0] = verts[3 * vert2 + 0];
-		face.vertices[2][1] = verts[3 * vert2 + 1];
-		face.vertices[2][2] = verts[3 * vert2 + 2];
-
-		const float *tverts = &ctx.verticesTexture[0];
-		const int    tvert0 = ctx.faces[i].verticesTexture[0];
-		const int    tvert1 = ctx.faces[i].verticesTexture[1];
-		const int    tvert2 = ctx.faces[i].verticesTexture[2];
-
-		// Real texture coordinates
-		if (ctx.faces[i].verticesTexture[0] >= (ctx.verticesTexture.size() * 3)) {
-			face.verticesTexture[0][0] = 0.0;
-			face.verticesTexture[0][1] = 0.0;
-			face.verticesTexture[0][2] = 0.0;
-			face.verticesTexture[1][0] = 0.0;
-			face.verticesTexture[1][1] = 0.0;
-			face.verticesTexture[1][2] = 0.0;
-			face.verticesTexture[2][0] = 0.0;
-			face.verticesTexture[2][1] = 0.0;
-			face.verticesTexture[2][2] = 0.0;
-		} else {
-			face.verticesTexture[0][0] = tverts[3 * tvert0 + 0];
-			face.verticesTexture[0][1] = tverts[3 * tvert0 + 1];
-			face.verticesTexture[0][2] = tverts[3 * tvert0 + 2];
-			face.verticesTexture[1][0] = tverts[3 * tvert1 + 0];
-			face.verticesTexture[1][1] = tverts[3 * tvert1 + 1];
-			face.verticesTexture[1][2] = tverts[3 * tvert1 + 2];
-			face.verticesTexture[2][0] = tverts[3 * tvert2 + 0];
-			face.verticesTexture[2][1] = tverts[3 * tvert2 + 1];
-			face.verticesTexture[2][2] = tverts[3 * tvert2 + 2];
-		}
-
-		face.smoothGroup = ctx.faces[i].smoothGroup;
-		face.material    = ctx.faces[i].material;
-	}
-
-	// Try to load the texture
-	try {
-		if (!ctx.texture.empty() && (ctx.texture != "NULL"))
-			ctx.node->texture = TextureMan.get(ctx.texture);
-	} catch (...) {
-		ctx.node->texture.clear();
-	}
-
-	ctx.texture.clear();
-	ctx.vertices.clear();
-	ctx.verticesTexture.clear();
-	ctx.faces.clear();
+	readNode(ctx, nodeHeadPointer + ctx.offModelData, 0, false);
 }
 
 } // End of namespace Aurora

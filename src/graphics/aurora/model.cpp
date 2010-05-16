@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/stream.h"
 
 #include "events/events.h"
 
@@ -58,6 +59,77 @@ void Model::createStateNameList() {
 
 	for (StateMap::const_iterator state = _states.begin(); state != _states.end(); ++state)
 		_stateNames.push_back(state->first);
+}
+
+void Model::readArray(Common::SeekableReadStream &stream, uint32 &start, uint32 &count) {
+	start = stream.readUint32LE();
+
+	uint32 usedCount      = stream.readUint32LE();
+	uint32 allocatedCount = stream.readUint32LE();
+
+	if (usedCount != allocatedCount)
+		warning("Model::readArray(): usedCount != allocatedCount (%d, %d)", usedCount, allocatedCount);
+
+	count = usedCount;
+}
+
+void Model::readArrayOffsets(Common::SeekableReadStream &stream, uint32 start, uint32 count,
+		std::vector<uint32> &offsets) {
+
+	uint32 pos = stream.seekTo(start);
+
+	offsets.reserve(count);
+	while (count-- > 0)
+		offsets.push_back(stream.readUint32LE());
+
+	stream.seekTo(pos);
+}
+
+void Model::readArrayFloats(Common::SeekableReadStream &stream, uint32 start, uint32 count,
+		std::vector<float> &floats) {
+
+	uint32 pos = stream.seekTo(start);
+
+	floats.reserve(count);
+	while (count-- > 0)
+		floats.push_back(stream.readIEEEFloatLE());
+
+	stream.seekTo(pos);
+}
+
+void Model::processMesh(const Mesh &mesh, Node &node) {
+	node.faces.resize(mesh.faces.size());
+
+	// Go over each face and assign the actual coordinates
+	for (uint32 i = 0; i < mesh.faces.size(); i++) {
+		Face &face = node.faces[i];
+
+		// Real face coordinates
+		for (int j = 0; j < 3; j++)
+			for (int k = 0; k < 3; k++)
+				face.verts[j][k] = mesh.verts[3 * mesh.faces[i].verts[j] + k];
+
+		// Real texture coordinates
+		if (mesh.faces[i].tverts[0] >= (mesh.tverts.size() * 3))
+			for (int j = 0; j < 3; j++)
+				for (int k = 0; k < 3; k++)
+					face.tverts[j][k] = 0.0;
+		else
+			for (int j = 0; j < 3; j++)
+				for (int k = 0; k < 3; k++)
+					face.tverts[j][k] = mesh.tverts[3 * mesh.faces[i].tverts[j] + k];
+
+		face.smoothGroup = mesh.faces[i].smoothGroup;
+		face.material    = mesh.faces[i].material;
+	}
+
+	// Try to load the texture
+	try {
+		if (!mesh.texture.empty() && (mesh.texture != "NULL"))
+			node.texture = TextureMan.get(mesh.texture);
+	} catch (...) {
+		node.texture.clear();
+	}
 }
 
 void Model::setPosition(float x, float y, float z) {
@@ -162,9 +234,6 @@ void Model::render() {
 }
 
 void Model::renderState(const State &state) {
-	//warning("====");
-	//warning("State: \"%s\", %d", state.name.c_str(), state.nodes.size());
-
 	for (NodeList::const_iterator node = state.nodes.begin(); node != state.nodes.end(); ++node) {
 		glPushMatrix();
 		glTranslatef((*node)->position[0], (*node)->position[1], (*node)->position[2]);
@@ -176,19 +245,17 @@ void Model::renderState(const State &state) {
 
 void Model::renderNode(const Node &node) {
 	if (node.render) {
-		//warning("\"%s\"", node.name.c_str());
-
 		TextureMan.set(node.texture);
 
 		glBegin(GL_TRIANGLES);
 
 		for (FaceList::const_iterator face = node.faces.begin(); face != node.faces.end(); ++face) {
-			glTexCoord2f(face->verticesTexture[0][0], face->verticesTexture[0][1]);
-			glVertex3f(face->vertices[0][0], face->vertices[0][1], face->vertices[0][2]);
-			glTexCoord2f(face->verticesTexture[1][0], face->verticesTexture[1][1]);
-			glVertex3f(face->vertices[1][0], face->vertices[1][1], face->vertices[1][2]);
-			glTexCoord2f(face->verticesTexture[2][0], face->verticesTexture[2][1]);
-			glVertex3f(face->vertices[2][0], face->vertices[2][1], face->vertices[2][2]);
+			glTexCoord2f(face->tverts[0][0], face->tverts[0][1]                   );
+			glVertex3f  (face-> verts[0][0], face-> verts[0][1], face->verts[0][2]);
+			glTexCoord2f(face->tverts[1][0], face->tverts[1][1]                   );
+			glVertex3f  (face-> verts[1][0], face-> verts[1][1], face->verts[1][2]);
+			glTexCoord2f(face->tverts[2][0], face->tverts[2][1]                   );
+			glVertex3f  (face-> verts[2][0], face-> verts[2][1], face->verts[2][2]);
 		}
 
 		glEnd();

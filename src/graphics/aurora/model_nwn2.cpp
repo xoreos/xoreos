@@ -34,10 +34,12 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_NWN2::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) : mdb(&mdbStream), state(0), node(0) {
+Model_NWN2::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) :
+	mdb(&mdbStream), state(0), node(0), mesh(0) {
 }
 
 Model_NWN2::ParserContext::~ParserContext() {
+	delete mesh;
 	delete node;
 	delete state;
 }
@@ -76,16 +78,16 @@ void Model_NWN2::load(Common::SeekableReadStream &mdb) {
 	warning("%d.%d: %d", verMajor, verMinor, packetCount);
 	for (std::vector<PacketKey>::const_iterator packetKey = packetKeys.begin(); packetKey != packetKeys.end(); ++packetKey) {
 		if      (packetKey->signature == kRigidID)
-			parseRigid(ctx, packetKey->offset);
+			readRigid(ctx, packetKey->offset);
 		else if (packetKey->signature == kSkinID)
-			parseSkin (ctx, packetKey->offset);
+			readSkin (ctx, packetKey->offset);
 	}
 
 	_states.insert(std::make_pair(ctx.state->name, ctx.state));
 	ctx.state = 0;
 }
 
-void Model_NWN2::parseRigid(ParserContext &ctx, uint32 offset) {
+void Model_NWN2::readRigid(ParserContext &ctx, uint32 offset) {
 	ctx.mdb->seekTo(offset);
 
 	if (ctx.mdb->readUint32BE() != kRigidID)
@@ -93,22 +95,25 @@ void Model_NWN2::parseRigid(ParserContext &ctx, uint32 offset) {
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 
+	ctx.mesh = new Mesh;
 	ctx.node = new Node;
 
 	ctx.node->name.readASCII(*ctx.mdb, 32);
 
 	// Skipping lower level of detail models
 	if (ctx.node->name.endsWith("_L01") || ctx.node->name.endsWith("_L02")) {
+		delete ctx.mesh;
 		delete ctx.node;
+		ctx.mesh = 0;
 		ctx.node = 0;
 		return;
 	}
 
 	Common::UString diffuseMap, normalMap, tintMap, glowMap;
 	diffuseMap.readASCII(*ctx.mdb, 32);
-	normalMap.readASCII (*ctx.mdb, 32);
-	tintMap.readASCII   (*ctx.mdb, 32);
-	glowMap.readASCII   (*ctx.mdb, 32);
+	 normalMap.readASCII(*ctx.mdb, 32);
+	   tintMap.readASCII(*ctx.mdb, 32);
+	   glowMap.readASCII(*ctx.mdb, 32);
 
 	ctx.node->diffuse [0] = ctx.mdb->readIEEEFloatLE();
 	ctx.node->diffuse [1] = ctx.mdb->readIEEEFloatLE();
@@ -127,39 +132,43 @@ void Model_NWN2::parseRigid(ParserContext &ctx, uint32 offset) {
 	warning("\"%s\" (%8d) - %d, %d - %08X (%d)", ctx.node->name.c_str(),
 			packetSize, vertexCount, faceCount, textureFlags, textureFlags);
 
-	ctx.vertices.resize(3 * vertexCount);
-	ctx.verticesTexture.resize(3 * vertexCount);
+	ctx.mesh-> verts.resize(3 * vertexCount);
+	ctx.mesh->tverts.resize(3 * vertexCount);
 	for (uint32 i = 0; i < vertexCount; i++) {
-		ctx.vertices[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.vertices[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.vertices[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
 
 		ctx.mdb->skip(3 * 4); // Normals
 		ctx.mdb->skip(3 * 4); // Tangents
 		ctx.mdb->skip(3 * 4); // Binormals
 
-		ctx.verticesTexture[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.verticesTexture[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.verticesTexture[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->tverts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->tverts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->tverts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
 	}
 
-	ctx.faces.reserve(3 * faceCount);
+	ctx.mesh->faces.resize(faceCount);
 	for (uint32 i = 0; i < faceCount; i++) {
-		ctx.faces.push_back(ctx.mdb->readUint16LE());
-		ctx.faces.push_back(ctx.mdb->readUint16LE());
-		ctx.faces.push_back(ctx.mdb->readUint16LE());
+		MeshFace &face = ctx.mesh->faces[i];
+
+		face.tverts[0] = face.verts[0] = ctx.mdb->readUint16LE();
+		face.tverts[1] = face.verts[1] = ctx.mdb->readUint16LE();
+		face.tverts[2] = face.verts[2] = ctx.mdb->readUint16LE();
 	}
 
-	ctx.texture = diffuseMap;
+	ctx.mesh->texture = diffuseMap;
 
-	processNode(ctx);
+	processMesh(*ctx.mesh, *ctx.node);
+	delete ctx.mesh;
+	ctx.mesh = 0;
 
 	ctx.state->nodes.push_back(ctx.node);
 
 	ctx.node = 0;
 }
 
-void Model_NWN2::parseSkin(ParserContext &ctx, uint32 offset) {
+void Model_NWN2::readSkin(ParserContext &ctx, uint32 offset) {
 	ctx.mdb->seekTo(offset);
 
 	if (ctx.mdb->readUint32BE() != kSkinID)
@@ -167,13 +176,16 @@ void Model_NWN2::parseSkin(ParserContext &ctx, uint32 offset) {
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 
+	ctx.mesh = new Mesh;
 	ctx.node = new Node;
 
 	ctx.node->name.readASCII(*ctx.mdb, 32);
 
 	// Skipping lower level of detail models
 	if (ctx.node->name.endsWith("_L01") || ctx.node->name.endsWith("_L02")) {
+		delete ctx.mesh;
 		delete ctx.node;
+		ctx.mesh = 0;
 		ctx.node = 0;
 		return;
 	}
@@ -183,9 +195,9 @@ void Model_NWN2::parseSkin(ParserContext &ctx, uint32 offset) {
 
 	Common::UString diffuseMap, normalMap, tintMap, glowMap;
 	diffuseMap.readASCII(*ctx.mdb, 32);
-	normalMap.readASCII (*ctx.mdb, 32);
-	tintMap.readASCII   (*ctx.mdb, 32);
-	glowMap.readASCII   (*ctx.mdb, 32);
+	 normalMap.readASCII(*ctx.mdb, 32);
+	   tintMap.readASCII(*ctx.mdb, 32);
+	   glowMap.readASCII(*ctx.mdb, 32);
 
 	ctx.node->diffuse [0] = ctx.mdb->readIEEEFloatLE();
 	ctx.node->diffuse [1] = ctx.mdb->readIEEEFloatLE();
@@ -204,12 +216,12 @@ void Model_NWN2::parseSkin(ParserContext &ctx, uint32 offset) {
 	warning("\"%s\".\"%s\" (%8d) - %d, %d - %08X", ctx.node->name.c_str(), skeletonName.c_str(),
 			packetSize, vertexCount, faceCount, textureFlags);
 
-	ctx.vertices.resize(3 * vertexCount);
-	ctx.verticesTexture.resize(3 * vertexCount);
+	ctx.mesh-> verts.resize(3 * vertexCount);
+	ctx.mesh->tverts.resize(3 * vertexCount);
 	for (uint32 i = 0; i < vertexCount; i++) {
-		ctx.vertices[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.vertices[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.vertices[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
 
 		ctx.mdb->skip(3 * 4); // Normals
 
@@ -219,67 +231,31 @@ void Model_NWN2::parseSkin(ParserContext &ctx, uint32 offset) {
 		ctx.mdb->skip(3 * 4); // Tangents
 		ctx.mdb->skip(3 * 4); // Binormals
 
-		ctx.verticesTexture[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.verticesTexture[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.verticesTexture[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->tverts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->tverts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->tverts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
 
 		ctx.mdb->skip(4); // Bone count
 	}
 
-	ctx.faces.reserve(3 * faceCount);
+	ctx.mesh->faces.resize(faceCount);
 	for (uint32 i = 0; i < faceCount; i++) {
-		ctx.faces.push_back(ctx.mdb->readUint16LE());
-		ctx.faces.push_back(ctx.mdb->readUint16LE());
-		ctx.faces.push_back(ctx.mdb->readUint16LE());
+		MeshFace &face = ctx.mesh->faces[i];
+
+		face.tverts[0] = face.verts[0] = ctx.mdb->readUint16LE();
+		face.tverts[1] = face.verts[1] = ctx.mdb->readUint16LE();
+		face.tverts[2] = face.verts[2] = ctx.mdb->readUint16LE();
 	}
 
-	ctx.texture = diffuseMap;
+	ctx.mesh->texture = diffuseMap;
 
-	processNode(ctx);
+	processMesh(*ctx.mesh, *ctx.node);
+	delete ctx.mesh;
+	ctx.mesh = 0;
 
 	ctx.state->nodes.push_back(ctx.node);
 
 	ctx.node = 0;
-}
-
-void Model_NWN2::processNode(ParserContext &ctx) {
-	ctx.node->faces.resize(ctx.faces.size() / 3);
-
-	for (uint i = 0; i < ctx.node->faces.size(); i++) {
-		Face &face = ctx.node->faces[i];
-
-		face.vertices[0][0] = ctx.vertices[3 * ctx.faces[3 * i + 0] + 0];
-		face.vertices[0][1] = ctx.vertices[3 * ctx.faces[3 * i + 0] + 1];
-		face.vertices[0][2] = ctx.vertices[3 * ctx.faces[3 * i + 0] + 2];
-		face.vertices[1][0] = ctx.vertices[3 * ctx.faces[3 * i + 1] + 0];
-		face.vertices[1][1] = ctx.vertices[3 * ctx.faces[3 * i + 1] + 1];
-		face.vertices[1][2] = ctx.vertices[3 * ctx.faces[3 * i + 1] + 2];
-		face.vertices[2][0] = ctx.vertices[3 * ctx.faces[3 * i + 2] + 0];
-		face.vertices[2][1] = ctx.vertices[3 * ctx.faces[3 * i + 2] + 1];
-		face.vertices[2][2] = ctx.vertices[3 * ctx.faces[3 * i + 2] + 2];
-
-		face.verticesTexture[0][0] = ctx.verticesTexture[3 * ctx.faces[3 * i + 0] + 0];
-		face.verticesTexture[0][1] = ctx.verticesTexture[3 * ctx.faces[3 * i + 0] + 1];
-		face.verticesTexture[0][2] = ctx.verticesTexture[3 * ctx.faces[3 * i + 0] + 2];
-		face.verticesTexture[1][0] = ctx.verticesTexture[3 * ctx.faces[3 * i + 1] + 0];
-		face.verticesTexture[1][1] = ctx.verticesTexture[3 * ctx.faces[3 * i + 1] + 1];
-		face.verticesTexture[1][2] = ctx.verticesTexture[3 * ctx.faces[3 * i + 1] + 2];
-		face.verticesTexture[2][0] = ctx.verticesTexture[3 * ctx.faces[3 * i + 2] + 0];
-		face.verticesTexture[2][1] = ctx.verticesTexture[3 * ctx.faces[3 * i + 2] + 1];
-		face.verticesTexture[2][2] = ctx.verticesTexture[3 * ctx.faces[3 * i + 2] + 2];
-	}
-
-	try {
-		if (!ctx.texture.empty() && (ctx.texture != "NULL"))
-			ctx.node->texture = TextureMan.get(ctx.texture);
-	} catch (...) {
-		ctx.node->texture.clear();
-	}
-
-	ctx.texture.clear();
-	ctx.vertices.clear();
-	ctx.verticesTexture.clear();
-	ctx.faces.clear();
 }
 
 } // End of namespace Aurora

@@ -36,26 +36,13 @@ public:
 	~Model_KotOR();
 
 private:
-	struct FaceKotOR {
-		uint32 vertices[3];
-		uint32 verticesTexture[3];
-
-		int smoothGroup;
-		int material;
-	};
-
 	struct ParserContext {
 		Common::SeekableReadStream *mdl;
 		Common::SeekableReadStream *mdx;
 
 		State *state;
 		Node  *node;
-
-		Common::UString texture;
-
-		std::vector<float> vertices;
-		std::vector<float> verticesTexture;
-		std::vector<FaceKotOR> faces;
+		Mesh  *mesh;
 
 		uint32 offModelData;
 		uint32 offRawData;
@@ -70,21 +57,13 @@ private:
 
 	void load(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx);
 
-	void parseNode(ParserContext &ctx, uint32 offset, Node *parent);
-	void parseMesh(ParserContext &ctx);
-
-	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);
-	void readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
-			std::vector<uint32> &offsets);
-	void readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
-			std::vector<float> &floats);
+	void readNode(ParserContext &ctx, uint32 offset, Node *parent);
+	void readMesh(ParserContext &ctx);
 
 	void readStrings(Common::SeekableReadStream &mdl, const std::vector<uint32> &offsets,
 			uint32 offset, std::vector<Common::UString> &strings);
 
-	void parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
-
-	void processNode(ParserContext &ctx);
+	void readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
 };
 
 } // End of namespace Aurora

@@ -40,6 +40,7 @@ private:
 
 		State *state;
 		Node  *node;
+		Mesh  *mesh;
 
 		uint16 fileVersion;
 
@@ -52,12 +53,6 @@ private:
 		uint32 offTexData;
 		uint32 texDatasize;
 
-		Common::UString texture;
-
-		std::vector<float>  vertices;
-		std::vector<float>  verticesTexture;
-		std::vector<uint32> faces;
-
 		ParserContext(Common::SeekableReadStream &mdbStream);
 		~ParserContext();
 	};
@@ -66,16 +61,9 @@ private:
 
 	void readNode(ParserContext &ctx, uint32 offset, Node *parent);
 
-	void readArray(Common::SeekableReadStream &mdb, uint32 &start, uint32 &count);
-	void readOffsetArray(Common::SeekableReadStream &mdb, uint32 start, uint32 count,
-			std::vector<uint32> &offsets);
-	void readFloatsArray(Common::SeekableReadStream &mdb, uint32 start, uint32 count,
-			std::vector<float> &floats);
-
 	void readMesh(ParserContext &ctx);
-	void processNode(ParserContext &ctx);
 
-	void parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
+	void readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
 };
 
 } // End of namespace Aurora

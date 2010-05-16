@@ -50,10 +50,12 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_Witcher::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) : mdb(&mdbStream), state(0), node(0) {
+Model_Witcher::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) :
+	mdb(&mdbStream), state(0), node(0), mesh(0) {
 }
 
 Model_Witcher::ParserContext::~ParserContext() {
+	delete mesh;
 	delete node;
 	delete state;
 }
@@ -153,6 +155,7 @@ void Model_Witcher::load(Common::SeekableReadStream &mdb) {
 void Model_Witcher::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	ctx.mdb->seekTo(offset);
 
+	ctx.mesh = new Mesh;
 	ctx.node = new Node;
 
 	if (parent) {
@@ -174,7 +177,7 @@ void Model_Witcher::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	readArray(*ctx.mdb, childrenStart, childrenCount);
 
 	std::vector<uint32> children;
-	readOffsetArray(*ctx.mdb, childrenStart + ctx.offModelData, childrenCount, children);
+	readArrayOffsets(*ctx.mdb, childrenStart + ctx.offModelData, childrenCount, children);
 
 	uint32 controllerKeyStart, controllerKeyCount;
 	readArray(*ctx.mdb, controllerKeyStart, controllerKeyCount);
@@ -183,9 +186,9 @@ void Model_Witcher::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	readArray(*ctx.mdb, controllerDataStart, controllerDataCount);
 
 	std::vector<float> controllerData;
-	readFloatsArray(*ctx.mdb, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
+	readArrayFloats(*ctx.mdb, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
 
-	parseNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
+	readNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
 
 	ctx.mdb->skip(20);
 
@@ -225,7 +228,9 @@ void Model_Witcher::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 		// TODO: AABB
 	}
 
-	processNode(ctx);
+	processMesh(*ctx.mesh, *ctx.node);
+	delete ctx.mesh;
+	ctx.mesh = 0;
 
 	parent = ctx.node;
 
@@ -318,33 +323,38 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 	if (ctx.fileVersion == 133)
 		ctx.offTexData = ctx.mdb->readUint32LE();
 
-	ctx.vertices.resize(3 * verticesCount);
 	ctx.mdb->seekTo(ctx.offRawData + verticesStart);
+
+	ctx.mesh->verts.resize(3 * verticesCount);
 	for (uint32 i = 0; i < verticesCount; i++) {
-		ctx.vertices[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.vertices[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.vertices[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->verts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
 	}
 
-	ctx.verticesTexture.resize(3 * tVerts0Count);
 	ctx.mdb->seekTo(ctx.offRawData + tVerts0Start);
+
+	ctx.mesh->tverts.resize(3 * tVerts0Count);
 	for (uint32 i = 0; i < tVerts0Count; i++) {
-		ctx.verticesTexture[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.verticesTexture[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.verticesTexture[3 * i + 2] = 0;
+		ctx.mesh->tverts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->tverts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
+		ctx.mesh->tverts[3 * i + 2] = 0;
 	}
 
-	ctx.faces.resize(3 * facesCount);
 	ctx.mdb->seekTo(ctx.offRawData + facesStart);
+
+	ctx.mesh->faces.resize(facesCount);
 	for (uint32 i = 0; i < facesCount; i++) {
 		ctx.mdb->skip(4 * 4 + 4);
 
 		if (ctx.fileVersion == 133)
 			ctx.mdb->skip(3 * 4);
 
-		ctx.faces[3 * i + 0] = ctx.mdb->readUint32LE();
-		ctx.faces[3 * i + 1] = ctx.mdb->readUint32LE();
-		ctx.faces[3 * i + 2] = ctx.mdb->readUint32LE();
+		MeshFace &face = ctx.mesh->faces[i];
+
+		face.tverts[0] = face.verts[0] = ctx.mdb->readUint32LE();
+		face.tverts[1] = face.verts[1] = ctx.mdb->readUint32LE();
+		face.tverts[2] = face.verts[2] = ctx.mdb->readUint32LE();
 
 		if (ctx.fileVersion == 133)
 			ctx.mdb->skip(4);
@@ -383,9 +393,9 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 				while (n-- > 0)
 					it++;
 
-				ctx.texture.clear();
+				ctx.mesh->texture.clear();
 				while (it != line->end())
-					ctx.texture += *it++;
+					ctx.mesh->texture += *it++;
 			}
 		}
 
@@ -395,83 +405,7 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 	ctx.mdb->seekTo(endPos);
 }
 
-void Model_Witcher::processNode(ParserContext &ctx) {
-	ctx.node->faces.resize(ctx.faces.size() / 3);
-
-	for (uint i = 0; i < ctx.node->faces.size(); i++) {
-		Face &face = ctx.node->faces[i];
-
-		face.vertices[0][0] = ctx.vertices[3 * ctx.faces[3 * i + 0] + 0];
-		face.vertices[0][1] = ctx.vertices[3 * ctx.faces[3 * i + 0] + 1];
-		face.vertices[0][2] = ctx.vertices[3 * ctx.faces[3 * i + 0] + 2];
-		face.vertices[1][0] = ctx.vertices[3 * ctx.faces[3 * i + 1] + 0];
-		face.vertices[1][1] = ctx.vertices[3 * ctx.faces[3 * i + 1] + 1];
-		face.vertices[1][2] = ctx.vertices[3 * ctx.faces[3 * i + 1] + 2];
-		face.vertices[2][0] = ctx.vertices[3 * ctx.faces[3 * i + 2] + 0];
-		face.vertices[2][1] = ctx.vertices[3 * ctx.faces[3 * i + 2] + 1];
-		face.vertices[2][2] = ctx.vertices[3 * ctx.faces[3 * i + 2] + 2];
-
-		face.verticesTexture[0][0] = ctx.verticesTexture[3 * ctx.faces[3 * i + 0] + 0];
-		face.verticesTexture[0][1] = ctx.verticesTexture[3 * ctx.faces[3 * i + 0] + 1];
-		face.verticesTexture[0][2] = ctx.verticesTexture[3 * ctx.faces[3 * i + 0] + 2];
-		face.verticesTexture[1][0] = ctx.verticesTexture[3 * ctx.faces[3 * i + 1] + 0];
-		face.verticesTexture[1][1] = ctx.verticesTexture[3 * ctx.faces[3 * i + 1] + 1];
-		face.verticesTexture[1][2] = ctx.verticesTexture[3 * ctx.faces[3 * i + 1] + 2];
-		face.verticesTexture[2][0] = ctx.verticesTexture[3 * ctx.faces[3 * i + 2] + 0];
-		face.verticesTexture[2][1] = ctx.verticesTexture[3 * ctx.faces[3 * i + 2] + 1];
-		face.verticesTexture[2][2] = ctx.verticesTexture[3 * ctx.faces[3 * i + 2] + 2];
-	}
-
-	try {
-		if (!ctx.texture.empty() && (ctx.texture != "NULL"))
-			ctx.node->texture = TextureMan.get(ctx.texture);
-	} catch (...) {
-		ctx.node->texture.clear();
-	}
-
-	ctx.texture.clear();
-	ctx.vertices.clear();
-	ctx.verticesTexture.clear();
-	ctx.faces.clear();
-}
-
-void Model_Witcher::readArray(Common::SeekableReadStream &mdb, uint32 &start, uint32 &count) {
-	start = mdb.readUint32LE();
-
-	uint32 usedCount      = mdb.readUint32LE();
-	uint32 allocatedCount = mdb.readUint32LE();
-
-	if (usedCount != allocatedCount)
-		warning("Model_Witcher::readArray(): usedCount != allocatedCount (%d, %d)", usedCount, allocatedCount);
-
-	count = usedCount;
-}
-
-void Model_Witcher::readOffsetArray(Common::SeekableReadStream &mdb, uint32 start, uint32 count,
-		std::vector<uint32> &offsets) {
-
-	uint32 pos = mdb.seekTo(start);
-
-	offsets.reserve(count);
-	while (count-- > 0)
-		offsets.push_back(mdb.readUint32LE());
-
-	mdb.seekTo(pos);
-}
-
-void Model_Witcher::readFloatsArray(Common::SeekableReadStream &mdb, uint32 start, uint32 count,
-		std::vector<float> &floats) {
-
-	uint32 pos = mdb.seekTo(start);
-
-	floats.reserve(count);
-	while (count-- > 0)
-		floats.push_back(mdb.readIEEEFloatLE());
-
-	mdb.seekTo(pos);
-}
-
-void Model_Witcher::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
+void Model_Witcher::readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
 	uint32 pos = ctx.mdb->seekTo(offset);
 
 	// TODO: Implement this properly :P
@@ -485,7 +419,7 @@ void Model_Witcher::parseNodeControllers(ParserContext &ctx, uint32 offset, uint
 		ctx.mdb->skip(1);
 
 		if (columnCount == 0xFFFF)
-			throw Common::Exception("TODO: Model_KotOR::parseNodeControllers(): columnCount == 0xFFFF");
+			throw Common::Exception("TODO: Model_KotOR::readNodeControllers(): columnCount == 0xFFFF");
 
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)

@@ -38,25 +38,12 @@ public:
 	static bool isBinary(Common::SeekableReadStream &mdl);
 
 private:
-	struct FaceNWN {
-		uint32 vertices[3];
-		uint32 verticesTexture[3];
-
-		int smoothGroup;
-		int material;
-	};
-
 	struct ParserContext {
 		Common::SeekableReadStream *mdl;
 
 		State *state;
 		Node  *node;
-
-		Common::UString texture;
-
-		std::vector<float> vertices;
-		std::vector<float> verticesTexture;
-		std::vector<FaceNWN> faces;
+		Mesh  *mesh;
 
 		uint32 offModelData;
 		uint32 offRawData;
@@ -74,23 +61,13 @@ private:
 
 	void load(Common::SeekableReadStream &mdl);
 
-	void load(ParserContext &ctx);
+	void readNode(ParserContext &ctx, uint32 offset, Node *parent, bool rootState);
+	void readMesh(ParserContext &ctx);
+	void readAnim(ParserContext &ctx);
 
-	void parseNode(ParserContext &ctx, uint32 offset, Node *parent, bool rootState);
-	void parseMesh(ParserContext &ctx);
-	void parseAnim(ParserContext &ctx);
+	void readAnimGeometry(ParserContext &ctx, uint32 offset);
 
-	void parseAnimGeometry(ParserContext &ctx, uint32 offset);
-
-	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);
-	void readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
-			std::vector<uint32> &offsets);
-	void readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
-			std::vector<float> &floats);
-
-	void parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
-
-	void processNode(ParserContext &ctx);
+	void readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
 };
 
 } // End of namespace Aurora
