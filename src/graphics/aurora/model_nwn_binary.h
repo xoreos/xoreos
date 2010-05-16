@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/aurora/model_nwn.h
- *  Loading MDL files found in Neverwinter Nights.
+/** @file graphics/aurora/model_nwn_binary.h
+ *  Loading Binary MDL files found in Neverwinter Nights.
  */
 
-#ifndef GRAPHICS_AURORA_MODEL_NWN_H
-#define GRAPHICS_AURORA_MODEL_NWN_H
+#ifndef GRAPHICS_AURORA_MODEL_NWN_BINARY_H
+#define GRAPHICS_AURORA_MODEL_NWN_BINARY_H
 
 #include <vector>
 
@@ -30,10 +30,12 @@ namespace Graphics {
 
 namespace Aurora {
 
-class Model_NWN : public Model {
+class Model_NWN_Binary : public Model {
 public:
-	Model_NWN(Common::SeekableReadStream &mdl, ModelType type = kModelTypeObject);
-	~Model_NWN();
+	Model_NWN_Binary(Common::SeekableReadStream &mdl, ModelType type = kModelTypeObject);
+	~Model_NWN_Binary();
+
+	static bool isBinary(Common::SeekableReadStream &mdl);
 
 private:
 	struct FaceNWN {
@@ -70,30 +72,15 @@ private:
 
 	NodeMap _nodeMap;
 
-	Common::StreamTokenizer *_tokenizeASCII;
-
 	void load(Common::SeekableReadStream &mdl);
 
-	void loadASCII(ParserContext &ctx);
-	void loadBinary(ParserContext &ctx);
+	void load(ParserContext &ctx);
 
-	void parseNodeASCII(ParserContext &ctx, const Common::UString &type, const Common::UString &name);
-	void parseAnimASCII(ParserContext &ctx);
+	void parseNode(ParserContext &ctx, uint32 offset, Node *parent, bool rootState);
+	void parseMesh(ParserContext &ctx);
+	void parseAnim(ParserContext &ctx);
 
-	Classification parseClassification(Common::UString classification);
-	void parseFloats(const std::vector<Common::UString> &strings, float *floats, int n, int start);
-
-	void parseVerticesASCII(ParserContext &ctx, std::vector<float> &vertices, int n);
-	void parseFacesASCII   (ParserContext &ctx, int n);
-	void parseWeightsASCII (ParserContext &ctx, int n);
-
-	void parseConstraintsASCII(ParserContext &ctx, std::vector<float> &constraints, int n);
-
-	void parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent, bool rootState);
-	void parseMeshBinary(ParserContext &ctx);
-	void parseAnimBinary(ParserContext &ctx);
-
-	void parseAnimGeometryBinary(ParserContext &ctx, uint32 offset);
+	void parseAnimGeometry(ParserContext &ctx, uint32 offset);
 
 	void readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count);
 	void readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
@@ -110,4 +97,4 @@ private:
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_MODEL_NWN_H
+#endif // GRAPHICS_AURORA_MODEL_NWN_BINARY_H

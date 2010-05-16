@@ -24,7 +24,8 @@
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/font.h"
 #include "graphics/aurora/text.h"
-#include "graphics/aurora/model_nwn.h"
+#include "graphics/aurora/model_nwn_ascii.h"
+#include "graphics/aurora/model_nwn_binary.h"
 
 #include "sound/sound.h"
 
@@ -246,7 +247,12 @@ Graphics::Aurora::Model *NWNEngine::loadModel(const Common::UString &resref,
 	if (!mdl)
 		throw Common::Exception("No such model");
 
-	return new Graphics::Aurora::Model_NWN(*mdl, type);
+	if      (Graphics::Aurora::Model_NWN_Binary::isBinary(*mdl))
+		return new Graphics::Aurora::Model_NWN_Binary(*mdl, type);
+	else if (Graphics::Aurora::Model_NWN_ASCII::isASCII(*mdl))
+		return new Graphics::Aurora::Model_NWN_ASCII(*mdl, type);
+
+	throw Common::Exception("Model not binary and not ASCII?!?");
 }
 
 void NWNEngine::freeModel(Graphics::Aurora::Model *&model) {

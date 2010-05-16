@@ -8,8 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/aurora/model_nwn.cpp
- *  Loading MDL files found in Neverwinter Nights.
+/** @file graphics/aurora/model_nwn_binary.cpp
+ *  Loading Binary MDL files found in Neverwinter Nights.
  */
 
 // Disable the "unused variable" warnings while most stuff is still stubbed
@@ -23,7 +23,7 @@
 
 #include "events/requests.h"
 
-#include "graphics/aurora/model_nwn.h"
+#include "graphics/aurora/model_nwn_binary.h"
 
 static const int kNodeFlagHasHeader    = 0x00000001;
 static const int kNodeFlagHasLight     = 0x00000002;
@@ -89,22 +89,16 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_NWN::ParserContext::ParserContext(Common::SeekableReadStream &stream) : mdl(&stream), state(0), node(0) {
+Model_NWN_Binary::ParserContext::ParserContext(Common::SeekableReadStream &stream) : mdl(&stream), state(0), node(0) {
 }
 
-Model_NWN::ParserContext::~ParserContext() {
+Model_NWN_Binary::ParserContext::~ParserContext() {
 	delete node;
 	delete state;
 }
 
 
-Model_NWN::Model_NWN(Common::SeekableReadStream &mdl, ModelType type) : Model(type) {
-	_tokenizeASCII = new Common::StreamTokenizer(Common::StreamTokenizer::kRuleIgnoreAll);
-
-	_tokenizeASCII->addSeparator(' ');
-	_tokenizeASCII->addChunkEnd('\n');
-	_tokenizeASCII->addIgnore('\r');
-
+Model_NWN_Binary::Model_NWN_Binary(Common::SeekableReadStream &mdl, ModelType type) : Model(type) {
 	load(mdl);
 	setState();
 
@@ -115,364 +109,20 @@ Model_NWN::Model_NWN(Common::SeekableReadStream &mdl, ModelType type) : Model(ty
 	RequestMan.sync();
 }
 
-Model_NWN::~Model_NWN() {
-	delete _tokenizeASCII;
+Model_NWN_Binary::~Model_NWN_Binary() {
 }
 
-void Model_NWN::load(Common::SeekableReadStream &mdl) {
+bool Model_NWN_Binary::isBinary(Common::SeekableReadStream &mdl) {
+	mdl.seek(0);
+
+	return mdl.readUint32LE() == 0;
+}
+
+void Model_NWN_Binary::load(Common::SeekableReadStream &mdl) {
 	ParserContext ctx(mdl);
 
-	if (ctx.mdl->readUint32LE() == 0)
-		loadBinary(ctx);
-	else
-		loadASCII(ctx);
-}
+	ctx.mdl->seek(4);
 
-void Model_NWN::loadASCII(ParserContext &ctx) {
-	ctx.mdl->seek(0);
-
-	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
-
-		_tokenizeASCII->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		line[0].tolower();
-
-		if        (line[0] == "newmodel") {
-			_name = line[1];
-		} else if (line[0] == "setsupermodel") {
-			if (line[1] != _name)
-				throw Common::Exception("setsupermodel with an invalid name");
-
-			if (line[2] != "NULL")
-				warning("TODO: setsupermodel");
-
-			_superModel = 0;
-		} else if (line[0] == "classification") {
-			_class = parseClassification(line[1]);
-		} else if (line[0] == "setanimationscale") {
-			line[1].parse(_scale);
-		} else if (line[0] == "beginmodelgeom") {
-			if (line[1] != _name)
-				throw Common::Exception("beginmodelgeom with an invalid name");
-		} else if (line[0] == "node") {
-			ctx.state = new State;
-
-			parseNodeASCII(ctx, line[1], line[2]);
-
-			_states.insert(std::make_pair(ctx.state->name, ctx.state));
-			ctx.state = 0;
-		} else if (line[0] == "newanim") {
-			parseAnimASCII(ctx);
-		} else if (line[0] == "filedependancy") {
-		} else if (line[0] == "endmodelgeom") {
-		} else if (line[0] == "donemodel") {
-			break;
-		} else
-			throw Common::Exception("Unknown MDL command \"%s\"", line[0].c_str());
-	}
-}
-
-void Model_NWN::parseNodeASCII(ParserContext &ctx, const Common::UString &type, const Common::UString &name) {
-
-	bool end = false;
-
-	bool skipNode = false;
-
-	ctx.node = new Node;
-
-	ctx.node->name = name;
-
-	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin"))
-		ctx.node->render = true;
-	else
-		ctx.node->render = false;
-
-	if ((type == "emitter") || (type == "reference")) {
-		warning("TODO: Node type %s", type.c_str());
-		skipNode = true;
-	}
-
-	if (type == "danglymesh")
-		ctx.node->dangly = true;
-
-	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
-
-		_tokenizeASCII->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		line[0].tolower();
-
-		if        (line[0] == "endnode") {
-			end = true;
-			break;
-		} else if (skipNode) {
-			continue;
-		} else if (line[0] == "parent") {
-			if (line[1] != "NULL") {
-				NodeMap::iterator it = _nodeMap.find(line[1]);
-				if (it == _nodeMap.end())
-					throw Common::Exception("Non-existent parent node");
-
-				ctx.node->parent = it->second;
-
-				ctx.node->parent->children.push_back(ctx.node);
-			} else {
-				ctx.node->parent = 0;
-				ctx.state->nodes.push_back(ctx.node);
-			}
-		} else if (line[0] == "position") {
-			parseFloats(line, ctx.node->position, 3, 1);
-		} else if (line[0] == "orientation") {
-			parseFloats(line, ctx.node->orientation, 4, 1);
-
-			ctx.node->orientation[3] = Common::rad2deg(ctx.node->orientation[3]);
-		} else if (line[0] == "wirecolor") {
-			parseFloats(line, ctx.node->wirecolor, 3, 1);
-		} else if (line[0] == "ambient") {
-			parseFloats(line, ctx.node->ambient, 3, 1);
-		} else if (line[0] == "diffuse") {
-			parseFloats(line, ctx.node->diffuse, 3, 1);
-		} else if (line[0] == "specular") {
-			parseFloats(line, ctx.node->specular, 3, 1);
-		} else if (line[0] == "shininess") {
-			parseFloats(line, &ctx.node->shininess, 1, 1);
-		} else if (line[0] == "period") {
-			parseFloats(line, &ctx.node->period, 1, 1);
-		} else if (line[0] == "tightness") {
-			parseFloats(line, &ctx.node->tightness, 1, 1);
-		} else if (line[0] == "displacement") {
-			parseFloats(line, &ctx.node->displacement, 1, 1);
-		} else if (line[0] == "showdispl") {
-			line[1].parse(ctx.node->showdispl);
-		} else if (line[0] == "displtype") {
-			line[1].parse(ctx.node->displtype);
-		} else if (line[0] == "center") {
-			if (line[1] == "undefined")
-				warning("TODO: center == undefined");
-			else
-				parseFloats(line, ctx.node->center, 3, 1);
-		} else if (line[0] == "tilefade") {
-			line[1].parse(ctx.node->tilefade);
-		} else if (line[0] == "scale") {
-			line[1].parse(ctx.node->scale);
-		} else if (line[0] == "render") {
-			line[1].parse(ctx.node->render);
-		} else if (line[0] == "shadow") {
-			line[1].parse(ctx.node->shadow);
-		} else if (line[0] == "beaming") {
-			line[1].parse(ctx.node->beaming);
-		} else if (line[0] == "inheritcolor") {
-			line[1].parse(ctx.node->inheritcolor);
-		} else if (line[0] == "rotatetexture") {
-			line[1].parse(ctx.node->rotatetexture);
-		} else if (line[0] == "alpha") {
-			line[1].parse(ctx.node->alpha);
-		} else if (line[0] == "transparencyhint") {
-			line[1].parse(ctx.node->transparencyhint);
-		} else if (line[0] == "selfillumcolor") {
-			parseFloats(line, ctx.node->selfillumcolor, 3, 1);
-		} else if (line[0] == "danglymesh") {
-			line[1].parse(ctx.node->dangly);
-		} else if (line[0] == "gizmo") {
-			warning("TODO: gizmo \"%s\"", line[1].c_str());
-		} else if (line[0] == "constraints") {
-			int n;
-
-			line[1].parse(n);
-			parseConstraintsASCII(ctx, ctx.node->constraints, n);
-		} else if (line[0] == "weights") {
-			warning("TODO: Weights");
-
-			int n;
-
-			line[1].parse(n);
-			parseWeightsASCII(ctx, n);
-		} else if (line[0] == "bitmap") {
-			ctx.texture = line[1];
-		} else if (line[0] == "verts") {
-			int n;
-
-			line[1].parse(n);
-			parseVerticesASCII(ctx, ctx.vertices, n);
-		} else if (line[0] == "tverts") {
-			int n;
-
-			line[1].parse(n);
-			parseVerticesASCII(ctx, ctx.verticesTexture, n);
-		} else if (line[0] == "faces") {
-			int n;
-
-			line[1].parse(n);
-			parseFacesASCII(ctx, n);
-		} else
-			throw Common::Exception("Unknown MDL node command \"%s\"", line[0].c_str());
-	}
-
-	if (!end)
-		throw Common::Exception("node without endnode");
-
-	processNode(ctx);
-
-	_nodes.push_back(ctx.node);
-	_nodeMap.insert(std::make_pair(name, ctx.node));
-	ctx.node = 0;
-}
-
-void Model_NWN::parseVerticesASCII(ParserContext &ctx, std::vector<float> &vertices, int n) {
-	vertices.resize(3 * n);
-
-	float *verts = &vertices[0];
-	while (n > 0) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
-
-		_tokenizeASCII->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		parseFloats(line, verts, 3, 0);
-
-		n--;
-		verts += 3;
-	}
-}
-
-void Model_NWN::parseFacesASCII(ParserContext &ctx, int n) {
-	ctx.faces.resize(n);
-
-	for (int i = 0; i < n; ) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
-
-		_tokenizeASCII->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		FaceNWN &face = ctx.faces[i++];
-
-		line[0].parse(face.vertices[0]);
-		line[1].parse(face.vertices[1]);
-		line[2].parse(face.vertices[2]);
-
-		line[3].parse(face.smoothGroup);
-
-		line[4].parse(face.verticesTexture[0]);
-		line[5].parse(face.verticesTexture[1]);
-		line[6].parse(face.verticesTexture[2]);
-
-		line[7].parse(face.material);
-	}
-}
-
-void Model_NWN::parseConstraintsASCII(ParserContext &ctx, std::vector<float> &constraints, int n) {
-	constraints.resize(n);
-
-	for (int i = 0; i < n; ) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
-
-		_tokenizeASCII->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		line[0].parse(constraints[i++]);
-	}
-}
-
-void Model_NWN::parseWeightsASCII(ParserContext &ctx, int n) {
-	for (int i = 0; i < n; ) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
-
-		_tokenizeASCII->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		i++;
-	}
-}
-
-void Model_NWN::parseAnimASCII(ParserContext &ctx) {
-	bool end = false;
-
-	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenizeASCII->getTokens(*ctx.mdl, line);
-
-		_tokenizeASCII->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		line[0].tolower();
-
-		if (line[0] == "doneanim") {
-			end = true;
-			break;
-		}
-	}
-
-	if (!end)
-		throw Common::Exception("anim without doneanim");
-}
-
-Model_NWN::Classification Model_NWN::parseClassification(Common::UString classification) {
-	classification.tolower();
-
-	if (classification == "effect")
-		return kClassEffect;
-	if (classification == "effects")
-		return kClassEffect;
-	if (classification == "tile")
-		return kClassTile;
-	if (classification == "character")
-		return kClassCharacter;
-	if (classification == "door")
-		return kClassDoor;
-	if (classification == "item")
-		return kClassItem;
-	if (classification == "gui")
-		return kClassGUI;
-
-	return kClassOther;
-}
-
-void Model_NWN::parseFloats(const std::vector<Common::UString> &strings, float *floats, int n, int start) {
-	if (strings.size() < ((uint) (start + n)))
-		throw Common::Exception("Missing tokens");
-
-	for (int i = 0; i < n; i++)
-		strings[start + i].parse(floats[i]);
-}
-
-void Model_NWN::loadBinary(ParserContext &ctx) {
 	uint32 sizeModelData = ctx.mdl->readUint32LE();
 	uint32 sizeRawData   = ctx.mdl->readUint32LE();
 
@@ -524,7 +174,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	ctx.hasOrientation = false;
 	ctx.state = new State;
 
-	parseNodeBinary(ctx, nodeHeadPointer + ctx.offModelData, 0, true);
+	parseNode(ctx, nodeHeadPointer + ctx.offModelData, 0, true);
 
 	_states.insert(std::make_pair(ctx.state->name, ctx.state));
 	_currentState = ctx.state;
@@ -536,14 +186,14 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	for (std::vector<uint32>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
 		ctx.state = new State;
 
-		parseAnimGeometryBinary(ctx, *offset + ctx.offModelData);
+		parseAnimGeometry(ctx, *offset + ctx.offModelData);
 
 		_states.insert(std::make_pair(ctx.state->name, ctx.state));
 		ctx.state = 0;
 	}
 }
 
-void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent, bool rootState) {
+void Model_NWN_Binary::parseNode(ParserContext &ctx, uint32 offset, Node *parent, bool rootState) {
 	ctx.mdl->seekTo(offset);
 
 	ctx.node = new Node;
@@ -603,7 +253,7 @@ void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent,
 	}
 
 	if (flags & kNodeFlagHasMesh) {
-		parseMeshBinary(ctx);
+		parseMesh(ctx);
 	}
 
 	if (flags & kNodeFlagHasSkin) {
@@ -612,7 +262,7 @@ void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent,
 	}
 
 	if (flags & kNodeFlagHasAnim) {
-		parseAnimBinary(ctx);
+		parseAnim(ctx);
 	}
 
 	if (flags & kNodeFlagHasDangly) {
@@ -658,11 +308,11 @@ void Model_NWN::parseNodeBinary(ParserContext &ctx, uint32 offset, Node *parent,
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ctx.hasPosition    = false;
 		ctx.hasOrientation = false;
-		parseNodeBinary(ctx, *child + ctx.offModelData, parent, rootState);
+		parseNode(ctx, *child + ctx.offModelData, parent, rootState);
 	}
 }
 
-void Model_NWN::parseMeshBinary(ParserContext &ctx) {
+void Model_NWN_Binary::parseMesh(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	uint32 facesStart, facesCount;
@@ -750,7 +400,7 @@ void Model_NWN::parseMeshBinary(ParserContext &ctx) {
 	ctx.mdl->skip(4); // Unknown
 
 	if (textureCount > 1)
-		warning("Model_NWN::parseMeshBinary(): textureCount == %d (\"%s\", \"%s\", \"%s\", \"%s\")",
+		warning("Model_NWN_Binary::parseMesh(): textureCount == %d (\"%s\", \"%s\", \"%s\", \"%s\")",
 				textureCount, textures[0].c_str(), textures[1].c_str(), textures[2].c_str(), textures[3].c_str());
 
 	ctx.texture = textures[0];
@@ -805,7 +455,7 @@ void Model_NWN::parseMeshBinary(ParserContext &ctx) {
 	ctx.mdl->seekTo(endPos);
 }
 
-void Model_NWN::parseAnimBinary(ParserContext &ctx) {
+void Model_NWN_Binary::parseAnim(ParserContext &ctx) {
 	float samplePeriod = ctx.mdl->readIEEEFloatLE();
 
 	uint32 a0S, a0C;
@@ -824,19 +474,19 @@ void Model_NWN::parseAnimBinary(ParserContext &ctx) {
 	uint32 textureVerticesCount = ctx.mdl->readUint32LE();
 }
 
-void Model_NWN::readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count) {
+void Model_NWN_Binary::readArray(Common::SeekableReadStream &mdl, uint32 &start, uint32 &count) {
 	start = mdl.readUint32LE();
 
 	uint32 usedCount      = mdl.readUint32LE();
 	uint32 allocatedCount = mdl.readUint32LE();
 
 	if (usedCount != allocatedCount)
-		warning("Model_NWN::readArray(): usedCount != allocatedCount (%d, %d)", usedCount, allocatedCount);
+		warning("Model_NWN_Binary::readArray(): usedCount != allocatedCount (%d, %d)", usedCount, allocatedCount);
 
 	count = usedCount;
 }
 
-void Model_NWN::readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
+void Model_NWN_Binary::readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
 		std::vector<uint32> &offsets) {
 
 	uint32 pos = mdl.seekTo(start);
@@ -848,7 +498,7 @@ void Model_NWN::readOffsetArray(Common::SeekableReadStream &mdl, uint32 start, u
 	mdl.seekTo(pos);
 }
 
-void Model_NWN::readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
+void Model_NWN_Binary::readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, uint32 count,
 		std::vector<float> &floats) {
 
 	uint32 pos = mdl.seekTo(start);
@@ -860,7 +510,7 @@ void Model_NWN::readFloatsArray(Common::SeekableReadStream &mdl, uint32 start, u
 	mdl.seekTo(pos);
 }
 
-void Model_NWN::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
+void Model_NWN_Binary::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
 	uint32 pos = ctx.mdl->seekTo(offset);
 
 	// TODO: Implement this properly :P
@@ -874,7 +524,7 @@ void Model_NWN::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 c
 		ctx.mdl->skip(1);
 
 		if (columnCount == 0xFFFF)
-			throw Common::Exception("TODO: Model_NWN::parseNodeControllers(): columnCount == 0xFFFF");
+			throw Common::Exception("TODO: Model_NWN_Binary::parseNodeControllers(): columnCount == 0xFFFF");
 
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)
@@ -919,7 +569,7 @@ void Model_NWN::parseNodeControllers(ParserContext &ctx, uint32 offset, uint32 c
 	ctx.mdl->seekTo(pos);
 }
 
-void Model_NWN::parseAnimGeometryBinary(ParserContext &ctx, uint32 offset) {
+void Model_NWN_Binary::parseAnimGeometry(ParserContext &ctx, uint32 offset) {
 	ctx.mdl->seekTo(offset);
 
 	ctx.mdl->skip(8); // Function pointers
@@ -955,10 +605,10 @@ void Model_NWN::parseAnimGeometryBinary(ParserContext &ctx, uint32 offset) {
 
 	ctx.hasPosition    = false;
 	ctx.hasOrientation = false;
-	parseNodeBinary(ctx, nodeHeadPointer + ctx.offModelData, 0, false);
+	parseNode(ctx, nodeHeadPointer + ctx.offModelData, 0, false);
 }
 
-void Model_NWN::processNode(ParserContext &ctx) {
+void Model_NWN_Binary::processNode(ParserContext &ctx) {
 	ctx.node->faces.resize(ctx.faces.size());
 
 	// Go over each face and assign the actual coordinates
