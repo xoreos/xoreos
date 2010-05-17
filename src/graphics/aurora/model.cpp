@@ -205,10 +205,8 @@ void Model::render() {
 		glScalef(1.2, 1.2, 1.2);
 	}
 
-	if (_type == kModelTypeGUIFront) {
+	if (_type == kModelTypeGUIFront)
 		glScalef(100, 100, 100);
-		glTranslatef(-4.76, -1.37, 0.0);
-	}
 
 	glTranslatef(_position[0], _position[1], _position[2]);
 

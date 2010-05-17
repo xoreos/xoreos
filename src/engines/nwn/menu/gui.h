@@ -8,38 +8,54 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/main.h
- *  The main menu.
+/** @file engines/nwn/menu/gui.h
+ *  A GUI.
  */
 
-#ifndef ENGINES_NWN_MENU_MAIN_H
-#define ENGINES_NWN_MENU_MAIN_H
+#ifndef ENGINES_NWN_MENU_GUI_H
+#define ENGINES_NWN_MENU_GUI_H
+
+#include <list>
+
+#include "common/ustring.h"
+
+#include "aurora/guifile.h"
 
 #include "engines/nwn/util.h"
+
+namespace Common {
+	class SeekableReadStream;
+}
 
 namespace Engines {
 
 namespace NWN {
 
-class GUI;
-
-class MainMenu {
+class GUI : public Aurora::GUIFile {
 public:
-	MainMenu(bool xp1, bool xp2);
-	~MainMenu();
+	GUI(Common::SeekableReadStream &gui);
+	~GUI();
 
 	void show();
-	void handle();
 
 private:
-	GUI *_gui;
+	struct Widget {
+		Object *object;
 
-	Graphics::Aurora::Model *_xp1;
-	Graphics::Aurora::Model *_xp2;
+		Graphics::Aurora::Model *model;
+
+		Widget(Object &obj);
+	};
+
+	std::list<Widget> _widgets;
+
+	void load();
 };
+
+GUI *loadGUI(const Common::UString &resref);
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_MAIN_H
+#endif // ENGINES_NWN_MENU_GUI_H

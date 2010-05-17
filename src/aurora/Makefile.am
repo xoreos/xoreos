@@ -19,7 +19,8 @@ noinst_HEADERS = types.h \
                  2dafile.h \
                  locstring.h \
                  gfffile.h \
-                 gffstructs.h
+                 gffstructs.h \
+                 guifile.h
 
 libaurora_la_SOURCES = error.cpp \
                        util.cpp \
@@ -37,4 +38,5 @@ libaurora_la_SOURCES = error.cpp \
                        2dafile.cpp \
                        locstring.cpp \
                        gfffile.cpp \
-                       gffstructs.cpp
+                       gffstructs.cpp \
+                       guifile.cpp

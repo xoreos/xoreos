@@ -31,7 +31,7 @@ Graphics::Aurora::Model *loadModel(const Common::UString &resref,
 
 	Common::SeekableReadStream *mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
 	if (!mdl)
-		throw Common::Exception("No such model");
+		throw Common::Exception("No such model \"%s\"", resref.c_str());
 
 	if      (Graphics::Aurora::Model_NWN_Binary::isBinary(*mdl))
 		return new Graphics::Aurora::Model_NWN_Binary(*mdl, type);

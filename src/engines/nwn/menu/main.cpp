@@ -13,6 +13,7 @@
  */
 
 #include "engines/nwn/menu/main.h"
+#include "engines/nwn/menu/gui.h"
 
 #include "events/events.h"
 
@@ -22,30 +23,29 @@ namespace Engines {
 
 namespace NWN {
 
-MainMenu::MainMenu(bool xp1, bool xp2) : _background(0), _xp1(0), _xp2(0) {
+MainMenu::MainMenu(bool xp1, bool xp2) : _gui(0), _xp1(0), _xp2(0) {
+	_gui = loadGUI("pre_main");
+
 	if (xp1) {
 		_xp1 = loadModel("ctl_xp1_text", Graphics::Aurora::kModelTypeGUIFront);
-		_xp1->setPosition(6.0, 1.38, 0.5);
+		_xp1->setPosition(1.24, 0.00, 0.50);
 	}
 
 	if (xp2) {
 		_xp2 = loadModel("ctl_xp2_text", Graphics::Aurora::kModelTypeGUIFront);
-		_xp2->setPosition(6.0, -0.10, 0.5);
+		_xp2->setPosition(1.24, -1.47, 0.50);
 	}
-
-	// => pre_main.gui
-	_background = loadModel("pnl_mainmenu", Graphics::Aurora::kModelTypeGUIFront);
-	_background->setPosition(4.760000, 1.370000, 0.000000);
 }
 
 MainMenu::~MainMenu() {
+	delete _gui;
+
 	freeModel(_xp1);
 	freeModel(_xp2);
-	freeModel(_background);
 }
 
 void MainMenu::show() {
-	_background->show();
+	_gui->show();
 
 	if (_xp1)
 		_xp1->show();
