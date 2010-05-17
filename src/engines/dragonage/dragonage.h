@@ -26,6 +26,8 @@ namespace Common {
 	class FileList;
 }
 
+namespace Engines {
+
 namespace DragonAge {
 
 class DragonAgeEngineProbe : public Engines::EngineProbe {
@@ -59,5 +61,7 @@ private:
 };
 
 } // End of namespace DragonAge
+
+} // End of namespace Engines
 
 #endif // ENGINES_DRAGONAGE_DRAGONAGE_H

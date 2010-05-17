@@ -14,6 +14,8 @@
 
 #include "engines/thewitcher/thewitcher.h"
 
+#include "engines/util.h"
+
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
@@ -27,6 +29,8 @@
 
 #include "aurora/resman.h"
 #include "aurora/error.h"
+
+namespace Engines {
 
 namespace TheWitcher {
 
@@ -169,3 +173,5 @@ Graphics::Aurora::Model *TheWitcherEngine::loadModel(const Common::UString &resr
 }
 
 } // End of namespace TheWitcher
+
+} // End of namespace Engines

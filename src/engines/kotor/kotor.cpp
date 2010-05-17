@@ -14,6 +14,8 @@
 
 #include "engines/kotor/kotor.h"
 
+#include "engines/util.h"
+
 #include "common/util.h"
 #include "common/strutil.h"
 #include "common/filelist.h"
@@ -32,6 +34,8 @@
 
 #include "aurora/resman.h"
 #include "aurora/error.h"
+
+namespace Engines {
 
 namespace KotOR {
 
@@ -194,3 +198,5 @@ Graphics::Aurora::Model *KotOREngine::loadModel(const Common::UString &resref) {
 }
 
 } // End of namespace KotOR
+
+} // End of namespace Engines

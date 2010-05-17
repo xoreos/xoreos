@@ -14,6 +14,8 @@
 
 #include "engines/dragonage/dragonage.h"
 
+#include "engines/util.h"
+
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
@@ -26,6 +28,8 @@
 
 #include "aurora/resman.h"
 #include "aurora/error.h"
+
+namespace Engines {
 
 namespace DragonAge {
 
@@ -174,3 +178,5 @@ void DragonAgeEngine::init() {
 }
 
 } // End of namespace DragonAge
+
+} // End of namespace Engines

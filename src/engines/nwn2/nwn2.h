@@ -28,6 +28,8 @@ namespace Common {
 	class FileList;
 }
 
+namespace Engines {
+
 namespace NWN2 {
 
 class NWN2EngineProbe : public Engines::EngineProbe {
@@ -63,5 +65,7 @@ private:
 };
 
 } // End of namespace NWN2
+
+} // End of namespace Engines
 
 #endif // ENGINES_NWN2_NWN2_H

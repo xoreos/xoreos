@@ -14,6 +14,8 @@
 
 #include "engines/nwn2/nwn2.h"
 
+#include "engines/util.h"
+
 #include "common/util.h"
 #include "common/strutil.h"
 #include "common/filelist.h"
@@ -32,6 +34,8 @@
 
 #include "aurora/resman.h"
 #include "aurora/error.h"
+
+namespace Engines {
 
 namespace NWN2 {
 
@@ -226,3 +230,5 @@ Graphics::Aurora::Model *NWN2Engine::loadModel(const Common::UString &resref) {
 }
 
 } // End of namespace NWN2
+
+} // End of namespace Engines

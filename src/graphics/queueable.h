@@ -73,6 +73,10 @@ protected:
 		_inQueue = false;
 	}
 
+	bool isInQueue() {
+		return _inQueue;
+	}
+
 private:
 	bool _inQueue;
 

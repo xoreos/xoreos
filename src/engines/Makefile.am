@@ -5,11 +5,13 @@ SUBDIRS = nwn nwn2 kotor kotor2 thewitcher sonic dragonage
 noinst_LTLIBRARIES = libengines.la
 
 noinst_HEADERS = engine.h \
+                 util.h \
                  engineprobe.h \
                  enginemanager.h \
                  gamethread.h
 
 libengines_la_SOURCES = engine.cpp \
+                        util.cpp \
                         enginemanager.cpp \
                         gamethread.cpp
 

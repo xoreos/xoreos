@@ -9,7 +9,7 @@
  */
 
 /** @file engines/nwn/nwn.h
- *  Engine class handling Neverwinter Nights
+ *  Engine class handling Neverwinter Nights.
  */
 
 #ifndef ENGINES_NWN_NWN_H
@@ -22,11 +22,11 @@
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
-#include "graphics/aurora/types.h"
-
 namespace Common {
 	class FileList;
 }
+
+namespace Engines {
 
 namespace NWN {
 
@@ -62,14 +62,10 @@ private:
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
 
 	void init();
-
-	Graphics::Aurora::Model *showLegal();
-
-	Graphics::Aurora::Model *loadModel(const Common::UString &resref,
-			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject);
-	void freeModel(Graphics::Aurora::Model *&model);
 };
 
 } // End of namespace NWN
+
+} // End of namespace Engines
 
 #endif // ENGINES_NWN_NWN_H

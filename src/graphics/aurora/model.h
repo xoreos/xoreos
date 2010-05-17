@@ -64,6 +64,8 @@ public:
 	void show(); ///< The model should be rendered.
 	void hide(); ///< The model should not be rendered.
 
+	bool shown(); ///< Should the model be rendered?
+
 	/** Fade in the model for length ms. */
 	void fadeIn(uint32 length);
 	/** Fade out the model for length ms. */

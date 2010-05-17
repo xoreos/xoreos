@@ -166,6 +166,13 @@ void Model::hide() {
 	removeFromQueue();
 }
 
+bool Model::shown() {
+	if (_fadeValue <= 0.0)
+		removeFromQueue();
+
+	return isInQueue();
+}
+
 void Model::fadeIn(uint32 length) {
 	_fade      = true;
 	_fadeStart = EventMan.getTimestamp();

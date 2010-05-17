@@ -28,6 +28,8 @@ namespace Common {
 	class FileList;
 }
 
+namespace Engines {
+
 namespace KotOR2 {
 
 class KotOR2EngineProbe : public Engines::EngineProbe {
@@ -63,5 +65,7 @@ private:
 };
 
 } // End of namespace KotOR2
+
+} // End of namespace Engines
 
 #endif // ENGINES_KOTOR2_KOTOR2_H

@@ -9,10 +9,14 @@
  */
 
 /** @file engines/nwn/nwn.cpp
- *  Engine class handling Neverwinter Nights
+ *  Engine class handling Neverwinter Nights.
  */
 
 #include "engines/nwn/nwn.h"
+#include "engines/nwn/menu/legal.h"
+#include "engines/nwn/menu/main.h"
+
+#include "engines/util.h"
 
 #include "common/util.h"
 #include "common/strutil.h"
@@ -24,8 +28,7 @@
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/font.h"
 #include "graphics/aurora/text.h"
-#include "graphics/aurora/model_nwn_ascii.h"
-#include "graphics/aurora/model_nwn_binary.h"
+#include "graphics/aurora/model.h"
 
 #include "sound/sound.h"
 
@@ -33,6 +36,8 @@
 
 #include "aurora/resman.h"
 #include "aurora/error.h"
+
+namespace Engines {
 
 namespace NWN {
 
@@ -99,56 +104,30 @@ void NWNEngine::run(const Common::UString &target) {
 
 	// Menu music
 	Sound::ChannelHandle menuMusic = _hasXP2 ?
-		playSound("mus_x2theme"   , Sound::kSoundTypeMusic, true) :
-		playSound("mus_theme_main", Sound::kSoundTypeMusic, true);
+	playSound("mus_x2theme"   , Sound::kSoundTypeMusic, true) :
+	playSound("mus_theme_main", Sound::kSoundTypeMusic, true);
 
 	// Start sound
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
-	Graphics::Aurora::Model *legal = showLegal();
-	if (EventMan.quitRequested()) {
-		freeModel(legal);
-		return;
-	}
+	Legal    *legal    = new Legal;
+	MainMenu *mainMenu = new MainMenu(_hasXP1, _hasXP2);
 
-	Graphics::Aurora::Model *xp1Text = 0, *xp2Text = 0;
-	if (_hasXP1) {
-		xp1Text = loadModel("ctl_xp1_text", Graphics::Aurora::kModelTypeGUIFront);
-		xp1Text->setPosition(6.0, 1.38, 0.5);
-		xp1Text->show();
-	}
-	if (_hasXP2) {
-		xp2Text = loadModel("ctl_xp2_text", Graphics::Aurora::kModelTypeGUIFront);
-		xp2Text->setPosition(6.0, -0.10, 0.5);
-		xp2Text->show();
-	}
+	// Fade in the legal billboard
+	legal->fadeIn();
 
-	// => pre_main.gui
-	Graphics::Aurora::Model *mainMenu = loadModel("pnl_mainmenu", Graphics::Aurora::kModelTypeGUIFront);
-	mainMenu->setPosition(4.760000, 1.370000, 0.000000);
+	// Show the main menu (still hidden by the legal billboard)
 	mainMenu->show();
 
-	Graphics::Aurora::Font *font = new Graphics::Aurora::Font("fnt_galahad14");
-	Graphics::Aurora::Text *text = 0;
+	// Show the legal billboard, then fade it out
+	legal->show();
 
-	while (!EventMan.quitRequested()) {
-		EventMan.delay(10);
+	delete legal;
 
-		GfxMan.lockFrame();
-		delete text;
-		text = new Graphics::Aurora::Text(*font, -1.0, 1.0, Common::UString::sprintf("%d fps", GfxMan.getFPS()));
-		GfxMan.unlockFrame();
-	}
+	// Handle the main menu
+	mainMenu->handle();
 
-	freeModel(xp1Text);
-	freeModel(xp2Text);
-
-	freeModel(legal);
-
-	freeModel(mainMenu);
-
-	delete text;
-	delete font;
+	delete mainMenu;
 }
 
 void NWNEngine::init() {
@@ -208,61 +187,6 @@ void NWNEngine::init() {
 	indexOptionalDirectory("override", 0, 0, 30);
 }
 
-Graphics::Aurora::Model *NWNEngine::showLegal() {
-	Graphics::Aurora::Model *legal = loadModel("load_legal", Graphics::Aurora::kModelTypeGUIFront);
-	legal->setPosition(4.760000, 1.370000, 1.000000);
-	legal->fadeIn(1000);
-
-	uint32 start = EventMan.getTimestamp();
-	bool fadeOut = false, end = false;
-	while (!end) {
-		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if (event.type == Events::kEventMouseDown) {
-				freeModel(legal);
-				return 0;
-			}
-		}
-
-		if (EventMan.quitRequested())
-			end = true;
-
-		if        (!fadeOut && ((EventMan.getTimestamp() - start) >= 5000)) {
-			legal->fadeOut(1000);
-			fadeOut = true;
-			end = true;
-		}
-
-		if (!end)
-			EventMan.delay(10);
-	}
-
-	return legal;
-}
-
-Graphics::Aurora::Model *NWNEngine::loadModel(const Common::UString &resref,
-		Graphics::Aurora::ModelType type) {
-
-	Common::SeekableReadStream *mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
-	if (!mdl)
-		throw Common::Exception("No such model");
-
-	if      (Graphics::Aurora::Model_NWN_Binary::isBinary(*mdl))
-		return new Graphics::Aurora::Model_NWN_Binary(*mdl, type);
-	else if (Graphics::Aurora::Model_NWN_ASCII::isASCII(*mdl))
-		return new Graphics::Aurora::Model_NWN_ASCII(*mdl, type);
-
-	throw Common::Exception("Model not binary and not ASCII?!?");
-}
-
-void NWNEngine::freeModel(Graphics::Aurora::Model *&model) {
-	if (!model)
-		return;
-
-	model->hide();
-	delete model;
-
-	model = 0;
-}
-
 } // End of namespace NWN
+
+} // End of namespace Engines

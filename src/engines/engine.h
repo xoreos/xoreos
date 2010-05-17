@@ -9,15 +9,13 @@
  */
 
 /** @file engines/engine.h
- *  Generic engine interface
+ *  Generic engine interface.
  */
 
 #ifndef ENGINES_ENGINE_H
 #define ENGINES_ENGINE_H
 
 #include "common/types.h"
-
-#include "sound/types.h"
 
 #include "aurora/types.h"
 
@@ -51,15 +49,6 @@ protected:
 	/** Add a directory to the resource manager, if it exists. */
 	bool indexOptionalDirectory(const Common::UString &dir,
 			const char *glob = 0, int depth = -1, uint32 priority = 10);
-
-	/** Play this video resource. */
-	void playVideo(const Common::UString &video);
-
-	/** Play this sound resource. */
-	Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType soundType, bool loop = false);
-
-	/** Debug method to quickly dump a stream to disk. */
-	void dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName);
 };
 
 } // End of namespace Engines

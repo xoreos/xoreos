@@ -14,6 +14,8 @@
 
 #include "engines/sonic/sonic.h"
 
+#include "engines/util.h"
+
 #include "common/util.h"
 #include "common/strutil.h"
 #include "common/filelist.h"
@@ -32,6 +34,8 @@
 #include "aurora/resman.h"
 #include "aurora/error.h"
 #include "aurora/ndsrom.h"
+
+namespace Engines {
 
 namespace Sonic {
 
@@ -80,3 +84,5 @@ void SonicEngine::init() {
 }
 
 } // End of namespace Sonic
+
+} // End of namespace Engines

@@ -26,6 +26,8 @@ namespace Common {
 	class FileList;
 }
 
+namespace Engines {
+
 namespace Sonic {
 
 class SonicEngineProbe : public Engines::EngineProbe {
@@ -59,5 +61,7 @@ private:
 };
 
 } // End of namespace Sonic
+
+} // End of namespace Engines
 
 #endif // ENGINES_SONIC_SONIC_H

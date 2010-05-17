@@ -28,6 +28,8 @@ namespace Common {
 	class FileList;
 }
 
+namespace Engines {
+
 namespace TheWitcher {
 
 class TheWitcherEngineProbe : public Engines::EngineProbe {
@@ -63,5 +65,7 @@ private:
 };
 
 } // End of namespace TheWitcher
+
+} // End of namespace Engines
 
 #endif // ENGINES_THEWITCHER_THEWITCHER_H
