@@ -53,6 +53,8 @@ TextureManager::~TextureManager() {
 }
 
 void TextureManager::clear() {
+	Common::StackLock lock(_mutex);
+
 	for (TextureMap::iterator texture = _textures.begin(); texture != _textures.end(); ++texture)
 		delete texture->second;
 
@@ -60,6 +62,8 @@ void TextureManager::clear() {
 }
 
 TextureHandle TextureManager::get(const Common::UString &name) {
+	Common::StackLock lock(_mutex);
+
 	TextureMap::iterator texture = _textures.find(name);
 	if (texture == _textures.end()) {
 		std::pair<TextureMap::iterator, bool> result;
@@ -77,6 +81,8 @@ TextureHandle TextureManager::get(const Common::UString &name) {
 }
 
 void TextureManager::release(TextureHandle &handle) {
+	Common::StackLock lock(_mutex);
+
 	if (handle.empty)
 		return;
 

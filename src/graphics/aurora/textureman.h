@@ -15,12 +15,13 @@
 #ifndef GRAPHICS_AURORA_TEXTUREMAN_H
 #define GRAPHICS_AURORA_TEXTUREMAN_H
 
-#include "boost/unordered/unordered_map.hpp"
+#include <map>
 
 #include "graphics/types.h"
 
 #include "common/types.h"
 #include "common/singleton.h"
+#include "common/mutex.h"
 #include "common/ustring.h"
 
 namespace Graphics {
@@ -37,7 +38,7 @@ struct ManagedTexture {
 	~ManagedTexture();
 };
 
-typedef boost::unordered_map<Common::UString, ManagedTexture *, Common::hashUStringCaseInsensitive> TextureMap;
+typedef std::map<Common::UString, ManagedTexture *> TextureMap;
 
 struct TextureHandle {
 	bool empty;
@@ -64,6 +65,8 @@ public:
 
 private:
 	TextureMap _textures;
+
+	Common::Mutex _mutex;
 };
 
 } // End of namespace Aurora

@@ -20,8 +20,6 @@
 #include <vector>
 #include <map>
 
-#include "boost/unordered/unordered_map.hpp"
-
 #include "common/types.h"
 #include "common/ustring.h"
 #include "common/singleton.h"
@@ -83,7 +81,7 @@ private:
 	/** Map over resources with the same name but different type. */
 	typedef std::map<FileType, ResourceList> ResourceTypeMap;
 	/** Map over resources, indexed by name. */
-	typedef boost::unordered_map<Common::UString, ResourceTypeMap, Common::hashUStringCaseInsensitive> ResourceMap;
+	typedef std::map<Common::UString, ResourceTypeMap> ResourceMap;
 
 	struct ResourceChange {
 		ResourceMap::iterator     nameIt;
