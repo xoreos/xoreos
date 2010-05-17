@@ -24,6 +24,7 @@ namespace NWN {
 
 Legal::Legal() : _billboard(0) {
 	_billboard = loadModel("load_legal", Graphics::Aurora::kModelTypeGUIFront);
+	_billboard->setPosition(0.0, 0.0, 10.0);
 }
 
 Legal::~Legal() {
