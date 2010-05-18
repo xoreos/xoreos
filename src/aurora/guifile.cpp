@@ -20,6 +20,10 @@
 
 namespace Aurora {
 
+GUIFile::Caption::Caption() : strRef(0xFFFFFFFF) {
+}
+
+
 GUIFile::GUIFile(Common::SeekableReadStream &gui) {
 	load(gui);
 }
@@ -69,7 +73,29 @@ void GUIFile::readObject(const GFFFile::StructRange &range, const Object *parent
 		else if (it->getLabel() == "Obj_ChildList") {
 			hasChildren     = true;
 			childrenRange   = it.listRange(it->getListIndex());
+		} else if (it->getLabel() == "Obj_Caption") {
+			GFFFile::StructRange captionRange = it.structRange(it->getStructIndex());
+
+			for (GFFFile::StructIterator itCap = captionRange.first; itCap != captionRange.second; ++itCap) {
+				if      (itCap->getLabel() == "AurString_Font")
+					obj.caption.font   = itCap->getString();
+				else if (itCap->getLabel() == "AurString_AlignH")
+					obj.caption.alignH = itCap->getDouble();
+				else if (itCap->getLabel() == "AurString_AlignV")
+					obj.caption.alignV = itCap->getDouble();
+				else if (itCap->getLabel() == "AurString_ColorR")
+					obj.caption.r      = itCap->getDouble();
+				else if (itCap->getLabel() == "AurString_ColorG")
+					obj.caption.g      = itCap->getDouble();
+				else if (itCap->getLabel() == "AurString_ColorB")
+					obj.caption.b      = itCap->getDouble();
+				else if (itCap->getLabel() == "AurString_ColorA")
+					obj.caption.a      = itCap->getDouble();
+				else if (itCap->getLabel() == "Obj_StrRef")
+					obj.caption.strRef = itCap->getUint();
+			}
 		}
+
 	}
 
 	if (parent) {

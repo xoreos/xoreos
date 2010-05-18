@@ -53,6 +53,8 @@ protected:
 		float r, g, b, a;
 
 		uint32 strRef;
+
+		Caption();
 	};
 
 	struct Object {
