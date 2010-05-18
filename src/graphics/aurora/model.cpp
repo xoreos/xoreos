@@ -52,6 +52,9 @@ Model::~Model() {
 			delete *node;
 		}
 	}
+
+	for (StateMap::iterator state = _states.begin(); state != _states.end(); ++state)
+		delete state->second;
 }
 
 void Model::createStateNameList() {
