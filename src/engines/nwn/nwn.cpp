@@ -34,8 +34,9 @@
 
 #include "events/events.h"
 
-#include "aurora/resman.h"
 #include "aurora/error.h"
+#include "aurora/resman.h"
+#include "aurora/talkman.h"
 
 namespace Engines {
 
@@ -133,6 +134,7 @@ void NWNEngine::run(const Common::UString &target) {
 void NWNEngine::init() {
 	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
+	indexMandatoryDirectory("", 0, 0, 0);
 
 	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
@@ -185,6 +187,9 @@ void NWNEngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
+
+	status("Loading main talk table");
+	TalkMan.addMainTable("dialog");
 }
 
 } // End of namespace NWN

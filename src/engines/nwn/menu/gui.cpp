@@ -18,6 +18,7 @@
 #include "common/stream.h"
 
 #include "aurora/resman.h"
+#include "aurora/talkman.h"
 
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/text.h"
@@ -52,17 +53,25 @@ void GUI::load() {
 			widget.model->setPosition(object->x, object->y, object->z);
 		}
 
-		if (!object->caption.font.empty() && (object->caption.strRef != 0xFFFFFFFF))
+		if (!object->caption.font.empty() && (object->caption.strRef != 0xFFFFFFFF)) {
 			widget.font = FontMan.get(object->caption.font);
+
+			const Common::UString &str = TalkMan.getString(object->caption.strRef);
+			widget.text = new Graphics::Aurora::Text(widget.font, object->x, object->y, str);
+		}
 
 		_widgets.push_back(widget);
 	}
 }
 
 void GUI::show() {
-	for (std::list<Widget>::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
+	for (std::list<Widget>::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
 		if (widget->model)
 			widget->model->show();
+
+		if (widget->text)
+			widget->text->show();
+	}
 }
 
 GUI *loadGUI(const Common::UString &resref) {
