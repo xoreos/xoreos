@@ -45,15 +45,22 @@ void Font::setTexture() const {
 	glBindTexture(GL_TEXTURE_2D, _texture->getID());
 }
 
-float Font::drawCharacter(char c) const {
-	if (((uint32) c) >= _chars.size())
+float Font::drawCharacter(uint32 c) const {
+	if (c >= _chars.size())
 		return 0.0;
 
-	const Char &cC = _chars[(int) c];
+	const Char &cC = _chars[c];
 
 	glCallList(cC.listID);
 
 	return cC.width;
+}
+
+float Font::getWidth(uint32 c) const {
+	if (c >= _chars.size())
+		return 0.0;
+
+	return _chars[c].width;
 }
 
 void Font::rebuild() {

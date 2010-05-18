@@ -42,11 +42,13 @@ public:
 	void setTexture() const;
 
 	/** Draw a character and return its width. */
-	float drawCharacter(char c) const;
+	float drawCharacter(uint32 c) const;
 
 	float getScale()  const;
 	float getSpaceR() const;
 	float getSpaceB() const;
+
+	float getWidth(uint32 c) const;
 
 // ListContainer
 public:

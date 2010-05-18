@@ -24,7 +24,9 @@ namespace Graphics {
 namespace Aurora {
 
 Text::Text(FontHandle &font, const Common::UString &str) :
-	_firstTime(true), _font(font), _x(0.0), _y(0.0), _str(str) {
+	_firstTime(true), _font(font), _x(0.0), _y(0.0) {
+
+	set(str);
 
 	_distance = -5.0;
 }
@@ -38,6 +40,14 @@ void Text::set(const Common::UString &str) {
 	removeFromQueue();
 
 	_str = str;
+
+	const Font &font = _font.getFont();
+
+	_height = font.getScale() / 100.0;
+	_width  = 0.0;
+	for (Common::UString::iterator c = _str.begin(); c != _str.end() && *c; ++c)
+		_width += font.getWidth(*c) + font.getSpaceR();
+	_width *= font.getScale() / 100.0;
 
 	if (visible)
 		addToQueue();
@@ -63,6 +73,14 @@ void Text::hide() {
 	removeFromQueue();
 }
 
+float Text::getWidth() const {
+	return _width;
+}
+
+float Text::getHeight() const {
+	return _height;
+}
+
 void Text::newFrame() {
 }
 
@@ -70,7 +88,6 @@ void Text::render() {
 	const Font &font = _font.getFont();
 
 	glTranslatef(_x * 100.0, _y * 100.0, 0.0);
-	//glTranslatef(_x * (GfxMan.getScreenWidth() / 2.0), _y * (GfxMan.getScreenHeight() / 2.0) - font.getScale(), -1.0);
 	glScalef(font.getScale(), font.getScale(), 0.0);
 
 	if (_firstTime) {
@@ -81,9 +98,8 @@ void Text::render() {
 
 	font.setTexture();
 
-	const char *str = _str.c_str();
-	while (*str) {
-		float w = font.drawCharacter(*str++);
+	for (Common::UString::iterator c = _str.begin(); c != _str.end() && *c; ++c) {
+		float w = font.drawCharacter(*c);
 		glTranslatef(w + font.getSpaceR(), 0.0, 0.0);
 	}
 }

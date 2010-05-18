@@ -36,6 +36,9 @@ public:
 	void show(); ///< The text should be rendered.
 	void hide(); ///< The text should not be rendered.
 
+	float getWidth()  const;
+	float getHeight() const;
+
 	// Renderable
 	void newFrame();
 	void render();
@@ -47,6 +50,9 @@ private:
 
 	float _x;
 	float _y;
+
+	float _width;
+	float _height;
 
 	Common::UString _str;
 };
