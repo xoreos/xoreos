@@ -57,7 +57,8 @@ void GUI::load() {
 			widget.font = FontMan.get(object->caption.font);
 
 			const Common::UString &str = TalkMan.getString(object->caption.strRef);
-			widget.text = new Graphics::Aurora::Text(widget.font, object->x, object->y, str);
+			widget.text = new Graphics::Aurora::Text(widget.font, str);
+			widget.text->setPosition(object->x, object->y);
 		}
 
 		_widgets.push_back(widget);

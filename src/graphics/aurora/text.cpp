@@ -23,13 +23,36 @@ namespace Graphics {
 
 namespace Aurora {
 
-Text::Text(FontHandle &font, float x, float y, const Common::UString &str) :
-	_firstTime(true), _font(font), _x(x), _y(y), _str(str) {
+Text::Text(FontHandle &font, const Common::UString &str) :
+	_firstTime(true), _font(font), _x(0.0), _y(0.0), _str(str) {
 
 	_distance = -5.0;
 }
 
 Text::~Text() {
+}
+
+void Text::set(const Common::UString &str) {
+	bool visible = isInQueue();
+
+	removeFromQueue();
+
+	_str = str;
+
+	if (visible)
+		addToQueue();
+}
+
+void Text::setPosition(float x, float y) {
+	bool visible = isInQueue();
+
+	removeFromQueue();
+
+	_x = x;
+	_y = y;
+
+	if (visible)
+		addToQueue();
 }
 
 void Text::show() {

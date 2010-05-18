@@ -112,19 +112,18 @@ void KotOR2Engine::run(const Common::UString &target) {
 	*/
 
 	Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32b");
-	Graphics::Aurora::Text *text = 0;
 
 	float textX = (-(GfxMan.getScreenWidth()  / 2.0))                             / 100.0;
 	float textY = ( (GfxMan.getScreenHeight() / 2.0) - font.getFont().getScale()) / 100.0;
 
+	Graphics::Aurora::Text *text = new Graphics::Aurora::Text(font, "");
+	text->setPosition(textX, textY);
+	text->show();
+
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 
-		GfxMan.lockFrame();
-		delete text;
-		text = new Graphics::Aurora::Text(font, textX, textY, Common::UString::sprintf("%d fps", GfxMan.getFPS()));
-		text->show();
-		GfxMan.unlockFrame();
+		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
 
 	delete model;

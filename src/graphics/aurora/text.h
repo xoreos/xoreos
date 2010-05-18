@@ -27,8 +27,11 @@ namespace Aurora {
 
 class Text : public GUIFrontElement {
 public:
-	Text(FontHandle &font, float x, float y, const Common::UString &str);
+	Text(FontHandle &font, const Common::UString &str);
 	~Text();
+
+	void set(const Common::UString &str);
+	void setPosition(float x, float y);
 
 	void show(); ///< The text should be rendered.
 	void hide(); ///< The text should not be rendered.
