@@ -15,6 +15,7 @@ noinst_HEADERS = types.h \
                  zipfile.h \
                  resman.h \
                  talktable.h \
+                 talkman.h \
                  ssffile.h \
                  2dafile.h \
                  locstring.h \
@@ -34,6 +35,7 @@ libaurora_la_SOURCES = error.cpp \
                        zipfile.cpp \
                        resman.cpp \
                        talktable.cpp \
+                       talkman.cpp \
                        ssffile.cpp \
                        2dafile.cpp \
                        locstring.cpp \

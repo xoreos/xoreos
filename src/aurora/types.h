@@ -234,6 +234,11 @@ enum GameID {
 	kGameIDDragonAge  = 7  ///< Dragon Age: Origins.
 };
 
+enum Gender {
+	kGenderMale,
+	kGenderFemale
+};
+
 enum Language {
 	kLanguageEnglishMale              =   0,
 	kLanguageEnglishFemale            =   1,

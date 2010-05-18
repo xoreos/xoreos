@@ -18,8 +18,9 @@
 #include "common/filelist.h"
 #include "common/filepath.h"
 
-#include "aurora/resman.h"
 #include "aurora/error.h"
+#include "aurora/resman.h"
+#include "aurora/talkman.h"
 
 #include "graphics/aurora/textureman.h"
 #include "graphics/aurora/fontman.h"
@@ -140,6 +141,7 @@ void EngineManager::cleanup() const {
 	ResMan.clear();
 	TextureMan.clear();
 	FontMan.clear();
+	TalkMan.clear();
 }
 
 } // End of namespace Engines
