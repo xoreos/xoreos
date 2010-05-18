@@ -150,11 +150,9 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 
 	// NDS aren't found in resource directories, they are used /instead/ of directories
 	if (archive == kArchiveNDS) {
-		// Generate a new change set
-		_changes.push_back(ChangeSet());
-		ChangeID change = --_changes.end();
-
 		NDSFile *nds = new NDSFile(file);
+
+		ChangeID change = newChangeSet();
 
 		return indexArchive(nds, priority, change);
 	}
@@ -174,9 +172,7 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 	if (archive == kArchiveERF) {
 		ERFFile *erf = new ERFFile(realName);
 
-		// Generate a new change set
-		_changes.push_back(ChangeSet());
-		ChangeID change = --_changes.end();
+		ChangeID change = newChangeSet();
 
 		return indexArchive(erf, priority, change);
 	}
@@ -184,9 +180,7 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 	if (archive == kArchiveRIM) {
 		RIMFile *rim = new RIMFile(realName);
 
-		// Generate a new change set
-		_changes.push_back(ChangeSet());
-		ChangeID change = --_changes.end();
+		ChangeID change = newChangeSet();
 
 		return indexArchive(rim, priority, change);
 	}
@@ -194,9 +188,7 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 	if (archive == kArchiveZIP) {
 		ZIPFile *zip = new ZIPFile(realName);
 
-		// Generate a new change set
-		_changes.push_back(ChangeSet());
-		ChangeID change = --_changes.end();
+		ChangeID change = newChangeSet();
 
 		return indexArchive(zip, priority, change);
 	}
@@ -251,16 +243,14 @@ void ResourceManager::mergeKEYBIF(const KEYFile &key, std::vector<Common::UStrin
 ResourceManager::ChangeID ResourceManager::indexKEY(const Common::UString &file, uint32 priority) {
 	KEYFile key(file);
 
-	// Generate a new change set
-	_changes.push_back(ChangeSet());
-	ChangeID change = --_changes.end();
-
 	// Search the correct BIFs
 	std::vector<Common::UString> bifs;
 	findBIFs(key, bifs);
 
 	std::vector<BIFFile *> bifFiles;
 	mergeKEYBIF(key, bifs, bifFiles);
+
+	ChangeID change = newChangeSet();
 
 	for (std::vector<BIFFile *>::iterator bifFile = bifFiles.begin(); bifFile != bifFiles.end(); ++bifFile)
 		indexArchive(*bifFile, priority, change);
@@ -305,9 +295,7 @@ ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString 
 	Common::FileList files;
 	files.addDirectory(directory, depth);
 
-	// Generate a new change set
-	_changes.push_back(ChangeSet());
-	ChangeID change = --_changes.end();
+	ChangeID change = newChangeSet();
 
 	if (!glob) {
 		// Add the files
@@ -515,6 +503,14 @@ void ResourceManager::listResources() const {
 			status("%32s%4s", itName->first.c_str(), setFileType("", resource.type).c_str());
 		}
 	}
+}
+
+ResourceManager::ChangeID ResourceManager::newChangeSet() {
+	// Generate a new change set
+
+	_changes.push_back(ChangeSet());
+
+	return --_changes.end();
 }
 
 } // End of namespace Aurora

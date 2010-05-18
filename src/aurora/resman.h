@@ -231,6 +231,8 @@ private:
 	const Resource *getRes(Common::UString name, const std::vector<FileType> &types) const;
 
 	Common::SeekableReadStream *getArchiveResource(const Resource &res) const;
+
+	ChangeID newChangeSet();
 };
 
 } // End of namespace Aurora
