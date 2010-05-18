@@ -86,7 +86,7 @@ void TalkTable::readStrings(Common::SeekableReadStream &tlk, uint32 dataOffset) 
 		if (!tlk.seek(dataOffset + entry->offset))
 			throw Common::Exception(Common::kSeekError);
 
-		entry->text.readASCII(tlk, entry->length);
+		entry->text.readLatin9(tlk, entry->length);
 	}
 }
 
