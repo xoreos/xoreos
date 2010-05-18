@@ -26,10 +26,18 @@ namespace Aurora {
 Text::Text(FontHandle &font, float x, float y, const Common::UString &str) :
 	_firstTime(true), _font(font), _x(x), _y(y), _str(str) {
 
-	addToQueue();
+	_distance = -5.0;
 }
 
 Text::~Text() {
+}
+
+void Text::show() {
+	addToQueue();
+}
+
+void Text::hide() {
+	removeFromQueue();
 }
 
 void Text::newFrame() {

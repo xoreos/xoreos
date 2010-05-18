@@ -30,8 +30,11 @@ public:
 	Text(FontHandle &font, float x, float y, const Common::UString &str);
 	~Text();
 
-	void newFrame();
+	void show(); ///< The text should be rendered.
+	void hide(); ///< The text should not be rendered.
 
+	// Renderable
+	void newFrame();
 	void render();
 
 private:

@@ -120,6 +120,7 @@ void KotOR2Engine::run(const Common::UString &target) {
 		GfxMan.lockFrame();
 		delete text;
 		text = new Graphics::Aurora::Text(font, -1.0, 1.0, Common::UString::sprintf("%d fps", GfxMan.getFPS()));
+		text->show();
 		GfxMan.unlockFrame();
 	}
 
