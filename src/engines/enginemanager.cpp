@@ -22,6 +22,7 @@
 #include "aurora/error.h"
 
 #include "graphics/aurora/textureman.h"
+#include "graphics/aurora/fontman.h"
 
 #include "events/events.h"
 
@@ -124,8 +125,7 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target) co
 
 		delete engine;
 		// Clean up after the engine
-		ResMan.clear();
-		TextureMan.clear();
+		cleanup();
 
 		throw;
 	}
@@ -133,8 +133,13 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target) co
 	delete engine;
 
 	// Clean up after the engine
+	cleanup();
+}
+
+void EngineManager::cleanup() const {
 	ResMan.clear();
 	TextureMan.clear();
+	FontMan.clear();
 }
 
 } // End of namespace Engines

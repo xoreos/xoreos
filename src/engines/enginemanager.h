@@ -46,6 +46,8 @@ public:
 private:
 	Aurora::GameID probeGameID(const Common::UString &directory, const Common::FileList &rootFiles) const;
 	Aurora::GameID probeGameID(Common::SeekableReadStream &stream) const;
+
+	void cleanup() const;
 };
 
 } // End of namespace Engines
