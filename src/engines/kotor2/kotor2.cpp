@@ -25,6 +25,7 @@
 
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/font.h"
+#include "graphics/aurora/fontman.h"
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/model_kotor.h"
 
@@ -110,7 +111,7 @@ void KotOR2Engine::run(const Common::UString &target) {
 	}
 	*/
 
-	Graphics::Aurora::Font *font = new Graphics::Aurora::Font("dialogfont32x32b");
+	Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32b");
 	Graphics::Aurora::Text *text = 0;
 
 	while (!EventMan.quitRequested()) {
@@ -118,14 +119,13 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 		GfxMan.lockFrame();
 		delete text;
-		text = new Graphics::Aurora::Text(*font, -1.0, 1.0, Common::UString::sprintf("%d fps", GfxMan.getFPS()));
+		text = new Graphics::Aurora::Text(font, -1.0, 1.0, Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 		GfxMan.unlockFrame();
 	}
 
 	delete model;
 
 	delete text;
-	delete font;
 
 	delete cube;
 }

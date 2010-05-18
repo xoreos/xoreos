@@ -7,6 +7,7 @@ noinst_HEADERS = types.h \
                  texture.h \
                  textureman.h \
                  font.h \
+                 fontman.h \
                  text.h \
                  cube.h \
                  model.h \
@@ -20,6 +21,7 @@ libaurora_la_SOURCES = videoplayer.cpp \
                        texture.cpp \
                        textureman.cpp \
                        font.cpp \
+                       fontman.cpp \
                        text.cpp \
                        cube.cpp \
                        model.cpp \

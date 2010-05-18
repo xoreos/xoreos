@@ -19,15 +19,15 @@
 
 #include "graphics/guifrontelement.h"
 
+#include "graphics/aurora/fontman.h"
+
 namespace Graphics {
 
 namespace Aurora {
 
-class Font;
-
 class Text : public GUIFrontElement {
 public:
-	Text(const Font &font, float x, float y, const Common::UString &str);
+	Text(FontHandle &font, float x, float y, const Common::UString &str);
 	~Text();
 
 	void newFrame();
@@ -37,7 +37,7 @@ public:
 private:
 	bool _firstTime;
 
-	const Font *_font;
+	FontHandle _font;
 
 	float _x;
 	float _y;
