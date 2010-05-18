@@ -426,6 +426,8 @@ bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 
 	alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, bufferSize, stream->getRate());
 
+	delete[] buffer;
+
 	if (alGetError() != AL_NO_ERROR)
 		throw Common::Exception("OpenAL error while filling buffer");
 
