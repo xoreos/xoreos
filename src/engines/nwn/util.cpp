@@ -33,12 +33,18 @@ Graphics::Aurora::Model *loadModel(const Common::UString &resref,
 	if (!mdl)
 		throw Common::Exception("No such model \"%s\"", resref.c_str());
 
+	Graphics::Aurora::Model *model = 0;
 	if      (Graphics::Aurora::Model_NWN_Binary::isBinary(*mdl))
-		return new Graphics::Aurora::Model_NWN_Binary(*mdl, type);
+		model = new Graphics::Aurora::Model_NWN_Binary(*mdl, type);
 	else if (Graphics::Aurora::Model_NWN_ASCII::isASCII(*mdl))
-		return new Graphics::Aurora::Model_NWN_ASCII(*mdl, type);
+		model = new Graphics::Aurora::Model_NWN_ASCII(*mdl, type);
 
-	throw Common::Exception("Model not binary and not ASCII?!?");
+	delete mdl;
+
+	if (!model)
+		throw Common::Exception("Model not binary and not ASCII?!?");
+
+	return model;
 }
 
 void freeModel(Graphics::Aurora::Model *&model) {
