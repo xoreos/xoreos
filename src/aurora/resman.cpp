@@ -150,9 +150,13 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 
 	// NDS aren't found in resource directories, they are used /instead/ of directories
 	if (archive == kArchiveNDS) {
+		// Generate a new change set
+		_changes.push_back(ChangeSet());
+		ChangeID change = --_changes.end();
+
 		NDSFile *nds = new NDSFile(file);
 
-		return indexArchive(nds, priority);
+		return indexArchive(nds, priority, change);
 	}
 
 	assert((archive >= 0) && (archive < kArchiveMAX));
@@ -170,19 +174,31 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 	if (archive == kArchiveERF) {
 		ERFFile *erf = new ERFFile(realName);
 
-		return indexArchive(erf, priority);
+		// Generate a new change set
+		_changes.push_back(ChangeSet());
+		ChangeID change = --_changes.end();
+
+		return indexArchive(erf, priority, change);
 	}
 
 	if (archive == kArchiveRIM) {
 		RIMFile *rim = new RIMFile(realName);
 
-		return indexArchive(rim, priority);
+		// Generate a new change set
+		_changes.push_back(ChangeSet());
+		ChangeID change = --_changes.end();
+
+		return indexArchive(rim, priority, change);
 	}
 
 	if (archive == kArchiveZIP) {
 		ZIPFile *zip = new ZIPFile(realName);
 
-		return indexArchive(zip, priority);
+		// Generate a new change set
+		_changes.push_back(ChangeSet());
+		ChangeID change = --_changes.end();
+
+		return indexArchive(zip, priority, change);
 	}
 
 	return _changes.end();
@@ -247,22 +263,16 @@ ResourceManager::ChangeID ResourceManager::indexKEY(const Common::UString &file,
 	mergeKEYBIF(key, bifs, bifFiles);
 
 	for (std::vector<BIFFile *>::iterator bifFile = bifFiles.begin(); bifFile != bifFiles.end(); ++bifFile)
-		indexArchive(*bifFile, priority, &change);
+		indexArchive(*bifFile, priority, change);
 
 	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32 priority, ChangeID *change) {
-	if (change == 0) {
-		// Generate a new change set
-		_changes.push_back(ChangeSet());
-		change = new ChangeID(--_changes.end());
-	}
-
+ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32 priority, ChangeID &change) {
 	_archives.push_back(archive);
 
 	// Add the information of the new archive to the change set
-	(*change)->archives.push_back(--_archives.end());
+	change->archives.push_back(--_archives.end());
 
 	const Archive::ResourceList &resources = archive->getResources();
 	for (Archive::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
@@ -275,12 +285,12 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 		res.type         = resource->type;
 
 		// And add it to our list
-		addResource(res, resource->name, *change);
+		addResource(res, resource->name, change);
 	}
 
 	archive->clear();
 
-	return *change;
+	return change;
 }
 
 ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString &dir,

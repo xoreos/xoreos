@@ -219,7 +219,7 @@ private:
 			const DirectoryList &dirs, const Common::FileList &files);
 
 	ChangeID indexKEY(const Common::UString &file, uint32 priority);
-	ChangeID indexArchive(Archive *archive, uint32 priority, ChangeID *change = 0);
+	ChangeID indexArchive(Archive *archive, uint32 priority, ChangeID &change);
 
 	// KEY/BIF loading helpers
 	void findBIFs   (const KEYFile &key, std::vector<Common::UString> &bifs);
