@@ -20,12 +20,13 @@
 #include "aurora/resman.h"
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/text.h"
 
 namespace Engines {
 
 namespace NWN {
 
-GUI::Widget::Widget(Object &obj) : object(&obj), model(0) {
+GUI::Widget::Widget(Object &obj) : object(&obj), model(0), text(0) {
 }
 
 
@@ -34,8 +35,11 @@ GUI::GUI(Common::SeekableReadStream &gui) : Aurora::GUIFile(gui) {
 }
 
 GUI::~GUI() {
-	for (std::list<Widget>::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
+	for (std::list<Widget>::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
 		freeModel(widget->model);
+
+		delete widget->text;
+	}
 }
 
 void GUI::load() {
@@ -47,6 +51,9 @@ void GUI::load() {
 
 			widget.model->setPosition(object->x, object->y, object->z);
 		}
+
+		if (!object->caption.font.empty() && (object->caption.strRef != 0xFFFFFFFF))
+			widget.font = FontMan.get(object->caption.font);
 
 		_widgets.push_back(widget);
 	}

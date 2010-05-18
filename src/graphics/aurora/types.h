@@ -27,6 +27,7 @@ enum ModelType {
 };
 
 class Model;
+class Text;
 
 } // End of namespace Aurora
 

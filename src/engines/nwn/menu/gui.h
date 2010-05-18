@@ -21,6 +21,9 @@
 
 #include "aurora/guifile.h"
 
+#include "graphics/aurora/types.h"
+#include "graphics/aurora/fontman.h"
+
 #include "engines/nwn/util.h"
 
 namespace Common {
@@ -43,6 +46,9 @@ private:
 		Object *object;
 
 		Graphics::Aurora::Model *model;
+		Graphics::Aurora::Text  *text;
+
+		Graphics::Aurora::FontHandle font;
 
 		Widget(Object &obj);
 	};
