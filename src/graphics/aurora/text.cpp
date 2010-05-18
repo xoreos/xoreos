@@ -46,7 +46,8 @@ void Text::newFrame() {
 void Text::render() {
 	const Font &font = _font.getFont();
 
-	glTranslatef(_x * (GfxMan.getScreenWidth() / 2.0), _y * (GfxMan.getScreenHeight() / 2.0) - font.getScale(), -1.0);
+	glTranslatef(_x * 100.0, _y * 100.0, 0.0);
+	//glTranslatef(_x * (GfxMan.getScreenWidth() / 2.0), _y * (GfxMan.getScreenHeight() / 2.0) - font.getScale(), -1.0);
 	glScalef(font.getScale(), font.getScale(), 0.0);
 
 	if (_firstTime) {
