@@ -46,6 +46,9 @@ FontHandle::~FontHandle() {
 }
 
 FontHandle &FontHandle::operator=(const FontHandle &right) {
+	if (this == &right)
+		return *this;
+
 	FontMan.release(*this);
 
 	empty = right.empty;
