@@ -53,8 +53,8 @@ public:
 	Common::UString getString() const;
 	uint32 getObject() const;
 
-	bool operator==(StackObject &obj) { return false; }
-	bool operator!=(StackObject &obj) { return true; }
+	bool operator==(StackObject &obj);
+	bool operator!=(StackObject &obj) { return !operator==(obj); }
 
 	StackObjectType getType() { return _type; }
 

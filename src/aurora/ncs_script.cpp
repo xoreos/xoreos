@@ -63,6 +63,27 @@ uint32 StackObject::getObject() const {
 	return _intVal;
 }
 
+bool StackObject::operator==(StackObject &obj) {
+	if (_type != obj._type)
+		return false;
+
+	switch (_type) {
+	case kStackObjectNone:
+		return true;
+	case kStackObjectInt:
+	case kStackObjectObject:
+		return _intVal == obj._intVal;
+	case kStackObjectFloat:
+		return _floatVal == obj._floatVal;
+	case kStackObjectString:
+		return _stringVal == obj._stringVal;
+	default:
+		warning("Unhandled operator== for StackObject type %d", _type);
+	}
+
+	return false;
+}
+
 #define OPCODE(x) { &NCSScript::x, #x }
 
 void NCSScript::setupOpcodes() {
