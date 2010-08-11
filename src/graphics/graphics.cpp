@@ -38,7 +38,8 @@ static bool queueComp(Renderable *a, Renderable *b) {
 GraphicsManager::GraphicsManager() {
 	_ready = false;
 
-	_needManualDeS3TC = false;
+	_needManualDeS3TC        = false;
+	_supportMultipleTextures = false;
 
 	_fullScreen = false;
 
@@ -84,7 +85,8 @@ void GraphicsManager::deinit() {
 
 	_ready = false;
 
-	_needManualDeS3TC = false;
+	_needManualDeS3TC        = false;
+	_supportMultipleTextures = false;
 }
 
 bool GraphicsManager::ready() const {
@@ -93,6 +95,10 @@ bool GraphicsManager::ready() const {
 
 bool GraphicsManager::needManualDeS3TC() const {
 	return _needManualDeS3TC;
+}
+
+bool GraphicsManager::supportMultipleTextures() const {
+	return _supportMultipleTextures;
 }
 
 uint32 GraphicsManager::getFPS() const {
@@ -159,6 +165,15 @@ void GraphicsManager::checkGLExtensions() {
 
 		_needManualDeS3TC = true;
 	}
+
+	if (!GLEW_ARB_multitexture) {
+		warning("Your graphics card does no support applying multiple textures onto "
+		        "one surface");
+		warning("Eos will only use one texture. Certain surfaces may look weird");
+
+		_supportMultipleTextures = false;
+	} else
+		_supportMultipleTextures = true;
 }
 
 void GraphicsManager::setWindowTitle(const Common::UString &title) {

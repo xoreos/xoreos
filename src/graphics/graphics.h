@@ -51,6 +51,8 @@ public:
 
 	/** Do we need to do manual S3TC DXTn decompression? */
 	bool needManualDeS3TC() const;
+	/** Do we have support for multiple textures? */
+	bool supportMultipleTextures() const;
 
 	/** How many frames per second to we render at the moments? */
 	uint32 getFPS() const;
@@ -66,7 +68,9 @@ public:
 private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
-	bool _needManualDeS3TC; ///< Do we need to do manual S3TC DXTn decompression?
+	// Extensions
+	bool _needManualDeS3TC;        ///< Do we need to do manual S3TC DXTn decompression?
+	bool _supportMultipleTextures; ///< Do we have support for multiple textures?
 
 	bool _fullScreen; ///< Are we currently in fullscreen mode?
 
