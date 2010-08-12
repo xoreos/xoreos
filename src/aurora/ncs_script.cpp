@@ -517,6 +517,50 @@ void NCSScript::o_ushright(InstructionType type) {
 	}
 }
 
+void NCSScript::o_mod(InstructionType type) {
+	if (type != kInstTypeIntInt)
+		throw Common::Exception("o_mod: Illegal type %d", type);
+
+	try {
+		int32 arg1 = _stack.pop().getInt();
+		int32 arg2 = _stack.pop().getInt();
+		_stack.push(arg2 % arg1);
+	} catch (Common::Exception e) {
+		throw e;
+	}
+}
+
+void NCSScript::o_neg(InstructionType type) {
+	switch (type) {
+	case kInstTypeInt:
+		try {
+			_stack.push(-_stack.pop().getInt());
+		} catch (Common::Exception e) {
+			throw e;
+		}
+		break;
+	case kInstTypeFloat:
+		try {
+			_stack.push(-_stack.pop().getFloat());
+		} catch (Common::Exception e) {
+			throw e;
+		}
+	default:
+		throw Common::Exception("o_neg: Illegal type %d", type);
+	}
+}
+
+void NCSScript::o_comp(InstructionType type) {
+	if (type != kInstTypeInt)
+		throw Common::Exception("o_comp: Illegal type %d", type);
+
+	try {
+		_stack.push(~_stack.pop().getInt());
+	} catch (Common::Exception e) {
+		throw e;
+	}
+}
+
 void NCSScript::o_movsp(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("o_movsp: Illegal type %d", type);
