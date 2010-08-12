@@ -79,6 +79,8 @@ void KotOREngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
+	SoundMan.setListenerGain(0.0);
+
 	playVideo("leclogo");
 	playVideo("biologo");
 	playVideo("legal");
@@ -95,9 +97,28 @@ void KotOREngine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
-	Graphics::Aurora::Model *model = loadModel("m03ae_09a");
+	static const char *modelFile[9] = {
+		"m03ae_09a", "m03ae_05a", "m03ae_02a", "m03ae_01a", "m03ae_04a",
+		"m03ae_03a", "m03ae_10a", "m03ae_11a", "m03ae_12a"
+	};
 
-	model->show();
+	Graphics::Aurora::Model *model[9];
+	for (int i = 0; i < 9; i++)
+		if (!(model[i] = loadModel(modelFile[i])))
+			throw Common::Exception("Couldn't load model \"%s\"", modelFile[i]);
+
+	model[0]->setPosition(  0.0,   0.0,  0.0);
+	model[1]->setPosition( 44.0,  10.0,  0.0);
+	model[2]->setPosition(  0.0,  35.0,  0.0);
+	model[3]->setPosition( 30.0,  10.0,  0.0);
+	model[4]->setPosition(-35.0,   0.0,  0.0);
+	model[5]->setPosition(  0.0, -40.0, -4.37114e-007);
+	model[6]->setPosition(  0.0,   0.0,  2.0);
+	model[7]->setPosition(  0.0,   0.0,  4.0);
+	model[8]->setPosition(  0.0,   0.0,  6.0);
+
+	for (int i = 0; i < 9; i++)
+		model[i]->show();
 
 	Graphics::Aurora::Cube *cube = 0;
 
@@ -126,7 +147,8 @@ void KotOREngine::run(const Common::UString &target) {
 		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
 
-	delete model;
+	for (int i = 0; i < 9; i++)
+		delete model[i];
 
 	delete text;
 
