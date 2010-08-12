@@ -24,6 +24,10 @@ namespace Graphics {
 
 namespace Aurora {
 
+Model::Mesh::Mesh() : faceCount(0) {
+}
+
+
 Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true) {
 	position   [0] = 0;
 	position   [1] = 0;
@@ -47,7 +51,8 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 Model::~Model() {
 	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
 		if (*node) {
-			TextureMan.release((*node)->texture);
+			for (std::vector<TextureHandle>::iterator t = (*node)->textures.begin(); t != (*node)->textures.end(); ++t)
+				TextureMan.release(*t);
 
 			delete *node;
 		}
@@ -101,38 +106,56 @@ void Model::readArrayFloats(Common::SeekableReadStream &stream, uint32 start, ui
 }
 
 void Model::processMesh(const Mesh &mesh, Node &node) {
-	node.faces.resize(mesh.faces.size());
+	node.textures.resize(mesh.textures.size());
+
+	// Try to load the textures
+	for (uint t = 0; t < mesh.textures.size(); t++) {
+		try {
+			if (!mesh.textures[t].empty() && (mesh.textures[t] != "NULL"))
+				node.textures[t] = TextureMan.get(mesh.textures[t]);
+		} catch (...) {
+			node.textures[t].clear();
+		}
+	}
+
+	node.faces.resize(mesh.faceCount);
 
 	// Go over each face and assign the actual coordinates
-	for (uint32 i = 0; i < mesh.faces.size(); i++) {
+	for (uint32 i = 0; i < mesh.faceCount; i++) {
 		Face &face = node.faces[i];
 
+		face.verts.resize(9);
+
 		// Real face coordinates
-		for (int j = 0; j < 3; j++)
-			for (int k = 0; k < 3; k++)
-				face.verts[j][k] = mesh.verts[3 * mesh.faces[i].verts[j] + k];
+		for (int v = 0; v < 3; v++)
+			for (int c = 0; c < 3; c++)
+				face.verts[v * 3 + c] = mesh.verts[3 * mesh.vertIndices[3 * i + v] + c];
+
+		face.tverts.resize(mesh.faceCount * 9);
 
 		// Real texture coordinates
-		if (mesh.faces[i].tverts[0] >= (mesh.tverts.size() * 3))
-			for (int j = 0; j < 3; j++)
-				for (int k = 0; k < 3; k++)
-					face.tverts[j][k] = 0.0;
-		else
-			for (int j = 0; j < 3; j++)
-				for (int k = 0; k < 3; k++)
-					face.tverts[j][k] = mesh.tverts[3 * mesh.faces[i].tverts[j] + k];
+		for (uint t = 0; t < mesh.textures.size(); t++) {
+			uint32 vC  = mesh.verts.size();
+			uint32 viC = mesh.vertIndices.size();
 
-		face.smoothGroup = mesh.faces[i].smoothGroup;
-		face.material    = mesh.faces[i].material;
+			if (((t * viC) >= mesh.tvertIndices.size()) || ((t * vC) >= mesh.tverts.size())) {
+				for (int v = 0; v < 3; v++)
+					for (int c = 0; c < 3; c++)
+						face.tverts[t * 9 + v * 3 + c] = 0.0;
+			} else {
+				for (int v = 0; v < 3; v++)
+					for (int c = 0; c < 3; c++)
+						face.tverts[t * 9 + v * 3 + c] =
+							mesh.tverts[t * vC + 3 * mesh.tvertIndices[t * viC + 3 * i + v] + c];
+			}
+		}
+
+		if (i < mesh.smoothGroup.size())
+			face.smoothGroup = mesh.smoothGroup[i];
+		if (i < mesh.material.size())
+		face.material = mesh.material[i];
 	}
 
-	// Try to load the texture
-	try {
-		if (!mesh.texture.empty() && (mesh.texture != "NULL"))
-			node.texture = TextureMan.get(mesh.texture);
-	} catch (...) {
-		node.texture.clear();
-	}
 }
 
 void Model::setPosition(float x, float y, float z) {
@@ -205,7 +228,7 @@ void Model::render() {
 		float rotate = EventMan.getTimestamp() * 0.1;
 
 		glRotatef(rotate, 0.0, 1.0, 0.0);
-		glScalef(1.2, 1.2, 1.2);
+		glScalef(0.3, 0.3, 0.3);
 	}
 
 	if (_type == kModelTypeGUIFront)
@@ -253,17 +276,32 @@ void Model::renderState(const State &state) {
 
 void Model::renderNode(const Node &node) {
 	if (node.render) {
-		TextureMan.set(node.texture);
+		int t = -1;
+		if (!node.textures.empty()) {
+			t = 0;
+			TextureMan.set(node.textures[t]);
+		} else
+			TextureMan.set();
 
 		glBegin(GL_TRIANGLES);
 
-		for (FaceList::const_iterator face = node.faces.begin(); face != node.faces.end(); ++face) {
-			glTexCoord2f(face->tverts[0][0], face->tverts[0][1]                   );
-			glVertex3f  (face-> verts[0][0], face-> verts[0][1], face->verts[0][2]);
-			glTexCoord2f(face->tverts[1][0], face->tverts[1][1]                   );
-			glVertex3f  (face-> verts[1][0], face-> verts[1][1], face->verts[1][2]);
-			glTexCoord2f(face->tverts[2][0], face->tverts[2][1]                   );
-			glVertex3f  (face-> verts[2][0], face-> verts[2][1], face->verts[2][2]);
+		if (node.textures.empty()) {
+			for (FaceList::const_iterator face = node.faces.begin(); face != node.faces.end(); ++face) {
+				glVertex3f(face->verts[0 * 3 + 0], face->verts[0 * 3 + 1], face->verts[0 * 3 + 2]);
+				glVertex3f(face->verts[1 * 3 + 0], face->verts[1 * 3 + 1], face->verts[1 * 3 + 2]);
+				glVertex3f(face->verts[2 * 3 + 0], face->verts[2 * 3 + 1], face->verts[2 * 3 + 2]);
+			}
+		} else {
+			t *= 9;
+
+			for (FaceList::const_iterator face = node.faces.begin(); face != node.faces.end(); ++face) {
+				glTexCoord2f(face->tverts[t + 0 * 3 + 0], face->tverts[t + 0 * 3 + 1]                        );
+				glVertex3f  (face-> verts[    0 * 3 + 0], face-> verts[    0 * 3 + 1], face->verts[0 * 3 + 2]);
+				glTexCoord2f(face->tverts[t + 1 * 3 + 0], face->tverts[t + 1 * 3 + 1]                        );
+				glVertex3f  (face-> verts[    1 * 3 + 0], face-> verts[    1 * 3 + 1], face->verts[1 * 3 + 2]);
+				glTexCoord2f(face->tverts[t + 2 * 3 + 0], face->tverts[t + 2 * 3 + 1]                        );
+				glVertex3f  (face-> verts[    2 * 3 + 0], face-> verts[    2 * 3 + 1], face->verts[2 * 3 + 2]);
+			}
 		}
 
 		glEnd();

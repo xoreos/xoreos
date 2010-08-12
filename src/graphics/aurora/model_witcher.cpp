@@ -343,18 +343,19 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 
 	ctx.mdb->seekTo(ctx.offRawData + facesStart);
 
-	ctx.mesh->faces.resize(facesCount);
+	ctx.mesh->faceCount = facesCount;
+
+	ctx.mesh-> vertIndices.resize(3 * facesCount);
+	ctx.mesh->tvertIndices.resize(3 * facesCount);
 	for (uint32 i = 0; i < facesCount; i++) {
 		ctx.mdb->skip(4 * 4 + 4);
 
 		if (ctx.fileVersion == 133)
 			ctx.mdb->skip(3 * 4);
 
-		MeshFace &face = ctx.mesh->faces[i];
-
-		face.tverts[0] = face.verts[0] = ctx.mdb->readUint32LE();
-		face.tverts[1] = face.verts[1] = ctx.mdb->readUint32LE();
-		face.tverts[2] = face.verts[2] = ctx.mdb->readUint32LE();
+		ctx.mesh->vertIndices[i * 3 + 0] = ctx.mesh->tvertIndices[i * 3 + 0] = ctx.mdb->readUint32LE();
+		ctx.mesh->vertIndices[i * 3 + 1] = ctx.mesh->tvertIndices[i * 3 + 1] = ctx.mdb->readUint32LE();
+		ctx.mesh->vertIndices[i * 3 + 2] = ctx.mesh->tvertIndices[i * 3 + 2] = ctx.mdb->readUint32LE();
 
 		if (ctx.fileVersion == 133)
 			ctx.mdb->skip(4);
@@ -393,9 +394,13 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 				while (n-- > 0)
 					it++;
 
-				ctx.mesh->texture.clear();
+				ctx.mesh->textures.clear();
+
+				Common::UString texture;
 				while (it != line->end())
-					ctx.mesh->texture += *it++;
+					texture += *it++;
+
+				ctx.mesh->textures.push_back(texture);
 			}
 		}
 

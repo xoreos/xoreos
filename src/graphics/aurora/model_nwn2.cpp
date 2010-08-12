@@ -148,16 +148,17 @@ void Model_NWN2::readRigid(ParserContext &ctx, uint32 offset) {
 		ctx.mesh->tverts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
 	}
 
-	ctx.mesh->faces.resize(faceCount);
-	for (uint32 i = 0; i < faceCount; i++) {
-		MeshFace &face = ctx.mesh->faces[i];
+	ctx.mesh->faceCount = faceCount;
 
-		face.tverts[0] = face.verts[0] = ctx.mdb->readUint16LE();
-		face.tverts[1] = face.verts[1] = ctx.mdb->readUint16LE();
-		face.tverts[2] = face.verts[2] = ctx.mdb->readUint16LE();
+	ctx.mesh-> vertIndices.resize(3 * faceCount);
+	ctx.mesh->tvertIndices.resize(3 * faceCount);
+	for (uint32 i = 0; i < faceCount; i++) {
+		ctx.mesh->vertIndices[i * 3 + 0] = ctx.mesh->tvertIndices[i * 3 + 0] = ctx.mdb->readUint16LE();
+		ctx.mesh->vertIndices[i * 3 + 1] = ctx.mesh->tvertIndices[i * 3 + 1] = ctx.mdb->readUint16LE();
+		ctx.mesh->vertIndices[i * 3 + 2] = ctx.mesh->tvertIndices[i * 3 + 2] = ctx.mdb->readUint16LE();
 	}
 
-	ctx.mesh->texture = diffuseMap;
+	ctx.mesh->textures.push_back(diffuseMap);
 
 	processMesh(*ctx.mesh, *ctx.node);
 	delete ctx.mesh;
@@ -238,16 +239,17 @@ void Model_NWN2::readSkin(ParserContext &ctx, uint32 offset) {
 		ctx.mdb->skip(4); // Bone count
 	}
 
-	ctx.mesh->faces.resize(faceCount);
-	for (uint32 i = 0; i < faceCount; i++) {
-		MeshFace &face = ctx.mesh->faces[i];
+	ctx.mesh->faceCount = faceCount;
 
-		face.tverts[0] = face.verts[0] = ctx.mdb->readUint16LE();
-		face.tverts[1] = face.verts[1] = ctx.mdb->readUint16LE();
-		face.tverts[2] = face.verts[2] = ctx.mdb->readUint16LE();
+	ctx.mesh-> vertIndices.resize(3 * faceCount);
+	ctx.mesh->tvertIndices.resize(3 * faceCount);
+	for (uint32 i = 0; i < faceCount; i++) {
+		ctx.mesh->vertIndices[i * 3 + 0] = ctx.mesh->tvertIndices[i * 3 + 0] = ctx.mdb->readUint16LE();
+		ctx.mesh->vertIndices[i * 3 + 1] = ctx.mesh->tvertIndices[i * 3 + 1] = ctx.mdb->readUint16LE();
+		ctx.mesh->vertIndices[i * 3 + 2] = ctx.mesh->tvertIndices[i * 3 + 2] = ctx.mdb->readUint16LE();
 	}
 
-	ctx.mesh->texture = diffuseMap;
+	ctx.mesh->textures.push_back(diffuseMap);
 
 	processMesh(*ctx.mesh, *ctx.node);
 	delete ctx.mesh;

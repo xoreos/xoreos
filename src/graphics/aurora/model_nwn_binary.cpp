@@ -386,8 +386,11 @@ void Model_NWN_Binary::readMesh(ParserContext &ctx) {
 	uint16 vertexCount  = ctx.mdl->readUint16LE();
 	uint16 textureCount = ctx.mdl->readUint16LE();
 
-	uint32 texture0VertexOffset = ctx.mdl->readUint32LE();
-	ctx.mdl->skip(3 * 4); // Texture vertex data
+	uint32 textureVertexOffset[4];
+	textureVertexOffset[0] = ctx.mdl->readUint32LE();
+	textureVertexOffset[1] = ctx.mdl->readUint32LE();
+	textureVertexOffset[2] = ctx.mdl->readUint32LE();
+	textureVertexOffset[3] = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4); // Vertex normals
 	ctx.mdl->skip(4); // Vertex RGBA colors
@@ -404,11 +407,13 @@ void Model_NWN_Binary::readMesh(ParserContext &ctx) {
 
 	ctx.mdl->skip(4); // Unknown
 
-	if (textureCount > 1)
-		warning("Model_NWN_Binary::readMesh(): textureCount == %d (\"%s\", \"%s\", \"%s\", \"%s\")",
-				textureCount, textures[0].c_str(), textures[1].c_str(), textures[2].c_str(), textures[3].c_str());
+	if (textureCount > 4) {
+		warning("Model_NWN_Binary::readMesh(): textureCount > 4 (%d)", textureCount);
+		textureCount = 4;
+	}
 
-	ctx.mesh->texture = textures[0];
+	for (uint16 i = 0; i < textureCount; i++)
+		ctx.mesh->textures.push_back(textures[i]);
 
 	uint32 endPos = ctx.mdl->pos();
 
@@ -423,22 +428,27 @@ void Model_NWN_Binary::readMesh(ParserContext &ctx) {
 	}
 
 	// Read texture vertices
-	ctx.mesh->tverts.resize(3 * vertexCount);
-	if (texture0VertexOffset != 0xFFFFFFFF) {
+	ctx.mesh->tverts.resize(textureCount * 3 * vertexCount);
+	for (uint16 t = 0; t < textureCount; t++) {
+		if (textureVertexOffset[t] != 0xFFFFFFFF) {
 
-		ctx.mdl->seekTo(texture0VertexOffset + ctx.offRawData);
+			ctx.mdl->seekTo(textureVertexOffset[t] + ctx.offRawData);
 
-		for (int i = 0; i < vertexCount; i++) {
-			ctx.mesh->tverts[3 * i + 0] = ctx.mdl->readIEEEFloatLE();
-			ctx.mesh->tverts[3 * i + 1] = ctx.mdl->readIEEEFloatLE();
-			ctx.mesh->tverts[3 * i + 2] = 0;
-		}
-	} else
-		for (int i = 0; i < (3 * vertexCount); i++)
-			ctx.mesh->tverts[i] = 0;
+			for (int i = 0; i < vertexCount; i++) {
+				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 0] = ctx.mdl->readIEEEFloatLE();
+				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 1] = ctx.mdl->readIEEEFloatLE();
+				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 2] = 0.0;
+			}
+		} else
+			for (int i = 0; i < (3 * vertexCount); i++)
+				ctx.mesh->tverts[t * 3 * vertexCount + i] = 0.0;
+	}
+
+	ctx.mesh->faceCount = facesCount;
 
 	// Read faces
-	ctx.mesh->faces.resize(facesCount);
+	ctx.mesh-> vertIndices.resize(               3 * facesCount);
+	ctx.mesh->tvertIndices.resize(textureCount * 3 * facesCount);
 	if ((facesStart != 0) && (facesCount > 0)) {
 		ctx.mdl->seekTo(facesStart + ctx.offModelData);
 
@@ -448,11 +458,15 @@ void Model_NWN_Binary::readMesh(ParserContext &ctx) {
 			ctx.mdl->skip(    4); // ID
 			ctx.mdl->skip(3 * 2); // Adjacent face number
 
-			MeshFace &face = ctx.mesh->faces[i];
+			ctx.mesh->vertIndices[i * 3 + 0] = ctx.mdl->readUint16LE();
+			ctx.mesh->vertIndices[i * 3 + 1] = ctx.mdl->readUint16LE();
+			ctx.mesh->vertIndices[i * 3 + 2] = ctx.mdl->readUint16LE();
 
-			face.tverts[0] = face.verts[0] = ctx.mdl->readUint16LE();
-			face.tverts[1] = face.verts[1] = ctx.mdl->readUint16LE();
-			face.tverts[2] = face.verts[2] = ctx.mdl->readUint16LE();
+			for (uint16 t = 0 ; t < textureCount; t++) {
+				ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 0] = ctx.mesh->vertIndices[i * 3 + 0];
+				ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 1] = ctx.mesh->vertIndices[i * 3 + 1];
+				ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 2] = ctx.mesh->vertIndices[i * 3 + 2];
+			}
 		}
 	}
 

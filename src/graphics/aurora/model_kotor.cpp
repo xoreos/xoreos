@@ -352,9 +352,11 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 
 	ctx.mdl->skip(4); // Unknown
 
-	uint32 offUV = ctx.mdl->readUint32LE();
+	uint32 offUV[2];
+	offUV[0] = ctx.mdl->readUint32LE();
+	offUV[1] = ctx.mdl->readUint32LE();
 
-	ctx.mdl->skip(28); // Unknown
+	ctx.mdl->skip(24); // Unknown
 
 	uint16 vertexCount  = ctx.mdl->readUint16LE();
 	uint16 textureCount = ctx.mdl->readUint16LE();
@@ -377,14 +379,16 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 
 	uint32 endPos = ctx.mdl->pos();
 
-	if (textureCount > 1)
-		warning("Model_KotOR::readMesh(): textureCount == %d (\"%s\", \"%s\")", textureCount,
-				textures[0].c_str(), textures[1].c_str());
+	if (textureCount > 2) {
+		warning("Model_KotOR::readMesh(): textureCount > 2 (%d)", textureCount);
+		textureCount = 2;
+	}
 
-	ctx.mesh->texture = textures[0];
+	for (uint16 i = 0; i < textureCount; i++)
+		ctx.mesh->textures.push_back(textures[i]);
 
-	ctx.mesh-> verts.resize(3 * vertexCount);
-	ctx.mesh->tverts.resize(3 * vertexCount);
+	ctx.mesh-> verts.resize(               3 * vertexCount);
+	ctx.mesh->tverts.resize(textureCount * 3 * vertexCount);
 	for (int i = 0; i < vertexCount; i++) {
 		ctx.mdx->seekTo(offNodeData + i * mdxStructSize);
 
@@ -392,17 +396,20 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 		ctx.mesh->verts[3 * i + 1] = ctx.mdx->readIEEEFloatLE();
 		ctx.mesh->verts[3 * i + 2] = ctx.mdx->readIEEEFloatLE();
 
-		if (offUV != 0xFFFFFFFF) {
-			ctx.mdx->seekTo(offNodeData + i * mdxStructSize + offUV);
+		for (uint16 t = 0; t < textureCount; t++) {
+			if (offUV[t] != 0xFFFFFFFF) {
+				ctx.mdx->seekTo(offNodeData + i * mdxStructSize + offUV[t]);
 
-			ctx.mesh->tverts[3 * i + 0] = ctx.mdx->readIEEEFloatLE();
-			ctx.mesh->tverts[3 * i + 1] = ctx.mdx->readIEEEFloatLE();
-			ctx.mesh->tverts[3 * i + 2] = 0.0;
-		} else {
-			ctx.mesh->tverts[3 * i + 0] = 0.0;
-			ctx.mesh->tverts[3 * i + 1] = 0.0;
-			ctx.mesh->tverts[3 * i + 2] = 0.0;
+				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 0] = ctx.mdx->readIEEEFloatLE();
+				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 1] = ctx.mdx->readIEEEFloatLE();
+				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 2] = 0.0;
+			} else {
+				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 0] = 0.0;
+				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 1] = 0.0;
+				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 2] = 0.0;
+			}
 		}
+
 	}
 
 	ctx.mdl->seekTo(offOffVerts + ctx.offModelData);
@@ -410,13 +417,20 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 
 	ctx.mdl->seekTo(offVerts + ctx.offModelData);
 
-	ctx.mesh->faces.resize(facesCount);
-	for (uint32 i = 0; i < facesCount; i++) {
-		MeshFace &face = ctx.mesh->faces[i];
+	ctx.mesh->faceCount = facesCount;
 
-		face.tverts[0] = face.verts[0] = ctx.mdl->readUint16LE();
-		face.tverts[1] = face.verts[1] = ctx.mdl->readUint16LE();
-		face.tverts[2] = face.verts[2] = ctx.mdl->readUint16LE();
+	ctx.mesh-> vertIndices.resize(               3 * facesCount);
+	ctx.mesh->tvertIndices.resize(textureCount * 3 * facesCount);
+	for (uint32 i = 0; i < facesCount; i++) {
+		ctx.mesh->vertIndices[i * 3 + 0] = ctx.mdl->readUint16LE();
+		ctx.mesh->vertIndices[i * 3 + 1] = ctx.mdl->readUint16LE();
+		ctx.mesh->vertIndices[i * 3 + 2] = ctx.mdl->readUint16LE();
+
+		for (uint16 t = 0 ; t < textureCount; t++) {
+			ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 0] = ctx.mesh->vertIndices[i * 3 + 0];
+			ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 1] = ctx.mesh->vertIndices[i * 3 + 1];
+			ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 2] = ctx.mesh->vertIndices[i * 3 + 2];
+		}
 	}
 
 	ctx.mdl->seekTo(endPos);

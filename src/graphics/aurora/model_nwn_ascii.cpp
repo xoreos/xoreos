@@ -242,7 +242,7 @@ void Model_NWN_ASCII::readNode(ParserContext &ctx, const Common::UString &type, 
 			line[1].parse(n);
 			readWeights(ctx, n);
 		} else if (line[0] == "bitmap") {
-			ctx.mesh->texture = line[1];
+			ctx.mesh->textures.push_back(line[1]);
 		} else if (line[0] == "verts") {
 			int n;
 
@@ -297,7 +297,11 @@ void Model_NWN_ASCII::readVertices(ParserContext &ctx, std::vector<float> &verti
 }
 
 void Model_NWN_ASCII::readFaces(ParserContext &ctx, int n) {
-	ctx.mesh->faces.resize(n);
+	ctx.mesh-> vertIndices.resize(3 * n);
+	ctx.mesh->tvertIndices.resize(3 * n);
+
+	ctx.mesh->smoothGroup.resize(n);
+	ctx.mesh->material.resize(n);
 
 	for (int i = 0; i < n; ) {
 		std::vector<Common::UString> line;
@@ -310,19 +314,19 @@ void Model_NWN_ASCII::readFaces(ParserContext &ctx, int n) {
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
-		MeshFace &face = ctx.mesh->faces[i++];
+		i++;
 
-		line[0].parse(face.verts[0]);
-		line[1].parse(face.verts[1]);
-		line[2].parse(face.verts[2]);
+		line[0].parse(ctx.mesh->vertIndices[i * 3 + 0]);
+		line[0].parse(ctx.mesh->vertIndices[i * 3 + 1]);
+		line[0].parse(ctx.mesh->vertIndices[i * 3 + 2]);
 
-		line[3].parse(face.smoothGroup);
+		line[3].parse(ctx.mesh->smoothGroup[i]);
 
-		line[4].parse(face.tverts[0]);
-		line[5].parse(face.tverts[1]);
-		line[6].parse(face.tverts[2]);
+		line[0].parse(ctx.mesh->tvertIndices[i * 3 + 0]);
+		line[0].parse(ctx.mesh->tvertIndices[i * 3 + 1]);
+		line[0].parse(ctx.mesh->tvertIndices[i * 3 + 2]);
 
-		line[7].parse(face.material);
+		line[7].parse(ctx.mesh->material[i]);
 	}
 }
 

@@ -77,28 +77,30 @@ public:
 
 protected:
 	// Representation found in the raw files
-	struct MeshFace {
-		uint32  verts[3];
-		uint32 tverts[3];
-
-		int smoothGroup;
-		int material;
-	};
-
 	struct Mesh {
-		Common::UString texture;
+		std::vector<Common::UString> textures;
 
 		std::vector<float>  verts;
 		std::vector<float> tverts;
 
-		std::vector<MeshFace> faces;
+		uint32 faceCount;
+
+		// Per face
+
+		std::vector<uint32>  vertIndices;
+		std::vector<uint32> tvertIndices;
+
+		std::vector<int> smoothGroup;
+		std::vector<int> material;
+
+		Mesh();
 	};
 
 
 	// Representation we use
 	struct Face {
-		float  verts[3][3];
-		float tverts[3][3];
+		std::vector<float>  verts;
+		std::vector<float> tverts;
 
 		int smoothGroup;
 		int material;
@@ -121,7 +123,7 @@ protected:
 		float specular[3];
 		float shininess;
 
-		TextureHandle texture;
+		std::vector<TextureHandle> textures;
 
 		bool dangly;
 
