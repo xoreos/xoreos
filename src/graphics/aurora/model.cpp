@@ -237,6 +237,9 @@ void Model::render() {
 	if (_type == kModelTypeGUIFront)
 		glScalef(100, 100, 100);
 
+	if (_type == kModelTypeObject)
+		glRotatef(90.0, -1.0, 0.0, 0.0);
+
 	glTranslatef(_position[0], _position[1], _position[2]);
 
 	glColor4f(1.0, 1.0, 1.0, _fadeValue);
@@ -264,9 +267,6 @@ void Model::render() {
 	}
 
 	TextureMan.activeTexture(0);
-
-	if (_type == kModelTypeObject)
-		glRotatef(90.0, -1.0, 0.0, 0.0);
 
 	renderState(*_currentState);
 
