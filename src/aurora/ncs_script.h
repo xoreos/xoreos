@@ -15,7 +15,7 @@
 #ifndef AURORA_NCS_SCRIPT_H
 #define AURORA_NCS_SCRIPT_H
 
-#include <stack>
+#include <vector>
 
 #include "common/types.h"
 #include "common/ustring.h"
@@ -66,12 +66,31 @@ private:
 	Common::UString _stringVal;
 };
 
+class NCSStack : public std::vector<StackObject> {
+public:
+	NCSStack();
+	~NCSStack();
+
+	StackObject top();
+	StackObject pop();
+	void push(StackObject obj);
+
+	int32 getStackPtr();
+	void setStackPtr(int32 pos);
+	int32 getBasePtr();
+	void setBasePtr(int32 pos);
+
+private:
+	int32 _stackPtr;
+	int32 _basePtr;
+};
+
 #define DECLARE_OPCODE(x) void x(InstructionType type)
 
 /** An NCS, BioWare's NWN Compile Script */
 class NCSScript : public AuroraBase {
 public:
-	NCSScript() { setupOpcodes(); }
+	NCSScript();
 	~NCSScript() {}
 
 	void load(Common::SeekableReadStream &ncs);
@@ -108,8 +127,9 @@ public:
 	};
 
 private:
-	std::stack<StackObject> _stack;
+	NCSStack _stack;
 	Common::SeekableReadStream *_script;
+	int32 _savedBasePtr;
 
 	typedef void (NCSScript::*OpcodeProc)(InstructionType type);
 	struct Opcode {

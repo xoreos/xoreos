@@ -84,6 +84,59 @@ bool StackObject::operator==(StackObject &obj) {
 	return false;
 }
 
+NCSStack::NCSStack() {
+	_stackPtr = -1;
+	_basePtr = -1;
+}
+
+NCSStack::~NCSStack() {
+}
+
+StackObject NCSStack::top() {
+	return at(_stackPtr);
+}
+
+StackObject NCSStack::pop() {
+	if (_stackPtr == 0)
+		throw Common::Exception("NCSStack: Stack underflow");
+
+	return at(_stackPtr--);
+}
+
+void NCSStack::push(StackObject obj) {
+	if (_stackPtr == 0x7FFFFFFF) // Like this will ever happen :P
+		throw Common::Exception("NCSStack: Stack overflow");
+
+	if (_stackPtr == (int32)size() - 1)
+		push_back(obj);
+	else
+		at(_stackPtr + 1) = obj;
+
+	_stackPtr++;
+}
+
+int32 NCSStack::getStackPtr() {
+	return (_stackPtr + 1) * -4;
+}
+
+void NCSStack::setStackPtr(int32 pos) {
+	if (pos >= -4 || (pos % 4) != 0)
+		throw Common::Exception("NCSStack::setStackPtr(): Illegal position %d", pos);
+
+	_stackPtr = (pos / -4) - 1;
+}
+
+int32 NCSStack::getBasePtr() {
+	return (_basePtr + 1) * -4;
+}
+
+void NCSStack::setBasePtr(int32 pos) {
+	if (pos >= -4 || (pos % 4) != 0)
+		throw Common::Exception("NCSStack::setBasePtr(): Illegal position %d", pos);
+
+	_basePtr = (pos / -4) - 1;
+}
+
 #define OPCODE(x) { &NCSScript::x, #x }
 
 void NCSScript::setupOpcodes() {
@@ -156,6 +209,11 @@ void NCSScript::setupOpcodes() {
 
 static const uint32 kNCSTag = MKID_BE('NCS ');
 static const uint32 kVersion10 = MKID_BE('V1.0');
+
+NCSScript::NCSScript() {
+	setupOpcodes();
+	_savedBasePtr = -4;
+}
 
 void NCSScript::load(Common::SeekableReadStream &ncs) {
 	readHeader(ncs);
@@ -238,8 +296,8 @@ void NCSScript::o_logand(InstructionType type) {
 		throw Common::Exception("o_logand: Illegal type %d", type);
 
 	try {
-		int32 arg1 = _stack.top().getInt(); _stack.pop();
-		int32 arg2 = _stack.top().getInt(); _stack.pop();
+		int32 arg1 = _stack.pop().getInt();
+		int32 arg2 = _stack.pop().getInt();
 		_stack.push(arg1 && arg2);
 	} catch (Common::Exception e) {
 		throw e;
@@ -251,8 +309,8 @@ void NCSScript::o_logor(InstructionType type) {
 		throw Common::Exception("o_logor: Illegal type %d", type);
 
 	try {
-		int32 arg1 = _stack.top().getInt(); _stack.pop();
-		int32 arg2 = _stack.top().getInt(); _stack.pop();
+		int32 arg1 = _stack.pop().getInt();
+		int32 arg2 = _stack.pop().getInt();
 		_stack.push(arg1 || arg2);
 	} catch (Common::Exception e) {
 		throw e;
@@ -264,8 +322,8 @@ void NCSScript::o_incor(InstructionType type) {
 		throw Common::Exception("o_incor: Illegal type %d", type);
 
 	try {
-		int32 arg1 = _stack.top().getInt(); _stack.pop();
-		int32 arg2 = _stack.top().getInt(); _stack.pop();
+		int32 arg1 = _stack.pop().getInt();
+		int32 arg2 = _stack.pop().getInt();
 		_stack.push(arg1 | arg2);
 	} catch (Common::Exception e) {
 		throw e;
@@ -277,8 +335,8 @@ void NCSScript::o_excor(InstructionType type) {
 		throw Common::Exception("o_excor: Illegal type %d", type);
 
 	try {
-		int32 arg1 = _stack.top().getInt(); _stack.pop();
-		int32 arg2 = _stack.top().getInt(); _stack.pop();
+		int32 arg1 = _stack.pop().getInt();
+		int32 arg2 = _stack.pop().getInt();
 		_stack.push(arg1 ^ arg2);
 	} catch (Common::Exception e) {
 		throw e;
@@ -290,8 +348,8 @@ void NCSScript::o_booland(InstructionType type) {
 		throw Common::Exception("o_booland: Illegal type %d", type);
 
 	try {
-		int32 arg1 = _stack.top().getInt(); _stack.pop();
-		int32 arg2 = _stack.top().getInt(); _stack.pop();
+		int32 arg1 = _stack.pop().getInt();
+		int32 arg2 = _stack.pop().getInt();
 		_stack.push(arg1 && arg2);
 	} catch (Common::Exception e) {
 		throw e;
@@ -302,8 +360,8 @@ void NCSScript::o_eq(InstructionType type) {
 	if (type == kInstTypeStructStruct) // TODO!
 		_script->readUint16LE();
 
-	StackObject arg1 = _stack.top(); _stack.pop();
-	StackObject arg2 = _stack.top(); _stack.pop();
+	StackObject arg1 = _stack.pop();
+	StackObject arg2 = _stack.pop();
 
 	_stack.push(arg1 == arg2);
 }
@@ -312,8 +370,8 @@ void NCSScript::o_neq(InstructionType type) {
 	if (type == kInstTypeStructStruct) // TODO!
 		_script->readUint16LE();
 
-	StackObject arg1 = _stack.top(); _stack.pop();
-	StackObject arg2 = _stack.top(); _stack.pop();
+	StackObject arg1 = _stack.pop();
+	StackObject arg2 = _stack.pop();
 
 	_stack.push(arg1 != arg2);
 }
@@ -322,8 +380,8 @@ void NCSScript::o_geq(InstructionType type) {
 	switch (type) {
 	case kInstTypeIntInt:
 		try {
-			int32 arg1 = _stack.top().getInt(); _stack.pop();
-			int32 arg2 = _stack.top().getInt(); _stack.pop();
+			int32 arg1 = _stack.pop().getInt();
+			int32 arg2 = _stack.pop().getInt();
 			_stack.push(arg2 >= arg1);
 		} catch (Common::Exception e) {
 			throw e;
@@ -331,8 +389,8 @@ void NCSScript::o_geq(InstructionType type) {
 		break;
 	case kInstTypeFloatFloat:
 		try {
-			float arg1 = _stack.top().getFloat(); _stack.pop();
-			float arg2 = _stack.top().getFloat(); _stack.pop();
+			float arg1 = _stack.pop().getFloat();
+			float arg2 = _stack.pop().getFloat();
 			_stack.push(arg2 >= arg1);
 		} catch (Common::Exception e) {
 			throw e;
@@ -347,8 +405,8 @@ void NCSScript::o_gt(InstructionType type) {
 	switch (type) {
 	case kInstTypeIntInt:
 		try {
-			int32 arg1 = _stack.top().getInt(); _stack.pop();
-			int32 arg2 = _stack.top().getInt(); _stack.pop();
+			int32 arg1 = _stack.pop().getInt();
+			int32 arg2 = _stack.pop().getInt();
 			_stack.push(arg2 > arg1);
 		} catch (Common::Exception e) {
 			throw e;
@@ -356,8 +414,8 @@ void NCSScript::o_gt(InstructionType type) {
 		break;
 	case kInstTypeFloatFloat:
 		try {
-			float arg1 = _stack.top().getFloat(); _stack.pop();
-			float arg2 = _stack.top().getFloat(); _stack.pop();
+			float arg1 = _stack.pop().getFloat();
+			float arg2 = _stack.pop().getFloat();
 			_stack.push(arg2 > arg1);
 		} catch (Common::Exception e) {
 			throw e;
@@ -372,8 +430,8 @@ void NCSScript::o_lt(InstructionType type) {
 	switch (type) {
 	case kInstTypeIntInt:
 		try {
-			int32 arg1 = _stack.top().getInt(); _stack.pop();
-			int32 arg2 = _stack.top().getInt(); _stack.pop();
+			int32 arg1 = _stack.pop().getInt();
+			int32 arg2 = _stack.pop().getInt();
 			_stack.push(arg2 < arg1);
 		} catch (Common::Exception e) {
 			throw e;
@@ -381,8 +439,8 @@ void NCSScript::o_lt(InstructionType type) {
 		break;
 	case kInstTypeFloatFloat:
 		try {
-			float arg1 = _stack.top().getFloat(); _stack.pop();
-			float arg2 = _stack.top().getFloat(); _stack.pop();
+			float arg1 = _stack.pop().getFloat();
+			float arg2 = _stack.pop().getFloat();
 			_stack.push(arg2 < arg1);
 		} catch (Common::Exception e) {
 			throw e;
@@ -397,8 +455,8 @@ void NCSScript::o_leq(InstructionType type) {
 	switch (type) {
 	case kInstTypeIntInt:
 		try {
-			int32 arg1 = _stack.top().getInt(); _stack.pop();
-			int32 arg2 = _stack.top().getInt(); _stack.pop();
+			int32 arg1 = _stack.pop().getInt();
+			int32 arg2 = _stack.pop().getInt();
 			_stack.push(arg2 <= arg1);
 		} catch (Common::Exception e) {
 			throw e;
@@ -406,8 +464,8 @@ void NCSScript::o_leq(InstructionType type) {
 		break;
 	case kInstTypeFloatFloat:
 		try {
-			float arg1 = _stack.top().getFloat(); _stack.pop();
-			float arg2 = _stack.top().getFloat(); _stack.pop();
+			float arg1 = _stack.pop().getFloat();
+			float arg2 = _stack.pop().getFloat();
 			_stack.push(arg2 <= arg1);
 		} catch (Common::Exception e) {
 			throw e;
@@ -423,8 +481,8 @@ void NCSScript::o_shleft(InstructionType type) {
 		throw Common::Exception("o_shleft: Illegal type %d", type);
 
 	try {
-		int32 arg1 = _stack.top().getInt(); _stack.pop();
-		int32 arg2 = _stack.top().getInt(); _stack.pop();
+		int32 arg1 = _stack.pop().getInt();
+		int32 arg2 = _stack.pop().getInt();
 		_stack.push(arg2 << arg1);
 	} catch (Common::Exception e) {
 		throw e;
@@ -436,8 +494,8 @@ void NCSScript::o_shright(InstructionType type) {
 		throw Common::Exception("o_shright: Illegal type %d", type);
 
 	try {
-		int32 arg1 = _stack.top().getInt(); _stack.pop();
-		int32 arg2 = _stack.top().getInt(); _stack.pop();
+		int32 arg1 = _stack.pop().getInt();
+		int32 arg2 = _stack.pop().getInt();
 		_stack.push(arg2 >> arg1);
 	} catch (Common::Exception e) {
 		throw e;
@@ -451,12 +509,19 @@ void NCSScript::o_ushright(InstructionType type) {
 		throw Common::Exception("o_ushright: Illegal type %d", type);
 
 	try {
-		int32 arg1 = _stack.top().getInt(); _stack.pop();
-		int32 arg2 = _stack.top().getInt(); _stack.pop();
+		int32 arg1 = _stack.pop().getInt();
+		int32 arg2 = _stack.pop().getInt();
 		_stack.push(arg2 >> arg1);
 	} catch (Common::Exception e) {
 		throw e;
 	}
+}
+
+void NCSScript::o_movsp(InstructionType type) {
+	if (type != kInstTypeNone)
+		throw Common::Exception("o_movsp: Illegal type %d", type);
+
+	_stack.setStackPtr(_stack.getStackPtr() + _script->readSint32LE());
 }
 
 void NCSScript::o_jmp(InstructionType type) {
@@ -472,9 +537,8 @@ void NCSScript::o_jz(InstructionType type) {
 		throw Common::Exception("o_jz: Illegal type %d", type);
 
 	int32 offset = _script->readSint32LE();
-	uint32 top = _stack.top().getInt(); _stack.pop();
 
-	if (!top)
+	if (!_stack.pop().getInt())
 		_script->seek(offset - 2, SEEK_CUR);
 }
 
@@ -482,8 +546,7 @@ void NCSScript::o_not(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("o_not: Illegal type %d", type);
 
-	uint32 top = _stack.top().getInt(); _stack.pop();
-	_stack.push(!top);
+	_stack.push(!_stack.pop().getInt());
 }
 
 void NCSScript::o_jnz(InstructionType type) {
@@ -491,10 +554,24 @@ void NCSScript::o_jnz(InstructionType type) {
 		throw Common::Exception("o_jnz: Illegal type %d", type);
 
 	int32 offset = _script->readSint32LE();
-	uint32 top = _stack.top().getInt(); _stack.pop();
 
-	if (top)
+	if (_stack.pop().getInt())
 		_script->seek(offset - 2, SEEK_CUR);
+}
+
+void NCSScript::o_savebp(InstructionType type) {
+	if (type != kInstTypeNone)
+		throw Common::Exception("o_savebp: Illegal type %d", type);
+
+	_savedBasePtr = _stack.getBasePtr();
+	_stack.setBasePtr(_stack.getStackPtr());
+}
+
+void NCSScript::o_restorebp(InstructionType type) {
+	if (type != kInstTypeNone)
+		throw Common::Exception("o_restorebp: Illegal type %d", type);
+
+	_stack.setBasePtr(_savedBasePtr);
 }
 
 void NCSScript::o_nop(InstructionType type) {
