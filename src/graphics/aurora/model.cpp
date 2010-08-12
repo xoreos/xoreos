@@ -114,6 +114,7 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 			if (!mesh.textures[t].empty() && (mesh.textures[t] != "NULL"))
 				node.textures[t] = TextureMan.get(mesh.textures[t]);
 		} catch (...) {
+			warning("Failed loading texture \"%s\"", mesh.textures[t].c_str());
 			node.textures[t].clear();
 		}
 	}
