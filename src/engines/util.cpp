@@ -72,21 +72,24 @@ bool longDelay(uint32 ms) {
 	return EventMan.quitRequested();
 }
 
-void dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName) {
+bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName) {
+	Common::DumpFile file;
+	if (!file.open(fileName))
+		return false;
+
 	uint32 pos = stream.pos();
 
 	stream.seek(0);
 
-	Common::DumpFile file;
-	if (!file.open(fileName)) {
-		stream.seek(pos);
-		return;
-	}
-
 	file.writeStream(stream);
-	file.close();
+	file.flush();
+
+	bool error = file.err();
 
 	stream.seek(pos);
+	file.close();
+
+	return !error;
 }
 
 } // End of namespace Engines

@@ -31,7 +31,7 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 bool longDelay(uint32 ms);
 
 /** Debug method to quickly dump a stream to disk. */
-void dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName);
+bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName);
 
 } // End of namespace Engines
 

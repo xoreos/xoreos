@@ -16,11 +16,11 @@
 #define ENGINES_ENGINE_H
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 #include "aurora/types.h"
 
 namespace Common {
-	class UString;
 	class SeekableReadStream;
 }
 
@@ -36,6 +36,9 @@ public:
 	virtual void run(const Common::UString &target) = 0;
 
 protected:
+	/** Dump a resource onto disk. */
+	bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::UString file = "");
+
 	/** Add an archive file to the resource manager, erroring out if the file does not exist. */
 	void indexMandatoryArchive(Aurora::ArchiveType archive, const Common::UString &file, uint32 priority = 10);
 
