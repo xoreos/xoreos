@@ -63,6 +63,10 @@ public:
 	void set();
 	void set(const TextureHandle &handle);
 
+	void activeTexture(uint32 n);
+
+	void textureCoord2f(uint32 n, float u, float v);
+
 private:
 	TextureMap _textures;
 
