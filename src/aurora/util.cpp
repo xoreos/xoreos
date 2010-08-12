@@ -74,6 +74,7 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeBTT,            ".btt"},
 	{kFileTypeUTT,            ".utt"},
 	{kFileTypeDDS,            ".dds"},
+	{kFileTypeBTS,            ".bts"},
 	{kFileTypeUTS,            ".uts"},
 	{kFileTypeLTR,            ".ltr"},
 	{kFileTypeGFF,            ".gff"},
