@@ -255,8 +255,15 @@ void Model::render() {
 		}
 	}
 
-	glEnable(GL_TEXTURE_2D);
+	glActiveTextureARB(GL_TEXTURE0_ARB);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glEnable(GL_TEXTURE_2D);
+
+	glActiveTextureARB(GL_TEXTURE1_ARB);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glEnable(GL_TEXTURE_2D);
+
+	glActiveTextureARB(GL_TEXTURE0_ARB);
 
 	if (_type == kModelTypeObject)
 		glRotatef(90.0, -1.0, 0.0, 0.0);
@@ -272,36 +279,40 @@ void Model::renderState(const State &state) {
 		renderNode(**node);
 		glPopMatrix();
 	}
+
+	TextureMan.activeTexture(0);
 }
 
 void Model::renderNode(const Node &node) {
 	if (node.render) {
-		int t = -1;
-		if (!node.textures.empty()) {
-			t = 0;
-			TextureMan.set(node.textures[t]);
-		} else
+		if (node.textures.empty()) {
+			TextureMan.activeTexture(0);
 			TextureMan.set();
+		}
+
+		for (uint32 i = 0; i < node.textures.size(); i++) {
+			TextureMan.activeTexture(i);
+			TextureMan.set(node.textures[i]);
+		}
 
 		glBegin(GL_TRIANGLES);
 
-		if (node.textures.empty()) {
-			for (FaceList::const_iterator face = node.faces.begin(); face != node.faces.end(); ++face) {
-				glVertex3f(face->verts[0 * 3 + 0], face->verts[0 * 3 + 1], face->verts[0 * 3 + 2]);
-				glVertex3f(face->verts[1 * 3 + 0], face->verts[1 * 3 + 1], face->verts[1 * 3 + 2]);
-				glVertex3f(face->verts[2 * 3 + 0], face->verts[2 * 3 + 1], face->verts[2 * 3 + 2]);
-			}
-		} else {
-			t *= 9;
+		for (FaceList::const_iterator face = node.faces.begin(); face != node.faces.end(); ++face) {
+			for (uint32 i = 0, t = 0; i < node.textures.size(); i++, t += 9)
+				TextureMan.textureCoord2f(i, face->tverts[t + 0 * 3 + 0], face->tverts[t + 0 * 3 + 1]);
 
-			for (FaceList::const_iterator face = node.faces.begin(); face != node.faces.end(); ++face) {
-				glTexCoord2f(face->tverts[t + 0 * 3 + 0], face->tverts[t + 0 * 3 + 1]                        );
-				glVertex3f  (face-> verts[    0 * 3 + 0], face-> verts[    0 * 3 + 1], face->verts[0 * 3 + 2]);
-				glTexCoord2f(face->tverts[t + 1 * 3 + 0], face->tverts[t + 1 * 3 + 1]                        );
-				glVertex3f  (face-> verts[    1 * 3 + 0], face-> verts[    1 * 3 + 1], face->verts[1 * 3 + 2]);
-				glTexCoord2f(face->tverts[t + 2 * 3 + 0], face->tverts[t + 2 * 3 + 1]                        );
-				glVertex3f  (face-> verts[    2 * 3 + 0], face-> verts[    2 * 3 + 1], face->verts[2 * 3 + 2]);
-			}
+			glVertex3f  (face-> verts[    0 * 3 + 0], face-> verts[    0 * 3 + 1], face->verts[0 * 3 + 2]);
+
+			for (uint32 i = 0, t = 0; i < node.textures.size(); i++, t += 9)
+				TextureMan.textureCoord2f(i, face->tverts[t + 1 * 3 + 0], face->tverts[t + 1 * 3 + 1]);
+
+			glVertex3f  (face-> verts[    1 * 3 + 0], face-> verts[    1 * 3 + 1], face->verts[1 * 3 + 2]);
+
+			for (uint32 i = 0, t = 0; i < node.textures.size(); i++, t += 9)
+				TextureMan.textureCoord2f(i, face->tverts[t + 2 * 3 + 0], face->tverts[t + 2 * 3 + 1]);
+
+			glVertex3f  (face-> verts[    2 * 3 + 0], face-> verts[    2 * 3 + 1], face->verts[2 * 3 + 2]);
+
 		}
 
 		glEnd();
@@ -317,6 +328,7 @@ void Model::renderNode(const Node &node) {
 		renderNode(**child);
 		glPopMatrix();
 	}
+
 }
 
 } // End of namespace Aurora
