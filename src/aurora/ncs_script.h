@@ -176,13 +176,13 @@ private:
 	DECLARE_OPCODE(o_retn);
 	DECLARE_OPCODE(o_destruct);
 	DECLARE_OPCODE(o_not);
-	DECLARE_OPCODE(o_decisp);
-	DECLARE_OPCODE(o_incisp);
+	DECLARE_OPCODE(o_decsp);
+	DECLARE_OPCODE(o_incsp);
 	DECLARE_OPCODE(o_jnz);
 	DECLARE_OPCODE(o_cpdownbp);
 	DECLARE_OPCODE(o_cptopbp);
-	DECLARE_OPCODE(o_decibp);
-	DECLARE_OPCODE(o_incibp);
+	DECLARE_OPCODE(o_decbp);
+	DECLARE_OPCODE(o_incbp);
 	DECLARE_OPCODE(o_savebp);
 	DECLARE_OPCODE(o_restorebp);
 	DECLARE_OPCODE(o_storestate);
