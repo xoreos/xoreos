@@ -149,7 +149,7 @@ enum FileType {
 	kFileTypeBWM            =  3005,
 	kFileTypeTXB            =  3006,
 	kFileTypeTPC            =  3007, ///< Texture.
-	kFileTypeMDX            =  3008,
+	kFileTypeMDX            =  3008, ///< Geometry, model mesh data.
 	kFileTypeRSV            =  3009,
 	kFileTypeSIG            =  3010,
 	kFileTypeXBX            =  3011,
