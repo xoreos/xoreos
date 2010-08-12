@@ -95,7 +95,7 @@ void KotOREngine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
-	Graphics::Aurora::Model *model = loadModel("p_hk47");
+	Graphics::Aurora::Model *model = loadModel("m03ae_09a");
 
 	model->show();
 
