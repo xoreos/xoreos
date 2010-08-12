@@ -41,7 +41,7 @@ Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true) {
 
 Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::RenderableQueue) type)),
 	_type(type), _superModel(0), _class(kClassOther), _scale(1.0), _fade(false), _fadeStart(0),
-	_fadeValue(1.0), _fadeStep(0.0), _currentState(0) {
+	_fadeValue(1.0), _fadeStep(0.0), _currentState(0), _textureCount(0) {
 
 	_position[0] = 0.0;
 	_position[1] = 0.0;
@@ -106,6 +106,8 @@ void Model::readArrayFloats(Common::SeekableReadStream &stream, uint32 start, ui
 }
 
 void Model::processMesh(const Mesh &mesh, Node &node) {
+	_textureCount = MAX<uint32>(_textureCount, mesh.textures.size());
+
 	node.textures.resize(mesh.textures.size());
 
 	// Try to load the textures
@@ -226,7 +228,7 @@ void Model::render() {
 	if (_type == kModelTypeObject) {
 		glTranslatef(0.0, -1.0, -3.0);
 
-		float rotate = EventMan.getTimestamp() * 0.1;
+		float rotate = EventMan.getTimestamp() * 0.05;
 
 		glRotatef(rotate, 0.0, 1.0, 0.0);
 		glScalef(0.3, 0.3, 0.3);
@@ -256,20 +258,25 @@ void Model::render() {
 		}
 	}
 
-	glActiveTextureARB(GL_TEXTURE0_ARB);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glEnable(GL_TEXTURE_2D);
+	for (uint32 i = 0; i < _textureCount; i++) {
+		TextureMan.activeTexture(i);
+		glEnable(GL_TEXTURE_2D);
+	}
 
-	glActiveTextureARB(GL_TEXTURE1_ARB);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glEnable(GL_TEXTURE_2D);
-
-	glActiveTextureARB(GL_TEXTURE0_ARB);
+	TextureMan.activeTexture(0);
 
 	if (_type == kModelTypeObject)
 		glRotatef(90.0, -1.0, 0.0, 0.0);
 
 	renderState(*_currentState);
+
+	for (uint32 i = 0; i < _textureCount; i++) {
+		TextureMan.activeTexture(i);
+		glDisable(GL_TEXTURE_2D);
+	}
+
+	TextureMan.activeTexture(0);
+	glEnable(GL_TEXTURE_2D);
 }
 
 void Model::renderState(const State &state) {
@@ -280,8 +287,6 @@ void Model::renderState(const State &state) {
 		renderNode(**node);
 		glPopMatrix();
 	}
-
-	TextureMan.activeTexture(0);
 }
 
 void Model::renderNode(const Node &node) {

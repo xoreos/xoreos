@@ -189,6 +189,8 @@ protected:
 	StateMap _states;
 	State   *_currentState;
 
+	uint32 _textureCount;
+
 	std::list<Common::UString> _stateNames;
 
 	void createStateNameList();
