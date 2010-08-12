@@ -131,7 +131,7 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 			for (int c = 0; c < 3; c++)
 				face.verts[v * 3 + c] = mesh.verts[3 * mesh.vertIndices[3 * i + v] + c];
 
-		face.tverts.resize(mesh.faceCount * 9);
+		face.tverts.resize(mesh.textures.size() * 9);
 
 		// Real texture coordinates
 		for (uint t = 0; t < mesh.textures.size(); t++) {
