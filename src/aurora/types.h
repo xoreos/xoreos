@@ -141,8 +141,8 @@ enum FileType {
 	kFileTypeAPI            =  2108,
 	kFileTypeProperties     =  2109,
 	kFileTypePNG            =  2110, ///< Image, Portable Network Graphics.
-	kFileTypeLYT            =  3000,
-	kFileTypeVIS            =  3001,
+	kFileTypeLYT            =  3000, ///< Area data, room layout.
+	kFileTypeVIS            =  3001, ///< Area data, room visibilities.
 	kFileTypeRIM            =  3002, ///< Module resources, RIM.
 	kFileTypePTH            =  3003, ///< Path finder data, GFF.
 	kFileTypeLIP            =  3004, ///< Lipsync data.
