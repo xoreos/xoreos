@@ -101,7 +101,7 @@ enum FileType {
 	kFileTypeNCM            =  2067,
 	kFileTypeMFX            =  2068,
 	kFileTypeMAT            =  2069,
-	kFileTypeMDB            =  2070,
+	kFileTypeMDB            =  2070, ///< Geometry, BioWare model.
 	kFileTypeSAY            =  2071,
 	kFileTypeTTF            =  2072, ///< Font, True Type.
 	kFileTypeTTC            =  2073,
