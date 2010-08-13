@@ -136,7 +136,7 @@ void KotOREngine::run(const Common::UString &target) {
 		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
 
-	for (int i = 0; i < roomArray.size(); i++)
+	for (uint i = 0; i < roomArray.size(); i++)
 		delete model[i];
 
 	delete[] model;
