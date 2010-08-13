@@ -59,6 +59,8 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 		std::vector<Common::UString> visibilityArray;
 		int roomCount = atoi(strings[1].c_str());
 
+		room.tolower();
+
 		for (int i = 0; i < roomCount; i++) {
 			tokenizer.nextChunk(vis);
 			tokenizer.getTokens(vis, strings);
@@ -73,8 +75,15 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 	}
 }
 
-const std::vector<Common::UString> &VISFile::getVisibilityArray(const Common::UString &room) {
-	return _map[room];
+static const std::vector<Common::UString> emptyRoom;
+const std::vector<Common::UString> &VISFile::getVisibilityArray(Common::UString room) const {
+	room.tolower();
+
+	std::map<Common::UString, std::vector<Common::UString> >::const_iterator vRoom = _map.find(room);
+	if (vRoom == _map.end())
+		return emptyRoom;
+
+	return vRoom->second;
 }
 
 } // End of namespace Aurora
