@@ -19,6 +19,7 @@
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
+#include "common/stream.h"
 
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/model_witcher.h"
