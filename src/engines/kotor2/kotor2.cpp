@@ -33,6 +33,7 @@
 
 #include "events/events.h"
 
+#include "aurora/lytfile.h"
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
@@ -95,21 +96,30 @@ void KotOR2Engine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
-	Graphics::Aurora::Model *model = loadModel("n_yoda");
+	// Test load up Nar Shaddaa
 
-	model->show();
+	Common::SeekableReadStream *lyt = ResMan.getResource("301NAR", Aurora::kFileTypeLYT);
+	Aurora::LYTFile lytFile;
 
-	Graphics::Aurora::Cube *cube = 0;
-
-	/*
 	try {
-
-		cube = new Graphics::Aurora::Cube("tel_hk51_front");
-
-	} catch (Common::Exception &e) {
+		lytFile.load(*lyt);
+	} catch (Common::Exception e) {
 		Common::printException(e);
 	}
-	*/
+
+	delete lyt;
+	Aurora::LYTFile::RoomArray roomArray = lytFile.getRooms();
+	Graphics::Aurora::Model **model  = new Graphics::Aurora::Model*[roomArray.size()];
+
+	for (uint32 i = 0; i < roomArray.size(); i++) {
+		if (!(model[i] = loadModel(roomArray[i].model)))
+			throw Common::Exception("Couldn't load model \"%s\"", roomArray[i].model.c_str());
+
+		model[i]->setPosition(roomArray[i].x, roomArray[i].y, roomArray[i].z - 8.0);
+	}
+
+	for (uint32 i = 0; i < roomArray.size(); i++)
+		model[i]->show();
 
 	Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32b");
 
@@ -126,11 +136,11 @@ void KotOR2Engine::run(const Common::UString &target) {
 		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
 
-	delete model;
+	for (uint32 i = 0; i < roomArray.size(); i++)
+		delete model[i];
 
+	delete[] model;
 	delete text;
-
-	delete cube;
 }
 
 void KotOR2Engine::init() {
