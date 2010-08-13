@@ -169,7 +169,17 @@ Graphics::Aurora::Model *TheWitcherEngine::loadModel(const Common::UString &resr
 	if (!mdb)
 		throw Common::Exception("No such model");
 
-	return new Graphics::Aurora::Model_Witcher(*mdb);
+	Graphics::Aurora::Model *model = 0;
+	try {
+		model = new Graphics::Aurora::Model_Witcher(*mdb);
+	} catch (...) {
+		delete mdb;
+		delete model;
+		throw;
+	}
+
+	delete mdb;
+	return model;
 }
 
 } // End of namespace TheWitcher

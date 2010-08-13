@@ -187,6 +187,8 @@ Graphics::Aurora::Model *KotOR2Engine::loadModel(const Common::UString &resref) 
 		throw;
 	}
 
+	delete mdl;
+	delete mdx;
 	return model;
 }
 

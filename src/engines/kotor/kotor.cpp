@@ -79,8 +79,6 @@ void KotOREngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	SoundMan.setListenerGain(0.0);
-
 	playVideo("leclogo");
 	playVideo("biologo");
 	playVideo("legal");
@@ -219,6 +217,8 @@ Graphics::Aurora::Model *KotOREngine::loadModel(const Common::UString &resref) {
 		throw;
 	}
 
+	delete mdl;
+	delete mdx;
 	return model;
 }
 

@@ -226,7 +226,17 @@ Graphics::Aurora::Model *NWN2Engine::loadModel(const Common::UString &resref) {
 	if (!mdb)
 		throw Common::Exception("No such model");
 
-	return new Graphics::Aurora::Model_NWN2(*mdb);
+	Graphics::Aurora::Model *model = 0;
+	try {
+		model = new Graphics::Aurora::Model_NWN2(*mdb);
+	} catch (...) {
+		delete mdb;
+		delete model;
+		throw;
+	}
+
+	delete mdb;
+	return model;
 }
 
 } // End of namespace NWN2
