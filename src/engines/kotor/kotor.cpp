@@ -121,16 +121,6 @@ void KotOREngine::run(const Common::UString &target) {
 	for (uint32 i = 0; i < roomArray.size(); i++)
 		model[i]->show();
 
-	/*
-	try {
-
-		cube = new Graphics::Aurora::Cube("po_phk47");
-
-	} catch (Common::Exception &e) {
-		Common::printException(e);
-	}
-	*/
-
 	Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32");
 
 	float textX = (-(GfxMan.getScreenWidth()  / 2.0))                             / 100.0;
@@ -146,10 +136,11 @@ void KotOREngine::run(const Common::UString &target) {
 		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
 
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < roomArray.size(); i++)
 		delete model[i];
 
 	delete[] model;
+
 	delete text;
 }
 
