@@ -33,6 +33,7 @@
 
 #include "events/events.h"
 
+#include "aurora/lytfile.h"
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
@@ -95,30 +96,30 @@ void KotOREngine::run(const Common::UString &target) {
 		SoundMan.startChannel(channel);
 	}
 
-	static const char *modelFile[9] = {
-		"m03ae_09a", "m03ae_05a", "m03ae_02a", "m03ae_01a", "m03ae_04a",
-		"m03ae_03a", "m03ae_10a", "m03ae_11a", "m03ae_12a"
-	};
+	// Test load up the Taris cantina
 
-	Graphics::Aurora::Model *model[9];
-	for (int i = 0; i < 9; i++)
-		if (!(model[i] = loadModel(modelFile[i])))
-			throw Common::Exception("Couldn't load model \"%s\"", modelFile[i]);
+	Common::SeekableReadStream *lyt = ResMan.getResource("m03ae", Aurora::kFileTypeLYT);
+	Aurora::LYTFile lytFile;
 
-	model[0]->setPosition(  0.0,   0.0,  0.0);
-	model[1]->setPosition( 44.0,  10.0,  0.0);
-	model[2]->setPosition(  0.0,  35.0,  0.0);
-	model[3]->setPosition( 30.0,  10.0,  0.0);
-	model[4]->setPosition(-35.0,   0.0,  0.0);
-	model[5]->setPosition(  0.0, -40.0, -4.37114e-007);
-	model[6]->setPosition(  0.0,   0.0,  2.0);
-	model[7]->setPosition(  0.0,   0.0,  4.0);
-	model[8]->setPosition(  0.0,   0.0,  6.0);
+	try {
+		lytFile.load(*lyt);
+	} catch (Common::Exception e) {
+		Common::printException(e);
+	}
 
-	for (int i = 0; i < 9; i++)
+	delete lyt;
+	Aurora::LYTFile::RoomArray roomArray = lytFile.getRooms();
+	Graphics::Aurora::Model **model  = new Graphics::Aurora::Model*[roomArray.size()];
+
+	for (uint32 i = 0; i < roomArray.size(); i++) {
+		if (!(model[i] = loadModel(roomArray[i].model)))
+			throw Common::Exception("Couldn't load model \"%s\"", roomArray[i].model.c_str());
+
+		model[i]->setPosition(roomArray[i].x - 110.0, roomArray[i].y - 110.0, roomArray[i].z);
+	}
+
+	for (uint32 i = 0; i < roomArray.size(); i++)
 		model[i]->show();
-
-	Graphics::Aurora::Cube *cube = 0;
 
 	/*
 	try {
@@ -148,9 +149,8 @@ void KotOREngine::run(const Common::UString &target) {
 	for (int i = 0; i < 9; i++)
 		delete model[i];
 
+	delete[] model;
 	delete text;
-
-	delete cube;
 }
 
 void KotOREngine::init() {
