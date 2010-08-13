@@ -185,15 +185,15 @@ void NCSScript::setupOpcodes() {
 		OPCODE(o_retn),
 		OPCODE(o_destruct),
 		OPCODE(o_not),
-		OPCODE(o_decisp),
+		OPCODE(o_decsp),
 		// 0x24
-		OPCODE(o_incisp),
+		OPCODE(o_incsp),
 		OPCODE(o_jnz),
 		OPCODE(o_cpdownbp),
 		OPCODE(o_cptopbp),
 		// 0x28
-		OPCODE(o_decibp),
-		OPCODE(o_incibp),
+		OPCODE(o_decbp),
+		OPCODE(o_incbp),
 		OPCODE(o_savebp),
 		OPCODE(o_restorebp),
 		// 0x2C
@@ -252,6 +252,25 @@ void NCSScript::decompile() {
 }
 
 // OPCODES!
+
+void NCSScript::o_rsadd(InstructionType type) {
+	switch (type) {
+	case kInstTypeInt:
+		_stack.push(StackObject(StackObject::kStackObjectInt));
+		break;
+	case kInstTypeFloat:
+		_stack.push(StackObject(StackObject::kStackObjectFloat));
+		break;
+	case kInstTypeString:
+		_stack.push(StackObject(StackObject::kStackObjectString));
+		break;
+	case kInstTypeObject:
+		_stack.push(StackObject(StackObject::kStackObjectObject));
+		break;
+	default:
+		throw Common::Exception("o_rsadd: Illegal type %d", type);
+	}
+}
 
 void NCSScript::o_const(InstructionType type) {
 	switch (type) {
@@ -593,6 +612,26 @@ void NCSScript::o_not(InstructionType type) {
 	_stack.push(!_stack.pop().getInt());
 }
 
+void NCSScript::o_decsp(InstructionType type) {
+	if (type != kInstTypeInt)
+		throw Common::Exception("o_decsp: Illegal type %d", type);
+
+	int32 oldStackPtr = _stack.getStackPtr();
+	_stack.setStackPtr(oldStackPtr + _script->readSint32LE());
+	_stack.push(_stack.pop().getInt() - 1);
+	_stack.setStackPtr(oldStackPtr);
+}
+
+void NCSScript::o_incsp(InstructionType type) {
+	if (type != kInstTypeInt)
+		throw Common::Exception("o_incsp: Illegal type %d", type);
+
+	int32 oldStackPtr = _stack.getStackPtr();
+	_stack.setStackPtr(oldStackPtr + _script->readSint32LE());
+	_stack.push(_stack.pop().getInt() + 1);
+	_stack.setStackPtr(oldStackPtr);
+}
+
 void NCSScript::o_jnz(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("o_jnz: Illegal type %d", type);
@@ -601,6 +640,26 @@ void NCSScript::o_jnz(InstructionType type) {
 
 	if (_stack.pop().getInt())
 		_script->seek(offset - 2, SEEK_CUR);
+}
+
+void NCSScript::o_decbp(InstructionType type) {
+	if (type != kInstTypeInt)
+		throw Common::Exception("o_decbp: Illegal type %d", type);
+
+	int32 oldStackPtr = _stack.getStackPtr();
+	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32LE());
+	_stack.push(_stack.pop().getInt() - 1);
+	_stack.setStackPtr(oldStackPtr);
+}
+
+void NCSScript::o_incbp(InstructionType type) {
+	if (type != kInstTypeInt)
+		throw Common::Exception("o_incbp: Illegal type %d", type);
+
+	int32 oldStackPtr = _stack.getStackPtr();
+	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32LE());
+	_stack.push(_stack.pop().getInt() + 1);
+	_stack.setStackPtr(oldStackPtr);
 }
 
 void NCSScript::o_savebp(InstructionType type) {
