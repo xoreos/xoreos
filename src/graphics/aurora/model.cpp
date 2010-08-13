@@ -16,6 +16,7 @@
 #include "common/stream.h"
 
 #include "events/events.h"
+#include "events/requests.h"
 
 #include "graphics/graphics.h"
 #include "graphics/aurora/model.h"
@@ -28,7 +29,7 @@ Model::Mesh::Mesh() : faceCount(0) {
 }
 
 
-Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true) {
+Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true), list(0) {
 	position   [0] = 0;
 	position   [1] = 0;
 	position   [2] = 0;
@@ -41,7 +42,7 @@ Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true) {
 
 Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::RenderableQueue) type)),
 	_type(type), _superModel(0), _class(kClassOther), _scale(1.0), _fade(false), _fadeStart(0),
-	_fadeValue(1.0), _fadeStep(0.0), _currentState(0), _textureCount(0) {
+	_fadeValue(1.0), _fadeStep(0.0), _currentState(0), _textureCount(0), _list(0) {
 
 	_position[0] = 0.0;
 	_position[1] = 0.0;
@@ -49,6 +50,9 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 }
 
 Model::~Model() {
+	if ((_list != 0) && !_nodes.empty())
+		RequestMan.dispatchAndForget(RequestMan.destroyLists(_list, _nodes.size()));
+
 	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
 		if (*node) {
 			for (std::vector<TextureHandle>::iterator t = (*node)->textures.begin(); t != (*node)->textures.end(); ++t)
@@ -161,6 +165,10 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 
 }
 
+void Model::buildLists() {
+	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
+}
+
 void Model::setPosition(float x, float y, float z) {
 	_position[0] = x;
 	_position[1] = y;
@@ -188,18 +196,18 @@ void Model::setState(const Common::UString &name) {
 }
 
 void Model::show() {
-	addToQueue();
+	Renderable::addToQueue();
 }
 
 void Model::hide() {
-	removeFromQueue();
+	Renderable::removeFromQueue();
 }
 
 bool Model::shown() {
 	if (_fadeValue <= 0.0)
-		removeFromQueue();
+		Renderable::removeFromQueue();
 
-	return isInQueue();
+	return Renderable::isInQueue();
 }
 
 void Model::fadeIn(uint32 length) {
@@ -301,27 +309,8 @@ void Model::renderNode(const Node &node) {
 			TextureMan.set(node.textures[i]);
 		}
 
-		glBegin(GL_TRIANGLES);
-
-		for (FaceList::const_iterator face = node.faces.begin(); face != node.faces.end(); ++face) {
-			for (uint32 i = 0, t = 0; i < node.textures.size(); i++, t += 9)
-				TextureMan.textureCoord2f(i, face->tverts[t + 0 * 3 + 0], face->tverts[t + 0 * 3 + 1]);
-
-			glVertex3f  (face-> verts[    0 * 3 + 0], face-> verts[    0 * 3 + 1], face->verts[0 * 3 + 2]);
-
-			for (uint32 i = 0, t = 0; i < node.textures.size(); i++, t += 9)
-				TextureMan.textureCoord2f(i, face->tverts[t + 1 * 3 + 0], face->tverts[t + 1 * 3 + 1]);
-
-			glVertex3f  (face-> verts[    1 * 3 + 0], face-> verts[    1 * 3 + 1], face->verts[1 * 3 + 2]);
-
-			for (uint32 i = 0, t = 0; i < node.textures.size(); i++, t += 9)
-				TextureMan.textureCoord2f(i, face->tverts[t + 2 * 3 + 0], face->tverts[t + 2 * 3 + 1]);
-
-			glVertex3f  (face-> verts[    2 * 3 + 0], face-> verts[    2 * 3 + 1], face->verts[2 * 3 + 2]);
-
-		}
-
-		glEnd();
+		if (node.list != 0)
+			glCallList(node.list);
 	}
 
 	for (NodeList::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
@@ -335,6 +324,54 @@ void Model::renderNode(const Node &node) {
 		glPopMatrix();
 	}
 
+}
+
+void Model::rebuild() {
+	if (_nodes.empty())
+		return;
+
+	ListID list = glGenLists(_nodes.size());
+
+	_list = list;
+	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
+		(*node)->list = list++;
+
+		glNewList((*node)->list, GL_COMPILE);
+
+		glBegin(GL_TRIANGLES);
+
+		for (FaceList::const_iterator face = (*node)->faces.begin(); face != (*node)->faces.end(); ++face) {
+			for (uint32 i = 0, t = 0; i < (*node)->textures.size(); i++, t += 9)
+				TextureMan.textureCoord2f(i, face->tverts[t + 0 * 3 + 0], face->tverts[t + 0 * 3 + 1]);
+
+			glVertex3f(face->verts[0 * 3 + 0], face->verts[0 * 3 + 1], face->verts[0 * 3 + 2]);
+
+			for (uint32 i = 0, t = 0; i < (*node)->textures.size(); i++, t += 9)
+				TextureMan.textureCoord2f(i, face->tverts[t + 1 * 3 + 0], face->tverts[t + 1 * 3 + 1]);
+
+			glVertex3f(face->verts[1 * 3 + 0], face->verts[1 * 3 + 1], face->verts[1 * 3 + 2]);
+
+			for (uint32 i = 0, t = 0; i < (*node)->textures.size(); i++, t += 9)
+				TextureMan.textureCoord2f(i, face->tverts[t + 2 * 3 + 0], face->tverts[t + 2 * 3 + 1]);
+
+			glVertex3f(face->verts[2 * 3 + 0], face->verts[2 * 3 + 1], face->verts[2 * 3 + 2]);
+		}
+
+		glEnd();
+
+		glEndList();
+	}
+}
+
+void Model::destroy() {
+	if ((_list == 0) || _nodes.empty())
+		return;
+
+	glDeleteLists(_list, _nodes.size());
+
+	_list = 0;
+	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node)
+		(*node)->list = 0;
 }
 
 } // End of namespace Aurora

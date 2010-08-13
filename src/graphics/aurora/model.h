@@ -22,6 +22,7 @@
 #include "common/ustring.h"
 
 #include "graphics/types.h"
+#include "graphics/listcontainer.h"
 #include "graphics/renderable.h"
 
 #include "graphics/aurora/types.h"
@@ -35,7 +36,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-class Model : public Renderable {
+class Model : public Renderable, public ListContainer {
 public:
 	enum Classification {
 		kClassOther     = 0,
@@ -74,6 +75,10 @@ public:
 	// Renderable
 	void newFrame();
 	void render();
+
+// ListContainer
+	void rebuild();
+	void destroy();
 
 protected:
 	// Representation found in the raw files
@@ -156,6 +161,8 @@ protected:
 
 		FaceList faces;
 
+		ListID list;
+
 		Node();
 	};
 
@@ -191,6 +198,8 @@ protected:
 
 	uint32 _textureCount;
 
+	ListID _list;
+
 	std::list<Common::UString> _stateNames;
 
 	void createStateNameList();
@@ -201,6 +210,7 @@ protected:
 	void readArrayFloats (Common::SeekableReadStream &stream, uint32 start, uint32 count, std::vector<float>  &floats);
 
 	void processMesh(const Mesh &mesh, Node &node);
+	void buildLists();
 
 private:
 	void renderState(const State &state);
