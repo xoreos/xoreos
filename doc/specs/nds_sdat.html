@@ -1,0 +1,941 @@
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<html>
+<body>
+<h1>Nitro Composer File (*.sdat) Specification</h1>
+
+<h2>Current status</h2>
+<p><u>This spec is far from completion. And it may contains error. Use it at your own risk.</u>
+<p>23 June 2007 SBNK update
+<p>20 June 2007 SSEQ Events
+<p>6 June 2007 SBNK + general update
+<p>23 May 2007 First published
+<p>For enquiries please contact me at "kiwi.ds AT gmail.com"
+
+<h2>Acknowledgement</h2>
+Many thanks to the following persons whose works I have studied:
+<p><a href="http://www.angeleden.net">Crystal</a> - the author of CrystalTile2.exe</p>
+<p><a href="http://loveemu.yh.land.to">loveemu</a> - the author of sseq2mid.exe, swave2wave.exe & strm2wave.exe</p>
+<p><a href="http://nintendon.s6.xrea.com">Nintendon</a> - the author of ndssndext.exe</p>
+<p><a href="http://djbouche.net/wp">DJ Bouche</a> - the author of sdattool.exe</p>
+<p><a href="http://www.vgmtrans.com">VGMTrans</a> - the author of VGMTrans.exe</p>
+
+
+
+<table width=100% bgcolor=#d0d0d0><tr><td>
+<h2>Tables of Contents</h2>
+</td></tr></table>
+<p><a href="#intro">0. Introduction</a>
+<ul>
+	<li>0.1 Terminology</li>
+	<li>0.2 NDS Standard File Header</li>
+</ul></p>
+<p><a href="#sdat">1. SDAT File Format</a>
+<ul>
+	<li>1.1 Header</li>
+	<li>1.2 Symbol Block</li>
+	<li>1.3 Info Block</li>
+	<li>1.4 FAT</li>
+	<li>1.5 File Block</li>
+</ul></p>
+<p><a href="#sseq">2. SSEQ File Format</a></p>
+<p><a href="#ssar">3. SSAR File Format</a></p>
+<p><a href="#sbnk">4. SBNK File Format</a></p>
+<p><a href="#swav">5. SWAV File Format</a></p>
+<p><a href="#swar">6. SWAR File Format</a></p>
+<p><a href="#strm">7. STRM File Format</a></p>
+
+
+
+
+
+<table width=100% bgcolor=#d0d0d0><tr><td>
+<h2><a name="intro">0. Introduction</a></h2>
+</td></tr></table>
+
+<p>"The DS SDK has all the tools in it to convert MIDI files to the DS format, and has text file templates to define the soundbanks." CptPiard from <a href="http://vgmix.com/vg25/viewtopic.php?pid=65287">VGMix</a></p>
+
+<p>The Nitro Composer packs various types of sound files in a single file (*.sdat) for use in DS games. Not all games involve the Nitro Composer. But it seems that it is very popular for creation of DS game music.</p>
+
+<p>Inside the SDAT you will find: SSEQ (Sequence), SSAR (Sequence Archive), SBNK (Sound Bank), SWAR (Wave Archive), STRM (Stream).</p>
+
+<p>SSAR is a collection of SSEQ, while SWAR is a collection of SWAV.</p>
+
+<h3>0.1 Terminology</h3>
+File format is explained in C-style struct declaration.
+The following types of variable are used:
+<pre>
+s8	1 byte	// signed char
+u8 	1 byte	// unsigned char
+s16	2 byte	// signed short
+u16	2 byte	// unsigned short
+s32	4 byte	// signed long
+u32	4 byte	// unsigned long
+</pre>
+
+<h3>0.2 NDS Standard File Header</h3>
+Many files (besides sound-related) found in DS game rom share this header structure:
+
+<pre>
+typedef struct tagNdsStdFile {
+	s8  type[4];	// i.e. 'SDAT' or 'SBNK' etc...
+	u32 magic;	// 0x0100feff or 0x0100fffe
+	u32 nFileSize;	// Size of this file ( include this structure )
+	u16 nSize;	// Size of this structure ( always 16 )
+	u16 nBlock;	// Number of Blocks
+} NDSSTDF;
+</pre>
+
+<p>The magic value can be 0x0002feff or 0x0001feff for non sound-related files.</p>
+
+
+<table width=100% bgcolor=#d0d0d0><tr><td>
+<h2><a name="sdat">1. SDAT File Format</a></h2>
+</td></tr></table>
+
+The file has the following structure:
+
+<pre>
+	--------------------------------
+	|            Header            |
+	--------------------------------
+	|         Symbol Block         |
+	--------------------------------
+	|          Info Block          |
+	--------------------------------
+	|  File Allocation Table (FAT) |
+	--------------------------------
+	|          File Block          |
+	--------------------------------
+</pre>
+
+<h3>1.1 Header</h3>
+The <b>Header</b> appears at offset 0 in the SDAT file. All offsets in this structure are absolute offsets.
+
+<pre>
+typedef struct tagSDATHeader
+{
+	struct tagNdsStdFile {
+		s8  type[4];   // 'SDAT'
+		u32 magic;	// 0x0100feff
+		u32 nFileSize;
+		u16 nSize;
+		u16 nBlock;    // usually 4, but some have 3 only ( Symbol Block omitted )
+	} file;
+	u32 nSymbOffset;  	// offset of Symbol Block = 0x40
+	u32 nSymbSize;    	// size of Symbol Block
+	u32 nInfoOffset; 	// offset of Info Block
+	u32 nInfoSize;    	// size of Info Block
+	u32 nFatOffset;   	// offset of FAT
+	u32 nFatSize;     	// size of FAT
+	u32 nFileOffset; 	// offset of File Block
+	u32 nFileSize;   	// size of File Block
+	u8  reserved[16]; 	// unused, 0s
+} SDATHEADER;
+</pre>
+
+<h3>1.2 Symbol Block</h3>
+It appears at offset 0x40, right after the <b>Header</b>. It may be omitted. It contains the symbols (or "filenames") of each sound file in the SDAT file. All offsets are relative to this block's starting address (i.e. 0x40). <br>
+NB. Some files doesn't have <b>Symbol Block</b>. <br>
+NB. The value of <b>nSize</b> of <b>Symbol Block</b> may not be 32-bit aligned. However, the value of <b>nSymbSize</b> in <b>Header</b> is.
+
+<pre>
+typedef struct tagSDATSymbol
+{
+	char type[4];		// 'SYMB'
+	u32 nSize;		// size of this Symbol Block
+	u32 nRecOffset[8];	// offset of Records (note below)
+	u8  reserved[24];	// unused, 0s
+} SDATSYMB;
+</pre>
+
+
+
+<h4>1.2.1 Symbol Block - Record</h4>
+There are a total of 8 records in the Symbol Block. They are:
+
+<table border=1 width=500>
+<tr>
+	<td><b>Record No.</a></td><td><b>Record Name</b></td><td><b>Description</b></td>
+</tr>
+<tr><td>0</td><td>SEQ</td><td>Sequence (for music)</td>
+<tr><td>1</td><td>SEQARC</td><td>Sequence Archive (for sound effect)</td>
+<tr><td>2</td><td>BANK</td><td>Sound Bank</td>
+<tr><td>3</td><td>WAVEARC</td><td>Wave Archive</td>
+<tr><td>4</td><td>PLAYER*</td><td>Player (Group-related)</td>
+<tr><td>5</td><td>GROUP</td><td>Group of SEQ/SEQARC/BANK/WAVEARC</td>
+<tr><td>6</td><td>PLAYER2*</td><td>Player2 (Stream-related)</td>
+<tr><td>7</td><td>STRM</td><td>Stream</td>
+<tr><td colspan=3>* Records 4 and 5 do not appear in SMAP file. A SMAP File is generated by the Nitro Composer listing all sound files in the SDAT file. An example can be found from &lt;&lt;Zoids Saga DS - Legend of Arcadia&gt;&gt;</td></tr>
+</table>
+<br>
+All offsets are relative to Symbol block's starting address (i.e. 0x40). Each record (except Record 1 "SEQARC") has the following structure:
+
+<pre>
+typedef struct tagSDATSymbolRec
+{
+	u32 nCount;		// No of entries in this record
+	u32 nEntryOffset[1];	// Array of offsets of each entry
+} SDATSYMBREC;
+</pre>
+
+For Record 1 (SEQARC), it is a group which contains sub-records. The sub-record is of the same structure as SDATSYMBREC (above). Record 1 has the following structure:
+
+<pre>
+typedef struct tagSDATSymbolRec2
+{
+	u32 nCount;			// No of entries in this record
+	struct {
+		u32 nEntryOffset;	// Offset of this Group's symbol
+		u32 nSubRecOffset;	// Offset of the sub-record
+	} Group[1];			// Array of offsets of each entry
+} SDATSYMBREC2;
+</pre>
+
+Below is an example to access these records:
+
+<pre>
+SDATSYMB    *symb;
+int         i, j;
+char        *szSymbol;
+...
+<font color="green">// access record 0 'SSEQ'</font>
+SDATSYMBREC *symb_rec = (SDATSYMBREC *) ( (u8 *)symb + symb->RecOffset[0] );
+
+for ( i = 0; i < symb_rec->nCount; i++ )
+{
+	// print out the symbol
+	szSymbol = (char *) ( (u8 *)symb + symb_rec->nEntryOffset[i] );
+	printf( "%s\n", szSymbol );
+}
+...
+
+<font color="green">// access record 1 'SSAR'</font>
+SDATSYMBREC2 symb_rec2 = (SDATSYMBREC *)( (u8  *)symb + symb->RecOffset[1] );
+
+for ( i = 0; i < symb_rec2->nCount; i++ )
+{
+	szSymbol = (char *) ( (u8 *)symb + symb_rec2->Group[ i ].nEntryOffset );
+	printf( "%s\n", szSymbol );
+
+	SDATSYMBREC *symb_subrec = (SDATSYMBREC *) ( (u8 *)symb + symb_rec2->Group[i].nSubRecOffset );
+	for ( j = 0; j < symb_subrec->nCount; j++ )
+	{
+		// print out sub record's symbols
+		szSymbol = (char *) ( (u8 *)symb + symb_subrec->nEntryOffset[i] );
+		printf( "%s\n", szSymbol );
+	}
+}
+</pre>
+
+<h4>1.2.2 Symbol Block - Entry</h4>
+EXCEPT for Record 1 "SEQARC", an Entry in the record is a null terminated string. This corresponds to the "filename" of a sound file in the SDAT file.
+<br><br>
+For Record 1 "SEQARC", since a SEQARC file is a collection of Sequence files, therefore this record contains a sub-record. And this sub-record contains the symbols ("filenames") of each of the archived SEQ files.
+
+
+<h3>1.3 Info Block</h3>
+The Info Block appears just after the Symbol Block. It contains some information of each sound file in the SDAT file. All offsets are relative to this block's starting address.
+
+<pre>
+typedef struct tagSDATInfo
+{
+	char type[4];           // 'INFO'
+	u32 nSize;             // size of this Info Block
+	u32 nRecOffset[8];     // offset of a Record
+	u8  reserved[24];       // unused, 0s
+} SDATINFO;
+</pre>
+
+<h4>1.3.1 Info Block - Record</h4>
+There are a total of 8 records in the Info Block. The Record Names in 1.2.1 above applies here as well. All offsets are relative to Info block's starting address. With modifications, the code example above could be used to access the Info records and entries.
+
+<pre>
+typedef struct tagSDATInfoRec
+{
+	u32 nCount;            // No of entries in this record
+	u32 nEntryOffset[1];   // array of offsets of each entry
+} SDATINFOREC;
+</pre>
+
+
+<h4>1.3.2 Info Block - Entry</h4>
+
+<p><u>Record 0 "SEQ"</u> - The Info Entry for SEQ contains playback information.</p>
+<pre>
+typedef struct tagSDATInfoSseq
+{
+	u16 fileID;	// for accessing this file
+	u16 unknown;
+	u16 bnk;	// Associated BANK
+	u8  vol;	// Volume
+	u8  cpr;
+	u8  ppr;
+	u8  ply;
+	u8  unknown[2];
+} SDATINFOSSEQ;
+</pre>
+
+<br><br>
+<u>Record 1 "SEQARC"</u>
+
+<pre>
+typedef struct tagSDATInfoSsar
+{
+	u16 fileID;
+	u16 unknown;
+} SDATINFOSSAR;
+</pre>
+
+Remarks: no info is available for SEQARC files. The info of each archived SEQ is stored in that SEQARC file.
+
+<br><br>
+<u>Record 2 "BANK"</u>
+
+<pre>
+typdef struct tagSDATInfoBank
+{
+	u16 fileID;
+	u16 unknown;
+	u16 wa[4];      // Associated WAVEARC. 0xffff if not in use
+}
+</pre>
+
+Remarks: Each bank can links to up to 4 WAVEARC files. The wa[4] stores the WAVEARC entry number.
+
+<br><br>
+<u>Record 3 "WAVEARC"</u>
+
+<pre>
+typedef struct tagSDATInfoSwar
+{
+	u16 fileID;
+	u16 unknown;
+} SDATINFOSwar;
+</pre>
+
+Remarks: This is not a new structure. It is the same as SDATINFOSSAR above for Record 1.
+
+<br><br>
+<u>Record 4 "PLAYER"</u>
+
+<pre>
+typedef struct tagSDATInfoPlayer
+{
+	u8  unknown;
+	u8  padding[3];
+	u32 unknown2;
+} SDATINFOPlayer;
+</pre>
+
+Remarks: None
+
+<br><br>
+<u>Record 5 "GROUP"</u>
+
+<pre>
+typedef struct tagSDATInfoPlayer
+{
+	u32 nCount;		// number of sub-records
+        struct {		// array of Group
+		u32 type;
+		u32 nEntry;
+	} Group[1];
+} SDATINFOPlayer;
+</pre>
+
+<p>Remarks: <b>SDATINFOPlayer::Group::type</b> can be one of the following values. <b>nEntry</b> is the entry number in the relevant Record (SEQ/SEQARC/BANK/WAVEARC).</p>
+
+<table border=1 width=200>
+<tr>
+	<td>Value</td><td>Type</td>
+</tr>
+<tr><td>0x0700</td><td>SEQ</td></tr>
+<tr><td>0x0803</td><td>SEQARC</td></tr>
+<tr><td>0x0601</td><td>BANK</td></tr>
+<tr><td>0x0402</td><td>WAVEARC</td></tr>
+</table>
+
+
+<br><br>
+<u>Record 6 "PLAYER2"</u>
+
+<pre>
+typedef struct SDATInfoPlayer2
+{
+	u8  nCount;
+	u8  v[16];		// 0xff if not in use
+	u8  reserved[7];	// padding, 0s
+} SDATINFOPLAYER2;
+</pre>
+
+Remarks: The use is unknown. The first byte states how many of the v[16] is used (non 0xff). 
+
+<br><br>
+<u>Record 7 "STRM"</u>
+
+<pre>
+typedef struct SDATInfoStrm
+{
+	u16 fileID;		// for accessing the file
+	u16 unknown;
+	u8  vol;		// volume
+	u8  pri;
+	u8  ply;
+	u8  reserved[5];
+} SDATINFOSTRM;
+</pre>
+
+Remarks: 'ply' means play?, 'pri' means priority?
+
+<h3>1.4 FAT</h3>
+The FAT appears just after the Info Block. It contains the records of offset and size of each sound file in the SDAT file.
+
+<pre>
+typedef struct tagSDATFAT
+{
+	char type[4];		// 'FAT '
+	u32 nSize;		// size of the FAT
+	u32 nCount;		// Number of FAT records
+	SDATFATREC Rec[1];	// Arrays of FAT records
+} SDATFAT;
+</pre>
+
+<h4>1.4.1 FAT - Record</h4>
+It contains the offset and size of the sound file. All the offsets are relative to the SDAT Header structure's beginning address.
+
+<pre>
+typedef struct tagSDATFATREC
+{
+	u32 nOffset;		// offset of the sound file
+	u32 nSize;		// size of the Sound file
+	u32 reserved[2];	// always 0s, for storing data in runtime.
+} SDATFATREC;
+</pre>
+
+<h3>1.5 File Block</h3>
+The File Block is the last block and appears just after the FAT. It has a small header (the structure below) which contains the total size and number of sound of files. All the sound files are stored after this structure.
+
+<pre>
+typedef struct tagSDATFILE
+{
+	char type[4];  // 'FILE'
+	u32 nSize;    // size of this block
+	u32 nCount;   // Mumber of sound files
+	u32 reserved; // always 0
+} SDATFILE;
+</pre>
+
+
+
+
+
+<table width=100% bgcolor=#d0d0d0><tr><td>
+<a name="sseq"><h2>2. SSEQ File Format</h2></a>
+</td></tr></table>
+
+<p>SSEQ stands for "Sound Sequence". It is a converted MIDI sequence. Linked to a BANK for instruments.</p>
+
+
+<pre>
+typedef struct tagSseq
+{
+	struct tagNdsStdFile {
+		char type[4];	// 'SSEQ'
+		u32 magic;	// 0x0100feff
+		u32 nFileSize;	// Size of this SSEQ file
+		u16 nSize;	// Size of this structure = 16
+		u16 nBlock;	// Number of Blocks = 1
+	} file;
+	struct {
+		char type[4];		// 'DATA'
+		u32 nSize;		// Size of this structure = nFileSize - 16
+		u32 nDataOffset;	// Offset of the sequence data = 0x1c
+		u8  data[1];		// Arrays of sequence data
+	} data;
+} SSEQ;
+</pre>
+
+<p>NB. For the details of the SSEQ file, please refer to loveemu's sseq2mid</p>
+
+<h3>2.1 Description</h3>
+<p>The design of SSEQ is more programming-oriented while MIDI is hardware-oriented. In MIDI, to produce a sound, a Note-On event is sent to the midi-instrument and then after a certain time, a Note-Off is sent to stop the sound (though it is also acceptable to send a Note-On message with 0 velocity).
+In SSEQ, a sound is produced by one event only which carries with data such as note, velocity and duration. So the SSEQ-sequencer knows exactly what and how to play and when to stop.</p>
+
+<p>A SSEQ can have at maximum 16 tracks, notes in the range of 0..127 (middle C is 60). Each quartet note has a fixed tick length of 48. Tempo in the range of 1..240 BPM (Default is 120). The SSEQ will not be played correctly if tempo higher than 240.</p>
+<p>The SEQ player uses Arm7's Timer1 for timing. The Arm7's 4 Timers runs at 33MHz (approximately 2^25). The SEQ player sets Timer1 reload value to 2728, prescaler to F/64. So on about every 0.0052 sec (64 * 2728 / 33MHz) the SEQ Player will be notified ( 1 cycle ). As a quartet note has fixed tick value of 48, the highest tempo that SEQ Player can handle is 240 BPM ( 60 / (0.0052 * 48) ).</p>
+<p>During each cycle, the SEQ player adds the tempo value to a variable. Then it checks if the value exceeds 240. If it does, the SEQ player subtracts 240 from the variable, and process the SSEQ file. Using this method, the playback is not very precise but the difference is too small to be noticed.</p>
+<p>Take an example with tempo = 160 BPM, the SSEQ file is processed twice in 3 notifications.</p>
+<table border=1>
+<tr><td>cycle</td><td>variable</td><td>action</td></tr>
+<tr><td>1</td><td>0</td><td>Add 160</td></tr>
+<tr><td>2</td><td>160</td><td>Add 160</td></tr>
+<tr><td>3</td><td>320</td><td>Subtract 240, process once, add 160</td></tr>
+<tr><td>4</td><td>240</td><td>Subtract 240, process once, add 160</td></tr>
+<tr><td>5</td><td>160</td><td>Add 160</td></tr>
+<tr><td>6</td><td>320</td><td>Subtract 240, process once, add 160</td></tr>
+<tr><td>7</td><td>240</td><td>Subtract 240, process once, add 160</td></tr>
+<tr><td>8</td><td>160</td><td>Add 160</td></tr>
+</table>
+
+<h3>2.2 Events</h3>
+
+<table width=100% border=1>
+<tr>
+	<td>Status Byte</td>
+	<td>Parameter</td>
+	<td>Description</td>
+</tr>
+<tr>
+	<td>0xFE</td><td>2 bytes<br>It indicates which tracks are used. Bit 0 for track 0, ... Bit 15 for track 15. If the bit is set, the corresponding track is used.</td><td>Indication begin of multitrack. Must be in the beginning of the first track to work. A series of event 0x93 follows.</td>
+</tr>
+<tr>
+	<td>0x93</td><td>4 bytes<br>1st byte is track number [0..15]<br>The other 3 bytes are the relative adress of track data. Add <b>nDataOffset</b> (usually 0x1C) to find out the absolute address.</td><td>SSEQ is similar to MIDI in that track data are stored one after one track. Unlike mod music.</td>
+</tr>
+<tr>
+	<td>0x00 .. 0x7f</td><td>Velocity: 1 byte [0..127]<br>Duration: Variable Length</td><td>NOTE-ON. Duration is expressed in tick. 48 for quartet note. Usually it is NOT a multiple of 3.</td>
+</tr>
+<tr>
+	<td>0x80</td><td>Duration: Variable Length</td><td>REST. It tells the SSEQ-sequencer to wait for a certain tick. Usually it is a multiple of 3.</td>
+</tr>
+<tr>
+	<td>0x81</td><td>Bank & Program Number: Variable Length</td><td>bits[0..7] is the program number, bits[8..14] is the bank number. Bank change is seldomly found, so usually bank 0 is used.</td>
+</tr>
+<tr>
+	<td>0x94</td><td>Destination Address: 3 bytes (Add <b>nDataOffset</b> (usually 0x1C) to find out the absolute address.)</td><td>JUMP. A jump must be backward. So that the song will loop forever.
+</tr>
+<tr>
+	<td>0x95</td><td>Call Address: 3 bytes (Add <b>nDataOffset</b> (usually 0x1C) to find out the absolute address.)</td><td>CALL. It's like a function call. The SSEQ-sequncer jumps to the address and starts playing at there, until it sees a RETURN event.</td>
+</tr>
+<tr>
+	<td>0xFD</td><td>NONE</td><td>RETURN. The SSEQ will return to the caller's address + 4 (a Call event is 4 bytes in size).</td>
+</tr>
+<tr>
+	<td>0xA0 .. 0xBf</td><td>See loveemu's sseq2mid for more details.</td><td>Some arithmetic operations / comparions. Affect how SSEQ is to be played.</td>
+</tr>
+<tr>
+	<td>0xC0</td><td>Pan Value: 1 byte [0..127], middle is 64</td><td>PAN</td>
+</tr>
+<tr>
+	<td>0xC1</td><td>Volume Value: 1 byte [0..127]</td><td>VOLUME</td>
+</tr>
+<tr>
+	<td>0xC2</td><td>Master Volume Value: 1 byte [0..127]</td><tD>MASTER VOLUME</td>
+</tr>
+<tr>
+	<td>0xC3</td><td>Value: 1 byte [0..64] (Add 64 to make it a MIDI value)</td><td>TRANSPOSE (Channel Coarse Tuning)</td>
+</tr>
+<tr>
+	<td>0xC4</td><td>Value: 1 byte</td><td>PITCH BEND</td>
+</tr>
+<tr>
+	<td>0xC5</td><td>Value: 1 byte</td><td>PITCH BEND RANGE</td>
+</tr>
+<tr>
+	<td>0xC6</td><td>Value: 1 byte</td><td>TRACK PRIORITY</td>
+</tr>
+<tr>
+	<td>0xC7</td><td>Value: 1 byte [0: Poly, 1: Mono]</td><td>MONO/POLY</td>
+</tr>
+<tr>
+	<td>0xC8</td><td>Value: 1 byte [0: Off, 1: On]</td><td>TIE (unknown)</td>
+</tr>
+<tr>
+	<td>0xC9</td><td>Value: 1 byte</td><td>PORTAMENTO CONTROL</td>
+</tr>
+<tr>
+	<td>0xCA</td><td>Value: 1 byte [0: Off, 1: On]</td><td>MODULATION DEPTH</td>
+</tr>
+<tr>
+	<td>0xCB</td><td>Value: 1 byte</td><td>MODULATION SPEED</td>
+</tr>
+<tr>
+	<td>0xCC</td><td>Value: 1 byte [0: Pitch, 1: Volume, 2: Pan]</td><td>MODULATION TYPE</td>
+</tr>
+<tr>
+	<td>0xCD</td><td>Value: 1 byte</td><td>MODULATION RANGE</td>
+</tr>
+<tr>
+	<td>0xCE</td><td>Value: 1 byte</td><td>PORTAMENTO ON/OFF</td>
+</tr>
+<tr>
+	<td>0xCF</td><td>Time: 1 byte</td><td>PORTAMENTO TIME</td>
+</tr>
+<tr>
+	<td>0xD0</td><td>Value: 1 byte</td><td>ATTACK RATE</td>
+</tr>
+<tr>
+	<td>0xD1</td><td>Value: 1 byte</td><td>DECAY RATE</td>
+</tr>
+<tr>
+	<td>0xD2</td><td>Value: 1 byte</td><td>SUSTAIN RATE</td>
+</tr>
+<tr>
+	<td>0xD3</td><td>Value: 1 byte</td><td>RELEASE RATE</td>
+</tr>
+<tr>
+	<td>0xD4</td><td>Count: 1 byte (how many times to be looped)</td><td>LOOP START MARKER</td>
+</tr>
+<tr>
+	<td>0xFC</td><td>NONE</td><td>LOOP END MARKER</td>
+</tr>
+<tr>
+	<td>0xD5</td><td>Value: 1 byte</td><td>EXPRESSION</td>
+</tr>
+<tr>
+	<td>0xD6</td><td>Value: 1 byte</td><td>PRINT VARIABLE (unknown)</td>
+</tr>
+<tr>
+	<td>0xE0</td><td>Value: 2 byte</td><td>MODULATION DELAY</td>
+</tr>
+<tr>
+	<td>0xE1</td><td>BPM: 2 byte</td><td>TEMPO</td>
+</tr>
+<tr>
+	<td>0xE3</td><td>Value: 2 byte</td><td>SWEEP PITCH</td>
+</tr>
+<tr>
+	<td>0xFF</td><td>NONE</td><td>EOT: End Of Track</td>
+</tr>
+</table>
+
+<br><br>
+
+
+
+<table width=100% bgcolor=#d0d0d0><tr><td>
+<a name="ssar"><h2>3. SSAR File Format</h2></a>
+</td></tr></table>
+
+
+SSAR stands for "(Sound) Sequence Archive". It is a collection of sequences (used mainly for sound effect). Therefore, each archived SSEQ is usually short, with one or two notes.
+
+
+<pre>
+typedef struct tagSsarRec {
+	u32 nOffset;		// relative offset of the archived SEQ file, absolute offset = nOffset + SSAR::nDataOffset
+	u16 bnk;		// bank
+	u8  vol;		// volume
+	u8  cpr;		// channel pressure 
+	u8  ppr;		// polyphonic pressure
+	u8  ply;		// play
+	u8  reserved[2];
+} SSARREC;
+
+typedef struct tagSsar
+{
+	struct tagNdsStdFile {
+		char type[4];   // 'SSAR'
+		u32 magic;	// 0x0100feff
+		u32 nFileSize; // Size of this SSAR file
+		u16 nSize;     // Size of this structure = 16
+		u16 nBlock;    // Number of Blocks = 1
+	} file;
+	struct {
+		char type[4];		// 'DATA'
+		u32 nSize;		// Size of this structure
+		u32 nDataOffset;	// Offset of data
+		u32 nCount;		// nCount * 12 + 32 = nDataOffset
+		SSARREC Rec[1];		// nCount of SSARREC
+	} data;
+} SSAR;
+</pre>
+
+<p>NB. Archived SSEQ files are not stored in sequence (order). So Rec[0].nOffset may point to 0x100 but Rec[1].nOffset points to 0x40.</p>
+<p>NB. Archived SSEQ files cannot be readily extracted from SSAR file because data in one SSEQ may 'call' data in other SSEQ.</p>
+
+
+
+
+<table width=100% bgcolor=#d0d0d0><tr><td>
+<a name="sbnk"><h2>4. SBNK File Format</h2></a>
+</td></tr></table>
+
+<p>SBNK stands for "Sound Bank". A bank is linked to up to 4 SWAR files which contain the samples. It define the instruments by which a SSEQ sequence can use. You may imagine SSEQ + SBNK + SWAR are similar to module music created by trackers.</p>
+
+<pre>
+typedef struct tagSbnkInstrument
+{
+	u8  fRecord;	// can be either 0, 1..4, 16 or 17
+	u16 nOffset;	// absolute offset of the data in file
+	u8  reserved;	// must be zero
+} SBNKINS;
+
+typedef struct tagSbnk
+{
+	struct tagNdsStdFile {
+		char type[4];   // 'SBNK'
+		u32 magic;	// 0x0100feff
+		u32 nFileSize;	// Size of this SBNK file
+		u16 nSize;	// Size of this structure = 16
+		u16 nBlock;	// Number of Blocks = 1
+	} file;
+	struct {
+		char type[4];		// 'DATA'
+		u32 nSize;		// Size of this structure
+		u32 reserved[8];	// reserved 0s, for use in runtime
+		u32 nCount;		// number of instrument
+		SBNKINS Ins[1];	
+	} data;
+} SBNK;
+</pre>
+
+<p>So, after <b>SBNK::data</b>, there come <b>SBNK::data::nCount</b> of <b>SBNKINS</b>. After the last <b>SBNKINS</b>, there will be <b>SBNK::data::nCount</b> of <b>instrument records</b>. In each <b>instrument records</b>, we can find one or more wave/note definitions.
+
+
+
+
+<h3>4.1 Instrument Record</h3>
+
+<p>If <b>SBNKINS::fRecord = 0</b>, it is empty. <b>SBNKINS::nOffset</b> will also = 0.</p>
+<p>If <b>SBNKINS::fRecord < 16</b>, the record is a note/wave definition. I have seen values 1, 2 and 3. But it seems the value does not affect the wave/note definition that follows. Instrument record size is 16 bytes.</p>
+<pre>
+	swav number 	2 bytes	// the swav used
+	swar number	2 bytes	// the swar used. NB. cross-reference to "1.3.2 Info Block - Entry, Record 2 BANK" 
+	note number	1 byte 	// 0..127
+	Attack Rate	1 byte	// 0..127
+	Decay Rate	1 byte	// 0..127
+	Sustain Level	1 byte	// 0..127
+	Release Rate	1 byte	// 0..127
+	Pan		1 byte	// 0..127, 64 = middle
+</pre>
+<p>If <b>SBNKINS::fRecord = 16</b>, the record is a range of note/wave definitions. The number of definitions = 'upper note' - 'lower note' + 1. The Instrument Record size is 2 + no. of definitions * 12 bytes.</p>
+<pre>
+	lower note	1 byte 	// 0..127
+	upper note	1 byte 	// 0..127
+
+	unknown		2 bytes	// usually == 01 00
+	swav number 	2 bytes	// the swav used
+	swar number	2 bytes	// the swar used. 
+	note number	1 byte
+	Attack Rate	1 byte
+	Decay Rate	1 byte
+	Sustain Level	1 byte
+	Release Rate	1 byte
+	Pan		1 byte
+
+	...
+	...
+	...
+
+	unknown		2 bytes	// usually == 01 00
+	swav number 	2 bytes	// the swav used
+	swar number	2 bytes	// the swar used. 
+	note number	1 byte
+	Attack Rate	1 byte
+	Decay Rate	1 byte
+	Sustain Level	1 byte
+	Release Rate	1 byte
+	Pan		1 byte
+</pre>
+<p>For example, lower note = 30, upper note = 40, there will be 40 - 30 + 1 = 11 wave/note definitions.<br>
+The first wave/note definition applies to note 30.<br>
+The second wave/note definition applies to note 31.<br>
+The third wave/note definition applies to note 32.<br>
+...<br>
+The eleventh wave/note definition applies to note 40.</p>
+
+<p>If <b>SBNKINS::fRecord = 17</b>, the record is a regional wave/note definition.</p>
+<pre>
+	The first 8 bytes defines the regions. They divide the full note range [0..127] into several regions (max. is 8)
+	An example is:
+	25  35  45  55  65  127 0   0 (So there are 6 regions: 0..25, 26..35, 36..45, 46..55, 56..65, 66..127)
+	Another example:
+	50  59  66  83  127 0   0   0 (5 regions: 0..50, 51..59, 60..66, 67..84, 85..127)
+
+	Depending on the number of regions defined, the corresponding number of wave/note definitions follow:
+
+	unknown		2 bytes	// usually == 01 00
+	swav number 	2 bytes	// the swav used
+	swar number	2 bytes	// the swar used. 
+	note number	1 byte	
+	Attack Rate	1 byte
+	Decay Rate	1 byte
+	Sustain Level	1 byte
+	Release Rate	1 byte
+	Pan		1 byte
+	...
+	...
+
+	In the first example, for region 0..25, the first wave/note definition applies.
+	For region 26..35, the 2nc wave/note definition applies.
+	For region 36..45, the 3rd wave/note definition applies.
+	... 
+	For region 66..127, the 6th wave/note definition applies.
+</pre>
+
+
+<p>REMARKS: Unknown bytes before wave/defnition definition = 5, not 1 in 
+stage_04_bank.sbnk, stage_04.sdat, Rom No.1156</p>
+
+
+<h3>4.2 Articulation Data</h3>
+<p>The articulation data affects the playback of the SSEQ file. They are 'Attack Rate', 'Decay Rate', 'Sustain Level' and 'Release Rate' (all have a value in range [0..127])</p>
+
+<pre>
+amplitude (%)
+
+100% |    /\
+     |   /  \__________
+     |  /              \
+     | /                \
+0%   |/__________________\___ time (sec)
+
+</pre>
+<p>Imagine how the amplitude of a note varies from begin to the end.</p>
+<p>The graph above shows the amplitude envelope when a note is sound. The y-axis is Amplitude, x-asix is time.</p>
+
+<p><b>Attack rate</b> determines how fast the note reaches 100% amplitude. (See the first upward curve). Thus the highest value 127 means the sound reaches 100% amplitude in the shortest time; 0 means the longest time.</p>
+<p><b>Decay rate</b> determines how fast the amplitude decays to 0% amplitude. Of course the sound will not drop to 0% but stops at sustain level. (See the first downward curve). Thus the highest value 127 means the sound reachs the sustain level in the shortest time; 0 means the longest time.</p>
+<p><b>Sustain level</b> determines the amplitude at which the sound sustains. (See the horizonal part). Thus the highest value 127 means the sound sustains at 100% amplitude (no decay), while 0 means 0% (full decay).</p>
+<p><b>Release rate</b> determines how fast the amplitude drops from 100% to 0%. Not from sustain level to 0%. (See the second downward curve). The value has the same meaning as Decay rate.</p>
+
+<p>See this <a href="articulation.htm">file</a> for more details on how to interpret the articulation data. The <b>raw data</b> column is the transformed value used for calculation.</p>
+<p>The SEQ Player treats 0 as the 100% amplitude value and -92544 (723*128) as the 0% amplitude value. The starting ampltitude is 0% (-92544).</p>
+
+<p>During the <u>attack phase</u>, in each cycle, the SSEQ Player calculates the new amplitude value: amplitude value = attack rate * amplitude value / 255. The attack phase stops when amplitude reaches 0.</p>
+<p>The <b>times</b> column shows how many cycles are needed to reach 100% amplitude value.</p>
+<p>The <b>sec</b> column shows the corresponding time needed to reach 100% amplitude value.</p>
+<p>The <b>scale</b> column is the corresponding value to feed in DLS Bank.</p>
+
+<p>During the <u>decay phase</u>, in each cycle, the SSEQ Player calculates the new amplitude value: amplitude value = amplitude value - decay rate. Note the starting amplitude value is 0. The decay phase stops when amplitude reaches sustain level.</p>
+<p>The other columns are self-explanatory.</p>
+
+<table width=100% bgcolor=#d0d0d0><tr><td>
+<a name="swav"><h2>5. SWAV File Format</h2></a>
+</td></tr></table>
+
+
+<p>SWAV doesn't appear in SDAT. They may be found in the ROM elsewhere. They can also be readily extracted from a SWAR file (see below).</p>
+
+
+<pre>
+// info about the sample
+typedef struct tagSwavInfo
+{
+	u8  nWaveType;		// 0 = PCM8, 1 = PCM16, 2 = (IMA-)ADPCM
+	u8  bLoop;		// Loop flag = TRUE|FALSE
+	u16 nSampleRate;	// Sampling Rate
+	u16 nTime;		// (ARM7_CLOCK / nSampleRate) [ARM7_CLOCK: 33.513982MHz / 2 = 1.6756991 E +7]
+	u16 nLoopOffset;	// Loop Offset (expressed in words (32-bits))
+	u32 nNonLoopLen;	// Non Loop Length (expressed in words (32-bits))
+} SWAVINFO;
+
+// Swav file format
+typedef struct tagSwav
+{
+	struct tagNdsStdFile {
+		char type[4];   // 'SWAV'
+		u32 magic;	// 0x0100feff
+		u32 nFileSize;	// Size of this SWAV file
+		u16 nSize;	// Size of this structure = 16
+		u16 nBlock;	// Number of Blocks = 1
+	} file;
+	struct {
+		char type[4];	// 'DATA'
+		u32 nSize;	// Size of this structure
+		SWAVINFO info;	// info about the sample
+		u8  data[1];	// array of binary data
+	} data;
+} SWAV;
+</pre>
+
+
+
+<table width=100% bgcolor=#d0d0d0><tr><td>
+<a name="swar"><h2>6. SWAR File Format</h2></a>
+</td></tr></table>
+
+SWAR stands for "(Sound) Wave Archive". It is a collection of mono wave (SWAV) samples only (which can be in either PCM8, PCM16 or ADPCM compression).
+
+<pre>
+typedef struct tagSwar
+{
+	struct tagNdsStdFile {
+		char type[4];   // 'SWAR'
+		u32 magic;	// 0x0100feff
+		u32 nFileSize;	// Size of this SWAR file
+		u16 nSize;	// Size of this structure = 16
+		u16 nBlock;	// Number of Blocks = 1
+	} file;
+	struct {
+		char type[4];		// 'DATA'
+		u32 nSize;		// Size of this structure
+		u32 reserved[8];	// reserved 0s, for use in runtime
+		u32 nSample;		// Number of Samples 
+	} data;
+	u32 nOffset[1];	// array of offsets of samples
+} SWAR;
+</pre>
+
+<p>NB. After the array of offsets, the binary samples follow. Each sample has a SWAVINFO structure before the sample data. Therefore, it is easy to make a SWAV from the samples in SWAR.</p>
+
+
+
+
+<table width=100% bgcolor=#d0d0d0><tr><td>
+<a name="strm"><h2>7. STRM File Format</h2></a>
+</td></tr></table>
+
+STRM stands for "Stream". It is an individual mono/stereo wave file (PCM8, PCM16 or ADPCM). 
+
+<pre>
+typedef struct tagSTRM
+{
+	struct tagNdsStdFile {
+		char type[4];   // 'STRM'
+		u32 magic;	// 0x0100feff
+		u32 nFileSize;	// Size of this STRM file
+		u16 nSize;	// Size of this structure = 16
+		u16 nBlock;	// Number of Blocks = 2
+	} file;
+	struct {
+		char type[4];		// 'HEAD'
+		u32 nSize;		// Size of this structure
+		u8  nWaveType;		// 0 = PCM8, 1 = PCM16, 2 = (IMA-)ADPCM
+		u8  bLoop;		// Loop flag = TRUE|FALSE
+		u8  nChannel;		// Channels
+		u8  unknown;		// always 0
+		u16 nSampleRate;	// Sampling Rate (perhaps resampled from the original) 
+		u16 nTime;		// (1.0 / rate * ARM7_CLOCK / 32) [ARM7_CLOCK: 33.513982MHz / 2 = 1.6756991e7]
+		u32 nLoopOffset;	// Loop Offset (samples) 
+		u32 nSample;		// Number of Samples 
+		u32 nDataOffset;	// Data Offset (always 68h)
+		u32 nBlock;		// Number of Blocks 
+		u32 nBlockLen;		// Block Length (Per Channel) 
+		u32 nBlockSample;	// Samples Per Block (Per Channel)
+		u32 nLastBlockLen;	// Last Block Length (Per Channel)
+		u32 nLastBlockSample;	// Samples Per Last Block (Per Channel)
+		u8  reserved[32];	// always 0
+	} head;
+	struct {
+		char type[4];		// 'DATA'
+		u32 nSize;		// Size of this structure
+		u8  data[1];		// Arrays of wave data
+	} data;
+} SDATSTRM;
+</pre>
+
+<h3>7.1 Wave Data</h3>
+
+<p>A Block is the same as SWAV Wave Data.</p>
+
+<p><b>Mono (SWAV)</b></p>
+Block 1 <br>
+Block 2 <br>
+... <br>
+Block N (Last Block) <br>
+
+
+<p><b>Stereo (STRM)</b></p>
+Block 1 L <br>
+Block 1 R <br>
+Block 2 L <br>
+Block 2 R <br>
+... <br>
+Block N L (Last Block) <br>
+
+Block N R (Last Block) 
+
+
+</body>
+</html>
