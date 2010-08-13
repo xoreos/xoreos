@@ -108,6 +108,8 @@ Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl,
 
 	_names.clear();
 
+	buildLists();
+
 	RequestMan.sync();
 }
 

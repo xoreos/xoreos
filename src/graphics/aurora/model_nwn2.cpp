@@ -49,6 +49,8 @@ Model_NWN2::Model_NWN2(Common::SeekableReadStream &mdb, ModelType type) : Model(
 	load(mdb);
 	setState();
 
+	buildLists();
+
 	RequestMan.sync();
 }
 
