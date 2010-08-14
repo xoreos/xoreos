@@ -14,6 +14,7 @@
 
 #include "engines/kotor2/area.h"
 
+#include "common/error.h"
 #include "common/ustring.h"
 #include "common/stream.h"
 
@@ -32,21 +33,24 @@ Area::~Area() {
 }
 
 Graphics::Aurora::Model *Area::loadModel(const Common::UString &resref) {
-	Common::SeekableReadStream *mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
-	Common::SeekableReadStream *mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX);
-
+	Common::SeekableReadStream *mdl = 0, *mdx = 0;
 	Graphics::Aurora::Model *model = 0;
-	if (mdl && mdx) {
-		try {
-			model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, true);
-		} catch(...) {
-			delete model;
-			model = 0;
-		}
+
+	try {
+		if (!(mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL)))
+			throw Common::Exception("No such MDL");
+		if (!(mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX)))
+			throw Common::Exception("No such MDX");
+
+		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, true);
+
+	} catch (...) {
+		delete mdl;
+		delete mdx;
+		delete model;
+		throw;
 	}
 
-	delete mdl;
-	delete mdx;
 	return model;
 }
 

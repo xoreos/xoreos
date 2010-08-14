@@ -53,7 +53,7 @@ void Area::loadLYT(const Common::UString &name) {
 		_lyt.load(*lyt);
 
 		delete lyt;
-	} catch(...) {
+	} catch (...) {
 		delete lyt;
 		throw;
 	}
@@ -68,7 +68,7 @@ void Area::loadVIS(const Common::UString &name) {
 		_vis.load(*vis);
 
 		delete vis;
-	} catch(...) {
+	} catch (...) {
 		delete vis;
 		throw;
 	}
@@ -81,7 +81,7 @@ void Area::loadARE(const Common::UString &name) {
 			throw Common::Exception("No such ARE \"%s\"", name.c_str());
 
 		delete are;
-	} catch(...) {
+	} catch (...) {
 		delete are;
 		throw;
 	}
@@ -94,7 +94,7 @@ void Area::loadGIT(const Common::UString &name) {
 			throw Common::Exception("No such GIT \"%s\"", name.c_str());
 
 		delete git;
-	} catch(...) {
+	} catch (...) {
 		delete git;
 		throw;
 	}
@@ -113,8 +113,14 @@ void Area::loadModels(const Common::UString &name) {
 			// No model for that room
 			continue;
 
-		if (!(_models[i] = loadModel(room.model)))
-			throw Common::Exception("Can't load model \"%s\" for area \"%s\"", room.model.c_str(), name.c_str());
+		try {
+			_models[i] = loadModel(room.model);
+		} catch (Common::Exception &e) {
+			e.add("Can't load model \"%s\" for area \"%s\"", room.model.c_str(), name.c_str());
+			throw e;
+		} catch (...) {
+			throw;
+		}
 
 		_models[i]->setPosition(room.x, room.y, room.z);
 	}
@@ -140,21 +146,24 @@ void Area::setPosition(float x, float y, float z) {
 }
 
 Graphics::Aurora::Model *Area::loadModel(const Common::UString &resref) {
-	Common::SeekableReadStream *mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
-	Common::SeekableReadStream *mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX);
-
+	Common::SeekableReadStream *mdl = 0, *mdx = 0;
 	Graphics::Aurora::Model *model = 0;
-	if (mdl && mdx) {
-		try {
-			model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, false);
-		} catch(...) {
-			delete model;
-			model = 0;
-		}
+
+	try {
+		if (!(mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL)))
+			throw Common::Exception("No such MDL");
+		if (!(mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX)))
+			throw Common::Exception("No such MDX");
+
+		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, false);
+
+	} catch (...) {
+		delete mdl;
+		delete mdx;
+		delete model;
+		throw;
 	}
 
-	delete mdl;
-	delete mdx;
 	return model;
 }
 
