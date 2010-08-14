@@ -13,6 +13,7 @@
  */
 
 #include "engines/kotor2/kotor2.h"
+#include "engines/kotor2/area.h"
 
 #include "engines/util.h"
 
@@ -98,28 +99,11 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	// Test load up Nar Shaddaa
 
-	Common::SeekableReadStream *lyt = ResMan.getResource("301NAR", Aurora::kFileTypeLYT);
-	Aurora::LYTFile lytFile;
+	Area *narShaddaa = new Area;
 
-	try {
-		lytFile.load(*lyt);
-	} catch (Common::Exception e) {
-		Common::printException(e);
-	}
-
-	delete lyt;
-	Aurora::LYTFile::RoomArray roomArray = lytFile.getRooms();
-	Graphics::Aurora::Model **model  = new Graphics::Aurora::Model*[roomArray.size()];
-
-	for (uint32 i = 0; i < roomArray.size(); i++) {
-		if (!(model[i] = loadModel(roomArray[i].model)))
-			throw Common::Exception("Couldn't load model \"%s\"", roomArray[i].model.c_str());
-
-		model[i]->setPosition(roomArray[i].x, roomArray[i].y, roomArray[i].z - 8.0);
-	}
-
-	for (uint32 i = 0; i < roomArray.size(); i++)
-		model[i]->show();
+	narShaddaa->load("301NAR");
+	narShaddaa->setPosition(0.0, 0.0, -12.0);
+	narShaddaa->show();
 
 	Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32b");
 
@@ -136,10 +120,8 @@ void KotOR2Engine::run(const Common::UString &target) {
 		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
 
-	for (uint32 i = 0; i < roomArray.size(); i++)
-		delete model[i];
+	delete narShaddaa;
 
-	delete[] model;
 	delete text;
 }
 
