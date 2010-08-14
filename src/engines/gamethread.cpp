@@ -51,7 +51,11 @@ void GameThread::run() {
 }
 
 void GameThread::threadMethod() {
-	EngineMan.run(_gameID, _baseDir);
+	try {
+		EngineMan.run(_gameID, _baseDir);
+	} catch (Common::Exception &e) {
+		Common::printException(e);
+	}
 }
 
 } // End of namespace Engines
