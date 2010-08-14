@@ -234,12 +234,12 @@ void Model::render() {
 		return;
 
 	if (_type == kModelTypeObject) {
-		glTranslatef(0.0, -1.0, -3.0);
+		// Roughly head position. TODO: This doesn't belong here :P
+		glTranslatef(0.0, -1.5, 0.0);
 
 		float rotate = EventMan.getTimestamp() * 0.05;
 
 		glRotatef(rotate, 0.0, 1.0, 0.0);
-		glScalef(0.3, 0.3, 0.3);
 	}
 
 	if (_type == kModelTypeGUIFront)
