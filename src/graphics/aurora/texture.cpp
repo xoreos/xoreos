@@ -15,7 +15,6 @@
 #include "common/types.h"
 #include "common/util.h"
 #include "common/error.h"
-#include "common/ustring.h"
 #include "common/stream.h"
 
 #include "graphics/aurora/texture.h"
@@ -76,6 +75,8 @@ void Texture::load(const Common::UString &name) {
 	if (!img)
 		throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
+	_name = name;
+
 	// Loading the different image formats
 	if      (_type == ::Aurora::kFileTypeTGA)
 		_image = new TGA(img);
@@ -92,7 +93,15 @@ void Texture::load(const Common::UString &name) {
 	Common::SeekableReadStream *txiStream = ResMan.getResource(name, ::Aurora::kFileTypeTXI);
 	if (txiStream) {
 		delete _txi;
-		_txi = new TXI(*txiStream);
+
+		try {
+			_txi = new TXI(*txiStream);
+		} catch (...) {
+			warning("Failed loading \"%s\".txi", name.c_str());
+
+			_txi = new TXI();
+		}
+
 		delete txiStream;
 	}
 
@@ -124,7 +133,15 @@ void Texture::reload() {
 		Common::SeekableReadStream *txiStream = _image->getTXI();
 		if (txiStream) {
 			delete _txi;
-			_txi = new TXI(*txiStream);
+
+			try {
+				_txi = new TXI(*txiStream);
+			} catch (...) {
+				warning("Failed loading TXI in texture \"%s\"", _name.c_str());
+
+				_txi = new TXI();
+			}
+
 			delete txiStream;
 		}
 	}

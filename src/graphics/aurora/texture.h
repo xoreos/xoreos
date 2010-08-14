@@ -15,13 +15,14 @@
 #ifndef GRAPHICS_AURORA_TEXTURE_H
 #define GRAPHICS_AURORA_TEXTURE_H
 
+#include "common/ustring.h"
+
 #include "graphics/types.h"
 #include "graphics/texture.h"
 
 #include "aurora/types.h"
 
 namespace Common {
-	class UString;
 	class SeekableReadStream;
 }
 
@@ -48,6 +49,8 @@ public:
 	const TXI &getTXI() const;
 
 private:
+	Common::UString _name;
+
 	TextureID _textureID; ///< OpenGL texture ID.
 
 	::Aurora::FileType _type; ///< The texture's image's file type.
