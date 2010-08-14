@@ -2,6 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libkotor.la
 
-noinst_HEADERS = kotor.h
+noinst_HEADERS = kotor.h \
+                 area.h
 
-libkotor_la_SOURCES = kotor.cpp
+libkotor_la_SOURCES = kotor.cpp \
+                      area.cpp

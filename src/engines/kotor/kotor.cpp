@@ -13,6 +13,7 @@
  */
 
 #include "engines/kotor/kotor.h"
+#include "engines/kotor/area.h"
 
 #include "engines/util.h"
 
@@ -98,28 +99,11 @@ void KotOREngine::run(const Common::UString &target) {
 
 	// Test load up the Taris cantina
 
-	Common::SeekableReadStream *lyt = ResMan.getResource("m03ae", Aurora::kFileTypeLYT);
-	Aurora::LYTFile lytFile;
+	Area *tarisCantina = new Area;
 
-	try {
-		lytFile.load(*lyt);
-	} catch (Common::Exception e) {
-		Common::printException(e);
-	}
-
-	delete lyt;
-	Aurora::LYTFile::RoomArray roomArray = lytFile.getRooms();
-	Graphics::Aurora::Model **model  = new Graphics::Aurora::Model*[roomArray.size()];
-
-	for (uint32 i = 0; i < roomArray.size(); i++) {
-		if (!(model[i] = loadModel(roomArray[i].model)))
-			throw Common::Exception("Couldn't load model \"%s\"", roomArray[i].model.c_str());
-
-		model[i]->setPosition(roomArray[i].x - 110.0, roomArray[i].y - 110.0, roomArray[i].z);
-	}
-
-	for (uint32 i = 0; i < roomArray.size(); i++)
-		model[i]->show();
+	tarisCantina->load("m03ae");
+	tarisCantina->setPosition(-110.0, -110.0, 0.0);
+	tarisCantina->show();
 
 	Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32");
 
@@ -136,10 +120,7 @@ void KotOREngine::run(const Common::UString &target) {
 		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
 
-	for (uint i = 0; i < roomArray.size(); i++)
-		delete model[i];
-
-	delete[] model;
+	delete tarisCantina;
 
 	delete text;
 }

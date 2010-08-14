@@ -1,0 +1,119 @@
+/* eos - A reimplementation of BioWare's Aurora engine
+ * Copyright (c) 2010 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)
+ *
+ * The Infinity, Aurora, Odyssey and Eclipse engines, Copyright (c) BioWare corp.
+ * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
+ *
+ * This file is part of eos and is distributed under the terms of
+ * the GNU General Public Licence. See COPYING for more informations.
+ */
+
+/** @file engines/kotor/area.cpp
+ *  An area.
+ */
+
+#include "engines/kotor/area.h"
+
+#include "common/error.h"
+#include "common/ustring.h"
+#include "common/stream.h"
+
+#include "aurora/resman.h"
+
+#include "graphics/aurora/model_kotor.h"
+
+namespace Engines {
+
+namespace KotOR {
+
+Area::Area() {
+}
+
+Area::~Area() {
+	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
+		delete *model;
+}
+
+void Area::load(const Common::UString &name) {
+	Common::SeekableReadStream *lyt = 0;
+	try {
+		if (!(lyt = ResMan.getResource(name, Aurora::kFileTypeLYT)))
+			throw Common::Exception("No such LYT");
+
+		_lyt.load(*lyt);
+
+		delete lyt;
+	} catch(...) {
+		delete lyt;
+		throw;
+	}
+
+	Common::SeekableReadStream *vis = 0;
+	try {
+		if (!(vis = ResMan.getResource(name, Aurora::kFileTypeVIS)))
+			throw Common::Exception("No such VIS");
+
+		_vis.load(*vis);
+
+		delete vis;
+	} catch(...) {
+		delete vis;
+		throw;
+	}
+
+	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
+	_models.resize(rooms.size());
+	for (size_t i = 0; i < rooms.size(); i++) {
+		const Aurora::LYTFile::Room &room = rooms[i];
+
+		if (!(_models[i] = loadModel(room.model))) {
+			warning("Area::load(): Can't load model \"%s\" for area \"%s\"", room.model.c_str(), name.c_str());
+
+			continue;
+		}
+
+		_models[i]->setPosition(room.x, room.y, room.z);
+	}
+}
+
+void Area::show() {
+	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
+		if (*model)
+			(*model)->show();
+}
+
+void Area::hide() {
+	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
+		if (*model)
+			(*model)->hide();
+}
+
+void Area::setPosition(float x, float y, float z) {
+	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
+	for (size_t i = 0; i < rooms.size(); i++)
+		if (_models[i])
+			_models[i]->setPosition(rooms[i].x + x, rooms[i].y + y, rooms[i].z + z);
+}
+
+Graphics::Aurora::Model *Area::loadModel(const Common::UString &resref) {
+	Common::SeekableReadStream *mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
+	Common::SeekableReadStream *mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX);
+
+	Graphics::Aurora::Model *model = 0;
+	if (mdl && mdx) {
+		try {
+			model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, false);
+		} catch(...) {
+			delete model;
+			model = 0;
+		}
+	}
+
+	delete mdl;
+	delete mdx;
+	return model;
+}
+
+} // End of namespace KotOR
+
+} // End of namespace Engines
