@@ -100,8 +100,11 @@ void LYTFile::load(Common::SeekableReadStream &lyt) {
 				strings[8].parse(_doorHooks[i].unk4);
 				strings[9].parse(_doorHooks[i].unk5);
 			}
-		} else if (strings[0] == "beginlayout" || strings[0] == "donelayout") {
-			// Ignore, we don't need these
+		} else if (strings[0] == "beginlayout") {
+			// Ignore, we don't need it
+		} else if (strings[0] == "donelayout") {
+			// End parsing
+			break;
 		} else {
 			throw Common::Exception("Unknown LYT token %s", strings[0].c_str());
 		}
