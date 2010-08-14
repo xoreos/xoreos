@@ -109,6 +109,10 @@ void Area::loadModels(const Common::UString &name) {
 	for (size_t i = 0; i < rooms.size(); i++) {
 		const Aurora::LYTFile::Room &room = rooms[i];
 
+		if (room.model == "****")
+			// No model for that room
+			continue;
+
 		if (!(_models[i] = loadModel(room.model)))
 			throw Common::Exception("Can't load model \"%s\" for area \"%s\"", room.model.c_str(), name.c_str());
 
@@ -118,18 +122,21 @@ void Area::loadModels(const Common::UString &name) {
 
 void Area::show() {
 	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
-		(*model)->show();
+		if (*model)
+			(*model)->show();
 }
 
 void Area::hide() {
 	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
-		(*model)->hide();
+		if (*model)
+			(*model)->hide();
 }
 
 void Area::setPosition(float x, float y, float z) {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	for (size_t i = 0; i < rooms.size(); i++)
-		_models[i]->setPosition(rooms[i].x + x, rooms[i].y + y, rooms[i].z + z);
+		if (_models[i])
+			_models[i]->setPosition(rooms[i].x + x, rooms[i].y + y, rooms[i].z + z);
 }
 
 Graphics::Aurora::Model *Area::loadModel(const Common::UString &resref) {
