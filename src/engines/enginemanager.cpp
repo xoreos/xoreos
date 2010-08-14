@@ -122,19 +122,25 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target) co
 	try {
 		engine->run(target);
 		EventMan.requestQuit();
-	} catch(...) {
 
 		delete engine;
 		// Clean up after the engine
 		cleanup();
 
+		EventMan.doQuit();
+
+	} catch(...) {
+		EventMan.requestQuit();
+
+		delete engine;
+		// Clean up after the engine
+		cleanup();
+
+		EventMan.doQuit();
+
 		throw;
 	}
 
-	delete engine;
-
-	// Clean up after the engine
-	cleanup();
 }
 
 void EngineManager::cleanup() const {

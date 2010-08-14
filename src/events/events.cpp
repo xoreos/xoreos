@@ -46,6 +46,7 @@ EventsManager::EventsManager() {
 	_ready = false;
 
 	_quitRequested = false;
+	_doQuit        = false;
 }
 
 void EventsManager::init() {
@@ -215,6 +216,10 @@ void EventsManager::requestQuit() {
 	_quitRequested = true;
 }
 
+void EventsManager::doQuit() {
+	_doQuit = true;
+}
+
 void EventsManager::initMainLoop() {
 	try {
 
@@ -233,12 +238,13 @@ void EventsManager::initMainLoop() {
 }
 
 void EventsManager::runMainLoop() {
-	while (!quitRequested()) {
+	while (!_doQuit) {
 		// (Pre)Process all events
 		processEvents();
 
-		// Render a frame
-		GfxMan.renderScene();
+		if (!_quitRequested)
+			// Render a frame
+			GfxMan.renderScene();
 	}
 }
 

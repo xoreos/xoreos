@@ -54,6 +54,9 @@ public:
 	/** Request an engine quit. */
 	void requestQuit();
 
+	/** Initiate the actual quitting process. */
+	void doQuit();
+
 	/** Get an event from the events queue.
 	 *
 	 *  @param  event Where to store the polled event.
@@ -96,6 +99,7 @@ private:
 	bool _ready; ///< Was the events subsystem successfully initialized?
 
 	bool _quitRequested; ///< Was an engine quit requested?
+	bool _doQuit;        ///< Are we currently in the process of quitting?
 
 	uint32 _mainThreadID; ///< The ID of the main thread.
 
