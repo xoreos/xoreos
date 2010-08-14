@@ -97,7 +97,13 @@ private:
 	typedef std::list<ChangeSet> ChangeSetList;
 
 public:
-	typedef ChangeSetList::iterator ChangeID;
+	struct ChangeID {
+		bool empty;
+		ChangeSetList::iterator change;
+
+		ChangeID();
+		ChangeID(ChangeSetList::iterator c);
+	};
 
 	ResourceManager();
 	~ResourceManager();
