@@ -13,7 +13,7 @@
  */
 
 #include "engines/kotor/kotor.h"
-#include "engines/kotor/area.h"
+#include "engines/kotor/module.h"
 
 #include "engines/util.h"
 
@@ -99,13 +99,10 @@ void KotOREngine::run(const Common::UString &target) {
 
 	// Test load up the Taris cantina
 
-	indexMandatoryArchive(Aurora::kArchiveRIM, "tar_m03ae.rim", 100);
+	Module *tarisCantina = new Module;
 
-	Area *tarisCantina = new Area;
-
-	tarisCantina->load("m03ae");
-	tarisCantina->setPosition(-110.0, -110.0, 0.0);
-	tarisCantina->show();
+	tarisCantina->load("tar_m03ae");
+	tarisCantina->enter();
 
 	Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32");
 
@@ -121,6 +118,8 @@ void KotOREngine::run(const Common::UString &target) {
 
 		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
+
+	tarisCantina->leave();
 
 	delete tarisCantina;
 

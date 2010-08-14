@@ -13,7 +13,7 @@
  */
 
 #include "engines/kotor2/kotor2.h"
-#include "engines/kotor2/area.h"
+#include "engines/kotor2/module.h"
 
 #include "engines/util.h"
 
@@ -99,13 +99,10 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	// Test load up Nar Shaddaa
 
-	indexMandatoryArchive(Aurora::kArchiveRIM, "301NAR.rim", 100);
-
-	Area *narShaddaa = new Area;
+	Module *narShaddaa = new Module;
 
 	narShaddaa->load("301NAR");
-	narShaddaa->setPosition(0.0, 0.0, -12.0);
-	narShaddaa->show();
+	narShaddaa->enter();
 
 	Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32b");
 
@@ -121,6 +118,8 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
+
+	narShaddaa->leave();
 
 	delete narShaddaa;
 

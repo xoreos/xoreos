@@ -35,7 +35,7 @@ namespace KotOR {
 class Area {
 public:
 	Area();
-	~Area();
+	virtual ~Area();
 
 	void load(const Common::UString &name);
 

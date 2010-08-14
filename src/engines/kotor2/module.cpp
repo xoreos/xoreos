@@ -8,30 +8,34 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/kotor2/area.h
- *  An area.
+/** @file engines/kotor2/module.cpp
+ *  A module.
  */
 
-#ifndef ENGINES_KOTOR2_AREA_H
-#define ENGINES_KOTOR2_AREA_H
-
-#include "engines/kotor/area.h"
+#include "engines/kotor2/module.h"
+#include "engines/kotor2/area.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class Area : public Engines::KotOR::Area {
-public:
-	Area();
-	~Area();
+Module::Module() {
+}
 
-protected:
-	Graphics::Aurora::Model *loadModel(const Common::UString &resref);
-};
+Module::~Module() {
+	ResMan.undo(_dialogResources);
+}
+
+Engines::KotOR::Area *Module::createArea() const {
+	return new Area;
+}
+
+void Module::loadResources(const Common::UString &name) {
+	Engines::KotOR::Module::loadResources(name);
+
+	_dialogResources = ResMan.addArchive(Aurora::kArchiveERF, name + "_dlg.erf", 110);
+}
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR2_AREA_H
