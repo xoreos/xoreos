@@ -197,7 +197,7 @@ Common::SeekableReadStream *ERFFile::getResource(uint32 index) const {
 
 	const IResource &res = _iResources[index];
 	if (res.size == 0)
-		return 0;
+		return new Common::MemoryReadStream(0, 0);
 
 	if (!erf.seek(res.offset))
 		throw Common::Exception(Common::kSeekError);
