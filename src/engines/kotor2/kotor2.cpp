@@ -99,6 +99,8 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	// Test load up Nar Shaddaa
 
+	indexMandatoryArchive(Aurora::kArchiveRIM, "301NAR.rim", 100);
+
 	Area *narShaddaa = new Area;
 
 	narShaddaa->load("301NAR");

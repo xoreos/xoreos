@@ -99,6 +99,8 @@ void KotOREngine::run(const Common::UString &target) {
 
 	// Test load up the Taris cantina
 
+	indexMandatoryArchive(Aurora::kArchiveRIM, "tar_m03ae.rim", 100);
+
 	Area *tarisCantina = new Area;
 
 	tarisCantina->load("m03ae");

@@ -52,6 +52,14 @@ private:
 	Aurora::VISFile _vis;
 
 	std::vector<Graphics::Aurora::Model *> _models;
+
+	void loadLYT(const Common::UString &name);
+	void loadVIS(const Common::UString &name);
+
+	void loadARE(const Common::UString &name);
+	void loadGIT(const Common::UString &name);
+
+	void loadModels(const Common::UString &name);
 };
 
 } // End of namespace KotOR
