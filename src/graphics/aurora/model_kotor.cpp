@@ -339,8 +339,8 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 	uint32 offOffVerts, offOffVertsCount;
 	readArray(*ctx.mdl, offOffVerts, offOffVertsCount);
 
-	if (offOffVertsCount != 1)
-		throw Common::Exception("Face offsets offsets count wrong");
+	if (offOffVertsCount > 1)
+		throw Common::Exception("Face offsets offsets count wrong (%d)", offOffVertsCount);
 
 	ctx.mdl->skip(12); // Unknown
 
@@ -414,24 +414,26 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 
 	}
 
-	ctx.mdl->seekTo(offOffVerts + ctx.offModelData);
-	uint32 offVerts = ctx.mdl->readUint32LE();
+	if (offOffVertsCount > 0) {
+		ctx.mdl->seekTo(offOffVerts + ctx.offModelData);
+		uint32 offVerts = ctx.mdl->readUint32LE();
 
-	ctx.mdl->seekTo(offVerts + ctx.offModelData);
+		ctx.mdl->seekTo(offVerts + ctx.offModelData);
 
-	ctx.mesh->faceCount = facesCount;
+		ctx.mesh->faceCount = facesCount;
 
-	ctx.mesh-> vertIndices.resize(               3 * facesCount);
-	ctx.mesh->tvertIndices.resize(textureCount * 3 * facesCount);
-	for (uint32 i = 0; i < facesCount; i++) {
-		ctx.mesh->vertIndices[i * 3 + 0] = ctx.mdl->readUint16LE();
-		ctx.mesh->vertIndices[i * 3 + 1] = ctx.mdl->readUint16LE();
-		ctx.mesh->vertIndices[i * 3 + 2] = ctx.mdl->readUint16LE();
+		ctx.mesh-> vertIndices.resize(               3 * facesCount);
+		ctx.mesh->tvertIndices.resize(textureCount * 3 * facesCount);
+		for (uint32 i = 0; i < facesCount; i++) {
+			ctx.mesh->vertIndices[i * 3 + 0] = ctx.mdl->readUint16LE();
+			ctx.mesh->vertIndices[i * 3 + 1] = ctx.mdl->readUint16LE();
+			ctx.mesh->vertIndices[i * 3 + 2] = ctx.mdl->readUint16LE();
 
-		for (uint16 t = 0 ; t < textureCount; t++) {
-			ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 0] = ctx.mesh->vertIndices[i * 3 + 0];
-			ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 1] = ctx.mesh->vertIndices[i * 3 + 1];
-			ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 2] = ctx.mesh->vertIndices[i * 3 + 2];
+			for (uint16 t = 0 ; t < textureCount; t++) {
+				ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 0] = ctx.mesh->vertIndices[i * 3 + 0];
+				ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 1] = ctx.mesh->vertIndices[i * 3 + 1];
+				ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 2] = ctx.mesh->vertIndices[i * 3 + 2];
+			}
 		}
 	}
 
