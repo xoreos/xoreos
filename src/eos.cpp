@@ -74,7 +74,10 @@ void init() {
 }
 
 void deinit() {
-	EventMan.deinit();
-	SoundMan.deinit();
-	GfxMan.deinit();
+	try {
+		EventMan.deinit();
+		SoundMan.deinit();
+		GfxMan.deinit();
+	} catch (...) {
+	}
 }

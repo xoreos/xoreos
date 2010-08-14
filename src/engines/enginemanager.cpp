@@ -144,10 +144,13 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target) co
 }
 
 void EngineManager::cleanup() const {
-	ResMan.clear();
-	TextureMan.clear();
-	FontMan.clear();
-	TalkMan.clear();
+	try {
+		ResMan.clear();
+		TextureMan.clear();
+		FontMan.clear();
+		TalkMan.clear();
+	} catch (...) {
+	}
 }
 
 } // End of namespace Engines
