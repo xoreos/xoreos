@@ -83,7 +83,11 @@ inline uint32 log2(uint32 v) {
 }
 
 inline float rad2deg(float rad) {
-	return rad * 180 / M_PI;
+	return rad * 180.0 / M_PI;
+}
+
+inline float deg2rad(float deg) {
+	return deg * M_PI / 180.0;
 }
 
 inline void vector2orientation(float vX, float vY, float &x, float &y, float &z) {
