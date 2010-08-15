@@ -118,14 +118,28 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 	node.textures.resize(mesh.textures.size());
 
 	// Try to load the textures
+	bool hasTexture = false;
 	for (uint t = 0; t < mesh.textures.size(); t++) {
 		try {
-			if (!mesh.textures[t].empty() && (mesh.textures[t] != "NULL"))
+			if (!mesh.textures[t].empty() && (mesh.textures[t] != "NULL")) {
 				node.textures[t] = TextureMan.get(mesh.textures[t]);
+				hasTexture = true;
+			}
 		} catch (...) {
 			warning("Failed loading texture \"%s\"", mesh.textures[t].c_str());
 			node.textures[t].clear();
 		}
+	}
+
+	if (!hasTexture) {
+		// The node has no actual texture, so we just assume that
+		// the geometry shouldn't be rendered. Cleaning up.
+
+		for (std::vector<TextureHandle>::iterator t = node.textures.begin(); t != node.textures.end(); ++t)
+			TextureMan.release(*t);
+
+		node.textures.clear();
+		return;
 	}
 
 	node.faces.resize(mesh.faceCount);
