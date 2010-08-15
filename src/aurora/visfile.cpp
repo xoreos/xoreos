@@ -52,12 +52,15 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 		if (vis.eos() || vis.err())
 			break;
 
-		if (strings.size() != 2)
+		if (strings.size() > 2)
 			throw Common::Exception("Malformed VIS file");
 
 		Common::UString room = strings[0];
 		std::vector<Common::UString> visibilityArray;
-		int roomCount = atoi(strings[1].c_str());
+
+		int roomCount = 0;
+		if (strings.size() > 1)
+			roomCount = atoi(strings[1].c_str());
 
 		room.tolower();
 
