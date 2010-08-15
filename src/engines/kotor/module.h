@@ -53,6 +53,8 @@ public:
 	void move(float x, float y, float z);
 	/** Move by this amount along the current view axis. */
 	void move(float n);
+	/** Move by this amount orthogonal to the current view axis. */
+	void strafe(float n);
 
 protected:
 	virtual Area *createArea() const;

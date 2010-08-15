@@ -180,6 +180,13 @@ void Module::move(float n) {
 	move(x, y, 0.0);
 }
 
+void Module::strafe(float n) {
+	float x = n * sin(Common::deg2rad(_orientation[1] + 90.0));
+	float y = n * cos(Common::deg2rad(_orientation[1] + 90.0));
+
+	move(x, y, 0.0);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
