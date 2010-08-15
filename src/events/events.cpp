@@ -201,6 +201,10 @@ void EventsManager::enableUnicode(bool enable) {
 	SDL_EnableUNICODE(enable ? 1 : 0);
 }
 
+void EventsManager::enableKeyRepeat(int delay, int interval) {
+	SDL_EnableKeyRepeat(delay, interval);
+}
+
 char EventsManager::getPressedCharacter(const Event &event) {
 	if ((event.type != kEventKeyDown) && (event.type != kEventKeyUp))
 		return 0;
