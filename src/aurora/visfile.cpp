@@ -62,11 +62,17 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 		room.tolower();
 
 		for (int i = 0; i < roomCount; i++) {
+			uint32 lineStart = vis.pos();
+
 			tokenizer.nextChunk(vis);
 			tokenizer.getTokens(vis, strings);
 
-			if (strings.size() != 1)
-				throw Common::Exception("Malformed VIS file");
+			if (strings.size() != 1) {
+				warning("Malformed VIS file. Wanted %d rooms, got %d?!?", roomCount, i);
+				strings.resize(i);
+				vis.seek(lineStart);
+				break;
+			}
 
 			visibilityArray.push_back(strings[0]);
 		}
