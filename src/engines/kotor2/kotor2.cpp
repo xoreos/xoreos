@@ -123,9 +123,21 @@ void KotOR2Engine::run(const Common::UString &target) {
 					narShaddaa->move( 0.5);
 				else if (event.key.keysym.sym == SDLK_DOWN)
 					narShaddaa->move(-0.5);
-				if      (event.key.keysym.sym == SDLK_LEFT)
+				else if (event.key.keysym.sym == SDLK_LEFT)
 					narShaddaa->turn( 0.0, -5.0, 0.0);
-				if      (event.key.keysym.sym == SDLK_RIGHT)
+				else if (event.key.keysym.sym == SDLK_RIGHT)
+					narShaddaa->turn( 0.0,  5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_w)
+					narShaddaa->move( 0.5);
+				else if (event.key.keysym.sym == SDLK_s)
+					narShaddaa->move(-0.5);
+				else if (event.key.keysym.sym == SDLK_a)
+					narShaddaa->strafe(-0.5);
+				else if (event.key.keysym.sym == SDLK_d)
+					narShaddaa->strafe( 0.5);
+				else if (event.key.keysym.sym == SDLK_q)
+					narShaddaa->turn( 0.0, -5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_e)
 					narShaddaa->turn( 0.0,  5.0, 0.0);
 			}
 		}

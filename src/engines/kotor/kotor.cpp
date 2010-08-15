@@ -123,9 +123,21 @@ void KotOREngine::run(const Common::UString &target) {
 					tarisCantina->move( 0.5);
 				else if (event.key.keysym.sym == SDLK_DOWN)
 					tarisCantina->move(-0.5);
-				if      (event.key.keysym.sym == SDLK_LEFT)
+				else if (event.key.keysym.sym == SDLK_LEFT)
 					tarisCantina->turn( 0.0, -5.0, 0.0);
-				if      (event.key.keysym.sym == SDLK_RIGHT)
+				else if (event.key.keysym.sym == SDLK_RIGHT)
+					tarisCantina->turn( 0.0,  5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_w)
+					tarisCantina->move( 0.5);
+				else if (event.key.keysym.sym == SDLK_s)
+					tarisCantina->move(-0.5);
+				else if (event.key.keysym.sym == SDLK_a)
+					tarisCantina->strafe(-0.5);
+				else if (event.key.keysym.sym == SDLK_d)
+					tarisCantina->strafe( 0.5);
+				else if (event.key.keysym.sym == SDLK_q)
+					tarisCantina->turn( 0.0, -5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_e)
 					tarisCantina->turn( 0.0,  5.0, 0.0);
 			}
 		}
