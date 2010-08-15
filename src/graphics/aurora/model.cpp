@@ -13,7 +13,6 @@
  */
 
 #include "common/util.h"
-#include "common/maths.h"
 #include "common/stream.h"
 
 #include "events/events.h"
@@ -179,13 +178,10 @@ void Model::setPosition(float x, float y, float z) {
 	_position[2] = z;
 }
 
-void Model::setOrientation(float x, float y) {
-	_orientation[0] = 0.0;
-	_orientation[1] = Common::rad2deg(acos(-y / sqrt(x * x + y * y)));
-	_orientation[2] = 0.0;
-
-	if (x < 0)
-		_orientation[1] = -_orientation[1];
+void Model::setOrientation(float x, float y, float z) {
+	_orientation[0] = x;
+	_orientation[1] = y;
+	_orientation[2] = z;
 }
 
 const std::list<Common::UString> &Model::getStates() const {

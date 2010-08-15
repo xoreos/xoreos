@@ -16,6 +16,7 @@
 #include "engines/kotor/area.h"
 
 #include "common/error.h"
+#include "common/maths.h"
 #include "common/stream.h"
 
 #include "aurora/gfffile.h"
@@ -25,6 +26,9 @@ namespace Engines {
 namespace KotOR {
 
 Module::Module() : _startX(0.0), _startY(0.0), _startZ(0.0), _startDirX(0.0), _startDirY(0.0), _area(0) {
+	_orientation[0] = 0.0;
+	_orientation[1] = 0.0;
+	_orientation[2] = 0.0;
 }
 
 Module::~Module() {
@@ -90,6 +94,8 @@ void Module::loadIFO(const Common::UString &name) {
 
 	if (_areaName.empty())
 		throw Common::Exception("No entry area in module \"%s\"", name.c_str());
+
+	Common::vector2orientation(_startDirX, _startDirY, _orientation[0], _orientation[1], _orientation[2]);
 }
 
 void Module::loadArea() {
@@ -102,7 +108,7 @@ void Module::enter() {
 	assert(_area);
 
 	_area->setPosition(-_startX, -_startY, -_startZ);
-	_area->setOrientation(_startDirX, _startDirY);
+	_area->setOrientation(_orientation[0], _orientation[1], _orientation[2]);
 	_area->show();
 }
 

@@ -86,6 +86,15 @@ inline float rad2deg(float rad) {
 	return rad * 180 / M_PI;
 }
 
+inline void vector2orientation(float vX, float vY, float &x, float &y, float &z) {
+	x = 0.0;
+	y = rad2deg(acos(-vY / sqrt(vX * vX + vY * vY)));
+	z = 0.0;
+
+	if (vX < 0)
+		y = -y;
+}
+
 } // End of namespace Common
 
 #endif // COMMON_MATHS_H

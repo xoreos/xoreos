@@ -43,7 +43,7 @@ public:
 	void hide(); ///< Don't render the area.
 
 	void setPosition(float x, float y, float z);
-	void setOrientation(float x, float y);
+	void setOrientation(float x, float y, float z);
 
 protected:
 	virtual Graphics::Aurora::Model *loadModel(const Common::UString &resref);

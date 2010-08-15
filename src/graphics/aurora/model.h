@@ -56,7 +56,7 @@ public:
 	/** Set the current position of the model. */
 	void setPosition(float x, float y, float z);
 	/** Set the current orientation of the model. */
-	void setOrientation(float x, float y);
+	void setOrientation(float x, float y, float z);
 
 	/** Return a list of all animation state names. */
 	const std::list<Common::UString> &getStates() const;

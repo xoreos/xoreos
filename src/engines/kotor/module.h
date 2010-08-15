@@ -48,6 +48,8 @@ private:
 	float _startDirX;
 	float _startDirY;
 
+	float _orientation[3];
+
 	Area *_area;
 
 	Aurora::ResourceManager::ChangeID _moduleResources;
