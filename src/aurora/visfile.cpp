@@ -61,23 +61,40 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 
 		room.tolower();
 
-		for (int i = 0; i < roomCount; i++) {
+		int realRoomCount = 0;
+
+		visibilityArray.reserve(roomCount);
+		while (!vis.eos() && !vis.err()) {
 			uint32 lineStart = vis.pos();
 
 			tokenizer.nextChunk(vis);
+
+			if (((char) vis.readByte()) != ' ') {
+				// Not indented => new room
+
+				vis.seek(lineStart);
+				break;
+			}
+
 			tokenizer.getTokens(vis, strings);
 
 			if (strings.size() != 1) {
-				warning("Malformed VIS file. Wanted %d rooms, got %d?!?", roomCount, i);
-				strings.resize(i);
+				// More than one token => new room
+
 				vis.seek(lineStart);
 				break;
 			}
 
 			visibilityArray.push_back(strings[0]);
+			realRoomCount++;
 		}
 
-		_map[room] = visibilityArray;
+		if (roomCount != realRoomCount)
+			// Thanks, BioWare! -.-
+			warning("Malformed VIS file. Wanted %d rooms, got %d?!?", roomCount, realRoomCount);
+
+		if (!visibilityArray.empty())
+			_map[room] = visibilityArray;
 	}
 }
 
