@@ -55,6 +55,8 @@ public:
 
 	/** Set the current position of the model. */
 	void setPosition(float x, float y, float z);
+	/** Set the current orientation of the model. */
+	void setOrientation(float x, float y);
 
 	/** Return a list of all animation state names. */
 	const std::list<Common::UString> &getStates() const;
@@ -190,6 +192,7 @@ protected:
 	float  _fadeStep;
 
 	float _position[3];
+	float _orientation[3];
 
 	NodeList _nodes;
 

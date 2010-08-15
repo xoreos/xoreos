@@ -102,6 +102,7 @@ void Module::enter() {
 	assert(_area);
 
 	_area->setPosition(-_startX, -_startY, -_startZ);
+	_area->setOrientation(_startDirX, _startDirY);
 	_area->show();
 }
 

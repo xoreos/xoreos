@@ -145,6 +145,13 @@ void Area::setPosition(float x, float y, float z) {
 			_models[i]->setPosition(rooms[i].x + x, rooms[i].y + y, rooms[i].z + z);
 }
 
+void Area::setOrientation(float x, float y) {
+	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
+	for (size_t i = 0; i < rooms.size(); i++)
+		if (_models[i])
+			_models[i]->setOrientation(x, y);
+}
+
 Graphics::Aurora::Model *Area::loadModel(const Common::UString &resref) {
 	Common::SeekableReadStream *mdl = 0, *mdx = 0;
 	Graphics::Aurora::Model *model = 0;

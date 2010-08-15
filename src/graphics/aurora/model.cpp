@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/maths.h"
 #include "common/stream.h"
 
 #include "events/events.h"
@@ -44,9 +45,12 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 	_type(type), _superModel(0), _class(kClassOther), _scale(1.0), _fade(false), _fadeStart(0),
 	_fadeValue(1.0), _fadeStep(0.0), _currentState(0), _textureCount(0), _list(0) {
 
-	_position[0] = 0.0;
-	_position[1] = 0.0;
-	_position[2] = 0.0;
+	_position   [0] = 0.0;
+	_position   [1] = 0.0;
+	_position   [2] = 0.0;
+	_orientation[0] = 0.0;
+	_orientation[1] = 0.0;
+	_orientation[2] = 0.0;
 }
 
 Model::~Model() {
@@ -175,6 +179,15 @@ void Model::setPosition(float x, float y, float z) {
 	_position[2] = z;
 }
 
+void Model::setOrientation(float x, float y) {
+	_orientation[0] = 0.0;
+	_orientation[1] = Common::rad2deg(acos(-y / sqrt(x * x + y * y)));
+	_orientation[2] = 0.0;
+
+	if (x < 0)
+		_orientation[1] = -_orientation[1];
+}
+
 const std::list<Common::UString> &Model::getStates() const {
 	return _stateNames;
 }
@@ -233,17 +246,16 @@ void Model::render() {
 	if (!_currentState)
 		return;
 
-	if (_type == kModelTypeObject) {
+	if (_type == kModelTypeObject)
 		// Roughly head position. TODO: This doesn't belong here :P
 		glTranslatef(0.0, -1.5, 0.0);
 
-		float rotate = EventMan.getTimestamp() * 0.05;
-
-		glRotatef(rotate, 0.0, 1.0, 0.0);
-	}
-
 	if (_type == kModelTypeGUIFront)
 		glScalef(100, 100, 100);
+
+	glRotatef(_orientation[0], 1.0, 0.0, 0.0);
+	glRotatef(_orientation[1], 0.0, 1.0, 0.0);
+	glRotatef(_orientation[2], 0.0, 0.0, 1.0);
 
 	if (_type == kModelTypeObject)
 		glRotatef(90.0, -1.0, 0.0, 0.0);
