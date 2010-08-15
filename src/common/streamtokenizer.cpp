@@ -150,7 +150,8 @@ int StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<Common::U
 	for (realTokenCount = 0; !isChunkEnd(stream) && ((max < 0) || (realTokenCount < max)); realTokenCount++) {
 		Common::UString token = getToken(stream);
 
-		list.push_back(token);
+		if (!token.empty() || (_conSepRule != kRuleIgnoreAll))
+			list.push_back(token);
 	}
 
 	while (list.size() < ((uint32) min))
