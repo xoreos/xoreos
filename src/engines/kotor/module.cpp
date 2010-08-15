@@ -174,10 +174,11 @@ void Module::move(float x, float y, float z) {
 }
 
 void Module::move(float n) {
-	float x = n * sin(Common::deg2rad(_orientation[1]));
-	float y = n * cos(Common::deg2rad(_orientation[1]));
+	float x = n *  sin(Common::deg2rad(_orientation[1]));
+	float y = n *  cos(Common::deg2rad(_orientation[1])) * cos(Common::deg2rad(_orientation[0]));
+	float z = n * -sin(Common::deg2rad(_orientation[0]));
 
-	move(x, y, 0.0);
+	move(x, y, z);
 }
 
 void Module::strafe(float n) {

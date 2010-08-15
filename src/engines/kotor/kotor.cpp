@@ -120,25 +120,38 @@ void KotOREngine::run(const Common::UString &target) {
 		while (EventMan.pollEvent(event)) {
 			if (event.type == Events::kEventKeyDown) {
 				if      (event.key.keysym.sym == SDLK_UP)
-					tarisCantina->move( 0.5);
+					tarisCantina->move  ( 0.5);
 				else if (event.key.keysym.sym == SDLK_DOWN)
-					tarisCantina->move(-0.5);
+					tarisCantina->move  (-0.5);
 				else if (event.key.keysym.sym == SDLK_LEFT)
-					tarisCantina->turn( 0.0, -5.0, 0.0);
+					tarisCantina->turn  ( 0.0, -5.0,  0.0);
 				else if (event.key.keysym.sym == SDLK_RIGHT)
-					tarisCantina->turn( 0.0,  5.0, 0.0);
+					tarisCantina->turn  ( 0.0,  5.0,  0.0);
+				else if (event.key.keysym.sym == SDLK_PAGEUP)
+					tarisCantina->turn  (-5.0,  0.0,  0.0);
+				else if (event.key.keysym.sym == SDLK_PAGEDOWN)
+					tarisCantina->turn  ( 5.0,  0.0,  0.0);
+				else if (event.key.keysym.sym == SDLK_INSERT)
+					tarisCantina->move  ( 0.0,  0.0,  0.5);
+				else if (event.key.keysym.sym == SDLK_DELETE)
+					tarisCantina->move  ( 0.0,  0.0, -0.5);
 				else if (event.key.keysym.sym == SDLK_w)
-					tarisCantina->move( 0.5);
+					tarisCantina->move  ( 0.5);
 				else if (event.key.keysym.sym == SDLK_s)
-					tarisCantina->move(-0.5);
+					tarisCantina->move  (-0.5);
 				else if (event.key.keysym.sym == SDLK_a)
 					tarisCantina->strafe(-0.5);
 				else if (event.key.keysym.sym == SDLK_d)
 					tarisCantina->strafe( 0.5);
 				else if (event.key.keysym.sym == SDLK_q)
-					tarisCantina->turn( 0.0, -5.0, 0.0);
+					tarisCantina->turn  ( 0.0, -5.0,  0.0);
 				else if (event.key.keysym.sym == SDLK_e)
-					tarisCantina->turn( 0.0,  5.0, 0.0);
+					tarisCantina->turn  ( 0.0,  5.0,  0.0);
+				else if (event.key.keysym.sym == SDLK_END) {
+					const float *orient = tarisCantina->getOrientation();
+
+					tarisCantina->setOrientation(0.0, orient[1], orient[2]);
+				}
 			}
 		}
 

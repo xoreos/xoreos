@@ -120,25 +120,38 @@ void KotOR2Engine::run(const Common::UString &target) {
 		while (EventMan.pollEvent(event)) {
 			if (event.type == Events::kEventKeyDown) {
 				if      (event.key.keysym.sym == SDLK_UP)
-					narShaddaa->move( 0.5);
+					narShaddaa->move  ( 0.5);
 				else if (event.key.keysym.sym == SDLK_DOWN)
-					narShaddaa->move(-0.5);
+					narShaddaa->move  (-0.5);
 				else if (event.key.keysym.sym == SDLK_LEFT)
-					narShaddaa->turn( 0.0, -5.0, 0.0);
+					narShaddaa->turn  ( 0.0, -5.0,  0.0);
 				else if (event.key.keysym.sym == SDLK_RIGHT)
-					narShaddaa->turn( 0.0,  5.0, 0.0);
+					narShaddaa->turn  ( 0.0,  5.0,  0.0);
+				else if (event.key.keysym.sym == SDLK_PAGEUP)
+					narShaddaa->turn  (-5.0,  0.0,  0.0);
+				else if (event.key.keysym.sym == SDLK_PAGEDOWN)
+					narShaddaa->turn  ( 5.0,  0.0,  0.0);
+				else if (event.key.keysym.sym == SDLK_INSERT)
+					narShaddaa->move  ( 0.0,  0.0,  0.5);
+				else if (event.key.keysym.sym == SDLK_DELETE)
+					narShaddaa->move  ( 0.0,  0.0, -0.5);
 				else if (event.key.keysym.sym == SDLK_w)
-					narShaddaa->move( 0.5);
+					narShaddaa->move  ( 0.5);
 				else if (event.key.keysym.sym == SDLK_s)
-					narShaddaa->move(-0.5);
+					narShaddaa->move  (-0.5);
 				else if (event.key.keysym.sym == SDLK_a)
 					narShaddaa->strafe(-0.5);
 				else if (event.key.keysym.sym == SDLK_d)
 					narShaddaa->strafe( 0.5);
 				else if (event.key.keysym.sym == SDLK_q)
-					narShaddaa->turn( 0.0, -5.0, 0.0);
+					narShaddaa->turn  ( 0.0, -5.0,  0.0);
 				else if (event.key.keysym.sym == SDLK_e)
-					narShaddaa->turn( 0.0,  5.0, 0.0);
+					narShaddaa->turn  ( 0.0,  5.0,  0.0);
+				else if (event.key.keysym.sym == SDLK_END) {
+					const float *orient = narShaddaa->getOrientation();
+
+					narShaddaa->setOrientation(0.0, orient[1], orient[2]);
+				}
 			}
 		}
 
