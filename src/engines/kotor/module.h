@@ -32,25 +32,45 @@ public:
 
 	void load(const Common::UString &name);
 
+	/** Enter the module's area. */
 	void enter();
+	/** Leave the module's area. */
 	void leave();
+
+	/** Get the current position within the module's area. */
+	const float *getPosition() const;
+	/** Get the current orientation within the module's area. */
+	const float *getOrientation() const;
+
+	/** Set the current position within the module's area. */
+	void setPosition(float x, float y, float z);
+	/** Set the current orientation within the module's area. */
+	void setOrientation(float x, float y, float z);
+
+	/** Turn by these amounts along these axes. */
+	void turn(float x, float y, float z);
+	/** Move by these amounts along these axes. */
+	void move(float x, float y, float z);
+	/** Move by this amount along the current view axis. */
+	void move(float n);
 
 protected:
 	virtual Area *createArea() const;
 	virtual void loadResources(const Common::UString &name);
 
 private:
-	Common::UString _areaName;
+	Common::UString _areaName; ///< Name of the module's area.
 
-	float _startX;
-	float _startY;
-	float _startZ;
-	float _startDirX;
-	float _startDirY;
+	float _startX;    ///< Starting point X coordinate.
+	float _startY;    ///< Starting point Y coordinate.
+	float _startZ;    ///< Starting point Z coordinate.
+	float _startDirX; ///< Starting orientation vector X coordinate.
+	float _startDirY; ///< Starting orientation vector Y coordinate.
 
-	float _orientation[3];
+	float _position[3];    ///< Current position.
+	float _orientation[3]; ///< Current orientation.
 
-	Area *_area;
+	Area *_area; ///< Module's area.
 
 	Aurora::ResourceManager::ChangeID _moduleResources;
 	Aurora::ResourceManager::ChangeID _scriptResources;
@@ -58,6 +78,8 @@ private:
 	void loadIFO(const Common::UString &name);
 
 	void loadArea();
+
+	void reset();
 };
 
 } // End of namespace KotOR

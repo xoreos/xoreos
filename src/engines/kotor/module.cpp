@@ -95,7 +95,7 @@ void Module::loadIFO(const Common::UString &name) {
 	if (_areaName.empty())
 		throw Common::Exception("No entry area in module \"%s\"", name.c_str());
 
-	Common::vector2orientation(_startDirX, _startDirY, _orientation[0], _orientation[1], _orientation[2]);
+	reset();
 }
 
 void Module::loadArea() {
@@ -107,8 +107,11 @@ void Module::loadArea() {
 void Module::enter() {
 	assert(_area);
 
-	_area->setPosition(-_startX, -_startY, -_startZ);
+	reset();
+
+	_area->setPosition(_position[0], _position[1], _position[2]);
 	_area->setOrientation(_orientation[0], _orientation[1], _orientation[2]);
+
 	_area->show();
 }
 
@@ -116,6 +119,65 @@ void Module::leave() {
 	assert(_area);
 
 	_area->hide();
+}
+
+void Module::reset() {
+	_position[0] = -_startX;
+	_position[1] = -_startY;
+	_position[2] = -_startZ;
+
+	Common::vector2orientation(_startDirX, _startDirY, _orientation[0], _orientation[1], _orientation[2]);
+}
+
+const float *Module::getPosition() const {
+	return _position;
+}
+
+const float *Module::getOrientation() const {
+	return _orientation;
+}
+
+void Module::setPosition(float x, float y, float z) {
+	assert(_area);
+
+	_position[0] = x;
+	_position[1] = y;
+	_position[2] = z;
+
+	_area->setPosition(_position[0], _position[1], _position[2]);
+}
+
+void Module::setOrientation(float x, float y, float z) {
+	assert(_area);
+
+	_orientation[0] = x;
+	_orientation[1] = y;
+	_orientation[2] = z;
+
+	// Clamp
+	for (int i = 0; i < 3; i++) {
+		while (_orientation[i] >  360)
+			_orientation[i] -= 360;
+		while (_orientation[i] < -360)
+			_orientation[i] += 360;
+	}
+
+	_area->setOrientation(_orientation[0], _orientation[1], _orientation[2]);
+}
+
+void Module::turn(float x, float y, float z) {
+	setOrientation(_orientation[0] + x, _orientation[1] + y, _orientation[2] + z);
+}
+
+void Module::move(float x, float y, float z) {
+	setPosition(_position[0] - x, _position[1] - y, _position[2] - z);
+}
+
+void Module::move(float n) {
+	float x = n * sin(Common::deg2rad(_orientation[1]));
+	float y = n * cos(Common::deg2rad(_orientation[1]));
+
+	move(x, y, 0.0);
 }
 
 } // End of namespace KotOR

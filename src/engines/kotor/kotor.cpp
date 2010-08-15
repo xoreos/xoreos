@@ -113,7 +113,23 @@ void KotOREngine::run(const Common::UString &target) {
 	text->setPosition(textX, textY);
 	text->show();
 
+	EventMan.enableKeyRepeat();
+
 	while (!EventMan.quitRequested()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event)) {
+			if (event.type == Events::kEventKeyDown) {
+				if      (event.key.keysym.sym == SDLK_UP)
+					tarisCantina->move( 0.5);
+				else if (event.key.keysym.sym == SDLK_DOWN)
+					tarisCantina->move(-0.5);
+				if      (event.key.keysym.sym == SDLK_LEFT)
+					tarisCantina->turn( 0.0, -5.0, 0.0);
+				if      (event.key.keysym.sym == SDLK_RIGHT)
+					tarisCantina->turn( 0.0,  5.0, 0.0);
+			}
+		}
+
 		EventMan.delay(10);
 
 		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
