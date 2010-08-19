@@ -21,6 +21,8 @@
 
 #include "aurora/gfffile.h"
 
+static const uint32 kIFOID = MKID_BE('IFO ');
+
 namespace Engines {
 
 namespace KotOR {
@@ -66,6 +68,9 @@ void Module::loadIFO(const Common::UString &name) {
 			throw Common::Exception("No module.ifo in module \"%s\"", name.c_str());
 
 		ifo.load(*ifoFile);
+
+		if (ifo.getID() != kIFOID)
+			throw Common::Exception("module.ifo is not an IFO file");
 
 		delete ifoFile;
 	} catch(...) {
