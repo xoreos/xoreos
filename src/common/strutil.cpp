@@ -79,6 +79,7 @@ void printDataHex(const byte *data, uint32 size) {
 		return;
 
 	MemoryReadStream stream(data, size);
+	printDataHex(stream);
 }
 
 } // End of namespace Common
