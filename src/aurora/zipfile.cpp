@@ -12,6 +12,7 @@
  *  A ZIP archive.
  */
 
+#include "common/ustring.h"
 #include "common/file.h"
 #include "common/zipfile.h"
 #include "common/filepath.h"

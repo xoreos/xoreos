@@ -16,11 +16,14 @@
 #define AURORA_TALKMAN_H
 
 #include "common/types.h"
-#include "common/ustring.h"
 #include "common/singleton.h"
 
 #include "aurora/types.h"
 #include "aurora/talktable.h"
+
+namespace Common {
+	class UString;
+}
 
 namespace Aurora {
 

@@ -16,6 +16,7 @@
 #include "aurora/resman.h"
 
 #include "common/error.h"
+#include "common/ustring.h"
 #include "common/stream.h"
 
 DECLARE_SINGLETON(Aurora::TalkManager)

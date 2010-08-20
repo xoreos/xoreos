@@ -18,12 +18,12 @@
 #include <vector>
 
 #include "common/types.h"
-#include "common/ustring.h"
 
 #include "aurora/types.h"
 #include "aurora/archive.h"
 
 namespace Common {
+	class UString;
 	class SeekableReadStream;
 	class File;
 	class ZipFile;
