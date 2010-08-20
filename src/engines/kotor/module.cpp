@@ -61,23 +61,8 @@ void Module::loadResources(const Common::UString &name) {
 }
 
 void Module::loadIFO(const Common::UString &name) {
-	Common::SeekableReadStream *ifoFile = 0;
 	Aurora::GFFFile ifo;
-	try {
-		if (!(ifoFile = ResMan.getResource("module", Aurora::kFileTypeIFO)))
-			throw Common::Exception("No module.ifo in module \"%s\"", name.c_str());
-
-		ifo.load(*ifoFile);
-
-		if (ifo.getID() != kIFOID)
-			throw Common::Exception("module.ifo is not an IFO file");
-
-		delete ifoFile;
-	} catch(...) {
-		delete ifoFile;
-		throw;
-	}
-
+	loadGFF(ifo, "module", Aurora::kFileTypeIFO, kIFOID);
 
 	Aurora::GFFFile::StructRange ifoTop = ifo.structRange();
 	for (Aurora::GFFFile::StructIterator it = ifoTop.first; it != ifoTop.second; ++it) {
