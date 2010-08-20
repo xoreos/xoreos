@@ -46,11 +46,11 @@ public:
 	StackObject(StackObjectType type = kStackObjectNone);
 	StackObject(int32 val, StackObjectType = kStackObjectInt);
 	StackObject(float val);
-	StackObject(Common::UString val);
+	StackObject(const Common::UString &val);
 
 	int32 getInt() const;
 	float getFloat() const;
-	Common::UString getString() const;
+	const Common::UString &getString() const;
 	uint32 getObject() const;
 
 	bool operator==(StackObject &obj);

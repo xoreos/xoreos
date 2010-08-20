@@ -34,7 +34,7 @@ StackObject::StackObject(float val) {
 	_type = kStackObjectFloat;
 }
 
-StackObject::StackObject(Common::UString val) {
+StackObject::StackObject(const Common::UString &val) {
 	_stringVal = val;
 	_type = kStackObjectString;
 }
@@ -51,7 +51,7 @@ float StackObject::getFloat() const {
 	return _floatVal;
 }
 
-Common::UString StackObject::getString() const {
+const Common::UString &StackObject::getString() const {
 	if (_type != kStackObjectString)
 		throw Common::Exception("Trying to get string from non-string StackObject");
 	return _stringVal;
