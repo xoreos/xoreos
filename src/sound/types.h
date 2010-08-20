@@ -15,6 +15,8 @@
 #ifndef SOUND_TYPES_H
 #define SOUND_TYPES_H
 
+#include "common/types.h"
+
 namespace Sound {
 
 /** A handle to a sound channel. */
