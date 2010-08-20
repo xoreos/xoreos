@@ -16,9 +16,11 @@
 #define ENGINES_KOTOR_AREA_H
 
 #include <vector>
+#include <list>
 
 #include "aurora/lytfile.h"
 #include "aurora/visfile.h"
+#include "aurora/gfffile.h"
 
 #include "graphics/aurora/types.h"
 
@@ -31,6 +33,8 @@ namespace Engines {
 class ModelLoader;
 
 namespace KotOR {
+
+class Placeable;
 
 class Area {
 public:
@@ -53,6 +57,8 @@ private:
 
 	std::vector<Graphics::Aurora::Model *> _models;
 
+	std::list<Placeable *> _placeables;
+
 	void loadLYT(const Common::UString &name);
 	void loadVIS(const Common::UString &name);
 
@@ -60,6 +66,8 @@ private:
 	void loadGIT(const Common::UString &name);
 
 	void loadModels(const Common::UString &name);
+
+	void loadPlaceable(Aurora::GFFFile::ListIterator &placeable);
 };
 
 } // End of namespace KotOR

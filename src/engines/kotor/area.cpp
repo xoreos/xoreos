@@ -13,16 +13,17 @@
  */
 
 #include "engines/kotor/area.h"
-#include "engines/engine.h"
+#include "engines/kotor/placeable.h"
 
 #include "common/error.h"
 #include "common/ustring.h"
 #include "common/stream.h"
 
+#include "engines/engine.h"
 #include "engines/util.h"
 
 #include "aurora/resman.h"
-#include "aurora/gfffile.h"
+#include "aurora/util.h"
 
 #include "graphics/aurora/model_kotor.h"
 
@@ -39,6 +40,9 @@ Area::Area(const ModelLoader &modelLoader) : _modelLoader(&modelLoader) {
 Area::~Area() {
 	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
 		delete *model;
+
+	for (std::list<Placeable *>::iterator plc = _placeables.begin(); plc != _placeables.end(); ++plc)
+		delete *plc;
 }
 
 void Area::load(const Common::UString &name) {
@@ -94,28 +98,49 @@ void Area::loadGIT(const Common::UString &name) {
 	for (Aurora::GFFFile::StructIterator it = gitTop.first; it != gitTop.second; ++it) {
 
 		if (it->getLabel() == "Placeable List") {
-
 			Aurora::GFFFile::ListRange placeables = git.listRange(it->getListIndex());
-			for (Aurora::GFFFile::ListIterator plc = placeables.first; plc != placeables.second; ++plc) {
-				float x = 0.0, y = 0.0, z = 0.0;
-
-				for (Aurora::GFFFile::StructIterator it2 = plc->first; it2 != plc->second; ++it2) {
-					if        (it->getLabel() == "TemplateResRef") {
-					} else if (it->getLabel() == "X") {
-						x = it->getDouble();
-					} else if (it->getLabel() == "Y") {
-						y = it->getDouble();
-					} else if (it->getLabel() == "Z") {
-						z = it->getDouble();
-					} else if (it->getLabel() == "Bearing") {
-					}
-
-				}
-			}
-
+			for (Aurora::GFFFile::ListIterator plc = placeables.first; plc != placeables.second; ++plc)
+				loadPlaceable(plc);
 		}
 
 	}
+}
+
+void Area::loadPlaceable(Aurora::GFFFile::ListIterator &placeable) {
+	Common::UString resref;
+	float x = 0.0, y = 0.0, z = 0.0;
+	float bearing = 0.0;
+
+	for (Aurora::GFFFile::StructIterator it = placeable->first; it != placeable->second; ++it) {
+		if      (it->getLabel() == "TemplateResRef")
+			resref = it->getString();
+		else if (it->getLabel() == "X")
+			x = it->getDouble();
+		else if (it->getLabel() == "Y")
+			y = it->getDouble();
+		else if (it->getLabel() == "Z")
+			z = it->getDouble();
+		else if (it->getLabel() == "Bearing")
+			bearing = it->getDouble();
+	}
+
+	if (resref.empty())
+		throw Common::Exception("Placeable without a template");
+
+	Placeable *place = 0;
+	try {
+		place = new Placeable(*_modelLoader);
+
+		place->load(resref);
+		place->setPosition(x, y, z);
+		place->setBearing(bearing);
+
+	} catch (...) {
+		delete place;
+		throw;
+	}
+
+	_placeables.push_back(place);
 }
 
 void Area::loadModels(const Common::UString &name) {
