@@ -17,6 +17,7 @@
 #include "common/util.h"
 #include "common/error.h"
 #include "common/ustring.h"
+#include "common/maths.h"
 
 #include "engines/util.h"
 
@@ -91,6 +92,9 @@ void Placeable::setPosition(float x, float y, float z) {
 
 void Placeable::setBearing(float bearing) {
 	_bearing = bearing;
+
+	if (_model)
+		_model->setBearing(0.0, Common::rad2deg(_bearing), 0.0);
 }
 
 void Placeable::moveWorld(float x, float y, float z) {
