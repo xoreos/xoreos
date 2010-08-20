@@ -533,7 +533,7 @@ inline void GFFField::readDouble(Common::SeekableReadStream &gff,
 	uint32 curPos;
 	seekGFFData(gff, header, data, curPos);
 
-	_value.typeDouble = gff.readIEEEFloatLE();
+	_value.typeDouble = gff.readIEEEDoubleLE();
 
 	gff.seek(curPos);
 }
