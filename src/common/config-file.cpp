@@ -28,7 +28,7 @@ namespace Common {
  * underscores. In particular, white space and "#", "=", "[", "]"
  * are not valid!
  */
-bool ConfigFile::isValidName(const Common::UString &name) {
+bool ConfigFile::isValidName(const UString &name) {
 	const char *p = name.c_str();
 	while (*p && (isalnum(*p) || *p == '-' || *p == '_' || *p == '.'))
 		p++;
@@ -46,7 +46,7 @@ void ConfigFile::clear() {
 	_map.clear();
 }
 
-bool ConfigFile::load(const Common::UString &fileName) {
+bool ConfigFile::load(const UString &fileName) {
 	File file;
 	if (!file.open(UString(fileName)))
 		return false;
@@ -55,15 +55,15 @@ bool ConfigFile::load(const Common::UString &fileName) {
 }
 
 bool ConfigFile::load(SeekableReadStream &stream) {
-	Common::UString section;
-	Common::UString keyValue;
+	UString section;
+	UString keyValue;
 
 	// TODO: Detect if a section occurs multiple times (or likewise, if
 	// a key occurs multiple times inside one section).
 
 	for (int lineno = 1; !stream.eos() && !stream.err(); lineno++) {
 		// Read a line
-		Common::UString line;
+		UString line;
 		line.readLineASCII(stream);
 
 		if (line.empty()) {
@@ -85,7 +85,7 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 			else if (*p != ']')
 				warning("ConfigFile::load: Invalid character '%c' occured in section name in line %d", *p, lineno);
 
-			section = Common::UString(line.c_str() + 1, p - line.c_str() - 1);
+			section = UString(line.c_str() + 1, p - line.c_str() - 1);
 			assert(isValidName(section));
 		} else {
 			// This line should be a line with a 'key=value' pair, or an empty one.
@@ -109,8 +109,8 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 				warning("Config stream buggy: Junk found in line %d: '%s'", lineno, t);
 
 			// Extract the key/value pair
-			Common::UString key = Common::UString(t, p - t);
-			Common::UString value = Common::UString(p + 1);
+			UString key = UString(t, p - t);
+			UString value = UString(p + 1);
 
 			// Trim off spaces
 			key.trim();
@@ -124,7 +124,7 @@ bool ConfigFile::load(SeekableReadStream &stream) {
 	return (!stream.err() || stream.eos());
 }
 
-void ConfigFile::removeSection(const Common::UString &section) {
+void ConfigFile::removeSection(const UString &section) {
 	assert(isValidName(section));
 
 	ConfigFileMap::iterator it = _map.find(section);
@@ -132,12 +132,12 @@ void ConfigFile::removeSection(const Common::UString &section) {
 		_map.erase(it);
 }
 
-bool ConfigFile::hasSection(const Common::UString &section) const {
+bool ConfigFile::hasSection(const UString &section) const {
 	assert(isValidName(section));
 	return _map.find(section) != _map.end();
 }
 
-void ConfigFile::renameSection(const Common::UString &oldName, const Common::UString &newName) {
+void ConfigFile::renameSection(const UString &oldName, const UString &newName) {
 	assert(isValidName(oldName));
 	assert(isValidName(newName));
 
@@ -154,7 +154,7 @@ void ConfigFile::renameSection(const Common::UString &oldName, const Common::USt
 	// - merge the two sections "oldName" and "newName"
 }
 
-bool ConfigFile::hasKey(const Common::UString &key, const Common::UString &section) const {
+bool ConfigFile::hasKey(const UString &key, const UString &section) const {
 	assert(isValidName(key));
 	assert(isValidName(section));
 
@@ -165,7 +165,7 @@ bool ConfigFile::hasKey(const Common::UString &key, const Common::UString &secti
 	return false;
 }
 
-void ConfigFile::removeKey(const Common::UString &key, const Common::UString &section) {
+void ConfigFile::removeKey(const UString &key, const UString &section) {
 	assert(isValidName(key));
 	assert(isValidName(section));
 
@@ -174,7 +174,7 @@ void ConfigFile::removeKey(const Common::UString &key, const Common::UString &se
 		it->second.erase(key);
 }
 
-bool ConfigFile::getKey(const Common::UString &key, const Common::UString &section, Common::UString &value) const {
+bool ConfigFile::getKey(const UString &key, const UString &section, UString &value) const {
 	assert(isValidName(key));
 	assert(isValidName(section));
 
@@ -190,7 +190,7 @@ bool ConfigFile::getKey(const Common::UString &key, const Common::UString &secti
 	return true;
 }
 
-void ConfigFile::setKey(const Common::UString &key, const Common::UString &section, const Common::UString &value) {
+void ConfigFile::setKey(const UString &key, const UString &section, const UString &value) {
 	assert(isValidName(key));
 	assert(isValidName(section));
 	// TODO: Verify that value is valid, too. In particular, it shouldn't

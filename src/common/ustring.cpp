@@ -313,7 +313,7 @@ UString::iterator UString::findFirst(uint32 c) const {
 	return end();
 }
 
-bool UString::beginsWith(const Common::UString &with) const {
+bool UString::beginsWith(const UString &with) const {
 	if (with.empty())
 		return true;
 
@@ -333,7 +333,7 @@ bool UString::beginsWith(const Common::UString &with) const {
 	return true;
 }
 
-bool UString::endsWith(const Common::UString &with) const {
+bool UString::endsWith(const UString &with) const {
 	if (with.empty())
 		return true;
 

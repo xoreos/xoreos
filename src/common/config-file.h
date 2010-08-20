@@ -54,28 +54,28 @@ public:
 	 * underscores. In particular, white space and "#", "=", "[", "]"
 	 * are not valid!
 	 */
-	static bool isValidName(const Common::UString &name);
+	static bool isValidName(const UString &name);
 
 	/** Reset everything stored in this config file. */
 	void clear();
 
 	bool load(SeekableReadStream &stream);
-	bool load(const Common::UString &fileName);
+	bool load(const UString &fileName);
 
-	//bool saveToFile(const Common::UString &filename);
+	//bool saveToFile(const UString &filename);
 
-	bool hasSection(const Common::UString &section) const;
-	void removeSection(const Common::UString &section);
-	void renameSection(const Common::UString &oldName, const Common::UString &newName);
+	bool hasSection(const UString &section) const;
+	void removeSection(const UString &section);
+	void renameSection(const UString &oldName, const UString &newName);
 
-	bool hasKey(const Common::UString &key, const Common::UString &section) const;
-	bool getKey(const Common::UString &key, const Common::UString &section, Common::UString &value) const;
-	void setKey(const Common::UString &key, const Common::UString &section, const Common::UString &value);
-	void removeKey(const Common::UString &key, const Common::UString &section);
+	bool hasKey(const UString &key, const UString &section) const;
+	bool getKey(const UString &key, const UString &section, UString &value) const;
+	void setKey(const UString &key, const UString &section, const UString &value);
+	void removeKey(const UString &key, const UString &section);
 
 private:
-	typedef std::map<Common::UString, Common::UString> StringMap;
-	typedef std::map<Common::UString, StringMap> ConfigFileMap;
+	typedef std::map<UString, UString> StringMap;
+	typedef std::map<UString, StringMap> ConfigFileMap;
 
 	ConfigFileMap _map;
 };

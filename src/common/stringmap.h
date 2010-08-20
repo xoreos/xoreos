@@ -40,12 +40,12 @@ public:
 	 *  @param  match If != 0, the position after the match will be stored here.
 	 *  @return The index of the matched string in the original list, or -1 if not found.
 	 */
-	int find(const Common::UString &str, const char **match) const;
+	int find(const UString &str, const char **match) const;
 
 private:
 	bool _onlyFirstWord;
 
-	typedef boost::unordered_map<Common::UString, int, Common::hashUStringCaseInsensitive> StrMap;
+	typedef boost::unordered_map<UString, int, hashUStringCaseInsensitive> StrMap;
 
 	StrMap _map;
 

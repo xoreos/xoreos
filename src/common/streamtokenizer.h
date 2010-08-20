@@ -50,7 +50,7 @@ public:
 	void addIgnore   (uint32 c);
 
 	/** Parse a token out of the stream. */
-	Common::UString getToken(SeekableReadStream &stream);
+	UString getToken(SeekableReadStream &stream);
 
 	/** Parse tokens out of the stream.
 	 *
@@ -61,8 +61,8 @@ public:
 	 *  @param  def Non-existing tokens are assigned this value.
 	 *  @return The number of existing tokens parsed.
 	 */
-	int getTokens(SeekableReadStream &stream, std::vector<Common::UString> &list,
-			int min = 0, int max = -1, const Common::UString &def = "");
+	int getTokens(SeekableReadStream &stream, std::vector<UString> &list,
+			int min = 0, int max = -1, const UString &def = "");
 
 	/** Skip a number of tokens. */
 	void skipToken(SeekableReadStream &stream, uint32 n = 1);

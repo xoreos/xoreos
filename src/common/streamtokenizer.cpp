@@ -45,14 +45,14 @@ void StreamTokenizer::addIgnore(uint32 c) {
 	_ignores.push_back(c);
 }
 
-Common::UString StreamTokenizer::getToken(SeekableReadStream &stream) {
+UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 	// Init
 	bool   chunkEnd     = false;
 	bool   inQuote      = false;
 	bool   hasSeparator = false;
 	uint32 separator    = 0;
 
-	Common::UString token;
+	UString token;
 
 	// Run through the stream, character by character
 	while (!stream.eos()) {
@@ -138,8 +138,8 @@ Common::UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 	return token;
 }
 
-int StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<Common::UString> &list,
-		int min, int max, const Common::UString &def) {
+int StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<UString> &list,
+		int min, int max, const UString &def) {
 
 	assert((min >= 0) && ((max == -1) || (max >= min)));
 
@@ -148,7 +148,7 @@ int StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<Common::U
 
 	int realTokenCount;
 	for (realTokenCount = 0; !isChunkEnd(stream) && ((max < 0) || (realTokenCount < max)); realTokenCount++) {
-		Common::UString token = getToken(stream);
+		UString token = getToken(stream);
 
 		if (!token.empty() || (_conSepRule != kRuleIgnoreAll))
 			list.push_back(token);
@@ -162,7 +162,7 @@ int StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<Common::U
 
 void StreamTokenizer::skipToken(SeekableReadStream &stream, uint32 n) {
 	while (n-- > 0)
-		Common::UString token = getToken(stream);
+		UString token = getToken(stream);
 }
 
 void StreamTokenizer::skipChunk(SeekableReadStream &stream) {

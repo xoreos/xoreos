@@ -21,14 +21,14 @@ namespace Common {
 
 StringMap::StringMap(const char **strings, int count, bool onlyFirstWord) : _onlyFirstWord(onlyFirstWord) {
 	for (int i = 0; i < count; i++)
-		_map.insert(std::make_pair(Common::UString(strings[i]), i));
+		_map.insert(std::make_pair(UString(strings[i]), i));
 }
 
 int StringMap::find(const char *str, const char **match) const {
-	Common::UString sStr = str;
+	UString sStr = str;
 
 	if (_onlyFirstWord) {
-		Common::UString::iterator space = sStr.findFirst(' ');
+		UString::iterator space = sStr.findFirst(' ');
 		if (space != sStr.end())
 			sStr.truncate(space);
 	}
@@ -42,11 +42,11 @@ int StringMap::find(const char *str, const char **match) const {
 	return s->second;
 }
 
-int StringMap::find(const Common::UString &str, const char **match) const {
-	Common::UString sStr = str;
+int StringMap::find(const UString &str, const char **match) const {
+	UString sStr = str;
 
 	if (_onlyFirstWord) {
-		Common::UString::iterator space = sStr.findFirst(' ');
+		UString::iterator space = sStr.findFirst(' ');
 		if (space != sStr.end())
 			sStr.truncate(space);
 	}

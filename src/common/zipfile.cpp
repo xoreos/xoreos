@@ -24,7 +24,7 @@
 
 namespace Common {
 
-ZipFile::ZipFile(const Common::UString &fileName) : _fileName(fileName) {
+ZipFile::ZipFile(const UString &fileName) : _fileName(fileName) {
 	load();
 }
 
@@ -122,7 +122,7 @@ const ZipFile::FileList &ZipFile::getFiles() const {
 
 SeekableReadStream *ZipFile::getFile(uint32 index) const {
 	if (index >= _iFiles.size())
-		throw Common::Exception("File index out of range (%d/%d)", index, _iFiles.size());
+		throw Exception("File index out of range (%d/%d)", index, _iFiles.size());
 
 	Common::File zip;
 	open(zip);
@@ -130,7 +130,7 @@ SeekableReadStream *ZipFile::getFile(uint32 index) const {
 	const IFile &file = _iFiles[index];
 
 	if (!zip.seek(file.offset))
-		throw Common::Exception(Common::kSeekError);
+		throw Exception(kSeekError);
 
 	uint32 tag = zip.readUint32LE();
 	if (tag != 0x04034B50)
@@ -159,7 +159,7 @@ SeekableReadStream *ZipFile::getFile(uint32 index) const {
 
 void ZipFile::open(Common::File &file) const {
 	if (!file.open(_fileName))
-		throw Common::Exception(Common::kOpenError);
+		throw Exception(kOpenError);
 }
 
 SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 method,

@@ -35,7 +35,7 @@ void BitStream::skip(uint32 n) {
 
 BitStreamBE::BitStreamBE(SeekableReadStream &stream, uint32 bitCount) : _value(0), _inValue(0) {
 	if ((bitCount % 8) != 0)
-		throw Common::Exception("Big-endian bit stream size has to be dividable by 8");
+		throw Exception("Big-endian bit stream size has to be dividable by 8");
 
 	// Read the number of bytes of the stream
 
@@ -52,7 +52,7 @@ BitStreamBE::BitStreamBE(SeekableReadStream &stream, uint32 bitCount) : _value(0
 
 BitStreamBE::BitStreamBE(const byte *data, uint32 bitCount) : _value(0), _inValue(0) {
 	if ((bitCount % 8) != 0)
-		throw Common::Exception("Big-endian bit stream size has to be dividable by 8");
+		throw Exception("Big-endian bit stream size has to be dividable by 8");
 
 	// Copy the number of bytes from the data array
 
@@ -73,7 +73,7 @@ uint32 BitStreamBE::getBit() {
 		// Need to get new byte
 
 		if (_stream->eos())
-			throw Common::Exception("End of bit stream reached");
+			throw Exception("End of bit stream reached");
 
 		_value = _stream->readByte();
 	}
@@ -92,7 +92,7 @@ uint32 BitStreamBE::getBit() {
 
 uint32 BitStreamBE::getBits(uint32 n) {
 	if (n > 32)
-		throw Common::Exception("Too many bits requested to be read");
+		throw Exception("Too many bits requested to be read");
 
 	// Read the number of bits
 	uint32 v = 0;
@@ -121,7 +121,7 @@ uint32 BitStreamBE::size() const {
 
 BitStream32LE::BitStream32LE(SeekableReadStream &stream, uint32 bitCount) : _value(0), _inValue(0) {
 	if ((bitCount % 32) != 0)
-		throw Common::Exception("32bit little-endian bit stream size has to be dividable by 32");
+		throw Exception("32bit little-endian bit stream size has to be dividable by 32");
 
 	// Read the number of bytes of the stream
 
@@ -138,7 +138,7 @@ BitStream32LE::BitStream32LE(SeekableReadStream &stream, uint32 bitCount) : _val
 
 BitStream32LE::BitStream32LE(const byte *data, uint32 bitCount) : _value(0), _inValue(0) {
 	if ((bitCount % 32) != 0)
-		throw Common::Exception("32bit little-endian bit stream size has to be dividable by 32");
+		throw Exception("32bit little-endian bit stream size has to be dividable by 32");
 
 	// Copy the number of bytes from the data array
 
@@ -159,7 +159,7 @@ uint32 BitStream32LE::getBit() {
 		// Need to get new 32bit value
 
 		if (_stream->eos())
-			throw Common::Exception("End of bit stream reached");
+			throw Exception("End of bit stream reached");
 
 		_value = _stream->readUint32LE();
 	}
@@ -178,7 +178,7 @@ uint32 BitStream32LE::getBit() {
 
 uint32 BitStream32LE::getBits(uint32 n) {
 	if (n > 32)
-		throw Common::Exception("Too many bits requested to be read");
+		throw Exception("Too many bits requested to be read");
 
 	// Read the number of bits
 	uint32 v = 0;

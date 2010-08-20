@@ -37,7 +37,7 @@ public:
 
 	typedef std::list<File> FileList;
 
-	ZipFile(const Common::UString &fileName);
+	ZipFile(const UString &fileName);
 	~ZipFile();
 
 	/** Clear the file list. */
@@ -65,7 +65,7 @@ private:
 	IFileList _iFiles;
 
 	/** The name of the ZIP file. */
-	Common::UString _fileName;
+	UString _fileName;
 
 	void open(Common::File &file) const;
 
