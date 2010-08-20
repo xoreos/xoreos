@@ -16,6 +16,12 @@ AC_PROG_LIBTOOL
 
 AC_PROG_CXX
 AC_PROG_INSTALL
+
+AC_ARG_WITH([werror], [AS_HELP_STRING([--with-werror], [Compile with -Werror @<:@default=no@:>@])], [], [with_werror=no])
+if test "x$with_werror" = "xyes"; then
+	WERROR="-Werror"
+fi
+
 AC_CHECK_PROG([SDL_CONFIG], [sdl-config], [sdl-config])
 
 if test -n "$SDL_CONFIG"; then
@@ -119,6 +125,7 @@ AC_SUBST(SDL_MAIN_OBJ, [$SDL_MAIN_OBJ])
 AC_SUBST(SDL_LIBS, [$SDL_LIBS])
 AC_SUBST(EOS_CXXFLAGS)
 AC_SUBST(EOS_LIBS)
+AC_SUBST(WERROR)
 
 AC_OUTPUT(utf8cpp/Makefile \
           src/common/Makefile \
