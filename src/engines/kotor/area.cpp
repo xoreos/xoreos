@@ -46,6 +46,8 @@ Area::~Area() {
 }
 
 void Area::load(const Common::UString &name) {
+	status("Loading area \"%s\"", name.c_str());
+
 	loadLYT(name); // Room layout
 	loadVIS(name); // Room visibilities
 
@@ -106,6 +108,8 @@ void Area::loadGIT(const Common::UString &name) {
 	for (Aurora::GFFFile::StructIterator it = gitTop.first; it != gitTop.second; ++it) {
 
 		if (it->getLabel() == "Placeable List") {
+			status("Loading placeables");
+
 			Aurora::GFFFile::ListRange placeables = git.listRange(it->getListIndex());
 			for (Aurora::GFFFile::ListIterator plc = placeables.first; plc != placeables.second; ++plc)
 				loadPlaceable(plc);

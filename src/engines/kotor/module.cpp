@@ -45,6 +45,8 @@ Module::~Module() {
 }
 
 void Module::load(const Common::UString &name) {
+	status("Loading module \"%s\"", name.c_str());
+
 	try {
 
 		loadResources(name);

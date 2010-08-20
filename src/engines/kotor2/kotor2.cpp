@@ -118,6 +118,8 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	EventMan.enableKeyRepeat();
 
+	status("Entering event loop");
+
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
 		while (EventMan.pollEvent(event)) {

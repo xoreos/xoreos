@@ -24,10 +24,6 @@
 
 #include "graphics/aurora/types.h"
 
-namespace Aurora {
-	class TwoDAFile;
-}
-
 namespace Engines {
 
 class ModelLoader;
@@ -40,8 +36,6 @@ public:
 	~Placeable();
 
 	void load(const Common::UString &name);
-
-	void loadAppearance(const Aurora::TwoDAFile &placeables);
 
 	void setPosition(float x, float y, float z);
 	void setBearing(float bearing);
@@ -61,6 +55,8 @@ private:
 	uint32 _appearance;
 
 	Graphics::Aurora::Model *_model;
+
+	void loadModel();
 };
 
 } // End of namespace KotOR

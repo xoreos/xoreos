@@ -21,6 +21,7 @@
 #include "engines/util.h"
 
 #include "aurora/2dafile.h"
+#include "aurora/2dareg.h"
 #include "aurora/gfffile.h"
 
 #include "graphics/aurora/model.h"
@@ -64,10 +65,7 @@ void Placeable::load(const Common::UString &name) {
 	if (_appearance == 0xFFFFFFFF)
 		throw Common::Exception("Placeable without an appearance");
 
-	warning("TODO: Placeable \"%s\": %d", name.c_str(), _appearance);
-}
-
-void Placeable::loadAppearance(const Aurora::TwoDAFile &placeables) {
+	loadModel();
 }
 
 void Placeable::setPosition(float x, float y, float z) {
@@ -90,6 +88,12 @@ void Placeable::turnWorld(float x, float y, float z) {
 	_worldOrientation[0] = x;
 	_worldOrientation[1] = y;
 	_worldOrientation[2] = z;
+}
+
+void Placeable::loadModel() {
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeables");
+
+	_model = (*_modelLoader)(twoda.getCellString(_appearance, "modelname"));
 }
 
 } // End of namespace KotOR
