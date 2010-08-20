@@ -17,8 +17,7 @@
 
 #include "engines/kotor/modelobject.h"
 
-#include "aurora/lytfile.h"
-#include "aurora/visfile.h"
+#include "common/types.h"
 
 #include "graphics/aurora/types.h"
 
