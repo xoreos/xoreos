@@ -37,6 +37,9 @@ public:
 
 	void load(const Common::UString &name);
 
+	void show();
+	void hide();
+
 	void setPosition(float x, float y, float z);
 	void setBearing(float bearing);
 

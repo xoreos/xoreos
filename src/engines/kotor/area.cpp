@@ -189,12 +189,18 @@ void Area::show() {
 	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
 		if (*model)
 			(*model)->show();
+
+	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
+		(*it)->show();
 }
 
 void Area::hide() {
 	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
 		if (*model)
 			(*model)->hide();
+
+	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
+		(*it)->hide();
 }
 
 void Area::setPosition(float x, float y, float z) {
@@ -202,6 +208,9 @@ void Area::setPosition(float x, float y, float z) {
 	for (size_t i = 0; i < rooms.size(); i++)
 		if (_models[i])
 			_models[i]->setPosition(rooms[i].x + x, rooms[i].y + y, rooms[i].z + z);
+
+	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
+		(*it)->moveWorld(x, y, z);
 }
 
 void Area::setOrientation(float x, float y, float z) {
@@ -209,6 +218,9 @@ void Area::setOrientation(float x, float y, float z) {
 	for (size_t i = 0; i < rooms.size(); i++)
 		if (_models[i])
 			_models[i]->setOrientation(x, y, z);
+
+	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
+		(*it)->turnWorld(x, y, z);
 }
 
 } // End of namespace KotOR
