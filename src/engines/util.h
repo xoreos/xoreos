@@ -27,6 +27,10 @@ namespace Common {
 	class SeekableReadStream;
 }
 
+namespace Aurora {
+	class GFFFile;
+}
+
 namespace Engines {
 
 /** Play this video resource. */
@@ -37,6 +41,11 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 
 /** Wait for a "long" amount of time, returning prematurely with true in the case of a requested quit. */
 bool longDelay(uint32 ms);
+
+/** Load a GFF file. */
+void loadGFF(Aurora::GFFFile &gff, const Common::UString &name, Aurora::FileType type, uint32 id);
+/** Load a GFF file. */
+Aurora::GFFFile *loadGFF(const Common::UString &name, Aurora::FileType type, uint32 id);
 
 /** Debug method to quickly dump a stream to disk. */
 bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName);
