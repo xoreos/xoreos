@@ -8,8 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file aurora/ncs_script.cpp
- *  Handling BioWare's NWN Compiled Scripts
+/** @file aurora/ncsscript.h
+ *  Handling BioWare's NWN Compiled Scripts.
  */
 
 #ifndef AURORA_NCS_SCRIPT_H

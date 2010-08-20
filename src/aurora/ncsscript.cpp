@@ -8,14 +8,14 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file aurora/ncs_script->cpp
- *  Handling BioWare's NWN Compiled Scripts
+/** @file aurora/ncsscript.cpp
+ *  Handling BioWare's NWN Compiled Scripts.
  */
 
 #include "common/stream.h"
 #include "common/util.h"
 
-#include "aurora/ncs_script.h"
+#include "aurora/ncsscript.h"
 #include "aurora/error.h"
 
 namespace Aurora {
