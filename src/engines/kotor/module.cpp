@@ -45,11 +45,18 @@ Module::~Module() {
 }
 
 void Module::load(const Common::UString &name) {
-	loadResources(name);
+	try {
 
-	loadIFO(name);
+		loadResources(name);
 
-	loadArea();
+		loadIFO(name);
+
+		loadArea();
+
+	} catch (Common::Exception &e) {
+		e.add("Failed loading module \"%s\"", name.c_str());
+		throw e;
+	}
 
 	// We don't need that one anymore
 	ResMan.undo(_moduleResources);

@@ -59,11 +59,15 @@ void Area::loadLYT(const Common::UString &name) {
 	Common::SeekableReadStream *lyt = 0;
 	try {
 		if (!(lyt = ResMan.getResource(name, Aurora::kFileTypeLYT)))
-			throw Common::Exception("No such LYT \"%s\"", name.c_str());
+			throw Common::Exception("No such LYT");
 
 		_lyt.load(*lyt);
 
 		delete lyt;
+	} catch (Common::Exception &e) {
+		delete lyt;
+		e.add("Failed loading LYT \"%s\"", name.c_str());
+		throw e;
 	} catch (...) {
 		delete lyt;
 		throw;
@@ -74,11 +78,15 @@ void Area::loadVIS(const Common::UString &name) {
 	Common::SeekableReadStream *vis = 0;
 	try {
 		if (!(vis = ResMan.getResource(name, Aurora::kFileTypeVIS)))
-			throw Common::Exception("No such VIS \"%s\"", name.c_str());
+			throw Common::Exception("No such VIS");
 
 		_vis.load(*vis);
 
 		delete vis;
+	} catch (Common::Exception &e) {
+		delete vis;
+		e.add("Failed loading VIS \"%s\"", name.c_str());
+		throw e;
 	} catch (...) {
 		delete vis;
 		throw;
@@ -135,6 +143,10 @@ void Area::loadPlaceable(Aurora::GFFFile::ListIterator &placeable) {
 		place->setPosition(x, y, z);
 		place->setBearing(bearing);
 
+	} catch (Common::Exception &e) {
+		delete place;
+		e.add("Failed loading placeable \"%s\"", resref.c_str());
+		throw e;
 	} catch (...) {
 		delete place;
 		throw;
