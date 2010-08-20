@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/aurora/texture.h
+/** @file graphics/aurora/texture.cpp
  *  A texture as used in the Aurora engines.
  */
 

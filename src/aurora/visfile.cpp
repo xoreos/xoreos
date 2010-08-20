@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file aurora/visfile.h
+/** @file aurora/visfile.cpp
  *  Handling BioWare's VISs (Visibility files).
  */
 

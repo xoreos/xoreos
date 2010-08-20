@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file aurora/types.h
+/** @file src/aurora/types.h
  *  Basic type definitions to handle files used in BioWare's Aurora engine.
  */
 
