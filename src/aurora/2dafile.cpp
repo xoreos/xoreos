@@ -144,10 +144,14 @@ void TwoDAFile::readHeaders2b(Common::SeekableReadStream &twoda) {
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
 	tokenize.addSeparator('\t');
-	tokenize.addChunkEnd('\0');
+	tokenize.addSeparator('\0');
 
-	tokenize.getTokens(twoda, _headers);
-	tokenize.nextChunk(twoda);
+	Common::UString header = tokenize.getToken(twoda);
+	while (!header.empty()) {
+		_headers.push_back(header);
+
+		header = tokenize.getToken(twoda);
+	}
 }
 
 void TwoDAFile::skipRowNames2b(Common::SeekableReadStream &twoda) {
@@ -160,11 +164,9 @@ void TwoDAFile::skipRowNames2b(Common::SeekableReadStream &twoda) {
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
 	tokenize.addSeparator('\t');
+	tokenize.addSeparator('\0');
 
-	Row rowNames;
-	rowNames.reserve(rowCount);
-
-	tokenize.getTokens(twoda, rowNames, rowCount, rowCount);
+	tokenize.skipToken(twoda, rowCount);
 }
 
 void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
