@@ -610,6 +610,10 @@ inline void GFFField::readVector(Common::SeekableReadStream &gff,
 	uint32 curPos;
 	seekGFFData(gff, header, data, curPos);
 
+	_value.typeVector[0] = gff.readIEEEFloatLE();
+	_value.typeVector[1] = gff.readIEEEFloatLE();
+	_value.typeVector[2] = gff.readIEEEFloatLE();
+
 	gff.seek(curPos);
 }
 
