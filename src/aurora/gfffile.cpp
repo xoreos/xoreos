@@ -495,6 +495,10 @@ void GFFField::convertData(Common::SeekableReadStream &gff, const GFFFile::Heade
 			readVector(gff, header, data);
 			break;
 
+		case kGFFTypeStrRef:
+			warning("TODO: kGFFTypeStrRef");
+			break;
+
 		default:
 			throw Common::Exception("Unknown field type %d", _gffType);
 	}
