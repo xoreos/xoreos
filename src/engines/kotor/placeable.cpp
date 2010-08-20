@@ -33,20 +33,9 @@ namespace Engines {
 
 namespace KotOR {
 
-Placeable::Placeable(const ModelLoader &modelLoader) : _modelLoader(&modelLoader),
+Placeable::Placeable(const ModelLoader &modelLoader) : ModelObject(modelLoader),
 	_appearance(0xFFFFFFFF), _model(0) {
 
-	_position[0] = 0.0;
-	_position[1] = 0.0;
-	_position[2] = 0.0;
-	_bearing     = 0.0;
-
-	_worldPosition   [0] = 0.0;
-	_worldPosition   [1] = 0.0;
-	_worldPosition   [2] = 0.0;
-	_worldOrientation[0] = 0.0;
-	_worldOrientation[1] = 0.0;
-	_worldOrientation[2] = 0.0;
 }
 
 Placeable::~Placeable() {
@@ -79,44 +68,21 @@ void Placeable::hide() {
 		_model->hide();
 }
 
-void Placeable::setPosition(float x, float y, float z) {
-	_position[0] = x;
-	_position[1] = y;
-	_position[2] = z;
-
-	if (_model)
-		_model->setPosition(_position[0] - _worldPosition[0],
-		                    _position[1] - _worldPosition[1],
-		                    _position[2] - _worldPosition[2]);
-}
-
-void Placeable::setBearing(float bearing) {
-	_bearing = bearing;
-
-	if (_model)
-		_model->setBearing(0.0, Common::rad2deg(_bearing), 0.0);
-}
-
-void Placeable::moveWorld(float x, float y, float z) {
-	_worldPosition[0] = x;
-	_worldPosition[1] = y;
-	_worldPosition[2] = z;
-
+void Placeable::changedPosition() {
 	if (_model)
 		_model->setPosition(_position[0] + _worldPosition[0],
 		                    _position[1] + _worldPosition[1],
 		                    _position[2] + _worldPosition[2]);
 }
 
-void Placeable::turnWorld(float x, float y, float z) {
-	_worldOrientation[0] = x;
-	_worldOrientation[1] = y;
-	_worldOrientation[2] = z;
-
+void Placeable::changedBearing() {
 	if (_model)
-		_model->setOrientation(_worldOrientation[0],
-		                       _worldOrientation[1],
-		                       _worldOrientation[2]);
+		_model->setBearing(0.0, Common::rad2deg(_bearing), 0.0);
+}
+
+void Placeable::changedOrientation() {
+	if (_model)
+		_model->setOrientation(_worldOrientation[0], _worldOrientation[1], _worldOrientation[2]);
 }
 
 void Placeable::loadModel() {

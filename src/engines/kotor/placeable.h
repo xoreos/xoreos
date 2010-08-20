@@ -15,14 +15,16 @@
 #ifndef ENGINES_KOTOR_PLACEABLE_H
 #define ENGINES_KOTOR_PLACEABLE_H
 
-#include <vector>
-
-#include "common/ustring.h"
+#include "engines/kotor/modelobject.h"
 
 #include "aurora/lytfile.h"
 #include "aurora/visfile.h"
 
 #include "graphics/aurora/types.h"
+
+namespace Common {
+	class UString;
+}
 
 namespace Engines {
 
@@ -30,7 +32,7 @@ class ModelLoader;
 
 namespace KotOR {
 
-class Placeable {
+class Placeable : public ModelObject {
 public:
 	Placeable(const ModelLoader &modelLoader);
 	~Placeable();
@@ -40,24 +42,14 @@ public:
 	void show();
 	void hide();
 
-	void setPosition(float x, float y, float z);
-	void setBearing(float bearing);
-
-	void moveWorld(float x, float y, float z);
-	void turnWorld(float x, float y, float z);
-
 private:
-	const ModelLoader *_modelLoader;
-
-	float _position[3];
-	float _bearing;
-
-	float _worldPosition[3];
-	float _worldOrientation[3];
-
 	uint32 _appearance;
 
 	Graphics::Aurora::Model *_model;
+
+	void changedPosition();
+	void changedBearing();
+	void changedOrientation();
 
 	void loadModel();
 };
