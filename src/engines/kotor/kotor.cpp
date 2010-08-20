@@ -13,6 +13,7 @@
  */
 
 #include "engines/kotor/kotor.h"
+#include "engines/kotor/util.h"
 #include "engines/kotor/module.h"
 
 #include "engines/util.h"
@@ -69,9 +70,11 @@ Engines::Engine *KotOREngineProbe::createEngine() const {
 
 
 KotOREngine::KotOREngine() {
+	_modelLoader = new KotORModelLoader;
 }
 
 KotOREngine::~KotOREngine() {
+	delete _modelLoader;
 }
 
 void KotOREngine::run(const Common::UString &target) {
@@ -99,7 +102,7 @@ void KotOREngine::run(const Common::UString &target) {
 
 	// Test load up the Taris cantina
 
-	Module *tarisCantina = new Module;
+	Module *tarisCantina = new Module(*_modelLoader);
 
 	tarisCantina->load("tar_m03ae");
 	tarisCantina->enter();
@@ -207,33 +210,6 @@ void KotOREngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 40);
-}
-
-Graphics::Aurora::Model *KotOREngine::loadModel(const Common::UString &resref) {
-	Common::SeekableReadStream *mdl = 0, *mdx = 0;
-
-	Graphics::Aurora::Model *model = 0;
-
-	try {
-		mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
-		if (!mdl)
-			throw Common::Exception("No such model");
-
-		mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX);
-		if (!mdx)
-			throw Common::Exception("No such model data");
-
-		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, false);
-	} catch(...) {
-		delete mdl;
-		delete mdx;
-		delete model;
-		throw;
-	}
-
-	delete mdl;
-	delete mdx;
-	return model;
 }
 
 } // End of namespace KotOR

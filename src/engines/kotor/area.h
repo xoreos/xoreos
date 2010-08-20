@@ -28,11 +28,13 @@ namespace Common {
 
 namespace Engines {
 
+class ModelLoader;
+
 namespace KotOR {
 
 class Area {
 public:
-	Area();
+	Area(const ModelLoader &modelLoader);
 	virtual ~Area();
 
 	void load(const Common::UString &name);
@@ -43,10 +45,9 @@ public:
 	void setPosition(float x, float y, float z);
 	void setOrientation(float x, float y, float z);
 
-protected:
-	virtual Graphics::Aurora::Model *loadModel(const Common::UString &resref);
-
 private:
+	const ModelLoader *_modelLoader;
+
 	Aurora::LYTFile _lyt;
 	Aurora::VISFile _vis;
 

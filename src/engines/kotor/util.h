@@ -8,30 +8,26 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/kotor2/area.h
- *  An area.
+/** @file engines/kotor/util.h
+ *  Utility functions.
  */
 
-#ifndef ENGINES_KOTOR2_AREA_H
-#define ENGINES_KOTOR2_AREA_H
+#ifndef ENGINES_KOTOR_UTIL_H
+#define ENGINES_KOTOR_UTIL_H
 
-#include "engines/kotor/area.h"
+#include "engines/util.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
-class Area : public Engines::KotOR::Area {
+class KotORModelLoader : public ModelLoader {
 public:
-	Area();
-	~Area();
-
-protected:
-	Graphics::Aurora::Model *loadModel(const Common::UString &resref);
+	Graphics::Aurora::Model *operator()(const Common::UString &resref) const;
 };
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_AREA_H
+#endif // ENGINES_KOTOR_UTIL_H

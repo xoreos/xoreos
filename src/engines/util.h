@@ -15,9 +15,14 @@
 #ifndef ENGINES_UTIL_H
 #define ENGINES_UTIL_H
 
-#include "common/ustring.h"
-
 #include "sound/types.h"
+
+#include "graphics/aurora/types.h"
+
+namespace Common {
+	class UString;
+	class SeekableReadStream;
+}
 
 namespace Engines {
 
@@ -32,6 +37,12 @@ bool longDelay(uint32 ms);
 
 /** Debug method to quickly dump a stream to disk. */
 bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName);
+
+/** Functor for loading models. */
+class ModelLoader {
+public:
+	virtual Graphics::Aurora::Model *operator()(const Common::UString &resref) const = 0;
+};
 
 } // End of namespace Engines
 

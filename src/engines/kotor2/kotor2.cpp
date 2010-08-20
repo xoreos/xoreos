@@ -13,6 +13,7 @@
  */
 
 #include "engines/kotor2/kotor2.h"
+#include "engines/kotor2/util.h"
 #include "engines/kotor2/module.h"
 
 #include "engines/util.h"
@@ -69,9 +70,11 @@ Engines::Engine *KotOR2EngineProbe::createEngine() const {
 
 
 KotOR2Engine::KotOR2Engine() {
+	_modelLoader = new KotOR2ModelLoader;
 }
 
 KotOR2Engine::~KotOR2Engine() {
+	delete _modelLoader;
 }
 
 void KotOR2Engine::run(const Common::UString &target) {
@@ -99,7 +102,7 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	// Test load up Nar Shaddaa
 
-	Module *narShaddaa = new Module;
+	Module *narShaddaa = new Module(*_modelLoader);
 
 	narShaddaa->load("301NAR");
 	narShaddaa->enter();
@@ -197,33 +200,6 @@ void KotOR2Engine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
-}
-
-Graphics::Aurora::Model *KotOR2Engine::loadModel(const Common::UString &resref) {
-	Common::SeekableReadStream *mdl = 0, *mdx = 0;
-
-	Graphics::Aurora::Model *model = 0;
-
-	try {
-		mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
-		if (!mdl)
-			throw Common::Exception("No such model");
-
-		mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX);
-		if (!mdx)
-			throw Common::Exception("No such model data");
-
-		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, true);
-	} catch(...) {
-		delete mdl;
-		delete mdx;
-		delete model;
-		throw;
-	}
-
-	delete mdl;
-	delete mdx;
-	return model;
 }
 
 } // End of namespace KotOR2

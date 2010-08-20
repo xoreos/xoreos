@@ -19,6 +19,8 @@
 #include "common/ustring.h"
 #include "common/stream.h"
 
+#include "engines/util.h"
+
 #include "aurora/resman.h"
 #include "aurora/gfffile.h"
 
@@ -31,7 +33,7 @@ namespace Engines {
 
 namespace KotOR {
 
-Area::Area() {
+Area::Area(const ModelLoader &modelLoader) : _modelLoader(&modelLoader) {
 }
 
 Area::~Area() {
@@ -158,7 +160,7 @@ void Area::loadModels(const Common::UString &name) {
 			continue;
 
 		try {
-			_models[i] = loadModel(room.model);
+			_models[i] = (*_modelLoader)(room.model);
 		} catch (Common::Exception &e) {
 			e.add("Can't load model \"%s\" for area \"%s\"", room.model.c_str(), name.c_str());
 			throw e;
@@ -194,28 +196,6 @@ void Area::setOrientation(float x, float y, float z) {
 	for (size_t i = 0; i < rooms.size(); i++)
 		if (_models[i])
 			_models[i]->setOrientation(x, y, z);
-}
-
-Graphics::Aurora::Model *Area::loadModel(const Common::UString &resref) {
-	Common::SeekableReadStream *mdl = 0, *mdx = 0;
-	Graphics::Aurora::Model *model = 0;
-
-	try {
-		if (!(mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL)))
-			throw Common::Exception("No such MDL");
-		if (!(mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX)))
-			throw Common::Exception("No such MDX");
-
-		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, false);
-
-	} catch (...) {
-		delete mdl;
-		delete mdx;
-		delete model;
-		throw;
-	}
-
-	return model;
 }
 
 } // End of namespace KotOR

@@ -21,13 +21,15 @@
 
 namespace Engines {
 
+class ModelLoader;
+
 namespace KotOR {
 
 class Area;
 
 class Module {
 public:
-	Module();
+	Module(const ModelLoader &modelLoader);
 	~Module();
 
 	void load(const Common::UString &name);
@@ -57,10 +59,11 @@ public:
 	void strafe(float n);
 
 protected:
-	virtual Area *createArea() const;
 	virtual void loadResources(const Common::UString &name);
 
 private:
+	const ModelLoader *_modelLoader;
+
 	Common::UString _areaName; ///< Name of the module's area.
 
 	float _startX;    ///< Starting point X coordinate.

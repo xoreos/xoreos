@@ -15,6 +15,7 @@
 #include "engines/util.h"
 
 #include "common/error.h"
+#include "common/ustring.h"
 #include "common/stream.h"
 #include "common/file.h"
 

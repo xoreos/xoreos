@@ -19,6 +19,8 @@
 #include "common/maths.h"
 #include "common/stream.h"
 
+#include "engines/util.h"
+
 #include "aurora/gfffile.h"
 
 static const uint32 kIFOID = MKID_BE('IFO ');
@@ -27,7 +29,9 @@ namespace Engines {
 
 namespace KotOR {
 
-Module::Module() : _startX(0.0), _startY(0.0), _startZ(0.0), _startDirX(0.0), _startDirY(0.0), _area(0) {
+Module::Module(const ModelLoader &modelLoader) : _modelLoader(&modelLoader),
+	_startX(0.0), _startY(0.0), _startZ(0.0), _startDirX(0.0), _startDirY(0.0), _area(0) {
+
 	_orientation[0] = 0.0;
 	_orientation[1] = 0.0;
 	_orientation[2] = 0.0;
@@ -49,10 +53,6 @@ void Module::load(const Common::UString &name) {
 
 	// We don't need that one anymore
 	ResMan.undo(_moduleResources);
-}
-
-Area *Module::createArea() const {
-	return new Area;
 }
 
 void Module::loadResources(const Common::UString &name) {
@@ -104,7 +104,7 @@ void Module::loadIFO(const Common::UString &name) {
 }
 
 void Module::loadArea() {
-	_area = createArea();
+	_area = new Area(*_modelLoader);
 
 	_area->load(_areaName);
 }

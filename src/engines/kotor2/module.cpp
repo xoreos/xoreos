@@ -13,21 +13,18 @@
  */
 
 #include "engines/kotor2/module.h"
-#include "engines/kotor2/area.h"
+
+#include "engines/util.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-Module::Module() {
+Module::Module(const ModelLoader &modelLoader) : Engines::KotOR::Module(modelLoader) {
 }
 
 Module::~Module() {
 	ResMan.undo(_dialogResources);
-}
-
-Engines::KotOR::Area *Module::createArea() const {
-	return new Area;
 }
 
 void Module::loadResources(const Common::UString &name) {

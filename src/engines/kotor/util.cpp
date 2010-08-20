@@ -8,11 +8,11 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/kotor2/area.cpp
- *  An area.
+/** @file engines/kotor/util.cpp
+ *  Utility functions.
  */
 
-#include "engines/kotor2/area.h"
+#include "engines/kotor/util.h"
 
 #include "common/error.h"
 #include "common/ustring.h"
@@ -24,15 +24,9 @@
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
-Area::Area() {
-}
-
-Area::~Area() {
-}
-
-Graphics::Aurora::Model *Area::loadModel(const Common::UString &resref) {
+Graphics::Aurora::Model *KotORModelLoader::operator()(const Common::UString &resref) const {
 	Common::SeekableReadStream *mdl = 0, *mdx = 0;
 	Graphics::Aurora::Model *model = 0;
 
@@ -42,7 +36,7 @@ Graphics::Aurora::Model *Area::loadModel(const Common::UString &resref) {
 		if (!(mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX)))
 			throw Common::Exception("No such MDX");
 
-		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, true);
+		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, false);
 
 	} catch (...) {
 		delete mdl;
@@ -54,6 +48,6 @@ Graphics::Aurora::Model *Area::loadModel(const Common::UString &resref) {
 	return model;
 }
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines

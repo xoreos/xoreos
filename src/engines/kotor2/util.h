@@ -8,33 +8,26 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/kotor2/module.h
- *  A module.
+/** @file engines/kotor2/util.h
+ *  Utility functions.
  */
 
-#ifndef ENGINES_KOTOR2_MODULE_H
-#define ENGINES_KOTOR2_MODULE_H
+#ifndef ENGINES_KOTOR2_UTIL_H
+#define ENGINES_KOTOR2_UTIL_H
 
-#include "engines/kotor/module.h"
+#include "engines/util.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class Module : public Engines::KotOR::Module {
+class KotOR2ModelLoader : public ModelLoader {
 public:
-	Module(const ModelLoader &modelLoader);
-	~Module();
-
-protected:
-	void loadResources(const Common::UString &name);
-
-private:
-	Aurora::ResourceManager::ChangeID _dialogResources;
+	Graphics::Aurora::Model *operator()(const Common::UString &resref) const;
 };
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_MODULE_H
+#endif // ENGINES_KOTOR2_UTIL_H
