@@ -25,12 +25,14 @@
 
 #include "graphics/aurora/model.h"
 
+static const uint32 kUTPID = MKID_BE('UTP ');
+
 namespace Engines {
 
 namespace KotOR {
 
 Placeable::Placeable(const ModelLoader &modelLoader) : _modelLoader(&modelLoader),
-	_appearance(0), _model(0) {
+	_appearance(0xFFFFFFFF), _model(0) {
 
 	_position[0] = 0.0;
 	_position[1] = 0.0;
@@ -50,7 +52,19 @@ Placeable::~Placeable() {
 }
 
 void Placeable::load(const Common::UString &name) {
-	warning("TODO: Load placeable \"%s\"", name.c_str());
+	Aurora::GFFFile utp;
+	loadGFF(utp, name, Aurora::kFileTypeUTP, kUTPID);
+
+	Aurora::GFFFile::StructRange utpTop = utp.structRange();
+	for (Aurora::GFFFile::StructIterator it = utpTop.first; it != utpTop.second; ++it) {
+		if (it->getLabel() == "Appearance")
+			_appearance = it->getUint();
+	}
+
+	if (_appearance == 0xFFFFFFFF)
+		throw Common::Exception("Placeable without an appearance");
+
+	warning("TODO: Placeable \"%s\": %d", name.c_str(), _appearance);
 }
 
 void Placeable::loadAppearance(const Aurora::TwoDAFile &placeables) {
