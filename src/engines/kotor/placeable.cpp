@@ -17,7 +17,6 @@
 #include "common/util.h"
 #include "common/error.h"
 #include "common/ustring.h"
-#include "common/maths.h"
 
 #include "engines/util.h"
 
@@ -77,7 +76,7 @@ void Placeable::changedPosition() {
 
 void Placeable::changedBearing() {
 	if (_model)
-		_model->setBearing(0.0, Common::rad2deg(_bearing), 0.0);
+		_model->setBearing(_bearing[0], _bearing[1], _bearing[2]);
 }
 
 void Placeable::changedOrientation() {

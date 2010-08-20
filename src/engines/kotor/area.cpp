@@ -18,6 +18,7 @@
 #include "common/error.h"
 #include "common/ustring.h"
 #include "common/stream.h"
+#include "common/maths.h"
 
 #include "engines/engine.h"
 #include "engines/util.h"
@@ -145,7 +146,7 @@ void Area::loadPlaceable(Aurora::GFFFile::ListIterator &placeable) {
 
 		place->load(resref);
 		place->setPosition(x, y, z);
-		place->setBearing(bearing);
+		place->setBearing(0.0, Common::rad2deg(bearing), 0.0);
 
 	} catch (Common::Exception &e) {
 		delete place;

@@ -30,7 +30,7 @@ public:
 	virtual void hide() = 0;
 
 	virtual void setPosition(float x, float y, float z);
-	virtual void setBearing(float bearing);
+	virtual void setBearing(float x, float y, float z);
 
 	virtual void moveWorld(float x, float y, float z);
 	virtual void turnWorld(float x, float y, float z);
@@ -39,7 +39,7 @@ protected:
 	const ModelLoader *_modelLoader;
 
 	float _position[3];
-	float _bearing;
+	float _bearing[3];
 
 	float _worldPosition[3];
 	float _worldOrientation[3];

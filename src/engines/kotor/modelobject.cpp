@@ -22,7 +22,9 @@ ModelObject::ModelObject(const ModelLoader &modelLoader) : _modelLoader(&modelLo
 	_position[0] = 0.0;
 	_position[1] = 0.0;
 	_position[2] = 0.0;
-	_bearing     = 0.0;
+	_bearing [0] = 0.0;
+	_bearing [1] = 0.0;
+	_bearing [2] = 0.0;
 
 	_worldPosition   [0] = 0.0;
 	_worldPosition   [1] = 0.0;
@@ -43,8 +45,10 @@ void ModelObject::setPosition(float x, float y, float z) {
 	changedPosition();
 }
 
-void ModelObject::setBearing(float bearing) {
-	_bearing = bearing;
+void ModelObject::setBearing(float x, float y, float z) {
+	_bearing[0] = x;
+	_bearing[1] = y;
+	_bearing[2] = z;
 
 	changedBearing();
 }
