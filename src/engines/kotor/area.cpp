@@ -13,14 +13,19 @@
  */
 
 #include "engines/kotor/area.h"
+#include "engines/engine.h"
 
 #include "common/error.h"
 #include "common/ustring.h"
 #include "common/stream.h"
 
 #include "aurora/resman.h"
+#include "aurora/gfffile.h"
 
 #include "graphics/aurora/model_kotor.h"
+
+static const uint32 kAREID = MKID_BE('ARE ');
+static const uint32 kGITID = MKID_BE('GIT ');
 
 namespace Engines {
 
@@ -75,28 +80,67 @@ void Area::loadVIS(const Common::UString &name) {
 }
 
 void Area::loadARE(const Common::UString &name) {
-	Common::SeekableReadStream *are = 0;
+	Common::SeekableReadStream *areFile = 0;
+	Aurora::GFFFile are;
 	try {
-		if (!(are = ResMan.getResource(name, Aurora::kFileTypeARE)))
+		if (!(areFile = ResMan.getResource(name, Aurora::kFileTypeARE)))
 			throw Common::Exception("No such ARE \"%s\"", name.c_str());
 
-		delete are;
+		are.load(*areFile);
+
+		delete areFile;
 	} catch (...) {
-		delete are;
+		delete areFile;
 		throw;
 	}
+
+	if (are.getID() != kAREID)
+		throw Common::Exception("\"%s\".are is not an ARE file", name.c_str());
 }
 
 void Area::loadGIT(const Common::UString &name) {
-	Common::SeekableReadStream *git = 0;
+	Common::SeekableReadStream *gitFile = 0;
+	Aurora::GFFFile git;
 	try {
-		if (!(git = ResMan.getResource(name, Aurora::kFileTypeGIT)))
+		if (!(gitFile = ResMan.getResource(name, Aurora::kFileTypeGIT)))
 			throw Common::Exception("No such GIT \"%s\"", name.c_str());
 
-		delete git;
+		git.load(*gitFile);
+
+		delete gitFile;
 	} catch (...) {
-		delete git;
+		delete gitFile;
 		throw;
+	}
+
+	if (git.getID() != kGITID)
+		throw Common::Exception("\"%s\".git is not a GIT file", name.c_str());
+
+	Aurora::GFFFile::StructRange gitTop = git.structRange();
+	for (Aurora::GFFFile::StructIterator it = gitTop.first; it != gitTop.second; ++it) {
+
+		if (it->getLabel() == "Placeable List") {
+
+			Aurora::GFFFile::ListRange placeables = git.listRange(it->getListIndex());
+			for (Aurora::GFFFile::ListIterator plc = placeables.first; plc != placeables.second; ++plc) {
+				float x = 0.0, y = 0.0, z = 0.0;
+
+				for (Aurora::GFFFile::StructIterator it2 = plc->first; it2 != plc->second; ++it2) {
+					if        (it->getLabel() == "TemplateResRef") {
+					} else if (it->getLabel() == "X") {
+						x = it->getDouble();
+					} else if (it->getLabel() == "Y") {
+						y = it->getDouble();
+					} else if (it->getLabel() == "Z") {
+						z = it->getDouble();
+					} else if (it->getLabel() == "Bearing") {
+					}
+
+				}
+			}
+
+		}
+
 	}
 }
 

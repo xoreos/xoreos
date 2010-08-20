@@ -17,8 +17,6 @@
 
 #include <vector>
 
-#include "common/ustring.h"
-
 #include "aurora/lytfile.h"
 #include "aurora/visfile.h"
 
