@@ -50,6 +50,9 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 	_orientation[0] = 0.0;
 	_orientation[1] = 0.0;
 	_orientation[2] = 0.0;
+	_bearing    [0] = 0.0;
+	_bearing    [1] = 0.0;
+	_bearing    [2] = 0.0;
 }
 
 Model::~Model() {
@@ -198,6 +201,12 @@ void Model::setOrientation(float x, float y, float z) {
 	_orientation[2] = z;
 }
 
+void Model::setBearing(float x, float y, float z) {
+	_bearing[0] = x;
+	_bearing[1] = y;
+	_bearing[2] = z;
+}
+
 const std::list<Common::UString> &Model::getStates() const {
 	return _stateNames;
 }
@@ -271,6 +280,10 @@ void Model::render() {
 		glRotatef(90.0, -1.0, 0.0, 0.0);
 
 	glTranslatef(_position[0], _position[1], _position[2]);
+
+	glRotatef(_bearing[0], 1.0, 0.0, 0.0);
+	glRotatef(_bearing[1], 0.0, 0.0, 1.0);
+	glRotatef(_bearing[2], 0.0, 1.0, 0.0);
 
 	glColor4f(1.0, 1.0, 1.0, _fadeValue);
 

@@ -57,6 +57,8 @@ public:
 	void setPosition(float x, float y, float z);
 	/** Set the current orientation of the model. */
 	void setOrientation(float x, float y, float z);
+	/** Set the current bearing of the model. */
+	void setBearing(float x, float y, float z);
 
 	/** Return a list of all animation state names. */
 	const std::list<Common::UString> &getStates() const;
@@ -193,6 +195,7 @@ protected:
 
 	float _position[3];
 	float _orientation[3];
+	float _bearing[3];
 
 	NodeList _nodes;
 
