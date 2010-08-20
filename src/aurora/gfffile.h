@@ -178,7 +178,8 @@ public:
 	uint32 getDataSize() const;
 	const byte *getData() const;
 
-	const float *getVector() const;
+	const float *getVector()      const;
+	const float *getOrientation() const;
 
 	const uint32 getStructIndex() const;
 	const uint32 getListIndex() const;
@@ -229,6 +230,7 @@ private:
 		byte *typeData;
 
 		float typeVector[3];
+		float typeOrientation[4];
 
 		uint32 typeIndex;
 	} _value;
@@ -237,21 +239,23 @@ private:
 
 	void convertData(Common::SeekableReadStream &gff, const GFFFile::Header &header, uint32 data);
 
-	inline void readUint64   (Common::SeekableReadStream &gff,
+	inline void readUint64     (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline void readSint64   (Common::SeekableReadStream &gff,
+	inline void readSint64     (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline void readDouble   (Common::SeekableReadStream &gff,
+	inline void readDouble     (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline void readExoString(Common::SeekableReadStream &gff,
+	inline void readExoString  (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline void readResRef   (Common::SeekableReadStream &gff,
+	inline void readResRef     (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline void readLocString(Common::SeekableReadStream &gff,
+	inline void readLocString  (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline void readVoid     (Common::SeekableReadStream &gff,
+	inline void readVoid       (Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
-	inline void readVector   (Common::SeekableReadStream &gff,
+	inline void readVector     (Common::SeekableReadStream &gff,
+			const GFFFile::Header &header, uint32 data);
+	inline void readOrientation(Common::SeekableReadStream &gff,
 			const GFFFile::Header &header, uint32 data);
 
 	inline void seekGFFData(Common::SeekableReadStream &gff,

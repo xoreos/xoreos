@@ -362,6 +362,13 @@ const float *GFFField::getVector() const {
 	return _value.typeVector;
 }
 
+const float *GFFField::getOrientation() const {
+	if (_type != kTypeOrientation)
+		throw kGFFFieldTypeError;
+
+	return _value.typeOrientation;
+}
+
 const uint32 GFFField::getStructIndex() const {
 	if (_type != kTypeStruct)
 		throw kGFFFieldTypeError;
@@ -481,7 +488,7 @@ void GFFField::convertData(Common::SeekableReadStream &gff, const GFFFile::Heade
 			break;
 
 		case kGFFTypeOrientation:
-			warning("TODO: kGFFTypeOrientation");
+			readOrientation(gff, header, data);
 			break;
 
 		case kGFFTypeVector:
@@ -613,6 +620,20 @@ inline void GFFField::readVector(Common::SeekableReadStream &gff,
 	_value.typeVector[0] = gff.readIEEEFloatLE();
 	_value.typeVector[1] = gff.readIEEEFloatLE();
 	_value.typeVector[2] = gff.readIEEEFloatLE();
+
+	gff.seek(curPos);
+}
+
+inline void GFFField::readOrientation(Common::SeekableReadStream &gff,
+		const GFFFile::Header &header, uint32 data) {
+
+	uint32 curPos;
+	seekGFFData(gff, header, data, curPos);
+
+	_value.typeOrientation[0] = gff.readIEEEFloatLE();
+	_value.typeOrientation[1] = gff.readIEEEFloatLE();
+	_value.typeOrientation[2] = gff.readIEEEFloatLE();
+	_value.typeOrientation[3] = gff.readIEEEFloatLE();
 
 	gff.seek(curPos);
 }
