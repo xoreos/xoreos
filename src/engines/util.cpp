@@ -15,7 +15,6 @@
 #include "engines/util.h"
 
 #include "common/error.h"
-#include "common/ustring.h"
 #include "common/stream.h"
 #include "common/file.h"
 
@@ -26,6 +25,7 @@
 #include "graphics/aurora/videoplayer.h"
 
 #include "aurora/resman.h"
+#include "aurora/util.h"
 
 namespace Engines {
 
@@ -91,6 +91,21 @@ bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileN
 	file.close();
 
 	return !error;
+}
+
+bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::UString file) {
+	Common::SeekableReadStream *res = ResMan.getResource(name, type);
+	if (!res)
+		return false;
+
+	if (file.empty())
+		file = Aurora::setFileType(name, type);
+
+	bool success = dumpStream(*res, file);
+
+	delete res;
+
+	return success;
 }
 
 } // End of namespace Engines
