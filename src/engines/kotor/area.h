@@ -35,6 +35,7 @@ class ModelLoader;
 namespace KotOR {
 
 class Placeable;
+class Creature;
 
 class Area {
 public:
@@ -58,6 +59,7 @@ private:
 	std::vector<Graphics::Aurora::Model *> _models;
 
 	std::list<Placeable *> _placeables;
+	std::list<Creature  *> _creatures;
 
 	void loadLYT(const Common::UString &name);
 	void loadVIS(const Common::UString &name);
@@ -68,6 +70,7 @@ private:
 	void loadModels(const Common::UString &name);
 
 	void loadPlaceable(Aurora::GFFFile::ListIterator &placeable);
+	void loadCreature(Aurora::GFFFile::ListIterator &creature);
 };
 
 } // End of namespace KotOR

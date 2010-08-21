@@ -14,6 +14,7 @@
 
 #include "engines/kotor/area.h"
 #include "engines/kotor/placeable.h"
+#include "engines/kotor/creature.h"
 
 #include "common/error.h"
 #include "common/ustring.h"
@@ -44,6 +45,9 @@ Area::~Area() {
 
 	for (std::list<Placeable *>::iterator plc = _placeables.begin(); plc != _placeables.end(); ++plc)
 		delete *plc;
+
+	for (std::list<Creature *>::iterator crt =  _creatures.begin(); crt != _creatures.end(); ++crt)
+		delete *crt;
 }
 
 void Area::load(const Common::UString &name) {
@@ -108,12 +112,19 @@ void Area::loadGIT(const Common::UString &name) {
 	Aurora::GFFFile::StructRange gitTop = git.structRange();
 	for (Aurora::GFFFile::StructIterator it = gitTop.first; it != gitTop.second; ++it) {
 
-		if (it->getLabel() == "Placeable List") {
+		if        (it->getLabel() == "Placeable List") {
 			status("Loading placeables");
 
 			Aurora::GFFFile::ListRange placeables = git.listRange(it->getListIndex());
 			for (Aurora::GFFFile::ListIterator plc = placeables.first; plc != placeables.second; ++plc)
 				loadPlaceable(plc);
+
+		} else if (it->getLabel() == "Creature List") {
+			status("Loading creatures");
+
+			Aurora::GFFFile::ListRange creatures = git.listRange(it->getListIndex());
+			for (Aurora::GFFFile::ListIterator crt = creatures.first; crt != creatures.second; ++crt)
+				loadCreature(crt);
 		}
 
 	}
@@ -160,6 +171,49 @@ void Area::loadPlaceable(Aurora::GFFFile::ListIterator &placeable) {
 	_placeables.push_back(place);
 }
 
+void Area::loadCreature(Aurora::GFFFile::ListIterator &creature) {
+	Common::UString resref;
+	float x = 0.0, y = 0.0, z = 0.0;
+	float bearingX = 0.0, bearingY = 0.0;
+
+	for (Aurora::GFFFile::StructIterator it = creature->first; it != creature->second; ++it) {
+		if      (it->getLabel() == "TemplateResRef")
+			resref = it->getString();
+		else if (it->getLabel() == "XPosition")
+			x = it->getDouble();
+		else if (it->getLabel() == "YPosition")
+			y = it->getDouble();
+		else if (it->getLabel() == "ZPosition")
+			z = it->getDouble();
+		else if (it->getLabel() == "XOrientation")
+			bearingX = it->getDouble();
+		else if (it->getLabel() == "YOrientation")
+			bearingY = it->getDouble();
+	}
+
+	if (resref.empty())
+		throw Common::Exception("Creature without a template");
+
+	Creature *creat = 0;
+	try {
+		creat = new Creature(*_modelLoader);
+
+		creat->load(resref);
+		creat->setPosition(x, y, z);
+		creat->setBearing(Common::rad2deg(bearingY), Common::rad2deg(bearingX), 0.0);
+
+	} catch (Common::Exception &e) {
+		delete creat;
+		e.add("Failed loading creature \"%s\"", resref.c_str());
+		throw e;
+	} catch (...) {
+		delete creat;
+		throw;
+	}
+
+	_creatures.push_back(creat);
+}
+
 void Area::loadModels(const Common::UString &name) {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	_models.resize(rooms.size());
@@ -193,6 +247,9 @@ void Area::show() {
 
 	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
 		(*it)->show();
+
+	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
+		(*it)->show();
 }
 
 void Area::hide() {
@@ -201,6 +258,9 @@ void Area::hide() {
 			(*model)->hide();
 
 	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
+		(*it)->hide();
+
+	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
 		(*it)->hide();
 }
 
@@ -212,6 +272,9 @@ void Area::setPosition(float x, float y, float z) {
 
 	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
 		(*it)->moveWorld(x, y, z);
+
+	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
+		(*it)->moveWorld(x, y, z);
 }
 
 void Area::setOrientation(float x, float y, float z) {
@@ -221,6 +284,9 @@ void Area::setOrientation(float x, float y, float z) {
 			_models[i]->setOrientation(x, y, z);
 
 	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
+		(*it)->turnWorld(x, y, z);
+
+	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
 		(*it)->turnWorld(x, y, z);
 }
 
