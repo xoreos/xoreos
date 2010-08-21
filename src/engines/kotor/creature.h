@@ -15,7 +15,11 @@
 #ifndef ENGINES_KOTOR_CREATURE_H
 #define ENGINES_KOTOR_CREATURE_H
 
+#include <list>
+
 #include "engines/kotor/modelobject.h"
+
+#include "common/types.h"
 
 #include "graphics/aurora/types.h"
 
@@ -40,9 +44,24 @@ public:
 	void hide();
 
 private:
+	struct Part {
+		Graphics::Aurora::Model *model;
+
+		Part();
+		Part(Graphics::Aurora::Model *m);
+		Part(Part &p);
+		~Part();
+	};
+
+	uint32 _appearance;
+
+	std::list<Part *> _parts;
+
 	void changedPosition();
 	void changedBearing();
 	void changedOrientation();
+
+	void loadModel(const Common::UString &name);
 };
 
 } // End of namespace KotOR

@@ -200,7 +200,11 @@ void Area::loadCreature(Aurora::GFFFile::ListIterator &creature) {
 
 		creat->load(resref);
 		creat->setPosition(x, y, z);
-		creat->setBearing(Common::rad2deg(bearingY), Common::rad2deg(bearingX), 0.0);
+
+		float bearing[3];
+		Common::vector2orientation(-bearingX, -bearingY, bearing[0], bearing[1], bearing[2]);
+
+		creat->setBearing(bearing[0], bearing[1], bearing[2]);
 
 	} catch (Common::Exception &e) {
 		delete creat;
