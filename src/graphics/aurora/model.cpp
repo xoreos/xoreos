@@ -289,14 +289,14 @@ void Model::fadeIn(uint32 length) {
 	_fade      = true;
 	_fadeStart = EventMan.getTimestamp();
 	_fadeValue = 0.0;
-	_fadeStep  = 1.0 / 100;
+	_fadeStep  = 10.0 / length;
 
 	show();
 }
 
 void Model::fadeOut(uint32 length) {
 	_fadeStart = EventMan.getTimestamp();
-	_fadeStep  = - (1.0 / 100);
+	_fadeStep  = - (10.0 / length);
 	_fade      = true;
 }
 
