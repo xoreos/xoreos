@@ -156,6 +156,11 @@ void KotOREngine::run(const Common::UString &target) {
 					const float *orient = tarisCantina->getOrientation();
 
 					tarisCantina->setOrientation(0.0, orient[1], orient[2]);
+				} else if (event.key.keysym.sym == SDLK_t) {
+					const float *pos    = tarisCantina->getPosition();
+					const float *orient = tarisCantina->getOrientation();
+
+					warning("%+8.3f %+8.3f %+8.3f; %+8.3f %+8.3f %+8.3f", pos[0], pos[1], pos[2], orient[0], orient[1], orient[2]);
 				}
 			}
 		}
