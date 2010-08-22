@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/maths.h"
 #include "common/stream.h"
 
 #include "events/events.h"
@@ -37,6 +38,22 @@ Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true), l
 	orientation[1] = 0;
 	orientation[2] = 0;
 	orientation[3] = 0;
+
+	boundMin[0] = FLT_MAX;
+	boundMin[1] = FLT_MAX;
+	boundMin[2] = FLT_MAX;
+
+	boundMax[0] = FLT_MIN;
+	boundMax[1] = FLT_MIN;
+	boundMax[2] = FLT_MIN;
+
+	realBoundMin[0] = FLT_MAX;
+	realBoundMin[1] = FLT_MAX;
+	realBoundMin[2] = FLT_MAX;
+
+	realBoundMax[0] = FLT_MIN;
+	realBoundMax[1] = FLT_MIN;
+	realBoundMax[2] = FLT_MIN;
 }
 
 
@@ -53,6 +70,22 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 	_bearing    [0] = 0.0;
 	_bearing    [1] = 0.0;
 	_bearing    [2] = 0.0;
+
+	_boundMin[0] = FLT_MAX;
+	_boundMin[1] = FLT_MAX;
+	_boundMin[2] = FLT_MAX;
+
+	_boundMax[0] = FLT_MIN;
+	_boundMax[1] = FLT_MIN;
+	_boundMax[2] = FLT_MIN;
+
+	_realBoundMin[0] = FLT_MAX;
+	_realBoundMin[1] = FLT_MAX;
+	_realBoundMin[2] = FLT_MAX;
+
+	_realBoundMax[0] = FLT_MIN;
+	_realBoundMax[1] = FLT_MIN;
+	_realBoundMax[2] = FLT_MIN;
 }
 
 Model::~Model() {
@@ -193,18 +226,24 @@ void Model::setPosition(float x, float y, float z) {
 	_position[0] = x;
 	_position[1] = y;
 	_position[2] = z;
+
+	// TODO: Need to recalculate bounding boxes
 }
 
 void Model::setOrientation(float x, float y, float z) {
 	_orientation[0] = x;
 	_orientation[1] = y;
 	_orientation[2] = z;
+
+	// TODO: Need to recalculate bounding boxes
 }
 
 void Model::setBearing(float x, float y, float z) {
 	_bearing[0] = x;
 	_bearing[1] = y;
 	_bearing[2] = z;
+
+	// TODO: Need to recalculate bounding boxes
 }
 
 const std::list<Common::UString> &Model::getStates() const {
@@ -217,9 +256,12 @@ void Model::setState(const Common::UString &name) {
 
 	StateMap::iterator state = _states.find(name);
 	if (state == _states.end())
+		// No such state, get the default one
 		state = _states.find("");
 
 	if (state == _states.end()) {
+		// No states at all
+
 		_currentState = 0;
 		return;
 	}
@@ -237,6 +279,7 @@ void Model::hide() {
 
 bool Model::shown() {
 	if (_fadeValue <= 0.0)
+		// Model faded out, don't render it anymore
 		Renderable::removeFromQueue();
 
 	return Renderable::isInQueue();
@@ -270,40 +313,52 @@ void Model::render() {
 		glTranslatef(0.0, -1.5, 0.0);
 
 	if (_type == kModelTypeGUIFront)
+		// Aurora GUI objects use 0.01 units / pixel
 		glScalef(100, 100, 100);
 
+	// Apply rotation around the world center
 	glRotatef(_orientation[0], 1.0, 0.0, 0.0);
 	glRotatef(_orientation[1], 0.0, 1.0, 0.0);
 	glRotatef(_orientation[2], 0.0, 0.0, 1.0);
 
 	if (_type == kModelTypeObject)
+		// Aurora world objects have a rotated axis
 		glRotatef(90.0, -1.0, 0.0, 0.0);
 
+	// Apply position translation
 	glTranslatef(_position[0], _position[1], _position[2]);
 
+	// Apply rotation around the object's center
 	glRotatef(_bearing[0], 1.0, 0.0, 0.0);
 	glRotatef(_bearing[1], 0.0, 0.0, 1.0);
 	glRotatef(_bearing[2], 0.0, 1.0, 0.0);
 
+	// Apply current fade value
 	glColor4f(1.0, 1.0, 1.0, _fadeValue);
 
 	if (_fade) {
+		// Evaluate fading
+
 		uint32 now = EventMan.getTimestamp();
 		if ((now - _fadeStart) >= 10) {
+			// Get new fade value every 10ms
 			_fadeValue += _fadeStep * ((now - _fadeStart) / 10.0);
 
 			_fadeStart = now;
 		}
 
 		if        (_fadeValue > 1.0) {
+			// Fade in stepped
 			_fade      = false;
 			_fadeValue = 1.0;
 		} else if (_fadeValue < 0.0) {
+			// Fade out stopped
 			_fade      = false;
 			_fadeValue = 0.0;
 		}
 	}
 
+	// Activate all needed texture units
 	for (uint32 i = 0; i < _textureCount; i++) {
 		TextureMan.activeTexture(i);
 		glEnable(GL_TEXTURE_2D);
@@ -311,9 +366,11 @@ void Model::render() {
 
 	TextureMan.activeTexture(0);
 
+	// Render the model
 	renderState(*_currentState);
 
-	for (uint32 i = 0; i < _textureCount; i++) {
+	// Disable all extra texture units
+	for (uint32 i = 1; i < _textureCount; i++) {
 		TextureMan.activeTexture(i);
 		glDisable(GL_TEXTURE_2D);
 	}
@@ -323,6 +380,7 @@ void Model::render() {
 }
 
 void Model::renderState(const State &state) {
+	// For each starting node, apply translation and rotation, then render it
 	for (NodeList::const_iterator node = state.nodes.begin(); node != state.nodes.end(); ++node) {
 		glPushMatrix();
 		glTranslatef((*node)->position[0], (*node)->position[1], (*node)->position[2]);
@@ -334,20 +392,28 @@ void Model::renderState(const State &state) {
 
 void Model::renderNode(const Node &node) {
 	if (node.render) {
+		// If the node is visible...
+
 		if (node.textures.empty()) {
+			// If it doesn't have textures, "empty" the texture unit
+
 			TextureMan.activeTexture(0);
 			TextureMan.set();
 		}
 
 		for (uint32 i = 0; i < node.textures.size(); i++) {
+			// Set all needed textures
+
 			TextureMan.activeTexture(i);
 			TextureMan.set(node.textures[i]);
 		}
 
+		// Call the node's OpenGL list
 		if (node.list != 0)
 			glCallList(node.list);
 	}
 
+	// Recurse over all child nodes, adding to the translation/rotation
 	for (NodeList::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
 		if (!*child)
 			continue;
@@ -362,6 +428,8 @@ void Model::renderNode(const Node &node) {
 }
 
 void Model::rebuild() {
+	// Rebuild all node lists
+
 	if (_nodes.empty())
 		return;
 
@@ -375,20 +443,27 @@ void Model::rebuild() {
 
 		glBegin(GL_TRIANGLES);
 
+		// For all faces
 		for (FaceList::const_iterator face = (*node)->faces.begin(); face != (*node)->faces.end(); ++face) {
+			// Texture vertex A
 			for (uint32 i = 0, t = 0; i < (*node)->textures.size(); i++, t += 9)
 				TextureMan.textureCoord2f(i, face->tverts[t + 0 * 3 + 0], face->tverts[t + 0 * 3 + 1]);
 
+			// Geometry vertex A
 			glVertex3f(face->verts[0 * 3 + 0], face->verts[0 * 3 + 1], face->verts[0 * 3 + 2]);
 
+			// Texture vertex B
 			for (uint32 i = 0, t = 0; i < (*node)->textures.size(); i++, t += 9)
 				TextureMan.textureCoord2f(i, face->tverts[t + 1 * 3 + 0], face->tverts[t + 1 * 3 + 1]);
 
+			// Geometry vertex B
 			glVertex3f(face->verts[1 * 3 + 0], face->verts[1 * 3 + 1], face->verts[1 * 3 + 2]);
 
+			// Texture vertex C
 			for (uint32 i = 0, t = 0; i < (*node)->textures.size(); i++, t += 9)
 				TextureMan.textureCoord2f(i, face->tverts[t + 2 * 3 + 0], face->tverts[t + 2 * 3 + 1]);
 
+			// Geometry vertex C
 			glVertex3f(face->verts[2 * 3 + 0], face->verts[2 * 3 + 1], face->verts[2 * 3 + 2]);
 		}
 
@@ -399,6 +474,8 @@ void Model::rebuild() {
 }
 
 void Model::destroy() {
+	// Destroy all node lists
+
 	if ((_list == 0) || _nodes.empty())
 		return;
 
