@@ -16,6 +16,7 @@
 #define COMMON_MATHS_H
 
 #include <cmath>
+#include <cfloat>
 
 #include "common/system.h"
 #include "common/types.h"
@@ -26,6 +27,14 @@
 
 #ifndef M_PI
 	#define M_PI 3.14159265358979323846
+#endif
+
+#ifndef FLT_MIN
+	#define FLT_MIN 1E-37
+#endif
+
+#ifndef FLT_MAX
+	#define FLT_MAX 1E+37
 #endif
 
 extern const float sinTable16[8];
