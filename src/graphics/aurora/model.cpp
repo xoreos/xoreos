@@ -187,9 +187,14 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 		face.verts.resize(9);
 
 		// Real face coordinates
-		for (int v = 0; v < 3; v++)
-			for (int c = 0; c < 3; c++)
+		for (int v = 0; v < 3; v++) {
+			for (int c = 0; c < 3; c++) {
 				face.verts[v * 3 + c] = mesh.verts[3 * mesh.vertIndices[3 * i + v] + c];
+
+				node.boundMin[c] = MIN(node.boundMin[c], face.verts[v * 3 + c]);
+				node.boundMax[c] = MAX(node.boundMin[c], face.verts[v * 3 + c]);
+			}
+		}
 
 		face.tverts.resize(mesh.textures.size() * 9);
 
@@ -218,6 +223,42 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 
 }
 
+void Model::createModelBound() {
+	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
+		if (*node) {
+			_boundMin[0] = MIN(_boundMin[0], (*node)->boundMin[0]);
+			_boundMin[1] = MIN(_boundMin[1], (*node)->boundMin[1]);
+			_boundMin[2] = MIN(_boundMin[2], (*node)->boundMin[2]);
+
+			_boundMax[0] = MAX(_boundMax[0], (*node)->boundMax[0]);
+			_boundMax[1] = MAX(_boundMax[1], (*node)->boundMax[1]);
+			_boundMax[2] = MAX(_boundMax[2], (*node)->boundMax[2]);
+		}
+	}
+
+	recalculateBound();
+}
+
+void Model::recalculateBound() {
+	// TODO
+
+	if (!_currentState)
+		return;
+
+	for (NodeList::const_iterator node = _currentState->nodes.begin(); node != _currentState->nodes.end(); ++node)
+		recalculateNodeBound(**node, (*node)->position[0], (*node)->position[1], (*node)->position[2],
+				(*node)->orientation[3], (*node)->orientation[0], (*node)->orientation[1], (*node)->orientation[2]);
+}
+
+void Model::recalculateNodeBound(Node &node, float pX, float pY, float pZ, float oN, float oX, float oY, float oZ) {
+	// TODO
+
+	// Recurse over all child nodes
+	for (NodeList::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
+		recalculateNodeBound(**child, pX, pY, pZ, oN, oX, oY, oZ);
+	}
+}
+
 void Model::buildLists() {
 	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
 }
@@ -227,7 +268,7 @@ void Model::setPosition(float x, float y, float z) {
 	_position[1] = y;
 	_position[2] = z;
 
-	// TODO: Need to recalculate bounding boxes
+	recalculateBound();
 }
 
 void Model::setOrientation(float x, float y, float z) {
@@ -235,7 +276,7 @@ void Model::setOrientation(float x, float y, float z) {
 	_orientation[1] = y;
 	_orientation[2] = z;
 
-	// TODO: Need to recalculate bounding boxes
+	recalculateBound();
 }
 
 void Model::setBearing(float x, float y, float z) {
@@ -243,7 +284,7 @@ void Model::setBearing(float x, float y, float z) {
 	_bearing[1] = y;
 	_bearing[2] = z;
 
-	// TODO: Need to recalculate bounding boxes
+	recalculateBound();
 }
 
 const std::list<Common::UString> &Model::getStates() const {
@@ -267,6 +308,8 @@ void Model::setState(const Common::UString &name) {
 	}
 
 	_currentState = state->second;
+
+	createModelBound();
 }
 
 void Model::show() {

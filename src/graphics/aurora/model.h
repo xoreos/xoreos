@@ -234,9 +234,15 @@ protected:
 	void buildLists();
 	void createStateNameList();
 
+	// Bounding boxes
+	void createModelBound();
+	void recalculateBound();
+
 private:
 	void renderState(const State &state);
 	void renderNode(const Node &node);
+
+	void recalculateNodeBound(Node &node, float pX, float pY, float pZ, float oN, float oX, float oY, float oZ);
 };
 
 } // End of namespace Aurora
