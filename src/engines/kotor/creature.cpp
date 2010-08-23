@@ -97,19 +97,39 @@ void Creature::changedOrientation() {
 }
 
 void Creature::loadModel(const Common::UString &name) {
-	const Aurora::TwoDAFile &twoda = TwoDAReg.get("appearance");
+	const Aurora::TwoDAFile &appearance = TwoDAReg.get("appearance");
+	const Aurora::TwoDAFile &heads      = TwoDAReg.get("heads");
 
-	const Common::UString &modelType = twoda.getCellString(_appearance, "modeltype");
-	const Common::UString &race      = twoda.getCellString(_appearance, "race");
+	const Common::UString &modelType = appearance.getCellString(_appearance, "modeltype");
+
+	Common::UString bodyModel = appearance.getCellString(_appearance, "modelb");
+	if (bodyModel.empty())
+		bodyModel = appearance.getCellString(_appearance, "race");
+
+	Common::UString headModel;
+	if (modelType == "B") {
+		if      (!appearance.getCellString(_appearance, "normalhead").empty())
+			headModel = heads.getCellString(appearance.getCellInt(_appearance, "normalhead"), "head");
+		else if (!appearance.getCellString(_appearance, "backuphead").empty())
+			headModel = heads.getCellString(appearance.getCellInt(_appearance, "backuphead"), "head");
+	}
 
 	//  Totally segmented  ||    Body + Head     ||    ???
-	if ((modelType == "P") || (modelType == "B") || race.empty())
-		warning("TODO: Model \"%s\": ModelType \"%s\" (\"%s\")", name.c_str(), modelType.c_str(), race.c_str());
+	if ((modelType == "P") || (modelType == "B") || bodyModel.empty())
+		warning("TODO: Model \"%s\": ModelType \"%s\" (\"%s\")", name.c_str(), modelType.c_str(), bodyModel.c_str());
 
-	if ((modelType != "P") && !race.empty()) {
-		Graphics::Aurora::Model *model = (*_modelLoader)(race);
+	if (modelType != "P") {
+		if (!bodyModel.empty()) {
+			Graphics::Aurora::Model *model = (*_modelLoader)(bodyModel);
 
-		_parts.push_back(new Part(model));
+			_parts.push_back(new Part(model));
+		}
+
+		if (!headModel.empty()) {
+			Graphics::Aurora::Model *model = (*_modelLoader)(headModel);
+
+			_parts.push_back(new Part(model));
+		}
 	}
 }
 
