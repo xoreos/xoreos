@@ -40,12 +40,14 @@ Matrix &Matrix::operator=(const Matrix &right) {
 	if (this == &right)
 		return *this;
 
-	delete[] _elements;
+	if ((_rows != right._rows) || (_columns != right._columns)) {
+		delete[] _elements;
 
-	_rows    = right._rows;
-	_columns = right._columns;
+		_rows    = right._rows;
+		_columns = right._columns;
 
-	_elements = new float[_rows * _columns];
+		_elements = new float[_rows * _columns];
+	}
 
 	memcpy(_elements, right._elements, _rows * _columns * sizeof(float));
 
