@@ -47,6 +47,8 @@ private:
 	struct Part {
 		Graphics::Aurora::Model *model;
 
+		float position[3];
+
 		Part();
 		Part(Graphics::Aurora::Model *m);
 		Part(Part &p);

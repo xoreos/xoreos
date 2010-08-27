@@ -33,9 +33,15 @@ namespace Engines {
 namespace KotOR {
 
 Creature::Part::Part() : model(0) {
+	position[0] = 0.0;
+	position[1] = 0.0;
+	position[2] = 0.0;
 }
 
 Creature::Part::Part(Graphics::Aurora::Model *m) : model(m) {
+	position[0] = 0.0;
+	position[1] = 0.0;
+	position[2] = 0.0;
 }
 
 Creature::Part::~Part() {
@@ -81,9 +87,9 @@ void Creature::hide() {
 
 void Creature::changedPosition() {
 	for (std::list<Part *>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		(*part)->model->setPosition(_position[0] + _worldPosition[0],
-		                            _position[1] + _worldPosition[1],
-		                            _position[2] + _worldPosition[2]);
+		(*part)->model->setPosition(_position[0] + _worldPosition[0] + (*part)->position[0],
+		                            _position[1] + _worldPosition[1] + (*part)->position[1],
+		                            _position[2] + _worldPosition[2] + (*part)->position[2]);
 }
 
 void Creature::changedBearing() {
@@ -107,28 +113,40 @@ void Creature::loadModel(const Common::UString &name) {
 		bodyModel = appearance.getCellString(_appearance, "race");
 
 	Common::UString headModel;
+	Common::UString headBone;
 	if (modelType == "B") {
 		if      (!appearance.getCellString(_appearance, "normalhead").empty())
 			headModel = heads.getCellString(appearance.getCellInt(_appearance, "normalhead"), "head");
 		else if (!appearance.getCellString(_appearance, "backuphead").empty())
 			headModel = heads.getCellString(appearance.getCellInt(_appearance, "backuphead"), "head");
+
+		headBone = appearance.getCellString(_appearance, "headbone");
+		if (headBone.empty())
+			headBone = "neck_g";
 	}
 
 	//  Totally segmented  ||    Body + Head     ||    ???
 	if ((modelType == "P") || (modelType == "B") || bodyModel.empty())
 		warning("TODO: Model \"%s\": ModelType \"%s\" (\"%s\")", name.c_str(), modelType.c_str(), bodyModel.c_str());
 
+	float hX = 0.0, hY = 0.0, hZ = 0.0;
 	if (modelType != "P") {
 		if (!bodyModel.empty()) {
 			Graphics::Aurora::Model *model = (*_modelLoader)(bodyModel);
 
 			_parts.push_back(new Part(model));
+
+			model->getNodePosition(headBone, hX, hY, hZ);
 		}
 
-		if (!headModel.empty()) {
+		if ((modelType == "B") && !headModel.empty()) {
 			Graphics::Aurora::Model *model = (*_modelLoader)(headModel);
 
 			_parts.push_back(new Part(model));
+
+			_parts.back()->position[0] = hX;
+			_parts.back()->position[1] = hY;
+			_parts.back()->position[2] = hZ;
 		}
 	}
 }
