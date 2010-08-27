@@ -175,6 +175,8 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 			TextureMan.release(*t);
 
 		node.textures.clear();
+
+		node.render = false;
 		return;
 	}
 
@@ -192,8 +194,9 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 				face.verts[v * 3 + c] = mesh.verts[3 * mesh.vertIndices[3 * i + v] + c];
 
 				node.boundMin[c] = MIN(node.boundMin[c], face.verts[v * 3 + c]);
-				node.boundMax[c] = MAX(node.boundMin[c], face.verts[v * 3 + c]);
+				node.boundMax[c] = MAX(node.boundMax[c], face.verts[v * 3 + c]);
 			}
+
 		}
 
 		face.tverts.resize(mesh.textures.size() * 9);
@@ -285,6 +288,31 @@ void Model::setBearing(float x, float y, float z) {
 	_bearing[2] = z;
 
 	recalculateBound();
+}
+
+bool Model::getNodePosition(const Common::UString &node, float &x, float &y, float &z) const {
+	if (!_currentState)
+		return false;
+
+	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
+	if ((n == _currentState->nodeMap.end()) || !n->second)
+		return false;
+
+	// TODO: Proper orientation!
+
+	x = 0.0;
+	y = 0.0;
+	z = 0.0;
+
+	Node *no = n->second;
+	while (no) {
+		x += no->position[0];
+		y += no->position[1];
+		z += no->position[2];
+		no = no->parent;
+	}
+
+	return true;
 }
 
 const std::list<Common::UString> &Model::getStates() const {
@@ -480,6 +508,9 @@ void Model::rebuild() {
 
 	_list = list;
 	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
+		if (!(*node)->render)
+			continue;
+
 		(*node)->list = list++;
 
 		glNewList((*node)->list, GL_COMPILE);

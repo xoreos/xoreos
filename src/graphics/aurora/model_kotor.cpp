@@ -35,55 +35,55 @@ static const int kNodeFlagHasAnim      = 0x0080;
 static const int kNodeFlagHasDangly    = 0x0100;
 static const int kNodeFlagHasAABB      = 0x0200;
 
-static const int kControllerTypePosition             = 8;
-static const int kControllerTypeOrientation          = 20;
-static const int kControllerTypeScale                = 36;
-static const int kControllerTypeColor                = 76;
-static const int kControllerTypeRadius               = 88;
-static const int kControllerTypeShadowRadius         = 96;
-static const int kControllerTypeVerticalDisplacement = 100;
-static const int kControllerTypeMultiplier           = 140;
-static const int kControllerTypeAlphaEnd             = 80;
-static const int kControllerTypeAlphaStart           = 84;
-static const int kControllerTypeBirthRate            = 88;
-static const int kControllerTypeBounce_Co            = 92;
-static const int kControllerTypeColorEnd             = 96;
-static const int kControllerTypeColorStart           = 108;
-static const int kControllerTypeCombineTime          = 120;
-static const int kControllerTypeDrag                 = 124;
-static const int kControllerTypeFPS                  = 128;
-static const int kControllerTypeFrameEnd             = 132;
-static const int kControllerTypeFrameStart           = 136;
-static const int kControllerTypeGrav                 = 140;
-static const int kControllerTypeLifeExp              = 144;
-static const int kControllerTypeMass                 = 148;
-static const int kControllerTypeP2P_Bezier2          = 152;
-static const int kControllerTypeP2P_Bezier3          = 156;
-static const int kControllerTypeParticleRot          = 160;
-static const int kControllerTypeRandVel              = 164;
-static const int kControllerTypeSizeStart            = 168;
-static const int kControllerTypeSizeEnd              = 172;
-static const int kControllerTypeSizeStart_Y          = 176;
-static const int kControllerTypeSizeEnd_Y            = 180;
-static const int kControllerTypeSpread               = 184;
-static const int kControllerTypeThreshold            = 188;
-static const int kControllerTypeVelocity             = 192;
-static const int kControllerTypeXSize                = 196;
-static const int kControllerTypeYSize                = 200;
-static const int kControllerTypeBlurLength           = 204;
-static const int kControllerTypeLightningDelay       = 208;
-static const int kControllerTypeLightningRadius      = 212;
-static const int kControllerTypeLightningScale       = 216;
-static const int kControllerTypeDetonate             = 228;
-static const int kControllerTypeAlphaMid             = 464;
-static const int kControllerTypeColorMid             = 468;
-static const int kControllerTypePercentStart         = 480;
-static const int kControllerTypePercentMid           = 481;
-static const int kControllerTypePercentEnd           = 482;
-static const int kControllerTypeSizeMid              = 484;
-static const int kControllerTypeSizeMid_Y            = 488;
-static const int kControllerTypeSelfIllumColor       = 100;
-static const int kControllerTypeAlpha                = 128;
+static const uint32 kControllerTypePosition             = 8;
+static const uint32 kControllerTypeOrientation          = 20;
+static const uint32 kControllerTypeScale                = 36;
+static const uint32 kControllerTypeColor                = 76;
+static const uint32 kControllerTypeRadius               = 88;
+static const uint32 kControllerTypeShadowRadius         = 96;
+static const uint32 kControllerTypeVerticalDisplacement = 100;
+static const uint32 kControllerTypeMultiplier           = 140;
+static const uint32 kControllerTypeAlphaEnd             = 80;
+static const uint32 kControllerTypeAlphaStart           = 84;
+static const uint32 kControllerTypeBirthRate            = 88;
+static const uint32 kControllerTypeBounce_Co            = 92;
+static const uint32 kControllerTypeColorEnd             = 96;
+static const uint32 kControllerTypeColorStart           = 108;
+static const uint32 kControllerTypeCombineTime          = 120;
+static const uint32 kControllerTypeDrag                 = 124;
+static const uint32 kControllerTypeFPS                  = 128;
+static const uint32 kControllerTypeFrameEnd             = 132;
+static const uint32 kControllerTypeFrameStart           = 136;
+static const uint32 kControllerTypeGrav                 = 140;
+static const uint32 kControllerTypeLifeExp              = 144;
+static const uint32 kControllerTypeMass                 = 148;
+static const uint32 kControllerTypeP2P_Bezier2          = 152;
+static const uint32 kControllerTypeP2P_Bezier3          = 156;
+static const uint32 kControllerTypeParticleRot          = 160;
+static const uint32 kControllerTypeRandVel              = 164;
+static const uint32 kControllerTypeSizeStart            = 168;
+static const uint32 kControllerTypeSizeEnd              = 172;
+static const uint32 kControllerTypeSizeStart_Y          = 176;
+static const uint32 kControllerTypeSizeEnd_Y            = 180;
+static const uint32 kControllerTypeSpread               = 184;
+static const uint32 kControllerTypeThreshold            = 188;
+static const uint32 kControllerTypeVelocity             = 192;
+static const uint32 kControllerTypeXSize                = 196;
+static const uint32 kControllerTypeYSize                = 200;
+static const uint32 kControllerTypeBlurLength           = 204;
+static const uint32 kControllerTypeLightningDelay       = 208;
+static const uint32 kControllerTypeLightningRadius      = 212;
+static const uint32 kControllerTypeLightningScale       = 216;
+static const uint32 kControllerTypeDetonate             = 228;
+static const uint32 kControllerTypeAlphaMid             = 464;
+static const uint32 kControllerTypeColorMid             = 468;
+static const uint32 kControllerTypePercentStart         = 480;
+static const uint32 kControllerTypePercentMid           = 481;
+static const uint32 kControllerTypePercentEnd           = 482;
+static const uint32 kControllerTypeSizeMid              = 484;
+static const uint32 kControllerTypeSizeMid_Y            = 488;
+static const uint32 kControllerTypeSelfIllumColor       = 100;
+static const uint32 kControllerTypeAlpha                = 128;
 
 namespace Graphics {
 
@@ -206,6 +206,11 @@ void Model_KotOR::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 	uint16 superNode  = ctx.mdl->readUint16LE();
 	uint16 nodeNumber = ctx.mdl->readUint16LE();
 
+	if (nodeNumber < _names.size())
+		ctx.node->name = _names[nodeNumber];
+
+	ctx.state->nodeMap.insert(std::make_pair(ctx.node->name, ctx.node));
+
 	ctx.mdl->skip(6 + 4); // Unknown + parent pointer
 
 	ctx.node->position   [0] = ctx.mdl->readIEEEFloatLE();
@@ -274,9 +279,6 @@ void Model_KotOR::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 		// TODO: AABB
 		ctx.mdl->skip(0x4);
 	}
-
-	if (nodeNumber < _names.size())
-		ctx.node->name = _names[nodeNumber];
 
 	processMesh(*ctx.mesh, *ctx.node);
 	delete ctx.mesh;
@@ -469,10 +471,10 @@ void Model_KotOR::readNodeControllers(ParserContext &ctx, uint32 offset, uint32 
 		uint8  columnCount = ctx.mdl->readByte();
 		ctx.mdl->skip(1);
 
-		if (columnCount == 0xFFFF)
-			throw Common::Exception("TODO: Model_KotOR::readNodeControllers(): columnCount == 0xFFFF");
+		if (rowCount == 0xFFFF)
+			// TODO
+			continue;
 
-		/*
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)
 				throw Common::Exception("Position controller with %d values", columnCount);
@@ -490,7 +492,6 @@ void Model_KotOR::readNodeControllers(ParserContext &ctx, uint32 offset, uint32 
 			ctx.node->orientation[2] = data[dataIndex + 2];
 			ctx.node->orientation[3] = data[dataIndex + 3];
 		}
-		*/
 
 	}
 

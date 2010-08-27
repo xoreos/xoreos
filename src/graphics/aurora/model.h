@@ -60,6 +60,9 @@ public:
 	/** Set the current bearing of the model. */
 	void setBearing(float x, float y, float z);
 
+	/** Get the base position of a named node in the current state. */
+	bool getNodePosition(const Common::UString &node, float &x, float &y, float &z) const;
+
 	/** Return a list of all animation state names. */
 	const std::list<Common::UString> &getStates() const;
 
@@ -178,11 +181,13 @@ protected:
 	};
 
 	typedef std::list<Node *> NodeList;
+	typedef std::map<Common::UString, Node *> NodeMap;
 
 	struct State {
 		Common::UString name;
 
 		NodeList nodes;
+		NodeMap  nodeMap;
 	};
 
 	typedef std::map<Common::UString, State *> StateMap;
