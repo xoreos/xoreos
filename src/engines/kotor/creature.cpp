@@ -134,7 +134,7 @@ void Creature::loadModel(const Common::UString &name) {
 	float hX = 0.0, hY = 0.0, hZ = 0.0;
 	if (modelType != "P") {
 		if (!bodyModel.empty()) {
-			Graphics::Aurora::Model *model = (*_modelLoader)(bodyModel, bodyTexture);
+			Graphics::Aurora::Model *model = _modelLoader->loadObject(bodyModel, bodyTexture);
 
 			_parts.push_back(new Part(model));
 
@@ -142,7 +142,7 @@ void Creature::loadModel(const Common::UString &name) {
 		}
 
 		if ((modelType == "B") && !headModel.empty()) {
-			Graphics::Aurora::Model *model = (*_modelLoader)(headModel);
+			Graphics::Aurora::Model *model = _modelLoader->loadObject(headModel);
 
 			_parts.push_back(new Part(model));
 

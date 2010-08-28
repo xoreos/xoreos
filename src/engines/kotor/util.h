@@ -24,7 +24,8 @@ namespace KotOR {
 class KotORModelLoader : public ModelLoader {
 public:
 	Graphics::Aurora::Model *operator()(const Common::UString &resref,
-	                                    const Common::UString &texture = "") const;
+			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject,
+			const Common::UString &texture = "") const;
 };
 
 } // End of namespace KotOR

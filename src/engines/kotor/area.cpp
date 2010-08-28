@@ -232,7 +232,7 @@ void Area::loadModels(const Common::UString &name) {
 			continue;
 
 		try {
-			_models[i] = (*_modelLoader)(room.model);
+			_models[i] = _modelLoader->loadObject(room.model);
 		} catch (Common::Exception &e) {
 			e.add("Can't load model \"%s\" for area \"%s\"", room.model.c_str(), name.c_str());
 			throw e;

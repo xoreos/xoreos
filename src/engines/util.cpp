@@ -23,6 +23,7 @@
 #include "sound/sound.h"
 
 #include "graphics/aurora/videoplayer.h"
+#include "graphics/aurora/model.h"
 
 #include "aurora/util.h"
 #include "aurora/resman.h"
@@ -140,6 +141,14 @@ bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::US
 	delete res;
 
 	return success;
+}
+
+Graphics::Aurora::Model *ModelLoader::loadObject(const Common::UString &resref, const Common::UString &texture) const {
+	return (*this)(resref, Graphics::Aurora::kModelTypeObject, texture);
+}
+
+Graphics::Aurora::Model *ModelLoader::loadGUI(const Common::UString &resref) const {
+	return (*this)(resref, Graphics::Aurora::kModelTypeGUIFront);
 }
 
 void ModelLoader::free(Graphics::Aurora::Model *&model) const {

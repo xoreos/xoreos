@@ -56,7 +56,11 @@ bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::US
 class ModelLoader {
 public:
 	virtual Graphics::Aurora::Model *operator()(const Common::UString &resref,
-	                                            const Common::UString &texture = "") const = 0;
+			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject,
+			const Common::UString &texture = "") const = 0;
+
+	Graphics::Aurora::Model *loadObject(const Common::UString &resref, const Common::UString &texture = "") const;
+	Graphics::Aurora::Model *loadGUI   (const Common::UString &resref) const;
 
 	virtual void free(Graphics::Aurora::Model *&model) const;
 };

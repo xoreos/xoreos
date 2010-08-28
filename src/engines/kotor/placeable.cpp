@@ -87,7 +87,7 @@ void Placeable::changedOrientation() {
 void Placeable::loadModel() {
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeables");
 
-	_model = (*_modelLoader)(twoda.getCellString(_appearance, "modelname"));
+	_model = _modelLoader->loadObject(twoda.getCellString(_appearance, "modelname"));
 }
 
 } // End of namespace KotOR

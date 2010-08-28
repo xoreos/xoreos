@@ -27,7 +27,7 @@ namespace Engines {
 namespace KotOR2 {
 
 Graphics::Aurora::Model *KotOR2ModelLoader::operator()(const Common::UString &resref,
-	const Common::UString &texture) const {
+	Graphics::Aurora::ModelType type, const Common::UString &texture) const {
 
 	Common::SeekableReadStream *mdl = 0, *mdx = 0;
 	Graphics::Aurora::Model *model = 0;
@@ -38,7 +38,7 @@ Graphics::Aurora::Model *KotOR2ModelLoader::operator()(const Common::UString &re
 		if (!(mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX)))
 			throw Common::Exception("No such MDX");
 
-		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, true, Graphics::Aurora::kModelTypeObject, texture);
+		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, true, type, texture);
 
 	} catch (...) {
 		delete mdl;
