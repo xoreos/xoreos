@@ -90,7 +90,9 @@ namespace Graphics {
 namespace Aurora {
 
 Model_KotOR::ParserContext::ParserContext(Common::SeekableReadStream &mdlStream,
-		Common::SeekableReadStream &mdxStream) : mdl(&mdlStream), mdx(&mdxStream), state(0), node(0), mesh(0) {
+		Common::SeekableReadStream &mdxStream, const Common::UString &text) :
+		mdl(&mdlStream), mdx(&mdxStream), texture(text), state(0), node(0), mesh(0) {
+
 }
 
 Model_KotOR::ParserContext::~ParserContext() {
@@ -101,9 +103,10 @@ Model_KotOR::ParserContext::~ParserContext() {
 
 
 Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl,
-		Common::SeekableReadStream &mdx, bool kotor2, ModelType type) : Model(type), _kotor2(kotor2) {
+		Common::SeekableReadStream &mdx, bool kotor2, ModelType type,
+		const Common::UString &texture) : Model(type), _kotor2(kotor2) {
 
-	load(mdl, mdx);
+	load(mdl, mdx, texture);
 	setState();
 
 	_names.clear();
@@ -118,8 +121,10 @@ Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl,
 Model_KotOR::~Model_KotOR() {
 }
 
-void Model_KotOR::load(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx) {
-	ParserContext ctx(mdl, mdx);
+void Model_KotOR::load(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx,
+		const Common::UString &texture) {
+
+	ParserContext ctx(mdl, mdx, texture);
 
 	if (ctx.mdl->readUint32LE() != 0)
 		throw Common::Exception("Unsupported KotOR ASCII MDL");
@@ -389,6 +394,9 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 		warning("Model_KotOR::readMesh(): textureCount > 2 (%d)", textureCount);
 		textureCount = 2;
 	}
+
+	if ((textureCount > 0) && !ctx.texture.empty())
+		textures[0] = ctx.texture;
 
 	for (uint16 i = 0; i < textureCount; i++)
 		ctx.mesh->textures.push_back(textures[i]);

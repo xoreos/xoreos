@@ -32,13 +32,15 @@ namespace Aurora {
 class Model_KotOR : public Model {
 public:
 	Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx, bool kotor2,
-			ModelType type = kModelTypeObject);
+			ModelType type = kModelTypeObject, const Common::UString &texture = "");
 	~Model_KotOR();
 
 private:
 	struct ParserContext {
 		Common::SeekableReadStream *mdl;
 		Common::SeekableReadStream *mdx;
+
+		Common::UString texture;
 
 		State *state;
 		Node  *node;
@@ -47,7 +49,8 @@ private:
 		uint32 offModelData;
 		uint32 offRawData;
 
-		ParserContext(Common::SeekableReadStream &mdlStream, Common::SeekableReadStream &mdxStream);
+		ParserContext(Common::SeekableReadStream &mdlStream, Common::SeekableReadStream &mdxStream,
+				const Common::UString &text);
 		~ParserContext();
 	};
 
@@ -55,7 +58,7 @@ private:
 
 	std::vector<Common::UString> _names;
 
-	void load(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx);
+	void load(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx, const Common::UString &texture);
 
 	void readNode(ParserContext &ctx, uint32 offset, Node *parent);
 	void readMesh(ParserContext &ctx);
