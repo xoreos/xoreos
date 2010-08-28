@@ -19,13 +19,15 @@
 
 namespace Engines {
 
+class ModelLoader;
+
 namespace NWN {
 
 class GUI;
 
 class MainMenu {
 public:
-	MainMenu(bool xp1, bool xp2);
+	MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2);
 	~MainMenu();
 
 	void show();

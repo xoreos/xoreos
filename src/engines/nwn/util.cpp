@@ -26,35 +26,32 @@ namespace Engines {
 
 namespace NWN {
 
-Graphics::Aurora::Model *loadModel(const Common::UString &resref,
-		Graphics::Aurora::ModelType type) {
+Graphics::Aurora::Model *NWNModelLoader::operator()(const Common::UString &resref,
+	Graphics::Aurora::ModelType type, const Common::UString &texture) const {
 
-	Common::SeekableReadStream *mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
-	if (!mdl)
-		throw Common::Exception("No such model \"%s\"", resref.c_str());
-
+	Common::SeekableReadStream *mdl = 0;
 	Graphics::Aurora::Model *model = 0;
-	if      (Graphics::Aurora::Model_NWN_Binary::isBinary(*mdl))
-		model = new Graphics::Aurora::Model_NWN_Binary(*mdl, type);
-	else if (Graphics::Aurora::Model_NWN_ASCII::isASCII(*mdl))
-		model = new Graphics::Aurora::Model_NWN_ASCII(*mdl, type);
+	try {
+		mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
 
-	delete mdl;
+		if (!mdl)
+			throw Common::Exception("No such model \"%s\"", resref.c_str());
 
-	if (!model)
-		throw Common::Exception("Model not binary and not ASCII?!?");
+		if      (Graphics::Aurora::Model_NWN_Binary::isBinary(*mdl))
+			model = new Graphics::Aurora::Model_NWN_Binary(*mdl, type);
+		else if (Graphics::Aurora::Model_NWN_ASCII::isASCII(*mdl))
+			model = new Graphics::Aurora::Model_NWN_ASCII(*mdl, type);
+
+		if (!model)
+			throw Common::Exception("Model not binary and not ASCII?!?");
+
+	} catch (...) {
+		delete mdl;
+		delete model;
+		throw;
+	}
 
 	return model;
-}
-
-void freeModel(Graphics::Aurora::Model *&model) {
-	if (!model)
-		return;
-
-	model->hide();
-	delete model;
-
-	model = 0;
 }
 
 } // End of namespace NWN

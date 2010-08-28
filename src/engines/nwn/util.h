@@ -15,18 +15,18 @@
 #ifndef ENGINES_NWN_UTIL_H
 #define ENGINES_NWN_UTIL_H
 
-#include "common/ustring.h"
-
-#include "graphics/aurora/types.h"
+#include "engines/util.h"
 
 namespace Engines {
 
 namespace NWN {
 
-Graphics::Aurora::Model *loadModel(const Common::UString &resref,
-		Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject);
-
-void freeModel(Graphics::Aurora::Model *&model);
+class NWNModelLoader : public ModelLoader {
+public:
+	Graphics::Aurora::Model *operator()(const Common::UString &resref,
+			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject,
+			const Common::UString &texture = "") const;
+};
 
 } // End of namespace NWN
 

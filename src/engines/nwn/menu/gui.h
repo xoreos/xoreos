@@ -32,11 +32,13 @@ namespace Common {
 
 namespace Engines {
 
+class ModelLoader;
+
 namespace NWN {
 
 class GUI : public Aurora::GUIFile {
 public:
-	GUI(Common::SeekableReadStream &gui);
+	GUI(const ModelLoader &modelLoader, Common::SeekableReadStream &gui);
 	~GUI();
 
 	void show();
@@ -55,10 +57,10 @@ private:
 
 	std::list<Widget> _widgets;
 
-	void load();
+	void load(const ModelLoader &modelLoader);
 };
 
-GUI *loadGUI(const Common::UString &resref);
+GUI *loadGUI(const ModelLoader &modelLoader, const Common::UString &resref);
 
 } // End of namespace NWN
 

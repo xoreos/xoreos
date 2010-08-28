@@ -28,6 +28,8 @@ namespace Common {
 
 namespace Engines {
 
+class ModelLoader;
+
 namespace NWN {
 
 class NWNEngineProbe : public Engines::EngineProbe {
@@ -56,6 +58,8 @@ public:
 
 private:
 	Common::UString _baseDirectory;
+
+	ModelLoader *_modelLoader;
 
 	bool _hasXP1; // Shadows of Undrentide (SoU)
 	bool _hasXP2; // Hordes of the Underdark (HotU)

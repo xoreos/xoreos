@@ -13,6 +13,7 @@
  */
 
 #include "engines/nwn/nwn.h"
+#include "engines/nwn/util.h"
 #include "engines/nwn/menu/legal.h"
 #include "engines/nwn/menu/main.h"
 
@@ -85,9 +86,11 @@ Engines::Engine *NWNEngineProbe::createEngine() const {
 
 
 NWNEngine::NWNEngine() {
+	_modelLoader = new NWNModelLoader;
 }
 
 NWNEngine::~NWNEngine() {
+	delete _modelLoader;
 }
 
 void NWNEngine::run(const Common::UString &target) {
@@ -111,8 +114,8 @@ void NWNEngine::run(const Common::UString &target) {
 	// Start sound
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
-	Legal    *legal    = new Legal;
-	MainMenu *mainMenu = new MainMenu(_hasXP1, _hasXP2);
+	Legal    *legal    = new Legal(*_modelLoader);
+	MainMenu *mainMenu = new MainMenu(*_modelLoader, _hasXP1, _hasXP2);
 
 	// Fade in the legal billboard
 	legal->fadeIn();

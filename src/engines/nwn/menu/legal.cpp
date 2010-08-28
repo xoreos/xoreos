@@ -22,13 +22,13 @@ namespace Engines {
 
 namespace NWN {
 
-Legal::Legal() : _billboard(0) {
-	_billboard = loadModel("load_legal", Graphics::Aurora::kModelTypeGUIFront);
+Legal::Legal(const ModelLoader &modelLoader) : _billboard(0) {
+	_billboard = modelLoader.loadGUI("load_legal");
 	_billboard->setPosition(0.0, 0.0, 10.0);
 }
 
 Legal::~Legal() {
-	freeModel(_billboard);
+	ModelLoader::free(_billboard);
 }
 
 void Legal::fadeIn() {
@@ -40,7 +40,7 @@ void Legal::fadeIn() {
 		while (EventMan.pollEvent(event)) {
 			// Mouse click => abort
 			if (event.type == Events::kEventMouseDown) {
-				freeModel(_billboard);
+				ModelLoader::free(_billboard);
 				return;
 			}
 		}
@@ -52,7 +52,7 @@ void Legal::fadeIn() {
 		EventMan.delay(10);
 	}
 
-	freeModel(_billboard);
+	ModelLoader::free(_billboard);
 }
 
 void Legal::show() {
@@ -82,7 +82,7 @@ void Legal::show() {
 			break;
 	}
 
-	freeModel(_billboard);
+	ModelLoader::free(_billboard);
 }
 
 } // End of namespace NWN

@@ -23,16 +23,16 @@ namespace Engines {
 
 namespace NWN {
 
-MainMenu::MainMenu(bool xp1, bool xp2) : _gui(0), _xp1(0), _xp2(0) {
-	_gui = loadGUI("pre_main");
+MainMenu::MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2) : _gui(0), _xp1(0), _xp2(0) {
+	_gui = loadGUI(modelLoader, "pre_main");
 
 	if (xp1) {
-		_xp1 = loadModel("ctl_xp1_text", Graphics::Aurora::kModelTypeGUIFront);
+		_xp1 = modelLoader.loadGUI("ctl_xp1_text");
 		_xp1->setPosition(1.24, 0.00, 0.50);
 	}
 
 	if (xp2) {
-		_xp2 = loadModel("ctl_xp2_text", Graphics::Aurora::kModelTypeGUIFront);
+		_xp2 = modelLoader.loadGUI("ctl_xp2_text");
 		_xp2->setPosition(1.24, -1.47, 0.50);
 	}
 }
@@ -40,8 +40,8 @@ MainMenu::MainMenu(bool xp1, bool xp2) : _gui(0), _xp1(0), _xp2(0) {
 MainMenu::~MainMenu() {
 	delete _gui;
 
-	freeModel(_xp1);
-	freeModel(_xp2);
+	ModelLoader::free(_xp1);
+	ModelLoader::free(_xp2);
 }
 
 void MainMenu::show() {

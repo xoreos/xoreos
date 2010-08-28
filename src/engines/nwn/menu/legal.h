@@ -19,11 +19,13 @@
 
 namespace Engines {
 
+class ModelLoader;
+
 namespace NWN {
 
 class Legal {
 public:
-	Legal();
+	Legal(const ModelLoader &modelLoader);
 	~Legal();
 
 	void fadeIn();

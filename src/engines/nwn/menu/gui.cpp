@@ -13,6 +13,7 @@
  */
 
 #include "engines/nwn/menu/gui.h"
+#include "engines/nwn/util.h"
 
 #include "common/error.h"
 #include "common/stream.h"
@@ -31,24 +32,24 @@ GUI::Widget::Widget(Object &obj) : object(&obj), model(0), text(0) {
 }
 
 
-GUI::GUI(Common::SeekableReadStream &gui) : Aurora::GUIFile(gui) {
-	load();
+GUI::GUI(const ModelLoader &modelLoader, Common::SeekableReadStream &gui) : Aurora::GUIFile(gui) {
+	load(modelLoader);
 }
 
 GUI::~GUI() {
 	for (std::list<Widget>::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
-		freeModel(widget->model);
+		ModelLoader::free(widget->model);
 
 		delete widget->text;
 	}
 }
 
-void GUI::load() {
+void GUI::load(const ModelLoader &modelLoader) {
 	for (std::list<Object>::iterator object = _objects.begin(); object != _objects.end(); ++object) {
 		Widget widget(*object);
 
 		if (!object->resRef.empty()) {
-			widget.model = loadModel(object->resRef, Graphics::Aurora::kModelTypeGUIFront);
+			widget.model = modelLoader.loadGUI(object->resRef);
 
 			widget.model->setPosition(object->x, object->y, object->z);
 		}
@@ -85,14 +86,14 @@ void GUI::show() {
 	}
 }
 
-GUI *loadGUI(const Common::UString &resref) {
+GUI *loadGUI(const ModelLoader &modelLoader, const Common::UString &resref) {
 	Common::SeekableReadStream *guiFile = ResMan.getResource(resref, Aurora::kFileTypeGUI);
 	if (!guiFile)
 		throw Common::Exception("Could not load GUI \"%s\"", resref.c_str());
 
 	GUI *gui = 0;
 	try {
-		gui = new GUI(*guiFile);
+		gui = new GUI(modelLoader, *guiFile);
 	} catch (...) {
 		delete guiFile;
 		throw;
