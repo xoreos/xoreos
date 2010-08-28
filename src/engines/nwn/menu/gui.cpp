@@ -56,9 +56,19 @@ void GUI::load() {
 		if (!object->caption.font.empty() && (object->caption.strRef != 0xFFFFFFFF)) {
 			widget.font = FontMan.get(object->caption.font);
 
+			float cX = 0.0, cY = 0.0;
+			if (widget.model) {
+				cX = widget.model->getWidth()  * object->caption.alignV;
+				cY = widget.model->getHeight() * object->caption.alignH;
+			}
+
 			const Common::UString &str = TalkMan.getString(object->caption.strRef);
 			widget.text = new Graphics::Aurora::Text(widget.font, str);
-			widget.text->setPosition(object->x, object->y);
+
+			cX -= widget.text->getWidth () / 2;
+			cY -= widget.text->getHeight() / 2;
+
+			widget.text->setPosition(object->x + cX, object->y + cY);
 		}
 
 		_widgets.push_back(widget);
