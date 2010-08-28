@@ -23,6 +23,8 @@
 
 #include "aurora/gfffile.h"
 
+#include "graphics/graphics.h"
+
 static const uint32 kIFOID = MKID_BE('IFO ');
 
 namespace Engines {
@@ -111,13 +113,17 @@ void Module::enter() {
 	_area->setPosition(_position[0], _position[1], _position[2]);
 	_area->setOrientation(_orientation[0], _orientation[1], _orientation[2]);
 
+	GfxMan.lockFrame();
 	_area->show();
+	GfxMan.unlockFrame();
 }
 
 void Module::leave() {
 	assert(_area);
 
+	GfxMan.lockFrame();
 	_area->hide();
+	GfxMan.unlockFrame();
 }
 
 void Module::reset() {
@@ -143,7 +149,9 @@ void Module::setPosition(float x, float y, float z) {
 	_position[1] = y;
 	_position[2] = z;
 
+	GfxMan.lockFrame();
 	_area->setPosition(_position[0], _position[1], _position[2]);
+	GfxMan.unlockFrame();
 }
 
 void Module::setOrientation(float x, float y, float z) {
@@ -161,7 +169,9 @@ void Module::setOrientation(float x, float y, float z) {
 			_orientation[i] += 360;
 	}
 
+	GfxMan.lockFrame();
 	_area->setOrientation(_orientation[0], _orientation[1], _orientation[2]);
+	GfxMan.unlockFrame();
 }
 
 void Module::turn(float x, float y, float z) {
