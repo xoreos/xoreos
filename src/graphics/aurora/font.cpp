@@ -81,7 +81,7 @@ void Font::rebuild() {
 		glBegin(GL_QUADS);
 		for (int j = 0; j < 4; j++) {
 			glTexCoord2f(c.tX[j], c.tY[j]);
-			glVertex3f(c.vX[j], c.vY[j], 0.0);
+			glVertex2f(c.vX[j], c.vY[j]);
 		}
 		glEnd();
 		glEndList();

@@ -298,6 +298,8 @@ void GraphicsManager::renderScene() {
 
 	glMatrixMode(GL_PROJECTION);
 
+	glDisable(GL_DEPTH_TEST);
+
 	// Draw the front part of the GUI
 	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj) {
 		glLoadIdentity();
@@ -305,6 +307,8 @@ void GraphicsManager::renderScene() {
 
 		(*obj)->render();
 	}
+
+	glEnable(GL_DEPTH_TEST);
 
 	SDL_GL_SwapBuffers();
 
