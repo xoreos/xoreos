@@ -35,6 +35,8 @@ Text::~Text() {
 }
 
 void Text::set(const Common::UString &str) {
+	GfxMan.lockFrame();
+
 	bool visible = isInQueue();
 
 	removeFromQueue();
@@ -51,9 +53,13 @@ void Text::set(const Common::UString &str) {
 
 	if (visible)
 		addToQueue();
+
+	GfxMan.unlockFrame();
 }
 
 void Text::setPosition(float x, float y) {
+	GfxMan.lockFrame();
+
 	bool visible = isInQueue();
 
 	removeFromQueue();
@@ -63,6 +69,8 @@ void Text::setPosition(float x, float y) {
 
 	if (visible)
 		addToQueue();
+
+	GfxMan.unlockFrame();
 }
 
 void Text::show() {
