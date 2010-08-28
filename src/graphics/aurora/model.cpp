@@ -15,6 +15,7 @@
 #include "common/util.h"
 #include "common/maths.h"
 #include "common/stream.h"
+#include "common/transmatrix.h"
 
 #include "events/events.h"
 #include "events/requests.h"
@@ -31,13 +32,13 @@ Model::Mesh::Mesh() : faceCount(0) {
 
 
 Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true), list(0) {
-	position   [0] = 0;
-	position   [1] = 0;
-	position   [2] = 0;
-	orientation[0] = 0;
-	orientation[1] = 0;
-	orientation[2] = 0;
-	orientation[3] = 0;
+	position   [0] = 0.0;
+	position   [1] = 0.0;
+	position   [2] = 0.0;
+	orientation[0] = 0.0;
+	orientation[1] = 0.0;
+	orientation[2] = 0.0;
+	orientation[3] = 0.0;
 
 	boundMin[0] = FLT_MAX;
 	boundMin[1] = FLT_MAX;
@@ -54,6 +55,10 @@ Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true), l
 	realBoundMax[0] = FLT_MIN;
 	realBoundMax[1] = FLT_MIN;
 	realBoundMax[2] = FLT_MIN;
+
+	realPosition[0] = 0.0;
+	realPosition[1] = 0.0;
+	realPosition[2] = 0.0;
 }
 
 
@@ -243,23 +248,58 @@ void Model::createModelBound() {
 }
 
 void Model::recalculateBound() {
-	// TODO
-
 	if (!_currentState)
 		return;
 
-	for (NodeList::const_iterator node = _currentState->nodes.begin(); node != _currentState->nodes.end(); ++node)
-		recalculateNodeBound(**node, (*node)->position[0], (*node)->position[1], (*node)->position[2],
-				(*node)->orientation[3], (*node)->orientation[0], (*node)->orientation[1], (*node)->orientation[2]);
+	Common::TransformationMatrix matrix;
+	for (NodeList::const_iterator node = _currentState->nodes.begin(); node != _currentState->nodes.end(); ++node) {
+		matrix.loadIdentity();
+
+		matrix.translate((*node)->position[0], (*node)->position[1], (*node)->position[2]);
+		matrix.rotate((*node)->orientation[3], (*node)->orientation[0], (*node)->orientation[1], (*node)->orientation[2]);
+
+		setNodeBound(**node, matrix);
+
+		recalculateNodeBound(**node, matrix);
+	}
 }
 
-void Model::recalculateNodeBound(Node &node, float pX, float pY, float pZ, float oN, float oX, float oY, float oZ) {
-	// TODO
-
+void Model::recalculateNodeBound(Node &node, Common::TransformationMatrix &matrix) {
 	// Recurse over all child nodes
 	for (NodeList::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
-		recalculateNodeBound(**child, pX, pY, pZ, oN, oX, oY, oZ);
+		Common::TransformationMatrix nodeMatrix = matrix;
+
+		nodeMatrix.translate((*child)->position[0], (*child)->position[1], (*child)->position[2]);
+		nodeMatrix.rotate((*child)->orientation[3], (*child)->orientation[0], (*child)->orientation[1], (*child)->orientation[2]);
+
+		setNodeBound(**child, matrix);
+
+		recalculateNodeBound(**child, nodeMatrix);
 	}
+}
+
+void Model::setNodeBound(Node &node, Common::TransformationMatrix &matrix) {
+	node.realPosition[0] = matrix.getX();
+	node.realPosition[1] = matrix.getY();
+	node.realPosition[2] = matrix.getZ();
+
+		Common::TransformationMatrix boundMin = matrix;
+
+	if (node.boundMin[0] != FLT_MAX)
+		boundMin.translate(node.boundMin[0], node.boundMin[1], node.boundMin[2]);
+
+	node.realBoundMin[0] = boundMin.getX();
+	node.realBoundMin[1] = boundMin.getY();
+	node.realBoundMin[2] = boundMin.getZ();
+
+	Common::TransformationMatrix boundMax = matrix;
+
+	if (node.boundMax[0] != FLT_MIN)
+		boundMax.translate(node.boundMax[0], node.boundMax[1], node.boundMax[2]);
+
+	node.realBoundMax[0] = boundMax.getX();
+	node.realBoundMax[1] = boundMax.getY();
+	node.realBoundMax[2] = boundMax.getZ();
 }
 
 void Model::buildLists() {
@@ -270,24 +310,18 @@ void Model::setPosition(float x, float y, float z) {
 	_position[0] = x;
 	_position[1] = y;
 	_position[2] = z;
-
-	recalculateBound();
 }
 
 void Model::setOrientation(float x, float y, float z) {
 	_orientation[0] = x;
 	_orientation[1] = y;
 	_orientation[2] = z;
-
-	recalculateBound();
 }
 
 void Model::setBearing(float x, float y, float z) {
 	_bearing[0] = x;
 	_bearing[1] = y;
 	_bearing[2] = z;
-
-	recalculateBound();
 }
 
 bool Model::getNodePosition(const Common::UString &node, float &x, float &y, float &z) const {
@@ -298,19 +332,9 @@ bool Model::getNodePosition(const Common::UString &node, float &x, float &y, flo
 	if ((n == _currentState->nodeMap.end()) || !n->second)
 		return false;
 
-	// TODO: Proper orientation!
-
-	x = 0.0;
-	y = 0.0;
-	z = 0.0;
-
-	Node *no = n->second;
-	while (no) {
-		x += no->position[0];
-		y += no->position[1];
-		z += no->position[2];
-		no = no->parent;
-	}
+	x = n->second->realPosition[0];
+	y = n->second->realPosition[1];
+	z = n->second->realPosition[2];
 
 	return true;
 }

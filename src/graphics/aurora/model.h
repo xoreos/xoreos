@@ -30,6 +30,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class TransformationMatrix;
 }
 
 namespace Graphics {
@@ -172,6 +173,7 @@ protected:
 
 		float realBoundMin[3]; ///< Minimal coordinate for a bounding max after translate/rotate.
 		float realBoundMax[3]; ///< Maximal coordinate for a bounding max after translate/rotate.
+		float realPosition[3]; ///< Position of the node after translate/rotate;
 
 		FaceList faces; ///< The node's faces.
 
@@ -247,7 +249,8 @@ private:
 	void renderState(const State &state);
 	void renderNode(const Node &node);
 
-	void recalculateNodeBound(Node &node, float pX, float pY, float pZ, float oN, float oX, float oY, float oZ);
+	void recalculateNodeBound(Node &node, Common::TransformationMatrix &matrix);
+	void setNodeBound(Node &node, Common::TransformationMatrix &matrix);
 };
 
 } // End of namespace Aurora
