@@ -64,6 +64,10 @@ public:
 	/** Get the base position of a named node in the current state. */
 	bool getNodePosition(const Common::UString &node, float &x, float &y, float &z) const;
 
+	float getWidth () const;
+	float getHeight() const;
+	float getDepth () const;
+
 	/** Return a list of all animation state names. */
 	const std::list<Common::UString> &getStates() const;
 

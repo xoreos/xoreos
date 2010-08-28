@@ -348,6 +348,18 @@ bool Model::getNodePosition(const Common::UString &node, float &x, float &y, flo
 	return true;
 }
 
+float Model::getWidth() const {
+	return ABS(_boundMax[0] - _boundMin[0]);
+}
+
+float Model::getHeight() const {
+	return ABS(_boundMax[1] - _boundMin[1]);
+}
+
+float Model::getDepth() const {
+	return ABS(_boundMax[2] - _boundMin[2]);
+}
+
 const std::list<Common::UString> &Model::getStates() const {
 	return _stateNames;
 }
