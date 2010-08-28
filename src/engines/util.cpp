@@ -151,7 +151,7 @@ Graphics::Aurora::Model *ModelLoader::loadGUI(const Common::UString &resref) con
 	return (*this)(resref, Graphics::Aurora::kModelTypeGUIFront);
 }
 
-void ModelLoader::free(Graphics::Aurora::Model *&model) const {
+void ModelLoader::free(Graphics::Aurora::Model *&model) {
 	if (!model)
 		return;
 

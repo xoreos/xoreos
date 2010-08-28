@@ -62,7 +62,7 @@ public:
 	Graphics::Aurora::Model *loadObject(const Common::UString &resref, const Common::UString &texture = "") const;
 	Graphics::Aurora::Model *loadGUI   (const Common::UString &resref) const;
 
-	virtual void free(Graphics::Aurora::Model *&model) const;
+	static void free(Graphics::Aurora::Model *&model);
 };
 
 } // End of namespace Engines
