@@ -113,16 +113,11 @@ void Creature::loadModel(const Common::UString &name) {
 		bodyModel = appearance.getCellString(_appearance, "race");
 
 	Common::UString headModel;
-	Common::UString headBone;
 	if (modelType == "B") {
 		if      (!appearance.getCellString(_appearance, "normalhead").empty())
 			headModel = heads.getCellString(appearance.getCellInt(_appearance, "normalhead"), "head");
 		else if (!appearance.getCellString(_appearance, "backuphead").empty())
 			headModel = heads.getCellString(appearance.getCellInt(_appearance, "backuphead"), "head");
-
-		headBone = appearance.getCellString(_appearance, "headbone");
-		if (headBone.empty())
-			headBone = "neck_g";
 	}
 
 	//  Totally segmented  ||    Body + Head     ||    ???
@@ -136,7 +131,7 @@ void Creature::loadModel(const Common::UString &name) {
 
 			_parts.push_back(new Part(model));
 
-			model->getNodePosition(headBone, hX, hY, hZ);
+			model->getNodePosition("headhook", hX, hY, hZ);
 		}
 
 		if ((modelType == "B") && !headModel.empty()) {
