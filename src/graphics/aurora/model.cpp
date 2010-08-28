@@ -232,22 +232,6 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 }
 
 void Model::createModelBound() {
-	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
-		if (*node) {
-			_boundMin[0] = MIN(_boundMin[0], (*node)->boundMin[0]);
-			_boundMin[1] = MIN(_boundMin[1], (*node)->boundMin[1]);
-			_boundMin[2] = MIN(_boundMin[2], (*node)->boundMin[2]);
-
-			_boundMax[0] = MAX(_boundMax[0], (*node)->boundMax[0]);
-			_boundMax[1] = MAX(_boundMax[1], (*node)->boundMax[1]);
-			_boundMax[2] = MAX(_boundMax[2], (*node)->boundMax[2]);
-		}
-	}
-
-	recalculateBound();
-}
-
-void Model::recalculateBound() {
 	if (!_currentState)
 		return;
 
@@ -262,6 +246,14 @@ void Model::recalculateBound() {
 
 		recalculateNodeBound(**node, matrix);
 	}
+
+	if ((_boundMin[0] == FLT_MAX) || (_boundMax[0] == FLT_MIN))
+		_boundMin[0] = _boundMin[1] = _boundMin[2] =
+		_boundMax[0] = _boundMax[1] = _boundMax[2] = 0.0;
+
+	if ((_realBoundMin[0] == FLT_MAX) || (_realBoundMax[0] == FLT_MIN))
+		_realBoundMin[0] = _realBoundMin[1] = _realBoundMin[2] =
+		_realBoundMax[0] = _realBoundMax[1] = _realBoundMax[2] = 0.0;
 }
 
 void Model::recalculateNodeBound(Node &node, Common::TransformationMatrix &matrix) {
@@ -300,6 +292,23 @@ void Model::setNodeBound(Node &node, Common::TransformationMatrix &matrix) {
 	node.realBoundMax[0] = boundMax.getX();
 	node.realBoundMax[1] = boundMax.getY();
 	node.realBoundMax[2] = boundMax.getZ();
+
+
+	_boundMin[0] = MIN(_boundMin[0], node.boundMin[0]);
+	_boundMin[1] = MIN(_boundMin[1], node.boundMin[1]);
+	_boundMin[2] = MIN(_boundMin[2], node.boundMin[2]);
+
+	_boundMax[0] = MAX(_boundMax[0], node.boundMax[0]);
+	_boundMax[1] = MAX(_boundMax[1], node.boundMax[1]);
+	_boundMax[2] = MAX(_boundMax[2], node.boundMax[2]);
+
+	_realBoundMin[0] = MIN(_realBoundMin[0], node.realBoundMin[0]);
+	_realBoundMin[1] = MIN(_realBoundMin[1], node.realBoundMin[1]);
+	_realBoundMin[2] = MIN(_realBoundMin[2], node.realBoundMin[2]);
+
+	_realBoundMax[0] = MAX(_realBoundMax[0], node.realBoundMax[0]);
+	_realBoundMax[1] = MAX(_realBoundMax[1], node.realBoundMax[1]);
+	_realBoundMax[2] = MAX(_realBoundMax[2], node.realBoundMax[2]);
 }
 
 void Model::buildLists() {

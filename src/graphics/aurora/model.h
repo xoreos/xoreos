@@ -243,7 +243,6 @@ protected:
 
 	// Bounding boxes
 	void createModelBound();
-	void recalculateBound();
 
 private:
 	void renderState(const State &state);
