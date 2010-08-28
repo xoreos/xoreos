@@ -65,8 +65,8 @@ void TransformationMatrix::scale(float x, float y, float z) {
 void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 	// Normalize the axis vector
 	float length = x * x + y * y + z * z;
-	if (length != 1.0) {
-		length = sqrt(length);
+	if ((length != 1.0) && (length != 0.0)) {
+		length = sqrtf(length);
 
 		x /= length;
 		y /= length;
