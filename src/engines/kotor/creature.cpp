@@ -112,6 +112,13 @@ void Creature::loadModel(const Common::UString &name) {
 	if (bodyModel.empty())
 		bodyModel = appearance.getCellString(_appearance, "race");
 
+	Common::UString bodyTexture = appearance.getCellString(_appearance, "texb");
+	if (!bodyTexture.empty())
+		bodyTexture += "01";
+
+	if (bodyTexture.empty())
+		bodyTexture = appearance.getCellString(_appearance, "racetex");
+
 	Common::UString headModel;
 	if (modelType == "B") {
 		if      (!appearance.getCellString(_appearance, "normalhead").empty())
@@ -127,7 +134,7 @@ void Creature::loadModel(const Common::UString &name) {
 	float hX = 0.0, hY = 0.0, hZ = 0.0;
 	if (modelType != "P") {
 		if (!bodyModel.empty()) {
-			Graphics::Aurora::Model *model = (*_modelLoader)(bodyModel);
+			Graphics::Aurora::Model *model = (*_modelLoader)(bodyModel, bodyTexture);
 
 			_parts.push_back(new Part(model));
 
@@ -144,6 +151,7 @@ void Creature::loadModel(const Common::UString &name) {
 			_parts.back()->position[2] = hZ;
 		}
 	}
+
 }
 
 } // End of namespace KotOR
