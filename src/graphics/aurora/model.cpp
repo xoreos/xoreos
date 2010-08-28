@@ -272,7 +272,7 @@ void Model::recalculateNodeBound(Node &node, Common::TransformationMatrix &matri
 		nodeMatrix.translate((*child)->position[0], (*child)->position[1], (*child)->position[2]);
 		nodeMatrix.rotate((*child)->orientation[3], (*child)->orientation[0], (*child)->orientation[1], (*child)->orientation[2]);
 
-		setNodeBound(**child, matrix);
+		setNodeBound(**child, nodeMatrix);
 
 		recalculateNodeBound(**child, nodeMatrix);
 	}
