@@ -57,6 +57,8 @@ class ModelLoader {
 public:
 	virtual Graphics::Aurora::Model *operator()(const Common::UString &resref,
 	                                            const Common::UString &texture = "") const = 0;
+
+	virtual void free(Graphics::Aurora::Model *&model) const;
 };
 
 } // End of namespace Engines

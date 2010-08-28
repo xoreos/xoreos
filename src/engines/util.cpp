@@ -142,4 +142,14 @@ bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::US
 	return success;
 }
 
+void ModelLoader::free(Graphics::Aurora::Model *&model) const {
+	if (!model)
+		return;
+
+	model->hide();
+	delete model;
+
+	model = 0;
+}
+
 } // End of namespace Engines
