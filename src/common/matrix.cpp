@@ -104,7 +104,7 @@ Matrix Matrix::operator*(const Matrix &right) const {
 		for (int j = 0; j < right._columns; j++, d++) {
 			*d = 0;
 			for (int n = 0; n < _columns; n++)
-				*d += (*this)[i][n] * (*this)[n][j];
+				*d += (*this)[i][n] * (right)[n][j];
 		}
 	}
 
