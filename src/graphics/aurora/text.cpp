@@ -58,8 +58,8 @@ void Text::setPosition(float x, float y) {
 
 	removeFromQueue();
 
-	_x = x;
-	_y = y;
+	_x = roundf(x * 100.0) / 100.0;
+	_y = roundf(y * 100.0) / 100.0;
 
 	if (visible)
 		addToQueue();
