@@ -64,9 +64,9 @@ public:
 	/** Get the base position of a named node in the current state. */
 	bool getNodePosition(const Common::UString &node, float &x, float &y, float &z) const;
 
-	float getWidth () const;
-	float getHeight() const;
-	float getDepth () const;
+	float getWidth () const; ///< Get the width of the model's bounding box.
+	float getHeight() const; ///< Get the height of the model's bounding box.
+	float getDepth () const; ///< Get the depth of the model's bounding box.
 
 	/** Return a list of all animation state names. */
 	const std::list<Common::UString> &getStates() const;
