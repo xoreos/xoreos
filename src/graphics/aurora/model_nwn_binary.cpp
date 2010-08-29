@@ -507,8 +507,10 @@ void Model_NWN_Binary::readNodeControllers(ParserContext &ctx, uint32 offset, ui
 		uint8  columnCount = ctx.mdl->readByte();
 		ctx.mdl->skip(1);
 
-		if (columnCount == 0xFFFF)
-			throw Common::Exception("TODO: Model_NWN_Binary::readNodeControllers(): columnCount == 0xFFFF");
+		if (rowCount == 0xFFFF) {
+			warning("TODO: Model_NWN_Binary::readNodeControllers(): rowCount == 0xFFFF");
+			continue;
+		}
 
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)

@@ -425,8 +425,10 @@ void Model_Witcher::readNodeControllers(ParserContext &ctx, uint32 offset, uint3
 		uint8  columnCount = ctx.mdb->readByte();
 		ctx.mdb->skip(1);
 
-		if (columnCount == 0xFFFF)
-			throw Common::Exception("TODO: Model_KotOR::readNodeControllers(): columnCount == 0xFFFF");
+		if (rowCount == 0xFFFF) {
+			warning("TODO: Model_Witcher::readNodeControllers(): rowCount == 0xFFFF");
+			continue;
+		}
 
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)
