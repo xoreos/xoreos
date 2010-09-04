@@ -73,8 +73,8 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 		z /= length;
 	}
 
-	float c = cosf(angle);
-	float s = sinf(angle);
+	float c = cosf(deg2rad(angle));
+	float s = sinf(deg2rad(angle));
 
 	// Elements for the rotation matrix
 	float e11 = (x * x) * (1.0 - c) +     c;
