@@ -77,15 +77,15 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 	float s = sinf(angle);
 
 	// Elements for the rotation matrix
-	float e11 = (x * x) * (1 - c) +     c;
-	float e12 = (x * y) * (1 - c) - z * s;
-	float e13 = (x * z) * (1 - c) + y * s;
-	float e21 = (y * x) * (1 - c) + z * s;
-	float e22 = (y * y) * (1 - c) +     c;
-	float e23 = (y * z) * (1 - c) - x * s;
-	float e31 = (x * z) * (1 - c) - y * s;
-	float e32 = (y * z) * (1 - c) + x * s;
-	float e33 = (z * z) * (1 - c) +     c;
+	float e11 = (x * x) * (1.0 - c) +     c;
+	float e12 = (x * y) * (1.0 - c) - z * s;
+	float e13 = (x * z) * (1.0 - c) + y * s;
+	float e21 = (y * x) * (1.0 - c) + z * s;
+	float e22 = (y * y) * (1.0 - c) +     c;
+	float e23 = (y * z) * (1.0 - c) - x * s;
+	float e31 = (z * x) * (1.0 - c) - y * s;
+	float e32 = (z * y) * (1.0 - c) + x * s;
+	float e33 = (z * z) * (1.0 - c) +     c;
 
 	Matrix rMatrix(4, 4);
 
