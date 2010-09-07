@@ -160,4 +160,104 @@ void Matrix::transpose() {
 	*this = getTranspose();
 }
 
+float Matrix::getDeterminant() const {
+	assert(_rows == _columns);
+
+	if ((_rows == 1) && (_columns == 1))
+		return (*this)[0][0];
+
+	if ((_rows == 2) && (_columns == 2))
+		return (*this)[0][0] * (*this)[1][1] - (*this)[0][1] * (*this)[1][0];
+
+	if ((_rows == 3) && (_columns == 3))
+		return (*this)[0][0] * (*this)[1][1] * (*this)[2][2] +
+		       (*this)[0][1] * (*this)[1][2] * (*this)[2][0] +
+		       (*this)[0][2] * (*this)[1][0] * (*this)[2][1] -
+		       (*this)[0][0] * (*this)[1][2] * (*this)[2][1] -
+		       (*this)[0][1] * (*this)[1][0] * (*this)[2][2] -
+		       (*this)[0][2] * (*this)[1][1] * (*this)[2][0];
+
+	if ((_rows == 4) && (_columns == 4))
+		return (*this)[0][0] * (*this)[1][1] * (*this)[2][2] * (*this)[3][3] +
+		       (*this)[0][0] * (*this)[1][2] * (*this)[2][3] * (*this)[3][1] +
+		       (*this)[0][0] * (*this)[1][3] * (*this)[2][1] * (*this)[3][2] +
+		       (*this)[0][1] * (*this)[1][0] * (*this)[2][3] * (*this)[3][2] +
+		       (*this)[0][1] * (*this)[1][2] * (*this)[2][0] * (*this)[3][3] +
+		       (*this)[0][1] * (*this)[1][3] * (*this)[2][2] * (*this)[3][0] +
+		       (*this)[0][2] * (*this)[1][0] * (*this)[2][1] * (*this)[3][3] +
+		       (*this)[0][2] * (*this)[1][1] * (*this)[2][3] * (*this)[3][0] +
+		       (*this)[0][2] * (*this)[1][3] * (*this)[2][0] * (*this)[3][1] +
+		       (*this)[0][3] * (*this)[1][0] * (*this)[2][2] * (*this)[3][1] +
+		       (*this)[0][3] * (*this)[1][1] * (*this)[2][0] * (*this)[3][2] +
+		       (*this)[0][3] * (*this)[1][2] * (*this)[2][1] * (*this)[3][0] -
+		       (*this)[0][0] * (*this)[1][1] * (*this)[2][3] * (*this)[3][2] -
+		       (*this)[0][0] * (*this)[1][2] * (*this)[2][1] * (*this)[3][3] -
+		       (*this)[0][0] * (*this)[1][3] * (*this)[2][2] * (*this)[3][1] -
+		       (*this)[0][1] * (*this)[1][0] * (*this)[2][2] * (*this)[3][3] -
+		       (*this)[0][1] * (*this)[1][2] * (*this)[2][3] * (*this)[3][0] -
+		       (*this)[0][1] * (*this)[1][3] * (*this)[2][0] * (*this)[3][2] -
+		       (*this)[0][2] * (*this)[1][0] * (*this)[2][3] * (*this)[3][1] -
+		       (*this)[0][2] * (*this)[1][1] * (*this)[2][0] * (*this)[3][3] -
+		       (*this)[0][2] * (*this)[1][3] * (*this)[2][1] * (*this)[3][0] -
+		       (*this)[0][3] * (*this)[1][0] * (*this)[2][1] * (*this)[3][2] -
+		       (*this)[0][3] * (*this)[1][1] * (*this)[2][2] * (*this)[3][0] -
+		       (*this)[0][3] * (*this)[1][2] * (*this)[2][0] * (*this)[3][1];
+
+	// General case
+	float det = 0.0f;
+	for (int j = 0; j < _columns; j++) {
+		if (j % 2)
+			det += (*this)[0][j] * -1 * getReduced(0,j).getDeterminant();
+		else
+			det += (*this)[0][j] *  1 * getReduced(0,j).getDeterminant();
+	}
+
+	return det;
+}
+
+Matrix Matrix::getReduced(int row, int col) const {
+	Matrix reducedMatrix(_rows - 1, _columns - 1);
+
+	int redMaRow = 0, redMaCol = 0;
+	for (int i = 0; i < _rows; i++) {
+		if (i == row)
+			continue;
+
+		for (int j = 0; j < _columns; j++) {
+			if (j == col)
+				continue;
+
+			reducedMatrix[redMaRow][redMaCol] = (*this)[i][j];
+			redMaCol++;
+		}
+
+		redMaRow++;
+		redMaCol = 0;
+	}
+
+	return reducedMatrix;
+}
+
+Matrix Matrix::getInverse() const {
+	Matrix inv(_rows, _columns);
+
+	float det = getDeterminant();
+	assert(det != 0);
+
+	for (int i = 0; i < _rows; i++) {
+		for (int j = 0; j < _columns; j++) {
+			inv[i][j] = (1.0f / det) * getReduced(j, i).getDeterminant();
+
+			if (((i + j) % 2) == 1)
+				inv[i][j] = -inv[i][j];
+		}
+	}
+
+	return inv;
+}
+
+void Matrix::invert() {
+	*this = getInverse();
+}
+
 } // End of namespace Common

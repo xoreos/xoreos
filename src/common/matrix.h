@@ -46,10 +46,15 @@ public:
 	Matrix &operator*=(const float &right);
 
 
+	float getDeterminant() const;
+
+	Matrix getReduced(int row, int col) const;
+
 	Matrix getTranspose() const;
+	Matrix getInverse() const;
 
 	void transpose();
-
+	void invert();
 
 protected:
 	int _rows;
