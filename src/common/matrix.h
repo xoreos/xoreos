@@ -56,6 +56,8 @@ public:
 	void transpose();
 	void invert();
 
+	bool isInvertible() const;
+
 protected:
 	int _rows;
 	int _columns;

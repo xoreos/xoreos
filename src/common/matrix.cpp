@@ -260,4 +260,8 @@ void Matrix::invert() {
 	*this = getInverse();
 }
 
+bool Matrix::isInvertible() const {
+	return getDeterminant() != 0;
+}
+
 } // End of namespace Common
