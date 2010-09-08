@@ -29,6 +29,7 @@ noinst_HEADERS = system.h \
                  huffman.h \
                  matrix.h \
                  transmatrix.h \
+                 boundingbox.h \
                  config-file.h \
                  zipfile.h
 
@@ -52,5 +53,6 @@ libcommon_la_SOURCES = maths.cpp \
                        huffman.cpp \
                        matrix.cpp \
                        transmatrix.cpp \
+                       boundingbox.cpp \
                        config-file.cpp \
                        zipfile.cpp
