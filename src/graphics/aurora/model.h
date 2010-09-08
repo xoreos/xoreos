@@ -20,6 +20,7 @@
 #include <list>
 
 #include "common/ustring.h"
+#include "common/boundingbox.h"
 
 #include "graphics/types.h"
 #include "graphics/listcontainer.h"
@@ -67,6 +68,9 @@ public:
 	float getWidth () const; ///< Get the width of the model's bounding box.
 	float getHeight() const; ///< Get the height of the model's bounding box.
 	float getDepth () const; ///< Get the depth of the model's bounding box.
+
+	/** Is the point within the model's bounding box? */
+	bool isIn(float x, float y, float z) const;
 
 	/** Return a list of all animation state names. */
 	const std::list<Common::UString> &getStates() const;
@@ -172,11 +176,9 @@ protected:
 
 		float selfillumcolor[3];
 
-		float boundMin[3]; //< Minimal coordinate for a bounding box.
-		float boundMax[3]; //< Maximal coordinate for a bounding box.
+		Common::BoundingBox boundBox;     ///< Node's bounding box.
+		Common::BoundingBox realBoundBox; ///< Node's bounding box after translate/rotate.
 
-		float realBoundMin[3]; ///< Minimal coordinate for a bounding max after translate/rotate.
-		float realBoundMax[3]; ///< Maximal coordinate for a bounding max after translate/rotate.
 		float realPosition[3]; ///< Position of the node after translate/rotate;
 
 		FaceList faces; ///< The node's faces.
@@ -215,11 +217,7 @@ protected:
 	float _orientation[3]; ///< Model's rotation around the world center.
 	float _bearing[3];     ///< Model's rotation around its center.
 
-	float _boundMin[3]; //< Minimal coordinate for a bounding box.
-	float _boundMax[3]; //< Maximal coordinate for a bounding box.
-
-	float _realBoundMin[3]; ///< Minimal coordinate for a bounding max after translate/rotate.
-	float _realBoundMax[3]; ///< Maximal coordinate for a bounding max after translate/rotate.
+	Common::BoundingBox _boundBox; ///< Model's bounding box.
 
 	NodeList _nodes;
 
@@ -253,7 +251,6 @@ private:
 	void renderNode(const Node &node);
 
 	void recalculateNodeBound(Node &node, Common::TransformationMatrix &matrix);
-	void setNodeBound(Node &node, Common::TransformationMatrix &matrix);
 };
 
 } // End of namespace Aurora

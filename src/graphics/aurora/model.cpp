@@ -40,22 +40,6 @@ Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true), l
 	orientation[2] = 0.0;
 	orientation[3] = 0.0;
 
-	boundMin[0] = FLT_MAX;
-	boundMin[1] = FLT_MAX;
-	boundMin[2] = FLT_MAX;
-
-	boundMax[0] = FLT_MIN;
-	boundMax[1] = FLT_MIN;
-	boundMax[2] = FLT_MIN;
-
-	realBoundMin[0] = FLT_MAX;
-	realBoundMin[1] = FLT_MAX;
-	realBoundMin[2] = FLT_MAX;
-
-	realBoundMax[0] = FLT_MIN;
-	realBoundMax[1] = FLT_MIN;
-	realBoundMax[2] = FLT_MIN;
-
 	realPosition[0] = 0.0;
 	realPosition[1] = 0.0;
 	realPosition[2] = 0.0;
@@ -75,22 +59,6 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 	_bearing    [0] = 0.0;
 	_bearing    [1] = 0.0;
 	_bearing    [2] = 0.0;
-
-	_boundMin[0] = FLT_MAX;
-	_boundMin[1] = FLT_MAX;
-	_boundMin[2] = FLT_MAX;
-
-	_boundMax[0] = FLT_MIN;
-	_boundMax[1] = FLT_MIN;
-	_boundMax[2] = FLT_MIN;
-
-	_realBoundMin[0] = FLT_MAX;
-	_realBoundMin[1] = FLT_MAX;
-	_realBoundMin[2] = FLT_MAX;
-
-	_realBoundMax[0] = FLT_MIN;
-	_realBoundMax[1] = FLT_MIN;
-	_realBoundMax[2] = FLT_MIN;
 }
 
 Model::~Model() {
@@ -195,13 +163,11 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 
 		// Real face coordinates
 		for (int v = 0; v < 3; v++) {
-			for (int c = 0; c < 3; c++) {
+			for (int c = 0; c < 3; c++)
 				face.verts[v * 3 + c] = mesh.verts[3 * mesh.vertIndices[3 * i + v] + c];
 
-				node.boundMin[c] = MIN(node.boundMin[c], face.verts[v * 3 + c]);
-				node.boundMax[c] = MAX(node.boundMax[c], face.verts[v * 3 + c]);
-			}
-
+			if (node.render)
+				node.boundBox.add(face.verts[v * 3 + 0], face.verts[v * 3 + 1], face.verts[v * 3 + 2]);
 		}
 
 		face.tverts.resize(mesh.textures.size() * 9);
@@ -235,80 +201,40 @@ void Model::createModelBound() {
 	if (!_currentState)
 		return;
 
+	_boundBox.clear();
+
 	Common::TransformationMatrix matrix;
 	for (NodeList::const_iterator node = _currentState->nodes.begin(); node != _currentState->nodes.end(); ++node) {
 		matrix.loadIdentity();
 
-		matrix.translate((*node)->position[0], (*node)->position[1], (*node)->position[2]);
-		matrix.rotate((*node)->orientation[3], (*node)->orientation[0], (*node)->orientation[1], (*node)->orientation[2]);
-
-		setNodeBound(**node, matrix);
-
 		recalculateNodeBound(**node, matrix);
+
+		_boundBox.add((*node)->realBoundBox);
 	}
-
-	if ((_boundMin[0] == FLT_MAX) || (_boundMax[0] == FLT_MIN))
-		_boundMin[0] = _boundMin[1] = _boundMin[2] =
-		_boundMax[0] = _boundMax[1] = _boundMax[2] = 0.0;
-
-	if ((_realBoundMin[0] == FLT_MAX) || (_realBoundMax[0] == FLT_MIN))
-		_realBoundMin[0] = _realBoundMin[1] = _realBoundMin[2] =
-		_realBoundMax[0] = _realBoundMax[1] = _realBoundMax[2] = 0.0;
 }
 
 void Model::recalculateNodeBound(Node &node, Common::TransformationMatrix &matrix) {
-	// Recurse over all child nodes
-	for (NodeList::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
-		Common::TransformationMatrix nodeMatrix = matrix;
+	matrix.translate(node.position[0], node.position[1], node.position[2]);
+	matrix.rotate(node.orientation[3], node.orientation[0], node.orientation[1], node.orientation[2]);
 
-		nodeMatrix.translate((*child)->position[0], (*child)->position[1], (*child)->position[2]);
-		nodeMatrix.rotate((*child)->orientation[3], (*child)->orientation[0], (*child)->orientation[1], (*child)->orientation[2]);
-
-		setNodeBound(**child, nodeMatrix);
-
-		recalculateNodeBound(**child, nodeMatrix);
-	}
-}
-
-void Model::setNodeBound(Node &node, Common::TransformationMatrix &matrix) {
 	node.realPosition[0] = matrix.getX();
 	node.realPosition[1] = matrix.getY();
 	node.realPosition[2] = matrix.getZ();
 
-		Common::TransformationMatrix boundMin = matrix;
 
-	if (node.boundMin[0] != FLT_MAX)
-		boundMin.translate(node.boundMin[0], node.boundMin[1], node.boundMin[2]);
-
-	node.realBoundMin[0] = boundMin.getX();
-	node.realBoundMin[1] = boundMin.getY();
-	node.realBoundMin[2] = boundMin.getZ();
-
-	Common::TransformationMatrix boundMax = matrix;
-
-	if (node.boundMax[0] != FLT_MIN)
-		boundMax.translate(node.boundMax[0], node.boundMax[1], node.boundMax[2]);
-
-	node.realBoundMax[0] = boundMax.getX();
-	node.realBoundMax[1] = boundMax.getY();
-	node.realBoundMax[2] = boundMax.getZ();
+	node.realBoundBox = node.boundBox;
+	node.realBoundBox.translate(node.position[0], node.position[1], node.position[2]);
+	node.realBoundBox.rotate(node.orientation[3], node.orientation[0], node.orientation[1], node.orientation[2]);
 
 
-	_boundMin[0] = MIN(_boundMin[0], node.boundMin[0]);
-	_boundMin[1] = MIN(_boundMin[1], node.boundMin[1]);
-	_boundMin[2] = MIN(_boundMin[2], node.boundMin[2]);
+	for (NodeList::const_iterator child = node.children.begin(); child != node.children.end(); ++child) {
+		Common::TransformationMatrix nodeMatrix = matrix;
 
-	_boundMax[0] = MAX(_boundMax[0], node.boundMax[0]);
-	_boundMax[1] = MAX(_boundMax[1], node.boundMax[1]);
-	_boundMax[2] = MAX(_boundMax[2], node.boundMax[2]);
+		recalculateNodeBound(**child, nodeMatrix);
 
-	_realBoundMin[0] = MIN(_realBoundMin[0], node.realBoundMin[0]);
-	_realBoundMin[1] = MIN(_realBoundMin[1], node.realBoundMin[1]);
-	_realBoundMin[2] = MIN(_realBoundMin[2], node.realBoundMin[2]);
-
-	_realBoundMax[0] = MAX(_realBoundMax[0], node.realBoundMax[0]);
-	_realBoundMax[1] = MAX(_realBoundMax[1], node.realBoundMax[1]);
-	_realBoundMax[2] = MAX(_realBoundMax[2], node.realBoundMax[2]);
+		Common::BoundingBox childBound = (*child)->realBoundBox.getAbsolute();
+		node.realBoundBox.add(childBound);
+	}
 }
 
 void Model::buildLists() {
@@ -349,15 +275,48 @@ bool Model::getNodePosition(const Common::UString &node, float &x, float &y, flo
 }
 
 float Model::getWidth() const {
-	return ABS(_boundMax[0] - _boundMin[0]);
+	return _boundBox.getWidth();
 }
 
 float Model::getHeight() const {
-	return ABS(_boundMax[1] - _boundMin[1]);
+	return _boundBox.getHeight();
 }
 
 float Model::getDepth() const {
-	return ABS(_boundMax[2] - _boundMin[2]);
+	return _boundBox.getDepth();
+}
+
+bool Model::isIn(float x, float y, float z) const {
+	Common::TransformationMatrix world;
+
+	// Apply position translation
+	world.translate(-_position[0], -_position[1], -_position[2]);
+
+	if (_type == kModelTypeObject)
+		// Aurora world objects have a rotated axis
+		world.rotate(-90.0, -1.0, 0.0, 0.0);
+
+	// Apply rotation around the world center
+	world.rotate(-_orientation[2], 0.0, 0.0, 1.0);
+	world.rotate(-_orientation[1], 0.0, 1.0, 0.0);
+	world.rotate(-_orientation[0], 1.0, 0.0, 0.0);
+
+	if (_type == kModelTypeGUIFront)
+		// Aurora GUI objects use 0.01 units / pixel
+		world.scale(0.01, 0.01, 0.01);
+
+	if (_type == kModelTypeObject)
+		// Roughly head position. TODO: This doesn't belong here :P
+		world.translate(0.0, 1.5, 0.0);
+
+	Common::BoundingBox boundBox = _boundBox;
+
+	// Apply rotation around the object's center
+	boundBox.rotate(_bearing[0], 1.0, 0.0, 0.0);
+	boundBox.rotate(_bearing[1], 0.0, 0.0, 1.0);
+	boundBox.rotate(_bearing[2], 0.0, 1.0, 0.0);
+
+	return boundBox.isIn(world.getX(), world.getY(), world.getZ());
 }
 
 const std::list<Common::UString> &Model::getStates() const {
