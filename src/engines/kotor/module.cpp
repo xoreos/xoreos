@@ -110,11 +110,10 @@ void Module::enter() {
 
 	reset();
 
-	_area->setPosition(_position[0], _position[1], _position[2]);
-	_area->setOrientation(_orientation[0], _orientation[1], _orientation[2]);
-
 	GfxMan.lockFrame();
 	_area->show();
+	_area->setPosition(_position[0], _position[1], _position[2]);
+	_area->setOrientation(_orientation[0], _orientation[1], _orientation[2]);
 	GfxMan.unlockFrame();
 }
 

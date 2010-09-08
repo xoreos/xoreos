@@ -36,12 +36,20 @@ namespace Engines {
 
 namespace KotOR {
 
+Area::Room::Room(const Aurora::LYTFile::Room &lRoom) : lytRoom(&lRoom), model(0), visible(false) {
+}
+
+Area::Room::~Room() {
+	delete model;
+}
+
+
 Area::Area(const ModelLoader &modelLoader) : _modelLoader(&modelLoader) {
 }
 
 Area::~Area() {
-	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
-		delete *model;
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
+		delete *room;
 
 	for (std::list<Placeable *>::iterator plc = _placeables.begin(); plc != _placeables.end(); ++plc)
 		delete *plc;
@@ -56,10 +64,11 @@ void Area::load(const Common::UString &name) {
 	loadLYT(name); // Room layout
 	loadVIS(name); // Room visibilities
 
+	loadModels(name); // Room models
+	loadVisibles();   // Room model visibilities
+
 	loadARE(name); // Statics
 	loadGIT(name); // Dynamics
-
-	loadModels(name);
 }
 
 void Area::loadLYT(const Common::UString &name) {
@@ -220,76 +229,155 @@ void Area::loadCreature(Aurora::GFFFile::ListIterator &creature) {
 
 void Area::loadModels(const Common::UString &name) {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
-	_models.resize(rooms.size());
-	for (size_t i = 0; i < rooms.size(); i++)
-		_models[i] = 0;
-
+	_rooms.reserve(rooms.size());
 	for (size_t i = 0; i < rooms.size(); i++) {
-		const Aurora::LYTFile::Room &room = rooms[i];
+		const Aurora::LYTFile::Room &lytRoom = rooms[i];
 
-		if (room.model == "****")
+		if (lytRoom.model == "****")
 			// No model for that room
 			continue;
 
+		Room *room = new Room(lytRoom);
+
 		try {
-			_models[i] = _modelLoader->loadObject(room.model);
+			room->model = _modelLoader->loadObject(lytRoom.model);
 		} catch (Common::Exception &e) {
-			e.add("Can't load model \"%s\" for area \"%s\"", room.model.c_str(), name.c_str());
+			delete room;
+			e.add("Can't load model \"%s\" for area \"%s\"", lytRoom.model.c_str(), name.c_str());
 			throw e;
 		} catch (...) {
+			delete room;
 			throw;
 		}
 
-		_models[i]->setPosition(room.x, room.y, room.z);
+		room->model->setPosition(lytRoom.x, lytRoom.y, lytRoom.z);
+
+		_rooms.push_back(room);
 	}
+
+}
+
+void Area::loadVisibles() {
+	// Go through all rooms
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room) {
+		// Get visibility information for that room
+		const std::vector<Common::UString> &rooms = _vis.getVisibilityArray((*room)->lytRoom->model);
+
+		if (rooms.empty()) {
+			// If no info is available, assume all rooms are visible
+
+			for (std::vector<Room *>::iterator iRoom = _rooms.begin(); iRoom != _rooms.end(); ++iRoom)
+				(*room)->visibles.push_back(*iRoom);
+
+			return;
+		}
+
+		// Otherwise, go through all rooms again, look for a match with the visibilities
+		for (std::vector<Room *>::iterator iRoom = _rooms.begin(); iRoom != _rooms.end(); ++iRoom) {
+
+			for (std::vector<Common::UString>::const_iterator vRoom = rooms.begin(); vRoom != rooms.end(); ++vRoom) {
+				if (vRoom->equalsIgnoreCase((*iRoom)->lytRoom->model)) {
+					// Mark that room as visible from the first room
+					(*room)->visibles.push_back(*iRoom);
+					break;
+				}
+			}
+
+		}
+
+	}
+
 }
 
 void Area::show() {
-	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
-		if (*model)
-			(*model)->show();
+	// Rooms
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
+		(*room)->model->show();
 
+	// Placeables
 	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
 		(*it)->show();
 
+	// Creatures
 	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
 		(*it)->show();
 }
 
 void Area::hide() {
-	for (std::vector<Graphics::Aurora::Model *>::iterator model = _models.begin(); model != _models.end(); ++model)
-		if (*model)
-			(*model)->hide();
+	// Rooms
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
+		(*room)->model->hide();
 
+	// Placeables
 	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
 		(*it)->hide();
 
+	// Creatures
 	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
 		(*it)->hide();
 }
 
 void Area::setPosition(float x, float y, float z) {
-	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
-	for (size_t i = 0; i < rooms.size(); i++)
-		if (_models[i])
-			_models[i]->setPosition(rooms[i].x + x, rooms[i].y + y, rooms[i].z + z);
+	// Set room positions
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
+		(*room)->model->setPosition((*room)->lytRoom->x + x, (*room)->lytRoom->y + y, (*room)->lytRoom->z + z);
 
+	// Switch all rooms temporarily to invisible
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
+		(*room)->visible = false;
+
+	// Look in what rooms we're in
+	std::vector<Room *> ins;
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room) {
+		if ((*room)->model->isIn(0.0, 0.0, 0.0)) {
+			// The rooms we're in should be visible
+			(*room)->visible = true;
+
+			ins.push_back(*room);
+		}
+	}
+
+	if (ins.empty()) {
+		// When we're outside everything, still display everything
+
+		for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
+			(*room)->visible = true;
+
+	} else {
+		// Display stuff that's visible from the room we're in
+
+		for (std::vector<Room *>::iterator in = ins.begin(); in != ins.end(); ++in)
+			for (std::vector<Room *>::iterator vis = (*in)->visibles.begin(); vis != (*in)->visibles.end(); ++vis)
+				(*vis)->visible = true;
+	}
+
+	// Show/Hide according to the visibility
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room) {
+		if ((*room)->visible)
+			(*room)->model->show();
+		else
+			(*room)->model->hide();
+	}
+
+	// Set placeable positions
 	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
 		(*it)->moveWorld(x, y, z);
 
+	// Set creature positions
 	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
 		(*it)->moveWorld(x, y, z);
 }
 
 void Area::setOrientation(float x, float y, float z) {
-	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
-	for (size_t i = 0; i < rooms.size(); i++)
-		if (_models[i])
-			_models[i]->setOrientation(x, y, z);
+	// Rooms
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
+		(*room)->model->setOrientation(x, y, z);
 
+	// Placables
 	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
 		(*it)->turnWorld(x, y, z);
 
+	// Creatures
 	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
 		(*it)->turnWorld(x, y, z);
 }

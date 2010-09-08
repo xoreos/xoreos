@@ -51,12 +51,24 @@ public:
 	void setOrientation(float x, float y, float z);
 
 private:
+	struct Room {
+		const Aurora::LYTFile::Room *lytRoom;
+
+		Graphics::Aurora::Model *model;
+
+		bool visible;
+		std::vector<Room *> visibles;
+
+		Room(const Aurora::LYTFile::Room &lRoom);
+		~Room();
+	};
+
 	const ModelLoader *_modelLoader;
 
 	Aurora::LYTFile _lyt;
 	Aurora::VISFile _vis;
 
-	std::vector<Graphics::Aurora::Model *> _models;
+	std::vector<Room *> _rooms;
 
 	std::list<Placeable *> _placeables;
 	std::list<Creature  *> _creatures;
@@ -68,6 +80,7 @@ private:
 	void loadGIT(const Common::UString &name);
 
 	void loadModels(const Common::UString &name);
+	void loadVisibles();
 
 	void loadPlaceable(Aurora::GFFFile::ListIterator &placeable);
 	void loadCreature(Aurora::GFFFile::ListIterator &creature);
