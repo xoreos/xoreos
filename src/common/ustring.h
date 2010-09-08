@@ -67,6 +67,8 @@ public:
 	UString &operator+=(const char *str);
 	UString &operator+=(uint32 c);
 
+	bool equalsIgnoreCase(const UString &str) const;
+
 	/** Swap the contents of the string with this string's. */
 	void swap(UString &str);
 

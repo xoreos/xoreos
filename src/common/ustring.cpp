@@ -274,6 +274,16 @@ UString &UString::operator+=(uint32 c) {
 	return *this;
 }
 
+bool UString::equalsIgnoreCase(const UString &str) const {
+	UString tmp1 = *this;
+	UString tmp2 = str;
+
+	tmp1.tolower();
+	tmp2.tolower();
+
+	return tmp1 == tmp2;
+}
+
 void UString::swap(UString &str) {
 	_string.swap(str._string);
 
