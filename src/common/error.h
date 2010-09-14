@@ -28,6 +28,7 @@ public:
 
 	StackException(const char *s, ...);
 	StackException(const StackException &e);
+	~StackException() throw();
 
 	void add(const char *s, ...);
 

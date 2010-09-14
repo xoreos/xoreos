@@ -35,6 +35,9 @@ StackException::StackException(const StackException &e) {
 	_stack = e._stack;
 }
 
+StackException::~StackException() throw() {
+}
+
 void StackException::add(const char *s, ...) {
 	char buf[STRINGBUFLEN];
 	va_list va;
