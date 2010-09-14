@@ -31,9 +31,9 @@
 
 #include "graphics/glew/glew.h"
 #if defined(_WIN32)
-#  include "wglew.h"
+#  include "graphics/glew/wglew.h"
 #elif !defined(__APPLE__) || defined(GLEW_APPLE_GLX)
-#  include "glxew.h"
+#  include "graphics/glew/glxew.h"
 #endif
 
 /*
