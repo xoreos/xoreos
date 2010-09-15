@@ -31,6 +31,17 @@
 void init();
 void deinit();
 
+// *grumbles about Microsoft incompetence*
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+int __stdcall WinMain(HINSTANCE /*hInst*/, HINSTANCE /*hPrevInst*/,  LPSTR /*lpCmdLine*/, int /*iShowCmd*/) {
+	SDL_SetModuleHandle(GetModuleHandle(NULL));
+	return main(__argc, __argv);
+}
+#endif
+
 int main(int argc, char **argv) {
 	if (argc < 2) {
 		std::printf("Usage: %s </path/to/aurora/game>\n", argv[0]);
