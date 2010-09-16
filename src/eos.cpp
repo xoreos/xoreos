@@ -48,7 +48,8 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	Common::UString baseDir = Common::FilePath::makeAbsolute((const Common::UString &) argv[1]);
+	Common::UString dirArg  = argv[1];
+	Common::UString baseDir = Common::FilePath::makeAbsolute(dirArg);
 
 	if (!Common::FilePath::isDirectory(baseDir) && !Common::FilePath::isRegularFile(baseDir))
 		error("No such file or directory \"%s\"", baseDir.c_str());
