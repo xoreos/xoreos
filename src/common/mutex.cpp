@@ -35,9 +35,7 @@ void Mutex::lock() {
 }
 
 void Mutex::unlock() {
-	int res = SDL_UnlockMutex(_mutex);
-
-	assert(res == 0);
+	SDL_UnlockMutex(_mutex);
 }
 
 
