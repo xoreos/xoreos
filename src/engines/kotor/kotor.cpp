@@ -224,6 +224,12 @@ void KotOREngine::init() {
 	status("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"      , 0, -1, 33);
 
+	if (_platform == Aurora::kPlatformMacOSX) {
+		status("Indexing Mac-specific resources");
+		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources",         0, -1, 33);
+		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources/Cursors", 0, -1, 34);
+	}
+
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 40);
 }
