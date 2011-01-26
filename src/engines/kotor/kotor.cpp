@@ -21,6 +21,7 @@
 #include "common/util.h"
 #include "common/strutil.h"
 #include "common/filelist.h"
+#include "common/filepath.h"
 #include "common/stream.h"
 
 #include "graphics/graphics.h"
@@ -56,7 +57,12 @@ const Common::UString &KotOREngineProbe::getGameName() const {
 }
 
 bool KotOREngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
-	// If either swkotor.ini or swkotor.exe exists, this should be a valid path
+	// If the "Knights of the Old Republic.app" directory exists, this should be a valid path for the Mac OS X port
+	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "Knights of the Old Republic.app");
+	if (!appDirectory.empty())
+		return true;
+
+	// If either swkotor.ini or swkotor.exe exists, this should be a valid path for the Windows port
 	return rootFiles.contains(".*/swkotor.(exe|ini)", true);
 }
 
