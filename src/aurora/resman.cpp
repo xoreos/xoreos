@@ -76,6 +76,9 @@ ResourceManager::ResourceManager() : _rimsAreERFs(false) {
 	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeWAV);
 	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeBMU);
 	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeOGG);
+
+	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeCUR);
+	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeCURS);
 }
 
 ResourceManager::~ResourceManager() {

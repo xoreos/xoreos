@@ -196,7 +196,7 @@ enum FileType {
 	kFileTypeANB            = 22000, ///< Animation blend.
 	kFileTypeANI            = 22001, ///< Animation sequence.
 	kFileTypeCNS            = 22002, ///< Script, client script source.
-	kFileTypeCUR            = 22003, ///< Image, Windows cursor.
+	kFileTypeCUR            = 22003, ///< Cursor, Windows cursor.
 	kFileTypeEVT            = 22004, ///< Animation event.
 	kFileTypeFDL            = 22005,
 	kFileTypeFXO            = 22006,
@@ -288,10 +288,11 @@ enum Language {
 };
 
 enum ResourceType {
-	kResourceImage, ///< A music resource.
-	kResourceVideo, ///< A video resource.
-	kResourceSound, ///< A sound resource.
-	kResourceMusic, ///< A music resource.
+	kResourceImage,  ///< A music resource.
+	kResourceVideo,  ///< A video resource.
+	kResourceSound,  ///< A sound resource.
+	kResourceMusic,  ///< A music resource.
+	kResourceCursor, ///< A cursor resource.
 	kResourceMAX
 };
 
