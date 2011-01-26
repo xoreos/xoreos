@@ -224,7 +224,11 @@ enum FileType {
 	kFileTypeOPF            = 22028,
 
 	// Found in KotOR Mac
-	kFileTypeMOV            = 23000  ///< Video, QuickTime/MPEG-4.
+	kFileTypeMOV            = 23000, ///< Video, QuickTime/MPEG-4.
+	kFileTypeCURS           = 23001, ///< Cursor, Mac CURS format.
+	kFileTypePICT           = 23002, ///< Image, Mac PICT format.
+	kFileTypeRSRC           = 23003, ///< Mac resource fork.
+	kFileTypePLIST          = 23004  ///< Mac property list (XML).
 };
 
 enum GameID {
