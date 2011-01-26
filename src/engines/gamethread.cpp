@@ -15,6 +15,8 @@
 #include "common/util.h"
 #include "common/error.h"
 
+#include "aurora/util.h"
+
 #include "engines/gamethread.h"
 #include "engines/enginemanager.h"
 
@@ -24,6 +26,7 @@ namespace Engines {
 
 GameThread::GameThread() {
 	_gameID = Aurora::kGameIDUnknown;
+	_platform = Aurora::kPlatformUnknown;
 }
 
 GameThread::~GameThread() {
@@ -34,13 +37,14 @@ void GameThread::init(const Common::UString &baseDir) {
 
 	_baseDir = baseDir;
 
-	_gameID = EngineMan.probeGameID(_baseDir);
+	_gameID = EngineMan.probeGameID(_baseDir, _platform);
 
 	if (_gameID == Aurora::kGameIDUnknown)
 		throw Common::Exception("Unable to detect the game ID");
 
 	// Set the window title to our and the detected game's name
-	GfxMan.setWindowTitle(Common::UString(PACKAGE_STRING " -- ") + EngineMan.getGameName(_gameID));
+	GfxMan.setWindowTitle(Common::UString(PACKAGE_STRING " -- ") + EngineMan.getGameName(_gameID)
+			+ " (" + Aurora::getPlatformDescription(_platform) + ")");
 
 	status("Detected game ID %d -- %s", _gameID, EngineMan.getGameName(_gameID).c_str());
 }
@@ -52,7 +56,7 @@ void GameThread::run() {
 
 void GameThread::threadMethod() {
 	try {
-		EngineMan.run(_gameID, _baseDir);
+		EngineMan.run(_gameID, _baseDir, _platform);
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}

@@ -35,6 +35,7 @@ public:
 private:
 	Common::UString _baseDir;
 	Aurora::GameID _gameID;
+	Aurora::Platform _platform;
 
 	void threadMethod();
 };

@@ -41,6 +41,8 @@ public:
 
 	Engines::Engine *createEngine() const;
 
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformNDS; }
+
 private:
 	static const Common::UString kGameName;
 };

@@ -40,8 +40,7 @@ public:
 
 	const Common::UString &getGameName() const;
 
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	bool probe(Common::SeekableReadStream &stream) const;
+	bool probe(Common::SeekableReadStream &stream) const { return false; }
 
 	Engines::Engine *createEngine() const;
 
@@ -49,7 +48,24 @@ private:
 	static const Common::UString kGameName;
 };
 
-extern const KotOREngineProbe kKotOREngineProbe;
+class KotOREngineProbeWin : public KotOREngineProbe {
+public:
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
+};
+
+class KotOREngineProbeMac : public KotOREngineProbe {
+public:
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformMacOSX; }
+};
+
+extern const KotOREngineProbeWin kKotOREngineProbeWin;
+extern const KotOREngineProbeMac kKotOREngineProbeMac;
 
 class KotOREngine : public Engines::Engine {
 public:

@@ -33,19 +33,20 @@ public:
 	/** Find an engine capable of running the game found in the directory or file.
 	 *
 	 *  @param  target The directory or file containing game data.
+	 *  @param  platform The platform found
 	 *  @return A GameID of the game found in that directory or file, or kGameIDUnknown.
 	 */
-	Aurora::GameID probeGameID(const Common::UString &target) const;
+	Aurora::GameID probeGameID(const Common::UString &target, Aurora::Platform &platform) const;
 
 	/** Return the full game name to that game ID. */
 	const Common::UString &getGameName(Aurora::GameID gameID) const;
 
 	/** Run the specified game found in that directory or file. */
-	void run(Aurora::GameID gameID, const Common::UString &target) const;
+	void run(Aurora::GameID gameID, const Common::UString &target, Aurora::Platform platform) const;
 
 private:
-	Aurora::GameID probeGameID(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	Aurora::GameID probeGameID(Common::SeekableReadStream &stream) const;
+	Aurora::GameID probeGameID(const Common::UString &directory, const Common::FileList &rootFiles, Aurora::Platform &platform) const;
+	Aurora::GameID probeGameID(Common::SeekableReadStream &stream, Aurora::Platform &platform) const;
 
 	void cleanup() const;
 };

@@ -44,7 +44,8 @@ namespace Engines {
 
 namespace KotOR {
 
-const KotOREngineProbe kKotOREngineProbe;
+const KotOREngineProbeWin kKotOREngineProbeWin;
+const KotOREngineProbeMac kKotOREngineProbeMac;
 
 const Common::UString KotOREngineProbe::kGameName = "Star Wars: Knights of the Old Republic";
 
@@ -56,22 +57,19 @@ const Common::UString &KotOREngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool KotOREngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
-	// If the "Knights of the Old Republic.app" directory exists, this should be a valid path for the Mac OS X port
-	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "Knights of the Old Republic.app");
-	if (!appDirectory.empty())
-		return true;
+Engines::Engine *KotOREngineProbe::createEngine() const {
+	return new KotOREngine;
+}
 
+bool KotOREngineProbeWin::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If either swkotor.ini or swkotor.exe exists, this should be a valid path for the Windows port
 	return rootFiles.contains(".*/swkotor.(exe|ini)", true);
 }
 
-bool KotOREngineProbe::probe(Common::SeekableReadStream &stream) const {
-	return false;
-}
-
-Engines::Engine *KotOREngineProbe::createEngine() const {
-	return new KotOREngine;
+bool KotOREngineProbeMac::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+	// If the "Knights of the Old Republic.app" directory exists, this should be a valid path for the Mac OS X port
+	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "Knights of the Old Republic.app");
+	return !appDirectory.empty();
 }
 
 
