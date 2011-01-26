@@ -196,7 +196,7 @@ enum FileType {
 	kFileTypeANB            = 22000, ///< Animation blend.
 	kFileTypeANI            = 22001, ///< Animation sequence.
 	kFileTypeCNS            = 22002, ///< Script, client script source.
-	kFileTypeCUR            = 22003, ///< Image, Window cursor.
+	kFileTypeCUR            = 22003, ///< Image, Windows cursor.
 	kFileTypeEVT            = 22004, ///< Animation event.
 	kFileTypeFDL            = 22005,
 	kFileTypeFXO            = 22006,
