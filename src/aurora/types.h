@@ -221,7 +221,10 @@ enum FileType {
 	kFileTypeARL            = 22025, ///< Area layout.
 	kFileTypeFEV            = 22026, ///< FMOD Event.
 	kFileTypeFSB            = 22027, ///< Audio, FMOD sound bank.
-	kFileTypeOPF            = 22028
+	kFileTypeOPF            = 22028,
+
+	// Found in KotOR Mac
+	kFileTypeMOV            = 23000  ///< Video, QuickTime/MPEG-4.
 };
 
 enum GameID {

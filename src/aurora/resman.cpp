@@ -68,6 +68,7 @@ ResourceManager::ResourceManager() : _rimsAreERFs(false) {
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeBIK);
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeMPG);
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeWMV);
+	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeMOV);
 
 	_resourceTypeTypes[kResourceSound].push_back(kFileTypeWAV);
 	_resourceTypeTypes[kResourceSound].push_back(kFileTypeOGG);

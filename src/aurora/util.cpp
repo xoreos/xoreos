@@ -227,7 +227,9 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeARL,            ".arl"},
 	{kFileTypeFEV,            ".fev"},
 	{kFileTypeFSB,            ".fsb"},
-	{kFileTypeOPF,            ".opf"}
+	{kFileTypeOPF,            ".opf"},
+
+	{kFileTypeMOV,            ".mov"}
 };
 
 FileType getFileType(const Common::UString &path) {
