@@ -301,6 +301,14 @@ enum ArchiveType {
 	kArchiveNDS      ///< Nintendo DS ROM.
 };
 
+enum Platform {
+	kPlatformWindows =  0, ///< Microsoft Windows
+	kPlatformNDS,          ///< Nintendo DS
+	kPlatformMacOSX,       ///< Mac OS X
+	kPlatformXbox,         ///< Microsoft Xbox
+	kPlatformUnknown       ///< Unknown (must be last)
+};
+
 static const uint32 kObjectIDInvalid = 0xFFFFFFFF;
 static const uint32 kStrRefInvalid   = 0xFFFFFFFF;
 

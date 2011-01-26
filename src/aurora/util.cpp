@@ -313,4 +313,12 @@ bool isLanguageTheWitcher(Language language) {
 	       (language == kLanguageWitcherChineseSimplified);
 }
 
+Common::UString getPlatformDescription(Platform platform) {
+	static const char *names[] = {
+		"Windows", "Nintendo DS", "Mac OS X", "Xbox", "Unknown"
+	};
+
+	return names[platform];
+}
+
 } // End of namespace Aurora

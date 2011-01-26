@@ -37,6 +37,9 @@ FileType getFileType(const Common::UString &path);
 /** Return the file name with a swapped extensions according to the specified file type. */
 Common::UString setFileType(const Common::UString &path, FileType type);
 
+/** Return the human readable string of a Platform. */
+Common::UString getPlatformDescription(Platform platform);
+
 } // End of namespace Aurora
 
 #endif // AURORA_UTIL_H
