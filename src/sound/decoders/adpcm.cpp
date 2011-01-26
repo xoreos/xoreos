@@ -117,6 +117,97 @@ int Ima_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
 	return samples;
 }
 
+class Apple_ADPCMStream : public Ima_ADPCMStream {
+protected:
+	// Apple QuickTime IMA ADPCM
+	int32 _streamPos[2];
+	int16 _buffer[2][2];
+	uint8 _chunkPos[2];
+
+	void reset() {
+		Ima_ADPCMStream::reset();
+		_chunkPos[0] = 0;
+		_chunkPos[1] = 0;
+		_streamPos[0] = 0;
+		_streamPos[1] = _blockAlign;
+	}
+
+public:
+	Apple_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+		: Ima_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
+		_chunkPos[0] = 0;
+		_chunkPos[1] = 0;
+		_streamPos[0] = 0;
+		_streamPos[1] = _blockAlign;
+	}
+
+	virtual int readBuffer(int16 *buffer, const int numSamples);
+
+};
+
+int Apple_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
+	// Need to write at least one samples per channel
+	assert((numSamples % _channels) == 0);
+
+	// Current sample positions
+	int samples[2] = { 0, 0};
+
+	// Number of samples per channel
+	int chanSamples = numSamples / _channels;
+
+	for (int i = 0; i < _channels; i++) {
+		_stream->seek(_streamPos[i]);
+
+		while ((samples[i] < chanSamples) &&
+		       // Last byte read and a new one needed
+		       !((_stream->eos() || (_stream->pos() >= _endpos)) && (_chunkPos[i] == 0))) {
+
+			if (_blockPos[i] == _blockAlign) {
+				// 2 byte header per block
+				uint16 temp = _stream->readUint16BE();
+
+				// First 9 bits are the upper bits of the predictor
+				_status.ima_ch[i].last      = (int16) (temp & 0xFF80);
+				// Lower 7 bits are the step index
+				_status.ima_ch[i].stepIndex =          temp & 0x007F;
+
+				// Clip the step index
+				_status.ima_ch[i].stepIndex = CLIP<int32>(_status.ima_ch[i].stepIndex, 0, 88);
+
+				_blockPos[i] = 2;
+			}
+
+			if (_chunkPos[i] == 0) {
+				// Decode data
+				byte data = _stream->readByte();
+				_buffer[i][0] = decodeIMA(data &  0x0F, i);
+				_buffer[i][1] = decodeIMA(data >>    4, i);
+			}
+
+			// The original is interleaved block-wise, we want it sample-wise
+			buffer[_channels * samples[i] + i] = _buffer[i][_chunkPos[i]];
+
+			if (++_chunkPos[i] > 1) {
+				// We're about to decode the next byte, so advance the block position
+				_chunkPos[i] = 0;
+				_blockPos[i]++;
+			}
+
+			samples[i]++;
+
+			if (_channels == 2)
+				if (_blockPos[i] == _blockAlign)
+					// We're at the end of the block.
+					// Since the channels are interleaved, skip the next block
+					_stream->skip(MIN<uint32>(_blockAlign, _endpos - _stream->pos()));
+
+			_streamPos[i] = _stream->pos();
+		}
+	}
+
+	return samples[0] + samples[1];
+}
+
 class MSIma_ADPCMStream : public Ima_ADPCMStream {
 public:
 	MSIma_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
@@ -339,6 +430,8 @@ RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, bool 
 		return new MSIma_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
 	case kADPCMMS:
 		return new MS_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
+	case kADPCMApple:
+		return new Apple_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
 	default:
 		error("Unsupported ADPCM encoding");
 		break;

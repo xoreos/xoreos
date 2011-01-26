@@ -29,8 +29,9 @@ class RewindableAudioStream;
 // Usually, if the audio stream we're trying to play has the FourCC header
 // string intact, it's easy to discern which encoding is used
 enum ADPCMTypes {
-	kADPCMMSIma,	// Microsoft IMA ADPCM
-	kADPCMMS		// Microsoft ADPCM
+	kADPCMMSIma,    // Microsoft IMA ADPCM
+	kADPCMMS,       // Microsoft ADPCM
+	kADPCMApple     // Apple QuickTime IMA ADPCM
 };
 
 /**
