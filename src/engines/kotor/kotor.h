@@ -69,13 +69,14 @@ extern const KotOREngineProbeMac kKotOREngineProbeMac;
 
 class KotOREngine : public Engines::Engine {
 public:
-	KotOREngine();
+	KotOREngine(Aurora::Platform platform);
 	~KotOREngine();
 
 	void run(const Common::UString &target);
 
 private:
 	Common::UString _baseDirectory;
+	Aurora::Platform _platform;
 
 	ModelLoader *_modelLoader;
 

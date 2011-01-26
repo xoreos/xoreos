@@ -58,7 +58,7 @@ const Common::UString &KotOREngineProbe::getGameName() const {
 }
 
 Engines::Engine *KotOREngineProbe::createEngine() const {
-	return new KotOREngine;
+	return new KotOREngine(getPlatform());
 }
 
 bool KotOREngineProbeWin::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
@@ -73,7 +73,7 @@ bool KotOREngineProbeMac::probe(const Common::UString &directory, const Common::
 }
 
 
-KotOREngine::KotOREngine() {
+KotOREngine::KotOREngine(Aurora::Platform platform) : _platform(platform) {
 	_modelLoader = new KotORModelLoader;
 }
 
@@ -90,6 +90,11 @@ void KotOREngine::run(const Common::UString &target) {
 
 	playVideo("leclogo");
 	playVideo("biologo");
+
+	// On Mac OS X, play the Aspyr logo
+	if (_platform == Aurora::kPlatformMacOSX)
+		playVideo("Aspyr_BlueDust_intro");
+
 	playVideo("legal");
 
 	playVideo("01a");
