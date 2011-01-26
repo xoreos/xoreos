@@ -83,7 +83,7 @@ public:
 	/** Does the list contain the specified file?
 	 *
 	 *  @param  fileName The file to look for.
-	 *  @return true if the file is in the list, fale if not.
+	 *  @return true if the file is in the list, false if not.
 	 */
 	bool contains(const UString &fileName) const;
 
