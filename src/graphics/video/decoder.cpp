@@ -114,6 +114,21 @@ void VideoDecoder::queueSound(const byte *data, uint32 dataSize) {
 	SoundMan.startChannel(_soundHandle);
 }
 
+void VideoDecoder::queueSound(Sound::AudioStream *stream) {
+	if (!_sound)
+		return;
+
+	assert(stream);
+
+	_sound->queueAudioStream(stream);
+
+	SoundMan.startChannel(_soundHandle);
+}
+
+uint32 VideoDecoder::getNumQueuedStreams() const {
+	return _sound ? _sound->numQueuedStreams() : 0;
+}
+
 void VideoDecoder::rebuild() {
 	if (!_data)
 		return;

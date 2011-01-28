@@ -24,6 +24,7 @@
 #include "sound/types.h"
 
 namespace Sound {
+	class AudioStream;
 	class QueuingAudioStream;
 }
 
@@ -77,6 +78,9 @@ protected:
 	void deinitSound();
 
 	void queueSound(const byte *data, uint32 dataSize);
+	void queueSound(Sound::AudioStream *stream);
+
+	uint32 getNumQueuedStreams() const;
 
 	/** Process the video's image and sound data further. */
 	virtual void processData() = 0;

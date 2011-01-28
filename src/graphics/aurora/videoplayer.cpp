@@ -19,6 +19,7 @@
 
 #include "graphics/video/decoder.h"
 #include "graphics/video/bink.h"
+#include "graphics/video/quicktime.h"
 
 #include "graphics/aurora/videoplayer.h"
 
@@ -48,6 +49,8 @@ void VideoPlayer::load(const Common::UString &name) {
 	// Loading the different image formats
 	if      (type == ::Aurora::kFileTypeBIK)
 		_video = new Bink(video);
+	else if (type == ::Aurora::kFileTypeMOV)
+		_video = new QuickTimeDecoder(video);
 	else {
 		delete video;
 		throw Common::Exception("Unsupported video resource type %d", (int) type);

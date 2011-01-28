@@ -9,4 +9,5 @@ noinst_HEADERS = decoder.h \
 
 libvideo_la_SOURCES = decoder.cpp \
                       bink.cpp \
-                      fader.cpp
+                      fader.cpp \
+                      quicktime.cpp
