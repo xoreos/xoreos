@@ -46,6 +46,26 @@ Texture::Texture(const Common::UString &name) : _textureID(0),
 	addToQueue();
 }
 
+Texture::Texture(ImageDecoder *image, const TXI &txi) {
+	assert(image);
+
+	_txi = new TXI(txi);
+
+	load(image);
+
+	addToQueue();
+}
+
+Texture::Texture(ImageDecoder *image) {
+	assert(image);
+
+	_txi = new TXI();
+
+	load(image);
+
+	addToQueue();
+}
+
 Texture::~Texture() {
 	if (_textureID != 0)
 		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_textureID));
@@ -104,6 +124,12 @@ void Texture::load(const Common::UString &name) {
 
 		delete txiStream;
 	}
+
+	RequestMan.dispatchAndForget(RequestMan.loadTexture(this));
+}
+
+void Texture::load(ImageDecoder *image) {
+	_image = image;
 
 	RequestMan.dispatchAndForget(RequestMan.loadTexture(this));
 }

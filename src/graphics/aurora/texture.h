@@ -37,6 +37,8 @@ namespace Aurora {
 class Texture : public Graphics::Texture {
 public:
 	Texture(const Common::UString &name);
+	Texture(ImageDecoder *image, const TXI &txi);
+	Texture(ImageDecoder *image);
 	~Texture();
 
 	/** Return the ID of the texture for use with OpenGL. */
@@ -62,6 +64,7 @@ private:
 	uint32 _height;
 
 	void load(const Common::UString &name);
+	void load(ImageDecoder *image);
 
 
 // To be called from the main/events/graphics thread
