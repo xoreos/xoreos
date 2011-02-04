@@ -79,6 +79,8 @@ ResourceManager::ResourceManager() : _rimsAreERFs(false) {
 
 	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeCUR);
 	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeCURS);
+	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeDDS);
+	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeTGA);
 }
 
 ResourceManager::~ResourceManager() {
