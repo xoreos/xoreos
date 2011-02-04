@@ -1,5 +1,5 @@
 /* eos - A reimplementation of BioWare's Aurora engine
- * Copyright (c) 2010 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)
+ * Copyright (c) 2010-2011 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)
  *
  * The Infinity, Aurora, Odyssey and Eclipse engines, Copyright (c) BioWare corp.
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
