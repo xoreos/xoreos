@@ -34,6 +34,7 @@ namespace Common {
 namespace Graphics {
 
 class FPSCounter;
+class Cursor;
 
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager> {
@@ -65,7 +66,17 @@ public:
 	/** Unlock the frame mutex. */
 	void unlockFrame();
 
+	/** Set the current cursor. */
+	void setCursor(Cursor *cursor = 0);
+
+
 private:
+	enum CursorState {
+		kCursorStateStay,
+		kCursorStateSwitchOn,
+		kCursorStateSwitchOff
+	};
+
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
 	// Extensions
@@ -78,13 +89,17 @@ private:
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 
-	Common::Mutex _frameMutex; ///< A mutex locked for each frame.
+	Common::Mutex _frameMutex;  ///< A mutex locked for each frame.
+	Common::Mutex _cursorMutex; ///< A mutex locked for the cursor.
 
 	Texture::Queue       _textures;        ///< All existing textures.
 	Renderable::Queue    _objects;         ///< Normal game objects currently in the render queue.
 	Renderable::Queue    _guiFrontObjects; ///< GUI front elements currently in the render queue.
 	ListContainer::Queue _listContainers;  ///< All existing list containers.
 	VideoDecoder::Queue  _videos;          ///< Currently playing videos.
+
+	Cursor     *_cursor;       ///< The current cursor.
+	CursorState _cursorState;  ///< What to do with the cursor.
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void checkGLExtensions();
@@ -103,6 +118,8 @@ private:
 	void destroyVideos();
 	void rebuildVideos();
 
+	void handleCursorSwitch();
+
 
 // For Queueables
 public:
@@ -113,6 +130,8 @@ public:
 	VideoDecoder::Queue &getVideoQueue();
 
 	Queueable<Renderable>::Queue &getRenderableQueue(RenderableQueue queue);
+
+	void showCursor(bool show);
 
 
 // Thread-unsafe functions. Should only ever be called from the main thread.

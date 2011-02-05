@@ -21,6 +21,7 @@
 #include "events/requests.h"
 
 #include "graphics/graphics.h"
+#include "graphics/cursor.h"
 #include "graphics/fpscounter.h"
 #include "graphics/renderable.h"
 
@@ -46,6 +47,9 @@ GraphicsManager::GraphicsManager() {
 	_screen = 0;
 
 	_fpsCounter = new FPSCounter(3);
+
+	_cursor = 0;
+	_cursorState = kCursorStateStay;
 }
 
 GraphicsManager::~GraphicsManager() {
@@ -214,6 +218,12 @@ void GraphicsManager::unlockFrame() {
 	_frameMutex.unlock();
 }
 
+void GraphicsManager::setCursor(Cursor *cursor) {
+	Common::StackLock lockFrame(_frameMutex);
+
+	_cursor = cursor;
+}
+
 void GraphicsManager::clearRenderQueue() {
 	Common::StackLock lockObjects(_objects.mutex);
 	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
@@ -234,6 +244,10 @@ void GraphicsManager::clearRenderQueue() {
 void GraphicsManager::renderScene() {
 	Common::StackLock lockFrame(_frameMutex);
 	Common::StackLock lockVideos(_videos.mutex);
+
+	// Switch cursor on/off
+	if (_cursorState != kCursorStateStay)
+		handleCursorSwitch();
 
 	// Clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -306,6 +320,16 @@ void GraphicsManager::renderScene() {
 		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
 
 		(*obj)->render();
+	}
+
+	// Draw the cursor
+	if (_cursor) {
+		glLoadIdentity();
+		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
+		//glTranslatef(- (2.0 / _screen->w), - (2.0 / _screen->h), 0.0);
+		glTranslatef(- (_screen->w / 2.0), _screen->h / 2.0, 0.0);
+
+		_cursor->render();
 	}
 
 	glEnable(GL_DEPTH_TEST);
@@ -406,6 +430,17 @@ void GraphicsManager::rebuildVideos() {
 
 	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video)
 		(*video)->rebuild();
+}
+
+void GraphicsManager::handleCursorSwitch() {
+	Common::StackLock lock(_cursorMutex);
+
+	if      (_cursorState == kCursorStateSwitchOn)
+		SDL_ShowCursor(SDL_ENABLE);
+	else if (_cursorState == kCursorStateSwitchOff)
+		SDL_ShowCursor(SDL_DISABLE);
+
+	_cursorState = kCursorStateStay;
 }
 
 void GraphicsManager::toggleFullScreen() {
@@ -542,6 +577,10 @@ Queueable<Renderable>::Queue &GraphicsManager::getRenderableQueue(RenderableQueu
 		return getGUIFrontQueue();
 	else
 		throw Common::Exception("Unknown queue");
+}
+
+void GraphicsManager::showCursor(bool show) {
+	_cursorState = show ? kCursorStateSwitchOn : kCursorStateSwitchOff;
 }
 
 } // End of namespace Graphics
