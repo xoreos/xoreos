@@ -68,6 +68,7 @@ private:
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
 
 	void init();
+	void initCursors();
 };
 
 } // End of namespace NWN
