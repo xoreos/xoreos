@@ -31,6 +31,8 @@
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/model.h"
 
+#include "graphics/aurora/cursorman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -100,11 +102,16 @@ void NWNEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
+	CursorMan.hideCursor();
+	CursorMan.set("gui_mp_defaultd");
+
 	playVideo("atarilogo");
 	playVideo("biowarelogo");
 	playVideo("wotclogo");
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
+
+	CursorMan.showCursor();
 
 	// Menu music
 	Sound::ChannelHandle menuMusic = _hasXP2 ?
