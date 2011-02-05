@@ -22,8 +22,9 @@
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
-#include "graphics/aurora/textureman.h"
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
+#include "graphics/aurora/textureman.h"
 
 #include "events/events.h"
 
@@ -151,8 +152,9 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target, Au
 void EngineManager::cleanup() const {
 	try {
 		ResMan.clear();
-		TextureMan.clear();
+		CursorMan.clear();
 		FontMan.clear();
+		TextureMan.clear();
 		TalkMan.clear();
 	} catch (...) {
 	}
