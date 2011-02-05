@@ -35,6 +35,7 @@ struct ManagedTexture {
 	uint32 referenceCount;
 
 	ManagedTexture(const Common::UString &name);
+	ManagedTexture(const Common::UString &name, Texture *t);
 	~ManagedTexture();
 };
 
@@ -56,6 +57,8 @@ public:
 	~TextureManager();
 
 	void clear();
+
+	TextureHandle add(const Common::UString &name, Texture *texture);
 
 	TextureHandle get(const Common::UString &name);
 	void release(TextureHandle &handle);

@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/error.h"
 
 #include "graphics/aurora/textureman.h"
 #include "graphics/aurora/texture.h"
@@ -28,6 +29,11 @@ namespace Aurora {
 ManagedTexture::ManagedTexture(const Common::UString &name) {
 	referenceCount = 0;
 	texture = new Texture(name);
+}
+
+ManagedTexture::ManagedTexture(const Common::UString &name, ::Graphics::Texture *t) {
+	referenceCount = 0;
+	texture = t;
 }
 
 ManagedTexture::~ManagedTexture() {
@@ -63,6 +69,26 @@ void TextureManager::clear() {
 		delete texture->second;
 
 	_textures.clear();
+}
+
+TextureHandle TextureManager::add(const Common::UString &name, ::Graphics::Texture *texture) {
+	Common::StackLock lock(_mutex);
+
+	TextureMap::iterator text = _textures.find(name);
+	if (text != _textures.end())
+		throw Common::Exception("Texture \"%s\" already exists", name.c_str());
+
+	std::pair<TextureMap::iterator, bool> result;
+
+	ManagedTexture *t = new ManagedTexture(name, texture);
+
+	result = _textures.insert(std::make_pair(name, t));
+
+	text = result.first;
+
+	text->second->referenceCount++;
+
+	return TextureHandle(text);
 }
 
 TextureHandle TextureManager::get(const Common::UString &name) {
