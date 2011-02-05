@@ -272,6 +272,10 @@ const TXI::Features &TXI::getFeatures() const {
 	return _features;
 }
 
+TXI::Features &TXI::getFeatures() {
+	return _features;
+}
+
 TXI::Blending TXI::parseBlending(const char *str) {
 	for (int i = 0; i < ARRAYSIZE(kBlendings); i++)
 		if (!strcmp(str, kBlendings[i]))

@@ -113,6 +113,7 @@ public:
 	bool isEmpty() const;
 
 	const Features &getFeatures() const;
+	Features &getFeatures();
 
 private:
 	enum Mode {
