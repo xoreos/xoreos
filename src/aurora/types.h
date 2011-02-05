@@ -159,6 +159,11 @@ enum FileType {
 	kFileTypeBIF            =  9998, ///< Game resource data.
 	kFileTypeKEY            =  9999, ///< Game resource index.
 
+	// Found in NWN
+	kFileTypeDBF            = 19000, ///< xBase database.
+	kFileTypeCDX            = 19001, ///< FoxPro database index.
+	kFileTypeFPT            = 19002, ///< FoxPro database memo file.
+
 	// Found in NWN2's ZIP files
 	kFileTypeFXA            = 20000, ///< Face bone definitions, FaceFX Actor.
 	kFileTypeFXE            = 20001, ///< Facial animations, FaceFX.
