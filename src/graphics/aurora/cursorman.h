@@ -35,15 +35,29 @@ public:
 
 	void clear();
 
+	void add(const Common::UString &name, const Common::UString &tag, bool enabled);
+
 	void set(const Common::UString &name = "");
+	void set(const Common::UString &tag, bool enabled);
 
 	void hideCursor();
 	void showCursor();
 
 private:
+	struct Tag {
+		Common::UString tag;
+		bool enabled;
+
+		Tag(const Common::UString &t, bool e);
+
+		bool operator<(const Tag &t) const;
+	};
+
 	typedef std::map<Common::UString, Cursor *> CursorMap;
+	typedef std::map<Tag, Cursor *> TagMap;
 
 	CursorMap _cursors;
+	TagMap _tags;
 
 	bool _hidden;
 	Cursor *_currentCursor;

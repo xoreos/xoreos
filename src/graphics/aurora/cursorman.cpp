@@ -26,6 +26,14 @@ namespace Graphics {
 
 namespace Aurora {
 
+CursorManager::Tag::Tag(const Common::UString &t, bool e) : tag(t), enabled(e) {
+}
+
+bool CursorManager::Tag::operator<(const Tag &t) const {
+	return (tag < t.tag) || (enabled < t.enabled);
+}
+
+
 CursorManager::CursorManager() : _hidden(false), _currentCursor(0) {
 }
 
@@ -43,6 +51,18 @@ void CursorManager::clear() {
 		delete cursor->second;
 
 	_cursors.clear();
+	_tags.clear();
+}
+
+void CursorManager::add(const Common::UString &name,
+		const Common::UString &tag, bool enabled) {
+
+	Tag t(tag, enabled);
+	if (_tags.find(t) != _tags.end())
+		throw Common::Exception("Cursor \"%s\":%d already exists", tag.c_str(), enabled);
+
+	Cursor *c = get(name);
+	_tags.insert(std::make_pair(t, c));
 }
 
 void CursorManager::set(const Common::UString &name) {
@@ -50,6 +70,19 @@ void CursorManager::set(const Common::UString &name) {
 		_currentCursor = get(name);
 	else
 		_currentCursor = 0;
+
+	if (!_hidden) {
+		set(_currentCursor);
+		GfxMan.showCursor(_currentCursor == 0);
+	}
+}
+
+void CursorManager::set(const Common::UString &tag, bool enabled) {
+	TagMap::const_iterator t = _tags.find(Tag(tag, enabled));
+	if (t == _tags.end())
+		throw Common::Exception("No such cursor \"%s\":%d", tag.c_str(), enabled);
+
+	_currentCursor = t->second;
 
 	if (!_hidden) {
 		set(_currentCursor);
