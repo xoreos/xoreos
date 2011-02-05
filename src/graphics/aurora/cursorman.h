@@ -35,9 +35,18 @@ public:
 
 	void clear();
 
+	/** Add a cursor with that tag and enabled state. */
 	void add(const Common::UString &name, const Common::UString &tag, bool enabled);
 
+	/** Set the cursor to a specific resource.
+	 *
+	 *  Will load the cursor if necessary.
+	 *
+	 *  @param name The name of the cursor resource.
+	 *              If empty, reset to the system's default cursor.
+	 */
 	void set(const Common::UString &name = "");
+	/** Set the cursor to a specific tag. */
 	void set(const Common::UString &tag, bool enabled);
 
 	void hideCursor();
