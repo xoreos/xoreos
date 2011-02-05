@@ -452,6 +452,8 @@ void Model::render() {
 
 	TextureMan.activeTexture(0);
 	glEnable(GL_TEXTURE_2D);
+
+	glColor4f(1.0, 1.0, 1.0, 1.0);
 }
 
 void Model::renderState(const State &state) {
