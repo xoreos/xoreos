@@ -168,6 +168,10 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeBIF,            ".bif"},
 	{kFileTypeKEY,            ".key"},
 
+	{kFileTypeDBF,            ".dbf"},
+	{kFileTypeCDX,            ".cdx"},
+	{kFileTypeFPT,            ".fpt"},
+
 	{kFileTypeFXA,            ".fxa"},
 	{kFileTypeFXE,            ".fxe"},
 	{kFileTypeFXM,            ".fxm"},
