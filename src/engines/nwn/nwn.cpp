@@ -195,6 +195,8 @@ void NWNEngine::init() {
 	indexMandatoryDirectory("localvault", 0, 0, 24);
 	status("Indexing extra talktables");
 	indexOptionalDirectory ("tlk"       , 0, 0, 25);
+	status("Indexing databases");
+	indexOptionalDirectory ("database"  , 0, 0, 26);
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
