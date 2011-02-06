@@ -81,6 +81,7 @@ private:
 	ModelLoader *_modelLoader;
 
 	void init();
+	void initCursors();
 };
 
 } // End of namespace KotOR
