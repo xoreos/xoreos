@@ -22,6 +22,7 @@
 #include "graphics/images/txi.h"
 #include "graphics/images/tga.h"
 #include "graphics/images/dds.h"
+#include "graphics/images/winiconimage.h"
 
 #include "graphics/aurora/cursor.h"
 #include "graphics/aurora/texture.h"
@@ -75,9 +76,18 @@ void Cursor::load() {
 		image = new TGA(img);
 	else if (type == ::Aurora::kFileTypeDDS)
 		image = new DDS(img);
-	else {
+	else if (type == ::Aurora::kFileTypeCUR) {
+		WinIconImage *cursor = new WinIconImage(img);
+
+		cursor->load();
+
+		_hotspotX = cursor->getHotspotX();
+		_hotspotY = cursor->getHotspotY();
+
+		image = cursor;
+	} else {
 		delete img;
-		throw Common::Exception("Unsupported image resource type %d", (int) type);
+		throw Common::Exception("Unsupported cursor resource type %d", (int) type);
 	}
 
 	image->load();

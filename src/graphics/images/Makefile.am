@@ -9,7 +9,8 @@ noinst_HEADERS = decoder.h \
                  tpc.h \
                  txitypes.h \
                  txi.h \
-                 s3tc.h
+                 s3tc.h \
+                 winiconimage.h
 
 libimages_la_SOURCES = decoder.cpp \
                        dumpppm.cpp \
@@ -18,4 +19,5 @@ libimages_la_SOURCES = decoder.cpp \
                        tpc.cpp \
                        txitypes.cpp \
                        txi.cpp \
-                       s3tc.cpp
+                       s3tc.cpp \
+                       winiconimage.cpp
