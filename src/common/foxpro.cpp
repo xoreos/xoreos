@@ -15,7 +15,6 @@
 #include "common/foxpro.h"
 #include "common/error.h"
 #include "common/stream.h"
-#include "common/strutil.h"
 
 // boost-date_time stuff
 using boost::gregorian::date;
@@ -304,8 +303,8 @@ bool FoxPro::getInt(const byte *data, uint32 size, int32 &i) {
 	if (size > 31)
 		throw Exception("Numerical field size > 31 (%d)", size);
 
-	strncpy(n, (const char *) data, 31);
-	n[31] = '\0';
+	strncpy(n, (const char *) data, size);
+	n[size] = '\0';
 
 	return sscanf(n, "%d", &i) == 1;
 }
