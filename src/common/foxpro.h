@@ -42,7 +42,7 @@ public:
 		kTypeMemo     = 0x4D, // 'M'
 		kTypeNumber   = 0x4E, // 'N'
 		kTypePicture  = 0x50, // 'P'
-		kTypeDataTime = 0x54, // 'T'
+		kTypeDateTime = 0x54, // 'T'
 		kTypeCurrency = 0x59  // 'Y'
 	};
 
