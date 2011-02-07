@@ -800,8 +800,10 @@ void FoxPro::setMemo(uint32 record, uint32 field, SeekableReadStream *value) {
 	if (f.type != kTypeMemo)
 		throw Exception("Field is not of memo type ('%c')", f.type);
 
+	char *data = (char *) r.fields[field];
+
 	if (!value) {
-		memset((char *) r.fields[field], 0x20, f.size);
+		memset(data, 0x20, f.size);
 		updateUpdate();
 		return;
 	}
@@ -812,6 +814,8 @@ void FoxPro::setMemo(uint32 record, uint32 field, SeekableReadStream *value) {
 
 	uint32 block = _memos.size();
 	_memos.push_back(new byte[_memoBlockSize]);
+
+	uint32 startBlock = block + 1;
 
 	WRITE_BE_UINT32(_memos[block]    , 1);
 	WRITE_BE_UINT32(_memos[block] + 4, size);
@@ -831,6 +835,11 @@ void FoxPro::setMemo(uint32 record, uint32 field, SeekableReadStream *value) {
 
 		first = false;
 	}
+
+	if (f.decimals != 0)
+		snprintf(data, f.size, "%*d", f.size, startBlock);
+	else
+		snprintf(data, f.size, "%*.*f", f.size, f.decimals, (double) startBlock);
 
 	updateUpdate();
 }
