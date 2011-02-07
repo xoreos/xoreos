@@ -456,6 +456,29 @@ void FoxPro::addField(uint8 size) {
 	}
 }
 
+uint32 FoxPro::addRecord() {
+	_records.push_back(Record());
+	Record &record = _records.back();
+
+	record.deleted = false;
+
+	if (!_fields.empty()) {
+		uint32 dataSize = _fields.back().offset + _fields.back().size;
+
+		_pool.push_back(new byte[dataSize]);
+
+		byte *data = _pool.back();
+
+		record.fields.resize(_fields.size());
+		for (uint i = 0; i < _fields.size(); i++) {
+			record.fields[i] = data;
+			data += _fields[i].size;
+		}
+	}
+
+	return _records.size() - 1;
+}
+
 bool FoxPro::getInt(const byte *data, uint32 size, int32 &i) {
 	char n[32];
 

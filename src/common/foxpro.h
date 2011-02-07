@@ -99,6 +99,8 @@ public:
 	uint32 addFieldBool  (const UString &name);
 	uint32 addFieldMemo  (const UString &name);
 
+	uint32 addRecord();
+
 private:
 	boost::gregorian::date _lastUpdate;
 
