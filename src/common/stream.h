@@ -383,7 +383,7 @@ public:
 	 * calling err() and eos() ).
 	 */
 	FORCEINLINE double readIEEEDoubleLE() {
-		return convertIEEEDouble(readUint32LE());
+		return convertIEEEDouble(readUint64LE());
 	}
 
 	/**
@@ -394,7 +394,7 @@ public:
 	 * calling err() and eos() ).
 	 */
 	FORCEINLINE double readIEEEDoubleBE() {
-		return convertIEEEDouble(readUint32BE());
+		return convertIEEEDouble(readUint64BE());
 	}
 
 	/**
