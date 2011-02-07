@@ -329,12 +329,22 @@ int32 FoxPro::getInt(const Record &record, uint32 field) const {
 	assert(field < _fields.size());
 
 	const Field &f = _fields[field];
-	if ((f.type != kTypeInteger) && (f.type != kTypeNumber))
-		throw Exception("Field is not of int type ('%c')", f.type);
 
 	int32 i = 0;
-	if (!getInt(record.fields[field], f.size, i))
-		i = 0;
+	if        (f.type == kTypeNumber) {
+
+		if (!getInt(record.fields[field], f.size, i))
+			i = 0;
+
+	} else if (f.type == kTypeInteger) {
+
+		if (f.size != 4)
+			throw Exception("Integer field size != 4 (%d)", f.size);
+
+		i = READ_LE_UINT32(record.fields[field]);
+
+	} else
+		throw Exception("Field is not of int type ('%c')", f.type);
 
 	return i;
 }
@@ -500,7 +510,7 @@ uint32 FoxPro::addFieldInt(const UString &name) {
 	field.name        = name;
 	field.type        = kTypeInteger;
 	field.offset      = offset;
-	field.size        = 10;
+	field.size        = 4;
 	field.decimals    = 0;
 	field.flags       = 0;
 	field.autoIncNext = 0;
@@ -631,15 +641,24 @@ void FoxPro::setInt(uint32 record, uint32 field, int32 value) {
 	Record &r = _records[record];
 	Field  &f = _fields[field];
 
-	if ((f.type != kTypeInteger) && (f.type != kTypeNumber))
-		throw Exception("Field is not of int type ('%c')", f.type);
-
 	char *data = (char *) r.fields[field];
 
-	if (f.decimals != 0)
-		snprintf(data, f.size, "%*d", f.size, value);
-	else
-		snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, (double) value);
+	if        (f.type == kTypeNumber) {
+
+		if (f.decimals != 0)
+			snprintf(data, f.size, "%*d", f.size, value);
+		else
+			snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, (double) value);
+
+	} else if (f.type == kTypeInteger) {
+
+		if (f.size != 4)
+			throw Exception("Integer field size != 4 (%d)", f.size);
+
+		WRITE_LE_UINT32(data, value);
+
+	} else
+		throw Exception("Field is not of int type ('%c')", f.type);
 
 	updateUpdate();
 }
