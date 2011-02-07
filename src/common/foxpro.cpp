@@ -405,6 +405,23 @@ double FoxPro::getDouble(const Record &record, uint32 field) const {
 	return d;
 }
 
+date FoxPro::getDate(const Record &record, uint32 field) const {
+	assert(field < _fields.size());
+
+	const Field &f = _fields[field];
+	if (f.type != kTypeDate)
+		throw Exception("Field is not of date type ('%c')", f.type);
+
+	if (f.size != 8)
+			throw Exception("Date field size != 8 (%d)", f.size);
+
+	int year, month, day;
+	if (sscanf((const char *) record.fields[field], "%4d%2d%2d", &year, &month, &day) != 3)
+		throw Exception("Failed reading the date");
+
+	return date(year, month, day);
+}
+
 SeekableReadStream *FoxPro::getMemo(const Record &record, uint32 field) const {
 	assert(field < _fields.size());
 
@@ -551,6 +568,30 @@ uint32 FoxPro::addFieldBool(const UString &name) {
 	field.type        = kTypeBool;
 	field.offset      = offset;
 	field.size        = 1;
+	field.decimals    = 0;
+	field.flags       = 0;
+	field.autoIncNext = 0;
+	field.autoIncStep = 0;
+
+	addField(field.size);
+	updateUpdate();
+
+	return _fields.size() - 1;
+}
+
+uint32 FoxPro::addFieldDate(const UString &name) {
+	uint32 offset = 1;
+	if (!_fields.empty())
+		offset = _fields.back().offset + _fields.back().size;
+
+	_fields.push_back(Field());
+
+	Field &field = _fields.back();
+
+	field.name        = name;
+	field.type        = kTypeDate;
+	field.offset      = offset;
+	field.size        = 8;
 	field.decimals    = 0;
 	field.flags       = 0;
 	field.autoIncNext = 0;
@@ -729,6 +770,23 @@ void FoxPro::setDouble(uint32 record, uint32 field, double value) {
 
 	} else
 		throw Exception("Field is not of double type ('%c')", f.type);
+
+	updateUpdate();
+}
+
+void FoxPro::setDate(uint32 record, uint32 field, const date &value) {
+	assert((record < _records.size()) && (field < _fields.size()));
+
+	Record &r = _records[record];
+	Field  &f = _fields[field];
+
+	if (f.type != kTypeDate)
+		throw Exception("Field is not of date type ('%c')", f.type);
+
+	char *data = (char *) r.fields[field];
+
+	snprintf(data, 8, "%04d%02d%02d",
+			(int) value.year(), (int) value.month(), (int) value.day());
 
 	updateUpdate();
 }

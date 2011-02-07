@@ -90,6 +90,8 @@ public:
 	bool    getBool  (const Record &record, uint32 field) const;
 	double  getDouble(const Record &record, uint32 field) const;
 
+	boost::gregorian::date getDate(const Record &record, uint32 field) const;
+
 	SeekableReadStream *getMemo(const Record &record, uint32 field) const;
 
 
@@ -99,6 +101,7 @@ public:
 	uint32 addFieldNumber(const UString &name, uint8 size, uint8 decimals);
 	uint32 addFieldInt   (const UString &name);
 	uint32 addFieldBool  (const UString &name);
+	uint32 addFieldDate  (const UString &name);
 	uint32 addFieldMemo  (const UString &name);
 
 	uint32 addRecord();
@@ -108,6 +111,8 @@ public:
 	void setInt   (uint32 record, uint32 field, int32 value);
 	void setBool  (uint32 record, uint32 field, bool value);
 	void setDouble(uint32 record, uint32 field, double value);
+
+	void setDate(uint32 record, uint32 field, const boost::gregorian::date &value);
 
 	void setMemo(uint32 record, uint32 field, SeekableReadStream *value = 0);
 
