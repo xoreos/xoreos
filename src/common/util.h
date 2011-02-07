@@ -91,4 +91,7 @@ void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
 float  convertIEEEFloat(uint32 data);
 double convertIEEEDouble(uint64 data);
 
+uint32 convertIEEEFloat(float value);
+uint64 convertIEEEDouble(double value);
+
 #endif // COMMON_UTIL_H
