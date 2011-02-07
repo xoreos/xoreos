@@ -156,6 +156,22 @@ public:
 		writeUint64BE((uint64)value);
 	}
 
+	FORCEINLINE void writeIEEEFloatLE(float value) {
+		writeUint32LE((uint32)convertIEEEFloat(value));
+	}
+
+	FORCEINLINE void writeIEEEFloatBE(float value) {
+		writeUint32BE((uint32)convertIEEEFloat(value));
+	}
+
+	FORCEINLINE void writeIEEEDoubleLE(double value) {
+		writeUint64LE((uint64)convertIEEEDouble(value));
+	}
+
+	FORCEINLINE void writeIEEEDoubleBE(double value) {
+		writeUint64BE((uint64)convertIEEEDouble(value));
+	}
+
 	/** Copy the complete contents of the given stream. */
 	void writeStream(ReadStream &stream);
 };
