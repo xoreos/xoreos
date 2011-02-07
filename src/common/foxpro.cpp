@@ -371,20 +371,36 @@ double FoxPro::getDouble(const Record &record, uint32 field) const {
 	assert(field < _fields.size());
 
 	const Field &f = _fields[field];
-	if ((f.type != kTypeFloat) && (f.type != kTypeDouble) && (f.type != kTypeNumber))
-		throw Exception("Field is not of int type ('%c')", f.type);
 
 	char n[32];
 	double d = 0.0;
+	if        (f.type == kTypeNumber) {
 
-	if (f.size > 31)
-		throw Exception("Numerical field size > 31 (%d)", f.size);
+		if (f.size > 31)
+			throw Exception("Numerical field size > 31 (%d)", f.size);
 
-	strncpy(n, (const char *) record.fields[field], f.size);
-	n[f.size] = '\0';
+		strncpy(n, (const char *) record.fields[field], f.size);
+		n[f.size] = '\0';
 
-	if (sscanf(n, "%lf", &d) != 1)
-		d = 0.0;
+		if (sscanf(n, "%lf", &d) != 1)
+			d = 0.0;
+
+	} else if (f.type == kTypeFloat) {
+
+		if (f.size != 4)
+			throw Exception("Float field size != 4 (%d)", f.size);
+
+		d = convertIEEEFloat(READ_LE_UINT32(record.fields[field]));
+
+	} else if (f.type == kTypeDouble) {
+
+		if (f.size != 8)
+			throw Exception("Double field size != 8 (%d)", f.size);
+
+		d = convertIEEEDouble(READ_LE_UINT64(record.fields[field]));
+
+	} else
+		throw Exception("Field is not of double type ('%c')", f.type);
 
 	return d;
 }
@@ -688,15 +704,31 @@ void FoxPro::setDouble(uint32 record, uint32 field, double value) {
 	Record &r = _records[record];
 	Field  &f = _fields[field];
 
-	if ((f.type != kTypeFloat) && (f.type != kTypeDouble) && (f.type != kTypeNumber))
-		throw Exception("Field is not of double type ('%c')", f.type);
-
 	char *data = (char *) r.fields[field];
 
-	if (f.decimals != 0)
-		snprintf(data, f.size, "%*d", f.size, (int32) value);
-	else
-		snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, value);
+	if        (f.type == kTypeNumber) {
+
+		if (f.decimals != 0)
+			snprintf(data, f.size, "%*d", f.size, (int32) value);
+		else
+			snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, value);
+
+	} else if (f.type == kTypeFloat) {
+
+		if (f.size != 4)
+			throw Exception("Float field size != 4 (%d)", f.size);
+
+		WRITE_LE_UINT32(data, convertIEEEFloat((float) value));
+
+	} else if (f.type == kTypeDouble) {
+
+		if (f.size != 8)
+			throw Exception("Double field size != 8 (%d)", f.size);
+
+		WRITE_LE_UINT64(data, convertIEEEDouble(value));
+
+	} else
+		throw Exception("Field is not of double type ('%c')", f.type);
 
 	updateUpdate();
 }
