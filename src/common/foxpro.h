@@ -89,6 +89,13 @@ public:
 
 	SeekableReadStream *getMemo(const Record &record, uint32 field) const;
 
+
+	uint32 addFieldString(const UString &name, uint8 size);
+	uint32 addFieldNumber(const UString &name, uint8 size, uint8 decimals);
+	uint32 addFieldInt   (const UString &name);
+	uint32 addFieldBool  (const UString &name);
+	uint32 addFieldMemo  (const UString &name);
+
 private:
 	boost::gregorian::date _lastUpdate;
 
@@ -102,6 +109,8 @@ private:
 
 	uint16 _memoBlockSize;
 	std::vector<byte *> _memos;
+
+	void addField(uint8 size);
 
 	static bool getInt(const byte *data, uint32 size, int32 &i);
 };

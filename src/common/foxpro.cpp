@@ -297,6 +297,137 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, uint32 field) const {
 	return new MemoryReadStream(data, dataSize, true);
 }
 
+uint32 FoxPro::addFieldString(const UString &name, uint8 size) {
+	uint32 offset = 1;
+	if (!_fields.empty())
+		offset = _fields.back().offset + _fields.back().size;
+
+	_fields.push_back(Field());
+
+	Field &field = _fields.back();
+
+	field.name        = name;
+	field.type        = kTypeString;
+	field.offset      = offset;
+	field.size        = size;
+	field.decimals    = 0;
+	field.flags       = 0;
+	field.autoIncNext = 0;
+	field.autoIncStep = 0;
+
+	addField(field.size);
+
+	return _fields.size() - 1;
+}
+
+uint32 FoxPro::addFieldNumber(const UString &name, uint8 size, uint8 decimals) {
+	uint32 offset = 1;
+	if (!_fields.empty())
+		offset = _fields.back().offset + _fields.back().size;
+
+	_fields.push_back(Field());
+
+	Field &field = _fields.back();
+
+	field.name        = name;
+	field.type        = kTypeNumber;
+	field.offset      = offset;
+	field.size        = size;
+	field.decimals    = decimals;
+	field.flags       = 0;
+	field.autoIncNext = 0;
+	field.autoIncStep = 0;
+
+	addField(field.size);
+
+	return _fields.size() - 1;
+}
+
+uint32 FoxPro::addFieldInt(const UString &name) {
+	uint32 offset = 1;
+	if (!_fields.empty())
+		offset = _fields.back().offset + _fields.back().size;
+
+	_fields.push_back(Field());
+
+	Field &field = _fields.back();
+
+	field.name        = name;
+	field.type        = kTypeInteger;
+	field.offset      = offset;
+	field.size        = 10;
+	field.decimals    = 0;
+	field.flags       = 0;
+	field.autoIncNext = 0;
+	field.autoIncStep = 0;
+
+	addField(field.size);
+
+	return _fields.size() - 1;
+}
+
+uint32 FoxPro::addFieldBool(const UString &name) {
+	uint32 offset = 1;
+	if (!_fields.empty())
+		offset = _fields.back().offset + _fields.back().size;
+
+	_fields.push_back(Field());
+
+	Field &field = _fields.back();
+
+	field.name        = name;
+	field.type        = kTypeBool;
+	field.offset      = offset;
+	field.size        = 1;
+	field.decimals    = 0;
+	field.flags       = 0;
+	field.autoIncNext = 0;
+	field.autoIncStep = 0;
+
+	addField(field.size);
+
+	return _fields.size() - 1;
+}
+
+uint32 FoxPro::addFieldMemo(const UString &name) {
+	uint32 offset = 1;
+	if (!_fields.empty())
+		offset = _fields.back().offset + _fields.back().size;
+
+	_fields.push_back(Field());
+
+	Field &field = _fields.back();
+
+	field.name        = name;
+	field.type        = kTypeMemo;
+	field.offset      = offset;
+	field.size        = 10;
+	field.decimals    = 0;
+	field.flags       = 0;
+	field.autoIncNext = 0;
+	field.autoIncStep = 0;
+
+	addField(field.size);
+
+	return _fields.size() - 1;
+}
+
+void FoxPro::addField(uint8 size) {
+	if (_records.empty())
+		return;
+
+	uint32 dataSize = size * _records.size();
+
+	_pool.push_back(new byte[dataSize]);
+
+	byte *data = _pool.back();
+
+	for (std::vector<Record>::iterator it = _records.begin(); it != _records.end(); ++it) {
+		it->fields.push_back(data);
+		data += size;
+	}
+}
+
 bool FoxPro::getInt(const byte *data, uint32 size, int32 &i) {
 	char n[32];
 
