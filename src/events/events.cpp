@@ -227,7 +227,7 @@ void EventsManager::doQuit() {
 void EventsManager::initMainLoop() {
 	try {
 
-		GfxMan.initSize(1080, 720, false);
+		GfxMan.initSize(900, 676, false);
 		GfxMan.setupScene();
 
 	} catch (Common::Exception &e) {

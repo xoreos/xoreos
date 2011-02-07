@@ -91,6 +91,8 @@ public:
 	SeekableReadStream *getMemo(const Record &record, uint32 field) const;
 
 
+	void deleteRecord(uint32 record);
+
 	uint32 addFieldString(const UString &name, uint8 size);
 	uint32 addFieldNumber(const UString &name, uint8 size, uint8 decimals);
 	uint32 addFieldInt   (const UString &name);

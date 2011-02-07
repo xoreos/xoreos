@@ -319,6 +319,12 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, uint32 field) const {
 	return new MemoryReadStream(data, dataSize, true);
 }
 
+void FoxPro::deleteRecord(uint32 record) {
+	assert(record < _records.size());
+
+	_records[record].deleted = true;
+}
+
 uint32 FoxPro::addFieldString(const UString &name, uint8 size) {
 	uint32 offset = 1;
 	if (!_fields.empty())
