@@ -21,7 +21,7 @@ using boost::gregorian::date;
 
 namespace Common {
 
-FoxPro::FoxPro() {
+FoxPro::FoxPro() : _hasIndex(false), _hasMemo(false), _memoBlockSize(512) {
 }
 
 FoxPro::~FoxPro() {
