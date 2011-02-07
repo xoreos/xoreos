@@ -86,6 +86,7 @@ public:
 	UString getString(const Record &record, uint32 field) const;
 	int32   getInt   (const Record &record, uint32 field) const;
 	bool    getBool  (const Record &record, uint32 field) const;
+	double  getDouble(const Record &record, uint32 field) const;
 
 	SeekableReadStream *getMemo(const Record &record, uint32 field) const;
 

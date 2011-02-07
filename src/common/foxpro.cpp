@@ -248,6 +248,28 @@ bool FoxPro::getBool(const Record &record, uint32 field) const {
 	return false;
 }
 
+double FoxPro::getDouble(const Record &record, uint32 field) const {
+	assert(field < _fields.size());
+
+	const Field &f = _fields[field];
+	if ((f.type != kTypeFloat) && (f.type != kTypeDouble) && (f.type != kTypeNumber))
+		throw Exception("Field is not of int type ('%c')", f.type);
+
+	char n[32];
+	double d = 0.0;
+
+	if (f.size > 31)
+		throw Exception("Numerical field size > 31 (%d)", f.size);
+
+	strncpy(n, (const char *) record.fields[field], f.size);
+	n[f.size] = '\0';
+
+	if (sscanf(n, "%lf", &d) != 1)
+		d = 0.0;
+
+	return d;
+}
+
 SeekableReadStream *FoxPro::getMemo(const Record &record, uint32 field) const {
 	assert(field < _fields.size());
 
