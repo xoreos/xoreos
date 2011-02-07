@@ -78,6 +78,7 @@ BOOST_FILESYSTEM
 BOOST_REGEX
 BOOST_UNORDERED
 BOOST_HASH
+BOOST_DATE_TIME
 
 dnl Do not run the OpenGL checks on OS X, they will incorrectly find the X11 OpenGL libraries which we do not want.
 dnl TODO: Eventually add a test for OS X for OpenGL
