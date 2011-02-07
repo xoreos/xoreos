@@ -168,6 +168,7 @@ void FoxPro::load(SeekableReadStream *dbf, SeekableReadStream *cdx,
 			throw Exception(kReadError);
 	}
 
+	// TODO: Read the compound index (CDX) file
 }
 
 date FoxPro::getLastUpdate() const {
@@ -323,6 +324,10 @@ void FoxPro::deleteRecord(uint32 record) {
 	assert(record < _records.size());
 
 	_records[record].deleted = true;
+
+	// TODO: Deleting a record should also mark any memo fields in that
+	//       record as free. They should be reused when adding a memo
+	//       field of equals or less size.
 }
 
 uint32 FoxPro::addFieldString(const UString &name, uint8 size) {
