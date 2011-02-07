@@ -95,6 +95,9 @@ public:
 	void truncate(const iterator &it);
 	void trim();
 
+	void trimLeft();
+	void trimRight();
+
 	/** Replace all occurences of a character with another character. */
 	void replaceAll(uint32 what, uint32 with);
 

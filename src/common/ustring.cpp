@@ -383,12 +383,59 @@ void UString::trim() {
 		}
 	}
 
+	if (itEnd == begin()) {
+		uint32 c = *itEnd;
+		if ((c != '\0') && (c != ' '))
+			++itEnd;
+	}
+
+	// Find the first non-space
 	iterator itStart = begin();
 	for (; itStart != itEnd; ++itStart)
 		if (*itStart != ' ')
 			break;
 
 	_string = std::string(itStart.base(), itEnd.base());
+	recalculateSize();
+}
+
+void UString::trimLeft() {
+	if (_string.empty())
+		// Nothing to do
+		return;
+
+	// Find the first non-space
+	iterator itStart = begin();
+	for (; itStart != end(); ++itStart)
+		if (*itStart != ' ')
+			break;
+
+	_string = std::string(itStart.base(), end().base());
+	recalculateSize();
+}
+
+void UString::trimRight() {
+	if (_string.empty())
+		// Nothing to do
+		return;
+
+	// Find the last space, from the end
+	iterator itEnd = --end();
+	for (; itEnd != begin(); --itEnd) {
+		uint32 c = *itEnd;
+		if ((c != '\0') && (c != ' ')) {
+			++itEnd;
+			break;
+		}
+	}
+
+	if (itEnd == begin()) {
+		uint32 c = *itEnd;
+		if ((c != '\0') && (c != ' '))
+			++itEnd;
+	}
+
+	_string = std::string(begin().base(), itEnd.base());
 	recalculateSize();
 }
 
