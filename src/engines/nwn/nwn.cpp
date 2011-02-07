@@ -23,7 +23,6 @@
 #include "common/strutil.h"
 #include "common/filelist.h"
 #include "common/stream.h"
-#include "common/foxpro.h"
 
 #include "graphics/graphics.h"
 
@@ -103,25 +102,6 @@ void NWNEngine::run(const Common::UString &target) {
 	initCursors();
 
 	status("Successfully initialized the engine");
-
-	Common::UString database = "xp2";
-	Common::SeekableReadStream *cdx = ResMan.getResource(database, Aurora::kFileTypeCDX);
-	Common::SeekableReadStream *dbf = ResMan.getResource(database, Aurora::kFileTypeDBF);
-	Common::SeekableReadStream *fpt = ResMan.getResource(database, Aurora::kFileTypeFPT);
-
-	if (dbf) {
-		Common::FoxPro db;
-
-		db.load(dbf, cdx, fpt);
-
-	} else
-		warning("-> %d, %d, %d", cdx != 0, dbf != 0, fpt != 0);
-
-	delete fpt;
-	delete dbf;
-	delete cdx;
-
-	return;
 
 	CursorMan.hideCursor();
 	CursorMan.set("default", true);
