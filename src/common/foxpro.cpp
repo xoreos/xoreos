@@ -481,6 +481,119 @@ uint32 FoxPro::addRecord() {
 	return _records.size() - 1;
 }
 
+void FoxPro::setString(uint32 record, uint32 field, const Common::UString &value) {
+	assert((record < _records.size()) && (field < _fields.size()));
+
+	Record &r = _records[record];
+	Field  &f = _fields[field];
+
+	if (f.type != kTypeString)
+		throw Exception("Field is not of string type ('%c')", f.type);
+
+	char *data    = (char *) r.fields[field];
+	char *dataEnd = (char *) r.fields[field] + f.size;
+
+	strncpy(data, value.c_str(), f.size);
+
+	data += strlen(value.c_str());
+
+	while (data < dataEnd)
+		*dataEnd++ = 0x20;
+}
+
+void FoxPro::setInt(uint32 record, uint32 field, int32 value) {
+	assert((record < _records.size()) && (field < _fields.size()));
+
+	Record &r = _records[record];
+	Field  &f = _fields[field];
+
+	if ((f.type != kTypeInteger) && (f.type != kTypeNumber))
+		throw Exception("Field is not of int type ('%c')", f.type);
+
+	char *data = (char *) r.fields[field];
+
+	if (f.decimals != 0)
+		snprintf(data, f.size, "%*d", f.size, value);
+	else
+		snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, (double) value);
+}
+
+void FoxPro::setBool(uint32 record, uint32 field, bool value) {
+	assert((record < _records.size()) && (field < _fields.size()));
+
+	Record &r = _records[record];
+	Field  &f = _fields[field];
+
+	if (f.type != kTypeBool)
+		throw Exception("Field is not of bool type ('%c')", f.type);
+
+	if (f.size != 1)
+		throw Exception("Bool field size != 1 (%d)", f.size);
+
+	char *data = (char *) r.fields[field];
+
+	data[0] = value ? 'T' : 'F';
+}
+
+void FoxPro::setDouble(uint32 record, uint32 field, double value) {
+	assert((record < _records.size()) && (field < _fields.size()));
+
+	Record &r = _records[record];
+	Field  &f = _fields[field];
+
+	if ((f.type != kTypeFloat) && (f.type != kTypeDouble) && (f.type != kTypeNumber))
+		throw Exception("Field is not of double type ('%c')", f.type);
+
+	char *data = (char *) r.fields[field];
+
+	if (f.decimals != 0)
+		snprintf(data, f.size, "%*d", f.size, (int32) value);
+	else
+		snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, value);
+}
+
+void FoxPro::setMemo(uint32 record, uint32 field, SeekableReadStream *value) {
+	assert((record < _records.size()) && (field < _fields.size()));
+
+	Record &r = _records[record];
+	Field  &f = _fields[field];
+
+	if (f.type != kTypeMemo)
+		throw Exception("Field is not of memo type ('%c')", f.type);
+
+	if (!value) {
+		memset((char *) r.fields[field], 0x20, f.size);
+		return;
+	}
+
+	value->seek(0);
+
+	uint32 size = value->size();
+
+	uint32 block = _memos.size();
+	_memos.push_back(new byte[_memoBlockSize]);
+
+	WRITE_BE_UINT32(_memos[block]    , 1);
+	WRITE_BE_UINT32(_memos[block] + 4, size);
+
+	bool first = true;
+	while (size > 0) {
+		uint32 n = MIN<uint32>(size, _memoBlockSize - (first ? 8 : 0));
+
+		if (value->read(_memos[block] + (first ? 8 : 0), n) != n)
+			throw Exception(kReadError);
+
+		size  -= n;
+		block += 1;
+
+		if (size > 0)
+			_memos.push_back(new byte[_memoBlockSize]);
+
+		first = false;
+	}
+
+}
+
 bool FoxPro::getInt(const byte *data, uint32 size, int32 &i) {
 	char n[32];
 

@@ -101,6 +101,14 @@ public:
 
 	uint32 addRecord();
 
+
+	void setString(uint32 record, uint32 field, const Common::UString &value);
+	void setInt   (uint32 record, uint32 field, int32 value);
+	void setBool  (uint32 record, uint32 field, bool value);
+	void setDouble(uint32 record, uint32 field, double value);
+
+	void setMemo(uint32 record, uint32 field, SeekableReadStream *value = 0);
+
 private:
 	boost::gregorian::date _lastUpdate;
 
