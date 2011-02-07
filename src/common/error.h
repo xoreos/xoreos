@@ -45,6 +45,7 @@ typedef StackException Exception;
 extern const Exception kOpenError;
 extern const Exception kReadError;
 extern const Exception kSeekError;
+extern const Exception kWriteError;
 
 void printException(Exception &e, const UString &prefix = "ERROR: ");
 
