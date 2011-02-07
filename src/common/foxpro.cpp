@@ -437,6 +437,8 @@ uint32 FoxPro::addFieldMemo(const UString &name) {
 
 	addField(field.size);
 
+	_hasMemo = true;
+
 	return _fields.size() - 1;
 }
 
