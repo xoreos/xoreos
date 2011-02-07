@@ -705,7 +705,7 @@ void FoxPro::setInt(uint32 record, uint32 field, int32 value) {
 		if (f.decimals != 0)
 			snprintf(data, f.size, "%*d", f.size, value);
 		else
-			snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, (double) value);
+			snprintf(data, f.size, "%*.*f", f.size, f.decimals, (double) value);
 
 	} else if (f.type == kTypeInteger) {
 
@@ -752,7 +752,7 @@ void FoxPro::setDouble(uint32 record, uint32 field, double value) {
 		if (f.decimals != 0)
 			snprintf(data, f.size, "%*d", f.size, (int32) value);
 		else
-			snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, value);
+			snprintf(data, f.size, "%*.*f", f.size, f.decimals, value);
 
 	} else if (f.type == kTypeFloat) {
 
