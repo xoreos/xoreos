@@ -26,6 +26,7 @@
 namespace Common {
 
 class SeekableReadStream;
+class WriteStream;
 
 class FoxPro {
 public:
@@ -71,6 +72,7 @@ public:
 
 	void load(SeekableReadStream *dbf, SeekableReadStream *cdx = 0,
 	          SeekableReadStream *fpt = 0);
+	void save(WriteStream *dbf, WriteStream *cdx = 0, WriteStream *fpt = 0) const;
 
 	boost::gregorian::date getLastUpdate() const;
 

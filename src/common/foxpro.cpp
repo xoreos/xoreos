@@ -35,6 +35,8 @@ FoxPro::~FoxPro() {
 void FoxPro::load(SeekableReadStream *dbf, SeekableReadStream *cdx,
                   SeekableReadStream *fpt) {
 
+	assert(dbf);
+
 	byte version = dbf->readByte();
 	if (version != 0xF5)
 		throw Exception("Unknown database version 0x%02X", version);
@@ -170,6 +172,111 @@ void FoxPro::load(SeekableReadStream *dbf, SeekableReadStream *cdx,
 	}
 
 	// TODO: Read the compound index (CDX) file
+}
+
+void FoxPro::save(WriteStream *dbf, WriteStream *cdx, WriteStream *fpt) const {
+	assert(dbf);
+
+	if (_hasIndex && !cdx)
+		throw Exception("Index needed");
+	if (_hasMemo && !fpt)
+		throw Exception("Memo needed");
+
+	if (_records.empty() || _fields.empty())
+		throw Exception("No records / fields");
+
+	dbf->writeByte(0xF5); // Version
+
+	dbf->writeByte(_lastUpdate.year() - 2000);
+	dbf->writeByte(_lastUpdate.month());
+	dbf->writeByte(_lastUpdate.day());
+
+	dbf->writeUint32LE(_records.size());
+
+	//                    Header + fields + field end marker
+	uint16 firstRecordPos = 32 + _fields.size() * 32 + 1;
+	dbf->writeUint16LE(firstRecordPos);
+
+	uint16 recordSize = _fields.back().offset + _fields.back().size;
+	dbf->writeUint16LE(recordSize);
+
+	dbf->writeUint32LE(0x00000000); // Reserved
+	dbf->writeUint32LE(0x00000000); // Reserved
+	dbf->writeUint32LE(0x00000000); // Reserved
+	dbf->writeUint32LE(0x00000000); // Reserved
+
+	uint8 flags = (_hasIndex ? 0x01 : 0x00) | (_hasMemo ? 0x02 : 0x00);
+	dbf->writeByte(flags);
+
+	dbf->writeByte(0x00); // Codepage marker
+
+	dbf->writeUint16LE(0x0000); // Reserved
+
+	// Write all field descriptions
+	for (uint i = 0; i < _fields.size(); i++) {
+		const Field &field = _fields[i];
+
+		int l = strlen(field.name.c_str());
+
+		dbf->write(field.name.c_str(), MIN(10, l));
+		dbf->writeByte(0x00);
+
+		while ((10 - l++) > 0)
+			dbf->writeByte(0x00);
+
+		dbf->writeByte((byte) ((char) field.type));
+
+		dbf->writeUint32LE(field.offset);
+
+		dbf->writeByte(field.size);
+		dbf->writeByte(field.decimals);
+		dbf->writeByte(field.flags);
+
+		dbf->writeUint32LE(field.autoIncNext);
+		dbf->writeByte    (field.autoIncStep);
+
+		dbf->writeUint32LE(0x00000000); // Reserved
+		dbf->writeUint32LE(0x00000000); // Reserved
+	}
+
+	dbf->writeByte(0x0D); // Field end marker
+
+	// Write the records
+	for (uint i = 0; i < _records.size(); i++) {
+		const Record &record = _records[i];
+
+		dbf->writeByte(record.deleted ? '*' : ' ');
+
+		for (uint j = 0; j < _fields.size(); j++)
+			dbf->write(record.fields[j], _fields[j].size);
+	}
+
+	dbf->writeByte(0x1A); // Records end marker
+
+	if (!dbf->flush() || dbf->err())
+		throw Exception(kWriteError);
+
+	// Write the memos
+	if (fpt) {
+		fpt->writeUint32BE(_memos.size() + 1); // Next free block
+		fpt->writeUint16BE(0x0000);        // Reserved
+		fpt->writeUint16BE(_memoBlockSize);
+
+		// Reserved
+		for (int i = 0; i < 126; i++)
+			fpt->writeUint32BE(0x00000000);
+
+		for (uint i = 0; i < _memos.size(); i++)
+			fpt->write(_memos[i], _memoBlockSize);
+
+		if (!fpt->flush() || fpt->err())
+			throw Exception(kWriteError);
+	}
+
+	// TODO: Write the compound index (CDX) file
+
+	if (cdx && (!cdx->flush() || cdx->err()))
+		throw Exception(kWriteError);
 }
 
 date FoxPro::getLastUpdate() const {
