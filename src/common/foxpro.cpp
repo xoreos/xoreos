@@ -18,6 +18,7 @@
 
 // boost-date_time stuff
 using boost::gregorian::date;
+using boost::gregorian::day_clock;
 
 namespace Common {
 
@@ -325,6 +326,8 @@ void FoxPro::deleteRecord(uint32 record) {
 
 	_records[record].deleted = true;
 
+	updateUpdate();
+
 	// TODO: Deleting a record should also mark any memo fields in that
 	//       record as free. They should be reused when adding a memo
 	//       field of equals or less size.
@@ -349,6 +352,7 @@ uint32 FoxPro::addFieldString(const UString &name, uint8 size) {
 	field.autoIncStep = 0;
 
 	addField(field.size);
+	updateUpdate();
 
 	return _fields.size() - 1;
 }
@@ -372,6 +376,7 @@ uint32 FoxPro::addFieldNumber(const UString &name, uint8 size, uint8 decimals) {
 	field.autoIncStep = 0;
 
 	addField(field.size);
+	updateUpdate();
 
 	return _fields.size() - 1;
 }
@@ -395,6 +400,7 @@ uint32 FoxPro::addFieldInt(const UString &name) {
 	field.autoIncStep = 0;
 
 	addField(field.size);
+	updateUpdate();
 
 	return _fields.size() - 1;
 }
@@ -418,6 +424,7 @@ uint32 FoxPro::addFieldBool(const UString &name) {
 	field.autoIncStep = 0;
 
 	addField(field.size);
+	updateUpdate();
 
 	return _fields.size() - 1;
 }
@@ -441,6 +448,7 @@ uint32 FoxPro::addFieldMemo(const UString &name) {
 	field.autoIncStep = 0;
 
 	addField(field.size);
+	updateUpdate();
 
 	_hasMemo = true;
 
@@ -483,6 +491,8 @@ uint32 FoxPro::addRecord() {
 		}
 	}
 
+	updateUpdate();
+
 	return _records.size() - 1;
 }
 
@@ -504,6 +514,8 @@ void FoxPro::setString(uint32 record, uint32 field, const Common::UString &value
 
 	while (data < dataEnd)
 		*dataEnd++ = 0x20;
+
+	updateUpdate();
 }
 
 void FoxPro::setInt(uint32 record, uint32 field, int32 value) {
@@ -521,6 +533,8 @@ void FoxPro::setInt(uint32 record, uint32 field, int32 value) {
 		snprintf(data, f.size, "%*d", f.size, value);
 	else
 		snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, (double) value);
+
+	updateUpdate();
 }
 
 void FoxPro::setBool(uint32 record, uint32 field, bool value) {
@@ -538,6 +552,8 @@ void FoxPro::setBool(uint32 record, uint32 field, bool value) {
 	char *data = (char *) r.fields[field];
 
 	data[0] = value ? 'T' : 'F';
+
+	updateUpdate();
 }
 
 void FoxPro::setDouble(uint32 record, uint32 field, double value) {
@@ -555,6 +571,8 @@ void FoxPro::setDouble(uint32 record, uint32 field, double value) {
 		snprintf(data, f.size, "%*d", f.size, (int32) value);
 	else
 		snprintf(data, f.size, "%*.*f\n", f.size, f.decimals, value);
+
+	updateUpdate();
 }
 
 void FoxPro::setMemo(uint32 record, uint32 field, SeekableReadStream *value) {
@@ -568,6 +586,7 @@ void FoxPro::setMemo(uint32 record, uint32 field, SeekableReadStream *value) {
 
 	if (!value) {
 		memset((char *) r.fields[field], 0x20, f.size);
+		updateUpdate();
 		return;
 	}
 
@@ -597,6 +616,7 @@ void FoxPro::setMemo(uint32 record, uint32 field, SeekableReadStream *value) {
 		first = false;
 	}
 
+	updateUpdate();
 }
 
 bool FoxPro::getInt(const byte *data, uint32 size, int32 &i) {
@@ -609,6 +629,10 @@ bool FoxPro::getInt(const byte *data, uint32 size, int32 &i) {
 	n[size] = '\0';
 
 	return sscanf(n, "%d", &i) == 1;
+}
+
+void FoxPro::updateUpdate() {
+	_lastUpdate = day_clock::universal_day();
 }
 
 } // End of namespace Common

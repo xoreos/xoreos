@@ -124,6 +124,7 @@ private:
 	std::vector<byte *> _memos;
 
 	void addField(uint8 size);
+	void updateUpdate();
 
 	static bool getInt(const byte *data, uint32 size, int32 &i);
 };
