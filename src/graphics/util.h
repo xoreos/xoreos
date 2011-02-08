@@ -27,6 +27,52 @@ inline static void YUV2RGB(byte y, byte u, byte v, byte &r, byte &g, byte &b) {
 	b = CLIP<int>(y + ((1715 * (u - 128)) >> 10), 0, 255);
 }
 
+inline static void flipHorizontally(byte *data, int width, int height, int bpp) {
+	int halfWidth = width / 2;
+	int pitch     = bpp * width;
+
+	byte *buffer = new byte[bpp];
+
+	while (height-- > 0) {
+		byte *dataStart = data;
+		byte *dataEnd   = data + pitch - bpp;
+
+		for (int j = 0; j < halfWidth; j++) {
+			memcpy(buffer   , dataStart, bpp);
+			memcpy(dataStart, dataEnd  , bpp);
+			memcpy(dataEnd  , buffer   , bpp);
+
+			dataStart += bpp;
+			dataEnd   -= bpp;
+		}
+
+		data += pitch;
+	}
+
+	delete[] buffer;
+}
+
+inline static void flipVertically(byte *data, int width, int height, int bpp) {
+	int halfHeight = height / 2;
+	int pitch      = bpp * width;
+
+	byte *dataStart = data;
+	byte *dataEnd   = data + (pitch * height) - pitch;
+
+	byte *buffer = new byte[pitch];
+
+	while (halfHeight--) {
+		memcpy(buffer   , dataStart, pitch);
+		memcpy(dataStart, dataEnd  , pitch);
+		memcpy(dataEnd  , buffer   , pitch);
+
+		dataStart += pitch;
+		dataEnd   -= pitch;
+	}
+
+	delete[] buffer;
+}
+
 } // End of namespace Graphics
 
 #endif // GRAPHICS_UTIL_H
