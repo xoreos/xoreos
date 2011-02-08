@@ -69,6 +69,9 @@ public:
 	/** Set the current cursor. */
 	void setCursor(Cursor *cursor = 0);
 
+	/** Take a screenshot. */
+	void takeScreenshot();
+
 
 private:
 	enum CursorState {
@@ -101,6 +104,8 @@ private:
 	Cursor     *_cursor;       ///< The current cursor.
 	CursorState _cursorState;  ///< What to do with the cursor.
 
+	bool _takeScreenshot; ///< Should screenshot be taken?
+
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void checkGLExtensions();
 
@@ -119,6 +124,8 @@ private:
 	void rebuildVideos();
 
 	void handleCursorSwitch();
+
+	void screenshot();
 
 
 // For Queueables
