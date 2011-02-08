@@ -137,6 +137,12 @@ private:
 	void loadRecords(SeekableReadStream &dbf, uint32 recordSize, uint32 recordCount);
 	void loadMemos  (SeekableReadStream &fpt);
 
+	// Saving helpers
+	void saveHeader (WriteStream &dbf) const;
+	void saveFields (WriteStream &dbf) const;
+	void saveRecords(WriteStream &dbf) const;
+	void saveMemos  (WriteStream &fpt) const;
+
 	void addField(uint8 size);
 	void updateUpdate();
 
