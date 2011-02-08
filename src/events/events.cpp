@@ -119,6 +119,9 @@ bool EventsManager::parseEventGraphics(const Event &event) {
 		} else if ((event.key.keysym.mod & KMOD_ALT) && event.key.keysym.sym == SDLK_m) {
 			GfxMan.toggleMouseGrab();
 			return true;
+		} else if ((event.key.keysym.mod & KMOD_ALT) && event.key.keysym.sym == SDLK_s) {
+			GfxMan.takeScreenshot();
+			return true;
 		}
 	}
 
