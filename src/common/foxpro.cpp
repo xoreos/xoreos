@@ -37,95 +37,112 @@ void FoxPro::load(SeekableReadStream *dbf, SeekableReadStream *cdx,
 
 	assert(dbf);
 
-	byte version = dbf->readByte();
+	// Read header
+	uint32 recordSize, recordCount, firstRecordPos;
+	loadHeader(*dbf, recordSize, recordCount, firstRecordPos);
+	if (_hasIndex && !cdx)
+		throw Exception("Index needed");
+	if (_hasMemo && !fpt)
+		throw Exception("Memo needed");
+
+	// Read fields
+	loadFields(*dbf, recordSize);
+	if (_hasMemo && !fpt)
+		throw Exception("Memo needed");
+
+	// Read records
+	dbf->seek(firstRecordPos);
+	loadRecords(*dbf, recordSize, recordCount);
+
+	// Read memos
+	if (fpt)
+		loadMemos(*fpt);
+
+	// TODO: Read the compound index (CDX) file
+}
+
+void FoxPro::loadHeader(SeekableReadStream &dbf, uint32 &recordSize, uint32 &recordCount,
+                        uint32 &firstRecordPos) {
+
+	byte version = dbf.readByte();
 	if (version != 0xF5)
 		throw Exception("Unknown database version 0x%02X", version);
 
-	int lastUpdateYear   = dbf->readByte() + 2000;
-	int lastUpdateMonth  = dbf->readByte();
-	int lastUpdateDay    = dbf->readByte();
+	int lastUpdateYear  = dbf.readByte() + 2000;
+	int lastUpdateMonth = dbf.readByte();
+	int lastUpdateDay   = dbf.readByte();
 
 	_lastUpdate = date(lastUpdateYear, lastUpdateMonth, lastUpdateDay);
 
-	uint32 recordCount = dbf->readUint32LE();
+	recordCount    = dbf.readUint32LE();
+	firstRecordPos = dbf.readUint16LE();
+	recordSize     = dbf.readUint16LE();
 
-	uint32 firstRecordPos = dbf->readUint16LE();
-	uint32 recordSize     = dbf->readUint16LE();
+	dbf.skip(16); // Reserved
 
-	dbf->skip(16); // Reserved
-
-	bool flags = dbf->readByte();
+	bool flags = dbf.readByte();
 
 	_hasIndex = flags & 0x01;
 	_hasMemo  = flags & 0x02;
 
 	if (flags & 0x04)
 		throw Exception("DBC unsupported");
-
 	if (flags & 0xF8)
 		throw Exception("Unknown flags 0x%02X", flags);
 
-	if (_hasIndex && !cdx)
-		throw Exception("Index needed");
+	dbf.skip(1); // Codepage marker
+	dbf.skip(2); // Reserved
+}
 
-	if (_hasMemo && !fpt)
-		throw Exception("Memo needed");
-
-	dbf->skip(1); // Codepage marker
-	dbf->skip(2); // Reserved
-
+void FoxPro::loadFields(SeekableReadStream &dbf, uint32 recordSize) {
 	// Read all field descriptions, 0x0D is the end marker
 	uint32 fieldsLength = 0;
-	while (!dbf->eos() && !dbf->err() && (dbf->readByte() != 0x0D)) {
+	while (!dbf.eos() && !dbf.err() && (dbf.readByte() != 0x0D)) {
 		Field field;
 
-		dbf->seek(-1, SEEK_CUR);
+		dbf.seek(-1, SEEK_CUR);
 
-		field.name.readASCII(*dbf, 11);
+		field.name.readASCII(dbf, 11);
 
-		field.type     = (Type) dbf->readByte();
-		field.offset   = dbf->readUint32LE();
-		field.size     = dbf->readByte();
-		field.decimals = dbf->readByte();
+		field.type     = (Type) dbf.readByte();
+		field.offset   = dbf.readUint32LE();
+		field.size     = dbf.readByte();
+		field.decimals = dbf.readByte();
 
-		field.flags = dbf->readByte();
+		field.flags = dbf.readByte();
 
-		field.autoIncNext = dbf->readUint32LE();
-		field.autoIncStep = dbf->readByte();
+		field.autoIncNext = dbf.readUint32LE();
+		field.autoIncStep = dbf.readByte();
 
-		dbf->skip(8); // Reserved
+		dbf.skip(8); // Reserved
 
 		if (field.offset != (fieldsLength + 1))
 			throw Exception("Field offset makes no sense (%d != %d)",
 					field.offset, fieldsLength + 1);
 
-		if (field.type == kTypeMemo) {
+		if (field.type == kTypeMemo)
 			_hasMemo = true;
-
-			if (!fpt)
-				throw Exception("Memo needed");
-		}
 
 		fieldsLength += field.size;
 
 		_fields.push_back(field);
 	}
 
-	if (dbf->eos() || dbf->err())
+	if (dbf.eos() || dbf.err())
 		throw Exception(kReadError);
 
 	if (recordSize != (fieldsLength + 1))
 		throw Exception("Length of all fields does not equal the record size");
+}
 
-	dbf->seek(firstRecordPos);
-
+void FoxPro::loadRecords(SeekableReadStream &dbf, uint32 recordSize, uint32 recordCount) {
 	_pool.push_back(new byte[recordSize * recordCount]);
 	byte *recordData = _pool.back();
 
-	if (dbf->read(recordData, recordSize * recordCount) != (recordSize * recordCount))
+	if (dbf.read(recordData, recordSize * recordCount) != (recordSize * recordCount))
 		throw Exception(kReadError);
 
-	if (dbf->readByte() != 0x1A)
+	if (dbf.readByte() != 0x1A)
 		throw Exception("Record end marker missing");
 
 	uint32 fieldCount = _fields.size();
@@ -148,30 +165,27 @@ void FoxPro::load(SeekableReadStream *dbf, SeekableReadStream *cdx,
 			data += _fields[j].size;
 		}
 	}
+}
 
-	// Read memo blocks
-	if (_hasMemo) {
-		fpt->skip(4); // Next free block
-		fpt->skip(2); // Unused
+void FoxPro::loadMemos(SeekableReadStream &fpt) {
+	fpt.skip(4); // Next free block
+	fpt.skip(2); // Unused
 
-		uint32 _memoBlockSize = fpt->readUint16BE();
-		if (_memoBlockSize < 33)
-			_memoBlockSize *= 1024;
+	uint32 _memoBlockSize = fpt.readUint16BE();
+	if (_memoBlockSize < 33)
+		_memoBlockSize *= 1024;
 
-		fpt->skip(504); // Unused
+	fpt.skip(504); // Unused
 
-		while (!fpt->eos() && !fpt->err()) {
-			_memos.push_back(new byte[_memoBlockSize]);
-			byte *data = _memos.back();
+	while (!fpt.eos() && !fpt.err()) {
+		_memos.push_back(new byte[_memoBlockSize]);
+		byte *data = _memos.back();
 
-			fpt->read(data, _memoBlockSize);
-		}
-
-		if (fpt->err())
-			throw Exception(kReadError);
+		fpt.read(data, _memoBlockSize);
 	}
 
-	// TODO: Read the compound index (CDX) file
+	if (fpt.err())
+		throw Exception(kReadError);
 }
 
 void FoxPro::save(WriteStream *dbf, WriteStream *cdx, WriteStream *fpt) const {

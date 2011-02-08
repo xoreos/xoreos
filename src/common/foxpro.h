@@ -130,6 +130,13 @@ private:
 	uint16 _memoBlockSize;
 	std::vector<byte *> _memos;
 
+	// Loading helpers
+	void loadHeader (SeekableReadStream &dbf, uint32 &recordSize, uint32 &recordCount,
+	                 uint32 &firstRecordPos);
+	void loadFields (SeekableReadStream &dbf, uint32 recordSize);
+	void loadRecords(SeekableReadStream &dbf, uint32 recordSize, uint32 recordCount);
+	void loadMemos  (SeekableReadStream &fpt);
+
 	void addField(uint8 size);
 	void updateUpdate();
 
