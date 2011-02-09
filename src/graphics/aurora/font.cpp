@@ -64,6 +64,8 @@ float Font::getWidth(uint32 c) const {
 }
 
 void Font::rebuild() {
+	enforceMainThread();
+
 	uint32 charCount = _chars.size();
 
 	// Generate the needed number of lists

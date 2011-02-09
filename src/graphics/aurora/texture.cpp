@@ -135,6 +135,8 @@ void Texture::load(ImageDecoder *image) {
 }
 
 void Texture::destroy() {
+	enforceMainThread();
+
 	if (_textureID == 0)
 		return;
 
@@ -144,6 +146,8 @@ void Texture::destroy() {
 }
 
 void Texture::reload() {
+	enforceMainThread();
+
 	if (!_image)
 		// No image
 		return;

@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/threads.h"
 
 #include "graphics/listcontainer.h"
 #include "graphics/graphics.h"
@@ -24,6 +25,10 @@ ListContainer::ListContainer() : Queueable<ListContainer>(GfxMan.getListContaine
 }
 
 ListContainer::~ListContainer() {
+}
+
+void ListContainer::enforceMainThread() {
+	Common::enforceMainThread();
 }
 
 } // End of namespace Graphics

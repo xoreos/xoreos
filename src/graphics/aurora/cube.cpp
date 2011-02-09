@@ -70,6 +70,8 @@ Cube::~Cube() {
 }
 
 void Cube::rebuild() {
+	enforceMainThread();
+
 	_list = glGenLists(1);
 
 	glNewList(_list, GL_COMPILE);
@@ -91,6 +93,8 @@ void Cube::rebuild() {
 }
 
 void Cube::destroy() {
+	enforceMainThread();
+
 	if (_list == 0)
 		return;
 

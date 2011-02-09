@@ -19,6 +19,7 @@
 
 #include "common/ustring.h"
 #include "common/file.h"
+#include "common/threads.h"
 
 #include "graphics/types.h"
 
@@ -79,6 +80,8 @@ static bool writePPM(const Common::UString &filename, const byte *data,
 }
 
 bool takeScreenshot() {
+	Common::enforceMainThread();
+
 	Common::UString filename;
 	if (!constructFilename(filename))
 		return true;

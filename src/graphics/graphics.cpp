@@ -18,6 +18,7 @@
 #include "common/error.h"
 #include "common/ustring.h"
 #include "common/file.h"
+#include "common/threads.h"
 
 #include "events/requests.h"
 
@@ -64,6 +65,8 @@ GraphicsManager::~GraphicsManager() {
 }
 
 void GraphicsManager::init() {
+	Common::enforceMainThread();
+
 	uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO;
 
 	// TODO: Is this actually needed on any systems? It seems to make MacOS X fail to
@@ -115,6 +118,8 @@ uint32 GraphicsManager::getFPS() const {
 }
 
 void GraphicsManager::initSize(int width, int height, bool fullscreen) {
+	Common::enforceMainThread();
+
 	int bpp = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
 	if ((bpp != 24) && (bpp != 32))
 		throw Common::Exception("Need 24 or 32 bits per pixel");
@@ -190,6 +195,8 @@ void GraphicsManager::setWindowTitle(const Common::UString &title) {
 }
 
 void GraphicsManager::setupScene() {
+	Common::enforceMainThread();
+
 	if (!_screen)
 		throw Common::Exception("No screen initialized");
 
@@ -469,6 +476,8 @@ void GraphicsManager::toggleFullScreen() {
 }
 
 void GraphicsManager::setFullScreen(bool fullScreen) {
+	Common::enforceMainThread();
+
 	if (_fullScreen == fullScreen)
 		// Nothing to do
 		return;
@@ -521,6 +530,8 @@ void GraphicsManager::toggleMouseGrab() {
 }
 
 void GraphicsManager::changeSize(int width, int height) {
+	Common::enforceMainThread();
+
 	// Save properties
 	uint32 flags     = _screen->flags;
 	int    bpp       = _screen->format->BitsPerPixel;
@@ -563,10 +574,14 @@ void GraphicsManager::changeSize(int width, int height) {
 }
 
 void GraphicsManager::destroyTexture(TextureID id) {
+	Common::enforceMainThread();
+
 	glDeleteTextures(1, &id);
 }
 
 void GraphicsManager::destroyLists(ListID *listIDs, uint32 count) {
+	Common::enforceMainThread();
+
 	while (count-- > 0)
 		glDeleteLists(*listIDs++, 1);
 }

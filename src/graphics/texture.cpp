@@ -12,6 +12,8 @@
  *  Virtual baseclass of a texture.
  */
 
+#include "common/threads.h"
+
 #include "graphics/texture.h"
 #include "graphics/graphics.h"
 
@@ -21,6 +23,10 @@ Texture::Texture() : Queueable<Texture>(GfxMan.getTextureQueue()) {
 }
 
 Texture::~Texture() {
+}
+
+void Texture::enforceMainThread() {
+	Common::enforceMainThread();
 }
 
 } // End of namespace Graphics

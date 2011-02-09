@@ -505,6 +505,8 @@ void Model::renderNode(const Node &node) {
 }
 
 void Model::rebuild() {
+	enforceMainThread();
+
 	// Rebuild all node lists
 
 	if (_nodes.empty())
@@ -554,6 +556,8 @@ void Model::rebuild() {
 }
 
 void Model::destroy() {
+	enforceMainThread();
+
 	// Destroy all node lists
 
 	if ((_list == 0) || _nodes.empty())

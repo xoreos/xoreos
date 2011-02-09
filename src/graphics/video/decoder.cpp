@@ -16,6 +16,7 @@
 
 #include "common/error.h"
 #include "common/stream.h"
+#include "common/threads.h"
 
 #include "graphics/video/decoder.h"
 #include "graphics/graphics.h"
@@ -130,6 +131,8 @@ uint32 VideoDecoder::getNumQueuedStreams() const {
 }
 
 void VideoDecoder::rebuild() {
+	Common::enforceMainThread();
+
 	if (!_data)
 		return;
 
@@ -150,6 +153,8 @@ void VideoDecoder::rebuild() {
 }
 
 void VideoDecoder::destroy() {
+	Common::enforceMainThread();
+
 	if (_texture == 0)
 		return;
 

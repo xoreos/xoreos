@@ -24,6 +24,9 @@ public:
 	ListContainer();
 	~ListContainer();
 
+protected:
+	void enforceMainThread();
+
 
 // To be called from the main/events/graphics thread
 public:
