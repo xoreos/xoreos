@@ -16,6 +16,7 @@
 
 #include "common/util.h"
 #include "common/error.h"
+#include "common/threads.h"
 
 #include "events/events.h"
 #include "events/requests.h"
@@ -158,6 +159,8 @@ bool EventsManager::parseITC(const Event &event) {
 }
 
 void EventsManager::processEvents() {
+	Common::enforceMainThread();
+
 	Common::StackLock lock(_eventQueueMutex);
 
 	Event event;
