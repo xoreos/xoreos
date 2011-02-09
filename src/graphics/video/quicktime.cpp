@@ -216,26 +216,20 @@ uint32 QuickTimeDecoder::getElapsedTime() const {
 	// TODO: Extend decoder to get the elapsed time of the sound
 	//	return g_system->getMixer()->getSoundElapsedTime(_audHandle);
 
-	warning("Elapsed time = %d", EventMan.getTimestamp() - _startTime);
 	return EventMan.getTimestamp() - _startTime;
 }
 
 uint32 QuickTimeDecoder::getTimeToNextFrame() const {
-	if (!_started || _curFrame < 0) {
-		warning("Haven't started: 0ms till we begin");
+	if (!_started || _curFrame < 0)
 		return 0;
-	}
 
 	// Convert from the QuickTime rate base to 1000
 	uint32 nextFrameStartTime = _nextFrameStartTime * 1000 / _streams[_videoStreamIndex]->time_scale;
 	uint32 elapsedTime = getElapsedTime();
 
-	if (nextFrameStartTime <= elapsedTime) {
-		warning("Overtime");
+	if (nextFrameStartTime <= elapsedTime)
 		return 0;
-	}
 
-	warning("Time until next frame: %d", nextFrameStartTime - elapsedTime);
 	return nextFrameStartTime - elapsedTime;
 }
 

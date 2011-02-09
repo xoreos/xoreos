@@ -67,8 +67,6 @@ void WinIconImage::readHeader(Common::SeekableReadStream &cur) {
 
 	if (!_imageCount)
 		throw Common::Exception("No image count");
-
-	warning("-> imageCount: %d", _imageCount);
 }
 
 void WinIconImage::readData(Common::SeekableReadStream &cur) {
@@ -93,7 +91,6 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 		throw Common::Exception("Reserved byte != 0");
 
 	if (_iconType == 2) {
-		warning("reading hotspot?");
 		_hotspotX = cur.readUint16LE();
 		_hotspotY = cur.readUint16LE();
 	} else {
