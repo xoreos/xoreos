@@ -12,8 +12,8 @@
  *  A simple PPM image dumper.
  */
 
-#ifndef GRAPHICS_IMAGESDUMPPPM_H
-#define GRAPHICS_IMAGESDUMPPPM_H
+#ifndef GRAPHICS_IMAGES_DUMPPPM_H
+#define GRAPHICS_IMAGES_DUMPPPM_H
 
 #include "common/types.h"
 
@@ -32,4 +32,4 @@ void dumpPPM(const Common::UString &fileName, const ImageDecoder *image);
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_IMAGESDUMPPPM_H
+#endif // GRAPHICS_IMAGES_DUMPPPM_H
