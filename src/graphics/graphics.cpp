@@ -14,8 +14,6 @@
 
 #include <cmath>
 
-#include "boost/date_time/posix_time/posix_time.hpp"
-
 #include "common/util.h"
 #include "common/error.h"
 #include "common/ustring.h"
@@ -30,11 +28,7 @@
 #include "graphics/renderable.h"
 
 #include "graphics/images/decoder.h"
-#include "graphics/images/dumpppm.h"
-
-// boost-date_time stuff
-using boost::posix_time::ptime;
-using boost::posix_time::second_clock;
+#include "graphics/images/screenshot.h"
 
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
@@ -291,8 +285,10 @@ void GraphicsManager::renderScene() {
 
 		SDL_GL_SwapBuffers();
 
-		if (_takeScreenshot)
-			screenshot();
+		if (_takeScreenshot) {
+			Graphics::takeScreenshot();
+			_takeScreenshot = false;
+		}
 
 		_fpsCounter->finishedFrame();
 		return;
@@ -356,8 +352,10 @@ void GraphicsManager::renderScene() {
 
 	SDL_GL_SwapBuffers();
 
-	if (_takeScreenshot)
-		screenshot();
+	if (_takeScreenshot) {
+		Graphics::takeScreenshot();
+		_takeScreenshot = false;
+	}
 
 	_fpsCounter->finishedFrame();
 }
@@ -464,30 +462,6 @@ void GraphicsManager::handleCursorSwitch() {
 		SDL_ShowCursor(SDL_DISABLE);
 
 	_cursorState = kCursorStateStay;
-}
-
-void GraphicsManager::screenshot() {
-	// Construct a file name from the current time
-	ptime t(second_clock::universal_time());
-	Common::UString file =
-		Common::UString::sprintf("%04d%02d%02dT%02d%02d%02d.ppm",
-		(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
-		(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
-		(int) t.time_of_day().seconds());
-
-	if (Common::File::exists(file))
-		// We already did a screenshot this second
-		return;
-
-	byte *screen = new byte[3 * _screen->w * _screen->h];
-
-	glReadPixels(0, 0, _screen->w, _screen->h, GL_RGB, GL_UNSIGNED_BYTE, screen);
-	flipVertically(screen, _screen->w, _screen->h, 3);
-	dumpPPM(file, screen, _screen->w, _screen->h, kPixelFormatRGB);
-
-	delete screen;
-
-	_takeScreenshot = false;
 }
 
 void GraphicsManager::toggleFullScreen() {

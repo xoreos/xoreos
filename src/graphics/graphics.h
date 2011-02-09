@@ -125,8 +125,6 @@ private:
 
 	void handleCursorSwitch();
 
-	void screenshot();
-
 
 // For Queueables
 public:
