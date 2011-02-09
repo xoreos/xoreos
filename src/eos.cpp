@@ -18,6 +18,7 @@
 #include "common/util.h"
 #include "common/error.h"
 #include "common/filepath.h"
+#include "common/threads.h"
 
 #include "graphics/graphics.h"
 
@@ -77,6 +78,8 @@ int main(int argc, char **argv) {
 }
 
 void init() {
+	Common::initThreads();
+
 	GfxMan.init();
 	status("Graphics subsystem initialized");
 	SoundMan.init();
