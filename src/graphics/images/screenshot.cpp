@@ -34,7 +34,7 @@ using boost::posix_time::second_clock;
 static bool constructFilename(Common::UString &filename) {
 	// Construct a file name from the current time
 	ptime t(second_clock::universal_time());
-	filename = Common::UString::sprintf("%04d%02d%02dT%02d%02d%02d.ppm",
+	filename = Common::UString::sprintf("%04d%02d%02dT%02d%02d%02d.bmp",
 		(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
 		(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
 		(int) t.time_of_day().seconds());
@@ -46,7 +46,7 @@ static bool constructFilename(Common::UString &filename) {
 	return true;
 }
 
-static bool writePPM(const Common::UString &filename, const byte *data,
+static bool writeBMP(const Common::UString &filename, const byte *data,
 		int width, int height) {
 
 	if ((width <= 0) || (height <= 0) || !data)
@@ -57,19 +57,46 @@ static bool writePPM(const Common::UString &filename, const byte *data,
 	if (!file.open(filename))
 		return false;
 
-	char header[64];
+	// The pitch of the output has to be divisible by 4, so
+	// we output zeroes to make the pitch that far.
+	int extraDataSize = width & 3;
+	int imageSize = height * (width + extraDataSize) * 3;
 
-	std::snprintf(header, 64, "P6\n%d %d 255\n", width, height);
-	header[63] = '\0';
+	// Main bitmap header
+	file.writeByte('B');
+	file.writeByte('M');
+	file.writeUint32LE(14 + 40 + imageSize); // Size
+	file.writeUint32LE(0); // reserved
+	file.writeUint32LE(14 + 40); // Image offset after both headers
 
-	file.write(header, std::strlen(header));
+	// v3 header
+	file.writeUint32LE(40);
+	file.writeUint32LE(width);
+	file.writeUint32LE(height);
+	file.writeUint16LE(1);
+	file.writeUint16LE(24);
+	file.writeUint32LE(0);
+	file.writeUint32LE(imageSize);
+	file.writeUint32LE(72);
+	file.writeUint32LE(72);
+	file.writeUint32LE(0);
+	file.writeUint32LE(0); 
 
-	int pitch = 3 * width;
+	if (extraDataSize != 0) {
+		// Dump, making sure the pitch is correct
+		while (height--) {
+			file.write(data, width * 3);
 
-	data += (pitch * height) - pitch;
-	while (height-- > 0) {
-		file.write(data, pitch);
-		data -= pitch;
+			// Ensure we're on a 4-byte boundary
+			for (int i = 0; i < extraDataSize; i++)
+				file.writeByte(0);
+
+			data += width * 3;
+		}
+	} else {
+		// Dump directly (can do all at once here because the data
+		// is already good for BMP output)
+		file.write(data, width * height * 3);
 	}
 
 	if (!file.flush() || file.err())
@@ -95,8 +122,8 @@ bool takeScreenshot() {
 
 	byte *screen = new byte[3 * m_viewport[2] * m_viewport[3]];
 
-	glReadPixels(0, 0, m_viewport[2], m_viewport[3], GL_RGB, GL_UNSIGNED_BYTE, screen);
-	bool success = writePPM(filename, screen, m_viewport[2], m_viewport[3]);
+	glReadPixels(0, 0, m_viewport[2], m_viewport[3], GL_BGR, GL_UNSIGNED_BYTE, screen);
+	bool success = writeBMP(filename, screen, m_viewport[2], m_viewport[3]);
 
 	delete screen;
 
