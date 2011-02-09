@@ -127,7 +127,13 @@ bool takeScreenshot() {
 
 	delete screen;
 
-	return success;
+	if (success) {
+		status("Screenshot taken: %s", filename.c_str());
+		return true;
+	}
+
+	warning("Failed to take screenshot");
+	return false;
 }
 
 } // End of namespace Graphics
