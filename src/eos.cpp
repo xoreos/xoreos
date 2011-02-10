@@ -20,6 +20,8 @@
 #include "common/filepath.h"
 #include "common/threads.h"
 
+#include "common/configman.h"
+
 #include "graphics/graphics.h"
 
 #include "sound/sound.h"
@@ -28,6 +30,8 @@
 
 #include "engines/enginemanager.h"
 #include "engines/gamethread.h"
+
+void initConfig();
 
 void init();
 void deinit();
@@ -43,7 +47,11 @@ int __stdcall WinMain(HINSTANCE /*hInst*/, HINSTANCE /*hPrevInst*/,  LPSTR /*lpC
 }
 #endif
 
+static bool configFileIsBroken = false;
+
 int main(int argc, char **argv) {
+	initConfig();
+
 	if (argc < 2) {
 		std::printf("Usage: %s </path/to/aurora/game>\n", argv[0]);
 		return 0;
@@ -74,7 +82,28 @@ int main(int argc, char **argv) {
 	}
 
 	status("Shutting down");
+
+	// Don't clobber a broken save
+	if (!configFileIsBroken)
+		ConfigMan.save();
+
 	return 0;
+}
+
+void initConfig() {
+	if (!ConfigMan.load()) {
+		// Loading failed, create an empty config file
+
+		ConfigMan.create();
+
+		// Does the config file exist per se?
+		if (ConfigMan.fileExists())
+			// Yes, mark it as broken
+			configFileIsBroken = true;
+		else
+			// Nope, just write the empty file
+			ConfigMan.save();
+	}
 }
 
 void init() {
