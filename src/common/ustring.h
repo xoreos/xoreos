@@ -41,7 +41,7 @@ public:
 	typedef utf8::iterator<std::string::const_iterator> iterator;
 
 	// Case insensitive compare
-	struct less : std::binary_function<UString, UString, bool>
+	struct iless : std::binary_function<UString, UString, bool>
 	{
 		bool operator() (const UString &str1, const UString &str2) const {
 			return str1.lessIgnoreCase(str2);

@@ -24,7 +24,7 @@
 namespace Common {
 
 typedef std::map<UString, UString> StringMap;
-typedef std::map<UString, UString, UString::less> StringIMap;
+typedef std::map<UString, UString, UString::iless> StringIMap;
 
 typedef boost::unordered_map<UString, UString, hashUStringCaseSensitive> StringHashMap;
 typedef boost::unordered_map<UString, UString, hashUStringCaseInsensitive> StringHashIMap;
