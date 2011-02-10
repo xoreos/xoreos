@@ -761,19 +761,23 @@ void UString::recalculateSize() {
 //       characters: http://www.unicode.org/reports/tr21/tr21-5.html
 
 uint32 UString::tolower(uint32 c) {
-	if ((c & 0xFFFFFF80) != 0)
-		// It's not a clean ASCII character, so we don't know how to lowercase it
+	if (!isASCII(c))
+		// We don't know how to lowercase that
 		return c;
 
 	return std::tolower(c);
 }
 
 uint32 UString::toupper(uint32 c) {
-	if ((c & 0xFFFFFF80) != 0)
-		// It's not a clean ASCII character, so we don't know how to uppercase it
+	if (!isASCII(c))
+		// We don't know how to uppercase that
 		return c;
 
 	return std::toupper(c);
+}
+
+bool UString::isASCII(uint32 c) {
+	return (c & 0xFFFFFF80) == 0;
 }
 
 } // End of namespace Common

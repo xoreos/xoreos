@@ -169,6 +169,8 @@ public:
 	static uint32 tolower(uint32 c);
 	static uint32 toupper(uint32 c);
 
+	static bool isASCII(uint32 c);
+
 private:
 	std::string _string; ///< Internal string holding the actual data.
 
