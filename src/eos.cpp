@@ -108,6 +108,12 @@ void initConfig() {
 	ConfigMan.setDefaultInt ("width" ,     800);
 	ConfigMan.setDefaultInt ("height",     600);
 	ConfigMan.setDefaultBool("fullscreen", false);
+
+	ConfigMan.setDefaultDouble("volume"      , 1.0);
+	ConfigMan.setDefaultDouble("volume_music", 1.0);
+	ConfigMan.setDefaultDouble("volume_sfx"  , 1.0);
+	ConfigMan.setDefaultDouble("volume_voice", 1.0);
+	ConfigMan.setDefaultDouble("volume_video", 1.0);
 }
 
 void init() {

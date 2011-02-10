@@ -21,6 +21,7 @@
 #include "common/stream.h"
 #include "common/util.h"
 #include "common/error.h"
+#include "common/configman.h"
 
 #include "events/events.h"
 
@@ -67,6 +68,13 @@ void SoundManager::init() {
 		throw Common::Exception("Failed to create sound thread: %s", SDL_GetError());
 
 	_ready = true;
+
+	setListenerGain(ConfigMan.getDouble("volume", 1.0));
+
+	setTypeGain(kSoundTypeMusic, ConfigMan.getDouble("volume_music", 1.0));
+	setTypeGain(kSoundTypeSFX  , ConfigMan.getDouble("volume_sfx"  , 1.0));
+	setTypeGain(kSoundTypeVoice, ConfigMan.getDouble("volume_voice", 1.0));
+	setTypeGain(kSoundTypeVideo, ConfigMan.getDouble("volume_video", 1.0));
 }
 
 void SoundManager::deinit() {
