@@ -675,6 +675,14 @@ void UString::readLineUTF16BE(SeekableReadStream &stream) {
 	recalculateSize();
 }
 
+void UString::readUTF8(SeekableReadStream &stream) {
+	readASCII(stream);
+}
+
+void UString::readLineUTF8(SeekableReadStream &stream) {
+	readLineASCII(stream);
+}
+
 void UString::readSingleByte(SeekableReadStream &stream, std::vector<char> &data) {
 	char c;
 	while ((c = stream.readByte()) != 0)
