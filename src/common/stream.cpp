@@ -17,6 +17,7 @@
 #include "common/stream.h"
 #include "common/error.h"
 #include "common/util.h"
+#include "common/ustring.h"
 
 namespace Common {
 
@@ -29,6 +30,11 @@ void WriteStream::writeStream(ReadStream &stream) {
 		write(buf, n);
 	}
 }
+
+void WriteStream::writeString(const UString &str) {
+	write(str.c_str(), strlen(str.c_str()));
+}
+
 
 MemoryReadStream *ReadStream::readStream(uint32 dataSize) {
 	byte *buf = new byte[dataSize];

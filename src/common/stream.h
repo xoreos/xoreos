@@ -29,6 +29,7 @@ namespace Common {
 
 class MemoryReadStream;
 class ReadStream;
+class UString;
 
 /**
  * Virtual base class for both ReadStream and WriteStream.
@@ -174,6 +175,12 @@ public:
 
 	/** Copy the complete contents of the given stream. */
 	void writeStream(ReadStream &stream);
+
+	/**
+	 *  Write the given string to the stream.
+	 *  No terminating zero byte is written.
+	 */
+	void writeString(const UString &str);
 };
 
 
