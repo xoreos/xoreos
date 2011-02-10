@@ -757,6 +757,9 @@ void UString::recalculateSize() {
 	_size = utf8::distance(_string.begin(), _string.end());
 }
 
+// NOTE: If we ever need uppercase<->lowercase mappings for non-ASCII
+//       characters: http://www.unicode.org/reports/tr21/tr21-5.html
+
 uint32 UString::tolower(uint32 c) {
 	if ((c & 0xFFFFFF80) != 0)
 		// It's not a clean ASCII character, so we don't know how to lowercase it
