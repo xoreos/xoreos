@@ -32,6 +32,7 @@ noinst_HEADERS = system.h \
                  transmatrix.h \
                  boundingbox.h \
                  configfile.h \
+                 configman.h \
                  foxpro.h \
                  zipfile.h
 
@@ -58,5 +59,6 @@ libcommon_la_SOURCES = maths.cpp \
                        transmatrix.cpp \
                        boundingbox.cpp \
                        configfile.cpp \
+                       configman.cpp \
                        foxpro.cpp \
                        zipfile.cpp
