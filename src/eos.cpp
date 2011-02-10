@@ -104,6 +104,10 @@ void initConfig() {
 			// Nope, just write the empty file
 			ConfigMan.save();
 	}
+
+	ConfigMan.setDefaultInt ("width" ,     800);
+	ConfigMan.setDefaultInt ("height",     600);
+	ConfigMan.setDefaultBool("fullscreen", false);
 }
 
 void init() {

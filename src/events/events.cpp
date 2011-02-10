@@ -17,6 +17,7 @@
 #include "common/util.h"
 #include "common/error.h"
 #include "common/threads.h"
+#include "common/configman.h"
 
 #include "events/events.h"
 #include "events/requests.h"
@@ -233,7 +234,11 @@ void EventsManager::doQuit() {
 void EventsManager::initMainLoop() {
 	try {
 
-		GfxMan.initSize(1080, 720, false);
+		int  width  = ConfigMan.getInt ("width"     , 800);
+		int  height = ConfigMan.getInt ("height"    , 600);
+		bool fs     = ConfigMan.getBool("fullscreen", false);
+
+		GfxMan.initSize(width, height, fs);
 		GfxMan.setupScene();
 
 	} catch (Common::Exception &e) {
