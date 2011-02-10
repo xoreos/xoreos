@@ -40,9 +40,12 @@ const char *ConfigManager::kDomainApp = "eos";
 ConfigManager::ConfigManager() : _config(0), _domainApp(0), _domainGame(0) {
 	_domainDefaultApp  = new ConfigDomain("appDefault");
 	_domainDefaultGame = 0;
+
+	_domainCommandline = new ConfigDomain("commandline");
 }
 
 ConfigManager::~ConfigManager() {
+	delete _domainCommandline;
 	delete _domainDefaultGame;
 	delete _domainDefaultApp;
 	delete _config;
@@ -64,6 +67,11 @@ void ConfigManager::clear() {
 
 	_domainDefaultApp  = new ConfigDomain("appDefault");
 	_domainDefaultGame = 0;
+}
+
+void ConfigManager::clearCommandline() {
+	delete _domainCommandline;
+	_domainCommandline = new ConfigDomain("commandline");
 }
 
 bool ConfigManager::fileExists() const {
@@ -150,11 +158,14 @@ bool ConfigManager::setGame(const UString &gameID) {
 }
 
 bool ConfigManager::hasKey(const UString &key) const {
-	return hasKey(_domainGame, key) || hasKey(_domainApp, key);
+	return hasKey(_domainCommandline, key) ||
+	       hasKey(_domainGame, key)        ||
+	       hasKey(_domainApp, key);
 }
 
 bool ConfigManager::getKey(const UString &key, UString &value) const {
-	return getKey(_domainGame       , key, value) ||
+	return getKey(_domainCommandline, key, value) ||
+	       getKey(_domainGame       , key, value) ||
 	       getKey(_domainApp        , key, value) ||
 	       getKey(_domainDefaultGame, key, value) ||
 	       getKey(_domainDefaultApp , key, value);
@@ -193,6 +204,9 @@ double ConfigManager::getDouble(const UString &key, double def) const {
 }
 
 void ConfigManager::setKey(const UString &key, const UString &value) {
+	// Commandline options always get overwritten
+	_domainCommandline->removeKey(key);
+
 	if (setKey(_domainGame, key, value))
 		return;
 
@@ -236,6 +250,10 @@ void ConfigManager::setDefaultInt(const UString &key, int value) {
 
 void ConfigManager::setDefaultDouble(const UString &key, double value) {
 	setDefaultKey(key, ConfigDomain::fromDouble(value));
+}
+
+void ConfigManager::setCommandlineKey(const UString &key, const UString &value) {
+	setKey(_domainCommandline, key, value);
 }
 
 UString ConfigManager::getConfigFile() const {

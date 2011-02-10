@@ -35,6 +35,7 @@ public:
 	void setConfigFile(const UString &file = "");
 
 	void clear();
+	void clearCommandline();
 
 	bool fileExists() const;
 
@@ -67,6 +68,8 @@ public:
 	void setDefaultInt   (const UString &key,       int      value);
 	void setDefaultDouble(const UString &key,       double   value);
 
+	void setCommandlineKey(const UString &key, const UString &value);
+
 private:
 	static const char *kDomainApp;
 
@@ -78,6 +81,7 @@ private:
 	ConfigDomain *_domainGame;
 	ConfigDomain *_domainDefaultApp;
 	ConfigDomain *_domainDefaultGame;
+	ConfigDomain *_domainCommandline;
 
 	UString getConfigFile() const;
 
