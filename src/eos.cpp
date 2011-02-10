@@ -14,6 +14,8 @@
 
 #include <cstdio>
 
+#include "cline.h"
+
 #include "common/ustring.h"
 #include "common/util.h"
 #include "common/error.h"
@@ -52,12 +54,24 @@ static bool configFileIsBroken = false;
 int main(int argc, char **argv) {
 	initConfig();
 
-	if (argc < 2) {
-		std::printf("Usage: %s </path/to/aurora/game>\n", argv[0]);
-		return 0;
+	Common::UString target;
+	int code;
+	if (!parseCommandline(argc, argv, target, code))
+		return code;
+
+	if (!target.empty()) {
+		status("Target \"%s\"", target.c_str());
+		if (!ConfigMan.setGame(target))
+			error("No target \"%s\" in the config file", target.c_str());
+	} else
+		warning("No target specified, probing");
+
+	Common::UString dirArg;
+	if (!ConfigMan.getKey("path", dirArg)) {
+		warning("No game path specified, using the current directory");
+		dirArg = ".";
 	}
 
-	Common::UString dirArg  = argv[1];
 	Common::UString baseDir = Common::FilePath::makeAbsolute(dirArg);
 
 	if (!Common::FilePath::isDirectory(baseDir) && !Common::FilePath::isRegularFile(baseDir))
@@ -100,9 +114,6 @@ void initConfig() {
 		if (ConfigMan.fileExists())
 			// Yes, mark it as broken
 			configFileIsBroken = true;
-		else
-			// Nope, just write the empty file
-			ConfigMan.save();
 	}
 
 	ConfigMan.setDefaultInt ("width" ,     800);
