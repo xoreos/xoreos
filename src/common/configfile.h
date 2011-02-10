@@ -124,7 +124,7 @@ public:
 
 private:
 	typedef std::list<ConfigDomain *> DomainList;
-	typedef std::map<UString, ConfigDomain *> DomainMap;
+	typedef std::map<UString, ConfigDomain *, UString::iless> DomainMap;
 
 	DomainList _domainList;
 	DomainMap  _domainMap;
