@@ -40,6 +40,14 @@ class UString {
 public:
 	typedef utf8::iterator<std::string::const_iterator> iterator;
 
+	// Case insensitive compare
+	struct less : std::binary_function<UString, UString, bool>
+	{
+		bool operator() (const UString &str1, const UString &str2) const {
+			return str1.lessIgnoreCase(str2);
+		}
+	};
+
 	UString(const UString &str);
 	UString(const std::string &str);
 	UString(const char *str = "");
@@ -68,6 +76,7 @@ public:
 	UString &operator+=(uint32 c);
 
 	bool equalsIgnoreCase(const UString &str) const;
+	bool lessIgnoreCase(const UString &str) const;
 
 	/** Swap the contents of the string with this string's. */
 	void swap(UString &str);

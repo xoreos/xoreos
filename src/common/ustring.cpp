@@ -275,13 +275,35 @@ UString &UString::operator+=(uint32 c) {
 }
 
 bool UString::equalsIgnoreCase(const UString &str) const {
-	UString tmp1 = *this;
-	UString tmp2 = str;
+	if (size() != str.size())
+		return false;
 
-	tmp1.tolower();
-	tmp2.tolower();
+	UString::iterator it1 = begin();
+	UString::iterator it2 = str.begin();
+	for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2)
+		if (tolower(*it1) != tolower(*it2))
+			return false;
 
-	return tmp1 == tmp2;
+	return true;
+}
+
+bool UString::lessIgnoreCase(const UString &str) const {
+	UString::iterator it1 = begin();
+	UString::iterator it2 = str.begin();
+	for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
+		uint32 c1 = tolower(*it1);
+		uint32 c2 = tolower(*it2);
+
+		if (c1 < c2)
+			return true;
+		if (c1 > c2)
+			return false;
+	}
+
+	if ((it1 == end()) && (it2 != str.end()))
+		return true;
+
+	return false;
 }
 
 void UString::swap(UString &str) {
