@@ -15,16 +15,24 @@
 #ifndef COMMON_STRWORDMAP_H
 #define COMMON_STRWORDMAP_H
 
+#include <map>
+
 #include "boost/unordered/unordered_map.hpp"
 
 #include "common/ustring.h"
 
 namespace Common {
 
-class StringMap {
+typedef std::map<UString, UString> StringMap;
+typedef std::map<UString, UString, UString::less> StringIMap;
+
+typedef boost::unordered_map<UString, UString, hashUStringCaseSensitive> StringHashMap;
+typedef boost::unordered_map<UString, UString, hashUStringCaseInsensitive> StringHashIMap;
+
+class StringListMap {
 public:
 	/** Build a string map to match a list of strings against. */
-	StringMap(const char **strings, int count, bool onlyFirstWord = false);
+	StringListMap(const char **strings, int count, bool onlyFirstWord = false);
 
 	/** Match a string against the map.
 	 *

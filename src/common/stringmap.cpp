@@ -19,12 +19,12 @@
 
 namespace Common {
 
-StringMap::StringMap(const char **strings, int count, bool onlyFirstWord) : _onlyFirstWord(onlyFirstWord) {
+StringListMap::StringListMap(const char **strings, int count, bool onlyFirstWord) : _onlyFirstWord(onlyFirstWord) {
 	for (int i = 0; i < count; i++)
 		_map.insert(std::make_pair(UString(strings[i]), i));
 }
 
-int StringMap::find(const char *str, const char **match) const {
+int StringListMap::find(const char *str, const char **match) const {
 	UString sStr = str;
 
 	if (_onlyFirstWord) {
@@ -42,7 +42,7 @@ int StringMap::find(const char *str, const char **match) const {
 	return s->second;
 }
 
-int StringMap::find(const UString &str, const char **match) const {
+int StringListMap::find(const UString &str, const char **match) const {
 	UString sStr = str;
 
 	if (_onlyFirstWord) {

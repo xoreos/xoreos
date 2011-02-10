@@ -20,6 +20,7 @@
 #include <map>
 
 #include "common/ustring.h"
+#include "common/stringmap.h"
 
 namespace Common {
 
@@ -74,8 +75,7 @@ public:
 	void removeKey(const UString &key, const UString &section);
 
 private:
-	typedef std::map<UString, UString> StringMap;
-	typedef std::map<UString, StringMap> ConfigFileMap;
+	typedef std::map<UString, StringHashIMap> ConfigFileMap;
 
 	ConfigFileMap _map;
 };

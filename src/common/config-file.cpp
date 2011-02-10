@@ -182,7 +182,7 @@ bool ConfigFile::getKey(const UString &key, const UString &section, UString &val
 	if (it == _map.end())
 		return false;
 
-	StringMap::const_iterator it2 = it->second.find(key);
+	StringHashIMap::const_iterator it2 = it->second.find(key);
 	if (it2 == it->second.end())
 		return false;
 
@@ -199,7 +199,7 @@ void ConfigFile::setKey(const UString &key, const UString &section, const UStrin
 	ConfigFileMap::iterator it = _map.find(section);
 
 	if (it == _map.end()) {
-		StringMap strMap;
+		StringHashIMap strMap;
 		strMap[key] = value;
 		_map[section] = strMap;
 	} else
