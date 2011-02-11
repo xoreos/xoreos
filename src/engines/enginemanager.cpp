@@ -39,6 +39,7 @@
 #include "engines/thewitcher/thewitcher.h"
 #include "engines/sonic/sonic.h"
 #include "engines/dragonage/dragonage.h"
+#include "engines/jade/jade.h"
 
 DECLARE_SINGLETON(Engines::EngineManager)
 
@@ -52,7 +53,8 @@ static const EngineProbe *kProbes[] = {
 	&KotOR2::kKotOR2EngineProbe,
 	&TheWitcher::kTheWitcherEngineProbe,
 	&Sonic::kSonicEngineProbe,
-	&DragonAge::kDragonAgeEngineProbe
+	&DragonAge::kDragonAgeEngineProbe,
+	&Jade::kJadeEngineProbe
 };
 
 Aurora::GameID EngineManager::probeGameID(const Common::UString &target, Aurora::Platform &platform) const {

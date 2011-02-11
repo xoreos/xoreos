@@ -146,5 +146,6 @@ AC_OUTPUT(utf8cpp/Makefile \
           src/engines/thewitcher/Makefile \
           src/engines/sonic/Makefile \
           src/engines/dragonage/Makefile \
+          src/engines/jade/Makefile \
           src/Makefile \
           Makefile)
