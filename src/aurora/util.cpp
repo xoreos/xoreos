@@ -162,7 +162,13 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeMDX,            ".mdx"},
 	{kFileTypeRSV,            ".rsv"},
 	{kFileTypeSIG,            ".sig"},
-	{kFileTypeXBX,            ".xbx"},
+	{kFileTypeMAB,            ".mab"},
+	{kFileTypeQST2,           ".qst"},
+	{kFileTypeSTO,            ".sto"},
+	{kFileTypeMDX2,           ".mdx"},
+	{kFileTypeTXB2,           ".txb"},
+	{kFileTypeART,            ".art"},
+	{kFileTypeBIP,            ".bip"},
 	{kFileType1DA,            ".1da"},
 	{kFileTypeERF,            ".erf"},
 	{kFileTypeBIF,            ".bif"},
@@ -237,7 +243,17 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypeCURS,           ".curs"},
 	{kFileTypePICT,           ".pict"},
 	{kFileTypeRSRC,           ".rsrc"},
-	{kFileTypePLIST,          ".plist"}
+	{kFileTypePLIST,          ".plist"},
+
+	{kFileTypeCRE,            ".cre"},
+	{kFileTypePSO,            ".pso"},
+	{kFileTypeVSO,            ".vso"},
+	{kFileTypeABC,            ".abc"},
+	{kFileTypeSBM,            ".sbm"},
+	{kFileTypePVD,            ".pvd"},
+	{kFileTypeAMP,            ".amp"},
+	{kFileTypePLA,            ".pla"},
+	{kFileTypePK,             ".pk" }
 };
 
 FileType getFileType(const Common::UString &path) {

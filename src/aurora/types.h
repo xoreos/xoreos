@@ -148,12 +148,19 @@ enum FileType {
 	kFileTypePTH            =  3003, ///< Path finder data, GFF.
 	kFileTypeLIP            =  3004, ///< Lipsync data.
 	kFileTypeBWM            =  3005,
-	kFileTypeTXB            =  3006,
+	kFileTypeTXB            =  3006, ///< Texture.
 	kFileTypeTPC            =  3007, ///< Texture.
 	kFileTypeMDX            =  3008, ///< Geometry, model mesh data.
 	kFileTypeRSV            =  3009,
 	kFileTypeSIG            =  3010,
-	kFileTypeXBX            =  3011, ///< Image, Xbox.
+	kFileTypeMAB            =  3011, ///< Material, binary.
+	kFileTypeQST2           =  3012, ///< Quest, GFF.
+	kFileTypeSTO            =  3013, ///< GFF.
+	kFileTypeMDX2           =  3016, ///< Geometry, model mesh data.
+	kFileTypeTXB2           =  3017, ///< Texture.
+	kFileTypeFSM            =  3022, ///< Finite State Machine data.
+	kFileTypeART            =  3023, ///< Area enviroment settings, INI.
+	kFileTypeBIP            =  3028, ///< Lipsync data, binary LIP.
 	kFileType1DA            =  9996, ///< Table data, 1-dimensional text array.
 	kFileTypeERF            =  9997, ///< Module resources.
 	kFileTypeBIF            =  9998, ///< Game resource data.
@@ -233,7 +240,18 @@ enum FileType {
 	kFileTypeCURS           = 23001, ///< Cursor, Mac CURS format.
 	kFileTypePICT           = 23002, ///< Image, Mac PICT format.
 	kFileTypeRSRC           = 23003, ///< Mac resource fork.
-	kFileTypePLIST          = 23004  ///< Mac property list (XML).
+	kFileTypePLIST          = 23004, ///< Mac property list (XML).
+
+	// Found Jade Empire
+	kFileTypeCRE            = 24000, ///< Creature template, GFF.
+	kFileTypePSO            = 24001, ///< Shader.
+	kFileTypeVSO            = 24002, ///< Shader.
+	kFileTypeABC            = 24003, ///< Font.
+	kFileTypeSBM            = 24004, ///< Font.
+	kFileTypePVD            = 24005,
+	kFileTypeAMP            = 24006,
+	kFileTypePLA            = 24007,
+	kFileTypePK             = 24008
 };
 
 enum GameID {
