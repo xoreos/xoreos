@@ -53,7 +53,7 @@ struct FontHandle {
 
 	void clear();
 
-	const Font &getFont();
+	const Font &getFont() const;
 };
 
 class FontManager : public Common::Singleton<FontManager> {

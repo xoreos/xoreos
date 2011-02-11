@@ -23,7 +23,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Text::Text(FontHandle &font, const Common::UString &str) :
+Text::Text(const FontHandle &font, const Common::UString &str) :
 	_firstTime(true), _font(font), _x(0.0), _y(0.0) {
 
 	set(str);
@@ -41,6 +41,15 @@ void Text::set(const Common::UString &str) {
 
 	removeFromQueue();
 
+	set_internal(str);
+
+	if (visible)
+		addToQueue();
+
+	GfxMan.unlockFrame();
+}
+
+void Text::set_internal(const Common::UString &str) {
 	_str = str;
 
 	const Font &font = _font.getFont();
@@ -50,11 +59,6 @@ void Text::set(const Common::UString &str) {
 	for (Common::UString::iterator c = _str.begin(); c != _str.end() && *c; ++c)
 		_width += font.getWidth(*c) + font.getSpaceR();
 	_width *= font.getScale() / 100.0;
-
-	if (visible)
-		addToQueue();
-
-	GfxMan.unlockFrame();
 }
 
 void Text::setPosition(float x, float y) {

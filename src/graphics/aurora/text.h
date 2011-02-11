@@ -27,7 +27,7 @@ namespace Aurora {
 
 class Text : public GUIFrontElement {
 public:
-	Text(FontHandle &font, const Common::UString &str);
+	Text(const FontHandle &font, const Common::UString &str);
 	~Text();
 
 	void set(const Common::UString &str);
@@ -42,6 +42,9 @@ public:
 	// Renderable
 	void newFrame();
 	void render();
+
+protected:
+	void set_internal(const Common::UString &str);
 
 private:
 	bool _firstTime;

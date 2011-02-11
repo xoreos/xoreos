@@ -11,6 +11,7 @@ noinst_HEADERS = types.h \
                  font.h \
                  fontman.h \
                  text.h \
+                 fps.h \
                  cube.h \
                  model.h \
                  model_nwn_ascii.h \
@@ -27,6 +28,7 @@ libaurora_la_SOURCES = videoplayer.cpp \
                        font.cpp \
                        fontman.cpp \
                        text.cpp \
+                       fps.cpp \
                        cube.cpp \
                        model.cpp \
                        model_nwn_ascii.cpp \

@@ -64,7 +64,7 @@ void FontHandle::clear() {
 	empty = true;
 }
 
-const Font &FontHandle::getFont() {
+const Font &FontHandle::getFont() const {
 	assert(!empty);
 
 	return *it->second->font;
