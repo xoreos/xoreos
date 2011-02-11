@@ -56,6 +56,8 @@ public:
 
 	bool renameKey(const UString &oldName, const UString &newName);
 
+	void set(const ConfigDomain &domain, bool clobber = true);
+
 	static bool   toBool  (const UString &value);
 	static int    toInt   (const UString &value);
 	static double toDouble(const UString &value);

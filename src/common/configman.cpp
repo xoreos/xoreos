@@ -252,6 +252,15 @@ void ConfigManager::setDefaultDouble(const UString &key, double value) {
 	setDefaultKey(key, ConfigDomain::fromDouble(value));
 }
 
+void ConfigManager::setDefaults() {
+	if        (_domainGame && _domainDefaultGame) {
+		// If we're already in a game, overwrite the game config
+		_domainGame->set(*_domainDefaultGame);
+	} else if (_domainApp  && _domainDefaultApp)
+		// Else, overwrite the app defaults
+		_domainApp->set(*_domainDefaultApp);
+}
+
 void ConfigManager::setCommandlineKey(const UString &key, const UString &value) {
 	setKey(_domainCommandline, key, value);
 }

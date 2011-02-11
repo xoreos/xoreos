@@ -105,15 +105,17 @@ int main(int argc, char **argv) {
 }
 
 void initConfig() {
+	bool newConfig = false;
 	if (!ConfigMan.load()) {
 		// Loading failed, create an empty config file
 
 		ConfigMan.create();
 
-		// Does the config file exist per se?
+		// Mark the config as either broken or new
 		if (ConfigMan.fileExists())
-			// Yes, mark it as broken
 			configFileIsBroken = true;
+		else
+			newConfig = true;
 	}
 
 	ConfigMan.setDefaultInt ("width" ,     800);
@@ -125,6 +127,12 @@ void initConfig() {
 	ConfigMan.setDefaultDouble("volume_sfx"  , 1.0);
 	ConfigMan.setDefaultDouble("volume_voice", 1.0);
 	ConfigMan.setDefaultDouble("volume_video", 1.0);
+
+	// Populate the new config with the defaults
+	if (newConfig) {
+		ConfigMan.setDefaults();
+		ConfigMan.save();
+	}
 }
 
 void init() {

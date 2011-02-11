@@ -161,6 +161,32 @@ bool ConfigDomain::renameKey(const UString &oldName, const UString &newName) {
 	return true;
 }
 
+void ConfigDomain::set(const ConfigDomain &domain, bool clobber) {
+	for (LineList::const_iterator l = domain._lines.begin(); l != domain._lines.end(); ++l) {
+		if (l->key == domain._keys.end())
+			// Comment-only line, ignore
+			continue;
+
+		StringIMap::iterator k = _keys.find(l->key->first);
+		if (k == _keys.end()) {
+			// Key doesn't yet exist in the target domain, add it
+
+			std::pair<StringIMap::iterator, bool> result =
+				_keys.insert(std::make_pair(l->key->first, l->key->second));
+
+			_lines.push_back(Line());
+			_lines.back().key = result.first;
+
+		} else {
+			// Key already exists in the target domain, only overwrite when told to
+			if (!clobber)
+				continue;
+
+			k->second = l->key->second;
+		}
+	}
+}
+
 bool ConfigDomain::toBool(const UString &value) {
 	// Valid true values are "true", "yes" and "1"
 	if (value.equalsIgnoreCase("true") ||

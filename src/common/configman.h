@@ -68,6 +68,8 @@ public:
 	void setDefaultInt   (const UString &key,       int      value);
 	void setDefaultDouble(const UString &key,       double   value);
 
+	void setDefaults();
+
 	void setCommandlineKey(const UString &key, const UString &value);
 
 private:
