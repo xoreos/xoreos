@@ -26,17 +26,13 @@
 
 #include "graphics/graphics.h"
 
-#include "graphics/aurora/cube.h"
-#include "graphics/aurora/font.h"
 #include "graphics/aurora/fontman.h"
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/model_kotor.h"
+#include "graphics/aurora/fps.h"
 
 #include "sound/sound.h"
 
 #include "events/events.h"
 
-#include "aurora/lytfile.h"
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
@@ -109,15 +105,9 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	bool showFPS = ConfigMan.getBool("showfps", false);
 
-	Graphics::Aurora::Text *fps = 0;
+	Graphics::Aurora::FPS *fps = 0;
 	if (showFPS) {
-		Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32b");
-
-		float fpsX = (-(GfxMan.getScreenWidth()  / 2.0))                             / 100.0;
-		float fpsY = ( (GfxMan.getScreenHeight() / 2.0) - font.getFont().getScale()) / 100.0;
-
-		fps = new Graphics::Aurora::Text(font, "");
-		fps->setPosition(fpsX, fpsY);
+		fps = new Graphics::Aurora::FPS(FontMan.get("dialogfont32x32b"));
 		fps->show();
 	}
 
@@ -171,9 +161,6 @@ void KotOR2Engine::run(const Common::UString &target) {
 		}
 
 		EventMan.delay(10);
-
-		if (fps)
-			fps->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
 
 	narShaddaa->leave();

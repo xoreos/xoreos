@@ -23,13 +23,12 @@
 #include "common/strutil.h"
 #include "common/filelist.h"
 #include "common/stream.h"
+#include "common/configman.h"
 
 #include "graphics/graphics.h"
 
-#include "graphics/aurora/cube.h"
-#include "graphics/aurora/font.h"
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/model.h"
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
 
 #include "graphics/aurora/cursorman.h"
 
@@ -114,6 +113,14 @@ void NWNEngine::run(const Common::UString &target) {
 
 	CursorMan.showCursor();
 
+	bool showFPS = ConfigMan.getBool("showfps", false);
+
+	Graphics::Aurora::FPS *fps = 0;
+	if (showFPS) {
+		fps = new Graphics::Aurora::FPS(FontMan.get("fnt_galahad14"));
+		fps->show();
+	}
+
 	// Menu music
 	Sound::ChannelHandle menuMusic = _hasXP2 ?
 	playSound("mus_x2theme"   , Sound::kSoundTypeMusic, true) :
@@ -140,6 +147,8 @@ void NWNEngine::run(const Common::UString &target) {
 	mainMenu->handle();
 
 	delete mainMenu;
+
+	delete fps;
 }
 
 void NWNEngine::init() {
