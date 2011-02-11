@@ -24,6 +24,7 @@
 
 static void displayUsage(const char *name) {
 	std::printf("Usage: %s [options] <target>\n\n", name);
+	std::printf("          --help              This text\n");
 	std::printf("  -cFILE  --config=FILE       Load the config from file FILE\n");
 	std::printf("  -pDIR   --path=DIR          Override the game path with DIR\n");
 	std::printf("  -wSIZE  --width=SIZE        Set the window's width to SIZE\n");
