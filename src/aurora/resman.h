@@ -231,7 +231,7 @@ private:
 	void findBIFs   (const KEYFile &key, std::vector<Common::UString> &bifs);
 	void mergeKEYBIF(const KEYFile &key, std::vector<Common::UString> &bifs, std::vector<BIFFile *> &bifFiles);
 
-	void addResource(const Resource &resource, Common::UString name, ChangeID &change);
+	void addResource(Resource &resource, Common::UString name, ChangeID &change);
 	void addResources(const Common::FileList &files, ChangeID &change, uint32 priority);
 
 	const Resource *getRes(Common::UString name, const std::vector<FileType> &types) const;

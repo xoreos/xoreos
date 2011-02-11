@@ -434,10 +434,20 @@ Common::SeekableReadStream *ResourceManager::getResource(ResourceType resType,
 	return 0;
 }
 
-void ResourceManager::addResource(const Resource &resource, Common::UString name, ChangeID &change) {
+void ResourceManager::addResource(Resource &resource, Common::UString name, ChangeID &change) {
 	name.tolower();
 	if (name.empty())
 		return;
+
+	// Normalize resource type *sigh*
+	if      (resource.type == kFileTypeQST2)
+		resource.type = kFileTypeQST;
+	else if (resource.type == kFileTypeMDX2)
+		resource.type = kFileTypeMDX;
+	else if (resource.type == kFileTypeTXB2)
+		resource.type = kFileTypeTXB;
+	else if (resource.type == kFileTypeCRE)
+		resource.type = kFileTypeBTC;
 
 	ResourceMap::iterator resTypeMap = _resources.find(name);
 	if (resTypeMap == _resources.end()) {
