@@ -149,5 +149,11 @@ bool parseCommandline(int argc, char **argv, Common::UString &target, int &code)
 		target = argv[i];
 	}
 
+	if (target.empty() && !ConfigMan.hasKey("path")) {
+		displayUsage(argv[0]);
+		code = 1;
+		return false;
+	}
+
 	return true;
 }
