@@ -316,7 +316,7 @@ void ConfigFile::load(SeekableReadStream &stream) {
 
 		if (domainName.empty() && key.empty() && value.empty() && lineComment.empty()) {
 			// Empty line, associate the collected comments with the current domain
-			if (!comment.empty()) {
+			if (!comment.empty() && !stream.eos()) {
 
 				if (!domain) {
 					// We have no domain yet, add it to the file's prologue
