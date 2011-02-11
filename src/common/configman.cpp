@@ -37,7 +37,7 @@ namespace Common {
 
 const char *ConfigManager::kDomainApp = "eos";
 
-ConfigManager::ConfigManager() : _config(0), _domainApp(0), _domainGame(0) {
+ConfigManager::ConfigManager() : _changed(false), _config(0), _domainApp(0), _domainGame(0) {
 	_domainDefaultApp  = new ConfigDomain("appDefault");
 	_domainDefaultGame = 0;
 
@@ -56,6 +56,8 @@ void ConfigManager::setConfigFile(const UString &file) {
 }
 
 void ConfigManager::clear() {
+	_changed = false;
+
 	_domainGame = 0;
 	_domainApp  = 0;
 
@@ -76,6 +78,10 @@ void ConfigManager::clearCommandline() {
 
 bool ConfigManager::fileExists() const {
 	return Common::File::exists(getConfigFile());
+}
+
+bool ConfigManager::changed() const {
+	return _changed;
 }
 
 bool ConfigManager::load() {
@@ -108,7 +114,7 @@ bool ConfigManager::load() {
 	return true;
 }
 
-bool ConfigManager::save() const {
+bool ConfigManager::save() {
 	if (!_config)
 		return true;
 
@@ -128,6 +134,9 @@ bool ConfigManager::save() const {
 		printException(e, "WARNING: ");
 		return false;
 	}
+
+	// We saved our changes, so we're no in a not-changed state again
+	_changed = false;
 
 	return true;
 }
@@ -219,6 +228,9 @@ void ConfigManager::setKey(const UString &key, const UString &value) {
 	// Commandline options always get overwritten
 	_domainCommandline->removeKey(key);
 
+	// Setting a config key => We've changed something
+	_changed = true;
+
 	if (setKey(_domainGame, key, value))
 		return;
 
@@ -273,6 +285,9 @@ void ConfigManager::setDefaults() {
 	} else if (_domainApp  && _domainDefaultApp)
 		// Else, overwrite the application defaults
 		_domainApp->set(*_domainDefaultApp);
+
+	// Resetting to defaults => We've got changes
+	_changed = true;
 }
 
 void ConfigManager::setCommandlineKey(const UString &key, const UString &value) {

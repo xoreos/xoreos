@@ -97,9 +97,12 @@ int main(int argc, char **argv) {
 
 	status("Shutting down");
 
-	// Don't clobber a broken save
-	if (!configFileIsBroken)
-		ConfigMan.save();
+	// Configs changed, we should save them
+	if (ConfigMan.changed()) {
+		// But don't clobber a broken save
+		if (!configFileIsBroken)
+			ConfigMan.save();
+	}
 
 	return 0;
 }

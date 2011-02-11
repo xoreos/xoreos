@@ -43,8 +43,11 @@ public:
 	/** Does the config file exist? */
 	bool fileExists() const;
 
+	/** Was at least on setting changed? */
+	bool changed() const;
+
 	bool load();
-	bool save() const;
+	bool save();
 
 	/** Create a new, empty config. */
 	void create();
@@ -88,6 +91,8 @@ private:
 	static const char *kDomainApp; ///< The name of the application domain.
 
 	UString _configFile; ///< The config file to use.
+
+	bool _changed;
 
 	ConfigFile *_config; ///< The actual config.
 
