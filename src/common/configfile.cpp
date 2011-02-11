@@ -113,15 +113,22 @@ void ConfigDomain::setDouble(const UString &key, double value) {
 bool ConfigDomain::removeKey(const UString &key) {
 	StringIMap::iterator k = _keys.find(key);
 	if (k == _keys.end())
-		return false;;
+		// Key doesn't exist, can't remove
+		return false;
 
-	for (LineList::iterator it = _lines.begin(); it != _lines.end(); ++it) {
-		if (it->key == k) {
-			_lines.erase(it);
+	// Find and remove the key's line
+	LineList::iterator line;
+	for (line = _lines.begin(); line != _lines.end(); ++line) {
+		if (line->key == k) {
+			_lines.erase(line);
 			break;
 		}
 	}
 
+	// If that happens, something is *really* broken
+	assert(line != _lines.end());
+
+	// Remove the key
 	_keys.erase(k);
 	return true;
 }
@@ -262,9 +269,11 @@ void ConfigFile::load(SeekableReadStream &stream) {
 	while (!stream.eos() && !stream.err()) {
 		lineNumber++;
 
+		// Read a line
 		UString line;
 		line.readLineUTF8(stream);
 
+		// Parse it
 		UString domainName;
 		UString key, value, lineComment;
 		parseConfigLine(line, domainName, key, value, lineComment, lineNumber);
@@ -272,12 +281,15 @@ void ConfigFile::load(SeekableReadStream &stream) {
 		if (!domainName.empty()) {
 			// New domain
 
+			// Finish up the old domain
 			addDomain(domain, domainLineNumber);
 
+			// Check that the name is actually valid
 			if (!isValidName(domainName))
 				throw Exception("\"%s\" isn't a valid domain name (line %d)",
 						domainName.c_str(), lineNumber);
 
+			// Create the new domain
 			domain = new ConfigDomain(domainName);
 
 			domain->_prologue = comment;
@@ -299,23 +311,26 @@ void ConfigFile::load(SeekableReadStream &stream) {
 				throw Exception("\"%s\" isn't a valid key name (line %d)",
 						key.c_str(), lineNumber);
 
+			// Add collected comments to the domain
 			if (!comment.empty())
 				addDomainKey(*domain, "", "", comment, lineNumber);
 
+			// Add the key to the domain
 			addDomainKey(*domain, key, value, lineComment, lineNumber);
 
 			comment.clear();
 			lineComment.clear();
 		}
 
+		// Collect comments, we don't yet know where those belong to.
 		if (!lineComment.empty()) {
 			if (!comment.empty())
 				comment += '\n';
 			comment += lineComment;
 		}
 
+		// Empty line, associate collected comments with the current domain
 		if (domainName.empty() && key.empty() && value.empty() && lineComment.empty()) {
-			// Empty line, associate the collected comments with the current domain
 			if (!comment.empty() && !stream.eos()) {
 
 				if (!domain) {
@@ -335,8 +350,10 @@ void ConfigFile::load(SeekableReadStream &stream) {
 	if (stream.err())
 		throw Exception(kReadError);
 
+	// Finish up the last domain
 	addDomain(domain, domainLineNumber);
 
+	// We still have comments, those apparently belong to the bottom of the file
 	if (!comment.empty())
 		_epilogue = comment;
 }
@@ -344,12 +361,15 @@ void ConfigFile::load(SeekableReadStream &stream) {
 void ConfigFile::addDomainKey(ConfigDomain &domain, const UString &key,
 		const UString &value, const UString &comment, int lineNumber) {
 
+	// Create new line
 	domain._lines.push_back(ConfigDomain::Line());
 	ConfigDomain::Line &line = domain._lines.back();
 
+	// Add comment
 	line.comment = comment;
 
 	if (!key.empty()) {
+		// We have a key/value pair, add it to the map
 		std::pair<StringIMap::iterator, bool> result =
 			domain._keys.insert(std::make_pair(key, value));
 
@@ -358,18 +378,23 @@ void ConfigFile::addDomainKey(ConfigDomain &domain, const UString &key,
 			throw Exception("Duplicate key \"%s\" in domain \"%s\" (line %d)",
 					key.c_str(), domain._name.c_str(), lineNumber);
 
+		// And set the iterator in the line accordingly
 		line.key = result.first;
 	} else
+		// No key, reflect that in the iterator
 		line.key = domain._keys.end();
 }
 
 void ConfigFile::addDomain(ConfigDomain *domain, int lineNumber) {
 	if (!domain)
+		// No domain, nothing to do
 		return;
 
+	// Sanity check
 	if (hasDomain(domain->_name))
 		throw Exception("Duplicate domain \"%s\" (line %d)", domain->_name.c_str(), lineNumber);
 
+	// Add the domain to the list and map
 	_domainList.push_back(domain);
 	_domainMap.insert(std::make_pair(domain->_name, domain));
 }
@@ -383,10 +408,15 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 	for (UString::iterator l = line.begin(); l != line.end(); ++l) {
 		uint32 c = *l;
 
-		if        (state == 1) {
+		if (state == 1) {
+			// Collecting comments
+
 			comment += c;
 			continue;
+
 		} else if (state == 2) {
+			// Collecting domain name
+
 			if (c != ']') {
 				domainName += c;
 			} else
@@ -396,15 +426,20 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 		}
 
 		if        (c == '#') {
+			// Found a comment
 			state = 1;
 			hasComment = true;
 		} else if (c == '[') {
+			// Found the start of a domain name
 			state = 2;
 		} else if (c == ']') {
+			// Parse error
 			throw Exception("Found extra ']' (line %d)", lineNumber);
 		} else if (c == '=') {
+			// Found the startt of a value
 			state = 3;
 		} else {
+			// Collect either a key or a value
 			if      (state == 0)
 				key   += c;
 			else if (state == 3)
@@ -412,16 +447,20 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 		}
 	}
 
+	// Sanity check
 	if (state == 2)
 		throw Exception("Missing ']' (line %d)", lineNumber);
 
+	// Remove excess whitespace
 	key.trim();
 	value.trim();
 	comment.trim();
 
+	// Readd the comment character #
 	if (hasComment)
 		comment = "# " + comment;
 
+	// Sanity checks
 	if (!domainName.empty())
 		if (!key.empty() || !value.empty())
 			throw Exception("Parse error (line %d)",
@@ -439,6 +478,7 @@ void ConfigFile::save(WriteStream &stream) const {
 		stream.writeByte('\n');
 	}
 
+	// Domains
 	for (DomainList::const_iterator domain = _domainList.begin(); domain != _domainList.end(); ++domain) {
 		// Write domain prologue
 		if (!(*domain)->_prologue.empty()) {
@@ -459,6 +499,7 @@ void ConfigFile::save(WriteStream &stream) const {
 
 		stream.writeByte('\n');
 
+		// Lines
 		for (ConfigDomain::LineList::const_iterator line = (*domain)->_lines.begin(); line != (*domain)->_lines.end(); ++line) {
 			// Write key
 			if (line->key != (*domain)->_keys.end()) {
@@ -512,8 +553,10 @@ const ConfigDomain *ConfigFile::getDomain(const UString &name) const {
 ConfigDomain *ConfigFile::addDomain(const UString &name) {
 	ConfigDomain *domain = getDomain(name);
 	if (domain)
+		// A domain with this name already exists, return that one then
 		return domain;
 
+	// Create a new domain
 	domain = new ConfigDomain(name);
 
 	_domainList.push_back(domain);
@@ -525,16 +568,23 @@ ConfigDomain *ConfigFile::addDomain(const UString &name) {
 bool ConfigFile::removeDomain(const UString &name) {
 	DomainMap::iterator domain = _domainMap.find(name);
 	if (domain == _domainMap.end())
+		// Domain doesn't exist, can't remove
 		return false;
 
-	for (DomainList::iterator it = _domainList.begin(); it != _domainList.end(); ++it) {
-		if (*it == domain->second) {
-			delete *it;
-			_domainList.erase(it);
+	// Find and remove the domain in the list
+	DomainList::iterator d;
+	for (d = _domainList.begin(); d != _domainList.end(); ++d) {
+		if (*d == domain->second) {
+			delete *d;
+			_domainList.erase(d);
 			break;
 		}
 	}
 
+	// If that happens, something is *really* broken
+	assert(d != _domainList.end());
+
+	// Remove the domain
 	_domainMap.erase(domain);
 	return true;
 }

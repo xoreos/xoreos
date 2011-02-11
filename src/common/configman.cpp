@@ -81,12 +81,14 @@ bool ConfigManager::fileExists() const {
 bool ConfigManager::load() {
 	clear();
 
+	// Check that the config file actually exists.
 	UString file = getConfigFile();
 	if (!Common::File::exists(file))
 		return false;
 
 	try {
 
+		// Open and load the config
 		Common::File config;
 		if (!config.open(file))
 			throw Exception(kOpenError);
@@ -94,6 +96,7 @@ bool ConfigManager::load() {
 		_config = new ConfigFile;
 		_config->load(config);
 
+		// Get the application domain
 		_domainApp = _config->addDomain(kDomainApp);
 
 	} catch (Common::Exception &e) {
@@ -113,6 +116,7 @@ bool ConfigManager::save() const {
 
 	try {
 
+		// Open and save the config
 		Common::DumpFile config;
 		if (!config.open(file))
 			throw Exception(kOpenError);
@@ -137,38 +141,46 @@ void ConfigManager::create() {
 }
 
 bool ConfigManager::setGame(const UString &gameID) {
+	// Clear the current game domain
 	delete _domainDefaultGame;
 
 	_domainGame        = 0;
 	_domainDefaultGame = 0;
 
 	if (gameID.empty())
+		// No ID specified, work done
 		return true;
 
+	// No config? There's something wrong here
 	if (!_config)
 		return false;
 
+	// Find the game domain
 	_domainGame = _config->getDomain(gameID);
 	if (!_domainGame)
+		// Doesn't exist? Fail.
 		return false;
 
+	// Create a new defaults domain for the game too
 	_domainDefaultGame = new ConfigDomain("gameDefault");
 
 	return true;
 }
 
 bool ConfigManager::hasKey(const UString &key) const {
-	return hasKey(_domainCommandline, key) ||
-	       hasKey(_domainGame, key)        ||
-	       hasKey(_domainApp, key);
+	// Look up the key in order of priority
+	return hasKey(_domainCommandline, key) || // First command line
+	       hasKey(_domainGame, key)        || // Then game
+	       hasKey(_domainApp, key);           // Then application
 }
 
 bool ConfigManager::getKey(const UString &key, UString &value) const {
-	return getKey(_domainCommandline, key, value) ||
-	       getKey(_domainGame       , key, value) ||
-	       getKey(_domainApp        , key, value) ||
-	       getKey(_domainDefaultGame, key, value) ||
-	       getKey(_domainDefaultApp , key, value);
+	// Look up the key in order of priority
+	return getKey(_domainCommandline, key, value) || // First command line
+	       getKey(_domainGame       , key, value) || // Then game
+	       getKey(_domainApp        , key, value) || // Then application
+	       getKey(_domainDefaultGame, key, value) || // Then game defaults
+	       getKey(_domainDefaultApp , key, value);   // Then application defaults
 }
 
 UString ConfigManager::getString(const UString &key, const UString &def) const {
@@ -230,9 +242,11 @@ void ConfigManager::setDouble(const UString &key, double value) {
 }
 
 void ConfigManager::setDefaultKey(const UString &key, const UString &value) {
+	// If we're in a game, set the game defaults
 	if (setKey(_domainDefaultGame, key, value))
 		return;
 
+	// Else, set the application defaults
 	setKey(_domainDefaultApp, key, value);
 }
 
@@ -257,7 +271,7 @@ void ConfigManager::setDefaults() {
 		// If we're already in a game, overwrite the game config
 		_domainGame->set(*_domainDefaultGame);
 	} else if (_domainApp  && _domainDefaultApp)
-		// Else, overwrite the app defaults
+		// Else, overwrite the application defaults
 		_domainApp->set(*_domainDefaultApp);
 }
 
@@ -272,6 +286,10 @@ UString ConfigManager::getConfigFile() const {
 	return getDefaultConfigFile();
 }
 
+// Big messy function to figure out the default config file/path,
+// depending on the OS.
+// TODO: For easier portability, stuff like that should probably
+//       be put somewhere collectively...
 UString ConfigManager::getDefaultConfigFile() {
 	Common::UString file;
 

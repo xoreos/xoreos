@@ -32,23 +32,30 @@ public:
 	ConfigManager();
 	~ConfigManager();
 
+	/** Set the config file to use. */
 	void setConfigFile(const UString &file = "");
 
+	/** Clear everything except the command line options. */
 	void clear();
+	/** Clear the command line options. */
 	void clearCommandline();
 
+	/** Does the config file exist? */
 	bool fileExists() const;
 
 	bool load();
 	bool save() const;
 
+	/** Create a new, empty config. */
 	void create();
 
+	/** Set the game domain to gameID. */
 	bool setGame(const UString &gameID = "");
 
 	bool hasKey(const UString &key) const;
 	bool getKey(const UString &key, UString &value) const;
 
+	// Specialized getters. */
 	UString getString(const UString &key, const UString &def = ""   ) const;
 	bool    getBool  (const UString &key,       bool     def = false) const;
 	int     getInt   (const UString &key,       int      def = 0    ) const;
@@ -56,42 +63,47 @@ public:
 
 	void setKey(const UString &key, const UString &value);
 
+	// Specialized setters. */
 	void setString(const UString &key, const UString &value);
 	void setBool  (const UString &key,       bool     value);
 	void setInt   (const UString &key,       int      value);
 	void setDouble(const UString &key,       double   value);
 
+	/** Set a default config value. */
 	void setDefaultKey(const UString &key, const UString &value);
 
+	// Specialized default setters. */
 	void setDefaultString(const UString &key, const UString &value);
 	void setDefaultBool  (const UString &key,       bool     value);
 	void setDefaultInt   (const UString &key,       int      value);
 	void setDefaultDouble(const UString &key,       double   value);
 
+	/** Overwrite the current config with the defaults. */
 	void setDefaults();
 
+	/** Set a config value that came from the command line. */
 	void setCommandlineKey(const UString &key, const UString &value);
 
 private:
-	static const char *kDomainApp;
+	static const char *kDomainApp; ///< The name of the application domain.
 
-	UString _configFile;
+	UString _configFile; ///< The config file to use.
 
-	ConfigFile *_config;
+	ConfigFile *_config; ///< The actual config.
 
-	ConfigDomain *_domainApp;
-	ConfigDomain *_domainGame;
-	ConfigDomain *_domainDefaultApp;
-	ConfigDomain *_domainDefaultGame;
-	ConfigDomain *_domainCommandline;
+	ConfigDomain *_domainApp;         ///< Application domain.
+	ConfigDomain *_domainGame;        ///< Game domain.
+	ConfigDomain *_domainDefaultApp;  ///< Application defaults domain.
+	ConfigDomain *_domainDefaultGame; ///< Game defaults domain.
+	ConfigDomain *_domainCommandline; ///< Command line domain.
 
 	UString getConfigFile() const;
 
 	static UString getDefaultConfigFile();
 
+	// Helpers
 	bool hasKey(const ConfigDomain *domain, const UString &key) const;
 	bool getKey(const ConfigDomain *domain, const UString &key, UString &value) const;
-
 	bool setKey(ConfigDomain *domain, const UString &key, const UString &value);
 };
 

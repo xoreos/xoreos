@@ -29,6 +29,7 @@ class WriteStream;
 
 class ConfigFile;
 
+/** Accessor for a domain (section) in a config file. */
 class ConfigDomain {
 public:
 	ConfigDomain(const UString &name);
@@ -40,6 +41,7 @@ public:
 
 	bool getKey(const UString &key, UString &value) const;
 
+	// Specialized getters
 	UString getString(const UString &key, const UString &def = ""   ) const;
 	bool    getBool  (const UString &key,       bool     def = false) const;
 	int     getInt   (const UString &key,       int      def = 0    ) const;
@@ -47,6 +49,7 @@ public:
 
 	void setKey(const UString &key, const UString &value);
 
+	// Specialized setters
 	void setString(const UString &key, const UString &value);
 	void setBool  (const UString &key,       bool     value);
 	void setInt   (const UString &key,       int      value);
@@ -56,31 +59,39 @@ public:
 
 	bool renameKey(const UString &oldName, const UString &newName);
 
+	/** Add the keys of another domain.
+	 *
+	 *  @param domain The domain to add.
+	 *  @param clobber Overwrite existing values?
+	 */
 	void set(const ConfigDomain &domain, bool clobber = true);
 
+	// Conversion helpers
 	static bool   toBool  (const UString &value);
 	static int    toInt   (const UString &value);
 	static double toDouble(const UString &value);
 
+	// Conversion helpers
 	static UString fromBool  (bool   value);
 	static UString fromInt   (int    value);
 	static UString fromDouble(double value);
 
 private:
+	/** A line in the config domain. */
 	struct Line {
-		StringIMap::const_iterator key;
-		UString comment;
+		StringIMap::const_iterator key; ///< Pointer to the key/value pair.
+		UString comment;                ///< Line comment.
 	};
 
 	typedef std::list<Line> LineList;
 
 	UString _name;
 
-	LineList   _lines;
-	StringIMap _keys;
+	LineList   _lines; ///< The lines of the config domain.
+	StringIMap _keys;  ///< The key/value pairs of the config domain.
 
-	UString _comment;
-	UString _prologue;
+	UString _comment;  ///< Comment on the same line as the domain definition.
+	UString _prologue; ///< Comment directly above the domain.
 
 	friend class ConfigFile;
 };
@@ -128,11 +139,11 @@ private:
 	typedef std::list<ConfigDomain *> DomainList;
 	typedef std::map<UString, ConfigDomain *, UString::iless> DomainMap;
 
-	DomainList _domainList;
-	DomainMap  _domainMap;
+	DomainList _domainList; ///< List of domains in order.
+	DomainMap  _domainMap;  ///< Domains indexed by name.
 
-	UString _prologue;
-	UString _epilogue;
+	UString _prologue; ///< Comments on top of the file.
+	UString _epilogue; ///< Comments at the bottom of the file.
 
 	// Loading helpers
 	void parseConfigLine(const UString &line, UString &domainName,
