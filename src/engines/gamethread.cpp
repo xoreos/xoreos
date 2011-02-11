@@ -14,6 +14,7 @@
 
 #include "common/util.h"
 #include "common/error.h"
+#include "common/configman.h"
 
 #include "aurora/util.h"
 
@@ -42,9 +43,14 @@ void GameThread::init(const Common::UString &baseDir) {
 	if (_gameID == Aurora::kGameIDUnknown)
 		throw Common::Exception("Unable to detect the game ID");
 
-	// Set the window title to our and the detected game's name
-	GfxMan.setWindowTitle(Common::UString(PACKAGE_STRING " -- ") + EngineMan.getGameName(_gameID)
-			+ " (" + Aurora::getPlatformDescription(_platform) + ")");
+	// Get the game description from the config, or alternatively
+	// construct one from the game name and platform.
+	Common::UString description;
+	if (!ConfigMan.getKey("description", description))
+		description = EngineMan.getGameName(_gameID) + " ( " +
+		              Aurora::getPlatformDescription(_platform) + ")";
+
+	GfxMan.setWindowTitle(Common::UString(PACKAGE_STRING " -- ") + description);
 
 	status("Detected game ID %d -- %s", _gameID, EngineMan.getGameName(_gameID).c_str());
 }
