@@ -82,6 +82,7 @@ static bool setOption(Common::UString &key, const Common::UString &value) {
 
 	ConfigMan.setCommandlineKey(key, value);
 	key.clear();
+	return true;
 }
 
 static bool parseOption(const char *arg, Common::UString &key) {
