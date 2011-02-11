@@ -67,13 +67,30 @@ static Common::UString convertShortToLongOption(char shortOption) {
 	return "";
 }
 
-static bool parseOption(const char *arg) {
+static bool setOption(Common::UString &key, const Common::UString &value) {
+	if (key.equalsIgnoreCase("config")) {
+		ConfigMan.setConfigFile(value);
+		if (!ConfigMan.load()) {
+			if (!ConfigMan.fileExists())
+				warning("No such config file \"%s\"", value.c_str());
+			return false;
+		}
+
+		key.clear();
+		return true;
+	}
+
+	ConfigMan.setCommandlineKey(key, value);
+	key.clear();
+}
+
+static bool parseOption(const char *arg, Common::UString &key) {
 	if (arg[1] == '\0') {
 		warning("Unrecognized command line argument \"%s\"", arg);
 		return false;
 	}
 
-	Common::UString key, value;
+	Common::UString value;
 	const char *start = arg + 1;
 	if (*start == '-') {
 		// Long option
@@ -94,23 +111,16 @@ static bool parseOption(const char *arg) {
 		value = start + 1;
 	}
 
-	if (key.empty() || value.empty()) {
+	if (key.empty()) {
 		warning("Unrecognized command line argument \"%s\"", arg);
 		return false;
 	}
 
-	if (key.equalsIgnoreCase("config")) {
-		ConfigMan.setConfigFile(value);
-		if (!ConfigMan.load()) {
-			if (!ConfigMan.fileExists())
-				warning("No such config file \"%s\"", value.c_str());
-			return false;
-		}
-
+	if (value.empty())
 		return true;
-	}
 
-	ConfigMan.setCommandlineKey(key, value);
+	if (!setOption(key, value))
+		return false;
 
 	return true;
 }
@@ -118,8 +128,21 @@ static bool parseOption(const char *arg) {
 bool parseCommandline(int argc, char **argv, Common::UString &target, int &code) {
 	target.clear();
 
+	Common::UString key;
+
 	bool stopMark = false;
 	for (int i = 1; i < argc; i++) {
+
+		if (!key.empty()) {
+		// Still got one parameter missing from last time
+			if (!setOption(key, argv[i])) {
+				code = 1;
+				return false;
+			}
+
+			continue;
+		}
+
 		if (!stopMark && (argv[i][0] == '-')) {
 			if (!strcmp(argv[i], "--")) {
 				stopMark = true;
@@ -132,7 +155,7 @@ bool parseCommandline(int argc, char **argv, Common::UString &target, int &code)
 				return false;
 			}
 
-			if (!parseOption(argv[i])) {
+			if (!parseOption(argv[i], key)) {
 				code = 1;
 				return false;
 			}
