@@ -76,11 +76,11 @@ public:
 
 	/** Enable/Disable repeated key events.
 	 *
-	 *  @param delay Delay between the start of repeated events in ms.
+	 *  @param delayTime Delay between the start of repeated events in ms.
 	 *         0 disables repeating.
 	 *  @param interval Interval between repeated events in ms.
 	 */
-	void enableKeyRepeat(int delay = SDL_DEFAULT_REPEAT_DELAY, int interval = SDL_DEFAULT_REPEAT_INTERVAL);
+	void enableKeyRepeat(int delayTime = SDL_DEFAULT_REPEAT_DELAY, int interval = SDL_DEFAULT_REPEAT_INTERVAL);
 
 	/** Return the ASCII character of the pressed key.
 	 *

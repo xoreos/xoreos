@@ -212,11 +212,11 @@ void TwoDAFile::createHeaderMap() {
 		_headerMap.insert(std::make_pair(_headers[i], i));
 }
 
-uint32 TwoDAFile::rowCount() const {
+uint32 TwoDAFile::getRowCount() const {
 	return _array.size();
 }
 
-uint32 TwoDAFile::columnCount() const {
+uint32 TwoDAFile::getColumnCount() const {
 	return _headers.size();
 }
 

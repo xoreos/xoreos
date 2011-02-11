@@ -51,10 +51,10 @@ public:
 	void load(Common::SeekableReadStream &twoda);
 
 	/** Return the number of rows in the array. */
-	uint32 rowCount() const;
+	uint32 getRowCount() const;
 
 	/** Return the number of columns in the array. */
-	uint32 columnCount() const;
+	uint32 getColumnCount() const;
 
 	/** Return the columns' headers. */
 	const Row &getHeaders() const;

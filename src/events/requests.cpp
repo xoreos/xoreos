@@ -124,8 +124,8 @@ void RequestManager::sync() {
 	dispatchAndWait(syncID);
 }
 
-RequestID RequestManager::fullscreen(bool fullscreen) {
-	if (fullscreen)
+RequestID RequestManager::fullscreen(bool fs) {
+	if (fs)
 		return newRequest(kITCEventFullscreen);
 	else
 		return newRequest(kITCEventWindowed);

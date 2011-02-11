@@ -398,11 +398,11 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 
 				ctx.mesh->textures.clear();
 
-				Common::UString texture;
+				Common::UString t;
 				while (it != line->end())
-					texture += *it++;
+					t += *it++;
 
-				ctx.mesh->textures.push_back(texture);
+				ctx.mesh->textures.push_back(t);
 			}
 		}
 

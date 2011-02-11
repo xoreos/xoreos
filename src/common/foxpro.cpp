@@ -171,7 +171,7 @@ void FoxPro::loadMemos(SeekableReadStream &fpt) {
 	fpt.skip(4); // Next free block
 	fpt.skip(2); // Unused
 
-	uint32 _memoBlockSize = fpt.readUint16BE();
+	_memoBlockSize = fpt.readUint16BE();
 	if (_memoBlockSize < 33)
 		_memoBlockSize *= 1024;
 

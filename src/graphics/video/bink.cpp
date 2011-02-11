@@ -211,12 +211,12 @@ void Bink::yuva2bgra() {
 		byte *rowData = data;
 
 		for (uint32 x = 0; x < _width; x++, rowData += 4) {
-			const byte y = planeY[x];
-			const byte u = planeU[x >> 1];
-			const byte v = planeV[x >> 1];
+			const byte cY = planeY[x];
+			const byte cU = planeU[x >> 1];
+			const byte cV = planeV[x >> 1];
 
 			byte r = 0, g = 0, b = 0;
-			YUV2RGB(y, u, v, r, g, b);
+			YUV2RGB(cY, cU, cV, r, g, b);
 
 			rowData[0] = b;
 			rowData[1] = g;

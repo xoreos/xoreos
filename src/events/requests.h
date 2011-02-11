@@ -74,7 +74,7 @@ public:
 
 	// Screen mode
 	/** Request that the display shall be switched to fullscreen or windowed mode. */
-	RequestID fullscreen(bool fullscreen);
+	RequestID fullscreen(bool fs);
 	/** Request that the display shall be resized. */
 	RequestID resize(int width, int height);
 

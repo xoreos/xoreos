@@ -110,8 +110,8 @@ uint32 BitStreamBE::pos() const {
 	if (_stream->pos() == 0)
 		return 0;
 
-	uint32 pos = (_inValue == 0) ? _stream->pos() : (_stream->pos() - 1);
-	return pos * 8 + _inValue;
+	uint32 p = (_inValue == 0) ? _stream->pos() : (_stream->pos() - 1);
+	return p * 8 + _inValue;
 }
 
 uint32 BitStreamBE::size() const {
@@ -197,8 +197,8 @@ uint32 BitStream32LE::pos() const {
 	if (_stream->pos() == 0)
 		return 0;
 
-	uint32 pos = ((_inValue == 0) ? _stream->pos() : (_stream->pos() - 1)) & 0xFFFFFFFC;
-	return pos * 8 + _inValue;
+	uint32 p = ((_inValue == 0) ? _stream->pos() : (_stream->pos() - 1)) & 0xFFFFFFFC;
+	return p * 8 + _inValue;
 }
 
 uint32 BitStream32LE::size() const {

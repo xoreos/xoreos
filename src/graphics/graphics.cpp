@@ -231,20 +231,20 @@ void GraphicsManager::unlockFrame() {
 }
 
 void GraphicsManager::setCursor(Cursor *cursor) {
-	Common::StackLock lockFrame(_frameMutex);
+	Common::StackLock frameLock(_frameMutex);
 
 	_cursor = cursor;
 }
 
 void GraphicsManager::takeScreenshot() {
-	Common::StackLock lockFrame(_frameMutex);
+	Common::StackLock frameLock(_frameMutex);
 
 	_takeScreenshot = true;
 }
 
 void GraphicsManager::clearRenderQueue() {
-	Common::StackLock lockObjects(_objects.mutex);
-	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
+	Common::StackLock objectsLock(_objects.mutex);
+	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
 
 	// Notify all objects in the queue that they have been kicked out
 	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj)
@@ -260,8 +260,8 @@ void GraphicsManager::clearRenderQueue() {
 }
 
 void GraphicsManager::renderScene() {
-	Common::StackLock lockFrame(_frameMutex);
-	Common::StackLock lockVideos(_videos.mutex);
+	Common::StackLock frameLock(_frameMutex);
+	Common::StackLock videosLock(_videos.mutex);
 
 	// Switch cursor on/off
 	if (_cursorState != kCursorStateStay)
@@ -301,8 +301,8 @@ void GraphicsManager::renderScene() {
 		return;
 	}
 
-	Common::StackLock lockObjects(_objects.mutex);
-	Common::StackLock lockGUIFront(_guiFrontObjects.mutex);
+	Common::StackLock objectsLock(_objects.mutex);
+	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
