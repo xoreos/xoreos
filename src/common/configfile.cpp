@@ -334,6 +334,8 @@ void ConfigFile::addDomain(ConfigDomain *domain, int lineNumber) {
 void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 		UString &key, UString &value, UString &comment, int lineNumber) {
 
+	bool hasComment = false;
+
 	int state = 0;
 	for (UString::iterator l = line.begin(); l != line.end(); ++l) {
 		uint32 c = *l;
@@ -352,6 +354,7 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 
 		if        (c == '#') {
 			state = 1;
+			hasComment = true;
 		} else if (c == '[') {
 			state = 2;
 		} else if (c == ']') {
@@ -373,7 +376,7 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 	value.trim();
 	comment.trim();
 
-	if (!comment.empty())
+	if (hasComment)
 		comment = "# " + comment;
 
 	if (!domainName.empty())
