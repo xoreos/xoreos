@@ -316,7 +316,6 @@ UString ConfigManager::getDefaultConfigFile() {
 
 	file = configFile;
 #elif defined(MACOSX)
-	#warning getDefaultConfigFile MACOSX needs testing
 	// Mac OS X: Home directory
 	const char *dir = getenv("HOME");
 	if (dir) {
