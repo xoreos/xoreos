@@ -22,6 +22,7 @@
 #include "common/strutil.h"
 #include "common/filelist.h"
 #include "common/stream.h"
+#include "common/configman.h"
 
 #include "graphics/graphics.h"
 
@@ -94,7 +95,6 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "298hk50mun003");
 	if (wav) {
-		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav, Sound::kSoundTypeVoice);
 
 		SoundMan.startChannel(channel);
@@ -107,14 +107,19 @@ void KotOR2Engine::run(const Common::UString &target) {
 	narShaddaa->load("301NAR");
 	narShaddaa->enter();
 
-	Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32b");
+	bool showFPS = ConfigMan.getBool("showfps", false);
 
-	float textX = (-(GfxMan.getScreenWidth()  / 2.0))                             / 100.0;
-	float textY = ( (GfxMan.getScreenHeight() / 2.0) - font.getFont().getScale()) / 100.0;
+	Graphics::Aurora::Text *fps = 0;
+	if (showFPS) {
+		Graphics::Aurora::FontHandle font = FontMan.get("dialogfont32x32b");
 
-	Graphics::Aurora::Text *text = new Graphics::Aurora::Text(font, "");
-	text->setPosition(textX, textY);
-	text->show();
+		float fpsX = (-(GfxMan.getScreenWidth()  / 2.0))                             / 100.0;
+		float fpsY = ( (GfxMan.getScreenHeight() / 2.0) - font.getFont().getScale()) / 100.0;
+
+		fps = new Graphics::Aurora::Text(font, "");
+		fps->setPosition(fpsX, fpsY);
+		fps->show();
+	}
 
 	EventMan.enableKeyRepeat();
 
@@ -167,14 +172,15 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 		EventMan.delay(10);
 
-		text->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
+		if (fps)
+			fps->set(Common::UString::sprintf("%d fps", GfxMan.getFPS()));
 	}
 
 	narShaddaa->leave();
 
 	delete narShaddaa;
 
-	delete text;
+	delete fps;
 }
 
 void KotOR2Engine::init() {

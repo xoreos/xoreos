@@ -106,25 +106,11 @@ void TheWitcherEngine::run(const Common::UString &target) {
 
 	model->show();
 
-	Graphics::Aurora::Cube *cube = 0;
-
-	/*
-	try {
-
-		cube = new Graphics::Aurora::Cube("wilk");
-
-	} catch (Common::Exception &e) {
-		Common::printException(e);
-	}
-	*/
-
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
 
 	delete model;
-
-	delete cube;
 }
 
 void TheWitcherEngine::init() {

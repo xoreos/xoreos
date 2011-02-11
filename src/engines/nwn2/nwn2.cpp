@@ -108,25 +108,11 @@ void NWN2Engine::run(const Common::UString &target) {
 
 	model->show();
 
-	Graphics::Aurora::Cube *cube = 0;
-
-	/*
-	try {
-
-		cube = new Graphics::Aurora::Cube("wt_lake01_n");
-
-	} catch (Common::Exception &e) {
-		Common::printException(e);
-	}
-	*/
-
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
 
 	delete model;
-
-	delete cube;
 }
 
 void NWN2Engine::init() {

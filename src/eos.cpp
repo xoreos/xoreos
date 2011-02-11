@@ -128,6 +128,8 @@ void initConfig() {
 	ConfigMan.setDefaultDouble("volume_voice", 1.0);
 	ConfigMan.setDefaultDouble("volume_video", 1.0);
 
+	ConfigMan.setDefaultBool("showfps", false);
+
 	// Populate the new config with the defaults
 	if (newConfig) {
 		ConfigMan.setDefaults();
