@@ -222,6 +222,7 @@ void ConfigFile::clear() {
 	_domainList.clear();
 	_domainMap.clear();
 
+	_prologue.clear();
 	_epilogue.clear();
 }
 
@@ -285,6 +286,22 @@ void ConfigFile::load(SeekableReadStream &stream) {
 			if (!comment.empty())
 				comment += '\n';
 			comment += lineComment;
+		}
+
+		if (domainName.empty() && key.empty() && value.empty() && lineComment.empty()) {
+			// Empty line, associate the collected comments with the current domain
+			if (!comment.empty()) {
+
+				if (!domain) {
+					// We have no domain yet, add it to the file's prologue
+					if (!_prologue.empty())
+						_prologue += '\n';
+					_prologue += comment;
+				} else
+					addDomainKey(*domain, "", "", comment, lineNumber);
+
+				comment.clear();
+			}
 		}
 
 	}
@@ -389,6 +406,13 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 }
 
 void ConfigFile::save(WriteStream &stream) const {
+	// Write file prologue
+	if (!_prologue.empty()) {
+		stream.writeString(_prologue);
+		stream.writeByte('\n');
+		stream.writeByte('\n');
+	}
+
 	for (DomainList::const_iterator domain = _domainList.begin(); domain != _domainList.end(); ++domain) {
 		// Write domain prologue
 		if (!(*domain)->_prologue.empty()) {

@@ -129,6 +129,7 @@ private:
 	DomainList _domainList;
 	DomainMap  _domainMap;
 
+	UString _prologue;
 	UString _epilogue;
 
 	// Loading helpers
