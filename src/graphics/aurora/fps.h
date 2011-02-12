@@ -29,6 +29,9 @@ public:
 
 	// Renderable
 	void render();
+
+private:
+	uint32 _fps;
 };
 
 } // End of namespace Aurora
