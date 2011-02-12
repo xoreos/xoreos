@@ -29,6 +29,7 @@ namespace Common {
 
 namespace Aurora {
 
+/** Aurora GUI description. */
 class GUIFile {
 public:
 	GUIFile(Common::SeekableReadStream &gui);
@@ -46,6 +47,7 @@ protected:
 		kObjectTypeButton      = 9
 	};
 
+	/** A caption text. */
 	struct Caption {
 		Common::UString font;
 
@@ -57,6 +59,7 @@ protected:
 		Caption();
 	};
 
+	/** A GUI object. */
 	struct Object {
 		Common::UString tag;
 

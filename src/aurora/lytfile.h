@@ -31,11 +31,13 @@ namespace Aurora {
 /** An LYT, BioWare's Layout Format. */
 class LYTFile {
 public:
+	/** A room. */
 	struct Room {
 		Common::UString model;
 		float x, y, z;
 	};
 
+	/** A place a door hooks into. */
 	struct DoorHook {
 		Common::UString name;
 		int unk0;

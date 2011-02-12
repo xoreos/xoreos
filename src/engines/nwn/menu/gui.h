@@ -36,6 +36,7 @@ class ModelLoader;
 
 namespace NWN {
 
+/** A NWN GUI. */
 class GUI : public Aurora::GUIFile {
 public:
 	GUI(const ModelLoader &modelLoader, Common::SeekableReadStream &gui);
@@ -44,6 +45,7 @@ public:
 	void show();
 
 private:
+	/** A widget within the GUI. */
 	struct Widget {
 		Object *object;
 

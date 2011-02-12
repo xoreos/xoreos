@@ -29,6 +29,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** A 3D model in the Witcher MDB format. */
 class Model_Witcher : public Model {
 public:
 	Model_Witcher(Common::SeekableReadStream &mdb, ModelType type = kModelTypeObject);

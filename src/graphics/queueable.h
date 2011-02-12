@@ -21,6 +21,7 @@
 
 namespace Graphics {
 
+/** A template for objects that can be stored in a queue. */
 template<class T>
 class Queueable {
 public:

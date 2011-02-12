@@ -23,6 +23,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** An abstract font. */
 class Font {
 public:
 	Font() {}

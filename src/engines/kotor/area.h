@@ -37,6 +37,7 @@ namespace KotOR {
 class Placeable;
 class Creature;
 
+/** A KotOR area. */
 class Area {
 public:
 	Area(const ModelLoader &modelLoader);
@@ -51,6 +52,7 @@ public:
 	void setOrientation(float x, float y, float z);
 
 private:
+	/** A room within the area. */
 	struct Room {
 		const Aurora::LYTFile::Room *lytRoom;
 

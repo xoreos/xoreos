@@ -21,9 +21,10 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** The display type of a model. */
 enum ModelType {
-	kModelTypeObject   = kRenderableQueueObject,
-	kModelTypeGUIFront = kRenderableQueueGUIFront
+	kModelTypeObject   = kRenderableQueueObject,  ///< A real object in the game world.
+	kModelTypeGUIFront = kRenderableQueueGUIFront ///< An element of the front GUI.
 };
 
 class Model;

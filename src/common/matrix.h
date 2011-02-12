@@ -17,6 +17,7 @@
 
 namespace Common {
 
+/** A matrix. */
 class Matrix {
 public:
 	Matrix(int rows, int columns);

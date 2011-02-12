@@ -19,6 +19,7 @@
 
 namespace Common {
 
+/** A bouding box around 3D points. */
 class BoundingBox {
 public:
 	BoundingBox();

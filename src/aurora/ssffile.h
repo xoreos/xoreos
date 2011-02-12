@@ -32,6 +32,7 @@ namespace Aurora {
 /** Class to hold a sound set. */
 class SSFFile : public AuroraBase {
 public:
+	/** A sound in the sound set. */
 	struct Sound {
 		Common::UString fileName; ///< The name of the sound file to play.
 		uint32          strRef;   ///< StrRef of the text to display.

@@ -27,6 +27,7 @@ namespace Common {
 class ConfigFile;
 class ConfigDomain;
 
+/** The global config manager, storing all config keys. */
 class ConfigManager : public Singleton<ConfigManager> {
 public:
 	ConfigManager();

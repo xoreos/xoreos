@@ -138,11 +138,13 @@ private:
 	struct Channel;
 	typedef std::list<Channel *> TypeList;
 
+	/** A sound type. */
 	struct Type {
 		float    gain; ///< The sound type's current gain.
 		TypeList list; ///< The list of channels for that type.
 	};
 
+	/** A sound channel. */
 	struct Channel {
 		uint32 id; ///< The channel's ID.
 

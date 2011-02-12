@@ -26,6 +26,7 @@
 
 namespace Common {
 
+/** (Inverse) Discrete Cosine Transforms. */
 class DCT {
 public:
 	enum TransformType {

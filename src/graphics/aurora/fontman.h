@@ -38,6 +38,7 @@ enum FontFormat {
 	kFontFormatTTF          ///< TTF font, used by NWN2.
 };
 
+/** A managed font, storing how often it's referenced. */
 struct ManagedFont {
 	Font *font;
 	uint32 referenceCount;
@@ -48,6 +49,7 @@ struct ManagedFont {
 
 typedef std::map<Common::UString, ManagedFont *> FontMap;
 
+/** A handle to a font. */
 struct FontHandle {
 	bool empty;
 	FontMap::iterator it;
@@ -64,6 +66,7 @@ struct FontHandle {
 	const Font &getFont() const;
 };
 
+/** The global Aurora font manager. */
 class FontManager : public Common::Singleton<FontManager> {
 public:
 	FontManager();

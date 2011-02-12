@@ -67,6 +67,7 @@ extern const float cosTable65536[32768];
 
 namespace Common {
 
+/** A complex number. */
 struct Complex {
 	float re, im;
 };

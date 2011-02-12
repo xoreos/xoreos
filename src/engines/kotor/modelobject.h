@@ -21,6 +21,7 @@ class ModelLoader;
 
 namespace KotOR {
 
+/** A KotOR model object. */
 class ModelObject {
 public:
 	ModelObject(const ModelLoader &modelLoader);

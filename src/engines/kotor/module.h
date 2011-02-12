@@ -27,6 +27,7 @@ namespace KotOR {
 
 class Area;
 
+/** A KotOR module. */
 class Module {
 public:
 	Module(const ModelLoader &modelLoader);

@@ -35,7 +35,7 @@ namespace Common {
 
 namespace Graphics {
 
-/** A generic interface for video decoders. */
+/** A decoder for RAD Game Tools' Bink videos. */
 class Bink : public VideoDecoder {
 public:
 	Bink(Common::SeekableReadStream *bink);
@@ -154,6 +154,7 @@ private:
 		~VideoFrame();
 	};
 
+	/** A decoder state. */
 	struct DecodeContext {
 		VideoFrame *video;
 

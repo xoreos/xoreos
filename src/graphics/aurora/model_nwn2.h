@@ -29,6 +29,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** A 3D model in the NWN2 MDB format. */
 class Model_NWN2 : public Model {
 public:
 	Model_NWN2(Common::SeekableReadStream &mdb, ModelType type = kModelTypeObject);

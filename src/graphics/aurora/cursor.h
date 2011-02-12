@@ -25,6 +25,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** A cursor as used in the Aurora engines. */
 class Cursor : public Graphics::Cursor {
 public:
 	Cursor(const Common::UString &name);

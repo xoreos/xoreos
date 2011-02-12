@@ -25,6 +25,7 @@
 
 namespace Common {
 
+/** (Inverse) Fast Fourier Transform. */
 class FFT {
 public:
 	FFT(int bits, int inverse);

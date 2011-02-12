@@ -27,6 +27,7 @@ inline static void YUV2RGB(byte y, byte u, byte v, byte &r, byte &g, byte &b) {
 	b = CLIP<int>(y + ((1715 * (u - 128)) >> 10), 0, 255);
 }
 
+/** Flip an image horizontally. */
 inline static void flipHorizontally(byte *data, int width, int height, int bpp) {
 	int halfWidth = width / 2;
 	int pitch     = bpp * width;
@@ -52,6 +53,7 @@ inline static void flipHorizontally(byte *data, int width, int height, int bpp) 
 	delete[] buffer;
 }
 
+/** Flip an image vertically. */
 inline static void flipVertically(byte *data, int width, int height, int bpp) {
 	int halfHeight = height / 2;
 	int pitch      = bpp * width;

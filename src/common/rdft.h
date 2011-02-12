@@ -24,6 +24,7 @@
 
 namespace Common {
 
+/** (Inverse) Real Discrete Fourier Transform. */
 class RDFT {
 public:
 	enum TransformType {

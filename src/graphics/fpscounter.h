@@ -19,7 +19,7 @@
 
 namespace Graphics {
 
-/** A class founting frames per second. */
+/** A class counting frames per second. */
 class FPSCounter  {
 public:
 	/** Average the FPS over that many seconds. */

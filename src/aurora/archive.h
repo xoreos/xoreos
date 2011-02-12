@@ -28,8 +28,10 @@ namespace Common {
 
 namespace Aurora {
 
+/** An abstract file archive. */
 class Archive {
 public:
+	/** A resource within the archive. */
 	struct Resource {
 		Common::UString name;  ///< The resource's name.
 		FileType        type;  ///< The resource's type.

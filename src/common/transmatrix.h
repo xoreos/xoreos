@@ -19,6 +19,7 @@
 
 namespace Common {
 
+/** A transformation matrix. */
 class TransformationMatrix : public Matrix {
 public:
 	TransformationMatrix();

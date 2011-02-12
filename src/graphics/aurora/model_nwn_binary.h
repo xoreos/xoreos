@@ -30,6 +30,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** A 3D model in the NWN binary MDL format. */
 class Model_NWN_Binary : public Model {
 public:
 	Model_NWN_Binary(Common::SeekableReadStream &mdl, ModelType type = kModelTypeObject);

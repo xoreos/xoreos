@@ -21,6 +21,7 @@
 
 namespace Common {
 
+/** A class that creates its own thread. */
 class Thread : NonCopyable {
 public:
 	Thread();

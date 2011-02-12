@@ -44,6 +44,7 @@ public:
 	void draw(const Common::UString &text) const;
 
 private:
+	/** A font character. */
 	struct Char {
 		float width;
 		float tX[4], tY[4];

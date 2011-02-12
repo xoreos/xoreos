@@ -29,7 +29,7 @@ namespace Common {
 
 namespace Aurora {
 
-/** A stack object for NCS scripts */
+/** A stack object for NCS scripts. */
 class StackObject {
 public:
 	enum StackObjectType {
@@ -87,7 +87,7 @@ private:
 
 #define DECLARE_OPCODE(x) void x(InstructionType type)
 
-/** An NCS, BioWare's NWN Compile Script */
+/** An NCS, BioWare's NWN Compile Script. */
 class NCSScript : public AuroraBase {
 public:
 	NCSScript();

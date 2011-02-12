@@ -22,6 +22,7 @@
 
 namespace Common {
 
+/** Exeption that provides a stack of explanations. */
 class StackException : public std::exception {
 public:
 	typedef std::stack<UString> Stack;

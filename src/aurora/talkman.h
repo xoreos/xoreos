@@ -27,6 +27,7 @@ namespace Common {
 
 namespace Aurora {
 
+/** The global Aurora talk manager, holding the current talk tables. */
 class TalkManager : public Common::Singleton<TalkManager> {
 public:
 	TalkManager();

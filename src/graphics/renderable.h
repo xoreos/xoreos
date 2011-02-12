@@ -19,6 +19,7 @@
 
 namespace Graphics {
 
+/** An object that can be displayed by the graphics manager. */
 class Renderable : public Queueable<Renderable> {
 public:
 	Renderable(Queueable<Renderable>::Queue &queue);

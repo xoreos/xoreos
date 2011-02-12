@@ -30,6 +30,7 @@ namespace Aurora {
 
 class Texture;
 
+/** A managed texture, storing how often it's referenced. */
 struct ManagedTexture {
 	Texture *texture;
 	uint32 referenceCount;
@@ -41,6 +42,7 @@ struct ManagedTexture {
 
 typedef std::map<Common::UString, ManagedTexture *> TextureMap;
 
+/** A handle to a texture. */
 struct TextureHandle {
 	bool empty;
 	TextureMap::iterator it;
@@ -53,6 +55,7 @@ struct TextureHandle {
 	const Texture &getTexture() const;
 };
 
+/** The global Aurora texture manager. */
 class TextureManager : public Common::Singleton<TextureManager> {
 public:
 	TextureManager();

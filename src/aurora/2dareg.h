@@ -26,6 +26,7 @@ namespace Aurora {
 
 class TwoDAFile;
 
+/** The global 2DA registry, holding all current 2DAs. */
 class TwoDARegistry : public Common::Singleton<TwoDARegistry> {
 public:
 	TwoDARegistry();

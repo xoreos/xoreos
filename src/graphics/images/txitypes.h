@@ -23,6 +23,7 @@ namespace Common {
 
 namespace Graphics {
 
+/** All supported commands in a TXI. */
 enum TXICommand {
 	TXICommandAlphaMean           =  0,
 	TXICommandArturoHeight        =  1,
@@ -88,6 +89,7 @@ enum TXICommand {
 	TXICommandXBoxDownsample      = 61
 };
 
+/** Parse a TXI command from a string. */
 TXICommand parseTXICommand(const Common::UString &str, int &skip);
 
 } // End of namespace Graphics

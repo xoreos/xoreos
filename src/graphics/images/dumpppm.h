@@ -27,7 +27,9 @@ namespace Graphics {
 
 class ImageDecoder;
 
+/** Dump raw image data into a PPM file. */
 void dumpPPM(const Common::UString &fileName, const byte *data, int width, int height, PixelFormat format);
+/** Dump image into a PPM file. */
 void dumpPPM(const Common::UString &fileName, const ImageDecoder *image);
 
 } // End of namespace Graphics

@@ -17,6 +17,7 @@
 
 namespace Graphics {
 
+/** An abstract cursor. */
 class Cursor {
 public:
 	Cursor();

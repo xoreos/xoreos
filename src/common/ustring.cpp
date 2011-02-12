@@ -94,6 +94,7 @@ static void readLine(SeekableReadStream &stream, std::vector<T> &data,
 		data.push_back('\0');
 }
 
+/** A manager handling string encoding conversions. */
 class ConversionManager : public Singleton<ConversionManager> {
 public:
 	ConversionManager() : _fromLatin9((iconv_t) -1) {

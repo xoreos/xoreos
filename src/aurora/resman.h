@@ -83,12 +83,14 @@ private:
 	/** Map over resources, indexed by name. */
 	typedef std::map<Common::UString, ResourceTypeMap> ResourceMap;
 
+	/** A changes produced by a manager operation. */
 	struct ResourceChange {
 		ResourceMap::iterator     nameIt;
 		ResourceTypeMap::iterator typeIt;
 		ResourceList::iterator    resIt;
 	};
 
+	/** A set of changes produced by a manager operation. */
 	struct ChangeSet {
 		std::list<ArchiveList::iterator> archives;
 		std::list<ResourceChange>        resources;
@@ -97,6 +99,7 @@ private:
 	typedef std::list<ChangeSet> ChangeSetList;
 
 public:
+	/** ID of a set of changes produced by a manager operation. */
 	struct ChangeID {
 		bool empty;
 		ChangeSetList::iterator change;

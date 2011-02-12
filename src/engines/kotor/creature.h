@@ -33,6 +33,7 @@ class ModelLoader;
 
 namespace KotOR {
 
+/** A KotOR creature. */
 class Creature : public ModelObject {
 public:
 	Creature(const ModelLoader &modelLoader);
@@ -44,6 +45,7 @@ public:
 	void hide();
 
 private:
+	/** A creature model part. */
 	struct Part {
 		Graphics::Aurora::Model *model;
 

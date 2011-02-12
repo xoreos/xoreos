@@ -29,6 +29,7 @@ typedef std::map<UString, UString, UString::iless> StringIMap;
 typedef boost::unordered_map<UString, UString, hashUStringCaseSensitive> StringHashMap;
 typedef boost::unordered_map<UString, UString, hashUStringCaseInsensitive> StringHashIMap;
 
+/** A map to quickly match strings from a list. */
 class StringListMap {
 public:
 	/** Build a string map to match a list of strings against. */

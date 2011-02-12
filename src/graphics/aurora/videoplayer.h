@@ -25,6 +25,7 @@ class VideoDecoder;
 
 namespace Aurora {
 
+/** A video player. */
 class VideoPlayer {
 public:
 	VideoPlayer(const Common::UString &video);

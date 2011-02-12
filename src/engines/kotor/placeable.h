@@ -31,6 +31,7 @@ class ModelLoader;
 
 namespace KotOR {
 
+/** A KotOR placeable. */
 class Placeable : public ModelObject {
 public:
 	Placeable(const ModelLoader &modelLoader);

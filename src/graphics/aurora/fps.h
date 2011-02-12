@@ -22,6 +22,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** An autonomous FPS display. */
 class FPS : public Text {
 public:
 	FPS(const FontHandle &font);

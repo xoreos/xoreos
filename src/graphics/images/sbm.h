@@ -23,7 +23,7 @@ namespace Common {
 
 namespace Graphics {
 
-/** TarGa image. */
+/** SBM font bitmap data. */
 class SBM : public ImageDecoder {
 public:
 	SBM(Common::SeekableReadStream *sbm);

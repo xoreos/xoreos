@@ -19,6 +19,7 @@
 
 namespace Graphics {
 
+/** A container of OpenGL lists. */
 class ListContainer : public Queueable<ListContainer> {
 public:
 	ListContainer();

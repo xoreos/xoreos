@@ -25,6 +25,7 @@ namespace NWN {
 
 class GUI;
 
+/** The NWN main menu. */
 class MainMenu {
 public:
 	MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2);

@@ -32,6 +32,7 @@ class Texture;
 
 class Cube;
 
+/** A cube side. */
 class CubeSide : public Object {
 public:
 	CubeSide(Cube &parent, int n);
@@ -47,6 +48,7 @@ private:
 	friend class Cube;
 };
 
+/** A simple, rotating cube. */
 class Cube : public ListContainer {
 public:
 	Cube(const Common::UString &texture);

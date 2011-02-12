@@ -29,6 +29,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** An ABC/SBM font, as used by Jade Empire. */
 class ABCFont : public Font {
 public:
 	ABCFont(const Common::UString &name);
@@ -40,6 +41,7 @@ public:
 	void draw(const Common::UString &text) const;
 
 private:
+	/** A font character. */
 	struct Char {
 		uint32 dataX;
 		uint32 dataY;

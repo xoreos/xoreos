@@ -27,6 +27,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** A text object. */
 class Text : public GUIFrontElement, public ListContainer {
 public:
 	Text(const FontHandle &font, const Common::UString &str);

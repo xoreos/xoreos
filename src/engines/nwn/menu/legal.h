@@ -23,6 +23,7 @@ class ModelLoader;
 
 namespace NWN {
 
+/** The NWN legal billboard. */
 class Legal {
 public:
 	Legal(const ModelLoader &modelLoader);

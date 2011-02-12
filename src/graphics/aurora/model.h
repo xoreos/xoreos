@@ -38,6 +38,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** A 3D model. */
 class Model : public Renderable, public ListContainer {
 public:
 	enum Classification {
@@ -98,6 +99,7 @@ public:
 
 protected:
 	// Representation found in the raw files
+	/** A raw Aurora model mesh. */
 	struct Mesh {
 		std::vector<Common::UString> textures;
 
@@ -119,6 +121,7 @@ protected:
 
 
 	// Representation we use
+	/** A geometry face. */
 	struct Face {
 		std::vector<float>  verts; ///< Geometry vertices.
 		std::vector<float> tverts; ///< Texture vertices.
@@ -129,6 +132,7 @@ protected:
 
 	typedef std::vector<Face> FaceList;
 
+	/** A node of geometry data. */
 	struct Node {
 		Node *parent;               ///< The node's parent.
 		std::list<Node *> children; ///< The node's children.
@@ -191,6 +195,7 @@ protected:
 	typedef std::list<Node *> NodeList;
 	typedef std::map<Common::UString, Node *> NodeMap;
 
+	/** A model state. */
 	struct State {
 		Common::UString name;
 

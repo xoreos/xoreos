@@ -19,6 +19,7 @@
 
 namespace Graphics {
 
+/** A renderable game object. */
 class Object : public Renderable {
 public:
 	Object();

@@ -29,6 +29,7 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** A 3D model in the KotOR MDL format. */
 class Model_KotOR : public Model {
 public:
 	Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx, bool kotor2,

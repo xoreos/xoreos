@@ -8,7 +8,7 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/images/winiconimage.cpp
+/** @file graphics/images/winiconimage.h
  *  Decoding Windows icon and cursor files (.ICO and .CUR).
  */
 

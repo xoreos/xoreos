@@ -26,18 +26,22 @@ namespace Common {
 
 namespace Graphics {
 
+/** Texture information. */
 class TXI {
 public:
+	/** Blending type. */
 	enum Blending {
 		kBlendingDefault      = 0,
 		kBlendingAdditive     = 1,
 		kBlendingPunchThrough = 2
 	};
 
+	/** Coordinates. */
 	struct Coords {
 		float x, y, z;
 	};
 
+	/** Texture features. */
 	struct Features {
 		float alphaMean;
 		uint8 arturoHeight;

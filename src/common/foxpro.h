@@ -28,6 +28,7 @@ namespace Common {
 class SeekableReadStream;
 class WriteStream;
 
+/** A database in FoxPro 2.0 format. */
 class FoxPro {
 public:
 	/** A field type. */

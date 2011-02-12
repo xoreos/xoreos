@@ -19,7 +19,7 @@
 
 namespace Graphics {
 
-/** A generic interface for video decoders. */
+/** A quick test fader "video". */
 class Fader : public VideoDecoder {
 public:
 	Fader(uint32 width, uint32 height, int n);

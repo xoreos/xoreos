@@ -19,6 +19,7 @@
 
 namespace Graphics {
 
+/** An element of the front GUI. */
 class GUIFrontElement : public Renderable {
 public:
 	GUIFrontElement();

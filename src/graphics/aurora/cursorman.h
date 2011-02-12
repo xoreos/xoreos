@@ -28,6 +28,7 @@ namespace Aurora {
 
 class Cursor;
 
+/** The global Aurorar cursor manager. */
 class CursorManager : public Common::Singleton<CursorManager> {
 public:
 	CursorManager();
@@ -53,6 +54,7 @@ public:
 	void showCursor();
 
 private:
+	/** A cursor tag. */
 	struct Tag {
 		Common::UString tag;
 		bool enabled;
