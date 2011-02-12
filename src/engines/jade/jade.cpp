@@ -19,8 +19,11 @@
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
+#include "common/configman.h"
 
+#include "graphics/aurora/cube.h"
 #include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
 
 #include "sound/sound.h"
 
@@ -83,9 +86,29 @@ void JadeEngine::run(const Common::UString &target) {
 
 	playSound("musicbank00046", Sound::kSoundTypeMusic, true);
 
+	bool showFPS = ConfigMan.getBool("showfps", false);
+
+	Graphics::Aurora::FPS *fps = 0;
+	if (showFPS) {
+		fps = new Graphics::Aurora::FPS(FontMan.get("asian"));
+		fps->show();
+	}
+
+	Graphics::Aurora::Cube *cube = 0;
+	try {
+
+		cube = new Graphics::Aurora::Cube("ui_logo_01");
+
+	} catch (Common::Exception &e) {
+		Common::printException(e);
+	}
+
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
+
+	delete cube;
+	delete fps;
 }
 
 void JadeEngine::init() {

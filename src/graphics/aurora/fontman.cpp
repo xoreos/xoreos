@@ -16,6 +16,7 @@
 
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/texturefont.h"
+#include "graphics/aurora/abcfont.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::FontManager)
 
@@ -135,7 +136,7 @@ ManagedFont *FontManager::createFont(const Common::UString &name) {
 	if (_format == kFontFormatTexture)
 		return new ManagedFont(new TextureFont(name));
 	if (_format == kFontFormatABC)
-		throw Common::Exception("TODO: Load ABC font (%s)", name.c_str());
+		return new ManagedFont(new ABCFont(name));
 	if (_format == kFontFormatTTF)
 		throw Common::Exception("TODO: Load TTF font (%s)", name.c_str());
 
