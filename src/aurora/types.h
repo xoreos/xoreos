@@ -246,8 +246,8 @@ enum FileType {
 	kFileTypeCRE            = 24000, ///< Creature template, GFF.
 	kFileTypePSO            = 24001, ///< Shader.
 	kFileTypeVSO            = 24002, ///< Shader.
-	kFileTypeABC            = 24003, ///< Font.
-	kFileTypeSBM            = 24004, ///< Font.
+	kFileTypeABC            = 24003, ///< Font, character descriptions.
+	kFileTypeSBM            = 24004, ///< Font, character bitmap data.
 	kFileTypePVD            = 24005,
 	kFileTypeAMP            = 24006,
 	kFileTypePLA            = 24007,

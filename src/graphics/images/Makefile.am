@@ -11,6 +11,7 @@ noinst_HEADERS = decoder.h \
                  txitypes.h \
                  txi.h \
                  s3tc.h \
+                 sbm.h \
                  winiconimage.h
 
 libimages_la_SOURCES = decoder.cpp \
@@ -22,4 +23,5 @@ libimages_la_SOURCES = decoder.cpp \
                        txitypes.cpp \
                        txi.cpp \
                        s3tc.cpp \
+                       sbm.cpp \
                        winiconimage.cpp
