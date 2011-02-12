@@ -205,6 +205,8 @@ void NWN2Engine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 100);
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
 }
 
 Graphics::Aurora::Model *NWN2Engine::loadModel(const Common::UString &resref) {

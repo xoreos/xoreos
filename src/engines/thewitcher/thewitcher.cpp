@@ -21,7 +21,7 @@
 #include "common/filepath.h"
 #include "common/stream.h"
 
-#include "graphics/aurora/cube.h"
+#include "graphics/aurora/fontman.h"
 #include "graphics/aurora/model_witcher.h"
 
 #include "sound/sound.h"
@@ -149,6 +149,8 @@ void TheWitcherEngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 50);
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
 }
 
 Graphics::Aurora::Model *TheWitcherEngine::loadModel(const Common::UString &resref) {

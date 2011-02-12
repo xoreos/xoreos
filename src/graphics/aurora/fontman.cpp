@@ -12,6 +12,8 @@
  *  The Aurora font manager.
  */
 
+#include "common/error.h"
+
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/texturefont.h"
 
@@ -21,9 +23,9 @@ namespace Graphics {
 
 namespace Aurora {
 
-ManagedFont::ManagedFont(const Common::UString &name) {
+ManagedFont::ManagedFont(Font *f) {
 	referenceCount = 0;
-	font = new TextureFont(name);
+	font = f;
 }
 
 ManagedFont::~ManagedFont() {
@@ -71,7 +73,7 @@ const Font &FontHandle::getFont() const {
 }
 
 
-FontManager::FontManager() {
+FontManager::FontManager() : _format(kFontFormatUnknown) {
 }
 
 FontManager::~FontManager() {
@@ -85,6 +87,12 @@ void FontManager::clear() {
 		delete font->second;
 
 	_fonts.clear();
+
+	_format = kFontFormatUnknown;
+}
+
+void FontManager::setFormat(FontFormat format) {
+	_format = format;
 }
 
 FontHandle FontManager::get(const Common::UString &name) {
@@ -94,7 +102,7 @@ FontHandle FontManager::get(const Common::UString &name) {
 	if (font == _fonts.end()) {
 		std::pair<FontMap::iterator, bool> result;
 
-		ManagedFont *t = new ManagedFont(name);
+		ManagedFont *t = createFont(name);
 
 		result = _fonts.insert(std::make_pair(name, t));
 
@@ -118,6 +126,21 @@ void FontManager::release(FontHandle &handle) {
 	}
 
 	handle.clear();
+}
+
+ManagedFont *FontManager::createFont(const Common::UString &name) {
+	if (_format == kFontFormatUnknown)
+		throw Common::Exception("Font format unknown (%s)", name.c_str());
+
+	if (_format == kFontFormatTexture)
+		return new ManagedFont(new TextureFont(name));
+	if (_format == kFontFormatABC)
+		throw Common::Exception("TODO: Load ABC font (%s)", name.c_str());
+	if (_format == kFontFormatTTF)
+		throw Common::Exception("TODO: Load TTF font (%s)", name.c_str());
+
+	throw Common::Exception("Invalid font format %d (%s)", _format, name.c_str());
+	return 0;
 }
 
 } // End of namespace Aurora

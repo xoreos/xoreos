@@ -30,11 +30,19 @@ namespace Aurora {
 
 class Font;
 
+/** The format of a font. */
+enum FontFormat {
+	kFontFormatUnknown = 0, ///< Unknown font format.
+	kFontFormatTexture    , ///< Textured font, used by NWN and KotOR/KotOR2
+	kFontFormatABC        , ///< ABC/SBM font, used by Jade Empire.
+	kFontFormatTTF          ///< TTF font, used by NWN2.
+};
+
 struct ManagedFont {
 	Font *font;
 	uint32 referenceCount;
 
-	ManagedFont(const Common::UString &name);
+	ManagedFont(Font *f);
 	~ManagedFont();
 };
 
@@ -63,13 +71,19 @@ public:
 
 	void clear();
 
+	void setFormat(FontFormat format);
+
 	FontHandle get(const Common::UString &name);
 	void release(FontHandle &handle);
 
 private:
+	FontFormat _format;
+
 	FontMap _fonts;
 
 	Common::Mutex _mutex;
+
+	ManagedFont *createFont(const Common::UString &name);
 };
 
 } // End of namespace Aurora

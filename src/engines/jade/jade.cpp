@@ -20,6 +20,8 @@
 #include "common/filelist.h"
 #include "common/filepath.h"
 
+#include "graphics/aurora/fontman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -172,6 +174,8 @@ void JadeEngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
 }
 
 } // End of namespace Jade

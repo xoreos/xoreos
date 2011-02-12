@@ -212,6 +212,8 @@ void NWNEngine::init() {
 
 	status("Loading main talk table");
 	TalkMan.addMainTable("dialog");
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }
 
 void NWNEngine::initCursors() {

@@ -230,6 +230,8 @@ void KotOREngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 40);
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }
 
 void KotOREngine::initCursors() {

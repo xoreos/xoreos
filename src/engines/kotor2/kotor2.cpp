@@ -200,6 +200,8 @@ void KotOR2Engine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }
 
 } // End of namespace KotOR2
