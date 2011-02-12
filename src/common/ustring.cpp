@@ -788,4 +788,11 @@ bool UString::isASCII(uint32 c) {
 	return (c & 0xFFFFFF80) == 0;
 }
 
+uint32 UString::fromUTF16(uint16 c) {
+	std::string utf8result;
+	utf8::utf16to8(&c, &c + 1, std::back_inserter(utf8result));
+
+	return *iterator(utf8result.begin(), utf8result.begin(), utf8result.end());
+}
+
 } // End of namespace Common

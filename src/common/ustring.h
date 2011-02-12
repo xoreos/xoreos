@@ -176,6 +176,8 @@ public:
 
 	static bool isASCII(uint32 c);
 
+	static uint32 fromUTF16(uint16 c);
+
 private:
 	std::string _string; ///< Internal string holding the actual data.
 
