@@ -8,8 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/aurora/font.cpp
- *  A font.
+/** @file graphics/aurora/texturefont.cpp
+ *  A texture font, as used by NWN and KotOR/KotOR2.
  */
 
 #include "common/types.h"
@@ -21,86 +21,80 @@
 
 #include "graphics/images/txi.h"
 
-#include "graphics/aurora/font.h"
+#include "graphics/aurora/texturefont.h"
 #include "graphics/aurora/texture.h"
 
 namespace Graphics {
 
 namespace Aurora {
 
-// TODO: Multibyte fonts
-
-Font::Font(const Common::UString &name) : _listStart(0), _scale(1.0), _spaceR(0.0), _spaceB(0.0) {
-	_texture = new Texture(name);
+// TODO: Multibyte fonts?
+TextureFont::TextureFont(const Common::UString &name) : _scale(1.0), _spaceR(0.0), _spaceB(0.0) {
+	_texture = TextureMan.get(name);
 
 	load();
 }
 
-Font::~Font() {
-	delete _texture;
+TextureFont::~TextureFont() {
 }
 
-void Font::setTexture() const {
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, _texture->getID());
+float TextureFont::getWidth(const Common::UString &text) const {
+	float width = 0.0;
+
+	for (Common::UString::iterator s = text.begin(); s != text.end(); ++s) {
+		uint32 c = *s;
+		if (c == '\0')
+			break;
+
+		if (c >= _chars.size())
+			continue;
+
+		width += _chars[c].width + _spaceR;
+	}
+
+	width *= _scale / 100.0;
+
+	return width;
 }
 
-float Font::drawCharacter(uint32 c) const {
-	if (c >= _chars.size())
-		return 0.0;
-
-	const Char &cC = _chars[c];
-
-	glCallList(cC.listID);
-
-	return cC.width;
+float TextureFont::getHeight(const Common::UString &text) const {
+	return _scale / 100.0;
 }
 
-float Font::getWidth(uint32 c) const {
-	if (c >= _chars.size())
-		return 0.0;
+void TextureFont::draw(const Common::UString &text) const {
+	glScalef(_scale, _scale, 0.0);
 
-	return _chars[c].width;
-}
+	TextureMan.set(_texture);
 
-void Font::rebuild() {
-	enforceMainThread();
+	for (Common::UString::iterator s = text.begin(); s != text.end(); ++s) {
+		uint32 c = *s;
+		if (c == '\0')
+			break;
 
-	uint32 charCount = _chars.size();
+		float width = 0.0;
+		if (c < _chars.size()) {
+			const Char &cC = _chars[c];
 
-	// Generate the needed number of lists
-	_listStart = glGenLists(charCount);
+			glBegin(GL_QUADS);
+			for (int i = 0; i < 4; i++) {
+				glTexCoord2f(cC.tX[i], cC.tY[i]);
+				glVertex2f  (cC.vX[i], cC.vY[i]);
+			}
+			glEnd();
 
-	// Build a list for each character
-	for (uint32 i = 0; i < charCount; i++) {
-		Char &c = _chars[i];
-
-		// The characters own personal list ID
-		c.listID = _listStart + i;
-
-		// Each character is one one textured quad
-		glNewList(c.listID, GL_COMPILE);
-		glBegin(GL_QUADS);
-		for (int j = 0; j < 4; j++) {
-			glTexCoord2f(c.tX[j], c.tY[j]);
-			glVertex2f(c.vX[j], c.vY[j]);
+			width = cC.width;
 		}
-		glEnd();
-		glEndList();
+
+		glTranslatef(width + _spaceR, 0.0, 0.0);
 	}
 }
 
-void Font::destroy() {
-	if (_listStart != 0)
-		RequestMan.dispatchAndForget(RequestMan.destroyLists(_listStart, _chars.size()));
-}
-
-void Font::load() {
+void TextureFont::load() {
 	// We need to wait for the texture to finish loading
 	RequestMan.sync();
 
-	const TXI &txi = _texture->getTXI();
-	const TXI::Features &txiFeatures = txi.getFeatures();
+	const Texture &texture = _texture.getTexture();
+	const TXI::Features &txiFeatures = texture.getTXI().getFeatures();
 
 	// Number of characters
 	uint32 charCount = txiFeatures.numChars;
@@ -113,10 +107,10 @@ void Font::load() {
 	if ((uls.size() < charCount) || (lrs.size() < charCount))
 		throw Common::Exception("Texture defines not enough character coordinates");
 
-	if ((_texture->getWidth() == 0) || (_texture->getHeight() == 0))
-		throw Common::Exception("Invalid texture dimensions (%dx%d)", _texture->getWidth(), _texture->getHeight());
+	if ((texture.getWidth() == 0) || (texture.getHeight() == 0))
+		throw Common::Exception("Invalid texture dimensions (%dx%d)", texture.getWidth(), texture.getHeight());
 
-	double textureRatio = ((double) _texture->getWidth()) / ((double) _texture->getHeight());
+	double textureRatio = ((double) texture.getWidth()) / ((double) texture.getHeight());
 
 	// Build the character texture and vertex coordinates
 	_chars.resize(charCount);
@@ -148,21 +142,6 @@ void Font::load() {
 	_scale  = txiFeatures.fontHeight * 100;
 	_spaceR = txiFeatures.spacingR;
 	_spaceB = txiFeatures.spacingB;
-
-	// And build the actual display lists
-	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
-}
-
-float Font::getScale() const {
-	return _scale;
-}
-
-float Font::getSpaceR() const {
-	return _spaceR;
-}
-
-float Font::getSpaceB() const {
-	return _spaceB;
 }
 
 } // End of namespace Aurora

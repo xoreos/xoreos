@@ -24,8 +24,8 @@ namespace Graphics {
 namespace Aurora {
 
 FPS::FPS(const FontHandle &font) : Text(font, "0 fps"), _fps(0) {
-	float posX = (-(GfxMan.getScreenWidth()  / 2.0))                             / 100.0;
-	float posY = ( (GfxMan.getScreenHeight() / 2.0) - font.getFont().getScale()) / 100.0;
+	float posX = (-(GfxMan.getScreenWidth()  / 2.0)) / 100.0;
+	float posY = ( (GfxMan.getScreenHeight() / 2.0)) / 100.0  - getHeight();
 
 	setPosition(posX, posY);
 }
@@ -40,6 +40,8 @@ void FPS::render() {
 		_fps = fps;
 
 		set_internal(Common::UString::sprintf("%d fps", _fps));
+		destroy();
+		rebuild();
 	}
 
 	Text::render();

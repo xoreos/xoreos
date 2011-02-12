@@ -15,13 +15,6 @@
 #ifndef GRAPHICS_AURORA_FONT_H
 #define GRAPHICS_AURORA_FONT_H
 
-#include <vector>
-
-#include "common/types.h"
-
-#include "graphics/types.h"
-#include "graphics/listcontainer.h"
-
 namespace Common {
 	class UString;
 }
@@ -30,52 +23,15 @@ namespace Graphics {
 
 namespace Aurora {
 
-class Texture;
-
-/** A font. */
-class Font : public ListContainer {
+class Font {
 public:
-	Font(const Common::UString &name);
-	~Font();
+	Font() {}
+	virtual ~Font() {}
 
-	/** Set the font's texture. */
-	void setTexture() const;
+	virtual float getWidth(const Common::UString &text) const = 0;
+	virtual float getHeight(const Common::UString &text) const = 0;
 
-	/** Draw a character and return its width. */
-	float drawCharacter(uint32 c) const;
-
-	float getScale()  const;
-	float getSpaceR() const;
-	float getSpaceB() const;
-
-	float getWidth(uint32 c) const;
-
-// ListContainer
-public:
-	void rebuild();
-	void destroy();
-
-private:
-	struct Char {
-		ListID listID;
-		float width;
-		float tX[4], tY[4];
-		float vX[4], vY[4];
-	};
-
-	bool _firstTime;
-
-	Texture *_texture;
-
-	ListID _listStart;
-
-	std::vector<Char> _chars;
-
-	float _scale;
-	float _spaceR;
-	float _spaceB;
-
-	void load();
+	virtual void draw(const Common::UString &text) const = 0;
 };
 
 } // End of namespace Aurora

@@ -31,7 +31,7 @@ ManagedTexture::ManagedTexture(const Common::UString &name) {
 	texture = new Texture(name);
 }
 
-ManagedTexture::ManagedTexture(const Common::UString &name, ::Graphics::Texture *t) {
+ManagedTexture::ManagedTexture(const Common::UString &name, Texture *t) {
 	referenceCount = 0;
 	texture = t;
 }
@@ -54,6 +54,12 @@ void TextureHandle::clear() {
 	empty = true;
 }
 
+const Texture &TextureHandle::getTexture() const {
+	assert(!empty);
+
+	return *it->second->texture;
+}
+
 
 TextureManager::TextureManager() {
 }
@@ -71,7 +77,7 @@ void TextureManager::clear() {
 	_textures.clear();
 }
 
-TextureHandle TextureManager::add(const Common::UString &name, ::Graphics::Texture *texture) {
+TextureHandle TextureManager::add(const Common::UString &name, Texture *texture) {
 	Common::StackLock lock(_mutex);
 
 	TextureMap::iterator text = _textures.find(name);

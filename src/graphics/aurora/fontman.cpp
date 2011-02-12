@@ -13,7 +13,7 @@
  */
 
 #include "graphics/aurora/fontman.h"
-#include "graphics/aurora/font.h"
+#include "graphics/aurora/texturefont.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::FontManager)
 
@@ -23,7 +23,7 @@ namespace Aurora {
 
 ManagedFont::ManagedFont(const Common::UString &name) {
 	referenceCount = 0;
-	font = new Font(name);
+	font = new TextureFont(name);
 }
 
 ManagedFont::~ManagedFont() {

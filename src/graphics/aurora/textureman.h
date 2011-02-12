@@ -26,9 +26,9 @@
 
 namespace Graphics {
 
-class Texture;
-
 namespace Aurora {
+
+class Texture;
 
 struct ManagedTexture {
 	Texture *texture;
@@ -49,6 +49,8 @@ struct TextureHandle {
 	TextureHandle(TextureMap::iterator &i);
 
 	void clear();
+
+	const Texture &getTexture() const;
 };
 
 class TextureManager : public Common::Singleton<TextureManager> {

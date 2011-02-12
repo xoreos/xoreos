@@ -9,6 +9,7 @@ noinst_HEADERS = types.h \
                  cursor.h \
                  cursorman.h \
                  font.h \
+                 texturefont.h \
                  fontman.h \
                  text.h \
                  fps.h \
@@ -25,7 +26,7 @@ libaurora_la_SOURCES = videoplayer.cpp \
                        textureman.cpp \
                        cursor.cpp \
                        cursorman.cpp \
-                       font.cpp \
+                       texturefont.cpp \
                        fontman.cpp \
                        text.cpp \
                        fps.cpp \

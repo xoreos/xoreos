@@ -17,6 +17,8 @@
 
 #include "common/ustring.h"
 
+#include "graphics/types.h"
+#include "graphics/listcontainer.h"
 #include "graphics/guifrontelement.h"
 
 #include "graphics/aurora/fontman.h"
@@ -25,7 +27,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-class Text : public GUIFrontElement {
+class Text : public GUIFrontElement, public ListContainer {
 public:
 	Text(const FontHandle &font, const Common::UString &str);
 	~Text();
@@ -43,12 +45,14 @@ public:
 	void newFrame();
 	void render();
 
+// ListContainer
+	void rebuild();
+	void destroy();
+
 protected:
 	void set_internal(const Common::UString &str);
 
 private:
-	bool _firstTime;
-
 	FontHandle _font;
 
 	float _x;
@@ -58,6 +62,8 @@ private:
 	float _height;
 
 	Common::UString _str;
+
+	ListID _list;
 };
 
 } // End of namespace Aurora

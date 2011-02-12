@@ -24,7 +24,7 @@ namespace Graphics {
 namespace Aurora {
 
 Text::Text(const FontHandle &font, const Common::UString &str) :
-	_firstTime(true), _font(font), _x(0.0), _y(0.0) {
+	_font(font), _x(0.0), _y(0.0), _list(0) {
 
 	set(str);
 
@@ -37,14 +37,16 @@ Text::~Text() {
 void Text::set(const Common::UString &str) {
 	GfxMan.lockFrame();
 
-	bool visible = isInQueue();
+	bool visible = Renderable::isInQueue();
 
-	removeFromQueue();
+	Renderable::removeFromQueue();
 
 	set_internal(str);
 
 	if (visible)
-		addToQueue();
+		Renderable::addToQueue();
+
+	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
 
 	GfxMan.unlockFrame();
 }
@@ -54,35 +56,32 @@ void Text::set_internal(const Common::UString &str) {
 
 	const Font &font = _font.getFont();
 
-	_height = font.getScale() / 100.0;
-	_width  = 0.0;
-	for (Common::UString::iterator c = _str.begin(); c != _str.end() && *c; ++c)
-		_width += font.getWidth(*c) + font.getSpaceR();
-	_width *= font.getScale() / 100.0;
+	_height = font.getHeight(_str);
+	_width  = font.getWidth (_str);
 }
 
 void Text::setPosition(float x, float y) {
 	GfxMan.lockFrame();
 
-	bool visible = isInQueue();
+	bool visible = Renderable::isInQueue();
 
-	removeFromQueue();
+	Renderable::removeFromQueue();
 
 	_x = roundf(x * 100.0) / 100.0;
 	_y = roundf(y * 100.0) / 100.0;
 
 	if (visible)
-		addToQueue();
+		Renderable::addToQueue();
 
 	GfxMan.unlockFrame();
 }
 
 void Text::show() {
-	addToQueue();
+	Renderable::addToQueue();
 }
 
 void Text::hide() {
-	removeFromQueue();
+	Renderable::removeFromQueue();
 }
 
 float Text::getWidth() const {
@@ -97,23 +96,33 @@ void Text::newFrame() {
 }
 
 void Text::render() {
+	glTranslatef(_x * 100.0, _y * 100.0, 0.0);
+
+	if (_list > 0)
+		glCallList(_list);
+}
+
+void Text::rebuild() {
+	enforceMainThread();
+
 	const Font &font = _font.getFont();
 
-	glTranslatef(_x * 100.0, _y * 100.0, 0.0);
-	glScalef(font.getScale(), font.getScale(), 0.0);
+	_list = glGenLists(1);
 
-	if (_firstTime) {
-		// Sync, to make sure that the texture has finished loading
-		RequestMan.sync();
-		_firstTime = false;
-	}
+	glNewList(_list, GL_COMPILE);
+	font.draw(_str);
+	glEndList();
+}
 
-	font.setTexture();
+void Text::destroy() {
+	enforceMainThread();
 
-	for (Common::UString::iterator c = _str.begin(); c != _str.end() && *c; ++c) {
-		float w = font.drawCharacter(*c);
-		glTranslatef(w + font.getSpaceR(), 0.0, 0.0);
-	}
+	if (_list == 0)
+		return;
+
+	glDeleteLists(_list, 0);
+
+	_list = 0;
 }
 
 } // End of namespace Aurora
