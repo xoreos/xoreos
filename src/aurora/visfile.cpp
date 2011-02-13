@@ -52,6 +52,10 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 		if (vis.eos() || vis.err())
 			break;
 
+		if ((strings.size() == 1) && (strings[0] == "[Adjacent]"))
+			// TODO: New in Jade Empire
+			break;
+
 		if (strings.size() > 2)
 			throw Common::Exception("Malformed VIS file");
 

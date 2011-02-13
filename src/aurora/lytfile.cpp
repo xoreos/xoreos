@@ -81,6 +81,22 @@ void LYTFile::load(Common::SeekableReadStream &lyt) {
 				tokenizer.nextChunk(lyt);
 				//tokenizer.getTokens(lyt, strings);
 			}
+		} else if (strings[0] == "artplaceablecount") {
+			int obstacleCount = atoi(strings[1].c_str());
+
+			// TODO! Just ignore for now
+			for (int i = 0; i < obstacleCount; i++) {
+				tokenizer.nextChunk(lyt);
+				//tokenizer.getTokens(lyt, strings);
+			}
+		} else if (strings[0] == "walkmeshRooms") {
+			int obstacleCount = atoi(strings[1].c_str());
+
+			// TODO! Just ignore for now
+			for (int i = 0; i < obstacleCount; i++) {
+				tokenizer.nextChunk(lyt);
+				//tokenizer.getTokens(lyt, strings);
+			}
 		} else if (strings[0] == "doorhookcount") {
 			int doorHookCount = atoi(strings[1].c_str());
 			_doorHooks.resize(doorHookCount);
