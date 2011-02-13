@@ -25,6 +25,7 @@
 #include "graphics/images/tga.h"
 #include "graphics/images/dds.h"
 #include "graphics/images/tpc.h"
+#include "graphics/images/txb.h"
 #include "graphics/images/sbm.h"
 
 #include "events/requests.h"
@@ -105,6 +106,8 @@ void Texture::load(const Common::UString &name) {
 		_image = new DDS(img);
 	else if (_type == ::Aurora::kFileTypeTPC)
 		_image = new TPC(img);
+	else if (_type == ::Aurora::kFileTypeTXB)
+		_image = new TXB(img);
 	else if (_type == ::Aurora::kFileTypeSBM)
 		_image = new SBM(img);
 	else {

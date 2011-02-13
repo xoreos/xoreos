@@ -60,6 +60,7 @@ ResourceManager::ChangeID::ChangeID(ChangeSetList::iterator c) : empty(false), c
 ResourceManager::ResourceManager() : _rimsAreERFs(false) {
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeDDS);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTPC);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTXB);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTGA);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypePNG);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeBMP);

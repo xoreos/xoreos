@@ -97,7 +97,7 @@ void JadeEngine::run(const Common::UString &target) {
 	Graphics::Aurora::Cube *cube = 0;
 	try {
 
-		cube = new Graphics::Aurora::Cube("ui_logo_01");
+		cube = new Graphics::Aurora::Cube("ui_ph_silk");
 
 	} catch (Common::Exception &e) {
 		Common::printException(e);

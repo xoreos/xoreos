@@ -8,6 +8,7 @@ noinst_HEADERS = decoder.h \
                  tga.h \
                  dds.h \
                  tpc.h \
+                 txb.h \
                  txitypes.h \
                  txi.h \
                  s3tc.h \
@@ -20,6 +21,7 @@ libimages_la_SOURCES = decoder.cpp \
                        tga.cpp \
                        dds.cpp \
                        tpc.cpp \
+                       txb.cpp \
                        txitypes.cpp \
                        txi.cpp \
                        s3tc.cpp \
