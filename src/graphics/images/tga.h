@@ -52,8 +52,8 @@ private:
 	MipMap &getMipMap(int mipMap);
 
 	// Loading helpers
-	void readHeader(Common::SeekableReadStream &tga);
-	void readData(Common::SeekableReadStream &tga);
+	void readHeader(Common::SeekableReadStream &tga, byte &imageType);
+	void readData(Common::SeekableReadStream &tga, byte imageType);
 };
 
 } // End of namespace Graphics

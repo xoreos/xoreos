@@ -33,8 +33,9 @@ void TGA::load() {
 
 	try {
 
-		readHeader(*_tga);
-		readData(*_tga);
+		byte imageType;
+		readHeader(*_tga, imageType);
+		readData(*_tga, imageType);
 
 		if (_tga->err())
 			throw Common::Exception(Common::kReadError);
@@ -48,7 +49,7 @@ void TGA::load() {
 	_tga = 0;
 }
 
-void TGA::readHeader(Common::SeekableReadStream &tga) {
+void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
 	if (!tga.seek(0))
 		throw Common::Exception(Common::kSeekError);
 
@@ -59,9 +60,9 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	if (tga.readByte() != 0)
 		throw Common::Exception("Unsupported feature: Color map");
 
-	// Image type. 2 == umapped RGB
-	byte imageType = tga.readByte();
-	if (imageType != 2)
+	// Image type. 2 == unmapped RGB, 3 == Grayscale
+	imageType = tga.readByte();
+	if ((imageType != 2) && (imageType != 3))
 		throw Common::Exception("Unsupported image type: %d", imageType);
 
 	// Color map specifications + X + Y
@@ -74,14 +75,22 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	// Bits per pixel
 	byte pixelDepth = tga.readByte();
 
-	if      (pixelDepth == 24) {
-		_format    = kPixelFormatBGR;
-		_formatRaw = kPixelFormatRGB8;
-	} else if (pixelDepth == 32) {
+	if (imageType == 2) {
+		if      (pixelDepth == 24) {
+			_format    = kPixelFormatBGR;
+			_formatRaw = kPixelFormatRGB8;
+		} else if (pixelDepth == 32) {
+			_format    = kPixelFormatBGRA;
+			_formatRaw = kPixelFormatRGBA8;
+		} else
+			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
+	} else if (imageType == 3) {
+		if (pixelDepth != 8)
+			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
+
 		_format    = kPixelFormatBGRA;
 		_formatRaw = kPixelFormatRGBA8;
-	} else
-		throw Common::Exception("Unsupported pixel depth: %d", pixelDepth);
+	}
 
 	// Image descriptor
 	tga.skip(1);
@@ -90,17 +99,35 @@ void TGA::readHeader(Common::SeekableReadStream &tga) {
 	tga.skip(idLength);
 }
 
-void TGA::readData(Common::SeekableReadStream &tga) {
-	// Size of image data in bytes
-	_image.size = _image.width * _image.height;
-	if      (_format == kPixelFormatBGR)
-		_image.size *= 3;
-	else if (_format == kPixelFormatBGRA)
-		_image.size *= 4;
+void TGA::readData(Common::SeekableReadStream &tga, byte imageType) {
+	if (imageType == 2) {
+		_image.size = _image.width * _image.height;
+		if      (_format == kPixelFormatBGR)
+			_image.size *= 3;
+		else if (_format == kPixelFormatBGRA)
+			_image.size *= 4;
 
-	_image.data = new byte[_image.size];
+		_image.data = new byte[_image.size];
 
-	tga.read(_image.data, _image.size);
+		tga.read(_image.data, _image.size);
+
+	} else if (imageType == 3) {
+		_image.size = _image.width * _image.height * 4;
+		_image.data = new byte[_image.size];
+
+		byte  *data  = _image.data;
+		uint32 count = _image.width * _image.height;
+
+		while (count-- > 0) {
+			byte g = tga.readByte();
+
+			memset(data, g, 3);
+			data[3] = 0xFF;
+
+			data += 4;
+		}
+
+	}
 }
 
 bool TGA::isCompressed() const {
