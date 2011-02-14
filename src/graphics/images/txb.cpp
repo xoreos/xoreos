@@ -19,6 +19,7 @@
 #include "graphics/images/txb.h"
 #include "graphics/graphics.h"
 
+static const byte kEncodingBGRA = 0x04;
 static const byte kEncodingDXT1 = 0x0A;
 static const byte kEncodingDXT5 = 0x0C;
 
@@ -131,7 +132,19 @@ void TXB::readHeader(Common::SeekableReadStream &txb) {
 	txb.skip(108); // Reserved
 
 	uint32 minDataSize, mipMapSize;
-	if        (encoding == kEncodingDXT1) {
+	if        (encoding == kEncodingBGRA) {
+		// Raw BGRA
+
+		_compressed = false;
+
+		_format     = kPixelFormatBGRA;
+		_formatRaw  = kPixelFormatRGBA8;
+		_dataType   = kPixelDataType8;
+
+		minDataSize = 4;
+		mipMapSize  = width * height * 4;
+
+	} else if (encoding == kEncodingDXT1) {
 		// S3TC DXT1
 
 		_compressed = true;
