@@ -17,8 +17,6 @@
 
 #include <list>
 
-#include "common/ustring.h"
-
 #include "aurora/guifile.h"
 
 #include "graphics/aurora/types.h"
@@ -27,6 +25,7 @@
 #include "engines/nwn/util.h"
 
 namespace Common {
+	class UString;
 	class SeekableReadStream;
 }
 
@@ -43,6 +42,8 @@ public:
 	~GUI();
 
 	void show();
+
+	void setWidgetState(const Common::UString &widgetTag, const Common::UString &state);
 
 private:
 	/** A widget within the GUI. */

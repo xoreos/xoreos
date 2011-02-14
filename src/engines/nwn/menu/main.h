@@ -42,6 +42,8 @@ private:
 	Graphics::Aurora::Model *_xp1;
 	Graphics::Aurora::Model *_xp2;
 
+	bool isButton(const Common::UString &tag);
+
 	void mouseMove(int x, int y, uint8 state, Common::UString &cursorTag);
 
 	void mouseMove(Events::Event &event, Common::UString &cursorTag);

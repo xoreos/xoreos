@@ -16,6 +16,7 @@
 #include "engines/nwn/util.h"
 
 #include "common/error.h"
+#include "common/ustring.h"
 #include "common/stream.h"
 
 #include "aurora/resman.h"
@@ -84,6 +85,16 @@ void GUI::show() {
 
 		if (widget->text)
 			widget->text->show();
+	}
+}
+
+void GUI::setWidgetState(const Common::UString &widgetTag, const Common::UString &state) {
+	for (std::list<Widget>::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
+		if (widget->object->tag == widgetTag) {
+			if (widget->model)
+				widget->model->setState(state);
+			break;
+		}
 	}
 }
 

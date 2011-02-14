@@ -79,6 +79,23 @@ void MainMenu::handle() {
 
 }
 
+bool MainMenu::isButton(const Common::UString &tag) {
+	if (tag == "NewButton")
+		return true;
+	if (tag == "LoadButton")
+		return true;
+	if (tag == "MultiButton")
+		return true;
+	if (tag == "MoviesButton")
+		return true;
+	if (tag == "OptionsButton")
+		return true;
+	if (tag == "ExitButton")
+		return true;
+
+	return false;
+}
+
 void MainMenu::mouseMove(Events::Event &event, Common::UString &cursorTag) {
 	if (event.motion.state != 0)
 		// Ignore move events when a mouse button is pressed
@@ -89,14 +106,13 @@ void MainMenu::mouseMove(Events::Event &event, Common::UString &cursorTag) {
 		// Nothing changed, nothing to do
 		return;
 
-	// TODO: Highlight that button
-	if        (tag == "NewButton") {
-	} else if (tag == "LoadButton") {
-	} else if (tag == "MultiButton") {
-	} else if (tag == "MoviesButton") {
-	} else if (tag == "OptionsButton") {
-	} else if (tag == "ExitButton") {
-	}
+	// Unhighlight the button we leave
+	if (isButton(cursorTag))
+		_gui->setWidgetState(cursorTag, "");
+
+	// Highlight the button we leave
+	if (isButton(tag))
+		_gui->setWidgetState(tag, "hilite");
 
 	cursorTag = tag;
 }
@@ -118,19 +134,10 @@ void MainMenu::mouseDown(Events::Event &event, Common::UString &cursorTag) {
 
 	const Common::UString &tag = GfxMan.getObjectAt(event.button.x, event.button.y);
 
-	// TODO: Highlight that button
-	if        (tag == "NewButton") {
+	if (isButton(tag)) {
 		playSound("gui_button", Sound::kSoundTypeSFX);
-	} else if (tag == "LoadButton") {
-		playSound("gui_button", Sound::kSoundTypeSFX);
-	} else if (tag == "MultiButton") {
-		playSound("gui_button", Sound::kSoundTypeSFX);
-	} else if (tag == "MoviesButton") {
-		playSound("gui_button", Sound::kSoundTypeSFX);
-	} else if (tag == "OptionsButton") {
-		playSound("gui_button", Sound::kSoundTypeSFX);
-	} else if (tag == "ExitButton") {
-		playSound("gui_button", Sound::kSoundTypeSFX);
+
+		_gui->setWidgetState(tag, "down");
 	}
 
 	cursorTag = tag;
@@ -148,7 +155,6 @@ void MainMenu::mouseUp(Events::Event &event, Common::UString &cursorTag) {
 		return;
 	}
 
-	// TODO: Unhighlight that button
 	if        (tag == "NewButton") {
 	} else if (tag == "LoadButton") {
 	} else if (tag == "MultiButton") {
@@ -156,7 +162,11 @@ void MainMenu::mouseUp(Events::Event &event, Common::UString &cursorTag) {
 	} else if (tag == "OptionsButton") {
 	} else if (tag == "ExitButton") {
 		EventMan.requestQuit();
+		return;
 	}
+
+	if (isButton(tag))
+		_gui->setWidgetState(tag, "hilite");
 
 	cursorTag = tag;
 }
