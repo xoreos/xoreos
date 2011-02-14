@@ -78,7 +78,7 @@ void Legal::show() {
 		}
 
 		// Display and fade-out time's up
-		if (!fadeOut && (EventMan.getTimestamp() - start) >= 6000)
+		if ((EventMan.getTimestamp() - start) >= 6000)
 			break;
 	}
 
