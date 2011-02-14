@@ -71,6 +71,8 @@ public:
 	float getDepth () const; ///< Get the depth of the model's bounding box.
 
 	/** Is the point within the model's bounding box? */
+	bool isIn(float x, float y)          const;
+	/** Is the point within the model's bounding box? */
 	bool isIn(float x, float y, float z) const;
 
 	/** Return a list of all animation state names. */
@@ -252,6 +254,9 @@ protected:
 	void createModelBound();
 
 private:
+	void transformBoundBox(Common::TransformationMatrix &world,
+			Common::BoundingBox &object) const;
+
 	void renderState(const State &state);
 	void renderNode(const Node &node);
 

@@ -329,7 +329,8 @@ void Area::setPosition(float x, float y, float z) {
 	// Look in what rooms we're in
 	std::vector<Room *> ins;
 	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room) {
-		if ((*room)->model->isIn(0.0, 0.0, 0.0)) {
+		// Roughly head position.
+		if ((*room)->model->isIn(0.0, 1.5, 0.0)) {
 			// The rooms we're in should be visible
 			(*room)->visible = true;
 

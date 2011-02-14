@@ -286,8 +286,8 @@ float Model::getDepth() const {
 	return _boundBox.getDepth();
 }
 
-bool Model::isIn(float x, float y, float z) const {
-	Common::TransformationMatrix world;
+void Model::transformBoundBox(Common::TransformationMatrix &world,
+		Common::BoundingBox &object) const {
 
 	// Apply position translation
 	world.translate(-_position[0], -_position[1], -_position[2]);
@@ -305,18 +305,34 @@ bool Model::isIn(float x, float y, float z) const {
 		// Aurora GUI objects use 0.01 units / pixel
 		world.scale(0.01, 0.01, 0.01);
 
-	if (_type == kModelTypeObject)
-		// Roughly head position. TODO: This doesn't belong here :P
-		world.translate(0.0, 1.5, 0.0);
-
-	Common::BoundingBox boundBox = _boundBox;
+	object = _boundBox;
 
 	// Apply rotation around the object's center
-	boundBox.rotate(_bearing[0], 1.0, 0.0, 0.0);
-	boundBox.rotate(_bearing[1], 0.0, 0.0, 1.0);
-	boundBox.rotate(_bearing[2], 0.0, 1.0, 0.0);
+	object.rotate(_bearing[0], 1.0, 0.0, 0.0);
+	object.rotate(_bearing[1], 0.0, 0.0, 1.0);
+	object.rotate(_bearing[2], 0.0, 1.0, 0.0);
+}
 
-	return boundBox.isIn(world.getX(), world.getY(), world.getZ());
+bool Model::isIn(float x, float y) const {
+	Common::TransformationMatrix world;
+	Common::BoundingBox object;
+
+	transformBoundBox(world, object);
+
+	world.translate(x, y, 0.0);
+
+	return object.isIn(world.getX(), world.getY());
+}
+
+bool Model::isIn(float x, float y, float z) const {
+	Common::TransformationMatrix world;
+	Common::BoundingBox object;
+
+	transformBoundBox(world, object);
+
+	world.translate(x, y, z);
+
+	return object.isIn(world.getX(), world.getY(), world.getZ());
 }
 
 const std::list<Common::UString> &Model::getStates() const {
