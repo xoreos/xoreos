@@ -12,11 +12,16 @@
  *  The main menu.
  */
 
+#include "common/util.h"
+
 #include "engines/nwn/menu/main.h"
 #include "engines/nwn/menu/gui.h"
 
 #include "events/events.h"
 
+#include "graphics/graphics.h"
+
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/model.h"
 
 namespace Engines {
@@ -54,8 +59,106 @@ void MainMenu::show() {
 }
 
 void MainMenu::handle() {
-	while (!EventMan.quitRequested())
-		EventMan.delay(10);
+	Common::UString cursorTag;
+
+	while (!EventMan.quitRequested()) {
+
+		Events::Event event;
+		while (EventMan.pollEvent(event)) {
+			if      (event.type == Events::kEventMouseMove)
+				mouseMove(event, cursorTag);
+			else if (event.type == Events::kEventMouseDown)
+				mouseDown(event, cursorTag);
+			else if (event.type == Events::kEventMouseUp)
+				mouseUp(event, cursorTag);
+		}
+
+		if (!EventMan.quitRequested())
+			EventMan.delay(10);
+	}
+
+}
+
+void MainMenu::mouseMove(Events::Event &event, Common::UString &cursorTag) {
+	if (event.motion.state != 0)
+		// Ignore move events when a mouse button is pressed
+		return;
+
+	const Common::UString &tag = GfxMan.getObjectAt(event.motion.x, event.motion.y);
+	if (tag == cursorTag)
+		// Nothing changed, nothing to do
+		return;
+
+	// TODO: Highlight that button
+	if        (tag == "NewButton") {
+	} else if (tag == "LoadButton") {
+	} else if (tag == "MultiButton") {
+	} else if (tag == "MoviesButton") {
+	} else if (tag == "OptionsButton") {
+	} else if (tag == "ExitButton") {
+	}
+
+	cursorTag = tag;
+}
+
+void MainMenu::mouseMove(int x, int y, uint8 state, Common::UString &cursorTag) {
+	Events::Event event;
+
+	event.motion.state = state;
+	event.button.x     = x;
+	event.button.y     = y;
+
+	mouseMove(event, cursorTag);
+}
+
+void MainMenu::mouseDown(Events::Event &event, Common::UString &cursorTag) {
+	if (event.button.button != SDL_BUTTON_LMASK)
+		// We only care about left mouse button presses
+		return;
+
+	const Common::UString &tag = GfxMan.getObjectAt(event.button.x, event.button.y);
+
+	// TODO: Highlight that button
+	if        (tag == "NewButton") {
+		playSound("gui_button", Sound::kSoundTypeSFX);
+	} else if (tag == "LoadButton") {
+		playSound("gui_button", Sound::kSoundTypeSFX);
+	} else if (tag == "MultiButton") {
+		playSound("gui_button", Sound::kSoundTypeSFX);
+	} else if (tag == "MoviesButton") {
+		playSound("gui_button", Sound::kSoundTypeSFX);
+	} else if (tag == "OptionsButton") {
+		playSound("gui_button", Sound::kSoundTypeSFX);
+	} else if (tag == "ExitButton") {
+		playSound("gui_button", Sound::kSoundTypeSFX);
+	}
+
+	cursorTag = tag;
+}
+
+void MainMenu::mouseUp(Events::Event &event, Common::UString &cursorTag) {
+	if (event.button.button != SDL_BUTTON_LMASK)
+		// We only care about left mouse button presses
+		return;
+
+	const Common::UString &tag = GfxMan.getObjectAt(event.button.x, event.button.y);
+	if (cursorTag != tag) {
+		// We pressed and released the mouse on differents object => Just signal a move
+		mouseMove(event.button.x, event.button.y, 0, cursorTag);
+		return;
+	}
+
+	// TODO: Unhighlight that button
+	if        (tag == "NewButton") {
+	} else if (tag == "LoadButton") {
+	} else if (tag == "MultiButton") {
+	} else if (tag == "MoviesButton") {
+	} else if (tag == "OptionsButton") {
+	} else if (tag == "ExitButton") {
+		EventMan.requestQuit();
+	}
+
+	cursorTag = tag;
 }
 
 } // End of namespace NWN

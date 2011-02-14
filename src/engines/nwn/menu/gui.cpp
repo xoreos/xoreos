@@ -51,6 +51,7 @@ void GUI::load(const ModelLoader &modelLoader) {
 		if (!object->resRef.empty()) {
 			widget.model = modelLoader.loadGUI(object->resRef);
 
+			widget.model->setTag(object->tag);
 			widget.model->setPosition(object->x, object->y, object->z);
 		}
 

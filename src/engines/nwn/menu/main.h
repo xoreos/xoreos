@@ -17,6 +17,8 @@
 
 #include "engines/nwn/util.h"
 
+#include "events/types.h"
+
 namespace Engines {
 
 class ModelLoader;
@@ -39,6 +41,12 @@ private:
 
 	Graphics::Aurora::Model *_xp1;
 	Graphics::Aurora::Model *_xp2;
+
+	void mouseMove(int x, int y, uint8 state, Common::UString &cursorTag);
+
+	void mouseMove(Events::Event &event, Common::UString &cursorTag);
+	void mouseDown(Events::Event &event, Common::UString &cursorTag);
+	void mouseUp  (Events::Event &event, Common::UString &cursorTag);
 };
 
 } // End of namespace NWN
