@@ -36,6 +36,7 @@ public:
 	float getHeight() const; ///< Get the height of the bounding box.
 	float getDepth () const; ///< Get the depth of the bounding box.
 
+	bool isIn(float x, float y         ) const;
 	bool isIn(float x, float y, float z) const;
 
 	void add(float x, float y, float z);

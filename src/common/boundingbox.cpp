@@ -86,6 +86,24 @@ float BoundingBox::getDepth() const {
 	return ABS(_max[2] - _min[2]);
 }
 
+bool BoundingBox::isIn(float x, float y) const {
+	if (_empty)
+		return false;
+
+	TransformationMatrix min = _origin;
+	TransformationMatrix max = _origin;
+
+	min.translate(_min[0], _min[1], _min[2]);
+	max.translate(_max[0], _max[1], _max[2]);
+
+	if ((x < min.getX()) || (x > max.getX()))
+		return false;
+	if ((y < min.getY()) || (y > max.getY()))
+		return false;
+
+	return true;
+}
+
 bool BoundingBox::isIn(float x, float y, float z) const {
 	if (_empty)
 		return false;
