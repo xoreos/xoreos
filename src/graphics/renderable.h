@@ -15,6 +15,8 @@
 #ifndef GRAPHICS_RENDERABLE_H
 #define GRAPHICS_RENDERABLE_H
 
+#include "common/ustring.h"
+
 #include "graphics/queueable.h"
 
 namespace Graphics {
@@ -34,7 +36,21 @@ public:
 	/** Get the distance of the object from the viewer. */
 	double getDistance() const;
 
+	/** Get the object's tag. */
+	const Common::UString &getTag() const;
+
+	/** Set the object's tag. */
+	void setTag(const Common::UString &tag);
+
+	/** Is that point within the object? */
+	virtual bool isIn(float x, float y) const;
+
+	/** Is that point within the object? */
+	virtual bool isIn(float x, float y, float z) const;
+
 protected:
+	Common::UString _tag;
+
 	double _distance; ///< The distance of the object from the viewer.
 
 	/** Set the distance to the distance between the origin and the current object-space origin. */

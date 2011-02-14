@@ -28,6 +28,22 @@ double Renderable::getDistance() const {
 	return _distance;
 }
 
+const Common::UString &Renderable::getTag() const {
+	return _tag;
+}
+
+void Renderable::setTag(const Common::UString &tag) {
+	_tag = tag;
+}
+
+bool Renderable::isIn(float x, float y) const {
+	return false;
+}
+
+bool Renderable::isIn(float x, float y, float z) const {
+	return false;
+}
+
 void Renderable::setCurrentDistance() {
 	GLfloat modelView[16];
 
