@@ -33,6 +33,7 @@ public:
 	};
 
 	typedef typename Queue::QueueList::iterator QueueRef;
+	typedef typename Queue::QueueList::reverse_iterator QueueRRef;
 
 	Queueable(Queue &queue) : _inQueue(false), _queue(&queue) {
 	}
