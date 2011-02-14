@@ -72,6 +72,9 @@ public:
 	/** Take a screenshot. */
 	void takeScreenshot();
 
+	/** Get the tag of the object at this screen position. */
+	const Common::UString &getObjectAt(float x, float y);
+
 
 private:
 	enum CursorState {

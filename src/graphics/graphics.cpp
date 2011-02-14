@@ -242,6 +242,38 @@ void GraphicsManager::takeScreenshot() {
 	_takeScreenshot = true;
 }
 
+static const Common::UString kNoTag;
+const Common::UString &GraphicsManager::getObjectAt(float x, float y) {
+	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
+
+	// Sort the GUI Front objects
+	_guiFrontObjects.list.sort(queueComp);
+
+	// Map the screen coordinates to the OpenGL coordinates
+	x =               x  - (_screen->w / 2.0);
+	y = (_screen->h - y) - (_screen->h / 2.0);
+
+	// Go through the GUI elements in reverse drawing order
+	for (Renderable::QueueRRef obj = _guiFrontObjects.list.rbegin(); obj != _guiFrontObjects.list.rend(); ++obj) {
+		// No tag, don't check
+		if ((*obj)->getTag().empty())
+			continue;
+
+		// If the coordinates are "in" that object, return its tag
+		if ((*obj)->isIn(x, y))
+			return (*obj)->getTag();
+	}
+
+	// TODO: World objects check
+
+	// Common::StackLock objectsLock(_objects.mutex);
+
+	// _objects.list.sort(queueComp);
+
+	// No object at that position
+	return kNoTag;
+}
+
 void GraphicsManager::clearRenderQueue() {
 	Common::StackLock objectsLock(_objects.mutex);
 	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
