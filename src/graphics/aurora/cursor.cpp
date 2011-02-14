@@ -25,6 +25,7 @@
 #include "graphics/images/winiconimage.h"
 
 #include "graphics/aurora/cursor.h"
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/texture.h"
 
 namespace Graphics {
@@ -44,7 +45,7 @@ void Cursor::render() {
 	TextureMan.set(_texture);
 
 	int x, y;
-	SDL_GetMouseState(&x, &y);
+	CursorMan.getPosition(x, y);
 
 	glTranslatef(x - _hotspotX, -y - _height + _hotspotY, 0.0);
 
