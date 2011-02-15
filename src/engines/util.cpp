@@ -17,6 +17,7 @@
 #include "common/error.h"
 #include "common/stream.h"
 #include "common/file.h"
+#include "common/configman.h"
 
 #include "events/events.h"
 
@@ -32,6 +33,11 @@
 namespace Engines {
 
 void playVideo(const Common::UString &video) {
+	// Mute other sound sources
+	SoundMan.setTypeGain(Sound::kSoundTypeMusic, 0.0);
+	SoundMan.setTypeGain(Sound::kSoundTypeSFX  , 0.0);
+	SoundMan.setTypeGain(Sound::kSoundTypeVoice, 0.0);
+
 	try {
 		Graphics::Aurora::VideoPlayer videoPlayer(video);
 
@@ -39,6 +45,11 @@ void playVideo(const Common::UString &video) {
 	} catch (Common::Exception &e) {
 		Common::printException(e, "WARNING: ");
 	}
+
+	// Restore volumes
+	SoundMan.setTypeGain(Sound::kSoundTypeMusic, ConfigMan.getDouble("volume_music", 1.0));
+	SoundMan.setTypeGain(Sound::kSoundTypeSFX  , ConfigMan.getDouble("volume_sfx"  , 1.0));
+	SoundMan.setTypeGain(Sound::kSoundTypeVoice, ConfigMan.getDouble("volume_voice", 1.0));
 }
 
 Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType soundType, bool loop) {
