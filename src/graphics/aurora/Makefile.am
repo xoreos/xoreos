@@ -27,6 +27,7 @@ libaurora_la_SOURCES = videoplayer.cpp \
                        textureman.cpp \
                        cursor.cpp \
                        cursorman.cpp \
+                       font.cpp \
                        texturefont.cpp \
                        abcfont.cpp \
                        fontman.cpp \

@@ -31,10 +31,13 @@ namespace Aurora {
 class Text : public GUIFrontElement, public ListContainer {
 public:
 	Text(const FontHandle &font, const Common::UString &str);
+	Text(const FontHandle &font, const Common::UString &str, float r, float g, float b, float a);
 	~Text();
 
 	void set(const Common::UString &str);
 	void setPosition(float x, float y);
+	void setColor(float r, float g, float b, float a);
+	void unsetColor();
 
 	void show(); ///< The text should be rendered.
 	void hide(); ///< The text should not be rendered.
@@ -61,6 +64,9 @@ private:
 
 	float _width;
 	float _height;
+
+	bool _hasColor;
+	float _r, _g, _b, _a;
 
 	Common::UString _str;
 

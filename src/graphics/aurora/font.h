@@ -26,13 +26,14 @@ namespace Aurora {
 /** An abstract font. */
 class Font {
 public:
-	Font() {}
-	virtual ~Font() {}
+	Font();
+	virtual ~Font();
 
 	virtual float getWidth(const Common::UString &text) const = 0;
 	virtual float getHeight(const Common::UString &text) const = 0;
 
 	virtual void draw(const Common::UString &text) const = 0;
+	virtual void draw(const Common::UString &text, float r, float g, float b, float a) const;
 };
 
 } // End of namespace Aurora

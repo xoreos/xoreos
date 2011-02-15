@@ -24,7 +24,15 @@ namespace Graphics {
 namespace Aurora {
 
 Text::Text(const FontHandle &font, const Common::UString &str) :
-	_font(font), _x(0.0), _y(0.0), _list(0) {
+	_font(font), _x(0.0), _y(0.0), _hasColor(false), _list(0) {
+
+	set(str);
+
+	_distance = -5.0;
+}
+
+Text::Text(const FontHandle &font, const Common::UString &str, float r, float g, float b, float a) :
+	_font(font), _x(0.0), _y(0.0), _hasColor(true), _r(r), _g(g), _b(b), _a(a), _list(0) {
 
 	set(str);
 
@@ -58,6 +66,44 @@ void Text::set_internal(const Common::UString &str) {
 
 	_height = font.getHeight(_str);
 	_width  = font.getWidth (_str);
+}
+
+void Text::setColor(float r, float g, float b, float a) {
+	GfxMan.lockFrame();
+
+	bool visible = Renderable::isInQueue();
+
+	Renderable::removeFromQueue();
+
+	_hasColor = true;
+	_r = r;
+	_g = g;
+	_b = b;
+	_a = a;
+
+	if (visible)
+		Renderable::addToQueue();
+
+	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
+
+	GfxMan.unlockFrame();
+}
+
+void Text::unsetColor() {
+	GfxMan.lockFrame();
+
+	bool visible = Renderable::isInQueue();
+
+	Renderable::removeFromQueue();
+
+	_hasColor = false;
+
+	if (visible)
+		Renderable::addToQueue();
+
+	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
+
+	GfxMan.unlockFrame();
 }
 
 void Text::setPosition(float x, float y) {
@@ -110,7 +156,10 @@ void Text::rebuild() {
 	_list = glGenLists(1);
 
 	glNewList(_list, GL_COMPILE);
-	font.draw(_str);
+	if (_hasColor)
+		font.draw(_str, _r, _g, _b, _a);
+	else
+		font.draw(_str);
 	glEndList();
 }
 

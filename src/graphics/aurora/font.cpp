@@ -8,38 +8,30 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/aurora/fps.h
- *  A text object displaying the current FPS.
+/** @file graphics/aurora/font.cpp
+ *  A font.
  */
 
-#ifndef GRAPHICS_AURORA_FPS_H
-#define GRAPHICS_AURORA_FPST_H
+#include "graphics/types.h"
 
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/text.h"
+#include "graphics/aurora/font.h"
 
 namespace Graphics {
 
 namespace Aurora {
 
-/** An autonomous FPS display. */
-class FPS : public Text {
-public:
-	FPS(const FontHandle &font);
-	FPS(const FontHandle &font, float r, float g, float b, float a);
-	~FPS();
+Font::Font() {
+}
 
-	// Renderable
-	void render();
+Font::~Font() {
+}
 
-private:
-	uint32 _fps;
-
-	void init();
-};
+void Font::draw(const Common::UString &text, float r, float g, float b, float a) const {
+	glColor4f(r, g, b, a);
+	draw(text);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+}
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
-
-#endif // GRAPHICS_AURORA_FPS_H

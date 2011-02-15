@@ -24,13 +24,23 @@ namespace Graphics {
 namespace Aurora {
 
 FPS::FPS(const FontHandle &font) : Text(font, "0 fps"), _fps(0) {
+	init();
+}
+
+FPS::FPS(const FontHandle &font, float r, float g, float b, float a) :
+	Text(font, "0 fps", r, g, b, a), _fps(0) {
+
+	init();
+}
+
+FPS::~FPS() {
+}
+
+void FPS::init() {
 	float posX = (-(GfxMan.getScreenWidth()  / 2.0)) / 100.0;
 	float posY = ( (GfxMan.getScreenHeight() / 2.0)) / 100.0  - getHeight();
 
 	setPosition(posX, posY);
-}
-
-FPS::~FPS() {
 }
 
 void FPS::render() {
