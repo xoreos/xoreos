@@ -56,6 +56,12 @@ void GUIFile::readObject(const GFFFile::StructRange &range, const Object *parent
 			obj.y           = it->getDouble();
 		else if (it->getLabel() == "Obj_Z")
 			obj.z           = it->getDouble();
+		else if (it->getLabel() == "Obj_Label_X")
+			obj.x           = it->getDouble();
+		else if (it->getLabel() == "Obj_Label_Y")
+			obj.y           = it->getDouble();
+		else if (it->getLabel() == "Obj_Label_Z")
+			obj.z           = it->getDouble();
 		else if (it->getLabel() == "Obj_Tag")
 			obj.tag         = it->getString();
 		else if (it->getLabel() == "Obj_Locked")

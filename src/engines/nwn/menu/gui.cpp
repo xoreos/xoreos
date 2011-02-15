@@ -167,6 +167,9 @@ void GUI::load(const ModelLoader &modelLoader) {
 			if (widget.hasModel()) {
 				cX = widget.getModel().getWidth () * object->caption.alignV;
 				cY = widget.getModel().getHeight() * object->caption.alignH;
+			} else {
+				cX = object->labelWidth  * object->caption.alignV;
+				cY = object->labelHeight * object->caption.alignH - object->labelHeight;
 			}
 
 			cX -= widget.getText().getWidth () / 2;
