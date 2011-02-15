@@ -40,6 +40,12 @@ MainMenu::MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2) : _gui(0)
 		_xp2 = modelLoader.loadGUI("ctl_xp2_text");
 		_xp2->setPosition(1.24, -1.47, 0.50);
 	}
+
+	disableButton("NewButton");
+	disableButton("LoadButton");
+	disableButton("MultiButton");
+	disableButton("MoviesButton");
+	disableButton("OptionsButton");
 }
 
 MainMenu::~MainMenu() {
@@ -96,6 +102,52 @@ bool MainMenu::isButton(const Common::UString &tag) {
 	return false;
 }
 
+bool MainMenu::isButtonDisabled(const Common::UString &tag) {
+	if (!isButton(tag))
+		return false;
+
+	return _gui->getWidget(tag).isDisabled();
+}
+
+void MainMenu::setButtonNormal(const Common::UString &tag) {
+	if (!isButton(tag))
+		return;
+
+	_gui->getWidget(tag).setNormal();
+}
+
+void MainMenu::setButtonHighlight(const Common::UString &tag) {
+	if (!isButton(tag))
+		return;
+
+	_gui->getWidget(tag).setHighlight();
+}
+
+void MainMenu::setButtonPressed(const Common::UString &tag) {
+	if (!isButton(tag))
+		return;
+
+	GUI::Widget &button = _gui->getWidget(tag);
+	if (!button.isDisabled()) {
+		playSound("gui_button", Sound::kSoundTypeSFX);
+		button.setPressed();
+	}
+}
+
+void MainMenu::disableButton(const Common::UString &tag) {
+	if (!isButton(tag))
+		return;
+
+	_gui->getWidget(tag).disable();
+}
+
+void MainMenu::enableButton(const Common::UString &tag) {
+	if (!isButton(tag))
+		return;
+
+	_gui->getWidget(tag).enable();
+}
+
 void MainMenu::mouseMove(Events::Event &event, Common::UString &cursorTag) {
 	if (event.motion.state != 0)
 		// Ignore move events when a mouse button is pressed
@@ -107,12 +159,9 @@ void MainMenu::mouseMove(Events::Event &event, Common::UString &cursorTag) {
 		return;
 
 	// Unhighlight the button we leave
-	if (isButton(cursorTag))
-		_gui->setWidgetState(cursorTag, "");
-
+	setButtonNormal(cursorTag);
 	// Highlight the button we leave
-	if (isButton(tag))
-		_gui->setWidgetState(tag, "hilite");
+	setButtonHighlight(tag);
 
 	cursorTag = tag;
 }
@@ -134,11 +183,7 @@ void MainMenu::mouseDown(Events::Event &event, Common::UString &cursorTag) {
 
 	const Common::UString &tag = GfxMan.getObjectAt(event.button.x, event.button.y);
 
-	if (isButton(tag)) {
-		playSound("gui_button", Sound::kSoundTypeSFX);
-
-		_gui->setWidgetState(tag, "down");
-	}
+	setButtonPressed(tag);
 
 	cursorTag = tag;
 }
@@ -155,7 +200,11 @@ void MainMenu::mouseUp(Events::Event &event, Common::UString &cursorTag) {
 		return;
 	}
 
+	if (isButtonDisabled(tag))
+		return;
+
 	if        (tag == "NewButton") {
+		enableButton("ExitButton");
 	} else if (tag == "LoadButton") {
 	} else if (tag == "MultiButton") {
 	} else if (tag == "MoviesButton") {
@@ -165,8 +214,7 @@ void MainMenu::mouseUp(Events::Event &event, Common::UString &cursorTag) {
 		return;
 	}
 
-	if (isButton(tag))
-		_gui->setWidgetState(tag, "hilite");
+	setButtonHighlight(tag);
 
 	cursorTag = tag;
 }

@@ -17,6 +17,8 @@
 
 #include <list>
 
+#include "common/ustring.h"
+
 #include "aurora/guifile.h"
 
 #include "graphics/aurora/types.h"
@@ -25,7 +27,6 @@
 #include "engines/nwn/util.h"
 
 namespace Common {
-	class UString;
 	class SeekableReadStream;
 }
 
@@ -38,27 +39,58 @@ namespace NWN {
 /** A NWN GUI. */
 class GUI : public Aurora::GUIFile {
 public:
+	class Widget {
+	public:
+		~Widget();
+
+		bool isDisabled() const;
+
+		void show();
+		void hide();
+
+		void setNormal();
+		void setHighlight();
+		void setPressed();
+
+		void disable();
+		void enable();
+
+	private:
+		Widget(Object &obj);
+
+		Object *_object;
+
+		bool _disabled;
+
+		Graphics::Aurora::Model *_model;
+		Graphics::Aurora::Text  *_text;
+
+		Graphics::Aurora::FontHandle _font;
+
+		bool hasModel() const;
+		bool hasText () const;
+
+		void setModel(Graphics::Aurora::Model *model);
+		void setText(const Common::UString &font, const Common::UString &text);
+
+		Graphics::Aurora::Model &getModel();
+		Graphics::Aurora::Text  &getText();
+
+		friend class GUI;
+	};
+
 	GUI(const ModelLoader &modelLoader, Common::SeekableReadStream &gui);
 	~GUI();
 
 	void show();
+	void hide();
 
-	void setWidgetState(const Common::UString &widgetTag, const Common::UString &state);
+	Widget &getWidget(const Common::UString &tag);
 
 private:
-	/** A widget within the GUI. */
-	struct Widget {
-		Object *object;
+	typedef std::map<Common::UString, Widget> WidgetMap;
 
-		Graphics::Aurora::Model *model;
-		Graphics::Aurora::Text  *text;
-
-		Graphics::Aurora::FontHandle font;
-
-		Widget(Object &obj);
-	};
-
-	std::list<Widget> _widgets;
+	WidgetMap _widgets;
 
 	void load(const ModelLoader &modelLoader);
 };

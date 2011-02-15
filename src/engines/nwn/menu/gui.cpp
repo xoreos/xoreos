@@ -16,7 +16,6 @@
 #include "engines/nwn/util.h"
 
 #include "common/error.h"
-#include "common/ustring.h"
 #include "common/stream.h"
 
 #include "aurora/resman.h"
@@ -29,7 +28,109 @@ namespace Engines {
 
 namespace NWN {
 
-GUI::Widget::Widget(Object &obj) : object(&obj), model(0), text(0) {
+GUI::Widget::Widget(Object &obj) : _object(&obj), _disabled(0), _model(0), _text(0) {
+}
+
+GUI::Widget::~Widget() {
+	ModelLoader::free(_model);
+
+	delete _text;
+}
+
+bool GUI::Widget::isDisabled() const {
+	return _disabled;
+}
+
+bool GUI::Widget::hasModel() const {
+	return _model != 0;
+}
+
+bool GUI::Widget::hasText() const {
+	return _text != 0;
+}
+
+void GUI::Widget::show() {
+	if (_model)
+		_model->show();
+	if (_text)
+		_text->show();
+}
+
+void GUI::Widget::hide() {
+	if (_model)
+		_model->hide();
+	if (_text)
+		_text->hide();
+}
+
+void GUI::Widget::setNormal() {
+	if (_disabled)
+		return;
+
+	if (_model)
+		_model->setState("");
+}
+
+void GUI::Widget::setHighlight() {
+	if (_disabled)
+		return;
+
+	if (_model)
+		_model->setState("hilite");
+}
+
+void GUI::Widget::setPressed() {
+	if (_disabled)
+		return;
+
+	if (_model)
+		_model->setState("down");
+}
+
+void GUI::Widget::disable() {
+	if (_disabled)
+		return;
+
+	_disabled = true;
+
+	if (_model)
+		_model->setState("disabled");
+	if (_text)
+		_text->setColor(0.6, 0.6, 0.6, 1.0);
+}
+
+void GUI::Widget::enable() {
+	if (!_disabled)
+		return;
+
+	_disabled = false;
+
+	if (_model)
+		_model->setState("");
+	if (_text)
+		_text->unsetColor();
+}
+
+Graphics::Aurora::Model &GUI::Widget::getModel() {
+	assert(_model);
+
+	return *_model;
+}
+
+Graphics::Aurora::Text &GUI::Widget::getText() {
+	assert(_text);
+
+	return *_text;
+}
+
+void GUI::Widget::setModel(Graphics::Aurora::Model *model) {
+	_model = model;
+}
+
+void GUI::Widget::setText(const Common::UString &font, const Common::UString &text) {
+	_font = FontMan.get(font);
+
+	_text = new Graphics::Aurora::Text(_font, text);
 }
 
 
@@ -38,65 +139,61 @@ GUI::GUI(const ModelLoader &modelLoader, Common::SeekableReadStream &gui) : Auro
 }
 
 GUI::~GUI() {
-	for (std::list<Widget>::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
-		ModelLoader::free(widget->model);
-
-		delete widget->text;
-	}
 }
 
 void GUI::load(const ModelLoader &modelLoader) {
 	for (std::list<Object>::iterator object = _objects.begin(); object != _objects.end(); ++object) {
-		Widget widget(*object);
+		std::pair<WidgetMap::iterator, bool> result =
+			_widgets.insert(std::make_pair(object->tag, Widget(*object)));
+
+		if (!result.second)
+			throw Common::Exception("Could not create widget \"%s\"", object->tag.c_str());
+
+		Widget &widget = result.first->second;
 
 		if (!object->resRef.empty()) {
-			widget.model = modelLoader.loadGUI(object->resRef);
+			widget.setModel(modelLoader.loadGUI(object->resRef));
 
-			widget.model->setTag(object->tag);
-			widget.model->setPosition(object->x, object->y, object->z);
+			widget.getModel().setTag(object->tag);
+			widget.getModel().setPosition(object->x, object->y, object->z);
 		}
 
 		if (!object->caption.font.empty() && (object->caption.strRef != 0xFFFFFFFF)) {
-			widget.font = FontMan.get(object->caption.font);
+			const Common::UString &text = TalkMan.getString(object->caption.strRef);
+
+			widget.setText(object->caption.font, text);
 
 			float cX = 0.0, cY = 0.0;
-			if (widget.model) {
-				cX = widget.model->getWidth()  * object->caption.alignV;
-				cY = widget.model->getHeight() * object->caption.alignH;
+			if (widget.hasModel()) {
+				cX = widget.getModel().getWidth () * object->caption.alignV;
+				cY = widget.getModel().getHeight() * object->caption.alignH;
 			}
 
-			const Common::UString &str = TalkMan.getString(object->caption.strRef);
-			widget.text = new Graphics::Aurora::Text(widget.font, str);
+			cX -= widget.getText().getWidth () / 2;
+			cY -= widget.getText().getHeight() / 2;
 
-			cX -= widget.text->getWidth () / 2;
-			cY -= widget.text->getHeight() / 2;
-
-			widget.text->setPosition(object->x + cX, object->y + cY);
+			widget.getText().setPosition(object->x + cX, object->y + cY);
 		}
-
-		_widgets.push_back(widget);
 	}
 }
 
 void GUI::show() {
-	for (std::list<Widget>::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
-		if (widget->model)
-			widget->model->show();
-
-		if (widget->text)
-			widget->text->show();
-	}
+	for (WidgetMap::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
+		widget->second.show();
 }
 
-void GUI::setWidgetState(const Common::UString &widgetTag, const Common::UString &state) {
-	for (std::list<Widget>::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
-		if (widget->object->tag == widgetTag) {
-			if (widget->model)
-				widget->model->setState(state);
-			break;
-		}
-	}
+void GUI::hide() {
+	for (WidgetMap::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
+		widget->second.hide();
 }
+
+GUI::Widget &GUI::getWidget(const Common::UString &tag) {
+	WidgetMap::iterator widget = _widgets.find(tag);
+	assert(widget != _widgets.end());
+
+	return widget->second;
+}
+
 
 GUI *loadGUI(const ModelLoader &modelLoader, const Common::UString &resref) {
 	Common::SeekableReadStream *guiFile = ResMan.getResource(resref, Aurora::kFileTypeGUI);

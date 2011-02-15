@@ -43,6 +43,14 @@ private:
 	Graphics::Aurora::Model *_xp2;
 
 	bool isButton(const Common::UString &tag);
+	bool isButtonDisabled(const Common::UString &tag);
+
+	void setButtonNormal(const Common::UString &tag);
+	void setButtonHighlight(const Common::UString &tag);
+	void setButtonPressed(const Common::UString &tag);
+
+	void disableButton(const Common::UString &tag);
+	void enableButton(const Common::UString &tag);
 
 	void mouseMove(int x, int y, uint8 state, Common::UString &cursorTag);
 
