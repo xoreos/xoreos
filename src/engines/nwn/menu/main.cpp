@@ -12,24 +12,32 @@
  *  The main menu.
  */
 
-#include "common/util.h"
-
 #include "engines/nwn/menu/main.h"
-#include "engines/nwn/menu/gui.h"
+#include "engines/nwn/menu/movies.h"
 
 #include "events/events.h"
 
-#include "graphics/graphics.h"
-
-#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/model.h"
 
 namespace Engines {
 
 namespace NWN {
 
-MainMenu::MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2) : _gui(0), _xp1(0), _xp2(0) {
-	_gui = loadGUI(modelLoader, "pre_main");
+static const uint kButtonNew     = 1;
+static const uint kButtonLoad    = 2;
+static const uint kButtonMulti   = 3;
+static const uint kButtonMovies  = 4;
+static const uint kButtonOptions = 5;
+static const uint kButtonExit    = 6;
+static const uint kButtonMAX     = 7;
+
+static const char *kButtonTags[] = {
+	"NONE"        , "NewButton"    , "LoadButton", "MultiButton",
+	"MoviesButton", "OptionsButton", "ExitButton"
+};
+
+MainMenu::MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2, bool xp3) :
+	Menu(modelLoader, "pre_main"), _xp1(0), _xp2(0) {
 
 	if (xp1) {
 		_xp1 = modelLoader.loadGUI("ctl_xp1_text");
@@ -41,182 +49,77 @@ MainMenu::MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2) : _gui(0)
 		_xp2->setPosition(1.24, -1.47, 0.50);
 	}
 
-	disableButton("NewButton");
-	disableButton("LoadButton");
-	disableButton("MultiButton");
-	disableButton("MoviesButton");
-	disableButton("OptionsButton");
+	for (uint i = 1; i < kButtonMAX; i++)
+		addButton(kButtonTags[i], i);
+
+	disableButton(kButtonNew);
+	disableButton(kButtonLoad);
+	disableButton(kButtonMulti);
+	disableButton(kButtonOptions);
+
+	_movies = new MoviesMenu(modelLoader, xp1, xp2, xp3);
 }
 
 MainMenu::~MainMenu() {
-	delete _gui;
+	delete _movies;
 
 	ModelLoader::free(_xp1);
 	ModelLoader::free(_xp2);
 }
 
-void MainMenu::show() {
-	_gui->show();
-
+void MainMenu::showModels() {
 	if (_xp1)
 		_xp1->show();
 	if (_xp2)
 		_xp2->show();
 }
 
-void MainMenu::handle() {
-	Common::UString cursorTag;
-
-	while (!EventMan.quitRequested()) {
-
-		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if      (event.type == Events::kEventMouseMove)
-				mouseMove(event, cursorTag);
-			else if (event.type == Events::kEventMouseDown)
-				mouseDown(event, cursorTag);
-			else if (event.type == Events::kEventMouseUp)
-				mouseUp(event, cursorTag);
-		}
-
-		if (!EventMan.quitRequested())
-			EventMan.delay(10);
-	}
-
+void MainMenu::hideModels() {
+	if (_xp1)
+		_xp1->hide();
+	if (_xp2)
+		_xp2->hide();
 }
 
-bool MainMenu::isButton(const Common::UString &tag) {
-	if (tag == "NewButton")
-		return true;
-	if (tag == "LoadButton")
-		return true;
-	if (tag == "MultiButton")
-		return true;
-	if (tag == "MoviesButton")
-		return true;
-	if (tag == "OptionsButton")
-		return true;
-	if (tag == "ExitButton")
-		return true;
+void MainMenu::show() {
+	Menu::show();
 
-	return false;
+	showModels();
 }
 
-bool MainMenu::isButtonDisabled(const Common::UString &tag) {
-	if (!isButton(tag))
-		return false;
+void MainMenu::hide() {
+	Menu::hide();
 
-	return _gui->getWidget(tag).isDisabled();
+	hideModels();
 }
 
-void MainMenu::setButtonNormal(const Common::UString &tag) {
-	if (!isButton(tag))
-		return;
+void MainMenu::mouseUp(Events::Event &event) {
+	Menu::mouseUp(event);
 
-	_gui->getWidget(tag).setNormal();
-}
-
-void MainMenu::setButtonHighlight(const Common::UString &tag) {
-	if (!isButton(tag))
-		return;
-
-	_gui->getWidget(tag).setHighlight();
-}
-
-void MainMenu::setButtonPressed(const Common::UString &tag) {
-	if (!isButton(tag))
-		return;
-
-	GUI::Widget &button = _gui->getWidget(tag);
-	if (!button.isDisabled()) {
-		playSound("gui_button", Sound::kSoundTypeSFX);
-		button.setPressed();
-	}
-}
-
-void MainMenu::disableButton(const Common::UString &tag) {
-	if (!isButton(tag))
-		return;
-
-	_gui->getWidget(tag).disable();
-}
-
-void MainMenu::enableButton(const Common::UString &tag) {
-	if (!isButton(tag))
-		return;
-
-	_gui->getWidget(tag).enable();
-}
-
-void MainMenu::mouseMove(Events::Event &event, Common::UString &cursorTag) {
-	if (event.motion.state != 0)
-		// Ignore move events when a mouse button is pressed
-		return;
-
-	const Common::UString &tag = GfxMan.getObjectAt(event.motion.x, event.motion.y);
-	if (tag == cursorTag)
-		// Nothing changed, nothing to do
-		return;
-
-	// Unhighlight the button we leave
-	setButtonNormal(cursorTag);
-	// Highlight the button we leave
-	setButtonHighlight(tag);
-
-	cursorTag = tag;
-}
-
-void MainMenu::mouseMove(int x, int y, uint8 state, Common::UString &cursorTag) {
-	Events::Event event;
-
-	event.motion.state = state;
-	event.button.x     = x;
-	event.button.y     = y;
-
-	mouseMove(event, cursorTag);
-}
-
-void MainMenu::mouseDown(Events::Event &event, Common::UString &cursorTag) {
-	if (event.button.button != SDL_BUTTON_LMASK)
-		// We only care about left mouse button presses
-		return;
-
-	const Common::UString &tag = GfxMan.getObjectAt(event.button.x, event.button.y);
-
-	setButtonPressed(tag);
-
-	cursorTag = tag;
-}
-
-void MainMenu::mouseUp(Events::Event &event, Common::UString &cursorTag) {
-	if (event.button.button != SDL_BUTTON_LMASK)
-		// We only care about left mouse button presses
-		return;
-
-	const Common::UString &tag = GfxMan.getObjectAt(event.button.x, event.button.y);
-	if (cursorTag != tag) {
-		// We pressed and released the mouse on differents object => Just signal a move
-		mouseMove(event.button.x, event.button.y, 0, cursorTag);
-		return;
-	}
-
-	if (isButtonDisabled(tag))
-		return;
-
-	if        (tag == "NewButton") {
-		enableButton("ExitButton");
-	} else if (tag == "LoadButton") {
-	} else if (tag == "MultiButton") {
-	} else if (tag == "MoviesButton") {
-	} else if (tag == "OptionsButton") {
-	} else if (tag == "ExitButton") {
+	if        (_currentButton == kButtonNew) {
+	} else if (_currentButton == kButtonLoad) {
+	} else if (_currentButton == kButtonMulti) {
+	} else if (_currentButton == kButtonMovies) {
+		subMenu(*_movies);
+	} else if (_currentButton == kButtonOptions) {
+	} else if (_currentButton == kButtonExit) {
 		EventMan.requestQuit();
 		return;
 	}
 
-	setButtonHighlight(tag);
+	updateMouse();
+}
 
-	cursorTag = tag;
+void MainMenu::subMenu(Menu &menu) {
+	hideModels();
+	hideButtons();
+
+	menu.show();
+	menu.handle();
+	menu.hide();
+
+	showButtons();
+	showModels();
 }
 
 } // End of namespace NWN

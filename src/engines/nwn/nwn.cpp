@@ -130,7 +130,7 @@ void NWNEngine::run(const Common::UString &target) {
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
 	Legal    *legal    = new Legal(*_modelLoader);
-	MainMenu *mainMenu = new MainMenu(*_modelLoader, _hasXP1, _hasXP2);
+	MainMenu *mainMenu = new MainMenu(*_modelLoader, _hasXP1, _hasXP2, _hasXP3);
 
 	// Fade in the legal billboard
 	legal->fadeIn();

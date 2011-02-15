@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/main.h
- *  The main menu.
+/** @file engines/nwn/menu/basemovies.h
+ *  The base game movies menu.
  */
 
-#ifndef ENGINES_NWN_MENU_MAIN_H
-#define ENGINES_NWN_MENU_MAIN_H
+#ifndef ENGINES_NWN_MENU_BASEMOVIES_H
+#define ENGINES_NWN_MENU_BASEMOVIES_H
 
 #include "events/types.h"
 
@@ -23,33 +23,24 @@ namespace Engines {
 
 namespace NWN {
 
-class MoviesMenu;
-
-/** The NWN main menu. */
-class MainMenu : public Menu {
+/** The NWN base game movies menu. */
+class BaseMoviesMenu : public Menu {
 public:
-	MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2, bool xp3);
-	~MainMenu();
+	BaseMoviesMenu(const ModelLoader &modelLoader);
+	~BaseMoviesMenu();
 
 	void show();
-	void hide();
 
 private:
-	Graphics::Aurora::Model *_xp1;
-	Graphics::Aurora::Model *_xp2;
-
-	MoviesMenu *_movies;
-
-	void showModels();
-	void hideModels();
+	bool _close;
 
 	void mouseUp(Events::Event &event);
 
-	void subMenu(Menu &menu);
+	bool handleCallBack();
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_MAIN_H
+#endif // ENGINES_NWN_MENU_BASEMOVIES_H
