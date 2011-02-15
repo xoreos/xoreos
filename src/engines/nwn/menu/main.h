@@ -44,8 +44,6 @@ private:
 	void hideModels();
 
 	void mouseUp(Events::Event &event);
-
-	void subMenu(Menu &menu);
 };
 
 } // End of namespace NWN

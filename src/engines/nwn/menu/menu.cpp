@@ -237,13 +237,13 @@ bool Menu::handleCallBack() {
 }
 
 void Menu::subMenu(Menu &menu) {
-	hideButtons();
-
 	menu.show();
-	menu.handle();
-	menu.hide();
+	hide();
 
-	showButtons();
+	menu.handle();
+
+	show();
+	menu.hide();
 }
 
 } // End of namespace NWN

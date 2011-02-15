@@ -110,18 +110,6 @@ void MainMenu::mouseUp(Events::Event &event) {
 	updateMouse();
 }
 
-void MainMenu::subMenu(Menu &menu) {
-	hideModels();
-	hideButtons();
-
-	menu.show();
-	menu.handle();
-	menu.hide();
-
-	showButtons();
-	showModels();
-}
-
 } // End of namespace NWN
 
 } // End of namespace Engines
