@@ -29,14 +29,12 @@ namespace Common {
 
 namespace Engines {
 
-class ModelLoader;
-
 namespace KotOR {
 
 /** A KotOR creature. */
 class Creature : public ModelObject {
 public:
-	Creature(const ModelLoader &modelLoader);
+	Creature();
 	~Creature();
 
 	void load(const Common::UString &name);

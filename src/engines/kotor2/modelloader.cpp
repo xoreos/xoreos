@@ -8,26 +8,26 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/kotor/util.cpp
- *  Utility functions.
+/** @file engines/kotor2/modelloader.cpp
+ *  KotOR2 model loader.
  */
 
-#include "engines/kotor/util.h"
-
 #include "common/error.h"
-#include "common/ustring.h"
 #include "common/stream.h"
 
+#include "aurora/types.h"
 #include "aurora/resman.h"
 
 #include "graphics/aurora/model_kotor.h"
 
+#include "engines/kotor2/modelloader.h"
+
 namespace Engines {
 
-namespace KotOR {
+namespace KotOR2 {
 
-Graphics::Aurora::Model *KotORModelLoader::operator()(const Common::UString &resref,
-	Graphics::Aurora::ModelType type, const Common::UString &texture) const {
+Graphics::Aurora::Model *KotOR2ModelLoader::load(const Common::UString &resref,
+		Graphics::Aurora::ModelType type, const Common::UString &texture) {
 
 	Common::SeekableReadStream *mdl = 0, *mdx = 0;
 	Graphics::Aurora::Model *model = 0;
@@ -38,7 +38,7 @@ Graphics::Aurora::Model *KotORModelLoader::operator()(const Common::UString &res
 		if (!(mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX)))
 			throw Common::Exception("No such MDX");
 
-		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, false, type, texture);
+		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, true, type, texture);
 
 	} catch (...) {
 		delete mdl;
@@ -50,6 +50,6 @@ Graphics::Aurora::Model *KotORModelLoader::operator()(const Common::UString &res
 	return model;
 }
 
-} // End of namespace KotOR
+} // End of namespace KotOR2
 
 } // End of namespace Engines

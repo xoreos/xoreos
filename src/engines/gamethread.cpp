@@ -16,7 +16,7 @@
 #include "common/error.h"
 #include "common/configman.h"
 
-#include "aurora/util.h"
+#include "../aurora/util.h"
 
 #include "engines/gamethread.h"
 #include "engines/enginemanager.h"

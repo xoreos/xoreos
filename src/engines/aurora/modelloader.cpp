@@ -8,34 +8,19 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/legal.h
- *  The legal billboard.
+/** @file engines/aurora/modelloader.cpp
+ *  An abstract Aurora model loader.
  */
 
-#ifndef ENGINES_NWN_MENU_LEGAL_H
-#define ENGINES_NWN_MENU_LEGAL_H
+#include "graphics/aurora/model.h"
 
-#include "graphics/aurora/types.h"
+#include "engines/aurora/modelloader.h"
 
 namespace Engines {
 
-namespace NWN {
-
-/** The NWN legal billboard. */
-class Legal {
-public:
-	Legal();
-	~Legal();
-
-	void fadeIn();
-	void show();
-
-private:
-	Graphics::Aurora::Model *_billboard;
-};
-
-} // End of namespace NWN
+void ModelLoader::free(Graphics::Aurora::Model *&model) {
+	delete model;
+	model = 0;
+}
 
 } // End of namespace Engines
-
-#endif // ENGINES_NWN_MENU_LEGAL_H

@@ -8,14 +8,14 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/util.h
- *  Utility functions for Neverwinter Nights.
+/** @file engines/nwn/modelloader.h
+ *  NWN model loader.
  */
 
-#ifndef ENGINES_NWN_UTIL_H
-#define ENGINES_NWN_UTIL_H
+#ifndef ENGINES_NWN_MODELLOADER_H
+#define ENGINES_NWN_MODELLOADER_H
 
-#include "engines/util.h"
+#include "engines/aurora/modelloader.h"
 
 namespace Engines {
 
@@ -23,13 +23,12 @@ namespace NWN {
 
 class NWNModelLoader : public ModelLoader {
 public:
-	Graphics::Aurora::Model *operator()(const Common::UString &resref,
-			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject,
-			const Common::UString &texture = "") const;
+	Graphics::Aurora::Model *load(const Common::UString &resref,
+			Graphics::Aurora::ModelType type, const Common::UString &texture);
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_UTIL_H
+#endif // ENGINES_NWN_MODELLOADER_H

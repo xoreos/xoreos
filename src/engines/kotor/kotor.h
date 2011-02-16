@@ -22,15 +22,11 @@
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
-#include "graphics/aurora/types.h"
-
 namespace Common {
 	class FileList;
 }
 
 namespace Engines {
-
-class ModelLoader;
 
 namespace KotOR {
 
@@ -77,8 +73,6 @@ public:
 private:
 	Common::UString _baseDirectory;
 	Aurora::Platform _platform;
-
-	ModelLoader *_modelLoader;
 
 	void init();
 	void initCursors();

@@ -8,20 +8,18 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/util.h
+/** @file engines/aurora/util.h
  *  Generic Aurora engines utility functions.
  */
 
-#ifndef ENGINES_UTIL_H
-#define ENGINES_UTIL_H
+#ifndef ENGINES_AURORA_UTIL_H
+#define ENGINES_AURORA_UTIL_H
 
 #include "common/ustring.h"
 
 #include "aurora/types.h"
 
 #include "sound/types.h"
-
-#include "graphics/aurora/types.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -52,19 +50,6 @@ bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileN
 /** Debug method to quickly dump a resource to disk. */
 bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::UString file = "");
 
-/** Functor for loading models. */
-class ModelLoader {
-public:
-	virtual Graphics::Aurora::Model *operator()(const Common::UString &resref,
-			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject,
-			const Common::UString &texture = "") const = 0;
-
-	Graphics::Aurora::Model *loadObject(const Common::UString &resref, const Common::UString &texture = "") const;
-	Graphics::Aurora::Model *loadGUI   (const Common::UString &resref) const;
-
-	static void free(Graphics::Aurora::Model *&model);
-};
-
 } // End of namespace Engines
 
-#endif // ENGINES_UTIL_H
+#endif // ENGINES_AURORA_UTIL_H

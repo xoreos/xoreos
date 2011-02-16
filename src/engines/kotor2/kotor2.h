@@ -30,8 +30,6 @@ namespace Common {
 
 namespace Engines {
 
-class ModelLoader;
-
 namespace KotOR2 {
 
 class KotOR2EngineProbe : public Engines::EngineProbe {
@@ -62,8 +60,6 @@ public:
 
 private:
 	Common::UString _baseDirectory;
-
-	ModelLoader *_modelLoader;
 
 	void init();
 };

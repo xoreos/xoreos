@@ -23,7 +23,7 @@ namespace KotOR2 {
 
 class Module : public Engines::KotOR::Module {
 public:
-	Module(const ModelLoader &modelLoader);
+	Module();
 	~Module();
 
 protected:

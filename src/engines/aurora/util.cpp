@@ -8,11 +8,11 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/util.cpp
+/** @file engines/aurora/util.cpp
  *  Generic Aurora engines utility functions.
  */
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
 
 #include "common/error.h"
 #include "common/stream.h"
@@ -26,9 +26,9 @@
 #include "graphics/aurora/videoplayer.h"
 #include "graphics/aurora/model.h"
 
-#include "aurora/util.h"
-#include "aurora/resman.h"
-#include "aurora/gfffile.h"
+#include "../../aurora/util.h"
+#include "../../aurora/resman.h"
+#include "../../aurora/gfffile.h"
 
 namespace Engines {
 
@@ -152,24 +152,6 @@ bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::US
 	delete res;
 
 	return success;
-}
-
-Graphics::Aurora::Model *ModelLoader::loadObject(const Common::UString &resref, const Common::UString &texture) const {
-	return (*this)(resref, Graphics::Aurora::kModelTypeObject, texture);
-}
-
-Graphics::Aurora::Model *ModelLoader::loadGUI(const Common::UString &resref) const {
-	return (*this)(resref, Graphics::Aurora::kModelTypeGUIFront);
-}
-
-void ModelLoader::free(Graphics::Aurora::Model *&model) {
-	if (!model)
-		return;
-
-	model->hide();
-	delete model;
-
-	model = 0;
 }
 
 } // End of namespace Engines

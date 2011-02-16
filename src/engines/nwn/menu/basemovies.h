@@ -26,7 +26,7 @@ namespace NWN {
 /** The NWN base game movies menu. */
 class BaseMoviesMenu : public Menu {
 public:
-	BaseMoviesMenu(const ModelLoader &modelLoader);
+	BaseMoviesMenu();
 	~BaseMoviesMenu();
 
 	void show();

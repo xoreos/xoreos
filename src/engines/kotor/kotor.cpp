@@ -13,19 +13,17 @@
  */
 
 #include "engines/kotor/kotor.h"
-#include "engines/kotor/util.h"
+#include "engines/kotor/modelloader.h"
 #include "engines/kotor/module.h"
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "common/util.h"
-#include "common/strutil.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
 #include "common/stream.h"
 #include "common/configman.h"
-
-#include "graphics/graphics.h"
 
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
@@ -72,18 +70,17 @@ bool KotOREngineProbeMac::probe(const Common::UString &directory, const Common::
 
 
 KotOREngine::KotOREngine(Aurora::Platform platform) : _platform(platform) {
-	_modelLoader = new KotORModelLoader;
 }
 
 KotOREngine::~KotOREngine() {
-	delete _modelLoader;
 }
 
 void KotOREngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
+	if (_platform == Aurora::kPlatformMacOSX)
+		initCursors();
 
 	status("Successfully initialized the engine");
 
@@ -98,18 +95,11 @@ void KotOREngine::run(const Common::UString &target) {
 
 	playVideo("01a");
 
-	Sound::ChannelHandle channel;
-
-	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "nm35aahhkd07134_");
-	if (wav) {
-		channel = SoundMan.playSoundFile(wav, Sound::kSoundTypeVoice);
-
-		SoundMan.startChannel(channel);
-	}
+	playSound("nm35aahhkd07134_", Sound::kSoundTypeVoice);
 
 	// Test load up the Taris cantina
 
-	Module *tarisCantina = new Module(*_modelLoader);
+	Module *tarisCantina = new Module;
 
 	tarisCantina->load("tar_m03ae");
 	tarisCantina->enter();
@@ -126,8 +116,9 @@ void KotOREngine::run(const Common::UString &target) {
 
 	status("Entering event loop");
 
-	// Show a cursor
-	CursorMan.set("default", false);
+	if (_platform == Aurora::kPlatformMacOSX)
+		// Show a cursor
+		CursorMan.set("default", false);
 
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
@@ -230,6 +221,8 @@ void KotOREngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 40);
+
+	registerModelLoader(new KotORModelLoader);
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }

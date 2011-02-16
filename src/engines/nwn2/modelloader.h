@@ -8,28 +8,27 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/kotor2/util.h
- *  Utility functions.
+/** @file engines/nwn2/modelloader.h
+ *  NWN2 model loader.
  */
 
-#ifndef ENGINES_KOTOR2_UTIL_H
-#define ENGINES_KOTOR2_UTIL_H
+#ifndef ENGINES_NWN2_MODELLOADER_H
+#define ENGINES_NWN2_MODELLOADER_H
 
-#include "engines/util.h"
+#include "engines/aurora/modelloader.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace NWN2 {
 
-class KotOR2ModelLoader : public ModelLoader {
+class NWN2ModelLoader : public ModelLoader {
 public:
-	Graphics::Aurora::Model *operator()(const Common::UString &resref,
-			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject,
-			const Common::UString &texture = "") const;
+	Graphics::Aurora::Model *load(const Common::UString &resref,
+			Graphics::Aurora::ModelType type, const Common::UString &texture);
 };
 
-} // End of namespace KotOR2
+} // End of namespace NWN2
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_UTIL_H
+#endif // ENGINES_NWN2_MODELLOADER_H

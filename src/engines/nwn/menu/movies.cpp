@@ -33,11 +33,10 @@ static const char *kButtonTags[] = {
 	"NWNXP2Button", "NWNXP3Button", "CancelButton",
 };
 
-MoviesMenu::MoviesMenu(const ModelLoader &modelLoader, bool xp1, bool xp2, bool xp3) :
-	Menu(modelLoader, "pre_camp_movies") {
+MoviesMenu::MoviesMenu(bool xp1, bool xp2, bool xp3) : Menu("pre_camp_movies") {
 
 	addButton(kButtonTags[kButtonNWN], kButtonNWN);
-	_baseMovies = new BaseMoviesMenu(modelLoader);
+	_baseMovies = new BaseMoviesMenu;
 
 	if (xp1) {
 		// TODO: No GUI file? Hardcoded?

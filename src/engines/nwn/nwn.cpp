@@ -13,14 +13,14 @@
  */
 
 #include "engines/nwn/nwn.h"
-#include "engines/nwn/util.h"
+#include "engines/nwn/modelloader.h"
 #include "engines/nwn/menu/legal.h"
 #include "engines/nwn/menu/main.h"
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "common/util.h"
-#include "common/strutil.h"
 #include "common/filelist.h"
 #include "common/stream.h"
 #include "common/configman.h"
@@ -87,11 +87,9 @@ Engines::Engine *NWNEngineProbe::createEngine() const {
 
 
 NWNEngine::NWNEngine() {
-	_modelLoader = new NWNModelLoader;
 }
 
 NWNEngine::~NWNEngine() {
-	delete _modelLoader;
 }
 
 void NWNEngine::run(const Common::UString &target) {
@@ -129,8 +127,8 @@ void NWNEngine::run(const Common::UString &target) {
 	// Start sound
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
-	Legal    *legal    = new Legal(*_modelLoader);
-	MainMenu *mainMenu = new MainMenu(*_modelLoader, _hasXP1, _hasXP2, _hasXP3);
+	Legal    *legal    = new Legal;
+	MainMenu *mainMenu = new MainMenu(_hasXP1, _hasXP2, _hasXP3);
 
 	// Fade in the legal billboard
 	legal->fadeIn();
@@ -212,6 +210,8 @@ void NWNEngine::init() {
 
 	status("Loading main talk table");
 	TalkMan.addMainTable("dialog");
+
+	registerModelLoader(new NWNModelLoader);
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }

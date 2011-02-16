@@ -17,14 +17,12 @@
 
 namespace Engines {
 
-class ModelLoader;
-
 namespace KotOR {
 
 /** A KotOR model object. */
 class ModelObject {
 public:
-	ModelObject(const ModelLoader &modelLoader);
+	ModelObject();
 	virtual ~ModelObject();
 
 	virtual void show() = 0;
@@ -37,8 +35,6 @@ public:
 	virtual void turnWorld(float x, float y, float z);
 
 protected:
-	const ModelLoader *_modelLoader;
-
 	float _position[3];
 	float _bearing[3];
 

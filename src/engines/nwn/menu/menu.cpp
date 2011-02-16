@@ -17,16 +17,16 @@
 
 #include "events/events.h"
 
-#include "engines/util.h"
-
 #include "engines/nwn/menu/menu.h"
+
+#include "engines/aurora/util.h"
 
 namespace Engines {
 
 namespace NWN {
 
-Menu::Menu(const ModelLoader &modelLoader, const Common::UString &gui) : _currentButton(0) {
-	_gui = loadGUI(modelLoader, gui);
+Menu::Menu(const Common::UString &gui) : _currentButton(0) {
+	_gui = loadGUI(gui);
 }
 
 Menu::~Menu() {

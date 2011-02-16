@@ -8,28 +8,27 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/kotor/util.h
- *  Utility functions.
+/** @file engines/thewitcher/modelloader.h
+ *  The Witcher model loader.
  */
 
-#ifndef ENGINES_KOTOR_UTIL_H
-#define ENGINES_KOTOR_UTIL_H
+#ifndef ENGINES_THEWITCHER_MODELLOADER_H
+#define ENGINES_THEWITCHER_MODELLOADER_H
 
-#include "engines/util.h"
+#include "engines/aurora/modelloader.h"
 
 namespace Engines {
 
-namespace KotOR {
+namespace TheWitcher {
 
-class KotORModelLoader : public ModelLoader {
+class TheWitcherModelLoader : public ModelLoader {
 public:
-	Graphics::Aurora::Model *operator()(const Common::UString &resref,
-			Graphics::Aurora::ModelType type = Graphics::Aurora::kModelTypeObject,
-			const Common::UString &texture = "") const;
+	Graphics::Aurora::Model *load(const Common::UString &resref,
+			Graphics::Aurora::ModelType type, const Common::UString &texture);
 };
 
-} // End of namespace KotOR
+} // End of namespace TheWitcher
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_UTIL_H
+#endif // ENGINES_THEWITCHER_MODELLOADER_H

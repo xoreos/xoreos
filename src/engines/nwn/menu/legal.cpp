@@ -12,7 +12,11 @@
  *  The legal billboard.
  */
 
+#include "common/ustring.h"
+
 #include "engines/nwn/menu/legal.h"
+
+#include "engines/aurora/model.h"
 
 #include "events/events.h"
 
@@ -22,13 +26,13 @@ namespace Engines {
 
 namespace NWN {
 
-Legal::Legal(const ModelLoader &modelLoader) : _billboard(0) {
-	_billboard = modelLoader.loadGUI("load_legal");
+Legal::Legal() : _billboard(0) {
+	_billboard = loadModelGUI("load_legal");
 	_billboard->setPosition(0.0, 0.0, 10.0);
 }
 
 Legal::~Legal() {
-	ModelLoader::free(_billboard);
+	freeModel(_billboard);
 }
 
 void Legal::fadeIn() {
@@ -40,7 +44,7 @@ void Legal::fadeIn() {
 		while (EventMan.pollEvent(event)) {
 			// Mouse click => abort
 			if (event.type == Events::kEventMouseDown) {
-				ModelLoader::free(_billboard);
+				freeModel(_billboard);
 				return;
 			}
 		}
@@ -52,7 +56,7 @@ void Legal::fadeIn() {
 		EventMan.delay(10);
 	}
 
-	ModelLoader::free(_billboard);
+	freeModel(_billboard);
 }
 
 void Legal::show() {
@@ -82,7 +86,7 @@ void Legal::show() {
 			break;
 	}
 
-	ModelLoader::free(_billboard);
+	freeModel(_billboard);
 }
 
 } // End of namespace NWN

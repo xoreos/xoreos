@@ -28,7 +28,7 @@ class MoviesMenu;
 /** The NWN main menu. */
 class MainMenu : public Menu {
 public:
-	MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2, bool xp3);
+	MainMenu(bool xp1, bool xp2, bool xp3);
 	~MainMenu();
 
 	void show();

@@ -19,7 +19,8 @@
 #include "common/maths.h"
 #include "common/stream.h"
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "aurora/gfffile.h"
 
@@ -31,8 +32,8 @@ namespace Engines {
 
 namespace KotOR {
 
-Module::Module(const ModelLoader &modelLoader) : _modelLoader(&modelLoader),
-	_startX(0.0), _startY(0.0), _startZ(0.0), _startDirX(0.0), _startDirY(0.0), _area(0) {
+Module::Module() : _startX(0.0), _startY(0.0), _startZ(0.0),
+	_startDirX(0.0), _startDirY(0.0), _area(0) {
 
 	_orientation[0] = 0.0;
 	_orientation[1] = 0.0;
@@ -100,7 +101,7 @@ void Module::loadIFO(const Common::UString &name) {
 }
 
 void Module::loadArea() {
-	_area = new Area(*_modelLoader);
+	_area = new Area;
 
 	_area->load(_areaName);
 }

@@ -13,8 +13,10 @@
  */
 
 #include "engines/thewitcher/thewitcher.h"
+#include "engines/thewitcher/modelloader.h"
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "common/util.h"
 #include "common/filelist.h"
@@ -22,7 +24,7 @@
 #include "common/stream.h"
 
 #include "graphics/aurora/fontman.h"
-#include "graphics/aurora/model_witcher.h"
+#include "graphics/aurora/model.h"
 
 #include "sound/sound.h"
 
@@ -92,17 +94,9 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	playVideo("intro");
 	playVideo("title");
 
-	Sound::ChannelHandle channel;
+	playSound("m1_axem00020005", Sound::kSoundTypeVoice);
 
-	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "m1_axem00020005");
-	if (wav) {
-		status("Found a wav. Trying to play it. Turn up your speakers");
-		channel = SoundMan.playSoundFile(wav, Sound::kSoundTypeVoice);
-
-		SoundMan.startChannel(channel);
-	}
-
-	Graphics::Aurora::Model *model = loadModel("cm_naked3");
+	Graphics::Aurora::Model *model = loadModelObject("cm_naked3");
 
 	model->show();
 
@@ -150,25 +144,9 @@ void TheWitcherEngine::init() {
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 50);
 
+	registerModelLoader(new TheWitcherModelLoader);
+
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
-}
-
-Graphics::Aurora::Model *TheWitcherEngine::loadModel(const Common::UString &resref) {
-	Common::SeekableReadStream *mdb = ResMan.getResource(resref, Aurora::kFileTypeMDB);
-	if (!mdb)
-		throw Common::Exception("No such model");
-
-	Graphics::Aurora::Model *model = 0;
-	try {
-		model = new Graphics::Aurora::Model_Witcher(*mdb);
-	} catch (...) {
-		delete mdb;
-		delete model;
-		throw;
-	}
-
-	delete mdb;
-	return model;
 }
 
 } // End of namespace TheWitcher

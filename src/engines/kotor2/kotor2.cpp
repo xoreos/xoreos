@@ -13,13 +13,13 @@
  */
 
 #include "engines/kotor2/kotor2.h"
-#include "engines/kotor2/util.h"
+#include "engines/kotor2/modelloader.h"
 #include "engines/kotor2/module.h"
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "common/util.h"
-#include "common/strutil.h"
 #include "common/filelist.h"
 #include "common/stream.h"
 #include "common/configman.h"
@@ -67,11 +67,9 @@ Engines::Engine *KotOR2EngineProbe::createEngine() const {
 
 
 KotOR2Engine::KotOR2Engine() {
-	_modelLoader = new KotOR2ModelLoader;
 }
 
 KotOR2Engine::~KotOR2Engine() {
-	delete _modelLoader;
 }
 
 void KotOR2Engine::run(const Common::UString &target) {
@@ -87,18 +85,11 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	playVideo("permov01");
 
-	Sound::ChannelHandle channel;
-
-	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceSound, "298hk50mun003");
-	if (wav) {
-		channel = SoundMan.playSoundFile(wav, Sound::kSoundTypeVoice);
-
-		SoundMan.startChannel(channel);
-	}
+	playSound("298hk50mun003", Sound::kSoundTypeVoice);
 
 	// Test load up Nar Shaddaa
 
-	Module *narShaddaa = new Module(*_modelLoader);
+	Module *narShaddaa = new Module;
 
 	narShaddaa->load("301NAR");
 	narShaddaa->enter();
@@ -200,6 +191,8 @@ void KotOR2Engine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
+
+	registerModelLoader(new KotOR2ModelLoader);
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }

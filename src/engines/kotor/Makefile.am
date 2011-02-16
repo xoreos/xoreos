@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.common
 noinst_LTLIBRARIES = libkotor.la
 
 noinst_HEADERS = kotor.h \
-                 util.h \
+                 modelloader.h \
                  modelobject.h \
                  placeable.h \
                  creature.h \
@@ -11,7 +11,7 @@ noinst_HEADERS = kotor.h \
                  module.h
 
 libkotor_la_SOURCES = kotor.cpp \
-                      util.cpp \
+                      modelloader.cpp \
                       modelobject.cpp \
                       placeable.cpp \
                       creature.cpp \

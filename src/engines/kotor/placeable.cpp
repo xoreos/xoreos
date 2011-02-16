@@ -18,7 +18,8 @@
 #include "common/error.h"
 #include "common/ustring.h"
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
@@ -32,9 +33,7 @@ namespace Engines {
 
 namespace KotOR {
 
-Placeable::Placeable(const ModelLoader &modelLoader) : ModelObject(modelLoader),
-	_appearance(0xFFFFFFFF), _model(0) {
-
+Placeable::Placeable() : _appearance(0xFFFFFFFF), _model(0) {
 }
 
 Placeable::~Placeable() {
@@ -87,7 +86,7 @@ void Placeable::changedOrientation() {
 void Placeable::loadModel() {
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeables");
 
-	_model = _modelLoader->loadObject(twoda.getCellString(_appearance, "modelname"));
+	_model = loadModelObject(twoda.getCellString(_appearance, "modelname"));
 }
 
 } // End of namespace KotOR

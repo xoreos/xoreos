@@ -15,6 +15,8 @@
 #include "engines/nwn/menu/main.h"
 #include "engines/nwn/menu/movies.h"
 
+#include "engines/aurora/model.h"
+
 #include "events/events.h"
 
 #include "graphics/aurora/model.h"
@@ -36,16 +38,14 @@ static const char *kButtonTags[] = {
 	"MoviesButton", "OptionsButton", "ExitButton"
 };
 
-MainMenu::MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2, bool xp3) :
-	Menu(modelLoader, "pre_main"), _xp1(0), _xp2(0) {
-
+MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : Menu("pre_main"), _xp1(0), _xp2(0) {
 	if (xp1) {
-		_xp1 = modelLoader.loadGUI("ctl_xp1_text");
+		_xp1 = loadModelGUI("ctl_xp1_text");
 		_xp1->setPosition(1.24, 0.00, 0.50);
 	}
 
 	if (xp2) {
-		_xp2 = modelLoader.loadGUI("ctl_xp2_text");
+		_xp2 = loadModelGUI("ctl_xp2_text");
 		_xp2->setPosition(1.24, -1.47, 0.50);
 	}
 
@@ -57,14 +57,14 @@ MainMenu::MainMenu(const ModelLoader &modelLoader, bool xp1, bool xp2, bool xp3)
 	disableButton(kButtonMulti);
 	disableButton(kButtonOptions);
 
-	_movies = new MoviesMenu(modelLoader, xp1, xp2, xp3);
+	_movies = new MoviesMenu(xp1, xp2, xp3);
 }
 
 MainMenu::~MainMenu() {
 	delete _movies;
 
-	ModelLoader::free(_xp1);
-	ModelLoader::free(_xp2);
+	freeModel(_xp1);
+	freeModel(_xp2);
 }
 
 void MainMenu::showModels() {

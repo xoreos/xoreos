@@ -13,20 +13,17 @@
  */
 
 #include "engines/nwn2/nwn2.h"
+#include "engines/nwn2/modelloader.h"
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "common/util.h"
-#include "common/strutil.h"
 #include "common/filelist.h"
 #include "common/stream.h"
 
-#include "graphics/graphics.h"
-
-#include "graphics/aurora/cube.h"
-#include "graphics/aurora/font.h"
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/model_nwn2.h"
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/model.h"
 
 #include "sound/sound.h"
 
@@ -98,13 +95,12 @@ void NWN2Engine::run(const Common::UString &target) {
 		// Cutting off the long silence at the end of mus_mulsantir :P
 		wav = new Common::SeekableSubReadStream(wav, 0, 3545548, true);
 
-		status("Found a wav. Trying to play it. Turn up your speakers");
 		channel = SoundMan.playSoundFile(wav, Sound::kSoundTypeMusic, true);
 
 		SoundMan.startChannel(channel);
 	}
 
-	Graphics::Aurora::Model *model = loadModel("plc_br_mulsantirhouse05");
+	Graphics::Aurora::Model *model = loadModelObject("plc_br_mulsantirhouse05");
 
 	model->show();
 
@@ -206,25 +202,9 @@ void NWN2Engine::init() {
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 100);
 
+	registerModelLoader(new NWN2ModelLoader);
+
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
-}
-
-Graphics::Aurora::Model *NWN2Engine::loadModel(const Common::UString &resref) {
-	Common::SeekableReadStream *mdb = ResMan.getResource(resref, Aurora::kFileTypeMDB);
-	if (!mdb)
-		throw Common::Exception("No such model");
-
-	Graphics::Aurora::Model *model = 0;
-	try {
-		model = new Graphics::Aurora::Model_NWN2(*mdb);
-	} catch (...) {
-		delete mdb;
-		delete model;
-		throw;
-	}
-
-	delete mdb;
-	return model;
 }
 
 } // End of namespace NWN2

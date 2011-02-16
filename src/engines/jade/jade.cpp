@@ -14,7 +14,7 @@
 
 #include "engines/jade/jade.h"
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
 
 #include "common/util.h"
 #include "common/filelist.h"

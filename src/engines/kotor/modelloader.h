@@ -8,34 +8,27 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/legal.h
- *  The legal billboard.
+/** @file engines/kotor/modelloader.h
+ *  KotOR model loader.
  */
 
-#ifndef ENGINES_NWN_MENU_LEGAL_H
-#define ENGINES_NWN_MENU_LEGAL_H
+#ifndef ENGINES_KOTOR_MODELLOADER_H
+#define ENGINES_KOTOR_MODELLOADER_H
 
-#include "graphics/aurora/types.h"
+#include "engines/aurora/modelloader.h"
 
 namespace Engines {
 
-namespace NWN {
+namespace KotOR {
 
-/** The NWN legal billboard. */
-class Legal {
+class KotORModelLoader : public ModelLoader {
 public:
-	Legal();
-	~Legal();
-
-	void fadeIn();
-	void show();
-
-private:
-	Graphics::Aurora::Model *_billboard;
+	Graphics::Aurora::Model *load(const Common::UString &resref,
+			Graphics::Aurora::ModelType type, const Common::UString &texture);
 };
 
-} // End of namespace NWN
+} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_LEGAL_H
+#endif // ENGINES_KOTOR_MODELLOADER_H

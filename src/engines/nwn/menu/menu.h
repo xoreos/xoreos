@@ -26,14 +26,12 @@
 
 namespace Engines {
 
-class ModelLoader;
-
 namespace NWN {
 
 /** A menu in NWN. */
 class Menu {
 public:
-	Menu(const ModelLoader &modelLoader, const Common::UString &gui);
+	Menu(const Common::UString &gui);
 	~Menu();
 
 	virtual void show();

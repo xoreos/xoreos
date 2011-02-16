@@ -16,6 +16,8 @@
 
 #include "events/events.h"
 
+#include "engines/aurora/util.h"
+
 namespace Engines {
 
 namespace NWN {
@@ -35,8 +37,7 @@ static const char *kButtonTags[] = {
 	"Chpt4Button", "EndButton"    , "CreditsButton", "CloseButton",
 };
 
-BaseMoviesMenu::BaseMoviesMenu(const ModelLoader &modelLoader) :
-	Menu(modelLoader, "pre_movies") {
+BaseMoviesMenu::BaseMoviesMenu() : Menu("pre_movies") {
 
 	for (uint i = 1; i < kButtonMAX; i++)
 		addButton(kButtonTags[i], i);

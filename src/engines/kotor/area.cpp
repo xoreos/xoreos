@@ -22,12 +22,13 @@
 #include "common/maths.h"
 
 #include "engines/engine.h"
-#include "engines/util.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "aurora/resman.h"
 #include "aurora/util.h"
 
-#include "graphics/aurora/model_kotor.h"
+#include "graphics/aurora/model.h"
 
 static const uint32 kAREID = MKID_BE('ARE ');
 static const uint32 kGITID = MKID_BE('GIT ');
@@ -44,7 +45,7 @@ Area::Room::~Room() {
 }
 
 
-Area::Area(const ModelLoader &modelLoader) : _modelLoader(&modelLoader) {
+Area::Area() {
 }
 
 Area::~Area() {
@@ -162,7 +163,7 @@ void Area::loadPlaceable(Aurora::GFFFile::ListIterator &placeable) {
 
 	Placeable *place = 0;
 	try {
-		place = new Placeable(*_modelLoader);
+		place = new Placeable;
 
 		place->load(resref);
 		place->setPosition(x, y, z);
@@ -205,7 +206,7 @@ void Area::loadCreature(Aurora::GFFFile::ListIterator &creature) {
 
 	Creature *creat = 0;
 	try {
-		creat = new Creature(*_modelLoader);
+		creat = new Creature;
 
 		creat->load(resref);
 		creat->setPosition(x, y, z);
@@ -240,7 +241,7 @@ void Area::loadModels(const Common::UString &name) {
 		Room *room = new Room(lytRoom);
 
 		try {
-			room->model = _modelLoader->loadObject(lytRoom.model);
+			room->model = loadModelObject(lytRoom.model);
 		} catch (Common::Exception &e) {
 			delete room;
 			e.add("Can't load model \"%s\" for area \"%s\"", lytRoom.model.c_str(), name.c_str());

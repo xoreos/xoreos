@@ -22,8 +22,6 @@
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
-#include "graphics/aurora/types.h"
-
 namespace Common {
 	class FileList;
 }
@@ -62,8 +60,6 @@ private:
 	Common::UString _baseDirectory;
 
 	void init();
-
-	Graphics::Aurora::Model *loadModel(const Common::UString &resref);
 };
 
 } // End of namespace TheWitcher

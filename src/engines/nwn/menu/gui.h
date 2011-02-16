@@ -24,15 +24,11 @@
 #include "graphics/aurora/types.h"
 #include "graphics/aurora/fontman.h"
 
-#include "engines/nwn/util.h"
-
 namespace Common {
 	class SeekableReadStream;
 }
 
 namespace Engines {
-
-class ModelLoader;
 
 namespace NWN {
 
@@ -79,7 +75,7 @@ public:
 		friend class GUI;
 	};
 
-	GUI(const ModelLoader &modelLoader, Common::SeekableReadStream &gui);
+	GUI(Common::SeekableReadStream &gui);
 	~GUI();
 
 	void show();
@@ -92,10 +88,10 @@ private:
 
 	WidgetMap _widgets;
 
-	void load(const ModelLoader &modelLoader);
+	void load();
 };
 
-GUI *loadGUI(const ModelLoader &modelLoader, const Common::UString &resref);
+GUI *loadGUI(const Common::UString &resref);
 
 } // End of namespace NWN
 

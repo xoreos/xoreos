@@ -14,10 +14,9 @@
 
 #include "engines/sonic/sonic.h"
 
-#include "engines/util.h"
+#include "engines/aurora/util.h"
 
 #include "common/util.h"
-#include "common/strutil.h"
 #include "common/filelist.h"
 #include "common/stream.h"
 

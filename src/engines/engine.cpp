@@ -13,9 +13,7 @@
  */
 
 #include "engines/engine.h"
-#include "engines/util.h"
 
-#include "common/util.h"
 #include "common/error.h"
 #include "common/ustring.h"
 #include "common/stream.h"

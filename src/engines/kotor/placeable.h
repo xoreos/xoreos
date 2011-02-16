@@ -27,14 +27,12 @@ namespace Common {
 
 namespace Engines {
 
-class ModelLoader;
-
 namespace KotOR {
 
 /** A KotOR placeable. */
 class Placeable : public ModelObject {
 public:
-	Placeable(const ModelLoader &modelLoader);
+	Placeable();
 	~Placeable();
 
 	void load(const Common::UString &name);

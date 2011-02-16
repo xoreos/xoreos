@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.common
 noinst_LTLIBRARIES = libnwn.la
 
 noinst_HEADERS = nwn.h \
-                 util.h \
+                 modelloader.h \
                  menu/gui.h \
                  menu/legal.h \
                  menu/menu.h \
@@ -12,7 +12,7 @@ noinst_HEADERS = nwn.h \
                  menu/basemovies.h
 
 libnwn_la_SOURCES = nwn.cpp \
-                    util.cpp \
+                    modelloader.cpp \
                     menu/gui.cpp \
                     menu/legal.cpp \
                     menu/menu.cpp \

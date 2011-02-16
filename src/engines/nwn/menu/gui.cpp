@@ -13,7 +13,8 @@
  */
 
 #include "engines/nwn/menu/gui.h"
-#include "engines/nwn/util.h"
+
+#include "engines/aurora/model.h"
 
 #include "common/error.h"
 #include "common/stream.h"
@@ -32,7 +33,7 @@ GUI::Widget::Widget(Object &obj) : _object(&obj), _disabled(0), _model(0), _text
 }
 
 GUI::Widget::~Widget() {
-	ModelLoader::free(_model);
+	freeModel(_model);
 
 	delete _text;
 }
@@ -134,14 +135,14 @@ void GUI::Widget::setText(const Common::UString &font, const Common::UString &te
 }
 
 
-GUI::GUI(const ModelLoader &modelLoader, Common::SeekableReadStream &gui) : Aurora::GUIFile(gui) {
-	load(modelLoader);
+GUI::GUI(Common::SeekableReadStream &gui) : Aurora::GUIFile(gui) {
+	load();
 }
 
 GUI::~GUI() {
 }
 
-void GUI::load(const ModelLoader &modelLoader) {
+void GUI::load() {
 	for (std::list<Object>::iterator object = _objects.begin(); object != _objects.end(); ++object) {
 		std::pair<WidgetMap::iterator, bool> result =
 			_widgets.insert(std::make_pair(object->tag, Widget(*object)));
@@ -152,7 +153,7 @@ void GUI::load(const ModelLoader &modelLoader) {
 		Widget &widget = result.first->second;
 
 		if (!object->resRef.empty()) {
-			widget.setModel(modelLoader.loadGUI(object->resRef));
+			widget.setModel(loadModelGUI(object->resRef));
 
 			widget.getModel().setTag(object->tag);
 			widget.getModel().setPosition(object->x, object->y, object->z);
@@ -198,14 +199,14 @@ GUI::Widget &GUI::getWidget(const Common::UString &tag) {
 }
 
 
-GUI *loadGUI(const ModelLoader &modelLoader, const Common::UString &resref) {
+GUI *loadGUI(const Common::UString &resref) {
 	Common::SeekableReadStream *guiFile = ResMan.getResource(resref, Aurora::kFileTypeGUI);
 	if (!guiFile)
 		throw Common::Exception("Could not load GUI \"%s\"", resref.c_str());
 
 	GUI *gui = 0;
 	try {
-		gui = new GUI(modelLoader, *guiFile);
+		gui = new GUI(*guiFile);
 	} catch (...) {
 		delete guiFile;
 		throw;

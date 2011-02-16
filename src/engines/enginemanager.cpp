@@ -31,6 +31,8 @@
 #include "engines/enginemanager.h"
 #include "engines/engineprobe.h"
 
+#include "engines/aurora/model.h"
+
 // The engines
 #include "engines/nwn/nwn.h"
 #include "engines/nwn2/nwn2.h"
@@ -153,6 +155,8 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target, Au
 
 void EngineManager::cleanup() const {
 	try {
+		unregisterModelLoader();
+
 		ResMan.clear();
 		CursorMan.clear();
 		FontMan.clear();

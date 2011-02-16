@@ -30,8 +30,6 @@ namespace Common {
 
 namespace Engines {
 
-class ModelLoader;
-
 namespace KotOR {
 
 class Placeable;
@@ -40,7 +38,7 @@ class Creature;
 /** A KotOR area. */
 class Area {
 public:
-	Area(const ModelLoader &modelLoader);
+	Area();
 	virtual ~Area();
 
 	void load(const Common::UString &name);
@@ -64,8 +62,6 @@ private:
 		Room(const Aurora::LYTFile::Room &lRoom);
 		~Room();
 	};
-
-	const ModelLoader *_modelLoader;
 
 	Aurora::LYTFile _lyt;
 	Aurora::VISFile _vis;

@@ -14,13 +14,11 @@
 
 #include "engines/kotor2/module.h"
 
-#include "engines/util.h"
-
 namespace Engines {
 
 namespace KotOR2 {
 
-Module::Module(const ModelLoader &modelLoader) : Engines::KotOR::Module(modelLoader) {
+Module::Module() {
 }
 
 Module::~Module() {

@@ -18,7 +18,7 @@ namespace Engines {
 
 namespace KotOR {
 
-ModelObject::ModelObject(const ModelLoader &modelLoader) : _modelLoader(&modelLoader) {
+ModelObject::ModelObject() {
 	_position[0] = 0.0;
 	_position[1] = 0.0;
 	_position[2] = 0.0;
