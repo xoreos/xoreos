@@ -115,6 +115,8 @@ void Texture::load(const Common::UString &name) {
 		throw Common::Exception("Unsupported image resource type %d", (int) _type);
 	}
 
+	_image->load();
+
 	// Get the TXI if availabe
 	Common::SeekableReadStream *txiStream = ResMan.getResource(name, ::Aurora::kFileTypeTXI);
 	if (txiStream) {
@@ -137,6 +139,9 @@ void Texture::load(const Common::UString &name) {
 void Texture::load(ImageDecoder *image) {
 	_image = image;
 
+	// If we didn't already, let the image load
+	_image->load();
+
 	RequestMan.dispatchAndForget(RequestMan.loadTexture(this));
 }
 
@@ -157,9 +162,6 @@ void Texture::reload() {
 	if (!_image)
 		// No image
 		return;
-
-	// If we didn't already, let the image load
-	_image->load();
 
 	if (_image->getMipMapCount() < 1)
 		throw Common::Exception("Texture has no images");
