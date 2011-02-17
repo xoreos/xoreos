@@ -42,6 +42,8 @@ public:
 	void show(); ///< The text should be rendered.
 	void hide(); ///< The text should not be rendered.
 
+	bool isVisible(); // Is the text visible?
+
 	float getWidth()  const;
 	float getHeight() const;
 

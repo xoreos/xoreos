@@ -368,7 +368,7 @@ void Model::hide() {
 	Renderable::removeFromQueue();
 }
 
-bool Model::shown() {
+bool Model::isVisible() {
 	if (_fadeValue <= 0.0)
 		// Model faded out, don't render it anymore
 		Renderable::removeFromQueue();

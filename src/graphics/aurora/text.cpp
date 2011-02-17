@@ -130,6 +130,10 @@ void Text::hide() {
 	Renderable::removeFromQueue();
 }
 
+bool Text::isVisible() {
+	return Renderable::isInQueue();
+}
+
 float Text::getWidth() const {
 	return _width;
 }
