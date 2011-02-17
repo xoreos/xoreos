@@ -77,6 +77,9 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	init();
 
+	if (EventMan.quitRequested())
+		return;
+
 	status("Successfully initialized the engine");
 
 	playVideo("leclogo");

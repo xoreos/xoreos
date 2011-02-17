@@ -73,6 +73,9 @@ void DragonAgeEngine::run(const Common::UString &target) {
 
 	init();
 
+	if (EventMan.quitRequested())
+		return;
+
 	status("Successfully initialized the engine");
 
 	playVideo("dragon_age_ea_logo");

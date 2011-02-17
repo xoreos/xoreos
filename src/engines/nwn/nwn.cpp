@@ -98,6 +98,9 @@ void NWNEngine::run(const Common::UString &target) {
 	init();
 	initCursors();
 
+	if (EventMan.quitRequested())
+		return;
+
 	status("Successfully initialized the engine");
 
 	CursorMan.hideCursor();
@@ -207,6 +210,9 @@ void NWNEngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
+
+	if (EventMan.quitRequested())
+		return;
 
 	status("Loading main talk table");
 	TalkMan.addMainTable("dialog");

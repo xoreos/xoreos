@@ -82,6 +82,9 @@ void KotOREngine::run(const Common::UString &target) {
 	if (_platform == Aurora::kPlatformMacOSX)
 		initCursors();
 
+	if (EventMan.quitRequested())
+		return;
+
 	status("Successfully initialized the engine");
 
 	playVideo("leclogo");
