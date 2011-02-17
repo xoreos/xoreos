@@ -62,6 +62,8 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 }
 
 Model::~Model() {
+	Renderable::removeFromQueue();
+
 	if ((_list != 0) && !_nodes.empty())
 		RequestMan.dispatchAndForget(RequestMan.destroyLists(_list, _nodes.size()));
 
