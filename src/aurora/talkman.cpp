@@ -131,7 +131,7 @@ const TalkTable::Entry *TalkManager::getEntry(uint32 strRef) {
 	if (!entry && (_gender == kGenderFemale) && _mainTableF)
 		entry = _mainTableF->getEntry(strRef);
 
-	if (!entry)
+	if (!entry && _mainTableM)
 		entry = _mainTableM->getEntry(strRef);
 
 	return entry;
