@@ -17,6 +17,8 @@
 #include "graphics/aurora/model.h"
 
 #include "engines/nwn/menu/main.h"
+#include "engines/nwn/menu/moviesbase.h"
+#include "engines/nwn/menu/moviescamp.h"
 
 #include "engines/aurora/model.h"
 
@@ -38,11 +40,19 @@ MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : GUI("pre_main"), _xp1(0), _xp
 	getWidget("NewButton"    , true)->setDisabled(true);
 	getWidget("LoadButton"   , true)->setDisabled(true);
 	getWidget("MultiButton"  , true)->setDisabled(true);
-	getWidget("MoviesButton" , true)->setDisabled(true);
 	getWidget("OptionsButton", true)->setDisabled(true);
+
+	if (xp1 || xp2)
+		// If we have at least an expansion, create the campaign selection movies menu
+		_movies = new MoviesCampMenu(xp1, xp2, xp3);
+	else
+		// If not, create the base game movies menu
+		_movies = new MoviesBaseMenu;
 }
 
 MainMenu::~MainMenu() {
+	delete _movies;
+
 	delete _xp2;
 	delete _xp1;
 }
@@ -68,6 +78,11 @@ void MainMenu::hide() {
 void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "ExitButton") {
 		EventMan.requestQuit();
+		return;
+	}
+
+	if (widget.getTag() == "MoviesButton") {
+		sub(*_movies);
 		return;
 	}
 }
