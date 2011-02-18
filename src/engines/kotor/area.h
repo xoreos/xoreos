@@ -80,8 +80,8 @@ private:
 	void loadModels(const Common::UString &name);
 	void loadVisibles();
 
-	void loadPlaceable(Aurora::GFFFile::ListIterator &placeable);
-	void loadCreature(Aurora::GFFFile::ListIterator &creature);
+	void loadPlaceable(const Aurora::GFFStruct &placeable);
+	void loadCreature(const Aurora::GFFStruct &creature);
 };
 
 } // End of namespace KotOR

@@ -12,8 +12,10 @@
  *  Handling BioWare's GFFs (generic file format).
  */
 
+#include "common/endianness.h"
+#include "common/error.h"
 #include "common/stream.h"
-#include "common/util.h"
+#include "common/ustring.h"
 
 #include "aurora/gfffile.h"
 #include "aurora/error.h"
@@ -23,65 +25,6 @@ static const uint32 kVersion32 = MKID_BE('V3.2');
 static const uint32 kVersion33 = MKID_BE('V3.3'); // Found in The Witcher, different language table
 
 namespace Aurora {
-
-GFFFile::StructIterator::StructIterator(const StructIterator &it) {
-	_it  = it._it;
-	_gff = it._gff;
-}
-
-GFFFile::StructIterator::StructIterator(const Struct::const_iterator &it, const GFFFile &gff) {
-	_it  =  it;
-	_gff = &gff;
-}
-
-GFFFile::StructIterator &GFFFile::StructIterator::operator++() {
-	++_it;
-
-	return *this;
-}
-
-GFFFile::StructIterator GFFFile::StructIterator::operator++(int) {
-	StructIterator tmp(*this);
-	++(*this);
-	return tmp;
-}
-
-GFFFile::StructIterator &GFFFile::StructIterator::operator--() {
-	--_it;
-
-	return *this;
-}
-
-GFFFile::StructIterator GFFFile::StructIterator::operator--(int) {
-	StructIterator tmp(*this);
-	--(*this);
-	return tmp;
-}
-
-const GFFField &GFFFile::StructIterator::operator*() const {
-	return *_it;
-}
-
-const GFFField *GFFFile::StructIterator::operator->() const {
-	return &*_it;
-}
-
-bool GFFFile::StructIterator::operator==(const StructIterator &x) const {
-	return _it == x._it;
-}
-
-bool GFFFile::StructIterator::operator!=(const StructIterator &x) const {
-	return _it != x._it;
-}
-
-GFFFile::StructRange GFFFile::StructIterator::structRange(uint32 structID) const {
-	return _gff->structRange(structID);
-}
-
-GFFFile::ListRange GFFFile::StructIterator::listRange(uint32 listID) const {
-	return _gff->listRange(listID);
-}
-
 
 GFFFile::Header::Header() {
 	clear();
@@ -118,17 +61,29 @@ void GFFFile::Header::read(Common::SeekableReadStream &gff) {
 }
 
 
-GFFFile::GFFFile() {
+GFFFile::GFFFile() : _fieldData(0) {
 }
 
 GFFFile::~GFFFile() {
+	delete[] _fieldData;
+
+	for (StructArray::iterator strct = _structs.begin(); strct != _structs.end(); ++strct)
+		delete *strct;
 }
 
 void GFFFile::clear() {
 	_header.clear();
 
-	_structArray.clear();
-	_listArray.clear();
+	for (StructArray::iterator strct = _structs.begin(); strct != _structs.end(); ++strct)
+		delete *strct;
+
+	_structs.clear();
+	_lists.clear();
+
+	_listOffsetToIndex.clear();
+
+	delete _fieldData;
+	_fieldData = 0;
 }
 
 void GFFFile::load(Common::SeekableReadStream &gff) {
@@ -143,70 +98,12 @@ void GFFFile::load(Common::SeekableReadStream &gff) {
 
 	try {
 
-		// Read structs
-		_structArray.resize(_header.structCount);
-		for (uint32 i = 0; i < _header.structCount; i++) {
-			gff.skip(4); // Programmer-defined ID
+		readStructs(gff);
+		readLists(gff);
+		readFieldData(gff);
 
-			uint32 data  = gff.readUint32LE();
-			uint32 count = gff.readUint32LE();
-
-			uint32 curPos = gff.pos();
-
-			_structArray[i].resize(count);
-			if (count > 1)
-				readFields(gff, _structArray[i], data);
-			else
-				readField(gff, _structArray[i][0], data);
-
-			gff.seek(curPos);
-		}
-
-		if (!gff.seek(_header.listIndicesOffset))
-			throw Common::Exception(Common::kSeekError);
-
-		// Read list array
-		std::vector<uint32> rawListArray;
-		uint32 listArrayCount = _header.listIndicesCount / 4;
-		rawListArray.resize(listArrayCount);
-		for (uint32 i = 0; i < listArrayCount; i++)
-			rawListArray[i] = gff.readUint32LE();
-
-		// Counting the actual amount of lists
-		uint32 realListCount = 0;
-		for (uint32 i = 0; i < listArrayCount; i++) {
-			uint32 n = rawListArray[i];
-
-			if ((i + n) > listArrayCount)
-				throw Common::Exception("List indices broken");
-
-			i += n;
-			realListCount++;
-		}
-
-		// Converting the raw list to an useable list
-		_listArray.reserve(realListCount);
-		_rawListToListMap.resize(listArrayCount);
-		for (uint32 i = 0; i < listArrayCount; ) {
-			List list;
-
-			uint32 n = rawListArray[i];
-			for (uint32 j = 0; j < n; j++) {
-				uint32 k = rawListArray[i + 1 + j];
-
-				if (k >= _structArray.size())
-					throw Common::Exception("List indices broken");
-
-				_rawListToListMap[i + 1 + j] = _listArray.end();
-
-				list.push_back(std::make_pair(StructIterator(_structArray[k].begin(), *this),
-				                              StructIterator(_structArray[k].end()  , *this)));
-			}
-
-			_listArray.push_back(list);
-			_rawListToListMap[i] = --_listArray.end();
-			i += n + 1;
-		}
+		if (gff.err())
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading GFF file");
@@ -215,484 +112,463 @@ void GFFFile::load(Common::SeekableReadStream &gff) {
 
 }
 
-void GFFFile::readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex) {
-	// Sanity check
-	if (fieldIndex > _header.fieldCount)
-		throw Common::Exception("Field index out of range (%d/%d)", fieldIndex, _header.fieldCount);
+const GFFStruct &GFFFile::getTopLevel() const {
+	return getStruct(0);
+}
 
-	// Seek
-	if (!gff.seek(_header.fieldOffset + fieldIndex * 12))
+const GFFStruct &GFFFile::getStruct(uint32 i) const {
+	assert(i < _structs.size());
+
+	return *_structs[i];
+}
+
+const GFFList &GFFFile::getList(uint32 i) const {
+	assert(i < _listOffsetToIndex.size());
+
+	i = _listOffsetToIndex[i];
+
+	assert(i < _lists.size());
+
+	return _lists[i];
+}
+
+void GFFFile::readStructs(Common::SeekableReadStream &gff) {
+	_structs.reserve(_header.structCount);
+	for (uint32 i = 0; i < _header.structCount; i++)
+		_structs.push_back(new GFFStruct(*this, gff));
+}
+
+void GFFFile::readLists(Common::SeekableReadStream &gff) {
+	if (!gff.seek(_header.listIndicesOffset))
 		throw Common::Exception(Common::kSeekError);
 
-	field.read(gff, _header);
-}
-
-void GFFFile::readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 fieldIndicesIndex) {
-	// Sanity check
-	if (fieldIndicesIndex > _header.fieldIndicesCount)
-		throw Common::Exception("Field indices index out of range (%d/%d)",
-		                        fieldIndicesIndex, _header.fieldIndicesCount);
-
-	// Seek
-	if (!gff.seek(_header.fieldIndicesOffset + fieldIndicesIndex))
-		throw Common::Exception(Common::kSeekError);
-
-	// Get the number of structs in the list
-	uint32 count = strct.size();
-
-	std::vector<uint32> indices;
-
-	// Read all struct indices
-	indices.resize(count);
-	for (uint32 i = 0; i < count; i++)
-		indices[i] = gff.readUint32LE();
-
-	// Read the structs
-	for (uint32 i = 0; i < count; i++)
-		readField(gff, strct[i], indices[i]);
-}
-
-GFFFile::StructRange GFFFile::structRange(uint32 structID) const {
-	return std::make_pair(StructIterator(_structArray[structID].begin(), *this),
-	                      StructIterator(_structArray[structID].end()  , *this));
-}
-
-GFFFile::ListRange GFFFile::listRange(uint32 listID) const {
-	return std::make_pair(_rawListToListMap[listID]->begin(), _rawListToListMap[listID]->end());
-}
-
-
-GFFField::GFFField() {
-	_gffType = kGFFTypeNone;
-	_type    = kTypeNone;
-}
-
-GFFField::~GFFField() {
-	clear();
-}
-
-void GFFField::clear() {
-	if (_type == kTypeNone)
-		return;
-
-	// Free memory if we need to
-	if      (_type == kTypeString)
-		delete _value.typeString;
-	else if (_type == kTypeLocString)
-		delete _value.typeLocString;
-	else if (_type == kTypeData)
-		delete[] _value.typeData;
-
-	_gffType = kGFFTypeNone;
-	_type    = kTypeNone;
-
-	_dataSize = 0;
-
-	_label.clear();
-}
-
-GFFField::Type GFFField::getType() const {
-	return _type;
-}
-
-const Common::UString &GFFField::getLabel() const {
-	return _label;
-}
-
-char GFFField::getChar() const {
-	if (_type != kTypeChar)
-		throw kGFFFieldTypeError;
-
-	return (char) _value.typeInt;
-}
-
-uint64 GFFField::getUint() const {
-	if ((_type != kTypeUint) && (_type != kTypeSint))
-		throw kGFFFieldTypeError;
-
-	return (uint64) _value.typeInt;
-}
-
-int64 GFFField::getSint() const {
-	if ((_type != kTypeUint) && (_type != kTypeSint))
-		throw kGFFFieldTypeError;
-
-	return (int64) _value.typeInt;
-}
-
-double GFFField::getDouble() const {
-	if (_type != kTypeDouble)
-		throw kGFFFieldTypeError;
-
-	return _value.typeDouble;
-}
-
-const Common::UString &GFFField::getString() const {
-	if (_type != kTypeString)
-		throw kGFFFieldTypeError;
-
-	return *_value.typeString;
-}
-
-const LocString &GFFField::getLocString() const {
-	if (_type != kTypeLocString)
-		throw kGFFFieldTypeError;
-
-	return *_value.typeLocString;
-}
-
-uint32 GFFField::getDataSize() const {
-	if (_type != kTypeData)
-		throw kGFFFieldTypeError;
-
-	return _dataSize;
-}
-
-const byte *GFFField::getData() const {
-	if (_type != kTypeData)
-		throw kGFFFieldTypeError;
-
-	return (const byte *) *_value.typeData;
-}
-
-const float *GFFField::getVector() const {
-	if (_type != kTypeVector)
-		throw kGFFFieldTypeError;
-
-	return _value.typeVector;
-}
-
-const float *GFFField::getOrientation() const {
-	if (_type != kTypeOrientation)
-		throw kGFFFieldTypeError;
-
-	return _value.typeOrientation;
-}
-
-const uint32 GFFField::getStructIndex() const {
-	if (_type != kTypeStruct)
-		throw kGFFFieldTypeError;
-
-	return _value.typeIndex;
-}
-
-const uint32 GFFField::getListIndex() const {
-	if (_type != kTypeList)
-		throw kGFFFieldTypeError;
-
-	return _value.typeIndex;
-}
-
-void GFFField::read(Common::SeekableReadStream &gff, const GFFFile::Header &header) {
-	clear();
-
-	// Read the data
-
-	_gffType = (GFFType) gff.readUint32LE();
-
-	uint32 labelIndex = gff.readUint32LE();
-	uint32 data       = gff.readUint32LE();
-
-	// Supported type?
-	_type = toType(_gffType);
-	if (_type == kTypeNone)
-		throw Common::Exception("Unknown field type %d", _gffType);
-
-	// Sanity check
-	if (labelIndex >= header.labelCount)
-		throw Common::Exception("Label index out of range (%d/%d)", labelIndex, header.labelCount);
-
-	// Read the label
-	uint32 curPos = gff.seekTo(header.labelOffset + labelIndex * 16);
-	_label.readASCII(gff, 16);
-	gff.seekTo(curPos);
-
-	// Fill in the correct data
-	convertData(gff, header, data);
-}
-
-void GFFField::convertData(Common::SeekableReadStream &gff, const GFFFile::Header &header, uint32 data) {
-	// Do the correct conversion/reading for each data type
-
-	switch (_gffType) {
-		case kGFFTypeChar:
-			// Correct sign extension
-			_value.typeInt = (uint64) ((char) data);
-			break;
-
-		case kGFFTypeByte:
-			// Correct sign extension
-			_value.typeInt = (uint64) ((byte) data);
-			break;
-
-		case kGFFTypeUint16:
-			// Correct sign extension
-			_value.typeInt = (uint64) ((uint16) data);
-			break;
-
-		case kGFFTypeUint32:
-			// Correct sign extension
-			_value.typeInt = (uint64) ((uint32) data);
-			break;
-
-		case kGFFTypeUint64:
-			readUint64(gff, header, data);
-			break;
-
-		case kGFFTypeSint16:
-			// Correct sign extension
-			_value.typeInt = (uint64) ((int64) ((int16) ((uint16) data)));
-			break;
-
-		case kGFFTypeSint32:
-			// Correct sign extension
-			_value.typeInt = (uint64) ((int64) ((int32) ((uint32) data)));
-			break;
-
-		case kGFFTypeSint64:
-			readSint64(gff, header, data);
-			break;
-
-		case kGFFTypeFloat:
-			_value.typeDouble = (double) convertIEEEFloat(data);
-			break;
-
-		case kGFFTypeDouble:
-			readDouble(gff, header, data);
-			break;
-
-		case kGFFTypeExoString:
-			readExoString(gff, header, data);
-			break;
-
-		case kGFFTypeResRef:
-			readResRef(gff, header, data);
-			break;
-
-		case kGFFTypeLocString:
-			readLocString(gff, header, data);
-			break;
-
-		case kGFFTypeVoid:
-			readVoid(gff, header, data);
-			break;
-
-		case kGFFTypeStruct:
-			// Direct index into the struct array
-			_value.typeIndex = data;
-			break;
-
-		case kGFFTypeList:
-			// Byte index into the list area, all 32bit values.
-			_value.typeIndex = data / 4;
-			break;
-
-		case kGFFTypeOrientation:
-			readOrientation(gff, header, data);
-			break;
-
-		case kGFFTypeVector:
-			readVector(gff, header, data);
-			break;
-
-		case kGFFTypeStrRef:
-			warning("TODO: kGFFTypeStrRef");
-			break;
-
-		default:
-			throw Common::Exception("Unknown field type %d", _gffType);
+	// Read list array
+	std::vector<uint32> rawLists;
+	rawLists.resize(_header.listIndicesCount / 4);
+	for (std::vector<uint32>::iterator it = rawLists.begin(); it != rawLists.end(); ++it)
+		*it = gff.readUint32LE();
+
+	// Counting the actual amount of lists
+	uint32 listCount = 0;
+	for (uint32 i = 0; i < rawLists.size(); i++) {
+		uint32 n = rawLists[i];
+
+		if ((i + n) > rawLists.size())
+			throw Common::Exception("List indices broken");
+
+		i += n;
+		listCount++;
+	}
+
+	// Converting the raw list array into real, useable lists
+	for (std::vector<uint32>::iterator it = rawLists.begin(); it != rawLists.end(); ) {
+		_listOffsetToIndex.push_back(_lists.size());
+
+		_lists.push_back(GFFList());
+		GFFList &list = _lists.back();
+
+		uint32 n = *it++;
+		for (uint32 j = 0; j < n; j++, ++it) {
+			assert(it != rawLists.end());
+
+			list.push_back(_structs[*it]);
+			_listOffsetToIndex.push_back(0xFFFFFFFF);
+		}
 	}
 
 }
 
-inline void GFFField::seekGFFData(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data, uint32 &curPos) {
+void GFFFile::readFieldData(Common::SeekableReadStream &gff) {
+	_fieldData = new byte[_header.fieldDataCount];
 
-	if (data >= header.fieldDataCount)
-		throw Common::Exception("Field data index out of range (%d/%d)", data, header.fieldDataCount);
-
-	curPos = gff.pos();
-	if (!gff.seek(header.fieldDataOffset + data))
-		throw Common::Exception(Common::kSeekError);
-}
-
-inline void GFFField::readUint64(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data) {
-
-	uint32 curPos;
-	seekGFFData(gff, header, data, curPos);
-
-	_value.typeInt = gff.readUint64LE();
-
-	gff.seek(curPos);
-}
-
-inline void GFFField::readSint64(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data) {
-
-	uint32 curPos;
-	seekGFFData(gff, header, data, curPos);
-
-	_value.typeInt = (uint64) gff.readSint64LE();
-
-	gff.seek(curPos);
-}
-
-inline void GFFField::readDouble(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data) {
-
-	uint32 curPos;
-	seekGFFData(gff, header, data, curPos);
-
-	_value.typeDouble = gff.readIEEEDoubleLE();
-
-	gff.seek(curPos);
-}
-
-inline void GFFField::readExoString(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data) {
-
-	uint32 curPos;
-	seekGFFData(gff, header, data, curPos);
-
-	uint32 length = gff.readUint32LE();
-
-	_value.typeString = new Common::UString;
-
-	_value.typeString->readASCII(gff, length);
-
-	gff.seek(curPos);
-}
-
-inline void GFFField::readResRef(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data) {
-
-	uint32 curPos;
-	seekGFFData(gff, header, data, curPos);
-
-	uint32 length = gff.readByte();
-
-	_value.typeString = new Common::UString;
-
-	_value.typeString->readASCII(gff, length);
-
-	gff.seek(curPos);
-}
-
-inline void GFFField::readLocString(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data) {
-
-	uint32 curPos;
-	seekGFFData(gff, header, data, curPos);
-
-	_value.typeLocString = new LocString();
-
-	gff.skip(4); // Size in bytes
-	_value.typeLocString->readLocString(gff);
-
-	gff.seek(curPos);
-}
-
-inline void GFFField::readVoid(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data) {
-
-	uint32 curPos;
-	seekGFFData(gff, header, data, curPos);
-
-	_dataSize = gff.readUint32LE();
-
-	_value.typeData = new byte[_dataSize];
-
-	if (gff.read(_value.typeData, _dataSize) != _dataSize) {
-		delete[] _value.typeData;
-
-		_value.typeData = 0;
-		_dataSize = 0;
-
+	gff.seek(_header.fieldDataOffset);
+	if (gff.read(_fieldData, _header.fieldDataCount) != _header.fieldDataCount)
 		throw Common::Exception(Common::kReadError);
+}
+
+const byte *GFFFile::getFieldData(uint32 offset) const {
+	assert(_fieldData);
+
+	if (offset >= _header.fieldDataCount)
+		throw Common::Exception("Field data offset out of range (%d/%d)",
+				offset, _header.fieldDataCount);
+
+	return _fieldData + offset;
+}
+
+
+GFFStruct::Field::Field() : type(kFieldTypeNone), data(0), extended(false) {
+}
+
+GFFStruct::Field::Field(FieldType t, uint32 d) : type(t), data(d) {
+	// These field types need extended field data
+	extended = (type == kFieldTypeUint64     ) ||
+	           (type == kFieldTypeSint64     ) ||
+	           (type == kFieldTypeDouble     ) ||
+	           (type == kFieldTypeExoString  ) ||
+	           (type == kFieldTypeResRef     ) ||
+	           (type == kFieldTypeLocString  ) ||
+	           (type == kFieldTypeLocString  ) ||
+	           (type == kFieldTypeOrientation) ||
+	           (type == kFieldTypeVector     );
+}
+
+
+GFFStruct::GFFStruct(const GFFFile &parent, Common::SeekableReadStream &gff) :
+	_parent(&parent) {
+
+	_id = gff.readUint32LE();
+
+	uint32 index = gff.readUint32LE(); // Index of the field / field indices
+	uint32 count = gff.readUint32LE(); // Number of fields
+
+	uint32 curPos = gff.pos();
+
+	// Read the field(s)
+	if      (count == 1)
+		readField (gff, index);
+	else if (count > 1)
+		readFields(gff, index, count);
+
+	gff.seek(curPos);
+}
+
+GFFStruct::~GFFStruct() {
+}
+
+void GFFStruct::readField(Common::SeekableReadStream &gff, uint32 index) {
+	// Sanity check
+	if (index > _parent->_header.fieldCount)
+		throw Common::Exception("Field index out of range (%d/%d)",
+			 	index, _parent->_header.fieldCount);
+
+	// Seek
+	if (!gff.seek(_parent->_header.fieldOffset + index * 12))
+		throw Common::Exception(Common::kSeekError);
+
+	// Read the field data
+	uint32 type  = gff.readUint32LE();
+	uint32 label = gff.readUint32LE();
+	uint32 data  = gff.readUint32LE();
+
+	// And add it to the map
+	_fields[readLabel(gff, label)] = Field((FieldType) type, data);
+}
+
+void GFFStruct::readFields(Common::SeekableReadStream &gff, uint32 index, uint32 count) {
+	// Sanity check
+	if (index > _parent->_header.fieldIndicesCount)
+		throw Common::Exception("Field indices index out of range (%d/%d)",
+		                        index , _parent->_header.fieldIndicesCount);
+
+	// Seek
+	if (!gff.seek(_parent->_header.fieldIndicesOffset + index))
+		throw Common::Exception(Common::kSeekError);
+
+	// Read the field indices
+	std::vector<uint32> indices;
+	readIndices(gff, indices, count);
+
+	// Read the fields
+	for (std::vector<uint32>::const_iterator i = indices.begin(); i != indices.end(); ++i)
+		readField(gff, *i);
+}
+
+void GFFStruct::readIndices(Common::SeekableReadStream &gff,
+                               std::vector<uint32> &indices, uint32 count) {
+	indices.reserve(count);
+	while (count-- > 0)
+		indices.push_back(gff.readUint32LE());
+}
+
+Common::UString GFFStruct::readLabel(Common::SeekableReadStream &gff, uint32 index) {
+	gff.seek(_parent->_header.labelOffset + index * 16);
+
+	Common::UString label;
+	label.readASCII(gff, 16);
+
+	return label;
+}
+
+const byte *GFFStruct::getData(const Field &field) const {
+	assert(field.extended);
+
+	return _parent->getFieldData(field.data);
+}
+
+const GFFStruct::Field *GFFStruct::getField(const Common::UString &name) const {
+	FieldMap::const_iterator field = _fields.find(name);
+	if (field == _fields.end())
+		return 0;
+
+	return &field->second;
+}
+
+uint GFFStruct::getFieldCount() const {
+	return _fields.size();
+}
+
+bool GFFStruct::hasField(const Common::UString &field) const {
+	return getField(field) != 0;
+}
+
+char GFFStruct::getChar(const Common::UString &field, char def) const {
+	const Field *f = getField(field);
+	if (!f)
+		return def;
+	if (f->type != kFieldTypeChar)
+		throw Common::Exception("Field is not a char type");
+
+	return (char) f->data;
+}
+
+uint64 GFFStruct::getUint(const Common::UString &field, uint64 def) const {
+	const Field *f = getField(field);
+	if (!f)
+		return def;
+
+	// Int types
+	if (f->type == kFieldTypeByte)
+		return (uint64) ((uint8 ) f->data);
+	if (f->type == kFieldTypeUint16)
+		return (uint64) ((uint16) f->data);
+	if (f->type == kFieldTypeUint32)
+		return (uint64) ((uint32) f->data);
+	if (f->type == kFieldTypeChar)
+		return (uint64) ((int64) ((int8 ) ((uint8 ) f->data)));
+	if (f->type == kFieldTypeSint16)
+		return (uint64) ((int64) ((int16) ((uint16) f->data)));
+	if (f->type == kFieldTypeSint32)
+		return (uint64) ((int64) ((int32) ((uint32) f->data)));
+	if (f->type == kFieldTypeUint64)
+		return (uint64) READ_LE_UINT64(getData(*f));
+	if (f->type == kFieldTypeSint64)
+		return ( int64) READ_LE_UINT64(getData(*f));
+
+	throw Common::Exception("Field is not an int type");
+}
+
+int64 GFFStruct::getSint(const Common::UString &field, int64 def) const {
+	const Field *f = getField(field);
+	if (!f)
+		return def;
+
+	// Int types
+	if (f->type == kFieldTypeByte)
+		return (int64) ((int8 ) ((uint8 ) f->data));
+	if (f->type == kFieldTypeUint16)
+		return (int64) ((int16) ((uint16) f->data));
+	if (f->type == kFieldTypeUint32)
+		return (int64) ((int32) ((uint32) f->data));
+	if (f->type == kFieldTypeChar)
+		return (int64) ((int8 ) ((uint8 ) f->data));
+	if (f->type == kFieldTypeSint16)
+		return (int64) ((int16) ((uint16) f->data));
+	if (f->type == kFieldTypeSint32)
+		return (int64) ((int32) ((uint32) f->data));
+	if (f->type == kFieldTypeUint64)
+		return (int64) READ_LE_UINT64(getData(*f));
+	if (f->type == kFieldTypeSint64)
+		return (int64) READ_LE_UINT64(getData(*f));
+
+	throw Common::Exception("Field is not an int type");
+}
+
+double GFFStruct::getDouble(const Common::UString &field, double def) const {
+	const Field *f = getField(field);
+	if (!f)
+		return def;
+
+	if (f->type == kFieldTypeFloat)
+		return convertIEEEFloat(f->data);
+	if (f->type == kFieldTypeDouble)
+		return convertIEEEDouble(READ_LE_UINT64(getData(*f)));
+
+	throw Common::Exception("Field is not a double type");
+}
+
+Common::UString GFFStruct::getString(const Common::UString &field,
+                                        const Common::UString &def) const {
+
+	const Field *f = getField(field);
+	if (!f)
+		return def;
+
+	if (f->type == kFieldTypeExoString) {
+		const byte *data = getData(*f);
+
+		uint32 length = READ_LE_UINT32(data);
+
+		Common::MemoryReadStream gff(data + 4, length);
+
+		Common::UString str;
+		str.readASCII(gff, length);
+		return str;
 	}
 
-	gff.seek(curPos);
-}
+	if (f->type == kFieldTypeResRef) {
+		const byte *data = getData(*f);
 
-inline void GFFField::readVector(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data) {
+		uint32 length = *data;
 
-	uint32 curPos;
-	seekGFFData(gff, header, data, curPos);
+		Common::MemoryReadStream gff(data + 1, length);
 
-	_value.typeVector[0] = gff.readIEEEFloatLE();
-	_value.typeVector[1] = gff.readIEEEFloatLE();
-	_value.typeVector[2] = gff.readIEEEFloatLE();
-
-	gff.seek(curPos);
-}
-
-inline void GFFField::readOrientation(Common::SeekableReadStream &gff,
-		const GFFFile::Header &header, uint32 data) {
-
-	uint32 curPos;
-	seekGFFData(gff, header, data, curPos);
-
-	_value.typeOrientation[0] = gff.readIEEEFloatLE();
-	_value.typeOrientation[1] = gff.readIEEEFloatLE();
-	_value.typeOrientation[2] = gff.readIEEEFloatLE();
-	_value.typeOrientation[3] = gff.readIEEEFloatLE();
-
-	gff.seek(curPos);
-}
-
-inline GFFField::Type GFFField::toType(GFFType type) {
-	switch (type) {
-		case kGFFTypeChar:
-			return kTypeChar;
-
-		// This is all an unsigned integer value
-		case kGFFTypeByte:
-		case kGFFTypeUint16:
-		case kGFFTypeUint32:
-		case kGFFTypeUint64:
-			return kTypeUint;
-
-		// This is all a signed integer value
-		case kGFFTypeSint16:
-		case kGFFTypeSint32:
-		case kGFFTypeSint64:
-			return kTypeSint;
-
-		// Float/Double type
-		case kGFFTypeFloat:
-		case kGFFTypeDouble:
-			return kTypeDouble;
-
-		// All strings
-		case kGFFTypeExoString:
-		case kGFFTypeResRef:
-			return kTypeString;
-
-		case kGFFTypeLocString:
-			return kTypeLocString;
-
-		case kGFFTypeVoid:
-			return kTypeData;
-
-		case kGFFTypeStruct:
-			return kTypeStruct;
-
-		case kGFFTypeList:
-			return kTypeList;
-
-		case kGFFTypeOrientation:
-			return kTypeOrientation;
-
-		case kGFFTypeVector:
-			return kTypeVector;
-
-		default:
-			break;
+		Common::UString str;
+		str.readASCII(gff, length);
+		return str;
 	}
 
-	return kTypeNone;
+	if ((f->type == kFieldTypeByte  ) ||
+	    (f->type == kFieldTypeUint16) ||
+	    (f->type == kFieldTypeUint32) ||
+	    (f->type == kFieldTypeUint64)) {
+
+		return Common::UString::sprintf("%lu", getUint(field));
+	}
+
+	if ((f->type == kFieldTypeChar  ) ||
+	    (f->type == kFieldTypeSint16) ||
+	    (f->type == kFieldTypeSint32) ||
+	    (f->type == kFieldTypeSint64)) {
+
+		return Common::UString::sprintf("%ld", getSint(field));
+	}
+
+	if ((f->type == kFieldTypeFloat) ||
+	    (f->type == kFieldTypeDouble)) {
+
+		return Common::UString::sprintf("%lf", getDouble(field));
+	}
+
+	if (f->type == kFieldTypeVector) {
+		float x, y, z;
+
+		getVector(field, x, y, z);
+		return Common::UString::sprintf("%f/%f/%f", x, y, z);
+	}
+
+	if (f->type == kFieldTypeOrientation) {
+		float a, b, c, d;
+
+		getOrientation(field, a, b, c, d);
+		return Common::UString::sprintf("%f/%f/%f/%f", a, b, c, d);
+	}
+
+	throw Common::Exception("Field is not a string(able) type");
+}
+
+void GFFStruct::getLocString(const Common::UString &field, LocString &str) const {
+	const Field *f = getField(field);
+	if (!f)
+		return;
+	if (f->type != kFieldTypeLocString)
+		throw Common::Exception("Field is not of a localized string type");
+
+	const byte *data = getData(*f);
+
+	Common::MemoryReadStream gff(data + 4, READ_LE_UINT32(data));
+
+	str.readLocString(gff);
+}
+
+Common::SeekableReadStream *GFFStruct::getData(const Common::UString &field) const {
+	const Field *f = getField(field);
+	if (!f)
+		return 0;
+	if (f->type != kFieldTypeVoid)
+		throw Common::Exception("Field is not a data type");
+
+	const byte *data = getData(*f);
+
+	return new Common::MemoryReadStream(data + 4, READ_LE_UINT32(data));
+}
+
+void GFFStruct::getVector(const Common::UString &field,
+		float &x, float &y, float &z) const {
+
+	const Field *f = getField(field);
+	if (!f)
+		return;
+	if (f->type != kFieldTypeVector)
+		throw Common::Exception("Field is not a vector type");
+
+	const byte *data = getData(*f);
+
+	x = convertIEEEFloat(READ_LE_UINT32(data + 0));
+	y = convertIEEEFloat(READ_LE_UINT32(data + 4));
+	z = convertIEEEFloat(READ_LE_UINT32(data + 8));
+}
+
+void GFFStruct::getOrientation(const Common::UString &field,
+		float &a, float &b, float &c, float &d) const {
+
+	const Field *f = getField(field);
+	if (!f)
+		return;
+	if (f->type != kFieldTypeOrientation)
+		throw Common::Exception("Field is not an orientation type");
+
+	const byte *data = getData(*f);
+
+	a = convertIEEEFloat(READ_LE_UINT32(data +  0));
+	b = convertIEEEFloat(READ_LE_UINT32(data +  4));
+	c = convertIEEEFloat(READ_LE_UINT32(data +  8));
+	d = convertIEEEFloat(READ_LE_UINT32(data + 12));
+}
+
+void GFFStruct::getVector(const Common::UString &field,
+		double &x, double &y, double &z) const {
+
+	const Field *f = getField(field);
+	if (!f)
+		return;
+	if (f->type != kFieldTypeVector)
+		throw Common::Exception("Field is not a vector type");
+
+	const byte *data = getData(*f);
+
+	x = convertIEEEFloat(READ_LE_UINT32(data + 0));
+	y = convertIEEEFloat(READ_LE_UINT32(data + 4));
+	z = convertIEEEFloat(READ_LE_UINT32(data + 8));
+}
+
+void GFFStruct::getOrientation(const Common::UString &field,
+		double &a, double &b, double &c, double &d) const {
+
+	const Field *f = getField(field);
+	if (!f)
+		return;
+	if (f->type != kFieldTypeOrientation)
+		throw Common::Exception("Field is not an orientation type");
+
+	const byte *data = getData(*f);
+
+	a = convertIEEEFloat(READ_LE_UINT32(data +  0));
+	b = convertIEEEFloat(READ_LE_UINT32(data +  4));
+	c = convertIEEEFloat(READ_LE_UINT32(data +  8));
+	d = convertIEEEFloat(READ_LE_UINT32(data + 12));
+}
+
+const GFFStruct &GFFStruct::getStruct(const Common::UString &field) const {
+	const Field *f = getField(field);
+	if (!f)
+		throw Common::Exception("No such field");
+	if (f->type != kFieldTypeStruct)
+		throw Common::Exception("Field is not a struct type");
+
+	// Direct index into the struct array
+	return _parent->getStruct(f->data);
+}
+
+const GFFList &GFFStruct::getList(const Common::UString &field) const {
+	const Field *f = getField(field);
+	if (!f)
+		throw Common::Exception("No such field");
+	if (f->type != kFieldTypeList)
+		throw Common::Exception("Field is not a list type");
+
+	// Byte offset into the list area, all 32bit values.
+	return _parent->getList(f->data / 4);
 }
 
 } // End of namespace Aurora

@@ -62,14 +62,11 @@ void Creature::load(const Common::UString &name) {
 	Aurora::GFFFile utc;
 	loadGFF(utc, name, Aurora::kFileTypeUTC, kUTCID);
 
-	Aurora::GFFFile::StructRange utcTop = utc.structRange();
-	for (Aurora::GFFFile::StructIterator it = utcTop.first; it != utcTop.second; ++it) {
-		if (it->getLabel() == "Appearance_Type")
-			_appearance = it->getUint();
-	}
+	const Aurora::GFFStruct &top = utc.getTopLevel();
+	_appearance = top.getUint("Appearance_Type", 0xFFFFFFFF);
 
 	if (_appearance == 0xFFFFFFFF)
-		throw Common::Exception("Creature without an appearance");
+		throw Common::Exception("No appearance");
 
 	loadModel(name);
 }

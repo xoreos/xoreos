@@ -43,7 +43,7 @@ public:
 	void setOrientation(const double *orientation); ///< Set the direction vector.
 
 	/** Read the location out of a GFF struct. */
-	void read(const GFFFile::StructRange &range);
+	void read(const GFFStruct &strct);
 
 private:
 	uint32 _area;           ///< ObjectID of the area containing the location.
@@ -76,9 +76,9 @@ public:
 
 	Type getType() const;
 
-				int32            getInt     () const;
-				float            getFloat   () const;
-				uint32           getObjectID() const;
+	      int32            getInt     () const;
+	      float            getFloat   () const;
+	      uint32           getObjectID() const;
 	const Common::UString &getString  () const;
 	const GFFLocation     &getLocation() const;
 
@@ -91,7 +91,7 @@ public:
 	void setLocation(const GFFLocation     &v);
 
 	/** Read the variable out of a GFF struct. */
-	void read(const GFFFile::StructRange &range, Common::UString &name);
+	void read(const GFFStruct &strct, Common::UString &name);
 
 private:
 	Type _type;
@@ -121,7 +121,7 @@ public:
 
 	void set(const Common::UString &name, const GFFVariable &variable);
 
-	void read(const GFFFile::ListRange &range);
+	void read(const GFFList &list);
 
 private:
 	typedef std::map<Common::UString, GFFVariable *> VarMap;

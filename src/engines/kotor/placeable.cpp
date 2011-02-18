@@ -44,14 +44,11 @@ void Placeable::load(const Common::UString &name) {
 	Aurora::GFFFile utp;
 	loadGFF(utp, name, Aurora::kFileTypeUTP, kUTPID);
 
-	Aurora::GFFFile::StructRange utpTop = utp.structRange();
-	for (Aurora::GFFFile::StructIterator it = utpTop.first; it != utpTop.second; ++it) {
-		if (it->getLabel() == "Appearance")
-			_appearance = it->getUint();
-	}
+	const Aurora::GFFStruct &top = utp.getTopLevel();
+	_appearance = top.getUint("Appearance", 0xFFFFFFFF);
 
 	if (_appearance == 0xFFFFFFFF)
-		throw Common::Exception("Placeable without an appearance");
+		throw Common::Exception("No appearance");
 
 	loadModel();
 }

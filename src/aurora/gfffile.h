@@ -16,6 +16,8 @@
 #define AURORA_GFFFILE_H
 
 #include <vector>
+#include <list>
+#include <map>
 
 #include "common/types.h"
 #include "common/ustring.h"
@@ -30,44 +32,28 @@ namespace Common {
 namespace Aurora {
 
 class LocString;
-class GFFField;
+class GFFStruct;
 
-/** A GFF, BioWare's General File Format. */
+typedef std::list<GFFStruct *> GFFList;
+
 class GFFFile : public AuroraBase {
 public:
-	class StructIterator;
+	GFFFile();
+	~GFFFile();
 
-	typedef std::vector<GFFField> Struct;
+	/** Clear all information. */
+	void clear();
 
-	typedef std::pair<StructIterator, StructIterator> StructRange;
+	/** Load a GFF file.
+	 *
+	 *  @param gff A gff of an GFF file.
+	 */
+	void load(Common::SeekableReadStream &gff);
 
-	typedef std::vector<StructRange> List;
-	typedef List::const_iterator     ListIterator;
+	/** Returns the top-level struct. */
+	const GFFStruct &getTopLevel() const;
 
-	typedef std::pair<ListIterator, ListIterator> ListRange;
-
-	class StructIterator {
-	public:
-		StructIterator(const StructIterator &it);
-		StructIterator(const Struct::const_iterator &it, const GFFFile &gff);
-
-		StructIterator &operator++();
-		StructIterator operator++(int);
-		StructIterator &operator--();
-		StructIterator operator--(int);
-		const GFFField &operator*() const;
-		const GFFField *operator->() const;
-		bool operator==(const StructIterator &x) const;
-		bool operator!=(const StructIterator &x) const;
-
-		StructRange structRange(uint32 structID = 0) const;
-		ListRange listRange(uint32 listID = 0) const;
-
-	private:
-		Struct::const_iterator _it;
-		const GFFFile *_gff;
-	};
-
+private:
 	/** A GFF header. */
 	struct Header {
 		uint32 structOffset;
@@ -88,181 +74,130 @@ public:
 		/** Clear the header. */
 		void clear();
 
-		/** Read the header out of a stream. */
+		/** Read the header out of a gff. */
 		void read(Common::SeekableReadStream &gff);
 	};
 
-	GFFFile();
-	~GFFFile();
-
-	/** Clear all information. */
-	void clear();
-
-	/** Load a GFF file.
-	 *
-	 *  @param gff A stream of an GFF file.
-	 */
-	void load(Common::SeekableReadStream &gff);
-
-	/** Create a StructRange of two StructIterators pointing to the start and end of a GFF's struct.
-	 *
-	 *  @param  structID The ID of the struct. 0 is the ID of the top-level struct.
-	 *  @return The range of the struct.
-	 */
-	StructRange structRange(uint32 structID = 0) const;
-
-	/** Create a ListRange of two ListIterators pointing to the start and end of a GFF's list.
-	 *
-	 *  @param  listID The ID of the list.
-	 *  @return The range of the list.
-	 */
-	ListRange listRange(uint32 listID = 0) const;
-
-private:
-	typedef std::vector<Struct> StructArray;
-	typedef std::vector<List>   ListArray;
+	typedef std::vector<GFFStruct *> StructArray;
+	typedef std::vector<GFFList> ListArray;
 
 	Header _header; ///< The GFF's header
 
-	StructArray _structArray; ///< All structs in the GFF.
-	ListArray   _listArray;   ///< All lists in the GFF.
+	StructArray _structs; ///< Our structs.
+	ListArray   _lists;   ///< Our lists.
 
-	/** To convert "raw" list indices found in GFFs an iterator into our ListArray. */
-	std::vector<ListArray::const_iterator> _rawListToListMap;
+	/** To convert list offsets found in GFF to real indices. */
+	std::vector<uint32> _listOffsetToIndex;
 
-	// Reading helpers
-	void readField(Common::SeekableReadStream &gff, GFFField &field, uint32 fieldIndex);
-	void readFields(Common::SeekableReadStream &gff, Struct &strct, uint32 fieldIndicesIndex);
+	byte *_fieldData; ///< The extended field data.
+
+	/** Returns the struct field data at this offset. */
+	const byte *getFieldData(uint32 offset) const;
+
+	/** Return a struct within the GFF. */
+	const GFFStruct &getStruct(uint32 i) const;
+	/** Return a list within the GFF. */
+	const GFFList   &getList  (uint32 i) const;
+
+	// Loading helpers
+	void readStructs(Common::SeekableReadStream &gff);
+	void readLists(Common::SeekableReadStream &gff);
+	void readFieldData(Common::SeekableReadStream &gff);
+
+	friend class GFFStruct;
 };
 
-/** A data field found in a GFF. */
-class GFFField {
+/** A struct within a GFF. */
+class GFFStruct {
 public:
-	/** The general type of the field's value. */
-	enum Type {
-		kTypeNone        = 0,
-		kTypeChar        = 1,
-		kTypeUint        = 2,
-		kTypeSint        = 3,
-		kTypeDouble      = 4,
-		kTypeString      = 5,
-		kTypeLocString   = 6,
-		kTypeData        = 7,
-		kTypeStruct      = 8,
-		kTypeList        = 9,
-		kTypeOrientation = 10,
-		kTypeVector      = 11
-	};
+	uint getFieldCount() const;
 
-	GFFField();
-	~GFFField();
+	bool hasField(const Common::UString &field) const;
 
-	/** Clear the field. */
-	void clear();
+	char   getChar(const Common::UString &field, char   def = '\0') const;
+	uint64 getUint(const Common::UString &field, uint64 def = 0   ) const;
+	 int64 getSint(const Common::UString &field,  int64 def = 0   ) const;
 
-	/** Return the field's type. */
-	Type getType() const;
+	double getDouble(const Common::UString &field, double def = 0.0) const;
 
-	/** Get the field's label. */
-	const Common::UString &getLabel() const;
+	Common::UString getString(const Common::UString &field,
+	                          const Common::UString &def = "") const;
 
-	char   getChar() const;
-	uint64 getUint() const;
-	int64  getSint() const;
+	void getLocString(const Common::UString &field, LocString &str) const;
 
-	double getDouble() const;
+	Common::SeekableReadStream *getData(const Common::UString &field) const;
 
-	const Common::UString &getString()    const;
-	const LocString       &getLocString() const;
+	void getVector     (const Common::UString &field,
+			float &x, float &y, float &z          ) const;
+	void getOrientation(const Common::UString &field,
+			float &a, float &b, float &c, float &d) const;
 
-	uint32 getDataSize() const;
-	const byte *getData() const;
+	void getVector     (const Common::UString &field,
+			double &x, double &y, double &z           ) const;
+	void getOrientation(const Common::UString &field,
+			double &a, double &b, double &c, double &d) const;
 
-	const float *getVector()      const;
-	const float *getOrientation() const;
-
-	const uint32 getStructIndex() const;
-	const uint32 getListIndex() const;
-
-	/** Read the field out of a stream. */
-	void read(Common::SeekableReadStream &gff, const GFFFile::Header &header);
+	const GFFStruct &getStruct(const Common::UString &field) const;
+	const GFFList   &getList  (const Common::UString &field) const;
 
 private:
-	/** The actual type of the field, as found in the GFF. */
-	enum GFFType {
-		kGFFTypeNone        = - 1, ///< Invalid type.
-		kGFFTypeByte        =   0, ///< A single byte.
-		kGFFTypeChar        =   1, ///< A single character.
-		kGFFTypeUint16      =   2, ///< Unsigned 16bit integer.
-		kGFFTypeSint16      =   3, ///< Signed 16bit integer.
-		kGFFTypeUint32      =   4, ///< Unsigned 32bit integer.
-		kGFFTypeSint32      =   5, ///< Signed 32bit integer.
-		kGFFTypeUint64      =   6, ///< Unsigned 64bit integer.
-		kGFFTypeSint64      =   7, ///< Signed 64bit integer.
-		kGFFTypeFloat       =   8, ///< IEEE float.
-		kGFFTypeDouble      =   9, ///< IEEE double.
-		kGFFTypeExoString   =  10, ///< String.
-		kGFFTypeResRef      =  11, ///< String, max. 16 characters.
-		kGFFTypeLocString   =  12, ///< Localized string.
-		kGFFTypeVoid        =  13, ///< Random data of variable length.
-		kGFFTypeStruct      =  14, ///< Struct containing a number of fields.
-		kGFFTypeList        =  15, ///< List containing a number of structs.
-		kGFFTypeOrientation =  16, ///< An object orientation.
-		kGFFTypeVector      =  17, ///< A vector of 3 floats.
-		kGFFTypeStrRef      =  18  // TODO: New in Jade Empire
+	/** The type of a GFF field. */
+	enum FieldType {
+		kFieldTypeNone        = - 1, ///< Invalid type.
+		kFieldTypeByte        =   0, ///< A single byte.
+		kFieldTypeChar        =   1, ///< A single character.
+		kFieldTypeUint16      =   2, ///< Unsigned 16bit integer.
+		kFieldTypeSint16      =   3, ///< Signed 16bit integer.
+		kFieldTypeUint32      =   4, ///< Unsigned 32bit integer.
+		kFieldTypeSint32      =   5, ///< Signed 32bit integer.
+		kFieldTypeUint64      =   6, ///< Unsigned 64bit integer.
+		kFieldTypeSint64      =   7, ///< Signed 64bit integer.
+		kFieldTypeFloat       =   8, ///< IEEE float.
+		kFieldTypeDouble      =   9, ///< IEEE double.
+		kFieldTypeExoString   =  10, ///< String.
+		kFieldTypeResRef      =  11, ///< String, max. 16 characters.
+		kFieldTypeLocString   =  12, ///< Localized string.
+		kFieldTypeVoid        =  13, ///< Random data of variable length.
+		kFieldTypeStruct      =  14, ///< Struct containing a number of fields.
+		kFieldTypeList        =  15, ///< List containing a number of structs.
+		kFieldTypeOrientation =  16, ///< An object orientation.
+		kFieldTypeVector      =  17, ///< A vector of 3 floats.
+		kFieldTypeStrRef      =  18  // TODO: New in Jade Empire
 	};
 
-	GFFType _gffType; ///< The field's actual type.
-	   Type _type;    ///< The field's general type.
+	/** A GFF field. */
+	struct Field {
+		FieldType type;     ///< Type of the field.
+		uint32    data;     ///< Data of the field.
+		bool      extended; ///< Does this field need extended data?
 
-	Common::UString _label; ///< The field's label.
+		Field();
+		Field(FieldType t, uint32 d);
+	};
 
-	uint32 _dataSize; ///< The size of the field's data, if applicable.
+	typedef std::map<Common::UString, Field> FieldMap;
 
-	/** The field's value. */
-	union {
-		uint64 typeInt;
-		double typeDouble;
+	const GFFFile *_parent; ///< The parent GFF.
 
-		Common::UString *typeString;
-		LocString       *typeLocString;
+	uint32 _id; ///< The struct's ID.
+	FieldMap _fields; ///< The fields, indexed by their label.
 
-		byte *typeData;
+	GFFStruct(const GFFFile &parent, Common::SeekableReadStream &gff);
+	~GFFStruct();
 
-		float typeVector[3];
-		float typeOrientation[4];
+	/** Returns the field with this tag. */
+	const Field *getField(const Common::UString &name) const;
+	/** Returns the extended field data for this field. */
+	const byte *getData(const Field &field) const;
 
-		uint32 typeIndex;
-	} _value;
+	// Loading helpers
+	void readField  (Common::SeekableReadStream &gff, uint32 index);
+	void readFields (Common::SeekableReadStream &gff, uint32 index, uint32 count);
+	void readIndices(Common::SeekableReadStream &gff,
+	                 std::vector<uint32> &indices, uint32 count);
+	Common::UString readLabel(Common::SeekableReadStream &gff, uint32 index);
 
-	// Reading helpers
-
-	void convertData(Common::SeekableReadStream &gff, const GFFFile::Header &header, uint32 data);
-
-	inline void readUint64     (Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data);
-	inline void readSint64     (Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data);
-	inline void readDouble     (Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data);
-	inline void readExoString  (Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data);
-	inline void readResRef     (Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data);
-	inline void readLocString  (Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data);
-	inline void readVoid       (Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data);
-	inline void readVector     (Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data);
-	inline void readOrientation(Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data);
-
-	inline void seekGFFData(Common::SeekableReadStream &gff,
-			const GFFFile::Header &header, uint32 data, uint32 &curPos);
-
-	/** Convert an actual GFF field type to a general type. */
-	static inline Type toType(GFFType type);
+	friend class GFFFile;
 };
 
 } // End of namespace Aurora

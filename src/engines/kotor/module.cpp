@@ -76,26 +76,20 @@ void Module::loadIFO(const Common::UString &name) {
 	Aurora::GFFFile ifo;
 	loadGFF(ifo, "module", Aurora::kFileTypeIFO, kIFOID);
 
-	Aurora::GFFFile::StructRange ifoTop = ifo.structRange();
-	for (Aurora::GFFFile::StructIterator it = ifoTop.first; it != ifoTop.second; ++it) {
-		if      (it->getLabel() == "Mod_Entry_Area")
-			_areaName  = it->getString();
-		else if (it->getLabel() == "Mod_Entry_X")
-			_startX    = it->getDouble();
-		else if (it->getLabel() == "Mod_Entry_Y")
-			_startY    = it->getDouble();
-		else if (it->getLabel() == "Mod_Entry_Z")
-			_startZ    = it->getDouble();
-		else if (it->getLabel() == "Mod_Entry_Dir_X")
-			_startDirX = it->getDouble();
-		else if (it->getLabel() == "Mod_Entry_Dir_Y")
-			_startDirY = it->getDouble();
+	const Aurora::GFFStruct &top = ifo.getTopLevel();
 
-		// TODO: Mod_On*
-	}
-
+	_areaName = top.getString("Mod_Entry_Area");
 	if (_areaName.empty())
 		throw Common::Exception("No entry area in module \"%s\"", name.c_str());
+
+	_startX = top.getDouble("Mod_Entry_X");
+	_startY = top.getDouble("Mod_Entry_Y");
+	_startZ = top.getDouble("Mod_Entry_Z");
+
+	_startDirX = top.getDouble("Mod_Entry_Dir_X");
+	_startDirY = top.getDouble("Mod_Entry_Dir_Y");
+
+	// TODO: Mod_On*
 
 	reset();
 }

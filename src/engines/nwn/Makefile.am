@@ -4,18 +4,8 @@ noinst_LTLIBRARIES = libnwn.la
 
 noinst_HEADERS = nwn.h \
                  modelloader.h \
-                 menu/gui.h \
-                 menu/legal.h \
-                 menu/menu.h \
-                 menu/main.h \
-                 menu/movies.h \
-                 menu/basemovies.h
+                 menu/legal.h
 
 libnwn_la_SOURCES = nwn.cpp \
                     modelloader.cpp \
-                    menu/gui.cpp \
-                    menu/legal.cpp \
-                    menu/menu.cpp \
-                    menu/main.cpp \
-                    menu/movies.cpp \
-                    menu/basemovies.cpp
+                    menu/legal.cpp

@@ -15,7 +15,6 @@
 #include "engines/nwn/nwn.h"
 #include "engines/nwn/modelloader.h"
 #include "engines/nwn/menu/legal.h"
-#include "engines/nwn/menu/main.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/model.h"
@@ -130,24 +129,15 @@ void NWNEngine::run(const Common::UString &target) {
 	// Start sound
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
-	Legal    *legal    = new Legal;
-	MainMenu *mainMenu = new MainMenu(_hasXP1, _hasXP2, _hasXP3);
+	Legal *legal = new Legal;
 
 	// Fade in the legal billboard
 	legal->fadeIn();
-
-	// Show the main menu (still hidden by the legal billboard)
-	mainMenu->show();
 
 	// Show the legal billboard, then fade it out
 	legal->show();
 
 	delete legal;
-
-	// Handle the main menu
-	mainMenu->handle();
-
-	delete mainMenu;
 
 	delete fps;
 }

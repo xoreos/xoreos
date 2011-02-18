@@ -119,47 +119,35 @@ void Area::loadGIT(const Common::UString &name) {
 	Aurora::GFFFile git;
 	loadGFF(git, name, Aurora::kFileTypeGIT, kGITID);
 
-	Aurora::GFFFile::StructRange gitTop = git.structRange();
-	for (Aurora::GFFFile::StructIterator it = gitTop.first; it != gitTop.second; ++it) {
+	const Aurora::GFFStruct &top = git.getTopLevel();
 
-		if        (it->getLabel() == "Placeable List") {
-			status("Loading placeables");
+	// Load placeables
+	if (top.hasField("Placeable List")) {
+		const Aurora::GFFList &list = top.getList("Placeable List");
 
-			Aurora::GFFFile::ListRange placeables = git.listRange(it->getListIndex());
-			for (Aurora::GFFFile::ListIterator plc = placeables.first; plc != placeables.second; ++plc)
-				loadPlaceable(plc);
+		for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p)
+			loadPlaceable(**p);
+	}
 
-		} else if (it->getLabel() == "Creature List") {
-			status("Loading creatures");
+	// Load creatures
+	if (top.hasField("Creature List")) {
+		const Aurora::GFFList &list = top.getList("Creature List");
 
-			Aurora::GFFFile::ListRange creatures = git.listRange(it->getListIndex());
-			for (Aurora::GFFFile::ListIterator crt = creatures.first; crt != creatures.second; ++crt)
-				loadCreature(crt);
-		}
-
+		for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c)
+			loadCreature(**c);
 	}
 }
 
-void Area::loadPlaceable(Aurora::GFFFile::ListIterator &placeable) {
-	Common::UString resref;
-	float x = 0.0, y = 0.0, z = 0.0;
-	float bearing = 0.0;
-
-	for (Aurora::GFFFile::StructIterator it = placeable->first; it != placeable->second; ++it) {
-		if      (it->getLabel() == "TemplateResRef")
-			resref = it->getString();
-		else if (it->getLabel() == "X")
-			x = it->getDouble();
-		else if (it->getLabel() == "Y")
-			y = it->getDouble();
-		else if (it->getLabel() == "Z")
-			z = it->getDouble();
-		else if (it->getLabel() == "Bearing")
-			bearing = it->getDouble();
-	}
-
+void Area::loadPlaceable(const Aurora::GFFStruct &placeable) {
+	Common::UString resref = placeable.getString("TemplateResRef");
 	if (resref.empty())
 		throw Common::Exception("Placeable without a template");
+
+	float x = placeable.getDouble("X");
+	float y = placeable.getDouble("Y");
+	float z = placeable.getDouble("Z");
+
+	float bearing = placeable.getDouble("Bearing");
 
 	Placeable *place = 0;
 	try {
@@ -181,28 +169,17 @@ void Area::loadPlaceable(Aurora::GFFFile::ListIterator &placeable) {
 	_placeables.push_back(place);
 }
 
-void Area::loadCreature(Aurora::GFFFile::ListIterator &creature) {
-	Common::UString resref;
-	float x = 0.0, y = 0.0, z = 0.0;
-	float bearingX = 0.0, bearingY = 0.0;
-
-	for (Aurora::GFFFile::StructIterator it = creature->first; it != creature->second; ++it) {
-		if      (it->getLabel() == "TemplateResRef")
-			resref = it->getString();
-		else if (it->getLabel() == "XPosition")
-			x = it->getDouble();
-		else if (it->getLabel() == "YPosition")
-			y = it->getDouble();
-		else if (it->getLabel() == "ZPosition")
-			z = it->getDouble();
-		else if (it->getLabel() == "XOrientation")
-			bearingX = it->getDouble();
-		else if (it->getLabel() == "YOrientation")
-			bearingY = it->getDouble();
-	}
-
+void Area::loadCreature(const Aurora::GFFStruct &creature) {
+	Common::UString resref = creature.getString("TemplateResRef");
 	if (resref.empty())
 		throw Common::Exception("Creature without a template");
+
+	float x = creature.getDouble("XPosition");
+	float y = creature.getDouble("YPosition");
+	float z = creature.getDouble("ZPosition");
+
+	float bearingX = creature.getDouble("XOrientation");
+	float bearingY = creature.getDouble("YOrientation");
 
 	Creature *creat = 0;
 	try {
