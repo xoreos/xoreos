@@ -220,6 +220,8 @@ void Model_NWN_Binary::readNode(ParserContext &ctx, uint32 offset, Node *parent,
 	if (rootState)
 		_nodeMap.insert(std::make_pair(ctx.node->name, ctx.node));
 
+	ctx.state->nodeMap.insert(std::make_pair(ctx.node->name, ctx.node));
+
 	ctx.mdl->skip(8); // Parent pointers
 
 	uint32 childrenStart, childrenCount;
