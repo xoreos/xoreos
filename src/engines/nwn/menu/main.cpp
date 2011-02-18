@@ -19,6 +19,7 @@
 #include "engines/nwn/menu/main.h"
 #include "engines/nwn/menu/moviesbase.h"
 #include "engines/nwn/menu/moviescamp.h"
+#include "engines/nwn/menu/options.h"
 
 #include "engines/aurora/model.h"
 
@@ -37,10 +38,9 @@ MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : GUI("pre_main"), _xp1(0), _xp
 		_xp2->setPosition(1.24, -1.47, 0.50);
 	}
 
-	getWidget("NewButton"    , true)->setDisabled(true);
-	getWidget("LoadButton"   , true)->setDisabled(true);
-	getWidget("MultiButton"  , true)->setDisabled(true);
-	getWidget("OptionsButton", true)->setDisabled(true);
+	getWidget("NewButton"  , true)->setDisabled(true);
+	getWidget("LoadButton" , true)->setDisabled(true);
+	getWidget("MultiButton", true)->setDisabled(true);
 
 	if (xp1 || xp2)
 		// If we have at least an expansion, create the campaign selection movies menu
@@ -48,9 +48,12 @@ MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : GUI("pre_main"), _xp1(0), _xp
 	else
 		// If not, create the base game movies menu
 		_movies = new MoviesBaseMenu;
+
+	_options = new OptionsMenu;
 }
 
 MainMenu::~MainMenu() {
+	delete _options;
 	delete _movies;
 
 	delete _xp2;
@@ -85,6 +88,12 @@ void MainMenu::callbackActive(Widget &widget) {
 		sub(*_movies);
 		return;
 	}
+
+	if (widget.getTag() == "OptionsButton") {
+		sub(*_options);
+		return;
+	}
+
 }
 
 } // End of namespace NWN

@@ -8,7 +8,12 @@ noinst_HEADERS = nwn.h \
                  menu/gui.h \
                  menu/main.h \
                  menu/moviescamp.h \
-                 menu/moviesbase.h
+                 menu/moviesbase.h \
+                 menu/options.h \
+                 menu/optionsgame.h \
+                 menu/optionsvideo.h \
+                 menu/optionssound.h \
+                 menu/optionscontrols.h
 
 libnwn_la_SOURCES = nwn.cpp \
                     modelloader.cpp \
@@ -16,4 +21,9 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/gui.cpp \
                     menu/main.cpp \
                     menu/moviescamp.cpp \
-                    menu/moviesbase.cpp
+                    menu/moviesbase.cpp \
+                    menu/options.cpp \
+                    menu/optionsgame.cpp \
+                    menu/optionsvideo.cpp \
+                    menu/optionssound.cpp \
+                    menu/optionscontrols.cpp
