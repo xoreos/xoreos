@@ -224,9 +224,18 @@ double ConfigManager::getDouble(const UString &key, double def) const {
 	return ConfigDomain::toDouble(value);
 }
 
-void ConfigManager::setKey(const UString &key, const UString &value) {
+void ConfigManager::setKey(const UString &key, const UString &value, bool update) {
 	// Commandline options always get overwritten
 	_domainCommandline->removeKey(key);
+
+	if (update) {
+		// Don't do anything if we only want to update a value and there's no change
+
+		UString current;
+		if (getKey(key, current))
+			if (current == value)
+				return;
+	}
 
 	// Setting a config key => We've changed something
 	_changed = true;
@@ -237,20 +246,20 @@ void ConfigManager::setKey(const UString &key, const UString &value) {
 	setKey(_domainApp, key, value);
 }
 
-void ConfigManager::setString(const UString &key, const UString &value) {
-	setKey(key, value);
+void ConfigManager::setString(const UString &key, const UString &value, bool update) {
+	setKey(key, value, update);
 }
 
-void ConfigManager::setBool(const UString &key, bool value) {
-	setKey(key, ConfigDomain::fromBool(value));
+void ConfigManager::setBool(const UString &key, bool value, bool update) {
+	setKey(key, ConfigDomain::fromBool(value), update);
 }
 
-void ConfigManager::setInt(const UString &key, int value) {
-	setKey(key, ConfigDomain::fromInt(value));
+void ConfigManager::setInt(const UString &key, int value, bool update) {
+	setKey(key, ConfigDomain::fromInt(value), update);
 }
 
-void ConfigManager::setDouble(const UString &key, double value) {
-	setKey(key, ConfigDomain::fromDouble(value));
+void ConfigManager::setDouble(const UString &key, double value, bool update) {
+	setKey(key, ConfigDomain::fromDouble(value), update);
 }
 
 void ConfigManager::setDefaultKey(const UString &key, const UString &value) {

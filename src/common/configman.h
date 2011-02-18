@@ -65,13 +65,13 @@ public:
 	int     getInt   (const UString &key,       int      def = 0    ) const;
 	double  getDouble(const UString &key,       double   def = 0.0  ) const;
 
-	void setKey(const UString &key, const UString &value);
+	void setKey(const UString &key, const UString &value, bool update = false);
 
 	// Specialized setters. */
-	void setString(const UString &key, const UString &value);
-	void setBool  (const UString &key,       bool     value);
-	void setInt   (const UString &key,       int      value);
-	void setDouble(const UString &key,       double   value);
+	void setString(const UString &key, const UString &value, bool update = false);
+	void setBool  (const UString &key,       bool     value, bool update = false);
+	void setInt   (const UString &key,       int      value, bool update = false);
+	void setDouble(const UString &key,       double   value, bool update = false);
 
 	/** Set a default config value. */
 	void setDefaultKey(const UString &key, const UString &value);
