@@ -15,6 +15,8 @@
 #ifndef ENGINES_NWN_MENU_OPTIONSSOUND_H
 #define ENGINES_NWN_MENU_OPTIONSSOUND_H
 
+#include "sound/types.h"
+
 #include "engines/nwn/menu/gui.h"
 
 namespace Engines {
@@ -27,11 +29,24 @@ public:
 	OptionsSoundMenu();
 	~OptionsSoundMenu();
 
+	void show();
+
 protected:
+	void initWidget(WidgetSlider &widget);
 	void callbackActive(Widget &widget);
 
 private:
 	GUI *_advanced;
+
+	double _volMusic;
+	double _volSFX;
+	double _volVoice;
+	double _volVideo;
+
+	void updateVolume(double volume, Sound::SoundType type, const Common::UString &label);
+
+	void adoptChanges();
+	void revertChanges();
 };
 
 } // End of namespace NWN

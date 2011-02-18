@@ -12,6 +12,10 @@
  *  The sound options menu.
  */
 
+#include "common/configman.h"
+
+#include "sound/sound.h"
+
 #include "engines/nwn/menu/optionssound.h"
 #include "engines/nwn/menu/optionssoundadv.h"
 
@@ -33,11 +37,6 @@ OptionsSoundMenu::OptionsSoundMenu() {
 	speakerGroup.push_back(getWidget("Headphones"));
 	declareGroup(speakerGroup);
 
-	// TODO: Sound volumes
-	getWidget("MusicSlider"  , true)->setDisabled(true);
-	getWidget("VoicesSlider" , true)->setDisabled(true);
-	getWidget("SoundFXSlider", true)->setDisabled(true);
-
 	// TODO: Sound settings
 	getWidget("EAXCheckbox", true)->setDisabled(true);
 	getWidget("HardwareBox", true)->setDisabled(true);
@@ -51,21 +50,53 @@ OptionsSoundMenu::OptionsSoundMenu() {
 	_advanced = new OptionsSoundAdvancedMenu;
 }
 
+void OptionsSoundMenu::show() {
+	_volMusic = ConfigMan.getDouble("volume_music", 1.0);
+	_volSFX   = ConfigMan.getDouble("volume_sfx"  , 1.0);
+	_volVoice = ConfigMan.getDouble("volume_voice", 1.0);
+	_volVideo = ConfigMan.getDouble("volume_video", 1.0);
+
+	updateVolume(_volMusic, Sound::kSoundTypeMusic, "MusicLabel");
+	updateVolume(_volSFX  , Sound::kSoundTypeSFX  , "SoundFXLabel");
+	updateVolume(_volVoice, Sound::kSoundTypeVoice, "VoicesLabel");
+
+	GUI::show();
+}
+
 OptionsSoundMenu::~OptionsSoundMenu() {
 	delete _advanced;
+}
+
+void OptionsSoundMenu::initWidget(WidgetSlider &widget) {
+	if (widget.getTag() == "MusicSlider") {
+		widget.setSteps(20);
+		return;
+	}
+
+	if (widget.getTag() == "VoicesSlider") {
+		widget.setSteps(20);
+		return;
+	}
+
+	if (widget.getTag() == "SoundFXSlider") {
+		widget.setSteps(20);
+		return;
+	}
 }
 
 void OptionsSoundMenu::callbackActive(Widget &widget) {
 	if ((widget.getTag() == "CancelButton") ||
 	    (widget.getTag() == "XButton")) {
+
+		revertChanges();
 		_returnCode = 1;
-		// TODO: Scrap changes
 		return;
 	}
 
 	if (widget.getTag() == "OkButton") {
+
+		adoptChanges();
 		_returnCode = 2;
-		// TODO: Adopt changes
 		return;
 	}
 
@@ -73,6 +104,45 @@ void OptionsSoundMenu::callbackActive(Widget &widget) {
 		sub(*_advanced);
 		return;
 	}
+
+	if (widget.getTag() == "MusicSlider") {
+		_volMusic = widget.getState() / 20.0;
+		updateVolume(_volMusic, Sound::kSoundTypeMusic, "MusicLabel");
+		return;
+	}
+
+	if (widget.getTag() == "VoicesSlider") {
+		_volVoice = widget.getState() / 20.0;
+		updateVolume(_volVoice, Sound::kSoundTypeVoice, "VoicesLabel");
+		return;
+	}
+
+	if (widget.getTag() == "SoundFXSlider") {
+		_volSFX = _volVideo = widget.getState() / 20.0;
+		updateVolume(_volSFX, Sound::kSoundTypeSFX, "SoundFXLabel");
+		return;
+	}
+}
+
+void OptionsSoundMenu::updateVolume(double volume, Sound::SoundType type,
+                                    const Common::UString &label) {
+
+	SoundMan.setTypeGain(type, volume);
+	getWidget(label, true)->setText(Common::UString::sprintf("%.0f%%", volume * 100.0));
+}
+
+void OptionsSoundMenu::adoptChanges() {
+	ConfigMan.setDouble("volume_music", _volMusic, true);
+	ConfigMan.setDouble("volume_sfx"  , _volSFX  , true);
+	ConfigMan.setDouble("volume_voice", _volVoice, true);
+	ConfigMan.setDouble("volume_video", _volVideo, true);
+}
+
+void OptionsSoundMenu::revertChanges() {
+	SoundMan.setTypeGain(Sound::kSoundTypeMusic, ConfigMan.getDouble("volume_music", 1.0));
+	SoundMan.setTypeGain(Sound::kSoundTypeSFX  , ConfigMan.getDouble("volume_sfx"  , 1.0));
+	SoundMan.setTypeGain(Sound::kSoundTypeVoice, ConfigMan.getDouble("volume_voice", 1.0));
+	SoundMan.setTypeGain(Sound::kSoundTypeVideo, ConfigMan.getDouble("volume_video", 1.0));
 }
 
 } // End of namespace NWN
