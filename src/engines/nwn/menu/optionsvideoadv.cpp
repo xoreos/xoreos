@@ -12,6 +12,16 @@
  *  The advanced video options menu.
  */
 
+#include "common/util.h"
+#include "common/maths.h"
+#include "common/configman.h"
+
+#include "aurora/talkman.h"
+
+#include "graphics/graphics.h"
+
+#include "events/requests.h"
+
 #include "engines/nwn/menu/optionsvideoadv.h"
 
 #include "engines/aurora/util.h"
@@ -35,9 +45,6 @@ OptionsVideoAdvancedMenu::OptionsVideoAdvancedMenu() {
 	// TODO: Shadow casting lights
 	getWidget("ShadowLights", true)->setDisabled(true);
 
-	// TODO: Anti-Aliasing
-	getWidget("AntiAliasSlider", true)->setDisabled(true);
-
 	// TODO: Texture animations
 	getWidget("TexAnimButton", true)->setDisabled(true);
 
@@ -60,17 +67,83 @@ OptionsVideoAdvancedMenu::OptionsVideoAdvancedMenu() {
 OptionsVideoAdvancedMenu::~OptionsVideoAdvancedMenu() {
 }
 
+void OptionsVideoAdvancedMenu::show() {
+	_oldFSAA = MAX(GfxMan.getCurrentFSAA(), 0);
+
+	int fsaa = _oldFSAA;
+	if (fsaa > 0)
+		fsaa = log2(fsaa);
+
+	getWidget("AntiAliasSlider", true)->setState(fsaa);
+
+	updateFSAALabel(fsaa);
+
+	GUI::show();
+}
+
+void OptionsVideoAdvancedMenu::initWidget(WidgetSlider &widget) {
+	if (widget.getTag() == "AntiAliasSlider") {
+		int maxFSAA = GfxMan.getMaxFSAA();
+
+		if (maxFSAA <= 0)
+			// No antialiasing available
+			widget.setDisabled(true);
+		else
+			widget.setSteps(log2(maxFSAA));
+
+		return;
+	}
+}
+
 void OptionsVideoAdvancedMenu::callbackActive(Widget &widget) {
 	if ((widget.getTag() == "CancelButton") ||
 	    (widget.getTag() == "XButton")) {
+
+		revertChanges();
 		_returnCode = 1;
 		return;
 	}
 
 	if (widget.getTag() == "OkButton") {
+
+		adoptChanges();
 		_returnCode = 2;
 		return;
 	}
+
+	if (widget.getTag() == "AntiAliasSlider") {
+		int fsaa = widget.getState();
+
+		updateFSAALabel(fsaa);
+
+		if (fsaa > 0)
+			fsaa = 1 << fsaa;
+
+		RequestMan.dispatchAndWait(RequestMan.changeFSAA(fsaa));
+		return;
+	}
+}
+
+void OptionsVideoAdvancedMenu::updateFSAALabel(int n) {
+	Common::UString text;
+	if      (n == 0)
+		text = TalkMan.getString(67539);
+	else if (n == 1)
+		text = TalkMan.getString(67540);
+	else if (n == 2)
+		text = TalkMan.getString(67542);
+	else
+		text = Common::UString::sprintf("%dx %s", 1 << n, TalkMan.getString(67538).c_str());
+
+	getWidget("AntialiasLabel", true)->setText(text);
+}
+
+void OptionsVideoAdvancedMenu::adoptChanges() {
+	ConfigMan.setInt("fsaa", GfxMan.getCurrentFSAA(), true);
+}
+
+void OptionsVideoAdvancedMenu::revertChanges() {
+	RequestMan.dispatchAndWait(RequestMan.changeFSAA(_oldFSAA));
 }
 
 } // End of namespace NWN

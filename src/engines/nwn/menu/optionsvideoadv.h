@@ -27,8 +27,19 @@ public:
 	OptionsVideoAdvancedMenu();
 	~OptionsVideoAdvancedMenu();
 
+	void show();
+
 protected:
+	void initWidget(WidgetSlider &widget);
 	void callbackActive(Widget &widget);
+
+private:
+	int _oldFSAA;
+
+	void updateFSAALabel(int n);
+
+	void adoptChanges();
+	void revertChanges();
 };
 
 } // End of namespace NWN
