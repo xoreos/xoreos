@@ -291,6 +291,28 @@ void Model::moveNode(const Common::UString &node, float x, float y, float z) {
 	createModelBound();
 }
 
+float Model::getNodeWidth(const Common::UString &node) const {
+	if (!_currentState)
+		return 0.0;
+
+	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
+	if ((n == _currentState->nodeMap.end()) || !n->second)
+		return 0.0;
+
+	return n->second->boundBox.getWidth();
+}
+
+float Model::getNodeHeight(const Common::UString &node) const {
+	if (!_currentState)
+		return 0.0;
+
+	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
+	if ((n == _currentState->nodeMap.end()) || !n->second)
+		return 0.0;
+
+	return n->second->boundBox.getHeight();
+}
+
 float Model::getWidth() const {
 	return _boundBox.getWidth();
 }

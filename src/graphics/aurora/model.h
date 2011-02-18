@@ -66,6 +66,11 @@ public:
 	/** Get the base position of a named node in the current state. */
 	bool getNodePosition(const Common::UString &node, float &x, float &y, float &z) const;
 
+	/** Get the width of a named node. */
+	float getNodeWidth (const Common::UString &node) const;
+	/** Get the height of a named node. */
+	float getNodeHeight(const Common::UString &node) const;
+
 	/** Move the base position of a named node in the current state. */
 	void moveNode(const Common::UString &node, float x, float y, float z);
 
