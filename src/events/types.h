@@ -42,6 +42,7 @@ enum ITCEvent {
 	kITCEventFullscreen        , ///< Request switching to fullscreen mode.
 	kITCEventWindowed          , ///< Request switching to windowed mode.
 	kITCEventResize            , ///< Request changing the display size.
+	kITCEventChangeFSAA        , ///< Request changing the FSAA level.
 	kITCEventLoadTexture       , ///< Request the loading of a texture.
 	kITCEventDestroyTexture    , ///< Request the destruction of a texture.
 	kITCEventBuildLists        , ///< Request the building of OpenGL display lists.

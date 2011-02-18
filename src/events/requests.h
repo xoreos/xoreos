@@ -77,6 +77,8 @@ public:
 	RequestID fullscreen(bool fs);
 	/** Request that the display shall be resized. */
 	RequestID resize(int width, int height);
+	/** Request that the FSAA level shall be changed. */
+	RequestID changeFSAA(int level);
 
 	// Textures
 	/** Request the loading of a texture. */

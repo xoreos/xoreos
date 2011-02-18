@@ -140,6 +140,14 @@ RequestID RequestManager::resize(int width, int height) {
 	return rID;
 }
 
+RequestID  RequestManager::changeFSAA(int level) {
+	RequestID rID = newRequest(kITCEventChangeFSAA);
+
+	(*rID)->_fsaa.level = level;
+
+	return rID;
+}
+
 RequestID RequestManager::loadTexture(Graphics::Texture *texture) {
 	RequestID rID = newRequest(kITCEventLoadTexture);
 

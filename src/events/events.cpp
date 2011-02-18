@@ -36,6 +36,7 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 	&EventsManager::requestFullscreen,
 	&EventsManager::requestWindowed,
 	&EventsManager::requestResize,
+	&EventsManager::requestChangeFSAA,
 	&EventsManager::requestLoadTexture,
 	&EventsManager::requestDestroyTexture,
 	&EventsManager::requestBuildLists,
@@ -279,6 +280,10 @@ void EventsManager::requestWindowed(Request &request) {
 
 void EventsManager::requestResize(Request &request) {
 	GfxMan.changeSize(request._resize.width, request._resize.height);
+}
+
+void EventsManager::requestChangeFSAA(Request &request) {
+	GfxMan.setFSAA(request._fsaa.level);
 }
 
 void EventsManager::requestLoadTexture(Request &request) {

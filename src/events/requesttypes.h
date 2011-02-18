@@ -37,6 +37,10 @@ struct RequestDataResize {
 	int height;
 };
 
+struct RequestChangeFSAA {
+	int level;
+};
+
 struct RequestDataLoadTexture {
 	Graphics::Texture *texture;
 };
@@ -82,6 +86,7 @@ private:
 	/** Request data. */
 	union {
 		RequestDataResize         _resize;
+		RequestChangeFSAA         _fsaa;
 		RequestDataLoadTexture    _loadTexture;
 		RequestDataDestroyTexture _destroyTexture;
 		RequestDataBuildLists     _buildLists;
