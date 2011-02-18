@@ -241,6 +241,12 @@ void EventsManager::initMainLoop() {
 		GfxMan.initSize(width, height, fs);
 		GfxMan.setupScene();
 
+		// Try to change the FSAA settings to the config value
+		if (GfxMan.getCurrentFSAA() != ConfigMan.getInt("fsaa"))
+			if (!GfxMan.setFSAA(ConfigMan.getInt("fsaa")))
+				// If that fails, set the config to the current level
+				ConfigMan.setInt("fsaa", GfxMan.getCurrentFSAA());
+
 	} catch (Common::Exception &e) {
 		e.add("Failed setting up graphics");
 		throw e;
