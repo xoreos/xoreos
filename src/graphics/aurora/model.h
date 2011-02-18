@@ -66,6 +66,9 @@ public:
 	/** Get the base position of a named node in the current state. */
 	bool getNodePosition(const Common::UString &node, float &x, float &y, float &z) const;
 
+	/** Move the base position of a named node in the current state. */
+	void moveNode(const Common::UString &node, float x, float y, float z);
+
 	float getWidth () const; ///< Get the width of the model's bounding box.
 	float getHeight() const; ///< Get the height of the model's bounding box.
 	float getDepth () const; ///< Get the depth of the model's bounding box.

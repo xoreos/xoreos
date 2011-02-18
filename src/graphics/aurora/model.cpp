@@ -276,6 +276,21 @@ bool Model::getNodePosition(const Common::UString &node, float &x, float &y, flo
 	return true;
 }
 
+void Model::moveNode(const Common::UString &node, float x, float y, float z) {
+	if (!_currentState)
+		return;
+
+	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
+	if ((n == _currentState->nodeMap.end()) || !n->second)
+		return;
+
+	n->second->position[0] += x;
+	n->second->position[1] += y;
+	n->second->position[2] += x;
+
+	createModelBound();
+}
+
 float Model::getWidth() const {
 	return _boundBox.getWidth();
 }
