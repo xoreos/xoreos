@@ -13,7 +13,8 @@ noinst_HEADERS = nwn.h \
                  menu/optionsgame.h \
                  menu/optionsvideo.h \
                  menu/optionssound.h \
-                 menu/optionscontrols.h
+                 menu/optionscontrols.h \
+                 menu/optionsfeedback.h
 
 libnwn_la_SOURCES = nwn.cpp \
                     modelloader.cpp \
@@ -26,4 +27,5 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/optionsgame.cpp \
                     menu/optionsvideo.cpp \
                     menu/optionssound.cpp \
-                    menu/optionscontrols.cpp
+                    menu/optionscontrols.cpp \
+                    menu/optionsfeedback.cpp

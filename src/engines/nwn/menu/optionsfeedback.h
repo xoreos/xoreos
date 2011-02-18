@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/optionsgame.h
- *  The game options menu.
+/** @file engines/nwn/menu/optionsfeedback.h
+ *  The feedback options menu.
  */
 
-#ifndef ENGINES_NWN_MENU_OPTIONSGAME_H
-#define ENGINES_NWN_MENU_OPTIONSGAME_H
+#ifndef ENGINES_NWN_MENU_OPTIONSFEEDBACK_H
+#define ENGINES_NWN_MENU_OPTIONSFEEDBACK_H
 
 #include "engines/nwn/menu/gui.h"
 
@@ -21,20 +21,18 @@ namespace Engines {
 
 namespace NWN {
 
-/** The NWN game options menu. */
-class OptionsGameMenu: public GUI {
+/** The NWN feedback options menu. */
+class OptionsFeedbackMenu: public GUI {
 public:
-	OptionsGameMenu();
-	~OptionsGameMenu();
+	OptionsFeedbackMenu();
+	~OptionsFeedbackMenu();
 
 protected:
 	void callbackActive(Widget &widget);
-
-	GUI *_feedback;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_OPTIONSGAME_H
+#endif // ENGINES_NWN_MENU_OPTIONSFEEDBACK_H

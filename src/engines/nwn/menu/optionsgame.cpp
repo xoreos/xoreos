@@ -13,6 +13,7 @@
  */
 
 #include "engines/nwn/menu/optionsgame.h"
+#include "engines/nwn/menu/optionsfeedback.h"
 
 #include "engines/aurora/util.h"
 
@@ -41,11 +42,11 @@ OptionsGameMenu::OptionsGameMenu() : GUI("options_game") {
 	// TODO: Gore password
 	getWidget("PasswordButton", true)->setDisabled(true);
 
-	// TODO: Feedback settings
-	getWidget("FeedbackButton", true)->setDisabled(true);
+	_feedback = new OptionsFeedbackMenu;
 }
 
 OptionsGameMenu::~OptionsGameMenu() {
+	delete _feedback;
 }
 
 void OptionsGameMenu::callbackActive(Widget &widget) {
@@ -57,6 +58,11 @@ void OptionsGameMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "OkButton") {
 		_returnCode = 2;
+		return;
+	}
+
+	if (widget.getTag() == "FeedbackButton") {
+		sub(*_feedback);
 		return;
 	}
 }
