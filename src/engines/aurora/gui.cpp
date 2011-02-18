@@ -236,6 +236,7 @@ bool Widget::hasGroupMembers() const {
 }
 
 void Widget::signalGroupMemberActive() {
+	_active = false;
 }
 
 void Widget::setActive(bool active) {

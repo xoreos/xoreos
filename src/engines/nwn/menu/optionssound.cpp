@@ -60,6 +60,10 @@ void OptionsSoundMenu::show() {
 	updateVolume(_volSFX  , Sound::kSoundTypeSFX  , "SoundFXLabel");
 	updateVolume(_volVoice, Sound::kSoundTypeVoice, "VoicesLabel");
 
+	getWidget("MusicSlider"  , true)->setState(_volMusic * 20);
+	getWidget("SoundFXSlider", true)->setState(_volSFX   * 20);
+	getWidget("VoicesSlider" , true)->setState(_volVoice * 20);
+
 	GUI::show();
 }
 

@@ -75,6 +75,27 @@ WidgetCheckBox::WidgetCheckBox(const Common::UString &model, const Common::UStri
 WidgetCheckBox::~WidgetCheckBox() {
 }
 
+void WidgetCheckBox::setState(int state) {
+	if (hasGroupMembers()) {
+		// Group members, we are a radio button
+
+		if (!state)
+			// We can't just uncheck a radio button without checking another one
+			return;
+
+		_state = true;
+		leave();
+		setActive(true);
+
+	} else {
+		// No group members, we are a check box
+
+		_state = !!state;
+		leave();
+		setActive(true);
+	}
+}
+
 void WidgetCheckBox::enter() {
 	if (isDisabled())
 		return;
@@ -134,6 +155,8 @@ void WidgetCheckBox::mouseUp(uint8 state, float x, float y) {
 }
 
 void WidgetCheckBox::signalGroupMemberActive() {
+	Widget::signalGroupMemberActive();
+
 	_state = false;
 	leave();
 }
@@ -157,9 +180,8 @@ WidgetLabel::~WidgetLabel() {
 
 WidgetSlider::WidgetSlider(const Common::UString &model, const Common::UString &font,
                          const Common::UString &text) : Widget(model, font, text) {
-	_steps = 0;
-	_state = 0;
-	_move  = false;
+	_steps    = 0;
+	_position = 0.0;
 }
 
 WidgetSlider::~WidgetSlider() {
@@ -167,6 +189,12 @@ WidgetSlider::~WidgetSlider() {
 
 void WidgetSlider::setSteps(int steps) {
 	_steps = steps;
+}
+
+void WidgetSlider::setState(int state) {
+	Widget::setState(state);
+
+	changePosition(CLIP(((float) _state) / _steps, 0.0f, 1.0f));
 }
 
 void WidgetSlider::enter() {
@@ -198,9 +226,21 @@ void WidgetSlider::changedValue(float x, float y) {
 	getPosition(curX, curY, curZ);
 
 	x      = CLIP(x - curX, 0.0f, getWidth()) / getWidth();
-	_state = x * _steps;
+	_state = roundf(x * _steps);
+
+	changePosition(((float) _state) / _steps);
 
 	setActive(true);
+}
+
+void WidgetSlider::changePosition(float value) {
+	if (_model) {
+		value -= _model->getNodeWidth("thumb") / 2.0;
+
+		_model->moveNode("thumb", - _position + value, 0.0, 0.0);
+	}
+
+	_position = value;
 }
 
 

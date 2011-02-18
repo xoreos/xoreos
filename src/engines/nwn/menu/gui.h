@@ -46,6 +46,8 @@ public:
 	               const Common::UString &text);
 	~WidgetCheckBox();
 
+	void setState(int state);
+
 	void enter();
 	void leave();
 
@@ -78,6 +80,8 @@ public:
 
 	void setSteps(int steps);
 
+	void setState(int state);
+
 	void enter();
 	void leave();
 
@@ -85,10 +89,11 @@ public:
 	void mouseDown(uint8 state, float x, float y);
 
 private:
-	int  _steps;
-	bool _move;
+	int   _steps;
+	float _position;
 
 	void changedValue(float x, float y);
+	void changePosition(float value);
 };
 
 class WidgetEditBox : public Widget {
