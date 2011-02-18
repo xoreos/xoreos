@@ -8,33 +8,37 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/optionsvideo.h
- *  The video options menu.
+/** @file engines/nwn/menu/optionsresolution.cpp
+ *  The resolution options menu.
  */
 
-#ifndef ENGINES_NWN_MENU_OPTIONSVIDEO_H
-#define ENGINES_NWN_MENU_OPTIONSVIDEO_H
+#include "engines/nwn/menu/optionsresolution.h"
 
-#include "engines/nwn/menu/gui.h"
+#include "engines/aurora/util.h"
 
 namespace Engines {
 
 namespace NWN {
 
-/** The NWN video options menu. */
-class OptionsVideoMenu: public GUI {
-public:
-	OptionsVideoMenu();
-	~OptionsVideoMenu();
+OptionsResolutionMenu::OptionsResolutionMenu() : GUI("options_vidmodes") {
+}
 
-protected:
-	void callbackActive(Widget &widget);
+OptionsResolutionMenu::~OptionsResolutionMenu() {
+}
 
-	GUI *_resolution;
-};
+void OptionsResolutionMenu::callbackActive(Widget &widget) {
+	if ((widget.getTag() == "CancelButton") ||
+	    (widget.getTag() == "XButton")) {
+		_returnCode = 1;
+		return;
+	}
+
+	if (widget.getTag() == "OkButton") {
+		_returnCode = 2;
+		return;
+	}
+}
 
 } // End of namespace NWN
 
 } // End of namespace Engines
-
-#endif // ENGINES_NWN_MENU_OPTIONSVIDEO_H
