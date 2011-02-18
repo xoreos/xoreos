@@ -16,7 +16,8 @@ noinst_HEADERS = nwn.h \
                  menu/optionscontrols.h \
                  menu/optionsgorepass.h \
                  menu/optionsfeedback.h \
-                 menu/optionsresolution.h
+                 menu/optionsresolution.h \
+                 menu/optionsvideoadv.h
 
 libnwn_la_SOURCES = nwn.cpp \
                     modelloader.cpp \
@@ -32,4 +33,5 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/optionscontrols.cpp \
                     menu/optionsgorepass.cpp \
                     menu/optionsfeedback.cpp \
-                    menu/optionsresolution.cpp
+                    menu/optionsresolution.cpp \
+                    menu/optionsvideoadv.cpp

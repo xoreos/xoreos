@@ -14,6 +14,7 @@
 
 #include "engines/nwn/menu/optionsvideo.h"
 #include "engines/nwn/menu/optionsresolution.h"
+#include "engines/nwn/menu/optionsvideoadv.h"
 
 #include "engines/aurora/util.h"
 
@@ -40,13 +41,12 @@ OptionsVideoMenu::OptionsVideoMenu() : GUI("options_video") {
 	getWidget("GammaSlider"     , true)->setDisabled(true);
 	getWidget("GammaResetButton", true)->setDisabled(true);
 
-	// TODO: Advanced video settings
-	getWidget("AdvVideoButton", true)->setDisabled(true);
-
 	_resolution = new OptionsResolutionMenu;
+	_advanced   = new OptionsVideoAdvancedMenu;
 }
 
 OptionsVideoMenu::~OptionsVideoMenu() {
+	delete _advanced;
 	delete _resolution;
 }
 
@@ -64,6 +64,11 @@ void OptionsVideoMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "VideoModeButton") {
 		sub(*_resolution);
+		return;
+	}
+
+	if (widget.getTag() == "AdvVideoButton") {
+		sub(*_advanced);
 		return;
 	}
 }

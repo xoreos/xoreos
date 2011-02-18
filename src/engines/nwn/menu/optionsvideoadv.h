@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/optionsvideo.h
- *  The video options menu.
+/** @file engines/nwn/menu/optionsvideoadv.h
+ *  The advanced video options menu.
  */
 
-#ifndef ENGINES_NWN_MENU_OPTIONSVIDEO_H
-#define ENGINES_NWN_MENU_OPTIONSVIDEO_H
+#ifndef ENGINES_NWN_MENU_OPTIONVIDEOADV_H
+#define ENGINES_NWN_MENU_OPTIONVIDEOADV_H
 
 #include "engines/nwn/menu/gui.h"
 
@@ -21,21 +21,18 @@ namespace Engines {
 
 namespace NWN {
 
-/** The NWN video options menu. */
-class OptionsVideoMenu: public GUI {
+/** The NWN advanced video options menu. */
+class OptionsVideoAdvancedMenu: public GUI {
 public:
-	OptionsVideoMenu();
-	~OptionsVideoMenu();
+	OptionsVideoAdvancedMenu();
+	~OptionsVideoAdvancedMenu();
 
 protected:
 	void callbackActive(Widget &widget);
-
-	GUI *_resolution;
-	GUI *_advanced;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_OPTIONSVIDEO_H
+#endif // ENGINES_NWN_MENU_OPTIONVIDEOADV_H
