@@ -208,10 +208,13 @@ void Widget::enter() {
 void Widget::leave() {
 }
 
-void Widget::mouseDown(const Events::Event &event) {
+void Widget::mouseMove(uint8 state, float x, float y) {
 }
 
-void Widget::mouseUp(const Events::Event &event) {
+void Widget::mouseDown(uint8 state, float x, float y) {
+}
+
+void Widget::mouseUp(uint8 state, float x, float y) {
 }
 
 void Widget::addChild(Widget &widget) {
@@ -435,15 +438,16 @@ void GUI::checkWidgetActive(Widget *widget) {
 
 void GUI::mouseMove(const Events::Event &event) {
 	Widget *widget = getWidgetAt(event.motion.x, event.motion.y);
-	if (widget == _currentWidget)
-		// Nothing changed
-		return;
 
-	if (event.motion.state != 0)
-		// We ignore moves with pressed mouse buttons
-		return;
+	if (event.motion.state != 0) {
+		// Moves with a mouse button pressed sends move events to the current widget
+		mouseMove(_currentWidget, event);
 
-	changedWidget(widget);
+		checkWidgetActive(_currentWidget);
+	} else
+		// Moves without a mouse button can change the current widget
+		if (widget != _currentWidget)
+			changedWidget(widget);
 }
 
 void GUI::mouseDown(const Events::Event &event) {
@@ -455,8 +459,7 @@ void GUI::mouseDown(const Events::Event &event) {
 	if (widget != _currentWidget)
 		changedWidget(widget);
 
-	if (_currentWidget)
-		_currentWidget->mouseDown(event);
+	mouseDown(_currentWidget, event);
 }
 
 void GUI::mouseUp(const Events::Event &event) {
@@ -470,10 +473,36 @@ void GUI::mouseUp(const Events::Event &event) {
 		return;
 	}
 
-	if (_currentWidget)
-		_currentWidget->mouseUp(event);
+	mouseUp(_currentWidget, event);
 
 	checkWidgetActive(_currentWidget);
+}
+
+float GUI::toGUIX(int x) {
+	float sW = GfxMan.getScreenWidth();
+
+	return (x - (sW / 2.0)) / 100.0;
+}
+
+float GUI::toGUIY(int y) {
+	float sH = GfxMan.getScreenHeight();
+
+	return ((sH - y) - (sH / 2.0)) / 100.0;
+}
+
+void GUI::mouseMove(Widget *widget, const Events::Event &event) {
+	if (widget)
+		widget->mouseMove(event.motion.state, toGUIX(event.motion.x), toGUIY(event.motion.y));
+}
+
+void GUI::mouseDown(Widget *widget, const Events::Event &event) {
+	if (widget)
+		widget->mouseDown(event.button.state, toGUIX(event.button.x), toGUIY(event.button.y));
+}
+
+void GUI::mouseUp(Widget *widget, const Events::Event &event) {
+	if (widget)
+		widget->mouseUp(event.button.state, toGUIX(event.button.x), toGUIY(event.button.y));
 }
 
 } // End of namespace Engines

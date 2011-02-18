@@ -36,8 +36,8 @@ public:
 	            const Common::UString &text);
 	~WidgetClose();
 
-	void mouseDown(const Events::Event &event);
-	void mouseUp  (const Events::Event &event);
+	void mouseDown(uint8 state, float x, float y);
+	void mouseUp  (uint8 state, float x, float y);
 };
 
 class WidgetCheckBox : public Widget {
@@ -49,8 +49,8 @@ public:
 	void enter();
 	void leave();
 
-	void mouseDown(const Events::Event &event);
-	void mouseUp  (const Events::Event &event);
+	void mouseDown(uint8 state, float x, float y);
+	void mouseUp  (uint8 state, float x, float y);
 
 protected:
 	void signalGroupMemberActive();
@@ -75,6 +75,20 @@ public:
 	WidgetSlider(const Common::UString &model, const Common::UString &font,
 	            const Common::UString &text);
 	~WidgetSlider();
+
+	void setSteps(int steps);
+
+	void enter();
+	void leave();
+
+	void mouseMove(uint8 state, float x, float y);
+	void mouseDown(uint8 state, float x, float y);
+
+private:
+	int  _steps;
+	bool _move;
+
+	void changedValue(float x, float y);
 };
 
 class WidgetEditBox : public Widget {
@@ -93,8 +107,8 @@ public:
 	void enter();
 	void leave();
 
-	void mouseDown(const Events::Event &event);
-	void mouseUp  (const Events::Event &event);
+	void mouseDown(uint8 state, float x, float y);
+	void mouseUp  (uint8 state, float x, float y);
 };
 
 /** A NWN GUI. */

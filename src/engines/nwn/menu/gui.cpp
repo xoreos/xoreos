@@ -44,7 +44,7 @@ WidgetClose::WidgetClose(const Common::UString &model, const Common::UString &fo
 WidgetClose::~WidgetClose() {
 }
 
-void WidgetClose::mouseDown(const Events::Event &event) {
+void WidgetClose::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -54,7 +54,7 @@ void WidgetClose::mouseDown(const Events::Event &event) {
 	playSound("gui_button", Sound::kSoundTypeSFX);
 }
 
-void WidgetClose::mouseUp(const Events::Event &event) {
+void WidgetClose::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -101,14 +101,14 @@ void WidgetCheckBox::leave() {
 		_model->setState("uncheckedup");
 }
 
-void WidgetCheckBox::mouseDown(const Events::Event &event) {
+void WidgetCheckBox::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
 	playSound("gui_button", Sound::kSoundTypeSFX);
 }
 
-void WidgetCheckBox::mouseUp(const Events::Event &event) {
+void WidgetCheckBox::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -157,9 +157,50 @@ WidgetLabel::~WidgetLabel() {
 
 WidgetSlider::WidgetSlider(const Common::UString &model, const Common::UString &font,
                          const Common::UString &text) : Widget(model, font, text) {
+	_steps = 0;
+	_state = 0;
+	_move  = false;
 }
 
 WidgetSlider::~WidgetSlider() {
+}
+
+void WidgetSlider::setSteps(int steps) {
+	_steps = steps;
+}
+
+void WidgetSlider::enter() {
+}
+
+void WidgetSlider::leave() {
+}
+
+void WidgetSlider::mouseMove(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	if (state != SDL_BUTTON_LMASK)
+		// We only care about moves with the left mouse button pressed
+		return;
+
+	changedValue(x, y);
+}
+
+void WidgetSlider::mouseDown(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	changedValue(x, y);
+}
+
+void WidgetSlider::changedValue(float x, float y) {
+	float curX, curY, curZ;
+	getPosition(curX, curY, curZ);
+
+	x      = CLIP(x - curX, 0.0f, getWidth()) / getWidth();
+	_state = x * _steps;
+
+	setActive(true);
 }
 
 
@@ -194,7 +235,7 @@ void WidgetButton::leave() {
 		_model->setState("");
 }
 
-void WidgetButton::mouseDown(const Events::Event &event) {
+void WidgetButton::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -204,7 +245,7 @@ void WidgetButton::mouseDown(const Events::Event &event) {
 	playSound("gui_button", Sound::kSoundTypeSFX);
 }
 
-void WidgetButton::mouseUp(const Events::Event &event) {
+void WidgetButton::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 

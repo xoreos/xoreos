@@ -73,10 +73,12 @@ public:
 	virtual void enter(); ///< The mouse entered the widget.
 	virtual void leave(); ///< The mouse left the widget.
 
+	/** The mouse was moved over the widget. */
+	virtual void mouseMove(uint8 state, float x, float y);
 	/** A mouse button was pressed on the widget. */
-	virtual void mouseDown(const Events::Event &event);
+	virtual void mouseDown(uint8 state, float x, float y);
 	/** A mouse button was released on the widget. */
-	virtual void mouseUp  (const Events::Event &event);
+	virtual void mouseUp  (uint8 state, float x, float y);
 
 	void addChild(Widget &widget);       ///< Add a child to the widget.
 	void addGroupMember(Widget &widget); ///< Add a fellow group member to the widget.
@@ -180,6 +182,17 @@ private:
 	void mouseMove(const Events::Event &event); ///< Mouse move event triggered.
 	void mouseDown(const Events::Event &event); ///< Mouse down event triggered.
 	void mouseUp  (const Events::Event &event); ///< Mouse up event triggered.
+
+	float toGUIX(int x); // Convert an event X coordinate to a GUI X coordinate
+	float toGUIY(int y); // Convert an event Y coordinate to a GUI Y coordinate
+
+	/** Send a mouse move event to the widget. */
+	void mouseMove(Widget *widget, const Events::Event &event);
+	/** Send a mouse down event to the widget. */
+	void mouseDown(Widget *widget, const Events::Event &event);
+	/** Send a mouse up event to the widget. */
+	void mouseUp  (Widget *widget, const Events::Event &event);
+	/** Send a mouse move event to the widget. */
 };
 
 } // End of namespace Engines
