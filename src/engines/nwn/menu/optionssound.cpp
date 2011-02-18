@@ -123,7 +123,8 @@ void OptionsSoundMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "SoundFXSlider") {
 		_volSFX = _volVideo = widget.getState() / 20.0;
-		updateVolume(_volSFX, Sound::kSoundTypeSFX, "SoundFXLabel");
+		updateVolume(_volSFX  , Sound::kSoundTypeSFX  , "SoundFXLabel");
+		updateVolume(_volVideo, Sound::kSoundTypeVideo, "");
 		return;
 	}
 }
@@ -132,7 +133,9 @@ void OptionsSoundMenu::updateVolume(double volume, Sound::SoundType type,
                                     const Common::UString &label) {
 
 	SoundMan.setTypeGain(type, volume);
-	getWidget(label, true)->setText(Common::UString::sprintf("%.0f%%", volume * 100.0));
+
+	if (!label.empty())
+		getWidget(label, true)->setText(Common::UString::sprintf("%.0f%%", volume * 100.0));
 }
 
 void OptionsSoundMenu::adoptChanges() {
