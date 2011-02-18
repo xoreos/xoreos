@@ -48,6 +48,9 @@ GraphicsManager::GraphicsManager() {
 
 	_fullScreen = false;
 
+	_fsaa    = 0;
+	_fsaaMax = 0;
+
 	_screen = 0;
 
 	_fpsCounter = new FPSCounter(3);
@@ -113,6 +116,14 @@ bool GraphicsManager::supportMultipleTextures() const {
 	return _supportMultipleTextures;
 }
 
+int GraphicsManager::getMaxFSAA() const {
+	return _fsaaMax;
+}
+
+int GraphicsManager::getCurrentFSAA() const {
+	return _fsaa;
+}
+
 uint32 GraphicsManager::getFPS() const {
 	return _fpsCounter->getFPS();
 }
@@ -149,12 +160,105 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	checkGLExtensions();
 }
 
+bool GraphicsManager::setFSAA(int level) {
+	Common::enforceMainThread();
+
+	if (_fsaa == level)
+		// Nothing to do
+		return true;
+
+	// Check if we have the support for that level
+	if (level > _fsaaMax)
+		return false;
+
+	// Backup the old level and set the new level
+	int oldFSAA = _fsaa;
+	_fsaa = level;
+
+	// Destroying all videos, textures and lists, since we need to
+	// reload/rebuild them anyway when the context is recreated
+	destroyVideos();
+	destroyLists();
+	destroyTextures();
+
+	// Set the multisample level
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
+
+	uint32 flags = _screen->flags;
+
+	// Now try to change the screen
+	_screen = SDL_SetVideoMode(0, 0, 0, flags);
+
+	if (!_screen) {
+		// Failed changing, back up
+
+		_fsaa = oldFSAA;
+
+		// Set the multisample level
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
+		_screen = SDL_SetVideoMode(0, 0, 0, flags);
+
+		// There's no reason how this could possibly fail, but ok...
+		if (!_screen)
+			throw Common::Exception("Failed reverting to the old FSAA settings");
+	}
+
+	int a, b;
+	SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &a);
+	SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &b);
+
+	// Reintroduce glew to the surface
+	GLenum glewErr = glewInit();
+	if (glewErr != GLEW_OK)
+		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
+
+	// Reintroduce OpenGL to the surface
+	setupScene();
+
+	// And reload/rebuild all textures, lists and videos
+	reloadTextures();
+	rebuildLists();
+	rebuildVideos();
+
+	// Wait for everything to settle
+	RequestMan.sync();
+
+	return _fsaa == level;
+}
+
+int GraphicsManager::probeFSAA(int width, int height, int bpp, uint32 flags) {
+	// Find the max supported FSAA level
+
+	for (int i = 32; i >= 2; i >>= 1) {
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE    ,   8);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE  ,   8);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE   ,   8);
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE  , bpp);
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,   1);
+
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, i);
+
+		if (SDL_SetVideoMode(width, height, bpp, flags))
+			return i;
+	}
+
+	return 0;
+}
+
 bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
+	_fsaaMax = probeFSAA(width, height, bpp, flags);
+
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE    ,   8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE  ,   8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE   ,   8);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE  , bpp);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,   1);
+
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
 	_screen = SDL_SetVideoMode(width, height, bpp, flags);
 	if (!_screen)
@@ -299,6 +403,9 @@ void GraphicsManager::renderScene() {
 	if (_cursorState != kCursorStateStay)
 		handleCursorSwitch();
 
+	if (_fsaa > 0)
+		glEnable(GL_MULTISAMPLE_ARB);
+
 	// Clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -330,6 +437,9 @@ void GraphicsManager::renderScene() {
 		}
 
 		_fpsCounter->finishedFrame();
+
+		if (_fsaa > 0)
+			glDisable(GL_MULTISAMPLE_ARB);
 		return;
 	}
 
@@ -397,6 +507,9 @@ void GraphicsManager::renderScene() {
 	}
 
 	_fpsCounter->finishedFrame();
+
+	if (_fsaa > 0)
+		glDisable(GL_MULTISAMPLE_ARB);
 }
 
 int GraphicsManager::getScreenWidth() const {

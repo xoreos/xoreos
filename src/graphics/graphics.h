@@ -55,6 +55,12 @@ public:
 	/** Do we have support for multiple textures? */
 	bool supportMultipleTextures() const;
 
+	/** Return the max supported FSAA level. */
+	int getMaxFSAA() const;
+
+	/** Return the current FSAA level. */
+	int getCurrentFSAA() const;
+
 	/** How many frames per second to we render at the moments? */
 	uint32 getFPS() const;
 
@@ -91,6 +97,9 @@ private:
 
 	bool _fullScreen; ///< Are we currently in fullscreen mode?
 
+	int _fsaa;    ///< Current FSAA settings.
+	int _fsaaMax; ///< Max supported FSAA level.
+
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
@@ -108,6 +117,8 @@ private:
 	CursorState _cursorState;  ///< What to do with the cursor.
 
 	bool _takeScreenshot; ///< Should screenshot be taken?
+
+	int probeFSAA(int width, int height, int bpp, uint32 flags);
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void checkGLExtensions();
@@ -161,6 +172,9 @@ public:
 	void setFullScreen(bool fullScreen);
 	/** Change the window size. */
 	void changeSize(int width, int height);
+
+	/** Set the FSAA settings. */
+	bool setFSAA(int level);
 
 	/** Toggle mouse grab */
 	void toggleMouseGrab();
