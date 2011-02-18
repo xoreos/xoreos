@@ -44,6 +44,8 @@ public:
 
 	int getState() const; ///< Get the widget's state.
 
+	virtual void setState(int state); ///< Set the widget's state.
+
 	/** Set the widget's position. */
 	void setPosition(float x, float y, float z);
 	/** Set the widget's text's position, relative to the widget's position. */

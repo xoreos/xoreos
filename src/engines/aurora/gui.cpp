@@ -100,6 +100,10 @@ int Widget::getState() const {
 	return _state;
 }
 
+void Widget::setState(int state) {
+	_state = state;
+}
+
 void Widget::setPosition(float x, float y, float z) {
 	_x = x; _y = y; _z = z;
 
