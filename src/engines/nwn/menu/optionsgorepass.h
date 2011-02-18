@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/optionsgame.h
- *  The game options menu.
+/** @file engines/nwn/menu/optionsgorepass.h
+ *  The violence/gore password options menu.
  */
 
-#ifndef ENGINES_NWN_MENU_OPTIONSGAME_H
-#define ENGINES_NWN_MENU_OPTIONSGAME_H
+#ifndef ENGINES_NWN_MENU_OPTIONSGOREPASS_H
+#define ENGINES_NWN_MENU_OPTIONSGOREPASS_H
 
 #include "engines/nwn/menu/gui.h"
 
@@ -21,21 +21,18 @@ namespace Engines {
 
 namespace NWN {
 
-/** The NWN game options menu. */
-class OptionsGameMenu: public GUI {
+/** The NWN violence/gore password options menu. */
+class OptionsGorePasswordMenu: public GUI {
 public:
-	OptionsGameMenu();
-	~OptionsGameMenu();
+	OptionsGorePasswordMenu();
+	~OptionsGorePasswordMenu();
 
 protected:
 	void callbackActive(Widget &widget);
-
-	GUI *_gorepass;
-	GUI *_feedback;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_OPTIONSGAME_H
+#endif // ENGINES_NWN_MENU_OPTIONSGOREPASS_H

@@ -13,6 +13,7 @@
  */
 
 #include "engines/nwn/menu/optionsgame.h"
+#include "engines/nwn/menu/optionsgorepass.h"
 #include "engines/nwn/menu/optionsfeedback.h"
 
 #include "engines/aurora/util.h"
@@ -39,14 +40,13 @@ OptionsGameMenu::OptionsGameMenu() : GUI("options_game") {
 	// TODO: Violence level
 	getWidget("ViolenceSlider", true)->setDisabled(true);
 
-	// TODO: Gore password
-	getWidget("PasswordButton", true)->setDisabled(true);
-
+	_gorepass = new OptionsGorePasswordMenu;
 	_feedback = new OptionsFeedbackMenu;
 }
 
 OptionsGameMenu::~OptionsGameMenu() {
 	delete _feedback;
+	delete _gorepass;
 }
 
 void OptionsGameMenu::callbackActive(Widget &widget) {
@@ -61,6 +61,10 @@ void OptionsGameMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
+	if (widget.getTag() == "PasswordButton") {
+		sub(*_gorepass);
+		return;
+	}
 	if (widget.getTag() == "FeedbackButton") {
 		sub(*_feedback);
 		return;
