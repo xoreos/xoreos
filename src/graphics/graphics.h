@@ -64,6 +64,16 @@ public:
 	/** How many frames per second to we render at the moments? */
 	uint32 getFPS() const;
 
+	/** Return the current screen width. */
+	int getScreenWidth() const;
+	/** Return the current screen height. */
+	int getScreenHeight() const;
+
+	/** Return the system's screen width. */
+	int getSystemWidth() const;
+	/** Return the system's screen height. */
+	int getSystemHeight() const;
+
 	/** That the window's title. */
 	void setWindowTitle(const Common::UString &title);
 
@@ -99,6 +109,9 @@ private:
 
 	int _fsaa;    ///< Current FSAA settings.
 	int _fsaaMax; ///< Max supported FSAA level.
+
+	int _systemWidth;  ///< The system's screen width.
+	int _systemHeight; ///< The system's screen height.
 
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
@@ -162,9 +175,6 @@ public:
 
 	/** Render one complete frame of the scene. */
 	void renderScene();
-
-	int getScreenWidth() const;
-	int getScreenHeight() const;
 
 	/** Toggle between full screen and windowed modes. */
 	void toggleFullScreen();

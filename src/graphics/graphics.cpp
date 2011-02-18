@@ -135,6 +135,9 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	if ((bpp != 24) && (bpp != 32))
 		throw Common::Exception("Need 24 or 32 bits per pixel");
 
+	_systemWidth  = SDL_GetVideoInfo()->current_w;
+	_systemHeight = SDL_GetVideoInfo()->current_h;
+
 	uint32 flags = SDL_OPENGL;
 
 	_fullScreen = fullscreen;
@@ -524,6 +527,14 @@ int GraphicsManager::getScreenHeight() const {
 		return 0;
 
 	return _screen->h;
+}
+
+int GraphicsManager::getSystemWidth() const {
+	return _systemWidth;
+}
+
+int GraphicsManager::getSystemHeight() const {
+	return _systemHeight;
 }
 
 void GraphicsManager::clearTextureList() {
