@@ -20,7 +20,9 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsFeedbackMenu::OptionsFeedbackMenu() : GUI("options_feedback") {
+OptionsFeedbackMenu::OptionsFeedbackMenu() {
+	load("options_feedback");
+
 	std::list<Widget *> bubbleMode;
 	bubbleMode.push_back(getWidget("BubblesTextOnly"));
 	bubbleMode.push_back(getWidget("BubblesFull"));

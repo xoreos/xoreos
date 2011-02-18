@@ -100,8 +100,20 @@ public:
 /** A NWN GUI. */
 class GUI : public ::Engines::GUI {
 public:
-	GUI(const Common::UString &resref);
+	GUI();
 	~GUI();
+
+protected:
+	void load(const Common::UString &resref);
+
+	virtual void initWidget(WidgetFrame    &widget);
+	virtual void initWidget(WidgetClose    &widget);
+	virtual void initWidget(WidgetCheckBox &widget);
+	virtual void initWidget(WidgetPanel    &widget);
+	virtual void initWidget(WidgetLabel    &widget);
+	virtual void initWidget(WidgetSlider   &widget);
+	virtual void initWidget(WidgetEditBox  &widget);
+	virtual void initWidget(WidgetButton   &widget);
 
 private:
 	enum WidgetType {
@@ -117,6 +129,10 @@ private:
 	};
 
 	void loadWidget(const Aurora::GFFStruct &strct, Widget *parent);
+	void initWidgetAll(Widget *widget, const Common::UString &tag, float *textColor);
+	Widget *createWidget(WidgetType type, const Common::UString &tag,
+	                     const Common::UString &resRef, const Common::UString &font,
+	                     const Common::UString &text, float *textColor);
 };
 
 } // End of namespace NWN

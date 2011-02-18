@@ -22,7 +22,9 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsVideoMenu::OptionsVideoMenu() : GUI("options_video") {
+OptionsVideoMenu::OptionsVideoMenu() {
+	load("options_video");
+
 	// TODO: Video quality
 	getWidget("VidQualSlider", true)->setDisabled(true);
 	getWidget("TextureSlider", true)->setDisabled(true);

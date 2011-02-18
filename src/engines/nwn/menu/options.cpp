@@ -24,13 +24,8 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsMenu::OptionsMenu() : GUI("options_pregame") {
-	Widget *build = getWidget("BuildNumber");
-	if (build) {
-		build->setText(PACKAGE_STRING);
-		build->setTextColor(0.6, 0.6, 0.6, 1.0);
-		build->moveText(- build->getTextWidth(), 0.0);
-	}
+OptionsMenu::OptionsMenu() {
+	load("options_pregame");
 
 	_game     = new OptionsGameMenu;
 	_video    = new OptionsVideoMenu;
@@ -43,6 +38,14 @@ OptionsMenu::~OptionsMenu() {
 	delete _sound;
 	delete _video;
 	delete _game;
+}
+
+void OptionsMenu::initWidget(WidgetLabel &widget) {
+	if (widget.getTag() == "BuildNumber") {
+		widget.setText(PACKAGE_STRING);
+		widget.setTextColor(0.6, 0.6, 0.6, 1.0);
+		return;
+	}
 }
 
 void OptionsMenu::callbackActive(Widget &widget) {

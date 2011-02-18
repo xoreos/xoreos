@@ -27,7 +27,9 @@ namespace Engines {
 
 namespace NWN {
 
-MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : GUI("pre_main"), _xp1(0), _xp2(0) {
+MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : _xp1(0), _xp2(0) {
+	load("pre_main");
+
 	if (xp1) {
 		_xp1 = loadModelGUI("ctl_xp1_text");
 		_xp1->setPosition(1.24, 0.00, 0.50);

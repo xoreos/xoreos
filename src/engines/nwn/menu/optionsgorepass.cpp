@@ -20,7 +20,9 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsGorePasswordMenu::OptionsGorePasswordMenu() : GUI("options_gorepass") {
+OptionsGorePasswordMenu::OptionsGorePasswordMenu() {
+	load("options_gorepass");
+
 	// TODO: Password
 	getWidget("OldPassword"    , true)->setDisabled(true);
 	getWidget("NewPassword"    , true)->setDisabled(true);

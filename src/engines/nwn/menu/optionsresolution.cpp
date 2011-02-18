@@ -20,7 +20,8 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsResolutionMenu::OptionsResolutionMenu() : GUI("options_vidmodes") {
+OptionsResolutionMenu::OptionsResolutionMenu() {
+	load("options_vidmodes");
 }
 
 OptionsResolutionMenu::~OptionsResolutionMenu() {

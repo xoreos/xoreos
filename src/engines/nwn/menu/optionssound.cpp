@@ -21,7 +21,9 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsSoundMenu::OptionsSoundMenu() : GUI("options_sound") {
+OptionsSoundMenu::OptionsSoundMenu() {
+	load("options_sound");
+
 	std::list<Widget *> speakerGroup;
 	speakerGroup.push_back(getWidget("71Speakers"));
 	speakerGroup.push_back(getWidget("51Speakers"));

@@ -20,7 +20,9 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu() : GUI("options_advsound") {
+OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu() {
+	load("options_advsound");
+
 	// TODO: Sound providers
 	getWidget("ProviderList", true)->setDisabled(true);
 

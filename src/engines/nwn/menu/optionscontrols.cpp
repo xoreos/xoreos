@@ -20,7 +20,9 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsControlsMenu::OptionsControlsMenu() : GUI("options_controls") {
+OptionsControlsMenu::OptionsControlsMenu() {
+	load("options_controls");
+
 	std::list<Widget *> camGroup;
 	camGroup.push_back(getWidget("ChaseCheckBox"));
 	camGroup.push_back(getWidget("StiffCheckBox"));

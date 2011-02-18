@@ -20,7 +20,9 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsVideoAdvancedMenu::OptionsVideoAdvancedMenu() : GUI("options_adv_vid") {
+OptionsVideoAdvancedMenu::OptionsVideoAdvancedMenu() {
+	load("options_adv_vid");
+
 	// TODO: Grass
 	getWidget("GrassSlider", true)->setDisabled(true);
 

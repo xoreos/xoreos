@@ -215,7 +215,13 @@ void WidgetButton::mouseUp(const Events::Event &event) {
 }
 
 
-GUI::GUI(const Common::UString &resref) {
+GUI::GUI() {
+}
+
+GUI::~GUI() {
+}
+
+void GUI::load(const Common::UString &resref) {
 	try {
 		Aurora::GFFFile *gff = loadGFF(resref, Aurora::kFileTypeGUI, MKID_BE('GUI '));
 
@@ -225,9 +231,6 @@ GUI::GUI(const Common::UString &resref) {
 		e.add("Can't load GUI \"%s\"", resref.c_str());
 		throw;
 	}
-}
-
-GUI::~GUI() {
 }
 
 void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
@@ -243,6 +246,7 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 
 	// Caption
 	Common::UString font, text;
+	float textColor[4] = {1.0, 1.0, 1.0, 1.0};
 	if (strct.hasField("Obj_Caption")) {
 		const Aurora::GFFStruct &caption = strct.getStruct("Obj_Caption");
 
@@ -251,32 +255,14 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 		uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
 		if (strRef != 0xFFFFFFFF)
 			text = TalkMan.getString(strRef);
+
+		textColor[0] = caption.getDouble("AurString_ColorR", 1.0);
+		textColor[1] = caption.getDouble("AurString_ColorG", 1.0);
+		textColor[2] = caption.getDouble("AurString_ColorB", 1.0);
+		textColor[3] = caption.getDouble("AurString_ColorA", 1.0);
 	}
 
-	Widget *widget = 0;
-	if      (type == kWidgetTypeFrame)
-		widget = new WidgetFrame(resRef, font, text);
-	else if (type == kWidgetTypeCloseButton)
-		widget = new WidgetClose(resRef, font, text);
-	else if (type == kWidgetTypeCheckBox)
-		widget = new WidgetCheckBox(resRef, font, text);
-	else if (type == kWidgetTypePanel)
-		widget = new WidgetPanel(resRef, font, text);
-	else if (type == kWidgetTypeLabel)
-		widget = new WidgetLabel(resRef, font, text);
-	else if (type == kWidgetTypeSlider)
-		widget = new WidgetSlider(resRef, font, text);
-	else if (type == kWidgetTypeEditBox)
-		widget = new WidgetEditBox(resRef, font, text);
-	else if (type == kWidgetTypeButton)
-		widget = new WidgetButton(resRef, font, text);
-
-	if (!widget) {
-		warning("Unknown widget type %d", type);
-		return;
-	}
-
-	addWidget(tag, widget);
+	Widget *widget = createWidget(type, tag, resRef, font, text, textColor);
 
 	if (parent) {
 		if (strct.getString("Obj_Parent") != parent->getTag())
@@ -327,13 +313,6 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 		}
 
 		widget->setTextPosition(labelX, labelY);
-
-		float r = caption.getDouble("AurString_ColorR", 1.0);
-		float g = caption.getDouble("AurString_ColorG", 1.0);
-		float b = caption.getDouble("AurString_ColorB", 1.0);
-		float a = caption.getDouble("AurString_ColorA", 1.0);
-
-		widget->setTextColor(r, g, b, a);
 	}
 
 	// Go down to the children
@@ -344,6 +323,83 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 			loadWidget(**c, widget);
 	}
 }
+
+void GUI::initWidgetAll(Widget *widget, const Common::UString &tag, float *textColor) {
+	widget->setTextColor(textColor[0], textColor[1], textColor[2], textColor[3]);
+	addWidget(tag, widget);
+}
+
+Widget *GUI::createWidget(WidgetType type, const Common::UString &tag,
+                     const Common::UString &resRef, const Common::UString &font,
+                     const Common::UString &text, float *textColor) {
+
+	if (type == kWidgetTypeFrame) {
+		WidgetFrame *widget = new WidgetFrame(resRef, font, text);
+		initWidgetAll(widget, tag, textColor);
+		initWidget(*widget);
+		return widget;
+	}
+
+	if (type == kWidgetTypeCloseButton) {
+		WidgetClose *widget = new WidgetClose(resRef, font, text);
+		initWidgetAll(widget, tag, textColor);
+		initWidget(*widget);
+		return widget;
+	}
+
+	if (type == kWidgetTypeCheckBox) {
+		WidgetCheckBox *widget = new WidgetCheckBox(resRef, font, text);
+		initWidgetAll(widget, tag, textColor);
+		initWidget(*widget);
+		return widget;
+	}
+
+	if (type == kWidgetTypePanel) {
+		WidgetPanel *widget = new WidgetPanel(resRef, font, text);
+		initWidgetAll(widget, tag, textColor);
+		initWidget(*widget);
+		return widget;
+	}
+
+	if (type == kWidgetTypeLabel) {
+		WidgetLabel *widget = new WidgetLabel(resRef, font, text);
+		initWidgetAll(widget, tag, textColor);
+		initWidget(*widget);
+		return widget;
+	}
+
+	if (type == kWidgetTypeSlider) {
+		WidgetSlider *widget = new WidgetSlider(resRef, font, text);
+		initWidgetAll(widget, tag, textColor);
+		initWidget(*widget);
+		return widget;
+	}
+
+	if (type == kWidgetTypeEditBox) {
+		WidgetEditBox *widget = new WidgetEditBox(resRef, font, text);
+		initWidgetAll(widget, tag, textColor);
+		initWidget(*widget);
+		return widget;
+	}
+
+	if (type == kWidgetTypeButton) {
+		WidgetButton *widget = new WidgetButton(resRef, font, text);
+		initWidgetAll(widget, tag, textColor);
+		initWidget(*widget);
+		return widget;
+	}
+
+	throw Common::Exception("No such widget type %d", type);
+}
+
+void GUI::initWidget(WidgetFrame    &widget) { }
+void GUI::initWidget(WidgetClose    &widget) { }
+void GUI::initWidget(WidgetCheckBox &widget) { }
+void GUI::initWidget(WidgetPanel    &widget) { }
+void GUI::initWidget(WidgetLabel    &widget) { }
+void GUI::initWidget(WidgetSlider   &widget) { }
+void GUI::initWidget(WidgetEditBox  &widget) { }
+void GUI::initWidget(WidgetButton   &widget) { }
 
 } // End of namespace NWN
 

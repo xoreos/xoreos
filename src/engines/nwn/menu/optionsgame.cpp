@@ -22,7 +22,9 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsGameMenu::OptionsGameMenu() : GUI("options_game") {
+OptionsGameMenu::OptionsGameMenu() {
+	load("options_game");
+
 	std::list<Widget *> hideTiles;
 	hideTiles.push_back(getWidget("NeverBox"));
 	hideTiles.push_back(getWidget("AutoBox"));

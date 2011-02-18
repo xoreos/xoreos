@@ -21,7 +21,9 @@ namespace Engines {
 
 namespace NWN {
 
-MoviesCampMenu::MoviesCampMenu(bool xp1, bool xp2, bool xp3) : GUI("pre_camp_movies") {
+MoviesCampMenu::MoviesCampMenu(bool xp1, bool xp2, bool xp3) {
+	load("pre_camp_movies");
+
 	Widget *button = 0;
 
 	button = getWidget("NWNXP1Button");

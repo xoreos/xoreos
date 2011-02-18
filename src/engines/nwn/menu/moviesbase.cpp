@@ -20,7 +20,8 @@ namespace Engines {
 
 namespace NWN {
 
-MoviesBaseMenu::MoviesBaseMenu() : GUI("pre_movies") {
+MoviesBaseMenu::MoviesBaseMenu() {
+	load("pre_movies");
 }
 
 MoviesBaseMenu::~MoviesBaseMenu() {
