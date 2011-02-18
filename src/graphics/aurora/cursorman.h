@@ -50,8 +50,8 @@ public:
 	/** Set the cursor to a specific tag. */
 	void set(const Common::UString &tag, bool enabled);
 
-	void getPosition(int &x, int &y) const;
-	void setPosition(int  x, int  y);
+	uint8 getPosition(int &x, int &y) const;
+	void  setPosition(int  x, int  y);
 
 	void hideCursor();
 	void showCursor();

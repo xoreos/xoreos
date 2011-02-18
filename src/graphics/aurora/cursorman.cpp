@@ -102,8 +102,8 @@ Cursor *CursorManager::get(const Common::UString &name) {
 	return _cursors.insert(std::make_pair(name, new Cursor(name))).first->second;
 }
 
-void CursorManager::getPosition(int &x, int &y) const {
-	SDL_GetMouseState(&x, &y);
+uint8 CursorManager::getPosition(int &x, int &y) const {
+	return SDL_GetMouseState(&x, &y);
 }
 
 void CursorManager::setPosition(int x, int y) {
