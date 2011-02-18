@@ -30,6 +30,7 @@ public:
 protected:
 	void callbackActive(Widget &widget);
 
+private:
 	GUI *_resolution;
 	GUI *_advanced;
 };
