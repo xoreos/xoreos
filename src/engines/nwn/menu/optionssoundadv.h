@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/optionssound.h
- *  The sound options menu.
+/** @file engines/nwn/menu/optionssoundadv.h
+ *  The advanced sound options menu.
  */
 
-#ifndef ENGINES_NWN_MENU_OPTIONSSOUND_H
-#define ENGINES_NWN_MENU_OPTIONSSOUND_H
+#ifndef ENGINES_NWN_MENU_OPTIONSSOUNDADV_H
+#define ENGINES_NWN_MENU_OPTIONSSOUNDADV_H
 
 #include "engines/nwn/menu/gui.h"
 
@@ -21,20 +21,18 @@ namespace Engines {
 
 namespace NWN {
 
-/** The NWN sound options menu. */
-class OptionsSoundMenu: public GUI {
+/** The NWN advanced sound options menu. */
+class OptionsSoundAdvancedMenu: public GUI {
 public:
-	OptionsSoundMenu();
-	~OptionsSoundMenu();
+	OptionsSoundAdvancedMenu();
+	~OptionsSoundAdvancedMenu();
 
 protected:
 	void callbackActive(Widget &widget);
-
-	GUI *_advanced;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_OPTIONSSOUND_H
+#endif // ENGINES_NWN_MENU_OPTIONSSOUNDADV_H

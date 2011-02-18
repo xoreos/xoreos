@@ -13,6 +13,7 @@
  */
 
 #include "engines/nwn/menu/optionssound.h"
+#include "engines/nwn/menu/optionssoundadv.h"
 
 #include "engines/aurora/util.h"
 
@@ -45,11 +46,11 @@ OptionsSoundMenu::OptionsSoundMenu() : GUI("options_sound") {
 	getWidget("Surround"   , true)->setDisabled(true);
 	getWidget("Headphones" , true)->setDisabled(true);
 
-	// TODO: Sound servers
-	getWidget("AdvSoundBtn", true)->setDisabled(true);
+	_advanced = new OptionsSoundAdvancedMenu;
 }
 
 OptionsSoundMenu::~OptionsSoundMenu() {
+	delete _advanced;
 }
 
 void OptionsSoundMenu::callbackActive(Widget &widget) {
@@ -63,6 +64,11 @@ void OptionsSoundMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
 		_returnCode = 2;
 		// TODO: Adopt changes
+		return;
+	}
+
+	if (widget.getTag() == "AdvSoundBtn") {
+		sub(*_advanced);
 		return;
 	}
 }
