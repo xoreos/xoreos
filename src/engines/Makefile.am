@@ -10,13 +10,15 @@ noinst_HEADERS = engine.h \
                  gamethread.h \
                  aurora/util.h \
                  aurora/modelloader.h \
-                 aurora/model.h
+                 aurora/model.h \
+                 aurora/gui.h
 
 libengines_la_SOURCES = engine.cpp \
                         enginemanager.cpp \
                         gamethread.cpp \
                         aurora/util.cpp \
                         aurora/modelloader.cpp \
-                        aurora/model.cpp
+                        aurora/model.cpp \
+                        aurora/gui.cpp
 
 libengines_la_LIBADD = nwn/libnwn.la nwn2/libnwn2.la kotor/libkotor.la kotor2/libkotor2.la thewitcher/libthewitcher.la sonic/libsonic.la dragonage/libdragonage.la jade/libjade.la
