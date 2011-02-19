@@ -22,15 +22,12 @@
 
 #include "events/types.h"
 
-#include "graphics/aurora/types.h"
-
 namespace Engines {
 
 /** A widget in a GUI. */
 class Widget {
 public:
-	Widget(const Common::UString &model, const Common::UString &font,
-	       const Common::UString &text);
+	Widget(const Common::UString &tag);
 	virtual ~Widget();
 
 	const Common::UString &getTag() const; ///< Get the widget's tag.
@@ -39,38 +36,22 @@ public:
 	bool isVisible () const; ///< Is the widget visible?
 	bool isDisabled() const; ///< Is the widget disabled?
 
-	void show(); ///< Show the widget.
-	void hide(); ///< Hide the widget.
-
-	int getState() const; ///< Get the widget's state.
-
-	virtual void setState(int state); ///< Set the widget's state.
+	virtual void show(); ///< Show the widget.
+	virtual void hide(); ///< Hide the widget.
 
 	/** Set the widget's position. */
-	void setPosition(float x, float y, float z);
-	/** Set the widget's text's position, relative to the widget's position. */
-	void setTextPosition(float x, float y);
+	virtual void setPosition(float x, float y, float z);
 
 	/** Move the widget, relative to its current position. */
-	void move(float x, float y, float z);
-	/** Move the widget's text, relative to its current position. */
-	void moveText(float x, float y);
+	virtual void movePosition(float x, float y, float z);
 
 	/** Get the widget's position. */
-	void getPosition(float &x, float &y, float &z) const;
+	virtual void getPosition(float &x, float &y, float &z) const;
 
-	float getWidth () const; ///< Get the widget's width.
-	float getHeight() const; ///< Get the widget's height.
+	virtual float getWidth () const; ///< Get the widget's width.
+	virtual float getHeight() const; ///< Get the widget's height.
 
-	float getTextWidth () const; ///< Get the widget's text's width.
-	float getTextHeight() const; ///< Get the widget's text's height.
-
-	/** Set the widget's text. */
-	void setText(const Common::UString &text);
-	/** Set the widget's text's color. */
-	void setTextColor(float r, float g, float b, float a);
-
-	void setDisabled(bool disabled); ///< Disable/Enable the widget.
+	virtual void setDisabled(bool disabled); ///< Disable/Enable the widget.
 
 	virtual void enter(); ///< The mouse entered the widget.
 	virtual void leave(); ///< The mouse left the widget.
@@ -82,22 +63,14 @@ public:
 	/** A mouse button was released on the widget. */
 	virtual void mouseUp  (uint8 state, float x, float y);
 
-	void addChild(Widget &widget);       ///< Add a child to the widget.
-	void addGroupMember(Widget &widget); ///< Add a fellow group member to the widget.
+	virtual void addChild(Widget &widget);       ///< Add a child to the widget.
+	virtual void addGroupMember(Widget &widget); ///< Add a fellow group member to the widget.
 
 protected:
 	Common::UString _tag; ///< The widget's tag.
 
 	std::list<Widget *> _children;     ///< The widget's children.
 	std::list<Widget *> _groupMembers; ///< The widget's fellow group members.
-
-	Graphics::Aurora::Model *_model; ///< The widget's model.
-	Graphics::Aurora::Text  *_text;  ///< The widget's text.
-
-	int _state; ///< The widget's state.
-
-	/** Does the widget have any fellow group members? */
-	bool hasGroupMembers() const;
 
 	/** A fellow group member signaled that it is now active. */
 	virtual void signalGroupMemberActive();
@@ -112,17 +85,6 @@ private:
 	float _x; ///< The widget X position.
 	float _y; ///< The widget Y position.
 	float _z; ///< The widget Z position.
-
-	float _textX; ///< The widget's text X position.
-	float _textY; ///< The widget's text Y position.
-
-	float _r; ///< The widget text's color's red compontent.
-	float _g; ///< The widget text's color's green compontent.
-	float _b; ///< The widget text's color's blue compontent.
-	float _a; ///< The widget text's color's alpha compontent.
-
-	/** Set the widget's tag. */
-	void setTag(const Common::UString &tag);
 
 	friend class GUI;
 };
@@ -144,7 +106,7 @@ protected:
 	int _returnCode; ///< The GUI's return code.
 
 	/** Add a widget. */
-	void addWidget(const Common::UString &tag, Widget *widget);
+	void addWidget(Widget *widget);
 
 	/** Does this specific widget exist within the GUI? */
 	bool hasWidget(const Common::UString &tag) const;

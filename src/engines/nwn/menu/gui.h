@@ -17,36 +17,80 @@
 
 #include "aurora/gfffile.h"
 
+#include "graphics/aurora/types.h"
+
 #include "engines/aurora/gui.h"
 
 namespace Engines {
 
 namespace NWN {
 
-class WidgetFrame : public Widget {
+class NWNModelWidget : public Widget {
 public:
-	WidgetFrame(const Common::UString &model, const Common::UString &font,
-	            const Common::UString &text);
+	NWNModelWidget(const Common::UString &tag, const Common::UString &model);
+	~NWNModelWidget();
+
+	void show();
+	void hide();
+
+	void setPosition(float x, float y, float z);
+
+	float getWidth () const;
+	float getHeight() const;
+
+protected:
+	Graphics::Aurora::Model *_model;
+};
+
+class NWNTextWidget : public Widget {
+public:
+	NWNTextWidget(const Common::UString &tag, const Common::UString &font,
+	              const Common::UString &text);
+	~NWNTextWidget();
+
+	void show();
+	void hide();
+
+	void setPosition(float x, float y, float z);
+	void setColor(float r, float g, float b, float a);
+	void setText(const Common::UString &text);
+
+	float getWidth () const;
+	float getHeight() const;
+
+	void setDisabled(bool disabled);
+
+protected:
+	Graphics::Aurora::Text *_text;
+
+	float _r;
+	float _g;
+	float _b;
+	float _a;
+};
+
+class WidgetFrame : public NWNModelWidget {
+public:
+	WidgetFrame(const Common::UString &tag, const Common::UString &model);
 	~WidgetFrame();
 };
 
-class WidgetClose : public Widget {
+class WidgetClose : public NWNModelWidget {
 public:
-	WidgetClose(const Common::UString &model, const Common::UString &font,
-	            const Common::UString &text);
+	WidgetClose(const Common::UString &tag, const Common::UString &model);
 	~WidgetClose();
 
 	void mouseDown(uint8 state, float x, float y);
 	void mouseUp  (uint8 state, float x, float y);
 };
 
-class WidgetCheckBox : public Widget {
+class WidgetCheckBox : public NWNModelWidget {
 public:
-	WidgetCheckBox(const Common::UString &model, const Common::UString &font,
-	               const Common::UString &text);
+	WidgetCheckBox(const Common::UString &tag, const Common::UString &model);
 	~WidgetCheckBox();
 
-	void setState(int state);
+	bool getState() const;
+	void setState(bool state);
 
 	void enter();
 	void leave();
@@ -56,57 +100,60 @@ public:
 
 protected:
 	void signalGroupMemberActive();
+
+private:
+	bool _state;
+
+	void updateModel(bool highlight);
 };
 
-class WidgetPanel : public Widget {
+class WidgetPanel : public NWNModelWidget {
 public:
-	WidgetPanel(const Common::UString &model, const Common::UString &font,
-	            const Common::UString &text);
+	WidgetPanel(const Common::UString &tag, const Common::UString &model);
 	~WidgetPanel();
 };
 
-class WidgetLabel : public Widget {
+class WidgetLabel : public NWNTextWidget {
 public:
-	WidgetLabel(const Common::UString &model, const Common::UString &font,
+	WidgetLabel(const Common::UString &tag, const Common::UString &font,
 	            const Common::UString &text);
 	~WidgetLabel();
 };
 
-class WidgetSlider : public Widget {
+class WidgetSlider : public NWNModelWidget {
 public:
-	WidgetSlider(const Common::UString &model, const Common::UString &font,
-	            const Common::UString &text);
+	WidgetSlider(const Common::UString &tag, const Common::UString &model);
 	~WidgetSlider();
+
+	void setPosition(float x, float y, float z);
 
 	void setSteps(int steps);
 
+	int getState() const;
 	void setState(int state);
-
-	void enter();
-	void leave();
 
 	void mouseMove(uint8 state, float x, float y);
 	void mouseDown(uint8 state, float x, float y);
 
 private:
-	int   _steps;
 	float _position;
+
+	int _steps;
+	int _state;
 
 	void changedValue(float x, float y);
 	void changePosition(float value);
 };
 
-class WidgetEditBox : public Widget {
+class WidgetEditBox : public NWNModelWidget {
 public:
-	WidgetEditBox(const Common::UString &model, const Common::UString &font,
-	            const Common::UString &text);
+	WidgetEditBox(const Common::UString &tag, const Common::UString &model);
 	~WidgetEditBox();
 };
 
-class WidgetButton : public Widget {
+class WidgetButton : public NWNModelWidget {
 public:
-	WidgetButton(const Common::UString &model, const Common::UString &font,
-	             const Common::UString &text);
+	WidgetButton(const Common::UString &tag, const Common::UString &model);
 	~WidgetButton();
 
 	void enter();
@@ -134,6 +181,15 @@ protected:
 	virtual void initWidget(WidgetEditBox  &widget);
 	virtual void initWidget(WidgetButton   &widget);
 
+	WidgetFrame    *getFrame   (const Common::UString &tag, bool vital = false);
+	WidgetClose    *getClose   (const Common::UString &tag, bool vital = false);
+	WidgetCheckBox *getCheckBox(const Common::UString &tag, bool vital = false);
+	WidgetPanel    *getPanel   (const Common::UString &tag, bool vital = false);
+	WidgetLabel    *getLabel   (const Common::UString &tag, bool vital = false);
+	WidgetSlider   *getSlider  (const Common::UString &tag, bool vital = false);
+	WidgetEditBox  *getEditBox (const Common::UString &tag, bool vital = false);
+	WidgetButton   *getButton  (const Common::UString &tag, bool vital = false);
+
 private:
 	enum WidgetType {
 		kWidgetTypeInvalid     = -1,
@@ -147,11 +203,30 @@ private:
 		kWidgetTypeButton      =  9
 	};
 
+	Common::UString _name;
+
 	void loadWidget(const Aurora::GFFStruct &strct, Widget *parent);
-	void initWidgetAll(Widget *widget, const Common::UString &tag, float *textColor);
-	Widget *createWidget(WidgetType type, const Common::UString &tag,
-	                     const Common::UString &resRef, const Common::UString &font,
-	                     const Common::UString &text, float *textColor);
+
+	Widget *createWidget(const Aurora::GFFStruct &strct, WidgetType &type);
+
+	WidgetFrame    *createFrame   (const Common::UString &tag,
+	                               const Aurora::GFFStruct &strct);
+	WidgetClose    *createClose   (const Common::UString &tag,
+	                               const Aurora::GFFStruct &strct);
+	WidgetCheckBox *createCheckBox(const Common::UString &tag,
+	                               const Aurora::GFFStruct &strct);
+	WidgetPanel    *createPanel   (const Common::UString &tag,
+	                               const Aurora::GFFStruct &strct);
+	WidgetLabel    *createLabel   (const Common::UString &tag,
+	                               const Aurora::GFFStruct &strct);
+	WidgetSlider   *createSlider  (const Common::UString &tag,
+	                               const Aurora::GFFStruct &strct);
+	WidgetEditBox  *createEditBox (const Common::UString &tag,
+	                               const Aurora::GFFStruct &strct);
+	WidgetButton   *createButton  (const Common::UString &tag,
+	                               const Aurora::GFFStruct &strct);
+
+	WidgetLabel *createCaption(const Aurora::GFFStruct &strct, Widget *parent);
 };
 
 } // End of namespace NWN

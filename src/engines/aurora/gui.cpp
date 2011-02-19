@@ -17,35 +17,18 @@
 #include "graphics/graphics.h"
 
 #include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/model.h"
 
 #include "events/events.h"
 
 #include "engines/aurora/gui.h"
-#include "engines/aurora/model.h"
 
 namespace Engines {
 
-Widget::Widget(const Common::UString &model, const Common::UString &font,
-               const Common::UString &text) :
-	_model(0), _text(0), _state(0),
-	_active(false), _visible(false), _disabled(false),
-	_x(0.0), _y(0.0), _z(0.0), _textX(0.0), _textY(0.0),
-	_r(1.0), _g(1.0), _b(1.0), _a(1.0) {
-
-	// Load model
-	if (!model.empty())
-		_model = loadModelGUI(model);
-
-	// Load text
-	if (!font.empty())
-		_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a);
+Widget::Widget(const Common::UString &tag) : _tag(tag),
+	_active(false), _visible(false), _disabled(false), _x(0.0), _y(0.0), _z(0.0) {
 }
 
 Widget::~Widget() {
-	delete _text;
-	delete _model;
 }
 
 const Common::UString &Widget::getTag() const {
@@ -71,10 +54,6 @@ void Widget::show() {
 
 	_visible = true;
 
-	// Show text and model
-	if (_model) _model->show();
-	if (_text ) _text ->show();
-
 	// Show children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
 		(*it)->show();
@@ -87,52 +66,19 @@ void Widget::hide() {
 
 	_visible = false;
 
-	// Hide text and model
-	if (_model) _model->hide();
-	if (_text ) _text ->hide();
-
 	// Hide children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
 		(*it)->hide();
 }
 
-int Widget::getState() const {
-	return _state;
-}
-
-void Widget::setState(int state) {
-	_state = state;
-}
-
 void Widget::setPosition(float x, float y, float z) {
-	_x = x; _y = y; _z = z;
-
-	if (_model)
-		_model->setPosition(_x, _y, _z);
+	_x = x;
+	_y = y;
+	_z = z;
 }
 
-void Widget::setTextPosition(float x, float y) {
-	_textX = x; _textY = y;
-
-	if (_text)
-	_text->setPosition(_x + _textX, _y + _textY);
-}
-
-void Widget::move(float x, float y, float z) {
-	_x += x;
-	_y += y;
-	_z += z;
-
-	if (_model)
-		_model->setPosition(_x, _y, _z);
-}
-
-void Widget::moveText(float x, float y) {
-	_textX += x;
-	_textY += y;
-
-	if (_text)
-	_text->setPosition(_x + _textX, _y + _textY);
+void Widget::movePosition(float x, float y, float z) {
+	setPosition(_x + x, _y + y, _z + z);
 }
 
 void Widget::getPosition(float &x, float &y, float &z) const {
@@ -142,51 +88,11 @@ void Widget::getPosition(float &x, float &y, float &z) const {
 }
 
 float Widget::getWidth() const {
-	// The widget's bounds are defined either by its model, or
-	// if not existent, its text.
-
-	if (_model)
-		return _model->getWidth();
-	if (_text)
-		return _text->getWidth();
-
 	return 0.0;
 }
 
 float Widget::getHeight() const {
-	// The widget's bounds are defined either by its model, or
-	// if not existent, its text.
-
-	if (_model)
-		return _model->getHeight();
-	if (_text)
-		return _text->getHeight();
-
 	return 0.0;
-}
-
-float Widget::getTextWidth() const {
-	if (_text)
-		return _text->getWidth();
-
-	return 0.0;
-}
-
-float Widget::getTextHeight() const {
-	if (_text)
-		return _text->getHeight();
-
-	return 0.0;
-}
-
-void Widget::setText(const Common::UString &text) {
-	if (_text)
-		_text->set(text);
-}
-
-void Widget::setTextColor(float r, float g, float b, float a) {
-	if (_text)
-		_text->setColor(_r = r, _g = g, _b = b, _a = a);
 }
 
 void Widget::setDisabled(bool disabled) {
@@ -195,11 +101,6 @@ void Widget::setDisabled(bool disabled) {
 		return;
 
 	_disabled = disabled;
-
-	// Shade/Unshade the text
-	_a = _disabled ? (_a * 0.6) : (_a / 0.6);
-	if (_text)
-		_text->setColor(_r, _g, _b, _a);
 
 	// Disable/Enable children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
@@ -231,10 +132,6 @@ void Widget::addGroupMember(Widget &widget) {
 		_groupMembers.push_back(&widget);
 }
 
-bool Widget::hasGroupMembers() const {
-	return !_groupMembers.empty();
-}
-
 void Widget::signalGroupMemberActive() {
 	_active = false;
 }
@@ -250,13 +147,6 @@ void Widget::setActive(bool active) {
 	if (_active)
 		for (std::list<Widget *>::iterator it = _groupMembers.begin(); it != _groupMembers.end(); ++it)
 			(*it)->signalGroupMemberActive();
-}
-
-void Widget::setTag(const Common::UString &tag) {
-	_tag = tag;
-
-	if (_model)
-		_model->setTag(tag);
 }
 
 
@@ -318,14 +208,12 @@ void GUI::callbackRun() {
 void GUI::callbackActive(Widget &widget) {
 }
 
-void GUI::addWidget(const Common::UString &tag, Widget *widget) {
+void GUI::addWidget(Widget *widget) {
 	if (!widget)
 		return;
 
-	widget->setTag(tag);
-
 	_widgets.push_back(widget);
-	_widgetMap[tag] = widget;
+	_widgetMap[widget->getTag()] = widget;
 }
 
 bool GUI::hasWidget(const Common::UString &tag) const {

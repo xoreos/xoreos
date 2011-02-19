@@ -74,7 +74,7 @@ void OptionsVideoAdvancedMenu::show() {
 	if (fsaa > 0)
 		fsaa = log2(fsaa);
 
-	getWidget("AntiAliasSlider", true)->setState(fsaa);
+	getSlider("AntiAliasSlider", true)->setState(fsaa);
 
 	updateFSAALabel(fsaa);
 
@@ -112,7 +112,7 @@ void OptionsVideoAdvancedMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "AntiAliasSlider") {
-		int fsaa = widget.getState();
+		int fsaa = dynamic_cast<WidgetSlider &>(widget).getState();
 
 		updateFSAALabel(fsaa);
 
@@ -135,7 +135,7 @@ void OptionsVideoAdvancedMenu::updateFSAALabel(int n) {
 	else
 		text = Common::UString::sprintf("%dx %s", 1 << n, TalkMan.getString(67538).c_str());
 
-	getWidget("AntialiasLabel", true)->setText(text);
+	getLabel("AntialiasLabel", true)->setText(text);
 }
 
 void OptionsVideoAdvancedMenu::adoptChanges() {

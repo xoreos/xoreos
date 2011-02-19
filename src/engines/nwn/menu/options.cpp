@@ -43,7 +43,7 @@ OptionsMenu::~OptionsMenu() {
 void OptionsMenu::initWidget(WidgetLabel &widget) {
 	if (widget.getTag() == "BuildNumber") {
 		widget.setText(PACKAGE_STRING);
-		widget.setTextColor(0.6, 0.6, 0.6, 1.0);
+		widget.setColor(0.6, 0.6, 0.6, 1.0);
 		return;
 	}
 }

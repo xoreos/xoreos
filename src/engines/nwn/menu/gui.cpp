@@ -19,9 +19,11 @@
 #include "aurora/gfffile.h"
 #include "aurora/talkman.h"
 
+#include "graphics/aurora/text.h"
 #include "graphics/aurora/model.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "engines/nwn/menu/gui.h"
 
@@ -29,16 +31,123 @@ namespace Engines {
 
 namespace NWN {
 
-WidgetFrame::WidgetFrame(const Common::UString &model, const Common::UString &font,
-                         const Common::UString &text) : Widget(model, font, text) {
+NWNModelWidget::NWNModelWidget(const Common::UString &tag, const Common::UString &model) :
+	Widget(tag) {
+
+	if (!(_model = loadModelGUI(model)))
+		throw Common::Exception("Can't load widget \"%s\" for widget \"%s\"",
+				model.c_str(), tag.c_str());
+
+	_model->setTag(tag);
+}
+
+NWNModelWidget::~NWNModelWidget() {
+	freeModel(_model);
+}
+
+void NWNModelWidget::show() {
+	if (isVisible())
+		return;
+
+	_model->show();
+	Widget::show();
+}
+
+void NWNModelWidget::hide() {
+	if (!isVisible())
+		return;
+
+	_model->hide();
+	Widget::hide();
+}
+
+void NWNModelWidget::setPosition(float x, float y, float z) {
+	Widget::setPosition(x, y, z);
+
+	getPosition(x, y, z);
+	_model->setPosition(x, y, z);
+}
+
+float NWNModelWidget::getWidth() const {
+	return _model->getWidth();
+}
+
+float NWNModelWidget::getHeight() const {
+	return _model->getHeight();
+}
+
+
+NWNTextWidget::NWNTextWidget(const Common::UString &tag, const Common::UString &font,
+                             const Common::UString &text) :
+	Widget(tag), _r(1.0), _g(1.0), _b(1.0), _a(1.0) {
+
+	_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a);
+}
+
+NWNTextWidget::~NWNTextWidget() {
+	delete _text;
+}
+
+void NWNTextWidget::show() {
+	_text->show();
+}
+
+void NWNTextWidget::hide() {
+	_text->hide();
+}
+
+void NWNTextWidget::setPosition(float x, float y, float z) {
+	Widget::setPosition(x, y, z);
+
+	getPosition(x, y, z);
+	_text->setPosition(x, y);
+}
+
+void NWNTextWidget::setColor(float r, float g, float b, float a) {
+	_r = r;
+	_g = g;
+	_b = b;
+	_a = a;
+
+	_text->setColor(_r, _g, _b, _a);
+}
+
+void NWNTextWidget::setText(const Common::UString &text) {
+	_text->set(text);
+}
+
+float NWNTextWidget::getWidth() const {
+	return _text->getWidth();
+}
+
+float NWNTextWidget::getHeight() const {
+	return _text->getHeight();
+}
+
+void NWNTextWidget::setDisabled(bool disabled) {
+	if (isDisabled())
+		return;
+
+	_a = disabled ? (_a * 0.6) : (_a / 0.6);
+
+	_text->setColor(_r, _g, _b, _a);
+
+	Widget::setDisabled(disabled);
+}
+
+
+WidgetFrame::WidgetFrame(const Common::UString &tag, const Common::UString &model) :
+	NWNModelWidget(tag, model) {
+
 }
 
 WidgetFrame::~WidgetFrame() {
 }
 
 
-WidgetClose::WidgetClose(const Common::UString &model, const Common::UString &font,
-                         const Common::UString &text) : Widget(model, font, text) {
+WidgetClose::WidgetClose(const Common::UString &tag, const Common::UString &model) :
+	NWNModelWidget(tag, model) {
+
 }
 
 WidgetClose::~WidgetClose() {
@@ -48,9 +157,7 @@ void WidgetClose::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	if (_model)
-		_model->setState("down");
-
+	_model->setState("down");
 	playSound("gui_button", Sound::kSoundTypeSFX);
 }
 
@@ -58,25 +165,41 @@ void WidgetClose::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	if (_model)
-		_model->setState("");
-
+	_model->setState("");
 	setActive(true);
 }
 
 
-WidgetCheckBox::WidgetCheckBox(const Common::UString &model, const Common::UString &font,
-                               const Common::UString &text) : Widget(model, font, text) {
+WidgetCheckBox::WidgetCheckBox(const Common::UString &tag, const Common::UString &model) :
+	NWNModelWidget(tag, model) {
 
-	_state = 0;
-	leave();
+	_state = false;
+	updateModel(false);
 }
 
 WidgetCheckBox::~WidgetCheckBox() {
 }
 
-void WidgetCheckBox::setState(int state) {
-	if (hasGroupMembers()) {
+void WidgetCheckBox::updateModel(bool highlight) {
+	if (highlight) {
+		if (_state)
+			_model->setState("");
+		else
+			_model->setState("hilite");
+	} else {
+		if (_state)
+			_model->setState("");
+		else
+			_model->setState("uncheckedup");
+	}
+}
+
+bool WidgetCheckBox::getState() const {
+	return _state;
+}
+
+void WidgetCheckBox::setState(bool state) {
+	if (!_groupMembers.empty()) {
 		// Group members, we are a radio button
 
 		if (!state)
@@ -84,14 +207,14 @@ void WidgetCheckBox::setState(int state) {
 			return;
 
 		_state = true;
-		leave();
+		updateModel(false);
 		setActive(true);
 
 	} else {
 		// No group members, we are a check box
 
 		_state = !!state;
-		leave();
+		updateModel(false);
 		setActive(true);
 	}
 }
@@ -100,26 +223,14 @@ void WidgetCheckBox::enter() {
 	if (isDisabled())
 		return;
 
-	if (!_model)
-		return;
-
-	if (_state)
-		_model->setState("");
-	else
-		_model->setState("hilite");
+	updateModel(true);
 }
 
 void WidgetCheckBox::leave() {
 	if (isDisabled())
 		return;
 
-	if (!_model)
-		return;
-
-	if (_state)
-		_model->setState("");
-	else
-		_model->setState("uncheckedup");
+	updateModel(false);
 }
 
 void WidgetCheckBox::mouseDown(uint8 state, float x, float y) {
@@ -133,7 +244,7 @@ void WidgetCheckBox::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	if (hasGroupMembers()) {
+	if (!_groupMembers.empty()) {
 		// Group members, we are a radio button
 
 		if (_state)
@@ -141,14 +252,14 @@ void WidgetCheckBox::mouseUp(uint8 state, float x, float y) {
 			return;
 
 		_state = true;
-		enter();
+		updateModel(true);
 		setActive(true);
 
 	} else {
 		// No group members, we are a check box
 
 		_state = !_state;
-		enter();
+		updateModel(true);
 		setActive(true);
 	}
 
@@ -158,49 +269,53 @@ void WidgetCheckBox::signalGroupMemberActive() {
 	Widget::signalGroupMemberActive();
 
 	_state = false;
-	leave();
+	updateModel(false);
 }
 
 
-WidgetPanel::WidgetPanel(const Common::UString &model, const Common::UString &font,
-                         const Common::UString &text) : Widget(model, font, text) {
+WidgetPanel::WidgetPanel(const Common::UString &tag, const Common::UString &model) :
+	NWNModelWidget(tag, model) {
+
 }
 
 WidgetPanel::~WidgetPanel() {
 }
 
 
-WidgetLabel::WidgetLabel(const Common::UString &model, const Common::UString &font,
-                         const Common::UString &text) : Widget(model, font, text) {
+WidgetLabel::WidgetLabel(const Common::UString &tag, const Common::UString &font,
+                         const Common::UString &text) : NWNTextWidget(tag, font, text) {
+
 }
 
 WidgetLabel::~WidgetLabel() {
 }
 
 
-WidgetSlider::WidgetSlider(const Common::UString &model, const Common::UString &font,
-                         const Common::UString &text) : Widget(model, font, text) {
-	_steps    = 0;
-	_position = 0.0;
+WidgetSlider::WidgetSlider(const Common::UString &tag, const Common::UString &model) :
+	NWNModelWidget(tag, model), _position(0.0), _steps(0), _state(0) {
+
+	changePosition(0.0);
 }
 
 WidgetSlider::~WidgetSlider() {
+}
+
+void WidgetSlider::setPosition(float x, float y, float z) {
+	NWNModelWidget::setPosition(x, y, z);
 }
 
 void WidgetSlider::setSteps(int steps) {
 	_steps = steps;
 }
 
+int WidgetSlider::getState() const {
+	return _state;
+}
+
 void WidgetSlider::setState(int state) {
-	Widget::setState(state);
+	_state = state;
 
 	changePosition(CLIP(((float) _state) / _steps, 0.0f, 1.0f));
-}
-
-void WidgetSlider::enter() {
-}
-
-void WidgetSlider::leave() {
 }
 
 void WidgetSlider::mouseMove(uint8 state, float x, float y) {
@@ -228,32 +343,37 @@ void WidgetSlider::changedValue(float x, float y) {
 	x      = CLIP(x - curX, 0.0f, getWidth()) / getWidth();
 	_state = roundf(x * _steps);
 
+	if (_steps == 0) {
+		changePosition(0.0);
+		return;
+	}
+
 	changePosition(((float) _state) / _steps);
 
 	setActive(true);
 }
 
 void WidgetSlider::changePosition(float value) {
-	if (_model) {
-		value -= _model->getNodeWidth("thumb") / 2.0;
+	value -= _model->getNodeWidth("thumb") / 2.0;
 
-		_model->moveNode("thumb", - _position + value, 0.0, 0.0);
-	}
+	_model->moveNode("thumb", - _position + value, 0.0, 0.0);
 
 	_position = value;
 }
 
 
-WidgetEditBox::WidgetEditBox(const Common::UString &model, const Common::UString &font,
-                         const Common::UString &text) : Widget(model, font, text) {
+WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &model) :
+	NWNModelWidget(tag, model) {
+
 }
 
 WidgetEditBox::~WidgetEditBox() {
 }
 
 
-WidgetButton::WidgetButton(const Common::UString &model, const Common::UString &font,
-                           const Common::UString &text) : Widget(model, font, text) {
+WidgetButton::WidgetButton(const Common::UString &tag, const Common::UString &model) :
+	NWNModelWidget(tag, model) {
+
 }
 
 WidgetButton::~WidgetButton() {
@@ -263,25 +383,21 @@ void WidgetButton::enter() {
 	if (isDisabled())
 		return;
 
-	if (_model)
-		_model->setState("hilite");
+	_model->setState("hilite");
 }
 
 void WidgetButton::leave() {
 	if (isDisabled())
 		return;
 
-	if (_model)
-		_model->setState("");
+	_model->setState("");
 }
 
 void WidgetButton::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	if (_model)
-		_model->setState("down");
-
+	_model->setState("down");
 	playSound("gui_button", Sound::kSoundTypeSFX);
 }
 
@@ -289,9 +405,7 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	if (_model)
-		_model->setState("");
-
+	_model->setState("");
 	setActive(true);
 }
 
@@ -303,6 +417,8 @@ GUI::~GUI() {
 }
 
 void GUI::load(const Common::UString &resref) {
+	_name = resref;
+
 	try {
 		Aurora::GFFFile *gff = loadGFF(resref, Aurora::kFileTypeGUI, MKID_BE('GUI '));
 
@@ -319,31 +435,11 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 	if (type == kWidgetTypeInvalid)
 		throw Common::Exception("Widget without a type");
 
-	Common::UString tag = strct.getString("Obj_Tag");
-	if (tag.empty())
-		throw Common::Exception("Widget without a tag");
+	Widget *widget = createWidget(strct, type);
+	if (!widget)
+		return;
 
-	Common::UString resRef = strct.getString("Obj_ResRef");
-
-	// Caption
-	Common::UString font, text;
-	float textColor[4] = {1.0, 1.0, 1.0, 1.0};
-	if (strct.hasField("Obj_Caption")) {
-		const Aurora::GFFStruct &caption = strct.getStruct("Obj_Caption");
-
-		font = caption.getString("AurString_Font");
-
-		uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
-		if (strRef != 0xFFFFFFFF)
-			text = TalkMan.getString(strRef);
-
-		textColor[0] = caption.getDouble("AurString_ColorR", 1.0);
-		textColor[1] = caption.getDouble("AurString_ColorG", 1.0);
-		textColor[2] = caption.getDouble("AurString_ColorB", 1.0);
-		textColor[3] = caption.getDouble("AurString_ColorA", 1.0);
-	}
-
-	Widget *widget = createWidget(type, tag, resRef, font, text, textColor);
+	addWidget(widget);
 
 	if (parent) {
 		if (strct.getString("Obj_Parent") != parent->getTag())
@@ -352,7 +448,6 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 		parent->addChild(*widget);
 
 		float pX, pY, pZ;
-
 		parent->getPosition(pX, pY, pZ);
 
 		float x = strct.getDouble("Obj_X") + pX;
@@ -364,14 +459,15 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 		// We'll ignore these for now, centering the GUI
 	}
 
-		/*
-		uint32 layer = strct.getUint("Obj_Layer");
+	WidgetLabel *label = 0;
+	if (type != kWidgetTypeLabel)
+		// Create a caption sub-widget
+		label = createCaption(strct, widget);
+	else
+		label = dynamic_cast<WidgetLabel *>(widget);
 
-		bool locked = strct.getUint("Obj_Locked") != 0;
-		*/
-
-	// Caption properties
-	if (strct.hasField("Obj_Caption")) {
+	// Move the label to its destined position
+	if (label && strct.hasField("Obj_Caption")) {
 		const Aurora::GFFStruct &caption = strct.getStruct("Obj_Caption");
 
 		float alignH = caption.getDouble("AurString_AlignH");
@@ -379,22 +475,26 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 
 		float labelX = strct.getDouble("Obj_Label_X");
 		float labelY = strct.getDouble("Obj_Label_Y");
+		float labelZ = strct.getDouble("Obj_Label_Z");
 
-		if (!resRef.empty()) {
+		if (type != kWidgetTypeLabel) {
 			labelX += widget->getWidth () * alignV;
 			labelY += widget->getHeight() * alignH;
 
-			labelX -= widget->getTextWidth () / 2;
-			labelY -= widget->getTextHeight() / 2;
+			labelX -= label->getWidth () / 2;
+			labelY -= label->getHeight() / 2;
 		} else {
-			labelY -= widget->getTextHeight();
+			labelY -= label->getHeight();
 
-			labelX -= widget->getTextWidth () * alignH;
-			labelY -= widget->getTextHeight() * alignV;
+			labelX -= label->getWidth () * alignH;
+			labelY -= label->getHeight() * alignV;
 		}
 
-		widget->setTextPosition(labelX, labelY);
+		label->movePosition(labelX, labelY, labelZ);
 	}
+
+	// uint32 layer = strct.getUint("Obj_Layer");
+	// bool locked = strct.getUint("Obj_Locked") != 0;
 
 	// Go down to the children
 	if (strct.hasField("Obj_ChildList")) {
@@ -405,72 +505,191 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 	}
 }
 
-void GUI::initWidgetAll(Widget *widget, const Common::UString &tag, float *textColor) {
-	widget->setTextColor(textColor[0], textColor[1], textColor[2], textColor[3]);
-	addWidget(tag, widget);
-}
+Widget *GUI::createWidget(const Aurora::GFFStruct &strct, WidgetType &type) {
+	Common::UString tag = strct.getString("Obj_Tag");
+	if (tag.empty())
+		throw Common::Exception("Widget without a tag");
 
-Widget *GUI::createWidget(WidgetType type, const Common::UString &tag,
-                     const Common::UString &resRef, const Common::UString &font,
-                     const Common::UString &text, float *textColor) {
+	if ((_name == "options_adv_vid") && (tag == "CreatureWind"))
+		// ....BioWare....
+		type = kWidgetTypeSlider;
 
-	if (type == kWidgetTypeFrame) {
-		WidgetFrame *widget = new WidgetFrame(resRef, font, text);
-		initWidgetAll(widget, tag, textColor);
-		initWidget(*widget);
-		return widget;
-	}
-
-	if (type == kWidgetTypeCloseButton) {
-		WidgetClose *widget = new WidgetClose(resRef, font, text);
-		initWidgetAll(widget, tag, textColor);
-		initWidget(*widget);
-		return widget;
-	}
-
-	if (type == kWidgetTypeCheckBox) {
-		WidgetCheckBox *widget = new WidgetCheckBox(resRef, font, text);
-		initWidgetAll(widget, tag, textColor);
-		initWidget(*widget);
-		return widget;
-	}
-
-	if (type == kWidgetTypePanel) {
-		WidgetPanel *widget = new WidgetPanel(resRef, font, text);
-		initWidgetAll(widget, tag, textColor);
-		initWidget(*widget);
-		return widget;
-	}
-
-	if (type == kWidgetTypeLabel) {
-		WidgetLabel *widget = new WidgetLabel(resRef, font, text);
-		initWidgetAll(widget, tag, textColor);
-		initWidget(*widget);
-		return widget;
-	}
-
-	if (type == kWidgetTypeSlider) {
-		WidgetSlider *widget = new WidgetSlider(resRef, font, text);
-		initWidgetAll(widget, tag, textColor);
-		initWidget(*widget);
-		return widget;
-	}
-
-	if (type == kWidgetTypeEditBox) {
-		WidgetEditBox *widget = new WidgetEditBox(resRef, font, text);
-		initWidgetAll(widget, tag, textColor);
-		initWidget(*widget);
-		return widget;
-	}
-
-	if (type == kWidgetTypeButton) {
-		WidgetButton *widget = new WidgetButton(resRef, font, text);
-		initWidgetAll(widget, tag, textColor);
-		initWidget(*widget);
-		return widget;
-	}
+	if      (type == kWidgetTypeFrame)
+		return createFrame(tag, strct);
+	else if (type == kWidgetTypeCloseButton)
+		return createClose(tag, strct);
+	else if (type == kWidgetTypeCheckBox)
+		return createCheckBox(tag, strct);
+	else if (type == kWidgetTypePanel)
+		return createPanel(tag, strct);
+	else if (type == kWidgetTypeLabel)
+		return createLabel(tag, strct);
+	else if (type == kWidgetTypeSlider)
+		return createSlider(tag, strct);
+	else if (type == kWidgetTypeEditBox)
+		return createEditBox(tag, strct);
+	else if (type == kWidgetTypeButton)
+		return createButton(tag, strct);
 
 	throw Common::Exception("No such widget type %d", type);
+}
+
+WidgetFrame *GUI::createFrame(const Common::UString &tag,
+                              const Aurora::GFFStruct &strct) {
+
+	Common::UString model = strct.getString("Obj_ResRef");
+	if (model.empty())
+		throw Common::Exception("Frame widget without a model");
+
+	WidgetFrame *frame = new WidgetFrame(tag, model);
+
+	initWidget(*frame);
+
+	return frame;
+}
+
+WidgetClose *GUI::createClose(const Common::UString &tag,
+                              const Aurora::GFFStruct &strct) {
+
+	Common::UString model = strct.getString("Obj_ResRef");
+	if (model.empty())
+		throw Common::Exception("Close button widget without a model");
+
+	WidgetClose *closeButton = new WidgetClose(tag, model);
+
+	initWidget(*closeButton);
+
+	return closeButton;
+	return 0;
+}
+
+WidgetCheckBox *GUI::createCheckBox(const Common::UString &tag,
+                                    const Aurora::GFFStruct &strct) {
+
+	Common::UString model = strct.getString("Obj_ResRef");
+	if (model.empty())
+		throw Common::Exception("Check box widget without a model");
+
+	WidgetCheckBox *box = new WidgetCheckBox(tag, model);
+
+	initWidget(*box);
+
+	return box;
+}
+
+WidgetPanel *GUI::createPanel(const Common::UString &tag,
+                              const Aurora::GFFStruct &strct) {
+
+	Common::UString model = strct.getString("Obj_ResRef");
+	if (model.empty())
+		throw Common::Exception("Panel widget without a model");
+
+	WidgetPanel *panel = new WidgetPanel(tag, model);
+
+	initWidget(*panel);
+
+	return panel;
+}
+
+WidgetLabel *GUI::createLabel(const Common::UString &tag,
+                              const Aurora::GFFStruct &strct) {
+
+	const Aurora::GFFStruct &caption = strct.getStruct("Obj_Caption");
+
+	Common::UString font = caption.getString("AurString_Font");
+
+	Common::UString text;
+	uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
+	if (strRef != 0xFFFFFFFF)
+		text = TalkMan.getString(strRef);
+
+	WidgetLabel *label = new WidgetLabel(tag, font, text);
+
+	float r = caption.getDouble("AurString_ColorR", 1.0);
+	float g = caption.getDouble("AurString_ColorG", 1.0);
+	float b = caption.getDouble("AurString_ColorB", 1.0);
+	float a = caption.getDouble("AurString_ColorA", 1.0);
+
+	label->setColor(r, g, b, a);
+
+	initWidget(*label);
+
+	return label;
+}
+
+WidgetSlider *GUI::createSlider(const Common::UString &tag,
+                                const Aurora::GFFStruct &strct) {
+
+	Common::UString model = strct.getString("Obj_ResRef");
+	if (model.empty())
+		throw Common::Exception("Slider widget without a model");
+
+	WidgetSlider *slider = new WidgetSlider(tag, model);
+
+	initWidget(*slider);
+
+	return slider;
+}
+
+WidgetEditBox *GUI::createEditBox(const Common::UString &tag,
+                                  const Aurora::GFFStruct &strct) {
+
+	Common::UString model = strct.getString("Obj_ResRef");
+	if (model.empty())
+		throw Common::Exception("Edit box widget without a model");
+
+	WidgetEditBox *editBox = new WidgetEditBox(tag, model);
+
+	initWidget(*editBox);
+
+	return editBox;
+}
+
+WidgetButton *GUI::createButton(const Common::UString &tag,
+                                const Aurora::GFFStruct &strct) {
+
+	Common::UString model = strct.getString("Obj_ResRef");
+	if (model.empty())
+		throw Common::Exception("Button widget without a model");
+
+	WidgetButton *button = new WidgetButton(tag, model);
+
+	initWidget(*button);
+
+	return button;
+}
+
+WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) {
+	if (!strct.hasField("Obj_Caption"))
+		return 0;
+
+	const Aurora::GFFStruct &caption = strct.getStruct("Obj_Caption");
+
+	Common::UString font = caption.getString("AurString_Font");
+
+	Common::UString text;
+	uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
+	if (strRef != 0xFFFFFFFF)
+		text = TalkMan.getString(strRef);
+
+	WidgetLabel *label = new WidgetLabel(parent->getTag() + "#Caption", font, text);
+
+	float pX, pY, pZ;
+	parent->getPosition(pX, pY, pZ);
+	label->setPosition(pX, pY, pZ);
+
+	float r = caption.getDouble("AurString_ColorR", 1.0);
+	float g = caption.getDouble("AurString_ColorG", 1.0);
+	float b = caption.getDouble("AurString_ColorB", 1.0);
+	float a = caption.getDouble("AurString_ColorA", 1.0);
+
+	label->setColor(r, g, b, a);
+
+	initWidget(*label);
+
+	parent->addChild(*label);
+
+	return label;
 }
 
 void GUI::initWidget(WidgetFrame    &widget) { }
@@ -481,6 +700,102 @@ void GUI::initWidget(WidgetLabel    &widget) { }
 void GUI::initWidget(WidgetSlider   &widget) { }
 void GUI::initWidget(WidgetEditBox  &widget) { }
 void GUI::initWidget(WidgetButton   &widget) { }
+
+WidgetFrame *GUI::getFrame(const Common::UString &tag, bool vital) {
+	Widget *widget = getWidget(tag, vital);
+	if (!widget)
+		return 0;
+
+	WidgetFrame *frame = dynamic_cast<WidgetFrame *>(widget);
+	if (!frame && vital)
+		throw Common::Exception("Vital frame widget \"%s\" doesn't exist", tag.c_str());
+
+	return frame;
+}
+
+WidgetClose *GUI::getClose(const Common::UString &tag, bool vital) {
+	Widget *widget = getWidget(tag, vital);
+	if (!widget)
+		return 0;
+
+	WidgetClose *closeButton = dynamic_cast<WidgetClose *>(widget);
+	if (!closeButton && vital)
+		throw Common::Exception("Vital close button widget \"%s\" doesn't exist", tag.c_str());
+
+	return closeButton;
+}
+
+WidgetCheckBox *GUI::getCheckBox(const Common::UString &tag, bool vital) {
+	Widget *widget = getWidget(tag, vital);
+	if (!widget)
+		return 0;
+
+	WidgetCheckBox *checkBox = dynamic_cast<WidgetCheckBox *>(widget);
+	if (!checkBox && vital)
+		throw Common::Exception("Vital check box widget \"%s\" doesn't exist", tag.c_str());
+
+	return checkBox;
+}
+
+WidgetPanel *GUI::getPanel(const Common::UString &tag, bool vital) {
+	Widget *widget = getWidget(tag, vital);
+	if (!widget)
+		return 0;
+
+	WidgetPanel *panel = dynamic_cast<WidgetPanel *>(widget);
+	if (!panel && vital)
+		throw Common::Exception("Vital panel widget \"%s\" doesn't exist", tag.c_str());
+
+	return panel;
+}
+
+WidgetLabel *GUI::getLabel(const Common::UString &tag, bool vital) {
+	Widget *widget = getWidget(tag, vital);
+	if (!widget)
+		return 0;
+
+	WidgetLabel *label = dynamic_cast<WidgetLabel *>(widget);
+	if (!label && vital)
+		throw Common::Exception("Vital label widget \"%s\" doesn't exist", tag.c_str());
+
+	return label;
+}
+
+WidgetSlider *GUI::getSlider(const Common::UString &tag, bool vital) {
+	Widget *widget = getWidget(tag, vital);
+	if (!widget)
+		return 0;
+
+	WidgetSlider *slider = dynamic_cast<WidgetSlider *>(widget);
+	if (!slider && vital)
+		throw Common::Exception("Vital slider widget \"%s\" doesn't exist", tag.c_str());
+
+	return slider;
+}
+
+WidgetEditBox *GUI::getEditBox(const Common::UString &tag, bool vital) {
+	Widget *widget = getWidget(tag, vital);
+	if (!widget)
+		return 0;
+
+	WidgetEditBox *editBox = dynamic_cast<WidgetEditBox *>(widget);
+	if (!editBox && vital)
+		throw Common::Exception("Vital edit box widget \"%s\" doesn't exist", tag.c_str());
+
+	return editBox;
+}
+
+WidgetButton *GUI::getButton(const Common::UString &tag, bool vital) {
+	Widget *widget = getWidget(tag, vital);
+	if (!widget)
+		return 0;
+
+	WidgetButton *button = dynamic_cast<WidgetButton *>(widget);
+	if (!button && vital)
+		throw Common::Exception("Vital button widget \"%s\" doesn't exist", tag.c_str());
+
+	return button;
+}
 
 } // End of namespace NWN
 

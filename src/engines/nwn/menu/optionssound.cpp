@@ -60,9 +60,9 @@ void OptionsSoundMenu::show() {
 	updateVolume(_volSFX  , Sound::kSoundTypeSFX  , "SoundFXLabel");
 	updateVolume(_volVoice, Sound::kSoundTypeVoice, "VoicesLabel");
 
-	getWidget("MusicSlider"  , true)->setState(_volMusic * 20);
-	getWidget("SoundFXSlider", true)->setState(_volSFX   * 20);
-	getWidget("VoicesSlider" , true)->setState(_volVoice * 20);
+	getSlider("MusicSlider"  , true)->setState(_volMusic * 20);
+	getSlider("SoundFXSlider", true)->setState(_volSFX   * 20);
+	getSlider("VoicesSlider" , true)->setState(_volVoice * 20);
 
 	GUI::show();
 }
@@ -110,19 +110,19 @@ void OptionsSoundMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "MusicSlider") {
-		_volMusic = widget.getState() / 20.0;
+		_volMusic = dynamic_cast<WidgetSlider &>(widget).getState() / 20.0;
 		updateVolume(_volMusic, Sound::kSoundTypeMusic, "MusicLabel");
 		return;
 	}
 
 	if (widget.getTag() == "VoicesSlider") {
-		_volVoice = widget.getState() / 20.0;
+		_volVoice = dynamic_cast<WidgetSlider &>(widget).getState() / 20.0;
 		updateVolume(_volVoice, Sound::kSoundTypeVoice, "VoicesLabel");
 		return;
 	}
 
 	if (widget.getTag() == "SoundFXSlider") {
-		_volSFX = _volVideo = widget.getState() / 20.0;
+		_volSFX = _volVideo = dynamic_cast<WidgetSlider &>(widget).getState() / 20.0;
 		updateVolume(_volSFX  , Sound::kSoundTypeSFX  , "SoundFXLabel");
 		updateVolume(_volVideo, Sound::kSoundTypeVideo, "");
 		return;
@@ -135,7 +135,7 @@ void OptionsSoundMenu::updateVolume(double volume, Sound::SoundType type,
 	SoundMan.setTypeGain(type, volume);
 
 	if (!label.empty())
-		getWidget(label, true)->setText(Common::UString::sprintf("%.0f%%", volume * 100.0));
+		getLabel(label, true)->setText(Common::UString::sprintf("%.0f%%", volume * 100.0));
 }
 
 void OptionsSoundMenu::adoptChanges() {
