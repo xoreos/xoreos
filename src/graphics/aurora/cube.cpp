@@ -159,7 +159,6 @@ void Cube::setTexture() {
 		_firstTime = false;
 	}
 
-	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _texture->getID());
 }
 

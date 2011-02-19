@@ -265,7 +265,6 @@ void VideoDecoder::render() {
 	float hWidth  = width  / 2.0;
 	float hHeight = height / 2.0;
 
-	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _texture);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0, 0.0);

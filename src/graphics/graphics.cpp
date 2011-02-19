@@ -412,6 +412,8 @@ void GraphicsManager::renderScene() {
 	// Clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glEnable(GL_TEXTURE_2D);
+
 	if (!_videos.list.empty()) {
 		// Got videos, just play those
 
