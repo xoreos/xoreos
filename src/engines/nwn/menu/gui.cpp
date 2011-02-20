@@ -347,8 +347,14 @@ void WidgetSlider::changedValue(float x, float y) {
 	float curX, curY, curZ;
 	getPosition(curX, curY, curZ);
 
-	x      = CLIP(x - curX, 0.0f, getWidth()) / getWidth();
-	_state = roundf(x * _steps);
+	float pX    = CLIP(x - curX, 0.0f, getWidth()) / getWidth();
+	int   state = roundf(pX * _steps);
+
+	if (state == _state)
+		// No change
+		return;
+
+	_state = state;
 
 	if (_steps == 0) {
 		changePosition(0.0);
