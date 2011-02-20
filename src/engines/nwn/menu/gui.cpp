@@ -417,6 +417,32 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 }
 
 
+GUI::WidgetContext::WidgetContext(const Aurora::GFFStruct &s, Widget *p) {
+	strct = &s;
+
+	widget = 0;
+	parent = p;
+
+	type = (WidgetType) strct->getUint("Obj_Type", kWidgetTypeInvalid);
+	if (type == kWidgetTypeInvalid)
+		throw Common::Exception("Widget without a type");
+
+	tag = strct->getString("Obj_Tag");
+
+	model = strct->getString("Obj_ResRef");
+
+	if (strct->hasField("Obj_Caption")) {
+		const Aurora::GFFStruct &caption = strct->getStruct("Obj_Caption");
+
+		font = caption.getString("AurString_Font");
+
+		uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
+		if (strRef != 0xFFFFFFFF)
+			text = TalkMan.getString(strRef);
+	}
+}
+
+
 GUI::GUI() {
 }
 
@@ -438,55 +464,47 @@ void GUI::load(const Common::UString &resref) {
 }
 
 void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
-	WidgetType type = (WidgetType) strct.getUint("Obj_Type", kWidgetTypeInvalid);
-	if (type == kWidgetTypeInvalid)
-		throw Common::Exception("Widget without a type");
+	WidgetContext ctx(strct, parent);
 
-	Widget *widget = createWidget(strct, type);
-	if (!widget)
-		return;
+	createWidget(ctx);
 
-	addWidget(widget);
+	addWidget(ctx.widget);
 
-	if (parent) {
-		if (strct.getString("Obj_Parent") != parent->getTag())
+	if (ctx.parent) {
+		if (ctx.strct->getString("Obj_Parent") != ctx.parent->getTag())
 			throw Common::Exception("Parent's tag != Obj_Parent");
 
-		parent->addChild(*widget);
+		parent->addChild(*ctx.widget);
 
 		float pX, pY, pZ;
 		parent->getPosition(pX, pY, pZ);
 
-		float x = strct.getDouble("Obj_X") + pX;
-		float y = strct.getDouble("Obj_Y") + pY;
-		float z = strct.getDouble("Obj_Z") + pZ;
+		float x = ctx.strct->getDouble("Obj_X") + pX;
+		float y = ctx.strct->getDouble("Obj_Y") + pY;
+		float z = ctx.strct->getDouble("Obj_Z") + pZ;
 
-		widget->setPosition(x, y, z);
+		ctx.widget->setPosition(x, y, z);
 	} else {
 		// We'll ignore these for now, centering the GUI
 	}
 
-	WidgetLabel *label = 0;
-	if (type != kWidgetTypeLabel)
-		// Create a caption sub-widget
-		label = createCaption(strct, widget);
-	else
-		label = dynamic_cast<WidgetLabel *>(widget);
+	initWidget(ctx);
 
-	// Move the label to its destined position
-	if (label && strct.hasField("Obj_Caption")) {
-		const Aurora::GFFStruct &caption = strct.getStruct("Obj_Caption");
+	// Create a caption/label and move the label to its destined position
+	WidgetLabel *label = createCaption(ctx);
+	if (label && ctx.strct->hasField("Obj_Caption")) {
+		const Aurora::GFFStruct &caption = ctx.strct->getStruct("Obj_Caption");
 
 		float alignH = caption.getDouble("AurString_AlignH");
 		float alignV = caption.getDouble("AurString_AlignV");
 
-		float labelX = strct.getDouble("Obj_Label_X");
-		float labelY = strct.getDouble("Obj_Label_Y");
-		float labelZ = strct.getDouble("Obj_Label_Z");
+		float labelX = ctx.strct->getDouble("Obj_Label_X");
+		float labelY = ctx.strct->getDouble("Obj_Label_Y");
+		float labelZ = ctx.strct->getDouble("Obj_Label_Z");
 
-		if (type != kWidgetTypeLabel) {
-			labelX += widget->getWidth () * alignV;
-			labelY += widget->getHeight() * alignH;
+		if (ctx.type != kWidgetTypeLabel) {
+			labelX += ctx.widget->getWidth () * alignV;
+			labelY += ctx.widget->getHeight() * alignH;
 
 			labelX -= label->getWidth () / 2;
 			labelY -= label->getHeight() / 2;
@@ -504,166 +522,74 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 	// bool locked = strct.getUint("Obj_Locked") != 0;
 
 	// Go down to the children
-	if (strct.hasField("Obj_ChildList")) {
-		const Aurora::GFFList &children = strct.getList("Obj_ChildList");
+	if (ctx.strct->hasField("Obj_ChildList")) {
+		const Aurora::GFFList &children = ctx.strct->getList("Obj_ChildList");
 
 		for (Aurora::GFFList::const_iterator c = children.begin(); c != children.end(); ++c)
-			loadWidget(**c, widget);
+			loadWidget(**c, ctx.widget);
 	}
 }
 
-Widget *GUI::createWidget(const Aurora::GFFStruct &strct, WidgetType &type) {
-	Common::UString tag = strct.getString("Obj_Tag");
-	if (tag.empty())
-		throw Common::Exception("Widget without a tag");
-
-	if ((_name == "options_adv_vid") && (tag == "CreatureWind"))
+void GUI::createWidget(WidgetContext &ctx) {
+	if ((_name == "options_adv_vid") && (ctx.tag == "CreatureWind"))
 		// ....BioWare....
-		type = kWidgetTypeSlider;
+		ctx.type = kWidgetTypeSlider;
 
-	if      (type == kWidgetTypeFrame)
-		return createFrame(tag, strct);
-	else if (type == kWidgetTypeCloseButton)
-		return createClose(tag, strct);
-	else if (type == kWidgetTypeCheckBox)
-		return createCheckBox(tag, strct);
-	else if (type == kWidgetTypePanel)
-		return createPanel(tag, strct);
-	else if (type == kWidgetTypeLabel)
-		return createLabel(tag, strct);
-	else if (type == kWidgetTypeSlider)
-		return createSlider(tag, strct);
-	else if (type == kWidgetTypeEditBox)
-		return createEditBox(tag, strct);
-	else if (type == kWidgetTypeButton)
-		return createButton(tag, strct);
+	if      (ctx.type == kWidgetTypeFrame)
+		ctx.widget = new WidgetFrame(ctx.tag, ctx.model);
+	else if (ctx.type == kWidgetTypeCloseButton)
+		ctx.widget = new WidgetClose(ctx.tag, ctx.model);
+	else if (ctx.type == kWidgetTypeCheckBox)
+		ctx.widget = new WidgetCheckBox(ctx.tag, ctx.model);
+	else if (ctx.type == kWidgetTypePanel)
+		ctx.widget = new WidgetPanel(ctx.tag, ctx.model);
+	else if (ctx.type == kWidgetTypeLabel)
+		ctx.widget = new WidgetLabel(ctx.tag, ctx.font, ctx.text);
+	else if (ctx.type == kWidgetTypeSlider)
+		ctx.widget = new WidgetSlider(ctx.tag, ctx.model);
+	else if (ctx.type == kWidgetTypeEditBox)
+		ctx.widget = new WidgetEditBox(ctx.tag, ctx.model);
+	else if (ctx.type == kWidgetTypeButton)
+		ctx.widget = new WidgetButton(ctx.tag, ctx.model);
+	else
+		throw Common::Exception("No such widget type %d", ctx.type);
 
-	throw Common::Exception("No such widget type %d", type);
+	NWNModelWidget *widgetModel = dynamic_cast<NWNModelWidget *>(ctx.widget);
+	if (widgetModel)
+		initWidget(*widgetModel);
+
+	NWNTextWidget  *widgetText  = dynamic_cast<NWNTextWidget  *>(ctx.widget);
+	if (widgetText)
+		initWidget(*widgetText);
 }
 
-WidgetFrame *GUI::createFrame(const Common::UString &tag,
-                              const Aurora::GFFStruct &strct) {
-
-	Common::UString model = strct.getString("Obj_ResRef");
-	if (model.empty())
-		throw Common::Exception("Frame widget without a model");
-
-	WidgetFrame *frame = new WidgetFrame(tag, model);
-
-	initWidget(*frame);
-
-	return frame;
+void GUI::initWidget(WidgetContext &ctx, NWNModelWidget &widget) {
 }
 
-WidgetClose *GUI::createClose(const Common::UString &tag,
-                              const Aurora::GFFStruct &strct) {
+void GUI::initWidget(WidgetContext &ctx, NWNTextWidget &widget) {
+	if (!ctx.strct->hasField("Obj_Caption"))
+		return;
 
-	Common::UString model = strct.getString("Obj_ResRef");
-	if (model.empty())
-		throw Common::Exception("Close button widget without a model");
-
-	WidgetClose *closeButton = new WidgetClose(tag, model);
-
-	initWidget(*closeButton);
-
-	return closeButton;
-	return 0;
-}
-
-WidgetCheckBox *GUI::createCheckBox(const Common::UString &tag,
-                                    const Aurora::GFFStruct &strct) {
-
-	Common::UString model = strct.getString("Obj_ResRef");
-	if (model.empty())
-		throw Common::Exception("Check box widget without a model");
-
-	WidgetCheckBox *box = new WidgetCheckBox(tag, model);
-
-	initWidget(*box);
-
-	return box;
-}
-
-WidgetPanel *GUI::createPanel(const Common::UString &tag,
-                              const Aurora::GFFStruct &strct) {
-
-	Common::UString model = strct.getString("Obj_ResRef");
-	if (model.empty())
-		throw Common::Exception("Panel widget without a model");
-
-	WidgetPanel *panel = new WidgetPanel(tag, model);
-
-	initWidget(*panel);
-
-	return panel;
-}
-
-WidgetLabel *GUI::createLabel(const Common::UString &tag,
-                              const Aurora::GFFStruct &strct) {
-
-	const Aurora::GFFStruct &caption = strct.getStruct("Obj_Caption");
-
-	Common::UString font = caption.getString("AurString_Font");
-
-	Common::UString text;
-	uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
-	if (strRef != 0xFFFFFFFF)
-		text = TalkMan.getString(strRef);
-
-	WidgetLabel *label = new WidgetLabel(tag, font, text);
+	const Aurora::GFFStruct &caption = ctx.strct->getStruct("Obj_Caption");
 
 	float r = caption.getDouble("AurString_ColorR", 1.0);
 	float g = caption.getDouble("AurString_ColorG", 1.0);
 	float b = caption.getDouble("AurString_ColorB", 1.0);
 	float a = caption.getDouble("AurString_ColorA", 1.0);
 
-	label->setColor(r, g, b, a);
-
-	initWidget(*label);
-
-	return label;
+	widget.setColor(r, g, b, a);
 }
 
-WidgetSlider *GUI::createSlider(const Common::UString &tag,
-                                const Aurora::GFFStruct &strct) {
+void GUI::initWidget(WidgetContext &ctx) {
 
-	Common::UString model = strct.getString("Obj_ResRef");
-	if (model.empty())
-		throw Common::Exception("Slider widget without a model");
-
-	WidgetSlider *slider = new WidgetSlider(tag, model);
-
-	initWidget(*slider);
-
-	return slider;
+	initWidget(*ctx.widget);
 }
 
-WidgetEditBox *GUI::createEditBox(const Common::UString &tag,
-                                  const Aurora::GFFStruct &strct) {
+WidgetLabel *GUI::createCaption(WidgetContext &ctx) {
+	if (ctx.type == kWidgetTypeLabel)
+		return dynamic_cast<WidgetLabel *>(ctx.widget);
 
-	Common::UString model = strct.getString("Obj_ResRef");
-	if (model.empty())
-		throw Common::Exception("Edit box widget without a model");
-
-	WidgetEditBox *editBox = new WidgetEditBox(tag, model);
-
-	initWidget(*editBox);
-
-	return editBox;
-}
-
-WidgetButton *GUI::createButton(const Common::UString &tag,
-                                const Aurora::GFFStruct &strct) {
-
-	Common::UString model = strct.getString("Obj_ResRef");
-	if (model.empty())
-		throw Common::Exception("Button widget without a model");
-
-	WidgetButton *button = new WidgetButton(tag, model);
-
-	initWidget(*button);
-
-	return button;
+	return createCaption(*ctx.strct, ctx.widget);
 }
 
 WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) {
@@ -699,14 +625,8 @@ WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) 
 	return label;
 }
 
-void GUI::initWidget(WidgetFrame    &widget) { }
-void GUI::initWidget(WidgetClose    &widget) { }
-void GUI::initWidget(WidgetCheckBox &widget) { }
-void GUI::initWidget(WidgetPanel    &widget) { }
-void GUI::initWidget(WidgetLabel    &widget) { }
-void GUI::initWidget(WidgetSlider   &widget) { }
-void GUI::initWidget(WidgetEditBox  &widget) { }
-void GUI::initWidget(WidgetButton   &widget) { }
+void GUI::initWidget(Widget &widget) {
+}
 
 WidgetFrame *GUI::getFrame(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);

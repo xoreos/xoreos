@@ -174,14 +174,7 @@ public:
 protected:
 	void load(const Common::UString &resref);
 
-	virtual void initWidget(WidgetFrame    &widget);
-	virtual void initWidget(WidgetClose    &widget);
-	virtual void initWidget(WidgetCheckBox &widget);
-	virtual void initWidget(WidgetPanel    &widget);
-	virtual void initWidget(WidgetLabel    &widget);
-	virtual void initWidget(WidgetSlider   &widget);
-	virtual void initWidget(WidgetEditBox  &widget);
-	virtual void initWidget(WidgetButton   &widget);
+	virtual void initWidget(Widget &widget);
 
 	WidgetFrame    *getFrame   (const Common::UString &tag, bool vital = false);
 	WidgetClose    *getClose   (const Common::UString &tag, bool vital = false);
@@ -205,29 +198,33 @@ private:
 		kWidgetTypeButton      =  9
 	};
 
+	struct WidgetContext {
+		const Aurora::GFFStruct *strct;
+
+		WidgetType type;
+
+		Common::UString tag;
+		Widget *widget;
+
+		Widget *parent;
+
+		Common::UString model;
+		Common::UString font;
+		Common::UString text;
+
+		WidgetContext(const Aurora::GFFStruct &s, Widget *p);
+	};
+
 	Common::UString _name;
 
 	void loadWidget(const Aurora::GFFStruct &strct, Widget *parent);
 
-	Widget *createWidget(const Aurora::GFFStruct &strct, WidgetType &type);
+	void createWidget(WidgetContext &ctx);
+	void initWidget(WidgetContext &ctx, NWNModelWidget &widget);
+	void initWidget(WidgetContext &ctx, NWNTextWidget &widget);
+	void initWidget(WidgetContext &ctx);
 
-	WidgetFrame    *createFrame   (const Common::UString &tag,
-	                               const Aurora::GFFStruct &strct);
-	WidgetClose    *createClose   (const Common::UString &tag,
-	                               const Aurora::GFFStruct &strct);
-	WidgetCheckBox *createCheckBox(const Common::UString &tag,
-	                               const Aurora::GFFStruct &strct);
-	WidgetPanel    *createPanel   (const Common::UString &tag,
-	                               const Aurora::GFFStruct &strct);
-	WidgetLabel    *createLabel   (const Common::UString &tag,
-	                               const Aurora::GFFStruct &strct);
-	WidgetSlider   *createSlider  (const Common::UString &tag,
-	                               const Aurora::GFFStruct &strct);
-	WidgetEditBox  *createEditBox (const Common::UString &tag,
-	                               const Aurora::GFFStruct &strct);
-	WidgetButton   *createButton  (const Common::UString &tag,
-	                               const Aurora::GFFStruct &strct);
-
+	WidgetLabel *createCaption(WidgetContext &ctx);
 	WidgetLabel *createCaption(const Aurora::GFFStruct &strct, Widget *parent);
 };
 

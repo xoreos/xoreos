@@ -71,9 +71,9 @@ void OptionsVideoMenu::show() {
 	GUI::show();
 }
 
-void OptionsVideoMenu::initWidget(WidgetSlider &widget) {
+void OptionsVideoMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "GammaSlider") {
-		widget.setSteps(19);
+		dynamic_cast<WidgetSlider &>(widget).setSteps(19);
 		return;
 	}
 }

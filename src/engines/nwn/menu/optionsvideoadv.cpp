@@ -81,15 +81,15 @@ void OptionsVideoAdvancedMenu::show() {
 	GUI::show();
 }
 
-void OptionsVideoAdvancedMenu::initWidget(WidgetSlider &widget) {
+void OptionsVideoAdvancedMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "AntiAliasSlider") {
 		int maxFSAA = GfxMan.getMaxFSAA();
 
 		if (maxFSAA <= 0)
 			// No antialiasing available
-			widget.setDisabled(true);
+			dynamic_cast<WidgetSlider &>(widget).setDisabled(true);
 		else
-			widget.setSteps(log2(maxFSAA));
+			dynamic_cast<WidgetSlider &>(widget).setSteps(log2(maxFSAA));
 
 		return;
 	}

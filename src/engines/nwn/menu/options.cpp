@@ -40,10 +40,10 @@ OptionsMenu::~OptionsMenu() {
 	delete _game;
 }
 
-void OptionsMenu::initWidget(WidgetLabel &widget) {
+void OptionsMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "BuildNumber") {
-		widget.setText(PACKAGE_STRING);
-		widget.setColor(0.6, 0.6, 0.6, 1.0);
+		dynamic_cast<WidgetLabel &>(widget).setText(PACKAGE_STRING);
+		dynamic_cast<WidgetLabel &>(widget).setColor(0.6, 0.6, 0.6, 1.0);
 		return;
 	}
 }

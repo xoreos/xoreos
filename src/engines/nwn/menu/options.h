@@ -28,7 +28,7 @@ public:
 	~OptionsMenu();
 
 protected:
-	void initWidget(WidgetLabel &widget);
+	void initWidget(Widget &widget);
 	void callbackActive(Widget &widget);
 
 private:

@@ -71,19 +71,19 @@ OptionsSoundMenu::~OptionsSoundMenu() {
 	delete _advanced;
 }
 
-void OptionsSoundMenu::initWidget(WidgetSlider &widget) {
+void OptionsSoundMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "MusicSlider") {
-		widget.setSteps(20);
+		dynamic_cast<WidgetSlider &>(widget).setSteps(20);
 		return;
 	}
 
 	if (widget.getTag() == "VoicesSlider") {
-		widget.setSteps(20);
+		dynamic_cast<WidgetSlider &>(widget).setSteps(20);
 		return;
 	}
 
 	if (widget.getTag() == "SoundFXSlider") {
-		widget.setSteps(20);
+		dynamic_cast<WidgetSlider &>(widget).setSteps(20);
 		return;
 	}
 }

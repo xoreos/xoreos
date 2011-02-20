@@ -32,7 +32,7 @@ public:
 	void show();
 
 protected:
-	void initWidget(WidgetSlider &widget);
+	void initWidget(Widget &widget);
 	void callbackActive(Widget &widget);
 
 private:
