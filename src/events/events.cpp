@@ -248,6 +248,9 @@ void EventsManager::initMainLoop() {
 				// If that fails, set the config to the current level
 				ConfigMan.setInt("fsaa", GfxMan.getCurrentFSAA());
 
+		// Set the gamma correction to what the config specifies
+		GfxMan.setGamma(ConfigMan.getDouble("gamma", 1.0));
+
 	} catch (Common::Exception &e) {
 		e.add("Failed setting up graphics");
 		throw e;

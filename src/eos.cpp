@@ -121,10 +121,11 @@ void initConfig() {
 			newConfig = true;
 	}
 
-	ConfigMan.setDefaultInt ("width" ,     800);
-	ConfigMan.setDefaultInt ("height",     600);
-	ConfigMan.setDefaultBool("fullscreen", false);
-	ConfigMan.setDefaultInt ("fsaa",       0);
+	ConfigMan.setDefaultInt   ("width" ,     800);
+	ConfigMan.setDefaultInt   ("height",     600);
+	ConfigMan.setDefaultBool  ("fullscreen", false);
+	ConfigMan.setDefaultInt   ("fsaa",       0);
+	ConfigMan.setDefaultDouble("gamma",    1.0);
 
 	ConfigMan.setDefaultDouble("volume"      , 1.0);
 	ConfigMan.setDefaultDouble("volume_music", 1.0);
