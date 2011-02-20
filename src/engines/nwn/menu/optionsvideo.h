@@ -27,12 +27,20 @@ public:
 	OptionsVideoMenu();
 	~OptionsVideoMenu();
 
+	void show();
+
 protected:
+	void initWidget(WidgetSlider &widget);
 	void callbackActive(Widget &widget);
 
 private:
 	GUI *_resolution;
 	GUI *_advanced;
+
+	float _gamma;
+
+	void adoptChanges();
+	void revertChanges();
 };
 
 } // End of namespace NWN
