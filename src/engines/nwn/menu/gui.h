@@ -80,6 +80,8 @@ public:
 	WidgetClose(const Common::UString &tag, const Common::UString &model);
 	~WidgetClose();
 
+	void leave();
+
 	void mouseDown(uint8 state, float x, float y);
 	void mouseUp  (uint8 state, float x, float y);
 };

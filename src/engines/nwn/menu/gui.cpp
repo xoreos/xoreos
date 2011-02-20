@@ -153,6 +153,13 @@ WidgetClose::WidgetClose(const Common::UString &tag, const Common::UString &mode
 WidgetClose::~WidgetClose() {
 }
 
+void WidgetClose::leave() {
+	if (isDisabled())
+		return;
+
+	_model->setState("");
+}
+
 void WidgetClose::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
