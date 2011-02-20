@@ -126,6 +126,7 @@ private:
 	void requestWindowed(Request &request);
 	void requestResize(Request &request);
 	void requestChangeFSAA(Request &request);
+	void requestChangeVSync(Request &request);
 	void requestLoadTexture(Request &request);
 	void requestDestroyTexture(Request &request);
 	void requestBuildLists(Request &request);

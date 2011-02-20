@@ -41,6 +41,10 @@ struct RequestChangeFSAA {
 	int level;
 };
 
+struct RequestChangeVSync {
+	bool vsync;
+};
+
 struct RequestDataLoadTexture {
 	Graphics::Texture *texture;
 };
@@ -87,6 +91,7 @@ private:
 	union {
 		RequestDataResize         _resize;
 		RequestChangeFSAA         _fsaa;
+		RequestChangeVSync        _vsync;
 		RequestDataLoadTexture    _loadTexture;
 		RequestDataDestroyTexture _destroyTexture;
 		RequestDataBuildLists     _buildLists;

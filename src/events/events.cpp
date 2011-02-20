@@ -37,6 +37,7 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 	&EventsManager::requestWindowed,
 	&EventsManager::requestResize,
 	&EventsManager::requestChangeFSAA,
+	&EventsManager::requestChangeVSync,
 	&EventsManager::requestLoadTexture,
 	&EventsManager::requestDestroyTexture,
 	&EventsManager::requestBuildLists,
@@ -240,6 +241,7 @@ void EventsManager::initMainLoop() {
 		bool fs     = ConfigMan.getBool("fullscreen", false);
 
 		GfxMan.initSize(width, height, fs);
+
 		GfxMan.setupScene();
 
 		// Try to change the FSAA settings to the config value
@@ -287,6 +289,10 @@ void EventsManager::requestResize(Request &request) {
 
 void EventsManager::requestChangeFSAA(Request &request) {
 	GfxMan.setFSAA(request._fsaa.level);
+}
+
+void EventsManager::requestChangeVSync(Request &request) {
+	// TODO
 }
 
 void EventsManager::requestLoadTexture(Request &request) {

@@ -79,6 +79,8 @@ public:
 	RequestID resize(int width, int height);
 	/** Request that the FSAA level shall be changed. */
 	RequestID changeFSAA(int level);
+	/** Request that the vsync settings shall be changed. */
+	RequestID changeVSync(bool vsync);
 
 	// Textures
 	/** Request the loading of a texture. */

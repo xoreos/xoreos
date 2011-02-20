@@ -148,6 +148,14 @@ RequestID  RequestManager::changeFSAA(int level) {
 	return rID;
 }
 
+RequestID  RequestManager::changeVSync(bool vsync) {
+	RequestID rID = newRequest(kITCEventChangeVSync);
+
+	(*rID)->_vsync.vsync = vsync;
+
+	return rID;
+}
+
 RequestID RequestManager::loadTexture(Graphics::Texture *texture) {
 	RequestID rID = newRequest(kITCEventLoadTexture);
 
