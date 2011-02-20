@@ -180,11 +180,7 @@ bool GraphicsManager::setFSAA(int level) {
 	int oldFSAA = _fsaa;
 	_fsaa = level;
 
-	// Destroying all videos, textures and lists, since we need to
-	// reload/rebuild them anyway when the context is recreated
-	destroyVideos();
-	destroyLists();
-	destroyTextures();
+	destroyContext();
 
 	// Set the multisample level
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
@@ -210,25 +206,7 @@ bool GraphicsManager::setFSAA(int level) {
 			throw Common::Exception("Failed reverting to the old FSAA settings");
 	}
 
-	int a, b;
-	SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &a);
-	SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &b);
-
-	// Reintroduce glew to the surface
-	GLenum glewErr = glewInit();
-	if (glewErr != GLEW_OK)
-		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
-
-	// Reintroduce OpenGL to the surface
-	setupScene();
-
-	// And reload/rebuild all textures, lists and videos
-	reloadTextures();
-	rebuildLists();
-	rebuildVideos();
-
-	// Wait for everything to settle
-	RequestMan.sync();
+	rebuildContext();
 
 	return _fsaa == level;
 }
@@ -630,6 +608,32 @@ void GraphicsManager::rebuildVideos() {
 		(*video)->rebuild();
 }
 
+void GraphicsManager::destroyContext() {
+	// Destroying all videos, textures and lists, since we need to
+	// reload/rebuild them anyway when the context is recreated
+	destroyVideos();
+	destroyLists();
+	destroyTextures();
+}
+
+void GraphicsManager::rebuildContext() {
+	// Reintroduce glew to the surface
+	GLenum glewErr = glewInit();
+	if (glewErr != GLEW_OK)
+		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
+
+	// Reintroduce OpenGL to the surface
+	setupScene();
+
+	// And reload/rebuild all textures, lists and videos
+	reloadTextures();
+	rebuildLists();
+	rebuildVideos();
+
+	// Wait for everything to settle
+	RequestMan.sync();
+}
+
 void GraphicsManager::handleCursorSwitch() {
 	Common::StackLock lock(_cursorMutex);
 
@@ -652,11 +656,7 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 		// Nothing to do
 		return;
 
-	// Destroying all videos, textures and lists, since we need to
-	// reload/rebuild them anyway when the context is recreated
-	destroyVideos();
-	destroyLists();
-	destroyTextures();
+	destroyContext();
 
 	// Save the flags
 	uint32 flags = _screen->flags;
@@ -674,21 +674,7 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 	if (!_screen)
 		throw Common::Exception("Failed going to fullscreen and then failed reverting.");
 
-	// Reintroduce glew to the surface
-	GLenum glewErr = glewInit();
-	if (glewErr != GLEW_OK)
-		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
-
-	// Reintroduce OpenGL to the surface
-	setupScene();
-
-	// And reload/rebuild all textures, lists and videos
-	reloadTextures();
-	rebuildLists();
-	rebuildVideos();
-
-	// Wait for everything to settle
-	RequestMan.sync();
+	rebuildContext();
 }
 
 void GraphicsManager::toggleMouseGrab() {
@@ -708,11 +694,7 @@ void GraphicsManager::changeSize(int width, int height) {
 	int    oldWidth  = _screen->w;
 	int    oldHeight = _screen->h;
 
-	// Destroying all videos, textures and lists, since we need to
-	// reload/rebuild them anyway when the context is recreated
-	destroyVideos();
-	destroyLists();
-	destroyTextures();
+	destroyContext();
 
 	// Now try to change modes
 	_screen = SDL_SetVideoMode(width, height, bpp, flags);
@@ -726,21 +708,7 @@ void GraphicsManager::changeSize(int width, int height) {
 	if (!_screen)
 		throw Common::Exception("Failed going to fullscreen and then failed reverting.");
 
-	// Reintroduce glew to the surface
-	GLenum glewErr = glewInit();
-	if (glewErr != GLEW_OK)
-		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
-
-	// Reintroduce OpenGL to the surface
-	setupScene();
-
-	// And reload/rebuild all textures, lists and videos
-	reloadTextures();
-	rebuildLists();
-	rebuildVideos();
-
-	// Wait for everything to settle
-	RequestMan.sync();
+	rebuildContext();
 }
 
 void GraphicsManager::destroyTexture(TextureID id) {

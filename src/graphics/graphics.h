@@ -157,6 +157,9 @@ private:
 	void destroyVideos();
 	void rebuildVideos();
 
+	void destroyContext();
+	void rebuildContext();
+
 	void handleCursorSwitch();
 
 
