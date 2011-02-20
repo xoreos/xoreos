@@ -77,6 +77,11 @@ public:
 	/** That the window's title. */
 	void setWindowTitle(const Common::UString &title);
 
+	/** Get the overall gamma correction. */
+	float getGamma() const;
+	/** Set the overall gamma correction. */
+	void setGamma(float gamma);
+
 	/** Lock the frame mutex. */
 	void lockFrame();
 	/** Unlock the frame mutex. */
@@ -112,6 +117,8 @@ private:
 
 	int _systemWidth;  ///< The system's screen width.
 	int _systemHeight; ///< The system's screen height.
+
+	float _gamma; ///< The current gamma correction value.
 
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 

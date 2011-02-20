@@ -51,6 +51,8 @@ GraphicsManager::GraphicsManager() {
 	_fsaa    = 0;
 	_fsaaMax = 0;
 
+	_gamma = 1.0;
+
 	_screen = 0;
 
 	_fpsCounter = new FPSCounter(3);
@@ -299,6 +301,16 @@ void GraphicsManager::checkGLExtensions() {
 
 void GraphicsManager::setWindowTitle(const Common::UString &title) {
 	SDL_WM_SetCaption(title.c_str(), 0);
+}
+
+float GraphicsManager::getGamma() const {
+	return _gamma;
+}
+
+void GraphicsManager::setGamma(float gamma) {
+	_gamma = gamma;
+
+	SDL_SetGamma(gamma, gamma, gamma);
 }
 
 void GraphicsManager::setupScene() {
