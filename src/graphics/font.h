@@ -15,11 +15,13 @@
 #ifndef GRAPHICS_FONT_H
 #define GRAPHICS_FONT_H
 
-namespace Common {
-	class UString;
-}
+#include <vector>
+
+#include "common/ustring.h"
 
 namespace Graphics {
+
+typedef std::pair<Common::UString::iterator, Common::UString::iterator> LineDefinition;
 
 /** An abstract font. */
 class Font {
@@ -39,6 +41,10 @@ public:
 	virtual void draw(const Common::UString &text) const = 0;
 	/** Draw this string in this color. */
 	virtual void draw(const Common::UString &text, float r, float g, float b, float a) const;
+
+	/** Split a long line, on word boundaries if possible. */
+	float split(const Common::UString &line, float maxWidth,
+			std::vector<LineDefinition> &lines) const;
 };
 
 } // End of namespace Graphics
