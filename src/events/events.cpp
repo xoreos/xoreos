@@ -59,6 +59,9 @@ void EventsManager::init() {
 
 	RequestMan.init();
 
+	_fullQueue = false;
+	_queueSize = 0;
+
 	_ready = true;
 
 	_mainThreadID = SDL_ThreadID();
@@ -92,6 +95,10 @@ bool EventsManager::ready() const {
 
 bool EventsManager::isMainThread() const {
 	return SDL_ThreadID() == _mainThreadID;
+}
+
+bool EventsManager::isQueueFull() const {
+	return _fullQueue;
 }
 
 void EventsManager::delay(uint32 ms) {
@@ -168,7 +175,6 @@ void EventsManager::processEvents() {
 
 	Event event;
 	while (SDL_PollEvent(&event)) {
-
 		// Check for quit events
 		if (parseEventQuit(event))
 			continue;
@@ -183,6 +189,9 @@ void EventsManager::processEvents() {
 		// Push the event to the back of the list
 		_eventQueue.push_back(event);
 	}
+
+	_queueSize = 0;
+	_fullQueue = false;
 }
 
 bool EventsManager::pollEvent(Event &event) {
@@ -199,9 +208,27 @@ bool EventsManager::pollEvent(Event &event) {
 }
 
 bool EventsManager::pushEvent(Event &event) {
-	Common::StackLock lock(_eventQueueMutex);
+	_eventQueueMutex.lock();
 
-	return SDL_PushEvent(&event) == 0;
+	int result = SDL_PushEvent(&event);
+	_queueSize++;
+
+	if (_queueSize >= 50)
+		_fullQueue = true;
+
+	// If we can't push the event, wait up to a second for a queue flush
+	if (result == -1) {
+		_fullQueue = true;
+
+		_eventQueueMutex.unlock();
+		_queueProcessed.wait(1000);
+		_eventQueueMutex.lock();
+
+		result = SDL_PushEvent(&event);
+	}
+
+	_eventQueueMutex.unlock();
+	return result == 0;
 }
 
 void EventsManager::enableUnicode(bool enable) {
@@ -268,6 +295,8 @@ void EventsManager::runMainLoop() {
 	while (!_doQuit) {
 		// (Pre)Process all events
 		processEvents();
+
+		_queueProcessed.signal();
 
 		if (!_quitRequested)
 			// Render a frame

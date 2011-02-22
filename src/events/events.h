@@ -92,6 +92,9 @@ public:
 	/** Are we currently in the main thread? */
 	bool isMainThread() const;
 
+	/** Is the event queue full? */
+	bool isQueueFull() const;
+
 	/** Initialize the main loop. */
 	void initMainLoop();
 	/** Run the main loop. */
@@ -113,6 +116,11 @@ private:
 
 	EventQueue _eventQueue;
 	Common::Mutex _eventQueueMutex;
+
+	int _queueSize;
+
+	bool _fullQueue;
+	Common::Condition _queueProcessed;
 
 	/** Look for quit events. */
 	bool parseEventQuit(const Event &event);

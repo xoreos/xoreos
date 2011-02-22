@@ -21,6 +21,7 @@
 #include "common/threads.h"
 
 #include "events/requests.h"
+#include "events/events.h"
 
 #include "graphics/graphics.h"
 #include "graphics/util.h"
@@ -325,6 +326,9 @@ void GraphicsManager::lockFrame() {
 
 void GraphicsManager::unlockFrame() {
 	_frameMutex.unlock();
+
+	if (EventMan.isQueueFull())
+		RequestMan.sync();
 }
 
 void GraphicsManager::setCursor(Cursor *cursor) {
