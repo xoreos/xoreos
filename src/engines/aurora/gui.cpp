@@ -57,6 +57,8 @@ void Widget::show() {
 	// Show children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
 		(*it)->show();
+	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it)
+		(*it)->show();
 }
 
 void Widget::hide() {
@@ -68,6 +70,8 @@ void Widget::hide() {
 
 	// Hide children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
+		(*it)->hide();
+	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it)
 		(*it)->hide();
 }
 
@@ -104,6 +108,8 @@ void Widget::setDisabled(bool disabled) {
 
 	// Disable/Enable children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
+		(*it)->setDisabled(disabled);
+	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it)
 		(*it)->setDisabled(disabled);
 }
 
