@@ -19,6 +19,8 @@
 #include "aurora/gfffile.h"
 #include "aurora/talkman.h"
 
+#include "events/requests.h"
+
 #include "graphics/font.h"
 
 #include "graphics/aurora/text.h"
@@ -377,12 +379,143 @@ void WidgetSlider::changePosition(float value) {
 }
 
 
-WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &model) :
-	NWNModelWidget(tag, model) {
+WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &model,
+                             const Common::UString &font) : NWNModelWidget(tag, model) {
 
+	_hasScrollbar = getHeight() > 0.25;
+
+	_mode = kModeStatic;
+
+	_startLine = 0;
+
+	// If the edit consists of at least two lines, add scroll buttons
+	// TODO: This needs an actual scrollbar too
+	if (_hasScrollbar) {
+		WidgetButton *down = new WidgetButton(tag + "#Down", "pb_scrl_down");
+
+		float dX = getWidth() - down->getWidth() - 0.03;
+		float dY = 0.03;
+
+		down->setPosition(dX, dY, 0.0);
+		addSub(*down);
+
+		WidgetButton *up = new WidgetButton(tag + "#Up", "pb_scrl_up");
+
+		float uX = getWidth () - up->getWidth () - 0.03;
+		float uY = getHeight() - up->getHeight() - 0.03;
+
+		up->setPosition(uX, uY, 0.0);
+		addSub(*up);
+	}
+
+
+	_font = FontMan.get(font);
+
+	// (Height of the model - Border) / (FontHeight + Line spacing)
+	int lineCount = (getHeight() - 0.04) / (_font.getFont().getHeight() + 0.01);
+
+	_lines.resize(lineCount);
+	for (int i = 0; i < lineCount; i++) {
+		Common::UString line = Common::UString::sprintf("Line%03d", i);
+
+		_lines[i] = new WidgetLabel(tag + "#" + line, font, "");
+
+		float lX = 0.03 + _font.getFont().getWidth(" ");
+		float lY = getHeight() - 0.02 - (i + 1) * (_font.getFont().getHeight() + 0.01);
+
+		_lines[i]->setPosition(lX, lY, 0.0);
+
+		addSub(*_lines[i]);
+	}
 }
 
 WidgetEditBox::~WidgetEditBox() {
+}
+
+void WidgetEditBox::setPosition(float x, float y, float z) {
+	float oX, oY, oZ;
+	getPosition(oX, oY, oZ);
+
+	NWNModelWidget::setPosition(x, y, z);
+
+	float nX, nY, nZ;
+	getPosition(nX, nY, nZ);
+
+	getPosition(x, y, z);
+	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it) {
+		float sX, sY, sZ;
+		(*it)->getPosition(sX, sY, sZ);
+
+		sX -= oX;
+		sY -= oY;
+		sZ -= oZ;
+
+		(*it)->setPosition(sX + nX, sY + nY, sZ + nZ);
+	}
+}
+
+void WidgetEditBox::subActive(Widget &widget) {
+	if (widget.getTag().endsWith("#Up")) {
+		if (_startLine > 0)
+			_startLine--;
+
+		updateScroll();
+		return;
+	}
+
+	if (widget.getTag().endsWith("#Down")) {
+		int max = _contentLines.size() - _lines.size();
+		if ((max > 0) && (_startLine < ((uint) max)))
+			_startLine++;
+
+		updateScroll();
+		return;
+	}
+}
+
+void WidgetEditBox::setMode(Mode mode) {
+	_mode = mode;
+}
+
+void WidgetEditBox::clear() {
+	_startLine = 0;
+
+	_contents.clear();
+	_contentLines.clear();
+
+	for (std::vector<WidgetLabel *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
+		(*it)->setText("");
+}
+
+void WidgetEditBox::add(const Common::UString &str) {
+	_contents += str;
+
+	updateContents();
+}
+
+void WidgetEditBox::addLine(const Common::UString &line) {
+	if (!_contents.empty())
+		_contents += '\n';
+
+	add(line);
+}
+
+void WidgetEditBox::updateContents() {
+	_contentLines.clear();
+
+	float width = getWidth() - 0.06 - _font.getFont().getWidth(" ");
+	if (_hasScrollbar)
+		width -= 0.19;
+
+	_font.getFont().split(_contents, width, _contentLines);
+
+	updateScroll();
+}
+
+void WidgetEditBox::updateScroll() {
+	std::vector<WidgetLabel *>::iterator line = _lines.begin();
+	for (uint i = _startLine; i < _contentLines.size() && line != _lines.end(); i++, ++line)
+		(*line)->setText(Common::UString(_contentLines[i].first, _contentLines[i].second));
 }
 
 
@@ -556,7 +689,7 @@ void GUI::createWidget(WidgetContext &ctx) {
 	else if (ctx.type == kWidgetTypeSlider)
 		ctx.widget = new WidgetSlider(ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeEditBox)
-		ctx.widget = new WidgetEditBox(ctx.tag, ctx.model);
+		ctx.widget = new WidgetEditBox(ctx.tag, ctx.model, ctx.font);
 	else if (ctx.type == kWidgetTypeButton)
 		ctx.widget = new WidgetButton(ctx.tag, ctx.model);
 	else
@@ -564,11 +697,11 @@ void GUI::createWidget(WidgetContext &ctx) {
 
 	NWNModelWidget *widgetModel = dynamic_cast<NWNModelWidget *>(ctx.widget);
 	if (widgetModel)
-		initWidget(*widgetModel);
+		initWidget(ctx, *widgetModel);
 
 	NWNTextWidget  *widgetText  = dynamic_cast<NWNTextWidget  *>(ctx.widget);
 	if (widgetText)
-		initWidget(*widgetText);
+		initWidget(ctx, *widgetText);
 }
 
 void GUI::initWidget(WidgetContext &ctx, NWNModelWidget &widget) {

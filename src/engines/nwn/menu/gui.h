@@ -17,7 +17,10 @@
 
 #include "aurora/gfffile.h"
 
+#include "graphics/font.h"
+
 #include "graphics/aurora/types.h"
+#include "graphics/aurora/fontman.h"
 
 #include "engines/aurora/gui.h"
 
@@ -149,8 +152,41 @@ private:
 
 class WidgetEditBox : public NWNModelWidget {
 public:
-	WidgetEditBox(const Common::UString &tag, const Common::UString &model);
+	enum Mode {
+		kModeStatic = 0
+	};
+
+	WidgetEditBox(const Common::UString &tag, const Common::UString &model,
+	              const Common::UString &font);
 	~WidgetEditBox();
+
+	void setPosition(float x, float y, float z);
+
+	void subActive(Widget &widget);
+
+	void setMode(Mode mode);
+
+	void clear();
+
+	void add(const Common::UString &str);
+	void addLine(const Common::UString &line);
+
+private:
+	bool _hasScrollbar;
+
+	Graphics::Aurora::FontHandle _font;
+
+	Mode _mode;
+
+	std::vector<WidgetLabel *> _lines;
+
+	Common::UString _contents;
+	std::vector<Graphics::LineDefinition> _contentLines;
+
+	uint _startLine;
+
+	void updateContents();
+	void updateScroll();
 };
 
 class WidgetButton : public NWNModelWidget {
