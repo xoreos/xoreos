@@ -65,6 +65,7 @@ private:
 
 	void init();
 	void initCursors();
+	void initConfig();
 };
 
 } // End of namespace NWN

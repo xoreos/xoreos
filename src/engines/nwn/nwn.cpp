@@ -97,6 +97,7 @@ void NWNEngine::run(const Common::UString &target) {
 
 	init();
 	initCursors();
+	initConfig();
 
 	if (EventMan.quitRequested())
 		return;
@@ -285,6 +286,10 @@ void NWNEngine::initCursors() {
 	CursorMan.add("gui_mp_nouseu"   , "nouse"    , false);
 	CursorMan.add("gui_mp_nowalkd"  , "nowalk"   , true);
 	CursorMan.add("gui_mp_nowalku"  , "nowalk"   , false);
+}
+
+void NWNEngine::initConfig() {
+	ConfigMan.setDefaultInt("difficulty", 0);
 }
 
 } // End of namespace NWN
