@@ -17,7 +17,8 @@
 
 #include "common/types.h"
 
-#include "graphics/aurora/font.h"
+#include "graphics/font.h"
+
 #include "graphics/aurora/textureman.h"
 
 namespace Common {
@@ -30,7 +31,7 @@ namespace Graphics {
 namespace Aurora {
 
 /** An ABC/SBM font, as used by Jade Empire. */
-class ABCFont : public Font {
+class ABCFont : public Graphics::Font {
 public:
 	ABCFont(const Common::UString &name);
 	~ABCFont();

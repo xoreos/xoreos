@@ -26,9 +26,9 @@
 
 namespace Graphics {
 
-namespace Aurora {
-
 class Font;
+
+namespace Aurora {
 
 /** The format of a font. */
 enum FontFormat {

@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/aurora/font.h
+/** @file graphics/font.h
  *  A font.
  */
 
-#ifndef GRAPHICS_AURORA_FONT_H
-#define GRAPHICS_AURORA_FONT_H
+#ifndef GRAPHICS_FONT_H
+#define GRAPHICS_FONT_H
 
 namespace Common {
 	class UString;
@@ -21,23 +21,23 @@ namespace Common {
 
 namespace Graphics {
 
-namespace Aurora {
-
 /** An abstract font. */
 class Font {
 public:
 	Font();
 	virtual ~Font();
 
+	/** Return the width this string would take. */
 	virtual float getWidth(const Common::UString &text) const = 0;
+	/** Return the height this string would take. */
 	virtual float getHeight(const Common::UString &text) const = 0;
 
+	/** Draw this string. */
 	virtual void draw(const Common::UString &text) const = 0;
+	/** Draw this string in this color. */
 	virtual void draw(const Common::UString &text, float r, float g, float b, float a) const;
 };
 
-} // End of namespace Aurora
-
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_FONT_H
+#endif // GRAPHICS_FONT_H

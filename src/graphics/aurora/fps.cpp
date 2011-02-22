@@ -15,9 +15,9 @@
 #include "common/ustring.h"
 
 #include "graphics/graphics.h"
+#include "graphics/font.h"
 
 #include "graphics/aurora/fps.h"
-#include "graphics/aurora/font.h"
 
 namespace Graphics {
 

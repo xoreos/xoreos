@@ -19,7 +19,8 @@
 
 #include "common/types.h"
 
-#include "graphics/aurora/font.h"
+#include "graphics/font.h"
+
 #include "graphics/aurora/textureman.h"
 
 namespace Common {
@@ -33,7 +34,7 @@ namespace Aurora {
 class Texture;
 
 /** A texture font, as used by NWN and KotOR/KotOR2. */
-class TextureFont : public Font {
+class TextureFont : public Graphics::Font {
 public:
 	TextureFont(const Common::UString &name);
 	~TextureFont();

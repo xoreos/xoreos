@@ -19,6 +19,8 @@
 #include "aurora/gfffile.h"
 #include "aurora/talkman.h"
 
+#include "graphics/font.h"
+
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/model.h"
 

@@ -15,6 +15,7 @@ noinst_HEADERS = types.h \
                  queueable.h \
                  listcontainer.h \
                  texture.h \
+                 font.h \
                  renderable.h \
                  object.h \
                  guifrontelement.h
@@ -25,6 +26,7 @@ libgraphics_la_SOURCES = glew/glew.c \
                          cursor.cpp \
                          listcontainer.cpp \
                          texture.cpp \
+                         font.cpp \
                          renderable.cpp \
                          object.cpp \
                          guifrontelement.cpp

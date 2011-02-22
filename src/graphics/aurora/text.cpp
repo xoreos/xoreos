@@ -15,9 +15,9 @@
 #include "events/requests.h"
 
 #include "graphics/graphics.h"
+#include "graphics/font.h"
 
 #include "graphics/aurora/text.h"
-#include "graphics/aurora/font.h"
 
 namespace Graphics {
 

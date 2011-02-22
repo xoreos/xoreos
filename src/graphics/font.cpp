@@ -8,17 +8,15 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/aurora/font.cpp
+/** @file graphics/font.cpp
  *  A font.
  */
 
 #include "graphics/types.h"
 
-#include "graphics/aurora/font.h"
+#include "graphics/font.h"
 
 namespace Graphics {
-
-namespace Aurora {
 
 Font::Font() {
 }
@@ -31,7 +29,5 @@ void Font::draw(const Common::UString &text, float r, float g, float b, float a)
 	draw(text);
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 }
-
-} // End of namespace Aurora
 
 } // End of namespace Graphics
