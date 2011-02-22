@@ -12,6 +12,13 @@
  *  The game options menu.
  */
 
+#include "common/util.h"
+#include "common/configman.h"
+
+#include "aurora/talkman.h"
+
+#include "graphics/graphics.h"
+
 #include "engines/nwn/menu/optionsgame.h"
 #include "engines/nwn/menu/optionsgorepass.h"
 #include "engines/nwn/menu/optionsfeedback.h"
@@ -31,9 +38,6 @@ OptionsGameMenu::OptionsGameMenu() {
 	hideTiles.push_back(getWidget("AlwaysBox"));
 	declareGroup(hideTiles);
 
-	// TODO: Difficulty
-	getWidget("DiffSlider", true)->setDisabled(true);
-
 	// TODO: Hide second story tiles setting
 	getWidget("NeverBox" , true)->setDisabled(true);
 	getWidget("AutoBox"  , true)->setDisabled(true);
@@ -51,14 +55,40 @@ OptionsGameMenu::~OptionsGameMenu() {
 	delete _gorepass;
 }
 
+void OptionsGameMenu::show() {
+	_difficulty = CLIP(ConfigMan.getInt("difficulty", 0), 0, 2);
+
+	getSlider("DiffSlider", true)->setState(_difficulty);
+
+	updateDifficulty(_difficulty);
+
+	GUI::show();
+}
+
+void OptionsGameMenu::initWidget(Widget &widget) {
+	if (widget.getTag() == "DiffSlider") {
+		dynamic_cast<WidgetSlider &>(widget).setSteps(3);
+		return;
+	}
+
+	if (widget.getTag() == "DiffEdit") {
+		dynamic_cast<WidgetEditBox &>(widget).setMode(WidgetEditBox::kModeStatic);
+		return;
+	}
+}
+
 void OptionsGameMenu::callbackActive(Widget &widget) {
 	if ((widget.getTag() == "CancelButton") ||
 	    (widget.getTag() == "XButton")) {
+
+		revertChanges();
 		_returnCode = 1;
 		return;
 	}
 
 	if (widget.getTag() == "OkButton") {
+
+		adoptChanges();
 		_returnCode = 2;
 		return;
 	}
@@ -67,10 +97,44 @@ void OptionsGameMenu::callbackActive(Widget &widget) {
 		sub(*_gorepass);
 		return;
 	}
+
 	if (widget.getTag() == "FeedbackButton") {
 		sub(*_feedback);
 		return;
 	}
+
+	if (widget.getTag() == "DiffSlider") {
+		updateDifficulty(dynamic_cast<WidgetSlider &>(widget).getState());
+		return;
+	}
+}
+
+void OptionsGameMenu::updateDifficulty(int difficulty) {
+	GfxMan.lockFrame();
+
+	WidgetLabel   &diffLabel = *getLabel  ("DifficultyLabel", true);
+	WidgetEditBox &diffEdit  = *getEditBox("DiffEdit"       , true);
+
+	diffEdit.clear();
+	diffEdit.add(TalkMan.getString(67578 + difficulty));
+
+	if      (difficulty == 0)
+		diffLabel.setText(TalkMan.getString(66786));
+	else if (difficulty == 1)
+		diffLabel.setText(TalkMan.getString(66788));
+	else if (difficulty == 2)
+		diffLabel.setText(TalkMan.getString(66790));
+	else if (difficulty == 3)
+		diffLabel.setText(TalkMan.getString(66792));
+
+	GfxMan.unlockFrame();
+}
+
+void OptionsGameMenu::adoptChanges() {
+	ConfigMan.setInt("difficulty", getSlider("DiffSlider", true)->getState(), true);
+}
+
+void OptionsGameMenu::revertChanges() {
 }
 
 } // End of namespace NWN

@@ -27,12 +27,22 @@ public:
 	OptionsGameMenu();
 	~OptionsGameMenu();
 
+	void show();
+
 protected:
+	void initWidget(Widget &widget);
 	void callbackActive(Widget &widget);
 
 private:
+	int _difficulty;
+
 	GUI *_gorepass;
 	GUI *_feedback;
+
+	void updateDifficulty(int difficulty);
+
+	void adoptChanges();
+	void revertChanges();
 };
 
 } // End of namespace NWN
