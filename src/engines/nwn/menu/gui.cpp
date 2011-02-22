@@ -380,13 +380,11 @@ void WidgetSlider::changePosition(float value) {
 
 
 WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &model,
-                             const Common::UString &font) : NWNModelWidget(tag, model) {
+                             const Common::UString &font) : NWNModelWidget(tag, model),
+	_mode(kModeStatic), _startLine(0), _selectedLine(0xFFFFFFFF),
+	_r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
 	_hasScrollbar = getHeight() > 0.25;
-
-	_mode = kModeStatic;
-
-	_startLine = 0;
 
 	// If the edit consists of at least two lines, add scroll buttons
 	// TODO: This needs an actual scrollbar too
@@ -473,12 +471,52 @@ void WidgetEditBox::subActive(Widget &widget) {
 	}
 }
 
+void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	if (_mode != kModeSelectable)
+		// Isn't selectable, nothing to do
+		return;
+
+	float wX, wY, wZ;
+	getPosition(wX, wY, wZ);
+
+	// Pixel position
+	y = getHeight() - (y - wY) - 0.02;
+
+	if ((y < 0.0) || (y > (_lines.size() * (_font.getFont().getHeight() + 0.01))))
+		// Outside the contents area
+		return;
+
+	uint line = _startLine + (y / (_font.getFont().getHeight() + 0.01));
+	if (line >= _contentLines.size() || (line == _selectedLine))
+		// No line or no change
+		return;
+
+	_selectedLine = line;
+	updateScroll();
+
+	setActive(true);
+}
+
 void WidgetEditBox::setMode(Mode mode) {
 	_mode = mode;
 }
 
+void WidgetEditBox::setColor(float r, float g, float b, float a) {
+	_r = r;
+	_g = g;
+	_b = b;
+	_a = a;
+
+	for (std::vector<WidgetLabel *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
+		(*it)->setColor(_r, _g, _b, _a);
+}
+
 void WidgetEditBox::clear() {
-	_startLine = 0;
+	_startLine    = 0;
+	_selectedLine = 0xFFFFFFFF;
 
 	_contents.clear();
 	_contentLines.clear();
@@ -500,6 +538,21 @@ void WidgetEditBox::addLine(const Common::UString &line) {
 	add(line);
 }
 
+void WidgetEditBox::selectLine(int line) {
+	if (_mode != kModeSelectable)
+		return;
+
+	_selectedLine = line;
+	updateScroll();
+}
+
+Common::UString WidgetEditBox::getSelectedLine() const {
+	if (_selectedLine >= _contentLines.size())
+		return "";
+
+	return Common::UString(_contentLines[_selectedLine].first, _contentLines[_selectedLine].second);
+}
+
 void WidgetEditBox::updateContents() {
 	_contentLines.clear();
 
@@ -514,8 +567,14 @@ void WidgetEditBox::updateContents() {
 
 void WidgetEditBox::updateScroll() {
 	std::vector<WidgetLabel *>::iterator line = _lines.begin();
-	for (uint i = _startLine; i < _contentLines.size() && line != _lines.end(); i++, ++line)
+	for (uint i = _startLine; i < _contentLines.size() && line != _lines.end(); i++, ++line) {
 		(*line)->setText(Common::UString(_contentLines[i].first, _contentLines[i].second));
+
+		if ((_mode == kModeSelectable) && (i == _selectedLine))
+			(*line)->setColor(1.0, 1.0, 0.0, 1.0);
+		else
+			(*line)->setColor(_r, _g, _b, _a);
+	}
 }
 
 
@@ -705,6 +764,20 @@ void GUI::createWidget(WidgetContext &ctx) {
 }
 
 void GUI::initWidget(WidgetContext &ctx, NWNModelWidget &widget) {
+	WidgetEditBox *editBox = dynamic_cast<WidgetEditBox *>(&widget);
+	if (editBox) {
+		if (!ctx.strct->hasField("Obj_Caption"))
+			return;
+
+		const Aurora::GFFStruct &caption = ctx.strct->getStruct("Obj_Caption");
+
+		float r = caption.getDouble("AurString_ColorR", 1.0);
+		float g = caption.getDouble("AurString_ColorG", 1.0);
+		float b = caption.getDouble("AurString_ColorB", 1.0);
+		float a = caption.getDouble("AurString_ColorA", 1.0);
+
+		editBox->setColor(r, g, b, a);
+	}
 }
 
 void GUI::initWidget(WidgetContext &ctx, NWNTextWidget &widget) {

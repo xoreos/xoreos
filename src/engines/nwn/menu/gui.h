@@ -153,7 +153,8 @@ private:
 class WidgetEditBox : public NWNModelWidget {
 public:
 	enum Mode {
-		kModeStatic = 0
+		kModeStatic     = 0,
+		kModeSelectable
 	};
 
 	WidgetEditBox(const Common::UString &tag, const Common::UString &model,
@@ -163,13 +164,20 @@ public:
 	void setPosition(float x, float y, float z);
 
 	void subActive(Widget &widget);
+	void mouseDown(uint8 state, float x, float y);
 
 	void setMode(Mode mode);
+
+	void setColor(float r, float g, float b, float a);
 
 	void clear();
 
 	void add(const Common::UString &str);
 	void addLine(const Common::UString &line);
+
+	void selectLine(int line);
+
+	Common::UString getSelectedLine() const;
 
 private:
 	bool _hasScrollbar;
@@ -184,6 +192,12 @@ private:
 	std::vector<Graphics::LineDefinition> _contentLines;
 
 	uint _startLine;
+	uint _selectedLine;
+
+	float _r;
+	float _g;
+	float _b;
+	float _a;
 
 	void updateContents();
 	void updateScroll();
