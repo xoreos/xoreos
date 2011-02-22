@@ -25,7 +25,7 @@
 namespace Engines {
 
 Widget::Widget(const Common::UString &tag) : _tag(tag),
-	_active(false), _visible(false), _disabled(false), _x(0.0), _y(0.0), _z(0.0) {
+	_owner(0), _active(false), _visible(false), _disabled(false), _x(0.0), _y(0.0), _z(0.0) {
 }
 
 Widget::~Widget() {
@@ -122,6 +122,15 @@ void Widget::mouseDown(uint8 state, float x, float y) {
 void Widget::mouseUp(uint8 state, float x, float y) {
 }
 
+void Widget::subActive(Widget &widget) {
+}
+
+void Widget::addSub(Widget &widget) {
+	_subWidgets.push_back(&widget);
+
+	widget._owner = this;
+}
+
 void Widget::addChild(Widget &widget) {
 	if (&widget != this)
 		_children.push_back(&widget);
@@ -214,6 +223,12 @@ void GUI::addWidget(Widget *widget) {
 
 	_widgets.push_back(widget);
 	_widgetMap[widget->getTag()] = widget;
+
+	// Add the widget's sub-widgets
+	for (std::list<Widget *>::const_iterator it = widget->_subWidgets.begin(); it != widget->_subWidgets.end(); ++it) {
+		_widgets.push_back(*it);
+		_widgetMap[(*it)->getTag()] = *it;
+	}
 }
 
 bool GUI::hasWidget(const Common::UString &tag) const {
@@ -322,8 +337,12 @@ void GUI::checkWidgetActive(Widget *widget) {
 		// Not active => return
 		return;
 
-	// Call the active callback
-	callbackActive(*widget);
+	if (widget->_owner) {
+		// This is a subwidget, call the owner's active callback
+		widget->_owner->subActive(*widget);
+	} else
+		// This is a standalone widget, call the GUI's active callback
+		callbackActive(*widget);
 
 	// We now handled that active trigger, reset the active state to false
 	widget->setActive(false);

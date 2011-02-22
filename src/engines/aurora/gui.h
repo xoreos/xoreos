@@ -63,12 +63,19 @@ public:
 	/** A mouse button was released on the widget. */
 	virtual void mouseUp  (uint8 state, float x, float y);
 
+	/** A sub-widget was activated. */
+	virtual void subActive(Widget &widget);
+
+	virtual void addSub(Widget &widget);         ///< Add a sub-widget to the widget.
 	virtual void addChild(Widget &widget);       ///< Add a child to the widget.
 	virtual void addGroupMember(Widget &widget); ///< Add a fellow group member to the widget.
 
 protected:
 	Common::UString _tag; ///< The widget's tag.
 
+	Widget *_owner; ///< The widget's owner, if any.
+
+	std::list<Widget *> _subWidgets;   ///< The widget's sub-widgets.
 	std::list<Widget *> _children;     ///< The widget's children.
 	std::list<Widget *> _groupMembers; ///< The widget's fellow group members.
 
