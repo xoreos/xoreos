@@ -27,8 +27,32 @@ public:
 	OptionsResolutionMenu();
 	~OptionsResolutionMenu();
 
+	void show();
+
 protected:
+	void initWidget(Widget &widget);
 	void callbackActive(Widget &widget);
+
+private:
+	struct Resolution {
+		int width;
+		int height;
+
+		Resolution(int w, int h);
+	};
+
+	std::vector<Resolution> _resolutions;
+
+	int _width;
+	int _height;
+
+	void initResolutions();
+	void initResolutionsBox(WidgetEditBox &resList);
+
+	void setResolution(const Common::UString &line);
+
+	void adoptChanges();
+	void revertChanges();
 };
 
 } // End of namespace NWN
