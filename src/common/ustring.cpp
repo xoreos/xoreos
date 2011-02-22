@@ -161,6 +161,14 @@ UString::UString(const char *str, int n) {
 	*this = std::string(str, n);
 }
 
+UString::UString(iterator sBegin, iterator sEnd) {
+	_string = std::string(sBegin, sEnd);
+}
+
+UString::UString(uint32 c) {
+	*this = c;
+}
+
 UString::~UString() {
 }
 
@@ -188,6 +196,14 @@ UString &UString::operator=(const std::string &str) {
 
 UString &UString::operator=(const char *str) {
 	*this = std::string(str);
+
+	return *this;
+}
+
+UString &UString::operator=(uint32 c) {
+	clear();
+
+	*this += c;
 
 	return *this;
 }
@@ -787,6 +803,10 @@ uint32 UString::toupper(uint32 c) {
 
 bool UString::isASCII(uint32 c) {
 	return (c & 0xFFFFFF80) == 0;
+}
+
+bool UString::isSpace(uint32 c) {
+	return isASCII(c) && std::isspace(c);
 }
 
 uint32 UString::fromUTF16(uint16 c) {

@@ -52,11 +52,14 @@ public:
 	UString(const std::string &str);
 	UString(const char *str = "");
 	UString(const char *str, int n);
+	UString(iterator sBegin, iterator sEnd);
+	UString(uint32 c);
 	~UString();
 
 	UString &operator=(const UString &str);
 	UString &operator=(const std::string &str);
 	UString &operator=(const char *str);
+	UString &operator=(uint32 c);
 
 	bool operator==(const UString &str) const;
 	bool operator!=(const UString &str) const;
@@ -175,6 +178,7 @@ public:
 	static uint32 toupper(uint32 c);
 
 	static bool isASCII(uint32 c);
+	static bool isSpace(uint32 c);
 
 	static uint32 fromUTF16(uint16 c);
 
