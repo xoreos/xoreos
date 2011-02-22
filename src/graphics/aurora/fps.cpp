@@ -57,6 +57,13 @@ void FPS::render() {
 	Text::render();
 }
 
+void FPS::changedResolution(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+	float posX = (-(newWidth  / 2.0)) / 100.0;
+	float posY = ( (newHeight / 2.0)) / 100.0  - getHeight();
+
+	setPosition_internal(posX, posY);
+}
+
 } // End of namespace Aurora
 
 } // End of namespace Graphics

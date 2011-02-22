@@ -31,6 +31,7 @@ public:
 
 	// Renderable
 	void render();
+	void changedResolution(int oldWidth, int oldHeight, int newWidth, int newHeight);
 
 private:
 	uint32 _fps;

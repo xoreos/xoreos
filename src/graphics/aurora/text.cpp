@@ -113,13 +113,17 @@ void Text::setPosition(float x, float y) {
 
 	Renderable::removeFromQueue();
 
-	_x = roundf(x * 100.0) / 100.0;
-	_y = roundf(y * 100.0) / 100.0;
+	setPosition_internal(x, y);
 
 	if (visible)
 		Renderable::addToQueue();
 
 	GfxMan.unlockFrame();
+}
+
+void Text::setPosition_internal(float x, float y) {
+	_x = roundf(x * 100.0) / 100.0;
+	_y = roundf(y * 100.0) / 100.0;
 }
 
 void Text::show() {

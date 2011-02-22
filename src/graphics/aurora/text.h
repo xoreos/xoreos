@@ -57,6 +57,7 @@ public:
 
 protected:
 	void set_internal(const Common::UString &str);
+	void setPosition_internal(float x, float y);
 
 private:
 	FontHandle _font;
