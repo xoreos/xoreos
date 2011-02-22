@@ -692,6 +692,10 @@ void GraphicsManager::toggleMouseGrab() {
 void GraphicsManager::changeSize(int width, int height) {
 	Common::enforceMainThread();
 
+	if ((width == _screen->w) && (height == _screen->h))
+		// No changes, nothing to do
+		return;
+
 	// Save properties
 	uint32 flags     = _screen->flags;
 	int    bpp       = _screen->format->BitsPerPixel;
@@ -710,9 +714,14 @@ void GraphicsManager::changeSize(int width, int height) {
 
 	// There's no reason how this could possibly fail, but ok...
 	if (!_screen)
-		throw Common::Exception("Failed going to fullscreen and then failed reverting.");
+		throw Common::Exception("Failed changing the resolution and then failed reverting.");
 
 	rebuildContext();
+
+	if ((oldWidth != _screen->w) || (oldHeight != _screen->h))
+		// Tell the gui front objects that the resolution changed
+		for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj)
+			(*obj)->changedResolution(oldWidth, oldHeight, _screen->w, _screen->h);
 }
 
 void GraphicsManager::destroyTexture(TextureID id) {

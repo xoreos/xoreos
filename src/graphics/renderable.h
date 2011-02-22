@@ -48,6 +48,9 @@ public:
 	/** Is that point within the object? */
 	virtual bool isIn(float x, float y, float z) const;
 
+	/** Signal to the object that the screen resolution changed. */
+	virtual void changedResolution(int oldWidth, int oldHeight, int newWidth, int newHeight);
+
 protected:
 	Common::UString _tag;
 
