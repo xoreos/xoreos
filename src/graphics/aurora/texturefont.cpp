@@ -38,6 +38,10 @@ TextureFont::TextureFont(const Common::UString &name) : _scale(1.0), _spaceR(0.0
 TextureFont::~TextureFont() {
 }
 
+float TextureFont::getHeight() const {
+	return _scale / 100.0;
+}
+
 float TextureFont::getWidth(const Common::UString &text) const {
 	float width = 0.0;
 
@@ -58,6 +62,7 @@ float TextureFont::getWidth(const Common::UString &text) const {
 }
 
 float TextureFont::getHeight(const Common::UString &text) const {
+	// TODO: Look for new line characters
 	return _scale / 100.0;
 }
 

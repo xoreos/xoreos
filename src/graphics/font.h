@@ -27,6 +27,9 @@ public:
 	Font();
 	virtual ~Font();
 
+	/** Return the base height of a character. */
+	virtual float getHeight() const = 0;
+
 	/** Return the width this string would take. */
 	virtual float getWidth(const Common::UString &text) const = 0;
 	/** Return the height this string would take. */

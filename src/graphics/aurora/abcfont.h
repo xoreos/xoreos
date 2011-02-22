@@ -36,6 +36,8 @@ public:
 	ABCFont(const Common::UString &name);
 	~ABCFont();
 
+	float getHeight() const;
+
 	float getWidth(const Common::UString &text) const;
 	float getHeight(const Common::UString &text) const;
 

@@ -39,6 +39,8 @@ public:
 	TextureFont(const Common::UString &name);
 	~TextureFont();
 
+	float getHeight() const;
+
 	float getWidth(const Common::UString &text) const;
 	float getHeight(const Common::UString &text) const;
 

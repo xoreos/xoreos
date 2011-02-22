@@ -36,6 +36,10 @@ ABCFont::ABCFont(const Common::UString &name) : _base(0) {
 ABCFont::~ABCFont() {
 }
 
+float ABCFont::getHeight() const {
+	return 32.0 / 100.0;
+}
+
 float ABCFont::getWidth(const Common::UString &text) const {
 	float width = 0.0;
 
@@ -53,6 +57,7 @@ float ABCFont::getWidth(const Common::UString &text) const {
 }
 
 float ABCFont::getHeight(const Common::UString &text) const {
+	// TODO: Look for new line characters
 	return 32.0 / 100.0;
 }
 
