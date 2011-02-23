@@ -384,25 +384,25 @@ WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &
 	_mode(kModeStatic), _startLine(0), _selectedLine(0xFFFFFFFF),
 	_r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
-	_hasScrollbar = getHeight() > 0.25;
 
-	// If the edit consists of at least two lines, add scroll buttons
+	float minX, minY, minZ;
+	bool minHas = _model->getNodePosition("scrollmin", minX, minY, minZ);
+
+	float maxX, maxY, maxZ;
+	bool maxHas = _model->getNodePosition("scrollmax", maxX, maxY, maxZ);
+
+	_hasScrollbar = minHas && maxHas;
+
 	// TODO: This needs an actual scrollbar too
 	if (_hasScrollbar) {
 		WidgetButton *down = new WidgetButton(tag + "#Down", "pb_scrl_down");
 
-		float dX = getWidth() - down->getWidth() - 0.03;
-		float dY = 0.03;
-
-		down->setPosition(dX, dY, 0.0);
+		down->setPosition(maxX, maxY - 0.10, 0.0);
 		addSub(*down);
 
 		WidgetButton *up = new WidgetButton(tag + "#Up", "pb_scrl_up");
 
-		float uX = getWidth () - up->getWidth () - 0.03;
-		float uY = getHeight() - up->getHeight() - 0.03;
-
-		up->setPosition(uX, uY, 0.0);
+		up->setPosition(minX, minY, 0.0);
 		addSub(*up);
 	}
 
