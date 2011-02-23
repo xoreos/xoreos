@@ -7,6 +7,9 @@ noinst_HEADERS = nwn.h \
                  menu/legal.h \
                  menu/gui.h \
                  menu/main.h \
+                 menu/new.h \
+                 menu/newcamp.h \
+                 menu/newmodule.h \
                  menu/moviescamp.h \
                  menu/moviesbase.h \
                  menu/options.h \
@@ -25,6 +28,9 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/legal.cpp \
                     menu/gui.cpp \
                     menu/main.cpp \
+                    menu/new.cpp \
+                    menu/newcamp.cpp \
+                    menu/newmodule.cpp \
                     menu/moviescamp.cpp \
                     menu/moviesbase.cpp \
                     menu/options.cpp \

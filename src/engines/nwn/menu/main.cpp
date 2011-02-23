@@ -17,6 +17,8 @@
 #include "graphics/aurora/model.h"
 
 #include "engines/nwn/menu/main.h"
+#include "engines/nwn/menu/new.h"
+#include "engines/nwn/menu/newcamp.h"
 #include "engines/nwn/menu/moviesbase.h"
 #include "engines/nwn/menu/moviescamp.h"
 #include "engines/nwn/menu/options.h"
@@ -40,9 +42,15 @@ MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : _xp1(0), _xp2(0) {
 		_xp2->setPosition(1.24, -1.47, 0.50);
 	}
 
-	getWidget("NewButton"  , true)->setDisabled(true);
 	getWidget("LoadButton" , true)->setDisabled(true);
 	getWidget("MultiButton", true)->setDisabled(true);
+
+	if (xp1 || xp2)
+		// If we have at least an expansion, create the campaign selection game menu
+		_new = new NewCampMenu(xp1, xp2, xp3);
+	else
+		// If not, create the base game menu
+		_new = new NewMenu(xp1, xp2, xp3);
 
 	if (xp1 || xp2)
 		// If we have at least an expansion, create the campaign selection movies menu
@@ -55,6 +63,7 @@ MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : _xp1(0), _xp2(0) {
 }
 
 MainMenu::~MainMenu() {
+	delete _new;
 	delete _options;
 	delete _movies;
 
@@ -83,6 +92,11 @@ void MainMenu::hide() {
 void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "ExitButton") {
 		EventMan.requestQuit();
+		return;
+	}
+
+	if (widget.getTag() == "NewButton") {
+		sub(*_new);
 		return;
 	}
 

@@ -8,44 +8,33 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/main.h
- *  The main menu.
+/** @file engines/nwn/menu/newmodule.cpp
+ *  The new module menu.
  */
 
-#ifndef ENGINES_NWN_MENU_MAIN_H
-#define ENGINES_NWN_MENU_MAIN_H
+#include "engines/nwn/menu/newmodule.h"
 
-#include "engines/nwn/menu/gui.h"
-
-#include "graphics/aurora/types.h"
+#include "engines/aurora/util.h"
 
 namespace Engines {
 
 namespace NWN {
 
-/** The NWN main menu. */
-class MainMenu : public GUI {
-public:
-	MainMenu(bool xp1, bool xp2, bool xp3);
-	~MainMenu();
+NewModuleMenu::NewModuleMenu() {
+	load("pre_loadmod");
+}
 
-	void show();
-	void hide();
+NewModuleMenu::~NewModuleMenu() {
+}
 
-protected:
-	void callbackActive(Widget &widget);
+void NewModuleMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "CancelButton") {
+		_returnCode = 1;
+		return;
+	}
 
-private:
-	Graphics::Aurora::Model *_xp1;
-	Graphics::Aurora::Model *_xp2;
-
-	GUI *_new;
-	GUI *_movies;
-	GUI *_options;
-};
+}
 
 } // End of namespace NWN
 
 } // End of namespace Engines
-
-#endif // ENGINES_NWN_MENU_MAIN_H
