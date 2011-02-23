@@ -45,16 +45,26 @@ float TextureFont::getHeight() const {
 float TextureFont::getWidth(const Common::UString &text) const {
 	float width = 0.0;
 
+	float lineWidth = 0.0;
 	for (Common::UString::iterator s = text.begin(); s != text.end(); ++s) {
 		uint32 c = *s;
 		if (c == '\0')
 			break;
 
+		if (c == '\n') {
+			width = MAX(width, lineWidth);
+
+			lineWidth = 0.0;
+			continue;
+		}
+
 		if (c >= _chars.size())
 			continue;
 
-		width += _chars[c].width + _spaceR;
+		lineWidth += _chars[c].width + _spaceR;
 	}
+
+	width = MAX(width, lineWidth);
 
 	width *= _scale / 100.0;
 
@@ -62,35 +72,62 @@ float TextureFont::getWidth(const Common::UString &text) const {
 }
 
 float TextureFont::getHeight(const Common::UString &text) const {
-	// TODO: Look for new line characters
-	return _scale / 100.0;
+	if (text.empty())
+		return getHeight();
+
+	std::vector<LineDefinition> lines;
+	std::vector<float> lengths;
+
+	getLines(text, lines, lengths);
+
+	return (lines.size() * _scale) / 100.0;
 }
 
-void TextureFont::draw(const Common::UString &text) const {
+void TextureFont::draw(const Common::UString &text, float align) const {
 	glScalef(_scale, _scale, 0.0);
 
 	TextureMan.set(_texture);
 
-	for (Common::UString::iterator s = text.begin(); s != text.end(); ++s) {
-		uint32 c = *s;
-		if (c == '\0')
-			break;
+	std::vector<LineDefinition> lines;
+	std::vector<float> lengths;
 
-		float width = 0.0;
-		if (c < _chars.size()) {
-			const Char &cC = _chars[c];
+	float maxLength = getLines(text, lines, lengths);
 
-			glBegin(GL_QUADS);
-			for (int i = 0; i < 4; i++) {
-				glTexCoord2f(cC.tX[i], cC.tY[i]);
-				glVertex2f  (cC.vX[i], cC.vY[i]);
+	glTranslatef(0.0, (lines.size() - 1), 0.0);
+
+	for (uint l = 0; l < lines.size(); l++) {
+		float curPos = roundf((maxLength - lengths[l]) * align * 100.0) / _scale;
+
+		glTranslatef(curPos, 0.0, 0.0);
+
+		for (Common::UString::iterator s = lines[l].first; s != lines[l].second; ++s) {
+			uint32 c = *s;
+			if (c == '\0')
+				break;
+
+			float width = 0.0;
+			if (c < _chars.size()) {
+				const Char &cC = _chars[c];
+
+				glBegin(GL_QUADS);
+				for (int i = 0; i < 4; i++) {
+					glTexCoord2f(cC.tX[i], cC.tY[i]);
+					glVertex2f  (cC.vX[i], cC.vY[i]);
+				}
+				glEnd();
+
+				width = cC.width;
 			}
-			glEnd();
 
-			width = cC.width;
+			float w = width;
+			if (s == lines[l].second)
+				w += _spaceR;
+
+			curPos += w;
+			glTranslatef(w, 0.0, 0.0);
 		}
 
-		glTranslatef(width + _spaceR, 0.0, 0.0);
+		glTranslatef(-curPos, -1.0, 0.0);
 	}
 }
 
@@ -147,6 +184,8 @@ void TextureFont::load() {
 	_scale  = txiFeatures.fontHeight * 100;
 	_spaceR = txiFeatures.spacingR;
 	_spaceB = txiFeatures.spacingB;
+
+	_spaceR = 0.0;
 }
 
 } // End of namespace Aurora

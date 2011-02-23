@@ -23,16 +23,18 @@ namespace Graphics {
 
 namespace Aurora {
 
-Text::Text(const FontHandle &font, const Common::UString &str) :
-	_font(font), _x(0.0), _y(0.0), _hasColor(false), _list(0) {
+Text::Text(const FontHandle &font, const Common::UString &str, float align) :
+	_font(font), _x(0.0), _y(0.0), _hasColor(false), _align(align), _list(0) {
 
 	set(str);
 
 	_distance = -5.0;
 }
 
-Text::Text(const FontHandle &font, const Common::UString &str, float r, float g, float b, float a) :
-	_font(font), _x(0.0), _y(0.0), _hasColor(true), _r(r), _g(g), _b(b), _a(a), _list(0) {
+Text::Text(const FontHandle &font, const Common::UString &str,
+		float r, float g, float b, float a, float align) :
+	_font(font), _x(0.0), _y(0.0), _hasColor(true), _r(r), _g(g), _b(b), _a(a),
+	_align(align), _list(0) {
 
 	set(str);
 
@@ -165,9 +167,9 @@ void Text::rebuild() {
 
 	glNewList(_list, GL_COMPILE);
 	if (_hasColor)
-		font.draw(_str, _r, _g, _b, _a);
+		font.draw(_str, _r, _g, _b, _a, _align);
 	else
-		font.draw(_str);
+		font.draw(_str, _align);
 	glEndList();
 }
 

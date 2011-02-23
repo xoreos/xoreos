@@ -30,8 +30,9 @@ namespace Aurora {
 /** A text object. */
 class Text : public GUIFrontElement, public ListContainer {
 public:
-	Text(const FontHandle &font, const Common::UString &str);
-	Text(const FontHandle &font, const Common::UString &str, float r, float g, float b, float a);
+	Text(const FontHandle &font, const Common::UString &str, float align = 0.0);
+	Text(const FontHandle &font, const Common::UString &str, float r, float g, float b, float a,
+	     float align = 0.0);
 	~Text();
 
 	void set(const Common::UString &str);
@@ -70,6 +71,8 @@ private:
 
 	bool _hasColor;
 	float _r, _g, _b, _a;
+
+	float _align;
 
 	Common::UString _str;
 

@@ -25,14 +25,52 @@ Font::Font() {
 Font::~Font() {
 }
 
-void Font::draw(const Common::UString &text, float r, float g, float b, float a) const {
+void Font::draw(const Common::UString &text, float r, float g, float b, float a,
+                float align) const {
+
 	glColor4f(r, g, b, a);
-	draw(text);
+	draw(text, align);
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 }
 
+float Font::getLines(const Common::UString &line, std::vector<LineDefinition> &lines,
+                     std::vector<float> &lengths) const {
+
+	Common::UString::iterator lineStart = line.begin();
+
+	float length = 0.0;
+
+	for (Common::UString::iterator p = line.begin(); p != line.end(); ++p) {
+		if (*p == '\n') {
+			Common::UString::iterator start = lineStart;
+			Common::UString::iterator end   = p;
+
+			while ((end   != lineStart) && Common::UString::isSpace(*--end));
+			while ((start != end      ) && Common::UString::isSpace(*start))
+				start++;
+
+			lines.push_back(std::make_pair(start, ++end));
+			lengths.push_back(getWidth(Common::UString(lines.back().first, lines.back().second)));
+
+			lineStart = p;
+			lineStart++;
+
+			length = MAX(length, lengths.back());
+		}
+	}
+
+	if (lineStart != line.end()) {
+		lines.push_back(std::make_pair(lineStart, line.end()));
+		lengths.push_back(getWidth(Common::UString(lines.back().first, lines.back().second)));
+
+		length = MAX(length, lengths.back());
+	}
+
+	return length;
+}
+
 float Font::split(const Common::UString &line, float maxWidth,
-                 std::vector<LineDefinition> &lines) const {
+                  std::vector<LineDefinition> &lines) const {
 
 	if (line.empty())
 		return 0.0;

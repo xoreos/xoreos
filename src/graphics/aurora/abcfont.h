@@ -41,7 +41,7 @@ public:
 	float getWidth(const Common::UString &text) const;
 	float getHeight(const Common::UString &text) const;
 
-	void draw(const Common::UString &text) const;
+	void draw(const Common::UString &text, float align = 0.0) const;
 
 private:
 	/** A font character. */

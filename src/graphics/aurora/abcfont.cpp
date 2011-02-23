@@ -61,7 +61,7 @@ float ABCFont::getHeight(const Common::UString &text) const {
 	return 32.0 / 100.0;
 }
 
-void ABCFont::draw(const Common::UString &text) const {
+void ABCFont::draw(const Common::UString &text, float align) const {
 	TextureMan.set(_texture);
 
 	for (Common::UString::iterator s = text.begin(); s != text.end(); ++s) {

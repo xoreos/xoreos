@@ -38,13 +38,17 @@ public:
 	virtual float getHeight(const Common::UString &text) const = 0;
 
 	/** Draw this string. */
-	virtual void draw(const Common::UString &text) const = 0;
+	virtual void draw(const Common::UString &text, float align = 0.0) const = 0;
 	/** Draw this string in this color. */
-	virtual void draw(const Common::UString &text, float r, float g, float b, float a) const;
+	virtual void draw(const Common::UString &text, float r, float g, float b, float a,
+	                  float align = 0.0) const;
+
+	float getLines(const Common::UString &line, std::vector<LineDefinition> &lines,
+	               std::vector<float> &lengths) const;
 
 	/** Split a long line, on word boundaries if possible. */
 	float split(const Common::UString &line, float maxWidth,
-			std::vector<LineDefinition> &lines) const;
+	            std::vector<LineDefinition> &lines) const;
 };
 
 } // End of namespace Graphics
