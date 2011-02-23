@@ -162,7 +162,8 @@ UString::UString(const char *str, int n) {
 }
 
 UString::UString(iterator sBegin, iterator sEnd) {
-	_string = std::string(sBegin, sEnd);
+	for (; sBegin != sEnd; ++sBegin)
+		*this += *sBegin;
 }
 
 UString::UString(uint32 c) {
