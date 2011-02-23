@@ -85,7 +85,7 @@ NWNTextWidget::NWNTextWidget(const Common::UString &tag, const Common::UString &
                              const Common::UString &text) :
 	Widget(tag), _r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
-	_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a);
+	_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, 0.5);
 }
 
 NWNTextWidget::~NWNTextWidget() {
