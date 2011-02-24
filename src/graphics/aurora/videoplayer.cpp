@@ -41,6 +41,9 @@ VideoPlayer::~VideoPlayer() {
 }
 
 void VideoPlayer::load(const Common::UString &name) {
+	delete _video;
+	_video = 0;
+
 	::Aurora::FileType type;
 	Common::SeekableReadStream *video = ResMan.getResource(::Aurora::kResourceVideo, name, &type);
 	if (!video)

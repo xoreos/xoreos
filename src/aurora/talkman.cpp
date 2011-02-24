@@ -42,19 +42,32 @@ void TalkManager::setGender(Gender gender) {
 void TalkManager::addMainTable(const Common::UString &name) {
 	removeMainTable();
 
-	Common::SeekableReadStream *tlkM = ResMan.getResource(name, kFileTypeTLK);
-	if (!tlkM)
-		throw Common::Exception("No such talk table \"%s\"", name.c_str());
+	Common::SeekableReadStream *tlkM = 0;
+	Common::SeekableReadStream *tlkF = 0;
 
-	Common::SeekableReadStream *tlkF = ResMan.getResource(name + "f", kFileTypeTLK);
+	try {
+		tlkM = ResMan.getResource(name, kFileTypeTLK);
+		if (!tlkM)
+			throw Common::Exception("No such talk table \"%s\"", name.c_str());
 
-	_mainTableM = new TalkTable;
-	_mainTableM->load(*tlkM);
+		tlkF = ResMan.getResource(name + "f", kFileTypeTLK);
 
-	if (tlkF) {
-		_mainTableF = new TalkTable;
-		_mainTableF->load(*tlkF);
+		_mainTableM = new TalkTable;
+		_mainTableM->load(*tlkM);
+
+		if (tlkF) {
+			_mainTableF = new TalkTable;
+			_mainTableF->load(*tlkF);
+		}
+
+	} catch (...) {
+		delete tlkM;
+		delete tlkF;
+		throw;
 	}
+
+	delete tlkM;
+	delete tlkF;
 }
 
 void TalkManager::addAltTable(const Common::UString &name) {

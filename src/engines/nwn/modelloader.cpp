@@ -52,6 +52,7 @@ Graphics::Aurora::Model *NWNModelLoader::load(const Common::UString &resref,
 		throw;
 	}
 
+	delete mdl;
 	return model;
 }
 

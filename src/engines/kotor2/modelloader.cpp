@@ -47,6 +47,8 @@ Graphics::Aurora::Model *KotOR2ModelLoader::load(const Common::UString &resref,
 		throw;
 	}
 
+	delete mdl;
+	delete mdx;
 	return model;
 }
 

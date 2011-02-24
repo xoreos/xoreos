@@ -652,15 +652,20 @@ GUI::~GUI() {
 void GUI::load(const Common::UString &resref) {
 	_name = resref;
 
+	Aurora::GFFFile *gff = 0;
 	try {
-		Aurora::GFFFile *gff = loadGFF(resref, Aurora::kFileTypeGUI, MKID_BE('GUI '));
+		gff = loadGFF(resref, Aurora::kFileTypeGUI, MKID_BE('GUI '));
 
 		loadWidget(gff->getTopLevel(), 0);
 
 	} catch (Common::Exception &e) {
+		delete gff;
+
 		e.add("Can't load GUI \"%s\"", resref.c_str());
 		throw;
 	}
+
+	delete gff;
 }
 
 void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
@@ -835,6 +840,7 @@ WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) 
 	initWidget(*label);
 
 	parent->addChild(*label);
+	addWidget(label);
 
 	return label;
 }

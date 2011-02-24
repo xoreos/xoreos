@@ -184,7 +184,7 @@ RequestID RequestManager::newRequest(ITCEvent type) {
 void RequestManager::clearList() {
 	Common::StackLock lock(_mutexUse);
 
-	for (RequestList::iterator request = _requests.begin(); request != _requests.begin(); ++request)
+	for (RequestList::iterator request = _requests.begin(); request != _requests.end(); ++request)
 		delete *request;
 	_requests.clear();
 }
