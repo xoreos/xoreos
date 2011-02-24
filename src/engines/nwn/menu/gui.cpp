@@ -260,7 +260,7 @@ void WidgetCheckBox::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	playSound("gui_button", Sound::kSoundTypeSFX);
+	playSound("gui_check", Sound::kSoundTypeSFX);
 }
 
 void WidgetCheckBox::mouseUp(uint8 state, float x, float y) {
@@ -363,7 +363,7 @@ void WidgetCheckButton::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	playSound("gui_button", Sound::kSoundTypeSFX);
+	playSound("gui_check", Sound::kSoundTypeSFX);
 }
 
 void WidgetCheckButton::mouseUp(uint8 state, float x, float y) {
