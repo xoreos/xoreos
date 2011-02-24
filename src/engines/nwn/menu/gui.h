@@ -112,6 +112,29 @@ private:
 	void updateModel(bool highlight);
 };
 
+class WidgetCheckButton : public NWNModelWidget {
+public:
+	WidgetCheckButton(const Common::UString &tag, const Common::UString &model);
+	~WidgetCheckButton();
+
+	bool getState() const;
+	void setState(bool state);
+
+	void enter();
+	void leave();
+
+	void mouseDown(uint8 state, float x, float y);
+	void mouseUp  (uint8 state, float x, float y);
+
+protected:
+	void signalGroupMemberActive();
+
+private:
+	bool _state;
+
+	void updateModel(bool highlight);
+};
+
 class WidgetPanel : public NWNModelWidget {
 public:
 	WidgetPanel(const Common::UString &tag, const Common::UString &model);

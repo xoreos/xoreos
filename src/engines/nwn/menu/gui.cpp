@@ -296,6 +296,109 @@ void WidgetCheckBox::signalGroupMemberActive() {
 }
 
 
+WidgetCheckButton::WidgetCheckButton(const Common::UString &tag, const Common::UString &model) :
+	NWNModelWidget(tag, model) {
+
+	_state = false;
+	updateModel(false);
+}
+
+WidgetCheckButton::~WidgetCheckButton() {
+}
+
+void WidgetCheckButton::updateModel(bool highlight) {
+	if (highlight) {
+		if (_state)
+			_model->setState("down");
+		else
+			_model->setState("hilite");
+	} else {
+		if (_state)
+			_model->setState("down");
+		else
+			_model->setState("");
+	}
+}
+
+bool WidgetCheckButton::getState() const {
+	return _state;
+}
+
+void WidgetCheckButton::setState(bool state) {
+	if (!_groupMembers.empty()) {
+		// Group members, we are a radio button
+
+		if (!state)
+			// We can't just uncheck a radio button without checking another one
+			return;
+
+		_state = true;
+		updateModel(false);
+		setActive(true);
+
+	} else {
+		// No group members, we are a check box
+
+		_state = !!state;
+		updateModel(false);
+		setActive(true);
+	}
+}
+
+void WidgetCheckButton::enter() {
+	if (isDisabled())
+		return;
+
+	updateModel(true);
+}
+
+void WidgetCheckButton::leave() {
+	if (isDisabled())
+		return;
+
+	updateModel(false);
+}
+
+void WidgetCheckButton::mouseDown(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	playSound("gui_button", Sound::kSoundTypeSFX);
+}
+
+void WidgetCheckButton::mouseUp(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	if (!_groupMembers.empty()) {
+		// Group members, we are a radio button
+
+		if (_state)
+			// We are already active
+			return;
+
+		_state = true;
+		updateModel(true);
+		setActive(true);
+
+	} else {
+		// No group members, we are a check box
+
+		_state = !_state;
+		updateModel(true);
+		setActive(true);
+	}
+
+}
+
+void WidgetCheckButton::signalGroupMemberActive() {
+	Widget::signalGroupMemberActive();
+
+	_state = false;
+	updateModel(false);
+}
+
+
 WidgetPanel::WidgetPanel(const Common::UString &tag, const Common::UString &model) :
 	NWNModelWidget(tag, model) {
 
