@@ -20,8 +20,6 @@
 
 #include "graphics/graphics.h"
 
-#include "events/requests.h"
-
 #include "engines/nwn/menu/optionsvideoadv.h"
 
 #include "engines/aurora/util.h"
@@ -119,7 +117,7 @@ void OptionsVideoAdvancedMenu::callbackActive(Widget &widget) {
 		if (fsaa > 0)
 			fsaa = 1 << fsaa;
 
-		RequestMan.dispatchAndWait(RequestMan.changeFSAA(fsaa));
+		GfxMan.setFSAA(fsaa);
 		return;
 	}
 }
@@ -143,7 +141,7 @@ void OptionsVideoAdvancedMenu::adoptChanges() {
 }
 
 void OptionsVideoAdvancedMenu::revertChanges() {
-	RequestMan.dispatchAndWait(RequestMan.changeFSAA(_oldFSAA));
+	GfxMan.setFSAA(_oldFSAA);
 }
 
 } // End of namespace NWN

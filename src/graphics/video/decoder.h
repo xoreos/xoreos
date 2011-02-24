@@ -19,6 +19,7 @@
 #include "common/mutex.h"
 
 #include "graphics/types.h"
+#include "graphics/glcontainer.h"
 #include "graphics/queueable.h"
 
 #include "sound/types.h"
@@ -31,7 +32,7 @@ namespace Sound {
 namespace Graphics {
 
 /** A generic interface for video decoders. */
-class VideoDecoder : public Queueable<VideoDecoder> {
+class VideoDecoder : public GLContainer, public Queueable<VideoDecoder> {
 public:
 	enum Scale {
 		kScaleNone,  ///< Don't scale the video.
@@ -85,6 +86,10 @@ protected:
 	/** Process the video's image and sound data further. */
 	virtual void processData() = 0;
 
+	// GLContainer
+	void doRebuild();
+	void doDestroy();
+
 private:
 	TextureID _texture;
 
@@ -109,13 +114,6 @@ private:
 
 	/** Get the dimensions of the quad to draw the texture on. */
 	void getQuadDimensions(float &width, float &height) const;
-
-// To be called from the main/events/graphics thread
-public:
-	/** Rebuild the video's texture. */
-	void rebuild();
-	/** Destroy the video's texture. */
-	void destroy();
 };
 
 } // End of namespace Graphics

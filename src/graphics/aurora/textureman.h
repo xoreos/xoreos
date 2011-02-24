@@ -49,6 +49,10 @@ struct TextureHandle {
 
 	TextureHandle();
 	TextureHandle(TextureMap::iterator &i);
+	TextureHandle(const TextureHandle &right);
+	~TextureHandle();
+
+	TextureHandle &operator=(const TextureHandle &right);
 
 	void clear();
 

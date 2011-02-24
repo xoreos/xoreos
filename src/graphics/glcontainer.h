@@ -8,23 +8,32 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/listcontainer.cpp
- *  A container of OpenGL lists.
+/** @file graphics/glcontainer.h
+ *  A container of OpenGL elements.
  */
 
-#include "common/util.h"
-#include "common/threads.h"
-
-#include "graphics/listcontainer.h"
-#include "graphics/graphics.h"
+#ifndef GRAPHICS_GLCONTAINER_H
+#define GRAPHICS_GLCONTAINER_H
 
 namespace Graphics {
 
-ListContainer::ListContainer() : Queueable<ListContainer>(GfxMan.getListContainerQueue()) {
-	addToQueue();
-}
+/** A container of OpenGL elements. */
+class GLContainer {
+public:
+	GLContainer();
+	~GLContainer();
 
-ListContainer::~ListContainer() {
-}
+	void rebuild();
+	void destroy();
+
+protected:
+	virtual void doRebuild() = 0;
+	virtual void doDestroy() = 0;
+
+private:
+	bool _built;
+};
 
 } // End of namespace Graphics
+
+#endif // GRAPHICS_LISTCONTAINER_H

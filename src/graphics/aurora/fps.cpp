@@ -50,8 +50,8 @@ void FPS::render() {
 		_fps = fps;
 
 		set_internal(Common::UString::sprintf("%d fps", _fps));
-		destroy();
-		rebuild();
+		doDestroy();
+		doRebuild();
 	}
 
 	Text::render();

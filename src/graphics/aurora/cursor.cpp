@@ -37,7 +37,6 @@ Cursor::Cursor(const Common::UString &name) : _name(name), _hotspotX(0), _hotspo
 }
 
 Cursor::~Cursor() {
-	TextureMan.release(_texture);
 }
 
 void Cursor::render() {

@@ -38,18 +38,15 @@ enum EventType {
 
 /** Specific type of the inter-thread communication. */
 enum ITCEvent {
-	kITCEventSync           = 0, ///< Request a sync, letting all prior requests finish.
-	kITCEventFullscreen        , ///< Request switching to fullscreen mode.
-	kITCEventWindowed          , ///< Request switching to windowed mode.
-	kITCEventResize            , ///< Request changing the display size.
-	kITCEventChangeFSAA        , ///< Request changing the FSAA level.
-	kITCEventChangeVSync       , ///< Request changing the vsync settings.
-	kITCEventLoadTexture       , ///< Request the loading of a texture.
-	kITCEventDestroyTexture    , ///< Request the destruction of a texture.
-	kITCEventBuildLists        , ///< Request the building of OpenGL display lists.
-	kITCEventDestroyLists      , ///< Request the destruction of OpenGL display lists.
-	kITCEventBuildVideo        , ///< Request the creation of a video texture.
-	kITCEventMAX                 ///< For range checks.
+	kITCEventSync               = 0, ///< Request a sync, letting all prior requests finish.
+	kITCEventFullscreen            , ///< Request switching to fullscreen mode.
+	kITCEventWindowed              , ///< Request switching to windowed mode.
+	kITCEventResize                , ///< Request changing the display size.
+	kITCEventChangeFSAA            , ///< Request changing the FSAA level.
+	kITCEventChangeVSync           , ///< Request changing the vsync settings.
+	kITCEventRebuildGLContainer    , ///< Request the rebuilding of a GL container.
+	kITCEventDestroyGLContainer    , ///< Request the destruction of a GL container.
+	kITCEventMAX                     ///< For range checks.
 };
 
 } // End of namespace Events

@@ -18,7 +18,6 @@
 #include "common/transmatrix.h"
 
 #include "events/events.h"
-#include "events/requests.h"
 
 #include "graphics/graphics.h"
 #include "graphics/aurora/model.h"
@@ -64,17 +63,10 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 Model::~Model() {
 	Renderable::removeFromQueue();
 
-	if ((_list != 0) && !_nodes.empty())
-		RequestMan.dispatchAndForget(RequestMan.destroyLists(_list, _nodes.size()));
+	destroy();
 
-	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node) {
-		if (*node) {
-			for (std::vector<TextureHandle>::iterator t = (*node)->textures.begin(); t != (*node)->textures.end(); ++t)
-				TextureMan.release(*t);
-
-			delete *node;
-		}
-	}
+	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node)
+		delete *node;
 
 	for (StateMap::iterator state = _states.begin(); state != _states.end(); ++state)
 		delete state->second;
@@ -146,11 +138,7 @@ void Model::processMesh(const Mesh &mesh, Node &node) {
 		// The node has no actual texture, so we just assume that
 		// the geometry shouldn't be rendered. Cleaning up.
 
-		for (std::vector<TextureHandle>::iterator t = node.textures.begin(); t != node.textures.end(); ++t)
-			TextureMan.release(*t);
-
 		node.textures.clear();
-
 		node.render = false;
 		return;
 	}
@@ -237,10 +225,6 @@ void Model::recalculateNodeBound(Node &node, Common::TransformationMatrix &matri
 		Common::BoundingBox childBound = (*child)->realBoundBox.getAbsolute();
 		node.realBoundBox.add(childBound);
 	}
-}
-
-void Model::buildLists() {
-	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
 }
 
 void Model::setPosition(float x, float y, float z) {
@@ -559,9 +543,7 @@ void Model::renderNode(const Node &node) {
 
 }
 
-void Model::rebuild() {
-	enforceMainThread();
-
+void Model::doRebuild() {
 	// Rebuild all node lists
 
 	if (_nodes.empty())
@@ -610,9 +592,7 @@ void Model::rebuild() {
 	}
 }
 
-void Model::destroy() {
-	enforceMainThread();
-
+void Model::doDestroy() {
 	// Destroy all node lists
 
 	if ((_list == 0) || _nodes.empty())

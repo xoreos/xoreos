@@ -65,9 +65,7 @@ Model_Witcher::Model_Witcher(Common::SeekableReadStream &mdb, ModelType type) : 
 	load(mdb);
 	setState();
 
-	buildLists();
-
-	RequestMan.sync();
+	rebuild();
 }
 
 Model_Witcher::~Model_Witcher() {

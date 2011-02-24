@@ -89,14 +89,9 @@ public:
 	 */
 	char getPressedCharacter(const Event &event);
 
-	/** Are we currently in the main thread? */
-	bool isMainThread() const;
-
 	/** Is the event queue full? */
 	bool isQueueFull() const;
 
-	/** Initialize the main loop. */
-	void initMainLoop();
 	/** Run the main loop. */
 	void runMainLoop();
 
@@ -111,8 +106,6 @@ private:
 
 	bool _quitRequested; ///< Was an engine quit requested?
 	bool _doQuit;        ///< Are we currently in the process of quitting?
-
-	uint32 _mainThreadID; ///< The ID of the main thread.
 
 	EventQueue _eventQueue;
 	Common::Mutex _eventQueueMutex;
@@ -135,14 +128,12 @@ private:
 	void requestResize(Request &request);
 	void requestChangeFSAA(Request &request);
 	void requestChangeVSync(Request &request);
-	void requestLoadTexture(Request &request);
-	void requestDestroyTexture(Request &request);
-	void requestBuildLists(Request &request);
-	void requestDestroyLists(Request &request);
-	void requestBuildVideo(Request &request);
+	void requestRebuildGLContainer(Request &request);
+	void requestDestroyGLContainer(Request &request);
 
-public:
 	void processEvents();
+
+	friend class RequestManager;
 };
 
 } // End of namespace Events

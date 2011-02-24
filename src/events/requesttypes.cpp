@@ -29,9 +29,6 @@ Request::Request(ITCEvent type) : _type(type), _dispatched(false), _garbage(fals
 }
 
 Request::~Request() {
-	if (_event.type == kITCEventDestroyLists)
-		delete[] _destroyLists.listIDs;
-
 	delete _hasReply;
 }
 
@@ -48,9 +45,6 @@ void Request::create() {
 	_event.type       = kEventITC;
 	_event.user.code  = (int) _type;
 	_event.user.data1 = (void *) this;
-
-	if (_event.type == kITCEventDestroyLists)
-		_destroyLists.listIDs = 0;
 }
 
 void Request::signalReply() {

@@ -25,8 +25,6 @@
 #include "sound/audiostream.h"
 #include "sound/decoders/pcm.h"
 
-#include "events/requests.h"
-
 namespace Graphics {
 
 VideoDecoder::VideoDecoder() : Queueable<VideoDecoder>(GfxMan.getVideoQueue()),
@@ -39,12 +37,11 @@ VideoDecoder::VideoDecoder() : Queueable<VideoDecoder>(GfxMan.getVideoQueue()),
 }
 
 VideoDecoder::~VideoDecoder() {
+	destroy();
+
 	delete[] _data;
 
 	deinitSound();
-
-	if (_texture != 0)
-		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_texture));
 }
 
 void VideoDecoder::createData(uint32 width, uint32 height) {
@@ -69,7 +66,7 @@ void VideoDecoder::createData(uint32 width, uint32 height) {
 	_data = new byte[_realWidth * _realHeight * 4];
 	memset(_data, 0, _realWidth * _realHeight * 4);
 
-	RequestMan.dispatchAndWait(RequestMan.buildVideo(this));
+	rebuild();
 }
 
 void VideoDecoder::initSound(uint16 rate, bool stereo, bool is16) {
@@ -130,9 +127,7 @@ uint32 VideoDecoder::getNumQueuedStreams() const {
 	return _sound ? _sound->numQueuedStreams() : 0;
 }
 
-void VideoDecoder::rebuild() {
-	Common::enforceMainThread();
-
+void VideoDecoder::doRebuild() {
 	if (!_data)
 		return;
 
@@ -152,9 +147,7 @@ void VideoDecoder::rebuild() {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _realWidth, _realHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, _data);
 }
 
-void VideoDecoder::destroy() {
-	Common::enforceMainThread();
-
+void VideoDecoder::doDestroy() {
 	if (_texture == 0)
 		return;
 

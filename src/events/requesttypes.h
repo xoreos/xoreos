@@ -23,9 +23,7 @@
 #include "graphics/types.h"
 
 namespace Graphics {
-	class Texture;
-	class ListContainer;
-	class VideoDecoder;
+	class GLContainer;
 }
 
 namespace Events {
@@ -37,35 +35,16 @@ struct RequestDataResize {
 	int height;
 };
 
-struct RequestChangeFSAA {
+struct RequestDataChangeFSAA {
 	int level;
 };
 
-struct RequestChangeVSync {
+struct RequestDataChangeVSync {
 	bool vsync;
 };
 
-struct RequestDataLoadTexture {
-	Graphics::Texture *texture;
-};
-
-struct RequestDataDestroyTexture {
-	Graphics::Texture  *texture;
-	Graphics::TextureID textureID;
-};
-
-struct RequestDataBuildLists {
-	Graphics::ListContainer *lists;
-};
-
-struct RequestDataDestroyLists {
-	Graphics::ListContainer *lists;
-	Graphics::ListID *listIDs;
-	uint32 count;
-};
-
-struct RequestDataBuildVideo {
-	Graphics::VideoDecoder *video;
+struct RequestDataGLContainer {
+	Graphics::GLContainer *glContainer;
 };
 
 /** A request, carrying inter-thread communication. */
@@ -89,14 +68,10 @@ private:
 
 	/** Request data. */
 	union {
-		RequestDataResize         _resize;
-		RequestChangeFSAA         _fsaa;
-		RequestChangeVSync        _vsync;
-		RequestDataLoadTexture    _loadTexture;
-		RequestDataDestroyTexture _destroyTexture;
-		RequestDataBuildLists     _buildLists;
-		RequestDataDestroyLists   _destroyLists;
-		RequestDataBuildVideo     _buildVideo;
+		RequestDataResize      _resize;
+		RequestDataChangeFSAA  _fsaa;
+		RequestDataChangeVSync _vsync;
+		RequestDataGLContainer _glContainer;
 	};
 
 	/** Create the empty request frame. */

@@ -16,12 +16,13 @@
 #define GRAPHICS_TEXTURE_H
 
 #include "graphics/types.h"
+#include "graphics/glcontainer.h"
 #include "graphics/queueable.h"
 
 namespace Graphics {
 
 /** A texture. */
-class Texture : public Queueable<Texture> {
+class Texture : public GLContainer, public Queueable<Texture> {
 public:
 	Texture();
 	virtual ~Texture();
@@ -31,15 +32,6 @@ public:
 
 	virtual const uint32 getWidth()  const = 0;
 	virtual const uint32 getHeight() const = 0;
-
-protected:
-	void enforceMainThread();
-
-
-// To be called from the main/events/graphics thread
-public:
-	virtual void reload()  = 0;
-	virtual void destroy() = 0;
 };
 
 } // End of namespace Graphics

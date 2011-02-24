@@ -52,11 +52,10 @@ public:
 	void newFrame();
 	void render();
 
-// ListContainer
-	void rebuild();
-	void destroy();
-
 protected:
+	void doRebuild();
+	void doDestroy();
+
 	void set_internal(const Common::UString &str);
 	void setPosition_internal(float x, float y);
 

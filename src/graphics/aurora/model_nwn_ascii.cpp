@@ -54,9 +54,7 @@ Model_NWN_ASCII::Model_NWN_ASCII(Common::SeekableReadStream &mdl, ModelType type
 
 	_nodeMap.clear();
 
-	buildLists();
-
-	RequestMan.sync();
+	rebuild();
 }
 
 Model_NWN_ASCII::~Model_NWN_ASCII() {

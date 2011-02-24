@@ -18,6 +18,7 @@
 #include "common/error.h"
 #include "common/ustring.h"
 #include "common/file.h"
+#include "common/configman.h"
 #include "common/threads.h"
 
 #include "events/requests.h"
@@ -87,16 +88,37 @@ void GraphicsManager::init() {
 	if (SDL_Init(sdlInitFlags) < 0)
 		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
 
+	int  width  = ConfigMan.getInt ("width"     , 800);
+	int  height = ConfigMan.getInt ("height"    , 600);
+	bool fs     = ConfigMan.getBool("fullscreen", false);
+
+	initSize(width, height, fs);
+	setupScene();
+
+	// Try to change the FSAA settings to the config value
+	if (_fsaa != ConfigMan.getInt("fsaa"))
+		if (!setFSAA(ConfigMan.getInt("fsaa")))
+			// If that fails, set the config to the current level
+			ConfigMan.setInt("fsaa", _fsaa);
+
+	// Set the gamma correction to what the config specifies
+	setGamma(ConfigMan.getDouble("gamma", 1.0));
+
+	// Set the window title to our name
+	setWindowTitle(PACKAGE_STRING);
+
 	_ready = true;
 }
 
 void GraphicsManager::deinit() {
+	Common::enforceMainThread();
+
 	if (!_ready)
 		return;
 
 	clearVideoQueue();
-	clearListsQueue();
-	clearTextureList();
+	clearListContainerQueue();
+	clearTextureQueue();
 	clearRenderQueue();
 
 	SDL_Quit();
@@ -132,8 +154,6 @@ uint32 GraphicsManager::getFPS() const {
 }
 
 void GraphicsManager::initSize(int width, int height, bool fullscreen) {
-	Common::enforceMainThread();
-
 	int bpp = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
 	if ((bpp != 24) && (bpp != 32))
 		throw Common::Exception("Need 24 or 32 bits per pixel");
@@ -167,7 +187,11 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 }
 
 bool GraphicsManager::setFSAA(int level) {
-	Common::enforceMainThread();
+	if (!Common::isMainThread()) {
+		// Not the main thread, send a request instead
+		RequestMan.dispatchAndWait(RequestMan.changeFSAA(level));
+		return _fsaa == level;
+	}
 
 	if (_fsaa == level)
 		// Nothing to do
@@ -293,8 +317,6 @@ void GraphicsManager::setGamma(float gamma) {
 }
 
 void GraphicsManager::setupScene() {
-	Common::enforceMainThread();
-
 	if (!_screen)
 		throw Common::Exception("No screen initialized");
 
@@ -393,6 +415,8 @@ void GraphicsManager::clearRenderQueue() {
 }
 
 void GraphicsManager::renderScene() {
+	Common::enforceMainThread();
+
 	Common::StackLock frameLock(_frameMutex);
 	Common::StackLock videosLock(_videos.mutex);
 
@@ -533,7 +557,25 @@ int GraphicsManager::getSystemHeight() const {
 	return _systemHeight;
 }
 
-void GraphicsManager::clearTextureList() {
+bool GraphicsManager::isFullScreen() const {
+	return _fullScreen;
+}
+
+void GraphicsManager::rebuildTextures() {
+	Common::StackLock lock(_textures.mutex);
+
+	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture)
+		(*texture)->rebuild();
+}
+
+void GraphicsManager::destroyTextures() {
+	Common::StackLock lock(_textures.mutex);
+
+	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture)
+		(*texture)->destroy();
+}
+
+void GraphicsManager::clearTextureQueue() {
 	Common::StackLock lock(_textures.mutex);
 
 	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture) {
@@ -544,21 +586,25 @@ void GraphicsManager::clearTextureList() {
 	_textures.list.clear();
 }
 
-void GraphicsManager::destroyTextures() {
-	Common::StackLock lock(_textures.mutex);
+void GraphicsManager::rebuildListContainers() {
+	Common::StackLock lock(_listContainers.mutex);
 
-	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture)
-		(*texture)->destroy();
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists)
+		(*lists)->rebuild();
+	glPopMatrix();
 }
 
-void GraphicsManager::reloadTextures() {
-	Common::StackLock lock(_textures.mutex);
+void GraphicsManager::destroyListContainers() {
+	Common::StackLock lock(_listContainers.mutex);
 
-	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture)
-		(*texture)->reload();
+	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists)
+		(*lists)->destroy();
 }
 
-void GraphicsManager::clearListsQueue() {
+void GraphicsManager::clearListContainerQueue() {
 	Common::StackLock lock(_listContainers.mutex);
 
 	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists) {
@@ -569,22 +615,18 @@ void GraphicsManager::clearListsQueue() {
 	_listContainers.list.clear();
 }
 
-void GraphicsManager::destroyLists() {
-	Common::StackLock lock(_listContainers.mutex);
+void GraphicsManager::rebuildVideos() {
+	Common::StackLock lock(_videos.mutex);
 
-	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists)
-		(*lists)->destroy();
+	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video)
+		(*video)->rebuild();
 }
 
-void GraphicsManager::rebuildLists() {
-	Common::StackLock lock(_listContainers.mutex);
+void GraphicsManager::destroyVideos() {
+	Common::StackLock lock(_videos.mutex);
 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists)
-		(*lists)->rebuild();
-	glPopMatrix();
+	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video)
+		(*video)->destroy();
 }
 
 void GraphicsManager::clearVideoQueue() {
@@ -598,25 +640,11 @@ void GraphicsManager::clearVideoQueue() {
 	_videos.list.clear();
 }
 
-void GraphicsManager::destroyVideos() {
-	Common::StackLock lock(_videos.mutex);
-
-	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video)
-		(*video)->destroy();
-}
-
-void GraphicsManager::rebuildVideos() {
-	Common::StackLock lock(_videos.mutex);
-
-	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video)
-		(*video)->rebuild();
-}
-
 void GraphicsManager::destroyContext() {
 	// Destroying all videos, textures and lists, since we need to
 	// reload/rebuild them anyway when the context is recreated
 	destroyVideos();
-	destroyLists();
+	destroyListContainers();
 	destroyTextures();
 }
 
@@ -630,8 +658,8 @@ void GraphicsManager::rebuildContext() {
 	setupScene();
 
 	// And reload/rebuild all textures, lists and videos
-	reloadTextures();
-	rebuildLists();
+	rebuildTextures();
+	rebuildListContainers();
 	rebuildVideos();
 
 	// Wait for everything to settle
@@ -654,11 +682,15 @@ void GraphicsManager::toggleFullScreen() {
 }
 
 void GraphicsManager::setFullScreen(bool fullScreen) {
-	Common::enforceMainThread();
-
 	if (_fullScreen == fullScreen)
 		// Nothing to do
 		return;
+
+	if (!Common::isMainThread()) {
+		// Not the main thread, send a request instead
+		RequestMan.dispatchAndWait(RequestMan.fullscreen(fullScreen));
+		return;
+	}
 
 	destroyContext();
 
@@ -689,12 +721,16 @@ void GraphicsManager::toggleMouseGrab() {
 		SDL_WM_GrabInput(SDL_GRAB_OFF);
 }
 
-void GraphicsManager::changeSize(int width, int height) {
-	Common::enforceMainThread();
-
+void GraphicsManager::setScreenSize(int width, int height) {
 	if ((width == _screen->w) && (height == _screen->h))
 		// No changes, nothing to do
 		return;
+
+	if (!Common::isMainThread()) {
+		// Not the main thread, send a request instead
+		RequestMan.dispatchAndWait(RequestMan.resize(width, height));
+		return;
+	}
 
 	// Save properties
 	uint32 flags     = _screen->flags;
@@ -722,19 +758,6 @@ void GraphicsManager::changeSize(int width, int height) {
 		// Tell the gui front objects that the resolution changed
 		for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj)
 			(*obj)->changedResolution(oldWidth, oldHeight, _screen->w, _screen->h);
-}
-
-void GraphicsManager::destroyTexture(TextureID id) {
-	Common::enforceMainThread();
-
-	glDeleteTextures(1, &id);
-}
-
-void GraphicsManager::destroyLists(ListID *listIDs, uint32 count) {
-	Common::enforceMainThread();
-
-	while (count-- > 0)
-		glDeleteLists(*listIDs++, 1);
 }
 
 Texture::Queue &GraphicsManager::getTextureQueue() {
@@ -767,6 +790,8 @@ Queueable<Renderable>::Queue &GraphicsManager::getRenderableQueue(RenderableQueu
 }
 
 void GraphicsManager::showCursor(bool show) {
+	Common::StackLock lock(_cursorMutex);
+
 	_cursorState = show ? kCursorStateSwitchOn : kCursorStateSwitchOff;
 }
 

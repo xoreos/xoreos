@@ -51,27 +51,22 @@ void CubeSide::render() {
 
 
 Cube::Cube(const Common::UString &texture) : _firstTime(true), _lastRotateTime(0), _list(0) {
-	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
-
-	_texture = new Texture(texture);
+	_texture = TextureMan.get(texture);
 
 	for (int i = 0; i < 6; i++)
 		_sides[i] = new CubeSide(*this, i);
+
+	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
 }
 
 Cube::~Cube() {
-	if (_list != 0)
-		RequestMan.dispatchAndForget(RequestMan.destroyLists(_list, 1));
-
-	delete _texture;
+	destroy();
 
 	for (int i = 0; i < 6; i++)
 		delete _sides[i];
 }
 
-void Cube::rebuild() {
-	enforceMainThread();
-
+void Cube::doRebuild() {
 	_list = glGenLists(1);
 
 	glNewList(_list, GL_COMPILE);
@@ -92,9 +87,7 @@ void Cube::rebuild() {
 	glEndList();
 }
 
-void Cube::destroy() {
-	enforceMainThread();
-
+void Cube::doDestroy() {
 	if (_list == 0)
 		return;
 
@@ -159,7 +152,7 @@ void Cube::setTexture() {
 		_firstTime = false;
 	}
 
-	glBindTexture(GL_TEXTURE_2D, _texture->getID());
+	TextureMan.set(_texture);
 }
 
 void Cube::callList() {

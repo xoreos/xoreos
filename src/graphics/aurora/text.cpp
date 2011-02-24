@@ -42,6 +42,7 @@ Text::Text(const FontHandle &font, const Common::UString &str,
 }
 
 Text::~Text() {
+	destroy();
 }
 
 void Text::set(const Common::UString &str) {
@@ -56,7 +57,7 @@ void Text::set(const Common::UString &str) {
 	if (visible)
 		Renderable::addToQueue();
 
-	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
+	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
 
 	GfxMan.unlockFrame();
 }
@@ -86,7 +87,7 @@ void Text::setColor(float r, float g, float b, float a) {
 	if (visible)
 		Renderable::addToQueue();
 
-	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
+	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
 
 	GfxMan.unlockFrame();
 }
@@ -103,7 +104,7 @@ void Text::unsetColor() {
 	if (visible)
 		Renderable::addToQueue();
 
-	RequestMan.dispatchAndForget(RequestMan.buildLists(this));
+	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
 
 	GfxMan.unlockFrame();
 }
@@ -158,9 +159,7 @@ void Text::render() {
 		glCallList(_list);
 }
 
-void Text::rebuild() {
-	enforceMainThread();
-
+void Text::doRebuild() {
 	const Font &font = _font.getFont();
 
 	_list = glGenLists(1);
@@ -173,9 +172,7 @@ void Text::rebuild() {
 	glEndList();
 }
 
-void Text::destroy() {
-	enforceMainThread();
-
+void Text::doDestroy() {
 	if (_list == 0)
 		return;
 

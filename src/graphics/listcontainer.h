@@ -15,26 +15,16 @@
 #ifndef GRAPHICS_LISTCONTAINER_H
 #define GRAPHICS_LISTCONTAINER_H
 
+#include "graphics/glcontainer.h"
 #include "graphics/queueable.h"
 
 namespace Graphics {
 
 /** A container of OpenGL lists. */
-class ListContainer : public Queueable<ListContainer> {
+class ListContainer : public GLContainer, public Queueable<ListContainer> {
 public:
 	ListContainer();
 	~ListContainer();
-
-protected:
-	void enforceMainThread();
-
-
-// To be called from the main/events/graphics thread
-public:
-	/** Rebuild the OpenGL lists. */
-	virtual void rebuild() = 0;
-	/** Destroy the OpenGL lists. */
-	virtual void destroy() = 0;
 };
 
 } // End of namespace Graphics

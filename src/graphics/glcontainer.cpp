@@ -8,24 +8,47 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file graphics/texture.cpp
- *  Virtual baseclass of a texture.
+/** @file graphics/glcontainer.cpp
+ *  A container of OpenGL elements.
  */
 
 #include "common/threads.h"
 
 #include "events/requests.h"
 
-#include "graphics/texture.h"
-#include "graphics/graphics.h"
+#include "graphics/glcontainer.h"
 
 namespace Graphics {
 
-Texture::Texture() : Queueable<Texture>(GfxMan.getTextureQueue()) {
-	addToQueue();
+GLContainer::GLContainer() : _built(false) {
 }
 
-Texture::~Texture() {
+GLContainer::~GLContainer() {
+}
+
+void GLContainer::rebuild() {
+	if (!Common::isMainThread()) {
+		RequestMan.dispatchAndWait(RequestMan.rebuild(*this));
+		return;
+	}
+
+	doRebuild();
+
+	_built = true;
+}
+
+void GLContainer::destroy() {
+	if (!_built)
+		return;
+
+	if (!Common::isMainThread()) {
+		RequestMan.dispatchAndWait(RequestMan.destroy(*this));
+		return;
+	}
+
+	doDestroy();
+
+	_built = false;
 }
 
 } // End of namespace Graphics

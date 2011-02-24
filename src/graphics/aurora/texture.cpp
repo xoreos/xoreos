@@ -69,8 +69,7 @@ Texture::Texture(ImageDecoder *image) {
 }
 
 Texture::~Texture() {
-	if (_textureID != 0)
-		RequestMan.dispatchAndForget(RequestMan.destroyTexture(_textureID));
+	destroy();
 
 	delete _txi;
 	delete _image;
@@ -133,7 +132,7 @@ void Texture::load(const Common::UString &name) {
 		delete txiStream;
 	}
 
-	RequestMan.dispatchAndForget(RequestMan.loadTexture(this));
+	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
 }
 
 void Texture::load(ImageDecoder *image) {
@@ -142,12 +141,10 @@ void Texture::load(ImageDecoder *image) {
 	// If we didn't already, let the image load
 	_image->load();
 
-	RequestMan.dispatchAndForget(RequestMan.loadTexture(this));
+	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
 }
 
-void Texture::destroy() {
-	enforceMainThread();
-
+void Texture::doDestroy() {
 	if (_textureID == 0)
 		return;
 
@@ -156,9 +153,7 @@ void Texture::destroy() {
 	_textureID = 0;
 }
 
-void Texture::reload() {
-	enforceMainThread();
-
+void Texture::doRebuild() {
 	if (!_image)
 		// No image
 		return;

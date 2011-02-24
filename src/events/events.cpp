@@ -38,11 +38,8 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 	&EventsManager::requestResize,
 	&EventsManager::requestChangeFSAA,
 	&EventsManager::requestChangeVSync,
-	&EventsManager::requestLoadTexture,
-	&EventsManager::requestDestroyTexture,
-	&EventsManager::requestBuildLists,
-	&EventsManager::requestDestroyLists,
-	&EventsManager::requestBuildVideo
+	&EventsManager::requestRebuildGLContainer,
+	&EventsManager::requestDestroyGLContainer
 };
 
 
@@ -63,8 +60,6 @@ void EventsManager::init() {
 	_queueSize = 0;
 
 	_ready = true;
-
-	_mainThreadID = SDL_ThreadID();
 }
 
 void EventsManager::deinit() {
@@ -91,10 +86,6 @@ void EventsManager::reset() {
 
 bool EventsManager::ready() const {
 	return _ready;
-}
-
-bool EventsManager::isMainThread() const {
-	return SDL_ThreadID() == _mainThreadID;
 }
 
 bool EventsManager::isQueueFull() const {
@@ -137,7 +128,7 @@ bool EventsManager::parseEventGraphics(const Event &event) {
 	}
 
 	if (event.type == kEventResize) {
-		GfxMan.changeSize(event.resize.w, event.resize.h);
+		GfxMan.setScreenSize(event.resize.w, event.resize.h);
 		return true;
 	}
 
@@ -260,37 +251,6 @@ void EventsManager::doQuit() {
 	_doQuit = true;
 }
 
-void EventsManager::initMainLoop() {
-	try {
-
-		int  width  = ConfigMan.getInt ("width"     , 800);
-		int  height = ConfigMan.getInt ("height"    , 600);
-		bool fs     = ConfigMan.getBool("fullscreen", false);
-
-		GfxMan.initSize(width, height, fs);
-
-		GfxMan.setupScene();
-
-		// Try to change the FSAA settings to the config value
-		if (GfxMan.getCurrentFSAA() != ConfigMan.getInt("fsaa"))
-			if (!GfxMan.setFSAA(ConfigMan.getInt("fsaa")))
-				// If that fails, set the config to the current level
-				ConfigMan.setInt("fsaa", GfxMan.getCurrentFSAA());
-
-		// Set the gamma correction to what the config specifies
-		GfxMan.setGamma(ConfigMan.getDouble("gamma", 1.0));
-
-	} catch (Common::Exception &e) {
-		e.add("Failed setting up graphics");
-		throw e;
-	}
-
-	status("Graphics set up");
-
-	// Set the window title to our name
-	GfxMan.setWindowTitle(PACKAGE_STRING);
-}
-
 void EventsManager::runMainLoop() {
 	while (!_doQuit) {
 		// (Pre)Process all events
@@ -313,7 +273,7 @@ void EventsManager::requestWindowed(Request &request) {
 }
 
 void EventsManager::requestResize(Request &request) {
-	GfxMan.changeSize(request._resize.width, request._resize.height);
+	GfxMan.setScreenSize(request._resize.width, request._resize.height);
 }
 
 void EventsManager::requestChangeFSAA(Request &request) {
@@ -324,30 +284,12 @@ void EventsManager::requestChangeVSync(Request &request) {
 	// TODO
 }
 
-void EventsManager::requestLoadTexture(Request &request) {
-	request._loadTexture.texture->reload();
+void EventsManager::requestRebuildGLContainer(Request &request) {
+	request._glContainer.glContainer->rebuild();
 }
 
-void EventsManager::requestDestroyTexture(Request &request) {
-	if (request._destroyTexture.texture)
-		request._destroyTexture.texture->destroy();
-	else
-		GfxMan.destroyTexture(request._destroyTexture.textureID);
-}
-
-void EventsManager::requestBuildLists(Request &request) {
-	request._buildLists.lists->rebuild();
-}
-
-void EventsManager::requestDestroyLists(Request &request) {
-	if (request._destroyLists.lists)
-		request._destroyLists.lists->destroy();
-	else if (request._destroyLists.listIDs)
-		GfxMan.destroyLists(request._destroyLists.listIDs, request._destroyLists.count);
-}
-
-void EventsManager::requestBuildVideo(Request &request) {
-	request._buildVideo.video->rebuild();
+void EventsManager::requestDestroyGLContainer(Request &request) {
+	request._glContainer.glContainer->destroy();
 }
 
 } // End of namespace Events

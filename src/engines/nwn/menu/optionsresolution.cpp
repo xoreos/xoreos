@@ -16,8 +16,6 @@
 
 #include "graphics/graphics.h"
 
-#include "events/requests.h"
-
 #include "engines/nwn/menu/optionsresolution.h"
 
 #include "engines/aurora/util.h"
@@ -163,7 +161,7 @@ void OptionsResolutionMenu::setResolution(const Common::UString &line) {
 	if (sscanf(line.c_str(), "%dx%d", &width, &height) != 2)
 		return;
 
-	RequestMan.dispatchAndWait(RequestMan.resize(width, height));
+	GfxMan.setScreenSize(width, height);
 }
 
 void OptionsResolutionMenu::adoptChanges() {
@@ -172,7 +170,7 @@ void OptionsResolutionMenu::adoptChanges() {
 }
 
 void OptionsResolutionMenu::revertChanges() {
-	RequestMan.dispatchAndWait(RequestMan.resize(_width, _height));
+	GfxMan.setScreenSize(_width, _height);
 }
 
 } // End of namespace NWN

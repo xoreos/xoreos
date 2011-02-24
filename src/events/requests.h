@@ -82,26 +82,10 @@ public:
 	/** Request that the vsync settings shall be changed. */
 	RequestID changeVSync(bool vsync);
 
-	// Textures
-	/** Request the loading of a texture. */
-	RequestID loadTexture(Graphics::Texture *texture);
-	/** Request the destruction of a texture. */
-	RequestID destroyTexture(Graphics::Texture *texture);
-	/** Request the destruction of a texture. */
-	RequestID destroyTexture(Graphics::TextureID textureID);
-
-	// Lists
-	/** Request the building of lists. */
-	RequestID buildLists(Graphics::ListContainer *lists);
-	/** Request the destruction of lists. */
-	RequestID destroyLists(Graphics::ListContainer *lists);
-	/** Request the destruction of lists. */
-	RequestID destroyLists(Graphics::ListID listID, uint32 count);
-	/** Request the destruction of lists. */
-	RequestID destroyLists(Graphics::ListID *listIDs, uint32 count);
-
-	// Videos
-	RequestID buildVideo(Graphics::VideoDecoder *video);
+	/** Request that a GL container shall be rebuilt. */
+	RequestID rebuild(Graphics::GLContainer &glContainer);
+	/** Request that a GL container shall be destroyed. */
+	RequestID destroy(Graphics::GLContainer &glContainer);
 
 private:
 	Common::Mutex _mutexUse; ///< The mutex locking the use of the manager.

@@ -19,6 +19,8 @@
 #include "graphics/listcontainer.h"
 #include "graphics/object.h"
 
+#include "graphics/aurora/textureman.h"
+
 namespace Common {
 	class UString;
 	class SeekableReadStream;
@@ -54,10 +56,9 @@ public:
 	Cube(const Common::UString &texture);
 	~Cube();
 
-// ListContainer
-public:
-	void rebuild();
-	void destroy();
+protected:
+	void doRebuild();
+	void doDestroy();
 
 private:
 	CubeSide *_sides[6];
@@ -69,7 +70,7 @@ private:
 
 	ListID _list;
 
-	Texture *_texture;
+	TextureHandle _texture;
 
 	void setRotate(float rotate);
 

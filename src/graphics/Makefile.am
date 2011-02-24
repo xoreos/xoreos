@@ -13,6 +13,7 @@ noinst_HEADERS = types.h \
                  fpscounter.h \
                  cursor.h \
                  queueable.h \
+                 glcontainer.h \
                  listcontainer.h \
                  texture.h \
                  font.h \
@@ -24,6 +25,7 @@ libgraphics_la_SOURCES = glew/glew.c \
                          graphics.cpp \
                          fpscounter.cpp \
                          cursor.cpp \
+                         glcontainer.cpp \
                          listcontainer.cpp \
                          texture.cpp \
                          font.cpp \

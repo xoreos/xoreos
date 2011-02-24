@@ -113,9 +113,7 @@ Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl,
 
 	createModelBound();
 
-	buildLists();
-
-	RequestMan.sync();
+	rebuild();
 }
 
 Model_KotOR::~Model_KotOR() {

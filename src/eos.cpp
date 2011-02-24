@@ -82,8 +82,6 @@ int main(int argc, char **argv) {
 	try {
 		init();
 
-		EventMan.initMainLoop();
-
 		Engines::GameThread gameThread;
 
 		gameThread.init(baseDir);

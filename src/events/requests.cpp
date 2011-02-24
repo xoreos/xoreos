@@ -14,6 +14,7 @@
 
 #include "common/error.h"
 #include "common/util.h"
+#include "common/threads.h"
 
 #include "events/requests.h"
 #include "events/events.h"
@@ -56,7 +57,7 @@ void RequestManager::dispatch(RequestID request) {
 	if (!EventMan.pushEvent((*request)->_event))
 		throw Common::Exception("Failed dispatching request");
 
-	if (EventMan.isMainThread())
+	if (Common::isMainThread())
 		// If we're currently in the main thread, to avoid a dead-lock, process events now
 		EventMan.processEvents();
 }
@@ -140,7 +141,7 @@ RequestID RequestManager::resize(int width, int height) {
 	return rID;
 }
 
-RequestID  RequestManager::changeFSAA(int level) {
+RequestID RequestManager::changeFSAA(int level) {
 	RequestID rID = newRequest(kITCEventChangeFSAA);
 
 	(*rID)->_fsaa.level = level;
@@ -148,7 +149,7 @@ RequestID  RequestManager::changeFSAA(int level) {
 	return rID;
 }
 
-RequestID  RequestManager::changeVSync(bool vsync) {
+RequestID RequestManager::changeVSync(bool vsync) {
 	RequestID rID = newRequest(kITCEventChangeVSync);
 
 	(*rID)->_vsync.vsync = vsync;
@@ -156,75 +157,18 @@ RequestID  RequestManager::changeVSync(bool vsync) {
 	return rID;
 }
 
-RequestID RequestManager::loadTexture(Graphics::Texture *texture) {
-	RequestID rID = newRequest(kITCEventLoadTexture);
+RequestID RequestManager::rebuild(Graphics::GLContainer &glContainer) {
+	RequestID rID = newRequest(kITCEventRebuildGLContainer);
 
-	(*rID)->_loadTexture.texture = texture;
-
-	return rID;
-}
-
-RequestID RequestManager::destroyTexture(Graphics::Texture *texture) {
-	RequestID rID = newRequest(kITCEventDestroyTexture);
-
-	(*rID)->_destroyTexture.texture   = texture;
-	(*rID)->_destroyTexture.textureID = 0xFFFFFFFF;
+	(*rID)->_glContainer.glContainer = &glContainer;
 
 	return rID;
 }
 
-RequestID RequestManager::destroyTexture(Graphics::TextureID textureID) {
-	RequestID rID = newRequest(kITCEventDestroyTexture);
+RequestID RequestManager::destroy(Graphics::GLContainer &glContainer) {
+	RequestID rID = newRequest(kITCEventDestroyGLContainer);
 
-	(*rID)->_destroyTexture.texture   = 0;
-	(*rID)->_destroyTexture.textureID = textureID;
-
-	return rID;
-}
-
-RequestID RequestManager::buildLists(Graphics::ListContainer *lists) {
-	RequestID rID = newRequest(kITCEventBuildLists);
-
-	(*rID)->_buildLists.lists = lists;
-
-	return rID;
-}
-
-RequestID RequestManager::destroyLists(Graphics::ListContainer *lists) {
-	RequestID rID = newRequest(kITCEventDestroyLists);
-
-	(*rID)->_destroyLists.lists = lists;
-
-	return rID;
-}
-
-RequestID RequestManager::destroyLists(Graphics::ListID listID, uint32 count) {
-	RequestID rID = newRequest(kITCEventDestroyLists);
-
-	(*rID)->_destroyLists.lists   = 0;
-	(*rID)->_destroyLists.count   = count;
-	(*rID)->_destroyLists.listIDs = new Graphics::ListID[count];
-	for (uint32 i = 0; i < count; i++)
-		(*rID)->_destroyLists.listIDs[i] = listID + i;
-
-	return rID;
-}
-
-RequestID RequestManager::destroyLists(Graphics::ListID *listIDs, uint32 count) {
-	RequestID rID = newRequest(kITCEventDestroyLists);
-
-	(*rID)->_destroyLists.lists   = 0;
-	(*rID)->_destroyLists.count   = count;
-	(*rID)->_destroyLists.listIDs = new Graphics::ListID[count];
-	memcpy((*rID)->_destroyLists.listIDs, listIDs, count * sizeof(Graphics::ListID));
-
-	return rID;
-}
-
-RequestID RequestManager::buildVideo(Graphics::VideoDecoder *video) {
-	RequestID rID = newRequest(kITCEventBuildVideo);
-
-	(*rID)->_buildVideo.video = video;
+	(*rID)->_glContainer.glContainer = &glContainer;
 
 	return rID;
 }

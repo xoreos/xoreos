@@ -55,14 +55,12 @@ public:
 	/** Do we have support for multiple textures? */
 	bool supportMultipleTextures() const;
 
-	/** Return the max supported FSAA level. */
-	int getMaxFSAA() const;
-
-	/** Return the current FSAA level. */
-	int getCurrentFSAA() const;
-
-	/** How many frames per second to we render at the moments? */
-	uint32 getFPS() const;
+	/** Set the screen size. */
+	void setScreenSize(int width, int height);
+	/** Set full screen/windowed mode. */
+	void setFullScreen(bool fullScreen);
+	/** Toggle between full screen and windowed mode. */
+	void toggleFullScreen();
 
 	/** Return the current screen width. */
 	int getScreenWidth() const;
@@ -74,6 +72,24 @@ public:
 	/** Return the system's screen height. */
 	int getSystemHeight() const;
 
+	/** Are we currently in full screen mode? */
+	bool isFullScreen() const;
+
+	/** Set the FSAA settings. */
+	bool setFSAA(int level);
+
+	/** Return the max supported FSAA level. */
+	int getMaxFSAA() const;
+
+	/** Return the current FSAA level. */
+	int getCurrentFSAA() const;
+
+	/** Toggle mouse grab */
+	void toggleMouseGrab();
+
+	/** How many frames per second to we render at the moments? */
+	uint32 getFPS() const;
+
 	/** That the window's title. */
 	void setWindowTitle(const Common::UString &title);
 
@@ -82,11 +98,8 @@ public:
 	/** Set the overall gamma correction. */
 	void setGamma(float gamma);
 
-	/** Lock the frame mutex. */
-	void lockFrame();
-	/** Unlock the frame mutex. */
-	void unlockFrame();
-
+	/** Show/Hide the cursor. */
+	void showCursor(bool show);
 	/** Set the current cursor. */
 	void setCursor(Cursor *cursor = 0);
 
@@ -95,6 +108,16 @@ public:
 
 	/** Get the tag of the object at this screen position. */
 	const Common::UString &getObjectAt(float x, float y);
+
+
+	/** Lock the frame mutex. */
+	void lockFrame();
+	/** Unlock the frame mutex. */
+	void unlockFrame();
+
+
+	/** Render one complete frame of the scene. */
+	void renderScene();
 
 
 private:
@@ -138,6 +161,9 @@ private:
 
 	bool _takeScreenshot; ///< Should screenshot be taken?
 
+	void initSize(int width, int height, bool fullscreen);
+	void setupScene();
+
 	int probeFSAA(int width, int height, int bpp, uint32 flags);
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
@@ -145,17 +171,17 @@ private:
 
 	void clearRenderQueue();
 
-	void clearTextureList();
+	void rebuildTextures();
 	void destroyTextures();
-	void reloadTextures();
+	void clearTextureQueue();
 
-	void clearListsQueue();
-	void destroyLists();
-	void rebuildLists();
+	void rebuildListContainers();
+	void destroyListContainers();
+	void clearListContainerQueue();
 
-	void clearVideoQueue();
-	void destroyVideos();
 	void rebuildVideos();
+	void destroyVideos();
+	void clearVideoQueue();
 
 	void destroyContext();
 	void rebuildContext();
@@ -165,47 +191,13 @@ private:
 
 // For Queueables
 public:
-	Texture::Queue &getTextureQueue();
-	Renderable::Queue &getObjectQueue();
-	Renderable::Queue &getGUIFrontQueue();
+	Texture::Queue       &getTextureQueue();
+	Renderable::Queue    &getObjectQueue();
+	Renderable::Queue    &getGUIFrontQueue();
 	ListContainer::Queue &getListContainerQueue();
-	VideoDecoder::Queue &getVideoQueue();
+	VideoDecoder::Queue  &getVideoQueue();
 
 	Queueable<Renderable>::Queue &getRenderableQueue(RenderableQueue queue);
-
-	void showCursor(bool show);
-
-
-// Thread-unsafe functions. Should only ever be called from the main thread.
-public:
-	/** Create a window of that size. */
-	void initSize(int width, int height, bool fullscreen);
-
-	void setupScene();
-
-	/** Render one complete frame of the scene. */
-	void renderScene();
-
-	/** Toggle between full screen and windowed modes. */
-	void toggleFullScreen();
-	/** Set full screen/windowed mode. */
-	void setFullScreen(bool fullScreen);
-	/** Change the window size. */
-	void changeSize(int width, int height);
-
-	/** Set the FSAA settings. */
-	bool setFSAA(int level);
-
-	/** Toggle mouse grab */
-	void toggleMouseGrab();
-
-	// Textures
-	/** Destroy a texture. */
-	void destroyTexture(TextureID id);
-
-	// Lists
-	/** Destroy lists. */
-	void destroyLists(ListID *listIDs, uint32 count);
 };
 
 } // End of namespace Graphics

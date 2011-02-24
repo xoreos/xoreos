@@ -103,10 +103,6 @@ public:
 	void newFrame();
 	void render();
 
-// ListContainer
-	void rebuild();
-	void destroy();
-
 protected:
 	// Representation found in the raw files
 	/** A raw Aurora model mesh. */
@@ -255,11 +251,13 @@ protected:
 	// Helpers to create our representations
 
 	void processMesh(const Mesh &mesh, Node &node);
-	void buildLists();
 	void createStateNameList();
 
 	// Bounding boxes
 	void createModelBound();
+
+	void doRebuild();
+	void doDestroy();
 
 private:
 	void transformBoundBox(Common::TransformationMatrix &world,

@@ -50,7 +50,11 @@ public:
 	/** Return the TXI. */
 	const TXI &getTXI() const;
 
-private:
+protected:
+	void doRebuild();
+	void doDestroy();
+
+public:
 	Common::UString _name;
 
 	TextureID _textureID; ///< OpenGL texture ID.
@@ -65,12 +69,6 @@ private:
 
 	void load(const Common::UString &name);
 	void load(ImageDecoder *image);
-
-
-// To be called from the main/events/graphics thread
-public:
-	void reload();
-	void destroy();
 };
 
 } // End of namespace Aurora

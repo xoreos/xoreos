@@ -20,6 +20,8 @@
 
 #include "graphics/graphics.h"
 
+#include "events/requests.h"
+
 DECLARE_SINGLETON(Graphics::Aurora::TextureManager)
 
 namespace Graphics {
@@ -48,6 +50,29 @@ TextureHandle::TextureHandle() {
 TextureHandle::TextureHandle(TextureMap::iterator &i) {
 	empty = false;
 	it    = i;
+}
+
+TextureHandle::TextureHandle(const TextureHandle &right) : empty(true) {
+	*this = right;
+}
+
+TextureHandle::~TextureHandle() {
+	TextureMan.release(*this);
+}
+
+TextureHandle &TextureHandle::operator=(const TextureHandle &right) {
+	if (this == &right)
+		return *this;
+
+	TextureMan.release(*this);
+
+	empty = right.empty;
+	it    = right.it;
+
+	if (!empty)
+		it->second->referenceCount++;
+
+	return *this;
 }
 
 void TextureHandle::clear() {
@@ -123,6 +148,8 @@ void TextureManager::release(TextureHandle &handle) {
 		return;
 
 	if (--handle.it->second->referenceCount == 0) {
+		RequestMan.sync();
+
 		delete handle.it->second;
 		_textures.erase(handle.it);
 	}

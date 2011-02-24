@@ -108,9 +108,7 @@ Model_NWN_Binary::Model_NWN_Binary(Common::SeekableReadStream &mdl, ModelType ty
 
 	_nodeMap.clear();
 
-	buildLists();
-
-	RequestMan.sync();
+	rebuild();
 }
 
 Model_NWN_Binary::~Model_NWN_Binary() {
