@@ -31,6 +31,8 @@ class Engine;
 /** A probe able to detect one specific game. */
 class EngineProbe {
 public:
+	virtual ~EngineProbe() {}
+
 	/** Get the GameID that the probe is able to detect. */
 	virtual Aurora::GameID getGameID() const = 0;
 

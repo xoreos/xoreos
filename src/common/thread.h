@@ -25,7 +25,7 @@ namespace Common {
 class Thread : NonCopyable {
 public:
 	Thread();
-	~Thread();
+	virtual ~Thread();
 
 	bool createThread();
 	bool destroyThread();

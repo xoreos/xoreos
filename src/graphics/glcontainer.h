@@ -21,7 +21,7 @@ namespace Graphics {
 class GLContainer {
 public:
 	GLContainer();
-	~GLContainer();
+	virtual ~GLContainer();
 
 	void rebuild();
 	void destroy();

@@ -29,7 +29,7 @@ class Area;
 class Module {
 public:
 	Module();
-	~Module();
+	virtual ~Module();
 
 	void load(const Common::UString &name);
 

@@ -25,6 +25,8 @@ namespace Engines {
 
 class ModelLoader {
 public:
+	virtual ~ModelLoader();
+
 	virtual Graphics::Aurora::Model *load(const Common::UString &resref,
 			Graphics::Aurora::ModelType type, const Common::UString &texture) = 0;
 	virtual void free(Graphics::Aurora::Model *&model);

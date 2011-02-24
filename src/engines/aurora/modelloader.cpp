@@ -18,6 +18,9 @@
 
 namespace Engines {
 
+ModelLoader::~ModelLoader() {
+}
+
 void ModelLoader::free(Graphics::Aurora::Model *&model) {
 	delete model;
 	model = 0;
