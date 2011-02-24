@@ -25,7 +25,8 @@
 namespace Engines {
 
 Widget::Widget(const Common::UString &tag) : _tag(tag),
-	_owner(0), _active(false), _visible(false), _disabled(false), _x(0.0), _y(0.0), _z(0.0) {
+	_owner(0), _active(false), _visible(false), _disabled(false), _invisible(false),
+	_x(0.0), _y(0.0), _z(0.0) {
 }
 
 Widget::~Widget() {
@@ -47,12 +48,17 @@ bool Widget::isDisabled() const {
 	return _disabled;
 }
 
+bool Widget::isInvisible() const {
+	return _invisible;
+}
+
 void Widget::show() {
 	if (_visible)
 		// Already shown, nothing to do
 		return;
 
-	_visible = true;
+	if (!_invisible)
+		_visible = true;
 
 	// Show children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
@@ -111,6 +117,20 @@ void Widget::setDisabled(bool disabled) {
 		(*it)->setDisabled(disabled);
 	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it)
 		(*it)->setDisabled(disabled);
+}
+
+void Widget::setInvisible(bool invisible) {
+	if (_invisible == invisible)
+		// State won't change, nothing to do
+		return;
+
+	_invisible = invisible;
+
+	// Invisible the children
+	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
+		(*it)->setInvisible(invisible);
+	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it)
+		(*it)->setInvisible(invisible);
 }
 
 void Widget::enter() {

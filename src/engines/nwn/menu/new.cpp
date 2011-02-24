@@ -33,6 +33,11 @@ NewMenu::NewMenu(bool xp1, bool xp2, bool xp3) : _hasXP(xp1 || xp2) {
 	getWidget("Chapter3Button", true)->setDisabled(true);
 	getWidget("Chapter4Button", true)->setDisabled(true);
 
+	if (_hasXP)
+		// If we have an expansion, hide the "Other modules" button, it's
+		// already in the campaign menu
+		getWidget("OtherButton", true)->setInvisible(true);
+
 	_module = 0;
 	if (!_hasXP)
 		_module = new NewModuleMenu;
@@ -40,19 +45,6 @@ NewMenu::NewMenu(bool xp1, bool xp2, bool xp3) : _hasXP(xp1 || xp2) {
 
 NewMenu::~NewMenu() {
 	delete _module;
-}
-
-void NewMenu::show() {
-	GfxMan.lockFrame();
-
-	GUI::show();
-
-	if (_hasXP)
-		// If we have an expansion, hide the "Other modules" button, it's
-		// already in the campaign menu
-		getWidget("OtherButton", true)->hide();
-
-	GfxMan.unlockFrame();
 }
 
 void NewMenu::callbackActive(Widget &widget) {

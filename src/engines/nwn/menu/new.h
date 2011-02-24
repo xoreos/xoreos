@@ -27,8 +27,6 @@ public:
 	NewMenu(bool xp1, bool xp2, bool xp3);
 	~NewMenu();
 
-	void show();
-
 protected:
 	bool _hasXP;
 

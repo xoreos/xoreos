@@ -32,9 +32,10 @@ public:
 
 	const Common::UString &getTag() const; ///< Get the widget's tag.
 
-	bool isActive  () const; ///< Was the widget activated?
-	bool isVisible () const; ///< Is the widget visible?
-	bool isDisabled() const; ///< Is the widget disabled?
+	bool isActive   () const; ///< Was the widget activated?
+	bool isVisible  () const; ///< Is the widget visible?
+	bool isDisabled () const; ///< Is the widget disabled?
+	bool isInvisible() const; ///< Is the widget invisible (never visible)?
 
 	virtual void show(); ///< Show the widget.
 	virtual void hide(); ///< Hide the widget.
@@ -51,7 +52,8 @@ public:
 	virtual float getWidth () const; ///< Get the widget's width.
 	virtual float getHeight() const; ///< Get the widget's height.
 
-	virtual void setDisabled(bool disabled); ///< Disable/Enable the widget.
+	virtual void setDisabled(bool disabled);   ///< Disable/Enable the widget.
+	virtual void setInvisible(bool invisible); ///< Make the widget invisible.
 
 	virtual void enter(); ///< The mouse entered the widget.
 	virtual void leave(); ///< The mouse left the widget.
@@ -85,9 +87,10 @@ protected:
 	void setActive(bool active); ///< The the widget's active state.
 
 private:
-	bool _active;   ///< Was the widget activated?
-	bool _visible;  ///< Is the widget visible?
-	bool _disabled; ///< Is the widget disabled?
+	bool _active;    ///< Was the widget activated?
+	bool _visible;   ///< Is the widget visible?
+	bool _disabled;  ///< Is the widget disabled?
+	bool _invisible; ///< Is the widget invisible (never visible)?
 
 	float _x; ///< The widget X position.
 	float _y; ///< The widget Y position.

@@ -53,7 +53,9 @@ void NWNModelWidget::show() {
 	if (isVisible())
 		return;
 
-	_model->show();
+	if (!isInvisible())
+		_model->show();
+
 	Widget::show();
 }
 
@@ -93,11 +95,21 @@ NWNTextWidget::~NWNTextWidget() {
 }
 
 void NWNTextWidget::show() {
-	_text->show();
+	if (isVisible())
+		return;
+
+	if (!isInvisible())
+		_text->show();
+
+	Widget::show();
 }
 
 void NWNTextWidget::hide() {
+	if (!isVisible())
+		return;
+
 	_text->hide();
+	Widget::hide();
 }
 
 void NWNTextWidget::setPosition(float x, float y, float z) {
