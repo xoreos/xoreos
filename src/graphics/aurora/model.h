@@ -63,6 +63,9 @@ public:
 	/** Set the current bearing of the model. */
 	void setBearing(float x, float y, float z);
 
+	/** Does the named node exist in the current state? */
+	bool hasNode(const Common::UString &node) const;
+
 	/** Get the base position of a named node in the current state. */
 	bool getNodePosition(const Common::UString &node, float &x, float &y, float &z) const;
 

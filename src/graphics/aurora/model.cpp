@@ -245,6 +245,17 @@ void Model::setBearing(float x, float y, float z) {
 	_bearing[2] = z;
 }
 
+bool Model::hasNode(const Common::UString &node) const {
+	if (!_currentState)
+		return false;
+
+	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
+	if ((n == _currentState->nodeMap.end()) || !n->second)
+		return false;
+
+	return true;
+}
+
 bool Model::getNodePosition(const Common::UString &node, float &x, float &y, float &z) const {
 	if (!_currentState)
 		return false;
