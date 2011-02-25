@@ -12,6 +12,8 @@
  *  The main menu.
  */
 
+#include "common/configman.h"
+
 #include "events/events.h"
 
 #include "graphics/aurora/model.h"
@@ -29,15 +31,15 @@ namespace Engines {
 
 namespace NWN {
 
-MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : _xp1(0), _xp2(0) {
+MainMenu::MainMenu() : _xp1(0), _xp2(0) {
 	load("pre_main");
 
-	if (xp1) {
+	if (ConfigMan.getBool("NWN_hasXP1")) {
 		_xp1 = loadModelGUI("ctl_xp1_text");
 		_xp1->setPosition(124.0, 0.00, 50.0);
 	}
 
-	if (xp2) {
+	if (ConfigMan.getBool("NWN_hasXP2")) {
 		_xp2 = loadModelGUI("ctl_xp2_text");
 		_xp2->setPosition(124.0, -147.0, 50.0);
 	}
@@ -45,16 +47,16 @@ MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : _xp1(0), _xp2(0) {
 	getWidget("LoadButton" , true)->setDisabled(true);
 	getWidget("MultiButton", true)->setDisabled(true);
 
-	if (xp1 || xp2)
+	if (_xp1 || _xp2)
 		// If we have at least an expansion, create the campaign selection game menu
-		_new = new NewCampMenu(xp1, xp2, xp3);
+		_new = new NewCampMenu;
 	else
 		// If not, create the base game menu
-		_new = new NewMenu(xp1, xp2, xp3);
+		_new = new NewMenu;
 
-	if (xp1 || xp2)
+	if (_xp1 || _xp2)
 		// If we have at least an expansion, create the campaign selection movies menu
-		_movies = new MoviesCampMenu(xp1, xp2, xp3);
+		_movies = new MoviesCampMenu;
 	else
 		// If not, create the base game movies menu
 		_movies = new MoviesBaseMenu;

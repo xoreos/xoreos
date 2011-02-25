@@ -132,7 +132,7 @@ void NWNEngine::run(const Common::UString &target) {
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
 	Legal *legal    = new Legal;
-	GUI   *mainMenu = new MainMenu(_hasXP1, _hasXP2, _hasXP3);
+	GUI   *mainMenu = new MainMenu;
 
 	// Fade in the legal billboard
 	legal->fadeIn();
@@ -290,6 +290,10 @@ void NWNEngine::initCursors() {
 
 void NWNEngine::initConfig() {
 	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty", 0);
+
+	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP1", _hasXP1);
+	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP2", _hasXP2);
+	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP3", _hasXP3);
 }
 
 } // End of namespace NWN

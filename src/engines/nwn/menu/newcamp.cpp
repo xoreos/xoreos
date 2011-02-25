@@ -22,7 +22,7 @@ namespace Engines {
 
 namespace NWN {
 
-NewCampMenu::NewCampMenu(bool xp1, bool xp2, bool xp3) {
+NewCampMenu::NewCampMenu() {
 	load("pre_campaign");
 
 	Widget *button = 0;
@@ -30,15 +30,15 @@ NewCampMenu::NewCampMenu(bool xp1, bool xp2, bool xp3) {
 	// No GUI files? Harcoded?
 	button = getWidget("NWNXP1Button");
 	if (button)
-		button->setDisabled(/*!xp1*/ true);
+		button->setDisabled(/*!ConfigMan.getBool("NWN_hasXP1")*/ true);
 	button = getWidget("NWNXP2Button");
 	if (button)
-		button->setDisabled(/*!xp2*/ true);
+		button->setDisabled(/*!ConfigMan.getBool("NWN_hasXP2")*/ true);
 	button = getWidget("NWNXP3Button");
 	if (button)
 		button->setDisabled(true);
 
-	_base   = new NewMenu(xp1, xp2, xp3);
+	_base   = new NewMenu;
 	_module = new NewModuleMenu;
 }
 

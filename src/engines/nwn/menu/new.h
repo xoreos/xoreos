@@ -24,7 +24,7 @@ namespace NWN {
 /** The NWN new game menu. */
 class NewMenu : public GUI {
 public:
-	NewMenu(bool xp1, bool xp2, bool xp3);
+	NewMenu();
 	~NewMenu();
 
 protected:

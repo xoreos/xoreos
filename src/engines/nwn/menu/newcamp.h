@@ -24,7 +24,7 @@ namespace NWN {
 /** The NWN new campaign menu. */
 class NewCampMenu : public GUI {
 public:
-	NewCampMenu(bool xp1, bool xp2, bool xp3);
+	NewCampMenu();
 	~NewCampMenu();
 
 protected:

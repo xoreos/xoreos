@@ -12,6 +12,8 @@
  *  The new game menu.
  */
 
+#include "common/configman.h"
+
 #include "graphics/graphics.h"
 
 #include "engines/nwn/menu/new.h"
@@ -23,8 +25,10 @@ namespace Engines {
 
 namespace NWN {
 
-NewMenu::NewMenu(bool xp1, bool xp2, bool xp3) : _hasXP(xp1 || xp2) {
+NewMenu::NewMenu() {
 	load("pre_newgame");
+
+	_hasXP = ConfigMan.getBool("NWN_hasXP1") || ConfigMan.getBool("NWN_hasXP2");
 
 	// TODO: Game chapters
 	getWidget("PreludeButton" , true)->setDisabled(true);

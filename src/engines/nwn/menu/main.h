@@ -26,7 +26,7 @@ namespace NWN {
 /** The NWN main menu. */
 class MainMenu : public GUI {
 public:
-	MainMenu(bool xp1, bool xp2, bool xp3);
+	MainMenu();
 	~MainMenu();
 
 	void show();

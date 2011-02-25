@@ -12,6 +12,8 @@
  *  The campaign movies menu.
  */
 
+#include "common/configman.h"
+
 #include "engines/nwn/menu/moviescamp.h"
 #include "engines/nwn/menu/moviesbase.h"
 
@@ -21,17 +23,17 @@ namespace Engines {
 
 namespace NWN {
 
-MoviesCampMenu::MoviesCampMenu(bool xp1, bool xp2, bool xp3) {
+MoviesCampMenu::MoviesCampMenu() {
 	load("pre_camp_movies");
 
 	Widget *button = 0;
 
 	button = getWidget("NWNXP1Button");
 	if (button)
-		button->setDisabled(!xp1);
+		button->setDisabled(!ConfigMan.getBool("NWN_hasXP1"));
 	button = getWidget("NWNXP2Button");
 	if (button)
-		button->setDisabled(!xp2);
+		button->setDisabled(!ConfigMan.getBool("NWN_hasXP2"));
 	button = getWidget("NWNXP3Button");
 	if (button)
 		button->setDisabled(true);

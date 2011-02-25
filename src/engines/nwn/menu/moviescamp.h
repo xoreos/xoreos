@@ -24,7 +24,7 @@ namespace NWN {
 /** The NWN campaign movies menu. */
 class MoviesCampMenu: public GUI {
 public:
-	MoviesCampMenu(bool xp1, bool xp2, bool xp3);
+	MoviesCampMenu();
 	~MoviesCampMenu();
 
 protected:
