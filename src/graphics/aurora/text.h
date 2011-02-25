@@ -16,6 +16,7 @@
 #define GRAPHICS_AURORA_TEXT_H
 
 #include "common/ustring.h"
+#include "common/maths.h"
 
 #include "graphics/types.h"
 #include "graphics/listcontainer.h"
@@ -36,7 +37,7 @@ public:
 	~Text();
 
 	void set(const Common::UString &str);
-	void setPosition(float x, float y);
+	void setPosition(float x, float y, float z = -FLT_MAX);
 	void setColor(float r, float g, float b, float a);
 	void unsetColor();
 
@@ -57,7 +58,7 @@ protected:
 	void doDestroy();
 
 	void set_internal(const Common::UString &str);
-	void setPosition_internal(float x, float y);
+	void setPosition_internal(float x, float y, float z = -FLT_MAX);
 
 private:
 	FontHandle _font;

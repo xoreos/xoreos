@@ -28,7 +28,7 @@ Text::Text(const FontHandle &font, const Common::UString &str, float align) :
 
 	set(str);
 
-	_distance = -5.0;
+	_distance = -FLT_MAX;
 }
 
 Text::Text(const FontHandle &font, const Common::UString &str,
@@ -38,7 +38,7 @@ Text::Text(const FontHandle &font, const Common::UString &str,
 
 	set(str);
 
-	_distance = -5.0;
+	_distance = -FLT_MAX;
 }
 
 Text::~Text() {
@@ -110,14 +110,14 @@ void Text::unsetColor() {
 	GfxMan.unlockFrame();
 }
 
-void Text::setPosition(float x, float y) {
+void Text::setPosition(float x, float y, float z) {
 	GfxMan.lockFrame();
 
 	bool visible = Renderable::isInQueue();
 
 	Renderable::removeFromQueue();
 
-	setPosition_internal(x, y);
+	setPosition_internal(x, y, z);
 
 	if (visible)
 		Renderable::addToQueue();
@@ -125,9 +125,11 @@ void Text::setPosition(float x, float y) {
 	GfxMan.unlockFrame();
 }
 
-void Text::setPosition_internal(float x, float y) {
+void Text::setPosition_internal(float x, float y, float z) {
 	_x = roundf(x);
 	_y = roundf(y);
+
+	_distance = z;
 }
 
 void Text::show() {
