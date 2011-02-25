@@ -289,7 +289,7 @@ void NWNEngine::initCursors() {
 }
 
 void NWNEngine::initConfig() {
-	ConfigMan.setDefaultInt("difficulty", 0);
+	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty", 0);
 }
 
 } // End of namespace NWN

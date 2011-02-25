@@ -119,19 +119,19 @@ void initConfig() {
 			newConfig = true;
 	}
 
-	ConfigMan.setDefaultInt   ("width" ,     800);
-	ConfigMan.setDefaultInt   ("height",     600);
-	ConfigMan.setDefaultBool  ("fullscreen", false);
-	ConfigMan.setDefaultInt   ("fsaa",       0);
-	ConfigMan.setDefaultDouble("gamma",    1.0);
+	ConfigMan.setInt   (Common::kConfigRealmDefault, "width" ,     800);
+	ConfigMan.setInt   (Common::kConfigRealmDefault, "height",     600);
+	ConfigMan.setBool  (Common::kConfigRealmDefault, "fullscreen", false);
+	ConfigMan.setInt   (Common::kConfigRealmDefault, "fsaa",       0);
+	ConfigMan.setDouble(Common::kConfigRealmDefault, "gamma",    1.0);
 
-	ConfigMan.setDefaultDouble("volume"      , 1.0);
-	ConfigMan.setDefaultDouble("volume_music", 1.0);
-	ConfigMan.setDefaultDouble("volume_sfx"  , 1.0);
-	ConfigMan.setDefaultDouble("volume_voice", 1.0);
-	ConfigMan.setDefaultDouble("volume_video", 1.0);
+	ConfigMan.setDouble(Common::kConfigRealmDefault, "volume"      , 1.0);
+	ConfigMan.setDouble(Common::kConfigRealmDefault, "volume_music", 1.0);
+	ConfigMan.setDouble(Common::kConfigRealmDefault, "volume_sfx"  , 1.0);
+	ConfigMan.setDouble(Common::kConfigRealmDefault, "volume_voice", 1.0);
+	ConfigMan.setDouble(Common::kConfigRealmDefault, "volume_video", 1.0);
 
-	ConfigMan.setDefaultBool("showfps", false);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "showfps", false);
 
 	// Populate the new config with the defaults
 	if (newConfig) {

@@ -27,6 +27,12 @@ namespace Common {
 class ConfigFile;
 class ConfigDomain;
 
+/** Special config realms. */
+enum ConfigRealm {
+	kConfigRealmDefault , ///< Application or game defaults.
+	kConfigRealmGameTemp  ///< Temporary game settings/properties.
+};
+
 /** The global config manager, storing all config keys. */
 class ConfigManager : public Singleton<ConfigManager> {
 public:
@@ -73,14 +79,14 @@ public:
 	void setInt   (const UString &key,       int      value, bool update = false);
 	void setDouble(const UString &key,       double   value, bool update = false);
 
-	/** Set a default config value. */
-	void setDefaultKey(const UString &key, const UString &value);
+	/** Set a config value in a specific realm. */
+	void setKey(ConfigRealm realm, const UString &key, const UString &value);
 
-	// Specialized default setters. */
-	void setDefaultString(const UString &key, const UString &value);
-	void setDefaultBool  (const UString &key,       bool     value);
-	void setDefaultInt   (const UString &key,       int      value);
-	void setDefaultDouble(const UString &key,       double   value);
+	// Specialized realm setters. */
+	void setString(ConfigRealm realm, const UString &key, const UString &value);
+	void setBool  (ConfigRealm realm, const UString &key,       bool     value);
+	void setInt   (ConfigRealm realm, const UString &key,       int      value);
+	void setDouble(ConfigRealm realm, const UString &key,       double   value);
 
 	/** Overwrite the current config with the defaults. */
 	void setDefaults();
@@ -102,6 +108,7 @@ private:
 	ConfigDomain *_domainDefaultApp;  ///< Application defaults domain.
 	ConfigDomain *_domainDefaultGame; ///< Game defaults domain.
 	ConfigDomain *_domainCommandline; ///< Command line domain.
+	ConfigDomain *_domainGameTemp;    ///< Temporary game settings domain.
 
 	UString getConfigFile() const;
 

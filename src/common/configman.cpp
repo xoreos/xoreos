@@ -42,9 +42,12 @@ ConfigManager::ConfigManager() : _changed(false), _config(0), _domainApp(0), _do
 	_domainDefaultGame = 0;
 
 	_domainCommandline = new ConfigDomain("commandline");
+
+	_domainGameTemp = 0;
 }
 
 ConfigManager::~ConfigManager() {
+	delete _domainGameTemp;
 	delete _domainCommandline;
 	delete _domainDefaultGame;
 	delete _domainDefaultApp;
@@ -61,6 +64,7 @@ void ConfigManager::clear() {
 	_domainGame = 0;
 	_domainApp  = 0;
 
+	delete _domainGameTemp;
 	delete _domainDefaultGame;
 	delete _domainDefaultApp;
 	delete _config;
@@ -69,6 +73,8 @@ void ConfigManager::clear() {
 
 	_domainDefaultApp  = new ConfigDomain("appDefault");
 	_domainDefaultGame = 0;
+
+	_domainGameTemp = 0;
 }
 
 void ConfigManager::clearCommandline() {
@@ -152,9 +158,11 @@ void ConfigManager::create() {
 bool ConfigManager::setGame(const UString &gameID) {
 	// Clear the current game domain
 	delete _domainDefaultGame;
+	delete _domainGameTemp;
 
 	_domainGame        = 0;
 	_domainDefaultGame = 0;
+	_domainGameTemp    = 0;
 
 	if (gameID.empty())
 		// No ID specified, work done
@@ -172,6 +180,8 @@ bool ConfigManager::setGame(const UString &gameID) {
 
 	// Create a new defaults domain for the game too
 	_domainDefaultGame = new ConfigDomain("gameDefault");
+	// And a temporary settings domain too
+	_domainGameTemp    = new ConfigDomain("gameTemp");
 
 	return true;
 }
@@ -186,6 +196,7 @@ bool ConfigManager::hasKey(const UString &key) const {
 bool ConfigManager::getKey(const UString &key, UString &value) const {
 	// Look up the key in order of priority
 	return getKey(_domainCommandline, key, value) || // First command line
+	       getKey(_domainGameTemp   , key, value) || // Then temporary game settings
 	       getKey(_domainGame       , key, value) || // Then game
 	       getKey(_domainApp        , key, value) || // Then application
 	       getKey(_domainDefaultGame, key, value) || // Then game defaults
@@ -262,29 +273,38 @@ void ConfigManager::setDouble(const UString &key, double value, bool update) {
 	setKey(key, ConfigDomain::fromDouble(value), update);
 }
 
-void ConfigManager::setDefaultKey(const UString &key, const UString &value) {
-	// If we're in a game, set the game defaults
-	if (setKey(_domainDefaultGame, key, value))
-		return;
+void ConfigManager::setKey(ConfigRealm realm, const UString &key, const UString &value) {
+	if        (realm == kConfigRealmDefault) {
 
-	// Else, set the application defaults
-	setKey(_domainDefaultApp, key, value);
+		// If we're in a game, set the game defaults
+		if (setKey(_domainDefaultGame, key, value))
+			return;
+
+		// Else, set the application defaults
+		setKey(_domainDefaultApp, key, value);
+
+	} else if (realm == kConfigRealmGameTemp) {
+
+		// Set a temporary game setting
+		setKey(_domainGameTemp, key, value);
+
+	}
 }
 
-void ConfigManager::setDefaultString(const UString &key, const UString &value) {
-	setDefaultKey(key, value);
+void ConfigManager::setString(ConfigRealm realm, const UString &key, const UString &value) {
+	setKey(realm, key, value);
 }
 
-void ConfigManager::setDefaultBool(const UString &key, bool value) {
-	setDefaultKey(key, ConfigDomain::fromBool(value));
+void ConfigManager::setBool(ConfigRealm realm, const UString &key, bool value) {
+	setKey(realm, key, ConfigDomain::fromBool(value));
 }
 
-void ConfigManager::setDefaultInt(const UString &key, int value) {
-	setDefaultKey(key, ConfigDomain::fromInt(value));
+void ConfigManager::setInt(ConfigRealm realm, const UString &key, int value) {
+	setKey(realm, key, ConfigDomain::fromInt(value));
 }
 
-void ConfigManager::setDefaultDouble(const UString &key, double value) {
-	setDefaultKey(key, ConfigDomain::fromDouble(value));
+void ConfigManager::setDouble(ConfigRealm realm, const UString &key, double value) {
+	setKey(realm, key, ConfigDomain::fromDouble(value));
 }
 
 void ConfigManager::setDefaults() {
