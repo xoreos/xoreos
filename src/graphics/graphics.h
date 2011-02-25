@@ -152,8 +152,8 @@ private:
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 
-	Common::Mutex _frameMutex;  ///< A mutex locked for each frame.
-	Common::Mutex _cursorMutex; ///< A mutex locked for the cursor.
+	Common::Semaphore _frameSemaphore; ///< A semaphore locked for each frame.
+	Common::Mutex     _cursorMutex;    ///< A mutex locked for the cursor.
 
 	Texture::Queue       _textures;        ///< All existing textures.
 	Renderable::Queue    _objects;         ///< Normal game objects currently in the render queue.

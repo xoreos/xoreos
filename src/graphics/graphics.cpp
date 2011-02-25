@@ -345,14 +345,11 @@ void GraphicsManager::setupScene() {
 }
 
 void GraphicsManager::lockFrame() {
-	_frameMutex.lock();
+	_frameSemaphore.lock();
 }
 
 void GraphicsManager::unlockFrame() {
-	_frameMutex.unlock();
-
-	if (EventMan.isQueueFull())
-		RequestMan.sync();
+	_frameSemaphore.unlock();
 }
 
 void GraphicsManager::abandon(TextureID *ids, uint32 count) {
@@ -381,13 +378,13 @@ void GraphicsManager::abandon(ListID ids, uint32 count) {
 }
 
 void GraphicsManager::setCursor(Cursor *cursor) {
-	Common::StackLock frameLock(_frameMutex);
+	Common::StackLock frameLock(_frameSemaphore);
 
 	_cursor = cursor;
 }
 
 void GraphicsManager::takeScreenshot() {
-	Common::StackLock frameLock(_frameMutex);
+	Common::StackLock frameLock(_frameSemaphore);
 
 	_takeScreenshot = true;
 }
@@ -446,7 +443,9 @@ void GraphicsManager::renderScene() {
 
 	cleanupAbandoned();
 
-	Common::StackLock frameLock(_frameMutex);
+	if (!_frameSemaphore.lockTry())
+		return;
+
 	Common::StackLock videosLock(_videos.mutex);
 
 	// Switch cursor on/off
@@ -492,6 +491,8 @@ void GraphicsManager::renderScene() {
 
 		if (_fsaa > 0)
 			glDisable(GL_MULTISAMPLE_ARB);
+
+		_frameSemaphore.unlock();
 		return;
 	}
 
@@ -562,6 +563,8 @@ void GraphicsManager::renderScene() {
 
 	if (_fsaa > 0)
 		glDisable(GL_MULTISAMPLE_ARB);
+
+	_frameSemaphore.unlock();
 }
 
 int GraphicsManager::getScreenWidth() const {

@@ -47,85 +47,33 @@ Text::~Text() {
 }
 
 void Text::set(const Common::UString &str) {
-	GfxMan.lockFrame();
-
-	bool visible = Renderable::isInQueue();
-
-	Renderable::removeFromQueue();
-
-	set_internal(str);
-
-	if (visible)
-		Renderable::addToQueue();
-
-	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
-
-	GfxMan.unlockFrame();
-}
-
-void Text::set_internal(const Common::UString &str) {
 	_str = str;
 
 	const Font &font = _font.getFont();
 
 	_height = font.getHeight(_str);
 	_width  = font.getWidth (_str);
+
+	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
 }
 
 void Text::setColor(float r, float g, float b, float a) {
-	GfxMan.lockFrame();
-
-	bool visible = Renderable::isInQueue();
-
-	Renderable::removeFromQueue();
-
 	_hasColor = true;
 	_r = r;
 	_g = g;
 	_b = b;
 	_a = a;
 
-	if (visible)
-		Renderable::addToQueue();
-
 	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
-
-	GfxMan.unlockFrame();
 }
 
 void Text::unsetColor() {
-	GfxMan.lockFrame();
-
-	bool visible = Renderable::isInQueue();
-
-	Renderable::removeFromQueue();
-
 	_hasColor = false;
 
-	if (visible)
-		Renderable::addToQueue();
-
 	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
-
-	GfxMan.unlockFrame();
 }
 
 void Text::setPosition(float x, float y, float z) {
-	GfxMan.lockFrame();
-
-	bool visible = Renderable::isInQueue();
-
-	Renderable::removeFromQueue();
-
-	setPosition_internal(x, y, z);
-
-	if (visible)
-		Renderable::addToQueue();
-
-	GfxMan.unlockFrame();
-}
-
-void Text::setPosition_internal(float x, float y, float z) {
 	_x = roundf(x);
 	_y = roundf(y);
 

@@ -199,26 +199,15 @@ bool EventsManager::pollEvent(Event &event) {
 }
 
 bool EventsManager::pushEvent(Event &event) {
-	_eventQueueMutex.lock();
+	if (_queueSize >= 50)
+		if (!Common::isMainThread())
+			_queueProcessed.wait(100);
+
+	Common::StackLock lock(_eventQueueMutex);
 
 	int result = SDL_PushEvent(&event);
 	_queueSize++;
 
-	if (_queueSize >= 50)
-		_fullQueue = true;
-
-	// If we can't push the event, wait up to a second for a queue flush
-	if (result == -1) {
-		_fullQueue = true;
-
-		_eventQueueMutex.unlock();
-		_queueProcessed.wait(1000);
-		_eventQueueMutex.lock();
-
-		result = SDL_PushEvent(&event);
-	}
-
-	_eventQueueMutex.unlock();
 	return result == 0;
 }
 

@@ -57,9 +57,6 @@ protected:
 	void doRebuild();
 	void doDestroy();
 
-	void set_internal(const Common::UString &str);
-	void setPosition_internal(float x, float y, float z = -FLT_MAX);
-
 private:
 	FontHandle _font;
 

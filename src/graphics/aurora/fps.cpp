@@ -49,9 +49,7 @@ void FPS::render() {
 	if (fps != _fps) {
 		_fps = fps;
 
-		set_internal(Common::UString::sprintf("%d fps", _fps));
-		doDestroy();
-		doRebuild();
+		set(Common::UString::sprintf("%d fps", _fps));
 	}
 
 	Text::render();
@@ -61,7 +59,7 @@ void FPS::changedResolution(int oldWidth, int oldHeight, int newWidth, int newHe
 	float posX = -(newWidth  / 2.0);
 	float posY =  (newHeight / 2.0) - getHeight();
 
-	setPosition_internal(posX, posY);
+	setPosition(posX, posY);
 }
 
 } // End of namespace Aurora
