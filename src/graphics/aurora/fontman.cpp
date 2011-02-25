@@ -67,6 +67,12 @@ void FontHandle::clear() {
 	empty = true;
 }
 
+const Common::UString &FontHandle::getFontName() const {
+	assert(!empty);
+
+	return it->first;
+}
+
 const Font &FontHandle::getFont() const {
 	assert(!empty);
 

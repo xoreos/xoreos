@@ -63,6 +63,7 @@ struct FontHandle {
 
 	void clear();
 
+	const Common::UString &getFontName() const;
 	const Font &getFont() const;
 };
 
