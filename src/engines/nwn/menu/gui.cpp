@@ -345,6 +345,11 @@ void WidgetCheckButton::setState(bool state) {
 	}
 }
 
+void WidgetCheckButton::forceUncheck() {
+	_state = false;
+	updateModel(false);
+}
+
 void WidgetCheckButton::enter() {
 	if (isDisabled())
 		return;
@@ -501,50 +506,123 @@ WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &
 	_mode(kModeStatic), _startLine(0), _selectedLine(0xFFFFFFFF),
 	_r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
-
-	float minX, minY, minZ;
-	bool minHas = _model->getNodePosition("scrollmin", minX, minY, minZ);
-
-	float maxX, maxY, maxZ;
-	bool maxHas = _model->getNodePosition("scrollmax", maxX, maxY, maxZ);
-
-	_hasScrollbar = minHas && maxHas;
-
-	// TODO: This needs an actual scrollbar too
-	if (_hasScrollbar) {
-		WidgetButton *down = new WidgetButton(tag + "#Down", "pb_scrl_down");
-
-		down->setPosition(maxX, maxY - 10, 0.0);
-		addSub(*down);
-
-		WidgetButton *up = new WidgetButton(tag + "#Up", "pb_scrl_up");
-
-		up->setPosition(minX, minY, 0.0);
-		addSub(*up);
-	}
-
-
 	_font = FontMan.get(font);
 
-	// (Height of the model - Border) / (FontHeight + Line spacing)
-	int lineCount = (getHeight() - 4) / (_font.getFont().getHeight() + 1);
+	_hasScrollbar = _model->hasNode("scrollmin") && _model->hasNode("scrollmax");
+	_hasButtons   = _model->hasNode("listitem");
 
-	_lines.resize(lineCount);
-	for (int i = 0; i < lineCount; i++) {
+	createScrollbar();
+	createButtons();
+	createLines();
+
+	setMode(kModeStatic);
+
+	for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b)
+		(*b)->setInvisible(true);
+}
+
+WidgetEditBox::~WidgetEditBox() {
+}
+
+void WidgetEditBox::createScrollbar() {
+	if (!_hasScrollbar)
+		return;
+
+	float minX, minY, minZ;
+	_model->getNodePosition("scrollmin", minX, minY, minZ);
+
+	float maxX, maxY, maxZ;
+	_model->getNodePosition("scrollmax", maxX, maxY, maxZ);
+
+	// TODO: This needs an actual scrollbar too
+	WidgetButton *down = new WidgetButton(getTag() + "#Down", "pb_scrl_down");
+
+	down->setPosition(maxX, maxY - 10, 0.0);
+	addSub(*down);
+
+	WidgetButton *up = new WidgetButton(getTag() + "#Up", "pb_scrl_up");
+
+	up->setPosition(minX, minY, 0.0);
+	addSub(*up);
+}
+
+void WidgetEditBox::createButtons() {
+	if (!_hasButtons)
+		return;
+
+	Common::UString buttonResRef;
+	if (getWidth() >= 440)
+		buttonResRef = "ctl_btn_txt407";
+
+	if (buttonResRef.empty()) {
+		warning("TODO: WidgetEditBox with buttons, width = %f", getWidth());
+		return;
+	}
+
+	float listX, listY, listZ;
+	_model->getNodePosition("listitem", listX, listY, listZ);
+
+	float buttonHeight = 0.0;
+	{
+		WidgetCheckButton *btn = new WidgetCheckButton("", buttonResRef);
+		buttonHeight = btn->getHeight();
+		delete btn;
+	}
+
+	int count = getHeight() / (buttonHeight + 2);
+
+	_buttons.resize(count);
+	for (int i = 0; i < count; i++) {
+		Common::UString button = Common::UString::sprintf("#Button%03d", i);
+
+		_buttons[i] = new WidgetCheckButton(getTag() + button, buttonResRef);
+		_buttons[i]->movePosition(listX, listY - (i * (_buttons[i]->getHeight() + 2)), listZ);
+		addSub(*_buttons[i]);
+	}
+
+	for (int i = 0; i < count; i++)
+		for (int j = 0; j < count; j++)
+			_buttons[i]->addGroupMember(*_buttons[j]);
+
+	_lines.resize(count);
+	for (int i = 0; i < count; i++) {
 		Common::UString line = Common::UString::sprintf("Line%03d", i);
 
-		_lines[i] = new WidgetLabel(tag + "#" + line, font, "");
+		_lines[i] = new WidgetLabel(getTag() + "#" + line, _font.getFontName(), "");
 
-		float lX = 3 + _font.getFont().getWidth(" ");
-		float lY = getHeight() - 2 - (i + 1) * (_font.getFont().getHeight() + 1);
+		float btnX, btnY, btnZ;
+		_buttons[i]->getPosition(btnX, btnY, btnZ);
 
-		_lines[i]->setPosition(lX, lY, 0.0);
+		_lines[i]->setPosition(btnX, btnY, btnZ);
 
 		addSub(*_lines[i]);
 	}
 }
 
-WidgetEditBox::~WidgetEditBox() {
+void WidgetEditBox::createLines() {
+	if (_hasButtons)
+		return;
+
+	// (Height of the model - Border) / (FontHeight + Line spacing)
+	int lineCount = (getHeight() - 4) / (_font.getFont().getHeight() + 1);
+
+	// Border + indenting
+	float lineX = 3 + _font.getFont().getWidth(" ");
+	// Height of the model - border, - (height of a line + line spacing)
+	float lineY = getHeight() - 2 - (_font.getFont().getHeight() + 1);
+
+	_lines.resize(lineCount);
+	for (int i = 0; i < lineCount; i++) {
+		Common::UString line = Common::UString::sprintf("Line%03d", i);
+
+		_lines[i] = new WidgetLabel(getTag() + "#" + line, _font.getFontName(), "");
+
+		_lines[i]->setPosition(lineX, lineY, 0.0);
+
+		addSub(*_lines[i]);
+
+		lineY -= _font.getFont().getHeight() + 1;
+	}
 }
 
 void WidgetEditBox::setPosition(float x, float y, float z) {
@@ -579,12 +657,19 @@ void WidgetEditBox::subActive(Widget &widget) {
 	}
 
 	if (widget.getTag().endsWith("#Down")) {
-		int max = _contentLines.size() - _lines.size();
+		int max = _contents.size() - _lines.size();
 		if ((max > 0) && (_startLine < ((uint) max)))
 			_startLine++;
 
 		updateScroll();
 		return;
+	}
+
+	if (widget.getTag().contains("#Button")) {
+		const char *str = widget.getTag().c_str() + strlen(widget.getTag().c_str()) - 3;
+		sscanf(str, "%u", &_selectedLine);
+
+		_selectedLine += _startLine;
 	}
 }
 
@@ -594,6 +679,10 @@ void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
 
 	if (_mode != kModeSelectable)
 		// Isn't selectable, nothing to do
+		return;
+
+	if (_hasButtons)
+		// Edit box has buttons, they handle the selection
 		return;
 
 	float wX, wY, wZ;
@@ -607,7 +696,7 @@ void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
 		return;
 
 	uint line = _startLine + (y / (_font.getFont().getHeight() + 1));
-	if (line >= _contentLines.size() || (line == _selectedLine))
+	if (line >= _contents.size() || (line == _selectedLine))
 		// No line or no change
 		return;
 
@@ -619,6 +708,14 @@ void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
 
 void WidgetEditBox::setMode(Mode mode) {
 	_mode = mode;
+
+	if        (_mode == kModeStatic) {
+		for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b)
+			(*b)->setDisabled(true);
+	} else if (_mode == kModeSelectable) {
+		for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b)
+			(*b)->setDisabled(false);
+	}
 }
 
 void WidgetEditBox::setColor(float r, float g, float b, float a) {
@@ -636,23 +733,45 @@ void WidgetEditBox::clear() {
 	_selectedLine = 0xFFFFFFFF;
 
 	_contents.clear();
-	_contentLines.clear();
 
 	for (std::vector<WidgetLabel *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
 		(*it)->setText("");
+
+	for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b) {
+		(*b)->setInvisible(true);
+		(*b)->hide();
+	}
 }
 
-void WidgetEditBox::add(const Common::UString &str) {
-	_contents += str;
+void WidgetEditBox::set(const Common::UString &str) {
+	clear();
 
-	updateContents();
+	// Width of the model - borders - indenting
+	float width = getWidth() - 6 - _font.getFont().getWidth(" ");
+	if (_hasScrollbar)
+		width -= 19;
+
+	_font.getFont().split(str, _contents, width);
+
+	for (uint i = 0; i < _contents.size() && i < _buttons.size(); i++) {
+		_buttons[i]->setInvisible(false);
+		if (isVisible())
+			_buttons[i]->show();
+	}
+
+	updateScroll();
 }
 
 void WidgetEditBox::addLine(const Common::UString &line) {
-	if (!_contents.empty())
-		_contents += '\n';
+	_contents.push_back(line);
 
-	add(line);
+	if (_contents.size() <= _buttons.size()) {
+		_buttons[_contents.size() - 1]->setInvisible(false);
+		if (isVisible())
+			_buttons[_contents.size() - 1]->show();
+	}
+
+	updateScroll();
 }
 
 void WidgetEditBox::selectLine(int line) {
@@ -664,33 +783,55 @@ void WidgetEditBox::selectLine(int line) {
 }
 
 Common::UString WidgetEditBox::getSelectedLine() const {
-	if (_selectedLine >= _contentLines.size())
+	if (_selectedLine >= _contents.size())
 		return "";
 
-	return _contentLines[_selectedLine];
+	return _contents[_selectedLine];
 }
 
-void WidgetEditBox::updateContents() {
-	_contentLines.clear();
-
-	float width = getWidth() - 6 - _font.getFont().getWidth(" ");
-	if (_hasScrollbar)
-		width -= 19;
-
-	_font.getFont().split(_contents, _contentLines, width);
-
-	updateScroll();
+uint WidgetEditBox::getSelectedLineNumber() const {
+	return _selectedLine;
 }
 
 void WidgetEditBox::updateScroll() {
-	std::vector<WidgetLabel *>::iterator line = _lines.begin();
-	for (uint i = _startLine; i < _contentLines.size() && line != _lines.end(); i++, ++line) {
-		(*line)->setText(_contentLines[i]);
+	// If the selected button is outside the current scroll range, uncheck all
+	if ((_selectedLine < _startLine) || ((_selectedLine - _startLine) >= _buttons.size()))
+		for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b)
+			(*b)->forceUncheck();
 
-		if ((_mode == kModeSelectable) && (i == _selectedLine))
-			(*line)->setColor(1.0, 1.0, 0.0, 1.0);
-		else
-			(*line)->setColor(_r, _g, _b, _a);
+	std::vector<WidgetLabel *>::iterator line = _lines.begin();
+	for (uint i = _startLine; i < _contents.size() && line != _lines.end(); i++, ++line) {
+		(*line)->setText(_contents[i]);
+
+		(*line)->setColor(_r, _g, _b, _a);
+
+		if ((_mode == kModeSelectable) && (i == _selectedLine)) {
+			if (_hasButtons)
+				// Press the selected button
+				_buttons[i - _startLine]->setState(true);
+			else
+				// Color the selected line
+				(*line)->setColor(1.0, 1.0, 0.0, 1.0);
+		}
+
+		// Center the lines onto the buttons
+		if (_hasButtons) {
+			WidgetCheckButton &btn = *_buttons[i - _startLine];
+
+			float btnX, btnY, btnZ;
+			btn.getPosition(btnX, btnY, btnZ);
+
+			float btnW = btn.getWidth();
+			float btnH = btn.getHeight();
+
+			float lblW = (*line)->getWidth();
+			float lblH = (*line)->getHeight();
+
+			float lblX = btnX + (btnW - lblW) / 2;
+			float lblY = btnY + (btnH - lblH) / 2;
+
+			(*line)->setPosition(lblX, lblY, btnZ);
+		}
 	}
 }
 

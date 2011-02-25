@@ -120,6 +120,8 @@ public:
 	bool getState() const;
 	void setState(bool state);
 
+	void forceUncheck();
+
 	void enter();
 	void leave();
 
@@ -197,24 +199,26 @@ public:
 
 	void clear();
 
-	void add(const Common::UString &str);
+	void set(const Common::UString &str);
 	void addLine(const Common::UString &line);
 
 	void selectLine(int line);
 
 	Common::UString getSelectedLine() const;
+	uint getSelectedLineNumber() const;
 
 private:
-	bool _hasScrollbar;
-
 	Graphics::Aurora::FontHandle _font;
+
+	bool _hasScrollbar;
+	bool _hasButtons;
 
 	Mode _mode;
 
-	std::vector<WidgetLabel *> _lines;
+	std::vector<WidgetCheckButton *> _buttons;
 
-	Common::UString _contents;
-	std::vector<Common::UString> _contentLines;
+	std::vector<WidgetLabel *>   _lines;
+	std::vector<Common::UString> _contents;
 
 	uint _startLine;
 	uint _selectedLine;
@@ -224,7 +228,10 @@ private:
 	float _b;
 	float _a;
 
-	void updateContents();
+	void createScrollbar();
+	void createButtons();
+	void createLines();
+
 	void updateScroll();
 };
 

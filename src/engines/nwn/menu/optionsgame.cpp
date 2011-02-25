@@ -115,8 +115,7 @@ void OptionsGameMenu::updateDifficulty(int difficulty) {
 	WidgetLabel   &diffLabel = *getLabel  ("DifficultyLabel", true);
 	WidgetEditBox &diffEdit  = *getEditBox("DiffEdit"       , true);
 
-	diffEdit.clear();
-	diffEdit.add(TalkMan.getString(67578 + difficulty));
+	diffEdit.set(TalkMan.getString(67578 + difficulty));
 
 	if      (difficulty == 0)
 		diffLabel.setText(TalkMan.getString(66786));
