@@ -29,7 +29,7 @@ namespace Graphics {
 namespace Aurora {
 
 // TODO: Multibyte fonts?
-TextureFont::TextureFont(const Common::UString &name) : _scale(1.0), _spaceR(0.0), _spaceB(0.0) {
+TextureFont::TextureFont(const Common::UString &name) : _height(1.0), _spaceR(0.0), _spaceB(0.0) {
 	_texture = TextureMan.get(name);
 
 	load();
@@ -38,97 +38,37 @@ TextureFont::TextureFont(const Common::UString &name) : _scale(1.0), _spaceR(0.0
 TextureFont::~TextureFont() {
 }
 
+float TextureFont::getWidth(uint32 c) const {
+	if (c >= _chars.size())
+		return 0.0;
+
+	return (_chars[c].width + _spaceR) / 100.0;
+}
+
 float TextureFont::getHeight() const {
-	return _scale / 100.0;
+	return _height / 100.0;
 }
 
-float TextureFont::getWidth(const Common::UString &text) const {
-	float width = 0.0;
-
-	float lineWidth = 0.0;
-	for (Common::UString::iterator s = text.begin(); s != text.end(); ++s) {
-		uint32 c = *s;
-		if (c == '\0')
-			break;
-
-		if (c == '\n') {
-			width = MAX(width, lineWidth);
-
-			lineWidth = 0.0;
-			continue;
-		}
-
-		if (c >= _chars.size())
-			continue;
-
-		lineWidth += _chars[c].width + _spaceR;
-	}
-
-	width = MAX(width, lineWidth);
-
-	width *= _scale / 100.0;
-
-	return width;
+float TextureFont::getLineSpacing() const {
+	return _spaceB / 100.0;
 }
 
-float TextureFont::getHeight(const Common::UString &text) const {
-	if (text.empty())
-		return getHeight();
-
-	std::vector<LineDefinition> lines;
-	std::vector<float> lengths;
-
-	getLines(text, lines, lengths);
-
-	return (lines.size() * _scale) / 100.0;
-}
-
-void TextureFont::draw(const Common::UString &text, float align) const {
-	glScalef(_scale, _scale, 0.0);
+void TextureFont::draw(uint32 c) const {
+	if (c >= _chars.size())
+		return;
 
 	TextureMan.set(_texture);
 
-	std::vector<LineDefinition> lines;
-	std::vector<float> lengths;
+	const Char &cC = _chars[c];
 
-	float maxLength = getLines(text, lines, lengths);
-
-	glTranslatef(0.0, (lines.size() - 1), 0.0);
-
-	for (uint l = 0; l < lines.size(); l++) {
-		float curPos = roundf((maxLength - lengths[l]) * align * 100.0) / _scale;
-
-		glTranslatef(curPos, 0.0, 0.0);
-
-		for (Common::UString::iterator s = lines[l].first; s != lines[l].second; ++s) {
-			uint32 c = *s;
-			if (c == '\0')
-				break;
-
-			float width = 0.0;
-			if (c < _chars.size()) {
-				const Char &cC = _chars[c];
-
-				glBegin(GL_QUADS);
-				for (int i = 0; i < 4; i++) {
-					glTexCoord2f(cC.tX[i], cC.tY[i]);
-					glVertex2f  (cC.vX[i], cC.vY[i]);
-				}
-				glEnd();
-
-				width = cC.width;
-			}
-
-			float w = width;
-			if (s == lines[l].second)
-				w += _spaceR;
-
-			curPos += w;
-			glTranslatef(w, 0.0, 0.0);
-		}
-
-		glTranslatef(-curPos, -1.0, 0.0);
+	glBegin(GL_QUADS);
+	for (int i = 0; i < 4; i++) {
+		glTexCoord2f(cC.tX[i], cC.tY[i]);
+		glVertex2f  (cC.vX[i], cC.vY[i]);
 	}
+	glEnd();
+
+	glTranslatef(cC.width + _spaceR, 0.0, 0.0);
 }
 
 void TextureFont::load() {
@@ -154,6 +94,11 @@ void TextureFont::load() {
 
 	double textureRatio = ((double) texture.getWidth()) / ((double) texture.getHeight());
 
+	// Get features
+	_height = txiFeatures.fontHeight * 100.0;
+	_spaceR = txiFeatures.spacingR   * 100.0;
+	_spaceB = txiFeatures.spacingB   * 100.0;
+
 	// Build the character texture and vertex coordinates
 	_chars.resize(charCount);
 	for (uint32 i = 0; i < charCount; i++) {
@@ -171,21 +116,14 @@ void TextureFont::load() {
 		double width  = ABS(lr.x - ul.x);
 		double ratio  = ((height != 0.0) ? (width / height) : 0.0) * textureRatio;
 
-		// Vertex coordinates. Fixed height of 1.00, width to fit the texture ratio
-		c.vX[0] = 0.00;         c.vY[0] = 0.00;
-		c.vX[1] = 1.00 * ratio; c.vY[1] = 0.00;
-		c.vX[2] = 1.00 * ratio; c.vY[2] = 1.00;
-		c.vX[3] = 0.00;         c.vY[3] = 1.00;
+		// Vertex coordinates. Fixed height, width to fit the texture ratio
+		c.vX[0] = 0.00;            c.vY[0] = 0.00;
+		c.vX[1] = _height * ratio; c.vY[1] = 0.00;
+		c.vX[2] = _height * ratio; c.vY[2] = _height;
+		c.vX[3] = 0.00;            c.vY[3] = _height;
 
 		c.width = c.vX[1] - c.vX[0];
 	}
-
-	// Get features
-	_scale  = txiFeatures.fontHeight * 100;
-	_spaceR = txiFeatures.spacingR;
-	_spaceB = txiFeatures.spacingB;
-
-	_spaceR = 0.0;
 }
 
 } // End of namespace Aurora

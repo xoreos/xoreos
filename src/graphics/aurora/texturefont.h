@@ -39,12 +39,12 @@ public:
 	TextureFont(const Common::UString &name);
 	~TextureFont();
 
-	float getHeight() const;
+	float getWidth (uint32 c) const;
+	float getHeight()         const;
 
-	float getWidth(const Common::UString &text) const;
-	float getHeight(const Common::UString &text) const;
+	float getLineSpacing() const;
 
-	void draw(const Common::UString &text, float align = 0.0) const;
+	void draw(uint32 c) const;
 
 private:
 	/** A font character. */
@@ -58,7 +58,7 @@ private:
 
 	std::vector<Char> _chars;
 
-	float _scale;
+	float _height;
 	float _spaceR;
 	float _spaceB;
 

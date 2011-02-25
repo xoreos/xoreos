@@ -665,7 +665,7 @@ Common::UString WidgetEditBox::getSelectedLine() const {
 	if (_selectedLine >= _contentLines.size())
 		return "";
 
-	return Common::UString(_contentLines[_selectedLine].first, _contentLines[_selectedLine].second);
+	return _contentLines[_selectedLine];
 }
 
 void WidgetEditBox::updateContents() {
@@ -675,7 +675,7 @@ void WidgetEditBox::updateContents() {
 	if (_hasScrollbar)
 		width -= 0.19;
 
-	_font.getFont().split(_contents, width, _contentLines);
+	_font.getFont().split(_contents, _contentLines, width);
 
 	updateScroll();
 }
@@ -683,7 +683,7 @@ void WidgetEditBox::updateContents() {
 void WidgetEditBox::updateScroll() {
 	std::vector<WidgetLabel *>::iterator line = _lines.begin();
 	for (uint i = _startLine; i < _contentLines.size() && line != _lines.end(); i++, ++line) {
-		(*line)->setText(Common::UString(_contentLines[i].first, _contentLines[i].second));
+		(*line)->setText(_contentLines[i]);
 
 		if ((_mode == kModeSelectable) && (i == _selectedLine))
 			(*line)->setColor(1.0, 1.0, 0.0, 1.0);
@@ -754,6 +754,9 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFFStruct &s, Widget *p) {
 		uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
 		if (strRef != 0xFFFFFFFF)
 			text = TalkMan.getString(strRef);
+
+		if (text.empty())
+			text = " ";
 	}
 }
 

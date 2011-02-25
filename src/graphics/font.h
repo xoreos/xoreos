@@ -21,34 +21,37 @@
 
 namespace Graphics {
 
-typedef std::pair<Common::UString::iterator, Common::UString::iterator> LineDefinition;
-
 /** An abstract font. */
 class Font {
 public:
 	Font();
 	virtual ~Font();
 
-	/** Return the base height of a character. */
-	virtual float getHeight() const = 0;
+	/** Return the width of a character. */
+	virtual float getWidth (uint32 c) const = 0;
+	/** Return the height of a character. */
+	virtual float getHeight()         const = 0;
+
+	/** Return the size of space between lines. */
+	virtual float getLineSpacing() const;
 
 	/** Return the width this string would take. */
-	virtual float getWidth(const Common::UString &text) const = 0;
+	float getWidth (const Common::UString &text) const;
 	/** Return the height this string would take. */
-	virtual float getHeight(const Common::UString &text) const = 0;
+	float getHeight(const Common::UString &text) const;
 
-	/** Draw this string. */
-	virtual void draw(const Common::UString &text, float align = 0.0) const = 0;
-	/** Draw this string in this color. */
-	virtual void draw(const Common::UString &text, float r, float g, float b, float a,
-	                  float align = 0.0) const;
+	/** Draw this character. */
+	virtual void draw(uint32 c) const = 0;
 
-	float getLines(const Common::UString &line, std::vector<LineDefinition> &lines,
-	               std::vector<float> &lengths) const;
+	void draw(const Common::UString &text, float align = 0.0) const;
+	void draw(const Common::UString &text, float r, float g, float b, float a,
+	          float align = 0.0) const;
 
-	/** Split a long line, on word boundaries if possible. */
-	float split(const Common::UString &line, float maxWidth,
-	            std::vector<LineDefinition> &lines) const;
+	float split(const Common::UString &line, std::vector<Common::UString> &lines,
+	            float maxWidth = 0.0) const;
+
+private:
+	float getLineWidth(const Common::UString &text) const;
 };
 
 } // End of namespace Graphics

@@ -13,6 +13,7 @@
  */
 
 #include "common/util.h"
+#include "common/maths.h"
 
 #include "graphics/types.h"
 #include "graphics/font.h"
@@ -25,6 +26,27 @@ Font::Font() {
 Font::~Font() {
 }
 
+float Font::getLineSpacing() const {
+	return 0.0;
+}
+
+float Font::getWidth(const Common::UString &text) const {
+	std::vector<Common::UString> lines;
+
+	return split(text, lines);
+}
+
+float Font::getHeight(const Common::UString &text) const {
+	std::vector<Common::UString> lines;
+
+	split(text, lines);
+
+	if (lines.empty())
+		return 0.0;
+
+	return (lines.size() * getHeight()) + ((lines.size() - 1) * getLineSpacing());
+}
+
 void Font::draw(const Common::UString &text, float r, float g, float b, float a,
                 float align) const {
 
@@ -33,47 +55,42 @@ void Font::draw(const Common::UString &text, float r, float g, float b, float a,
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 }
 
-float Font::getLines(const Common::UString &line, std::vector<LineDefinition> &lines,
-                     std::vector<float> &lengths) const {
+void Font::draw(const Common::UString &text, float align) const {
+	std::vector<Common::UString> lines;
+	float maxLength = split(text, lines);
 
-	Common::UString::iterator lineStart = line.begin();
+	// Move position to the top
+	glTranslatef(0.0, (((lines.size() - 1) * (getHeight() + getLineSpacing())) * 100.0), 0.0);
 
-	float length = 0.0;
+	// Draw lines
+	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l) {
+		// Save the current position
+		glPushMatrix();
 
-	for (Common::UString::iterator p = line.begin(); p != line.end(); ++p) {
-		if (*p == '\n') {
-			Common::UString::iterator start = lineStart;
-			Common::UString::iterator end   = p;
+		// Align
+		glTranslatef(roundf((maxLength - getLineWidth(*l)) * align * 100.0), 0.0, 0.0);
 
-			while ((end   != lineStart) && Common::UString::isSpace(*--end));
-			while ((start != end      ) && Common::UString::isSpace(*start))
-				start++;
+		// Draw line
+		for (Common::UString::iterator s = l->begin(); s != l->end(); ++s)
+			draw(*s);
 
-			lines.push_back(std::make_pair(start, ++end));
-			lengths.push_back(getWidth(Common::UString(lines.back().first, lines.back().second)));
+		// Restore position to the start of the line
+		glPopMatrix();
 
-			lineStart = p;
-			lineStart++;
-
-			length = MAX(length, lengths.back());
-		}
+		// Move to the next line
+		glTranslatef(0.0, -((getHeight() + getLineSpacing()) * 100.0), 0.0);
 	}
-
-	if (lineStart != line.end()) {
-		lines.push_back(std::make_pair(lineStart, line.end()));
-		lengths.push_back(getWidth(Common::UString(lines.back().first, lines.back().second)));
-
-		length = MAX(length, lengths.back());
-	}
-
-	return length;
 }
 
-float Font::split(const Common::UString &line, float maxWidth,
-                  std::vector<LineDefinition> &lines) const {
+float Font::split(const Common::UString &line, std::vector<Common::UString> &lines,
+                  float maxWidth) const {
 
 	if (line.empty())
+		// Nothing to do
 		return 0.0;
+
+	if (maxWidth <= 0.0)
+		maxWidth = FLT_MAX;
 
 	// Wrap the line into several lines of at max maxWidth pixel length, breaking
 	// the line at font-specific word boundaries.
@@ -96,12 +113,15 @@ float Font::split(const Common::UString &line, float maxWidth,
 				// Adding the word to the line would overflow
 
 				// Commit the line first
-				lines.push_back(std::make_pair(lineStart, lineEnd));
+				lines.push_back(Common::UString(lineStart, lineEnd));
 
 				length = MAX(length, lineLength);
 
 				lineStart = lineEnd;
 				lineLength = 0.0;
+
+				if (c == '\n')
+					lineStart++;
 			}
 
 			// Add the word to the line
@@ -119,9 +139,9 @@ float Font::split(const Common::UString &line, float maxWidth,
 
 			if (lineEnd != lineStart)
 				// Commit the line
-				lines.push_back(std::make_pair(lineStart, lineEnd));
+				lines.push_back(Common::UString(lineStart, lineEnd));
 			// Commit the word fragment in a new line
-			lines.push_back(std::make_pair(lineEnd, p));
+			lines.push_back(Common::UString(lineEnd, p));
 
 			length = MAX(length, MAX(lineLength, wordLength));
 
@@ -135,16 +155,15 @@ float Font::split(const Common::UString &line, float maxWidth,
 		if (c == '\n') {
 			// Mandatory line break
 
-			if (lineEnd != lineStart) {
-				// Commit the line
-				lines.push_back(std::make_pair(lineStart, lineEnd));
+			// Commit the line
+			lines.push_back(Common::UString(lineStart, lineEnd));
 
-				length = MAX(length, lineLength);
+			length = MAX(length, lineLength);
 
-				lineStart = lineEnd;
-				lineLength = 0;
-			}
+			lineStart = lineEnd;
+			lineLength = 0;
 
+			lineStart++;
 		}
 
 		// Add the character to the word
@@ -159,7 +178,7 @@ float Font::split(const Common::UString &line, float maxWidth,
 
 		if ((lineLength + wordLength) > maxWidth) {
 			// The dangling word would overflow the line, commit that first
-			lines.push_back(std::make_pair(lineStart, lineEnd));
+			lines.push_back(Common::UString(lineStart, lineEnd));
 
 			length = MAX(length, lineLength);
 
@@ -176,17 +195,25 @@ float Font::split(const Common::UString &line, float maxWidth,
 
 	if (lineEnd != lineStart) {
 		// We've got a dangling line, commit it
-		lines.push_back(std::make_pair(lineStart, lineEnd));
+		lines.push_back(Common::UString(lineStart, lineEnd));
 
 		length = MAX(length, lineLength);
 	}
 
-	// Trim spaces in front of the lines
-	for (std::vector<LineDefinition>::iterator l = lines.begin(); l != lines.end(); ++l)
-		while ((l->first != l->second) && Common::UString::isSpace(*l->first))
-			++l->first;
+	// Trim the lines
+	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l)
+		l->trim();
 
 	return length;
+}
+
+float Font::getLineWidth(const Common::UString &text) const {
+	float width = 0.0;
+
+	for (Common::UString::iterator c = text.begin(); c != text.end(); ++c)
+		width += getWidth(*c);
+
+	return width;
 }
 
 } // End of namespace Graphics

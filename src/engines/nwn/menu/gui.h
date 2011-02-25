@@ -212,7 +212,7 @@ private:
 	std::vector<WidgetLabel *> _lines;
 
 	Common::UString _contents;
-	std::vector<Graphics::LineDefinition> _contentLines;
+	std::vector<Common::UString> _contentLines;
 
 	uint _startLine;
 	uint _selectedLine;

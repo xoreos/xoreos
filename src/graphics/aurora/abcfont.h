@@ -36,12 +36,10 @@ public:
 	ABCFont(const Common::UString &name);
 	~ABCFont();
 
-	float getHeight() const;
+	float getWidth (uint32 c) const;
+	float getHeight()         const;
 
-	float getWidth(const Common::UString &text) const;
-	float getHeight(const Common::UString &text) const;
-
-	void draw(const Common::UString &text, float align = 0.0) const;
+	void draw(uint32 c) const;
 
 private:
 	/** A font character. */

@@ -40,47 +40,27 @@ float ABCFont::getHeight() const {
 	return 32.0 / 100.0;
 }
 
-float ABCFont::getWidth(const Common::UString &text) const {
-	float width = 0.0;
+float ABCFont::getWidth(uint32 c) const {
+	const Char &cC = findChar(c);
 
-	for (Common::UString::iterator s = text.begin(); s != text.end(); ++s) {
-		uint32 c = *s;
-		if (c == '\0')
-			break;
-
-		const Char &ch = findChar(c);
-
-		width += ch.spaceL + ch.width + ch.spaceR;
-	}
-
-	return width / 100.0;
+	return (cC.spaceL + cC.width + cC.spaceR) / 100.0;
 }
 
-float ABCFont::getHeight(const Common::UString &text) const {
-	// TODO: Look for new line characters
-	return 32.0 / 100.0;
-}
-
-void ABCFont::draw(const Common::UString &text, float align) const {
+void ABCFont::draw(uint32 c) const {
 	TextureMan.set(_texture);
 
-	for (Common::UString::iterator s = text.begin(); s != text.end(); ++s) {
-		uint32 c = *s;
-		if (c == '\0')
-			break;
+	const Char &cC = findChar(c);
 
-		const Char &ch = findChar(c);
-		glTranslatef(ch.spaceL, 0.0, 0.0);
+	glTranslatef(cC.spaceL, 0.0, 0.0);
 
-		glBegin(GL_QUADS);
-		for (int i = 0; i < 4; i++) {
-			glTexCoord2f(ch.tX[i], ch.tY[i]);
-			glVertex2f  (ch.vX[i], ch.vY[i]);
-		}
-		glEnd();
-
-		glTranslatef(ch.width + ch.spaceR, 0.0, 0.0);
+	glBegin(GL_QUADS);
+	for (int i = 0; i < 4; i++) {
+		glTexCoord2f(cC.tX[i], cC.tY[i]);
+		glVertex2f  (cC.vX[i], cC.vY[i]);
 	}
+	glEnd();
+
+	glTranslatef(cC.width + cC.spaceR, 0.0, 0.0);
 }
 
 void ABCFont::load(const Common::UString &name) {
