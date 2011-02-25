@@ -16,6 +16,8 @@
 #include "common/ustring.h"
 #include "common/stream.h"
 
+#include "graphics/graphics.h"
+
 #include "graphics/images/tga.h"
 
 #include "graphics/aurora/cube.h"
@@ -60,7 +62,8 @@ Cube::Cube(const Common::UString &texture) : _firstTime(true), _lastRotateTime(0
 }
 
 Cube::~Cube() {
-	destroy();
+	if (_list != 0)
+		GfxMan.abandon(_list, 1);
 
 	for (int i = 0; i < 6; i++)
 		delete _sides[i];

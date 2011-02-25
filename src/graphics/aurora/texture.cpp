@@ -69,7 +69,8 @@ Texture::Texture(ImageDecoder *image) {
 }
 
 Texture::~Texture() {
-	destroy();
+	if (_textureID != 0)
+		GfxMan.abandon(&_textureID, 1);
 
 	delete _txi;
 	delete _image;

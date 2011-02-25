@@ -42,7 +42,8 @@ Text::Text(const FontHandle &font, const Common::UString &str,
 }
 
 Text::~Text() {
-	destroy();
+	if (_list != 0)
+		GfxMan.abandon(_list, 1);
 }
 
 void Text::set(const Common::UString &str) {

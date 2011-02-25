@@ -63,6 +63,8 @@ GraphicsManager::GraphicsManager() {
 	_cursorState = kCursorStateStay;
 
 	_takeScreenshot = false;
+
+	_hasAbandoned = false;
 }
 
 GraphicsManager::~GraphicsManager() {
@@ -353,6 +355,31 @@ void GraphicsManager::unlockFrame() {
 		RequestMan.sync();
 }
 
+void GraphicsManager::abandon(TextureID *ids, uint32 count) {
+	if (count == 0)
+		return;
+
+	Common::StackLock lock(_abandonMutex);
+
+	_abandonTextures.reserve(_abandonTextures.size() + count);
+	while (count-- > 0)
+		_abandonTextures.push_back(*ids++);
+
+	_hasAbandoned = true;
+}
+
+void GraphicsManager::abandon(ListID ids, uint32 count) {
+	if (count == 0)
+		return;
+
+	Common::StackLock lock(_abandonMutex);
+
+	while (count-- > 0)
+		_abandonLists.push_back(ids++);
+
+	_hasAbandoned = true;
+}
+
 void GraphicsManager::setCursor(Cursor *cursor) {
 	Common::StackLock frameLock(_frameMutex);
 
@@ -416,6 +443,8 @@ void GraphicsManager::clearRenderQueue() {
 
 void GraphicsManager::renderScene() {
 	Common::enforceMainThread();
+
+	cleanupAbandoned();
 
 	Common::StackLock frameLock(_frameMutex);
 	Common::StackLock videosLock(_videos.mutex);
@@ -675,6 +704,24 @@ void GraphicsManager::handleCursorSwitch() {
 		SDL_ShowCursor(SDL_DISABLE);
 
 	_cursorState = kCursorStateStay;
+}
+
+void GraphicsManager::cleanupAbandoned() {
+	if (!_hasAbandoned)
+		return;
+
+	Common::StackLock lock(_abandonMutex);
+
+	if (!_abandonTextures.empty())
+		glDeleteTextures(_abandonTextures.size(), &_abandonTextures[0]);
+
+	for (std::list<ListID>::iterator l = _abandonLists.begin(); l != _abandonLists.end(); ++l)
+		glDeleteLists(*l, 1);
+
+	_abandonTextures.clear();
+	_abandonLists.clear();
+
+	_hasAbandoned = false;
 }
 
 void GraphicsManager::toggleFullScreen() {

@@ -27,6 +27,7 @@
 #include "graphics/aurora/textureman.h"
 
 #include "events/events.h"
+#include "events/requests.h"
 
 #include "engines/enginemanager.h"
 #include "engines/engineprobe.h"
@@ -156,6 +157,8 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target, Au
 void EngineManager::cleanup() const {
 	try {
 		unregisterModelLoader();
+
+		RequestMan.sync();
 
 		ResMan.clear();
 		CursorMan.clear();

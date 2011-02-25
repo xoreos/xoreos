@@ -115,6 +115,11 @@ public:
 	/** Unlock the frame mutex. */
 	void unlockFrame();
 
+	/** Abandon these textures. */
+	void abandon(TextureID *ids, uint32 count);
+	/** Abandon these lists. */
+	void abandon(ListID ids, uint32 count);
+
 
 	/** Render one complete frame of the scene. */
 	void renderScene();
@@ -161,6 +166,13 @@ private:
 
 	bool _takeScreenshot; ///< Should screenshot be taken?
 
+	bool _hasAbandoned; ///< Do we have abandoned textures/lists?
+
+	std::vector<TextureID> _abandonTextures; ///< Abandoned textures.
+	std::list<ListID>      _abandonLists;    ///< Abandoned lists.
+
+	Common::Mutex _abandonMutex; ///< A mutex protecting abandoned structures.
+
 	void initSize(int width, int height, bool fullscreen);
 	void setupScene();
 
@@ -187,6 +199,8 @@ private:
 	void rebuildContext();
 
 	void handleCursorSwitch();
+
+	void cleanupAbandoned();
 
 
 // For Queueables

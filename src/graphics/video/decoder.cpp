@@ -37,7 +37,8 @@ VideoDecoder::VideoDecoder() : Queueable<VideoDecoder>(GfxMan.getVideoQueue()),
 }
 
 VideoDecoder::~VideoDecoder() {
-	destroy();
+	if (_texture != 0)
+		GfxMan.abandon(&_texture, 1);
 
 	delete[] _data;
 

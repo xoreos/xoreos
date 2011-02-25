@@ -67,7 +67,8 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 Model::~Model() {
 	Renderable::removeFromQueue();
 
-	destroy();
+	if ((_list != 0) && !_nodes.empty())
+		GfxMan.abandon(_list,  _nodes.size());
 
 	for (NodeList::iterator node = _nodes.begin(); node != _nodes.end(); ++node)
 		delete *node;
