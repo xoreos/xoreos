@@ -36,14 +36,30 @@ private:
 	friend class Condition;
 };
 
+/** A semaphore . */
+class Semaphore {
+public:
+	Semaphore();
+	~Semaphore();
+
+	bool lock(uint32 timeout = 0);
+	bool lockTry();
+	void unlock();
+
+private:
+	SDL_sem *_semaphore;
+};
+
 /** Convenience class that locks a mutex on creation and unlocks it on destruction. */
 class StackLock {
 public:
 	StackLock(Mutex &mutex);
+	StackLock(Semaphore &semaphore);
 	~StackLock();
 
 private:
-	Mutex *_mutex;
+	Mutex     *_mutex;
+	Semaphore *_semaphore;
 };
 
 /** A condition. */

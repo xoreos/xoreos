@@ -39,12 +39,47 @@ void Mutex::unlock() {
 }
 
 
-StackLock::StackLock(Mutex &mutex) : _mutex(&mutex) {
+Semaphore::Semaphore() {
+	_semaphore = SDL_CreateSemaphore(1);
+}
+
+Semaphore::~Semaphore() {
+	SDL_DestroySemaphore(_semaphore);
+}
+
+bool Semaphore::lock(uint32 timeout) {
+	int ret;
+
+	if (timeout == 0)
+		ret = SDL_SemWait(_semaphore);
+	else
+		ret = SDL_SemWaitTimeout(_semaphore, timeout);
+
+	return ret == 0;
+}
+
+bool Semaphore::lockTry() {
+	return SDL_SemTryWait(_semaphore) == 0;
+}
+
+void Semaphore::unlock() {
+	SDL_SemPost(_semaphore);
+}
+
+
+StackLock::StackLock(Mutex &mutex) : _mutex(&mutex), _semaphore(0) {
 	_mutex->lock();
 }
 
+StackLock::StackLock(Semaphore &semaphore) : _mutex(0), _semaphore(&semaphore) {
+	_semaphore->lock();
+}
+
 StackLock::~StackLock() {
-	_mutex->unlock();
+	if (_mutex)
+		_mutex->unlock();
+	if (_semaphore)
+		_semaphore->unlock();
 }
 
 
