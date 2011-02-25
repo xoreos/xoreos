@@ -403,6 +403,10 @@ bool UString::endsWith(const UString &with) const {
 	return false;
 }
 
+bool UString::contains(const UString &what) const {
+	return _string.find(what._string) != std::string::npos;
+}
+
 void UString::truncate(const iterator &it) {
 	_string.resize(std::distance((std::string::const_iterator) _string.begin(), it.base()));
 	recalculateSize();

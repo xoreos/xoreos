@@ -104,6 +104,8 @@ public:
 	bool beginsWith(const UString &with) const;
 	bool endsWith(const UString &with) const;
 
+	bool contains(const UString &what) const;
+
 	void truncate(const iterator &it);
 	void trim();
 
