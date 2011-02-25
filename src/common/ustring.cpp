@@ -166,10 +166,6 @@ UString::UString(iterator sBegin, iterator sEnd) {
 		*this += *sBegin;
 }
 
-UString::UString(uint32 c) {
-	*this = c;
-}
-
 UString::~UString() {
 }
 
@@ -197,14 +193,6 @@ UString &UString::operator=(const std::string &str) {
 
 UString &UString::operator=(const char *str) {
 	*this = std::string(str);
-
-	return *this;
-}
-
-UString &UString::operator=(uint32 c) {
-	clear();
-
-	*this += c;
 
 	return *this;
 }

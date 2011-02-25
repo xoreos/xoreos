@@ -53,13 +53,11 @@ public:
 	UString(const char *str = "");
 	UString(const char *str, int n);
 	UString(iterator sBegin, iterator sEnd);
-	UString(uint32 c);
 	~UString();
 
 	UString &operator=(const UString &str);
 	UString &operator=(const std::string &str);
 	UString &operator=(const char *str);
-	UString &operator=(uint32 c);
 
 	bool operator==(const UString &str) const;
 	bool operator!=(const UString &str) const;
