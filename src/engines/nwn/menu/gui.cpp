@@ -420,6 +420,8 @@ WidgetLabel::~WidgetLabel() {
 WidgetSlider::WidgetSlider(const Common::UString &tag, const Common::UString &model) :
 	NWNModelWidget(tag, model), _position(0.0), _steps(0), _state(0) {
 
+	_width = getWidth();
+
 	changePosition(0.0);
 }
 
@@ -466,7 +468,7 @@ void WidgetSlider::changedValue(float x, float y) {
 	float curX, curY, curZ;
 	getPosition(curX, curY, curZ);
 
-	float pX    = CLIP(x - curX, 0.0f, getWidth()) / getWidth();
+	float pX    = CLIP(x - curX, 0.0f, _width) / _width;
 	int   state = roundf(pX * _steps);
 
 	if (state == _state)
@@ -486,9 +488,9 @@ void WidgetSlider::changedValue(float x, float y) {
 }
 
 void WidgetSlider::changePosition(float value) {
-	value -= _model->getNodeWidth("thumb") / 2.0;
+	value = (value * _width) - (_model->getNodeWidth("thumb") / 2.0);
 
-	_model->moveNode("thumb", - _position + value, 0.0, 0.0);
+	_model->moveNode("thumb", -_position + value, 0.0, 0.0);
 
 	_position = value;
 }
@@ -512,7 +514,7 @@ WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &
 	if (_hasScrollbar) {
 		WidgetButton *down = new WidgetButton(tag + "#Down", "pb_scrl_down");
 
-		down->setPosition(maxX, maxY - 0.10, 0.0);
+		down->setPosition(maxX, maxY - 10, 0.0);
 		addSub(*down);
 
 		WidgetButton *up = new WidgetButton(tag + "#Up", "pb_scrl_up");
@@ -525,7 +527,7 @@ WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &
 	_font = FontMan.get(font);
 
 	// (Height of the model - Border) / (FontHeight + Line spacing)
-	int lineCount = (getHeight() - 0.04) / (_font.getFont().getHeight() + 0.01);
+	int lineCount = (getHeight() - 4) / (_font.getFont().getHeight() + 1);
 
 	_lines.resize(lineCount);
 	for (int i = 0; i < lineCount; i++) {
@@ -533,8 +535,8 @@ WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &
 
 		_lines[i] = new WidgetLabel(tag + "#" + line, font, "");
 
-		float lX = 0.03 + _font.getFont().getWidth(" ");
-		float lY = getHeight() - 0.02 - (i + 1) * (_font.getFont().getHeight() + 0.01);
+		float lX = 3 + _font.getFont().getWidth(" ");
+		float lY = getHeight() - 2 - (i + 1) * (_font.getFont().getHeight() + 1);
 
 		_lines[i]->setPosition(lX, lY, 0.0);
 
@@ -598,13 +600,13 @@ void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
 	getPosition(wX, wY, wZ);
 
 	// Pixel position
-	y = getHeight() - (y - wY) - 0.02;
+	y = getHeight() - (y - wY) - 2;
 
-	if ((y < 0.0) || (y > (_lines.size() * (_font.getFont().getHeight() + 0.01))))
+	if ((y < 0.0) || (y > (_lines.size() * (_font.getFont().getHeight() + 1))))
 		// Outside the contents area
 		return;
 
-	uint line = _startLine + (y / (_font.getFont().getHeight() + 0.01));
+	uint line = _startLine + (y / (_font.getFont().getHeight() + 1));
 	if (line >= _contentLines.size() || (line == _selectedLine))
 		// No line or no change
 		return;
@@ -671,9 +673,9 @@ Common::UString WidgetEditBox::getSelectedLine() const {
 void WidgetEditBox::updateContents() {
 	_contentLines.clear();
 
-	float width = getWidth() - 0.06 - _font.getFont().getWidth(" ");
+	float width = getWidth() - 6 - _font.getFont().getWidth(" ");
 	if (_hasScrollbar)
-		width -= 0.19;
+		width -= 19;
 
 	_font.getFont().split(_contents, _contentLines, width);
 
@@ -802,9 +804,9 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 		float pX, pY, pZ;
 		parent->getPosition(pX, pY, pZ);
 
-		float x = ctx.strct->getDouble("Obj_X") + pX;
-		float y = ctx.strct->getDouble("Obj_Y") + pY;
-		float z = ctx.strct->getDouble("Obj_Z") + pZ;
+		float x = ctx.strct->getDouble("Obj_X") * 100.0 + pX;
+		float y = ctx.strct->getDouble("Obj_Y") * 100.0 + pY;
+		float z = ctx.strct->getDouble("Obj_Z") * 100.0 + pZ;
 
 		ctx.widget->setPosition(x, y, z);
 	} else {
@@ -821,9 +823,9 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 		float alignH = caption.getDouble("AurString_AlignH");
 		float alignV = caption.getDouble("AurString_AlignV");
 
-		float labelX = ctx.strct->getDouble("Obj_Label_X");
-		float labelY = ctx.strct->getDouble("Obj_Label_Y");
-		float labelZ = ctx.strct->getDouble("Obj_Label_Z");
+		float labelX = ctx.strct->getDouble("Obj_Label_X") * 100.0;
+		float labelY = ctx.strct->getDouble("Obj_Label_Y") * 100.0;
+		float labelZ = ctx.strct->getDouble("Obj_Label_Z") * 100.0;
 
 		if (ctx.type != kWidgetTypeLabel) {
 			labelX += ctx.widget->getWidth () * alignV;

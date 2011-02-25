@@ -37,8 +37,8 @@ FPS::~FPS() {
 }
 
 void FPS::init() {
-	float posX = (-(GfxMan.getScreenWidth()  / 2.0)) / 100.0;
-	float posY = ( (GfxMan.getScreenHeight() / 2.0)) / 100.0  - getHeight();
+	float posX = -(GfxMan.getScreenWidth()  / 2.0);
+	float posY =  (GfxMan.getScreenHeight() / 2.0) - getHeight();
 
 	setPosition(posX, posY);
 }
@@ -58,8 +58,8 @@ void FPS::render() {
 }
 
 void FPS::changedResolution(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	float posX = (-(newWidth  / 2.0)) / 100.0;
-	float posY = ( (newHeight / 2.0)) / 100.0  - getHeight();
+	float posX = -(newWidth  / 2.0);
+	float posY =  (newHeight / 2.0) - getHeight();
 
 	setPosition_internal(posX, posY);
 }

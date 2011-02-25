@@ -37,13 +37,13 @@ ABCFont::~ABCFont() {
 }
 
 float ABCFont::getHeight() const {
-	return 32.0 / 100.0;
+	return 32.0;
 }
 
 float ABCFont::getWidth(uint32 c) const {
 	const Char &cC = findChar(c);
 
-	return (cC.spaceL + cC.width + cC.spaceR) / 100.0;
+	return cC.spaceL + cC.width + cC.spaceR;
 }
 
 void ABCFont::draw(uint32 c) const {

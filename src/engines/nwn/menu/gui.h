@@ -164,6 +164,8 @@ public:
 	void mouseDown(uint8 state, float x, float y);
 
 private:
+	float _width;
+
 	float _position;
 
 	int _steps;

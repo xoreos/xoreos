@@ -101,6 +101,11 @@ Model_NWN_Binary::ParserContext::~ParserContext() {
 
 
 Model_NWN_Binary::Model_NWN_Binary(Common::SeekableReadStream &mdl, ModelType type) : Model(type) {
+
+	if (_type == kModelTypeGUIFront)
+		// NWN GUI objects use 0.01 units / pixel
+		_modelScale[0] = _modelScale[1] = _modelScale[2] = 100.0;
+
 	load(mdl);
 	setState();
 

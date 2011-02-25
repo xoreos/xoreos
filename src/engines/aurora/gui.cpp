@@ -419,13 +419,13 @@ void GUI::mouseUp(const Events::Event &event) {
 float GUI::toGUIX(int x) {
 	float sW = GfxMan.getScreenWidth();
 
-	return (x - (sW / 2.0)) / 100.0;
+	return (x - (sW / 2.0));
 }
 
 float GUI::toGUIY(int y) {
 	float sH = GfxMan.getScreenHeight();
 
-	return ((sH - y) - (sH / 2.0)) / 100.0;
+	return ((sH - y) - (sH / 2.0));
 }
 
 void GUI::mouseMove(Widget *widget, const Events::Event &event) {

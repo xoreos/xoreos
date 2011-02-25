@@ -49,6 +49,10 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 	_type(type), _superModel(0), _class(kClassOther), _scale(1.0), _fade(false), _fadeStart(0),
 	_fadeValue(1.0), _fadeStep(0.0), _currentState(0), _textureCount(0), _list(0) {
 
+	_modelScale[0] = 1.0;
+	_modelScale[1] = 1.0;
+	_modelScale[2] = 1.0;
+
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
 	_position   [2] = 0.0;
@@ -228,9 +232,9 @@ void Model::recalculateNodeBound(Node &node, Common::TransformationMatrix &matri
 }
 
 void Model::setPosition(float x, float y, float z) {
-	_position[0] = x;
-	_position[1] = y;
-	_position[2] = z;
+	_position[0] = x / _modelScale[0];
+	_position[1] = y / _modelScale[1];
+	_position[2] = z / _modelScale[2];
 }
 
 void Model::setOrientation(float x, float y, float z) {
@@ -264,9 +268,9 @@ bool Model::getNodePosition(const Common::UString &node, float &x, float &y, flo
 	if ((n == _currentState->nodeMap.end()) || !n->second)
 		return false;
 
-	x = n->second->realPosition[0];
-	y = n->second->realPosition[1];
-	z = n->second->realPosition[2];
+	x = n->second->realPosition[0] * _modelScale[0];
+	y = n->second->realPosition[1] * _modelScale[1];
+	z = n->second->realPosition[2] * _modelScale[2];
 
 	return true;
 }
@@ -279,9 +283,9 @@ void Model::moveNode(const Common::UString &node, float x, float y, float z) {
 	if ((n == _currentState->nodeMap.end()) || !n->second)
 		return;
 
-	n->second->position[0] += x;
-	n->second->position[1] += y;
-	n->second->position[2] += x;
+	n->second->position[0] += x / _modelScale[0];
+	n->second->position[1] += y / _modelScale[1];
+	n->second->position[2] += x / _modelScale[2];
 
 	createModelBound();
 }
@@ -294,7 +298,7 @@ float Model::getNodeWidth(const Common::UString &node) const {
 	if ((n == _currentState->nodeMap.end()) || !n->second)
 		return 0.0;
 
-	return n->second->boundBox.getWidth();
+	return n->second->boundBox.getWidth() * _modelScale[0];
 }
 
 float Model::getNodeHeight(const Common::UString &node) const {
@@ -305,19 +309,19 @@ float Model::getNodeHeight(const Common::UString &node) const {
 	if ((n == _currentState->nodeMap.end()) || !n->second)
 		return 0.0;
 
-	return n->second->boundBox.getHeight();
+	return n->second->boundBox.getHeight() * _modelScale[1];
 }
 
 float Model::getWidth() const {
-	return _boundBox.getWidth();
+	return _boundBox.getWidth() * _modelScale[0];
 }
 
 float Model::getHeight() const {
-	return _boundBox.getHeight();
+	return _boundBox.getHeight() * _modelScale[1];
 }
 
 float Model::getDepth() const {
-	return _boundBox.getDepth();
+	return _boundBox.getDepth() * _modelScale[2];
 }
 
 void Model::transformBoundBox(Common::TransformationMatrix &world,
@@ -437,9 +441,7 @@ void Model::render() {
 		// Roughly head position. TODO: This doesn't belong here :P
 		glTranslatef(0.0, -1.5, 0.0);
 
-	if (_type == kModelTypeGUIFront)
-		// Aurora GUI objects use 0.01 units / pixel
-		glScalef(100, 100, 100);
+	glScalef(_modelScale[0], _modelScale[1], _modelScale[2]);
 
 	// Apply rotation around the world center
 	glRotatef(_orientation[0], 1.0, 0.0, 0.0);

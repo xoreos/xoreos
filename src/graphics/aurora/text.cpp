@@ -125,8 +125,8 @@ void Text::setPosition(float x, float y) {
 }
 
 void Text::setPosition_internal(float x, float y) {
-	_x = roundf(x * 100.0) / 100.0;
-	_y = roundf(y * 100.0) / 100.0;
+	_x = roundf(x);
+	_y = roundf(y);
 }
 
 void Text::show() {
@@ -153,7 +153,7 @@ void Text::newFrame() {
 }
 
 void Text::render() {
-	glTranslatef(_x * 100.0, _y * 100.0, 0.0);
+	glTranslatef(_x, _y, 0.0);
 
 	if (_list > 0)
 		glCallList(_list);

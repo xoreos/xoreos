@@ -42,15 +42,15 @@ float TextureFont::getWidth(uint32 c) const {
 	if (c >= _chars.size())
 		return 0.0;
 
-	return (_chars[c].width + _spaceR) / 100.0;
+	return _chars[c].width + _spaceR;
 }
 
 float TextureFont::getHeight() const {
-	return _height / 100.0;
+	return _height;
 }
 
 float TextureFont::getLineSpacing() const {
-	return _spaceB / 100.0;
+	return _spaceB;
 }
 
 void TextureFont::draw(uint32 c) const {

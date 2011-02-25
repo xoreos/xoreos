@@ -34,12 +34,12 @@ MainMenu::MainMenu(bool xp1, bool xp2, bool xp3) : _xp1(0), _xp2(0) {
 
 	if (xp1) {
 		_xp1 = loadModelGUI("ctl_xp1_text");
-		_xp1->setPosition(1.24, 0.00, 0.50);
+		_xp1->setPosition(124.0, 0.00, 50.0);
 	}
 
 	if (xp2) {
 		_xp2 = loadModelGUI("ctl_xp2_text");
-		_xp2->setPosition(1.24, -1.47, 0.50);
+		_xp2->setPosition(124.0, -147.0, 50.0);
 	}
 
 	getWidget("LoadButton" , true)->setDisabled(true);

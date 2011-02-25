@@ -47,6 +47,10 @@ Model_NWN_ASCII::Model_NWN_ASCII(Common::SeekableReadStream &mdl, ModelType type
 	_tokenize->addChunkEnd('\n');
 	_tokenize->addIgnore('\r');
 
+	if (_type == kModelTypeGUIFront)
+		// NWN GUI objects use 0.01 units / pixel
+		_modelScale[0] = _modelScale[1] = _modelScale[2] = 100.0;
+
 	load(mdl);
 	setState();
 

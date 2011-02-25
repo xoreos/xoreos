@@ -218,6 +218,8 @@ protected:
 
 	Common::UString _name;
 
+	float _modelScale[3];
+
 	Model *_superModel;
 	Classification _class;
 	float _scale;

@@ -60,7 +60,7 @@ void Font::draw(const Common::UString &text, float align) const {
 	float maxLength = split(text, lines);
 
 	// Move position to the top
-	glTranslatef(0.0, (((lines.size() - 1) * (getHeight() + getLineSpacing())) * 100.0), 0.0);
+	glTranslatef(0.0, (lines.size() - 1) * (getHeight() + getLineSpacing()), 0.0);
 
 	// Draw lines
 	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l) {
@@ -68,7 +68,7 @@ void Font::draw(const Common::UString &text, float align) const {
 		glPushMatrix();
 
 		// Align
-		glTranslatef(roundf((maxLength - getLineWidth(*l)) * align * 100.0), 0.0, 0.0);
+		glTranslatef(roundf((maxLength - getLineWidth(*l)) * align), 0.0, 0.0);
 
 		// Draw line
 		for (Common::UString::iterator s = l->begin(); s != l->end(); ++s)
@@ -78,7 +78,7 @@ void Font::draw(const Common::UString &text, float align) const {
 		glPopMatrix();
 
 		// Move to the next line
-		glTranslatef(0.0, -((getHeight() + getLineSpacing()) * 100.0), 0.0);
+		glTranslatef(0.0, -(getHeight() + getLineSpacing()), 0.0);
 	}
 }
 
