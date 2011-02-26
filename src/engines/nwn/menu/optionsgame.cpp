@@ -110,8 +110,6 @@ void OptionsGameMenu::callbackActive(Widget &widget) {
 }
 
 void OptionsGameMenu::updateDifficulty(int difficulty) {
-	GfxMan.lockFrame();
-
 	WidgetLabel   &diffLabel = *getLabel  ("DifficultyLabel", true);
 	WidgetEditBox &diffEdit  = *getEditBox("DiffEdit"       , true);
 
@@ -125,8 +123,6 @@ void OptionsGameMenu::updateDifficulty(int difficulty) {
 		diffLabel.setText(TalkMan.getString(66790));
 	else if (difficulty == 3)
 		diffLabel.setText(TalkMan.getString(66792));
-
-	GfxMan.unlockFrame();
 }
 
 void OptionsGameMenu::adoptChanges() {
