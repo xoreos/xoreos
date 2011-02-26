@@ -51,6 +51,7 @@ bool Scrollbar::isIn(float x, float y) const {
 void Scrollbar::setLength(float length) {
 	GfxMan.lockFrame();
 
+	// Need at least the space for the 2 caps
 	_length = MAX(length, 4.0f);
 
 	if      (_type == kTypeVertical)
@@ -111,11 +112,13 @@ void Scrollbar::render() {
 }
 
 void Scrollbar::createH() {
+	// Number of 16 pixel wide quads
 	int n = ceilf(_length / 16.0);
 
 	float x = 0.0;
 	float y = 0.0;
 
+	// Quads + caps
 	_quads.resize(n + 2);
 
 	// Left cap
@@ -165,11 +168,13 @@ void Scrollbar::createH() {
 }
 
 void Scrollbar::createV() {
+	// Number of 16 pixel wide quads
 	int n = ceilf(_length / 16.0);
 
 	float x = 0.0;
 	float y = 0.0;
 
+	// Quads + caps
 	_quads.resize(n + 2);
 
 	// Bottom cap

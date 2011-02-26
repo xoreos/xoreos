@@ -84,12 +84,23 @@ public:
 
 	void setPosition(float x, float y, float z);
 
+	/** Set the length of the scrollbar, as a fraction of the range. */
+	void setLength(float length);
+
+	/** Get the current state, as a fraction of the range. */
+	float getState() const;
+	/** Set the current state, as a fraction of the range. */
+	void setState(float state);
+
 	float getWidth () const;
 	float getHeight() const;
 
 private:
 	Scrollbar::Type _type;
+
 	float _range;
+	float _length;
+	float _state;
 
 	Scrollbar _scrollbar;
 };
@@ -239,6 +250,8 @@ private:
 
 	Mode _mode;
 
+	WidgetScrollbar *_scrollbar;
+
 	std::vector<WidgetCheckButton *> _buttons;
 
 	std::vector<WidgetLabel *>   _lines;
@@ -260,6 +273,9 @@ private:
 	void scrollDown();
 
 	void updateScroll();
+
+	void updateScrollbarLength();
+	void updateScrollbarPosition();
 };
 
 class WidgetButton : public NWNModelWidget {

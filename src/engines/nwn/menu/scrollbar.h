@@ -28,8 +28,8 @@ namespace NWN {
 class Scrollbar : public Graphics::GUIFrontElement {
 public:
 	enum Type {
-		kTypeVertical,
-		kTypeHorizontal
+		kTypeVertical,  ///< Vertial scrollbar.
+		kTypeHorizontal ///< Horizontal scrollbar.
 	};
 
 	Scrollbar(Type type);
@@ -41,6 +41,7 @@ public:
 	/** Is the point within the scrollbar? */
 	bool isIn(float x, float y) const;
 
+	/** Set the scrollbar length */
 	void setLength(float length);
 
 	void show(); ///< The scrollbar should be rendered.
@@ -48,8 +49,8 @@ public:
 
 	bool isVisible(); ///< Is the scrollbar visible?
 
-	float getWidth () const;
-	float getHeight() const;
+	float getWidth () const; ///< Get the scrollbar's width.
+	float getHeight() const; ///< Get the scrollbar's height.
 
 	// Renderable
 	void newFrame();
@@ -73,8 +74,8 @@ private:
 
 	Graphics::Aurora::TextureHandle _texture;
 
-	void createV();
-	void createH();
+	void createV(); ///< Create a vertical scrollbar.
+	void createH(); ///< Create a horizontal scrollbar.
 };
 
 } // End of namespace NWN

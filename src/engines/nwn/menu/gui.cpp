@@ -153,10 +153,11 @@ void NWNTextWidget::setDisabled(bool disabled) {
 }
 
 
-WidgetScrollbar::WidgetScrollbar(const Common::UString &tag, Scrollbar::Type type,
-		float range) : Widget(tag), _type(type), _range(range), _scrollbar(type) {
+WidgetScrollbar::WidgetScrollbar(const Common::UString &tag,
+		Scrollbar::Type type, float range) :
+		Widget(tag), _type(type), _range(range), _state(0.0), _scrollbar(type) {
 
-	_scrollbar.setLength(_range);
+	setLength(1.0);
 }
 
 WidgetScrollbar::~WidgetScrollbar() {
@@ -183,7 +184,38 @@ void WidgetScrollbar::hide() {
 void WidgetScrollbar::setPosition(float x, float y, float z) {
 	Widget::setPosition(x, y, z);
 
+	setState(_state);
+}
+
+void WidgetScrollbar::setLength(float percent) {
+	// Calculate the actual length, at 2 pixel intervals
+	_length = ceilf(MAX(_range * CLIP(percent, 0.0f, 1.0f), 10.0f));
+	if ((((int) _length) % 2) == 1)
+		_length += 1.0;
+
+	_scrollbar.setLength(_length);
+
+	setState(_state);
+}
+
+float WidgetScrollbar::getState() const {
+	return _state;
+}
+
+void WidgetScrollbar::setState(float state) {
+	_state = CLIP(state, 0.0f, 1.0f);
+
+	float span = _range - _length; // Space to scroll in
+	float pos  = _state * span;    // Offset within that space
+
+	float x, y, z;
 	getPosition(x, y, z);
+
+	if      (_type == Scrollbar::kTypeVertical)
+		y += span - pos;
+	else if (_type == Scrollbar::kTypeHorizontal)
+		x += pos;
+
 	_scrollbar.setPosition(x, y, z);
 }
 
@@ -569,7 +601,7 @@ void WidgetSlider::changePosition(float value) {
 
 WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &model,
                              const Common::UString &font) : NWNModelWidget(tag, model),
-	_mode(kModeStatic), _startLine(0), _selectedLine(0xFFFFFFFF),
+	_mode(kModeStatic), _scrollbar(0), _startLine(0), _selectedLine(0xFFFFFFFF),
 	_r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
 	_font = FontMan.get(font);
@@ -600,7 +632,6 @@ void WidgetEditBox::createScrollbar() {
 	float maxX, maxY, maxZ;
 	_model->getNodePosition("scrollmax", maxX, maxY, maxZ);
 
-	// TODO: This needs an actual scrollbar too
 	WidgetButton *down = new WidgetButton(getTag() + "#Down", "pb_scrl_down", "gui_scroll");
 
 	down->setPosition(maxX, maxY - 10, 0.0);
@@ -613,14 +644,15 @@ void WidgetEditBox::createScrollbar() {
 
 	float scrollRange = minY - (maxY - 10) - up->getHeight() - 1;
 
-	WidgetScrollbar *bar = new WidgetScrollbar(getTag() + "#Bar",
-			Scrollbar::kTypeVertical, scrollRange);
+	_scrollbar = new WidgetScrollbar(getTag() + "#Bar", Scrollbar::kTypeVertical, scrollRange);
 
-	float scrollX = maxX + (up->getWidth() - bar->getWidth()) / 2;
+	// Center the bar within the scrollbar area
+	float scrollX = maxX + (up->getWidth() - _scrollbar->getWidth()) / 2;
+	// Move it to the base position
 	float scrollY = maxY - 10 + up->getHeight();
 
-	bar->setPosition(scrollX, scrollY, 0.0);
-	addSub(*bar);
+	_scrollbar->setPosition(scrollX, scrollY, 0.0);
+	addSub(*_scrollbar);
 }
 
 void WidgetEditBox::createButtons() {
@@ -639,6 +671,7 @@ void WidgetEditBox::createButtons() {
 	float listX, listY, listZ;
 	_model->getNodePosition("listitem", listX, listY, listZ);
 
+	// Get the height of the button
 	float buttonHeight = 0.0;
 	{
 		WidgetCheckButton *btn = new WidgetCheckButton("", buttonResRef);
@@ -646,8 +679,10 @@ void WidgetEditBox::createButtons() {
 		delete btn;
 	}
 
+	//          model height / (button height + border)
 	int count = getHeight() / (buttonHeight + 2);
 
+	// Create the buttons
 	_buttons.resize(count);
 	for (int i = 0; i < count; i++) {
 		Common::UString button = Common::UString::sprintf("#Button%03d", i);
@@ -657,10 +692,12 @@ void WidgetEditBox::createButtons() {
 		addSub(*_buttons[i]);
 	}
 
+	// Make the buttons into a group
 	for (int i = 0; i < count; i++)
 		for (int j = 0; j < count; j++)
 			_buttons[i]->addGroupMember(*_buttons[j]);
 
+	// Create the text lines on the buttons
 	_lines.resize(count);
 	for (int i = 0; i < count; i++) {
 		Common::UString line = Common::UString::sprintf("Line%03d", i);
@@ -694,6 +731,7 @@ void WidgetEditBox::createLines() {
 	// Height of the model - border, - (height of a line + line spacing)
 	float lineY = getHeight() - 2 - (_font.getFont().getHeight() + 1);
 
+	// Create lines
 	_lines.resize(lineCount);
 	for (int i = 0; i < lineCount; i++) {
 		Common::UString line = Common::UString::sprintf("Line%03d", i);
@@ -736,6 +774,7 @@ void WidgetEditBox::scrollUp() {
 
 	_startLine--;
 	updateScroll();
+	updateScrollbarPosition();
 	return;
 }
 
@@ -746,6 +785,7 @@ void WidgetEditBox::scrollDown() {
 
 	_startLine++;
 	updateScroll();
+	updateScrollbarPosition();
 	return;
 }
 
@@ -836,30 +876,57 @@ void WidgetEditBox::setColor(float r, float g, float b, float a) {
 }
 
 void WidgetEditBox::clear() {
+	// Reset scroll/selected lines
 	_startLine    = 0;
 	_selectedLine = 0xFFFFFFFF;
 
+	// Clear contents
 	_contents.clear();
 
+	// Clear the lines
 	for (std::vector<WidgetLabel *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
 		(*it)->setText("");
 
+	// Hide the buttons
 	for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b) {
 		(*b)->setInvisible(true);
 		(*b)->hide();
 	}
+
+	// Reset the scrollbar
+	if (_scrollbar) {
+		_scrollbar->setLength(1.0);
+		_scrollbar->setState(0.0);
+	}
 }
 
 void WidgetEditBox::set(const Common::UString &str) {
-	clear();
+	// Reset scroll/selected lines
+	_startLine    = 0;
+	_selectedLine = 0xFFFFFFFF;
+
+	// Clear contents
+	_contents.clear();
+
+	// Clear the lines
+	for (std::vector<WidgetLabel *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
+		(*it)->setText("");
+
+	// Hide the buttons
+	for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b) {
+		(*b)->setInvisible(true);
+		(*b)->hide();
+	}
 
 	// Width of the model - borders - indenting
 	float width = getWidth() - 6 - 4;
 	if (_hasScrollbar)
 		width -= 19;
 
+	// Split the text into lines
 	_font.getFont().split(str, _contents, width);
 
+	// Show the appropriate number of buttons
 	for (uint i = 0; i < _contents.size() && i < _buttons.size(); i++) {
 		_buttons[i]->setInvisible(false);
 		if (isVisible())
@@ -867,10 +934,13 @@ void WidgetEditBox::set(const Common::UString &str) {
 	}
 
 	updateScroll();
+	updateScrollbarPosition();
+	updateScrollbarLength();
 }
 
 void WidgetEditBox::addLine(const Common::UString &line) {
 	if (_hasButtons) {
+		// If we have buttons, split a too long line over its button
 		std::vector<Common::UString> lines;
 		_font.getFont().split(line, lines, _buttons[0]->getWidth());
 
@@ -889,6 +959,7 @@ void WidgetEditBox::addLine(const Common::UString &line) {
 	} else
 		_contents.push_back(line);
 
+	// Another another button if necessary
 	if (_contents.size() <= _buttons.size()) {
 		_buttons[_contents.size() - 1]->setInvisible(false);
 		if (isVisible())
@@ -896,6 +967,8 @@ void WidgetEditBox::addLine(const Common::UString &line) {
 	}
 
 	updateScroll();
+	updateScrollbarLength();
+	updateScrollbarPosition();
 }
 
 void WidgetEditBox::selectLine(int line) {
@@ -959,6 +1032,27 @@ void WidgetEditBox::updateScroll() {
 
 		(*line)->setText(_contents[i]);
 	}
+}
+
+void WidgetEditBox::updateScrollbarLength() {
+	if (!_scrollbar)
+		return;
+
+	if (!_contents.empty())
+		_scrollbar->setLength(((float) _lines.size()) / _contents.size());
+	else
+		_scrollbar->setLength(1.0);
+}
+
+void WidgetEditBox::updateScrollbarPosition() {
+	if (!_scrollbar)
+		return;
+
+	int max = _contents.size() - _lines.size();
+	if (max > 0)
+		_scrollbar->setState(((float) _startLine) / max);
+	else
+		_scrollbar->setState(0.0);
 }
 
 
