@@ -82,18 +82,23 @@ void NewModuleMenu::callbackActive(Widget &widget) {
 }
 
 void NewModuleMenu::selectedModule(WidgetEditBox &moduleList) {
-	Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
-	Common::UString modFile   = moduleList.getSelectedLine();
-
-	Aurora::ERFFile mod(moduleDir + "/" + modFile + ".mod", true);
-
-	Aurora::LocString locString = mod.getDescription();
-
 	Common::UString description;
-	if (locString.hasString(TalkMan.getMainLanguage()))
-		description = locString.getString(TalkMan.getMainLanguage());
-	else
-		description = locString.getFirstString();
+
+	try {
+		Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
+		Common::UString modFile   = moduleList.getSelectedLine();
+
+		Aurora::ERFFile mod(moduleDir + "/" + modFile + ".mod", true);
+
+		Aurora::LocString locString = mod.getDescription();
+
+		if (locString.hasString(TalkMan.getMainLanguage()))
+			description = locString.getString(TalkMan.getMainLanguage());
+		else
+			description = locString.getFirstString();
+	} catch (...) {
+		description.clear();
+	}
 
 	if (description.empty())
 		description = TalkMan.getString(67741);
