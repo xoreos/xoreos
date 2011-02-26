@@ -65,6 +65,9 @@ public:
 	 */
 	void load(Common::SeekableReadStream &tlk);
 
+	/** Return the language of the talk table. */
+	Language getLanguage() const;
+
 	/** Get an entry.
 	 *
 	 *  @param strRef a handle to a string (index).
@@ -73,6 +76,8 @@ public:
 	const Entry *getEntry(uint32 strRef) const;
 
 private:
+	Language _language;
+
 	EntryList _entryList;
 
 	void readEntryTable(Common::SeekableReadStream &tlk);
