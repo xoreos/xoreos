@@ -98,7 +98,7 @@ void Scrollbar::newFrame() {
 void Scrollbar::render() {
 	TextureMan.set(_texture);
 
-	glTranslatef(_x, _y, 0.0);
+	glTranslatef(roundf(_x), roundf(_y), 0.0);
 
 	glBegin(GL_QUADS);
 	for (std::vector<Quad>::const_iterator q = _quads.begin(); q != _quads.end(); ++q) {

@@ -153,6 +153,49 @@ void NWNTextWidget::setDisabled(bool disabled) {
 }
 
 
+WidgetScrollbar::WidgetScrollbar(const Common::UString &tag, Scrollbar::Type type,
+		float range) : Widget(tag), _type(type), _range(range), _scrollbar(type) {
+
+	_scrollbar.setLength(_range);
+}
+
+WidgetScrollbar::~WidgetScrollbar() {
+}
+
+void WidgetScrollbar::show() {
+	if (isVisible())
+		return;
+
+	if (!isInvisible())
+		_scrollbar.show();
+
+	Widget::show();
+}
+
+void WidgetScrollbar::hide() {
+	if (!isVisible())
+		return;
+
+	_scrollbar.hide();
+	Widget::hide();
+}
+
+void WidgetScrollbar::setPosition(float x, float y, float z) {
+	Widget::setPosition(x, y, z);
+
+	getPosition(x, y, z);
+	_scrollbar.setPosition(x, y, z);
+}
+
+float WidgetScrollbar::getWidth() const {
+	return _scrollbar.getWidth();
+}
+
+float WidgetScrollbar::getHeight() const {
+	return _scrollbar.getHeight();
+}
+
+
 WidgetFrame::WidgetFrame(const Common::UString &tag, const Common::UString &model) :
 	NWNModelWidget(tag, model) {
 
@@ -567,6 +610,17 @@ void WidgetEditBox::createScrollbar() {
 
 	up->setPosition(minX, minY, 0.0);
 	addSub(*up);
+
+	float scrollRange = minY - (maxY - 10) - up->getHeight() - 1;
+
+	WidgetScrollbar *bar = new WidgetScrollbar(getTag() + "#Bar",
+			Scrollbar::kTypeVertical, scrollRange);
+
+	float scrollX = maxX + (up->getWidth() - bar->getWidth()) / 2;
+	float scrollY = maxY - 10 + up->getHeight();
+
+	bar->setPosition(scrollX, scrollY, 0.0);
+	addSub(*bar);
 }
 
 void WidgetEditBox::createButtons() {

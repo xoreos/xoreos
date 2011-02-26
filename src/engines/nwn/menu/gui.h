@@ -24,6 +24,8 @@
 
 #include "engines/aurora/gui.h"
 
+#include "engines/nwn/menu/scrollbar.h"
+
 namespace Engines {
 
 namespace NWN {
@@ -70,6 +72,26 @@ protected:
 	float _g;
 	float _b;
 	float _a;
+};
+
+class WidgetScrollbar : public Widget {
+public:
+	WidgetScrollbar(const Common::UString &tag, Scrollbar::Type type, float range);
+	~WidgetScrollbar();
+
+	void show();
+	void hide();
+
+	void setPosition(float x, float y, float z);
+
+	float getWidth () const;
+	float getHeight() const;
+
+private:
+	Scrollbar::Type _type;
+	float _range;
+
+	Scrollbar _scrollbar;
 };
 
 class WidgetFrame : public NWNModelWidget {
