@@ -34,7 +34,7 @@ Text::Text(const FontHandle &font, const Common::UString &str, float align) :
 Text::Text(const FontHandle &font, const Common::UString &str,
 		float r, float g, float b, float a, float align) :
 	_font(font), _x(0.0), _y(0.0), _hasColor(true), _r(r), _g(g), _b(b), _a(a),
-	_align(align), _list(0) {
+	_align(align), _ready(false), _list(0) {
 
 	set(str);
 
@@ -47,6 +47,10 @@ Text::~Text() {
 }
 
 void Text::set(const Common::UString &str) {
+	_ready = false;
+	if (str.empty())
+		return;
+
 	_str = str;
 
 	const Font &font = _font.getFont();
@@ -104,6 +108,9 @@ void Text::newFrame() {
 }
 
 void Text::render() {
+	if (!_ready)
+		return;
+
 	glTranslatef(_x, _y, 0.0);
 
 	if (_list > 0)
@@ -121,6 +128,8 @@ void Text::doRebuild() {
 	else
 		font.draw(_str, _align);
 	glEndList();
+
+	_ready = true;
 }
 
 void Text::doDestroy() {

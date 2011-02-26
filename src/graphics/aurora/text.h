@@ -71,6 +71,8 @@ private:
 
 	float _align;
 
+	bool _ready;
+
 	Common::UString _str;
 
 	ListID _list;
