@@ -366,6 +366,10 @@ void GUI::checkWidgetActive(Widget *widget) {
 	if (widget->_owner) {
 		// This is a subwidget, call the owner's active callback
 		widget->_owner->subActive(*widget);
+
+		// Check whether the owner's active now
+		checkWidgetActive(widget->_owner);
+
 	} else
 		// This is a standalone widget, call the GUI's active callback
 		callbackActive(*widget);
