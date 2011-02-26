@@ -24,7 +24,7 @@ namespace Graphics {
 namespace Aurora {
 
 Text::Text(const FontHandle &font, const Common::UString &str, float align) :
-	_font(font), _x(0.0), _y(0.0), _hasColor(false), _align(align), _list(0) {
+	_font(font), _x(0.0), _y(0.0), _hasColor(false), _align(align) {
 
 	set(str);
 
@@ -33,8 +33,7 @@ Text::Text(const FontHandle &font, const Common::UString &str, float align) :
 
 Text::Text(const FontHandle &font, const Common::UString &str,
 		float r, float g, float b, float a, float align) :
-	_font(font), _x(0.0), _y(0.0), _hasColor(true), _r(r), _g(g), _b(b), _a(a),
-	_align(align), _ready(false), _list(0) {
+	_font(font), _x(0.0), _y(0.0), _hasColor(true), _r(r), _g(g), _b(b), _a(a), _align(align) {
 
 	set(str);
 
@@ -42,14 +41,10 @@ Text::Text(const FontHandle &font, const Common::UString &str,
 }
 
 Text::~Text() {
-	if (_list != 0)
-		GfxMan.abandon(_list, 1);
 }
 
 void Text::set(const Common::UString &str) {
-	_ready = false;
-	if (str.empty())
-		return;
+	GfxMan.lockFrame();
 
 	_str = str;
 
@@ -58,30 +53,38 @@ void Text::set(const Common::UString &str) {
 	_height = font.getHeight(_str);
 	_width  = font.getWidth (_str);
 
-	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
+	GfxMan.unlockFrame();
 }
 
 void Text::setColor(float r, float g, float b, float a) {
+	GfxMan.lockFrame();
+
 	_hasColor = true;
 	_r = r;
 	_g = g;
 	_b = b;
 	_a = a;
 
-	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
+	GfxMan.unlockFrame();
 }
 
 void Text::unsetColor() {
+	GfxMan.lockFrame();
+
 	_hasColor = false;
 
-	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
+	GfxMan.unlockFrame();
 }
 
 void Text::setPosition(float x, float y, float z) {
+	GfxMan.lockFrame();
+
 	_x = roundf(x);
 	_y = roundf(y);
 
 	_distance = z;
+
+	GfxMan.unlockFrame();
 }
 
 void Text::show() {
@@ -108,37 +111,12 @@ void Text::newFrame() {
 }
 
 void Text::render() {
-	if (!_ready)
-		return;
-
 	glTranslatef(_x, _y, 0.0);
 
-	if (_list > 0)
-		glCallList(_list);
-}
-
-void Text::doRebuild() {
-	const Font &font = _font.getFont();
-
-	_list = glGenLists(1);
-
-	glNewList(_list, GL_COMPILE);
 	if (_hasColor)
-		font.draw(_str, _r, _g, _b, _a, _align);
+		_font.getFont().draw(_str, _r, _g, _b, _a, _align);
 	else
-		font.draw(_str, _align);
-	glEndList();
-
-	_ready = true;
-}
-
-void Text::doDestroy() {
-	if (_list == 0)
-		return;
-
-	glDeleteLists(_list, 0);
-
-	_list = 0;
+		_font.getFont().draw(_str, _align);
 }
 
 } // End of namespace Aurora

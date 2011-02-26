@@ -47,7 +47,7 @@ float Font::getHeight(const Common::UString &text) const {
 	return (lines.size() * getHeight()) + ((lines.size() - 1) * getLineSpacing());
 }
 
-void Font::draw(const Common::UString &text, float r, float g, float b, float a,
+void Font::draw(Common::UString text, float r, float g, float b, float a,
                 float align) const {
 
 	glColor4f(r, g, b, a);
@@ -55,7 +55,7 @@ void Font::draw(const Common::UString &text, float r, float g, float b, float a,
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 }
 
-void Font::draw(const Common::UString &text, float align) const {
+void Font::draw(Common::UString text, float align) const {
 	std::vector<Common::UString> lines;
 	float maxLength = split(text, lines);
 
