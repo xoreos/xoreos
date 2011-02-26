@@ -113,6 +113,8 @@ void NWNEngine::run(const Common::UString &target) {
 	playVideo("wotclogo");
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
+	if (EventMan.quitRequested())
+		return;
 
 	CursorMan.showCursor();
 
