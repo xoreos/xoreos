@@ -626,8 +626,14 @@ void WidgetEditBox::createLines() {
 	if (_hasButtons)
 		return;
 
+	float bottomX, bottomY, bottomZ;
+	if (!_model->getNodePosition("scrollmax", bottomX, bottomY, bottomZ))
+		bottomY = 12;
+
+	bottomY = getHeight() - (bottomY - 10);
+
 	// (Height of the model - Border) / (FontHeight + Line spacing)
-	int lineCount = (getHeight() - 4) / (_font.getFont().getHeight() + 1);
+	int lineCount = (bottomY) / (_font.getFont().getHeight() + 1);
 
 	// Border + indenting
 	float lineX = 3 + _font.getFont().getWidth(" ");
@@ -705,6 +711,8 @@ void WidgetEditBox::subActive(Widget &widget) {
 		sscanf(str, "%u", &_selectedLine);
 
 		_selectedLine += _startLine;
+
+		setActive(true);
 	}
 }
 
