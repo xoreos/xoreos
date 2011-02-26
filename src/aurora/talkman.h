@@ -35,6 +35,8 @@ public:
 
 	void clear();
 
+	Language getMainLanguage() const;
+
 	void setGender(Gender gender);
 
 	void addMainTable(const Common::UString &name);

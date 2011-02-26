@@ -35,6 +35,15 @@ void TalkManager::clear() {
 	removeAltTable();
 }
 
+Language TalkManager::getMainLanguage() const {
+	if (_mainTableM)
+		return _mainTableM->getLanguage();
+	if (_mainTableF)
+		return _mainTableF->getLanguage();
+
+	return kLanguageInvalid;
+}
+
 void TalkManager::setGender(Gender gender) {
 	_gender = gender;
 }
