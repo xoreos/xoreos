@@ -13,6 +13,7 @@
  */
 
 #include "common/ustring.h"
+#include "common/maths.h"
 
 #include "engines/nwn/menu/legal.h"
 
@@ -28,7 +29,7 @@ namespace NWN {
 
 Legal::Legal() : _billboard(0) {
 	_billboard = loadModelGUI("load_legal");
-	_billboard->setPosition(0.0, 0.0, 10.0);
+	_billboard->setPosition(0.0, 0.0, FLT_MAX);
 }
 
 Legal::~Legal() {
