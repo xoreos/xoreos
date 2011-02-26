@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libnwn.la
 
 noinst_HEADERS = nwn.h \
                  modelloader.h \
+                 menu/scrollbar.h \
                  menu/legal.h \
                  menu/gui.h \
                  menu/main.h \
@@ -25,6 +26,7 @@ noinst_HEADERS = nwn.h \
 
 libnwn_la_SOURCES = nwn.cpp \
                     modelloader.cpp \
+                    menu/scrollbar.cpp \
                     menu/legal.cpp \
                     menu/gui.cpp \
                     menu/main.cpp \
