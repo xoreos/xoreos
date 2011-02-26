@@ -12,6 +12,10 @@
  *  The new module menu.
  */
 
+#include "common/configman.h"
+#include "common/filepath.h"
+#include "common/filelist.h"
+
 #include "engines/nwn/menu/newmodule.h"
 
 #include "engines/aurora/util.h"
@@ -25,6 +29,35 @@ NewModuleMenu::NewModuleMenu() {
 }
 
 NewModuleMenu::~NewModuleMenu() {
+}
+
+void NewModuleMenu::show() {
+	initModuleList();
+}
+
+void NewModuleMenu::initModuleList() {
+	WidgetEditBox &moduleList = *getEditBox("ModuleListBox", true);
+
+	moduleList.clear();
+	moduleList.setMode(WidgetEditBox::kModeSelectable);
+
+	Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
+	if (moduleDir.empty())
+		return;
+
+	Common::FileList moduleDirList;
+
+	moduleDirList.addDirectory(moduleDir);
+
+	std::list<Common::UString> modules;
+	moduleDirList.getFileNames(modules);
+
+	modules.sort(Common::UString::iless());
+
+	for (std::list<Common::UString>::const_iterator m = modules.begin(); m != modules.end(); ++m)
+		moduleList.addLine(Common::FilePath::getStem(*m));
+
+	GUI::show();
 }
 
 void NewModuleMenu::callbackActive(Widget &widget) {

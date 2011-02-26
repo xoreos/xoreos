@@ -27,7 +27,11 @@ public:
 	NewModuleMenu();
 	~NewModuleMenu();
 
+	void show();
+
 protected:
+	void initModuleList();
+
 	void callbackActive(Widget &widget);
 };
 

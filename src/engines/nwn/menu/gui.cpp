@@ -21,6 +21,7 @@
 
 #include "events/requests.h"
 
+#include "graphics/graphics.h"
 #include "graphics/font.h"
 
 #include "graphics/aurora/text.h"
@@ -116,7 +117,7 @@ void NWNTextWidget::setPosition(float x, float y, float z) {
 	Widget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
-	_text->setPosition(x, y);
+	_text->setPosition(x, y, -z);
 }
 
 void NWNTextWidget::setColor(float r, float g, float b, float a) {
@@ -535,12 +536,12 @@ void WidgetEditBox::createScrollbar() {
 	_model->getNodePosition("scrollmax", maxX, maxY, maxZ);
 
 	// TODO: This needs an actual scrollbar too
-	WidgetButton *down = new WidgetButton(getTag() + "#Down", "pb_scrl_down");
+	WidgetButton *down = new WidgetButton(getTag() + "#Down", "pb_scrl_down", "gui_scroll");
 
 	down->setPosition(maxX, maxY - 10, 0.0);
 	addSub(*down);
 
-	WidgetButton *up = new WidgetButton(getTag() + "#Up", "pb_scrl_up");
+	WidgetButton *up = new WidgetButton(getTag() + "#Up", "pb_scrl_up", "gui_scroll");
 
 	up->setPosition(minX, minY, 0.0);
 	addSub(*up);
@@ -649,18 +650,20 @@ void WidgetEditBox::setPosition(float x, float y, float z) {
 
 void WidgetEditBox::subActive(Widget &widget) {
 	if (widget.getTag().endsWith("#Up")) {
-		if (_startLine > 0)
-			_startLine--;
+		if (_startLine == 0)
+			return;
 
+		_startLine--;
 		updateScroll();
 		return;
 	}
 
 	if (widget.getTag().endsWith("#Down")) {
 		int max = _contents.size() - _lines.size();
-		if ((max > 0) && (_startLine < ((uint) max)))
-			_startLine++;
+		if ((max <= 0) || (_startLine >= ((uint) max)))
+			return;
 
+		_startLine++;
 		updateScroll();
 		return;
 	}
@@ -763,7 +766,24 @@ void WidgetEditBox::set(const Common::UString &str) {
 }
 
 void WidgetEditBox::addLine(const Common::UString &line) {
-	_contents.push_back(line);
+	if (_hasButtons) {
+		std::vector<Common::UString> lines;
+		_font.getFont().split(line, lines, _buttons[0]->getWidth());
+
+		if (!lines.empty()) {
+			Common::UString joinedLines = lines[0];
+			for (uint i = 1; i < lines.size(); i++) {
+				joinedLines += "\n";
+				joinedLines += lines[i];
+			}
+
+		_contents.push_back(joinedLines);
+
+		} else
+			_contents.push_back(line);
+
+	} else
+		_contents.push_back(line);
 
 	if (_contents.size() <= _buttons.size()) {
 		_buttons[_contents.size() - 1]->setInvisible(false);
@@ -801,7 +821,7 @@ void WidgetEditBox::updateScroll() {
 
 	std::vector<WidgetLabel *>::iterator line = _lines.begin();
 	for (uint i = _startLine; i < _contents.size() && line != _lines.end(); i++, ++line) {
-		(*line)->setText(_contents[i]);
+		(*line)->setText("");
 
 		(*line)->setColor(_r, _g, _b, _a);
 
@@ -824,21 +844,24 @@ void WidgetEditBox::updateScroll() {
 			float btnW = btn.getWidth();
 			float btnH = btn.getHeight();
 
-			float lblW = (*line)->getWidth();
-			float lblH = (*line)->getHeight();
+			float lblW = _font.getFont().getWidth (_contents[i]);
+			float lblH = _font.getFont().getHeight(_contents[i]);
 
 			float lblX = btnX + (btnW - lblW) / 2;
 			float lblY = btnY + (btnH - lblH) / 2;
 
 			(*line)->setPosition(lblX, lblY, btnZ);
 		}
+
+		(*line)->setText(_contents[i]);
 	}
 }
 
 
-WidgetButton::WidgetButton(const Common::UString &tag, const Common::UString &model) :
-	NWNModelWidget(tag, model) {
+WidgetButton::WidgetButton(const Common::UString &tag, const Common::UString &model,
+                           const Common::UString &sound) : NWNModelWidget(tag, model) {
 
+	_sound = sound;
 }
 
 WidgetButton::~WidgetButton() {
@@ -863,7 +886,7 @@ void WidgetButton::mouseDown(uint8 state, float x, float y) {
 		return;
 
 	_model->setState("down");
-	playSound("gui_button", Sound::kSoundTypeSFX);
+	playSound(_sound, Sound::kSoundTypeSFX);
 }
 
 void WidgetButton::mouseUp(uint8 state, float x, float y) {

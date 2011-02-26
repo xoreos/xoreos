@@ -237,7 +237,8 @@ private:
 
 class WidgetButton : public NWNModelWidget {
 public:
-	WidgetButton(const Common::UString &tag, const Common::UString &model);
+	WidgetButton(const Common::UString &tag, const Common::UString &model,
+	             const Common::UString &sound = "gui_button");
 	~WidgetButton();
 
 	void enter();
@@ -245,6 +246,9 @@ public:
 
 	void mouseDown(uint8 state, float x, float y);
 	void mouseUp  (uint8 state, float x, float y);
+
+private:
+	Common::UString _sound;
 };
 
 /** A NWN GUI. */

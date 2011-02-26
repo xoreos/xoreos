@@ -22,6 +22,7 @@
 
 #include "common/util.h"
 #include "common/filelist.h"
+#include "common/filepath.h"
 #include "common/stream.h"
 #include "common/configman.h"
 
@@ -294,6 +295,9 @@ void NWNEngine::initConfig() {
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP1", _hasXP1);
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP2", _hasXP2);
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP3", _hasXP3);
+
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_extraModuleDir",
+		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
 }
 
 } // End of namespace NWN
