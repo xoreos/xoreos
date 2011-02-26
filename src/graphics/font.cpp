@@ -117,11 +117,11 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 
 				length = MAX(length, lineLength);
 
+				if (c == '\n')
+					lineEnd++;
+
 				lineStart = lineEnd;
 				lineLength = 0.0;
-
-				if (c == '\n')
-					lineStart++;
 			}
 
 			// Add the word to the line
@@ -129,7 +129,7 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 			lineEnd = p;
 
 			lineLength += wordLength;
-			wordLength = 0;
+			wordLength = 0.0;
 		}
 
 		float charWidth = getWidth(c);
@@ -148,8 +148,8 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 			lineStart = p;
 			lineEnd   = p;
 
-			wordLength = 0;
-			lineLength = 0;
+			wordLength = 0.0;
+			lineLength = 0.0;
 		}
 
 		if (c == '\n') {
@@ -160,10 +160,11 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 
 			length = MAX(length, lineLength);
 
-			lineStart = lineEnd;
-			lineLength = 0;
+			lineEnd++;
 
-			lineStart++;
+			lineStart = lineEnd;
+			lineLength = 0.0;
+			wordLength = 0.0;
 		}
 
 		// Add the character to the word
@@ -183,7 +184,7 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 			length = MAX(length, lineLength);
 
 			lineStart = lineEnd;
-			lineLength = 0;
+			lineLength = 0.0;
 		}
 
 		// Add the dangling word to the line
