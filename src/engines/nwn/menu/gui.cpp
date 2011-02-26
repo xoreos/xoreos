@@ -636,7 +636,7 @@ void WidgetEditBox::createLines() {
 	int lineCount = (bottomY) / (_font.getFont().getHeight() + 1);
 
 	// Border + indenting
-	float lineX = 3 + _font.getFont().getWidth(" ");
+	float lineX = 3 + 4;
 	// Height of the model - border, - (height of a line + line spacing)
 	float lineY = getHeight() - 2 - (_font.getFont().getHeight() + 1);
 
@@ -800,7 +800,7 @@ void WidgetEditBox::set(const Common::UString &str) {
 	clear();
 
 	// Width of the model - borders - indenting
-	float width = getWidth() - 6 - _font.getFont().getWidth(" ");
+	float width = getWidth() - 6 - 4;
 	if (_hasScrollbar)
 		width -= 19;
 
