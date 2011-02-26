@@ -308,7 +308,9 @@ enum Language {
 	kLanguageWitcherHungarian          = 1016,
 	kLanguageWitcherKorean             = 1020, // UTF8
 	kLanguageWitcherChineseTraditional = 1021, // UTF8
-	kLanguageWitcherChineseSimplified  = 1022  // UTF8
+	kLanguageWitcherChineseSimplified  = 1022, // UTF8
+
+	kLanguageInvalid                   = 0xFFFFFFFF
 };
 
 enum ResourceType {
