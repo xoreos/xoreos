@@ -345,11 +345,13 @@ void GraphicsManager::setupScene() {
 }
 
 void GraphicsManager::lockFrame() {
-	_frameSemaphore.lock();
+	if (!Common::isMainThread())
+		_frameSemaphore.lock();
 }
 
 void GraphicsManager::unlockFrame() {
-	_frameSemaphore.unlock();
+	if (!Common::isMainThread())
+		_frameSemaphore.unlock();
 }
 
 void GraphicsManager::abandon(TextureID *ids, uint32 count) {
