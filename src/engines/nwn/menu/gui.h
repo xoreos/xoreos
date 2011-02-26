@@ -132,8 +132,10 @@ protected:
 	void signalGroupMemberActive();
 
 private:
+	bool _entered;
 	bool _state;
 
+	void updateModel();
 	void updateModel(bool highlight);
 };
 
@@ -231,6 +233,9 @@ private:
 	void createScrollbar();
 	void createButtons();
 	void createLines();
+
+	void scrollUp();
+	void scrollDown();
 
 	void updateScroll();
 };

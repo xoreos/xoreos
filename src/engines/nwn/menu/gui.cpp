@@ -181,6 +181,9 @@ void WidgetClose::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
+	if (state != SDL_BUTTON_LMASK)
+		return;
+
 	_model->setState("down");
 	playSound("gui_button", Sound::kSoundTypeSFX);
 }
@@ -261,6 +264,9 @@ void WidgetCheckBox::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
+	if (state != SDL_BUTTON_LMASK)
+		return;
+
 	playSound("gui_check", Sound::kSoundTypeSFX);
 }
 
@@ -307,6 +313,10 @@ WidgetCheckButton::WidgetCheckButton(const Common::UString &tag, const Common::U
 WidgetCheckButton::~WidgetCheckButton() {
 }
 
+void WidgetCheckButton::updateModel() {
+	updateModel(_entered);
+}
+
 void WidgetCheckButton::updateModel(bool highlight) {
 	if (highlight) {
 		if (_state)
@@ -319,6 +329,8 @@ void WidgetCheckButton::updateModel(bool highlight) {
 		else
 			_model->setState("");
 	}
+
+	_entered = highlight;
 }
 
 bool WidgetCheckButton::getState() const {
@@ -334,21 +346,21 @@ void WidgetCheckButton::setState(bool state) {
 			return;
 
 		_state = true;
-		updateModel(false);
+		updateModel();
 		setActive(true);
 
 	} else {
 		// No group members, we are a check box
 
 		_state = !!state;
-		updateModel(false);
+		updateModel();
 		setActive(true);
 	}
 }
 
 void WidgetCheckButton::forceUncheck() {
 	_state = false;
-	updateModel(false);
+	updateModel();
 }
 
 void WidgetCheckButton::enter() {
@@ -368,6 +380,13 @@ void WidgetCheckButton::leave() {
 void WidgetCheckButton::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
+
+	if (state != SDL_BUTTON_LMASK) {
+		if (_owner)
+			_owner->mouseDown(state, x, y);
+		updateModel();
+		return;
+	}
 
 	playSound("gui_check", Sound::kSoundTypeSFX);
 }
@@ -401,7 +420,7 @@ void WidgetCheckButton::signalGroupMemberActive() {
 	Widget::signalGroupMemberActive();
 
 	_state = false;
-	updateModel(false);
+	updateModel();
 }
 
 
@@ -465,6 +484,9 @@ void WidgetSlider::mouseMove(uint8 state, float x, float y) {
 
 void WidgetSlider::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
+		return;
+
+	if (state != SDL_BUTTON_LMASK)
 		return;
 
 	changedValue(x, y);
@@ -648,23 +670,33 @@ void WidgetEditBox::setPosition(float x, float y, float z) {
 	}
 }
 
+void WidgetEditBox::scrollUp() {
+	if (_startLine == 0)
+		return;
+
+	_startLine--;
+	updateScroll();
+	return;
+}
+
+void WidgetEditBox::scrollDown() {
+	int max = _contents.size() - _lines.size();
+	if ((max <= 0) || (_startLine >= ((uint) max)))
+		return;
+
+	_startLine++;
+	updateScroll();
+	return;
+}
+
 void WidgetEditBox::subActive(Widget &widget) {
 	if (widget.getTag().endsWith("#Up")) {
-		if (_startLine == 0)
-			return;
-
-		_startLine--;
-		updateScroll();
+		scrollUp();
 		return;
 	}
 
 	if (widget.getTag().endsWith("#Down")) {
-		int max = _contents.size() - _lines.size();
-		if ((max <= 0) || (_startLine >= ((uint) max)))
-			return;
-
-		_startLine++;
-		updateScroll();
+		scrollDown();
 		return;
 	}
 
@@ -679,6 +711,16 @@ void WidgetEditBox::subActive(Widget &widget) {
 void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
+
+	if (state == SDL_BUTTON_WHEELUP) {
+		scrollUp();
+		return;
+	}
+
+	if (state == SDL_BUTTON_WHEELDOWN) {
+		scrollDown();
+		return;
+	}
 
 	if (_mode != kModeSelectable)
 		// Isn't selectable, nothing to do
@@ -883,6 +925,9 @@ void WidgetButton::leave() {
 
 void WidgetButton::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
+		return;
+
+	if (state != SDL_BUTTON_LMASK)
 		return;
 
 	_model->setState("down");

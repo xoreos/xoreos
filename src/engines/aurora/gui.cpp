@@ -389,8 +389,10 @@ void GUI::mouseMove(const Events::Event &event) {
 }
 
 void GUI::mouseDown(const Events::Event &event) {
-	if (event.button.button != SDL_BUTTON_LMASK)
-		// We only care about left mouse button presses
+	if ((event.button.button != SDL_BUTTON_LMASK) &&
+	    (event.button.button != SDL_BUTTON_WHEELUP) &&
+	    (event.button.button != SDL_BUTTON_WHEELDOWN))
+		// We only care about left mouse button presses, and the wheel
 		return;
 
 	Widget *widget = getWidgetAt(event.button.x, event.button.y);
@@ -435,12 +437,12 @@ void GUI::mouseMove(Widget *widget, const Events::Event &event) {
 
 void GUI::mouseDown(Widget *widget, const Events::Event &event) {
 	if (widget)
-		widget->mouseDown(event.button.state, toGUIX(event.button.x), toGUIY(event.button.y));
+		widget->mouseDown(event.button.button, toGUIX(event.button.x), toGUIY(event.button.y));
 }
 
 void GUI::mouseUp(Widget *widget, const Events::Event &event) {
 	if (widget)
-		widget->mouseUp(event.button.state, toGUIX(event.button.x), toGUIY(event.button.y));
+		widget->mouseUp(event.button.button, toGUIX(event.button.x), toGUIY(event.button.y));
 }
 
 } // End of namespace Engines
