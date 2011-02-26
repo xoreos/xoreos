@@ -30,9 +30,11 @@ public:
 	void show();
 
 protected:
-	void initModuleList();
-
 	void callbackActive(Widget &widget);
+
+private:
+	void initModuleList();
+	void selectedModule(WidgetEditBox &moduleList);
 };
 
 } // End of namespace NWN
