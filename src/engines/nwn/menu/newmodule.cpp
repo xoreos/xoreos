@@ -59,7 +59,8 @@ void NewModuleMenu::initModuleList() {
 	modules.sort(Common::UString::iless());
 
 	for (std::list<Common::UString>::const_iterator m = modules.begin(); m != modules.end(); ++m)
-		moduleList.addLine(Common::FilePath::getStem(*m));
+		if (Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
+			moduleList.addLine(Common::FilePath::getStem(*m));
 
 	moduleList.selectLine(0);
 	selectedModule(moduleList);
