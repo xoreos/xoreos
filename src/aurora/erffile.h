@@ -35,7 +35,7 @@ namespace Aurora {
 /** Class to hold resource data of an ERF file. */
 class ERFFile : public Archive, public AuroraBase {
 public:
-	ERFFile(const Common::UString &fileName);
+	ERFFile(const Common::UString &fileName, bool noResources = false);
 	~ERFFile();
 
 	/** Clear the resource list. */
@@ -68,6 +68,8 @@ private:
 	};
 
 	typedef std::vector<IResource> IResourceList;
+
+	bool _noResources;
 
 	/** The ERF's description. */
 	LocString _description;

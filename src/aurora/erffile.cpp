@@ -29,7 +29,9 @@ static const uint32 kVersion2  = MKID_BE('V2.0');
 
 namespace Aurora {
 
-ERFFile::ERFFile(const Common::UString &fileName) : _fileName(fileName) {
+ERFFile::ERFFile(const Common::UString &fileName, bool noResources) :
+	_noResources(noResources), _fileName(fileName) {
+
 	load();
 }
 
@@ -61,7 +63,9 @@ void ERFFile::load() {
 
 		readERFHeader  (erf, erfHeader);
 		readDescription(erf, erfHeader);
-		readResources  (erf, erfHeader);
+
+		if (!_noResources)
+			readResources(erf, erfHeader);
 
 		if (erf.err())
 			throw Common::Exception(Common::kReadError);
@@ -106,8 +110,10 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header) 
 		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
 	}
 
-	_resources.resize(resCount);
-	_iResources.resize(resCount);
+	if (!_noResources) {
+		_resources.resize(resCount);
+		_iResources.resize(resCount);
+	}
 }
 
 void ERFFile::readDescription(Common::SeekableReadStream &erf, const ERFHeader &header) {
@@ -120,6 +126,8 @@ void ERFFile::readDescription(Common::SeekableReadStream &erf, const ERFHeader &
 }
 
 void ERFFile::readResources(Common::SeekableReadStream &erf, const ERFHeader &header) {
+	assert(!_noResources);
+
 	if        (_version == kVersion1) {
 
 		readV1KeyList(erf, header); // Read name and type part of the resource list
