@@ -37,6 +37,11 @@ void playVideo(const Common::UString &video);
 /** Play this sound resource. */
 Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType soundType, bool loop = false);
 
+/** Make sure that an int config value is in the right range. */
+void checkConfigInt   (const Common::UString &key, int    min, int    max, int    def);
+/** Make sure that a double config value is in the right range. */
+void checkConfigDouble(const Common::UString &key, double min, double max, double def);
+
 /** Wait for a "long" amount of time, returning prematurely with true in the case of a requested quit. */
 bool longDelay(uint32 ms);
 

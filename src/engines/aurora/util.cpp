@@ -74,6 +74,26 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 	return channel;
 }
 
+void checkConfigInt(const Common::UString &key, int min, int max, int def) {
+	int value = ConfigMan.getInt(key, def);
+	if ((value >= min) && (value <= max))
+		return;
+
+	warning("Config \"%s\" has invalid value (%d), resetting to default (%d)",
+			key.c_str(), value, def);
+	ConfigMan.setInt(key, def);
+}
+
+void checkConfigDouble(const Common::UString &key, double min, double max, double def) {
+	double value = ConfigMan.getDouble(key, def);
+	if ((value >= min) && (value <= max))
+		return;
+
+	warning("Config \"%s\" has invalid value (%lf), resetting to default (%lf)",
+			key.c_str(), value, def);
+	ConfigMan.setDouble(key, def);
+}
+
 bool longDelay(uint32 ms) {
 	while ((ms > 0) && !EventMan.quitRequested()) {
 		uint32 delay = MIN<uint32>(ms, 10);
