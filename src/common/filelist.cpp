@@ -127,9 +127,14 @@ uint32 FileList::size() const {
 	return _files.size();
 }
 
-void FileList::getFileNames(std::list<UString> &list) const {
-	for (std::list<FilePath>::const_iterator it = _files.begin(); it != _files.end(); ++it)
+uint FileList::getFileNames(std::list<UString> &list) const {
+	uint n = 0;
+	for (std::list<FilePath>::const_iterator it = _files.begin(); it != _files.end(); ++it) {
 		list.push_back(it->pathString);
+		n++;
+	}
+
+	return n;
 }
 
 bool FileList::addDirectory(const UString &directory, int recurseDepth) {

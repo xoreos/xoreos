@@ -50,7 +50,7 @@ public:
 	 *
 	 *  @param list The list into which to copy the file names.
 	 */
-	void getFileNames(std::list<UString> &list) const;
+	uint getFileNames(std::list<UString> &list) const;
 
 	/** Add a directory to the list
 	 *
