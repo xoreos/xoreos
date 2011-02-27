@@ -43,9 +43,19 @@ void Scrollbar::setPosition(float x, float y, float z) {
 	GfxMan.unlockFrame();
 }
 
+void Scrollbar::getPosition(float &x, float &y, float &z) const {
+	x = _x;
+	y = _y;
+	z = _z;
+}
+
 bool Scrollbar::isIn(float x, float y) const {
-	// TODO
-	return false;
+	if ((x < _x) || (y < _y))
+		return false;
+	if ((x > (_x + getWidth())) || (y > (_y + getHeight())))
+		return false;
+
+	return true;
 }
 
 void Scrollbar::setLength(float length) {

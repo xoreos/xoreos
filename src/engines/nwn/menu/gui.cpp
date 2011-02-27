@@ -157,6 +157,8 @@ WidgetScrollbar::WidgetScrollbar(const Common::UString &tag,
 		Scrollbar::Type type, float range) :
 		Widget(tag), _type(type), _range(range), _state(0.0), _scrollbar(type) {
 
+	_scrollbar.setTag(tag);
+
 	setLength(1.0);
 }
 
@@ -225,6 +227,52 @@ float WidgetScrollbar::getWidth() const {
 
 float WidgetScrollbar::getHeight() const {
 	return _scrollbar.getHeight();
+}
+
+float WidgetScrollbar::getBarPosition() const {
+	float x, y, z;
+	_scrollbar.getPosition(x, y, z);
+
+	if      (_type == Scrollbar::kTypeVertical)
+		return y;
+	else if (_type == Scrollbar::kTypeHorizontal)
+		return x;
+
+	return 0.0;
+}
+
+void WidgetScrollbar::mouseDown(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	// We only care about the left mouse button, pass everything else to the owner
+	if (state != SDL_BUTTON_LMASK) {
+		if (_owner)
+			_owner->mouseDown(state, x, y);
+		return;
+	}
+
+	_dragX     = x;
+	_dragY     = y;
+	_dragState = _state;
+}
+
+void WidgetScrollbar::mouseMove(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	if (state != SDL_BUTTON_LMASK)
+		// We only care about moves with the left mouse button pressed
+		return;
+
+	float steps = 1.0 / (_range - _length);
+
+	if      (_type == Scrollbar::kTypeVertical)
+		setState(_dragState + ((_dragY - y) * steps));
+	else if (_type == Scrollbar::kTypeHorizontal)
+		setState(_dragState + ((x - _dragX) * steps));
+
+	setActive(true);
 }
 
 
@@ -789,6 +837,18 @@ void WidgetEditBox::scrollDown() {
 	return;
 }
 
+void WidgetEditBox::scrollPageUp() {
+	_startLine -= MIN<uint>(_startLine, _lines.size() - 1);
+	updateScroll();
+	updateScrollbarPosition();
+}
+
+void WidgetEditBox::scrollPageDown() {
+	_startLine = MIN(_startLine + _lines.size() - 1, _contents.size() - _lines.size());
+	updateScroll();
+	updateScrollbarPosition();
+}
+
 void WidgetEditBox::subActive(Widget &widget) {
 	if (widget.getTag().endsWith("#Up")) {
 		scrollUp();
@@ -797,6 +857,20 @@ void WidgetEditBox::subActive(Widget &widget) {
 
 	if (widget.getTag().endsWith("#Down")) {
 		scrollDown();
+		return;
+	}
+
+	if (widget.getTag().endsWith("#Bar")) {
+		int max = _contents.size() - _lines.size();
+		if (max <= 0)
+			return;
+
+		uint startLine = _scrollbar->getState() * max;
+		if (startLine == _startLine)
+			return;
+
+		_startLine = startLine;
+		updateScroll();
 		return;
 	}
 
@@ -824,6 +898,21 @@ void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
 		return;
 	}
 
+	float wX, wY, wZ;
+	getPosition(wX, wY, wZ);
+
+	// Check if we clicked on the scrollbar area
+	if (_scrollbar) {
+		if (x > (wX + getWidth() - 20)) {
+			if (y > _scrollbar->getBarPosition())
+				scrollPageUp();
+			else
+				scrollPageDown();
+
+			return;
+		}
+	}
+
 	if (_mode != kModeSelectable)
 		// Isn't selectable, nothing to do
 		return;
@@ -831,9 +920,6 @@ void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
 	if (_hasButtons)
 		// Edit box has buttons, they handle the selection
 		return;
-
-	float wX, wY, wZ;
-	getPosition(wX, wY, wZ);
 
 	// Pixel position
 	y = getHeight() - (y - wY) - 2;

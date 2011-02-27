@@ -38,6 +38,9 @@ public:
 	/** Set the current position of the scrollbar. */
 	void setPosition(float x, float y, float z);
 
+	/** Get the current position of the scrollbar. */
+	void getPosition(float &x, float &y, float &z) const;
+
 	/** Is the point within the scrollbar? */
 	bool isIn(float x, float y) const;
 

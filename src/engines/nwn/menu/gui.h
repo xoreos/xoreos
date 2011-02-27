@@ -95,12 +95,21 @@ public:
 	float getWidth () const;
 	float getHeight() const;
 
+	float getBarPosition() const;
+
+	void mouseDown(uint8 state, float x, float y);
+	void mouseMove(uint8 state, float x, float y);
+
 private:
 	Scrollbar::Type _type;
 
 	float _range;
 	float _length;
 	float _state;
+
+	float _dragX;
+	float _dragY;
+	float _dragState;
 
 	Scrollbar _scrollbar;
 };
@@ -271,6 +280,9 @@ private:
 
 	void scrollUp();
 	void scrollDown();
+
+	void scrollPageUp();
+	void scrollPageDown();
 
 	void updateScroll();
 
