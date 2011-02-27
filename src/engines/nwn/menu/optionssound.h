@@ -26,7 +26,7 @@ namespace NWN {
 /** The NWN sound options menu. */
 class OptionsSoundMenu: public GUI {
 public:
-	OptionsSoundMenu();
+	OptionsSoundMenu(bool isMain = false);
 	~OptionsSoundMenu();
 
 	void show();

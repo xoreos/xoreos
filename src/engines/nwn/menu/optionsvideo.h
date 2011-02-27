@@ -24,7 +24,7 @@ namespace NWN {
 /** The NWN video options menu. */
 class OptionsVideoMenu: public GUI {
 public:
-	OptionsVideoMenu();
+	OptionsVideoMenu(bool isMain = false);
 	~OptionsVideoMenu();
 
 	void show();

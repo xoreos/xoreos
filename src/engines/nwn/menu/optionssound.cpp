@@ -25,8 +25,14 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsSoundMenu::OptionsSoundMenu() {
+OptionsSoundMenu::OptionsSoundMenu(bool isMain) {
 	load("options_sound");
+
+	if (isMain) {
+		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		backdrop->setPosition(0.0, 0.0, -10.0);
+		addWidget(backdrop);
+	}
 
 	std::list<Widget *> speakerGroup;
 	speakerGroup.push_back(getWidget("71Speakers"));
@@ -47,7 +53,7 @@ OptionsSoundMenu::OptionsSoundMenu() {
 	getWidget("Surround"   , true)->setDisabled(true);
 	getWidget("Headphones" , true)->setDisabled(true);
 
-	_advanced = new OptionsSoundAdvancedMenu;
+	_advanced = new OptionsSoundAdvancedMenu(isMain);
 }
 
 void OptionsSoundMenu::show() {

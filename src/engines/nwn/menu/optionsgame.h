@@ -24,7 +24,7 @@ namespace NWN {
 /** The NWN game options menu. */
 class OptionsGameMenu: public GUI {
 public:
-	OptionsGameMenu();
+	OptionsGameMenu(bool isMain = false);
 	~OptionsGameMenu();
 
 	void show();

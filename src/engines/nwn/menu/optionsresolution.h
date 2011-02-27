@@ -24,7 +24,7 @@ namespace NWN {
 /** The NWN resolution options menu. */
 class OptionsResolutionMenu: public GUI {
 public:
-	OptionsResolutionMenu();
+	OptionsResolutionMenu(bool isMain = false);
 	~OptionsResolutionMenu();
 
 	void show();

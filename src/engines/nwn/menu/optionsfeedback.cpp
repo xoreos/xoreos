@@ -20,8 +20,14 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsFeedbackMenu::OptionsFeedbackMenu() {
+OptionsFeedbackMenu::OptionsFeedbackMenu(bool isMain) {
 	load("options_feedback");
+
+	if (isMain) {
+		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		backdrop->setPosition(0.0, 0.0, -10.0);
+		addWidget(backdrop);
+	}
 
 	std::list<Widget *> bubbleMode;
 	bubbleMode.push_back(getWidget("BubblesTextOnly"));

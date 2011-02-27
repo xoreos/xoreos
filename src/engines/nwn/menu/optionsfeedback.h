@@ -24,7 +24,7 @@ namespace NWN {
 /** The NWN feedback options menu. */
 class OptionsFeedbackMenu: public GUI {
 public:
-	OptionsFeedbackMenu();
+	OptionsFeedbackMenu(bool isMain = false);
 	~OptionsFeedbackMenu();
 
 protected:

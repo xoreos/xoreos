@@ -20,8 +20,14 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu() {
+OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(bool isMain) {
 	load("options_advsound");
+
+	if (isMain) {
+		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		backdrop->setPosition(0.0, 0.0, -10.0);
+		addWidget(backdrop);
+	}
 
 	// TODO: Sound providers
 	getWidget("ProviderList", true)->setDisabled(true);

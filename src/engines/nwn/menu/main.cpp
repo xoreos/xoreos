@@ -66,7 +66,7 @@ MainMenu::MainMenu() {
 		// If not, create the base game movies menu
 		_movies = new MoviesBaseMenu;
 
-	_options = new OptionsMenu;
+	_options = new OptionsMenu(true);
 }
 
 MainMenu::~MainMenu() {

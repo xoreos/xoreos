@@ -24,13 +24,19 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsMenu::OptionsMenu() {
+OptionsMenu::OptionsMenu(bool isMain) {
 	load("options_pregame");
 
-	_game     = new OptionsGameMenu;
-	_video    = new OptionsVideoMenu;
-	_sound    = new OptionsSoundMenu;
-	_controls = new OptionsControlsMenu;
+	if (isMain) {
+		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		backdrop->setPosition(0.0, 0.0, -10.0);
+		addWidget(backdrop);
+	}
+
+	_game     = new OptionsGameMenu(isMain);
+	_video    = new OptionsVideoMenu(isMain);
+	_sound    = new OptionsSoundMenu(isMain);
+	_controls = new OptionsControlsMenu(isMain);
 }
 
 OptionsMenu::~OptionsMenu() {

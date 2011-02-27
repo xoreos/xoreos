@@ -24,7 +24,7 @@ namespace NWN {
 /** The NWN options menu. */
 class OptionsMenu: public GUI {
 public:
-	OptionsMenu();
+	OptionsMenu(bool isMain = false);
 	~OptionsMenu();
 
 protected:

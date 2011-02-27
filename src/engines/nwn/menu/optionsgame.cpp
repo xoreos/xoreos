@@ -29,8 +29,14 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsGameMenu::OptionsGameMenu() {
+OptionsGameMenu::OptionsGameMenu(bool isMain) {
 	load("options_game");
+
+	if (isMain) {
+		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		backdrop->setPosition(0.0, 0.0, -10.0);
+		addWidget(backdrop);
+	}
 
 	std::list<Widget *> hideTiles;
 	hideTiles.push_back(getWidget("NeverBox"));
@@ -46,8 +52,8 @@ OptionsGameMenu::OptionsGameMenu() {
 	// TODO: Violence level
 	getWidget("ViolenceSlider", true)->setDisabled(true);
 
-	_gorepass = new OptionsGorePasswordMenu;
-	_feedback = new OptionsFeedbackMenu;
+	_gorepass = new OptionsGorePasswordMenu(isMain);
+	_feedback = new OptionsFeedbackMenu(isMain);
 }
 
 OptionsGameMenu::~OptionsGameMenu() {

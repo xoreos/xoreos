@@ -20,8 +20,14 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsControlsMenu::OptionsControlsMenu() {
+OptionsControlsMenu::OptionsControlsMenu(bool isMain) {
 	load("options_controls");
+
+	if (isMain) {
+		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		backdrop->setPosition(0.0, 0.0, -10.0);
+		addWidget(backdrop);
+	}
 
 	std::list<Widget *> camGroup;
 	camGroup.push_back(getWidget("ChaseCheckBox"));

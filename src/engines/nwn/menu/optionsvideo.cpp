@@ -27,8 +27,14 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsVideoMenu::OptionsVideoMenu() {
+OptionsVideoMenu::OptionsVideoMenu(bool isMain) {
 	load("options_video");
+
+	if (isMain) {
+		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		backdrop->setPosition(0.0, 0.0, -10.0);
+		addWidget(backdrop);
+	}
 
 	// TODO: Video quality
 	getWidget("VidQualSlider", true)->setDisabled(true);
@@ -44,8 +50,8 @@ OptionsVideoMenu::OptionsVideoMenu() {
 	// TODO: Creature shadows
 	getWidget("ShadowSlider", true)->setDisabled(true);
 
-	_resolution = new OptionsResolutionMenu;
-	_advanced   = new OptionsVideoAdvancedMenu;
+	_resolution = new OptionsResolutionMenu(isMain);
+	_advanced   = new OptionsVideoAdvancedMenu(isMain);
 }
 
 OptionsVideoMenu::~OptionsVideoMenu() {
