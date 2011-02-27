@@ -19,6 +19,7 @@
 #include "graphics/aurora/model.h"
 
 #include "engines/nwn/menu/main.h"
+#include "engines/nwn/menu/newgamefog.h"
 #include "engines/nwn/menu/new.h"
 #include "engines/nwn/menu/newcamp.h"
 #include "engines/nwn/menu/moviesbase.h"
@@ -26,6 +27,7 @@
 #include "engines/nwn/menu/options.h"
 
 #include "engines/aurora/model.h"
+#include "engines/aurora/util.h"
 
 namespace Engines {
 
@@ -82,7 +84,21 @@ void MainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "NewButton") {
+		std::vector<Graphics::Aurora::Model *> fogs;
+		fogs.resize(4);
+
+		for (uint i = 0; i < fogs.size(); i++) {
+			fogs[i] = createNewGameFog();
+			fogs[i]->show();
+		}
+
 		sub(*_new);
+
+		for (uint i = 0; i < fogs.size(); i++) {
+			fogs[i]->hide();
+			delete fogs[i];
+		}
+
 		return;
 	}
 

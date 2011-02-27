@@ -461,10 +461,10 @@ void Model::render() {
 	glRotatef(_bearing[1], 0.0, 0.0, 1.0);
 	glRotatef(_bearing[2], 0.0, 1.0, 0.0);
 
-	// Apply current fade value
-	glColor4f(1.0, 1.0, 1.0, _fadeValue);
-
 	if (_fade) {
+		// Apply current fade value
+		glColor4f(1.0, 1.0, 1.0, _fadeValue);
+
 		// Evaluate fading
 
 		uint32 now = EventMan.getTimestamp();

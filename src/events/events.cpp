@@ -12,6 +12,8 @@
  *  The global events manager.
  */
 
+#include <cstdlib>
+
 #include <SDL_timer.h>
 
 #include "common/util.h"
@@ -60,6 +62,8 @@ void EventsManager::init() {
 	_queueSize = 0;
 
 	_ready = true;
+
+	std::srand(getTimestamp());
 }
 
 void EventsManager::deinit() {
