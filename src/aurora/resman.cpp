@@ -36,7 +36,7 @@ using boost::iequals;
 DECLARE_SINGLETON(Aurora::ResourceManager)
 
 static const char *kArchiveGlob[Aurora::kArchiveMAX] = {
-	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak)", ".*\\.rim", ".*\\.zip"
+	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak|nwm)", ".*\\.rim", ".*\\.zip"
 };
 
 namespace Aurora {
