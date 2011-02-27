@@ -108,11 +108,12 @@ public:
 	virtual void show(); ///< Show the GUI.
 	virtual void hide(); ///< Hide the GUI.
 
-	int run(); ///< Run the GUI.
+	int run(int startCode = 0); ///< Run the GUI.
 
 protected:
 	Widget *_currentWidget; ///< The widget the mouse is currently on.
 
+	int _startCode;  ///< The GUI's start code.
 	int _returnCode; ///< The GUI's return code.
 
 	/** Add a widget. */
@@ -133,7 +134,7 @@ protected:
 	void updateMouse();
 
 	/** Open up a sub GUI. */
-	int sub(GUI &gui);
+	int sub(GUI &gui, int startCode = 0);
 
 	/** Callback that's triggered periodically in the run() method. */
 	virtual void callbackRun();

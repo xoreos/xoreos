@@ -33,8 +33,12 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	std::vector<Common::UString> _modules;
+
+	Common::UString getSelectedModule();
+
 	void initModuleList();
-	void selectedModule(WidgetEditBox &moduleList);
+	void selectedModule();
 };
 
 } // End of namespace NWN

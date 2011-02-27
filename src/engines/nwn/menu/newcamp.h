@@ -28,6 +28,7 @@ public:
 	~NewCampMenu();
 
 protected:
+	void callbackRun();
 	void callbackActive(Widget &widget);
 
 private:

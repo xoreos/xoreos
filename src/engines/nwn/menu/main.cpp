@@ -77,6 +77,14 @@ MainMenu::~MainMenu() {
 	delete _movies;
 }
 
+void MainMenu::callbackRun() {
+	int startCode = _startCode;
+	_startCode = 0;
+
+	if ((startCode == 2) || (startCode == 3))
+		callNew(startCode);
+}
+
 void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "ExitButton") {
 		EventMan.requestQuit();
@@ -84,21 +92,7 @@ void MainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "NewButton") {
-		std::vector<Graphics::Aurora::Model *> fogs;
-		fogs.resize(4);
-
-		for (uint i = 0; i < fogs.size(); i++) {
-			fogs[i] = createNewGameFog();
-			fogs[i]->show();
-		}
-
-		sub(*_new);
-
-		for (uint i = 0; i < fogs.size(); i++) {
-			fogs[i]->hide();
-			delete fogs[i];
-		}
-
+		callNew();
 		return;
 	}
 
@@ -112,6 +106,25 @@ void MainMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
+}
+
+void MainMenu::callNew(int startCode) {
+	std::vector<Graphics::Aurora::Model *> fogs;
+	fogs.resize(4);
+
+	for (uint i = 0; i < fogs.size(); i++) {
+		fogs[i] = createNewGameFog();
+		fogs[i]->show();
+	}
+
+	int code = sub(*_new, startCode);
+	if ((code == 2) || (code == 3))
+		_returnCode = code;
+
+	for (uint i = 0; i < fogs.size(); i++) {
+		fogs[i]->hide();
+		delete fogs[i];
+	}
 }
 
 } // End of namespace NWN

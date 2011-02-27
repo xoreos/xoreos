@@ -36,7 +36,10 @@ NewModuleMenu::~NewModuleMenu() {
 }
 
 void NewModuleMenu::show() {
-	initModuleList();
+	if (_modules.empty())
+		initModuleList();
+
+	GUI::show();
 }
 
 void NewModuleMenu::initModuleList() {
@@ -54,19 +57,22 @@ void NewModuleMenu::initModuleList() {
 	moduleDirList.addDirectory(moduleDir);
 
 	std::list<Common::UString> modules;
-	moduleDirList.getFileNames(modules);
+	uint n = moduleDirList.getFileNames(modules);
 
 	modules.sort(Common::UString::iless());
 
-	for (std::list<Common::UString>::const_iterator m = modules.begin(); m != modules.end(); ++m)
-		if (Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
-			moduleList.addLine(Common::FilePath::getStem(*m));
+	_modules.reserve(n);
+	moduleList.reserve(n);
+	for (std::list<Common::UString>::const_iterator m = modules.begin(); m != modules.end(); ++m) {
+		if (Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod")) {
+
+			_modules.push_back(Common::FilePath::getStem(*m));
+			moduleList.addLine(_modules.back());
+		}
+	}
 
 	moduleList.selectLine(0);
-	selectedModule(moduleList);
-
-	GUI::show();
-
+	selectedModule();
 }
 
 void NewModuleMenu::callbackActive(Widget &widget) {
@@ -75,18 +81,36 @@ void NewModuleMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
+	if (widget.getTag() == "LoadButton") {
+		Common::UString module = getSelectedModule();
+		if (module.empty())
+			return;
+
+		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", module + ".mod");
+		_returnCode = 3;
+		return;
+	}
+
 	if (widget.getTag() == "ModuleListBox") {
-		selectedModule(dynamic_cast<WidgetEditBox &>(widget));
+		selectedModule();
 		return;
 	}
 }
 
-void NewModuleMenu::selectedModule(WidgetEditBox &moduleList) {
+Common::UString NewModuleMenu::getSelectedModule() {
+	uint n = getEditBox("ModuleListBox", true)->getSelectedLineNumber();
+	if (n >= _modules.size())
+		return "";
+
+	return _modules[n];
+}
+
+void NewModuleMenu::selectedModule() {
 	Common::UString description;
 
 	try {
 		Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
-		Common::UString modFile   = moduleList.getSelectedLine();
+		Common::UString modFile   = getSelectedModule();
 
 		Aurora::ERFFile mod(moduleDir + "/" + modFile + ".mod", true);
 

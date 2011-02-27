@@ -243,6 +243,8 @@ public:
 
 	void clear();
 
+	void reserve(uint n);
+
 	void set(const Common::UString &str);
 	void addLine(const Common::UString &line);
 

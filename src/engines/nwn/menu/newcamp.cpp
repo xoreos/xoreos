@@ -47,6 +47,19 @@ NewCampMenu::~NewCampMenu() {
 	delete _base;
 }
 
+void NewCampMenu::callbackRun() {
+	int startCode = _startCode;
+	_startCode = 0;
+
+	if (startCode == 2)
+		if (sub(*_base, startCode) == 2)
+			_returnCode = 2;
+
+	if (startCode == 3)
+		if (sub(*_module, startCode) == 3)
+			_returnCode = 3;
+}
+
 void NewCampMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "CancelButton") {
 		_returnCode = 1;
@@ -54,12 +67,14 @@ void NewCampMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "NWNButton") {
-		sub(*_base);
+		if (sub(*_base) == 2)
+			_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "OtherButton") {
-		sub(*_module);
+		if (sub(*_module) == 3)
+			_returnCode = 3;
 		return;
 	}
 

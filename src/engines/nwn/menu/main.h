@@ -30,12 +30,15 @@ public:
 	~MainMenu();
 
 protected:
+	void callbackRun();
 	void callbackActive(Widget &widget);
 
 private:
 	GUI *_new;
 	GUI *_movies;
 	GUI *_options;
+
+	void callNew(int startCode = 0);
 };
 
 } // End of namespace NWN

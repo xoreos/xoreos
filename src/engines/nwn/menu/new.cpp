@@ -30,13 +30,6 @@ NewMenu::NewMenu() {
 
 	_hasXP = ConfigMan.getBool("NWN_hasXP1") || ConfigMan.getBool("NWN_hasXP2");
 
-	// TODO: Game chapters
-	getWidget("PreludeButton" , true)->setDisabled(true);
-	getWidget("Chapter1Button", true)->setDisabled(true);
-	getWidget("Chapter2Button", true)->setDisabled(true);
-	getWidget("Chapter3Button", true)->setDisabled(true);
-	getWidget("Chapter4Button", true)->setDisabled(true);
-
 	if (_hasXP)
 		// If we have an expansion, hide the "Other modules" button, it's
 		// already in the campaign menu
@@ -51,6 +44,15 @@ NewMenu::~NewMenu() {
 	delete _module;
 }
 
+void NewMenu::callbackRun() {
+	int startCode = _startCode;
+	_startCode = 0;
+
+	if ((startCode == 3) && _module)
+		if (sub(*_module, startCode) == 3)
+			_returnCode = 3;
+}
+
 void NewMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "CancelButton") {
 		_returnCode = 1;
@@ -58,7 +60,38 @@ void NewMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "OtherButton") {
-		sub(*_module);
+		if (sub(*_module) == 3)
+			_returnCode = 3;
+		return;
+	}
+
+	if (widget.getTag() == "PreludeButton") {
+		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "prelude.nwm");
+		_returnCode = 2;
+		return;
+	}
+
+	if (widget.getTag() == "Chapter1Button") {
+		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "chapter1.nwm");
+		_returnCode = 2;
+		return;
+	}
+
+	if (widget.getTag() == "Chapter2Button") {
+		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "chapter2.nwm");
+		_returnCode = 2;
+		return;
+	}
+
+	if (widget.getTag() == "Chapter3Button") {
+		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "chapter3.nwm");
+		_returnCode = 2;
+		return;
+	}
+
+	if (widget.getTag() == "Chapter4Button") {
+		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "chapter4.nwm");
+		_returnCode = 2;
 		return;
 	}
 }

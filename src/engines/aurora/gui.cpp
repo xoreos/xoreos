@@ -206,11 +206,17 @@ void GUI::hide() {
 		(*widget)->hide();
 }
 
-int GUI::run() {
+int GUI::run(int startCode) {
+	_startCode  = startCode;
 	_returnCode = 0;
 
 	// Run as long as we don't have a return code
 	while (_returnCode == 0) {
+		// Call the periodic run callback
+		callbackRun();
+		if (_returnCode != 0)
+			break;
+
 		// But return immediately when an engine quit was requested
 		if (EventMan.quitRequested())
 			return 0;
@@ -226,9 +232,6 @@ int GUI::run() {
 				mouseUp(event);
 		}
 
-		// Call the periodic run callback
-		callbackRun();
-
 		// Delay for a while
 		if (!EventMan.quitRequested() && (_returnCode != 0))
 			EventMan.delay(10);
@@ -238,6 +241,7 @@ int GUI::run() {
 }
 
 void GUI::callbackRun() {
+	_startCode = 0;
 }
 
 void GUI::callbackActive(Widget &widget) {
@@ -295,7 +299,7 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 			(*a)->addGroupMember(**b);
 }
 
-int GUI::sub(GUI &gui) {
+int GUI::sub(GUI &gui, int startCode) {
 	// Change the current widget to nothing
 	changedWidget(0);
 
@@ -304,7 +308,7 @@ int GUI::sub(GUI &gui) {
 	hide();
 
 	// Run the sub GUI
-	int code = gui.run();
+	int code = gui.run(startCode);
 
 	// Hide the sub GUI
 	show();

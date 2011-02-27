@@ -87,7 +87,7 @@ Engines::Engine *NWNEngineProbe::createEngine() const {
 }
 
 
-NWNEngine::NWNEngine() {
+NWNEngine::NWNEngine() : _fps(0) {
 }
 
 NWNEngine::~NWNEngine() {
@@ -118,42 +118,14 @@ void NWNEngine::run(const Common::UString &target) {
 
 	CursorMan.showCursor();
 
-	bool showFPS = ConfigMan.getBool("showfps", false);
-
-	Graphics::Aurora::FPS *fps = 0;
-	if (showFPS) {
-		fps = new Graphics::Aurora::FPS(FontMan.get("fnt_galahad14"));
-		fps->show();
+	if (ConfigMan.getBool("showfps", false)) {
+		_fps = new Graphics::Aurora::FPS(FontMan.get("fnt_galahad14"));
+		_fps->show();
 	}
 
-	// Menu music
-	Sound::ChannelHandle menuMusic = _hasXP2 ?
-	playSound("mus_x2theme"   , Sound::kSoundTypeMusic, true) :
-	playSound("mus_theme_main", Sound::kSoundTypeMusic, true);
+	mainMenuLoop();
 
-	// Start sound
-	playSound("gui_prompt", Sound::kSoundTypeSFX);
-
-	Legal *legal    = new Legal;
-	GUI   *mainMenu = new MainMenu;
-
-	// Fade in the legal billboard
-	legal->fadeIn();
-
-	// Show the main menu (still hidden by the legal billboard)
-	mainMenu->show();
-
-	// Show the legal billboard, then fade it out
-	legal->show();
-
-	delete legal;
-
-	// Run the main menu
-	mainMenu->run();
-
-	delete mainMenu;
-
-	delete fps;
+	deinit();
 }
 
 void NWNEngine::init() {
@@ -300,6 +272,68 @@ void NWNEngine::initConfig() {
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_extraModuleDir",
 		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
+}
+
+void NWNEngine::deinit() {
+	delete _fps;
+}
+
+void NWNEngine::mainMenuLoop() {
+	// Menu music
+	Sound::ChannelHandle menuMusic = _hasXP2 ?
+	playSound("mus_x2theme"   , Sound::kSoundTypeMusic, true) :
+	playSound("mus_theme_main", Sound::kSoundTypeMusic, true);
+
+	// Start sound
+	playSound("gui_prompt", Sound::kSoundTypeSFX);
+
+	Legal *legal    = new Legal;
+	GUI   *mainMenu = new MainMenu;
+
+	// Fade in the legal billboard
+	legal->fadeIn();
+
+	// Show the main menu (still hidden by the legal billboard)
+	mainMenu->show();
+
+	// Show the legal billboard, then fade it out
+	legal->show();
+
+	delete legal;
+
+	int startSection = 0;
+	while (!EventMan.quitRequested()) {
+		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "");
+
+		// Run the main menu
+		int code = mainMenu->run(startSection);
+		if (EventMan.quitRequested())
+			return;
+
+		if ((code == 2) || (code == 3)) {
+			// New game
+
+			startSection = code;
+			Common::UString module = ConfigMan.getString("NWN_moduleToLoad");
+			if (module.empty())
+				continue;
+
+			warning("Want to run module \"%s\"", module.c_str());
+
+			// Char selection
+			// if (!hasChar)
+			//   continue;
+			// delete mainMenu;
+			// run game
+			// mainMenu = new mainMenu
+			// startSection = 0;
+
+		} else
+			startSection = 0;
+
+	}
+
+	delete mainMenu;
 }
 
 } // End of namespace NWN

@@ -28,11 +28,12 @@ public:
 	~NewMenu();
 
 protected:
-	bool _hasXP;
-
-	GUI *_module;
-
+	void callbackRun();
 	void callbackActive(Widget &widget);
+
+private:
+	bool _hasXP;
+	GUI *_module;
 };
 
 } // End of namespace NWN

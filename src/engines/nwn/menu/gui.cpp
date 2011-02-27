@@ -1024,6 +1024,10 @@ void WidgetEditBox::set(const Common::UString &str) {
 	updateScrollbarLength();
 }
 
+void WidgetEditBox::reserve(uint n) {
+	_contents.reserve(n);
+}
+
 void WidgetEditBox::addLine(const Common::UString &line) {
 	if (_hasButtons) {
 		// If we have buttons, split a too long line over its button
