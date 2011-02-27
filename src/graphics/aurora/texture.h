@@ -50,11 +50,14 @@ public:
 	/** Return the TXI. */
 	const TXI &getTXI() const;
 
+	/** Reload the texture. */
+	bool reload(const Common::UString &name = "");
+
 protected:
 	void doRebuild();
 	void doDestroy();
 
-public:
+private:
 	Common::UString _name;
 
 	TextureID _textureID; ///< OpenGL texture ID.

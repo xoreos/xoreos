@@ -72,6 +72,8 @@ public:
 	TextureHandle get(const Common::UString &name);
 	void release(TextureHandle &handle);
 
+	void reloadAll();
+
 	void set();
 	void set(const TextureHandle &handle);
 

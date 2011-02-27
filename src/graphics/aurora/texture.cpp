@@ -248,6 +248,33 @@ const TXI &Texture::getTXI() const {
 	return *_txi;
 }
 
+bool Texture::reload(const Common::UString &name) {
+	if (!name.empty())
+		_name = name;
+
+	if (_name.empty())
+		// Yeah, we don't know the resource name, so we can't reload the texture
+		return false;
+
+	removeFromQueue();
+
+	delete _txi;
+	delete _image;
+
+	if (_textureID != 0)
+		GfxMan.abandon(&_textureID, 1);
+
+	_textureID = 0;
+
+	_txi = new TXI();
+
+	load(_name);
+
+	addToQueue();
+
+	return true;
+}
+
 } // End of namespace Aurora
 
 } // End of namespace Graphics

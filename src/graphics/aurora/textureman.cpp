@@ -157,6 +157,26 @@ void TextureManager::release(TextureHandle &handle) {
 	handle.clear();
 }
 
+void TextureManager::reloadAll() {
+	Common::StackLock lock(_mutex);
+
+	GfxMan.lockFrame();
+
+	TextureMap::iterator texture;
+	try {
+
+		for (texture = _textures.begin(); texture != _textures.end(); ++texture)
+			texture->second->texture->reload(texture->first);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed reloading texture \"%s\"", texture->first.c_str());
+		throw;
+	}
+
+	RequestMan.sync();
+	GfxMan.unlockFrame();
+}
+
 void TextureManager::set() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
