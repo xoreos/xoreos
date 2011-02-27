@@ -31,30 +31,35 @@ namespace Engines {
 
 namespace NWN {
 
-MainMenu::MainMenu() : _xp1(0), _xp2(0) {
+MainMenu::MainMenu() {
 	load("pre_main");
 
-	if (ConfigMan.getBool("NWN_hasXP1")) {
-		_xp1 = loadModelGUI("ctl_xp1_text");
-		_xp1->setPosition(124.0, 0.00, 50.0);
+	bool hasXP1 = ConfigMan.getBool("NWN_hasXP1");
+	bool hasXP2 = ConfigMan.getBool("NWN_hasXP2");
+
+	if (hasXP1) {
+		WidgetPanel *xp1 = new WidgetPanel("TextXP1", "ctl_xp1_text");
+		xp1->setPosition(124.0, 0.00, 50.0);
+		addWidget(xp1);
 	}
 
-	if (ConfigMan.getBool("NWN_hasXP2")) {
-		_xp2 = loadModelGUI("ctl_xp2_text");
-		_xp2->setPosition(124.0, -147.0, 50.0);
+	if (hasXP2) {
+		WidgetPanel *xp2 = new WidgetPanel("TextXP2", "ctl_xp2_text");
+		xp2->setPosition(124.0, -147.0, 50.0);
+		addWidget(xp2);
 	}
 
 	getWidget("LoadButton" , true)->setDisabled(true);
 	getWidget("MultiButton", true)->setDisabled(true);
 
-	if (_xp1 || _xp2)
+	if (hasXP1 || hasXP2)
 		// If we have at least an expansion, create the campaign selection game menu
 		_new = new NewCampMenu;
 	else
 		// If not, create the base game menu
 		_new = new NewMenu;
 
-	if (_xp1 || _xp2)
+	if (hasXP1 || hasXP2)
 		// If we have at least an expansion, create the campaign selection movies menu
 		_movies = new MoviesCampMenu;
 	else
@@ -68,27 +73,6 @@ MainMenu::~MainMenu() {
 	delete _new;
 	delete _options;
 	delete _movies;
-
-	delete _xp2;
-	delete _xp1;
-}
-
-void MainMenu::show() {
-	GUI::show();
-
-	if (_xp1)
-		_xp1->show();
-	if (_xp2)
-		_xp2->show();
-}
-
-void MainMenu::hide() {
-	GUI::hide();
-
-	if (_xp1)
-		_xp1->hide();
-	if (_xp2)
-		_xp2->hide();
 }
 
 void MainMenu::callbackActive(Widget &widget) {

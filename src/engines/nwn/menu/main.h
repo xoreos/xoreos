@@ -29,16 +29,10 @@ public:
 	MainMenu();
 	~MainMenu();
 
-	void show();
-	void hide();
-
 protected:
 	void callbackActive(Widget &widget);
 
 private:
-	Graphics::Aurora::Model *_xp1;
-	Graphics::Aurora::Model *_xp2;
-
 	GUI *_new;
 	GUI *_movies;
 	GUI *_options;
