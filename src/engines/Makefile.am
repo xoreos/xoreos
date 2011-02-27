@@ -9,6 +9,7 @@ noinst_HEADERS = engine.h \
                  enginemanager.h \
                  gamethread.h \
                  aurora/util.h \
+                 aurora/resources.h \
                  aurora/modelloader.h \
                  aurora/model.h \
                  aurora/gui.h
@@ -17,6 +18,7 @@ libengines_la_SOURCES = engine.cpp \
                         enginemanager.cpp \
                         gamethread.cpp \
                         aurora/util.cpp \
+                        aurora/resources.cpp \
                         aurora/modelloader.cpp \
                         aurora/model.cpp \
                         aurora/gui.cpp

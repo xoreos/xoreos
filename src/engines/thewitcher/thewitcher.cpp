@@ -16,6 +16,7 @@
 #include "engines/thewitcher/modelloader.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
 #include "common/util.h"

@@ -14,13 +14,6 @@
 
 #include "engines/engine.h"
 
-#include "common/error.h"
-#include "common/ustring.h"
-#include "common/stream.h"
-
-#include "events/events.h"
-
-#include "aurora/resman.h"
 
 namespace Engines {
 
@@ -28,52 +21,6 @@ Engine::Engine() {
 }
 
 Engine::~Engine() {
-}
-
-void Engine::indexMandatoryArchive(Aurora::ArchiveType archive, const Common::UString &file, uint32 priority) {
-
-	if (EventMan.quitRequested())
-		return;
-
-	ResMan.addArchive(archive, file, priority);
-}
-
-bool Engine::indexOptionalArchive(Aurora::ArchiveType archive, const Common::UString &file, uint32 priority) {
-
-	if (EventMan.quitRequested())
-		return false;
-
-	try {
-		ResMan.addArchive(archive, file, priority);
-	} catch (Common::Exception &e) {
-		return false;
-	}
-
-	return true;
-}
-
-void Engine::indexMandatoryDirectory(const Common::UString &dir,
-		const char *glob, int depth, uint32 priority) {
-
-	if (EventMan.quitRequested())
-		return;
-
-	ResMan.addResourceDir(dir, glob, depth, priority);
-}
-
-bool Engine::indexOptionalDirectory(const Common::UString &dir,
-		const char *glob, int depth, uint32 priority) {
-
-	if (EventMan.quitRequested())
-		return false;
-
-	try {
-		ResMan.addResourceDir(dir, glob, depth, priority);
-	} catch (Common::Exception &e) {
-		return false;
-	}
-
-	return true;
 }
 
 } // End of namespace Engine

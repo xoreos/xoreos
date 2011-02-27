@@ -17,6 +17,7 @@
 #include "engines/kotor2/module.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
 #include "common/util.h"
