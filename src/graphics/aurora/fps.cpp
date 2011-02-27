@@ -34,6 +34,7 @@ FPS::FPS(const FontHandle &font, float r, float g, float b, float a) :
 }
 
 FPS::~FPS() {
+	removeFromQueue();
 }
 
 void FPS::init() {

@@ -41,6 +41,7 @@ Text::Text(const FontHandle &font, const Common::UString &str,
 }
 
 Text::~Text() {
+	removeFromQueue();
 }
 
 void Text::set(const Common::UString &str) {
