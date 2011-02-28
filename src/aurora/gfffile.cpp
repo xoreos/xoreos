@@ -208,7 +208,7 @@ GFFStruct::Field::Field(FieldType t, uint32 d) : type(t), data(d) {
 	           (type == kFieldTypeExoString  ) ||
 	           (type == kFieldTypeResRef     ) ||
 	           (type == kFieldTypeLocString  ) ||
-	           (type == kFieldTypeLocString  ) ||
+	           (type == kFieldTypeVoid       ) ||
 	           (type == kFieldTypeOrientation) ||
 	           (type == kFieldTypeVector     );
 }
