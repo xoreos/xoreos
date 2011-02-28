@@ -27,6 +27,7 @@ class StackException : public std::exception {
 public:
 	typedef std::stack<UString> Stack;
 
+	StackException();
 	StackException(const char *s, ...);
 	StackException(const StackException &e);
 	~StackException() throw();

@@ -20,6 +20,9 @@
 
 namespace Common {
 
+StackException::StackException() {
+}
+
 StackException::StackException(const char *s, ...) {
 	char buf[STRINGBUFLEN];
 	va_list va;
