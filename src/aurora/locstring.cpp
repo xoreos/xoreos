@@ -132,7 +132,8 @@ const Common::UString &LocString::getFirstString() const {
 void LocString::readString(Language language, Common::SeekableReadStream &stream) {
 	uint32 length = stream.readUint32LE();
 
-	_strings[mapLanguageToStorage(language)].readASCII(stream, length);
+	// TODO: Different encodings for different languages, probably
+	_strings[mapLanguageToStorage(language)].readLatin9(stream, length);
 }
 
 void LocString::readLocSubString(Common::SeekableReadStream &stream) {
