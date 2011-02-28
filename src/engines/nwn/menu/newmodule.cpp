@@ -82,17 +82,19 @@ void NewModuleMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "LoadButton") {
-		Common::UString module = getSelectedModule();
-		if (module.empty())
-			return;
-
-		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", module + ".mod");
+		loadModule();
 		_returnCode = 3;
 		return;
 	}
 
 	if (widget.getTag() == "ModuleListBox") {
 		selectedModule();
+
+		if (dynamic_cast<WidgetEditBox &>(widget).wasDblClicked()) {
+			loadModule();
+			_returnCode = 3;
+		}
+
 		return;
 	}
 }
@@ -128,6 +130,14 @@ void NewModuleMenu::selectedModule() {
 		description = TalkMan.getString(67741);
 
 	getEditBox("ModDescEditBox", true)->set(description);
+}
+
+void NewModuleMenu::loadModule() {
+	Common::UString module = getSelectedModule();
+	if (module.empty())
+		return;
+
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", module + ".mod");
 }
 
 } // End of namespace NWN

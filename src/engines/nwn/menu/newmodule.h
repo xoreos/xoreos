@@ -39,6 +39,7 @@ private:
 
 	void initModuleList();
 	void selectedModule();
+	void loadModule();
 };
 
 } // End of namespace NWN

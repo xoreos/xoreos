@@ -514,6 +514,14 @@ void WidgetCheckButton::mouseDown(uint8 state, float x, float y) {
 	playSound("gui_check", Sound::kSoundTypeSFX);
 }
 
+void WidgetCheckButton::mouseDblClick(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	if (_owner)
+		_owner->mouseDblClick(state, x, y);
+}
+
 void WidgetCheckButton::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
@@ -650,7 +658,7 @@ void WidgetSlider::changePosition(float value) {
 WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &model,
                              const Common::UString &font) : NWNModelWidget(tag, model),
 	_mode(kModeStatic), _scrollbar(0), _startLine(0), _selectedLine(0xFFFFFFFF),
-	_r(1.0), _g(1.0), _b(1.0), _a(1.0) {
+	_r(1.0), _g(1.0), _b(1.0), _a(1.0), _dblClicked(false) {
 
 	_font = FontMan.get(font);
 
@@ -668,6 +676,12 @@ WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &
 }
 
 WidgetEditBox::~WidgetEditBox() {
+}
+
+void WidgetEditBox::show() {
+	NWNModelWidget::show();
+
+	_dblClicked = false;
 }
 
 void WidgetEditBox::createScrollbar() {
@@ -937,6 +951,19 @@ void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
 	updateScroll();
 
 	setActive(true);
+}
+
+void WidgetEditBox::mouseDblClick(uint8 state, float x, float y) {
+	_dblClicked = true;
+	setActive(true);
+}
+
+bool WidgetEditBox::wasDblClicked() {
+	bool dblClicked = _dblClicked;
+
+	_dblClicked = false;
+
+	return dblClicked;
 }
 
 void WidgetEditBox::setMode(Mode mode) {

@@ -170,6 +170,8 @@ public:
 	void mouseDown(uint8 state, float x, float y);
 	void mouseUp  (uint8 state, float x, float y);
 
+	void mouseDblClick(uint8 state, float x, float y);
+
 protected:
 	void signalGroupMemberActive();
 
@@ -232,10 +234,15 @@ public:
 	              const Common::UString &font);
 	~WidgetEditBox();
 
+	void show();
+
 	void setPosition(float x, float y, float z);
 
 	void subActive(Widget &widget);
 	void mouseDown(uint8 state, float x, float y);
+	void mouseDblClick(uint8 state, float x, float y);
+
+	bool wasDblClicked();
 
 	void setMode(Mode mode);
 
@@ -275,6 +282,8 @@ private:
 	float _g;
 	float _b;
 	float _a;
+
+	bool _dblClicked;
 
 	void createScrollbar();
 	void createButtons();
