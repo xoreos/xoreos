@@ -34,14 +34,14 @@ class TalkTable : public AuroraBase {
 public:
 	/** The entries' flags. */
 	enum EntryFlags {
-		kTextPresent = (1 << 0),
-		kSoundPresent = (1 << 1),
-		kSoundLengthPresent = (1 << 2)
+		kFlagTextPresent        = (1 << 0),
+		kFlagSoundPresent       = (1 << 1),
+		kFlagSoundLengthPresent = (1 << 2)
 	};
 
 	/** A talk resource entry. */
 	struct Entry {
-		EntryFlags flags;
+		uint32 flags;
 		Common::UString soundResRef;
 		uint32 volumeVariance; // Unused
 		uint32 pitchVariance; // Unused
@@ -53,17 +53,8 @@ public:
 
 	typedef std::vector<Entry> EntryList;
 
-	TalkTable();
+	TalkTable(Common::SeekableReadStream *tlk);
 	~TalkTable();
-
-	/** Clear all string information. */
-	void clear();
-
-	/** Load a talk table.
-	 *
-	 *  @param tlk A stream of a talk table.
-	 */
-	void load(Common::SeekableReadStream &tlk);
 
 	/** Return the language of the talk table. */
 	Language getLanguage() const;
@@ -73,15 +64,21 @@ public:
 	 *  @param strRef a handle to a string (index).
 	 *  @return 0 if strRef is invalid, otherwise the Entry from the list.
 	 */
-	const Entry *getEntry(uint32 strRef) const;
+	const Entry *getEntry(uint32 strRef);
 
 private:
+	Common::SeekableReadStream *_tlk;
+
+	uint32 _stringsOffset;
+
 	Language _language;
 
 	EntryList _entryList;
 
-	void readEntryTable(Common::SeekableReadStream &tlk);
-	void readStrings(Common::SeekableReadStream &tlk, uint32 dataOffset);
+	void load();
+
+	void readEntryTable();
+	void readString(Entry &entry);
 };
 
 } // End of namespace Aurora

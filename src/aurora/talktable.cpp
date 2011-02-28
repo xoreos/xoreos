@@ -23,21 +23,18 @@ static const uint32 kVersion3  = MKID_BE('V3.0');
 
 namespace Aurora {
 
-TalkTable::TalkTable() {
+TalkTable::TalkTable(Common::SeekableReadStream *tlk) : _tlk(tlk), _stringsOffset(0) {
+	assert(tlk);
+
+	load();
 }
 
 TalkTable::~TalkTable() {
-	AuroraBase::clear();
-
-	clear();
+	delete _tlk;
 }
 
-void TalkTable::clear() {
-	_entryList.clear();
-}
-
-void TalkTable::load(Common::SeekableReadStream &tlk) {
-	readHeader(tlk);
+void TalkTable::load() {
+	readHeader(*_tlk);
 
 	if (_id != kTLKID)
 		throw Common::Exception("Not a TLK file");
@@ -45,22 +42,19 @@ void TalkTable::load(Common::SeekableReadStream &tlk) {
 	if (_version != kVersion3)
 		throw Common::Exception("Unsupported TLK file version %08X", _version);
 
-	_language = (Language) (tlk.readUint32LE() * 2);
+	_language = (Language) (_tlk->readUint32LE() * 2);
 
-	uint32 stringCount = tlk.readUint32LE();
-	uint32 tableOffset = tlk.readUint32LE();
-
+	uint32 stringCount = _tlk->readUint32LE();
 	_entryList.resize(stringCount);
+
+	_stringsOffset = _tlk->readUint32LE();
 
 	try {
 
-		// First, read in all the table data
-		readEntryTable(tlk);
+		// Read in all the table data
+		readEntryTable();
 
-		// Now go and pick up all the strings
-		readStrings(tlk, tableOffset);
-
-		if (tlk.err())
+		if (_tlk->err())
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
@@ -70,37 +64,46 @@ void TalkTable::load(Common::SeekableReadStream &tlk) {
 
 }
 
-void TalkTable::readEntryTable(Common::SeekableReadStream &tlk) {
+void TalkTable::readEntryTable() {
 	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
-		entry->flags          = (EntryFlags) tlk.readUint32LE();
-		entry->soundResRef.readASCII(tlk, 16);
-		entry->volumeVariance = tlk.readUint32LE();
-		entry->pitchVariance  = tlk.readUint32LE();
-		entry->offset         = tlk.readUint32LE();
-		entry->length         = tlk.readUint32LE();
-		entry->soundLength    = tlk.readIEEEFloatLE();
+		entry->flags          = _tlk->readUint32LE();
+		entry->soundResRef.readASCII(*_tlk, 16);
+		entry->volumeVariance = _tlk->readUint32LE();
+		entry->pitchVariance  = _tlk->readUint32LE();
+		entry->offset         = _tlk->readUint32LE();
+		entry->length         = _tlk->readUint32LE();
+		entry->soundLength    = _tlk->readIEEEFloatLE();
 	}
 }
 
-void TalkTable::readStrings(Common::SeekableReadStream &tlk, uint32 dataOffset) {
-	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
-		if (!tlk.seek(dataOffset + entry->offset))
-			throw Common::Exception(Common::kSeekError);
+void TalkTable::readString(Entry &entry) {
+	if (!entry.text.empty() || (entry.length == 0) || !(entry.flags & kFlagTextPresent))
+		// We already have the string
+		return;
 
-		entry->text.readLatin9(tlk, entry->length);
-	}
+	assert(_tlk);
+
+	if (!_tlk->seek(_stringsOffset + entry.offset))
+		throw Common::Exception(Common::kSeekError);
+
+	// TODO: Different encodings for different languages, probably
+	entry.text.readLatin9(*_tlk, MIN<uint32>(entry.length, _tlk->size() - _tlk->pos()));
 }
 
 Language TalkTable::getLanguage() const {
 	return _language;
 }
 
-const TalkTable::Entry *TalkTable::getEntry(uint32 strRef) const {
+const TalkTable::Entry *TalkTable::getEntry(uint32 strRef) {
 	// If invalid or not loaded, return 0
 	if (strRef >= _entryList.size())
 		return 0;
 
-	return &_entryList[strRef];
+	Entry &entry = _entryList[strRef];
+
+	readString(entry);
+
+	return &entry;
 }
 
 } // End of namespace Aurora

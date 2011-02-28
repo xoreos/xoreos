@@ -58,6 +58,8 @@ private:
 	TalkTable *_altTableF;
 
 	const TalkTable::Entry *getEntry(uint32 strRef);
+
+	void addTable(const Common::UString &name, TalkTable *&m, TalkTable *&f);
 };
 
 } // End of namespace Aurora
