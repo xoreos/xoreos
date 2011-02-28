@@ -184,7 +184,7 @@ void NWNEngine::init() {
 	indexOptionalDirectory ("database"  , 0, 0, 26);
 
 	status("Indexing override files");
-	indexOptionalDirectory("override", 0, 0, 30);
+	indexOptionalDirectory("override", 0, 0, 1000);
 
 	if (EventMan.quitRequested())
 		return;
@@ -280,6 +280,8 @@ void NWNEngine::checkConfig() {
 }
 
 void NWNEngine::deinit() {
+	unloadModule();
+
 	delete _fps;
 }
 
@@ -320,10 +322,8 @@ void NWNEngine::mainMenuLoop() {
 
 			startSection = code;
 			Common::UString module = ConfigMan.getString("NWN_moduleToLoad");
-			if (module.empty())
+			if (module.empty() || !loadModule())
 				continue;
-
-			warning("Want to run module \"%s\"", module.c_str());
 
 			// Char selection
 			// if (!hasChar)
@@ -370,6 +370,48 @@ void NWNEngine::loadTexturePack() {
 		TextureMan.reloadAll();
 
 	_currentTexturePack = level;
+}
+
+void NWNEngine::unloadModule() {
+	ResMan.undo(_resCurModule);
+
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentModule", "");
+}
+
+bool NWNEngine::loadModule() {
+	unloadModule();
+
+	Common::UString module = ConfigMan.getString("NWN_moduleToLoad");
+	if (module.empty())
+		return false;
+
+	warning("Loading module \"%s\"", module.c_str());
+
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "");
+
+	bool hasError = false;
+	Common::Exception error;
+
+	try {
+		indexMandatoryArchive(Aurora::kArchiveERF, module, 100, &_resCurModule);
+	} catch (Common::Exception &e) {
+		error = e;
+		hasError = true;
+	} catch (std::exception &e) {
+		error = Common::Exception(e.what());
+		hasError = true;
+	} catch (...) {
+		hasError = true;
+	}
+
+	if (hasError) {
+		error.add("Can't load module \"%s\"", module.c_str());
+		printException(error, "WARNING: ");
+		return false;
+	}
+
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentModule", module);
+	return true;
 }
 
 } // End of namespace NWN

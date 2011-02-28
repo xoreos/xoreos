@@ -82,11 +82,14 @@ private:
 	void initCursors();
 	void initConfig();
 
+	void deinit();
+
 	void checkConfig();
 
 	void loadTexturePack();
 
-	void deinit();
+	void unloadModule();
+	bool loadModule();
 
 	void mainMenuLoop();
 };
