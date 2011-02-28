@@ -15,6 +15,8 @@
 #include "common/util.h"
 #include "common/configman.h"
 
+#include "aurora/talkman.h"
+
 #include "graphics/graphics.h"
 
 #include "engines/nwn/menu/optionsvideo.h"
@@ -38,8 +40,6 @@ OptionsVideoMenu::OptionsVideoMenu(bool isMain) {
 
 	// TODO: Video quality
 	getWidget("VidQualSlider", true)->setDisabled(true);
-	getWidget("TextureSlider", true)->setDisabled(true);
-	getWidget("ApplyButton"  , true)->setDisabled(true);
 
 	// TODO: Sky boxes
 	getWidget("SkyboxBox", true)->setDisabled(true);
@@ -74,12 +74,22 @@ void OptionsVideoMenu::show() {
 
 	getSlider("GammaSlider", true)->setState(gammaValue);
 
+	_textureLevel = ConfigMan.getInt("texturepack", 1);
+	getSlider("TextureSlider", true)->setState(_textureLevel);
+
+	updateTextureQualityLabel();
+
 	GUI::show();
 }
 
 void OptionsVideoMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "GammaSlider") {
 		dynamic_cast<WidgetSlider &>(widget).setSteps(19);
+		return;
+	}
+
+	if (widget.getTag() == "TextureSlider") {
+		dynamic_cast<WidgetSlider &>(widget).setSteps(3);
 		return;
 	}
 }
@@ -126,10 +136,27 @@ void OptionsVideoMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
+	if (widget.getTag() == "TextureSlider") {
+		_textureLevel = dynamic_cast<WidgetSlider &>(widget).getState();
+
+		updateTextureQualityLabel();
+		return;
+	}
+
+	if (widget.getTag() == "ApplyButton") {
+		ConfigMan.setInt("texturepack", _textureLevel);
+		return;
+	}
+
+}
+
+void OptionsVideoMenu::updateTextureQualityLabel() {
+	getLabel("TextureQualDesc", true)->setText(TalkMan.getString(7031 + _textureLevel));
 }
 
 void OptionsVideoMenu::adoptChanges() {
 	ConfigMan.setDouble("gamma", GfxMan.getGamma(), true);
+	ConfigMan.setInt("texturepack", _textureLevel);
 }
 
 void OptionsVideoMenu::revertChanges() {

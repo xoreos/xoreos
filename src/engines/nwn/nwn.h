@@ -18,6 +18,7 @@
 #include "common/ustring.h"
 
 #include "aurora/types.h"
+#include "aurora/resman.h"
 
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
@@ -71,9 +72,19 @@ private:
 
 	Graphics::Aurora::FPS *_fps;
 
+	// Texture pack
+	int _currentTexturePack;
+	Aurora::ResourceManager::ChangeID _resTP[4];
+
+	Aurora::ResourceManager::ChangeID _resCurModule;
+
 	void init();
 	void initCursors();
 	void initConfig();
+
+	void checkConfig();
+
+	void loadTexturePack();
 
 	void deinit();
 

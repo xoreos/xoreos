@@ -39,6 +39,10 @@ private:
 
 	float _gamma;
 
+	int _textureLevel;
+
+	void updateTextureQualityLabel();
+
 	void adoptChanges();
 	void revertChanges();
 };

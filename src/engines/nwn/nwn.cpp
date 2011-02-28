@@ -88,7 +88,7 @@ Engines::Engine *NWNEngineProbe::createEngine() const {
 }
 
 
-NWNEngine::NWNEngine() : _fps(0) {
+NWNEngine::NWNEngine() : _fps(0), _currentTexturePack(-1) {
 }
 
 NWNEngine::~NWNEngine() {
@@ -97,9 +97,11 @@ NWNEngine::~NWNEngine() {
 void NWNEngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
+	initConfig();
+	checkConfig();
+
 	init();
 	initCursors();
-	initConfig();
 
 	if (EventMan.quitRequested())
 		return;
@@ -161,14 +163,10 @@ void NWNEngine::init() {
 	_hasXP3 = indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key", 6);
 	indexOptionalArchive(Aurora::kArchiveKEY, "xp3patch.key", 7);
 
-	status("Loading high-res texture packs");
+	status("Loading GUI textures");
 	indexMandatoryArchive(Aurora::kArchiveERF, "gui_32bit.erf"   , 10);
 	indexOptionalArchive (Aurora::kArchiveERF, "xp1_gui.erf"     , 11);
 	indexOptionalArchive (Aurora::kArchiveERF, "xp2_gui.erf"     , 12);
-	indexMandatoryArchive(Aurora::kArchiveERF, "textures_tpa.erf", 13);
-	indexMandatoryArchive(Aurora::kArchiveERF, "tiles_tpa.erf"   , 14);
-	indexOptionalArchive (Aurora::kArchiveERF, "xp1_tex_tpa.erf" , 15);
-	indexOptionalArchive (Aurora::kArchiveERF, "xp2_tex_tpa.erf" , 16);
 
 	status("Indexing extra sound resources");
 	indexMandatoryDirectory("ambient"   , 0, 0, 20);
@@ -265,7 +263,8 @@ void NWNEngine::initCursors() {
 }
 
 void NWNEngine::initConfig() {
-	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty", 0);
+	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack", 1);
+	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty" , 0);
 
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP1", _hasXP1);
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP2", _hasXP2);
@@ -273,6 +272,11 @@ void NWNEngine::initConfig() {
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_extraModuleDir",
 		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
+}
+
+void NWNEngine::checkConfig() {
+	checkConfigInt("texturepack", 0, 3, 1);
+	checkConfigInt("difficulty" , 0, 3, 0);
 }
 
 void NWNEngine::deinit() {
@@ -335,6 +339,37 @@ void NWNEngine::mainMenuLoop() {
 	}
 
 	delete mainMenu;
+}
+
+static const char *texturePacks[4][4] = {
+	{ "textures_tpc.erf", "tiles_tpc.erf", "xp1_tex_tpc.erf", "xp2_tex_tpc.erf" }, // Worst
+	{ "textures_tpa.erf", "tiles_tpc.erf", "xp1_tex_tpc.erf", "xp2_tex_tpc.erf" }, // Bad
+	{ "textures_tpa.erf", "tiles_tpb.erf", "xp1_tex_tpb.erf", "xp2_tex_tpb.erf" }, // Okay
+	{ "textures_tpa.erf", "tiles_tpa.erf", "xp1_tex_tpa.erf", "xp2_tex_tpa.erf" }  // Best
+};
+
+void NWNEngine::loadTexturePack() {
+	int level = ConfigMan.getInt("texturepack", 1);
+	if (_currentTexturePack == level)
+		// Nothing to do
+		return;
+
+	// Unload the currently loaded texture pack
+	for (int i = 0; i < 4; i++)
+		ResMan.undo(_resTP[i]);
+
+	// Load new the texture pack
+	status("Loading texture pack %d", level);
+	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][0], 13, &_resTP[0]);
+	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][1], 14, &_resTP[1]);
+	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][2], 15, &_resTP[2]);
+	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][3], 16, &_resTP[3]);
+
+	// If we already had a texture pack loaded, reload all textures
+	if (_currentTexturePack != -1)
+		TextureMan.reloadAll();
+
+	_currentTexturePack = level;
 }
 
 } // End of namespace NWN
