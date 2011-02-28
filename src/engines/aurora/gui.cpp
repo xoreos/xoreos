@@ -62,6 +62,12 @@ void Widget::show() {
 		// Already shown, nothing to do
 		return;
 
+	// Reset the double-click info
+	_lastClickButton = 0;
+	_lastClickTime   = 0;
+	_lastClickX      = 0.0;
+	_lastClickY      = 0.0;
+
 	if (!_invisible)
 		_visible = true;
 
