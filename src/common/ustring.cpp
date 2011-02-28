@@ -328,7 +328,7 @@ uint32 UString::size() const {
 }
 
 bool UString::empty() const {
-	return _string.empty();
+	return _string.empty() || (_string[0] == '\0');
 }
 
 const char *UString::c_str() const {
