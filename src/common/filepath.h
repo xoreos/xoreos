@@ -123,6 +123,9 @@ public:
 	 */
 	static UString findSubDirectory(const UString &directory, const UString &subDirectory,
 	                                bool caseInsensitive = false);
+
+	/** Escape a string literal for use in a regexp. */
+	static UString escapeStringLiteral(const UString &str);
 };
 
 } // End of namespace Common

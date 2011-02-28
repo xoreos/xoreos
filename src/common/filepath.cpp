@@ -16,6 +16,7 @@
 
 #include "boost/algorithm/string.hpp"
 #include "boost/system/config.hpp"
+#include "boost/regex.hpp"
 
 #include "common/filepath.h"
 #include "common/util.h"
@@ -222,6 +223,13 @@ UString FilePath::findSubDirectory(const UString &directory, const UString &subD
 			return "";
 
 	return curDir;
+}
+
+UString FilePath::escapeStringLiteral(const UString &str) {
+	const boost::regex esc("[\\^\\.\\$\\|\\(\\)\\[\\]\\*\\+\\?\\/\\\\]");
+	const std::string  rep("\\\\\\1&");
+
+	return boost::regex_replace(std::string(str.c_str()), esc, rep, boost::match_default | boost::format_sed);
 }
 
 } // End of namespace Common
