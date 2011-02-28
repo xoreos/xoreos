@@ -132,6 +132,14 @@ public:
 	 */
 	void addArchiveDir(ArchiveType archive, const Common::UString &dir);
 
+	/** Does a specific archive exist?
+	 *
+	 *  @param  archive The type of archive to check.
+	 *  @param  name The name of the archive file.
+	 *  @return true if the archive exists, false otherwise.
+	 */
+	bool hasArchive(ArchiveType archive, const Common::UString &file);
+
 	/** Add an archive file and all its resources to the resource manager.
 	 *
 	 *  @param  archive The type of archive to add.

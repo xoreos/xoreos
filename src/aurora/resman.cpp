@@ -163,6 +163,15 @@ Common::UString ResourceManager::findArchive(const Common::UString &file,
 	return "";
 }
 
+bool ResourceManager::hasArchive(ArchiveType archive, const Common::UString &file) {
+	assert((archive >= 0) && (archive < kArchiveMAX));
+
+	if (archive == kArchiveNDS)
+		return Common::File::exists(file);
+
+	return !findArchive(file, _archiveDirs[archive], _archiveFiles[archive]).empty();
+}
+
 ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 		const Common::UString &file, uint32 priority) {
 
