@@ -83,12 +83,17 @@ private:
 	IFOFile _ifo;
 
 	void init();
-	void initCursors();
+
 	void initConfig();
+	void initResources();
+	void initCursors();
+	void initGameConfig();
 
 	void deinit();
 
 	void checkConfig();
+
+	void playIntroVideos();
 
 	void loadTexturePack();
 

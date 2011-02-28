@@ -88,7 +88,9 @@ Engines::Engine *NWNEngineProbe::createEngine() const {
 }
 
 
-NWNEngine::NWNEngine() : _fps(0), _currentTexturePack(-1) {
+NWNEngine::NWNEngine() : _hasXP1(false), _hasXP2(false), _hasXP3(false),
+	_fps(0), _currentTexturePack(-1) {
+
 }
 
 NWNEngine::~NWNEngine() {
@@ -97,12 +99,7 @@ NWNEngine::~NWNEngine() {
 void NWNEngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
-	initConfig();
-	checkConfig();
-
 	init();
-	initCursors();
-
 	if (EventMan.quitRequested())
 		return;
 
@@ -111,11 +108,7 @@ void NWNEngine::run(const Common::UString &target) {
 	CursorMan.hideCursor();
 	CursorMan.set("default", true);
 
-	playVideo("atarilogo");
-	playVideo("biowarelogo");
-	playVideo("wotclogo");
-	playVideo("fge_logo_black");
-	playVideo("nwnintro");
+	playIntroVideos();
 	if (EventMan.quitRequested())
 		return;
 
@@ -132,6 +125,26 @@ void NWNEngine::run(const Common::UString &target) {
 }
 
 void NWNEngine::init() {
+	initConfig();
+	checkConfig();
+
+	if (EventMan.quitRequested())
+		return;
+
+	initResources();
+
+	if (EventMan.quitRequested())
+		return;
+
+	initCursors();
+
+	if (EventMan.quitRequested())
+		return;
+
+	initGameConfig();
+}
+
+void NWNEngine::initResources() {
 	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 	indexMandatoryDirectory("", 0, 0, 0);
@@ -265,7 +278,9 @@ void NWNEngine::initCursors() {
 void NWNEngine::initConfig() {
 	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack", 1);
 	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty" , 0);
+}
 
+void NWNEngine::initGameConfig() {
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP1", _hasXP1);
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP2", _hasXP2);
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP3", _hasXP3);
@@ -283,6 +298,14 @@ void NWNEngine::deinit() {
 	unloadModule();
 
 	delete _fps;
+}
+
+void NWNEngine::playIntroVideos() {
+	playVideo("atarilogo");
+	playVideo("biowarelogo");
+	playVideo("wotclogo");
+	playVideo("fge_logo_black");
+	playVideo("nwnintro");
 }
 
 void NWNEngine::mainMenuLoop() {
