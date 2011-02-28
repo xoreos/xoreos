@@ -1211,6 +1211,8 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFFStruct &s, Widget *p) {
 		uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
 		if (strRef != 0xFFFFFFFF)
 			text = TalkMan.getString(strRef);
+		else
+			text = caption.getString("AurString_Text");
 
 		if (text.empty())
 			text = " ";
