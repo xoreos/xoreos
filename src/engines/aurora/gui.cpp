@@ -22,11 +22,16 @@
 
 #include "engines/aurora/gui.h"
 
+/** Time between clicks to still be considered a double-click. */
+static const uint32 kDoubleClickTime = 500;
+
 namespace Engines {
 
 Widget::Widget(const Common::UString &tag) : _tag(tag),
 	_owner(0), _active(false), _visible(false), _disabled(false), _invisible(false),
-	_x(0.0), _y(0.0), _z(0.0) {
+	_x(0.0), _y(0.0), _z(0.0),
+	_lastClickButton(0), _lastClickTime(0), _lastClickX(0.0), _lastClickY(0.0) {
+
 }
 
 Widget::~Widget() {
@@ -146,6 +151,9 @@ void Widget::mouseDown(uint8 state, float x, float y) {
 }
 
 void Widget::mouseUp(uint8 state, float x, float y) {
+}
+
+void Widget::mouseDblClick(uint8 state, float x, float y) {
 }
 
 void Widget::subActive(Widget &widget) {
@@ -363,9 +371,14 @@ void GUI::checkWidgetActive(Widget *widget) {
 		// No widget => not active => return
 		return;
 
-	if (!widget->isActive())
-		// Not active => return
+	if (!widget->isActive()) {
+		// Not active, check if the owner's active instead
+
+		if (widget->_owner)
+			checkWidgetActive(widget->_owner);
+
 		return;
+	}
 
 	if (widget->_owner) {
 		// This is a subwidget, call the owner's active callback
@@ -449,8 +462,26 @@ void GUI::mouseDown(Widget *widget, const Events::Event &event) {
 }
 
 void GUI::mouseUp(Widget *widget, const Events::Event &event) {
-	if (widget)
-		widget->mouseUp(event.button.button, toGUIX(event.button.x), toGUIY(event.button.y));
+	if (widget) {
+		uint8 button = event.button.button;
+		float x      = toGUIX(event.button.x);
+		float y      = toGUIY(event.button.y);
+
+		widget->mouseUp(button, x, y);
+
+		uint32 curTime = EventMan.getTimestamp();
+		if (((curTime - widget->_lastClickTime) < kDoubleClickTime) &&
+		    (widget->_lastClickButton == button) &&
+		    (widget->_lastClickX = x) && (widget->_lastClickY = x)) {
+
+			widget->mouseDblClick(button, x, y);
+		}
+
+		widget->_lastClickButton = button;
+		widget->_lastClickTime   = curTime;
+		widget->_lastClickX      = x;
+		widget->_lastClickY      = y;
+	}
 }
 
 } // End of namespace Engines
