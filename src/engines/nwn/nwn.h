@@ -100,6 +100,8 @@ private:
 	void unloadModule();
 	bool loadModule();
 
+	void checkModuleHAKs();
+
 	void mainMenuLoop();
 };
 

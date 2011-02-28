@@ -432,6 +432,8 @@ bool NWNEngine::loadModule() {
 			throw Common::Exception("Expansion requirements not met (want %d, got %d)",
 					xp, (_hasXP3 ? 4 : 0) | (_hasXP2 ? 2 : 0) | (_hasXP1 ? 1 : 0));
 
+		checkModuleHAKs();
+
 		_ifo.loadTLK();
 
 	} catch (Common::Exception &e) {
@@ -454,6 +456,13 @@ bool NWNEngine::loadModule() {
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentModule", module);
 	return true;
+}
+
+void NWNEngine::checkModuleHAKs() {
+	const std::vector<Common::UString> &haks = _ifo.getHAKs();
+	for (std::vector<Common::UString>::const_iterator h = haks.begin(); h != haks.end(); ++h)
+		if (!ResMan.hasArchive(Aurora::kArchiveERF, *h + ".hak"))
+			throw Common::Exception("Required hak \"%s\" does not exist", h->c_str());
 }
 
 } // End of namespace NWN
