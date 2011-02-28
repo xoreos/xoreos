@@ -83,7 +83,7 @@ private:
 	/** Map over resources, indexed by name. */
 	typedef std::map<Common::UString, ResourceTypeMap> ResourceMap;
 
-	/** A changes produced by a manager operation. */
+	/** A change produced by a manager operation. */
 	struct ResourceChange {
 		ResourceMap::iterator     nameIt;
 		ResourceTypeMap::iterator typeIt;
@@ -158,7 +158,7 @@ public:
 	/** Undo the changes done in the specified change ID. */
 	void undo(ChangeID &change);
 
-	/** Does a specific resource exists?
+	/** Does a specific resource exist?
 	 *
 	 *  @param  name The name (ResRef) of the resource.
 	 *  @param  type The resource's type.
@@ -166,7 +166,7 @@ public:
 	 */
 	bool hasResource(const Common::UString &name, FileType type) const;
 
-	/** Does a specific resource exists?
+	/** Does a specific resource exist?
 	 *
 	 *  @param  name The name (ResRef) of the resource.
 	 *  @param  types The resource's types.
