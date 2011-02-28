@@ -313,7 +313,10 @@ void NWNEngine::mainMenuLoop() {
 		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "");
 
 		// Run the main menu
+		mainMenu->show();
 		int code = mainMenu->run(startSection);
+		mainMenu->hide();
+
 		if (EventMan.quitRequested())
 			return;
 
@@ -373,6 +376,8 @@ void NWNEngine::loadTexturePack() {
 }
 
 void NWNEngine::unloadModule() {
+	_ifo.unload();
+
 	ResMan.undo(_resCurModule);
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentModule", "");
@@ -385,8 +390,6 @@ bool NWNEngine::loadModule() {
 	if (module.empty())
 		return false;
 
-	warning("Loading module \"%s\"", module.c_str());
-
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "");
 
 	bool hasError = false;
@@ -394,6 +397,20 @@ bool NWNEngine::loadModule() {
 
 	try {
 		indexMandatoryArchive(Aurora::kArchiveERF, module, 100, &_resCurModule);
+
+		_ifo.load();
+
+		if (_ifo.isSave())
+			throw Common::Exception("This is a save");
+
+		uint16 xp = _ifo.getExpansions();
+		if (((xp & 0xFFF8) != 0) ||
+		    ((xp & 1) && !_hasXP1) || ((xp & 2) && !_hasXP2) || ((xp & 4) && !_hasXP3))
+			throw Common::Exception("Expansion requirements not met (want %d, got %d)",
+					xp, (_hasXP3 ? 4 : 0) | (_hasXP2 ? 2 : 0) | (_hasXP1 ? 1 : 0));
+
+		_ifo.loadTLK();
+
 	} catch (Common::Exception &e) {
 		error = e;
 		hasError = true;
@@ -409,6 +426,8 @@ bool NWNEngine::loadModule() {
 		printException(error, "WARNING: ");
 		return false;
 	}
+
+	status("Loaded module \"%s\"", _ifo.getName().getFirstString().c_str());
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentModule", module);
 	return true;

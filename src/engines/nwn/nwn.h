@@ -23,6 +23,8 @@
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
+#include "engines/nwn/ifofile.h"
+
 namespace Common {
 	class FileList;
 }
@@ -77,6 +79,8 @@ private:
 	Aurora::ResourceManager::ChangeID _resTP[4];
 
 	Aurora::ResourceManager::ChangeID _resCurModule;
+
+	IFOFile _ifo;
 
 	void init();
 	void initCursors();
