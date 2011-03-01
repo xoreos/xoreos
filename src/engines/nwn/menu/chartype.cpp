@@ -14,6 +14,8 @@
 
 #include "engines/nwn/menu/chartype.h"
 #include "engines/nwn/menu/newgamefog.h"
+#include "engines/nwn/menu/charnew.h"
+#include "engines/nwn/menu/charpremade.h"
 
 namespace Engines {
 
@@ -23,9 +25,15 @@ CharTypeMenu::CharTypeMenu() {
 	load("pre_chartype");
 
 	_fogs = new NewGameFogs(4);
+
+	_charNew     = new CharNewMenu;
+	_charPremade = new CharPremadeMenu;
 }
 
 CharTypeMenu::~CharTypeMenu() {
+	delete _charPremade;
+	delete _charNew;
+
 	delete _fogs;
 }
 
@@ -38,6 +46,16 @@ void CharTypeMenu::show() {
 void CharTypeMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "CancelButton") {
 		_returnCode = 1;
+		return;
+	}
+
+	if (widget.getTag() == "CreateNewButton") {
+		sub(*_charNew);
+		return;
+	}
+
+	if (widget.getTag() == "UsePremadeButton") {
+		sub(*_charPremade);
 		return;
 	}
 

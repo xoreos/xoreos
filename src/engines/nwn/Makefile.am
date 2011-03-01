@@ -14,6 +14,8 @@ noinst_HEADERS = nwn.h \
                  menu/newcamp.h \
                  menu/newmodule.h \
                  menu/chartype.h \
+                 menu/charnew.h \
+                 menu/charpremade.h \
                  menu/moviescamp.h \
                  menu/moviesbase.h \
                  menu/options.h \
@@ -39,6 +41,8 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/newcamp.cpp \
                     menu/newmodule.cpp \
                     menu/chartype.cpp \
+                    menu/charnew.cpp \
+                    menu/charpremade.cpp \
                     menu/moviescamp.cpp \
                     menu/moviesbase.cpp \
                     menu/options.cpp \

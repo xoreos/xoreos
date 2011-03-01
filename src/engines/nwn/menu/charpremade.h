@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/chartype.h
- *  The new/premade character selection menu.
+/** @file engines/nwn/menu/charpremade.h
+ *  The premade character chooser.
  */
 
-#ifndef ENGINES_NWN_MENU_CHARTYPE_H
-#define ENGINES_NWN_MENU_CHARTYPE_H
+#ifndef ENGINES_NWN_MENU_CHARPREMADE_H
+#define ENGINES_NWN_MENU_CHARPREMADE_H
 
 #include "engines/nwn/menu/gui.h"
 
@@ -21,28 +21,21 @@ namespace Engines {
 
 namespace NWN {
 
-class NewGameFogs;
-
-/** The NWN new/premade character selection menu. */
-class CharTypeMenu : public GUI {
+/** The NWN character creator. */
+class CharPremadeMenu : public GUI {
 public:
-	CharTypeMenu();
-	~CharTypeMenu();
-
-	void show();
+	CharPremadeMenu();
+	~CharPremadeMenu();
 
 protected:
 	void callbackActive(Widget &widget);
 
 private:
-	NewGameFogs *_fogs;
-
 	GUI *_charNew;
-	GUI *_charPremade;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_CHARTYPE_H
+#endif // ENGINES_NWN_MENU_CHARPREMADE_H
