@@ -27,11 +27,21 @@ public:
 	CharPremadeMenu();
 	~CharPremadeMenu();
 
+	void show();
+
 protected:
 	void callbackActive(Widget &widget);
 
 private:
 	GUI *_charNew;
+
+	std::vector<Common::UString> _characters;
+
+	Common::UString getCharacterName(const Common::UString &file);
+	Common::UString getSelectedCharacter();
+
+	void initCharacterList();
+	void playCharacter();
 };
 
 } // End of namespace NWN

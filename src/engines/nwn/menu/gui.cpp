@@ -722,8 +722,10 @@ void WidgetEditBox::createButtons() {
 		return;
 
 	Common::UString buttonResRef;
-	if (getWidth() >= 440)
+	if      (getWidth() >= 440)
 		buttonResRef = "ctl_btn_txt407";
+	else if (getWidth() >= 353)
+		buttonResRef = "ctl_pre_btn_char";
 
 	if (buttonResRef.empty()) {
 		warning("TODO: WidgetEditBox with buttons, width = %f", getWidth());
@@ -741,8 +743,12 @@ void WidgetEditBox::createButtons() {
 		delete btn;
 	}
 
-	//          model height / (button height + border)
-	int count = getHeight() / (buttonHeight + 2);
+	float bottomX, bottomY, bottomZ;
+	if (!_model->getNodePosition("scrollmax", bottomX, bottomY, bottomZ))
+		bottomY = 12;
+
+	//          (top - bottom) / (button height + border)
+	int count = (listY + buttonHeight - (bottomY - 10)) / (buttonHeight + 2);
 
 	// Create the buttons
 	_buttons.resize(count);
@@ -1340,9 +1346,13 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 }
 
 void GUI::createWidget(WidgetContext &ctx) {
+	// ....BioWare....
 	if ((_name == "options_adv_vid") && (ctx.tag == "CreatureWind"))
-		// ....BioWare....
 		ctx.type = kWidgetTypeSlider;
+	if ((_name == "pre_playmod") && (ctx.tag == "ButtonList")) {
+		ctx.type = kWidgetTypeEditBox;
+		ctx.font = "fnt_galahad14";
+	}
 
 	if      (ctx.type == kWidgetTypeFrame)
 		ctx.widget = new WidgetFrame(ctx.tag, ctx.model);

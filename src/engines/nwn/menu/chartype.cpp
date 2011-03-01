@@ -55,7 +55,9 @@ void CharTypeMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "UsePremadeButton") {
-		sub(*_charPremade);
+		if (sub(*_charPremade) == 2)
+			_returnCode = 2;
+
 		return;
 	}
 

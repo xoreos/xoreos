@@ -288,6 +288,8 @@ void NWNEngine::initGameConfig() {
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_extraModuleDir",
 		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_localCharDir",
+		Common::FilePath::findSubDirectory(_baseDirectory, "localvault", true));
 }
 
 void NWNEngine::checkConfig() {
@@ -368,6 +370,7 @@ void NWNEngine::mainMenuLoop() {
 			if ((charCode != 2) || character.empty())
 				continue;
 
+			warning("Want to use character \"%s\"", character.c_str());
 
 			// RUN GAME
 
