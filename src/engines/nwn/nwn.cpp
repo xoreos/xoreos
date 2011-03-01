@@ -298,6 +298,7 @@ void NWNEngine::checkConfig() {
 }
 
 void NWNEngine::deinit() {
+	unloadPC();
 	unloadModule();
 
 	delete _fps;
@@ -336,6 +337,9 @@ void NWNEngine::mainMenuLoop() {
 
 	int startSection = 0;
 	while (!EventMan.quitRequested()) {
+		unloadPC();
+		unloadModule();
+
 		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad"  , "");
 		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_characterToUse", "");
 
@@ -352,8 +356,7 @@ void NWNEngine::mainMenuLoop() {
 			// New game
 
 			startSection = code;
-			Common::UString module = ConfigMan.getString("NWN_moduleToLoad");
-			if (module.empty() || !loadModule())
+			if (!loadModule())
 				continue;
 
 			GUI *charSelection = new CharTypeMenu;
@@ -366,11 +369,8 @@ void NWNEngine::mainMenuLoop() {
 			if (EventMan.quitRequested())
 				break;
 
-			Common::UString character = ConfigMan.getString("NWN_characterToUse");
-			if ((charCode != 2) || character.empty())
+			if ((charCode != 2) || !loadPC())
 				continue;
-
-			warning("Want to use character \"%s\"", character.c_str());
 
 			// RUN GAME
 
@@ -481,6 +481,49 @@ void NWNEngine::checkModuleHAKs() {
 	for (std::vector<Common::UString>::const_iterator h = haks.begin(); h != haks.end(); ++h)
 		if (!ResMan.hasArchive(Aurora::kArchiveERF, *h + ".hak"))
 			throw Common::Exception("Required hak \"%s\" does not exist", h->c_str());
+}
+
+void NWNEngine::unloadPC() {
+	_pc.clear();
+
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentCharacter", "");
+}
+
+bool NWNEngine::loadPC() {
+	unloadPC();
+
+	Common::UString character = ConfigMan.getString("NWN_characterToUse");
+	if (character.empty())
+		return false;
+
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_characterToUse", "");
+
+	bool hasError = false;
+	Common::Exception error;
+
+	try {
+		_pc.loadCharacter(character);
+
+	} catch (Common::Exception &e) {
+		error = e;
+		hasError = true;
+	} catch (std::exception &e) {
+		error = Common::Exception(e.what());
+		hasError = true;
+	} catch (...) {
+		hasError = true;
+	}
+
+	if (hasError) {
+		error.add("Can't load character \"%s\"", character.c_str());
+		printException(error, "WARNING: ");
+		return false;
+	}
+
+	status("Loaded PC character \"%s\"", _pc.getFullName().c_str());
+
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentCharacter", character);
+	return true;
 }
 
 } // End of namespace NWN

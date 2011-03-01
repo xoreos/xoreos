@@ -24,6 +24,7 @@
 #include "engines/engineprobe.h"
 
 #include "engines/nwn/ifofile.h"
+#include "engines/nwn/creature.h"
 
 namespace Common {
 	class FileList;
@@ -82,6 +83,8 @@ private:
 
 	IFOFile _ifo;
 
+	Creature _pc;
+
 	void init();
 
 	void initConfig();
@@ -99,6 +102,9 @@ private:
 
 	void unloadModule();
 	bool loadModule();
+
+	void unloadPC();
+	bool loadPC();
 
 	void checkModuleHAKs();
 

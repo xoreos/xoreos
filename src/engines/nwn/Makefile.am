@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libnwn.la
 noinst_HEADERS = nwn.h \
                  modelloader.h \
                  ifofile.h \
+                 creature.h \
                  menu/scrollbar.h \
                  menu/newgamefog.h \
                  menu/legal.h \
@@ -32,6 +33,7 @@ noinst_HEADERS = nwn.h \
 libnwn_la_SOURCES = nwn.cpp \
                     modelloader.cpp \
                     ifofile.cpp \
+                    creature.cpp \
                     menu/scrollbar.cpp \
                     menu/newgamefog.cpp \
                     menu/legal.cpp \
