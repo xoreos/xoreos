@@ -34,6 +34,8 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	bool _hasXP;
+
 	GUI *_new;
 	GUI *_movies;
 	GUI *_options;

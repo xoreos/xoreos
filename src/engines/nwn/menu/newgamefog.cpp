@@ -89,7 +89,8 @@ public:
 
 };
 
-Graphics::Aurora::Model *createNewGameFog() {
+
+static Graphics::Aurora::Model *createNewGameFog() {
 	Common::SeekableReadStream *fog = ResMan.getResource("pnl_fog", Aurora::kFileTypeMDL);
 	assert(fog);
 
@@ -98,6 +99,32 @@ Graphics::Aurora::Model *createNewGameFog() {
 
 	return fogModel;
 }
+
+
+NewGameFogs::NewGameFogs(uint count) {
+	_fogs.reserve(count);
+
+	for (uint i = 0; i < count; i++)
+		_fogs.push_back(createNewGameFog());
+}
+
+NewGameFogs::~NewGameFogs() {
+	for (std::vector<Graphics::Aurora::Model *>::iterator f = _fogs.begin(); f != _fogs.end(); ++f) {
+		(*f)->hide();
+		delete *f;
+	}
+}
+
+void NewGameFogs::show() {
+	for (std::vector<Graphics::Aurora::Model *>::iterator f = _fogs.begin(); f != _fogs.end(); ++f)
+		(*f)->show();
+}
+
+void NewGameFogs::hide() {
+	for (std::vector<Graphics::Aurora::Model *>::iterator f = _fogs.begin(); f != _fogs.end(); ++f)
+		(*f)->hide();
+}
+
 
 } // End of namespace NWN
 

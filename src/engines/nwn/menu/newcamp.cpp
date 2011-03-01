@@ -52,11 +52,11 @@ void NewCampMenu::callbackRun() {
 	_startCode = 0;
 
 	if (startCode == 2)
-		if (sub(*_base, startCode) == 2)
+		if (sub(*_base, 0) == 2)
 			_returnCode = 2;
 
 	if (startCode == 3)
-		if (sub(*_module, startCode) == 3)
+		if (sub(*_module, 0) == 3)
 			_returnCode = 3;
 }
 

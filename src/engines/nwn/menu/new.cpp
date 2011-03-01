@@ -49,7 +49,7 @@ void NewMenu::callbackRun() {
 	_startCode = 0;
 
 	if ((startCode == 3) && _module)
-		if (sub(*_module, startCode) == 3)
+		if (sub(*_module, 0) == 3)
 			_returnCode = 3;
 }
 

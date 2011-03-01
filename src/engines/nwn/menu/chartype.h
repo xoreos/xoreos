@@ -8,35 +8,38 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/newgamefog.h
- *  The fog behind the new game dialogs.
+/** @file engines/nwn/menu/chartype.h
+ *  The new/premade character selection menu.
  */
 
-#ifndef ENGINES_NWN_MENU_NEWGAMEFOG_H
-#define ENGINES_NWN_MENU_NEWGAMEFOG_H
+#ifndef ENGINES_NWN_MENU_CHARTYPE_H
+#define ENGINES_NWN_MENU_CHARTYPE_H
 
-#include <vector>
-
-#include "graphics/aurora/types.h"
+#include "engines/nwn/menu/gui.h"
 
 namespace Engines {
 
 namespace NWN {
 
-class NewGameFogs {
+class NewGameFogs;
+
+/** The NWN new/premade character selection menu. */
+class CharTypeMenu : public GUI {
 public:
-	NewGameFogs(uint count);
-	~NewGameFogs();
+	CharTypeMenu();
+	~CharTypeMenu();
 
 	void show();
-	void hide();
+
+protected:
+	void callbackActive(Widget &widget);
 
 private:
-	std::vector<Graphics::Aurora::Model *> _fogs;
+	NewGameFogs *_fogs;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_NEWGAMEFOG_H
+#endif // ENGINES_NWN_MENU_CHARTYPE_H

@@ -318,14 +318,16 @@ int GUI::sub(GUI &gui, int startCode) {
 	changedWidget(0);
 
 	// Show the sub GUI
-	gui.show();
+	if (startCode == 0)
+		gui.show();
 	hide();
 
 	// Run the sub GUI
 	int code = gui.run(startCode);
 
 	// Hide the sub GUI
-	show();
+	if (code <= 1)
+		show();
 	gui.hide();
 
 	// Update the mouse position

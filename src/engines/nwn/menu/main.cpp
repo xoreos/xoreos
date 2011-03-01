@@ -39,6 +39,8 @@ MainMenu::MainMenu() {
 	bool hasXP1 = ConfigMan.getBool("NWN_hasXP1");
 	bool hasXP2 = ConfigMan.getBool("NWN_hasXP2");
 
+	_hasXP = hasXP1 || hasXP2;
+
 	if (hasXP1) {
 		WidgetPanel *xp1 = new WidgetPanel("TextXP1", "ctl_xp1_text");
 		xp1->setPosition(124.0, 0.00, 50.0);
@@ -54,14 +56,14 @@ MainMenu::MainMenu() {
 	getWidget("LoadButton" , true)->setDisabled(true);
 	getWidget("MultiButton", true)->setDisabled(true);
 
-	if (hasXP1 || hasXP2)
+	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection game menu
 		_new = new NewCampMenu;
 	else
 		// If not, create the base game menu
 		_new = new NewMenu;
 
-	if (hasXP1 || hasXP2)
+	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection movies menu
 		_movies = new MoviesCampMenu;
 	else
@@ -109,22 +111,15 @@ void MainMenu::callbackActive(Widget &widget) {
 }
 
 void MainMenu::callNew(int startCode) {
-	std::vector<Graphics::Aurora::Model *> fogs;
-	fogs.resize(4);
+	NewGameFogs fogs(4);
+	fogs.show();
 
-	for (uint i = 0; i < fogs.size(); i++) {
-		fogs[i] = createNewGameFog();
-		fogs[i]->show();
-	}
+	if ((startCode == 2) && !_hasXP)
+		startCode = 0;
 
 	int code = sub(*_new, startCode);
 	if ((code == 2) || (code == 3))
 		_returnCode = code;
-
-	for (uint i = 0; i < fogs.size(); i++) {
-		fogs[i]->hide();
-		delete fogs[i];
-	}
 }
 
 } // End of namespace NWN

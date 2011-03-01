@@ -16,6 +16,7 @@
 #include "engines/nwn/modelloader.h"
 #include "engines/nwn/menu/legal.h"
 #include "engines/nwn/menu/main.h"
+#include "engines/nwn/menu/chartype.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
@@ -333,15 +334,17 @@ void NWNEngine::mainMenuLoop() {
 
 	int startSection = 0;
 	while (!EventMan.quitRequested()) {
-		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "");
+		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad"  , "");
+		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_characterToUse", "");
 
 		// Run the main menu
-		mainMenu->show();
+		if (startSection == 0)
+			mainMenu->show();
 		int code = mainMenu->run(startSection);
 		mainMenu->hide();
 
 		if (EventMan.quitRequested())
-			return;
+			break;
 
 		if ((code == 2) || (code == 3)) {
 			// New game
@@ -351,13 +354,25 @@ void NWNEngine::mainMenuLoop() {
 			if (module.empty() || !loadModule())
 				continue;
 
-			// Char selection
-			// if (!hasChar)
-			//   continue;
-			// delete mainMenu;
-			// run game
-			// mainMenu = new mainMenu
-			// startSection = 0;
+			GUI *charSelection = new CharTypeMenu;
+			charSelection->show();
+			int charCode = charSelection->run();
+			charSelection->hide();
+
+			delete charSelection;
+
+			if (EventMan.quitRequested())
+				break;
+
+			Common::UString character = ConfigMan.getString("NWN_characterToUse");
+			if ((charCode != 2) || character.empty())
+				continue;
+
+
+			// RUN GAME
+
+			mainMenu = new MainMenu;
+			startSection = 0;
 
 		} else
 			startSection = 0;
