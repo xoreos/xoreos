@@ -584,7 +584,7 @@ void UString::readLatin9(SeekableReadStream &stream) {
 	if (data.empty())
 		return;
 
-	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
+	_string = ConvMan.fromLatin9((byte *) &data[0], strlen((const char *) &data[0]));
 	recalculateSize();
 }
 
@@ -596,7 +596,7 @@ void UString::readLatin9(SeekableReadStream &stream, uint32 length) {
 	if (data.empty())
 		return;
 
-	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
+	_string = ConvMan.fromLatin9((byte *) &data[0], strlen((const char *) &data[0]));
 	recalculateSize();
 }
 
@@ -609,7 +609,7 @@ void UString::readLineLatin9(SeekableReadStream &stream) {
 	if (data.empty())
 		return;
 
-	_string = ConvMan.fromLatin9((byte *) &data[0], data.size());
+	_string = ConvMan.fromLatin9((byte *) &data[0], strlen((const char *) &data[0]));
 	recalculateSize();
 }
 
