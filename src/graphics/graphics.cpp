@@ -59,6 +59,8 @@ GraphicsManager::GraphicsManager() {
 
 	_fpsCounter = new FPSCounter(3);
 
+	_frameLock = 0;
+
 	_cursor = 0;
 	_cursorState = kCursorStateStay;
 
@@ -345,13 +347,17 @@ void GraphicsManager::setupScene() {
 }
 
 void GraphicsManager::lockFrame() {
-	if (!Common::isMainThread())
-		_frameSemaphore.lock();
+	Common::StackLock frameLock(_frameLockMutex);
+
+	_frameLock++;
 }
 
 void GraphicsManager::unlockFrame() {
-	if (!Common::isMainThread())
-		_frameSemaphore.unlock();
+	Common::StackLock frameLock(_frameLockMutex);
+
+	assert(_frameLock != 0);
+
+	_frameLock--;
 }
 
 void GraphicsManager::abandon(TextureID *ids, uint32 count) {
@@ -380,15 +386,19 @@ void GraphicsManager::abandon(ListID ids, uint32 count) {
 }
 
 void GraphicsManager::setCursor(Cursor *cursor) {
-	Common::StackLock frameLock(_frameSemaphore);
+	lockFrame();
 
 	_cursor = cursor;
+
+	unlockFrame();
 }
 
 void GraphicsManager::takeScreenshot() {
-	Common::StackLock frameLock(_frameSemaphore);
+	lockFrame();
 
 	_takeScreenshot = true;
+
+	unlockFrame();
 }
 
 static const Common::UString kNoTag;
@@ -445,8 +455,10 @@ void GraphicsManager::renderScene() {
 
 	cleanupAbandoned();
 
-	if (!_frameSemaphore.lockTry())
+	if (_frameLock > 0)
 		return;
+
+	Common::StackLock frameLock(_frameLockMutex);
 
 	Common::StackLock videosLock(_videos.mutex);
 
@@ -494,7 +506,6 @@ void GraphicsManager::renderScene() {
 		if (_fsaa > 0)
 			glDisable(GL_MULTISAMPLE_ARB);
 
-		_frameSemaphore.unlock();
 		return;
 	}
 
@@ -565,8 +576,6 @@ void GraphicsManager::renderScene() {
 
 	if (_fsaa > 0)
 		glDisable(GL_MULTISAMPLE_ARB);
-
-	_frameSemaphore.unlock();
 }
 
 int GraphicsManager::getScreenWidth() const {

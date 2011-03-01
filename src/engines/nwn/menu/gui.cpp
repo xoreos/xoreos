@@ -1020,6 +1020,8 @@ void WidgetEditBox::clear() {
 }
 
 void WidgetEditBox::set(const Common::UString &str) {
+	GfxMan.lockFrame();
+
 	// Reset scroll/selected lines
 	_startLine    = 0;
 	_selectedLine = 0xFFFFFFFF;
@@ -1055,6 +1057,8 @@ void WidgetEditBox::set(const Common::UString &str) {
 	updateScroll();
 	updateScrollbarPosition();
 	updateScrollbarLength();
+
+	GfxMan.unlockFrame();
 }
 
 void WidgetEditBox::reserve(uint n) {
@@ -1062,6 +1066,7 @@ void WidgetEditBox::reserve(uint n) {
 }
 
 void WidgetEditBox::addLine(const Common::UString &line) {
+	GfxMan.lockFrame();
 	if (_hasButtons) {
 		// If we have buttons, split a too long line over its button
 		std::vector<Common::UString> lines;
@@ -1092,6 +1097,8 @@ void WidgetEditBox::addLine(const Common::UString &line) {
 	updateScroll();
 	updateScrollbarLength();
 	updateScrollbarPosition();
+
+	GfxMan.unlockFrame();
 }
 
 void WidgetEditBox::selectLine(int line) {
@@ -1114,6 +1121,8 @@ uint WidgetEditBox::getSelectedLineNumber() const {
 }
 
 void WidgetEditBox::updateScroll() {
+	GfxMan.lockFrame();
+
 	// If the selected button is outside the current scroll range, uncheck all
 	if ((_selectedLine < _startLine) || ((_selectedLine - _startLine) >= _buttons.size()))
 		for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b)
@@ -1155,6 +1164,8 @@ void WidgetEditBox::updateScroll() {
 
 		(*line)->setText(_contents[i]);
 	}
+
+	GfxMan.unlockFrame();
 }
 
 void WidgetEditBox::updateScrollbarLength() {
