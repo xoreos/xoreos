@@ -12,6 +12,7 @@
  *  The new module menu.
  */
 
+#include "common/util.h"
 #include "common/configman.h"
 #include "common/filepath.h"
 #include "common/filelist.h"
@@ -20,13 +21,92 @@
 #include "aurora/locstring.h"
 #include "aurora/talkman.h"
 
+#include "graphics/aurora/text.h"
+#include "graphics/aurora/model.h"
+
 #include "engines/nwn/menu/newmodule.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 namespace Engines {
 
 namespace NWN {
+
+WidgetListItemModule::WidgetListItemModule(::Engines::GUI &gui,
+    const Common::UString &font, const Common::UString &text, float spacing) :
+	WidgetListItem(gui), _spacing(spacing) {
+
+	_button = loadModelGUI("ctl_btn_txt407");
+
+	Common::UString splitText;
+	Graphics::Aurora::FontHandle f = FontMan.get(font);
+	f.getFont().split(text, splitText, _button->getWidth() - 8.0);
+
+	_text = new Graphics::Aurora::Text(f, splitText, 0.5);
+
+	assert(_button);
+}
+
+WidgetListItemModule::~WidgetListItemModule() {
+	delete _button;
+	delete _text;
+}
+
+void WidgetListItemModule::show() {
+	_button->show();
+	_text->show();
+}
+
+void WidgetListItemModule::hide() {
+	_text->hide();
+	_button->hide();
+}
+
+void WidgetListItemModule::setPosition(float x, float y, float z) {
+	Widget::setPosition(x, y, z);
+
+	getPosition(x, y, z);
+	_button->setPosition(x, y, z);
+
+	x = x + (_button->getWidth () - _text->getWidth ()) / 2.0;
+	y = y + (_button->getHeight() - _text->getHeight()) / 2.0;
+
+	_text->setPosition(x, y, -z);
+}
+
+float WidgetListItemModule::getWidth() const {
+	return _button->getWidth();
+}
+
+float WidgetListItemModule::getHeight() const {
+	return _button->getHeight() + _spacing;
+}
+
+void WidgetListItemModule::setTag(const Common::UString &tag) {
+	WidgetListItem::setTag(tag);
+
+	_button->setTag(tag);
+}
+
+bool WidgetListItemModule::activate() {
+	if (!WidgetListItem::activate())
+		return false;
+
+	_button->setState("down");
+
+	return true;
+}
+
+bool WidgetListItemModule::deactivate() {
+	if (!WidgetListItem::deactivate())
+		return false;
+
+	_button->setState("");
+
+	return true;
+}
+
 
 NewModuleMenu::NewModuleMenu() {
 	load("pre_loadmod");
@@ -42,15 +122,26 @@ void NewModuleMenu::show() {
 	GUI::show();
 }
 
-void NewModuleMenu::initModuleList() {
-	WidgetEditBox &moduleList = *getEditBox("ModuleListBox", true);
+void NewModuleMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) {
+	     if (tag == "ModuleListBox")
+		type = kWidgetTypeListBox;
+	else if (tag == "ModDescEditBox")
+		type = kWidgetTypeListBox;
+}
 
-	moduleList.clear();
-	moduleList.setMode(WidgetEditBox::kModeSelectable);
+void NewModuleMenu::initModuleList() {
+	status("Creating module list");
 
 	Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
 	if (moduleDir.empty())
 		return;
+
+	WidgetListBox &moduleList = *getListBox("ModuleListBox", true);
+
+	moduleList.lock();
+
+	moduleList.clear();
+	moduleList.setMode(WidgetListBox::kModeSelectable);
 
 	Common::FileList moduleDirList;
 
@@ -67,11 +158,16 @@ void NewModuleMenu::initModuleList() {
 		if (Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod")) {
 
 			_modules.push_back(Common::FilePath::getStem(*m));
-			moduleList.addLine(_modules.back());
+
+			WidgetListItemModule *M =
+				new WidgetListItemModule(*this, "fnt_galahad14", _modules.back(), 2.0);
+			moduleList.add(M);
 		}
 	}
 
-	moduleList.selectLine(0);
+	moduleList.unlock();
+
+	moduleList.select(0);
 	selectedModule();
 }
 
@@ -90,7 +186,7 @@ void NewModuleMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "ModuleListBox") {
 		selectedModule();
 
-		if (dynamic_cast<WidgetEditBox &>(widget).wasDblClicked()) {
+		if (dynamic_cast<WidgetListBox &>(widget).wasDblClicked()) {
 			loadModule();
 			_returnCode = 3;
 		}
@@ -100,7 +196,7 @@ void NewModuleMenu::callbackActive(Widget &widget) {
 }
 
 Common::UString NewModuleMenu::getSelectedModule() {
-	uint n = getEditBox("ModuleListBox", true)->getSelectedLineNumber();
+	uint n = getListBox("ModuleListBox", true)->getSelected();
 	if (n >= _modules.size())
 		return "";
 
@@ -129,7 +225,7 @@ void NewModuleMenu::selectedModule() {
 	if (description.empty())
 		description = TalkMan.getString(67741);
 
-	getEditBox("ModDescEditBox", true)->set(description);
+	getListBox("ModDescEditBox", true)->setText("fnt_galahad14", description, 1.0);
 }
 
 void NewModuleMenu::loadModule() {

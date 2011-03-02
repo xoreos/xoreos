@@ -42,13 +42,13 @@ MainMenu::MainMenu() {
 	_hasXP = hasXP1 || hasXP2;
 
 	if (hasXP1) {
-		WidgetPanel *xp1 = new WidgetPanel("TextXP1", "ctl_xp1_text");
+		WidgetPanel *xp1 = new WidgetPanel(*this, "TextXP1", "ctl_xp1_text");
 		xp1->setPosition(124.0, 0.00, 50.0);
 		addWidget(xp1);
 	}
 
 	if (hasXP2) {
-		WidgetPanel *xp2 = new WidgetPanel("TextXP2", "ctl_xp2_text");
+		WidgetPanel *xp2 = new WidgetPanel(*this, "TextXP2", "ctl_xp2_text");
 		xp2->setPosition(124.0, -147.0, 50.0);
 		addWidget(xp2);
 	}

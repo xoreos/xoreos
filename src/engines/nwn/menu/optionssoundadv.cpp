@@ -24,7 +24,7 @@ OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(bool isMain) {
 	load("options_advsound");
 
 	if (isMain) {
-		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
 		backdrop->setPosition(0.0, 0.0, -10.0);
 		addWidget(backdrop);
 	}
@@ -43,6 +43,11 @@ OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(bool isMain) {
 }
 
 OptionsSoundAdvancedMenu::~OptionsSoundAdvancedMenu() {
+}
+
+void OptionsSoundAdvancedMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) {
+	if (tag == "ProviderList")
+		type = kWidgetTypeListBox;
 }
 
 void OptionsSoundAdvancedMenu::callbackActive(Widget &widget) {

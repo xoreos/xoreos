@@ -32,7 +32,8 @@ namespace NWN {
 
 class NWNModelWidget : public Widget {
 public:
-	NWNModelWidget(const Common::UString &tag, const Common::UString &model);
+	NWNModelWidget(::Engines::GUI &gui, const Common::UString &tag,
+	               const Common::UString &model);
 	~NWNModelWidget();
 
 	void show();
@@ -49,8 +50,8 @@ protected:
 
 class NWNTextWidget : public Widget {
 public:
-	NWNTextWidget(const Common::UString &tag, const Common::UString &font,
-	              const Common::UString &text);
+	NWNTextWidget(::Engines::GUI &gui, const Common::UString &tag,
+	              const Common::UString &font, const Common::UString &text);
 	~NWNTextWidget();
 
 	void show();
@@ -76,7 +77,8 @@ protected:
 
 class WidgetScrollbar : public Widget {
 public:
-	WidgetScrollbar(const Common::UString &tag, Scrollbar::Type type, float range);
+	WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag,
+	                Scrollbar::Type type, float range);
 	~WidgetScrollbar();
 
 	void show();
@@ -103,6 +105,8 @@ public:
 private:
 	Scrollbar::Type _type;
 
+	bool _full;
+
 	float _range;
 	float _length;
 	float _state;
@@ -116,13 +120,15 @@ private:
 
 class WidgetFrame : public NWNModelWidget {
 public:
-	WidgetFrame(const Common::UString &tag, const Common::UString &model);
+	WidgetFrame(::Engines::GUI &gui, const Common::UString &tag,
+	            const Common::UString &model);
 	~WidgetFrame();
 };
 
 class WidgetClose : public NWNModelWidget {
 public:
-	WidgetClose(const Common::UString &tag, const Common::UString &model);
+	WidgetClose(::Engines::GUI &gui, const Common::UString &tag,
+	            const Common::UString &model);
 	~WidgetClose();
 
 	void leave();
@@ -133,7 +139,8 @@ public:
 
 class WidgetCheckBox : public NWNModelWidget {
 public:
-	WidgetCheckBox(const Common::UString &tag, const Common::UString &model);
+	WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag,
+	               const Common::UString &model);
 	~WidgetCheckBox();
 
 	bool getState() const;
@@ -154,51 +161,24 @@ private:
 	void updateModel(bool highlight);
 };
 
-class WidgetCheckButton : public NWNModelWidget {
-public:
-	WidgetCheckButton(const Common::UString &tag, const Common::UString &model);
-	~WidgetCheckButton();
-
-	bool getState() const;
-	void setState(bool state);
-
-	void forceUncheck();
-
-	void enter();
-	void leave();
-
-	void mouseDown(uint8 state, float x, float y);
-	void mouseUp  (uint8 state, float x, float y);
-
-	void mouseDblClick(uint8 state, float x, float y);
-
-protected:
-	void signalGroupMemberActive();
-
-private:
-	bool _entered;
-	bool _state;
-
-	void updateModel();
-	void updateModel(bool highlight);
-};
-
 class WidgetPanel : public NWNModelWidget {
 public:
-	WidgetPanel(const Common::UString &tag, const Common::UString &model);
+	WidgetPanel(::Engines::GUI &gui, const Common::UString &tag,
+	            const Common::UString &model);
 	~WidgetPanel();
 };
 
 class WidgetLabel : public NWNTextWidget {
 public:
-	WidgetLabel(const Common::UString &tag, const Common::UString &font,
-	            const Common::UString &text);
+	WidgetLabel(::Engines::GUI &gui, const Common::UString &tag,
+	            const Common::UString &font, const Common::UString &text);
 	~WidgetLabel();
 };
 
 class WidgetSlider : public NWNModelWidget {
 public:
-	WidgetSlider(const Common::UString &tag, const Common::UString &model);
+	WidgetSlider(::Engines::GUI &gui, const Common::UString &tag,
+	             const Common::UString &model);
 	~WidgetSlider();
 
 	void setPosition(float x, float y, float z);
@@ -225,86 +205,15 @@ private:
 
 class WidgetEditBox : public NWNModelWidget {
 public:
-	enum Mode {
-		kModeStatic     = 0,
-		kModeSelectable
-	};
-
-	WidgetEditBox(const Common::UString &tag, const Common::UString &model,
-	              const Common::UString &font);
+	WidgetEditBox(::Engines::GUI &gui, const Common::UString &tag,
+	              const Common::UString &model, const Common::UString &font);
 	~WidgetEditBox();
-
-	void show();
-
-	void setPosition(float x, float y, float z);
-
-	void subActive(Widget &widget);
-	void mouseDown(uint8 state, float x, float y);
-	void mouseDblClick(uint8 state, float x, float y);
-
-	bool wasDblClicked();
-
-	void setMode(Mode mode);
-
-	void setColor(float r, float g, float b, float a);
-
-	void clear();
-
-	void reserve(uint n);
-
-	void set(const Common::UString &str);
-	void addLine(const Common::UString &line);
-
-	void selectLine(int line);
-
-	Common::UString getSelectedLine() const;
-	uint getSelectedLineNumber() const;
-
-private:
-	Graphics::Aurora::FontHandle _font;
-
-	bool _hasScrollbar;
-	bool _hasButtons;
-
-	Mode _mode;
-
-	WidgetScrollbar *_scrollbar;
-
-	std::vector<WidgetCheckButton *> _buttons;
-
-	std::vector<WidgetLabel *>   _lines;
-	std::vector<Common::UString> _contents;
-
-	uint _startLine;
-	uint _selectedLine;
-
-	float _r;
-	float _g;
-	float _b;
-	float _a;
-
-	bool _dblClicked;
-
-	void createScrollbar();
-	void createButtons();
-	void createLines();
-
-	void scrollUp();
-	void scrollDown();
-
-	void scrollPageUp();
-	void scrollPageDown();
-
-	void updateScroll();
-
-	void updateScrollbarLength();
-	void updateScrollbarPosition();
 };
 
 class WidgetButton : public NWNModelWidget {
 public:
-	WidgetButton(const Common::UString &tag, const Common::UString &model,
-	             const Common::UString &sound = "gui_button");
+	WidgetButton(::Engines::GUI &gui, const Common::UString &tag,
+	             const Common::UString &model, const Common::UString &sound = "gui_button");
 	~WidgetButton();
 
 	void enter();
@@ -317,6 +226,149 @@ private:
 	Common::UString _sound;
 };
 
+class WidgetListItem : public Widget {
+public:
+	WidgetListItem(::Engines::GUI &gui);
+	~WidgetListItem();
+
+	void mouseUp  (uint8 state, float x, float y);
+	void mouseDown(uint8 state, float x, float y);
+
+	void mouseDblClick(uint8 state, float x, float y);
+
+	void select();
+
+protected:
+	bool getState();
+
+	virtual bool activate();
+	virtual bool deactivate();
+
+	void signalGroupMemberActive();
+
+private:
+	uint _itemNumber;
+	bool _state;
+
+	friend class WidgetListBox;
+};
+
+class WidgetListItemTextLine : public WidgetListItem {
+public:
+	WidgetListItemTextLine(::Engines::GUI &gui, const Common::UString &font,
+	                       const Common::UString &text, float spacing = 0.0);
+	~WidgetListItemTextLine();
+
+	void show();
+	void hide();
+
+	void setPosition(float x, float y, float z);
+
+	void setUnselectedColor(float r, float g, float b, float a);
+	void setSelectedColor(float r, float g, float b, float a);
+
+	float getWidth () const;
+	float getHeight() const;
+
+	void setTag(const Common::UString &tag);
+
+protected:
+	bool activate();
+	bool deactivate();
+
+private:
+	Graphics::Aurora::Text *_text;
+
+	float _uR, _uG, _uB, _uA;
+	float _sR, _sG, _sB, _sA;
+
+	float _fontHeight;
+	float _spacing;
+};
+
+class WidgetListBox : public NWNModelWidget {
+public:
+	enum Mode {
+		kModeStatic     = 0,
+		kModeSelectable
+	};
+
+	WidgetListBox(::Engines::GUI &gui, const Common::UString &tag,
+	              const Common::UString &model);
+	~WidgetListBox();
+
+	Mode getMode() const;
+	void setMode(Mode mode);
+
+	void show();
+	void hide();
+
+	void setPosition(float x, float y, float z);
+
+	float getContentWidth () const;
+	float getContentHeight() const;
+
+	void lock();
+	void clear();
+	void reserve(uint n);
+	void add(WidgetListItem *item);
+	void unlock();
+
+	void setText(const Common::UString &font, const Common::UString &text,
+	             float spacing = 0.0);
+
+	void select(uint item);
+	uint getSelected() const;
+
+	bool wasDblClicked();
+
+	void mouseDown(uint8 state, float x, float y);
+
+	void subActive(Widget &widget);
+
+private:
+	Mode _mode;
+
+	float _contentX;
+	float _contentY;
+	float _contentZ;
+
+	float _contentWidth;
+	float _contentHeight;
+
+	bool _hasScrollbar;
+	WidgetButton    *_up;
+	WidgetButton    *_down;
+	WidgetScrollbar *_scrollbar;
+
+	bool _dblClicked;
+
+	std::vector<WidgetListItem *> _items;
+	std::vector<WidgetListItem *> _visibleItems;
+
+	uint _startItem;
+	uint _selectedItem;
+
+	bool _locked;
+
+	void getProperties();
+
+	void createScrollbar();
+
+	void updateScrollbarLength();
+	void updateScrollbarPosition();
+
+	void scrollUp(uint n);
+	void scrollDown(uint n);
+
+	void updateVisible();
+
+	void itemDblClicked();
+
+	friend class WidgetListItem;
+};
+
+
 /** A NWN GUI. */
 class GUI : public ::Engines::GUI {
 public:
@@ -324,7 +376,22 @@ public:
 	~GUI();
 
 protected:
+	enum WidgetType {
+		kWidgetTypeInvalid     = -  1,
+		kWidgetTypeFrame       =    0,
+		kWidgetTypeCloseButton =    1,
+		kWidgetTypeCheckBox    =    2,
+		kWidgetTypePanel       =    3,
+		kWidgetTypeLabel       =    5,
+		kWidgetTypeSlider      =    6,
+		kWidgetTypeEditBox     =    8,
+		kWidgetTypeButton      =    9,
+		kWidgetTypeListBox     =  100
+	};
+
 	void load(const Common::UString &resref);
+
+	virtual void fixWidgetType(const Common::UString &tag, WidgetType &type);
 
 	virtual void initWidget(Widget &widget);
 
@@ -336,20 +403,9 @@ protected:
 	WidgetSlider   *getSlider  (const Common::UString &tag, bool vital = false);
 	WidgetEditBox  *getEditBox (const Common::UString &tag, bool vital = false);
 	WidgetButton   *getButton  (const Common::UString &tag, bool vital = false);
+	WidgetListBox  *getListBox (const Common::UString &tag, bool vital = false);
 
 private:
-	enum WidgetType {
-		kWidgetTypeInvalid     = -1,
-		kWidgetTypeFrame       =  0,
-		kWidgetTypeCloseButton =  1,
-		kWidgetTypeCheckBox    =  2,
-		kWidgetTypePanel       =  3,
-		kWidgetTypeLabel       =  5,
-		kWidgetTypeSlider      =  6,
-		kWidgetTypeEditBox     =  8,
-		kWidgetTypeButton      =  9
-	};
-
 	struct WidgetContext {
 		const Aurora::GFFStruct *strct;
 
@@ -373,7 +429,7 @@ private:
 
 	void createWidget(WidgetContext &ctx);
 	void initWidget(WidgetContext &ctx, NWNModelWidget &widget);
-	void initWidget(WidgetContext &ctx, NWNTextWidget &widget);
+	void initWidget(WidgetContext &ctx, NWNTextWidget  &widget);
 	void initWidget(WidgetContext &ctx);
 
 	WidgetLabel *createCaption(WidgetContext &ctx);

@@ -21,7 +21,11 @@
 #include "aurora/locstring.h"
 #include "aurora/gfffile.h"
 
+#include "graphics/aurora/text.h"
+#include "graphics/aurora/model.h"
+
 #include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "engines/nwn/menu/charpremade.h"
 #include "engines/nwn/menu/charnew.h"
@@ -29,6 +33,140 @@
 namespace Engines {
 
 namespace NWN {
+
+Character::Character() {
+}
+
+Character::Character(const Common::UString &f) {
+	file = f;
+
+	n = 0;
+
+	try {
+		Aurora::GFFFile bic;
+
+		loadGFF(bic, file, Aurora::kFileTypeBIC, MKID_BE('BIC '));
+
+		const Aurora::GFFStruct &bicTop = bic.getTopLevel();
+
+		Aurora::LocString firstName;
+		bicTop.getLocString("FirstName", firstName);
+
+		Aurora::LocString lastName;
+		bicTop.getLocString("LastName", lastName);
+
+		fullName = firstName.getFirstString();
+		if (!fullName.empty())
+			fullName += ' ';
+
+		fullName += lastName.getFirstString();
+
+		if (bicTop.hasField("ClassList")) {
+			const Aurora::GFFList &cClasses = bicTop.getList("ClassList");
+
+			for (Aurora::GFFList::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
+				const Aurora::GFFStruct &cClass = **c;
+
+				if (!classes.empty())
+					classes += '/';
+
+				classes += Common::UString::sprintf("%d", cClass.getUint("Class", -1));
+			}
+		}
+
+		classes = "(" + classes + ")";
+
+	} catch (...) {
+		file.clear();
+		fullName.clear();
+		classes.clear();
+	}
+}
+
+bool Character::empty() const {
+	return file.empty();
+}
+
+
+WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
+    const Common::UString &font, const Character &c, float spacing) :
+	WidgetListItem(gui), _spacing(spacing) {
+
+	_button = loadModelGUI("ctl_pre_btn_char");
+	assert(_button);
+
+	if (c.n > 0) {
+		Common::UString name = Common::UString::sprintf("%s (%d)", c.fullName.c_str(), c.n);
+
+		_textName = new Graphics::Aurora::Text(FontMan.get(font), name);
+	} else
+		_textName = new Graphics::Aurora::Text(FontMan.get(font), c.fullName);
+
+	_textClass = new Graphics::Aurora::Text(FontMan.get(font), c.classes);
+}
+
+WidgetListItemCharacter::~WidgetListItemCharacter() {
+	delete _button;
+	delete _textName;
+	delete _textClass;
+}
+
+void WidgetListItemCharacter::show() {
+	_button->show();
+	_textName->show();
+	_textClass->show();
+}
+
+void WidgetListItemCharacter::hide() {
+	_textClass->hide();
+	_textName->hide();
+	_button->hide();
+}
+
+void WidgetListItemCharacter::setPosition(float x, float y, float z) {
+	Widget::setPosition(x, y, z);
+
+	getPosition(x, y, z);
+	_button->setPosition(x, y, z);
+
+	x += 32.0;
+
+	_textName->setPosition (x, y + _button->getHeight() -     _textName->getHeight() - 4.0, -z);
+	_textClass->setPosition(x, y + _button->getHeight() - 2 * _textName->getHeight() - 4.0, -z);
+}
+
+float WidgetListItemCharacter::getWidth() const {
+	return _button->getWidth();
+}
+
+float WidgetListItemCharacter::getHeight() const {
+	return _button->getHeight() + _spacing;
+}
+
+void WidgetListItemCharacter::setTag(const Common::UString &tag) {
+	WidgetListItem::setTag(tag);
+
+	_button->setTag(tag);
+}
+
+bool WidgetListItemCharacter::activate() {
+	if (!WidgetListItem::activate())
+		return false;
+
+	_button->setState("down");
+
+	return true;
+}
+
+bool WidgetListItemCharacter::deactivate() {
+	if (!WidgetListItem::deactivate())
+		return false;
+
+	_button->setState("");
+
+	return true;
+}
+
 
 CharPremadeMenu::CharPremadeMenu() {
 	load("pre_playmod");
@@ -62,6 +200,11 @@ void CharPremadeMenu::show() {
 	GUI::show();
 }
 
+void CharPremadeMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) {
+	if (tag == "ButtonList")
+		type = kWidgetTypeListBox;
+}
+
 void CharPremadeMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "CancelButton") {
 		_returnCode = 1;
@@ -82,7 +225,7 @@ void CharPremadeMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "ButtonList") {
 		// selectedCharacter();
 
-		if (dynamic_cast<WidgetEditBox &>(widget).wasDblClicked()) {
+		if (dynamic_cast<WidgetListBox &>(widget).wasDblClicked()) {
 			playCharacter();
 			_returnCode = 2;
 		}
@@ -92,14 +235,13 @@ void CharPremadeMenu::callbackActive(Widget &widget) {
 }
 
 void CharPremadeMenu::initCharacterList() {
-	WidgetEditBox &charList = *getEditBox("ButtonList", true);
-
-	charList.clear();
-	charList.setMode(WidgetEditBox::kModeSelectable);
+	status("Collecting characters");
 
 	Common::UString charDir = ConfigMan.getString("NWN_localCharDir");
 	if (charDir.empty())
 		return;
+
+	// Get characters
 
 	Common::FileList charDirList;
 
@@ -111,55 +253,47 @@ void CharPremadeMenu::initCharacterList() {
 	characters.sort(Common::UString::iless());
 
 	_characters.reserve(n);
-	charList.reserve(n);
 	for (std::list<Common::UString>::const_iterator c = characters.begin(); c != characters.end(); ++c) {
+
 		if (Common::FilePath::getExtension(*c).equalsIgnoreCase(".bic")) {
-
-			Common::UString file = Common::FilePath::getStem(*c);
-			Common::UString name = getCharacterName(file);
-
-			if (name.empty())
+			Character character(Common::FilePath::getStem(*c));
+			if (character.empty())
 				continue;
 
-			_characters.push_back(file);
-			charList.addLine(name);
+			if (!_characters.empty() && (_characters.back().fullName == character.fullName))
+				character.n = _characters.back().n + 1;
+
+			_characters.push_back(character);
 		}
+
 	}
 
-	charList.selectLine(0);
-}
 
-Common::UString CharPremadeMenu::getCharacterName(const Common::UString &file) {
-	Common::UString name;
+	// Add the characters to the list box
+	status("Creating character list");
 
-	try {
-		Aurora::GFFFile bic;
+	WidgetListBox &charList = *getListBox("ButtonList", true);
 
-		loadGFF(bic, file, Aurora::kFileTypeBIC, MKID_BE('BIC '));
+	charList.lock();
 
-		const Aurora::GFFStruct &bicTop = bic.getTopLevel();
+	charList.clear();
+	charList.setMode(WidgetListBox::kModeSelectable);
 
-		Aurora::LocString firstName;
-		bicTop.getLocString("FirstName", firstName);
+	charList.reserve(_characters.size());
+	for (std::vector<Character>::const_iterator c = _characters.begin(); c != _characters.end(); ++c)
+		charList.add(new WidgetListItemCharacter(*this, "fnt_galahad14", *c, 2.0));
 
-		Aurora::LocString lastName;
-		bicTop.getLocString("LastName", lastName);
+	charList.unlock();
 
-		name = firstName.getFirstString() + " " + lastName.getFirstString();
-
-	} catch (...) {
-		name.clear();
-	}
-
-	return name;
+	charList.select(0);
 }
 
 Common::UString CharPremadeMenu::getSelectedCharacter() {
-	uint n = getEditBox("ButtonList", true)->getSelectedLineNumber();
+	uint n = getListBox("ButtonList", true)->getSelected();
 	if (n >= _characters.size())
 		return "";
 
-	return _characters[n];
+	return _characters[n].file;
 }
 
 void CharPremadeMenu::playCharacter() {

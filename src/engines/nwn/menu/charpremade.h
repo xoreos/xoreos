@@ -17,9 +17,53 @@
 
 #include "engines/nwn/menu/gui.h"
 
+namespace Aurora {
+	class GFFStruct;
+}
+
 namespace Engines {
 
 namespace NWN {
+
+struct Character {
+	Common::UString file;
+	Common::UString fullName;
+	Common::UString classes;
+	uint n;
+
+	Character();
+	Character(const Common::UString &f);
+
+	bool empty() const;
+};
+
+class WidgetListItemCharacter : public WidgetListItem {
+public:
+	WidgetListItemCharacter(::Engines::GUI &gui, const Common::UString &font,
+	                        const Character &c, float spacing = 0.0);
+	~WidgetListItemCharacter();
+
+	void show();
+	void hide();
+
+	void setPosition(float x, float y, float z);
+
+	float getWidth () const;
+	float getHeight() const;
+
+	void setTag(const Common::UString &tag);
+
+protected:
+	bool activate();
+	bool deactivate();
+
+private:
+	Graphics::Aurora::Model *_button;
+	Graphics::Aurora::Text  *_textName;
+	Graphics::Aurora::Text  *_textClass;
+
+	float _spacing;
+};
 
 /** The NWN character creator. */
 class CharPremadeMenu : public GUI {
@@ -30,14 +74,15 @@ public:
 	void show();
 
 protected:
+	void fixWidgetType(const Common::UString &tag, WidgetType &type);
+
 	void callbackActive(Widget &widget);
 
 private:
 	GUI *_charNew;
 
-	std::vector<Common::UString> _characters;
+	std::vector<Character> _characters;
 
-	Common::UString getCharacterName(const Common::UString &file);
 	Common::UString getSelectedCharacter();
 
 	void initCharacterList();

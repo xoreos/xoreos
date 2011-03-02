@@ -24,7 +24,7 @@ OptionsGorePasswordMenu::OptionsGorePasswordMenu(bool isMain) {
 	load("options_gorepass");
 
 	if (isMain) {
-		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
 		backdrop->setPosition(0.0, 0.0, -10.0);
 		addWidget(backdrop);
 	}

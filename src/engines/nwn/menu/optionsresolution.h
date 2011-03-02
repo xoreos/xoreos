@@ -30,6 +30,8 @@ public:
 	void show();
 
 protected:
+	void fixWidgetType(const Common::UString &tag, WidgetType &type);
+
 	void initWidget(Widget &widget);
 	void callbackActive(Widget &widget);
 
@@ -42,14 +44,15 @@ private:
 	};
 
 	std::vector<Resolution> _resolutions;
+	std::vector<Resolution> _useableResolutions;
 
 	int _width;
 	int _height;
 
 	void initResolutions();
-	void initResolutionsBox(WidgetEditBox &resList);
+	void initResolutionsBox(WidgetListBox &resList);
 
-	void setResolution(const Common::UString &line);
+	void setResolution(uint n);
 
 	void adoptChanges();
 	void revertChanges();

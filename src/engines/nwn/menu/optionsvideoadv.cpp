@@ -32,7 +32,7 @@ OptionsVideoAdvancedMenu::OptionsVideoAdvancedMenu(bool isMain) {
 	load("options_adv_vid");
 
 	if (isMain) {
-		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
 		backdrop->setPosition(0.0, 0.0, -10.0);
 		addWidget(backdrop);
 	}
@@ -83,6 +83,11 @@ void OptionsVideoAdvancedMenu::show() {
 	updateFSAALabel(fsaa);
 
 	GUI::show();
+}
+
+void OptionsVideoAdvancedMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) {
+	if (tag == "CreatureWind")
+		type = kWidgetTypeSlider;
 }
 
 void OptionsVideoAdvancedMenu::initWidget(Widget &widget) {

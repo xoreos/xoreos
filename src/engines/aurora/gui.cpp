@@ -27,8 +27,9 @@ static const uint32 kDoubleClickTime = 500;
 
 namespace Engines {
 
-Widget::Widget(const Common::UString &tag) : _tag(tag),
-	_owner(0), _active(false), _visible(false), _disabled(false), _invisible(false),
+Widget::Widget(GUI &gui, const Common::UString &tag) : _gui(&gui), _tag(tag),
+	_parent(0), _owner(0),
+	_active(false), _visible(false), _disabled(false), _invisible(false),
 	_x(0.0), _y(0.0), _z(0.0),
 	_lastClickButton(0), _lastClickTime(0), _lastClickX(0.0), _lastClickY(0.0) {
 
@@ -39,6 +40,12 @@ Widget::~Widget() {
 
 const Common::UString &Widget::getTag() const {
 	return _tag;
+}
+
+void Widget::setTag(const Common::UString &tag) {
+	assert(_tag.empty());
+
+	_tag = tag;
 }
 
 bool Widget::isActive() const {
@@ -74,8 +81,6 @@ void Widget::show() {
 	// Show children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
 		(*it)->show();
-	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it)
-		(*it)->show();
 }
 
 void Widget::hide() {
@@ -87,8 +92,6 @@ void Widget::hide() {
 
 	// Hide children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
-		(*it)->hide();
-	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it)
 		(*it)->hide();
 }
 
@@ -169,16 +172,57 @@ void Widget::addSub(Widget &widget) {
 	_subWidgets.push_back(&widget);
 
 	widget._owner = this;
+
+	_gui->addWidget(&widget);
 }
 
 void Widget::addChild(Widget &widget) {
 	if (&widget != this)
 		_children.push_back(&widget);
+
+	widget._parent = this;
 }
 
 void Widget::addGroupMember(Widget &widget) {
 	if (&widget != this)
 		_groupMembers.push_back(&widget);
+}
+
+void Widget::removeSub(Widget &widget) {
+	for (std::list<Widget *>::iterator i = _subWidgets.begin(); i != _subWidgets.end(); ++i) {
+		if (*i == &widget) {
+			_subWidgets.erase(i);
+			break;
+		}
+	}
+
+	widget._owner = 0;
+}
+
+void Widget::removeChild(Widget &widget) {
+	for (std::list<Widget *>::iterator i = _children.begin(); i != _children.end(); ++i) {
+		if (*i == &widget) {
+			_children.erase(i);
+			break;
+		}
+	}
+
+	widget._parent = 0;
+}
+
+void Widget::removeGroupMember(Widget &widget) {
+	for (std::list<Widget *>::iterator i = _groupMembers.begin(); i != _groupMembers.end(); ++i) {
+		if (*i == &widget) {
+			widget._groupMembers.erase(i);
+			break;
+		}
+	}
+}
+
+void Widget::remove() {
+	hide();
+
+	_gui->removeWidget(this);
 }
 
 void Widget::signalGroupMemberActive() {
@@ -204,14 +248,22 @@ GUI::GUI() : _currentWidget(0), _returnCode(0) {
 
 GUI::~GUI() {
 	// Delete all widgets
-	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
+	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
 		delete *widget;
+		*widget = 0;
+	}
+
+	_widgets.clear();
 }
 
 void GUI::show() {
 	// Show all widgets
-	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
-		(*widget)->show();
+	for (WidgetList::iterator w = _widgets.begin(); w != _widgets.end(); ++w) {
+		Widget &widget = **w;
+
+		if (!widget._owner)
+			widget.show();
+	}
 }
 
 void GUI::hide() {
@@ -265,14 +317,38 @@ void GUI::addWidget(Widget *widget) {
 	if (!widget)
 		return;
 
+	assert(!widget->getTag().empty());
+
 	_widgets.push_back(widget);
 	_widgetMap[widget->getTag()] = widget;
+}
 
-	// Add the widget's sub-widgets
-	for (std::list<Widget *>::const_iterator it = widget->_subWidgets.begin(); it != widget->_subWidgets.end(); ++it) {
-		_widgets.push_back(*it);
-		_widgetMap[(*it)->getTag()] = *it;
+void GUI::removeWidget(Widget *widget) {
+	if (!widget)
+		return;
+
+	widget->hide();
+
+	for (WidgetList::iterator i = _widgets.begin(); i != _widgets.end(); ++i) {
+		if (*i == widget) {
+			_widgets.erase(i);
+			break;
+		}
 	}
+
+	WidgetMap::iterator w = _widgetMap.find(widget->getTag());
+	if (w != _widgetMap.end())
+		_widgetMap.erase(w);
+
+	if (widget->_parent)
+		widget->_parent->removeChild(*widget);
+	if (widget->_owner)
+		widget->_owner->removeSub(*widget);
+
+	for (std::list<Widget *>::iterator i = widget->_groupMembers.begin(); i != widget->_groupMembers.end(); ++i)
+		(*i)->removeGroupMember(*widget);
+
+	delete widget;
 }
 
 bool GUI::hasWidget(const Common::UString &tag) const {

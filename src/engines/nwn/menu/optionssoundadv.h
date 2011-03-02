@@ -28,6 +28,8 @@ public:
 	~OptionsSoundAdvancedMenu();
 
 protected:
+	void fixWidgetType(const Common::UString &tag, WidgetType &type);
+
 	void callbackActive(Widget &widget);
 };
 

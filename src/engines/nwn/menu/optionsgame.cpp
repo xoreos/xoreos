@@ -33,7 +33,7 @@ OptionsGameMenu::OptionsGameMenu(bool isMain) {
 	load("options_game");
 
 	if (isMain) {
-		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
 		backdrop->setPosition(0.0, 0.0, -10.0);
 		addWidget(backdrop);
 	}
@@ -71,6 +71,11 @@ void OptionsGameMenu::show() {
 	GUI::show();
 }
 
+void OptionsGameMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) {
+	if (tag == "DiffEdit")
+		type = kWidgetTypeListBox;
+}
+
 void OptionsGameMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "DiffSlider") {
 		dynamic_cast<WidgetSlider &>(widget).setSteps(3);
@@ -78,7 +83,7 @@ void OptionsGameMenu::initWidget(Widget &widget) {
 	}
 
 	if (widget.getTag() == "DiffEdit") {
-		dynamic_cast<WidgetEditBox &>(widget).setMode(WidgetEditBox::kModeStatic);
+		dynamic_cast<WidgetListBox &>(widget).setMode(WidgetListBox::kModeStatic);
 		return;
 	}
 }
@@ -116,10 +121,10 @@ void OptionsGameMenu::callbackActive(Widget &widget) {
 }
 
 void OptionsGameMenu::updateDifficulty(int difficulty) {
-	WidgetLabel   &diffLabel = *getLabel  ("DifficultyLabel", true);
-	WidgetEditBox &diffEdit  = *getEditBox("DiffEdit"       , true);
+	WidgetLabel   &diffLabel = *getLabel("DifficultyLabel", true);
+	WidgetListBox &diffDesc  = *getListBox("DiffEdit", true);
 
-	diffEdit.set(TalkMan.getString(67578 + difficulty));
+	diffDesc.setText("fnt_galahad14", TalkMan.getString(67578 + difficulty), 1.0);
 
 	if      (difficulty == 0)
 		diffLabel.setText(TalkMan.getString(66786));
@@ -130,6 +135,7 @@ void OptionsGameMenu::updateDifficulty(int difficulty) {
 	else if (difficulty == 3)
 		diffLabel.setText(TalkMan.getString(66792));
 }
+
 
 void OptionsGameMenu::adoptChanges() {
 	ConfigMan.setInt("difficulty", getSlider("DiffSlider", true)->getState(), true);

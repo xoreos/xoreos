@@ -32,7 +32,7 @@ OptionsResolutionMenu::OptionsResolutionMenu(bool isMain) {
 	load("options_vidmodes");
 
 	if (isMain) {
-		WidgetPanel *backdrop = new WidgetPanel("PNL_MAINMENU", "pnl_mainmenu");
+		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
 		backdrop->setPosition(0.0, 0.0, -10.0);
 		addWidget(backdrop);
 	}
@@ -44,7 +44,7 @@ OptionsResolutionMenu::~OptionsResolutionMenu() {
 }
 
 void OptionsResolutionMenu::show() {
-	initResolutionsBox(*getEditBox("VideoModeList", true));
+	initResolutionsBox(*getListBox("VideoModeList", true));
 
 	_width  = GfxMan.getScreenWidth ();
 	_height = GfxMan.getScreenHeight();
@@ -52,9 +52,14 @@ void OptionsResolutionMenu::show() {
 	GUI::show();
 }
 
+void OptionsResolutionMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) {
+	if (tag == "VideoModeList")
+		type = kWidgetTypeListBox;
+}
+
 void OptionsResolutionMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "VideoModeList") {
-		dynamic_cast<WidgetEditBox &>(widget).setMode(WidgetEditBox::kModeSelectable);
+		dynamic_cast<WidgetListBox &>(widget).setMode(WidgetListBox::kModeSelectable);
 		return;
 	}
 }
@@ -70,20 +75,21 @@ void OptionsResolutionMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "OkButton") {
 
-		setResolution(getEditBox("VideoModeList", true)->getSelectedLine());
+		setResolution(getListBox("VideoModeList", true)->getSelected());
 		adoptChanges();
 		_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "ApplyButton") {
-		setResolution(getEditBox("VideoModeList", true)->getSelectedLine());
+		setResolution(getListBox("VideoModeList", true)->getSelected());
 		return;
 	}
 }
 
 void OptionsResolutionMenu::initResolutions() {
 	// Add all standard resolutions to the list
+	_resolutions.reserve(33);
 	_resolutions.push_back(Resolution(7680, 4800));
 	_resolutions.push_back(Resolution(7680, 4320));
 	_resolutions.push_back(Resolution(6400, 4800));
@@ -119,55 +125,60 @@ void OptionsResolutionMenu::initResolutions() {
 	_resolutions.push_back(Resolution(320 ,  200));
 }
 
-void OptionsResolutionMenu::initResolutionsBox(WidgetEditBox &resList) {
-	resList.clear();
+void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
+	_useableResolutions.clear();
 
 	int maxWidth  = GfxMan.getSystemWidth ();
 	int maxHeight = GfxMan.getSystemHeight();
 	int curWidth  = GfxMan.getScreenWidth ();
 	int curHeight = GfxMan.getScreenHeight();
 
-	std::vector<Resolution>::const_iterator maxRes = _resolutions.end();
-
 	// Find the max allowed resolution in the list
-	for (std::vector<Resolution>::const_iterator it = _resolutions.begin(); it != _resolutions.end(); ++it) {
-		if ((it->width <= maxWidth) && (it->height <= maxHeight)) {
-			maxRes = it;
+	uint maxRes = 0;
+	for (uint i = 0; i < _resolutions.size(); i++) {
+		if ((_resolutions[i].width <= maxWidth) && (_resolutions[i].height <= maxHeight)) {
+			maxRes = i;
 			break;
 		}
 	}
 
 	// Find the current resolution in the list
 	uint currentResolution = 0xFFFFFFFF;
-	if (maxRes != _resolutions.end()) {
-		std::vector<Resolution>::const_iterator cur = maxRes;
-		for (uint i = 0; cur != _resolutions.end(); i++, ++cur) {
-			if ((cur->width == curWidth) && (cur->height == curHeight)) {
-				currentResolution = i;
-				break;
-			}
+	for (uint i = maxRes; i < _resolutions.size(); i++) {
+		if ((_resolutions[i].width == curWidth) && (_resolutions[i].height == curHeight)) {
+			currentResolution = i - maxRes;
+			break;
 		}
 	}
 
 	// Doesn't exist, add it at the top
 	if (currentResolution == 0xFFFFFFFF) {
 		currentResolution = 0;
-		resList.addLine(Common::UString::sprintf("%dx%d", curWidth, curHeight));
+		_useableResolutions.push_back(Resolution(curWidth, curHeight));
 	}
 
-	// Add the standard resolutions to the box
-	for (std::vector<Resolution>::const_iterator it = maxRes; it != _resolutions.end(); ++it)
-		resList.addLine(Common::UString::sprintf("%dx%d", it->width, it->height));
+	// Put the rest of the useable resolutions into the list
+	for (uint i = maxRes; i < _resolutions.size(); i++)
+		_useableResolutions.push_back(_resolutions[i]);
 
-	resList.selectLine(currentResolution);
+
+	resList.lock();
+
+	resList.clear();
+	for (std::vector<Resolution>::const_iterator r = _useableResolutions.begin(); r != _useableResolutions.end(); ++r)
+		resList.add(new WidgetListItemTextLine(*this, "fnt_dialog16x16",
+					Common::UString::sprintf("%dx%d", r->width, r->height), 0.0));
+
+	resList.unlock();
+
+	resList.select(currentResolution);
 }
 
-void OptionsResolutionMenu::setResolution(const Common::UString &line) {
-	int width, height;
-	if (sscanf(line.c_str(), "%dx%d", &width, &height) != 2)
+void OptionsResolutionMenu::setResolution(uint n) {
+	if (n >= _useableResolutions.size())
 		return;
 
-	GfxMan.setScreenSize(width, height);
+	GfxMan.setScreenSize(_useableResolutions[n].width, _useableResolutions[n].height);
 }
 
 void OptionsResolutionMenu::adoptChanges() {

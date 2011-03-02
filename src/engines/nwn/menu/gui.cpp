@@ -36,8 +36,8 @@ namespace Engines {
 
 namespace NWN {
 
-NWNModelWidget::NWNModelWidget(const Common::UString &tag, const Common::UString &model) :
-	Widget(tag) {
+NWNModelWidget::NWNModelWidget(::Engines::GUI &gui, const Common::UString &tag,
+                               const Common::UString &model) : Widget(gui, tag) {
 
 	if (!(_model = loadModelGUI(model)))
 		throw Common::Exception("Can't load widget \"%s\" for widget \"%s\"",
@@ -84,9 +84,9 @@ float NWNModelWidget::getHeight() const {
 }
 
 
-NWNTextWidget::NWNTextWidget(const Common::UString &tag, const Common::UString &font,
-                             const Common::UString &text) :
-	Widget(tag), _r(1.0), _g(1.0), _b(1.0), _a(1.0) {
+NWNTextWidget::NWNTextWidget(::Engines::GUI &gui, const Common::UString &tag,
+                             const Common::UString &font, const Common::UString &text) :
+	Widget(gui, tag), _r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
 	_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, 0.5);
 }
@@ -153,9 +153,9 @@ void NWNTextWidget::setDisabled(bool disabled) {
 }
 
 
-WidgetScrollbar::WidgetScrollbar(const Common::UString &tag,
-		Scrollbar::Type type, float range) :
-		Widget(tag), _type(type), _range(range), _state(0.0), _scrollbar(type) {
+WidgetScrollbar::WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag,
+                                 Scrollbar::Type type, float range) :
+		Widget(gui, tag), _type(type), _range(range), _state(0.0), _scrollbar(type) {
 
 	_scrollbar.setTag(tag);
 
@@ -190,10 +190,15 @@ void WidgetScrollbar::setPosition(float x, float y, float z) {
 }
 
 void WidgetScrollbar::setLength(float percent) {
+	_full = percent >= 1.0;
+
 	// Calculate the actual length, at 2 pixel intervals
 	_length = ceilf(MAX(_range * CLIP(percent, 0.0f, 1.0f), 10.0f));
 	if ((((int) _length) % 2) == 1)
 		_length += 1.0;
+
+	if (_length > _range)
+		_length = _range;
 
 	_scrollbar.setLength(_length);
 
@@ -245,6 +250,10 @@ void WidgetScrollbar::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
+	if (_full)
+		// Can't scroll when the bar is going full length
+		return;
+
 	// We only care about the left mouse button, pass everything else to the owner
 	if (state != SDL_BUTTON_LMASK) {
 		if (_owner)
@@ -259,6 +268,10 @@ void WidgetScrollbar::mouseDown(uint8 state, float x, float y) {
 
 void WidgetScrollbar::mouseMove(uint8 state, float x, float y) {
 	if (isDisabled())
+		return;
+
+	if (_full)
+		// Can't scroll when the bar is going full length
 		return;
 
 	if (state != SDL_BUTTON_LMASK)
@@ -276,8 +289,8 @@ void WidgetScrollbar::mouseMove(uint8 state, float x, float y) {
 }
 
 
-WidgetFrame::WidgetFrame(const Common::UString &tag, const Common::UString &model) :
-	NWNModelWidget(tag, model) {
+WidgetFrame::WidgetFrame(::Engines::GUI &gui, const Common::UString &tag,
+                         const Common::UString &model) : NWNModelWidget(gui, tag, model) {
 
 }
 
@@ -285,8 +298,8 @@ WidgetFrame::~WidgetFrame() {
 }
 
 
-WidgetClose::WidgetClose(const Common::UString &tag, const Common::UString &model) :
-	NWNModelWidget(tag, model) {
+WidgetClose::WidgetClose(::Engines::GUI &gui, const Common::UString &tag,
+                         const Common::UString &model) : NWNModelWidget(gui, tag, model) {
 
 }
 
@@ -320,8 +333,9 @@ void WidgetClose::mouseUp(uint8 state, float x, float y) {
 }
 
 
-WidgetCheckBox::WidgetCheckBox(const Common::UString &tag, const Common::UString &model) :
-	NWNModelWidget(tag, model) {
+WidgetCheckBox::WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag,
+                               const Common::UString &model) :
+	NWNModelWidget(gui, tag, model) {
 
 	_state = false;
 	updateModel(false);
@@ -426,137 +440,8 @@ void WidgetCheckBox::signalGroupMemberActive() {
 }
 
 
-WidgetCheckButton::WidgetCheckButton(const Common::UString &tag, const Common::UString &model) :
-	NWNModelWidget(tag, model) {
-
-	_state = false;
-	updateModel(false);
-}
-
-WidgetCheckButton::~WidgetCheckButton() {
-}
-
-void WidgetCheckButton::updateModel() {
-	updateModel(_entered);
-}
-
-void WidgetCheckButton::updateModel(bool highlight) {
-	if (highlight) {
-		if (_state)
-			_model->setState("down");
-		else
-			_model->setState("hilite");
-	} else {
-		if (_state)
-			_model->setState("down");
-		else
-			_model->setState("");
-	}
-
-	_entered = highlight;
-}
-
-bool WidgetCheckButton::getState() const {
-	return _state;
-}
-
-void WidgetCheckButton::setState(bool state) {
-	if (!_groupMembers.empty()) {
-		// Group members, we are a radio button
-
-		if (!state)
-			// We can't just uncheck a radio button without checking another one
-			return;
-
-		_state = true;
-		updateModel();
-		setActive(true);
-
-	} else {
-		// No group members, we are a check box
-
-		_state = !!state;
-		updateModel();
-		setActive(true);
-	}
-}
-
-void WidgetCheckButton::forceUncheck() {
-	_state = false;
-	updateModel();
-}
-
-void WidgetCheckButton::enter() {
-	if (isDisabled())
-		return;
-
-	updateModel(true);
-}
-
-void WidgetCheckButton::leave() {
-	if (isDisabled())
-		return;
-
-	updateModel(false);
-}
-
-void WidgetCheckButton::mouseDown(uint8 state, float x, float y) {
-	if (isDisabled())
-		return;
-
-	if (state != SDL_BUTTON_LMASK) {
-		if (_owner)
-			_owner->mouseDown(state, x, y);
-		updateModel();
-		return;
-	}
-
-	playSound("gui_check", Sound::kSoundTypeSFX);
-}
-
-void WidgetCheckButton::mouseDblClick(uint8 state, float x, float y) {
-	if (isDisabled())
-		return;
-
-	if (_owner)
-		_owner->mouseDblClick(state, x, y);
-}
-
-void WidgetCheckButton::mouseUp(uint8 state, float x, float y) {
-	if (isDisabled())
-		return;
-
-	if (!_groupMembers.empty()) {
-		// Group members, we are a radio button
-
-		if (_state)
-			// We are already active
-			return;
-
-		_state = true;
-		updateModel(true);
-		setActive(true);
-
-	} else {
-		// No group members, we are a check box
-
-		_state = !_state;
-		updateModel(true);
-		setActive(true);
-	}
-
-}
-
-void WidgetCheckButton::signalGroupMemberActive() {
-	Widget::signalGroupMemberActive();
-
-	_state = false;
-	updateModel();
-}
-
-
-WidgetPanel::WidgetPanel(const Common::UString &tag, const Common::UString &model) :
-	NWNModelWidget(tag, model) {
+WidgetPanel::WidgetPanel(::Engines::GUI &gui, const Common::UString &tag,
+                         const Common::UString &model) : NWNModelWidget(gui, tag, model) {
 
 }
 
@@ -564,8 +449,9 @@ WidgetPanel::~WidgetPanel() {
 }
 
 
-WidgetLabel::WidgetLabel(const Common::UString &tag, const Common::UString &font,
-                         const Common::UString &text) : NWNTextWidget(tag, font, text) {
+WidgetLabel::WidgetLabel(::Engines::GUI &gui, const Common::UString &tag,
+                         const Common::UString &font, const Common::UString &text) :
+	NWNTextWidget(gui, tag, font, text) {
 
 }
 
@@ -573,8 +459,9 @@ WidgetLabel::~WidgetLabel() {
 }
 
 
-WidgetSlider::WidgetSlider(const Common::UString &tag, const Common::UString &model) :
-	NWNModelWidget(tag, model), _position(0.0), _steps(0), _state(0) {
+WidgetSlider::WidgetSlider(::Engines::GUI &gui, const Common::UString &tag, 
+                           const Common::UString &model) :
+	NWNModelWidget(gui, tag, model), _position(0.0), _steps(0), _state(0) {
 
 	_width = getWidth();
 
@@ -655,543 +542,19 @@ void WidgetSlider::changePosition(float value) {
 }
 
 
-WidgetEditBox::WidgetEditBox(const Common::UString &tag, const Common::UString &model,
-                             const Common::UString &font) : NWNModelWidget(tag, model),
-	_mode(kModeStatic), _scrollbar(0), _startLine(0), _selectedLine(0xFFFFFFFF),
-	_r(1.0), _g(1.0), _b(1.0), _a(1.0), _dblClicked(false) {
+WidgetEditBox::WidgetEditBox(::Engines::GUI &gui, const Common::UString &tag,
+                             const Common::UString &model, const Common::UString &font) :
+	NWNModelWidget(gui, tag, model) {
 
-	_font = FontMan.get(font);
-
-	_hasScrollbar = _model->hasNode("scrollmin") && _model->hasNode("scrollmax");
-	_hasButtons   = _model->hasNode("listitem");
-
-	createScrollbar();
-	createButtons();
-	createLines();
-
-	setMode(kModeStatic);
-
-	for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b)
-		(*b)->setInvisible(true);
 }
 
 WidgetEditBox::~WidgetEditBox() {
 }
 
-void WidgetEditBox::show() {
-	NWNModelWidget::show();
 
-	_dblClicked = false;
-}
-
-void WidgetEditBox::createScrollbar() {
-	if (!_hasScrollbar)
-		return;
-
-	float minX, minY, minZ;
-	_model->getNodePosition("scrollmin", minX, minY, minZ);
-
-	float maxX, maxY, maxZ;
-	_model->getNodePosition("scrollmax", maxX, maxY, maxZ);
-
-	WidgetButton *down = new WidgetButton(getTag() + "#Down", "pb_scrl_down", "gui_scroll");
-
-	down->setPosition(maxX, maxY - 10, 0.0);
-	addSub(*down);
-
-	WidgetButton *up = new WidgetButton(getTag() + "#Up", "pb_scrl_up", "gui_scroll");
-
-	up->setPosition(minX, minY, 0.0);
-	addSub(*up);
-
-	float scrollRange = minY - (maxY - 10) - up->getHeight() - 1;
-
-	_scrollbar = new WidgetScrollbar(getTag() + "#Bar", Scrollbar::kTypeVertical, scrollRange);
-
-	// Center the bar within the scrollbar area
-	float scrollX = maxX + (up->getWidth() - _scrollbar->getWidth()) / 2;
-	// Move it to the base position
-	float scrollY = maxY - 10 + up->getHeight();
-
-	_scrollbar->setPosition(scrollX, scrollY, 0.0);
-	addSub(*_scrollbar);
-}
-
-void WidgetEditBox::createButtons() {
-	if (!_hasButtons)
-		return;
-
-	Common::UString buttonResRef;
-	if      (getWidth() >= 440)
-		buttonResRef = "ctl_btn_txt407";
-	else if (getWidth() >= 353)
-		buttonResRef = "ctl_pre_btn_char";
-
-	if (buttonResRef.empty()) {
-		warning("TODO: WidgetEditBox with buttons, width = %f", getWidth());
-		return;
-	}
-
-	float listX, listY, listZ;
-	_model->getNodePosition("listitem", listX, listY, listZ);
-
-	// Get the height of the button
-	float buttonHeight = 0.0;
-	{
-		WidgetCheckButton *btn = new WidgetCheckButton("", buttonResRef);
-		buttonHeight = btn->getHeight();
-		delete btn;
-	}
-
-	float bottomX, bottomY, bottomZ;
-	if (!_model->getNodePosition("scrollmax", bottomX, bottomY, bottomZ))
-		bottomY = 12;
-
-	//          (top - bottom) / (button height + border)
-	int count = (listY + buttonHeight - (bottomY - 10)) / (buttonHeight + 2);
-
-	// Create the buttons
-	_buttons.resize(count);
-	for (int i = 0; i < count; i++) {
-		Common::UString button = Common::UString::sprintf("#Button%03d", i);
-
-		_buttons[i] = new WidgetCheckButton(getTag() + button, buttonResRef);
-		_buttons[i]->movePosition(listX, listY - (i * (_buttons[i]->getHeight() + 2)), listZ);
-		addSub(*_buttons[i]);
-	}
-
-	// Make the buttons into a group
-	for (int i = 0; i < count; i++)
-		for (int j = 0; j < count; j++)
-			_buttons[i]->addGroupMember(*_buttons[j]);
-
-	// Create the text lines on the buttons
-	_lines.resize(count);
-	for (int i = 0; i < count; i++) {
-		Common::UString line = Common::UString::sprintf("Line%03d", i);
-
-		_lines[i] = new WidgetLabel(getTag() + "#" + line, _font.getFontName(), "");
-
-		float btnX, btnY, btnZ;
-		_buttons[i]->getPosition(btnX, btnY, btnZ);
-
-		_lines[i]->setPosition(btnX, btnY, btnZ);
-
-		addSub(*_lines[i]);
-	}
-}
-
-void WidgetEditBox::createLines() {
-	if (_hasButtons)
-		return;
-
-	float bottomX, bottomY, bottomZ;
-	if (!_model->getNodePosition("scrollmax", bottomX, bottomY, bottomZ))
-		bottomY = 12;
-
-	bottomY = getHeight() - (bottomY - 10);
-
-	// (Height of the model - Border) / (FontHeight + Line spacing)
-	int lineCount = (bottomY) / (_font.getFont().getHeight() + 1);
-
-	// Border + indenting
-	float lineX = 3 + 4;
-	// Height of the model - border, - (height of a line + line spacing)
-	float lineY = getHeight() - 2 - (_font.getFont().getHeight() + 1);
-
-	// Create lines
-	_lines.resize(lineCount);
-	for (int i = 0; i < lineCount; i++) {
-		Common::UString line = Common::UString::sprintf("Line%03d", i);
-
-		_lines[i] = new WidgetLabel(getTag() + "#" + line, _font.getFontName(), "");
-
-		_lines[i]->setPosition(lineX, lineY, 0.0);
-
-		addSub(*_lines[i]);
-
-		lineY -= _font.getFont().getHeight() + 1;
-	}
-}
-
-void WidgetEditBox::setPosition(float x, float y, float z) {
-	float oX, oY, oZ;
-	getPosition(oX, oY, oZ);
-
-	NWNModelWidget::setPosition(x, y, z);
-
-	float nX, nY, nZ;
-	getPosition(nX, nY, nZ);
-
-	getPosition(x, y, z);
-	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it) {
-		float sX, sY, sZ;
-		(*it)->getPosition(sX, sY, sZ);
-
-		sX -= oX;
-		sY -= oY;
-		sZ -= oZ;
-
-		(*it)->setPosition(sX + nX, sY + nY, sZ + nZ);
-	}
-}
-
-void WidgetEditBox::scrollUp() {
-	if (_startLine == 0)
-		return;
-
-	_startLine--;
-	updateScroll();
-	updateScrollbarPosition();
-	return;
-}
-
-void WidgetEditBox::scrollDown() {
-	int max = _contents.size() - _lines.size();
-	if ((max <= 0) || (_startLine >= ((uint) max)))
-		return;
-
-	_startLine++;
-	updateScroll();
-	updateScrollbarPosition();
-	return;
-}
-
-void WidgetEditBox::scrollPageUp() {
-	_startLine -= MIN<uint>(_startLine, _lines.size() - 1);
-	updateScroll();
-	updateScrollbarPosition();
-}
-
-void WidgetEditBox::scrollPageDown() {
-	_startLine = MIN(_startLine + _lines.size() - 1, _contents.size() - _lines.size());
-	updateScroll();
-	updateScrollbarPosition();
-}
-
-void WidgetEditBox::subActive(Widget &widget) {
-	if (widget.getTag().endsWith("#Up")) {
-		scrollUp();
-		return;
-	}
-
-	if (widget.getTag().endsWith("#Down")) {
-		scrollDown();
-		return;
-	}
-
-	if (widget.getTag().endsWith("#Bar")) {
-		int max = _contents.size() - _lines.size();
-		if (max <= 0)
-			return;
-
-		uint startLine = _scrollbar->getState() * max;
-		if (startLine == _startLine)
-			return;
-
-		_startLine = startLine;
-		updateScroll();
-		return;
-	}
-
-	if (widget.getTag().contains("#Button")) {
-		const char *str = widget.getTag().c_str() + strlen(widget.getTag().c_str()) - 3;
-		sscanf(str, "%u", &_selectedLine);
-
-		_selectedLine += _startLine;
-
-		setActive(true);
-	}
-}
-
-void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
-	if (isDisabled())
-		return;
-
-	if (state == SDL_BUTTON_WHEELUP) {
-		scrollUp();
-		return;
-	}
-
-	if (state == SDL_BUTTON_WHEELDOWN) {
-		scrollDown();
-		return;
-	}
-
-	float wX, wY, wZ;
-	getPosition(wX, wY, wZ);
-
-	// Check if we clicked on the scrollbar area
-	if (_scrollbar) {
-		if (x > (wX + getWidth() - 20)) {
-			if (y > _scrollbar->getBarPosition())
-				scrollPageUp();
-			else
-				scrollPageDown();
-
-			return;
-		}
-	}
-
-	if (_mode != kModeSelectable)
-		// Isn't selectable, nothing to do
-		return;
-
-	if (_hasButtons)
-		// Edit box has buttons, they handle the selection
-		return;
-
-	// Pixel position
-	y = getHeight() - (y - wY) - 2;
-
-	if ((y < 0.0) || (y > (_lines.size() * (_font.getFont().getHeight() + 1))))
-		// Outside the contents area
-		return;
-
-	uint line = _startLine + (y / (_font.getFont().getHeight() + 1));
-	if (line >= _contents.size() || (line == _selectedLine))
-		// No line or no change
-		return;
-
-	_selectedLine = line;
-	updateScroll();
-
-	setActive(true);
-}
-
-void WidgetEditBox::mouseDblClick(uint8 state, float x, float y) {
-	_dblClicked = true;
-	setActive(true);
-}
-
-bool WidgetEditBox::wasDblClicked() {
-	bool dblClicked = _dblClicked;
-
-	_dblClicked = false;
-
-	return dblClicked;
-}
-
-void WidgetEditBox::setMode(Mode mode) {
-	_mode = mode;
-
-	if        (_mode == kModeStatic) {
-		for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b)
-			(*b)->setDisabled(true);
-	} else if (_mode == kModeSelectable) {
-		for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b)
-			(*b)->setDisabled(false);
-	}
-}
-
-void WidgetEditBox::setColor(float r, float g, float b, float a) {
-	_r = r;
-	_g = g;
-	_b = b;
-	_a = a;
-
-	for (std::vector<WidgetLabel *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
-		(*it)->setColor(_r, _g, _b, _a);
-}
-
-void WidgetEditBox::clear() {
-	// Reset scroll/selected lines
-	_startLine    = 0;
-	_selectedLine = 0xFFFFFFFF;
-
-	// Clear contents
-	_contents.clear();
-
-	// Clear the lines
-	for (std::vector<WidgetLabel *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
-		(*it)->setText("");
-
-	// Hide the buttons
-	for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b) {
-		(*b)->setInvisible(true);
-		(*b)->hide();
-	}
-
-	// Reset the scrollbar
-	if (_scrollbar) {
-		_scrollbar->setLength(1.0);
-		_scrollbar->setState(0.0);
-	}
-}
-
-void WidgetEditBox::set(const Common::UString &str) {
-	GfxMan.lockFrame();
-
-	// Reset scroll/selected lines
-	_startLine    = 0;
-	_selectedLine = 0xFFFFFFFF;
-
-	// Clear contents
-	_contents.clear();
-
-	// Clear the lines
-	for (std::vector<WidgetLabel *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
-		(*it)->setText("");
-
-	// Hide the buttons
-	for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b) {
-		(*b)->setInvisible(true);
-		(*b)->hide();
-	}
-
-	// Width of the model - borders - indenting
-	float width = getWidth() - 6 - 4;
-	if (_hasScrollbar)
-		width -= 19;
-
-	// Split the text into lines
-	_font.getFont().split(str, _contents, width);
-
-	// Show the appropriate number of buttons
-	for (uint i = 0; i < _contents.size() && i < _buttons.size(); i++) {
-		_buttons[i]->setInvisible(false);
-		if (isVisible())
-			_buttons[i]->show();
-	}
-
-	updateScroll();
-	updateScrollbarPosition();
-	updateScrollbarLength();
-
-	GfxMan.unlockFrame();
-}
-
-void WidgetEditBox::reserve(uint n) {
-	_contents.reserve(n);
-}
-
-void WidgetEditBox::addLine(const Common::UString &line) {
-	GfxMan.lockFrame();
-	if (_hasButtons) {
-		// If we have buttons, split a too long line over its button
-		std::vector<Common::UString> lines;
-		_font.getFont().split(line, lines, _buttons[0]->getWidth());
-
-		if (!lines.empty()) {
-			Common::UString joinedLines = lines[0];
-			for (uint i = 1; i < lines.size(); i++) {
-				joinedLines += "\n";
-				joinedLines += lines[i];
-			}
-
-		_contents.push_back(joinedLines);
-
-		} else
-			_contents.push_back(line);
-
-	} else
-		_contents.push_back(line);
-
-	// Another another button if necessary
-	if (_contents.size() <= _buttons.size()) {
-		_buttons[_contents.size() - 1]->setInvisible(false);
-		if (isVisible())
-			_buttons[_contents.size() - 1]->show();
-	}
-
-	updateScroll();
-	updateScrollbarLength();
-	updateScrollbarPosition();
-
-	GfxMan.unlockFrame();
-}
-
-void WidgetEditBox::selectLine(int line) {
-	if (_mode != kModeSelectable)
-		return;
-
-	_selectedLine = line;
-	updateScroll();
-}
-
-Common::UString WidgetEditBox::getSelectedLine() const {
-	if (_selectedLine >= _contents.size())
-		return "";
-
-	return _contents[_selectedLine];
-}
-
-uint WidgetEditBox::getSelectedLineNumber() const {
-	return _selectedLine;
-}
-
-void WidgetEditBox::updateScroll() {
-	GfxMan.lockFrame();
-
-	// If the selected button is outside the current scroll range, uncheck all
-	if ((_selectedLine < _startLine) || ((_selectedLine - _startLine) >= _buttons.size()))
-		for (std::vector<WidgetCheckButton *>::iterator b = _buttons.begin(); b != _buttons.end(); ++b)
-			(*b)->forceUncheck();
-
-	std::vector<WidgetLabel *>::iterator line = _lines.begin();
-	for (uint i = _startLine; i < _contents.size() && line != _lines.end(); i++, ++line) {
-		(*line)->setText("");
-
-		(*line)->setColor(_r, _g, _b, _a);
-
-		if ((_mode == kModeSelectable) && (i == _selectedLine)) {
-			if (_hasButtons)
-				// Press the selected button
-				_buttons[i - _startLine]->setState(true);
-			else
-				// Color the selected line
-				(*line)->setColor(1.0, 1.0, 0.0, 1.0);
-		}
-
-		// Center the lines onto the buttons
-		if (_hasButtons) {
-			WidgetCheckButton &btn = *_buttons[i - _startLine];
-
-			float btnX, btnY, btnZ;
-			btn.getPosition(btnX, btnY, btnZ);
-
-			float btnW = btn.getWidth();
-			float btnH = btn.getHeight();
-
-			float lblW = _font.getFont().getWidth (_contents[i]);
-			float lblH = _font.getFont().getHeight(_contents[i]);
-
-			float lblX = btnX + (btnW - lblW) / 2;
-			float lblY = btnY + (btnH - lblH) / 2;
-
-			(*line)->setPosition(lblX, lblY, btnZ);
-		}
-
-		(*line)->setText(_contents[i]);
-	}
-
-	GfxMan.unlockFrame();
-}
-
-void WidgetEditBox::updateScrollbarLength() {
-	if (!_scrollbar)
-		return;
-
-	if (!_contents.empty())
-		_scrollbar->setLength(((float) _lines.size()) / _contents.size());
-	else
-		_scrollbar->setLength(1.0);
-}
-
-void WidgetEditBox::updateScrollbarPosition() {
-	if (!_scrollbar)
-		return;
-
-	int max = _contents.size() - _lines.size();
-	if (max > 0)
-		_scrollbar->setState(((float) _startLine) / max);
-	else
-		_scrollbar->setState(0.0);
-}
-
-
-WidgetButton::WidgetButton(const Common::UString &tag, const Common::UString &model,
-                           const Common::UString &sound) : NWNModelWidget(tag, model) {
+WidgetButton::WidgetButton(::Engines::GUI &gui, const Common::UString &tag,
+                           const Common::UString &model, const Common::UString &sound) :
+	NWNModelWidget(gui, tag, model) {
 
 	_sound = sound;
 }
@@ -1230,6 +593,593 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 
 	_model->setState("");
 	setActive(true);
+}
+
+
+WidgetListItem::WidgetListItem(::Engines::GUI &gui) : Widget(gui, ""), _state(false) {
+}
+
+WidgetListItem::~WidgetListItem() {
+}
+
+void WidgetListItem::mouseUp(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	if (state != SDL_BUTTON_LMASK)
+		return;
+
+	activate();
+}
+
+void WidgetListItem::mouseDown(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	if ((state == SDL_BUTTON_WHEELUP) || (state == SDL_BUTTON_WHEELDOWN)) {
+		if (_owner)
+			_owner->mouseDown(state, x, y);
+		return;
+	}
+}
+
+void WidgetListItem::mouseDblClick(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	if (state == SDL_BUTTON_LMASK) {
+		WidgetListBox *ownerList = dynamic_cast<WidgetListBox *>(_owner);
+		if (ownerList)
+			ownerList->itemDblClicked();
+	}
+}
+
+void WidgetListItem::select() {
+	if (isDisabled())
+		return;
+
+	activate();
+}
+
+bool WidgetListItem::getState() {
+	return _state;
+}
+
+bool WidgetListItem::activate() {
+	if (_state)
+		return false;
+
+	WidgetListBox *ownerList = dynamic_cast<WidgetListBox *>(_owner);
+	if (!ownerList || (ownerList->getMode() != WidgetListBox::kModeSelectable))
+		return false;
+
+	_state = true;
+
+	setActive(true);
+
+	return true;
+}
+
+bool WidgetListItem::deactivate() {
+	if (!_state)
+		return false;
+
+	WidgetListBox *ownerList = dynamic_cast<WidgetListBox *>(_owner);
+	if (!ownerList || (ownerList->getMode() != WidgetListBox::kModeSelectable))
+		return false;
+
+	_state = false;
+
+	return true;
+}
+
+void WidgetListItem::signalGroupMemberActive() {
+	Widget::signalGroupMemberActive();
+
+	deactivate();
+}
+
+
+WidgetListItemTextLine::WidgetListItemTextLine(::Engines::GUI &gui,
+    const Common::UString &font, const Common::UString &text, float spacing) :
+	WidgetListItem(gui),
+	_uR(1.0), _uG(1.0), _uB(1.0), _uA(1.0),
+	_sR(1.0), _sG(1.0), _sB(0.0), _sA(1.0), _spacing(spacing) {
+
+	Graphics::Aurora::FontHandle f = FontMan.get(font);
+
+	_fontHeight = f.getFont().getHeight();
+
+	_text = new Graphics::Aurora::Text(f, text, _uR, _uG, _uB, _uA, 0.0);
+}
+
+WidgetListItemTextLine::~WidgetListItemTextLine() {
+	delete _text;
+}
+
+void WidgetListItemTextLine::show() {
+	_text->show();
+}
+
+void WidgetListItemTextLine::hide() {
+	_text->hide();
+}
+
+void WidgetListItemTextLine::setPosition(float x, float y, float z) {
+	Widget::setPosition(x, y, z);
+
+	getPosition(x, y, z);
+	_text->setPosition(x, y, -z);
+}
+
+void WidgetListItemTextLine::setUnselectedColor(float r, float g, float b, float a) {
+	_uR = r;
+	_uG = g;
+	_uB = b;
+	_uA = a;
+
+	if (!getState())
+		_text->setColor(_uR, _uG, _uB, _uA);
+}
+
+void WidgetListItemTextLine::setSelectedColor(float r, float g, float b, float a) {
+	_sR = r;
+	_sG = g;
+	_sB = b;
+	_sA = a;
+
+	if (getState())
+		_text->setColor(_sR, _sG, _sB, _sA);
+}
+
+float WidgetListItemTextLine::getWidth() const {
+	return _text->getWidth();
+}
+
+float WidgetListItemTextLine::getHeight() const {
+	if (_text->isEmpty())
+		return _fontHeight + _spacing;
+
+	return _text->getHeight() + _spacing;
+}
+
+void WidgetListItemTextLine::setTag(const Common::UString &tag) {
+	WidgetListItem::setTag(tag);
+
+	_text->setTag(tag);
+}
+
+bool WidgetListItemTextLine::activate() {
+	if (!WidgetListItem::activate())
+		return false;
+
+	_text->setColor(_sR, _sG, _sB, _sA);
+
+	return true;
+}
+
+bool WidgetListItemTextLine::deactivate() {
+	if (!WidgetListItem::deactivate())
+		return false;
+
+	_text->setColor(_uR, _uG, _uB, _uA);
+
+	return true;
+}
+
+
+WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag,
+                             const Common::UString &model) :
+	NWNModelWidget(gui, tag, model),
+	_mode(kModeStatic), _contentX(0.0), _contentY(0.0), _contentZ(0.0),
+	_hasScrollbar(false), _up(0), _down(0), _scrollbar(0), _dblClicked(false),
+	_startItem(0), _selectedItem(0xFFFFFFFF), _locked(false) {
+
+	getProperties();
+
+	createScrollbar();
+}
+
+WidgetListBox::~WidgetListBox() {
+}
+
+void WidgetListBox::getProperties() {
+	// Do we have a scroll bar?
+	_hasScrollbar = _model->hasNode("scrollmin") && _model->hasNode("scrollmax");
+
+	// Calculate content region
+
+	float topX = 8.0, topY = getHeight() - 6.0, topZ = 0.0;
+	_model->getNodePosition("text0", topX, topY, topZ);
+
+	float bottomX = getWidth() - (_hasScrollbar ? 25.0 : 3.0), bottomY = 3.0, bottomZ = 0.0;
+	_model->getNodePosition("text1", bottomX, bottomY, bottomZ);
+
+	_contentX = topX;
+	_contentY = topY;
+
+	_contentWidth  = bottomX - topX;
+	_contentHeight = topY - bottomY;
+}
+
+void WidgetListBox::createScrollbar() {
+	if (!_hasScrollbar)
+		return;
+
+	// Get top position
+	float minX, minY, minZ;
+	_model->getNodePosition("scrollmin", minX, minY, minZ);
+
+	// Create the "up" button
+	_up = new WidgetButton(*_gui, getTag() + "#Up", "pb_scrl_up", "gui_scroll");
+	_up->setPosition(minX, minY, 0.0);
+	addSub(*_up);
+
+	// Get bottom position
+	float maxX, maxY, maxZ;
+	_model->getNodePosition("scrollmax", maxX, maxY, maxZ);
+
+	// Create the "down" button
+	_down = new WidgetButton(*_gui, getTag() + "#Down", "pb_scrl_down", "gui_scroll");
+	_down->setPosition(maxX, maxY - 10, 0.0);
+	addSub(*_down);
+
+	// Scroll bar range (max length)
+	float scrollRange = minY - (maxY - 10) - _up->getHeight() - 1;
+
+	// Create the scrollbar
+	_scrollbar =
+		new WidgetScrollbar(*_gui, getTag() + "#Bar", Scrollbar::kTypeVertical, scrollRange);
+
+	// Center the bar within the scrollbar area
+	float scrollX = maxX + (_up->getWidth() - _scrollbar->getWidth()) / 2;
+	// Move it to the base position
+	float scrollY = maxY - 10 + _up->getHeight();
+
+	_scrollbar->setPosition(scrollX, scrollY, 0.0);
+	addSub(*_scrollbar);
+}
+
+WidgetListBox::Mode WidgetListBox::getMode() const {
+	return _mode;
+}
+
+void WidgetListBox::setMode(Mode mode) {
+	_mode = mode;
+}
+
+void WidgetListBox::show() {
+	NWNModelWidget::show();
+
+	// Show the scrollbar
+	if (_hasScrollbar) {
+		_up->show();
+		_down->show();
+		_scrollbar->show();
+	}
+
+	// Show the visible items
+	for (std::vector<WidgetListItem *>::iterator v = _visibleItems.begin(); v != _visibleItems.end(); ++v)
+		(*v)->show();
+}
+
+void WidgetListBox::hide() {
+	NWNModelWidget::hide();
+
+	// Hide the scrollbar
+	if (_hasScrollbar) {
+		_up->hide();
+		_down->hide();
+		_scrollbar->hide();
+	}
+
+	// Hide the visible items
+	for (std::vector<WidgetListItem *>::iterator v = _visibleItems.begin(); v != _visibleItems.end(); ++v)
+		(*v)->hide();
+}
+
+void WidgetListBox::setPosition(float x, float y, float z) {
+	float oX, oY, oZ;
+	getPosition(oX, oY, oZ);
+
+	NWNModelWidget::setPosition(x, y, z);
+
+	float nX, nY, nZ;
+	getPosition(nX, nY, nZ);
+
+	getPosition(x, y, z);
+	for (std::list<Widget *>::iterator it = _subWidgets.begin(); it != _subWidgets.end(); ++it) {
+		float sX, sY, sZ;
+		(*it)->getPosition(sX, sY, sZ);
+
+		sX -= oX;
+		sY -= oY;
+		sZ -= oZ;
+
+		(*it)->setPosition(sX + nX, sY + nY, sZ + nZ);
+	}
+
+	_contentX = _contentX - oX + nX;
+	_contentY = _contentY - oY + nY;
+	_contentZ = _contentZ - oZ + nZ;
+}
+
+float WidgetListBox::getContentWidth() const {
+	return _contentWidth;
+}
+
+float WidgetListBox::getContentHeight() const {
+	return _contentHeight;
+}
+
+void WidgetListBox::lock() {
+	assert(!_locked);
+	_locked = true;
+
+	GfxMan.lockFrame();
+}
+
+void WidgetListBox::clear() {
+	assert(_locked);
+
+	for (std::vector<WidgetListItem *>::iterator v = _visibleItems.begin(); v != _visibleItems.end(); ++v)
+		(*v)->hide();
+	_visibleItems.clear();
+
+	for (std::vector<WidgetListItem *>::iterator i = _items.begin(); i != _items.end(); ++i)
+		(*i)->remove();
+	_items.clear();
+
+	_startItem    = 0;
+	_selectedItem = 0xFFFFFFFF;
+
+	updateScrollbarLength();
+}
+
+void WidgetListBox::reserve(uint n) {
+	assert(_locked);
+
+	_items.reserve(n);
+}
+
+void WidgetListBox::add(WidgetListItem *item) {
+	assert(_locked);
+
+	if (!_items.empty())
+		if (item->getHeight() != _items.front()->getHeight())
+			throw Common::Exception("WidgetListBox item sizes mismatch");
+
+	item->_itemNumber = _items.size();
+
+	item->setTag(Common::UString::sprintf("%s#Item%d", getTag().c_str(), _items.size()));
+
+	for (std::vector<WidgetListItem *>::iterator i = _items.begin(); i != _items.end(); ++i) {
+		(*i)->addGroupMember(*item);
+		item->addGroupMember(**i);
+	}
+
+	_items.push_back(item);
+
+	addSub(*item);
+}
+
+void WidgetListBox::unlock() {
+	assert(_locked);
+	_locked = false;
+
+	if (_items.empty()) {
+		GfxMan.unlockFrame();
+		return;
+	}
+
+	uint count = MIN<uint>(_contentHeight / _items.front()->getHeight(), _items.size());
+	if ((count == 0) || (count == _visibleItems.size())) {
+		GfxMan.unlockFrame();
+		return;
+	}
+
+	assert(_visibleItems.size() < count);
+
+	_visibleItems.reserve(count);
+
+	uint start = _startItem + _visibleItems.size();
+
+	float itemHeight = _items.front()->getHeight();
+	while (_visibleItems.size() < count) {
+		WidgetListItem *item = _items[start++];
+
+		float itemY = _contentY - (_visibleItems.size() + 1) * itemHeight;
+		item->setPosition(_contentX, itemY, _contentZ);
+
+		_visibleItems.push_back(item);
+		if (isVisible())
+			_visibleItems.back()->show();
+	}
+
+	updateScrollbarLength();
+	updateScrollbarPosition();
+
+	GfxMan.unlockFrame();
+}
+
+void WidgetListBox::setText(const Common::UString &font,
+                            const Common::UString &text, float spacing) {
+
+	lock();
+	clear();
+
+	Graphics::Aurora::FontHandle f = FontMan.get(font);
+	std::vector<Common::UString> lines;
+	f.getFont().split(text, lines, getContentWidth());
+
+	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l)
+		add(new WidgetListItemTextLine(*_gui, font, *l, spacing));
+
+	unlock();
+}
+
+void WidgetListBox::updateScrollbarLength() {
+	if (!_scrollbar)
+		return;
+
+	if (_visibleItems.empty())
+		_scrollbar->setLength(1.0);
+	else
+		_scrollbar->setLength(((float) _visibleItems.size()) / _items.size());
+}
+
+void WidgetListBox::updateScrollbarPosition() {
+	if (!_scrollbar)
+		return;
+
+	int max = _items.size() - _visibleItems.size();
+	if (max > 0)
+		_scrollbar->setState(((float) _startItem) / max);
+	else
+		_scrollbar->setState(0.0);
+}
+
+void WidgetListBox::updateVisible() {
+	if (_visibleItems.empty())
+		return;
+
+	GfxMan.lockFrame();
+
+	for (uint i = 0; i < _visibleItems.size(); i++)
+		_visibleItems[i]->hide();
+
+	float itemHeight = _items.front()->getHeight();
+	float itemY      = _contentY;
+	for (uint i = 0; i < _visibleItems.size(); i++) {
+		WidgetListItem *item = _items[_startItem + i];
+
+		itemY -= itemHeight;
+
+		item->setPosition(_contentX, itemY, _contentZ);
+		_visibleItems[i] = item;
+
+		if (isVisible())
+			_visibleItems[i]->show();
+	}
+
+	GfxMan.unlockFrame();
+}
+
+void WidgetListBox::itemDblClicked() {
+	_dblClicked = true;
+
+	setActive(true);
+}
+
+void WidgetListBox::scrollUp(uint n) {
+	if (_visibleItems.empty())
+		return;
+
+	if (_startItem == 0)
+		return;
+
+	_startItem -= MIN<uint>(n, _startItem);
+
+	updateVisible();
+	updateScrollbarPosition();
+}
+
+void WidgetListBox::scrollDown(uint n) {
+	if (_visibleItems.empty())
+		return;
+
+	if (_startItem + _visibleItems.size() >= _items.size())
+		return;
+
+	_startItem += MIN<uint>(n, _items.size() - _visibleItems.size() - _startItem);
+
+	updateVisible();
+	updateScrollbarPosition();
+}
+
+void WidgetListBox::select(uint item) {
+	if (item >= _items.size())
+		return;
+
+	_items[item]->select();
+	_selectedItem = item;
+}
+
+uint WidgetListBox::getSelected() const {
+	return _selectedItem;
+}
+
+bool WidgetListBox::wasDblClicked() {
+	bool dblClicked = _dblClicked;
+
+	_dblClicked = false;
+
+	return dblClicked;
+}
+
+void WidgetListBox::subActive(Widget &widget) {
+	if (widget.getTag().endsWith("#Up")) {
+		scrollUp(1);
+		return;
+	}
+
+	if (widget.getTag().endsWith("#Down")) {
+		scrollDown(1);
+		return;
+	}
+
+	if (widget.getTag().endsWith("#Bar")) {
+		int max = _items.size() - _visibleItems.size();
+		if (max <= 0)
+			return;
+
+		uint startItem = _scrollbar->getState() * max;
+		if (startItem == _startItem)
+			return;
+
+		_startItem = startItem;
+		updateVisible();
+		return;
+	}
+
+	WidgetListItem *listItem = dynamic_cast<WidgetListItem *>(&widget);
+	if (listItem) {
+		if (_selectedItem != listItem->_itemNumber) {
+			_selectedItem = listItem->_itemNumber;
+			setActive(true);
+		}
+	}
+
+}
+
+void WidgetListBox::mouseDown(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	if (state == SDL_BUTTON_WHEELUP) {
+		scrollUp(1);
+		return;
+	}
+
+	if (state == SDL_BUTTON_WHEELDOWN) {
+		scrollDown(1);
+		return;
+	}
+
+	float wX, wY, wZ;
+	getPosition(wX, wY, wZ);
+
+	// Check if we clicked on the scrollbar area
+	if (_scrollbar) {
+		if (x > (wX + getWidth() - 20)) {
+			if (y > _scrollbar->getBarPosition())
+				scrollUp(_visibleItems.size());
+			else
+				scrollDown(_visibleItems.size());
+
+			return;
+		}
+	}
 }
 
 
@@ -1357,30 +1307,27 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 }
 
 void GUI::createWidget(WidgetContext &ctx) {
-	// ....BioWare....
-	if ((_name == "options_adv_vid") && (ctx.tag == "CreatureWind"))
-		ctx.type = kWidgetTypeSlider;
-	if ((_name == "pre_playmod") && (ctx.tag == "ButtonList")) {
-		ctx.type = kWidgetTypeEditBox;
-		ctx.font = "fnt_galahad14";
-	}
+	// ...BioWare...
+	fixWidgetType(ctx.tag, ctx.type);
 
 	if      (ctx.type == kWidgetTypeFrame)
-		ctx.widget = new WidgetFrame(ctx.tag, ctx.model);
+		ctx.widget = new WidgetFrame(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeCloseButton)
-		ctx.widget = new WidgetClose(ctx.tag, ctx.model);
+		ctx.widget = new WidgetClose(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeCheckBox)
-		ctx.widget = new WidgetCheckBox(ctx.tag, ctx.model);
+		ctx.widget = new WidgetCheckBox(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypePanel)
-		ctx.widget = new WidgetPanel(ctx.tag, ctx.model);
+		ctx.widget = new WidgetPanel(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeLabel)
-		ctx.widget = new WidgetLabel(ctx.tag, ctx.font, ctx.text);
+		ctx.widget = new WidgetLabel(*this, ctx.tag, ctx.font, ctx.text);
 	else if (ctx.type == kWidgetTypeSlider)
-		ctx.widget = new WidgetSlider(ctx.tag, ctx.model);
+		ctx.widget = new WidgetSlider(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeEditBox)
-		ctx.widget = new WidgetEditBox(ctx.tag, ctx.model, ctx.font);
+		ctx.widget = new WidgetEditBox(*this, ctx.tag, ctx.model, ctx.font);
 	else if (ctx.type == kWidgetTypeButton)
-		ctx.widget = new WidgetButton(ctx.tag, ctx.model);
+		ctx.widget = new WidgetButton(*this, ctx.tag, ctx.model);
+	else if (ctx.type == kWidgetTypeListBox)
+		ctx.widget = new WidgetListBox(*this, ctx.tag, ctx.model);
 	else
 		throw Common::Exception("No such widget type %d", ctx.type);
 
@@ -1394,20 +1341,6 @@ void GUI::createWidget(WidgetContext &ctx) {
 }
 
 void GUI::initWidget(WidgetContext &ctx, NWNModelWidget &widget) {
-	WidgetEditBox *editBox = dynamic_cast<WidgetEditBox *>(&widget);
-	if (editBox) {
-		if (!ctx.strct->hasField("Obj_Caption"))
-			return;
-
-		const Aurora::GFFStruct &caption = ctx.strct->getStruct("Obj_Caption");
-
-		float r = caption.getDouble("AurString_ColorR", 1.0);
-		float g = caption.getDouble("AurString_ColorG", 1.0);
-		float b = caption.getDouble("AurString_ColorB", 1.0);
-		float a = caption.getDouble("AurString_ColorA", 1.0);
-
-		editBox->setColor(r, g, b, a);
-	}
 }
 
 void GUI::initWidget(WidgetContext &ctx, NWNTextWidget &widget) {
@@ -1449,7 +1382,7 @@ WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) 
 	if (strRef != 0xFFFFFFFF)
 		text = TalkMan.getString(strRef);
 
-	WidgetLabel *label = new WidgetLabel(parent->getTag() + "#Caption", font, text);
+	WidgetLabel *label = new WidgetLabel(*this, parent->getTag() + "#Caption", font, text);
 
 	float pX, pY, pZ;
 	parent->getPosition(pX, pY, pZ);
@@ -1468,6 +1401,9 @@ WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) 
 	addWidget(label);
 
 	return label;
+}
+
+void GUI::fixWidgetType(const Common::UString &tag, WidgetType &type) {
 }
 
 void GUI::initWidget(Widget &widget) {
@@ -1567,6 +1503,18 @@ WidgetButton *GUI::getButton(const Common::UString &tag, bool vital) {
 		throw Common::Exception("Vital button widget \"%s\" doesn't exist", tag.c_str());
 
 	return button;
+}
+
+WidgetListBox *GUI::getListBox(const Common::UString &tag, bool vital) {
+	Widget *widget = getWidget(tag, vital);
+	if (!widget)
+		return 0;
+
+	WidgetListBox *listBox = dynamic_cast<WidgetListBox *>(widget);
+	if (!listBox && vital)
+		throw Common::Exception("Vital listBox widget \"%s\" doesn't exist", tag.c_str());
+
+	return listBox;
 }
 
 } // End of namespace NWN

@@ -24,13 +24,18 @@
 
 namespace Engines {
 
+class GUI;
+
 /** A widget in a GUI. */
 class Widget {
 public:
-	Widget(const Common::UString &tag);
+	Widget(GUI &gui, const Common::UString &tag);
 	virtual ~Widget();
 
 	const Common::UString &getTag() const; ///< Get the widget's tag.
+
+	/** Set the widget's tag. */
+	virtual void setTag(const Common::UString &tag);
 
 	bool isActive   () const; ///< Was the widget activated?
 	bool isVisible  () const; ///< Is the widget visible?
@@ -71,14 +76,23 @@ public:
 	/** A sub-widget was activated. */
 	virtual void subActive(Widget &widget);
 
+	void remove(); ///< Remove the widget from the GUI.
+
 	virtual void addSub(Widget &widget);         ///< Add a sub-widget to the widget.
 	virtual void addChild(Widget &widget);       ///< Add a child to the widget.
 	virtual void addGroupMember(Widget &widget); ///< Add a fellow group member to the widget.
 
+	virtual void removeSub(Widget &widget);         ///< Remove a sub-widget from the widget.
+	virtual void removeChild(Widget &widget);       ///< Remove a child from the widget.
+	virtual void removeGroupMember(Widget &widget); ///< Remove fellow group member from the widget.
+
 protected:
+	GUI *_gui; ///< The GUI the widget belongs to.
+
 	Common::UString _tag; ///< The widget's tag.
 
-	Widget *_owner; ///< The widget's owner, if any.
+	Widget *_parent; ///< The widget's parent, if any.
+	Widget *_owner;  ///< The widget's owner, if any.
 
 	std::list<Widget *> _subWidgets;   ///< The widget's sub-widgets.
 	std::list<Widget *> _children;     ///< The widget's children.
@@ -126,6 +140,8 @@ protected:
 
 	/** Add a widget. */
 	void addWidget(Widget *widget);
+	/** Remove a widget. */
+	void removeWidget(Widget *widget);
 
 	/** Does this specific widget exist within the GUI? */
 	bool hasWidget(const Common::UString &tag) const;
@@ -176,6 +192,8 @@ private:
 	/** Send a mouse up event to the widget. */
 	void mouseUp  (Widget *widget, const Events::Event &event);
 	/** Send a mouse move event to the widget. */
+
+	friend class Widget;
 };
 
 } // End of namespace Engines

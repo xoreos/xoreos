@@ -30,6 +30,8 @@ public:
 	void show();
 
 protected:
+	void fixWidgetType(const Common::UString &tag, WidgetType &type);
+
 	void initWidget(Widget &widget);
 	void callbackActive(Widget &widget);
 

@@ -21,6 +21,33 @@ namespace Engines {
 
 namespace NWN {
 
+class WidgetListItemModule : public WidgetListItem {
+public:
+	WidgetListItemModule(::Engines::GUI &gui, const Common::UString &font,
+	                     const Common::UString &text, float spacing = 0.0);
+	~WidgetListItemModule();
+
+	void show();
+	void hide();
+
+	void setPosition(float x, float y, float z);
+
+	float getWidth () const;
+	float getHeight() const;
+
+	void setTag(const Common::UString &tag);
+
+protected:
+	bool activate();
+	bool deactivate();
+
+private:
+	Graphics::Aurora::Model *_button;
+	Graphics::Aurora::Text  *_text;
+
+	float _spacing;
+};
+
 /** The NWN new module menu. */
 class NewModuleMenu : public GUI {
 public:
@@ -30,6 +57,8 @@ public:
 	void show();
 
 protected:
+	void fixWidgetType(const Common::UString &tag, WidgetType &type);
+
 	void callbackActive(Widget &widget);
 
 private:
