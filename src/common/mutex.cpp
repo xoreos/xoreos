@@ -39,8 +39,8 @@ void Mutex::unlock() {
 }
 
 
-Semaphore::Semaphore() {
-	_semaphore = SDL_CreateSemaphore(1);
+Semaphore::Semaphore(uint value) {
+	_semaphore = SDL_CreateSemaphore(value);
 }
 
 Semaphore::~Semaphore() {

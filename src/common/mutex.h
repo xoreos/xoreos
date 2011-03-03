@@ -39,7 +39,7 @@ private:
 /** A semaphore . */
 class Semaphore {
 public:
-	Semaphore();
+	Semaphore(uint value);
 	~Semaphore();
 
 	bool lock(uint32 timeout = 0);
