@@ -53,6 +53,28 @@ const TwoDAFile &TwoDARegistry::get(const Common::UString &name) {
 	return *result.first->second;
 }
 
+void TwoDARegistry::add(const Common::UString &name) {
+	TwoDAMap::iterator twoda = _twodas.find(name);
+	if (twoda != _twodas.end()) {
+		// Entry exists => remove first
+		delete twoda->second;
+		_twodas.erase(twoda);
+	}
+
+	// Load and add
+	_twodas[name] = load(name);
+}
+
+void TwoDARegistry::remove(const Common::UString &name) {
+	TwoDAMap::iterator twoda = _twodas.find(name);
+	if (twoda == _twodas.end())
+		// Does exist, nothing to do
+		return;
+
+	delete twoda->second;
+	_twodas.erase(twoda);
+}
+
 TwoDAFile *TwoDARegistry::load(const Common::UString &name) {
 	Common::SeekableReadStream *twodaFile = 0;
 	TwoDAFile *twoda = new TwoDAFile;

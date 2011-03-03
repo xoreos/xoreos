@@ -34,8 +34,13 @@ public:
 
 	void clear();
 
-	/** Get a certain 2DA. */
+	/** Get a certain 2DA, loading it if necessary. */
 	const TwoDAFile &get(const Common::UString &name);
+
+	/** Add a certain 2DA to the registry, reloading it if necessary. */
+	void add(const Common::UString &name);
+	/** Remove a certain 2DA from the registry. */
+	void remove(const Common::UString &name);
 
 private:
 	typedef std::map<Common::UString, TwoDAFile *> TwoDAMap;
