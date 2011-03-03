@@ -42,6 +42,7 @@
 #include "aurora/error.h"
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
+#include "aurora/2dareg.h"
 
 namespace Engines {
 
@@ -417,6 +418,8 @@ void NWNEngine::loadTexturePack() {
 }
 
 void NWNEngine::unloadModule() {
+	TwoDAReg.clear();
+
 	_ifo.unload();
 
 	ResMan.undo(_resCurModule);

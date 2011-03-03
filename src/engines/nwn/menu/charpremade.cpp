@@ -20,6 +20,9 @@
 #include "aurora/types.h"
 #include "aurora/locstring.h"
 #include "aurora/gfffile.h"
+#include "aurora/talkman.h"
+#include "aurora/2dareg.h"
+#include "aurora/2dafile.h"
 
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/model.h"
@@ -70,7 +73,9 @@ Character::Character(const Common::UString &f) {
 				if (!classes.empty())
 					classes += '/';
 
-				classes += Common::UString::sprintf("%d", cClass.getUint("Class", -1));
+				uint32 classNumber = cClass.getUint("Class");
+				uint32 strRef = TwoDAReg.get("classes").getCellInt(classNumber, "Name");
+				classes += TalkMan.getString(strRef);
 			}
 		}
 
