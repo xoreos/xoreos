@@ -100,6 +100,10 @@ bool Text::isVisible() {
 	return Renderable::isInQueue();
 }
 
+bool Text::isEmpty() {
+	return _str.empty();
+}
+
 float Text::getWidth() const {
 	return _width;
 }

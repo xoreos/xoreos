@@ -45,6 +45,8 @@ public:
 
 	bool isVisible(); // Is the text visible?
 
+	bool isEmpty();
+
 	float getWidth()  const;
 	float getHeight() const;
 
