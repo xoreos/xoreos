@@ -15,28 +15,20 @@
 #include <cstdio>
 
 #include "cline.h"
+#include "init.h"
 
 #include "common/ustring.h"
 #include "common/util.h"
 #include "common/error.h"
 #include "common/filepath.h"
-#include "common/threads.h"
 
 #include "common/configman.h"
 
-#include "graphics/graphics.h"
-
-#include "sound/sound.h"
-
 #include "events/events.h"
 
-#include "engines/enginemanager.h"
 #include "engines/gamethread.h"
 
 void initConfig();
-
-void init();
-void deinit();
 
 // *grumbles about Microsoft incompetence*
 #ifdef WIN32
@@ -137,25 +129,5 @@ void initConfig() {
 	if (newConfig) {
 		ConfigMan.setDefaults();
 		ConfigMan.save();
-	}
-}
-
-void init() {
-	Common::initThreads();
-
-	GfxMan.init();
-	status("Graphics subsystem initialized");
-	SoundMan.init();
-	status("Sound subsystem initialized");
-	EventMan.init();
-	status("Event subsystem initialized");
-}
-
-void deinit() {
-	try {
-		EventMan.deinit();
-		SoundMan.deinit();
-		GfxMan.deinit();
-	} catch (...) {
 	}
 }
