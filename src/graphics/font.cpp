@@ -208,6 +208,26 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 	return length;
 }
 
+float Font::split(Common::UString &line, float maxWidth) const {
+	return split(line, line, maxWidth);
+}
+
+float Font::split(const Common::UString &line, Common::UString &lines, float maxWidth) const {
+	std::vector<Common::UString> sLines;
+
+	float width = split(line, sLines, maxWidth);
+
+	lines.clear();
+	for (std::vector<Common::UString>::const_iterator l = sLines.begin(); l != sLines.end(); ++l) {
+		if (!lines.empty())
+			lines += '\n';
+
+		lines += *l;
+	}
+
+	return width;
+}
+
 float Font::getLineWidth(const Common::UString &text) const {
 	float width = 0.0;
 

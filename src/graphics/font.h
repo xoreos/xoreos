@@ -49,6 +49,8 @@ public:
 
 	float split(const Common::UString &line, std::vector<Common::UString> &lines,
 	            float maxWidth = 0.0) const;
+	float split(Common::UString &line, float maxWidth) const;
+	float split(const Common::UString &line, Common::UString &lines, float maxWidth) const;
 
 private:
 	float getLineWidth(const Common::UString &text) const;
