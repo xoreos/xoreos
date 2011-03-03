@@ -61,8 +61,7 @@ private:
 	bool _dispatched; ///< Was the request dispatched?
 	bool _garbage;
 
-	Common::Condition *_hasReply;   ///< The condition signaling a reply.
-	Common::Mutex      _mutexReply; ///< The reply condition's mutex.
+	Common::Semaphore _hasReply; ///< Do we have a reply?
 
 	Event _event; ///< The actual event.
 

@@ -67,31 +67,22 @@ void RequestManager::waitReply(RequestID request) {
 	_mutexUse.lock();
 
 	if (!(*request)->_dispatched) {
-		// The request either wasn't yet dispatched, or we've already gotten a reply
-
-		// Copy the reply (if any) to the reply memory
-		(*request)->copyToReply();
+		// The request wasn't yet dispatched
 
 		_mutexUse.unlock();
 		return;
 	}
 
-	// Lock the mutex for the condition
-	(*request)->_mutexReply.lock();
-
 	// We don't need our use mutex now
 	_mutexUse.unlock();
 
 	// Wait for a reply
-	(*request)->_hasReply->wait();
+	(*request)->_hasReply.lock();
 
 	// Got a reply
 
 	// Now we need the use mutex again
 	_mutexUse.lock();
-
-	// Unlock the relocked reply mutex
-	(*request)->_mutexReply.unlock();
 
 	// Copy the reply (if any) to the reply memory
 	(*request)->copyToReply();

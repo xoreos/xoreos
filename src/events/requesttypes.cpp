@@ -22,14 +22,13 @@
 
 namespace Events {
 
-Request::Request(ITCEvent type) : _type(type), _dispatched(false), _garbage(false) {
-	_hasReply = new Common::Condition(_mutexReply);
+Request::Request(ITCEvent type) : _type(type), _dispatched(false), _garbage(false),
+	_hasReply(0) {
 
 	create();
 }
 
 Request::~Request() {
-	delete _hasReply;
 }
 
 bool Request::isGarbage() const {
@@ -48,8 +47,7 @@ void Request::create() {
 }
 
 void Request::signalReply() {
-	_dispatched = false;
-	_hasReply->signal();
+	_hasReply.unlock();
 }
 
 void Request::copyToReply() {
