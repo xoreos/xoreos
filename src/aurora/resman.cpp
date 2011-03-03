@@ -102,7 +102,7 @@ void ResourceManager::clear() {
 
 	for (ArchiveList::iterator archive = _archives.begin(); archive != _archives.end(); ++archive)
 		delete *archive;
-	_archives.end();
+	_archives.clear();
 
 	_resources.clear();
 
