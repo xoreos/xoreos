@@ -200,4 +200,8 @@ void RequestManager::threadMethod() {
 	}
 }
 
+void RequestManager::destroy() {
+	Common::Singleton<RequestManager>::destroy();
+}
+
 } // End of namespace Events

@@ -87,6 +87,9 @@ public:
 	/** Request that a GL container shall be destroyed. */
 	RequestID destroy(Graphics::GLContainer &glContainer);
 
+	// Singleton
+	static void destroy();
+
 private:
 	Common::Mutex _mutexUse; ///< The mutex locking the use of the manager.
 
