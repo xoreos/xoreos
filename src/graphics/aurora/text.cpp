@@ -124,6 +124,16 @@ void Text::render() {
 		_font.getFont().draw(_str, _align);
 }
 
+bool Text::isIn(float x, float y) const {
+	if ((x < _x) || (y < _y))
+		return false;
+
+	if ((x > (_x + _width)) || (y > (_y + _height)))
+		return false;
+
+	return true;
+}
+
 } // End of namespace Aurora
 
 } // End of namespace Graphics

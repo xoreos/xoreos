@@ -53,6 +53,7 @@ public:
 	// Renderable
 	void newFrame();
 	void render();
+	bool isIn(float x, float y) const;
 
 private:
 	FontHandle _font;
