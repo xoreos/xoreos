@@ -17,10 +17,12 @@
 #include "common/file.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
+#include "common/configman.h"
 
 #include "aurora/error.h"
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
+#include "aurora/2dareg.h"
 
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
@@ -160,11 +162,16 @@ void EngineManager::cleanup() const {
 
 		RequestMan.sync();
 
-		ResMan.clear();
-		CursorMan.clear();
 		FontMan.clear();
+		CursorMan.clear();
 		TextureMan.clear();
+
 		TalkMan.clear();
+		TwoDAReg.clear();
+		ResMan.clear();
+
+		ConfigMan.setGame();
+
 	} catch (...) {
 	}
 }
