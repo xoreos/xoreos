@@ -62,9 +62,7 @@ public:
 	bool operator==(const UString &str) const;
 	bool operator!=(const UString &str) const;
 	bool operator<(const UString &str) const;
-	bool operator<=(const UString &str) const;
 	bool operator>(const UString &str) const;
-	bool operator>=(const UString &str) const;
 
 	UString operator+(const UString &str) const;
 	UString operator+(const std::string &str) const;
@@ -76,7 +74,13 @@ public:
 	UString &operator+=(const char *str);
 	UString &operator+=(uint32 c);
 
+	int strcmp(const UString &str) const;
+	int stricmp(const UString &str) const;
+
+	bool equals(const UString &str) const;
 	bool equalsIgnoreCase(const UString &str) const;
+
+	bool less(const UString &str) const;
 	bool lessIgnoreCase(const UString &str) const;
 
 	/** Swap the contents of the string with this string's. */

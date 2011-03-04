@@ -198,27 +198,19 @@ UString &UString::operator=(const char *str) {
 }
 
 bool UString::operator==(const UString &str) const {
-	return _string == str._string;
+	return strcmp(str) == 0;
 }
 
 bool UString::operator!=(const UString &str) const {
-	return _string != str._string;
+	return strcmp(str) != 0;
 }
 
 bool UString::operator<(const UString &str) const {
-	return _string < str._string;
-}
-
-bool UString::operator<=(const UString &str) const {
-	return _string <= str._string;
+	return strcmp(str) < 0;
 }
 
 bool UString::operator>(const UString &str) const {
-	return _string > str._string;
-}
-
-bool UString::operator>=(const UString &str) const {
-	return _string >= str._string;
+	return strcmp(str) > 0;
 }
 
 UString UString::operator+(const UString &str) const {
@@ -280,20 +272,29 @@ UString &UString::operator+=(uint32 c) {
 	return *this;
 }
 
-bool UString::equalsIgnoreCase(const UString &str) const {
-	if (size() != str.size())
-		return false;
-
+int UString::strcmp(const UString &str) const {
 	UString::iterator it1 = begin();
 	UString::iterator it2 = str.begin();
-	for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2)
-		if (tolower(*it1) != tolower(*it2))
-			return false;
+	for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
+		uint32 c1 = *it1;
+		uint32 c2 = *it2;
 
-	return true;
+		if (c1 < c2)
+			return -1;
+		if (c1 > c2)
+			return  1;
+	}
+
+	if ((it1 == end()) && (it2 == str.end()))
+		return 0;
+
+	if (it1 == end())
+		return -1;
+
+	return 1;
 }
 
-bool UString::lessIgnoreCase(const UString &str) const {
+int UString::stricmp(const UString &str) const {
 	UString::iterator it1 = begin();
 	UString::iterator it2 = str.begin();
 	for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
@@ -301,15 +302,34 @@ bool UString::lessIgnoreCase(const UString &str) const {
 		uint32 c2 = tolower(*it2);
 
 		if (c1 < c2)
-			return true;
+			return -1;
 		if (c1 > c2)
-			return false;
+			return  1;
 	}
 
-	if ((it1 == end()) && (it2 != str.end()))
-		return true;
+	if ((it1 == end()) && (it2 == str.end()))
+		return 0;
 
-	return false;
+	if (it1 == end())
+		return -1;
+
+	return 1;
+}
+
+bool UString::equals(const UString &str) const {
+	return strcmp(str) == 0;
+}
+
+bool UString::equalsIgnoreCase(const UString &str) const {
+	return stricmp(str) == 0;
+}
+
+bool UString::less(const UString &str) const {
+	return strcmp(str) < 0;
+}
+
+bool UString::lessIgnoreCase(const UString &str) const {
+	return stricmp(str) < 0;
 }
 
 void UString::swap(UString &str) {
