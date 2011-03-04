@@ -15,6 +15,8 @@
 #ifndef GRAPHICS_AURORA_GUIQUAD_H
 #define GRAPHICS_AURORA_GUIQUAD_H
 
+#include "common/maths.h"
+
 #include "graphics/guifrontelement.h"
 
 #include "graphics/aurora/textureman.h"
@@ -29,11 +31,12 @@ namespace Aurora {
 
 class GUIQuad : public GUIFrontElement {
 public:
-	GUIQuad(const Common::UString &texture, float x1, float y1, float x2, float y2);
+	GUIQuad(const Common::UString &texture, float x1, float y1, float x2, float y2,
+			float tX1 = 0.0, float tY1 = 0.0, float tX2 = 1.0, float tY2 = 1.0);
 	~GUIQuad();
 
 	/** Set the current position of the quad. */
-	void setPosition(float x, float y);
+	void setPosition(float x, float y, float z = -FLT_MAX);
 
 	/** Is the point within the quad? */
 	bool isIn(float x, float y) const;
@@ -54,6 +57,11 @@ private:
 	float _y1;
 	float _x2;
 	float _y2;
+
+	float _tX1;
+	float _tY1;
+	float _tX2;
+	float _tY2;
 };
 
 } // End of namespace Aurora

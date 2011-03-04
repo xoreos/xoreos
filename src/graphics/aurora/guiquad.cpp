@@ -23,17 +23,20 @@ namespace Graphics {
 
 namespace Aurora {
 
-GUIQuad::GUIQuad(const Common::UString &texture, float x1, float y1, float x2, float y2) :
-	_x1(x1), _y1(y1), _x2(x2), _y2(y2) {
+GUIQuad::GUIQuad(const Common::UString &texture, float x1, float y1, float x2, float y2,
+		float tX1, float tY1, float tX2, float tY2) :
+	_x1(x1), _y1(y1), _x2(x2), _y2(y2), _tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2) {
 
 	_texture = TextureMan.get(texture);
+
+	_distance = -FLT_MAX;
 }
 
 GUIQuad::~GUIQuad() {
 	removeFromQueue();
 }
 
-void GUIQuad::setPosition(float x, float y) {
+void GUIQuad::setPosition(float x, float y, float z) {
 	GfxMan.lockFrame();
 
 	_x2 = _x2 - _x1 + x;
@@ -41,6 +44,8 @@ void GUIQuad::setPosition(float x, float y) {
 
 	_x1 = x;
 	_y1 = y;
+
+	_distance = z;
 
 	GfxMan.unlockFrame();
 }
@@ -73,13 +78,13 @@ void GUIQuad::render() {
 	TextureMan.set(_texture);
 
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0, 0.0);
+		glTexCoord2f(_tX1, _tY1);
 		glVertex2f(_x1, _y1);
-		glTexCoord2f(1.0, 0.0);
+		glTexCoord2f(_tX2, _tY1);
 		glVertex2f(_x2, _y1);
-		glTexCoord2f(1.0, 1.0);
+		glTexCoord2f(_tX2, _tY2);
 		glVertex2f(_x2, _y2);
-		glTexCoord2f(0.0, 1.0);
+		glTexCoord2f(_tX1, _tY2);
 		glVertex2f(_x1, _y2);
 	glEnd();
 }
