@@ -12,13 +12,15 @@
  *  The new character creator.
  */
 
+#include "engines/nwn/types.h"
+
 #include "engines/nwn/menu/charnew.h"
 
 namespace Engines {
 
 namespace NWN {
 
-CharNewMenu::CharNewMenu() {
+CharNewMenu::CharNewMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
 	load("cg_main");
 
 	// TODO: "TitleLabel" misplaced!

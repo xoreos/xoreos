@@ -16,6 +16,8 @@
 
 #include "aurora/talkman.h"
 #include "aurora/gfffile.h"
+#include "aurora/2dafile.h"
+#include "aurora/2dareg.h"
 
 #include "engines/aurora/util.h"
 
@@ -38,14 +40,19 @@ void Creature::clear() {
 
 	_fullName.clear();
 
+	_portrait.clear();
+	_portraitID = 0xFFFFFFFF;
+
 	_age = 0;
 
 	_xp = 0;
+
+	_classes.clear();
 }
 
-void Creature::loadCharacter(const Common::UString &name) {
+void Creature::loadCharacter(Common::SeekableReadStream &stream) {
 	Aurora::GFFFile gff;
-	loadGFF(gff, name, Aurora::kFileTypeBIC, MKID_BE('BIC '));
+	loadGFF(gff, stream, MKID_BE('BIC '));
 
 	load(gff.getTopLevel());
 }
@@ -60,11 +67,29 @@ void Creature::load(const Aurora::GFFStruct &gffTop) {
 
 	_fullName = createFullName();
 
+	// Portrait
+	_portrait   = gffTop.getString("Portrait");
+	_portraitID = gffTop.getUint("PortraitId", 0xFFFFFFFF);
+
 	// Age
 	_age = gffTop.getUint("Age", 0);
 
 	// Experience
 	_xp = gffTop.getUint("Experience", 0);
+
+	// Classes
+	if (gffTop.hasField("ClassList")) {
+		const Aurora::GFFList &cClasses = gffTop.getList("ClassList");
+
+		for (Aurora::GFFList::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
+			_classes.push_back(Class());
+
+			const Aurora::GFFStruct &cClass = **c;
+
+			_classes.back().classID = cClass.getUint("Class");
+			_classes.back().level   = cClass.getUint("ClassLevel");
+		}
+	}
 }
 
 Common::UString Creature::createFullName() {
@@ -105,6 +130,35 @@ const Aurora::LocString &Creature::getDescription() const {
 
 const Common::UString &Creature::getFullName() const {
 	return _fullName;
+}
+
+Common::UString Creature::getPortrait() const {
+	if (_portrait.empty()) {
+		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
+
+		Common::UString portrait = twoda.getCellString(_portraitID, "BaseResRef");
+		if (!portrait.empty())
+			return "po_" + portrait;
+
+		return "";
+	}
+
+	return _portrait;
+}
+
+Common::UString Creature::getClassString() const {
+	Common::UString classString;
+
+	for (std::vector<Class>::const_iterator c = _classes.begin(); c != _classes.end(); ++c) {
+		if (!classString.empty())
+			classString += '/';
+
+		uint32 strRef = TwoDAReg.get("classes").getCellInt(c->classID, "Name");
+
+		classString += TalkMan.getString(strRef);
+	}
+
+	return classString;
 }
 
 uint32 Creature::getAge() const {

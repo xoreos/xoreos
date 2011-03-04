@@ -3,9 +3,11 @@ include $(top_srcdir)/Makefile.common
 noinst_LTLIBRARIES = libnwn.la
 
 noinst_HEADERS = nwn.h \
+                 types.h \
                  modelloader.h \
                  ifofile.h \
                  creature.h \
+                 charstore.h \
                  menu/scrollbar.h \
                  menu/newgamefog.h \
                  menu/legal.h \
@@ -31,9 +33,11 @@ noinst_HEADERS = nwn.h \
                  menu/optionssoundadv.h
 
 libnwn_la_SOURCES = nwn.cpp \
+                    types.cpp \
                     modelloader.cpp \
                     ifofile.cpp \
                     creature.cpp \
+                    charstore.cpp \
                     menu/scrollbar.cpp \
                     menu/newgamefog.cpp \
                     menu/legal.cpp \

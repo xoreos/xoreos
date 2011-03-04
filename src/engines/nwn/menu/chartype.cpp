@@ -21,13 +21,13 @@ namespace Engines {
 
 namespace NWN {
 
-CharTypeMenu::CharTypeMenu() {
+CharTypeMenu::CharTypeMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
 	load("pre_chartype");
 
 	_fogs = new NewGameFogs(4);
 
-	_charNew     = new CharNewMenu;
-	_charPremade = new CharPremadeMenu;
+	_charNew     = new CharNewMenu(*_moduleContext);
+	_charPremade = new CharPremadeMenu(*_moduleContext);
 }
 
 CharTypeMenu::~CharTypeMenu() {

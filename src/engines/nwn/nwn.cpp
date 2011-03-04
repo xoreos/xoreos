@@ -14,6 +14,7 @@
 
 #include "engines/nwn/nwn.h"
 #include "engines/nwn/modelloader.h"
+#include "engines/nwn/charstore.h"
 #include "engines/nwn/menu/legal.h"
 #include "engines/nwn/menu/main.h"
 #include "engines/nwn/menu/chartype.h"
@@ -133,6 +134,11 @@ void NWNEngine::init() {
 	if (EventMan.quitRequested())
 		return;
 
+	Common::UString localCharDir =
+		Common::FilePath::findSubDirectory(_baseDirectory, "localvault", true);
+
+	CharStore.addDirectory(localCharDir);
+
 	initResources();
 
 	if (EventMan.quitRequested())
@@ -191,8 +197,6 @@ void NWNEngine::initResources() {
 	indexMandatoryDirectory("movies"    , 0, 0, 22);
 	status("Indexing extra image resources");
 	indexMandatoryDirectory("portraits" , 0, 0, 23);
-	status("Indexing extra character resources");
-	indexMandatoryDirectory("localvault", 0, 0, 24);
 	status("Indexing extra talktables");
 	indexOptionalDirectory ("tlk"       , 0, 0, 25);
 	status("Indexing databases");
@@ -289,8 +293,6 @@ void NWNEngine::initGameConfig() {
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_extraModuleDir",
 		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_localCharDir",
-		Common::FilePath::findSubDirectory(_baseDirectory, "localvault", true));
 }
 
 void NWNEngine::checkConfig() {
@@ -301,6 +303,8 @@ void NWNEngine::checkConfig() {
 void NWNEngine::deinit() {
 	unloadPC();
 	unloadModule();
+
+	CharacterStore::destroy();
 
 	delete _fps;
 }
@@ -323,7 +327,7 @@ void NWNEngine::mainMenuLoop() {
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
 	Legal *legal    = new Legal;
-	GUI   *mainMenu = new MainMenu;
+	GUI   *mainMenu = new MainMenu(_moduleContext);
 
 	// Fade in the legal billboard
 	legal->fadeIn();
@@ -341,8 +345,7 @@ void NWNEngine::mainMenuLoop() {
 		unloadPC();
 		unloadModule();
 
-		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad"  , "");
-		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_characterToUse", "");
+		_moduleContext.clear();
 
 		// Run the main menu
 		if (startSection == 0)
@@ -360,7 +363,7 @@ void NWNEngine::mainMenuLoop() {
 			if (!loadModule())
 				continue;
 
-			GUI *charSelection = new CharTypeMenu;
+			GUI *charSelection = new CharTypeMenu(_moduleContext);
 			charSelection->show();
 			int charCode = charSelection->run();
 			charSelection->hide();
@@ -375,7 +378,7 @@ void NWNEngine::mainMenuLoop() {
 
 			// RUN GAME
 
-			mainMenu = new MainMenu;
+			mainMenu = new MainMenu(_moduleContext);
 			startSection = 0;
 
 		} else
@@ -430,11 +433,11 @@ void NWNEngine::unloadModule() {
 bool NWNEngine::loadModule() {
 	unloadModule();
 
-	Common::UString module = ConfigMan.getString("NWN_moduleToLoad");
+	Common::UString module = _moduleContext.module;
 	if (module.empty())
 		return false;
 
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "");
+	_moduleContext.module.clear();
 
 	bool hasError = false;
 	Common::Exception error;
@@ -495,37 +498,18 @@ void NWNEngine::unloadPC() {
 bool NWNEngine::loadPC() {
 	unloadPC();
 
-	Common::UString character = ConfigMan.getString("NWN_characterToUse");
+	CharacterID character = _moduleContext.pc;
 	if (character.empty())
 		return false;
 
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_characterToUse", "");
+	_moduleContext.pc.clear();
 
-	bool hasError = false;
-	Common::Exception error;
+	_pc = *character;
 
-	try {
-		_pc.loadCharacter(character);
+	status("Using PC character \"%s\"", _pc.getFullName().c_str());
 
-	} catch (Common::Exception &e) {
-		error = e;
-		hasError = true;
-	} catch (std::exception &e) {
-		error = Common::Exception(e.what());
-		hasError = true;
-	} catch (...) {
-		hasError = true;
-	}
-
-	if (hasError) {
-		error.add("Can't load character \"%s\"", character.c_str());
-		printException(error, "WARNING: ");
-		return false;
-	}
-
-	status("Loaded PC character \"%s\"", _pc.getFullName().c_str());
-
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentCharacter", character);
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentCharacter",
+			_pc.getFullName());
 	return true;
 }
 

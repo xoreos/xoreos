@@ -16,6 +16,8 @@
 
 #include "graphics/graphics.h"
 
+#include "engines/nwn/types.h"
+
 #include "engines/nwn/menu/new.h"
 #include "engines/nwn/menu/newmodule.h"
 
@@ -25,7 +27,7 @@ namespace Engines {
 
 namespace NWN {
 
-NewMenu::NewMenu() {
+NewMenu::NewMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
 	load("pre_newgame");
 
 	_hasXP = ConfigMan.getBool("NWN_hasXP1") || ConfigMan.getBool("NWN_hasXP2");
@@ -37,7 +39,7 @@ NewMenu::NewMenu() {
 
 	_module = 0;
 	if (!_hasXP)
-		_module = new NewModuleMenu;
+		_module = new NewModuleMenu(*_moduleContext);
 }
 
 NewMenu::~NewMenu() {
@@ -66,31 +68,31 @@ void NewMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "PreludeButton") {
-		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "prelude.nwm");
+		_moduleContext->module = "prelude.nwm";
 		_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "Chapter1Button") {
-		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "chapter1.nwm");
+		_moduleContext->module = "chapter1.nwm";
 		_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "Chapter2Button") {
-		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "chapter2.nwm");
+		_moduleContext->module = "chapter2.nwm";
 		_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "Chapter3Button") {
-		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "chapter3.nwm");
+		_moduleContext->module = "chapter3.nwm";
 		_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "Chapter4Button") {
-		ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", "chapter4.nwm");
+		_moduleContext->module = "chapter4.nwm";
 		_returnCode = 2;
 		return;
 	}

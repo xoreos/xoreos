@@ -21,12 +21,14 @@ namespace Engines {
 
 namespace NWN {
 
+struct ModuleContext;
+
 class NewGameFogs;
 
 /** The NWN new/premade character selection menu. */
 class CharTypeMenu : public GUI {
 public:
-	CharTypeMenu();
+	CharTypeMenu(ModuleContext &moduleContext);
 	~CharTypeMenu();
 
 	void show();
@@ -35,6 +37,8 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	ModuleContext *_moduleContext;
+
 	NewGameFogs *_fogs;
 
 	GUI *_charNew;

@@ -30,6 +30,9 @@
 #include "engines/aurora/util.h"
 #include "engines/aurora/model.h"
 
+#include "engines/nwn/creature.h"
+#include "engines/nwn/charstore.h"
+
 #include "engines/nwn/menu/charpremade.h"
 #include "engines/nwn/menu/charnew.h"
 
@@ -37,77 +40,21 @@ namespace Engines {
 
 namespace NWN {
 
-Character::Character() {
-}
-
-Character::Character(const Common::UString &f) {
-	file = f;
-
-	n = 0;
-
-	try {
-		Aurora::GFFFile bic;
-
-		loadGFF(bic, file, Aurora::kFileTypeBIC, MKID_BE('BIC '));
-
-		const Aurora::GFFStruct &bicTop = bic.getTopLevel();
-
-		Aurora::LocString firstName;
-		bicTop.getLocString("FirstName", firstName);
-
-		Aurora::LocString lastName;
-		bicTop.getLocString("LastName", lastName);
-
-		fullName = firstName.getFirstString();
-		if (!fullName.empty())
-			fullName += ' ';
-
-		fullName += lastName.getFirstString();
-
-		if (bicTop.hasField("ClassList")) {
-			const Aurora::GFFList &cClasses = bicTop.getList("ClassList");
-
-			for (Aurora::GFFList::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
-				const Aurora::GFFStruct &cClass = **c;
-
-				if (!classes.empty())
-					classes += '/';
-
-				uint32 classNumber = cClass.getUint("Class");
-				uint32 strRef = TwoDAReg.get("classes").getCellInt(classNumber, "Name");
-				classes += TalkMan.getString(strRef);
-			}
-		}
-
-		classes = "(" + classes + ")";
-
-	} catch (...) {
-		file.clear();
-		fullName.clear();
-		classes.clear();
-	}
-}
-
-bool Character::empty() const {
-	return file.empty();
-}
-
-
 WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
-    const Common::UString &font, const Character &c, float spacing) :
+    const Common::UString &font, const CharacterID &c, float spacing) :
 	WidgetListItem(gui), _spacing(spacing) {
 
 	_button = loadModelGUI("ctl_pre_btn_char");
 	assert(_button);
 
-	if (c.n > 0) {
-		Common::UString name = Common::UString::sprintf("%s (%d)", c.fullName.c_str(), c.n);
+	Common::UString name = c->getFullName();
+	if (c.getNumber() > 0)
+		name += Common::UString::sprintf(" (%d)", c.getNumber());
 
-		_textName = new Graphics::Aurora::Text(FontMan.get(font), name);
-	} else
-		_textName = new Graphics::Aurora::Text(FontMan.get(font), c.fullName);
+	Common::UString classes = "(" + c->getClassString() + ")";
 
-	_textClass = new Graphics::Aurora::Text(FontMan.get(font), c.classes);
+	_textName  = new Graphics::Aurora::Text(FontMan.get(font), name);
+	_textClass = new Graphics::Aurora::Text(FontMan.get(font), classes);
 }
 
 WidgetListItemCharacter::~WidgetListItemCharacter() {
@@ -173,7 +120,7 @@ bool WidgetListItemCharacter::deactivate() {
 }
 
 
-CharPremadeMenu::CharPremadeMenu() {
+CharPremadeMenu::CharPremadeMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
 	load("pre_playmod");
 
 	// TODO: "Title" misplaced!
@@ -189,7 +136,7 @@ CharPremadeMenu::CharPremadeMenu() {
 	// TODO: Delete character
 	getWidget("DeleteCharButton", true)->setDisabled(true);
 
-	_charNew = new CharNewMenu;
+	_charNew = new CharNewMenu(*_moduleContext);
 }
 
 CharPremadeMenu::~CharPremadeMenu() {
@@ -240,42 +187,10 @@ void CharPremadeMenu::callbackActive(Widget &widget) {
 }
 
 void CharPremadeMenu::initCharacterList() {
-	status("Collecting characters");
-
-	Common::UString charDir = ConfigMan.getString("NWN_localCharDir");
-	if (charDir.empty())
-		return;
-
-	// Get characters
-
-	Common::FileList charDirList;
-
-	charDirList.addDirectory(charDir);
-
-	std::list<Common::UString> characters;
-	uint n = charDirList.getFileNames(characters);
-
-	characters.sort(Common::UString::iless());
-
-	_characters.reserve(n);
-	for (std::list<Common::UString>::const_iterator c = characters.begin(); c != characters.end(); ++c) {
-
-		if (Common::FilePath::getExtension(*c).equalsIgnoreCase(".bic")) {
-			Character character(Common::FilePath::getStem(*c));
-			if (character.empty())
-				continue;
-
-			if (!_characters.empty() && (_characters.back().fullName == character.fullName))
-				character.n = _characters.back().n + 1;
-
-			_characters.push_back(character);
-		}
-
-	}
-
-
-	// Add the characters to the list box
 	status("Creating character list");
+
+	std::list<CharacterID> chars;
+	uint n = CharStore.getCharacters(chars);
 
 	WidgetListBox &charList = *getListBox("ButtonList", true);
 
@@ -284,29 +199,30 @@ void CharPremadeMenu::initCharacterList() {
 	charList.clear();
 	charList.setMode(WidgetListBox::kModeSelectable);
 
-	charList.reserve(_characters.size());
-	for (std::vector<Character>::const_iterator c = _characters.begin(); c != _characters.end(); ++c)
+	_characters.reserve(n);
+	charList.reserve(n);
+
+	for (std::list<CharacterID>::const_iterator c = chars.begin(); c != chars.end(); ++c) {
+		_characters.push_back(*c);
+
 		charList.add(new WidgetListItemCharacter(*this, "fnt_galahad14", *c, 2.0));
+	}
 
 	charList.unlock();
 
 	charList.select(0);
 }
 
-Common::UString CharPremadeMenu::getSelectedCharacter() {
+CharacterID CharPremadeMenu::getSelectedCharacter() {
 	uint n = getListBox("ButtonList", true)->getSelected();
 	if (n >= _characters.size())
-		return "";
+		return CharacterID();
 
-	return _characters[n].file;
+	return _characters[n];
 }
 
 void CharPremadeMenu::playCharacter() {
-	Common::UString character = getSelectedCharacter();
-	if (character.empty())
-		return;
-
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_characterToUse", character);
+	_moduleContext->pc = getSelectedCharacter();
 }
 
 } // End of namespace NWN

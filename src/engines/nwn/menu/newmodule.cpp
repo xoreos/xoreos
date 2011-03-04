@@ -24,6 +24,8 @@
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/model.h"
 
+#include "engines/nwn/types.h"
+
 #include "engines/nwn/menu/newmodule.h"
 
 #include "engines/aurora/util.h"
@@ -108,7 +110,7 @@ bool WidgetListItemModule::deactivate() {
 }
 
 
-NewModuleMenu::NewModuleMenu() {
+NewModuleMenu::NewModuleMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
 	load("pre_loadmod");
 }
 
@@ -233,7 +235,7 @@ void NewModuleMenu::loadModule() {
 	if (module.empty())
 		return;
 
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_moduleToLoad", module + ".mod");
+	_moduleContext->module = module + ".mod";
 }
 
 } // End of namespace NWN

@@ -12,6 +12,8 @@
  *  The new campaign menu.
  */
 
+#include "engines/nwn/types.h"
+
 #include "engines/nwn/menu/newcamp.h"
 #include "engines/nwn/menu/new.h"
 #include "engines/nwn/menu/newmodule.h"
@@ -22,7 +24,7 @@ namespace Engines {
 
 namespace NWN {
 
-NewCampMenu::NewCampMenu() {
+NewCampMenu::NewCampMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
 	load("pre_campaign");
 
 	Widget *button = 0;
@@ -38,8 +40,8 @@ NewCampMenu::NewCampMenu() {
 	if (button)
 		button->setDisabled(true);
 
-	_base   = new NewMenu;
-	_module = new NewModuleMenu;
+	_base   = new NewMenu(*_moduleContext);
+	_module = new NewModuleMenu(*_moduleContext);
 }
 
 NewCampMenu::~NewCampMenu() {

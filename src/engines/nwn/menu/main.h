@@ -23,10 +23,12 @@ namespace Engines {
 
 namespace NWN {
 
+struct ModuleContext;
+
 /** The NWN main menu. */
 class MainMenu : public GUI {
 public:
-	MainMenu();
+	MainMenu(ModuleContext &moduleContext);
 	~MainMenu();
 
 protected:
@@ -34,6 +36,8 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	ModuleContext *_moduleContext;
+
 	bool _hasXP;
 
 	GUI *_new;

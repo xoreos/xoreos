@@ -24,7 +24,7 @@ namespace NWN {
 /** The NWN new campaign menu. */
 class NewCampMenu : public GUI {
 public:
-	NewCampMenu();
+	NewCampMenu(ModuleContext &moduleContext);
 	~NewCampMenu();
 
 protected:
@@ -32,6 +32,8 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	ModuleContext *_moduleContext;
+
 	GUI *_base;
 	GUI *_module;
 };

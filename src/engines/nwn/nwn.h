@@ -23,6 +23,7 @@
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
+#include "engines/nwn/types.h"
 #include "engines/nwn/ifofile.h"
 #include "engines/nwn/creature.h"
 
@@ -74,6 +75,8 @@ private:
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
 
 	Graphics::Aurora::FPS *_fps;
+
+	ModuleContext _moduleContext;
 
 	// Texture pack
 	int _currentTexturePack;

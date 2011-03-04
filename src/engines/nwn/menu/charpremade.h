@@ -15,6 +15,8 @@
 #ifndef ENGINES_NWN_MENU_CHARPREMADE_H
 #define ENGINES_NWN_MENU_CHARPREMADE_H
 
+#include "engines/nwn/types.h"
+
 #include "engines/nwn/menu/gui.h"
 
 namespace Aurora {
@@ -25,22 +27,10 @@ namespace Engines {
 
 namespace NWN {
 
-struct Character {
-	Common::UString file;
-	Common::UString fullName;
-	Common::UString classes;
-	uint n;
-
-	Character();
-	Character(const Common::UString &f);
-
-	bool empty() const;
-};
-
 class WidgetListItemCharacter : public WidgetListItem {
 public:
 	WidgetListItemCharacter(::Engines::GUI &gui, const Common::UString &font,
-	                        const Character &c, float spacing = 0.0);
+	                        const CharacterID &c, float spacing = 0.0);
 	~WidgetListItemCharacter();
 
 	void show();
@@ -68,7 +58,7 @@ private:
 /** The NWN character creator. */
 class CharPremadeMenu : public GUI {
 public:
-	CharPremadeMenu();
+	CharPremadeMenu(ModuleContext &moduleContext);
 	~CharPremadeMenu();
 
 	void show();
@@ -79,11 +69,13 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	ModuleContext *_moduleContext;
+
 	GUI *_charNew;
 
-	std::vector<Character> _characters;
+	std::vector<CharacterID> _characters;
 
-	Common::UString getSelectedCharacter();
+	CharacterID getSelectedCharacter();
 
 	void initCharacterList();
 	void playCharacter();

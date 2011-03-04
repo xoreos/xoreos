@@ -18,6 +18,8 @@
 
 #include "graphics/aurora/model.h"
 
+#include "engines/nwn/types.h"
+
 #include "engines/nwn/menu/main.h"
 #include "engines/nwn/menu/newgamefog.h"
 #include "engines/nwn/menu/new.h"
@@ -33,7 +35,7 @@ namespace Engines {
 
 namespace NWN {
 
-MainMenu::MainMenu() {
+MainMenu::MainMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
 	load("pre_main");
 
 	bool hasXP1 = ConfigMan.getBool("NWN_hasXP1");
@@ -58,10 +60,10 @@ MainMenu::MainMenu() {
 
 	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection game menu
-		_new = new NewCampMenu;
+		_new = new NewCampMenu(*_moduleContext);
 	else
 		// If not, create the base game menu
-		_new = new NewMenu;
+		_new = new NewMenu(*_moduleContext);
 
 	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection movies menu
