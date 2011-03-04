@@ -106,22 +106,26 @@ bool longDelay(uint32 ms) {
 	return EventMan.quitRequested();
 }
 
+void loadGFF(Aurora::GFFFile &gff, Common::SeekableReadStream &stream, uint32 id) {
+	gff.load(stream);
+
+	if (gff.getID() != id)
+		throw Common::Exception("GFF has invalid ID (want 0x%08X, got 0x%08X)", id, gff.getID());
+}
+
 void loadGFF(Aurora::GFFFile &gff, const Common::UString &name, Aurora::FileType type, uint32 id) {
 	Common::SeekableReadStream *gffFile = 0;
 	try {
 		if (!(gffFile = ResMan.getResource(name, type)))
 			throw Common::Exception("No such resource \"%s\"", Aurora::setFileType(name, type).c_str());
 
-		gff.load(*gffFile);
+		loadGFF(gff, *gffFile, id);
 
 		delete gffFile;
 	} catch (...) {
 		delete gffFile;
 		throw;
 	}
-
-	if (gff.getID() != id)
-		throw Common::Exception("\"%s\" has invalid ID", Aurora::setFileType(name, type).c_str());
 }
 
 Aurora::GFFFile *loadGFF(const Common::UString &name, Aurora::FileType type, uint32 id) {

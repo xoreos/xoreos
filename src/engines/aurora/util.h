@@ -46,6 +46,8 @@ void checkConfigDouble(const Common::UString &key, double min, double max, doubl
 bool longDelay(uint32 ms);
 
 /** Load a GFF file. */
+void loadGFF(Aurora::GFFFile &gff, Common::SeekableReadStream &stream, uint32 id);
+/** Load a GFF file. */
 void loadGFF(Aurora::GFFFile &gff, const Common::UString &name, Aurora::FileType type, uint32 id);
 /** Load a GFF file. */
 Aurora::GFFFile *loadGFF(const Common::UString &name, Aurora::FileType type, uint32 id);
