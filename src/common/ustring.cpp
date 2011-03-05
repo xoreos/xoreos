@@ -177,14 +177,7 @@ UString &UString::operator=(const UString &str) {
 }
 
 UString &UString::operator=(const std::string &str) {
-	std::string::const_iterator itEnd = utf8::find_invalid(str.begin(), str.end());
-
-	if (itEnd != str.end())
-		warning("Invalid UTF8 string: \"%s\"", str.c_str());
-
-	// Create the string for the valid utf8 portion of the string.
-	// Will work for clean non-extended ASCII strings, too.
-	_string = std::string(str.begin(), itEnd);
+	_string = str;
 
 	recalculateSize();
 
@@ -265,7 +258,12 @@ UString &UString::operator+=(const char *str) {
 }
 
 UString &UString::operator+=(uint32 c) {
-	utf8::append(c, std::back_inserter(_string));
+	try {
+		utf8::append(c, std::back_inserter(_string));
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
+	}
 
 	_size++;
 
@@ -492,72 +490,93 @@ void UString::trimRight() {
 }
 
 void UString::replaceAll(uint32 what, uint32 with) {
-	// The new string with characters replaced
-	std::string newString;
-	newString.reserve(_string.size());
+	try {
 
-	// Run through the whole string
-	std::string::iterator it = _string.begin();
-	while (it != _string.end()) {
-		std::string::iterator prev = it;
+		// The new string with characters replaced
+		std::string newString;
+		newString.reserve(_string.size());
 
-		// Get the codepoint
-		uint32 c = utf8::next(it, _string.end());
+		// Run through the whole string
+		std::string::iterator it = _string.begin();
+		while (it != _string.end()) {
+			std::string::iterator prev = it;
 
-		if (c != what) {
-			// It's not what we're looking for, copy it
-			for (; prev != it; ++prev)
-				newString.push_back(*prev);
-		} else
-			// It's what we're looking for, insert the replacement instead
-			utf8::append(with, std::back_inserter(newString));
+			// Get the codepoint
+			uint32 c = utf8::next(it, _string.end());
 
+			if (c != what) {
+				// It's not what we're looking for, copy it
+				for (; prev != it; ++prev)
+					newString.push_back(*prev);
+			} else
+				// It's what we're looking for, insert the replacement instead
+				utf8::append(with, std::back_inserter(newString));
+
+		}
+
+		// And set the new string's contents
+		_string.swap(newString);
+
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
 	}
-
-	// And set the new string's contents
-	_string.swap(newString);
 }
 
 void UString::tolower() {
-	// The new string with characters replaced
-	std::string newString;
-	newString.reserve(_string.size());
+	try {
 
-	// Run through the whole string
-	std::string::iterator it = _string.begin();
-	while (it != _string.end()) {
-		std::string::iterator prev = it;
+		// The new string with characters replaced
+		std::string newString;
+		newString.reserve(_string.size());
 
-		// Get the codepoint
-		uint32 c = utf8::next(it, _string.end());
+		// Run through the whole string
+		std::string::iterator it = _string.begin();
+		while (it != _string.end()) {
+			std::string::iterator prev = it;
 
-		// And append the lowercase version to the new string
-		utf8::append(UString::tolower(c), std::back_inserter(newString));
+			// Get the codepoint
+			uint32 c = utf8::next(it, _string.end());
+
+			// And append the lowercase version to the new string
+			utf8::append(UString::tolower(c), std::back_inserter(newString));
+		}
+
+		// And set the new string's contents
+		_string.swap(newString);
+
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
 	}
-
-	// And set the new string's contents
-	_string.swap(newString);
 }
 
 void UString::toupper() {
-	// The new string with characters replaced
-	std::string newString;
-	newString.reserve(_string.size());
+	try {
 
-	// Run through the whole string
-	std::string::iterator it = _string.begin();
-	while (it != _string.end()) {
-		std::string::iterator prev = it;
+		// The new string with characters replaced
+		std::string newString;
+		newString.reserve(_string.size());
 
-		// Get the codepoint
-		uint32 c = utf8::next(it, _string.end());
+		// Run through the whole string
+		std::string::iterator it = _string.begin();
+		while (it != _string.end()) {
+			std::string::iterator prev = it;
 
-		// And append the uppercase version to the new string
-		utf8::append(UString::toupper(c), std::back_inserter(newString));
+			// Get the codepoint
+			uint32 c = utf8::next(it, _string.end());
+
+			// And append the uppercase version to the new string
+			utf8::append(UString::toupper(c), std::back_inserter(newString));
+		}
+
+		// And set the new string's contents
+		_string.swap(newString);
+
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
 	}
-
-	// And set the new string's contents
-	_string.swap(newString);
 }
 
 void UString::readASCII(SeekableReadStream &stream) {
@@ -641,7 +660,15 @@ void UString::readUTF16LE(SeekableReadStream &stream) {
 	if (data.empty())
 		return;
 
-	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	try {
+
+		utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
+	}
+
 	recalculateSize();
 }
 
@@ -653,7 +680,14 @@ void UString::readUTF16LE(SeekableReadStream &stream, uint32 length) {
 	if (data.empty())
 		return;
 
-	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	try {
+		utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
+	}
+
 	recalculateSize();
 }
 
@@ -665,7 +699,15 @@ void UString::readLineUTF16LE(SeekableReadStream &stream) {
 	if (data.empty())
 		return;
 
-	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	try {
+
+		utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
+	}
+
 	recalculateSize();
 }
 
@@ -677,7 +719,15 @@ void UString::readUTF16BE(SeekableReadStream &stream) {
 	if (data.empty())
 		return;
 
-	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	try {
+
+		utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
+	}
+
 	recalculateSize();
 }
 
@@ -689,7 +739,15 @@ void UString::readUTF16BE(SeekableReadStream &stream, uint32 length) {
 	if (data.empty())
 		return;
 
-	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	try {
+
+		utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
+	}
+
 	recalculateSize();
 }
 
@@ -701,7 +759,15 @@ void UString::readLineUTF16BE(SeekableReadStream &stream) {
 	if (data.empty())
 		return;
 
-	utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+	try {
+
+		utf8::utf16to8(data.begin(), data.end(), std::back_inserter(_string));
+
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
+	}
+
 	recalculateSize();
 }
 
@@ -791,8 +857,13 @@ UString UString::sprintf(const char *s, ...) {
 }
 
 void UString::recalculateSize() {
-	// Calculate the "distance" in characters from the beginning and end
-	_size = utf8::distance(_string.begin(), _string.end());
+	try {
+		// Calculate the "distance" in characters from the beginning and end
+		_size = utf8::distance(_string.begin(), _string.end());
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
+	}
 }
 
 // NOTE: If we ever need uppercase<->lowercase mappings for non-ASCII
@@ -824,7 +895,13 @@ bool UString::isSpace(uint32 c) {
 
 uint32 UString::fromUTF16(uint16 c) {
 	std::string utf8result;
-	utf8::utf16to8(&c, &c + 1, std::back_inserter(utf8result));
+
+	try {
+		utf8::utf16to8(&c, &c + 1, std::back_inserter(utf8result));
+	} catch (const std::exception &se) {
+		Exception e(se.what());
+		throw e;
+	}
 
 	return *iterator(utf8result.begin(), utf8result.begin(), utf8result.end());
 }

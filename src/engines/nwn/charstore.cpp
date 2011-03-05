@@ -150,9 +150,6 @@ void CharacterStore::index() {
 		// Not a player character
 		return;
 
-	bool hasError = false;
-	Common::Exception error;
-
 	Creature *character = 0;
 	try {
 		Common::File file;
@@ -165,20 +162,10 @@ void CharacterStore::index() {
 		check(*character);
 
 	} catch (Common::Exception &e) {
-		error = e;
-		hasError = true;
-	} catch (std::exception &e) {
-		error = Common::Exception(e.what());
-		hasError = true;
-	} catch (...) {
-		hasError = true;
-	}
-
-	if (hasError) {
 		delete character;
 
-		error.add("Can't load character \"%s\"", Common::FilePath::getStem(fileName).c_str());
-		printException(error, "WARNING: ");
+		e.add("Can't load character \"%s\"", Common::FilePath::getStem(fileName).c_str());
+		printException(e, "WARNING: ");
 		return;
 	}
 

@@ -43,9 +43,6 @@ bool Module::loadModule(const Common::UString &module) {
 	if (module.empty())
 		return false;
 
-	bool hasError = false;
-	Common::Exception error;
-
 	try {
 		indexMandatoryArchive(Aurora::kArchiveERF, module, 100, &_resModule);
 
@@ -60,18 +57,8 @@ bool Module::loadModule(const Common::UString &module) {
 		_ifo.loadTLK();
 
 	} catch (Common::Exception &e) {
-		error = e;
-		hasError = true;
-	} catch (std::exception &e) {
-		error = Common::Exception(e.what());
-		hasError = true;
-	} catch (...) {
-		hasError = true;
-	}
-
-	if (hasError) {
-		error.add("Can't load module \"%s\"", module.c_str());
-		printException(error, "WARNING: ");
+		e.add("Can't load module \"%s\"", module.c_str());
+		printException(e, "WARNING: ");
 		return false;
 	}
 
