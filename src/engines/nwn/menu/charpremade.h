@@ -23,6 +23,12 @@ namespace Aurora {
 	class GFFStruct;
 }
 
+namespace Graphics {
+	namespace Aurora {
+		class GUIQuad;
+	}
+}
+
 namespace Engines {
 
 namespace NWN {
@@ -48,9 +54,10 @@ protected:
 	bool deactivate();
 
 private:
-	Graphics::Aurora::Model *_button;
-	Graphics::Aurora::Text  *_textName;
-	Graphics::Aurora::Text  *_textClass;
+	Graphics::Aurora::Model   *_button;
+	Graphics::Aurora::GUIQuad *_portrait;
+	Graphics::Aurora::Text    *_textName;
+	Graphics::Aurora::Text    *_textClass;
 
 	float _spacing;
 };
