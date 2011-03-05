@@ -20,6 +20,8 @@
 #include "aurora/types.h"
 #include "aurora/resman.h"
 
+#include "sound/types.h"
+
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
@@ -72,6 +74,8 @@ private:
 
 	Graphics::Aurora::FPS *_fps;
 
+	Sound::ChannelHandle _menuMusic;
+
 	// Texture pack
 	int _currentTexturePack;
 	Aurora::ResourceManager::ChangeID _resTP[4];
@@ -90,6 +94,9 @@ private:
 	void playIntroVideos();
 
 	void loadTexturePack();
+
+	void playMenuMusic();
+	void stopMenuMusic();
 
 	void mainMenuLoop();
 };

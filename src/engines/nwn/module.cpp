@@ -16,18 +16,22 @@
 #include "common/error.h"
 #include "common/configman.h"
 
+#include "events/events.h"
+
 #include "aurora/2dareg.h"
 
+#include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
 
 #include "engines/nwn/module.h"
 #include "engines/nwn/types.h"
+#include "engines/nwn/area.h"
 
 namespace Engines {
 
 namespace NWN {
 
-Module::Module() : _hasModule(false), _hasPC(false) {
+Module::Module() : _hasModule(false), _hasPC(false), _area(0) {
 }
 
 Module::~Module() {
@@ -125,10 +129,31 @@ void Module::run() {
 		return;
 	}
 
-	// TODO
+	Common::UString startMovie = _ifo.getStartMovie();
+	if (!startMovie.empty())
+		playVideo(startMovie);
+
+	_newArea = _ifo.getEntryArea();
+
+	while (!EventMan.quitRequested() && !_newArea.empty()) {
+		if (!_area || (_area->getName() != _newArea)) {
+			delete _area;
+
+			_area = new Area(*this, _newArea);
+		}
+
+		Events::Event event;
+		while (EventMan.pollEvent(event)) {
+		};
+
+		EventMan.delay(10);
+	}
 }
 
 void Module::unload() {
+	delete _area;
+	_area = 0;
+
 	unloadHAKs();
 	unloadPC();
 	unloadModule();

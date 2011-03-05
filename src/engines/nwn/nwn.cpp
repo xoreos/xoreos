@@ -314,11 +314,21 @@ void NWNEngine::playIntroVideos() {
 	playVideo("nwnintro");
 }
 
+void NWNEngine::playMenuMusic() {
+	if (SoundMan.isPlaying(_menuMusic))
+		return;
+
+	_menuMusic = _hasXP2 ?
+		playSound("mus_x2theme"   , Sound::kSoundTypeMusic, true) :
+		playSound("mus_theme_main", Sound::kSoundTypeMusic, true);
+}
+
+void NWNEngine::stopMenuMusic() {
+	SoundMan.stopChannel(_menuMusic);
+}
+
 void NWNEngine::mainMenuLoop() {
-	// Menu music
-	Sound::ChannelHandle menuMusic = _hasXP2 ?
-	playSound("mus_x2theme"   , Sound::kSoundTypeMusic, true) :
-	playSound("mus_theme_main", Sound::kSoundTypeMusic, true);
+	playMenuMusic();
 
 	// Start sound
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
@@ -349,8 +359,16 @@ void NWNEngine::mainMenuLoop() {
 
 		delete mainMenu;
 
+		stopMenuMusic();
+
 		module.run();
+		if (EventMan.quitRequested())
+			break;
+
+		playMenuMusic();
 	}
+
+	stopMenuMusic();
 }
 
 static const char *texturePacks[4][4] = {

@@ -27,6 +27,7 @@ namespace Engines {
 namespace NWN {
 
 class CharacterID;
+class Area;
 
 class Module {
 public:
@@ -56,6 +57,10 @@ private:
 	IFOFile _ifo; ///< The module's IFO.
 
 	Creature _pc; ///< The player character we use.
+
+	Common::UString _newArea; ///< The new area to enter.
+
+	Area *_area; ///< The current area.
 
 	void unload(); ///< Unload the whole shebang.
 
