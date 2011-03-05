@@ -143,6 +143,8 @@ void Module::run() {
 			delete _area;
 
 			_area = new Area(*this, _newArea);
+
+			_area->show();
 		}
 
 		Events::Event event;

@@ -18,6 +18,12 @@
 #include "common/types.h"
 #include "common/ustring.h"
 
+#include "sound/sound.h"
+
+namespace Aurora {
+	class GFFStruct;
+};
+
 namespace Engines {
 
 namespace NWN {
@@ -38,6 +44,28 @@ private:
 	Module *_module;
 
 	Common::UString _name;
+
+	Common::UString _ambientDay;
+	Common::UString _ambientNight;
+
+	Common::UString _musicDay;
+	Common::UString _musicNight;
+	Common::UString _musicBattle;
+
+	std::vector<Common::UString> _musicBattleStinger;
+
+	float _ambientDayVol;
+	float _ambientNightVol;
+
+	bool _visible;
+
+	Sound::ChannelHandle _ambientSound;
+	Sound::ChannelHandle _ambientMusic;
+
+	void loadARE(const Aurora::GFFStruct &are);
+	void loadGIT(const Aurora::GFFStruct &git);
+
+	void loadProperties(const Aurora::GFFStruct &props);
 };
 
 } // End of namespace NWN

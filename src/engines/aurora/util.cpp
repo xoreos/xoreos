@@ -52,7 +52,9 @@ void playVideo(const Common::UString &video) {
 	SoundMan.setTypeGain(Sound::kSoundTypeVoice, ConfigMan.getDouble("volume_voice", 1.0));
 }
 
-Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType soundType, bool loop) {
+Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType soundType,
+		bool loop, float volume) {
+
 	Aurora::ResourceType resType =
 		(soundType == Sound::kSoundTypeMusic) ? Aurora::kResourceMusic : Aurora::kResourceSound;
 
@@ -65,6 +67,7 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 
 		channel = SoundMan.playSoundFile(soundStream, soundType, loop);
 
+		SoundMan.setChannelGain(channel, volume);
 		SoundMan.startChannel(channel);
 
 	} catch (Common::Exception &e) {
