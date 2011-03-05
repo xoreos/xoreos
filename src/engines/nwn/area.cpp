@@ -15,6 +15,7 @@
 #include "common/endianness.h"
 #include "common/util.h"
 
+#include "aurora/types.h"
 #include "aurora/gfffile.h"
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
@@ -91,12 +92,12 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 
 	const Aurora::TwoDAFile &ambientSound = TwoDAReg.get("ambientsound");
 
-	uint32 ambientDay   = props.getUint("AmbientSndDay"  , 0xFFFFFFFF);
-	uint32 ambientNight = props.getUint("AmbientSndNight", 0xFFFFFFFF);
+	uint32 ambientDay   = props.getUint("AmbientSndDay"  , Aurora::kStrRefInvalid);
+	uint32 ambientNight = props.getUint("AmbientSndNight", Aurora::kStrRefInvalid);
 
-	if (ambientDay   != 0xFFFFFFFF)
+	if (ambientDay   != Aurora::kStrRefInvalid)
 		_ambientDay   = ambientSound.getCellString(ambientDay  , "Resource");
-	if (ambientNight != 0xFFFFFFFF)
+	if (ambientNight != Aurora::kStrRefInvalid)
 		_ambientNight = ambientSound.getCellString(ambientNight, "Resource");
 
 	_ambientDayVol   =  props.getUint("AmbientSndDayVol"  , 127) / 127.0;
@@ -109,20 +110,20 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 
 	const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get("ambientmusic");
 
-	uint32 musicDay   = props.getUint("MusicDay"   , 0xFFFFFFFF);
-	uint32 musicNight = props.getUint("MusicNight" , 0xFFFFFFFF);
+	uint32 musicDay   = props.getUint("MusicDay"   , Aurora::kStrRefInvalid);
+	uint32 musicNight = props.getUint("MusicNight" , Aurora::kStrRefInvalid);
 
-	if (musicDay   != 0xFFFFFFFF)
+	if (musicDay   != Aurora::kStrRefInvalid)
 		_musicDay   = ambientMusic.getCellString(musicDay  , "Resource");
-	if (musicNight != 0xFFFFFFFF)
+	if (musicNight != Aurora::kStrRefInvalid)
 		_musicNight = ambientMusic.getCellString(musicNight, "Resource");
 
 
 	// Battle music
 
-	uint32 musicBattle = props.getUint("MusicBattle", 0xFFFFFFFF);
+	uint32 musicBattle = props.getUint("MusicBattle", Aurora::kStrRefInvalid);
 
-	if (musicBattle != 0xFFFFFFFF) {
+	if (musicBattle != Aurora::kStrRefInvalid) {
 		_musicBattle = ambientMusic.getCellString(musicBattle, "Resource");
 
 		// Battle stingers

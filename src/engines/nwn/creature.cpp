@@ -14,6 +14,7 @@
 
 #include "common/endianness.h"
 
+#include "aurora/types.h"
 #include "aurora/talkman.h"
 #include "aurora/gfffile.h"
 #include "aurora/2dafile.h"
@@ -41,7 +42,7 @@ void Creature::clear() {
 	_fullName.clear();
 
 	_portrait.clear();
-	_portraitID = 0xFFFFFFFF;
+	_portraitID = Aurora::kStrRefInvalid;
 
 	_isPC = false;
 	_isDM = false;
@@ -75,7 +76,7 @@ void Creature::load(const Aurora::GFFStruct &gffTop) {
 
 	// Portrait
 	_portrait   = gffTop.getString("Portrait");
-	_portraitID = gffTop.getUint("PortraitId", 0xFFFFFFFF);
+	_portraitID = gffTop.getUint("PortraitId", Aurora::kStrRefInvalid);
 
 	// PC and DM
 	_isPC = gffTop.getUint("IsPC", 0) != 0;

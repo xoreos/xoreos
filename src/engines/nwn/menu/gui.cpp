@@ -1202,8 +1202,8 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFFStruct &s, Widget *p) {
 
 		font = caption.getString("AurString_Font");
 
-		uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
-		if (strRef != 0xFFFFFFFF)
+		uint32 strRef = caption.getUint("Obj_StrRef", Aurora::kStrRefInvalid);
+		if (strRef != Aurora::kStrRefInvalid)
 			text = TalkMan.getString(strRef);
 		else
 			text = caption.getString("AurString_Text");
@@ -1378,8 +1378,8 @@ WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) 
 	Common::UString font = caption.getString("AurString_Font");
 
 	Common::UString text;
-	uint32 strRef = caption.getUint("Obj_StrRef", 0xFFFFFFFF);
-	if (strRef != 0xFFFFFFFF)
+	uint32 strRef = caption.getUint("Obj_StrRef", Aurora::kStrRefInvalid);
+	if (strRef != Aurora::kStrRefInvalid)
 		text = TalkMan.getString(strRef);
 
 	WidgetLabel *label = new WidgetLabel(*this, parent->getTag() + "#Caption", font, text);
