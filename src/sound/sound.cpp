@@ -171,8 +171,8 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		stream->skip(stream->readUint32LE());
 		tag = stream->readUint32BE();
 
-		if (tag == MKID_BE('fact')) {
-			// Skip useless chunk and dummied 'data' header
+		while ((tag == MKID_BE('fact')) || (tag == MKID_BE('PAD '))) {
+			// Skip useless chunks
 			stream->skip(stream->readUint32LE());
 			tag = stream->readUint32BE();
 		}
