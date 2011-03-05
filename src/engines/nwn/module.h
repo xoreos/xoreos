@@ -58,9 +58,10 @@ private:
 
 	Creature _pc; ///< The player character we use.
 
-	Common::UString _newArea; ///< The new area to enter.
+	bool _exit; //< Should we exit the module?
 
-	Area *_area; ///< The current area.
+	Common::UString _newArea; ///< The new area to enter.
+	Area           *_area;    ///< The current area.
 
 	void unload(); ///< Unload the whole shebang.
 
@@ -72,6 +73,8 @@ private:
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
 	void loadHAKs(); /// Load the HAKs required by the module.
+
+	void showMenu();
 };
 
 } // End of namespace NWN

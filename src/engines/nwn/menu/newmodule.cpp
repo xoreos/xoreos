@@ -231,9 +231,14 @@ void NewModuleMenu::selectedModule() {
 
 void NewModuleMenu::loadModule() {
 	Common::UString module = getSelectedModule();
-	if (_module->loadModule(module + ".mod"))
-		if (sub(*_charType) == 2)
+	if (_module->loadModule(module + ".mod")) {
+		if (sub(*_charType, 0, false) == 2) {
 			_returnCode = 2;
+			return;
+		}
+
+		show();
+	}
 }
 
 } // End of namespace NWN

@@ -8,48 +8,40 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/main.h
- *  The main menu.
+/** @file engines/nwn/menu/yesnocancel.h
+ *  The yes/no/cancel dialog.
  */
 
-#ifndef ENGINES_NWN_MENU_MAIN_H
-#define ENGINES_NWN_MENU_MAIN_H
+#ifndef ENGINES_NWN_MENU_YESNOCANCEL_H
+#define ENGINES_NWN_MENU_YESNOCANCEL_H
 
 #include "engines/nwn/menu/gui.h"
-
-#include "graphics/aurora/types.h"
 
 namespace Engines {
 
 namespace NWN {
 
-class Module;
-
-/** The NWN main menu. */
-class MainMenu : public GUI {
+/** The NWN advanced sound options menu. */
+class YesNoCancelDialog: public GUI {
 public:
-	MainMenu(Module &module);
-	~MainMenu();
+	YesNoCancelDialog(const Common::UString &msg, bool hasCancel = true);
+	~YesNoCancelDialog();
 
 	void show();
 
 protected:
+	void initWidget(Widget &widget);
+
 	void callbackActive(Widget &widget);
 
 private:
-	Module *_module;
+	Common::UString _msg;
 
-	bool _hasXP;
-
-	GUI *_charType;
-
-	GUI *_new;
-	GUI *_movies;
-	GUI *_options;
+	bool _hasCancel;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_MAIN_H
+#endif // ENGINES_NWN_MENU_YESNOCANCEL_H

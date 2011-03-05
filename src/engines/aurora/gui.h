@@ -45,6 +45,9 @@ public:
 	virtual void show(); ///< Show the widget.
 	virtual void hide(); ///< Hide the widget.
 
+	Widget *getParent();
+	const Widget *getParent() const;
+
 	/** Set the widget's position. */
 	virtual void setPosition(float x, float y, float z);
 
@@ -158,7 +161,7 @@ protected:
 	void updateMouse();
 
 	/** Open up a sub GUI. */
-	int sub(GUI &gui, int startCode = 0);
+	int sub(GUI &gui, int startCode = 0, bool showSelf = true);
 
 	/** Callback that's triggered periodically in the run() method. */
 	virtual void callbackRun();

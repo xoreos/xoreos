@@ -27,11 +27,13 @@
 #include "engines/nwn/types.h"
 #include "engines/nwn/area.h"
 
+#include "engines/nwn/menu/ingamemain.h"
+
 namespace Engines {
 
 namespace NWN {
 
-Module::Module() : _hasModule(false), _hasPC(false), _area(0) {
+Module::Module() : _hasModule(false), _hasPC(false), _exit(false), _area(0) {
 }
 
 Module::~Module() {
@@ -133,9 +135,10 @@ void Module::run() {
 	if (!startMovie.empty())
 		playVideo(startMovie);
 
+	_exit    = false;
 	_newArea = _ifo.getEntryArea();
 
-	while (!EventMan.quitRequested() && !_newArea.empty()) {
+	while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
 		if (!_area || (_area->getName() != _newArea)) {
 			delete _area;
 
@@ -144,7 +147,11 @@ void Module::run() {
 
 		Events::Event event;
 		while (EventMan.pollEvent(event)) {
-		};
+			if (event.type == Events::kEventKeyDown) {
+				if (event.key.keysym.sym == SDLK_ESCAPE)
+					showMenu();
+			}
+		}
 
 		EventMan.delay(10);
 	}
@@ -190,6 +197,17 @@ void Module::unloadHAKs() {
 		ResMan.undo(*hak);
 
 	_resHAKs.clear();
+}
+
+void Module::showMenu() {
+	InGameMainMenu menu;
+
+	menu.show();
+	int code = menu.run();
+	menu.hide();
+
+	if (code == 2)
+		_exit = true;
 }
 
 } // End of namespace NWN

@@ -14,6 +14,7 @@ noinst_HEADERS = nwn.h \
                  menu/newgamefog.h \
                  menu/legal.h \
                  menu/gui.h \
+                 menu/yesnocancel.h \
                  menu/main.h \
                  menu/new.h \
                  menu/newcamp.h \
@@ -32,7 +33,8 @@ noinst_HEADERS = nwn.h \
                  menu/optionsfeedback.h \
                  menu/optionsresolution.h \
                  menu/optionsvideoadv.h \
-                 menu/optionssoundadv.h
+                 menu/optionssoundadv.h \
+                 menu/ingamemain.h
 
 libnwn_la_SOURCES = nwn.cpp \
                     types.cpp \
@@ -46,6 +48,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/newgamefog.cpp \
                     menu/legal.cpp \
                     menu/gui.cpp \
+                    menu/yesnocancel.cpp \
                     menu/main.cpp \
                     menu/new.cpp \
                     menu/newcamp.cpp \
@@ -64,4 +67,5 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/optionsfeedback.cpp \
                     menu/optionsresolution.cpp \
                     menu/optionsvideoadv.cpp \
-                    menu/optionssoundadv.cpp
+                    menu/optionssoundadv.cpp \
+                    menu/ingamemain.cpp

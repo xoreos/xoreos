@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/main.h
- *  The main menu.
+/** @file engines/nwn/menu/ingamemain.h
+ *  The ingame main menu.
  */
 
-#ifndef ENGINES_NWN_MENU_MAIN_H
-#define ENGINES_NWN_MENU_MAIN_H
+#ifndef ENGINES_NWN_MENU_INGAMEMAIN_H
+#define ENGINES_NWN_MENU_INGAMEMAIN_H
 
 #include "engines/nwn/menu/gui.h"
 
@@ -23,33 +23,23 @@ namespace Engines {
 
 namespace NWN {
 
-class Module;
-
-/** The NWN main menu. */
-class MainMenu : public GUI {
+/** The NWN ingame main menu. */
+class InGameMainMenu : public GUI {
 public:
-	MainMenu(Module &module);
-	~MainMenu();
-
-	void show();
+	InGameMainMenu();
+	~InGameMainMenu();
 
 protected:
+	void initWidget(Widget &widget);
+
 	void callbackActive(Widget &widget);
 
 private:
-	Module *_module;
-
-	bool _hasXP;
-
-	GUI *_charType;
-
-	GUI *_new;
-	GUI *_movies;
-	GUI *_options;
+	GUI *_quitPrompt;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_MAIN_H
+#endif // ENGINES_NWN_MENU_INGAMEMAIN_H

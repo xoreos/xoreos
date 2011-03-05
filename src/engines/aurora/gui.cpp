@@ -95,7 +95,26 @@ void Widget::hide() {
 		(*it)->hide();
 }
 
+Widget *Widget::getParent() {
+	return _parent;
+}
+
+const Widget *Widget::getParent() const {
+	return _parent;
+}
+
 void Widget::setPosition(float x, float y, float z) {
+	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it) {
+		float sX, sY, sZ;
+		(*it)->getPosition(sX, sY, sZ);
+
+		sX -= _x;
+		sY -= _y;
+		sZ -= _z;
+
+		(*it)->setPosition(sX + x, sY + y, sZ + z);
+	}
+
 	_x = x;
 	_y = y;
 	_z = z;
@@ -389,7 +408,7 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 			(*a)->addGroupMember(**b);
 }
 
-int GUI::sub(GUI &gui, int startCode) {
+int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 	// Change the current widget to nothing
 	changedWidget(0);
 
@@ -402,7 +421,7 @@ int GUI::sub(GUI &gui, int startCode) {
 	int code = gui.run(startCode);
 
 	// Hide the sub GUI
-	if (code <= 1)
+	if (showSelf)
 		show();
 	gui.hide();
 

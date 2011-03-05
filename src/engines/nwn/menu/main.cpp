@@ -86,6 +86,12 @@ MainMenu::~MainMenu() {
 	delete _charType;
 }
 
+void MainMenu::show() {
+	GUI::show();
+
+	getWidget("NewButton#Caption", true)->show();
+}
+
 void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "ExitButton") {
 		EventMan.requestQuit();
@@ -96,9 +102,12 @@ void MainMenu::callbackActive(Widget &widget) {
 		NewGameFogs fogs(4);
 		fogs.show();
 
-		if (sub(*_new) == 2)
+		if (sub(*_new, 0, false) == 2) {
 			_returnCode = 2;
+			return;
+		}
 
+		show();
 		return;
 	}
 

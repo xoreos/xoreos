@@ -53,8 +53,12 @@ void NewMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "OtherButton") {
-		if (sub(*_modules) == 2)
+		if (sub(*_modules, 0, false) == 2) {
 			_returnCode = 2;
+			return;
+		}
+
+		show();
 		return;
 	}
 
@@ -85,9 +89,14 @@ void NewMenu::callbackActive(Widget &widget) {
 }
 
 void NewMenu::loadModule(const Common::UString &module) {
-	if (_module->loadModule(module))
-		if (sub(*_charType) == 2)
+	if (_module->loadModule(module)) {
+		if (sub(*_charType, 0, false) == 2) {
 			_returnCode = 2;
+			return;
+		}
+
+		show();
+	}
 }
 
 } // End of namespace NWN

@@ -58,14 +58,22 @@ void NewCampMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "NWNButton") {
-		if (sub(*_base) == 2)
+		if (sub(*_base, 0, false) == 2) {
 			_returnCode = 2;
+			return;
+		}
+
+		show();
 		return;
 	}
 
 	if (widget.getTag() == "OtherButton") {
-		if (sub(*_modules) == 2)
+		if (sub(*_modules, 0, false) == 2) {
 			_returnCode = 2;
+			return;
+		}
+
+		show();
 		return;
 	}
 
