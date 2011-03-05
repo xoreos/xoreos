@@ -56,6 +56,9 @@ public:
 	/** Return the creature's class description. */
 	Common::UString getClassString() const;
 
+	bool isPC() const; ///< Is the creature a player character?
+	bool isDM() const; ///< Is the creature a dungeon master?
+
 	/** Return the creature's age. */
 	uint32 getAge() const;
 
@@ -76,6 +79,9 @@ private:
 
 	Common::UString _portrait;
 	uint32          _portraitID;
+
+	bool _isPC;
+	bool _isDM;
 
 	uint32 _age;
 

@@ -76,6 +76,8 @@ private:
 	Common::UString createFilename(const Creature &character, uint n);
 
 	void save(const Creature &character, const Common::UString &filename);
+
+	void check(const Creature &character);
 };
 
 } // End of namespace NWN

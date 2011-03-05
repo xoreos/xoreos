@@ -162,6 +162,8 @@ void CharacterStore::index() {
 		character = new Creature;
 		character->loadCharacter(file);
 
+		check(*character);
+
 	} catch (Common::Exception &e) {
 		error = e;
 		hasError = true;
@@ -274,6 +276,13 @@ void CharacterStore::threadMethod() {
 
 void CharacterStore::save(const Creature &character, const Common::UString &filename) {
 	warning("TODO: CharacterStore::save()");
+}
+
+void CharacterStore::check(const Creature &character) {
+	if (!character.isPC())
+		throw Common::Exception("Is not a player character");
+	if (character.isDM())
+		throw Common::Exception("Is a dungeon master");
 }
 
 } // End of namespace NWN

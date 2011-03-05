@@ -43,6 +43,9 @@ void Creature::clear() {
 	_portrait.clear();
 	_portraitID = 0xFFFFFFFF;
 
+	_isPC = false;
+	_isDM = false;
+
 	_age = 0;
 
 	_xp = 0;
@@ -55,6 +58,9 @@ void Creature::loadCharacter(Common::SeekableReadStream &stream) {
 	loadGFF(gff, stream, MKID_BE('BIC '));
 
 	load(gff.getTopLevel());
+
+	// All BICs should be PCs.
+	_isPC = true;
 }
 
 void Creature::load(const Aurora::GFFStruct &gffTop) {
@@ -70,6 +76,10 @@ void Creature::load(const Aurora::GFFStruct &gffTop) {
 	// Portrait
 	_portrait   = gffTop.getString("Portrait");
 	_portraitID = gffTop.getUint("PortraitId", 0xFFFFFFFF);
+
+	// PC and DM
+	_isPC = gffTop.getUint("IsPC", 0) != 0;
+	_isDM = gffTop.getUint("IsDM", 0) != 0;
 
 	// Age
 	_age = gffTop.getUint("Age", 0);
@@ -159,6 +169,14 @@ Common::UString Creature::getClassString() const {
 	}
 
 	return classString;
+}
+
+bool Creature::isPC() const {
+	return _isPC;
+}
+
+bool Creature::isDM() const {
+	return _isDM;
 }
 
 uint32 Creature::getAge() const {
