@@ -16,6 +16,10 @@
 
 #include "engines/nwn/menu/ingamemain.h"
 #include "engines/nwn/menu/yesnocancel.h"
+#include "engines/nwn/menu/optionsgame.h"
+#include "engines/nwn/menu/optionsvideo.h"
+#include "engines/nwn/menu/optionssound.h"
+#include "engines/nwn/menu/optionscontrols.h"
 
 namespace Engines {
 
@@ -24,11 +28,30 @@ namespace NWN {
 InGameMainMenu::InGameMainMenu() {
 	load("options_main");
 
+	// TODO: Load game
+	getWidget("LoadButton", true)->setDisabled(true);
+
+	// TODO: Save game
+	getWidget("SaveButton", true)->setDisabled(true);
+
+	// TODO: Save character
+	getWidget("SaveCharButton", true)->setDisabled(true);
+
+	_game     = new OptionsGameMenu(false);
+	_video    = new OptionsVideoMenu(false);
+	_sound    = new OptionsSoundMenu(false);
+	_controls = new OptionsControlsMenu(false);
+
 	_quitPrompt = new YesNoCancelDialog(TalkMan.getString(10308), false);
 }
 
 InGameMainMenu::~InGameMainMenu() {
 	delete _quitPrompt;
+
+	delete _controls;
+	delete _sound;
+	delete _video;
+	delete _game;
 }
 
 void InGameMainMenu::initWidget(Widget &widget) {
@@ -60,6 +83,27 @@ void InGameMainMenu::callbackActive(Widget &widget) {
 		show();
 		return;
 	}
+
+	if (widget.getTag() == "GameButton") {
+		sub(*_game);
+		return;
+	}
+
+	if (widget.getTag() == "VideoOptionsButton") {
+		sub(*_video);
+		return;
+	}
+
+	if (widget.getTag() == "SoundOptionsButton") {
+		sub(*_sound);
+		return;
+	}
+
+	if (widget.getTag() == "ControlsButton") {
+		sub(*_controls);
+		return;
+	}
+
 }
 
 } // End of namespace NWN

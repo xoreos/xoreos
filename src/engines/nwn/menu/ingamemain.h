@@ -35,6 +35,11 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	GUI *_game;
+	GUI *_video;
+	GUI *_sound;
+	GUI *_controls;
+
 	GUI *_quitPrompt;
 };
 
