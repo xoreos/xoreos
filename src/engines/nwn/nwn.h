@@ -23,10 +23,6 @@
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
-#include "engines/nwn/types.h"
-#include "engines/nwn/ifofile.h"
-#include "engines/nwn/creature.h"
-
 namespace Common {
 	class FileList;
 }
@@ -76,17 +72,9 @@ private:
 
 	Graphics::Aurora::FPS *_fps;
 
-	ModuleContext _moduleContext;
-
 	// Texture pack
 	int _currentTexturePack;
 	Aurora::ResourceManager::ChangeID _resTP[4];
-
-	Aurora::ResourceManager::ChangeID _resCurModule;
-
-	IFOFile _ifo;
-
-	Creature _pc;
 
 	void init();
 
@@ -102,14 +90,6 @@ private:
 	void playIntroVideos();
 
 	void loadTexturePack();
-
-	void unloadModule();
-	bool loadModule();
-
-	void unloadPC();
-	bool loadPC();
-
-	void checkModuleHAKs();
 
 	void mainMenuLoop();
 };

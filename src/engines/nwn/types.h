@@ -62,13 +62,6 @@ private:
 	friend class CharacterStore;
 };
 
-struct ModuleContext {
-	Common::UString module;
-	CharacterID pc;
-
-	void clear();
-};
-
 } // End of namespace NWN
 
 } // End of namespace Engines

@@ -12,7 +12,7 @@
  *  The new character creator.
  */
 
-#include "engines/nwn/types.h"
+#include "engines/nwn/module.h"
 
 #include "engines/nwn/menu/charnew.h"
 
@@ -20,7 +20,7 @@ namespace Engines {
 
 namespace NWN {
 
-CharNewMenu::CharNewMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
+CharNewMenu::CharNewMenu(Module &module) : _module(&module) {
 	load("cg_main");
 
 	// TODO: "TitleLabel" misplaced!

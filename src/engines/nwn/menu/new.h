@@ -21,23 +21,27 @@ namespace Engines {
 
 namespace NWN {
 
-struct ModuleContext;
+class Module;
 
 /** The NWN new game menu. */
 class NewMenu : public GUI {
 public:
-	NewMenu(ModuleContext &moduleContext);
+	NewMenu(Module &module, GUI &charType);
 	~NewMenu();
 
 protected:
-	void callbackRun();
 	void callbackActive(Widget &widget);
 
 private:
-	ModuleContext *_moduleContext;
+	Module *_module;
 
 	bool _hasXP;
-	GUI *_module;
+
+	GUI *_charType;
+
+	GUI *_modules;
+
+	void loadModule(const Common::UString &module);
 };
 
 } // End of namespace NWN

@@ -8,6 +8,7 @@ noinst_HEADERS = nwn.h \
                  ifofile.h \
                  creature.h \
                  charstore.h \
+                 module.h \
                  menu/scrollbar.h \
                  menu/newgamefog.h \
                  menu/legal.h \
@@ -38,6 +39,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     ifofile.cpp \
                     creature.cpp \
                     charstore.cpp \
+                    module.cpp \
                     menu/scrollbar.cpp \
                     menu/newgamefog.cpp \
                     menu/legal.cpp \

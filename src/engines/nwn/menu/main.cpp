@@ -18,7 +18,7 @@
 
 #include "graphics/aurora/model.h"
 
-#include "engines/nwn/types.h"
+#include "engines/nwn/module.h"
 
 #include "engines/nwn/menu/main.h"
 #include "engines/nwn/menu/newgamefog.h"
@@ -27,6 +27,7 @@
 #include "engines/nwn/menu/moviesbase.h"
 #include "engines/nwn/menu/moviescamp.h"
 #include "engines/nwn/menu/options.h"
+#include "engines/nwn/menu/chartype.h"
 
 #include "engines/aurora/model.h"
 #include "engines/aurora/util.h"
@@ -35,7 +36,7 @@ namespace Engines {
 
 namespace NWN {
 
-MainMenu::MainMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
+MainMenu::MainMenu(Module &module) : _module(&module) {
 	load("pre_main");
 
 	bool hasXP1 = ConfigMan.getBool("NWN_hasXP1");
@@ -58,12 +59,14 @@ MainMenu::MainMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext
 	getWidget("LoadButton" , true)->setDisabled(true);
 	getWidget("MultiButton", true)->setDisabled(true);
 
+	_charType = new CharTypeMenu(*_module);
+
 	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection game menu
-		_new = new NewCampMenu(*_moduleContext);
+		_new = new NewCampMenu(*_module, *_charType);
 	else
 		// If not, create the base game menu
-		_new = new NewMenu(*_moduleContext);
+		_new = new NewMenu(*_module, *_charType);
 
 	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection movies menu
@@ -76,17 +79,11 @@ MainMenu::MainMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext
 }
 
 MainMenu::~MainMenu() {
-	delete _new;
 	delete _options;
 	delete _movies;
-}
+	delete _new;
 
-void MainMenu::callbackRun() {
-	int startCode = _startCode;
-	_startCode = 0;
-
-	if ((startCode == 2) || (startCode == 3))
-		callNew(startCode);
+	delete _charType;
 }
 
 void MainMenu::callbackActive(Widget &widget) {
@@ -96,7 +93,12 @@ void MainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "NewButton") {
-		callNew();
+		NewGameFogs fogs(4);
+		fogs.show();
+
+		if (sub(*_new) == 2)
+			_returnCode = 2;
+
 		return;
 	}
 
@@ -110,18 +112,6 @@ void MainMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-}
-
-void MainMenu::callNew(int startCode) {
-	NewGameFogs fogs(4);
-	fogs.show();
-
-	if ((startCode == 2) && !_hasXP)
-		startCode = 0;
-
-	int code = sub(*_new, startCode);
-	if ((code == 2) || (code == 3))
-		_returnCode = code;
 }
 
 } // End of namespace NWN

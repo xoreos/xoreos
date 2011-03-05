@@ -15,6 +15,7 @@
 #include "engines/nwn/nwn.h"
 #include "engines/nwn/modelloader.h"
 #include "engines/nwn/charstore.h"
+#include "engines/nwn/module.h"
 #include "engines/nwn/menu/legal.h"
 #include "engines/nwn/menu/main.h"
 #include "engines/nwn/menu/chartype.h"
@@ -43,7 +44,6 @@
 #include "aurora/error.h"
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
-#include "aurora/2dareg.h"
 
 namespace Engines {
 
@@ -301,9 +301,6 @@ void NWNEngine::checkConfig() {
 }
 
 void NWNEngine::deinit() {
-	unloadPC();
-	unloadModule();
-
 	CharacterStore::destroy();
 
 	delete _fps;
@@ -326,67 +323,34 @@ void NWNEngine::mainMenuLoop() {
 	// Start sound
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
 
-	Legal *legal    = new Legal;
-	GUI   *mainMenu = new MainMenu(_moduleContext);
+	// Create and fade in the legal billboard
+	Legal *legal = new Legal;
 
-	// Fade in the legal billboard
-	legal->fadeIn();
-
-	// Show the main menu (still hidden by the legal billboard)
-	mainMenu->show();
-
-	// Show the legal billboard, then fade it out
-	legal->show();
-
-	delete legal;
-
-	int startSection = 0;
 	while (!EventMan.quitRequested()) {
-		unloadPC();
-		unloadModule();
+		Module module;
 
-		_moduleContext.clear();
+		GUI *mainMenu = new MainMenu(module);
 
-		// Run the main menu
-		if (startSection == 0)
+		if (legal) {
+			// Fade in, show and fade out the legal billboard
+			legal->fadeIn();
 			mainMenu->show();
-		int code = mainMenu->run(startSection);
-		mainMenu->hide();
+			legal->show();
 
+			delete legal;
+			legal = 0;
+		} else
+			mainMenu->show();
+
+		mainMenu->run();
+		mainMenu->hide();
 		if (EventMan.quitRequested())
 			break;
 
-		if ((code == 2) || (code == 3)) {
-			// New game
+		delete mainMenu;
 
-			startSection = code;
-			if (!loadModule())
-				continue;
-
-			GUI *charSelection = new CharTypeMenu(_moduleContext);
-			charSelection->show();
-			int charCode = charSelection->run();
-			charSelection->hide();
-
-			delete charSelection;
-
-			if (EventMan.quitRequested())
-				break;
-
-			if ((charCode != 2) || !loadPC())
-				continue;
-
-			// RUN GAME
-
-			mainMenu = new MainMenu(_moduleContext);
-			startSection = 0;
-
-		} else
-			startSection = 0;
-
+		module.run();
 	}
-
-	delete mainMenu;
 }
 
 static const char *texturePacks[4][4] = {
@@ -418,99 +382,6 @@ void NWNEngine::loadTexturePack() {
 		TextureMan.reloadAll();
 
 	_currentTexturePack = level;
-}
-
-void NWNEngine::unloadModule() {
-	TwoDAReg.clear();
-
-	_ifo.unload();
-
-	ResMan.undo(_resCurModule);
-
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentModule", "");
-}
-
-bool NWNEngine::loadModule() {
-	unloadModule();
-
-	Common::UString module = _moduleContext.module;
-	if (module.empty())
-		return false;
-
-	_moduleContext.module.clear();
-
-	bool hasError = false;
-	Common::Exception error;
-
-	try {
-		indexMandatoryArchive(Aurora::kArchiveERF, module, 100, &_resCurModule);
-
-		_ifo.load();
-
-		if (_ifo.isSave())
-			throw Common::Exception("This is a save");
-
-		uint16 xp = _ifo.getExpansions();
-		if (((xp & 0xFFF8) != 0) ||
-		    ((xp & 1) && !_hasXP1) || ((xp & 2) && !_hasXP2) || ((xp & 4) && !_hasXP3))
-			throw Common::Exception("Expansion requirements not met (want %d, got %d)",
-					xp, (_hasXP3 ? 4 : 0) | (_hasXP2 ? 2 : 0) | (_hasXP1 ? 1 : 0));
-
-		checkModuleHAKs();
-
-		_ifo.loadTLK();
-
-	} catch (Common::Exception &e) {
-		error = e;
-		hasError = true;
-	} catch (std::exception &e) {
-		error = Common::Exception(e.what());
-		hasError = true;
-	} catch (...) {
-		hasError = true;
-	}
-
-	if (hasError) {
-		error.add("Can't load module \"%s\"", module.c_str());
-		printException(error, "WARNING: ");
-		return false;
-	}
-
-	status("Loaded module \"%s\"", _ifo.getName().getFirstString().c_str());
-
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentModule", module);
-	return true;
-}
-
-void NWNEngine::checkModuleHAKs() {
-	const std::vector<Common::UString> &haks = _ifo.getHAKs();
-	for (std::vector<Common::UString>::const_iterator h = haks.begin(); h != haks.end(); ++h)
-		if (!ResMan.hasArchive(Aurora::kArchiveERF, *h + ".hak"))
-			throw Common::Exception("Required hak \"%s\" does not exist", h->c_str());
-}
-
-void NWNEngine::unloadPC() {
-	_pc.clear();
-
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentCharacter", "");
-}
-
-bool NWNEngine::loadPC() {
-	unloadPC();
-
-	CharacterID character = _moduleContext.pc;
-	if (character.empty())
-		return false;
-
-	_moduleContext.pc.clear();
-
-	_pc = *character;
-
-	status("Using PC character \"%s\"", _pc.getFullName().c_str());
-
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_currentCharacter",
-			_pc.getFullName());
-	return true;
 }
 
 } // End of namespace NWN

@@ -1,18 +1,18 @@
-/* eos - A reimplementation of BioWare's Aurora engine
- * Copyright (c) 2010-2011 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)
- *
- * The Infinity, Aurora, Odyssey and Eclipse engines, Copyright (c) BioWare corp.
- * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
- *
- * This file is part of eos and is distributed under the terms of
- * the GNU General Public Licence. See COPYING for more informations.
- */
+	/* eos - A reimplementation of BioWare's Aurora engine
+	 * Copyright (c) 2010-2011 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)
+	 *
+	 * The Infinity, Aurora, Odyssey and Eclipse engines, Copyright (c) BioWare corp.
+	 * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
+	 *
+	 * This file is part of eos and is distributed under the terms of
+	 * the GNU General Public Licence. See COPYING for more informations.
+	 */
 
-/** @file engines/nwn/menu/newcamp.cpp
- *  The new campaign menu.
- */
+	/** @file engines/nwn/menu/newcamp.cpp
+	 *  The new campaign menu.
+	 */
 
-#include "engines/nwn/types.h"
+#include "engines/nwn/module.h"
 
 #include "engines/nwn/menu/newcamp.h"
 #include "engines/nwn/menu/new.h"
@@ -24,12 +24,14 @@ namespace Engines {
 
 namespace NWN {
 
-NewCampMenu::NewCampMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
+NewCampMenu::NewCampMenu(Module &module, GUI &charType) :
+	_module(&module), _charType(&charType) {
+
 	load("pre_campaign");
 
 	Widget *button = 0;
 
-	// No GUI files? Harcoded?
+	// No GUI files? Hardcoded?
 	button = getWidget("NWNXP1Button");
 	if (button)
 		button->setDisabled(/*!ConfigMan.getBool("NWN_hasXP1")*/ true);
@@ -40,26 +42,13 @@ NewCampMenu::NewCampMenu(ModuleContext &moduleContext) : _moduleContext(&moduleC
 	if (button)
 		button->setDisabled(true);
 
-	_base   = new NewMenu(*_moduleContext);
-	_module = new NewModuleMenu(*_moduleContext);
+	_base    = new NewMenu(*_module, *_charType);
+	_modules = new NewModuleMenu(*_module, *_charType);
 }
 
 NewCampMenu::~NewCampMenu() {
-	delete _module;
+	delete _modules;
 	delete _base;
-}
-
-void NewCampMenu::callbackRun() {
-	int startCode = _startCode;
-	_startCode = 0;
-
-	if (startCode == 2)
-		if (sub(*_base, 0) == 2)
-			_returnCode = 2;
-
-	if (startCode == 3)
-		if (sub(*_module, 0) == 3)
-			_returnCode = 3;
 }
 
 void NewCampMenu::callbackActive(Widget &widget) {
@@ -75,8 +64,8 @@ void NewCampMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "OtherButton") {
-		if (sub(*_module) == 3)
-			_returnCode = 3;
+		if (sub(*_modules) == 2)
+			_returnCode = 2;
 		return;
 	}
 

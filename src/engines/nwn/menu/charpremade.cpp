@@ -33,6 +33,7 @@
 
 #include "engines/nwn/creature.h"
 #include "engines/nwn/charstore.h"
+#include "engines/nwn/module.h"
 
 #include "engines/nwn/menu/charpremade.h"
 #include "engines/nwn/menu/charnew.h"
@@ -143,7 +144,7 @@ bool WidgetListItemCharacter::deactivate() {
 }
 
 
-CharPremadeMenu::CharPremadeMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
+CharPremadeMenu::CharPremadeMenu(Module &module) : _module(&module) {
 	load("pre_playmod");
 
 	// TODO: "Title" misplaced!
@@ -159,7 +160,7 @@ CharPremadeMenu::CharPremadeMenu(ModuleContext &moduleContext) : _moduleContext(
 	// TODO: Delete character
 	getWidget("DeleteCharButton", true)->setDisabled(true);
 
-	_charNew = new CharNewMenu(*_moduleContext);
+	_charNew = new CharNewMenu(*_module);
 }
 
 CharPremadeMenu::~CharPremadeMenu() {
@@ -193,17 +194,14 @@ void CharPremadeMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "PlayButton") {
 		playCharacter();
-		_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "ButtonList") {
 		// selectedCharacter();
 
-		if (dynamic_cast<WidgetListBox &>(widget).wasDblClicked()) {
+		if (dynamic_cast<WidgetListBox &>(widget).wasDblClicked())
 			playCharacter();
-			_returnCode = 2;
-		}
 
 		return;
 	}
@@ -245,7 +243,8 @@ CharacterID CharPremadeMenu::getSelectedCharacter() {
 }
 
 void CharPremadeMenu::playCharacter() {
-	_moduleContext->pc = getSelectedCharacter();
+	if (_module->usePC(getSelectedCharacter()))
+		_returnCode = 2;
 }
 
 } // End of namespace NWN

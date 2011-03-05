@@ -16,7 +16,7 @@
 
 #include "graphics/graphics.h"
 
-#include "engines/nwn/types.h"
+#include "engines/nwn/module.h"
 
 #include "engines/nwn/menu/new.h"
 #include "engines/nwn/menu/newmodule.h"
@@ -27,7 +27,7 @@ namespace Engines {
 
 namespace NWN {
 
-NewMenu::NewMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
+NewMenu::NewMenu(Module &module, GUI &charType) : _module(&module), _charType(&charType) {
 	load("pre_newgame");
 
 	_hasXP = ConfigMan.getBool("NWN_hasXP1") || ConfigMan.getBool("NWN_hasXP2");
@@ -37,22 +37,13 @@ NewMenu::NewMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) 
 		// already in the campaign menu
 		getWidget("OtherButton", true)->setInvisible(true);
 
-	_module = 0;
+	_modules = 0;
 	if (!_hasXP)
-		_module = new NewModuleMenu(*_moduleContext);
+		_modules = new NewModuleMenu(*_module, *_charType);
 }
 
 NewMenu::~NewMenu() {
-	delete _module;
-}
-
-void NewMenu::callbackRun() {
-	int startCode = _startCode;
-	_startCode = 0;
-
-	if ((startCode == 3) && _module)
-		if (sub(*_module, 0) == 3)
-			_returnCode = 3;
+	delete _modules;
 }
 
 void NewMenu::callbackActive(Widget &widget) {
@@ -62,40 +53,41 @@ void NewMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "OtherButton") {
-		if (sub(*_module) == 3)
-			_returnCode = 3;
+		if (sub(*_modules) == 2)
+			_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "PreludeButton") {
-		_moduleContext->module = "prelude.nwm";
-		_returnCode = 2;
+		loadModule("prelude.nwm");
 		return;
 	}
 
 	if (widget.getTag() == "Chapter1Button") {
-		_moduleContext->module = "chapter1.nwm";
-		_returnCode = 2;
+		loadModule("chapter1.nwm");
 		return;
 	}
 
 	if (widget.getTag() == "Chapter2Button") {
-		_moduleContext->module = "chapter2.nwm";
-		_returnCode = 2;
+		loadModule("chapter2.nwm");
 		return;
 	}
 
 	if (widget.getTag() == "Chapter3Button") {
-		_moduleContext->module = "chapter3.nwm";
-		_returnCode = 2;
+		loadModule("chapter3.nwm");
 		return;
 	}
 
 	if (widget.getTag() == "Chapter4Button") {
-		_moduleContext->module = "chapter4.nwm";
-		_returnCode = 2;
+		loadModule("chapter4.nwm");
 		return;
 	}
+}
+
+void NewMenu::loadModule(const Common::UString &module) {
+	if (_module->loadModule(module))
+		if (sub(*_charType) == 2)
+			_returnCode = 2;
 }
 
 } // End of namespace NWN

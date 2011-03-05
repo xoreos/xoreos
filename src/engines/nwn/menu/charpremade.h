@@ -65,7 +65,7 @@ private:
 /** The NWN character creator. */
 class CharPremadeMenu : public GUI {
 public:
-	CharPremadeMenu(ModuleContext &moduleContext);
+	CharPremadeMenu(Module &module);
 	~CharPremadeMenu();
 
 	void show();
@@ -76,7 +76,7 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	ModuleContext *_moduleContext;
+	Module *_module;
 
 	GUI *_charNew;
 

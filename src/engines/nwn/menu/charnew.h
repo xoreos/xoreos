@@ -24,14 +24,14 @@ namespace NWN {
 /** The NWN character creator. */
 class CharNewMenu : public GUI {
 public:
-	CharNewMenu(ModuleContext &moduleContext);
+	CharNewMenu(Module &module);
 	~CharNewMenu();
 
 protected:
 	void callbackActive(Widget &widget);
 
 private:
-	ModuleContext *_moduleContext;
+	Module *_module;
 };
 
 } // End of namespace NWN

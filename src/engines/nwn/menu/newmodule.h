@@ -51,7 +51,7 @@ private:
 /** The NWN new module menu. */
 class NewModuleMenu : public GUI {
 public:
-	NewModuleMenu(ModuleContext &moduleContext);
+	NewModuleMenu(Module &module, GUI &charType);
 	~NewModuleMenu();
 
 	void show();
@@ -62,9 +62,11 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	ModuleContext *_moduleContext;
+	Module *_module;
 
 	std::vector<Common::UString> _modules;
+
+	GUI *_charType;
 
 	Common::UString getSelectedModule();
 

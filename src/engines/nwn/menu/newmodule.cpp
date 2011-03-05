@@ -24,7 +24,7 @@
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/model.h"
 
-#include "engines/nwn/types.h"
+#include "engines/nwn/module.h"
 
 #include "engines/nwn/menu/newmodule.h"
 
@@ -110,7 +110,9 @@ bool WidgetListItemModule::deactivate() {
 }
 
 
-NewModuleMenu::NewModuleMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
+NewModuleMenu::NewModuleMenu(Module &module, GUI &charType) :
+	_module(&module), _charType(&charType) {
+
 	load("pre_loadmod");
 }
 
@@ -181,17 +183,14 @@ void NewModuleMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "LoadButton") {
 		loadModule();
-		_returnCode = 3;
 		return;
 	}
 
 	if (widget.getTag() == "ModuleListBox") {
 		selectedModule();
 
-		if (dynamic_cast<WidgetListBox &>(widget).wasDblClicked()) {
+		if (dynamic_cast<WidgetListBox &>(widget).wasDblClicked())
 			loadModule();
-			_returnCode = 3;
-		}
 
 		return;
 	}
@@ -232,10 +231,9 @@ void NewModuleMenu::selectedModule() {
 
 void NewModuleMenu::loadModule() {
 	Common::UString module = getSelectedModule();
-	if (module.empty())
-		return;
-
-	_moduleContext->module = module + ".mod";
+	if (_module->loadModule(module + ".mod"))
+		if (sub(*_charType) == 2)
+			_returnCode = 2;
 }
 
 } // End of namespace NWN

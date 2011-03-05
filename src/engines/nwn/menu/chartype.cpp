@@ -13,7 +13,6 @@
  */
 
 #include "engines/nwn/menu/chartype.h"
-#include "engines/nwn/menu/newgamefog.h"
 #include "engines/nwn/menu/charnew.h"
 #include "engines/nwn/menu/charpremade.h"
 
@@ -21,26 +20,16 @@ namespace Engines {
 
 namespace NWN {
 
-CharTypeMenu::CharTypeMenu(ModuleContext &moduleContext) : _moduleContext(&moduleContext) {
+CharTypeMenu::CharTypeMenu(Module &module) : _module(&module) {
 	load("pre_chartype");
 
-	_fogs = new NewGameFogs(4);
-
-	_charNew     = new CharNewMenu(*_moduleContext);
-	_charPremade = new CharPremadeMenu(*_moduleContext);
+	_charNew     = new CharNewMenu(*_module);
+	_charPremade = new CharPremadeMenu(*_module);
 }
 
 CharTypeMenu::~CharTypeMenu() {
 	delete _charPremade;
 	delete _charNew;
-
-	delete _fogs;
-}
-
-void CharTypeMenu::show() {
-	_fogs->show();
-
-	GUI::show();
 }
 
 void CharTypeMenu::callbackActive(Widget &widget) {

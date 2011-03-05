@@ -24,18 +24,19 @@ namespace NWN {
 /** The NWN new campaign menu. */
 class NewCampMenu : public GUI {
 public:
-	NewCampMenu(ModuleContext &moduleContext);
+	NewCampMenu(Module &module, GUI &charType);
 	~NewCampMenu();
 
 protected:
-	void callbackRun();
 	void callbackActive(Widget &widget);
 
 private:
-	ModuleContext *_moduleContext;
+	Module *_module;
+
+	GUI *_charType;
 
 	GUI *_base;
-	GUI *_module;
+	GUI *_modules;
 };
 
 } // End of namespace NWN

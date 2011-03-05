@@ -71,12 +71,6 @@ void CharacterID::clear() {
 	_empty = true;
 }
 
-
-void ModuleContext::clear() {
-	module.clear();
-	pc.clear();
-}
-
 } // End of namespace NWN
 
 } // End of namespace Engines
