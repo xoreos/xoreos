@@ -31,6 +31,7 @@ Module::Module() : _hasModule(false), _hasPC(false) {
 }
 
 Module::~Module() {
+	clear();
 }
 
 void Module::clear() {
@@ -114,10 +115,21 @@ void Module::run() {
 	status("Running module \"%s\" with character \"%s\"",
 			_ifo.getName().getFirstString().c_str(), _pc.getFullName().c_str());
 
+	try {
+
+		loadHAKs();
+
+	} catch (Common::Exception &e) {
+		e.add("Can't initialize module \"%s\"", _ifo.getName().getFirstString().c_str());
+		printException(e, "WARNING: ");
+		return;
+	}
+
 	// TODO
 }
 
 void Module::unload() {
+	unloadHAKs();
 	unloadPC();
 	unloadModule();
 }
@@ -136,6 +148,23 @@ void Module::unloadPC() {
 	_pc.clear();
 
 	_hasPC = false;
+}
+
+void Module::loadHAKs() {
+	const std::vector<Common::UString> &haks = _ifo.getHAKs();
+
+	_resHAKs.resize(haks.size());
+
+	for (uint i = 0; i < haks.size(); i++)
+		indexMandatoryArchive(Aurora::kArchiveERF, haks[i] + ".hak", 100, &_resHAKs[i]);
+}
+
+void Module::unloadHAKs() {
+	std::vector<Aurora::ResourceManager::ChangeID>::iterator hak;
+	for (hak = _resHAKs.begin(); hak != _resHAKs.end(); ++hak)
+		ResMan.undo(*hak);
+
+	_resHAKs.clear();
 }
 
 } // End of namespace NWN

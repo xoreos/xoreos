@@ -15,6 +15,8 @@
 #ifndef ENGINES_NWN_MODULE_H
 #define ENGINES_NWN_MODULE_H
 
+#include <list>
+
 #include "aurora/resman.h"
 
 #include "engines/nwn/ifofile.h"
@@ -48,6 +50,9 @@ private:
 	/** Resources added by the module. */
 	Aurora::ResourceManager::ChangeID _resModule;
 
+	/** Resources added by the HAKs of the module. */
+	std::vector<Aurora::ResourceManager::ChangeID> _resHAKs;
+
 	IFOFile _ifo; ///< The module's IFO.
 
 	Creature _pc; ///< The player character we use.
@@ -56,9 +61,12 @@ private:
 
 	void unloadModule(); ///< Unload the module.
 	void unloadPC();     ///< Unload the PC.
+	void unloadHAKs();   ///< Unload the HAKs required by the module.
 
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
+
+	void loadHAKs(); /// Load the HAKs required by the module.
 };
 
 } // End of namespace NWN
