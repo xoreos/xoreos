@@ -160,6 +160,8 @@ private:
 
 		SoundType type;            ///< The channel's sound type.
 		TypeList::iterator typeIt; ///< Iterator into the type list.
+
+		float gain; ///< The channel's gain.
 	};
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?

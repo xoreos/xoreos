@@ -230,6 +230,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 	channel.disposeAfterUse = disposeAfterUse;
 	channel.type            = type;
 	channel.typeIt          = _types[channel.type].list.end();
+	channel.gain            = 1.0;
 
 	try {
 
@@ -391,10 +392,9 @@ void SoundManager::setChannelGain(const ChannelHandle &handle, float gain) {
 	if (!channel || !channel->stream)
 		throw Common::Exception("Invalid channel");
 
-	if (channel->stream->isStereo())
-		throw Common::Exception("Cannot set position on a stereo sound.");
+	channel->gain = gain;
 
-	alSourcef(channel->source, AL_GAIN, gain);
+	alSourcef(channel->source, AL_GAIN, _types[channel->type].gain * gain);
 }
 
 void SoundManager::setTypeGain(SoundType type, float gain) {
@@ -409,7 +409,7 @@ void SoundManager::setTypeGain(SoundType type, float gain) {
 	for (TypeList::iterator t = _types[type].list.begin(); t != _types[type].list.end(); ++t) {
 		assert(*t);
 
-		alSourcef((*t)->source, AL_GAIN, gain);
+		alSourcef((*t)->source, AL_GAIN, (*t)->gain * gain);
 	}
 }
 
