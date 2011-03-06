@@ -318,8 +318,6 @@ void Model_NWN_ASCII::readFaces(ParserContext &ctx, int n) {
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
-		i++;
-
 		line[0].parse(ctx.mesh->vertIndices[i * 3 + 0]);
 		line[0].parse(ctx.mesh->vertIndices[i * 3 + 1]);
 		line[0].parse(ctx.mesh->vertIndices[i * 3 + 2]);
@@ -331,6 +329,8 @@ void Model_NWN_ASCII::readFaces(ParserContext &ctx, int n) {
 		line[0].parse(ctx.mesh->tvertIndices[i * 3 + 2]);
 
 		line[7].parse(ctx.mesh->material[i]);
+
+		i++;
 	}
 }
 
