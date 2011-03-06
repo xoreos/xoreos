@@ -261,7 +261,8 @@ bool ConfigFile::isValidName(const UString &name) {
 	for (UString::iterator it = name.begin(); it != name.end(); ++it) {
 		uint32 c = *it;
 
-		if (UString::isASCII(c) && (!isalnum(c) && (c != '-') && (c != '_') && (c != '.')))
+		if (UString::isASCII(c) &&
+				(!isalnum(c) && (c != '-') && (c != '_') && (c != '.') && (c != ' ')))
 			return false;
 	}
 
@@ -445,7 +446,7 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 			continue;
 		}
 
-		if        (c == '#') {
+		if        ((c == '#') || ((c == ';') && (l == line.begin()))) {
 			// Found a comment
 			state = 1;
 			hasComment = true;
@@ -486,8 +487,8 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 			throw Exception("Parse error (line %d)",
 					lineNumber);
 
-	if ((!key.empty() && value.empty()) || (key.empty() && !value.empty()))
-		throw Exception("Key without value or vice versa (line %d)", lineNumber);
+	if (key.empty() && !value.empty())
+		throw Exception("Value with a key (line %d)", lineNumber);
 }
 
 void ConfigFile::save(WriteStream &stream) const {

@@ -117,8 +117,7 @@ public:
 	/**
 	 * Check whether the given string is a valid section or key name.
 	 * For that, it must only consist of letters, numbers, dashes and
-	 * underscores. In particular, white space and "#", "=", "[", "]"
-	 * are not valid!
+	 * underscores. In particular, "#", "=", "[", "]" are not valid!
 	 */
 	static bool isValidName(const UString &name);
 
