@@ -58,6 +58,10 @@ private:
 
 	Creature _pc; ///< The player character we use.
 
+	// Texture pack
+	int _currentTexturePack;
+	Aurora::ResourceManager::ChangeID _resTP[4];
+
 	bool _exit; //< Should we exit the module?
 
 	Common::UString _newArea; ///< The new area to enter.
@@ -65,14 +69,17 @@ private:
 
 	void unload(); ///< Unload the whole shebang.
 
-	void unloadModule(); ///< Unload the module.
-	void unloadPC();     ///< Unload the PC.
-	void unloadHAKs();   ///< Unload the HAKs required by the module.
+	void unloadModule();      ///< Unload the module.
+	void unloadPC();          ///< Unload the PC.
+	void unloadHAKs();        ///< Unload the HAKs required by the module.
+	void unloadTexturePack(); ///< Unload the texture pack.
 
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
 	void loadHAKs(); /// Load the HAKs required by the module.
+
+	void loadTexturePack(); ///< Load the texture pack.
 
 	void showMenu();
 };

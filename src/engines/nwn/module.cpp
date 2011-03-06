@@ -20,6 +20,8 @@
 
 #include "aurora/2dareg.h"
 
+#include "graphics/aurora/textureman.h"
+
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
 
@@ -33,7 +35,9 @@ namespace Engines {
 
 namespace NWN {
 
-Module::Module() : _hasModule(false), _hasPC(false), _exit(false), _area(0) {
+Module::Module() : _hasModule(false), _hasPC(false), _currentTexturePack(-1),
+	_exit(false), _area(0) {
+
 }
 
 Module::~Module() {
@@ -118,6 +122,8 @@ void Module::run() {
 		return;
 	}
 
+	loadTexturePack();
+
 	status("Running module \"%s\" with character \"%s\"",
 			_ifo.getName().getFirstString().c_str(), _pc.getFullName().c_str());
 
@@ -166,6 +172,7 @@ void Module::unload() {
 	delete _area;
 	_area = 0;
 
+	unloadTexturePack();
 	unloadHAKs();
 	unloadPC();
 	unloadModule();
@@ -204,6 +211,39 @@ void Module::unloadHAKs() {
 	_resHAKs.clear();
 }
 
+static const char *texturePacks[4][4] = {
+	{ "textures_tpc.erf", "tiles_tpc.erf", "xp1_tex_tpc.erf", "xp2_tex_tpc.erf" }, // Worst
+	{ "textures_tpa.erf", "tiles_tpc.erf", "xp1_tex_tpc.erf", "xp2_tex_tpc.erf" }, // Bad
+	{ "textures_tpa.erf", "tiles_tpb.erf", "xp1_tex_tpb.erf", "xp2_tex_tpb.erf" }, // Okay
+	{ "textures_tpa.erf", "tiles_tpa.erf", "xp1_tex_tpa.erf", "xp2_tex_tpa.erf" }  // Best
+};
+
+void Module::loadTexturePack() {
+	int level = ConfigMan.getInt("texturepack", 1);
+	if (_currentTexturePack == level)
+		// Nothing to do
+		return;
+
+	unloadTexturePack();
+
+	status("Loading texture pack %d", level);
+	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][0], 13, &_resTP[0]);
+	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][1], 14, &_resTP[1]);
+	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][2], 15, &_resTP[2]);
+	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][3], 16, &_resTP[3]);
+
+	// If we already had a texture pack loaded, reload all textures
+	if (_currentTexturePack != -1)
+		TextureMan.reloadAll();
+
+	_currentTexturePack = level;
+}
+
+void Module::unloadTexturePack() {
+	for (int i = 0; i < 4; i++)
+		ResMan.undo(_resTP[i]);
+}
+
 void Module::showMenu() {
 	InGameMainMenu menu;
 
@@ -211,8 +251,13 @@ void Module::showMenu() {
 	int code = menu.run();
 	menu.hide();
 
-	if (code == 2)
+	if (code == 2) {
 		_exit = true;
+		return;
+	}
+
+	// In case we changed the texture pack settings, reload it
+	loadTexturePack();
 }
 
 } // End of namespace NWN

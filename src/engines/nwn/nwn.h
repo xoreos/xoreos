@@ -76,10 +76,6 @@ private:
 
 	Sound::ChannelHandle _menuMusic;
 
-	// Texture pack
-	int _currentTexturePack;
-	Aurora::ResourceManager::ChangeID _resTP[4];
-
 	void init();
 
 	void initConfig();
@@ -92,8 +88,6 @@ private:
 	void checkConfig();
 
 	void playIntroVideos();
-
-	void loadTexturePack();
 
 	void playMenuMusic();
 	void stopMenuMusic();

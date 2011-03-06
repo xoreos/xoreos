@@ -91,9 +91,7 @@ Engines::Engine *NWNEngineProbe::createEngine() const {
 }
 
 
-NWNEngine::NWNEngine() : _hasXP1(false), _hasXP2(false), _hasXP3(false),
-	_fps(0), _currentTexturePack(-1) {
-
+NWNEngine::NWNEngine() : _hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0) {
 }
 
 NWNEngine::~NWNEngine() {
@@ -369,37 +367,6 @@ void NWNEngine::mainMenuLoop() {
 	}
 
 	stopMenuMusic();
-}
-
-static const char *texturePacks[4][4] = {
-	{ "textures_tpc.erf", "tiles_tpc.erf", "xp1_tex_tpc.erf", "xp2_tex_tpc.erf" }, // Worst
-	{ "textures_tpa.erf", "tiles_tpc.erf", "xp1_tex_tpc.erf", "xp2_tex_tpc.erf" }, // Bad
-	{ "textures_tpa.erf", "tiles_tpb.erf", "xp1_tex_tpb.erf", "xp2_tex_tpb.erf" }, // Okay
-	{ "textures_tpa.erf", "tiles_tpa.erf", "xp1_tex_tpa.erf", "xp2_tex_tpa.erf" }  // Best
-};
-
-void NWNEngine::loadTexturePack() {
-	int level = ConfigMan.getInt("texturepack", 1);
-	if (_currentTexturePack == level)
-		// Nothing to do
-		return;
-
-	// Unload the currently loaded texture pack
-	for (int i = 0; i < 4; i++)
-		ResMan.undo(_resTP[i]);
-
-	// Load new the texture pack
-	status("Loading texture pack %d", level);
-	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][0], 13, &_resTP[0]);
-	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][1], 14, &_resTP[1]);
-	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][2], 15, &_resTP[2]);
-	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][3], 16, &_resTP[3]);
-
-	// If we already had a texture pack loaded, reload all textures
-	if (_currentTexturePack != -1)
-		TextureMan.reloadAll();
-
-	_currentTexturePack = level;
 }
 
 } // End of namespace NWN
