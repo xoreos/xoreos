@@ -73,13 +73,14 @@ private:
 	void unloadPC();          ///< Unload the PC.
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadTexturePack(); ///< Unload the texture pack.
+	void unloadArea();        ///< Unload the current area.
 
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
-	void loadHAKs(); /// Load the HAKs required by the module.
-
+	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadTexturePack(); ///< Load the texture pack.
+	void loadArea();        ///< Load a new area.
 
 	void showMenu();
 };

@@ -15,20 +15,21 @@
 #ifndef ENGINES_NWN_AREA_H
 #define ENGINES_NWN_AREA_H
 
+#include <vector>
+
 #include "common/types.h"
 #include "common/ustring.h"
 
-#include "sound/sound.h"
+#include "aurora/types.h"
 
-namespace Aurora {
-	class GFFStruct;
-};
+#include "sound/types.h"
 
 namespace Engines {
 
 namespace NWN {
 
 class Module;
+class Tileset;
 
 class Area {
 public:
@@ -46,6 +47,25 @@ public:
 	void hide();
 
 private:
+	enum Orientation {
+		kOrientation0   = 0,
+		kOrientation90  = 1,
+		kOrientation180 = 2,
+		kOrientation270 = 3
+	};
+
+	struct Tile {
+		uint32 tile;
+
+		uint32 height;
+		Orientation orientation;
+
+		uint8 mainLight[2];
+		uint8  srcLight[2];
+
+		bool animLoop[3];
+	};
+
 	Module *_module;
 
 	Common::UString _resRef;
@@ -70,10 +90,24 @@ private:
 	Sound::ChannelHandle _ambientSound;
 	Sound::ChannelHandle _ambientMusic;
 
+	uint32 _width;
+	uint32 _height;
+
+	Common::UString _tilesetName;
+	Tileset *_tileset;
+
+	std::vector<Tile> _tiles;
+
+
 	void loadARE(const Aurora::GFFStruct &are);
 	void loadGIT(const Aurora::GFFStruct &git);
 
 	void loadProperties(const Aurora::GFFStruct &props);
+
+	void loadTiles(const Aurora::GFFList &tiles);
+	void loadTile(const Aurora::GFFStruct &t, Tile &tile);
+
+	void loadTileset();
 
 	Common::UString createDisplayName(const Common::UString &name);
 };

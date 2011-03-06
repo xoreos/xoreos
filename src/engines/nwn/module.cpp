@@ -144,34 +144,30 @@ void Module::run() {
 	_exit    = false;
 	_newArea = _ifo.getEntryArea();
 
-	while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
-		if (!_area || (_area->getResRef() != _newArea)) {
-			delete _area;
+	try {
 
-			_area = new Area(*this, _newArea);
+		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
+			loadArea();
 
-			_area->show();
-
-			status("Entered area \"%s\", (\"%s\")",
-					_area->getName().c_str(), _area->getResRef().c_str());
-		}
-
-		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if (event.type == Events::kEventKeyDown) {
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-					showMenu();
+			Events::Event event;
+			while (EventMan.pollEvent(event)) {
+				if (event.type == Events::kEventKeyDown) {
+					if (event.key.keysym.sym == SDLK_ESCAPE)
+						showMenu();
+				}
 			}
+
+			EventMan.delay(10);
 		}
 
-		EventMan.delay(10);
+	} catch (Common::Exception &e) {
+		e.add("Failed running module \"%s\"", _ifo.getName().getFirstString().c_str());
+		printException(e, "WARNING: ");
 	}
 }
 
 void Module::unload() {
-	delete _area;
-	_area = 0;
-
+	unloadArea();
 	unloadTexturePack();
 	unloadHAKs();
 	unloadPC();
@@ -242,6 +238,25 @@ void Module::loadTexturePack() {
 void Module::unloadTexturePack() {
 	for (int i = 0; i < 4; i++)
 		ResMan.undo(_resTP[i]);
+}
+
+void Module::loadArea() {
+	if (_area && (_area->getResRef() == _newArea))
+		return;
+
+	delete _area;
+
+	_area = new Area(*this, _newArea);
+
+	_area->show();
+
+	status("Entered area \"%s\", (\"%s\")",
+			_area->getName().c_str(), _area->getResRef().c_str());
+}
+
+void Module::unloadArea() {
+	delete _area;
+	_area = 0;
 }
 
 void Module::showMenu() {

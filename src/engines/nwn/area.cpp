@@ -14,23 +14,27 @@
 
 #include "common/endianness.h"
 #include "common/util.h"
+#include "common/error.h"
 
 #include "aurora/types.h"
 #include "aurora/gfffile.h"
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
 
+#include "sound/sound.h"
+
 #include "engines/aurora/util.h"
 
 #include "engines/nwn/area.h"
 #include "engines/nwn/module.h"
+#include "engines/nwn/tileset.h"
 
 namespace Engines {
 
 namespace NWN {
 
 Area::Area(Module &module, const Common::UString &resRef) :
-	_module(&module), _resRef(resRef), _visible(false) {
+	_module(&module), _resRef(resRef), _visible(false), _tileset(0) {
 
 	Aurora::GFFFile are;
 	loadGFF(are, _resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
@@ -39,10 +43,14 @@ Area::Area(Module &module, const Common::UString &resRef) :
 	Aurora::GFFFile git;
 	loadGFF(git, _resRef, Aurora::kFileTypeGIT, MKID_BE('GIT '));
 	loadGIT(git.getTopLevel());
+
+	loadTileset();
 }
 
 Area::~Area() {
 	hide();
+
+	delete _tileset;
 }
 
 const Common::UString &Area::getResRef() {
@@ -95,6 +103,17 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 
 	_name        = name.getFirstString();
 	_displayName = createDisplayName(_name);
+
+	// Tiles
+
+	_width  = are.getUint("Width");
+	_height = are.getUint("Height");
+
+	_tilesetName = are.getString("Tileset");
+
+	_tiles.resize(_width * _height);
+
+	loadTiles(are.getList("Tile_List"));
 }
 
 void Area::loadGIT(const Aurora::GFFStruct &git) {
@@ -151,6 +170,43 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 			if (!stinger[i].empty())
 				_musicBattleStinger.push_back(stinger[i]);
 	}
+}
+
+void Area::loadTiles(const Aurora::GFFList &tiles) {
+	uint32 n = 0;
+	for (Aurora::GFFList::const_iterator t = tiles.begin(); t != tiles.end(); ++t, ++n) {
+		assert(n < (_width * _height));
+
+		loadTile(**t, _tiles[n]);
+	}
+
+	assert(n == _tiles.size());
+}
+
+void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
+	tile.tile   = t.getUint("Tile_ID");
+	tile.height = t.getUint("Tile_Height", 0);
+
+	tile.orientation = (Orientation) t.getUint("Tile_Orientation", 0);
+
+	tile.mainLight[0] = t.getUint("Tile_MainLight1", 0);
+	tile.mainLight[1] = t.getUint("Tile_MainLight2", 0);
+
+	tile.srcLight[0] = t.getUint("Tile_SrcLight1", 0);
+	tile.srcLight[1] = t.getUint("Tile_SrcLight2", 0);
+
+	tile.animLoop[0] = t.getUint("Tile_AnimLoop1", 0) != 0;
+	tile.animLoop[1] = t.getUint("Tile_AnimLoop2", 0) != 0;
+	tile.animLoop[2] = t.getUint("Tile_AnimLoop3", 0) != 0;
+}
+
+void Area::loadTileset() {
+	if (_tilesetName.empty())
+		throw Common::Exception("Area \"%s\" has no tileset", _resRef.c_str());
+
+	_tileset = new Tileset(_tilesetName);
+
+	status("Loaded tileset \"%s\" (\"%s\")", _tileset->getName().c_str(), _tilesetName.c_str());
 }
 
 // "Elfland: The Woods" -> "The Woods"
