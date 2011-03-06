@@ -100,6 +100,8 @@ void TalkManager::removeAltTable() {
 
 const Common::UString &TalkManager::getString(uint32 strRef) {
 	static const Common::UString kEmptyString = "";
+	if (strRef == kStrRefInvalid)
+		return kEmptyString;
 
 	const TalkTable::Entry *entry = getEntry(strRef);
 	if (!entry)
@@ -110,6 +112,8 @@ const Common::UString &TalkManager::getString(uint32 strRef) {
 
 const Common::UString &TalkManager::getSoundResRef(uint32 strRef) {
 	static const Common::UString kEmptyString = "";
+	if (strRef == kStrRefInvalid)
+		return kEmptyString;
 
 	const TalkTable::Entry *entry = getEntry(strRef);
 	if (!entry)
