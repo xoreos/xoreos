@@ -68,6 +68,14 @@ int ConfigDomain::getInt(const UString &key, int def) const {
 	return toInt(value);
 }
 
+uint ConfigDomain::getUint(const UString &key, uint def) const {
+	UString value;
+	if (!getKey(key, value))
+		return def;
+
+	return toUint(value);
+}
+
 double ConfigDomain::getDouble(const UString &key, double def) const {
 	UString value;
 	if (!getKey(key, value))
@@ -104,6 +112,10 @@ void ConfigDomain::setBool(const UString &key, bool value) {
 
 void ConfigDomain::setInt(const UString &key, int value) {
 	setKey(key, fromInt(value));
+}
+
+void ConfigDomain::setUint(const UString &key, uint value) {
+	setKey(key, fromUint(value));
 }
 
 void ConfigDomain::setDouble(const UString &key, double value) {
@@ -208,6 +220,10 @@ int ConfigDomain::toInt(const UString &value) {
 	return atoi(value.c_str());
 }
 
+uint ConfigDomain::toUint(const UString &value) {
+	return strtoul(value.c_str(), 0, 10);
+}
+
 double ConfigDomain::toDouble(const UString &value) {
 	double d;
 	if (sscanf(value.c_str(), "%lf", &d) != 1)
@@ -222,6 +238,10 @@ UString ConfigDomain::fromBool(bool value) {
 
 UString ConfigDomain::fromInt(int value) {
 	return UString::sprintf("%d", value);
+}
+
+UString ConfigDomain::fromUint(uint value) {
+	return UString::sprintf("%u", value);
 }
 
 UString ConfigDomain::fromDouble(double value) {

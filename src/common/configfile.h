@@ -45,6 +45,7 @@ public:
 	UString getString(const UString &key, const UString &def = ""   ) const;
 	bool    getBool  (const UString &key,       bool     def = false) const;
 	int     getInt   (const UString &key,       int      def = 0    ) const;
+	uint    getUint  (const UString &key,       uint     def = 0    ) const;
 	double  getDouble(const UString &key,       double   def = 0.0  ) const;
 
 	void setKey(const UString &key, const UString &value);
@@ -53,6 +54,7 @@ public:
 	void setString(const UString &key, const UString &value);
 	void setBool  (const UString &key,       bool     value);
 	void setInt   (const UString &key,       int      value);
+	void setUint  (const UString &key,       uint     value);
 	void setDouble(const UString &key,       double   value);
 
 	bool removeKey(const UString &key);
@@ -69,11 +71,13 @@ public:
 	// Conversion helpers
 	static bool   toBool  (const UString &value);
 	static int    toInt   (const UString &value);
+	static uint   toUint  (const UString &value);
 	static double toDouble(const UString &value);
 
 	// Conversion helpers
 	static UString fromBool  (bool   value);
 	static UString fromInt   (int    value);
+	static UString fromUint  (uint   value);
 	static UString fromDouble(double value);
 
 private:
