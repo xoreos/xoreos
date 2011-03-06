@@ -52,16 +52,41 @@ const Common::UString &Tileset::getName() const {
 	return _name;
 }
 
+const Tileset::Tile &Tileset::getTile(uint n) const {
+	if (n >= _tiles.size())
+		throw Common::Exception("Tileset has no tile %u", n);
+
+	return _tiles[n];
+}
+
 void Tileset::load(const Common::ConfigFile &set) {
 	const Common::ConfigDomain *general = set.getDomain("GENERAL");
 	if (!general)
 		throw Common::Exception("Tileset has no \"GENERAL\" domain");
 
 	loadGeneral(*general);
+
+	const Common::ConfigDomain *tiles = set.getDomain("TILES");
+	if (!general)
+		throw Common::Exception("Tileset has no \"TILES\" domain");
+
+	_tiles.resize(tiles->getUint("Count"));
+
+	for (uint i = 0; i < _tiles.size(); i++)
+		loadTile(set, i, _tiles[i]);
 }
 
 void Tileset::loadGeneral(const Common::ConfigDomain &general) {
 	_name = TalkMan.getString(general.getUint("DisplayName", Aurora::kStrRefInvalid));
+}
+
+void Tileset::loadTile(const Common::ConfigFile &set, uint i, Tile &tile) {
+	Common::UString domainName = Common::UString::sprintf("TILE%u", i);
+	const Common::ConfigDomain *domain = set.getDomain(domainName);
+	if (!domain)
+		throw Common::Exception("Tileset has no \"%s\" domain", domainName.c_str());
+
+	tile.model = domain->getString("Model");
 }
 
 } // End of namespace NWN

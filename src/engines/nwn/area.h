@@ -24,12 +24,15 @@
 
 #include "sound/types.h"
 
+#include "graphics/aurora/types.h"
+
+#include "engines/nwn/tileset.h"
+
 namespace Engines {
 
 namespace NWN {
 
 class Module;
-class Tileset;
 
 class Area {
 public:
@@ -55,7 +58,7 @@ private:
 	};
 
 	struct Tile {
-		uint32 tile;
+		uint32 tileID;
 
 		uint32 height;
 		Orientation orientation;
@@ -64,6 +67,10 @@ private:
 		uint8  srcLight[2];
 
 		bool animLoop[3];
+
+		const Tileset::Tile *tile;
+
+		Graphics::Aurora::Model *model;
 	};
 
 	Module *_module;
@@ -108,6 +115,8 @@ private:
 	void loadTile(const Aurora::GFFStruct &t, Tile &tile);
 
 	void loadTileset();
+
+	void initTiles();
 
 	Common::UString createDisplayName(const Common::UString &name);
 };

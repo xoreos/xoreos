@@ -23,11 +23,13 @@
 
 #include "sound/sound.h"
 
+#include "graphics/aurora/model.h"
+
 #include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "engines/nwn/area.h"
 #include "engines/nwn/module.h"
-#include "engines/nwn/tileset.h"
 
 namespace Engines {
 
@@ -45,10 +47,15 @@ Area::Area(Module &module, const Common::UString &resRef) :
 	loadGIT(git.getTopLevel());
 
 	loadTileset();
+
+	initTiles();
 }
 
 Area::~Area() {
 	hide();
+
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
+		delete t->model;
 
 	delete _tileset;
 }
@@ -81,6 +88,10 @@ void Area::show() {
 	if (!_musicDay.empty())
 		_ambientMusic = playSound(_musicDay  , Sound::kSoundTypeMusic, true);
 
+	// Show tiles
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
+		t->model->show();
+
 	_visible = true;
 }
 
@@ -91,6 +102,10 @@ void Area::hide() {
 	// Stop sound
 	SoundMan.stopChannel(_ambientSound);
 	SoundMan.stopChannel(_ambientMusic);
+
+	// Hide tiles
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
+		t->model->hide();
 
 	_visible = false;
 }
@@ -184,7 +199,7 @@ void Area::loadTiles(const Aurora::GFFList &tiles) {
 }
 
 void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
-	tile.tile   = t.getUint("Tile_ID");
+	tile.tileID = t.getUint("Tile_ID");
 	tile.height = t.getUint("Tile_Height", 0);
 
 	tile.orientation = (Orientation) t.getUint("Tile_Orientation", 0);
@@ -198,15 +213,41 @@ void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 	tile.animLoop[0] = t.getUint("Tile_AnimLoop1", 0) != 0;
 	tile.animLoop[1] = t.getUint("Tile_AnimLoop2", 0) != 0;
 	tile.animLoop[2] = t.getUint("Tile_AnimLoop3", 0) != 0;
+
+	tile.tile  = 0;
+	tile.model = 0;
 }
 
 void Area::loadTileset() {
 	if (_tilesetName.empty())
 		throw Common::Exception("Area \"%s\" has no tileset", _resRef.c_str());
 
-	_tileset = new Tileset(_tilesetName);
+	try {
+		_tileset = new Tileset(_tilesetName);
+	} catch (Common::Exception &e) {
+		e.add("Failed loading tileset \"%s\"", _resRef.c_str());
+		throw;
+	}
 
 	status("Loaded tileset \"%s\" (\"%s\")", _tileset->getName().c_str(), _tilesetName.c_str());
+}
+
+void Area::initTiles() {
+	for (uint32 y = 0; y < _height; y++) {
+		for (uint32 x = 0; x < _width; x++) {
+			uint32 n = y * _width + x;
+
+			Tile &t = _tiles[n];
+
+			t.tile = &_tileset->getTile(t.tileID);
+
+			t.model = loadModelObject(t.tile->model);
+			if (!t.model)
+				throw Common::Exception("Can't load tile model \"%s\"", t.tile->model.c_str());
+
+			t.model->setPosition(x * 10.0, y * 10.0, 0.0);
+		}
+	}
 }
 
 // "Elfland: The Woods" -> "The Woods"

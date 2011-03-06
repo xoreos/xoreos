@@ -15,6 +15,8 @@
 #ifndef ENGINES_NWN_TILESET_H
 #define ENGINES_NWN_TILESET_H
 
+#include <vector>
+
 #include "common/types.h"
 #include "common/ustring.h"
 
@@ -29,18 +31,27 @@ namespace NWN {
 
 class Tileset {
 public:
+	struct Tile {
+		Common::UString model;
+	};
+
 	Tileset(const Common::UString &resRef);
 	~Tileset();
 
 	const Common::UString &getName() const;
 
+	const Tile &getTile(uint n) const;
+
 private:
 	Common::UString _resRef;
 	Common::UString _name;
 
+	std::vector<Tile> _tiles;
+
 	void load(const Common::ConfigFile &set);
 
 	void loadGeneral(const Common::ConfigDomain &general);
+	void loadTile(const Common::ConfigFile &set, uint i, Tile &tile);
 };
 
 } // End of namespace NWN
