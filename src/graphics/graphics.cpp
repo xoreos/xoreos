@@ -29,6 +29,7 @@
 #include "graphics/cursor.h"
 #include "graphics/fpscounter.h"
 #include "graphics/renderable.h"
+#include "graphics/camera.h"
 
 #include "graphics/images/decoder.h"
 #include "graphics/images/screenshot.h"
@@ -534,12 +535,24 @@ void GraphicsManager::renderScene() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	// Apply camera orientation
+	const float *cOrient = CameraMan.getOrientation();
+	glRotatef(-cOrient[0], 1.0, 0.0, 0.0);
+	glRotatef( cOrient[1], 0.0, 1.0, 0.0);
+	glRotatef(-cOrient[2], 0.0, 0.0, 1.0);
+
+	// Apply camera position
+	const float *cPos = CameraMan.getPosition();
+	glTranslatef(-cPos[0], -cPos[1], cPos[2]);
+
 	// Draw normal objects
 	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj) {
 		glPushMatrix();
 		(*obj)->render();
 		glPopMatrix();
 	}
+
+	glLoadIdentity();
 
 	glMatrixMode(GL_PROJECTION);
 

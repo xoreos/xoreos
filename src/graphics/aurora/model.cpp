@@ -335,21 +335,15 @@ void Model::transformBoundBox(Common::TransformationMatrix &world,
 		// Aurora world objects have a rotated axis
 		world.rotate(-90.0, -1.0, 0.0, 0.0);
 
-	// Apply rotation around the world center
-	world.rotate(-_orientation[2], 0.0, 0.0, 1.0);
-	world.rotate(-_orientation[1], 0.0, 1.0, 0.0);
-	world.rotate(-_orientation[0], 1.0, 0.0, 0.0);
-
-	if (_type == kModelTypeGUIFront)
-		// Aurora GUI objects use 0.01 units / pixel
-		world.scale(0.01, 0.01, 0.01);
+	// Scale
+	world.scale(1.0 / _modelScale[0], 1.0 / _modelScale[1], 1.0 / _modelScale[2]);
 
 	object = _boundBox;
 
 	// Apply rotation around the object's center
-	object.rotate(_bearing[0], 1.0, 0.0, 0.0);
-	object.rotate(_bearing[1], 0.0, 0.0, 1.0);
-	object.rotate(_bearing[2], 0.0, 1.0, 0.0);
+	object.rotate( _bearing[0], 1.0, 0.0, 0.0);
+	object.rotate( _bearing[1], 0.0, 1.0, 0.0);
+	object.rotate(-_bearing[2], 0.0, 0.0, 1.0);
 }
 
 bool Model::isIn(float x, float y) const {
@@ -438,16 +432,8 @@ void Model::render() {
 	if (!_currentState)
 		return;
 
-	if (_type == kModelTypeObject)
-		// Roughly head position. TODO: This doesn't belong here :P
-		glTranslatef(0.0, -1.5, 0.0);
-
+	// Scale
 	glScalef(_modelScale[0], _modelScale[1], _modelScale[2]);
-
-	// Apply rotation around the world center
-	glRotatef(_orientation[0], 1.0, 0.0, 0.0);
-	glRotatef(_orientation[1], 0.0, 1.0, 0.0);
-	glRotatef(_orientation[2], 0.0, 0.0, 1.0);
 
 	if (_type == kModelTypeObject)
 		// Aurora world objects have a rotated axis
@@ -457,9 +443,9 @@ void Model::render() {
 	glTranslatef(_position[0], _position[1], _position[2]);
 
 	// Apply rotation around the object's center
-	glRotatef(_bearing[0], 1.0, 0.0, 0.0);
-	glRotatef(_bearing[1], 0.0, 0.0, 1.0);
-	glRotatef(_bearing[2], 0.0, 1.0, 0.0);
+	glRotatef( _bearing[0], 1.0, 0.0, 0.0);
+	glRotatef( _bearing[1], 0.0, 1.0, 0.0);
+	glRotatef(-_bearing[2], 0.0, 0.0, 1.0);
 
 	if (_fade) {
 		// Apply current fade value

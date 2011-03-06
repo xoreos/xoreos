@@ -17,6 +17,7 @@ noinst_HEADERS = types.h \
                  listcontainer.h \
                  texture.h \
                  font.h \
+                 camera.h \
                  renderable.h \
                  object.h \
                  guifrontelement.h
@@ -29,6 +30,7 @@ libgraphics_la_SOURCES = glew/glew.c \
                          listcontainer.cpp \
                          texture.cpp \
                          font.cpp \
+                         camera.cpp \
                          renderable.cpp \
                          object.cpp \
                          guifrontelement.cpp
