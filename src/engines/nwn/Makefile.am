@@ -17,6 +17,8 @@ noinst_HEADERS = nwn.h \
                  menu/yesnocancel.h \
                  menu/main.h \
                  menu/new.h \
+                 menu/newxp1.h \
+                 menu/newxp2.h \
                  menu/newcamp.h \
                  menu/newmodule.h \
                  menu/chartype.h \
@@ -51,6 +53,8 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/yesnocancel.cpp \
                     menu/main.cpp \
                     menu/new.cpp \
+                    menu/newxp1.cpp \
+                    menu/newxp2.cpp \
                     menu/newcamp.cpp \
                     menu/newmodule.cpp \
                     menu/chartype.cpp \

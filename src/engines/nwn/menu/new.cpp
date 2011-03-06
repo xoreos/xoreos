@@ -14,14 +14,10 @@
 
 #include "common/configman.h"
 
-#include "graphics/graphics.h"
-
 #include "engines/nwn/module.h"
 
 #include "engines/nwn/menu/new.h"
 #include "engines/nwn/menu/newmodule.h"
-
-#include "engines/aurora/util.h"
 
 namespace Engines {
 

@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/newcamp.h
- *  The new campaign menu.
+/** @file engines/nwn/menu/newxp1.h
+ *  The new game menu, expansion 1.
  */
 
-#ifndef ENGINES_NWN_MENU_NEWCAMP_H
-#define ENGINES_NWN_MENU_NEWCAMP_H
+#ifndef ENGINES_NWN_MENU_NEWXP1_H
+#define ENGINES_NWN_MENU_NEWXP1_H
 
 #include "engines/nwn/menu/gui.h"
 
@@ -21,13 +21,16 @@ namespace Engines {
 
 namespace NWN {
 
-/** The NWN new campaign menu. */
-class NewCampMenu : public GUI {
+class Module;
+
+/** The NWN new game menu, expansion 1. */
+class NewXP1Menu : public GUI {
 public:
-	NewCampMenu(Module &module, GUI &charType);
-	~NewCampMenu();
+	NewXP1Menu(Module &module, GUI &charType);
+	~NewXP1Menu();
 
 protected:
+	void initWidget(Widget &widget);
 	void callbackActive(Widget &widget);
 
 private:
@@ -35,14 +38,11 @@ private:
 
 	GUI *_charType;
 
-	GUI *_base;
-	GUI *_xp1;
-	GUI *_xp2;
-	GUI *_modules;
+	void loadModule(const Common::UString &module);
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_NEWCAMP_H
+#endif // ENGINES_NWN_MENU_NEWXP1_H

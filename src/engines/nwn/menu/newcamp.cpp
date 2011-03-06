@@ -12,10 +12,14 @@
 	 *  The new campaign menu.
 	 */
 
+#include "common/configman.h"
+
 #include "engines/nwn/module.h"
 
 #include "engines/nwn/menu/newcamp.h"
 #include "engines/nwn/menu/new.h"
+#include "engines/nwn/menu/newxp1.h"
+#include "engines/nwn/menu/newxp2.h"
 #include "engines/nwn/menu/newmodule.h"
 
 #include "engines/aurora/util.h"
@@ -31,23 +35,26 @@ NewCampMenu::NewCampMenu(Module &module, GUI &charType) :
 
 	Widget *button = 0;
 
-	// No GUI files? Hardcoded?
 	button = getWidget("NWNXP1Button");
 	if (button)
-		button->setDisabled(/*!ConfigMan.getBool("NWN_hasXP1")*/ true);
+		button->setDisabled(!ConfigMan.getBool("NWN_hasXP1"));
 	button = getWidget("NWNXP2Button");
 	if (button)
-		button->setDisabled(/*!ConfigMan.getBool("NWN_hasXP2")*/ true);
+		button->setDisabled(!ConfigMan.getBool("NWN_hasXP2"));
 	button = getWidget("NWNXP3Button");
 	if (button)
 		button->setDisabled(true);
 
 	_base    = new NewMenu(*_module, *_charType);
+	_xp1     = new NewXP1Menu(*_module, *_charType);
+	_xp2     = new NewXP2Menu(*_module, *_charType);
 	_modules = new NewModuleMenu(*_module, *_charType);
 }
 
 NewCampMenu::~NewCampMenu() {
 	delete _modules;
+	delete _xp2;
+	delete _xp1;
 	delete _base;
 }
 
@@ -59,6 +66,26 @@ void NewCampMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "NWNButton") {
 		if (sub(*_base, 0, false) == 2) {
+			_returnCode = 2;
+			return;
+		}
+
+		show();
+		return;
+	}
+
+	if (widget.getTag() == "NWNXP1Button") {
+		if (sub(*_xp1, 0, false) == 2) {
+			_returnCode = 2;
+			return;
+		}
+
+		show();
+		return;
+	}
+
+	if (widget.getTag() == "NWNXP2Button") {
+		if (sub(*_xp2, 0, false) == 2) {
 			_returnCode = 2;
 			return;
 		}

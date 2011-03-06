@@ -17,8 +17,6 @@
 
 #include "aurora/talkman.h"
 
-#include "graphics/graphics.h"
-
 #include "engines/nwn/menu/optionsgame.h"
 #include "engines/nwn/menu/optionsgorepass.h"
 #include "engines/nwn/menu/optionsfeedback.h"
