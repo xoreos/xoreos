@@ -16,6 +16,7 @@
 #define AURORA_TYPES_H
 
 #include <string>
+#include <list>
 
 #include "common/types.h"
 
@@ -342,6 +343,9 @@ enum Platform {
 
 static const uint32 kObjectIDInvalid = 0xFFFFFFFF;
 static const uint32 kStrRefInvalid   = 0xFFFFFFFF;
+
+class GFFStruct;
+typedef std::list<GFFStruct *> GFFList;
 
 } // End of namespace Aurora
 
