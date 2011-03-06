@@ -49,6 +49,9 @@ public:
 	/** Set the string of that language. */
 	void setString(Language language, const Common::UString &str);
 
+	/** Get the string the StrRef points to. */
+	const Common::UString &getStrRefString() const;
+
 	/** Get the first available string. */
 	const Common::UString &getFirstString() const;
 

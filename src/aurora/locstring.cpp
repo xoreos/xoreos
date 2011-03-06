@@ -17,6 +17,7 @@
 
 #include "aurora/locstring.h"
 #include "aurora/aurorafile.h"
+#include "aurora/talkman.h"
 
 /** A giant array to quickly map language IDs to storage space. */
 static const int languageToStorage[] = {
@@ -87,8 +88,7 @@ static inline int mapLanguageToStorage(Aurora::Language language) {
 
 namespace Aurora {
 
-LocString::LocString() {
-	_id = kStrRefInvalid;
+LocString::LocString() : _id(kStrRefInvalid) {
 }
 
 LocString::~LocString() {
@@ -121,12 +121,20 @@ void LocString::setString(Language language, const Common::UString &str) {
 	_strings[mapLanguageToStorage(language)] = str;
 }
 
+static const Common::UString kEmpty;
+const Common::UString &LocString::getStrRefString() const {
+	if (_id == kStrRefInvalid)
+		return kEmpty;
+
+	return TalkMan.getString(_id);
+}
+
 const Common::UString &LocString::getFirstString() const {
 	for (int i = 0; i < kStringCount; i++)
 		if (!_strings[i].empty())
 			return _strings[i];
 
-	return _strings[0];
+	return getStrRefString();
 }
 
 void LocString::readString(Language language, Common::SeekableReadStream &stream) {
