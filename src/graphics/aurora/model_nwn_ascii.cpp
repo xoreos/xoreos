@@ -263,7 +263,7 @@ void Model_NWN_ASCII::readNode(ParserContext &ctx, const Common::UString &type, 
 			line[1].parse(n);
 			readFaces(ctx, n);
 		} else
-			throw Common::Exception("Unknown MDL node command \"%s\"", line[0].c_str());
+			warning("Unknown MDL node command \"%s\"", line[0].c_str());
 	}
 
 	if (!end)
