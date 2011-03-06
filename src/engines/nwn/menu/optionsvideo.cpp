@@ -42,7 +42,9 @@ OptionsVideoMenu::OptionsVideoMenu(bool isMain) {
 	getWidget("VidQualSlider", true)->setDisabled(true);
 
 	// TODO: Sky boxes
-	getWidget("SkyboxBox", true)->setDisabled(true);
+	Widget *skyBox = getWidget("SkyboxBox");
+	if (skyBox)
+		skyBox->setDisabled(true);
 
 	// TODO: Environment shadows
 	getWidget("EnvShadowBox", true)->setDisabled(true);

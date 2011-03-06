@@ -35,6 +35,8 @@ void MoviesBaseMenu::callbackActive(Widget &widget) {
 
 	if      (widget.getTag() == "PreludeButton")
 		playVideo("prelude");
+	else if (widget.getTag() == "IntroButton")
+		playVideo("prelude");
 	else if (widget.getTag() == "Chpt1Button")
 		playVideo("prelude_chap1");
 	else if (widget.getTag() == "Chpt2Button")

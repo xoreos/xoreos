@@ -152,7 +152,9 @@ CharPremadeMenu::CharPremadeMenu(Module &module) : _module(&module) {
 	// TODO: "SaveLabel" should wrap!
 
 	// TODO: Customize character
-	getWidget("CustomCharButton", true)->setDisabled(true);
+	Widget *customChar = getWidget("CustomCharButton");
+	if (customChar)
+		customChar->setDisabled(true);
 
 	// TODO: Show pregenerated characters
 	getWidget("SaveGameBox"     , true)->setDisabled(true);

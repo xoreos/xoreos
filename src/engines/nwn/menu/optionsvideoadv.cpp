@@ -65,7 +65,9 @@ OptionsVideoAdvancedMenu::OptionsVideoAdvancedMenu(bool isMain) {
 	getWidget("VsyncBox", true)->setDisabled(true);
 
 	// TODO: Use large font
-	getWidget("UseLargeFont", true)->setDisabled(true);
+	Widget *useLargeFont = getWidget("UseLargeFont");
+	if (useLargeFont)
+		useLargeFont->setDisabled(true);
 }
 
 OptionsVideoAdvancedMenu::~OptionsVideoAdvancedMenu() {

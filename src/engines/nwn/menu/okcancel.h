@@ -8,12 +8,12 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/menu/yesnocancel.h
- *  The yes/no/cancel dialog.
+/** @file engines/nwn/menu/okcancel.h
+ *  The okay/cancel dialog.
  */
 
-#ifndef ENGINES_NWN_MENU_YESNOCANCEL_H
-#define ENGINES_NWN_MENU_YESNOCANCEL_H
+#ifndef ENGINES_NWN_MENU_OKCANCEL_H
+#define ENGINES_NWN_MENU_OKCANCEL_H
 
 #include "engines/nwn/menu/gui.h"
 
@@ -22,11 +22,11 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN advanced sound options menu. */
-class YesNoCancelDialog: public GUI {
+class OKCancelDialog: public GUI {
 public:
-	YesNoCancelDialog(const Common::UString &msg, const Common::UString &yes = "",
-			const Common::UString &no = "", const Common::UString &cancel = "");
-	~YesNoCancelDialog();
+	OKCancelDialog(const Common::UString &msg,
+			const Common::UString &ok = "", const Common::UString &cancel = "");
+	~OKCancelDialog();
 
 	void show();
 
@@ -38,8 +38,7 @@ protected:
 private:
 	Common::UString _msg;
 
-	Common::UString _yes;
-	Common::UString _no;
+	Common::UString _ok;
 	Common::UString _cancel;
 };
 
@@ -47,4 +46,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MENU_YESNOCANCEL_H
+#endif // ENGINES_NWN_MENU_OKCANCEL_H

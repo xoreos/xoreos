@@ -15,6 +15,7 @@ noinst_HEADERS = nwn.h \
                  menu/legal.h \
                  menu/gui.h \
                  menu/yesnocancel.h \
+                 menu/okcancel.h \
                  menu/main.h \
                  menu/new.h \
                  menu/newxp1.h \
@@ -51,6 +52,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/legal.cpp \
                     menu/gui.cpp \
                     menu/yesnocancel.cpp \
+                    menu/okcancel.cpp \
                     menu/main.cpp \
                     menu/new.cpp \
                     menu/newxp1.cpp \

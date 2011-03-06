@@ -405,7 +405,8 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 
 	for (std::list<Widget *>::const_iterator a = group.begin(); a != group.end(); ++a)
 		for (std::list<Widget *>::const_iterator b = group.begin(); b != group.end(); ++b)
-			(*a)->addGroupMember(**b);
+			if (*a && *b)
+				(*a)->addGroupMember(**b);
 }
 
 int GUI::sub(GUI &gui, int startCode, bool showSelf) {

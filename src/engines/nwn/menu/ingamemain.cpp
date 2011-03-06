@@ -16,6 +16,7 @@
 
 #include "engines/nwn/menu/ingamemain.h"
 #include "engines/nwn/menu/yesnocancel.h"
+#include "engines/nwn/menu/okcancel.h"
 #include "engines/nwn/menu/optionsgame.h"
 #include "engines/nwn/menu/optionsvideo.h"
 #include "engines/nwn/menu/optionssound.h"
@@ -42,7 +43,8 @@ InGameMainMenu::InGameMainMenu() {
 	_sound    = new OptionsSoundMenu(false);
 	_controls = new OptionsControlsMenu(false);
 
-	_quitPrompt = new YesNoCancelDialog(TalkMan.getString(10308), false);
+	_quitPrompt = new OKCancelDialog(TalkMan.getString(10308),
+	                                 TalkMan.getString(8274), TalkMan.getString(8275));
 }
 
 InGameMainMenu::~InGameMainMenu() {

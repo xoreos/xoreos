@@ -44,14 +44,30 @@ OptionsSoundMenu::OptionsSoundMenu(bool isMain) {
 	declareGroup(speakerGroup);
 
 	// TODO: Sound settings
-	getWidget("EAXCheckbox", true)->setDisabled(true);
-	getWidget("HardwareBox", true)->setDisabled(true);
-	getWidget("71Speakers" , true)->setDisabled(true);
-	getWidget("51Speakers" , true)->setDisabled(true);
-	getWidget("2Speakers"  , true)->setDisabled(true);
-	getWidget("4Speakers"  , true)->setDisabled(true);
-	getWidget("Surround"   , true)->setDisabled(true);
-	getWidget("Headphones" , true)->setDisabled(true);
+	Widget *soundEAX        = getWidget("EAXCheckbox");
+	if (soundEAX)
+		soundEAX->setDisabled(true);
+	Widget *soundHardware   = getWidget("HardwareBox");
+	if (soundHardware)
+		soundHardware->setDisabled(true);
+	Widget *sound71Speakers = getWidget("71Speakers");
+	if (sound71Speakers)
+		sound71Speakers->setDisabled(true);
+	Widget *sound51Speakers = getWidget("51Speakers");
+	if (sound51Speakers)
+		sound51Speakers->setDisabled(true);
+	Widget *sound4Speakers  = getWidget("4Speakers");
+	if (sound4Speakers)
+		sound4Speakers->setDisabled(true);
+	Widget *sound2Speakers  = getWidget("2Speakers");
+	if (sound2Speakers)
+		sound2Speakers->setDisabled(true);
+	Widget *soundSurround   = getWidget("Surround");
+	if (soundSurround)
+		soundSurround->setDisabled(true);
+	Widget *soundHeadphones = getWidget("Headphones");
+	if (soundHeadphones)
+		soundHeadphones->setDisabled(true);
 
 	_advanced = new OptionsSoundAdvancedMenu(isMain);
 }
