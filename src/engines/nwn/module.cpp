@@ -139,12 +139,15 @@ void Module::run() {
 	_newArea = _ifo.getEntryArea();
 
 	while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
-		if (!_area || (_area->getName() != _newArea)) {
+		if (!_area || (_area->getResRef() != _newArea)) {
 			delete _area;
 
 			_area = new Area(*this, _newArea);
 
 			_area->show();
+
+			status("Entered area \"%s\", (\"%s\")",
+					_area->getName().c_str(), _area->getResRef().c_str());
 		}
 
 		Events::Event event;

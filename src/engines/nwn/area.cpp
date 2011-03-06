@@ -29,15 +29,15 @@ namespace Engines {
 
 namespace NWN {
 
-Area::Area(Module &module, const Common::UString &name) : _module(&module), _name(name),
-	_visible(false) {
+Area::Area(Module &module, const Common::UString &resRef) :
+	_module(&module), _resRef(resRef), _visible(false) {
 
 	Aurora::GFFFile are;
-	loadGFF(are, _name, Aurora::kFileTypeARE, MKID_BE('ARE '));
+	loadGFF(are, _resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
 	loadARE(are.getTopLevel());
 
 	Aurora::GFFFile git;
-	loadGFF(git, _name, Aurora::kFileTypeGIT, MKID_BE('GIT '));
+	loadGFF(git, _resRef, Aurora::kFileTypeGIT, MKID_BE('GIT '));
 	loadGIT(git.getTopLevel());
 }
 
@@ -45,8 +45,16 @@ Area::~Area() {
 	hide();
 }
 
+const Common::UString &Area::getResRef() {
+	return _resRef;
+}
+
 const Common::UString &Area::getName() {
 	return _name;
+}
+
+const Common::UString &Area::getDisplayName() {
+	return _displayName;
 }
 
 void Area::show() {
@@ -80,6 +88,13 @@ void Area::hide() {
 }
 
 void Area::loadARE(const Aurora::GFFStruct &are) {
+	// Name
+
+	Aurora::LocString name;
+	are.getLocString("Name", name);
+
+	_name        = name.getFirstString();
+	_displayName = createDisplayName(_name);
 }
 
 void Area::loadGIT(const Aurora::GFFStruct &git) {
@@ -136,6 +151,24 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 			if (!stinger[i].empty())
 				_musicBattleStinger.push_back(stinger[i]);
 	}
+}
+
+// "Elfland: The Woods" -> "The Woods"
+Common::UString Area::createDisplayName(const Common::UString &name) {
+	for (Common::UString::iterator it = name.begin(); it != name.end(); ++it) {
+		if (*it == ':') {
+			if (++it == name.end())
+				break;
+
+			if (*it == ' ')
+				if (++it == name.end())
+					break;
+
+			return Common::UString(it, name.end());
+		}
+	}
+
+	return name;
 }
 
 } // End of namespace NWN

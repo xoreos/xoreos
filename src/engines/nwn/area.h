@@ -32,10 +32,15 @@ class Module;
 
 class Area {
 public:
-	Area(Module &module, const Common::UString &name);
+	Area(Module &module, const Common::UString &resRef);
 	~Area();
 
+	/** Return the area's resref (resource ID). */
+	const Common::UString &getResRef();
+	/** Return the area's localized name. */
 	const Common::UString &getName();
+	/** Return the area's localized display name. */
+	const Common::UString &getDisplayName();
 
 	void show();
 	void hide();
@@ -43,7 +48,10 @@ public:
 private:
 	Module *_module;
 
+	Common::UString _resRef;
 	Common::UString _name;
+
+	Common::UString _displayName;
 
 	Common::UString _ambientDay;
 	Common::UString _ambientNight;
@@ -66,6 +74,8 @@ private:
 	void loadGIT(const Aurora::GFFStruct &git);
 
 	void loadProperties(const Aurora::GFFStruct &props);
+
+	Common::UString createDisplayName(const Common::UString &name);
 };
 
 } // End of namespace NWN
