@@ -11,6 +11,7 @@ noinst_HEADERS = nwn.h \
                  module.h \
                  area.h \
                  tileset.h \
+                 situated.h \
                  placeable.h \
                  menu/scrollbar.h \
                  menu/newgamefog.h \
@@ -50,6 +51,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     module.cpp \
                     area.cpp \
                     tileset.cpp \
+                    situated.cpp \
                     placeable.cpp \
                     menu/scrollbar.cpp \
                     menu/newgamefog.cpp \

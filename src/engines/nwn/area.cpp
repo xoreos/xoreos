@@ -267,8 +267,13 @@ void Area::initTiles() {
 }
 
 void Area::loadPlaceables(const Aurora::GFFList &list) {
-	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p)
-		_placeables.push_back(new Placeable(**p));
+	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
+		Placeable *placeable = new Placeable;
+
+		placeable->load(**p);
+
+		_placeables.push_back(placeable);
+	}
 }
 
 // "Elfland: The Woods" -> "The Woods"

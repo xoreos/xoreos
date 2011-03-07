@@ -32,41 +32,13 @@ namespace Engines {
 
 namespace NWN {
 
-Placeable::Placeable(const Aurora::GFFStruct &placeable) :
-	_appearanceID(Aurora::kFieldIDInvalid), _model(0) {
-
-	load(placeable);
+Placeable::Placeable() {
 }
 
 Placeable::~Placeable() {
-	delete _model;
-}
-
-void Placeable::show() {
-	_model->show();
-}
-
-void Placeable::hide() {
-	_model->hide();
-}
-
-const Common::UString &Placeable::getTag() const {
-	return _tag;
-}
-
-const Common::UString &Placeable::getName() const {
-	return _name;
-}
-
-const Common::UString &Placeable::getDescription() const {
-	return _description;
 }
 
 void Placeable::load(const Aurora::GFFStruct &placeable) {
-	loadProperties(placeable);
-
-	// Template
-
 	Common::UString temp = placeable.getString("TemplateResRef");
 	if (temp.empty())
 		throw Common::Exception("Placeable without a template resref");
@@ -74,88 +46,16 @@ void Placeable::load(const Aurora::GFFStruct &placeable) {
 	Aurora::GFFFile utp;
 	loadGFF(utp, temp, Aurora::kFileTypeUTP, MKID_BE('UTP '));
 
-	loadAppearance();
-
-	// Model position
-
-	float x = placeable.getDouble("X");
-	float y = placeable.getDouble("Y");
-	float z = placeable.getDouble("Z");
-
-	_model->setPosition(x, y, z);
-
-	// Model orientation
-
-	float bearing = placeable.getDouble("Bearing");
-
-	_model->setOrientation(0.0, 0.0, -Common::rad2deg(bearing));
+	Situated::load(utp.getTopLevel(), placeable);
 }
 
-void Placeable::loadTemplate(const Aurora::GFFStruct &utp) {
-	loadProperties(utp);
-}
-
-void Placeable::loadProperties(const Aurora::GFFStruct &gff) {
-	// Tag
-	if (_tag.empty())
-		_tag = gff.getString("Tag");
-
-	// Name
-	if (_name.empty()) {
-		Aurora::LocString name;
-		gff.getLocString("LocName", name);
-
-		_name = name.getFirstString();
-	}
-
-	// Description
-	if (_description.empty()) {
-		Aurora::LocString description;
-		gff.getLocString("Description", description);
-
-		_description = description.getFirstString();
-	}
-
-	// Portrait
-	if (_portrait.empty())
-		loadPortrait(gff);
-
-	// Appearance
-	if (_appearanceID == Aurora::kFieldIDInvalid)
-		_appearanceID = gff.getUint("Appearance", Aurora::kFieldIDInvalid);
-}
-
-void Placeable::loadPortrait(const Aurora::GFFStruct &gff) {
-	_portrait = gff.getString("Portrait");
-	if (!_portrait.empty())
-		return;
-
-	uint32 portraitID = gff.getUint("PortraitId");
-	if (portraitID == 0)
-		return;
-
-	const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
-
-	Common::UString portrait = twoda.getCellString(portraitID, "BaseResRef");
-	if (portrait.empty())
-		return;
-
-	_portrait = "po_" + portrait;
+void Placeable::loadObject(const Aurora::GFFStruct &gff) {
 }
 
 void Placeable::loadAppearance() {
-	if (_appearanceID == Aurora::kFieldIDInvalid)
-		throw Common::Exception("Placeable without an appearance");
-
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeables");
 
-	Common::UString modelName = twoda.getCellString(_appearanceID, "ModelName");
-	if (modelName.empty())
-		throw Common::Exception("Placeable without a model");
-
-	_model = loadModelObject(modelName);
-	if (!_model)
-		throw Common::Exception("Failed to load placeable model \"%s\"", modelName.c_str());
+	_modelName = twoda.getCellString(_appearanceID, "ModelName");
 }
 
 } // End of namespace NWN

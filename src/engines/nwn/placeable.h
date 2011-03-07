@@ -15,46 +15,23 @@
 #ifndef ENGINES_NWN_PLACEABLE_H
 #define ENGINES_NWN_PLACEABLE_H
 
-#include "common/ustring.h"
-
 #include "aurora/types.h"
 
-#include "graphics/aurora/types.h"
+#include "engines/nwn/situated.h"
 
 namespace Engines {
 
 namespace NWN {
 
-class Placeable {
+class Placeable : public Situated {
 public:
-	Placeable(const Aurora::GFFStruct &placeable);
+	Placeable();
 	~Placeable();
 
-	void show();
-	void hide();
-
-	const Common::UString &getTag() const;
-	const Common::UString &getName() const;
-	const Common::UString &getDescription() const;
-
-private:
-	Common::UString _tag;
-	Common::UString _name;
-	Common::UString _description;
-
-	Common::UString _portrait;
-
-	uint32 _appearanceID;
-
-	Graphics::Aurora::Model *_model;
-
-
 	void load(const Aurora::GFFStruct &placeable);
-	void loadTemplate(const Aurora::GFFStruct &utp);
 
-	void loadProperties(const Aurora::GFFStruct &gff);
-	void loadPortrait(const Aurora::GFFStruct &gff);
-
+protected:
+	void loadObject(const Aurora::GFFStruct &gff);
 	void loadAppearance();
 };
 
