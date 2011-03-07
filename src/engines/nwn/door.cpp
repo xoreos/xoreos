@@ -41,13 +41,21 @@ Door::~Door() {
 
 void Door::load(const Aurora::GFFStruct &door) {
 	Common::UString temp = door.getString("TemplateResRef");
-	if (temp.empty())
-		throw Common::Exception("Door without a template resref");
 
-	Aurora::GFFFile utd;
-	loadGFF(utd, temp, Aurora::kFileTypeUTD, MKID_BE('UTD '));
+	Aurora::GFFFile *utd = 0;
+	if (!temp.empty()) {
+		try {
+			utd = loadGFF(temp, Aurora::kFileTypeUTD, MKID_BE('UTD '));
+		} catch (...) {
+		}
+	}
 
-	Situated::load(utd.getTopLevel(), door);
+	Situated::load(door, utd ? &utd->getTopLevel() : 0);
+
+	if (!utd)
+		warning("Door \"%s\" has no blueprint", _tag.c_str());
+
+	delete utd;
 }
 
 void Door::loadObject(const Aurora::GFFStruct &gff) {
@@ -58,7 +66,8 @@ void Door::loadObject(const Aurora::GFFStruct &gff) {
 void Door::loadAppearance() {
 	if (_appearanceID == 0) {
 		if (_genericType == Aurora::kFieldIDInvalid)
-			throw Common::Exception("Door has no appearance ID and no generic type");
+			throw Common::Exception("Door \"%s\" has no appearance ID and no generic type",
+			                        _tag.c_str());
 
 		loadAppearance(TwoDAReg.get("genericdoors"), _genericType);
 	} else

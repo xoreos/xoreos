@@ -66,20 +66,22 @@ const Common::UString &Situated::getDescription() const {
 	return _description;
 }
 
-void Situated::load(const Aurora::GFFStruct &blueprint, const Aurora::GFFStruct &instance) {
+void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
 	assert(!_loaded);
 
 
 	// General properties
 
-	loadProperties(instance);  // Instance
-	loadProperties(blueprint); // Blueprint
+	loadProperties(instance);    // Instance
+	if (blueprint)
+		loadProperties(*blueprint); // Blueprint
 
 
 	// Specialized object properties
 
-	loadObject(instance);  // Instance
-	loadObject(blueprint); // Blueprint
+	loadObject(instance);    // Instance
+	if (blueprint)
+		loadObject(*blueprint); // Blueprint
 
 
 	// Appearance

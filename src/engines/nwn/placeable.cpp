@@ -15,6 +15,7 @@
 #include "common/endianness.h"
 #include "common/error.h"
 #include "common/maths.h"
+#include "common/util.h"
 
 #include "aurora/locstring.h"
 #include "aurora/gfffile.h"
@@ -40,13 +41,21 @@ Placeable::~Placeable() {
 
 void Placeable::load(const Aurora::GFFStruct &placeable) {
 	Common::UString temp = placeable.getString("TemplateResRef");
-	if (temp.empty())
-		throw Common::Exception("Placeable without a template resref");
 
-	Aurora::GFFFile utp;
-	loadGFF(utp, temp, Aurora::kFileTypeUTP, MKID_BE('UTP '));
+	Aurora::GFFFile *utp = 0;
+	if (!temp.empty()) {
+		try {
+			utp = loadGFF(temp, Aurora::kFileTypeUTP, MKID_BE('UTP '));
+		} catch (...) {
+		}
+	}
 
-	Situated::load(utp.getTopLevel(), placeable);
+	Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
+
+	if (!utp)
+		warning("Placeable \"%s\" has no blueprint", _tag.c_str());
+
+	delete utp;
 }
 
 void Placeable::loadObject(const Aurora::GFFStruct &gff) {
