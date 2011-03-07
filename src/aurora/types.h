@@ -347,6 +347,7 @@ static const uint32 kStrRefInvalid   = 0xFFFFFFFF;
 
 class GFFStruct;
 typedef std::list<GFFStruct *> GFFList;
+class GFFFile;
 
 } // End of namespace Aurora
 
