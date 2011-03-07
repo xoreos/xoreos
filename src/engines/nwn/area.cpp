@@ -86,10 +86,8 @@ void Area::show() {
 
 	// TODO Day/Night
 
-	/* IMA ADPCM currently broken for stereo files!
 	if (!_ambientDay.empty())
 		_ambientSound = playSound(_ambientDay, Sound::kSoundTypeSFX  , true, _ambientDayVol);
-	*/
 	if (!_musicDay.empty())
 		_ambientMusic = playSound(_musicDay  , Sound::kSoundTypeMusic, true);
 
