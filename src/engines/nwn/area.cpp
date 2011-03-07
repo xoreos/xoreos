@@ -174,8 +174,11 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 	if (ambientNight != Aurora::kStrRefInvalid)
 		_ambientNight = ambientSound.getCellString(ambientNight, "Resource");
 
-	_ambientDayVol   =  props.getUint("AmbientSndDayVol"  , 127) / 127.0;
-	_ambientNightVol =  props.getUint("AmbientSndNightVol", 127) / 127.0;
+	uint32 ambientDayVol   = CLIP<uint32>(props.getUint("AmbientSndDayVol"  , 127), 0, 127);
+	uint32 ambientNightVol = CLIP<uint32>(props.getUint("AmbientSndNightVol", 127), 0, 127);
+
+	_ambientDayVol   = 1.25 * (1.0 - (1.0 / powf(5.0, ambientDayVol   / 127.0)));
+	_ambientNightVol = 1.25 * (1.0 - (1.0 / powf(5.0, ambientNightVol / 127.0)));
 
 	// TODO: PresetInstance0 - PresetInstance7
 
