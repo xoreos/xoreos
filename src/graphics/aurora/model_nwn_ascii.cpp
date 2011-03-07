@@ -139,7 +139,7 @@ void Model_NWN_ASCII::readNode(ParserContext &ctx, const Common::UString &type, 
 	else
 		ctx.node->render = false;
 
-	if ((type == "emitter") || (type == "reference")) {
+	if ((type == "emitter") || (type == "reference") || (type == "aabb")) {
 		warning("TODO: Node type %s", type.c_str());
 		skipNode = true;
 	}
