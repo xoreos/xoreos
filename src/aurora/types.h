@@ -342,6 +342,7 @@ enum Platform {
 };
 
 static const uint32 kObjectIDInvalid = 0xFFFFFFFF;
+static const uint32 kFieldIDInvalid  = 0xFFFFFFFF;
 static const uint32 kStrRefInvalid   = 0xFFFFFFFF;
 
 class GFFStruct;
