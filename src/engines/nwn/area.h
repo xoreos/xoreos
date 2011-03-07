@@ -33,7 +33,9 @@ namespace Engines {
 namespace NWN {
 
 class Module;
+
 class Placeable;
+class Door;
 
 class Area {
 public:
@@ -105,7 +107,9 @@ private:
 	Tileset *_tileset;
 
 	std::vector<Tile> _tiles;
+
 	std::vector<Placeable *> _placeables;
+	std::vector<Door *>      _doors;
 
 
 	void loadARE(const Aurora::GFFStruct &are);
@@ -121,6 +125,7 @@ private:
 	void initTiles();
 
 	void loadPlaceables(const Aurora::GFFList &list);
+	void loadDoors     (const Aurora::GFFList &list);
 
 	Common::UString createDisplayName(const Common::UString &name);
 };

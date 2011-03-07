@@ -31,6 +31,7 @@
 #include "engines/nwn/area.h"
 #include "engines/nwn/module.h"
 #include "engines/nwn/placeable.h"
+#include "engines/nwn/door.h"
 
 namespace Engines {
 
@@ -92,13 +93,17 @@ void Area::show() {
 	if (!_musicDay.empty())
 		_ambientMusic = playSound(_musicDay  , Sound::kSoundTypeMusic, true);
 
+	// Show tiles
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
+		t->model->show();
+
 	// Show placeables
 	for (std::vector<Placeable *>::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
 		(*p)->show();
 
-	// Show tiles
-	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
-		t->model->show();
+	// Show doors
+	for (std::vector<Door *>::iterator d = _doors.begin(); d != _doors.end(); ++d)
+		(*d)->show();
 
 	_visible = true;
 }
@@ -110,6 +115,10 @@ void Area::hide() {
 	// Stop sound
 	SoundMan.stopChannel(_ambientSound);
 	SoundMan.stopChannel(_ambientMusic);
+
+	// Hide doors
+	for (std::vector<Door *>::iterator d = _doors.begin(); d != _doors.end(); ++d)
+		(*d)->hide();
 
 	// Hide placeables
 	for (std::vector<Placeable *>::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
@@ -149,6 +158,9 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 
 	if (git.hasField("Placeable List"))
 		loadPlaceables(git.getList("Placeable List"));
+
+	if (git.hasField("Door List"))
+		loadDoors(git.getList("Door List"));
 }
 
 void Area::loadProperties(const Aurora::GFFStruct &props) {
@@ -273,6 +285,16 @@ void Area::loadPlaceables(const Aurora::GFFList &list) {
 		placeable->load(**p);
 
 		_placeables.push_back(placeable);
+	}
+}
+
+void Area::loadDoors(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+		Door *door = new Door;
+
+		door->load(**d);
+
+		_doors.push_back(door);
 	}
 }
 

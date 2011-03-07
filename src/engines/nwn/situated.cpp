@@ -15,6 +15,7 @@
 #include "common/endianness.h"
 #include "common/error.h"
 #include "common/maths.h"
+#include "common/util.h"
 
 #include "aurora/locstring.h"
 #include "aurora/gfffile.h"
@@ -42,13 +43,15 @@ Situated::~Situated() {
 void Situated::show() {
 	assert(_loaded);
 
-	_model->show();
+	if (_model)
+		_model->show();
 }
 
 void Situated::hide() {
 	assert(_loaded);
 
-	_model->hide();
+	if (_model)
+		_model->hide();
 }
 
 const Common::UString &Situated::getTag() const {
@@ -89,29 +92,33 @@ void Situated::load(const Aurora::GFFStruct &blueprint, const Aurora::GFFStruct 
 
 	// Model
 
-	if (_modelName.empty())
-		throw Common::Exception("Situated object without a model");
+	if (!_modelName.empty()) {
+		_model = loadModelObject(_modelName);
 
-	_model = loadModelObject(_modelName);
-	if (!_model)
-		throw Common::Exception("Failed to load situated object model \"%s\"",
-		                        _modelName.c_str());
+		if (!_model)
+			throw Common::Exception("Failed to load situated object model \"%s\"",
+			                        _modelName.c_str());
+	} else
+		warning("Situated object \"%s\" (\"%s\") has no model", _name.c_str(), _tag.c_str());
+
 
 
 	// Model position
 
-	float x = instance.getDouble("X");
-	float y = instance.getDouble("Y");
-	float z = instance.getDouble("Z");
+	if (_model) {
+		float x = instance.getDouble("X");
+		float y = instance.getDouble("Y");
+		float z = instance.getDouble("Z");
 
-	_model->setPosition(x, y, z);
+		_model->setPosition(x, y, z);
 
 
-	// Model orientation
+		// Model orientation
 
-	float bearing = instance.getDouble("Bearing");
+		float bearing = instance.getDouble("Bearing");
 
-	_model->setOrientation(0.0, 0.0, -Common::rad2deg(bearing));
+		_model->setOrientation(0.0, 0.0, -Common::rad2deg(bearing));
+	}
 
 
 	_loaded = true;

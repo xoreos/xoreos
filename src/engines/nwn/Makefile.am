@@ -13,6 +13,7 @@ noinst_HEADERS = nwn.h \
                  tileset.h \
                  situated.h \
                  placeable.h \
+                 door.h \
                  menu/scrollbar.h \
                  menu/newgamefog.h \
                  menu/legal.h \
@@ -53,6 +54,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     tileset.cpp \
                     situated.cpp \
                     placeable.cpp \
+                    door.cpp \
                     menu/scrollbar.cpp \
                     menu/newgamefog.cpp \
                     menu/legal.cpp \
