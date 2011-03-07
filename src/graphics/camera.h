@@ -31,8 +31,8 @@ public:
 	void setPosition   (float x, float y, float z); ///< Set the camera position.
 	void setOrientation(float x, float y, float z); ///< Set the camera orientation.
 
-	/** Set orientation from a 2D vector. */
-	void setOrientationVector(float x, float y);
+	/** Set orientation from unit vector describing the bearing in the xy plane. */
+	void setOrientation(float vX, float vY);
 
 	void turn(float x, float y, float z); ///< Turn along axes.
 	void move(float x, float y, float z); ///< Move along axes.

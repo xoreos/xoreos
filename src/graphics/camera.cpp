@@ -80,11 +80,12 @@ void CameraManager::setOrientation(float x, float y, float z) {
 	GfxMan.unlockFrame();
 }
 
-void CameraManager::setOrientationVector(float x, float y) {
-	float o[3];
+void CameraManager::setOrientation(float vX, float vY) {
+	float x, y, z;
 
-	Common::vector2orientation(x, y, o[0], o[1], o[2]);
-	setOrientation(o[0], o[1], o[2]);
+	Common::vector2orientation(vX, vY, x, y, z);
+
+	setOrientation(x, y, z);
 }
 
 void CameraManager::turn(float x, float y, float z) {

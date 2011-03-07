@@ -189,7 +189,7 @@ void Area::loadCreature(const Aurora::GFFStruct &creature) {
 		creat->setPosition(x, y, z);
 
 		float orientation[3];
-		Common::vector2orientation(-bearingX, -bearingY,
+		Common::vector2orientation(bearingX, bearingY,
 		                           orientation[0], orientation[1], orientation[2]);
 
 		creat->setOrientation(orientation[0], orientation[1], orientation[2]);

@@ -122,7 +122,7 @@ void Module::reset() {
 	// Roughly head position
 	CameraMan.setPosition(_startX, _startZ + 1.8, _startY);
 
-	CameraMan.setOrientationVector(_startDirX, _startDirY);
+	CameraMan.setOrientation(_startDirX, _startDirY);
 }
 
 } // End of namespace KotOR

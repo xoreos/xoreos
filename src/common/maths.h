@@ -102,17 +102,11 @@ inline float deg2rad(float deg) {
 
 inline void vector2orientation(float vX, float vY, float &x, float &y, float &z) {
 	x = 0.0;
-	y = 0.0;
+	y = rad2deg(acos(vY));
 	z = 0.0;
 
-	float r = sqrt(vX * vX + vY * vY);
-	if (r == 0.0)
-		return;
-
-	y = rad2deg(acos(-vY / sqrt(vX * vX + vY * vY)));
-
 	if (vX < 0)
-		y = -y;
+		y = 360.0 - y;
 }
 
 } // End of namespace Common
