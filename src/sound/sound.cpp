@@ -436,8 +436,11 @@ bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 
 	delete[] buffer;
 
-	if (alGetError() != AL_NO_ERROR)
-		throw Common::Exception("OpenAL error while filling buffer");
+	ALenum error = alGetError();
+	if (error != AL_NO_ERROR) {
+		warning("OpenAL error while filling buffer: 0x%X", error);
+		return false;
+	}
 
 	return true;
 }
