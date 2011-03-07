@@ -40,11 +40,15 @@ public:
 
 	const Common::UString &getName() const;
 
+	float getTilesHeight() const;
+
 	const Tile &getTile(uint n) const;
 
 private:
 	Common::UString _resRef;
 	Common::UString _name;
+
+	float _tilesHeight;
 
 	std::vector<Tile> _tiles;
 

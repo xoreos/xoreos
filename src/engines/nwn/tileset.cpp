@@ -52,6 +52,10 @@ const Common::UString &Tileset::getName() const {
 	return _name;
 }
 
+float Tileset::getTilesHeight() const {
+	return _tilesHeight;
+}
+
 const Tileset::Tile &Tileset::getTile(uint n) const {
 	if (n >= _tiles.size())
 		throw Common::Exception("Tileset has no tile %u", n);
@@ -78,6 +82,8 @@ void Tileset::load(const Common::ConfigFile &set) {
 
 void Tileset::loadGeneral(const Common::ConfigDomain &general) {
 	_name = TalkMan.getString(general.getUint("DisplayName", Aurora::kStrRefInvalid));
+
+	_tilesHeight = general.getUint("Transition");
 }
 
 void Tileset::loadTile(const Common::ConfigFile &set, uint i, Tile &tile) {

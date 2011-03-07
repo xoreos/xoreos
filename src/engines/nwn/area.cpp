@@ -272,7 +272,11 @@ void Area::initTiles() {
 			if (!t.model)
 				throw Common::Exception("Can't load tile model \"%s\"", t.tile->model.c_str());
 
-			t.model->setPosition(x * 10.0 + 5.0, y * 10.0 + 5.0, 0.0);
+			const float tileX = x * 10.0 + 5.0;
+			const float tileY = y * 10.0 + 5.0;
+			const float tileZ = t.height * _tileset->getTilesHeight();
+
+			t.model->setPosition(tileX, tileY, tileZ);
 			t.model->setOrientation(0.0, 0.0, -(((int) t.orientation) * 90.0));
 		}
 	}
