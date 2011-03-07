@@ -30,6 +30,7 @@
 
 #include "engines/nwn/area.h"
 #include "engines/nwn/module.h"
+#include "engines/nwn/placeable.h"
 
 namespace Engines {
 
@@ -53,6 +54,9 @@ Area::Area(Module &module, const Common::UString &resRef) :
 
 Area::~Area() {
 	hide();
+
+	for (std::vector<Placeable *>::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
+		delete *p;
 
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 		delete t->model;
@@ -88,6 +92,10 @@ void Area::show() {
 	if (!_musicDay.empty())
 		_ambientMusic = playSound(_musicDay  , Sound::kSoundTypeMusic, true);
 
+	// Show placeables
+	for (std::vector<Placeable *>::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
+		(*p)->show();
+
 	// Show tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 		t->model->show();
@@ -102,6 +110,10 @@ void Area::hide() {
 	// Stop sound
 	SoundMan.stopChannel(_ambientSound);
 	SoundMan.stopChannel(_ambientMusic);
+
+	// Hide placeables
+	for (std::vector<Placeable *>::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
+		(*p)->hide();
 
 	// Hide tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
@@ -134,6 +146,9 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 void Area::loadGIT(const Aurora::GFFStruct &git) {
 	if (git.hasField("AreaProperties"))
 		loadProperties(git.getStruct("AreaProperties"));
+
+	if (git.hasField("Placeable List"))
+		loadPlaceables(git.getList("Placeable List"));
 }
 
 void Area::loadProperties(const Aurora::GFFStruct &props) {
@@ -245,10 +260,15 @@ void Area::initTiles() {
 			if (!t.model)
 				throw Common::Exception("Can't load tile model \"%s\"", t.tile->model.c_str());
 
-			t.model->setPosition(x * 10.0, y * 10.0, 0.0);
+			t.model->setPosition(x * 10.0 + 5.0, y * 10.0 + 5.0, 0.0);
 			t.model->setOrientation(0.0, 0.0, -(((int) t.orientation) * 90.0));
 		}
 	}
+}
+
+void Area::loadPlaceables(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p)
+		_placeables.push_back(new Placeable(**p));
 }
 
 // "Elfland: The Woods" -> "The Woods"
