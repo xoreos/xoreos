@@ -112,6 +112,7 @@ void Model_NWN_ASCII::load(Common::SeekableReadStream &mdl) {
 			readNode(ctx, line[1], line[2]);
 
 			_states.insert(std::make_pair(ctx.state->name, ctx.state));
+			_currentState = ctx.state;
 			ctx.state = 0;
 		} else if (line[0] == "newanim") {
 			readAnim(ctx);
@@ -275,6 +276,8 @@ void Model_NWN_ASCII::readNode(ParserContext &ctx, const Common::UString &type, 
 
 	_nodes.push_back(ctx.node);
 	_nodeMap.insert(std::make_pair(name, ctx.node));
+	ctx.state->nodeMap.insert(std::make_pair(ctx.node->name, ctx.node));
+
 	ctx.node = 0;
 }
 
@@ -331,6 +334,7 @@ void Model_NWN_ASCII::readFaces(ParserContext &ctx, int n) {
 		line[7].parse(ctx.mesh->material[i]);
 
 		i++;
+		ctx.mesh->faceCount++;
 	}
 }
 
