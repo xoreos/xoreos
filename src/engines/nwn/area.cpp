@@ -246,6 +246,7 @@ void Area::initTiles() {
 				throw Common::Exception("Can't load tile model \"%s\"", t.tile->model.c_str());
 
 			t.model->setPosition(x * 10.0, y * 10.0, 0.0);
+			t.model->setOrientation(0.0, 0.0, -(((int) t.orientation) * 90.0));
 		}
 	}
 }
