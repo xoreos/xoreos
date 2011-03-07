@@ -40,10 +40,13 @@ namespace NWN {
 Module::Module() : _hasModule(false), _hasPC(false), _currentTexturePack(-1),
 	_exit(false), _area(0) {
 
+	_ingameMenu = new InGameMainMenu;
 }
 
 Module::~Module() {
 	clear();
+
+	delete _ingameMenu;
 }
 
 void Module::clear() {
@@ -303,11 +306,9 @@ void Module::unloadArea() {
 }
 
 void Module::showMenu() {
-	InGameMainMenu menu;
-
-	menu.show();
-	int code = menu.run();
-	menu.hide();
+	_ingameMenu->show();
+	int code = _ingameMenu->run();
+	_ingameMenu->hide();
 
 	if (code == 2) {
 		_exit = true;
