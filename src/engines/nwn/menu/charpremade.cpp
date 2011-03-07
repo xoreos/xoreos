@@ -24,6 +24,8 @@
 #include "aurora/2dareg.h"
 #include "aurora/2dafile.h"
 
+#include "events/requests.h"
+
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/guiquad.h"
@@ -234,6 +236,8 @@ void CharPremadeMenu::initCharacterList() {
 	charList.unlock();
 
 	charList.select(0);
+
+	RequestMan.sync();
 }
 
 CharacterID CharPremadeMenu::getSelectedCharacter() {
