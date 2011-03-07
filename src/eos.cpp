@@ -71,13 +71,12 @@ int main(int argc, char **argv) {
 
 	atexit(deinit);
 
+	Engines::GameThread *gameThread = new Engines::GameThread;
 	try {
 		init();
 
-		Engines::GameThread gameThread;
-
-		gameThread.init(baseDir);
-		gameThread.run();
+		gameThread->init(baseDir);
+		gameThread->run();
 
 		EventMan.runMainLoop();
 	} catch (Common::Exception &e) {
@@ -86,6 +85,8 @@ int main(int argc, char **argv) {
 	}
 
 	status("Shutting down");
+
+	delete gameThread;
 
 	// Configs changed, we should save them
 	if (ConfigMan.changed()) {
