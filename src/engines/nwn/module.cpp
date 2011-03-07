@@ -149,9 +149,18 @@ void Module::run() {
 	_exit    = false;
 	_newArea = _ifo.getEntryArea();
 
-	// Roughly head position
 	CameraMan.reset();
-	CameraMan.setPosition(0.0, 2.0, 0.0);
+
+	float entryX, entryY, entryZ;
+	_ifo.getEntryPosition(entryX, entryY, entryZ);
+
+	// Roughly head position
+	CameraMan.setPosition(entryX, entryZ + 2.0, entryY);
+
+	float entryDirX, entryDirY;
+	_ifo.getEntryDirection(entryDirX, entryDirY);
+
+	CameraMan.setOrientation(entryDirX, entryDirY);
 
 	EventMan.enableKeyRepeat();
 
