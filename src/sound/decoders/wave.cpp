@@ -60,13 +60,14 @@ bool loadWAVFromStream(Common::SeekableReadStream &stream, int &size, int &rate,
 	// Next comes the "type" field of the fmt header. Some typical
 	// values for it:
 	// 1  -> uncompressed PCM
-	// 17 -> IMA ADPCM compressed WAVE
+	// 2  -> MS ADPCM compressed WAVE
+	// 17 -> MS IMA ADPCM compressed WAVE
 	// See <http://www.saettler.com/RIFFNEW/RIFFNEW.htm> for a more complete
 	// list of common WAVE compression formats...
-	uint16 type = stream.readUint16LE();	// == 1 for PCM data
+	uint16 type = stream.readUint16LE();
 	uint16 numChannels = stream.readUint16LE();	// 1 for mono, 2 for stereo
 	uint32 samplesPerSec = stream.readUint32LE();	// in Hz
-	uint32 avgBytesPerSec = stream.readUint32LE();	// == SampleRate * NumChannels * BitsPerSample/8
+	/* uint32 avgBytesPerSec = */ stream.readUint32LE();
 
 	uint16 blockAlign = stream.readUint16LE();	// == NumChannels * BitsPerSample/8
 	uint16 bitsPerSample = stream.readUint16LE();	// 8, 16 ...
@@ -94,12 +95,6 @@ bool loadWAVFromStream(Common::SeekableReadStream &stream, int &size, int &rate,
 		warning("getWavInfo: only PCM, MS ADPCM or IMA ADPCM data is supported (type %d)", type);
 		return false;
 	}
-
-	if (blockAlign != numChannels * bitsPerSample / 8 && type != 2)
-		warning("getWavInfo: blockAlign is invalid");
-
-	if (avgBytesPerSec != samplesPerSec * blockAlign && type != 2)
-		warning("getWavInfo: avgBytesPerSec is invalid");
 
 	// Prepare the return values.
 	rate = samplesPerSec;
