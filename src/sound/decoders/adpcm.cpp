@@ -212,74 +212,71 @@ class MSIma_ADPCMStream : public Ima_ADPCMStream {
 public:
 	MSIma_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
 		: Ima_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
+
 		if (blockAlign == 0)
-			error("ADPCMStream(): blockAlign isn't specified for MS IMA ADPCM");
+			error("MSIma_ADPCMStream(): blockAlign isn't specified");
+
+		if (blockAlign % (_channels * 4))
+			error("MSIma_ADPCMStream(): invalid blockAlign");
+
+		_samplesLeft[0] = 0;
+		_samplesLeft[1] = 0;
 	}
 
-	virtual int readBuffer(int16 *buffer, const int numSamples) {
-		if (_channels == 1)
-			return readBufferMSIMA1(buffer, numSamples);
-		else
-			return readBufferMSIMA2(buffer, numSamples);
+	int readBuffer(int16 *buffer, const int numSamples);
+
+	void reset() {
+		Ima_ADPCMStream::reset();
+		_samplesLeft[0] = 0;
+		_samplesLeft[1] = 0;
 	}
 
-	int readBufferMSIMA1(int16 *buffer, const int numSamples);
-	int readBufferMSIMA2(int16 *buffer, const int numSamples);
+private:
+	int16 _buffer[2][8];
+	int _samplesLeft[2];
 };
 
-int MSIma_ADPCMStream::readBufferMSIMA1(int16 *buffer, const int numSamples) {
-	int samples = 0;
-	byte data;
+int MSIma_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
+	// Need to write at least one sample per channel
+	assert((numSamples % _channels) == 0);
 
-	assert(numSamples % 2 == 0);
+	int samples = 0;
 
 	while (samples < numSamples && !_stream->eos() && _stream->pos() < _endpos) {
 		if (_blockPos[0] == _blockAlign) {
-			// read block header
-			_status.ima_ch[0].last = _stream->readSint16LE();
-			_status.ima_ch[0].stepIndex = _stream->readSint16LE();
-			_blockPos[0] = 4;
+			for (int i = 0; i < _channels; i++) {
+				// read block header
+				_status.ima_ch[i].last = _stream->readSint16LE();
+				_status.ima_ch[i].stepIndex = _stream->readSint16LE();
+			}
+
+			_blockPos[0] = _channels * 4;
 		}
 
-		for (; samples < numSamples && _blockPos[0] < _blockAlign && !_stream->eos() && _stream->pos() < _endpos; samples += 2) {
-			data = _stream->readByte();
-			_blockPos[0]++;
-			buffer[samples] = decodeIMA(data & 0x0f);
-			buffer[samples + 1] = decodeIMA((data >> 4) & 0x0f);
-		}
-	}
-	return samples;
-}
-
-
-// Microsoft as usual tries to implement it differently. This method
-// is used for stereo data.
-int MSIma_ADPCMStream::readBufferMSIMA2(int16 *buffer, const int numSamples) {
-	int samples;
-	uint32 data;
-	int nibble;
-	byte k;
-
-	// TODO: Currently this implementation only supports
-	// reading a multiple of 16 samples at once. We might
-	// consider changing that so it could read an arbitrary
-	// sample pair count.
-	assert(numSamples % 16 == 0);
-
-	for (samples = 0; samples < numSamples && !_stream->eos() && _stream->pos() < _endpos;) {
-		for (int channel = 0; channel < 2; channel++) {
-			data = _stream->readUint32LE();
-
-			for (nibble = 0; nibble < 8; nibble++) {
-				k = ((data & 0xf0000000) >> 28);
-				buffer[samples + channel + nibble * 2] = decodeIMA(k);
-				data <<= 4;
+		// Decode a set of samples
+		for (int i = 0; i < _channels; i++) {
+			for (int j = 0; j < 4; j++) {
+				byte data = _stream->readByte();
+				_blockPos[0]++;
+				_buffer[i][j * 2] = decodeIMA(data & 0x0f, i);
+				_buffer[i][j * 2 + 1] = decodeIMA((data >> 4) & 0x0f, i);
+				_samplesLeft[i] += 2;
 			}
 		}
-		samples += 16;
+
+		while (samples < numSamples && _samplesLeft[0] != 0) {
+			for (int i = 0; i < _channels; i++) {
+				buffer[samples] = _buffer[i][8 - _samplesLeft[i]];
+				_samplesLeft[i]--;
+			}
+
+			samples += _channels;
+		}
 	}
+
 	return samples;
 }
+
 
 static const int MSADPCMAdaptCoeff1[] = {
 	256, 512, 0, 192, 240, 460, 392
