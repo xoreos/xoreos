@@ -31,19 +31,12 @@ public:
 	virtual void setPosition(float x, float y, float z);
 	virtual void setBearing(float x, float y, float z);
 
-	virtual void moveWorld(float x, float y, float z);
-	virtual void turnWorld(float x, float y, float z);
-
 protected:
 	float _position[3];
 	float _bearing[3];
 
-	float _worldPosition[3];
-	float _worldOrientation[3];
-
-	virtual void changedPosition()    = 0;
-	virtual void changedBearing()     = 0;
-	virtual void changedOrientation() = 0;
+	virtual void changedPosition() = 0;
+	virtual void changedBearing()  = 0;
 };
 
 } // End of namespace KotOR

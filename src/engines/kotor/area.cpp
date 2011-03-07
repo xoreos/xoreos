@@ -295,6 +295,7 @@ void Area::hide() {
 		(*it)->hide();
 }
 
+/*
 void Area::setPosition(float x, float y, float z) {
 	// Set room positions
 	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
@@ -360,6 +361,7 @@ void Area::setOrientation(float x, float y, float z) {
 	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
 		(*it)->turnWorld(x, y, z);
 }
+*/
 
 } // End of namespace KotOR
 

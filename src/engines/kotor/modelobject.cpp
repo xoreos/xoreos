@@ -25,13 +25,6 @@ ModelObject::ModelObject() {
 	_bearing [0] = 0.0;
 	_bearing [1] = 0.0;
 	_bearing [2] = 0.0;
-
-	_worldPosition   [0] = 0.0;
-	_worldPosition   [1] = 0.0;
-	_worldPosition   [2] = 0.0;
-	_worldOrientation[0] = 0.0;
-	_worldOrientation[1] = 0.0;
-	_worldOrientation[2] = 0.0;
 }
 
 ModelObject::~ModelObject() {
@@ -51,22 +44,6 @@ void ModelObject::setBearing(float x, float y, float z) {
 	_bearing[2] = z;
 
 	changedBearing();
-}
-
-void ModelObject::moveWorld(float x, float y, float z) {
-	_worldPosition[0] = x;
-	_worldPosition[1] = y;
-	_worldPosition[2] = z;
-
-	changedPosition();
-}
-
-void ModelObject::turnWorld(float x, float y, float z) {
-	_worldOrientation[0] = x;
-	_worldOrientation[1] = y;
-	_worldOrientation[2] = z;
-
-	changedOrientation();
 }
 
 } // End of namespace KotOR

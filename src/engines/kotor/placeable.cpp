@@ -65,19 +65,12 @@ void Placeable::hide() {
 
 void Placeable::changedPosition() {
 	if (_model)
-		_model->setPosition(_position[0] + _worldPosition[0],
-		                    _position[1] + _worldPosition[1],
-		                    _position[2] + _worldPosition[2]);
+		_model->setPosition(_position[0], _position[1], _position[2]);
 }
 
 void Placeable::changedBearing() {
 	if (_model)
-		_model->setBearing(_bearing[0], _bearing[1], _bearing[2]);
-}
-
-void Placeable::changedOrientation() {
-	if (_model)
-		_model->setOrientation(_worldOrientation[0], _worldOrientation[1], _worldOrientation[2]);
+		_model->setBearing(_bearing[0], _bearing[2], -_bearing[1]);
 }
 
 void Placeable::loadModel() {

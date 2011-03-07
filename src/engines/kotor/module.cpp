@@ -25,6 +25,7 @@
 #include "aurora/gfffile.h"
 
 #include "graphics/graphics.h"
+#include "graphics/camera.h"
 
 static const uint32 kIFOID = MKID_BE('IFO ');
 
@@ -35,9 +36,6 @@ namespace KotOR {
 Module::Module() : _startX(0.0), _startY(0.0), _startZ(0.0),
 	_startDirX(0.0), _startDirY(0.0), _area(0) {
 
-	_orientation[0] = 0.0;
-	_orientation[1] = 0.0;
-	_orientation[2] = 0.0;
 }
 
 Module::~Module() {
@@ -107,8 +105,6 @@ void Module::enter() {
 
 	GfxMan.lockFrame();
 	_area->show();
-	_area->setPosition(_position[0], _position[1], _position[2]);
-	_area->setOrientation(_orientation[0], _orientation[1], _orientation[2]);
 	GfxMan.unlockFrame();
 }
 
@@ -121,74 +117,12 @@ void Module::leave() {
 }
 
 void Module::reset() {
-	_position[0] = -_startX;
-	_position[1] = -_startY;
-	_position[2] = -_startZ;
+	CameraMan.reset();
 
-	Common::vector2orientation(_startDirX, _startDirY, _orientation[0], _orientation[1], _orientation[2]);
-}
+	// Roughly head position
+	CameraMan.setPosition(_startX, _startZ + 1.8, _startY);
 
-const float *Module::getPosition() const {
-	return _position;
-}
-
-const float *Module::getOrientation() const {
-	return _orientation;
-}
-
-void Module::setPosition(float x, float y, float z) {
-	assert(_area);
-
-	_position[0] = x;
-	_position[1] = y;
-	_position[2] = z;
-
-	GfxMan.lockFrame();
-	_area->setPosition(_position[0], _position[1], _position[2]);
-	GfxMan.unlockFrame();
-}
-
-void Module::setOrientation(float x, float y, float z) {
-	assert(_area);
-
-	_orientation[0] = x;
-	_orientation[1] = y;
-	_orientation[2] = z;
-
-	// Clamp
-	for (int i = 0; i < 3; i++) {
-		while (_orientation[i] >  360)
-			_orientation[i] -= 360;
-		while (_orientation[i] < -360)
-			_orientation[i] += 360;
-	}
-
-	GfxMan.lockFrame();
-	_area->setOrientation(_orientation[0], _orientation[1], _orientation[2]);
-	GfxMan.unlockFrame();
-}
-
-void Module::turn(float x, float y, float z) {
-	setOrientation(_orientation[0] + x, _orientation[1] + y, _orientation[2] + z);
-}
-
-void Module::move(float x, float y, float z) {
-	setPosition(_position[0] - x, _position[1] - y, _position[2] - z);
-}
-
-void Module::move(float n) {
-	float x = n *  sin(Common::deg2rad(_orientation[1]));
-	float y = n *  cos(Common::deg2rad(_orientation[1])) * cos(Common::deg2rad(_orientation[0]));
-	float z = n * -sin(Common::deg2rad(_orientation[0]));
-
-	move(x, y, z);
-}
-
-void Module::strafe(float n) {
-	float x = n * sin(Common::deg2rad(_orientation[1] + 90.0));
-	float y = n * cos(Common::deg2rad(_orientation[1] + 90.0));
-
-	move(x, y, 0.0);
+	CameraMan.setOrientationVector(_startDirX, _startDirY);
 }
 
 } // End of namespace KotOR

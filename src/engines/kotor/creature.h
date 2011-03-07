@@ -61,7 +61,6 @@ private:
 
 	void changedPosition();
 	void changedBearing();
-	void changedOrientation();
 
 	void loadModel(const Common::UString &name);
 };

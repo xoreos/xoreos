@@ -83,19 +83,14 @@ void Creature::hide() {
 
 void Creature::changedPosition() {
 	for (std::list<Part *>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		(*part)->model->setPosition(_position[0] + _worldPosition[0] + (*part)->position[0],
-		                            _position[1] + _worldPosition[1] + (*part)->position[1],
-		                            _position[2] + _worldPosition[2] + (*part)->position[2]);
+		(*part)->model->setPosition(_position[0] + (*part)->position[0],
+		                            _position[1] + (*part)->position[1],
+		                            _position[2] + (*part)->position[2]);
 }
 
 void Creature::changedBearing() {
 	for (std::list<Part *>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		(*part)->model->setBearing(_bearing[0], _bearing[1], _bearing[2]);
-}
-
-void Creature::changedOrientation() {
-	for (std::list<Part *>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		(*part)->model->setOrientation(_worldOrientation[0], _worldOrientation[1], _worldOrientation[2]);
+		(*part)->model->setBearing(_bearing[0], _bearing[2], -_bearing[1]);
 }
 
 void Creature::loadModel(const Common::UString &name) {

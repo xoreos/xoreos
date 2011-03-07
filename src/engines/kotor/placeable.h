@@ -47,7 +47,6 @@ private:
 
 	void changedPosition();
 	void changedBearing();
-	void changedOrientation();
 
 	void loadModel();
 };

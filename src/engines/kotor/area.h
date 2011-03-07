@@ -46,9 +46,6 @@ public:
 	void show(); ///< Render the area.
 	void hide(); ///< Don't render the area.
 
-	void setPosition(float x, float y, float z);
-	void setOrientation(float x, float y, float z);
-
 private:
 	/** A room within the area. */
 	struct Room {

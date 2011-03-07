@@ -26,6 +26,8 @@
 #include "common/stream.h"
 #include "common/configman.h"
 
+#include "graphics/camera.h"
+
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/fps.h"
@@ -129,48 +131,50 @@ void KotOREngine::run(const Common::UString &target) {
 		while (EventMan.pollEvent(event)) {
 			if (event.type == Events::kEventKeyDown) {
 				if      (event.key.keysym.sym == SDLK_UP)
-					tarisCantina->move  ( 0.5);
+					CameraMan.move( 0.5);
 				else if (event.key.keysym.sym == SDLK_DOWN)
-					tarisCantina->move  (-0.5);
-				else if (event.key.keysym.sym == SDLK_LEFT)
-					tarisCantina->turn  ( 0.0, -5.0,  0.0);
+					CameraMan.move(-0.5);
 				else if (event.key.keysym.sym == SDLK_RIGHT)
-					tarisCantina->turn  ( 0.0,  5.0,  0.0);
-				else if (event.key.keysym.sym == SDLK_PAGEUP)
-					tarisCantina->turn  (-5.0,  0.0,  0.0);
-				else if (event.key.keysym.sym == SDLK_PAGEDOWN)
-					tarisCantina->turn  ( 5.0,  0.0,  0.0);
-				else if (event.key.keysym.sym == SDLK_INSERT)
-					tarisCantina->move  ( 0.0,  0.0,  0.5);
-				else if (event.key.keysym.sym == SDLK_DELETE)
-					tarisCantina->move  ( 0.0,  0.0, -0.5);
+					CameraMan.turn( 0.0,  5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_LEFT)
+					CameraMan.turn( 0.0, -5.0, 0.0);
 				else if (event.key.keysym.sym == SDLK_w)
-					tarisCantina->move  ( 0.5);
+					CameraMan.move( 0.5);
 				else if (event.key.keysym.sym == SDLK_s)
-					tarisCantina->move  (-0.5);
-				else if (event.key.keysym.sym == SDLK_a)
-					tarisCantina->strafe(-0.5);
+					CameraMan.move(-0.5);
 				else if (event.key.keysym.sym == SDLK_d)
-					tarisCantina->strafe( 0.5);
-				else if (event.key.keysym.sym == SDLK_q)
-					tarisCantina->turn  ( 0.0, -5.0,  0.0);
+					CameraMan.turn( 0.0,  5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_a)
+					CameraMan.turn( 0.0, -5.0, 0.0);
 				else if (event.key.keysym.sym == SDLK_e)
-					tarisCantina->turn  ( 0.0,  5.0,  0.0);
+					CameraMan.strafe( 0.5);
+				else if (event.key.keysym.sym == SDLK_q)
+					CameraMan.strafe(-0.5);
+				else if (event.key.keysym.sym == SDLK_INSERT)
+					CameraMan.move(0.0,  0.5, 0.0);
+				else if (event.key.keysym.sym == SDLK_DELETE)
+					CameraMan.move(0.0, -0.5, 0.0);
+				else if (event.key.keysym.sym == SDLK_PAGEUP)
+					CameraMan.turn( 5.0,  0.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_PAGEDOWN)
+					CameraMan.turn(-5.0,  0.0, 0.0);
 				else if (event.key.keysym.sym == SDLK_END) {
-					const float *orient = tarisCantina->getOrientation();
+					const float *orient = CameraMan.getOrientation();
 
-					tarisCantina->setOrientation(0.0, orient[1], orient[2]);
+					CameraMan.setOrientation(0.0, orient[1], orient[2]);
 				} else if (event.key.keysym.sym == SDLK_t) {
-					const float *pos    = tarisCantina->getPosition();
-					const float *orient = tarisCantina->getOrientation();
+					const float *pos = CameraMan.getPosition();
+					const float *ort = CameraMan.getOrientation();
 
-					warning("%+8.3f %+8.3f %+8.3f; %+8.3f %+8.3f %+8.3f", pos[0], pos[1], pos[2], orient[0], orient[1], orient[2]);
+					warning("%f, %f, %f -- %f, %f, %f", pos[0], pos[1], pos[2], ort[0], ort[1], ort[2]);
 				}
 			}
 		}
 
 		EventMan.delay(10);
 	}
+
+	EventMan.enableKeyRepeat(0);
 
 	tarisCantina->leave();
 
