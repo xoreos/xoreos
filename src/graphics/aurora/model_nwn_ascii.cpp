@@ -79,12 +79,12 @@ void Model_NWN_ASCII::load(Common::SeekableReadStream &mdl) {
 	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenize->getTokens(*ctx.mdl, line);
+		int count = _tokenize->getTokens(*ctx.mdl, line, 3);
 
 		_tokenize->nextChunk(*ctx.mdl);
 
 		// Ignore empty lines and comments
-		if ((count == 0) || line.empty() || line[0].empty() || (*line[0].begin() == '#'))
+		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
 		line[0].tolower();
@@ -95,7 +95,7 @@ void Model_NWN_ASCII::load(Common::SeekableReadStream &mdl) {
 			if (line[1] != _name)
 				throw Common::Exception("setsupermodel with an invalid name");
 
-			if (line[2] != "NULL")
+			if (!line[2].empty() && (line[2] != "NULL"))
 				warning("TODO: setsupermodel");
 
 			_superModel = 0;
@@ -150,7 +150,7 @@ void Model_NWN_ASCII::readNode(ParserContext &ctx, const Common::UString &type, 
 	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenize->getTokens(*ctx.mdl, line);
+		int count = _tokenize->getTokens(*ctx.mdl, line, 5);
 
 		_tokenize->nextChunk(*ctx.mdl);
 
@@ -285,7 +285,7 @@ void Model_NWN_ASCII::readVertices(ParserContext &ctx, std::vector<float> &verti
 	while (n > 0) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenize->getTokens(*ctx.mdl, line);
+		int count = _tokenize->getTokens(*ctx.mdl, line, 3);
 
 		_tokenize->nextChunk(*ctx.mdl);
 
@@ -310,7 +310,7 @@ void Model_NWN_ASCII::readFaces(ParserContext &ctx, int n) {
 	for (int i = 0; i < n; ) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenize->getTokens(*ctx.mdl, line);
+		int count = _tokenize->getTokens(*ctx.mdl, line, 8);
 
 		_tokenize->nextChunk(*ctx.mdl);
 
@@ -319,14 +319,14 @@ void Model_NWN_ASCII::readFaces(ParserContext &ctx, int n) {
 			continue;
 
 		line[0].parse(ctx.mesh->vertIndices[i * 3 + 0]);
-		line[0].parse(ctx.mesh->vertIndices[i * 3 + 1]);
-		line[0].parse(ctx.mesh->vertIndices[i * 3 + 2]);
+		line[1].parse(ctx.mesh->vertIndices[i * 3 + 1]);
+		line[2].parse(ctx.mesh->vertIndices[i * 3 + 2]);
 
 		line[3].parse(ctx.mesh->smoothGroup[i]);
 
-		line[0].parse(ctx.mesh->tvertIndices[i * 3 + 0]);
-		line[0].parse(ctx.mesh->tvertIndices[i * 3 + 1]);
-		line[0].parse(ctx.mesh->tvertIndices[i * 3 + 2]);
+		line[4].parse(ctx.mesh->tvertIndices[i * 3 + 0]);
+		line[5].parse(ctx.mesh->tvertIndices[i * 3 + 1]);
+		line[6].parse(ctx.mesh->tvertIndices[i * 3 + 2]);
 
 		line[7].parse(ctx.mesh->material[i]);
 
@@ -340,7 +340,7 @@ void Model_NWN_ASCII::readConstraints(ParserContext &ctx, std::vector<float> &co
 	for (int i = 0; i < n; ) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenize->getTokens(*ctx.mdl, line);
+		int count = _tokenize->getTokens(*ctx.mdl, line, 1);
 
 		_tokenize->nextChunk(*ctx.mdl);
 
@@ -356,7 +356,7 @@ void Model_NWN_ASCII::readWeights(ParserContext &ctx, int n) {
 	for (int i = 0; i < n; ) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenize->getTokens(*ctx.mdl, line);
+		int count = _tokenize->getTokens(*ctx.mdl, line, 1);
 
 		_tokenize->nextChunk(*ctx.mdl);
 
@@ -374,7 +374,7 @@ void Model_NWN_ASCII::readAnim(ParserContext &ctx) {
 	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenize->getTokens(*ctx.mdl, line);
+		int count = _tokenize->getTokens(*ctx.mdl, line, 1);
 
 		_tokenize->nextChunk(*ctx.mdl);
 
