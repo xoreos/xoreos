@@ -88,9 +88,9 @@ void Creature::changedPosition() {
 		                            _position[2] + (*part)->position[2]);
 }
 
-void Creature::changedBearing() {
+void Creature::changedOrientation() {
 	for (std::list<Part *>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		(*part)->model->setBearing(_bearing[0], _bearing[2], -_bearing[1]);
+		(*part)->model->setOrientation(_orientation[0], _orientation[2], -_orientation[1]);
 }
 
 void Creature::loadModel(const Common::UString &name) {

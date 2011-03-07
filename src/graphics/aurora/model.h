@@ -60,8 +60,6 @@ public:
 	void setPosition(float x, float y, float z);
 	/** Set the current orientation of the model. */
 	void setOrientation(float x, float y, float z);
-	/** Set the current bearing of the model. */
-	void setBearing(float x, float y, float z);
 
 	/** Does the named node exist in the current state? */
 	bool hasNode(const Common::UString &node) const;
@@ -230,8 +228,7 @@ protected:
 	float  _fadeStep;  ///< Fading steps.
 
 	float _position[3];    ///< Model's position.
-	float _orientation[3]; ///< Model's rotation around the world center.
-	float _bearing[3];     ///< Model's rotation around its center.
+	float _orientation[3]; ///< Model's rotation.
 
 	Common::BoundingBox _boundBox; ///< Model's bounding box.
 

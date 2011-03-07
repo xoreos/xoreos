@@ -155,7 +155,7 @@ void Area::loadPlaceable(const Aurora::GFFStruct &placeable) {
 
 		place->load(resref);
 		place->setPosition(x, y, z);
-		place->setBearing(0.0, Common::rad2deg(bearing), 0.0);
+		place->setOrientation(0.0, Common::rad2deg(bearing), 0.0);
 
 	} catch (Common::Exception &e) {
 		delete place;
@@ -188,10 +188,11 @@ void Area::loadCreature(const Aurora::GFFStruct &creature) {
 		creat->load(resref);
 		creat->setPosition(x, y, z);
 
-		float bearing[3];
-		Common::vector2orientation(-bearingX, -bearingY, bearing[0], bearing[1], bearing[2]);
+		float orientation[3];
+		Common::vector2orientation(-bearingX, -bearingY,
+		                           orientation[0], orientation[1], orientation[2]);
 
-		creat->setBearing(bearing[0], bearing[1], bearing[2]);
+		creat->setOrientation(orientation[0], orientation[1], orientation[2]);
 
 	} catch (Common::Exception &e) {
 		delete creat;

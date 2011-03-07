@@ -68,9 +68,9 @@ void Placeable::changedPosition() {
 		_model->setPosition(_position[0], _position[1], _position[2]);
 }
 
-void Placeable::changedBearing() {
+void Placeable::changedOrientation() {
 	if (_model)
-		_model->setBearing(_bearing[0], _bearing[2], -_bearing[1]);
+		_model->setOrientation(_orientation[0], _orientation[2], -_orientation[1]);
 }
 
 void Placeable::loadModel() {

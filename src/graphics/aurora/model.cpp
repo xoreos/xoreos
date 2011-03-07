@@ -59,9 +59,6 @@ Model::Model(ModelType type) : Renderable(GfxMan.getRenderableQueue((Graphics::R
 	_orientation[0] = 0.0;
 	_orientation[1] = 0.0;
 	_orientation[2] = 0.0;
-	_bearing    [0] = 0.0;
-	_bearing    [1] = 0.0;
-	_bearing    [2] = 0.0;
 }
 
 Model::~Model() {
@@ -244,12 +241,6 @@ void Model::setOrientation(float x, float y, float z) {
 	_orientation[2] = z;
 }
 
-void Model::setBearing(float x, float y, float z) {
-	_bearing[0] = x;
-	_bearing[1] = y;
-	_bearing[2] = z;
-}
-
 bool Model::hasNode(const Common::UString &node) const {
 	if (!_currentState)
 		return false;
@@ -341,9 +332,9 @@ void Model::transformBoundBox(Common::TransformationMatrix &world,
 	object = _boundBox;
 
 	// Apply rotation around the object's center
-	object.rotate( _bearing[0], 1.0, 0.0, 0.0);
-	object.rotate( _bearing[1], 0.0, 1.0, 0.0);
-	object.rotate(-_bearing[2], 0.0, 0.0, 1.0);
+	object.rotate( _orientation[0], 1.0, 0.0, 0.0);
+	object.rotate( _orientation[1], 0.0, 1.0, 0.0);
+	object.rotate(-_orientation[2], 0.0, 0.0, 1.0);
 }
 
 bool Model::isIn(float x, float y) const {
@@ -443,9 +434,9 @@ void Model::render() {
 	glTranslatef(_position[0], _position[1], _position[2]);
 
 	// Apply rotation around the object's center
-	glRotatef( _bearing[0], 1.0, 0.0, 0.0);
-	glRotatef( _bearing[1], 0.0, 1.0, 0.0);
-	glRotatef(-_bearing[2], 0.0, 0.0, 1.0);
+	glRotatef( _orientation[0], 1.0, 0.0, 0.0);
+	glRotatef( _orientation[1], 0.0, 1.0, 0.0);
+	glRotatef(-_orientation[2], 0.0, 0.0, 1.0);
 
 	if (_fade) {
 		// Apply current fade value

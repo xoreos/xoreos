@@ -46,7 +46,7 @@ private:
 	Graphics::Aurora::Model *_model;
 
 	void changedPosition();
-	void changedBearing();
+	void changedOrientation();
 
 	void loadModel();
 };

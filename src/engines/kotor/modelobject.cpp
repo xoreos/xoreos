@@ -19,12 +19,12 @@ namespace Engines {
 namespace KotOR {
 
 ModelObject::ModelObject() {
-	_position[0] = 0.0;
-	_position[1] = 0.0;
-	_position[2] = 0.0;
-	_bearing [0] = 0.0;
-	_bearing [1] = 0.0;
-	_bearing [2] = 0.0;
+	_position   [0] = 0.0;
+	_position   [1] = 0.0;
+	_position   [2] = 0.0;
+	_orientation[0] = 0.0;
+	_orientation[1] = 0.0;
+	_orientation[2] = 0.0;
 }
 
 ModelObject::~ModelObject() {
@@ -38,12 +38,12 @@ void ModelObject::setPosition(float x, float y, float z) {
 	changedPosition();
 }
 
-void ModelObject::setBearing(float x, float y, float z) {
-	_bearing[0] = x;
-	_bearing[1] = y;
-	_bearing[2] = z;
+void ModelObject::setOrientation(float x, float y, float z) {
+	_orientation[0] = x;
+	_orientation[1] = y;
+	_orientation[2] = z;
 
-	changedBearing();
+	changedOrientation();
 }
 
 } // End of namespace KotOR
