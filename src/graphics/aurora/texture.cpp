@@ -77,10 +77,6 @@ Texture::~Texture() {
 }
 
 TextureID Texture::getID() const {
-	// TODO: Just for debugging, take it out eventually :P
-	if (_textureID == 0)
-		throw Common::Exception("Non-existing texture ID");
-
 	return _textureID;
 }
 

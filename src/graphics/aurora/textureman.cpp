@@ -187,7 +187,11 @@ void TextureManager::set(const TextureHandle &handle) {
 		return;
 	}
 
-	glBindTexture(GL_TEXTURE_2D, handle.it->second->texture->getID());
+	TextureID id = handle.it->second->texture->getID();
+	if (id == 0)
+		warning("Empty texture ID for texture \"%s\"", handle.it->first.c_str());
+
+	glBindTexture(GL_TEXTURE_2D, id);
 }
 
 static GLenum texture[32] = {

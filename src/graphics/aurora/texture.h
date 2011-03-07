@@ -41,9 +41,6 @@ public:
 	Texture(ImageDecoder *image);
 	~Texture();
 
-	/** Return the ID of the texture for use with OpenGL. */
-	TextureID getID() const;
-
 	const uint32 getWidth()  const;
 	const uint32 getHeight() const;
 
@@ -72,6 +69,10 @@ private:
 
 	void load(const Common::UString &name);
 	void load(ImageDecoder *image);
+
+	TextureID getID() const;
+
+	friend class TextureManager;
 };
 
 } // End of namespace Aurora
