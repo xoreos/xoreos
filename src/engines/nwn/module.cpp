@@ -20,6 +20,8 @@
 
 #include "aurora/2dareg.h"
 
+#include "graphics/camera.h"
+
 #include "graphics/aurora/textureman.h"
 
 #include "engines/aurora/util.h"
@@ -144,6 +146,12 @@ void Module::run() {
 	_exit    = false;
 	_newArea = _ifo.getEntryArea();
 
+	// Roughly head position
+	CameraMan.reset();
+	CameraMan.setPosition(0.0, 2.0, 0.0);
+
+	EventMan.enableKeyRepeat();
+
 	try {
 
 		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
@@ -152,8 +160,41 @@ void Module::run() {
 			Events::Event event;
 			while (EventMan.pollEvent(event)) {
 				if (event.type == Events::kEventKeyDown) {
-					if (event.key.keysym.sym == SDLK_ESCAPE)
+					if      (event.key.keysym.sym == SDLK_ESCAPE)
 						showMenu();
+					else if (event.key.keysym.sym == SDLK_UP)
+						CameraMan.move( 0.5);
+					else if (event.key.keysym.sym == SDLK_DOWN)
+						CameraMan.move(-0.5);
+					else if (event.key.keysym.sym == SDLK_RIGHT)
+						CameraMan.turn( 0.0,  5.0, 0.0);
+					else if (event.key.keysym.sym == SDLK_LEFT)
+						CameraMan.turn( 0.0, -5.0, 0.0);
+					else if (event.key.keysym.sym == SDLK_w)
+						CameraMan.move( 0.5);
+					else if (event.key.keysym.sym == SDLK_s)
+						CameraMan.move(-0.5);
+					else if (event.key.keysym.sym == SDLK_d)
+						CameraMan.turn( 0.0,  5.0, 0.0);
+					else if (event.key.keysym.sym == SDLK_a)
+						CameraMan.turn( 0.0, -5.0, 0.0);
+					else if (event.key.keysym.sym == SDLK_e)
+						CameraMan.strafe( 0.5);
+					else if (event.key.keysym.sym == SDLK_q)
+						CameraMan.strafe(-0.5);
+					else if (event.key.keysym.sym == SDLK_INSERT)
+						CameraMan.move(0.0,  0.5, 0.0);
+					else if (event.key.keysym.sym == SDLK_DELETE)
+						CameraMan.move(0.0, -0.5, 0.0);
+					else if (event.key.keysym.sym == SDLK_PAGEUP)
+						CameraMan.turn( 5.0,  0.0, 0.0);
+					else if (event.key.keysym.sym == SDLK_PAGEDOWN)
+						CameraMan.turn(-5.0,  0.0, 0.0);
+					else if (event.key.keysym.sym == SDLK_END) {
+						const float *orient = CameraMan.getOrientation();
+
+						CameraMan.setOrientation(0.0, orient[1], orient[2]);
+					}
 				}
 			}
 
@@ -164,6 +205,8 @@ void Module::run() {
 		e.add("Failed running module \"%s\"", _ifo.getName().getFirstString().c_str());
 		printException(e, "WARNING: ");
 	}
+
+	EventMan.enableKeyRepeat(0);
 }
 
 void Module::unload() {
