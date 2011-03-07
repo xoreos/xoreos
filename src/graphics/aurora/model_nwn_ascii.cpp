@@ -84,7 +84,7 @@ void Model_NWN_ASCII::load(Common::SeekableReadStream &mdl) {
 		_tokenize->nextChunk(*ctx.mdl);
 
 		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
+		if ((count == 0) || line.empty() || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
 		line[0].tolower();
