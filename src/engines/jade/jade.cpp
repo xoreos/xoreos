@@ -22,6 +22,7 @@
 #include "common/filepath.h"
 #include "common/configman.h"
 
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/fps.h"
@@ -76,17 +77,25 @@ void JadeEngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
+	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
 
 	status("Successfully initialized the engine");
 
+	CursorMan.hideCursor();
+	CursorMan.set("default", false);
+
 	playVideo("black");
 	playVideo("publisher");
 	playVideo("bwlogo");
 	playVideo("graymatr");
 	playVideo("attract");
+	if (EventMan.quitRequested())
+		return;
+
+	CursorMan.showCursor();
 
 	playSound("musicbank00046", Sound::kSoundTypeMusic, true);
 
@@ -203,6 +212,10 @@ void JadeEngine::init() {
 	indexOptionalDirectory("override", 0, 0, 30);
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
+}
+
+void JadeEngine::initCursors() {
+	CursorMan.add("ui_cursor32", "default", false);
 }
 
 } // End of namespace Jade
