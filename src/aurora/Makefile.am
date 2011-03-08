@@ -24,7 +24,8 @@ noinst_HEADERS = types.h \
                  gffstructs.h \
                  ncsscript.h \
                  lytfile.h \
-                 visfile.h
+                 visfile.h \
+                 pefile.h
 
 libaurora_la_SOURCES = error.cpp \
                        util.cpp \
@@ -47,4 +48,5 @@ libaurora_la_SOURCES = error.cpp \
                        gffstructs.cpp \
                        ncsscript.cpp \
                        lytfile.cpp \
-                       visfile.cpp
+                       visfile.cpp \
+                       pefile.cpp
