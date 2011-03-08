@@ -339,7 +339,7 @@ UString FoxPro::getString(const Record &record, uint32 field) const {
 	if (f.type != kTypeString)
 		throw Exception("Field is not of string type ('%c')", f.type);
 
-	Common::MemoryReadStream stream(record.fields[field], f.size);
+	MemoryReadStream stream(record.fields[field], f.size);
 
 	UString str;
 	str.readLatin9(stream, f.size);
@@ -695,7 +695,7 @@ uint32 FoxPro::addRecord() {
 	return _records.size() - 1;
 }
 
-void FoxPro::setString(uint32 record, uint32 field, const Common::UString &value) {
+void FoxPro::setString(uint32 record, uint32 field, const UString &value) {
 	assert((record < _records.size()) && (field < _fields.size()));
 
 	Record &r = _records[record];

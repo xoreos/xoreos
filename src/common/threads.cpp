@@ -40,7 +40,7 @@ bool isMainThread() {
 
 void enforceMainThread() {
 	if (!isMainThread())
-		throw Common::Exception("Unsafe function called in non-main thread");
+		throw Exception("Unsafe function called in non-main thread");
 }
 
 } // End of namespace Common

@@ -84,7 +84,7 @@ void ConfigManager::clearCommandline() {
 }
 
 bool ConfigManager::fileExists() const {
-	return Common::File::exists(getConfigFile());
+	return File::exists(getConfigFile());
 }
 
 bool ConfigManager::changed() const {
@@ -96,13 +96,13 @@ bool ConfigManager::load() {
 
 	// Check that the config file actually exists.
 	UString file = getConfigFile();
-	if (!Common::File::exists(file))
+	if (!File::exists(file))
 		return false;
 
 	try {
 
 		// Open and load the config
-		Common::File config;
+		File config;
 		if (!config.open(file))
 			throw Exception(kOpenError);
 
@@ -112,7 +112,7 @@ bool ConfigManager::load() {
 		// Get the application domain
 		_domainApp = _config->addDomain(kDomainApp);
 
-	} catch (Common::Exception &e) {
+	} catch (Exception &e) {
 		e.add("Failed loading config file \"%s\"", file.c_str());
 		printException(e, "WARNING: ");
 		return false;
@@ -130,13 +130,13 @@ bool ConfigManager::save() {
 	try {
 
 		// Open and save the config
-		Common::DumpFile config;
+		DumpFile config;
 		if (!config.open(file))
 			throw Exception(kOpenError);
 
 		_config->save(config);
 
-	} catch (Common::Exception &e) {
+	} catch (Exception &e) {
 		e.add("Failed saving config file \"%s\"", file.c_str());
 		printException(e, "WARNING: ");
 		return false;
@@ -399,7 +399,7 @@ UString ConfigManager::getConfigFile() const {
 // TODO: For easier portability, stuff like that should probably
 //       be put somewhere collectively...
 UString ConfigManager::getDefaultConfigFile() {
-	Common::UString file;
+	UString file;
 
 #if defined(WIN32)
 	#warning getDefaultConfigFile WIN32 needs testing
