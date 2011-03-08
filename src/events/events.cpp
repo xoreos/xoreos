@@ -23,6 +23,7 @@
 
 #include "events/events.h"
 #include "events/requests.h"
+#include "events/notifications.h"
 
 #include "graphics/types.h"
 #include "graphics/graphics.h"
@@ -57,6 +58,7 @@ void EventsManager::init() {
 		throw Common::Exception("The GraphicsManager needs to be initialized first");
 
 	RequestMan.init();
+	NotificationMan.init();
 
 	_fullQueue = false;
 	_queueSize = 0;

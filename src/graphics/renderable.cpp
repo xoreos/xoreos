@@ -44,9 +44,6 @@ bool Renderable::isIn(float x, float y, float z) const {
 	return false;
 }
 
-void Renderable::changedResolution(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-}
-
 void Renderable::setCurrentDistance() {
 	GLfloat modelView[16];
 

@@ -38,10 +38,7 @@ FPS::~FPS() {
 }
 
 void FPS::init() {
-	float posX = -(GfxMan.getScreenWidth()  / 2.0);
-	float posY =  (GfxMan.getScreenHeight() / 2.0) - getHeight();
-
-	setPosition(posX, posY);
+	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
 }
 
 void FPS::render() {
@@ -56,7 +53,7 @@ void FPS::render() {
 	Text::render();
 }
 
-void FPS::changedResolution(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+void FPS::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
 	float posX = -(newWidth  / 2.0);
 	float posY =  (newHeight / 2.0) - getHeight();
 

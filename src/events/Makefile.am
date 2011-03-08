@@ -5,8 +5,11 @@ noinst_LTLIBRARIES = libevents.la
 noinst_HEADERS = events.h \
                  types.h \
                  requesttypes.h \
-                 requests.h
+                 requests.h \
+                 notifyable.h \
+                 notifications.h
 
 libevents_la_SOURCES = events.cpp \
                        requesttypes.cpp \
-                       requests.cpp
+                       requests.cpp \
+                       notifications.cpp

@@ -15,6 +15,8 @@
 #ifndef GRAPHICS_AURORA_FPS_H
 #define GRAPHICS_AURORA_FPST_H
 
+#include "events/notifyable.h"
+
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/text.h"
 
@@ -23,7 +25,7 @@ namespace Graphics {
 namespace Aurora {
 
 /** An autonomous FPS display. */
-class FPS : public Text {
+class FPS : public Text, public Events::Notifyable {
 public:
 	FPS(const FontHandle &font);
 	FPS(const FontHandle &font, float r, float g, float b, float a);
@@ -31,12 +33,13 @@ public:
 
 	// Renderable
 	void render();
-	void changedResolution(int oldWidth, int oldHeight, int newWidth, int newHeight);
 
 private:
 	uint32 _fps;
 
 	void init();
+
+	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
 };
 
 } // End of namespace Aurora

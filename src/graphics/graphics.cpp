@@ -23,6 +23,7 @@
 
 #include "events/requests.h"
 #include "events/events.h"
+#include "events/notifications.h"
 
 #include "graphics/graphics.h"
 #include "graphics/util.h"
@@ -829,10 +830,9 @@ void GraphicsManager::setScreenSize(int width, int height) {
 
 	rebuildContext();
 
+	// Let the NotificationManager notify the Notifyables that the resolution changed
 	if ((oldWidth != _screen->w) || (oldHeight != _screen->h))
-		// Tell the gui front objects that the resolution changed
-		for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj)
-			(*obj)->changedResolution(oldWidth, oldHeight, _screen->w, _screen->h);
+		NotificationMan.resized(oldWidth, oldHeight, _screen->w, _screen->h);
 }
 
 Texture::Queue &GraphicsManager::getTextureQueue() {
