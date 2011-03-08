@@ -27,6 +27,7 @@
 
 #include "graphics/camera.h"
 
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/fps.h"
 
@@ -77,6 +78,7 @@ void KotOR2Engine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
+	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
@@ -109,6 +111,9 @@ void KotOR2Engine::run(const Common::UString &target) {
 	EventMan.enableKeyRepeat();
 
 	status("Entering event loop");
+
+	// Show a cursor
+	CursorMan.set("default", false);
 
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
@@ -195,12 +200,49 @@ void KotOR2Engine::init() {
 	status("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"      , 0, -1, 23);
 
+	status("Indexing Windows-specific resources");
+	indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor2.exe", 24);
+
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
 
 	registerModelLoader(new KotOR2ModelLoader);
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
+}
+
+void KotOR2Engine::initCursors() {
+	CursorMan.add("gui_mp_defaultd" , "default"  , true);
+	CursorMan.add("gui_mp_defaultu" , "default"  , false);
+
+	CursorMan.add("gui_mp_bashd"    , "bash"     , true);
+	CursorMan.add("gui_mp_bashu"    , "bash"     , false);
+	CursorMan.add("gui_mp_bashdp"   , "bash+"    , true);
+	CursorMan.add("gui_mp_bashup"   , "bash+"    , false);
+	CursorMan.add("gui_mp_dismined" , "dismine"  , true);
+	CursorMan.add("gui_mp_dismineu" , "dismine"  , false);
+	CursorMan.add("gui_mp_disminedp", "dismine+" , true);
+	CursorMan.add("gui_mp_dismineup", "dismine+" , false);
+	CursorMan.add("gui_mp_doord"    , "door"     , true);
+	CursorMan.add("gui_mp_dooru"    , "door"     , false);
+	CursorMan.add("gui_mp_doordp"   , "door+"    , true);
+	CursorMan.add("gui_mp_doorup"   , "door+"    , false);
+	CursorMan.add("gui_mp_invalidd" , "invalid"  , true);
+	CursorMan.add("gui_mp_invalidu" , "invalid"  , false);
+	CursorMan.add("gui_mp_killd"    , "kill"     , true);
+	CursorMan.add("gui_mp_killu"    , "kill"     , false);
+	CursorMan.add("gui_mp_recmined" , "recmine"  , true);
+	CursorMan.add("gui_mp_recmineu" , "recmine"  , false);
+	CursorMan.add("gui_mp_recminedp", "recmine+" , true);
+	CursorMan.add("gui_mp_recmineup", "recmine+" , false);
+	CursorMan.add("gui_mp_selectd"  , "select"   , true);
+	CursorMan.add("gui_mp_selectu"  , "select"   , false);
+	CursorMan.add("gui_mp_talkd"    , "talk"     , true);
+	CursorMan.add("gui_mp_talku"    , "talk"     , false);
+	CursorMan.add("gui_mp_used"     , "use"      , true);
+	CursorMan.add("gui_mp_useu"     , "use"      , false);
+	CursorMan.add("gui_mp_usedp"    , "use+"     , true);
+	CursorMan.add("gui_mp_useup"    , "use+"     , false);
 }
 
 } // End of namespace KotOR2
