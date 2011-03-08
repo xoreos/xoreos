@@ -122,9 +122,10 @@ void PEFile::load(const std::vector<Common::UString> &remap) {
 
 		uint32 id = it->getID() - 1;
 		if (id >= remap.size())
-			throw Common::Exception("Missing name for cursor %d", id);
+			res.name = Common::UString::sprintf("cursor%d", id);
+		else
+			res.name = remap[id];
 
-		res.name  = remap[id];
 		res.type  = kFileTypeCUR;
 		res.index = id + 1;
 
