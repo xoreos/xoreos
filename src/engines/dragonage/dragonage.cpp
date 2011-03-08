@@ -21,6 +21,7 @@
 #include "common/filelist.h"
 #include "common/filepath.h"
 
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/cube.h"
 
 #include "sound/sound.h"
@@ -73,14 +74,22 @@ void DragonAgeEngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
+	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
 
 	status("Successfully initialized the engine");
 
+	CursorMan.hideCursor();
+	CursorMan.set("standard", false);
+
 	playVideo("dragon_age_ea_logo");
 	playVideo("dragon_age_main");
+	if (EventMan.quitRequested())
+		return;
+
+	CursorMan.showCursor();
 
 	Graphics::Aurora::Cube *cube = 0;
 
@@ -166,6 +175,8 @@ void DragonAgeEngine::init() {
 	indexMandatoryDirectory("packages/core/data/movies"    , 0,  0, 101);
 	status("Indexing extra core talktables");
 	indexMandatoryDirectory("packages/core/data/talktables", 0,  0, 102);
+	status("Indexing extra core cursors");
+	indexMandatoryDirectory("packages/core/data/cursors"   , 0,  0, 103);
 
 	status("Indexing extra environments");
 	indexMandatoryDirectory("packages/core/env", 0, 0, 110);
@@ -179,6 +190,79 @@ void DragonAgeEngine::init() {
 	indexMandatoryDirectory("modules/single player/data/movies"    , 0,  0, 121);
 	status("Indexing extra single-player campaign talktables");
 	indexMandatoryDirectory("modules/single player/data/talktables", 0,  0, 122);
+}
+
+void DragonAgeEngine::initCursors() {
+	CursorMan.add("area_transition"            , "area_transition"            , false);
+	CursorMan.add("area_transition_pressed"    , "area_transition_pressed"    , false);
+	CursorMan.add("attack"                     , "attack"                     , false);
+	CursorMan.add("attack_pressed"             , "attack_pressed"             , false);
+	CursorMan.add("chest"                      , "chest"                      , false);
+	CursorMan.add("chest_pressed"              , "chest_pressed"              , false);
+	CursorMan.add("close"                      , "close"                      , false);
+	CursorMan.add("close_pressed"              , "close_pressed"              , false);
+	CursorMan.add("converse"                   , "converse"                   , false);
+	CursorMan.add("converse_pressed"           , "converse_pressed"           , false);
+	CursorMan.add("destroy"                    , "destroy"                    , false);
+	CursorMan.add("destroy_pressed"            , "destroy_pressed"            , false);
+	CursorMan.add("dialog"                     , "dialog"                     , false);
+	CursorMan.add("dialog_pressed"             , "dialog_pressed"             , false);
+	CursorMan.add("disabled_unlock"            , "disabled_unlock"            , false);
+	CursorMan.add("disabled_unlock_pressed"    , "disabled_unlock_pressed"    , false);
+	CursorMan.add("disarm"                     , "disarm"                     , false);
+	CursorMan.add("disarm_pressed"             , "disarm_pressed"             , false);
+	CursorMan.add("door"                       , "door"                       , false);
+	CursorMan.add("door_pressed"               , "door_pressed"               , false);
+	CursorMan.add("dragging"                   , "dragging"                   , false);
+	CursorMan.add("examine"                    , "examine"                    , false);
+	CursorMan.add("examine_pressed"            , "examine_pressed"            , false);
+	CursorMan.add("flip_cover"                 , "flip_cover"                 , false);
+	CursorMan.add("flip_cover_pressed"         , "flip_cover_pressed"         , false);
+	CursorMan.add("hand"                       , "hand"                       , false);
+	CursorMan.add("hand2"                      , "hand2"                      , false);
+	CursorMan.add("hidden_cursor"              , "hidden_cursor"              , false);
+	CursorMan.add("ibeam"                      , "ibeam"                      , false);
+	CursorMan.add("ibeam_pressed"              , "ibeam_pressed"              , false);
+	CursorMan.add("invalid"                    , "invalid"                    , false);
+	CursorMan.add("invalid_move"               , "invalid_move"               , false);
+	CursorMan.add("invalid_pressed"            , "invalid_pressed"            , false);
+	CursorMan.add("open"                       , "open"                       , false);
+	CursorMan.add("open_inventory"             , "open_inventory"             , false);
+	CursorMan.add("open_inventory_pressed"     , "open_inventory_pressed"     , false);
+	CursorMan.add("open_pressed"               , "open_pressed"               , false);
+	CursorMan.add("panning"                    , "panning"                    , false);
+	CursorMan.add("panning1"                   , "panning1"                   , false);
+	CursorMan.add("panning1_h"                 , "panning1_h"                 , false);
+	CursorMan.add("panning1_v"                 , "panning1_v"                 , false);
+	CursorMan.add("panning_h"                  , "panning_h"                  , false);
+	CursorMan.add("panning_v"                  , "panning_v"                  , false);
+	CursorMan.add("party_member"               , "party_member"               , false);
+	CursorMan.add("standard"                   , "standard"                   , false);
+	CursorMan.add("standard_pressed"           , "standard_pressed"           , false);
+	CursorMan.add("standard_targeting"         , "standard_targeting"         , false);
+	CursorMan.add("standard_targeting_pressed" , "standard_targeting_pressed" , false);
+	CursorMan.add("target"                     , "target"                     , false);
+	CursorMan.add("target_circle"              , "target_circle"              , false);
+	CursorMan.add("target_circle_invalid"      , "target_circle_invalid"      , false);
+	CursorMan.add("target_circle_pressed"      , "target_circle_pressed"      , false);
+	CursorMan.add("target_cone"                , "target_cone"                , false);
+	CursorMan.add("target_cone_invalid"        , "target_cone_invalid"        , false);
+	CursorMan.add("target_cone_pressed"        , "target_cone_pressed"        , false);
+	CursorMan.add("target_creature"            , "target_creature"            , false);
+	CursorMan.add("target_creature_invalid"    , "target_creature_invalid"    , false);
+	CursorMan.add("target_creature_pressed"    , "target_creature_pressed"    , false);
+	CursorMan.add("target_creaturelock"        , "target_creaturelock"        , false);
+	CursorMan.add("target_creaturelock_pressed", "target_creaturelock_pressed", false);
+	CursorMan.add("target_inactive"            , "target_inactive"            , false);
+	CursorMan.add("target_pressed"             , "target_pressed"             , false);
+	CursorMan.add("topple"                     , "topple"                     , false);
+	CursorMan.add("topple_pressed"             , "topple_pressed"             , false);
+	CursorMan.add("trigger_trap"               , "trigger_trap"               , false);
+	CursorMan.add("trigger_trap_pressed"       , "trigger_trap_pressed"       , false);
+	CursorMan.add("unlock"                     , "unlock"                     , false);
+	CursorMan.add("unlock_pressed"             , "unlock_pressed"             , false);
+	CursorMan.add("use"                        , "use"                        , false);
+	CursorMan.add("use_pressed"                , "use_pressed"                , false);
 }
 
 } // End of namespace DragonAge
