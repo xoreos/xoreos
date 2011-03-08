@@ -16,6 +16,7 @@
 
 #include "common/configman.h"
 #include "common/file.h"
+#include "common/filepath.h"
 #include "common/configfile.h"
 
 #if defined(WIN32)
@@ -155,6 +156,65 @@ void ConfigManager::create() {
 	_domainApp = _config->addDomain(kDomainApp);
 }
 
+UString ConfigManager::findGame(const UString &path) {
+	if (!_config)
+		return "";
+
+	UString normPath = FilePath::makeAbsolute(path);
+
+	const ConfigFile::DomainList &domains = _config->getDomains();
+	for (ConfigFile::DomainList::const_iterator d = domains.begin(); d != domains.end(); ++d)
+		if (FilePath::makeAbsolute((*d)->getString("path")) == normPath)
+			return (*d)->getName();
+
+	return "";
+}
+
+UString ConfigManager::createGameID(const UString &path) {
+	if (!_config)
+		return "";
+
+	UString normPathStem = FilePath::getStem(FilePath::makeAbsolute(path));
+
+	UString target;
+	for (UString::iterator s = normPathStem.begin(); s != normPathStem.end(); ++s) {
+		uint32 c = *s;
+
+		if (UString::isAlNum(c))
+			target += c;
+	}
+
+	if (target.empty())
+		target = "game";
+
+	if (!_config->hasDomain(target))
+		return target;
+
+	for (uint32 i = 0; i < 65536; i++) {
+		UString targetNumbered = UString::sprintf("%s_%d", target.c_str(), i);
+
+		if (!_config->hasDomain(targetNumbered))
+			return targetNumbered;
+	}
+
+	return "";
+}
+
+UString ConfigManager::createGame(const UString &path) {
+	UString target = createGameID(path);
+	if (target.empty())
+		return "";
+
+	ConfigDomain *gameDomain = _config->addDomain(target);
+	assert(gameDomain);
+
+	gameDomain->setString("path", path);
+
+	_changed = true;
+
+	return target;
+}
+
 bool ConfigManager::setGame(const UString &gameID) {
 	// Clear the current game domain
 	delete _domainDefaultGame;
@@ -184,6 +244,10 @@ bool ConfigManager::setGame(const UString &gameID) {
 	_domainGameTemp    = new ConfigDomain("gameTemp");
 
 	return true;
+}
+
+bool ConfigManager::isInGame() const {
+	return _domainGame && _domainDefaultGame && _domainGameTemp;
 }
 
 bool ConfigManager::hasKey(const UString &key) const {

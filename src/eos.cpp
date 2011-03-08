@@ -67,21 +67,31 @@ int main(int argc, char **argv) {
 	if (!parseCommandline(argc, argv, target, code))
 		return code;
 
-	if (!target.empty()) {
-		status("Target \"%s\"", target.c_str());
-		if (!ConfigMan.setGame(target))
-			error("No target \"%s\" in the config file", target.c_str());
-	} else
-		warning("No target specified, probing");
+	if (target.empty()) {
+		Common::UString path = ConfigMan.getString("path");
+		if (path.empty())
+			error("Neither a target, nor a path specified");
 
-	Common::UString dirArg;
-	if (!ConfigMan.getKey("path", dirArg)) {
-		warning("No game path specified, using the current directory");
-		dirArg = ".";
+		target = ConfigMan.findGame(path);
+		if (target.empty()) {
+			target = ConfigMan.createGame(path);
+			if (target.empty())
+				error("Failed creating a new config target for the game");
+
+			warning("No target specified. Creating a new target");
+		} else
+			warning("No target specified, but found a target with a matching path");
 	}
 
-	Common::UString baseDir = Common::FilePath::makeAbsolute(dirArg);
+	status("Target \"%s\"", target.c_str());
+	if (!ConfigMan.setGame(target) || !ConfigMan.isInGame())
+		error("No target \"%s\" in the config file", target.c_str());
 
+	Common::UString dirArg = ConfigMan.getString("path");
+	if (dirArg.empty())
+		error("Target \"%s\" is missing a path", target.c_str());
+
+	Common::UString baseDir = Common::FilePath::makeAbsolute(dirArg);
 	if (!Common::FilePath::isDirectory(baseDir) && !Common::FilePath::isRegularFile(baseDir))
 		error("No such file or directory \"%s\"", baseDir.c_str());
 

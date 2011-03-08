@@ -555,6 +555,10 @@ bool ConfigFile::hasDomain(const UString &name) const {
 	return _domainMap.find(name) != _domainMap.end();
 }
 
+const ConfigFile::DomainList &ConfigFile::getDomains() const {
+	return _domainList;
+}
+
 ConfigDomain *ConfigFile::getDomain(const UString &name) {
 	DomainMap::iterator domain = _domainMap.find(name);
 	if (domain != _domainMap.end())

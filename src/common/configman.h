@@ -59,8 +59,16 @@ public:
 	/** Create a new, empty config. */
 	void create();
 
+	/** Find the game domain using this path. */
+	UString findGame(const UString &path);
+	/** Create the game domain with this path. */
+	UString createGame(const UString &path);
+
 	/** Set the game domain to gameID. */
 	bool setGame(const UString &gameID = "");
+
+	/** Are we currently in a game? */
+	bool isInGame() const;
 
 	bool hasKey(const UString &key) const;
 	bool getKey(const UString &key, UString &value) const;
@@ -113,6 +121,8 @@ private:
 	UString getConfigFile() const;
 
 	static UString getDefaultConfigFile();
+
+	UString createGameID(const UString &path);
 
 	// Helpers
 	bool hasKey(const ConfigDomain *domain, const UString &key) const;

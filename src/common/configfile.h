@@ -111,6 +111,8 @@ private:
  */
 class ConfigFile {
 public:
+	typedef std::list<ConfigDomain *> DomainList;
+
 	ConfigFile();
 	~ConfigFile();
 
@@ -129,6 +131,8 @@ public:
 
 	bool hasDomain(const UString &name) const;
 
+	const DomainList &getDomains() const;
+
 	ConfigDomain *getDomain(const UString &name);
 	const ConfigDomain *getDomain(const UString &name) const;
 
@@ -139,7 +143,6 @@ public:
 	bool renameDomain(const UString &oldName, const UString &newName);
 
 private:
-	typedef std::list<ConfigDomain *> DomainList;
 	typedef std::map<UString, ConfigDomain *, UString::iless> DomainMap;
 
 	DomainList _domainList; ///< List of domains in order.
