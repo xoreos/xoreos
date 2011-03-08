@@ -181,8 +181,12 @@ public:
 	static uint32 tolower(uint32 c);
 	static uint32 toupper(uint32 c);
 
-	static bool isASCII(uint32 c);
-	static bool isSpace(uint32 c);
+	static bool isASCII(uint32 c); ///< Is the character an ASCII character?
+
+	static bool isSpace(uint32 c); ///< Is the character an ASCII space character?
+	static bool isDigit(uint32 c); ///< Is the character an ASCII digit character?
+	static bool isAlpha(uint32 c); ///< Is the character an ASCII alphabetic character?
+	static bool isAlNum(uint32 c); ///< Is the character an ASCII alphanumeric character?
 
 	static uint32 fromUTF16(uint16 c);
 

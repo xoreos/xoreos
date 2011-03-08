@@ -893,6 +893,18 @@ bool UString::isSpace(uint32 c) {
 	return isASCII(c) && std::isspace(c);
 }
 
+bool UString::isDigit(uint32 c) {
+	return isASCII(c) && std::isdigit(c);
+}
+
+bool UString::isAlpha(uint32 c) {
+	return isASCII(c) && std::isalpha(c);
+}
+
+bool UString::isAlNum(uint32 c) {
+	return isASCII(c) && std::isalnum(c);
+}
+
 uint32 UString::fromUTF16(uint16 c) {
 	std::string utf8result;
 
