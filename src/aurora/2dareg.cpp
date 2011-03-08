@@ -79,7 +79,7 @@ TwoDAFile *TwoDARegistry::load(const Common::UString &name) {
 	Common::SeekableReadStream *twodaFile = 0;
 	TwoDAFile *twoda = new TwoDAFile;
 	try {
-		if (!(twodaFile = ResMan.getResource(name, Aurora::kFileType2DA)))
+		if (!(twodaFile = ResMan.getResource(name, kFileType2DA)))
 			throw Common::Exception("No such 2DA");
 
 		twoda->load(*twodaFile);
