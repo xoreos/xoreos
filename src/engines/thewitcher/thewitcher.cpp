@@ -24,6 +24,7 @@
 #include "common/filepath.h"
 #include "common/stream.h"
 
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/model.h"
 
@@ -81,22 +82,28 @@ TheWitcherEngine::~TheWitcherEngine() {
 }
 
 void TheWitcherEngine::run(const Common::UString &target) {
-	_baseDirectory = Common::FilePath::findSubDirectory(target, "data", true);
-	if (_baseDirectory.empty())
-		throw Common::Exception("No data directory");
+	_baseDirectory = target;
 
 	init();
+	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
 
 	status("Successfully initialized the engine");
 
+	CursorMan.hideCursor();
+	CursorMan.set("default", false);
+
 	playVideo("publisher");
 	playVideo("developer");
 	playVideo("engine");
 	playVideo("intro");
 	playVideo("title");
+	if (EventMan.quitRequested())
+		return;
+
+	CursorMan.showCursor();
 
 	playSound("m1_axem00020005", Sound::kSoundTypeVoice);
 
@@ -116,8 +123,11 @@ void TheWitcherEngine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, "voices");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/!final");
+	ResMan.addArchiveDir(Aurora::kArchiveEXE, "system");
+	ResMan.addArchiveDir(Aurora::kArchiveKEY, "data");
+	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
+	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data/voices");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "data/modules/!final");
 
 	status("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 0);
@@ -131,26 +141,34 @@ void TheWitcherEngine::init() {
 	indexMandatoryArchive(Aurora::kArchiveKEY, "M2_3.key"  , 22);
 
 	status("Indexing extra resources");
-	indexOptionalDirectory("movies"   , 0, -1, 30);
-	indexOptionalDirectory("music"    , 0, -1, 31);
-	indexOptionalDirectory("sounds"   , 0, -1, 32);
-	indexOptionalDirectory("cutscenes", 0, -1, 33);
-	indexOptionalDirectory("dialogues", 0, -1, 34);
-	indexOptionalDirectory("fx"       , 0, -1, 35);
-	indexOptionalDirectory("meshes"   , 0, -1, 36);
-	indexOptionalDirectory("quests"   , 0, -1, 37);
-	indexOptionalDirectory("scripts"  , 0, -1, 38);
-	indexOptionalDirectory("templates", 0, -1, 39);
-	indexOptionalDirectory("textures" , 0, -1, 40);
+	indexOptionalDirectory("data/movies"   , 0, -1, 30);
+	indexOptionalDirectory("data/music"    , 0, -1, 31);
+	indexOptionalDirectory("data/sounds"   , 0, -1, 32);
+	indexOptionalDirectory("data/cutscenes", 0, -1, 33);
+	indexOptionalDirectory("data/dialogues", 0, -1, 34);
+	indexOptionalDirectory("data/fx"       , 0, -1, 35);
+	indexOptionalDirectory("data/meshes"   , 0, -1, 36);
+	indexOptionalDirectory("data/quests"   , 0, -1, 37);
+	indexOptionalDirectory("data/scripts"  , 0, -1, 38);
+	indexOptionalDirectory("data/templates", 0, -1, 39);
+	indexOptionalDirectory("data/textures" , 0, -1, 40);
 
-	indexOptionalDirectory("", ".*\\.bik", 0, 41);
+	indexOptionalDirectory("data", ".*\\.bik", 0, 41);
+
+	status("Indexing Windows-specific resources");
+	indexMandatoryArchive(Aurora::kArchiveEXE, "witcher.exe", 42);
 
 	status("Indexing override files");
-	indexOptionalDirectory("override", 0, 0, 50);
+	indexOptionalDirectory("data/override", 0, 0, 50);
 
 	registerModelLoader(new TheWitcherModelLoader);
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
+}
+
+void TheWitcherEngine::initCursors() {
+	CursorMan.add("cursor0" , "default"  , false);
+	CursorMan.add("cursor1" , "default"  , true);
 }
 
 } // End of namespace TheWitcher

@@ -60,6 +60,7 @@ private:
 	Common::UString _baseDirectory;
 
 	void init();
+	void initCursors();
 };
 
 } // End of namespace TheWitcher
