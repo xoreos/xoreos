@@ -115,18 +115,22 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 	/* uint32 imageSize = */ cur.readUint32LE();
 	cur.skip(16); // Skip the rest
 
-	// We're only using 8bpp for now. If more is required, DrMcCoy will
+	// We're only using 8bpp/24bpp for now. If more is required, DrMcCoy will
 	// volunteer to add it.
-	if (bitsPerPixel != 8)
+	if (bitsPerPixel != 8 && bitsPerPixel != 24)
 		throw Common::Exception("Unhandled bpp %d", bitsPerPixel);
 
-	// Now we're at the palette. Read it in.
+	int pitch = width * (bitsPerPixel / 8);
+
+	// Now we're at the palette. Read it in for 8bpp
 	byte palette[256 * 4];
-	cur.read(palette, 256 * 4);
+
+	if (bitsPerPixel == 8)
+		cur.read(palette, 256 * 4);
 
 	// The XOR map
-	byte *xorMap = new byte[width * height];
-	cur.read(xorMap, width * height);
+	byte *xorMap = new byte[pitch * height];
+	cur.read(xorMap, pitch * height);
 
 	// The AND map
 	uint32 andWidth = (width + 7) / 8;
@@ -143,17 +147,23 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 
 	byte *xorSrc = xorMap;
 	byte *dst = _image.data;
-	
 
 	for (uint32 y = 0; y < height; y++) {
 		byte *andSrc = andMap + andWidth * y;
 
 		for (uint32 x = 0; x < width; x++) {
-			byte pixel = *xorSrc++;
+			if (bitsPerPixel == 8) {
+				byte pixel = *xorSrc++;
 
-			*dst++ = palette[pixel * 4];
-			*dst++ = palette[pixel * 4 + 1];
-			*dst++ = palette[pixel * 4 + 2];
+				*dst++ = palette[pixel * 4];
+				*dst++ = palette[pixel * 4 + 1];
+				*dst++ = palette[pixel * 4 + 2];
+			} else {
+				*dst++ = *xorSrc++;
+				*dst++ = *xorSrc++;
+				*dst++ = *xorSrc++;
+			}
+
 			*dst++ = (andSrc[x / 8] & (1 << (7 - x % 8))) ? 0 : 0xff;
 		}
 	}
