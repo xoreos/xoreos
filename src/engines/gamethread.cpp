@@ -47,7 +47,7 @@ void GameThread::init(const Common::UString &baseDir) {
 	// construct one from the game name and platform.
 	Common::UString description;
 	if (!ConfigMan.getKey("description", description))
-		description = EngineMan.getGameName(_gameID) + " ( " +
+		description = EngineMan.getGameName(_gameID) + " (" +
 		              Aurora::getPlatformDescription(_platform) + ")";
 
 	GfxMan.setWindowTitle(Common::UString(PACKAGE_STRING " -- ") + description);
