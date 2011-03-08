@@ -352,10 +352,11 @@ void NWNEngine::mainMenuLoop() {
 
 		mainMenu->run();
 		mainMenu->hide();
-		if (EventMan.quitRequested())
-			break;
 
 		delete mainMenu;
+
+		if (EventMan.quitRequested())
+			break;
 
 		stopMenuMusic();
 

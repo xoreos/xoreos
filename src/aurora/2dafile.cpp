@@ -36,6 +36,8 @@ TwoDAFile::TwoDAFile() {
 }
 
 TwoDAFile::~TwoDAFile() {
+	clear();
+
 	delete _tokenizeASCII;
 }
 
@@ -132,9 +134,11 @@ void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda) {
 
 		_tokenizeASCII->nextChunk(twoda);
 
-		if (count == 0)
+		if (count == 0) {
 			// Ignore empty lines
+			delete row;
 			continue;
+		}
 
 		_array.push_back(row);
 	}

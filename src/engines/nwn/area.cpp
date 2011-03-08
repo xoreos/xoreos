@@ -56,6 +56,9 @@ Area::Area(Module &module, const Common::UString &resRef) :
 Area::~Area() {
 	hide();
 
+	for (std::vector<Door *>::iterator d = _doors.begin(); d != _doors.end(); ++d)
+		delete *d;
+
 	for (std::vector<Placeable *>::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
 		delete *p;
 

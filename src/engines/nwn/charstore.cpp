@@ -29,10 +29,16 @@ CharacterStore::CharacterStore() : _started(0), _isRunning(false) {
 }
 
 CharacterStore::~CharacterStore() {
+	clear();
 }
 
 void CharacterStore::clear() {
+	sync();
+
 	Common::StackLock lock(_mutex);
+
+	for (CharacterID::CharMap::iterator c = _charMap.begin(); c != _charMap.end(); ++c)
+		delete c->second;
 
 	_charMap.clear();
 	_todoList.clear();

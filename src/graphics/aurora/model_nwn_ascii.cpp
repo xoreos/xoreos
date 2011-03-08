@@ -76,6 +76,8 @@ void Model_NWN_ASCII::load(Common::SeekableReadStream &mdl) {
 
 	ctx.mdl->seek(0);
 
+	ctx.state = new State;
+
 	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
 		std::vector<Common::UString> line;
 
@@ -107,13 +109,9 @@ void Model_NWN_ASCII::load(Common::SeekableReadStream &mdl) {
 			if (line[1] != _name)
 				throw Common::Exception("beginmodelgeom with an invalid name");
 		} else if (line[0] == "node") {
-			ctx.state = new State;
 
 			readNode(ctx, line[1], line[2]);
 
-			_states.insert(std::make_pair(ctx.state->name, ctx.state));
-			_currentState = ctx.state;
-			ctx.state = 0;
 		} else if (line[0] == "newanim") {
 			readAnim(ctx);
 		} else if (line[0] == "filedependancy") {
@@ -123,6 +121,18 @@ void Model_NWN_ASCII::load(Common::SeekableReadStream &mdl) {
 		} else
 			throw Common::Exception("Unknown MDL command \"%s\"", line[0].c_str());
 	}
+
+	std::pair<StateMap::iterator, bool> result;
+	result = _states.insert(std::make_pair(ctx.state->name, ctx.state));
+
+	if (!result.second) {
+		warning("Failed inserting state \"%s\" into model", ctx.state->name.c_str());
+
+		delete ctx.state;
+	} else
+		_currentState = ctx.state;
+
+	ctx.state = 0;
 }
 
 void Model_NWN_ASCII::readNode(ParserContext &ctx, const Common::UString &type, const Common::UString &name) {

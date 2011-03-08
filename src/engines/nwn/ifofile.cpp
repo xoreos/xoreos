@@ -120,6 +120,7 @@ void IFOFile::load() {
 	Common::SeekableReadStream *id = ifoTop.getData("Mod_ID");
 	if (id && (id->read(_id, idSize) != idSize))
 		throw Common::Exception("Can't read MOD ID");
+	delete id;
 
 	// TLK
 	_customTLK = ifoTop.getString("Mod_CustomTlk");
