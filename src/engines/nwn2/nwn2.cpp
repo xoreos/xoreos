@@ -23,6 +23,7 @@
 #include "common/filelist.h"
 #include "common/stream.h"
 
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/model.h"
 
@@ -78,19 +79,26 @@ void NWN2Engine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
+	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
 
 	status("Successfully initialized the engine");
 
+	CursorMan.hideCursor();
+	CursorMan.set("default", false);
+
 	playVideo("atarilogo");
 	playVideo("oeilogo");
 	playVideo("wotclogo");
 	playVideo("nvidialogo");
 	playVideo("legal");
-
 	playVideo("intro");
+	if (EventMan.quitRequested())
+		return;
+
+	CursorMan.showCursor();
 
 	Sound::ChannelHandle channel;
 
@@ -203,12 +211,20 @@ void NWN2Engine::init() {
 	status("Indexing extra UI resources");
 	indexMandatoryDirectory("ui"        , 0, -1, 69);
 
+	status("Indexing Windows-specific resources");
+	indexMandatoryArchive(Aurora::kArchiveEXE, "nwn2main.exe", 70);
+
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 100);
 
 	registerModelLoader(new NWN2ModelLoader);
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
+}
+
+void NWN2Engine::initCursors() {
+	CursorMan.add("cursor0" , "default"  , false);
+	CursorMan.add("cursor1" , "default"  , true);
 }
 
 } // End of namespace NWN2
