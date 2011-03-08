@@ -123,7 +123,10 @@ void ResourceManager::setCursorRemap(const std::vector<Common::UString> &remap) 
 }
 
 void ResourceManager::registerDataBaseDir(const Common::UString &path) {
+	// Clear, but keep the info on whether RIMs are ERFs
+	bool rimsAreERFs = _rimsAreERFs;
 	clear();
+	_rimsAreERFs = rimsAreERFs;
 
 	_baseDir = Common::FilePath::normalize(path);
 
