@@ -107,7 +107,8 @@ void GraphicsManager::init() {
 			ConfigMan.setInt("fsaa", _fsaa);
 
 	// Set the gamma correction to what the config specifies
-	setGamma(ConfigMan.getDouble("gamma", 1.0));
+	if (ConfigMan.hasKey("gamma"))
+		setGamma(ConfigMan.getDouble("gamma", 1.0));
 
 	// Set the window title to our name
 	setWindowTitle(PACKAGE_STRING);
