@@ -82,8 +82,7 @@ void KotOREngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	if (_platform == Aurora::kPlatformMacOSX)
-		initCursors();
+	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
@@ -122,9 +121,8 @@ void KotOREngine::run(const Common::UString &target) {
 
 	status("Entering event loop");
 
-	if (_platform == Aurora::kPlatformMacOSX)
-		// Show a cursor
-		CursorMan.set("default", false);
+	// Show a cursor
+	CursorMan.set("default", false);
 
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
@@ -221,10 +219,13 @@ void KotOREngine::init() {
 	status("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"      , 0, -1, 33);
 
-	if (_platform == Aurora::kPlatformMacOSX) {
+	if (_platform == Aurora::kPlatformWindows) {
+		status("Indexing Windows-specific resources");
+		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor.exe", 34);
+	} else if (_platform == Aurora::kPlatformMacOSX) {
 		status("Indexing Mac-specific resources");
-		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources",         0, -1, 33);
-		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources/Cursors", 0, -1, 34);
+		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources",         0, -1, 34);
+		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources/Cursors", 0, -1, 35);
 	}
 
 	status("Indexing override files");
