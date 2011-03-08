@@ -117,6 +117,9 @@ public:
 	/** Are .rim files actually ERF files? */
 	void setRIMsAreERFs(bool rimsAreERFs);
 
+	/** Set the array used to map cursor ID to cursor names. */
+	void setCursorRemap(const std::vector<Common::UString> &remap);
+
 	/** Register a path to be the base data directory.
 	 *
 	 *  @param path The path to a base data directory.
@@ -218,6 +221,8 @@ public:
 
 private:
 	bool _rimsAreERFs; ///< Are .rim files actually ERF files?
+
+	std::vector<Common::UString> _cursorRemap; ///< Cursor ID -> cursor name
 
 	Common::UString _baseDir;     ///< The data base directory.
 

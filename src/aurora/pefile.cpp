@@ -23,7 +23,9 @@
 
 namespace Aurora {
 
-PEFile::PEFile(const Common::UString &fileName) : _peFile(0) {
+PEFile::PEFile(const Common::UString &fileName, const std::vector<Common::UString> &remap) :
+	_peFile(0) {
+
 	Common::File *file = new Common::File();
 	if (!file->open(fileName)) {
 		delete file;
@@ -38,7 +40,7 @@ PEFile::PEFile(const Common::UString &fileName) : _peFile(0) {
 		throw Common::Exception("Could not parse exe");
 	}
 
-	load();
+	load(remap);
 }
 
 PEFile::~PEFile() {
@@ -109,113 +111,22 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index) const {
 	return new Common::MemoryReadStream(out.getData(), out.size());
 }
 
-static const char *s_nameRemap[] = {
-	"gui_mp_defaultu",
-	"gui_mp_defaultd",
-	"gui_mp_walku",
-	"gui_mp_walkd",
-	"gui_mp_invalidu",
-	"gui_mp_invalidd",
-	"gui_mp_bashu",
-	"gui_mp_bashd",
-	"gui_mp_bashup",
-	"gui_mp_bashdp",
-	"gui_mp_talku",
-	"gui_mp_talkd",
-	"gui_mp_notalku",
-	"gui_mp_notalkd",
-	"gui_mp_followu",
-	"gui_mp_followd",
-	"gui_mp_examineu",
-	"gui_mp_examined",
-	"gui_mp_noexamu",
-	"gui_mp_noexamd",
-	"gui_mp_transu",
-	"gui_mp_transd",
-	"gui_mp_dooru",
-	"gui_mp_doord",
-	"gui_mp_useu",
-	"gui_mp_used",
-	"gui_mp_useup",
-	"gui_mp_usedp",
-	"gui_mp_magicu",
-	"gui_mp_magicd",
-	"gui_mp_nomagicu",
-	"gui_mp_nomagicd",
-	"gui_mp_dismineu",
-	"gui_mp_dismined",
-	"gui_mp_dismineup",
-	"gui_mp_disminedp",
-	"gui_mp_recmineu",
-	"gui_mp_recmined",
-	"gui_mp_recmineup",
-	"gui_mp_recminedp",
-	"gui_mp_locku",
-	"gui_mp_lockd",
-	"gui_mp_doorup",
-	"gui_mp_doordp",
-	"gui_mp_selectu",
-	"gui_mp_selectd",
-	"gui_mp_createu",
-	"gui_mp_created",
-	"gui_mp_nocreatu",
-	"gui_mp_nocreatd",
-	"gui_mp_killu",
-	"gui_mp_killd",
-	"gui_mp_nokillu",
-	"gui_mp_nokilld",
-	"gui_mp_healu",
-	"gui_mp_heald",
-	"gui_mp_nohealu",
-	"gui_mp_noheald",
-	"gui_mp_arrun00",
-	"gui_mp_arrun01",
-	"gui_mp_arrun02",
-	"gui_mp_arrun03",
-	"gui_mp_arrun04",
-	"gui_mp_arrun05",
-	"gui_mp_arrun06",
-	"gui_mp_arrun07",
-	"gui_mp_arrun08",
-	"gui_mp_arrun09",
-	"gui_mp_arrun10",
-	"gui_mp_arrun11",
-	"gui_mp_arrun12",
-	"gui_mp_arrun13",
-	"gui_mp_arrun14",
-	"gui_mp_arrun15",
-	"gui_mp_arwalk00",
-	"gui_mp_arwalk01",
-	"gui_mp_arwalk02",
-	"gui_mp_arwalk03",
-	"gui_mp_arwalk04",
-	"gui_mp_arwalk05",
-	"gui_mp_arwalk06",
-	"gui_mp_arwalk07",
-	"gui_mp_arwalk08",
-	"gui_mp_arwalk09",
-	"gui_mp_arwalk10",
-	"gui_mp_arwalk11",
-	"gui_mp_arwalk12",
-	"gui_mp_arwalk13",
-	"gui_mp_arwalk14",
-	"gui_mp_arwalk15",
-	"gui_mp_pickupu",
-	"gui_mp_pickupd"
-};
-
-void PEFile::load() {
+void PEFile::load(const std::vector<Common::UString> &remap) {
 	std::vector<Common::PEResourceID> cursorList = _peFile->getNameList(Common::kPEGroupCursor);
 
 	for (std::vector<Common::PEResourceID>::const_iterator it = cursorList.begin(); it != cursorList.end(); it++) {
 		Resource res;
 
-		if (it->getID() == 0xffffffff)
+		if (it->getID() == 0xFFFFFFFF)
 			throw Common::Exception("Found non-integer cursor group");
 
-		res.name  = s_nameRemap[it->getID() - 1];
+		uint32 id = it->getID() - 1;
+		if (id >= remap.size())
+			throw Common::Exception("Missing name for cursor %d", id);
+
+		res.name  = remap[id];
 		res.type  = kFileTypeCUR;
-		res.index = it->getID();
+		res.index = id + 1;
 
 		_resources.push_back(res);
 	}

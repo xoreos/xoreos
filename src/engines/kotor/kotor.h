@@ -75,6 +75,7 @@ private:
 	Aurora::Platform _platform;
 
 	void init();
+	void initCursorsRemap();
 	void initCursors();
 };
 

@@ -94,6 +94,10 @@ ResourceManager::~ResourceManager() {
 }
 
 void ResourceManager::clear() {
+	_rimsAreERFs = false;
+
+	_cursorRemap.clear();
+
 	_baseDir.clear();
 
 	for (int i = 0; i < kArchiveMAX; i++) {
@@ -112,6 +116,10 @@ void ResourceManager::clear() {
 
 void ResourceManager::setRIMsAreERFs(bool rimsAreERFs) {
 	_rimsAreERFs = rimsAreERFs;
+}
+
+void ResourceManager::setCursorRemap(const std::vector<Common::UString> &remap) {
+	_cursorRemap = remap;
 }
 
 void ResourceManager::registerDataBaseDir(const Common::UString &path) {
@@ -222,7 +230,7 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 	}
 
 	if (archive == kArchiveEXE) {
-		PEFile *pe = new PEFile(realName);
+		PEFile *pe = new PEFile(realName, _cursorRemap);
 
 		ChangeID change = newChangeSet();
 

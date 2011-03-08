@@ -34,7 +34,7 @@ namespace Aurora {
 /** A class encapsulating PE exe's for resource archive access. */
 class PEFile : public Archive {
 public:
-	PEFile(const Common::UString &fileName);
+	PEFile(const Common::UString &fileName, const std::vector<Common::UString> &remap);
 	~PEFile();
 
 	/** Clear the resource list. */
@@ -53,7 +53,7 @@ private:
 	/** External list of resource names and types. */
 	ResourceList _resources;
 
-	void load();
+	void load(const std::vector<Common::UString> &remap);
 };
 
 } // End of namespace Aurora

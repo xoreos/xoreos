@@ -62,6 +62,7 @@ private:
 	Common::UString _baseDirectory;
 
 	void init();
+	void initCursorsRemap();
 	void initCursors();
 };
 

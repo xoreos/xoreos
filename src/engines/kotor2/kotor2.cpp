@@ -201,6 +201,7 @@ void KotOR2Engine::init() {
 	indexMandatoryDirectory("movies"      , 0, -1, 23);
 
 	status("Indexing Windows-specific resources");
+	initCursorsRemap();
 	indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor2.exe", 24);
 
 	status("Indexing override files");
@@ -209,6 +210,105 @@ void KotOR2Engine::init() {
 	registerModelLoader(new KotOR2ModelLoader);
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
+}
+
+void KotOR2Engine::initCursorsRemap() {
+	std::vector<Common::UString> cursorRemap;
+
+	cursorRemap.push_back("gui_mp_defaultu");
+	cursorRemap.push_back("gui_mp_defaultd");
+	cursorRemap.push_back("gui_mp_walku");
+	cursorRemap.push_back("gui_mp_walkd");
+	cursorRemap.push_back("gui_mp_invalidu");
+	cursorRemap.push_back("gui_mp_invalidd");
+	cursorRemap.push_back("gui_mp_bashu");
+	cursorRemap.push_back("gui_mp_bashd");
+	cursorRemap.push_back("gui_mp_bashup");
+	cursorRemap.push_back("gui_mp_bashdp");
+	cursorRemap.push_back("gui_mp_talku");
+	cursorRemap.push_back("gui_mp_talkd");
+	cursorRemap.push_back("gui_mp_notalku");
+	cursorRemap.push_back("gui_mp_notalkd");
+	cursorRemap.push_back("gui_mp_followu");
+	cursorRemap.push_back("gui_mp_followd");
+	cursorRemap.push_back("gui_mp_examineu");
+	cursorRemap.push_back("gui_mp_examined");
+	cursorRemap.push_back("gui_mp_noexamu");
+	cursorRemap.push_back("gui_mp_noexamd");
+	cursorRemap.push_back("gui_mp_transu");
+	cursorRemap.push_back("gui_mp_transd");
+	cursorRemap.push_back("gui_mp_dooru");
+	cursorRemap.push_back("gui_mp_doord");
+	cursorRemap.push_back("gui_mp_useu");
+	cursorRemap.push_back("gui_mp_used");
+	cursorRemap.push_back("gui_mp_useup");
+	cursorRemap.push_back("gui_mp_usedp");
+	cursorRemap.push_back("gui_mp_magicu");
+	cursorRemap.push_back("gui_mp_magicd");
+	cursorRemap.push_back("gui_mp_nomagicu");
+	cursorRemap.push_back("gui_mp_nomagicd");
+	cursorRemap.push_back("gui_mp_dismineu");
+	cursorRemap.push_back("gui_mp_dismined");
+	cursorRemap.push_back("gui_mp_dismineup");
+	cursorRemap.push_back("gui_mp_disminedp");
+	cursorRemap.push_back("gui_mp_recmineu");
+	cursorRemap.push_back("gui_mp_recmined");
+	cursorRemap.push_back("gui_mp_recmineup");
+	cursorRemap.push_back("gui_mp_recminedp");
+	cursorRemap.push_back("gui_mp_locku");
+	cursorRemap.push_back("gui_mp_lockd");
+	cursorRemap.push_back("gui_mp_doorup");
+	cursorRemap.push_back("gui_mp_doordp");
+	cursorRemap.push_back("gui_mp_selectu");
+	cursorRemap.push_back("gui_mp_selectd");
+	cursorRemap.push_back("gui_mp_createu");
+	cursorRemap.push_back("gui_mp_created");
+	cursorRemap.push_back("gui_mp_nocreatu");
+	cursorRemap.push_back("gui_mp_nocreatd");
+	cursorRemap.push_back("gui_mp_killu");
+	cursorRemap.push_back("gui_mp_killd");
+	cursorRemap.push_back("gui_mp_nokillu");
+	cursorRemap.push_back("gui_mp_nokilld");
+	cursorRemap.push_back("gui_mp_healu");
+	cursorRemap.push_back("gui_mp_heald");
+	cursorRemap.push_back("gui_mp_nohealu");
+	cursorRemap.push_back("gui_mp_noheald");
+	cursorRemap.push_back("gui_mp_arrun00");
+	cursorRemap.push_back("gui_mp_arrun01");
+	cursorRemap.push_back("gui_mp_arrun02");
+	cursorRemap.push_back("gui_mp_arrun03");
+	cursorRemap.push_back("gui_mp_arrun04");
+	cursorRemap.push_back("gui_mp_arrun05");
+	cursorRemap.push_back("gui_mp_arrun06");
+	cursorRemap.push_back("gui_mp_arrun07");
+	cursorRemap.push_back("gui_mp_arrun08");
+	cursorRemap.push_back("gui_mp_arrun09");
+	cursorRemap.push_back("gui_mp_arrun10");
+	cursorRemap.push_back("gui_mp_arrun11");
+	cursorRemap.push_back("gui_mp_arrun12");
+	cursorRemap.push_back("gui_mp_arrun13");
+	cursorRemap.push_back("gui_mp_arrun14");
+	cursorRemap.push_back("gui_mp_arrun15");
+	cursorRemap.push_back("gui_mp_arwalk00");
+	cursorRemap.push_back("gui_mp_arwalk01");
+	cursorRemap.push_back("gui_mp_arwalk02");
+	cursorRemap.push_back("gui_mp_arwalk03");
+	cursorRemap.push_back("gui_mp_arwalk04");
+	cursorRemap.push_back("gui_mp_arwalk05");
+	cursorRemap.push_back("gui_mp_arwalk06");
+	cursorRemap.push_back("gui_mp_arwalk07");
+	cursorRemap.push_back("gui_mp_arwalk08");
+	cursorRemap.push_back("gui_mp_arwalk09");
+	cursorRemap.push_back("gui_mp_arwalk10");
+	cursorRemap.push_back("gui_mp_arwalk11");
+	cursorRemap.push_back("gui_mp_arwalk12");
+	cursorRemap.push_back("gui_mp_arwalk13");
+	cursorRemap.push_back("gui_mp_arwalk14");
+	cursorRemap.push_back("gui_mp_arwalk15");
+	cursorRemap.push_back("gui_mp_pickupu");
+	cursorRemap.push_back("gui_mp_pickupd");
+
+	ResMan.setCursorRemap(cursorRemap);
 }
 
 void KotOR2Engine::initCursors() {
