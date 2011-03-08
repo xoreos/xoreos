@@ -329,6 +329,7 @@ enum ArchiveType {
 	kArchiveERF,     ///< ERF archive.
 	kArchiveRIM,     ///< RIM archive.
 	kArchiveZIP,     ///< ZIP archive.
+	kArchiveEXE,     ///< EXE archive.
 	kArchiveMAX,
 	kArchiveNDS      ///< Nintendo DS ROM.
 };

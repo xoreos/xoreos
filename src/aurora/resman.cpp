@@ -29,6 +29,7 @@
 #include "aurora/rimfile.h"
 #include "aurora/ndsrom.h"
 #include "aurora/zipfile.h"
+#include "aurora/pefile.h"
 
 // boost-string_algo
 using boost::iequals;
@@ -36,7 +37,7 @@ using boost::iequals;
 DECLARE_SINGLETON(Aurora::ResourceManager)
 
 static const char *kArchiveGlob[Aurora::kArchiveMAX] = {
-	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak|nwm)", ".*\\.rim", ".*\\.zip"
+	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak|nwm)", ".*\\.rim", ".*\\.zip", ".*\\.exe"
 };
 
 namespace Aurora {
@@ -218,6 +219,14 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 		ChangeID change = newChangeSet();
 
 		return indexArchive(zip, priority, change);
+	}
+
+	if (archive == kArchiveEXE) {
+		PEFile *pe = new PEFile(realName);
+
+		ChangeID change = newChangeSet();
+
+		return indexArchive(pe, priority, change);
 	}
 
 	return ChangeID();
