@@ -76,6 +76,22 @@ void GUIQuad::setTexture(const Common::UString &texture) {
 	GfxMan.unlockFrame();
 }
 
+void GUIQuad::setWidth(float w) {
+	GfxMan.lockFrame();
+
+	_x2 = _x1 + w;
+
+	GfxMan.unlockFrame();
+}
+
+void GUIQuad::setHeight(float h) {
+	GfxMan.lockFrame();
+
+	_y2 = _y1 + h;
+
+	GfxMan.unlockFrame();
+}
+
 bool GUIQuad::isIn(float x, float y) const {
 	if ((x < _x1) || (x > _x2))
 		return false;

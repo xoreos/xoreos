@@ -44,6 +44,9 @@ public:
 	/** Set the current texture of the quad. */
 	void setTexture(const Common::UString &texture);
 
+	void setWidth (float w); ///< Set the quad's width.
+	void setHeight(float h); ///< Set the quad's height.
+
 	/** Is the point within the quad? */
 	bool isIn(float x, float y) const;
 
