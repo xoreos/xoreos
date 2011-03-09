@@ -31,9 +31,9 @@
 #include "engines/nwn/types.h"
 #include "engines/nwn/area.h"
 
-#include "engines/nwn/menu/ingamemain.h"
-#include "engines/nwn/menu/partybar.h"
-#include "engines/nwn/menu/quickbar.h"
+#include "engines/nwn/gui/ingame/main.h"
+#include "engines/nwn/gui/ingame/partybar.h"
+#include "engines/nwn/gui/ingame/quickbar.h"
 
 namespace Engines {
 

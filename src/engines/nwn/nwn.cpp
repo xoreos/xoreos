@@ -12,23 +12,19 @@
  *  Engine class handling Neverwinter Nights.
  */
 
-#include "engines/nwn/nwn.h"
-#include "engines/nwn/modelloader.h"
-#include "engines/nwn/charstore.h"
-#include "engines/nwn/module.h"
-#include "engines/nwn/menu/legal.h"
-#include "engines/nwn/menu/main.h"
-#include "engines/nwn/menu/chartype.h"
-
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
-
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
 #include "common/stream.h"
 #include "common/configman.h"
+
+#include "aurora/error.h"
+#include "aurora/resman.h"
+#include "aurora/talkman.h"
+
+#include "sound/sound.h"
+
+#include "events/events.h"
 
 #include "graphics/graphics.h"
 
@@ -37,13 +33,17 @@
 
 #include "graphics/aurora/cursorman.h"
 
-#include "sound/sound.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
+#include "engines/aurora/model.h"
 
-#include "events/events.h"
+#include "engines/nwn/nwn.h"
+#include "engines/nwn/modelloader.h"
+#include "engines/nwn/charstore.h"
+#include "engines/nwn/module.h"
 
-#include "aurora/error.h"
-#include "aurora/resman.h"
-#include "aurora/talkman.h"
+#include "engines/nwn/gui/legal.h"
+#include "engines/nwn/gui/main/main.h"
 
 namespace Engines {
 

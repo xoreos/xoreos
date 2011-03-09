@@ -29,6 +29,7 @@ enum ModelType {
 
 class Model;
 class Text;
+class GUIQuad;
 
 } // End of namespace Aurora
 

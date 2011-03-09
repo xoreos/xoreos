@@ -14,36 +14,49 @@ noinst_HEADERS = nwn.h \
                  situated.h \
                  placeable.h \
                  door.h \
-                 menu/scrollbar.h \
-                 menu/newgamefog.h \
-                 menu/legal.h \
-                 menu/gui.h \
-                 menu/yesnocancel.h \
-                 menu/okcancel.h \
-                 menu/main.h \
-                 menu/new.h \
-                 menu/newxp1.h \
-                 menu/newxp2.h \
-                 menu/newcamp.h \
-                 menu/newmodule.h \
-                 menu/chartype.h \
-                 menu/charnew.h \
-                 menu/charpremade.h \
-                 menu/moviescamp.h \
-                 menu/moviesbase.h \
-                 menu/options.h \
-                 menu/optionsgame.h \
-                 menu/optionsvideo.h \
-                 menu/optionssound.h \
-                 menu/optionscontrols.h \
-                 menu/optionsgorepass.h \
-                 menu/optionsfeedback.h \
-                 menu/optionsresolution.h \
-                 menu/optionsvideoadv.h \
-                 menu/optionssoundadv.h \
-                 menu/ingamemain.h \
-                 menu/partybar.h \
-                 menu/quickbar.h
+                 gui/gui.h \
+                 gui/legal.h \
+                 gui/widgets/button.h \
+                 gui/widgets/checkbox.h \
+                 gui/widgets/close.h \
+                 gui/widgets/editbox.h \
+                 gui/widgets/frame.h \
+                 gui/widgets/label.h \
+                 gui/widgets/listbox.h \
+                 gui/widgets/modelwidget.h \
+                 gui/widgets/panel.h \
+                 gui/widgets/quadwidget.h \
+                 gui/widgets/scrollbar.h \
+                 gui/widgets/slider.h \
+                 gui/widgets/textwidget.h \
+                 gui/dialogs/okcancel.h \
+                 gui/dialogs/yesnocancel.h \
+                 gui/options/controls.h \
+                 gui/options/feedback.h \
+                 gui/options/game.h \
+                 gui/options/gorepass.h \
+                 gui/options/resolution.h \
+                 gui/options/sound.h \
+                 gui/options/soundadv.h \
+                 gui/options/video.h \
+                 gui/options/videoadv.h \
+                 gui/chargen/chargen.h \
+                 gui/main/charpremade.h \
+                 gui/main/chartype.h \
+                 gui/main/main.h \
+                 gui/main/moviesbase.h \
+                 gui/main/moviescamp.h \
+                 gui/main/new.h \
+                 gui/main/newcamp.h \
+                 gui/main/newgamefog.h \
+                 gui/main/newmodule.h \
+                 gui/main/newxp1.h \
+                 gui/main/newxp2.h \
+                 gui/main/options.h \
+                 gui/ingame/main.h \
+                 gui/ingame/partybar.h \
+                 gui/ingame/quickbar.h
+
 
 libnwn_la_SOURCES = nwn.cpp \
                     types.cpp \
@@ -57,33 +70,45 @@ libnwn_la_SOURCES = nwn.cpp \
                     situated.cpp \
                     placeable.cpp \
                     door.cpp \
-                    menu/scrollbar.cpp \
-                    menu/newgamefog.cpp \
-                    menu/legal.cpp \
-                    menu/gui.cpp \
-                    menu/yesnocancel.cpp \
-                    menu/okcancel.cpp \
-                    menu/main.cpp \
-                    menu/new.cpp \
-                    menu/newxp1.cpp \
-                    menu/newxp2.cpp \
-                    menu/newcamp.cpp \
-                    menu/newmodule.cpp \
-                    menu/chartype.cpp \
-                    menu/charnew.cpp \
-                    menu/charpremade.cpp \
-                    menu/moviescamp.cpp \
-                    menu/moviesbase.cpp \
-                    menu/options.cpp \
-                    menu/optionsgame.cpp \
-                    menu/optionsvideo.cpp \
-                    menu/optionssound.cpp \
-                    menu/optionscontrols.cpp \
-                    menu/optionsgorepass.cpp \
-                    menu/optionsfeedback.cpp \
-                    menu/optionsresolution.cpp \
-                    menu/optionsvideoadv.cpp \
-                    menu/optionssoundadv.cpp \
-                    menu/ingamemain.cpp \
-                    menu/partybar.cpp \
-                    menu/quickbar.cpp
+                    gui/gui.cpp \
+                    gui/legal.cpp \
+                    gui/widgets/button.cpp \
+                    gui/widgets/checkbox.cpp \
+                    gui/widgets/close.cpp \
+                    gui/widgets/editbox.cpp \
+                    gui/widgets/frame.cpp \
+                    gui/widgets/label.cpp \
+                    gui/widgets/listbox.cpp \
+                    gui/widgets/modelwidget.cpp \
+                    gui/widgets/panel.cpp \
+                    gui/widgets/quadwidget.cpp \
+                    gui/widgets/scrollbar.cpp \
+                    gui/widgets/slider.cpp \
+                    gui/widgets/textwidget.cpp \
+                    gui/dialogs/okcancel.cpp \
+                    gui/dialogs/yesnocancel.cpp \
+                    gui/options/controls.cpp \
+                    gui/options/feedback.cpp \
+                    gui/options/game.cpp \
+                    gui/options/gorepass.cpp \
+                    gui/options/resolution.cpp \
+                    gui/options/sound.cpp \
+                    gui/options/soundadv.cpp \
+                    gui/options/video.cpp \
+                    gui/options/videoadv.cpp \
+                    gui/chargen/chargen.cpp \
+                    gui/main/charpremade.cpp \
+                    gui/main/chartype.cpp \
+                    gui/main/main.cpp \
+                    gui/main/moviesbase.cpp \
+                    gui/main/moviescamp.cpp \
+                    gui/main/new.cpp \
+                    gui/main/newcamp.cpp \
+                    gui/main/newgamefog.cpp \
+                    gui/main/newmodule.cpp \
+                    gui/main/newxp1.cpp \
+                    gui/main/newxp2.cpp \
+                    gui/main/options.cpp \
+                    gui/ingame/main.cpp \
+                    gui/ingame/partybar.cpp \
+                    gui/ingame/quickbar.cpp
