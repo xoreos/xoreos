@@ -102,12 +102,11 @@ void KotOREngine::run(const Common::UString &target) {
 
 	playSound("nm35aahhkd07134_", Sound::kSoundTypeVoice);
 
-	// Test load up the Taris cantina
+	// Test load up a Leviathan module
+	Module *leviathan = new Module;
 
-	Module *tarisCantina = new Module;
-
-	tarisCantina->load("tar_m03ae");
-	tarisCantina->enter();
+	leviathan->load("lev_m40aa");
+	leviathan->enter();
 
 	bool showFPS = ConfigMan.getBool("showfps", false);
 
@@ -174,9 +173,9 @@ void KotOREngine::run(const Common::UString &target) {
 
 	EventMan.enableKeyRepeat(0);
 
-	tarisCantina->leave();
+	leviathan->leave();
 
-	delete tarisCantina;
+	delete leviathan;
 
 	delete fps;
 }

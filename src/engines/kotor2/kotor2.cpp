@@ -93,12 +93,11 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	playSound("298hk50mun003", Sound::kSoundTypeVoice);
 
-	// Test load up Nar Shaddaa
+	// Test load up the Ebon Hawk
+	Module *ebonHawk = new Module;
 
-	Module *narShaddaa = new Module;
-
-	narShaddaa->load("301NAR");
-	narShaddaa->enter();
+	ebonHawk->load("001EBO");
+	ebonHawk->enter();
 
 	bool showFPS = ConfigMan.getBool("showfps", false);
 
@@ -165,9 +164,9 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	EventMan.enableKeyRepeat(0);
 
-	narShaddaa->leave();
+	ebonHawk->leave();
 
-	delete narShaddaa;
+	delete ebonHawk;
 
 	delete fps;
 }
