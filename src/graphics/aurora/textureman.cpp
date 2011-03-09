@@ -43,16 +43,13 @@ ManagedTexture::~ManagedTexture() {
 }
 
 
-TextureHandle::TextureHandle() {
-	empty = true;
+TextureHandle::TextureHandle() : _empty(true) {
 }
 
-TextureHandle::TextureHandle(TextureMap::iterator &i) {
-	empty = false;
-	it    = i;
+TextureHandle::TextureHandle(TextureMap::iterator &i) : _empty(false), _it(i) {
 }
 
-TextureHandle::TextureHandle(const TextureHandle &right) : empty(true) {
+TextureHandle::TextureHandle(const TextureHandle &right) : _empty(true) {
 	*this = right;
 }
 
@@ -66,23 +63,27 @@ TextureHandle &TextureHandle::operator=(const TextureHandle &right) {
 
 	TextureMan.release(*this);
 
-	empty = right.empty;
-	it    = right.it;
+	_empty = right._empty;
+	_it    = right._it;
 
-	if (!empty)
-		it->second->referenceCount++;
+	if (!_empty)
+		_it->second->referenceCount++;
 
 	return *this;
 }
 
+bool TextureHandle::empty() const {
+	return _empty;
+}
+
 void TextureHandle::clear() {
-	empty = true;
+	_empty = true;
 }
 
 const Texture &TextureHandle::getTexture() const {
-	assert(!empty);
+	assert(!_empty);
 
-	return *it->second->texture;
+	return *_it->second->texture;
 }
 
 
@@ -144,14 +145,14 @@ TextureHandle TextureManager::get(const Common::UString &name) {
 void TextureManager::release(TextureHandle &handle) {
 	Common::StackLock lock(_mutex);
 
-	if (handle.empty)
+	if (handle.empty())
 		return;
 
-	if (--handle.it->second->referenceCount == 0) {
+	if (--handle._it->second->referenceCount == 0) {
 		RequestMan.sync();
 
-		delete handle.it->second;
-		_textures.erase(handle.it);
+		delete handle._it->second;
+		_textures.erase(handle._it);
 	}
 
 	handle.clear();
@@ -182,14 +183,14 @@ void TextureManager::set() {
 }
 
 void TextureManager::set(const TextureHandle &handle) {
-	if (handle.empty) {
+	if (handle.empty()) {
 		set();
 		return;
 	}
 
-	TextureID id = handle.it->second->texture->getID();
+	TextureID id = handle._it->second->texture->getID();
 	if (id == 0)
-		warning("Empty texture ID for texture \"%s\"", handle.it->first.c_str());
+		warning("Empty texture ID for texture \"%s\"", handle._it->first.c_str());
 
 	glBindTexture(GL_TEXTURE_2D, id);
 }

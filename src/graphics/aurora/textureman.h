@@ -43,10 +43,8 @@ struct ManagedTexture {
 typedef std::map<Common::UString, ManagedTexture *> TextureMap;
 
 /** A handle to a texture. */
-struct TextureHandle {
-	bool empty;
-	TextureMap::iterator it;
-
+class TextureHandle {
+public:
 	TextureHandle();
 	TextureHandle(TextureMap::iterator &i);
 	TextureHandle(const TextureHandle &right);
@@ -54,9 +52,17 @@ struct TextureHandle {
 
 	TextureHandle &operator=(const TextureHandle &right);
 
+	bool empty() const;
+
 	void clear();
 
 	const Texture &getTexture() const;
+
+private:
+	bool _empty;
+	TextureMap::iterator _it;
+
+	friend class TextureManager;
 };
 
 /** The global Aurora texture manager. */
