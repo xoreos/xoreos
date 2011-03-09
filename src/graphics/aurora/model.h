@@ -72,6 +72,8 @@ public:
 	/** Get the height of a named node. */
 	float getNodeHeight(const Common::UString &node) const;
 
+	void setNodeVisibility(const Common::UString &node, bool visible);
+
 	/** Move the base position of a named node in the current state. */
 	void moveNode(const Common::UString &node, float x, float y, float z);
 

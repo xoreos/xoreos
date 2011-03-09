@@ -304,6 +304,17 @@ float Model::getNodeHeight(const Common::UString &node) const {
 	return n->second->boundBox.getHeight() * _modelScale[1];
 }
 
+void Model::setNodeVisibility(const Common::UString &node, bool visible) {
+	if (!_currentState)
+		return;
+
+	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
+	if ((n == _currentState->nodeMap.end()) || !n->second)
+		return;
+
+	n->second->render = visible;
+}
+
 float Model::getWidth() const {
 	return _boundBox.getWidth() * _modelScale[0];
 }
