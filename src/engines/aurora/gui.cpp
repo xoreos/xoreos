@@ -262,7 +262,7 @@ void Widget::setActive(bool active) {
 }
 
 
-GUI::GUI() : _currentWidget(0), _returnCode(0) {
+GUI::GUI() : _currentWidget(0), _returnCode(0), _x(0.0), _y(0.0), _z(0.0) {
 }
 
 GUI::~GUI() {
@@ -430,6 +430,34 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 	updateMouse();
 
 	return code;
+}
+
+void GUI::setPosition(float x, float y, float z) {
+	for (WidgetList::iterator w = _widgets.begin(); w != _widgets.end(); ++w) {
+		Widget &widget = **w;
+
+		if (widget._parent)
+			continue;
+
+		float wX, wY, wZ;
+		widget.getPosition(wX, wY, wZ);
+
+		wX -= _x;
+		wY -= _y;
+		wZ -= _z;
+
+		widget.setPosition(wX + x, wY + y, wZ + z);
+	}
+
+	_x = x;
+	_y = y;
+	_z = z;
+}
+
+void GUI::getPosition(float &x, float &y, float &z) const {
+	x = _x;
+	y = _y;
+	z = _z;
 }
 
 void GUI::updateMouse() {

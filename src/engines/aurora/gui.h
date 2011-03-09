@@ -163,6 +163,12 @@ protected:
 	/** Open up a sub GUI. */
 	int sub(GUI &gui, int startCode = 0, bool showSelf = true);
 
+	/** Set the GUI's position. */
+	void setPosition(float x, float y, float z);
+
+	/** Get the GUI's position. */
+	void getPosition(float &x, float &y, float &z) const;
+
 	/** Callback that's triggered periodically in the run() method. */
 	virtual void callbackRun();
 	/** Callback that's triggered when a widget was activated. */
@@ -174,6 +180,10 @@ private:
 
 	WidgetList _widgets;   ///< All widgets in the GUI.
 	WidgetMap  _widgetMap; ///< All widgets in the GUI, index by their tag.
+
+	float _x; ///< The GUI X position.
+	float _y; ///< The GUI Y position.
+	float _z; ///< The GUI Z position.
 
 	/** Return the widget at that position. */
 	Widget *getWidgetAt(float x, float y);
