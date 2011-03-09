@@ -23,9 +23,12 @@ namespace Graphics {
 
 namespace Aurora {
 
-GUIQuad::GUIQuad(const Common::UString &texture, float x1, float y1, float x2, float y2,
-		float tX1, float tY1, float tX2, float tY2) :
-	_x1(x1), _y1(y1), _x2(x2), _y2(y2), _tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2) {
+GUIQuad::GUIQuad(const Common::UString &texture,
+                 float x1 , float y1 , float x2 , float y2,
+                 float tX1, float tY1, float tX2, float tY2) :
+	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
+	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
+	_r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
 	if (!texture.empty())
 		_texture = TextureMan.get(texture);
@@ -47,6 +50,17 @@ void GUIQuad::setPosition(float x, float y, float z) {
 	_y1 = y;
 
 	_distance = z;
+
+	GfxMan.unlockFrame();
+}
+
+void GUIQuad::setColor(float r, float g, float b, float a) {
+	GfxMan.lockFrame();
+
+	_r = r;
+	_g = g;
+	_b = b;
+	_a = a;
 
 	GfxMan.unlockFrame();
 }
@@ -89,6 +103,8 @@ void GUIQuad::newFrame() {
 void GUIQuad::render() {
 	TextureMan.set(_texture);
 
+	glColor4f(_r, _g, _b, _a);
+
 	glBegin(GL_QUADS);
 		glTexCoord2f(_tX1, _tY1);
 		glVertex2f(_x1, _y1);
@@ -99,6 +115,8 @@ void GUIQuad::render() {
 		glTexCoord2f(_tX1, _tY2);
 		glVertex2f(_x1, _y2);
 	glEnd();
+
+	glColor4f(1.0, 1.0, 1.0, 1.0);
 }
 
 } // End of namespace Aurora

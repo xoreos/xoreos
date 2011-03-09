@@ -39,6 +39,8 @@ public:
 	/** Set the current position of the quad. */
 	void setPosition(float x, float y, float z = -FLT_MAX);
 
+	/** Set the current color of the quad. */
+	void setColor(float r, float g, float b, float a);
 	/** Set the current texture of the quad. */
 	void setTexture(const Common::UString &texture);
 
@@ -66,6 +68,11 @@ private:
 	float _tY1;
 	float _tX2;
 	float _tY2;
+
+	float _r;
+	float _g;
+	float _b;
+	float _a;
 };
 
 } // End of namespace Aurora
