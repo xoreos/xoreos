@@ -124,9 +124,6 @@ void Partybar::callbackActive(Widget &widget) {
 
 void Partybar::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
 	setPosition(newWidth / 2.0, newHeight / 2.0, 0.0);
-
-	float x, y, z;
-	getPosition(x, y, z);
 }
 
 } // End of namespace NWN
