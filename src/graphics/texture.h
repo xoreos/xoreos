@@ -26,12 +26,6 @@ class Texture : public GLContainer, public Queueable<Texture> {
 public:
 	Texture();
 	virtual ~Texture();
-
-	/** Return the ID of the texture for use with OpenGL. */
-	virtual TextureID getID() const = 0;
-
-	virtual const uint32 getWidth()  const = 0;
-	virtual const uint32 getHeight() const = 0;
 };
 
 } // End of namespace Graphics
