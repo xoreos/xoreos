@@ -31,12 +31,16 @@ namespace Aurora {
 
 class GUIQuad : public GUIFrontElement {
 public:
-	GUIQuad(const Common::UString &texture, float x1, float y1, float x2, float y2,
-			float tX1 = 0.0, float tY1 = 0.0, float tX2 = 1.0, float tY2 = 1.0);
+	GUIQuad(const Common::UString &texture,
+	        float  x1      , float  y1      , float  x2      , float  y2,
+			    float tX1 = 0.0, float tY1 = 0.0, float tX2 = 1.0, float tY2 = 1.0);
 	~GUIQuad();
 
 	/** Set the current position of the quad. */
 	void setPosition(float x, float y, float z = -FLT_MAX);
+
+	/** Set the current texture of the quad. */
+	void setTexture(const Common::UString &texture);
 
 	/** Is the point within the quad? */
 	bool isIn(float x, float y) const;

@@ -27,7 +27,8 @@ GUIQuad::GUIQuad(const Common::UString &texture, float x1, float y1, float x2, f
 		float tX1, float tY1, float tX2, float tY2) :
 	_x1(x1), _y1(y1), _x2(x2), _y2(y2), _tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2) {
 
-	_texture = TextureMan.get(texture);
+	if (!texture.empty())
+		_texture = TextureMan.get(texture);
 
 	_distance = -FLT_MAX;
 }
@@ -46,6 +47,17 @@ void GUIQuad::setPosition(float x, float y, float z) {
 	_y1 = y;
 
 	_distance = z;
+
+	GfxMan.unlockFrame();
+}
+
+void GUIQuad::setTexture(const Common::UString &texture) {
+	GfxMan.lockFrame();
+
+	if (texture.empty())
+		_texture.clear();
+	else
+		_texture = TextureMan.get(texture);
 
 	GfxMan.unlockFrame();
 }
