@@ -30,8 +30,16 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
-	if (!texture.empty())
-		_texture = TextureMan.get(texture);
+	try {
+
+		if (!texture.empty())
+			_texture = TextureMan.get(texture);
+
+	} catch (...) {
+		_texture.clear();
+
+		_r = _g = _b = _a = 0.0;
+	}
 
 	_distance = -FLT_MAX;
 }
@@ -68,10 +76,18 @@ void GUIQuad::setColor(float r, float g, float b, float a) {
 void GUIQuad::setTexture(const Common::UString &texture) {
 	GfxMan.lockFrame();
 
-	if (texture.empty())
+	try {
+
+		if (texture.empty())
+			_texture.clear();
+		else
+			_texture = TextureMan.get(texture);
+
+	} catch (...) {
 		_texture.clear();
-	else
-		_texture = TextureMan.get(texture);
+
+		_r = _g = _b = _a = 0.0;
+	}
 
 	GfxMan.unlockFrame();
 }
