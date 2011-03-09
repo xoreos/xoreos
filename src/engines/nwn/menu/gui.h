@@ -21,6 +21,7 @@
 
 #include "graphics/aurora/types.h"
 #include "graphics/aurora/fontman.h"
+#include "graphics/aurora/guiquad.h"
 
 #include "engines/aurora/gui.h"
 
@@ -73,6 +74,34 @@ protected:
 	float _g;
 	float _b;
 	float _a;
+};
+
+class NWNQuadWidget : public Widget {
+public:
+	NWNQuadWidget(::Engines::GUI &gui, const Common::UString &tag,
+	              const Common::UString &texture,
+	              float  x1      , float  y1      , float  x2      , float  y2,
+	              float tX1 = 0.0, float tY1 = 0.0, float tX2 = 1.0, float tY2 = 1.0);
+	~NWNQuadWidget();
+
+	void show();
+	void hide();
+
+	void setPosition(float x, float y, float z);
+	void setColor(float r, float g, float b, float a);
+	void setTexture(const Common::UString &texture);
+
+	void setWidth (float w);
+	void setHeight(float h);
+
+	float getWidth () const;
+	float getHeight() const;
+
+private:
+	float _width;
+	float _height;
+
+	Graphics::Aurora::GUIQuad *_quad;
 };
 
 class WidgetScrollbar : public Widget {

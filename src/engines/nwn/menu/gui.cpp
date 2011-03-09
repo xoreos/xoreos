@@ -153,6 +153,62 @@ void NWNTextWidget::setDisabled(bool disabled) {
 }
 
 
+NWNQuadWidget::NWNQuadWidget(::Engines::GUI &gui, const Common::UString &tag,
+                             const Common::UString &texture,
+                             float  x1, float  y1, float  x2, float  y2,
+                             float tX1, float tY1, float tX2, float tY2) :
+	Widget(gui, tag) {
+
+	_quad = new Graphics::Aurora::GUIQuad(texture, x1, y1, x2, y2, tX1, tY1, tX2, tY2);
+
+	_width  = ABS(x2 - x1);
+	_height = ABS(y2 - y1);
+}
+
+NWNQuadWidget::~NWNQuadWidget() {
+	delete _quad;
+}
+
+void NWNQuadWidget::show() {
+	_quad->show();
+}
+
+void NWNQuadWidget::hide() {
+	_quad->hide();
+}
+
+void NWNQuadWidget::setPosition(float x, float y, float z) {
+	Widget::setPosition(x, y, z);
+
+	getPosition(x, y, z);
+	_quad->setPosition(x, y, -z);
+}
+
+void NWNQuadWidget::setColor(float r, float g, float b, float a) {
+	_quad->setColor(r, g, b, a);
+}
+
+void NWNQuadWidget::setTexture(const Common::UString &texture) {
+	_quad->setTexture(texture);
+}
+
+void NWNQuadWidget::setWidth(float w) {
+	_quad->setWidth(w);
+}
+
+void NWNQuadWidget::setHeight(float h) {
+	_quad->setHeight(h);
+}
+
+float NWNQuadWidget::getWidth() const {
+	return _width;
+}
+
+float NWNQuadWidget::getHeight() const {
+	return _height;
+}
+
+
 WidgetScrollbar::WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag,
                                  Scrollbar::Type type, float range) :
 		Widget(gui, tag), _type(type), _range(range), _state(0.0), _scrollbar(type) {
