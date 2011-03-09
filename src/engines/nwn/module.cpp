@@ -33,6 +33,7 @@
 
 #include "engines/nwn/menu/ingamemain.h"
 #include "engines/nwn/menu/partybar.h"
+#include "engines/nwn/menu/quickbar.h"
 
 namespace Engines {
 
@@ -43,11 +44,13 @@ Module::Module() : _hasModule(false), _hasPC(false), _currentTexturePack(-1),
 
 	_ingameMenu = new InGameMainMenu;
 	_partybar   = new Partybar;
+	_quickbar   = new Quickbar;
 }
 
 Module::~Module() {
 	clear();
 
+	delete _quickbar;
 	delete _partybar;
 	delete _ingameMenu;
 }
@@ -152,6 +155,7 @@ void Module::run() {
 		playVideo(startMovie);
 
 	_partybar->show();
+	_quickbar->show();
 
 	_exit    = false;
 	_newArea = _ifo.getEntryArea();

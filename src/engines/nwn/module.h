@@ -28,8 +28,11 @@ namespace NWN {
 
 class CharacterID;
 class Area;
+
 class GUI;
+
 class Partybar;
+class Quickbar;
 
 class Module {
 public:
@@ -53,6 +56,7 @@ private:
 	GUI *_ingameMenu; ///< The ingame menu.
 
 	Partybar *_partybar; ///< The player/party bar.
+	Quickbar *_quickbar; ///< The quickbar.
 
 	/** Resources added by the module. */
 	Aurora::ResourceManager::ChangeID _resModule;
