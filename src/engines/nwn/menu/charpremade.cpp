@@ -51,17 +51,9 @@ WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
 	_button = loadModelGUI("ctl_pre_btn_char");
 	assert(_button);
 
-	_portrait = 0;
 	Common::UString portrait = c->getPortrait();
-	if (!portrait.empty()) {
-		try {
-			_portrait = new Graphics::Aurora::GUIQuad(portrait + "t", 0.0, 0.0, 16.0, 24.0,
-			                                          0.0, 8.0 / 32.0, 1.0, 1.0);
-		} catch (...) {
-			delete _portrait;
-			_portrait = 0;
-		}
-	}
+	_portrait = new Graphics::Aurora::GUIQuad(portrait + "t", 0.0, 0.0, 16.0, 24.0,
+	                                          0.0, 8.0 / 32.0, 1.0, 1.0);
 
 	Common::UString name = c->getFullName();
 	if (c.getNumber() > 0)
@@ -84,18 +76,14 @@ void WidgetListItemCharacter::show() {
 	_button->show();
 	_textName->show();
 	_textClass->show();
-
-	if (_portrait)
-		_portrait->show();
+	_portrait->show();
 }
 
 void WidgetListItemCharacter::hide() {
 	_textClass->hide();
 	_textName->hide();
 	_button->hide();
-
-	if (_portrait)
-		_portrait->hide();
+	_portrait->hide();
 }
 
 void WidgetListItemCharacter::setPosition(float x, float y, float z) {
@@ -104,8 +92,7 @@ void WidgetListItemCharacter::setPosition(float x, float y, float z) {
 	getPosition(x, y, z);
 	_button->setPosition(x, y, z);
 
-	if (_portrait)
-		_portrait->setPosition(x + 8.0, y + 9.0, -z);
+	_portrait->setPosition(x + 8.0, y + 9.0, -z);
 
 	x += 32.0;
 
