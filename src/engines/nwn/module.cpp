@@ -32,6 +32,7 @@
 #include "engines/nwn/area.h"
 
 #include "engines/nwn/menu/ingamemain.h"
+#include "engines/nwn/menu/partybar.h"
 
 namespace Engines {
 
@@ -41,11 +42,13 @@ Module::Module() : _hasModule(false), _hasPC(false), _currentTexturePack(-1),
 	_exit(false), _area(0) {
 
 	_ingameMenu = new InGameMainMenu;
+	_partybar   = new Partybar;
 }
 
 Module::~Module() {
 	clear();
 
+	delete _partybar;
 	delete _ingameMenu;
 }
 
@@ -132,6 +135,8 @@ void Module::run() {
 	status("Running module \"%s\" with character \"%s\"",
 			_ifo.getName().getFirstString().c_str(), _pc.getFullName().c_str());
 
+	_partybar->setPortrait(_pc.getPortrait() + "l");
+
 	try {
 
 		loadHAKs();
@@ -145,6 +150,8 @@ void Module::run() {
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
 		playVideo(startMovie);
+
+	_partybar->show();
 
 	_exit    = false;
 	_newArea = _ifo.getEntryArea();

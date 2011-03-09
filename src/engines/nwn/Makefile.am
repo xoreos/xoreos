@@ -41,7 +41,8 @@ noinst_HEADERS = nwn.h \
                  menu/optionsresolution.h \
                  menu/optionsvideoadv.h \
                  menu/optionssoundadv.h \
-                 menu/ingamemain.h
+                 menu/ingamemain.h \
+                 menu/partybar.h
 
 libnwn_la_SOURCES = nwn.cpp \
                     types.cpp \
@@ -82,4 +83,5 @@ libnwn_la_SOURCES = nwn.cpp \
                     menu/optionsresolution.cpp \
                     menu/optionsvideoadv.cpp \
                     menu/optionssoundadv.cpp \
-                    menu/ingamemain.cpp
+                    menu/ingamemain.cpp \
+                    menu/partybar.cpp
