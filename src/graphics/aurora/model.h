@@ -73,6 +73,7 @@ public:
 	float getNodeHeight(const Common::UString &node) const;
 
 	void setNodeVisibility(const Common::UString &node, bool visible);
+	void setNodeRotation(const Common::UString &node, float x, float y, float z);
 
 	/** Move the base position of a named node in the current state. */
 	void moveNode(const Common::UString &node, float x, float y, float z);
@@ -150,6 +151,8 @@ protected:
 
 		float position[3];    ///< Position of the node.
 		float orientation[4]; ///< Orientation of the node.
+
+		float rotation[3]; ///< Node rotation.
 
 		float wirecolor[3]; ///< Color of the wireframe.
 		float ambient[3];   ///< Ambient color.

@@ -38,6 +38,9 @@ Model::Node::Node() : parent(0), dangly(false), displacement(0), render(true), l
 	orientation[1] = 0.0;
 	orientation[2] = 0.0;
 	orientation[3] = 0.0;
+	rotation   [0] = 0.0;
+	rotation   [1] = 0.0;
+	rotation   [2] = 0.0;
 
 	realPosition[0] = 0.0;
 	realPosition[1] = 0.0;
@@ -277,7 +280,7 @@ void Model::moveNode(const Common::UString &node, float x, float y, float z) {
 
 	n->second->position[0] += x / _modelScale[0];
 	n->second->position[1] += y / _modelScale[1];
-	n->second->position[2] += x / _modelScale[2];
+	n->second->position[2] += z / _modelScale[2];
 
 	createModelBound();
 }
@@ -313,6 +316,19 @@ void Model::setNodeVisibility(const Common::UString &node, bool visible) {
 		return;
 
 	n->second->render = visible;
+}
+
+void Model::setNodeRotation(const Common::UString &node, float x, float y, float z) {
+	if (!_currentState)
+		return;
+
+	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
+	if ((n == _currentState->nodeMap.end()) || !n->second)
+		return;
+
+	n->second->rotation[0] = x;
+	n->second->rotation[1] = y;
+	n->second->rotation[2] = z;
 }
 
 float Model::getWidth() const {
@@ -503,6 +519,11 @@ void Model::renderState(const State &state) {
 		glPushMatrix();
 		glTranslatef((*node)->position[0], (*node)->position[1], (*node)->position[2]);
 		glRotatef((*node)->orientation[3], (*node)->orientation[0], (*node)->orientation[1], (*node)->orientation[2]);
+
+		glRotatef((*node)->rotation[0], 1.0, 0.0, 0.0);
+		glRotatef((*node)->rotation[1], 0.0, 1.0, 0.0);
+		glRotatef((*node)->rotation[2], 0.0, 0.0, 1.0);
+
 		renderNode(**node);
 		glPopMatrix();
 	}
@@ -539,6 +560,11 @@ void Model::renderNode(const Node &node) {
 		glPushMatrix();
 		glTranslatef((*child)->position[0], (*child)->position[1], (*child)->position[2]);
 		glRotatef((*child)->orientation[3], (*child)->orientation[0], (*child)->orientation[1], (*child)->orientation[2]);
+
+		glRotatef((*child)->rotation[0], 1.0, 0.0, 0.0);
+		glRotatef((*child)->rotation[1], 0.0, 1.0, 0.0);
+		glRotatef((*child)->rotation[2], 0.0, 0.0, 1.0);
+
 		renderNode(**child);
 		glPopMatrix();
 	}
