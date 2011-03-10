@@ -8,8 +8,8 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/gui/ingame/partybar.cpp
- *  The ingame player bar.
+/** @file engines/nwn/gui/ingame/partyleader.cpp
+ *  The NWN ingame party leader panel.
  */
 
 #include "graphics/graphics.h"
@@ -18,14 +18,14 @@
 #include "engines/nwn/gui/widgets/panel.h"
 #include "engines/nwn/gui/widgets/button.h"
 
-#include "engines/nwn/gui/ingame/partybar.h"
+#include "engines/nwn/gui/ingame/partyleader.h"
 
 namespace Engines {
 
 namespace NWN {
 
-Partybar::Partybar() {
-	// The player panel
+PartyLeader::PartyLeader() {
+	// The panel
 
 	WidgetPanel *playerPanel = new WidgetPanel(*this, "Portrait", "pnl_party_bar");
 
@@ -88,43 +88,28 @@ Partybar::Partybar() {
 	addWidget(_health);
 
 
-	// TODO: Party members
-
-
 	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
 }
 
-Partybar::~Partybar() {
+PartyLeader::~PartyLeader() {
 }
 
-void Partybar::setPortrait(const Common::UString &portrait) {
+void PartyLeader::setPortrait(const Common::UString &portrait) {
 	_portrait->setTexture(portrait);
 }
 
-void Partybar::setHealthColor(float r, float g, float b, float a) {
+void PartyLeader::setHealthColor(float r, float g, float b, float a) {
 	_health->setColor(r, g, b, a);
 }
 
-void Partybar::setHealthLength(float length) {
+void PartyLeader::setHealthLength(float length) {
 	_health->setHeight(length * 100.0);
 }
 
-void Partybar::setHealthHealthy() {
-	setHealthColor(1.0, 0.0, 0.0, 1.0);
+void PartyLeader::callbackActive(Widget &widget) {
 }
 
-void Partybar::setHealthSick() {
-	setHealthColor(189.0 / 255.0, 146.0 / 255.0,  74.0 / 255.0, 1.0);
-}
-
-void Partybar::setHealthPoisoned() {
-	setHealthColor(132.0 / 255.0, 182.0 / 255.0,  74.0 / 255.0, 1.0);
-}
-
-void Partybar::callbackActive(Widget &widget) {
-}
-
-void Partybar::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+void PartyLeader::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
 	setPosition(newWidth / 2.0, newHeight / 2.0, 0.0);
 }
 

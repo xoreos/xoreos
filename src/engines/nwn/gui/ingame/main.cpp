@@ -9,7 +9,7 @@
  */
 
 /** @file engines/nwn/gui/ingame/main.cpp
- *  The ingame main menu.
+ *  The NWN ingame main menu.
  */
 
 #include "aurora/talkman.h"
@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace NWN {
 
-InGameMainMenu::InGameMainMenu() {
+IngameMainMenu::IngameMainMenu() {
 	load("options_main");
 
 	// TODO: Load game
@@ -51,7 +51,7 @@ InGameMainMenu::InGameMainMenu() {
 	                                 TalkMan.getString(8274), TalkMan.getString(8275));
 }
 
-InGameMainMenu::~InGameMainMenu() {
+IngameMainMenu::~IngameMainMenu() {
 	delete _quitPrompt;
 
 	delete _controls;
@@ -60,7 +60,7 @@ InGameMainMenu::~InGameMainMenu() {
 	delete _game;
 }
 
-void InGameMainMenu::initWidget(Widget &widget) {
+void IngameMainMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "BuildNumber") {
 		dynamic_cast<WidgetLabel &>(widget).setText(PACKAGE_STRING);
 		dynamic_cast<WidgetLabel &>(widget).setColor(0.6, 0.6, 0.6, 1.0);
@@ -73,7 +73,7 @@ void InGameMainMenu::initWidget(Widget &widget) {
 	}
 }
 
-void InGameMainMenu::callbackActive(Widget &widget) {
+void IngameMainMenu::callbackActive(Widget &widget) {
 	if ((widget.getTag() == "ResumeGameButton") ||
 	    (widget.getTag() == "XButton")) {
 		_returnCode = 1;

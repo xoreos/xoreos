@@ -8,41 +8,22 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/gui/ingame/main.h
- *  The NWN ingame main menu.
+/** @file engines/nwn/gui/ingame/charinfo.h
+ *  A NWN character info panel.
  */
 
-#ifndef ENGINES_NWN_GUI_INGAME_MAIN_H
-#define ENGINES_NWN_GUI_INGAME_MAIN_H
-
-#include "engines/nwn/gui/gui.h"
+#include "engines/nwn/gui/ingame/charinfo.h"
 
 namespace Engines {
 
 namespace NWN {
 
-/** The NWN ingame main menu. */
-class IngameMainMenu : public GUI {
-public:
-	IngameMainMenu();
-	~IngameMainMenu();
+CharacterInfo::CharacterInfo() {
+}
 
-protected:
-	void initWidget(Widget &widget);
-
-	void callbackActive(Widget &widget);
-
-private:
-	GUI *_game;
-	GUI *_video;
-	GUI *_sound;
-	GUI *_controls;
-
-	GUI *_quitPrompt;
-};
+CharacterInfo::~CharacterInfo() {
+}
 
 } // End of namespace NWN
 
 } // End of namespace Engines
-
-#endif // ENGINES_NWN_GUI_INGAME_MAIN_H

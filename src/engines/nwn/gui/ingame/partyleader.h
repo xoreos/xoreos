@@ -8,26 +8,26 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/nwn/gui/ingame/partybar.h
- *  The ingame party bar.
+/** @file engines/nwn/gui/ingame/partyleader.h
+ *  The NWN ingame party leader panel.
  */
 
-#ifndef ENGINES_NWN_GUI_INGAME_PLAYERBAR_H
-#define ENGINES_NWN_GUI_INGAME_PLAYERBAR_H
+#ifndef ENGINES_NWN_GUI_INGAME_PARTYLEADER_H
+#define ENGINES_NWN_GUI_INGAME_PARTYLEADER_H
 
 #include "events/notifyable.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "engines/nwn/gui/ingame/charinfo.h"
 
 namespace Engines {
 
 namespace NWN {
 
-/** The NWN ingame party bar. */
-class Partybar : public GUI, public Events::Notifyable {
+/** The NWN ingame party leader bar. */
+class PartyLeader : public CharacterInfo, public Events::Notifyable {
 public:
-	Partybar();
-	~Partybar();
+	PartyLeader();
+	~PartyLeader();
 
 	/** Set the portrait image. */
 	void setPortrait(const Common::UString &portrait);
@@ -36,13 +36,6 @@ public:
 	void setHealthColor(float r, float g, float b, float a);
 	/** Set the health bar length (as a fraction of "full health") */
 	void setHealthLength(float length);
-
-	/** Set the health bar color to "healthy" (red). */
-	void setHealthHealthy();
-	/** Set the health bar color to "sick" (brown). */
-	void setHealthSick();
-	/** Set the health bar color to "poisoned" (green). */
-	void setHealthPoisoned();
 
 protected:
 	void callbackActive(Widget &widget);
@@ -58,4 +51,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_GUI_INGAME_PLAYERBAR_H
+#endif // ENGINES_NWN_GUI_INGAME_PARTYLEADER_H

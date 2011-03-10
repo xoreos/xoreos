@@ -53,9 +53,11 @@ noinst_HEADERS = nwn.h \
                  gui/main/newxp1.h \
                  gui/main/newxp2.h \
                  gui/main/options.h \
+                 gui/ingame/ingame.h \
                  gui/ingame/main.h \
-                 gui/ingame/partybar.h \
-                 gui/ingame/quickbar.h
+                 gui/ingame/quickbar.h \
+                 gui/ingame/charinfo.h \
+                 gui/ingame/partyleader.h
 
 
 libnwn_la_SOURCES = nwn.cpp \
@@ -109,6 +111,8 @@ libnwn_la_SOURCES = nwn.cpp \
                     gui/main/newxp1.cpp \
                     gui/main/newxp2.cpp \
                     gui/main/options.cpp \
+                    gui/ingame/ingame.cpp \
                     gui/ingame/main.cpp \
-                    gui/ingame/partybar.cpp \
-                    gui/ingame/quickbar.cpp
+                    gui/ingame/quickbar.cpp \
+                    gui/ingame/charinfo.cpp \
+                    gui/ingame/partyleader.cpp

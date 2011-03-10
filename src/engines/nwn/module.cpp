@@ -31,9 +31,7 @@
 #include "engines/nwn/types.h"
 #include "engines/nwn/area.h"
 
-#include "engines/nwn/gui/ingame/main.h"
-#include "engines/nwn/gui/ingame/partybar.h"
-#include "engines/nwn/gui/ingame/quickbar.h"
+#include "engines/nwn/gui/ingame/ingame.h"
 
 namespace Engines {
 
@@ -42,17 +40,13 @@ namespace NWN {
 Module::Module() : _hasModule(false), _hasPC(false), _currentTexturePack(-1),
 	_exit(false), _area(0) {
 
-	_ingameMenu = new InGameMainMenu;
-	_partybar   = new Partybar;
-	_quickbar   = new Quickbar;
+	_ingameGUI = new IngameGUI;
 }
 
 Module::~Module() {
 	clear();
 
-	delete _quickbar;
-	delete _partybar;
-	delete _ingameMenu;
+	delete _ingameGUI;
 }
 
 void Module::clear() {
@@ -138,7 +132,7 @@ void Module::run() {
 	status("Running module \"%s\" with character \"%s\"",
 			_ifo.getName().getFirstString().c_str(), _pc.getFullName().c_str());
 
-	_partybar->setPortrait(_pc.getPortrait() + "l");
+	_ingameGUI->setPortrait(0, _pc.getPortrait() + "l");
 
 	try {
 
@@ -154,8 +148,7 @@ void Module::run() {
 	if (!startMovie.empty())
 		playVideo(startMovie);
 
-	_partybar->show();
-	_quickbar->show();
+	_ingameGUI->show();
 
 	_exit    = false;
 	_newArea = _ifo.getEntryArea();
@@ -326,11 +319,7 @@ void Module::unloadArea() {
 }
 
 void Module::showMenu() {
-	_ingameMenu->show();
-	int code = _ingameMenu->run();
-	_ingameMenu->hide();
-
-	if (code == 2) {
+	if (_ingameGUI->showMain() == 2) {
 		_exit = true;
 		return;
 	}

@@ -29,10 +29,7 @@ namespace NWN {
 class CharacterID;
 class Area;
 
-class GUI;
-
-class Partybar;
-class Quickbar;
+class IngameGUI;
 
 class Module {
 public:
@@ -53,10 +50,7 @@ private:
 	bool _hasModule; ///< Do we have a module?
 	bool _hasPC;     ///< Do we have a PC?
 
-	GUI *_ingameMenu; ///< The ingame menu.
-
-	Partybar *_partybar; ///< The player/party bar.
-	Quickbar *_quickbar; ///< The quickbar.
+	IngameGUI *_ingameGUI; ///< The ingame GUI elements.
 
 	/** Resources added by the module. */
 	Aurora::ResourceManager::ChangeID _resModule;
