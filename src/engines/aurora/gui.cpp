@@ -74,19 +74,24 @@ int GUI::run(int startCode) {
 
 		// Handle events
 		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if      (event.type == Events::kEventMouseMove)
-				mouseMove(event);
-			else if (event.type == Events::kEventMouseDown)
-				mouseDown(event);
-			else if (event.type == Events::kEventMouseUp)
-				mouseUp(event);
-		}
+		while (EventMan.pollEvent(event))
+			evaluateEvent(event);
 
 		// Delay for a while
 		if (!EventMan.quitRequested() && (_returnCode != 0))
 			EventMan.delay(10);
 	}
+
+	return _returnCode;
+}
+
+int GUI::evaluateEvent(const Events::Event &event) {
+	if      (event.type == Events::kEventMouseMove)
+		mouseMove(event);
+	else if (event.type == Events::kEventMouseDown)
+		mouseDown(event);
+	else if (event.type == Events::kEventMouseUp)
+		mouseUp(event);
 
 	return _returnCode;
 }

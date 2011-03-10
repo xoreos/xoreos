@@ -37,6 +37,9 @@ public:
 
 	int run(int startCode = 0); ///< Run the GUI.
 
+	/** Evaluate a single event. */
+	int evaluateEvent(const Events::Event &event);
+
 protected:
 	Widget *_currentWidget; ///< The widget the mouse is currently on.
 
