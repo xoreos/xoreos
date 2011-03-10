@@ -89,6 +89,8 @@ Quickbar::Quickbar() {
 	WidgetPanel *bottomEdge = new WidgetPanel(*this, "BottomEdge", "pnl_quick_bar");
 	addWidget(bottomEdge);
 
+	_edgeHeight = bottomEdge->getHeight();
+
 	for (int i = 0; i < 12; i++) {
 		QuickbarButton *button = new QuickbarButton(*this, i);
 
@@ -104,6 +106,14 @@ Quickbar::Quickbar() {
 }
 
 Quickbar::~Quickbar() {
+}
+
+float Quickbar::getWidth() const {
+	return 12 * _slotWidth;
+}
+
+float Quickbar::getHeight() const {
+	return _slotHeight + 2 * _edgeHeight;
 }
 
 void Quickbar::callbackActive(Widget &widget) {

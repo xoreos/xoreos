@@ -57,12 +57,17 @@ public:
 	Quickbar();
 	~Quickbar();
 
+	float getWidth () const;
+	float getHeight() const;
+
 protected:
 	void callbackActive(Widget &widget);
 
 private:
 	float _slotWidth;
 	float _slotHeight;
+
+	float _edgeHeight;
 
 	void getSlotSize();
 

@@ -15,6 +15,7 @@
 #include "engines/nwn/gui/ingame/ingame.h"
 #include "engines/nwn/gui/ingame/main.h"
 #include "engines/nwn/gui/ingame/quickbar.h"
+#include "engines/nwn/gui/ingame/quickchat.h"
 #include "engines/nwn/gui/ingame/partyleader.h"
 
 namespace Engines {
@@ -24,7 +25,8 @@ namespace NWN {
 IngameGUI::IngameGUI() {
 	_main = new IngameMainMenu;
 
-	_quickbar = new Quickbar;
+	_quickbar  = new Quickbar;
+	_quickchat = new Quickchat(_quickbar->getHeight() - 3.0);
 
 	_party.resize(1);
 	_party[0] = new PartyLeader;
@@ -36,6 +38,7 @@ IngameGUI::~IngameGUI() {
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		delete *p;
 
+	delete _quickchat;
 	delete _quickbar;
 
 	delete _main;
@@ -51,6 +54,7 @@ int IngameGUI::showMain() {
 
 void IngameGUI::show() {
 	_quickbar->show();
+	_quickchat->show();
 
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->show();
@@ -60,6 +64,7 @@ void IngameGUI::hide() {
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->hide();
 
+	_quickchat->hide();
 	_quickbar->hide();
 }
 

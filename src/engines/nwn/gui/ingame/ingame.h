@@ -31,6 +31,7 @@ class IngameMainMenu;
 
 class CharacterInfo;
 class Quickbar;
+class Quickchat;
 
 /** The NWN ingame GUI elements. */
 class IngameGUI {
@@ -59,7 +60,8 @@ public:
 private:
 	IngameMainMenu *_main; ///< The ingame main menu.
 
-	Quickbar *_quickbar; ///< The quick bar.
+	Quickbar  *_quickbar;  ///< The quick bar.
+	Quickchat *_quickchat; ///< The quick chat.
 
 	std::vector<CharacterInfo *> _party; ///< The party member character panels.
 };
