@@ -41,7 +41,11 @@ public:
 	void strafe(float n); ///< Move orthogonal (left/right) to current view axis.
 	void fly   (float n); ///< Move orthogonal (up/down) to current view axis.
 
+	bool wasChanged(); ///< Was the camera setup changed since the last time asked?
+
 private:
+	bool _changed;
+
 	float _position[3];    ///< Current position.
 	float _orientation[3]; ///< Current orientation.
 };

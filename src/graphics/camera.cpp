@@ -22,7 +22,7 @@ DECLARE_SINGLETON(Graphics::CameraManager)
 
 namespace Graphics {
 
-CameraManager::CameraManager() {
+CameraManager::CameraManager() : _changed(false) {
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
 	_position   [2] = 0.0;
@@ -49,6 +49,8 @@ void CameraManager::reset() {
 	_orientation[1] = 0.0;
 	_orientation[2] = 0.0;
 
+	_changed = true;
+
 	GfxMan.unlockFrame();
 }
 
@@ -58,6 +60,8 @@ void CameraManager::setPosition(float x, float y, float z) {
 	_position[0] = x;
 	_position[1] = y;
 	_position[2] = z;
+
+	_changed = true;
 
 	GfxMan.unlockFrame();
 }
@@ -76,6 +80,8 @@ void CameraManager::setOrientation(float x, float y, float z) {
 		while (_orientation[i] < -360)
 			_orientation[i] += 360;
 	}
+
+	_changed = true;
 
 	GfxMan.unlockFrame();
 }
@@ -121,6 +127,14 @@ void CameraManager::fly(float n) {
 	float z = n * cos(Common::deg2rad(_orientation[0] + 90.0));
 
 	move(x, y, z);
+}
+
+bool CameraManager::wasChanged() {
+	bool changed = _changed;
+
+	_changed = false;
+
+	return changed;
 }
 
 } // End of namespace Graphics
