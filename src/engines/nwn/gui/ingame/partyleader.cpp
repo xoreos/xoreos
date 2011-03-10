@@ -12,6 +12,8 @@
  *  The NWN ingame party leader panel.
  */
 
+#include "common/util.h"
+
 #include "graphics/graphics.h"
 
 #include "engines/nwn/gui/widgets/quadwidget.h"
@@ -20,11 +22,13 @@
 
 #include "engines/nwn/gui/ingame/partyleader.h"
 
+#include "engines/nwn/module.h"
+
 namespace Engines {
 
 namespace NWN {
 
-PartyLeader::PartyLeader() {
+PartyLeader::PartyLeader(Module &module) : _module(&module) {
 	// The panel
 
 	WidgetPanel *playerPanel = new WidgetPanel(*this, "Portrait", "pnl_party_bar");
@@ -65,6 +69,8 @@ PartyLeader::PartyLeader() {
 
 	for (int i = 0; i < 8; i++)
 		addWidget(btns[i]);
+
+	btns[7]->setDisabled(true);
 
 
 	// Portrait
@@ -107,6 +113,11 @@ void PartyLeader::setHealthLength(float length) {
 }
 
 void PartyLeader::callbackActive(Widget &widget) {
+	if (widget.getTag() == "ButtonOptions") {
+		_module->showMenu();
+		return;
+	}
+
 }
 
 void PartyLeader::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {

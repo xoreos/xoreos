@@ -25,7 +25,7 @@ namespace Engines {
 
 namespace NWN {
 
-IngameGUI::IngameGUI() {
+IngameGUI::IngameGUI(Module &module) {
 	_main = new IngameMainMenu;
 
 	_quickbar  = new Quickbar;
@@ -33,7 +33,7 @@ IngameGUI::IngameGUI() {
 	_compass   = new Compass(_quickbar->getHeight() + _quickchat->getHeight() - 6.0);
 
 	_party.resize(1);
-	_party[0] = new PartyLeader;
+	_party[0] = new PartyLeader(module);
 }
 
 IngameGUI::~IngameGUI() {
@@ -73,6 +73,15 @@ void IngameGUI::hide() {
 	_compass->hide();
 	_quickchat->hide();
 	_quickbar->hide();
+}
+
+void IngameGUI::evaluateEvent(const Events::Event &event) {
+	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
+		(*p)->evaluateEvent(event);
+
+	_compass->evaluateEvent(event);
+	_quickchat->evaluateEvent(event);
+	_quickbar->evaluateEvent(event);
 }
 
 void IngameGUI::setPortrait(uint partyMember, const Common::UString &portrait) {

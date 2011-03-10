@@ -46,6 +46,8 @@ public:
 
 	void run();
 
+	void showMenu();
+
 private:
 	bool _hasModule; ///< Do we have a module?
 	bool _hasPC;     ///< Do we have a PC?
@@ -85,8 +87,6 @@ private:
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadTexturePack(); ///< Load the texture pack.
 	void loadArea();        ///< Load a new area.
-
-	void showMenu();
 };
 
 } // End of namespace NWN

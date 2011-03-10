@@ -40,7 +40,7 @@ namespace NWN {
 Module::Module() : _hasModule(false), _hasPC(false), _currentTexturePack(-1),
 	_exit(false), _area(0) {
 
-	_ingameGUI = new IngameGUI;
+	_ingameGUI = new IngameGUI(*this);
 }
 
 Module::~Module() {
@@ -177,6 +177,8 @@ void Module::run() {
 
 			Events::Event event;
 			while (EventMan.pollEvent(event)) {
+				_ingameGUI->evaluateEvent(event);
+
 				if (event.type == Events::kEventKeyDown) {
 					if      (event.key.keysym.sym == SDLK_ESCAPE)
 						showMenu();

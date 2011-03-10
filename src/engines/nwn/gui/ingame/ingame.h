@@ -19,6 +19,8 @@
 
 #include "common/types.h"
 
+#include "events/types.h"
+
 namespace Common {
 	class UString;
 }
@@ -26,6 +28,8 @@ namespace Common {
 namespace Engines {
 
 namespace NWN {
+
+class Module;
 
 class IngameMainMenu;
 
@@ -37,13 +41,15 @@ class Compass;
 /** The NWN ingame GUI elements. */
 class IngameGUI {
 public:
-	IngameGUI();
+	IngameGUI(Module &module);
 	~IngameGUI();
 
 	int showMain(); ///< Show the ingame main menu.
 
 	void show(); ///< Show the ingame GUI elements.
 	void hide(); ///< Hide the ingame GUI elements.
+
+	void evaluateEvent(const Events::Event &event);
 
 	/** Set the party member's portrait. */
 	void setPortrait(uint partyMember, const Common::UString &portrait);

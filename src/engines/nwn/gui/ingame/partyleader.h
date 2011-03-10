@@ -23,10 +23,12 @@ namespace Engines {
 
 namespace NWN {
 
+class Module;
+
 /** The NWN ingame party leader bar. */
 class PartyLeader : public CharacterInfo, public Events::Notifyable {
 public:
-	PartyLeader();
+	PartyLeader(Module &module);
 	~PartyLeader();
 
 	/** Set the portrait image. */
@@ -41,6 +43,8 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	Module *_module;
+
 	QuadWidget *_portrait;
 	QuadWidget *_health;
 
