@@ -32,6 +32,7 @@ class IngameMainMenu;
 class CharacterInfo;
 class Quickbar;
 class Quickchat;
+class Compass;
 
 /** The NWN ingame GUI elements. */
 class IngameGUI {
@@ -57,11 +58,14 @@ public:
 	/** Set party member to "poisoned" (green health bar). */
 	void setPoisoned(uint partyMember);
 
+	void updateCompass(); ///< Update the compass.
+
 private:
 	IngameMainMenu *_main; ///< The ingame main menu.
 
 	Quickbar  *_quickbar;  ///< The quick bar.
 	Quickchat *_quickchat; ///< The quick chat.
+	Compass   *_compass;   ///< The compass.
 
 	std::vector<CharacterInfo *> _party; ///< The party member character panels.
 };

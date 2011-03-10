@@ -65,10 +65,15 @@ public:
 	Quickchat(float position);
 	~Quickchat();
 
+	float getWidth () const;
+	float getHeight() const;
+
 protected:
 	void callbackActive(Widget &widget);
 
 private:
+	WidgetPanel *_prompt;
+
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
 };
 

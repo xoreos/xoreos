@@ -12,10 +12,13 @@
  *  The NWN ingame GUI elements.
  */
 
+#include "graphics/camera.h"
+
 #include "engines/nwn/gui/ingame/ingame.h"
 #include "engines/nwn/gui/ingame/main.h"
 #include "engines/nwn/gui/ingame/quickbar.h"
 #include "engines/nwn/gui/ingame/quickchat.h"
+#include "engines/nwn/gui/ingame/compass.h"
 #include "engines/nwn/gui/ingame/partyleader.h"
 
 namespace Engines {
@@ -27,6 +30,7 @@ IngameGUI::IngameGUI() {
 
 	_quickbar  = new Quickbar;
 	_quickchat = new Quickchat(_quickbar->getHeight() - 3.0);
+	_compass   = new Compass(_quickbar->getHeight() + _quickchat->getHeight() - 6.0);
 
 	_party.resize(1);
 	_party[0] = new PartyLeader;
@@ -38,6 +42,7 @@ IngameGUI::~IngameGUI() {
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		delete *p;
 
+	delete _compass;
 	delete _quickchat;
 	delete _quickbar;
 
@@ -55,6 +60,7 @@ int IngameGUI::showMain() {
 void IngameGUI::show() {
 	_quickbar->show();
 	_quickchat->show();
+	_compass->show();
 
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->show();
@@ -64,6 +70,7 @@ void IngameGUI::hide() {
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->hide();
 
+	_compass->hide();
 	_quickchat->hide();
 	_quickbar->hide();
 }
@@ -96,6 +103,15 @@ void IngameGUI::setPoisoned(uint partyMember) {
 	assert(partyMember < _party.size());
 
 	_party[partyMember]->setHealthColor(132.0 / 255.0, 182.0 / 255.0,  74.0 / 255.0, 1.0);
+}
+
+void IngameGUI::updateCompass() {
+	if (!CameraMan.wasChanged())
+		return;
+
+	const float *orientation = CameraMan.getOrientation();
+
+	_compass->setRotation(orientation[0] + 90.0, orientation[1], orientation[2]);
 }
 
 } // End of namespace NWN

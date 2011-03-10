@@ -148,6 +148,7 @@ void Module::run() {
 	if (!startMovie.empty())
 		playVideo(startMovie);
 
+	_ingameGUI->updateCompass();
 	_ingameGUI->show();
 
 	_exit    = false;
@@ -165,6 +166,7 @@ void Module::run() {
 	_ifo.getEntryDirection(entryDirX, entryDirY);
 
 	CameraMan.setOrientation(entryDirX, entryDirY);
+	_ingameGUI->updateCompass();
 
 	EventMan.enableKeyRepeat();
 
@@ -214,6 +216,7 @@ void Module::run() {
 				}
 			}
 
+			_ingameGUI->updateCompass();
 			EventMan.delay(10);
 		}
 

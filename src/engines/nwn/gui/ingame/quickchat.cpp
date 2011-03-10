@@ -83,11 +83,11 @@ void ChatModeButton::setTag(const Common::UString &tag) {
 Quickchat::Quickchat(float position) {
 	// Prompt
 
-	WidgetPanel *prompt = new WidgetPanel(*this, "Prompt", "pnl_chat_prompt");
+	_prompt = new WidgetPanel(*this, "Prompt", "pnl_chat_prompt");
 
-	prompt->setPosition(0.0, position, 0.0);
+	_prompt->setPosition(0.0, position, 0.0);
 
-	addWidget(prompt);
+	addWidget(_prompt);
 
 
 	// Mode button
@@ -104,6 +104,14 @@ Quickchat::Quickchat(float position) {
 }
 
 Quickchat::~Quickchat() {
+}
+
+float Quickchat::getWidth() const {
+	return _prompt->getWidth();
+}
+
+float Quickchat::getHeight() const {
+	return _prompt->getHeight();
 }
 
 void Quickchat::callbackActive(Widget &widget) {

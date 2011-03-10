@@ -57,6 +57,7 @@ noinst_HEADERS = nwn.h \
                  gui/ingame/main.h \
                  gui/ingame/quickbar.h \
                  gui/ingame/quickchat.h \
+                 gui/ingame/compass.h \
                  gui/ingame/charinfo.h \
                  gui/ingame/partyleader.h
 
@@ -116,5 +117,6 @@ libnwn_la_SOURCES = nwn.cpp \
                     gui/ingame/main.cpp \
                     gui/ingame/quickbar.cpp \
                     gui/ingame/quickchat.cpp \
+                    gui/ingame/compass.cpp \
                     gui/ingame/charinfo.cpp \
                     gui/ingame/partyleader.cpp
