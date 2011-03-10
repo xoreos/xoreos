@@ -17,7 +17,7 @@
 
 #include "graphics/aurora/types.h"
 
-#include "engines/aurora/gui.h"
+#include "engines/aurora/widget.h"
 
 namespace Common {
 	class UString;

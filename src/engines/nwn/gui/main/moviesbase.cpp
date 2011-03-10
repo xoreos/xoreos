@@ -13,6 +13,7 @@
  */
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/widget.h"
 
 #include "engines/nwn/gui/main/moviesbase.h"
 

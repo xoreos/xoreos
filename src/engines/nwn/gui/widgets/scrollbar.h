@@ -21,11 +21,13 @@
 
 #include "graphics/aurora/textureman.h"
 
-#include "engines/aurora/gui.h"
+#include "engines/aurora/widget.h"
 
 namespace Engines {
 
 namespace NWN {
+
+class GUI;
 
 /** A NWN scrollbar model. */
 class Scrollbar : public Graphics::GUIFrontElement {

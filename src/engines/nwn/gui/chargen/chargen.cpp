@@ -12,6 +12,8 @@
  *  The new character generator.
  */
 
+#include "engines/aurora/widget.h"
+
 #include "engines/nwn/module.h"
 
 #include "engines/nwn/gui/chargen/chargen.h"

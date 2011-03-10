@@ -21,6 +21,8 @@
 
 #include "graphics/aurora/types.h"
 
+#include "engines/aurora/widget.h"
+
 #include "engines/nwn/gui/gui.h"
 
 namespace Engines {
