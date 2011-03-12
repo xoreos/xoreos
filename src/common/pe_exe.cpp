@@ -166,11 +166,10 @@ void PEResources::parseResourceLevel(Section &section, uint32 offset, int level)
 			uint32 startPos = _exe->pos();
 			_exe->seek(section.offset + (value & 0x7fffffff));
 
-			// Read in the name, truncating from unicode to ascii
-			UString name;
+			// Read in the name, UTF-16LE
 			uint16 nameLength = _exe->readUint16LE();
-			while (nameLength--)
-				name += (char)(_exe->readUint16LE() & 0xff);
+			UString name;
+			name.readUTF16LE(*_exe, nameLength);
 
 			_exe->seek(startPos);
 
@@ -199,7 +198,7 @@ void PEResources::parseResourceLevel(Section &section, uint32 offset, int level)
 			resource.offset = _exe->readUint32LE() + section.offset - section.virtualAddress;
 			resource.size = _exe->readUint32LE();
 
-			//debug(4, "Found resource '%s' '%s' '%s' at %d of size %d", _curType.toString().c_str(),
+			//status("Found resource '%s' '%s' '%s' at %d of size %d", _curType.toString().c_str(),
 			//		_curName.toString().c_str(), _curLang.toString().c_str(), resource.offset, resource.size);
 
 			_resources[_curType][_curName][_curLang] = resource;
