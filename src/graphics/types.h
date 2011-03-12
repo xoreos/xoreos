@@ -17,7 +17,7 @@
 
 #include <SDL.h>
 
-#include "graphics/glew/glew.h"
+#include "glew/glew.h"
 
 namespace Graphics {
 

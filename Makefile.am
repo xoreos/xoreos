@@ -3,7 +3,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 
 EXTRA_DIST = FAQ TODO
 
-SUBDIRS = src
+SUBDIRS = glew src
 
 doxygen:
 	doxygen

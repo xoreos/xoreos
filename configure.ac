@@ -129,6 +129,7 @@ AC_SUBST(EOS_LIBS)
 AC_SUBST(WERROR)
 
 AC_OUTPUT(utf8cpp/Makefile \
+          glew/Makefile \
           src/common/Makefile \
           src/graphics/Makefile \
           src/graphics/images/Makefile \
