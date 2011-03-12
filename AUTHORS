@@ -31,7 +31,7 @@ ax_check_gl.m4 / ax_check_glu.m4
 glew
 ****
    eos uses glew, The OpenGL Extension Wrangler Library
-   (<<http://glew.sourceforge.net/>), to safely check for and use OpenGL 1.2+
+   (<http://glew.sourceforge.net/>), to safely check for and use OpenGL 1.2+
    features and extensions. To minimize dependencies on "uncommon" libraries,
    eos completely includes the glew code, one of its suggested use methods.
    glew is licensed under the Modified BSD License, the Mesa 3-D License
