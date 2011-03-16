@@ -54,6 +54,8 @@ private:
 
 	Aurora::ResourceManager::ChangeID _moduleResources;
 	Aurora::ResourceManager::ChangeID _scriptResources;
+	Aurora::ResourceManager::ChangeID _xboxLayoutResources;
+	Aurora::ResourceManager::ChangeID _xboxTextureResources;
 
 	void loadIFO(const Common::UString &name);
 

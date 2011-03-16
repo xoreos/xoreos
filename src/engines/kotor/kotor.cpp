@@ -89,7 +89,9 @@ void KotOREngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
+
+	if (_platform != Aurora::kPlatformXbox)
+		initCursors();
 
 	if (EventMan.quitRequested())
 		return;
@@ -128,7 +130,8 @@ void KotOREngine::run(const Common::UString &target) {
 	status("Entering event loop");
 
 	// Show a cursor
-	CursorMan.set("default", false);
+	if (_platform != Aurora::kPlatformXbox)
+		CursorMan.set("default", false);
 
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
@@ -192,11 +195,14 @@ void KotOREngine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
+	ResMan.addArchiveDir(Aurora::kArchiveBIF, (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "lips");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
+
+	if (_platform != Aurora::kPlatformXbox)
+		ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
+
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
-	ResMan.addArchiveDir(Aurora::kArchiveRIM, "rims");
+	ResMan.addArchiveDir(Aurora::kArchiveRIM, (_platform == Aurora::kPlatformXbox) ? "rimsxbox" : "rims");
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "modules");
 
 	status("Loading main KEY");
@@ -212,9 +218,13 @@ void KotOREngine::init() {
 	indexMandatoryArchive(Aurora::kArchiveRIM, "chargen.rim"   , 16);
 	indexMandatoryArchive(Aurora::kArchiveRIM, "chargendx.rim" , 17);
 
-	status("Loading high-res texture packs");
-	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 20);
-	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 21);
+	if (_platform != Aurora::kPlatformXbox) {
+		// The Windows/Mac versions have swappable texture packs
+		// The Xbox version has all its textures in "textures.bif"
+		status("Loading high-res texture packs");
+		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 20);
+		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 21);
+	}
 
 	status("Indexing extra sound resources");
 	indexMandatoryDirectory("streamsounds", 0, -1, 30);
@@ -233,6 +243,11 @@ void KotOREngine::init() {
 		status("Indexing Mac-specific resources");
 		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources",         0, -1, 34);
 		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources/Cursors", 0, -1, 35);
+	} else if (_platform == Aurora::kPlatformXbox) {
+		status("Indexing Xbox-specific resources");
+		indexMandatoryDirectory("errortex"  , 0, -1, 34);
+		indexMandatoryDirectory("localvault", 0, -1, 35);
+		indexMandatoryDirectory("media"     , 0, -1, 36);
 	}
 
 	status("Indexing override files");

@@ -43,6 +43,8 @@ Module::~Module() {
 
 	ResMan.undo(_moduleResources);
 	ResMan.undo(_scriptResources);
+	ResMan.undo(_xboxLayoutResources);
+	ResMan.undo(_xboxTextureResources);
 }
 
 void Module::load(const Common::UString &name) {
@@ -68,6 +70,13 @@ void Module::load(const Common::UString &name) {
 void Module::loadResources(const Common::UString &name) {
 	_moduleResources = ResMan.addArchive(Aurora::kArchiveRIM, name + ".rim"  , 100);
 	_scriptResources = ResMan.addArchive(Aurora::kArchiveRIM, name + "_s.rim", 105);
+
+	try {
+		_xboxLayoutResources  = ResMan.addArchive(Aurora::kArchiveRIM, name + "_a.rim"  , 110);
+		_xboxTextureResources = ResMan.addArchive(Aurora::kArchiveRIM, name + "_adx.rim", 115);
+	} catch (...) {
+		// Ignore, these only exist on the Xbox
+	}
 }
 
 void Module::loadIFO(const Common::UString &name) {
