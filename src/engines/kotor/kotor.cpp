@@ -98,14 +98,19 @@ void KotOREngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	playVideo("leclogo");
-	playVideo("biologo");
+	if (_platform == Aurora::kPlatformXbox) {
+		playVideo("logo");
+		// TODO: What the hell is (sizzle|sizzle2).xmv?
+	} else {
+		playVideo("leclogo");
+		playVideo("biologo");
 
-	// On Mac OS X, play the Aspyr logo
-	if (_platform == Aurora::kPlatformMacOSX)
-		playVideo("Aspyr_BlueDust_intro");
+		// On Mac OS X, play the Aspyr logo
+		if (_platform == Aurora::kPlatformMacOSX)
+			playVideo("Aspyr_BlueDust_intro");
 
-	playVideo("legal");
+		playVideo("legal");
+	}
 
 	playVideo("01a");
 
