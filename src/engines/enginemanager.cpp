@@ -55,6 +55,7 @@ static const EngineProbe *kProbes[] = {
 	&NWN2::kNWN2EngineProbe,
 	&KotOR::kKotOREngineProbeWin,
 	&KotOR::kKotOREngineProbeMac,
+	&KotOR::kKotOREngineProbeXbox,
 	&KotOR2::kKotOR2EngineProbe,
 	&TheWitcher::kTheWitcherEngineProbe,
 	&Sonic::kSonicEngineProbe,

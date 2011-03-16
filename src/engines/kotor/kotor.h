@@ -60,8 +60,17 @@ public:
 	Aurora::Platform getPlatform() const { return Aurora::kPlatformMacOSX; }
 };
 
-extern const KotOREngineProbeWin kKotOREngineProbeWin;
-extern const KotOREngineProbeMac kKotOREngineProbeMac;
+class KotOREngineProbeXbox : public KotOREngineProbe {
+public:
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformXbox; }
+};
+
+extern const KotOREngineProbeWin  kKotOREngineProbeWin;
+extern const KotOREngineProbeMac  kKotOREngineProbeMac;
+extern const KotOREngineProbeXbox kKotOREngineProbeXbox;
 
 class KotOREngine : public Engines::Engine {
 public:
