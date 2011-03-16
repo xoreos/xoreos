@@ -72,13 +72,16 @@ ResourceManager::ResourceManager() : _rimsAreERFs(false) {
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeMPG);
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeWMV);
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeMOV);
+	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeXMV);
 
 	_resourceTypeTypes[kResourceSound].push_back(kFileTypeWAV);
 	_resourceTypeTypes[kResourceSound].push_back(kFileTypeOGG);
+	_resourceTypeTypes[kResourceSound].push_back(kFileTypeWMA);
 
 	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeWAV);
 	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeBMU);
 	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeOGG);
+	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeWMA);
 
 	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeCUR);
 	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeCURS);
