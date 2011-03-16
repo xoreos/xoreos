@@ -54,7 +54,10 @@ void VideoPlayer::load(const Common::UString &name) {
 		_video = new Bink(video);
 	else if (type == ::Aurora::kFileTypeMOV)
 		_video = new QuickTimeDecoder(video);
-	else {
+	else if (type == ::Aurora::kFileTypeXMV) {
+		delete video;
+		throw Common::Exception("XMV video not supported");
+	} else {
 		delete video;
 		throw Common::Exception("Unsupported video resource type %d", (int) type);
 	}
