@@ -80,6 +80,7 @@ bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common:
 
 
 KotOREngine::KotOREngine(Aurora::Platform platform) : _platform(platform) {
+	_hasLiveKey = false;
 }
 
 KotOREngine::~KotOREngine() {
@@ -213,8 +214,10 @@ void KotOREngine::init() {
 	status("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
 
-	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 1))
+	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 1)) {
 		status("Loading Xbox DLC KEY");
+		_hasLiveKey = true;
+	}
 
 	status("Loading global auxiliary resources");
 	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenu.rim"  , 10);
@@ -256,6 +259,10 @@ void KotOREngine::init() {
 		indexMandatoryDirectory("errortex"  , 0, -1, 34);
 		indexMandatoryDirectory("localvault", 0, -1, 35);
 		indexMandatoryDirectory("media"     , 0, -1, 36);
+
+		// For the DLC, we need to index the "sound" directory as well
+		if (_hasLiveKey)
+			indexMandatoryDirectory("sound", 0, -1, 37);
 	}
 
 	status("Indexing override files");
@@ -397,6 +404,10 @@ void KotOREngine::initCursors() {
 	CursorMan.add("gui_mp_useu"     , "use"      , false);
 	CursorMan.add("gui_mp_usedp"    , "use+"     , true);
 	CursorMan.add("gui_mp_useup"    , "use+"     , false);
+}
+
+bool KotOREngine::hasYavin4Module() const {
+	return _platform != Aurora::kPlatformXbox || _hasLiveKey;
 }
 
 } // End of namespace KotOR

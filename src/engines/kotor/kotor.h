@@ -86,6 +86,9 @@ private:
 	void init();
 	void initCursorsRemap();
 	void initCursors();
+
+	bool _hasLiveKey;
+	bool hasYavin4Module() const;
 };
 
 } // End of namespace KotOR
