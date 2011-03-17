@@ -213,6 +213,9 @@ void KotOREngine::init() {
 	status("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
 
+	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 1))
+		status("Loading Xbox DLC KEY");
+
 	status("Loading global auxiliary resources");
 	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenu.rim"  , 10);
 	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenudx.rim", 11);
