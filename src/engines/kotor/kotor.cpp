@@ -229,9 +229,13 @@ void KotOREngine::init() {
 	indexMandatoryArchive(Aurora::kArchiveRIM, "chargen.rim"   , 16);
 	indexMandatoryArchive(Aurora::kArchiveRIM, "chargendx.rim" , 17);
 
-	if (_platform != Aurora::kPlatformXbox) {
+	if (_platform == Aurora::kPlatformXbox) {
+		// The Xbox version has most of its textures in "textures.bif"
+		// Some, however, reside in "players.erf"
+		status("Loading Xbox textures");
+		indexMandatoryArchive(Aurora::kArchiveERF, "players.erf", 20);
+	} else {
 		// The Windows/Mac versions have swappable texture packs
-		// The Xbox version has all its textures in "textures.bif"
 		status("Loading high-res texture packs");
 		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 20);
 		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 21);
