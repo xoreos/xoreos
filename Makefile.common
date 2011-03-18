@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
-FLAGS_C_CXX = -I$(top_srcdir)/src/ -ggdb -Wall -Wno-multichar -Wpointer-arith \
-              -Wshadow $(EOS_CXXFLAGS) $(BOOST_CPPFLAGS) $(GL_CFLAGS) \
-              $(GLU_CFLAGS) -DGLEW_STATIC $(WERROR)
+FLAGS_C_CXX = -I$(top_srcdir) -I$(top_srcdir)/src/ -ggdb -Wall -Wno-multichar \
+              -Wpointer-arith -Wshadow $(EOS_CXXFLAGS) $(BOOST_CPPFLAGS) \
+              $(GL_CFLAGS) $(GLU_CFLAGS) -DGLEW_STATIC $(WERROR)
 
 AM_CXXFLAGS = $(FLAGS_C_CXX) -Wnon-virtual-dtor
 AM_CFLAGS   = $(FLAGS_C_CXX)
