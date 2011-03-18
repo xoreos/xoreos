@@ -30,6 +30,10 @@ using boost::to_lower_copy;
 using boost::equals;
 using boost::iequals;
 
+#if BOOST_FILESYSTEM_VERSION == 3
+#define stem() stem().native()
+#endif
+
 namespace Common {
 
 FileList::FilePath::FilePath(UString b, boost::filesystem::path p) :

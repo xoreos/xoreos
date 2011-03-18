@@ -32,6 +32,12 @@ using boost::filesystem::directory_iterator;
 using boost::equals;
 using boost::iequals;
 
+#if BOOST_FILESYSTEM_VERSION == 3
+#define stem() stem().native()
+#define extension() extension().native()
+#define filename() filename().native()
+#endif
+
 namespace Common {
 
 bool FilePath::isRegularFile(const UString &p) {
