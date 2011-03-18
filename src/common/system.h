@@ -23,8 +23,6 @@
 
 #if defined(_MSC_VER)
 
-	#define scumm_stricmp stricmp
-	#define scumm_strnicmp _strnicmp
 	#define snprintf _snprintf
 
 	#define EOS_LITTLE_ENDIAN
@@ -39,9 +37,6 @@
 
 #elif defined(__MINGW32__)
 
-	#define scumm_stricmp stricmp
-	#define scumm_strnicmp strnicmp
-
 	#define EOS_LITTLE_ENDIAN
 
 	#define PLUGIN_EXPORT __declspec(dllexport)
@@ -51,9 +46,6 @@
 	#endif
 
 #elif defined(UNIX)
-
-	#define scumm_stricmp strcasecmp
-	#define scumm_strnicmp strncasecmp
 
 	#if defined(HAVE_CONFIG_H)
 		#if defined(WORDS_BIGENDIAN)
