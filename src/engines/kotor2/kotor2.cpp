@@ -22,6 +22,7 @@
 
 #include "common/util.h"
 #include "common/filelist.h"
+#include "common/filepath.h"
 #include "common/stream.h"
 #include "common/configman.h"
 
@@ -42,7 +43,8 @@ namespace Engines {
 
 namespace KotOR2 {
 
-const KotOR2EngineProbe kKotOR2EngineProbe;
+const KotOR2EngineProbeWin  kKotOR2EngineProbeWin;
+const KotOR2EngineProbeXbox kKotOR2EngineProbeXbox;
 
 const Common::UString KotOR2EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
 
@@ -54,21 +56,23 @@ const Common::UString &KotOR2EngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool KotOR2EngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
-	// If either swkotor2.ini or swkotor2.exe exists, this should be a valid path
-	return rootFiles.contains(".*/swkotor2.(exe|ini)", true);
-}
-
-bool KotOR2EngineProbe::probe(Common::SeekableReadStream &stream) const {
-	return false;
-}
-
 Engines::Engine *KotOR2EngineProbe::createEngine() const {
-	return new KotOR2Engine;
+	return new KotOR2Engine(getPlatform());
+}
+
+bool KotOR2EngineProbeWin::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+	// If either "swkotor2.exe" exists, this should be a valid path for the Windows port
+	return rootFiles.contains(".*/swkotor2.exe", true);
+}
+
+bool KotOR2EngineProbeXbox::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+	// If the "dataxbox" directory exists and "weapons.erf" exists, this should be a valid path for the Xbox port
+	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "dataxbox");
+	return !appDirectory.empty() && rootFiles.contains(".*/weapons.erf", true);
 }
 
 
-KotOR2Engine::KotOR2Engine() {
+KotOR2Engine::KotOR2Engine(Aurora::Platform platform) : _platform(platform) {
 }
 
 KotOR2Engine::~KotOR2Engine() {

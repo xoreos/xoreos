@@ -38,22 +38,36 @@ public:
 
 	const Common::UString &getGameName() const;
 
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	bool probe(Common::SeekableReadStream &stream) const;
+	bool probe(Common::SeekableReadStream &stream) const { return false; }
 
 	Engines::Engine *createEngine() const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
 
 private:
 	static const Common::UString kGameName;
 };
 
-extern const KotOR2EngineProbe kKotOR2EngineProbe;
+class KotOR2EngineProbeWin : public KotOR2EngineProbe {
+public:
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
+};
+
+class KotOR2EngineProbeXbox : public KotOR2EngineProbe {
+public:
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformXbox; }
+};
+
+extern const KotOR2EngineProbeWin  kKotOR2EngineProbeWin;
+extern const KotOR2EngineProbeXbox kKotOR2EngineProbeXbox;
 
 class KotOR2Engine : public Engines::Engine {
 public:
-	KotOR2Engine();
+	KotOR2Engine(Aurora::Platform platform);
 	~KotOR2Engine();
 
 	void run(const Common::UString &target);
@@ -64,6 +78,8 @@ private:
 	void init();
 	void initCursorsRemap();
 	void initCursors();
+
+	Aurora::Platform _platform;
 };
 
 } // End of namespace KotOR2
