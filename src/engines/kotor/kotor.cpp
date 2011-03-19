@@ -73,9 +73,9 @@ bool KotOREngineProbeMac::probe(const Common::UString &directory, const Common::
 }
 
 bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
-	// If the "dataxbox" directory exists, this should be a valid path for the Xbox port
+	// If the "dataxbox" directory exists and "players.erf" exists, this should be a valid path for the Xbox port
 	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "dataxbox");
-	return !appDirectory.empty();
+	return !appDirectory.empty() && rootFiles.contains(".*/players.erf", true);
 }
 
 
