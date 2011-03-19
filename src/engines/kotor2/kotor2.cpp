@@ -82,7 +82,9 @@ void KotOR2Engine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
+
+	if (_platform != Aurora::kPlatformXbox)
+		initCursors();
 
 	if (EventMan.quitRequested())
 		return;
@@ -116,7 +118,8 @@ void KotOR2Engine::run(const Common::UString &target) {
 	status("Entering event loop");
 
 	// Show a cursor
-	CursorMan.set("default", false);
+	if (_platform != Aurora::kPlatformXbox)
+		CursorMan.set("default", false);
 
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
@@ -180,19 +183,27 @@ void KotOR2Engine::init() {
 	ResMan.registerDataBaseDir(_baseDirectory);
 
 	status("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
+	ResMan.addArchiveDir(Aurora::kArchiveBIF, (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "lips");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
+
+	if (_platform != Aurora::kPlatformXbox)
+		ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
+
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
-	ResMan.addArchiveDir(Aurora::kArchiveRIM, "rims");
+	ResMan.addArchiveDir(Aurora::kArchiveRIM, (_platform == Aurora::kPlatformXbox) ? "rimsxbox" : "rims");
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "modules");
+
+	if (_platform == Aurora::kPlatformXbox)
+		ResMan.addArchiveDir(Aurora::kArchiveERF, "SuperModels");
 
 	status("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
 
-	status("Loading high-res texture packs");
-	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 10);
-	indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 11);
+	if (_platform != Aurora::kPlatformXbox) {
+		status("Loading high-res texture packs");
+		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 10);
+		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 11);
+	}
 
 	status("Indexing extra sound resources");
 	indexMandatoryDirectory("streamsounds", 0, -1, 20);
@@ -203,9 +214,14 @@ void KotOR2Engine::init() {
 	status("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"      , 0, -1, 23);
 
-	status("Indexing Windows-specific resources");
-	initCursorsRemap();
-	indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor2.exe", 24);
+	if (_platform == Aurora::kPlatformWindows) {
+		status("Indexing Windows-specific resources");
+		initCursorsRemap();
+		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor2.exe", 24);
+	} else if (_platform == Aurora::kPlatformXbox) {
+		status("Indexing Xbox-specific resources");
+		indexMandatoryDirectory("SWRC", 0, -1, 24);
+	}
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
