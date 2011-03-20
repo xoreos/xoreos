@@ -20,6 +20,7 @@
 #include "graphics/video/decoder.h"
 #include "graphics/video/bink.h"
 #include "graphics/video/quicktime.h"
+#include "graphics/video/xmv.h"
 
 #include "graphics/aurora/videoplayer.h"
 
@@ -54,10 +55,9 @@ void VideoPlayer::load(const Common::UString &name) {
 		_video = new Bink(video);
 	else if (type == ::Aurora::kFileTypeMOV)
 		_video = new QuickTimeDecoder(video);
-	else if (type == ::Aurora::kFileTypeXMV) {
-		delete video;
-		throw Common::Exception("XMV video not supported");
-	} else {
+	else if (type == ::Aurora::kFileTypeXMV)
+		_video = new XboxMediaVideo(video);
+	else {
 		delete video;
 		throw Common::Exception("Unsupported video resource type %d", (int) type);
 	}
