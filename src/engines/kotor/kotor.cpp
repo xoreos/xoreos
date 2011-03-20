@@ -62,7 +62,7 @@ Engines::Engine *KotOREngineProbe::createEngine() const {
 }
 
 bool KotOREngineProbeWin::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
-	// If either swkotor.exe exists, this should be a valid path for the Windows port
+	// If swkotor.exe exists, this should be a valid path for the Windows port
 	return rootFiles.contains(".*/swkotor.exe", true);
 }
 
