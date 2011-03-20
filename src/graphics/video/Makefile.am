@@ -5,7 +5,8 @@ noinst_LTLIBRARIES = libvideo.la
 noinst_HEADERS = decoder.h \
                  bink.h \
                  binkdata.h \
-                 fader.h
+                 fader.h \
+                 quicktime.h
 
 libvideo_la_SOURCES = decoder.cpp \
                       bink.cpp \
