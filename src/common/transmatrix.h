@@ -28,6 +28,8 @@ public:
 	float getY() const;
 	float getZ() const;
 
+	void get(float &x, float &y, float &z) const;
+
 	void loadIdentity();
 
 	void translate(float x, float y, float z);

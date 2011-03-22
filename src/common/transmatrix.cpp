@@ -33,6 +33,12 @@ float TransformationMatrix::getZ() const {
 	return _elements[11];
 }
 
+void TransformationMatrix::get(float &x, float &y, float &z) const {
+	x = getX();
+	y = getY();
+	z = getZ();
+}
+
 void TransformationMatrix::loadIdentity() {
 	_elements[ 0] = 1.0; _elements[ 1] = 0.0; _elements[ 2] = 0.0; _elements[ 3] = 0.0;
 	_elements[ 4] = 0.0; _elements[ 5] = 1.0; _elements[ 6] = 0.0; _elements[ 7] = 0.0;
