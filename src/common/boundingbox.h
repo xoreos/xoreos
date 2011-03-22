@@ -29,6 +29,8 @@ public:
 
 	bool isEmpty() const;
 
+	const Common::TransformationMatrix &getOrigin() const;
+
 	void getMin(float &x, float &y, float &z) const;
 	void getMax(float &x, float &y, float &z) const;
 
