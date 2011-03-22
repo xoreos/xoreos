@@ -193,24 +193,19 @@ void BoundingBox::absolutize() {
 		// Nothing to do
 		return;
 
+	float coords[8][3];
 	for (int i = 0; i < 8; i++) {
 		TransformationMatrix c = _origin;
 
 		c.translate(_coords[i][0], _coords[i][1], _coords[i][2]);
 
-		_coords[i][0] = c.getX(); _coords[i][1] = c.getY(), _coords[i][2] = c.getZ();
+		c.get(coords[i][0], coords[i][1], coords[i][2]);
 	}
 
-	TransformationMatrix min = _origin;
-	TransformationMatrix max = _origin;
+	clear();
 
-	min.translate(_min[0], _min[1], _min[2]);
-	max.translate(_max[0], _max[1], _max[2]);
-
-	_min[0] = min.getX(); _min[1] = min.getY(); _min[2] = min.getZ();
-	_max[0] = max.getX(); _max[1] = max.getY(); _max[2] = max.getZ();
-
-	_origin.loadIdentity();
+	for (int i = 0; i < 8; i++)
+		add(coords[i][0], coords[i][1], coords[i][2]);
 }
 
 BoundingBox BoundingBox::getAbsolute() const {
