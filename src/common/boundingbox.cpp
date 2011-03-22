@@ -53,25 +53,29 @@ bool BoundingBox::isEmpty() const {
 void BoundingBox::getMin(float &x, float &y, float &z) const {
 	// Minimum, relative to the origin
 
-	TransformationMatrix m = _origin;
+	TransformationMatrix min = _origin;
+	min.translate(_min[0], _min[1], _min[2]);
 
-	m.translate(_min[0], _min[1], _min[2]);
+	TransformationMatrix max = _origin;
+	max.translate(_max[0], _max[1], _max[2]);
 
-	x = m.getX();
-	y = m.getY();
-	z = m.getZ();
+	x = MIN(min.getX(), max.getX());
+	y = MIN(min.getY(), max.getY());
+	z = MIN(min.getZ(), max.getZ());
 }
 
 void BoundingBox::getMax(float &x, float &y, float &z) const {
 	// Maximum, relative to the origin
 
-	TransformationMatrix m = _origin;
+	TransformationMatrix min = _origin;
+	min.translate(_min[0], _min[1], _min[2]);
 
-	m.translate(_max[0], _max[1], _max[2]);
+	TransformationMatrix max = _origin;
+	max.translate(_max[0], _max[1], _max[2]);
 
-	x = m.getX();
-	y = m.getY();
-	z = m.getZ();
+	x = MAX(min.getX(), max.getX());
+	y = MAX(min.getY(), max.getY());
+	z = MAX(min.getZ(), max.getZ());
 }
 
 float BoundingBox::getWidth() const {
@@ -90,15 +94,15 @@ bool BoundingBox::isIn(float x, float y) const {
 	if (_empty)
 		return false;
 
-	TransformationMatrix min = _origin;
-	TransformationMatrix max = _origin;
+	float minX, minY, minZ;
+	getMin(minX, minY, minZ);
 
-	min.translate(_min[0], _min[1], _min[2]);
-	max.translate(_max[0], _max[1], _max[2]);
+	float maxX, maxY, maxZ;
+	getMax(maxX, maxY, maxZ);
 
-	if ((x < min.getX()) || (x > max.getX()))
+	if ((x < minX) || (x > maxX))
 		return false;
-	if ((y < min.getY()) || (y > max.getY()))
+	if ((y < minY) || (y > maxY))
 		return false;
 
 	return true;
@@ -108,17 +112,17 @@ bool BoundingBox::isIn(float x, float y, float z) const {
 	if (_empty)
 		return false;
 
-	TransformationMatrix min = _origin;
-	TransformationMatrix max = _origin;
+	float minX, minY, minZ;
+	getMin(minX, minY, minZ);
 
-	min.translate(_min[0], _min[1], _min[2]);
-	max.translate(_max[0], _max[1], _max[2]);
+	float maxX, maxY, maxZ;
+	getMax(maxX, maxY, maxZ);
 
-	if ((x < min.getX()) || (x > max.getX()))
+	if ((x < minX) || (x > maxX))
 		return false;
-	if ((y < min.getY()) || (y > max.getY()))
+	if ((y < minY) || (y > maxY))
 		return false;
-	if ((z < min.getZ()) || (z > max.getZ()))
+	if ((z < minZ) || (y > maxZ))
 		return false;
 
 	return true;
