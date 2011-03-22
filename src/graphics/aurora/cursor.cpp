@@ -51,12 +51,12 @@ void Cursor::render() {
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0, 0.0);
 		glVertex2f(0.0, 0.0);
-		glTexCoord2f(0.0, 1.0);
-		glVertex2f(0.0, _width);
-		glTexCoord2f(1.0, 1.0);
-		glVertex2f(_height, _width);
 		glTexCoord2f(1.0, 0.0);
 		glVertex2f(_height, 0.0);
+		glTexCoord2f(1.0, 1.0);
+		glVertex2f(_height, _width);
+		glTexCoord2f(0.0, 1.0);
+		glVertex2f(0.0, _width);
 	glEnd();
 }
 
