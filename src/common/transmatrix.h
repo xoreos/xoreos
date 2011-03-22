@@ -36,6 +36,8 @@ public:
 	void scale    (float x, float y, float z);
 
 	void rotate(float angle, float x, float y, float z);
+
+	void transform(const Matrix &m);
 };
 
 } // End of namespace Common

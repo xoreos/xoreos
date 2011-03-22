@@ -103,4 +103,8 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 	(*this) *= rMatrix;
 }
 
+void TransformationMatrix::transform(const Matrix &m) {
+	(*this) *= m;
+}
+
 } // End of namespace Common
