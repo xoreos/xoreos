@@ -24,7 +24,7 @@ static const byte kEncodingRGBA = 0x04;
 
 namespace Graphics {
 
-TPC::TPC(Common::SeekableReadStream *tpc) : _tpc(tpc), _compressed(true),
+TPC::TPC(Common::SeekableReadStream *tpc) : _tpc(tpc), _compressed(true), _hasAlpha(false),
 	_format(kPixelFormatRGB), _formatRaw(kPixelFormatDXT1), _dataType(kPixelDataType8),
 	_txiData(0), _txiDataSize(0) {
 
@@ -67,6 +67,10 @@ void TPC::load() {
 
 bool TPC::isCompressed() const {
 	return _compressed;
+}
+
+bool TPC::hasAlpha() const {
+	return _hasAlpha;
 }
 
 PixelFormat TPC::getFormat() const {
@@ -132,6 +136,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 		if        (encoding == kEncodingRGB) {
 			// RGB, no alpha channel
 
+			_hasAlpha   = false;
 			_format     = kPixelFormatRGB;
 			_formatRaw  = kPixelFormatRGB8;
 			_dataType   = kPixelDataType8;
@@ -141,6 +146,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 		} else if (encoding == kEncodingRGBA) {
 			// RGBA, alpha channel
 
+			_hasAlpha   = true;
 			_format     = kPixelFormatRGBA;
 			_formatRaw  = kPixelFormatRGBA8;
 			_dataType   = kPixelDataType8;
@@ -154,6 +160,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 		// S3TC DXT1
 
 		_compressed = true;
+		_hasAlpha   = false;
 		_format     = kPixelFormatBGR;
 		_formatRaw  = kPixelFormatDXT1;
 		_dataType   = kPixelDataType8;
@@ -164,6 +171,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc) {
 		// S3TC DXT5
 
 		_compressed = true;
+		_hasAlpha   = true;
 		_format     = kPixelFormatBGRA;
 		_formatRaw  = kPixelFormatDXT5;
 		_dataType   = kPixelDataType8;

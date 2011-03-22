@@ -96,6 +96,11 @@ bool SBM::isCompressed() const {
 	return false;
 }
 
+bool SBM::hasAlpha() const {
+	// SBMs always have alpha
+	return true;
+}
+
 PixelFormat SBM::getFormat() const {
 	// SBM pixels always BGRA
 	return kPixelFormatBGRA;

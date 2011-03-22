@@ -44,6 +44,8 @@ public:
 	const uint32 getWidth()  const;
 	const uint32 getHeight() const;
 
+	bool hasAlpha() const;
+
 	/** Return the TXI. */
 	const TXI &getTXI() const;
 

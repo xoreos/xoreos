@@ -37,6 +37,7 @@ public:
 	void load();
 
 	bool isCompressed() const;
+	bool hasAlpha() const;
 
 	PixelFormat    getFormat() const;
 	PixelFormatRaw getFormatRaw() const;
@@ -62,6 +63,7 @@ private:
 	Common::SeekableReadStream *_dds;
 
 	bool _compressed;
+	bool _hasAlpha;
 
 	PixelFormat    _format;
 	PixelFormatRaw _formatRaw;

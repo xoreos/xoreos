@@ -88,6 +88,13 @@ const uint32 Texture::getHeight() const {
 	return _height;
 }
 
+bool Texture::hasAlpha() const {
+	if (!_image)
+		return false;
+
+	return _image->hasAlpha();
+}
+
 void Texture::load(const Common::UString &name) {
 	Common::SeekableReadStream *img = ResMan.getResource(::Aurora::kResourceImage, name, &_type);
 	if (!img)

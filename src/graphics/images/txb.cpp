@@ -25,7 +25,7 @@ static const byte kEncodingDXT5 = 0x0C;
 
 namespace Graphics {
 
-TXB::TXB(Common::SeekableReadStream *txb) : _txb(txb), _compressed(true),
+TXB::TXB(Common::SeekableReadStream *txb) : _txb(txb), _compressed(true), _hasAlpha(false),
 	_format(kPixelFormatBGRA), _formatRaw(kPixelFormatDXT5), _dataType(kPixelDataType8),
 	_dataSize(0), _txiData(0), _txiDataSize(0) {
 
@@ -71,6 +71,10 @@ void TXB::load() {
 
 bool TXB::isCompressed() const {
 	return _compressed;
+}
+
+bool TXB::hasAlpha() const {
+	return _hasAlpha;
 }
 
 PixelFormat TXB::getFormat() const {
@@ -136,7 +140,7 @@ void TXB::readHeader(Common::SeekableReadStream &txb) {
 		// Raw BGRA
 
 		_compressed = false;
-
+		_hasAlpha   = true;
 		_format     = kPixelFormatBGRA;
 		_formatRaw  = kPixelFormatRGBA8;
 		_dataType   = kPixelDataType8;
@@ -148,6 +152,7 @@ void TXB::readHeader(Common::SeekableReadStream &txb) {
 		// S3TC DXT1
 
 		_compressed = true;
+		_hasAlpha   = false;
 		_format     = kPixelFormatBGR;
 		_formatRaw  = kPixelFormatDXT1;
 		_dataType   = kPixelDataType8;
@@ -159,6 +164,7 @@ void TXB::readHeader(Common::SeekableReadStream &txb) {
 		// S3TC DXT5
 
 		_compressed = true;
+		_hasAlpha   = true;
 		_format     = kPixelFormatBGRA;
 		_formatRaw  = kPixelFormatDXT5;
 		_dataType   = kPixelDataType8;

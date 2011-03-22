@@ -49,6 +49,8 @@ public:
 	/** Is the image data compressed? */
 	virtual bool isCompressed() const = 0;
 
+	virtual bool hasAlpha() const = 0;
+
 	/** Return the image data's general format. */
 	virtual PixelFormat    getFormat() const = 0;
 	/** Return the image data's raw format. */

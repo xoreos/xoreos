@@ -20,7 +20,9 @@
 
 namespace Graphics {
 
-TGA::TGA(Common::SeekableReadStream *tga) : _tga(tga), _format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8) {
+TGA::TGA(Common::SeekableReadStream *tga) : _tga(tga),
+	_hasAlpha(false), _format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8) {
+
 	assert(_tga);
 }
 
@@ -77,9 +79,11 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
 
 	if (imageType == 2) {
 		if      (pixelDepth == 24) {
+			_hasAlpha  = false;
 			_format    = kPixelFormatBGR;
 			_formatRaw = kPixelFormatRGB8;
 		} else if (pixelDepth == 32) {
+			_hasAlpha  = true;
 			_format    = kPixelFormatBGRA;
 			_formatRaw = kPixelFormatRGBA8;
 		} else
@@ -88,6 +92,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
 		if (pixelDepth != 8)
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
 
+		_hasAlpha  = false;
 		_format    = kPixelFormatBGRA;
 		_formatRaw = kPixelFormatRGBA8;
 	}
@@ -133,6 +138,10 @@ void TGA::readData(Common::SeekableReadStream &tga, byte imageType) {
 bool TGA::isCompressed() const {
 	// TGAs are never compressed
 	return false;
+}
+
+bool TGA::hasAlpha() const {
+	return _hasAlpha;
 }
 
 PixelFormat TGA::getFormat() const {

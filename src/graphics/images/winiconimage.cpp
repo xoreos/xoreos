@@ -177,6 +177,10 @@ bool WinIconImage::isCompressed() const {
 	return false;
 }
 
+bool WinIconImage::hasAlpha() const {
+	return true;
+}
+
 PixelFormat WinIconImage::getFormat() const {
 	return _format;
 }

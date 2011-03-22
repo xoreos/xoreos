@@ -33,7 +33,7 @@ static const uint32 kPixelFlagsIsRGB     = 0x00000040;
 
 namespace Graphics {
 
-DDS::DDS(Common::SeekableReadStream *dds) : _dds(dds), _compressed(false),
+DDS::DDS(Common::SeekableReadStream *dds) : _dds(dds), _compressed(false), _hasAlpha(false),
 	_format(kPixelFormatRGB), _formatRaw(kPixelFormatDXT1), _dataType(kPixelDataType8) {
 
 	assert(_dds);
@@ -72,6 +72,10 @@ void DDS::load() {
 
 bool DDS::isCompressed() const {
 	return _compressed;
+}
+
+bool DDS::hasAlpha() const {
+	return _hasAlpha;
 }
 
 PixelFormat DDS::getFormat() const {
@@ -188,11 +192,17 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 
 	// Check which compression
 	uint32 bpp = dds.readUint32LE();
-	if      (bpp == 3)
+	if      (bpp == 3) {
+		_hasAlpha  = false;
+		_format    = kPixelFormatBGR;
 		_formatRaw = kPixelFormatDXT1;
-	else if (bpp == 4)
+		_dataType  = kPixelDataType8;
+	} else if (bpp == 4) {
+		_hasAlpha  = true;
+		_format    = kPixelFormatBGRA;
 		_formatRaw = kPixelFormatDXT5;
-	else
+		_dataType  = kPixelDataType8;
+	} else
 		throw Common::Exception("Unsupported bytes per pixel value (%d)", bpp);
 
 	// Sanity check for the image data size
@@ -268,16 +278,19 @@ void DDS::detectFormat(const DDSPixelFormat &format) {
 
 	if        ((format.flags & kPixelFlagsHasFourCC) && (format.fourCC == kDXT1ID)) {
 		_compressed = true;
-		_format     = kPixelFormatBGRA;
+		_hasAlpha   = false;
+		_format     = kPixelFormatBGR;
 		_formatRaw  = kPixelFormatDXT1;
 		_dataType   = kPixelDataType8;
 	} else if ((format.flags & kPixelFlagsHasFourCC) && (format.fourCC == kDXT3ID)) {
 		_compressed = true;
+		_hasAlpha   = true;
 		_format     = kPixelFormatBGRA;
 		_formatRaw  = kPixelFormatDXT3;
 		_dataType   = kPixelDataType8;
 	} else if ((format.flags & kPixelFlagsHasFourCC) && (format.fourCC == kDXT5ID)) {
 		_compressed = true;
+		_hasAlpha   = true;
 		_format     = kPixelFormatBGRA;
 		_formatRaw  = kPixelFormatDXT5;
 		_dataType   = kPixelDataType8;
@@ -286,6 +299,7 @@ void DDS::detectFormat(const DDSPixelFormat &format) {
 	           (format.rBitMask == 0x00FF0000) && (format.gBitMask == 0x0000FF00) &&
 	           (format.bBitMask == 0x000000FF) && (format.aBitMask == 0xFF000000)) {
 		_compressed = false;
+		_hasAlpha   = true;
 		_format     = kPixelFormatBGRA;
 		_formatRaw  = kPixelFormatRGBA8;
 		_dataType   = kPixelDataType8;
@@ -294,6 +308,7 @@ void DDS::detectFormat(const DDSPixelFormat &format) {
 	           (format.rBitMask == 0x00FF0000) && (format.gBitMask == 0x0000FF00) &&
 	           (format.bBitMask == 0x000000FF)) {
 		_compressed = false;
+		_hasAlpha   = false;
 		_format     = kPixelFormatBGR;
 		_formatRaw  = kPixelFormatRGB8;
 		_dataType   = kPixelDataType8;
@@ -305,6 +320,7 @@ void DDS::detectFormat(const DDSPixelFormat &format) {
 	           (format.rBitMask == 0x00007C00) && (format.gBitMask == 0x000003E0) &&
 	           (format.bBitMask == 0x0000001F) && (format.aBitMask == 0x00008000)) {
 		_compressed = false;
+		_hasAlpha   = true;
 		_format     = kPixelFormatBGRA;
 		_formatRaw  = kPixelFormatRGB5A1;
 		_dataType   = kPixelDataType1555;
@@ -316,6 +332,7 @@ void DDS::detectFormat(const DDSPixelFormat &format) {
 	           (format.rBitMask == 0x0000F800) && (format.gBitMask == 0x000007E0) &&
 	           (format.bBitMask == 0x0000001F)) {
 		_compressed = false;
+		_hasAlpha   = false;
 		_format     = kPixelFormatBGR;
 		_formatRaw  = kPixelFormatRGB5;
 		_dataType   = kPixelDataType565;
