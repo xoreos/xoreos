@@ -38,19 +38,26 @@ void XboxMediaVideo::processData() {
 }
 
 void XboxMediaVideo::load() {
-	_xmv->skip(12); // unknown
+	_xmv->skip(8); // (???, min packet size?)
+
+	uint32 packetSize = _xmv->readUint32LE();
 
 	if (_xmv->readUint32LE() != MKID_BE('Xbox'))
 		throw Common::Exception("XboxMediaVideo::load(): No 'Xbox' tag");
 
-	_xmv->skip(4); // unknown
+	_xmv->skip(4); // unknown (always 4? video compression?)
 	uint32 width = _xmv->readUint32LE();
 	uint32 height = _xmv->readUint32LE();
-	_xmv->skip(10); // unknown
+	uint32 duration = _xmv->readUint32LE();
+	_xmv->skip(4); // unknown (audio-related?)
+	uint16 audioCompression = _xmv->readUint16LE(); // same as the WAVEFORMATEX compression field
 	uint16 audioChannelCount = _xmv->readUint16LE();
 	uint32 audioRate = _xmv->readUint32LE();
+	/* uint32 audioBitsPerSample = */ _xmv->readUint16LE();
+	_xmv->skip(2); // block align? -> this would make it a full WAVEFORMAT structure here
+	_xmv->skip(4); // audio flags?
 
-	throw Common::Exception("STUB: XboxMediaVideo::load() - Video: %dx%d, Audio: %dch @%dHz", width, height, audioChannelCount, audioRate);
+	throw Common::Exception("STUB: XboxMediaVideo::load() - Packet Size: %d, Duration: %dms, Video: %dx%d, Audio: 0x%04x %dch @%dHz", packetSize, duration, width, height, audioCompression, audioChannelCount, audioRate);
 }
 
 } // End of namespace Graphics
