@@ -174,6 +174,10 @@ void BoundingBox::rotate(float angle, float x, float y, float z) {
 	_origin.rotate(angle, x, y, z);
 }
 
+void BoundingBox::transform(const Matrix &m) {
+	_origin *= m;
+}
+
 inline float BoundingBox::getCoordMin(int i) const {
 	if (i == 0)
 		return MIN(MIN(MIN(_coords[0][0], _coords[1][0]), _coords[2][0]), _coords[3][0]);
