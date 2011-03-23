@@ -57,6 +57,9 @@ public:
 	/** Initiate the actual quitting process. */
 	void doQuit();
 
+	/** Clear the event queue, ignore all unhandled events. */
+	void flushEvents();
+
 	/** Get an event from the events queue.
 	 *
 	 *  @param  event Where to store the polled event.

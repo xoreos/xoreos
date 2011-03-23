@@ -191,6 +191,12 @@ void EventsManager::processEvents() {
 	_fullQueue = false;
 }
 
+void EventsManager::flushEvents() {
+	Common::StackLock lock(_eventQueueMutex);
+
+	_eventQueue.clear();
+}
+
 bool EventsManager::pollEvent(Event &event) {
 	Common::StackLock lock(_eventQueueMutex);
 
