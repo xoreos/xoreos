@@ -75,7 +75,7 @@ protected:
 		_inQueue = false;
 	}
 
-	bool isInQueue() {
+	bool isInQueue() const {
 		return _inQueue;
 	}
 
