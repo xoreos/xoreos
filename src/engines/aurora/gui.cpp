@@ -42,6 +42,8 @@ GUI::~GUI() {
 }
 
 void GUI::show() {
+	GfxMan.lockFrame();
+
 	// Show all widgets
 	for (WidgetList::iterator w = _widgets.begin(); w != _widgets.end(); ++w) {
 		Widget &widget = **w;
@@ -49,12 +51,18 @@ void GUI::show() {
 		if (!widget._owner)
 			widget.show();
 	}
+
+	GfxMan.unlockFrame();
 }
 
 void GUI::hide() {
+	GfxMan.lockFrame();
+
 	// Hide all widgets
 	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
 		(*widget)->hide();
+
+	GfxMan.unlockFrame();
 }
 
 int GUI::run(int startCode) {
@@ -183,6 +191,8 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 }
 
 int GUI::sub(GUI &gui, int startCode, bool showSelf) {
+	GfxMan.lockFrame();
+
 	// Change the current widget to nothing
 	changedWidget(0);
 
@@ -191,8 +201,12 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 		gui.show();
 	hide();
 
+	GfxMan.unlockFrame();
+
 	// Run the sub GUI
 	int code = gui.run(startCode);
+
+	GfxMan.lockFrame();
 
 	// Hide the sub GUI
 	if (showSelf)
@@ -201,6 +215,8 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 
 	// Update the mouse position
 	updateMouse();
+
+	GfxMan.unlockFrame();
 
 	return code;
 }
