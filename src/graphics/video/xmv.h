@@ -39,6 +39,13 @@ private:
 
 	/** Load an XMV file. */
 	void load();
+
+	/** Create a new audio stream to be queued. */
+	void queueAudioStream(Common::SeekableReadStream *stream);
+
+	uint16 _audioCompression;
+	uint16 _audioChannels;
+	uint32 _audioRate;
 };
 
 } // End of namespace Graphics

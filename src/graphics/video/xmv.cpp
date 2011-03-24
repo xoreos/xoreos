@@ -17,6 +17,8 @@
 
 #include "graphics/video/xmv.h"
 
+#include "sound/decoders/adpcm.h"
+
 namespace Graphics {
 
 XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) : _xmv(xmv) {
@@ -45,19 +47,41 @@ void XboxMediaVideo::load() {
 	if (_xmv->readUint32LE() != MKID_BE('Xbox'))
 		throw Common::Exception("XboxMediaVideo::load(): No 'Xbox' tag");
 
-	_xmv->skip(4); // unknown (always 4? video compression?)
+	_xmv->skip(4); // unknown (always 4? version?)
 	uint32 width = _xmv->readUint32LE();
 	uint32 height = _xmv->readUint32LE();
 	uint32 duration = _xmv->readUint32LE();
-	_xmv->skip(4); // unknown (audio-related?)
-	uint16 audioCompression = _xmv->readUint16LE(); // same as the WAVEFORMATEX compression field
-	uint16 audioChannelCount = _xmv->readUint16LE();
-	uint32 audioRate = _xmv->readUint32LE();
-	/* uint32 audioBitsPerSample = */ _xmv->readUint16LE();
-	_xmv->skip(2); // block align? -> this would make it a full WAVEFORMAT structure here
-	_xmv->skip(4); // audio flags?
+	_xmv->skip(4); // unknown (audio-related? audio stream count might be the second one)
+	_audioCompression = _xmv->readUint16LE(); // same as the WAVEFORMATEX compression field
+	_audioChannels = _xmv->readUint16LE();
+	_audioRate = _xmv->readUint32LE();
+	/* uint32 audioBitsPerSample = */ _xmv->readUint32LE();
+	// I'd wager the next four bytes are the audio flags, but I have no samples with this
 
-	throw Common::Exception("STUB: XboxMediaVideo::load() - Packet Size: %d, Duration: %dms, Video: %dx%d, Audio: 0x%04x %dch @%dHz", packetSize, duration, width, height, audioCompression, audioChannelCount, audioRate);
+	// Initialize our sound stuff
+	initSound(_audioRate, _audioChannels, true);
+
+	// TODO: Everything else
+	// Like video being WMV2 and stuff
+
+	throw Common::Exception("STUB: XboxMediaVideo::load() - Packet Size: %d, Duration: %dms, Video: %dx%d, Audio: 0x%04x %dch @%dHz", packetSize, duration, width, height, _audioCompression, _audioChannels, _audioRate);
+}
+
+void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream) {
+	switch (_audioCompression) {
+	case 1:    // PCM
+		// TODO: Where's the flags? Anyone have samples?
+		warning("XboxMediaVideo::createAudioStream(): PCM not yet handled");
+		break;
+	case 0x69: // MS IMA ADPCM
+		// TODO: Where's block align?
+		warning("XboxMediaVideo::createAudioStream(): ADPCM not yet handled");
+		//queueSound(new Sound::makeADPCMStream(stream, true, stream->size(), Sound::kADPCMMSIma, _audioRate, _audioChannels /* , _audioBlockAlign */));
+		break;
+	default:
+		warning("XboxMediaVideo::createAudioStream(): Unknown audio compression 0x%04x", _audioCompression);
+		break;
+	}
 }
 
 } // End of namespace Graphics
