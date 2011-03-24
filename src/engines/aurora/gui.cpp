@@ -61,6 +61,8 @@ int GUI::run(int startCode) {
 	_startCode  = startCode;
 	_returnCode = 0;
 
+	EventMan.flushEvents();
+
 	// Run as long as we don't have a return code
 	while (_returnCode == 0) {
 		// Call the periodic run callback
