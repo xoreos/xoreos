@@ -23,6 +23,8 @@
 
 #include "sound/sound.h"
 
+#include "graphics/graphics.h"
+
 #include "graphics/aurora/model.h"
 
 #include "engines/aurora/util.h"
@@ -94,6 +96,8 @@ void Area::show() {
 	if (!_musicDay.empty())
 		_ambientMusic = playSound(_musicDay  , Sound::kSoundTypeMusic, true);
 
+	GfxMan.lockFrame();
+
 	// Show tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 		t->model->show();
@@ -106,6 +110,8 @@ void Area::show() {
 	for (std::vector<Door *>::iterator d = _doors.begin(); d != _doors.end(); ++d)
 		(*d)->show();
 
+	GfxMan.unlockFrame();
+
 	_visible = true;
 }
 
@@ -116,6 +122,8 @@ void Area::hide() {
 	// Stop sound
 	SoundMan.stopChannel(_ambientSound);
 	SoundMan.stopChannel(_ambientMusic);
+
+	GfxMan.lockFrame();
 
 	// Hide doors
 	for (std::vector<Door *>::iterator d = _doors.begin(); d != _doors.end(); ++d)
@@ -128,6 +136,8 @@ void Area::hide() {
 	// Hide tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 		t->model->hide();
+
+	GfxMan.unlockFrame();
 
 	_visible = false;
 }
