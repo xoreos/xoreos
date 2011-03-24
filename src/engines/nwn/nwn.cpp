@@ -339,6 +339,7 @@ void NWNEngine::mainMenuLoop() {
 
 		GUI *mainMenu = new MainMenu(module);
 
+		EventMan.flushEvents();
 		if (legal) {
 			// Fade in, show and fade out the legal billboard
 			legal->fadeIn();
