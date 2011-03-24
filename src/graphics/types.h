@@ -52,13 +52,6 @@ enum RenderableQueue {
 	kRenderableQueueGUIFront
 };
 
-inline int getBytesPerPixel(PixelFormat format) {
-	if ((format == kPixelFormatRGBA) || (format == kPixelFormatBGRA))
-		return 4;
-
-	return 3;
-}
-
 } // End of namespace Graphics
 
 #endif // GRAPHICS_TYPES_H
