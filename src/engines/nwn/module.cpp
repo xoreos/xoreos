@@ -172,6 +172,8 @@ void Module::run() {
 
 	try {
 
+		EventMan.flushEvents();
+
 		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
 			loadArea();
 
@@ -313,6 +315,8 @@ void Module::loadArea() {
 	_area = new Area(*this, _newArea);
 
 	_area->show();
+
+	EventMan.flushEvents();
 
 	status("Entered area \"%s\", (\"%s\")",
 			_area->getName().c_str(), _area->getResRef().c_str());
