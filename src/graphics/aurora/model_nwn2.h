@@ -12,14 +12,11 @@
  *  Loading MDB files found in Neverwinter Nights 2
  */
 
-#ifndef GRAPHICS_AURORA_MODEL_NWN2_H
-#define GRAPHICS_AURORA_MODEL_NWN2_H
-
-#include <vector>
-
-#include "common/ustring.h"
+#ifndef GRAPHICS_AURORA_NEWMODEL_NWN2_H
+#define GRAPHICS_AURORA_NEWMODEL_NWN2_H
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/modelnode.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -28,6 +25,8 @@ namespace Common {
 namespace Graphics {
 
 namespace Aurora {
+
+class ModelNode_NWN2;
 
 /** A 3D model in the NWN2 MDB format. */
 class Model_NWN2 : public Model {
@@ -45,23 +44,38 @@ private:
 		Common::SeekableReadStream *mdb;
 
 		State *state;
-		Node  *node;
-		Mesh  *mesh;
 
-		ParserContext(Common::SeekableReadStream &mdbStream);
+		std::list<ModelNode_NWN2 *> nodes;
+
+		uint32 offModelData;
+		uint32 offRawData;
+
+		ParserContext(Common::SeekableReadStream &stream);
 		~ParserContext();
+
+		void clear();
 	};
 
-	void load(Common::SeekableReadStream &mdb);
 
-	void readRigid(ParserContext &ctx, uint32 offset);
-	void readSkin (ParserContext &ctx, uint32 offset);
+	void newState(ParserContext &ctx);
+	void addState(ParserContext &ctx);
 
-	void processNode(ParserContext &ctx);
+	void load(ParserContext &ctx);
+
+	friend class ModelNode_NWN2;
+};
+
+class ModelNode_NWN2 : public ModelNode {
+public:
+	ModelNode_NWN2(Model &model);
+	~ModelNode_NWN2();
+
+	bool loadRigid(Model_NWN2::ParserContext &ctx);
+	bool loadSkin (Model_NWN2::ParserContext &ctx);
 };
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_MODEL_NWN2_H
+#endif // GRAPHICS_AURORA_NEWMODEL_NWN2_H

@@ -24,6 +24,7 @@
 namespace Common {
 	class UString;
 	class SeekableReadStream;
+	class TransformationMatrix;
 }
 
 namespace Graphics {
@@ -39,9 +40,8 @@ class CubeSide : public Object {
 public:
 	CubeSide(Cube &parent, int n);
 
-	void newFrame();
-
-	void render();
+	void calculateDistance();
+	void render(RenderPass pass);
 
 private:
 	Cube *_parent;
@@ -72,9 +72,8 @@ private:
 
 	TextureHandle _texture;
 
-	void setRotate(float rotate);
-
 	void applyTransformation(int n);
+	void applyTransformation(int n, Common::TransformationMatrix &m);
 	void setTexture();
 	void callList();
 

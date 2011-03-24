@@ -38,10 +38,15 @@ FPS::~FPS() {
 }
 
 void FPS::init() {
+	setTag("FPS");
 	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
 }
 
-void FPS::render() {
+void FPS::render(RenderPass pass) {
+	// Text objects should always be transparent
+	if (pass == kRenderPassOpaque)
+		return;
+
 	uint32 fps = GfxMan.getFPS();
 
 	if (fps != _fps) {
@@ -50,7 +55,7 @@ void FPS::render() {
 		set(Common::UString::sprintf("%d fps", _fps));
 	}
 
-	Text::render();
+	Text::render(pass);
 }
 
 void FPS::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {

@@ -15,6 +15,7 @@ noinst_HEADERS = types.h \
                  fps.h \
                  cube.h \
                  guiquad.h \
+                 modelnode.h \
                  model.h \
                  model_nwn_ascii.h \
                  model_nwn_binary.h \
@@ -34,6 +35,7 @@ libaurora_la_SOURCES = videoplayer.cpp \
                        fps.cpp \
                        cube.cpp \
                        guiquad.cpp \
+                       modelnode.cpp \
                        model.cpp \
                        model_nwn_ascii.cpp \
                        model_nwn_binary.cpp \

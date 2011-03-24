@@ -48,6 +48,7 @@ protected:
 
 private:
 	bool _state;
+	bool _down;
 
 	void updateModel(bool highlight);
 };

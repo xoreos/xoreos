@@ -25,6 +25,7 @@
 #include "aurora/2dareg.h"
 #include "aurora/gfffile.h"
 
+#include "graphics/aurora/modelnode.h"
 #include "graphics/aurora/model.h"
 
 static const uint32 kUTCID = MKID_BE('UTC ');
@@ -90,7 +91,7 @@ void Creature::changedPosition() {
 
 void Creature::changedOrientation() {
 	for (std::list<Part *>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		(*part)->model->setOrientation(_orientation[0], _orientation[2], -_orientation[1]);
+		(*part)->model->setRotation(_orientation[0], _orientation[2], -_orientation[1]);
 }
 
 void Creature::loadModel(const Common::UString &name) {
@@ -129,7 +130,9 @@ void Creature::loadModel(const Common::UString &name) {
 
 			_parts.push_back(new Part(model));
 
-			model->getNodePosition("headhook", hX, hY, hZ);
+			Graphics::Aurora::ModelNode *head = model->getNode("headhook");
+			if (head)
+				head->getAbsolutePosition(hX, hY, hZ);
 		}
 
 		if ((modelType == "B") && !headModel.empty()) {

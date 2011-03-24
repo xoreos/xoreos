@@ -15,6 +15,7 @@
 #include "common/util.h"
 #include "common/ustring.h"
 #include "common/stream.h"
+#include "common/transmatrix.h"
 
 #include "graphics/graphics.h"
 
@@ -33,22 +34,30 @@ namespace Graphics {
 namespace Aurora {
 
 CubeSide::CubeSide(Cube &parent, int n) : _parent(&parent), _n(n) {
-	addToQueue();
+	calculateDistance();
+
+	show();
 }
 
-void CubeSide::newFrame() {
-	_parent->newFrame();
+void CubeSide::calculateDistance() {
+	Common::TransformationMatrix m;
 
-	glPushMatrix();
-	_parent->applyTransformation(_n);
-	setCurrentDistance();
-	glPopMatrix();
+	_parent->applyTransformation(_n, m);
+
+	_distance = ABS(m.getX()) + ABS(m.getY()) + ABS(m.getZ());
 }
 
-void CubeSide::render() {
+void CubeSide::render(RenderPass pass) {
+	bool isTransparent = _parent->_texture.getTexture().hasAlpha();
+	if (((pass == kRenderPassOpaque)      &&  isTransparent) ||
+			((pass == kRenderPassTransparent) && !isTransparent))
+		return;
+
 	_parent->applyTransformation(_n);
 	_parent->setTexture();
 	_parent->callList();
+
+	_parent->newFrame();
 }
 
 
@@ -85,6 +94,15 @@ void Cube::doRebuild() {
 			glVertex3f( 1.00,  1.00,  0.00);
 			glTexCoord2f(0.0, 1.0);
 			glVertex3f(-1.00,  1.00,  0.00);
+
+			glTexCoord2f(0.0, 0.0);
+			glVertex3f(-1.00, -1.00,  0.00);
+			glTexCoord2f(0.0, 1.0);
+			glVertex3f(-1.00,  1.00,  0.00);
+			glTexCoord2f(1.0, 1.0);
+			glVertex3f( 1.00,  1.00,  0.00);
+			glTexCoord2f(1.0, 0.0);
+			glVertex3f( 1.00, -1.00,  0.00);
 		glEnd();
 
 	glEndList();
@@ -97,12 +115,6 @@ void Cube::doDestroy() {
 	glDeleteLists(_list, 1);
 
 	_list = 0;
-}
-
-void Cube::setRotate(float rotate) {
-	glRotatef(-rotate, 1.0, 0.0, 0.0);
-	glRotatef( rotate, 0.0, 1.0, 0.0);
-	glRotatef( rotate, 0.0, 0.0, 1.0);
 }
 
 void Cube::newFrame() {
@@ -119,7 +131,11 @@ void Cube::newFrame() {
 
 void Cube::applyTransformation(int n) {
 	glTranslatef(0.0, 0.0, -3.0);
-	setRotate(_rotation);
+
+	glRotatef(-_rotation, 1.0, 0.0, 0.0);
+	glRotatef( _rotation, 0.0, 1.0, 0.0);
+	glRotatef( _rotation, 0.0, 0.0, 1.0);
+
 	glScalef(0.5, 0.5, 0.5);
 
 	switch (n) {
@@ -144,6 +160,41 @@ void Cube::applyTransformation(int n) {
 		case 5:
 			glRotatef(90.0, 1.0, 0.0, 0.0);
 			glTranslatef(0.0, 0.0, -1.0);
+			break;
+	}
+}
+
+void Cube::applyTransformation(int n, Common::TransformationMatrix &m) {
+	m.translate(0.0, 0.0, -3.0);
+
+	m.rotate(-_rotation, 1.0, 0.0, 0.0);
+	m.rotate( _rotation, 0.0, 1.0, 0.0);
+	m.rotate( _rotation, 0.0, 0.0, 1.0);
+
+	m.scale(0.5, 0.5, 0.5);
+
+	switch (n) {
+		case 0:
+			m.translate(0.0, 0.0, 1.0);
+			break;
+		case 1:
+			m.translate(0.0, 0.0, -1.0);
+			break;
+		case 2:
+			m.rotate(90.0, 0.0, 1.0, 0.0);
+			m.translate(0.0, 0.0, 1.0);
+			break;
+		case 3:
+			m.rotate(90.0, 0.0, 1.0, 0.0);
+			m.translate(0.0, 0.0, -1.0);
+			break;
+		case 4:
+			m.rotate(90.0, 1.0, 0.0, 0.0);
+			m.translate(0.0, 0.0, 1.0);
+			break;
+		case 5:
+			m.rotate(90.0, 1.0, 0.0, 0.0);
+			m.translate(0.0, 0.0, -1.0);
 			break;
 	}
 }

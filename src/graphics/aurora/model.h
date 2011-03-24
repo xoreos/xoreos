@@ -12,272 +12,166 @@
  *  A 3D model of an object.
  */
 
-#ifndef GRAPHICS_AURORA_MODEL_H
-#define GRAPHICS_AURORA_MODEL_H
+#ifndef GRAPHICS_AURORA_NEWMODEL_H
+#define GRAPHICS_AURORA_NEWMODEL_H
 
-#include <map>
 #include <vector>
 #include <list>
+#include <map>
 
 #include "common/ustring.h"
+#include "common/transmatrix.h"
 #include "common/boundingbox.h"
 
-#include "graphics/types.h"
-#include "graphics/listcontainer.h"
 #include "graphics/renderable.h"
 
 #include "graphics/aurora/types.h"
-#include "graphics/aurora/textureman.h"
 
 namespace Common {
 	class SeekableReadStream;
-	class TransformationMatrix;
 }
 
 namespace Graphics {
 
 namespace Aurora {
 
-/** A 3D model. */
-class Model : public Renderable, public ListContainer {
+class ModelNode;
+
+class Model : public Renderable {
 public:
-	enum Classification {
-		kClassOther     = 0,
-		kClassEffect       ,
-		kClassTile         ,
-		kClassCharacter    ,
-		kClassDoor         ,
-		kClassItem         ,
-		kClassGUI          ,
-
-		kClassMAX
-	};
-
 	Model(ModelType type = kModelTypeObject);
 	~Model();
 
-	/** Set the current position of the model. */
-	void setPosition(float x, float y, float z);
-	/** Set the current orientation of the model. */
-	void setOrientation(float x, float y, float z);
+	ModelType getType() const; ///< Return the model's type.
 
-	/** Does the named node exist in the current state? */
-	bool hasNode(const Common::UString &node) const;
-
-	/** Get the base position of a named node in the current state. */
-	bool getNodePosition(const Common::UString &node, float &x, float &y, float &z) const;
-
-	/** Get the width of a named node. */
-	float getNodeWidth (const Common::UString &node) const;
-	/** Get the height of a named node. */
-	float getNodeHeight(const Common::UString &node) const;
-
-	void setNodeVisibility(const Common::UString &node, bool visible);
-	void setNodeRotation(const Common::UString &node, float x, float y, float z);
-
-	/** Move the base position of a named node in the current state. */
-	void moveNode(const Common::UString &node, float x, float y, float z);
+	/** Get the model's name. */
+	const Common::UString &getName() const;
 
 	float getWidth () const; ///< Get the width of the model's bounding box.
 	float getHeight() const; ///< Get the height of the model's bounding box.
 	float getDepth () const; ///< Get the depth of the model's bounding box.
 
-	/** Is the point within the model's bounding box? */
-	bool isIn(float x, float y)          const;
-	/** Is the point within the model's bounding box? */
+
+	/** Is that point within the model's bounding box? */
+	bool isIn(float x, float y) const;
+	/** Is that point within the model's bounding box? */
 	bool isIn(float x, float y, float z) const;
+
+
+	// Positioning
+
+	/** Get the current position of the model. */
+	void getPosition(float &x, float &y, float &z) const;
+	/** Get the current rotation of the model. */
+	void getRotation(float &x, float &y, float &z) const;
+
+	/** Set the current position of the model. */
+	void setPosition(float x, float y, float z);
+	/** Set the current rotation of the model. */
+	void setRotation(float x, float y, float z);
+
+	/** Move the model, relative to its current position. */
+	void move  (float x, float y, float z);
+	/** Rotate the model, relative to its current rotation. */
+	void rotate(float x, float y, float z);
+
+
+	// States
 
 	/** Return a list of all animation state names. */
 	const std::list<Common::UString> &getStates() const;
-
 	/** Set the current animation state. */
 	void setState(const Common::UString &name = "");
+	/** Return the name of the current state. */
+	const Common::UString &getState() const;
 
-	void show(); ///< The model should be rendered.
-	void hide(); ///< The model should not be rendered.
 
-	bool isVisible(); ///< Is the model visible?
+	// Nodes
 
-	/** Fade in the model for length ms. */
-	void fadeIn(uint32 length);
-	/** Fade out the model for length ms. */
-	void fadeOut(uint32 length);
+	/** Does the specified node exist in the current state? */
+	bool hasNode(const Common::UString &node) const;
+
+	/** Get the specified node, from the current state. */
+	ModelNode *getNode(const Common::UString &node);
+	/** Get the specified node, from the current state. */
+	const ModelNode *getNode(const Common::UString &node) const;
+
 
 	// Renderable
-	void newFrame();
-	void render();
+	void calculateDistance();
+	void render(RenderPass pass);
+
 
 protected:
-	// Representation found in the raw files
-	/** A raw Aurora model mesh. */
-	struct Mesh {
-		std::vector<Common::UString> textures;
-
-		std::vector<float>  verts; ///< Geometry vertices.
-		std::vector<float> tverts; ///< Texture vertices.
-
-		uint32 faceCount;
-
-		// Per face
-
-		std::vector<uint32>  vertIndices; ///< Indices into the geometry vertices for each face.
-		std::vector<uint32> tvertIndices; ///< Indices into the texture vertices for each face.
-
-		std::vector<int> smoothGroup;
-		std::vector<int> material;
-
-		Mesh();
-	};
-
-
-	// Representation we use
-	/** A geometry face. */
-	struct Face {
-		std::vector<float>  verts; ///< Geometry vertices.
-		std::vector<float> tverts; ///< Texture vertices.
-
-		int smoothGroup;
-		int material;
-	};
-
-	typedef std::vector<Face> FaceList;
-
-	/** A node of geometry data. */
-	struct Node {
-		Node *parent;               ///< The node's parent.
-		std::list<Node *> children; ///< The node's children.
-
-		Common::UString name;
-
-		float position[3];    ///< Position of the node.
-		float orientation[4]; ///< Orientation of the node.
-
-		float rotation[3]; ///< Node rotation.
-
-		float wirecolor[3]; ///< Color of the wireframe.
-		float ambient[3];   ///< Ambient color.
-		float diffuse[3];   ///< Diffuse color.
-		float specular[3];  ///< Specular color.
-		float shininess;    ///< Shiny?
-
-		std::vector<TextureHandle> textures; ///< Textures.
-
-		bool dangly; ///< Is the node mesh's dangly?
-
-		float period;
-		float tightness;
-		float displacement;
-
-		bool showdispl;
-		int displtype;
-
-		float center[3]; ///< The node's center.
-
-		std::vector<float> constraints;
-
-		int tilefade;
-
-		float scale;
-
-		bool render; ///< Render the node?
-		bool shadow; ///< Does the node have a shadow?
-
-		bool beaming;
-		bool inheritcolor;
-		bool rotatetexture;
-
-		float alpha;
-
-		int transparencyhint;
-
-		float selfillumcolor[3];
-
-		Common::BoundingBox boundBox;     ///< Node's bounding box.
-		Common::BoundingBox realBoundBox; ///< Node's bounding box after translate/rotate.
-
-		float realPosition[3]; ///< Position of the node after translate/rotate;
-
-		FaceList faces; ///< The node's faces.
-
-		ListID list; ///< OpenGL display list for the node.
-
-		Node();
-	};
-
-	typedef std::list<Node *> NodeList;
-	typedef std::map<Common::UString, Node *> NodeMap;
+	typedef std::list<ModelNode *> NodeList;
+	typedef std::map<Common::UString, ModelNode *> NodeMap;
 
 	/** A model state. */
 	struct State {
-		Common::UString name;
+		Common::UString name; ///< The state's name.
 
-		NodeList nodes;
-		NodeMap  nodeMap;
+		NodeList nodeList; ///< The nodes within the state.
+		NodeMap  nodeMap;  ///< The nodes within the state, indexed by name.
+
+		NodeList rootNodes; ///< The nodes in the state without a parent.
 	};
 
+	typedef std::list<State *> StateList;
 	typedef std::map<Common::UString, State *> StateMap;
 
-	ModelType _type;
 
-	Common::UString _name;
+	ModelType _type; ///< The model's type.
 
-	float _modelScale[3];
+	Common::UString _name; ///< The model's name.
 
-	Model *_superModel;
-	Classification _class;
-	float _scale;
+	NodeList _nodes; ///< All nodes within this model.
 
-	bool   _fade;      ///< Currently fading in/out the model?
-	uint32 _fadeStart; ///< Timestamp when the fading started.
-	float  _fadeValue; ///< Current fading value.
-	float  _fadeStep;  ///< Fading steps.
+	StateList _stateList;   ///< All states within this model.
+	StateMap  _stateMap;    ///< All states within this model, index by name.
+	State   *_currentState; ///< The current state.
 
-	float _position[3];    ///< Model's position.
-	float _orientation[3]; ///< Model's rotation.
+	std::list<Common::UString> _stateNames; ///< All state names.
+
+	float _modelScale[3]; ///< The model's scale.
+
+	float _position[3]; ///< Model's position.
+	float _rotation[3]; ///< Model's rotation.
+	float _center  [3]; ///< Model's center.
+
+	Common::TransformationMatrix _absolutePosition;
 
 	Common::BoundingBox _boundBox; ///< Model's bounding box.
 
-	NodeList _nodes;
 
-	StateMap _states;
-	State   *_currentState;
+	/** Finalize the loading procedure. */
+	void finalize();
 
-	uint32 _textureCount; /// Max number of textures used by a node.
-
-	ListID _list; ///< Start of all lists for this model.
-
-	std::list<Common::UString> _stateNames;
-
-	// Helpers for common Aurora model structures
-
-	void readArray(Common::SeekableReadStream &stream, uint32 &start, uint32 &count);
-
-	void readArrayOffsets(Common::SeekableReadStream &stream, uint32 start, uint32 count, std::vector<uint32> &offsets);
-	void readArrayFloats (Common::SeekableReadStream &stream, uint32 start, uint32 count, std::vector<float>  &floats);
-
-	// Helpers to create our representations
-
-	void processMesh(const Mesh &mesh, Node &node);
-	void createStateNameList();
-
-	// Bounding boxes
-	void createModelBound();
-
-	void doRebuild();
-	void doDestroy();
 
 private:
-	void transformBoundBox(Common::TransformationMatrix &world,
-			Common::BoundingBox &object) const;
+	void createStateNamesList(); ///< Create the list of all state names.
+	void createBound();          ///< Create the model's bounding box.
 
-	void renderState(const State &state);
-	void renderNode(const Node &node);
+	void createAbsolutePosition();
 
-	void recalculateNodeBound(Node &node, Common::TransformationMatrix &matrix);
+
+public:
+	// General loading helpers
+
+	static void readValue(Common::SeekableReadStream &stream, uint32 &value);
+	static void readValue(Common::SeekableReadStream &stream, float  &value);
+
+	static void readArrayDef(Common::SeekableReadStream &stream,
+	                         uint32 &offset, uint32 &count);
+
+	template<typename T>
+	static void readArray(Common::SeekableReadStream &stream,
+	                      uint32 offset, uint32 count, std::vector<T> &values);
+
+	friend class ModelNode;
 };
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_MODEL_H
+#endif // GRAPHICS_AURORA_NEWMODEL_H

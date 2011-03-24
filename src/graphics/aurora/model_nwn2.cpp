@@ -15,15 +15,11 @@
 // Disable the "unused variable" warnings while most stuff is still stubbed
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
-#include "common/util.h"
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/stream.h"
 
-#include "events/requests.h"
-
 #include "graphics/aurora/model_nwn2.h"
-#include "graphics/aurora/texture.h"
 
 static const uint32 kMDBID = MKID_BE('NWN2');
 
@@ -34,30 +30,39 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_NWN2::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) :
-	mdb(&mdbStream), state(0), node(0), mesh(0) {
+Model_NWN2::ParserContext::ParserContext(Common::SeekableReadStream &stream) :
+	mdb(&stream), state(0) {
+
 }
 
 Model_NWN2::ParserContext::~ParserContext() {
-	delete mesh;
-	delete node;
+	clear();
+}
+
+void Model_NWN2::ParserContext::clear() {
+	for (std::list<ModelNode_NWN2 *>::iterator n = nodes.begin(); n != nodes.end(); ++n)
+		delete *n;
+	nodes.clear();
+
 	delete state;
+	state = 0;
 }
 
 
-Model_NWN2::Model_NWN2(Common::SeekableReadStream &mdb, ModelType type) : Model(type) {
-	load(mdb);
-	setState();
+Model_NWN2::Model_NWN2(Common::SeekableReadStream &mdb, ModelType type) :
+	Model(type) {
 
-	rebuild();
+	ParserContext ctx(mdb);
+
+	load(ctx);
+
+	finalize();
 }
 
 Model_NWN2::~Model_NWN2() {
 }
 
-void Model_NWN2::load(Common::SeekableReadStream &mdb) {
-	ParserContext ctx(mdb);
-
+void Model_NWN2::load(ParserContext &ctx) {
 	if (ctx.mdb->readUint32BE() != kMDBID)
 		throw Common::Exception("Not a NWN2 MDB file");
 
@@ -68,46 +73,89 @@ void Model_NWN2::load(Common::SeekableReadStream &mdb) {
 
 	std::vector<PacketKey> packetKeys;
 	packetKeys.resize(packetCount);
-	for (std::vector<PacketKey>::iterator packetKey = packetKeys.begin(); packetKey != packetKeys.end(); ++packetKey) {
+	for (std::vector<PacketKey>::iterator packetKey = packetKeys.begin();
+	     packetKey != packetKeys.end(); ++packetKey) {
+
 		packetKey->signature = ctx.mdb->readUint32BE();
 		packetKey->offset    = ctx.mdb->readUint32LE();
 	}
 
-	ctx.state = new State;
+	newState(ctx);
 
-	warning("%d.%d: %d", verMajor, verMinor, packetCount);
-	for (std::vector<PacketKey>::const_iterator packetKey = packetKeys.begin(); packetKey != packetKeys.end(); ++packetKey) {
+	for (std::vector<PacketKey>::const_iterator packetKey = packetKeys.begin();
+	     packetKey != packetKeys.end(); ++packetKey) {
+
+		ctx.mdb->seek(packetKey->offset);
+
+		ModelNode_NWN2 *newNode = new ModelNode_NWN2(*this);
+		bool success = false;
+
 		if      (packetKey->signature == kRigidID)
-			readRigid(ctx, packetKey->offset);
+			success = newNode->loadRigid(ctx);
 		else if (packetKey->signature == kSkinID)
-			readSkin (ctx, packetKey->offset);
+			success = newNode->loadSkin (ctx);
+
+		if (success)
+			ctx.nodes.push_back(newNode);
+		else
+			delete newNode;
 	}
 
-	_states.insert(std::make_pair(ctx.state->name, ctx.state));
-	ctx.state = 0;
+	addState(ctx);
 }
 
-void Model_NWN2::readRigid(ParserContext &ctx, uint32 offset) {
-	ctx.mdb->seekTo(offset);
+void Model_NWN2::newState(ParserContext &ctx) {
+	ctx.clear();
 
+	ctx.state = new State;
+}
+
+void Model_NWN2::addState(ParserContext &ctx) {
+	if (!ctx.state || ctx.nodes.empty()) {
+		ctx.clear();
+		return;
+	}
+
+	for (std::list<ModelNode_NWN2 *>::iterator n = ctx.nodes.begin();
+	     n != ctx.nodes.end(); ++n) {
+
+		_nodes.push_back(*n);
+		ctx.state->nodeList.push_back(*n);
+		ctx.state->nodeMap.insert(std::make_pair((*n)->getName(), *n));
+
+		if (!(*n)->getParent())
+			ctx.state->rootNodes.push_back(*n);
+	}
+
+	_stateList.push_back(ctx.state);
+	_stateMap.insert(std::make_pair(ctx.state->name, ctx.state));
+
+	if (!_currentState)
+		_currentState = ctx.state;
+
+	ctx.state = 0;
+
+	ctx.nodes.clear();
+}
+
+
+ModelNode_NWN2::ModelNode_NWN2(Model &model) : ModelNode(model) {
+}
+
+ModelNode_NWN2::~ModelNode_NWN2() {
+}
+
+bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	if (ctx.mdb->readUint32BE() != kRigidID)
 		throw Common::Exception("Packet signatures do not match");
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 
-	ctx.mesh = new Mesh;
-	ctx.node = new Node;
-
-	ctx.node->name.readASCII(*ctx.mdb, 32);
+	_name.readASCII(*ctx.mdb, 32);
 
 	// Skipping lower level of detail models
-	if (ctx.node->name.endsWith("_L01") || ctx.node->name.endsWith("_L02")) {
-		delete ctx.mesh;
-		delete ctx.node;
-		ctx.mesh = 0;
-		ctx.node = 0;
-		return;
-	}
+	if (_name.endsWith("_L01") || _name.endsWith("_L02"))
+		return false;
 
 	Common::UString diffuseMap, normalMap, tintMap, glowMap;
 	diffuseMap.readASCII(*ctx.mdb, 32);
@@ -115,12 +163,12 @@ void Model_NWN2::readRigid(ParserContext &ctx, uint32 offset) {
 	   tintMap.readASCII(*ctx.mdb, 32);
 	   glowMap.readASCII(*ctx.mdb, 32);
 
-	ctx.node->diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->diffuse [2] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->specular[0] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->specular[1] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->specular[2] = ctx.mdb->readIEEEFloatLE();
+	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
+	_diffuse [1] = ctx.mdb->readIEEEFloatLE();
+	_diffuse [2] = ctx.mdb->readIEEEFloatLE();
+	_specular[0] = ctx.mdb->readIEEEFloatLE();
+	_specular[1] = ctx.mdb->readIEEEFloatLE();
+	_specular[2] = ctx.mdb->readIEEEFloatLE();
 
 	float  specularPower = ctx.mdb->readIEEEFloatLE();
 	float  specularValue = ctx.mdb->readIEEEFloatLE();
@@ -129,67 +177,101 @@ void Model_NWN2::readRigid(ParserContext &ctx, uint32 offset) {
 	uint32 vertexCount = ctx.mdb->readUint32LE();
 	uint32 faceCount   = ctx.mdb->readUint32LE();
 
-	warning("\"%s\" (%8d) - %d, %d - %08X (%d)", ctx.node->name.c_str(),
-			packetSize, vertexCount, faceCount, textureFlags, textureFlags);
+	if ((vertexCount == 0) || (faceCount == 0))
+		return false;
 
-	ctx.mesh-> verts.resize(3 * vertexCount);
-	ctx.mesh->tverts.resize(3 * vertexCount);
+	std::vector<Common::UString> textures;
+	textures.push_back(diffuseMap);
+
+	uint32 textureCount = textures.size();
+
+	loadTextures(textures);
+	if (!createFaces(faceCount))
+		return false;
+
+
+	// Read vertex coordinates
+
+	std::vector<float> vX, vY, vZ;
+	vX.resize(vertexCount);
+	vY.resize(vertexCount);
+	vZ.resize(vertexCount);
+
+	std::vector<float> tX, tY, tZ;
+	tX.resize(vertexCount);
+	tY.resize(vertexCount);
+	tZ.resize(vertexCount);
+
 	for (uint32 i = 0; i < vertexCount; i++) {
-		ctx.mesh->verts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->verts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->verts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		vX[i] = ctx.mdb->readIEEEFloatLE();
+		vY[i] = ctx.mdb->readIEEEFloatLE();
+		vZ[i] = ctx.mdb->readIEEEFloatLE();
 
 		ctx.mdb->skip(3 * 4); // Normals
 		ctx.mdb->skip(3 * 4); // Tangents
 		ctx.mdb->skip(3 * 4); // Binormals
 
-		ctx.mesh->tverts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->tverts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->tverts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		tX[i] = ctx.mdb->readIEEEFloatLE();
+		tY[i] = ctx.mdb->readIEEEFloatLE();
+		tZ[i] = ctx.mdb->readIEEEFloatLE();
 	}
 
-	ctx.mesh->faceCount = faceCount;
 
-	ctx.mesh-> vertIndices.resize(3 * faceCount);
-	ctx.mesh->tvertIndices.resize(3 * faceCount);
+	// Read faces
+
 	for (uint32 i = 0; i < faceCount; i++) {
-		ctx.mesh->vertIndices[i * 3 + 0] = ctx.mesh->tvertIndices[i * 3 + 0] = ctx.mdb->readUint16LE();
-		ctx.mesh->vertIndices[i * 3 + 1] = ctx.mesh->tvertIndices[i * 3 + 1] = ctx.mdb->readUint16LE();
-		ctx.mesh->vertIndices[i * 3 + 2] = ctx.mesh->tvertIndices[i * 3 + 2] = ctx.mdb->readUint16LE();
+		const uint16 v1 = ctx.mdb->readUint16LE();
+		const uint16 v2 = ctx.mdb->readUint16LE();
+		const uint16 v3 = ctx.mdb->readUint16LE();
+
+		// Vertex coordinates
+		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
+		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
+		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
+		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
+
+		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
+		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
+		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
+		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
+
+		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
+		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
+		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
+		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
+
+		// Texture coordinates
+		for (uint32 t = 0; t < textureCount; t++) {
+			_tX[3 * textureCount * i + 3 * t + 0] = v1 < tX.size() ? tX[v1] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 0] = v1 < tY.size() ? tY[v1] : 0.0;
+
+			_tX[3 * textureCount * i + 3 * t + 1] = v2 < tX.size() ? tX[v2] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 1] = v2 < tY.size() ? tY[v2] : 0.0;
+
+			_tX[3 * textureCount * i + 3 * t + 2] = v3 < tX.size() ? tX[v3] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 2] = v3 < tY.size() ? tY[v3] : 0.0;
+		}
+
 	}
 
-	ctx.mesh->textures.push_back(diffuseMap);
+	createCenter();
 
-	processMesh(*ctx.mesh, *ctx.node);
-	delete ctx.mesh;
-	ctx.mesh = 0;
+	_render = true;
 
-	ctx.state->nodes.push_back(ctx.node);
-
-	ctx.node = 0;
+	return true;
 }
 
-void Model_NWN2::readSkin(ParserContext &ctx, uint32 offset) {
-	ctx.mdb->seekTo(offset);
-
+bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	if (ctx.mdb->readUint32BE() != kSkinID)
 		throw Common::Exception("Packet signatures do not match");
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 
-	ctx.mesh = new Mesh;
-	ctx.node = new Node;
-
-	ctx.node->name.readASCII(*ctx.mdb, 32);
+	_name.readASCII(*ctx.mdb, 32);
 
 	// Skipping lower level of detail models
-	if (ctx.node->name.endsWith("_L01") || ctx.node->name.endsWith("_L02")) {
-		delete ctx.mesh;
-		delete ctx.node;
-		ctx.mesh = 0;
-		ctx.node = 0;
-		return;
-	}
+	if (_name.endsWith("_L01") || _name.endsWith("_L02"))
+		return false;
 
 	Common::UString skeletonName;
 	skeletonName.readASCII(*ctx.mdb, 32);
@@ -200,12 +282,12 @@ void Model_NWN2::readSkin(ParserContext &ctx, uint32 offset) {
 	   tintMap.readASCII(*ctx.mdb, 32);
 	   glowMap.readASCII(*ctx.mdb, 32);
 
-	ctx.node->diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->diffuse [2] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->specular[0] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->specular[1] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->specular[2] = ctx.mdb->readIEEEFloatLE();
+	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
+	_diffuse [1] = ctx.mdb->readIEEEFloatLE();
+	_diffuse [2] = ctx.mdb->readIEEEFloatLE();
+	_specular[0] = ctx.mdb->readIEEEFloatLE();
+	_specular[1] = ctx.mdb->readIEEEFloatLE();
+	_specular[2] = ctx.mdb->readIEEEFloatLE();
 
 	float  specularPower = ctx.mdb->readIEEEFloatLE();
 	float  specularValue = ctx.mdb->readIEEEFloatLE();
@@ -214,15 +296,35 @@ void Model_NWN2::readSkin(ParserContext &ctx, uint32 offset) {
 	uint32 vertexCount = ctx.mdb->readUint32LE();
 	uint32 faceCount   = ctx.mdb->readUint32LE();
 
-	warning("\"%s\".\"%s\" (%8d) - %d, %d - %08X", ctx.node->name.c_str(), skeletonName.c_str(),
-			packetSize, vertexCount, faceCount, textureFlags);
+	if ((vertexCount == 0) || (faceCount == 0))
+		return false;
 
-	ctx.mesh-> verts.resize(3 * vertexCount);
-	ctx.mesh->tverts.resize(3 * vertexCount);
+	std::vector<Common::UString> textures;
+	textures.push_back(diffuseMap);
+
+	uint32 textureCount = textures.size();
+
+	loadTextures(textures);
+	if (!createFaces(faceCount))
+		return false;
+
+
+	// Read vertex coordinates
+
+	std::vector<float> vX, vY, vZ;
+	vX.resize(vertexCount);
+	vY.resize(vertexCount);
+	vZ.resize(vertexCount);
+
+	std::vector<float> tX, tY, tZ;
+	tX.resize(vertexCount);
+	tY.resize(vertexCount);
+	tZ.resize(vertexCount);
+
 	for (uint32 i = 0; i < vertexCount; i++) {
-		ctx.mesh->verts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->verts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->verts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		vX[i] = ctx.mdb->readIEEEFloatLE();
+		vY[i] = ctx.mdb->readIEEEFloatLE();
+		vZ[i] = ctx.mdb->readIEEEFloatLE();
 
 		ctx.mdb->skip(3 * 4); // Normals
 
@@ -232,33 +334,58 @@ void Model_NWN2::readSkin(ParserContext &ctx, uint32 offset) {
 		ctx.mdb->skip(3 * 4); // Tangents
 		ctx.mdb->skip(3 * 4); // Binormals
 
-		ctx.mesh->tverts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->tverts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->tverts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		tX[i] = ctx.mdb->readIEEEFloatLE();
+		tY[i] = ctx.mdb->readIEEEFloatLE();
+		tZ[i] = ctx.mdb->readIEEEFloatLE();
 
 		ctx.mdb->skip(4); // Bone count
 	}
 
-	ctx.mesh->faceCount = faceCount;
 
-	ctx.mesh-> vertIndices.resize(3 * faceCount);
-	ctx.mesh->tvertIndices.resize(3 * faceCount);
+	// Read faces
+
 	for (uint32 i = 0; i < faceCount; i++) {
-		ctx.mesh->vertIndices[i * 3 + 0] = ctx.mesh->tvertIndices[i * 3 + 0] = ctx.mdb->readUint16LE();
-		ctx.mesh->vertIndices[i * 3 + 1] = ctx.mesh->tvertIndices[i * 3 + 1] = ctx.mdb->readUint16LE();
-		ctx.mesh->vertIndices[i * 3 + 2] = ctx.mesh->tvertIndices[i * 3 + 2] = ctx.mdb->readUint16LE();
+		const uint16 v1 = ctx.mdb->readUint16LE();
+		const uint16 v2 = ctx.mdb->readUint16LE();
+		const uint16 v3 = ctx.mdb->readUint16LE();
+
+		// Vertex coordinates
+		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
+		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
+		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
+		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
+
+		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
+		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
+		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
+		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
+
+		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
+		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
+		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
+		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
+
+		// Texture coordinates
+		for (uint32 t = 0; t < textureCount; t++) {
+			_tX[3 * textureCount * i + 3 * t + 0] = v1 < tX.size() ? tX[v1] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 0] = v1 < tY.size() ? tY[v1] : 0.0;
+
+			_tX[3 * textureCount * i + 3 * t + 1] = v2 < tX.size() ? tX[v2] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 1] = v2 < tY.size() ? tY[v2] : 0.0;
+
+			_tX[3 * textureCount * i + 3 * t + 2] = v3 < tX.size() ? tX[v3] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 2] = v3 < tY.size() ? tY[v3] : 0.0;
+		}
+
 	}
 
-	ctx.mesh->textures.push_back(diffuseMap);
+	createCenter();
 
-	processMesh(*ctx.mesh, *ctx.node);
-	delete ctx.mesh;
-	ctx.mesh = 0;
+	_render = true;
 
-	ctx.state->nodes.push_back(ctx.node);
-
-	ctx.node = 0;
+	return true;
 }
+
 
 } // End of namespace Aurora
 

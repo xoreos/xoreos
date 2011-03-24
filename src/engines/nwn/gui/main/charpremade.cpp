@@ -42,6 +42,8 @@ WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
 	_button = loadModelGUI("ctl_pre_btn_char");
 	assert(_button);
 
+	_button->setClickable(true);
+
 	Common::UString portrait = c->getPortrait();
 	_portrait = new Graphics::Aurora::GUIQuad(portrait + "t", 0.0, 0.0, 16.0, 24.0,
 	                                          0.0, 8.0 / 32.0, 1.0, 1.0);
@@ -83,12 +85,14 @@ void WidgetListItemCharacter::setPosition(float x, float y, float z) {
 	getPosition(x, y, z);
 	_button->setPosition(x, y, z);
 
-	_portrait->setPosition(x + 8.0, y + 9.0, -z);
+	z -= 5.0;
+
+	_portrait->setPosition(x + 8.0, y + 9.0, z);
 
 	x += 32.0;
 
-	_textName->setPosition (x, y + _button->getHeight() -     _textName->getHeight() - 4.0, -z);
-	_textClass->setPosition(x, y + _button->getHeight() - 2 * _textName->getHeight() - 4.0, -z);
+	_textName->setPosition (x, y + _button->getHeight() -     _textName->getHeight() - 4.0, z);
+	_textClass->setPosition(x, y + _button->getHeight() - 2 * _textName->getHeight() - 4.0, z);
 }
 
 float WidgetListItemCharacter::getWidth() const {

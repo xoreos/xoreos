@@ -9,26 +9,24 @@
  */
 
 /** @file graphics/aurora/model_nwn_binary.h
- *  Loading Binary MDL files found in Neverwinter Nights.
+ *  Loading binary MDL files found in Neverwinter Nights.
  */
 
-#ifndef GRAPHICS_AURORA_MODEL_NWN_BINARY_H
-#define GRAPHICS_AURORA_MODEL_NWN_BINARY_H
-
-#include <vector>
-
-#include "common/ustring.h"
+#ifndef GRAPHICS_AURORA_NEWMODEL_NWN_BINARY_H
+#define GRAPHICS_AURORA_NEWMODEL_NWN_BINARY_H
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/modelnode.h"
 
 namespace Common {
 	class SeekableReadStream;
-	class StreamTokenizer;
 }
 
 namespace Graphics {
 
 namespace Aurora {
+
+class ModelNode_NWN_Binary;
 
 /** A 3D model in the NWN binary MDL format. */
 class Model_NWN_Binary : public Model {
@@ -43,8 +41,9 @@ private:
 		Common::SeekableReadStream *mdl;
 
 		State *state;
-		Node  *node;
-		Mesh  *mesh;
+
+		ModelNode_NWN_Binary *rootNode;
+		std::list<ModelNode_NWN_Binary *> nodes;
 
 		uint32 offModelData;
 		uint32 offRawData;
@@ -54,25 +53,38 @@ private:
 
 		ParserContext(Common::SeekableReadStream &stream);
 		~ParserContext();
+
+		void clear();
 	};
 
-	typedef std::map<Common::UString, Node *> NodeMap;
 
-	NodeMap _nodeMap;
+	void newState(ParserContext &ctx);
+	void addState(ParserContext &ctx);
 
-	void load(Common::SeekableReadStream &mdl);
+	void load(ParserContext &ctx);
 
-	void readNode(ParserContext &ctx, uint32 offset, Node *parent, bool rootState);
-	void readMesh(ParserContext &ctx);
-	void readAnim(ParserContext &ctx);
+	void readAnim(ParserContext &ctx, uint32 offset);
 
-	void readAnimGeometry(ParserContext &ctx, uint32 offset);
+	friend class ModelNode_NWN_Binary;
+};
 
-	void readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
+class ModelNode_NWN_Binary : public ModelNode {
+public:
+	ModelNode_NWN_Binary(Model &model);
+	~ModelNode_NWN_Binary();
+
+	void load(Model_NWN_Binary::ParserContext &ctx);
+
+private:
+	void readMesh(Model_NWN_Binary::ParserContext &ctx);
+	void readAnim(Model_NWN_Binary::ParserContext &ctx);
+
+	void readNodeControllers(Model_NWN_Binary::ParserContext &ctx, uint32 offset,
+                           uint32 count, std::vector<float> &data);
 };
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_MODEL_NWN_BINARY_H
+#endif // GRAPHICS_AURORA_NEWMODEL_NWN_BINARY_H

@@ -52,6 +52,8 @@ private:
 	int _steps;
 	int _state;
 
+	Graphics::Aurora::ModelNode *_thumb;
+
 	void changedValue(float x, float y);
 	void changePosition(float value);
 };

@@ -14,11 +14,13 @@
 
 #include "graphics/renderable.h"
 #include "graphics/types.h"
+#include "graphics/graphics.h"
 
 namespace Graphics {
 
-Renderable::Renderable(Queueable<Renderable>::Queue &queue) : Queueable<Renderable>(queue) {
-	_distance = 0.0;
+Renderable::Renderable(Queueable<Renderable>::Queue &queue) : Queueable<Renderable>(queue),
+	_clickable(false), _distance(0.0) {
+
 }
 
 Renderable::~Renderable() {
@@ -26,6 +28,14 @@ Renderable::~Renderable() {
 
 double Renderable::getDistance() const {
 	return _distance;
+}
+
+bool Renderable::isClickable() const {
+	return _clickable;
+}
+
+void Renderable::setClickable(bool clickable) {
+	_clickable = clickable;
 }
 
 const Common::UString &Renderable::getTag() const {
@@ -36,19 +46,30 @@ void Renderable::setTag(const Common::UString &tag) {
 	_tag = tag;
 }
 
+bool Renderable::isVisible() const {
+	return isInQueue();
+}
+
+void Renderable::show() {
+	GfxMan.lockFrame();
+
+	addToQueue();
+
+	GfxMan.resortObjects();
+
+	GfxMan.unlockFrame();
+}
+
+void Renderable::hide() {
+	removeFromQueue();
+}
+
 bool Renderable::isIn(float x, float y) const {
 	return false;
 }
 
 bool Renderable::isIn(float x, float y, float z) const {
 	return false;
-}
-
-void Renderable::setCurrentDistance() {
-	GLfloat modelView[16];
-
-	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
-	_distance = modelView[12] * modelView[12] + modelView[13] * modelView[13] + modelView[14] * modelView[14];
 }
 
 } // End of namespace Graphics

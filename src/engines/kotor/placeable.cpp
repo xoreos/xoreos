@@ -70,7 +70,7 @@ void Placeable::changedPosition() {
 
 void Placeable::changedOrientation() {
 	if (_model)
-		_model->setOrientation(_orientation[0], _orientation[2], -_orientation[1]);
+		_model->setRotation(_orientation[0], _orientation[2], -_orientation[1]);
 }
 
 void Placeable::loadModel() {

@@ -12,9 +12,8 @@
  *  The global graphics manager.
  */
 
-#include <cmath>
-
 #include "common/util.h"
+#include "common/maths.h"
 #include "common/error.h"
 #include "common/ustring.h"
 #include "common/file.h"
@@ -40,7 +39,7 @@ DECLARE_SINGLETON(Graphics::GraphicsManager)
 namespace Graphics {
 
 static bool queueComp(Renderable *a, Renderable *b) {
-	return a->getDistance() > b->getDistance();
+	return a->getDistance() < b->getDistance();
 }
 
 
@@ -348,6 +347,9 @@ void GraphicsManager::setupScene() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	glAlphaFunc(GL_GREATER, 0.1);
+	glEnable(GL_ALPHA_TEST);
+
 	glEnable(GL_CULL_FACE);
 }
 
@@ -363,6 +365,30 @@ void GraphicsManager::unlockFrame() {
 	assert(_frameLock != 0);
 
 	_frameLock--;
+}
+
+void GraphicsManager::recalculateObjectDistances() {
+	lockFrame();
+
+	for (Renderable::QueueRef obj = _objects.list.begin();
+       obj != _objects.list.end(); ++obj)
+		(*obj)->calculateDistance();
+	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin();
+	     obj != _guiFrontObjects.list.end(); ++obj)
+		(*obj)->calculateDistance();
+
+	resortObjects();
+
+	unlockFrame();
+}
+
+void GraphicsManager::resortObjects() {
+	lockFrame();
+
+	_objects.list.sort(queueComp);
+	_guiFrontObjects.list.sort(queueComp);
+
+	unlockFrame();
 }
 
 void GraphicsManager::abandon(TextureID *ids, uint32 count) {
@@ -410,17 +436,14 @@ static const Common::UString kNoTag;
 const Common::UString &GraphicsManager::getObjectAt(float x, float y) {
 	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
 
-	// Sort the GUI Front objects
-	_guiFrontObjects.list.sort(queueComp);
-
 	// Map the screen coordinates to the OpenGL coordinates
 	x =               x  - (_screen->w / 2.0);
 	y = (_screen->h - y) - (_screen->h / 2.0);
 
 	// Go through the GUI elements in reverse drawing order
-	for (Renderable::QueueRRef obj = _guiFrontObjects.list.rbegin(); obj != _guiFrontObjects.list.rend(); ++obj) {
-		// No tag, don't check
-		if ((*obj)->getTag().empty())
+	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj) {
+		if (!(*obj)->isClickable())
+			// Object isn't clickable, don't check
 			continue;
 
 		// If the coordinates are "in" that object, return its tag
@@ -429,10 +452,6 @@ const Common::UString &GraphicsManager::getObjectAt(float x, float y) {
 	}
 
 	// TODO: World objects check
-
-	// Common::StackLock objectsLock(_objects.mutex);
-
-	// _objects.list.sort(queueComp);
 
 	// No object at that position
 	return kNoTag;
@@ -482,12 +501,18 @@ void GraphicsManager::renderScene() {
 	if (!_videos.list.empty()) {
 		// Got videos, just play those
 
-		for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video) {
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
 
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		VideoDecoder::QueueRef video = _videos.list.begin();
+		while (video != _videos.list.end()) {
+			glPushMatrix();
 			(*video)->render();
+			glPopMatrix();
 
 			if (!(*video)->isPlaying()) {
 				// Finished playing, kick the video out of the queue
@@ -495,8 +520,8 @@ void GraphicsManager::renderScene() {
 				(*video)->destroy();
 				(*video)->kickedOut();
 				video = _videos.list.erase(video);
-			}
-
+			} else
+				++video;
 		}
 
 		SDL_GL_SwapBuffers();
@@ -519,22 +544,8 @@ void GraphicsManager::renderScene() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glViewport(0, 0, _screen->w, _screen->h);
 
 	gluPerspective(60.0, ((GLfloat) _screen->w) / ((GLfloat) _screen->h), 1.0, 1000.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	// Notify all objects that we're now in a new frame
-	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj)
-		(*obj)->newFrame();
-	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj)
-		(*obj)->newFrame();
-
-	// Sort the queues
-	_objects.list.sort(queueComp);
-	_guiFrontObjects.list.sort(queueComp);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -549,33 +560,53 @@ void GraphicsManager::renderScene() {
 	const float *cPos = CameraMan.getPosition();
 	glTranslatef(-cPos[0], -cPos[1], cPos[2]);
 
-	// Draw normal objects
-	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj) {
+	// Draw opaque objects
+	for (Renderable::QueueRRef obj = _objects.list.rbegin(); obj != _objects.list.rend(); ++obj) {
 		glPushMatrix();
-		(*obj)->render();
+		(*obj)->render(kRenderPassOpaque);
 		glPopMatrix();
 	}
 
-	glLoadIdentity();
-
-	glMatrixMode(GL_PROJECTION);
+	// Draw transparent objects
+	for (Renderable::QueueRRef obj = _objects.list.rbegin(); obj != _objects.list.rend(); ++obj) {
+		glPushMatrix();
+		(*obj)->render(kRenderPassTransparent);
+		glPopMatrix();
+	}
 
 	glDisable(GL_DEPTH_TEST);
 
-	// Draw the front part of the GUI
-	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj) {
-		glLoadIdentity();
-		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
 
-		(*obj)->render();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	// Draw the opaque front part of the GUI
+	for (Renderable::QueueRRef obj = _guiFrontObjects.list.rbegin(); obj != _guiFrontObjects.list.rend(); ++obj) {
+		glPushMatrix();
+		(*obj)->render(kRenderPassAll);
+		glPopMatrix();
 	}
+
+	/*
+	// Draw the transparent front part of the GUI
+	for (Renderable::QueueRRef obj = _guiFrontObjects.list.rbegin(); obj != _guiFrontObjects.list.rend(); ++obj) {
+		glPushMatrix();
+		glPopMatrix();
+	}
+	*/
 
 	// Draw the cursor
 	if (_cursor) {
+		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
-		//glTranslatef(- (2.0 / _screen->w), - (2.0 / _screen->h), 0.0);
 		glTranslatef(- (_screen->w / 2.0), _screen->h / 2.0, 0.0);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 
 		_cursor->render();
 	}

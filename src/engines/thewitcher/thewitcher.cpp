@@ -24,6 +24,8 @@
 #include "common/filepath.h"
 #include "common/stream.h"
 
+#include "graphics/camera.h"
+
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/model.h"
@@ -107,14 +109,60 @@ void TheWitcherEngine::run(const Common::UString &target) {
 
 	playSound("m1_axem00020005", Sound::kSoundTypeVoice);
 
+	CameraMan.setPosition(0.0, 1.0, 0.0);
+
 	Graphics::Aurora::Model *model = loadModelObject("cm_naked3");
 
+	model->setRotation(0.0, 0.0, 180.0);
+	model->setPosition(0.0, 2.0, 0.0);
 	model->show();
 
+	EventMan.enableKeyRepeat();
+
 	while (!EventMan.quitRequested()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event)) {
+			if (event.type == Events::kEventKeyDown) {
+				if      (event.key.keysym.sym == SDLK_UP)
+					CameraMan.move( 0.5);
+				else if (event.key.keysym.sym == SDLK_DOWN)
+					CameraMan.move(-0.5);
+				else if (event.key.keysym.sym == SDLK_RIGHT)
+					CameraMan.turn( 0.0,  5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_LEFT)
+					CameraMan.turn( 0.0, -5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_w)
+					CameraMan.move( 0.5);
+				else if (event.key.keysym.sym == SDLK_s)
+					CameraMan.move(-0.5);
+				else if (event.key.keysym.sym == SDLK_d)
+					CameraMan.turn( 0.0,  5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_a)
+					CameraMan.turn( 0.0, -5.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_e)
+					CameraMan.strafe( 0.5);
+				else if (event.key.keysym.sym == SDLK_q)
+					CameraMan.strafe(-0.5);
+				else if (event.key.keysym.sym == SDLK_INSERT)
+					CameraMan.move(0.0,  0.5, 0.0);
+				else if (event.key.keysym.sym == SDLK_DELETE)
+					CameraMan.move(0.0, -0.5, 0.0);
+				else if (event.key.keysym.sym == SDLK_PAGEUP)
+					CameraMan.turn( 5.0,  0.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_PAGEDOWN)
+					CameraMan.turn(-5.0,  0.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_END) {
+					const float *orient = CameraMan.getOrientation();
+
+					CameraMan.setOrientation(0.0, orient[1], orient[2]);
+				}
+			}
+		}
+
 		EventMan.delay(10);
 	}
 
+	EventMan.enableKeyRepeat(0);
 	delete model;
 }
 

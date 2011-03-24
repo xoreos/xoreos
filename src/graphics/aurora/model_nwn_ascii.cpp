@@ -15,13 +15,10 @@
 // Disable the "unused variable" warnings while most stuff is still stubbed
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
-#include "common/util.h"
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/stream.h"
 #include "common/streamtokenizer.h"
-
-#include "events/requests.h"
 
 #include "graphics/aurora/model_nwn_ascii.h"
 
@@ -30,39 +27,68 @@ namespace Graphics {
 namespace Aurora {
 
 Model_NWN_ASCII::ParserContext::ParserContext(Common::SeekableReadStream &stream) :
-	mdl(&stream), state(0), node(0), mesh(0) {
+	mdl(&stream), state(0) {
+
+	tokenize = new Common::StreamTokenizer(Common::StreamTokenizer::kRuleIgnoreAll);
+
+	tokenize->addSeparator(' ');
+	tokenize->addChunkEnd('\n');
+	tokenize->addIgnore('\r');
 }
 
 Model_NWN_ASCII::ParserContext::~ParserContext() {
-	delete mesh;
-	delete node;
+	delete tokenize;
+
+	clear();
+}
+
+void Model_NWN_ASCII::ParserContext::clear() {
+	for (std::list<ModelNode_NWN_ASCII *>::iterator n = nodes.begin(); n != nodes.end(); ++n)
+		delete *n;
+	nodes.clear();
+
 	delete state;
+	state = 0;
+}
+
+bool Model_NWN_ASCII::ParserContext::findNode(const Common::UString &name,
+		ModelNode_NWN_ASCII *&node) const {
+
+	node = 0;
+
+	if (name.empty() || (name == "NULL"))
+		return true;
+
+	for (std::list<ModelNode_NWN_ASCII *>::const_iterator n = nodes.begin();
+	     n != nodes.end(); ++n) {
+
+		if ((*n)->getName() == name) {
+			node = *n;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
-Model_NWN_ASCII::Model_NWN_ASCII(Common::SeekableReadStream &mdl, ModelType type) : Model(type) {
-	_tokenize = new Common::StreamTokenizer(Common::StreamTokenizer::kRuleIgnoreAll);
+Model_NWN_ASCII::Model_NWN_ASCII(Common::SeekableReadStream &mdl, ModelType type) :
+	Model(type) {
 
-	_tokenize->addSeparator(' ');
-	_tokenize->addChunkEnd('\n');
-	_tokenize->addIgnore('\r');
-
-	if (_type == kModelTypeGUIFront)
+	if (_type == kModelTypeGUIFront) {
 		// NWN GUI objects use 0.01 units / pixel
-		_modelScale[0] = _modelScale[1] = _modelScale[2] = 100.0;
+		_modelScale[0] = _modelScale[1] = 100.0;
+		_modelScale[2] = 1.0;
+	}
 
-	load(mdl);
-	setState();
+	ParserContext ctx(mdl);
 
-	createStateNameList();
+	load(ctx);
 
-	_nodeMap.clear();
-
-	rebuild();
+	finalize();
 }
 
 Model_NWN_ASCII::~Model_NWN_ASCII() {
-	delete _tokenize;
 }
 
 bool Model_NWN_ASCII::isASCII(Common::SeekableReadStream &mdl) {
@@ -71,19 +97,17 @@ bool Model_NWN_ASCII::isASCII(Common::SeekableReadStream &mdl) {
 	return mdl.readUint32LE() != 0;
 }
 
-void Model_NWN_ASCII::load(Common::SeekableReadStream &mdl) {
-	ParserContext ctx(mdl);
-
+void Model_NWN_ASCII::load(ParserContext &ctx) {
 	ctx.mdl->seek(0);
 
-	ctx.state = new State;
+	newState(ctx);
 
 	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenize->getTokens(*ctx.mdl, line, 3);
+		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 3);
 
-		_tokenize->nextChunk(*ctx.mdl);
+		ctx.tokenize->nextChunk(*ctx.mdl);
 
 		// Ignore empty lines and comments
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
@@ -92,305 +116,55 @@ void Model_NWN_ASCII::load(Common::SeekableReadStream &mdl) {
 		line[0].tolower();
 
 		if        (line[0] == "newmodel") {
+			if (!_name.empty())
+				warning("Model_NWN_ASCII::load(): More than one model definition");
+
 			_name = line[1];
 		} else if (line[0] == "setsupermodel") {
 			if (line[1] != _name)
-				throw Common::Exception("setsupermodel with an invalid name");
+				warning("Model_NWN_ASCII::load(): setsupermodel: \"%s\" != \"%s\"",
+				        line[1].c_str(), _name.c_str());
 
-			if (!line[2].empty() && (line[2] != "NULL"))
-				warning("TODO: setsupermodel");
+			// if (!line[2].empty() && (line[2] != "NULL"))
+				// warning("Model_NWN_ASCII::load(): TODO: setsupermodel");
 
-			_superModel = 0;
-		} else if (line[0] == "classification") {
-			_class = readClassification(line[1]);
-		} else if (line[0] == "setanimationscale") {
-			line[1].parse(_scale);
 		} else if (line[0] == "beginmodelgeom") {
 			if (line[1] != _name)
-				throw Common::Exception("beginmodelgeom with an invalid name");
+				warning("Model_NWN_ASCII::load(): beginmodelgeom: \"%s\" != \"%s\"",
+				        line[1].c_str(), _name.c_str());
 		} else if (line[0] == "node") {
 
-			readNode(ctx, line[1], line[2]);
+			ModelNode_NWN_ASCII *newNode = new ModelNode_NWN_ASCII(*this);
+			ctx.nodes.push_back(newNode);
+
+			newNode->load(ctx, line[1], line[2]);
 
 		} else if (line[0] == "newanim") {
-			readAnim(ctx);
-		} else if (line[0] == "filedependancy") {
-		} else if (line[0] == "endmodelgeom") {
+			ctx.anims.push_back(ctx.mdl->pos());
+			skipAnim(ctx);
 		} else if (line[0] == "donemodel") {
 			break;
 		} else
-			throw Common::Exception("Unknown MDL command \"%s\"", line[0].c_str());
+			;//warning("Unknown MDL command \"%s\"", line[0].c_str());
 	}
 
-	std::pair<StateMap::iterator, bool> result;
-	result = _states.insert(std::make_pair(ctx.state->name, ctx.state));
+	addState(ctx);
 
-	if (!result.second) {
-		warning("Failed inserting state \"%s\" into model", ctx.state->name.c_str());
-
-		delete ctx.state;
-	} else
-		_currentState = ctx.state;
-
-	ctx.state = 0;
-}
-
-void Model_NWN_ASCII::readNode(ParserContext &ctx, const Common::UString &type, const Common::UString &name) {
-	bool end = false;
-
-	bool skipNode = false;
-
-	ctx.mesh = new Mesh;
-	ctx.node = new Node;
-
-	ctx.node->name = name;
-
-	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin"))
-		ctx.node->render = true;
-	else
-		ctx.node->render = false;
-
-	if ((type == "emitter") || (type == "reference") || (type == "aabb")) {
-		warning("TODO: Node type %s", type.c_str());
-		skipNode = true;
-	}
-
-	if (type == "danglymesh")
-		ctx.node->dangly = true;
-
-	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenize->getTokens(*ctx.mdl, line, 5);
-
-		_tokenize->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		line[0].tolower();
-
-		if        (line[0] == "endnode") {
-			end = true;
-			break;
-		} else if (skipNode) {
-			continue;
-		} else if (line[0] == "parent") {
-			if (line[1] != "NULL") {
-				NodeMap::iterator it = _nodeMap.find(line[1]);
-				if (it == _nodeMap.end())
-					throw Common::Exception("Non-existent parent node");
-
-				ctx.node->parent = it->second;
-
-				ctx.node->parent->children.push_back(ctx.node);
-			} else {
-				ctx.node->parent = 0;
-				ctx.state->nodes.push_back(ctx.node);
-			}
-		} else if (line[0] == "position") {
-			readFloats(line, ctx.node->position, 3, 1);
-		} else if (line[0] == "orientation") {
-			readFloats(line, ctx.node->orientation, 4, 1);
-
-			ctx.node->orientation[3] = Common::rad2deg(ctx.node->orientation[3]);
-		} else if (line[0] == "wirecolor") {
-			readFloats(line, ctx.node->wirecolor, 3, 1);
-		} else if (line[0] == "ambient") {
-			readFloats(line, ctx.node->ambient, 3, 1);
-		} else if (line[0] == "diffuse") {
-			readFloats(line, ctx.node->diffuse, 3, 1);
-		} else if (line[0] == "specular") {
-			readFloats(line, ctx.node->specular, 3, 1);
-		} else if (line[0] == "shininess") {
-			readFloats(line, &ctx.node->shininess, 1, 1);
-		} else if (line[0] == "period") {
-			readFloats(line, &ctx.node->period, 1, 1);
-		} else if (line[0] == "tightness") {
-			readFloats(line, &ctx.node->tightness, 1, 1);
-		} else if (line[0] == "displacement") {
-			readFloats(line, &ctx.node->displacement, 1, 1);
-		} else if (line[0] == "showdispl") {
-			line[1].parse(ctx.node->showdispl);
-		} else if (line[0] == "displtype") {
-			line[1].parse(ctx.node->displtype);
-		} else if (line[0] == "center") {
-			if (line[1] == "undefined")
-				warning("TODO: center == undefined");
-			else
-				readFloats(line, ctx.node->center, 3, 1);
-		} else if (line[0] == "tilefade") {
-			line[1].parse(ctx.node->tilefade);
-		} else if (line[0] == "scale") {
-			line[1].parse(ctx.node->scale);
-		} else if (line[0] == "render") {
-			line[1].parse(ctx.node->render);
-		} else if (line[0] == "shadow") {
-			line[1].parse(ctx.node->shadow);
-		} else if (line[0] == "beaming") {
-			line[1].parse(ctx.node->beaming);
-		} else if (line[0] == "inheritcolor") {
-			line[1].parse(ctx.node->inheritcolor);
-		} else if (line[0] == "rotatetexture") {
-			line[1].parse(ctx.node->rotatetexture);
-		} else if (line[0] == "alpha") {
-			line[1].parse(ctx.node->alpha);
-		} else if (line[0] == "transparencyhint") {
-			line[1].parse(ctx.node->transparencyhint);
-		} else if (line[0] == "selfillumcolor") {
-			readFloats(line, ctx.node->selfillumcolor, 3, 1);
-		} else if (line[0] == "danglymesh") {
-			line[1].parse(ctx.node->dangly);
-		} else if (line[0] == "gizmo") {
-			warning("TODO: gizmo \"%s\"", line[1].c_str());
-		} else if (line[0] == "constraints") {
-			int n;
-
-			line[1].parse(n);
-			readConstraints(ctx, ctx.node->constraints, n);
-		} else if (line[0] == "weights") {
-			warning("TODO: Weights");
-
-			int n;
-
-			line[1].parse(n);
-			readWeights(ctx, n);
-		} else if (line[0] == "bitmap") {
-			ctx.mesh->textures.push_back(line[1]);
-		} else if (line[0] == "verts") {
-			int n;
-
-			line[1].parse(n);
-			readVertices(ctx, ctx.mesh->verts, n);
-		} else if (line[0] == "tverts") {
-			int n;
-
-			line[1].parse(n);
-			readVertices(ctx, ctx.mesh->tverts, n);
-		} else if (line[0] == "faces") {
-			int n;
-
-			line[1].parse(n);
-			readFaces(ctx, n);
-		} else
-			warning("Unknown MDL node command \"%s\"", line[0].c_str());
-	}
-
-	if (!end)
-		throw Common::Exception("node without endnode");
-
-	processMesh(*ctx.mesh, *ctx.node);
-	delete ctx.mesh;
-	ctx.mesh = 0;
-
-	_nodes.push_back(ctx.node);
-	_nodeMap.insert(std::make_pair(name, ctx.node));
-	ctx.state->nodeMap.insert(std::make_pair(ctx.node->name, ctx.node));
-
-	ctx.node = 0;
-}
-
-void Model_NWN_ASCII::readVertices(ParserContext &ctx, std::vector<float> &vertices, int n) {
-	vertices.resize(3 * n);
-
-	float *verts = &vertices[0];
-	while (n > 0) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenize->getTokens(*ctx.mdl, line, 3);
-
-		_tokenize->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		readFloats(line, verts, 3, 0);
-
-		n--;
-		verts += 3;
+	for (std::vector<uint32>::iterator a = ctx.anims.begin(); a != ctx.anims.end(); ++a) {
+		ctx.mdl->seek(*a);
+		readAnim(ctx);
 	}
 }
 
-void Model_NWN_ASCII::readFaces(ParserContext &ctx, int n) {
-	ctx.mesh-> vertIndices.resize(3 * n);
-	ctx.mesh->tvertIndices.resize(3 * n);
-
-	ctx.mesh->smoothGroup.resize(n);
-	ctx.mesh->material.resize(n);
-
-	for (int i = 0; i < n; ) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenize->getTokens(*ctx.mdl, line, 8);
-
-		_tokenize->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		line[0].parse(ctx.mesh->vertIndices[i * 3 + 0]);
-		line[1].parse(ctx.mesh->vertIndices[i * 3 + 1]);
-		line[2].parse(ctx.mesh->vertIndices[i * 3 + 2]);
-
-		line[3].parse(ctx.mesh->smoothGroup[i]);
-
-		line[4].parse(ctx.mesh->tvertIndices[i * 3 + 0]);
-		line[5].parse(ctx.mesh->tvertIndices[i * 3 + 1]);
-		line[6].parse(ctx.mesh->tvertIndices[i * 3 + 2]);
-
-		line[7].parse(ctx.mesh->material[i]);
-
-		i++;
-		ctx.mesh->faceCount++;
-	}
-}
-
-void Model_NWN_ASCII::readConstraints(ParserContext &ctx, std::vector<float> &constraints, int n) {
-	constraints.resize(n);
-
-	for (int i = 0; i < n; ) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenize->getTokens(*ctx.mdl, line, 1);
-
-		_tokenize->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		line[0].parse(constraints[i++]);
-	}
-}
-
-void Model_NWN_ASCII::readWeights(ParserContext &ctx, int n) {
-	for (int i = 0; i < n; ) {
-		std::vector<Common::UString> line;
-
-		int count = _tokenize->getTokens(*ctx.mdl, line, 1);
-
-		_tokenize->nextChunk(*ctx.mdl);
-
-		// Ignore empty lines and comments
-		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
-			continue;
-
-		i++;
-	}
-}
-
-void Model_NWN_ASCII::readAnim(ParserContext &ctx) {
+void Model_NWN_ASCII::skipAnim(ParserContext &ctx) {
 	bool end = false;
 
 	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
 		std::vector<Common::UString> line;
 
-		int count = _tokenize->getTokens(*ctx.mdl, line, 1);
+		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 1);
 
-		_tokenize->nextChunk(*ctx.mdl);
+		ctx.tokenize->nextChunk(*ctx.mdl);
 
 		// Ignore empty lines and comments
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
@@ -408,33 +182,338 @@ void Model_NWN_ASCII::readAnim(ParserContext &ctx) {
 		throw Common::Exception("anim without doneanim");
 }
 
-Model_NWN_ASCII::Classification Model_NWN_ASCII::readClassification(Common::UString classification) {
-	classification.tolower();
-
-	if (classification == "effect")
-		return kClassEffect;
-	if (classification == "effects")
-		return kClassEffect;
-	if (classification == "tile")
-		return kClassTile;
-	if (classification == "character")
-		return kClassCharacter;
-	if (classification == "door")
-		return kClassDoor;
-	if (classification == "item")
-		return kClassItem;
-	if (classification == "gui")
-		return kClassGUI;
-
-	return kClassOther;
+void Model_NWN_ASCII::readAnim(ParserContext &ctx) {
+	// TODO: Model_NWN_ASCII::readAnim
 }
 
-void Model_NWN_ASCII::readFloats(const std::vector<Common::UString> &strings, float *floats, int n, int start) {
-	if (strings.size() < ((uint) (start + n)))
+void Model_NWN_ASCII::newState(ParserContext &ctx) {
+	ctx.clear();
+
+	ctx.hasPosition    = false;
+	ctx.hasOrientation = false;
+	ctx.state          = new State;
+}
+
+void Model_NWN_ASCII::addState(ParserContext &ctx) {
+	if (!ctx.state || ctx.nodes.empty()) {
+		ctx.clear();
+		return;
+	}
+
+	for (std::list<ModelNode_NWN_ASCII *>::iterator n = ctx.nodes.begin();
+	     n != ctx.nodes.end(); ++n) {
+
+		_nodes.push_back(*n);
+		ctx.state->nodeList.push_back(*n);
+		ctx.state->nodeMap.insert(std::make_pair((*n)->getName(), *n));
+
+		if (!(*n)->getParent())
+			ctx.state->rootNodes.push_back(*n);
+	}
+
+	_stateList.push_back(ctx.state);
+	_stateMap.insert(std::make_pair(ctx.state->name, ctx.state));
+
+	if (!_currentState)
+		_currentState = ctx.state;
+
+	ctx.state = 0;
+
+	ctx.nodes.clear();
+}
+
+
+ModelNode_NWN_ASCII::Mesh::Mesh() : vCount(0), tCount(0), faceCount(0) {
+}
+
+
+ModelNode_NWN_ASCII::ModelNode_NWN_ASCII(Model &model) : ModelNode(model) {
+	_hasTransparencyHint = true;
+	_transparencyHint = false;
+}
+
+ModelNode_NWN_ASCII::~ModelNode_NWN_ASCII() {
+}
+
+void ModelNode_NWN_ASCII::load(Model_NWN_ASCII::ParserContext &ctx,
+                               const Common::UString &type, const Common::UString &name) {
+
+	bool end      = false;
+	bool skipNode = false;
+
+	_name = name;
+
+	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin"))
+		_render = true;
+	else
+		_render = false;
+
+	if ((type == "emitter") || (type == "reference") || (type == "aabb")) {
+		// warning("TODO: Node type %s", type.c_str());
+		skipNode = true;
+	}
+
+	if (type == "danglymesh")
+		_dangly = true;
+
+	Mesh mesh;
+
+	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
+		std::vector<Common::UString> line;
+
+		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 5);
+
+		ctx.tokenize->nextChunk(*ctx.mdl);
+
+		// Ignore empty lines and comments
+		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
+			continue;
+
+		line[0].tolower();
+
+		if        (line[0] == "endnode") {
+			end = true;
+			break;
+		} else if (skipNode) {
+			continue;
+		} else if (line[0] == "parent") {
+			ModelNode_NWN_ASCII *parent = 0;
+
+			if (!ctx.findNode(line[1], parent))
+				warning("ModelNode_NWN_ASCII::load(): Non-existent parent node \"%s\"",
+				        line[1].c_str());
+
+			setParent(parent);
+			if (parent) {
+				_level = parent->_level + 1;
+				parent->_children.push_back(this);
+			}
+
+		} else if (line[0] == "position") {
+			readFloats(line, _position, 3, 1);
+		} else if (line[0] == "orientation") {
+			readFloats(line, _orientation, 4, 1);
+
+			_orientation[3] = Common::rad2deg(_orientation[3]);
+		} else if (line[0] == "render") {
+			line[1].parse(_render);
+		} else if (line[0] == "transparencyhint") {
+			line[1].parse(_transparencyHint);
+		} else if (line[0] == "danglymesh") {
+			line[1].parse(_dangly);
+		} else if (line[0] == "constraints") {
+			uint32 n;
+
+			line[1].parse(n);
+			readConstraints(ctx, n);
+		} else if (line[0] == "weights") {
+			uint32 n;
+
+			line[1].parse(n);
+			readWeights(ctx, n);
+		} else if (line[0] == "bitmap") {
+			mesh.textures.push_back(line[1]);
+		} else if (line[0] == "verts") {
+			line[1].parse(mesh.vCount);
+
+			readVCoords(ctx, mesh);
+		} else if (line[0] == "tverts") {
+			if (mesh.tCount != 0)
+				warning("ModelNode_NWN_ASCII::load(): Multiple texture coordinates!");
+
+			line[1].parse(mesh.tCount);
+
+			readTCoords(ctx, mesh);
+		} else if (line[0] == "faces") {
+			line[1].parse(mesh.faceCount);
+
+			readFaces(ctx, mesh);
+		} else
+			;//warning("Unknown MDL node command \"%s\"", line[0].c_str());
+	}
+
+	if (!end)
+		throw Common::Exception("ModelNode_NWN_ASCII::load(): node without endnode");
+
+	processMesh(mesh);
+}
+
+void ModelNode_NWN_ASCII::readConstraints(Model_NWN_ASCII::ParserContext &ctx, uint32 n) {
+	for (uint32 i = 0; i < n; ) {
+		std::vector<Common::UString> line;
+
+		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 1);
+
+		ctx.tokenize->nextChunk(*ctx.mdl);
+
+		// Ignore empty lines and comments
+		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
+			continue;
+
+		i++;
+	}
+}
+
+void ModelNode_NWN_ASCII::readWeights(Model_NWN_ASCII::ParserContext &ctx, uint32 n) {
+	for (uint32 i = 0; i < n; ) {
+		std::vector<Common::UString> line;
+
+		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 1);
+
+		ctx.tokenize->nextChunk(*ctx.mdl);
+
+		// Ignore empty lines and comments
+		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
+			continue;
+
+		i++;
+	}
+}
+
+void ModelNode_NWN_ASCII::readFloats(const std::vector<Common::UString> &strings,
+                                     float *floats, uint32 n, uint32 start) {
+
+	if (strings.size() < (start + n))
 		throw Common::Exception("Missing tokens");
 
-	for (int i = 0; i < n; i++)
+	for (uint32 i = 0; i < n; i++)
 		strings[start + i].parse(floats[i]);
+}
+
+void ModelNode_NWN_ASCII::readVCoords(Model_NWN_ASCII::ParserContext &ctx, Mesh &mesh) {
+	mesh.vX.resize(mesh.vCount);
+	mesh.vY.resize(mesh.vCount);
+	mesh.vZ.resize(mesh.vCount);
+
+	for (uint32 i = 0; i < mesh.vCount; ) {
+		std::vector<Common::UString> line;
+
+		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 3);
+
+		ctx.tokenize->nextChunk(*ctx.mdl);
+
+		// Ignore empty lines and comments
+		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
+			continue;
+
+		line[0].parse(mesh.vX[i]);
+		line[1].parse(mesh.vY[i]);
+		line[2].parse(mesh.vZ[i]);
+
+		i++;
+	}
+}
+
+void ModelNode_NWN_ASCII::readTCoords(Model_NWN_ASCII::ParserContext &ctx, Mesh &mesh) {
+	mesh.tX.resize(mesh.tCount);
+	mesh.tY.resize(mesh.tCount);
+
+	for (uint32 i = 0; i < mesh.tCount; ) {
+		std::vector<Common::UString> line;
+
+		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 2);
+
+		ctx.tokenize->nextChunk(*ctx.mdl);
+
+		// Ignore empty lines and comments
+		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
+			continue;
+
+		line[0].parse(mesh.tX[i]);
+		line[1].parse(mesh.tY[i]);
+
+		i++;
+	}
+}
+
+void ModelNode_NWN_ASCII::readFaces(Model_NWN_ASCII::ParserContext &ctx, Mesh &mesh) {
+	mesh.vIA.resize(mesh.faceCount);
+	mesh.vIB.resize(mesh.faceCount);
+	mesh.vIC.resize(mesh.faceCount);
+
+	mesh.tIA.resize(mesh.faceCount);
+	mesh.tIB.resize(mesh.faceCount);
+	mesh.tIC.resize(mesh.faceCount);
+
+	mesh.smooth.resize(mesh.faceCount);
+	mesh.mat.resize(mesh.faceCount);
+
+	for (uint32 i = 0; i < mesh.faceCount; ) {
+		std::vector<Common::UString> line;
+
+		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 8);
+
+		ctx.tokenize->nextChunk(*ctx.mdl);
+
+		// Ignore empty lines and comments
+		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
+			continue;
+
+		line[0].parse(mesh.vIA[i]);
+		line[1].parse(mesh.vIB[i]);
+		line[2].parse(mesh.vIC[i]);
+
+		line[3].parse(mesh.smooth[i]);
+
+		line[4].parse(mesh.tIA[i]);
+		line[5].parse(mesh.tIB[i]);
+		line[6].parse(mesh.tIC[i]);
+
+		line[7].parse(mesh.mat[i]);
+
+		i++;
+	}
+}
+
+void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
+	loadTextures(mesh.textures);
+	if (!createFaces(mesh.faceCount))
+		return;
+
+	const uint32 textureCount = mesh.textures.size();
+	if (textureCount > 1)
+		warning("ModelNode_NWN_ASCII::processMesh(): textureCount == %d", textureCount);
+
+	for (uint32 i = 0; i < mesh.faceCount; i++) {
+		const uint32 v1 = mesh.vIA[i];
+		const uint32 v2 = mesh.vIB[i];
+		const uint32 v3 = mesh.vIC[i];
+
+		// Vertex coordinates
+		_vX[3 * i + 0] = v1 < mesh.vCount ? mesh.vX[v1] : 0.0;
+		_vY[3 * i + 0] = v1 < mesh.vCount ? mesh.vY[v1] : 0.0;
+		_vZ[3 * i + 0] = v1 < mesh.vCount ? mesh.vZ[v1] : 0.0;
+		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
+
+		_vX[3 * i + 1] = v2 < mesh.vCount ? mesh.vX[v2] : 0.0;
+		_vY[3 * i + 1] = v2 < mesh.vCount ? mesh.vY[v2] : 0.0;
+		_vZ[3 * i + 1] = v2 < mesh.vCount ? mesh.vZ[v2] : 0.0;
+		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
+
+		_vX[3 * i + 2] = v3 < mesh.vCount ? mesh.vX[v3] : 0.0;
+		_vY[3 * i + 2] = v3 < mesh.vCount ? mesh.vY[v3] : 0.0;
+		_vZ[3 * i + 2] = v3 < mesh.vCount ? mesh.vZ[v3] : 0.0;
+		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
+
+		const uint32 t1 = mesh.tIA[i];
+		const uint32 t2 = mesh.tIB[i];
+		const uint32 t3 = mesh.tIC[i];
+
+		// Texture coordinates
+		for (uint32 t = 0; t < textureCount; t++) {
+			_tX[3 * textureCount * i + 3 * t + 0] = t1 < mesh.tCount ? mesh.tX[t1] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 0] = t1 < mesh.tCount ? mesh.tY[t1] : 0.0;
+
+			_tX[3 * textureCount * i + 3 * t + 1] = t2 < mesh.tCount ? mesh.tX[t2] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 1] = t2 < mesh.tCount ? mesh.tY[t2] : 0.0;
+
+			_tX[3 * textureCount * i + 3 * t + 2] = t3 < mesh.tCount ? mesh.tX[t3] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 2] = t3 < mesh.tCount ? mesh.tY[t3] : 0.0;
+		}
+
+	}
+
+	createCenter();
 }
 
 } // End of namespace Aurora

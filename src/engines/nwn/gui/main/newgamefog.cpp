@@ -12,6 +12,7 @@
  *  The fog behind the new game dialogs.
  */
 
+#include "common/maths.h"
 #include "common/stream.h"
 
 #include "aurora/resman.h"
@@ -19,6 +20,8 @@
 #include "events/events.h"
 
 #include "graphics/aurora/model_nwn_binary.h"
+
+#include "engines/aurora/model.h"
 
 #include "engines/nwn/gui/main/newgamefog.h"
 
@@ -43,8 +46,6 @@ public:
 	NewGameFog(Common::SeekableReadStream &fog) :
 		Graphics::Aurora::Model_NWN_Binary(fog, Graphics::Aurora::kModelTypeGUIFront) {
 
-		setPosition(0.0, 0.0, -10.0);
-
 		_startTime  = EventMan.getTimestamp();
 		_lastTime   = _startTime;
 		_timeRotate = _startTime - (std::rand() % 10000);
@@ -60,7 +61,10 @@ public:
 	~NewGameFog() {
 	}
 
-	void render() {
+	void render(Graphics::RenderPass pass) {
+		if (pass == Graphics::kRenderPassTransparent)
+			return;
+
 		uint32 curTime = EventMan.getTimestamp();
 
 		uint32 diffRotate = curTime - _timeRotate;
@@ -80,7 +84,7 @@ public:
 
 		glColor4f(1.0, 1.0, 1.0, _curFade);
 
-		Graphics::Aurora::Model_NWN_Binary::render();
+		Graphics::Aurora::Model_NWN_Binary::render(pass);
 
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 
@@ -97,6 +101,7 @@ static Graphics::Aurora::Model *createNewGameFog() {
 	Graphics::Aurora::Model *fogModel = new NewGameFog(*fog);
 	delete fog;
 
+	fogModel->setPosition(0.0, 0.0, 100.0);
 	return fogModel;
 }
 

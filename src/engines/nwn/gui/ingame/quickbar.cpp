@@ -16,6 +16,7 @@
 
 #include "graphics/graphics.h"
 
+#include "graphics/aurora/modelnode.h"
 #include "graphics/aurora/model.h"
 
 #include "engines/aurora/model.h"
@@ -31,21 +32,26 @@ namespace NWN {
 QuickbarButton::QuickbarButton(::Engines::GUI &gui, uint n) : Widget(gui, ""),
 	_buttonNumber(n) {
 
+	Graphics::Aurora::ModelNode *invisible = 0;
+
 	if (_buttonNumber == 11) {
 
 		_model = loadModelGUI("qb_but67end");
 		if (!_model)
 			throw Common::Exception("Failed to load quickbar model");
-		_model->setNodeVisibility("Plane72", false);
+		invisible = _model->getNode("Plane72");
 
 	} else {
 
 		_model = loadModelGUI("qb_but67");
 		if (!_model)
 			throw Common::Exception("Failed to load quickbar model");
-		_model->setNodeVisibility("Plane52", false);
+		invisible = _model->getNode("Plane52");
 
 	}
+
+	if (invisible)
+		invisible->setInvisible(true);
 
 	Widget::setTag(Common::UString::sprintf("Quickbar%d", _buttonNumber));
 	_model->setTag(Widget::getTag());
@@ -86,7 +92,7 @@ void QuickbarButton::setTag(const Common::UString &tag) {
 Quickbar::Quickbar() {
 	getSlotSize();
 
-	WidgetPanel *bottomEdge = new WidgetPanel(*this, "BottomEdge", "pnl_quick_bar");
+	WidgetPanel *bottomEdge = new WidgetPanel(*this, "QBBottomEdge", "pnl_quick_bar");
 	addWidget(bottomEdge);
 
 	_edgeHeight = bottomEdge->getHeight();
@@ -98,7 +104,7 @@ Quickbar::Quickbar() {
 		addWidget(button);
 	}
 
-	WidgetPanel *topEdge = new WidgetPanel(*this, "TopEdge", "pnl_quick_bar");
+	WidgetPanel *topEdge = new WidgetPanel(*this, "QBTopEdge", "pnl_quick_bar");
 	topEdge->setPosition(0.0, _slotHeight, 0.0);
 	addWidget(topEdge);
 

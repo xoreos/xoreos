@@ -16,6 +16,7 @@
 
 #include "graphics/graphics.h"
 
+#include "graphics/aurora/modelnode.h"
 #include "graphics/aurora/model.h"
 
 #include "engines/nwn/gui/widgets/panel.h"
@@ -67,10 +68,13 @@ void ChatModeButton::setPosition(float x, float y, float z) {
 
 	getPosition(x, y, z);
 
-	float tX = 0.0, tY = 0.0, tZ = 0.0;
-	_model->getNodePosition("text", tX, tY, tZ);
+	Graphics::Aurora::ModelNode *node = 0;
 
-	_label->setPosition(x + tX, y + tY - (_label->getHeight() / 2.0), z + tZ);
+	float tX = 0.0, tY = 0.0, tZ = 0.0;
+	if ((node = _model->getNode("text")))
+		node->getPosition(tX, tY, tZ);
+
+	_label->setPosition(x + tX, y + tY - (_label->getHeight() / 2.0), z - tZ);
 }
 
 void ChatModeButton::setTag(const Common::UString &tag) {
@@ -83,7 +87,7 @@ void ChatModeButton::setTag(const Common::UString &tag) {
 Quickchat::Quickchat(float position) {
 	// Prompt
 
-	_prompt = new WidgetPanel(*this, "Prompt", "pnl_chat_prompt");
+	_prompt = new WidgetPanel(*this, "QCPrompt", "pnl_chat_prompt");
 
 	_prompt->setPosition(0.0, position, 0.0);
 
@@ -93,9 +97,9 @@ Quickchat::Quickchat(float position) {
 	// Mode button
 
 	ChatModeButton *modeButton =
-		new ChatModeButton(*this, "Mode", "ctl_btn_chatmode", kModeTalk);
+		new ChatModeButton(*this, "QCMode", "ctl_btn_chatmode", kModeTalk);
 
-	modeButton->setPosition(0.0, position, 0.0);
+	modeButton->setPosition(0.0, position, -100.0);
 
 	addWidget(modeButton);
 

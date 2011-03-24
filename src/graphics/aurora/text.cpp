@@ -84,20 +84,9 @@ void Text::setPosition(float x, float y, float z) {
 	_y = roundf(y);
 
 	_distance = z;
+	GfxMan.resortObjects();
 
 	GfxMan.unlockFrame();
-}
-
-void Text::show() {
-	Renderable::addToQueue();
-}
-
-void Text::hide() {
-	Renderable::removeFromQueue();
-}
-
-bool Text::isVisible() {
-	return Renderable::isInQueue();
 }
 
 bool Text::isEmpty() {
@@ -112,10 +101,14 @@ float Text::getHeight() const {
 	return _height;
 }
 
-void Text::newFrame() {
+void Text::calculateDistance() {
 }
 
-void Text::render() {
+void Text::render(RenderPass pass) {
+	// Text objects should always be transparent
+	if (pass == kRenderPassOpaque)
+		return;
+
 	glTranslatef(_x, _y, 0.0);
 
 	if (_hasColor)

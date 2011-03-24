@@ -41,14 +41,15 @@ WidgetListItemModule::WidgetListItemModule(::Engines::GUI &gui,
 	WidgetListItem(gui), _spacing(spacing) {
 
 	_button = loadModelGUI("ctl_btn_txt407");
+	assert(_button);
+
+	_button->setClickable(true);
 
 	Common::UString splitText;
 	Graphics::Aurora::FontHandle f = FontMan.get(font);
 	f.getFont().split(text, splitText, _button->getWidth() - 8.0);
 
 	_text = new Graphics::Aurora::Text(f, splitText, 0.5);
-
-	assert(_button);
 }
 
 WidgetListItemModule::~WidgetListItemModule() {
@@ -75,7 +76,7 @@ void WidgetListItemModule::setPosition(float x, float y, float z) {
 	x = x + (_button->getWidth () - _text->getWidth ()) / 2.0;
 	y = y + (_button->getHeight() - _text->getHeight()) / 2.0;
 
-	_text->setPosition(x, y, -z);
+	_text->setPosition(x, y, z - 1.0);
 }
 
 float WidgetListItemModule::getWidth() const {

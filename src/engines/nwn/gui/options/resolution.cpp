@@ -34,7 +34,7 @@ OptionsResolutionMenu::OptionsResolutionMenu(bool isMain) {
 
 	if (isMain) {
 		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
-		backdrop->setPosition(0.0, 0.0, -10.0);
+		backdrop->setPosition(0.0, 0.0, 100.0);
 		addWidget(backdrop);
 	}
 

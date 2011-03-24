@@ -15,15 +15,11 @@
 // Disable the "unused variable" warnings while most stuff is still stubbed
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
-#include "common/util.h"
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/stream.h"
 
-#include "events/requests.h"
-
 #include "graphics/aurora/model_kotor.h"
-#include "graphics/aurora/texture.h"
 
 static const int kNodeFlagHasHeader    = 0x0001;
 static const int kNodeFlagHasLight     = 0x0002;
@@ -90,40 +86,40 @@ namespace Graphics {
 namespace Aurora {
 
 Model_KotOR::ParserContext::ParserContext(Common::SeekableReadStream &mdlStream,
-		Common::SeekableReadStream &mdxStream, const Common::UString &text) :
-		mdl(&mdlStream), mdx(&mdxStream), texture(text), state(0), node(0), mesh(0) {
+		Common::SeekableReadStream &mdxStream, const Common::UString &t, bool k2) :
+	mdl(&mdlStream), mdx(&mdxStream), state(0), texture(t), kotor2(k2) {
 
 }
 
 Model_KotOR::ParserContext::~ParserContext() {
-	delete mesh;
-	delete node;
+	clear();
+}
+
+void Model_KotOR::ParserContext::clear() {
+	for (std::list<ModelNode_KotOR *>::iterator n = nodes.begin(); n != nodes.end(); ++n)
+		delete *n;
+	nodes.clear();
+
 	delete state;
+	state = 0;
 }
 
 
-Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl,
-		Common::SeekableReadStream &mdx, bool kotor2, ModelType type,
-		const Common::UString &texture) : Model(type), _kotor2(kotor2) {
+Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx,
+                         bool kotor2, ModelType type, const Common::UString &texture) :
+	Model(type) {
 
-	load(mdl, mdx, texture);
-	setState();
+	ParserContext ctx(mdl, mdx, texture, kotor2);
 
-	_names.clear();
+	load(ctx);
 
-	createModelBound();
-
-	rebuild();
+	finalize();
 }
 
 Model_KotOR::~Model_KotOR() {
 }
 
-void Model_KotOR::load(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx,
-		const Common::UString &texture) {
-
-	ParserContext ctx(mdl, mdx, texture);
-
+void Model_KotOR::load(ParserContext &ctx) {
 	if (ctx.mdl->readUint32LE() != 0)
 		throw Common::Exception("Unsupported KotOR ASCII MDL");
 
@@ -167,7 +163,7 @@ void Model_KotOR::load(Common::SeekableReadStream &mdl, Common::SeekableReadStre
 
 	float radius = ctx.mdl->readIEEEFloatLE();
 
-	_scale = ctx.mdl->readIEEEFloatLE();
+	float scale = ctx.mdl->readIEEEFloatLE();
 
 	Common::UString superModelName;
 
@@ -177,69 +173,117 @@ void Model_KotOR::load(Common::SeekableReadStream &mdl, Common::SeekableReadStre
 
 	ctx.mdl->skip(12); // Unknown
 
-	uint32 nameStart, nameCount;
-	readArray(*ctx.mdl, nameStart, nameCount);
+	uint32 nameOffset, nameCount;
+	readArrayDef(*ctx.mdl, nameOffset, nameCount);
 
-	std::vector<uint32> nameOffset;
-	readArrayOffsets(*ctx.mdl, nameStart + ctx.offModelData, nameCount, nameOffset);
+	std::vector<uint32> nameOffsets;
+	readArray(*ctx.mdl, ctx.offModelData + nameOffset, nameCount, nameOffsets);
 
-	readStrings(*ctx.mdl, nameOffset, ctx.offModelData, _names);
+	readStrings(*ctx.mdl, nameOffsets, ctx.offModelData, ctx.names);
 
-	ctx.state = new State;
+	newState(ctx);
 
-	readNode(ctx, nodeHeadPointer + ctx.offModelData, 0);
+	ModelNode_KotOR *rootNode = new ModelNode_KotOR(*this);
+	ctx.nodes.push_back(rootNode);
 
-	_states.insert(std::make_pair(ctx.state->name, ctx.state));
-	ctx.state = 0;
+	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
+	rootNode->load(ctx);
+
+	addState(ctx);
 }
 
-void Model_KotOR::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
-	ctx.mdl->seekTo(offset);
+void Model_KotOR::readStrings(Common::SeekableReadStream &mdl,
+		const std::vector<uint32> &offsets, uint32 offset,
+		std::vector<Common::UString> &strings) {
 
-	ctx.mesh = new Mesh;
-	ctx.node = new Node;
+	uint32 pos = mdl.pos();
 
-	if (parent) {
-		ctx.node->parent = parent;
-		parent->children.push_back(ctx.node);
-	} else
-		ctx.state->nodes.push_back(ctx.node);
+	strings.resize(offsets.size());
+	for (uint32 i = 0; i < offsets.size(); i++) {
+		mdl.seekTo(offsets[i] + offset);
+		strings[i].readASCII(mdl);
+	}
 
+	mdl.seekTo(pos);
+}
+
+void Model_KotOR::newState(ParserContext &ctx) {
+	ctx.clear();
+
+	ctx.state = new State;
+}
+
+void Model_KotOR::addState(ParserContext &ctx) {
+	if (!ctx.state || ctx.nodes.empty()) {
+		ctx.clear();
+		return;
+	}
+
+	for (std::list<ModelNode_KotOR *>::iterator n = ctx.nodes.begin();
+	     n != ctx.nodes.end(); ++n) {
+
+		_nodes.push_back(*n);
+		ctx.state->nodeList.push_back(*n);
+		ctx.state->nodeMap.insert(std::make_pair((*n)->getName(), *n));
+
+		if (!(*n)->getParent())
+			ctx.state->rootNodes.push_back(*n);
+	}
+
+	_stateList.push_back(ctx.state);
+	_stateMap.insert(std::make_pair(ctx.state->name, ctx.state));
+
+	if (!_currentState)
+		_currentState = ctx.state;
+
+	ctx.state = 0;
+
+	ctx.nodes.clear();
+}
+
+
+ModelNode_KotOR::ModelNode_KotOR(Model &model) : ModelNode(model) {
+}
+
+ModelNode_KotOR::~ModelNode_KotOR() {
+}
+
+void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	uint16 flags      = ctx.mdl->readUint16LE();
 	uint16 superNode  = ctx.mdl->readUint16LE();
 	uint16 nodeNumber = ctx.mdl->readUint16LE();
 
-	if (nodeNumber < _names.size())
-		ctx.node->name = _names[nodeNumber];
-
-	ctx.state->nodeMap.insert(std::make_pair(ctx.node->name, ctx.node));
+	if (nodeNumber < ctx.names.size())
+		_name = ctx.names[nodeNumber];
 
 	ctx.mdl->skip(6 + 4); // Unknown + parent pointer
 
-	ctx.node->position   [0] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->position   [1] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->position   [2] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->orientation[3] = Common::rad2deg(acos(ctx.mdl->readIEEEFloatLE()) * 2.0);
-	ctx.node->orientation[0] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->orientation[1] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->orientation[2] = ctx.mdl->readIEEEFloatLE();
+	_position   [0] = ctx.mdl->readIEEEFloatLE();
+	_position   [1] = ctx.mdl->readIEEEFloatLE();
+	_position   [2] = ctx.mdl->readIEEEFloatLE();
+	_orientation[3] = Common::rad2deg(acos(ctx.mdl->readIEEEFloatLE()) * 2.0);
+	_orientation[0] = ctx.mdl->readIEEEFloatLE();
+	_orientation[1] = ctx.mdl->readIEEEFloatLE();
+	_orientation[2] = ctx.mdl->readIEEEFloatLE();
 
-	uint32 childrenStart, childrenCount;
-	readArray(*ctx.mdl, childrenStart, childrenCount);
+	uint32 childrenOffset, childrenCount;
+	Model::readArrayDef(*ctx.mdl, childrenOffset, childrenCount);
 
 	std::vector<uint32> children;
-	readArrayOffsets(*ctx.mdl, childrenStart + ctx.offModelData, childrenCount, children);
+	Model::readArray(*ctx.mdl, ctx.offModelData + childrenOffset, childrenCount, children);
 
-	uint32 controllerKeyStart, controllerKeyCount;
-	readArray(*ctx.mdl, controllerKeyStart, controllerKeyCount);
+	uint32 controllerKeyOffset, controllerKeyCount;
+	Model::readArrayDef(*ctx.mdl, controllerKeyOffset, controllerKeyCount);
 
-	uint32 controllerDataStart, controllerDataCount;
-	readArray(*ctx.mdl, controllerDataStart, controllerDataCount);
+	uint32 controllerDataOffset, controllerDataCount;
+	Model::readArrayDef(*ctx.mdl, controllerDataOffset, controllerDataCount);
 
 	std::vector<float> controllerData;
-	readArrayFloats(*ctx.mdl, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
+	Model::readArray(*ctx.mdl, ctx.offModelData + controllerDataOffset,
+	                 controllerDataCount, controllerData);
 
-	readNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
+	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
+	                    controllerKeyCount, controllerData);
 
 	if ((flags & 0xFC00) != 0)
 		throw Common::Exception("Unknown node flags %04X", flags);
@@ -283,26 +327,69 @@ void Model_KotOR::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 		ctx.mdl->skip(0x4);
 	}
 
-	processMesh(*ctx.mesh, *ctx.node);
-	delete ctx.mesh;
-	ctx.mesh = 0;
+	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
+		ModelNode_KotOR *childNode = new ModelNode_KotOR(*_model);
+		ctx.nodes.push_back(childNode);
 
-	parent = ctx.node;
+		childNode->setParent(this);
+		childNode->_level = _level + 1;
 
-	_nodes.push_back(ctx.node);
-	ctx.node = 0;
+		_children.push_back(childNode);
 
-	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child)
-		readNode(ctx, *child + ctx.offModelData, parent);
+		ctx.mdl->seek(ctx.offModelData + *child);
+		childNode->load(ctx);
+	}
 }
 
-void Model_KotOR::readMesh(ParserContext &ctx) {
+void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
+		uint32 offset, uint32 count, std::vector<float> &data) {
+
+	uint32 pos = ctx.mdl->seekTo(offset);
+
+	// TODO: readNodeControllers: Implement this properly :P
+
+	for (uint32 i = 0; i < count; i++) {
+		uint32 type        = ctx.mdl->readUint32LE();
+		uint16 rowCount    = ctx.mdl->readUint16LE();
+		uint16 timeIndex   = ctx.mdl->readUint16LE();
+		uint16 dataIndex   = ctx.mdl->readUint16LE();
+		uint8  columnCount = ctx.mdl->readByte();
+		ctx.mdl->skip(1);
+
+		if (rowCount == 0xFFFF)
+			// TODO: Controller row count = 0xFFFF
+			continue;
+
+		if        (type == kControllerTypePosition) {
+			if (columnCount != 3)
+				throw Common::Exception("Position controller with %d values", columnCount);
+
+			_position[0] = data[dataIndex + 0];
+			_position[1] = data[dataIndex + 1];
+			_position[2] = data[dataIndex + 2];
+
+		} else if (type == kControllerTypeOrientation) {
+			if (columnCount != 4)
+				throw Common::Exception("Orientation controller with %d values", columnCount);
+
+			_orientation[0] = data[dataIndex + 0];
+			_orientation[1] = data[dataIndex + 1];
+			_orientation[2] = data[dataIndex + 2];
+			_orientation[3] = data[dataIndex + 3];
+		}
+
+	}
+
+	ctx.mdl->seekTo(pos);
+}
+
+void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	uint32 P = ctx.mdl->pos();
 
 	ctx.mdl->skip(8); // Function pointers
 
-	uint32 facesStart, facesCount;
-	readArray(*ctx.mdl, facesStart, facesCount);
+	uint32 facesOffset, facesCount;
+	Model::readArrayDef(*ctx.mdl, facesOffset, facesCount);
 
 	float boundingMin[3], boundingMax[3];
 
@@ -321,21 +408,23 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
 	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
-	ctx.node->diffuse[0] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->diffuse[1] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->diffuse[2] = ctx.mdl->readIEEEFloatLE();
+	_diffuse[0] = ctx.mdl->readIEEEFloatLE();
+	_diffuse[1] = ctx.mdl->readIEEEFloatLE();
+	_diffuse[2] = ctx.mdl->readIEEEFloatLE();
 
-	ctx.node->ambient[0] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->ambient[1] = ctx.mdl->readIEEEFloatLE();
-	ctx.node->ambient[2] = ctx.mdl->readIEEEFloatLE();
+	_ambient[0] = ctx.mdl->readIEEEFloatLE();
+	_ambient[1] = ctx.mdl->readIEEEFloatLE();
+	_ambient[2] = ctx.mdl->readIEEEFloatLE();
 
-	ctx.node->specular[0] = 0;
-	ctx.node->specular[1] = 0;
-	ctx.node->specular[2] = 0;
+	_specular[0] = 0;
+	_specular[1] = 0;
+	_specular[2] = 0;
 
-	ctx.node->shininess = ctx.mdl->readIEEEFloatLE();
+	_shininess = ctx.mdl->readIEEEFloatLE();
 
-	Common::UString textures[2];
+	std::vector<Common::UString> textures;
+
+	textures.resize(2);
 	textures[0].readASCII(*ctx.mdl, 32);
 	textures[1].readASCII(*ctx.mdl, 32);
 
@@ -344,7 +433,7 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 	ctx.mdl->skip(12); // Vertex indices counts
 
 	uint32 offOffVerts, offOffVertsCount;
-	readArray(*ctx.mdl, offOffVerts, offOffVertsCount);
+	Model::readArrayDef(*ctx.mdl, offOffVerts, offOffVertsCount);
 
 	if (offOffVertsCount > 1)
 		throw Common::Exception("Face offsets offsets count wrong (%d)", offOffVertsCount);
@@ -373,18 +462,21 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 	ctx.mdl->skip(2);
 
 	byte unknownFlag1 = ctx.mdl->readByte();
-	ctx.node->shadow  = ctx.mdl->readByte() == 1;
+	_shadow  = ctx.mdl->readByte() == 1;
 	byte unknownFlag2 = ctx.mdl->readByte();
-	ctx.node->render  = ctx.mdl->readByte() == 1;
+	_render  = ctx.mdl->readByte() == 1;
 
 	ctx.mdl->skip(10);
 
-	if (_kotor2)
+	if (ctx.kotor2)
 		ctx.mdl->skip(8);
 
 	uint32 offNodeData = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4);
+
+	if ((offOffVertsCount < 1) || (vertexCount == 0) || (facesCount == 0))
+		return;
 
 	uint32 endPos = ctx.mdl->pos();
 
@@ -396,112 +488,100 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 	if ((textureCount > 0) && !ctx.texture.empty())
 		textures[0] = ctx.texture;
 
-	for (uint16 i = 0; i < textureCount; i++)
-		ctx.mesh->textures.push_back(textures[i]);
+	textures.resize(textureCount);
+	loadTextures(textures);
 
-	ctx.mesh-> verts.resize(               3 * vertexCount);
-	ctx.mesh->tverts.resize(textureCount * 3 * vertexCount);
+
+	// Read vertex coordinates
+
+	std::vector<float> vX, vY, vZ;
+
+	vX.resize(vertexCount);
+	vY.resize(vertexCount);
+	vZ.resize(vertexCount);
+
+	std::vector< std::vector<float> > tX, tY;
+
+	tX.resize(textureCount);
+	tY.resize(textureCount);
+
+	for (uint16 t = 0; t < textureCount; t++) {
+		tX[t].resize(vertexCount);
+		tY[t].resize(vertexCount);
+	}
+
 	for (int i = 0; i < vertexCount; i++) {
 		ctx.mdx->seekTo(offNodeData + i * mdxStructSize);
 
-		ctx.mesh->verts[3 * i + 0] = ctx.mdx->readIEEEFloatLE();
-		ctx.mesh->verts[3 * i + 1] = ctx.mdx->readIEEEFloatLE();
-		ctx.mesh->verts[3 * i + 2] = ctx.mdx->readIEEEFloatLE();
+		vX[i] = ctx.mdx->readIEEEFloatLE();
+		vY[i] = ctx.mdx->readIEEEFloatLE();
+		vZ[i] = ctx.mdx->readIEEEFloatLE();
 
 		for (uint16 t = 0; t < textureCount; t++) {
 			if (offUV[t] != 0xFFFFFFFF) {
 				ctx.mdx->seekTo(offNodeData + i * mdxStructSize + offUV[t]);
 
-				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 0] = ctx.mdx->readIEEEFloatLE();
-				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 1] = ctx.mdx->readIEEEFloatLE();
-				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 2] = 0.0;
+				tX[t][i] = ctx.mdx->readIEEEFloatLE();
+				tY[t][i] = ctx.mdx->readIEEEFloatLE();
 			} else {
-				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 0] = 0.0;
-				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 1] = 0.0;
-				ctx.mesh->tverts[t * 3 * vertexCount + i * 3 + 2] = 0.0;
-			}
-		}
-
-	}
-
-	if (offOffVertsCount > 0) {
-		ctx.mdl->seekTo(offOffVerts + ctx.offModelData);
-		uint32 offVerts = ctx.mdl->readUint32LE();
-
-		ctx.mdl->seekTo(offVerts + ctx.offModelData);
-
-		ctx.mesh->faceCount = facesCount;
-
-		ctx.mesh-> vertIndices.resize(               3 * facesCount);
-		ctx.mesh->tvertIndices.resize(textureCount * 3 * facesCount);
-		for (uint32 i = 0; i < facesCount; i++) {
-			ctx.mesh->vertIndices[i * 3 + 0] = ctx.mdl->readUint16LE();
-			ctx.mesh->vertIndices[i * 3 + 1] = ctx.mdl->readUint16LE();
-			ctx.mesh->vertIndices[i * 3 + 2] = ctx.mdl->readUint16LE();
-
-			for (uint16 t = 0 ; t < textureCount; t++) {
-				ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 0] = ctx.mesh->vertIndices[i * 3 + 0];
-				ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 1] = ctx.mesh->vertIndices[i * 3 + 1];
-				ctx.mesh->tvertIndices[t * 3 * facesCount + i * 3 + 2] = ctx.mesh->vertIndices[i * 3 + 2];
+				tX[t][i] = 0.0;
+				tY[t][i] = 0.0;
 			}
 		}
 	}
+
+
+	// Read faces
+
+	if (!createFaces(facesCount)) {
+		ctx.mdl->seekTo(endPos);
+		return;
+	}
+
+	ctx.mdl->seekTo(ctx.offModelData + offOffVerts);
+	uint32 offVerts = ctx.mdl->readUint32LE();
+
+	ctx.mdl->seekTo(ctx.offModelData + offVerts);
+
+
+	for (uint32 i = 0; i < facesCount; i++) {
+		// Vertex indices
+		const uint16 v1 = ctx.mdl->readUint16LE();
+		const uint16 v2 = ctx.mdl->readUint16LE();
+		const uint16 v3 = ctx.mdl->readUint16LE();
+
+		// Vertex coordinates
+		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
+		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
+		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
+		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
+
+		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
+		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
+		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
+		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
+
+		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
+		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
+		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
+		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
+
+		// Texture coordinates
+		for (uint16 t = 0 ; t < textureCount; t++) {
+			_tX[3 * textureCount * i + 3 * t + 0] = v1 < tX[t].size() ? tX[t][v1] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 0] = v1 < tY[t].size() ? tY[t][v1] : 0.0;
+
+			_tX[3 * textureCount * i + 3 * t + 1] = v2 < tX[t].size() ? tX[t][v2] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 1] = v2 < tY[t].size() ? tY[t][v2] : 0.0;
+
+			_tX[3 * textureCount * i + 3 * t + 2] = v3 < tX[t].size() ? tX[t][v3] : 0.0;
+			_tY[3 * textureCount * i + 3 * t + 2] = v3 < tY[t].size() ? tY[t][v3] : 0.0;
+		}
+	}
+
+	createCenter();
 
 	ctx.mdl->seekTo(endPos);
-}
-
-void Model_KotOR::readStrings(Common::SeekableReadStream &mdl, const std::vector<uint32> &offsets,
-		uint32 offset, std::vector<Common::UString> &strings) {
-
-	uint32 pos = mdl.pos();
-
-	strings.resize(offsets.size());
-	for (uint32 i = 0; i < offsets.size(); i++) {
-		mdl.seekTo(offsets[i] + offset);
-		strings[i].readASCII(mdl);
-	}
-
-	mdl.seekTo(pos);
-}
-
-void Model_KotOR::readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
-	uint32 pos = ctx.mdl->seekTo(offset);
-
-	// TODO: Implement this properly :P
-
-	for (uint32 i = 0; i < count; i++) {
-		uint32 type        = ctx.mdl->readUint32LE();
-		uint16 rowCount    = ctx.mdl->readUint16LE();
-		uint16 timeIndex   = ctx.mdl->readUint16LE();
-		uint16 dataIndex   = ctx.mdl->readUint16LE();
-		uint8  columnCount = ctx.mdl->readByte();
-		ctx.mdl->skip(1);
-
-		if (rowCount == 0xFFFF)
-			// TODO
-			continue;
-
-		if        (type == kControllerTypePosition) {
-			if (columnCount != 3)
-				throw Common::Exception("Position controller with %d values", columnCount);
-
-			ctx.node->position[0] = data[dataIndex + 0];
-			ctx.node->position[1] = data[dataIndex + 1];
-			ctx.node->position[2] = data[dataIndex + 2];
-
-		} else if (type == kControllerTypeOrientation) {
-			if (columnCount != 4)
-				throw Common::Exception("Orientation controller with %d values", columnCount);
-
-			ctx.node->orientation[0] = data[dataIndex + 0];
-			ctx.node->orientation[1] = data[dataIndex + 1];
-			ctx.node->orientation[2] = data[dataIndex + 2];
-			ctx.node->orientation[3] = data[dataIndex + 3];
-		}
-
-	}
-
-	ctx.mdl->seekTo(pos);
 }
 
 } // End of namespace Aurora

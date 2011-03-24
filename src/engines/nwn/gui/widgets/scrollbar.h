@@ -61,8 +61,8 @@ public:
 	float getHeight() const; ///< Get the scrollbar's height.
 
 	// Renderable
-	void newFrame();
-	void render();
+	void calculateDistance();
+	void render(Graphics::RenderPass pass);
 
 private:
 	struct Quad {

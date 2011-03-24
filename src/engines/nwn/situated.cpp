@@ -119,7 +119,7 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 
 		float bearing = instance.getDouble("Bearing");
 
-		_model->setOrientation(0.0, 0.0, -Common::rad2deg(bearing));
+		_model->setRotation(0.0, 0.0, -Common::rad2deg(bearing));
 	}
 
 

@@ -17,6 +17,7 @@
 
 #include "common/ustring.h"
 
+#include "graphics/types.h"
 #include "graphics/queueable.h"
 
 namespace Graphics {
@@ -27,20 +28,29 @@ public:
 	Renderable(Queueable<Renderable>::Queue &queue);
 	virtual ~Renderable();
 
-	/** Signal the object that we're rendering a new frame. */
-	virtual void newFrame() = 0;
+	/** Calculate the object's distance. */
+	virtual void calculateDistance() = 0;
 
 	/** Render the object. */
-	virtual void render() = 0;
+	virtual void render(RenderPass pass) = 0;
 
 	/** Get the distance of the object from the viewer. */
 	double getDistance() const;
 
+	/** Is the object clickable? */
+	bool isClickable() const;
+	/** Set the object's clickable state. */
+	void setClickable(bool clickable);
+
 	/** Get the object's tag. */
 	const Common::UString &getTag() const;
-
 	/** Set the object's tag. */
 	void setTag(const Common::UString &tag);
+
+	bool isVisible() const; ///< Is the object visible?
+
+	void show(); ///< Show the object.
+	void hide(); ///< Hide the object.
 
 	/** Is that point within the object? */
 	virtual bool isIn(float x, float y) const;
@@ -49,12 +59,10 @@ public:
 	virtual bool isIn(float x, float y, float z) const;
 
 protected:
+	bool _clickable;
 	Common::UString _tag;
 
 	double _distance; ///< The distance of the object from the viewer.
-
-	/** Set the distance to the distance between the origin and the current object-space origin. */
-	void setCurrentDistance();
 };
 
 } // End of namespace Graphics

@@ -109,6 +109,10 @@ public:
 	/** Get the tag of the object at this screen position. */
 	const Common::UString &getObjectAt(float x, float y);
 
+	/** Recalculate all object distances to the camera and resort the objebts. */
+	void recalculateObjectDistances();
+	/** Resort the objects without recalculating the distances. */
+	void resortObjects();
 
 	/** Lock the frame mutex. */
 	void lockFrame();

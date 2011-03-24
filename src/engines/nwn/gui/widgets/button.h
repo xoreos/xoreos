@@ -35,6 +35,8 @@ public:
 	void enter();
 	void leave();
 
+	void setDisabled(bool disabled);
+
 	void mouseDown(uint8 state, float x, float y);
 	void mouseUp  (uint8 state, float x, float y);
 

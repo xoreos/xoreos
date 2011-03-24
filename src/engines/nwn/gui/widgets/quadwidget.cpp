@@ -30,6 +30,8 @@ QuadWidget::QuadWidget(::Engines::GUI &gui, const Common::UString &tag,
 	Widget(gui, tag) {
 
 	_quad = new Graphics::Aurora::GUIQuad(texture, x1, y1, x2, y2, tX1, tY1, tX2, tY2);
+	_quad->setTag(tag);
+	_quad->setClickable(true);
 
 	_width  = ABS(x2 - x1);
 	_height = ABS(y2 - y1);
@@ -51,7 +53,7 @@ void QuadWidget::setPosition(float x, float y, float z) {
 	Widget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
-	_quad->setPosition(x, y, -z);
+	_quad->setPosition(x, y, z);
 }
 
 void QuadWidget::setColor(float r, float g, float b, float a) {

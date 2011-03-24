@@ -115,7 +115,7 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 
 		float x = ctx.strct->getDouble("Obj_X") * 100.0 + pX;
 		float y = ctx.strct->getDouble("Obj_Y") * 100.0 + pY;
-		float z = ctx.strct->getDouble("Obj_Z") * 100.0 + pZ;
+		float z = pZ - ctx.strct->getDouble("Obj_Z") * 100.0;
 
 		ctx.widget->setPosition(x, y, z);
 	} else {
@@ -149,7 +149,7 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 			labelY -= label->getHeight() * alignV;
 		}
 
-		label->movePosition(labelX, labelY, labelZ);
+		label->movePosition(labelX, labelY, -labelZ);
 	}
 
 	// uint32 layer = strct.getUint("Obj_Layer");
@@ -244,7 +244,7 @@ WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) 
 
 	float pX, pY, pZ;
 	parent->getPosition(pX, pY, pZ);
-	label->setPosition(pX, pY, pZ);
+	label->setPosition(pX, pY, pZ - 5.0);
 
 	float r = caption.getDouble("AurString_ColorR", 1.0);
 	float g = caption.getDouble("AurString_ColorG", 1.0);

@@ -44,6 +44,10 @@ private:
 	GUI *_new;
 	GUI *_movies;
 	GUI *_options;
+
+	void createNew();
+	void createMovies();
+	void createOptions();
 };
 
 } // End of namespace NWN

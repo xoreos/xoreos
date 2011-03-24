@@ -30,6 +30,7 @@ TextWidget::TextWidget(::Engines::GUI &gui, const Common::UString &tag,
 	Widget(gui, tag), _r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
 	_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, 0.5);
+	_text->setTag(tag);
 }
 
 TextWidget::~TextWidget() {
@@ -58,7 +59,7 @@ void TextWidget::setPosition(float x, float y, float z) {
 	Widget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
-	_text->setPosition(x, y, -z);
+	_text->setPosition(x, y, z);
 }
 
 void TextWidget::setColor(float r, float g, float b, float a) {

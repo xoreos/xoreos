@@ -40,19 +40,14 @@ public:
 	void setColor(float r, float g, float b, float a);
 	void unsetColor();
 
-	void show(); ///< The text should be rendered.
-	void hide(); ///< The text should not be rendered.
-
-	bool isVisible(); // Is the text visible?
-
 	bool isEmpty();
 
 	float getWidth()  const;
 	float getHeight() const;
 
 	// Renderable
-	void newFrame();
-	void render();
+	void calculateDistance();
+	void render(RenderPass pass);
 	bool isIn(float x, float y) const;
 
 private:

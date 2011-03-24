@@ -12,14 +12,11 @@
  *  Loading ASCII MDL files found in Neverwinter Nights.
  */
 
-#ifndef GRAPHICS_AURORA_MODEL_NWN_ASCII_H
-#define GRAPHICS_AURORA_MODEL_NWN_ASCII_H
-
-#include <vector>
-
-#include "common/ustring.h"
+#ifndef GRAPHICS_AURORA_NEWMODEL_NWN_ASCII_H
+#define GRAPHICS_AURORA_NEWMODEL_NWN_ASCII_H
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/modelnode.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -29,6 +26,8 @@ namespace Common {
 namespace Graphics {
 
 namespace Aurora {
+
+class ModelNode_NWN_ASCII;
 
 /** A 3D model in the NWN ASCII MDL format. */
 class Model_NWN_ASCII : public Model {
@@ -43,36 +42,79 @@ private:
 		Common::SeekableReadStream *mdl;
 
 		State *state;
-		Node  *node;
-		Mesh  *mesh;
+
+		std::list<ModelNode_NWN_ASCII *> nodes;
+
+		bool hasPosition;
+		bool hasOrientation;
+
+		Common::StreamTokenizer *tokenize;
+
+		std::vector<uint32> anims;
 
 		ParserContext(Common::SeekableReadStream &stream);
 		~ParserContext();
+
+		void clear();
+
+		bool findNode(const Common::UString &name, ModelNode_NWN_ASCII *&node) const;
 	};
 
-	typedef std::map<Common::UString, Node *> NodeMap;
 
-	NodeMap _nodeMap;
+	void newState(ParserContext &ctx);
+	void addState(ParserContext &ctx);
 
-	Common::StreamTokenizer *_tokenize;
+	void load(ParserContext &ctx);
 
-	void load(Common::SeekableReadStream &mdl);
-
-	void readNode(ParserContext &ctx, const Common::UString &type, const Common::UString &name);
+	void skipAnim(ParserContext &ctx);
 	void readAnim(ParserContext &ctx);
 
-	Classification readClassification(Common::UString classification);
-	void readFloats(const std::vector<Common::UString> &strings, float *floats, int n, int start);
+	friend class ModelNode_NWN_ASCII;
+};
 
-	void readVertices(ParserContext &ctx, std::vector<float> &vertices, int n);
-	void readFaces   (ParserContext &ctx, int n);
-	void readWeights (ParserContext &ctx, int n);
+class ModelNode_NWN_ASCII : public ModelNode {
+public:
+	ModelNode_NWN_ASCII(Model &model);
+	~ModelNode_NWN_ASCII();
 
-	void readConstraints(ParserContext &ctx, std::vector<float> &constraints, int n);
+	void load(Model_NWN_ASCII::ParserContext &ctx,
+	          const Common::UString &type, const Common::UString &name);
+
+private:
+	struct Mesh {
+		uint32 vCount;
+		uint32 tCount;
+		uint32 faceCount;
+
+		std::vector<Common::UString> textures;
+
+		std::vector<float> vX, vY, vZ;
+		std::vector<float> tX, tY;
+
+		std::vector<uint32> vIA, vIB, vIC;
+		std::vector<uint32> tIA, tIB, tIC;
+
+		std::vector<uint32> smooth, mat;
+
+		Mesh();
+	};
+
+	void readConstraints(Model_NWN_ASCII::ParserContext &ctx, uint32 n);
+	void readWeights(Model_NWN_ASCII::ParserContext &ctx, uint32 n);
+
+	void readFloats(const std::vector<Common::UString> &strings,
+	                float *floats, uint32 n, uint32 start);
+
+	void readVCoords(Model_NWN_ASCII::ParserContext &ctx, Mesh &mesh);
+	void readTCoords(Model_NWN_ASCII::ParserContext &ctx, Mesh &mesh);
+
+	void readFaces(Model_NWN_ASCII::ParserContext &ctx, Mesh &mesh);
+
+	void processMesh(Mesh &mesh);
 };
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_MODEL_NWN_ASCII_H
+#endif // GRAPHICS_AURORA_NEWMODEL_NWN_ASCII_H

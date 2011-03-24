@@ -26,6 +26,9 @@ WidgetButton::WidgetButton(::Engines::GUI &gui, const Common::UString &tag,
                            const Common::UString &model, const Common::UString &sound) :
 	ModelWidget(gui, tag, model) {
 
+	_model->setClickable(true);
+	_model->setState("up");
+
 	_sound = sound;
 }
 
@@ -43,7 +46,16 @@ void WidgetButton::leave() {
 	if (isDisabled())
 		return;
 
-	_model->setState("");
+	_model->setState("up");
+}
+
+void WidgetButton::setDisabled(bool disabled) {
+	Widget::setDisabled(disabled);
+
+	if (isDisabled())
+		_model->setState("disabled");
+	else
+		_model->setState("up");
 }
 
 void WidgetButton::mouseDown(uint8 state, float x, float y) {
@@ -61,7 +73,7 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	_model->setState("");
+	_model->setState("up");
 	setActive(true);
 }
 

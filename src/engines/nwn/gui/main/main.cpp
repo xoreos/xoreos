@@ -43,13 +43,13 @@ MainMenu::MainMenu(Module &module) : _module(&module) {
 
 	if (hasXP1) {
 		WidgetPanel *xp1 = new WidgetPanel(*this, "TextXP1", "ctl_xp1_text");
-		xp1->setPosition(124.0, 0.00, 50.0);
+		xp1->setPosition(124.0, 0.00, -50.0);
 		addWidget(xp1);
 	}
 
 	if (hasXP2) {
 		WidgetPanel *xp2 = new WidgetPanel(*this, "TextXP2", "ctl_xp2_text");
-		xp2->setPosition(124.0, -147.0, 50.0);
+		xp2->setPosition(124.0, -147.0, -50.0);
 		addWidget(xp2);
 	}
 
@@ -58,21 +58,9 @@ MainMenu::MainMenu(Module &module) : _module(&module) {
 
 	_charType = new CharTypeMenu(*_module);
 
-	if (_hasXP)
-		// If we have at least an expansion, create the campaign selection game menu
-		_new = new NewCampMenu(*_module, *_charType);
-	else
-		// If not, create the base game menu
-		_new = new NewMenu(*_module, *_charType);
-
-	if (_hasXP)
-		// If we have at least an expansion, create the campaign selection movies menu
-		_movies = new MoviesCampMenu;
-	else
-		// If not, create the base game movies menu
-		_movies = new MoviesBaseMenu;
-
-	_options = new OptionsMenu();
+	_new     = 0;
+	_movies  = 0;
+	_options = 0;
 }
 
 MainMenu::~MainMenu() {
@@ -81,6 +69,37 @@ MainMenu::~MainMenu() {
 	delete _new;
 
 	delete _charType;
+}
+
+void MainMenu::createNew() {
+	if (_new)
+		return;
+
+	if (_hasXP)
+		// If we have at least an expansion, create the campaign selection game menu
+		_new = new NewCampMenu(*_module, *_charType);
+	else
+		// If not, create the base game menu
+		_new = new NewMenu(*_module, *_charType);
+}
+
+void MainMenu::createMovies() {
+	if (_movies)
+		return;
+
+	if (_hasXP)
+		// If we have at least an expansion, create the campaign selection movies menu
+		_movies = new MoviesCampMenu;
+	else
+		// If not, create the base game movies menu
+		_movies = new MoviesBaseMenu;
+}
+
+void MainMenu::createOptions() {
+	if (_options)
+		return;
+
+	_options = new OptionsMenu();
 }
 
 void MainMenu::show() {
@@ -96,6 +115,8 @@ void MainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "NewButton") {
+		createNew();
+
 		NewGameFogs fogs(4);
 		fogs.show();
 
@@ -109,11 +130,15 @@ void MainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "MoviesButton") {
+		createMovies();
+
 		sub(*_movies);
 		return;
 	}
 
 	if (widget.getTag() == "OptionsButton") {
+		createOptions();
+
 		sub(*_options);
 		return;
 	}

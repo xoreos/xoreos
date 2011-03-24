@@ -31,7 +31,7 @@ namespace NWN {
 PartyLeader::PartyLeader(Module &module) : _module(&module) {
 	// The panel
 
-	WidgetPanel *playerPanel = new WidgetPanel(*this, "Portrait", "pnl_party_bar");
+	WidgetPanel *playerPanel = new WidgetPanel(*this, "LeaderPanel", "pnl_party_bar");
 
 	playerPanel->setPosition(- playerPanel->getWidth(), 0.0, 0.0);
 
@@ -50,10 +50,10 @@ PartyLeader::PartyLeader(Module &module) : _module(&module) {
 	btns[2] = new WidgetButton(*this, "ButtonRest"   , "pb_but_rest");
 	btns[3] = new WidgetButton(*this, "ButtonOptions", "pb_but_opts");
 
-	btns[0]->setPosition(buttonsX, buttonsY -  0.0, 0.0);
-	btns[1]->setPosition(buttonsX, buttonsY - 18.0, 0.0);
-	btns[2]->setPosition(buttonsX, buttonsY - 36.0, 0.0);
-	btns[3]->setPosition(buttonsX, buttonsY - 54.0, 0.0);
+	btns[0]->setPosition(buttonsX, buttonsY -  0.0, -100.0);
+	btns[1]->setPosition(buttonsX, buttonsY - 18.0, -100.0);
+	btns[2]->setPosition(buttonsX, buttonsY - 36.0, -100.0);
+	btns[3]->setPosition(buttonsX, buttonsY - 54.0, -100.0);
 
 	buttonsX += 36.0;
 
@@ -62,10 +62,10 @@ PartyLeader::PartyLeader(Module &module) : _module(&module) {
 	btns[6] = new WidgetButton(*this, "ButtonSpells"   , "pb_but_spell");
 	btns[7] = new WidgetButton(*this, "ButtonPlayers"  , "pb_but_pvp"  );
 
-	btns[4]->setPosition(buttonsX, buttonsY -  0.0, 0.0);
-	btns[5]->setPosition(buttonsX, buttonsY - 18.0, 0.0);
-	btns[6]->setPosition(buttonsX, buttonsY - 36.0, 0.0);
-	btns[7]->setPosition(buttonsX, buttonsY - 54.0, 0.0);
+	btns[4]->setPosition(buttonsX, buttonsY -  0.0, -100.0);
+	btns[5]->setPosition(buttonsX, buttonsY - 18.0, -100.0);
+	btns[6]->setPosition(buttonsX, buttonsY - 36.0, -100.0);
+	btns[7]->setPosition(buttonsX, buttonsY - 54.0, -100.0);
 
 	for (int i = 0; i < 8; i++)
 		addWidget(btns[i]);
@@ -75,21 +75,21 @@ PartyLeader::PartyLeader(Module &module) : _module(&module) {
 
 	// Portrait
 
-	_portrait = new QuadWidget(*this, "Portrait", "gui_po_nwnlogo_l",
+	_portrait = new QuadWidget(*this, "LeaderPortrait", "gui_po_nwnlogo_l",
 	                              0.0, 0.0, 64.0, 100.0,
 	                              0.0, 56.0 / 256.0, 1.0, 1.0);
 
-	_portrait->setPosition(-67.0, -103.0, 0.0);
+	_portrait->setPosition(-67.0, -103.0, -100.0);
 
 	addWidget(_portrait);
 
 
 	// Health bar
 
-	_health = new QuadWidget(*this, "Healthbar", "", 0.0, 0.0, 6.0, 100.0);
+	_health = new QuadWidget(*this, "LeaderHealthbar", "", 0.0, 0.0, 6.0, 100.0);
 
 	_health->setColor(1.0, 0.0, 0.0, 1.0);
-	_health->setPosition(-76.0, -103.0, 0.0);
+	_health->setPosition(-76.0, -103.0, -100.0);
 
 	addWidget(_health);
 

@@ -28,6 +28,7 @@ enum ModelType {
 };
 
 class Model;
+class ModelNode;
 class Text;
 class GUIQuad;
 

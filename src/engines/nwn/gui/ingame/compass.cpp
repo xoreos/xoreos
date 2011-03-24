@@ -12,8 +12,11 @@
  *  The NWN ingame compass.
  */
 
+#include "common/util.h"
+
 #include "graphics/graphics.h"
 
+#include "graphics/aurora/modelnode.h"
 #include "graphics/aurora/model.h"
 
 #include "engines/nwn/gui/widgets/panel.h"
@@ -37,15 +40,17 @@ CompassWidget::~CompassWidget() {
 // TODO: The disk rotation should feel more "natural", i.e. it should
 //       be more sluggish.
 void CompassWidget::setRotation(float x, float y, float z) {
-	_model->setOrientation(x, -z, 0.0);
-	_model->setNodeRotation("cmp_pointer", 0.0, 0.0, y);
+	_model->setRotation(-x, 0.0, 0.0);
+	Graphics::Aurora::ModelNode *pointer = _model->getNode("cmp_pointer");
+	if (pointer)
+		pointer->setRotation(0.0, 0.0, y);
 }
 
 
 Compass::Compass(float position) {
 	// Panel
 
-	WidgetPanel *panel = new WidgetPanel(*this, "Panel", "pnl_compass");
+	WidgetPanel *panel = new WidgetPanel(*this, "CompassPanel", "pnl_compass");
 
 	float panelWidth  = panel->getWidth ();
 	float panelHeight = panel->getHeight();
@@ -59,7 +64,7 @@ Compass::Compass(float position) {
 
 	_compass = new CompassWidget(*this, "Compass");
 
-	_compass->setPosition(- (panelWidth / 2.0), position + (panelHeight / 2.0), 0.0);
+	_compass->setPosition(- (panelWidth / 2.0), position + (panelHeight / 2.0), -100.0);
 
 	addWidget(_compass);
 

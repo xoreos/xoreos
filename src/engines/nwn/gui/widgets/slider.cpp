@@ -15,6 +15,7 @@
 #include "common/util.h"
 #include "common/ustring.h"
 
+#include "graphics/aurora/modelnode.h"
 #include "graphics/aurora/model.h"
 
 #include "engines/nwn/gui/widgets/slider.h"
@@ -27,7 +28,13 @@ WidgetSlider::WidgetSlider(::Engines::GUI &gui, const Common::UString &tag,
                            const Common::UString &model) :
 	ModelWidget(gui, tag, model), _position(0.0), _steps(0), _state(0) {
 
+	_model->setClickable(true);
+
 	_width = getWidth();
+
+	_thumb = _model->getNode("thumb");
+
+	assert(_thumb);
 
 	changePosition(0.0);
 }
@@ -98,9 +105,9 @@ void WidgetSlider::changedValue(float x, float y) {
 }
 
 void WidgetSlider::changePosition(float value) {
-	value = (value * _width) - (_model->getNodeWidth("thumb") / 2.0);
+	value = (value * _width) - (_thumb->getWidth() / 2.0);
 
-	_model->moveNode("thumb", -_position + value, 0.0, 0.0);
+	_thumb->move(-_position + value, 0.0, 0.0);
 
 	_position = value;
 }

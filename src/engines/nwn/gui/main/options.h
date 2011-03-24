@@ -36,6 +36,11 @@ private:
 	GUI *_video;
 	GUI *_sound;
 	GUI *_controls;
+
+	void createGame();
+	void createVideo();
+	void createSound();
+	void createControls();
 };
 
 } // End of namespace NWN

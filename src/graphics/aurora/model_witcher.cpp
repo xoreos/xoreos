@@ -15,15 +15,15 @@
 // Disable the "unused variable" warnings while most stuff is still stubbed
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
-#include "common/util.h"
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/stream.h"
 
-#include "events/requests.h"
-
 #include "graphics/aurora/model_witcher.h"
-#include "graphics/aurora/texture.h"
+
+namespace Graphics {
+
+namespace Aurora {
 
 static const int kNodeFlagHasHeader    = 0x00000001;
 static const int kNodeFlagHasLight     = 0x00000002;
@@ -46,34 +46,39 @@ static const int kNodeFlagHasUnknown8  = 0x00020000;
 static const uint32 kControllerTypePosition    = 84;
 static const uint32 kControllerTypeOrientation = 96;
 
-namespace Graphics {
+Model_Witcher::ParserContext::ParserContext(Common::SeekableReadStream &stream) :
+	mdb(&stream), state(0) {
 
-namespace Aurora {
-
-Model_Witcher::ParserContext::ParserContext(Common::SeekableReadStream &mdbStream) :
-	mdb(&mdbStream), state(0), node(0), mesh(0) {
 }
 
 Model_Witcher::ParserContext::~ParserContext() {
-	delete mesh;
-	delete node;
+	clear();
+}
+
+void Model_Witcher::ParserContext::clear() {
+	for (std::list<ModelNode_Witcher *>::iterator n = nodes.begin(); n != nodes.end(); ++n)
+		delete *n;
+	nodes.clear();
+
 	delete state;
+	state = 0;
 }
 
 
-Model_Witcher::Model_Witcher(Common::SeekableReadStream &mdb, ModelType type) : Model(type) {
-	load(mdb);
-	setState();
+Model_Witcher::Model_Witcher(Common::SeekableReadStream &mdb, ModelType type) :
+	Model(type) {
 
-	rebuild();
+	ParserContext ctx(mdb);
+
+	load(ctx);
+
+	finalize();
 }
 
 Model_Witcher::~Model_Witcher() {
 }
 
-void Model_Witcher::load(Common::SeekableReadStream &mdb) {
-	ParserContext ctx(mdb);
-
+void Model_Witcher::load(ParserContext &ctx) {
 	if (ctx.mdb->readByte() != 0) {
 		ctx.mdb->seek(0);
 
@@ -111,8 +116,7 @@ void Model_Witcher::load(Common::SeekableReadStream &mdb) {
 
 	ctx.mdb->skip(8);
 
-	Common::UString name;
-	name.readASCII(*ctx.mdb, 64);
+	_name.readASCII(*ctx.mdb, 64);
 
 	uint32 offsetRootNode = ctx.mdb->readUint32LE();
 
@@ -134,61 +138,93 @@ void Model_Witcher::load(Common::SeekableReadStream &mdb) {
 
 	ctx.mdb->skip(4);
 
-	_scale = ctx.mdb->readIEEEFloatLE();
+	float scale = ctx.mdb->readIEEEFloatLE();
 
 	Common::UString superModel;
 	superModel.readASCII(*ctx.mdb, 64);
 
 	ctx.mdb->skip(16);
 
-	warning("\"%s\", %d, %d, %d, %d, %f, \"%s\", \"%s\"", name.c_str(), ctx.fileVersion, ctx.modelDataSize, offsetRootNode,
-			type, _scale, detailMap.c_str(), superModel.c_str());
+	newState(ctx);
 
-	ctx.state = new State;
+	ModelNode_Witcher *rootNode = new ModelNode_Witcher(*this);
+	ctx.nodes.push_back(rootNode);
 
-	readNode(ctx, offsetRootNode + ctx.offModelData, 0);
+	ctx.mdb->seek(ctx.offModelData + offsetRootNode);
+	rootNode->load(ctx);
 
-	_states.insert(std::make_pair(ctx.state->name, ctx.state));
-	ctx.state = 0;
+	addState(ctx);
 }
 
-void Model_Witcher::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
-	ctx.mdb->seekTo(offset);
+void Model_Witcher::newState(ParserContext &ctx) {
+	ctx.clear();
 
-	ctx.mesh = new Mesh;
-	ctx.node = new Node;
+	ctx.state = new State;
+}
 
-	if (parent) {
-		ctx.node->parent = parent;
-		parent->children.push_back(ctx.node);
-	} else
-		ctx.state->nodes.push_back(ctx.node);
+void Model_Witcher::addState(ParserContext &ctx) {
+	if (!ctx.state || ctx.nodes.empty()) {
+		ctx.clear();
+		return;
+	}
 
+	for (std::list<ModelNode_Witcher *>::iterator n = ctx.nodes.begin();
+	     n != ctx.nodes.end(); ++n) {
+
+		_nodes.push_back(*n);
+		ctx.state->nodeList.push_back(*n);
+		ctx.state->nodeMap.insert(std::make_pair((*n)->getName(), *n));
+
+		if (!(*n)->getParent())
+			ctx.state->rootNodes.push_back(*n);
+	}
+
+	_stateList.push_back(ctx.state);
+	_stateMap.insert(std::make_pair(ctx.state->name, ctx.state));
+
+	if (!_currentState)
+		_currentState = ctx.state;
+
+	ctx.state = 0;
+
+	ctx.nodes.clear();
+}
+
+
+ModelNode_Witcher::ModelNode_Witcher(Model &model) : ModelNode(model) {
+}
+
+ModelNode_Witcher::~ModelNode_Witcher() {
+}
+
+void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 	ctx.mdb->skip(24);
 
 	uint32 inheritColor = ctx.mdb->readUint32LE();
 	uint32 nodeNumber   = ctx.mdb->readUint32LE();
 
-	ctx.node->name.readASCII(*ctx.mdb, 64);
+	_name.readASCII(*ctx.mdb, 64);
 
 	ctx.mdb->skip(8); // Parent pointers
 
-	uint32 childrenStart, childrenCount;
-	readArray(*ctx.mdb, childrenStart, childrenCount);
+	uint32 childrenOffset, childrenCount;
+	Model::readArrayDef(*ctx.mdb, childrenOffset, childrenCount);
 
 	std::vector<uint32> children;
-	readArrayOffsets(*ctx.mdb, childrenStart + ctx.offModelData, childrenCount, children);
+	Model::readArray(*ctx.mdb, ctx.offModelData + childrenOffset, childrenCount, children);
 
-	uint32 controllerKeyStart, controllerKeyCount;
-	readArray(*ctx.mdb, controllerKeyStart, controllerKeyCount);
+	uint32 controllerKeyOffset, controllerKeyCount;
+	Model::readArrayDef(*ctx.mdb, controllerKeyOffset, controllerKeyCount);
 
-	uint32 controllerDataStart, controllerDataCount;
-	readArray(*ctx.mdb, controllerDataStart, controllerDataCount);
+	uint32 controllerDataOffset, controllerDataCount;
+	Model::readArrayDef(*ctx.mdb, controllerDataOffset, controllerDataCount);
 
 	std::vector<float> controllerData;
-	readArrayFloats(*ctx.mdb, controllerDataStart + ctx.offModelData, controllerDataCount, controllerData);
+	Model::readArray(*ctx.mdb, ctx.offModelData + controllerDataOffset,
+	                 controllerDataCount, controllerData);
 
-	readNodeControllers(ctx, controllerKeyStart + ctx.offModelData, controllerKeyCount, controllerData);
+	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
+	                    controllerKeyCount, controllerData);
 
 	ctx.mdb->skip(20);
 
@@ -228,37 +264,39 @@ void Model_Witcher::readNode(ParserContext &ctx, uint32 offset, Node *parent) {
 		// TODO: AABB
 	}
 
-	processMesh(*ctx.mesh, *ctx.node);
-	delete ctx.mesh;
-	ctx.mesh = 0;
 
-	parent = ctx.node;
+	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
+		ModelNode_Witcher *childNode = new ModelNode_Witcher(*_model);
+		ctx.nodes.push_back(childNode);
 
-	_nodes.push_back(ctx.node);
-	ctx.node = 0;
+		childNode->setParent(this);
+		childNode->_level = _level + 1;
 
-	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child)
-		readNode(ctx, *child + ctx.offModelData, parent);
+		_children.push_back(childNode);
+
+		ctx.mdb->seek(ctx.offModelData + *child);
+		childNode->load(ctx);
+	}
 }
 
-void Model_Witcher::readMesh(ParserContext &ctx) {
+void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	ctx.mdb->skip(8);
 
 	uint32 offMeshArrays = ctx.mdb->readUint32LE();
 
 	ctx.mdb->skip(76);
 
-	ctx.node->ambient [0] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->ambient [1] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->ambient [2] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->diffuse [2] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->specular[0] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->specular[1] = ctx.mdb->readIEEEFloatLE();
-	ctx.node->specular[2] = ctx.mdb->readIEEEFloatLE();
+	_ambient [0] = ctx.mdb->readIEEEFloatLE();
+	_ambient [1] = ctx.mdb->readIEEEFloatLE();
+	_ambient [2] = ctx.mdb->readIEEEFloatLE();
+	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
+	_diffuse [1] = ctx.mdb->readIEEEFloatLE();
+	_diffuse [2] = ctx.mdb->readIEEEFloatLE();
+	_specular[0] = ctx.mdb->readIEEEFloatLE();
+	_specular[1] = ctx.mdb->readIEEEFloatLE();
+	_specular[2] = ctx.mdb->readIEEEFloatLE();
 
-	ctx.node->shininess = ctx.mdb->readIEEEFloatLE();
+	_shininess = ctx.mdb->readIEEEFloatLE();
 
 	ctx.mdb->skip(20);
 
@@ -282,7 +320,7 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 
 	ctx.mdb->skip(308);
 
-	uint32 offTextureInfo = ctx.mdb->readUint32LE();
+	ctx.offTextureInfo = ctx.mdb->readUint32LE();
 
 	ctx.mdb->skip(4);
 
@@ -290,130 +328,208 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 
 	ctx.mdb->skip(4);
 
-	uint32 verticesStart, verticesCount;
-	readArray(*ctx.mdb, verticesStart, verticesCount);
+	uint32 verticesOffset, verticesCount;
+	Model::readArrayDef(*ctx.mdb, verticesOffset, verticesCount);
 
-	uint32 normalsStart, normalsCount;
-	readArray(*ctx.mdb, normalsStart, normalsCount);
+	uint32 normalsOffset, normalsCount;
+	Model::readArrayDef(*ctx.mdb, normalsOffset, normalsCount);
 
-	uint32 tangentsStart, tangentsCount;
-	readArray(*ctx.mdb, tangentsStart, tangentsCount);
+	uint32 tangentsOffset, tangentsCount;
+	Model::readArrayDef(*ctx.mdb, tangentsOffset, tangentsCount);
 
-	uint32 biNormalsStart, biNormalsCount;
-	readArray(*ctx.mdb, biNormalsStart, biNormalsCount);
+	uint32 biNormalsOffset, biNormalsCount;
+	Model::readArrayDef(*ctx.mdb, biNormalsOffset, biNormalsCount);
 
-	uint32 tVerts0Start, tVerts0Count;
-	readArray(*ctx.mdb, tVerts0Start, tVerts0Count);
+	uint32 tVerts0Offset, tVerts0Count;
+	Model::readArrayDef(*ctx.mdb, tVerts0Offset, tVerts0Count);
 
-	uint32 tVerts1Start, tVerts1Count;
-	readArray(*ctx.mdb, tVerts1Start, tVerts1Count);
+	uint32 tVerts1Offset, tVerts1Count;
+	Model::readArrayDef(*ctx.mdb, tVerts1Offset, tVerts1Count);
 
-	uint32 tVerts2Start, tVerts2Count;
-	readArray(*ctx.mdb, tVerts2Start, tVerts2Count);
+	uint32 tVerts2Offset, tVerts2Count;
+	Model::readArrayDef(*ctx.mdb, tVerts2Offset, tVerts2Count);
 
-	uint32 tVerts3Start, tVerts3Count;
-	readArray(*ctx.mdb, tVerts3Start, tVerts3Count);
+	uint32 tVerts3Offset, tVerts3Count;
+	Model::readArrayDef(*ctx.mdb, tVerts3Offset, tVerts3Count);
 
-	uint32 unknownStart, unknownCount;
-	readArray(*ctx.mdb, unknownStart, unknownCount);
+	uint32 unknownOffset, unknownCount;
+	Model::readArrayDef(*ctx.mdb, unknownOffset, unknownCount);
 
-	uint32 facesStart, facesCount;
-	readArray(*ctx.mdb, facesStart, facesCount);
+	uint32 facesOffset, facesCount;
+	Model::readArrayDef(*ctx.mdb, facesOffset, facesCount);
 
 	if (ctx.fileVersion == 133)
 		ctx.offTexData = ctx.mdb->readUint32LE();
 
-	ctx.mdb->seekTo(ctx.offRawData + verticesStart);
 
-	ctx.mesh->verts.resize(3 * verticesCount);
+	if ((verticesCount == 0) || (facesCount == 0)) {
+		ctx.mdb->seekTo(endPos);
+		return;
+	}
+
+	_render = true;
+
+	std::vector<Common::UString> textures;
+	readTextures(ctx, texture[0], textures);
+	loadTextures(textures);
+
+	uint32 textureCount = textures.size();
+
+	if (!createFaces(facesCount)) {
+		ctx.mdb->seekTo(endPos);
+		return;
+	}
+
+
+
+	// Read vertex coordinates
+	ctx.mdb->seekTo(ctx.offRawData + verticesOffset);
+
+	std::vector<float> vX, vY, vZ;
+	vX.resize(verticesCount);
+	vY.resize(verticesCount);
+	vZ.resize(verticesCount);
+
 	for (uint32 i = 0; i < verticesCount; i++) {
-		ctx.mesh->verts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->verts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->verts[3 * i + 2] = ctx.mdb->readIEEEFloatLE();
+		vX[i] = ctx.mdb->readIEEEFloatLE();
+		vY[i] = ctx.mdb->readIEEEFloatLE();
+		vZ[i] = ctx.mdb->readIEEEFloatLE();
 	}
 
-	ctx.mdb->seekTo(ctx.offRawData + tVerts0Start);
 
-	ctx.mesh->tverts.resize(3 * tVerts0Count);
+	// Read texture coordinates
+
+	ctx.mdb->seekTo(ctx.offRawData + tVerts0Offset);
+
+	std::vector<float> tX, tY;
+	tX.resize(tVerts0Count);
+	tY.resize(tVerts0Count);
+
 	for (uint32 i = 0; i < tVerts0Count; i++) {
-		ctx.mesh->tverts[3 * i + 0] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->tverts[3 * i + 1] = ctx.mdb->readIEEEFloatLE();
-		ctx.mesh->tverts[3 * i + 2] = 0;
+		tX[i] = ctx.mdb->readIEEEFloatLE();
+		tY[i] = ctx.mdb->readIEEEFloatLE();
 	}
 
-	ctx.mdb->seekTo(ctx.offRawData + facesStart);
 
-	ctx.mesh->faceCount = facesCount;
+	// Read faces
 
-	ctx.mesh-> vertIndices.resize(3 * facesCount);
-	ctx.mesh->tvertIndices.resize(3 * facesCount);
+	ctx.mdb->seekTo(ctx.offRawData + facesOffset);
+
 	for (uint32 i = 0; i < facesCount; i++) {
 		ctx.mdb->skip(4 * 4 + 4);
 
 		if (ctx.fileVersion == 133)
 			ctx.mdb->skip(3 * 4);
 
-		ctx.mesh->vertIndices[i * 3 + 0] = ctx.mesh->tvertIndices[i * 3 + 0] = ctx.mdb->readUint32LE();
-		ctx.mesh->vertIndices[i * 3 + 1] = ctx.mesh->tvertIndices[i * 3 + 1] = ctx.mdb->readUint32LE();
-		ctx.mesh->vertIndices[i * 3 + 2] = ctx.mesh->tvertIndices[i * 3 + 2] = ctx.mdb->readUint32LE();
+		// Vertex indices
+		const uint32 v1 = ctx.mdb->readUint32LE();
+		const uint32 v2 = ctx.mdb->readUint32LE();
+		const uint32 v3 = ctx.mdb->readUint32LE();
+
+		// Vertex coordinates
+		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
+		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
+		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
+		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
+
+		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
+		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
+		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
+		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
+
+		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
+		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
+		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
+		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
+
+		const float tX1 = v1 < tX.size() ? tX[v1] : 0.0;
+		const float tY1 = v1 < tY.size() ? tY[v1] : 0.0;
+
+		const float tX2 = v2 < tX.size() ? tX[v2] : 0.0;
+		const float tY2 = v2 < tY.size() ? tY[v2] : 0.0;
+
+		const float tX3 = v3 < tX.size() ? tX[v3] : 0.0;
+		const float tY3 = v3 < tY.size() ? tY[v3] : 0.0;
+
+		for (uint32 t = 0; t < textureCount; t++) {
+			_tX[3 * textureCount * i + 3 * t + 0] = tX1;
+			_tY[3 * textureCount * i + 3 * t + 0] = tY1;
+
+			_tX[3 * textureCount * i + 3 * t + 1] = tX2;
+			_tY[3 * textureCount * i + 3 * t + 1] = tY2;
+
+			_tX[3 * textureCount * i + 3 * t + 2] = tX3;
+			_tY[3 * textureCount * i + 3 * t + 2] = tY3;
+		}
 
 		if (ctx.fileVersion == 133)
 			ctx.mdb->skip(4);
 	}
 
-	if (texture[0] != "NULL") {
-		uint32 offset;
-		if (ctx.fileVersion == 133)
-			offset = ctx.offRawData + ctx.offTexData;
-		else
-			offset = ctx.offTexData + offTextureInfo;
-
-		ctx.mdb->seek(offset);
-
-		uint32 textureCount = ctx.mdb->readUint32LE();
-		uint32 offTexture   = ctx.mdb->readUint32LE();
-
-		std::vector<Common::UString> textureLine;
-		textureLine.resize(textureCount);
-		for (std::vector<Common::UString>::iterator line = textureLine.begin(); line != textureLine.end(); ++line) {
-			line->readLineASCII(*ctx.mdb);
-			ctx.mdb->skip(1);
-
-			line->trim();
-		}
-
-		for (std::vector<Common::UString>::const_iterator line = textureLine.begin(); line != textureLine.end(); ++line) {
-			int n = -1;
-			if      (line->beginsWith("texture texture0 "))
-				n = 17;
-			else if (line->beginsWith("texture tex "))
-				n = 12;
-
-			if (n != -1) {
-				Common::UString::iterator it = line->begin();
-				while (n-- > 0)
-					it++;
-
-				ctx.mesh->textures.clear();
-
-				Common::UString t;
-				while (it != line->end())
-					t += *it++;
-
-				ctx.mesh->textures.push_back(t);
-			}
-		}
-
-	} else
-		ctx.node->render = false;
+	createCenter();
 
 	ctx.mdb->seekTo(endPos);
 }
 
-void Model_Witcher::readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data) {
+void ModelNode_Witcher::readTextures(Model_Witcher::ParserContext &ctx,
+                                     const Common::UString &texture,
+                                     std::vector<Common::UString> &textures) {
+
+	if (texture == "NULL") {
+		_render = false;
+		return;
+	}
+
+	uint32 offset;
+	if (ctx.fileVersion == 133)
+		offset = ctx.offRawData + ctx.offTexData;
+	else
+		offset = ctx.offTexData + ctx.offTextureInfo;
+
+	ctx.mdb->seek(offset);
+
+	uint32 textureCount = ctx.mdb->readUint32LE();
+	uint32 offTexture   = ctx.mdb->readUint32LE();
+
+	std::vector<Common::UString> textureLine;
+	textureLine.resize(textureCount);
+	for (std::vector<Common::UString>::iterator line = textureLine.begin(); line != textureLine.end(); ++line) {
+		line->readLineASCII(*ctx.mdb);
+		ctx.mdb->skip(1);
+
+		line->trim();
+	}
+
+	for (std::vector<Common::UString>::const_iterator line = textureLine.begin(); line != textureLine.end(); ++line) {
+		int n = -1;
+		if      (line->beginsWith("texture texture0 "))
+			n = 17;
+		else if (line->beginsWith("texture tex "))
+			n = 12;
+
+		if (n != -1) {
+			Common::UString::iterator it = line->begin();
+			while (n-- > 0)
+				it++;
+
+			textures.clear();
+
+			Common::UString t;
+			while (it != line->end())
+				t += *it++;
+
+			textures.push_back(t);
+		}
+	}
+
+}
+
+void ModelNode_Witcher::readNodeControllers(Model_Witcher::ParserContext &ctx,
+		uint32 offset, uint32 count, std::vector<float> &data) {
+
 	uint32 pos = ctx.mdb->seekTo(offset);
 
-	// TODO: Implement this properly :P
+	// TODO: readNodeControllers: Implement this properly :P
 
 	for (uint32 i = 0; i < count; i++) {
 		uint32 type        = ctx.mdb->readUint32LE();
@@ -423,27 +539,26 @@ void Model_Witcher::readNodeControllers(ParserContext &ctx, uint32 offset, uint3
 		uint8  columnCount = ctx.mdb->readByte();
 		ctx.mdb->skip(1);
 
-		if (rowCount == 0xFFFF) {
-			warning("TODO: Model_Witcher::readNodeControllers(): rowCount == 0xFFFF");
+		if (rowCount == 0xFFFF)
+			// TODO: Controller row count = 0xFFFF
 			continue;
-		}
 
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)
 				throw Common::Exception("Position controller with %d values", columnCount);
 
-			ctx.node->position[0] = data[dataIndex + 0];
-			ctx.node->position[1] = data[dataIndex + 1];
-			ctx.node->position[2] = data[dataIndex + 2];
+			_position[0] = data[dataIndex + 0];
+			_position[1] = data[dataIndex + 1];
+			_position[2] = data[dataIndex + 2];
 
 		} else if (type == kControllerTypeOrientation) {
 			if (columnCount != 4)
 				throw Common::Exception("Orientation controller with %d values", columnCount);
 
-			ctx.node->orientation[0] = data[dataIndex + 0];
-			ctx.node->orientation[1] = data[dataIndex + 1];
-			ctx.node->orientation[2] = data[dataIndex + 2];
-			ctx.node->orientation[3] = Common::rad2deg(acos(data[dataIndex + 3]) * 2.0);
+			_orientation[0] = data[dataIndex + 0];
+			_orientation[1] = data[dataIndex + 1];
+			_orientation[2] = data[dataIndex + 2];
+			_orientation[3] = Common::rad2deg(acos(data[dataIndex + 3]) * 2.0);
 		}
 
 	}

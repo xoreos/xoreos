@@ -63,6 +63,8 @@ void CameraManager::setPosition(float x, float y, float z) {
 
 	_changed = true;
 
+	GfxMan.recalculateObjectDistances();
+
 	GfxMan.unlockFrame();
 }
 
@@ -82,6 +84,8 @@ void CameraManager::setOrientation(float x, float y, float z) {
 	}
 
 	_changed = true;
+
+	GfxMan.recalculateObjectDistances();
 
 	GfxMan.unlockFrame();
 }

@@ -52,6 +52,12 @@ enum RenderableQueue {
 	kRenderableQueueGUIFront
 };
 
+enum RenderPass {
+	kRenderPassOpaque,      ///< Only render opaque parts.
+	kRenderPassTransparent, ///< Only render transparent parts.
+	kRenderPassAll          ///< Render all parts.
+};
+
 } // End of namespace Graphics
 
 #endif // GRAPHICS_TYPES_H

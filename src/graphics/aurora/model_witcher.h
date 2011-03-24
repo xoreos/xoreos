@@ -12,14 +12,11 @@
  *  Loading MDB files found in The Witcher
  */
 
-#ifndef GRAPHICS_AURORA_MODEL_WITCHER_H
-#define GRAPHICS_AURORA_MODEL_WITCHER_H
-
-#include <vector>
-
-#include "common/ustring.h"
+#ifndef GRAPHICS_AURORA_NEWMODEL_WITCHER_H
+#define GRAPHICS_AURORA_NEWMODEL_WITCHER_H
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/modelnode.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -29,7 +26,9 @@ namespace Graphics {
 
 namespace Aurora {
 
-/** A 3D model in the Witcher MDB format. */
+class ModelNode_Witcher;
+
+/** A 3D model in the The Witcher MDB format. */
 class Model_Witcher : public Model {
 public:
 	Model_Witcher(Common::SeekableReadStream &mdb, ModelType type = kModelTypeObject);
@@ -40,8 +39,8 @@ private:
 		Common::SeekableReadStream *mdb;
 
 		State *state;
-		Node  *node;
-		Mesh  *mesh;
+
+		std::list<ModelNode_Witcher *> nodes;
 
 		uint16 fileVersion;
 
@@ -51,24 +50,45 @@ private:
 		uint32 offRawData;
 		uint32 rawDataSize;
 
+		uint32 offTextureInfo;
+
 		uint32 offTexData;
 		uint32 texDatasize;
 
-		ParserContext(Common::SeekableReadStream &mdbStream);
+		ParserContext(Common::SeekableReadStream &stream);
 		~ParserContext();
+
+		void clear();
 	};
 
-	void load(Common::SeekableReadStream &mdb);
 
-	void readNode(ParserContext &ctx, uint32 offset, Node *parent);
+	void newState(ParserContext &ctx);
+	void addState(ParserContext &ctx);
 
-	void readMesh(ParserContext &ctx);
+	void load(ParserContext &ctx);
 
-	void readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
+	friend class ModelNode_Witcher;
+};
+
+class ModelNode_Witcher : public ModelNode {
+public:
+	ModelNode_Witcher(Model &model);
+	~ModelNode_Witcher();
+
+	void load(Model_Witcher::ParserContext &ctx);
+
+private:
+	void readMesh(Model_Witcher::ParserContext &ctx);
+
+	void readTextures(Model_Witcher::ParserContext &ctx,
+	                  const Common::UString &texture,
+	                  std::vector<Common::UString> &textures);
+	void readNodeControllers(Model_Witcher::ParserContext &ctx,
+	                         uint32 offset, uint32 count, std::vector<float> &data);
 };
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_MODEL_WITCHER_H
+#endif // GRAPHICS_AURORA_NEWMODEL_WITCHER_H

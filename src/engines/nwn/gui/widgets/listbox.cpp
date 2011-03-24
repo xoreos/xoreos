@@ -19,6 +19,7 @@
 #include "graphics/graphics.h"
 #include "graphics/font.h"
 
+#include "graphics/aurora/modelnode.h"
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/fontman.h"
@@ -126,6 +127,8 @@ WidgetListItemTextLine::WidgetListItemTextLine(::Engines::GUI &gui,
 	_fontHeight = f.getFont().getHeight();
 
 	_text = new Graphics::Aurora::Text(f, text, _uR, _uG, _uB, _uA, 0.0);
+
+	_text->setClickable(true);
 }
 
 WidgetListItemTextLine::~WidgetListItemTextLine() {
@@ -144,7 +147,7 @@ void WidgetListItemTextLine::setPosition(float x, float y, float z) {
 	Widget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
-	_text->setPosition(x, y, -z);
+	_text->setPosition(x, y, z);
 }
 
 void WidgetListItemTextLine::setUnselectedColor(float r, float g, float b, float a) {
@@ -210,6 +213,8 @@ WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag,
 	_hasScrollbar(false), _up(0), _down(0), _scrollbar(0), _dblClicked(false),
 	_startItem(0), _selectedItem(0xFFFFFFFF), _locked(false) {
 
+	_model->setClickable(true);
+
 	getProperties();
 
 	createScrollbar();
@@ -224,11 +229,15 @@ void WidgetListBox::getProperties() {
 
 	// Calculate content region
 
+	Graphics::Aurora::ModelNode *node = 0;
+
 	float topX = 8.0, topY = getHeight() - 6.0, topZ = 0.0;
-	_model->getNodePosition("text0", topX, topY, topZ);
+	if ((node = _model->getNode("text0")))
+		node->getPosition(topX, topY, topZ);
 
 	float bottomX = getWidth() - (_hasScrollbar ? 25.0 : 3.0), bottomY = 3.0, bottomZ = 0.0;
-	_model->getNodePosition("text1", bottomX, bottomY, bottomZ);
+	if ((node = _model->getNode("text1")))
+		node->getPosition(bottomX, bottomY, bottomZ);
 
 	_contentX = topX;
 	_contentY = topY;
@@ -243,20 +252,20 @@ void WidgetListBox::createScrollbar() {
 
 	// Get top position
 	float minX, minY, minZ;
-	_model->getNodePosition("scrollmin", minX, minY, minZ);
+	_model->getNode("scrollmin")->getPosition(minX, minY, minZ);
 
 	// Create the "up" button
 	_up = new WidgetButton(*_gui, getTag() + "#Up", "pb_scrl_up", "gui_scroll");
-	_up->setPosition(minX, minY, 0.0);
+	_up->setPosition(minX, minY, -50.0);
 	addSub(*_up);
 
 	// Get bottom position
 	float maxX, maxY, maxZ;
-	_model->getNodePosition("scrollmax", maxX, maxY, maxZ);
+	_model->getNode("scrollmax")->getPosition(maxX, maxY, maxZ);
 
 	// Create the "down" button
 	_down = new WidgetButton(*_gui, getTag() + "#Down", "pb_scrl_down", "gui_scroll");
-	_down->setPosition(maxX, maxY - 10, 0.0);
+	_down->setPosition(maxX, maxY - 10, -50.0);
 	addSub(*_down);
 
 	// Scroll bar range (max length)
@@ -271,7 +280,7 @@ void WidgetListBox::createScrollbar() {
 	// Move it to the base position
 	float scrollY = maxY - 10 + _up->getHeight();
 
-	_scrollbar->setPosition(scrollX, scrollY, 0.0);
+	_scrollbar->setPosition(scrollX, scrollY, -50.0);
 	addSub(*_scrollbar);
 }
 
@@ -424,7 +433,7 @@ void WidgetListBox::unlock() {
 		WidgetListItem *item = _items[start++];
 
 		float itemY = _contentY - (_visibleItems.size() + 1) * itemHeight;
-		item->setPosition(_contentX, itemY, _contentZ);
+		item->setPosition(_contentX, itemY, _contentZ - 5.0);
 
 		_visibleItems.push_back(item);
 		if (isVisible())
@@ -490,7 +499,7 @@ void WidgetListBox::updateVisible() {
 
 		itemY -= itemHeight;
 
-		item->setPosition(_contentX, itemY, _contentZ);
+		item->setPosition(_contentX, itemY, _contentZ - 5.0);
 		_visibleItems[i] = item;
 
 		if (isVisible())

@@ -50,14 +50,9 @@ public:
 	/** Is the point within the quad? */
 	bool isIn(float x, float y) const;
 
-	void show(); ///< The quad should be rendered.
-	void hide(); ///< The quad should not be rendered.
-
-	bool isVisible(); ///< Is the quad visible?
-
 	// Renderable
-	void newFrame();
-	void render();
+	void calculateDistance();
+	void render(RenderPass pass);
 
 private:
 	TextureHandle _texture;

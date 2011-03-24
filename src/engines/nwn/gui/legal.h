@@ -15,11 +15,11 @@
 #ifndef ENGINES_NWN_GUI_LEGAL_H
 #define ENGINES_NWN_GUI_LEGAL_H
 
-#include "graphics/aurora/types.h"
-
 namespace Engines {
 
 namespace NWN {
+
+class FadeModel;
 
 /** The NWN legal billboard. */
 class Legal {
@@ -31,7 +31,7 @@ public:
 	void show();
 
 private:
-	Graphics::Aurora::Model *_billboard;
+	FadeModel *_billboard;
 };
 
 } // End of namespace NWN

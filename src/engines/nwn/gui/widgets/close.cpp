@@ -27,6 +27,7 @@ namespace NWN {
 WidgetClose::WidgetClose(::Engines::GUI &gui, const Common::UString &tag,
                          const Common::UString &model) : ModelWidget(gui, tag, model) {
 
+	_model->setClickable(true);
 }
 
 WidgetClose::~WidgetClose() {

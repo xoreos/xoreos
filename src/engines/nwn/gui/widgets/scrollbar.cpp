@@ -40,6 +40,8 @@ void Scrollbar::setPosition(float x, float y, float z) {
 	_y = y;
 	_z = z;
 
+	calculateDistance();
+
 	GfxMan.unlockFrame();
 }
 
@@ -102,14 +104,18 @@ float Scrollbar::getHeight() const {
 	return 0.0;
 }
 
-void Scrollbar::newFrame() {
-	_distance = -_z;
+void Scrollbar::calculateDistance() {
+	_distance = _z;
 }
 
-void Scrollbar::render() {
+void Scrollbar::render(Graphics::RenderPass pass) {
+	// The scrollbar model is opaque
+	if (pass == Graphics::kRenderPassTransparent)
+		return;
+
 	TextureMan.set(_texture);
 
-	glTranslatef(roundf(_x), roundf(_y), 0.0);
+	glTranslatef(roundf(_x), roundf(_y), _z);
 
 	glBegin(GL_QUADS);
 	for (std::vector<Quad>::const_iterator q = _quads.begin(); q != _quads.end(); ++q) {
@@ -239,6 +245,7 @@ WidgetScrollbar::WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag
 		Widget(gui, tag), _type(type), _range(range), _state(0.0), _scrollbar(type) {
 
 	_scrollbar.setTag(tag);
+	_scrollbar.setClickable(true);
 
 	setLength(1.0);
 }

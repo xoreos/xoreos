@@ -32,7 +32,7 @@ public:
 	~FPS();
 
 	// Renderable
-	void render();
+	void render(RenderPass pass);
 
 private:
 	uint32 _fps;

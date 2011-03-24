@@ -30,13 +30,13 @@ OptionsMenu::OptionsMenu() {
 	load("options_pregame");
 
 	WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
-	backdrop->setPosition(0.0, 0.0, -10.0);
+	backdrop->setPosition(0.0, 0.0, 100.0);
 	addWidget(backdrop);
 
-	_game     = new OptionsGameMenu(true);
-	_video    = new OptionsVideoMenu(true);
-	_sound    = new OptionsSoundMenu(true);
-	_controls = new OptionsControlsMenu(true);
+	_game     = 0;
+	_video    = 0;
+	_sound    = 0;
+	_controls = 0;
 }
 
 OptionsMenu::~OptionsMenu() {
@@ -44,6 +44,34 @@ OptionsMenu::~OptionsMenu() {
 	delete _sound;
 	delete _video;
 	delete _game;
+}
+
+void OptionsMenu::createGame() {
+	if (_game)
+		return;
+
+	_game = new OptionsGameMenu(true);
+}
+
+void OptionsMenu::createVideo() {
+	if (_video)
+		return;
+
+	_video = new OptionsVideoMenu(true);
+}
+
+void OptionsMenu::createSound() {
+	if (_sound)
+		return;
+
+	_sound = new OptionsSoundMenu(true);
+}
+
+void OptionsMenu::createControls() {
+	if (_controls)
+		return;
+
+	_controls = new OptionsControlsMenu(true);
 }
 
 void OptionsMenu::initWidget(Widget &widget) {
@@ -62,21 +90,29 @@ void OptionsMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "GameButton") {
+		createGame();
+
 		sub(*_game);
 		return;
 	}
 
 	if (widget.getTag() == "VideoOptsButton") {
+		createVideo();
+
 		sub(*_video);
 		return;
 	}
 
 	if (widget.getTag() == "SoundButton") {
+		createSound();
+
 		sub(*_sound);
 		return;
 	}
 
 	if (widget.getTag() == "ControlButton") {
+		createControls();
+
 		sub(*_controls);
 		return;
 	}

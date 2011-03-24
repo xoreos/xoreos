@@ -18,6 +18,7 @@
 #include "graphics/graphics.h"
 
 #include "graphics/aurora/guiquad.h"
+#include "graphics/aurora/texture.h"
 
 namespace Graphics {
 
@@ -58,6 +59,7 @@ void GUIQuad::setPosition(float x, float y, float z) {
 	_y1 = y;
 
 	_distance = z;
+	GfxMan.resortObjects();
 
 	GfxMan.unlockFrame();
 }
@@ -117,22 +119,15 @@ bool GUIQuad::isIn(float x, float y) const {
 	return true;
 }
 
-void GUIQuad::show() {
-	addToQueue();
+void GUIQuad::calculateDistance() {
 }
 
-void GUIQuad::hide() {
-	removeFromQueue();
-}
+void GUIQuad::render(RenderPass pass) {
+	bool isTransparent = (_a < 1.0) || (!_texture.empty() && _texture.getTexture().hasAlpha());
+	if (((pass == kRenderPassOpaque)      &&  isTransparent) ||
+			((pass == kRenderPassTransparent) && !isTransparent))
+		return;
 
-bool GUIQuad::isVisible() {
-	return isInQueue();
-}
-
-void GUIQuad::newFrame() {
-}
-
-void GUIQuad::render() {
 	TextureMan.set(_texture);
 
 	glColor4f(_r, _g, _b, _a);
