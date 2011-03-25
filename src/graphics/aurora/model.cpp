@@ -305,9 +305,8 @@ void Model::render(RenderPass pass) {
 	}
 
 
-	// Reset the first texture unit
-	TextureMan.activeTexture(0);
-	glEnable(GL_TEXTURE_2D);
+	// Reset the first texture units
+	TextureMan.reset();
 }
 
 void Model::finalize() {

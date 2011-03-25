@@ -80,6 +80,8 @@ public:
 
 	void reloadAll();
 
+	void reset();
+
 	void set();
 	void set(const TextureHandle &handle);
 

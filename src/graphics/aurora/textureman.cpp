@@ -178,6 +178,12 @@ void TextureManager::reloadAll() {
 	GfxMan.unlockFrame();
 }
 
+void TextureManager::reset() {
+	activeTexture(0);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void TextureManager::set() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
