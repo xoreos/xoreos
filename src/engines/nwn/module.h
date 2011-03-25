@@ -87,6 +87,9 @@ private:
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadTexturePack(); ///< Load the texture pack.
 	void loadArea();        ///< Load a new area.
+
+
+	friend class Console;
 };
 
 } // End of namespace NWN

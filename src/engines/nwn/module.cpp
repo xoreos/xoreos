@@ -27,9 +27,10 @@
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
 
-#include "engines/nwn/module.h"
 #include "engines/nwn/types.h"
+#include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
+#include "engines/nwn/console.h"
 
 #include "engines/nwn/gui/ingame/ingame.h"
 
@@ -168,7 +169,10 @@ void Module::run() {
 	CameraMan.setOrientation(entryDirX, entryDirY);
 	_ingameGUI->updateCompass();
 
+	EventMan.enableUnicode(true);
 	EventMan.enableKeyRepeat();
+
+	Console *console = new Console(*this);
 
 	try {
 
@@ -181,9 +185,14 @@ void Module::run() {
 			while (EventMan.pollEvent(event)) {
 				_ingameGUI->evaluateEvent(event);
 
+				if (console->processEvent(event))
+					continue;
+
 				if (event.type == Events::kEventKeyDown) {
 					if      (event.key.keysym.sym == SDLK_ESCAPE)
 						showMenu();
+					else if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL))
+						console->show();
 					else if (event.key.keysym.sym == SDLK_UP)
 						CameraMan.move( 0.5);
 					else if (event.key.keysym.sym == SDLK_DOWN)
@@ -231,6 +240,9 @@ void Module::run() {
 		printException(e, "WARNING: ");
 	}
 
+	delete console;
+
+	EventMan.enableUnicode(false);
 	EventMan.enableKeyRepeat(0);
 }
 

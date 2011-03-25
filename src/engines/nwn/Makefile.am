@@ -8,6 +8,7 @@ noinst_HEADERS = nwn.h \
                  ifofile.h \
                  creature.h \
                  charstore.h \
+                 console.h \
                  module.h \
                  area.h \
                  tileset.h \
@@ -68,6 +69,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     ifofile.cpp \
                     creature.cpp \
                     charstore.cpp \
+                    console.cpp \
                     module.cpp \
                     area.cpp \
                     tileset.cpp \
