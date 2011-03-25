@@ -16,6 +16,7 @@
 #define ENGINES_AURORA_CONSOLE_H
 
 #include "common/types.h"
+#include "common/error.h"
 
 #include "events/types.h"
 #include "events/notifyable.h"
@@ -128,6 +129,8 @@ public:
 protected:
 	void clear();
 	void print(const Common::UString &line);
+
+	void printException(Common::Exception &e, const Common::UString &prefix = "ERROR: ");
 
 	virtual bool cmdCallback(Common::UString cmd, Common::UString args) = 0;
 	virtual void handleHelp(Common::UString args);

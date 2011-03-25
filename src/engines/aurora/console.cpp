@@ -496,4 +496,22 @@ void Console::print(const Common::UString &line) {
 	_console->print(line);
 }
 
+void Console::printException(Common::Exception &e, const Common::UString &prefix) {
+	Common::Exception::Stack &stack = e.getStack();
+
+	if (stack.empty()) {
+		print("FATAL ERROR");
+		return;
+	}
+
+	print(Common::UString::sprintf("%s%s", prefix.c_str(), stack.top().c_str()));
+
+	stack.pop();
+
+	while (!stack.empty()) {
+		print(Common::UString::sprintf("'- Because: %s", stack.top().c_str()));
+		stack.pop();
+	}
+}
+
 } // End of namespace Engines
