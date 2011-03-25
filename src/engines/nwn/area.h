@@ -52,6 +52,8 @@ public:
 	void show();
 	void hide();
 
+	static Common::UString getName(const Common::UString &resRef);
+
 private:
 	enum Orientation {
 		kOrientation0   = 0,

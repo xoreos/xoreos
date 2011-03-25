@@ -70,6 +70,16 @@ Area::~Area() {
 	delete _tileset;
 }
 
+Common::UString Area::getName(const Common::UString &resRef) {
+	Aurora::GFFFile are;
+	loadGFF(are, resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
+
+	Aurora::LocString name;
+	are.getTopLevel().getLocString("Name", name);
+
+	return name.getFirstString();
+}
+
 const Common::UString &Area::getResRef() {
 	return _resRef;
 }
