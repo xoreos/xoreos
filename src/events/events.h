@@ -85,12 +85,11 @@ public:
 	 */
 	void enableKeyRepeat(int delayTime = SDL_DEFAULT_REPEAT_DELAY, int interval = SDL_DEFAULT_REPEAT_INTERVAL);
 
-	/** Return the ASCII character of the pressed key.
+	/** Return the unicode code point of the pressed key.
 	 *
-	 *  Requirements: enableUnicode must be enabled and the event must
-	 *                be a keydown or keyup event.
+	 *  Requirements: enableUnicode must be enabled and the event must be a keydown event.
 	 */
-	char getPressedCharacter(const Event &event);
+	uint32 getPressedCharacter(const Event &event);
 
 	/** Is the event queue full? */
 	bool isQueueFull() const;

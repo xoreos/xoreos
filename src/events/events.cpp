@@ -231,11 +231,12 @@ void EventsManager::enableKeyRepeat(int delayTime, int interval) {
 	SDL_EnableKeyRepeat(delayTime, interval);
 }
 
-char EventsManager::getPressedCharacter(const Event &event) {
-	if ((event.type != kEventKeyDown) && (event.type != kEventKeyUp))
+uint32 EventsManager::getPressedCharacter(const Event &event) {
+	uint32 c = event.key.keysym.unicode;
+	if ((event.type != kEventKeyDown) || (Common::UString::isCntrl(c)))
 		return 0;
 
-	return event.key.keysym.unicode & 0x7F;
+	return c;
 }
 
 bool EventsManager::quitRequested() const {
