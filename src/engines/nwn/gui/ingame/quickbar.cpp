@@ -29,7 +29,7 @@ namespace Engines {
 
 namespace NWN {
 
-QuickbarButton::QuickbarButton(::Engines::GUI &gui, uint n) : Widget(gui, ""),
+QuickbarButton::QuickbarButton(::Engines::GUI &gui, uint n) : NWNWidget(gui, ""),
 	_buttonNumber(n) {
 
 	Graphics::Aurora::ModelNode *invisible = 0;
@@ -53,8 +53,8 @@ QuickbarButton::QuickbarButton(::Engines::GUI &gui, uint n) : Widget(gui, ""),
 	if (invisible)
 		invisible->setInvisible(true);
 
-	Widget::setTag(Common::UString::sprintf("Quickbar%d", _buttonNumber));
-	_model->setTag(Widget::getTag());
+	NWNWidget::setTag(Common::UString::sprintf("Quickbar%d", _buttonNumber));
+	_model->setTag(NWNWidget::getTag());
 
 }
 
@@ -71,7 +71,7 @@ void QuickbarButton::hide() {
 }
 
 void QuickbarButton::setPosition(float x, float y, float z) {
-	Widget::setPosition(x, y, z);
+	NWNWidget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
 	_model->setPosition(x, y, z);

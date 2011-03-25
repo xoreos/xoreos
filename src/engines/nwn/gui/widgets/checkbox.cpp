@@ -109,6 +109,8 @@ void WidgetCheckBox::setState(bool state) {
 }
 
 void WidgetCheckBox::enter() {
+	ModelWidget::enter();
+
 	if (isDisabled())
 		return;
 
@@ -117,6 +119,8 @@ void WidgetCheckBox::enter() {
 }
 
 void WidgetCheckBox::leave() {
+	ModelWidget::leave();
+
 	if (isDisabled())
 		return;
 
@@ -165,7 +169,7 @@ void WidgetCheckBox::mouseUp(uint8 state, float x, float y) {
 }
 
 void WidgetCheckBox::signalGroupMemberActive() {
-	Widget::signalGroupMemberActive();
+	NWNWidget::signalGroupMemberActive();
 
 	_state = false;
 	_down  = false;

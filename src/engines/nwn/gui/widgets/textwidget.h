@@ -17,7 +17,7 @@
 
 #include "graphics/aurora/types.h"
 
-#include "engines/aurora/widget.h"
+#include "engines/nwn/gui/widgets/nwnwidget.h"
 
 namespace Common {
 	class UString;
@@ -32,7 +32,7 @@ namespace NWN {
  *  One of the base NWN widget classes, the TextWidget consists of a
  *  single Aurora Text.
  */
-class TextWidget : public Widget {
+class TextWidget : public NWNWidget {
 public:
 	TextWidget(::Engines::GUI &gui, const Common::UString &tag,
 	           const Common::UString &font, const Common::UString &text);

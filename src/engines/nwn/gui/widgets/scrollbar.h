@@ -21,7 +21,7 @@
 
 #include "graphics/aurora/textureman.h"
 
-#include "engines/aurora/widget.h"
+#include "engines/nwn/gui/widgets/nwnwidget.h"
 
 namespace Engines {
 
@@ -87,7 +87,7 @@ private:
 };
 
 /** A NWN scrollbar widget. */
-class WidgetScrollbar : public Widget {
+class WidgetScrollbar : public NWNWidget {
 public:
 	WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag,
 	                Scrollbar::Type type, float range);

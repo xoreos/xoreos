@@ -242,7 +242,7 @@ void Scrollbar::createV() {
 
 WidgetScrollbar::WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag,
                                  Scrollbar::Type type, float range) :
-		Widget(gui, tag), _type(type), _range(range), _state(0.0), _scrollbar(type) {
+		NWNWidget(gui, tag), _type(type), _range(range), _state(0.0), _scrollbar(type) {
 
 	_scrollbar.setTag(tag);
 	_scrollbar.setClickable(true);
@@ -260,7 +260,7 @@ void WidgetScrollbar::show() {
 	if (!isInvisible())
 		_scrollbar.show();
 
-	Widget::show();
+	NWNWidget::show();
 }
 
 void WidgetScrollbar::hide() {
@@ -268,11 +268,11 @@ void WidgetScrollbar::hide() {
 		return;
 
 	_scrollbar.hide();
-	Widget::hide();
+	NWNWidget::hide();
 }
 
 void WidgetScrollbar::setPosition(float x, float y, float z) {
-	Widget::setPosition(x, y, z);
+	NWNWidget::setPosition(x, y, z);
 
 	setState(_state);
 }

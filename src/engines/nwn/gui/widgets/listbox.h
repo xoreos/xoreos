@@ -35,7 +35,7 @@ class WidgetButton;
 class WidgetScrollbar;
 
 /** An item widget within a NWN listbox widget. */
-class WidgetListItem : public Widget {
+class WidgetListItem : public NWNWidget {
 public:
 	WidgetListItem(::Engines::GUI &gui);
 	~WidgetListItem();

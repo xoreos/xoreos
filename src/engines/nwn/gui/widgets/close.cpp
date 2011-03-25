@@ -34,6 +34,8 @@ WidgetClose::~WidgetClose() {
 }
 
 void WidgetClose::leave() {
+	ModelWidget::leave();
+
 	if (isDisabled())
 		return;
 

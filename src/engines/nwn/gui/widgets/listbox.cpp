@@ -32,7 +32,7 @@ namespace Engines {
 
 namespace NWN {
 
-WidgetListItem::WidgetListItem(::Engines::GUI &gui) : Widget(gui, ""), _state(false) {
+WidgetListItem::WidgetListItem(::Engines::GUI &gui) : NWNWidget(gui, ""), _state(false) {
 }
 
 WidgetListItem::~WidgetListItem() {
@@ -110,7 +110,7 @@ bool WidgetListItem::deactivate() {
 }
 
 void WidgetListItem::signalGroupMemberActive() {
-	Widget::signalGroupMemberActive();
+	NWNWidget::signalGroupMemberActive();
 
 	deactivate();
 }
@@ -144,7 +144,7 @@ void WidgetListItemTextLine::hide() {
 }
 
 void WidgetListItemTextLine::setPosition(float x, float y, float z) {
-	Widget::setPosition(x, y, z);
+	NWNWidget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
 	_text->setPosition(x, y, z);

@@ -27,7 +27,7 @@ namespace NWN {
 
 TextWidget::TextWidget(::Engines::GUI &gui, const Common::UString &tag,
                        const Common::UString &font, const Common::UString &text) :
-	Widget(gui, tag), _r(1.0), _g(1.0), _b(1.0), _a(1.0) {
+	NWNWidget(gui, tag), _r(1.0), _g(1.0), _b(1.0), _a(1.0) {
 
 	_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, 0.5);
 	_text->setTag(tag);
@@ -44,7 +44,7 @@ void TextWidget::show() {
 	if (!isInvisible())
 		_text->show();
 
-	Widget::show();
+	NWNWidget::show();
 }
 
 void TextWidget::hide() {
@@ -52,11 +52,11 @@ void TextWidget::hide() {
 		return;
 
 	_text->hide();
-	Widget::hide();
+	NWNWidget::hide();
 }
 
 void TextWidget::setPosition(float x, float y, float z) {
-	Widget::setPosition(x, y, z);
+	NWNWidget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
 	_text->setPosition(x, y, z);
@@ -91,7 +91,7 @@ void TextWidget::setDisabled(bool disabled) {
 
 	_text->setColor(_r, _g, _b, _a);
 
-	Widget::setDisabled(disabled);
+	NWNWidget::setDisabled(disabled);
 }
 
 } // End of namespace NWN

@@ -36,6 +36,8 @@ WidgetButton::~WidgetButton() {
 }
 
 void WidgetButton::enter() {
+	ModelWidget::enter();
+
 	if (isDisabled())
 		return;
 
@@ -43,6 +45,8 @@ void WidgetButton::enter() {
 }
 
 void WidgetButton::leave() {
+	ModelWidget::leave();
+
 	if (isDisabled())
 		return;
 
@@ -50,7 +54,7 @@ void WidgetButton::leave() {
 }
 
 void WidgetButton::setDisabled(bool disabled) {
-	Widget::setDisabled(disabled);
+	NWNWidget::setDisabled(disabled);
 
 	if (isDisabled())
 		_model->setState("disabled");

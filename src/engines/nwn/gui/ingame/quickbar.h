@@ -21,7 +21,7 @@
 
 #include "graphics/aurora/types.h"
 
-#include "engines/aurora/widget.h"
+#include "engines/nwn/gui/widgets/nwnwidget.h"
 
 #include "engines/nwn/gui/gui.h"
 
@@ -30,7 +30,7 @@ namespace Engines {
 namespace NWN {
 
 /** A button within the NWN quickbar. */
-class QuickbarButton : public Widget {
+class QuickbarButton : public NWNWidget {
 public:
 	QuickbarButton(::Engines::GUI &gui, uint n);
 	~QuickbarButton();

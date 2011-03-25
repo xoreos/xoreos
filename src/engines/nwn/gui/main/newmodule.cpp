@@ -68,7 +68,7 @@ void WidgetListItemModule::hide() {
 }
 
 void WidgetListItemModule::setPosition(float x, float y, float z) {
-	Widget::setPosition(x, y, z);
+	NWNWidget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
 	_button->setPosition(x, y, z);

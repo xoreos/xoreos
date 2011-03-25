@@ -16,19 +16,19 @@ noinst_HEADERS = nwn.h \
                  door.h \
                  gui/gui.h \
                  gui/legal.h \
-                 gui/widgets/button.h \
+                 gui/widgets/nwnwidget.h \
+                 gui/widgets/modelwidget.h \
+                 gui/widgets/quadwidget.h \
+                 gui/widgets/textwidget.h \
                  gui/widgets/checkbox.h \
                  gui/widgets/close.h \
                  gui/widgets/editbox.h \
                  gui/widgets/frame.h \
                  gui/widgets/label.h \
                  gui/widgets/listbox.h \
-                 gui/widgets/modelwidget.h \
                  gui/widgets/panel.h \
-                 gui/widgets/quadwidget.h \
                  gui/widgets/scrollbar.h \
                  gui/widgets/slider.h \
-                 gui/widgets/textwidget.h \
                  gui/dialogs/okcancel.h \
                  gui/dialogs/yesnocancel.h \
                  gui/options/controls.h \
@@ -76,6 +76,10 @@ libnwn_la_SOURCES = nwn.cpp \
                     door.cpp \
                     gui/gui.cpp \
                     gui/legal.cpp \
+                    gui/widgets/nwnwidget.cpp \
+                    gui/widgets/modelwidget.cpp \
+                    gui/widgets/quadwidget.cpp \
+                    gui/widgets/textwidget.cpp \
                     gui/widgets/button.cpp \
                     gui/widgets/checkbox.cpp \
                     gui/widgets/close.cpp \
@@ -83,12 +87,9 @@ libnwn_la_SOURCES = nwn.cpp \
                     gui/widgets/frame.cpp \
                     gui/widgets/label.cpp \
                     gui/widgets/listbox.cpp \
-                    gui/widgets/modelwidget.cpp \
                     gui/widgets/panel.cpp \
-                    gui/widgets/quadwidget.cpp \
                     gui/widgets/scrollbar.cpp \
                     gui/widgets/slider.cpp \
-                    gui/widgets/textwidget.cpp \
                     gui/dialogs/okcancel.cpp \
                     gui/dialogs/yesnocancel.cpp \
                     gui/options/controls.cpp \

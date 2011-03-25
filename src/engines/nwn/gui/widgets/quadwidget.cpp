@@ -27,7 +27,7 @@ QuadWidget::QuadWidget(::Engines::GUI &gui, const Common::UString &tag,
                        const Common::UString &texture,
                        float  x1, float  y1, float  x2, float  y2,
                        float tX1, float tY1, float tX2, float tY2) :
-	Widget(gui, tag) {
+	NWNWidget(gui, tag) {
 
 	_quad = new Graphics::Aurora::GUIQuad(texture, x1, y1, x2, y2, tX1, tY1, tX2, tY2);
 	_quad->setTag(tag);
@@ -50,7 +50,7 @@ void QuadWidget::hide() {
 }
 
 void QuadWidget::setPosition(float x, float y, float z) {
-	Widget::setPosition(x, y, z);
+	NWNWidget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
 	_quad->setPosition(x, y, z);

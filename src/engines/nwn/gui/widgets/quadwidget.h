@@ -17,7 +17,7 @@
 
 #include "graphics/aurora/types.h"
 
-#include "engines/aurora/widget.h"
+#include "engines/nwn/gui/widgets/nwnwidget.h"
 
 namespace Common {
 	class UString;
@@ -34,7 +34,7 @@ class GUI;
  *  One of the base NWN widget classes, the QuadWidget consists of a
  *  single Aurora GUIQuad.
  */
-class QuadWidget : public Widget {
+class QuadWidget : public NWNWidget {
 public:
 	QuadWidget(::Engines::GUI &gui, const Common::UString &tag,
 	           const Common::UString &texture,
