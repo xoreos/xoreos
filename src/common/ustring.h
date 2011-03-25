@@ -123,6 +123,10 @@ public:
 	/** Convert the string to uppercase. */
 	void toupper();
 
+	/** Insert the specified character at position n. */
+	void insert(uint32 n, uint32 c);
+	/** Replace the nth character with c. */
+	void replace(uint32 n, uint32 c);
 	/** Erase the nth character from the string. */
 	void erase(uint32 n);
 

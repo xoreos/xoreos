@@ -595,6 +595,46 @@ void UString::toupper() {
 	}
 }
 
+void UString::insert(uint32 n, uint32 c) {
+	if (n >= _size) {
+		*this += c;
+		return;
+	}
+
+	Common::UString temp;
+
+	iterator it;
+	for (it = begin(); n > 0; ++it, n--)
+		temp += *it;
+
+	temp += c;
+
+	for (; it != end(); ++it)
+		temp += *it;
+
+	*this = temp;
+}
+
+void UString::replace(uint32 n, uint32 c) {
+	if (n >= _size) {
+		*this += c;
+		return;
+	}
+
+	Common::UString temp;
+
+	iterator it;
+	for (it = begin(); n > 0; ++it, n--)
+		temp += *it;
+
+	temp += c;
+
+	for (++it; it != end(); ++it)
+		temp += *it;
+
+	*this = temp;
+}
+
 void UString::erase(uint32 n) {
 	if (n >= _size)
 		return;
