@@ -31,6 +31,8 @@ public:
 	Module();
 	virtual ~Module();
 
+	void clear();
+
 	void load(const Common::UString &name);
 
 	/** Enter the module's area. */

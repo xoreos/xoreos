@@ -39,7 +39,16 @@ Module::Module() : _startX(0.0), _startY(0.0), _startZ(0.0),
 }
 
 Module::~Module() {
-	delete _area;
+	clear();
+}
+
+void Module::clear() {
+	if (_area) {
+		leave();
+
+		delete _area;
+		_area = 0;
+	}
 
 	ResMan.undo(_moduleResources);
 	ResMan.undo(_scriptResources);
@@ -48,6 +57,8 @@ Module::~Module() {
 }
 
 void Module::load(const Common::UString &name) {
+	clear();
+
 	status("Loading module \"%s\"", name.c_str());
 
 	try {
@@ -108,7 +119,8 @@ void Module::loadArea() {
 }
 
 void Module::enter() {
-	assert(_area);
+	if (!_area)
+		return;
 
 	reset();
 
@@ -118,7 +130,8 @@ void Module::enter() {
 }
 
 void Module::leave() {
-	assert(_area);
+	if (!_area)
+		return;
 
 	GfxMan.lockFrame();
 	_area->hide();

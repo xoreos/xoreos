@@ -16,6 +16,8 @@
 #include "engines/kotor2/modelloader.h"
 #include "engines/kotor2/module.h"
 
+#include "engines/kotor/console.h"
+
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
@@ -99,11 +101,13 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	playSound("298hk50mun003", Sound::kSoundTypeVoice);
 
-	// Test load up the Ebon Hawk
-	Module *ebonHawk = new Module;
+	Module *module = new Module;
 
-	ebonHawk->load("001EBO");
-	ebonHawk->enter();
+	::Engines::KotOR::Console *console = new ::Engines::KotOR::Console(*module);
+
+	// Test load up the Ebon Hawk
+	module->load("001EBO");
+	module->enter();
 
 	bool showFPS = ConfigMan.getBool("showfps", false);
 
@@ -113,6 +117,7 @@ void KotOR2Engine::run(const Common::UString &target) {
 		fps->show();
 	}
 
+	EventMan.enableUnicode(true);
 	EventMan.enableKeyRepeat();
 
 	status("Entering event loop");
@@ -124,8 +129,13 @@ void KotOR2Engine::run(const Common::UString &target) {
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
 		while (EventMan.pollEvent(event)) {
+			if (console->processEvent(event))
+				continue;
+
 			if (event.type == Events::kEventKeyDown) {
-				if      (event.key.keysym.sym == SDLK_UP)
+				if      ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL))
+					console->show();
+				else if (event.key.keysym.sym == SDLK_UP)
 					CameraMan.move( 0.5);
 				else if (event.key.keysym.sym == SDLK_DOWN)
 					CameraMan.move(-0.5);
@@ -170,10 +180,13 @@ void KotOR2Engine::run(const Common::UString &target) {
 	}
 
 	EventMan.enableKeyRepeat(0);
+	EventMan.enableUnicode(false);
 
-	ebonHawk->leave();
+	delete console;
 
-	delete ebonHawk;
+	module->leave();
+
+	delete module;
 
 	delete fps;
 }

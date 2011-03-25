@@ -49,6 +49,8 @@ Area::Area() {
 }
 
 Area::~Area() {
+	hide();
+
 	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
 		delete *room;
 

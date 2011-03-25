@@ -15,6 +15,7 @@
 #include "engines/kotor/kotor.h"
 #include "engines/kotor/modelloader.h"
 #include "engines/kotor/module.h"
+#include "engines/kotor/console.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
@@ -117,11 +118,13 @@ void KotOREngine::run(const Common::UString &target) {
 
 	playSound("nm35aahhkd07134_", Sound::kSoundTypeVoice);
 
-	// Test load up a Leviathan module
-	Module *leviathan = new Module;
+	Module *module = new Module;
 
-	leviathan->load("lev_m40aa");
-	leviathan->enter();
+	Console *console = new Console(*module);
+
+	// Test load up a Leviathan module
+	module->load("lev_m40aa");
+	module->enter();
 
 	bool showFPS = ConfigMan.getBool("showfps", false);
 
@@ -131,6 +134,7 @@ void KotOREngine::run(const Common::UString &target) {
 		fps->show();
 	}
 
+	EventMan.enableUnicode(true);
 	EventMan.enableKeyRepeat();
 
 	status("Entering event loop");
@@ -142,8 +146,13 @@ void KotOREngine::run(const Common::UString &target) {
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
 		while (EventMan.pollEvent(event)) {
+			if (console->processEvent(event))
+				continue;
+
 			if (event.type == Events::kEventKeyDown) {
-				if      (event.key.keysym.sym == SDLK_UP)
+				if      ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL))
+					console->show();
+				else if (event.key.keysym.sym == SDLK_UP)
 					CameraMan.move( 0.5);
 				else if (event.key.keysym.sym == SDLK_DOWN)
 					CameraMan.move(-0.5);
@@ -188,10 +197,13 @@ void KotOREngine::run(const Common::UString &target) {
 	}
 
 	EventMan.enableKeyRepeat(0);
+	EventMan.enableUnicode(false);
 
-	leviathan->leave();
+	delete console;
 
-	delete leviathan;
+	module->leave();
+
+	delete module;
 
 	delete fps;
 }
