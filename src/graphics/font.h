@@ -35,6 +35,9 @@ public:
 	/** Return the size of space between lines. */
 	virtual float getLineSpacing() const;
 
+	/** Return the number of lines this text spans. */
+	uint32 getLineCount(const Common::UString &text) const;
+
 	/** Return the width this string would take. */
 	float getWidth (const Common::UString &text) const;
 	/** Return the height this string would take. */

@@ -30,6 +30,14 @@ float Font::getLineSpacing() const {
 	return 0.0;
 }
 
+uint32 Font::getLineCount(const Common::UString &text) const {
+	std::vector<Common::UString> lines;
+
+	split(text, lines);
+
+	return lines.size();
+}
+
 float Font::getWidth(const Common::UString &text) const {
 	std::vector<Common::UString> lines;
 
@@ -37,14 +45,12 @@ float Font::getWidth(const Common::UString &text) const {
 }
 
 float Font::getHeight(const Common::UString &text) const {
-	std::vector<Common::UString> lines;
+	uint32 lines = getLineCount(text);
 
-	split(text, lines);
-
-	if (lines.empty())
+	if (lines == 0)
 		return 0.0;
 
-	return (lines.size() * getHeight()) + ((lines.size() - 1) * getLineSpacing());
+	return (lines * getHeight()) + ((lines - 1) * getLineSpacing());
 }
 
 void Font::draw(Common::UString text, float r, float g, float b, float a,
