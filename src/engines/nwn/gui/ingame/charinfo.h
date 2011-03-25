@@ -34,10 +34,15 @@ public:
 	/** Set the portrait image. */
 	virtual void setPortrait(const Common::UString &portrait) = 0;
 
+	/** Set the character name. */
+	virtual void setName(const Common::UString &name);
+	/** Set the area the character is in. */
+	virtual void setArea(const Common::UString &area);
+
 	/** Set the health bar color. */
 	virtual void setHealthColor(float r, float g, float b, float a) = 0;
-	/** Set the health bar length (as a fraction of "full health") */
-	virtual void setHealthLength(float length) = 0;
+	/** Set the character health. */
+	virtual void setHealth(int32 current, int32 max) = 0;
 };
 
 } // End of namespace NWN

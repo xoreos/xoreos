@@ -24,6 +24,12 @@ CharacterInfo::CharacterInfo() {
 CharacterInfo::~CharacterInfo() {
 }
 
+void CharacterInfo::setName(const Common::UString &name) {
+}
+
+void CharacterInfo::setArea(const Common::UString &area) {
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

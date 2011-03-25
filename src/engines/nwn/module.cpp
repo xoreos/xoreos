@@ -132,7 +132,7 @@ void Module::run() {
 	status("Running module \"%s\" with character \"%s\"",
 			_ifo.getName().getFirstString().c_str(), _pc.getFullName().c_str());
 
-	_ingameGUI->setPortrait(0, _pc.getPortrait() + "l");
+	_ingameGUI->updatePartyMember(0, _pc);
 
 	try {
 
@@ -220,7 +220,9 @@ void Module::run() {
 				}
 			}
 
+			_ingameGUI->updatePartyMember(0, _pc);
 			_ingameGUI->updateCompass();
+
 			EventMan.delay(10);
 		}
 
@@ -318,8 +320,7 @@ void Module::loadArea() {
 
 	EventMan.flushEvents();
 
-	status("Entered area \"%s\", (\"%s\")",
-			_area->getName().c_str(), _area->getResRef().c_str());
+	_ingameGUI->setArea(_area->getName());
 }
 
 void Module::unloadArea() {

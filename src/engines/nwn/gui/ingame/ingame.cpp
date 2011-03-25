@@ -14,6 +14,8 @@
 
 #include "graphics/camera.h"
 
+#include "engines/nwn/creature.h"
+
 #include "engines/nwn/gui/ingame/ingame.h"
 #include "engines/nwn/gui/ingame/main.h"
 #include "engines/nwn/gui/ingame/quickbar.h"
@@ -85,33 +87,40 @@ void IngameGUI::evaluateEvent(const Events::Event &event) {
 }
 
 void IngameGUI::setPortrait(uint partyMember, const Common::UString &portrait) {
-	assert(partyMember < _party.size());
-
 	_party[partyMember]->setPortrait(portrait);
 }
 
-void IngameGUI::setHealth(uint partyMember, float health) {
-	assert(partyMember < _party.size());
+void IngameGUI::setHealth(uint partyMember, uint32 current, uint32 max) {
+	_party[partyMember]->setHealth(current, max);
+}
 
-	_party[partyMember]->setHealthLength(health);
+void IngameGUI::setName(uint partyMember, const Common::UString &name) {
+	_party[partyMember]->setName(name);
+}
+
+void IngameGUI::setArea(const Common::UString &area) {
+	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
+		(*p)->setArea(area);
 }
 
 void IngameGUI::setHealthy(uint partyMember) {
-	assert(partyMember < _party.size());
-
 	_party[partyMember]->setHealthColor(1.0, 0.0, 0.0, 1.0);
 }
 
 void IngameGUI::setSick(uint partyMember) {
-	assert(partyMember < _party.size());
-
 	_party[partyMember]->setHealthColor(189.0 / 255.0, 146.0 / 255.0,  74.0 / 255.0, 1.0);
 }
 
 void IngameGUI::setPoisoned(uint partyMember) {
+	_party[partyMember]->setHealthColor(132.0 / 255.0, 182.0 / 255.0,  74.0 / 255.0, 1.0);
+}
+
+void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature) {
 	assert(partyMember < _party.size());
 
-	_party[partyMember]->setHealthColor(132.0 / 255.0, 182.0 / 255.0,  74.0 / 255.0, 1.0);
+	setPortrait(partyMember, creature.getPortrait() + "l");
+	setName    (partyMember, creature.getFullName());
+	setHealth  (partyMember, creature.getCurrentHP(), creature.getMaxHP());
 }
 
 void IngameGUI::updateCompass() {

@@ -33,6 +33,8 @@ class Module;
 
 class IngameMainMenu;
 
+class Creature;
+
 class CharacterInfo;
 class Quickbar;
 class Quickchat;
@@ -51,20 +53,14 @@ public:
 
 	void evaluateEvent(const Events::Event &event);
 
-	/** Set the party member's portrait. */
-	void setPortrait(uint partyMember, const Common::UString &portrait);
+	/** Set the current area. */
+	void setArea(const Common::UString &area);
 
-	/** Set the party member's health. */
-	void setHealth(uint partyMember, float health);
+	/** Update the party member. */
+	void updatePartyMember(uint partyMember, const Creature &creature);
 
-	/** Set party member to "healthy" (red health bar). */
-	void setHealthy (uint partyMember);
-	/** Set party member to "sick" (brown health bar). */
-	void setSick    (uint partyMember);
-	/** Set party member to "poisoned" (green health bar). */
-	void setPoisoned(uint partyMember);
-
-	void updateCompass(); ///< Update the compass.
+	/** Update the compass. */
+	void updateCompass();
 
 private:
 	IngameMainMenu *_main; ///< The ingame main menu.
@@ -74,6 +70,23 @@ private:
 	Compass   *_compass;   ///< The compass.
 
 	std::vector<CharacterInfo *> _party; ///< The party member character panels.
+
+
+	/** Set the party member's portrait. */
+	void setPortrait(uint partyMember, const Common::UString &portrait);
+
+	/** Set the party member's name. */
+	void setName(uint partyMember, const Common::UString &name);
+
+	/** Set the party member's health. */
+	void setHealth(uint partyMember, uint32 current, uint32 max);
+
+	/** Set party member to "healthy" (red health bar). */
+	void setHealthy (uint partyMember);
+	/** Set party member to "sick" (brown health bar). */
+	void setSick    (uint partyMember);
+	/** Set party member to "poisoned" (green health bar). */
+	void setPoisoned(uint partyMember);
 };
 
 } // End of namespace NWN

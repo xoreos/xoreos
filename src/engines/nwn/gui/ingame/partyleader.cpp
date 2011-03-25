@@ -30,6 +30,8 @@ namespace Engines {
 
 namespace NWN {
 
+static const char *kTooltipFont = "fnt_dialog16x16";
+
 static const char *kButtonTags[] = {
 	"ButtonMap"      , "ButtonJournal"  , "ButtonRest"  , "ButtonOptions",
 	"ButtonInventory", "ButtonCharacter", "ButtonSpells", "ButtonPlayers"
@@ -44,7 +46,9 @@ static const uint32 kButtonTooltips[] = {
 	7036, 7037, 8105, 7040, 7035, 7039, 7038, 8106
 };
 
-PartyLeader::PartyLeader(Module &module) : _module(&module) {
+PartyLeader::PartyLeader(Module &module) : _module(&module),
+	_currentHP(1), _maxHP(1) {
+
 	// The panel
 
 	WidgetPanel *playerPanel = new WidgetPanel(*this, "LeaderPanel", "pnl_party_bar");
@@ -62,7 +66,7 @@ PartyLeader::PartyLeader(Module &module) : _module(&module) {
 	for (int i = 0; i < 8; i++) {
 		WidgetButton *button = new WidgetButton(*this, kButtonTags[i], kButtonModels[i]);
 
-		button->setTooltip("fnt_dialog16x16", TalkMan.getString(kButtonTooltips[i]));
+		button->setTooltip(kTooltipFont, TalkMan.getString(kButtonTooltips[i]));
 		button->setTooltipPosition(0.0, -10.0, -1.0);
 
 		const float x = buttonsX + ((i / 4) * 36.0);
@@ -84,6 +88,7 @@ PartyLeader::PartyLeader(Module &module) : _module(&module) {
 	                              0.0, 56.0 / 256.0, 1.0, 1.0);
 
 	_portrait->setPosition(-67.0, -103.0, -100.0);
+	_portrait->setTooltipPosition(-50.0, 50.0, -1.0);
 
 	addWidget(_portrait);
 
@@ -98,6 +103,7 @@ PartyLeader::PartyLeader(Module &module) : _module(&module) {
 	addWidget(_health);
 
 
+	updatePortraitTooltip();
 	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
 }
 
@@ -105,15 +111,49 @@ PartyLeader::~PartyLeader() {
 }
 
 void PartyLeader::setPortrait(const Common::UString &portrait) {
+	if (_currentPortrait == portrait)
+		return;
+
+	_currentPortrait = portrait;
 	_portrait->setTexture(portrait);
+}
+
+void PartyLeader::setName(const Common::UString &name) {
+	if (_name == name)
+		return;
+
+	_name = name;
+
+	updatePortraitTooltip();
+}
+
+void PartyLeader::setArea(const Common::UString &area) {
+	if (_area == area)
+		return;
+
+	_area = area;
+
+	updatePortraitTooltip();
 }
 
 void PartyLeader::setHealthColor(float r, float g, float b, float a) {
 	_health->setColor(r, g, b, a);
 }
 
-void PartyLeader::setHealthLength(float length) {
-	_health->setHeight(length * 100.0);
+void PartyLeader::setHealth(int32 current, int32 max) {
+	if ((_currentHP == current) && (_maxHP == max))
+		return;
+
+	_currentHP = current;
+	_maxHP     = max;
+
+	float barLength = 0.0;
+	if (_maxHP > 0)
+		barLength = CLIP(((float) current) / ((float) max), 0.0f, 1.0f) * 100.0;
+
+	_health->setHeight(barLength);
+
+	updatePortraitTooltip();
 }
 
 void PartyLeader::callbackActive(Widget &widget) {
@@ -122,6 +162,14 @@ void PartyLeader::callbackActive(Widget &widget) {
 		return;
 	}
 
+}
+
+void PartyLeader::updatePortraitTooltip() {
+	Common::UString tooltip =
+		Common::UString::sprintf("%s %d/%d\n%s",
+				_name.c_str(), _currentHP, _maxHP, _area.c_str());
+
+	_portrait->setTooltip(kTooltipFont, tooltip);
 }
 
 void PartyLeader::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
