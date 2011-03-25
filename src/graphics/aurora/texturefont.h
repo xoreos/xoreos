@@ -63,6 +63,8 @@ private:
 	float _spaceB;
 
 	void load();
+
+	void drawMissing() const;
 };
 
 } // End of namespace Aurora

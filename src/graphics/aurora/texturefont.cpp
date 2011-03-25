@@ -40,7 +40,9 @@ TextureFont::~TextureFont() {
 
 float TextureFont::getWidth(uint32 c) const {
 	if (c >= _chars.size())
-		return 0.0;
+		c = 'm';
+	if (c >= _chars.size())
+		return _spaceR;
 
 	return _chars[c].width + _spaceR;
 }
@@ -53,9 +55,26 @@ float TextureFont::getLineSpacing() const {
 	return _spaceB;
 }
 
+void TextureFont::drawMissing() const {
+	TextureMan.set();
+
+	float width = getWidth('m') - _spaceR;
+
+	glBegin(GL_QUADS);
+		glVertex2f(0.0  ,     0.0);
+		glVertex2f(width,     0.0);
+		glVertex2f(width, _height);
+		glVertex2f(0.0  , _height);
+	glEnd();
+
+	glTranslatef(width + _spaceR, 0.0, 0.0);
+}
+
 void TextureFont::draw(uint32 c) const {
-	if (c >= _chars.size())
+	if (c >= _chars.size()) {
+		drawMissing();
 		return;
+	}
 
 	TextureMan.set(_texture);
 
