@@ -37,6 +37,9 @@ public:
 	/** Clear the creature information. */
 	void clear();
 
+	/** Last time info was changed that's displayed in the GUI. */
+	uint32 lastChangedGUIDisplay() const;
+
 	/** Load from a character file. */
 	void loadCharacter(Common::SeekableReadStream &stream);
 
@@ -75,6 +78,8 @@ private:
 		uint32 classID;
 		uint16 level;
 	};
+
+	uint32 _lastChangedGUIDisplay;
 
 	Aurora::LocString _firstName;
 	Aurora::LocString _lastName;

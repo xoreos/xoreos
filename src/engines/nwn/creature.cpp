@@ -20,6 +20,8 @@
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
 
+#include "events/events.h"
+
 #include "engines/aurora/util.h"
 
 #include "engines/nwn/creature.h"
@@ -28,7 +30,7 @@ namespace Engines {
 
 namespace NWN {
 
-Creature::Creature() {
+Creature::Creature() : _lastChangedGUIDisplay(0) {
 }
 
 Creature::~Creature() {
@@ -52,6 +54,12 @@ void Creature::clear() {
 	_xp = 0;
 
 	_classes.clear();
+
+	_lastChangedGUIDisplay = EventMan.getTimestamp();
+}
+
+uint32 Creature::lastChangedGUIDisplay() const {
+	return _lastChangedGUIDisplay;
 }
 
 void Creature::loadCharacter(Common::SeekableReadStream &stream) {
@@ -62,6 +70,8 @@ void Creature::loadCharacter(Common::SeekableReadStream &stream) {
 
 	// All BICs should be PCs.
 	_isPC = true;
+
+	_lastChangedGUIDisplay = EventMan.getTimestamp();
 }
 
 void Creature::load(const Aurora::GFFStruct &gffTop) {

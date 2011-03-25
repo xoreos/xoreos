@@ -109,26 +109,17 @@ PartyLeader::~PartyLeader() {
 }
 
 void PartyLeader::setPortrait(const Common::UString &portrait) {
-	if (_currentPortrait == portrait)
-		return;
-
 	_currentPortrait = portrait;
 	_portrait->setTexture(portrait);
 }
 
 void PartyLeader::setName(const Common::UString &name) {
-	if (_name == name)
-		return;
-
 	_name = name;
 
 	updatePortraitTooltip();
 }
 
 void PartyLeader::setArea(const Common::UString &area) {
-	if (_area == area)
-		return;
-
 	_area = area;
 
 	updatePortraitTooltip();
@@ -139,9 +130,6 @@ void PartyLeader::setHealthColor(float r, float g, float b, float a) {
 }
 
 void PartyLeader::setHealth(int32 current, int32 max) {
-	if ((_currentHP == current) && (_maxHP == max))
-		return;
-
 	_currentHP = current;
 	_maxHP     = max;
 

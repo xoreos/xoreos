@@ -36,6 +36,9 @@ IngameGUI::IngameGUI(Module &module) : _lastCompassChange(0) {
 
 	_party.resize(1);
 	_party[0] = new PartyLeader(module);
+
+	_lastPartyMemberChange.resize(1);
+	_lastPartyMemberChange[0] = 0;
 }
 
 IngameGUI::~IngameGUI() {
@@ -118,9 +121,15 @@ void IngameGUI::setPoisoned(uint partyMember) {
 void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature) {
 	assert(partyMember < _party.size());
 
+	uint32 lastPartyMemberChange = creature.lastChangedGUIDisplay();
+	if (lastPartyMemberChange <= _lastPartyMemberChange[partyMember])
+		return;
+
 	setPortrait(partyMember, creature.getPortrait() + "l");
 	setName    (partyMember, creature.getFullName());
 	setHealth  (partyMember, creature.getCurrentHP(), creature.getMaxHP());
+
+	_lastPartyMemberChange[partyMember] = lastPartyMemberChange;
 }
 
 void IngameGUI::updateCompass() {
