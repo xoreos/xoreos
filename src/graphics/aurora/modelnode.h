@@ -20,7 +20,7 @@
 #include "common/boundingbox.h"
 
 #include "graphics/types.h"
-#include "graphics/listcontainer.h"
+#include "graphics/glcontainer.h"
 
 #include "graphics/aurora/types.h"
 #include "graphics/aurora/textureman.h"
@@ -31,7 +31,7 @@ namespace Aurora {
 
 class Model;
 
-class ModelNode : public ListContainer {
+class ModelNode : public GLContainer {
 public:
 	ModelNode(Model &model);
 	~ModelNode();
@@ -72,10 +72,6 @@ public:
 
 	// Renderable
 	void render(RenderPass pass);
-
-	// ListContainer
-	void doRebuild();
-	void doDestroy();
 
 
 protected:
@@ -161,6 +157,11 @@ protected:
 	bool createFaces(uint32 count);
 	void createBound();
 	void createCenter();
+
+
+	// GLContainer
+	void doRebuild();
+	void doDestroy();
 
 
 private:

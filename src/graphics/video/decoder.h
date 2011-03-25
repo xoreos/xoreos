@@ -34,6 +34,9 @@ namespace Graphics {
 /** A generic interface for video decoders. */
 class VideoDecoder : public GLContainer, public Queueable<VideoDecoder> {
 public:
+	typedef Queueable<VideoDecoder>::Queue    VisibleQueue;
+	typedef Queueable<VideoDecoder>::QueueRef VisibleQueueRef;
+
 	enum Scale {
 		kScaleNone,  ///< Don't scale the video.
 		kScaleUp,    ///< Only scale the video up, if necessary.

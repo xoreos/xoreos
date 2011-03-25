@@ -16,7 +16,7 @@
 #define GRAPHICS_AURORA_CUBE_H
 
 #include "graphics/types.h"
-#include "graphics/listcontainer.h"
+#include "graphics/glcontainer.h"
 #include "graphics/object.h"
 
 #include "graphics/aurora/textureman.h"
@@ -51,12 +51,13 @@ private:
 };
 
 /** A simple, rotating cube. */
-class Cube : public ListContainer {
+class Cube : public GLContainer {
 public:
 	Cube(const Common::UString &texture);
 	~Cube();
 
 protected:
+	// GLContainer
 	void doRebuild();
 	void doDestroy();
 

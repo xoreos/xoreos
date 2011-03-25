@@ -280,7 +280,7 @@ void VideoDecoder::abort() {
 	_canUpdate.unlock();
 	_canCopy.unlock();
 
-	removeFromQueue();
+	Queueable<VideoDecoder>::removeFromQueue();
 }
 
 } // End of namespace Graphics

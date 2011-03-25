@@ -15,10 +15,12 @@
 #ifndef GRAPHICS_GLCONTAINER_H
 #define GRAPHICS_GLCONTAINER_H
 
+#include "graphics/queueable.h"
+
 namespace Graphics {
 
 /** A container of OpenGL elements. */
-class GLContainer {
+class GLContainer : public Queueable<GLContainer> {
 public:
 	GLContainer();
 	virtual ~GLContainer();

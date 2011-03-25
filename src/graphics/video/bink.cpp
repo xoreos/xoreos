@@ -104,7 +104,7 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false)
 	}
 
 	load();
-	addToQueue();
+	Queueable<VideoDecoder>::addToQueue();
 }
 
 Bink::~Bink() {

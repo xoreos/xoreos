@@ -21,8 +21,7 @@
 
 namespace Graphics {
 
-Texture::Texture() : Queueable<Texture>(GfxMan.getTextureQueue()) {
-	addToQueue();
+Texture::Texture() {
 }
 
 Texture::~Texture() {

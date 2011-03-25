@@ -23,7 +23,7 @@ namespace Graphics {
 Fader::Fader(uint32 width, uint32 height, int n) : _c(0), _n(n), _lastUpdate(0) {
 	createData(width, height);
 
-	addToQueue();
+	Queueable<VideoDecoder>::addToQueue();
 }
 
 Fader::~Fader() {

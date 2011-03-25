@@ -16,11 +16,15 @@
 
 #include "events/requests.h"
 
+#include "graphics/graphics.h"
 #include "graphics/glcontainer.h"
 
 namespace Graphics {
 
-GLContainer::GLContainer() : _built(false) {
+GLContainer::GLContainer() : Queueable<GLContainer>(GfxMan.getGLContainerQueue()),
+	_built(false) {
+
+	addToQueue();
 }
 
 GLContainer::~GLContainer() {

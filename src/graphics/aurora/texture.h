@@ -53,6 +53,7 @@ public:
 	bool reload(const Common::UString &name = "");
 
 protected:
+	// GLContainer
 	void doRebuild();
 	void doDestroy();
 

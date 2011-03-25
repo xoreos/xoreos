@@ -27,8 +27,6 @@
 
 #include "graphics/types.h"
 #include "graphics/graphics.h"
-#include "graphics/texture.h"
-#include "graphics/listcontainer.h"
 
 DECLARE_SINGLETON(Events::EventsManager)
 

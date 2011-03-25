@@ -22,7 +22,7 @@
 namespace Graphics {
 
 /** A texture. */
-class Texture : public GLContainer, public Queueable<Texture> {
+class Texture : public GLContainer {
 public:
 	Texture();
 	virtual ~Texture();

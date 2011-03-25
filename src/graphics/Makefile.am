@@ -11,7 +11,6 @@ noinst_HEADERS = types.h \
                  cursor.h \
                  queueable.h \
                  glcontainer.h \
-                 listcontainer.h \
                  texture.h \
                  font.h \
                  camera.h \
@@ -23,7 +22,6 @@ libgraphics_la_SOURCES = graphics.cpp \
                          fpscounter.cpp \
                          cursor.cpp \
                          glcontainer.cpp \
-                         listcontainer.cpp \
                          texture.cpp \
                          font.cpp \
                          camera.cpp \

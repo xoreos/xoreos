@@ -18,9 +18,8 @@
 #include <list>
 
 #include "graphics/types.h"
-#include "graphics/texture.h"
+#include "graphics/glcontainer.h"
 #include "graphics/renderable.h"
-#include "graphics/listcontainer.h"
 #include "graphics/video/decoder.h"
 
 #include "common/types.h"
@@ -161,11 +160,14 @@ private:
 	Common::Mutex _frameLockMutex; ///< A soft mutex locked for each frame.
 	Common::Mutex _cursorMutex;    ///< A mutex locked for the cursor.
 
-	Texture::Queue       _textures;        ///< All existing textures.
-	Renderable::Queue    _objects;         ///< Normal game objects currently in the render queue.
-	Renderable::Queue    _guiFrontObjects; ///< GUI front elements currently in the render queue.
-	ListContainer::Queue _listContainers;  ///< All existing list containers.
-	VideoDecoder::Queue  _videos;          ///< Currently playing videos.
+	GLContainer::Queue _glContainers; ///< All GL containers.
+
+	/** Normal game objects currently in the render queue. */
+	Renderable::VisibleQueue   _objects;
+	/** GUI front elements currently in the render queue. */
+	Renderable::VisibleQueue   _guiFrontObjects;
+	/** Currently playing videos. */
+	VideoDecoder::VisibleQueue _videos;
 
 	Cursor     *_cursor;       ///< The current cursor.
 	CursorState _cursorState;  ///< What to do with the cursor.
@@ -187,19 +189,9 @@ private:
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void checkGLExtensions();
 
-	void clearRenderQueue();
-
-	void rebuildTextures();
-	void destroyTextures();
-	void clearTextureQueue();
-
-	void rebuildListContainers();
-	void destroyListContainers();
-	void clearListContainerQueue();
-
-	void rebuildVideos();
-	void destroyVideos();
-	void clearVideoQueue();
+	void rebuildGLContainers();
+	void destroyGLContainers();
+	void clearGLContainerQueue();
 
 	void destroyContext();
 	void rebuildContext();
@@ -211,11 +203,11 @@ private:
 
 // For Queueables
 public:
-	Texture::Queue       &getTextureQueue();
-	Renderable::Queue    &getObjectQueue();
-	Renderable::Queue    &getGUIFrontQueue();
-	ListContainer::Queue &getListContainerQueue();
-	VideoDecoder::Queue  &getVideoQueue();
+	GLContainer::Queue &getGLContainerQueue();
+
+	Renderable::VisibleQueue   &getObjectQueue();
+	Renderable::VisibleQueue   &getGUIFrontQueue();
+	VideoDecoder::VisibleQueue &getVideoQueue();
 
 	Queueable<Renderable>::Queue &getRenderableQueue(RenderableQueue queue);
 };

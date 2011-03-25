@@ -122,10 +122,7 @@ void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
 
-	clearVideoQueue();
-	clearListContainerQueue();
-	clearTextureQueue();
-	clearRenderQueue();
+	clearGLContainerQueue();
 
 	SDL_Quit();
 
@@ -457,23 +454,6 @@ const Common::UString &GraphicsManager::getObjectAt(float x, float y) {
 	return kNoTag;
 }
 
-void GraphicsManager::clearRenderQueue() {
-	Common::StackLock objectsLock(_objects.mutex);
-	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
-
-	// Notify all objects in the queue that they have been kicked out
-	for (Renderable::QueueRef obj = _objects.list.begin(); obj != _objects.list.end(); ++obj)
-		(*obj)->kickedOut();
-
-	// Notify all front GUI objects in the queue that they have been kicked out
-	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj)
-		(*obj)->kickedOut();
-
-	// Clear the queues
-	_objects.list.clear();
-	_guiFrontObjects.list.clear();
-}
-
 void GraphicsManager::renderScene() {
 	Common::enforceMainThread();
 
@@ -483,8 +463,7 @@ void GraphicsManager::renderScene() {
 		return;
 
 	Common::StackLock frameLock(_frameLockMutex);
-
-	Common::StackLock videosLock(_videos.mutex);
+	Common::StackLock glContainersLock(_glContainers.mutex);
 
 	// Switch cursor on/off
 	if (_cursorState != kCursorStateStay)
@@ -498,6 +477,7 @@ void GraphicsManager::renderScene() {
 
 	glEnable(GL_TEXTURE_2D);
 
+	Common::StackLock videosLock(_videos.mutex);
 	if (!_videos.list.empty()) {
 		// Got videos, just play those
 
@@ -508,7 +488,7 @@ void GraphicsManager::renderScene() {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		VideoDecoder::QueueRef video = _videos.list.begin();
+		VideoDecoder::VisibleQueueRef video = _videos.list.begin();
 		while (video != _videos.list.end()) {
 			glPushMatrix();
 			(*video)->render();
@@ -518,7 +498,7 @@ void GraphicsManager::renderScene() {
 				// Finished playing, kick the video out of the queue
 
 				(*video)->destroy();
-				(*video)->kickedOut();
+				(*video)->Queueable<VideoDecoder>::kickedOut();
 				video = _videos.list.erase(video);
 			} else
 				++video;
@@ -539,9 +519,6 @@ void GraphicsManager::renderScene() {
 		return;
 	}
 
-	Common::StackLock objectsLock(_objects.mutex);
-	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -559,6 +536,8 @@ void GraphicsManager::renderScene() {
 	// Apply camera position
 	const float *cPos = CameraMan.getPosition();
 	glTranslatef(-cPos[0], -cPos[1], cPos[2]);
+
+	Common::StackLock objectsLock(_objects.mutex);
 
 	// Draw opaque objects
 	for (Renderable::QueueRRef obj = _objects.list.rbegin(); obj != _objects.list.rend(); ++obj) {
@@ -583,20 +562,14 @@ void GraphicsManager::renderScene() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	// Draw the opaque front part of the GUI
+	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
+
+	// Draw the front GUI elements
 	for (Renderable::QueueRRef obj = _guiFrontObjects.list.rbegin(); obj != _guiFrontObjects.list.rend(); ++obj) {
 		glPushMatrix();
 		(*obj)->render(kRenderPassAll);
 		glPopMatrix();
 	}
-
-	/*
-	// Draw the transparent front part of the GUI
-	for (Renderable::QueueRRef obj = _guiFrontObjects.list.rbegin(); obj != _guiFrontObjects.list.rend(); ++obj) {
-		glPushMatrix();
-		glPopMatrix();
-	}
-	*/
 
 	// Draw the cursor
 	if (_cursor) {
@@ -652,91 +625,42 @@ bool GraphicsManager::isFullScreen() const {
 	return _fullScreen;
 }
 
-void GraphicsManager::rebuildTextures() {
-	Common::StackLock lock(_textures.mutex);
+void GraphicsManager::rebuildGLContainers() {
+	Common::StackLock lock(_glContainers.mutex);
 
-	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture)
-		(*texture)->rebuild();
+	for (GLContainer::QueueRef glContainer = _glContainers.list.begin();
+	     glContainer != _glContainers.list.end(); ++glContainer)
+		(*glContainer)->rebuild();
 }
 
-void GraphicsManager::destroyTextures() {
-	Common::StackLock lock(_textures.mutex);
+void GraphicsManager::destroyGLContainers() {
+	Common::StackLock lock(_glContainers.mutex);
 
-	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture)
-		(*texture)->destroy();
+	for (GLContainer::QueueRef glContainer = _glContainers.list.begin();
+	     glContainer != _glContainers.list.end(); ++glContainer)
+		(*glContainer)->destroy();
 }
 
-void GraphicsManager::clearTextureQueue() {
-	Common::StackLock lock(_textures.mutex);
+void GraphicsManager::clearGLContainerQueue() {
+	Common::StackLock lock(_glContainers.mutex);
 
-	for (Texture::QueueRef texture = _textures.list.begin(); texture != _textures.list.end(); ++texture) {
-		(*texture)->destroy();
-		(*texture)->kickedOut();
+	for (GLContainer::QueueRef glContainer = _glContainers.list.begin();
+	     glContainer != _glContainers.list.end(); ++glContainer) {
+		(*glContainer)->destroy();
+		(*glContainer)->kickedOut();
 	}
 
-	_textures.list.clear();
-}
-
-void GraphicsManager::rebuildListContainers() {
-	Common::StackLock lock(_listContainers.mutex);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists)
-		(*lists)->rebuild();
-	glPopMatrix();
-}
-
-void GraphicsManager::destroyListContainers() {
-	Common::StackLock lock(_listContainers.mutex);
-
-	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists)
-		(*lists)->destroy();
-}
-
-void GraphicsManager::clearListContainerQueue() {
-	Common::StackLock lock(_listContainers.mutex);
-
-	for (ListContainer::QueueRef lists = _listContainers.list.begin(); lists != _listContainers.list.end(); ++lists) {
-		(*lists)->destroy();
-		(*lists)->kickedOut();
-	}
-
-	_listContainers.list.clear();
-}
-
-void GraphicsManager::rebuildVideos() {
-	Common::StackLock lock(_videos.mutex);
-
-	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video)
-		(*video)->rebuild();
-}
-
-void GraphicsManager::destroyVideos() {
-	Common::StackLock lock(_videos.mutex);
-
-	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video)
-		(*video)->destroy();
-}
-
-void GraphicsManager::clearVideoQueue() {
-	Common::StackLock lock(_videos.mutex);
-
-	for (VideoDecoder::QueueRef video = _videos.list.begin(); video != _videos.list.end(); ++video) {
-		(*video)->destroy();
-		(*video)->kickedOut();
-	}
-
+	_glContainers.list.clear();
+	_objects.list.clear();
+	_guiFrontObjects.list.clear();
 	_videos.list.clear();
 }
 
+
 void GraphicsManager::destroyContext() {
-	// Destroying all videos, textures and lists, since we need to
+	// Destroying all GL containers, since we need to
 	// reload/rebuild them anyway when the context is recreated
-	destroyVideos();
-	destroyListContainers();
-	destroyTextures();
+	destroyGLContainers();
 }
 
 void GraphicsManager::rebuildContext() {
@@ -748,10 +672,8 @@ void GraphicsManager::rebuildContext() {
 	// Reintroduce OpenGL to the surface
 	setupScene();
 
-	// And reload/rebuild all textures, lists and videos
-	rebuildTextures();
-	rebuildListContainers();
-	rebuildVideos();
+	// And reload/rebuild all GL containers
+	rebuildGLContainers();
 
 	// Wait for everything to settle
 	RequestMan.sync();
@@ -868,23 +790,19 @@ void GraphicsManager::setScreenSize(int width, int height) {
 		NotificationMan.resized(oldWidth, oldHeight, _screen->w, _screen->h);
 }
 
-Texture::Queue &GraphicsManager::getTextureQueue() {
-	return _textures;
+GLContainer::Queue &GraphicsManager::getGLContainerQueue() {
+	return _glContainers;
 }
 
-Renderable::Queue &GraphicsManager::getObjectQueue() {
+Renderable::VisibleQueue &GraphicsManager::getObjectQueue() {
 	return _objects;
 }
 
-Renderable::Queue &GraphicsManager::getGUIFrontQueue() {
+Renderable::VisibleQueue &GraphicsManager::getGUIFrontQueue() {
 	return _guiFrontObjects;
 }
 
-ListContainer::Queue &GraphicsManager::getListContainerQueue() {
-	return _listContainers;
-}
-
-VideoDecoder::Queue &GraphicsManager::getVideoQueue() {
+VideoDecoder::VisibleQueue &GraphicsManager::getVideoQueue() {
 	return _videos;
 }
 
