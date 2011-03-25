@@ -414,7 +414,7 @@ bool UString::contains(const UString &what) const {
 }
 
 void UString::truncate(const iterator &it) {
-	Common::UString temp;
+	UString temp;
 
 	for (iterator i = begin(); i != it; ++i)
 		temp += *i;
@@ -426,7 +426,7 @@ void UString::truncate(uint32 n) {
 	if (n >= _size)
 		return;
 
-	Common::UString temp;
+	UString temp;
 
 	for (iterator it = begin(); n > 0; ++it, n--)
 		temp += *it;
@@ -601,7 +601,7 @@ void UString::insert(uint32 n, uint32 c) {
 		return;
 	}
 
-	Common::UString temp;
+	UString temp;
 
 	iterator it;
 	for (it = begin(); n > 0; ++it, n--)
@@ -621,7 +621,7 @@ void UString::replace(uint32 n, uint32 c) {
 		return;
 	}
 
-	Common::UString temp;
+	UString temp;
 
 	iterator it;
 	for (it = begin(); n > 0; ++it, n--)
@@ -639,7 +639,7 @@ void UString::erase(uint32 n) {
 	if (n >= _size)
 		return;
 
-	Common::UString temp;
+	UString temp;
 
 	uint32 i = 0;
 	for (iterator it = begin(); it != end(); ++it, i++)
