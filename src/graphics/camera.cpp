@@ -18,11 +18,13 @@
 #include "graphics/camera.h"
 #include "graphics/graphics.h"
 
+#include "events/events.h"
+
 DECLARE_SINGLETON(Graphics::CameraManager)
 
 namespace Graphics {
 
-CameraManager::CameraManager() : _changed(false) {
+CameraManager::CameraManager() : _lastChanged(0) {
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
 	_position   [2] = 0.0;
@@ -49,7 +51,9 @@ void CameraManager::reset() {
 	_orientation[1] = 0.0;
 	_orientation[2] = 0.0;
 
-	_changed = true;
+	_lastChanged = EventMan.getTimestamp();
+
+	GfxMan.recalculateObjectDistances();
 
 	GfxMan.unlockFrame();
 }
@@ -61,7 +65,7 @@ void CameraManager::setPosition(float x, float y, float z) {
 	_position[1] = y;
 	_position[2] = z;
 
-	_changed = true;
+	_lastChanged = EventMan.getTimestamp();
 
 	GfxMan.recalculateObjectDistances();
 
@@ -71,19 +75,11 @@ void CameraManager::setPosition(float x, float y, float z) {
 void CameraManager::setOrientation(float x, float y, float z) {
 	GfxMan.lockFrame();
 
-	_orientation[0] = x;
-	_orientation[1] = y;
-	_orientation[2] = z;
+	_orientation[0] = fmodf(x, 360.0);
+	_orientation[1] = fmodf(y, 360.0);
+	_orientation[2] = fmodf(z, 360.0);
 
-	// Clamp
-	for (int i = 0; i < 3; i++) {
-		while (_orientation[i] >  360)
-			_orientation[i] -= 360;
-		while (_orientation[i] < -360)
-			_orientation[i] += 360;
-	}
-
-	_changed = true;
+	_lastChanged = EventMan.getTimestamp();
 
 	GfxMan.recalculateObjectDistances();
 
@@ -133,12 +129,8 @@ void CameraManager::fly(float n) {
 	move(x, y, z);
 }
 
-bool CameraManager::wasChanged() {
-	bool changed = _changed;
-
-	_changed = false;
-
-	return changed;
+uint32 CameraManager::lastChanged() const {
+	return _lastChanged;
 }
 
 } // End of namespace Graphics

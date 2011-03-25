@@ -69,6 +69,8 @@ private:
 	Quickchat *_quickchat; ///< The quick chat.
 	Compass   *_compass;   ///< The compass.
 
+	uint32 _lastCompassChange; ///< The time the compass was changed last.
+
 	std::vector<CharacterInfo *> _party; ///< The party member character panels.
 
 

@@ -27,7 +27,7 @@ namespace Engines {
 
 namespace NWN {
 
-IngameGUI::IngameGUI(Module &module) {
+IngameGUI::IngameGUI(Module &module) : _lastCompassChange(0) {
 	_main = new IngameMainMenu;
 
 	_quickbar  = new Quickbar;
@@ -124,12 +124,15 @@ void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature) {
 }
 
 void IngameGUI::updateCompass() {
-	if (!CameraMan.wasChanged())
+	uint32 lastCompassChange = CameraMan.lastChanged();
+	if (lastCompassChange <= _lastCompassChange)
 		return;
 
 	const float *orientation = CameraMan.getOrientation();
 
 	_compass->setRotation(orientation[0] + 90.0, orientation[1], orientation[2]);
+
+	_lastCompassChange = lastCompassChange;
 }
 
 } // End of namespace NWN
