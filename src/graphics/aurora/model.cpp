@@ -322,10 +322,6 @@ void Model::finalize() {
 	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
 		for (NodeList::iterator n = (*s)->rootNodes.begin(); n != (*s)->rootNodes.end(); ++n)
 			(*n)->orderChildren();
-
-	// Build the node GL containers
-	for (NodeList::iterator n = _nodes.begin(); n != _nodes.end(); ++n)
-		(*n)->rebuild();
 }
 
 void Model::createStateNamesList() {

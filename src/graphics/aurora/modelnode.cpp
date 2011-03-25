@@ -36,7 +36,8 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 ModelNode::ModelNode(Model &model) :
 	_model(&model), _parent(0), _level(0),
 	_faceCount(0), _coords(0), _smoothGroups(0), _material(0), _isTransparent(false),
-	_constraints(0), _render(false), _hasTransparencyHint(false), _list(0) {
+	_constraints(0), _render(false), _hasTransparencyHint(false),
+	_needRebuild(true), _list(0) {
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
@@ -317,7 +318,17 @@ void ModelNode::orderChildren() {
 		(*c)->orderChildren();
 }
 
+void ModelNode::checkRebuild() {
+	if (!_needRebuild)
+		return;
+
+	_needRebuild = false;
+	rebuild();
+}
+
 void ModelNode::render(RenderPass pass) {
+	checkRebuild();
+
 	// Apply the node's transformation
 	glTranslatef(_position[0], _position[1], _position[2]);
 	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);

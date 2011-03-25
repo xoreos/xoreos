@@ -149,8 +149,6 @@ protected:
 	Common::BoundingBox _boundBox;
 	Common::BoundingBox _absoluteBoundBox;
 
-	ListID _list; ///< OpenGL display list for the node.
-
 
 	// Loading helpers
 	void loadTextures(const std::vector<Common::UString> &textures);
@@ -165,11 +163,16 @@ protected:
 
 
 private:
-	const Common::BoundingBox &getAbsoluteBound() const;
+	bool _needRebuild;
+	ListID _list; ///< OpenGL display list for the node.
 
+
+	const Common::BoundingBox &getAbsoluteBound() const;
 	void createAbsoluteBound(Common::BoundingBox parentPosition);
 
 	void orderChildren();
+
+	void checkRebuild();
 
 
 public:
