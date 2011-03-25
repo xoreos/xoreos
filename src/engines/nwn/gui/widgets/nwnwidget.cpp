@@ -14,6 +14,7 @@
 
 #include "common/util.h"
 #include "common/ustring.h"
+#include "common/configman.h"
 
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/model.h"
@@ -35,8 +36,7 @@ NWNWidget::NWNWidget(::Engines::GUI &gui, const Common::UString &tag) : Widget(g
 }
 
 NWNWidget::~NWNWidget() {
-	delete _tooltip;
-	delete _tooltipBubble;
+	hideTooltip();
 }
 
 void NWNWidget::hide() {
@@ -57,6 +57,10 @@ void NWNWidget::leave() {
 }
 
 void NWNWidget::showTooltip() {
+	if (_hasTooltip)
+		return;
+
+	createTooltip();
 	if (!_hasTooltip)
 		return;
 
@@ -70,6 +74,8 @@ void NWNWidget::hideTooltip() {
 
 	_tooltip->hide();
 	_tooltipBubble->hide();
+
+	destroyTooltip();
 }
 
 void NWNWidget::setPosition(float x, float y, float z) {
@@ -78,21 +84,14 @@ void NWNWidget::setPosition(float x, float y, float z) {
 	setTooltipPosition();
 }
 
-void NWNWidget::setTooltip(const Common::UString &font, const Common::UString &text) {
-	hideTooltip();
-
-	delete _tooltip;
-	delete _tooltipBubble;
-
-	_tooltip       = 0;
-	_tooltipBubble = 0;
-
-	_hasTooltip = false;
-
-	if (font.empty() || text.empty())
+void NWNWidget::createTooltip() {
+	if (_tooltipText.empty())
 		return;
 
-	_tooltip = new Graphics::Aurora::Text(FontMan.get(font), text, 1.0, 1.0, 1.0, 1.0, 0.5);
+	Common::UString font = ConfigMan.getString("NWN_tooltipFont", "fnt_dialog16x16");
+
+	_tooltip = new Graphics::Aurora::Text(FontMan.get(font),
+			_tooltipText, 1.0, 1.0, 1.0, 1.0, 0.5);
 	_tooltip->setTag(getTag() + "#Tooltip");
 
 	Common::UString bubbleModel =
@@ -112,6 +111,25 @@ void NWNWidget::setTooltip(const Common::UString &font, const Common::UString &t
 	_hasTooltip = true;
 
 	setTooltipPosition();
+}
+
+void NWNWidget::destroyTooltip() {
+	delete _tooltip;
+	delete _tooltipBubble;
+
+	_tooltip       = 0;
+	_tooltipBubble = 0;
+
+	_hasTooltip = false;
+}
+
+void NWNWidget::setTooltip(const Common::UString &text) {
+	_tooltipText = text;
+
+	if (_hasTooltip) {
+		hideTooltip();
+		showTooltip();
+	}
 }
 
 void NWNWidget::setTooltipPosition(float x, float y, float z) {

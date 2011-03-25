@@ -30,8 +30,6 @@ namespace Engines {
 
 namespace NWN {
 
-static const char *kTooltipFont = "fnt_dialog16x16";
-
 static const char *kButtonTags[] = {
 	"ButtonMap"      , "ButtonJournal"  , "ButtonRest"  , "ButtonOptions",
 	"ButtonInventory", "ButtonCharacter", "ButtonSpells", "ButtonPlayers"
@@ -66,7 +64,7 @@ PartyLeader::PartyLeader(Module &module) : _module(&module),
 	for (int i = 0; i < 8; i++) {
 		WidgetButton *button = new WidgetButton(*this, kButtonTags[i], kButtonModels[i]);
 
-		button->setTooltip(kTooltipFont, TalkMan.getString(kButtonTooltips[i]));
+		button->setTooltip(TalkMan.getString(kButtonTooltips[i]));
 		button->setTooltipPosition(0.0, -10.0, -1.0);
 
 		const float x = buttonsX + ((i / 4) * 36.0);
@@ -169,7 +167,7 @@ void PartyLeader::updatePortraitTooltip() {
 		Common::UString::sprintf("%s %d/%d\n%s",
 				_name.c_str(), _currentHP, _maxHP, _area.c_str());
 
-	_portrait->setTooltip(kTooltipFont, tooltip);
+	_portrait->setTooltip(tooltip);
 }
 
 void PartyLeader::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {

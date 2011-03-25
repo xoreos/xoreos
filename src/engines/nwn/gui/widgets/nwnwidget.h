@@ -40,7 +40,7 @@ public:
 
 	void setPosition(float x, float y, float z);
 
-	void setTooltip(const Common::UString &font, const Common::UString &text);
+	void setTooltip(const Common::UString &text);
 	void setTooltipPosition(float x, float y, float z);
 
 private:
@@ -50,15 +50,20 @@ private:
 	float _tooltipY;
 	float _tooltipZ;
 
+	Common::UString _tooltipText;
+
 	Graphics::Aurora::Text  *_tooltip;
 	Graphics::Aurora::Model *_tooltipBubble;
 
 	void showTooltip();
 	void hideTooltip();
 
-	void setTooltipPosition();
+	void createTooltip();
+	void destroyTooltip();
 
 	Common::UString getBubbleModel(uint32 lines, float width);
+
+	void setTooltipPosition();
 };
 
 } // End of namespace NWN
