@@ -109,10 +109,11 @@ public:
 	bool contains(const UString &what) const;
 
 	void truncate(const iterator &it);
-	void trim();
+	void truncate(uint32 n);
 
 	void trimLeft();
 	void trimRight();
+	void trim();
 
 	/** Replace all occurences of a character with another character. */
 	void replaceAll(uint32 what, uint32 with);

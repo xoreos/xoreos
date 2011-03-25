@@ -414,8 +414,24 @@ bool UString::contains(const UString &what) const {
 }
 
 void UString::truncate(const iterator &it) {
-	_string.resize(std::distance((std::string::const_iterator) _string.begin(), it.base()));
-	recalculateSize();
+	Common::UString temp;
+
+	for (iterator i = begin(); i != it; ++i)
+		temp += *i;
+
+	*this = temp;
+}
+
+void UString::truncate(uint32 n) {
+	if (n >= _size)
+		return;
+
+	Common::UString temp;
+
+	for (iterator it = begin(); n > 0; ++it, n--)
+		temp += *it;
+
+	*this = temp;
 }
 
 void UString::trim() {
