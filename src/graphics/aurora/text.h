@@ -42,6 +42,8 @@ public:
 
 	bool isEmpty();
 
+	uint getLineCount() const;
+
 	float getWidth()  const;
 	float getHeight() const;
 
@@ -55,6 +57,8 @@ private:
 
 	float _x;
 	float _y;
+
+	uint32 _lineCount;
 
 	float _width;
 	float _height;

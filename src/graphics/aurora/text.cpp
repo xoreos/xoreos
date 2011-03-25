@@ -51,6 +51,8 @@ void Text::set(const Common::UString &str) {
 
 	const Font &font = _font.getFont();
 
+	_lineCount = font.getLineCount(_str);
+
 	_height = font.getHeight(_str);
 	_width  = font.getWidth (_str);
 
@@ -91,6 +93,10 @@ void Text::setPosition(float x, float y, float z) {
 
 bool Text::isEmpty() {
 	return _str.empty();
+}
+
+uint32 Text::getLineCount() const {
+	return _lineCount;
 }
 
 float Text::getWidth() const {
