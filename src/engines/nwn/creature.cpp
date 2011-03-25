@@ -101,6 +101,11 @@ void Creature::load(const Aurora::GFFStruct &gffTop) {
 			_classes.back().level   = cClass.getUint("ClassLevel");
 		}
 	}
+
+	// Health
+	_baseHP    = gffTop.getSint("HitPoints", 0);
+	_bonusHP   = gffTop.getSint("MaxHitPoints", _baseHP) - _baseHP;
+	_currentHP = gffTop.getSint("CurrentHitPoints", _baseHP);
 }
 
 Common::UString Creature::createFullName() {
@@ -186,6 +191,14 @@ uint32 Creature::getAge() const {
 
 uint32 Creature::getXP() const {
 	return _xp;
+}
+
+int32 Creature::getCurrentHP() const {
+	return _currentHP + _bonusHP;
+}
+
+int32 Creature::getMaxHP() const {
+	return _baseHP + _bonusHP;
 }
 
 } // End of namespace NWN

@@ -65,6 +65,11 @@ public:
 	/** Return the creature's XP. */
 	uint32 getXP() const;
 
+	/** Return the current HP this creature has. */
+	int32 getCurrentHP() const;
+	/** Return the max HP this creature can have. */
+	int32 getMaxHP() const;
+
 private:
 	struct Class {
 		uint32 classID;
@@ -86,6 +91,10 @@ private:
 	uint32 _age;
 
 	uint32 _xp;
+
+	int32 _baseHP;
+	int32 _bonusHP;
+	int32 _currentHP;
 
 	std::vector<Class> _classes;
 
