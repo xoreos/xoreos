@@ -649,6 +649,28 @@ void UString::erase(uint32 n) {
 	*this = temp;
 }
 
+void UString::split(iterator splitPoint,
+		Common::UString &left, Common::UString &right) const {
+
+	left.clear();
+	right.clear();
+
+	if (splitPoint == begin()) {
+		right = *this;
+		return;
+	}
+	if (splitPoint == end()) {
+		left = *this;
+		return;
+	}
+
+	iterator it = begin();
+	for (it = begin(); it != splitPoint; ++it)
+		left += *it;
+	for (; it != end(); ++it)
+		right += *it;
+}
+
 void UString::readASCII(SeekableReadStream &stream) {
 	clear();
 

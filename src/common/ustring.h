@@ -130,6 +130,8 @@ public:
 	/** Erase the nth character from the string. */
 	void erase(uint32 n);
 
+	void split(iterator splitPoint, Common::UString &left, Common::UString &right) const;
+
 	/** Parse a string into different types. */
 	template<typename T> bool parse(T &v, int skip = 0) const {
 		std::stringstream ss(_string.c_str() + skip);
