@@ -88,7 +88,8 @@ void NWNWidget::createTooltip() {
 	if (_tooltipText.empty())
 		return;
 
-	Common::UString font = ConfigMan.getString("NWN_tooltipFont", "fnt_dialog16x16");
+	Common::UString font =
+		ConfigMan.getBool("largefonts") ? "fnt_dialog_big16" : "fnt_dialog16x16";
 
 	_tooltip = new Graphics::Aurora::Text(FontMan.get(font),
 			_tooltipText, 1.0, 1.0, 1.0, 1.0, 0.5);

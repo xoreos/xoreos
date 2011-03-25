@@ -282,6 +282,8 @@ void NWNEngine::initCursors() {
 void NWNEngine::initConfig() {
 	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack", 1);
 	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty" , 0);
+
+	ConfigMan.setBool(Common::kConfigRealmDefault, "largefonts", false);
 }
 
 void NWNEngine::initGameConfig() {

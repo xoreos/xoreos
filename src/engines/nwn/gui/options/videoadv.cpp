@@ -22,6 +22,7 @@
 
 #include "engines/nwn/gui/widgets/panel.h"
 #include "engines/nwn/gui/widgets/label.h"
+#include "engines/nwn/gui/widgets/checkbox.h"
 #include "engines/nwn/gui/widgets/slider.h"
 
 #include "engines/nwn/gui/options/videoadv.h"
@@ -65,11 +66,6 @@ OptionsVideoAdvancedMenu::OptionsVideoAdvancedMenu(bool isMain) {
 
 	// TODO: Use vsync
 	getWidget("VsyncBox", true)->setDisabled(true);
-
-	// TODO: Use large font
-	Widget *useLargeFont = getWidget("UseLargeFont");
-	if (useLargeFont)
-		useLargeFont->setDisabled(true);
 }
 
 OptionsVideoAdvancedMenu::~OptionsVideoAdvancedMenu() {
@@ -85,6 +81,10 @@ void OptionsVideoAdvancedMenu::show() {
 	getSlider("AntiAliasSlider", true)->setState(fsaa);
 
 	updateFSAALabel(fsaa);
+
+	WidgetCheckBox *largeFonts = getCheckBox("UseLargeFont");
+	if (largeFonts)
+		largeFonts->setState(ConfigMan.getBool("largefonts"));
 
 	GUI::show();
 }
@@ -153,6 +153,10 @@ void OptionsVideoAdvancedMenu::updateFSAALabel(int n) {
 
 void OptionsVideoAdvancedMenu::adoptChanges() {
 	ConfigMan.setInt("fsaa", GfxMan.getCurrentFSAA(), true);
+
+	WidgetCheckBox *largeFonts = getCheckBox("UseLargeFont");
+	if (largeFonts)
+		ConfigMan.setBool("largefonts", largeFonts->getState(), true);
 }
 
 void OptionsVideoAdvancedMenu::revertChanges() {
