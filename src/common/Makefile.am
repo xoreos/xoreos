@@ -23,6 +23,7 @@ noinst_HEADERS = system.h \
                  stream.h \
                  streamtokenizer.h \
                  stringmap.h \
+                 readline.h \
                  file.h \
                  filepath.h \
                  filelist.h \
@@ -51,6 +52,7 @@ libcommon_la_SOURCES = maths.cpp \
                        stream.cpp \
                        streamtokenizer.cpp \
                        stringmap.cpp \
+                       readline.cpp \
                        file.cpp \
                        filepath.cpp \
                        filelist.cpp \
