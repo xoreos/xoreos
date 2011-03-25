@@ -122,6 +122,9 @@ public:
 	/** Convert the string to uppercase. */
 	void toupper();
 
+	/** Erase the nth character from the string. */
+	void erase(uint32 n);
+
 	/** Parse a string into different types. */
 	template<typename T> bool parse(T &v, int skip = 0) const {
 		std::stringstream ss(_string.c_str() + skip);

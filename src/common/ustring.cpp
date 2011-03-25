@@ -579,6 +579,20 @@ void UString::toupper() {
 	}
 }
 
+void UString::erase(uint32 n) {
+	if (n >= _size)
+		return;
+
+	Common::UString temp;
+
+	uint32 i = 0;
+	for (iterator it = begin(); it != end(); ++it, i++)
+		if (i != n)
+			temp += *it;
+
+	*this = temp;
+}
+
 void UString::readASCII(SeekableReadStream &stream) {
 	clear();
 
