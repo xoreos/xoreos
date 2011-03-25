@@ -51,8 +51,8 @@ public:
 
 	bool isVisible() const; ///< Is the object visible?
 
-	void show(); ///< Show the object.
-	void hide(); ///< Hide the object.
+	virtual void show(); ///< Show the object.
+	virtual void hide(); ///< Hide the object.
 
 	/** Is that point within the object? */
 	virtual bool isIn(float x, float y) const;
