@@ -33,6 +33,9 @@
 namespace Engines {
 
 void playVideo(const Common::UString &video) {
+	if (ConfigMan.getBool("skipvideos", false))
+		return;
+
 	// Mute other sound sources
 	SoundMan.setTypeGain(Sound::kSoundTypeMusic, 0.0);
 	SoundMan.setTypeGain(Sound::kSoundTypeSFX  , 0.0);

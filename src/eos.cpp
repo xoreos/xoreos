@@ -152,6 +152,8 @@ void initConfig() {
 
 	ConfigMan.setBool(Common::kConfigRealmDefault, "showfps", false);
 
+	ConfigMan.setBool(Common::kConfigRealmDefault, "skipvideos", false);
+
 	// Populate the new config with the defaults
 	if (newConfig) {
 		ConfigMan.setDefaults();
