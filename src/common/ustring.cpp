@@ -905,6 +905,10 @@ bool UString::isAlNum(uint32 c) {
 	return isASCII(c) && std::isalnum(c);
 }
 
+bool UString::isCntrl(uint32 c) {
+	return isASCII(c) && std::iscntrl(c);
+}
+
 uint32 UString::fromUTF16(uint16 c) {
 	std::string utf8result;
 

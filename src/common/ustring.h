@@ -187,6 +187,7 @@ public:
 	static bool isDigit(uint32 c); ///< Is the character an ASCII digit character?
 	static bool isAlpha(uint32 c); ///< Is the character an ASCII alphabetic character?
 	static bool isAlNum(uint32 c); ///< Is the character an ASCII alphanumeric character?
+	static bool isCntrl(uint32 c); ///< Is the character an ASCII control character?
 
 	static uint32 fromUTF16(uint16 c);
 
