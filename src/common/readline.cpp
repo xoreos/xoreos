@@ -107,16 +107,30 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 
 	if (event.key.keysym.sym == SDLK_BACKSPACE) {
 		if (!_currentLine.empty() && (_cursorPosition > 0)) {
-			_currentLine.erase(_cursorPosition - 1);
 			_cursorPosition--;
+			_currentLine.erase(getCurrentPosition());
 		}
 		updateHistory();
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_DELETE) {
+	if (((event.key.keysym.sym == SDLK_w) && (event.key.keysym.mod & KMOD_CTRL)) ||
+	     (event.key.keysym.sym == SDLK_DELETE)) {
 		if (_cursorPosition < _currentLine.size())
-			_currentLine.erase(_cursorPosition);
+			_currentLine.erase(getCurrentPosition());
+		updateHistory();
+		return true;
+	}
+
+	if ((event.key.keysym.sym == SDLK_u) && (event.key.keysym.mod & KMOD_CTRL)) {
+		_currentLine.erase(_currentLine.begin(), getCurrentPosition());
+		_cursorPosition = 0;
+		updateHistory();
+		return true;
+	}
+
+	if ((event.key.keysym.sym == SDLK_k) && (event.key.keysym.mod & KMOD_CTRL)) {
+		_currentLine.erase(getCurrentPosition(), _currentLine.end());
 		updateHistory();
 		return true;
 	}
@@ -126,40 +140,58 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_LEFT) {
+	if (((event.key.keysym.sym == SDLK_b) && (event.key.keysym.mod & KMOD_CTRL)) ||
+	     (event.key.keysym.sym == SDLK_LEFT)) {
 		if (_cursorPosition > 0)
 			_cursorPosition--;
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_RIGHT) {
+	if (((event.key.keysym.sym == SDLK_f) && (event.key.keysym.mod & KMOD_CTRL)) ||
+	     (event.key.keysym.sym == SDLK_RIGHT)) {
 		if (_cursorPosition < _currentLine.size())
 			_cursorPosition++;
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_HOME) {
+	if (((event.key.keysym.sym == SDLK_a) && (event.key.keysym.mod & KMOD_CTRL)) ||
+	     (event.key.keysym.sym == SDLK_HOME)) {
 		_cursorPosition = 0;
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_END) {
+	if (((event.key.keysym.sym == SDLK_e) && (event.key.keysym.mod & KMOD_CTRL)) ||
+	     (event.key.keysym.sym == SDLK_END)) {
 		_cursorPosition = _currentLine.size();
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_UP) {
+	if (((event.key.keysym.sym == SDLK_p) && (event.key.keysym.mod & KMOD_CTRL)) ||
+	     (event.key.keysym.sym == SDLK_UP)) {
 		browseUp();
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_DOWN) {
+	if (((event.key.keysym.sym == SDLK_n) && (event.key.keysym.mod & KMOD_CTRL)) ||
+	     (event.key.keysym.sym == SDLK_DOWN)) {
 		browseDown();
+		return true;
+	}
+
+	if ((event.key.keysym.sym == SDLK_LESS) &&
+			(event.key.keysym.mod & KMOD_ALT) && (event.key.keysym.mod & KMOD_SHIFT)) {
+		browseBottom();
+		return true;
+	}
+
+	if ((event.key.keysym.sym == SDLK_LESS) && (event.key.keysym.mod & KMOD_ALT)) {
+		browseTop();
 		return true;
 	}
 
 	if (event.key.keysym.sym == SDLK_TAB) {
 		tabComplete();
+		updateHistory();
 		return true;
 	}
 
@@ -168,15 +200,19 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 		return false;
 
 	if (_overwrite)
-		_currentLine.replace(_cursorPosition, c);
+		_currentLine.replace(getCurrentPosition(), c);
 	else
-		_currentLine.insert(_cursorPosition, c);
+		_currentLine.insert(getCurrentPosition(), c);
 
 	_cursorPosition++;
 
 	updateHistory();
 
 	return true;
+}
+
+UString::iterator ReadLine::getCurrentPosition() const {
+	return _currentLine.getPosition(_cursorPosition);
 }
 
 void ReadLine::updateHistory() {
@@ -266,6 +302,42 @@ void ReadLine::browseDown() {
 
 	// Get a line out of the history
 	_currentLine    = *_historyPosition;
+	_cursorPosition = _currentLine.size();
+}
+
+void ReadLine::browseTop() {
+	if (_history.empty())
+		// Empty history, can't browse
+		return;
+
+	if (_historyPosition == _history.begin())
+		// Already at the top
+		return;
+
+	_overwrite = false;
+
+	// We're currently at the bottom, modified a potential new line. Save it.
+	if (_historyPosition == _history.end())
+		_currentLineBak = _currentLine;
+
+	_historyPosition = _history.begin();
+
+	// Get a line out of the history
+	_currentLine    = *_historyPosition;
+	_cursorPosition = _currentLine.size();
+}
+
+void ReadLine::browseBottom() {
+	if (_historyPosition == _history.end())
+		// Already at the bottom
+		return;
+
+	_overwrite = false;
+
+	_historyPosition = _history.end();
+
+	// Restore the potential new line
+	_currentLine    = _currentLineBak;
 	_cursorPosition = _currentLine.size();
 }
 

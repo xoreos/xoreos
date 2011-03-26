@@ -123,12 +123,19 @@ public:
 	/** Convert the string to uppercase. */
 	void toupper();
 
-	/** Insert the specified character at position n. */
-	void insert(uint32 n, uint32 c);
-	/** Replace the nth character with c. */
-	void replace(uint32 n, uint32 c);
-	/** Erase the nth character from the string. */
-	void erase(uint32 n);
+	/** Convert an iterator into a numerical position. */
+	iterator getPosition(uint32 n)    const;
+	/** Convert a numerical position into an iterator. */
+	uint32   getPosition(iterator it) const;
+
+	/** Insert character c in front of this position. */
+	void insert(iterator pos, uint32 c);
+	/** Replace the character at this position with c. */
+	void replace(iterator pos, uint32 c);
+	/** Erase the character within this range. */
+	void erase(iterator from, iterator to);
+	/** Erase the character at this position. */
+	void erase(iterator pos);
 
 	void split(iterator splitPoint, Common::UString &left, Common::UString &right) const;
 

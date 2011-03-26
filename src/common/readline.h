@@ -113,12 +113,17 @@ private:
 	void addCurrentLineToHistory();
 
 	void updateHistory();
+
 	void browseUp();
 	void browseDown();
+	void browseTop();
+	void browseBottom();
 
 	void tabComplete();
 	void tabComplete(const UString &prefix, const UString &input,
 	                 const CommandSet &commands);
+
+	UString::iterator getCurrentPosition() const;
 
 	static UString findCommonSubstring(const std::list<UString> &strings);
 };

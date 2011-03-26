@@ -419,7 +419,7 @@ void UString::truncate(const iterator &it) {
 	for (iterator i = begin(); i != it; ++i)
 		temp += *i;
 
-	*this = temp;
+	swap(temp);
 }
 
 void UString::truncate(uint32 n) {
@@ -431,7 +431,7 @@ void UString::truncate(uint32 n) {
 	for (iterator it = begin(); n > 0; ++it, n--)
 		temp += *it;
 
-	*this = temp;
+	swap(temp);
 }
 
 void UString::trim() {
@@ -595,8 +595,20 @@ void UString::toupper() {
 	}
 }
 
-void UString::insert(uint32 n, uint32 c) {
-	if (n >= _size) {
+UString::iterator UString::getPosition(uint32 n) const {
+	iterator it = begin();
+	for (uint32 i = 0; (i < n) && (it != end()); i++, ++it);
+	return it;
+}
+
+uint32 UString::getPosition(iterator it) const {
+	uint32 n = 0;
+	for (iterator i = begin(); i != it; ++i, n++);
+	return n;
+}
+
+void UString::insert(iterator pos, uint32 c) {
+	if (pos == end()) {
 		*this += c;
 		return;
 	}
@@ -604,19 +616,19 @@ void UString::insert(uint32 n, uint32 c) {
 	UString temp;
 
 	iterator it;
-	for (it = begin(); n > 0; ++it, n--)
+	for (it = begin(); it != pos; ++it)
 		temp += *it;
 
 	temp += c;
 
-	for (; it != end(); ++it)
+	for ( ; it != end(); ++it)
 		temp += *it;
 
-	*this = temp;
+	swap(temp);
 }
 
-void UString::replace(uint32 n, uint32 c) {
-	if (n >= _size) {
+void UString::replace(iterator pos, uint32 c) {
+	if (pos == end()) {
 		*this += c;
 		return;
 	}
@@ -624,7 +636,7 @@ void UString::replace(uint32 n, uint32 c) {
 	UString temp;
 
 	iterator it;
-	for (it = begin(); n > 0; ++it, n--)
+	for (it = begin(); it != pos; ++it)
 		temp += *it;
 
 	temp += c;
@@ -632,21 +644,30 @@ void UString::replace(uint32 n, uint32 c) {
 	for (++it; it != end(); ++it)
 		temp += *it;
 
-	*this = temp;
+	swap(temp);
 }
 
-void UString::erase(uint32 n) {
-	if (n >= _size)
+void UString::erase(iterator from, iterator to) {
+	if (from == end())
 		return;
 
 	UString temp;
 
-	uint32 i = 0;
-	for (iterator it = begin(); it != end(); ++it, i++)
-		if (i != n)
-			temp += *it;
+	iterator it = begin();
+	for ( ; it != from; ++it)
+		temp += *it;
 
-	*this = temp;
+	for ( ; it != to; ++it);
+
+	for ( ; it != end(); ++it)
+		temp += *it;
+
+	swap(temp);
+}
+
+void UString::erase(iterator pos) {
+	iterator to = pos;
+	erase(pos, ++to);
 }
 
 void UString::split(iterator splitPoint,
