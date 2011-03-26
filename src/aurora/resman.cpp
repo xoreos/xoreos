@@ -471,6 +471,40 @@ Common::SeekableReadStream *ResourceManager::getResource(ResourceType resType,
 	return 0;
 }
 
+void ResourceManager::getAvailabeResources(FileType type,
+		std::list<ResourceID> &list) const {
+
+	for (ResourceMap::const_iterator r = _resources.begin(); r != _resources.end(); ++r)
+		for (ResourceTypeMap::const_iterator rt = r->second.begin(); rt != r->second.end(); ++rt)
+			if (rt->first == type) {
+				list.push_back(ResourceID());
+
+				list.back().name = r->first;
+				list.back().type = rt->first;
+			}
+
+}
+
+void ResourceManager::getAvailabeResources(const std::vector<FileType> &types,
+		std::list<ResourceID> &list) const {
+
+	for (ResourceMap::const_iterator r = _resources.begin(); r != _resources.end(); ++r)
+		for (ResourceTypeMap::const_iterator rt = r->second.begin(); rt != r->second.end(); ++rt)
+			for (std::vector<FileType>::const_iterator wt = types.begin(); wt != types.end(); ++wt)
+				if (rt->first == *wt) {
+					list.push_back(ResourceID());
+
+					list.back().name = r->first;
+					list.back().type = rt->first;
+				}
+}
+
+void ResourceManager::getAvailabeResources(ResourceType type,
+		std::list<ResourceID> &list) const {
+
+	getAvailabeResources(_resourceTypeTypes[type], list);
+}
+
 void ResourceManager::addResource(Resource &resource, Common::UString name, ChangeID &change) {
 	name.tolower();
 	if (name.empty())
