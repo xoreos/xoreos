@@ -9,6 +9,9 @@
 /* Define to 1 if you have <boost/algorithm/string.hpp> */
 #undef HAVE_BOOST_ALGORITHM_STRING_HPP
 
+/* Define to 1 if you have <boost/bind.hpp> */
+#undef HAVE_BOOST_BIND_HPP
+
 /* Define to 1 if you have <boost/date_time/posix_time/posix_time.hpp> */
 #undef HAVE_BOOST_DATE_TIME_POSIX_TIME_POSIX_TIME_HPP
 
@@ -17,6 +20,9 @@
 
 /* Define to 1 if you have <boost/functional/hash.hpp> */
 #undef HAVE_BOOST_FUNCTIONAL_HASH_HPP
+
+/* Define to 1 if you have <boost/function.hpp> */
+#undef HAVE_BOOST_FUNCTION_HPP
 
 /* Define to 1 if you have <boost/regex.hpp> */
 #undef HAVE_BOOST_REGEX_HPP
