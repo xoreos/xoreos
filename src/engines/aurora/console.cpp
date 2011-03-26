@@ -419,6 +419,8 @@ void Console::show() {
 
 	_console->show();
 	_visible = true;
+
+	showCallback();
 }
 
 void Console::hide() {
@@ -668,6 +670,9 @@ void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) 
 		print(line);
 	}
 
+}
+
+void Console::showCallback() {
 }
 
 bool Console::registerCommand(const Common::UString &cmd, const CommandCallback &callback,

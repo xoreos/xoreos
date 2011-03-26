@@ -152,12 +152,16 @@ protected:
 
 	typedef boost::function<void (const CommandLine &cl)> CommandCallback;
 
+
 	void printException(Common::Exception &e, const Common::UString &prefix = "ERROR: ");
 
 	bool registerCommand(const Common::UString &cmd, const CommandCallback &callback,
 	                     const Common::UString &help);
 	void printCommandHelp(const Common::UString &cmd);
 	void printList(const std::list<Common::UString> &list, uint32 maxSize = 0);
+
+	virtual void showCallback();
+
 
 
 private:
