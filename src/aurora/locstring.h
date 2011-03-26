@@ -55,6 +55,9 @@ public:
 	/** Get the first available string. */
 	const Common::UString &getFirstString() const;
 
+	/** Try to get the most appropriate string. */
+	const Common::UString &getString() const;
+
 	/** Read a string out of a stream. */
 	void readString(Language language, Common::SeekableReadStream &stream);
 	/** Read a LocSubString (substring of a LocString in game data) out of a stream. */
