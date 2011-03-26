@@ -179,21 +179,21 @@ void ConsoleWindow::printLine(const Common::UString &line) {
 	redrawLines();
 }
 
-void ConsoleWindow::scrollUp() {
+void ConsoleWindow::scrollUp(uint32 n) {
 	if ((_historyStart + _lines.size()) >= _historySizeCurrent)
 		return;
 
-	_historyStart++;
+	_historyStart += MIN<uint32>(n, _historySizeCurrent - _lines.size() - _historyStart);
 
 	updateScrollbarPosition();
 	redrawLines();
 }
 
-void ConsoleWindow::scrollDown() {
+void ConsoleWindow::scrollDown(uint32 n) {
 	if (_historyStart == 0)
 		return;
 
-	_historyStart--;
+	_historyStart -= MIN(n, _historyStart);
 
 	updateScrollbarPosition();
 	redrawLines();
@@ -402,6 +402,16 @@ bool Console::processEvent(Events::Event &event) {
 			return true;
 		}
 
+		if ((event.key.keysym.sym == SDLK_PAGEUP) && (event.key.keysym.mod & KMOD_SHIFT)) {
+			_console->scrollUp(kConsoleLines / 2);
+			return true;
+		}
+
+		if ((event.key.keysym.sym == SDLK_PAGEDOWN) && (event.key.keysym.mod & KMOD_SHIFT)) {
+			_console->scrollDown(kConsoleLines / 2);
+			return true;
+		}
+
 		if (event.key.keysym.sym == SDLK_PAGEUP) {
 			_console->scrollUp();
 			return true;
@@ -412,12 +422,12 @@ bool Console::processEvent(Events::Event &event) {
 			return true;
 		}
 
-		if (event.key.keysym.sym == SDLK_HOME) {
+		if ((event.key.keysym.sym == SDLK_HOME) && (event.key.keysym.mod & KMOD_SHIFT)) {
 			_console->scrollTop();
 			return true;
 		}
 
-		if (event.key.keysym.sym == SDLK_END) {
+		if ((event.key.keysym.sym == SDLK_END) && (event.key.keysym.mod & KMOD_SHIFT)) {
 			_console->scrollBottom();
 			return true;
 		}

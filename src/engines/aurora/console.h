@@ -53,8 +53,8 @@ public:
 	void clear();
 	void print(const Common::UString &line);
 
-	void scrollUp();
-	void scrollDown();
+	void scrollUp(uint32 n = 1);
+	void scrollDown(uint32 n = 1);
 	void scrollTop();
 	void scrollBottom();
 
