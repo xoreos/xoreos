@@ -511,6 +511,17 @@ bool Console::processEvent(Events::Event &event) {
 	_console->setInput(_readLine->getCurrentLine(),
 			_readLine->getCursorPosition(), _readLine->getOverwrite());
 
+	// Check whether we have tab-completion hints
+	uint32 maxHintSize;
+	const std::list<Common::UString> &completeHints = _readLine->getCompleteHint(maxHintSize);
+	if (!completeHints.empty()) {
+		// If we do, display them
+
+		_console->print(Common::UString(kPrompt) + " " + command);
+		printList(completeHints, maxHintSize);
+		return true;
+	}
+
 	if (command.empty())
 		return true;
 
@@ -673,6 +684,8 @@ bool Console::registerCommand(const Common::UString &cmd, const CommandCallback 
 	result.first->second.help = help;
 
 	result.first->second.callback = callback;
+
+	_readLine->addCommand(cmd);
 
 	return true;
 }

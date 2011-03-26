@@ -16,6 +16,7 @@
 #define COMMON_READLINE_H
 
 #include <list>
+#include <set>
 
 #include "common/types.h"
 #include "common/ustring.h"
@@ -36,11 +37,24 @@ public:
 	/** Erase all lines matching the line to be saved. */
 	void historyEraseDups  (bool eraseDups);
 
+	/** Clear the input history. */
 	void clearHistory();
 
+	/** Add a command that can be tab-completed. */
+	void addCommand(const UString &command);
+
+	/** Return the current input line. */
 	const UString &getCurrentLine() const;
+
+	/** Return the current cursor position within the input line. */
 	uint32 getCursorPosition() const;
+
+	/** Return whether we're current in overwrite mode. */
 	bool getOverwrite() const;
+
+	/** Return the current tab-completion hints. */
+	const std::list<UString> &getCompleteHint(uint32 &maxSize) const;
+
 
 	/** Process that given events.
 	 *
@@ -53,23 +67,35 @@ public:
 	 */
 	bool processEvent(Events::Event &event, UString &command);
 
+
 private:
-	uint32 _historySizeMax;
-	uint32 _historySizeCurrent;
+	typedef std::set<UString, UString::iless> CommandSet;
 
-	bool _historyIgnoreSpace;
-	bool _historyIgnoreDups;
-	bool _historyEraseDups;
+	uint32 _historySizeMax;     ///< Max size of the history.
+	uint32 _historySizeCurrent; ///< Current size of the history.
 
-	uint32 _cursorPosition;
+	bool _historyIgnoreSpace; ///< Should we not remember input beginning with spaces?
+	bool _historyIgnoreDups;  ///< Should we not remember duplicate lines?
+	bool _historyEraseDups;   ///< Should we actively remove duplicate lines?
 
-	bool _overwrite;
+	uint32 _cursorPosition; ///< The current cursor position.
 
-	UString _currentLine;
-	UString _currentLineBak;
+	bool _overwrite; ///< Overwrite instead of insert?
 
+	UString _currentLine;    ///< The current input line.
+	UString _currentLineBak; ///< The backupped input line while we're browsing the history.
+
+	/** The history of previous input lines. */
 	std::list<UString> _history;
+	/** The current browsing position within the history. */
 	std::list<UString>::iterator _historyPosition;
+
+	/** All known tab-completeable commands. */
+	CommandSet _commands;
+	/** Current possible command candidates for the input line. */
+	std::list<UString> _completeHint;
+	/** Max size of a current command candidates. */
+	uint32 _maxHintSize;
 
 
 	void addCurrentLineToHistory();
@@ -77,6 +103,12 @@ private:
 	void updateHistory();
 	void browseUp();
 	void browseDown();
+
+	void tabComplete();
+
+	bool hasCommand() const;
+
+	static UString findCommonSubstring(const std::list<UString> &strings);
 };
 
 } // End of namespace Common

@@ -12,6 +12,7 @@
  *  A class providing (limited) readline-like capabilities.
  */
 
+#include "common/util.h"
 #include "common/readline.h"
 
 #include "events/events.h"
@@ -46,6 +47,10 @@ void ReadLine::clearHistory() {
 	_historySizeCurrent = 0;
 }
 
+void ReadLine::addCommand(const UString &command) {
+	_commands.insert(command);
+}
+
 const UString &ReadLine::getCurrentLine() const {
 	return _currentLine;
 }
@@ -58,8 +63,17 @@ bool ReadLine::getOverwrite() const {
 	return _overwrite;
 }
 
+const std::list<UString> &ReadLine::getCompleteHint(uint32 &maxSize) const {
+	maxSize = _maxHintSize;
+
+	return _completeHint;
+}
+
 bool ReadLine::processEvent(Events::Event &event, UString &command) {
 	command.clear();
+
+	_completeHint.clear();
+	_maxHintSize = 0;
 
 	// We only handle key down events
 	if (event.type != Events::kEventKeyDown)
@@ -121,6 +135,11 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 
 	if (event.key.keysym.sym == SDLK_DOWN) {
 		browseDown();
+		return true;
+	}
+
+	if (event.key.keysym.sym == SDLK_TAB) {
+		tabComplete();
 		return true;
 	}
 
@@ -228,6 +247,91 @@ void ReadLine::browseDown() {
 	// Get a line out of the history
 	_currentLine    = *_historyPosition;
 	_cursorPosition = _currentLine.size();
+}
+
+void ReadLine::tabComplete() {
+	if (hasCommand())
+		return;
+
+	// Find the first command that's greater than the current line
+	CommandSet::const_iterator lower = _commands.lower_bound(_currentLine);
+	if (lower == _commands.end())
+		return;
+
+	uint32 maxSize = 0;
+
+	// All commands starting with the current line are match candidates
+	std::list<UString> candidates;
+	for (CommandSet::const_iterator it = lower; it != _commands.end(); ++it) {
+		if (!it->beginsWith(_currentLine))
+			break;
+
+		if (!it->empty()) {
+			candidates.push_back(*it);
+			maxSize = MAX(maxSize, candidates.back().size());
+		}
+	}
+
+	if (candidates.empty())
+		// No match
+		return;
+
+	if (&candidates.front() == &candidates.back()) {
+		// Perfect match, complete
+
+		_currentLine    = candidates.front() + " ";
+		_cursorPosition = _currentLine.size();
+		return;
+	}
+
+	// Partial match, figure out the common substring
+	UString substring = findCommonSubstring(candidates);
+
+	if (substring == _currentLine) {
+		_completeHint = candidates;
+		_maxHintSize  = maxSize;
+		return;
+	}
+
+	_currentLine    = substring;
+	_cursorPosition = _currentLine.size();
+}
+
+UString ReadLine::findCommonSubstring(const std::list<UString> &strings) {
+	if (strings.empty())
+		return "";
+
+	uint32 minSize = strings.front().size();
+
+	// Create iterators for all strings
+	std::list<UString::iterator> positions;
+	for (std::list<UString>::const_iterator s = strings.begin(); s != strings.end(); ++s) {
+		minSize = MIN(minSize, s->size());
+		if (minSize == 0)
+			return "";
+
+		positions.push_back(s->begin());
+	}
+
+	UString substring;
+
+	while (minSize-- > 0) {
+		uint32 c = *positions.front();
+
+		// Make sure the current character still matches in all strings
+		std::list<UString::iterator>::iterator p;
+		for (p = positions.begin(); p != positions.end(); ++(*p), ++p)
+			if (**p != c)
+				return substring;
+
+		substring += c;
+	}
+
+	return substring;
+}
+
+bool ReadLine::hasCommand() const {
+	return _currentLine.findFirst(' ') != _currentLine.end();
 }
 
 } // End of namespace Common
