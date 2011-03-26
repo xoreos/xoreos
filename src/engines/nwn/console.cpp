@@ -23,11 +23,14 @@ namespace Engines {
 
 namespace NWN {
 
-Console::Console(Module &module) : ::Engines::Console("fnt_console"),
-	_module(&module) {
+Console::Console() : ::Engines::Console("fnt_console"), _module(0) {
 }
 
 Console::~Console() {
+}
+
+void Console::setModule(Module *module) {
+	_module = module;
 }
 
 bool Console::cmdCallback(Common::UString cmd, Common::UString args) {
@@ -61,6 +64,9 @@ void Console::handleHelp(Common::UString args) {
 }
 
 bool Console::listAreas(Common::UString args) {
+	if (!_module)
+		return true;
+
 	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		print(Common::UString::sprintf("%s (\"%s\")", a->c_str(), Area::getName(*a).c_str()));
@@ -69,6 +75,9 @@ bool Console::listAreas(Common::UString args) {
 }
 
 bool Console::gotoArea(Common::UString args) {
+	if (!_module)
+		return true;
+
 	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		if (a->equalsIgnoreCase(args)) {

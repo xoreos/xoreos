@@ -40,6 +40,7 @@
 #include "engines/nwn/nwn.h"
 #include "engines/nwn/modelloader.h"
 #include "engines/nwn/charstore.h"
+#include "engines/nwn/console.h"
 #include "engines/nwn/module.h"
 
 #include "engines/nwn/gui/legal.h"
@@ -336,8 +337,12 @@ void NWNEngine::mainMenuLoop() {
 	// Create and fade in the legal billboard
 	Legal *legal = new Legal;
 
+	Console console;
+
 	while (!EventMan.quitRequested()) {
-		Module module;
+		Module module(console);
+
+		console.setModule(&module);
 
 		GUI *mainMenu = new MainMenu(module);
 
@@ -368,7 +373,11 @@ void NWNEngine::mainMenuLoop() {
 			break;
 
 		playMenuMusic();
+		console.setModule();
+		console.hide();
 	}
+
+	console.setModule();
 
 	stopMenuMusic();
 }

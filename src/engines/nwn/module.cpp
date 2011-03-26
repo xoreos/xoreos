@@ -38,8 +38,8 @@ namespace Engines {
 
 namespace NWN {
 
-Module::Module() : _hasModule(false), _hasPC(false), _currentTexturePack(-1),
-	_exit(false), _area(0) {
+Module::Module(Console &console) : _console(&console), _hasModule(false), _hasPC(false),
+	_currentTexturePack(-1), _exit(false), _area(0) {
 
 	_ingameGUI = new IngameGUI(*this);
 }
@@ -172,8 +172,6 @@ void Module::run() {
 	EventMan.enableUnicode(true);
 	EventMan.enableKeyRepeat();
 
-	Console *console = new Console(*this);
-
 	try {
 
 		EventMan.flushEvents();
@@ -185,14 +183,14 @@ void Module::run() {
 			while (EventMan.pollEvent(event)) {
 				_ingameGUI->evaluateEvent(event);
 
-				if (console->processEvent(event))
+				if (_console->processEvent(event))
 					continue;
 
 				if (event.type == Events::kEventKeyDown) {
 					if      (event.key.keysym.sym == SDLK_ESCAPE)
 						showMenu();
 					else if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL))
-						console->show();
+						_console->show();
 					else if (event.key.keysym.sym == SDLK_UP)
 						CameraMan.move( 0.5);
 					else if (event.key.keysym.sym == SDLK_DOWN)
@@ -239,8 +237,6 @@ void Module::run() {
 		e.add("Failed running module \"%s\"", _ifo.getName().getFirstString().c_str());
 		printException(e, "WARNING: ");
 	}
-
-	delete console;
 
 	EventMan.enableUnicode(false);
 	EventMan.enableKeyRepeat(0);

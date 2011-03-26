@@ -26,6 +26,8 @@ namespace Engines {
 
 namespace NWN {
 
+class Console;
+
 class CharacterID;
 class Area;
 
@@ -33,7 +35,7 @@ class IngameGUI;
 
 class Module {
 public:
-	Module();
+	Module(Console &console);
 	~Module();
 
 	/** Clear the whole context. */
@@ -49,6 +51,8 @@ public:
 	void showMenu();
 
 private:
+	Console *_console;
+
 	bool _hasModule; ///< Do we have a module?
 	bool _hasPC;     ///< Do we have a PC?
 

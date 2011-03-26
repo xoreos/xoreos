@@ -25,8 +25,10 @@ class Module;
 
 class Console : public ::Engines::Console {
 public:
-	Console(Module &module);
+	Console();
 	~Console();
+
+	void setModule(Module *module = 0);
 
 protected:
 	bool cmdCallback(Common::UString cmd, Common::UString args);
