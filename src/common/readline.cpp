@@ -19,13 +19,26 @@
 namespace Common {
 
 ReadLine::ReadLine(uint32 historySize) :
-	_historySizeMax(historySize), _historySizeCurrent(0), _cursorPosition(0),
-	_overwrite(false), _notBrowsed(true) {
+	_historySizeMax(historySize), _historySizeCurrent(0),
+	_historyIgnoreSpace(false), _historyIgnoreDups(false), _historyEraseDups(false),
+	_cursorPosition(0), _overwrite(false) {
 
 	_historyPosition = _history.end();
 }
 
 ReadLine::~ReadLine() {
+}
+
+void ReadLine::historyIgnoreSpace(bool ignoreSpace) {
+	_historyIgnoreSpace = ignoreSpace;
+}
+
+void ReadLine::historyIgnoreDups(bool ignoreDups) {
+	_historyIgnoreDups = ignoreDups;
+}
+
+void ReadLine::historyEraseDups(bool eraseDups) {
+	_historyEraseDups = eraseDups;
 }
 
 void ReadLine::clearHistory() {
@@ -137,13 +150,34 @@ void ReadLine::addCurrentLineToHistory() {
 	if (_currentLine.empty())
 		return;
 
-	_history.push_back(_currentLine);
-	if (_historySizeCurrent >= _historySizeMax)
-		_history.pop_front();
-	else
-		_historySizeCurrent++;
+	// Erase duplicate lines
+	if (_historyEraseDups) {
+		for (std::list<Common::UString>::iterator h = _history.begin(); h != _history.end(); ) {
+			if (*h == _currentLine)
+				h = _history.erase(h);
+			else
+				++h;
+		}
+	}
 
-	_notBrowsed = true;
+	// Ignore duplicate lines and/or lines starting with a space
+	bool shouldSave = true;
+	if (_historyIgnoreSpace && (*_currentLine.begin() == ' '))
+		shouldSave = false;
+	if (_historyIgnoreDups && !_history.empty() && (_history.back() == _currentLine))
+		shouldSave = false;
+
+	// Add the line to the history
+	if (shouldSave) {
+		_history.push_back(_currentLine);
+		if (_historySizeCurrent >= _historySizeMax)
+			_history.pop_front();
+		else
+			_historySizeCurrent++;
+	}
+
+
+	// Clear the input
 
 	_currentLine.clear();
 	_currentLineBak.clear();

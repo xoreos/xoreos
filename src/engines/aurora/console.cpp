@@ -389,6 +389,8 @@ Console::Console(const Common::UString &font) : _visible(false) {
 	_readLine = new Common::ReadLine(kCommandHistorySize);
 	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory);
 
+	_readLine->historyIgnoreDups(true);
+
 	registerCommand("help"    , boost::bind(&Console::cmdHelp , this, _1),
 			"Usage: help [<command>]\nPrint help text");
 	registerCommand("clear"   , boost::bind(&Console::cmdClear, this, _1),

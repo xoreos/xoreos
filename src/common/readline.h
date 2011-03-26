@@ -29,6 +29,13 @@ public:
 	ReadLine(uint32 historySize);
 	~ReadLine();
 
+	/** Don't save lines starting with a space. */
+	void historyIgnoreSpace(bool ignoreSpace);
+	/** Don't save lines matching the bottom of the history. */
+	void historyIgnoreDups (bool ignoreDups);
+	/** Erase all lines matching the line to be saved. */
+	void historyEraseDups  (bool eraseDups);
+
 	void clearHistory();
 
 	const Common::UString &getCurrentLine() const;
@@ -50,11 +57,14 @@ private:
 	uint32 _historySizeMax;
 	uint32 _historySizeCurrent;
 
+	bool _historyIgnoreSpace;
+	bool _historyIgnoreDups;
+	bool _historyEraseDups;
+
 	uint32 _cursorPosition;
 
 	bool _overwrite;
 
-	bool _notBrowsed;
 	Common::UString _currentLine;
 	Common::UString _currentLineBak;
 
