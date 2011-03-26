@@ -99,13 +99,20 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 	if (event.type != Events::kEventKeyDown)
 		return false;
 
-	if (event.key.keysym.sym == SDLK_RETURN) {
+	// We only care about certain modifiers
+	SDLKey key = event.key.keysym.sym;
+	SDLMod mod = (SDLMod) (((int) event.key.keysym.mod) & (KMOD_CTRL | KMOD_SHIFT | KMOD_ALT));
+
+
+	// Return / Enter: Execute this line
+	if ((key == SDLK_RETURN) || (key == SDLK_KP_ENTER)) {
 		command = _currentLine;
 		addCurrentLineToHistory();
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_BACKSPACE) {
+	// Backspace: Delete character left of the cursor
+	if ((key == SDLK_BACKSPACE) && (mod == KMOD_NONE)) {
 		if (!_currentLine.empty() && (_cursorPosition > 0)) {
 			_cursorPosition--;
 			_currentLine.erase(getCurrentPosition());
@@ -114,87 +121,133 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 		return true;
 	}
 
-	if (((event.key.keysym.sym == SDLK_w) && (event.key.keysym.mod & KMOD_CTRL)) ||
-	     (event.key.keysym.sym == SDLK_DELETE)) {
+	// Delete / CTRL-D: Delete character right of the cursor
+	if ((key == SDLK_DELETE) || ((key == SDLK_d) && (mod & KMOD_CTRL))) {
 		if (_cursorPosition < _currentLine.size())
 			_currentLine.erase(getCurrentPosition());
 		updateHistory();
 		return true;
 	}
 
-	if ((event.key.keysym.sym == SDLK_u) && (event.key.keysym.mod & KMOD_CTRL)) {
+	// CTRL-U: Delete everything from the start of the line up to the cursor
+	if ((key == SDLK_u) && (mod & KMOD_CTRL)) {
 		_currentLine.erase(_currentLine.begin(), getCurrentPosition());
 		_cursorPosition = 0;
 		updateHistory();
 		return true;
 	}
 
-	if ((event.key.keysym.sym == SDLK_k) && (event.key.keysym.mod & KMOD_CTRL)) {
+	// CTRL-K: Delete everything from the cursor to the end of the line
+	if ((key == SDLK_k) & (mod & KMOD_CTRL)) {
 		_currentLine.erase(getCurrentPosition(), _currentLine.end());
 		updateHistory();
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_INSERT) {
+	// Insert: Toggle insert/replace
+	if (key == SDLK_INSERT) {
 		_overwrite = !_overwrite;
 		return true;
 	}
 
-	if (((event.key.keysym.sym == SDLK_b) && (event.key.keysym.mod & KMOD_CTRL)) ||
-	     (event.key.keysym.sym == SDLK_LEFT)) {
+	// CTRL-Left / ALT-B: Move to the start of the last word
+	if (((key == SDLK_LEFT) && (mod & KMOD_CTRL)) || ((key == SDLK_b) && (mod & KMOD_ALT))) {
+		_cursorPosition = findLastWordStart();
+		return true;
+	}
+
+	// CTRL-Right / ALT-F: Move to the end of the next word
+	if (((key == SDLK_RIGHT) && (mod & KMOD_CTRL)) || ((key == SDLK_f) && (mod & KMOD_ALT))) {
+		_cursorPosition = findNextWordEnd();
+		return true;
+	}
+
+	// ALT-Backspace: Delete the last word
+	if ((key == SDLK_BACKSPACE) && (mod & KMOD_ALT)) {
+		uint32 lastWordStart = findLastWordStart();
+
+		_currentLine.erase(_currentLine.getPosition(lastWordStart), getCurrentPosition());
+
+		_cursorPosition = lastWordStart;
+		return true;
+	}
+
+	// ALT-d: Delete the next word
+	if ((key == SDLK_d) && (mod & KMOD_ALT)) {
+		uint32 nextWordEnd = findNextWordEnd();
+
+		_currentLine.erase(getCurrentPosition(), _currentLine.getPosition(nextWordEnd));
+		return true;
+	}
+
+	// CTRL-w: Delete the last word (but only consider spaces to be word separators)
+	if ((key == SDLK_w) && (mod & KMOD_CTRL)) {
+		uint32 lastWordStart = findLastWordStart(true);
+
+		_currentLine.erase(_currentLine.getPosition(lastWordStart), getCurrentPosition());
+
+		_cursorPosition = lastWordStart;
+		return true;
+	}
+
+	// Left / CTRL-B: Move one character to the left
+	if ((key == SDLK_LEFT) || ((key == SDLK_b) && (mod & KMOD_CTRL))) {
 		if (_cursorPosition > 0)
 			_cursorPosition--;
 		return true;
 	}
 
-	if (((event.key.keysym.sym == SDLK_f) && (event.key.keysym.mod & KMOD_CTRL)) ||
-	     (event.key.keysym.sym == SDLK_RIGHT)) {
+	// Right / CTRL-F: Move one character to the right
+	if ((key == SDLK_RIGHT) || ((key == SDLK_f) && (mod & KMOD_CTRL))) {
 		if (_cursorPosition < _currentLine.size())
 			_cursorPosition++;
 		return true;
 	}
 
-	if (((event.key.keysym.sym == SDLK_a) && (event.key.keysym.mod & KMOD_CTRL)) ||
-	     (event.key.keysym.sym == SDLK_HOME)) {
+	// Home / CTRL-A: Move to the start of the line
+	if ((key == SDLK_HOME) || ((key == SDLK_a) && (mod & KMOD_CTRL))) {
 		_cursorPosition = 0;
 		return true;
 	}
 
-	if (((event.key.keysym.sym == SDLK_e) && (event.key.keysym.mod & KMOD_CTRL)) ||
-	     (event.key.keysym.sym == SDLK_END)) {
+	// End / CTRL-E: Move to the end of the line
+	if ((key == SDLK_END) || ((key == SDLK_e) && (mod & KMOD_CTRL))) {
 		_cursorPosition = _currentLine.size();
 		return true;
 	}
 
-	if (((event.key.keysym.sym == SDLK_p) && (event.key.keysym.mod & KMOD_CTRL)) ||
-	     (event.key.keysym.sym == SDLK_UP)) {
+	// Up / CTRL-p: Move up in the history
+	if ((key == SDLK_UP) || ((key == SDLK_p) && (mod & KMOD_CTRL))) {
 		browseUp();
 		return true;
 	}
 
-	if (((event.key.keysym.sym == SDLK_n) && (event.key.keysym.mod & KMOD_CTRL)) ||
-	     (event.key.keysym.sym == SDLK_DOWN)) {
+	// Down / CTRL-n: Move down in the history
+	if ((key == SDLK_DOWN) || ((key == SDLK_n) && (mod & KMOD_CTRL))) {
 		browseDown();
 		return true;
 	}
 
-	if ((event.key.keysym.sym == SDLK_LESS) &&
-			(event.key.keysym.mod & KMOD_ALT) && (event.key.keysym.mod & KMOD_SHIFT)) {
+	// ALT->: Move to the bottom of the history
+	if ((key == SDLK_LESS) && (mod & KMOD_ALT) && (mod & KMOD_SHIFT)) {
 		browseBottom();
 		return true;
 	}
 
-	if ((event.key.keysym.sym == SDLK_LESS) && (event.key.keysym.mod & KMOD_ALT)) {
+	// ALT-<: Move to the top of the history
+	if ((key == SDLK_LESS) && (mod & KMOD_ALT)) {
 		browseTop();
 		return true;
 	}
 
-	if (event.key.keysym.sym == SDLK_TAB) {
+	// TAB: Auto-complete
+	if (key == SDLK_TAB) {
 		tabComplete();
 		updateHistory();
 		return true;
 	}
 
+	// Printable character: Add it to our input
 	uint32 c = EventMan.getPressedCharacter(event);
 	if (c == 0)
 		return false;
@@ -440,6 +493,52 @@ UString ReadLine::findCommonSubstring(const std::list<UString> &strings) {
 	}
 
 	return substring;
+}
+
+bool ReadLine::isWordCharacter(uint32 c, bool onlySpace) {
+	if (onlySpace)
+		return c != ' ';
+
+	return !UString::isASCII(c) || UString::isAlNum(c);
+}
+
+uint32 ReadLine::findLastWordStart(bool onlySpace) const {
+	UString::iterator pos = _currentLine.getPosition(_cursorPosition);
+	if (pos == _currentLine.begin())
+		return _currentLine.getPosition(pos);
+
+	--pos;
+
+	// If we're between words, skip to the end of the last word
+	while ((pos != _currentLine.begin()) && !isWordCharacter(*pos, onlySpace))
+		--pos;
+
+	// Now skip the word
+	while ((pos != _currentLine.begin()) &&  isWordCharacter(*pos, onlySpace))
+		--pos;
+
+	if (pos != _currentLine.begin())
+		++pos;
+
+	// And return the position
+	return _currentLine.getPosition(pos);
+}
+
+uint32 ReadLine::findNextWordEnd(bool onlySpace) const {
+	UString::iterator pos = _currentLine.getPosition(_cursorPosition);
+	if (pos == _currentLine.end())
+		return _currentLine.getPosition(pos);
+
+	// If we're between words, skip to the start of the next word
+	while ((pos != _currentLine.end()) && !isWordCharacter(*pos, onlySpace))
+		++pos;
+
+	// Now skip the word
+	while ((pos != _currentLine.end()) &&  isWordCharacter(*pos, onlySpace))
+		++pos;
+
+	// And return the position
+	return _currentLine.getPosition(pos);
 }
 
 } // End of namespace Common

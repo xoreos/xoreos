@@ -125,6 +125,10 @@ private:
 
 	UString::iterator getCurrentPosition() const;
 
+	uint32 findLastWordStart(bool onlySpace = false) const;
+	uint32 findNextWordEnd(bool onlySpace = false) const;
+
+	static bool isWordCharacter(uint32 c, bool onlySpace = false);
 	static UString findCommonSubstring(const std::list<UString> &strings);
 };
 

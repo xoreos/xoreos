@@ -464,9 +464,7 @@ bool Console::processEvent(Events::Event &event) {
 		} else
 			_tabCount++;
 
-		if (((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) ||
-		    (event.key.keysym.sym == SDLK_ESCAPE)) {
-
+		if (event.key.keysym.sym == SDLK_ESCAPE) {
 			hide();
 			return true;
 		}
