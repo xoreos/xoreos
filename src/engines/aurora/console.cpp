@@ -138,6 +138,14 @@ float ConsoleWindow::getContentHeight() const {
 	return _height - _lineHeight;
 }
 
+uint32 ConsoleWindow::getLines() const {
+	return _lines.size();
+}
+
+uint32 ConsoleWindow::getColumns() const {
+	return floorf(getContentWidth() / _font.getFont().getWidth('m'));
+}
+
 void ConsoleWindow::setPrompt(const Common::UString &prompt) {
 	GfxMan.lockFrame();
 
@@ -377,9 +385,7 @@ void ConsoleWindow::updateScrollbarPosition() {
 }
 
 
-Console::Console(const Common::UString &font) : _visible(false),
-	_font(FontMan.get(font)), _longestCommandSize(0), _longestCommandLength(0.0) {
-
+Console::Console(const Common::UString &font) : _visible(false) {
 	_readLine = new Common::ReadLine(kCommandHistorySize);
 	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory);
 
@@ -423,6 +429,22 @@ void Console::hide() {
 
 bool Console::isVisible() const {
 	return _visible;
+}
+
+float Console::getWidth() const {
+	return _console->getContentWidth();
+}
+
+float Console::getHeight() const {
+	return _console->getContentHeight();
+}
+
+uint32 Console::getLines() const {
+	return _console->getLines();
+}
+
+uint32 Console::getColumns() const {
+	return _console->getColumns();
 }
 
 bool Console::processEvent(Events::Event &event) {
@@ -585,18 +607,49 @@ void Console::printCommandHelp(const Common::UString &cmd) {
 void Console::printFullHelp() {
 	print("Available commands (help <command> for further help on each command):");
 
-	uint32 lineLength = floorf(_console->getContentWidth() / _longestCommandLength);
+	uint32 maxSize = 0;
+	std::list<Common::UString> commands;
+	for (CommandMap::const_iterator c = _commands.begin(); c != _commands.end(); ++c) {
+		commands.push_back(c->second.cmd);
 
-	CommandMap::const_iterator c = _commands.begin();
-	while (c != _commands.end()) {
+		maxSize = MAX(maxSize, commands.back().size());
+	}
+
+	printList(commands, maxSize);
+}
+
+void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) {
+	const uint32 columns = getColumns();
+
+	if (maxSize > 0)
+		maxSize = MAX<uint32>(maxSize, 3);
+
+	uint32 lineSize = 1;
+	if      (maxSize >= (columns - 2))
+		maxSize  = columns;
+	else if (maxSize > 0)
+		lineSize = columns / (maxSize + 2);
+
+	std::list<Common::UString>::const_iterator l = list.begin();
+	while (l != list.end()) {
 		Common::UString line;
 
-		for (uint32 i = 0; (i < lineLength) && (c != _commands.end()); i++, ++c) {
-			line += c->second.cmd;
+		for (uint32 i = 0; (i < lineSize) && (l != list.end()); i++, ++l) {
+			Common::UString item = *l;
 
-			int32 padding = _longestCommandSize - c->second.cmd.size();
-			while (padding-- > 0)
-				line += " ";
+			uint32 itemSize = item.size();
+
+			if (itemSize > maxSize) {
+				item.truncate(maxSize - 3);
+				item += "...";
+				itemSize = maxSize;
+			}
+
+			uint32 pad = (maxSize + 2) - itemSize;
+			while (pad-- > 0)
+				item += ' ';
+
+			line += item;
 		}
 
 		print(line);
@@ -618,12 +671,6 @@ bool Console::registerCommand(const Common::UString &cmd, const CommandCallback 
 	result.first->second.help = help;
 
 	result.first->second.callback = callback;
-
-
-	float length = _font.getFont().getWidth(cmd + "     ");
-
-	_longestCommandSize   = MAX(_longestCommandSize, cmd.size() + 5);
-	_longestCommandLength = MAX(_longestCommandLength, length);
 
 	return true;
 }

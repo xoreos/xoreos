@@ -53,6 +53,9 @@ public:
 	float getContentWidth () const;
 	float getContentHeight() const;
 
+	uint32 getLines  () const;
+	uint32 getColumns() const;
+
 	void setPrompt(const Common::UString &prompt);
 	void setInput(const Common::UString &input, uint32 cursorPos, bool overwrite);
 
@@ -129,6 +132,11 @@ public:
 
 	bool isVisible() const;
 
+	float  getWidth  () const;
+	float  getHeight () const;
+	uint32 getLines  () const;
+	uint32 getColumns() const;
+
 	bool processEvent(Events::Event &event);
 
 	void clear();
@@ -149,6 +157,7 @@ protected:
 	bool registerCommand(const Common::UString &cmd, const CommandCallback &callback,
 	                     const Common::UString &help);
 	void printCommandHelp(const Common::UString &cmd);
+	void printList(const std::list<Common::UString> &list, uint32 maxSize = 0);
 
 
 private:
@@ -164,13 +173,10 @@ private:
 
 	bool _visible;
 
-	Graphics::Aurora::FontHandle _font;
 	Common::ReadLine *_readLine;
 	ConsoleWindow *_console;
 
 	CommandMap _commands;
-	uint32 _longestCommandSize;
-	float  _longestCommandLength;
 
 
 	void cmdHelp (const CommandLine &cli);
