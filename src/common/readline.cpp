@@ -91,6 +91,16 @@ bool ReadLine::processEvent(Events::Event &event, Common::UString &command) {
 		return true;
 	}
 
+	if (event.key.keysym.sym == SDLK_HOME) {
+		_cursorPosition = 0;
+		return true;
+	}
+
+	if (event.key.keysym.sym == SDLK_END) {
+		_cursorPosition = _currentLine.size();
+		return true;
+	}
+
 	if (event.key.keysym.sym == SDLK_UP) {
 		browseUp();
 		return true;
