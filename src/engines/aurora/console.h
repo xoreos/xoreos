@@ -179,6 +179,7 @@ private:
 	typedef std::map<Common::UString, Command, Common::UString::iless> CommandMap;
 
 
+	bool _neverShown;
 	bool _visible;
 
 	Common::ReadLine *_readLine;

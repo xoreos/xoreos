@@ -385,7 +385,7 @@ void ConsoleWindow::updateScrollbarPosition() {
 }
 
 
-Console::Console(const Common::UString &font) : _visible(false),
+Console::Console(const Common::UString &font) : _neverShown(true), _visible(false),
 	_tabCount(0), _printedCompleteWarning(false) {
 
 	_readLine = new Common::ReadLine(kCommandHistorySize);
@@ -405,7 +405,6 @@ Console::Console(const Common::UString &font) : _visible(false),
 	_console->setPrompt(kPrompt);
 
 	_console->print("Console ready...");
-	_console->print("Type 'exit' to return to the game. Type 'help' for a list of commands.");
 }
 
 Console::~Console() {
@@ -419,8 +418,12 @@ void Console::show() {
 	if (_visible)
 		return;
 
+	if (_neverShown)
+		_console->print("Type 'exit' to return to the game. Type 'help' for a list of commands.");
+
 	_console->show();
-	_visible = true;
+	_visible    = true;
+	_neverShown = false;
 
 	showCallback();
 }
