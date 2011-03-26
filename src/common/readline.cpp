@@ -46,7 +46,7 @@ void ReadLine::clearHistory() {
 	_historySizeCurrent = 0;
 }
 
-const Common::UString &ReadLine::getCurrentLine() const {
+const UString &ReadLine::getCurrentLine() const {
 	return _currentLine;
 }
 
@@ -58,7 +58,7 @@ bool ReadLine::getOverwrite() const {
 	return _overwrite;
 }
 
-bool ReadLine::processEvent(Events::Event &event, Common::UString &command) {
+bool ReadLine::processEvent(Events::Event &event, UString &command) {
 	command.clear();
 
 	// We only handle key down events
@@ -152,7 +152,7 @@ void ReadLine::addCurrentLineToHistory() {
 
 	// Erase duplicate lines
 	if (_historyEraseDups) {
-		for (std::list<Common::UString>::iterator h = _history.begin(); h != _history.end(); ) {
+		for (std::list<UString>::iterator h = _history.begin(); h != _history.end(); ) {
 			if (*h == _currentLine)
 				h = _history.erase(h);
 			else

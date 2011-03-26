@@ -38,7 +38,7 @@ public:
 
 	void clearHistory();
 
-	const Common::UString &getCurrentLine() const;
+	const UString &getCurrentLine() const;
 	uint32 getCursorPosition() const;
 	bool getOverwrite() const;
 
@@ -51,7 +51,7 @@ public:
 	 *                 to be executed will be stored here.
 	 *  @return true if the event was handled.
 	 */
-	bool processEvent(Events::Event &event, Common::UString &command);
+	bool processEvent(Events::Event &event, UString &command);
 
 private:
 	uint32 _historySizeMax;
@@ -65,11 +65,11 @@ private:
 
 	bool _overwrite;
 
-	Common::UString _currentLine;
-	Common::UString _currentLineBak;
+	UString _currentLine;
+	UString _currentLineBak;
 
-	std::list<Common::UString> _history;
-	std::list<Common::UString>::iterator _historyPosition;
+	std::list<UString> _history;
+	std::list<UString>::iterator _historyPosition;
 
 
 	void addCurrentLineToHistory();
