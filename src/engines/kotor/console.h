@@ -30,7 +30,6 @@ public:
 
 protected:
 	bool cmdCallback(Common::UString cmd, Common::UString args);
-	void handleHelp(Common::UString args);
 
 private:
 	Module *_module;

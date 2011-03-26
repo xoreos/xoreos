@@ -24,6 +24,8 @@ namespace KotOR {
 
 Console::Console(Module &module) : ::Engines::Console("fnt_console"),
 	_module(&module) {
+
+	registerCommand("gotomodule", "Usage: gotomodule <module>\nEnter the specified module");
 }
 
 Console::~Console() {
@@ -36,23 +38,6 @@ bool Console::cmdCallback(Common::UString cmd, Common::UString args) {
 		return gotoModule(args);
 
 	return false;
-}
-
-void Console::handleHelp(Common::UString args) {
-	args.tolower();
-
-	if        (args == "help")
-		print("Usage: help [<command>]");
-	else if (args == "clear")
-		print("Usage: clear\nClear the console window");
-	else if (args == "exit")
-		print("Usage: exit\nLeave the console window, returning to the game");
-	else if (args == "gotomodule")
-		print("Usage: gotomodule <module>\nEnter the specified module");
-	else {
-		print("Available commands (help <command> for further help on each command):");
-		print("help\nexit\nclear\ngotomodule\n");
-	}
 }
 
 bool Console::gotoModule(Common::UString args) {

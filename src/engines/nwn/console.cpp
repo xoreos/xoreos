@@ -24,6 +24,8 @@ namespace Engines {
 namespace NWN {
 
 Console::Console() : ::Engines::Console("fnt_console"), _module(0) {
+	registerCommand("listareas", "Usage: listareas\nList all areas in the current module");
+	registerCommand("gotoarea" , "Usage: gotoarea <area>\nMove to a specific area");
 }
 
 Console::~Console() {
@@ -42,25 +44,6 @@ bool Console::cmdCallback(Common::UString cmd, Common::UString args) {
 		return gotoArea(args);
 
 	return false;
-}
-
-void Console::handleHelp(Common::UString args) {
-	args.tolower();
-
-	if        (args == "help")
-		print("Usage: help [<command>]");
-	else if (args == "clear")
-		print("Usage: clear\nClear the console window");
-	else if (args == "exit")
-		print("Usage: exit\nLeave the console window, returning to the game");
-	else if (args == "listareas")
-		print("Usage: listareas\nList all areas in the current module");
-	else if (args == "gotoarea")
-		print("Usage: gotoarea <area>\nMove to a specific area");
-	else {
-		print("Available commands (help <command> for further help on each command):");
-		print("help\nexit\nclear\nlistareas\ngotoarea");
-	}
 }
 
 bool Console::listAreas(Common::UString args) {

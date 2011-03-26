@@ -46,6 +46,10 @@ public:
 	bool isIn(float x, float y) const;
 	bool isIn(float x, float y, float z) const;
 
+	float getWidth () const;
+	float getHeight() const;
+	float getContentWidth () const;
+	float getContentHeight() const;
 
 	void setPrompt(const Common::UString &prompt);
 	void setInput(const Common::UString &input, uint32 cursorPos, bool overwrite);
@@ -132,14 +136,29 @@ protected:
 
 	void printException(Common::Exception &e, const Common::UString &prefix = "ERROR: ");
 
+	void registerCommand(const Common::UString &cmd, const Common::UString &help);
+
 	virtual bool cmdCallback(Common::UString cmd, Common::UString args) = 0;
-	virtual void handleHelp(Common::UString args);
 
 private:
+	struct Command {
+		Common::UString cmd;
+		Common::UString help;
+	};
+
 	bool _visible;
 
+	Graphics::Aurora::FontHandle _font;
 	Common::ReadLine *_readLine;
 	ConsoleWindow *_console;
+
+	std::list<Command> _commands;
+	uint32 _longestCommandSize;
+	float  _longestCommandLength;
+
+
+	void printHelp();
+	void handleHelp(const Common::UString &args);
 };
 
 } // End of namespace Engines

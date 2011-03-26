@@ -117,6 +117,22 @@ bool ConsoleWindow::isIn(float x, float y, float z) const {
 	return isIn(x, y);
 }
 
+float ConsoleWindow::getWidth() const {
+	return _width;
+}
+
+float ConsoleWindow::getHeight() const {
+	return _height;
+}
+
+float ConsoleWindow::getContentWidth() const {
+	return _width - 15.0;
+}
+
+float ConsoleWindow::getContentHeight() const {
+	return _height - _lineHeight;
+}
+
 void ConsoleWindow::setPrompt(const Common::UString &prompt) {
 	GfxMan.lockFrame();
 
@@ -356,9 +372,15 @@ void ConsoleWindow::updateScrollbarPosition() {
 }
 
 
-Console::Console(const Common::UString &font) : _visible(false) {
+Console::Console(const Common::UString &font) : _visible(false),
+	_font(FontMan.get(font)), _longestCommandSize(0), _longestCommandLength(0.0) {
+
 	_readLine = new Common::ReadLine(kCommandHistorySize);
-	_console = new ConsoleWindow(font, kConsoleLines, kConsoleHistory);
+	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory);
+
+	registerCommand("help" , "Usage: help [<command>]\nPrint help text");
+	registerCommand("clear", "Usage: clear\nClear the console window");
+	registerCommand("exit" , "Usage: exit\nLeave the console window, returning to the game");
 
 	_console->setPrompt(kPrompt);
 
@@ -486,21 +508,6 @@ bool Console::processEvent(Events::Event &event) {
 	return true;
 }
 
-void Console::handleHelp(Common::UString args) {
-	args.tolower();
-
-	if        (args == "help")
-		print("Usage: help [<command>]\nPrint help text");
-	else if (args == "clear")
-		print("Usage: clear\nClear the console window");
-	else if (args == "exit")
-		print("Usage: exit\nLeave the console window, returning to the game");
-	else {
-		print("Available commands (help <command> for further help on each command):");
-		print("help\nexit\nclear");
-	}
-}
-
 void Console::clear() {
 	_console->clear();
 }
@@ -525,6 +532,59 @@ void Console::printException(Common::Exception &e, const Common::UString &prefix
 		print(Common::UString::sprintf("'- Because: %s", stack.top().c_str()));
 		stack.pop();
 	}
+}
+
+void Console::handleHelp(const Common::UString &args) {
+	if (args.empty()) {
+		printHelp();
+		return;
+	}
+
+	std::list<Command>::iterator cmd = _commands.begin();
+	for (cmd = _commands.begin(); cmd != _commands.end(); ++cmd)
+		if (cmd->cmd.equalsIgnoreCase(args))
+			break;
+
+	if (cmd == _commands.end()) {
+		printHelp();
+		return;
+	}
+
+	print(cmd->help);
+}
+
+void Console::printHelp() {
+	print("Available commands (help <command> for further help on each command):");
+
+	uint32 lineLength = floorf(_console->getContentWidth() / _longestCommandLength);
+
+	std::list<Command>::iterator c = _commands.begin();
+	while (c != _commands.end()) {
+		Common::UString line;
+
+		for (uint32 i = 0; (i < lineLength) && (c != _commands.end()); i++, ++c) {
+			line += c->cmd;
+
+			int32 padding = _longestCommandSize - c->cmd.size();
+			while (padding-- > 0)
+				line += " ";
+		}
+
+		print(line);
+	}
+
+}
+
+void Console::registerCommand(const Common::UString &cmd, const Common::UString &help) {
+	_commands.push_back(Command());
+
+	_commands.back().cmd  = cmd;
+	_commands.back().help = help;
+
+	float length = _font.getFont().getWidth(cmd + "     ");
+
+	_longestCommandSize   = MAX(_longestCommandSize, cmd.size() + 5);
+	_longestCommandLength = MAX(_longestCommandLength, length);
 }
 
 } // End of namespace Engines
