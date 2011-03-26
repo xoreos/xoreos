@@ -27,7 +27,9 @@ namespace Engines {
 
 namespace NWN {
 
-Console::Console() : ::Engines::Console("fnt_console"), _module(0) {
+Console::Console() : ::Engines::Console("fnt_console"), _module(0),
+	_maxSizeVideos(0), _maxSizeSounds(0), _maxSizeMusic(0) {
+
 	registerCommand("quitmodule" , boost::bind(&Console::cmdQuitModule, this, _1),
 			"Usage: quitmodule\nLeave the module, returning to the main menu");
 	registerCommand("listareas"  , boost::bind(&Console::cmdListAreas , this, _1),
@@ -56,6 +58,71 @@ Console::~Console() {
 
 void Console::setModule(Module *module) {
 	_module = module;
+}
+
+void Console::showCallback() {
+	updateAreas();
+	updateVideos();
+	updateSounds();
+	updateMusic();
+}
+
+void Console::updateAreas() {
+	_areas.clear();
+	if (!_module)
+		return;
+
+	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
+	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
+		_areas.push_back(*a);
+}
+
+void Console::updateVideos() {
+	_videos.clear();
+	_maxSizeVideos = 0;
+
+	std::list<Aurora::ResourceManager::ResourceID> videos;
+	ResMan.getAvailabeResources(Aurora::kFileTypeBIK, videos);
+
+	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator v = videos.begin();
+	     v != videos.end(); ++v) {
+
+		_videos.push_back(v->name);
+
+		_maxSizeVideos = MAX(_maxSizeVideos, _videos.back().size());
+	}
+}
+
+void Console::updateSounds() {
+	_sounds.clear();
+	_maxSizeSounds = 0;
+
+	std::list<Aurora::ResourceManager::ResourceID> sounds;
+	ResMan.getAvailabeResources(Aurora::kFileTypeWAV, sounds);
+
+	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator s = sounds.begin();
+	     s != sounds.end(); ++s) {
+
+		_sounds.push_back(s->name);
+
+		_maxSizeSounds = MAX(_maxSizeSounds, _sounds.back().size());
+	}
+}
+
+void Console::updateMusic() {
+	_music.clear();
+	_maxSizeMusic = 0;
+
+	std::list<Aurora::ResourceManager::ResourceID> music;
+	ResMan.getAvailabeResources(Aurora::kFileTypeBMU, music);
+
+	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator m = music.begin();
+	     m != music.end(); ++m) {
+
+		_music.push_back(m->name);
+
+		_maxSizeMusic = MAX(_maxSizeMusic, _music.back().size());
+	}
 }
 
 void Console::cmdQuitModule(const CommandLine &cl) {
@@ -91,20 +158,8 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 }
 
 void Console::cmdListMusic(const CommandLine &cl) {
-	std::list<Aurora::ResourceManager::ResourceID> music;
-	ResMan.getAvailabeResources(Aurora::kFileTypeBMU, music);
-
-	uint32 maxSize = 0;
-	std::list<Common::UString> musics;
-	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator m = music.begin();
-	     m != music.end(); ++m) {
-
-		musics.push_back(m->name);
-
-		maxSize = MAX(maxSize, musics.back().size());
-	}
-
-	printList(musics, maxSize);
+	updateMusic();
+	printList(_music, _maxSizeMusic);
 }
 
 void Console::cmdStopMusic(const CommandLine &cl) {
@@ -122,20 +177,8 @@ void Console::cmdPlayMusic(const CommandLine &cl) {
 }
 
 void Console::cmdListVideos(const CommandLine &cl) {
-	std::list<Aurora::ResourceManager::ResourceID> videos;
-	ResMan.getAvailabeResources(Aurora::kFileTypeBIK, videos);
-
-	uint32 maxSize = 0;
-	std::list<Common::UString> vids;
-	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator v = videos.begin();
-	     v != videos.end(); ++v) {
-
-		vids.push_back(v->name);
-
-		maxSize = MAX(maxSize, vids.back().size());
-	}
-
-	printList(vids, maxSize);
+	updateVideos();
+	printList(_videos, _maxSizeVideos);
 }
 
 void Console::cmdPlayVideo(const CommandLine &cl) {
@@ -148,20 +191,8 @@ void Console::cmdPlayVideo(const CommandLine &cl) {
 }
 
 void Console::cmdListSounds(const CommandLine &cl) {
-	std::list<Aurora::ResourceManager::ResourceID> sounds;
-	ResMan.getAvailabeResources(Aurora::kFileTypeWAV, sounds);
-
-	uint32 maxSize = 0;
-	std::list<Common::UString> snds;
-	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator s = sounds.begin();
-	     s != sounds.end(); ++s) {
-
-		snds.push_back(s->name);
-
-		maxSize = MAX(maxSize, snds.back().size());
-	}
-
-	printList(snds, maxSize);
+	updateSounds();
+	printList(_sounds, _maxSizeSounds);
 }
 
 void Console::cmdPlaySound(const CommandLine &cl) {

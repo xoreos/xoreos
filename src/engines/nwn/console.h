@@ -30,19 +30,39 @@ public:
 
 	void setModule(Module *module = 0);
 
+protected:
+	void showCallback();
+
 private:
 	Module *_module;
+
+
+	std::list<Common::UString> _areas;
+	std::list<Common::UString> _videos;
+	std::list<Common::UString> _sounds;
+	std::list<Common::UString> _music;
+
+	uint32 _maxSizeVideos;
+	uint32 _maxSizeSounds;
+	uint32 _maxSizeMusic;
+
+
+	void updateAreas();
+	void updateVideos();
+	void updateSounds();
+	void updateMusic();
+
 
 	void cmdQuitModule(const CommandLine &cl);
 	void cmdListAreas (const CommandLine &cl);
 	void cmdGotoArea  (const CommandLine &cl);
-	void cmdListMusic (const CommandLine &cl);
-	void cmdStopMusic (const CommandLine &cl);
-	void cmdPlayMusic (const CommandLine &cl);
 	void cmdListVideos(const CommandLine &cl);
 	void cmdPlayVideo (const CommandLine &cl);
 	void cmdListSounds(const CommandLine &cl);
 	void cmdPlaySound (const CommandLine &cl);
+	void cmdListMusic (const CommandLine &cl);
+	void cmdStopMusic (const CommandLine &cl);
+	void cmdPlayMusic (const CommandLine &cl);
 };
 
 } // End of namespace NWN
