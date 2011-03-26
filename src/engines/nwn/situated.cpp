@@ -136,7 +136,7 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 		Aurora::LocString name;
 		gff.getLocString("LocName", name);
 
-		_name = name.getFirstString();
+		_name = name.getString();
 	}
 
 	// Description
@@ -144,7 +144,7 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 		Aurora::LocString description;
 		gff.getLocString("Description", description);
 
-		_description = description.getFirstString();
+		_description = description.getString();
 	}
 
 	// Portrait

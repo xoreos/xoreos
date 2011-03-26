@@ -77,7 +77,7 @@ Common::UString Area::getName(const Common::UString &resRef) {
 	Aurora::LocString name;
 	are.getTopLevel().getLocString("Name", name);
 
-	return name.getFirstString();
+	return name.getString();
 }
 
 const Common::UString &Area::getResRef() {
@@ -188,7 +188,7 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 	Aurora::LocString name;
 	are.getLocString("Name", name);
 
-	_name        = name.getFirstString();
+	_name        = name.getString();
 	_displayName = createDisplayName(_name);
 
 	// Tiles

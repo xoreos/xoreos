@@ -131,7 +131,7 @@ void Module::run() {
 	loadTexturePack();
 
 	status("Running module \"%s\" with character \"%s\"",
-			_ifo.getName().getFirstString().c_str(), _pc.getFullName().c_str());
+			_ifo.getName().getString().c_str(), _pc.getFullName().c_str());
 
 	_ingameGUI->updatePartyMember(0, _pc);
 
@@ -140,7 +140,7 @@ void Module::run() {
 		loadHAKs();
 
 	} catch (Common::Exception &e) {
-		e.add("Can't initialize module \"%s\"", _ifo.getName().getFirstString().c_str());
+		e.add("Can't initialize module \"%s\"", _ifo.getName().getString().c_str());
 		printException(e, "WARNING: ");
 		return;
 	}
@@ -236,7 +236,7 @@ void Module::run() {
 		}
 
 	} catch (Common::Exception &e) {
-		e.add("Failed running module \"%s\"", _ifo.getName().getFirstString().c_str());
+		e.add("Failed running module \"%s\"", _ifo.getName().getString().c_str());
 		printException(e, "WARNING: ");
 	}
 

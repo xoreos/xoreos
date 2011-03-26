@@ -124,12 +124,12 @@ Common::UString Creature::createFullName() {
 	Common::UString first;
 	first = _firstName.getString(language);
 	if (first.empty())
-		first = _firstName.getFirstString();
+		first = _firstName.getString();
 
 	Common::UString last;
 	last = _lastName.getString(language);
 	if (last.empty())
-		last = _lastName.getFirstString();
+		last = _lastName.getString();
 
 	if (first.empty() && last.empty())
 		return "";

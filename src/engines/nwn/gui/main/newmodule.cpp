@@ -215,12 +215,8 @@ void NewModuleMenu::selectedModule() {
 
 		Aurora::ERFFile mod(moduleDir + "/" + modFile + ".mod", true);
 
-		Aurora::LocString locString = mod.getDescription();
+		description = mod.getDescription().getString();
 
-		if (locString.hasString(TalkMan.getMainLanguage()))
-			description = locString.getString(TalkMan.getMainLanguage());
-		else
-			description = locString.getFirstString();
 	} catch (...) {
 		description.clear();
 	}
