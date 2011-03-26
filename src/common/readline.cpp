@@ -52,11 +52,8 @@ void ReadLine::addCommand(const UString &command) {
 }
 
 void ReadLine::setArguments(const UString &command, const std::list<UString> &arguments) {
-	std::pair<ArgumentSets::iterator, bool> result;
-
-	result = _arguments.insert(std::make_pair(command, CommandSet()));
-	if (!result.second)
-		return;
+	std::pair<ArgumentSets::iterator, bool> result =
+		_arguments.insert(std::make_pair(command, CommandSet()));
 
 	result.first->second.clear();
 	for (std::list<UString>::const_iterator a = arguments.begin(); a != arguments.end(); ++a)
