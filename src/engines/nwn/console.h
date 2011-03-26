@@ -30,14 +30,11 @@ public:
 
 	void setModule(Module *module = 0);
 
-protected:
-	bool cmdCallback(Common::UString cmd, Common::UString args);
-
 private:
 	Module *_module;
 
-	bool listAreas(Common::UString args);
-	bool gotoArea(Common::UString args);
+	void cmdListAreas(const CommandLine &cl);
+	void cmdGotoArea (const CommandLine &cl);
 };
 
 } // End of namespace NWN

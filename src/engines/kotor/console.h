@@ -28,13 +28,10 @@ public:
 	Console(Module &module);
 	~Console();
 
-protected:
-	bool cmdCallback(Common::UString cmd, Common::UString args);
-
 private:
 	Module *_module;
 
-	bool gotoModule(Common::UString args);
+	void cmdGotoModule(const CommandLine &cl);
 };
 
 } // End of namespace KOTOR

@@ -12,6 +12,8 @@
  *  KotOR (debug) console.
  */
 
+#include "boost/bind.hpp"
+
 #include "common/ustring.h"
 #include "common/util.h"
 
@@ -25,33 +27,23 @@ namespace KotOR {
 Console::Console(Module &module) : ::Engines::Console("fnt_console"),
 	_module(&module) {
 
-	registerCommand("gotomodule", "Usage: gotomodule <module>\nEnter the specified module");
+	registerCommand("gotomodule", boost::bind(&Console::cmdGotoModule, this, _1),
+			"Usage: gotomodule <module>\nEnter the specified module");
 }
 
 Console::~Console() {
 }
 
-bool Console::cmdCallback(Common::UString cmd, Common::UString args) {
-	cmd.tolower();
-
-	if (cmd == "gotomodule")
-		return gotoModule(args);
-
-	return false;
-}
-
-bool Console::gotoModule(Common::UString args) {
+void Console::cmdGotoModule(const CommandLine &cl) {
 	_module->leave();
 	_module->clear();
 
 	try {
-		_module->load(args);
+		_module->load(cl.args);
 		_module->enter();
 	} catch (Common::Exception &e) {
 		printException(e);
 	}
-
-	return true;
 }
 
 } // End of namespace KOTOR

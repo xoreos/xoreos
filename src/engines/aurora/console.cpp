@@ -12,6 +12,8 @@
  *  Generic Aurora engines (debug) console.
  */
 
+#include "boost/bind.hpp"
+
 #include "common/util.h"
 #include "common/readline.h"
 
@@ -378,9 +380,12 @@ Console::Console(const Common::UString &font) : _visible(false),
 	_readLine = new Common::ReadLine(kCommandHistorySize);
 	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory);
 
-	registerCommand("help" , "Usage: help [<command>]\nPrint help text");
-	registerCommand("clear", "Usage: clear\nClear the console window");
-	registerCommand("exit" , "Usage: exit\nLeave the console window, returning to the game");
+	registerCommand("help" , boost::bind(&Console::cmdHelp , this, _1),
+			"Usage: help [<command>]\nPrint help text");
+	registerCommand("clear", boost::bind(&Console::cmdClear, this, _1),
+			"Usage: clear\nClear the console window");
+	registerCommand("exit" , boost::bind(&Console::cmdExit , this, _1),
+			"Usage: exit\nLeave the console window, returning to the game");
 
 	_console->setPrompt(kPrompt);
 
@@ -483,27 +488,21 @@ bool Console::processEvent(Events::Event &event) {
 	_console->print(Common::UString(kPrompt) + " " + command);
 
 
-	Common::UString cmd;
-	Common::UString args;
+	CommandLine cl;
 
-	command.split(command.findFirst(' '), cmd, args);
+	command.split(command.findFirst(' '), cl.cmd, cl.args);
 
-	cmd.trim();
-	args.trim();
+	cl.cmd.trim();
+	cl.args.trim();
 
-	if        (cmd.equalsIgnoreCase("help")) {
-		handleHelp(args);
-		return true;
-	} else if (cmd.equalsIgnoreCase("clear")) {
-		clear();
-		return true;
-	} else if (cmd.equalsIgnoreCase("exit")) {
-		hide();
+
+	CommandMap::iterator cmd = _commands.find(cl.cmd);
+	if (cmd == _commands.end()) {
+		_console->print(Common::UString::sprintf("Unknown command \"%s\". Type 'help' for a list of available commands.", cl.cmd.c_str()));
 		return true;
 	}
 
-	if (!cmdCallback(cmd, args))
-		_console->print(Common::UString::sprintf("Unknown command \"%s\". Type 'help' for a list of available commands.", cmd.c_str()));
+	cmd->second.callback(cl);
 
 	return true;
 }
@@ -534,38 +533,42 @@ void Console::printException(Common::Exception &e, const Common::UString &prefix
 	}
 }
 
-void Console::handleHelp(const Common::UString &args) {
-	if (args.empty()) {
-		printHelp();
+void Console::cmdHelp(const CommandLine &cli) {
+	if (cli.args.empty()) {
+		printFullHelp();
 		return;
 	}
 
-	std::list<Command>::iterator cmd = _commands.begin();
-	for (cmd = _commands.begin(); cmd != _commands.end(); ++cmd)
-		if (cmd->cmd.equalsIgnoreCase(args))
-			break;
-
+	CommandMap::const_iterator cmd = _commands.find(cli.args);
 	if (cmd == _commands.end()) {
-		printHelp();
+		printFullHelp();
 		return;
 	}
 
-	print(cmd->help);
+	print(cmd->second.help);
 }
 
-void Console::printHelp() {
+void Console::cmdClear(const CommandLine &cli) {
+	clear();
+}
+
+void Console::cmdExit(const CommandLine &cli) {
+	hide();
+}
+
+void Console::printFullHelp() {
 	print("Available commands (help <command> for further help on each command):");
 
 	uint32 lineLength = floorf(_console->getContentWidth() / _longestCommandLength);
 
-	std::list<Command>::iterator c = _commands.begin();
+	CommandMap::const_iterator c = _commands.begin();
 	while (c != _commands.end()) {
 		Common::UString line;
 
 		for (uint32 i = 0; (i < lineLength) && (c != _commands.end()); i++, ++c) {
-			line += c->cmd;
+			line += c->second.cmd;
 
-			int32 padding = _longestCommandSize - c->cmd.size();
+			int32 padding = _longestCommandSize - c->second.cmd.size();
 			while (padding-- > 0)
 				line += " ";
 		}
@@ -575,16 +578,28 @@ void Console::printHelp() {
 
 }
 
-void Console::registerCommand(const Common::UString &cmd, const Common::UString &help) {
-	_commands.push_back(Command());
+bool Console::registerCommand(const Common::UString &cmd, const CommandCallback &callback,
+                              const Common::UString &help) {
 
-	_commands.back().cmd  = cmd;
-	_commands.back().help = help;
+
+	std::pair<CommandMap::iterator, bool> result;
+
+	result = _commands.insert(std::make_pair(cmd, Command()));
+	if (!result.second)
+		return false;
+
+	result.first->second.cmd  = cmd;
+	result.first->second.help = help;
+
+	result.first->second.callback = callback;
+
 
 	float length = _font.getFont().getWidth(cmd + "     ");
 
 	_longestCommandSize   = MAX(_longestCommandSize, cmd.size() + 5);
 	_longestCommandLength = MAX(_longestCommandLength, length);
+
+	return true;
 }
 
 } // End of namespace Engines

@@ -15,8 +15,11 @@
 #ifndef ENGINES_AURORA_CONSOLE_H
 #define ENGINES_AURORA_CONSOLE_H
 
+#include "boost/function.hpp"
+
 #include "common/types.h"
 #include "common/error.h"
+#include "common/ustring.h"
 
 #include "events/types.h"
 #include "events/notifyable.h"
@@ -28,7 +31,6 @@
 #include "graphics/aurora/fontman.h"
 
 namespace Common {
-	class UString;
 	class ReadLine;
 }
 
@@ -131,20 +133,33 @@ public:
 
 
 protected:
+	struct CommandLine {
+		Common::UString cmd;
+		Common::UString args;
+	};
+
+	typedef boost::function<void (const CommandLine &cl)> CommandCallback;
+
+
 	void clear();
 	void print(const Common::UString &line);
 
 	void printException(Common::Exception &e, const Common::UString &prefix = "ERROR: ");
 
-	void registerCommand(const Common::UString &cmd, const Common::UString &help);
+	bool registerCommand(const Common::UString &cmd, const CommandCallback &callback,
+	                     const Common::UString &help);
 
-	virtual bool cmdCallback(Common::UString cmd, Common::UString args) = 0;
 
 private:
 	struct Command {
 		Common::UString cmd;
 		Common::UString help;
+
+		CommandCallback callback;
 	};
+
+	typedef std::map<Common::UString, Command, Common::UString::iless> CommandMap;
+
 
 	bool _visible;
 
@@ -152,13 +167,16 @@ private:
 	Common::ReadLine *_readLine;
 	ConsoleWindow *_console;
 
-	std::list<Command> _commands;
+	CommandMap _commands;
 	uint32 _longestCommandSize;
 	float  _longestCommandLength;
 
 
-	void printHelp();
-	void handleHelp(const Common::UString &args);
+	void cmdHelp (const CommandLine &cli);
+	void cmdClear(const CommandLine &cli);
+	void cmdExit (const CommandLine &cli);
+
+	void printFullHelp();
 };
 
 } // End of namespace Engines

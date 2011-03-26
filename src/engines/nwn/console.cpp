@@ -12,6 +12,8 @@
  *  NWN (debug) console.
  */
 
+#include "boost/bind.hpp"
+
 #include "common/ustring.h"
 #include "common/util.h"
 
@@ -24,8 +26,10 @@ namespace Engines {
 namespace NWN {
 
 Console::Console() : ::Engines::Console("fnt_console"), _module(0) {
-	registerCommand("listareas", "Usage: listareas\nList all areas in the current module");
-	registerCommand("gotoarea" , "Usage: gotoarea <area>\nMove to a specific area");
+	registerCommand("listareas", boost::bind(&Console::cmdListAreas, this, _1),
+			"Usage: listareas\nList all areas in the current module");
+	registerCommand("gotoarea" , boost::bind(&Console::cmdGotoArea , this, _1),
+			"Usage: gotoarea <area>\nMove to a specific area");
 }
 
 Console::~Console() {
@@ -35,41 +39,27 @@ void Console::setModule(Module *module) {
 	_module = module;
 }
 
-bool Console::cmdCallback(Common::UString cmd, Common::UString args) {
-	cmd.tolower();
-
-	if (cmd == "listareas")
-		return listAreas(args);
-	if (cmd == "gotoarea")
-		return gotoArea(args);
-
-	return false;
-}
-
-bool Console::listAreas(Common::UString args) {
+void Console::cmdListAreas(const CommandLine &cl) {
 	if (!_module)
-		return true;
+		return;
 
 	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		print(Common::UString::sprintf("%s (\"%s\")", a->c_str(), Area::getName(*a).c_str()));
-
-	return true;
 }
 
-bool Console::gotoArea(Common::UString args) {
+void Console::cmdGotoArea(const CommandLine &cl) {
 	if (!_module)
-		return true;
+		return;
 
 	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
-		if (a->equalsIgnoreCase(args)) {
+		if (a->equalsIgnoreCase(cl.args)) {
 			_module->_newArea = *a;
-			return true;
+			return;
 		}
 
-	print(Common::UString::sprintf("Area \"%s\" does not exist", args.c_str()));
-	return true;
+	print(Common::UString::sprintf("Area \"%s\" does not exist", cl.args.c_str()));
 }
 
 } // End of namespace NWN
