@@ -131,6 +131,10 @@ public:
 
 	bool processEvent(Events::Event &event);
 
+	void clear();
+	void print(const Common::UString &line);
+	void printf(const char *s, ...);
+
 
 protected:
 	struct CommandLine {
@@ -140,14 +144,11 @@ protected:
 
 	typedef boost::function<void (const CommandLine &cl)> CommandCallback;
 
-
-	void clear();
-	void print(const Common::UString &line);
-
 	void printException(Common::Exception &e, const Common::UString &prefix = "ERROR: ");
 
 	bool registerCommand(const Common::UString &cmd, const CommandCallback &callback,
 	                     const Common::UString &help);
+	void printCommandHelp(const Common::UString &cmd);
 
 
 private:
@@ -175,6 +176,7 @@ private:
 	void cmdHelp (const CommandLine &cli);
 	void cmdClear(const CommandLine &cli);
 	void cmdExit (const CommandLine &cli);
+	void cmdQuit (const CommandLine &cli);
 
 	void printFullHelp();
 };

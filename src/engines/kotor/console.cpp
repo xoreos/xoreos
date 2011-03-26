@@ -35,6 +35,11 @@ Console::~Console() {
 }
 
 void Console::cmdGotoModule(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
 	_module->leave();
 	_module->clear();
 

@@ -12,6 +12,9 @@
  *  Generic Aurora engines (debug) console.
  */
 
+#include <cstdarg>
+#include <cstdio>
+
 #include "boost/bind.hpp"
 
 #include "common/util.h"
@@ -380,12 +383,14 @@ Console::Console(const Common::UString &font) : _visible(false),
 	_readLine = new Common::ReadLine(kCommandHistorySize);
 	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory);
 
-	registerCommand("help" , boost::bind(&Console::cmdHelp , this, _1),
+	registerCommand("help"    , boost::bind(&Console::cmdHelp , this, _1),
 			"Usage: help [<command>]\nPrint help text");
-	registerCommand("clear", boost::bind(&Console::cmdClear, this, _1),
+	registerCommand("clear"   , boost::bind(&Console::cmdClear, this, _1),
 			"Usage: clear\nClear the console window");
-	registerCommand("exit" , boost::bind(&Console::cmdExit , this, _1),
+	registerCommand("exit"    , boost::bind(&Console::cmdExit , this, _1),
 			"Usage: exit\nLeave the console window, returning to the game");
+	registerCommand("quiteos" , boost::bind(&Console::cmdQuit , this, _1),
+			"Usage: quiteos\nShut down eos");
 
 	_console->setPrompt(kPrompt);
 
@@ -498,7 +503,8 @@ bool Console::processEvent(Events::Event &event) {
 
 	CommandMap::iterator cmd = _commands.find(cl.cmd);
 	if (cmd == _commands.end()) {
-		_console->print(Common::UString::sprintf("Unknown command \"%s\". Type 'help' for a list of available commands.", cl.cmd.c_str()));
+		printf("Unknown command \"%s\". Type 'help' for a list of available commands.",
+				cl.cmd.c_str());
 		return true;
 	}
 
@@ -515,6 +521,17 @@ void Console::print(const Common::UString &line) {
 	_console->print(line);
 }
 
+void Console::printf(const char *s, ...) {
+	char buf[STRINGBUFLEN];
+	va_list va;
+
+	va_start(va, s);
+	std::vsnprintf(buf, STRINGBUFLEN, s, va);
+	va_end(va);
+
+	print(buf);
+}
+
 void Console::printException(Common::Exception &e, const Common::UString &prefix) {
 	Common::Exception::Stack &stack = e.getStack();
 
@@ -523,12 +540,12 @@ void Console::printException(Common::Exception &e, const Common::UString &prefix
 		return;
 	}
 
-	print(Common::UString::sprintf("%s%s", prefix.c_str(), stack.top().c_str()));
+	printf("%s%s", prefix.c_str(), stack.top().c_str());
 
 	stack.pop();
 
 	while (!stack.empty()) {
-		print(Common::UString::sprintf("'- Because: %s", stack.top().c_str()));
+		printf("'- Because: %s", stack.top().c_str());
 		stack.pop();
 	}
 }
@@ -539,13 +556,7 @@ void Console::cmdHelp(const CommandLine &cli) {
 		return;
 	}
 
-	CommandMap::const_iterator cmd = _commands.find(cli.args);
-	if (cmd == _commands.end()) {
-		printFullHelp();
-		return;
-	}
-
-	print(cmd->second.help);
+	printCommandHelp(cli.args);
 }
 
 void Console::cmdClear(const CommandLine &cli) {
@@ -554,6 +565,21 @@ void Console::cmdClear(const CommandLine &cli) {
 
 void Console::cmdExit(const CommandLine &cli) {
 	hide();
+}
+
+void Console::cmdQuit(const CommandLine &cli) {
+	print("Bye...");
+	EventMan.requestQuit();
+}
+
+void Console::printCommandHelp(const Common::UString &cmd) {
+	CommandMap::const_iterator c = _commands.find(cmd);
+	if (c == _commands.end()) {
+		printFullHelp();
+		return;
+	}
+
+	print(c->second.help);
 }
 
 void Console::printFullHelp() {
