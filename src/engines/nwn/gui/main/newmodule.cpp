@@ -13,12 +13,7 @@
  */
 
 #include "common/util.h"
-#include "common/configman.h"
-#include "common/filepath.h"
-#include "common/filelist.h"
 
-#include "aurora/erffile.h"
-#include "aurora/locstring.h"
 #include "aurora/talkman.h"
 
 #include "graphics/font.h"
@@ -138,9 +133,7 @@ void NewModuleMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) 
 void NewModuleMenu::initModuleList() {
 	status("Creating module list");
 
-	Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
-	if (moduleDir.empty())
-		return;
+	Module::getModules(_modules);
 
 	WidgetListBox &moduleList = *getListBox("ModuleListBox", true);
 
@@ -149,27 +142,9 @@ void NewModuleMenu::initModuleList() {
 	moduleList.clear();
 	moduleList.setMode(WidgetListBox::kModeSelectable);
 
-	Common::FileList moduleDirList;
-
-	moduleDirList.addDirectory(moduleDir);
-
-	std::list<Common::UString> modules;
-	uint n = moduleDirList.getFileNames(modules);
-
-	modules.sort(Common::UString::iless());
-
-	_modules.reserve(n);
-	moduleList.reserve(n);
-	for (std::list<Common::UString>::const_iterator m = modules.begin(); m != modules.end(); ++m) {
-		if (Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod")) {
-
-			_modules.push_back(Common::FilePath::getStem(*m));
-
-			WidgetListItemModule *M =
-				new WidgetListItemModule(*this, "fnt_galahad14", _modules.back(), 2.0);
-			moduleList.add(M);
-		}
-	}
+	moduleList.reserve(_modules.size());
+	for (std::vector<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
+		moduleList.add(new WidgetListItemModule(*this, "fnt_galahad14", *m, 2.0));
 
 	moduleList.unlock();
 

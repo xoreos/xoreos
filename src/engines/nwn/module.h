@@ -50,6 +50,8 @@ public:
 
 	void showMenu();
 
+
+	static void getModules(std::vector<Common::UString> &modules);
 	static Common::UString getDescription(const Common::UString &module);
 
 private:
