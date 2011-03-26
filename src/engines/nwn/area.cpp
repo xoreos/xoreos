@@ -92,19 +92,51 @@ const Common::UString &Area::getDisplayName() {
 	return _displayName;
 }
 
+void Area::stopSound() {
+	stopAmbientMusic();
+	stopAmbientSound();
+}
+
+void Area::stopAmbientMusic() {
+	SoundMan.stopChannel(_ambientMusic);
+}
+
+void Area::stopAmbientSound() {
+	SoundMan.stopChannel(_ambientSound);
+}
+
+void Area::playAmbientMusic(Common::UString music) {
+	stopAmbientMusic();
+
+	// TODO Day/Night
+	if (music.empty())
+		music = _musicDay;
+
+	if (music.empty())
+		return;
+
+	_ambientMusic = playSound(music, Sound::kSoundTypeMusic, true);
+}
+
+void Area::playAmbientSound(Common::UString sound) {
+	stopAmbientSound();
+
+	// TODO Day/Night
+	if (sound.empty())
+		sound = _ambientDay;
+
+	if (sound.empty())
+		return;
+
+	_ambientSound = playSound(sound, Sound::kSoundTypeSFX, true, _ambientDayVol);
+}
+
 void Area::show() {
 	if (_visible)
 		return;
 
-	SoundMan.stopChannel(_ambientSound);
-	SoundMan.stopChannel(_ambientMusic);
-
-	// TODO Day/Night
-
-	if (!_ambientDay.empty())
-		_ambientSound = playSound(_ambientDay, Sound::kSoundTypeSFX  , true, _ambientDayVol);
-	if (!_musicDay.empty())
-		_ambientMusic = playSound(_musicDay  , Sound::kSoundTypeMusic, true);
+	playAmbientSound();
+	playAmbientMusic();
 
 	GfxMan.lockFrame();
 
@@ -129,9 +161,7 @@ void Area::hide() {
 	if (!_visible)
 		return;
 
-	// Stop sound
-	SoundMan.stopChannel(_ambientSound);
-	SoundMan.stopChannel(_ambientMusic);
+	stopSound();
 
 	GfxMan.lockFrame();
 

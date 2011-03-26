@@ -33,8 +33,16 @@ public:
 private:
 	Module *_module;
 
-	void cmdListAreas(const CommandLine &cl);
-	void cmdGotoArea (const CommandLine &cl);
+	void cmdQuitModule(const CommandLine &cl);
+	void cmdListAreas (const CommandLine &cl);
+	void cmdGotoArea  (const CommandLine &cl);
+	void cmdListMusic (const CommandLine &cl);
+	void cmdStopMusic (const CommandLine &cl);
+	void cmdPlayMusic (const CommandLine &cl);
+	void cmdListVideos(const CommandLine &cl);
+	void cmdPlayVideo (const CommandLine &cl);
+	void cmdListSounds(const CommandLine &cl);
+	void cmdPlaySound (const CommandLine &cl);
 };
 
 } // End of namespace NWN

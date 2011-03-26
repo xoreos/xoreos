@@ -130,6 +130,15 @@ private:
 	void loadDoors     (const Aurora::GFFList &list);
 
 	Common::UString createDisplayName(const Common::UString &name);
+
+	void stopSound();
+	void stopAmbientMusic();
+	void stopAmbientSound();
+
+	void playAmbientMusic(Common::UString music = "");
+	void playAmbientSound(Common::UString sound = "");
+
+	friend class Console;
 };
 
 } // End of namespace NWN

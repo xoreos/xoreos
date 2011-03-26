@@ -178,6 +178,8 @@ void Module::run() {
 
 		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
 			loadArea();
+			if (_exit)
+				break;
 
 			Events::Event event;
 			while (EventMan.pollEvent(event)) {
@@ -321,6 +323,10 @@ void Module::loadArea() {
 		return;
 
 	delete _area;
+	if (_newArea.empty()) {
+		_exit = true;
+		return;
+	}
 
 	_area = new Area(*this, _newArea);
 
@@ -329,6 +335,8 @@ void Module::loadArea() {
 	EventMan.flushEvents();
 
 	_ingameGUI->setArea(_area->getName());
+
+	_console->printf("Entering area \"%s\"", _area->getResRef().c_str());
 }
 
 void Module::unloadArea() {
