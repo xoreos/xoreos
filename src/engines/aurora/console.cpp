@@ -471,6 +471,11 @@ bool Console::processEvent(Events::Event &event) {
 			return true;
 		}
 
+		if ((event.key.keysym.sym == SDLK_l) && (event.key.keysym.mod & KMOD_CTRL)) {
+			clear();
+			return true;
+		}
+
 		if ((event.key.keysym.sym == SDLK_PAGEUP) && (event.key.keysym.mod & KMOD_SHIFT)) {
 			_console->scrollUp(kConsoleLines / 2);
 			return true;
