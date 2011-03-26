@@ -50,6 +50,8 @@ public:
 
 	void showMenu();
 
+	static Common::UString getDescription(const Common::UString &module);
+
 private:
 	Console *_console;
 

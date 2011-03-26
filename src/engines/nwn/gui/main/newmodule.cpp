@@ -207,20 +207,7 @@ Common::UString NewModuleMenu::getSelectedModule() {
 }
 
 void NewModuleMenu::selectedModule() {
-	Common::UString description;
-
-	try {
-		Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
-		Common::UString modFile   = getSelectedModule();
-
-		Aurora::ERFFile mod(moduleDir + "/" + modFile + ".mod", true);
-
-		description = mod.getDescription().getString();
-
-	} catch (...) {
-		description.clear();
-	}
-
+	Common::UString description = Module::getDescription(getSelectedModule());
 	if (description.empty())
 		description = TalkMan.getString(67741);
 

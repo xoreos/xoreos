@@ -19,6 +19,7 @@
 #include "events/events.h"
 
 #include "aurora/2dareg.h"
+#include "aurora/erffile.h"
 
 #include "graphics/camera.h"
 
@@ -352,6 +353,20 @@ void Module::showMenu() {
 
 	// In case we changed the texture pack settings, reload it
 	loadTexturePack();
+}
+
+Common::UString Module::getDescription(const Common::UString &module) {
+	try {
+		Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
+		Common::UString modFile   = module;
+
+		Aurora::ERFFile mod(moduleDir + "/" + modFile + ".mod", true);
+
+		return mod.getDescription().getString();
+	} catch (...) {
+	}
+
+	return "";
 }
 
 } // End of namespace NWN
