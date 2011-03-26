@@ -120,20 +120,33 @@ bool Module::usePC(const CharacterID &c) {
 	return true;
 }
 
-void Module::run() {
+bool Module::replaceModule(const Common::UString &module) {
+	_exit = true;
+
+	unloadArea();
+	unloadHAKs();
+	unloadModule();
+
+	if (!loadModule(module))
+		return false;
+
+	return enter();
+}
+
+bool Module::enter() {
 	if (!_hasModule) {
-		warning("Module::run(): Lacking a module?!?");
-		return;
+		warning("Module::enter(): Lacking a module?!?");
+		return false;
 	}
 
 	if (!_hasPC) {
-		warning("Module::run(): Lacking a PC?!?");
-		return;
+		warning("Module::enter(): Lacking a PC?!?");
+		return false;
 	}
 
 	loadTexturePack();
 
-	status("Running module \"%s\" with character \"%s\"",
+	_console->printf("Entering module \"%s\" with character \"%s\"",
 			_ifo.getName().getString().c_str(), _pc.getFullName().c_str());
 
 	_ingameGUI->updatePartyMember(0, _pc);
@@ -145,7 +158,7 @@ void Module::run() {
 	} catch (Common::Exception &e) {
 		e.add("Can't initialize module \"%s\"", _ifo.getName().getString().c_str());
 		printException(e, "WARNING: ");
-		return;
+		return false;
 	}
 
 	Common::UString startMovie = _ifo.getStartMovie();
@@ -153,7 +166,6 @@ void Module::run() {
 		playVideo(startMovie);
 
 	_ingameGUI->updateCompass();
-	_ingameGUI->show();
 
 	_exit    = false;
 	_newArea = _ifo.getEntryArea();
@@ -172,8 +184,17 @@ void Module::run() {
 	CameraMan.setOrientation(entryDirX, entryDirY);
 	_ingameGUI->updateCompass();
 
+	return true;
+}
+
+void Module::run() {
+	if (!enter())
+		return;
+
 	EventMan.enableUnicode(true);
 	EventMan.enableKeyRepeat();
+
+	_ingameGUI->show();
 
 	try {
 
@@ -242,6 +263,8 @@ void Module::run() {
 		e.add("Failed running module \"%s\"", _ifo.getName().getString().c_str());
 		printException(e, "WARNING: ");
 	}
+
+	_ingameGUI->hide();
 
 	EventMan.enableUnicode(false);
 	EventMan.enableKeyRepeat(0);

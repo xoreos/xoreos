@@ -46,6 +46,9 @@ public:
 	/** Use this character as the player character. */
 	bool usePC(const CharacterID &c);
 
+	/** Replace the currently running module. */
+	bool replaceModule(const Common::UString &module);
+
 	void run();
 
 	void showMenu();
@@ -95,6 +98,8 @@ private:
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadTexturePack(); ///< Load the texture pack.
 	void loadArea();        ///< Load a new area.
+
+	bool enter(); ///< Enter the currently loaded module.
 
 
 	friend class Console;

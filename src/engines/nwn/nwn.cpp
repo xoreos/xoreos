@@ -338,12 +338,11 @@ void NWNEngine::mainMenuLoop() {
 	Legal *legal = new Legal;
 
 	Console console;
+	Module module(console);
+
+	console.setModule(&module);
 
 	while (!EventMan.quitRequested()) {
-		Module module(console);
-
-		console.setModule(&module);
-
 		GUI *mainMenu = new MainMenu(module);
 
 		EventMan.flushEvents();
@@ -373,8 +372,8 @@ void NWNEngine::mainMenuLoop() {
 			break;
 
 		playMenuMusic();
-		console.setModule();
 		console.hide();
+		module.clear();
 	}
 
 	console.setModule();
