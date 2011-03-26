@@ -71,13 +71,18 @@ Area::~Area() {
 }
 
 Common::UString Area::getName(const Common::UString &resRef) {
-	Aurora::GFFFile are;
-	loadGFF(are, resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
+	try {
+		Aurora::GFFFile are;
+		loadGFF(are, resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
 
-	Aurora::LocString name;
-	are.getTopLevel().getLocString("Name", name);
+		Aurora::LocString name;
+		are.getTopLevel().getLocString("Name", name);
 
-	return name.getString();
+		return name.getString();
+	} catch (...) {
+	}
+
+	return "";
 }
 
 const Common::UString &Area::getResRef() {
