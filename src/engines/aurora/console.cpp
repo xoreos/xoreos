@@ -137,6 +137,9 @@ void ConsoleWindow::setInput(const Common::UString &input, uint32 cursorPos,
 	_cursorPosition = cursorPos;
 	_overwrite      = overwrite;
 
+	_cursorBlinkState = false;
+	_lastCursorBlink  = 0;
+
 	_input->set(input);
 	recalcCursor();
 
