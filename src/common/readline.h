@@ -17,6 +17,7 @@
 
 #include <list>
 #include <set>
+#include <map>
 
 #include "common/types.h"
 #include "common/ustring.h"
@@ -43,6 +44,11 @@ public:
 	/** Add a command that can be tab-completed. */
 	void addCommand(const UString &command);
 
+	/** Set the tab-completeable arguments for a command. */
+	void setArguments(const UString &command, const std::list<UString> &arguments);
+	/** Clear the tab-completeable arguments for a command. */
+	void setArguments(const UString &command);
+
 	/** Return the current input line. */
 	const UString &getCurrentLine() const;
 
@@ -53,7 +59,7 @@ public:
 	bool getOverwrite() const;
 
 	/** Return the current tab-completion hints. */
-	const std::list<UString> &getCompleteHint(uint32 &maxSize) const;
+	const std::list<UString> &getCompleteHint(uint32 &maxSize, uint32 &count) const;
 
 
 	/** Process that given events.
@@ -69,7 +75,9 @@ public:
 
 
 private:
-	typedef std::set<UString, UString::iless> CommandSet;
+	typedef std::set<UString> CommandSet;
+	typedef std::map<UString, CommandSet> ArgumentSets;
+
 
 	uint32 _historySizeMax;     ///< Max size of the history.
 	uint32 _historySizeCurrent; ///< Current size of the history.
@@ -92,10 +100,14 @@ private:
 
 	/** All known tab-completeable commands. */
 	CommandSet _commands;
+	/** All know tab-completeable command arguments. */
+	ArgumentSets _arguments;
+
 	/** Current possible command candidates for the input line. */
 	std::list<UString> _completeHint;
 	/** Max size of a current command candidates. */
 	uint32 _maxHintSize;
+	uint32 _hintCount;
 
 
 	void addCurrentLineToHistory();
@@ -105,8 +117,8 @@ private:
 	void browseDown();
 
 	void tabComplete();
-
-	bool hasCommand() const;
+	void tabComplete(const UString &prefix, const UString &input,
+	                 const CommandSet &commands);
 
 	static UString findCommonSubstring(const std::list<UString> &strings);
 };

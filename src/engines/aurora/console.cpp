@@ -385,7 +385,9 @@ void ConsoleWindow::updateScrollbarPosition() {
 }
 
 
-Console::Console(const Common::UString &font) : _visible(false) {
+Console::Console(const Common::UString &font) : _visible(false),
+	_tabCount(0), _printedCompleteWarning(false) {
+
 	_readLine = new Common::ReadLine(kCommandHistorySize);
 	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory);
 
@@ -456,6 +458,12 @@ bool Console::processEvent(Events::Event &event) {
 		return false;
 
 	if (event.type == Events::kEventKeyDown) {
+		if (event.key.keysym.sym != SDLK_TAB) {
+			_tabCount = 0;
+			_printedCompleteWarning = false;
+		} else
+			_tabCount++;
+
 		if (((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) ||
 		    (event.key.keysym.sym == SDLK_ESCAPE)) {
 
@@ -514,15 +522,8 @@ bool Console::processEvent(Events::Event &event) {
 			_readLine->getCursorPosition(), _readLine->getOverwrite());
 
 	// Check whether we have tab-completion hints
-	uint32 maxHintSize;
-	const std::list<Common::UString> &completeHints = _readLine->getCompleteHint(maxHintSize);
-	if (!completeHints.empty()) {
-		// If we do, display them
-
-		_console->print(Common::UString(kPrompt) + " " + command);
-		printList(completeHints, maxHintSize);
+	if (printHints(command))
 		return true;
-	}
 
 	if (command.empty())
 		return true;
@@ -546,6 +547,40 @@ bool Console::processEvent(Events::Event &event) {
 	}
 
 	cmd->second.callback(cl);
+
+	return true;
+}
+
+bool Console::printHints(const Common::UString &command) {
+	if (_tabCount < 2)
+		return false;
+
+	uint32 maxSize;
+	uint32 count;
+	const std::list<Common::UString> &hints = _readLine->getCompleteHint(maxSize, count);
+	if (count == 0)
+		return false;
+
+	maxSize = MAX<uint32>(maxSize, 3) + 2;
+	uint32 lineSize = getColumns() / maxSize;
+	uint32 lines = count / lineSize;
+
+	if (lines >= (kConsoleLines - 3)) {
+		if (!_printedCompleteWarning)
+			printf("%d completion candidates", count);
+
+		_printedCompleteWarning = true;
+
+		if (_tabCount < 4)
+			return true;
+	}
+
+	_console->scrollBottom();
+	_console->print(Common::UString(kPrompt) + " " + command);
+	printList(hints, maxSize);
+
+	_tabCount = 0;
+	_printedCompleteWarning = false;
 
 	return true;
 }
@@ -670,6 +705,16 @@ void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) 
 		print(line);
 	}
 
+}
+
+void Console::setArguments(const Common::UString &cmd,
+		const std::list<Common::UString> &args) {
+
+	_readLine->setArguments(cmd, args);
+}
+
+void Console::setArguments(const Common::UString &cmd) {
+	_readLine->setArguments(cmd);
 }
 
 void Console::showCallback() {

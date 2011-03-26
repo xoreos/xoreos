@@ -75,6 +75,8 @@ void Console::updateAreas() {
 	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		_areas.push_back(*a);
+
+	setArguments("gotoarea", _areas);
 }
 
 void Console::updateVideos() {
@@ -91,6 +93,8 @@ void Console::updateVideos() {
 
 		_maxSizeVideos = MAX(_maxSizeVideos, _videos.back().size());
 	}
+
+	setArguments("playvideo", _videos);
 }
 
 void Console::updateSounds() {
@@ -107,6 +111,8 @@ void Console::updateSounds() {
 
 		_maxSizeSounds = MAX(_maxSizeSounds, _sounds.back().size());
 	}
+
+	setArguments("playsound", _sounds);
 }
 
 void Console::updateMusic() {
@@ -123,6 +129,8 @@ void Console::updateMusic() {
 
 		_maxSizeMusic = MAX(_maxSizeMusic, _music.back().size());
 	}
+
+	setArguments("playmusic", _music);
 }
 
 void Console::cmdQuitModule(const CommandLine &cl) {

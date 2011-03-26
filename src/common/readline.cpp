@@ -51,6 +51,24 @@ void ReadLine::addCommand(const UString &command) {
 	_commands.insert(command);
 }
 
+void ReadLine::setArguments(const UString &command, const std::list<UString> &arguments) {
+	std::pair<ArgumentSets::iterator, bool> result;
+
+	result = _arguments.insert(std::make_pair(command, CommandSet()));
+	if (!result.second)
+		return;
+
+	result.first->second.clear();
+	for (std::list<UString>::const_iterator a = arguments.begin(); a != arguments.end(); ++a)
+		result.first->second.insert(*a);
+}
+
+void ReadLine::setArguments(const UString &command) {
+	ArgumentSets::iterator args = _arguments.find(command);
+	if (args != _arguments.end())
+		_arguments.erase(args);
+}
+
 const UString &ReadLine::getCurrentLine() const {
 	return _currentLine;
 }
@@ -63,8 +81,9 @@ bool ReadLine::getOverwrite() const {
 	return _overwrite;
 }
 
-const std::list<UString> &ReadLine::getCompleteHint(uint32 &maxSize) const {
+const std::list<UString> &ReadLine::getCompleteHint(uint32 &maxSize, uint32 &count) const {
 	maxSize = _maxHintSize;
+	count   = _hintCount;
 
 	return _completeHint;
 }
@@ -74,6 +93,7 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 
 	_completeHint.clear();
 	_maxHintSize = 0;
+	_hintCount   = 0;
 
 	// We only handle key down events
 	if (event.type != Events::kEventKeyDown)
@@ -250,25 +270,45 @@ void ReadLine::browseDown() {
 }
 
 void ReadLine::tabComplete() {
-	if (hasCommand())
+	UString::iterator separator = _currentLine.findFirst(' ');
+	if (separator == _currentLine.end()) {
+		tabComplete("", _currentLine, _commands);
+		return;
+	}
+
+	UString command, arguments;
+	_currentLine.split(separator, command, arguments);
+
+	arguments.trimLeft();
+
+	ArgumentSets::iterator args = _arguments.find(command);
+	if (args == _arguments.end())
 		return;
 
-	// Find the first command that's greater than the current line
-	CommandSet::const_iterator lower = _commands.lower_bound(_currentLine);
-	if (lower == _commands.end())
+	tabComplete(command + " ", arguments, args->second);
+}
+
+void ReadLine::tabComplete(const UString &prefix, const UString &input,
+                           const CommandSet &commands) {
+
+	// Find the first command that's greater than the current input
+	CommandSet::const_iterator lower = commands.lower_bound(input);
+	if (lower == commands.end())
 		return;
 
 	uint32 maxSize = 0;
+	uint32 count   = 0;
 
-	// All commands starting with the current line are match candidates
+	// All commands starting with the current input are match candidates
 	std::list<UString> candidates;
-	for (CommandSet::const_iterator it = lower; it != _commands.end(); ++it) {
-		if (!it->beginsWith(_currentLine))
+	for (CommandSet::const_iterator it = lower; it != commands.end(); ++it) {
+		if (!it->beginsWith(input))
 			break;
 
 		if (!it->empty()) {
 			candidates.push_back(*it);
 			maxSize = MAX(maxSize, candidates.back().size());
+			count++;
 		}
 	}
 
@@ -279,7 +319,7 @@ void ReadLine::tabComplete() {
 	if (&candidates.front() == &candidates.back()) {
 		// Perfect match, complete
 
-		_currentLine    = candidates.front() + " ";
+		_currentLine    = prefix + candidates.front() + " ";
 		_cursorPosition = _currentLine.size();
 		return;
 	}
@@ -287,14 +327,14 @@ void ReadLine::tabComplete() {
 	// Partial match, figure out the common substring
 	UString substring = findCommonSubstring(candidates);
 
-	if (substring == _currentLine) {
-		_completeHint = candidates;
-		_maxHintSize  = maxSize;
-		return;
-	}
+	_completeHint = candidates;
+	_maxHintSize  = maxSize;
+	_hintCount    = count;
 
-	_currentLine    = substring;
-	_cursorPosition = _currentLine.size();
+	if (substring != input) {
+		_currentLine    = prefix + substring;
+		_cursorPosition = _currentLine.size();
+	}
 }
 
 UString ReadLine::findCommonSubstring(const std::list<UString> &strings) {
@@ -328,10 +368,6 @@ UString ReadLine::findCommonSubstring(const std::list<UString> &strings) {
 	}
 
 	return substring;
-}
-
-bool ReadLine::hasCommand() const {
-	return _currentLine.findFirst(' ') != _currentLine.end();
 }
 
 } // End of namespace Common

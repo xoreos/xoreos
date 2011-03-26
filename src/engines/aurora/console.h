@@ -157,8 +157,12 @@ protected:
 
 	bool registerCommand(const Common::UString &cmd, const CommandCallback &callback,
 	                     const Common::UString &help);
+
 	void printCommandHelp(const Common::UString &cmd);
 	void printList(const std::list<Common::UString> &list, uint32 maxSize = 0);
+
+	void setArguments(const Common::UString &cmd, const std::list<Common::UString> &args);
+	void setArguments(const Common::UString &cmd);
 
 	virtual void showCallback();
 
@@ -182,6 +186,9 @@ private:
 
 	CommandMap _commands;
 
+	uint32 _tabCount;
+	bool _printedCompleteWarning;
+
 
 	void cmdHelp (const CommandLine &cli);
 	void cmdClear(const CommandLine &cli);
@@ -189,6 +196,7 @@ private:
 	void cmdQuit (const CommandLine &cli);
 
 	void printFullHelp();
+	bool printHints(const Common::UString &command);
 };
 
 } // End of namespace Engines
