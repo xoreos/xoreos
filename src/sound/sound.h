@@ -109,6 +109,15 @@ public:
 	void stopChannel(ChannelHandle &handle);
 
 
+	// Pausing/Stopping all channels
+
+	/** Pause all channels. */
+	void pauseAll(bool pause);
+
+	/** Stop all channels. */
+	void stopAll();
+
+
 	// Listener properties
 
 	/** Set the gain of the listener (= the global master volume). */
@@ -196,6 +205,9 @@ private:
 
 	/** Is that channel currently playing a sound? */
 	bool isPlaying(uint16 channel) const;
+
+	/** Pause/Unpause a channel. */
+	void pauseChannel(Channel *channel, bool pause);
 
 	/** Stop and free a channel. */
 	void freeChannel(ChannelHandle &handle);

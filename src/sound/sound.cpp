@@ -332,23 +332,27 @@ void SoundManager::pauseChannel(ChannelHandle &handle, bool pause) {
 	if (!channel || !channel->stream)
 		throw Common::Exception("Invalid channel");
 
-	ALenum error = AL_NO_ERROR;
-	if (pause) {
-		alSourcePause(channel->source);
-		if ((error = alGetError()) != AL_NO_ERROR)
-			throw Common::Exception("OpenAL error while attempting to pause: %X", error);
-
-		channel->state = AL_PAUSED;
-	} else
-		channel->state = AL_PLAYING;
-
-	triggerUpdate();
+	pauseChannel(channel, pause);
 }
 
 void SoundManager::stopChannel(ChannelHandle &handle) {
 	Common::StackLock lock(_mutex);
 
 	freeChannel(handle);
+}
+
+void SoundManager::pauseAll(bool pause) {
+	Common::StackLock lock(_mutex);
+
+	for (uint16 i = 1; i < kChannelCount; i++)
+		pauseChannel(_channels[i], pause);
+}
+
+void SoundManager::stopAll() {
+	Common::StackLock lock(_mutex);
+
+	for (uint16 i = 1; i < kChannelCount; i++)
+		freeChannel(i);
 }
 
 void SoundManager::setListenerGain(float gain) {
@@ -528,6 +532,23 @@ ChannelHandle SoundManager::newChannel() {
 		_curID++;
 
 	return handle;
+}
+
+void SoundManager::pauseChannel(Channel *channel, bool pause) {
+	if (!channel || channel->id == 0)
+		return;
+
+	ALenum error = AL_NO_ERROR;
+	if (pause) {
+		alSourcePause(channel->source);
+		if ((error = alGetError()) != AL_NO_ERROR)
+			warning("OpenAL error while attempting to pause: %X", error);
+
+		channel->state = AL_PAUSED;
+	} else
+		channel->state = AL_PLAYING;
+
+	triggerUpdate();
 }
 
 void SoundManager::freeChannel(ChannelHandle &handle) {
