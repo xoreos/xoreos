@@ -195,6 +195,10 @@ private:
 
 	/** Set up a projection matrix. Analog to gluPerspective. */
 	void perspective(float fovy, float aspect, float zNear, float zFar);
+	/** Map the given screen coordinates onto a line in world space. */
+	bool unproject(float x, float y,
+	               float &x1, float &y1, float &z1,
+	               float &x2, float &y2, float &z2);
 
 	void rebuildGLContainers();
 	void destroyGLContainers();

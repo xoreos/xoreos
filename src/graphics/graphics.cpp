@@ -383,6 +383,99 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	_projection.getGLMatrix(_glProjection);
 }
 
+bool GraphicsManager::unproject(float x, float y,
+                                float &x1, float &y1, float &z1,
+                                float &x2, float &y2, float &z2) {
+
+	try {
+		// Generate the model matrix
+
+		Common::TransformationMatrix model;
+
+		// Apply camera orientation
+		const float *cOrient = CameraMan.getOrientation();
+		model.rotate(-cOrient[0], 1.0, 0.0, 0.0);
+		model.rotate( cOrient[1], 0.0, 1.0, 0.0);
+		model.rotate(-cOrient[2], 0.0, 0.0, 1.0);
+
+		// Apply camera position
+		const float *cPos = CameraMan.getPosition();
+		model.translate(-cPos[0], -cPos[1], cPos[2]);
+
+
+		// This here is our projection matrix
+		Common::Matrix proj = _projection;
+
+		// Multiply them and invert the result
+		proj *= model;
+		proj.invert();
+
+
+		// Viewport coordinates
+
+		float view[4];
+
+		view[0] = 0.0;
+		view[1] = 0.0;
+		view[2] = _screen->w;
+		view[3] = _screen->h;
+
+		float zNear = 0.0;
+		float zFar  = 1.0;
+
+
+		// Generate a matrix for the coordinates at the near plane
+
+		Common::Matrix coordsNear(4, 1);
+
+		coordsNear[0][0] = ((2 * (x - view[0])) / (view[2])) - 1.0;
+		coordsNear[1][0] = ((2 * (y - view[1])) / (view[3])) - 1.0;
+		coordsNear[2][0] = (2 * zNear) - 1.0;
+		coordsNear[3][0] = 1.0;
+
+
+
+		// Generate a matrix for the coordinates at the far plane
+
+		Common::Matrix coordsFar(4, 1);
+
+		coordsFar[0][0] = ((2 * (x - view[0])) / (view[2])) - 1.0;
+		coordsFar[1][0] = ((2 * (y - view[1])) / (view[3])) - 1.0;
+		coordsFar[2][0] = (2 * zFar) - 1.0;
+		coordsFar[3][0] = 1.0;
+
+
+		// Unproject
+		Common::Matrix oNear(proj * coordsNear);
+		Common::Matrix oFar (proj * coordsFar );
+		if ((oNear[3][0] == 0.0) || (oNear[3][0] == 0.0))
+			return false;
+
+
+		// And return the values
+
+		oNear[3][0] = 1.0 / oNear[3][0];
+
+		x1 = oNear[0][0] * oNear[3][0];
+		y1 = oNear[1][0] * oNear[3][0];
+		z1 = oNear[2][0] * oNear[3][0];
+
+		oFar[3][0] = 1.0 / oFar[3][0];
+
+		x2 = oFar[0][0] * oFar[3][0];
+		y2 = oFar[1][0] * oFar[3][0];
+		z2 = oFar[2][0] * oFar[3][0];
+
+	} catch (Common::Exception &e) {
+		Common::printException(e, "WARNING: ");
+		return false;
+	} catch (...) {
+		return false;
+	}
+
+	return true;
+}
+
 void GraphicsManager::lockFrame() {
 	Common::StackLock frameLock(_frameLockMutex);
 
@@ -464,26 +557,61 @@ void GraphicsManager::takeScreenshot() {
 
 static const Common::UString kNoTag;
 const Common::UString &GraphicsManager::getObjectAt(float x, float y) {
-	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
+	// Check for a hit in the GUI objects
 
-	// Map the screen coordinates to the OpenGL coordinates
-	x =               x  - (_screen->w / 2.0);
-	y = (_screen->h - y) - (_screen->h / 2.0);
+	lockFrame();
 
-	// Go through the GUI elements in reverse drawing order
-	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin(); obj != _guiFrontObjects.list.end(); ++obj) {
+	// Map the screen coordinates to our OpenGL GUI screen coordinates
+	const float guiX =               x  - (_screen->w / 2.0);
+	const float guiY = (_screen->h - y) - (_screen->h / 2.0);
+
+	// Go through the GUI elements, from nearest to furthest
+	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin();
+	     obj != _guiFrontObjects.list.end(); ++obj) {
+
 		if (!(*obj)->isClickable())
 			// Object isn't clickable, don't check
 			continue;
 
 		// If the coordinates are "in" that object, return its tag
-		if ((*obj)->isIn(x, y))
+		if ((*obj)->isIn(guiX, guiY)) {
+			unlockFrame();
 			return (*obj)->getTag();
+		}
 	}
 
-	// TODO: World objects check
 
-	// No object at that position
+	// Check for a hit in the world objects
+
+	if (!_objects.list.empty()) {
+		// Map the screen coordinates to OpenGL world screen coordinates
+		const float worldX =              x;
+		const float worldY = _screen->h - y;
+
+		float x1, y1, z1, x2, y2, z2;
+		if (unproject(worldX, worldY, x1, y1, z1, x2, y2, z2)) {
+
+			// Go through the world objects, from nearest to furthest
+			for (Renderable::QueueRef obj = _objects.list.begin();
+			     obj != _objects.list.end(); ++obj) {
+
+				if (!(*obj)->isClickable())
+					// Object isn't clickable, don't check
+					continue;
+
+				// If the line intersects with the object, return its tag
+				if ((*obj)->isIn(x1, y1, z1, x2, y2, z2)) {
+					unlockFrame();
+					return (*obj)->getTag();
+				}
+
+			}
+
+		}
+	}
+
+	// No object at all at that position
+	unlockFrame();
 	return kNoTag;
 }
 
