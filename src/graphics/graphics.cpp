@@ -555,8 +555,7 @@ void GraphicsManager::takeScreenshot() {
 	unlockFrame();
 }
 
-static const Common::UString kNoTag;
-const Common::UString &GraphicsManager::getObjectAt(float x, float y) {
+Renderable *GraphicsManager::getObjectAt(float x, float y) {
 	// Check for a hit in the GUI objects
 
 	lockFrame();
@@ -573,10 +572,10 @@ const Common::UString &GraphicsManager::getObjectAt(float x, float y) {
 			// Object isn't clickable, don't check
 			continue;
 
-		// If the coordinates are "in" that object, return its tag
+		// If the coordinates are "in" that object, return it
 		if ((*obj)->isIn(guiX, guiY)) {
 			unlockFrame();
-			return (*obj)->getTag();
+			return *obj;
 		}
 	}
 
@@ -599,10 +598,10 @@ const Common::UString &GraphicsManager::getObjectAt(float x, float y) {
 					// Object isn't clickable, don't check
 					continue;
 
-				// If the line intersects with the object, return its tag
+				// If the line intersects with the object, return it
 				if ((*obj)->isIn(x1, y1, z1, x2, y2, z2)) {
 					unlockFrame();
-					return (*obj)->getTag();
+					return *obj;
 				}
 
 			}
@@ -612,7 +611,7 @@ const Common::UString &GraphicsManager::getObjectAt(float x, float y) {
 
 	// No object at all at that position
 	unlockFrame();
-	return kNoTag;
+	return 0;
 }
 
 void GraphicsManager::renderScene() {

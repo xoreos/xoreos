@@ -106,8 +106,8 @@ public:
 	/** Take a screenshot. */
 	void takeScreenshot();
 
-	/** Get the tag of the object at this screen position. */
-	const Common::UString &getObjectAt(float x, float y);
+	/** Get the object at this screen position. */
+	Renderable *getObjectAt(float x, float y);
 
 	/** Recalculate all object distances to the camera and resort the objebts. */
 	void recalculateObjectDistances();

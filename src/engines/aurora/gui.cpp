@@ -267,11 +267,13 @@ void GUI::updateMouse() {
 }
 
 Widget *GUI::getWidgetAt(float x, float y) {
-	// Get the GFX object tag at the position
-	const Common::UString &tag = GfxMan.getObjectAt(x, y);
+	// Get the GFX object at the position
+	Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
+	if (!obj)
+		return 0;
 
-	// And return that widget with that tag
-	return getWidget(tag);
+	// And return the widget with the same tag
+	return getWidget(obj->getTag());
 }
 
 void GUI::changedWidget(Widget *widget) {
