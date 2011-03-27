@@ -19,6 +19,8 @@
 
 #include "aurora/resman.h"
 
+#include "graphics/aurora/types.h"
+
 #include "engines/nwn/ifofile.h"
 #include "engines/nwn/creature.h"
 
@@ -100,6 +102,8 @@ private:
 	void loadArea();        ///< Load a new area.
 
 	bool enter(); ///< Enter the currently loaded module.
+
+	Graphics::Aurora::Model *getModelAt(float x, float y);
 
 
 	friend class Console;

@@ -104,6 +104,8 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 		warning("Situated object \"%s\" (\"%s\") has no model", _name.c_str(), _tag.c_str());
 
 
+	_model->setTag(_tag);
+	_model->setClickable(true);
 
 	// Model position
 

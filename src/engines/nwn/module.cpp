@@ -23,9 +23,11 @@
 #include "aurora/2dareg.h"
 #include "aurora/erffile.h"
 
+#include "graphics/graphics.h"
 #include "graphics/camera.h"
 
 #include "graphics/aurora/textureman.h"
+#include "graphics/aurora/model.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
@@ -187,6 +189,13 @@ bool Module::enter() {
 	return true;
 }
 
+Graphics::Aurora::Model *Module::getModelAt(float x, float y) {
+	Graphics::Aurora::Model *model =
+		dynamic_cast<Graphics::Aurora::Model *>(GfxMan.getObjectAt(x, y));
+
+	return model;
+}
+
 void Module::run() {
 	if (!enter())
 		return;
@@ -199,6 +208,8 @@ void Module::run() {
 	try {
 
 		EventMan.flushEvents();
+
+		Graphics::Aurora::Model *activeModel = 0;
 
 		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
 			loadArea();
@@ -250,6 +261,22 @@ void Module::run() {
 
 						CameraMan.setOrientation(0.0, orient[1], orient[2]);
 					}
+				} else if (event.type == Events::kEventMouseMove) {
+					Graphics::Aurora::Model *model = getModelAt(event.motion.x, event.motion.y);
+
+					if (model != activeModel) {
+						if (activeModel)
+							activeModel->drawBound(false);
+
+						activeModel = model;
+
+						if (activeModel) {
+							warning("Now in \"%s\" (%d)", activeModel->getTag().c_str(),
+									activeModel->getID());
+							activeModel->drawBound(true);
+						}
+					}
+
 				}
 			}
 
