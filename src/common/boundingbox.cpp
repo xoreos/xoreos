@@ -132,6 +132,80 @@ bool BoundingBox::isIn(float x, float y, float z) const {
 	return true;
 }
 
+bool BoundingBox::getIntersection(float fDst1, float fDst2,
+                                  float x1, float y1, float z1,
+                                  float x2, float y2, float z2,
+                                  float &x, float &y, float &z) const {
+
+	if ((fDst1 * fDst2) >= 0.0f)
+		return false;
+	if (fDst1 == fDst2)
+		return false;
+
+	x = x1 + ((x2 - x1) * (-fDst1 / (fDst2 - fDst1)));
+	y = y1 + ((y2 - y1) * (-fDst1 / (fDst2 - fDst1)));
+	z = z1 + ((z2 - z1) * (-fDst1 / (fDst2 - fDst1)));
+
+	return true;
+}
+
+bool BoundingBox::inBox(float x, float y, float z, float minX, float minY, float minZ,
+                        float maxX, float maxY, float maxZ, int axis) const {
+
+	if (((axis == 1) && (z > minZ) && (z < maxZ) && (y > minY) && (y < maxY)) ||
+      ((axis == 2) && (z > minZ) && (z < maxZ) && (x > minX) && (x < maxX)) ||
+	    ((axis == 3) && (x > minX) && (x < maxX) && (y > minY) && (y < maxY)))
+		return true;
+
+	return false;
+}
+
+bool BoundingBox::isIn(float x1, float y1, float z1, float x2, float y2, float z2) const {
+	if (_empty)
+		return false;
+
+	float minX, minY, minZ;
+	getMin(minX, minY, minZ);
+
+	float maxX, maxY, maxZ;
+	getMax(maxX, maxY, maxZ);
+
+	if ((x2 < minX) && (x1 < minX)) return false;
+	if ((x2 > maxX) && (x1 > maxX)) return false;
+	if ((y2 < minY) && (y1 < minY)) return false;
+	if ((y2 > maxY) && (y1 > maxY)) return false;
+	if ((z2 < minZ) && (z1 < minZ)) return false;
+	if ((z2 > maxZ) && (z1 > maxZ)) return false;
+
+	if ((x1 > minX) && (x1 < maxX) &&
+	    (y1 > minY) && (y1 < maxY) &&
+	    (z1 > minZ) && (z1 < maxZ))
+		return true;
+
+	float x, y, z;
+
+	if (getIntersection(x1 - minX, x2 - minX, x1, y1, z1, x2, y2, z2, x, y, z) &&
+	    inBox(x, y, z, minX, minY, minZ, maxX, maxY, maxZ, 1))
+		return true;
+	if (getIntersection(y1 - minY, y2 - minY, x1, y1, z1, x2, y2, z2, x, y, z) &&
+	    inBox(x, y, z, minX, minY, minZ, maxX, maxY, maxZ, 2))
+		return true;
+	if (getIntersection(z1 - minZ, z2 - minZ, x1, y1, z1, x2, y2, z2, x, y, z) &&
+	    inBox(x, y, z, minX, minY, minZ, maxX, maxY, maxZ, 3))
+		return true;
+	if (getIntersection(x1 - maxX, x2 - maxX, x1, y1, z1, x2, y2, z2, x, y, z) &&
+	    inBox(x, y, z, minX, minY, minZ, maxX, maxY, maxZ, 1))
+		return true;
+	if (getIntersection(y1 - maxY, y2 - maxY, x1, y1, z1, x2, y2, z2, x, y, z) &&
+	    inBox(x, y, z, minX, minY, minZ, maxX, maxY, maxZ, 2))
+		return true;
+	if (getIntersection(z1 - maxZ, z2 - maxZ, x1, y1, z1, x2, y2, z2, x, y, z) &&
+	    inBox(x, y, z, minX, minY, minZ, maxX, maxY, maxZ, 3))
+		return true;
+
+return false;
+}
+
 void BoundingBox::add(float x, float y, float z) {
 	_coords[0][0] = MIN(_coords[0][0], x); _coords[0][1] = MIN(_coords[0][1], y); _coords[0][2] = MIN(_coords[0][2], z);
 	_coords[1][0] = MIN(_coords[1][0], x); _coords[1][1] = MIN(_coords[1][1], y); _coords[1][2] = MAX(_coords[1][2], z);

@@ -41,6 +41,8 @@ public:
 	bool isIn(float x, float y         ) const;
 	bool isIn(float x, float y, float z) const;
 
+	bool isIn(float x1, float y1, float z1, float x2, float y2, float z2) const;
+
 	void add(float x, float y, float z);
 	void add(const BoundingBox &box);
 
@@ -69,6 +71,13 @@ private:
 
 	inline float getCoordMin(int i) const;
 	inline float getCoordMax(int i) const;
+
+	bool getIntersection(float fDst1, float fDst2,
+	                     float x1, float y1, float z1,
+	                     float x2, float y2, float z2,
+	                     float &x, float &y, float &z) const;
+	bool inBox(float x, float y, float z, float minX, float minY, float minZ,
+	           float maxX, float maxY, float maxZ, int axis) const;
 };
 
 } // End of namespace Common
