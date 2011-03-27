@@ -21,6 +21,44 @@ TransformationMatrix::TransformationMatrix() : Matrix(4, 4) {
 	loadIdentity();
 }
 
+void TransformationMatrix::getGLMatrix(float *m) const {
+	m[ 0] = _elements[ 0];
+	m[ 1] = _elements[ 4];
+	m[ 2] = _elements[ 8];
+	m[ 3] = _elements[12];
+	m[ 4] = _elements[ 1];
+	m[ 5] = _elements[ 5];
+	m[ 6] = _elements[ 9];
+	m[ 7] = _elements[13];
+	m[ 8] = _elements[ 2];
+	m[ 9] = _elements[ 6];
+	m[10] = _elements[10];
+	m[11] = _elements[14];
+	m[12] = _elements[ 3];
+	m[13] = _elements[ 7];
+	m[14] = _elements[11];
+	m[15] = _elements[15];
+}
+
+void TransformationMatrix::setGLMatrix(const float *m) {
+	_elements[ 0] = m[ 0];
+	_elements[ 4] = m[ 1];
+	_elements[ 8] = m[ 2];
+	_elements[12] = m[ 3];
+	_elements[ 1] = m[ 4];
+	_elements[ 5] = m[ 5];
+	_elements[ 9] = m[ 6];
+	_elements[13] = m[ 7];
+	_elements[ 2] = m[ 8];
+	_elements[ 6] = m[ 9];
+	_elements[10] = m[10];
+	_elements[14] = m[11];
+	_elements[ 3] = m[12];
+	_elements[ 7] = m[13];
+	_elements[11] = m[14];
+	_elements[15] = m[15];
+}
+
 float TransformationMatrix::getX() const {
 	return _elements[3];
 }

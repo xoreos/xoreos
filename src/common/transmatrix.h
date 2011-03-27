@@ -24,6 +24,9 @@ class TransformationMatrix : public Matrix {
 public:
 	TransformationMatrix();
 
+	void getGLMatrix(float *m) const;
+	void setGLMatrix(const float *m);
+
 	float getX() const;
 	float getY() const;
 	float getZ() const;
