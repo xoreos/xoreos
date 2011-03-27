@@ -20,6 +20,8 @@
 
 #include "aurora/talkman.h"
 
+#include "sound/sound.h"
+
 #include "engines/aurora/util.h"
 
 #include "engines/nwn/console.h"
@@ -71,11 +73,13 @@ Console::Console() : ::Engines::Console("fnt_console"), _module(0),
 	registerCommand("listvideos"   , boost::bind(&Console::cmdListVideos   , this, _1),
 			"Usage: listvideos\nList all available videos");
 	registerCommand("playvideo"    , boost::bind(&Console::cmdPlayVideo    , this, _1),
-			"Usage: playvideo <video>\nPlays the specified video");
+			"Usage: playvideo <video>\nPlay the specified video");
 	registerCommand("listsounds"   , boost::bind(&Console::cmdListSounds   , this, _1),
 			"Usage: listsounds\nList all available sounds");
 	registerCommand("playsound"    , boost::bind(&Console::cmdPlaySound    , this, _1),
-			"Usage: playsound <sound>\nPlays the specified sound");
+			"Usage: playsound <sound>\nPlay the specified sound");
+	registerCommand("silence"      , boost::bind(&Console::cmdSilence      , this, _1),
+			"Usage: silence\nStop all playing sounds and music");
 }
 
 Console::~Console() {
@@ -349,6 +353,10 @@ void Console::cmdPlaySound(const CommandLine &cl) {
 	}
 
 	playSound(cl.args, Sound::kSoundTypeSFX);
+}
+
+void Console::cmdSilence(const CommandLine &cl) {
+	SoundMan.stopAll();
 }
 
 } // End of namespace NWN

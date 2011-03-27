@@ -83,6 +83,7 @@ private:
 	void cmdListMusic    (const CommandLine &cl);
 	void cmdStopMusic    (const CommandLine &cl);
 	void cmdPlayMusic    (const CommandLine &cl);
+	void cmdSilence      (const CommandLine &cl);
 };
 
 } // End of namespace NWN
