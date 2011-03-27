@@ -196,6 +196,8 @@ private:
 	void cmdExit (const CommandLine &cli);
 	void cmdQuit (const CommandLine &cli);
 
+	void updateHelpArguments();
+
 	void printFullHelp();
 	bool printHints(const Common::UString &command);
 };

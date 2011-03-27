@@ -743,7 +743,17 @@ bool Console::registerCommand(const Common::UString &cmd, const CommandCallback 
 
 	_readLine->addCommand(cmd);
 
+	updateHelpArguments();
+
 	return true;
+}
+
+void Console::updateHelpArguments() {
+	std::list<Common::UString> commands;
+	for (CommandMap::const_iterator c = _commands.begin(); c != _commands.end(); ++c)
+		commands.push_back(c->second.cmd);
+
+	_readLine->setArguments("help", commands);
 }
 
 } // End of namespace Engines
