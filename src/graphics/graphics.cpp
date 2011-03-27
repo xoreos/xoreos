@@ -60,6 +60,8 @@ GraphicsManager::GraphicsManager() {
 
 	_fpsCounter = new FPSCounter(3);
 
+	_projection.getGLMatrix(_glProjection);
+
 	_frameLock = 0;
 
 	_cursor = 0;
@@ -328,8 +330,6 @@ void GraphicsManager::setupScene() {
 	glLoadIdentity();
 	glViewport(0, 0, _screen->w, _screen->h);
 
-	gluPerspective(60.0, ((GLfloat) _screen->w) / ((GLfloat) _screen->h), 1.0, 1000.0);
-
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -348,6 +348,39 @@ void GraphicsManager::setupScene() {
 	glEnable(GL_ALPHA_TEST);
 
 	glEnable(GL_CULL_FACE);
+
+	perspective(60.0, ((float) _screen->w) / ((float) _screen->h), 1.0, 1000.0);
+}
+
+void GraphicsManager::perspective(float fovy, float aspect, float zNear, float zFar) {
+	_projection.loadIdentity();
+
+	const float f = 1.0 / (tanf(Common::deg2rad(fovy) / 2.0));
+
+	const float t1 = (zFar + zNear) / (zNear - zFar);
+	const float t2 = (2 * zFar * zNear) / (zNear - zFar);
+
+	_projection[0][0] =  f / aspect;
+	_projection[0][1] =  0.0;
+	_projection[0][2] =  0.0;
+	_projection[0][3] =  0.0;
+
+	_projection[1][0] =  0.0;
+	_projection[1][1] =  f;
+	_projection[1][2] =  0.0;
+	_projection[1][3] =  0.0;
+
+	_projection[2][0] =  0.0;
+	_projection[2][1] =  0.0;
+	_projection[2][2] =  t1;
+	_projection[2][3] =  t2;
+
+	_projection[3][0] =  0.0;
+	_projection[3][1] =  0.0;
+	_projection[3][2] = -1.0;
+	_projection[3][3] =  0.0;
+
+	_projection.getGLMatrix(_glProjection);
 }
 
 void GraphicsManager::lockFrame() {
@@ -522,7 +555,7 @@ void GraphicsManager::renderScene() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(60.0, ((GLfloat) _screen->w) / ((GLfloat) _screen->h), 1.0, 1000.0);
+	glMultMatrixf(_glProjection);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

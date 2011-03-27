@@ -25,6 +25,7 @@
 #include "common/types.h"
 #include "common/singleton.h"
 #include "common/mutex.h"
+#include "common/transmatrix.h"
 
 namespace Common {
 	class UString;
@@ -155,6 +156,9 @@ private:
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 
+	Common::TransformationMatrix _projection; ///< Our projection matrix.
+	float _glProjection[16];                  ///< Projection matrix values.
+
 	uint32 _frameLock;
 
 	Common::Mutex _frameLockMutex; ///< A soft mutex locked for each frame.
@@ -188,6 +192,9 @@ private:
 
 	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
 	void checkGLExtensions();
+
+	/** Set up a projection matrix. Analog to gluPerspective. */
+	void perspective(float fovy, float aspect, float zNear, float zFar);
 
 	void rebuildGLContainers();
 	void destroyGLContainers();
