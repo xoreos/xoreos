@@ -21,6 +21,7 @@ namespace Graphics {
 Renderable::Renderable(Queueable<Renderable>::Queue &queue) : Queueable<Renderable>(queue),
 	_clickable(false), _distance(0.0) {
 
+	_id = GfxMan.createRenderableID();
 }
 
 Renderable::~Renderable() {
@@ -28,6 +29,10 @@ Renderable::~Renderable() {
 
 double Renderable::getDistance() const {
 	return _distance;
+}
+
+uint32 Renderable::getID() const {
+	return _id;
 }
 
 bool Renderable::isClickable() const {

@@ -119,6 +119,9 @@ public:
 	/** Unlock the frame mutex. */
 	void unlockFrame();
 
+	/** Create a new unique renderable ID. */
+	uint32 createRenderableID();
+
 	/** Abandon these textures. */
 	void abandon(TextureID *ids, uint32 count);
 	/** Abandon these lists. */
@@ -177,6 +180,9 @@ private:
 	CursorState _cursorState;  ///< What to do with the cursor.
 
 	bool _takeScreenshot; ///< Should screenshot be taken?
+
+	uint32 _renderableID;             ///< The last ID given to a renderable.
+	Common::Mutex _renderableIDMutex; ///< The mutex to govern renderable ID creation.
 
 	bool _hasAbandoned; ///< Do we have abandoned textures/lists?
 

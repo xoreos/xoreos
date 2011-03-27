@@ -69,6 +69,8 @@ GraphicsManager::GraphicsManager() {
 
 	_takeScreenshot = false;
 
+	_renderableID = 0;
+
 	_hasAbandoned = false;
 }
 
@@ -512,6 +514,12 @@ void GraphicsManager::resortObjects() {
 	_guiFrontObjects.list.sort(queueComp);
 
 	unlockFrame();
+}
+
+uint32 GraphicsManager::createRenderableID() {
+	Common::StackLock lock(_renderableIDMutex);
+
+	return ++_renderableID;
 }
 
 void GraphicsManager::abandon(TextureID *ids, uint32 count) {

@@ -39,6 +39,9 @@ public:
 	/** Get the distance of the object from the viewer. */
 	double getDistance() const;
 
+	/** Get the object's unique ID. */
+	uint32 getID() const;
+
 	/** Is the object clickable? */
 	bool isClickable() const;
 	/** Set the object's clickable state. */
@@ -62,6 +65,8 @@ public:
 	virtual bool isIn(float x1, float y1, float z1, float x2, float y2, float z2) const;
 
 protected:
+	uint32 _id;
+
 	bool _clickable;
 	Common::UString _tag;
 
