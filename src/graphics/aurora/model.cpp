@@ -89,6 +89,17 @@ bool Model::isIn(float x, float y, float z) const {
 	return object.isIn(x, y, z);
 }
 
+bool Model::isIn(float x1, float y1, float z1, float x2, float y2, float z2) const {
+	if (_type == kModelTypeGUIFront)
+		return false;
+
+	Common::BoundingBox object = _boundBox;
+
+	object.transform(_absolutePosition);
+
+	return object.isIn(x1, y1, z1, x2, y2, z2);
+}
+
 float Model::getWidth() const {
 	return _boundBox.getWidth() * _modelScale[0];
 }
