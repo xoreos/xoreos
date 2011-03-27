@@ -26,7 +26,7 @@ namespace Aurora {
 
 Model::Model(ModelType type) :
 	Renderable(GfxMan.getRenderableQueue((Graphics::RenderableQueue) type)),
-	_type(type), _currentState(0) {
+	_type(type), _currentState(0), _drawBound(false) {
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
@@ -81,7 +81,6 @@ bool Model::isIn(float x, float y, float z) const {
 	if (_type == kModelTypeGUIFront)
 		return isIn(x, y);
 
-
 	Common::BoundingBox object = _boundBox;
 
 	object.transform(_absolutePosition);
@@ -110,6 +109,10 @@ float Model::getHeight() const {
 
 float Model::getDepth() const {
 	return _boundBox.getDepth() * _modelScale[2];
+}
+
+void Model::drawBound(bool enabled) {
+	_drawBound = enabled;
 }
 
 void Model::getPosition(float &x, float &y, float &z) const {
@@ -305,6 +308,7 @@ void Model::render(RenderPass pass) {
 	glRotatef( _rotation[1], 0.0, 1.0, 0.0);
 	glRotatef(-_rotation[2], 0.0, 0.0, 1.0);
 
+	doDrawBound();
 
 	// Render root nodes
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
@@ -318,6 +322,62 @@ void Model::render(RenderPass pass) {
 
 	// Reset the first texture units
 	TextureMan.reset();
+}
+
+void Model::doDrawBound() {
+	if (!_drawBound)
+		return;
+
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glLineWidth(1.0);
+
+	Common::BoundingBox object = _boundBox;
+
+	float minX, minY, minZ, maxX, maxY, maxZ;
+	object.getMin(minX, minY, minZ);
+	object.getMax(maxX, maxY, maxZ);
+
+	glBegin(GL_LINE_LOOP);
+		glVertex3f(minX, minY, minZ);
+		glVertex3f(maxX, minY, minZ);
+		glVertex3f(maxX, maxY, minZ);
+		glVertex3f(minX, maxY, minZ);
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+		glVertex3f(minX, minY, maxZ);
+		glVertex3f(maxX, minY, maxZ);
+		glVertex3f(maxX, maxY, maxZ);
+		glVertex3f(minX, maxY, maxZ);
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+		glVertex3f(minX, minY, minZ);
+		glVertex3f(minX, maxY, minZ);
+		glVertex3f(minX, maxY, maxZ);
+		glVertex3f(minX, minY, maxZ);
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+		glVertex3f(maxX, minY, minZ);
+		glVertex3f(maxX, maxY, minZ);
+		glVertex3f(maxX, maxY, maxZ);
+		glVertex3f(maxX, minY, maxZ);
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+		glVertex3f(minX, minY, minZ);
+		glVertex3f(maxX, minY, minZ);
+		glVertex3f(maxX, minY, maxZ);
+		glVertex3f(minX, minY, maxZ);
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+		glVertex3f(minX, maxY, minZ);
+		glVertex3f(maxX, maxY, minZ);
+		glVertex3f(maxX, maxY, maxZ);
+		glVertex3f(minX, maxY, maxZ);
+	glEnd();
 }
 
 void Model::finalize() {

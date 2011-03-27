@@ -51,6 +51,9 @@ public:
 	float getHeight() const; ///< Get the height of the model's bounding box.
 	float getDepth () const; ///< Get the depth of the model's bounding box.
 
+	/** Should a bounding box be drawn around this model? */
+	void drawBound(bool enabled);
+
 
 	/** Is that point within the model's bounding box? */
 	bool isIn(float x, float y) const;
@@ -150,10 +153,14 @@ protected:
 
 
 private:
+	bool _drawBound;
+
 	void createStateNamesList(); ///< Create the list of all state names.
 	void createBound();          ///< Create the model's bounding box.
 
 	void createAbsolutePosition();
+
+	void doDrawBound();
 
 
 public:
