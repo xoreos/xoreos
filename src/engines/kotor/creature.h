@@ -20,12 +20,9 @@
 #include "engines/kotor/modelobject.h"
 
 #include "common/types.h"
+#include "common/ustring.h"
 
 #include "graphics/aurora/types.h"
-
-namespace Common {
-	class UString;
-}
 
 namespace Engines {
 
@@ -56,6 +53,8 @@ private:
 	};
 
 	uint32 _appearance;
+
+	Common::UString _tag;
 
 	std::list<Part *> _parts;
 

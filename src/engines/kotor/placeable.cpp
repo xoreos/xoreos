@@ -47,6 +47,8 @@ void Placeable::load(const Common::UString &name) {
 	const Aurora::GFFStruct &top = utp.getTopLevel();
 	_appearance = top.getUint("Appearance", 0xFFFFFFFF);
 
+	_tag = top.getString("Tag");
+
 	if (_appearance == 0xFFFFFFFF)
 		throw Common::Exception("No appearance");
 
@@ -77,6 +79,11 @@ void Placeable::loadModel() {
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeables");
 
 	_model = loadModelObject(twoda.getCellString(_appearance, "modelname"));
+	if (_model) {
+		_model->setTag(_tag);
+		_model->setClickable(true);
+	}
+
 }
 
 } // End of namespace KotOR

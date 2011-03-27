@@ -66,6 +66,8 @@ void Creature::load(const Common::UString &name) {
 	const Aurora::GFFStruct &top = utc.getTopLevel();
 	_appearance = top.getUint("Appearance_Type", 0xFFFFFFFF);
 
+	_tag = top.getString("Tag");
+
 	if (_appearance == 0xFFFFFFFF)
 		throw Common::Exception("No appearance");
 
@@ -127,6 +129,10 @@ void Creature::loadModel(const Common::UString &name) {
 	if (modelType != "P") {
 		if (!bodyModel.empty()) {
 			Graphics::Aurora::Model *model = loadModelObject(bodyModel, bodyTexture);
+			if (model) {
+				model->setTag(_tag + "#Body");
+				model->setClickable(true);
+			}
 
 			_parts.push_back(new Part(model));
 
@@ -137,6 +143,10 @@ void Creature::loadModel(const Common::UString &name) {
 
 		if ((modelType == "B") && !headModel.empty()) {
 			Graphics::Aurora::Model *model = loadModelObject(headModel);
+			if (model) {
+				model->setTag(_tag + "#Head");
+				model->setClickable(true);
+			}
 
 			_parts.push_back(new Part(model));
 

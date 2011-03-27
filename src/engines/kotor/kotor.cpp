@@ -27,11 +27,13 @@
 #include "common/stream.h"
 #include "common/configman.h"
 
+#include "graphics/graphics.h"
 #include "graphics/camera.h"
 
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/fps.h"
+#include "graphics/aurora/model.h"
 
 #include "sound/sound.h"
 
@@ -143,6 +145,8 @@ void KotOREngine::run(const Common::UString &target) {
 	if (_platform != Aurora::kPlatformXbox)
 		CursorMan.set("default", false);
 
+	Graphics::Aurora::Model *activeModel = 0;
+
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
 		while (EventMan.pollEvent(event)) {
@@ -190,6 +194,22 @@ void KotOREngine::run(const Common::UString &target) {
 
 					warning("%f, %f, %f -- %f, %f, %f", pos[0], pos[1], pos[2], ort[0], ort[1], ort[2]);
 				}
+			} else if (event.type == Events::kEventMouseMove) {
+				Graphics::Aurora::Model *model =
+					dynamic_cast<Graphics::Aurora::Model *>(GfxMan.getObjectAt(event.motion.x, event.motion.y));
+				if (model != activeModel) {
+					if (activeModel)
+						activeModel->drawBound(false);
+
+					activeModel = model;
+
+					if (activeModel) {
+						warning("Now in \"%s\" (%d)", activeModel->getTag().c_str(),
+								activeModel->getID());
+						activeModel->drawBound(true);
+					}
+				}
+
 			}
 		}
 
