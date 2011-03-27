@@ -12,9 +12,9 @@
  *  A matrix.
  */
 
+#include "common/error.h"
 #include "common/matrix.h"
 
-#include <cassert>
 #include <cstring>
 
 namespace Common {
@@ -95,7 +95,8 @@ Matrix Matrix::operator*(const float &right) const {
 }
 
 Matrix Matrix::operator*(const Matrix &right) const {
-	assert(_columns == right._rows);
+	if (_columns != right._rows)
+		throw Exception("Matrix::operator*(): %d != %d", _columns, right._rows);
 
 	Matrix tmp(_rows, right._columns);
 
@@ -112,8 +113,9 @@ Matrix Matrix::operator*(const Matrix &right) const {
 }
 
 Matrix &Matrix::operator+=(const Matrix &right) {
-	assert(_rows    == right._rows);
-	assert(_columns == right._columns);
+	if ((_rows != right._rows) || (_columns != right._columns))
+		throw Exception("Matrix::operator+=(): %dx%d != %dx%d",
+		                _rows, _columns,  right._rows, right._columns);
 
 	for (int i = 0; i < (_rows * _columns); i++)
 		_elements[i] += right._elements[i];
@@ -122,8 +124,9 @@ Matrix &Matrix::operator+=(const Matrix &right) {
 }
 
 Matrix &Matrix::operator-=(const Matrix &right) {
-	assert(_rows    == right._rows);
-	assert(_columns == right._columns);
+	if ((_rows != right._rows) || (_columns != right._columns))
+		throw Exception("Matrix::operator-=(): %dx%d != %dx%d",
+		                _rows, _columns,  right._rows, right._columns);
 
 	for (int i = 0; i < (_rows * _columns); i++)
 		_elements[i] -= right._elements[i];
@@ -161,7 +164,8 @@ void Matrix::transpose() {
 }
 
 float Matrix::getDeterminant() const {
-	assert(_rows == _columns);
+	if (_rows != _columns)
+		throw Exception("Matrix::getDeterminant(): %d != %d", _rows, _columns);
 
 	if ((_rows == 1) && (_columns == 1))
 		return (*this)[0][0];
@@ -242,7 +246,8 @@ Matrix Matrix::getInverse() const {
 	Matrix inv(_rows, _columns);
 
 	float det = getDeterminant();
-	assert(det != 0);
+	if (det == 0)
+		throw Exception("Matrix::getInverse(): Determinant == 0");
 
 	for (int i = 0; i < _rows; i++) {
 		for (int j = 0; j < _columns; j++) {
