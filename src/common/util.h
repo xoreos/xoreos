@@ -19,6 +19,8 @@
 
 #include "common/endianness.h"
 
+#include <cmath>
+
 #ifdef MIN
 	#undef MIN
 #endif
@@ -63,6 +65,27 @@ inline uint64 NEXTPOWER2(uint64 x) {
 
 	return x + 1;
 }
+
+#ifdef HAVE_FABS
+template<> inline double ABS(double x) { return fabs(x); }
+#endif
+#ifdef HAVE_FABSF
+template<> inline float ABS(float x) { return fabsf(x); }
+#endif
+
+#ifdef HAVE_FMIN
+template<> inline double MIN(double a, double b) { return fmin(a, b); }
+#endif
+#ifdef HAVE_FMINF
+template<> inline float MIN(float a, float b) { return fminf(a, b); }
+#endif
+
+#ifdef HAVE_FMAX
+template<> inline double MAX(double a, double b) { return fmax(a, b); }
+#endif
+#ifdef HAVE_FMAXF
+template<> inline float MAX(float a, float b) { return fmaxf(a, b); }
+#endif
 
 /**
  * Macro which determines the number of entries in a fixed size array.
