@@ -285,7 +285,7 @@ void BoundingBox::absolutize() {
 
 		c.translate(_coords[i][0], _coords[i][1], _coords[i][2]);
 
-		c.get(coords[i][0], coords[i][1], coords[i][2]);
+		c.getPosition(coords[i][0], coords[i][1], coords[i][2]);
 	}
 
 	clear();

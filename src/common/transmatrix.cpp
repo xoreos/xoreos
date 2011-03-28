@@ -71,7 +71,7 @@ float TransformationMatrix::getZ() const {
 	return _elements[11];
 }
 
-void TransformationMatrix::get(float &x, float &y, float &z) const {
+void TransformationMatrix::getPosition(float &x, float &y, float &z) const {
 	x = getX();
 	y = getY();
 	z = getZ();

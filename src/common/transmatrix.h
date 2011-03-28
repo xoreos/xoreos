@@ -31,7 +31,7 @@ public:
 	float getY() const;
 	float getZ() const;
 
-	void get(float &x, float &y, float &z) const;
+	void getPosition(float &x, float &y, float &z) const;
 
 	void loadIdentity();
 
