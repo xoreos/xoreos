@@ -57,9 +57,6 @@
 /* Define to 1 if you have the `fminf' function. */
 #undef HAVE_FMINF
 
-/* Define to 1 if you have the <GL/glu.h> header file. */
-#undef HAVE_GL_GLU_H
-
 /* Define to 1 if you have the <GL/gl.h> header file. */
 #undef HAVE_GL_GL_H
 
@@ -74,9 +71,6 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
-
-/* Define to 1 if you have the <OpenGL/glu.h> header file. */
-#undef HAVE_OPENGL_GLU_H
 
 /* Define to 1 if you have the <OpenGL/gl.h> header file. */
 #undef HAVE_OPENGL_GL_H
@@ -104,9 +98,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
-
-/* Use nonstandard varargs form for the GLU tesselator callback */
-#undef HAVE_VARARGS_GLU_TESSCB
 
 /* Define to 1 if you have the <windows.h> header file. */
 #undef HAVE_WINDOWS_H

@@ -98,17 +98,12 @@ case "$target" in
 		;;
 	*)
 		AX_CHECK_GL
-		AX_CHECK_GLU
 
 		AC_CHECK_HEADER("AL/al.h", , noopenal=1)
 		AC_CHECK_HEADER("AL/alc.h", , noopenal=1)
 
 		if test -n "$no_gl"; then
 			AC_MSG_ERROR([OpenGL is required and could not be found!])
-		fi
-
-		if test -n "$no_glu"; then
-			AC_MSG_ERROR([GLU is required and could not be found!])
 		fi
 
 		if test -n "$noopenal"; then
