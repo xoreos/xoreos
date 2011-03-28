@@ -160,7 +160,6 @@ private:
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 
 	Common::TransformationMatrix _projection; ///< Our projection matrix.
-	float _glProjection[16];                  ///< Projection matrix values.
 
 	uint32 _frameLock;
 

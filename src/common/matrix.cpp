@@ -62,12 +62,20 @@ int Matrix::getColumns() const {
 	return _columns;
 }
 
+const float *Matrix::get() const {
+	return _elements;
+}
+
+void Matrix::set(const float *m) const {
+	memcpy(_elements, m, _rows * _columns * sizeof(float));
+}
+
 float &Matrix::operator()(int row, int column) {
-	return _elements[(row * _columns) + column];
+	return _elements[(column * _rows) + row];
 }
 
 float Matrix::operator()(int row, int column) const {
-	return _elements[(row * _columns) + column];
+	return _elements[(column * _rows) + row];
 }
 
 Matrix Matrix::operator+(const Matrix &right) const {
@@ -101,11 +109,11 @@ Matrix Matrix::operator*(const Matrix &right) const {
 	Matrix tmp(_rows, right._columns);
 
 	float *d = tmp._elements;
-	for (int i = 0; i < _rows; i++) {
-		for (int j = 0; j < right._columns; j++, d++) {
+	for (int i = 0; i < right._columns; i++) {
+		for (int j = 0; j < _rows; j++, d++) {
 			*d = 0;
 			for (int n = 0; n < _columns; n++)
-				*d += (*this)(i, n) * (right)(n, j);
+				*d += (*this)(j, n) * (right)(n, i);
 		}
 	}
 

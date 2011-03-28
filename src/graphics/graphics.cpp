@@ -60,8 +60,6 @@ GraphicsManager::GraphicsManager() {
 
 	_fpsCounter = new FPSCounter(3);
 
-	_projection.getGLMatrix(_glProjection);
-
 	_frameLock = 0;
 
 	_cursor = 0;
@@ -381,8 +379,6 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	_projection(3, 1) =  0.0;
 	_projection(3, 2) = -1.0;
 	_projection(3, 3) =  0.0;
-
-	_projection.getGLMatrix(_glProjection);
 }
 
 bool GraphicsManager::unproject(float x, float y,
@@ -690,7 +686,7 @@ void GraphicsManager::renderScene() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glMultMatrixf(_glProjection);
+	glMultMatrixf(_projection.get());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

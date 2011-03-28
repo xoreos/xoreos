@@ -21,54 +21,16 @@ TransformationMatrix::TransformationMatrix() : Matrix(4, 4) {
 	loadIdentity();
 }
 
-void TransformationMatrix::getGLMatrix(float *m) const {
-	m[ 0] = _elements[ 0];
-	m[ 1] = _elements[ 4];
-	m[ 2] = _elements[ 8];
-	m[ 3] = _elements[12];
-	m[ 4] = _elements[ 1];
-	m[ 5] = _elements[ 5];
-	m[ 6] = _elements[ 9];
-	m[ 7] = _elements[13];
-	m[ 8] = _elements[ 2];
-	m[ 9] = _elements[ 6];
-	m[10] = _elements[10];
-	m[11] = _elements[14];
-	m[12] = _elements[ 3];
-	m[13] = _elements[ 7];
-	m[14] = _elements[11];
-	m[15] = _elements[15];
-}
-
-void TransformationMatrix::setGLMatrix(const float *m) {
-	_elements[ 0] = m[ 0];
-	_elements[ 4] = m[ 1];
-	_elements[ 8] = m[ 2];
-	_elements[12] = m[ 3];
-	_elements[ 1] = m[ 4];
-	_elements[ 5] = m[ 5];
-	_elements[ 9] = m[ 6];
-	_elements[13] = m[ 7];
-	_elements[ 2] = m[ 8];
-	_elements[ 6] = m[ 9];
-	_elements[10] = m[10];
-	_elements[14] = m[11];
-	_elements[ 3] = m[12];
-	_elements[ 7] = m[13];
-	_elements[11] = m[14];
-	_elements[15] = m[15];
-}
-
 float TransformationMatrix::getX() const {
-	return _elements[3];
+	return _elements[12];
 }
 
 float TransformationMatrix::getY() const {
-	return _elements[7];
+	return _elements[13];
 }
 
 float TransformationMatrix::getZ() const {
-	return _elements[11];
+	return _elements[14];
 }
 
 void TransformationMatrix::getPosition(float &x, float &y, float &z) const {
@@ -78,10 +40,10 @@ void TransformationMatrix::getPosition(float &x, float &y, float &z) const {
 }
 
 void TransformationMatrix::loadIdentity() {
-	_elements[ 0] = 1.0; _elements[ 1] = 0.0; _elements[ 2] = 0.0; _elements[ 3] = 0.0;
-	_elements[ 4] = 0.0; _elements[ 5] = 1.0; _elements[ 6] = 0.0; _elements[ 7] = 0.0;
-	_elements[ 8] = 0.0; _elements[ 9] = 0.0; _elements[10] = 1.0; _elements[11] = 0.0;
-	_elements[12] = 0.0; _elements[13] = 0.0; _elements[14] = 0.0; _elements[15] = 1.0;
+	_elements[ 0] = 1.0; _elements[ 4] = 0.0; _elements[ 8] = 0.0; _elements[12] = 0.0;
+	_elements[ 1] = 0.0; _elements[ 5] = 1.0; _elements[ 9] = 0.0; _elements[13] = 0.0;
+	_elements[ 2] = 0.0; _elements[ 6] = 0.0; _elements[10] = 1.0; _elements[14] = 0.0;
+	_elements[ 3] = 0.0; _elements[ 7] = 0.0; _elements[11] = 0.0; _elements[15] = 1.0;
 }
 
 void TransformationMatrix::translate(float x, float y, float z) {
