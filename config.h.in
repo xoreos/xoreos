@@ -39,6 +39,24 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
+/* Define to 1 if you have the `fabs' function. */
+#undef HAVE_FABS
+
+/* Define to 1 if you have the `fabsf' function. */
+#undef HAVE_FABSF
+
+/* Define to 1 if you have the `fmax' function. */
+#undef HAVE_FMAX
+
+/* Define to 1 if you have the `fmaxf' function. */
+#undef HAVE_FMAXF
+
+/* Define to 1 if you have the `fmin' function. */
+#undef HAVE_FMIN
+
+/* Define to 1 if you have the `fminf' function. */
+#undef HAVE_FMINF
+
 /* Define to 1 if you have the <GL/glu.h> header file. */
 #undef HAVE_GL_GLU_H
 
@@ -50,6 +68,9 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `m' library (-lm). */
+#undef HAVE_LIBM
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H

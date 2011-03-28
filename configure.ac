@@ -22,6 +22,14 @@ if test "x$with_werror" = "xyes"; then
 	WERROR="-Werror"
 fi
 
+AC_CHECK_LIB([m], [cos])
+AC_CHECK_FUNCS([fabs])
+AC_CHECK_FUNCS([fmin])
+AC_CHECK_FUNCS([fmax])
+AC_CHECK_FUNCS([fabsf])
+AC_CHECK_FUNCS([fminf])
+AC_CHECK_FUNCS([fmaxf])
+
 AC_CHECK_PROG([SDL_CONFIG], [sdl-config], [sdl-config])
 
 if test -n "$SDL_CONFIG"; then
