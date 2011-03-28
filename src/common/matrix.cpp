@@ -62,12 +62,12 @@ int Matrix::getColumns() const {
 	return _columns;
 }
 
-float *Matrix::operator[](int row) {
-	return _elements + (row * _columns);
+float &Matrix::operator()(int row, int column) {
+	return _elements[(row * _columns) + column];
 }
 
-const float *Matrix::operator[](int row) const {
-	return _elements + (row * _columns);
+float Matrix::operator()(int row, int column) const {
+	return _elements[(row * _columns) + column];
 }
 
 Matrix Matrix::operator+(const Matrix &right) const {
@@ -105,7 +105,7 @@ Matrix Matrix::operator*(const Matrix &right) const {
 		for (int j = 0; j < right._columns; j++, d++) {
 			*d = 0;
 			for (int n = 0; n < _columns; n++)
-				*d += (*this)[i][n] * (right)[n][j];
+				*d += (*this)(i, n) * (right)(n, j);
 		}
 	}
 
@@ -154,7 +154,7 @@ Matrix Matrix::getTranspose() const {
 
 	for (int i = 0; i < _columns; i++)
 		for (int j = 0; j < _rows; j++)
-			tmp[i][j] = (*this)[j][i];
+			tmp(i, j) = (*this)(j, i);
 
 	return tmp;
 }
@@ -168,52 +168,52 @@ float Matrix::getDeterminant() const {
 		throw Exception("Matrix::getDeterminant(): %d != %d", _rows, _columns);
 
 	if ((_rows == 1) && (_columns == 1))
-		return (*this)[0][0];
+		return (*this)(0, 0);
 
 	if ((_rows == 2) && (_columns == 2))
-		return (*this)[0][0] * (*this)[1][1] - (*this)[0][1] * (*this)[1][0];
+		return (*this)(0, 0) * (*this)(1, 1) - (*this)(0, 1) * (*this)(1, 0);
 
 	if ((_rows == 3) && (_columns == 3))
-		return (*this)[0][0] * (*this)[1][1] * (*this)[2][2] +
-		       (*this)[0][1] * (*this)[1][2] * (*this)[2][0] +
-		       (*this)[0][2] * (*this)[1][0] * (*this)[2][1] -
-		       (*this)[0][0] * (*this)[1][2] * (*this)[2][1] -
-		       (*this)[0][1] * (*this)[1][0] * (*this)[2][2] -
-		       (*this)[0][2] * (*this)[1][1] * (*this)[2][0];
+		return (*this)(0, 0) * (*this)(1, 1) * (*this)(2, 2) +
+		       (*this)(0, 1) * (*this)(1, 2) * (*this)(2, 0) +
+		       (*this)(0, 2) * (*this)(1, 0) * (*this)(2, 1) -
+		       (*this)(0, 0) * (*this)(1, 2) * (*this)(2, 1) -
+		       (*this)(0, 1) * (*this)(1, 0) * (*this)(2, 2) -
+		       (*this)(0, 2) * (*this)(1, 1) * (*this)(2, 0);
 
 	if ((_rows == 4) && (_columns == 4))
-		return (*this)[0][0] * (*this)[1][1] * (*this)[2][2] * (*this)[3][3] +
-		       (*this)[0][0] * (*this)[1][2] * (*this)[2][3] * (*this)[3][1] +
-		       (*this)[0][0] * (*this)[1][3] * (*this)[2][1] * (*this)[3][2] +
-		       (*this)[0][1] * (*this)[1][0] * (*this)[2][3] * (*this)[3][2] +
-		       (*this)[0][1] * (*this)[1][2] * (*this)[2][0] * (*this)[3][3] +
-		       (*this)[0][1] * (*this)[1][3] * (*this)[2][2] * (*this)[3][0] +
-		       (*this)[0][2] * (*this)[1][0] * (*this)[2][1] * (*this)[3][3] +
-		       (*this)[0][2] * (*this)[1][1] * (*this)[2][3] * (*this)[3][0] +
-		       (*this)[0][2] * (*this)[1][3] * (*this)[2][0] * (*this)[3][1] +
-		       (*this)[0][3] * (*this)[1][0] * (*this)[2][2] * (*this)[3][1] +
-		       (*this)[0][3] * (*this)[1][1] * (*this)[2][0] * (*this)[3][2] +
-		       (*this)[0][3] * (*this)[1][2] * (*this)[2][1] * (*this)[3][0] -
-		       (*this)[0][0] * (*this)[1][1] * (*this)[2][3] * (*this)[3][2] -
-		       (*this)[0][0] * (*this)[1][2] * (*this)[2][1] * (*this)[3][3] -
-		       (*this)[0][0] * (*this)[1][3] * (*this)[2][2] * (*this)[3][1] -
-		       (*this)[0][1] * (*this)[1][0] * (*this)[2][2] * (*this)[3][3] -
-		       (*this)[0][1] * (*this)[1][2] * (*this)[2][3] * (*this)[3][0] -
-		       (*this)[0][1] * (*this)[1][3] * (*this)[2][0] * (*this)[3][2] -
-		       (*this)[0][2] * (*this)[1][0] * (*this)[2][3] * (*this)[3][1] -
-		       (*this)[0][2] * (*this)[1][1] * (*this)[2][0] * (*this)[3][3] -
-		       (*this)[0][2] * (*this)[1][3] * (*this)[2][1] * (*this)[3][0] -
-		       (*this)[0][3] * (*this)[1][0] * (*this)[2][1] * (*this)[3][2] -
-		       (*this)[0][3] * (*this)[1][1] * (*this)[2][2] * (*this)[3][0] -
-		       (*this)[0][3] * (*this)[1][2] * (*this)[2][0] * (*this)[3][1];
+		return (*this)(0, 0) * (*this)(1, 1) * (*this)(2, 2) * (*this)(3, 3) +
+		       (*this)(0, 0) * (*this)(1, 2) * (*this)(2, 3) * (*this)(3, 1) +
+		       (*this)(0, 0) * (*this)(1, 3) * (*this)(2, 1) * (*this)(3, 2) +
+		       (*this)(0, 1) * (*this)(1, 0) * (*this)(2, 3) * (*this)(3, 2) +
+		       (*this)(0, 1) * (*this)(1, 2) * (*this)(2, 0) * (*this)(3, 3) +
+		       (*this)(0, 1) * (*this)(1, 3) * (*this)(2, 2) * (*this)(3, 0) +
+		       (*this)(0, 2) * (*this)(1, 0) * (*this)(2, 1) * (*this)(3, 3) +
+		       (*this)(0, 2) * (*this)(1, 1) * (*this)(2, 3) * (*this)(3, 0) +
+		       (*this)(0, 2) * (*this)(1, 3) * (*this)(2, 0) * (*this)(3, 1) +
+		       (*this)(0, 3) * (*this)(1, 0) * (*this)(2, 2) * (*this)(3, 1) +
+		       (*this)(0, 3) * (*this)(1, 1) * (*this)(2, 0) * (*this)(3, 2) +
+		       (*this)(0, 3) * (*this)(1, 2) * (*this)(2, 1) * (*this)(3, 0) -
+		       (*this)(0, 0) * (*this)(1, 1) * (*this)(2, 3) * (*this)(3, 2) -
+		       (*this)(0, 0) * (*this)(1, 2) * (*this)(2, 1) * (*this)(3, 3) -
+		       (*this)(0, 0) * (*this)(1, 3) * (*this)(2, 2) * (*this)(3, 1) -
+		       (*this)(0, 1) * (*this)(1, 0) * (*this)(2, 2) * (*this)(3, 3) -
+		       (*this)(0, 1) * (*this)(1, 2) * (*this)(2, 3) * (*this)(3, 0) -
+		       (*this)(0, 1) * (*this)(1, 3) * (*this)(2, 0) * (*this)(3, 2) -
+		       (*this)(0, 2) * (*this)(1, 0) * (*this)(2, 3) * (*this)(3, 1) -
+		       (*this)(0, 2) * (*this)(1, 1) * (*this)(2, 0) * (*this)(3, 3) -
+		       (*this)(0, 2) * (*this)(1, 3) * (*this)(2, 1) * (*this)(3, 0) -
+		       (*this)(0, 3) * (*this)(1, 0) * (*this)(2, 1) * (*this)(3, 2) -
+		       (*this)(0, 3) * (*this)(1, 1) * (*this)(2, 2) * (*this)(3, 0) -
+		       (*this)(0, 3) * (*this)(1, 2) * (*this)(2, 0) * (*this)(3, 1);
 
 	// General case
 	float det = 0.0f;
 	for (int j = 0; j < _columns; j++) {
 		if (j % 2)
-			det += (*this)[0][j] * -1 * getReduced(0,j).getDeterminant();
+			det += (*this)(0, j) * -1 * getReduced(0,j).getDeterminant();
 		else
-			det += (*this)[0][j] *  1 * getReduced(0,j).getDeterminant();
+			det += (*this)(0, j) *  1 * getReduced(0,j).getDeterminant();
 	}
 
 	return det;
@@ -231,7 +231,7 @@ Matrix Matrix::getReduced(int row, int col) const {
 			if (j == col)
 				continue;
 
-			reducedMatrix[redMaRow][redMaCol] = (*this)[i][j];
+			reducedMatrix(redMaRow, redMaCol) = (*this)(i, j);
 			redMaCol++;
 		}
 
@@ -251,10 +251,10 @@ Matrix Matrix::getInverse() const {
 
 	for (int i = 0; i < _rows; i++) {
 		for (int j = 0; j < _columns; j++) {
-			inv[i][j] = (1.0f / det) * getReduced(j, i).getDeterminant();
+			inv(i, j) = (1.0f / det) * getReduced(j, i).getDeterminant();
 
 			if (((i + j) % 2) == 1)
-				inv[i][j] = -inv[i][j];
+				inv(i, j) = -inv(i, j);
 		}
 	}
 

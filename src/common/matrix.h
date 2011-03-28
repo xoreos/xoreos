@@ -17,7 +17,7 @@
 
 namespace Common {
 
-/** A matrix. */
+/** A matrix, storing its elements in row-major order. */
 class Matrix {
 public:
 	Matrix(int rows, int columns);
@@ -26,11 +26,12 @@ public:
 
 	Matrix &operator=(const Matrix &right);
 
+
 	int getRows   () const;
 	int getColumns() const;
 
-	      float *operator[](int row);
-	const float *operator[](int row) const;
+	float &operator()(int row, int column);
+	float  operator()(int row, int column) const;
 
 
 	Matrix operator+(const Matrix &right) const;

@@ -87,10 +87,10 @@ void TransformationMatrix::loadIdentity() {
 void TransformationMatrix::translate(float x, float y, float z) {
 	Matrix tMatrix(4, 4);
 
-	tMatrix[0][0] = 1.0; tMatrix[0][1] = 0.0; tMatrix[0][2] = 0.0; tMatrix[0][3] =   x;
-	tMatrix[1][0] = 0.0; tMatrix[1][1] = 1.0; tMatrix[1][2] = 0.0; tMatrix[1][3] =   y;
-	tMatrix[2][0] = 0.0; tMatrix[2][1] = 0.0; tMatrix[2][2] = 1.0; tMatrix[2][3] =   z;
-	tMatrix[3][0] = 0.0; tMatrix[3][1] = 0.0; tMatrix[3][2] = 0.0; tMatrix[3][3] = 1.0;
+	tMatrix(0, 0) = 1.0; tMatrix(0, 1) = 0.0; tMatrix(0, 2) = 0.0; tMatrix(0, 3) =   x;
+	tMatrix(1, 0) = 0.0; tMatrix(1, 1) = 1.0; tMatrix(1, 2) = 0.0; tMatrix(1, 3) =   y;
+	tMatrix(2, 0) = 0.0; tMatrix(2, 1) = 0.0; tMatrix(2, 2) = 1.0; tMatrix(2, 3) =   z;
+	tMatrix(3, 0) = 0.0; tMatrix(3, 1) = 0.0; tMatrix(3, 2) = 0.0; tMatrix(3, 3) = 1.0;
 
 	(*this) *= tMatrix;
 }
@@ -98,10 +98,10 @@ void TransformationMatrix::translate(float x, float y, float z) {
 void TransformationMatrix::scale(float x, float y, float z) {
 	Matrix sMatrix(4, 4);
 
-	sMatrix[0][0] =   x; sMatrix[0][1] = 0.0; sMatrix[0][2] = 0.0; sMatrix[0][3] = 0.0;
-	sMatrix[1][0] = 0.0; sMatrix[1][1] =   y; sMatrix[1][2] = 0.0; sMatrix[1][3] = 0.0;
-	sMatrix[2][0] = 0.0; sMatrix[2][1] = 0.0; sMatrix[2][2] =   z; sMatrix[2][3] = 0.0;
-	sMatrix[3][0] = 0.0; sMatrix[3][1] = 0.0; sMatrix[3][2] = 0.0; sMatrix[3][3] = 1.0;
+	sMatrix(0, 0) =   x; sMatrix(0, 1) = 0.0; sMatrix(0, 2) = 0.0; sMatrix(0, 3) = 0.0;
+	sMatrix(1, 0) = 0.0; sMatrix(1, 1) =   y; sMatrix(1, 2) = 0.0; sMatrix(1, 3) = 0.0;
+	sMatrix(2, 0) = 0.0; sMatrix(2, 1) = 0.0; sMatrix(2, 2) =   z; sMatrix(2, 3) = 0.0;
+	sMatrix(3, 0) = 0.0; sMatrix(3, 1) = 0.0; sMatrix(3, 2) = 0.0; sMatrix(3, 3) = 1.0;
 
 	(*this) *= sMatrix;
 }
@@ -133,10 +133,10 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 
 	Matrix rMatrix(4, 4);
 
-	rMatrix[0][0] = e11; rMatrix[0][1] = e12; rMatrix[0][2] = e13; rMatrix[0][3] = 0.0;
-	rMatrix[1][0] = e21; rMatrix[1][1] = e22; rMatrix[1][2] = e23; rMatrix[1][3] = 0.0;
-	rMatrix[2][0] = e31; rMatrix[2][1] = e32; rMatrix[2][2] = e33; rMatrix[2][3] = 0.0;
-	rMatrix[3][0] = 0.0; rMatrix[3][1] = 0.0; rMatrix[3][2] = 0.0; rMatrix[3][3] = 1.0;
+	rMatrix(0, 0) = e11; rMatrix(0, 1) = e12; rMatrix(0, 2) = e13; rMatrix(0, 3) = 0.0;
+	rMatrix(1, 0) = e21; rMatrix(1, 1) = e22; rMatrix(1, 2) = e23; rMatrix(1, 3) = 0.0;
+	rMatrix(2, 0) = e31; rMatrix(2, 1) = e32; rMatrix(2, 2) = e33; rMatrix(2, 3) = 0.0;
+	rMatrix(3, 0) = 0.0; rMatrix(3, 1) = 0.0; rMatrix(3, 2) = 0.0; rMatrix(3, 3) = 1.0;
 
 	(*this) *= rMatrix;
 }

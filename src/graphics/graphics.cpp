@@ -362,25 +362,25 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	const float t1 = (zFar + zNear) / (zNear - zFar);
 	const float t2 = (2 * zFar * zNear) / (zNear - zFar);
 
-	_projection[0][0] =  f / aspect;
-	_projection[0][1] =  0.0;
-	_projection[0][2] =  0.0;
-	_projection[0][3] =  0.0;
+	_projection(0, 0) =  f / aspect;
+	_projection(0, 1) =  0.0;
+	_projection(0, 2) =  0.0;
+	_projection(0, 3) =  0.0;
 
-	_projection[1][0] =  0.0;
-	_projection[1][1] =  f;
-	_projection[1][2] =  0.0;
-	_projection[1][3] =  0.0;
+	_projection(1, 0) =  0.0;
+	_projection(1, 1) =  f;
+	_projection(1, 2) =  0.0;
+	_projection(1, 3) =  0.0;
 
-	_projection[2][0] =  0.0;
-	_projection[2][1] =  0.0;
-	_projection[2][2] =  t1;
-	_projection[2][3] =  t2;
+	_projection(2, 0) =  0.0;
+	_projection(2, 1) =  0.0;
+	_projection(2, 2) =  t1;
+	_projection(2, 3) =  t2;
 
-	_projection[3][0] =  0.0;
-	_projection[3][1] =  0.0;
-	_projection[3][2] = -1.0;
-	_projection[3][3] =  0.0;
+	_projection(3, 0) =  0.0;
+	_projection(3, 1) =  0.0;
+	_projection(3, 2) = -1.0;
+	_projection(3, 3) =  0.0;
 
 	_projection.getGLMatrix(_glProjection);
 }
@@ -430,10 +430,10 @@ bool GraphicsManager::unproject(float x, float y,
 
 		Common::Matrix coordsNear(4, 1);
 
-		coordsNear[0][0] = ((2 * (x - view[0])) / (view[2])) - 1.0;
-		coordsNear[1][0] = ((2 * (y - view[1])) / (view[3])) - 1.0;
-		coordsNear[2][0] = (2 * zNear) - 1.0;
-		coordsNear[3][0] = 1.0;
+		coordsNear(0, 0) = ((2 * (x - view[0])) / (view[2])) - 1.0;
+		coordsNear(1, 0) = ((2 * (y - view[1])) / (view[3])) - 1.0;
+		coordsNear(2, 0) = (2 * zNear) - 1.0;
+		coordsNear(3, 0) = 1.0;
 
 
 
@@ -441,32 +441,32 @@ bool GraphicsManager::unproject(float x, float y,
 
 		Common::Matrix coordsFar(4, 1);
 
-		coordsFar[0][0] = ((2 * (x - view[0])) / (view[2])) - 1.0;
-		coordsFar[1][0] = ((2 * (y - view[1])) / (view[3])) - 1.0;
-		coordsFar[2][0] = (2 * zFar) - 1.0;
-		coordsFar[3][0] = 1.0;
+		coordsFar(0, 0) = ((2 * (x - view[0])) / (view[2])) - 1.0;
+		coordsFar(1, 0) = ((2 * (y - view[1])) / (view[3])) - 1.0;
+		coordsFar(2, 0) = (2 * zFar) - 1.0;
+		coordsFar(3, 0) = 1.0;
 
 
 		// Unproject
 		Common::Matrix oNear(proj * coordsNear);
 		Common::Matrix oFar (proj * coordsFar );
-		if ((oNear[3][0] == 0.0) || (oNear[3][0] == 0.0))
+		if ((oNear(3, 0) == 0.0) || (oNear(3, 0) == 0.0))
 			return false;
 
 
 		// And return the values
 
-		oNear[3][0] = 1.0 / oNear[3][0];
+		oNear(3, 0) = 1.0 / oNear(3, 0);
 
-		x1 = oNear[0][0] * oNear[3][0];
-		y1 = oNear[1][0] * oNear[3][0];
-		z1 = oNear[2][0] * oNear[3][0];
+		x1 = oNear(0, 0) * oNear(3, 0);
+		y1 = oNear(1, 0) * oNear(3, 0);
+		z1 = oNear(2, 0) * oNear(3, 0);
 
-		oFar[3][0] = 1.0 / oFar[3][0];
+		oFar(3, 0) = 1.0 / oFar(3, 0);
 
-		x2 = oFar[0][0] * oFar[3][0];
-		y2 = oFar[1][0] * oFar[3][0];
-		z2 = oFar[2][0] * oFar[3][0];
+		x2 = oFar(0, 0) * oFar(3, 0);
+		y2 = oFar(1, 0) * oFar(3, 0);
+		z2 = oFar(2, 0) * oFar(3, 0);
 
 	} catch (Common::Exception &e) {
 		Common::printException(e, "WARNING: ");
