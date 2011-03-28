@@ -70,6 +70,10 @@ protected:
 	int _columns;
 
 	float *_elements;
+
+private:
+	static void multiply(float *out, const Matrix &a, const Matrix &b);
+	static void multiply_4x4_4x4(float *out, const float *a, const float *b);
 };
 
 } // End of namespace Common

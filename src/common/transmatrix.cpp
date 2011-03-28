@@ -15,6 +15,13 @@
 #include "common/transmatrix.h"
 #include "common/maths.h"
 
+static const float kIdentity[] = {
+	1.0, 0.0, 0.0, 0.0,
+	0.0, 1.0, 0.0, 0.0,
+	0.0, 0.0, 1.0, 0.0,
+	0.0, 0.0, 0.0, 1.0
+};
+
 namespace Common {
 
 TransformationMatrix::TransformationMatrix() : Matrix(4, 4) {
@@ -40,19 +47,17 @@ void TransformationMatrix::getPosition(float &x, float &y, float &z) const {
 }
 
 void TransformationMatrix::loadIdentity() {
-	_elements[ 0] = 1.0; _elements[ 4] = 0.0; _elements[ 8] = 0.0; _elements[12] = 0.0;
-	_elements[ 1] = 0.0; _elements[ 5] = 1.0; _elements[ 9] = 0.0; _elements[13] = 0.0;
-	_elements[ 2] = 0.0; _elements[ 6] = 0.0; _elements[10] = 1.0; _elements[14] = 0.0;
-	_elements[ 3] = 0.0; _elements[ 7] = 0.0; _elements[11] = 0.0; _elements[15] = 1.0;
+	set(kIdentity);
 }
 
 void TransformationMatrix::translate(float x, float y, float z) {
 	Matrix tMatrix(4, 4);
 
-	tMatrix(0, 0) = 1.0; tMatrix(0, 1) = 0.0; tMatrix(0, 2) = 0.0; tMatrix(0, 3) =   x;
-	tMatrix(1, 0) = 0.0; tMatrix(1, 1) = 1.0; tMatrix(1, 2) = 0.0; tMatrix(1, 3) =   y;
-	tMatrix(2, 0) = 0.0; tMatrix(2, 1) = 0.0; tMatrix(2, 2) = 1.0; tMatrix(2, 3) =   z;
-	tMatrix(3, 0) = 0.0; tMatrix(3, 1) = 0.0; tMatrix(3, 2) = 0.0; tMatrix(3, 3) = 1.0;
+	tMatrix.set(kIdentity);
+
+	tMatrix(0, 3) = x;
+	tMatrix(1, 3) = y;
+	tMatrix(2, 3) = z;
 
 	(*this) *= tMatrix;
 }
@@ -60,10 +65,11 @@ void TransformationMatrix::translate(float x, float y, float z) {
 void TransformationMatrix::scale(float x, float y, float z) {
 	Matrix sMatrix(4, 4);
 
-	sMatrix(0, 0) =   x; sMatrix(0, 1) = 0.0; sMatrix(0, 2) = 0.0; sMatrix(0, 3) = 0.0;
-	sMatrix(1, 0) = 0.0; sMatrix(1, 1) =   y; sMatrix(1, 2) = 0.0; sMatrix(1, 3) = 0.0;
-	sMatrix(2, 0) = 0.0; sMatrix(2, 1) = 0.0; sMatrix(2, 2) =   z; sMatrix(2, 3) = 0.0;
-	sMatrix(3, 0) = 0.0; sMatrix(3, 1) = 0.0; sMatrix(3, 2) = 0.0; sMatrix(3, 3) = 1.0;
+	sMatrix.set(kIdentity);
+
+	sMatrix(0, 0) = x;
+	sMatrix(1, 1) = y;
+	sMatrix(2, 2) = z;
 
 	(*this) *= sMatrix;
 }
@@ -79,26 +85,32 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 		z /= length;
 	}
 
-	float c = cosf(deg2rad(angle));
-	float s = sinf(deg2rad(angle));
+	const float c = cosf(deg2rad(angle));
+	const float s = sinf(deg2rad(angle));
+
+	float e[16];
 
 	// Elements for the rotation matrix
-	float e11 = (x * x) * (1.0 - c) +     c;
-	float e12 = (x * y) * (1.0 - c) - z * s;
-	float e13 = (x * z) * (1.0 - c) + y * s;
-	float e21 = (y * x) * (1.0 - c) + z * s;
-	float e22 = (y * y) * (1.0 - c) +     c;
-	float e23 = (y * z) * (1.0 - c) - x * s;
-	float e31 = (z * x) * (1.0 - c) - y * s;
-	float e32 = (z * y) * (1.0 - c) + x * s;
-	float e33 = (z * z) * (1.0 - c) +     c;
+	e[ 0] = (x * x) * (1.0 - c) +     c;
+	e[ 1] = (y * x) * (1.0 - c) + z * s;
+	e[ 2] = (z * x) * (1.0 - c) - y * s;
+	e[ 3] = 0.0;
+	e[ 4] = (x * y) * (1.0 - c) - z * s;
+	e[ 5] = (y * y) * (1.0 - c) +     c;
+	e[ 6] = (z * y) * (1.0 - c) + x * s;
+	e[ 7] = 0.0;
+	e[ 8] = (x * z) * (1.0 - c) + y * s;
+	e[ 9] = (y * z) * (1.0 - c) - x * s;
+	e[10] = (z * z) * (1.0 - c) +     c;
+	e[11] = 0.0;
+	e[12] = 0.0;
+	e[13] = 0.0;
+	e[14] = 0.0;
+	e[15] = 1.0;
 
 	Matrix rMatrix(4, 4);
 
-	rMatrix(0, 0) = e11; rMatrix(0, 1) = e12; rMatrix(0, 2) = e13; rMatrix(0, 3) = 0.0;
-	rMatrix(1, 0) = e21; rMatrix(1, 1) = e22; rMatrix(1, 2) = e23; rMatrix(1, 3) = 0.0;
-	rMatrix(2, 0) = e31; rMatrix(2, 1) = e32; rMatrix(2, 2) = e33; rMatrix(2, 3) = 0.0;
-	rMatrix(3, 0) = 0.0; rMatrix(3, 1) = 0.0; rMatrix(3, 2) = 0.0; rMatrix(3, 3) = 1.0;
+	rMatrix.set(e);
 
 	(*this) *= rMatrix;
 }

@@ -15,6 +15,7 @@
 #include "common/error.h"
 #include "common/matrix.h"
 
+#include <cassert>
 #include <cstring>
 
 namespace Common {
@@ -103,27 +104,17 @@ Matrix Matrix::operator*(const float &right) const {
 }
 
 Matrix Matrix::operator*(const Matrix &right) const {
-	if (_columns != right._rows)
-		throw Exception("Matrix::operator*(): %d != %d", _columns, right._rows);
+	assert(_columns == right._rows);
 
 	Matrix tmp(_rows, right._columns);
 
-	float *d = tmp._elements;
-	for (int i = 0; i < right._columns; i++) {
-		for (int j = 0; j < _rows; j++, d++) {
-			*d = 0;
-			for (int n = 0; n < _columns; n++)
-				*d += (*this)(j, n) * (right)(n, i);
-		}
-	}
+	multiply(tmp._elements, *this, right);
 
 	return tmp;
 }
 
 Matrix &Matrix::operator+=(const Matrix &right) {
-	if ((_rows != right._rows) || (_columns != right._columns))
-		throw Exception("Matrix::operator+=(): %dx%d != %dx%d",
-		                _rows, _columns,  right._rows, right._columns);
+	assert((_rows == right._rows) && (_columns == right._columns));
 
 	for (int i = 0; i < (_rows * _columns); i++)
 		_elements[i] += right._elements[i];
@@ -132,9 +123,7 @@ Matrix &Matrix::operator+=(const Matrix &right) {
 }
 
 Matrix &Matrix::operator-=(const Matrix &right) {
-	if ((_rows != right._rows) || (_columns != right._columns))
-		throw Exception("Matrix::operator-=(): %dx%d != %dx%d",
-		                _rows, _columns,  right._rows, right._columns);
+	assert((_rows == right._rows) && (_columns == right._columns));
 
 	for (int i = 0; i < (_rows * _columns); i++)
 		_elements[i] -= right._elements[i];
@@ -150,9 +139,16 @@ Matrix &Matrix::operator*=(const float &right) {
 }
 
 Matrix &Matrix::operator*=(const Matrix &right) {
-	Matrix tmp = *this * right;
+	assert(_columns == right._rows);
 
-	*this = tmp;
+	float *t = new float[_rows * right._columns];
+
+	multiply(t, *this, right);
+
+	delete _elements;
+
+	_columns  = right._columns;
+	_elements = t;
 
 	return *this;
 }
@@ -172,48 +168,47 @@ void Matrix::transpose() {
 }
 
 float Matrix::getDeterminant() const {
-	if (_rows != _columns)
-		throw Exception("Matrix::getDeterminant(): %d != %d", _rows, _columns);
+	assert(_rows == _columns);
 
-	if ((_rows == 1) && (_columns == 1))
-		return (*this)(0, 0);
+	if (_rows == 1)
+		return _elements[0];
 
-	if ((_rows == 2) && (_columns == 2))
-		return (*this)(0, 0) * (*this)(1, 1) - (*this)(0, 1) * (*this)(1, 0);
+	if (_rows == 2)
+		return _elements[0] * _elements[3] - _elements[1] * _elements[2];
 
-	if ((_rows == 3) && (_columns == 3))
-		return (*this)(0, 0) * (*this)(1, 1) * (*this)(2, 2) +
-		       (*this)(0, 1) * (*this)(1, 2) * (*this)(2, 0) +
-		       (*this)(0, 2) * (*this)(1, 0) * (*this)(2, 1) -
-		       (*this)(0, 0) * (*this)(1, 2) * (*this)(2, 1) -
-		       (*this)(0, 1) * (*this)(1, 0) * (*this)(2, 2) -
-		       (*this)(0, 2) * (*this)(1, 1) * (*this)(2, 0);
+	if (_rows == 3)
+		return _elements[0] * _elements[4] * _elements[8] +
+		       _elements[3] * _elements[7] * _elements[2] +
+		       _elements[6] * _elements[1] * _elements[5] -
+		       _elements[0] * _elements[7] * _elements[5] -
+		       _elements[3] * _elements[1] * _elements[8] -
+		       _elements[6] * _elements[4] * _elements[2];
 
-	if ((_rows == 4) && (_columns == 4))
-		return (*this)(0, 0) * (*this)(1, 1) * (*this)(2, 2) * (*this)(3, 3) +
-		       (*this)(0, 0) * (*this)(1, 2) * (*this)(2, 3) * (*this)(3, 1) +
-		       (*this)(0, 0) * (*this)(1, 3) * (*this)(2, 1) * (*this)(3, 2) +
-		       (*this)(0, 1) * (*this)(1, 0) * (*this)(2, 3) * (*this)(3, 2) +
-		       (*this)(0, 1) * (*this)(1, 2) * (*this)(2, 0) * (*this)(3, 3) +
-		       (*this)(0, 1) * (*this)(1, 3) * (*this)(2, 2) * (*this)(3, 0) +
-		       (*this)(0, 2) * (*this)(1, 0) * (*this)(2, 1) * (*this)(3, 3) +
-		       (*this)(0, 2) * (*this)(1, 1) * (*this)(2, 3) * (*this)(3, 0) +
-		       (*this)(0, 2) * (*this)(1, 3) * (*this)(2, 0) * (*this)(3, 1) +
-		       (*this)(0, 3) * (*this)(1, 0) * (*this)(2, 2) * (*this)(3, 1) +
-		       (*this)(0, 3) * (*this)(1, 1) * (*this)(2, 0) * (*this)(3, 2) +
-		       (*this)(0, 3) * (*this)(1, 2) * (*this)(2, 1) * (*this)(3, 0) -
-		       (*this)(0, 0) * (*this)(1, 1) * (*this)(2, 3) * (*this)(3, 2) -
-		       (*this)(0, 0) * (*this)(1, 2) * (*this)(2, 1) * (*this)(3, 3) -
-		       (*this)(0, 0) * (*this)(1, 3) * (*this)(2, 2) * (*this)(3, 1) -
-		       (*this)(0, 1) * (*this)(1, 0) * (*this)(2, 2) * (*this)(3, 3) -
-		       (*this)(0, 1) * (*this)(1, 2) * (*this)(2, 3) * (*this)(3, 0) -
-		       (*this)(0, 1) * (*this)(1, 3) * (*this)(2, 0) * (*this)(3, 2) -
-		       (*this)(0, 2) * (*this)(1, 0) * (*this)(2, 3) * (*this)(3, 1) -
-		       (*this)(0, 2) * (*this)(1, 1) * (*this)(2, 0) * (*this)(3, 3) -
-		       (*this)(0, 2) * (*this)(1, 3) * (*this)(2, 1) * (*this)(3, 0) -
-		       (*this)(0, 3) * (*this)(1, 0) * (*this)(2, 1) * (*this)(3, 2) -
-		       (*this)(0, 3) * (*this)(1, 1) * (*this)(2, 2) * (*this)(3, 0) -
-		       (*this)(0, 3) * (*this)(1, 2) * (*this)(2, 0) * (*this)(3, 1);
+	if (_rows == 4)
+		return _elements[ 0] * _elements[ 5] * _elements[10] * _elements[15] +
+		       _elements[ 0] * _elements[ 9] * _elements[14] * _elements[ 7] +
+		       _elements[ 0] * _elements[13] * _elements[ 6] * _elements[11] +
+		       _elements[ 4] * _elements[ 1] * _elements[14] * _elements[11] +
+		       _elements[ 4] * _elements[ 9] * _elements[ 2] * _elements[15] +
+		       _elements[ 4] * _elements[13] * _elements[10] * _elements[ 3] +
+		       _elements[ 8] * _elements[ 1] * _elements[ 6] * _elements[15] +
+		       _elements[ 8] * _elements[ 5] * _elements[14] * _elements[ 3] +
+		       _elements[ 8] * _elements[13] * _elements[ 2] * _elements[ 7] +
+		       _elements[12] * _elements[ 1] * _elements[10] * _elements[ 7] +
+		       _elements[12] * _elements[ 5] * _elements[ 2] * _elements[11] +
+		       _elements[12] * _elements[ 9] * _elements[ 6] * _elements[ 3] -
+		       _elements[ 0] * _elements[ 5] * _elements[14] * _elements[11] -
+		       _elements[ 0] * _elements[ 9] * _elements[ 6] * _elements[15] -
+		       _elements[ 0] * _elements[13] * _elements[10] * _elements[ 7] -
+		       _elements[ 4] * _elements[ 1] * _elements[10] * _elements[15] -
+		       _elements[ 4] * _elements[ 9] * _elements[14] * _elements[ 3] -
+		       _elements[ 4] * _elements[13] * _elements[ 2] * _elements[11] -
+		       _elements[ 8] * _elements[ 1] * _elements[14] * _elements[ 7] -
+		       _elements[ 8] * _elements[ 5] * _elements[ 2] * _elements[15] -
+		       _elements[ 8] * _elements[13] * _elements[ 6] * _elements[ 3] -
+		       _elements[12] * _elements[ 1] * _elements[ 6] * _elements[11] -
+		       _elements[12] * _elements[ 5] * _elements[10] * _elements[ 3] -
+		       _elements[12] * _elements[ 9] * _elements[ 2] * _elements[ 7];
 
 	// General case
 	float det = 0.0f;
@@ -275,6 +270,40 @@ void Matrix::invert() {
 
 bool Matrix::isInvertible() const {
 	return getDeterminant() != 0;
+}
+
+void Matrix::multiply(float *out, const Matrix &a, const Matrix &b) {
+	if ((a._rows == 4) && (a._columns == 4) && (b._rows == 4) && (b._columns == 4)) {
+		multiply_4x4_4x4(out, a._elements, b._elements);
+		return;
+	}
+
+	for (int i = 0; i < b._columns; i++) {
+		for (int j = 0; j < a._rows; j++, out++) {
+			*out = a(j, 0) * b(0, i);
+			for (int n = 1; n < a._columns; n++)
+				*out += a(j, n) * b(n, i);
+		}
+	}
+}
+
+void Matrix::multiply_4x4_4x4(float *out, const float *a, const float *b) {
+	out[ 0] = (a[ 0] * b[ 0]) + (a[ 4] * b[ 1]) + (a[ 8] * b[ 2]) + (a[12] * b[ 3]);
+	out[ 1] = (a[ 1] * b[ 0]) + (a[ 5] * b[ 1]) + (a[ 9] * b[ 2]) + (a[13] * b[ 3]);
+	out[ 2] = (a[ 2] * b[ 0]) + (a[ 6] * b[ 1]) + (a[10] * b[ 2]) + (a[14] * b[ 3]);
+	out[ 3] = (a[ 3] * b[ 0]) + (a[ 7] * b[ 1]) + (a[11] * b[ 2]) + (a[15] * b[ 3]);
+	out[ 4] = (a[ 0] * b[ 4]) + (a[ 4] * b[ 5]) + (a[ 8] * b[ 6]) + (a[12] * b[ 7]);
+	out[ 5] = (a[ 1] * b[ 4]) + (a[ 5] * b[ 5]) + (a[ 9] * b[ 6]) + (a[13] * b[ 7]);
+	out[ 6] = (a[ 2] * b[ 4]) + (a[ 6] * b[ 5]) + (a[10] * b[ 6]) + (a[14] * b[ 7]);
+	out[ 7] = (a[ 3] * b[ 4]) + (a[ 7] * b[ 5]) + (a[11] * b[ 6]) + (a[15] * b[ 7]);
+	out[ 8] = (a[ 0] * b[ 8]) + (a[ 4] * b[ 9]) + (a[ 8] * b[10]) + (a[12] * b[11]);
+	out[ 9] = (a[ 1] * b[ 8]) + (a[ 5] * b[ 9]) + (a[ 9] * b[10]) + (a[13] * b[11]);
+	out[10] = (a[ 2] * b[ 8]) + (a[ 6] * b[ 9]) + (a[10] * b[10]) + (a[14] * b[11]);
+	out[11] = (a[ 3] * b[ 8]) + (a[ 7] * b[ 9]) + (a[11] * b[10]) + (a[15] * b[11]);
+	out[12] = (a[ 0] * b[12]) + (a[ 4] * b[13]) + (a[ 8] * b[14]) + (a[12] * b[15]);
+	out[13] = (a[ 1] * b[12]) + (a[ 5] * b[13]) + (a[ 9] * b[14]) + (a[13] * b[15]);
+	out[14] = (a[ 2] * b[12]) + (a[ 6] * b[13]) + (a[10] * b[14]) + (a[14] * b[15]);
+	out[15] = (a[ 3] * b[12]) + (a[ 7] * b[13]) + (a[11] * b[14]) + (a[15] * b[15]);
 }
 
 } // End of namespace Common
