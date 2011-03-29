@@ -25,7 +25,10 @@ namespace Graphics {
 namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
-	_type(type), _currentState(0), _drawBound(false) {
+	_type(type), _currentState(0), _drawBound(false), _lists(0) {
+
+	for (int i = 0; i < kRenderPassAll; i++)
+		_needBuild[i] = true;
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
@@ -35,6 +38,9 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 
 Model::~Model() {
 	hide();
+
+	if (_lists != 0)
+		GfxMan.abandon(_lists, 2);
 
 	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
 		delete *s;
@@ -112,6 +118,7 @@ float Model::getDepth() const {
 
 void Model::drawBound(bool enabled) {
 	_drawBound = enabled;
+	needRebuild();
 }
 
 void Model::getPosition(float &x, float &y, float &z) const {
@@ -135,6 +142,7 @@ void Model::setPosition(float x, float y, float z) {
 
 	createAbsolutePosition();
 	calculateDistance();
+	needRebuild();
 
 	resort();
 
@@ -150,6 +158,7 @@ void Model::setRotation(float x, float y, float z) {
 
 	createAbsolutePosition();
 	calculateDistance();
+	needRebuild();
 
 	resort();
 
@@ -221,6 +230,8 @@ void Model::setState(const Common::UString &name) {
 	if (visible)
 		show();
 
+	needRebuild();
+
 	GfxMan.unlockFrame();
 }
 
@@ -289,9 +300,15 @@ void Model::calculateDistance() {
 	_distance = x + y + z;
 }
 
-void Model::render(RenderPass pass) {
-	if (!_currentState)
-		return;
+bool Model::buildList(RenderPass pass) {
+	if (!_needBuild[pass])
+		return false;
+
+	if (_lists == 0)
+		_lists = glGenLists(kRenderPassAll);
+
+	glNewList(_lists + pass, GL_COMPILE);
+
 
 	// Apply our global model transformation
 
@@ -307,9 +324,11 @@ void Model::render(RenderPass pass) {
 	glRotatef( _rotation[1], 0.0, 1.0, 0.0);
 	glRotatef(-_rotation[2], 0.0, 0.0, 1.0);
 
+
+	// Draw the bounding box, if requested
 	doDrawBound();
 
-	// Render root nodes
+	// Draw the nodes
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
 	     n != _currentState->rootNodes.end(); n++) {
 
@@ -318,6 +337,27 @@ void Model::render(RenderPass pass) {
 		glPopMatrix();
 	}
 
+
+	glEndList();
+
+
+	_needBuild[pass] = false;
+	return true;
+}
+
+void Model::render(RenderPass pass) {
+	if (!_currentState || (pass > kRenderPassAll))
+		return;
+
+	if (pass == kRenderPassAll) {
+		Model::render(kRenderPassOpaque);
+		Model::render(kRenderPassTransparent);
+		return;
+	}
+
+	// Render
+	buildList(pass);
+		glCallList(_lists + pass);
 
 	// Reset the first texture units
 	TextureMan.reset();
@@ -379,6 +419,18 @@ void Model::doDrawBound() {
 	glEnd();
 }
 
+void Model::doRebuild() {
+	needRebuild();
+}
+
+void Model::doDestroy() {
+	if (!_lists == 0)
+		return;
+
+	glDeleteLists(_lists, 2);
+	_lists = 0;
+}
+
 void Model::finalize() {
 	_currentState = 0;
 
@@ -391,6 +443,11 @@ void Model::finalize() {
 	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
 		for (NodeList::iterator n = (*s)->rootNodes.begin(); n != (*s)->rootNodes.end(); ++n)
 			(*n)->orderChildren();
+}
+
+void Model::needRebuild() {
+	for (int i = 0; i < kRenderPassAll; i++)
+		_needBuild[i] = true;
 }
 
 void Model::createStateNamesList() {

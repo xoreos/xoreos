@@ -46,6 +46,8 @@ public:
 	NewGameFog(Common::SeekableReadStream &fog) :
 		Graphics::Aurora::Model_NWN_Binary(fog, Graphics::Aurora::kModelTypeGUIFront) {
 
+		_modelScale[0] = _modelScale[1] = 10.0;
+
 		_startTime  = EventMan.getTimestamp();
 		_lastTime   = _startTime;
 		_timeRotate = _startTime - (std::rand() % 10000);

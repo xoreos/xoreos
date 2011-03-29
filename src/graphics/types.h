@@ -65,9 +65,9 @@ enum RenderableType {
 };
 
 enum RenderPass {
-	kRenderPassOpaque,      ///< Only render opaque parts.
-	kRenderPassTransparent, ///< Only render transparent parts.
-	kRenderPassAll          ///< Render all parts.
+	kRenderPassOpaque      = 0, ///< Only render opaque parts.
+	kRenderPassTransparent = 1, ///< Only render transparent parts.
+	kRenderPassAll         = 2, ///< Render all parts.
 };
 
 } // End of namespace Graphics

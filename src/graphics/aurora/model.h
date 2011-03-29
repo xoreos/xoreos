@@ -23,6 +23,8 @@
 #include "common/transmatrix.h"
 #include "common/boundingbox.h"
 
+#include "graphics/types.h"
+#include "graphics/glcontainer.h"
 #include "graphics/renderable.h"
 
 #include "graphics/aurora/types.h"
@@ -37,7 +39,7 @@ namespace Aurora {
 
 class ModelNode;
 
-class Model : public Renderable {
+class Model : public GLContainer, public Renderable {
 public:
 	Model(ModelType type = kModelTypeObject);
 	~Model();
@@ -150,10 +152,23 @@ protected:
 
 	/** Finalize the loading procedure. */
 	void finalize();
+	/** Signal that the nodes changed and the OpenGL list needs to be rebuild. */
+	void needRebuild();
+
+
+	// GLContainer
+	void doRebuild();
+	void doDestroy();
 
 
 private:
+	bool _needBuild[kRenderPassAll];
 	bool _drawBound;
+
+	ListID _lists; ///< OpenGL display lists for the model
+
+
+	bool buildList(RenderPass pass);
 
 	void createStateNamesList(); ///< Create the list of all state names.
 	void createBound();          ///< Create the model's bounding box.

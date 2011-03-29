@@ -36,8 +36,7 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 ModelNode::ModelNode(Model &model) :
 	_model(&model), _parent(0), _level(0),
 	_faceCount(0), _coords(0), _smoothGroups(0), _material(0), _isTransparent(false),
-	_constraints(0), _render(false), _hasTransparencyHint(false),
-	_needRebuild(true), _list(0) {
+	_constraints(0), _render(false), _hasTransparencyHint(false) {
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
@@ -49,11 +48,6 @@ ModelNode::ModelNode(Model &model) :
 }
 
 ModelNode::~ModelNode() {
-	removeFromQueue(kQueueGLContainer);
-
-	if (_list != 0)
-		GfxMan.abandon(_list, 1);
-
 	delete[] _constraints;
 	delete[] _material;
 	delete[] _smoothGroups;
@@ -132,6 +126,8 @@ void ModelNode::setPosition(float x, float y, float z) {
 	if (_parent)
 		_parent->orderChildren();
 
+	_model->needRebuild();
+
 	GfxMan.unlockFrame();
 }
 
@@ -141,6 +137,8 @@ void ModelNode::setRotation(float x, float y, float z) {
 	_rotation[0] = x;
 	_rotation[1] = y;
 	_rotation[2] = z;
+
+	_model->needRebuild();
 
 	GfxMan.unlockFrame();
 }
@@ -189,6 +187,7 @@ void ModelNode::inheritGeometry(ModelNode &node) const {
 
 void ModelNode::setInvisible(bool invisible) {
 	_render = !invisible;
+	_model->needRebuild();
 }
 
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
@@ -320,81 +319,26 @@ void ModelNode::orderChildren() {
 		(*c)->orderChildren();
 }
 
-void ModelNode::checkRebuild() {
-	if (!_needRebuild)
-		return;
+void ModelNode::renderGeometry() {
+	// Enable all needed texture units
+	for (uint32 t = 0; t < _textures.size(); t++) {
+		TextureMan.activeTexture(t);
+		glEnable(GL_TEXTURE_2D);
 
-	_needRebuild = false;
-	rebuild();
-}
-
-void ModelNode::render(RenderPass pass) {
-	checkRebuild();
-
-	// Apply the node's transformation
-	glTranslatef(_position[0], _position[1], _position[2]);
-	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-
-	glRotatef(_rotation[0], 1.0, 0.0, 0.0);
-	glRotatef(_rotation[1], 0.0, 1.0, 0.0);
-	glRotatef(_rotation[2], 0.0, 0.0, 1.0);
-
-
-	// Test if we have something to render in the current pass
-	bool shouldRender = _render;
-	if (((pass == kRenderPassOpaque)      &&  _isTransparent) ||
-			((pass == kRenderPassTransparent) && !_isTransparent))
-		shouldRender = false;
-
-
-	// Render the node's geometry
-	if (shouldRender && (_faceCount > 0) && (_list != 0)) {
-
-		// Enable all needed texture units
-		for (uint32 t = 0; t < _textures.size(); t++) {
-			TextureMan.activeTexture(t);
-			glEnable(GL_TEXTURE_2D);
-
-			TextureMan.set(_textures[t]);
-		}
-
-		// Render
-		glCallList(_list);
-
-		// Disable the texture units again
-		for (uint32 i = 0; i < _textures.size(); i++) {
-			TextureMan.activeTexture(i);
-			glDisable(GL_TEXTURE_2D);
-		}
-
+		TextureMan.set(_textures[t]);
 	}
 
 
-	// Render the node's children
-	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
-		glPushMatrix();
-		(*c)->render(pass);
-		glPopMatrix();
-	}
-}
-
-void ModelNode::doRebuild() {
-	if (_faceCount == 0)
-		return;
-
-	_list = glGenLists(1);
-
-	glNewList(_list, GL_COMPILE);
-	glBegin(GL_TRIANGLES);
+	// Render the node's faces
 
 	const uint32 textureCount = _textures.size();
-
 	const float *vX = _vX;
 	const float *vY = _vY;
 	const float *vZ = _vZ;
 	const float *tX = _tX;
 	const float *tY = _tY;
 
+	glBegin(GL_TRIANGLES);
 	for (uint32 f = 0; f < _faceCount; f++, vX += 3, vY += 3, vZ += 3,
 	                                   tX += 3 * textureCount, tY += 3 * textureCount) {
 
@@ -421,17 +365,44 @@ void ModelNode::doRebuild() {
 		// Geometry vertex C
 		glVertex3f(vX[2], vY[2], vZ[2]);
 	}
-
 	glEnd();
-	glEndList();
+
+
+	// Disable the texture units again
+	for (uint32 i = 0; i < _textures.size(); i++) {
+		TextureMan.activeTexture(i);
+		glDisable(GL_TEXTURE_2D);
+	}
 }
 
-void ModelNode::doDestroy() {
-	if (!_list == 0)
-		return;
+void ModelNode::render(RenderPass pass) {
+	// Apply the node's transformation
 
-	glDeleteLists(_list, 1);
-	_list = 0;
+	glTranslatef(_position[0], _position[1], _position[2]);
+	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+
+	glRotatef(_rotation[0], 1.0, 0.0, 0.0);
+	glRotatef(_rotation[1], 0.0, 1.0, 0.0);
+	glRotatef(_rotation[2], 0.0, 0.0, 1.0);
+
+
+	// Render the node's geometry
+
+	bool shouldRender = _render && (_faceCount > 0);
+	if (((pass == kRenderPassOpaque)      &&  _isTransparent) ||
+			((pass == kRenderPassTransparent) && !_isTransparent))
+		shouldRender = false;
+
+	if (shouldRender)
+		renderGeometry();
+
+
+	// Render the node's children
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+		glPushMatrix();
+		(*c)->render(pass);
+		glPopMatrix();
+	}
 }
 
 } // End of namespace Aurora

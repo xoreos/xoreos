@@ -15,12 +15,14 @@
 #ifndef GRAPHICS_AURORA_MODELNODE_H
 #define GRAPHICS_AURORA_MODELNODE_H
 
+#include <list>
+#include <vector>
+
 #include "common/ustring.h"
 #include "common/transmatrix.h"
 #include "common/boundingbox.h"
 
 #include "graphics/types.h"
-#include "graphics/glcontainer.h"
 
 #include "graphics/aurora/types.h"
 #include "graphics/aurora/textureman.h"
@@ -31,7 +33,7 @@ namespace Aurora {
 
 class Model;
 
-class ModelNode : public GLContainer {
+class ModelNode {
 public:
 	ModelNode(Model &model);
 	~ModelNode();
@@ -68,10 +70,6 @@ public:
 	void move  (float x, float y, float z);
 	/** Rotate the node, relative to its current rotation. */
 	void rotate(float x, float y, float z);
-
-
-	// Renderable
-	void render(RenderPass pass);
 
 
 protected:
@@ -156,23 +154,16 @@ protected:
 	void createBound();
 	void createCenter();
 
-
-	// GLContainer
-	void doRebuild();
-	void doDestroy();
+	void render(RenderPass pass);
 
 
 private:
-	bool _needRebuild;
-	ListID _list; ///< OpenGL display list for the node.
-
-
 	const Common::BoundingBox &getAbsoluteBound() const;
 	void createAbsoluteBound(Common::BoundingBox parentPosition);
 
 	void orderChildren();
 
-	void checkRebuild();
+	void renderGeometry();
 
 
 public:
