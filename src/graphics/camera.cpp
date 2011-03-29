@@ -33,6 +33,14 @@ CameraManager::CameraManager() : _lastChanged(0) {
 	_orientation[2] = 0.0;
 }
 
+void CameraManager::lock() {
+	_mutex.lock();
+}
+
+void CameraManager::unlock() {
+	_mutex.unlock();
+}
+
 const float *CameraManager::getPosition() const {
 	return _position;
 }
@@ -42,7 +50,7 @@ const float *CameraManager::getOrientation() const {
 }
 
 void CameraManager::reset() {
-	GfxMan.lockFrame();
+	Common::StackLock cameraLock(_mutex);
 
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
@@ -54,12 +62,10 @@ void CameraManager::reset() {
 	_lastChanged = EventMan.getTimestamp();
 
 	GfxMan.recalculateObjectDistances();
-
-	GfxMan.unlockFrame();
 }
 
 void CameraManager::setPosition(float x, float y, float z) {
-	GfxMan.lockFrame();
+	Common::StackLock cameraLock(_mutex);
 
 	_position[0] = x;
 	_position[1] = y;
@@ -68,12 +74,10 @@ void CameraManager::setPosition(float x, float y, float z) {
 	_lastChanged = EventMan.getTimestamp();
 
 	GfxMan.recalculateObjectDistances();
-
-	GfxMan.unlockFrame();
 }
 
 void CameraManager::setOrientation(float x, float y, float z) {
-	GfxMan.lockFrame();
+	Common::StackLock cameraLock(_mutex);
 
 	_orientation[0] = fmodf(x, 360.0);
 	_orientation[1] = fmodf(y, 360.0);
@@ -82,8 +86,6 @@ void CameraManager::setOrientation(float x, float y, float z) {
 	_lastChanged = EventMan.getTimestamp();
 
 	GfxMan.recalculateObjectDistances();
-
-	GfxMan.unlockFrame();
 }
 
 void CameraManager::setOrientation(float vX, float vY) {

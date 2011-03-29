@@ -39,6 +39,12 @@ void QueueManager::unlockQueue(QueueType queue) {
 	_queueMutex[queue].unlock();
 }
 
+bool QueueManager::isQueueEmpty(QueueType queue) {
+	Common::StackLock lock(_queueMutex[queue]);
+
+	return _queue[queue].empty();
+}
+
 const std::list<Queueable *> &QueueManager::getQueue(QueueType queue) {
 	return _queue[queue];
 }

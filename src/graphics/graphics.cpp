@@ -388,14 +388,20 @@ bool GraphicsManager::unproject(float x, float y,
 
 		Common::TransformationMatrix model;
 
+		float cPos[3];
+		float cOrient[3];
+
+		CameraMan.lock();
+		memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
+		memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
+		CameraMan.unlock();
+
 		// Apply camera orientation
-		const float *cOrient = CameraMan.getOrientation();
 		model.rotate(-cOrient[0], 1.0, 0.0, 0.0);
 		model.rotate( cOrient[1], 0.0, 1.0, 0.0);
 		model.rotate(-cOrient[2], 0.0, 0.0, 1.0);
 
 		// Apply camera position
-		const float *cPos = CameraMan.getPosition();
 		model.translate(-cPos[0], -cPos[1], cPos[2]);
 
 
@@ -556,18 +562,18 @@ void GraphicsManager::takeScreenshot() {
 }
 
 Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
-	QueueMan.lockQueue(kQueueVisibleGUIFrontObject);
-	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
-	if (gui.empty()) {
-		QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
+	if (QueueMan.isQueueEmpty(kQueueVisibleGUIFrontObject))
 		return 0;
-	}
 
 	// Map the screen coordinates to our OpenGL GUI screen coordinates
 	x =               x  - (_screen->w / 2.0);
 	y = (_screen->h - y) - (_screen->h / 2.0);
 
 	Renderable *object = 0;
+
+	QueueMan.lockQueue(kQueueVisibleGUIFrontObject);
+	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
+
 	// Go through the GUI elements, from nearest to furthest
 	for (std::list<Queueable *>::const_iterator g = gui.begin(); g != gui.end(); ++g) {
 		Renderable &r = static_cast<Renderable &>(**g);
@@ -588,23 +594,21 @@ Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
 }
 
 Renderable *GraphicsManager::getWorldObjectAt(float x, float y) const {
-	QueueMan.lockQueue(kQueueVisibleWorldObject);
-	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
-	if (objects.empty()) {
-		QueueMan.unlockQueue(kQueueVisibleWorldObject);
+	if (QueueMan.isQueueEmpty(kQueueVisibleWorldObject))
 		return 0;
-	}
 
 		// Map the screen coordinates to OpenGL world screen coordinates
 	y = _screen->h - y;
 
 	float x1, y1, z1, x2, y2, z2;
-	if (!unproject(x, y, x1, y1, z1, x2, y2, z2)) {
-		QueueMan.unlockQueue(kQueueVisibleWorldObject);
+	if (!unproject(x, y, x1, y1, z1, x2, y2, z2))
 		return 0;
-	}
 
 	Renderable *object = 0;
+
+	QueueMan.lockQueue(kQueueVisibleWorldObject);
+	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
+
 	for (std::list<Queueable *>::const_iterator o = objects.begin(); o != objects.end(); ++o) {
 		Renderable &r = static_cast<Renderable &>(**o);
 
@@ -651,8 +655,6 @@ void GraphicsManager::buildNewTextures() {
 }
 
 void GraphicsManager::beginScene() {
-	_frameLockMutex.lock();
-
 	// Switch cursor on/off
 	if (_cursorState != kCursorStateStay)
 		handleCursorSwitch();
@@ -667,12 +669,8 @@ void GraphicsManager::beginScene() {
 }
 
 bool GraphicsManager::playVideo() {
-	QueueMan.lockQueue(kQueueVideo);
-	const std::list<Queueable *> &videos = QueueMan.getQueue(kQueueVideo);
-	if (videos.empty()) {
-		QueueMan.unlockQueue(kQueueVideo);
+	if (QueueMan.isQueueEmpty(kQueueVideo))
 		return false;
-	}
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -680,6 +678,9 @@ bool GraphicsManager::playVideo() {
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	QueueMan.lockQueue(kQueueVideo);
+	const std::list<Queueable *> &videos = QueueMan.getQueue(kQueueVideo);
 
 	for (std::list<Queueable *>::const_iterator v = videos.begin(); v != videos.end(); ++v) {
 		glPushMatrix();
@@ -692,14 +693,16 @@ bool GraphicsManager::playVideo() {
 }
 
 bool GraphicsManager::renderWorld() {
-	QueueMan.lockQueue(kQueueVisibleWorldObject);
-	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
-	if (objects.empty()) {
-		QueueMan.unlockQueue(kQueueVisibleWorldObject);
+	if (QueueMan.isQueueEmpty(kQueueVisibleWorldObject))
 		return false;
-	}
 
-	buildNewTextures();
+	float cPos[3];
+	float cOrient[3];
+
+	CameraMan.lock();
+	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
+	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
+	CameraMan.unlock();
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -710,14 +713,17 @@ bool GraphicsManager::renderWorld() {
 	glLoadIdentity();
 
 	// Apply camera orientation
-	const float *cOrient = CameraMan.getOrientation();
 	glRotatef(-cOrient[0], 1.0, 0.0, 0.0);
 	glRotatef( cOrient[1], 0.0, 1.0, 0.0);
 	glRotatef(-cOrient[2], 0.0, 0.0, 1.0);
 
 	// Apply camera position
-	const float *cPos = CameraMan.getPosition();
 	glTranslatef(-cPos[0], -cPos[1], cPos[2]);
+
+	QueueMan.lockQueue(kQueueVisibleWorldObject);
+	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
+
+	buildNewTextures();
 
 	// Draw opaque objects
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
@@ -742,14 +748,8 @@ bool GraphicsManager::renderWorld() {
 }
 
 bool GraphicsManager::renderGUIFront() {
-	QueueMan.lockQueue(kQueueVisibleGUIFrontObject);
-	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
-	if (gui.empty()) {
-		QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
+	if (QueueMan.isQueueEmpty(kQueueVisibleGUIFrontObject))
 		return false;
-	}
-
-	buildNewTextures();
 
 	glDisable(GL_DEPTH_TEST);
 
@@ -759,6 +759,11 @@ bool GraphicsManager::renderGUIFront() {
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	QueueMan.lockQueue(kQueueVisibleGUIFrontObject);
+	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
+
+	buildNewTextures();
 
 	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
 	     g != gui.rend(); ++g) {
@@ -806,8 +811,6 @@ void GraphicsManager::endScene() {
 
 	if (_fsaa > 0)
 		glDisable(GL_MULTISAMPLE_ARB);
-
-	_frameLockMutex.unlock();
 }
 
 void GraphicsManager::renderScene() {

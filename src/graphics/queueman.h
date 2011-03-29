@@ -33,6 +33,8 @@ public:
 	QueueManager();
 	~QueueManager();
 
+	bool isQueueEmpty(QueueType queue);
+
 	void lockQueue(QueueType queue);
 	void unlockQueue(QueueType queue);
 
