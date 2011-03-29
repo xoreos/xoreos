@@ -104,10 +104,12 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false)
 	}
 
 	load();
-	Queueable<VideoDecoder>::addToQueue();
 }
 
 Bink::~Bink() {
+	removeFromQueue(kQueueGLContainer);
+	removeFromQueue(kQueueVideo);
+
 	for (int i = 0; i < 4; i++) {
 		delete[] _curPlanes[i];
 		delete[] _oldPlanes[i];

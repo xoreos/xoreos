@@ -39,6 +39,10 @@ CubeSide::CubeSide(Cube &parent, int n) : _parent(&parent), _n(n) {
 	show();
 }
 
+CubeSide::~CubeSide() {
+	hide();
+}
+
 void CubeSide::calculateDistance() {
 	Common::TransformationMatrix m;
 
@@ -71,11 +75,13 @@ Cube::Cube(const Common::UString &texture) : _firstTime(true), _lastRotateTime(0
 }
 
 Cube::~Cube() {
-	if (_list != 0)
-		GfxMan.abandon(_list, 1);
+	removeFromQueue(kQueueGLContainer);
 
 	for (int i = 0; i < 6; i++)
 		delete _sides[i];
+
+	if (_list != 0)
+		GfxMan.abandon(_list, 1);
 }
 
 void Cube::doRebuild() {

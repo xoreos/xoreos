@@ -17,7 +17,7 @@
 
 namespace Graphics {
 
-Object::Object() : Renderable(GfxMan.getObjectQueue()) {
+Object::Object() : Renderable(kRenderableTypeObject) {
 }
 
 Object::~Object() {

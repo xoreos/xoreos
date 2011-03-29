@@ -30,7 +30,7 @@ Scrollbar::Scrollbar(Type type) : _type(type), _x(0.0), _y(0.0), _z(0.0) {
 }
 
 Scrollbar::~Scrollbar() {
-	removeFromQueue();
+	hide();
 }
 
 void Scrollbar::setPosition(float x, float y, float z) {
@@ -72,18 +72,6 @@ void Scrollbar::setLength(float length) {
 		createH();
 
 	GfxMan.unlockFrame();
-}
-
-void Scrollbar::show() {
-	addToQueue();
-}
-
-void Scrollbar::hide() {
-	removeFromQueue();
-}
-
-bool Scrollbar::isVisible() {
-	return isInQueue();
 }
 
 float Scrollbar::getWidth() const {

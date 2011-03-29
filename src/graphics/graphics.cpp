@@ -28,20 +28,18 @@
 #include "graphics/util.h"
 #include "graphics/cursor.h"
 #include "graphics/fpscounter.h"
+#include "graphics/queueman.h"
 #include "graphics/renderable.h"
 #include "graphics/camera.h"
 
 #include "graphics/images/decoder.h"
 #include "graphics/images/screenshot.h"
 
+#include "graphics/video/decoder.h"
+
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
-
-static bool queueComp(Renderable *a, Renderable *b) {
-	return a->getDistance() < b->getDistance();
-}
-
 
 GraphicsManager::GraphicsManager() {
 	_ready = false;
@@ -124,7 +122,7 @@ void GraphicsManager::deinit() {
 	if (!_ready)
 		return;
 
-	clearGLContainerQueue();
+	QueueMan.clearAllQueues();
 
 	SDL_Quit();
 
@@ -383,7 +381,7 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 
 bool GraphicsManager::unproject(float x, float y,
                                 float &x1, float &y1, float &z1,
-                                float &x2, float &y2, float &z2) {
+                                float &x2, float &y2, float &z2) const {
 
 	try {
 		// Generate the model matrix
@@ -489,27 +487,25 @@ void GraphicsManager::unlockFrame() {
 }
 
 void GraphicsManager::recalculateObjectDistances() {
-	lockFrame();
+	// World objects
+	QueueMan.lockQueue(kQueueVisibleWorldObject);
 
-	for (Renderable::QueueRef obj = _objects.list.begin();
-       obj != _objects.list.end(); ++obj)
-		(*obj)->calculateDistance();
-	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin();
-	     obj != _guiFrontObjects.list.end(); ++obj)
-		(*obj)->calculateDistance();
+	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
+	for (std::list<Queueable *>::const_iterator o = objects.begin(); o != objects.end(); ++o)
+		static_cast<Renderable *>(*o)->calculateDistance();
 
-	resortObjects();
+	QueueMan.sortQueue(kQueueVisibleWorldObject);
+	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 
-	unlockFrame();
-}
+	// GUI front objects
+	QueueMan.lockQueue(kQueueVisibleGUIFrontObject);
 
-void GraphicsManager::resortObjects() {
-	lockFrame();
+	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
+	for (std::list<Queueable *>::const_iterator g = gui.begin(); g != gui.end(); ++g)
+		static_cast<Renderable *>(*g)->calculateDistance();
 
-	_objects.list.sort(queueComp);
-	_guiFrontObjects.list.sort(queueComp);
-
-	unlockFrame();
+	QueueMan.sortQueue(kQueueVisibleGUIFrontObject);
+	QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
 }
 
 uint32 GraphicsManager::createRenderableID() {
@@ -559,75 +555,88 @@ void GraphicsManager::takeScreenshot() {
 	unlockFrame();
 }
 
-Renderable *GraphicsManager::getObjectAt(float x, float y) {
-	// Check for a hit in the GUI objects
-
-	lockFrame();
+Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
+	QueueMan.lockQueue(kQueueVisibleGUIFrontObject);
+	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
+	if (gui.empty()) {
+		QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
+		return 0;
+	}
 
 	// Map the screen coordinates to our OpenGL GUI screen coordinates
-	const float guiX =               x  - (_screen->w / 2.0);
-	const float guiY = (_screen->h - y) - (_screen->h / 2.0);
+	x =               x  - (_screen->w / 2.0);
+	y = (_screen->h - y) - (_screen->h / 2.0);
 
+	Renderable *object = 0;
 	// Go through the GUI elements, from nearest to furthest
-	for (Renderable::QueueRef obj = _guiFrontObjects.list.begin();
-	     obj != _guiFrontObjects.list.end(); ++obj) {
+	for (std::list<Queueable *>::const_iterator g = gui.begin(); g != gui.end(); ++g) {
+		Renderable &r = static_cast<Renderable &>(**g);
 
-		if (!(*obj)->isClickable())
+		if (!r.isClickable())
 			// Object isn't clickable, don't check
 			continue;
 
 		// If the coordinates are "in" that object, return it
-		if ((*obj)->isIn(guiX, guiY)) {
-			unlockFrame();
-			return *obj;
+		if (r.isIn(x, y)) {
+			object = &r;
+			break;
 		}
 	}
 
+	QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
+	return object;
+}
 
-	// Check for a hit in the world objects
+Renderable *GraphicsManager::getWorldObjectAt(float x, float y) const {
+	QueueMan.lockQueue(kQueueVisibleWorldObject);
+	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
+	if (objects.empty()) {
+		QueueMan.unlockQueue(kQueueVisibleWorldObject);
+		return 0;
+	}
 
-	if (!_objects.list.empty()) {
 		// Map the screen coordinates to OpenGL world screen coordinates
-		const float worldX =              x;
-		const float worldY = _screen->h - y;
+	y = _screen->h - y;
 
-		float x1, y1, z1, x2, y2, z2;
-		if (unproject(worldX, worldY, x1, y1, z1, x2, y2, z2)) {
+	float x1, y1, z1, x2, y2, z2;
+	if (!unproject(x, y, x1, y1, z1, x2, y2, z2)) {
+		QueueMan.unlockQueue(kQueueVisibleWorldObject);
+		return 0;
+	}
 
-			// Go through the world objects, from nearest to furthest
-			for (Renderable::QueueRef obj = _objects.list.begin();
-			     obj != _objects.list.end(); ++obj) {
+	Renderable *object = 0;
+	for (std::list<Queueable *>::const_iterator o = objects.begin(); o != objects.end(); ++o) {
+		Renderable &r = static_cast<Renderable &>(**o);
 
-				if (!(*obj)->isClickable())
-					// Object isn't clickable, don't check
-					continue;
+		if (!r.isClickable())
+			// Object isn't clickable, don't check
+			continue;
 
-				// If the line intersects with the object, return it
-				if ((*obj)->isIn(x1, y1, z1, x2, y2, z2)) {
-					unlockFrame();
-					return *obj;
-				}
-
-			}
-
+		// If the line intersects with the object, return it
+		if (r.isIn(x1, y1, z1, x2, y2, z2)) {
+			object = &r;
+			break;
 		}
 	}
 
-	// No object at all at that position
-	unlockFrame();
+	QueueMan.unlockQueue(kQueueVisibleWorldObject);
+	return object;
+}
+
+Renderable *GraphicsManager::getObjectAt(float x, float y) {
+	Renderable *object = 0;
+
+	if ((object = getGUIObjectAt(x, y)))
+		return object;
+
+	if ((object = getWorldObjectAt(x, y)))
+		return object;
+
 	return 0;
 }
 
-void GraphicsManager::renderScene() {
-	Common::enforceMainThread();
-
-	cleanupAbandoned();
-
-	if (_frameLock > 0)
-		return;
-
-	Common::StackLock frameLock(_frameLockMutex);
-	Common::StackLock glContainersLock(_glContainers.mutex);
+void GraphicsManager::beginScene() {
+	_frameLockMutex.lock();
 
 	// Switch cursor on/off
 	if (_cursorState != kCursorStateStay)
@@ -640,47 +649,39 @@ void GraphicsManager::renderScene() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_TEXTURE_2D);
+}
 
-	Common::StackLock videosLock(_videos.mutex);
-	if (!_videos.list.empty()) {
-		// Got videos, just play those
+bool GraphicsManager::playVideo() {
+	QueueMan.lockQueue(kQueueVideo);
+	const std::list<Queueable *> &videos = QueueMan.getQueue(kQueueVideo);
+	if (videos.empty()) {
+		QueueMan.unlockQueue(kQueueVideo);
+		return false;
+	}
 
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
-		VideoDecoder::VisibleQueueRef video = _videos.list.begin();
-		while (video != _videos.list.end()) {
-			glPushMatrix();
-			(*video)->render();
-			glPopMatrix();
+	for (std::list<Queueable *>::const_iterator v = videos.begin(); v != videos.end(); ++v) {
+		glPushMatrix();
+		static_cast<VideoDecoder *>(*v)->render();
+		glPopMatrix();
+	}
 
-			if (!(*video)->isPlaying()) {
-				// Finished playing, kick the video out of the queue
+	QueueMan.unlockQueue(kQueueVideo);
+	return true;
+}
 
-				(*video)->destroy();
-				(*video)->Queueable<VideoDecoder>::kickedOut();
-				video = _videos.list.erase(video);
-			} else
-				++video;
-		}
-
-		SDL_GL_SwapBuffers();
-
-		if (_takeScreenshot) {
-			Graphics::takeScreenshot();
-			_takeScreenshot = false;
-		}
-
-		_fpsCounter->finishedFrame();
-
-		if (_fsaa > 0)
-			glDisable(GL_MULTISAMPLE_ARB);
-
-		return;
+bool GraphicsManager::renderWorld() {
+	QueueMan.lockQueue(kQueueVisibleWorldObject);
+	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
+	if (objects.empty()) {
+		QueueMan.unlockQueue(kQueueVisibleWorldObject);
+		return false;
 	}
 
 	glMatrixMode(GL_PROJECTION);
@@ -701,20 +702,34 @@ void GraphicsManager::renderScene() {
 	const float *cPos = CameraMan.getPosition();
 	glTranslatef(-cPos[0], -cPos[1], cPos[2]);
 
-	Common::StackLock objectsLock(_objects.mutex);
-
 	// Draw opaque objects
-	for (Renderable::QueueRRef obj = _objects.list.rbegin(); obj != _objects.list.rend(); ++obj) {
+	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
+	     o != objects.rend(); ++o) {
+
 		glPushMatrix();
-		(*obj)->render(kRenderPassOpaque);
+		static_cast<Renderable *>(*o)->render(kRenderPassOpaque);
 		glPopMatrix();
 	}
 
 	// Draw transparent objects
-	for (Renderable::QueueRRef obj = _objects.list.rbegin(); obj != _objects.list.rend(); ++obj) {
+	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
+	     o != objects.rend(); ++o) {
+
 		glPushMatrix();
-		(*obj)->render(kRenderPassTransparent);
+		static_cast<Renderable *>(*o)->render(kRenderPassTransparent);
 		glPopMatrix();
+	}
+
+	QueueMan.unlockQueue(kQueueVisibleWorldObject);
+	return true;
+}
+
+bool GraphicsManager::renderGUIFront() {
+	QueueMan.lockQueue(kQueueVisibleGUIFrontObject);
+	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
+	if (gui.empty()) {
+		QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
+		return false;
 	}
 
 	glDisable(GL_DEPTH_TEST);
@@ -726,30 +741,39 @@ void GraphicsManager::renderScene() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	Common::StackLock guiFrontLock(_guiFrontObjects.mutex);
+	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
+	     g != gui.rend(); ++g) {
 
-	// Draw the front GUI elements
-	for (Renderable::QueueRRef obj = _guiFrontObjects.list.rbegin(); obj != _guiFrontObjects.list.rend(); ++obj) {
 		glPushMatrix();
-		(*obj)->render(kRenderPassAll);
+		static_cast<Renderable *>(*g)->render(kRenderPassAll);
 		glPopMatrix();
 	}
 
-	// Draw the cursor
-	if (_cursor) {
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
-		glTranslatef(- (_screen->w / 2.0), _screen->h / 2.0, 0.0);
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		_cursor->render();
-	}
+	QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
 
 	glEnable(GL_DEPTH_TEST);
+	return true;
+}
 
+bool GraphicsManager::renderCursor() {
+	if (!_cursor)
+		return false;
+
+	glDisable(GL_DEPTH_TEST);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
+	glTranslatef(- (_screen->w / 2.0), _screen->h / 2.0, 0.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	_cursor->render();
+	glEnable(GL_DEPTH_TEST);
+	return true;
+}
+
+void GraphicsManager::endScene() {
 	SDL_GL_SwapBuffers();
 
 	if (_takeScreenshot) {
@@ -761,6 +785,30 @@ void GraphicsManager::renderScene() {
 
 	if (_fsaa > 0)
 		glDisable(GL_MULTISAMPLE_ARB);
+
+	_frameLockMutex.unlock();
+}
+
+void GraphicsManager::renderScene() {
+	Common::enforceMainThread();
+
+	cleanupAbandoned();
+
+	if (_frameLock > 0)
+		return;
+
+	beginScene();
+
+	if (playVideo()) {
+		endScene();
+		return;
+	}
+
+	renderWorld();
+	renderGUIFront();
+	renderCursor();
+
+	endScene();
 }
 
 int GraphicsManager::getScreenWidth() const {
@@ -790,36 +838,24 @@ bool GraphicsManager::isFullScreen() const {
 }
 
 void GraphicsManager::rebuildGLContainers() {
-	Common::StackLock lock(_glContainers.mutex);
+	QueueMan.lockQueue(kQueueGLContainer);
 
-	for (GLContainer::QueueRef glContainer = _glContainers.list.begin();
-	     glContainer != _glContainers.list.end(); ++glContainer)
-		(*glContainer)->rebuild();
+	const std::list<Queueable *> &cont = QueueMan.getQueue(kQueueGLContainer);
+	for (std::list<Queueable *>::const_iterator c = cont.begin(); c != cont.end(); ++c)
+		static_cast<GLContainer *>(*c)->rebuild();
+
+	QueueMan.unlockQueue(kQueueGLContainer);
 }
 
 void GraphicsManager::destroyGLContainers() {
-	Common::StackLock lock(_glContainers.mutex);
+	QueueMan.lockQueue(kQueueGLContainer);
 
-	for (GLContainer::QueueRef glContainer = _glContainers.list.begin();
-	     glContainer != _glContainers.list.end(); ++glContainer)
-		(*glContainer)->destroy();
+	const std::list<Queueable *> &cont = QueueMan.getQueue(kQueueGLContainer);
+	for (std::list<Queueable *>::const_iterator c = cont.begin(); c != cont.end(); ++c)
+		static_cast<GLContainer *>(*c)->destroy();
+
+	QueueMan.unlockQueue(kQueueGLContainer);
 }
-
-void GraphicsManager::clearGLContainerQueue() {
-	Common::StackLock lock(_glContainers.mutex);
-
-	for (GLContainer::QueueRef glContainer = _glContainers.list.begin();
-	     glContainer != _glContainers.list.end(); ++glContainer) {
-		(*glContainer)->destroy();
-		(*glContainer)->kickedOut();
-	}
-
-	_glContainers.list.clear();
-	_objects.list.clear();
-	_guiFrontObjects.list.clear();
-	_videos.list.clear();
-}
-
 
 void GraphicsManager::destroyContext() {
 	// Destroying all GL containers, since we need to
@@ -952,31 +988,6 @@ void GraphicsManager::setScreenSize(int width, int height) {
 	// Let the NotificationManager notify the Notifyables that the resolution changed
 	if ((oldWidth != _screen->w) || (oldHeight != _screen->h))
 		NotificationMan.resized(oldWidth, oldHeight, _screen->w, _screen->h);
-}
-
-GLContainer::Queue &GraphicsManager::getGLContainerQueue() {
-	return _glContainers;
-}
-
-Renderable::VisibleQueue &GraphicsManager::getObjectQueue() {
-	return _objects;
-}
-
-Renderable::VisibleQueue &GraphicsManager::getGUIFrontQueue() {
-	return _guiFrontObjects;
-}
-
-VideoDecoder::VisibleQueue &GraphicsManager::getVideoQueue() {
-	return _videos;
-}
-
-Queueable<Renderable>::Queue &GraphicsManager::getRenderableQueue(RenderableQueue queue) {
-	if      (queue == kRenderableQueueObject)
-		return getObjectQueue();
-	else if (queue == kRenderableQueueGUIFront)
-		return getGUIFrontQueue();
-	else
-		throw Common::Exception("Unknown queue");
 }
 
 void GraphicsManager::showCursor(bool show) {

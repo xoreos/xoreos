@@ -9,6 +9,7 @@ noinst_HEADERS = types.h \
                  graphics.h \
                  fpscounter.h \
                  cursor.h \
+                 queueman.h \
                  queueable.h \
                  glcontainer.h \
                  texture.h \
@@ -21,6 +22,8 @@ noinst_HEADERS = types.h \
 libgraphics_la_SOURCES = graphics.cpp \
                          fpscounter.cpp \
                          cursor.cpp \
+                         queueman.cpp \
+                         queueable.cpp \
                          glcontainer.cpp \
                          texture.cpp \
                          font.cpp \

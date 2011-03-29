@@ -45,7 +45,7 @@ Texture::Texture(const Common::UString &name) : _textureID(0),
 
 	load(name);
 
-	addToQueue();
+	addToQueue(kQueueTexture);
 }
 
 Texture::Texture(ImageDecoder *image, const TXI &txi) {
@@ -55,7 +55,7 @@ Texture::Texture(ImageDecoder *image, const TXI &txi) {
 
 	load(image);
 
-	addToQueue();
+	addToQueue(kQueueTexture);
 }
 
 Texture::Texture(ImageDecoder *image) {
@@ -65,10 +65,12 @@ Texture::Texture(ImageDecoder *image) {
 
 	load(image);
 
-	addToQueue();
+	addToQueue(kQueueTexture);
 }
 
 Texture::~Texture() {
+	removeFromQueue(kQueueTexture);
+
 	if (_textureID != 0)
 		GfxMan.abandon(&_textureID, 1);
 
@@ -259,7 +261,7 @@ bool Texture::reload(const Common::UString &name) {
 		// Yeah, we don't know the resource name, so we can't reload the texture
 		return false;
 
-	removeFromQueue();
+	removeFromQueue(kQueueTexture);
 
 	delete _txi;
 	delete _image;
@@ -273,7 +275,7 @@ bool Texture::reload(const Common::UString &name) {
 
 	load(_name);
 
-	addToQueue();
+	addToQueue(kQueueTexture);
 
 	return true;
 }

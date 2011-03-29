@@ -21,13 +21,12 @@
 
 namespace Graphics {
 
-GLContainer::GLContainer() : Queueable<GLContainer>(GfxMan.getGLContainerQueue()),
-	_built(false) {
-
-	addToQueue();
+GLContainer::GLContainer() : _built(false) {
+	addToQueue(kQueueGLContainer);
 }
 
 GLContainer::~GLContainer() {
+	removeFromQueue(kQueueGLContainer);
 }
 
 void GLContainer::rebuild() {

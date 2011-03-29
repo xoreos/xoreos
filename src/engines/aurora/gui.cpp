@@ -17,6 +17,7 @@
 #include "events/events.h"
 
 #include "graphics/graphics.h"
+#include "graphics/renderable.h"
 
 #include "graphics/aurora/cursorman.h"
 

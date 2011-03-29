@@ -28,6 +28,9 @@ XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) : _xmv(xmv) {
 }
 
 XboxMediaVideo::~XboxMediaVideo() {
+	removeFromQueue(kQueueGLContainer);
+	removeFromQueue(kQueueVideo);
+
 	delete _xmv;
 }
 

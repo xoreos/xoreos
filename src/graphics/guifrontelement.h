@@ -23,7 +23,7 @@ namespace Graphics {
 class GUIFrontElement : public Renderable {
 public:
 	GUIFrontElement();
-	virtual ~GUIFrontElement();
+	~GUIFrontElement();
 };
 
 } // End of namespace Graphics

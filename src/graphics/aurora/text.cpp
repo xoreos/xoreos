@@ -41,7 +41,7 @@ Text::Text(const FontHandle &font, const Common::UString &str,
 }
 
 Text::~Text() {
-	removeFromQueue();
+	hide();
 }
 
 void Text::set(const Common::UString &str) {
@@ -86,7 +86,7 @@ void Text::setPosition(float x, float y, float z) {
 	_y = roundf(y);
 
 	_distance = z;
-	GfxMan.resortObjects();
+	resort();
 
 	GfxMan.unlockFrame();
 }

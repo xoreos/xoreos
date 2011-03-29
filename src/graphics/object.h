@@ -23,7 +23,7 @@ namespace Graphics {
 class Object : public Renderable {
 public:
 	Object();
-	virtual ~Object();
+	~Object();
 };
 
 } // End of namespace Graphics

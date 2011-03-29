@@ -17,7 +17,7 @@
 
 namespace Graphics {
 
-GUIFrontElement::GUIFrontElement() : Renderable(GfxMan.getGUIFrontQueue()) {
+GUIFrontElement::GUIFrontElement() : Renderable(kRenderableTypeGUIFront) {
 }
 
 GUIFrontElement::~GUIFrontElement() {

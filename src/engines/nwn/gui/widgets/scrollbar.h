@@ -52,11 +52,6 @@ public:
 	/** Set the scrollbar length */
 	void setLength(float length);
 
-	void show(); ///< The scrollbar should be rendered.
-	void hide(); ///< The scrollbar should not be rendered.
-
-	bool isVisible(); ///< Is the scrollbar visible?
-
 	float getWidth () const; ///< Get the scrollbar's width.
 	float getHeight() const; ///< Get the scrollbar's height.
 

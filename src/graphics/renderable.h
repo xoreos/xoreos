@@ -23,12 +23,12 @@
 namespace Graphics {
 
 /** An object that can be displayed by the graphics manager. */
-class Renderable : public Queueable<Renderable> {
+class Renderable : public Queueable {
 public:
-	typedef Queueable<Renderable>::Queue VisibleQueue;
+	Renderable(RenderableType type);
+	~Renderable();
 
-	Renderable(Queueable<Renderable>::Queue &queue);
-	virtual ~Renderable();
+	bool operator<(const Queueable &q) const;
 
 	/** Calculate the object's distance. */
 	virtual void calculateDistance() = 0;
@@ -65,12 +65,17 @@ public:
 	virtual bool isIn(float x1, float y1, float z1, float x2, float y2, float z2) const;
 
 protected:
+	QueueType _queueExists;
+	QueueType _queueVisible;
+
 	uint32 _id;
 
 	bool _clickable;
 	Common::UString _tag;
 
 	double _distance; ///< The distance of the object from the viewer.
+
+	void resort();
 };
 
 } // End of namespace Graphics

@@ -12,19 +12,37 @@
  *  An object that can be displayed by the graphics manager.
  */
 
+#include "common/error.h"
+
 #include "graphics/renderable.h"
 #include "graphics/types.h"
 #include "graphics/graphics.h"
 
 namespace Graphics {
 
-Renderable::Renderable(Queueable<Renderable>::Queue &queue) : Queueable<Renderable>(queue),
-	_clickable(false), _distance(0.0) {
+Renderable::Renderable(RenderableType type) : _clickable(false), _distance(0.0) {
+	if        (type == kRenderableTypeObject) {
+		_queueExists  = kQueueWorldObject;
+		_queueVisible = kQueueVisibleWorldObject;
+	} else if (type == kRenderableTypeGUIFront) {
+		_queueExists  = kQueueGUIFrontObject;
+		_queueVisible = kQueueVisibleGUIFrontObject;
+	} else
+		throw Common::Exception("Unknown Renderable type %d", type);
+
+	addToQueue(_queueExists);
 
 	_id = GfxMan.createRenderableID();
 }
 
 Renderable::~Renderable() {
+	hide();
+
+	removeFromQueue(_queueExists);
+}
+
+bool Renderable::operator<(const Queueable &q) const {
+	return _distance < static_cast<const Renderable &>(q)._distance;
 }
 
 double Renderable::getDistance() const {
@@ -52,21 +70,24 @@ void Renderable::setTag(const Common::UString &tag) {
 }
 
 bool Renderable::isVisible() const {
-	return isInQueue();
+	return isInQueue(_queueVisible);
+}
+
+void Renderable::resort() {
+	sortQueue(_queueVisible);
 }
 
 void Renderable::show() {
-	GfxMan.lockFrame();
+	lockQueue(_queueVisible);
 
-	addToQueue();
+	addToQueue(_queueVisible);
+	sortQueue(_queueVisible);
 
-	GfxMan.resortObjects();
-
-	GfxMan.unlockFrame();
+	unlockQueue(_queueVisible);
 }
 
 void Renderable::hide() {
-	removeFromQueue();
+	removeFromQueue(_queueVisible);
 }
 
 bool Renderable::isIn(float x, float y) const {

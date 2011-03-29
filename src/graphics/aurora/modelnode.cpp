@@ -49,6 +49,8 @@ ModelNode::ModelNode(Model &model) :
 }
 
 ModelNode::~ModelNode() {
+	removeFromQueue(kQueueGLContainer);
+
 	if (_list != 0)
 		GfxMan.abandon(_list, 1);
 

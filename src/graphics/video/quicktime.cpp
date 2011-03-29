@@ -125,6 +125,9 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDe
 }
 
 QuickTimeDecoder::~QuickTimeDecoder() {
+	removeFromQueue(kQueueGLContainer);
+	removeFromQueue(kQueueVideo);
+
 	for (uint32 i = 0; i < _numStreams; i++)
 		delete _streams[i];
 

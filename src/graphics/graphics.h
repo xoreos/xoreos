@@ -15,12 +15,10 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
+#include <vector>
 #include <list>
 
 #include "graphics/types.h"
-#include "graphics/glcontainer.h"
-#include "graphics/renderable.h"
-#include "graphics/video/decoder.h"
 
 #include "common/types.h"
 #include "common/singleton.h"
@@ -35,6 +33,7 @@ namespace Graphics {
 
 class FPSCounter;
 class Cursor;
+class Renderable;
 
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager> {
@@ -111,8 +110,6 @@ public:
 
 	/** Recalculate all object distances to the camera and resort the objebts. */
 	void recalculateObjectDistances();
-	/** Resort the objects without recalculating the distances. */
-	void resortObjects();
 
 	/** Lock the frame mutex. */
 	void lockFrame();
@@ -166,15 +163,6 @@ private:
 	Common::Mutex _frameLockMutex; ///< A soft mutex locked for each frame.
 	Common::Mutex _cursorMutex;    ///< A mutex locked for the cursor.
 
-	GLContainer::Queue _glContainers; ///< All GL containers.
-
-	/** Normal game objects currently in the render queue. */
-	Renderable::VisibleQueue   _objects;
-	/** GUI front elements currently in the render queue. */
-	Renderable::VisibleQueue   _guiFrontObjects;
-	/** Currently playing videos. */
-	VideoDecoder::VisibleQueue _videos;
-
 	Cursor     *_cursor;       ///< The current cursor.
 	CursorState _cursorState;  ///< What to do with the cursor.
 
@@ -203,11 +191,10 @@ private:
 	/** Map the given screen coordinates onto a line in world space. */
 	bool unproject(float x, float y,
 	               float &x1, float &y1, float &z1,
-	               float &x2, float &y2, float &z2);
+	               float &x2, float &y2, float &z2) const;
 
 	void rebuildGLContainers();
 	void destroyGLContainers();
-	void clearGLContainerQueue();
 
 	void destroyContext();
 	void rebuildContext();
@@ -216,16 +203,15 @@ private:
 
 	void cleanupAbandoned();
 
+	Renderable *getGUIObjectAt(float x, float y) const;
+	Renderable *getWorldObjectAt(float x, float y) const;
 
-// For Queueables
-public:
-	GLContainer::Queue &getGLContainerQueue();
-
-	Renderable::VisibleQueue   &getObjectQueue();
-	Renderable::VisibleQueue   &getGUIFrontQueue();
-	VideoDecoder::VisibleQueue &getVideoQueue();
-
-	Queueable<Renderable>::Queue &getRenderableQueue(RenderableQueue queue);
+	void beginScene();
+	bool playVideo();
+	bool renderWorld();
+	bool renderGUIFront();
+	bool renderCursor();
+	void endScene();
 };
 
 } // End of namespace Graphics

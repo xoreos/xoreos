@@ -25,7 +25,7 @@ namespace Graphics {
 class Texture : public GLContainer {
 public:
 	Texture();
-	virtual ~Texture();
+	~Texture();
 };
 
 } // End of namespace Graphics

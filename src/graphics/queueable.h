@@ -17,73 +17,34 @@
 
 #include <list>
 
-#include "common/mutex.h"
+#include "graphics/types.h"
 
 namespace Graphics {
 
-/** A template for objects that can be stored in a queue. */
-template<class T>
 class Queueable {
 public:
-	struct Queue {
-		typedef std::list<T *> QueueList;
+	Queueable();
+	virtual ~Queueable();
 
-		QueueList list;
-		Common::Mutex mutex;
-	};
-
-	typedef typename Queue::QueueList::iterator QueueRef;
-	typedef typename Queue::QueueList::reverse_iterator QueueRRef;
-
-	Queueable(Queue &queue) : _inQueue(false), _queue(&queue) {
-	}
-
-	~Queueable() {
-		removeFromQueue();
-	}
-
-	/** Notify the object that it has been kicked out of its queue. */
-	void kickedOut() {
-		Common::StackLock lock(_queue->mutex);
-
-		_inQueue = false;
-	}
+	virtual bool operator<(const Queueable &q) const;
 
 protected:
-	/** Add the object to its queue. */
-	void addToQueue() {
-		Common::StackLock lock(_queue->mutex);
+	void addToQueue(QueueType queue);
+	void removeFromQueue(QueueType queue);
+	bool isInQueue(QueueType queue) const;
 
-		if (_inQueue)
-			return;
-
-		_queue->list.push_back((T *) this);
-		_queueRef = --_queue->list.end();
-
-		_inQueue = true;
-	}
-
-	/** Remove the object from its queue. */
-	void removeFromQueue() {
-		Common::StackLock lock(_queue->mutex);
-
-		if (!_inQueue)
-			return;
-
-		_queue->list.erase(_queueRef);
-
-		_inQueue = false;
-	}
-
-	bool isInQueue() const {
-		return _inQueue;
-	}
+	void lockQueue(QueueType queue);
+	void unlockQueue(QueueType queue);
+	void sortQueue(QueueType queue);
 
 private:
-	bool _inQueue;
+	bool _isInQueue[kQueueMAX];
+	std::list<Queueable *>::iterator _queueRef[kQueueMAX];
 
-	Queue *_queue;
-	QueueRef _queueRef;
+	void removeFromAll();
+	void kickedOut(QueueType queue);
+
+	friend class QueueManager;
 };
 
 } // End of namespace Graphics

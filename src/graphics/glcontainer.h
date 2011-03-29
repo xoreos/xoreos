@@ -20,10 +20,10 @@
 namespace Graphics {
 
 /** A container of OpenGL elements. */
-class GLContainer : public Queueable<GLContainer> {
+class GLContainer : public Queueable {
 public:
 	GLContainer();
-	virtual ~GLContainer();
+	~GLContainer();
 
 	void rebuild();
 	void destroy();

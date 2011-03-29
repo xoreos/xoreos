@@ -27,16 +27,21 @@
 
 namespace Graphics {
 
-VideoDecoder::VideoDecoder() : Queueable<VideoDecoder>(GfxMan.getVideoQueue()),
-	_started(false), _finished(false), _needCopy(false), _width(0), _height(0), _pitch(0),
-	_data(0), _texture(0), _realWidth(0), _realHeight(0), _textureWidth(0.0), _textureHeight(0.0),
-	_scale(kScaleNone), _sound(0), _soundRate(0), _soundFlags(0) {
+VideoDecoder::VideoDecoder() : _started(false), _finished(false), _needCopy(false),
+	_width(0), _height(0), _pitch(0), _data(0), _texture(0), _realWidth(0), _realHeight(0),
+ 	_textureWidth(0.0), _textureHeight(0.0), _scale(kScaleNone),
+	_sound(0), _soundRate(0), _soundFlags(0) {
 
 	// No data at the start, lock the mutex
 	_canCopy.lock();
+
+	addToQueue(kQueueVideo);
 }
 
 VideoDecoder::~VideoDecoder() {
+	removeFromQueue(kQueueGLContainer);
+	removeFromQueue(kQueueVideo);
+
 	if (_texture != 0)
 		GfxMan.abandon(&_texture, 1);
 
@@ -280,7 +285,7 @@ void VideoDecoder::abort() {
 	_canUpdate.unlock();
 	_canCopy.unlock();
 
-	Queueable<VideoDecoder>::removeFromQueue();
+	removeFromQueue(kQueueVideo);
 }
 
 } // End of namespace Graphics

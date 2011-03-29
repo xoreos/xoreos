@@ -46,7 +46,7 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 }
 
 GUIQuad::~GUIQuad() {
-	removeFromQueue();
+	hide();
 }
 
 void GUIQuad::setPosition(float x, float y, float z) {
@@ -59,7 +59,7 @@ void GUIQuad::setPosition(float x, float y, float z) {
 	_y1 = y;
 
 	_distance = z;
-	GfxMan.resortObjects();
+	resort();
 
 	GfxMan.unlockFrame();
 }

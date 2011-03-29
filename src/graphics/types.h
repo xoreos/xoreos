@@ -47,9 +47,21 @@ enum PixelDataType {
 	kPixelDataType565  = GL_UNSIGNED_SHORT_5_6_5
 };
 
-enum RenderableQueue {
-	kRenderableQueueObject,
-	kRenderableQueueGUIFront
+enum QueueType {
+	kQueueTexture               = 0, ///< A texture.
+	kQueueNewTexture               , ///< A newly created texture.
+	kQueueWorldObject              , ///< An object in 3D space.
+	kQueueVisibleWorldObject       , ///< A visible object in 3D space.
+	kQueueGUIFrontObject           , ///< A GUI object.
+	kQueueVisibleGUIFrontObject    , ///< A visible GUI object.
+	kQueueVideo                    , ///< A currently playing video.
+	kQueueGLContainer              , ///< An object containing OpenGL structures.
+	kQueueMAX                        ///< For range checks.
+};
+
+enum RenderableType {
+	kRenderableTypeObject   = 0,
+	kRenderableTypeGUIFront
 };
 
 enum RenderPass {

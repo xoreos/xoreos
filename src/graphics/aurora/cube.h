@@ -39,6 +39,7 @@ class Cube;
 class CubeSide : public Object {
 public:
 	CubeSide(Cube &parent, int n);
+	~CubeSide();
 
 	void calculateDistance();
 	void render(RenderPass pass);

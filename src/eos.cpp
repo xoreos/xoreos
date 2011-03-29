@@ -27,6 +27,7 @@
 #include "aurora/2dareg.h"
 #include "aurora/talkman.h"
 
+#include "graphics/queueman.h"
 #include "graphics/graphics.h"
 
 #include "sound/sound.h"
@@ -200,6 +201,7 @@ void deinit() {
 	Sound::SoundManager::destroy();
 
 	Graphics::GraphicsManager::destroy();
+	Graphics::QueueManager::destroy();
 
 	Common::ConfigManager::destroy();
 }

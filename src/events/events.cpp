@@ -27,6 +27,7 @@
 
 #include "graphics/types.h"
 #include "graphics/graphics.h"
+#include "graphics/glcontainer.h"
 
 DECLARE_SINGLETON(Events::EventsManager)
 

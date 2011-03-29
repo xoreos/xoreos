@@ -24,8 +24,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model::Model(ModelType type) :
-	Renderable(GfxMan.getRenderableQueue((Graphics::RenderableQueue) type)),
+Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_type(type), _currentState(0), _drawBound(false) {
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
@@ -137,7 +136,7 @@ void Model::setPosition(float x, float y, float z) {
 	createAbsolutePosition();
 	calculateDistance();
 
-	GfxMan.resortObjects();
+	resort();
 
 	GfxMan.unlockFrame();
 }
@@ -152,7 +151,7 @@ void Model::setRotation(float x, float y, float z) {
 	createAbsolutePosition();
 	calculateDistance();
 
-	GfxMan.resortObjects();
+	resort();
 
 	GfxMan.unlockFrame();
 }
