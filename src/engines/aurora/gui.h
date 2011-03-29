@@ -37,8 +37,11 @@ public:
 
 	int run(int startCode = 0); ///< Run the GUI.
 
-	/** Evaluate a single event. */
-	int evaluateEvent(const Events::Event &event);
+	/** Add a single event for consideration into the GUI event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	int processEventQueue();
+
 
 protected:
 	Widget *_currentWidget; ///< The widget the mouse is currently on.
@@ -63,7 +66,7 @@ protected:
 	void declareGroup(const std::list<Widget *> &group);
 
 	/** Force an update of the mouse position. */
-	void updateMouse();
+	void updateMouse(bool removeFocus = true);
 
 	/** Open up a sub GUI. */
 	int sub(GUI &gui, int startCode = 0, bool showSelf = true);
@@ -89,6 +92,8 @@ private:
 	float _x; ///< The GUI X position.
 	float _y; ///< The GUI Y position.
 	float _z; ///< The GUI Z position.
+
+	std::list<Events::Event> _eventQueue; ///< The GUI event queue.
 
 	/** Return the widget at that position. */
 	Widget *getWidgetAt(float x, float y);

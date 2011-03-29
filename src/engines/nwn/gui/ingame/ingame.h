@@ -51,7 +51,8 @@ public:
 	void show(); ///< Show the ingame GUI elements.
 	void hide(); ///< Hide the ingame GUI elements.
 
-	void evaluateEvent(const Events::Event &event);
+	void addEvent(const Events::Event &event);
+	void processEventQueue();
 
 	/** Set the current area. */
 	void setArea(const Common::UString &area);

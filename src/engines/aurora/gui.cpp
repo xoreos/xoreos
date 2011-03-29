@@ -86,7 +86,9 @@ int GUI::run(int startCode) {
 		// Handle events
 		Events::Event event;
 		while (EventMan.pollEvent(event))
-			evaluateEvent(event);
+			addEvent(event);
+
+		processEventQueue();
 
 		// Delay for a while
 		if (!EventMan.quitRequested() && (_returnCode != 0))
@@ -96,13 +98,28 @@ int GUI::run(int startCode) {
 	return _returnCode;
 }
 
-int GUI::evaluateEvent(const Events::Event &event) {
-	if      (event.type == Events::kEventMouseMove)
-		mouseMove(event);
-	else if (event.type == Events::kEventMouseDown)
-		mouseDown(event);
-	else if (event.type == Events::kEventMouseUp)
-		mouseUp(event);
+void GUI::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+int GUI::processEventQueue() {
+	bool hasMove = false;
+
+	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
+	     e != _eventQueue.end(); ++e) {
+
+		if      (e->type == Events::kEventMouseMove)
+			hasMove = true;
+		else if (e->type == Events::kEventMouseDown)
+			mouseDown(*e);
+		else if (e->type == Events::kEventMouseUp)
+			mouseUp(*e);
+	}
+
+	_eventQueue.clear();
+
+	if (hasMove)
+		updateMouse(false);
 
 	return _returnCode;
 }
@@ -250,9 +267,10 @@ void GUI::getPosition(float &x, float &y, float &z) const {
 	z = _z;
 }
 
-void GUI::updateMouse() {
-	// Change the current widget to nothing
-	changedWidget(0);
+void GUI::updateMouse(bool removeFocus) {
+	if (removeFocus)
+		// Change the current widget to nothing
+		changedWidget(0);
 
 	// Fabricate a mouse move event at the current position
 	int x, y, state;

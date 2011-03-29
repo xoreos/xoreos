@@ -128,9 +128,12 @@ void KotOR2Engine::run(const Common::UString &target) {
 	if (_platform != Aurora::kPlatformXbox)
 		CursorMan.set("default", false);
 
+	uint32 lastCameraChange = 0;
 	Graphics::Aurora::Model *activeModel = 0;
 
 	while (!EventMan.quitRequested()) {
+		bool hasMove = false;
+
 		Events::Event event;
 		while (EventMan.pollEvent(event)) {
 			if (console->processEvent(event))
@@ -177,22 +180,33 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 					warning("%f, %f, %f -- %f, %f, %f", pos[0], pos[1], pos[2], ort[0], ort[1], ort[2]);
 				}
-			} else if (event.type == Events::kEventMouseMove) {
-				Graphics::Aurora::Model *model =
-					dynamic_cast<Graphics::Aurora::Model *>(GfxMan.getObjectAt(event.motion.x, event.motion.y));
-				if (model != activeModel) {
-					if (activeModel)
-						activeModel->drawBound(false);
+			} else if (event.type == Events::kEventMouseMove)
+				hasMove = true;
+		}
 
-					activeModel = model;
+		uint32 curLastCameraChange = CameraMan.lastChanged();
+		if (lastCameraChange < curLastCameraChange) {
+			hasMove = true;
+			lastCameraChange = curLastCameraChange;
+		}
 
-					if (activeModel) {
-						warning("Now in \"%s\" (%d)", activeModel->getTag().c_str(),
-								activeModel->getID());
-						activeModel->drawBound(true);
-					}
+		if (hasMove) {
+			int mouseX, mouseY;
+			CursorMan.getPosition(mouseX, mouseY);
+
+			Graphics::Aurora::Model *model =
+				dynamic_cast<Graphics::Aurora::Model *>(GfxMan.getObjectAt(mouseX, mouseY));
+			if (model != activeModel) {
+				if (activeModel)
+					activeModel->drawBound(false);
+
+				activeModel = model;
+
+				if (activeModel) {
+					warning("Now in \"%s\" (%d)", activeModel->getTag().c_str(),
+							activeModel->getID());
+					activeModel->drawBound(true);
 				}
-
 			}
 		}
 

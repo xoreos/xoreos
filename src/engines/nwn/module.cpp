@@ -26,6 +26,7 @@
 #include "graphics/graphics.h"
 #include "graphics/camera.h"
 
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/textureman.h"
 #include "graphics/aurora/model.h"
 
@@ -209,6 +210,7 @@ void Module::run() {
 
 		EventMan.flushEvents();
 
+		uint32 lastCameraChange = 0;
 		Graphics::Aurora::Model *activeModel = 0;
 
 		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
@@ -216,12 +218,14 @@ void Module::run() {
 			if (_exit)
 				break;
 
+			bool hasMove = false;
+
 			Events::Event event;
 			while (EventMan.pollEvent(event)) {
-				_ingameGUI->evaluateEvent(event);
-
 				if (_console->processEvent(event))
 					continue;
+
+				_ingameGUI->addEvent(event);
 
 				if (event.type == Events::kEventKeyDown) {
 					if      (event.key.keysym.sym == SDLK_ESCAPE)
@@ -261,29 +265,42 @@ void Module::run() {
 
 						CameraMan.setOrientation(0.0, orient[1], orient[2]);
 					}
-				} else if (event.type == Events::kEventMouseMove) {
-					Graphics::Aurora::Model *model = getModelAt(event.motion.x, event.motion.y);
+				} else if (event.type == Events::kEventMouseMove)
+					hasMove = true;
+			}
 
-					if (model != activeModel) {
-						if (activeModel)
-							activeModel->drawBound(false);
+			uint32 curLastCameraChange = CameraMan.lastChanged();
+			if (lastCameraChange < curLastCameraChange) {
+				hasMove = true;
+				lastCameraChange = curLastCameraChange;
+			}
 
-						activeModel = model;
+			if (hasMove) {
+				int mouseX, mouseY;
+				CursorMan.getPosition(mouseX, mouseY);
 
-						if (activeModel) {
-							warning("Now in \"%s\" (%d)", activeModel->getTag().c_str(),
-									activeModel->getID());
-							activeModel->drawBound(true);
-						}
+				Graphics::Aurora::Model *model = getModelAt(mouseX, mouseY);
+				if (model != activeModel) {
+					if (activeModel)
+						activeModel->drawBound(false);
+
+					activeModel = model;
+
+					if (activeModel) {
+						warning("Now in \"%s\" (%d)", activeModel->getTag().c_str(),
+								activeModel->getID());
+						activeModel->drawBound(true);
 					}
-
 				}
 			}
 
 			_ingameGUI->updatePartyMember(0, _pc);
 			_ingameGUI->updateCompass();
 
-			EventMan.delay(10);
+			_ingameGUI->processEventQueue();
+
+			if (!EventMan.quitRequested() && !_exit && !_newArea.empty())
+				EventMan.delay(10);
 		}
 
 	} catch (Common::Exception &e) {

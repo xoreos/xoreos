@@ -80,13 +80,22 @@ void IngameGUI::hide() {
 	_quickbar->hide();
 }
 
-void IngameGUI::evaluateEvent(const Events::Event &event) {
+void IngameGUI::addEvent(const Events::Event &event) {
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
-		(*p)->evaluateEvent(event);
+		(*p)->addEvent(event);
 
-	_compass->evaluateEvent(event);
-	_quickchat->evaluateEvent(event);
-	_quickbar->evaluateEvent(event);
+	_compass->addEvent(event);
+	_quickchat->addEvent(event);
+	_quickbar->addEvent(event);
+}
+
+void IngameGUI::processEventQueue() {
+	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
+		(*p)->processEventQueue();
+
+	_compass->processEventQueue();
+	_quickchat->processEventQueue();
+	_quickbar->processEventQueue();
 }
 
 void IngameGUI::setPortrait(uint partyMember, const Common::UString &portrait) {
