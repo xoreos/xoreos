@@ -16,8 +16,6 @@
 #include "common/error.h"
 #include "common/stream.h"
 
-#include "events/requests.h"
-
 #include "aurora/resman.h"
 
 #include "graphics/aurora/texture.h"
@@ -64,9 +62,6 @@ void ABCFont::draw(uint32 c) const {
 }
 
 void ABCFont::load(const Common::UString &name) {
-	// We need to wait for the texture to finish loading
-	RequestMan.sync();
-
 	Common::SeekableReadStream *abc = ResMan.getResource(name, ::Aurora::kFileTypeABC);
 	if (!abc)
 		throw Common::Exception("No such font \"%s\"", name.c_str());

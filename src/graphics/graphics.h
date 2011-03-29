@@ -206,6 +206,8 @@ private:
 	Renderable *getGUIObjectAt(float x, float y) const;
 	Renderable *getWorldObjectAt(float x, float y) const;
 
+	void buildNewTextures();
+
 	void beginScene();
 	bool playVideo();
 	bool renderWorld();

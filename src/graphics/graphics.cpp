@@ -635,6 +635,21 @@ Renderable *GraphicsManager::getObjectAt(float x, float y) {
 	return 0;
 }
 
+void GraphicsManager::buildNewTextures() {
+	QueueMan.lockQueue(kQueueNewTexture);
+	const std::list<Queueable *> &text = QueueMan.getQueue(kQueueNewTexture);
+	if (text.empty()) {
+		QueueMan.unlockQueue(kQueueNewTexture);
+		return;
+	}
+
+	for (std::list<Queueable *>::const_iterator t = text.begin(); t != text.end(); ++t)
+		static_cast<GLContainer *>(*t)->rebuild();
+
+	QueueMan.clearQueue(kQueueNewTexture);
+	QueueMan.unlockQueue(kQueueNewTexture);
+}
+
 void GraphicsManager::beginScene() {
 	_frameLockMutex.lock();
 
@@ -684,6 +699,8 @@ bool GraphicsManager::renderWorld() {
 		return false;
 	}
 
+	buildNewTextures();
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -732,6 +749,8 @@ bool GraphicsManager::renderGUIFront() {
 		return false;
 	}
 
+	buildNewTextures();
+
 	glDisable(GL_DEPTH_TEST);
 
 	glMatrixMode(GL_PROJECTION);
@@ -758,6 +777,8 @@ bool GraphicsManager::renderGUIFront() {
 bool GraphicsManager::renderCursor() {
 	if (!_cursor)
 		return false;
+
+	buildNewTextures();
 
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);

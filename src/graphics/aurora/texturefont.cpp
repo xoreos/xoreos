@@ -17,8 +17,6 @@
 #include "common/ustring.h"
 #include "common/util.h"
 
-#include "events/requests.h"
-
 #include "graphics/images/txi.h"
 
 #include "graphics/aurora/texturefont.h"
@@ -91,9 +89,6 @@ void TextureFont::draw(uint32 c) const {
 }
 
 void TextureFont::load() {
-	// We need to wait for the texture to finish loading
-	RequestMan.sync();
-
 	const Texture &texture = _texture.getTexture();
 	const TXI::Features &txiFeatures = texture.getTXI().getFeatures();
 

@@ -206,12 +206,6 @@ void Cube::applyTransformation(int n, Common::TransformationMatrix &m) {
 }
 
 void Cube::setTexture() {
-	if (_firstTime) {
-		// Sync, to make sure that the texture has finished loading
-		RequestMan.sync();
-		_firstTime = false;
-	}
-
 	TextureMan.set(_texture);
 }
 

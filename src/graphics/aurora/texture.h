@@ -73,6 +73,9 @@ private:
 	void load(const Common::UString &name);
 	void load(ImageDecoder *image);
 
+	void loadTXI(Common::SeekableReadStream *stream);
+	void loadImage();
+
 	TextureID getID() const;
 
 	friend class TextureManager;

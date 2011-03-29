@@ -46,6 +46,7 @@ Texture::Texture(const Common::UString &name) : _textureID(0),
 	load(name);
 
 	addToQueue(kQueueTexture);
+	addToQueue(kQueueNewTexture);
 }
 
 Texture::Texture(ImageDecoder *image, const TXI &txi) {
@@ -56,6 +57,7 @@ Texture::Texture(ImageDecoder *image, const TXI &txi) {
 	load(image);
 
 	addToQueue(kQueueTexture);
+	addToQueue(kQueueNewTexture);
 }
 
 Texture::Texture(ImageDecoder *image) {
@@ -66,6 +68,7 @@ Texture::Texture(ImageDecoder *image) {
 	load(image);
 
 	addToQueue(kQueueTexture);
+	addToQueue(kQueueNewTexture);
 }
 
 Texture::~Texture() {
@@ -120,34 +123,46 @@ void Texture::load(const Common::UString &name) {
 		throw Common::Exception("Unsupported image resource type %d", (int) _type);
 	}
 
-	_image->load();
-
-	// Get the TXI if availabe
-	Common::SeekableReadStream *txiStream = ResMan.getResource(name, ::Aurora::kFileTypeTXI);
-	if (txiStream) {
-		delete _txi;
-
-		try {
-			_txi = new TXI(*txiStream);
-		} catch (...) {
-			warning("Failed loading \"%s\".txi", name.c_str());
-
-			_txi = new TXI();
-		}
-
-		delete txiStream;
-	}
-
-	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
+	loadTXI(ResMan.getResource(name, ::Aurora::kFileTypeTXI));
+	loadImage();
 }
 
 void Texture::load(ImageDecoder *image) {
 	_image = image;
 
-	// If we didn't already, let the image load
+	loadImage();
+}
+
+void Texture::loadTXI(Common::SeekableReadStream *stream) {
+	if (!stream)
+		return;
+
+	delete _txi;
+
+	try {
+		_txi = new TXI(*stream);
+	} catch (Common::Exception &e) {
+		e.add("Failed loading TXI");
+		Common::printException(e);
+
+		_txi = new TXI();
+	}
+
+	delete stream;
+}
+
+void Texture::loadImage() {
 	_image->load();
 
-	RequestMan.dispatchAndForget(RequestMan.rebuild(*this));
+	if (_image->getMipMapCount() < 1)
+		throw Common::Exception("Texture has no images");
+
+	// Set dimensions
+	_width  = ((const ImageDecoder *) _image)->getMipMap(0).width;
+	_height = ((const ImageDecoder *) _image)->getMipMap(0).height;
+
+	// If we've still got no TXI, look if the image provides TXI data
+	loadTXI(_image->getTXI());
 }
 
 void Texture::doDestroy() {
@@ -163,31 +178,6 @@ void Texture::doRebuild() {
 	if (!_image)
 		// No image
 		return;
-
-	if (_image->getMipMapCount() < 1)
-		throw Common::Exception("Texture has no images");
-
-	// If we didn't find any "loose" TXI resource, look if the image provides TXI data
-	if (_txi->isEmpty()) {
-		Common::SeekableReadStream *txiStream = _image->getTXI();
-		if (txiStream) {
-			delete _txi;
-
-			try {
-				_txi = new TXI(*txiStream);
-			} catch (...) {
-				warning("Failed loading TXI in texture \"%s\"", _name.c_str());
-
-				_txi = new TXI();
-			}
-
-			delete txiStream;
-		}
-	}
-
-	// Set dimensions
-	_width  = ((const ImageDecoder *) _image)->getMipMap(0).width;
-	_height = ((const ImageDecoder *) _image)->getMipMap(0).height;
 
 	// Generate the texture ID
 	glGenTextures(1, &_textureID);
@@ -276,6 +266,7 @@ bool Texture::reload(const Common::UString &name) {
 	load(_name);
 
 	addToQueue(kQueueTexture);
+	addToQueue(kQueueNewTexture);
 
 	return true;
 }
