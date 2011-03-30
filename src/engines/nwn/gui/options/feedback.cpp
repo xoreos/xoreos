@@ -12,9 +12,18 @@
  *  The NWN feedback options menu.
  */
 
+#include "common/util.h"
+#include "common/configman.h"
+
+#include "aurora/talkman.h"
+
 #include "engines/nwn/gui/widgets/panel.h"
+#include "engines/nwn/gui/widgets/label.h"
+#include "engines/nwn/gui/widgets/slider.h"
 
 #include "engines/nwn/gui/options/feedback.h"
+
+const int kStringSec = 2367;
 
 namespace Engines {
 
@@ -56,25 +65,68 @@ OptionsFeedbackMenu::OptionsFeedbackMenu(bool isMain) {
 
 	// TODO: Floaty text feedback
 	getWidget("FloatyText", true)->setDisabled(true);
-
-	// TODO: Tooltip delay
-	getWidget("TooltipSlider", true)->setDisabled(true);
 }
 
 OptionsFeedbackMenu::~OptionsFeedbackMenu() {
 }
 
+void OptionsFeedbackMenu::show() {
+	uint32 tooltipDelay = (CLIP(ConfigMan.getInt("tooltipdelay", 100), 100, 2700) / 100) - 1;
+
+	getSlider("TooltipSlider", true)->setState(tooltipDelay);
+	updateTooltipDelay(tooltipDelay);
+
+	GUI::show();
+}
+
+void OptionsFeedbackMenu::initWidget(Widget &widget) {
+	if (widget.getTag() == "TooltipSlider") {
+		dynamic_cast<WidgetSlider &>(widget).setSteps(26);
+		return;
+	}
+}
+
 void OptionsFeedbackMenu::callbackActive(Widget &widget) {
 	if ((widget.getTag() == "CancelButton") ||
 	    (widget.getTag() == "XButton")) {
+
+		revertChanges();
 		_returnCode = 1;
 		return;
 	}
 
 	if (widget.getTag() == "OkButton") {
+
+		adoptChanges();
 		_returnCode = 2;
 		return;
 	}
+
+	if (widget.getTag() == "TooltipSlider") {
+		updateTooltipDelay(dynamic_cast<WidgetSlider &>(widget).getState());
+		return;
+	}
+}
+
+void OptionsFeedbackMenu::updateTooltipDelay(uint32 tooltipDelay) {
+	WidgetLabel  &ttDelayLabel  = *getLabel ("ToolTipValue" , true);
+	WidgetSlider &ttDelaySlider = *getSlider("TooltipSlider", true);
+
+	const float ttDelay = ((float) (ttDelaySlider.getState() + 1)) / 10.0;
+
+	const Common::UString secString   = TalkMan.getString(kStringSec);
+	const Common::UString ttDelayText =
+		Common::UString::sprintf("%3.1f %s", ttDelay, secString.c_str());
+
+	ttDelayLabel.setText(ttDelayText);
+}
+
+void OptionsFeedbackMenu::adoptChanges() {
+	uint32 tooltipDelay = (getSlider("TooltipSlider", true)->getState() + 1) * 100;
+	ConfigMan.setInt("tooltipdelay", tooltipDelay, true);
+}
+
+void OptionsFeedbackMenu::revertChanges() {
 }
 
 } // End of namespace NWN

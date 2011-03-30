@@ -12,6 +12,8 @@
  *  A NWN widget.
  */
 
+#include "boost/bind.hpp"
+
 #include "common/util.h"
 #include "common/ustring.h"
 #include "common/configman.h"
@@ -36,6 +38,8 @@ NWNWidget::NWNWidget(::Engines::GUI &gui, const Common::UString &tag) : Widget(g
 }
 
 NWNWidget::~NWNWidget() {
+	TimerMan.removeTimer(_tooltipTimer);
+
 	hideTooltip();
 }
 
@@ -43,16 +47,28 @@ void NWNWidget::hide() {
 	if (!isVisible())
 		return;
 
+	TimerMan.removeTimer(_tooltipTimer);
+
 	hideTooltip();
 
 	Widget::hide();
 }
 
 void NWNWidget::enter() {
-	showTooltip();
+	if (!_tooltipText.empty()) {
+		uint32 delay = ConfigMan.getInt("tooltipdelay", 100);
+
+		if (delay == 0)
+			showTooltip();
+		else
+			TimerMan.addTimer(delay, _tooltipTimer,
+			                  boost::bind(&NWNWidget::tooltipDelayed, this, _1));
+	}
 }
 
 void NWNWidget::leave() {
+	TimerMan.removeTimer(_tooltipTimer);
+
 	hideTooltip();
 }
 
@@ -164,6 +180,11 @@ void NWNWidget::setTooltipPosition() {
 
 	_tooltip->setPosition(textX, textY, textZ);
 	_tooltipBubble->setPosition(bubbleX, bubbleY, bubbleZ);
+}
+
+uint32 NWNWidget::tooltipDelayed(uint32 oldInterval) {
+	showTooltip();
+	return 0;
 }
 
 Common::UString NWNWidget::getBubbleModel(uint32 lines, float width) {

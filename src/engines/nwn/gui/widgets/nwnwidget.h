@@ -15,6 +15,8 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_NWNWIDGET_H
 #define ENGINES_NWN_GUI_WIDGETS_NWNWIDGET_H
 
+#include "events/timerman.h"
+
 #include "graphics/aurora/types.h"
 
 #include "engines/aurora/widget.h"
@@ -55,6 +57,8 @@ private:
 	Graphics::Aurora::Text  *_tooltip;
 	Graphics::Aurora::Model *_tooltipBubble;
 
+	Events::TimerHandle _tooltipTimer;
+
 	void showTooltip();
 	void hideTooltip();
 
@@ -64,6 +68,8 @@ private:
 	Common::UString getBubbleModel(uint32 lines, float width);
 
 	void setTooltipPosition();
+
+	uint32 tooltipDelayed(uint32 oldInterval);
 };
 
 } // End of namespace NWN

@@ -281,8 +281,9 @@ void NWNEngine::initCursors() {
 }
 
 void NWNEngine::initConfig() {
-	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack", 1);
-	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty" , 0);
+	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack"  ,   1);
+	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty"   ,   0);
+	ConfigMan.setInt(Common::kConfigRealmDefault, "tooltipdelay" , 100);
 
 	ConfigMan.setBool(Common::kConfigRealmDefault, "largefonts", false);
 }
@@ -297,8 +298,9 @@ void NWNEngine::initGameConfig() {
 }
 
 void NWNEngine::checkConfig() {
-	checkConfigInt("texturepack", 0, 3, 1);
-	checkConfigInt("difficulty" , 0, 3, 0);
+	checkConfigInt("texturepack"  ,   0,    3,   1);
+	checkConfigInt("difficulty"   ,   0,    3,   0);
+	checkConfigInt("tooltipdelay" , 100, 2700, 100);
 }
 
 void NWNEngine::deinit() {

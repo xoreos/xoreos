@@ -27,8 +27,18 @@ public:
 	OptionsFeedbackMenu(bool isMain = false);
 	~OptionsFeedbackMenu();
 
+	void show();
+
 protected:
+	void initWidget(Widget &widget);
+
 	void callbackActive(Widget &widget);
+
+private:
+	void updateTooltipDelay(uint32 tooltipDelay);
+
+	void adoptChanges();
+	void revertChanges();
 };
 
 } // End of namespace NWN
