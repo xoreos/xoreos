@@ -144,6 +144,7 @@ void PartyLeader::setHealth(int32 current, int32 max) {
 
 void PartyLeader::callbackActive(Widget &widget) {
 	if (widget.getTag() == "ButtonOptions") {
+		removeFocus();
 		_module->showMenu();
 		return;
 	}
