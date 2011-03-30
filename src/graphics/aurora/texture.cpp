@@ -49,7 +49,9 @@ Texture::Texture(const Common::UString &name) : _textureID(0),
 	addToQueue(kQueueNewTexture);
 }
 
-Texture::Texture(ImageDecoder *image, const TXI &txi) {
+Texture::Texture(ImageDecoder *image, const TXI &txi) : _textureID(0),
+	_type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
+
 	assert(image);
 
 	_txi = new TXI(txi);
@@ -60,7 +62,9 @@ Texture::Texture(ImageDecoder *image, const TXI &txi) {
 	addToQueue(kQueueNewTexture);
 }
 
-Texture::Texture(ImageDecoder *image) {
+Texture::Texture(ImageDecoder *image) : _textureID(0),
+	_type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
+
 	assert(image);
 
 	_txi = new TXI();
@@ -180,7 +184,9 @@ void Texture::doRebuild() {
 		return;
 
 	// Generate the texture ID
-	glGenTextures(1, &_textureID);
+	if (_textureID == 0)
+		glGenTextures(1, &_textureID);
+
 	// Bind the texture
 	glBindTexture(GL_TEXTURE_2D, _textureID);
 
@@ -255,11 +261,6 @@ bool Texture::reload(const Common::UString &name) {
 
 	delete _txi;
 	delete _image;
-
-	if (_textureID != 0)
-		GfxMan.abandon(&_textureID, 1);
-
-	_textureID = 0;
 
 	_txi = new TXI();
 
