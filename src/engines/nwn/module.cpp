@@ -280,6 +280,9 @@ void Module::run() {
 				CursorMan.getPosition(mouseX, mouseY);
 
 				Graphics::Aurora::Model *model = getModelAt(mouseX, mouseY);
+				if (model && (model->getType() != Graphics::Aurora::kModelTypeObject))
+					model = 0;
+
 				if (model != activeModel) {
 					if (activeModel)
 						activeModel->drawBound(false);
