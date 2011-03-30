@@ -212,16 +212,15 @@ void NWN2Engine::init() {
 	indexOptionalArchive(Aurora::kArchiveZIP, "music_x1.zip"         , 26);
 	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_x1.zip", 27);
 	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_x1.zip"   , 28);
-	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_x2.zip"   , 29);
-	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_vfx_x1.zip"      , 30);
-	indexOptionalArchive(Aurora::kArchiveZIP, "prefabs_x1.zip"       , 31);
-	indexOptionalArchive(Aurora::kArchiveZIP, "scripts_x1.zip"       , 32);
-	indexOptionalArchive(Aurora::kArchiveZIP, "soundsets_x1.zip"     , 33);
-	indexOptionalArchive(Aurora::kArchiveZIP, "sounds_x1.zip"        , 34);
-	indexOptionalArchive(Aurora::kArchiveZIP, "speedtree_x1.zip"     , 35);
-	indexOptionalArchive(Aurora::kArchiveZIP, "templates_x1.zip"     , 36);
-	indexOptionalArchive(Aurora::kArchiveZIP, "vo_x1.zip"            , 37);
-	indexOptionalArchive(Aurora::kArchiveZIP, "walkmesh_x1.zip"      , 38);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_vfx_x1.zip"      , 29);
+	indexOptionalArchive(Aurora::kArchiveZIP, "prefabs_x1.zip"       , 30);
+	indexOptionalArchive(Aurora::kArchiveZIP, "scripts_x1.zip"       , 31);
+	indexOptionalArchive(Aurora::kArchiveZIP, "soundsets_x1.zip"     , 32);
+	indexOptionalArchive(Aurora::kArchiveZIP, "sounds_x1.zip"        , 33);
+	indexOptionalArchive(Aurora::kArchiveZIP, "speedtree_x1.zip"     , 34);
+	indexOptionalArchive(Aurora::kArchiveZIP, "templates_x1.zip"     , 35);
+	indexOptionalArchive(Aurora::kArchiveZIP, "vo_x1.zip"            , 36);
+	indexOptionalArchive(Aurora::kArchiveZIP, "walkmesh_x1.zip"      , 37);
 
 	// Expansion 2: Storm of Zehir (SoZ)
 	indexOptionalArchive(Aurora::kArchiveZIP, "2da_x2.zip"           , 40);
@@ -230,14 +229,15 @@ void NWN2Engine::init() {
 	indexOptionalArchive(Aurora::kArchiveZIP, "lod-merged_x2.zip"    , 43);
 	indexOptionalArchive(Aurora::kArchiveZIP, "music_x2.zip"         , 44);
 	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_x2.zip", 45);
-	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_vfx_x2.zip"      , 46);
-	indexOptionalArchive(Aurora::kArchiveZIP, "prefabs_x2.zip"       , 47);
-	indexOptionalArchive(Aurora::kArchiveZIP, "scripts_x2.zip"       , 48);
-	indexOptionalArchive(Aurora::kArchiveZIP, "soundsets_x2.zip"     , 49);
-	indexOptionalArchive(Aurora::kArchiveZIP, "sounds_x2.zip"        , 50);
-	indexOptionalArchive(Aurora::kArchiveZIP, "speedtree_x2.zip"     , 51);
-	indexOptionalArchive(Aurora::kArchiveZIP, "templates_x2.zip"     , 52);
-	indexOptionalArchive(Aurora::kArchiveZIP, "vo_x2.zip"            , 53);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_x2.zip"   , 46);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_vfx_x2.zip"      , 47);
+	indexOptionalArchive(Aurora::kArchiveZIP, "prefabs_x2.zip"       , 48);
+	indexOptionalArchive(Aurora::kArchiveZIP, "scripts_x2.zip"       , 49);
+	indexOptionalArchive(Aurora::kArchiveZIP, "soundsets_x2.zip"     , 50);
+	indexOptionalArchive(Aurora::kArchiveZIP, "sounds_x2.zip"        , 51);
+	indexOptionalArchive(Aurora::kArchiveZIP, "speedtree_x2.zip"     , 52);
+	indexOptionalArchive(Aurora::kArchiveZIP, "templates_x2.zip"     , 53);
+	indexOptionalArchive(Aurora::kArchiveZIP, "vo_x2.zip"            , 54);
 
 	warning("TODO: Mysteries of Westgate (MoW) resource files");
 	warning("TODO: Patch resource files");
