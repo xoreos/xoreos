@@ -145,7 +145,7 @@ Matrix &Matrix::operator*=(const Matrix &right) {
 
 	multiply(t, *this, right);
 
-	delete _elements;
+	delete[] _elements;
 
 	_columns  = right._columns;
 	_elements = t;
