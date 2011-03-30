@@ -28,7 +28,8 @@ BoundingBox::~BoundingBox() {
 }
 
 void BoundingBox::clear() {
-	_empty = true;
+	_empty    = true;
+	_absolute = true;
 
 	// Set to boundaries
 	_coords[0][0] =  FLT_MAX; _coords[0][1] =  FLT_MAX; _coords[0][2] =  FLT_MAX;
@@ -57,6 +58,11 @@ const Common::TransformationMatrix &BoundingBox::getOrigin() const {
 void BoundingBox::getMin(float &x, float &y, float &z) const {
 	// Minimum, relative to the origin
 
+	if (_absolute) {
+		x = _min[0]; y = _min[1]; z = _min[2];
+		return;
+	}
+
 	TransformationMatrix min = _origin;
 	min.translate(_min[0], _min[1], _min[2]);
 
@@ -70,6 +76,11 @@ void BoundingBox::getMin(float &x, float &y, float &z) const {
 
 void BoundingBox::getMax(float &x, float &y, float &z) const {
 	// Maximum, relative to the origin
+
+	if (_absolute) {
+		x = _max[0]; y = _max[1]; z = _max[2];
+		return;
+	}
 
 	TransformationMatrix min = _origin;
 	min.translate(_min[0], _min[1], _min[2]);
@@ -242,14 +253,17 @@ void BoundingBox::translate(float x, float y, float z) {
 
 void BoundingBox::scale(float x, float y, float z) {
 	_origin.scale(x, y, z);
+	_absolute = false;
 }
 
 void BoundingBox::rotate(float angle, float x, float y, float z) {
 	_origin.rotate(angle, x, y, z);
+	_absolute = false;
 }
 
 void BoundingBox::transform(const Matrix &m) {
 	_origin *= m;
+	_absolute = false;
 }
 
 inline float BoundingBox::getCoordMin(int i) const {
@@ -292,6 +306,8 @@ void BoundingBox::absolutize() {
 
 	for (int i = 0; i < 8; i++)
 		add(coords[i][0], coords[i][1], coords[i][2]);
+
+	_absolute = true;
 }
 
 BoundingBox BoundingBox::getAbsolute() const {

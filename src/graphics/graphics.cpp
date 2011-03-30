@@ -19,6 +19,7 @@
 #include "common/file.h"
 #include "common/configman.h"
 #include "common/threads.h"
+#include "common/transmatrix.h"
 
 #include "events/requests.h"
 #include "events/events.h"
@@ -41,7 +42,7 @@ DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
 
-GraphicsManager::GraphicsManager() {
+GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
 	_ready = false;
 
 	_needManualDeS3TC        = false;
@@ -351,8 +352,6 @@ void GraphicsManager::setupScene() {
 }
 
 void GraphicsManager::perspective(float fovy, float aspect, float zNear, float zFar) {
-	_projection.loadIdentity();
-
 	const float f = 1.0 / (tanf(Common::deg2rad(fovy) / 2.0));
 
 	const float t1 = (zFar + zNear) / (zNear - zFar);
@@ -377,6 +376,8 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	_projection(3, 1) =  0.0;
 	_projection(3, 2) = -1.0;
 	_projection(3, 3) =  0.0;
+
+	_projectionInv = _projection.getInverse();
 }
 
 bool GraphicsManager::unproject(float x, float y,
@@ -384,7 +385,7 @@ bool GraphicsManager::unproject(float x, float y,
                                 float &x2, float &y2, float &z2) const {
 
 	try {
-		// Generate the model matrix
+		// Generate the inverse of the model matrix
 
 		Common::TransformationMatrix model;
 
@@ -396,21 +397,17 @@ bool GraphicsManager::unproject(float x, float y,
 		memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
 		CameraMan.unlock();
 
-		// Apply camera orientation
-		model.rotate(-cOrient[0], 1.0, 0.0, 0.0);
-		model.rotate( cOrient[1], 0.0, 1.0, 0.0);
-		model.rotate(-cOrient[2], 0.0, 0.0, 1.0);
-
 		// Apply camera position
-		model.translate(-cPos[0], -cPos[1], cPos[2]);
+		model.translate(cPos[0], cPos[1], -cPos[2]);
+
+		// Apply camera orientation
+		model.rotate( cOrient[2], 0.0, 0.0, 1.0);
+		model.rotate(-cOrient[1], 0.0, 1.0, 0.0);
+		model.rotate( cOrient[0], 1.0, 0.0, 0.0);
 
 
-		// This here is our projection matrix
-		Common::Matrix proj = _projection;
-
-		// Multiply them and invert the result
-		proj *= model;
-		proj.invert();
+		// Multiply with the inverse of our projection matrix
+		model *= _projectionInv;
 
 
 		// Viewport coordinates
@@ -448,8 +445,8 @@ bool GraphicsManager::unproject(float x, float y,
 
 
 		// Unproject
-		Common::Matrix oNear(proj * coordsNear);
-		Common::Matrix oFar (proj * coordsFar );
+		Common::Matrix oNear(model * coordsNear);
+		Common::Matrix oFar (model * coordsFar );
 		if ((oNear(3, 0) == 0.0) || (oNear(3, 0) == 0.0))
 			return false;
 

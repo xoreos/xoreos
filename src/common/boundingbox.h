@@ -61,6 +61,7 @@ public:
 
 private:
 	bool _empty;
+	bool _absolute;
 
 	TransformationMatrix _origin;
 

@@ -23,7 +23,7 @@
 #include "common/types.h"
 #include "common/singleton.h"
 #include "common/mutex.h"
-#include "common/transmatrix.h"
+#include "common/matrix.h"
 
 namespace Common {
 	class UString;
@@ -156,7 +156,8 @@ private:
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 
-	Common::TransformationMatrix _projection; ///< Our projection matrix.
+	Common::Matrix _projection;    ///< Our projection matrix.
+	Common::Matrix _projectionInv; ///< The inverse of our projection matrix.
 
 	uint32 _frameLock;
 

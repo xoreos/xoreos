@@ -75,33 +75,21 @@ bool Model::isIn(float x, float y) const {
 	}
 
 
-	Common::BoundingBox object = _boundBox;
-
-	object.transform(_absolutePosition);
-
-	return object.isIn(x, y);
+	return _absoluteBoundBox.isIn(x, y);
 }
 
 bool Model::isIn(float x, float y, float z) const {
 	if (_type == kModelTypeGUIFront)
 		return isIn(x, y);
 
-	Common::BoundingBox object = _boundBox;
-
-	object.transform(_absolutePosition);
-
-	return object.isIn(x, y, z);
+	return _absoluteBoundBox.isIn(x, y, z);
 }
 
 bool Model::isIn(float x1, float y1, float z1, float x2, float y2, float z2) const {
 	if (_type == kModelTypeGUIFront)
 		return false;
 
-	Common::BoundingBox object = _boundBox;
-
-	object.transform(_absolutePosition);
-
-	return object.isIn(x1, y1, z1, x2, y2, z2);
+	return _absoluteBoundBox.isIn(x1, y1, z1, x2, y2, z2);
 }
 
 float Model::getWidth() const {
@@ -190,6 +178,10 @@ void Model::createAbsolutePosition() {
 	_absolutePosition.rotate( _rotation[0], 1.0, 0.0, 0.0);
 	_absolutePosition.rotate( _rotation[1], 0.0, 1.0, 0.0);
 	_absolutePosition.rotate(-_rotation[2], 0.0, 0.0, 1.0);
+
+	_absoluteBoundBox = _boundBox;
+	_absoluteBoundBox.transform(_absolutePosition);
+	_absoluteBoundBox.absolutize();
 }
 
 const std::list<Common::UString> &Model::getStates() const {
@@ -480,6 +472,11 @@ void Model::createBound() {
 	_center[0] = minX + ((maxX - minX) / 2.0);
 	_center[1] = minY + ((maxY - minY) / 2.0);
 	_center[2] = minZ + ((maxZ - minZ) / 2.0);
+
+
+	_absoluteBoundBox = _boundBox;
+	_absoluteBoundBox.transform(_absolutePosition);
+	_absoluteBoundBox.absolutize();
 }
 
 void Model::readValue(Common::SeekableReadStream &stream, uint32 &value) {

@@ -147,7 +147,10 @@ protected:
 
 	Common::TransformationMatrix _absolutePosition;
 
-	Common::BoundingBox _boundBox; ///< Model's bounding box.
+	/** The model's bounding box. */
+	Common::BoundingBox _boundBox;
+	/** The model's box after translate/rotate. */
+	Common::BoundingBox _absoluteBoundBox;
 
 
 	/** Finalize the loading procedure. */
