@@ -72,6 +72,9 @@ int GUI::run(int startCode) {
 
 	EventMan.flushEvents();
 
+	removeFocus();
+	updateMouse();
+
 	// Run as long as we don't have a return code
 	while (_returnCode == 0) {
 		// Call the periodic run callback
@@ -119,7 +122,7 @@ int GUI::processEventQueue() {
 	_eventQueue.clear();
 
 	if (hasMove)
-		updateMouse(false);
+		updateMouse();
 
 	return _returnCode;
 }
@@ -211,8 +214,7 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 	GfxMan.lockFrame();
 
-	// Change the current widget to nothing
-	changedWidget(0);
+	removeFocus();
 
 	// Show the sub GUI
 	if (startCode == 0)
@@ -232,6 +234,7 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 	gui.hide();
 
 	// Update the mouse position
+	removeFocus();
 	updateMouse();
 
 	GfxMan.unlockFrame();
@@ -267,11 +270,11 @@ void GUI::getPosition(float &x, float &y, float &z) const {
 	z = _z;
 }
 
-void GUI::updateMouse(bool removeFocus) {
-	if (removeFocus)
-		// Change the current widget to nothing
-		changedWidget(0);
+void GUI::removeFocus() {
+	changedWidget(0);
+}
 
+void GUI::updateMouse() {
 	// Fabricate a mouse move event at the current position
 	int x, y, state;
 	state = CursorMan.getPosition(x, y);
@@ -379,6 +382,8 @@ void GUI::mouseUp(const Events::Event &event) {
 	mouseUp(_currentWidget, event);
 
 	checkWidgetActive(_currentWidget);
+
+	updateMouse();
 }
 
 float GUI::toGUIX(int x) {

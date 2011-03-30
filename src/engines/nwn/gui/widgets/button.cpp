@@ -77,7 +77,7 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	_model->setState("up");
+	_model->setState("hilite");
 	setActive(true);
 }
 
