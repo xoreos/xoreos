@@ -18,6 +18,8 @@
 #include "common/ustring.h"
 #include "common/configman.h"
 
+#include "graphics/graphics.cpp"
+
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/text.h"
@@ -178,8 +180,11 @@ void NWNWidget::setTooltipPosition() {
 	const float textY = y + _tooltipY - (bubbleHeight / 2.0) - (textHeight / 2.0);
 	const float textZ = z + _tooltipZ - 1.0;
 
-	_tooltip->setPosition(textX, textY, textZ);
-	_tooltipBubble->setPosition(bubbleX, bubbleY, bubbleZ);
+	const float maxX  = GfxMan.getScreenWidth() / 2.0;
+	const float overX = MAX(0.0f, bubbleX + bubbleWidth + 15.0f - maxX);
+
+	_tooltip->setPosition(textX - overX, textY, textZ);
+	_tooltipBubble->setPosition(bubbleX - overX, bubbleY, bubbleZ);
 }
 
 uint32 NWNWidget::tooltipDelayed(uint32 oldInterval) {
