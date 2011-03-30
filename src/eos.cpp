@@ -34,6 +34,7 @@
 
 #include "events/requests.h"
 #include "events/events.h"
+#include "events/timerman.h"
 
 #include "engines/enginemanager.h"
 #include "engines/gamethread.h"
@@ -197,6 +198,7 @@ void deinit() {
 
 	Events::EventsManager::destroy();
 	Events::RequestManager::destroy();
+	Events::TimerManager::destroy();
 
 	Sound::SoundManager::destroy();
 

@@ -24,6 +24,7 @@
 #include "events/events.h"
 #include "events/requests.h"
 #include "events/notifications.h"
+#include "events/timerman.h"
 
 #include "graphics/types.h"
 #include "graphics/graphics.h"
@@ -58,6 +59,7 @@ void EventsManager::init() {
 
 	RequestMan.init();
 	NotificationMan.init();
+	TimerMan.init();
 
 	_fullQueue = false;
 	_queueSize = 0;
