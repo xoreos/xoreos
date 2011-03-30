@@ -110,6 +110,7 @@ void Console::updateCampaigns() {
 	for (int i = 0; i < 5; i++) {
 		Common::UString name = TalkMan.getString(kCampaignNames[i]);
 		name.truncate(name.findFirst('\n'));
+		name.trim();
 
 		_campaigns.push_back(name);
 		_campaignModules.insert(std::make_pair(name, i));
@@ -120,6 +121,7 @@ void Console::updateCampaigns() {
 		for (int i = 5; i < 8; i++) {
 			Common::UString name = "XP1: " + TalkMan.getString(kCampaignNames[i]);
 			name.truncate(name.findFirst('\n'));
+			name.trim();
 
 			_campaigns.push_back(name);
 			_campaignModules.insert(std::make_pair(name, i));
@@ -131,6 +133,7 @@ void Console::updateCampaigns() {
 		for (int i = 8; i < 11; i++) {
 			Common::UString name = "XP2: " + TalkMan.getString(kCampaignNames[i]);
 			name.truncate(name.findFirst('\n'));
+			name.trim();
 
 			_campaigns.push_back(name);
 			_campaignModules.insert(std::make_pair(name, i));
