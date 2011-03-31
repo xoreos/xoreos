@@ -17,6 +17,7 @@ noinst_HEADERS = nwn.h \
                  door.h \
                  gui/gui.h \
                  gui/legal.h \
+                 gui/widgets/tooltip.h \
                  gui/widgets/nwnwidget.h \
                  gui/widgets/modelwidget.h \
                  gui/widgets/quadwidget.h \
@@ -79,6 +80,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     door.cpp \
                     gui/gui.cpp \
                     gui/legal.cpp \
+                    gui/widgets/tooltip.cpp \
                     gui/widgets/nwnwidget.cpp \
                     gui/widgets/modelwidget.cpp \
                     gui/widgets/quadwidget.cpp \
