@@ -671,7 +671,7 @@ void UString::erase(iterator pos) {
 }
 
 void UString::split(iterator splitPoint,
-		Common::UString &left, Common::UString &right) const {
+		Common::UString &left, Common::UString &right, bool remove) const {
 
 	left.clear();
 	right.clear();
@@ -688,6 +688,10 @@ void UString::split(iterator splitPoint,
 	iterator it = begin();
 	for (it = begin(); it != splitPoint; ++it)
 		left += *it;
+
+	if (remove)
+		++it;
+
 	for (; it != end(); ++it)
 		right += *it;
 }
@@ -967,6 +971,33 @@ UString UString::sprintf(const char *s, ...) {
 	va_end(va);
 
 	return UString(buf);
+}
+
+uint32 UString::split(const UString &text, uint32 delim, std::vector<UString> &texts) {
+	uint32 length = 0;
+
+	UString t = text;
+
+	iterator point;
+	while ((point = t.findFirst(delim)) != t.end()) {
+		UString left, right;
+
+		t.split(point, left, right, true);
+
+		if (!left.empty()) {
+			length = MAX(length, left.size());
+			texts.push_back(left);
+		}
+
+		t = right;
+	}
+
+	if (!t.empty()) {
+		length = MAX(length, t.size());
+		texts.push_back(t);
+	}
+
+	return length;
 }
 
 void UString::recalculateSize() {

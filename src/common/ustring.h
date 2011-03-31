@@ -137,7 +137,8 @@ public:
 	/** Erase the character at this position. */
 	void erase(iterator pos);
 
-	void split(iterator splitPoint, Common::UString &left, Common::UString &right) const;
+	void split(iterator splitPoint, Common::UString &left,
+	           Common::UString &right, bool remove = false) const;
 
 	/** Parse a string into different types. */
 	template<typename T> bool parse(T &v, int skip = 0) const {
@@ -194,6 +195,8 @@ public:
 
 	/** Formatted printer, works like sprintf(). */
 	static UString sprintf(const char *s, ...);
+
+	static uint32 split(const UString &text, uint32 delim, std::vector<UString> &texts);
 
 	static uint32 tolower(uint32 c);
 	static uint32 toupper(uint32 c);
