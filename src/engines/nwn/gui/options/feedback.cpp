@@ -20,6 +20,7 @@
 #include "engines/nwn/gui/widgets/panel.h"
 #include "engines/nwn/gui/widgets/label.h"
 #include "engines/nwn/gui/widgets/slider.h"
+#include "engines/nwn/gui/widgets/checkbox.h"
 
 #include "engines/nwn/gui/options/feedback.h"
 
@@ -50,14 +51,6 @@ OptionsFeedbackMenu::OptionsFeedbackMenu(bool isMain) {
 	targetingFeedback.push_back(getWidget("FeedbackAlways"));
 	declareGroup(targetingFeedback);
 
-	// TODO: Show mouse-over feedback
-	getWidget("MouseoverBox", true)->setDisabled(true);
-
-	// TODO: Text buble mode
-	getWidget("BubblesTextOnly", true)->setDisabled(true);
-	getWidget("BubblesFull", true)->setDisabled(true);
-	getWidget("BubblesOff", true)->setDisabled(true);
-
 	// TODO: Targeting feedback
 	getWidget("FeedbackNever", true)->setDisabled(true);
 	getWidget("FeedbackPause", true)->setDisabled(true);
@@ -75,6 +68,16 @@ void OptionsFeedbackMenu::show() {
 
 	getSlider("TooltipSlider", true)->setState(tooltipDelay);
 	updateTooltipDelay(tooltipDelay);
+
+	getCheckBox("MouseoverBox", true)->setState(ConfigMan.getBool("mouseoverfeedback"));
+
+	uint32 feedbackMode = CLIP(ConfigMan.getInt("feedbackmode", 2), 0, 2);
+	if      (feedbackMode == 0)
+		getCheckBox("BubblesOff", true)->setState(true);
+	else if (feedbackMode == 1)
+		getCheckBox("BubblesTextOnly", true)->setState(true);
+	else if (feedbackMode == 2)
+		getCheckBox("BubblesFull", true)->setState(true);
 
 	GUI::show();
 }
@@ -124,6 +127,19 @@ void OptionsFeedbackMenu::updateTooltipDelay(uint32 tooltipDelay) {
 void OptionsFeedbackMenu::adoptChanges() {
 	uint32 tooltipDelay = (getSlider("TooltipSlider", true)->getState() + 1) * 100;
 	ConfigMan.setInt("tooltipdelay", tooltipDelay, true);
+
+	bool mouseoverFeedback = getCheckBox("MouseoverBox", true)->getState();
+	ConfigMan.setBool("mouseoverfeedback", mouseoverFeedback, true);
+
+	uint32 feedbackMode = 2;
+	if      (getCheckBox("BubblesOff", true)->getState())
+		feedbackMode = 0;
+	else if (getCheckBox("BubblesTextOnly", true)->getState())
+		feedbackMode = 1;
+	else if (getCheckBox("BubblesFull", true)->getState())
+		feedbackMode = 2;
+
+	ConfigMan.setInt("feedbackmode", feedbackMode, true);
 }
 
 void OptionsFeedbackMenu::revertChanges() {
