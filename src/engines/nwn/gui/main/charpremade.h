@@ -28,6 +28,7 @@ namespace Engines {
 namespace NWN {
 
 class Module;
+class Portrait;
 
 class WidgetListItemCharacter : public WidgetListItem {
 public:
@@ -50,10 +51,11 @@ protected:
 	bool deactivate();
 
 private:
-	Graphics::Aurora::Model   *_button;
-	Graphics::Aurora::GUIQuad *_portrait;
-	Graphics::Aurora::Text    *_textName;
-	Graphics::Aurora::Text    *_textClass;
+	Graphics::Aurora::Model *_button;
+	Graphics::Aurora::Text  *_textName;
+	Graphics::Aurora::Text  *_textClass;
+
+	Portrait *_portrait;
 
 	float _spacing;
 };

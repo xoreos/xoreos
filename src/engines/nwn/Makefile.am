@@ -29,6 +29,7 @@ noinst_HEADERS = nwn.h \
                  gui/widgets/listbox.h \
                  gui/widgets/panel.h \
                  gui/widgets/scrollbar.h \
+                 gui/widgets/portrait.h \
                  gui/widgets/slider.h \
                  gui/dialogs/okcancel.h \
                  gui/dialogs/yesnocancel.h \
@@ -91,6 +92,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     gui/widgets/listbox.cpp \
                     gui/widgets/panel.cpp \
                     gui/widgets/scrollbar.cpp \
+                    gui/widgets/portrait.cpp \
                     gui/widgets/slider.cpp \
                     gui/dialogs/okcancel.cpp \
                     gui/dialogs/yesnocancel.cpp \

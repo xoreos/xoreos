@@ -18,7 +18,6 @@
 
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/model.h"
-#include "graphics/aurora/guiquad.h"
 
 #include "engines/aurora/model.h"
 
@@ -26,6 +25,7 @@
 #include "engines/nwn/module.h"
 
 #include "engines/nwn/gui/widgets/listbox.h"
+#include "engines/nwn/gui/widgets/portrait.h"
 
 #include "engines/nwn/gui/chargen/chargen.h"
 
@@ -45,8 +45,8 @@ WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
 	_button->setClickable(true);
 
 	Common::UString portrait = c->getPortrait();
-	_portrait = new Graphics::Aurora::GUIQuad(portrait + "t", 0.0, 0.0, 16.0, 24.0,
-	                                          0.0, 8.0 / 32.0, 1.0, 1.0);
+
+	_portrait = new Portrait(portrait, Portrait::kSizeTiny, 1.0);
 
 	Common::UString name = c->getFullName();
 	if (c.getNumber() > 0)
@@ -87,7 +87,7 @@ void WidgetListItemCharacter::setPosition(float x, float y, float z) {
 
 	z -= 5.0;
 
-	_portrait->setPosition(x + 8.0, y + 9.0, z);
+	_portrait->setPosition(x + 8.0, y + 7.0, z);
 
 	x += 32.0;
 

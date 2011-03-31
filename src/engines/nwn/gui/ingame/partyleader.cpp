@@ -21,6 +21,7 @@
 #include "engines/nwn/gui/widgets/quadwidget.h"
 #include "engines/nwn/gui/widgets/panel.h"
 #include "engines/nwn/gui/widgets/button.h"
+#include "engines/nwn/gui/widgets/portrait.h"
 
 #include "engines/nwn/gui/ingame/partyleader.h"
 
@@ -81,9 +82,8 @@ PartyLeader::PartyLeader(Module &module) : _module(&module),
 
 	// Portrait
 
-	_portrait = new QuadWidget(*this, "LeaderPortrait", "gui_po_nwnlogo_l",
-	                              0.0, 0.0, 64.0, 100.0,
-	                              0.0, 56.0 / 256.0, 1.0, 1.0);
+	_portrait =
+		new PortraitWidget(*this, "LeaderPortrait", "gui_po_nwnlogo_", Portrait::kSizeMedium);
 
 	_portrait->setPosition(-67.0, -103.0, -100.0);
 	_portrait->setTooltipPosition(-50.0, 50.0, -1.0);
@@ -110,7 +110,7 @@ PartyLeader::~PartyLeader() {
 
 void PartyLeader::setPortrait(const Common::UString &portrait) {
 	_currentPortrait = portrait;
-	_portrait->setTexture(portrait);
+	_portrait->setPortrait(portrait);
 }
 
 void PartyLeader::setName(const Common::UString &name) {
