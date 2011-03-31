@@ -72,6 +72,9 @@ public:
 	/** Get the current rotation of the model. */
 	void getRotation(float &x, float &y, float &z) const;
 
+	/** Get the position of the node after translate/rotate. */
+	void getAbsolutePosition(float &x, float &y, float &z) const;
+
 	/** Set the current position of the model. */
 	void setPosition(float x, float y, float z);
 	/** Set the current rotation of the model. */

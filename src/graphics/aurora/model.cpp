@@ -121,6 +121,12 @@ void Model::getRotation(float &x, float &y, float &z) const {
 	z = _rotation[2];
 }
 
+void Model::getAbsolutePosition(float &x, float &y, float &z) const {
+	x = _absolutePosition.getX();
+	y = _absolutePosition.getY();
+	z = _absolutePosition.getZ();
+}
+
 void Model::setPosition(float x, float y, float z) {
 	GfxMan.lockFrame();
 
