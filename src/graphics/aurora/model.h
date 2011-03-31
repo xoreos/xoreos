@@ -85,6 +85,8 @@ public:
 	/** Rotate the model, relative to its current rotation. */
 	void rotate(float x, float y, float z);
 
+	/** Get the point where the feedback tooltip is anchored. */
+	void getTooltipAnchor(float &x, float &y, float &z) const;
 
 	// States
 

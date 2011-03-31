@@ -171,6 +171,14 @@ void Model::rotate(float x, float y, float z) {
 	setRotation(_rotation[0] + x, _rotation[1] + y, _rotation[2] + z);
 }
 
+void Model::getTooltipAnchor(float &x, float &y, float &z) const {
+	Common::TransformationMatrix pos = _absolutePosition;
+
+	pos.translate(0.0, 0.0, _absoluteBoundBox.getHeight() + 0.5);
+
+	pos.getPosition(x, y, z);
+}
+
 void Model::createAbsolutePosition() {
 	_absolutePosition.loadIdentity();
 
