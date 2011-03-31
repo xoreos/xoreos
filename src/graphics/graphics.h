@@ -105,6 +105,14 @@ public:
 	/** Take a screenshot. */
 	void takeScreenshot();
 
+	/** Map the given world coordinates onto screen coordinates. */
+	bool project(float x, float y, float z, float &sX, float &sY, float &sZ);
+
+	/** Map the given screen coordinates onto a line in world space. */
+	bool unproject(float x, float y,
+	               float &x1, float &y1, float &z1,
+	               float &x2, float &y2, float &z2) const;
+
 	/** Get the object at this screen position. */
 	Renderable *getObjectAt(float x, float y);
 
@@ -189,10 +197,6 @@ private:
 
 	/** Set up a projection matrix. Analog to gluPerspective. */
 	void perspective(float fovy, float aspect, float zNear, float zFar);
-	/** Map the given screen coordinates onto a line in world space. */
-	bool unproject(float x, float y,
-	               float &x1, float &y1, float &z1,
-	               float &x2, float &y2, float &z2) const;
 
 	void rebuildGLContainers();
 	void destroyGLContainers();

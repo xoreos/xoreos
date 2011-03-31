@@ -380,6 +380,74 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	_projectionInv = _projection.getInverse();
 }
 
+bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, float &sZ) {
+	// This is our projection matrix
+	Common::Matrix proj = _projection;
+
+
+	// Generate the model matrix
+
+	Common::TransformationMatrix model;
+
+	float cPos[3];
+	float cOrient[3];
+
+	CameraMan.lock();
+	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
+	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
+	CameraMan.unlock();
+
+	// Apply camera orientation
+	model.rotate(-cOrient[0], 1.0, 0.0, 0.0);
+	model.rotate( cOrient[1], 0.0, 1.0, 0.0);
+	model.rotate(-cOrient[2], 0.0, 0.0, 1.0);
+
+	// Apply camera position
+	model.translate(-cPos[0], -cPos[1], cPos[2]);
+
+
+	// Generate a matrix for the coordinates
+
+	Common::Matrix coords(4, 1);
+
+	coords(0, 0) = x;
+	coords(1, 0) = y;
+	coords(2, 0) = z;
+	coords(3, 0) = 1.0;
+
+
+	// Multiply them
+	Common::Matrix v(proj * model * coords);
+
+
+	// Projection divide
+
+	if (v(3, 0) == 0.0)
+		return false;
+
+	v(0, 0) /= v(3, 0);
+	v(1, 0) /= v(3, 0);
+	v(2, 0) /= v(3, 0);
+
+	// Viewport coordinates
+
+	float view[4];
+
+	view[0] = 0.0;
+	view[1] = 0.0;
+	view[2] = _screen->w;
+	view[3] = _screen->h;
+
+
+	sX = view[0] + view[2] * (v(0, 0) + 1.0) / 2.0;
+	sY = view[1] + view[3] * (v(1, 0) + 1.0) / 2.0;
+	sZ =                     (v(2, 0) + 1.0) / 2.0;
+
+	sX -= view[2] / 2.0;
+	sY -= view[3] / 2.0;
+	return true;
+}
+
 bool GraphicsManager::unproject(float x, float y,
                                 float &x1, float &y1, float &z1,
                                 float &x2, float &y2, float &z2) const {
