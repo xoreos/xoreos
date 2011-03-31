@@ -35,6 +35,8 @@ public:
 	virtual void show();
 	virtual void hide();
 
+	bool isStatic() const;
+
 	uint32 getID() const;
 
 	const Common::UString &getTag() const;
@@ -56,6 +58,9 @@ protected:
 	Common::UString _modelName;
 
 	uint32 _appearanceID;
+
+	bool _static;
+	bool _useable;
 
 	Graphics::Aurora::Model *_model;
 

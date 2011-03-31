@@ -356,7 +356,7 @@ void Area::loadPlaceables(const Aurora::GFFList &list) {
 		_placeables.push_back(placeable);
 
 		uint32 id = placeable->getID();
-		if (id != 0) {
+		if ((id != 0) && !placeable->isStatic()) {
 			_situatedMap.insert(std::make_pair(id, placeable));
 			_placeableMap.insert(std::make_pair(id, placeable));
 		}
@@ -372,7 +372,7 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 		_doors.push_back(door);
 
 		uint32 id = door->getID();
-		if (id != 0) {
+		if ((id != 0) && !door->isStatic()) {
 			_situatedMap.insert(std::make_pair(id, door));
 			_doorMap.insert(std::make_pair(id, door));
 		}

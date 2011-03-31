@@ -33,7 +33,9 @@ namespace Engines {
 
 namespace NWN {
 
-Situated::Situated() : _appearanceID(Aurora::kFieldIDInvalid), _model(0), _loaded(false) {
+Situated::Situated() : _appearanceID(Aurora::kFieldIDInvalid),
+	_static(false), _useable(true), _model(0),
+	_loaded(false) {
 }
 
 Situated::~Situated() {
@@ -52,6 +54,10 @@ void Situated::hide() {
 
 	if (_model)
 		_model->hide();
+}
+
+bool Situated::isStatic() const {
+	return _static && !_useable;
 }
 
 const Common::UString &Situated::getTag() const {
@@ -79,16 +85,16 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 
 	// General properties
 
-	loadProperties(instance);    // Instance
 	if (blueprint)
 		loadProperties(*blueprint); // Blueprint
+	loadProperties(instance);    // Instance
 
 
 	// Specialized object properties
 
-	loadObject(instance);    // Instance
 	if (blueprint)
 		loadObject(*blueprint); // Blueprint
+	loadObject(instance);    // Instance
 
 
 	// Appearance
@@ -112,7 +118,7 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 
 
 	_model->setTag(_tag);
-	_model->setClickable(true);
+	_model->setClickable(!_static && _useable);
 
 	// Model position
 
@@ -137,11 +143,10 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 
 void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 	// Tag
-	if (_tag.empty())
-		_tag = gff.getString("Tag");
+	_tag = gff.getString("Tag", _tag);
 
 	// Name
-	if (_name.empty()) {
+	if (gff.hasField("LocName")) {
 		Aurora::LocString name;
 		gff.getLocString("LocName", name);
 
@@ -149,7 +154,7 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 	}
 
 	// Description
-	if (_description.empty()) {
+	if (gff.hasField("Description")) {
 		Aurora::LocString description;
 		gff.getLocString("Description", description);
 
@@ -157,30 +162,29 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 	}
 
 	// Portrait
-	if (_portrait.empty())
-		loadPortrait(gff);
+	loadPortrait(gff);
 
 	// Appearance
-	if (_appearanceID == Aurora::kFieldIDInvalid)
-		_appearanceID = gff.getUint("Appearance", Aurora::kFieldIDInvalid);
+	_appearanceID = gff.getUint("Appearance", _appearanceID);
+
+	// Static
+	_static = gff.getBool("Static", _static);
+
+	// Usable
+	_useable = gff.getBool("Usable", _useable);
 }
 
 void Situated::loadPortrait(const Aurora::GFFStruct &gff) {
-	_portrait = gff.getString("Portrait");
-	if (!_portrait.empty())
-		return;
-
 	uint32 portraitID = gff.getUint("PortraitId");
-	if (portraitID == 0)
-		return;
+	if (portraitID != 0) {
+		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
 
-	const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
+		Common::UString portrait = twoda.getCellString(portraitID, "BaseResRef");
+		if (!portrait.empty())
+			_portrait = "po_" + portrait;
+	}
 
-	Common::UString portrait = twoda.getCellString(portraitID, "BaseResRef");
-	if (portrait.empty())
-		return;
-
-	_portrait = "po_" + portrait;
+	_portrait = gff.getString("Portrait", _portrait);
 }
 
 void Situated::updateCamera() {

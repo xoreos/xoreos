@@ -60,8 +60,7 @@ void Door::load(const Aurora::GFFStruct &door) {
 }
 
 void Door::loadObject(const Aurora::GFFStruct &gff) {
-	if (_genericType == Aurora::kFieldIDInvalid)
-		_genericType = gff.getUint("GenericType", Aurora::kFieldIDInvalid);
+	_genericType = gff.getUint("GenericType", _genericType);
 }
 
 void Door::loadAppearance() {
