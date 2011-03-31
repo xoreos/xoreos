@@ -374,6 +374,10 @@ int64 GFFStruct::getSint(const Common::UString &field, int64 def) const {
 	throw Common::Exception("Field is not an int type");
 }
 
+bool GFFStruct::getBool(const Common::UString &field, bool def) const {
+	return getUint(field, def) != 0;
+}
+
 double GFFStruct::getDouble(const Common::UString &field, double def) const {
 	const Field *f = getField(field);
 	if (!f)

@@ -302,9 +302,9 @@ void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 	tile.srcLight[0] = t.getUint("Tile_SrcLight1", 0);
 	tile.srcLight[1] = t.getUint("Tile_SrcLight2", 0);
 
-	tile.animLoop[0] = t.getUint("Tile_AnimLoop1", 0) != 0;
-	tile.animLoop[1] = t.getUint("Tile_AnimLoop2", 0) != 0;
-	tile.animLoop[2] = t.getUint("Tile_AnimLoop3", 0) != 0;
+	tile.animLoop[0] = t.getBool("Tile_AnimLoop1", false);
+	tile.animLoop[1] = t.getBool("Tile_AnimLoop2", false);
+	tile.animLoop[2] = t.getBool("Tile_AnimLoop3", false);
 
 	tile.tile  = 0;
 	tile.model = 0;

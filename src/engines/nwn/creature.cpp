@@ -89,8 +89,8 @@ void Creature::load(const Aurora::GFFStruct &gffTop) {
 	_portraitID = gffTop.getUint("PortraitId", Aurora::kStrRefInvalid);
 
 	// PC and DM
-	_isPC = gffTop.getUint("IsPC", 0) != 0;
-	_isDM = gffTop.getUint("IsDM", 0) != 0;
+	_isPC = gffTop.getBool("IsPC", false);
+	_isDM = gffTop.getBool("IsDM", false);
 
 	// Age
 	_age = gffTop.getUint("Age", 0);

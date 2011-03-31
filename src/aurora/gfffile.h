@@ -114,9 +114,10 @@ public:
 
 	bool hasField(const Common::UString &field) const;
 
-	char   getChar(const Common::UString &field, char   def = '\0') const;
-	uint64 getUint(const Common::UString &field, uint64 def = 0   ) const;
-	 int64 getSint(const Common::UString &field,  int64 def = 0   ) const;
+	char   getChar(const Common::UString &field, char   def = '\0' ) const;
+	uint64 getUint(const Common::UString &field, uint64 def = 0    ) const;
+	 int64 getSint(const Common::UString &field,  int64 def = 0    ) const;
+	bool   getBool(const Common::UString &field, bool   def = false) const;
 
 	double getDouble(const Common::UString &field, double def = 0.0) const;
 
