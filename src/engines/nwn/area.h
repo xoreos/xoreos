@@ -16,6 +16,8 @@
 #define ENGINES_NWN_AREA_H
 
 #include <vector>
+#include <list>
+#include <map>
 
 #include "common/types.h"
 #include "common/ustring.h"
@@ -26,6 +28,8 @@
 
 #include "graphics/aurora/types.h"
 
+#include "events/types.h"
+
 #include "engines/nwn/tileset.h"
 
 namespace Engines {
@@ -34,6 +38,7 @@ namespace NWN {
 
 class Module;
 
+class Situated;
 class Placeable;
 class Door;
 
@@ -53,6 +58,9 @@ public:
 	void hide();
 
 	static Common::UString getName(const Common::UString &resRef);
+
+	void addEvent(const Events::Event &event);
+	void processEventQueue();
 
 private:
 	enum Orientation {
@@ -77,6 +85,14 @@ private:
 
 		Graphics::Aurora::Model *model;
 	};
+
+	typedef std::list<Placeable *> PlaceableList;
+	typedef std::list<Door *>      DoorList;
+
+	typedef std::map<uint32, Situated *>  SituatedMap;
+	typedef std::map<uint32, Placeable *> PlaceableMap;
+	typedef std::map<uint32, Door *>      DoorMap;
+
 
 	Module *_module;
 
@@ -110,8 +126,17 @@ private:
 
 	std::vector<Tile> _tiles;
 
-	std::vector<Placeable *> _placeables;
-	std::vector<Door *>      _doors;
+	PlaceableList _placeables;
+	DoorList      _doors;
+
+	SituatedMap  _situatedMap;
+	PlaceableMap _placeableMap;
+	DoorMap      _doorMap;
+
+	Situated *_activeSituated;
+	uint32 _lastCameraChange;
+
+	std::list<Events::Event> _eventQueue;
 
 
 	void loadARE(const Aurora::GFFStruct &are);
@@ -129,14 +154,19 @@ private:
 	void loadPlaceables(const Aurora::GFFList &list);
 	void loadDoors     (const Aurora::GFFList &list);
 
-	Common::UString createDisplayName(const Common::UString &name);
-
 	void stopSound();
 	void stopAmbientMusic();
 	void stopAmbientSound();
 
 	void playAmbientMusic(Common::UString music = "");
 	void playAmbientSound(Common::UString sound = "");
+
+	void checkActive();
+	uint32 getIDAt(int x, int y);
+
+	Situated *getSituated(uint32 id);
+
+	static Common::UString createDisplayName(const Common::UString &name);
 
 	friend class Console;
 };

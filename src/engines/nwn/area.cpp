@@ -24,7 +24,9 @@
 #include "sound/sound.h"
 
 #include "graphics/graphics.h"
+#include "graphics/camera.h"
 
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/model.h"
 
 #include "engines/aurora/util.h"
@@ -40,7 +42,8 @@ namespace Engines {
 namespace NWN {
 
 Area::Area(Module &module, const Common::UString &resRef) :
-	_module(&module), _resRef(resRef), _visible(false), _tileset(0) {
+	_module(&module), _resRef(resRef), _visible(false), _tileset(0),
+	_activeSituated(0), _lastCameraChange(0) {
 
 	Aurora::GFFFile are;
 	loadGFF(are, _resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
@@ -58,10 +61,9 @@ Area::Area(Module &module, const Common::UString &resRef) :
 Area::~Area() {
 	hide();
 
-	for (std::vector<Door *>::iterator d = _doors.begin(); d != _doors.end(); ++d)
+	for (DoorList::iterator d = _doors.begin(); d != _doors.end(); ++d)
 		delete *d;
-
-	for (std::vector<Placeable *>::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
+	for (PlaceableList::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
 		delete *p;
 
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
@@ -150,11 +152,11 @@ void Area::show() {
 		t->model->show();
 
 	// Show placeables
-	for (std::vector<Placeable *>::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
+	for (PlaceableList::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
 		(*p)->show();
 
 	// Show doors
-	for (std::vector<Door *>::iterator d = _doors.begin(); d != _doors.end(); ++d)
+	for (DoorList::iterator d = _doors.begin(); d != _doors.end(); ++d)
 		(*d)->show();
 
 	GfxMan.unlockFrame();
@@ -171,11 +173,11 @@ void Area::hide() {
 	GfxMan.lockFrame();
 
 	// Hide doors
-	for (std::vector<Door *>::iterator d = _doors.begin(); d != _doors.end(); ++d)
+	for (DoorList::iterator d = _doors.begin(); d != _doors.end(); ++d)
 		(*d)->hide();
 
 	// Hide placeables
-	for (std::vector<Placeable *>::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
+	for (PlaceableList::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
 		(*p)->hide();
 
 	// Hide tiles
@@ -348,6 +350,12 @@ void Area::loadPlaceables(const Aurora::GFFList &list) {
 		placeable->load(**p);
 
 		_placeables.push_back(placeable);
+
+		uint32 id = placeable->getID();
+		if (id != 0) {
+			_situatedMap.insert(std::make_pair(id, placeable));
+			_placeableMap.insert(std::make_pair(id, placeable));
+		}
 	}
 }
 
@@ -358,6 +366,69 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 		door->load(**d);
 
 		_doors.push_back(door);
+
+		uint32 id = door->getID();
+		if (id != 0) {
+			_situatedMap.insert(std::make_pair(id, door));
+			_doorMap.insert(std::make_pair(id, door));
+		}
+	}
+}
+
+void Area::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+void Area::processEventQueue() {
+	bool hasMove = false;
+	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
+	     e != _eventQueue.end(); ++e) {
+
+		if (e->type == Events::kEventMouseMove)
+			hasMove = true;
+	}
+
+	_eventQueue.clear();
+
+	uint32 lastCameraChange = CameraMan.lastChanged();
+	if (_lastCameraChange < lastCameraChange) {
+		hasMove = true;
+		_lastCameraChange = lastCameraChange;
+	}
+
+	if (hasMove)
+		checkActive();
+}
+
+uint32 Area::getIDAt(int x, int y) {
+	const Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
+	if (!obj)
+		return 0;
+
+	return obj->getID();
+}
+
+Situated *Area::getSituated(uint32 id) {
+	SituatedMap::iterator s = _situatedMap.find(id);
+	if (s == _situatedMap.end())
+		return 0;
+
+	return s->second;
+}
+
+void Area::checkActive() {
+	int x, y;
+	CursorMan.getPosition(x, y);
+
+	Situated *situated = getSituated(getIDAt(x, y));
+	if (situated != _activeSituated) {
+		if (_activeSituated)
+			_activeSituated->setActive(false);
+
+		_activeSituated = situated;
+
+		if (_activeSituated)
+			_activeSituated->setActive(true);
 	}
 }
 

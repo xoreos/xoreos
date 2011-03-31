@@ -23,10 +23,8 @@
 #include "aurora/2dareg.h"
 #include "aurora/erffile.h"
 
-#include "graphics/graphics.h"
 #include "graphics/camera.h"
 
-#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/textureman.h"
 #include "graphics/aurora/model.h"
 
@@ -190,13 +188,6 @@ bool Module::enter() {
 	return true;
 }
 
-Graphics::Aurora::Model *Module::getModelAt(float x, float y) {
-	Graphics::Aurora::Model *model =
-		dynamic_cast<Graphics::Aurora::Model *>(GfxMan.getObjectAt(x, y));
-
-	return model;
-}
-
 void Module::run() {
 	if (!enter())
 		return;
@@ -210,97 +201,15 @@ void Module::run() {
 
 		EventMan.flushEvents();
 
-		uint32 lastCameraChange = 0;
-		Graphics::Aurora::Model *activeModel = 0;
-
 		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
 			loadArea();
 			if (_exit)
 				break;
 
-			bool hasMove = false;
-
-			Events::Event event;
-			while (EventMan.pollEvent(event)) {
-				if (_console->processEvent(event))
-					continue;
-
-				_ingameGUI->addEvent(event);
-
-				if (event.type == Events::kEventKeyDown) {
-					if      (event.key.keysym.sym == SDLK_ESCAPE)
-						showMenu();
-					else if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL))
-						_console->show();
-					else if (event.key.keysym.sym == SDLK_UP)
-						CameraMan.move( 0.5);
-					else if (event.key.keysym.sym == SDLK_DOWN)
-						CameraMan.move(-0.5);
-					else if (event.key.keysym.sym == SDLK_RIGHT)
-						CameraMan.turn( 0.0,  5.0, 0.0);
-					else if (event.key.keysym.sym == SDLK_LEFT)
-						CameraMan.turn( 0.0, -5.0, 0.0);
-					else if (event.key.keysym.sym == SDLK_w)
-						CameraMan.move( 0.5);
-					else if (event.key.keysym.sym == SDLK_s)
-						CameraMan.move(-0.5);
-					else if (event.key.keysym.sym == SDLK_d)
-						CameraMan.turn( 0.0,  5.0, 0.0);
-					else if (event.key.keysym.sym == SDLK_a)
-						CameraMan.turn( 0.0, -5.0, 0.0);
-					else if (event.key.keysym.sym == SDLK_e)
-						CameraMan.strafe( 0.5);
-					else if (event.key.keysym.sym == SDLK_q)
-						CameraMan.strafe(-0.5);
-					else if (event.key.keysym.sym == SDLK_INSERT)
-						CameraMan.move(0.0,  0.5, 0.0);
-					else if (event.key.keysym.sym == SDLK_DELETE)
-						CameraMan.move(0.0, -0.5, 0.0);
-					else if (event.key.keysym.sym == SDLK_PAGEUP)
-						CameraMan.turn( 5.0,  0.0, 0.0);
-					else if (event.key.keysym.sym == SDLK_PAGEDOWN)
-						CameraMan.turn(-5.0,  0.0, 0.0);
-					else if (event.key.keysym.sym == SDLK_END) {
-						const float *orient = CameraMan.getOrientation();
-
-						CameraMan.setOrientation(0.0, orient[1], orient[2]);
-					}
-				} else if (event.type == Events::kEventMouseMove)
-					hasMove = true;
-			}
-
-			uint32 curLastCameraChange = CameraMan.lastChanged();
-			if (lastCameraChange < curLastCameraChange) {
-				hasMove = true;
-				lastCameraChange = curLastCameraChange;
-			}
-
-			if (hasMove) {
-				int mouseX, mouseY;
-				CursorMan.getPosition(mouseX, mouseY);
-
-				Graphics::Aurora::Model *model = getModelAt(mouseX, mouseY);
-				if (model && (model->getType() != Graphics::Aurora::kModelTypeObject))
-					model = 0;
-
-				if (model != activeModel) {
-					if (activeModel)
-						activeModel->drawBound(false);
-
-					activeModel = model;
-
-					if (activeModel) {
-						warning("Now in \"%s\" (%d)", activeModel->getTag().c_str(),
-								activeModel->getID());
-						activeModel->drawBound(true);
-					}
-				}
-			}
+			handleEvents();
 
 			_ingameGUI->updatePartyMember(0, _pc);
 			_ingameGUI->updateCompass();
-
-			_ingameGUI->processEventQueue();
 
 			if (!EventMan.quitRequested() && !_exit && !_newArea.empty())
 				EventMan.delay(10);
@@ -315,6 +224,60 @@ void Module::run() {
 
 	EventMan.enableUnicode(false);
 	EventMan.enableKeyRepeat(0);
+}
+
+void Module::handleEvents() {
+	Events::Event event;
+	while (EventMan.pollEvent(event)) {
+		if (_console->processEvent(event))
+			continue;
+
+		_ingameGUI->addEvent(event);
+		_area->addEvent(event);
+
+		if (event.type == Events::kEventKeyDown) {
+			if      (event.key.keysym.sym == SDLK_ESCAPE)
+				showMenu();
+			else if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL))
+				_console->show();
+			else if (event.key.keysym.sym == SDLK_UP)
+				CameraMan.move( 0.5);
+			else if (event.key.keysym.sym == SDLK_DOWN)
+				CameraMan.move(-0.5);
+			else if (event.key.keysym.sym == SDLK_RIGHT)
+				CameraMan.turn( 0.0,  5.0, 0.0);
+			else if (event.key.keysym.sym == SDLK_LEFT)
+				CameraMan.turn( 0.0, -5.0, 0.0);
+			else if (event.key.keysym.sym == SDLK_w)
+				CameraMan.move( 0.5);
+			else if (event.key.keysym.sym == SDLK_s)
+				CameraMan.move(-0.5);
+			else if (event.key.keysym.sym == SDLK_d)
+				CameraMan.turn( 0.0,  5.0, 0.0);
+			else if (event.key.keysym.sym == SDLK_a)
+				CameraMan.turn( 0.0, -5.0, 0.0);
+			else if (event.key.keysym.sym == SDLK_e)
+				CameraMan.strafe( 0.5);
+			else if (event.key.keysym.sym == SDLK_q)
+				CameraMan.strafe(-0.5);
+			else if (event.key.keysym.sym == SDLK_INSERT)
+				CameraMan.move(0.0,  0.5, 0.0);
+			else if (event.key.keysym.sym == SDLK_DELETE)
+				CameraMan.move(0.0, -0.5, 0.0);
+			else if (event.key.keysym.sym == SDLK_PAGEUP)
+				CameraMan.turn( 5.0,  0.0, 0.0);
+			else if (event.key.keysym.sym == SDLK_PAGEDOWN)
+				CameraMan.turn(-5.0,  0.0, 0.0);
+			else if (event.key.keysym.sym == SDLK_END) {
+				const float *orient = CameraMan.getOrientation();
+
+				CameraMan.setOrientation(0.0, orient[1], orient[2]);
+			}
+		}
+	}
+
+	_area->processEventQueue();
+	_ingameGUI->processEventQueue();
 }
 
 void Module::unload() {

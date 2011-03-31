@@ -35,9 +35,13 @@ public:
 	void show();
 	void hide();
 
+	uint32 getID() const;
+
 	const Common::UString &getTag() const;
 	const Common::UString &getName() const;
 	const Common::UString &getDescription() const;
+
+	void setActive(bool active);
 
 
 protected:
@@ -52,6 +56,8 @@ protected:
 	uint32 _appearanceID;
 
 	Graphics::Aurora::Model *_model;
+
+	bool _active;
 
 
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);

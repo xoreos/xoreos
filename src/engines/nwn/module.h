@@ -103,8 +103,7 @@ private:
 
 	bool enter(); ///< Enter the currently loaded module.
 
-	Graphics::Aurora::Model *getModelAt(float x, float y);
-
+	void handleEvents();
 
 	friend class Console;
 };
