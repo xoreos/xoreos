@@ -22,6 +22,7 @@
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
 
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/model.h"
 
 #include "engines/aurora/util.h"
@@ -78,6 +79,20 @@ void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
 	_modelName = twoda.getCellString(id, "ModelName");
 	if (_modelName.empty())
 		_modelName = twoda.getCellString(id, "Model");
+}
+
+void Door::hide() {
+	Situated::hide();
+}
+
+void Door::setActive(bool active) {
+	if (_active == active)
+		return;
+
+	_active = active;
+
+	if (_model)
+		_model->drawBound(_active);
 }
 
 } // End of namespace NWN

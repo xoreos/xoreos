@@ -32,8 +32,8 @@ public:
 
 	void load(const Aurora::GFFStruct &situated);
 
-	void show();
-	void hide();
+	virtual void show();
+	virtual void hide();
 
 	uint32 getID() const;
 
@@ -41,7 +41,9 @@ public:
 	const Common::UString &getName() const;
 	const Common::UString &getDescription() const;
 
-	void setActive(bool active);
+	virtual void updateCamera();
+
+	virtual void setActive(bool active) = 0;
 
 
 protected:
@@ -56,8 +58,6 @@ protected:
 	uint32 _appearanceID;
 
 	Graphics::Aurora::Model *_model;
-
-	bool _active;
 
 
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);

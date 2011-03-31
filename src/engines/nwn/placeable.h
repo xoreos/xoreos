@@ -23,6 +23,8 @@ namespace Engines {
 
 namespace NWN {
 
+class Tooltip;
+
 class Placeable : public Situated {
 public:
 	Placeable();
@@ -30,9 +32,19 @@ public:
 
 	void load(const Aurora::GFFStruct &placeable);
 
+	void hide();
+
+	void updateCamera();
+
+	void setActive(bool active);
+
 protected:
 	void loadObject(const Aurora::GFFStruct &gff);
 	void loadAppearance();
+
+private:
+	bool _active;
+	Tooltip *_tooltip;
 };
 
 } // End of namespace NWN

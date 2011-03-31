@@ -229,8 +229,12 @@ void Module::run() {
 void Module::handleEvents() {
 	Events::Event event;
 	while (EventMan.pollEvent(event)) {
-		if (_console->processEvent(event))
+		if (_console->processEvent(event)) {
+			if (!_area)
+				return;
+
 			continue;
+		}
 
 		_ingameGUI->addEvent(event);
 		_area->addEvent(event);
@@ -381,6 +385,8 @@ void Module::unloadArea() {
 }
 
 void Module::showMenu() {
+	_area->removeFocus();
+
 	if (_ingameGUI->showMain() == 2) {
 		_exit = true;
 		return;

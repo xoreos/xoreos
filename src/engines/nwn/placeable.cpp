@@ -16,6 +16,7 @@
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/util.h"
+#include "common/configman.h"
 
 #include "aurora/locstring.h"
 #include "aurora/gfffile.h"
@@ -29,14 +30,17 @@
 
 #include "engines/nwn/placeable.h"
 
+#include "engines/nwn/gui/widgets/tooltip.h"
+
 namespace Engines {
 
 namespace NWN {
 
-Placeable::Placeable() {
+Placeable::Placeable() : _active(false), _tooltip(0) {
 }
 
 Placeable::~Placeable() {
+	delete _tooltip;
 }
 
 void Placeable::load(const Aurora::GFFStruct &placeable) {
@@ -58,6 +62,13 @@ void Placeable::load(const Aurora::GFFStruct &placeable) {
 	delete utp;
 }
 
+void Placeable::hide() {
+	if (_tooltip)
+		_tooltip->hide();
+
+	Situated::hide();
+}
+
 void Placeable::loadObject(const Aurora::GFFStruct &gff) {
 }
 
@@ -65,6 +76,42 @@ void Placeable::loadAppearance() {
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeables");
 
 	_modelName = twoda.getCellString(_appearanceID, "ModelName");
+}
+
+void Placeable::updateCamera() {
+	if (_tooltip)
+		_tooltip->updateCamera();
+}
+
+void Placeable::setActive(bool active) {
+	if (_active == active)
+		return;
+
+	_active = active;
+
+	if (_active) {
+		if (_model)
+			_model->drawBound(true);
+
+		if (ConfigMan.getBool("mouseoverfeedback", true)) {
+			if (!_tooltip) {
+				_tooltip = new Tooltip(Tooltip::kTypeFeedback, *_model);
+
+				_tooltip->setAlign(0.5);
+				_tooltip->addLine(_name, 0.5, 0.5, 1.0, 1.0);
+				_tooltip->setPortrait(_portrait);
+			}
+
+			_tooltip->show();
+		}
+
+	} else {
+		if (_model)
+			_model->drawBound(false);
+
+		if (_tooltip)
+			_tooltip->hide();
+	}
 }
 
 } // End of namespace NWN

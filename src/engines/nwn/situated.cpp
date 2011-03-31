@@ -33,8 +33,7 @@ namespace Engines {
 
 namespace NWN {
 
-Situated::Situated() : _appearanceID(Aurora::kFieldIDInvalid), _model(0), _active(false),
-	_loaded(false) {
+Situated::Situated() : _appearanceID(Aurora::kFieldIDInvalid), _model(0), _loaded(false) {
 }
 
 Situated::~Situated() {
@@ -72,16 +71,6 @@ uint32 Situated::getID() const {
 		return 0;
 
 	return _model->getID();
-}
-
-void Situated::setActive(bool active) {
-	if (_active == active)
-		return;
-
-	if (_model)
-		_model->drawBound(active);
-
-	_active = active;
 }
 
 void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
@@ -192,6 +181,9 @@ void Situated::loadPortrait(const Aurora::GFFStruct &gff) {
 		return;
 
 	_portrait = "po_" + portrait;
+}
+
+void Situated::updateCamera() {
 }
 
 } // End of namespace NWN

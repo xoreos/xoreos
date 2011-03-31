@@ -61,6 +61,8 @@ Area::Area(Module &module, const Common::UString &resRef) :
 Area::~Area() {
 	hide();
 
+	removeFocus();
+
 	for (DoorList::iterator d = _doors.begin(); d != _doors.end(); ++d)
 		delete *d;
 	for (PlaceableList::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
@@ -167,6 +169,8 @@ void Area::show() {
 void Area::hide() {
 	if (!_visible)
 		return;
+
+	removeFocus();
 
 	stopSound();
 
@@ -393,11 +397,17 @@ void Area::processEventQueue() {
 	uint32 lastCameraChange = CameraMan.lastChanged();
 	if (_lastCameraChange < lastCameraChange) {
 		hasMove = true;
+		updateCamera();
 		_lastCameraChange = lastCameraChange;
 	}
 
 	if (hasMove)
 		checkActive();
+}
+
+void Area::updateCamera() {
+	if (_activeSituated)
+		_activeSituated->updateCamera();
 }
 
 uint32 Area::getIDAt(int x, int y) {
@@ -430,6 +440,13 @@ void Area::checkActive() {
 		if (_activeSituated)
 			_activeSituated->setActive(true);
 	}
+}
+
+void Area::removeFocus() {
+	if (_activeSituated)
+		_activeSituated->setActive(false);
+
+	_activeSituated = 0;
 }
 
 // "Elfland: The Woods" -> "The Woods"

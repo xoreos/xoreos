@@ -62,6 +62,8 @@ public:
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
 
+	void removeFocus();
+
 private:
 	enum Orientation {
 		kOrientation0   = 0,
@@ -160,6 +162,8 @@ private:
 
 	void playAmbientMusic(Common::UString music = "");
 	void playAmbientSound(Common::UString sound = "");
+
+	void updateCamera();
 
 	void checkActive();
 	uint32 getIDAt(int x, int y);
