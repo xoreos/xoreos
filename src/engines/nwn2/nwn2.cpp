@@ -89,7 +89,7 @@ void NWN2Engine::run(const Common::UString &target) {
 	status("Successfully initialized the engine");
 
 	CursorMan.hideCursor();
-	CursorMan.set("default", false);
+	CursorMan.set();
 
 	playVideo("atarilogo");
 	playVideo("oeilogo");
@@ -271,8 +271,10 @@ void NWN2Engine::init() {
 }
 
 void NWN2Engine::initCursors() {
-	CursorMan.add("cursor0" , "default"  , false);
-	CursorMan.add("cursor1" , "default"  , true);
+	CursorMan.add("cursor0" , "default"  , "up"  );
+	CursorMan.add("cursor1" , "default"  , "down");
+
+	CursorMan.setDefault("default", "up");
 }
 
 } // End of namespace NWN2

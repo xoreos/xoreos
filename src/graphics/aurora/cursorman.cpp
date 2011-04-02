@@ -26,80 +26,126 @@ namespace Graphics {
 
 namespace Aurora {
 
-CursorManager::Tag::Tag(const Common::UString &t, bool e) : tag(t), enabled(e) {
-}
-
-bool CursorManager::Tag::operator<(const Tag &t) const {
-	return (tag < t.tag) || (enabled < t.enabled);
-}
-
-
 CursorManager::CursorManager() : _hidden(false), _currentCursor(0) {
 }
 
 CursorManager::~CursorManager() {
-	for (CursorMap::iterator cursor = _cursors.begin(); cursor != _cursors.end(); ++cursor)
-		delete cursor->second;
+	clear();
+	showCursor();
+}
+
+bool CursorManager::isVisible() const {
+	return !_hidden;
+}
+
+const Common::UString &CursorManager::getCurrentGroup() const {
+	return _currentGroup;
+}
+
+const Common::UString &CursorManager::getCurrentState() const {
+	return _currentState;
 }
 
 void CursorManager::clear() {
 	Common::StackLock lock(_mutex);
 
-	set();
+	reset();
 
-	for (CursorMap::iterator cursor = _cursors.begin(); cursor != _cursors.end(); ++cursor)
-		delete cursor->second;
+	for (CursorMap::iterator g = _cursors.begin(); g != _cursors.end(); ++g)
+		for (StateMap::iterator c = g->second.begin(); c != g->second.end(); ++c)
+			delete c->second;
 
 	_cursors.clear();
-	_tags.clear();
+
+	_currentGroup.clear();
+	_currentState.clear();
+
+	_defaultGroup.clear();
+	_defaultState.clear();
 }
 
-void CursorManager::add(const Common::UString &name,
-		const Common::UString &tag, bool enabled) {
+bool CursorManager::add(const Common::UString &name, const Common::UString &group,
+                        const Common::UString &state, int hotspotX, int hotspotY) {
 
-	Tag t(tag, enabled);
-	if (_tags.find(t) != _tags.end())
-		throw Common::Exception("Cursor \"%s\":%d already exists", tag.c_str(), enabled);
+	Common::StackLock lock(_mutex);
 
-	Cursor *c = get(name);
-	_tags.insert(std::make_pair(t, c));
-}
+	Cursor *cursor = 0;
+	try {
 
-void CursorManager::set(const Common::UString &name) {
-	if (!name.empty())
-		_currentCursor = get(name);
-	else
-		_currentCursor = 0;
+		cursor = new Cursor(name, hotspotX, hotspotY);
 
-	if (!_hidden) {
-		set(_currentCursor);
-		GfxMan.showCursor(_currentCursor == 0);
+		CursorMap::iterator g = _cursors.find(group);
+		if (g == _cursors.end()) {
+			std::pair<CursorMap::iterator, bool> result;
+
+			result = _cursors.insert(std::make_pair(group, StateMap()));
+
+			g = result.first;
+		}
+
+		std::pair<StateMap::iterator, bool> result;
+
+		result = g->second.insert(std::make_pair(state, cursor));
+		if (!result.second)
+			throw "Cursor already exists";
+
+	} catch (Common::Exception &e) {
+		delete cursor;
+
+		e.add("Could not add cursor \"%s\" as \"%s\":\"%s\"",
+		      name.c_str(), group.c_str(), state.c_str());
+		Common::printException(e);
+		return false;
 	}
+
+	return true;
 }
 
-void CursorManager::set(const Common::UString &tag, bool enabled) {
-	TagMap::const_iterator t = _tags.find(Tag(tag, enabled));
-	if (t == _tags.end())
-		throw Common::Exception("No such cursor \"%s\":%d", tag.c_str(), enabled);
+void CursorManager::setDefault(const Common::UString &group, const Common::UString &state) {
+	Common::StackLock lock(_mutex);
 
-	_currentCursor = t->second;
-
-	if (!_hidden) {
-		set(_currentCursor);
-		GfxMan.showCursor(_currentCursor == 0);
-	}
+	_defaultGroup = group;
+	_defaultState = state;
 }
 
-void CursorManager::set(Cursor *cursor) {
-	GfxMan.setCursor(cursor);
+void CursorManager::reset() {
+	Common::StackLock lock(_mutex);
+
+	_currentGroup.clear();
+	_currentState.clear();
+
+	_currentCursor = 0;
+
+	update();
 }
 
-Cursor *CursorManager::get(const Common::UString &name) {
-	CursorMap::iterator cursor = _cursors.find(name);
-	if (cursor != _cursors.end())
-		return cursor->second;
+void CursorManager::set() {
+	Common::StackLock lock(_mutex);
 
-	return _cursors.insert(std::make_pair(name, new Cursor(name))).first->second;
+	set(_defaultGroup, _defaultState);
+}
+
+void CursorManager::setGroup(const Common::UString &group) {
+	Common::StackLock lock(_mutex);
+
+	set(group, _defaultState);
+}
+
+void CursorManager::setState(const Common::UString &state) {
+	Common::StackLock lock(_mutex);
+
+	set(_defaultGroup, state);
+}
+
+void CursorManager::set(const Common::UString &group, const Common::UString &state) {
+	Common::StackLock lock(_mutex);
+
+	_currentGroup = group;
+	_currentState = state;
+
+	_currentCursor = find(_currentGroup, _currentState);
+
+	update();
 }
 
 uint8 CursorManager::getPosition(int &x, int &y) const {
@@ -111,19 +157,45 @@ void CursorManager::setPosition(int x, int y) {
 }
 
 void CursorManager::hideCursor() {
+	Common::StackLock lock(_mutex);
+
 	_hidden = true;
 
-	GfxMan.setCursor();
-	GfxMan.showCursor(false);
+	update();
 }
 
 void CursorManager::showCursor() {
+	Common::StackLock lock(_mutex);
+
 	_hidden = false;
 
-	if (_currentCursor)
-		GfxMan.setCursor(_currentCursor);
-	else
-		GfxMan.showCursor(true);
+	update();
+}
+
+Cursor *CursorManager::find(Common::UString &group, Common::UString &state, bool def) const {
+	// Try to find the group. If not found, look for the default cursor.
+	CursorMap::const_iterator g = _cursors.find(group);
+	if (g == _cursors.end())
+		return def ? 0 : find(group = _defaultGroup, state = _defaultState, true);
+
+	// Try to find the state. If not found, use the first available.
+	StateMap::const_iterator c = g->second.find(state);
+	if (c == g->second.end()) {
+		c = g->second.begin();
+
+		if (c == g->second.end())
+			return def ? 0 : find(group = _defaultGroup, state = _defaultState, true);
+	}
+
+	group = g->first;
+	state = c->first;
+
+	return c->second;
+}
+
+void CursorManager::update() {
+	GfxMan.setCursor(_hidden ? 0 : _currentCursor);
+	GfxMan.showCursor(!_hidden && !_currentCursor);
 }
 
 } // End of namespace Aurora

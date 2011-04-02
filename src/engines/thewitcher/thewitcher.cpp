@@ -95,7 +95,7 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	status("Successfully initialized the engine");
 
 	CursorMan.hideCursor();
-	CursorMan.set("default", false);
+	CursorMan.set();
 
 	playVideo("publisher");
 	playVideo("developer");
@@ -215,8 +215,10 @@ void TheWitcherEngine::init() {
 }
 
 void TheWitcherEngine::initCursors() {
-	CursorMan.add("cursor0" , "default"  , false);
-	CursorMan.add("cursor1" , "default"  , true);
+	CursorMan.add("cursor0" , "default"  , "up"  );
+	CursorMan.add("cursor1" , "default"  , "down");
+
+	CursorMan.setDefault("default", "up");
 }
 
 } // End of namespace TheWitcher

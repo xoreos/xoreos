@@ -93,14 +93,15 @@ void KotOREngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-
-	if (_platform != Aurora::kPlatformXbox)
-		initCursors();
+	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
 
 	status("Successfully initialized the engine");
+
+	CursorMan.hideCursor();
+	CursorMan.set();
 
 	if (_platform == Aurora::kPlatformXbox) {
 		playVideo("logo");
@@ -117,6 +118,11 @@ void KotOREngine::run(const Common::UString &target) {
 	}
 
 	playVideo("01a");
+
+	if (EventMan.quitRequested())
+		return;
+
+	CursorMan.showCursor();
 
 	playSound("nm35aahhkd07134_", Sound::kSoundTypeVoice);
 
@@ -140,10 +146,6 @@ void KotOREngine::run(const Common::UString &target) {
 	EventMan.enableKeyRepeat();
 
 	status("Entering event loop");
-
-	// Show a cursor
-	if (_platform != Aurora::kPlatformXbox)
-		CursorMan.set("default", false);
 
 	uint32 lastCameraChange = 0;
 	Graphics::Aurora::Model *activeModel = 0;
@@ -423,37 +425,42 @@ void KotOREngine::initCursorsRemap() {
 }
 
 void KotOREngine::initCursors() {
-	CursorMan.add("gui_mp_defaultd" , "default"  , true);
-	CursorMan.add("gui_mp_defaultu" , "default"  , false);
+	if (_platform == Aurora::kPlatformXbox)
+		return;
 
-	CursorMan.add("gui_mp_bashd"    , "bash"     , true);
-	CursorMan.add("gui_mp_bashu"    , "bash"     , false);
-	CursorMan.add("gui_mp_bashdp"   , "bash+"    , true);
-	CursorMan.add("gui_mp_bashup"   , "bash+"    , false);
-	CursorMan.add("gui_mp_dismined" , "dismine"  , true);
-	CursorMan.add("gui_mp_dismineu" , "dismine"  , false);
-	CursorMan.add("gui_mp_disminedp", "dismine+" , true);
-	CursorMan.add("gui_mp_dismineup", "dismine+" , false);
-	CursorMan.add("gui_mp_doord"    , "door"     , true);
-	CursorMan.add("gui_mp_dooru"    , "door"     , false);
-	CursorMan.add("gui_mp_doordp"   , "door+"    , true);
-	CursorMan.add("gui_mp_doorup"   , "door+"    , false);
-	CursorMan.add("gui_mp_invalidd" , "invalid"  , true);
-	CursorMan.add("gui_mp_invalidu" , "invalid"  , false);
-	CursorMan.add("gui_mp_killd"    , "kill"     , true);
-	CursorMan.add("gui_mp_killu"    , "kill"     , false);
-	CursorMan.add("gui_mp_recmined" , "recmine"  , true);
-	CursorMan.add("gui_mp_recmineu" , "recmine"  , false);
-	CursorMan.add("gui_mp_recminedp", "recmine+" , true);
-	CursorMan.add("gui_mp_recmineup", "recmine+" , false);
-	CursorMan.add("gui_mp_selectd"  , "select"   , true);
-	CursorMan.add("gui_mp_selectu"  , "select"   , false);
-	CursorMan.add("gui_mp_talkd"    , "talk"     , true);
-	CursorMan.add("gui_mp_talku"    , "talk"     , false);
-	CursorMan.add("gui_mp_used"     , "use"      , true);
-	CursorMan.add("gui_mp_useu"     , "use"      , false);
-	CursorMan.add("gui_mp_usedp"    , "use+"     , true);
-	CursorMan.add("gui_mp_useup"    , "use+"     , false);
+	CursorMan.add("gui_mp_defaultd" , "default"  , "down");
+	CursorMan.add("gui_mp_defaultu" , "default"  , "up"  );
+
+	CursorMan.add("gui_mp_bashd"    , "bash"     , "down");
+	CursorMan.add("gui_mp_bashu"    , "bash"     , "up"  );
+	CursorMan.add("gui_mp_bashdp"   , "bash+"    , "down");
+	CursorMan.add("gui_mp_bashup"   , "bash+"    , "up"  );
+	CursorMan.add("gui_mp_dismined" , "dismine"  , "down");
+	CursorMan.add("gui_mp_dismineu" , "dismine"  , "up"  );
+	CursorMan.add("gui_mp_disminedp", "dismine+" , "down");
+	CursorMan.add("gui_mp_dismineup", "dismine+" , "up"  );
+	CursorMan.add("gui_mp_doord"    , "door"     , "down");
+	CursorMan.add("gui_mp_dooru"    , "door"     , "up"  );
+	CursorMan.add("gui_mp_doordp"   , "door+"    , "down");
+	CursorMan.add("gui_mp_doorup"   , "door+"    , "up"  );
+	CursorMan.add("gui_mp_invalidd" , "invalid"  , "down");
+	CursorMan.add("gui_mp_invalidu" , "invalid"  , "up"  );
+	CursorMan.add("gui_mp_killd"    , "kill"     , "down");
+	CursorMan.add("gui_mp_killu"    , "kill"     , "up"  );
+	CursorMan.add("gui_mp_recmined" , "recmine"  , "down");
+	CursorMan.add("gui_mp_recmineu" , "recmine"  , "up"  );
+	CursorMan.add("gui_mp_recminedp", "recmine+" , "down");
+	CursorMan.add("gui_mp_recmineup", "recmine+" , "up"  );
+	CursorMan.add("gui_mp_selectd"  , "select"   , "down");
+	CursorMan.add("gui_mp_selectu"  , "select"   , "up"  );
+	CursorMan.add("gui_mp_talkd"    , "talk"     , "down");
+	CursorMan.add("gui_mp_talku"    , "talk"     , "up"  );
+	CursorMan.add("gui_mp_used"     , "use"      , "down");
+	CursorMan.add("gui_mp_useu"     , "use"      , "up"  );
+	CursorMan.add("gui_mp_usedp"    , "use+"     , "down");
+	CursorMan.add("gui_mp_useup"    , "use+"     , "up"  );
+
+	CursorMan.setDefault("default", "up");
 }
 
 bool KotOREngine::hasYavin4Module() const {

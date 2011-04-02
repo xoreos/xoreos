@@ -85,7 +85,7 @@ void JadeEngine::run(const Common::UString &target) {
 	status("Successfully initialized the engine");
 
 	CursorMan.hideCursor();
-	CursorMan.set("default", false);
+	CursorMan.set();
 
 	playVideo("black");
 	playVideo("publisher");
@@ -215,7 +215,9 @@ void JadeEngine::init() {
 }
 
 void JadeEngine::initCursors() {
-	CursorMan.add("ui_cursor32", "default", false);
+	CursorMan.add("ui_cursor32", "default");
+
+	CursorMan.setDefault("default");
 }
 
 } // End of namespace Jade

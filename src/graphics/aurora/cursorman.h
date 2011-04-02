@@ -34,52 +34,76 @@ public:
 	CursorManager();
 	~CursorManager();
 
+	/** Remove all managed cursors. */
 	void clear();
 
-	/** Add a cursor with that tag and enabled state. */
-	void add(const Common::UString &name, const Common::UString &tag, bool enabled);
-
-	/** Set the cursor to a specific resource.
+	/** Add a cursor.
 	 *
-	 *  Will load the cursor if necessary.
+	 *  @param name     The name of the cursor image resource.
+	 *  @param group    The tag to identify the cursor group.
+	 *  @param state    The state this cursor has within the cursor group.
+	 *  @param hotspotX The X coordinate of the hotspot.
+	 *  @param hotspotY The Y coordinate of the hotspot.
 	 *
-	 *  @param name The name of the cursor resource.
-	 *              If empty, reset to the system's default cursor.
+	 *  @return true if the cursor could be added to the manager.
 	 */
-	void set(const Common::UString &name = "");
-	/** Set the cursor to a specific tag. */
-	void set(const Common::UString &tag, bool enabled);
+	bool add(const Common::UString &name, const Common::UString &group,
+	         const Common::UString &state = "", int hotspotX = -1, int hotspotY = -1);
 
+	/** Register this cursor as the default cursor. */
+	void setDefault(const Common::UString &group, const Common::UString &state = "");
+
+	/** Set the cursor to a specific group and state. */
+	void set(const Common::UString &group, const Common::UString &state = "");
+
+	/** Set the cursor to another group, using the current state name. */
+	void setGroup(const Common::UString &group);
+	/** Set the cursor to a different state within the current group. */
+	void setState(const Common::UString &state);
+
+	/** Set the cursor to the registered default. */
+	void set();
+
+	/** Reset the cursor to the system's default. */
+	void reset();
+
+	void hideCursor(); ///< Hide the cursor completely.
+	void showCursor(); ///< Unhide the cursor.
+
+	/** Get the current cursor position. */
 	uint8 getPosition(int &x, int &y) const;
+	/** Move the cursor to a specific position. */
 	void  setPosition(int  x, int  y);
 
-	void hideCursor();
-	void showCursor();
+	bool isVisible() const; ///< Is a cursor current visible?
+
+	/** Return the current group. */
+	const Common::UString &getCurrentGroup() const;
+	/** Return the current state. */
+	const Common::UString &getCurrentState() const;
 
 private:
-	/** A cursor tag. */
-	struct Tag {
-		Common::UString tag;
-		bool enabled;
-
-		Tag(const Common::UString &t, bool e);
-
-		bool operator<(const Tag &t) const;
-	};
-
-	typedef std::map<Common::UString, Cursor *> CursorMap;
-	typedef std::map<Tag, Cursor *> TagMap;
+	typedef std::map<Common::UString, Cursor *> StateMap;
+	typedef std::map<Common::UString, StateMap> CursorMap;
 
 	CursorMap _cursors;
-	TagMap _tags;
+
+	Common::UString _currentGroup;
+	Common::UString _currentState;
+
+	Common::UString _defaultGroup;
+	Common::UString _defaultState;
 
 	bool _hidden;
+
 	Cursor *_currentCursor;
 
 	Common::Mutex _mutex;
 
-	Cursor *get(const Common::UString &name);
-	void set(Cursor *cursor);
+
+	Cursor *find(Common::UString &group, Common::UString &state, bool def = false) const;
+
+	void update();
 };
 
 } // End of namespace Aurora
