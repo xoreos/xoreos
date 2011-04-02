@@ -54,7 +54,7 @@ void SBM::readData(Common::SeekableReadStream &sbm) {
 	uint32 rowCount = (sbm.size() / 1024);
 
 	_image.width  = 4 * 32;
-	_image.height = rowCount * 32;
+	_image.height = NEXTPOWER2((uint32) rowCount * 32);
 	_image.size   = _image.width * _image.height * 4;
 
 	_image.data = new byte[_image.size];
@@ -89,6 +89,9 @@ void SBM::readData(Common::SeekableReadStream &sbm) {
 			}
 		}
 	}
+
+	byte *dataEnd = _image.data + _image.size;
+	memset(data, dataEnd - data, 0);
 }
 
 bool SBM::isCompressed() const {
