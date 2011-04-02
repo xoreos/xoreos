@@ -279,6 +279,40 @@ void NWNEngine::initCursors() {
 	CursorMan.add("gui_mp_nowalkd"  , "nowalk"   , "down");
 	CursorMan.add("gui_mp_nowalku"  , "nowalk"   , "up"  );
 
+	CursorMan.add("gui_mp_arwalk00", "arrowwalk", "N");
+	CursorMan.add("gui_mp_arwalk01", "arrowwalk", "NNE");
+	CursorMan.add("gui_mp_arwalk02", "arrowwalk", "NE");
+	CursorMan.add("gui_mp_arwalk03", "arrowwalk", "ENE");
+	CursorMan.add("gui_mp_arwalk04", "arrowwalk", "E");
+	CursorMan.add("gui_mp_arwalk05", "arrowwalk", "ESE");
+	CursorMan.add("gui_mp_arwalk06", "arrowwalk", "SE");
+	CursorMan.add("gui_mp_arwalk07", "arrowwalk", "SSE");
+	CursorMan.add("gui_mp_arwalk08", "arrowwalk", "S");
+	CursorMan.add("gui_mp_arwalk09", "arrowwalk", "SSW");
+	CursorMan.add("gui_mp_arwalk10", "arrowwalk", "SW");
+	CursorMan.add("gui_mp_arwalk11", "arrowwalk", "WSW");
+	CursorMan.add("gui_mp_arwalk12", "arrowwalk", "W");
+	CursorMan.add("gui_mp_arwalk13", "arrowwalk", "WNW");
+	CursorMan.add("gui_mp_arwalk14", "arrowwalk", "NW");
+	CursorMan.add("gui_mp_arwalk15", "arrowwalk", "NNW");
+
+	CursorMan.add("gui_mp_arrun00", "arrowrun", "N");
+	CursorMan.add("gui_mp_arrun01", "arrowrun", "NNE");
+	CursorMan.add("gui_mp_arrun02", "arrowrun", "NE");
+	CursorMan.add("gui_mp_arrun03", "arrowrun", "ENE");
+	CursorMan.add("gui_mp_arrun04", "arrowrun", "E");
+	CursorMan.add("gui_mp_arrun05", "arrowrun", "ESE");
+	CursorMan.add("gui_mp_arrun06", "arrowrun", "SE");
+	CursorMan.add("gui_mp_arrun07", "arrowrun", "SSE");
+	CursorMan.add("gui_mp_arrun08", "arrowrun", "S");
+	CursorMan.add("gui_mp_arrun09", "arrowrun", "SSW");
+	CursorMan.add("gui_mp_arrun10", "arrowrun", "SW");
+	CursorMan.add("gui_mp_arrun11", "arrowrun", "WSW");
+	CursorMan.add("gui_mp_arrun12", "arrowrun", "W");
+	CursorMan.add("gui_mp_arrun13", "arrowrun", "WNW");
+	CursorMan.add("gui_mp_arrun14", "arrowrun", "NW");
+	CursorMan.add("gui_mp_arrun15", "arrowrun", "NNW");
+
 	CursorMan.setDefault("default", "up");
 }
 
