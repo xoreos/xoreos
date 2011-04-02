@@ -49,6 +49,12 @@ GUIQuad::~GUIQuad() {
 	hide();
 }
 
+void GUIQuad::getPosition(float &x, float &y, float &z) const {
+	x = MIN(_x1, _x2);
+	y = MIN(_y1, _y2);
+	z = _distance;
+}
+
 void GUIQuad::setPosition(float x, float y, float z) {
 	GfxMan.lockFrame();
 

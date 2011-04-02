@@ -37,6 +37,8 @@ public:
 	~GUIQuad();
 
 	/** Set the current position of the quad. */
+	void getPosition(float &x, float &y, float &z) const;
+	/** Set the current position of the quad. */
 	void setPosition(float x, float y, float z = -FLT_MAX);
 
 	/** Set the current color of the quad. */
