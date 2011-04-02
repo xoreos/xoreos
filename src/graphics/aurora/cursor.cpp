@@ -12,6 +12,7 @@
  *  A cursor as used in the Aurora engines.
  */
 
+#include "common/util.h"
 #include "common/error.h"
 #include "common/stream.h"
 
@@ -32,7 +33,9 @@ namespace Graphics {
 
 namespace Aurora {
 
-Cursor::Cursor(const Common::UString &name) : _name(name), _hotspotX(0), _hotspotY(0) {
+Cursor::Cursor(const Common::UString &name, int hotspotX, int hotspotY) :
+	_name(name), _hotspotX(hotspotX), _hotspotY(hotspotY) {
+
 	load();
 }
 
@@ -81,8 +84,10 @@ void Cursor::load() {
 
 		cursor->load();
 
-		_hotspotX = cursor->getHotspotX();
-		_hotspotY = cursor->getHotspotY();
+		if (_hotspotX < 0)
+			_hotspotX = cursor->getHotspotX();
+		if (_hotspotY < 0)
+			_hotspotY = cursor->getHotspotY();
 
 		image = cursor;
 	} else {
@@ -115,6 +120,8 @@ void Cursor::load() {
 		throw;
 	}
 
+	_hotspotX = CLIP(_hotspotX, 0, _width  - 1);
+	_hotspotY = CLIP(_hotspotY, 0, _height - 1);
 }
 
 } // End of namespace Aurora

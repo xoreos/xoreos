@@ -28,7 +28,7 @@ namespace Aurora {
 /** A cursor as used in the Aurora engines. */
 class Cursor : public Graphics::Cursor {
 public:
-	Cursor(const Common::UString &name);
+	Cursor(const Common::UString &name, int hotspotX = -1, int hotspotY = -1);
 	~Cursor();
 
 	/** Render the cursor. */
