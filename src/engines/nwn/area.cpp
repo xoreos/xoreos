@@ -388,8 +388,15 @@ void Area::processEventQueue() {
 	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
 	     e != _eventQueue.end(); ++e) {
 
-		if (e->type == Events::kEventMouseMove)
+		if        (e->type == Events::kEventMouseMove) {
 			hasMove = true;
+		} else if (e->type == Events::kEventKeyDown) {
+			if (e->key.keysym.sym == SDLK_TAB)
+				highlightAll(true);
+		} else if (e->type == Events::kEventKeyUp) {
+			if (e->key.keysym.sym == SDLK_TAB)
+				highlightAll(false);
+		}
 	}
 
 	_eventQueue.clear();
@@ -426,25 +433,35 @@ Situated *Area::getSituated(uint32 id) {
 	return s->second;
 }
 
+void Area::setActive(Situated *situated) {
+	if (situated == _activeSituated)
+		return;
+
+	if (_activeSituated)
+		_activeSituated->leave();
+
+	_activeSituated = situated;
+
+	if (_activeSituated)
+		_activeSituated->enter();
+}
+
 void Area::checkActive() {
 	int x, y;
 	CursorMan.getPosition(x, y);
 
-	Situated *situated = getSituated(getIDAt(x, y));
-	if (situated != _activeSituated) {
-		if (_activeSituated)
-			_activeSituated->setActive(false);
+	setActive(getSituated(getIDAt(x, y)));
+}
 
-		_activeSituated = situated;
-
-		if (_activeSituated)
-			_activeSituated->setActive(true);
-	}
+void Area::highlightAll(bool enabled) {
+	for (SituatedMap::iterator s = _situatedMap.begin(); s != _situatedMap.end(); ++s)
+		if (s->second->isUsable())
+			s->second->highlight(enabled);
 }
 
 void Area::removeFocus() {
 	if (_activeSituated)
-		_activeSituated->setActive(false);
+		_activeSituated->leave();
 
 	_activeSituated = 0;
 }

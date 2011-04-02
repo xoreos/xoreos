@@ -163,12 +163,19 @@ private:
 	void playAmbientMusic(Common::UString music = "");
 	void playAmbientSound(Common::UString sound = "");
 
+
 	void updateCamera();
 
-	void checkActive();
-	uint32 getIDAt(int x, int y);
 
+	void setActive(Situated *situated);
+
+	void checkActive();
+
+	uint32 getIDAt(int x, int y);
 	Situated *getSituated(uint32 id);
+
+	void highlightAll(bool enabled);
+
 
 	static Common::UString createDisplayName(const Common::UString &name);
 

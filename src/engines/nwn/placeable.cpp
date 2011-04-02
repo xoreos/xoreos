@@ -36,7 +36,7 @@ namespace Engines {
 
 namespace NWN {
 
-Placeable::Placeable() : _active(false), _tooltip(0) {
+Placeable::Placeable() : _tooltip(0) {
 }
 
 Placeable::~Placeable() {
@@ -63,8 +63,7 @@ void Placeable::load(const Aurora::GFFStruct &placeable) {
 }
 
 void Placeable::hide() {
-	if (_tooltip)
-		_tooltip->hide();
+	leave();
 
 	Situated::hide();
 }
@@ -83,35 +82,45 @@ void Placeable::updateCamera() {
 		_tooltip->updateCamera();
 }
 
-void Placeable::setActive(bool active) {
-	if (_active == active)
+void Placeable::enter() {
+	highlight(true);
+}
+
+void Placeable::leave() {
+	highlight(false);
+}
+
+void Placeable::highlight(bool enabled) {
+	if (_model)
+		_model->drawBound(enabled);
+
+	if (enabled)
+		showTooltip();
+	else
+		hideTooltip();
+}
+
+void Placeable::createTooltip() {
+	if (_tooltip)
 		return;
 
-	_active = active;
+	_tooltip = new Tooltip(Tooltip::kTypeFeedback, *_model);
 
-	if (_active) {
-		if (_model)
-			_model->drawBound(true);
+	_tooltip->setAlign(0.5);
+	_tooltip->addLine(_name, 0.5, 0.5, 1.0, 1.0);
+	_tooltip->setPortrait(_portrait);
+}
 
-		if (ConfigMan.getBool("mouseoverfeedback", true)) {
-			if (!_tooltip) {
-				_tooltip = new Tooltip(Tooltip::kTypeFeedback, *_model);
+void Placeable::showTooltip() {
+	createTooltip();
+	_tooltip->show();
+}
 
-				_tooltip->setAlign(0.5);
-				_tooltip->addLine(_name, 0.5, 0.5, 1.0, 1.0);
-				_tooltip->setPortrait(_portrait);
-			}
+void Placeable::hideTooltip() {
+	if (!_tooltip)
+		return;
 
-			_tooltip->show();
-		}
-
-	} else {
-		if (_model)
-			_model->drawBound(false);
-
-		if (_tooltip)
-			_tooltip->hide();
-	}
+	_tooltip->hide();
 }
 
 } // End of namespace NWN

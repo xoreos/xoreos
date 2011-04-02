@@ -36,6 +36,7 @@ public:
 	virtual void hide();
 
 	bool isStatic() const;
+	bool isUsable() const;
 
 	uint32 getID() const;
 
@@ -45,7 +46,10 @@ public:
 
 	virtual void updateCamera();
 
-	virtual void setActive(bool active) = 0;
+	virtual void enter() = 0;
+	virtual void leave() = 0;
+
+	virtual void highlight(bool enabled) = 0;
 
 
 protected:

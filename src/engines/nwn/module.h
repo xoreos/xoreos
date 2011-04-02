@@ -21,6 +21,8 @@
 
 #include "graphics/aurora/types.h"
 
+#include "events/types.h"
+
 #include "engines/nwn/ifofile.h"
 #include "engines/nwn/creature.h"
 
@@ -104,6 +106,7 @@ private:
 	bool enter(); ///< Enter the currently loaded module.
 
 	void handleEvents();
+	bool handleCamera(const Events::Event &e);
 
 	friend class Console;
 };

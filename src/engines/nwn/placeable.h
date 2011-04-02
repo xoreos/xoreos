@@ -36,15 +36,21 @@ public:
 
 	void updateCamera();
 
-	void setActive(bool active);
+	void enter();
+	void leave();
+
+	void highlight(bool enabled);
 
 protected:
 	void loadObject(const Aurora::GFFStruct &gff);
 	void loadAppearance();
 
 private:
-	bool _active;
 	Tooltip *_tooltip;
+
+	void createTooltip();
+	void showTooltip();
+	void hideTooltip();
 };
 
 } // End of namespace NWN

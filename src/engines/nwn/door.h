@@ -32,7 +32,10 @@ public:
 
 	void hide();
 
-	void setActive(bool active);
+	void enter();
+	void leave();
+
+	void highlight(bool enabled);
 
 protected:
 	void loadObject(const Aurora::GFFStruct &gff);
@@ -42,9 +45,6 @@ private:
 	uint32 _genericType;
 
 	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);
-
-private:
-	bool _active;
 };
 
 } // End of namespace NWN

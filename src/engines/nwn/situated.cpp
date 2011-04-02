@@ -57,7 +57,11 @@ void Situated::hide() {
 }
 
 bool Situated::isStatic() const {
-	return _static && !_useable;
+	return _static;
+}
+
+bool Situated::isUsable() const {
+	return _useable;
 }
 
 const Common::UString &Situated::getTag() const {

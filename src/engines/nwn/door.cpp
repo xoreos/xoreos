@@ -81,17 +81,24 @@ void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
 }
 
 void Door::hide() {
+	leave();
+
 	Situated::hide();
 }
 
-void Door::setActive(bool active) {
-	if (_active == active)
-		return;
+void Door::enter() {
+	highlight(true);
+	CursorMan.set("door", "up");
+}
 
-	_active = active;
+void Door::leave() {
+	highlight(false);
+	CursorMan.set();
+}
 
+void Door::highlight(bool enabled) {
 	if (_model)
-		_model->drawBound(_active);
+		_model->drawBound(enabled);
 }
 
 } // End of namespace NWN
