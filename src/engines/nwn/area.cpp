@@ -41,9 +41,9 @@ namespace Engines {
 
 namespace NWN {
 
-Area::Area(Module &module, const Common::UString &resRef) :
+Area::Area(Module &module, const Common::UString &resRef) : _loaded(false),
 	_module(&module), _resRef(resRef), _visible(false), _tileset(0),
-	_activeSituated(0), _lastCameraChange(0) {
+	_activeSituated(0) {
 
 	Aurora::GFFFile are;
 	loadGFF(are, _resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
@@ -56,6 +56,8 @@ Area::Area(Module &module, const Common::UString &resRef) :
 	loadTileset();
 
 	initTiles();
+
+	_loaded = true;
 }
 
 Area::~Area() {
@@ -401,20 +403,8 @@ void Area::processEventQueue() {
 
 	_eventQueue.clear();
 
-	uint32 lastCameraChange = CameraMan.lastChanged();
-	if (_lastCameraChange < lastCameraChange) {
-		hasMove = true;
-		updateCamera();
-		_lastCameraChange = lastCameraChange;
-	}
-
 	if (hasMove)
 		checkActive();
-}
-
-void Area::updateCamera() {
-	if (_activeSituated)
-		_activeSituated->updateCamera();
 }
 
 uint32 Area::getIDAt(int x, int y) {
@@ -447,6 +437,11 @@ void Area::setActive(Situated *situated) {
 }
 
 void Area::checkActive() {
+	if (!_loaded)
+		return;
+
+	Common::StackLock lock(_mutex);
+
 	int x, y;
 	CursorMan.getPosition(x, y);
 
@@ -464,6 +459,10 @@ void Area::removeFocus() {
 		_activeSituated->leave();
 
 	_activeSituated = 0;
+}
+
+void Area::notifyCameraMoved() {
+	checkActive();
 }
 
 // "Elfland: The Woods" -> "The Woods"

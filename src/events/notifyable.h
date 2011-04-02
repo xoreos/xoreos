@@ -37,6 +37,8 @@ public:
 private:
 	virtual void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
 	}
+	virtual void notifyCameraMoved() {
+	}
 
 	friend class NotificationManager;
 };

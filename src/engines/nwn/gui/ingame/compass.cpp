@@ -15,6 +15,7 @@
 #include "common/util.h"
 
 #include "graphics/graphics.h"
+#include "graphics/camera.h"
 
 #include "graphics/aurora/modelnode.h"
 #include "graphics/aurora/model.h"
@@ -75,15 +76,17 @@ Compass::Compass(float position) {
 Compass::~Compass() {
 }
 
-void Compass::setRotation(float x, float y, float z) {
-	_compass->setRotation(x, y, z);
-}
-
 void Compass::callbackActive(Widget &widget) {
 }
 
 void Compass::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
 	setPosition(newWidth / 2.0, - (newHeight / 2.0), 0.0);
+}
+
+void Compass::notifyCameraMoved() {
+	const float *orientation = CameraMan.getOrientation();
+
+	_compass->setRotation(orientation[0] + 90.0, orientation[1], orientation[2]);
 }
 
 } // End of namespace NWN

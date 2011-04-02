@@ -45,6 +45,8 @@ public:
 
 	/** Notify all Notifyables that the screen size changed. */
 	void resized(int oldWidth, int oldHeight, int newWidth, int newHeight);
+	/** Notify all Notifyables that the camera moved. */
+	void cameraMoved();
 
 private:
 	Common::Mutex _mutex;

@@ -60,9 +60,6 @@ public:
 	/** Update the party member. */
 	void updatePartyMember(uint partyMember, const Creature &creature);
 
-	/** Update the compass. */
-	void updateCompass();
-
 private:
 	IngameMainMenu *_main; ///< The ingame main menu.
 

@@ -44,8 +44,6 @@ public:
 	const Common::UString &getName() const;
 	const Common::UString &getDescription() const;
 
-	virtual void updateCamera();
-
 	virtual void enter() = 0;
 	virtual void leave() = 0;
 

@@ -49,4 +49,11 @@ void NotificationManager::resized(int oldWidth, int oldHeight, int newWidth, int
 		(*it)->notifyResized(oldWidth, oldHeight, newWidth, newHeight);
 }
 
+void NotificationManager::cameraMoved() {
+	Common::StackLock lock(_mutex);
+
+	for (std::list<Notifyable *>::iterator it = _notifyables.begin(); it != _notifyables.end(); ++it)
+		(*it)->notifyCameraMoved();
+}
+
 } // End of namespace Events

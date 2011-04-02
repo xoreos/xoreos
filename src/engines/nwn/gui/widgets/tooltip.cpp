@@ -41,7 +41,7 @@ Tooltip::Tooltip(Type type) : _type(type),
 	_empty(true), _visible(false), _align(0.0),
 	_bubble(0), _portrait(0), _x(0.0), _y(0.0), _z(0.0),
 	_lineHeight(0.0), _lineSpacing(0.0), _width(0.0), _height(0.0),
-	_needCamera(false), _cameraChanged(0) {
+	_needCamera(false) {
 
 	getFeedbackMode(_showBubble, _showText, _showPortrait);
 }
@@ -51,7 +51,7 @@ Tooltip::Tooltip(Type type, Widget &parent) : _type(type),
 	_empty(true), _visible(false), _align(0.0),
 	_bubble(0), _portrait(0), _x(0.0), _y(0.0), _z(0.0),
 	_lineHeight(0.0), _lineSpacing(0.0), _width(0.0), _height(0.0),
-	_needCamera(false), _cameraChanged(0) {
+	_needCamera(false) {
 
 	getFeedbackMode(_showBubble, _showText, _showPortrait);
 }
@@ -61,7 +61,7 @@ Tooltip::Tooltip(Type type, Graphics::Aurora::Model &parent) : _type(type),
 	_empty(true), _visible(false), _align(0.0),
 	_bubble(0), _portrait(0), _x(0.0), _y(0.0), _z(0.0),
 	_lineHeight(0.0), _lineSpacing(0.0), _width(0.0), _height(0.0),
-	_needCamera(true), _cameraChanged(0) {
+	_needCamera(true) {
 
 	getFeedbackMode(_showBubble, _showText, _showPortrait);
 }
@@ -137,21 +137,15 @@ void Tooltip::setAlign(float align) {
 	redoLayout();
 }
 
-void Tooltip::updateCamera() {
-	if (!_needCamera)
-		return;
-
-	uint32 lastChanged = CameraMan.lastChanged();
-	if (_cameraChanged >= lastChanged)
-		return;
-
+void Tooltip::notifyCameraMoved() {
 	updatePosition();
-	_cameraChanged = lastChanged;
 }
 
 void Tooltip::updatePosition() {
 	if (_empty)
 		return;
+
+	Common::StackLock lock(_mutex);
 
 	float pX = 0.0, pY = 0.0, pZ = 0.0;
 
@@ -247,7 +241,6 @@ void Tooltip::show() {
 		return;
 
 	redoLines();
-	updateCamera();
 
 	uint32 delay = ConfigMan.getInt("tooltipdelay", 100);
 	if (delay == 0)

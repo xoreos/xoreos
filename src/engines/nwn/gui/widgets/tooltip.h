@@ -16,8 +16,11 @@
 #define ENGINES_NWN_GUI_WIDGETS_TOOLTIP_H
 
 #include "common/ustring.h"
+#include "common/mutex.h"
 
 #include "graphics/aurora/types.h"
+
+#include "events/notifyable.h"
 
 #include "events/timerman.h"
 
@@ -30,7 +33,7 @@ namespace NWN {
 class Portrait;
 
 /** A tooltip. */
-class Tooltip {
+class Tooltip : public Events::Notifyable {
 public:
 	enum Type {
 		kTypeHelp,
@@ -50,13 +53,15 @@ public:
 
 	void setAlign(float align);
 
-	void updateCamera();
-
 	void updatePosition();
 	void setPosition(float x, float y, float z);
 
 	void show();
 	void hide();
+
+
+protected:
+	void notifyCameraMoved();
 
 
 private:
@@ -101,8 +106,9 @@ private:
 
 	Events::TimerHandle _timer;
 
-	bool   _needCamera;
-	uint32 _cameraChanged;
+	bool _needCamera;
+
+	Common::Mutex _mutex;
 
 
 	void getSize(float &width, float &height);

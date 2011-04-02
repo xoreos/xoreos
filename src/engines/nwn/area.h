@@ -21,6 +21,7 @@
 
 #include "common/types.h"
 #include "common/ustring.h"
+#include "common/mutex.h"
 
 #include "aurora/types.h"
 
@@ -29,6 +30,7 @@
 #include "graphics/aurora/types.h"
 
 #include "events/types.h"
+#include "events/notifyable.h"
 
 #include "engines/nwn/tileset.h"
 
@@ -42,7 +44,7 @@ class Situated;
 class Placeable;
 class Door;
 
-class Area {
+class Area : public Events::Notifyable {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();
@@ -63,6 +65,12 @@ public:
 	void processEventQueue();
 
 	void removeFocus();
+
+
+
+protected:
+	void notifyCameraMoved();
+
 
 private:
 	enum Orientation {
@@ -95,6 +103,8 @@ private:
 	typedef std::map<uint32, Placeable *> PlaceableMap;
 	typedef std::map<uint32, Door *>      DoorMap;
 
+
+	bool _loaded;
 
 	Module *_module;
 
@@ -136,9 +146,10 @@ private:
 	DoorMap      _doorMap;
 
 	Situated *_activeSituated;
-	uint32 _lastCameraChange;
 
 	std::list<Events::Event> _eventQueue;
+
+	Common::Mutex _mutex;
 
 
 	void loadARE(const Aurora::GFFStruct &are);
@@ -162,9 +173,6 @@ private:
 
 	void playAmbientMusic(Common::UString music = "");
 	void playAmbientSound(Common::UString sound = "");
-
-
-	void updateCamera();
 
 
 	void setActive(Situated *situated);

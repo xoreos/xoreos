@@ -34,8 +34,6 @@ public:
 
 	void hide();
 
-	void updateCamera();
-
 	void enter();
 	void leave();
 

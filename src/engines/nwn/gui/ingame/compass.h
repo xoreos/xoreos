@@ -40,8 +40,6 @@ public:
 	Compass(float position);
 	~Compass();
 
-	void setRotation(float x, float y, float z);
-
 protected:
 	void callbackActive(Widget &widget);
 
@@ -49,6 +47,7 @@ private:
 	CompassWidget *_compass;
 
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
+	void notifyCameraMoved();
 };
 
 } // End of namespace NWN

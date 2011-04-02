@@ -12,8 +12,6 @@
  *  The NWN ingame GUI elements.
  */
 
-#include "graphics/camera.h"
-
 #include "engines/nwn/creature.h"
 
 #include "engines/nwn/gui/ingame/ingame.h"
@@ -139,18 +137,6 @@ void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature) {
 	setHealth  (partyMember, creature.getCurrentHP(), creature.getMaxHP());
 
 	_lastPartyMemberChange[partyMember] = lastPartyMemberChange;
-}
-
-void IngameGUI::updateCompass() {
-	uint32 lastCompassChange = CameraMan.lastChanged();
-	if (lastCompassChange <= _lastCompassChange)
-		return;
-
-	const float *orientation = CameraMan.getOrientation();
-
-	_compass->setRotation(orientation[0] + 90.0, orientation[1], orientation[2]);
-
-	_lastCompassChange = lastCompassChange;
 }
 
 } // End of namespace NWN

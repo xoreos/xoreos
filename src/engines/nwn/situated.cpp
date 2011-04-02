@@ -191,9 +191,6 @@ void Situated::loadPortrait(const Aurora::GFFStruct &gff) {
 	_portrait = gff.getString("Portrait", _portrait);
 }
 
-void Situated::updateCamera() {
-}
-
 } // End of namespace NWN
 
 } // End of namespace Engines

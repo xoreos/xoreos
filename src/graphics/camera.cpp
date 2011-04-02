@@ -19,6 +19,7 @@
 #include "graphics/graphics.h"
 
 #include "events/events.h"
+#include "events/notifications.h"
 
 DECLARE_SINGLETON(Graphics::CameraManager)
 
@@ -62,6 +63,8 @@ void CameraManager::reset() {
 	_lastChanged = EventMan.getTimestamp();
 
 	GfxMan.recalculateObjectDistances();
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::setPosition(float x, float y, float z) {
@@ -74,6 +77,8 @@ void CameraManager::setPosition(float x, float y, float z) {
 	_lastChanged = EventMan.getTimestamp();
 
 	GfxMan.recalculateObjectDistances();
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::setOrientation(float x, float y, float z) {
@@ -86,6 +91,8 @@ void CameraManager::setOrientation(float x, float y, float z) {
 	_lastChanged = EventMan.getTimestamp();
 
 	GfxMan.recalculateObjectDistances();
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::setOrientation(float vX, float vY) {

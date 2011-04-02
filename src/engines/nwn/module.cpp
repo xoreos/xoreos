@@ -166,8 +166,6 @@ bool Module::enter() {
 	if (!startMovie.empty())
 		playVideo(startMovie);
 
-	_ingameGUI->updateCompass();
-
 	_exit    = false;
 	_newArea = _ifo.getEntryArea();
 
@@ -183,7 +181,6 @@ bool Module::enter() {
 	_ifo.getEntryDirection(entryDirX, entryDirY);
 
 	CameraMan.setOrientation(entryDirX, entryDirY);
-	_ingameGUI->updateCompass();
 
 	return true;
 }
@@ -209,7 +206,6 @@ void Module::run() {
 			handleEvents();
 
 			_ingameGUI->updatePartyMember(0, _pc);
-			_ingameGUI->updateCompass();
 
 			if (!EventMan.quitRequested() && !_exit && !_newArea.empty())
 				EventMan.delay(10);

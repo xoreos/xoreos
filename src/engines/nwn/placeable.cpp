@@ -77,11 +77,6 @@ void Placeable::loadAppearance() {
 	_modelName = twoda.getCellString(_appearanceID, "ModelName");
 }
 
-void Placeable::updateCamera() {
-	if (_tooltip)
-		_tooltip->updateCamera();
-}
-
 void Placeable::enter() {
 	highlight(true);
 }
