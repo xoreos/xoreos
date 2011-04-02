@@ -43,7 +43,7 @@ namespace NWN {
 
 Area::Area(Module &module, const Common::UString &resRef) : _loaded(false),
 	_module(&module), _resRef(resRef), _visible(false), _tileset(0),
-	_activeSituated(0) {
+	_activeSituated(0), _highlightAll(false) {
 
 	Aurora::GFFFile are;
 	loadGFF(are, _resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
@@ -437,7 +437,7 @@ void Area::setActive(Situated *situated) {
 }
 
 void Area::checkActive() {
-	if (!_loaded)
+	if (!_loaded || _highlightAll)
 		return;
 
 	Common::StackLock lock(_mutex);
@@ -449,6 +449,11 @@ void Area::checkActive() {
 }
 
 void Area::highlightAll(bool enabled) {
+	if (_highlightAll == enabled)
+		return;
+
+	_highlightAll = enabled;
+
 	for (SituatedMap::iterator s = _situatedMap.begin(); s != _situatedMap.end(); ++s)
 		if (s->second->isUsable())
 			s->second->highlight(enabled);

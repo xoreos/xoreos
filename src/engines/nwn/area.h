@@ -147,6 +147,8 @@ private:
 
 	Situated *_activeSituated;
 
+	bool _highlightAll;
+
 	std::list<Events::Event> _eventQueue;
 
 	Common::Mutex _mutex;
