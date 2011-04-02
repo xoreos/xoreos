@@ -39,9 +39,9 @@ namespace NWN {
 Tooltip::Tooltip(Type type) : _type(type),
 	_parentWidget(0), _parentModel(0),
 	_empty(true), _visible(false), _align(0.0),
-	_bubble(0), _portrait(0), _x(0.0), _y(0.0), _z(0.0),
+	_bubble(0), _portrait(0), _offscreen(false), _x(0.0), _y(0.0), _z(0.0),
 	_lineHeight(0.0), _lineSpacing(0.0), _width(0.0), _height(0.0),
-	_needCamera(false) {
+	_needCamera(false), _detectEdge(false) {
 
 	getFeedbackMode(_showBubble, _showText, _showPortrait);
 }
@@ -49,9 +49,9 @@ Tooltip::Tooltip(Type type) : _type(type),
 Tooltip::Tooltip(Type type, Widget &parent) : _type(type),
 	_parentWidget(&parent), _parentModel(0),
 	_empty(true), _visible(false), _align(0.0),
-	_bubble(0), _portrait(0), _x(0.0), _y(0.0), _z(0.0),
+	_bubble(0), _portrait(0), _offscreen(false), _x(0.0), _y(0.0), _z(0.0),
 	_lineHeight(0.0), _lineSpacing(0.0), _width(0.0), _height(0.0),
-	_needCamera(false) {
+	_needCamera(false), _detectEdge(true) {
 
 	getFeedbackMode(_showBubble, _showText, _showPortrait);
 }
@@ -59,9 +59,9 @@ Tooltip::Tooltip(Type type, Widget &parent) : _type(type),
 Tooltip::Tooltip(Type type, Graphics::Aurora::Model &parent) : _type(type),
 	_parentWidget(0), _parentModel(&parent),
 	_empty(true), _visible(false), _align(0.0),
-	_bubble(0), _portrait(0), _x(0.0), _y(0.0), _z(0.0),
+	_bubble(0), _portrait(0), _offscreen(false), _x(0.0), _y(0.0), _z(0.0),
 	_lineHeight(0.0), _lineSpacing(0.0), _width(0.0), _height(0.0),
-	_needCamera(true) {
+	_needCamera(true), _detectEdge(false) {
 
 	getFeedbackMode(_showBubble, _showText, _showPortrait);
 }
@@ -141,25 +141,44 @@ void Tooltip::notifyCameraMoved() {
 	updatePosition();
 }
 
+bool Tooltip::getParentPosition(float &x, float &y, float &z) const {
+	x = y = z = 0.0;
+
+	bool onscreen = true;
+
+	if (_parentWidget)
+		_parentWidget->getPosition(x, y, z);
+
+	if (_parentModel) {
+		float aX, aY, aZ;
+
+		_parentModel->getTooltipAnchor(aX, aY, aZ);
+		if (!GfxMan.project(aX, aY, aZ, x, y, z))
+			return false;
+
+		onscreen = ((z >= 0.0) && (z <= 1.0));
+
+		z = -100.0;
+	}
+
+	return onscreen;
+}
+
 void Tooltip::updatePosition() {
 	if (_empty)
 		return;
 
 	Common::StackLock lock(_mutex);
 
-	float pX = 0.0, pY = 0.0, pZ = 0.0;
-
-	if (_parentWidget)
-		_parentWidget->getPosition(pX, pY, pZ);
-
-	if (_parentModel) {
-		_parentModel->getTooltipAnchor(pX, pY, pZ);
-		if (!GfxMan.project(pX, pY, pZ, pX, pY, pZ))
-			pX = pY = pZ = 0.0;
-
-		pZ = -100.0;
+	float pX, pY, pZ;
+	if (!getParentPosition(pX, pY, pZ)) {
+		_offscreen = true;
+		doHide();
+		return;
+	} else {
+		_offscreen = false;
+		doShow();
 	}
-
 
 	// Set bubble position
 
@@ -169,9 +188,10 @@ void Tooltip::updatePosition() {
 	const float bubbleHeight = hasBubble ? (_bubble->getHeight() -  8.0) : _height;
 
 	const float bubbleWantX = pX + _x - (bubbleWidth / 2.0);
+	const float bubbleRight = bubbleWantX + bubbleWidth + 15.0f;
 
-	const float maxX  = GfxMan.getScreenWidth() / 2.0;
-	const float overX = MAX(0.0f, bubbleWantX + bubbleWidth + 15.0f - maxX);
+	const float maxX  = _detectEdge ? GfxMan.getScreenWidth() / 2.0 : 0.0;
+	const float overX = _detectEdge ? MAX(0.0f, bubbleRight - maxX) : 0.0;
 
 	const float bubbleX = bubbleWantX - overX;
 	const float bubbleY = pY + _y;
@@ -253,22 +273,10 @@ void Tooltip::show() {
 }
 
 void Tooltip::hide() {
-	GfxMan.lockFrame();
-
 	TimerMan.removeTimer(_timer);
 
-	if (_bubble)
-		_bubble->hide();
-	if (_portrait)
-		_portrait->hide();
-
-	for (std::vector<Line>::iterator l = _lines.begin(); l != _lines.end(); ++l)
-		if (l->text)
-			l->text->hide();
-
 	_visible = false;
-
-	GfxMan.unlockFrame();
+	doHide();
 }
 
 void Tooltip::getSize(float &width, float &height) {
@@ -396,9 +404,9 @@ void Tooltip::redoLayout() {
 	updatePosition();
 }
 
-uint32 Tooltip::doShow(uint32 oldInterval) {
-	if (_empty)
-		return 0;
+void Tooltip::doShow() {
+	if (_empty || _offscreen || !_visible)
+		return;
 
 	GfxMan.lockFrame();
 
@@ -413,7 +421,29 @@ uint32 Tooltip::doShow(uint32 oldInterval) {
 				l->text->show();
 
 	GfxMan.unlockFrame();
+}
 
+void Tooltip::doHide() {
+	if (_visible)
+		return;
+
+	GfxMan.lockFrame();
+
+	if (_bubble)
+		_bubble->hide();
+	if (_portrait)
+		_portrait->hide();
+
+	for (std::vector<Line>::iterator l = _lines.begin(); l != _lines.end(); ++l)
+		if (l->text)
+			l->text->hide();
+
+	GfxMan.unlockFrame();
+}
+
+uint32 Tooltip::doShow(uint32 oldInterval) {
+	Common::StackLock lock(_mutex);
+	doShow();
 	return 0;
 }
 

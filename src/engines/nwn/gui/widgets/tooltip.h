@@ -92,6 +92,8 @@ private:
 
 	std::vector<Line> _lines;
 
+	bool _offscreen;
+
 	float _x;
 	float _y;
 	float _z;
@@ -107,6 +109,7 @@ private:
 	Events::TimerHandle _timer;
 
 	bool _needCamera;
+	bool _detectEdge;
 
 	Common::Mutex _mutex;
 
@@ -120,7 +123,12 @@ private:
 
 	uint32 doShow(uint32 oldInterval);
 
+	void doShow();
+	void doHide();
+
 	void getFeedbackMode(bool &showBubble, bool &showText, bool &showPortrait) const;
+
+	bool getParentPosition(float &x, float &y, float &z) const;
 
 	static Common::UString getFontName();
 	static Common::UString getBubbleModel(uint32 lines, float width);
