@@ -12,20 +12,14 @@
  *  Engine class handling Star Wars: Knights of the Old Republic
  */
 
-#include "engines/kotor/kotor.h"
-#include "engines/kotor/modelloader.h"
-#include "engines/kotor/module.h"
-#include "engines/kotor/console.h"
-
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
-
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
 #include "common/stream.h"
 #include "common/configman.h"
+
+#include "aurora/resman.h"
+#include "aurora/error.h"
 
 #include "graphics/graphics.h"
 #include "graphics/camera.h"
@@ -39,8 +33,16 @@
 
 #include "events/events.h"
 
-#include "aurora/resman.h"
-#include "aurora/error.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
+#include "engines/aurora/model.h"
+
+#include "engines/kotor/kotor.h"
+#include "engines/kotor/modelloader.h"
+#include "engines/kotor/module.h"
+#include "engines/kotor/console.h"
+
+#include "engines/kotor/gui/main/main.h"
 
 namespace Engines {
 
@@ -123,6 +125,18 @@ void KotOREngine::run(const Common::UString &target) {
 		return;
 
 	CursorMan.showCursor();
+
+
+	MainMenu *mainMenu = new MainMenu();
+
+	mainMenu->show();
+	mainMenu->run();
+
+	delete mainMenu;
+
+	if (EventMan.quitRequested())
+		return;
+
 
 	playSound("nm35aahhkd07134_", Sound::kSoundTypeVoice);
 
