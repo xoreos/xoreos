@@ -265,15 +265,39 @@ UString::iterator ReadLine::getCurrentPosition() const {
 	return _currentLine.getPosition(_cursorPosition);
 }
 
+std::list<ReadLine::HistorySave>::iterator ReadLine::findHistorySave() {
+	for (std::list<HistorySave>::iterator save = _historySave.begin();
+	     save != _historySave.end(); ++save)
+		if (save->position == _historyPosition)
+			return save;
+
+	return _historySave.end();
+}
+
 void ReadLine::updateHistory() {
-	// We modified a copied history line, copy it back
-	if (_historyPosition != _history.end())
+	if (_historyPosition != _history.end()) {
+		// We modified a copied history line. Save it...
+		std::list<HistorySave>::iterator save = findHistorySave();
+		if (save == _historySave.end()) {
+			_historySave.push_back(HistorySave());
+
+			_historySave.back().position =  _historyPosition;
+			_historySave.back().line     = *_historyPosition;
+		}
+
+		// ...and copy the modified line into the history
 		*_historyPosition = _currentLine;
+	}
 }
 
 void ReadLine::addCurrentLineToHistory() {
 	if (_currentLine.empty())
 		return;
+
+	// We submitted a modified history line. Copy back the original.
+	std::list<HistorySave>::iterator save = findHistorySave();
+	if (save != _historySave.end())
+		*save->position = save->line;
 
 	// Erase duplicate lines
 	if (_historyEraseDups) {
@@ -311,6 +335,8 @@ void ReadLine::addCurrentLineToHistory() {
 	_overwrite = false;
 
 	_historyPosition = _history.end();
+
+	_historySave.clear();
 }
 
 void ReadLine::browseUp() {

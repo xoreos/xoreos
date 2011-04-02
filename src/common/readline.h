@@ -75,6 +75,11 @@ public:
 
 
 private:
+	struct HistorySave {
+		std::list<UString>::iterator position;
+		UString line;
+	};
+
 	typedef std::set<UString> CommandSet;
 	typedef std::map<UString, CommandSet> ArgumentSets;
 
@@ -98,6 +103,9 @@ private:
 	/** The current browsing position within the history. */
 	std::list<UString>::iterator _historyPosition;
 
+	/** Saved copies of modified history lines. */
+	std::list<HistorySave> _historySave;
+
 	/** All known tab-completeable commands. */
 	CommandSet _commands;
 	/** All know tab-completeable command arguments. */
@@ -109,6 +117,8 @@ private:
 	uint32 _maxHintSize;
 	uint32 _hintCount;
 
+
+	std::list<HistorySave>::iterator findHistorySave();
 
 	void addCurrentLineToHistory();
 
