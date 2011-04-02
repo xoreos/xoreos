@@ -35,6 +35,8 @@ public:
 	     float align = 0.0);
 	~Text();
 
+	void getPosition(float &x, float &y, float &z) const;
+
 	void set(const Common::UString &str);
 	void setPosition(float x, float y, float z = -FLT_MAX);
 	void setColor(float r, float g, float b, float a);

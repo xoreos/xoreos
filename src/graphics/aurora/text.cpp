@@ -79,6 +79,12 @@ void Text::unsetColor() {
 	GfxMan.unlockFrame();
 }
 
+void Text::getPosition(float &x, float &y, float &z) const {
+	x = _x;
+	y = _y;
+	z = _distance;
+}
+
 void Text::setPosition(float x, float y, float z) {
 	GfxMan.lockFrame();
 
