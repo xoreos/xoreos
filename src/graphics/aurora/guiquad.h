@@ -44,6 +44,9 @@ public:
 	/** Set the current texture of the quad. */
 	void setTexture(const Common::UString &texture);
 
+	float getWidth () const; ///< Return the quad's width.
+	float getHeight() const; ///< Return the quad's height.
+
 	void setWidth (float w); ///< Set the quad's width.
 	void setHeight(float h); ///< Set the quad's height.
 

@@ -94,6 +94,14 @@ void GUIQuad::setTexture(const Common::UString &texture) {
 	GfxMan.unlockFrame();
 }
 
+float GUIQuad::getWidth() const {
+	return ABS(_x2 - _x1);
+}
+
+float GUIQuad::getHeight() const {
+	return ABS(_y2 - _y1);
+}
+
 void GUIQuad::setWidth(float w) {
 	GfxMan.lockFrame();
 
