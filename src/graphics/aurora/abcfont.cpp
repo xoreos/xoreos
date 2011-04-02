@@ -149,23 +149,26 @@ void ABCFont::readCharDesc(Char &c, Common::SeekableReadStream &abc) {
 }
 
 void ABCFont::calcCharVertices(Char &c) {
-	float w = _texture.getTexture().getWidth();
-	float h = _texture.getTexture().getHeight();
+	const float w = _texture.getTexture().getWidth();
+	const float h = _texture.getTexture().getHeight();
 
-	float vW = c.width;
-	float vH = 32.0;
-	float tW = vW / w;
-	float tH = vH / h;
+	const float vW = c.width;
+	const float vH = 32.0;
+	const float tW = vW / w;
+	const float tH = vH / h;
 
-	c.tX[0] = c.dataX / w ; c.tY[0] = c.dataY / h ;
-	c.tX[1] = c.tX[0] + tW; c.tY[1] = c.tY[0]     ;
-	c.tX[2] = c.tX[0] + tW; c.tY[2] = c.tY[0] + tH;
-	c.tX[3] = c.tX[0]     ; c.tY[3] = c.tY[0] + tH;
+	const float tX = c.dataX / w;
+	const float tY = c.dataY / h;
 
-	c.vX[0] = 0.0         ; c.vY[0] = 0.0     + vH;
-	c.vX[1] = 0.0     + vW; c.vY[1] = 0.0     + vH;
-	c.vX[2] = 0.0     + vW; c.vY[2] = 0.0         ;
-	c.vX[3] = 0.0         ; c.vY[3] = 0.0         ;
+	c.tX[0] = tX     ; c.tY[0] = tY + tH;
+	c.tX[1] = tX + tW; c.tY[1] = tY + tH;
+	c.tX[2] = tX + tW; c.tY[2] = tY     ;
+	c.tX[3] = tX     ; c.tY[3] = tY     ;
+
+	c.vX[0] = 0.0     ; c.vY[0] = 0.0     ;
+	c.vX[1] = 0.0 + vW; c.vY[1] = 0.0     ;
+	c.vX[2] = 0.0 + vW; c.vY[2] = 0.0 + vH;
+	c.vX[3] = 0.0     ; c.vY[3] = 0.0 + vH;
 }
 
 const ABCFont::Char &ABCFont::findChar(uint32 c) const {
