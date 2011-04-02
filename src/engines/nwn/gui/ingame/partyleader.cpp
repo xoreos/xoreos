@@ -160,7 +160,7 @@ void PartyLeader::updatePortraitTooltip() {
 }
 
 void PartyLeader::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(newWidth / 2.0, newHeight / 2.0, 0.0);
+	setPosition(newWidth / 2.0, newHeight / 2.0, -10.0);
 }
 
 } // End of namespace NWN

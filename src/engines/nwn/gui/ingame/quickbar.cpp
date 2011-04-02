@@ -135,7 +135,7 @@ void Quickbar::getSlotSize() {
 }
 
 void Quickbar::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(- ((12 * _slotWidth) / 2.0), - (newHeight / 2.0), 0.0);
+	setPosition(- ((12 * _slotWidth) / 2.0), - (newHeight / 2.0), -10.0);
 }
 
 } // End of namespace NWN

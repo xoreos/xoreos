@@ -99,7 +99,7 @@ Quickchat::Quickchat(float position) {
 	ChatModeButton *modeButton =
 		new ChatModeButton(*this, "QCMode", "ctl_btn_chatmode", kModeTalk);
 
-	modeButton->setPosition(0.0, position, -100.0);
+	modeButton->setPosition(0.0, position, -10.0);
 
 	addWidget(modeButton);
 
@@ -122,7 +122,7 @@ void Quickchat::callbackActive(Widget &widget) {
 }
 
 void Quickchat::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(- (newWidth / 2.0), - (newHeight / 2.0), 0.0);
+	setPosition(- (newWidth / 2.0), - (newHeight / 2.0), -10.0);
 }
 
 } // End of namespace NWN

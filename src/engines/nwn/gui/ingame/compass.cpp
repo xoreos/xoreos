@@ -80,7 +80,7 @@ void Compass::callbackActive(Widget &widget) {
 }
 
 void Compass::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(newWidth / 2.0, - (newHeight / 2.0), 0.0);
+	setPosition(newWidth / 2.0, - (newHeight / 2.0), -10.0);
 }
 
 void Compass::notifyCameraMoved() {

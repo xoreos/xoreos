@@ -158,7 +158,7 @@ bool Tooltip::getParentPosition(float &x, float &y, float &z) const {
 
 		onscreen = ((z >= 0.0) && (z <= 1.0));
 
-		z = -100.0;
+		z = 0.0;
 	}
 
 	return onscreen;
