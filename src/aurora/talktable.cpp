@@ -40,10 +40,7 @@ void TalkTable::load() {
 	if (_id != kTLKID)
 		throw Common::Exception("Not a TLK file");
 
-	if (_version == kVersion4)
-		throw Common::Exception("TODO: TLK V4.0");
-
-	if (_version != kVersion3)
+	if (_version != kVersion3 && _version != kVersion4)
 		throw Common::Exception("Unsupported TLK file version %08X", _version);
 
 	_language = (Language) (_tlk->readUint32LE() * 2);
@@ -51,12 +48,23 @@ void TalkTable::load() {
 	uint32 stringCount = _tlk->readUint32LE();
 	_entryList.resize(stringCount);
 
+	// V4 added this field; it's right after the header in V3
+	uint32 tableOffset = 20;
+	if (_version == kVersion4)
+		tableOffset = _tlk->readUint32LE();
+
 	_stringsOffset = _tlk->readUint32LE();
+
+	// Go to the table
+	_tlk->seek(tableOffset);
 
 	try {
 
 		// Read in all the table data
-		readEntryTable();
+		if (_version == kVersion3)
+			readEntryTableV3();
+		else
+			readEntryTableV4();
 
 		if (_tlk->err())
 			throw Common::Exception(Common::kReadError);
@@ -68,15 +76,24 @@ void TalkTable::load() {
 
 }
 
-void TalkTable::readEntryTable() {
+void TalkTable::readEntryTableV3() {
 	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
 		entry->flags          = _tlk->readUint32LE();
 		entry->soundResRef.readASCII(*_tlk, 16);
 		entry->volumeVariance = _tlk->readUint32LE();
 		entry->pitchVariance  = _tlk->readUint32LE();
-		entry->offset         = _tlk->readUint32LE();
+		entry->offset         = _tlk->readUint32LE() + _stringsOffset;
 		entry->length         = _tlk->readUint32LE();
 		entry->soundLength    = _tlk->readIEEEFloatLE();
+	}
+}
+
+void TalkTable::readEntryTableV4() {
+	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
+		entry->soundID = _tlk->readUint32LE();
+		entry->offset  = _tlk->readUint32LE();
+		entry->length  = _tlk->readUint16LE();
+		entry->flags   = kFlagTextPresent;
 	}
 }
 
@@ -87,7 +104,7 @@ void TalkTable::readString(Entry &entry) {
 
 	assert(_tlk);
 
-	if (!_tlk->seek(_stringsOffset + entry.offset))
+	if (!_tlk->seek(entry.offset))
 		throw Common::Exception(Common::kSeekError);
 
 	// TODO: Different encodings for different languages, probably

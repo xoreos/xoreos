@@ -41,14 +41,19 @@ public:
 
 	/** A talk resource entry. */
 	struct Entry {
+		Common::UString text;
+		uint32 offset;
+		uint32 length;
+
+		// V3
 		uint32 flags;
 		Common::UString soundResRef;
 		uint32 volumeVariance; // Unused
-		uint32 pitchVariance; // Unused
-		uint32 offset;
-		uint32 length;
+		uint32 pitchVariance; // Unused		
 		float soundLength; // In seconds
-		Common::UString text;
+
+		// V4
+		uint32 soundID;
 	};
 
 	typedef std::vector<Entry> EntryList;
@@ -77,7 +82,8 @@ private:
 
 	void load();
 
-	void readEntryTable();
+	void readEntryTableV3();
+	void readEntryTableV4();
 	void readString(Entry &entry);
 };
 
