@@ -18,7 +18,7 @@
 #include "common/configman.h"
 
 #include "aurora/resman.h"
-#include "aurora/error.h"
+#include "aurora/talkman.h"
 
 #include "engines/jade/jade.h"
 
@@ -141,6 +141,7 @@ void JadeEngine::run(const Common::UString &target) {
 void JadeEngine::init() {
 	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
+	indexMandatoryDirectory("", 0, 0, 0);
 
 	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
@@ -224,6 +225,12 @@ void JadeEngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
+
+	if (EventMan.quitRequested())
+		return;
+
+	status("Loading main talk table");
+	TalkMan.addMainTable("dialog");
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
 }
