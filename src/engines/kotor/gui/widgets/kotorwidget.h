@@ -15,15 +15,13 @@
 #ifndef ENGINES_KOTOR_GUI_WIDGETS_KOTORWIDGET_H
 #define ENGINES_KOTOR_GUI_WIDGETS_KOTORWIDGET_H
 
+#include "common/ustring.h"
+
 #include "aurora/types.h"
 
 #include "graphics/aurora/types.h"
 
 #include "engines/aurora/widget.h"
-
-namespace Common {
-	class UString;
-}
 
 namespace Engines {
 
@@ -35,7 +33,7 @@ public:
 	KotORWidget(::Engines::GUI &gui, const Common::UString &tag);
 	~KotORWidget();
 
-	virtual void load(const Aurora::GFFStruct &gff) = 0;
+	virtual void load(const Aurora::GFFStruct &gff);
 
 	void show();
 	void hide();
@@ -47,9 +45,48 @@ public:
 	float getWidth () const;
 	float getHeight() const;
 
+	void setFill(const Common::UString &fill);
+
 protected:
+	struct Extend {
+		float x;
+		float y;
+		float w;
+		float h;
+
+		Extend();
+	};
+
+	struct Border {
+		Common::UString corner;
+		Common::UString edge;
+		Common::UString fill;
+
+		uint32 fillStyle;
+		uint32 dimension;
+		uint32 innerOffset;
+
+		float r, g, b;
+
+		bool pulsing;
+
+		Border();
+	};
+
+	float _width;
+	float _height;
+
+	float _r;
+	float _g;
+	float _b;
+	float _a;
+
 	Graphics::Aurora::GUIQuad *_quad;
 	Graphics::Aurora::Text    *_text;
+
+
+	Extend getExtend(const Aurora::GFFStruct &gff);
+	Border getBorder(const Aurora::GFFStruct &gff);
 };
 
 } // End of namespace KotOR

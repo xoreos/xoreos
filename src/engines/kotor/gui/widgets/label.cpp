@@ -12,6 +12,10 @@
  *  A KotOR label widget.
  */
 
+#include "aurora/gfffile.h"
+
+#include "graphics/aurora/guiquad.h"
+
 #include "engines/kotor/gui/widgets/label.h"
 
 namespace Engines {
@@ -26,6 +30,7 @@ WidgetLabel::~WidgetLabel() {
 }
 
 void WidgetLabel::load(const Aurora::GFFStruct &gff) {
+	KotORWidget::load(gff);
 }
 
 } // End of namespace KotOR

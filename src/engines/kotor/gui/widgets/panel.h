@@ -24,6 +24,8 @@ namespace KotOR {
 class WidgetPanel : public KotORWidget {
 public:
 	WidgetPanel(::Engines::GUI &gui, const Common::UString &tag);
+	WidgetPanel(::Engines::GUI &gui, const Common::UString &tag,
+	            const Common::UString &texture, float x, float y, float w, float h);
 	~WidgetPanel();
 
 	void load(const Aurora::GFFStruct &gff);

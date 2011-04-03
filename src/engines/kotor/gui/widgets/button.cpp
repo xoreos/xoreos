@@ -12,6 +12,10 @@
  *  A KotOR button widget.
  */
 
+#include "aurora/gfffile.h"
+
+#include "graphics/aurora/guiquad.h"
+
 #include "engines/kotor/gui/widgets/button.h"
 
 namespace Engines {
@@ -26,6 +30,7 @@ WidgetButton::~WidgetButton() {
 }
 
 void WidgetButton::load(const Aurora::GFFStruct &gff) {
+	KotORWidget::load(gff);
 }
 
 } // End of namespace KotOR

@@ -57,7 +57,7 @@ protected:
 		kWidgetTypeListBox     =  11
 	};
 
-	void load(const Common::UString &resref);
+	void load(const Common::UString &resref, float width = 0.0, float height = 0.0);
 
 	virtual void initWidget(Widget &widget);
 
@@ -70,6 +70,8 @@ protected:
 	WidgetScrollbar   *getScrollbar  (const Common::UString &tag, bool vital = false);
 	WidgetProgressbar *getProgressbar(const Common::UString &tag, bool vital = false);
 	WidgetListBox     *getListBox    (const Common::UString &tag, bool vital = false);
+
+	void addBackground(const Common::UString &background);
 
 private:
 	struct WidgetContext {
@@ -85,9 +87,11 @@ private:
 		WidgetContext(const Aurora::GFFStruct &s, Widget *p);
 	};
 
+	float _widgetZ;
+
 	Common::UString _name;
 
-	void loadWidget(const Aurora::GFFStruct &strct, Widget *parent);
+	void loadWidget(const Aurora::GFFStruct &strct, Widget *parent, float width, float height);
 
 	void createWidget(WidgetContext &ctx);
 };

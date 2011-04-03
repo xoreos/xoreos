@@ -49,20 +49,20 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFFStruct &s, Widget *p) {
 }
 
 
-GUI::GUI() {
+GUI::GUI() : _widgetZ(0) {
 }
 
 GUI::~GUI() {
 }
 
-void GUI::load(const Common::UString &resref) {
+void GUI::load(const Common::UString &resref, float width, float height) {
 	_name = resref;
 
 	Aurora::GFFFile *gff = 0;
 	try {
 		gff = loadGFF(resref, Aurora::kFileTypeGUI, MKID_BE('GUI '));
 
-		loadWidget(gff->getTopLevel(), 0);
+		loadWidget(gff->getTopLevel(), 0, width, height);
 
 	} catch (Common::Exception &e) {
 		delete gff;
@@ -74,10 +74,28 @@ void GUI::load(const Common::UString &resref) {
 	delete gff;
 }
 
-void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
+void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent,
+		float width, float height) {
+
 	WidgetContext ctx(strct, parent);
 
 	createWidget(ctx);
+
+	if (width  <= 0.0)
+		width  = ctx.widget->getWidth();
+	if (height <= 0.0)
+		height = ctx.widget->getHeight();
+
+	float wX, wY, wZ;
+	ctx.widget->getPosition(wX, wY, wZ);
+
+	wX = wX - (width / 2.0);
+	wY = ((height - wY) - ctx.widget->getHeight()) - (height / 2.0);
+	wZ = _widgetZ;
+
+	ctx.widget->setPosition(wX, wY, wZ);
+
+	_widgetZ -= 1.0;
 
 	addWidget(ctx.widget);
 
@@ -86,7 +104,7 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 		const Aurora::GFFList &children = ctx.strct->getList("CONTROLS");
 
 		for (Aurora::GFFList::const_iterator c = children.begin(); c != children.end(); ++c)
-			loadWidget(**c, ctx.widget);
+			loadWidget(**c, ctx.widget, width, height);
 	}
 }
 
@@ -228,6 +246,15 @@ WidgetListBox *GUI::getListBox(const Common::UString &tag, bool vital) {
 	return listBox;
 }
 
+void GUI::addBackground(const Common::UString &background) {
+	WidgetPanel *backPanel =
+		new WidgetPanel(*this, "Background", "1600x1200" + background,
+		                -800.0, -600.0, 1600.0, 1200.0);
+
+	backPanel->movePosition(0.0, 0.0, 10.0);
+
+	addWidget(backPanel);
+}
 
 } // End of namespace KotOR
 

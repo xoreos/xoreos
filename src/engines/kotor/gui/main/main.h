@@ -27,6 +27,8 @@ public:
 	~MainMenu();
 
 protected:
+	void initWidget(Widget &widget);
+
 	void callbackActive(Widget &widget);
 };
 

@@ -12,6 +12,10 @@
  *  A KotOR panel widget.
  */
 
+#include "aurora/gfffile.h"
+
+#include "graphics/aurora/guiquad.h"
+
 #include "engines/kotor/gui/widgets/panel.h"
 
 namespace Engines {
@@ -22,10 +26,24 @@ WidgetPanel::WidgetPanel(::Engines::GUI &gui, const Common::UString &tag) :
 	KotORWidget(gui, tag) {
 }
 
+WidgetPanel::WidgetPanel(::Engines::GUI &gui, const Common::UString &tag,
+                         const Common::UString &texture,
+                         float x, float y, float w, float h) : KotORWidget(gui, tag) {
+
+	_width  = w;
+	_height = h;
+
+	Widget::setPosition(x, y, 0.0);
+
+	_quad = new Graphics::Aurora::GUIQuad(texture, 0.0, 0.0, w, h);
+	_quad->setPosition(x, y, 0.0);
+}
+
 WidgetPanel::~WidgetPanel() {
 }
 
 void WidgetPanel::load(const Aurora::GFFStruct &gff) {
+	KotORWidget::load(gff);
 }
 
 } // End of namespace KotOR

@@ -12,6 +12,10 @@
  *  The KotOR main menu.
  */
 
+#include "common/util.h"
+
+#include "engines/aurora/widget.h"
+
 #include "engines/kotor/gui/main/main.h"
 
 namespace Engines {
@@ -19,10 +23,26 @@ namespace Engines {
 namespace KotOR {
 
 MainMenu::MainMenu() {
-	load("mainmenu");
+	load("mainmenu16x12");
+
+	addBackground("back");
 }
 
 MainMenu::~MainMenu() {
+}
+
+void MainMenu::initWidget(Widget &widget) {
+	// BioWare logo, the original game doesn't display it.
+	if (widget.getTag() == "LBL_BW") {
+		widget.setInvisible(true);
+		return;
+	}
+
+	// LucasArts logo, the original game doesn't display it.
+	if (widget.getTag() == "LBL_LUCAS") {
+		widget.setInvisible(true);
+		return;
+	}
 }
 
 void MainMenu::callbackActive(Widget &widget) {
