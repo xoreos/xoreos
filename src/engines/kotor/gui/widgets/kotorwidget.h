@@ -73,6 +73,21 @@ protected:
 		Border();
 	};
 
+	struct Text {
+		Common::UString font;
+		Common::UString text;
+		uint32 strRef;
+
+		float halign;
+		float valign;
+
+		float r, g, b;
+
+		bool pulsing;
+
+		Text();
+	};
+
 	float _width;
 	float _height;
 
@@ -87,6 +102,7 @@ protected:
 
 	Extend getExtend(const Aurora::GFFStruct &gff);
 	Border getBorder(const Aurora::GFFStruct &gff);
+	Text   getText  (const Aurora::GFFStruct &gff);
 };
 
 } // End of namespace KotOR

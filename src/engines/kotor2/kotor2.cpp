@@ -19,7 +19,7 @@
 #include "common/configman.h"
 
 #include "aurora/resman.h"
-#include "aurora/error.h"
+#include "aurora/talkman.h"
 
 #include "graphics/graphics.h"
 #include "graphics/camera.h"
@@ -244,6 +244,7 @@ void KotOR2Engine::run(const Common::UString &target) {
 void KotOR2Engine::init() {
 	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
+	indexMandatoryDirectory("", 0, 0, 0);
 
 	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data");
@@ -288,6 +289,12 @@ void KotOR2Engine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
+
+	if (EventMan.quitRequested())
+		return;
+
+	status("Loading main talk table");
+	TalkMan.addMainTable("dialog");
 
 	registerModelLoader(new KotOR2ModelLoader);
 

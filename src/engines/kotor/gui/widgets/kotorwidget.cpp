@@ -14,7 +14,9 @@
 
 #include "common/util.h"
 
+#include "aurora/types.h"
 #include "aurora/gfffile.h"
+#include "aurora/talkman.h"
 
 #include "graphics/aurora/guiquad.h"
 #include "graphics/aurora/text.h"
@@ -30,7 +32,13 @@ KotORWidget::Extend::Extend() : x(0.0), y(0.0), w(0.0), h(0.0) {
 
 
 KotORWidget::Border::Border() : fillStyle(0), dimension(0), innerOffset(0),
-	r(0), g(0), b(0), pulsing(false) {
+	r(0.0), g(0.0), b(0.0), pulsing(false) {
+
+}
+
+
+KotORWidget::Text::Text() : strRef(Aurora::kStrRefInvalid), halign(0.0), valign(0.0),
+	r(1.0), g(1.0), b(1.0), pulsing(false) {
 
 }
 
@@ -92,6 +100,13 @@ void KotORWidget::setPosition(float x, float y, float z) {
 
 		_quad->setPosition(qX - oX + x, qY - oY + y, qZ - oZ + z);
 	}
+
+	if (_text) {
+		float tX, tY, tZ;
+		_text->getPosition(tX, tY, tZ);
+
+		_text->setPosition(tX - oX + x, tY - oY + y, tZ - oZ + z);
+	}
 }
 
 float KotORWidget::getWidth() const {
@@ -119,6 +134,9 @@ void KotORWidget::setFill(const Common::UString &fill) {
 }
 
 void KotORWidget::load(const Aurora::GFFStruct &gff) {
+	gff.getVector("COLOR", _r, _g, _b);
+	_a = gff.getDouble("ALPHA", 1.0);
+
 	Extend extend = getExtend(gff);
 
 	_width  = extend.w;
@@ -133,8 +151,20 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 		_quad->setPosition(extend.x, extend.y, 0.0);
 	}
 
-	gff.getVector("COLOR", _r, _g, _b);
-	_a = gff.getDouble("ALPHA", 1.0);
+	Text text = getText(gff);
+
+	if (!text.text.empty() && !text.font.empty()) {
+		_text = new Graphics::Aurora::Text(FontMan.get(text.font), text.text,
+		                                   text.r, text.g, text.b, 1.0);
+
+		const float hspan = extend.w - _text->getWidth();
+		const float vspan = extend.h - _text->getHeight();
+
+		const float x = extend.x + text.halign * hspan;
+		const float y = extend.y + text.valign * vspan;
+
+		_text->setPosition(x, y, -1.0);
+	}
 }
 
 KotORWidget::Extend KotORWidget::getExtend(const Aurora::GFFStruct &gff) {
@@ -172,6 +202,39 @@ KotORWidget::Border KotORWidget::getBorder(const Aurora::GFFStruct &gff) {
 	}
 
 	return border;
+}
+
+KotORWidget::Text KotORWidget::getText(const Aurora::GFFStruct &gff) {
+	Text text;
+
+	if (gff.hasField("TEXT")) {
+		const Aurora::GFFStruct &t = gff.getStruct("TEXT");
+
+		text.font   = t.getString("FONT");
+		text.text   = t.getString("TEXT");
+		text.strRef = t.getUint("STRREF", Aurora::kStrRefInvalid);
+
+		const uint32 alignment = t.getUint("ALIGNMENT");
+
+		t.getVector("COLOR", text.r, text.g, text.b);
+
+		text.pulsing = t.getBool("PULSING");
+
+
+		if (text.text == "(Unitialized)")
+			text.text.clear();
+
+		if (text.strRef != Aurora::kStrRefInvalid)
+			text.text = TalkMan.getString(text.strRef);
+
+		// TODO: KotORWidget::getText(): Alignment
+		if (alignment == 18) {
+			text.halign = 0.5;
+			text.valign = 0.5;
+		}
+	}
+
+	return text;
 }
 
 } // End of namespace KotOR

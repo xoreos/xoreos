@@ -43,6 +43,18 @@ void MainMenu::initWidget(Widget &widget) {
 		widget.setInvisible(true);
 		return;
 	}
+
+	// Warp button? O_o
+	if (widget.getTag() == "BTN_WARP") {
+		widget.setInvisible(true);
+		return;
+	}
+
+	// New downloadable content is available, bluhbluh.
+	if (widget.getTag() == "LBL_NEWCONTENT") {
+		widget.setInvisible(true);
+		return;
+	}
 }
 
 void MainMenu::callbackActive(Widget &widget) {
