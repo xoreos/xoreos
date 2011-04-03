@@ -96,17 +96,30 @@ void FontManager::clear() {
 	_fonts.clear();
 
 	_format = kFontFormatUnknown;
+	_aliases.clear();
 }
 
 void FontManager::setFormat(FontFormat format) {
 	_format = format;
 }
 
-FontHandle FontManager::get(const Common::UString &name) {
+void FontManager::addAlias(const Common::UString &alias, const Common::UString &realName) {
+	_aliases[alias] = realName;
+}
+
+FontHandle FontManager::get(Common::UString name) {
 	Common::StackLock lock(_mutex);
 
+	// Lock up the name in our alias map first
+	std::map<Common::UString, Common::UString>::iterator realName = _aliases.find(name);
+	if (realName != _aliases.end())
+		name = realName->second;
+
+	// Look up the name in our font map
 	FontMap::iterator font = _fonts.find(name);
 	if (font == _fonts.end()) {
+		// If not found, load and add that font
+
 		std::pair<FontMap::iterator, bool> result;
 
 		ManagedFont *t = createFont(name);
@@ -116,6 +129,7 @@ FontHandle FontManager::get(const Common::UString &name) {
 		font = result.first;
 	}
 
+	// Increase the reference count and return the font
 	font->second->referenceCount++;
 
 	return FontHandle(font);

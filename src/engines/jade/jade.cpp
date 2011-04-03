@@ -233,6 +233,9 @@ void JadeEngine::init() {
 	TalkMan.addMainTable("dialog");
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
+	FontMan.addAlias("sava"   , "asian");
+	FontMan.addAlias("cerigo" , "asian");
+	FontMan.addAlias("fnt_gui", "asian");
 }
 
 void JadeEngine::initCursors() {

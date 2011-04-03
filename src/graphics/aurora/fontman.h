@@ -77,11 +77,16 @@ public:
 
 	void setFormat(FontFormat format);
 
-	FontHandle get(const Common::UString &name);
+	/** Add an alias for a specific font name. */
+	void addAlias(const Common::UString &alias, const Common::UString &realName);
+
+	FontHandle get(Common::UString name);
 	void release(FontHandle &handle);
 
 private:
 	FontFormat _format;
+
+	std::map<Common::UString, Common::UString> _aliases;
 
 	FontMap _fonts;
 
