@@ -57,6 +57,8 @@ Aurora::GFFFile *loadGFF(const Common::UString &name, Aurora::FileType type, uin
 bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName);
 /** Debug method to quickly dump a resource to disk. */
 bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::UString file = "");
+/** Debug method to quickly dump a resource to disk. */
+bool dumpResource(const Common::UString &name, const Common::UString &file = "");
 
 } // End of namespace Engines
 

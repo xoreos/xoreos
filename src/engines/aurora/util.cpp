@@ -184,4 +184,10 @@ bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::US
 	return success;
 }
 
+bool dumpResource(const Common::UString &name, const Common::UString &file) {
+	Aurora::FileType type = Aurora::getFileType(name);
+
+	return dumpResource(Aurora::setFileType(name, Aurora::kFileTypeNone), type, file);
+}
+
 } // End of namespace Engines
