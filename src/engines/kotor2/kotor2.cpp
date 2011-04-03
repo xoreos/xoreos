@@ -12,21 +12,14 @@
  *  Engine class handling Star Wars: Knights of the Old Republic II - The Sith Lords
  */
 
-#include "engines/kotor2/kotor2.h"
-#include "engines/kotor2/modelloader.h"
-#include "engines/kotor2/module.h"
-
-#include "engines/kotor/console.h"
-
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
-
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
 #include "common/stream.h"
 #include "common/configman.h"
+
+#include "aurora/resman.h"
+#include "aurora/error.h"
 
 #include "graphics/graphics.h"
 #include "graphics/camera.h"
@@ -36,12 +29,21 @@
 #include "graphics/aurora/fps.h"
 #include "graphics/aurora/model.h"
 
+#include "engines/kotor2/kotor2.h"
+#include "engines/kotor2/modelloader.h"
+#include "engines/kotor2/module.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
 
-#include "aurora/resman.h"
-#include "aurora/error.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
+#include "engines/aurora/model.h"
+
+#include "engines/kotor/console.h"
+
+#include "engines/kotor2/gui/main/main.h"
 
 namespace Engines {
 
@@ -106,6 +108,18 @@ void KotOR2Engine::run(const Common::UString &target) {
 		return;
 
 	CursorMan.showCursor();
+
+
+	MainMenu *mainMenu = new MainMenu();
+
+	mainMenu->show();
+	mainMenu->run();
+
+	delete mainMenu;
+
+	if (EventMan.quitRequested())
+		return;
+
 
 	playSound("298hk50mun003", Sound::kSoundTypeVoice);
 
