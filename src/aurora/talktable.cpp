@@ -20,6 +20,7 @@
 
 static const uint32 kTLKID     = MKID_BE('TLK ');
 static const uint32 kVersion3  = MKID_BE('V3.0');
+static const uint32 kVersion4  = MKID_BE('V4.0');
 
 namespace Aurora {
 
@@ -38,6 +39,9 @@ void TalkTable::load() {
 
 	if (_id != kTLKID)
 		throw Common::Exception("Not a TLK file");
+
+	if (_version == kVersion4)
+		throw Common::Exception("TODO: TLK V4.0");
 
 	if (_version != kVersion3)
 		throw Common::Exception("Unsupported TLK file version %08X", _version);
