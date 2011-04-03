@@ -12,12 +12,9 @@
  *  NWN door.
  */
 
-#include "common/endianness.h"
-#include "common/error.h"
-#include "common/maths.h"
 #include "common/util.h"
+#include "common/error.h"
 
-#include "aurora/locstring.h"
 #include "aurora/gfffile.h"
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
@@ -26,7 +23,6 @@
 #include "graphics/aurora/model.h"
 
 #include "engines/aurora/util.h"
-#include "engines/aurora/model.h"
 
 #include "engines/nwn/door.h"
 

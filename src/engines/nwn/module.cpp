@@ -385,7 +385,7 @@ void Module::loadArea() {
 		return;
 	}
 
-	_area = new Area(*this, _newArea);
+	_area = new Area(_newArea);
 
 	_area->show();
 

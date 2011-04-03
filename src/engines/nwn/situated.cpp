@@ -9,10 +9,9 @@
  */
 
 /** @file engines/nwn/situated.cpp
- *  NWN situated.
+ *  NWN situated object.
  */
 
-#include "common/endianness.h"
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/util.h"
@@ -33,9 +32,7 @@ namespace Engines {
 
 namespace NWN {
 
-Situated::Situated() : _appearanceID(Aurora::kFieldIDInvalid),
-	_static(false), _useable(true), _model(0),
-	_loaded(false) {
+Situated::Situated() : _appearanceID(Aurora::kFieldIDInvalid), _model(0) {
 }
 
 Situated::~Situated() {
@@ -56,31 +53,20 @@ void Situated::hide() {
 		_model->hide();
 }
 
-bool Situated::isStatic() const {
-	return _static;
+void Situated::setPosition(float x, float y, float z) {
+	Object::setPosition(x, y, z);
+	Object::getPosition(x, y, z);
+
+	if (_model)
+		_model->setPosition(x, y, z);
 }
 
-bool Situated::isUsable() const {
-	return _useable;
-}
+void Situated::setOrientation(float x, float y, float z) {
+	Object::setOrientation(x, y, z);
+	Object::getOrientation(x, y, z);
 
-const Common::UString &Situated::getTag() const {
-	return _tag;
-}
-
-const Common::UString &Situated::getName() const {
-	return _name;
-}
-
-const Common::UString &Situated::getDescription() const {
-	return _description;
-}
-
-uint32 Situated::getID() const {
-	if (!_model)
-		return 0;
-
-	return _model->getID();
+	if (_model)
+		_model->setRotation(x, z, -y);
 }
 
 void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
@@ -120,27 +106,26 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	} else
 		warning("Situated object \"%s\" (\"%s\") has no model", _name.c_str(), _tag.c_str());
 
-
-	_model->setTag(_tag);
-	_model->setClickable(!_static && _useable);
-
-	// Model position
-
 	if (_model) {
-		float x = instance.getDouble("X");
-		float y = instance.getDouble("Y");
-		float z = instance.getDouble("Z");
+		// Clickable
+		_model->setTag(_tag);
+		_model->setClickable(isClickable());
 
-		_model->setPosition(x, y, z);
-
-
-		// Model orientation
-
-		float bearing = instance.getDouble("Bearing");
-
-		_model->setRotation(0.0, 0.0, -Common::rad2deg(bearing));
+		// ID
+		_ids.push_back(_model->getID());
 	}
 
+	// Position
+
+	setPosition(instance.getDouble("X"),
+	            instance.getDouble("Y"),
+	            instance.getDouble("Z"));
+
+	// Orientation
+
+	float bearing = instance.getDouble("Bearing");
+
+	setOrientation(0.0, Common::rad2deg(bearing), 0.0);
 
 	_loaded = true;
 }
@@ -175,7 +160,7 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 	_static = gff.getBool("Static", _static);
 
 	// Usable
-	_useable = gff.getBool("Usable", _useable);
+	_usable = gff.getBool("Useable", _usable);
 }
 
 void Situated::loadPortrait(const Aurora::GFFStruct &gff) {

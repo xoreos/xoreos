@@ -18,7 +18,6 @@
 #include "common/ustring.h"
 
 #include "aurora/types.h"
-#include "aurora/resman.h"
 
 #include "sound/types.h"
 

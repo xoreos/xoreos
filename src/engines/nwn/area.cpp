@@ -12,28 +12,25 @@
  *  NWN area.
  */
 
-#include "common/endianness.h"
 #include "common/util.h"
 #include "common/error.h"
 
-#include "aurora/types.h"
+#include "aurora/locstring.h"
 #include "aurora/gfffile.h"
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
 
-#include "sound/sound.h"
-
 #include "graphics/graphics.h"
-#include "graphics/camera.h"
 
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/model.h"
+
+#include "sound/sound.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/model.h"
 
 #include "engines/nwn/area.h"
-#include "engines/nwn/module.h"
 #include "engines/nwn/placeable.h"
 #include "engines/nwn/door.h"
 
@@ -41,9 +38,9 @@ namespace Engines {
 
 namespace NWN {
 
-Area::Area(Module &module, const Common::UString &resRef) : _loaded(false),
-	_module(&module), _resRef(resRef), _visible(false), _tileset(0),
-	_activeSituated(0), _highlightAll(false) {
+Area::Area(const Common::UString &resRef) : _loaded(false),
+	_resRef(resRef), _visible(false), _tileset(0),
+	_activeObject(0), _highlightAll(false) {
 
 	Aurora::GFFFile are;
 	loadGFF(are, _resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
@@ -65,10 +62,8 @@ Area::~Area() {
 
 	removeFocus();
 
-	for (DoorList::iterator d = _doors.begin(); d != _doors.end(); ++d)
-		delete *d;
-	for (PlaceableList::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
-		delete *p;
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		delete *o;
 
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 		delete t->model;
@@ -155,13 +150,9 @@ void Area::show() {
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 		t->model->show();
 
-	// Show placeables
-	for (PlaceableList::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
-		(*p)->show();
-
-	// Show doors
-	for (DoorList::iterator d = _doors.begin(); d != _doors.end(); ++d)
-		(*d)->show();
+	// Show objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->show();
 
 	GfxMan.unlockFrame();
 
@@ -178,13 +169,9 @@ void Area::hide() {
 
 	GfxMan.lockFrame();
 
-	// Hide doors
-	for (DoorList::iterator d = _doors.begin(); d != _doors.end(); ++d)
-		(*d)->hide();
-
-	// Hide placeables
-	for (PlaceableList::iterator p = _placeables.begin(); p != _placeables.end(); ++p)
-		(*p)->hide();
+	// Hide objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->hide();
 
 	// Hide tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
@@ -355,13 +342,15 @@ void Area::loadPlaceables(const Aurora::GFFList &list) {
 
 		placeable->load(**p);
 
-		_placeables.push_back(placeable);
+		_objects.push_back(placeable);
 
-		uint32 id = placeable->getID();
-		if ((id != 0) && !placeable->isStatic()) {
-			_situatedMap.insert(std::make_pair(id, placeable));
-			_placeableMap.insert(std::make_pair(id, placeable));
+		if (!placeable->isStatic()) {
+			const std::list<uint32> &ids = placeable->getIDs();
+
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, placeable));
 		}
+
 	}
 }
 
@@ -371,13 +360,15 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 
 		door->load(**d);
 
-		_doors.push_back(door);
+		_objects.push_back(door);
 
-		uint32 id = door->getID();
-		if ((id != 0) && !door->isStatic()) {
-			_situatedMap.insert(std::make_pair(id, door));
-			_doorMap.insert(std::make_pair(id, door));
+		if (!door->isStatic()) {
+			const std::list<uint32> &ids = door->getIDs();
+
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, door));
 		}
+
 	}
 }
 
@@ -407,33 +398,29 @@ void Area::processEventQueue() {
 		checkActive();
 }
 
-uint32 Area::getIDAt(int x, int y) {
+Object *Area::getObjectAt(int x, int y) {
 	const Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
 	if (!obj)
 		return 0;
 
-	return obj->getID();
-}
-
-Situated *Area::getSituated(uint32 id) {
-	SituatedMap::iterator s = _situatedMap.find(id);
-	if (s == _situatedMap.end())
+	ObjectMap::iterator o = _objectMap.find(obj->getID());
+	if (o == _objectMap.end())
 		return 0;
 
-	return s->second;
+	return o->second;
 }
 
-void Area::setActive(Situated *situated) {
-	if (situated == _activeSituated)
+void Area::setActive(Object *object) {
+	if (object == _activeObject)
 		return;
 
-	if (_activeSituated)
-		_activeSituated->leave();
+	if (_activeObject)
+		_activeObject->leave();
 
-	_activeSituated = situated;
+	_activeObject = object;
 
-	if (_activeSituated)
-		_activeSituated->enter();
+	if (_activeObject)
+		_activeObject->enter();
 }
 
 void Area::checkActive() {
@@ -445,7 +432,7 @@ void Area::checkActive() {
 	int x, y;
 	CursorMan.getPosition(x, y);
 
-	setActive(getSituated(getIDAt(x, y)));
+	setActive(getObjectAt(x, y));
 }
 
 void Area::highlightAll(bool enabled) {
@@ -454,16 +441,16 @@ void Area::highlightAll(bool enabled) {
 
 	_highlightAll = enabled;
 
-	for (SituatedMap::iterator s = _situatedMap.begin(); s != _situatedMap.end(); ++s)
-		if (s->second->isUsable())
-			s->second->highlight(enabled);
+	for (ObjectMap::iterator o = _objectMap.begin(); o != _objectMap.end(); ++o)
+		if (o->second->isClickable())
+			o->second->highlight(enabled);
 }
 
 void Area::removeFocus() {
-	if (_activeSituated)
-		_activeSituated->leave();
+	if (_activeObject)
+		_activeObject->leave();
 
-	_activeSituated = 0;
+	_activeObject = 0;
 }
 
 void Area::notifyCameraMoved() {

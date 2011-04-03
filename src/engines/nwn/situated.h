@@ -15,54 +15,34 @@
 #ifndef ENGINES_NWN_SITUATED_H
 #define ENGINES_NWN_SITUATED_H
 
-#include "common/ustring.h"
-
 #include "aurora/types.h"
 
 #include "graphics/aurora/types.h"
+
+#include "engines/nwn/object.h"
 
 namespace Engines {
 
 namespace NWN {
 
-class Situated {
+/** NWN situated object. */
+class Situated : public Object {
 public:
 	Situated();
-	virtual ~Situated();
+	~Situated();
 
 	void load(const Aurora::GFFStruct &situated);
 
-	virtual void show();
-	virtual void hide();
+	void show();
+	void hide();
 
-	bool isStatic() const;
-	bool isUsable() const;
-
-	uint32 getID() const;
-
-	const Common::UString &getTag() const;
-	const Common::UString &getName() const;
-	const Common::UString &getDescription() const;
-
-	virtual void enter() = 0;
-	virtual void leave() = 0;
-
-	virtual void highlight(bool enabled) = 0;
-
+	void setPosition(float x, float y, float z);
+	void setOrientation(float x, float y, float z);
 
 protected:
-	Common::UString _tag;
-	Common::UString _name;
-	Common::UString _description;
-
-	Common::UString _portrait;
-
 	Common::UString _modelName;
 
 	uint32 _appearanceID;
-
-	bool _static;
-	bool _useable;
 
 	Graphics::Aurora::Model *_model;
 
@@ -74,8 +54,6 @@ protected:
 
 
 private:
-	bool _loaded;
-
 	void loadProperties(const Aurora::GFFStruct &gff);
 	void loadPortrait(const Aurora::GFFStruct &gff);
 };

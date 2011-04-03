@@ -18,7 +18,6 @@
 #include "common/stream.h"
 #include "common/configman.h"
 
-#include "aurora/error.h"
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
@@ -26,12 +25,9 @@
 
 #include "events/events.h"
 
-#include "graphics/graphics.h"
-
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/fps.h"
-
-#include "graphics/aurora/cursorman.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"

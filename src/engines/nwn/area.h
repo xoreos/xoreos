@@ -27,8 +27,6 @@
 
 #include "sound/types.h"
 
-#include "graphics/aurora/types.h"
-
 #include "events/types.h"
 #include "events/notifyable.h"
 
@@ -38,15 +36,13 @@ namespace Engines {
 
 namespace NWN {
 
-class Module;
-
-class Situated;
+class Object;
 class Placeable;
 class Door;
 
 class Area : public Events::Notifyable {
 public:
-	Area(Module &module, const Common::UString &resRef);
+	Area(const Common::UString &resRef);
 	~Area();
 
 	/** Return the area's resref (resource ID). */
@@ -96,17 +92,12 @@ private:
 		Graphics::Aurora::Model *model;
 	};
 
-	typedef std::list<Placeable *> PlaceableList;
-	typedef std::list<Door *>      DoorList;
+	typedef std::list<Object *> ObjectList;
 
-	typedef std::map<uint32, Situated *>  SituatedMap;
-	typedef std::map<uint32, Placeable *> PlaceableMap;
-	typedef std::map<uint32, Door *>      DoorMap;
+	typedef std::map<uint32, Object *> ObjectMap;
 
 
 	bool _loaded;
-
-	Module *_module;
 
 	Common::UString _resRef;
 	Common::UString _name;
@@ -138,14 +129,11 @@ private:
 
 	std::vector<Tile> _tiles;
 
-	PlaceableList _placeables;
-	DoorList      _doors;
+	ObjectList _objects;
 
-	SituatedMap  _situatedMap;
-	PlaceableMap _placeableMap;
-	DoorMap      _doorMap;
+	ObjectMap _objectMap;
 
-	Situated *_activeSituated;
+	Object *_activeObject;
 
 	bool _highlightAll;
 
@@ -177,12 +165,9 @@ private:
 	void playAmbientSound(Common::UString sound = "");
 
 
-	void setActive(Situated *situated);
-
 	void checkActive();
-
-	uint32 getIDAt(int x, int y);
-	Situated *getSituated(uint32 id);
+	void setActive(Object *object);
+	Object *getObjectAt(int x, int y);
 
 	void highlightAll(bool enabled);
 
