@@ -21,7 +21,7 @@ namespace Engines {
 namespace Jade {
 
 MainMenu::MainMenu() {
-	load("lti_maingame");
+	load("maingame");
 }
 
 MainMenu::~MainMenu() {
