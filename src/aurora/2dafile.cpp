@@ -277,7 +277,7 @@ const Common::UString &TwoDAFile::getCellString(uint32 row, const Common::UStrin
 	return getCellString(row, headerToColumn(column));
 }
 
-const int32 TwoDAFile::getCellInt(uint32 row, uint32 column) const {
+const int32 TwoDAFile::getCellInt(uint32 row, uint32 column, int def) const {
 	const Common::UString *cell = getCell(row, column);
 	if (!cell)
 		// Cell does not exist, return default value
@@ -285,16 +285,16 @@ const int32 TwoDAFile::getCellInt(uint32 row, uint32 column) const {
 
 	// Check if the cell is empty
 	if (*cell == "****")
-		return 0;
+		return def;
 
 	return parseInt(*cell);
 }
 
-const int32 TwoDAFile::getCellInt(uint32 row, const Common::UString &column) const {
+const int32 TwoDAFile::getCellInt(uint32 row, const Common::UString &column, int def) const {
 	return getCellInt(row, headerToColumn(column));
 }
 
-const float TwoDAFile::getCellFloat(uint32 row, uint32 column) const {
+const float TwoDAFile::getCellFloat(uint32 row, uint32 column, float def) const {
 	const Common::UString *cell = getCell(row, column);
 	if (!cell)
 		// Cell does not exist, return default value
@@ -302,12 +302,12 @@ const float TwoDAFile::getCellFloat(uint32 row, uint32 column) const {
 
 	// Check if the cell is empty
 	if (*cell == "****")
-		return 0.0;
+		return def;
 
 	return parseFloat(*cell);
 }
 
-const float TwoDAFile::getCellFloat(uint32 row, const Common::UString &column) const {
+const float TwoDAFile::getCellFloat(uint32 row, const Common::UString &column, float def) const {
 	return getCellFloat(row, headerToColumn(column));
 }
 

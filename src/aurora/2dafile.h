@@ -75,14 +75,14 @@ public:
 	const Common::UString &getCellString(uint32 row, const Common::UString &column) const;
 
 	/** Return the contents of a cell as an int. */
-	const int32 getCellInt(uint32 row, uint32 column) const;
+	const int32 getCellInt(uint32 row, uint32 column, int def = 0) const;
 	/** Return the contents of a cell as an int. */
-	const int32 getCellInt(uint32 row, const Common::UString &column) const;
+	const int32 getCellInt(uint32 row, const Common::UString &column, int def = 0) const;
 
 	/** Return the contents of a cell as a float. */
-	const float getCellFloat(uint32 row, uint32 column) const;
+	const float getCellFloat(uint32 row, uint32 column, float def = 0.0) const;
 	/** Return the contents of a cell as a float. */
-	const float getCellFloat(uint32 row, const Common::UString &column) const;
+	const float getCellFloat(uint32 row, const Common::UString &column, float = 0.0) const;
 
 private:
 	typedef std::vector<Row *> Array;
