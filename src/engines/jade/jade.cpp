@@ -12,15 +12,15 @@
  *  Engine class handling Jade Empire
  */
 
-#include "engines/jade/jade.h"
-
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
 #include "common/configman.h"
+
+#include "aurora/resman.h"
+#include "aurora/error.h"
+
+#include "engines/jade/jade.h"
 
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/cube.h"
@@ -31,8 +31,10 @@
 
 #include "events/events.h"
 
-#include "aurora/resman.h"
-#include "aurora/error.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
+
+#include "engines/jade/gui/main/main.h"
 
 namespace Engines {
 
@@ -96,6 +98,18 @@ void JadeEngine::run(const Common::UString &target) {
 		return;
 
 	CursorMan.showCursor();
+
+
+	MainMenu *mainMenu = new MainMenu();
+
+	mainMenu->show();
+	mainMenu->run();
+
+	delete mainMenu;
+
+	if (EventMan.quitRequested())
+		return;
+
 
 	playSound("musicbank00046", Sound::kSoundTypeMusic, true);
 
