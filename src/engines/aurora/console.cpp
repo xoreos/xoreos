@@ -29,6 +29,7 @@
 #include "graphics/aurora/textureman.h"
 
 #include "engines/aurora/console.h"
+#include "engines/aurora/util.h"
 
 
 static const char *kPrompt = " >";
@@ -393,14 +394,16 @@ Console::Console(const Common::UString &font) : _neverShown(true), _visible(fals
 
 	_readLine->historyIgnoreDups(true);
 
-	registerCommand("help"    , boost::bind(&Console::cmdHelp , this, _1),
+	registerCommand("help"    , boost::bind(&Console::cmdHelp   , this, _1),
 			"Usage: help [<command>]\nPrint help text");
-	registerCommand("clear"   , boost::bind(&Console::cmdClear, this, _1),
+	registerCommand("clear"   , boost::bind(&Console::cmdClear  , this, _1),
 			"Usage: clear\nClear the console window");
-	registerCommand("exit"    , boost::bind(&Console::cmdExit , this, _1),
+	registerCommand("exit"    , boost::bind(&Console::cmdExit   , this, _1),
 			"Usage: exit\nLeave the console window, returning to the game");
-	registerCommand("quiteos" , boost::bind(&Console::cmdQuit , this, _1),
+	registerCommand("quiteos" , boost::bind(&Console::cmdQuit   , this, _1),
 			"Usage: quiteos\nShut down eos");
+	registerCommand("dumpres" , boost::bind(&Console::cmdDumpRes, this, _1),
+			"Usage: dumpres <resource>\nDump a resource to file");
 
 	_console->setPrompt(kPrompt);
 
@@ -637,17 +640,29 @@ void Console::cmdHelp(const CommandLine &cli) {
 	printCommandHelp(cli.args);
 }
 
-void Console::cmdClear(const CommandLine &cli) {
+void Console::cmdClear(const CommandLine &cl) {
 	clear();
 }
 
-void Console::cmdExit(const CommandLine &cli) {
+void Console::cmdExit(const CommandLine &cl) {
 	hide();
 }
 
-void Console::cmdQuit(const CommandLine &cli) {
+void Console::cmdQuit(const CommandLine &cl) {
 	print("Bye...");
 	EventMan.requestQuit();
+}
+
+void Console::cmdDumpRes(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	if (dumpResource(cl.args))
+		printf("Dumped resource \"%s\"", cl.args.c_str());
+	else
+		printf("Failed dumping resource \"%s\"", cl.args.c_str());
 }
 
 void Console::printCommandHelp(const Common::UString &cmd) {

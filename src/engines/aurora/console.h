@@ -191,10 +191,11 @@ private:
 	bool _printedCompleteWarning;
 
 
-	void cmdHelp (const CommandLine &cli);
-	void cmdClear(const CommandLine &cli);
-	void cmdExit (const CommandLine &cli);
-	void cmdQuit (const CommandLine &cli);
+	void cmdHelp   (const CommandLine &cl);
+	void cmdClear  (const CommandLine &cl);
+	void cmdExit   (const CommandLine &cl);
+	void cmdQuit   (const CommandLine &cl);
+	void cmdDumpRes(const CommandLine &cl);
 
 	void updateHelpArguments();
 
