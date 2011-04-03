@@ -105,12 +105,21 @@ public:
 	};
 
 	/** ID of a set of changes produced by a manager operation. */
-	struct ChangeID {
-		bool empty;
-		ChangeSetList::iterator change;
-
+	class ChangeID {
+	public:
 		ChangeID();
+
+		bool empty() const;
+
+		void clear();
+
+	private:
 		ChangeID(ChangeSetList::iterator c);
+
+		bool _empty;
+		ChangeSetList::iterator _change;
+
+		friend class ResourceManager;
 	};
 
 	ResourceManager();

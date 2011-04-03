@@ -51,10 +51,18 @@ bool ResourceManager::Resource::operator<(const Resource &right) const {
 }
 
 
-ResourceManager::ChangeID::ChangeID() : empty(true) {
+ResourceManager::ChangeID::ChangeID() : _empty(true) {
 }
 
-ResourceManager::ChangeID::ChangeID(ChangeSetList::iterator c) : empty(false), change(c) {
+bool ResourceManager::ChangeID::empty() const {
+	return _empty;
+}
+
+void ResourceManager::ChangeID::clear() {
+	_empty = true;
+}
+
+ResourceManager::ChangeID::ChangeID(ChangeSetList::iterator c) : _empty(false), _change(c) {
 }
 
 
@@ -312,7 +320,7 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 	_archives.push_back(archive);
 
 	// Add the information of the new archive to the change set
-	change.change->archives.push_back(--_archives.end());
+	change._change->archives.push_back(--_archives.end());
 
 	const Archive::ResourceList &resources = archive->getResources();
 	for (Archive::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
@@ -363,12 +371,13 @@ ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString 
 }
 
 void ResourceManager::undo(ChangeID &change) {
-	if (change.empty || (change.change == _changes.end()))
+	if (change.empty() || (change._change == _changes.end()))
 		// Nothing to do
 		return;
 
 	// Go through all changes in the resource map
-	for (std::list<ResourceChange>::iterator resChange = change.change->resources.begin(); resChange != change.change->resources.end(); ++resChange) {
+	for (std::list<ResourceChange>::iterator resChange = change._change->resources.begin();
+	     resChange != change._change->resources.end(); ++resChange) {
 
 		// Remove the resource
 		resChange->typeIt->second.erase(resChange->resIt);
@@ -383,17 +392,19 @@ void ResourceManager::undo(ChangeID &change) {
 	}
 
 	// Removing all changes in the archive list
-	for (std::list<ArchiveList::iterator>::iterator archiveChange = change.change->archives.begin(); archiveChange != change.change->archives.end(); ++archiveChange) {
+	for (std::list<ArchiveList::iterator>::iterator archiveChange = change._change->archives.begin();
+	     archiveChange != change._change->archives.end(); ++archiveChange) {
+
 		delete **archiveChange;
 		_archives.erase(*archiveChange);
 	}
 
 	// Now we can remove the change set from our list of change sets
-	_changes.erase(change.change);
+	_changes.erase(change._change);
 
 	// And finally set the change ID to a defined empty state
-	change.empty  = true;
-	change.change = _changes.end();
+	change._empty  = true;
+	change._change = _changes.end();
 }
 
 bool ResourceManager::hasResource(const Common::UString &name, FileType type) const {
@@ -549,10 +560,10 @@ void ResourceManager::addResource(Resource &resource, Common::UString name, Chan
 	resList->second.sort();
 
 	// Remember the resource in the change set
-	change.change->resources.push_back(ResourceChange());
-	change.change->resources.back().nameIt = resTypeMap;
-	change.change->resources.back().typeIt = resList;
-	change.change->resources.back().resIt  = --resList->second.end();
+	change._change->resources.push_back(ResourceChange());
+	change._change->resources.back().nameIt = resTypeMap;
+	change._change->resources.back().typeIt = resList;
+	change._change->resources.back().resIt  = --resList->second.end();
 }
 
 void ResourceManager::addResources(const Common::FileList &files, ChangeID &change, uint32 priority) {
