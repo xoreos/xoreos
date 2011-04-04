@@ -87,7 +87,7 @@ public:
 private:
 	typedef std::vector<Row *> Array;
 
-	typedef std::map<Common::UString, uint32> HeaderMap;
+	typedef std::map<Common::UString, uint32, Common::UString::iless> HeaderMap;
 
 	Common::UString _defaultString; ///< The default string to return should a cell not exist.
 	int32           _defaultInt;    ///< The default int to return should a cell not exist.
