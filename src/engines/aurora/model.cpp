@@ -16,6 +16,7 @@
 #define ENGINES_AURORA_MODEL_H
 
 #include "common/ustring.h"
+#include "common/error.h"
 
 #include "engines/aurora/model.h"
 #include "engines/aurora/modelloader.h"
@@ -38,13 +39,39 @@ Graphics::Aurora::Model *loadModelObject(const Common::UString &resref,
                                          const Common::UString &texture) {
 	assert(kModelLoader);
 
-	return kModelLoader->load(resref, Graphics::Aurora::kModelTypeObject, texture);
+	Graphics::Aurora::Model *model = 0;
+
+	try {
+
+		model = kModelLoader->load(resref, Graphics::Aurora::kModelTypeObject, texture);
+
+	} catch (Common::Exception &e) {
+
+		e.add("Failed to load object model \"%s\"", resref.c_str());
+		Common::printException(e, "WARNING: ");
+
+	}
+
+	return model;
 }
 
 Graphics::Aurora::Model *loadModelGUI(const Common::UString &resref) {
 	assert(kModelLoader);
 
-	return kModelLoader->load(resref, Graphics::Aurora::kModelTypeGUIFront, "");
+	Graphics::Aurora::Model *model = 0;
+
+	try {
+
+		model = kModelLoader->load(resref, Graphics::Aurora::kModelTypeGUIFront, "");
+
+	} catch (Common::Exception &e) {
+
+		e.add("Failed to load GUI model \"%s\"", resref.c_str());
+		Common::printException(e, "WARNING: ");
+
+	}
+
+	return model;
 }
 
 void freeModel(Graphics::Aurora::Model *&model) {
