@@ -20,6 +20,7 @@
 #include <map>
 
 #include "common/ustring.h"
+#include "common/mutex.h"
 
 #include "aurora/types.h"
 #include "aurora/lytfile.h"
@@ -28,6 +29,7 @@
 #include "sound/types.h"
 
 #include "events/types.h"
+#include "events/notifyable.h"
 
 #include "graphics/aurora/types.h"
 #include "graphics/aurora/model.h"
@@ -39,7 +41,7 @@ namespace KotOR {
 class Object;
 
 /** A KotOR area. */
-class Area {
+class Area : public Events::Notifyable {
 public:
 	Area();
 	virtual ~Area();
@@ -56,6 +58,11 @@ public:
 	void processEventQueue();
 
 	void removeFocus();
+
+
+protected:
+	void notifyCameraMoved();
+
 
 private:
 	/** A room within the area. */
@@ -112,6 +119,8 @@ private:
 	bool _highlightAll;
 
 	std::list<Events::Event> _eventQueue;
+
+	Common::Mutex _mutex;
 
 
 	void loadLYT();

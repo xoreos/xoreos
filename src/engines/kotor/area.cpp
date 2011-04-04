@@ -452,6 +452,8 @@ void Area::checkActive() {
 	if (!_loaded || _highlightAll)
 		return;
 
+	Common::StackLock lock(_mutex);
+
 	int x, y;
 	CursorMan.getPosition(x, y);
 
@@ -474,6 +476,10 @@ void Area::removeFocus() {
 		_activeObject->leave();
 
 	_activeObject = 0;
+}
+
+void Area::notifyCameraMoved() {
+	checkActive();
 }
 
 } // End of namespace KotOR
