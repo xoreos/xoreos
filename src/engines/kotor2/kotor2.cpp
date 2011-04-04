@@ -74,7 +74,7 @@ bool KotOR2EngineProbeXbox::probe(const Common::UString &directory, const Common
 }
 
 
-KotOR2Engine::KotOR2Engine(Aurora::Platform platform) : _platform(platform) {
+KotOR2Engine::KotOR2Engine(Aurora::Platform platform) : _platform(platform), _fps(0) {
 }
 
 KotOR2Engine::~KotOR2Engine() {

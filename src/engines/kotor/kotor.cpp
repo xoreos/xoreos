@@ -80,8 +80,8 @@ bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common:
 }
 
 
-KotOREngine::KotOREngine(Aurora::Platform platform) : _platform(platform) {
-	_hasLiveKey = false;
+KotOREngine::KotOREngine(Aurora::Platform platform) : _platform(platform),
+	_fps(0), _hasLiveKey(false) {
 }
 
 KotOREngine::~KotOREngine() {
