@@ -13,22 +13,20 @@
  */
 
 #include "engines/kotor2/module.h"
+#include "engines/kotor2/area.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-Module::Module() {
+Module::Module(Console &console) : Engines::KotOR::Module(console) {
 }
 
 Module::~Module() {
-	ResMan.undo(_dialogResources);
 }
 
-void Module::loadResources(const Common::UString &name) {
-	Engines::KotOR::Module::loadResources(name);
-
-	_dialogResources = ResMan.addArchive(Aurora::kArchiveERF, name + "_dlg.erf", 110);
+::Engines::KotOR::Area *Module::createArea() const {
+	return new ::Engines::KotOR2::Area;
 }
 
 } // End of namespace KotOR2

@@ -21,15 +21,20 @@ namespace Engines {
 
 namespace KotOR2 {
 
+class Module;
+
 class MainMenu : public ::Engines::KotOR::GUI {
 public:
-	MainMenu();
+	MainMenu(Module &module);
 	~MainMenu();
 
 protected:
 	void initWidget(Widget &widget);
 
 	void callbackActive(Widget &widget);
+
+private:
+	Module *_module;
 };
 
 } // End of namespace KotOR2

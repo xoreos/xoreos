@@ -14,7 +14,11 @@
 
 #include "common/util.h"
 
+#include "events/events.h"
+
 #include "engines/kotor/gui/widgets/kotorwidget.h"
+
+#include "engines/kotor2/module.h"
 
 #include "engines/kotor2/gui/main/main.h"
 
@@ -22,7 +26,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-MainMenu::MainMenu() {
+MainMenu::MainMenu(Module &module) : _module(&module) {
 	load("mainmenu16x12_p");
 }
 
@@ -50,6 +54,18 @@ void MainMenu::initWidget(Widget &widget) {
 }
 
 void MainMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_EXIT") {
+		EventMan.requestQuit();
+
+		_returnCode = 1;
+		return;
+	}
+
+	if (widget.getTag() == "BTN_NEWGAME") {
+		if (_module->load("001EBO"))
+			_returnCode = 2;
+		return;
+	}
 }
 
 } // End of namespace KotOR2

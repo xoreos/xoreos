@@ -17,27 +17,37 @@
 
 #include <list>
 
-#include "engines/kotor/modelobject.h"
-
 #include "common/types.h"
 #include "common/ustring.h"
 
+#include "aurora/types.h"
+
 #include "graphics/aurora/types.h"
+
+#include "engines/kotor/object.h"
 
 namespace Engines {
 
 namespace KotOR {
 
 /** A KotOR creature. */
-class Creature : public ModelObject {
+class Creature : public Object {
 public:
 	Creature();
 	~Creature();
 
-	void load(const Common::UString &name);
+	void load(const Aurora::GFFStruct &creature);
 
 	void show();
 	void hide();
+
+	void setPosition(float x, float y, float z);
+	void setOrientation(float x, float y, float z);
+
+	void enter();
+	void leave();
+
+	void highlight(bool enabled);
 
 private:
 	/** A creature model part. */
@@ -47,21 +57,23 @@ private:
 		float position[3];
 
 		Part();
-		Part(Graphics::Aurora::Model *m);
-		Part(Part &p);
 		~Part();
 	};
 
 	uint32 _appearance;
 
-	Common::UString _tag;
+	std::list<Part> _parts;
 
-	std::list<Part *> _parts;
+	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
 
-	void changedPosition();
-	void changedOrientation();
+	void loadProperties(const Aurora::GFFStruct &gff);
+	void loadPortrait(const Aurora::GFFStruct &gff);
+	void loadAppearance();
 
-	void loadModel(const Common::UString &name);
+	void loadBody(const Common::UString &model, const Common::UString &texture,
+	              float &headX, float &headY, float &headZ);
+	void loadHead(const Common::UString &model,
+	              float headX, float headY, float headZ);
 };
 
 } // End of namespace KotOR

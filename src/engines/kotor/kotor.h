@@ -19,6 +19,8 @@
 
 #include "aurora/types.h"
 
+#include "sound/types.h"
+
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
@@ -83,12 +85,34 @@ private:
 	Common::UString _baseDirectory;
 	Aurora::Platform _platform;
 
-	void init();
-	void initCursorsRemap();
-	void initCursors();
+	Graphics::Aurora::FPS *_fps;
+
+	Sound::ChannelHandle _menuMusic;
+
 
 	bool _hasLiveKey;
+
 	bool hasYavin4Module() const;
+
+
+	void init();
+
+	void initConfig();
+	void initResources();
+	void initCursorsRemap();
+	void initCursors();
+	void initGameConfig();
+
+	void deinit();
+
+	void checkConfig();
+
+	void playIntroVideos();
+
+	void playMenuMusic();
+	void stopMenuMusic();
+
+	void mainMenuLoop();
 };
 
 } // End of namespace KotOR

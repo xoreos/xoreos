@@ -25,13 +25,15 @@ class Module;
 
 class Console : public ::Engines::Console {
 public:
-	Console(Module &module);
+	Console();
 	~Console();
+
+	void setModule(Module *module = 0);
 
 private:
 	Module *_module;
 
-	void cmdGotoModule(const CommandLine &cl);
+	void cmdLoadModule(const CommandLine &cl);
 };
 
 } // End of namespace KOTOR

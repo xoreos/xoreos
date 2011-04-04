@@ -14,7 +14,11 @@
 
 #include "common/util.h"
 
+#include "events/events.h"
+
 #include "engines/aurora/widget.h"
+
+#include "engines/kotor/module.h"
 
 #include "engines/kotor/gui/main/main.h"
 
@@ -22,7 +26,7 @@ namespace Engines {
 
 namespace KotOR {
 
-MainMenu::MainMenu() {
+MainMenu::MainMenu(Module &module) : _module(&module) {
 	load("mainmenu16x12");
 
 	addBackground("back");
@@ -58,6 +62,18 @@ void MainMenu::initWidget(Widget &widget) {
 }
 
 void MainMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_EXIT") {
+		EventMan.requestQuit();
+
+		_returnCode = 1;
+		return;
+	}
+
+	if (widget.getTag() == "BTN_NEWGAME") {
+		if (_module->load("lev_m40aa"))
+			_returnCode = 2;
+		return;
+	}
 }
 
 } // End of namespace KotOR

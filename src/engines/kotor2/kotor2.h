@@ -19,10 +19,10 @@
 
 #include "aurora/types.h"
 
+#include "sound/types.h"
+
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
-
-#include "graphics/aurora/types.h"
 
 namespace Common {
 	class FileList;
@@ -74,12 +74,31 @@ public:
 
 private:
 	Common::UString _baseDirectory;
+	Aurora::Platform _platform;
+
+	Graphics::Aurora::FPS *_fps;
+
+	Sound::ChannelHandle _menuMusic;
+
 
 	void init();
+
+	void initConfig();
+	void initResources();
 	void initCursorsRemap();
 	void initCursors();
+	void initGameConfig();
 
-	Aurora::Platform _platform;
+	void deinit();
+
+	void checkConfig();
+
+	void playIntroVideos();
+
+	void playMenuMusic();
+	void stopMenuMusic();
+
+	void mainMenuLoop();
 };
 
 } // End of namespace KotOR2

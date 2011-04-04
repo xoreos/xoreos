@@ -8,31 +8,47 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/kotor/gui/widgets/button.h
- *  A KotOR button widget.
+/** @file engines/kotor/door.h
+ *  KotOR door.
  */
 
-#ifndef ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
-#define ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+#ifndef ENGINES_KOTOR_DOOR_H
+#define ENGINES_KOTOR_DOOR_H
 
-#include "engines/kotor/gui/widgets/kotorwidget.h"
+#include "aurora/types.h"
+
+#include "engines/kotor/situated.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class WidgetButton : public KotORWidget {
+class Door : public Situated {
 public:
-	WidgetButton(::Engines::GUI &gui, const Common::UString &tag);
-	~WidgetButton();
+	Door();
+	~Door();
 
-	void load(const Aurora::GFFStruct &gff);
+	void load(const Aurora::GFFStruct &door);
 
-	void mouseUp(uint8 state, float x, float y);
+	void hide();
+
+	void enter();
+	void leave();
+
+	void highlight(bool enabled);
+
+protected:
+	void loadObject(const Aurora::GFFStruct &gff);
+	void loadAppearance();
+
+private:
+	uint32 _genericType;
+
+	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+#endif // ENGINES_KOTOR_DOOR_H

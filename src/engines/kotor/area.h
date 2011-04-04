@@ -17,23 +17,26 @@
 
 #include <vector>
 #include <list>
+#include <map>
 
+#include "common/ustring.h"
+
+#include "aurora/types.h"
 #include "aurora/lytfile.h"
 #include "aurora/visfile.h"
-#include "aurora/gfffile.h"
+
+#include "sound/types.h"
+
+#include "events/types.h"
 
 #include "graphics/aurora/types.h"
-
-namespace Common {
-	class UString;
-}
+#include "graphics/aurora/model.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Placeable;
-class Creature;
+class Object;
 
 /** A KotOR area. */
 class Area {
@@ -41,10 +44,18 @@ public:
 	Area();
 	virtual ~Area();
 
-	void load(const Common::UString &name);
+	void load(const Common::UString &resRef);
 
-	void show(); ///< Render the area.
-	void hide(); ///< Don't render the area.
+	/** Return the area's localized name. */
+	const Common::UString &getName();
+
+	void show();
+	void hide();
+
+	void addEvent(const Events::Event &event);
+	void processEventQueue();
+
+	void removeFocus();
 
 private:
 	/** A room within the area. */
@@ -60,25 +71,78 @@ private:
 		~Room();
 	};
 
+	typedef std::list<Object *> ObjectList;
+
+	typedef std::map<uint32, Object *> ObjectMap;
+
+
+	bool _loaded;
+
+	Common::UString _resRef;
+	Common::UString _name;
+
+	Common::UString _ambientDay;
+	Common::UString _ambientNight;
+
+	Common::UString _musicDay;
+	Common::UString _musicNight;
+	Common::UString _musicBattle;
+
+	std::vector<Common::UString> _musicBattleStinger;
+
+	float _ambientDayVol;
+	float _ambientNightVol;
+
+	bool _visible;
+
+	Sound::ChannelHandle _ambientSound;
+	Sound::ChannelHandle _ambientMusic;
+
 	Aurora::LYTFile _lyt;
 	Aurora::VISFile _vis;
 
 	std::vector<Room *> _rooms;
 
-	std::list<Placeable *> _placeables;
-	std::list<Creature  *> _creatures;
+	ObjectList _objects;
 
-	void loadLYT(const Common::UString &name);
-	void loadVIS(const Common::UString &name);
+	ObjectMap _objectMap;
 
-	void loadARE(const Common::UString &name);
-	void loadGIT(const Common::UString &name);
+	Object *_activeObject;
 
-	void loadModels(const Common::UString &name);
+	bool _highlightAll;
+
+	std::list<Events::Event> _eventQueue;
+
+
+	void loadLYT();
+	void loadVIS();
+
+	void loadARE(const Aurora::GFFStruct &are);
+	void loadGIT(const Aurora::GFFStruct &git);
+
+	void loadModels();
 	void loadVisibles();
 
-	void loadPlaceable(const Aurora::GFFStruct &placeable);
-	void loadCreature(const Aurora::GFFStruct &creature);
+	void loadProperties(const Aurora::GFFStruct &props);
+
+	void loadPlaceables(const Aurora::GFFList &list);
+	void loadDoors     (const Aurora::GFFList &list);
+	void loadCreatures (const Aurora::GFFList &list);
+
+	void stopSound();
+	void stopAmbientMusic();
+	void stopAmbientSound();
+
+	void playAmbientMusic(Common::UString music = "");
+	void playAmbientSound(Common::UString sound = "");
+
+	void checkActive();
+	void setActive(Object *object);
+	Object *getObjectAt(int x, int y);
+
+	void highlightAll(bool enabled);
+
+	friend class Console;
 };
 
 } // End of namespace KotOR

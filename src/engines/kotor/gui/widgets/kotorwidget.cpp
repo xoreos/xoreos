@@ -124,6 +124,8 @@ void KotORWidget::setFill(const Common::UString &fill) {
 
 		_quad = new Graphics::Aurora::GUIQuad("", 0.0, 0.0, _width, _height);
 		_quad->setPosition(x, y, z);
+		_quad->setTag(getTag());
+		_quad->setClickable(true);
 
 		if (isVisible())
 			_quad->show();
@@ -146,10 +148,13 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 
 	Border border = getBorder(gff);
 
-	if (!border.fill.empty()) {
-		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
-		_quad->setPosition(extend.x, extend.y, 0.0);
-	}
+	_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
+	_quad->setPosition(extend.x, extend.y, 0.0);
+	_quad->setTag(getTag());
+	_quad->setClickable(true);
+
+	if (border.fill.empty())
+		_quad->setColor(0.0, 0.0, 0.0, 0.0);
 
 	Text text = getText(gff);
 
@@ -164,6 +169,8 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 		const float y = extend.y + text.valign * vspan;
 
 		_text->setPosition(x, y, -1.0);
+		_text->setTag(getTag());
+		_text->setClickable(true);
 	}
 }
 

@@ -16,10 +16,17 @@
 #define ENGINES_KOTOR_MODULE_H
 
 #include "common/ustring.h"
+#include "common/configman.h"
 
 #include "aurora/resman.h"
 
+#include "events/types.h"
+
+#include "engines/nwn/ifofile.h"
+
 namespace Engines {
+
+class Console;
 
 namespace KotOR {
 
@@ -28,42 +35,66 @@ class Area;
 /** A KotOR module. */
 class Module {
 public:
-	Module();
+	Module(Console &console);
 	virtual ~Module();
 
+	/** Clear the whole context. */
 	void clear();
 
-	void load(const Common::UString &name);
+	/** Load a module. */
+	bool load(const Common::UString &module);
 
-	/** Enter the module's area. */
-	void enter();
-	/** Leave the module's area. */
-	void leave();
+	/** Replace the currently running module. */
+	bool replaceModule(const Common::UString &module);
+
+	void run();
+
+	void showMenu();
 
 protected:
-	virtual void loadResources(const Common::UString &name);
+	Console *_console;
 
-private:
-	Common::UString _areaName; ///< Name of the module's area.
+	/** The current module's name. */
+	Common::UString _module;
 
-	float _startX;    ///< Starting point X coordinate.
-	float _startY;    ///< Starting point Y coordinate.
-	float _startZ;    ///< Starting point Z coordinate.
-	float _startDirX; ///< Starting orientation vector X coordinate.
-	float _startDirY; ///< Starting orientation vector Y coordinate.
+	/** The current module's area. */
+	Area *_area;
 
-	Area *_area; ///< Module's area.
+	/** Resources added by the current module. */
+	std::list<Aurora::ResourceManager::ChangeID> _resources;
 
-	Aurora::ResourceManager::ChangeID _moduleResources;
-	Aurora::ResourceManager::ChangeID _scriptResources;
-	Aurora::ResourceManager::ChangeID _xboxLayoutResources;
-	Aurora::ResourceManager::ChangeID _xboxTextureResources;
+	/** The current texture pack. */
+	int _currentTexturePack;
+	/** Resources added by the current texture pack. */
+	Aurora::ResourceManager::ChangeID _textures;
 
-	void loadIFO(const Common::UString &name);
+	/** The current module's IFO. */
+	::Engines::NWN::IFOFile _ifo;
 
+	bool _exit; //< Should we exit the module?
+
+
+	void load();
+	void loadResources();
+	void loadIFO();
 	void loadArea();
+	void loadTexturePack();
 
-	void reset();
+	void unload();
+	void unloadResources();
+	void unloadIFO();
+	void unloadArea();
+	void unloadTexturePack();
+
+	void enter(); ///< Enter the current module.
+	void leave(); ///< Leave the current module.
+
+	void handleEvents();
+	bool handleCamera(const Events::Event &e);
+
+	virtual Area *createArea() const;
+
+	friend class Console;
 };
 
 } // End of namespace KotOR

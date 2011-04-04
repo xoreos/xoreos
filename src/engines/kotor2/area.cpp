@@ -8,36 +8,22 @@
  * the GNU General Public Licence. See COPYING for more informations.
  */
 
-/** @file engines/kotor2/module.h
- *  A module.
+/** @file engines/kotor2/area.cpp
+ *  An area.
  */
 
-#ifndef ENGINES_KOTOR2_MODULE_H
-#define ENGINES_KOTOR2_MODULE_H
-
-#include "engines/kotor/module.h"
+#include "engines/kotor2/area.h"
 
 namespace Engines {
 
-class Console;
-
-namespace KotOR {
-	class Area;
-}
-
 namespace KotOR2 {
 
-class Module : public Engines::KotOR::Module {
-public:
-	Module(Console &console);
-	~Module();
+Area::Area() {
+}
 
-protected:
-	::Engines::KotOR::Area *createArea() const;
-};
+Area::~Area() {
+}
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR2_MODULE_H

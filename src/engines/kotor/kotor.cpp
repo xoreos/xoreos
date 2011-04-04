@@ -21,17 +21,13 @@
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
-#include "graphics/graphics.h"
-#include "graphics/camera.h"
+#include "sound/sound.h"
+
+#include "events/events.h"
 
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/fps.h"
-#include "graphics/aurora/model.h"
-
-#include "sound/sound.h"
-
-#include "events/events.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
@@ -95,8 +91,6 @@ void KotOREngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
-
 	if (EventMan.quitRequested())
 		return;
 
@@ -105,160 +99,43 @@ void KotOREngine::run(const Common::UString &target) {
 	CursorMan.hideCursor();
 	CursorMan.set();
 
-	if (_platform == Aurora::kPlatformXbox) {
-		playVideo("logo");
-		// TODO: What the hell is (sizzle|sizzle2).xmv?
-	} else {
-		playVideo("leclogo");
-		playVideo("biologo");
-
-		// On Mac OS X, play the Aspyr logo
-		if (_platform == Aurora::kPlatformMacOSX)
-			playVideo("Aspyr_BlueDust_intro");
-
-		playVideo("legal");
-	}
-
-	playVideo("01a");
-
+	playIntroVideos();
 	if (EventMan.quitRequested())
 		return;
 
 	CursorMan.showCursor();
 
+	if (ConfigMan.getBool("showfps", false)) {
+		_fps = new Graphics::Aurora::FPS(FontMan.get("fnt_galahad14"));
+		_fps->show();
+	}
 
-	MainMenu *mainMenu = new MainMenu();
+	mainMenuLoop();
 
-	mainMenu->show();
-	mainMenu->run();
+	deinit();
+}
 
-	delete mainMenu;
+void KotOREngine::init() {
+	initConfig();
+	checkConfig();
 
 	if (EventMan.quitRequested())
 		return;
 
+	initResources();
 
-	playSound("nm35aahhkd07134_", Sound::kSoundTypeVoice);
+	if (EventMan.quitRequested())
+		return;
 
-	Module *module = new Module;
+	initCursors();
 
-	Console *console = new Console(*module);
+	if (EventMan.quitRequested())
+		return;
 
-	// Test load up a Leviathan module
-	module->load("lev_m40aa");
-	module->enter();
-
-	bool showFPS = ConfigMan.getBool("showfps", false);
-
-	Graphics::Aurora::FPS *fps = 0;
-	if (showFPS) {
-		fps = new Graphics::Aurora::FPS(FontMan.get("dialogfont32x32"));
-		fps->show();
-	}
-
-	EventMan.enableUnicode(true);
-	EventMan.enableKeyRepeat();
-
-	status("Entering event loop");
-
-	uint32 lastCameraChange = 0;
-	Graphics::Aurora::Model *activeModel = 0;
-
-	while (!EventMan.quitRequested()) {
-		bool hasMove = false;
-
-		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if (console->processEvent(event))
-				continue;
-
-			if (event.type == Events::kEventKeyDown) {
-				if      ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL))
-					console->show();
-				else if (event.key.keysym.sym == SDLK_UP)
-					CameraMan.move( 0.5);
-				else if (event.key.keysym.sym == SDLK_DOWN)
-					CameraMan.move(-0.5);
-				else if (event.key.keysym.sym == SDLK_RIGHT)
-					CameraMan.turn( 0.0,  5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_LEFT)
-					CameraMan.turn( 0.0, -5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_w)
-					CameraMan.move( 0.5);
-				else if (event.key.keysym.sym == SDLK_s)
-					CameraMan.move(-0.5);
-				else if (event.key.keysym.sym == SDLK_d)
-					CameraMan.turn( 0.0,  5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_a)
-					CameraMan.turn( 0.0, -5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_e)
-					CameraMan.strafe( 0.5);
-				else if (event.key.keysym.sym == SDLK_q)
-					CameraMan.strafe(-0.5);
-				else if (event.key.keysym.sym == SDLK_INSERT)
-					CameraMan.move(0.0,  0.5, 0.0);
-				else if (event.key.keysym.sym == SDLK_DELETE)
-					CameraMan.move(0.0, -0.5, 0.0);
-				else if (event.key.keysym.sym == SDLK_PAGEUP)
-					CameraMan.turn( 5.0,  0.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_PAGEDOWN)
-					CameraMan.turn(-5.0,  0.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_END) {
-					const float *orient = CameraMan.getOrientation();
-
-					CameraMan.setOrientation(0.0, orient[1], orient[2]);
-				} else if (event.key.keysym.sym == SDLK_t) {
-					const float *pos = CameraMan.getPosition();
-					const float *ort = CameraMan.getOrientation();
-
-					warning("%f, %f, %f -- %f, %f, %f", pos[0], pos[1], pos[2], ort[0], ort[1], ort[2]);
-				}
-			} else if (event.type == Events::kEventMouseMove)
-				hasMove = true;
-		}
-
-		uint32 curLastCameraChange = CameraMan.lastChanged();
-		if (lastCameraChange < curLastCameraChange) {
-			hasMove = true;
-			lastCameraChange = curLastCameraChange;
-		}
-
-		if (hasMove) {
-			int mouseX, mouseY;
-			CursorMan.getPosition(mouseX, mouseY);
-
-			Graphics::Aurora::Model *model =
-				dynamic_cast<Graphics::Aurora::Model *>(GfxMan.getObjectAt(mouseX, mouseY));
-			if (model != activeModel) {
-				if (activeModel)
-					activeModel->drawBound(false);
-
-				activeModel = model;
-
-				if (activeModel) {
-					warning("Now in \"%s\" (%d)", activeModel->getTag().c_str(),
-							activeModel->getID());
-					activeModel->drawBound(true);
-				}
-			}
-		}
-
-		EventMan.delay(10);
-	}
-
-	EventMan.enableKeyRepeat(0);
-	EventMan.enableUnicode(false);
-
-	delete console;
-
-	module->leave();
-
-	delete module;
-
-	delete fps;
+	initGameConfig();
 }
 
-void KotOREngine::init() {
+void KotOREngine::initResources() {
 	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 	indexMandatoryDirectory("", 0, 0, 0);
@@ -298,10 +175,9 @@ void KotOREngine::init() {
 		status("Loading Xbox textures");
 		indexMandatoryArchive(Aurora::kArchiveERF, "players.erf", 20);
 	} else {
-		// The Windows/Mac versions have swappable texture packs
-		status("Loading high-res texture packs");
+		// The Windows/Mac versions have the GUI textures here
+		status("Loading GUI textures");
 		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 20);
-		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 21);
 	}
 
 	status("Indexing extra sound resources");
@@ -482,6 +358,86 @@ void KotOREngine::initCursors() {
 	CursorMan.add("gui_mp_useup"    , "use+"     , "up"  );
 
 	CursorMan.setDefault("default", "up");
+}
+
+void KotOREngine::initConfig() {
+	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack", 2);
+}
+
+void KotOREngine::initGameConfig() {
+}
+
+void KotOREngine::checkConfig() {
+	checkConfigInt("texturepack", 0, 2, 2);
+}
+
+void KotOREngine::deinit() {
+	delete _fps;
+}
+
+void KotOREngine::playIntroVideos() {
+	if (_platform == Aurora::kPlatformXbox) {
+		playVideo("logo");
+		// TODO: What the hell is (sizzle|sizzle2).xmv?
+	} else {
+		playVideo("leclogo");
+		playVideo("biologo");
+
+		// On Mac OS X, play the Aspyr logo
+		if (_platform == Aurora::kPlatformMacOSX)
+			playVideo("Aspyr_BlueDust_intro");
+
+		playVideo("legal");
+	}
+}
+
+void KotOREngine::playMenuMusic() {
+	if (SoundMan.isPlaying(_menuMusic))
+		return;
+
+	_menuMusic = playSound("mus_theme_cult", Sound::kSoundTypeMusic, true);
+}
+
+void KotOREngine::stopMenuMusic() {
+	SoundMan.stopChannel(_menuMusic);
+}
+
+void KotOREngine::mainMenuLoop() {
+	playMenuMusic();
+
+	Console console;
+	Module module(console);
+
+	console.setModule(&module);
+
+	while (!EventMan.quitRequested()) {
+		GUI *mainMenu = new MainMenu(module);
+
+		EventMan.flushEvents();
+
+		mainMenu->show();
+		mainMenu->run();
+		mainMenu->hide();
+
+		delete mainMenu;
+
+		if (EventMan.quitRequested())
+			break;
+
+		stopMenuMusic();
+
+		module.run();
+		if (EventMan.quitRequested())
+			break;
+
+		playMenuMusic();
+		console.hide();
+		module.clear();
+	}
+
+	console.setModule();
+
+	stopMenuMusic();
 }
 
 bool KotOREngine::hasYavin4Module() const {

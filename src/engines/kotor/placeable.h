@@ -9,45 +9,37 @@
  */
 
 /** @file engines/kotor/placeable.h
- *  A placeable.
+ *  KotOR placeable.
  */
 
 #ifndef ENGINES_KOTOR_PLACEABLE_H
 #define ENGINES_KOTOR_PLACEABLE_H
 
-#include "engines/kotor/modelobject.h"
+#include "aurora/types.h"
 
-#include "common/types.h"
-#include "common/ustring.h"
-
-#include "graphics/aurora/types.h"
+#include "engines/kotor/situated.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-/** A KotOR placeable. */
-class Placeable : public ModelObject {
+class Placeable : public Situated {
 public:
 	Placeable();
 	~Placeable();
 
-	void load(const Common::UString &name);
+	void load(const Aurora::GFFStruct &placeable);
 
-	void show();
 	void hide();
 
-private:
-	uint32 _appearance;
+	void enter();
+	void leave();
 
-	Common::UString _tag;
+	void highlight(bool enabled);
 
-	Graphics::Aurora::Model *_model;
-
-	void changedPosition();
-	void changedOrientation();
-
-	void loadModel();
+protected:
+	void loadObject(const Aurora::GFFStruct &gff);
+	void loadAppearance();
 };
 
 } // End of namespace KotOR

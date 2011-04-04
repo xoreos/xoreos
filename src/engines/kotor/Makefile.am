@@ -5,8 +5,10 @@ noinst_LTLIBRARIES = libkotor.la
 noinst_HEADERS = kotor.h \
                  console.h \
                  modelloader.h \
-                 modelobject.h \
+                 object.h \
+                 situated.h \
                  placeable.h \
+                 door.h \
                  creature.h \
                  area.h \
                  module.h \
@@ -26,8 +28,10 @@ noinst_HEADERS = kotor.h \
 libkotor_la_SOURCES = kotor.cpp \
                       console.cpp \
                       modelloader.cpp \
-                      modelobject.cpp \
+                      object.cpp \
+                      situated.cpp \
                       placeable.cpp \
+                      door.cpp \
                       creature.cpp \
                       area.cpp \
                       module.cpp \

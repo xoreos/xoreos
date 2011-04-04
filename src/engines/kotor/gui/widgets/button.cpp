@@ -33,6 +33,13 @@ void WidgetButton::load(const Aurora::GFFStruct &gff) {
 	KotORWidget::load(gff);
 }
 
+void WidgetButton::mouseUp(uint8 state, float x, float y) {
+	if (isDisabled())
+		return;
+
+	setActive(true);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

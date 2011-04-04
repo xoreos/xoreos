@@ -12,32 +12,36 @@
  *  An area.
  */
 
-#include "engines/kotor/area.h"
-#include "engines/kotor/placeable.h"
-#include "engines/kotor/creature.h"
-
+#include "common/util.h"
 #include "common/error.h"
-#include "common/ustring.h"
 #include "common/stream.h"
-#include "common/maths.h"
 
-#include "engines/engine.h"
+#include "aurora/resman.h"
+#include "aurora/locstring.h"
+#include "aurora/gfffile.h"
+#include "aurora/2dafile.h"
+#include "aurora/2dareg.h"
+
+#include "graphics/graphics.h"
+
+#include "graphics/aurora/cursorman.h"
+
+#include "sound/sound.h"
+
 #include "engines/aurora/util.h"
 #include "engines/aurora/model.h"
 
-#include "aurora/resman.h"
-#include "aurora/util.h"
-
-#include "graphics/aurora/model.h"
-
-static const uint32 kAREID = MKID_BE('ARE ');
-static const uint32 kGITID = MKID_BE('GIT ');
+#include "engines/kotor/area.h"
+#include "engines/kotor/placeable.h"
+#include "engines/kotor/door.h"
+#include "engines/kotor/creature.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Area::Room::Room(const Aurora::LYTFile::Room &lRoom) : lytRoom(&lRoom), model(0), visible(false) {
+Area::Room::Room(const Aurora::LYTFile::Room &lRoom) :
+	lytRoom(&lRoom), model(0), visible(false) {
 }
 
 Area::Room::~Room() {
@@ -45,39 +49,137 @@ Area::Room::~Room() {
 }
 
 
-Area::Area() {
+Area::Area() : _loaded(false), _visible(false), _activeObject(0), _highlightAll(false) {
 }
 
 Area::~Area() {
 	hide();
 
-	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
-		delete *room;
+	removeFocus();
 
-	for (std::list<Placeable *>::iterator plc = _placeables.begin(); plc != _placeables.end(); ++plc)
-		delete *plc;
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		delete *o;
 
-	for (std::list<Creature *>::iterator crt =  _creatures.begin(); crt != _creatures.end(); ++crt)
-		delete *crt;
+	for (std::vector<Room *>::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
+		delete *r;
 }
 
-void Area::load(const Common::UString &name) {
-	status("Loading area \"%s\"", name.c_str());
+const Common::UString &Area::getName() {
+	return _name;
+}
 
-	loadLYT(name); // Room layout
-	loadVIS(name); // Room visibilities
+void Area::stopSound() {
+	stopAmbientMusic();
+	stopAmbientSound();
+}
 
-	loadModels(name); // Room models
+void Area::stopAmbientMusic() {
+	SoundMan.stopChannel(_ambientMusic);
+}
+
+void Area::stopAmbientSound() {
+	SoundMan.stopChannel(_ambientSound);
+}
+
+void Area::playAmbientMusic(Common::UString music) {
+	stopAmbientMusic();
+
+	// TODO Day/Night
+	if (music.empty())
+		music = _musicDay;
+
+	if (music.empty())
+		return;
+
+	_ambientMusic = playSound(music, Sound::kSoundTypeMusic, true);
+}
+
+void Area::playAmbientSound(Common::UString sound) {
+	stopAmbientSound();
+
+	// TODO Day/Night
+	if (sound.empty())
+		sound = _ambientDay;
+
+	if (sound.empty())
+		return;
+
+	_ambientSound = playSound(sound, Sound::kSoundTypeSFX, true, _ambientDayVol);
+}
+
+void Area::show() {
+	assert(_loaded);
+
+	if (_visible)
+		return;
+
+	playAmbientSound();
+	playAmbientMusic();
+
+	GfxMan.lockFrame();
+
+	// Show rooms
+	for (std::vector<Room *>::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
+		(*r)->model->show();
+
+	// Show objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->show();
+
+	GfxMan.unlockFrame();
+
+	_visible = true;
+}
+
+void Area::hide() {
+	assert(_loaded);
+
+	if (!_visible)
+		return;
+
+	removeFocus();
+
+	stopSound();
+
+	GfxMan.lockFrame();
+
+	// Hide objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->hide();
+
+	// Hide rooms
+	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
+		(*room)->model->hide();
+
+	GfxMan.unlockFrame();
+
+	_visible = false;
+}
+
+void Area::load(const Common::UString &resRef) {
+	_resRef = resRef;
+
+	loadLYT(); // Room layout
+	loadVIS(); // Room visibilities
+
+	loadModels(); // Room models
 	loadVisibles();   // Room model visibilities
 
-	loadARE(name); // Statics
-	loadGIT(name); // Dynamics
+	Aurora::GFFFile are;
+	loadGFF(are, _resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
+	loadARE(are.getTopLevel());
+
+	Aurora::GFFFile git;
+	loadGFF(git, _resRef, Aurora::kFileTypeGIT, MKID_BE('GIT '));
+	loadGIT(git.getTopLevel());
+
+	_loaded = true;
 }
 
-void Area::loadLYT(const Common::UString &name) {
+void Area::loadLYT() {
 	Common::SeekableReadStream *lyt = 0;
 	try {
-		if (!(lyt = ResMan.getResource(name, Aurora::kFileTypeLYT)))
+		if (!(lyt = ResMan.getResource(_resRef, Aurora::kFileTypeLYT)))
 			throw Common::Exception("No such LYT");
 
 		_lyt.load(*lyt);
@@ -85,18 +187,15 @@ void Area::loadLYT(const Common::UString &name) {
 		delete lyt;
 	} catch (Common::Exception &e) {
 		delete lyt;
-		e.add("Failed loading LYT \"%s\"", name.c_str());
+		e.add("Failed loading LYT \"%s\"", _resRef.c_str());
 		throw e;
-	} catch (...) {
-		delete lyt;
-		throw;
 	}
 }
 
-void Area::loadVIS(const Common::UString &name) {
+void Area::loadVIS() {
 	Common::SeekableReadStream *vis = 0;
 	try {
-		if (!(vis = ResMan.getResource(name, Aurora::kFileTypeVIS)))
+		if (!(vis = ResMan.getResource(_resRef, Aurora::kFileTypeVIS)))
 			throw Common::Exception("No such VIS");
 
 		_vis.load(*vis);
@@ -104,111 +203,143 @@ void Area::loadVIS(const Common::UString &name) {
 		delete vis;
 	} catch (Common::Exception &e) {
 		delete vis;
-		e.add("Failed loading VIS \"%s\"", name.c_str());
+		e.add("Failed loading VIS \"%s\"", _resRef.c_str());
 		throw e;
-	} catch (...) {
-		delete vis;
-		throw;
 	}
 }
 
-void Area::loadARE(const Common::UString &name) {
-	Aurora::GFFFile are;
-	loadGFF(are, name, Aurora::kFileTypeARE, kAREID);
+void Area::loadARE(const Aurora::GFFStruct &are) {
+	// Name
+
+	Aurora::LocString name;
+	are.getLocString("Name", name);
+
+	_name = name.getString();
 }
 
-void Area::loadGIT(const Common::UString &name) {
-	Aurora::GFFFile git;
-	loadGFF(git, name, Aurora::kFileTypeGIT, kGITID);
+void Area::loadGIT(const Aurora::GFFStruct &git) {
+	if (git.hasField("AreaProperties"))
+		loadProperties(git.getStruct("AreaProperties"));
 
-	const Aurora::GFFStruct &top = git.getTopLevel();
+	if (git.hasField("Placeable List"))
+		loadPlaceables(git.getList("Placeable List"));
 
-	// Load placeables
-	if (top.hasField("Placeable List")) {
-		const Aurora::GFFList &list = top.getList("Placeable List");
+	if (git.hasField("Door List"))
+		loadDoors(git.getList("Door List"));
 
-		for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p)
-			loadPlaceable(**p);
-	}
+	if (git.hasField("Creature List"))
+		loadCreatures(git.getList("Creature List"));
+}
 
-	// Load creatures
-	if (top.hasField("Creature List")) {
-		const Aurora::GFFList &list = top.getList("Creature List");
+void Area::loadProperties(const Aurora::GFFStruct &props) {
+	// Ambient sound
 
-		for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c)
-			loadCreature(**c);
+	const Aurora::TwoDAFile &ambientSound = TwoDAReg.get("ambientsound");
+
+	uint32 ambientDay   = props.getUint("AmbientSndDay"  , Aurora::kStrRefInvalid);
+	uint32 ambientNight = props.getUint("AmbientSndNight", Aurora::kStrRefInvalid);
+
+	if (ambientDay   != Aurora::kStrRefInvalid)
+		_ambientDay   = ambientSound.getCellString(ambientDay  , "Resource");
+	if (ambientNight != Aurora::kStrRefInvalid)
+		_ambientNight = ambientSound.getCellString(ambientNight, "Resource");
+
+	uint32 ambientDayVol   = CLIP<uint32>(props.getUint("AmbientSndDayVol"  , 127), 0, 127);
+	uint32 ambientNightVol = CLIP<uint32>(props.getUint("AmbientSndNightVol", 127), 0, 127);
+
+	_ambientDayVol   = 1.25 * (1.0 - (1.0 / powf(5.0, ambientDayVol   / 127.0)));
+	_ambientNightVol = 1.25 * (1.0 - (1.0 / powf(5.0, ambientNightVol / 127.0)));
+
+	// TODO: PresetInstance0 - PresetInstance7
+
+
+	// Ambient music
+
+	const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get("ambientmusic");
+
+	uint32 musicDay   = props.getUint("MusicDay"   , Aurora::kStrRefInvalid);
+	uint32 musicNight = props.getUint("MusicNight" , Aurora::kStrRefInvalid);
+
+	if (musicDay   != Aurora::kStrRefInvalid)
+		_musicDay   = ambientMusic.getCellString(musicDay  , "Resource");
+	if (musicNight != Aurora::kStrRefInvalid)
+		_musicNight = ambientMusic.getCellString(musicNight, "Resource");
+
+
+	// Battle music
+
+	uint32 musicBattle = props.getUint("MusicBattle", Aurora::kStrRefInvalid);
+
+	if (musicBattle != Aurora::kStrRefInvalid) {
+		_musicBattle = ambientMusic.getCellString(musicBattle, "Resource");
+
+		// Battle stingers
+		Common::UString stinger[3];
+		stinger[0] = ambientMusic.getCellString(musicBattle, "Stinger1");
+		stinger[1] = ambientMusic.getCellString(musicBattle, "Stinger2");
+		stinger[2] = ambientMusic.getCellString(musicBattle, "Stinger3");
+
+		for (int i = 0; i < 3; i++)
+			if (!stinger[i].empty())
+				_musicBattleStinger.push_back(stinger[i]);
 	}
 }
 
-void Area::loadPlaceable(const Aurora::GFFStruct &placeable) {
-	Common::UString resref = placeable.getString("TemplateResRef");
-	if (resref.empty())
-		throw Common::Exception("Placeable without a template");
+void Area::loadPlaceables(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
+		Placeable *placeable = new Placeable;
 
-	float x = placeable.getDouble("X");
-	float y = placeable.getDouble("Y");
-	float z = placeable.getDouble("Z");
+		placeable->load(**p);
 
-	float bearing = placeable.getDouble("Bearing");
+		_objects.push_back(placeable);
 
-	Placeable *place = 0;
-	try {
-		place = new Placeable;
+		if (!placeable->isStatic()) {
+			const std::list<uint32> &ids = placeable->getIDs();
 
-		place->load(resref);
-		place->setPosition(x, y, z);
-		place->setOrientation(0.0, Common::rad2deg(bearing), 0.0);
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, placeable));
+		}
 
-	} catch (Common::Exception &e) {
-		delete place;
-		e.add("Failed loading placeable \"%s\"", resref.c_str());
-		throw e;
-	} catch (...) {
-		delete place;
-		throw;
 	}
-
-	_placeables.push_back(place);
 }
 
-void Area::loadCreature(const Aurora::GFFStruct &creature) {
-	Common::UString resref = creature.getString("TemplateResRef");
-	if (resref.empty())
-		throw Common::Exception("Creature without a template");
+void Area::loadDoors(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+		Door *door = new Door;
 
-	float x = creature.getDouble("XPosition");
-	float y = creature.getDouble("YPosition");
-	float z = creature.getDouble("ZPosition");
+		door->load(**d);
 
-	float bearingX = creature.getDouble("XOrientation");
-	float bearingY = creature.getDouble("YOrientation");
+		_objects.push_back(door);
 
-	Creature *creat = 0;
-	try {
-		creat = new Creature;
+		if (!door->isStatic()) {
+			const std::list<uint32> &ids = door->getIDs();
 
-		creat->load(resref);
-		creat->setPosition(x, y, z);
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, door));
+		}
 
-		float orientation[3];
-		Common::vector2orientation(bearingX, bearingY,
-		                           orientation[0], orientation[1], orientation[2]);
-
-		creat->setOrientation(orientation[0], orientation[1], orientation[2]);
-
-	} catch (Common::Exception &e) {
-		delete creat;
-		e.add("Failed loading creature \"%s\"", resref.c_str());
-		throw e;
-	} catch (...) {
-		delete creat;
-		throw;
 	}
-
-	_creatures.push_back(creat);
 }
 
-void Area::loadModels(const Common::UString &name) {
+void Area::loadCreatures(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c) {
+		Creature *creature = new Creature;
+
+		creature->load(**c);
+
+		_objects.push_back(creature);
+
+		if (!creature->isStatic()) {
+			const std::list<uint32> &ids = creature->getIDs();
+
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, creature));
+		}
+
+	}
+}
+
+void Area::loadModels() {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	_rooms.reserve(rooms.size());
 	for (size_t i = 0; i < rooms.size(); i++) {
@@ -220,15 +351,11 @@ void Area::loadModels(const Common::UString &name) {
 
 		Room *room = new Room(lytRoom);
 
-		try {
-			room->model = loadModelObject(lytRoom.model);
-		} catch (Common::Exception &e) {
+		room->model = loadModelObject(lytRoom.model);
+		if (!room->model) {
 			delete room;
-			e.add("Can't load model \"%s\" for area \"%s\"", lytRoom.model.c_str(), name.c_str());
-			throw e;
-		} catch (...) {
-			delete room;
-			throw;
+			throw Common::Exception("Can't load model \"%s\" for area \"%s\"",
+			                        lytRoom.model.c_str(), _resRef.c_str());
 		}
 
 		room->model->setPosition(lytRoom.x, lytRoom.y, lytRoom.z);
@@ -270,101 +397,84 @@ void Area::loadVisibles() {
 
 }
 
-void Area::show() {
-	// Rooms
-	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
-		(*room)->model->show();
-
-	// Placeables
-	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
-		(*it)->show();
-
-	// Creatures
-	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
-		(*it)->show();
+void Area::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
 }
 
-void Area::hide() {
-	// Rooms
-	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
-		(*room)->model->hide();
+void Area::processEventQueue() {
+	bool hasMove = false;
+	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
+	     e != _eventQueue.end(); ++e) {
 
-	// Placeables
-	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
-		(*it)->hide();
-
-	// Creatures
-	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
-		(*it)->hide();
-}
-
-/*
-void Area::setPosition(float x, float y, float z) {
-	// Set room positions
-	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
-		(*room)->model->setPosition((*room)->lytRoom->x + x, (*room)->lytRoom->y + y, (*room)->lytRoom->z + z);
-
-	// Switch all rooms temporarily to invisible
-	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
-		(*room)->visible = false;
-
-	// Look in what rooms we're in
-	std::vector<Room *> ins;
-	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room) {
-		// Roughly head position.
-		if ((*room)->model->isIn(0.0, 1.5, 0.0)) {
-			// The rooms we're in should be visible
-			(*room)->visible = true;
-
-			ins.push_back(*room);
+		if        (e->type == Events::kEventMouseMove) {
+			hasMove = true;
+		} else if (e->type == Events::kEventKeyDown) {
+			if (e->key.keysym.sym == SDLK_TAB)
+				highlightAll(true);
+		} else if (e->type == Events::kEventKeyUp) {
+			if (e->key.keysym.sym == SDLK_TAB)
+				highlightAll(false);
 		}
 	}
 
-	if (ins.empty()) {
-		// When we're outside everything, still display everything
+	_eventQueue.clear();
 
-		for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
-			(*room)->visible = true;
-
-	} else {
-		// Display stuff that's visible from the room we're in
-
-		for (std::vector<Room *>::iterator in = ins.begin(); in != ins.end(); ++in)
-			for (std::vector<Room *>::iterator vis = (*in)->visibles.begin(); vis != (*in)->visibles.end(); ++vis)
-				(*vis)->visible = true;
-	}
-
-	// Show/Hide according to the visibility
-	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room) {
-		if ((*room)->visible)
-			(*room)->model->show();
-		else
-			(*room)->model->hide();
-	}
-
-	// Set placeable positions
-	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
-		(*it)->moveWorld(x, y, z);
-
-	// Set creature positions
-	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
-		(*it)->moveWorld(x, y, z);
+	if (hasMove)
+		checkActive();
 }
 
-void Area::setOrientation(float x, float y, float z) {
-	// Rooms
-	for (std::vector<Room *>::iterator room = _rooms.begin(); room != _rooms.end(); ++room)
-		(*room)->model->setOrientation(x, y, z);
+Object *Area::getObjectAt(int x, int y) {
+	const Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
+	if (!obj)
+		return 0;
 
-	// Placables
-	for (std::list<Placeable *>::iterator it = _placeables.begin(); it != _placeables.end(); ++it)
-		(*it)->turnWorld(x, y, z);
+	ObjectMap::iterator o = _objectMap.find(obj->getID());
+	if (o == _objectMap.end())
+		return 0;
 
-	// Creatures
-	for (std::list<Creature *>::iterator it = _creatures.begin(); it != _creatures.end(); ++it)
-		(*it)->turnWorld(x, y, z);
+	return o->second;
 }
-*/
+
+void Area::setActive(Object *object) {
+	if (object == _activeObject)
+		return;
+
+	if (_activeObject)
+		_activeObject->leave();
+
+	_activeObject = object;
+
+	if (_activeObject)
+		_activeObject->enter();
+}
+
+void Area::checkActive() {
+	if (!_loaded || _highlightAll)
+		return;
+
+	int x, y;
+	CursorMan.getPosition(x, y);
+
+	setActive(getObjectAt(x, y));
+}
+
+void Area::highlightAll(bool enabled) {
+	if (_highlightAll == enabled)
+		return;
+
+	_highlightAll = enabled;
+
+	for (ObjectMap::iterator o = _objectMap.begin(); o != _objectMap.end(); ++o)
+		if (o->second->isClickable())
+			o->second->highlight(enabled);
+}
+
+void Area::removeFocus() {
+	if (_activeObject)
+		_activeObject->leave();
+
+	_activeObject = 0;
+}
 
 } // End of namespace KotOR
 

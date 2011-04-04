@@ -9,81 +9,76 @@
  */
 
 /** @file engines/kotor/placeable.cpp
- *  A placeable.
+ *  KotOR placeable.
  */
 
-#include "engines/kotor/placeable.h"
-
 #include "common/util.h"
-#include "common/error.h"
-#include "common/ustring.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/model.h"
-
+#include "aurora/gfffile.h"
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
-#include "aurora/gfffile.h"
 
 #include "graphics/aurora/model.h"
 
-static const uint32 kUTPID = MKID_BE('UTP ');
+#include "engines/aurora/util.h"
+
+#include "engines/kotor/placeable.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Placeable::Placeable() : _appearance(0xFFFFFFFF), _model(0) {
+Placeable::Placeable() {
 }
 
 Placeable::~Placeable() {
-	delete _model;
 }
 
-void Placeable::load(const Common::UString &name) {
-	Aurora::GFFFile utp;
-	loadGFF(utp, name, Aurora::kFileTypeUTP, kUTPID);
+void Placeable::load(const Aurora::GFFStruct &placeable) {
+	Common::UString temp = placeable.getString("TemplateResRef");
 
-	const Aurora::GFFStruct &top = utp.getTopLevel();
-	_appearance = top.getUint("Appearance", 0xFFFFFFFF);
+	Aurora::GFFFile *utp = 0;
+	if (!temp.empty()) {
+		try {
+			utp = loadGFF(temp, Aurora::kFileTypeUTP, MKID_BE('UTP '));
+		} catch (...) {
+		}
+	}
 
-	_tag = top.getString("Tag");
+	Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
 
-	if (_appearance == 0xFFFFFFFF)
-		throw Common::Exception("No appearance");
+	if (!utp)
+		warning("Placeable \"%s\" has no blueprint", _tag.c_str());
 
-	loadModel();
-}
-
-void Placeable::show() {
-	if (_model)
-		_model->show();
+	delete utp;
 }
 
 void Placeable::hide() {
-	if (_model)
-		_model->hide();
+	leave();
+
+	Situated::hide();
 }
 
-void Placeable::changedPosition() {
-	if (_model)
-		_model->setPosition(_position[0], _position[1], _position[2]);
+void Placeable::loadObject(const Aurora::GFFStruct &gff) {
 }
 
-void Placeable::changedOrientation() {
-	if (_model)
-		_model->setRotation(_orientation[0], _orientation[2], -_orientation[1]);
-}
-
-void Placeable::loadModel() {
+void Placeable::loadAppearance() {
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeables");
 
-	_model = loadModelObject(twoda.getCellString(_appearance, "modelname"));
-	if (_model) {
-		_model->setTag(_tag);
-		_model->setClickable(true);
-	}
+	_modelName = twoda.getCellString(_appearanceID, "ModelName");
+}
 
+void Placeable::enter() {
+	highlight(true);
+}
+
+void Placeable::leave() {
+	highlight(false);
+}
+
+void Placeable::highlight(bool enabled) {
+	if (_model)
+		_model->drawBound(enabled);
 }
 
 } // End of namespace KotOR

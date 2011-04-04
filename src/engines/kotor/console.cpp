@@ -24,31 +24,28 @@ namespace Engines {
 
 namespace KotOR {
 
-Console::Console(Module &module) : ::Engines::Console("fnt_console"),
-	_module(&module) {
-
-	registerCommand("gotomodule", boost::bind(&Console::cmdGotoModule, this, _1),
-			"Usage: gotomodule <module>\nEnter the specified module");
+Console::Console() : ::Engines::Console("fnt_console"), _module(0) {
+	registerCommand("loadmodule", boost::bind(&Console::cmdLoadModule, this, _1),
+			"Usage: loadmodule <module>\nLoad and enter the specified module");
 }
 
 Console::~Console() {
 }
 
-void Console::cmdGotoModule(const CommandLine &cl) {
+void Console::setModule(Module *module) {
+	_module = module;
+}
+
+void Console::cmdLoadModule(const CommandLine &cl) {
+	if (!_module)
+		return;
+
 	if (cl.args.empty()) {
 		printCommandHelp(cl.cmd);
 		return;
 	}
 
-	_module->leave();
-	_module->clear();
-
-	try {
-		_module->load(cl.args);
-		_module->enter();
-	} catch (Common::Exception &e) {
-		printException(e);
-	}
+	_module->replaceModule(cl.args);
 }
 
 } // End of namespace KOTOR

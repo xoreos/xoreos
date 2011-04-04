@@ -21,27 +21,23 @@
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
-#include "graphics/graphics.h"
-#include "graphics/camera.h"
+#include "sound/sound.h"
+
+#include "events/events.h"
 
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/fps.h"
-#include "graphics/aurora/model.h"
-
-#include "engines/kotor2/kotor2.h"
-#include "engines/kotor2/modelloader.h"
-#include "engines/kotor2/module.h"
-
-#include "sound/sound.h"
-
-#include "events/events.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
 #include "engines/kotor/console.h"
+
+#include "engines/kotor2/kotor2.h"
+#include "engines/kotor2/modelloader.h"
+#include "engines/kotor2/module.h"
 
 #include "engines/kotor2/gui/main/main.h"
 
@@ -88,8 +84,6 @@ void KotOR2Engine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
-
 	if (EventMan.quitRequested())
 		return;
 
@@ -98,150 +92,43 @@ void KotOR2Engine::run(const Common::UString &target) {
 	CursorMan.hideCursor();
 	CursorMan.set();
 
-	playVideo("leclogo");
-	playVideo("obsidianent");
-	playVideo("legal");
-
-	playVideo("permov01");
-
+	playIntroVideos();
 	if (EventMan.quitRequested())
 		return;
 
 	CursorMan.showCursor();
 
+	if (ConfigMan.getBool("showfps", false)) {
+		_fps = new Graphics::Aurora::FPS(FontMan.get("fnt_galahad14"));
+		_fps->show();
+	}
 
-	MainMenu *mainMenu = new MainMenu();
+	mainMenuLoop();
 
-	mainMenu->show();
-	mainMenu->run();
+	deinit();
+}
 
-	delete mainMenu;
+void KotOR2Engine::init() {
+	initConfig();
+	checkConfig();
 
 	if (EventMan.quitRequested())
 		return;
 
+	initResources();
 
-	playSound("298hk50mun003", Sound::kSoundTypeVoice);
+	if (EventMan.quitRequested())
+		return;
 
-	Module *module = new Module;
+	initCursors();
 
-	::Engines::KotOR::Console *console = new ::Engines::KotOR::Console(*module);
+	if (EventMan.quitRequested())
+		return;
 
-	// Test load up the Ebon Hawk
-	module->load("001EBO");
-	module->enter();
-
-	bool showFPS = ConfigMan.getBool("showfps", false);
-
-	Graphics::Aurora::FPS *fps = 0;
-	if (showFPS) {
-		fps = new Graphics::Aurora::FPS(FontMan.get("dialogfont32x32b"));
-		fps->show();
-	}
-
-	EventMan.enableUnicode(true);
-	EventMan.enableKeyRepeat();
-
-	status("Entering event loop");
-
-	uint32 lastCameraChange = 0;
-	Graphics::Aurora::Model *activeModel = 0;
-
-	while (!EventMan.quitRequested()) {
-		bool hasMove = false;
-
-		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if (console->processEvent(event))
-				continue;
-
-			if (event.type == Events::kEventKeyDown) {
-				if      ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL))
-					console->show();
-				else if (event.key.keysym.sym == SDLK_UP)
-					CameraMan.move( 0.5);
-				else if (event.key.keysym.sym == SDLK_DOWN)
-					CameraMan.move(-0.5);
-				else if (event.key.keysym.sym == SDLK_RIGHT)
-					CameraMan.turn( 0.0,  5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_LEFT)
-					CameraMan.turn( 0.0, -5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_w)
-					CameraMan.move( 0.5);
-				else if (event.key.keysym.sym == SDLK_s)
-					CameraMan.move(-0.5);
-				else if (event.key.keysym.sym == SDLK_d)
-					CameraMan.turn( 0.0,  5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_a)
-					CameraMan.turn( 0.0, -5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_e)
-					CameraMan.strafe( 0.5);
-				else if (event.key.keysym.sym == SDLK_q)
-					CameraMan.strafe(-0.5);
-				else if (event.key.keysym.sym == SDLK_INSERT)
-					CameraMan.move(0.0,  0.5, 0.0);
-				else if (event.key.keysym.sym == SDLK_DELETE)
-					CameraMan.move(0.0, -0.5, 0.0);
-				else if (event.key.keysym.sym == SDLK_PAGEUP)
-					CameraMan.turn( 5.0,  0.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_PAGEDOWN)
-					CameraMan.turn(-5.0,  0.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_END) {
-					const float *orient = CameraMan.getOrientation();
-
-					CameraMan.setOrientation(0.0, orient[1], orient[2]);
-				} else if (event.key.keysym.sym == SDLK_t) {
-					const float *pos = CameraMan.getPosition();
-					const float *ort = CameraMan.getOrientation();
-
-					warning("%f, %f, %f -- %f, %f, %f", pos[0], pos[1], pos[2], ort[0], ort[1], ort[2]);
-				}
-			} else if (event.type == Events::kEventMouseMove)
-				hasMove = true;
-		}
-
-		uint32 curLastCameraChange = CameraMan.lastChanged();
-		if (lastCameraChange < curLastCameraChange) {
-			hasMove = true;
-			lastCameraChange = curLastCameraChange;
-		}
-
-		if (hasMove) {
-			int mouseX, mouseY;
-			CursorMan.getPosition(mouseX, mouseY);
-
-			Graphics::Aurora::Model *model =
-				dynamic_cast<Graphics::Aurora::Model *>(GfxMan.getObjectAt(mouseX, mouseY));
-			if (model != activeModel) {
-				if (activeModel)
-					activeModel->drawBound(false);
-
-				activeModel = model;
-
-				if (activeModel) {
-					warning("Now in \"%s\" (%d)", activeModel->getTag().c_str(),
-							activeModel->getID());
-					activeModel->drawBound(true);
-				}
-			}
-		}
-
-		EventMan.delay(10);
-	}
-
-	EventMan.enableKeyRepeat(0);
-	EventMan.enableUnicode(false);
-
-	delete console;
-
-	module->leave();
-
-	delete module;
-
-	delete fps;
+	initGameConfig();
 }
 
-void KotOR2Engine::init() {
+void KotOR2Engine::initResources() {
 	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 	indexMandatoryDirectory("", 0, 0, 0);
@@ -437,6 +324,76 @@ void KotOR2Engine::initCursors() {
 	CursorMan.add("gui_mp_useup"    , "use+"     , "up"  );
 
 	CursorMan.setDefault("default", "up");
+}
+
+void KotOR2Engine::initConfig() {
+	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack", 2);
+}
+
+void KotOR2Engine::initGameConfig() {
+}
+
+void KotOR2Engine::checkConfig() {
+	checkConfigInt("texturepack", 0, 2, 2);
+}
+
+void KotOR2Engine::deinit() {
+	delete _fps;
+}
+
+void KotOR2Engine::playIntroVideos() {
+	playVideo("leclogo");
+	playVideo("obsidianent");
+	playVideo("legal");
+}
+
+void KotOR2Engine::playMenuMusic() {
+	if (SoundMan.isPlaying(_menuMusic))
+		return;
+
+	_menuMusic = playSound("mus_sion", Sound::kSoundTypeMusic, true);
+}
+
+void KotOR2Engine::stopMenuMusic() {
+	SoundMan.stopChannel(_menuMusic);
+}
+
+void KotOR2Engine::mainMenuLoop() {
+	playMenuMusic();
+
+	::Engines::KotOR::Console console;
+	Module module(console);
+
+	console.setModule(&module);
+
+	while (!EventMan.quitRequested()) {
+		GUI *mainMenu = new MainMenu(module);
+
+		EventMan.flushEvents();
+
+		mainMenu->show();
+		mainMenu->run();
+		mainMenu->hide();
+
+		delete mainMenu;
+
+		if (EventMan.quitRequested())
+			break;
+
+		stopMenuMusic();
+
+		module.run();
+		if (EventMan.quitRequested())
+			break;
+
+		playMenuMusic();
+		console.hide();
+		module.clear();
+	}
+
+	console.setModule();
+
+	stopMenuMusic();
 }
 
 } // End of namespace KotOR2
