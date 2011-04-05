@@ -20,6 +20,7 @@
 #include "common/types.h"
 #include "common/error.h"
 #include "common/ustring.h"
+#include "common/file.h"
 
 #include "events/types.h"
 #include "events/notifyable.h"
@@ -70,6 +71,7 @@ public:
 
 	void clear();
 	void print(const Common::UString &line);
+	bool setRedirect(Common::UString redirect = "");
 
 
 	// Highlight
@@ -136,6 +138,9 @@ private:
 	uint32 _highlightX;
 	uint32 _highlightY;
 	 int32 _highlightLength;
+
+	Common::DumpFile _redirect;
+
 
 	void recalcCursor();
 	void redrawLines();
@@ -255,6 +260,8 @@ private:
 
 	void printFullHelp();
 	bool printHints(const Common::UString &command);
+
+	void execute(const Common::UString &line);
 };
 
 } // End of namespace Engines

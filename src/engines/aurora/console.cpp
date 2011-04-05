@@ -18,6 +18,7 @@
 #include "boost/bind.hpp"
 
 #include "common/util.h"
+#include "common/filepath.h"
 #include "common/readline.h"
 
 #include "aurora/resman.h"
@@ -87,6 +88,9 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 h
 }
 
 ConsoleWindow::~ConsoleWindow() {
+	_redirect.flush();
+	_redirect.close();
+
 	for (std::vector<Graphics::Aurora::Text *>::iterator l = _lines.begin();
 	     l != _lines.end(); ++l)
 		delete *l;
@@ -223,6 +227,12 @@ void ConsoleWindow::print(const Common::UString &line) {
 }
 
 void ConsoleWindow::printLine(const Common::UString &line) {
+	if (_redirect.isOpen()) {
+		_redirect.writeString(line);
+		_redirect.writeByte('\n');
+		return;
+	}
+
 	_history.push_back(line);
 	if (_historySizeCurrent >= _historySizeMax)
 		_history.pop_front();
@@ -231,6 +241,25 @@ void ConsoleWindow::printLine(const Common::UString &line) {
 
 	updateScrollbarLength();
 	redrawLines();
+}
+
+bool ConsoleWindow::setRedirect(Common::UString redirect) {
+	_redirect.flush();
+	_redirect.close();
+
+	if (redirect.empty())
+		return true;
+
+	redirect = Common::FilePath::makeAbsolute(redirect);
+	if (!_redirect.open(redirect)) {
+		Common::UString error =
+			Common::UString::sprintf("Failed opening file \"%s\" for writing.", redirect.c_str());
+
+		print(error);
+		return false;
+	}
+
+	return true;
 }
 
 void ConsoleWindow::updateHighlight() {
@@ -795,30 +824,55 @@ bool Console::processEvent(Events::Event &event) {
 	if (printHints(command))
 		return true;
 
-	if (command.empty())
-		return true;
+	execute(command);
+	return true;
+}
 
-	_console->print(Common::UString(kPrompt) + " " + command);
+void Console::execute(const Common::UString &line) {
+	if (line.empty())
+		return;
 
+	// Add the line to console
+	_console->print(Common::UString(kPrompt) + " " + line);
+
+
+	// Split command from redirect target
+
+	Common::UString command;
+	Common::UString redirect;
+	line.split(line.findFirst('>'), command, redirect, true);
+
+	command.trim();
+	redirect.trim();
+
+
+	// Split command from arguments
 
 	CommandLine cl;
 
-	command.split(command.findFirst(' '), cl.cmd, cl.args);
+	command.split(command.findFirst(' '), cl.cmd, cl.args, true);
 
 	cl.cmd.trim();
 	cl.args.trim();
 
 
+	// Find the command
 	CommandMap::iterator cmd = _commands.find(cl.cmd);
 	if (cmd == _commands.end()) {
 		printf("Unknown command \"%s\". Type 'help' for a list of available commands.",
 				cl.cmd.c_str());
-		return true;
+		return;
 	}
 
+	// Set redirect
+	if (!_console->setRedirect(redirect))
+		return;
+
+	// Execute
 	cmd->second.callback(cl);
 
-	return true;
+	// Reset redirect
+	_console->setRedirect();
 }
 
 bool Console::printHints(const Common::UString &command) {
