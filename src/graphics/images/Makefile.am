@@ -3,7 +3,6 @@ include $(top_srcdir)/Makefile.common
 noinst_LTLIBRARIES = libimages.la
 
 noinst_HEADERS = decoder.h \
-                 dumpppm.h \
                  dumptga.h \
                  screenshot.h \
                  tga.h \
@@ -17,7 +16,6 @@ noinst_HEADERS = decoder.h \
                  winiconimage.h
 
 libimages_la_SOURCES = decoder.cpp \
-                       dumpppm.cpp \
                        dumptga.cpp \
                        screenshot.cpp \
                        tga.cpp \
