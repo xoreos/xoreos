@@ -29,8 +29,9 @@
 
 #include "events/events.h"
 
-#include "graphics/aurora/text.h"
 #include "graphics/aurora/textureman.h"
+#include "graphics/aurora/text.h"
+#include "graphics/aurora/guiquad.h"
 
 #include "engines/aurora/console.h"
 #include "engines/aurora/util.h"
@@ -55,13 +56,15 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 h
 	setTag("ConsoleWindow");
 	setClickable(true);
 
-	_cursorHeight = _font.getFont().getHeight();
-
 	_lineHeight = _font.getFont().getHeight() + _font.getFont().getLineSpacing();
 	_height     = floorf(lines * _lineHeight);
 
 	_prompt = new Graphics::Aurora::Text(_font, "");
 	_input  = new Graphics::Aurora::Text(_font, "");
+
+	const float cursorHeight = _font.getFont().getHeight();
+	_cursor = new Graphics::Aurora::GUIQuad("", 0.0, 1.0, 0.0, cursorHeight);
+	_cursor->setXOR(true);
 
 	_lines.reserve(lines - 1);
 	for (uint32 i = 0; i < (lines - 1); i++)
@@ -80,6 +83,7 @@ ConsoleWindow::~ConsoleWindow() {
 	     l != _lines.end(); ++l)
 		delete *l;
 
+	delete _cursor;
 	delete _prompt;
 	delete _input;
 }
@@ -91,6 +95,7 @@ void ConsoleWindow::show() {
 	     l != _lines.end(); ++l)
 		(*l)->show();
 
+	_cursor->show();
 	_prompt->show();
 	_input->show();
 
@@ -106,6 +111,7 @@ void ConsoleWindow::hide() {
 	     l != _lines.end(); ++l)
 		(*l)->hide();
 
+	_cursor->hide();
 	_prompt->hide();
 	_input->hide();
 
@@ -272,6 +278,8 @@ void ConsoleWindow::render(Graphics::RenderPass pass) {
 	if ((now - _lastCursorBlink) > 500) {
 		_cursorBlinkState = !_cursorBlinkState;
 		_lastCursorBlink = now;
+
+		_cursor->setColor(1.0, 1.0, 1.0, _cursorBlinkState ? 1.0 : 0.0);
 	}
 
 	TextureMan.reset();
@@ -294,19 +302,6 @@ void ConsoleWindow::render(Graphics::RenderPass pass) {
 		glVertex2f(_x + _width, _y      );
 		glVertex2f(_x         , _y      );
 	glEnd();
-
-
-	// Cursor
-	if (_cursorBlinkState) {
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glBegin(GL_QUADS);
-			glVertex2f(_cursorX               , _y);
-			glVertex2f(_cursorX + _cursorWidth, _y);
-			glVertex2f(_cursorX + _cursorWidth, _y + _cursorHeight);
-			glVertex2f(_cursorX               , _y + _cursorHeight);
-		glEnd();
-	}
-
 
 	// Scrollbar background
 	glColor4f(0.0, 0.0, 0.0, 1.0);
@@ -349,11 +344,11 @@ void ConsoleWindow::recalcCursor() {
 	Common::UString input = _inputText;
 	input.truncate(_cursorPosition);
 
-	_cursorX = _x + _prompt->getWidth() + _font.getFont().getWidth(input) - 1.0;
+	const float cursorX = _x + _prompt->getWidth() + _font.getFont().getWidth(input) - 1.0;
+	_cursor->setPosition(cursorX, _y, -1002.0);
 
-	_cursorWidth = 1.0;
-	if (_overwrite)
-		_cursorWidth += _font.getFont().getWidth(' ');
+	const float cursorWidth = 1.0 + (_overwrite ? _font.getFont().getWidth(' ') : 0.0);
+	_cursor->setWidth(cursorWidth);
 }
 
 void ConsoleWindow::redrawLines() {

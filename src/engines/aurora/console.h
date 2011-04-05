@@ -76,7 +76,8 @@ public:
 private:
 	Graphics::Aurora::FontHandle _font;
 
-	Graphics::Aurora::Text *_prompt;
+	Graphics::Aurora::Text    *_prompt;
+	Graphics::Aurora::GUIQuad *_cursor;
 
 	uint32 _historySizeMax;
 	uint32 _historySizeCurrent;
@@ -102,10 +103,6 @@ private:
 
 	bool _cursorBlinkState;
 	uint32 _lastCursorBlink;
-
-	float _cursorHeight;
-	float _cursorWidth;
-	float _cursorX;
 
 	float _scrollbarLength;
 	float _scrollbarPosition;
