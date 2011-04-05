@@ -250,6 +250,7 @@ private:
 	void cmdExit      (const CommandLine &cl);
 	void cmdQuit      (const CommandLine &cl);
 	void cmdDumpRes   (const CommandLine &cl);
+	void cmdDumpTGA   (const CommandLine &cl);
 	void cmdListVideos(const CommandLine &cl);
 	void cmdPlayVideo (const CommandLine &cl);
 	void cmdListSounds(const CommandLine &cl);

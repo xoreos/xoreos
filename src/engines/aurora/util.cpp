@@ -24,7 +24,7 @@
 #include "sound/sound.h"
 
 #include "graphics/aurora/videoplayer.h"
-#include "graphics/aurora/model.h"
+#include "graphics/aurora/texture.h"
 
 #include "../../aurora/util.h"
 #include "../../aurora/resman.h"
@@ -188,6 +188,19 @@ bool dumpResource(const Common::UString &name, const Common::UString &file) {
 	Aurora::FileType type = Aurora::getFileType(name);
 
 	return dumpResource(Aurora::setFileType(name, Aurora::kFileTypeNone), type, file);
+}
+
+bool dumpTGA(const Common::UString &name) {
+	try {
+
+		Graphics::Aurora::Texture texture(name);
+
+		return texture.dumpTGA(name + ".tga");
+
+	} catch (...) {
+	}
+
+	return false;
 }
 
 } // End of namespace Engines

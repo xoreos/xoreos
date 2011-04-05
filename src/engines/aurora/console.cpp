@@ -628,6 +628,8 @@ Console::Console(const Common::UString &font) : _neverShown(true), _visible(fals
 			"Usage: quiteos\nShut down eos");
 	registerCommand("dumpres"   , boost::bind(&Console::cmdDumpRes   , this, _1),
 			"Usage: dumpres <resource>\nDump a resource to file");
+	registerCommand("dumptga"   , boost::bind(&Console::cmdDumpTGA   , this, _1),
+			"Usage: dumptga <resource>\nDump an image resource into a TGA");
 	registerCommand("listvideos", boost::bind(&Console::cmdListVideos, this, _1),
 			"Usage: listvideos\nList all available videos");
 	registerCommand("playvideo" , boost::bind(&Console::cmdPlayVideo , this, _1),
@@ -1019,6 +1021,18 @@ void Console::cmdDumpRes(const CommandLine &cl) {
 		printf("Dumped resource \"%s\"", cl.args.c_str());
 	else
 		printf("Failed dumping resource \"%s\"", cl.args.c_str());
+}
+
+void Console::cmdDumpTGA(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	if (dumpTGA(cl.args))
+		printf("Dumped TGA \"%s\"", cl.args.c_str());
+	else
+		printf("Failed dumping TGA \"%s\"", cl.args.c_str());
 }
 
 void Console::cmdListVideos(const CommandLine &cl) {
