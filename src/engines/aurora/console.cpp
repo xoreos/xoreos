@@ -20,10 +20,14 @@
 #include "common/util.h"
 #include "common/readline.h"
 
-#include "events/events.h"
+#include "aurora/resman.h"
 
 #include "graphics/graphics.h"
 #include "graphics/font.h"
+
+#include "sound/sound.h"
+
+#include "events/events.h"
 
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/textureman.h"
@@ -387,23 +391,34 @@ void ConsoleWindow::updateScrollbarPosition() {
 
 
 Console::Console(const Common::UString &font) : _neverShown(true), _visible(false),
-	_tabCount(0), _printedCompleteWarning(false) {
+	_tabCount(0), _printedCompleteWarning(false),
+	_maxSizeVideos(0), _maxSizeSounds(0) {
 
 	_readLine = new Common::ReadLine(kCommandHistorySize);
 	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory);
 
 	_readLine->historyIgnoreDups(true);
 
-	registerCommand("help"    , boost::bind(&Console::cmdHelp   , this, _1),
+	registerCommand("help"      , boost::bind(&Console::cmdHelp      , this, _1),
 			"Usage: help [<command>]\nPrint help text");
-	registerCommand("clear"   , boost::bind(&Console::cmdClear  , this, _1),
+	registerCommand("clear"     , boost::bind(&Console::cmdClear     , this, _1),
 			"Usage: clear\nClear the console window");
-	registerCommand("exit"    , boost::bind(&Console::cmdExit   , this, _1),
+	registerCommand("exit"      , boost::bind(&Console::cmdExit      , this, _1),
 			"Usage: exit\nLeave the console window, returning to the game");
-	registerCommand("quiteos" , boost::bind(&Console::cmdQuit   , this, _1),
+	registerCommand("quiteos"   , boost::bind(&Console::cmdQuit      , this, _1),
 			"Usage: quiteos\nShut down eos");
-	registerCommand("dumpres" , boost::bind(&Console::cmdDumpRes, this, _1),
+	registerCommand("dumpres"   , boost::bind(&Console::cmdDumpRes   , this, _1),
 			"Usage: dumpres <resource>\nDump a resource to file");
+	registerCommand("listvideos", boost::bind(&Console::cmdListVideos, this, _1),
+			"Usage: listvideos\nList all available videos");
+	registerCommand("playvideo" , boost::bind(&Console::cmdPlayVideo , this, _1),
+			"Usage: playvideo <video>\nPlay the specified video");
+	registerCommand("listsounds", boost::bind(&Console::cmdListSounds, this, _1),
+			"Usage: listsounds\nList all available sounds");
+	registerCommand("playsound" , boost::bind(&Console::cmdPlaySound , this, _1),
+			"Usage: playsound <sound>\nPlay the specified sound");
+	registerCommand("silence"   , boost::bind(&Console::cmdSilence   , this, _1),
+			"Usage: silence\nStop all playing sounds and music");
 
 	_console->setPrompt(kPrompt);
 
@@ -428,6 +443,7 @@ void Console::show() {
 	_visible    = true;
 	_neverShown = false;
 
+	updateCaches();
 	showCallback();
 }
 
@@ -631,6 +647,47 @@ void Console::printException(Common::Exception &e, const Common::UString &prefix
 	}
 }
 
+void Console::updateCaches() {
+	updateVideos();
+	updateSounds();
+}
+
+void Console::updateVideos() {
+	_videos.clear();
+	_maxSizeVideos = 0;
+
+	std::list<Aurora::ResourceManager::ResourceID> videos;
+	ResMan.getAvailabeResources(Aurora::kFileTypeBIK, videos);
+
+	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator v = videos.begin();
+	     v != videos.end(); ++v) {
+
+		_videos.push_back(v->name);
+
+		_maxSizeVideos = MAX(_maxSizeVideos, _videos.back().size());
+	}
+
+	setArguments("playvideo", _videos);
+}
+
+void Console::updateSounds() {
+	_sounds.clear();
+	_maxSizeSounds = 0;
+
+	std::list<Aurora::ResourceManager::ResourceID> sounds;
+	ResMan.getAvailabeResources(Aurora::kFileTypeWAV, sounds);
+
+	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator s = sounds.begin();
+	     s != sounds.end(); ++s) {
+
+		_sounds.push_back(s->name);
+
+		_maxSizeSounds = MAX(_maxSizeSounds, _sounds.back().size());
+	}
+
+	setArguments("playsound", _sounds);
+}
+
 void Console::cmdHelp(const CommandLine &cli) {
 	if (cli.args.empty()) {
 		printFullHelp();
@@ -663,6 +720,38 @@ void Console::cmdDumpRes(const CommandLine &cl) {
 		printf("Dumped resource \"%s\"", cl.args.c_str());
 	else
 		printf("Failed dumping resource \"%s\"", cl.args.c_str());
+}
+
+void Console::cmdListVideos(const CommandLine &cl) {
+	updateVideos();
+	printList(_videos, _maxSizeVideos);
+}
+
+void Console::cmdPlayVideo(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	playVideo(cl.args);
+}
+
+void Console::cmdListSounds(const CommandLine &cl) {
+	updateSounds();
+	printList(_sounds, _maxSizeSounds);
+}
+
+void Console::cmdPlaySound(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	playSound(cl.args, Sound::kSoundTypeSFX);
+}
+
+void Console::cmdSilence(const CommandLine &cl) {
+	SoundMan.stopAll();
 }
 
 void Console::printCommandHelp(const Common::UString &cmd) {

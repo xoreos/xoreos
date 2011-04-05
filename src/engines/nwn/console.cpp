@@ -20,8 +20,6 @@
 
 #include "aurora/talkman.h"
 
-#include "sound/sound.h"
-
 #include "engines/aurora/util.h"
 
 #include "engines/nwn/console.h"
@@ -45,7 +43,7 @@ namespace Engines {
 namespace NWN {
 
 Console::Console() : ::Engines::Console("fnt_console"), _module(0),
-	_maxSizeVideos(0), _maxSizeSounds(0), _maxSizeMusic(0) {
+	_maxSizeMusic(0) {
 
 	registerCommand("quitmodule"   , boost::bind(&Console::cmdQuitModule   , this, _1),
 			"Usage: quitmodule\nLeave the module, returning to the main menu");
@@ -70,16 +68,6 @@ Console::Console() : ::Engines::Console("fnt_console"), _module(0),
 	registerCommand("playmusic"    , boost::bind(&Console::cmdPlayMusic    , this, _1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
-	registerCommand("listvideos"   , boost::bind(&Console::cmdListVideos   , this, _1),
-			"Usage: listvideos\nList all available videos");
-	registerCommand("playvideo"    , boost::bind(&Console::cmdPlayVideo    , this, _1),
-			"Usage: playvideo <video>\nPlay the specified video");
-	registerCommand("listsounds"   , boost::bind(&Console::cmdListSounds   , this, _1),
-			"Usage: listsounds\nList all available sounds");
-	registerCommand("playsound"    , boost::bind(&Console::cmdPlaySound    , this, _1),
-			"Usage: playsound <sound>\nPlay the specified sound");
-	registerCommand("silence"      , boost::bind(&Console::cmdSilence      , this, _1),
-			"Usage: silence\nStop all playing sounds and music");
 }
 
 Console::~Console() {
@@ -89,16 +77,12 @@ void Console::setModule(Module *module) {
 	_module = module;
 }
 
-void Console::showCallback() {
-	updateCaches();
-}
-
 void Console::updateCaches() {
+	::Engines::Console::updateCaches();
+
 	updateCampaigns();
 	updateModules();
 	updateAreas();
-	updateVideos();
-	updateSounds();
 	updateMusic();
 }
 
@@ -167,42 +151,6 @@ void Console::updateAreas() {
 		_areas.push_back(*a);
 
 	setArguments("gotoarea", _areas);
-}
-
-void Console::updateVideos() {
-	_videos.clear();
-	_maxSizeVideos = 0;
-
-	std::list<Aurora::ResourceManager::ResourceID> videos;
-	ResMan.getAvailabeResources(Aurora::kFileTypeBIK, videos);
-
-	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator v = videos.begin();
-	     v != videos.end(); ++v) {
-
-		_videos.push_back(v->name);
-
-		_maxSizeVideos = MAX(_maxSizeVideos, _videos.back().size());
-	}
-
-	setArguments("playvideo", _videos);
-}
-
-void Console::updateSounds() {
-	_sounds.clear();
-	_maxSizeSounds = 0;
-
-	std::list<Aurora::ResourceManager::ResourceID> sounds;
-	ResMan.getAvailabeResources(Aurora::kFileTypeWAV, sounds);
-
-	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator s = sounds.begin();
-	     s != sounds.end(); ++s) {
-
-		_sounds.push_back(s->name);
-
-		_maxSizeSounds = MAX(_maxSizeSounds, _sounds.back().size());
-	}
-
-	setArguments("playsound", _sounds);
 }
 
 void Console::updateMusic() {
@@ -328,38 +276,6 @@ void Console::cmdPlayMusic(const CommandLine &cl) {
 		return;
 
 	_module->_area->playAmbientMusic(cl.args);
-}
-
-void Console::cmdListVideos(const CommandLine &cl) {
-	updateVideos();
-	printList(_videos, _maxSizeVideos);
-}
-
-void Console::cmdPlayVideo(const CommandLine &cl) {
-	if (cl.args.empty()) {
-		printCommandHelp(cl.cmd);
-		return;
-	}
-
-	playVideo(cl.args);
-}
-
-void Console::cmdListSounds(const CommandLine &cl) {
-	updateSounds();
-	printList(_sounds, _maxSizeSounds);
-}
-
-void Console::cmdPlaySound(const CommandLine &cl) {
-	if (cl.args.empty()) {
-		printCommandHelp(cl.cmd);
-		return;
-	}
-
-	playSound(cl.args, Sound::kSoundTypeSFX);
-}
-
-void Console::cmdSilence(const CommandLine &cl) {
-	SoundMan.stopAll();
 }
 
 } // End of namespace NWN

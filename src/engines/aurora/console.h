@@ -164,8 +164,8 @@ protected:
 	void setArguments(const Common::UString &cmd, const std::list<Common::UString> &args);
 	void setArguments(const Common::UString &cmd);
 
+	virtual void updateCaches();
 	virtual void showCallback();
-
 
 
 private:
@@ -191,11 +191,26 @@ private:
 	bool _printedCompleteWarning;
 
 
-	void cmdHelp   (const CommandLine &cl);
-	void cmdClear  (const CommandLine &cl);
-	void cmdExit   (const CommandLine &cl);
-	void cmdQuit   (const CommandLine &cl);
-	void cmdDumpRes(const CommandLine &cl);
+	std::list<Common::UString> _videos;
+	std::list<Common::UString> _sounds;
+
+	uint32 _maxSizeVideos;
+	uint32 _maxSizeSounds;
+
+
+	void updateVideos();
+	void updateSounds();
+
+	void cmdHelp      (const CommandLine &cl);
+	void cmdClear     (const CommandLine &cl);
+	void cmdExit      (const CommandLine &cl);
+	void cmdQuit      (const CommandLine &cl);
+	void cmdDumpRes   (const CommandLine &cl);
+	void cmdListVideos(const CommandLine &cl);
+	void cmdPlayVideo (const CommandLine &cl);
+	void cmdListSounds(const CommandLine &cl);
+	void cmdPlaySound (const CommandLine &cl);
+	void cmdSilence   (const CommandLine &cl);
 
 	void updateHelpArguments();
 

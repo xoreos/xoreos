@@ -36,9 +36,6 @@ public:
 
 	void setModule(Module *module = 0);
 
-protected:
-	void showCallback();
-
 private:
 	typedef std::map<Common::UString, int, Common::UString::iless> CampaignMap;
 
@@ -48,14 +45,10 @@ private:
 	std::list<Common::UString> _campaigns;
 	std::list<Common::UString> _modules;
 	std::list<Common::UString> _areas;
-	std::list<Common::UString> _videos;
-	std::list<Common::UString> _sounds;
 	std::list<Common::UString> _music;
 
 	CampaignMap _campaignModules;
 
-	uint32 _maxSizeVideos;
-	uint32 _maxSizeSounds;
 	uint32 _maxSizeMusic;
 
 
@@ -64,8 +57,6 @@ private:
 	void updateCampaigns();
 	void updateModules();
 	void updateAreas();
-	void updateVideos();
-	void updateSounds();
 	void updateMusic();
 
 
@@ -76,14 +67,9 @@ private:
 	void cmdLoadModule   (const CommandLine &cl);
 	void cmdListAreas    (const CommandLine &cl);
 	void cmdGotoArea     (const CommandLine &cl);
-	void cmdListVideos   (const CommandLine &cl);
-	void cmdPlayVideo    (const CommandLine &cl);
-	void cmdListSounds   (const CommandLine &cl);
-	void cmdPlaySound    (const CommandLine &cl);
 	void cmdListMusic    (const CommandLine &cl);
 	void cmdStopMusic    (const CommandLine &cl);
 	void cmdPlayMusic    (const CommandLine &cl);
-	void cmdSilence      (const CommandLine &cl);
 };
 
 } // End of namespace NWN
