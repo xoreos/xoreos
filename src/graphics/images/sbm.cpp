@@ -22,6 +22,12 @@ namespace Graphics {
 
 SBM::SBM(Common::SeekableReadStream *sbm) : _sbm(sbm) {
 	assert(_sbm);
+
+	_compressed = false;
+	_hasAlpha   = true;
+	_format     = kPixelFormatBGRA;
+	_formatRaw  = kPixelFormatRGBA8;
+	_dataType   = kPixelDataType8;
 }
 
 SBM::~SBM() {
@@ -53,11 +59,13 @@ void SBM::readData(Common::SeekableReadStream &sbm) {
 
 	uint32 rowCount = (sbm.size() / 1024);
 
-	_image.width  = 4 * 32;
-	_image.height = NEXTPOWER2((uint32) rowCount * 32);
-	_image.size   = _image.width * _image.height * 4;
+	_mipMaps.push_back(new MipMap);
 
-	_image.data = new byte[_image.size];
+	_mipMaps[0]->width  = 4 * 32;
+	_mipMaps[0]->height = NEXTPOWER2((uint32) rowCount * 32);
+	_mipMaps[0]->size   = _mipMaps[0]->width * _mipMaps[0]->height * 4;
+
+	_mipMaps[0]->data = new byte[_mipMaps[0]->size];
 
 	// SBM data consists of character sized 32 * 32 pixels, with 2 bits per pixel.
 	// 4 characters each are on top of each other, occupying the same x/y
@@ -67,7 +75,7 @@ void SBM::readData(Common::SeekableReadStream &sbm) {
 	int masks [4] = { 0x03, 0x0C, 0x30, 0xC0 };
 	int shifts[4] = {    0,    2,    4,    6 };
 
-	byte *data = _image.data;
+	byte *data = _mipMaps[0]->data;
 	byte buffer[1024];
 	for (uint32 c = 0; c < rowCount; c++) {
 
@@ -90,46 +98,8 @@ void SBM::readData(Common::SeekableReadStream &sbm) {
 		}
 	}
 
-	byte *dataEnd = _image.data + _image.size;
+	byte *dataEnd = _mipMaps[0]->data + _mipMaps[0]->size;
 	memset(data, dataEnd - data, 0);
-}
-
-bool SBM::isCompressed() const {
-	// SBMs are never compressed
-	return false;
-}
-
-bool SBM::hasAlpha() const {
-	// SBMs always have alpha
-	return true;
-}
-
-PixelFormat SBM::getFormat() const {
-	// SBM pixels always BGRA
-	return kPixelFormatBGRA;
-}
-
-PixelFormatRaw SBM::getFormatRaw() const {
-	// SBM pixels always RGBA8
-	return kPixelFormatRGBA8;
-}
-
-PixelDataType SBM::getDataType() const {
-	// SBM pixels always 888(8)
-	return kPixelDataType8;
-}
-
-int SBM::getMipMapCount() const {
-	// Just one image in SBMs
-	return 1;
-}
-
-const SBM::MipMap &SBM::getMipMap(int mipMap) const {
-	return _image;
-}
-
-SBM::MipMap &SBM::getMipMap(int mipMap) {
-	return _image;
 }
 
 } // End of namespace Graphics

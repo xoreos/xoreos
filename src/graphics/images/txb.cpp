@@ -17,7 +17,6 @@
 #include "common/stream.h"
 
 #include "graphics/images/txb.h"
-#include "graphics/graphics.h"
 
 static const byte kEncodingBGRA = 0x04;
 static const byte kEncodingDXT1 = 0x0A;
@@ -25,8 +24,7 @@ static const byte kEncodingDXT5 = 0x0C;
 
 namespace Graphics {
 
-TXB::TXB(Common::SeekableReadStream *txb) : _txb(txb), _compressed(true), _hasAlpha(false),
-	_format(kPixelFormatBGRA), _formatRaw(kPixelFormatDXT5), _dataType(kPixelDataType8),
+TXB::TXB(Common::SeekableReadStream *txb) : _txb(txb),
 	_dataSize(0), _txiData(0), _txiDataSize(0) {
 
 	assert(_txb);
@@ -34,9 +32,6 @@ TXB::TXB(Common::SeekableReadStream *txb) : _txb(txb), _compressed(true), _hasAl
 
 TXB::~TXB() {
 	delete[] _txiData;
-
-	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
-		delete *mipMap;
 }
 
 void TXB::load() {
@@ -55,11 +50,6 @@ void TXB::load() {
 		if (_txb->err())
 			throw Common::Exception(Common::kReadError);
 
-		if (GfxMan.needManualDeS3TC()) {
-			decompress();
-			_compressed = false;
-		}
-
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TXB file");
 		throw e;
@@ -69,49 +59,11 @@ void TXB::load() {
 	_txb = 0;
 }
 
-bool TXB::isCompressed() const {
-	return _compressed;
-}
-
-bool TXB::hasAlpha() const {
-	return _hasAlpha;
-}
-
-PixelFormat TXB::getFormat() const {
-	return _format;
-}
-
-PixelFormatRaw TXB::getFormatRaw() const {
-	return _formatRaw;
-}
-
-PixelDataType TXB::getDataType() const {
-	return _dataType;
-}
-
-int TXB::getMipMapCount() const {
-	return _mipMaps.size();
-}
-
-const TXB::MipMap &TXB::getMipMap(int mipMap) const {
-	return *_mipMaps[mipMap];
-}
-
-TXB::MipMap &TXB::getMipMap(int mipMap) {
-	return *_mipMaps[mipMap];
-}
-
 Common::SeekableReadStream *TXB::getTXI() const {
 	if (!_txiData || (_txiDataSize == 0))
 		return 0;
 
 	return new Common::MemoryReadStream(_txiData, _txiDataSize);
-}
-
-void TXB::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
-	_format    = format;
-	_formatRaw = formatRaw;
-	_dataType  = dataType;
 }
 
 void TXB::readHeader(Common::SeekableReadStream &txb) {

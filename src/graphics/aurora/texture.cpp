@@ -161,9 +161,13 @@ void Texture::loadImage() {
 	if (_image->getMipMapCount() < 1)
 		throw Common::Exception("Texture has no images");
 
+	// Decompress
+	if (GfxMan.needManualDeS3TC())
+		_image->decompress();
+
 	// Set dimensions
-	_width  = ((const ImageDecoder *) _image)->getMipMap(0).width;
-	_height = ((const ImageDecoder *) _image)->getMipMap(0).height;
+	_width  = _image->getMipMap(0).width;
+	_height = _image->getMipMap(0).height;
 
 	// If we've still got no TXI, look if the image provides TXI data
 	loadTXI(_image->getTXI());
@@ -222,8 +226,8 @@ void Texture::doRebuild() {
 	if (_image->isCompressed()) {
 		// Compressed texture data
 
-		for (int i = 0; i < _image->getMipMapCount(); i++) {
-			const ImageDecoder::MipMap &mipMap = ((const ImageDecoder *) _image)->getMipMap(i);
+		for (uint32 i = 0; i < _image->getMipMapCount(); i++) {
+			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
 
 			glCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
 			                       mipMap.width, mipMap.height, 0,
@@ -233,8 +237,8 @@ void Texture::doRebuild() {
 	} else {
 		// Uncompressed texture data
 
-		for (int i = 0; i < _image->getMipMapCount(); i++) {
-			const ImageDecoder::MipMap &mipMap = ((const ImageDecoder *) _image)->getMipMap(i);
+		for (uint32 i = 0; i < _image->getMipMapCount(); i++) {
+			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
 
 			glTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
 			             mipMap.width, mipMap.height, 0, _image->getFormat(),

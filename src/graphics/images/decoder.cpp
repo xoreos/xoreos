@@ -12,68 +12,115 @@
  *  Generic image decoder interface.
  */
 
+#include "common/util.h"
 #include "common/error.h"
 #include "common/stream.h"
+
+#include "graphics/graphics.h"
 
 #include "graphics/images/decoder.h"
 #include "graphics/images/s3tc.h"
 
 namespace Graphics {
 
-ImageDecoder::MipMap::MipMap() {
-	width    = 0;
-	height   = 0;
-	size     = 0;
-	data     = 0;
-	dataOrig = 0;
+ImageDecoder::MipMap::MipMap() : width(0), height(0), size(0), data(0) {
 }
 
 ImageDecoder::MipMap::~MipMap() {
 	delete[] data;
-	delete[] dataOrig;
+}
+
+void ImageDecoder::MipMap::swap(MipMap &right) {
+	SWAP(width , right.width );
+	SWAP(height, right.height);
+	SWAP(size  , right.size  );
+	SWAP(data  , right.data  );
 }
 
 
-ImageDecoder::ImageDecoder() {
+ImageDecoder::ImageDecoder() : _compressed(false), _hasAlpha(false),
+	_format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8), _dataType(kPixelDataType8) {
+
 }
 
 ImageDecoder::~ImageDecoder() {
+	for (std::vector<MipMap *>::iterator m = _mipMaps.begin(); m != _mipMaps.end(); ++m)
+		delete *m;
 }
 
 Common::SeekableReadStream *ImageDecoder::getTXI() const {
 	return 0;
 }
 
-void ImageDecoder::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
-	throw Common::Exception("Setting the format is not implemented for this image decoder");
+bool ImageDecoder::isCompressed() const {
+	return _compressed;
+}
+
+bool ImageDecoder::hasAlpha() const {
+	return _hasAlpha;
+}
+
+PixelFormat ImageDecoder::getFormat() const {
+	return _format;
+}
+
+PixelFormatRaw ImageDecoder::getFormatRaw() const {
+	return _formatRaw;
+}
+
+PixelDataType ImageDecoder::getDataType() const {
+	return _dataType;
+}
+
+uint32 ImageDecoder::getMipMapCount() const {
+	return _mipMaps.size();
+}
+
+const ImageDecoder::MipMap &ImageDecoder::getMipMap(uint32 mipMap) const {
+	assert(mipMap < _mipMaps.size());
+
+	return *_mipMaps[mipMap];
+}
+
+void ImageDecoder::decompress(MipMap &out, const MipMap &in, PixelFormatRaw format) {
+	if ((format != kPixelFormatDXT1) &&
+	    (format != kPixelFormatDXT3) &&
+	    (format != kPixelFormatDXT5))
+		throw Common::Exception("Unknown compressed format %d", format);
+
+	out.width  = in.width;
+	out.height = in.height;
+	out.size   = out.width * out.height * 4;
+	out.data   = new byte[out.size];
+
+	Common::MemoryReadStream *stream = new Common::MemoryReadStream(in.data, in.size);
+
+	if      (format == kPixelFormatDXT1)
+		decompressDXT1(out.data, *stream, out.width, out.height, out.width * 4);
+	else if (format == kPixelFormatDXT3)
+		decompressDXT3(out.data, *stream, out.width, out.height, out.width * 4);
+	else if (format == kPixelFormatDXT5)
+		decompressDXT5(out.data, *stream, out.width, out.height, out.width * 4);
+
+	delete stream;
 }
 
 void ImageDecoder::decompress() {
-	if (!isCompressed())
+	if (!_compressed)
 		return;
 
-	int count = getMipMapCount();
-	PixelFormatRaw format = getFormatRaw();
+	for (std::vector<MipMap *>::iterator m = _mipMaps.begin(); m != _mipMaps.end(); ++m) {
+		MipMap decompressed;
 
-	for (int i = 0; i < count; i++) {
-		MipMap &mipMap = getMipMap(i);
+		decompress(decompressed, **m, _formatRaw);
 
-		Common::MemoryReadStream *stream = new Common::MemoryReadStream(mipMap.data, mipMap.size);
-
-		mipMap.size     = mipMap.width * mipMap.height * 4;
-		mipMap.dataOrig = mipMap.data;
-		mipMap.data     = new byte[mipMap.size];
-
-		if (format == kPixelFormatDXT1)
-			decompressDXT1(mipMap.data, *stream, mipMap.width, mipMap.height, mipMap.width * 4);
-		else if (format == kPixelFormatDXT3)
-			decompressDXT3(mipMap.data, *stream, mipMap.width, mipMap.height, mipMap.width * 4);
-		else if (format == kPixelFormatDXT5)
-			decompressDXT5(mipMap.data, *stream, mipMap.width, mipMap.height, mipMap.width * 4);
-
-		setFormat(kPixelFormatRGBA, kPixelFormatRGBA8, kPixelDataType8);
-		delete stream;
+		decompressed.swap(**m);
 	}
+
+	_format     = kPixelFormatRGBA;
+	_formatRaw  = kPixelFormatRGBA8;
+	_dataType   = kPixelDataType8;
+	_compressed = false;
 }
 
 } // End of namespace Graphics

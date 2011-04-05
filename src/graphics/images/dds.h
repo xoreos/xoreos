@@ -36,17 +36,6 @@ public:
 
 	void load();
 
-	bool isCompressed() const;
-	bool hasAlpha() const;
-
-	PixelFormat    getFormat() const;
-	PixelFormatRaw getFormatRaw() const;
-	PixelDataType  getDataType() const;
-
-	int getMipMapCount() const;
-
-	const MipMap &getMipMap(int mipMap) const;
-
 private:
 	/** The specific pixel format of the included image data. */
 	struct DDSPixelFormat {
@@ -61,19 +50,6 @@ private:
 	};
 
 	Common::SeekableReadStream *_dds;
-
-	bool _compressed;
-	bool _hasAlpha;
-
-	PixelFormat    _format;
-	PixelFormatRaw _formatRaw;
-	PixelDataType  _dataType;
-
-	std::vector<MipMap *> _mipMaps;
-
-	MipMap &getMipMap(int mipMap);
-
-	void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
 
 	// Loading helpers
 	void readHeader(Common::SeekableReadStream &dds);

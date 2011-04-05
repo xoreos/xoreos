@@ -21,11 +21,14 @@
 
 namespace Graphics {
 
-WinIconImage::WinIconImage(Common::SeekableReadStream *cur) :
-	_cur(cur), _format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8),
+WinIconImage::WinIconImage(Common::SeekableReadStream *cur) : _cur(cur),
 	_hotspotX(0), _hotspotY(0) {
 
 	assert(_cur);
+
+	_compressed = false;
+	_hasAlpha   = true;
+	_dataType   = kPixelDataType8;
 }
 
 WinIconImage::~WinIconImage() {
@@ -120,7 +123,7 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 	if (bitsPerPixel != 8 && bitsPerPixel != 24)
 		throw Common::Exception("Unhandled bpp %d", bitsPerPixel);
 
-	int pitch = width * (bitsPerPixel / 8);
+	const int pitch = width * (bitsPerPixel / 8);
 
 	// Now we're at the palette. Read it in for 8bpp
 	byte palette[256 * 4];
@@ -133,27 +136,29 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 	cur.read(xorMap, pitch * height);
 
 	// The AND map
-	uint32 andWidth = (width + 7) / 8;
+	const uint32 andWidth = (width + 7) / 8;
 	byte *andMap = new byte[andWidth * height];
 	cur.read(andMap, andWidth * height);
 
 	_format    = kPixelFormatBGRA;
 	_formatRaw = kPixelFormatRGBA8;
-	
-	_image.width = width;
-	_image.height = height;
-	_image.size = width * height * 4;
-	_image.data = new byte[_image.size];
 
-	byte *xorSrc = xorMap;
-	byte *dst = _image.data;
+	_mipMaps.push_back(new MipMap);
+
+	_mipMaps[0]->width  = width;
+	_mipMaps[0]->height = height;
+	_mipMaps[0]->size   = width * height * 4;
+	_mipMaps[0]->data   = new byte[_mipMaps[0]->size];
+
+	const byte *xorSrc = xorMap;
+	      byte *dst    = _mipMaps[0]->data;
 
 	for (uint32 y = 0; y < height; y++) {
-		byte *andSrc = andMap + andWidth * y;
+		const byte *andSrc = andMap + andWidth * y;
 
 		for (uint32 x = 0; x < width; x++) {
 			if (bitsPerPixel == 8) {
-				byte pixel = *xorSrc++;
+				const byte pixel = *xorSrc++;
 
 				*dst++ = palette[pixel * 4];
 				*dst++ = palette[pixel * 4 + 1];
@@ -170,41 +175,6 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 
 	delete[] xorMap;
 	delete[] andMap;
-}
-
-bool WinIconImage::isCompressed() const {
-	// We've got no compression here
-	return false;
-}
-
-bool WinIconImage::hasAlpha() const {
-	return true;
-}
-
-PixelFormat WinIconImage::getFormat() const {
-	return _format;
-}
-
-PixelFormatRaw WinIconImage::getFormatRaw() const {
-	return _formatRaw;
-}
-
-PixelDataType WinIconImage::getDataType() const {
-	// The pixels are always 888(8)
-	return kPixelDataType8;
-}
-
-int WinIconImage::getMipMapCount() const {
-	// We're just using one image from here
-	return 1;
-}
-
-const WinIconImage::MipMap &WinIconImage::getMipMap(int mipMap) const {
-	return _image;
-}
-
-WinIconImage::MipMap &WinIconImage::getMipMap(int mipMap) {
-	return _image;
 }
 
 int WinIconImage::getHotspotX() const {

@@ -33,49 +33,56 @@ public:
 
 	/** A mip map. */
 	struct MipMap {
-		int    width;    ///< The mip map's width.
-		int    height;   ///< The mip map's height.
-		uint32 size;     ///< The mip map's size in bytes.
-		byte  *data;     ///< The mip map's data.
-		byte  *dataOrig; ///< The mip map's original data.
+		int    width;  ///< The mip map's width.
+		int    height; ///< The mip map's height.
+		uint32 size;   ///< The mip map's size in bytes.
+		byte  *data;   ///< The mip map's data.
 
 		MipMap();
 		~MipMap();
+
+		void swap(MipMap &right);
 	};
 
 	/** Load the image. */
 	virtual void load() = 0;
 
 	/** Is the image data compressed? */
-	virtual bool isCompressed() const = 0;
+	bool isCompressed() const;
 
-	virtual bool hasAlpha() const = 0;
+	/** Does the image data have alpha? .*/
+	bool hasAlpha() const;
 
 	/** Return the image data's general format. */
-	virtual PixelFormat    getFormat() const = 0;
+	PixelFormat    getFormat() const;
 	/** Return the image data's raw format. */
-	virtual PixelFormatRaw getFormatRaw() const = 0;
+	PixelFormatRaw getFormatRaw() const;
 	/** Return the image data pixel's type. */
-	virtual PixelDataType  getDataType() const = 0;
+	PixelDataType  getDataType() const;
 
 	/** Return the number of mip maps contained in the image. */
-	virtual int getMipMapCount() const = 0;
+	uint32 getMipMapCount() const;
 
 	/** Return a mip map. */
-	virtual const MipMap &getMipMap(int mipMap) const = 0;
+	const MipMap &getMipMap(uint32 mipMap) const;
+
+	/** Manually decompress the texture image data. */
+	void decompress();
 
 	/** Return TXI data, if embedded in the image. */
 	virtual Common::SeekableReadStream *getTXI() const;
 
 protected:
-	/** Return a mip map. */
-	virtual MipMap &getMipMap(int mipMap) = 0;
+	bool _compressed;
+	bool _hasAlpha;
 
-	/** Set the format. */
-	virtual void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
+	PixelFormat    _format;
+	PixelFormatRaw _formatRaw;
+	PixelDataType  _dataType;
 
-	/** Manually decompress texture image data. */
-	void decompress();
+	std::vector<MipMap *> _mipMaps;
+
+	static void decompress(MipMap &out, const MipMap &in, PixelFormatRaw format);
 };
 
 } // End of namespace Graphics

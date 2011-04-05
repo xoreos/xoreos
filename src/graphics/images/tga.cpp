@@ -20,10 +20,10 @@
 
 namespace Graphics {
 
-TGA::TGA(Common::SeekableReadStream *tga) : _tga(tga),
-	_hasAlpha(false), _format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8) {
-
+TGA::TGA(Common::SeekableReadStream *tga) : _tga(tga) {
 	assert(_tga);
+
+	_compressed = false;
 }
 
 TGA::~TGA() {
@@ -70,9 +70,11 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
 	// Color map specifications + X + Y
 	tga.skip(5 + 2 + 2);
 
+	_mipMaps.push_back(new MipMap);
+
 	// Image dimensions
-	_image.width  = tga.readUint16LE();
-	_image.height = tga.readUint16LE();
+	_mipMaps[0]->width  = tga.readUint16LE();
+	_mipMaps[0]->height = tga.readUint16LE();
 
 	// Bits per pixel
 	byte pixelDepth = tga.readByte();
@@ -82,10 +84,12 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
 			_hasAlpha  = false;
 			_format    = kPixelFormatBGR;
 			_formatRaw = kPixelFormatRGB8;
+			_dataType  = kPixelDataType8;
 		} else if (pixelDepth == 32) {
 			_hasAlpha  = true;
 			_format    = kPixelFormatBGRA;
 			_formatRaw = kPixelFormatRGBA8;
+			_dataType  = kPixelDataType8;
 		} else
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
 	} else if (imageType == 3) {
@@ -95,6 +99,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
 		_hasAlpha  = false;
 		_format    = kPixelFormatBGRA;
 		_formatRaw = kPixelFormatRGBA8;
+		_dataType  = kPixelDataType8;
 	}
 
 	// Image descriptor
@@ -106,22 +111,22 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
 
 void TGA::readData(Common::SeekableReadStream &tga, byte imageType) {
 	if (imageType == 2) {
-		_image.size = _image.width * _image.height;
+		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height;
 		if      (_format == kPixelFormatBGR)
-			_image.size *= 3;
+			_mipMaps[0]->size *= 3;
 		else if (_format == kPixelFormatBGRA)
-			_image.size *= 4;
+			_mipMaps[0]->size *= 4;
 
-		_image.data = new byte[_image.size];
+		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
 
-		tga.read(_image.data, _image.size);
+		tga.read(_mipMaps[0]->data, _mipMaps[0]->size);
 
 	} else if (imageType == 3) {
-		_image.size = _image.width * _image.height * 4;
-		_image.data = new byte[_image.size];
+		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height * 4;
+		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
 
-		byte  *data  = _image.data;
-		uint32 count = _image.width * _image.height;
+		byte  *data  = _mipMaps[0]->data;
+		uint32 count = _mipMaps[0]->width * _mipMaps[0]->height;
 
 		while (count-- > 0) {
 			byte g = tga.readByte();
@@ -133,41 +138,6 @@ void TGA::readData(Common::SeekableReadStream &tga, byte imageType) {
 		}
 
 	}
-}
-
-bool TGA::isCompressed() const {
-	// TGAs are never compressed
-	return false;
-}
-
-bool TGA::hasAlpha() const {
-	return _hasAlpha;
-}
-
-PixelFormat TGA::getFormat() const {
-	return _format;
-}
-
-PixelFormatRaw TGA::getFormatRaw() const {
-	return _formatRaw;
-}
-
-PixelDataType TGA::getDataType() const {
-	// TGA pixels always 888(8)
-	return kPixelDataType8;
-}
-
-int TGA::getMipMapCount() const {
-	// Just one image in TGAs
-	return 1;
-}
-
-const TGA::MipMap &TGA::getMipMap(int mipMap) const {
-	return _image;
-}
-
-TGA::MipMap &TGA::getMipMap(int mipMap) {
-	return _image;
 }
 
 } // End of namespace Graphics

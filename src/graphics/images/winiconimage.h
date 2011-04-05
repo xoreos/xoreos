@@ -31,29 +31,11 @@ public:
 
 	void load();
 
-	bool isCompressed() const;
-	bool hasAlpha() const;
-
-	PixelFormat    getFormat() const;
-	PixelFormatRaw getFormatRaw() const;
-	PixelDataType  getDataType() const;
-
-	int getMipMapCount() const;
-
-	const MipMap &getMipMap(int mipMap) const;
-
 	int getHotspotX() const;
 	int getHotspotY() const;
 
 private:
 	Common::SeekableReadStream *_cur;
-
-	PixelFormat    _format;
-	PixelFormatRaw _formatRaw;
-
-	MipMap _image;
-
-	MipMap &getMipMap(int mipMap);
 
 	uint16 _imageCount;
 	uint16 _iconType;

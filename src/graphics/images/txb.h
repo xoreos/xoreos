@@ -33,40 +33,16 @@ public:
 
 	void load();
 
-	bool isCompressed() const;
-	bool hasAlpha() const;
-
-	PixelFormat    getFormat() const;
-	PixelFormatRaw getFormatRaw() const;
-	PixelDataType  getDataType() const;
-
-	int getMipMapCount() const;
-
-	const MipMap &getMipMap(int mipMap) const;
-
 	/** Return the enclosed TXI data. */
 	Common::SeekableReadStream *getTXI() const;
 
 private:
 	Common::SeekableReadStream *_txb;
 
-	bool _compressed;
-	bool _hasAlpha;
-
-	PixelFormat    _format;
-	PixelFormatRaw _formatRaw;
-	PixelDataType  _dataType;
-
-	std::vector<MipMap *> _mipMaps;
-
 	uint32 _dataSize;
 
 	byte  *_txiData;
 	uint32 _txiDataSize;
-
-	MipMap &getMipMap(int mipMap);
-
-	void setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType);
 
 	// Loading helpers
 	void readHeader(Common::SeekableReadStream &txb);

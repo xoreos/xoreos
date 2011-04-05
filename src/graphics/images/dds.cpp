@@ -17,7 +17,6 @@
 #include "common/stream.h"
 
 #include "graphics/images/dds.h"
-#include "graphics/graphics.h"
 
 static const uint32 kDDSID  = MKID_BE('DDS ');
 static const uint32 kDXT1ID = MKID_BE('DXT1');
@@ -33,15 +32,11 @@ static const uint32 kPixelFlagsIsRGB     = 0x00000040;
 
 namespace Graphics {
 
-DDS::DDS(Common::SeekableReadStream *dds) : _dds(dds), _compressed(false), _hasAlpha(false),
-	_format(kPixelFormatRGB), _formatRaw(kPixelFormatDXT1), _dataType(kPixelDataType8) {
-
+DDS::DDS(Common::SeekableReadStream *dds) : _dds(dds) {
 	assert(_dds);
 }
 
 DDS::~DDS() {
-	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
-		delete *mipMap;
 }
 
 void DDS::load() {
@@ -56,11 +51,6 @@ void DDS::load() {
 		if (_dds->err())
 			throw Common::Exception(Common::kReadError);
 
-		if (GfxMan.needManualDeS3TC()) {
-			decompress();
-			_compressed = false;
-		}
-
 	} catch (Common::Exception &e) {
 		e.add("Failed reading DDS file");
 		throw e;
@@ -68,44 +58,6 @@ void DDS::load() {
 
 	delete _dds;
 	_dds = 0;
-}
-
-bool DDS::isCompressed() const {
-	return _compressed;
-}
-
-bool DDS::hasAlpha() const {
-	return _hasAlpha;
-}
-
-PixelFormat DDS::getFormat() const {
-	return _format;
-}
-
-PixelFormatRaw DDS::getFormatRaw() const {
-	return _formatRaw;
-}
-
-PixelDataType DDS::getDataType() const {
-	return _dataType;
-}
-
-int DDS::getMipMapCount() const {
-	return _mipMaps.size();
-}
-
-const DDS::MipMap &DDS::getMipMap(int mipMap) const {
-	return *_mipMaps[mipMap];
-}
-
-DDS::MipMap &DDS::getMipMap(int mipMap) {
-	return *_mipMaps[mipMap];
-}
-
-void DDS::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
-	_format    = format;
-	_formatRaw = formatRaw;
-	_dataType  = dataType;
 }
 
 void DDS::readHeader(Common::SeekableReadStream &dds) {

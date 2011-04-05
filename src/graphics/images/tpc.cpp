@@ -17,25 +17,18 @@
 #include "common/stream.h"
 
 #include "graphics/images/tpc.h"
-#include "graphics/graphics.h"
 
 static const byte kEncodingRGB  = 0x02;
 static const byte kEncodingRGBA = 0x04;
 
 namespace Graphics {
 
-TPC::TPC(Common::SeekableReadStream *tpc) : _tpc(tpc), _compressed(true), _hasAlpha(false),
-	_format(kPixelFormatRGB), _formatRaw(kPixelFormatDXT1), _dataType(kPixelDataType8),
-	_txiData(0), _txiDataSize(0) {
-
+TPC::TPC(Common::SeekableReadStream *tpc) : _tpc(tpc), _txiData(0), _txiDataSize(0) {
 	assert(_tpc);
 }
 
 TPC::~TPC() {
 	delete[] _txiData;
-
-	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap)
-		delete *mipMap;
 }
 
 void TPC::load() {
@@ -51,11 +44,6 @@ void TPC::load() {
 		if (_tpc->err())
 			throw Common::Exception(Common::kReadError);
 
-		if (GfxMan.needManualDeS3TC()) {
-			decompress();
-			_compressed = false;
-		}
-
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TPC file");
 		throw e;
@@ -65,49 +53,11 @@ void TPC::load() {
 	_tpc = 0;
 }
 
-bool TPC::isCompressed() const {
-	return _compressed;
-}
-
-bool TPC::hasAlpha() const {
-	return _hasAlpha;
-}
-
-PixelFormat TPC::getFormat() const {
-	return _format;
-}
-
-PixelFormatRaw TPC::getFormatRaw() const {
-	return _formatRaw;
-}
-
-PixelDataType TPC::getDataType() const {
-	return _dataType;
-}
-
-int TPC::getMipMapCount() const {
-	return _mipMaps.size();
-}
-
-const TPC::MipMap &TPC::getMipMap(int mipMap) const {
-	return *_mipMaps[mipMap];
-}
-
-TPC::MipMap &TPC::getMipMap(int mipMap) {
-	return *_mipMaps[mipMap];
-}
-
 Common::SeekableReadStream *TPC::getTXI() const {
 	if (!_txiData || (_txiDataSize == 0))
 		return 0;
 
 	return new Common::MemoryReadStream(_txiData, _txiDataSize);
-}
-
-void TPC::setFormat(PixelFormat format, PixelFormatRaw formatRaw, PixelDataType dataType) {
-	_format    = format;
-	_formatRaw = formatRaw;
-	_dataType  = dataType;
 }
 
 void TPC::readHeader(Common::SeekableReadStream &tpc) {

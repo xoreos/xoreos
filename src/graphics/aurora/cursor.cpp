@@ -97,8 +97,8 @@ void Cursor::load() {
 
 	image->load();
 
-	_width  = ((const ImageDecoder *) image)->getMipMap(0).width;
-	_height = ((const ImageDecoder *) image)->getMipMap(0).height;
+	_width  = image->getMipMap(0).width;
+	_height = image->getMipMap(0).height;
 
 	TXI txi;
 	txi.getFeatures().filter = false;

@@ -31,28 +31,8 @@ public:
 
 	void load();
 
-	bool isCompressed() const;
-	bool hasAlpha() const;
-
-	PixelFormat    getFormat() const;
-	PixelFormatRaw getFormatRaw() const;
-	PixelDataType  getDataType() const;
-
-	int getMipMapCount() const;
-
-	const MipMap &getMipMap(int mipMap) const;
-
 private:
 	Common::SeekableReadStream *_tga;
-
-	bool _hasAlpha;
-
-	PixelFormat    _format;
-	PixelFormatRaw _formatRaw;
-
-	MipMap _image;
-
-	MipMap &getMipMap(int mipMap);
 
 	// Loading helpers
 	void readHeader(Common::SeekableReadStream &tga, byte &imageType);
