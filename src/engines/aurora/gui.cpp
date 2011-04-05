@@ -419,7 +419,7 @@ void GUI::mouseUp(Widget *widget, const Events::Event &event) {
 		uint32 curTime = EventMan.getTimestamp();
 		if (((curTime - widget->_lastClickTime) < kDoubleClickTime) &&
 		    (widget->_lastClickButton == button) &&
-		    (widget->_lastClickX = x) && (widget->_lastClickY = x)) {
+		    (widget->_lastClickX == x) && (widget->_lastClickY == y)) {
 
 			widget->mouseDblClick(button, x, y);
 		}
