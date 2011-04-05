@@ -40,7 +40,7 @@ Model::~Model() {
 	hide();
 
 	if (_lists != 0)
-		GfxMan.abandon(_lists, 2);
+		GfxMan.abandon(_lists, kRenderPassAll);
 
 	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
 		delete *s;
@@ -363,7 +363,7 @@ void Model::render(RenderPass pass) {
 
 	// Render
 	buildList(pass);
-		glCallList(_lists + pass);
+	glCallList(_lists + pass);
 
 	// Reset the first texture units
 	TextureMan.reset();
@@ -430,10 +430,10 @@ void Model::doRebuild() {
 }
 
 void Model::doDestroy() {
-	if (!_lists == 0)
+	if (_lists == 0)
 		return;
 
-	glDeleteLists(_lists, 2);
+	glDeleteLists(_lists, kRenderPassAll);
 	_lists = 0;
 }
 
