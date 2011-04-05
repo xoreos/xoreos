@@ -52,6 +52,8 @@ public:
 	void setWidth (float w); ///< Set the quad's width.
 	void setHeight(float h); ///< Set the quad's height.
 
+	void setXOR(bool enabled); ///< Enable/Disable XOR mode.
+
 	/** Is the point within the quad? */
 	bool isIn(float x, float y) const;
 
@@ -76,6 +78,8 @@ private:
 	float _g;
 	float _b;
 	float _a;
+
+	bool _xor;
 };
 
 } // End of namespace Aurora

@@ -29,7 +29,7 @@ GUIQuad::GUIQuad(const Common::UString &texture,
                  float tX1, float tY1, float tX2, float tY2) :
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
-	_r(1.0), _g(1.0), _b(1.0), _a(1.0) {
+	_r(1.0), _g(1.0), _b(1.0), _a(1.0), _xor(false) {
 
 	try {
 
@@ -124,6 +124,14 @@ void GUIQuad::setHeight(float h) {
 	GfxMan.unlockFrame();
 }
 
+void GUIQuad::setXOR(bool enabled) {
+	GfxMan.lockFrame();
+
+	_xor = enabled;
+
+	GfxMan.unlockFrame();
+}
+
 bool GUIQuad::isIn(float x, float y) const {
 	if ((x < _x1) || (x > _x2))
 		return false;
@@ -146,6 +154,11 @@ void GUIQuad::render(RenderPass pass) {
 
 	glColor4f(_r, _g, _b, _a);
 
+	if (_xor) {
+		glEnable(GL_COLOR_LOGIC_OP);
+		glLogicOp(GL_XOR);
+	}
+
 	glBegin(GL_QUADS);
 		glTexCoord2f(_tX1, _tY1);
 		glVertex2f(_x1, _y1);
@@ -156,6 +169,9 @@ void GUIQuad::render(RenderPass pass) {
 		glTexCoord2f(_tX1, _tY2);
 		glVertex2f(_x1, _y2);
 	glEnd();
+
+	if (_xor)
+		glDisable(GL_COLOR_LOGIC_OP);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 }
