@@ -35,6 +35,7 @@ public:
 	     float align = 0.0);
 	~Text();
 
+	const Common::UString &get() const;
 	void getPosition(float &x, float &y, float &z) const;
 
 	void set(const Common::UString &str);

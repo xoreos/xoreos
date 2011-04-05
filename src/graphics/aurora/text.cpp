@@ -79,6 +79,10 @@ void Text::unsetColor() {
 	GfxMan.unlockFrame();
 }
 
+const Common::UString &Text::get() const {
+	return _str;
+}
+
 void Text::getPosition(float &x, float &y, float &z) const {
 	x = _x;
 	y = _y;
