@@ -670,9 +670,7 @@ void UString::erase(iterator pos) {
 	erase(pos, ++to);
 }
 
-void UString::split(iterator splitPoint,
-		Common::UString &left, Common::UString &right, bool remove) const {
-
+void UString::split(iterator splitPoint, UString &left, UString &right, bool remove) const {
 	left.clear();
 	right.clear();
 
@@ -686,14 +684,26 @@ void UString::split(iterator splitPoint,
 	}
 
 	iterator it = begin();
-	for (it = begin(); it != splitPoint; ++it)
+	for ( ; it != splitPoint; ++it)
 		left += *it;
 
 	if (remove)
 		++it;
 
-	for (; it != end(); ++it)
+	for ( ; it != end(); ++it)
 		right += *it;
+}
+
+UString UString::substr(iterator from, iterator to) const {
+	UString sub;
+
+	iterator it = begin();
+	for ( ; it != from; ++it);
+
+	for ( ; it != to; ++it)
+		sub += *it;
+
+	return sub;
 }
 
 void UString::readASCII(SeekableReadStream &stream) {

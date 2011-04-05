@@ -137,8 +137,9 @@ public:
 	/** Erase the character at this position. */
 	void erase(iterator pos);
 
-	void split(iterator splitPoint, Common::UString &left,
-	           Common::UString &right, bool remove = false) const;
+	void split(iterator splitPoint, UString &left, UString &right, bool remove = false) const;
+
+	UString substr(iterator from, iterator to) const;
 
 	/** Parse a string into different types. */
 	template<typename T> bool parse(T &v, int skip = 0) const {
