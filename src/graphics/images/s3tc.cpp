@@ -51,7 +51,7 @@ struct DXT1Texel {
 	x.color_1 = src.readUint16LE(); \
 	x.pixels = src.readUint32BE()
 
-void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch) {	
+void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch) {
 	for (int32 ty = height; ty > 0; ty -= 4) {
 		for (uint32 tx = 0; tx < width; tx += 4) {
 			DXT1Texel tex;
@@ -75,7 +75,7 @@ void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 
 			for (byte y = 0; y < blockHeight; ++y) {
 				for (byte x = 0; x < blockWidth; ++x) {
-					WRITE_BE_UINT32(dest + (ty - blockHeight + y) * pitch + (tx + x) * 4, blended[cpx & 3]);
+					WRITE_BE_UINT32(dest + (height - 1 - (ty - blockHeight + y)) * pitch + (tx + x) * 4, blended[cpx & 3]);
 					cpx >>= 2;
 				}
 			}
@@ -95,7 +95,7 @@ struct DXT23Texel : public DXT1Texel {
 	READ_DXT1_TEXEL(x)
 
 void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch) {
-	for (uint32 ty = height; ty; ty -= 4) {
+	for (int32 ty = height; ty > 0; ty -= 4) {
 		for (uint32 tx = 0; tx < width; tx += 4) {
 			DXT23Texel tex;
 			uint32 blended[4];
@@ -113,7 +113,7 @@ void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 			for (byte y = 0; y < blockHeight; ++y) {
 				for (byte x = 0; x < blockWidth; ++x) {
 					uint32 alpha = (tex.alpha[y] >> (x * 4)) & 0xF;
-					WRITE_BE_UINT32(dest + (ty - blockHeight + y) * pitch + (tx + x) * 4, blended[cpx & 3] | alpha << 4);
+					WRITE_BE_UINT32(dest + (height - 1 - (ty - blockHeight + y)) * pitch + (tx + x) * 4, blended[cpx & 3] | alpha << 4);
 					cpx >>= 2;
 				}
 			}
@@ -177,7 +177,7 @@ void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 			for (byte y = 0; y < blockHeight; ++y) {
 				for (byte x = 0; x < blockWidth; ++x) {
 					uint32 alpha = alphab[(tex.alphabl >> (3 * (4 * (3 - y) + x))) & 7];
-					WRITE_BE_UINT32(dest + (ty - blockHeight + y) * pitch + (tx + x) * 4, blended[cpx & 3] | alpha);
+					WRITE_BE_UINT32(dest + (height - 1 - (ty - blockHeight + y)) * pitch + (tx + x) * 4, blended[cpx & 3] | alpha);
 					cpx >>= 2;
 				}
 			}
