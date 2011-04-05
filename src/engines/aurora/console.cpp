@@ -66,6 +66,10 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 h
 	_cursor = new Graphics::Aurora::GUIQuad("", 0.0, 1.0, 0.0, cursorHeight);
 	_cursor->setXOR(true);
 
+	_highlight = new Graphics::Aurora::GUIQuad("", 0.0, 0.0, 0.0, cursorHeight);
+	_highlight->setColor(1.0, 1.0, 1.0, 0.0);
+	_highlight->setXOR(true);
+
 	_lines.reserve(lines - 1);
 	for (uint32 i = 0; i < (lines - 1); i++)
 		_lines.push_back(new Graphics::Aurora::Text(_font, ""));
@@ -75,6 +79,8 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 h
 	updateScrollbarLength();
 	updateScrollbarPosition();
 
+	clearHighlight();
+
 	calculateDistance();
 }
 
@@ -83,6 +89,7 @@ ConsoleWindow::~ConsoleWindow() {
 	     l != _lines.end(); ++l)
 		delete *l;
 
+	delete _highlight;
 	delete _cursor;
 	delete _prompt;
 	delete _input;
@@ -95,6 +102,7 @@ void ConsoleWindow::show() {
 	     l != _lines.end(); ++l)
 		(*l)->show();
 
+	_highlight->show();
 	_cursor->show();
 	_prompt->show();
 	_input->show();
@@ -111,6 +119,7 @@ void ConsoleWindow::hide() {
 	     l != _lines.end(); ++l)
 		(*l)->hide();
 
+	_highlight->hide();
 	_cursor->hide();
 	_prompt->hide();
 	_input->hide();
@@ -220,6 +229,126 @@ void ConsoleWindow::printLine(const Common::UString &line) {
 
 	updateScrollbarLength();
 	redrawLines();
+}
+
+void ConsoleWindow::updateHighlight() {
+	if ((_highlightLength == 0) || (_highlightY >= kConsoleLines)) {
+		_highlight->setColor(1.0, 1.0, 1.0, 0.0);
+		return;
+	}
+
+	const float charWidth = _font.getFont().getWidth(' ');
+
+	const int32 start = _highlightX;
+	const int32 end   = _highlightX + _highlightLength;
+
+	const  int32 x      = MIN(start, end);
+	const uint32 length = ABS(start - end);
+
+	_highlight->setWidth(length * charWidth);
+	_highlight->setPosition(_x + x * charWidth, _y + _highlightY * _lineHeight, -1002.0);
+	_highlight->setColor(1.0, 1.0, 1.0, 1.0);
+}
+
+bool ConsoleWindow::getPosition(float cursorX, float cursorY, float &x, float &y) {
+	const float sW = GfxMan.getScreenWidth();
+	const float sH = GfxMan.getScreenHeight();
+
+	const float realX =       cursorX  - (sW / 2.0);
+	const float realY = (sH - cursorY) - (sH / 2.0);
+
+	x = (realX - _x) / _font.getFont().getWidth(' ');
+	y = (realY - _y) / _lineHeight;
+
+	if ((x < _x) || (x > (_x + _width)))
+		return false;
+	if ((y < _y) || (y > (_y + _height)))
+		return false;
+
+	return true;
+}
+
+void ConsoleWindow::startHighlight(float x, float y) {
+	clearHighlight();
+
+	float lineX, lineY;
+	if (!getPosition(x, y, lineX, lineY))
+		return;
+
+	_highlightX = floor(lineX);
+	_highlightY = floor(lineY);
+
+	uint32 minX, maxX;
+	if        (_highlightY == 0) {
+		minX = _prompt->get().size();
+		maxX = _prompt->get().size() + _input->get().size();
+	} else if (_highlightY >= _lines.size()) {
+		minX = maxX = 0;
+	} else {
+		minX = 0;
+		maxX = _lines[_lines.size() - _highlightY]->get().size();
+	}
+
+	_highlightX = CLIP(_highlightX, minX, maxX);
+
+	updateHighlight();
+}
+
+void ConsoleWindow::stopHighlight(float x, float y) {
+	float lineX, lineY;
+	if (!getPosition(x, y, lineX, lineY))
+		return;
+
+	uint32 endX = floor(lineX);
+
+	uint32 minX, maxX;
+	if        (_highlightY == 0) {
+		minX = _prompt->get().size();
+		maxX = _prompt->get().size() + _input->get().size();
+	} else if (_highlightY >= _lines.size()) {
+		minX = maxX = 0;
+	} else {
+		minX = 0;
+		maxX = _lines[_lines.size() - _highlightY]->get().size();
+	}
+
+	endX = CLIP(endX, minX, maxX);
+
+	_highlightLength = ((int32) endX) - ((int32) _highlightX);
+
+	updateHighlight();
+}
+
+void ConsoleWindow::clearHighlight() {
+	_highlightX      = 0;
+	_highlightY      = 0;
+	_highlightLength = 0;
+
+	updateHighlight();
+}
+
+const Common::UString ConsoleWindow::getHighlight() const {
+	if ((_highlightLength == 0) || (_highlightY >= kConsoleLines))
+		return "";
+
+	int32 start = _highlightX;
+	int32 end   = _highlightX + _highlightLength;
+
+	if (start > end)
+		SWAP(start, end);
+
+	Common::UString line;
+	if (_highlightY == 0) {
+		start = start - _prompt->get().size();
+		end   = end   - _prompt->get().size();
+		line  = _input->get();
+	} else
+		line = _lines[_lines.size() - _highlightY]->get();
+
+	start = MAX(0, start);
+	end   = MAX(0, end  );
+
+	return line.substr(line.getPosition(start), line.getPosition(end));
 }
 
 void ConsoleWindow::scrollUp(uint32 n) {
@@ -474,7 +603,41 @@ bool Console::processEvent(Events::Event &event) {
 	if (!isVisible())
 		return false;
 
+	if (event.type == Events::kEventMouseDown) {
+		const uint8 button     = event.button.button;
+		const uint8 pasteMask1 = SDL_BUTTON_MMASK;
+		const uint8 pasteMask2 = SDL_BUTTON_LMASK | SDL_BUTTON_RMASK;
+
+		if (((button & pasteMask1) == pasteMask1) || ((button & pasteMask2) == pasteMask2)) {
+			_readLine->addInput(_console->getHighlight());
+			_console->setInput(_readLine->getCurrentLine(),
+					_readLine->getCursorPosition(), _readLine->getOverwrite());
+			return true;
+		}
+
+		if (button & SDL_BUTTON_LMASK) {
+			_console->startHighlight(event.button.x, event.button.y);
+			return true;
+		}
+	}
+
+	if (event.type == Events::kEventMouseMove) {
+		if (event.motion.state & SDL_BUTTON_LMASK) {
+			_console->stopHighlight(event.button.x, event.button.y);
+			return true;
+		}
+	}
+
+	if (event.type == Events::kEventMouseUp) {
+		if (event.button.button & SDL_BUTTON_LMASK) {
+			_console->stopHighlight(event.button.x, event.button.y);
+			return true;
+		}
+	}
+
 	if (event.type == Events::kEventKeyDown) {
+		_console->clearHighlight();
+
 		if (event.key.keysym.sym != SDLK_TAB) {
 			_tabCount = 0;
 			_printedCompleteWarning = false;

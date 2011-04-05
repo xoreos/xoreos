@@ -62,6 +62,12 @@ public:
 	void clear();
 	void print(const Common::UString &line);
 
+	void startHighlight(float x, float y);
+	void stopHighlight(float x, float y);
+	void clearHighlight();
+
+	const Common::UString getHighlight() const;
+
 	void scrollUp(uint32 n = 1);
 	void scrollDown(uint32 n = 1);
 	void scrollTop();
@@ -78,6 +84,7 @@ private:
 
 	Graphics::Aurora::Text    *_prompt;
 	Graphics::Aurora::GUIQuad *_cursor;
+	Graphics::Aurora::GUIQuad *_highlight;
 
 	uint32 _historySizeMax;
 	uint32 _historySizeCurrent;
@@ -107,11 +114,17 @@ private:
 	float _scrollbarLength;
 	float _scrollbarPosition;
 
+	uint32 _highlightX;
+	uint32 _highlightY;
+	 int32 _highlightLength;
 
 	void recalcCursor();
 	void redrawLines();
 
 	void printLine(const Common::UString &line);
+
+	void updateHighlight();
+	bool getPosition(float cursorX, float cursorY, float &x, float &y);
 
 	void updateScrollbarLength();
 	void updateScrollbarPosition();
