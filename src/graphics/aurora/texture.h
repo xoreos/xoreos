@@ -52,6 +52,9 @@ public:
 	/** Reload the texture. */
 	bool reload(const Common::UString &name = "");
 
+	/** Dump the texture into a TGA. */
+	bool dumpTGA(const Common::UString &fileName) const;
+
 protected:
 	// GLContainer
 	void doRebuild();

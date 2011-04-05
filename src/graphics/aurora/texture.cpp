@@ -276,6 +276,13 @@ bool Texture::reload(const Common::UString &name) {
 	return true;
 }
 
+bool Texture::dumpTGA(const Common::UString &fileName) const {
+	if (!_image)
+		return false;
+
+	return _image->dumpTGA(fileName);
+}
+
 } // End of namespace Aurora
 
 } // End of namespace Graphics
