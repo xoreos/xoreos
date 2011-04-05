@@ -37,6 +37,8 @@
 #include "engines/aurora/util.h"
 
 
+static const uint32 kDoubleClickTime = 500;
+
 static const char *kPrompt = " >";
 
 static const uint32 kCommandHistorySize = 100;
@@ -268,6 +270,21 @@ bool ConsoleWindow::getPosition(float cursorX, float cursorY, float &x, float &y
 	return true;
 }
 
+void ConsoleWindow::highlightClip(uint32 &x, uint32 &y) const {
+	y = CLIP<uint32>(y, 0, _lines.size());
+
+	uint32 minX, maxX;
+	if        (y == 0) {
+		minX = _prompt->get().size();
+		maxX = _prompt->get().size() + _input->get().size();
+	} else {
+		minX = 0;
+		maxX = _lines[_lines.size() - y]->get().size();
+	}
+
+	x = CLIP(x, minX, maxX);
+}
+
 void ConsoleWindow::startHighlight(float x, float y) {
 	clearHighlight();
 
@@ -278,18 +295,7 @@ void ConsoleWindow::startHighlight(float x, float y) {
 	_highlightX = floor(lineX);
 	_highlightY = floor(lineY);
 
-	uint32 minX, maxX;
-	if        (_highlightY == 0) {
-		minX = _prompt->get().size();
-		maxX = _prompt->get().size() + _input->get().size();
-	} else if (_highlightY >= _lines.size()) {
-		minX = maxX = 0;
-	} else {
-		minX = 0;
-		maxX = _lines[_lines.size() - _highlightY]->get().size();
-	}
-
-	_highlightX = CLIP(_highlightX, minX, maxX);
+	highlightClip(_highlightX, _highlightY);
 
 	updateHighlight();
 }
@@ -301,20 +307,54 @@ void ConsoleWindow::stopHighlight(float x, float y) {
 
 	uint32 endX = floor(lineX);
 
-	uint32 minX, maxX;
-	if        (_highlightY == 0) {
-		minX = _prompt->get().size();
-		maxX = _prompt->get().size() + _input->get().size();
-	} else if (_highlightY >= _lines.size()) {
-		minX = maxX = 0;
-	} else {
-		minX = 0;
-		maxX = _lines[_lines.size() - _highlightY]->get().size();
-	}
-
-	endX = CLIP(endX, minX, maxX);
+	highlightClip(endX, _highlightY);
 
 	_highlightLength = ((int32) endX) - ((int32) _highlightX);
+
+	updateHighlight();
+}
+
+void ConsoleWindow::highlightWord(float x, float y) {
+	clearHighlight();
+
+	float lineX, lineY;
+	if (!getPosition(x, y, lineX, lineY))
+		return;
+
+	uint32 wX = floor(lineX);
+	uint32 wY = floor(lineY);
+
+	highlightClip(wX, wY);
+
+	const Common::UString &line = (wY == 0) ? _input->get() :
+	                                          _lines[_lines.size() - wY]->get();
+	const uint32 pos = (wY == 0) ? (wX - _prompt->get().size()) : wX;
+
+	uint32 wordStart = findWordStart(line, pos);
+	uint32 wordEnd   = findWordEnd  (line, pos);
+
+	_highlightX      = (wY == 0) ? (wordStart + _prompt->get().size()) : wordStart;
+	_highlightY      =  wY;
+	_highlightLength = wordEnd - wordStart;
+
+	updateHighlight();
+}
+
+void ConsoleWindow::highlightLine(float x, float y) {
+	clearHighlight();
+
+	float lineX, lineY;
+	if (!getPosition(x, y, lineX, lineY))
+		return;
+
+	_highlightX = 0;
+	_highlightY = floor(lineY);
+
+	highlightClip(_highlightX, _highlightY);
+
+	const Common::UString &line = (_highlightY == 0) ?
+		_input->get() : _lines[_lines.size() - _highlightY]->get();
+	_highlightLength = line.size();
 
 	updateHighlight();
 }
@@ -469,6 +509,31 @@ void ConsoleWindow::notifyResized(int oldWidth, int oldHeight, int newWidth, int
 	recalcCursor();
 }
 
+uint32 ConsoleWindow::findWordStart(const Common::UString &line, uint32 pos) {
+	Common::UString::iterator it = line.getPosition(pos);
+	if ((it == line.end()) || (*it == ' '))
+		return 0;
+
+	while ((it != line.begin()) && (*it != ' '))
+		--it;
+
+	if (*it == ' ')
+		++it;
+
+	return line.getPosition(it);
+}
+
+uint32 ConsoleWindow::findWordEnd(const Common::UString &line, uint32 pos) {
+	Common::UString::iterator it = line.getPosition(pos);
+	if ((it == line.end()) || (*it == ' '))
+		return 0;
+
+	while ((it != line.end()) && (*it != ' '))
+		++it;
+
+	return line.getPosition(it);
+}
+
 void ConsoleWindow::recalcCursor() {
 	Common::UString input = _inputText;
 	input.truncate(_cursorPosition);
@@ -515,7 +580,8 @@ void ConsoleWindow::updateScrollbarPosition() {
 
 
 Console::Console(const Common::UString &font) : _neverShown(true), _visible(false),
-	_tabCount(0), _printedCompleteWarning(false),
+	_tabCount(0), _printedCompleteWarning(false), _lastClickCount(-1),
+	_lastClickButton(0), _lastClickTime(0), _lastClickX(0), _lastClickY(0),
 	_maxSizeVideos(0), _maxSizeSounds(0) {
 
 	_readLine = new Common::ReadLine(kCommandHistorySize);
@@ -629,10 +695,31 @@ bool Console::processEvent(Events::Event &event) {
 	}
 
 	if (event.type == Events::kEventMouseUp) {
+		uint32 curTime = EventMan.getTimestamp();
+
+		if (((curTime - _lastClickTime) < kDoubleClickTime) &&
+		    (_lastClickButton == event.button.button) &&
+		    (_lastClickX == event.button.x) && (_lastClickY == event.button.y))
+			_lastClickCount = (_lastClickCount + 1) % 3;
+		else
+			_lastClickCount = 0;
+
+		_lastClickButton = event.button.button;
+		_lastClickTime   = curTime;
+		_lastClickX      = event.button.x;
+		_lastClickY      = event.button.y;
+
 		if (event.button.button & SDL_BUTTON_LMASK) {
-			_console->stopHighlight(event.button.x, event.button.y);
+			if      (_lastClickCount == 0)
+				_console->stopHighlight(event.button.x, event.button.y);
+			else if (_lastClickCount == 1)
+				_console->highlightWord(event.button.x, event.button.y);
+			else if (_lastClickCount == 2)
+				_console->highlightLine(event.button.x, event.button.y);
+
 			return true;
 		}
+
 	}
 
 	if (event.type == Events::kEventKeyDown) {

@@ -48,6 +48,9 @@ public:
 	bool isIn(float x, float y) const;
 	bool isIn(float x, float y, float z) const;
 
+
+	// Dimensions
+
 	float getWidth () const;
 	float getHeight() const;
 	float getContentWidth () const;
@@ -56,17 +59,33 @@ public:
 	uint32 getLines  () const;
 	uint32 getColumns() const;
 
+
+	// Input
+
 	void setPrompt(const Common::UString &prompt);
 	void setInput(const Common::UString &input, uint32 cursorPos, bool overwrite);
+
+
+	// Output
 
 	void clear();
 	void print(const Common::UString &line);
 
-	void startHighlight(float x, float y);
-	void stopHighlight(float x, float y);
+
+	// Highlight
+
 	void clearHighlight();
 
+	void startHighlight(float x, float y);
+	void stopHighlight(float x, float y);
+
+	void highlightWord(float x, float y);
+	void highlightLine(float x, float y);
+
 	const Common::UString getHighlight() const;
+
+
+	// Scrolling
 
 	void scrollUp(uint32 n = 1);
 	void scrollDown(uint32 n = 1);
@@ -125,11 +144,15 @@ private:
 
 	void updateHighlight();
 	bool getPosition(float cursorX, float cursorY, float &x, float &y);
+	void highlightClip(uint32 &x, uint32 &y) const;
 
 	void updateScrollbarLength();
 	void updateScrollbarPosition();
 
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
+
+	static uint32 findWordStart(const Common::UString &line, uint32 pos);
+	static uint32 findWordEnd  (const Common::UString &line, uint32 pos);
 };
 
 class Console {
@@ -199,6 +222,12 @@ private:
 
 	uint32 _tabCount;
 	bool _printedCompleteWarning;
+
+	 int8  _lastClickCount;
+	uint8  _lastClickButton;
+	uint32 _lastClickTime;
+	uint32 _lastClickX;
+	uint32 _lastClickY;
 
 
 	std::list<Common::UString> _videos;
