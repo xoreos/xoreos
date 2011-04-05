@@ -61,6 +61,10 @@ public:
 	/** Return the current tab-completion hints. */
 	const std::list<UString> &getCompleteHint(uint32 &maxSize, uint32 &count) const;
 
+	/** Add that character to the current input. */
+	void addInput(uint32 c);
+	/** Add that string to the current input. */
+	void addInput(const UString &str);
 
 	/** Process that given events.
 	 *

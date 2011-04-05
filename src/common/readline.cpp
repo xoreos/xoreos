@@ -85,6 +85,25 @@ const std::list<UString> &ReadLine::getCompleteHint(uint32 &maxSize, uint32 &cou
 	return _completeHint;
 }
 
+void ReadLine::addInput(uint32 c) {
+	if (c == 0)
+		return;
+
+	if (_overwrite)
+		_currentLine.replace(getCurrentPosition(), c);
+	else
+		_currentLine.insert(getCurrentPosition(), c);
+
+	_cursorPosition++;
+
+	updateHistory();
+}
+
+void ReadLine::addInput(const UString &str) {
+	for (Common::UString::iterator c = str.begin(); c != str.end(); ++c)
+		addInput(*c);
+}
+
 bool ReadLine::processEvent(Events::Event &event, UString &command) {
 	command.clear();
 
