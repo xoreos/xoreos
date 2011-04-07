@@ -132,7 +132,7 @@ void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda) {
 
 		_tokenizeASCII->skipToken(twoda);
 
-		int count = _tokenizeASCII->getTokens(twoda, *row, columnCount);
+		int count = _tokenizeASCII->getTokens(twoda, *row, columnCount, columnCount);
 
 		_tokenizeASCII->nextChunk(twoda);
 
