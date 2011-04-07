@@ -31,6 +31,7 @@ TwoDAFile::TwoDAFile() {
 	_tokenizeASCII = new Common::StreamTokenizer(Common::StreamTokenizer::kRuleIgnoreAll);
 
 	_tokenizeASCII->addSeparator(' ');
+	_tokenizeASCII->addSeparator('\t');
 	_tokenizeASCII->addQuote('\"');
 	_tokenizeASCII->addChunkEnd('\n');
 	_tokenizeASCII->addIgnore('\r');
