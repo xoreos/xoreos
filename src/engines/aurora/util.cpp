@@ -12,23 +12,24 @@
  *  Generic Aurora engines utility functions.
  */
 
-#include "engines/aurora/util.h"
-
 #include "common/error.h"
 #include "common/stream.h"
 #include "common/file.h"
 #include "common/configman.h"
 
-#include "events/events.h"
-
-#include "sound/sound.h"
+#include "../../aurora/util.h"
+#include "../../aurora/resman.h"
+#include "../../aurora/gfffile.h"
+#include "../../aurora/2dafile.h"
 
 #include "graphics/aurora/videoplayer.h"
 #include "graphics/aurora/texture.h"
 
-#include "../../aurora/util.h"
-#include "../../aurora/resman.h"
-#include "../../aurora/gfffile.h"
+#include "sound/sound.h"
+
+#include "events/events.h"
+
+#include "engines/aurora/util.h"
 
 namespace Engines {
 
@@ -201,6 +202,28 @@ bool dumpTGA(const Common::UString &name) {
 	}
 
 	return false;
+}
+
+bool dump2DA(const Common::UString &name) {
+	Common::SeekableReadStream *twoDAFile = 0;
+	bool success = false;
+
+	try {
+
+		if (!(twoDAFile = ResMan.getResource(name, Aurora::kFileType2DA)))
+			return false;
+
+		Aurora::TwoDAFile twoda;
+
+		twoda.load(*twoDAFile);
+
+		success = twoda.dumpASCII(name + ".2da");
+
+	} catch (...) {
+	}
+
+	delete twoDAFile;
+	return success;
 }
 
 } // End of namespace Engines

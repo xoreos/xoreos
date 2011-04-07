@@ -630,6 +630,10 @@ Console::Console(const Common::UString &font) : _neverShown(true), _visible(fals
 			"Usage: dumpres <resource>\nDump a resource to file");
 	registerCommand("dumptga"   , boost::bind(&Console::cmdDumpTGA   , this, _1),
 			"Usage: dumptga <resource>\nDump an image resource into a TGA");
+	registerCommand("dump2da"   , boost::bind(&Console::cmdDump2DA   , this, _1),
+			"Usage: dump2da <2da>\nDump a 2DA to file");
+	registerCommand("dumpall2da", boost::bind(&Console::cmdDumpAll2DA, this, _1),
+			"Usage: dumpall2da\nDump all 2DA to file");
 	registerCommand("listvideos", boost::bind(&Console::cmdListVideos, this, _1),
 			"Usage: listvideos\nList all available videos");
 	registerCommand("playvideo" , boost::bind(&Console::cmdPlayVideo , this, _1),
@@ -1033,6 +1037,31 @@ void Console::cmdDumpTGA(const CommandLine &cl) {
 		printf("Dumped TGA \"%s\"", cl.args.c_str());
 	else
 		printf("Failed dumping TGA \"%s\"", cl.args.c_str());
+}
+
+void Console::cmdDump2DA(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	if (dump2DA(cl.args))
+		printf("Dumped 2DA \"%s\"", cl.args.c_str());
+	else
+		printf("Failed dumping 2DA \"%s\"", cl.args.c_str());
+}
+
+void Console::cmdDumpAll2DA(const CommandLine &cl) {
+	std::list<Aurora::ResourceManager::ResourceID> twoda;
+	ResMan.getAvailabeResources(Aurora::kFileType2DA, twoda);
+
+	std::list<Aurora::ResourceManager::ResourceID>::const_iterator t;
+	for (t = twoda.begin(); t != twoda.end(); ++t) {
+		if (dump2DA(t->name))
+			printf("Dumped 2DA \"%s\"", t->name.c_str());
+		else
+			printf("Failed dumping 2DA \"%s\"", t->name.c_str());
+	}
 }
 
 void Console::cmdListVideos(const CommandLine &cl) {

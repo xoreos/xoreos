@@ -63,6 +63,9 @@ bool dumpResource(const Common::UString &name, const Common::UString &file = "")
 /** Debug method to quickly dump an image resource to disk. */
 bool dumpTGA(const Common::UString &name);
 
+/** Debug method to quickly dump a 2DA to disk. */
+bool dump2DA(const Common::UString &name);
+
 } // End of namespace Engines
 
 #endif // ENGINES_AURORA_UTIL_H
