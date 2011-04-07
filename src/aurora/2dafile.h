@@ -31,13 +31,41 @@ namespace Common {
 
 namespace Aurora {
 
+class TwoDAFile;
+
+class TwoDARow {
+public:
+	/** Return the contents of a cell as a string. */
+	const Common::UString &getString(uint32 column) const;
+	/** Return the contents of a cell as a string. */
+	const Common::UString &getString(const Common::UString &column) const;
+
+	/** Return the contents of a cell as an int. */
+	const int32 getInt(uint32 column) const;
+	/** Return the contents of a cell as an int. */
+	const int32 getInt(const Common::UString &column) const;
+
+	/** Return the contents of a cell as a float. */
+	const float getFloat(uint32 column) const;
+	/** Return the contents of a cell as a float. */
+	const float getFloat(const Common::UString &column) const;
+
+private:
+	TwoDAFile *_parent; ///< The parent 2DA.
+
+	std::vector<Common::UString> _data;
+
+	TwoDARow(TwoDAFile &parent);
+	~TwoDARow();
+
+	const Common::UString &getCell(uint32 n) const;
+
+	friend class TwoDAFile;
+};
+
 /** Class to hold the two-dimensional array of a 2DA file. */
 class TwoDAFile : public AuroraBase {
 public:
-	static const int kColumnInvalid = 0xFFFFFFFF;
-
-	typedef std::vector<Common::UString> Row;
-
 	TwoDAFile();
 	~TwoDAFile();
 
@@ -57,74 +85,50 @@ public:
 	uint32 getColumnCount() const;
 
 	/** Return the columns' headers. */
-	const Row &getHeaders() const;
+	const std::vector<Common::UString> &getHeaders() const;
 
 	/** Translate a column header to a column index. */
 	uint32 headerToColumn(const Common::UString &header) const;
 
-	/** Get a complete row.
-	 *
-	 *  @param  row The row's index.
-	 *  @return A pointer to the row, or 0 if the row does not exist.
-	 */
-	const Row *getRow(uint32 row) const;
-
-	/** Return the contents of a cell as a string. */
-	const Common::UString &getCellString(uint32 row, uint32 column) const;
-	/** Return the contents of a cell as a string. */
-	const Common::UString &getCellString(uint32 row, const Common::UString &column) const;
-
-	/** Return the contents of a cell as an int. */
-	const int32 getCellInt(uint32 row, uint32 column, int def = 0) const;
-	/** Return the contents of a cell as an int. */
-	const int32 getCellInt(uint32 row, const Common::UString &column, int def = 0) const;
-
-	/** Return the contents of a cell as a float. */
-	const float getCellFloat(uint32 row, uint32 column, float def = 0.0) const;
-	/** Return the contents of a cell as a float. */
-	const float getCellFloat(uint32 row, const Common::UString &column, float = 0.0) const;
+	/** Get a row. */
+	const TwoDARow &getRow(uint32 row) const;
 
 	/** Dump the 2DA data into an V2.0 ASCII 2DA. */
 	bool dumpASCII(const Common::UString &fileName) const;
 
 private:
-	typedef std::vector<Row *> Array;
-
 	typedef std::map<Common::UString, uint32, Common::UString::iless> HeaderMap;
 
 	Common::UString _defaultString; ///< The default string to return should a cell not exist.
 	int32           _defaultInt;    ///< The default int to return should a cell not exist.
 	float           _defaultFloat;  ///< The default float to return should a cell not exist.
 
-	Row _headers; ///< The columns' headers.
-	Array _array; ///< The array itself.
-
-	/** Map to translate a column header to an index. */
+	std::vector<Common::UString> _headers;
 	HeaderMap _headerMap;
 
-	/** Tokenizer for the ASCII file format. */
-	Common::StreamTokenizer *_tokenizeASCII;
+	TwoDARow _emptyRow;
+	std::vector<TwoDARow *> _rows;
 
 	// Loading helpers
 	void read2a(Common::SeekableReadStream &twoda);
 	void read2b(Common::SeekableReadStream &twoda);
 
 	// ASCII loading helpers
-	void readDefault2a(Common::SeekableReadStream &twoda);
-	void readHeaders2a(Common::SeekableReadStream &twoda);
-	void readRows2a(Common::SeekableReadStream &twoda);
+	void readDefault2a(Common::SeekableReadStream &twoda, Common::StreamTokenizer &tokenize);
+	void readHeaders2a(Common::SeekableReadStream &twoda, Common::StreamTokenizer &tokenize);
+	void readRows2a   (Common::SeekableReadStream &twoda, Common::StreamTokenizer &tokenize);
 
 	// Binary loading helpers
-	void readHeaders2b(Common::SeekableReadStream &twoda);
+	void readHeaders2b (Common::SeekableReadStream &twoda);
 	void skipRowNames2b(Common::SeekableReadStream &twoda);
-	void readRows2b(Common::SeekableReadStream &twoda);
+	void readRows2b    (Common::SeekableReadStream &twoda);
 
 	void createHeaderMap();
 
-	const Common::UString *getCell(uint32 row, uint32 column) const;
-
 	static int32 parseInt(const Common::UString &str);
 	static float parseFloat(const Common::UString &str);
+
+	friend class TwoDARow;
 };
 
 } // End of namespace Aurora

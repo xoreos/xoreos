@@ -45,6 +45,13 @@ Creature::Part::~Part() {
 }
 
 
+Creature::PartModels::PartModels() {
+	headPosition[0] = 0.0;
+	headPosition[1] = 0.0;
+	headPosition[2] = 0.0;
+}
+
+
 Creature::Creature() : _appearance(Aurora::kFieldIDInvalid) {
 }
 
@@ -172,7 +179,7 @@ void Creature::loadPortrait(const Aurora::GFFStruct &gff) {
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
 
-		Common::UString portrait = twoda.getCellString(portraitID, "BaseResRef");
+		Common::UString portrait = twoda.getRow(portraitID).getString("BaseResRef");
 		if (!portrait.empty())
 			_portrait = "po_" + portrait;
 	}
@@ -181,56 +188,51 @@ void Creature::loadPortrait(const Aurora::GFFStruct &gff) {
 }
 
 void Creature::loadAppearance() {
-	const Aurora::TwoDAFile &appearance = TwoDAReg.get("appearance");
-	const Aurora::TwoDAFile &heads      = TwoDAReg.get("heads");
+	PartModels parts;
 
-	const Common::UString &modelType = appearance.getCellString(_appearance, "modeltype");
+	getPartModels(parts);
 
-	Common::UString bodyModel = appearance.getCellString(_appearance, "modelb");
-	if (bodyModel.empty())
-		bodyModel = appearance.getCellString(_appearance, "race");
-
-	Common::UString bodyTexture = appearance.getCellString(_appearance, "texb");
-	if (!bodyTexture.empty())
-		bodyTexture += "01";
-
-	if (bodyTexture.empty())
-		bodyTexture = appearance.getCellString(_appearance, "racetex");
-
-	const int headNormalID = appearance.getCellInt(_appearance, "normalhead", -1);
-	const int headBackupID = appearance.getCellInt(_appearance, "backuphead", -1);
-
-	Common::UString headModel;
-	if (modelType == "B") {
-		if      (headNormalID >= 0)
-			headModel = heads.getCellString(headNormalID, "head");
-		else if (headBackupID >= 0)
-			headModel = heads.getCellString(headBackupID, "head");
-	}
-
-	//  Totally segmented  ||    Body + Head     ||    ???
-	if ((modelType == "P") || (modelType == "B") || bodyModel.empty())
+	if ((parts.type == "P") || parts.body.empty()) {
 		warning("TODO: Model \"%s\": ModelType \"%s\" (\"%s\")",
-		        _tag.c_str(), modelType.c_str(), bodyModel.c_str());
-
-	if (modelType != "P") {
-		float headX = 0.0, headY = 0.0, headZ = 0.0;
-
-		loadBody(bodyModel, bodyTexture, headX, headY, headZ);
-
-		if (modelType == "B")
-			loadHead(headModel, headX, headY, headZ);
+		        _tag.c_str(), parts.type.c_str(), parts.body.c_str());
+		return;
 	}
 
+	loadBody(parts);
+	loadHead(parts);
 }
 
-void Creature::loadBody(const Common::UString &model, const Common::UString &texture,
-	                      float &headX, float &headY, float &headZ) {
+void Creature::getPartModels(PartModels &parts, uint32 state) {
+	const Aurora::TwoDARow &appearance = TwoDAReg.get("appearance").getRow(_appearance);
 
-	if (model.empty())
-		return;
+	parts.type = appearance.getString("modeltype");
 
-	Graphics::Aurora::Model *m = loadModelObject(model, texture);
+	parts.body = appearance.getString(Common::UString("model") + state);
+	if (parts.body.empty())
+		parts.body = appearance.getString("race");
+
+	parts.bodyTexture = appearance.getString(Common::UString("tex") + state);
+	if (!parts.bodyTexture.empty())
+		parts.bodyTexture += "01";
+
+	if (parts.bodyTexture.empty())
+		parts.bodyTexture = appearance.getString("racetex");
+
+	if ((parts.type == "B") || (parts.type == "P")) {
+		const int headNormalID = appearance.getInt("normalhead");
+		const int headBackupID = appearance.getInt("backuphead");
+
+		const Aurora::TwoDAFile &heads = TwoDAReg.get("heads");
+
+		if      (headNormalID >= 0)
+			parts.head = heads.getRow(headNormalID).getString("head");
+		else if (headBackupID >= 0)
+			parts.head = heads.getRow(headBackupID).getString("head");
+	}
+}
+
+void Creature::loadBody(PartModels &parts) {
+	Graphics::Aurora::Model *m = loadModelObject(parts.body, parts.bodyTexture);
 	if (!m)
 		return;
 
@@ -241,20 +243,20 @@ void Creature::loadBody(const Common::UString &model, const Common::UString &tex
 
 	Graphics::Aurora::ModelNode *head = m->getNode("headhook");
 	if (head)
-		head->getAbsolutePosition(headX, headY, headZ);
+		head->getAbsolutePosition(parts.headPosition[0],
+		                          parts.headPosition[1],
+		                          parts.headPosition[2]);
 
 	_parts.push_back(Part());
 
 	_parts.back().model = m;
 }
 
-void Creature::loadHead(const Common::UString &model,
-                        float headX, float headY, float headZ) {
-
-	if (model.empty())
+void Creature::loadHead(PartModels &parts) {
+	if (parts.head.empty())
 		return;
 
-	Graphics::Aurora::Model *m = loadModelObject(model);
+	Graphics::Aurora::Model *m = loadModelObject(parts.head);
 	if (!m)
 		return;
 
@@ -266,9 +268,9 @@ void Creature::loadHead(const Common::UString &model,
 	_parts.push_back(Part());
 
 	_parts.back().model       = m;
-	_parts.back().position[0] = headX;
-	_parts.back().position[1] = headY;
-	_parts.back().position[2] = headZ;
+	_parts.back().position[0] = parts.headPosition[0];
+	_parts.back().position[1] = parts.headPosition[1];
+	_parts.back().position[2] = parts.headPosition[2];
 }
 
 void Creature::enter() {

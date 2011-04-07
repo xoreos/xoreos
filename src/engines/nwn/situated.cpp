@@ -168,7 +168,7 @@ void Situated::loadPortrait(const Aurora::GFFStruct &gff) {
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
 
-		Common::UString portrait = twoda.getCellString(portraitID, "BaseResRef");
+		Common::UString portrait = twoda.getRow(portraitID).getString("BaseResRef");
 		if (!portrait.empty())
 			_portrait = "po_" + portrait;
 	}

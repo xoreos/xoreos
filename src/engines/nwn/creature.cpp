@@ -162,7 +162,7 @@ Common::UString Creature::getPortrait() const {
 	if (_portrait.empty()) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
 
-		Common::UString portrait = twoda.getCellString(_portraitID, "BaseResRef");
+		Common::UString portrait = twoda.getRow(_portraitID).getString("BaseResRef");
 		if (!portrait.empty())
 			return "po_" + portrait;
 
@@ -179,7 +179,7 @@ Common::UString Creature::getClassString() const {
 		if (!classString.empty())
 			classString += '/';
 
-		uint32 strRef = TwoDAReg.get("classes").getCellInt(c->classID, "Name");
+		uint32 strRef = TwoDAReg.get("classes").getRow(c->classID).getInt("Name");
 
 		classString += TalkMan.getString(strRef);
 	}

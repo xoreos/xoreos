@@ -222,10 +222,8 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 	uint32 ambientDay   = props.getUint("AmbientSndDay"  , Aurora::kStrRefInvalid);
 	uint32 ambientNight = props.getUint("AmbientSndNight", Aurora::kStrRefInvalid);
 
-	if (ambientDay   != Aurora::kStrRefInvalid)
-		_ambientDay   = ambientSound.getCellString(ambientDay  , "Resource");
-	if (ambientNight != Aurora::kStrRefInvalid)
-		_ambientNight = ambientSound.getCellString(ambientNight, "Resource");
+	_ambientDay   = ambientSound.getRow(ambientDay  ).getString("Resource");
+	_ambientNight = ambientSound.getRow(ambientNight).getString("Resource");
 
 	uint32 ambientDayVol   = CLIP<uint32>(props.getUint("AmbientSndDayVol"  , 127), 0, 127);
 	uint32 ambientNightVol = CLIP<uint32>(props.getUint("AmbientSndNightVol", 127), 0, 127);
@@ -243,10 +241,8 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 	uint32 musicDay   = props.getUint("MusicDay"   , Aurora::kStrRefInvalid);
 	uint32 musicNight = props.getUint("MusicNight" , Aurora::kStrRefInvalid);
 
-	if (musicDay   != Aurora::kStrRefInvalid)
-		_musicDay   = ambientMusic.getCellString(musicDay  , "Resource");
-	if (musicNight != Aurora::kStrRefInvalid)
-		_musicNight = ambientMusic.getCellString(musicNight, "Resource");
+	_musicDay   = ambientMusic.getRow(musicDay  ).getString("Resource");
+	_musicNight = ambientMusic.getRow(musicNight).getString("Resource");
 
 
 	// Battle music
@@ -254,13 +250,13 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 	uint32 musicBattle = props.getUint("MusicBattle", Aurora::kStrRefInvalid);
 
 	if (musicBattle != Aurora::kStrRefInvalid) {
-		_musicBattle = ambientMusic.getCellString(musicBattle, "Resource");
+		_musicBattle = ambientMusic.getRow(musicBattle).getString("Resource");
 
 		// Battle stingers
 		Common::UString stinger[3];
-		stinger[0] = ambientMusic.getCellString(musicBattle, "Stinger1");
-		stinger[1] = ambientMusic.getCellString(musicBattle, "Stinger2");
-		stinger[2] = ambientMusic.getCellString(musicBattle, "Stinger3");
+		stinger[0] = ambientMusic.getRow(musicBattle).getString("Stinger1");
+		stinger[1] = ambientMusic.getRow(musicBattle).getString("Stinger2");
+		stinger[2] = ambientMusic.getRow(musicBattle).getString("Stinger3");
 
 		for (int i = 0; i < 3; i++)
 			if (!stinger[i].empty())

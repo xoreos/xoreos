@@ -71,9 +71,11 @@ void Door::loadAppearance() {
 }
 
 void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
-	_modelName = twoda.getCellString(id, "ModelName");
-	if (_modelName.empty())
-		_modelName = twoda.getCellString(id, "Model");
+	uint32 column = twoda.headerToColumn("ModelName");
+	if (column == Aurora::kFieldIDInvalid)
+		column = twoda.headerToColumn("Model");
+
+	_modelName = twoda.getRow(id).getString(column);
 }
 
 void Door::hide() {

@@ -60,6 +60,19 @@ private:
 		~Part();
 	};
 
+	struct PartModels {
+		Common::UString type;
+
+		Common::UString body;
+		Common::UString head;
+
+		Common::UString bodyTexture;
+
+		float headPosition[3];
+
+		PartModels();
+	};
+
 	uint32 _appearance;
 
 	std::list<Part> _parts;
@@ -70,10 +83,9 @@ private:
 	void loadPortrait(const Aurora::GFFStruct &gff);
 	void loadAppearance();
 
-	void loadBody(const Common::UString &model, const Common::UString &texture,
-	              float &headX, float &headY, float &headZ);
-	void loadHead(const Common::UString &model,
-	              float headX, float headY, float headZ);
+	void getPartModels(PartModels &parts, uint32 state = 'b');
+	void loadBody(PartModels &parts);
+	void loadHead(PartModels &parts);
 };
 
 } // End of namespace KotOR

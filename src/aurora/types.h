@@ -348,6 +348,9 @@ static const uint32 kObjectIDInvalid = 0xFFFFFFFF;
 static const uint32 kFieldIDInvalid  = 0xFFFFFFFF;
 static const uint32 kStrRefInvalid   = 0xFFFFFFFF;
 
+class TwoDAFile;
+class TwoDARow;
+
 class GFFStruct;
 typedef std::list<GFFStruct *> GFFList;
 class GFFFile;
