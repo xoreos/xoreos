@@ -48,7 +48,7 @@ WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
 
 	_portrait = new Portrait(portrait, Portrait::kSizeTiny, 1.0);
 
-	Common::UString name = c->getFullName();
+	Common::UString name = c->getName();
 	if (c.getNumber() > 0)
 		name += Common::UString::sprintf(" (%d)", c.getNumber());
 

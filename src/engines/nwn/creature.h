@@ -21,6 +21,10 @@
 #include "aurora/types.h"
 #include "aurora/locstring.h"
 
+#include "graphics/aurora/types.h"
+
+#include "engines/nwn/object.h"
+
 namespace Aurora {
 	class GFFStruct;
 }
@@ -29,7 +33,9 @@ namespace Engines {
 
 namespace NWN {
 
-class Creature {
+class Tooltip;
+
+class Creature : public Object {
 public:
 	Creature();
 	~Creature();
@@ -40,21 +46,31 @@ public:
 	/** Last time info was changed that's displayed in the GUI. */
 	uint32 lastChangedGUIDisplay() const;
 
+	void show();
+	void hide();
+
+	void setPosition(float x, float y, float z);
+	void setOrientation(float x, float y, float z);
+
+	void enter();
+	void leave();
+
+	void highlight(bool enabled);
+
 	/** Load from a character file. */
 	void loadCharacter(Common::SeekableReadStream &stream);
+	/** Load from a creature instance. */
+	void load(const Aurora::GFFStruct &creature);
+
+	/** Load the creature's model. */
+	void loadModel();
+	/** Unload the creature's model. */
+	void unloadModel();
 
 	/** Return the creature's first name. */
-	const Aurora::LocString &getFirstName() const;
+	const Common::UString &getFirstName() const;
 	/** Return the creature's last name. */
-	const Aurora::LocString &getLastName() const;
-	/** Return the creature's description. */
-	const Aurora::LocString &getDescription() const;
-
-	/** Return the creature's full name. */
-	const Common::UString &getFullName() const;
-
-	/** Return the creature's portrait. */
-	Common::UString getPortrait() const;
+	const Common::UString &getLastName() const;
 
 	/** Return the creature's class description. */
 	Common::UString getClassString() const;
@@ -81,14 +97,11 @@ private:
 
 	uint32 _lastChangedGUIDisplay;
 
-	Aurora::LocString _firstName;
-	Aurora::LocString _lastName;
-	Aurora::LocString _description;
+	Common::UString _firstName;
+	Common::UString _lastName;
 
-	Common::UString _fullName;
-
-	Common::UString _portrait;
-	uint32          _portraitID;
+	uint32 _gender;
+	uint32 _race;
 
 	bool _isPC;
 	bool _isDM;
@@ -103,9 +116,48 @@ private:
 
 	std::vector<Class> _classes;
 
-	void load(const Aurora::GFFStruct &gffTop);
+	uint32 _appearanceID;
+	uint32 _phenotype;
 
-	Common::UString createFullName();
+	uint32 _head;
+	uint32 _neck;
+	uint32 _torso;
+	uint32 _pelvis;
+	uint32 _belt;
+	uint32 _rFoot;
+	uint32 _lFoot;
+	uint32 _rShin;
+	uint32 _lShin;
+	uint32 _lThigh;
+	uint32 _rThigh;
+	uint32 _rFArm;
+	uint32 _lFArm;
+	uint32 _rBicep;
+	uint32 _lBicep;
+	uint32 _rShoul;
+	uint32 _lShoul;
+	uint32 _rHand;
+	uint32 _lHand;
+
+	uint32 _colorSkin;
+	uint32 _colorHair;
+	uint32 _colorTattoo1;
+	uint32 _colorTattoo2;
+
+	Graphics::Aurora::Model *_model;
+
+	Tooltip *_tooltip;
+
+
+	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
+
+	void loadProperties(const Aurora::GFFStruct &gff);
+	void loadPortrait(const Aurora::GFFStruct &gff);
+
+	void createTooltip();
+	void showTooltip();
+	void hideTooltip();
+
 };
 
 } // End of namespace NWN

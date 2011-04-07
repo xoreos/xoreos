@@ -102,7 +102,7 @@ CharacterID CharacterStore::addCharacter(Creature &character) {
 
 	Common::StackLock lock(_mutex);
 
-	uint &count = getCount(character.getFullName());
+	uint &count = getCount(character.getName());
 
 	count++;
 
@@ -179,7 +179,7 @@ void CharacterStore::index() {
 
 	CharacterKey charKey = createCharacterKey(*character, fileNumber);
 
-	uint &count = getCount(character->getFullName());
+	uint &count = getCount(character->getName());
 	count = MAX(count, fileNumber);
 
 	std::pair<CharacterID::CharMap::iterator, bool> result;
@@ -225,7 +225,7 @@ uint CharacterStore::parseFileNumber(const Common::UString &file) {
 }
 
 CharacterKey CharacterStore::createCharacterKey(const Creature &character, uint n) {
-	return CharacterKey(character.getFullName(), n);
+	return CharacterKey(character.getName(), n);
 }
 
 Common::UString CharacterStore::createFilename(const Creature &character, uint n) {
@@ -237,7 +237,7 @@ Common::UString CharacterStore::createFilename(const Creature &character, uint n
 		nString = Common::UString::sprintf("%d", n);
 
 	uint nameLength = 16 - nString.size();
-	const Common::UString &fullName = character.getFullName();
+	const Common::UString &fullName = character.getName();
 	for (Common::UString::iterator f = fullName.begin(); f != fullName.end() && nameLength > 0;
        ++f, --nameLength) {
 

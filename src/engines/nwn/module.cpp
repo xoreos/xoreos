@@ -148,7 +148,7 @@ bool Module::enter() {
 	loadTexturePack();
 
 	_console->printf("Entering module \"%s\" with character \"%s\"",
-			_ifo.getName().getString().c_str(), _pc.getFullName().c_str());
+			_ifo.getName().getString().c_str(), _pc.getName().c_str());
 
 	_ingameGUI->updatePartyMember(0, _pc);
 

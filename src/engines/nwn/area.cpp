@@ -33,6 +33,7 @@
 #include "engines/nwn/area.h"
 #include "engines/nwn/placeable.h"
 #include "engines/nwn/door.h"
+#include "engines/nwn/creature.h"
 
 namespace Engines {
 
@@ -212,6 +213,9 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 
 	if (git.hasField("Door List"))
 		loadDoors(git.getList("Door List"));
+
+	if (git.hasField("Creature List"))
+		loadCreatures(git.getList("Creature List"));
 }
 
 void Area::loadProperties(const Aurora::GFFStruct &props) {
@@ -363,6 +367,25 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 
 			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 				_objectMap.insert(std::make_pair(*id, door));
+		}
+
+	}
+}
+
+void Area::loadCreatures(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c) {
+		Creature *creature = new Creature;
+
+		creature->load(**c);
+		creature->loadModel();
+
+		_objects.push_back(creature);
+
+		if (!creature->isStatic()) {
+			const std::list<uint32> &ids = creature->getIDs();
+
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, creature));
 		}
 
 	}

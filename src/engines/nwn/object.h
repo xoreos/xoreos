@@ -73,6 +73,8 @@ protected:
 
 	float _position[3];
 	float _orientation[3];
+
+	void clear();
 };
 
 } // End of namespace NWN

@@ -133,7 +133,7 @@ void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature) {
 		return;
 
 	setPortrait(partyMember, creature.getPortrait());
-	setName    (partyMember, creature.getFullName());
+	setName    (partyMember, creature.getName());
 	setHealth  (partyMember, creature.getCurrentHP(), creature.getMaxHP());
 
 	_lastPartyMemberChange[partyMember] = lastPartyMemberChange;

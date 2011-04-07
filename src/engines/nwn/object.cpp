@@ -18,13 +18,8 @@ namespace Engines {
 
 namespace NWN {
 
-Object::Object() : _loaded(false), _static(false), _usable(true) {
-	_position   [0] = 0.0;
-	_position   [1] = 0.0;
-	_position   [2] = 0.0;
-	_orientation[0] = 0.0;
-	_orientation[1] = 0.0;
-	_orientation[2] = 0.0;
+Object::Object() {
+	clear();
 }
 
 Object::~Object() {
@@ -84,6 +79,28 @@ void Object::setOrientation(float x, float y, float z) {
 	_orientation[0] = x;
 	_orientation[1] = y;
 	_orientation[2] = z;
+}
+
+void Object::clear() {
+	_loaded = false;
+
+	_tag.clear();
+	_name.clear();
+	_description.clear();
+
+	_portrait.clear();
+
+	_static = false;
+	_usable = true;
+
+	_ids.clear();
+
+	_position   [0] = 0.0;
+	_position   [1] = 0.0;
+	_position   [2] = 0.0;
+	_orientation[0] = 0.0;
+	_orientation[1] = 0.0;
+	_orientation[2] = 0.0;
 }
 
 } // End of namespace NWN
