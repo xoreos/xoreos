@@ -173,7 +173,7 @@ void Model_NWN_Binary::load(ParserContext &ctx) {
 
 	float radius = ctx.mdl->readIEEEFloatLE();
 
-	//_scale = ctx.mdl->readIEEEFloatLE();
+	float scale = ctx.mdl->readIEEEFloatLE();
 
 	Common::UString superModelName;
 
