@@ -46,6 +46,9 @@ public:
 	void show();
 	void hide();
 
+	void showPrompt();
+	void hidePrompt();
+
 	bool isIn(float x, float y) const;
 	bool isIn(float x, float y, float z) const;
 

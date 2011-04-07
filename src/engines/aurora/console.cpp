@@ -135,6 +135,32 @@ void ConsoleWindow::hide() {
 	GfxMan.unlockFrame();
 }
 
+void ConsoleWindow::showPrompt() {
+	if (!isVisible())
+		return;
+
+	GfxMan.lockFrame();
+
+	_cursor->show();
+	_prompt->show();
+	_input->show();
+
+	GfxMan.unlockFrame();
+}
+
+void ConsoleWindow::hidePrompt() {
+	if (!isVisible())
+		return;
+
+	GfxMan.lockFrame();
+
+	_cursor->hide();
+	_prompt->hide();
+	_input->hide();
+
+	GfxMan.unlockFrame();
+}
+
 bool ConsoleWindow::isIn(float x, float y) const {
 	if ((x < _x) || (x > (_x + _width)))
 		return false;
@@ -875,7 +901,9 @@ void Console::execute(const Common::UString &line) {
 		return;
 
 	// Execute
+	_console->hidePrompt();
 	cmd->second.callback(cl);
+	_console->showPrompt();
 
 	// Reset redirect
 	_console->setRedirect();
