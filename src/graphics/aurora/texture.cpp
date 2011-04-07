@@ -76,6 +76,7 @@ Texture::Texture(ImageDecoder *image) : _textureID(0),
 }
 
 Texture::~Texture() {
+	removeFromQueue(kQueueNewTexture);
 	removeFromQueue(kQueueTexture);
 
 	if (_textureID != 0)
