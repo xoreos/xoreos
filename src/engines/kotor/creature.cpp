@@ -34,56 +34,35 @@ namespace Engines {
 
 namespace KotOR {
 
-Creature::Part::Part() : model(0) {
-	position[0] = 0.0;
-	position[1] = 0.0;
-	position[2] = 0.0;
-}
-
-Creature::Part::~Part() {
-	delete model;
-}
-
-
-Creature::PartModels::PartModels() {
-	headPosition[0] = 0.0;
-	headPosition[1] = 0.0;
-	headPosition[2] = 0.0;
-}
-
-
-Creature::Creature() : _appearance(Aurora::kFieldIDInvalid) {
+Creature::Creature() : _appearance(Aurora::kFieldIDInvalid), _model(0) {
 }
 
 Creature::~Creature() {
+	delete _model;
 }
 
 void Creature::show() {
-	for (std::list<Part>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		part->model->show();
+	if (_model)
+		_model->show();
 }
 
 void Creature::hide() {
-	for (std::list<Part>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		part->model->hide();
+	if (_model)
+		_model->hide();
 }
 
 void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
 
-	for (std::list<Part>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		part->model->setPosition(x + part->position[0],
-		                         y + part->position[1],
-		                         z + part->position[2]);
+	_model->setPosition(x, y, z);
 }
 
 void Creature::setOrientation(float x, float y, float z) {
 	Object::setOrientation(x, y, z);
 	Object::getOrientation(x, y, z);
 
-	for (std::list<Part>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		part->model->setRotation(x, z, -y);
+	_model->setRotation(x, z, -y);
 }
 
 void Creature::load(const Aurora::GFFStruct &creature) {
@@ -232,45 +211,25 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 }
 
 void Creature::loadBody(PartModels &parts) {
-	Graphics::Aurora::Model *m = loadModelObject(parts.body, parts.bodyTexture);
-	if (!m)
+	_model = loadModelObject(parts.body, parts.bodyTexture);
+	if (!_model)
 		return;
 
-	_ids.push_back(m->getID());
+	_ids.push_back(_model->getID());
 
-	m->setTag(_tag + "#Body");
-	m->setClickable(isClickable());
-
-	Graphics::Aurora::ModelNode *head = m->getNode("headhook");
-	if (head)
-		head->getAbsolutePosition(parts.headPosition[0],
-		                          parts.headPosition[1],
-		                          parts.headPosition[2]);
-
-	_parts.push_back(Part());
-
-	_parts.back().model = m;
+	_model->setTag(_tag);
+	_model->setClickable(isClickable());
 }
 
 void Creature::loadHead(PartModels &parts) {
-	if (parts.head.empty())
+	if (!_model || parts.head.empty())
 		return;
 
-	Graphics::Aurora::Model *m = loadModelObject(parts.head);
-	if (!m)
+	Graphics::Aurora::ModelNode *headHook = _model->getNode("headhook");
+	if (!headHook)
 		return;
 
-	_ids.push_back(m->getID());
-
-	m->setTag(_tag + "#Head");
-	m->setClickable(isClickable());
-
-	_parts.push_back(Part());
-
-	_parts.back().model       = m;
-	_parts.back().position[0] = parts.headPosition[0];
-	_parts.back().position[1] = parts.headPosition[1];
-	_parts.back().position[2] = parts.headPosition[2];
+	headHook->addChild(loadModelObject(parts.head));
 }
 
 void Creature::enter() {
@@ -282,8 +241,7 @@ void Creature::leave() {
 }
 
 void Creature::highlight(bool enabled) {
-	for (std::list<Part>::iterator part = _parts.begin(); part != _parts.end(); ++part)
-		part->model->drawBound(enabled);
+	_model->drawBound(enabled);
 }
 
 } // End of namespace KotOR

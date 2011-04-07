@@ -50,16 +50,6 @@ public:
 	void highlight(bool enabled);
 
 private:
-	/** A creature model part. */
-	struct Part {
-		Graphics::Aurora::Model *model;
-
-		float position[3];
-
-		Part();
-		~Part();
-	};
-
 	struct PartModels {
 		Common::UString type;
 
@@ -67,15 +57,11 @@ private:
 		Common::UString head;
 
 		Common::UString bodyTexture;
-
-		float headPosition[3];
-
-		PartModels();
 	};
 
 	uint32 _appearance;
 
-	std::list<Part> _parts;
+	Graphics::Aurora::Model *_model;
 
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
 
