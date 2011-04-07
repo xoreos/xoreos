@@ -48,6 +48,8 @@ public:
 	/** Should the node never be rendered at all? */
 	void setInvisible(bool invisible);
 
+	/** Add another model as a child to this node. */
+	void addChild(Model *model);
 
 	// Positioning
 
@@ -126,7 +128,7 @@ protected:
 	bool _showdispl;
 	int  _displtype;
 
-	float *_constraints;
+	std::vector<float> _constraints;
 
 	int _tilefade;
 
@@ -180,6 +182,8 @@ public:
 	void inheritPosition(ModelNode &node) const;
 	void inheritOrientation(ModelNode &node) const;
 	void inheritGeometry(ModelNode &node) const;
+
+	void reparent(ModelNode &parent);
 
 
 	friend class Model;

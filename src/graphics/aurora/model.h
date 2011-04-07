@@ -136,8 +136,6 @@ protected:
 
 	Common::UString _name; ///< The model's name.
 
-	NodeList _nodes; ///< All nodes within this model.
-
 	StateList _stateList;   ///< All states within this model.
 	StateMap  _stateMap;    ///< All states within this model, index by name.
 	State   *_currentState; ///< The current state.

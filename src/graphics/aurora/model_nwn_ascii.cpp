@@ -203,7 +203,6 @@ void Model_NWN_ASCII::addState(ParserContext &ctx) {
 	for (std::list<ModelNode_NWN_ASCII *>::iterator n = ctx.nodes.begin();
 	     n != ctx.nodes.end(); ++n) {
 
-		_nodes.push_back(*n);
 		ctx.state->nodeList.push_back(*n);
 		ctx.state->nodeMap.insert(std::make_pair((*n)->getName(), *n));
 

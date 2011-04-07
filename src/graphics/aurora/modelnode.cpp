@@ -36,7 +36,7 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 ModelNode::ModelNode(Model &model) :
 	_model(&model), _parent(0), _level(0),
 	_faceCount(0), _coords(0), _smoothGroups(0), _material(0), _isTransparent(false),
-	_constraints(0), _render(false), _hasTransparencyHint(false) {
+	_render(false), _hasTransparencyHint(false) {
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
@@ -48,7 +48,6 @@ ModelNode::ModelNode(Model &model) :
 }
 
 ModelNode::~ModelNode() {
-	delete[] _constraints;
 	delete[] _material;
 	delete[] _smoothGroups;
 	delete[] _coords;
@@ -183,6 +182,70 @@ void ModelNode::inheritGeometry(ModelNode &node) const {
 	memcpy(node._material    , _material    , _faceCount * sizeof(uint32));
 
 	node.createBound();
+}
+
+void ModelNode::reparent(ModelNode &parent) {
+	_model = parent._model;
+	_level = parent._level + 1;
+
+	_model->_currentState->nodeList.push_back(this);
+	_model->_currentState->nodeMap.insert(std::make_pair(_name, this));
+
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c)
+		(*c)->reparent(parent);
+}
+
+void ModelNode::addChild(Model *model) {
+	if (!model || !model->_currentState) {
+		delete model;
+		return;
+	}
+
+	model->hide();
+
+	bool visible = _model->isVisible();
+	_model->hide();
+
+	// Take over the nodes in the model's currentstate
+
+	for (Model::NodeList::iterator r = model->_currentState->rootNodes.begin();
+	     r != model->_currentState->rootNodes.end(); ++r) {
+
+		_children.push_back(*r);
+
+		(*r)->reparent(*this);
+	}
+
+	// Remove the nodes from the model's current state
+
+	for (Model::StateList::iterator s = model->_stateList.begin();
+	     s != model->_stateList.end(); ++s) {
+
+		if (*s == model->_currentState) {
+			(*s)->nodeList.clear();
+			(*s)->nodeMap.clear();
+			(*s)->rootNodes.clear();
+		}
+	}
+
+	for (Model::StateMap::iterator s = model->_stateMap.begin();
+	     s != model->_stateMap.end(); ++s) {
+
+		if (s->second == model->_currentState) {
+			s->second->nodeList.clear();
+			s->second->nodeMap.clear();
+			s->second->rootNodes.clear();
+		}
+	}
+
+	// Delete the model
+	delete model;
+
+	// Rebuild our model
+	_model->finalize();
+
+	if (visible)
+		_model->show();
 }
 
 void ModelNode::setInvisible(bool invisible) {

@@ -42,10 +42,12 @@ Model::~Model() {
 	if (_lists != 0)
 		GfxMan.abandon(_lists, kRenderPassAll);
 
-	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
+	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s) {
+		for (NodeList::iterator n = (*s)->nodeList.begin(); n != (*s)->nodeList.end(); ++n)
+			delete *n;
+
 		delete *s;
-	for (NodeList::iterator n = _nodes.begin(); n != _nodes.end(); ++n)
-		delete *n;
+	}
 }
 
 ModelType Model::getType() const {
@@ -449,6 +451,8 @@ void Model::finalize() {
 	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
 		for (NodeList::iterator n = (*s)->rootNodes.begin(); n != (*s)->rootNodes.end(); ++n)
 			(*n)->orderChildren();
+
+	needRebuild();
 }
 
 void Model::needRebuild() {
