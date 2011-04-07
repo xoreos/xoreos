@@ -12,9 +12,10 @@
  *  Handling BioWare's 2DAs (two-dimensional array).
  */
 
-#include "common/stream.h"
 #include "common/util.h"
 #include "common/strutil.h"
+#include "common/stream.h"
+#include "common/file.h"
 #include "common/streamtokenizer.h"
 
 #include "aurora/2dafile.h"
@@ -205,6 +206,9 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 			}
 
 			(*_array[i])[j] = tokenize.getToken(twoda);
+
+			if ((*_array[i])[j].empty())
+				(*_array[i])[j] = "****";
 		}
 	}
 
@@ -305,6 +309,57 @@ const float TwoDAFile::getCellFloat(uint32 row, uint32 column, float def) const 
 		return def;
 
 	return parseFloat(*cell);
+}
+
+bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
+	Common::DumpFile file;
+	if (!file.open(fileName))
+		return false;
+
+	// Write header
+
+	file.writeString("2DA V2.0\n");
+	file.writeString(_defaultString); file.writeByte('\n');
+
+	// Calculate column lengths
+
+	std::vector<uint32> colLength;
+	colLength.resize(_headers.size() + 1);
+
+	const Common::UString maxRow = Common::UString::sprintf("%d", _array.size() - 1);
+	colLength[0] = maxRow.size();
+
+	for (uint32 i = 0; i < _headers.size(); i++)
+		colLength[i + 1] = _headers[i].size();
+
+	for (uint32 i = 0; i < _array.size(); i++)
+		for (uint32 j = 0; j < _array[i]->size(); j++)
+			colLength[j + 1] = MAX<uint32>(colLength[j + 1], (*_array[i])[j].size());
+
+	// Write column headers
+
+	file.writeString(Common::UString::sprintf("%-*s", colLength[0], ""));
+
+	for (uint32 i = 0; i < _headers.size(); i++)
+		file.writeString(Common::UString::sprintf(" %-*s", colLength[i + 1], _headers[i].c_str()));
+
+	file.writeByte('\n');
+
+	// Write array
+
+	for (uint32 i = 0; i < _array.size(); i++) {
+		file.writeString(Common::UString::sprintf("%*d", colLength[0], i));
+
+		for (uint32 j = 0; j < _array[i]->size(); j++)
+			file.writeString(Common::UString::sprintf(" %-*s", colLength[j + 1], (*_array[i])[j].c_str()));
+
+		file.writeByte('\n');
+	}
+
+	file.flush();
+	file.close();
+
+	return true;
 }
 
 const float TwoDAFile::getCellFloat(uint32 row, const Common::UString &column, float def) const {

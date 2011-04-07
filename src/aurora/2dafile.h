@@ -84,6 +84,9 @@ public:
 	/** Return the contents of a cell as a float. */
 	const float getCellFloat(uint32 row, const Common::UString &column, float = 0.0) const;
 
+	/** Dump the 2DA data into an V2.0 ASCII 2DA. */
+	bool dumpASCII(const Common::UString &fileName) const;
+
 private:
 	typedef std::vector<Row *> Array;
 
