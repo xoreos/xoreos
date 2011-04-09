@@ -264,6 +264,7 @@ void QuickTimeDecoder::initParseTable() {
 		{ &QuickTimeDecoder::readTRAK,    MKID_BE('trak') },
 		{ &QuickTimeDecoder::readLeaf,    MKID_BE('udta') },
 		{ &QuickTimeDecoder::readLeaf,    MKID_BE('vmhd') },
+		{ &QuickTimeDecoder::readDefault, MKID_BE('wave') },
 		{ 0, 0 }
 	};
 
