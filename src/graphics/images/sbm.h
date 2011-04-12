@@ -26,15 +26,12 @@ namespace Graphics {
 /** SBM font bitmap data. */
 class SBM : public ImageDecoder {
 public:
-	SBM(Common::SeekableReadStream *sbm);
+	SBM(Common::SeekableReadStream &sbm);
 	~SBM();
 
-	void load();
-
 private:
-	Common::SeekableReadStream *_sbm;
-
 	// Loading helpers
+	void load(Common::SeekableReadStream &sbm);
 	void readData(Common::SeekableReadStream &sbm);
 };
 

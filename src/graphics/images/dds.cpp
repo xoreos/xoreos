@@ -32,32 +32,26 @@ static const uint32 kPixelFlagsIsRGB     = 0x00000040;
 
 namespace Graphics {
 
-DDS::DDS(Common::SeekableReadStream *dds) : _dds(dds) {
-	assert(_dds);
+DDS::DDS(Common::SeekableReadStream &dds) {
+	load(dds);
 }
 
 DDS::~DDS() {
 }
 
-void DDS::load() {
-	if (!_dds)
-		return;
-
+void DDS::load(Common::SeekableReadStream &dds) {
 	try {
 
-		readHeader(*_dds);
-		readData(*_dds);
+		readHeader(dds);
+		readData  (dds);
 
-		if (_dds->err())
+		if (dds.err())
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading DDS file");
 		throw e;
 	}
-
-	delete _dds;
-	_dds = 0;
 }
 
 void DDS::readHeader(Common::SeekableReadStream &dds) {

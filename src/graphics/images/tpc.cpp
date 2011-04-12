@@ -23,34 +23,28 @@ static const byte kEncodingRGBA = 0x04;
 
 namespace Graphics {
 
-TPC::TPC(Common::SeekableReadStream *tpc) : _tpc(tpc), _txiData(0), _txiDataSize(0) {
-	assert(_tpc);
+TPC::TPC(Common::SeekableReadStream &tpc) : _txiData(0), _txiDataSize(0) {
+	load(tpc);
 }
 
 TPC::~TPC() {
 	delete[] _txiData;
 }
 
-void TPC::load() {
-	if (!_tpc)
-		return;
-
+void TPC::load(Common::SeekableReadStream &tpc) {
 	try {
 
-		readHeader(*_tpc);
-		readData(*_tpc);
-		readTXIData(*_tpc);
+		readHeader (tpc);
+		readData   (tpc);
+		readTXIData(tpc);
 
-		if (_tpc->err())
+		if (tpc.err())
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TPC file");
 		throw e;
 	}
-
-	delete _tpc;
-	_tpc = 0;
 }
 
 Common::SeekableReadStream *TPC::getTXI() const {

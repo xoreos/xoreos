@@ -76,13 +76,11 @@ void Cursor::load() {
 	ImageDecoder *image;
 	// Loading the different image formats
 	if      (type == ::Aurora::kFileTypeTGA)
-		image = new TGA(img);
+		image = new TGA(*img);
 	else if (type == ::Aurora::kFileTypeDDS)
-		image = new DDS(img);
+		image = new DDS(*img);
 	else if (type == ::Aurora::kFileTypeCUR) {
-		WinIconImage *cursor = new WinIconImage(img);
-
-		cursor->load();
+		WinIconImage *cursor = new WinIconImage(*img);
 
 		if (_hotspotX < 0)
 			_hotspotX = cursor->getHotspotX();
@@ -95,7 +93,7 @@ void Cursor::load() {
 		throw Common::Exception("Unsupported cursor resource type %d", (int) type);
 	}
 
-	image->load();
+	delete img;
 
 	_width  = image->getMipMap(0).width;
 	_height = image->getMipMap(0).height;
@@ -104,7 +102,7 @@ void Cursor::load() {
 	txi.getFeatures().filter = false;
 
 	try {
-		Texture *texture = new Texture(image, txi);
+		Texture *texture = new Texture(image, &txi);
 
 		image = 0;
 

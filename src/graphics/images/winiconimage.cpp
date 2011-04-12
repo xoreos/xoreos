@@ -21,38 +21,30 @@
 
 namespace Graphics {
 
-WinIconImage::WinIconImage(Common::SeekableReadStream *cur) : _cur(cur),
-	_hotspotX(0), _hotspotY(0) {
-
-	assert(_cur);
-
+WinIconImage::WinIconImage(Common::SeekableReadStream &cur) : _hotspotX(0), _hotspotY(0) {
 	_compressed = false;
 	_hasAlpha   = true;
 	_dataType   = kPixelDataType8;
+
+	load(cur);
 }
 
 WinIconImage::~WinIconImage() {
 }
 
-void WinIconImage::load() {
-	if (!_cur)
-		return;
-
+void WinIconImage::load(Common::SeekableReadStream &cur) {
 	try {
 
-		readHeader(*_cur);
-		readData(*_cur);
+		readHeader(cur);
+		readData  (cur);
 
-		if (_cur->err())
+		if (cur.err())
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading CUR file");
 		throw e;
 	}
-
-	delete _cur;
-	_cur = 0;
 }
 
 void WinIconImage::readHeader(Common::SeekableReadStream &cur) {

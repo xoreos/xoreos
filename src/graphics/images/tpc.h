@@ -28,21 +28,18 @@ namespace Graphics {
 /** BioWare's own texture format, TPC. */
 class TPC : public ImageDecoder {
 public:
-	TPC(Common::SeekableReadStream *tpc);
+	TPC(Common::SeekableReadStream &tpc);
 	~TPC();
-
-	void load();
 
 	/** Return the enclosed TXI data. */
 	Common::SeekableReadStream *getTXI() const;
 
 private:
-	Common::SeekableReadStream *_tpc;
-
 	byte  *_txiData;
 	uint32 _txiDataSize;
 
 	// Loading helpers
+	void load(Common::SeekableReadStream &tpc);
 	void readHeader(Common::SeekableReadStream &tpc);
 	void readData(Common::SeekableReadStream &tpc);
 	void readTXIData(Common::SeekableReadStream &tpc);

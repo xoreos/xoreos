@@ -36,9 +36,10 @@ namespace Aurora {
 /** A texture. */
 class Texture : public Graphics::Texture {
 public:
+	/** Create a texture from this image resource. */
 	Texture(const Common::UString &name);
-	Texture(ImageDecoder *image, const TXI &txi);
-	Texture(ImageDecoder *image);
+	/** Take over the image and create a texture from it. */
+	Texture(ImageDecoder *image, const TXI *txi = 0);
 	~Texture();
 
 	const uint32 getWidth()  const;
@@ -49,8 +50,10 @@ public:
 	/** Return the TXI. */
 	const TXI &getTXI() const;
 
-	/** Reload the texture. */
+	/** Reload the texture from this image resource. */
 	bool reload(const Common::UString &name = "");
+	/** Reload the texture from this image. */
+	bool reload(ImageDecoder *image, const TXI *txi = 0);
 
 	/** Dump the texture into a TGA. */
 	bool dumpTGA(const Common::UString &fileName) const;

@@ -44,9 +44,6 @@ public:
 		void swap(MipMap &right);
 	};
 
-	/** Load the image. */
-	virtual void load() = 0;
-
 	/** Is the image data compressed? */
 	bool isCompressed() const;
 

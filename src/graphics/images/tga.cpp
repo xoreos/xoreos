@@ -20,35 +20,29 @@
 
 namespace Graphics {
 
-TGA::TGA(Common::SeekableReadStream *tga) : _tga(tga) {
-	assert(_tga);
-
+TGA::TGA(Common::SeekableReadStream &tga) {
 	_compressed = false;
+
+	load(tga);
 }
 
 TGA::~TGA() {
 }
 
-void TGA::load() {
-	if (!_tga)
-		return;
-
+void TGA::load(Common::SeekableReadStream &tga) {
 	try {
 
 		byte imageType;
-		readHeader(*_tga, imageType);
-		readData(*_tga, imageType);
+		readHeader(tga, imageType);
+		readData  (tga, imageType);
 
-		if (_tga->err())
+		if (tga.err())
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TGA file");
 		throw e;
 	}
-
-	delete _tga;
-	_tga = 0;
 }
 
 void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {

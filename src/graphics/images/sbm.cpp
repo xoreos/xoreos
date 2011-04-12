@@ -20,37 +20,31 @@
 
 namespace Graphics {
 
-SBM::SBM(Common::SeekableReadStream *sbm) : _sbm(sbm) {
-	assert(_sbm);
-
+SBM::SBM(Common::SeekableReadStream &sbm) {
 	_compressed = false;
 	_hasAlpha   = true;
 	_format     = kPixelFormatBGRA;
 	_formatRaw  = kPixelFormatRGBA8;
 	_dataType   = kPixelDataType8;
+
+	load(sbm);
 }
 
 SBM::~SBM() {
 }
 
-void SBM::load() {
-	if (!_sbm)
-		return;
-
+void SBM::load(Common::SeekableReadStream &sbm) {
 	try {
 
-		readData(*_sbm);
+		readData(sbm);
 
-		if (_sbm->err())
+		if (sbm.err())
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading SBM file");
 		throw e;
 	}
-
-	delete _sbm;
-	_sbm = 0;
 }
 
 void SBM::readData(Common::SeekableReadStream &sbm) {

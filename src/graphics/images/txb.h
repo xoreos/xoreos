@@ -28,23 +28,20 @@ namespace Graphics {
 /** Another one of BioWare's own texture formats, TXB. */
 class TXB : public ImageDecoder {
 public:
-	TXB(Common::SeekableReadStream *txb);
+	TXB(Common::SeekableReadStream &txb);
 	~TXB();
-
-	void load();
 
 	/** Return the enclosed TXI data. */
 	Common::SeekableReadStream *getTXI() const;
 
 private:
-	Common::SeekableReadStream *_txb;
-
 	uint32 _dataSize;
 
 	byte  *_txiData;
 	uint32 _txiDataSize;
 
 	// Loading helpers
+	void load(Common::SeekableReadStream &txb);
 	void readHeader(Common::SeekableReadStream &txb);
 	void readData(Common::SeekableReadStream &txb);
 	void readTXIData(Common::SeekableReadStream &txb);

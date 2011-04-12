@@ -24,39 +24,31 @@ static const byte kEncodingDXT5 = 0x0C;
 
 namespace Graphics {
 
-TXB::TXB(Common::SeekableReadStream *txb) : _txb(txb),
-	_dataSize(0), _txiData(0), _txiDataSize(0) {
-
-	assert(_txb);
+TXB::TXB(Common::SeekableReadStream &txb) : _dataSize(0), _txiData(0), _txiDataSize(0) {
+	load(txb);
 }
 
 TXB::~TXB() {
 	delete[] _txiData;
 }
 
-void TXB::load() {
-	if (!_txb)
-		return;
-
+void TXB::load(Common::SeekableReadStream &txb) {
 	try {
 
-		readHeader(*_txb);
-		readData(*_txb);
+		readHeader(txb);
+		readData  (txb);
 
-		_txb->seek(_dataSize + 128);
+		txb.seek(_dataSize + 128);
 
-		readTXIData(*_txb);
+		readTXIData(txb);
 
-		if (_txb->err())
+		if (txb.err())
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TXB file");
 		throw e;
 	}
-
-	delete _txb;
-	_txb = 0;
 }
 
 Common::SeekableReadStream *TXB::getTXI() const {

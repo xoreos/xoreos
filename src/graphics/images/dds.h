@@ -31,10 +31,8 @@ namespace Graphics {
  */
 class DDS : public ImageDecoder {
 public:
-	DDS(Common::SeekableReadStream *dds);
+	DDS(Common::SeekableReadStream &dds);
 	~DDS();
-
-	void load();
 
 private:
 	/** The specific pixel format of the included image data. */
@@ -49,9 +47,8 @@ private:
 		uint32 aBitMask; ///< Bit mask for the alpha component.
 	};
 
-	Common::SeekableReadStream *_dds;
-
 	// Loading helpers
+	void load(Common::SeekableReadStream &dds);
 	void readHeader(Common::SeekableReadStream &dds);
 	void readStandardHeader(Common::SeekableReadStream &dds);
 	void readBioWareHeader(Common::SeekableReadStream &dds);

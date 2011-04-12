@@ -26,17 +26,13 @@ namespace Graphics {
 /** Windows cursor. */
 class WinIconImage : public ImageDecoder {
 public:
-	WinIconImage(Common::SeekableReadStream *cur);
+	WinIconImage(Common::SeekableReadStream &cur);
 	~WinIconImage();
-
-	void load();
 
 	int getHotspotX() const;
 	int getHotspotY() const;
 
 private:
-	Common::SeekableReadStream *_cur;
-
 	uint16 _imageCount;
 	uint16 _iconType;
 
@@ -44,8 +40,9 @@ private:
 	int _hotspotY;
 
 	// Loading helpers
-	void readHeader(Common::SeekableReadStream &tga);
-	void readData(Common::SeekableReadStream &tga);
+	void load(Common::SeekableReadStream &cur);
+	void readHeader(Common::SeekableReadStream &cur);
+	void readData(Common::SeekableReadStream &cur);
 };
 
 } // End of namespace Graphics

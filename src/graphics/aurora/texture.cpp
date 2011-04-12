@@ -49,25 +49,13 @@ Texture::Texture(const Common::UString &name) : _textureID(0),
 	addToQueue(kQueueNewTexture);
 }
 
-Texture::Texture(ImageDecoder *image, const TXI &txi) : _textureID(0),
+Texture::Texture(ImageDecoder *image, const TXI *txi) : _textureID(0),
 	_type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
 
-	assert(image);
-
-	_txi = new TXI(txi);
-
-	load(image);
-
-	addToQueue(kQueueTexture);
-	addToQueue(kQueueNewTexture);
-}
-
-Texture::Texture(ImageDecoder *image) : _textureID(0),
-	_type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
-
-	assert(image);
-
-	_txi = new TXI();
+	if (txi)
+		_txi = new TXI(*txi);
+	else
+		_txi = new TXI();
 
 	load(image);
 
@@ -114,19 +102,21 @@ void Texture::load(const Common::UString &name) {
 
 	// Loading the different image formats
 	if      (_type == ::Aurora::kFileTypeTGA)
-		_image = new TGA(img);
+		_image = new TGA(*img);
 	else if (_type == ::Aurora::kFileTypeDDS)
-		_image = new DDS(img);
+		_image = new DDS(*img);
 	else if (_type == ::Aurora::kFileTypeTPC)
-		_image = new TPC(img);
+		_image = new TPC(*img);
 	else if (_type == ::Aurora::kFileTypeTXB)
-		_image = new TXB(img);
+		_image = new TXB(*img);
 	else if (_type == ::Aurora::kFileTypeSBM)
-		_image = new SBM(img);
+		_image = new SBM(*img);
 	else {
 		delete img;
 		throw Common::Exception("Unsupported image resource type %d", (int) _type);
 	}
+
+	delete img;
 
 	loadTXI(ResMan.getResource(name, ::Aurora::kFileTypeTXI));
 	loadImage();
@@ -157,7 +147,11 @@ void Texture::loadTXI(Common::SeekableReadStream *stream) {
 }
 
 void Texture::loadImage() {
-	_image->load();
+	if (!_image) {
+		_width  = 0;
+		_height = 0;
+		return;
+	}
 
 	if (_image->getMipMapCount() < 1)
 		throw Common::Exception("Texture has no images");
@@ -254,6 +248,25 @@ const TXI &Texture::getTXI() const {
 	return *_txi;
 }
 
+bool Texture::reload(ImageDecoder *image, const TXI *txi) {
+	removeFromQueue(kQueueNewTexture);
+	removeFromQueue(kQueueTexture);
+
+	if (txi) {
+		delete _txi;
+		_txi = new TXI(*txi);
+	}
+
+	delete _image;
+
+	load(image);
+
+	addToQueue(kQueueTexture);
+	addToQueue(kQueueNewTexture);
+
+	return true;
+}
+
 bool Texture::reload(const Common::UString &name) {
 	if (!name.empty())
 		_name = name;
@@ -262,6 +275,7 @@ bool Texture::reload(const Common::UString &name) {
 		// Yeah, we don't know the resource name, so we can't reload the texture
 		return false;
 
+	removeFromQueue(kQueueNewTexture);
 	removeFromQueue(kQueueTexture);
 
 	delete _txi;

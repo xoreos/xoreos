@@ -26,15 +26,12 @@ namespace Graphics {
 /** TarGa image. */
 class TGA : public ImageDecoder {
 public:
-	TGA(Common::SeekableReadStream *tga);
+	TGA(Common::SeekableReadStream &tga);
 	~TGA();
 
-	void load();
-
 private:
-	Common::SeekableReadStream *_tga;
-
 	// Loading helpers
+	void load(Common::SeekableReadStream &tga);
 	void readHeader(Common::SeekableReadStream &tga, byte &imageType);
 	void readData(Common::SeekableReadStream &tga, byte imageType);
 };
