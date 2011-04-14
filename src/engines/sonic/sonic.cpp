@@ -42,6 +42,12 @@ const SonicEngineProbe kSonicEngineProbe;
 
 const Common::UString SonicEngineProbe::kGameName = "Sonic Chronicles: The Dark Brotherhood";
 
+SonicEngineProbe::SonicEngineProbe() {
+}
+
+SonicEngineProbe::~SonicEngineProbe() {
+}
+
 Aurora::GameID SonicEngineProbe::getGameID() const {
 	return Aurora::kGameIDSonic;
 }

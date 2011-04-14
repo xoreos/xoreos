@@ -44,6 +44,12 @@ const NWN2EngineProbe kNWN2EngineProbe;
 
 const Common::UString NWN2EngineProbe::kGameName = "Neverwinter Nights 2";
 
+NWN2EngineProbe::NWN2EngineProbe() {
+}
+
+NWN2EngineProbe::~NWN2EngineProbe() {
+}
+
 Aurora::GameID NWN2EngineProbe::getGameID() const {
 	return Aurora::kGameIDNWN2;
 }

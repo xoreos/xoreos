@@ -34,6 +34,9 @@ namespace KotOR {
 
 class KotOREngineProbe : public Engines::EngineProbe {
 public:
+	KotOREngineProbe();
+	~KotOREngineProbe();
+
 	Aurora::GameID getGameID() const;
 
 	const Common::UString &getGameName() const;
@@ -48,6 +51,8 @@ private:
 
 class KotOREngineProbeWin : public KotOREngineProbe {
 public:
+	KotOREngineProbeWin();
+	~KotOREngineProbeWin();
 
 	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
 
@@ -56,6 +61,8 @@ public:
 
 class KotOREngineProbeMac : public KotOREngineProbe {
 public:
+	KotOREngineProbeMac();
+	~KotOREngineProbeMac();
 
 	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
 
@@ -64,6 +71,8 @@ public:
 
 class KotOREngineProbeXbox : public KotOREngineProbe {
 public:
+	KotOREngineProbeXbox();
+	~KotOREngineProbeXbox();
 
 	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
 

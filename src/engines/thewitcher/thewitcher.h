@@ -32,6 +32,9 @@ namespace TheWitcher {
 
 class TheWitcherEngineProbe : public Engines::EngineProbe {
 public:
+	TheWitcherEngineProbe();
+	~TheWitcherEngineProbe();
+
 	Aurora::GameID getGameID() const;
 
 	const Common::UString &getGameName() const;

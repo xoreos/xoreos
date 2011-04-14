@@ -50,6 +50,12 @@ const NWNEngineProbe kNWNEngineProbe;
 
 const Common::UString NWNEngineProbe::kGameName = "Neverwinter Nights";
 
+NWNEngineProbe::NWNEngineProbe() {
+}
+
+NWNEngineProbe::~NWNEngineProbe() {
+}
+
 Aurora::GameID NWNEngineProbe::getGameID() const {
 	return Aurora::kGameIDNWN;
 }

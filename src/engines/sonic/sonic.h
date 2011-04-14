@@ -32,6 +32,9 @@ namespace Sonic {
 
 class SonicEngineProbe : public Engines::EngineProbe {
 public:
+	SonicEngineProbe();
+	~SonicEngineProbe();
+
 	Aurora::GameID getGameID() const;
 
 	const Common::UString &getGameName() const;

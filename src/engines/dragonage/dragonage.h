@@ -32,6 +32,9 @@ namespace DragonAge {
 
 class DragonAgeEngineProbe : public Engines::EngineProbe {
 public:
+	DragonAgeEngineProbe();
+	~DragonAgeEngineProbe();
+
 	Aurora::GameID getGameID() const;
 
 	const Common::UString &getGameName() const;

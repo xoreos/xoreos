@@ -44,6 +44,12 @@ const JadeEngineProbe kJadeEngineProbe;
 
 const Common::UString JadeEngineProbe::kGameName = "Jade Empire";
 
+JadeEngineProbe::JadeEngineProbe() {
+}
+
+JadeEngineProbe::~JadeEngineProbe() {
+}
+
 Aurora::GameID JadeEngineProbe::getGameID() const {
 	return Aurora::kGameIDJade;
 }

@@ -32,6 +32,9 @@ namespace NWN2 {
 
 class NWN2EngineProbe : public Engines::EngineProbe {
 public:
+	NWN2EngineProbe();
+	~NWN2EngineProbe();
+
 	Aurora::GameID getGameID() const;
 
 	const Common::UString &getGameName() const;

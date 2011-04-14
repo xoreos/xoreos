@@ -40,6 +40,9 @@ namespace NWN {
 
 class NWNEngineProbe : public Engines::EngineProbe {
 public:
+	NWNEngineProbe();
+	~NWNEngineProbe();
+
 	Aurora::GameID getGameID() const;
 
 	const Common::UString &getGameName() const;

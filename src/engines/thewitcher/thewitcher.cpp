@@ -45,6 +45,12 @@ const TheWitcherEngineProbe kTheWitcherEngineProbe;
 
 const Common::UString TheWitcherEngineProbe::kGameName = "The Witcher";
 
+TheWitcherEngineProbe::TheWitcherEngineProbe() {
+}
+
+TheWitcherEngineProbe::~TheWitcherEngineProbe() {
+}
+
 Aurora::GameID TheWitcherEngineProbe::getGameID() const {
 	return Aurora::kGameIDTheWitcher;
 }

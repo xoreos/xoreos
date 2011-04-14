@@ -50,6 +50,12 @@ const KotOREngineProbeXbox kKotOREngineProbeXbox;
 
 const Common::UString KotOREngineProbe::kGameName = "Star Wars: Knights of the Old Republic";
 
+KotOREngineProbe::KotOREngineProbe() {
+}
+
+KotOREngineProbe::~KotOREngineProbe() {
+}
+
 Aurora::GameID KotOREngineProbe::getGameID() const {
 	return Aurora::kGameIDKotOR;
 }
@@ -62,15 +68,36 @@ Engines::Engine *KotOREngineProbe::createEngine() const {
 	return new KotOREngine(getPlatform());
 }
 
+
+KotOREngineProbeWin::KotOREngineProbeWin() {
+}
+
+KotOREngineProbeWin::~KotOREngineProbeWin() {
+}
+
 bool KotOREngineProbeWin::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If swkotor.exe exists, this should be a valid path for the Windows port
 	return rootFiles.contains(".*/swkotor.exe", true);
+}
+
+
+KotOREngineProbeMac::KotOREngineProbeMac() {
+}
+
+KotOREngineProbeMac::~KotOREngineProbeMac() {
 }
 
 bool KotOREngineProbeMac::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If the "Knights of the Old Republic.app" directory exists, this should be a valid path for the Mac OS X port
 	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "Knights of the Old Republic.app");
 	return !appDirectory.empty();
+}
+
+
+KotOREngineProbeXbox::KotOREngineProbeXbox() {
+}
+
+KotOREngineProbeXbox::~KotOREngineProbeXbox() {
 }
 
 bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {

@@ -39,6 +39,12 @@ const DragonAgeEngineProbe kDragonAgeEngineProbe;
 
 const Common::UString DragonAgeEngineProbe::kGameName = "Dragon Age: Origins";
 
+DragonAgeEngineProbe::DragonAgeEngineProbe() {
+}
+
+DragonAgeEngineProbe::~DragonAgeEngineProbe() {
+}
+
 Aurora::GameID DragonAgeEngineProbe::getGameID() const {
 	return Aurora::kGameIDDragonAge;
 }

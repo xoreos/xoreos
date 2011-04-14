@@ -32,6 +32,9 @@ namespace Jade {
 
 class JadeEngineProbe : public Engines::EngineProbe {
 public:
+	JadeEngineProbe();
+	~JadeEngineProbe();
+
 	Aurora::GameID getGameID() const;
 
 	const Common::UString &getGameName() const;

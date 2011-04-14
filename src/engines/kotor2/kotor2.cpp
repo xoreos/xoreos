@@ -50,6 +50,12 @@ const KotOR2EngineProbeXbox kKotOR2EngineProbeXbox;
 
 const Common::UString KotOR2EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
 
+KotOR2EngineProbe::KotOR2EngineProbe() {
+}
+
+KotOR2EngineProbe::~KotOR2EngineProbe() {
+}
+
 Aurora::GameID KotOR2EngineProbe::getGameID() const {
 	return Aurora::kGameIDKotOR2;
 }
@@ -62,9 +68,23 @@ Engines::Engine *KotOR2EngineProbe::createEngine() const {
 	return new KotOR2Engine(getPlatform());
 }
 
+
+KotOR2EngineProbeWin::KotOR2EngineProbeWin() {
+}
+
+KotOR2EngineProbeWin::~KotOR2EngineProbeWin() {
+}
+
 bool KotOR2EngineProbeWin::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If "swkotor2.exe" exists, this should be a valid path for the Windows port
 	return rootFiles.contains(".*/swkotor2.exe", true);
+}
+
+
+KotOR2EngineProbeXbox::KotOR2EngineProbeXbox() {
+}
+
+KotOR2EngineProbeXbox::~KotOR2EngineProbeXbox() {
 }
 
 bool KotOR2EngineProbeXbox::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
