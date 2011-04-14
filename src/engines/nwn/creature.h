@@ -22,6 +22,7 @@
 #include "aurora/locstring.h"
 
 #include "graphics/aurora/types.h"
+#include "graphics/aurora/textureman.h"
 
 #include "engines/nwn/object.h"
 
@@ -90,9 +91,40 @@ public:
 	int32 getMaxHP() const;
 
 private:
+	enum BodyPartType {
+		kBodyPartHead       = 0,
+		kBodyPartNeck          ,
+		kBodyPartTorso         ,
+		kBodyPartPelvis        ,
+		kBodyPartBelt          ,
+		kBodyPartRightFoot     ,
+		kBodyPartLeftFoot      ,
+		kBodyPartRightShin     ,
+		kBodyPartLeftShin      ,
+		kBodyPartLeftThigh     ,
+		kBodyPartRightThigh    ,
+		kBodyPartRightFArm     ,
+		kBodyPartLeftFArm      ,
+		kBodyPartRightBicep    ,
+		kBodyPartLeftBicep     ,
+		kBodyPartRightShoul    ,
+		kBodyPartLeftShoul     ,
+		kBodyPartRightHand     ,
+		kBodyPartLeftHand      ,
+		kBodyPartMAX
+	};
+
 	struct Class {
 		uint32 classID;
 		uint16 level;
+	};
+
+	struct BodyPart {
+		uint32 id;
+		Common::UString modelName;
+		std::list<Graphics::Aurora::PLTHandle> plts;
+
+		BodyPart();
 	};
 
 	uint32 _lastChangedGUIDisplay;
@@ -119,25 +151,7 @@ private:
 	uint32 _appearanceID;
 	uint32 _phenotype;
 
-	uint32 _head;
-	uint32 _neck;
-	uint32 _torso;
-	uint32 _pelvis;
-	uint32 _belt;
-	uint32 _rFoot;
-	uint32 _lFoot;
-	uint32 _rShin;
-	uint32 _lShin;
-	uint32 _lThigh;
-	uint32 _rThigh;
-	uint32 _rFArm;
-	uint32 _lFArm;
-	uint32 _rBicep;
-	uint32 _lBicep;
-	uint32 _rShoul;
-	uint32 _lShoul;
-	uint32 _rHand;
-	uint32 _lHand;
+	std::vector<BodyPart> _bodyParts;
 
 	uint32 _colorSkin;
 	uint32 _colorHair;
@@ -154,10 +168,19 @@ private:
 	void loadProperties(const Aurora::GFFStruct &gff);
 	void loadPortrait(const Aurora::GFFStruct &gff);
 
+	void constructModelName(const Common::UString &type, uint32 id,
+	                        const Common::UString &gender,
+	                        const Common::UString &race,
+	                        const Common::UString &phenoType,
+	                        const Common::UString &phenoTypeAlt,
+	                        Common::UString &model);
+	void getPartModels();
+
+	void finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts);
+
 	void createTooltip();
 	void showTooltip();
 	void hideTooltip();
-
 };
 
 } // End of namespace NWN

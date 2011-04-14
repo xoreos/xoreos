@@ -17,11 +17,13 @@
 
 #include "aurora/types.h"
 #include "aurora/talkman.h"
+#include "aurora/resman.h"
 #include "aurora/gfffile.h"
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/pltfile.h"
 
 #include "events/events.h"
 
@@ -35,6 +37,10 @@
 namespace Engines {
 
 namespace NWN {
+
+Creature::BodyPart::BodyPart() : id(Aurora::kFieldIDInvalid) {
+}
+
 
 Creature::Creature() : _model(0), _tooltip(0) {
 }
@@ -102,25 +108,8 @@ void Creature::clear() {
 	_appearanceID = Aurora::kFieldIDInvalid;
 	_phenotype    = Aurora::kFieldIDInvalid;
 
-	_head   = Aurora::kFieldIDInvalid;
-	_neck   = Aurora::kFieldIDInvalid;
-	_torso  = Aurora::kFieldIDInvalid;
-	_pelvis = Aurora::kFieldIDInvalid;
-	_belt   = Aurora::kFieldIDInvalid;
-	_rFoot  = Aurora::kFieldIDInvalid;
-	_lFoot  = Aurora::kFieldIDInvalid;
-	_rShin  = Aurora::kFieldIDInvalid;
-	_lShin  = Aurora::kFieldIDInvalid;
-	_lThigh = Aurora::kFieldIDInvalid;
-	_rThigh = Aurora::kFieldIDInvalid;
-	_rFArm  = Aurora::kFieldIDInvalid;
-	_lFArm  = Aurora::kFieldIDInvalid;
-	_rBicep = Aurora::kFieldIDInvalid;
-	_lBicep = Aurora::kFieldIDInvalid;
-	_rShoul = Aurora::kFieldIDInvalid;
-	_lShoul = Aurora::kFieldIDInvalid;
-	_rHand  = Aurora::kFieldIDInvalid;
-	_lHand  = Aurora::kFieldIDInvalid;
+	_bodyParts.clear();
+	_bodyParts.resize(kBodyPartMAX);
 
 	_colorSkin    = Aurora::kFieldIDInvalid;
 	_colorHair    = Aurora::kFieldIDInvalid;
@@ -170,6 +159,75 @@ int32 Creature::getMaxHP() const {
 	return _baseHP + _bonusHP;
 }
 
+void Creature::constructModelName(const Common::UString &type, uint32 id,
+                                  const Common::UString &gender,
+                                  const Common::UString &race,
+                                  const Common::UString &phenoType,
+                                  const Common::UString &phenoTypeAlt,
+                                  Common::UString &model) {
+
+	model = Common::UString::sprintf("p%s%s%s_%s%03d",
+	        gender.c_str(), race.c_str(), phenoType.c_str(), type.c_str(), id);
+
+	if (ResMan.hasResource(model, Aurora::kFileTypeMDL))
+		return;
+
+	model = Common::UString::sprintf("p%s%s%s_%s%03d",
+	        gender.c_str(), race.c_str(), phenoTypeAlt.c_str(), type.c_str(), id);
+
+	if (!ResMan.hasResource(model, Aurora::kFileTypeMDL))
+		model.clear();
+}
+
+static const char *kBodyPartModels[] = {
+	"head"  ,
+	"neck"  ,
+	"chest" ,
+	"pelvis",
+	"belt"  ,
+	"rfoot" , "lfoot" ,
+	"rshin" , "lshin" ,
+	"lthigh", "rthigh",
+	"rfarm" , "lfarm" ,
+	"rbicep", "lbicep",
+	"rshoul", "lshoul",
+	"rhand" , "lhand"
+};
+
+void Creature::getPartModels() {
+	const Aurora::TwoDAFile &appearance = TwoDAReg.get("appearance");
+
+	const Aurora::TwoDARow &gender = TwoDAReg.get("gender").getRow(_gender);
+	const Aurora::TwoDARow &race   = TwoDAReg.get("racialtypes").getRow(_race);
+	const Aurora::TwoDARow &raceAp = appearance.getRow(race.getInt("Appearance"));
+	const Aurora::TwoDARow &pheno  = TwoDAReg.get("phenotype").getRow(_phenotype);
+
+	Common::UString genderChar   = gender.getString("GENDER");
+	Common::UString raceChar     = raceAp.getString("RACE");
+	Common::UString phenoChar    = Common::UString("%d", _phenotype);
+	Common::UString phenoAltChar = pheno.getString("DefaultPhenoType");
+
+	for (uint i = 0; i < kBodyPartMAX; i++)
+		constructModelName(kBodyPartModels[i], _bodyParts[i].id,
+		                   genderChar, raceChar, phenoChar, phenoAltChar,
+		                   _bodyParts[i].modelName);
+}
+
+void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
+	for (std::list<Graphics::Aurora::PLTHandle>::iterator p = plts.begin();
+	     p != plts.end(); ++p) {
+
+		Graphics::Aurora::PLTFile &plt = p->getPLT();
+
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerSkin   , _colorSkin);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerHair   , _colorHair);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo1, _colorTattoo1);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo2, _colorTattoo2);
+
+		plt.rebuild();
+	}
+}
+
 void Creature::loadModel() {
 	assert(_loaded);
 
@@ -187,8 +245,25 @@ void Creature::loadModel() {
 		_portrait = appearance.getString("PORTRAIT");
 
 	if (appearance.getString("MODELTYPE") == "P") {
+		getPartModels();
 
-		warning("ModelType P: \"%s\"", _tag.c_str());
+		for (uint i = 0; i < kBodyPartMAX; i++) {
+			if (i != kBodyPartHead)
+				continue;
+
+			if (_bodyParts[i].modelName.empty())
+				continue;
+
+			TextureMan.clearNewPLTs();
+
+			_model = loadModelObject(_bodyParts[i].modelName);
+			if (!_model)
+				continue;
+
+			TextureMan.getNewPLTs(_bodyParts[i].plts);
+
+			finishPLTs(_bodyParts[i].plts);
+		}
 
 	} else
 		_model = loadModelObject(appearance.getString("RACE"));
@@ -283,6 +358,21 @@ void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	setOrientation(o[0], o[1], o[2]);
 }
 
+static const char *kBodyPartFields[] = {
+	"Appearance_Head",
+	"BodyPart_Neck"  ,
+	"BodyPart_Torso" ,
+	"BodyPart_Pelvis",
+	"BodyPart_Belt"  ,
+	"ArmorPart_RFoot", "BodyPart_LFoot" ,
+	"BodyPart_RShin" , "BodyPart_LShin" ,
+	"BodyPart_LThigh", "BodyPart_RThigh",
+	"BodyPart_RFArm" , "BodyPart_LFArm" ,
+	"BodyPart_RBicep", "BodyPart_LBicep",
+	"BodyPart_RShoul", "BodyPart_LShoul",
+	"BodyPart_RHand" , "BodyPart_LHand"
+};
+
 void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	// Tag
 
@@ -365,25 +455,8 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_phenotype    = gff.getUint("Phenotype"      , _phenotype);
 
 	// Body parts
-	_head   = gff.getUint("Appearance_Head", _head);
-	_neck   = gff.getUint("BodyPart_Neck"  , _neck);
-	_torso  = gff.getUint("BodyPart_Torso" , _torso);
-	_pelvis = gff.getUint("BodyPart_Pelvis", _pelvis);
-	_belt   = gff.getUint("BodyPart_Belt"  , _belt);
-	_rFoot  = gff.getUint("ArmorPart_RFoot", _rFoot);
-	_lFoot  = gff.getUint("BodyPart_LFoot" , _lFoot);
-	_rShin  = gff.getUint("BodyPart_RShin" , _rShin);
-	_lShin  = gff.getUint("BodyPart_LShin" , _lShin);
-	_lThigh = gff.getUint("BodyPart_LThigh", _lThigh);
-	_rThigh = gff.getUint("BodyPart_RThigh", _rThigh);
-	_rFArm  = gff.getUint("BodyPart_RFArm" , _rFArm);
-	_lFArm  = gff.getUint("BodyPart_LFArm" , _lFArm);
-	_rBicep = gff.getUint("BodyPart_RBicep", _rBicep);
-	_lBicep = gff.getUint("BodyPart_LBicep", _lBicep);
-	_rShoul = gff.getUint("BodyPart_RShoul", _rShoul);
-	_lShoul = gff.getUint("BodyPart_LShoul", _lShoul);
-	_rHand  = gff.getUint("BodyPart_RHand" , _rHand);
-	_lHand  = gff.getUint("BodyPart_LHand" , _lHand);
+	for (uint i = 0; i < kBodyPartMAX; i++)
+		_bodyParts[i].id = gff.getUint(kBodyPartFields[i], _bodyParts[i].id);
 
 	// Colors
 	_colorSkin    = gff.getUint("Color_Skin", _colorSkin);
