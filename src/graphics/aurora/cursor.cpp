@@ -107,7 +107,7 @@ void Cursor::load() {
 		image = 0;
 
 		try {
-			_texture = TextureMan.add(_name, texture);
+			_texture = TextureMan.add(texture, _name);
 		} catch(...) {
 			delete texture;
 			throw;

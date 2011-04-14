@@ -14,9 +14,13 @@
 
 #include "common/util.h"
 #include "common/error.h"
+#include "common/uuid.h"
+
+#include "aurora/resman.h"
 
 #include "graphics/aurora/textureman.h"
 #include "graphics/aurora/texture.h"
+#include "graphics/aurora/pltfile.h"
 
 #include "graphics/graphics.h"
 
@@ -28,12 +32,12 @@ namespace Graphics {
 
 namespace Aurora {
 
-ManagedTexture::ManagedTexture(const Common::UString &name) {
+ManagedTexture::ManagedTexture(const Common::UString &name) : reloadable(false) {
 	referenceCount = 0;
 	texture = new Texture(name);
 }
 
-ManagedTexture::ManagedTexture(const Common::UString &name, Texture *t) {
+ManagedTexture::ManagedTexture(const Common::UString &name, Texture *t) : reloadable(false) {
 	referenceCount = 0;
 	texture = t;
 }
@@ -43,10 +47,21 @@ ManagedTexture::~ManagedTexture() {
 }
 
 
+ManagedPLT::ManagedPLT(const Common::UString &name) {
+	referenceCount = 0;
+	plt = new PLTFile(name);
+}
+
+ManagedPLT::~ManagedPLT() {
+	delete plt;
+}
+
+
 TextureHandle::TextureHandle() : _empty(true) {
 }
 
 TextureHandle::TextureHandle(TextureMap::iterator &i) : _empty(false), _it(i) {
+	_it->second->referenceCount++;
 }
 
 TextureHandle::TextureHandle(const TextureHandle &right) : _empty(true) {
@@ -54,14 +69,14 @@ TextureHandle::TextureHandle(const TextureHandle &right) : _empty(true) {
 }
 
 TextureHandle::~TextureHandle() {
-	TextureMan.release(*this);
+	clear();
 }
 
 TextureHandle &TextureHandle::operator=(const TextureHandle &right) {
 	if (this == &right)
 		return *this;
 
-	TextureMan.release(*this);
+	clear();
 
 	_empty = right._empty;
 	_it    = right._it;
@@ -77,13 +92,70 @@ bool TextureHandle::empty() const {
 }
 
 void TextureHandle::clear() {
-	_empty = true;
+	if (_empty)
+		return;
+
+	if (--_it->second->referenceCount == 0) {
+		TextureMan.release(_it);
+		_empty = true;
+	}
 }
 
-const Texture &TextureHandle::getTexture() const {
+Texture &TextureHandle::getTexture() const {
 	assert(!_empty);
 
 	return *_it->second->texture;
+}
+
+
+PLTHandle::PLTHandle() : _empty(true) {
+}
+
+PLTHandle::PLTHandle(PLTList::iterator &i) : _empty(false), _it(i) {
+	(*_it)->referenceCount++;
+}
+
+PLTHandle::PLTHandle(const PLTHandle &right) : _empty(true) {
+	*this = right;
+}
+
+PLTHandle::~PLTHandle() {
+	clear();
+}
+
+PLTHandle &PLTHandle::operator=(const PLTHandle &right) {
+	if (this == &right)
+		return *this;
+
+	clear();
+
+	_empty = right._empty;
+	_it    = right._it;
+
+	if (!_empty)
+		(*_it)->referenceCount++;
+
+	return *this;
+}
+
+bool PLTHandle::empty() const {
+	return _empty;
+}
+
+void PLTHandle::clear() {
+	if (_empty)
+		return;
+
+	if (--(*_it)->referenceCount == 0) {
+		TextureMan.release(_it);
+		_empty = true;
+	}
+}
+
+PLTFile &PLTHandle::getPLT() const {
+	assert(!_empty);
+
+	return *(*_it)->plt;
 }
 
 
@@ -97,14 +169,26 @@ TextureManager::~TextureManager() {
 void TextureManager::clear() {
 	Common::StackLock lock(_mutex);
 
-	for (TextureMap::iterator texture = _textures.begin(); texture != _textures.end(); ++texture)
-		delete texture->second;
+	_newPLTs.clear();
 
+	for (PLTList::iterator p = _plts.begin(); p != _plts.end(); ++p)
+		delete *p;
+	_plts.clear();
+
+	for (TextureMap::iterator t = _textures.begin(); t != _textures.end(); ++t)
+		delete t->second;
 	_textures.clear();
 }
 
-TextureHandle TextureManager::add(const Common::UString &name, Texture *texture) {
+TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
 	Common::StackLock lock(_mutex);
+
+	bool reloadable = true;
+	if (name.empty()) {
+		reloadable = false;
+
+		name = Common::generateIDRandomString();
+	}
 
 	TextureMap::iterator text = _textures.find(name);
 	if (text != _textures.end())
@@ -118,13 +202,21 @@ TextureHandle TextureManager::add(const Common::UString &name, Texture *texture)
 
 	text = result.first;
 
-	text->second->referenceCount++;
+	text->second->reloadable = reloadable;
 
 	return TextureHandle(text);
 }
 
 TextureHandle TextureManager::get(const Common::UString &name) {
 	Common::StackLock lock(_mutex);
+
+	if (ResMan.hasResource(name, ::Aurora::kFileTypePLT)) {
+		_plts.push_back(new ManagedPLT(name));
+
+		_newPLTs.push_back(PLTHandle(--_plts.end()));
+
+		return _newPLTs.back().getPLT().getTexture();
+	}
 
 	TextureMap::iterator texture = _textures.find(name);
 	if (texture == _textures.end()) {
@@ -135,27 +227,37 @@ TextureHandle TextureManager::get(const Common::UString &name) {
 		result = _textures.insert(std::make_pair(name, t));
 
 		texture = result.first;
-	}
 
-	texture->second->referenceCount++;
+		texture->second->reloadable = true;
+	}
 
 	return TextureHandle(texture);
 }
 
-void TextureManager::release(TextureHandle &handle) {
+void TextureManager::release(TextureMap::iterator &i) {
 	Common::StackLock lock(_mutex);
 
-	if (handle.empty())
+	if (i == _textures.end())
 		return;
 
-	if (--handle._it->second->referenceCount == 0) {
-		RequestMan.sync();
+	RequestMan.sync();
 
-		delete handle._it->second;
-		_textures.erase(handle._it);
-	}
+	delete i->second;
+	_textures.erase(i);
+	i = _textures.end();
+}
 
-	handle.clear();
+void TextureManager::release(PLTList::iterator &i) {
+	Common::StackLock lock(_mutex);
+
+	if (i == _plts.end())
+		return;
+
+	RequestMan.sync();
+
+	delete *i;
+	_plts.erase(i);
+	i = _plts.end();
 }
 
 void TextureManager::reloadAll() {
@@ -167,7 +269,8 @@ void TextureManager::reloadAll() {
 	try {
 
 		for (texture = _textures.begin(); texture != _textures.end(); ++texture)
-			texture->second->texture->reload(texture->first);
+			if (texture->second->reloadable)
+				texture->second->texture->reload(texture->first);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reloading texture \"%s\"", texture->first.c_str());
@@ -176,6 +279,16 @@ void TextureManager::reloadAll() {
 
 	RequestMan.sync();
 	GfxMan.unlockFrame();
+}
+
+void TextureManager::getNewPLTs(std::list<PLTHandle> &plts) {
+	for (std::list<PLTHandle>::const_iterator p = _newPLTs.begin(); p != _newPLTs.end(); ++p)
+		plts.push_back(*p);
+	_newPLTs.clear();
+}
+
+void TextureManager::clearNewPLTs() {
+	_newPLTs.clear();
 }
 
 void TextureManager::reset() {

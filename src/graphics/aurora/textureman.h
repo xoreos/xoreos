@@ -16,6 +16,7 @@
 #define GRAPHICS_AURORA_TEXTUREMAN_H
 
 #include <map>
+#include <list>
 
 #include "graphics/types.h"
 
@@ -29,18 +30,31 @@ namespace Graphics {
 namespace Aurora {
 
 class Texture;
+class PLTFile;
 
 /** A managed texture, storing how often it's referenced. */
 struct ManagedTexture {
 	Texture *texture;
 	uint32 referenceCount;
 
+	bool reloadable;
+
 	ManagedTexture(const Common::UString &name);
 	ManagedTexture(const Common::UString &name, Texture *t);
 	~ManagedTexture();
 };
 
+/** A managed PLT, storing how often it's referenced. */
+struct ManagedPLT {
+	PLTFile *plt;
+	uint32 referenceCount;
+
+	ManagedPLT(const Common::UString &name);
+	~ManagedPLT();
+};
+
 typedef std::map<Common::UString, ManagedTexture *> TextureMap;
+typedef std::list<ManagedPLT *> PLTList;;
 
 /** A handle to a texture. */
 class TextureHandle {
@@ -56,11 +70,33 @@ public:
 
 	void clear();
 
-	const Texture &getTexture() const;
+	Texture &getTexture() const;
 
 private:
 	bool _empty;
 	TextureMap::iterator _it;
+
+	friend class TextureManager;
+};
+
+class PLTHandle {
+public:
+	PLTHandle();
+	PLTHandle(PLTList::iterator &i);
+	PLTHandle(const PLTHandle &right);
+	~PLTHandle();
+
+	PLTHandle &operator=(const PLTHandle &right);
+
+	bool empty() const;
+
+	void clear();
+
+	PLTFile &getPLT() const;
+
+private:
+	bool _empty;
+	PLTList::iterator _it;
 
 	friend class TextureManager;
 };
@@ -73,26 +109,40 @@ public:
 
 	void clear();
 
-	TextureHandle add(const Common::UString &name, Texture *texture);
 
+	TextureHandle add(Texture *texture, Common::UString name = "");
 	TextureHandle get(const Common::UString &name);
-	void release(TextureHandle &handle);
+
 
 	void reloadAll();
 
-	void reset();
 
+	void getNewPLTs(std::list<PLTHandle> &plts);
+	void clearNewPLTs();
+
+
+	void reset();
 	void set();
 	void set(const TextureHandle &handle);
 
-	void activeTexture(uint32 n);
 
+	void activeTexture(uint32 n);
 	void textureCoord2f(uint32 n, float u, float v);
+
 
 private:
 	TextureMap _textures;
+	PLTList    _plts;
+
+	std::list<PLTHandle> _newPLTs;
 
 	Common::Mutex _mutex;
+
+	void release(TextureMap::iterator &i);
+	void release(PLTList::iterator &i);
+
+	friend class PLTHandle;
+	friend class TextureHandle;
 };
 
 } // End of namespace Aurora

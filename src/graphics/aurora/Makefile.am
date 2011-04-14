@@ -6,6 +6,7 @@ noinst_HEADERS = types.h \
                  videoplayer.h \
                  texture.h \
                  textureman.h \
+                 pltfile.h \
                  cursor.h \
                  cursorman.h \
                  texturefont.h \
@@ -26,6 +27,7 @@ noinst_HEADERS = types.h \
 libaurora_la_SOURCES = videoplayer.cpp \
                        texture.cpp \
                        textureman.cpp \
+                       pltfile.cpp \
                        cursor.cpp \
                        cursorman.cpp \
                        texturefont.cpp \
