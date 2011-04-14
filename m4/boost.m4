@@ -1,5 +1,5 @@
 # boost.m4: Locate Boost headers and libraries for autoconf-based projects.
-# Copyright (C) 2007, 2008, 2009  Benoit Sigoure <tsuna@lrde.epita.fr>
+# Copyright (C) 2007, 2008, 2009, 2010, 2011  Benoit Sigoure <tsuna@lrde.epita.fr>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 m4_define([_BOOST_SERIAL], [m4_translit([
-# serial 12
+# serial 15
 ], [#
 ], [])])
 
@@ -45,15 +45,19 @@ m4_define([_BOOST_SERIAL], [m4_translit([
 # Note: THESE MACROS ASSUME THAT YOU USE LIBTOOL.  If you don't, don't worry,
 # simply read the README, it will show you what to do step by step.
 
-m4_pattern_forbid([^_?BOOST_])
+m4_pattern_forbid([^_?(BOOST|Boost)_])
 
 
 # _BOOST_SED_CPP(SED-PROGRAM, PROGRAM,
 #                [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
 # --------------------------------------------------------
 # Same as AC_EGREP_CPP, but leave the result in conftest.i.
-# PATTERN is *not* overquoted, as in AC_EGREP_CPP.  It could be useful
-# to turn this into a macro which extracts the value of any macro.
+#
+# SED-PROGRAM is *not* overquoted, as in AC_EGREP_CPP.  It is expanded
+# in double-quotes, so escape your double quotes.
+#
+# It could be useful to turn this into a macro which extracts the
+# value of any macro.
 m4_define([_BOOST_SED_CPP],
 [AC_LANG_PREPROC_REQUIRE()dnl
 AC_REQUIRE([AC_PROG_SED])dnl
@@ -98,6 +102,7 @@ set x $boost_version_req 0 0 0
 IFS=$boost_save_IFS
 shift
 boost_version_req=`expr "$[1]" '*' 100000 + "$[2]" '*' 100 + "$[3]"`
+boost_version_req_string=$[1].$[2].$[3]
 AC_ARG_WITH([boost],
    [AS_HELP_STRING([--with-boost=DIR],
                    [prefix of Boost $1 @<:@guess@:>@])])dnl
@@ -113,9 +118,9 @@ if test x"$BOOST_ROOT" != x; then
   fi
 fi
 AC_SUBST([DISTCHECK_CONFIGURE_FLAGS],
-         ["$DISTCHECK_CONFIGURE_FLAGS '--with-boost=$with_boost'"])
+         ["$DISTCHECK_CONFIGURE_FLAGS '--with-boost=$with_boost'"])dnl
 boost_save_CPPFLAGS=$CPPFLAGS
-  AC_CACHE_CHECK([for Boost headers version >= $boost_version_req],
+  AC_CACHE_CHECK([for Boost headers version >= $boost_version_req_string],
     [boost_cv_inc_path],
     [boost_cv_inc_path=no
 AC_LANG_PUSH([C++])dnl
@@ -183,7 +188,7 @@ AC_LANG_POP([C++])dnl
     ])
     case $boost_cv_inc_path in #(
       no)
-        boost_errmsg="cannot find Boost headers version >= $boost_version_req"
+        boost_errmsg="cannot find Boost headers version >= $boost_version_req_string"
         m4_if([$2], [],  [AC_MSG_ERROR([$boost_errmsg])],
                         [AC_MSG_NOTICE([$boost_errmsg])])
         $2
@@ -192,7 +197,7 @@ AC_LANG_POP([C++])dnl
         BOOST_CPPFLAGS=
         ;;#(
       *)
-        AC_SUBST([BOOST_CPPFLAGS], ["-I$boost_cv_inc_path"])
+        AC_SUBST([BOOST_CPPFLAGS], ["-I$boost_cv_inc_path"])dnl
         ;;
     esac
   if test x"$boost_cv_inc_path" != xno; then
@@ -201,7 +206,7 @@ AC_LANG_POP([C++])dnl
   AC_CACHE_CHECK([for Boost's header version],
     [boost_cv_lib_version],
     [m4_pattern_allow([^BOOST_LIB_VERSION$])dnl
-     _BOOST_SED_CPP([/^boost-lib-version = /{s///;s/\"//g;p;g;}],
+     _BOOST_SED_CPP([/^boost-lib-version = /{s///;s/\"//g;p;q;}],
                     [#include <boost/version.hpp>
 boost-lib-version = BOOST_LIB_VERSION],
     [boost_cv_lib_version=`cat conftest.i`])])
@@ -292,6 +297,7 @@ dnl The else branch is huge and wasn't intended on purpose.
 AC_LANG_PUSH([C++])dnl
 AS_VAR_PUSHDEF([Boost_lib], [boost_cv_lib_$1])dnl
 AS_VAR_PUSHDEF([Boost_lib_LDFLAGS], [boost_cv_lib_$1_LDFLAGS])dnl
+AS_VAR_PUSHDEF([Boost_lib_LDPATH], [boost_cv_lib_$1_LDPATH])dnl
 AS_VAR_PUSHDEF([Boost_lib_LIBS], [boost_cv_lib_$1_LIBS])dnl
 BOOST_FIND_HEADER([$3])
 boost_save_CPPFLAGS=$CPPFLAGS
@@ -373,8 +379,8 @@ for boost_rtopt_ in $boost_rtopt '' -d; do
     boost_tmp_lib=$with_boost
     test x"$with_boost" = x && boost_tmp_lib=${boost_cv_inc_path%/include}
     for boost_ldpath in "$boost_tmp_lib/lib" '' \
-             /opt/local/lib /usr/local/lib /opt/lib /usr/lib \
-             "$with_boost" C:/Boost/lib /lib /usr/lib64 /lib64
+             /opt/local/lib* /usr/local/lib* /opt/lib* /usr/lib* \
+             "$with_boost" C:/Boost/lib /lib*
     do
       test -e "$boost_ldpath" || continue
       boost_save_LDFLAGS=$LDFLAGS
@@ -397,7 +403,8 @@ dnl generated only once above (before we start the for loops).
       LDFLAGS=$boost_save_LDFLAGS
       LIBS=$boost_save_LIBS
       if test x"$Boost_lib" = xyes; then
-        Boost_lib_LDFLAGS="-L$boost_ldpath -R$boost_ldpath"
+        Boost_lib_LDFLAGS="-L$boost_ldpath -Wl,-R$boost_ldpath"
+        Boost_lib_LDPATH="$boost_ldpath"
         break 6
       else
         boost_failed_libs="$boost_failed_libs@$boost_lib@"
@@ -412,14 +419,17 @@ rm -f conftest.$ac_objext
 ])
 case $Boost_lib in #(
   no) _AC_MSG_LOG_CONFTEST
-    AC_MSG_ERROR([cannot not find the flags to link with Boost $1])
+    AC_MSG_ERROR([cannot find the flags to link with Boost $1])
     ;;
 esac
-AC_SUBST(AS_TR_CPP([BOOST_$1_LDFLAGS]), [$Boost_lib_LDFLAGS])
-AC_SUBST(AS_TR_CPP([BOOST_$1_LIBS]), [$Boost_lib_LIBS])
+AC_SUBST(AS_TR_CPP([BOOST_$1_LDFLAGS]), [$Boost_lib_LDFLAGS])dnl
+AC_SUBST(AS_TR_CPP([BOOST_$1_LDPATH]), [$Boost_lib_LDPATH])dnl
+AC_SUBST([BOOST_LDPATH], [$Boost_lib_LDPATH])dnl
+AC_SUBST(AS_TR_CPP([BOOST_$1_LIBS]), [$Boost_lib_LIBS])dnl
 CPPFLAGS=$boost_save_CPPFLAGS
 AS_VAR_POPDEF([Boost_lib])dnl
 AS_VAR_POPDEF([Boost_lib_LDFLAGS])dnl
+AS_VAR_POPDEF([Boost_lib_LDPATH])dnl
 AS_VAR_POPDEF([Boost_lib_LIBS])dnl
 AC_LANG_POP([C++])dnl
 fi
@@ -434,17 +444,31 @@ fi
 # The page http://beta.boost.org/doc/libs is useful: it gives the first release
 # version of each library (among other things).
 
+# BOOST_DEFUN(LIBRARY, CODE)
+# --------------------------
+# Define BOOST_<LIBRARY-UPPERCASE> as a macro that runs CODE.
+#
+# Use indir to avoid the warning on underquoted macro name given to AC_DEFUN.
+m4_define([BOOST_DEFUN],
+[m4_indir([AC_DEFUN],
+          m4_toupper([BOOST_$1]),
+[m4_pushdef([BOOST_Library], [$1])dnl
+$2
+m4_popdef([BOOST_Library])dnl
+])
+])
+
 # BOOST_ARRAY()
 # -------------
 # Look for Boost.Array
-AC_DEFUN([BOOST_ARRAY],
+BOOST_DEFUN([Array],
 [BOOST_FIND_HEADER([boost/array.hpp])])
 
 
 # BOOST_ASIO()
 # ------------
 # Look for Boost.Asio (new in Boost 1.35).
-AC_DEFUN([BOOST_ASIO],
+BOOST_DEFUN([Asio],
 [AC_REQUIRE([BOOST_SYSTEM])dnl
 BOOST_FIND_HEADER([boost/asio.hpp])])
 
@@ -452,14 +476,14 @@ BOOST_FIND_HEADER([boost/asio.hpp])])
 # BOOST_BIND()
 # ------------
 # Look for Boost.Bind
-AC_DEFUN([BOOST_BIND],
+BOOST_DEFUN([Bind],
 [BOOST_FIND_HEADER([boost/bind.hpp])])
 
 
 # BOOST_CONVERSION()
 # ------------------
 # Look for Boost.Conversion (cast / lexical_cast)
-AC_DEFUN([BOOST_CONVERSION],
+BOOST_DEFUN([Conversion],
 [BOOST_FIND_HEADER([boost/cast.hpp])
 BOOST_FIND_HEADER([boost/lexical_cast.hpp])
 ])# BOOST_CONVERSION
@@ -469,7 +493,7 @@ BOOST_FIND_HEADER([boost/lexical_cast.hpp])
 # -----------------------------------
 # Look for Boost.Date_Time.  For the documentation of PREFERRED-RT-OPT, see the
 # documentation of BOOST_FIND_LIB above.
-AC_DEFUN([BOOST_DATE_TIME],
+BOOST_DEFUN([Date_Time],
 [BOOST_FIND_LIB([date_time], [$1],
                 [boost/date_time/posix_time/posix_time.hpp],
                 [boost::posix_time::ptime t;])
@@ -482,31 +506,32 @@ AC_DEFUN([BOOST_DATE_TIME],
 # the documentation of BOOST_FIND_LIB above.
 # Do not check for boost/filesystem.hpp because this file was introduced in
 # 1.34.
-AC_DEFUN([BOOST_FILESYSTEM],
+BOOST_DEFUN([Filesystem],
 [# Do we have to check for Boost.System?  This link-time dependency was
 # added as of 1.35.0.  If we have a version <1.35, we must not attempt to
 # find Boost.System as it didn't exist by then.
 if test $boost_major_version -ge 135; then
 BOOST_SYSTEM([$1])
 fi # end of the Boost.System check.
-AC_REQUIRE([_BOOST_PTHREAD_FLAG])
 boost_filesystem_save_LIBS=$LIBS
 boost_filesystem_save_LDFLAGS=$LDFLAGS
 m4_pattern_allow([^BOOST_SYSTEM_(LIBS|LDFLAGS)$])dnl
-LIBS="$LIBS $BOOST_SYSTEM_LIBS $boost_cv_pthread_flag"
+LIBS="$LIBS $BOOST_SYSTEM_LIBS"
 LDFLAGS="$LDFLAGS $BOOST_SYSTEM_LDFLAGS"
 BOOST_FIND_LIB([filesystem], [$1],
                 [boost/filesystem/path.hpp], [boost::filesystem::path p;])
-BOOST_FILESYSTEM_LIBS="$BOOST_FILESYSTEM_LIBS $boost_cv_pthread_flag"
-BOOST_CPPFLAGS="$BOOST_CPPFLAGS $boost_cv_pthread_flag"
+if test $enable_static_boost = yes && test $boost_major_version -ge 135; then
+    AC_SUBST([BOOST_FILESYSTEM_LIBS], ["$BOOST_FILESYSTEM_LIBS $BOOST_SYSTEM_LIBS"])
+fi
 LIBS=$boost_filesystem_save_LIBS
 LDFLAGS=$boost_filesystem_save_LDFLAGS
 ])# BOOST_FILESYSTEM
 
+
 # BOOST_FOREACH()
 # ---------------
 # Look for Boost.Foreach
-AC_DEFUN([BOOST_FOREACH],
+BOOST_DEFUN([Foreach],
 [BOOST_FIND_HEADER([boost/foreach.hpp])])
 
 
@@ -517,14 +542,14 @@ AC_DEFUN([BOOST_FOREACH],
 # standalone.  It can't be compiled because it triggers the following error:
 # boost/format/detail/config_macros.hpp:88: error: 'locale' in namespace 'std'
 #                                                  does not name a type
-AC_DEFUN([BOOST_FORMAT],
+BOOST_DEFUN([Format],
 [BOOST_FIND_HEADER([boost/format.hpp])])
 
 
 # BOOST_FUNCTION()
 # ----------------
 # Look for Boost.Function
-AC_DEFUN([BOOST_FUNCTION],
+BOOST_DEFUN([Function],
 [BOOST_FIND_HEADER([boost/function.hpp])])
 
 
@@ -532,53 +557,34 @@ AC_DEFUN([BOOST_FUNCTION],
 # -------------------------------
 # Look for Boost.Graphs.  For the documentation of PREFERRED-RT-OPT, see the
 # documentation of BOOST_FIND_LIB above.
-AC_DEFUN([BOOST_GRAPH],
+BOOST_DEFUN([Graph],
 [BOOST_FIND_LIB([graph], [$1],
                 [boost/graph/adjacency_list.hpp], [boost::adjacency_list<> g;])
 ])# BOOST_GRAPH
 
 
 # BOOST_IOSTREAMS([PREFERRED-RT-OPT])
-# -------------------------------
+# -----------------------------------
 # Look for Boost.IOStreams.  For the documentation of PREFERRED-RT-OPT, see the
 # documentation of BOOST_FIND_LIB above.
-AC_DEFUN([BOOST_IOSTREAMS],
+BOOST_DEFUN([IOStreams],
 [BOOST_FIND_LIB([iostreams], [$1],
                 [boost/iostreams/device/file_descriptor.hpp],
-                [boost::iostreams::file_descriptor fd(0); fd.close();])
+                [boost::iostreams::file_descriptor fd; fd.close();])
 ])# BOOST_IOSTREAMS
 
 
 # BOOST_HASH()
 # ------------
 # Look for Boost.Functional/Hash
-AC_DEFUN([BOOST_HASH],
+BOOST_DEFUN([Hash],
 [BOOST_FIND_HEADER([boost/functional/hash.hpp])])
-
-
-# BOOST_UNORDERED()
-# ------------
-# Look for Boost.Unordered
-AC_DEFUN([BOOST_UNORDERED],
-[BOOST_FIND_HEADER([boost/unordered_map.hpp])
-BOOST_FIND_HEADER([boost/unordered_set.hpp])
-])
-
-
-# BOOST_UUID()
-# ------------
-# Look for Boost.Uuid
-AC_DEFUN([BOOST_UUID],
-[BOOST_FIND_HEADER([boost/uuid/uuid.hpp])
-BOOST_FIND_HEADER([boost/uuid/uuid_generators.hpp])
-BOOST_FIND_HEADER([boost/uuid/uuid_io.hpp])
-])
 
 
 # BOOST_LAMBDA()
 # --------------
 # Look for Boost.Lambda
-AC_DEFUN([BOOST_LAMBDA],
+BOOST_DEFUN([Lambda],
 [BOOST_FIND_HEADER([boost/lambda/lambda.hpp])])
 
 
@@ -590,21 +596,21 @@ AC_DEFUN([BOOST_LAMBDA],
 # libboost_math_c99f, libboost_math_c99l, libboost_math_tr1,
 # libboost_math_tr1f, libboost_math_tr1l).  This macro must be fixed to do the
 # right thing anyway.
-AC_DEFUN([BOOST_MATH],
+BOOST_DEFUN([Math],
 [BOOST_FIND_HEADER([boost/math/special_functions.hpp])])
 
 
 # BOOST_MULTIARRAY()
 # ------------------
 # Look for Boost.MultiArray
-AC_DEFUN([BOOST_MULTIARRAY],
+BOOST_DEFUN([MultiArray],
 [BOOST_FIND_HEADER([boost/multi_array.hpp])])
 
 
 # BOOST_NUMERIC_CONVERSION()
 # --------------------------
 # Look for Boost.NumericConversion (policy-based numeric conversion)
-AC_DEFUN([BOOST_NUMERIC_CONVERSION],
+BOOST_DEFUN([Numeric_Conversion],
 [BOOST_FIND_HEADER([boost/numeric/conversion/converter.hpp])
 ])# BOOST_NUMERIC_CONVERSION
 
@@ -612,32 +618,81 @@ AC_DEFUN([BOOST_NUMERIC_CONVERSION],
 # BOOST_OPTIONAL()
 # ----------------
 # Look for Boost.Optional
-AC_DEFUN([BOOST_OPTIONAL],
+BOOST_DEFUN([Optional],
 [BOOST_FIND_HEADER([boost/optional.hpp])])
 
 
 # BOOST_PREPROCESSOR()
 # --------------------
 # Look for Boost.Preprocessor
-AC_DEFUN([BOOST_PREPROCESSOR],
+BOOST_DEFUN([Preprocessor],
 [BOOST_FIND_HEADER([boost/preprocessor/repeat.hpp])])
+
+
+# BOOST_UNORDERED()
+# ------------
+# Look for Boost.Unordered
+BOOST_DEFUN([Unordered],
+[BOOST_FIND_HEADER([boost/unordered_map.hpp])
+BOOST_FIND_HEADER([boost/unordered_set.hpp])
+])# BOOST_UNORDERED
+
+
+# BOOST_UUID()
+# ------------
+# Look for Boost.Uuid
+BOOST_DEFUN([Uuid],
+[BOOST_FIND_HEADER([boost/uuid/uuid.hpp])
+BOOST_FIND_HEADER([boost/uuid/uuid_generators.hpp])
+BOOST_FIND_HEADER([boost/uuid/uuid_io.hpp])
+])# BOOST_UUID
 
 
 # BOOST_PROGRAM_OPTIONS([PREFERRED-RT-OPT])
 # -----------------------------------------
-# Look for Boost.Program_options.  For the documentation of PREFERRED-RT-OPT, see
-# the documentation of BOOST_FIND_LIB above.
-AC_DEFUN([BOOST_PROGRAM_OPTIONS],
+# Look for Boost.Program_options.  For the documentation of PREFERRED-RT-OPT,
+# see the documentation of BOOST_FIND_LIB above.
+BOOST_DEFUN([Program_Options],
 [BOOST_FIND_LIB([program_options], [$1],
                 [boost/program_options.hpp],
                 [boost::program_options::options_description d("test");])
 ])# BOOST_PROGRAM_OPTIONS
 
 
+
+# _BOOST_PYTHON_CONFIG(VARIABLE, FLAG)
+# ------------------------------------
+# Save VARIABLE, and define it via `python-config --FLAG`.
+# Substitute BOOST_PYTHON_VARIABLE.
+m4_define([_BOOST_PYTHON_CONFIG],
+[AC_SUBST([BOOST_PYTHON_$1],
+          [`python-config --$2 2>/dev/null`])dnl
+boost_python_save_$1=$$1
+$1="$$1 $BOOST_PYTHON_$1"])
+
+
+# BOOST_PYTHON([PREFERRED-RT-OPT])
+# --------------------------------
+# Look for Boost.Python.  For the documentation of PREFERRED-RT-OPT,
+# see the documentation of BOOST_FIND_LIB above.
+BOOST_DEFUN([Python],
+[_BOOST_PYTHON_CONFIG([CPPFLAGS], [includes])
+_BOOST_PYTHON_CONFIG([LDFLAGS],   [ldflags])
+_BOOST_PYTHON_CONFIG([LIBS],      [libs])
+m4_pattern_allow([^BOOST_PYTHON_MODULE$])dnl
+BOOST_FIND_LIB([python], [$1],
+               [boost/python.hpp],
+               [], [BOOST_PYTHON_MODULE(empty) {}])
+CPPFLAGS=$boost_python_save_CPPFLAGS
+LDFLAGS=$boost_python_save_LDFLAGS
+LIBS=$boost_python_save_LIBS
+])# BOOST_PYTHON
+
+
 # BOOST_REF()
 # -----------
 # Look for Boost.Ref
-AC_DEFUN([BOOST_REF],
+BOOST_DEFUN([Ref],
 [BOOST_FIND_HEADER([boost/ref.hpp])])
 
 
@@ -645,7 +700,7 @@ AC_DEFUN([BOOST_REF],
 # -------------------------------
 # Look for Boost.Regex.  For the documentation of PREFERRED-RT-OPT, see the
 # documentation of BOOST_FIND_LIB above.
-AC_DEFUN([BOOST_REGEX],
+BOOST_DEFUN([Regex],
 [BOOST_FIND_LIB([regex], [$1],
                 [boost/regex.hpp],
                 [boost::regex exp("*"); boost::regex_match("foo", exp);])
@@ -656,7 +711,7 @@ AC_DEFUN([BOOST_REGEX],
 # ---------------------------------------
 # Look for Boost.Serialization.  For the documentation of PREFERRED-RT-OPT, see
 # the documentation of BOOST_FIND_LIB above.
-AC_DEFUN([BOOST_SERIALIZATION],
+BOOST_DEFUN([Serialization],
 [BOOST_FIND_LIB([serialization], [$1],
                 [boost/archive/text_oarchive.hpp],
                 [std::ostream* o = 0; // Cheap way to get an ostream...
@@ -668,7 +723,7 @@ AC_DEFUN([BOOST_SERIALIZATION],
 # ---------------------------------
 # Look for Boost.Signals.  For the documentation of PREFERRED-RT-OPT, see the
 # documentation of BOOST_FIND_LIB above.
-AC_DEFUN([BOOST_SIGNALS],
+BOOST_DEFUN([Signals],
 [BOOST_FIND_LIB([signals], [$1],
                 [boost/signal.hpp],
                 [boost::signal<void ()> s;])
@@ -678,7 +733,7 @@ AC_DEFUN([BOOST_SIGNALS],
 # BOOST_SMART_PTR()
 # -----------------
 # Look for Boost.SmartPtr
-AC_DEFUN([BOOST_SMART_PTR],
+BOOST_DEFUN([Smart_Ptr],
 [BOOST_FIND_HEADER([boost/scoped_ptr.hpp])
 BOOST_FIND_HEADER([boost/shared_ptr.hpp])
 ])
@@ -687,14 +742,14 @@ BOOST_FIND_HEADER([boost/shared_ptr.hpp])
 # BOOST_STATICASSERT()
 # --------------------
 # Look for Boost.StaticAssert
-AC_DEFUN([BOOST_STATICASSERT],
+BOOST_DEFUN([StaticAssert],
 [BOOST_FIND_HEADER([boost/static_assert.hpp])])
 
 
 # BOOST_STRING_ALGO()
 # -------------------
 # Look for Boost.StringAlgo
-AC_DEFUN([BOOST_STRING_ALGO],
+BOOST_DEFUN([String_Algo],
 [BOOST_FIND_HEADER([boost/algorithm/string.hpp])
 ])
 
@@ -704,7 +759,7 @@ AC_DEFUN([BOOST_STRING_ALGO],
 # Look for Boost.System.  For the documentation of PREFERRED-RT-OPT, see the
 # documentation of BOOST_FIND_LIB above.  This library was introduced in Boost
 # 1.35.0.
-AC_DEFUN([BOOST_SYSTEM],
+BOOST_DEFUN([System],
 [BOOST_FIND_LIB([system], [$1],
                 [boost/system/error_code.hpp],
                 [boost::system::error_code e; e.clear();])
@@ -715,7 +770,7 @@ AC_DEFUN([BOOST_SYSTEM],
 # ------------------------------
 # Look for Boost.Test.  For the documentation of PREFERRED-RT-OPT, see the
 # documentation of BOOST_FIND_LIB above.
-AC_DEFUN([BOOST_TEST],
+BOOST_DEFUN([Test],
 [m4_pattern_allow([^BOOST_CHECK$])dnl
 BOOST_FIND_LIB([unit_test_framework], [$1],
                [boost/test/unit_test.hpp], [BOOST_CHECK(2 == 2);],
@@ -730,7 +785,7 @@ BOOST_FIND_LIB([unit_test_framework], [$1],
 # Look for Boost.Thread.  For the documentation of PREFERRED-RT-OPT, see the
 # documentation of BOOST_FIND_LIB above.
 # FIXME: Provide an alias "BOOST_THREAD".
-AC_DEFUN([BOOST_THREADS],
+BOOST_DEFUN([Threads],
 [dnl Having the pthread flag is required at least on GCC3 where
 dnl boost/thread.hpp would complain if we try to compile without
 dnl -pthread on GNU/Linux.
@@ -745,7 +800,7 @@ LIBS="$LIBS $boost_cv_pthread_flag"
 #   threading: -pthread (Linux), -pthreads (Solaris) or -mthreads (Mingw32)"
 CPPFLAGS="$CPPFLAGS $boost_cv_pthread_flag"
 BOOST_FIND_LIB([thread], [$1],
-                [boost/thread.hpp], [boost::thread t; boost::mutex m;])
+               [boost/thread.hpp], [boost::thread t; boost::mutex m;])
 BOOST_THREAD_LIBS="$BOOST_THREAD_LIBS $boost_cv_pthread_flag"
 BOOST_CPPFLAGS="$BOOST_CPPFLAGS $boost_cv_pthread_flag"
 LIBS=$boost_threads_save_LIBS
@@ -756,14 +811,14 @@ CPPFLAGS=$boost_threads_save_CPPFLAGS
 # BOOST_TOKENIZER()
 # -----------------
 # Look for Boost.Tokenizer
-AC_DEFUN([BOOST_TOKENIZER],
+BOOST_DEFUN([Tokenizer],
 [BOOST_FIND_HEADER([boost/tokenizer.hpp])])
 
 
 # BOOST_TRIBOOL()
 # ---------------
 # Look for Boost.Tribool
-AC_DEFUN([BOOST_TRIBOOL],
+BOOST_DEFUN([Tribool],
 [BOOST_FIND_HEADER([boost/logic/tribool_fwd.hpp])
 BOOST_FIND_HEADER([boost/logic/tribool.hpp])
 ])
@@ -772,14 +827,14 @@ BOOST_FIND_HEADER([boost/logic/tribool.hpp])
 # BOOST_TUPLE()
 # -------------
 # Look for Boost.Tuple
-AC_DEFUN([BOOST_TUPLE],
+BOOST_DEFUN([Tuple],
 [BOOST_FIND_HEADER([boost/tuple/tuple.hpp])])
 
 
 # BOOST_TYPETRAITS()
 # --------------------
 # Look for Boost.TypeTraits
-AC_DEFUN([BOOST_TYPETRAITS],
+BOOST_DEFUN([TypeTraits],
 [BOOST_FIND_HEADER([boost/type_traits.hpp])])
 
 
@@ -787,14 +842,14 @@ AC_DEFUN([BOOST_TYPETRAITS],
 # ---------------
 # Look for Boost.Utility (noncopyable, result_of, base-from-member idiom,
 # etc.)
-AC_DEFUN([BOOST_UTILITY],
+BOOST_DEFUN([Utility],
 [BOOST_FIND_HEADER([boost/utility.hpp])])
 
 
 # BOOST_VARIANT()
 # ---------------
 # Look for Boost.Variant.
-AC_DEFUN([BOOST_VARIANT],
+BOOST_DEFUN([Variant],
 [BOOST_FIND_HEADER([boost/variant/variant_fwd.hpp])
 BOOST_FIND_HEADER([boost/variant.hpp])])
 
@@ -805,7 +860,7 @@ BOOST_FIND_HEADER([boost/variant.hpp])])
 # call BOOST_THREADS first.
 # Look for Boost.Wave.  For the documentation of PREFERRED-RT-OPT, see the
 # documentation of BOOST_FIND_LIB above.
-AC_DEFUN([BOOST_WAVE],
+BOOST_DEFUN([Wave],
 [AC_REQUIRE([BOOST_FILESYSTEM])dnl
 AC_REQUIRE([BOOST_DATE_TIME])dnl
 boost_wave_save_LIBS=$LIBS
@@ -826,7 +881,7 @@ LDFLAGS=$boost_wave_save_LDFLAGS
 # BOOST_XPRESSIVE()
 # -----------------
 # Look for Boost.Xpressive (new since 1.36.0).
-AC_DEFUN([BOOST_XPRESSIVE],
+BOOST_DEFUN([Xpressive],
 [BOOST_FIND_HEADER([boost/xpressive/xpressive.hpp])])
 
 
@@ -933,6 +988,7 @@ if test x$boost_cv_inc_path != xno; then
   # I'm not sure about my test for `il' (be careful: Intel's ICC pre-defines
   # the same defines as GCC's).
   for i in \
+    _BOOST_gcc_test(4, 6) \
     _BOOST_gcc_test(4, 5) \
     _BOOST_gcc_test(4, 4) \
     _BOOST_gcc_test(4, 3) \
