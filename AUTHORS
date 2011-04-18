@@ -38,6 +38,15 @@ glew
    glew is licensed under the Modified BSD License, the Mesa 3-D License
    (MIT License), and the Khronos License (MIT License).
 
+lua
+***
+   eos uses lua, a lightweight scripting language (<http://www.lua.org/>), to
+   handle scripts from The Witcher. To minimize dependencies on "uncommon"
+   libraries, eos completely includes the lua 5.0.3 code. Lua is licensed under
+   the terms of the MIT license reproduced below. This means that Lua is free
+   software and can be used for both academic and commercial purposes at
+   absolutely no cost.
+
 UTF-8 CPP
 *********
    eos uses the lightweight header-only UTF-8 CPP library

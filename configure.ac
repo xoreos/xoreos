@@ -136,6 +136,7 @@ AC_SUBST(WERROR)
 
 AC_OUTPUT(utf8cpp/Makefile \
           glew/Makefile \
+          lua/Makefile \
           src/common/Makefile \
           src/graphics/Makefile \
           src/graphics/images/Makefile \
