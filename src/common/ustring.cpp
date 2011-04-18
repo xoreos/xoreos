@@ -549,8 +549,6 @@ void UString::tolower() {
 		// Run through the whole string
 		std::string::iterator it = _string.begin();
 		while (it != _string.end()) {
-			std::string::iterator prev = it;
-
 			// Get the codepoint
 			uint32 c = utf8::next(it, _string.end());
 
@@ -577,8 +575,6 @@ void UString::toupper() {
 		// Run through the whole string
 		std::string::iterator it = _string.begin();
 		while (it != _string.end()) {
-			std::string::iterator prev = it;
-
 			// Get the codepoint
 			uint32 c = utf8::next(it, _string.end());
 
