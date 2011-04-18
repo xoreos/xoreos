@@ -119,6 +119,13 @@ static FileHandle *tofileh (lua_State *L, int findex) {
   return fh;
 }
 
+#define checkfile(L,i)	checkfileh(L,i)
+
+static void checkfileh (lua_State *L, int findex) {
+	if (topfile(L, findex)->f == NULL)
+		luaL_error(L, "attempt to use a closed file");
+}
+
 
 
 #define newfile(L)	(&(newfileh(L)->f))
@@ -248,7 +255,7 @@ static int g_iofile (lua_State *L, const char *name, const char *mode) {
       }
     }
     else {
-      tofile(L, 1);  /* check that it's a valid file handle */
+      checkfile(L, 1);  /* check that it's a valid file handle */
       lua_pushvalue(L, 1);
     }
     lua_rawset(L, lua_upvalueindex(1));
@@ -283,7 +290,7 @@ static void aux_lines (lua_State *L, int idx, int close) {
 
 
 static int f_lines (lua_State *L) {
-  tofile(L, 1);  /* check that it's a valid file handle */
+  checkfile(L, 1);  /* check that it's a valid file handle */
   aux_lines(L, 1, 0);
   return 1;
 }

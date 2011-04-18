@@ -41,9 +41,9 @@
 */
 
 /* an unsigned integer to hold hash values */
-typedef unsigned int lu_hash;
+typedef unsigned long long lu_hash;
 /* its signed equivalent */
-typedef int ls_hash;
+typedef long long ls_hash;
 
 /* an unsigned integer big enough to count the total memory used by Lua; */
 /* it should be at least as large as size_t */
