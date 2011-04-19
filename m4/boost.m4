@@ -630,22 +630,17 @@ BOOST_DEFUN([Preprocessor],
 
 
 # BOOST_UNORDERED()
-# ------------
+# -----------------
 # Look for Boost.Unordered
 BOOST_DEFUN([Unordered],
-[BOOST_FIND_HEADER([boost/unordered_map.hpp])
-BOOST_FIND_HEADER([boost/unordered_set.hpp])
-])# BOOST_UNORDERED
+[BOOST_FIND_HEADER([boost/unordered_map.hpp])])
 
 
 # BOOST_UUID()
 # ------------
 # Look for Boost.Uuid
 BOOST_DEFUN([Uuid],
-[BOOST_FIND_HEADER([boost/uuid/uuid.hpp])
-BOOST_FIND_HEADER([boost/uuid/uuid_generators.hpp])
-BOOST_FIND_HEADER([boost/uuid/uuid_io.hpp])
-])# BOOST_UUID
+[BOOST_FIND_HEADER([boost/uuid/uuid.hpp])])
 
 
 # BOOST_PROGRAM_OPTIONS([PREFERRED-RT-OPT])

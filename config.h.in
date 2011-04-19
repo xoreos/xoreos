@@ -33,17 +33,8 @@
 /* Define to 1 if you have <boost/unordered_map.hpp> */
 #undef HAVE_BOOST_UNORDERED_MAP_HPP
 
-/* Define to 1 if you have <boost/unordered_set.hpp> */
-#undef HAVE_BOOST_UNORDERED_SET_HPP
-
-/* Define to 1 if you have <boost/uuid/uuid_generators.hpp> */
-#undef HAVE_BOOST_UUID_UUID_GENERATORS_HPP
-
 /* Define to 1 if you have <boost/uuid/uuid.hpp> */
 #undef HAVE_BOOST_UUID_UUID_HPP
-
-/* Define to 1 if you have <boost/uuid/uuid_io.hpp> */
-#undef HAVE_BOOST_UUID_UUID_IO_HPP
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
