@@ -114,7 +114,7 @@ void PLTFile::readHeader(Common::SeekableReadStream &plt) {
 	_width  = plt.readUint32LE();
 	_height = plt.readUint32LE();
 
-	if ((plt.size() - plt.pos()) < (2 * _width * _height))
+	if ((plt.size() - plt.pos()) < (int32) (2 * _width * _height))
 		throw Common::Exception("Not enough data");
 }
 
