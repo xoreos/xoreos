@@ -5,5 +5,7 @@ Changes:
 ========
 
 - Silenced a compiler warning (unused value) in liolib.c
-- Increase the size of lu_hash, so it won't make any problem on 64bit
+- Increased the size of lu_hash, so it won't make any problem on 64bit
   systems
+- Changed the definition of IntPoint() to work warning-less on systems
+  where sizeof(void *) < sizeof(lu_hash)
