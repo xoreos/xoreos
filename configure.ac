@@ -22,6 +22,14 @@ if test "x$with_werror" = "xyes"; then
 	WERROR="-Werror"
 fi
 
+AC_C_CONST
+AC_HEADER_STDC
+
+AC_C_BIGENDIAN()
+
+AC_TYPE_INTPTR_T
+AC_TYPE_UINTPTR_T
+
 AC_CHECK_LIB([m], [cos])
 AC_CHECK_FUNCS([fabs])
 AC_CHECK_FUNCS([fmin])
@@ -67,11 +75,6 @@ AC_CHECK_HEADER("zlib.h", , nozlib=1)
 if test -n "$nozlib"; then
 	AC_MSG_ERROR([zlib is required and could not be found])
 fi
-
-AC_C_CONST
-AC_HEADER_STDC
-
-AC_C_BIGENDIAN()
 
 AM_ICONV
 
