@@ -43,9 +43,7 @@ lua
    eos uses lua, a lightweight scripting language (<http://www.lua.org/>), to
    handle scripts from The Witcher. To minimize dependencies on "uncommon"
    libraries, eos completely includes the lua 5.0.3 code. Lua is licensed under
-   the terms of the MIT license reproduced below. This means that Lua is free
-   software and can be used for both academic and commercial purposes at
-   absolutely no cost.
+   the terms of the MIT license.
 
 UTF-8 CPP
 *********
@@ -63,6 +61,6 @@ Bink
 
 ScummVM code
 ************
-   eos uses some ScummVM code, most prominently the endian, singleton, stream
-   and audio stream code. For copyright information, please visit the
-   ScummVM website <http://scummvm.org/>.
+   eos uses some ScummVM (<http://scummvm.org/>) code, most prominently the
+   endian, singleton, stream and audio stream code. ScummVM is licensed under
+   version 2 or later of the GNU General Public License.
