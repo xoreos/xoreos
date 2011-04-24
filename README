@@ -1,21 +1,23 @@
-eos 0.0.1 by Sven Hesse (DrMcCoy)
-=================================
+eos 0.0.1
+=========
 
 eos will be a reimplementation of BioWare's Aurora engine (and derivatives),
 its direct goal being having Star Wars: Knights of the Old Republic working in
 a portable manner. Other games might follow.
 
 
-What is currently working, you might ask? Well...visibly, not much. But quite
+What is currently working, you might ask? Well...visibly, a bit. And quite
 a lot of the "foundation" work is there. Resource management, basic file
 formats, etc.. What you'll see when you sick eos on the installation directory
 of a recognized game is, apart from the movies (Bink playback courtesy of the
-ffmpeg project), static 3D geometry and/or music and/or sound, loaded from
-the actual data files. Not really impressive yet, I know. :P
+ffmpeg project), stubby menus for NWN and KotOR, static 3D geometry and/or
+music and/or sound, loaded from the actual data files. Not really impressive
+yet, I know. :P
 
 Will it ever be more? I don't know. This project was started out of a whim,
-basically. And I've since sort of stopped working on it. I might pick it up
-again some day.
+basically. Like with many of my projects, I don't work on it continously,
+but on and off. There's no way I can actually finish this project on my
+own, though.
 
 Of course, if /you/ want to help, if /you/ want to work on it, I'd be quite
 happy. Just drop me a mail (for organizational purposes). Don't be afraid,
