@@ -29,6 +29,7 @@
 
 // Disable the "unused variable" warnings while most stuff is still stubbed
 #pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
 #include "common/error.h"
 #include "common/maths.h"
