@@ -82,6 +82,8 @@ if test "x$am_cv_func_iconv" != "xyes"; then
 	AC_MSG_ERROR([No useable iconv() function found])
 fi
 
+AC_CHECK_FT2([11.0.5], [], [AC_MSG_ERROR([FreeType2 is required to compile eos])])
+
 BOOST_REQUIRE
 BOOST_STRING_ALGO
 BOOST_SYSTEM

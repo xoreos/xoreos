@@ -18,6 +18,7 @@ Dependencies
 
 - OpenGL (>= 2.1)
 - SDL (>= 1.2.14)
+- FreeType 2 (>= 2.4.0 (libtool number >= 11.0.5))
 
 - OpenAL Soft (>= 1.12)
 - MAD (>= 1.15.1b)
