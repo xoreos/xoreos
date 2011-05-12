@@ -30,12 +30,15 @@
 #ifndef GRAPHICS_IMAGES_DECODER_H
 #define GRAPHICS_IMAGES_DECODER_H
 
+#include <vector>
+
 #include "common/types.h"
 
 #include "graphics/types.h"
 
 namespace Common {
 	class SeekableReadStream;
+	class UString;
 }
 
 namespace Graphics {
