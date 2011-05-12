@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libimages.la
 noinst_HEADERS = decoder.h \
                  dumptga.h \
                  screenshot.h \
+                 surface.h \
                  tga.h \
                  dds.h \
                  tpc.h \
@@ -18,6 +19,7 @@ noinst_HEADERS = decoder.h \
 libimages_la_SOURCES = decoder.cpp \
                        dumptga.cpp \
                        screenshot.cpp \
+                       surface.cpp \
                        tga.cpp \
                        dds.cpp \
                        tpc.cpp \
