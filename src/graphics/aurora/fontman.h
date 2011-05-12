@@ -95,7 +95,9 @@ public:
 	/** Add an alias for a specific font name. */
 	void addAlias(const Common::UString &alias, const Common::UString &realName);
 
-	FontHandle get(Common::UString name);
+	FontHandle get(FontFormat format, Common::UString name, int height = 0);
+	FontHandle get(Common::UString name, int height = 0);
+
 	void release(FontHandle &handle);
 
 private:
@@ -107,7 +109,8 @@ private:
 
 	Common::Mutex _mutex;
 
-	ManagedFont *createFont(const Common::UString &name);
+	static ManagedFont *createFont(FontFormat format,
+			const Common::UString &name, int height);
 };
 
 } // End of namespace Aurora

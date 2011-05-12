@@ -32,6 +32,7 @@
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/texturefont.h"
 #include "graphics/aurora/abcfont.h"
+#include "graphics/aurora/ttffont.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::FontManager)
 
@@ -122,7 +123,11 @@ void FontManager::addAlias(const Common::UString &alias, const Common::UString &
 	_aliases[alias] = realName;
 }
 
-FontHandle FontManager::get(Common::UString name) {
+FontHandle FontManager::get(Common::UString name, int height) {
+	return get(_format, name, height);
+}
+
+FontHandle FontManager::get(FontFormat format, Common::UString name, int height) {
 	Common::StackLock lock(_mutex);
 
 	// Lock up the name in our alias map first
@@ -130,16 +135,22 @@ FontHandle FontManager::get(Common::UString name) {
 	if (realName != _aliases.end())
 		name = realName->second;
 
+	Common::UString indexName = name;
+
+	// If we have been given a size, index the font under that size
+	if (height > 0)
+		indexName = Common::UString::sprintf("%s-%d", name.c_str(), height);
+
 	// Look up the name in our font map
-	FontMap::iterator font = _fonts.find(name);
+	FontMap::iterator font = _fonts.find(indexName);
 	if (font == _fonts.end()) {
 		// If not found, load and add that font
 
 		std::pair<FontMap::iterator, bool> result;
 
-		ManagedFont *t = createFont(name);
+		ManagedFont *t = createFont(format, name, height);
 
-		result = _fonts.insert(std::make_pair(name, t));
+		result = _fonts.insert(std::make_pair(indexName, t));
 
 		font = result.first;
 	}
@@ -164,18 +175,20 @@ void FontManager::release(FontHandle &handle) {
 	handle.clear();
 }
 
-ManagedFont *FontManager::createFont(const Common::UString &name) {
-	if (_format == kFontFormatUnknown)
+ManagedFont *FontManager::createFont(FontFormat format,
+		const Common::UString &name, int height) {
+
+	if (format == kFontFormatUnknown)
 		throw Common::Exception("Font format unknown (%s)", name.c_str());
 
-	if (_format == kFontFormatTexture)
+	if (format == kFontFormatTexture)
 		return new ManagedFont(new TextureFont(name));
-	if (_format == kFontFormatABC)
+	if (format == kFontFormatABC)
 		return new ManagedFont(new ABCFont(name));
-	if (_format == kFontFormatTTF)
-		throw Common::Exception("TODO: Load TTF font (%s)", name.c_str());
+	if (format == kFontFormatTTF)
+		return new ManagedFont(new TTFFont(name, height));
 
-	throw Common::Exception("Invalid font format %d (%s)", _format, name.c_str());
+	throw Common::Exception("Invalid font format %d (%s)", format, name.c_str());
 	return 0;
 }
 
