@@ -8,28 +8,37 @@ AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE(eos, 0.0.1)
 
+dnl SDL params to configure
 AC_ARG_VAR(SDL_CONFIG, [sdl-config utility])
 AC_ARG_VAR(SDL_CFLAGS, [C compiler flags for SDL])
 AC_ARG_VAR(SDL_LIBS, [libraries to pass to the linker for SDL])
 
+dnl libtool
 AC_PROG_LIBTOOL
 
+dnl We're C++
 AC_PROG_CXX
+dnl We want a make install
 AC_PROG_INSTALL
 
+dnl --with-werror
 AC_ARG_WITH([werror], [AS_HELP_STRING([--with-werror], [Compile with -Werror @<:@default=no@:>@])], [], [with_werror=no])
 if test "x$with_werror" = "xyes"; then
 	WERROR="-Werror -Werror=unused-but-set-variable"
 fi
 
+dnl Standard C, C++
 AC_C_CONST
 AC_HEADER_STDC
 
+dnl Endianness
 AC_C_BIGENDIAN()
 
+dnl Special variables of the size of pointers
 AC_TYPE_INTPTR_T
 AC_TYPE_UINTPTR_T
 
+dnl math library and special float functions
 AC_CHECK_LIB([m], [cos])
 AC_CHECK_FUNCS([fabs])
 AC_CHECK_FUNCS([fmin])
@@ -38,6 +47,7 @@ AC_CHECK_FUNCS([fabsf])
 AC_CHECK_FUNCS([fminf])
 AC_CHECK_FUNCS([fmaxf])
 
+dnl SDL
 AC_CHECK_PROG([SDL_CONFIG], [sdl-config], [sdl-config])
 
 if test -n "$SDL_CONFIG"; then
@@ -58,32 +68,50 @@ if test -n "$nosdl"; then
 	AC_MSG_ERROR([SDL is required and could not be found!])
 fi
 
+dnl MAD
 AC_CHECK_HEADER("mad.h", , nolibmad=1)
 
 if test -n "$nolibmad"; then
 	AC_MSG_ERROR([libMAD is required and could not be found])
 fi
 
+MAD_CFLAGS=""
+MAD_LIBS="-lmad"
+
+dnl libvorbisfile and libogg
 AC_CHECK_HEADER("vorbis/vorbisfile.h", , novorbis=1)
 
 if test -n "$novorbis"; then
 	AC_MSG_ERROR([libOgg and libVorbis are required and could not be found])
 fi
 
+VORBIS_CFLAGS=""
+VORBIS_LIBS="-lvorbisfile"
+
+OGG_CFLAGS=""
+OGG_LIBS="-logg"
+
+dnl zlib
 AC_CHECK_HEADER("zlib.h", , nozlib=1)
 
 if test -n "$nozlib"; then
 	AC_MSG_ERROR([zlib is required and could not be found])
 fi
 
+Z_CFLAGS=""
+Z_LIBS="-lz"
+
+dnl iconv
 AM_ICONV
 
 if test "x$am_cv_func_iconv" != "xyes"; then
 	AC_MSG_ERROR([No useable iconv() function found])
 fi
 
+dnl FreeType2
 AC_CHECK_FT2([11.0.5], [], [AC_MSG_ERROR([FreeType2 is required to compile eos])])
 
+dnl Boost
 BOOST_REQUIRE
 BOOST_STRING_ALGO
 BOOST_SYSTEM
@@ -96,47 +124,85 @@ BOOST_FUNCTION
 BOOST_BIND
 BOOST_UUID
 
-dnl Do not run the OpenGL checks on OS X, they will incorrectly find the X11 OpenGL libraries which we do not want.
-dnl TODO: Eventually add a test for OS X for OpenGL
-dnl TODO: Add OpenAL tests on non OS X systems
+dnl OpenGL
 case "$target" in
 	*darwin*)
+		dnl Do not run the OpenGL checks on OS X, they will incorrectly find the X11
+		dnl OpenGL libraries which we do not want.
+		dnl TODO: Eventually add a test for OS X for OpenGL
+
+		GL_CFLAGS=""
+		GL_LIBS="-framework OpenGL"
 		;;
 	*)
 		AX_CHECK_GL
 
-		AC_CHECK_HEADER("AL/al.h", , noopenal=1)
-		AC_CHECK_HEADER("AL/alc.h", , noopenal=1)
-
 		if test -n "$no_gl"; then
 			AC_MSG_ERROR([OpenGL is required and could not be found!])
 		fi
-
-		if test -n "$noopenal"; then
-			AC_MSG_ERROR([OpenAL is required and could not be found!])
-		fi
 		;;
 esac;
 
-EOS_CXXFLAGS="-DUNIX `sdl-config --cflags` $FT2_CFLAGS"
-EOS_LIBS="`sdl-config --libs` -lmad -logg -lvorbis -lvorbisfile -lz $FT2_LIBS"
-
-dnl Add the OpenAL and OpenGL frameworks on Mac OS X
+dnl OpenAL
 case "$target" in
 	*darwin*)
-		EOS_CXXFLAGS="$EOS_CXXFLAGS -DMACOSX -I/System/Library/Frameworks/OpenAL.framework/Headers"
-		EOS_LIBS="$EOS_LIBS -framework OpenGL -framework OpenAL"
+		dnl TODO: Eventually add a test for OS X for OpenAL
+
+		AL_CFLAGS="-I/System/Library/Frameworks/OpenAL.framework/Headers"
+		AL_LIBS="-framework OpenAL"
 		;;
 	*)
-		EOS_LIBS="$EOS_LIBS -lopenal"
+		AC_CHECK_HEADER("AL/al.h", , no_al=1)
+		AC_CHECK_HEADER("AL/alc.h", , no_al=1)
+
+		if test -n "$no_al"; then
+			AC_MSG_ERROR([OpenAL is required and could not be found!])
+		fi
+
+		AL_CFLAGS=""
+		AL_LIBS="-lopenal"
 		;;
 esac;
 
+dnl Extra flags
+case "$target" in
+	*darwin*)
+		EOS_CFLAGS="-DUNIX -DMACOSX"
+		EOS_LIBS=""
+		;;
+	*)
+		EOS_CFLAGS="-DUNIX"
+		EOS_LIBS=""
+		;;
+esac;
 
-AC_SUBST(SDL_MAIN_OBJ, [$SDL_MAIN_OBJ])
-AC_SUBST(SDL_LIBS, [$SDL_LIBS])
-AC_SUBST(EOS_CXXFLAGS)
+AC_SUBST(SDL_LIBS)
+AC_SUBST(SDL_CFLAGS)
+
+AC_SUBST(FT2_CFLAGS)
+AC_SUBST(FT2_LIBS)
+
+AC_SUBST(GL_CFLAGS)
+AC_SUBST(GL_LIBS)
+
+AC_SUBST(AL_CFLAGS)
+AC_SUBST(AL_LIBS)
+
+AC_SUBST(MAD_CFLAGS)
+AC_SUBST(MAD_LIBS)
+
+AC_SUBST(OGG_CFLAGS)
+AC_SUBST(OGG_LIBS)
+
+AC_SUBST(VORBIS_CFLAGS)
+AC_SUBST(VORBIS_LIBS)
+
+AC_SUBST(Z_CFLAGS)
+AC_SUBST(Z_LIBS)
+
+AC_SUBST(EOS_CFLAGS)
 AC_SUBST(EOS_LIBS)
+
 AC_SUBST(WERROR)
 
 AC_OUTPUT(utf8cpp/Makefile \
