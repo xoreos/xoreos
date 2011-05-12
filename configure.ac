@@ -118,8 +118,8 @@ case "$target" in
 		;;
 esac;
 
-EOS_CXXFLAGS="-DUNIX `sdl-config --cflags`"
-EOS_LIBS="`sdl-config --libs` -lmad -logg -lvorbis -lvorbisfile -lz"
+EOS_CXXFLAGS="-DUNIX `sdl-config --cflags` $FT2_CFLAGS"
+EOS_LIBS="`sdl-config --libs` -lmad -logg -lvorbis -lvorbisfile -lz $FT2_LIBS"
 
 dnl Add the OpenAL and OpenGL frameworks on Mac OS X
 case "$target" in
