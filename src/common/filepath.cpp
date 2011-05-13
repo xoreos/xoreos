@@ -41,6 +41,7 @@ using boost::filesystem::path;
 using boost::filesystem::exists;
 using boost::filesystem::is_regular_file;
 using boost::filesystem::is_directory;
+using boost::filesystem::file_size;
 using boost::filesystem::directory_iterator;
 
 // boost-string_algo
@@ -61,6 +62,15 @@ bool FilePath::isRegularFile(const UString &p) {
 
 bool FilePath::isDirectory(const UString &p) {
 	return (exists(p.c_str()) && is_directory(p.c_str()));
+}
+
+uint32 FilePath::getFileSize(const UString &p) {
+	uintmax_t size = file_size(p.c_str());
+
+	if (size == ((uintmax_t) -1))
+		return kFileInvalid;
+
+	return size;
 }
 
 UString FilePath::getStem(const UString &p) {

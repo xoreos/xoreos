@@ -37,6 +37,8 @@
 
 namespace Common {
 
+static const uint32 kFileInvalid = 0xFFFFFFFF;
+
 /** Utility class for manipulating file paths. */
 class FilePath {
 public:
@@ -53,6 +55,13 @@ public:
 	 *  @return true if the path exists and is a directory, false otherwise.
 	 */
 	static bool isDirectory(const UString &p);
+
+	/** Return a file's size.
+	 *
+	 *  @param  p The file to look up.
+	 *  @return The size of the file or kFileInvalid if not a valid file.
+	 */
+	static uint32 getFileSize(const UString &p);
 
 	/** Return a file name's stem.
 	 *
