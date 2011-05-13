@@ -437,6 +437,20 @@ bool ResourceManager::hasResource(const Common::UString &name, const std::vector
 	return false;
 }
 
+uint32 ResourceManager::getResourceSize(const Resource &res) const {
+	if (res.source == kSourceArchive) {
+		if ((res.archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
+			return 0xFFFFFFFF;
+
+		return res.archive->getResourceSize(res.archiveIndex);
+	}
+
+	if (res.source == kSourceFile)
+		return Common::FilePath::getFileSize(res.path);
+
+	return 0xFFFFFFFF;
+}
+
 Common::SeekableReadStream *ResourceManager::getArchiveResource(const Resource &res) const {
 	if ((res.archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
 		throw Common::Exception("Archive resource has no archive");
@@ -626,8 +640,14 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 
 			const Resource &resource = itType->second.back();
 
-			file.writeString(Common::UString::sprintf("%32s%4s\n",
-						itName->first.c_str(), setFileType("", resource.type).c_str()));
+			const Common::UString &name = itName->first;
+			const Common::UString  ext  = setFileType("", resource.type);
+			const uint32           size = getResourceSize(resource);
+
+			const Common::UString line =
+				Common::UString::sprintf("%32s%4s | %12d\n", name.c_str(), ext.c_str(), size);
+
+			file.writeString(line);
 		}
 	}
 

@@ -290,6 +290,8 @@ private:
 
 	Common::SeekableReadStream *getArchiveResource(const Resource &res) const;
 
+	uint32 getResourceSize(const Resource &res) const;
+
 	ChangeID newChangeSet();
 };
 
