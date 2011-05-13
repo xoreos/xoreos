@@ -252,8 +252,8 @@ public:
 	/** Return a list of all available resources of the specified type. */
 	void getAvailabeResources(ResourceType type, std::list<ResourceID> &list) const;
 
-	/** Small debug method that lists all indexed resources. */
-	void listResources() const;
+	/** Dump a list of all resources into a file. */
+	void dumpResourcesList(const Common::UString &fileName) const;
 
 private:
 	bool _rimsAreERFs; ///< Are .rim files actually ERF files?

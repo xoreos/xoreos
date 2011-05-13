@@ -659,31 +659,33 @@ Console::Console(const Common::UString &font) : _neverShown(true), _visible(fals
 
 	_readLine->historyIgnoreDups(true);
 
-	registerCommand("help"      , boost::bind(&Console::cmdHelp      , this, _1),
+	registerCommand("help"       , boost::bind(&Console::cmdHelp       , this, _1),
 			"Usage: help [<command>]\nPrint help text");
-	registerCommand("clear"     , boost::bind(&Console::cmdClear     , this, _1),
+	registerCommand("clear"      , boost::bind(&Console::cmdClear      , this, _1),
 			"Usage: clear\nClear the console window");
-	registerCommand("exit"      , boost::bind(&Console::cmdExit      , this, _1),
+	registerCommand("exit"       , boost::bind(&Console::cmdExit       , this, _1),
 			"Usage: exit\nLeave the console window, returning to the game");
-	registerCommand("quiteos"   , boost::bind(&Console::cmdQuit      , this, _1),
+	registerCommand("quiteos"    , boost::bind(&Console::cmdQuit       , this, _1),
 			"Usage: quiteos\nShut down eos");
-	registerCommand("dumpres"   , boost::bind(&Console::cmdDumpRes   , this, _1),
+	registerCommand("dumpreslist", boost::bind(&Console::cmdDumpResList, this, _1),
+			"Usage: dumpreslist <file>\nDump the current list of resources to file");
+	registerCommand("dumpres"    , boost::bind(&Console::cmdDumpRes    , this, _1),
 			"Usage: dumpres <resource>\nDump a resource to file");
-	registerCommand("dumptga"   , boost::bind(&Console::cmdDumpTGA   , this, _1),
+	registerCommand("dumptga"    , boost::bind(&Console::cmdDumpTGA    , this, _1),
 			"Usage: dumptga <resource>\nDump an image resource into a TGA");
-	registerCommand("dump2da"   , boost::bind(&Console::cmdDump2DA   , this, _1),
+	registerCommand("dump2da"    , boost::bind(&Console::cmdDump2DA    , this, _1),
 			"Usage: dump2da <2da>\nDump a 2DA to file");
-	registerCommand("dumpall2da", boost::bind(&Console::cmdDumpAll2DA, this, _1),
+	registerCommand("dumpall2da" , boost::bind(&Console::cmdDumpAll2DA , this, _1),
 			"Usage: dumpall2da\nDump all 2DA to file");
-	registerCommand("listvideos", boost::bind(&Console::cmdListVideos, this, _1),
+	registerCommand("listvideos" , boost::bind(&Console::cmdListVideos , this, _1),
 			"Usage: listvideos\nList all available videos");
-	registerCommand("playvideo" , boost::bind(&Console::cmdPlayVideo , this, _1),
+	registerCommand("playvideo"  , boost::bind(&Console::cmdPlayVideo  , this, _1),
 			"Usage: playvideo <video>\nPlay the specified video");
-	registerCommand("listsounds", boost::bind(&Console::cmdListSounds, this, _1),
+	registerCommand("listsounds" , boost::bind(&Console::cmdListSounds , this, _1),
 			"Usage: listsounds\nList all available sounds");
-	registerCommand("playsound" , boost::bind(&Console::cmdPlaySound , this, _1),
+	registerCommand("playsound"  , boost::bind(&Console::cmdPlaySound  , this, _1),
 			"Usage: playsound <sound>\nPlay the specified sound");
-	registerCommand("silence"   , boost::bind(&Console::cmdSilence   , this, _1),
+	registerCommand("silence"    , boost::bind(&Console::cmdSilence    , this, _1),
 			"Usage: silence\nStop all playing sounds and music");
 
 	_console->setPrompt(kPrompt);
@@ -1056,6 +1058,18 @@ void Console::cmdExit(const CommandLine &cl) {
 void Console::cmdQuit(const CommandLine &cl) {
 	print("Bye...");
 	EventMan.requestQuit();
+}
+
+void Console::cmdDumpResList(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	if (dumpResList(cl.args))
+		printf("Dumped list of resources to file \"%s\"", cl.args.c_str());
+	else
+		printf("Failed dumping list of resources to file \"%s\"", cl.args.c_str());
 }
 
 void Console::cmdDumpRes(const CommandLine &cl) {

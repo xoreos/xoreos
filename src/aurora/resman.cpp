@@ -613,7 +613,12 @@ const ResourceManager::Resource *ResourceManager::getRes(Common::UString name,
 	return 0;
 }
 
-void ResourceManager::listResources() const {
+void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
+	Common::DumpFile file;
+
+	if (!file.open(fileName))
+		throw Common::Exception(Common::kOpenError);
+
 	for (ResourceMap::const_iterator itName = _resources.begin(); itName != _resources.end(); ++itName) {
 		for (ResourceTypeMap::const_iterator itType = itName->second.begin(); itType != itName->second.end(); ++itType) {
 			if (itType->second.empty())
@@ -621,9 +626,17 @@ void ResourceManager::listResources() const {
 
 			const Resource &resource = itType->second.back();
 
-			status("%32s%4s", itName->first.c_str(), setFileType("", resource.type).c_str());
+			file.writeString(Common::UString::sprintf("%32s%4s\n",
+						itName->first.c_str(), setFileType("", resource.type).c_str()));
 		}
 	}
+
+	file.flush();
+
+	if (file.err())
+		throw Common::Exception("Write error");
+
+	file.close();
 }
 
 ResourceManager::ChangeID ResourceManager::newChangeSet() {

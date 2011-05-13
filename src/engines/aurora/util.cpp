@@ -165,6 +165,18 @@ Aurora::GFFFile *loadGFF(const Common::UString &name, Aurora::FileType type, uin
 	return gff;
 }
 
+bool dumpResList(const Common::UString &name) {
+	try {
+
+		ResMan.dumpResourcesList(name);
+		return true;
+
+	} catch (...) {
+	}
+
+	return false;
+}
+
 bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName) {
 	Common::DumpFile file;
 	if (!file.open(fileName))

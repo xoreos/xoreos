@@ -68,6 +68,9 @@ void loadGFF(Aurora::GFFFile &gff, const Common::UString &name, Aurora::FileType
 /** Load a GFF file. */
 Aurora::GFFFile *loadGFF(const Common::UString &name, Aurora::FileType type, uint32 id);
 
+/** Debug method to quickly dump the current list of resource to disk. */
+bool dumpResList(const Common::UString &name);
+
 /** Debug method to quickly dump a stream to disk. */
 bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName);
 /** Debug method to quickly dump a resource to disk. */

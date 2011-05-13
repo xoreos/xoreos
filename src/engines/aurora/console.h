@@ -263,19 +263,20 @@ private:
 	void updateVideos();
 	void updateSounds();
 
-	void cmdHelp      (const CommandLine &cl);
-	void cmdClear     (const CommandLine &cl);
-	void cmdExit      (const CommandLine &cl);
-	void cmdQuit      (const CommandLine &cl);
-	void cmdDumpRes   (const CommandLine &cl);
-	void cmdDumpTGA   (const CommandLine &cl);
-	void cmdDump2DA   (const CommandLine &cl);
-	void cmdDumpAll2DA(const CommandLine &cl);
-	void cmdListVideos(const CommandLine &cl);
-	void cmdPlayVideo (const CommandLine &cl);
-	void cmdListSounds(const CommandLine &cl);
-	void cmdPlaySound (const CommandLine &cl);
-	void cmdSilence   (const CommandLine &cl);
+	void cmdHelp       (const CommandLine &cl);
+	void cmdClear      (const CommandLine &cl);
+	void cmdExit       (const CommandLine &cl);
+	void cmdQuit       (const CommandLine &cl);
+	void cmdDumpResList(const CommandLine &cl);
+	void cmdDumpRes    (const CommandLine &cl);
+	void cmdDumpTGA    (const CommandLine &cl);
+	void cmdDump2DA    (const CommandLine &cl);
+	void cmdDumpAll2DA (const CommandLine &cl);
+	void cmdListVideos (const CommandLine &cl);
+	void cmdPlayVideo  (const CommandLine &cl);
+	void cmdListSounds (const CommandLine &cl);
+	void cmdPlaySound  (const CommandLine &cl);
+	void cmdSilence    (const CommandLine &cl);
 
 	void updateHelpArguments();
 
