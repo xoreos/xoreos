@@ -633,6 +633,9 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 	if (!file.open(fileName))
 		throw Common::Exception(Common::kOpenError);
 
+	file.writeString("                Name                 |     Size    \n");
+	file.writeString("-------------------------------------|-------------\n");
+
 	for (ResourceMap::const_iterator itName = _resources.begin(); itName != _resources.end(); ++itName) {
 		for (ResourceTypeMap::const_iterator itType = itName->second.begin(); itType != itName->second.end(); ++itType) {
 			if (itType->second.empty())
