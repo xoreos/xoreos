@@ -135,30 +135,31 @@ const ZipFile::FileList &ZipFile::getFiles() const {
 	return _files;
 }
 
-SeekableReadStream *ZipFile::getFile(uint32 index) const {
+const ZipFile::IFile &ZipFile::getIFile(uint32 index) const {
 	if (index >= _iFiles.size())
 		throw Exception("File index out of range (%d/%d)", index, _iFiles.size());
 
-	Common::File zip;
-	open(zip);
+	return _iFiles[index];
+}
 
-	const IFile &file = _iFiles[index];
+void ZipFile::getFileProperties(Common::SeekableReadStream &zip, const IFile &file,
+		uint16 &compMethod, uint32 &compSize, uint32 &realSize) const {
 
 	if (!zip.seek(file.offset))
 		throw Exception(kSeekError);
 
 	uint32 tag = zip.readUint32LE();
 	if (tag != 0x04034B50)
-		return 0;
+		throw Exception("Unknown ZIP record %08X", tag);
 
 	zip.skip(4);
 
-	uint16 compMethod = zip.readUint16LE();
+	compMethod = zip.readUint16LE();
 
 	zip.skip(8);
 
-	uint32 compSize = zip.readUint32LE();
-	uint32 realSize = zip.readUint32LE();
+	compSize = zip.readUint32LE();
+	realSize = zip.readUint32LE();
 
 	uint16 nameLength  = zip.readUint16LE();
 	uint16 extraLength = zip.readUint16LE();
@@ -167,7 +168,35 @@ SeekableReadStream *ZipFile::getFile(uint32 index) const {
 	zip.skip(extraLength);
 
 	if (zip.err())
-		return 0;
+		throw Exception(kReadError);
+}
+
+uint32 ZipFile::getFileSize(uint32 index) const {
+	const IFile &file = getIFile(index);
+
+	Common::File zip;
+	open(zip);
+
+	uint16 compMethod;
+	uint32 compSize;
+	uint32 realSize;
+
+	getFileProperties(zip, file, compMethod, compSize, realSize);
+
+	return realSize;
+}
+
+SeekableReadStream *ZipFile::getFile(uint32 index) const {
+	const IFile &file = getIFile(index);
+
+	Common::File zip;
+	open(zip);
+
+	uint16 compMethod;
+	uint32 compSize;
+	uint32 realSize;
+
+	getFileProperties(zip, file, compMethod, compSize, realSize);
 
 	return decompressFile(zip, compMethod, compSize, realSize);
 }

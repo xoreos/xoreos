@@ -58,6 +58,9 @@ public:
 	/** Return the list of resources. */
 	const ResourceList &getResources() const;
 
+	/** Return the size of a resource. */
+	uint32 getResourceSize(uint32 index) const;
+
 	/** Return a stream of the resource's contents. */
 	Common::SeekableReadStream *getResource(uint32 index) const;
 

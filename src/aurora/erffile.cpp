@@ -211,16 +211,24 @@ const Archive::ResourceList &ERFFile::getResources() const {
 	return _resources;
 }
 
-Common::SeekableReadStream *ERFFile::getResource(uint32 index) const {
+const ERFFile::IResource &ERFFile::getIResource(uint32 index) const {
 	if (index >= _iResources.size())
 		throw Common::Exception("Resource index out of range (%d/%d)", index, _iResources.size());
 
-	Common::File erf;
-	open(erf);
+	return _iResources[index];
+}
 
-	const IResource &res = _iResources[index];
+uint32 ERFFile::getResourceSize(uint32 index) const {
+	return getIResource(index).size;
+}
+
+Common::SeekableReadStream *ERFFile::getResource(uint32 index) const {
+	const IResource &res = getIResource(index);
 	if (res.size == 0)
 		return new Common::MemoryReadStream(0, 0);
+
+	Common::File erf;
+	open(erf);
 
 	if (!erf.seek(res.offset))
 		throw Common::Exception(Common::kSeekError);

@@ -134,16 +134,24 @@ const Archive::ResourceList &NDSFile::getResources() const {
 	return _resources;
 }
 
-Common::SeekableReadStream *NDSFile::getResource(uint32 index) const {
+const NDSFile::IResource &NDSFile::getIResource(uint32 index) const {
 	if (index >= _iResources.size())
 		throw Common::Exception("Resource index out of range (%d/%d)", index, _iResources.size());
 
-	Common::File nds;
-	open(nds);
+	return _iResources[index];
+}
 
-	const IResource &res = _iResources[index];
+uint32 NDSFile::getResourceSize(uint32 index) const {
+	return getIResource(index).size;
+}
+
+Common::SeekableReadStream *NDSFile::getResource(uint32 index) const {
+	const IResource &res = getIResource(index);
 	if (res.size == 0)
 		return new Common::MemoryReadStream(0, 0);
+
+	Common::File nds;
+	open(nds);
 
 	if (!nds.seek(res.offset))
 		throw Common::Exception(Common::kSeekError);

@@ -64,6 +64,9 @@ public:
 	/** Return the list of resources. */
 	virtual const ResourceList &getResources() const = 0;
 
+	/** Return the size of a resource. */
+	virtual uint32 getResourceSize(uint32 index) const;
+
 	/** Return a stream of the resource's contents. */
 	virtual Common::SeekableReadStream *getResource(uint32 index) const = 0;
 };

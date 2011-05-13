@@ -37,4 +37,8 @@ Archive::Archive() {
 Archive::~Archive() {
 }
 
+uint32 Archive::getResourceSize(uint32 index) const {
+	return 0xFFFFFFFF;
+}
+
 } // End of namespace Aurora

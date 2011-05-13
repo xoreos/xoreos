@@ -61,6 +61,9 @@ public:
 	/** Return the list of files. */
 	const FileList &getFiles() const;
 
+	/** Return the size of a file. */
+	uint32 getFileSize(uint32 index) const;
+
 	/** Return a stream of the files's contents. */
 	SeekableReadStream *getFile(uint32 index) const;
 
@@ -89,6 +92,10 @@ private:
 
 	static SeekableReadStream *decompressFile(SeekableReadStream &zip, uint32 method,
 			uint32 compSize, uint32 realSize);
+
+	const IFile &getIFile(uint32 index) const;
+	void getFileProperties(Common::SeekableReadStream &zip, const IFile &file,
+			uint16 &compMethod, uint32 &compSize, uint32 &realSize) const;
 };
 
 } // End of namespace Common

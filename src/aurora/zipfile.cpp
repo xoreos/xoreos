@@ -55,6 +55,10 @@ const Archive::ResourceList &ZIPFile::getResources() const {
 	return _resources;
 }
 
+uint32 ZIPFile::getResourceSize(uint32 index) const {
+	return _zipFile->getFileSize(index);
+}
+
 Common::SeekableReadStream *ZIPFile::getResource(uint32 index) const {
 	return _zipFile->getFile(index);
 }

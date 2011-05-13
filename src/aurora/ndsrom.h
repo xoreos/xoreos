@@ -57,6 +57,9 @@ public:
 	/** Return the list of resources. */
 	const ResourceList &getResources() const;
 
+	/** Return the size of a resource. */
+	uint32 getResourceSize(uint32 index) const;
+
 	/** Return a stream of the resource's contents. */
 	Common::SeekableReadStream *getResource(uint32 index) const;
 
@@ -86,6 +89,8 @@ private:
 	void load();
 	void readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 length);
 	void readFAT(Common::SeekableReadStream &nds, uint32 offset);
+
+	const IResource &getIResource(uint32 index) const;
 };
 
 } // End of namespace Aurora
