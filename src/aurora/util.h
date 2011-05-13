@@ -49,6 +49,8 @@ bool isLanguageTheWitcher(Language language);
 /** Return the file type of a file name, detected by its extension. */
 FileType getFileType(const Common::UString &path);
 
+/** Return the file name with an added extensions according to the specified file type. */
+Common::UString addFileType(const Common::UString &path, FileType type);
 /** Return the file name with a swapped extensions according to the specified file type. */
 Common::UString setFileType(const Common::UString &path, FileType type);
 

@@ -281,6 +281,10 @@ FileType getFileType(const Common::UString &path) {
 	return kFileTypeNone;
 }
 
+Common::UString addFileType(const Common::UString &path, FileType type) {
+	return setFileType(path + ".", type);
+}
+
 Common::UString setFileType(const Common::UString &path, FileType type) {
 	Common::UString ext;
 
