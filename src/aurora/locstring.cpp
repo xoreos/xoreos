@@ -170,7 +170,7 @@ void LocString::readString(Language language, Common::SeekableReadStream &stream
 	uint32 length = stream.readUint32LE();
 
 	// TODO: Different encodings for different languages, probably
-	_strings[mapLanguageToStorage(language)].readFixedLatin9(stream, length);
+	_strings[mapLanguageToStorage(language)].readFixedLatin9(stream, length, true);
 }
 
 void LocString::readLocSubString(Common::SeekableReadStream &stream) {

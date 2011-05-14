@@ -177,18 +177,18 @@ public:
 	}
 
 	/** Read clean non-extended ASCII out of a stream. */
-	void readASCII(SeekableReadStream &stream);
+	void readASCII(SeekableReadStream &stream, bool colorCodes = false);
 	/** Read clean non-extended ASCII out of a stream. */
-	void readFixedASCII(SeekableReadStream &stream, uint32 length);
+	void readFixedASCII(SeekableReadStream &stream, uint32 length, bool colorCodes = false);
 	/** Read a line of clean non-extended ASCII out of a stream. */
-	void readLineASCII(SeekableReadStream &stream);
+	void readLineASCII(SeekableReadStream &stream, bool colorCodes = false);
 
 	/** Read Latin9 out of a stream. */
-	void readLatin9(SeekableReadStream &stream);
+	void readLatin9(SeekableReadStream &stream, bool colorCodes = false);
 	/** Read Latin9 out of a stream. */
-	void readFixedLatin9(SeekableReadStream &stream, uint32 length);
+	void readFixedLatin9(SeekableReadStream &stream, uint32 length, bool colorCodes = false);
 	/** Read a line of Latin9 out of a stream. */
-	void readLineLatin9(SeekableReadStream &stream);
+	void readLineLatin9(SeekableReadStream &stream, bool colorCodes = false);
 
 	/** Read UTF-16LE out of a stream. */
 	void readUTF16LE(SeekableReadStream &stream);
@@ -246,6 +246,8 @@ private:
 	void readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data);
 	/** Read big-endian double-byte data. */
 	void readDoubleByteBE(SeekableReadStream &stream, std::vector<uint16> &data, uint32 length);
+
+	static void parseColorColors(std::vector<char> &data);
 
 	void recalculateSize();
 };
