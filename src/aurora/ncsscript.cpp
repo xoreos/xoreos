@@ -297,7 +297,7 @@ void NCSScript::o_const(InstructionType type) {
 		break;
 	case kInstTypeString: {
 		Common::UString string;
-		string.readASCII(*_script, _script->readUint16LE());
+		string.readFixedASCII(*_script, _script->readUint16LE());
 		_stack.push(string);
 		break;
 	}

@@ -199,7 +199,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	ctx.mdl->skip(8); // Function pointers
 
-	_name.readASCII(*ctx.mdl, 64);
+	_name.readFixedASCII(*ctx.mdl, 64);
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -236,7 +236,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	Common::UString superModelName;
 
-	superModelName.readASCII(*ctx.mdl, 64);
+	superModelName.readFixedASCII(*ctx.mdl, 64);
 
 	newState(ctx);
 
@@ -388,7 +388,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 
 	ctx.mdl->skip(8); // Function pointers
 
-	ctx.state->name.readASCII(*ctx.mdl, 64);
+	ctx.state->name.readFixedASCII(*ctx.mdl, 64);
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -403,7 +403,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 	float transTime  = ctx.mdl->readIEEEFloatLE();
 
 	Common::UString animRoot;
-	animRoot.readASCII(*ctx.mdl, 64);
+	animRoot.readFixedASCII(*ctx.mdl, 64);
 
 	uint32 eventOffset, eventCount;
 	readArrayDef(*ctx.mdl, eventOffset, eventCount);
@@ -414,7 +414,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 		float after = ctx.mdl->readIEEEFloatLE();
 
 		Common::UString eventName;
-		eventName.readASCII(*ctx.mdl, 32);
+		eventName.readFixedASCII(*ctx.mdl, 32);
 	}
 
 	ModelNode_NWN_Binary *rootNode = new ModelNode_NWN_Binary(*this);
@@ -439,7 +439,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	uint32 inheritColorFlag = ctx.mdl->readUint32LE();
 	uint32 partNumber       = ctx.mdl->readUint32LE();
 
-	_name.readASCII(*ctx.mdl, 32);
+	_name.readFixedASCII(*ctx.mdl, 32);
 
 	ctx.mdl->skip(8); // Parent pointers
 
@@ -588,10 +588,10 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	std::vector<Common::UString> textures;
 	textures.resize(4);
-	textures[0].readASCII(*ctx.mdl, 64);
-	textures[1].readASCII(*ctx.mdl, 64);
-	textures[2].readASCII(*ctx.mdl, 64);
-	textures[3].readASCII(*ctx.mdl, 64);
+	textures[0].readFixedASCII(*ctx.mdl, 64);
+	textures[1].readFixedASCII(*ctx.mdl, 64);
+	textures[2].readFixedASCII(*ctx.mdl, 64);
+	textures[3].readFixedASCII(*ctx.mdl, 64);
 
 	_tilefade = ctx.mdl->readUint32LE();
 

@@ -729,7 +729,7 @@ void UString::readASCII(SeekableReadStream &stream) {
 	recalculateSize();
 }
 
-void UString::readASCII(SeekableReadStream &stream, uint32 length) {
+void UString::readFixedASCII(SeekableReadStream &stream, uint32 length) {
 	clear();
 
 	std::vector<char> data;
@@ -765,7 +765,7 @@ void UString::readLatin9(SeekableReadStream &stream) {
 	recalculateSize();
 }
 
-void UString::readLatin9(SeekableReadStream &stream, uint32 length) {
+void UString::readFixedLatin9(SeekableReadStream &stream, uint32 length) {
 	clear();
 
 	std::vector<char> data;
@@ -782,7 +782,6 @@ void UString::readLineLatin9(SeekableReadStream &stream) {
 
 	std::vector<char> data;
 	readLine(stream, data, &Common::readSingleByte);
-
 	if (data.empty())
 		return;
 
@@ -810,7 +809,7 @@ void UString::readUTF16LE(SeekableReadStream &stream) {
 	recalculateSize();
 }
 
-void UString::readUTF16LE(SeekableReadStream &stream, uint32 length) {
+void UString::readFixedUTF16LE(SeekableReadStream &stream, uint32 length) {
 	clear();
 
 	std::vector<uint16> data;
@@ -869,7 +868,7 @@ void UString::readUTF16BE(SeekableReadStream &stream) {
 	recalculateSize();
 }
 
-void UString::readUTF16BE(SeekableReadStream &stream, uint32 length) {
+void UString::readFixedUTF16BE(SeekableReadStream &stream, uint32 length) {
 	clear();
 
 	std::vector<uint16> data;

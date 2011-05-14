@@ -163,7 +163,7 @@ void ERFFile::readV1KeyList(Common::SeekableReadStream &erf, const ERFHeader &he
 
 	uint32 index = 0;
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++index, ++res) {
-		res->name.readASCII(erf, 16);
+		res->name.readFixedASCII(erf, 16);
 		erf.skip(4); // Resource ID
 		res->type = (FileType) erf.readUint16LE();
 		erf.skip(2); // Reserved
@@ -191,7 +191,7 @@ void ERFFile::readV2ResList(Common::SeekableReadStream &erf, const ERFHeader &he
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
 		Common::UString name;
 
-		name.readUTF16LE(erf, 32);
+		name.readFixedUTF16LE(erf, 32);
 
 		res->name  = setFileType(name, kFileTypeNone);
 		res->type  = getFileType(name);

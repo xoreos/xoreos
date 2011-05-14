@@ -102,7 +102,7 @@ void ZipFile::load() {
 
 		iFile.offset = zip.readUint32LE();
 
-		file.name.readASCII(zip, nameLength);
+		file.name.readFixedASCII(zip, nameLength);
 		file.name.tolower();
 
 		zip.skip(extraLength);

@@ -171,17 +171,17 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 
-	_name.readASCII(*ctx.mdb, 32);
+	_name.readFixedASCII(*ctx.mdb, 32);
 
 	// Skipping lower level of detail models
 	if (_name.endsWith("_L01") || _name.endsWith("_L02"))
 		return false;
 
 	Common::UString diffuseMap, normalMap, tintMap, glowMap;
-	diffuseMap.readASCII(*ctx.mdb, 32);
-	 normalMap.readASCII(*ctx.mdb, 32);
-	   tintMap.readASCII(*ctx.mdb, 32);
-	   glowMap.readASCII(*ctx.mdb, 32);
+	diffuseMap.readFixedASCII(*ctx.mdb, 32);
+	 normalMap.readFixedASCII(*ctx.mdb, 32);
+	   tintMap.readFixedASCII(*ctx.mdb, 32);
+	   glowMap.readFixedASCII(*ctx.mdb, 32);
 
 	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
 	_diffuse [1] = ctx.mdb->readIEEEFloatLE();
@@ -287,20 +287,20 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 
-	_name.readASCII(*ctx.mdb, 32);
+	_name.readFixedASCII(*ctx.mdb, 32);
 
 	// Skipping lower level of detail models
 	if (_name.endsWith("_L01") || _name.endsWith("_L02"))
 		return false;
 
 	Common::UString skeletonName;
-	skeletonName.readASCII(*ctx.mdb, 32);
+	skeletonName.readFixedASCII(*ctx.mdb, 32);
 
 	Common::UString diffuseMap, normalMap, tintMap, glowMap;
-	diffuseMap.readASCII(*ctx.mdb, 32);
-	 normalMap.readASCII(*ctx.mdb, 32);
-	   tintMap.readASCII(*ctx.mdb, 32);
-	   glowMap.readASCII(*ctx.mdb, 32);
+	diffuseMap.readFixedASCII(*ctx.mdb, 32);
+	 normalMap.readFixedASCII(*ctx.mdb, 32);
+	   tintMap.readFixedASCII(*ctx.mdb, 32);
+	   glowMap.readFixedASCII(*ctx.mdb, 32);
 
 	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
 	_diffuse [1] = ctx.mdb->readIEEEFloatLE();

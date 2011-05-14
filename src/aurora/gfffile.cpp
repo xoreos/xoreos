@@ -306,7 +306,7 @@ Common::UString GFFStruct::readLabel(Common::SeekableReadStream &gff, uint32 ind
 	gff.seek(_parent->_header.labelOffset + index * 16);
 
 	Common::UString label;
-	label.readASCII(gff, 16);
+	label.readFixedASCII(gff, 16);
 
 	return label;
 }
@@ -427,7 +427,7 @@ Common::UString GFFStruct::getString(const Common::UString &field,
 		Common::MemoryReadStream gff(data + 4, length);
 
 		Common::UString str;
-		str.readASCII(gff, length);
+		str.readFixedASCII(gff, length);
 		return str;
 	}
 
@@ -439,7 +439,7 @@ Common::UString GFFStruct::getString(const Common::UString &field,
 		Common::MemoryReadStream gff(data + 1, length);
 
 		Common::UString str;
-		str.readASCII(gff, length);
+		str.readFixedASCII(gff, length);
 		return str;
 	}
 

@@ -167,7 +167,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	ctx.mdl->skip(8); // Function pointers
 
-	_name.readASCII(*ctx.mdl, 32);
+	_name.readFixedASCII(*ctx.mdl, 32);
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -203,7 +203,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	Common::UString superModelName;
 
-	superModelName.readASCII(*ctx.mdl, 32);
+	superModelName.readFixedASCII(*ctx.mdl, 32);
 
 	ctx.mdl->skip(4); // Root node pointer again
 
@@ -457,8 +457,8 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	std::vector<Common::UString> textures;
 
 	textures.resize(2);
-	textures[0].readASCII(*ctx.mdl, 32);
-	textures[1].readASCII(*ctx.mdl, 32);
+	textures[0].readFixedASCII(*ctx.mdl, 32);
+	textures[1].readFixedASCII(*ctx.mdl, 32);
 
 	ctx.mdl->skip(24); // Unknown
 

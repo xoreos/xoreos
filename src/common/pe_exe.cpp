@@ -184,7 +184,7 @@ void PEResources::parseResourceLevel(Section &section, uint32 offset, int level)
 			// Read in the name, UTF-16LE
 			uint16 nameLength = _exe->readUint16LE();
 			UString name;
-			name.readUTF16LE(*_exe, nameLength);
+			name.readFixedUTF16LE(*_exe, nameLength);
 
 			_exe->seek(startPos);
 

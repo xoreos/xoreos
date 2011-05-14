@@ -93,7 +93,7 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 
 		Common::UString name;
 
-		name.readASCII(nds, nameLength);
+		name.readFixedASCII(nds, nameLength);
 		name.tolower();
 
 		res.name  = setFileType(name, kFileTypeNone);
@@ -120,7 +120,7 @@ bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
 		return false;
 
 	Common::UString gameName;
-	gameName.readASCII(stream, 12);
+	gameName.readFixedASCII(stream, 12);
 	if (gameName != "SONICCHRON") // Should be the only game we will accept.
 		return false;
 

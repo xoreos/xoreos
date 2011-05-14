@@ -179,28 +179,28 @@ public:
 	/** Read clean non-extended ASCII out of a stream. */
 	void readASCII(SeekableReadStream &stream);
 	/** Read clean non-extended ASCII out of a stream. */
-	void readASCII(SeekableReadStream &stream, uint32 length);
+	void readFixedASCII(SeekableReadStream &stream, uint32 length);
 	/** Read a line of clean non-extended ASCII out of a stream. */
 	void readLineASCII(SeekableReadStream &stream);
 
 	/** Read Latin9 out of a stream. */
 	void readLatin9(SeekableReadStream &stream);
 	/** Read Latin9 out of a stream. */
-	void readLatin9(SeekableReadStream &stream, uint32 length);
+	void readFixedLatin9(SeekableReadStream &stream, uint32 length);
 	/** Read a line of Latin9 out of a stream. */
 	void readLineLatin9(SeekableReadStream &stream);
 
 	/** Read UTF-16LE out of a stream. */
 	void readUTF16LE(SeekableReadStream &stream);
 	/** Read UTF-16LE out of a stream. */
-	void readUTF16LE(SeekableReadStream &stream, uint32 length);
+	void readFixedUTF16LE(SeekableReadStream &stream, uint32 length);
 	/** Read a line of UTF-16LE out of a stream. */
 	void readLineUTF16LE(SeekableReadStream &stream);
 
 	/** Read UTF-16BE out of a stream. */
 	void readUTF16BE(SeekableReadStream &stream);
 	/** Read UTF-16BE out of a stream. */
-	void readUTF16BE(SeekableReadStream &stream, uint32 length);
+	void readFixedUTF16BE(SeekableReadStream &stream, uint32 length);
 	/** Read a line of UTF-16BE out of a stream. */
 	void readLineUTF16BE(SeekableReadStream &stream);
 

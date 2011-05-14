@@ -94,7 +94,7 @@ void TalkTable::load() {
 void TalkTable::readEntryTableV3() {
 	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
 		entry->flags          = _tlk->readUint32LE();
-		entry->soundResRef.readASCII(*_tlk, 16);
+		entry->soundResRef.readFixedASCII(*_tlk, 16);
 		entry->volumeVariance = _tlk->readUint32LE();
 		entry->pitchVariance  = _tlk->readUint32LE();
 		entry->offset         = _tlk->readUint32LE() + _stringsOffset;
@@ -123,7 +123,7 @@ void TalkTable::readString(Entry &entry) {
 		throw Common::Exception(Common::kSeekError);
 
 	// TODO: Different encodings for different languages, probably
-	entry.text.readLatin9(*_tlk, MIN<uint32>(entry.length, _tlk->size() - _tlk->pos()));
+	entry.text.readFixedLatin9(*_tlk, MIN<uint32>(entry.length, _tlk->size() - _tlk->pos()));
 }
 
 Language TalkTable::getLanguage() const {

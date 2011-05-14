@@ -137,7 +137,7 @@ void Model_Witcher::load(ParserContext &ctx) {
 
 	ctx.mdb->skip(8);
 
-	_name.readASCII(*ctx.mdb, 64);
+	_name.readFixedASCII(*ctx.mdb, 64);
 
 	uint32 offsetRootNode = ctx.mdb->readUint32LE();
 
@@ -155,14 +155,14 @@ void Model_Witcher::load(ParserContext &ctx) {
 	ctx.mdb->skip(16);
 
 	Common::UString detailMap;
-	detailMap.readASCII(*ctx.mdb, 64);
+	detailMap.readFixedASCII(*ctx.mdb, 64);
 
 	ctx.mdb->skip(4);
 
 	float scale = ctx.mdb->readIEEEFloatLE();
 
 	Common::UString superModel;
-	superModel.readASCII(*ctx.mdb, 64);
+	superModel.readFixedASCII(*ctx.mdb, 64);
 
 	ctx.mdb->skip(16);
 
@@ -223,7 +223,7 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 	uint32 inheritColor = ctx.mdb->readUint32LE();
 	uint32 nodeNumber   = ctx.mdb->readUint32LE();
 
-	_name.readASCII(*ctx.mdb, 64);
+	_name.readFixedASCII(*ctx.mdb, 64);
 
 	ctx.mdb->skip(8); // Parent pointers
 
@@ -318,10 +318,10 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	ctx.mdb->skip(20);
 
 	Common::UString texture[4];
-	texture[0].readASCII(*ctx.mdb, 64);
-	texture[1].readASCII(*ctx.mdb, 64);
-	texture[2].readASCII(*ctx.mdb, 64);
-	texture[3].readASCII(*ctx.mdb, 64);
+	texture[0].readFixedASCII(*ctx.mdb, 64);
+	texture[1].readFixedASCII(*ctx.mdb, 64);
+	texture[2].readFixedASCII(*ctx.mdb, 64);
+	texture[3].readFixedASCII(*ctx.mdb, 64);
 
 	ctx.mdb->skip(20);
 

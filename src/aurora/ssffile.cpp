@@ -127,7 +127,7 @@ void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 		if (!ssf.seek(offsets[i]))
 			throw Common::Exception(Common::kSeekError);
 
-		_sounds[i].fileName.readASCII(ssf, 16);
+		_sounds[i].fileName.readFixedASCII(ssf, 16);
 		_sounds[i].strRef = ssf.readUint32LE();
 	}
 }
