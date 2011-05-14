@@ -416,6 +416,16 @@ void SoundManager::setChannelGain(const ChannelHandle &handle, float gain) {
 	alSourcef(channel->source, AL_GAIN, _types[channel->type].gain * gain);
 }
 
+void SoundManager::setChannelPitch(const ChannelHandle &handle, float pitch) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	alSourcef(channel->source, AL_PITCH, pitch);
+}
+
 void SoundManager::setTypeGain(SoundType type, float gain) {
 	assert((type >= 0) && (type < kSoundTypeMAX));
 

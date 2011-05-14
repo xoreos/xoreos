@@ -150,6 +150,9 @@ public:
 	/** Set the gain/volume of the channel. */
 	void setChannelGain(const ChannelHandle &handle, float gain);
 
+	/** Set the pitch of the channel. */
+	void setChannelPitch(const ChannelHandle &handle, float pitch);
+
 
 	// Type properties
 
