@@ -137,12 +137,14 @@ const GFFStruct &GFFFile::getStruct(uint32 i) const {
 	return *_structs[i];
 }
 
-const GFFList &GFFFile::getList(uint32 i) const {
+const GFFList &GFFFile::getList(uint32 i, uint32 &size) const {
 	assert(i < _listOffsetToIndex.size());
 
 	i = _listOffsetToIndex[i];
 
 	assert(i < _lists.size());
+
+	size = _listSizes[i];
 
 	return _lists[i];
 }
@@ -180,13 +182,17 @@ void GFFFile::readLists(Common::SeekableReadStream &gff) {
 		_listOffsetToIndex.push_back(_lists.size());
 
 		_lists.push_back(GFFList());
+		_listSizes.push_back(0);
+
 		GFFList &list = _lists.back();
+		uint32  &size = _listSizes.back();
 
 		uint32 n = *it++;
 		for (uint32 j = 0; j < n; j++, ++it) {
 			assert(it != rawLists.end());
 
 			list.push_back(_structs[*it]);
+			size++;
 			_listOffsetToIndex.push_back(0xFFFFFFFF);
 		}
 	}
@@ -579,7 +585,7 @@ const GFFStruct &GFFStruct::getStruct(const Common::UString &field) const {
 	return _parent->getStruct(f->data);
 }
 
-const GFFList &GFFStruct::getList(const Common::UString &field) const {
+const GFFList &GFFStruct::getList(const Common::UString &field, uint32 &size) const {
 	const Field *f = getField(field);
 	if (!f)
 		throw Common::Exception("No such field");
@@ -587,7 +593,13 @@ const GFFList &GFFStruct::getList(const Common::UString &field) const {
 		throw Common::Exception("Field is not a list type");
 
 	// Byte offset into the list area, all 32bit values.
-	return _parent->getList(f->data / 4);
+	return _parent->getList(f->data / 4, size);
+}
+
+const GFFList &GFFStruct::getList(const Common::UString &field) const {
+	uint32 size;
+
+	return getList(field, size);
 }
 
 } // End of namespace Aurora
