@@ -214,6 +214,8 @@ public:
 
 	static uint32 split(const UString &text, uint32 delim, std::vector<UString> &texts);
 
+	static void splitTextTokens(const UString &text, std::vector<UString> &tokens);
+
 	static uint32 tolower(uint32 c);
 	static uint32 toupper(uint32 c);
 

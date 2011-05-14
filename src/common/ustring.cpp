@@ -705,6 +705,67 @@ void UString::split(iterator splitPoint, UString &left, UString &right, bool rem
 		right += *it;
 }
 
+void UString::splitTextTokens(const UString &text, std::vector<UString> &tokens) {
+	UString collect;
+
+	int state = 0;
+	for (iterator it = text.begin(); it != text.end(); ++it) {
+		uint32 c = *it;
+
+		if (state == 0) {
+			// Collecting non-tokens
+
+			if (c == '<') {
+				tokens.push_back(collect);
+
+				collect.clear();
+				collect += c;
+
+				state = 1;
+			} else
+				collect += c;
+
+		} else if (state == 1) {
+			// Collecting tokens
+
+			if        (c == '<') {
+				// Start of a token within a token
+				// Add what we've collected to the last non-token
+
+				tokens.back() += collect;
+
+				collect.clear();
+				collect += c;
+
+			} else if (c == '>') {
+				// End of the token
+
+				collect += c;
+				tokens.push_back(collect);
+
+				collect.clear();
+				state = 0;
+
+			} else {
+				// Still within a token
+
+				collect += c;
+			}
+
+		}
+
+	}
+
+	if (collect.empty())
+		return;
+
+	// What's now collected is no full token
+	if (state == 0)
+		tokens.push_back(collect);
+	else if (state == 1)
+		tokens.back() += collect;
+}
+
 UString UString::substr(iterator from, iterator to) const {
 	UString sub;
 
