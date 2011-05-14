@@ -147,7 +147,7 @@ void MP3Stream::decodeMP3Data() {
 					// Note: we will occasionally see MAD_ERROR_BADDATAPTR errors here.
 					// These are normal and expected (caused by our frame skipping (i.e. "seeking")
 					// code above).
-					status("MP3Stream: Recoverable error in mad_frame_decode (%s)", mad_stream_errorstr(&_stream));
+					// status("MP3Stream: Recoverable error in mad_frame_decode (%s)", mad_stream_errorstr(&_stream));
 					continue;
 				} else {
 					warning("MP3Stream: Unrecoverable error in mad_frame_decode (%s)", mad_stream_errorstr(&_stream));
@@ -249,7 +249,7 @@ void MP3Stream::readHeader() {
 				readMP3Data();  // Read more data
 				continue;
 			} else if (MAD_RECOVERABLE(_stream.error)) {
-				status("MP3Stream: Recoverable error in mad_header_decode (%s)", mad_stream_errorstr(&_stream));
+				//status("MP3Stream: Recoverable error in mad_header_decode (%s)", mad_stream_errorstr(&_stream));
 				continue;
 			} else {
 				warning("MP3Stream: Unrecoverable error in mad_header_decode (%s)", mad_stream_errorstr(&_stream));
