@@ -77,6 +77,58 @@ private:
 	friend class CharacterStore;
 };
 
+enum SFFSounds {
+	kSSFAttack            =  0,
+	kSSFBattlecry1        =  1,
+	kSSFBattlecry2        =  2,
+	kSSFBattlecry3        =  3,
+	kSSFHealMe            =  4,
+	kSSFHelp              =  5,
+	kSSFEnemiesSighted    =  6,
+	kSSFFlee              =  7,
+	kSSFTaunt             =  8,
+	kSSFGuardMe           =  9,
+	kSSFHold              = 10,
+	kSSFAttackGrunt1      = 11,
+	kSSFAttackGrunt2      = 12,
+	kSSFAttackGrunt3      = 13,
+	kSSFPainGrunt1        = 14,
+	kSSFPainGrunt2        = 15,
+	kSSFPainGrunt3        = 16,
+	kSSFNearDeath         = 17,
+	kSSFDeath             = 18,
+	kSSFPoisoned          = 19,
+	kSSFSpellFailed       = 20,
+	kSSFWeaponIneffective = 21,
+	kSSFFollowMe          = 22,
+	kSSFLookHere          = 23,
+	kSSFGroupParty        = 24,
+	kSSFMoveOver          = 25,
+	kSSFPickLock          = 26,
+	kSSFSearch            = 27,
+	kSSFGoStealthy        = 28,
+	kSSFCanDo             = 29,
+	kSSFCannotDo          = 30,
+	kSSFTaskComplete      = 31,
+	kSSFEncumbered        = 32,
+	kSSFSelected          = 33,
+	kSSFHello             = 34,
+	kSSFYes               = 35,
+	kSSFNo                = 36,
+	kSSFStop              = 37,
+	kSSFRest              = 38,
+	kSSFBored             = 39,
+	kSSFGoodbye           = 40,
+	kSSFThankYou          = 41,
+	kSSFLaugh             = 42,
+	kSSFCuss              = 43,
+	kSSFCheer             = 44,
+	kSSFSomethingToSay    = 45,
+	kSSFGoodIdea          = 46,
+	kSSFBadIdea           = 47,
+	kSSFThreaten          = 48
+};
+
 } // End of namespace NWN
 
 } // End of namespace Engines

@@ -35,8 +35,11 @@
 #include "common/types.h"
 #include "common/ustring.h"
 
+#include "sound/types.h"
+
 namespace Aurora {
 	class DLGFile;
+	class SSFFile;
 }
 
 namespace Engines {
@@ -89,7 +92,10 @@ protected:
 
 	Common::UString _conversation;
 
+	uint32 _soundSet;
+
 	Aurora::DLGFile *_dlg;
+	Aurora::SSFFile *_ssf;
 
 	bool _static;
 	bool _usable;
@@ -99,9 +105,16 @@ protected:
 	float _position[3];
 	float _orientation[3];
 
+	Sound::ChannelHandle _sound;
+
+
 	void clear();
 
 	void loadDLG();
+	void loadSSF();
+
+	void stopSound();
+	void playSound(const Common::UString &sound);
 };
 
 } // End of namespace NWN

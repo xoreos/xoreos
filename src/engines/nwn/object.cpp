@@ -30,20 +30,30 @@
 #include "common/util.h"
 
 #include "aurora/dlgfile.h"
+#include "aurora/ssffile.h"
+#include "aurora/2dafile.h"
+#include "aurora/2dareg.h"
+
+#include "sound/sound.h"
 
 #include "engines/aurora/util.h"
 
+#include "engines/nwn/types.h"
 #include "engines/nwn/object.h"
 
 namespace Engines {
 
 namespace NWN {
 
-Object::Object() : _dlg(0) {
+Object::Object() : _dlg(0), _ssf(0) {
 	clear();
 }
 
 Object::~Object() {
+	stopSound();
+
+	delete _ssf;
+	delete _dlg;
 }
 
 const Common::UString &Object::getTag() const {
@@ -105,6 +115,8 @@ void Object::setOrientation(float x, float y, float z) {
 void Object::clear() {
 	_loaded = false;
 
+	stopSound();
+
 	_tag.clear();
 	_name.clear();
 	_description.clear();
@@ -113,8 +125,13 @@ void Object::clear() {
 
 	_conversation.clear();
 
+	_soundSet = Aurora::kFieldIDInvalid;
+
 	delete _dlg;
 	_dlg = 0;
+
+	delete _ssf;
+	_ssf = 0;
 
 	_static = false;
 	_usable = true;
@@ -142,16 +159,58 @@ void Object::loadDLG() {
 	}
 }
 
+void Object::loadSSF() {
+	if (_ssf || (_soundSet == Aurora::kFieldIDInvalid))
+		return;
+
+	const Aurora::TwoDAFile &soundSets = TwoDAReg.get("soundset");
+
+	Common::UString ssfFile = soundSets.getRow(_soundSet).getString("RESREF");
+	if (ssfFile.empty())
+		return;
+
+	try {
+		_ssf = new Aurora::SSFFile(ssfFile);
+	} catch (...) {
+		warning("Failed to load SSF \"%s\" (object \"%s\")", ssfFile.c_str(), _tag.c_str());
+		delete _ssf;
+		_ssf = 0;
+	}
+}
+
+void Object::stopSound() {
+	SoundMan.stopChannel(_sound);
+}
+
+void Object::playSound(const Common::UString &sound) {
+	stopSound();
+	if (sound.empty())
+		return;
+
+	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice);
+}
+
 void Object::click() {
+	loadDLG();
+	loadSSF();
+
 	Common::UString text, sound;
 
 	if (_dlg)
 		_dlg->getStart(text, sound);
 
+	if (sound.empty()) {
+		if (_ssf) {
+			const Aurora::SSFFile::Sound &ssfSound = _ssf->getSound(kSSFHello);
+
+			sound = ssfSound.fileName;
+		}
+	}
+
 	if (!text.empty())
 		status("%s: \"%s\"", _name.c_str(), text.c_str());
 	if (!sound.empty())
-		playSound(sound, Sound::kSoundTypeVoice);
+		playSound(sound);
 }
 
 } // End of namespace NWN

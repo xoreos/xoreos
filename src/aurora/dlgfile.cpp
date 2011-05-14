@@ -64,16 +64,8 @@ void DLGFile::getStart(Common::UString &text, Common::UString &sound) const {
 	if (_entriesStart.empty())
 		return;
 
-	for (std::vector<Link>::const_reverse_iterator s = _entriesStart.rbegin();
-	     s != _entriesStart.rend(); ++s) {
-		if (!_entriesNPC[s->index].sound.empty()) {
-			text  = _entriesNPC[s->index].text.getString();
-			sound = _entriesNPC[s->index].sound;
-			return;
-		}
-	}
-
-	text = _entriesNPC[_entriesStart.back().index].text.getString();
+	text  = _entriesNPC[_entriesStart.front().index].text.getString();
+	sound = _entriesNPC[_entriesStart.front().index].sound;
 }
 
 void DLGFile::load(Common::SeekableReadStream &dlg) {
