@@ -34,7 +34,7 @@
 
 #include "events/events.h"
 
-#include "graphics/aurora/model_nwn_binary.h"
+#include "graphics/aurora/model_nwn.h"
 
 #include "engines/aurora/model.h"
 
@@ -44,7 +44,7 @@ namespace Engines {
 
 namespace NWN {
 
-class NewGameFog : public Graphics::Aurora::Model_NWN_Binary {
+class NewGameFog : public Graphics::Aurora::Model_NWN {
 private:
 	uint32 _startTime;
 	uint32 _lastTime;
@@ -59,7 +59,7 @@ private:
 
 public:
 	NewGameFog(Common::SeekableReadStream &fog) :
-		Graphics::Aurora::Model_NWN_Binary(fog, Graphics::Aurora::kModelTypeGUIFront) {
+		Graphics::Aurora::Model_NWN(fog, Graphics::Aurora::kModelTypeGUIFront) {
 
 		_modelScale[0] = _modelScale[1] = 10.0;
 
@@ -101,7 +101,7 @@ public:
 
 		glColor4f(1.0, 1.0, 1.0, _curFade);
 
-		Graphics::Aurora::Model_NWN_Binary::render(pass);
+		Graphics::Aurora::Model_NWN::render(pass);
 
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 

@@ -284,9 +284,6 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 		ctx.nodes.push_back(childNode);
 
 		childNode->setParent(this);
-		childNode->_level = _level + 1;
-
-		_children.push_back(childNode);
 
 		ctx.mdb->seek(ctx.offModelData + *child);
 		childNode->load(ctx);

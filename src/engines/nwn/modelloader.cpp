@@ -33,8 +33,7 @@
 #include "aurora/types.h"
 #include "aurora/resman.h"
 
-#include "graphics/aurora/model_nwn_ascii.h"
-#include "graphics/aurora/model_nwn_binary.h"
+#include "graphics/aurora/model_nwn.h"
 
 #include "engines/nwn/modelloader.h"
 
@@ -53,13 +52,7 @@ Graphics::Aurora::Model *NWNModelLoader::load(const Common::UString &resref,
 		if (!mdl)
 			throw Common::Exception("No such model \"%s\"", resref.c_str());
 
-		if      (Graphics::Aurora::Model_NWN_Binary::isBinary(*mdl))
-			model = new Graphics::Aurora::Model_NWN_Binary(*mdl, type);
-		else if (Graphics::Aurora::Model_NWN_ASCII::isASCII(*mdl))
-			model = new Graphics::Aurora::Model_NWN_ASCII(*mdl, type);
-
-		if (!model)
-			throw Common::Exception("Model not binary and not ASCII?!?");
+		model = new Graphics::Aurora::Model_NWN(*mdl, type);
 
 	} catch (...) {
 		delete mdl;

@@ -78,6 +78,11 @@ const ModelNode *ModelNode::getParent() const {
 
 void ModelNode::setParent(ModelNode *parent) {
 	_parent = parent;
+
+	if (_parent) {
+		_level = parent->_level + 1;
+		_parent->_children.push_back(this);
+	}
 }
 
 const Common::UString &ModelNode::getName() const {

@@ -347,9 +347,6 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		ctx.nodes.push_back(childNode);
 
 		childNode->setParent(this);
-		childNode->_level = _level + 1;
-
-		_children.push_back(childNode);
 
 		ctx.mdl->seek(ctx.offModelData + *child);
 		childNode->load(ctx);

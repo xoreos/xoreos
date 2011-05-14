@@ -37,7 +37,7 @@
 
 #include "graphics/graphics.h"
 
-#include "graphics/aurora/model_nwn_binary.h"
+#include "graphics/aurora/model_nwn.h"
 
 #include "engines/aurora/model.h"
 
@@ -47,7 +47,7 @@ namespace Engines {
 
 namespace NWN {
 
-class FadeModel : public Graphics::Aurora::Model_NWN_Binary {
+class FadeModel : public Graphics::Aurora::Model_NWN {
 private:
 	bool _fade;
 
@@ -84,7 +84,7 @@ private:
 
 public:
 	FadeModel(Common::SeekableReadStream &model) :
-		Graphics::Aurora::Model_NWN_Binary(model, Graphics::Aurora::kModelTypeGUIFront),
+		Graphics::Aurora::Model_NWN(model, Graphics::Aurora::kModelTypeGUIFront),
 		_fade(false), _fadeStart(0), _fadeValue(1.0), _fadeStep(0.0) {
 
 	}
@@ -123,7 +123,7 @@ public:
 			return;
 
 		glColor4f(1.0, 1.0, 1.0, _fadeValue);
-		Graphics::Aurora::Model_NWN_Binary::render(Graphics::kRenderPassAll);
+		Graphics::Aurora::Model_NWN::render(Graphics::kRenderPassAll);
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 
 		updateFade();

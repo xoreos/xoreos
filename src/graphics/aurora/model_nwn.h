@@ -23,12 +23,12 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/aurora/model_nwn_ascii.h
- *  Loading ASCII MDL files found in Neverwinter Nights.
+/** @file graphics/aurora/model_nwn.h
+ *  Loading MDL files found in Neverwinter Nights.
  */
 
-#ifndef GRAPHICS_AURORA_NEWMODEL_NWN_ASCII_H
-#define GRAPHICS_AURORA_NEWMODEL_NWN_ASCII_H
+#ifndef GRAPHICS_AURORA_NEWMODEL_NWN_H
+#define GRAPHICS_AURORA_NEWMODEL_NWN_H
 
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/modelnode.h"
@@ -42,15 +42,14 @@ namespace Graphics {
 
 namespace Aurora {
 
+class ModelNode_NWN_Binary;
 class ModelNode_NWN_ASCII;
 
-/** A 3D model in the NWN ASCII MDL format. */
-class Model_NWN_ASCII : public Model {
+/** A 3D model in the NWN MDL format. */
+class Model_NWN : public Model {
 public:
-	Model_NWN_ASCII(Common::SeekableReadStream &mdl, ModelType type = kModelTypeObject);
-	~Model_NWN_ASCII();
-
-	static bool isASCII(Common::SeekableReadStream &mdl);
+	Model_NWN(Common::SeekableReadStream &mdl, ModelType type = kModelTypeObject);
+	~Model_NWN();
 
 private:
 	struct ParserContext {
@@ -58,33 +57,56 @@ private:
 
 		State *state;
 
-		std::list<ModelNode_NWN_ASCII *> nodes;
+		bool isASCII;
+
+		ModelNode *rootNode;
+		std::list<ModelNode *> nodes;
+
+		uint32 offModelData;
+		uint32 offRawData;
 
 		bool hasPosition;
 		bool hasOrientation;
 
 		Common::StreamTokenizer *tokenize;
-
 		std::vector<uint32> anims;
 
 		ParserContext(Common::SeekableReadStream &stream);
 		~ParserContext();
 
-		void clear();
+		bool findNode(const Common::UString &name, ModelNode *&node) const;
 
-		bool findNode(const Common::UString &name, ModelNode_NWN_ASCII *&node) const;
+		void clear();
 	};
 
 
 	void newState(ParserContext &ctx);
 	void addState(ParserContext &ctx);
 
-	void load(ParserContext &ctx);
+	void loadBinary(ParserContext &ctx);
+	void readAnimBinary(ParserContext &ctx, uint32 offset);
 
-	void skipAnim(ParserContext &ctx);
-	void readAnim(ParserContext &ctx);
+	void loadASCII(ParserContext &ctx);
+	void readAnimASCII(ParserContext &ctx);
+	void skipAnimASCII(ParserContext &ctx);
 
+	friend class ModelNode_NWN_Binary;
 	friend class ModelNode_NWN_ASCII;
+};
+
+class ModelNode_NWN_Binary : public ModelNode {
+public:
+	ModelNode_NWN_Binary(Model &model);
+	~ModelNode_NWN_Binary();
+
+	void load(Model_NWN::ParserContext &ctx);
+
+private:
+	void readMesh(Model_NWN::ParserContext &ctx);
+	void readAnim(Model_NWN::ParserContext &ctx);
+
+	void readNodeControllers(Model_NWN::ParserContext &ctx, uint32 offset,
+                           uint32 count, std::vector<float> &data);
 };
 
 class ModelNode_NWN_ASCII : public ModelNode {
@@ -92,7 +114,7 @@ public:
 	ModelNode_NWN_ASCII(Model &model);
 	~ModelNode_NWN_ASCII();
 
-	void load(Model_NWN_ASCII::ParserContext &ctx,
+	void load(Model_NWN::ParserContext &ctx,
 	          const Common::UString &type, const Common::UString &name);
 
 private:
@@ -114,16 +136,16 @@ private:
 		Mesh();
 	};
 
-	void readConstraints(Model_NWN_ASCII::ParserContext &ctx, uint32 n);
-	void readWeights(Model_NWN_ASCII::ParserContext &ctx, uint32 n);
+	void readConstraints(Model_NWN::ParserContext &ctx, uint32 n);
+	void readWeights(Model_NWN::ParserContext &ctx, uint32 n);
 
 	void readFloats(const std::vector<Common::UString> &strings,
 	                float *floats, uint32 n, uint32 start);
 
-	void readVCoords(Model_NWN_ASCII::ParserContext &ctx, Mesh &mesh);
-	void readTCoords(Model_NWN_ASCII::ParserContext &ctx, Mesh &mesh);
+	void readVCoords(Model_NWN::ParserContext &ctx, Mesh &mesh);
+	void readTCoords(Model_NWN::ParserContext &ctx, Mesh &mesh);
 
-	void readFaces(Model_NWN_ASCII::ParserContext &ctx, Mesh &mesh);
+	void readFaces(Model_NWN::ParserContext &ctx, Mesh &mesh);
 
 	void processMesh(Mesh &mesh);
 };
@@ -132,4 +154,4 @@ private:
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_NEWMODEL_NWN_ASCII_H
+#endif // GRAPHICS_AURORA_NEWMODEL_NWN_BINARY_H
