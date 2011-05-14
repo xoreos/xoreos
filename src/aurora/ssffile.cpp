@@ -30,8 +30,9 @@
 #include "common/stream.h"
 #include "common/util.h"
 
-#include "aurora/ssffile.h"
 #include "aurora/error.h"
+#include "aurora/resman.h"
+#include "aurora/ssffile.h"
 
 static const uint32 kSSFID     = MKID_BE('SSF ');
 static const uint32 kVersion1  = MKID_BE('V1.0');
@@ -39,21 +40,33 @@ static const uint32 kVersion11 = MKID_BE('V1.1');
 
 namespace Aurora {
 
-SSFFile::SSFFile() {
+SSFFile::SSFFile(Common::SeekableReadStream &ssf) {
+	load(ssf);
+
+	_emptySound.strRef = kStrRefInvalid;
+}
+
+SSFFile::SSFFile(const Common::UString &ssf) {
+	Common::SeekableReadStream *res = ResMan.getResource(ssf, kFileTypeSSF);
+	if (!res)
+		throw Common::Exception("No such SSF \"%s\"", ssf.c_str());
+
+	try {
+		load(*res);
+	} catch (...) {
+		delete res;
+		throw;
+	}
+
+	delete res;
+
+	_emptySound.strRef = kStrRefInvalid;
 }
 
 SSFFile::~SSFFile() {
 }
 
-void SSFFile::clear() {
-	AuroraBase::clear();
-
-	_soundSet.clear();
-}
-
 void SSFFile::load(Common::SeekableReadStream &ssf) {
-	clear();
-
 	readHeader(ssf);
 
 	if (_id != kSSFID)
@@ -71,7 +84,7 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 	if (_version == kVersion11)
 		entryCount = (ssf.size() - offEntryTable) / 4;
 
-	_soundSet.resize(entryCount);
+	_sounds.resize(entryCount);
 
 	try {
 
@@ -101,7 +114,7 @@ void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 	// V1.0 begins with a list of offsets to the data entries.
 	// Each data entry has a ResRef of a sound file and a StrRef of a text.
 
-	uint32 count = _soundSet.size();
+	uint32 count = _sounds.size();
 
 	std::vector<uint32> offsets;
 
@@ -114,20 +127,23 @@ void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 		if (!ssf.seek(offsets[i]))
 			throw Common::Exception(Common::kSeekError);
 
-		_soundSet[i].fileName.readASCII(ssf, 16);
-		_soundSet[i].strRef = ssf.readUint32LE();
+		_sounds[i].fileName.readASCII(ssf, 16);
+		_sounds[i].strRef = ssf.readUint32LE();
 	}
 }
 
 void SSFFile::readEntries11(Common::SeekableReadStream &ssf) {
 	// V1.1 is just a list of StrRef
 
-	for (SoundSet::iterator sound = _soundSet.begin(); sound != _soundSet.end(); ++sound)
+	for (SoundSet::iterator sound = _sounds.begin(); sound != _sounds.end(); ++sound)
 		sound->strRef = ssf.readUint32LE();
 }
 
-const SSFFile::SoundSet &SSFFile::getSounds() const {
-	return _soundSet;
+const SSFFile::Sound &SSFFile::getSound(uint32 index) const {
+	if (index >= _sounds.size())
+		return _emptySound;
+
+	return _sounds[index];
 }
 
 } // End of namespace Aurora

@@ -53,23 +53,19 @@ public:
 		uint32          strRef;   ///< StrRef of the text to display.
 	};
 
-	typedef std::vector<Sound> SoundSet;
-
-	SSFFile();
+	SSFFile(Common::SeekableReadStream &ssf);
+	SSFFile(const Common::UString &ssf);
 	~SSFFile();
 
-	void clear();
-
-	/** Load a SSF file.
-	 *
-	 *  @param ssf A stream of a SSF file.
-	 */
-	void load(Common::SeekableReadStream &ssf);
-
-	const SoundSet &getSounds() const;
+	const Sound &getSound(uint32 index) const;
 
 private:
-	SoundSet _soundSet;
+	typedef std::vector<Sound> SoundSet;
+
+	Sound _emptySound;
+	SoundSet _sounds;
+
+	void load(Common::SeekableReadStream &ssf);
 
 	void readEntries(Common::SeekableReadStream &ssf, uint32 offset);
 	void readEntries1(Common::SeekableReadStream &ssf);
