@@ -51,7 +51,7 @@ void playVideo(const Common::UString &video);
 
 /** Play this sound resource. */
 Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType soundType,
-		bool loop = false, float volume = 1.0);
+		bool loop = false, float volume = 1.0, bool pitchVariance = false);
 
 /** Make sure that an int config value is in the right range. */
 void checkConfigInt   (const Common::UString &key, int    min, int    max, int    def);

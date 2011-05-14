@@ -114,7 +114,7 @@ protected:
 	void loadSSF();
 
 	void stopSound();
-	void playSound(const Common::UString &sound);
+	void playSound(const Common::UString &sound, bool pitchVariance = false);
 };
 
 } // End of namespace NWN

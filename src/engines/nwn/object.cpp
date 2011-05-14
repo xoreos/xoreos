@@ -182,12 +182,12 @@ void Object::stopSound() {
 	SoundMan.stopChannel(_sound);
 }
 
-void Object::playSound(const Common::UString &sound) {
+void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 	stopSound();
 	if (sound.empty())
 		return;
 
-	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice);
+	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice, false, 1.0, pitchVariance);
 }
 
 void Object::click() {
@@ -199,18 +199,20 @@ void Object::click() {
 	if (_dlg)
 		_dlg->getStart(text, sound);
 
+	bool isSSF = false;
 	if (sound.empty()) {
 		if (_ssf) {
 			const Aurora::SSFFile::Sound &ssfSound = _ssf->getSound(kSSFHello);
 
 			sound = ssfSound.fileName;
+			isSSF = true;
 		}
 	}
 
 	if (!text.empty())
 		status("%s: \"%s\"", _name.c_str(), text.c_str());
 	if (!sound.empty())
-		playSound(sound);
+		playSound(sound, isSSF);
 }
 
 } // End of namespace NWN
