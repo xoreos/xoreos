@@ -48,7 +48,7 @@ class ModelNode_NWN_ASCII;
 /** A 3D model in the NWN MDL format. */
 class Model_NWN : public Model {
 public:
-	Model_NWN(Common::SeekableReadStream &mdl, ModelType type = kModelTypeObject);
+	Model_NWN(const Common::UString &name, ModelType type = kModelTypeObject);
 	~Model_NWN();
 
 private:
@@ -71,7 +71,7 @@ private:
 		Common::StreamTokenizer *tokenize;
 		std::vector<uint32> anims;
 
-		ParserContext(Common::SeekableReadStream &stream);
+		ParserContext(const Common::UString &name);
 		~ParserContext();
 
 		bool findNode(const Common::UString &name, ModelNode *&node) const;

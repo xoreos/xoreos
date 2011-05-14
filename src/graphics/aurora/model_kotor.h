@@ -46,8 +46,8 @@ class ModelNode_KotOR;
 /** A 3D model in the NWN binary MDL format. */
 class Model_KotOR : public Model {
 public:
-	Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx,
-	            bool kotor2, ModelType type = kModelTypeObject,
+	Model_KotOR(const Common::UString &name, bool kotor2,
+	            ModelType type = kModelTypeObject,
 	            const Common::UString &texture = "");
 	~Model_KotOR();
 
@@ -69,9 +69,7 @@ private:
 
 		std::vector<Common::UString> names;
 
-		ParserContext(Common::SeekableReadStream &mdlStream,
-		              Common::SeekableReadStream &mdxStream,
-		              const Common::UString &t, bool k2);
+		ParserContext(const Common::UString &name, const Common::UString &t, bool k2);
 		~ParserContext();
 
 		void clear();

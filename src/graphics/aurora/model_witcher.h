@@ -46,7 +46,7 @@ class ModelNode_Witcher;
 /** A 3D model in the The Witcher MDB format. */
 class Model_Witcher : public Model {
 public:
-	Model_Witcher(Common::SeekableReadStream &mdb, ModelType type = kModelTypeObject);
+	Model_Witcher(const Common::UString &name, ModelType type = kModelTypeObject);
 	~Model_Witcher();
 
 private:
@@ -70,7 +70,7 @@ private:
 		uint32 offTexData;
 		uint32 texDatasize;
 
-		ParserContext(Common::SeekableReadStream &stream);
+		ParserContext(const Common::UString &name);
 		~ParserContext();
 
 		void clear();

@@ -149,6 +149,8 @@ protected:
 
 	ModelType _type; ///< The model's type.
 
+	Common::UString _fileName; ///< The model's file name.
+
 	Common::UString _name; ///< The model's name.
 
 	StateList _stateList;   ///< All states within this model.

@@ -44,26 +44,14 @@ namespace KotOR {
 Graphics::Aurora::Model *KotORModelLoader::load(const Common::UString &resref,
 		Graphics::Aurora::ModelType type, const Common::UString &texture) {
 
-	Common::SeekableReadStream *mdl = 0, *mdx = 0;
 	Graphics::Aurora::Model *model = 0;
-
 	try {
-		if (!(mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL)))
-			throw Common::Exception("No such MDL");
-		if (!(mdx = ResMan.getResource(resref, Aurora::kFileTypeMDX)))
-			throw Common::Exception("No such MDX");
-
-		model = new Graphics::Aurora::Model_KotOR(*mdl, *mdx, false, type, texture);
-
+		model = new Graphics::Aurora::Model_KotOR(resref, false, type, texture);
 	} catch (...) {
-		delete mdl;
-		delete mdx;
 		delete model;
 		throw;
 	}
 
-	delete mdl;
-	delete mdx;
 	return model;
 }
 

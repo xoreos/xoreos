@@ -44,23 +44,14 @@ namespace NWN {
 Graphics::Aurora::Model *NWNModelLoader::load(const Common::UString &resref,
 		Graphics::Aurora::ModelType type, const Common::UString &texture) {
 
-	Common::SeekableReadStream *mdl = 0;
 	Graphics::Aurora::Model *model = 0;
 	try {
-		mdl = ResMan.getResource(resref, Aurora::kFileTypeMDL);
-
-		if (!mdl)
-			throw Common::Exception("No such model \"%s\"", resref.c_str());
-
-		model = new Graphics::Aurora::Model_NWN(*mdl, type);
-
+		model = new Graphics::Aurora::Model_NWN(resref, type);
 	} catch (...) {
-		delete mdl;
 		delete model;
 		throw;
 	}
 
-	delete mdl;
 	return model;
 }
 

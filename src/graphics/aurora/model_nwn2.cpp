@@ -34,6 +34,9 @@
 #include "common/maths.h"
 #include "common/stream.h"
 
+#include "aurora/types.h"
+#include "aurora/resman.h"
+
 #include "graphics/aurora/model_nwn2.h"
 
 static const uint32 kMDBID = MKID_BE('NWN2');
@@ -45,12 +48,15 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_NWN2::ParserContext::ParserContext(Common::SeekableReadStream &stream) :
-	mdb(&stream), state(0) {
-
+Model_NWN2::ParserContext::ParserContext(const Common::UString &name) : mdb(0), state(0) {
+	mdb = ResMan.getResource(name, ::Aurora::kFileTypeMDB);
+	if (!mdb)
+		throw Common::Exception("No such MDB \"%s\"", name.c_str());
 }
 
 Model_NWN2::ParserContext::~ParserContext() {
+	delete mdb;
+
 	clear();
 }
 
@@ -64,10 +70,10 @@ void Model_NWN2::ParserContext::clear() {
 }
 
 
-Model_NWN2::Model_NWN2(Common::SeekableReadStream &mdb, ModelType type) :
-	Model(type) {
+Model_NWN2::Model_NWN2(const Common::UString &name, ModelType type) : Model(type) {
+	_fileName = name;
 
-	ParserContext ctx(mdb);
+	ParserContext ctx(name);
 
 	load(ctx);
 

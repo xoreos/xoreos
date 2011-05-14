@@ -83,8 +83,8 @@ private:
 	}
 
 public:
-	FadeModel(Common::SeekableReadStream &model) :
-		Graphics::Aurora::Model_NWN(model, Graphics::Aurora::kModelTypeGUIFront),
+	FadeModel(const Common::UString &name) :
+		Graphics::Aurora::Model_NWN(name, Graphics::Aurora::kModelTypeGUIFront),
 		_fade(false), _fadeStart(0), _fadeValue(1.0), _fadeStep(0.0) {
 
 	}
@@ -132,13 +132,16 @@ public:
 
 
 static FadeModel *createFade(const Common::UString &name) {
-	Common::SeekableReadStream *model = ResMan.getResource(name, Aurora::kFileTypeMDL);
-	assert(model);
+	FadeModel *model = 0;
 
-	FadeModel *fade = new FadeModel(*model);
-	delete model;
+	try {
+		model = new FadeModel(name);
+	} catch (...) {
+		delete model;
+		throw;
+	}
 
-	return fade;
+	return model;
 }
 
 

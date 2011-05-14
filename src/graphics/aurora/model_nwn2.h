@@ -46,7 +46,7 @@ class ModelNode_NWN2;
 /** A 3D model in the NWN2 MDB format. */
 class Model_NWN2 : public Model {
 public:
-	Model_NWN2(Common::SeekableReadStream &mdb, ModelType type = kModelTypeObject);
+	Model_NWN2(const Common::UString &name, ModelType type = kModelTypeObject);
 	~Model_NWN2();
 
 private:
@@ -65,7 +65,7 @@ private:
 		uint32 offModelData;
 		uint32 offRawData;
 
-		ParserContext(Common::SeekableReadStream &stream);
+		ParserContext(const Common::UString &name);
 		~ParserContext();
 
 		void clear();

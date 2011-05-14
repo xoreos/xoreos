@@ -35,6 +35,9 @@
 #include "common/maths.h"
 #include "common/stream.h"
 
+#include "aurora/types.h"
+#include "aurora/resman.h"
+
 #include "graphics/aurora/model_kotor.h"
 
 static const int kNodeFlagHasHeader    = 0x0001;
@@ -101,13 +104,28 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_KotOR::ParserContext::ParserContext(Common::SeekableReadStream &mdlStream,
-		Common::SeekableReadStream &mdxStream, const Common::UString &t, bool k2) :
-	mdl(&mdlStream), mdx(&mdxStream), state(0), texture(t), kotor2(k2) {
+Model_KotOR::ParserContext::ParserContext(const Common::UString &name,
+                                          const Common::UString &t, bool k2) :
+	mdl(0), mdx(0), state(0), texture(t), kotor2(k2) {
 
+	try {
+
+		if (!(mdl = ResMan.getResource(name, ::Aurora::kFileTypeMDL)))
+			throw Common::Exception("No such MDL \"%s\"", name.c_str());
+		if (!(mdx = ResMan.getResource(name, ::Aurora::kFileTypeMDX)))
+			throw Common::Exception("No such MDX \"%s\"", name.c_str());
+
+	} catch (...) {
+		delete mdl;
+		delete mdx;
+		throw;
+	}
 }
 
 Model_KotOR::ParserContext::~ParserContext() {
+	delete mdl;
+	delete mdx;
+
 	clear();
 }
 
@@ -121,11 +139,13 @@ void Model_KotOR::ParserContext::clear() {
 }
 
 
-Model_KotOR::Model_KotOR(Common::SeekableReadStream &mdl, Common::SeekableReadStream &mdx,
+Model_KotOR::Model_KotOR(const Common::UString &name,
                          bool kotor2, ModelType type, const Common::UString &texture) :
 	Model(type) {
 
-	ParserContext ctx(mdl, mdx, texture, kotor2);
+	_fileName = name;
+
+	ParserContext ctx(name, texture, kotor2);
 
 	load(ctx);
 

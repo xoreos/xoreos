@@ -44,20 +44,14 @@ namespace NWN2 {
 Graphics::Aurora::Model *NWN2ModelLoader::load(const Common::UString &resref,
 		Graphics::Aurora::ModelType type, const Common::UString &texture) {
 
-	Common::SeekableReadStream *mdb = ResMan.getResource(resref, Aurora::kFileTypeMDB);
-	if (!mdb)
-		throw Common::Exception("No such model");
-
 	Graphics::Aurora::Model *model = 0;
 	try {
-		model = new Graphics::Aurora::Model_NWN2(*mdb);
+		model = new Graphics::Aurora::Model_NWN2(resref);
 	} catch (...) {
-		delete mdb;
 		delete model;
 		throw;
 	}
 
-	delete mdb;
 	return model;
 }
 

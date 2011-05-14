@@ -58,8 +58,8 @@ private:
 	float _rotateSpeed;
 
 public:
-	NewGameFog(Common::SeekableReadStream &fog) :
-		Graphics::Aurora::Model_NWN(fog, Graphics::Aurora::kModelTypeGUIFront) {
+	NewGameFog(const Common::UString &name) :
+		Graphics::Aurora::Model_NWN(name, Graphics::Aurora::kModelTypeGUIFront) {
 
 		_modelScale[0] = _modelScale[1] = 10.0;
 
@@ -112,14 +112,17 @@ public:
 
 
 static Graphics::Aurora::Model *createNewGameFog() {
-	Common::SeekableReadStream *fog = ResMan.getResource("pnl_fog", Aurora::kFileTypeMDL);
-	assert(fog);
+	Graphics::Aurora::Model *model = 0;
 
-	Graphics::Aurora::Model *fogModel = new NewGameFog(*fog);
-	delete fog;
+	try {
+		model = new NewGameFog("pnl_fog");
+	} catch (...) {
+		delete model;
+	}
 
-	fogModel->setPosition(0.0, 0.0, 100.0);
-	return fogModel;
+	model->setPosition(0.0, 0.0, 100.0);
+
+	return model;
 }
 
 

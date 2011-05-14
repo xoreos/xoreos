@@ -34,6 +34,9 @@
 #include "common/maths.h"
 #include "common/stream.h"
 
+#include "aurora/types.h"
+#include "aurora/resman.h"
+
 #include "graphics/aurora/model_witcher.h"
 
 namespace Graphics {
@@ -61,12 +64,15 @@ static const int kNodeFlagHasUnknown8  = 0x00020000;
 static const uint32 kControllerTypePosition    = 84;
 static const uint32 kControllerTypeOrientation = 96;
 
-Model_Witcher::ParserContext::ParserContext(Common::SeekableReadStream &stream) :
-	mdb(&stream), state(0) {
-
+Model_Witcher::ParserContext::ParserContext(const Common::UString &name) : mdb(0), state(0) {
+	mdb = ResMan.getResource(name, ::Aurora::kFileTypeMDB);
+	if (!mdb)
+		throw Common::Exception("No such MDB \"%s\"", name.c_str());
 }
 
 Model_Witcher::ParserContext::~ParserContext() {
+	delete mdb;
+
 	clear();
 }
 
@@ -80,10 +86,10 @@ void Model_Witcher::ParserContext::clear() {
 }
 
 
-Model_Witcher::Model_Witcher(Common::SeekableReadStream &mdb, ModelType type) :
-	Model(type) {
+Model_Witcher::Model_Witcher(const Common::UString &name, ModelType type) : Model(type) {
+	_fileName = name;
 
-	ParserContext ctx(mdb);
+	ParserContext ctx(name);
 
 	load(ctx);
 
