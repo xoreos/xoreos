@@ -50,6 +50,8 @@ public:
 	DLGFile(const Common::UString &dlg);
 	~DLGFile();
 
+	void getStart(Common::UString &text, Common::UString &sound) const;
+
 private:
 	/** A link to a reply. */
 	struct Link {

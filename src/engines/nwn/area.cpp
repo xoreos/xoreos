@@ -417,6 +417,11 @@ void Area::processEventQueue() {
 
 		if        (e->type == Events::kEventMouseMove) {
 			hasMove = true;
+		} else if (e->type == Events::kEventMouseDown) {
+			if (e->button.button == SDL_BUTTON_LMASK) {
+				checkActive(e->button.x, e->button.y);
+				click(e->button.x, e->button.y);
+			}
 		} else if (e->type == Events::kEventKeyDown) {
 			if (e->key.keysym.sym == SDLK_TAB)
 				highlightAll(true);
@@ -457,16 +462,29 @@ void Area::setActive(Object *object) {
 		_activeObject->enter();
 }
 
-void Area::checkActive() {
+void Area::checkActive(int x, int y) {
 	if (!_loaded || _highlightAll)
 		return;
 
 	Common::StackLock lock(_mutex);
 
-	int x, y;
-	CursorMan.getPosition(x, y);
+	if ((x < 0) || (y < 0))
+		CursorMan.getPosition(x, y);
 
 	setActive(getObjectAt(x, y));
+}
+
+void Area::click(int x, int y) {
+	if (!_loaded)
+		return;
+
+	Common::StackLock lock(_mutex);
+
+	Object *o = getObjectAt(x, y);
+	if (!o)
+		return;
+
+	o->click();
 }
 
 void Area::highlightAll(bool enabled) {

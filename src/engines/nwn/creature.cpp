@@ -356,6 +356,8 @@ void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 		loadProperties(*blueprint); // Blueprint
 	loadProperties(instance);    // Instance
 
+	loadDLG();
+
 	// Position
 
 	setPosition(instance.getDouble("XPosition"),
@@ -420,6 +422,10 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 
 		_description = description.getString();
 	}
+
+	// Conversation
+
+	_conversation = gff.getString("Conversation", _conversation);
 
 	// Portrait
 

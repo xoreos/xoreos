@@ -35,6 +35,10 @@
 #include "common/types.h"
 #include "common/ustring.h"
 
+namespace Aurora {
+	class DLGFile;
+}
+
 namespace Engines {
 
 namespace NWN {
@@ -72,6 +76,8 @@ public:
 
 	virtual void highlight(bool enabled) = 0;
 
+	virtual void click();
+
 protected:
 	bool _loaded;
 
@@ -80,6 +86,10 @@ protected:
 	Common::UString _description;
 
 	Common::UString _portrait;
+
+	Common::UString _conversation;
+
+	Aurora::DLGFile *_dlg;
 
 	bool _static;
 	bool _usable;
@@ -90,6 +100,8 @@ protected:
 	float _orientation[3];
 
 	void clear();
+
+	void loadDLG();
 };
 
 } // End of namespace NWN

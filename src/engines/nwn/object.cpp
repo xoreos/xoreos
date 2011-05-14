@@ -27,13 +27,19 @@
  *  An object within a NWN area.
  */
 
+#include "common/util.h"
+
+#include "aurora/dlgfile.h"
+
+#include "engines/aurora/util.h"
+
 #include "engines/nwn/object.h"
 
 namespace Engines {
 
 namespace NWN {
 
-Object::Object() {
+Object::Object() : _dlg(0) {
 	clear();
 }
 
@@ -105,6 +111,11 @@ void Object::clear() {
 
 	_portrait.clear();
 
+	_conversation.clear();
+
+	delete _dlg;
+	_dlg = 0;
+
 	_static = false;
 	_usable = true;
 
@@ -116,6 +127,31 @@ void Object::clear() {
 	_orientation[0] = 0.0;
 	_orientation[1] = 0.0;
 	_orientation[2] = 0.0;
+}
+
+void Object::loadDLG() {
+	if (_dlg || _conversation.empty())
+		return;
+
+	try {
+		_dlg = new Aurora::DLGFile(_conversation);
+	} catch (...) {
+		warning("Failed to load DLG \"%s\" (object \"%s\")", _conversation.c_str(), _tag.c_str());
+		delete _dlg;
+		_dlg = 0;
+	}
+}
+
+void Object::click() {
+	Common::UString text, sound;
+
+	if (_dlg)
+		_dlg->getStart(text, sound);
+
+	if (!text.empty())
+		status("%s: \"%s\"", _name.c_str(), text.c_str());
+	if (!sound.empty())
+		playSound(sound, Sound::kSoundTypeVoice);
 }
 
 } // End of namespace NWN

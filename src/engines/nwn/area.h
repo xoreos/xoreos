@@ -181,11 +181,13 @@ private:
 	void playAmbientSound(Common::UString sound = "");
 
 
-	void checkActive();
+	void checkActive(int x = -1, int y = -1);
 	void setActive(Object *object);
 	Object *getObjectAt(int x, int y);
 
 	void highlightAll(bool enabled);
+
+	void click(int x, int y);
 
 
 	static Common::UString createDisplayName(const Common::UString &name);
