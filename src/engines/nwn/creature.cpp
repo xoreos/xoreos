@@ -271,7 +271,7 @@ void Creature::loadModel() {
 
 			TextureMan.clearNewPLTs();
 
-			_model = loadModelObject(_bodyParts[i].modelName);
+			_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].modelName);
 			if (!_model)
 				continue;
 

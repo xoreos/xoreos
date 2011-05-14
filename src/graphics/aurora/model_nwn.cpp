@@ -105,7 +105,10 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_NWN::ParserContext::ParserContext(const Common::UString &name) : mdl(0), state(0) {
+Model_NWN::ParserContext::ParserContext(const Common::UString &name,
+                                        const Common::UString &t) :
+	mdl(0), state(0), texture(t) {
+
 	mdl = ResMan.getResource(name, ::Aurora::kFileTypeMDL);
 	if (!mdl)
 		throw Common::Exception("No such MDL \"%s\"", name.c_str());
@@ -160,7 +163,10 @@ bool Model_NWN::ParserContext::findNode(const Common::UString &name,
 }
 
 
-Model_NWN::Model_NWN(const Common::UString &name, ModelType type) : Model(type) {
+Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
+                     const Common::UString &texture) :
+	Model(type) {
+
 	if (_type == kModelTypeGUIFront) {
 		// NWN GUI objects use 0.01 units / pixel
 		_modelScale[0] = _modelScale[1] = 100.0;
@@ -169,7 +175,7 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type) : Model(type) 
 
 	_fileName = name;
 
-	ParserContext ctx(name);
+	ParserContext ctx(name, texture);
 
 	if (ctx.isASCII)
 		loadASCII(ctx);
@@ -634,6 +640,9 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 		textureCount = 4;
 	}
 
+	if ((textureCount > 0) && !ctx.texture.empty())
+		textures[0] = ctx.texture;
+
 	textures.resize(textureCount);
 	loadTextures(textures);
 
@@ -916,6 +925,9 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 	if (!end)
 		throw Common::Exception("ModelNode_NWN_ASCII::load(): node without endnode");
+
+	if (!mesh.textures.empty() && !ctx.texture.empty())
+		mesh.textures[0] = ctx.texture;
 
 	processMesh(mesh);
 }

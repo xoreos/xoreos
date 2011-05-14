@@ -46,7 +46,7 @@ Graphics::Aurora::Model *NWNModelLoader::load(const Common::UString &resref,
 
 	Graphics::Aurora::Model *model = 0;
 	try {
-		model = new Graphics::Aurora::Model_NWN(resref, type);
+		model = new Graphics::Aurora::Model_NWN(resref, type, texture);
 	} catch (...) {
 		delete model;
 		throw;

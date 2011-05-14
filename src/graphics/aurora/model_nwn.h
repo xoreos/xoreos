@@ -48,7 +48,8 @@ class ModelNode_NWN_ASCII;
 /** A 3D model in the NWN MDL format. */
 class Model_NWN : public Model {
 public:
-	Model_NWN(const Common::UString &name, ModelType type = kModelTypeObject);
+	Model_NWN(const Common::UString &name, ModelType type = kModelTypeObject,
+	          const Common::UString &texture = "");
 	~Model_NWN();
 
 private:
@@ -59,8 +60,9 @@ private:
 
 		bool isASCII;
 
-		ModelNode *rootNode;
 		std::list<ModelNode *> nodes;
+
+		Common::UString texture;
 
 		uint32 offModelData;
 		uint32 offRawData;
@@ -71,7 +73,7 @@ private:
 		Common::StreamTokenizer *tokenize;
 		std::vector<uint32> anims;
 
-		ParserContext(const Common::UString &name);
+		ParserContext(const Common::UString &name, const Common::UString &t);
 		~ParserContext();
 
 		bool findNode(const Common::UString &name, ModelNode *&node) const;
