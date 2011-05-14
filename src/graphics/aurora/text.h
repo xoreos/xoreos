@@ -45,9 +45,8 @@ namespace Aurora {
 /** A text object. */
 class Text : public GUIFrontElement {
 public:
-	Text(const FontHandle &font, const Common::UString &str, float align = 0.0);
-	Text(const FontHandle &font, const Common::UString &str, float r, float g, float b, float a,
-	     float align = 0.0);
+	Text(const FontHandle &font, const Common::UString &str,
+	     float r = 1.0, float g = 1.0, float b = 1.0, float a = 1.0, float align = 0.0);
 	~Text();
 
 	const Common::UString &get() const;
@@ -81,12 +80,16 @@ private:
 	float _width;
 	float _height;
 
-	bool _hasColor;
 	float _r, _g, _b, _a;
 
 	float _align;
 
 	Common::UString _str;
+	ColorPositions  _colors;
+
+
+	void parseColors(const Common::UString &str, Common::UString &parsed,
+	                 ColorPositions &colors);
 };
 
 } // End of namespace Aurora

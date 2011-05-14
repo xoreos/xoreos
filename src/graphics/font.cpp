@@ -68,20 +68,20 @@ float Font::getHeight(const Common::UString &text) const {
 	return (lines * getHeight()) + ((lines - 1) * getLineSpacing());
 }
 
-void Font::draw(Common::UString text, float r, float g, float b, float a,
-                float align) const {
+void Font::draw(Common::UString text, const ColorPositions &colors,
+                float r, float g, float b, float a, float align) const {
 
 	glColor4f(r, g, b, a);
-	draw(text, align);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-}
 
-void Font::draw(Common::UString text, float align) const {
 	std::vector<Common::UString> lines;
 	float maxLength = split(text, lines);
 
 	// Move position to the top
 	glTranslatef(0.0, (lines.size() - 1) * (getHeight() + getLineSpacing()), 0.0);
+
+	uint32 position = 0;
+
+	ColorPositions::const_iterator color = colors.begin();
 
 	// Draw lines
 	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l) {
@@ -92,15 +92,31 @@ void Font::draw(Common::UString text, float align) const {
 		glTranslatef(roundf((maxLength - getLineWidth(*l)) * align), 0.0, 0.0);
 
 		// Draw line
-		for (Common::UString::iterator s = l->begin(); s != l->end(); ++s)
+		for (Common::UString::iterator s = l->begin(); s != l->end(); ++s, position++) {
+			// If we have color changes, apply them
+			while ((color != colors.end()) && (color->position <= position)) {
+				if (color->defaultColor)
+					glColor4f(r, g, b, a);
+				else
+					glColor4f(color->r, color->g, color->b, color->a);
+
+				++color;
+			}
+
 			draw(*s);
+		}
 
 		// Restore position to the start of the line
 		glPopMatrix();
 
 		// Move to the next line
 		glTranslatef(0.0, -(getHeight() + getLineSpacing()), 0.0);
+
+		// \n character
+		position++;
 	}
+
+	glColor4f(1.0, 1.0, 1.0, 1.0);
 }
 
 float Font::split(const Common::UString &line, std::vector<Common::UString> &lines,
@@ -116,108 +132,140 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 	// Wrap the line into several lines of at max maxWidth pixel length, breaking
 	// the line at font-specific word boundaries.
 
-	Common::UString::iterator lineStart = line.begin();
-	Common::UString::iterator lineEnd   = line.begin();
-
 	float length     = 0.0;
 	float wordLength = 0.0;
 	float lineLength = 0.0;
 
-	Common::UString::iterator p = line.begin();
-	while (p != line.end()) {
-		uint32 c = *p;
+	Common::UString currentWord;
+	Common::UString currentLine;
 
-		if (((c == '\n') || Common::UString::isSpace(c)) && (lineEnd != p)) {
-			// We can break and there's already something in the word buffer
+	Common::UString wordColor;
+	Common::UString lineColor;
 
-			if ((lineLength + wordLength) > maxWidth) {
-				// Adding the word to the line would overflow
+	std::vector<Common::UString> tokens;
+	Common::UString::splitTextTokens(line, tokens);
 
-				// Commit the line first
-				lines.push_back(Common::UString(lineStart, lineEnd));
+	bool plain = false;
+	for (std::vector<Common::UString>::iterator t = tokens.begin(); t != tokens.end(); ++t) {
+		plain = !plain;
+
+		// Color tokens always have length 0
+		if (!plain) {
+			if (((t->size() == 11) && t->beginsWith("<c") && t->endsWith(">")) ||
+			    (*t == "</c>")) {
+
+				currentWord += *t;
+				wordColor = *t;
+				continue;
+			}
+		}
+
+		for (Common::UString::iterator p = t->begin(); p != t->end(); ++p) {
+			uint32 c = *p;
+
+			if (((c == '\n') || Common::UString::isSpace(c)) && !currentWord.empty()) {
+				// We can break and there's already something in the word buffer
+
+				if ((lineLength + wordLength) > maxWidth) {
+					// Adding the word to the line would overflow
+
+					// Commit the line first
+					lines.push_back(currentLine);
+
+					length = MAX(length, lineLength);
+
+					currentLine.clear();
+					lineLength = 0.0;
+
+					currentLine += lineColor;
+				}
+
+				// Add the word to the line
+
+				currentLine += currentWord;
+				lineLength  += wordLength;
+
+				lineColor = wordColor;
+
+				currentWord.clear();
+				wordLength = 0.0;
+			}
+
+			float charWidth = getWidth(c);
+
+			if ((wordLength + charWidth) > maxWidth) {
+				// The word itself overflows the max width
+
+				// Commit the line
+				if (!currentLine.empty())
+					lines.push_back(currentLine);
+
+				// Commit the word fragment in a new line
+				lines.push_back(lineColor + currentWord);
+
+				length = MAX(length, MAX(lineLength, wordLength));
+
+				currentLine.clear();
+				lineLength = 0.0;
+
+				currentWord.clear();
+				wordLength = 0.0;
+
+				lineColor = wordColor;
+				currentLine += lineColor;
+			}
+
+			if (c == '\n') {
+				// Mandatory line break
+
+				// Commit the line
+				lines.push_back(currentLine);
 
 				length = MAX(length, lineLength);
 
-				if (c == '\n')
-					lineEnd++;
-
-				lineStart = lineEnd;
+				currentLine.clear();
 				lineLength = 0.0;
+
+				currentWord.clear();
+				wordLength = 0.0;
+
+				currentLine += lineColor;
+			} else {
+				// Add the character to the word
+
+				wordLength += charWidth;
+
+				currentWord += c;
 			}
 
-			// Add the word to the line
-
-			lineEnd = p;
-
-			lineLength += wordLength;
-			wordLength = 0.0;
 		}
 
-		float charWidth = getWidth(c);
-
-		if ((wordLength + charWidth) > maxWidth) {
-			// The word itself overflows the max width
-
-			if (lineEnd != lineStart)
-				// Commit the line
-				lines.push_back(Common::UString(lineStart, lineEnd));
-			// Commit the word fragment in a new line
-			lines.push_back(Common::UString(lineEnd, p));
-
-			length = MAX(length, MAX(lineLength, wordLength));
-
-			lineStart = p;
-			lineEnd   = p;
-
-			wordLength = 0.0;
-			lineLength = 0.0;
-		}
-
-		if (c == '\n') {
-			// Mandatory line break
-
-			// Commit the line
-			lines.push_back(Common::UString(lineStart, lineEnd));
-
-			length = MAX(length, lineLength);
-
-			lineEnd++;
-
-			lineStart = lineEnd;
-			lineLength = 0.0;
-			wordLength = 0.0;
-		}
-
-		// Add the character to the word
-
-		wordLength += charWidth;
-
-		++p;
 	}
 
-	if (lineEnd != p) {
+	if (!currentWord.empty()) {
 		// We've got a dangling word fragment
 
 		if ((lineLength + wordLength) > maxWidth) {
 			// The dangling word would overflow the line, commit that first
-			lines.push_back(Common::UString(lineStart, lineEnd));
+			lines.push_back(currentLine);
 
 			length = MAX(length, lineLength);
 
-			lineStart = lineEnd;
+			currentLine.clear();
 			lineLength = 0.0;
+
+			currentLine += lineColor;
 		}
 
 		// Add the dangling word to the line
 
-		lineEnd = p;
-
-		lineLength += wordLength;
+		currentLine += currentWord;
+		lineLength  += wordLength;
 	}
 
-	if (lineEnd != lineStart) {
+	if (!currentLine.empty()) {
 		// We've got a dangling line, commit it
-		lines.push_back(Common::UString(lineStart, lineEnd));
+		lines.push_back(currentLine);
 
 		length = MAX(length, lineLength);
 	}

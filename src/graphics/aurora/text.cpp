@@ -38,17 +38,9 @@ namespace Graphics {
 
 namespace Aurora {
 
-Text::Text(const FontHandle &font, const Common::UString &str, float align) :
-	_font(font), _x(0.0), _y(0.0), _hasColor(false), _align(align) {
-
-	set(str);
-
-	_distance = -FLT_MAX;
-}
-
 Text::Text(const FontHandle &font, const Common::UString &str,
 		float r, float g, float b, float a, float align) :
-	_font(font), _x(0.0), _y(0.0), _hasColor(true), _r(r), _g(g), _b(b), _a(a), _align(align) {
+	_font(font), _x(0.0), _y(0.0), _r(r), _g(g), _b(b), _a(a), _align(align) {
 
 	set(str);
 
@@ -62,7 +54,7 @@ Text::~Text() {
 void Text::set(const Common::UString &str) {
 	GfxMan.lockFrame();
 
-	_str = str;
+	parseColors(str, _str, _colors);
 
 	const Font &font = _font.getFont();
 
@@ -77,7 +69,6 @@ void Text::set(const Common::UString &str) {
 void Text::setColor(float r, float g, float b, float a) {
 	GfxMan.lockFrame();
 
-	_hasColor = true;
 	_r = r;
 	_g = g;
 	_b = b;
@@ -87,11 +78,7 @@ void Text::setColor(float r, float g, float b, float a) {
 }
 
 void Text::unsetColor() {
-	GfxMan.lockFrame();
-
-	_hasColor = false;
-
-	GfxMan.unlockFrame();
+	setColor(1.0, 1.0, 1.0, 1.0);
 }
 
 const Common::UString &Text::get() const {
@@ -142,10 +129,7 @@ void Text::render(RenderPass pass) {
 
 	glTranslatef(_x, _y, 0.0);
 
-	if (_hasColor)
-		_font.getFont().draw(_str, _r, _g, _b, _a, _align);
-	else
-		_font.getFont().draw(_str, _align);
+	_font.getFont().draw(_str, _colors, _r, _g, _b, _a, _align);
 }
 
 bool Text::isIn(float x, float y) const {
@@ -156,6 +140,90 @@ bool Text::isIn(float x, float y) const {
 		return false;
 
 	return true;
+}
+
+void Text::parseColors(const Common::UString &str, Common::UString &parsed,
+                       ColorPositions &colors) {
+
+	parsed.clear();
+	colors.clear();
+
+	ColorPosition color;
+
+	// Split by text tokens. They will have a strictly interleaving plain/token order
+	std::vector<Common::UString> tokens;
+	Common::UString::splitTextTokens(str, tokens);
+
+	bool plain = false;
+	for (std::vector<Common::UString>::iterator t = tokens.begin(); t != tokens.end(); ++t) {
+		plain = !plain;
+
+		if (plain) {
+			// Plain text, add it verbatim
+
+			parsed += *t;
+			continue;
+		}
+
+		if ((t->size() == 11) && t->beginsWith("<c") && t->endsWith(">")) {
+			// Color start token
+
+			uint8 colorValue[4];
+
+			Common::UString::iterator it = t->begin();
+
+			// Skip "<c"
+			++it;
+			++it;
+
+			for (int i = 0; i < 8; i++, ++it) {
+				uint32 c = *it;
+
+				// Convert the hex values into true nibble values
+				if      ((c >= '0') && (c <= '9'))
+					c =  c - '0';
+				else if ((c >= 'A') && (c <= 'F'))
+					c = (c - 'A') + 10;
+				else if ((c >= 'f') && (c <= 'f'))
+					c = (c - 'a') + 10;
+				else
+					c = 15;
+
+				// Merge two nibbles into one color value byte
+				uint8 &value = colorValue[i / 2];
+				bool  high   = (i % 2) == 0;
+
+				if (high)
+					value  = c << 4;
+				else
+					value |= c;
+			}
+
+			// Add the color change
+
+			color.position     = parsed.size();
+			color.defaultColor = false;
+
+			color.r = colorValue[0] / 255.0;
+			color.g = colorValue[1] / 255.0;
+			color.b = colorValue[2] / 255.0;
+			color.a = colorValue[3] / 255.0;
+
+			colors.push_back(color);
+
+		} else if (*t == "</c>") {
+			// Color end token, add a "uncolor" / default color change
+
+			color.position     = parsed.size();
+			color.defaultColor = true;
+
+			colors.push_back(color);
+
+		} else
+			// Ignore non-color tokens
+			parsed += *t;
+
+	}
 }
 
 } // End of namespace Aurora

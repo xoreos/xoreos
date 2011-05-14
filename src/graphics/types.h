@@ -30,9 +30,13 @@
 #ifndef GRAPHICS_TYPES_H
 #define GRAPHICS_TYPES_H
 
+#include <vector>
+
 #include <SDL.h>
 
 #include "glew/glew.h"
+
+#include "common/types.h"
 
 namespace Graphics {
 
@@ -84,6 +88,19 @@ enum RenderPass {
 	kRenderPassTransparent = 1, ///< Only render transparent parts.
 	kRenderPassAll         = 2, ///< Render all parts.
 };
+
+struct ColorPosition {
+	uint32 position;
+
+	bool defaultColor;
+
+	float r;
+	float g;
+	float b;
+	float a;
+};
+
+typedef std::vector<ColorPosition> ColorPositions;
 
 } // End of namespace Graphics
 
