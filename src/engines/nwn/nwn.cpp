@@ -335,6 +335,7 @@ void NWNEngine::initCursors() {
 }
 
 void NWNEngine::initConfig() {
+	ConfigMan.setInt(Common::kConfigRealmDefault, "menufogcount" ,   4);
 	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack"  ,   1);
 	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty"   ,   0);
 	ConfigMan.setInt(Common::kConfigRealmDefault, "feedbackmode" ,   2);
@@ -361,6 +362,7 @@ void NWNEngine::initGameConfig() {
 }
 
 void NWNEngine::checkConfig() {
+	checkConfigInt("menufogcount" ,   0,    5,   4);
 	checkConfigInt("texturepack"  ,   0,    3,   1);
 	checkConfigInt("difficulty"   ,   0,    3,   0);
 	checkConfigInt("feedbackmode" ,   0,    2,   2);

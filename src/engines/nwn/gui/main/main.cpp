@@ -132,7 +132,7 @@ void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "NewButton") {
 		createNew();
 
-		NewGameFogs fogs(4);
+		NewGameFogs fogs(ConfigMan.getInt("menufogcount", 4));
 		fogs.show();
 
 		if (sub(*_new, 0, false) == 2) {
