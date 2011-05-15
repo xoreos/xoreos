@@ -159,7 +159,10 @@ uint32 Creature::getGender() const {
 }
 
 bool Creature::isFemale() const {
-	return _gender == 1;
+	// Male and female are hardcoded.  Other genders (none, both, other)
+	// count as male when it comes to tokens in text strings.
+
+	return _gender == Aurora::kGenderFemale;
 }
 
 bool Creature::isPC() const {

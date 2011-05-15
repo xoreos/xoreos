@@ -283,8 +283,8 @@ enum GameID {
 };
 
 enum Gender {
-	kGenderMale,
-	kGenderFemale
+	kGenderMale   = 0,
+	kGenderFemale = 1
 };
 
 enum Language {

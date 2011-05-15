@@ -90,7 +90,7 @@ public:
 
 	/** Get the creature's gender. */
 	uint32 getGender() const;
-	/** Is the creature female? */
+	/** Is the creature female, do we need female dialogs tokens? */
 	bool isFemale() const;
 
 	/** Return the creature's race as needed in conversations, e.g. "Dwarven". */
