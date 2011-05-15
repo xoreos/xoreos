@@ -10,6 +10,7 @@ noinst_HEADERS = engine.h \
                  gamethread.h \
                  aurora/util.h \
                  aurora/resources.h \
+                 aurora/tokenman.h \
                  aurora/modelloader.h \
                  aurora/model.h \
                  aurora/widget.h \
@@ -21,6 +22,7 @@ libengines_la_SOURCES = engine.cpp \
                         gamethread.cpp \
                         aurora/util.cpp \
                         aurora/resources.cpp \
+                        aurora/tokenman.cpp \
                         aurora/modelloader.cpp \
                         aurora/model.cpp \
                         aurora/widget.cpp \

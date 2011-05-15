@@ -49,6 +49,7 @@
 #include "engines/enginemanager.h"
 #include "engines/engineprobe.h"
 
+#include "engines/aurora/tokenman.h"
 #include "engines/aurora/model.h"
 
 // The engines
@@ -182,6 +183,8 @@ void EngineManager::cleanup() const {
 		FontMan.clear();
 		CursorMan.clear();
 		TextureMan.clear();
+
+		TokenMan.clear();
 
 		TalkMan.clear();
 		TwoDAReg.clear();
