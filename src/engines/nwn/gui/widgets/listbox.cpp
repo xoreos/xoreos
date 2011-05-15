@@ -405,7 +405,7 @@ void WidgetListBox::add(WidgetListItem *item) {
 	assert(_locked);
 
 	if (!_items.empty())
-		if (item->getHeight() != _items.front()->getHeight())
+		if (round(item->getHeight()) != round(_items.front()->getHeight()))
 			throw Common::Exception("WidgetListBox item sizes mismatch");
 
 	item->_itemNumber = _items.size();
