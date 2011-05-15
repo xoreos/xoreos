@@ -37,6 +37,7 @@
 #include "sound/sound.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/tokenman.h"
 
 #include "engines/nwn/types.h"
 #include "engines/nwn/object.h"
@@ -208,6 +209,8 @@ void Object::click() {
 			isSSF = true;
 		}
 	}
+
+	TokenMan.parse(text);
 
 	if (!text.empty())
 		status("%s: \"%s\"", _name.c_str(), text.c_str());

@@ -45,6 +45,7 @@
 #include "graphics/aurora/fps.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/tokenman.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
@@ -350,6 +351,13 @@ void NWNEngine::initGameConfig() {
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_extraModuleDir",
 		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
+
+	TokenMan.set("<StartCheck>"    , "<cFF0000FF>");
+	TokenMan.set("<StartAction>"   , "<c00FF00FF>");
+	TokenMan.set("<StartHighlight>", "<c0000FFFF>");
+	TokenMan.set("</Start>"        , "</c>");
+
+	// TODO: <PlayerName>
 }
 
 void NWNEngine::checkConfig() {

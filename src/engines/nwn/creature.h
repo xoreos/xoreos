@@ -88,8 +88,33 @@ public:
 	/** Return the creature's last name. */
 	const Common::UString &getLastName() const;
 
+	/** Get the creature's gender. */
+	uint32 getGender() const;
+	/** Is the creature female? */
+	bool isFemale() const;
+
+	/** Return the creature's race as needed in conversations, e.g. "Dwarven". */
+	const Common::UString &getConvRace() const;
+	/** Return the creature's lowercase race as needed in conversations, e.g. "dwarven". */
+	const Common::UString &getConvrace() const;
+	/** Return the creature's race plural as needed in conversations, e.g. "Dwarves". */
+	const Common::UString &getConvRaces() const;
+
+	/** Get the creature's subrace. */
+	const Common::UString &getSubRace() const;
+
+	/** Return the creature's class as needed in conversations, e.g. "Barbarian". */
+	const Common::UString &getConvClass() const;
+	/** Return the creature's class as needed in conversations, e.g. "barbarian". */
+	const Common::UString &getConvclass() const;
+	/** Return the pcreature's class plural as needed in conversations, e.g. "Barbarians". */
+	const Common::UString &getConvClasses() const;
+
 	/** Return the creature's class description. */
 	Common::UString getClassString() const;
+
+	/** Get the creature's deity. */
+	const Common::UString &getDeity() const;
 
 	bool isPC() const; ///< Is the creature a player character?
 	bool isDM() const; ///< Is the creature a dungeon master?
@@ -150,6 +175,8 @@ private:
 	uint32 _gender;
 	uint32 _race;
 
+	Common::UString _subRace;
+
 	bool _isPC;
 	bool _isDM;
 
@@ -162,6 +189,8 @@ private:
 	int32 _currentHP;
 
 	std::vector<Class> _classes;
+
+	Common::UString _deity;
 
 	uint32 _appearanceID;
 	uint32 _phenotype;

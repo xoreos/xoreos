@@ -109,6 +109,8 @@ void Creature::clear() {
 	_gender = Aurora::kFieldIDInvalid;
 	_race   = Aurora::kFieldIDInvalid;
 
+	_subRace.clear();
+
 	_isPC = false;
 	_isDM = false;
 
@@ -117,6 +119,8 @@ void Creature::clear() {
 	_xp = 0;
 
 	_classes.clear();
+
+	_deity.clear();
 
 	_lastChangedGUIDisplay = 0;
 
@@ -148,6 +152,14 @@ const Common::UString &Creature::getFirstName() const {
 
 const Common::UString &Creature::getLastName() const {
 	return _lastName;
+}
+
+uint32 Creature::getGender() const {
+	return _gender;
+}
+
+bool Creature::isFemale() const {
+	return _gender == 1;
 }
 
 bool Creature::isPC() const {
@@ -439,6 +451,9 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	// Race
 	_race = gff.getUint("Race", _race);
 
+	// Subrace
+	_subRace = gff.getString("Subrace", _subRace);
+
 	// PC and DM
 	_isPC = gff.getBool("IsPC", _isPC);
 	_isDM = gff.getBool("IsDM", _isDM);
@@ -464,6 +479,8 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 			_classes.back().level   = cClass.getUint("ClassLevel");
 		}
 	}
+
+	_deity = gff.getString("Deity", _deity);
 
 	// Health
 	if (gff.hasField("HitPoints")) {
@@ -499,6 +516,53 @@ void Creature::loadPortrait(const Aurora::GFFStruct &gff) {
 	}
 
 	_portrait = gff.getString("Portrait", _portrait);
+}
+
+const Common::UString &Creature::getConvRace() const {
+	const uint32 strRef = TwoDAReg.get("racialtypes").getRow(_race).getInt("ConverName");
+
+	return TalkMan.getString(strRef);
+}
+
+const Common::UString &Creature::getConvrace() const {
+	const uint32 strRef = TwoDAReg.get("racialtypes").getRow(_race).getInt("ConverNameLower");
+
+	return TalkMan.getString(strRef);
+}
+
+const Common::UString &Creature::getConvRaces() const {
+	const uint32 strRef = TwoDAReg.get("racialtypes").getRow(_race).getInt("NamePlural");
+
+	return TalkMan.getString(strRef);
+}
+
+const Common::UString &Creature::getSubRace() const {
+	return _subRace;
+}
+
+const Common::UString &Creature::getConvClass() const {
+	const uint32 classID = _classes.front().classID;
+	const uint32 strRef  = TwoDAReg.get("classes").getRow(classID).getInt("Name");
+
+	return TalkMan.getString(strRef);
+}
+
+const Common::UString &Creature::getConvclass() const {
+	const uint32 classID = _classes.front().classID;
+	const uint32 strRef  = TwoDAReg.get("classes").getRow(classID).getInt("Lower");
+
+	return TalkMan.getString(strRef);
+}
+
+const Common::UString &Creature::getConvClasses() const {
+	const uint32 classID = _classes.front().classID;
+	const uint32 strRef  = TwoDAReg.get("classes").getRow(classID).getInt("Plural");
+
+	return TalkMan.getString(strRef);
+}
+
+const Common::UString &Creature::getDeity() const {
+	return _deity;
 }
 
 Common::UString Creature::getClassString() const {

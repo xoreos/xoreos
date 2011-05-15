@@ -118,6 +118,9 @@ private:
 	void loadTexturePack(); ///< Load the texture pack.
 	void loadArea();        ///< Load a new area.
 
+	void setPCTokens();
+	void removePCTokens();
+
 	bool enter(); ///< Enter the currently loaded module.
 
 	void handleEvents();

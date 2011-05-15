@@ -36,6 +36,7 @@
 #include "events/events.h"
 
 #include "aurora/2dareg.h"
+#include "aurora/talkman.h"
 #include "aurora/erffile.h"
 
 #include "graphics/camera.h"
@@ -44,6 +45,7 @@
 #include "graphics/aurora/model.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/tokenman.h"
 #include "engines/aurora/resources.h"
 
 #include "engines/nwn/types.h"
@@ -52,6 +54,25 @@
 #include "engines/nwn/console.h"
 
 #include "engines/nwn/gui/ingame/ingame.h"
+
+static const uint32 kStrMaleFemale =  156;
+static const uint32 kStrmalefemale = 4924;
+static const uint32 kStrBoyGirl    = 4860;
+static const uint32 kStrboygirl    = 4862;
+static const uint32 kStrBroSis     = 4864;
+static const uint32 kStrbrosis     = 4866;
+static const uint32 kStrHeShe      = 4869;
+static const uint32 kStrheshe      = 4871;
+static const uint32 kStrHimHer     = 4873;
+static const uint32 kStrhimher     = 4875;
+static const uint32 kStrHishis     = 4877;
+static const uint32 kStrHershers   = 4879;
+static const uint32 kStrLadLass    = 4881;
+static const uint32 kStrladlass    = 4883;
+static const uint32 kStrLordLady   = 4885;
+static const uint32 kStrlordlady   = 4887;
+static const uint32 kStrBastard    = 1757;
+static const uint32 kStrBitch      = 1739;
 
 namespace Engines {
 
@@ -124,6 +145,86 @@ void Module::checkHAKs() {
 			throw Common::Exception("Required hak \"%s\" does not exist", h->c_str());
 }
 
+void Module::setPCTokens() {
+	TokenMan.set("<FullName>" , _pc.getName());
+	TokenMan.set("<FirstName>", _pc.getFirstName());
+	TokenMan.set("<LastName>" , _pc.getLastName());
+
+	TokenMan.set("<Race>" , _pc.getConvRace());
+	TokenMan.set("<race>" , _pc.getConvrace());
+	TokenMan.set("<Races>", _pc.getConvRaces());
+
+	TokenMan.set("<Subrace>", _pc.getSubRace());
+
+	TokenMan.set("<Class>"  , _pc.getConvClass());
+	TokenMan.set("<class>"  , _pc.getConvclass());
+	TokenMan.set("<Classes>", _pc.getConvClasses());
+
+	TokenMan.set("<Deity>", _pc.getDeity());
+
+	TokenMan.set("<Male/Female>"   , TalkMan.getString(kStrMaleFemale + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<male/female>"   , TalkMan.getString(kStrmalefemale + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<Boy/Girl>"      , TalkMan.getString(kStrBoyGirl    + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<boy/girl>"      , TalkMan.getString(kStrboygirl    + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<Brother/Sister>", TalkMan.getString(kStrBroSis     + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<brother/sister>", TalkMan.getString(kStrbrosis     + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<He/She>"        , TalkMan.getString(kStrHeShe      + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<he/she>"        , TalkMan.getString(kStrheshe      + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<Him/Her>"       , TalkMan.getString(kStrHimHer     + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<him/her>"       , TalkMan.getString(kStrhimher     + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<His/his>"       , TalkMan.getString(kStrHishis     + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<Hers/hers>"     , TalkMan.getString(kStrHershers   + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<Lad/Lass>"      , TalkMan.getString(kStrLadLass    + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<lad/lass>"      , TalkMan.getString(kStrladlass    + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<Lord/Lady>"     , TalkMan.getString(kStrLordLady   + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<lord/lady>"     , TalkMan.getString(kStrlordlady   + (_pc.isFemale() ? 1 : 0)));
+
+	TokenMan.set("<bitch/bastard>", TalkMan.getString(_pc.isFemale() ? kStrBitch : kStrBastard));
+
+	// TODO: <Level>
+	// TODO: <Alignment>, <alignment>
+	// TODO: <Good/Evil>, <good/evil>
+	// TODO: <Lawful/Chaotic>, <lawful/chaotic>, <Law/Chaos>, <law/chaos>,
+	// TODO: <GameTime>. <GameYear>, <Day/Night>, <day/night>, <QuarterDay>, <quarterday>
+}
+
+void Module::removePCTokens() {
+	TokenMan.remove("<FullName>");
+	TokenMan.remove("<FirstName>");
+	TokenMan.remove("<LastName>");
+
+	TokenMan.remove("<Race>");
+	TokenMan.remove("<race>");
+	TokenMan.remove("<Races>");
+
+	TokenMan.remove("<Subrace>");
+
+	TokenMan.remove("<Class>");
+	TokenMan.remove("<class>");
+	TokenMan.remove("<Classes>");
+
+	TokenMan.remove("<Deity>");
+
+	TokenMan.remove("<Male/Female>");
+	TokenMan.remove("<male/female>");
+	TokenMan.remove("<Boy/Girl>");
+	TokenMan.remove("<boy/girl>");
+	TokenMan.remove("<Brother/Sister>");
+	TokenMan.remove("<brother/sister>");
+	TokenMan.remove("<He/She>");
+	TokenMan.remove("<he/she>");
+	TokenMan.remove("<Him/Her>");
+	TokenMan.remove("<him/her>");
+	TokenMan.remove("<His/his>");
+	TokenMan.remove("<Hers/hers>");
+	TokenMan.remove("<Lad/Lass>");
+	TokenMan.remove("<lad/lass>");
+	TokenMan.remove("<Lord/Lady>");
+	TokenMan.remove("<lord/lady>");
+
+	TokenMan.remove("<bitch/bastard>");
+}
+
 bool Module::usePC(const CharacterID &c) {
 	unloadPC();
 
@@ -131,6 +232,8 @@ bool Module::usePC(const CharacterID &c) {
 		return false;
 
 	_pc = *c;
+
+	setPCTokens();
 
 	_hasPC = true;
 	return true;
@@ -335,6 +438,8 @@ void Module::unloadModule() {
 }
 
 void Module::unloadPC() {
+	removePCTokens();
+
 	_pc.clear();
 
 	_hasPC = false;
