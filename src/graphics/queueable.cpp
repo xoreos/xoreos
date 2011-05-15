@@ -46,19 +46,25 @@ bool Queueable::operator<(const Queueable &q) const {
 }
 
 void Queueable::addToQueue(QueueType queue) {
-	if (_isInQueue[queue])
-		return;
+	QueueMan.lockQueue(queue);
 
-	_queueRef[queue] = QueueMan.addToQueue(queue, *this);
-	_isInQueue[queue] = true;
+	if (!_isInQueue[queue]) {
+		_queueRef[queue] = QueueMan.addToQueue(queue, *this);
+		_isInQueue[queue] = true;
+	}
+
+	QueueMan.unlockQueue(queue);
 }
 
 void Queueable::removeFromQueue(QueueType queue) {
-	if (!_isInQueue[queue])
-		return;
+	QueueMan.lockQueue(queue);
 
-	QueueMan.removeFromQueue(queue, _queueRef[queue]);
-	_isInQueue[queue] = false;
+	if (_isInQueue[queue]) {
+		QueueMan.removeFromQueue(queue, _queueRef[queue]);
+		_isInQueue[queue] = false;
+	}
+
+	QueueMan.unlockQueue(queue);
 }
 
 bool Queueable::isInQueue(QueueType queue) const {
@@ -85,7 +91,11 @@ void Queueable::removeFromAll() {
 }
 
 void Queueable::kickedOut(QueueType queue) {
+	QueueMan.lockQueue(queue);
+
 	_isInQueue[queue] = false;
+
+	QueueMan.unlockQueue(queue);
 }
 
 } // End of namespace Graphics
