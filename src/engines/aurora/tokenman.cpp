@@ -56,6 +56,12 @@ void TokenManager::remove(const Common::UString &token) {
 }
 
 void TokenManager::parse(Common::UString &str) const {
+	Common::UString parsed = parse((const Common::UString &) str);
+
+	str.swap(parsed);
+}
+
+Common::UString TokenManager::parse(const Common::UString &str) const {
 	Common::UString parsed;
 
 	std::vector<Common::UString> tokens;
@@ -74,7 +80,7 @@ void TokenManager::parse(Common::UString &str) const {
 		plain = !plain;
 	}
 
-	str.swap(parsed);
+	return parsed;
 }
 
 } // End of namespace Engines

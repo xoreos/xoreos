@@ -53,6 +53,8 @@ public:
 
 	/** Parse a string for tokens, replacing them with their values. */
 	void parse(Common::UString &str) const;
+	/** Parse a string for tokens, replacing them with their values. */
+	Common::UString parse(const Common::UString &str) const;
 
 private:
 	typedef std::map<Common::UString, Common::UString> TokenMap;
