@@ -48,12 +48,14 @@ class Module;
 
 class IngameMainMenu;
 
+class Object;
 class Creature;
 
 class CharacterInfo;
 class Quickbar;
 class Quickchat;
 class Compass;
+class Dialog;
 
 /** The NWN ingame GUI elements. */
 class IngameGUI {
@@ -75,12 +77,17 @@ public:
 	/** Update the party member. */
 	void updatePartyMember(uint partyMember, const Creature &creature);
 
+	void startConversation(const Common::UString &conv, Creature &pc, Object &obj);
+	void stopConversation();
+
 private:
 	IngameMainMenu *_main; ///< The ingame main menu.
 
 	Quickbar  *_quickbar;  ///< The quick bar.
 	Quickchat *_quickchat; ///< The quick chat.
 	Compass   *_compass;   ///< The compass.
+
+	Dialog *_dialog; ///< The current dialog.
 
 	/** The time the compass was changed last. */
 	uint32 _lastCompassChange;

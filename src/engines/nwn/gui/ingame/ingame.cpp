@@ -35,6 +35,7 @@
 #include "engines/nwn/gui/ingame/quickchat.h"
 #include "engines/nwn/gui/ingame/compass.h"
 #include "engines/nwn/gui/ingame/partyleader.h"
+#include "engines/nwn/gui/ingame/dialog.h"
 
 namespace Engines {
 
@@ -52,10 +53,14 @@ IngameGUI::IngameGUI(Module &module) : _lastCompassChange(0) {
 
 	_lastPartyMemberChange.resize(1);
 	_lastPartyMemberChange[0] = 0;
+
+	_dialog = 0;
 }
 
 IngameGUI::~IngameGUI() {
 	hide();
+
+	delete _dialog;
 
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		delete *p;
@@ -82,9 +87,15 @@ void IngameGUI::show() {
 
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->show();
+
+	if (_dialog)
+		_dialog->show();
 }
 
 void IngameGUI::hide() {
+	if (_dialog)
+		_dialog->hide();
+
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->hide();
 
@@ -100,6 +111,11 @@ void IngameGUI::addEvent(const Events::Event &event) {
 	_compass->addEvent(event);
 	_quickchat->addEvent(event);
 	_quickbar->addEvent(event);
+
+	/*
+	if (_dialog)
+		_dialog->addEvent(event);
+	*/
 }
 
 void IngameGUI::processEventQueue() {
@@ -109,6 +125,11 @@ void IngameGUI::processEventQueue() {
 	_compass->processEventQueue();
 	_quickchat->processEventQueue();
 	_quickbar->processEventQueue();
+
+	/*
+	if (_dialog)
+		_dialog->processEventQueue();
+	*/
 }
 
 void IngameGUI::setPortrait(uint partyMember, const Common::UString &portrait) {
@@ -152,6 +173,28 @@ void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature) {
 	setHealth  (partyMember, creature.getCurrentHP(), creature.getMaxHP());
 
 	_lastPartyMemberChange[partyMember] = lastPartyMemberChange;
+}
+
+void IngameGUI::startConversation(const Common::UString &conv, Creature &pc, Object &obj) {
+	stopConversation();
+
+	if (conv.empty())
+		return;
+
+	_dialog = new Dialog(conv, pc, obj);
+
+	_dialog->show();
+}
+
+void IngameGUI::stopConversation() {
+	if (!_dialog)
+		return;
+
+	_dialog->hide();
+
+	delete _dialog;
+
+	_dialog = 0;
 }
 
 } // End of namespace NWN
