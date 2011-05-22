@@ -1,5 +1,7 @@
 include $(top_srcdir)/Makefile.common
 
+SUBDIRS = nwscript
+
 noinst_LTLIBRARIES = libaurora.la
 
 noinst_HEADERS = types.h \
@@ -52,3 +54,5 @@ libaurora_la_SOURCES = error.cpp \
                        lytfile.cpp \
                        visfile.cpp \
                        pefile.cpp
+
+libaurora_la_LIBADD = nwscript/libnwscript.la

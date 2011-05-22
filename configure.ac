@@ -217,6 +217,7 @@ AC_OUTPUT(utf8cpp/Makefile \
           src/sound/decoders/Makefile \
           src/events/Makefile \
           src/aurora/Makefile \
+          src/aurora/nwscript/Makefile \
           src/engines/Makefile \
           src/engines/nwn/Makefile \
           src/engines/nwn2/Makefile \
