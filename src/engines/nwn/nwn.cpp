@@ -54,6 +54,7 @@
 #include "engines/nwn/charstore.h"
 #include "engines/nwn/console.h"
 #include "engines/nwn/module.h"
+#include "engines/nwn/scriptfuncs.h"
 
 #include "engines/nwn/gui/legal.h"
 #include "engines/nwn/gui/main/main.h"
@@ -110,7 +111,9 @@ Engines::Engine *NWNEngineProbe::createEngine() const {
 }
 
 
-NWNEngine::NWNEngine() : _hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0) {
+NWNEngine::NWNEngine() : _hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0),
+	_scriptFuncs(0) {
+
 }
 
 NWNEngine::~NWNEngine() {
@@ -167,6 +170,8 @@ void NWNEngine::init() {
 		return;
 
 	initGameConfig();
+
+	_scriptFuncs = new ScriptFunctions();
 }
 
 void NWNEngine::initResources() {
@@ -372,6 +377,7 @@ void NWNEngine::checkConfig() {
 void NWNEngine::deinit() {
 	CharacterStore::destroy();
 
+	delete _scriptFuncs;
 	delete _fps;
 }
 
@@ -408,6 +414,7 @@ void NWNEngine::mainMenuLoop() {
 	Console console;
 	Module module(console);
 
+	_scriptFuncs->setModule(&module);
 	console.setModule(&module);
 
 	while (!EventMan.quitRequested()) {
@@ -444,6 +451,7 @@ void NWNEngine::mainMenuLoop() {
 		module.clear();
 	}
 
+	_scriptFuncs->setModule(0);
 	console.setModule();
 
 	stopMenuMusic();

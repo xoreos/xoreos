@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libnwn.la
 noinst_HEADERS = nwn.h \
                  types.h \
                  modelloader.h \
+                 scriptfuncs.h \
                  ifofile.h \
                  creature.h \
                  charstore.h \
@@ -63,12 +64,14 @@ noinst_HEADERS = nwn.h \
                  gui/ingame/quickchat.h \
                  gui/ingame/compass.h \
                  gui/ingame/charinfo.h \
-                 gui/ingame/partyleader.h
+                 gui/ingame/partyleader.h \
+                 gui/ingame/dialog.h
 
 
 libnwn_la_SOURCES = nwn.cpp \
                     types.cpp \
                     modelloader.cpp \
+                    scriptfuncs.cpp \
                     ifofile.cpp \
                     creature.cpp \
                     charstore.cpp \
@@ -128,4 +131,5 @@ libnwn_la_SOURCES = nwn.cpp \
                     gui/ingame/quickchat.cpp \
                     gui/ingame/compass.cpp \
                     gui/ingame/charinfo.cpp \
-                    gui/ingame/partyleader.cpp
+                    gui/ingame/partyleader.cpp \
+                    gui/ingame/dialog.cpp

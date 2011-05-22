@@ -53,6 +53,8 @@ namespace Engines {
 
 namespace NWN {
 
+class ScriptFunctions;
+
 class NWNEngineProbe : public Engines::EngineProbe {
 public:
 	NWNEngineProbe();
@@ -92,6 +94,9 @@ private:
 	Graphics::Aurora::FPS *_fps;
 
 	Sound::ChannelHandle _menuMusic;
+
+	ScriptFunctions *_scriptFuncs;
+
 
 	void init();
 

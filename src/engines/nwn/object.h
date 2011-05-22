@@ -35,10 +35,11 @@
 #include "common/types.h"
 #include "common/ustring.h"
 
+#include "aurora/nwscript/object.h"
+
 #include "sound/types.h"
 
 namespace Aurora {
-	class DLGFile;
 	class SSFFile;
 }
 
@@ -47,19 +48,24 @@ namespace Engines {
 namespace NWN {
 
 /** An object within a NWN area. */
-class Object {
+class Object : public Aurora::NWScript::Object {
 public:
 	Object();
 	virtual ~Object();
 
+	bool loaded() const;
+
 	virtual void show() = 0;
 	virtual void hide() = 0;
 
-	const Common::UString &getTag() const;
 	const Common::UString &getName() const;
 	const Common::UString &getDescription() const;
 
 	const Common::UString &getPortrait() const;
+
+	const Common::UString &getConversation() const;
+
+	const Aurora::SSFFile *getSSF();
 
 	bool isStatic() const;
 	bool isUsable() const;
@@ -81,10 +87,14 @@ public:
 
 	virtual void click();
 
+
+	void stopSound();
+	void playSound(const Common::UString &sound, bool pitchVariance = false);
+
+
 protected:
 	bool _loaded;
 
-	Common::UString _tag;
 	Common::UString _name;
 	Common::UString _description;
 
@@ -94,7 +104,6 @@ protected:
 
 	uint32 _soundSet;
 
-	Aurora::DLGFile *_dlg;
 	Aurora::SSFFile *_ssf;
 
 	bool _static;
@@ -110,11 +119,7 @@ protected:
 
 	void clear();
 
-	void loadDLG();
 	void loadSSF();
-
-	void stopSound();
-	void playSound(const Common::UString &sound, bool pitchVariance = false);
 };
 
 } // End of namespace NWN

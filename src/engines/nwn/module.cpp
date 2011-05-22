@@ -239,6 +239,13 @@ bool Module::usePC(const CharacterID &c) {
 	return true;
 }
 
+Creature *Module::getPC() {
+	if (!_pc.loaded())
+		return 0;
+
+	return &_pc;
+}
+
 bool Module::replaceModule(const Common::UString &module) {
 	_exit = true;
 
@@ -334,6 +341,7 @@ void Module::run() {
 		printException(e, "WARNING: ");
 	}
 
+	_ingameGUI->stopConversation();
 	_ingameGUI->hide();
 
 	EventMan.enableUnicode(false);
@@ -499,6 +507,8 @@ void Module::loadArea() {
 	if (_area && (_area->getResRef() == _newArea))
 		return;
 
+	_ingameGUI->stopConversation();
+
 	delete _area;
 	if (_newArea.empty()) {
 		_exit = true;
@@ -517,6 +527,8 @@ void Module::loadArea() {
 }
 
 void Module::unloadArea() {
+	_ingameGUI->stopConversation();
+
 	delete _area;
 	_area = 0;
 }
@@ -531,6 +543,10 @@ void Module::showMenu() {
 
 	// In case we changed the texture pack settings, reload it
 	loadTexturePack();
+}
+
+void Module::startConversation(const Common::UString &conv, Creature &pc, Object &obj) {
+	_ingameGUI->startConversation(conv, pc, obj);
 }
 
 void Module::getModules(std::vector<Common::UString> &modules) {

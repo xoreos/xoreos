@@ -65,12 +65,16 @@ public:
 	/** Use this character as the player character. */
 	bool usePC(const CharacterID &c);
 
+	Creature *getPC();
+
 	/** Replace the currently running module. */
 	bool replaceModule(const Common::UString &module);
 
 	void run();
 
 	void showMenu();
+
+	void startConversation(const Common::UString &conv, Creature &pc, Object &obj);
 
 
 	static void getModules(std::vector<Common::UString> &modules);

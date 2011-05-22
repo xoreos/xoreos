@@ -29,10 +29,14 @@
 
 #include "common/util.h"
 
-#include "aurora/dlgfile.h"
 #include "aurora/ssffile.h"
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
+
+#include "aurora/nwscript/types.h"
+#include "aurora/nwscript/util.h"
+#include "aurora/nwscript/functioncontext.h"
+#include "aurora/nwscript/functionman.h"
 
 #include "sound/sound.h"
 
@@ -46,7 +50,7 @@ namespace Engines {
 
 namespace NWN {
 
-Object::Object() : _dlg(0), _ssf(0) {
+Object::Object() : _ssf(0) {
 	clear();
 }
 
@@ -54,11 +58,10 @@ Object::~Object() {
 	stopSound();
 
 	delete _ssf;
-	delete _dlg;
 }
 
-const Common::UString &Object::getTag() const {
-	return _tag;
+bool Object::loaded() const {
+	return _loaded;
 }
 
 const Common::UString &Object::getName() const {
@@ -71,6 +74,16 @@ const Common::UString &Object::getDescription() const {
 
 const Common::UString &Object::getPortrait() const {
 	return _portrait;
+}
+
+const Common::UString &Object::getConversation() const {
+	return _conversation;
+}
+
+const Aurora::SSFFile *Object::getSSF() {
+	loadSSF();
+
+	return _ssf;
 }
 
 bool Object::isStatic() const {
@@ -128,9 +141,6 @@ void Object::clear() {
 
 	_soundSet = Aurora::kFieldIDInvalid;
 
-	delete _dlg;
-	_dlg = 0;
-
 	delete _ssf;
 	_ssf = 0;
 
@@ -145,19 +155,6 @@ void Object::clear() {
 	_orientation[0] = 0.0;
 	_orientation[1] = 0.0;
 	_orientation[2] = 0.0;
-}
-
-void Object::loadDLG() {
-	if (_dlg || _conversation.empty())
-		return;
-
-	try {
-		_dlg = new Aurora::DLGFile(_conversation);
-	} catch (...) {
-		warning("Failed to load DLG \"%s\" (object \"%s\")", _conversation.c_str(), _tag.c_str());
-		delete _dlg;
-		_dlg = 0;
-	}
 }
 
 void Object::loadSSF() {
@@ -192,30 +189,13 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 }
 
 void Object::click() {
-	loadDLG();
-	loadSSF();
+	Aurora::NWScript::FunctionContext ctx = FunctionMan.createContext("BeginConversation");
 
-	Common::UString text, sound;
+	ctx.setCaller((Aurora::NWScript::Object *) this);
 
-	if (_dlg)
-		_dlg->getStart(text, sound);
+	Aurora::NWScript::setParams(ctx.getParams(), "", (Aurora::NWScript::Object *) 0);
 
-	bool isSSF = false;
-	if (sound.empty()) {
-		if (_ssf) {
-			const Aurora::SSFFile::Sound &ssfSound = _ssf->getSound(kSSFHello);
-
-			sound = ssfSound.fileName;
-			isSSF = true;
-		}
-	}
-
-	TokenMan.parse(text);
-
-	if (!text.empty())
-		status("%s: \"%s\"", _name.c_str(), text.c_str());
-	if (!sound.empty())
-		playSound(sound, isSSF);
+	FunctionMan.call("BeginConversation", ctx);
 }
 
 } // End of namespace NWN
