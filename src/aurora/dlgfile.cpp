@@ -60,6 +60,18 @@ DLGFile::DLGFile(const Common::UString &dlg) {
 DLGFile::~DLGFile() {
 }
 
+bool DLGFile::getNoZoomIn() const {
+	return _noZoomIn;
+}
+
+uint32 DLGFile::getDelayEntry() const {
+	return _delayEntry;
+}
+
+uint32 DLGFile::getDelayReply() const {
+	return _delayReply;
+}
+
 void DLGFile::getStart(Common::UString &text, Common::UString &sound) const {
 	if (_entriesStart.empty())
 		return;

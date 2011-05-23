@@ -50,6 +50,14 @@ public:
 	DLGFile(const Common::UString &dlg);
 	~DLGFile();
 
+	/** Does starting the conversation zoom in the camera onto the speaker or not? */
+	bool getNoZoomIn() const;
+
+	/** Return the number of seconds to wait before showing each entry. */
+	uint32 getDelayEntry() const;
+	/** Return the number of seconds to wait before showing each reply. */
+	uint32 getDelayReply() const;
+
 	void getStart(Common::UString &text, Common::UString &sound) const;
 
 private:
