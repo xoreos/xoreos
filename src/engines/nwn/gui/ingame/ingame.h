@@ -77,7 +77,12 @@ public:
 	/** Update the party member. */
 	void updatePartyMember(uint partyMember, const Creature &creature);
 
+	/** Do we have a currently running conversation? */
+	bool hasRunningConversation() const;
+
+	/** Start a conversation. */
 	void startConversation(const Common::UString &conv, Creature &pc, Object &obj);
+	/** Stop a conversation. */
 	void stopConversation();
 
 private:

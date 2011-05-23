@@ -105,31 +105,35 @@ void IngameGUI::hide() {
 }
 
 void IngameGUI::addEvent(const Events::Event &event) {
+	// The dialog takes preference
+	if (_dialog) {
+		_dialog->addEvent(event);
+		return;
+	}
+
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->addEvent(event);
 
 	_compass->addEvent(event);
 	_quickchat->addEvent(event);
 	_quickbar->addEvent(event);
-
-	/*
-	if (_dialog)
-		_dialog->addEvent(event);
-	*/
 }
 
 void IngameGUI::processEventQueue() {
+	// The dialog takes preference
+	if (_dialog) {
+		if (_dialog->processEventQueue() != 0)
+			stopConversation();
+
+		return;
+	}
+
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->processEventQueue();
 
 	_compass->processEventQueue();
 	_quickchat->processEventQueue();
 	_quickbar->processEventQueue();
-
-	/*
-	if (_dialog)
-		_dialog->processEventQueue();
-	*/
 }
 
 void IngameGUI::setPortrait(uint partyMember, const Common::UString &portrait) {
@@ -175,6 +179,10 @@ void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature) {
 	_lastPartyMemberChange[partyMember] = lastPartyMemberChange;
 }
 
+bool IngameGUI::hasRunningConversation() const {
+	return _dialog != 0;
+}
+
 void IngameGUI::startConversation(const Common::UString &conv, Creature &pc, Object &obj) {
 	stopConversation();
 
@@ -190,7 +198,7 @@ void IngameGUI::stopConversation() {
 	if (!_dialog)
 		return;
 
-	_dialog->hide();
+	_dialog->abort();
 
 	delete _dialog;
 

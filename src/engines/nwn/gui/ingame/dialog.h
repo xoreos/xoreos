@@ -70,36 +70,59 @@ public:
 	DialogBox(float width, float height);
 	~DialogBox();
 
-	void show();
-	void hide();
+	void show(); ///< Show the box.
+	void hide(); ///< Hide the box.
 
-	bool isIn(float x, float y) const;
-	bool isIn(float x, float y, float z) const;
+	// Size and position
 
-	float getWidth() const;
-	float getHeight() const;
+	float getWidth () const; ///< Return the box's width.
+	float getHeight() const; ///< Return the box's height.
 
+	/** Return the box's position. */
 	void getPosition(float &x, float &y, float &z) const;
 
+	/** Set the box's position. */
 	void setPosition(float x, float y, float z);
 
+	// Changing contents
+
+	/** Clear the complete contents. */
 	void clear();
 
+	/** Set the current speaker's portrait. */
 	void setPortrait(const Common::UString &portrait);
+	/** Set the current speaker's name. */
 	void setName(const Common::UString &name);
 
+	/** Clear the NPC entry. */
 	void clearEntry();
+	/** Set the NPC entry. */
 	void setEntry(const Common::UString &entry);
 
+	/** Clear the PC replies. */
 	void clearReplies();
+	/** Add a PC reply. */
 	void addReply(const Common::UString &reply, uint32 id);
+	/** Finished adding PC replies. */
 	void finishReplies();
+
+	// Events
+
+	/** Notify the box that the mouse was moved. */
+	void mouseMove(float x, float y);
+	/** Notify the box that the mouse was clicked. */
+	void mouseClick(float x, float y);
+
+	/** Return the reply ID that was clicked. */
+	uint32 getPickedID() const;
+
 
 	// Renderable
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
 
 private:
+	/** A PC reply. */
 	struct Reply {
 		Common::UString reply;
 		uint32 id;
@@ -107,6 +130,7 @@ private:
 		Reply(const Common::UString &r = "", uint32 i = 0xFFFFFFFF);
 	};
 
+	/** A line of a PC reply. */
 	struct ReplyLine {
 		Graphics::Aurora::Text *count;
 		Graphics::Aurora::Text *line;
@@ -117,34 +141,39 @@ private:
 		ReplyLine(std::list<Reply>::const_iterator &i);
 	};
 
-	float _width;
-	float _height;
+	float _width;  ///< The box's width.
+	float _height; ///< The box's height.
 
-	float _x;
-	float _y;
-	float _z;
+	float _x; ///< The box's X position.
+	float _y; ///< The box's Y position.
+	float _z; ///< The box's Z position.
 
+	/** The current speaker's portrait. */
 	Portrait *_portrait;
-
+	/** The current speaker's name. */
 	Graphics::Aurora::Text *_name;
 
+	/** The dialog font. */
 	Graphics::Aurora::FontHandle _font;
 
-	Common::UString _entry;
-	std::list<Reply> _replies;
+	Common::UString _entry;    ///< The NPC entry.
+	std::list<Reply> _replies; ///< The PC replies.
 
-	std::list<Graphics::Aurora::Text *> _entryLines;
-	std::list<ReplyLine> _replyLines;
+	std::list<Graphics::Aurora::Text *> _entryLines; ///< The NPC text lines.
+	std::list<ReplyLine> _replyLines;                ///< The PC text lines.
 
-	uint32 _replyCount;
-	float  _replyCountWidth;
+	uint32 _replyCount;      ///< The number of replies.
+	float  _replyCountWidth; ///< The max width of a reply number text.
 
 
-	void showEntry();
-	void hideEntry();
+	void showEntry(); ///< Show the entry.
+	void hideEntry(); ///< Hide the entry.
 
-	void showReplies();
-	void hideReplies();
+	void showReplies(); ///< Show the replies.
+	void hideReplies(); ///< Hide the replies.
+
+	/** Are the coordinates inside the box? */
+	bool isIn(float x, float y) const;
 };
 
 class Dialog : public Events::Notifyable {
@@ -152,24 +181,42 @@ public:
 	Dialog(const Common::UString &conv, Creature &pc, Object &obj);
 	~Dialog();
 
-	void show();
-	void hide();
+	/** Has the conversation ended? */
+	bool hasEnded() const;
+
+	void show(); ///< Show the dialog.
+	void hide(); ///< Hide the dialog.
+
+	void abort(); ///< Abort the current conversation.
+
+	/** Add a single event for consideration into the event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	int processEventQueue();
 
 protected:
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
 
 private:
-	Common::UString _conv;
-	Creature *_pc;
-	Object *_object;
+	Common::UString _conv; ///< The conversation file.
 
-	DialogBox *_dlgBox;
+	Creature *_pc;     ///< The conversation's PC.
+	Object   *_object; ///< The conversation's NPC.
 
-	Aurora::DLGFile *_dlg;
+	DialogBox *_dlgBox; ///< The actual dialog box.
+
+	Aurora::DLGFile *_dlg; ///< The conversation file.
+
+	std::list<Events::Event> _eventQueue; ///< The event queue.
 
 
-	void updateBox();
-	void playSound();
+	void updateBox(); ///< Update the box's contents.
+	void playSound(); ///< Play a conversation sound.
+
+	/** The mouse was moved. */
+	void mouseMove();
+	/** The mouse was clicked. */
+	void mouseClick(const Events::Event &event);
 };
 
 } // End of namespace NWN

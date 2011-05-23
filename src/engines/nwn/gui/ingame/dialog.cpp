@@ -37,11 +37,14 @@
 #include "aurora/ssffile.h"
 #include "aurora/dlgfile.h"
 
+#include "events/events.h"
+
 #include "graphics/graphics.h"
 #include "graphics/font.h"
 
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/textureman.h"
+#include "graphics/aurora/cursorman.h"
 
 #include "engines/aurora/tokenman.h"
 
@@ -136,10 +139,6 @@ bool DialogBox::isIn(float x, float y) const {
 		return false;
 
 	return true;
-}
-
-bool DialogBox::isIn(float x, float y, float z) const {
-	return isIn(x, y);
 }
 
 float DialogBox::getWidth() const {
@@ -393,6 +392,17 @@ void DialogBox::finishReplies() {
 		showReplies();
 }
 
+void DialogBox::mouseMove(float x, float y) {
+}
+
+void DialogBox::mouseClick(float x, float y) {
+	mouseMove(x, y);
+}
+
+uint32 DialogBox::getPickedID() const {
+	return Aurora::DLGFile::kInvalidLine;
+}
+
 void DialogBox::calculateDistance() {
 	_distance = _z;
 }
@@ -467,8 +477,14 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj) :
 }
 
 Dialog::~Dialog() {
+	abort();
+
 	delete _dlg;
 	delete _dlgBox;
+}
+
+bool Dialog::hasEnded() const {
+	return _dlg->hasEnded();
 }
 
 void Dialog::show() {
@@ -477,6 +493,50 @@ void Dialog::show() {
 
 void Dialog::hide() {
 	_dlgBox->hide();
+}
+
+void Dialog::abort() {
+	hide();
+
+	_dlg->abortConversation();
+}
+
+void Dialog::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+int Dialog::processEventQueue() {
+	bool hasMove = false;
+
+	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
+	     e != _eventQueue.end(); ++e) {
+
+		if      (e->type == Events::kEventMouseMove)
+			hasMove = true;
+		else if ((e->type == Events::kEventKeyDown) && (e->key.keysym.sym == SDLK_ESCAPE))
+			abort();
+		else if (e->type == Events::kEventMouseDown)
+			mouseClick(*e);
+	}
+
+	_eventQueue.clear();
+
+	if (hasMove)
+		mouseMove();
+
+	return hasEnded() ? 1 : 0;
+}
+
+void Dialog::mouseMove() {
+	int x, y;
+	CursorMan.getPosition(x, y);
+
+	_dlgBox->mouseMove(x, y);
+}
+
+void Dialog::mouseClick(const Events::Event &event) {
+	if (event.button.button == SDL_BUTTON_LMASK)
+		_dlgBox->mouseClick(event.button.x, event.button.y);
 }
 
 void Dialog::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
@@ -514,7 +574,7 @@ void Dialog::updateBox() {
 			_dlgBox->addReply(text, (*r)->id);
 		}
 	} else
-		_dlgBox->addReply(TalkMan.getString(kEndDialog), Aurora::DLGFile::kInvalidLine);
+		_dlgBox->addReply(TalkMan.getString(kEndDialog), Aurora::DLGFile::kEndLine);
 
 	_dlgBox->finishReplies();
 

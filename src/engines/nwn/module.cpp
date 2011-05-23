@@ -362,8 +362,11 @@ void Module::handleEvents() {
 		if (event.type == Events::kEventKeyDown) {
 			// Menu
 			if (event.key.keysym.sym == SDLK_ESCAPE) {
-				showMenu();
-				continue;
+				// But only if we're not in a conversation, where ESC should abort that
+				if (!_ingameGUI->hasRunningConversation()) {
+					showMenu();
+					continue;
+				}
 			}
 
 			// Console

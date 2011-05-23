@@ -46,6 +46,7 @@ namespace Aurora {
 
 class DLGFile {
 public:
+	static const uint32 kEndLine     = 0xFFFFFFFE;
 	static const uint32 kInvalidLine = 0xFFFFFFFF;
 
 	struct Line {
