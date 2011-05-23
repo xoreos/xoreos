@@ -38,8 +38,10 @@ static const uint32 kDLGID = MKID_BE('DLG ');
 
 namespace Aurora {
 
-DLGFile::DLGFile(Common::SeekableReadStream &dlg) {
+DLGFile::DLGFile(Common::SeekableReadStream &dlg) : _ended(true) {
 	load(dlg);
+
+	_currentEntry = _entriesNPC.end();
 }
 
 DLGFile::DLGFile(const Common::UString &dlg) {
@@ -72,12 +74,46 @@ uint32 DLGFile::getDelayReply() const {
 	return _delayReply;
 }
 
-void DLGFile::getStart(Common::UString &text, Common::UString &sound) const {
-	if (_entriesStart.empty())
+bool DLGFile::hasEnded() const {
+	return _ended;
+}
+
+void DLGFile::startConversation() {
+	abortConversation();
+
+	_currentEntry = _entriesNPC.end();
+	_currentReplies.clear();
+
+	if (evaluateEntries(_entriesStart, _currentEntry)) {
+		evaluateReplies(_currentEntry->replies, _currentReplies);
+
+		// TODO: DLGFile::start(): Run _currentEntry's script
+	}
+
+	_ended = false;
+}
+
+void DLGFile::abortConversation() {
+	if (_ended)
 		return;
 
-	text  = _entriesNPC[_entriesStart.front().index].text.getString();
-	sound = _entriesNPC[_entriesStart.front().index].sound;
+	// TODO: DLGFile::abort(): Run abort script
+
+	_currentEntry = _entriesNPC.end();
+	_currentReplies.clear();
+
+	_ended = true;
+}
+
+const DLGFile::Line *DLGFile::getCurrentEntry() const {
+	if (_currentEntry == _entriesNPC.end())
+		return 0;
+
+	return &_currentEntry->line;
+}
+
+const std::vector<const DLGFile::Line *> &DLGFile::getCurrentReplies() const {
+	return _currentReplies;
 }
 
 void DLGFile::load(Common::SeekableReadStream &dlg) {
@@ -138,6 +174,8 @@ void DLGFile::readEntries(const GFFList &list, std::vector<Entry> &entries, bool
 
 		entry.isPC = isPC;
 
+		entry.line.id = entries.size() - 1;
+
 		readEntry(**e, entry);
 	}
 }
@@ -151,18 +189,18 @@ void DLGFile::readLinks(const GFFList &list, std::vector<Link> &links) {
 }
 
 void DLGFile::readEntry(const GFFStruct &gff, Entry &entry) {
-	entry.speaker = gff.getString("Speaker");
-
-	gff.getLocString("Text", entry.text);
-
-	entry.sound = gff.getString("Sound");
-
-	entry.animation = gff.getUint("Animation", 0);
-
 	entry.script = gff.getString("Script");
 
-	entry.quest      = gff.getString("Quest");
-	entry.questEntry = gff.getUint("QuestEntry", 0xFFFFFFFF);
+	entry.line.speaker = gff.getString("Speaker");
+
+	gff.getLocString("Text", entry.line.text);
+
+	entry.line.sound = gff.getString("Sound");
+
+	entry.line.animation = gff.getUint("Animation", 0);
+
+	entry.line.quest      = gff.getString("Quest");
+	entry.line.questEntry = gff.getUint("QuestEntry", 0xFFFFFFFF);
 
 	uint32 repliesCount = 0;
 	const GFFList *replies = 0;
@@ -183,6 +221,40 @@ void DLGFile::readEntry(const GFFStruct &gff, Entry &entry) {
 void DLGFile::readLink(const GFFStruct &gff, Link &link) {
 	link.index  = gff.getUint("Index", 0xFFFFFFFF);
 	link.active = gff.getString("Active");
+}
+
+bool DLGFile::evaluateEntries(const std::vector<Link> &entries,
+                              std::vector<Entry>::iterator &active) {
+
+	active = _entriesNPC.end();
+
+	for (std::vector<Link>::const_iterator e = entries.begin(); e != entries.end(); ++e) {
+		// TODO: DLGFile::evaluateEntries(): Run the link's active script
+
+		assert(e->index < _entriesNPC.size());
+
+		active = _entriesNPC.begin() + e->index;
+		break;
+	}
+
+	return active != _entriesNPC.end();
+}
+
+bool DLGFile::evaluateReplies(const std::vector<Link> &entries,
+                              std::vector<const Line *> &active) {
+
+	active.clear();
+
+	active.reserve(entries.size());
+	for (std::vector<Link>::const_iterator e = entries.begin(); e != entries.end(); ++e) {
+		// TODO: DLGFile::evaluateReplies(): Run the links' active script
+
+		assert(e->index < _entriesPC.size());
+
+		active.push_back(&_entriesPC[e->index].line);
+	}
+
+	return !active.empty();
 }
 
 } // End of namespace Aurora

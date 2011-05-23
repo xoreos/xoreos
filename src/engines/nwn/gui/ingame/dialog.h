@@ -166,6 +166,10 @@ private:
 	DialogBox *_dlgBox;
 
 	Aurora::DLGFile *_dlg;
+
+
+	void updateBox();
+	void playSound();
 };
 
 } // End of namespace NWN

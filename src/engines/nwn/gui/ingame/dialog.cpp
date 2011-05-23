@@ -28,10 +28,13 @@
  */
 
 // TODO: Make dialog boxes resizeable and/or repositionable?
+// TODO: Actually, in the original, the dialog boxes do resize themselves up to a point...
 
 #include "common/util.h"
 #include "common/configman.h"
 
+#include "aurora/talkman.h"
+#include "aurora/ssffile.h"
 #include "aurora/dlgfile.h"
 
 #include "graphics/graphics.h"
@@ -42,6 +45,7 @@
 
 #include "engines/aurora/tokenman.h"
 
+#include "engines/nwn/types.h"
 #include "engines/nwn/object.h"
 #include "engines/nwn/creature.h"
 
@@ -55,6 +59,9 @@ static const float kDialogHeight = 254.0;
 static const float kLightBlueR = 101.0 / 255.0;
 static const float kLightBlueG = 176.0 / 255.0;
 static const float kLightBlueB = 252.0 / 255.0;
+
+static const uint32 kContinue  = 1741;
+static const uint32 kEndDialog = 1742;
 
 namespace Engines {
 
@@ -201,7 +208,8 @@ void DialogBox::setPosition(float x, float y, float z) {
 
 		const float replyLineX = replyCountRight + _font.getFont().getWidth(' ');
 
-		r->line->setPosition(replyLineX, replyY, portraitZ);
+		if (r->line)
+			r->line->setPosition(replyLineX, replyY, portraitZ);
 	}
 
 	resort();
@@ -292,7 +300,8 @@ void DialogBox::showReplies() {
 		if (r->count)
 			r->count->show();
 
-		r->line->show();
+		if (r->line)
+			r->line->show();
 	}
 }
 
@@ -301,7 +310,8 @@ void DialogBox::hideReplies() {
 		if (r->count)
 			r->count->hide();
 
-		r->line->hide();
+		if (r->line)
+			r->line->hide();
 	}
 }
 
@@ -447,22 +457,11 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj) :
 	_conv(conv), _pc(&pc), _object(&obj) {
 
 	_dlg = new Aurora::DLGFile(conv);
+	_dlg->startConversation();
 
 	_dlgBox = new DialogBox(kDialogWidth, kDialogHeight);
 
-	_dlgBox->clear();
-
-	_dlgBox->setPortrait(_object->getPortrait());
-	_dlgBox->setName(_object->getName());
-
-	Common::UString text, sound;
-	_dlg->getStart(text, sound);
-
-	_dlgBox->setEntry(text);
-	_dlgBox->addReply("Option 01", 1);
-	_dlgBox->addReply("Option 02", 2);
-	_dlgBox->addReply("Option 03", 3);
-	_dlgBox->finishReplies();
+	updateBox();
 
 	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
 }
@@ -485,6 +484,64 @@ void Dialog::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHei
 	const float y =  (newHeight / 2.0) - _dlgBox->getHeight() - 20.0;
 
 	_dlgBox->setPosition(x, y, 0.0);
+}
+
+void Dialog::updateBox() {
+	_dlgBox->clear();
+
+	// Name and portrait
+
+	_dlgBox->setPortrait(_object->getPortrait());
+	_dlgBox->setName(_object->getName());
+
+	// Entry
+
+	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
+	if (entry)
+		_dlgBox->setEntry(entry->text.getString());
+
+	// Replies
+
+	const std::vector<const Aurora::DLGFile::Line *> &replies = _dlg->getCurrentReplies();
+	if (!replies.empty()) {
+		for (std::vector<const Aurora::DLGFile::Line *>::const_iterator r = replies.begin();
+				 r != replies.end(); ++r) {
+
+			Common::UString text = (*r)->text.getString();
+			if (text.empty())
+				text = TalkMan.getString(kContinue);
+
+			_dlgBox->addReply(text, (*r)->id);
+		}
+	} else
+		_dlgBox->addReply(TalkMan.getString(kEndDialog), Aurora::DLGFile::kInvalidLine);
+
+	_dlgBox->finishReplies();
+
+	// Sound
+
+	playSound();
+}
+
+void Dialog::playSound() {
+	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
+	if (!entry)
+		return;
+
+	Common::UString sound = entry->sound;
+
+	bool isSSF = false;
+	if (sound.empty()) {
+		const Aurora::SSFFile *ssf = _object->getSSF();
+
+		if (ssf) {
+			isSSF = true;
+
+			sound = ssf->getSound(kSSFHello).fileName;
+		}
+	}
+
+	_object->playSound(sound, isSSF);
 }
 
 } // End of namespace NWN

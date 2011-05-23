@@ -46,6 +46,23 @@ namespace Aurora {
 
 class DLGFile {
 public:
+	static const uint32 kInvalidLine = 0xFFFFFFFF;
+
+	struct Line {
+		uint32 id; ///< ID of this line (entry-local).
+
+		Common::UString speaker; ///< Tag of the speaker, empty if default.
+		LocString       text;    ///< The actual text of the entry.
+
+		Common::UString sound; ///< ResRef of the sound to play while speaking this entry.
+
+		uint32 animation; ///< Animation to play while speaking this entry.
+
+		Common::UString quest;      ///< Quest name to modify when speaking this entry.
+		uint32          questEntry; ///< Entry ID to set the quest to.
+	};
+
+
 	DLGFile(Common::SeekableReadStream &dlg);
 	DLGFile(const Common::UString &dlg);
 	~DLGFile();
@@ -58,7 +75,13 @@ public:
 	/** Return the number of seconds to wait before showing each reply. */
 	uint32 getDelayReply() const;
 
-	void getStart(Common::UString &text, Common::UString &sound) const;
+	bool hasEnded() const;
+
+	void startConversation();
+	void abortConversation();
+
+	const Line *getCurrentEntry() const;
+	const std::vector<const Line *> &getCurrentReplies() const;
 
 private:
 	/** A link to a reply. */
@@ -71,17 +94,9 @@ private:
 	struct Entry {
 		bool isPC; ///< Is this a PC or NPC line?
 
-		Common::UString speaker; ///< Tag of the speaker, empty if default.
-		LocString       text;    ///< The actual text of the entry.
-
-		Common::UString sound; ///< ResRef of the sound to play while speaking this entry.
-
-		uint32 animation; ///< Animation to play while speaking this entry.
-
 		Common::UString script; ///< Script to run when speaking this entry.
 
-		Common::UString quest;      ///< Quest name to modify when speaking this entry.
-		uint32          questEntry; ///< Entry ID to set the quest to.
+		Line line; ///< The line's contents.
 
 		std::vector<Link> replies; ///< Reply lines.
 	};
@@ -100,6 +115,11 @@ private:
 
 	std::vector<Link> _entriesStart; ///< NPC starting lines (greetings).
 
+	std::vector<Entry>::iterator _currentEntry; ///< The current entry.
+	std::vector<const Line *> _currentReplies;  ///< The current replies.
+
+	bool _ended; ///< Has the conversation ended?
+
 
 	void load(Common::SeekableReadStream &dlg);
 	void load(const GFFStruct &dlg);
@@ -109,6 +129,11 @@ private:
 
 	void readEntry(const GFFStruct &gff, Entry &entry);
 	void readLink(const GFFStruct &gff, Link &link);
+
+	bool evaluateEntries(const std::vector<Link> &entries,
+	                     std::vector<Entry>::iterator &active);
+	bool evaluateReplies(const std::vector<Link> &entries,
+	                     std::vector<const Line *> &active);
 };
 
 } // End of namespace Aurora
