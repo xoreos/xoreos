@@ -94,6 +94,8 @@ DialogBox::DialogBox(float width, float height) : _width(width), _height(height)
 
 	_name = new Graphics::Aurora::Text(FontMan.get("fnt_galahad14"), " ",
 	                                   kLightBlueR, kLightBlueG, kLightBlueB);
+
+	_highlightedReply = _replyLines.end();
 }
 
 DialogBox::~DialogBox() {
@@ -205,7 +207,7 @@ void DialogBox::setPosition(float x, float y, float z) {
 			r->count->setPosition(replyCountX, replyY, portraitZ);
 		}
 
-		const float replyLineX = replyCountRight + _font.getFont().getWidth(' ');
+		const float replyLineX = replyCountRight;
 
 		if (r->line)
 			r->line->setPosition(replyLineX, replyY, portraitZ);
@@ -361,7 +363,7 @@ void DialogBox::finishReplies() {
 
 	// Create the reply line texts
 
-	const float maxWidth = _width - 6.0 - _replyCountWidth - _font.getFont().getWidth(' ');
+	const float maxWidth = _width - 6.0 - _replyCountWidth;
 
 	for (std::list<ReplyLine>::iterator r = _replyLines.begin(); r != _replyLines.end(); ++r) {
 		std::vector<Common::UString> lines;
@@ -392,15 +394,76 @@ void DialogBox::finishReplies() {
 		showReplies();
 }
 
-void DialogBox::mouseMove(float x, float y) {
+void DialogBox::mouseMove(int x, int y) {
+	float screenX, screenY;
+	CursorMan.toScreenCoordinates(x, y, screenX, screenY);
+
+	if (!isIn(screenX, screenY)) {
+		setHighlight(_replyLines.end());
+		return;
+	}
+
+	std::list<ReplyLine>::iterator highlight;
+	for (highlight = _replyLines.begin(); highlight != _replyLines.end(); ++highlight)
+		if ((highlight->count && highlight->count->isIn(screenX, screenY)) ||
+		    (highlight->line  && highlight->line->isIn (screenX, screenY)))
+			break;
+
+	setHighlight(highlight);
 }
 
-void DialogBox::mouseClick(float x, float y) {
+void DialogBox::mouseClick(int x, int y) {
 	mouseMove(x, y);
 }
 
 uint32 DialogBox::getPickedID() const {
 	return Aurora::DLGFile::kInvalidLine;
+}
+
+void DialogBox::setHighlight(const std::list<ReplyLine>::iterator &h) {
+	if (_highlightedReply != _replyLines.end()) {
+		uint32 id = _highlightedReply->reply->id;
+
+		for (std::list<ReplyLine>::iterator r = _replyLines.begin();
+		     r != _replyLines.end(); ++r) {
+
+			if (r->reply->id != id)
+				continue;
+
+			if (r->count)
+				r->count->setColor(kLightBlueR, kLightBlueG, kLightBlueB, 1.0);
+			if (r->line)
+				r->line->setColor(kLightBlueR, kLightBlueG, kLightBlueB, 1.0);
+		}
+
+	}
+
+	_highlightedReply = h;
+
+	if (_highlightedReply != _replyLines.end()) {
+		if (_highlightedReply->count)
+			_highlightedReply->count->setColor(1.0, 1.0, 1.0, 1.0);
+		if (_highlightedReply->line)
+			_highlightedReply->line->setColor(1.0, 1.0, 1.0, 1.0);
+	}
+
+	if (_highlightedReply != _replyLines.end()) {
+		uint32 id = _highlightedReply->reply->id;
+
+		for (std::list<ReplyLine>::iterator r = _replyLines.begin();
+		     r != _replyLines.end(); ++r) {
+
+			if (r->reply->id != id)
+				continue;
+
+			if (r->count)
+				r->count->setColor(1.0, 1.0, 1.0, 1.0);
+			if (r->line)
+				r->line->setColor(1.0, 1.0, 1.0, 1.0);
+		}
+
+	}
+
 }
 
 void DialogBox::calculateDistance() {

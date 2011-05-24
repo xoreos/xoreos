@@ -109,9 +109,9 @@ public:
 	// Events
 
 	/** Notify the box that the mouse was moved. */
-	void mouseMove(float x, float y);
+	void mouseMove(int x, int y);
 	/** Notify the box that the mouse was clicked. */
-	void mouseClick(float x, float y);
+	void mouseClick(int x, int y);
 
 	/** Return the reply ID that was clicked. */
 	uint32 getPickedID() const;
@@ -165,6 +165,8 @@ private:
 	uint32 _replyCount;      ///< The number of replies.
 	float  _replyCountWidth; ///< The max width of a reply number text.
 
+	std::list<ReplyLine>::iterator _highlightedReply;
+
 
 	void showEntry(); ///< Show the entry.
 	void hideEntry(); ///< Hide the entry.
@@ -174,6 +176,9 @@ private:
 
 	/** Are the coordinates inside the box? */
 	bool isIn(float x, float y) const;
+
+	/** Set the highlighted reply. */
+	void setHighlight(const std::list<ReplyLine>::iterator &h);
 };
 
 class Dialog : public Events::Notifyable {
