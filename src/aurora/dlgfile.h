@@ -44,6 +44,20 @@ namespace Common {
 
 namespace Aurora {
 
+// TODO: KotOR:
+//       - "ConversationType", "StuntList", "Skippable", "AmbientTrack",
+//         "AnimatedCut", ...
+//       - Sound resrefs in field "VO_ResRef"
+//       - Quest IDs in field "PlotIndex"
+//       - Camera: "CameraModel", "CameraAngle", "CameraID", "CamVidEffect", "FadeType"
+// TODO: KotOR2:
+//       - "Emotion", "FacialAnim"
+//       - 2 scripts, with params:
+//         "Script{,2}"; "ActionParam[1-5]{,b}", "ActionParamStr{A,B}"
+//       - 2 active test scripts, with params and bool operators (not, and/or)
+//         "Active{,2}"; "Param[1-5]{,b}", "ParamStr{A,B}"
+//         "Not{,2}", "Logic"
+
 class DLGFile {
 public:
 	static const uint32 kEndLine     = 0xFFFFFFFE;
