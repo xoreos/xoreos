@@ -718,7 +718,7 @@ void Dialog::updateBox() {
 
 			Common::UString text = (*r)->text.getString();
 			if (text.empty())
-				text = TalkMan.getString(kContinue);
+				text = TalkMan.getString((*r)->isEnd ? kEndDialog : kContinue);
 
 			_dlgBox->addReply(text, (*r)->id);
 		}

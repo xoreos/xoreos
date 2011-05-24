@@ -61,6 +61,8 @@ public:
 
 		Common::UString quest;      ///< Quest name to modify when speaking this entry.
 		uint32          questEntry; ///< Entry ID to set the quest to.
+
+		bool isEnd; ///< Are there no replies to this line?
 	};
 
 

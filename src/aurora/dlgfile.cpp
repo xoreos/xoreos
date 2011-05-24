@@ -240,6 +240,7 @@ void DLGFile::readEntry(const GFFStruct &gff, Entry &entry) {
 		readLinks(*replies, entry.replies);
 	}
 
+	entry.line.isEnd = entry.replies.empty();
 }
 
 void DLGFile::readLink(const GFFStruct &gff, Link &link) {
