@@ -319,6 +319,8 @@ void DialogBox::hideReplies() {
 void DialogBox::clearReplies() {
 	hideReplies();
 
+	setHighlight(_replyLines.end());
+
 	for (std::list<ReplyLine>::iterator r = _replyLines.begin(); r != _replyLines.end(); ++r) {
 		delete r->count;
 		delete r->line;
@@ -417,7 +419,10 @@ void DialogBox::mouseClick(int x, int y) {
 }
 
 uint32 DialogBox::getPickedID() const {
-	return Aurora::DLGFile::kInvalidLine;
+	if (_highlightedReply == _replyLines.end())
+		return Aurora::DLGFile::kInvalidLine;
+
+	return _highlightedReply->reply->id;
 }
 
 void DialogBox::setHighlight(const std::list<ReplyLine>::iterator &h) {
@@ -598,8 +603,20 @@ void Dialog::mouseMove() {
 }
 
 void Dialog::mouseClick(const Events::Event &event) {
-	if (event.button.button == SDL_BUTTON_LMASK)
-		_dlgBox->mouseClick(event.button.x, event.button.y);
+	if (event.button.button != SDL_BUTTON_LMASK)
+		return;
+
+	_dlgBox->mouseClick(event.button.x, event.button.y);
+
+	uint32 picked = _dlgBox->getPickedID();
+	if (picked == Aurora::DLGFile::kInvalidLine)
+		return;
+
+	_dlg->pickReply(picked);
+	if (_dlg->hasEnded())
+		return;
+
+	updateBox();
 }
 
 void Dialog::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {

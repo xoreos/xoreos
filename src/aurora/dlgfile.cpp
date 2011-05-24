@@ -105,6 +105,30 @@ void DLGFile::abortConversation() {
 	_ended = true;
 }
 
+void DLGFile::pickReply(uint32 id) {
+	if (_ended || (id == kInvalidLine))
+		return;
+
+	if ((id == kEndLine) || ((_currentEntry == _entriesNPC.end()))) {
+		// TODO: DLGFile::pickReply(): Run end script
+
+		_ended = true;
+		return;
+	}
+
+	assert(id < _entriesPC.size());
+
+	_currentEntry = _entriesPC.begin() + id;
+	_currentReplies.clear();
+
+	if (evaluateEntries(_currentEntry->replies, _currentEntry)) {
+		evaluateReplies(_currentEntry->replies, _currentReplies);
+
+		// TODO: DLGFile::pickReply(): Run _currentEntry's script
+	} else
+		_ended = true;
+}
+
 const DLGFile::Line *DLGFile::getCurrentEntry() const {
 	if (_currentEntry == _entriesNPC.end())
 		return 0;

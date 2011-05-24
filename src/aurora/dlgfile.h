@@ -81,6 +81,8 @@ public:
 	void startConversation();
 	void abortConversation();
 
+	void pickReply(uint32 id);
+
 	const Line *getCurrentEntry() const;
 	const std::vector<const Line *> &getCurrentReplies() const;
 
