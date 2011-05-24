@@ -234,6 +234,7 @@ bool Module::usePC(const CharacterID &c) {
 	_pc = *c;
 
 	setPCTokens();
+	TalkMan.setGender((Aurora::Gender) _pc.getGender());
 
 	_hasPC = true;
 	return true;
