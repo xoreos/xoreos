@@ -541,6 +541,7 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj, Module &m
 	_dlgBox = new DialogBox(kDialogWidth, kDialogHeight);
 
 	updateBox();
+	playSound(true);
 
 	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
 }
@@ -618,6 +619,7 @@ void Dialog::mouseClick(const Events::Event &event) {
 		return;
 
 	updateBox();
+	playSound(false);
 }
 
 void Dialog::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
@@ -667,13 +669,9 @@ void Dialog::updateBox() {
 		_dlgBox->addReply(TalkMan.getString(kEndDialog), Aurora::DLGFile::kEndLine);
 
 	_dlgBox->finishReplies();
-
-	// Sound
-
-	playSound();
 }
 
-void Dialog::playSound() {
+void Dialog::playSound(bool greeting) {
 	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
 	if (!entry)
 		return;
@@ -681,7 +679,7 @@ void Dialog::playSound() {
 	Common::UString sound = entry->sound;
 
 	bool isSSF = false;
-	if (sound.empty()) {
+	if (sound.empty() && greeting) {
 		const Aurora::SSFFile *ssf = _object->getSSF();
 
 		if (ssf) {

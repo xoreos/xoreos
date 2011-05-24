@@ -220,7 +220,7 @@ private:
 
 
 	void updateBox(); ///< Update the box's contents.
-	void playSound(); ///< Play a conversation sound.
+	void playSound(bool greeting); ///< Play a conversation sound.
 
 	/** The mouse was moved. */
 	void mouseMove();
