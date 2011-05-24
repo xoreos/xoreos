@@ -114,6 +114,8 @@ public:
 	void mouseMove(int x, int y);
 	/** Notify the box that the mouse was clicked. */
 	void mouseClick(int x, int y);
+	/** Pick the reply number n. */
+	void pickReply(uint32 n);
 
 	/** Return the reply ID that was clicked. */
 	uint32 getPickedID() const;
@@ -167,7 +169,8 @@ private:
 	uint32 _replyCount;      ///< The number of replies.
 	float  _replyCountWidth; ///< The max width of a reply number text.
 
-	std::list<ReplyLine>::iterator _highlightedReply;
+	std::list<ReplyLine>::iterator _highlightedReply; ///< The currently highlighted reply.
+	std::list<Reply>::const_iterator _pickedReply;    ///< The picked (clicked) reply.
 
 
 	void showEntry(); ///< Show the entry.
@@ -226,6 +229,10 @@ private:
 	void mouseMove();
 	/** The mouse was clicked. */
 	void mouseClick(const Events::Event &event);
+	/** A keyboard key was pressed. */
+	void keyPressed(const Events::Event &event);
+
+	void checkPicked();
 };
 
 } // End of namespace NWN

@@ -97,6 +97,7 @@ DialogBox::DialogBox(float width, float height) : _width(width), _height(height)
 	                                   kLightBlueR, kLightBlueG, kLightBlueB);
 
 	_highlightedReply = _replyLines.end();
+	_pickedReply      = _replies.end();
 }
 
 DialogBox::~DialogBox() {
@@ -321,6 +322,7 @@ void DialogBox::clearReplies() {
 	hideReplies();
 
 	setHighlight(_replyLines.end());
+	_pickedReply = _replies.end();
 
 	for (std::list<ReplyLine>::iterator r = _replyLines.begin(); r != _replyLines.end(); ++r) {
 		delete r->count;
@@ -417,13 +419,28 @@ void DialogBox::mouseMove(int x, int y) {
 
 void DialogBox::mouseClick(int x, int y) {
 	mouseMove(x, y);
+
+	if (_highlightedReply == _replyLines.end())
+		_pickedReply = _replies.end();
+	else
+		_pickedReply = _highlightedReply->reply;
+}
+
+void DialogBox::pickReply(uint32 n) {
+	if (n >= _replyCount) {
+		_pickedReply = _replies.end();
+		return;
+	}
+
+	_pickedReply = _replies.begin();
+	std::advance(_pickedReply, n);
 }
 
 uint32 DialogBox::getPickedID() const {
-	if (_highlightedReply == _replyLines.end())
+	if (_pickedReply == _replies.end())
 		return Aurora::DLGFile::kInvalidLine;
 
-	return _highlightedReply->reply->id;
+	return _pickedReply->id;
 }
 
 void DialogBox::setHighlight(const std::list<ReplyLine>::iterator &h) {
@@ -585,8 +602,8 @@ int Dialog::processEventQueue() {
 
 		if      (e->type == Events::kEventMouseMove)
 			hasMove = true;
-		else if ((e->type == Events::kEventKeyDown) && (e->key.keysym.sym == SDLK_ESCAPE))
-			abort();
+		else if (e->type == Events::kEventKeyDown)
+			keyPressed(*e);
 		else if (e->type == Events::kEventMouseDown)
 			mouseClick(*e);
 	}
@@ -611,7 +628,40 @@ void Dialog::mouseClick(const Events::Event &event) {
 		return;
 
 	_dlgBox->mouseClick(event.button.x, event.button.y);
+	checkPicked();
+}
 
+void Dialog::keyPressed(const Events::Event &event) {
+	if (event.key.keysym.sym == SDLK_ESCAPE) {
+		abort();
+		return;
+	}
+
+	if (event.key.keysym.sym == SDLK_1)
+		_dlgBox->pickReply(0);
+	else if (event.key.keysym.sym == SDLK_2)
+		_dlgBox->pickReply(1);
+	else if (event.key.keysym.sym == SDLK_3)
+		_dlgBox->pickReply(2);
+	else if (event.key.keysym.sym == SDLK_4)
+		_dlgBox->pickReply(3);
+	else if (event.key.keysym.sym == SDLK_5)
+		_dlgBox->pickReply(4);
+	else if (event.key.keysym.sym == SDLK_6)
+		_dlgBox->pickReply(5);
+	else if (event.key.keysym.sym == SDLK_7)
+		_dlgBox->pickReply(6);
+	else if (event.key.keysym.sym == SDLK_8)
+		_dlgBox->pickReply(7);
+	else if (event.key.keysym.sym == SDLK_9)
+		_dlgBox->pickReply(8);
+	else if (event.key.keysym.sym == SDLK_0)
+		_dlgBox->pickReply(9);
+
+	checkPicked();
+}
+
+void Dialog::checkPicked() {
 	uint32 picked = _dlgBox->getPickedID();
 	if (picked == Aurora::DLGFile::kInvalidLine)
 		return;
