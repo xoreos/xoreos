@@ -90,6 +90,11 @@ public:
 	/** Move the cursor to a specific position. */
 	void  setPosition(int  x, int  y);
 
+	/** Convert cursor position to screen position. */
+	void toScreenCoordinates(int x, int y, float &sX, float &sY);
+	/** Convert screen position to cursor position. */
+	void fromScreenCoordinates(float sX, float sY, int &x, int &y);
+
 	bool isVisible() const; ///< Is a cursor current visible?
 
 	/** Return the current group. */

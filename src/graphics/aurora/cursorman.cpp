@@ -171,6 +171,22 @@ void CursorManager::setPosition(int x, int y) {
 	SDL_WarpMouse(x, y);
 }
 
+void CursorManager::toScreenCoordinates(int x, int y, float &sX, float &sY) {
+	const float sW = GfxMan.getScreenWidth();
+	const float sH = GfxMan.getScreenHeight();
+
+	sX =       ((float) x)  - (sW / 2.0);
+	sY = (sH - ((float) y)) - (sH / 2.0);
+}
+
+void CursorManager::fromScreenCoordinates(float sX, float sY, int &x, int &y) {
+	const float sW = GfxMan.getScreenWidth();
+	const float sH = GfxMan.getScreenHeight();
+
+	x = (int)   sX + (sW / 2.0);
+	y = (int) (-sY - (sH / 2.0)) + sH;
+}
+
 void CursorManager::hideCursor() {
 	Common::StackLock lock(_mutex);
 
