@@ -46,6 +46,7 @@
 #include "events/events.h"
 
 #include "graphics/aurora/textureman.h"
+#include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/guiquad.h"
 
@@ -322,12 +323,9 @@ void ConsoleWindow::updateHighlight() {
 	_highlight->setColor(1.0, 1.0, 1.0, 1.0);
 }
 
-bool ConsoleWindow::getPosition(float cursorX, float cursorY, float &x, float &y) {
-	const float sW = GfxMan.getScreenWidth();
-	const float sH = GfxMan.getScreenHeight();
-
-	const float realX =       cursorX  - (sW / 2.0);
-	const float realY = (sH - cursorY) - (sH / 2.0);
+bool ConsoleWindow::getPosition(int cursorX, int cursorY, float &x, float &y) {
+	float realX, realY;
+	CursorMan.toScreenCoordinates(cursorX, cursorY, realX, realY);
 
 	x = (realX - _x) / _font.getFont().getWidth(' ');
 	y = (realY - _y) / _lineHeight;
@@ -355,7 +353,7 @@ void ConsoleWindow::highlightClip(uint32 &x, uint32 &y) const {
 	x = CLIP(x, minX, maxX);
 }
 
-void ConsoleWindow::startHighlight(float x, float y) {
+void ConsoleWindow::startHighlight(int x, int y) {
 	clearHighlight();
 
 	float lineX, lineY;
@@ -370,7 +368,7 @@ void ConsoleWindow::startHighlight(float x, float y) {
 	updateHighlight();
 }
 
-void ConsoleWindow::stopHighlight(float x, float y) {
+void ConsoleWindow::stopHighlight(int x, int y) {
 	float lineX, lineY;
 	if (!getPosition(x, y, lineX, lineY))
 		return;
@@ -384,7 +382,7 @@ void ConsoleWindow::stopHighlight(float x, float y) {
 	updateHighlight();
 }
 
-void ConsoleWindow::highlightWord(float x, float y) {
+void ConsoleWindow::highlightWord(int x, int y) {
 	clearHighlight();
 
 	float lineX, lineY;
@@ -410,7 +408,7 @@ void ConsoleWindow::highlightWord(float x, float y) {
 	updateHighlight();
 }
 
-void ConsoleWindow::highlightLine(float x, float y) {
+void ConsoleWindow::highlightLine(int x, int y) {
 	clearHighlight();
 
 	float lineX, lineY;

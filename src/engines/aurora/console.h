@@ -96,11 +96,11 @@ public:
 
 	void clearHighlight();
 
-	void startHighlight(float x, float y);
-	void stopHighlight(float x, float y);
+	void startHighlight(int x, int y);
+	void stopHighlight(int x, int y);
 
-	void highlightWord(float x, float y);
-	void highlightLine(float x, float y);
+	void highlightWord(int x, int y);
+	void highlightLine(int x, int y);
 
 	const Common::UString getHighlight() const;
 
@@ -166,7 +166,7 @@ private:
 	void printLine(const Common::UString &line);
 
 	void updateHighlight();
-	bool getPosition(float cursorX, float cursorY, float &x, float &y);
+	bool getPosition(int cursorX, int cursorY, float &x, float &y);
 	void highlightClip(uint32 &x, uint32 &y) const;
 
 	void updateScrollbarLength();
