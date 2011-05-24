@@ -547,6 +547,8 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj, Module &m
 }
 
 Dialog::~Dialog() {
+	_object->stopSound();
+
 	abort();
 
 	delete _dlg;
