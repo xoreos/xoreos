@@ -41,7 +41,7 @@ namespace Engines {
 
 namespace NWN {
 
-IngameGUI::IngameGUI(Module &module) : _lastCompassChange(0) {
+IngameGUI::IngameGUI(Module &module) : _module(&module), _lastCompassChange(0) {
 	_main = new IngameMainMenu;
 
 	_quickbar  = new Quickbar;
@@ -189,7 +189,7 @@ void IngameGUI::startConversation(const Common::UString &conv, Creature &pc, Obj
 	if (conv.empty())
 		return;
 
-	_dialog = new Dialog(conv, pc, obj);
+	_dialog = new Dialog(conv, pc, obj, *_module);
 
 	_dialog->show();
 }

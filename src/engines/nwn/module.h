@@ -47,6 +47,8 @@ namespace NWN {
 
 class Console;
 
+class Object;
+
 class CharacterID;
 class Area;
 
@@ -73,6 +75,9 @@ public:
 	void run();
 
 	void showMenu();
+
+	Object *findObject(const Common::UString &tag);
+	const Object *findObject(const Common::UString &tag) const;
 
 	void startConversation(const Common::UString &conv, Creature &pc, Object &obj);
 

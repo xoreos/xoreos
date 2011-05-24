@@ -86,6 +86,8 @@ public:
 	void stopConversation();
 
 private:
+	Module *_module;
+
 	IngameMainMenu *_main; ///< The ingame main menu.
 
 	Quickbar  *_quickbar;  ///< The quick bar.

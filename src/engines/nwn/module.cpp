@@ -548,6 +548,20 @@ void Module::showMenu() {
 	loadTexturePack();
 }
 
+Object *Module::findObject(const Common::UString &tag) {
+	if (!_area)
+		return 0;
+
+	return _area->findObject(tag);
+}
+
+const Object *Module::findObject(const Common::UString &tag) const {
+	if (!_area)
+		return 0;
+
+	return _area->findObject(tag);
+}
+
 void Module::startConversation(const Common::UString &conv, Creature &pc, Object &obj) {
 	_ingameGUI->startConversation(conv, pc, obj);
 }

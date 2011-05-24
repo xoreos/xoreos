@@ -51,6 +51,7 @@
 #include "engines/nwn/types.h"
 #include "engines/nwn/object.h"
 #include "engines/nwn/creature.h"
+#include "engines/nwn/module.h"
 
 #include "engines/nwn/gui/widgets/portrait.h"
 
@@ -531,8 +532,8 @@ void DialogBox::render(Graphics::RenderPass pass) {
 }
 
 
-Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj) :
-	_conv(conv), _pc(&pc), _object(&obj) {
+Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj, Module &module) :
+	_conv(conv), _pc(&pc), _object(&obj), _module(&module) {
 
 	_dlg = new Aurora::DLGFile(conv);
 	_dlg->startConversation();
@@ -629,16 +630,25 @@ void Dialog::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHei
 void Dialog::updateBox() {
 	_dlgBox->clear();
 
-	// Name and portrait
-
-	_dlgBox->setPortrait(_object->getPortrait());
-	_dlgBox->setName(_object->getName());
-
 	// Entry
 
 	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
-	if (entry)
+	if (entry) {
+		// Name and portrait
+
+		Object *obj = _object;
+		if (!entry->speaker.empty())
+			obj = _module->findObject(entry->speaker);
+
+		if (obj) {
+			_dlgBox->setPortrait(obj->getPortrait());
+			_dlgBox->setName(obj->getName());
+		} else
+			_dlgBox->setName("[INVALID NPC]");
+
+		// Text
 		_dlgBox->setEntry(entry->text.getString());
+	}
 
 	// Replies
 

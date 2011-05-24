@@ -63,6 +63,8 @@ class Portrait;
 class Object;
 class Creature;
 
+class Module;
+
 // TODO: Scrollbars. Need to restructure/rewrite the scrollbar element/widget for that
 
 class DialogBox : public Graphics::GUIFrontElement {
@@ -183,7 +185,7 @@ private:
 
 class Dialog : public Events::Notifyable {
 public:
-	Dialog(const Common::UString &conv, Creature &pc, Object &obj);
+	Dialog(const Common::UString &conv, Creature &pc, Object &obj, Module &module);
 	~Dialog();
 
 	/** Has the conversation ended? */
@@ -207,6 +209,8 @@ private:
 
 	Creature *_pc;     ///< The conversation's PC.
 	Object   *_object; ///< The conversation's NPC.
+
+	Module *_module; ///< The module this dialog is in.
 
 	DialogBox *_dlgBox; ///< The actual dialog box.
 

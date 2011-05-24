@@ -72,6 +72,9 @@ public:
 
 	static Common::UString getName(const Common::UString &resRef);
 
+	Object *findObject(const Common::UString &tag);
+	const Object *findObject(const Common::UString &tag) const;
+
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
 
@@ -110,6 +113,7 @@ private:
 	typedef std::list<Object *> ObjectList;
 
 	typedef std::map<uint32, Object *> ObjectMap;
+	typedef std::multimap<Common::UString, Object *> ObjectTagMap;
 
 
 	bool _loaded;
@@ -147,6 +151,7 @@ private:
 	ObjectList _objects;
 
 	ObjectMap _objectMap;
+	ObjectTagMap _objectTagMap;
 
 	Object *_activeObject;
 
