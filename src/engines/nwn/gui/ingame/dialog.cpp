@@ -635,6 +635,8 @@ void Dialog::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHei
 }
 
 void Dialog::updateBox() {
+	GfxMan.lockFrame();
+
 	_dlgBox->clear();
 
 	// Entry
@@ -674,6 +676,8 @@ void Dialog::updateBox() {
 		_dlgBox->addReply(TalkMan.getString(kEndDialog), Aurora::DLGFile::kEndLine);
 
 	_dlgBox->finishReplies();
+
+	GfxMan.unlockFrame();
 }
 
 void Dialog::playSound(bool greeting) {
