@@ -622,6 +622,9 @@ void Dialog::mouseClick(const Events::Event &event) {
 
 	updateBox();
 	playSound(false);
+
+	// Update the highlighted reply
+	mouseMove();
 }
 
 void Dialog::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
