@@ -122,9 +122,10 @@ public:
 	};
 
 private:
+	Common::UString _name;
+
 	NCSStack _stack;
 	Common::SeekableReadStream *_script;
-	int32 _savedBasePtr;
 
 	Object *_objectSelf;
 

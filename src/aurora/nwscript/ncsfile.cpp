@@ -35,6 +35,7 @@
 #include "aurora/resman.h"
 
 #include "aurora/nwscript/ncsfile.h"
+#include "aurora/nwscript/object.h"
 #include "aurora/nwscript/functionman.h"
 
 static const uint32 kNCSTag    = MKID_BE('NCS ');
@@ -132,7 +133,7 @@ int32 NCSStack::getBasePtr() {
 }
 
 void NCSStack::setBasePtr(int32 pos) {
-	if ((pos > -4) || ((pos % 4) != 0))
+	if ((pos > 0) || ((pos % 4) != 0))
 		throw Common::Exception("NCSStack::setBasePtr(): Illegal position %d", pos);
 
 	_basePtr = (pos / -4) - 1;
@@ -149,7 +150,12 @@ void NCSStack::print() const {
 			warning("| %d: %f", var.getType(), var.getFloat());
 		else if (var.getType() == kTypeString)
 			warning("| %d: \"%s\"", var.getType(), var.getString().c_str());
-		else
+		else if (var.getType() == kTypeObject) {
+			if (!var.getObject())
+				warning("| %d: 0", var.getType());
+			else
+				warning("| %d: \"%s\"", var.getType(), var.getObject()->getTag().c_str());
+		} else
 			warning("| %d", var.getType());
 	}
 	warning("'--- ---'");
@@ -231,8 +237,8 @@ NCSFile::NCSFile(Common::SeekableReadStream *ncs, Object *self) : _objectSelf(se
 	load();
 }
 
-NCSFile::NCSFile(const Common::UString &ncs, Object *self) : _script(0), _objectSelf(self) {
-	warning("=== Running script \"%s\" ===", ncs.c_str());
+NCSFile::NCSFile(const Common::UString &ncs, Object *self) : _name(ncs),
+	_script(0), _objectSelf(self) {
 
 	_script = ResMan.getResource(ncs, kFileTypeNCS);
 	if (!_script)
@@ -276,11 +282,11 @@ void NCSFile::reset() {
 		_returnOffsets.pop();
 
 	_script->seek(13); // 8 byte header + 5 byte program size dummy op
-
-	_savedBasePtr = -4;
 }
 
 const Variable &NCSFile::run() {
+	warning("=== Running script \"%s\" ===", _name.c_str());
+
 	reset();
 
 	while (!_script->eos() && !_script->err())
@@ -291,6 +297,9 @@ const Variable &NCSFile::run() {
 
 	if (_stack.empty())
 		_stack.push(kTypeVoid);
+
+	if (_stack.top().getType() == kTypeInt)
+		warning("=> Script\"%s\" returns: %d", _name.c_str(), _stack.top().getInt());
 
 	return _stack.top();
 }
@@ -824,7 +833,7 @@ void NCSFile::o_savebp(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_savebp(): Illegal type %d", type);
 
-	_savedBasePtr = _stack.getBasePtr();
+	_stack.push(_stack.getBasePtr());
 	_stack.setBasePtr(_stack.getStackPtr());
 }
 
@@ -832,7 +841,7 @@ void NCSFile::o_restorebp(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_restorebp(): Illegal type %d", type);
 
-	_stack.setBasePtr(_savedBasePtr);
+	_stack.setBasePtr(_stack.pop().getInt());
 }
 
 void NCSFile::o_nop(InstructionType type) {
