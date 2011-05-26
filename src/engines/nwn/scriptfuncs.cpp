@@ -83,6 +83,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::intToString, this, _1),
 			createSignature(2, kTypeString, kTypeInt));
 
+	FunctionMan.registerFunction("GetPCSpeaker", 238,
+			boost::bind(&ScriptFunctions::getPCSpeaker, this, _1),
+			createSignature(1, kTypeObject));
+
 	FunctionMan.registerFunction("BeginConversation", 255,
 			boost::bind(&ScriptFunctions::beginConversation, this, _1),
 			createSignature(3, kTypeVoid, kTypeString, kTypeObject));
@@ -118,6 +122,15 @@ void ScriptFunctions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 }
 
+void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
+	Object *speaker = 0;
+	Object *object  = dynamic_cast<Object *>(ctx.getCaller());
+	if (object)
+		speaker = object->getPCSpeaker();
+
+	ctx.getReturn() = (Aurora::NWScript::Object *) speaker;
+}
+
 void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {
 	if (!_module)
 		throw Common::Exception("ScriptFunctions::beginConversation(): Module needed");
@@ -147,11 +160,17 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 		throw Common::Exception("ScriptFunctions::beginConversation(): "
 		                        "Need one PC and one object");
 
+	if (object->getPCSpeaker())
+		throw Common::Exception("ScriptFunctions::beginConversation(): "
+		                        "Object already in conversation");
+
 	Common::UString conversation = params[0].getString();
 	if (conversation.empty())
 		conversation = object->getConversation();
 
+	object->setPCSpeaker(pc);
 	_module->startConversation(conversation, *pc, *object);
+	object->setPCSpeaker(0);
 }
 
 void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {

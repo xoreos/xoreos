@@ -50,7 +50,7 @@ namespace Engines {
 
 namespace NWN {
 
-Object::Object() : _ssf(0) {
+Object::Object() : _ssf(0), _pcSpeaker(0) {
 	clear();
 }
 
@@ -100,6 +100,14 @@ bool Object::isClickable() const {
 
 const std::list<uint32> &Object::getIDs() const {
 	return _ids;
+}
+
+Object *Object::getPCSpeaker() const {
+	return _pcSpeaker;
+}
+
+void Object::setPCSpeaker(Object *pc) {
+	_pcSpeaker = pc;
 }
 
 void Object::getPosition(float &x, float &y, float &z) const {

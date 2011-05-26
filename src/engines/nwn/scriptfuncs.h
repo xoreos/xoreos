@@ -61,6 +61,8 @@ private:
 
 	void intToString(Aurora::NWScript::FunctionContext &ctx);
 
+	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
+
 	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
 
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);

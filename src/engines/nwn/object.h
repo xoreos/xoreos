@@ -74,6 +74,9 @@ public:
 
 	const std::list<uint32> &getIDs() const;
 
+	Object *getPCSpeaker() const;
+	void setPCSpeaker(Object *pc);
+
 	virtual void getPosition(float &x, float &y, float &z) const;
 	virtual void getOrientation(float &x, float &y, float &z) const;
 
@@ -110,6 +113,8 @@ protected:
 	bool _usable;
 
 	std::list<uint32> _ids;
+
+	Object *_pcSpeaker;
 
 	float _position[3];
 	float _orientation[3];
