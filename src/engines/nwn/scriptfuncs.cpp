@@ -132,6 +132,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::intToString, this, _1),
 			createSignature(2, kTypeString, kTypeInt));
 
+	FunctionMan.registerFunction("GetTag", 168,
+			boost::bind(&ScriptFunctions::getTag, this, _1),
+			createSignature(2, kTypeString, kTypeObject));
+
 	FunctionMan.registerFunction("GetPCSpeaker", 238,
 			boost::bind(&ScriptFunctions::getPCSpeaker, this, _1),
 			createSignature(1, kTypeObject));
@@ -227,6 +231,14 @@ void ScriptFunctions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::intToString(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = Common::UString::sprintf("%d", ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::getTag(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().getString().clear();
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (object)
+		ctx.getReturn() = object->getTag();
 }
 
 void ScriptFunctions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {

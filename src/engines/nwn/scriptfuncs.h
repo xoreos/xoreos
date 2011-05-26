@@ -77,6 +77,8 @@ private:
 
 	void intToString(Aurora::NWScript::FunctionContext &ctx);
 
+	void getTag(Aurora::NWScript::FunctionContext &ctx);
+
 	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
 
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
