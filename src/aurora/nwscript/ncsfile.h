@@ -23,77 +23,46 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file aurora/ncsscript.h
+/** @file aurora/nwscript/ncsfile.h
  *  Handling BioWare's NWN Compiled Scripts.
  */
 
-#ifndef AURORA_NCS_SCRIPT_H
-#define AURORA_NCS_SCRIPT_H
+#ifndef AURORA_NWSCRIPT_NCSFILE_H
+#define AURORA_NWSCRIPT_NCSFILE_H
 
 #include <vector>
 
 #include "common/types.h"
-#include "common/ustring.h"
 
 #include "aurora/types.h"
 #include "aurora/aurorafile.h"
 
+#include "aurora/nwscript/types.h"
+#include "aurora/nwscript/variable.h"
+
 namespace Common {
+	class UString;
 	class SeekableReadStream;
 }
 
 namespace Aurora {
 
-/** A stack object for NCS scripts. */
-class StackObject {
-public:
-	enum StackObjectType {
-		kStackObjectNone,
-		kStackObjectInt,
-		kStackObjectFloat,
-		kStackObjectString,
-		kStackObjectObject,
-		kStackObjectVector,
-		kStackObjectStruct,
-		kStackObjectEngineType
-	};
+namespace NWScript {
 
-	StackObject(StackObjectType type = kStackObjectNone);
-	StackObject(int32 val, StackObjectType = kStackObjectInt);
-	StackObject(float val);
-	StackObject(const Common::UString &val);
-
-	int32 getInt() const;
-	float getFloat() const;
-	const Common::UString &getString() const;
-	uint32 getObject() const;
-
-	bool operator==(StackObject &obj);
-	bool operator!=(StackObject &obj) { return !operator==(obj); }
-
-	StackObjectType getType() { return _type; }
-
-private:
-	StackObjectType _type;
-
-	uint32 _intVal;
-	float _floatVal;
-	Common::UString _stringVal;
-};
-
-class NCSStack : public std::vector<StackObject> {
+class NCSStack : public std::vector<Variable> {
 public:
 	NCSStack();
 	~NCSStack();
 
-	StackObject top();
-	StackObject pop();
-	void push(StackObject obj);
+	Variable &top();
+	Variable pop();
+	void push(const Variable &obj);
 
 	int32 getStackPtr();
-	void setStackPtr(int32 pos);
+	void  setStackPtr(int32 pos);
+
 	int32 getBasePtr();
-	void setBasePtr(int32 pos);
+	void  setBasePtr(int32 pos);
 
 private:
 	int32 _stackPtr;
@@ -103,42 +72,42 @@ private:
 #define DECLARE_OPCODE(x) void x(InstructionType type)
 
 /** An NCS, BioWare's NWN Compile Script. */
-class NCSScript : public AuroraBase {
+class NCSFile : public AuroraBase {
 public:
-	NCSScript();
-	~NCSScript() {}
+	NCSFile(Common::SeekableReadStream *ncs);
+	NCSFile(const Common::UString &ncs);
+	~NCSFile();
 
-	void load(Common::SeekableReadStream &ncs);
 	void executeStep();
 	void decompile();
 
 	enum InstructionType {
 		// Unary
-		kInstTypeNone = 0,
-		kInstTypeInt = 3,
-		kInstTypeFloat = 4,
-		kInstTypeString = 5,
-		kInstTypeObject = 6,
-		kInstTypeEffect = 16,
-		kInstTypeEvent = 17,
-		kInstTypeLocation = 18,
-		kInstTypeTalent = 19,
+		kInstTypeNone      =  0,
+		kInstTypeInt       =  3,
+		kInstTypeFloat     =  4,
+		kInstTypeString    =  5,
+		kInstTypeObject    =  6,
+		kInstTypeEffect    = 16,
+		kInstTypeEvent     = 17,
+		kInstTypeLocation  = 18,
+		kInstTypeTalent    = 19,
 
 		// Binary
-		kInstTypeIntInt = 32,
-		kInstTypeFloatFloat = 33,
-		kInstTypeObjectObject = 34,
-		kInstTypeStringString = 35,
-		kInstTypeStructStruct = 36,
-		kInstTypeIntFloat = 37,
-		kInstTypeFloatInt = 38,
-		kInstTypeEffectEffect = 48,
-		kInstTypeEventEvent = 49,
+		kInstTypeIntInt           = 32,
+		kInstTypeFloatFloat       = 33,
+		kInstTypeObjectObject     = 34,
+		kInstTypeStringString     = 35,
+		kInstTypeStructStruct     = 36,
+		kInstTypeIntFloat         = 37,
+		kInstTypeFloatInt         = 38,
+		kInstTypeEffectEffect     = 48,
+		kInstTypeEventEvent       = 49,
 		kInstTypeLocationLocation = 50,
-		kInstTypeTalentTalent = 51,
-		kInstTypeVectorVector = 58,
-		kInstTypeVectorFloat = 59,
-		kInstTypeFloatVector = 60
+		kInstTypeTalentTalent     = 51,
+		kInstTypeVectorVector     = 58,
+		kInstTypeVectorFloat      = 59,
+		kInstTypeFloatVector      = 60
 	};
 
 private:
@@ -146,7 +115,7 @@ private:
 	Common::SeekableReadStream *_script;
 	int32 _savedBasePtr;
 
-	typedef void (NCSScript::*OpcodeProc)(InstructionType type);
+	typedef void (NCSFile::*OpcodeProc)(InstructionType type);
 	struct Opcode {
 		OpcodeProc proc;
 		const char *desc;
@@ -154,6 +123,8 @@ private:
 	const Opcode *_opcodes;
 	uint32 _opcodeListSize;
 	void setupOpcodes();
+
+	void load();
 
 	// Opcode declarations
 	DECLARE_OPCODE(o_nop);
@@ -205,6 +176,8 @@ private:
 
 #undef DECLARE_OPCODE
 
+} // End of namespace NWScript
+
 } // End of namespace Aurora
 
-#endif // AURORA_NCS_SCRIPT_H
+#endif // AURORA_NWSCRIPT_NCSFILE_H

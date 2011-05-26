@@ -23,102 +23,46 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file aurora/ncsscript.cpp
+/** @file aurora/nwscript/ncsfile.cpp
  *  Handling BioWare's NWN Compiled Scripts.
  */
 
-#include "common/stream.h"
 #include "common/util.h"
+#include "common/ustring.h"
+#include "common/stream.h"
 
-#include "aurora/ncsscript.h"
 #include "aurora/error.h"
+#include "aurora/resman.h"
+
+#include "aurora/nwscript/ncsfile.h"
+
+static const uint32 kNCSTag    = MKID_BE('NCS ');
+static const uint32 kVersion10 = MKID_BE('V1.0');
 
 namespace Aurora {
 
-StackObject::StackObject(StackObjectType type) {
-	_type = type;
-}
-
-StackObject::StackObject(int32 val, StackObjectType type) {
-	_intVal = val;
-	_type = type;
-}
-
-StackObject::StackObject(float val) {
-	_floatVal = val;
-	_type = kStackObjectFloat;
-}
-
-StackObject::StackObject(const Common::UString &val) {
-	_stringVal = val;
-	_type = kStackObjectString;
-}
-
-int32 StackObject::getInt() const {
-	if (_type != kStackObjectInt)
-		throw Common::Exception("Trying to get int from non-int StackObject");
-	return (int32)_intVal;
-}
-
-float StackObject::getFloat() const {
-	if (_type != kStackObjectFloat)
-		throw Common::Exception("Trying to get float from non-float StackObject");
-	return _floatVal;
-}
-
-const Common::UString &StackObject::getString() const {
-	if (_type != kStackObjectString)
-		throw Common::Exception("Trying to get string from non-string StackObject");
-	return _stringVal;
-}
-
-uint32 StackObject::getObject() const {
-	if (_type != kStackObjectObject)
-		throw Common::Exception("Trying to get object from non-object StackObject");
-	return _intVal;
-}
-
-bool StackObject::operator==(StackObject &obj) {
-	if (_type != obj._type)
-		return false;
-
-	switch (_type) {
-	case kStackObjectNone:
-		return true;
-	case kStackObjectInt:
-	case kStackObjectObject:
-		return _intVal == obj._intVal;
-	case kStackObjectFloat:
-		return _floatVal == obj._floatVal;
-	case kStackObjectString:
-		return _stringVal == obj._stringVal;
-	default:
-		warning("Unhandled operator== for StackObject type %d", _type);
-	}
-
-	return false;
-}
+namespace NWScript {
 
 NCSStack::NCSStack() {
 	_stackPtr = -1;
-	_basePtr = -1;
+	_basePtr  = -1;
 }
 
 NCSStack::~NCSStack() {
 }
 
-StackObject NCSStack::top() {
+Variable &NCSStack::top() {
 	return at(_stackPtr);
 }
 
-StackObject NCSStack::pop() {
+Variable NCSStack::pop() {
 	if (_stackPtr == 0)
 		throw Common::Exception("NCSStack: Stack underflow");
 
 	return at(_stackPtr--);
 }
 
-void NCSStack::push(StackObject obj) {
+void NCSStack::push(const Variable &obj) {
 	if (_stackPtr == 0x7FFFFFFF) // Like this will ever happen :P
 		throw Common::Exception("NCSStack: Stack overflow");
 
@@ -135,7 +79,7 @@ int32 NCSStack::getStackPtr() {
 }
 
 void NCSStack::setStackPtr(int32 pos) {
-	if (pos >= -4 || (pos % 4) != 0)
+	if ((pos >= -4) || ((pos % 4) != 0))
 		throw Common::Exception("NCSStack::setStackPtr(): Illegal position %d", pos);
 
 	_stackPtr = (pos / -4) - 1;
@@ -146,15 +90,15 @@ int32 NCSStack::getBasePtr() {
 }
 
 void NCSStack::setBasePtr(int32 pos) {
-	if (pos >= -4 || (pos % 4) != 0)
+	if ((pos >= -4) || ((pos % 4) != 0))
 		throw Common::Exception("NCSStack::setBasePtr(): Illegal position %d", pos);
 
 	_basePtr = (pos / -4) - 1;
 }
 
-#define OPCODE(x) { &NCSScript::x, #x }
+#define OPCODE(x) { &NCSFile::x, #x }
 
-void NCSScript::setupOpcodes() {
+void NCSFile::setupOpcodes() {
 	static const Opcode opcodes[] = {
 		// 0x00
 		OPCODE(o_nop), // Doesn't exist
@@ -222,16 +166,26 @@ void NCSScript::setupOpcodes() {
 
 #undef OPCODE
 
-static const uint32 kNCSTag = MKID_BE('NCS ');
-static const uint32 kVersion10 = MKID_BE('V1.0');
+NCSFile::NCSFile(Common::SeekableReadStream *ncs) {
+	_script = ncs;
 
-NCSScript::NCSScript() {
-	setupOpcodes();
-	_savedBasePtr = -4;
+	load();
 }
 
-void NCSScript::load(Common::SeekableReadStream &ncs) {
-	readHeader(ncs);
+NCSFile::NCSFile(const Common::UString &ncs) : _script(0) {
+	_script = ResMan.getResource(ncs, kFileTypeNCS);
+	if (!_script)
+		throw Common::Exception("No such NCS \"%s\"", ncs.c_str());
+
+	load();
+}
+
+NCSFile::~NCSFile() {
+	delete _script;
+}
+
+void NCSFile::load() {
+	readHeader(*_script);
 
 	if (_id != kNCSTag)
 		throw Common::Exception("Try to load non-NCS file");
@@ -239,16 +193,26 @@ void NCSScript::load(Common::SeekableReadStream &ncs) {
 	if (_version != kVersion10)
 		throw Common::Exception("Unsupported NCS file version %08X", _version);
 
-	_script = &ncs;
-	_script->skip(5); // Program Size
+	byte lengthOpcode = _script->readByte();
+	if (lengthOpcode != 0x42)
+		throw Common::Exception("Script size opcode != 0x42 (0x%02X)", lengthOpcode);
+
+	uint32 length = _script->readUint32BE();
+	if (length > ((uint32) _script->size()))
+		throw Common::Exception("Script size %d > stream size %d", length, _script->size());
+	if (length < ((uint32) _script->size()))
+		warning("TODO: NCSFile::load(): Script size %d < stream size %d", length, _script->size());
+
+	setupOpcodes();
+	_savedBasePtr = -4;
 }
 
-void NCSScript::executeStep() {
+void NCSFile::executeStep() {
 	byte opcode = _script->readByte();
 	InstructionType type = (InstructionType)_script->readByte();
 
 	if (opcode >= _opcodeListSize || opcode == 0)
-		throw Common::Exception("Illegal instruction 0x%02x", opcode);
+		throw Common::Exception("NCSFile::executeStep(): Illegal instruction 0x%02x", opcode);
 
 	try {
 		(this->*(_opcodes[opcode].proc))(type);
@@ -257,7 +221,7 @@ void NCSScript::executeStep() {
 	}
 }
 
-void NCSScript::decompile() {
+void NCSFile::decompile() {
 	uint32 oldScriptPos = _script->pos();
 	_script->seek(13); // 8 byte header + 5 byte program size dummy op
 
@@ -268,26 +232,26 @@ void NCSScript::decompile() {
 
 // OPCODES!
 
-void NCSScript::o_rsadd(InstructionType type) {
+void NCSFile::o_rsadd(InstructionType type) {
 	switch (type) {
 	case kInstTypeInt:
-		_stack.push(StackObject(StackObject::kStackObjectInt));
+		_stack.push(kTypeInt);
 		break;
 	case kInstTypeFloat:
-		_stack.push(StackObject(StackObject::kStackObjectFloat));
+		_stack.push(kTypeFloat);
 		break;
 	case kInstTypeString:
-		_stack.push(StackObject(StackObject::kStackObjectString));
+		_stack.push(kTypeString);
 		break;
 	case kInstTypeObject:
-		_stack.push(StackObject(StackObject::kStackObjectObject));
+		_stack.push(kTypeObject);
 		break;
 	default:
-		throw Common::Exception("o_rsadd: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_rsadd(): Illegal type %d", type);
 	}
 }
 
-void NCSScript::o_const(InstructionType type) {
+void NCSFile::o_const(InstructionType type) {
 	switch (type) {
 	case kInstTypeInt:
 		_stack.push(_script->readSint32LE());
@@ -296,27 +260,32 @@ void NCSScript::o_const(InstructionType type) {
 		_stack.push(_script->readIEEEFloatLE());
 		break;
 	case kInstTypeString: {
-		Common::UString string;
-		string.readFixedASCII(*_script, _script->readUint16LE());
-		_stack.push(string);
+		_stack.push(kTypeString);
+		_stack.top().getString().readFixedASCII(*_script, _script->readUint16LE());
 		break;
 	}
-	case kInstTypeObject:
-		_stack.push(StackObject(_script->readUint32LE(), StackObject::kStackObjectObject));
+	case kInstTypeObject: {
+		uint32 objectID = _script->readUint32LE();
+
+		if (objectID != 0)
+			throw Common::Exception("NCSFile::o_const(): Illegal object ID %d", objectID);
+
+		_stack.push((Object *) 0);
 		break;
+	}
 	default:
-		throw Common::Exception("o_const: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_const(): Illegal type %d", type);
 	}
 }
 
-void NCSScript::o_action(InstructionType type) {
+void NCSFile::o_action(InstructionType type) {
 	if (type != kInstTypeNone)
-		throw Common::Exception("o_action: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_action(): Illegal type %d", type);
 
 	uint16 routineNumber = _script->readUint16LE();
 	byte argCount = _script->readByte();
 
-	warning("STUB: o_action: Run routine %d with %d args", routineNumber, argCount);
+	warning("STUB: NCSFile::o_action(): Run routine %d with %d args", routineNumber, argCount);
 
 	// For now, pop off the args and put a 0 on the stack :P
 
@@ -325,9 +294,9 @@ void NCSScript::o_action(InstructionType type) {
 	_stack.push(0);
 }
 
-void NCSScript::o_logand(InstructionType type) {
+void NCSFile::o_logand(InstructionType type) {
 	if (type != kInstTypeIntInt)
-		throw Common::Exception("o_logand: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_logand(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
@@ -338,9 +307,9 @@ void NCSScript::o_logand(InstructionType type) {
 	}
 }
 
-void NCSScript::o_logor(InstructionType type) {
+void NCSFile::o_logor(InstructionType type) {
 	if (type != kInstTypeIntInt)
-		throw Common::Exception("o_logor: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_logor(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
@@ -351,9 +320,9 @@ void NCSScript::o_logor(InstructionType type) {
 	}
 }
 
-void NCSScript::o_incor(InstructionType type) {
+void NCSFile::o_incor(InstructionType type) {
 	if (type != kInstTypeIntInt)
-		throw Common::Exception("o_incor: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_incor(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
@@ -364,9 +333,9 @@ void NCSScript::o_incor(InstructionType type) {
 	}
 }
 
-void NCSScript::o_excor(InstructionType type) {
+void NCSFile::o_excor(InstructionType type) {
 	if (type != kInstTypeIntInt)
-		throw Common::Exception("o_excor: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_excor(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
@@ -377,9 +346,9 @@ void NCSScript::o_excor(InstructionType type) {
 	}
 }
 
-void NCSScript::o_booland(InstructionType type) {
+void NCSFile::o_booland(InstructionType type) {
 	if (type != kInstTypeIntInt)
-		throw Common::Exception("o_booland: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_booland(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
@@ -390,27 +359,27 @@ void NCSScript::o_booland(InstructionType type) {
 	}
 }
 
-void NCSScript::o_eq(InstructionType type) {
+void NCSFile::o_eq(InstructionType type) {
 	if (type == kInstTypeStructStruct) // TODO!
 		_script->readUint16LE();
 
-	StackObject arg1 = _stack.pop();
-	StackObject arg2 = _stack.pop();
+	Variable arg1 = _stack.pop();
+	Variable arg2 = _stack.pop();
 
 	_stack.push(arg1 == arg2);
 }
 
-void NCSScript::o_neq(InstructionType type) {
+void NCSFile::o_neq(InstructionType type) {
 	if (type == kInstTypeStructStruct) // TODO!
 		_script->readUint16LE();
 
-	StackObject arg1 = _stack.pop();
-	StackObject arg2 = _stack.pop();
+	Variable arg1 = _stack.pop();
+	Variable arg2 = _stack.pop();
 
 	_stack.push(arg1 != arg2);
 }
 
-void NCSScript::o_geq(InstructionType type) {
+void NCSFile::o_geq(InstructionType type) {
 	switch (type) {
 	case kInstTypeIntInt:
 		try {
@@ -431,11 +400,11 @@ void NCSScript::o_geq(InstructionType type) {
 		}
 		break;
 	default:
-		throw Common::Exception("o_geq: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_geq(): Illegal type %d", type);
 	}
 }
 
-void NCSScript::o_gt(InstructionType type) {
+void NCSFile::o_gt(InstructionType type) {
 	switch (type) {
 	case kInstTypeIntInt:
 		try {
@@ -456,11 +425,11 @@ void NCSScript::o_gt(InstructionType type) {
 		}
 		break;
 	default:
-		throw Common::Exception("o_gt: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_gt(): Illegal type %d", type);
 	}
 }
 
-void NCSScript::o_lt(InstructionType type) {
+void NCSFile::o_lt(InstructionType type) {
 	switch (type) {
 	case kInstTypeIntInt:
 		try {
@@ -481,11 +450,11 @@ void NCSScript::o_lt(InstructionType type) {
 		}
 		break;
 	default:
-		throw Common::Exception("o_lt: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_lt(): Illegal type %d", type);
 	}
 }
 
-void NCSScript::o_leq(InstructionType type) {
+void NCSFile::o_leq(InstructionType type) {
 	switch (type) {
 	case kInstTypeIntInt:
 		try {
@@ -506,13 +475,13 @@ void NCSScript::o_leq(InstructionType type) {
 		}
 		break;
 	default:
-		throw Common::Exception("o_leq: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_leq(): Illegal type %d", type);
 	}
 }
 
-void NCSScript::o_shleft(InstructionType type) {
+void NCSFile::o_shleft(InstructionType type) {
 	if (type != kInstTypeIntInt)
-		throw Common::Exception("o_shleft: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_shleft(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
@@ -523,9 +492,9 @@ void NCSScript::o_shleft(InstructionType type) {
 	}
 }
 
-void NCSScript::o_shright(InstructionType type) {
+void NCSFile::o_shright(InstructionType type) {
 	if (type != kInstTypeIntInt)
-		throw Common::Exception("o_shright: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_shright(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
@@ -536,11 +505,11 @@ void NCSScript::o_shright(InstructionType type) {
 	}
 }
 
-void NCSScript::o_ushright(InstructionType type) {
+void NCSFile::o_ushright(InstructionType type) {
 	// TODO: Difference between this and o_shright
 
 	if (type != kInstTypeIntInt)
-		throw Common::Exception("o_ushright: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_ushright(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
@@ -551,9 +520,9 @@ void NCSScript::o_ushright(InstructionType type) {
 	}
 }
 
-void NCSScript::o_mod(InstructionType type) {
+void NCSFile::o_mod(InstructionType type) {
 	if (type != kInstTypeIntInt)
-		throw Common::Exception("o_mod: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_mod(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
@@ -564,7 +533,7 @@ void NCSScript::o_mod(InstructionType type) {
 	}
 }
 
-void NCSScript::o_neg(InstructionType type) {
+void NCSFile::o_neg(InstructionType type) {
 	switch (type) {
 	case kInstTypeInt:
 		try {
@@ -580,13 +549,13 @@ void NCSScript::o_neg(InstructionType type) {
 			throw e;
 		}
 	default:
-		throw Common::Exception("o_neg: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_neg(): Illegal type %d", type);
 	}
 }
 
-void NCSScript::o_comp(InstructionType type) {
+void NCSFile::o_comp(InstructionType type) {
 	if (type != kInstTypeInt)
-		throw Common::Exception("o_comp: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_comp(): Illegal type %d", type);
 
 	try {
 		_stack.push(~_stack.pop().getInt());
@@ -595,24 +564,24 @@ void NCSScript::o_comp(InstructionType type) {
 	}
 }
 
-void NCSScript::o_movsp(InstructionType type) {
+void NCSFile::o_movsp(InstructionType type) {
 	if (type != kInstTypeNone)
-		throw Common::Exception("o_movsp: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_movsp(): Illegal type %d", type);
 
 	_stack.setStackPtr(_stack.getStackPtr() + _script->readSint32LE());
 }
 
-void NCSScript::o_jmp(InstructionType type) {
+void NCSFile::o_jmp(InstructionType type) {
 	if (type != kInstTypeNone)
-		throw Common::Exception("o_jmp: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_jmp(): Illegal type %d", type);
 
 	int32 offset = _script->readSint32LE();
 	_script->seek(offset - 2, SEEK_CUR);
 }
 
-void NCSScript::o_jz(InstructionType type) {
+void NCSFile::o_jz(InstructionType type) {
 	if (type != kInstTypeNone)
-		throw Common::Exception("o_jz: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_jz(): Illegal type %d", type);
 
 	int32 offset = _script->readSint32LE();
 
@@ -620,16 +589,16 @@ void NCSScript::o_jz(InstructionType type) {
 		_script->seek(offset - 2, SEEK_CUR);
 }
 
-void NCSScript::o_not(InstructionType type) {
+void NCSFile::o_not(InstructionType type) {
 	if (type != kInstTypeInt)
-		throw Common::Exception("o_not: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_not(): Illegal type %d", type);
 
 	_stack.push(!_stack.pop().getInt());
 }
 
-void NCSScript::o_decsp(InstructionType type) {
+void NCSFile::o_decsp(InstructionType type) {
 	if (type != kInstTypeInt)
-		throw Common::Exception("o_decsp: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_decsp(): Illegal type %d", type);
 
 	int32 oldStackPtr = _stack.getStackPtr();
 	_stack.setStackPtr(oldStackPtr + _script->readSint32LE());
@@ -637,9 +606,9 @@ void NCSScript::o_decsp(InstructionType type) {
 	_stack.setStackPtr(oldStackPtr);
 }
 
-void NCSScript::o_incsp(InstructionType type) {
+void NCSFile::o_incsp(InstructionType type) {
 	if (type != kInstTypeInt)
-		throw Common::Exception("o_incsp: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_incsp(): Illegal type %d", type);
 
 	int32 oldStackPtr = _stack.getStackPtr();
 	_stack.setStackPtr(oldStackPtr + _script->readSint32LE());
@@ -647,9 +616,9 @@ void NCSScript::o_incsp(InstructionType type) {
 	_stack.setStackPtr(oldStackPtr);
 }
 
-void NCSScript::o_jnz(InstructionType type) {
+void NCSFile::o_jnz(InstructionType type) {
 	if (type != kInstTypeNone)
-		throw Common::Exception("o_jnz: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_jnz(): Illegal type %d", type);
 
 	int32 offset = _script->readSint32LE();
 
@@ -657,9 +626,9 @@ void NCSScript::o_jnz(InstructionType type) {
 		_script->seek(offset - 2, SEEK_CUR);
 }
 
-void NCSScript::o_decbp(InstructionType type) {
+void NCSFile::o_decbp(InstructionType type) {
 	if (type != kInstTypeInt)
-		throw Common::Exception("o_decbp: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_decbp(): Illegal type %d", type);
 
 	int32 oldStackPtr = _stack.getStackPtr();
 	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32LE());
@@ -667,9 +636,9 @@ void NCSScript::o_decbp(InstructionType type) {
 	_stack.setStackPtr(oldStackPtr);
 }
 
-void NCSScript::o_incbp(InstructionType type) {
+void NCSFile::o_incbp(InstructionType type) {
 	if (type != kInstTypeInt)
-		throw Common::Exception("o_incbp: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_incbp(): Illegal type %d", type);
 
 	int32 oldStackPtr = _stack.getStackPtr();
 	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32LE());
@@ -677,23 +646,77 @@ void NCSScript::o_incbp(InstructionType type) {
 	_stack.setStackPtr(oldStackPtr);
 }
 
-void NCSScript::o_savebp(InstructionType type) {
+void NCSFile::o_savebp(InstructionType type) {
 	if (type != kInstTypeNone)
-		throw Common::Exception("o_savebp: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_savebp(): Illegal type %d", type);
 
 	_savedBasePtr = _stack.getBasePtr();
 	_stack.setBasePtr(_stack.getStackPtr());
 }
 
-void NCSScript::o_restorebp(InstructionType type) {
+void NCSFile::o_restorebp(InstructionType type) {
 	if (type != kInstTypeNone)
-		throw Common::Exception("o_restorebp: Illegal type %d", type);
+		throw Common::Exception("NCSFile::o_restorebp(): Illegal type %d", type);
 
 	_stack.setBasePtr(_savedBasePtr);
 }
 
-void NCSScript::o_nop(InstructionType type) {
+void NCSFile::o_nop(InstructionType type) {
 	// Nothing! Yay!
 }
+
+void NCSFile::o_cpdownsp(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_cpdownsp()");
+}
+
+void NCSFile::o_cptopsp(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_cptopsp()");
+}
+
+void NCSFile::o_add(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_add()");
+}
+
+void NCSFile::o_sub(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_sub()");
+}
+
+void NCSFile::o_mul(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_mul()");
+}
+
+void NCSFile::o_div(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_div()");
+}
+
+void NCSFile::o_storestateall(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_storestateall()");
+}
+
+void NCSFile::o_jsr(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_jsr()");
+}
+
+void NCSFile::o_retn(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_retn()");
+}
+
+void NCSFile::o_destruct(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_destruct()");
+}
+
+void NCSFile::o_cpdownbp(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_cpdownbp()");
+}
+
+void NCSFile::o_cptopbp(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_cptopbp()");
+}
+
+void NCSFile::o_storestate(InstructionType type) {
+	throw Common::Exception("TODO: NCSFile::o_storestate()");
+}
+
+} // End of namespace NWScript
 
 } // End of namespace Aurora

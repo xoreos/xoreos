@@ -8,11 +8,13 @@ noinst_HEADERS = types.h \
                  functioncontext.h \
                  object.h \
                  objectcontainer.h \
-                 functionman.h
+                 functionman.h \
+                 ncsfile.h
 
 libnwscript_la_SOURCES = util.cpp \
                          variable.cpp \
                          functioncontext.cpp \
                          object.cpp \
                          objectcontainer.cpp \
-                         functionman.cpp
+                         functionman.cpp \
+                         ncsfile.cpp

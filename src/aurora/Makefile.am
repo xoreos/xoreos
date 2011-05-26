@@ -24,7 +24,6 @@ noinst_HEADERS = types.h \
                  locstring.h \
                  gfffile.h \
                  gffstructs.h \
-                 ncsscript.h \
                  dlgfile.h \
                  lytfile.h \
                  visfile.h \
@@ -49,7 +48,6 @@ libaurora_la_SOURCES = error.cpp \
                        locstring.cpp \
                        gfffile.cpp \
                        gffstructs.cpp \
-                       ncsscript.cpp \
                        dlgfile.cpp \
                        lytfile.cpp \
                        visfile.cpp \
