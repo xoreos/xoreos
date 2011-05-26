@@ -52,6 +52,8 @@ public:
 
 	void registerFunction(const Common::UString &name, uint32 id, const Function &func,
 	                      const Signature &signature);
+	void registerFunction(const Common::UString &name, uint32 id, const Function &func,
+	                      const Signature &signature, const Parameters &defaults);
 
 	FunctionContext createContext(const Common::UString &function) const;
 	void call(const Common::UString &function, FunctionContext &ctx) const;

@@ -55,6 +55,14 @@ void FunctionManager::clear() {
 
 void FunctionManager::registerFunction(const Common::UString &name, uint32 id,
                                        const Function &func, const Signature &signature) {
+	Parameters defaults;
+
+	registerFunction(name, id, func, signature, defaults);
+}
+
+void FunctionManager::registerFunction(const Common::UString &name, uint32 id,
+                                       const Function &func, const Signature &signature,
+                                       const Parameters &defaults) {
 
 	std::pair<FunctionMap::iterator, bool> result;
 
@@ -66,6 +74,7 @@ void FunctionManager::registerFunction(const Common::UString &name, uint32 id,
 
 	f.func = func;
 	f.ctx.setSignature(signature);
+	f.ctx.setDefaults(defaults);
 	f.empty = false;
 
 	if (_functionArray.size() <= id)

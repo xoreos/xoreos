@@ -53,6 +53,8 @@ enum Type {
 // Index 0 is the return type, following indices are the arguments
 typedef std::vector<Type> Signature;
 
+typedef std::vector<class Variable> Parameters;
+
 typedef boost::function<void (class FunctionContext &ctx)> Function;
 
 } // End of namespace NWScript

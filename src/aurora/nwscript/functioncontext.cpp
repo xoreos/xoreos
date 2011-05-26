@@ -33,7 +33,7 @@ namespace Aurora {
 
 namespace NWScript {
 
-FunctionContext::FunctionContext() : _caller(0), _triggerer(0) {
+FunctionContext::FunctionContext() : _caller(0), _triggerer(0), _defaultCount(0) {
 }
 
 FunctionContext::FunctionContext(const FunctionContext &ctx) {
@@ -49,6 +49,7 @@ FunctionContext &FunctionContext::operator=(const FunctionContext &ctx) {
 	_triggerer    = ctx._triggerer;
 	_return       = ctx._return;
 	_parameters   = ctx._parameters;
+	_defaultCount = ctx._defaultCount;
 
 	return *this;
 }
@@ -69,6 +70,31 @@ void FunctionContext::setSignature(const Signature &signature) {
 
 	for (++s; s != signature.end(); ++s)
 		_parameters.push_back(Variable(*s));
+}
+
+void FunctionContext::setDefaults(const Parameters &defaults) {
+	assert(defaults.size() <= _parameters.size());
+
+	int start = _parameters.size() - defaults.size();
+
+	for (uint i = 0; i < defaults.size(); i++, start++) {
+		      Variable &param = _parameters[start];
+		const Variable &def   = defaults[i];
+
+		assert(param.getType() == def.getType());
+
+		param = def;
+	}
+
+	_defaultCount = defaults.size();
+}
+
+uint32 FunctionContext::getParamMin() const {
+	return _parameters.size() - _defaultCount;
+}
+
+uint32 FunctionContext::getParamMax() const {
+	return _parameters.size();
 }
 
 const Signature &FunctionContext::getSignature() const {

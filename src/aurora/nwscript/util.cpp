@@ -91,6 +91,23 @@ void setParams(Parameters &params, ...) {
 	va_end(va);
 }
 
+Parameters createDefaults(int n, ...) {
+	Parameters defaults;
+
+	defaults.reserve(n);
+
+	va_list va;
+
+	va_start(va, n);
+
+	while (n-- > 0)
+		defaults.push_back(*va_arg(va, const Variable *));
+
+	va_end(va);
+
+	return defaults;
+}
+
 } // End of namespace NWScript
 
 } // End of namespace Aurora

@@ -36,10 +36,10 @@ namespace Aurora {
 
 namespace NWScript {
 
-typedef std::vector<class Variable> Parameters;
-
 Signature createSignature(int n, ...);
 void setParams(Parameters &params, ...);
+
+Parameters createDefaults(int n, ...);
 
 } // End of namespace NWScript
 

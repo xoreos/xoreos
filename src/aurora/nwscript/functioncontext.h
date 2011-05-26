@@ -49,6 +49,10 @@ public:
 	FunctionContext &operator=(const FunctionContext &ctx);
 
 	void setSignature(const Signature &signature);
+	void setDefaults(const Parameters &defaults);
+
+	uint32 getParamMin() const;
+	uint32 getParamMax() const;
 
 	const Signature &getSignature() const;
 
@@ -72,6 +76,8 @@ private:
 
 	Variable   _return;     ///< The function's return value.
 	Parameters _parameters; ///< The function's parameters.
+
+	uint32 _defaultCount; ///< The number of default values.
 };
 
 } // End of namespace NWScript
