@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libnwscript.la
 noinst_HEADERS = types.h \
                  util.h \
                  variable.h \
+                 variablecontainer.h \
                  functioncontext.h \
                  object.h \
                  objectcontainer.h \
@@ -13,6 +14,7 @@ noinst_HEADERS = types.h \
 
 libnwscript_la_SOURCES = util.cpp \
                          variable.cpp \
+                         variablecontainer.cpp \
                          functioncontext.cpp \
                          object.cpp \
                          objectcontainer.cpp \

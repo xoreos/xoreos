@@ -23,55 +23,46 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file aurora/nwscript/object.h
- *  An NWScript object.
+/** @file aurora/nwscript/variablecontainer.h
+ *  An NWScript variable container.
  */
 
-#ifndef AURORA_NWSCRIPT_OBJECT_H
-#define AURORA_NWSCRIPT_OBJECT_H
+#ifndef AURORA_NWSCRIPT_VARIABLECONTAINER_H
+#define AURORA_NWSCRIPT_VARIABLECONTAINER_H
 
 #include <map>
 
-#include "common/types.h"
 #include "common/ustring.h"
 
-#include "aurora/nwscript/variablecontainer.h"
+#include "aurora/nwscript/variable.h"
 
 namespace Aurora {
 
 namespace NWScript {
 
-class ObjectContainer;
-
-typedef std::map<uint32, class Object *> ObjectIDMap;
-typedef std::multimap<Common::UString, class Object *> ObjectTagMap;
-
-class Object : public VariableContainer {
+class VariableContainer {
 public:
-	Object();
-	virtual ~Object();
+	VariableContainer();
+	virtual ~VariableContainer();
 
-	uint32 getID() const;
+	bool hasVariable(const Common::UString &var) const;
 
-	const Common::UString &getTag() const;
+	Variable &getVariable(const Common::UString &var, Type type = kTypeVoid);
+	const Variable &getVariable(const Common::UString &var) const;
 
-protected:
-	uint32 _id;
+	void setVariable(const Common::UString &var, const Variable &value);
 
-	Common::UString _tag;
-
-	void removeContainer();
+	void removeVariable(const Common::UString &var);
+	void clearVariables();
 
 private:
-	ObjectContainer *_objectContainer;
-	ObjectIDMap::iterator _objectContainerID;
-	ObjectTagMap::iterator _objectContainerTag;
+	typedef std::map<Common::UString, Variable> VariableMap;
 
-	friend class ObjectContainer;
+	VariableMap _variables;
 };
 
 } // End of namespace NWScript
 
 } // End of namespace Aurora
 
-#endif // AURORA_NWSCRIPT_OBJECT_H
+#endif // AURORA_NWSCRIPT_VARIABLECONTAINER_H
