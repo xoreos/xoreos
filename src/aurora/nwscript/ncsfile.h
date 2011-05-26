@@ -60,11 +60,16 @@ public:
 	Variable pop();
 	void push(const Variable &obj);
 
+	Variable &get(int32 pos);
+	void set(int32 pos, const Variable &obj);
+
 	int32 getStackPtr();
 	void  setStackPtr(int32 pos);
 
 	int32 getBasePtr();
 	void  setBasePtr(int32 pos);
+
+	void print() const;
 
 private:
 	int32 _stackPtr;
@@ -86,6 +91,7 @@ public:
 	enum InstructionType {
 		// Unary
 		kInstTypeNone      =  0,
+		kInstTypeDirect    =  1,
 		kInstTypeInt       =  3,
 		kInstTypeFloat     =  4,
 		kInstTypeString    =  5,

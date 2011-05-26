@@ -62,7 +62,7 @@ Variable &NCSStack::top() {
 }
 
 Variable NCSStack::pop() {
-	if (_stackPtr == 0)
+	if (_stackPtr == -1)
 		throw Common::Exception("NCSStack: Stack underflow");
 
 	return at(_stackPtr--);
@@ -80,15 +80,40 @@ void NCSStack::push(const Variable &obj) {
 	_stackPtr++;
 }
 
+Variable &NCSStack::get(int32 pos) {
+	if ((pos > -4) || ((pos % 4) != 0))
+		throw Common::Exception("NCSStack::get(): Illegal position %d", pos);
+
+	int32 stackPos = _stackPtr - ((pos / -4) - 1);
+	if (stackPos < 0)
+		throw Common::Exception("NCSStack::get(): Position %d below the bottom", pos);
+
+	return at(stackPos);
+}
+
+void NCSStack::set(int32 pos, const Variable &obj) {
+	if ((pos > -4) || ((pos % 4) != 0))
+		throw Common::Exception("NCSStack::set(): Illegal position %d", pos);
+
+	int32 stackPos = _stackPtr - ((pos / -4) - 1);
+	if (stackPos < 0)
+		throw Common::Exception("NCSStack::set(): Position %d below the bottom", pos);
+
+	at(stackPos) = obj;
+}
+
 int32 NCSStack::getStackPtr() {
 	return (_stackPtr + 1) * -4;
 }
 
 void NCSStack::setStackPtr(int32 pos) {
-	if ((pos >= -4) || ((pos % 4) != 0))
+	if ((pos > -4) || ((pos % 4) != 0))
 		throw Common::Exception("NCSStack::setStackPtr(): Illegal position %d", pos);
 
 	_stackPtr = (pos / -4) - 1;
+
+	if (size() < (_stackPtr + 1))
+		resize(_stackPtr + 1);
 }
 
 int32 NCSStack::getBasePtr() {
@@ -96,10 +121,27 @@ int32 NCSStack::getBasePtr() {
 }
 
 void NCSStack::setBasePtr(int32 pos) {
-	if ((pos >= -4) || ((pos % 4) != 0))
+	if ((pos > -4) || ((pos % 4) != 0))
 		throw Common::Exception("NCSStack::setBasePtr(): Illegal position %d", pos);
 
 	_basePtr = (pos / -4) - 1;
+}
+
+void NCSStack::print() const {
+	warning(".--- %d ---.", _stackPtr);
+	for (int32 i = _stackPtr; i >= 0; i--) {
+		const Variable &var = at(i);
+
+		if      (var.getType() == kTypeInt)
+			warning("| %d: %d", var.getType(), var.getInt());
+		else if (var.getType() == kTypeFloat)
+			warning("| %d: %f", var.getType(), var.getFloat());
+		else if (var.getType() == kTypeString)
+			warning("| %d: \"%s\"", var.getType(), var.getString().c_str());
+		else
+			warning("| %d", var.getType());
+	}
+	warning("'--- ---'");
 }
 
 #define OPCODE(x) { &NCSFile::x, #x }
@@ -216,6 +258,7 @@ void NCSFile::load() {
 
 void NCSFile::reset() {
 	_stack.reset();
+	_stack.push(_script->size());
 
 	_script->seek(13); // 8 byte header + 5 byte program size dummy op
 
@@ -236,14 +279,18 @@ void NCSFile::executeStep() {
 	byte opcode = _script->readByte();
 	InstructionType type = (InstructionType)_script->readByte();
 
-	if (opcode >= _opcodeListSize || opcode == 0)
+	if (opcode >= _opcodeListSize)
 		throw Common::Exception("NCSFile::executeStep(): Illegal instruction 0x%02x", opcode);
+
+	warning("NWScript opcode %s [0x%02X]", _opcodes[opcode].desc, opcode);
 
 	try {
 		(this->*(_opcodes[opcode].proc))(type);
 	} catch (Common::Exception e) {
 		throw e;
 	}
+
+	_stack.print();
 }
 
 void NCSFile::decompile() {
@@ -259,47 +306,51 @@ void NCSFile::decompile() {
 
 void NCSFile::o_rsadd(InstructionType type) {
 	switch (type) {
-	case kInstTypeInt:
-		_stack.push(kTypeInt);
-		break;
-	case kInstTypeFloat:
-		_stack.push(kTypeFloat);
-		break;
-	case kInstTypeString:
-		_stack.push(kTypeString);
-		break;
-	case kInstTypeObject:
-		_stack.push(kTypeObject);
-		break;
-	default:
-		throw Common::Exception("NCSFile::o_rsadd(): Illegal type %d", type);
+		case kInstTypeInt:
+			_stack.push(kTypeInt);
+			break;
+		case kInstTypeFloat:
+			_stack.push(kTypeFloat);
+			break;
+		case kInstTypeString:
+			_stack.push(kTypeString);
+			break;
+		case kInstTypeObject:
+			_stack.push(kTypeObject);
+			break;
+		default:
+			throw Common::Exception("NCSFile::o_rsadd(): Illegal type %d", type);
 	}
 }
 
 void NCSFile::o_const(InstructionType type) {
 	switch (type) {
-	case kInstTypeInt:
-		_stack.push(_script->readSint32LE());
-		break;
-	case kInstTypeFloat:
-		_stack.push(_script->readIEEEFloatLE());
-		break;
-	case kInstTypeString: {
-		_stack.push(kTypeString);
-		_stack.top().getString().readFixedASCII(*_script, _script->readUint16LE());
-		break;
-	}
-	case kInstTypeObject: {
-		uint32 objectID = _script->readUint32LE();
+		case kInstTypeInt:
+			_stack.push(_script->readSint32BE());
+			break;
 
-		if (objectID != 0)
-			throw Common::Exception("NCSFile::o_const(): Illegal object ID %d", objectID);
+		case kInstTypeFloat:
+			_stack.push(_script->readIEEEFloatBE());
+			break;
 
-		_stack.push((Object *) 0);
-		break;
-	}
-	default:
-		throw Common::Exception("NCSFile::o_const(): Illegal type %d", type);
+		case kInstTypeString: {
+			_stack.push(kTypeString);
+			_stack.top().getString().readFixedASCII(*_script, _script->readUint16BE());
+			break;
+		}
+
+		case kInstTypeObject: {
+			uint32 objectID = _script->readUint32BE();
+
+			if (objectID != 0)
+				throw Common::Exception("NCSFile::o_const(): Illegal object ID %d", objectID);
+
+			_stack.push((Object *) 0);
+			break;
+		}
+
+		default:
+			throw Common::Exception("NCSFile::o_const(): Illegal type %d", type);
 	}
 }
 
@@ -307,15 +358,20 @@ void NCSFile::o_action(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_action(): Illegal type %d", type);
 
-	uint16 routineNumber = _script->readUint16LE();
+	uint16 routineNumber = _script->readUint16BE();
 	byte argCount = _script->readByte();
 
 	warning("STUB: NCSFile::o_action(): Run routine %d with %d args", routineNumber, argCount);
 
 	// For now, pop off the args and put a 0 on the stack :P
+	// TODO: For types like vector and struct, the number of arguments != the number of
+	//       stack objects!
 
 	for (byte i = 0; i < argCount; i++)
 		_stack.pop();
+
+	// TODO: The return value pushing is done by the callee!
+
 	_stack.push(0);
 }
 
@@ -386,7 +442,7 @@ void NCSFile::o_booland(InstructionType type) {
 
 void NCSFile::o_eq(InstructionType type) {
 	if (type == kInstTypeStructStruct) // TODO!
-		_script->readUint16LE();
+		_script->readUint16BE();
 
 	Variable arg1 = _stack.pop();
 	Variable arg2 = _stack.pop();
@@ -396,7 +452,7 @@ void NCSFile::o_eq(InstructionType type) {
 
 void NCSFile::o_neq(InstructionType type) {
 	if (type == kInstTypeStructStruct) // TODO!
-		_script->readUint16LE();
+		_script->readUint16BE();
 
 	Variable arg1 = _stack.pop();
 	Variable arg2 = _stack.pop();
@@ -406,101 +462,109 @@ void NCSFile::o_neq(InstructionType type) {
 
 void NCSFile::o_geq(InstructionType type) {
 	switch (type) {
-	case kInstTypeIntInt:
-		try {
-			int32 arg1 = _stack.pop().getInt();
-			int32 arg2 = _stack.pop().getInt();
-			_stack.push(arg2 >= arg1);
-		} catch (Common::Exception e) {
-			throw e;
-		}
-		break;
-	case kInstTypeFloatFloat:
-		try {
-			float arg1 = _stack.pop().getFloat();
-			float arg2 = _stack.pop().getFloat();
-			_stack.push(arg2 >= arg1);
-		} catch (Common::Exception e) {
-			throw e;
-		}
-		break;
-	default:
-		throw Common::Exception("NCSFile::o_geq(): Illegal type %d", type);
+		case kInstTypeIntInt:
+			try {
+				int32 arg1 = _stack.pop().getInt();
+				int32 arg2 = _stack.pop().getInt();
+				_stack.push(arg2 >= arg1);
+			} catch (Common::Exception e) {
+				throw e;
+			}
+			break;
+
+		case kInstTypeFloatFloat:
+			try {
+				float arg1 = _stack.pop().getFloat();
+				float arg2 = _stack.pop().getFloat();
+				_stack.push(arg2 >= arg1);
+			} catch (Common::Exception e) {
+				throw e;
+			}
+			break;
+
+		default:
+			throw Common::Exception("NCSFile::o_geq(): Illegal type %d", type);
 	}
 }
 
 void NCSFile::o_gt(InstructionType type) {
 	switch (type) {
-	case kInstTypeIntInt:
-		try {
-			int32 arg1 = _stack.pop().getInt();
-			int32 arg2 = _stack.pop().getInt();
-			_stack.push(arg2 > arg1);
-		} catch (Common::Exception e) {
-			throw e;
-		}
-		break;
-	case kInstTypeFloatFloat:
-		try {
-			float arg1 = _stack.pop().getFloat();
-			float arg2 = _stack.pop().getFloat();
-			_stack.push(arg2 > arg1);
-		} catch (Common::Exception e) {
-			throw e;
-		}
-		break;
-	default:
-		throw Common::Exception("NCSFile::o_gt(): Illegal type %d", type);
+		case kInstTypeIntInt:
+			try {
+				int32 arg1 = _stack.pop().getInt();
+				int32 arg2 = _stack.pop().getInt();
+				_stack.push(arg2 > arg1);
+			} catch (Common::Exception e) {
+				throw e;
+			}
+			break;
+
+		case kInstTypeFloatFloat:
+			try {
+				float arg1 = _stack.pop().getFloat();
+				float arg2 = _stack.pop().getFloat();
+				_stack.push(arg2 > arg1);
+			} catch (Common::Exception e) {
+				throw e;
+			}
+			break;
+
+		default:
+			throw Common::Exception("NCSFile::o_gt(): Illegal type %d", type);
 	}
 }
 
 void NCSFile::o_lt(InstructionType type) {
 	switch (type) {
-	case kInstTypeIntInt:
-		try {
-			int32 arg1 = _stack.pop().getInt();
-			int32 arg2 = _stack.pop().getInt();
-			_stack.push(arg2 < arg1);
-		} catch (Common::Exception e) {
-			throw e;
-		}
-		break;
-	case kInstTypeFloatFloat:
-		try {
-			float arg1 = _stack.pop().getFloat();
-			float arg2 = _stack.pop().getFloat();
-			_stack.push(arg2 < arg1);
-		} catch (Common::Exception e) {
-			throw e;
-		}
-		break;
-	default:
-		throw Common::Exception("NCSFile::o_lt(): Illegal type %d", type);
+		case kInstTypeIntInt:
+			try {
+				int32 arg1 = _stack.pop().getInt();
+				int32 arg2 = _stack.pop().getInt();
+				_stack.push(arg2 < arg1);
+			} catch (Common::Exception e) {
+				throw e;
+			}
+			break;
+
+		case kInstTypeFloatFloat:
+			try {
+				float arg1 = _stack.pop().getFloat();
+				float arg2 = _stack.pop().getFloat();
+				_stack.push(arg2 < arg1);
+			} catch (Common::Exception e) {
+				throw e;
+			}
+			break;
+
+		default:
+			throw Common::Exception("NCSFile::o_lt(): Illegal type %d", type);
 	}
 }
 
 void NCSFile::o_leq(InstructionType type) {
 	switch (type) {
-	case kInstTypeIntInt:
-		try {
-			int32 arg1 = _stack.pop().getInt();
-			int32 arg2 = _stack.pop().getInt();
-			_stack.push(arg2 <= arg1);
-		} catch (Common::Exception e) {
-			throw e;
-		}
-		break;
-	case kInstTypeFloatFloat:
-		try {
-			float arg1 = _stack.pop().getFloat();
-			float arg2 = _stack.pop().getFloat();
-			_stack.push(arg2 <= arg1);
-		} catch (Common::Exception e) {
-			throw e;
-		}
-		break;
-	default:
-		throw Common::Exception("NCSFile::o_leq(): Illegal type %d", type);
+		case kInstTypeIntInt:
+			try {
+				int32 arg1 = _stack.pop().getInt();
+				int32 arg2 = _stack.pop().getInt();
+				_stack.push(arg2 <= arg1);
+			} catch (Common::Exception e) {
+				throw e;
+			}
+			break;
+
+		case kInstTypeFloatFloat:
+			try {
+				float arg1 = _stack.pop().getFloat();
+				float arg2 = _stack.pop().getFloat();
+				_stack.push(arg2 <= arg1);
+			} catch (Common::Exception e) {
+				throw e;
+			}
+			break;
+
+		default:
+			throw Common::Exception("NCSFile::o_leq(): Illegal type %d", type);
 	}
 }
 
@@ -560,21 +624,23 @@ void NCSFile::o_mod(InstructionType type) {
 
 void NCSFile::o_neg(InstructionType type) {
 	switch (type) {
-	case kInstTypeInt:
-		try {
-			_stack.push(-_stack.pop().getInt());
-		} catch (Common::Exception e) {
-			throw e;
-		}
-		break;
-	case kInstTypeFloat:
-		try {
-			_stack.push(-_stack.pop().getFloat());
-		} catch (Common::Exception e) {
-			throw e;
-		}
-	default:
-		throw Common::Exception("NCSFile::o_neg(): Illegal type %d", type);
+		case kInstTypeInt:
+			try {
+				_stack.push(-_stack.pop().getInt());
+			} catch (Common::Exception e) {
+				throw e;
+			}
+			break;
+
+		case kInstTypeFloat:
+			try {
+				_stack.push(-_stack.pop().getFloat());
+			} catch (Common::Exception e) {
+				throw e;
+			}
+
+		default:
+			throw Common::Exception("NCSFile::o_neg(): Illegal type %d", type);
 	}
 }
 
@@ -593,25 +659,25 @@ void NCSFile::o_movsp(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_movsp(): Illegal type %d", type);
 
-	_stack.setStackPtr(_stack.getStackPtr() + _script->readSint32LE());
+	_stack.setStackPtr(_stack.getStackPtr() - _script->readSint32BE());
 }
 
 void NCSFile::o_jmp(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_jmp(): Illegal type %d", type);
 
-	int32 offset = _script->readSint32LE();
-	_script->seek(offset - 2, SEEK_CUR);
+	int32 offset = _script->readSint32BE();
+	_script->seek(offset - 6, SEEK_CUR);
 }
 
 void NCSFile::o_jz(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_jz(): Illegal type %d", type);
 
-	int32 offset = _script->readSint32LE();
+	int32 offset = _script->readSint32BE();
 
 	if (!_stack.pop().getInt())
-		_script->seek(offset - 2, SEEK_CUR);
+		_script->seek(offset - 6, SEEK_CUR);
 }
 
 void NCSFile::o_not(InstructionType type) {
@@ -626,7 +692,7 @@ void NCSFile::o_decsp(InstructionType type) {
 		throw Common::Exception("NCSFile::o_decsp(): Illegal type %d", type);
 
 	int32 oldStackPtr = _stack.getStackPtr();
-	_stack.setStackPtr(oldStackPtr + _script->readSint32LE());
+	_stack.setStackPtr(oldStackPtr + _script->readSint32BE());
 	_stack.push(_stack.pop().getInt() - 1);
 	_stack.setStackPtr(oldStackPtr);
 }
@@ -636,7 +702,7 @@ void NCSFile::o_incsp(InstructionType type) {
 		throw Common::Exception("NCSFile::o_incsp(): Illegal type %d", type);
 
 	int32 oldStackPtr = _stack.getStackPtr();
-	_stack.setStackPtr(oldStackPtr + _script->readSint32LE());
+	_stack.setStackPtr(oldStackPtr + _script->readSint32BE());
 	_stack.push(_stack.pop().getInt() + 1);
 	_stack.setStackPtr(oldStackPtr);
 }
@@ -645,10 +711,10 @@ void NCSFile::o_jnz(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_jnz(): Illegal type %d", type);
 
-	int32 offset = _script->readSint32LE();
+	int32 offset = _script->readSint32BE();
 
 	if (_stack.pop().getInt())
-		_script->seek(offset - 2, SEEK_CUR);
+		_script->seek(offset - 6, SEEK_CUR);
 }
 
 void NCSFile::o_decbp(InstructionType type) {
@@ -656,7 +722,7 @@ void NCSFile::o_decbp(InstructionType type) {
 		throw Common::Exception("NCSFile::o_decbp(): Illegal type %d", type);
 
 	int32 oldStackPtr = _stack.getStackPtr();
-	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32LE());
+	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32BE());
 	_stack.push(_stack.pop().getInt() - 1);
 	_stack.setStackPtr(oldStackPtr);
 }
@@ -666,7 +732,7 @@ void NCSFile::o_incbp(InstructionType type) {
 		throw Common::Exception("NCSFile::o_incbp(): Illegal type %d", type);
 
 	int32 oldStackPtr = _stack.getStackPtr();
-	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32LE());
+	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32BE());
 	_stack.push(_stack.pop().getInt() + 1);
 	_stack.setStackPtr(oldStackPtr);
 }
@@ -691,27 +757,280 @@ void NCSFile::o_nop(InstructionType type) {
 }
 
 void NCSFile::o_cpdownsp(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_cpdownsp()");
+	if (type != kInstTypeDirect)
+		throw Common::Exception("NCSFile::o_cpdownsp(): Illegal type %d", type);
+
+	int32 offset = _script->readSint32BE();
+	int16 size   = _script->readSint16BE();
+
+	if ((size % 4) != 0)
+		throw Common::Exception("NCSFile::o_cpdownsp(): Illegal size %d", size);
+
+	int32 startPos = -size;
+	while (size > 0) {
+		_stack.set(offset, _stack.get(startPos));
+
+		startPos += 4;
+		offset   += 4;
+		size     -= 4;
+	}
 }
 
 void NCSFile::o_cptopsp(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_cptopsp()");
+	if (type != kInstTypeDirect)
+		throw Common::Exception("NCSFile::o_cptopsp(): Illegal type %d", type);
+
+	int32 offset = _script->readSint32BE();
+	int16 size   = _script->readSint16BE();
+
+	if ((size % 4) != 0)
+		throw Common::Exception("NCSFile::o_cptopsp(): Illegal size %d", size);
+
+	while (size > 0) {
+		_stack.push(_stack.get(offset));
+
+		size -= 4;
+	}
 }
 
 void NCSFile::o_add(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_add()");
+	switch (type) {
+		case kInstTypeIntInt: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push((int32) (op1.getInt() + op2.getInt()));
+			break;
+		}
+
+		case kInstTypeFloatFloat: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(op1.getFloat() + op2.getFloat());
+			break;
+		}
+
+		case kInstTypeIntFloat: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(((float) op1.getInt()) + op2.getFloat());
+			break;
+		}
+
+		case kInstTypeFloatInt: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(op1.getFloat() + ((float) op2.getInt()));
+			break;
+		}
+
+		case kInstTypeStringString: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(op1.getString() + op2.getString());
+			break;
+		}
+
+		case kInstTypeVectorVector: {
+			Variable op2z = _stack.pop();
+			Variable op2y = _stack.pop();
+			Variable op2x = _stack.pop();
+			Variable op1z = _stack.pop();
+			Variable op1y = _stack.pop();
+			Variable op1x = _stack.pop();
+
+			_stack.push(op1z.getFloat() + op2z.getFloat());
+			_stack.push(op1y.getFloat() + op2y.getFloat());
+			_stack.push(op1x.getFloat() + op2x.getFloat());
+			break;
+		}
+
+		default:
+			throw Common::Exception("NCSFile::o_add(): Illegal type %d", type);
+	}
 }
 
 void NCSFile::o_sub(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_sub()");
+	switch (type) {
+		case kInstTypeIntInt: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push((int32) (op1.getInt() - op2.getInt()));
+			break;
+		}
+
+		case kInstTypeFloatFloat: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(op1.getFloat() - op2.getFloat());
+			break;
+		}
+
+		case kInstTypeIntFloat: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(((float) op1.getInt()) - op2.getFloat());
+			break;
+		}
+
+		case kInstTypeFloatInt: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(op1.getFloat() - ((float) op2.getInt()));
+			break;
+		}
+
+		case kInstTypeVectorVector: {
+			Variable op2z = _stack.pop();
+			Variable op2y = _stack.pop();
+			Variable op2x = _stack.pop();
+			Variable op1z = _stack.pop();
+			Variable op1y = _stack.pop();
+			Variable op1x = _stack.pop();
+
+			_stack.push(op1z.getFloat() - op2z.getFloat());
+			_stack.push(op1y.getFloat() - op2y.getFloat());
+			_stack.push(op1x.getFloat() - op2x.getFloat());
+			break;
+		}
+
+		default:
+			throw Common::Exception("NCSFile::o_sub(): Illegal type %d", type);
+	}
 }
 
 void NCSFile::o_mul(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_mul()");
+	switch (type) {
+		case kInstTypeIntInt: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push((int32) (op1.getInt() * op2.getInt()));
+			break;
+		}
+
+		case kInstTypeFloatFloat: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(op1.getFloat() * op2.getFloat());
+			break;
+		}
+
+		case kInstTypeIntFloat: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(((float) op1.getInt()) * op2.getFloat());
+			break;
+		}
+
+		case kInstTypeFloatInt: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(op1.getFloat() * ((float) op2.getInt()));
+			break;
+		}
+
+		case kInstTypeVectorFloat: {
+			Variable op2  = _stack.pop();
+			Variable op1z = _stack.pop();
+			Variable op1y = _stack.pop();
+			Variable op1x = _stack.pop();
+
+			_stack.push(op1z.getFloat() * op2.getFloat());
+			_stack.push(op1y.getFloat() * op2.getFloat());
+			_stack.push(op1x.getFloat() * op2.getFloat());
+			break;
+		}
+
+		case kInstTypeFloatVector: {
+			Variable op2z = _stack.pop();
+			Variable op2y = _stack.pop();
+			Variable op2x = _stack.pop();
+			Variable op1  = _stack.pop();
+
+			_stack.push(op1.getFloat() * op2z.getFloat());
+			_stack.push(op1.getFloat() * op2y.getFloat());
+			_stack.push(op1.getFloat() * op2x.getFloat());
+			break;
+		}
+
+		default:
+			throw Common::Exception("NCSFile::o_mul(): Illegal type %d", type);
+	}
 }
 
 void NCSFile::o_div(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_div()");
+	switch (type) {
+		case kInstTypeIntInt: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push((int32) (op1.getInt() / op2.getInt()));
+			break;
+		}
+
+		case kInstTypeFloatFloat: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(op1.getFloat() / op2.getFloat());
+			break;
+		}
+
+		case kInstTypeIntFloat: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(((float) op1.getInt()) / op2.getFloat());
+			break;
+		}
+
+		case kInstTypeFloatInt: {
+			Variable op2 = _stack.pop();
+			Variable op1 = _stack.pop();
+
+			_stack.push(op1.getFloat() / ((float) op2.getInt()));
+			break;
+		}
+
+		case kInstTypeVectorFloat: {
+			Variable op2  = _stack.pop();
+			Variable op1z = _stack.pop();
+			Variable op1y = _stack.pop();
+			Variable op1x = _stack.pop();
+
+			_stack.push(op1z.getFloat() / op2.getFloat());
+			_stack.push(op1y.getFloat() / op2.getFloat());
+			_stack.push(op1x.getFloat() / op2.getFloat());
+			break;
+		}
+
+		case kInstTypeFloatVector: {
+			Variable op2z = _stack.pop();
+			Variable op2y = _stack.pop();
+			Variable op2x = _stack.pop();
+			Variable op1  = _stack.pop();
+
+			_stack.push(op1.getFloat() / op2z.getFloat());
+			_stack.push(op1.getFloat() / op2y.getFloat());
+			_stack.push(op1.getFloat() / op2x.getFloat());
+			break;
+		}
+
+		default:
+			throw Common::Exception("NCSFile::o_div(): Illegal type %d", type);
+	}
 }
 
 void NCSFile::o_storestateall(InstructionType type) {
@@ -719,15 +1038,51 @@ void NCSFile::o_storestateall(InstructionType type) {
 }
 
 void NCSFile::o_jsr(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_jsr()");
+	if (type != kInstTypeNone)
+		throw Common::Exception("NCSFile::o_jsr(): Illegal type %d", type);
+
+	int32 offset = _script->readSint32BE();
+
+	// Push the current script position
+	_stack.push((int32) _script->pos());
+
+	_script->seek(offset - 6, SEEK_CUR);
 }
 
 void NCSFile::o_retn(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_retn()");
+	int32 returnAddress = _stack.pop().getInt();
+
+	_script->seek(returnAddress);
 }
 
 void NCSFile::o_destruct(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_destruct()");
+	int16 stackSize        = _script->readSint16BE();
+	int16 dontRemoveOffset = _script->readSint16BE();
+	int16 dontRemoveSize   = _script->readSint16BE();
+
+	if ((stackSize % 4) != 0)
+		throw Common::Exception("NCSFile::o_destruct(): Illegal stack size %d", stackSize);
+	if ((dontRemoveOffset % 4) != 0)
+		throw Common::Exception("NCSFile::o_destruct(): Illegal offset %d", dontRemoveOffset);
+	if ((dontRemoveSize % 4) != 0)
+		throw Common::Exception("NCSFile::o_destruct(): Illegal size %d", dontRemoveSize);
+
+	std::vector<Variable> tmp;
+	tmp.reserve(dontRemoveSize / 4);
+
+	while (stackSize > 0) {
+
+		if ((stackSize <= (dontRemoveOffset + dontRemoveSize)) &&
+		    (stackSize >   dontRemoveOffset))
+			tmp.push_back(_stack.top());
+
+		_stack.pop();
+
+		stackSize -= 4;
+	}
+
+	for (std::vector<Variable>::const_reverse_iterator t = tmp.rbegin(); t != tmp.rend(); ++t)
+		_stack.push(*t);
 }
 
 void NCSFile::o_cpdownbp(InstructionType type) {
