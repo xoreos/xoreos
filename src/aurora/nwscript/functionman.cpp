@@ -38,6 +38,10 @@ namespace Aurora {
 
 namespace NWScript {
 
+FunctionManager::FunctionEntry::FunctionEntry() : empty(true) {
+}
+
+
 FunctionManager::FunctionManager() {
 }
 
@@ -45,15 +49,16 @@ FunctionManager::~FunctionManager() {
 }
 
 void FunctionManager::clear() {
-	_functions.clear();
+	_functionMap.clear();
+	_functionArray.clear();
 }
 
-void FunctionManager::registerFunction(const Common::UString &name,
+void FunctionManager::registerFunction(const Common::UString &name, uint32 id,
                                        const Function &func, const Signature &signature) {
 
 	std::pair<FunctionMap::iterator, bool> result;
 
-	result = _functions.insert(std::make_pair(name, FunctionEntry()));
+	result = _functionMap.insert(std::make_pair(name, FunctionEntry()));
 	if (!result.second)
 		throw Common::Exception("Failed to register NWScript function \"%s\"", name.c_str());
 
@@ -61,22 +66,43 @@ void FunctionManager::registerFunction(const Common::UString &name,
 
 	f.func = func;
 	f.ctx.setSignature(signature);
+	f.empty = false;
+
+	if (_functionArray.size() <= id)
+		_functionArray.resize(id + 1);
+
+	_functionArray[id] = f;
 }
 
 FunctionContext FunctionManager::createContext(const Common::UString &function) const {
-	FunctionMap::const_iterator f = _functions.find(function);
-	if (f == _functions.end())
-		throw Common::Exception("No such NWScript function \"%s\"", function.c_str());
-
-	return f->second.ctx;
+	return find(function).ctx;
 }
 
 void FunctionManager::call(const Common::UString &function, FunctionContext &ctx) const {
-	FunctionMap::const_iterator f = _functions.find(function);
-	if (f == _functions.end())
+	find(function).func(ctx);
+}
+
+FunctionContext FunctionManager::createContext(uint32 function) const {
+	return find(function).ctx;
+}
+
+void FunctionManager::call(uint32 function, FunctionContext &ctx) const {
+	find(function).func(ctx);
+}
+
+const FunctionManager::FunctionEntry &FunctionManager::find(const Common::UString &function) const {
+	FunctionMap::const_iterator f = _functionMap.find(function);
+	if ((f == _functionMap.end()) || f->second.empty)
 		throw Common::Exception("No such NWScript function \"%s\"", function.c_str());
 
-	f->second.func(ctx);
+	return f->second;
+}
+
+const FunctionManager::FunctionEntry &FunctionManager::find(uint32 function) const {
+	if ((function >= _functionArray.size()) || _functionArray[function].empty)
+		throw Common::Exception("No such NWScript function %d", function);
+
+	return _functionArray[function];
 }
 
 } // End of namespace NWScript

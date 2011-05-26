@@ -50,21 +50,33 @@ public:
 
 	void clear();
 
-	void registerFunction(const Common::UString &name, const Function &func,
+	void registerFunction(const Common::UString &name, uint32 id, const Function &func,
 	                      const Signature &signature);
 
 	FunctionContext createContext(const Common::UString &function) const;
 	void call(const Common::UString &function, FunctionContext &ctx) const;
 
+	FunctionContext createContext(uint32 function) const;
+	void call(uint32 function, FunctionContext &ctx) const;
+
 private:
 	struct FunctionEntry {
+		bool empty;
+
 		Function func;
 		FunctionContext ctx;
+
+		FunctionEntry();
 	};
 
 	typedef std::map<Common::UString, FunctionEntry> FunctionMap;
+	typedef std::vector<FunctionEntry> FunctionArray;
 
-	FunctionMap _functions;
+	FunctionMap _functionMap;
+	FunctionArray _functionArray;
+
+	const FunctionEntry &find(const Common::UString &function) const;
+	const FunctionEntry &find(uint32 function) const;
 };
 
 } // End of namespace NWScript

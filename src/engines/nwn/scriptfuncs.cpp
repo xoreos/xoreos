@@ -75,7 +75,7 @@ Aurora::NWScript::Object *ScriptFunctions::getPC() {
 void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Signature sig;
 
-	FunctionMan.registerFunction("BeginConversation",
+	FunctionMan.registerFunction("BeginConversation", 255,
 			boost::bind(&ScriptFunctions::beginConversation, this, _1),
 			createSignature(3, kTypeVoid, kTypeString, kTypeObject));
 }

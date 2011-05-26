@@ -46,6 +46,8 @@ public:
 	FunctionContext(const FunctionContext &ctx);
 	~FunctionContext();
 
+	FunctionContext &operator=(const FunctionContext &ctx);
+
 	void setSignature(const Signature &signature);
 
 	const Signature &getSignature() const;
@@ -70,9 +72,6 @@ private:
 
 	Variable   _return;     ///< The function's return value.
 	Parameters _parameters; ///< The function's parameters.
-
-
-	FunctionContext &operator=(const FunctionContext &ctx);
 };
 
 } // End of namespace NWScript
