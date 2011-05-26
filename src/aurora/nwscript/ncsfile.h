@@ -57,6 +57,8 @@ public:
 
 	void reset();
 
+	bool empty() const;
+
 	Variable &top();
 	Variable pop();
 	void push(const Variable &obj);

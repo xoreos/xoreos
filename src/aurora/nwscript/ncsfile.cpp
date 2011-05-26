@@ -61,7 +61,14 @@ void NCSStack::reset() {
 	_basePtr  = -1;
 }
 
+bool NCSStack::empty() const {
+	return _stackPtr < 0;
+}
+
 Variable &NCSStack::top() {
+	if (_stackPtr == -1)
+		throw Common::Exception("NCSStack: Stack underflow");
+
 	return at(_stackPtr);
 }
 
