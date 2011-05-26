@@ -27,6 +27,8 @@
  *  NWScript variable.
  */
 
+#include "common/error.h"
+
 #include "aurora/nwscript/variable.h"
 
 namespace Aurora {
@@ -35,6 +37,30 @@ namespace NWScript {
 
 Variable::Variable(Type type) : _type(kTypeVoid) {
 	setType(type);
+}
+
+Variable::Variable(int32 value) : _type(kTypeVoid) {
+	setType(kTypeInt);
+
+	*this = value;
+}
+
+Variable::Variable(float value) : _type(kTypeVoid) {
+	setType(kTypeFloat);
+
+	*this = value;
+}
+
+Variable::Variable(const Common::UString &value) : _type(kTypeVoid) {
+	setType(kTypeString);
+
+	*this = value;
+}
+
+Variable::Variable(Object *value) : _type(kTypeVoid) {
+	setType(kTypeObject);
+
+	*this = value;
 }
 
 Variable::Variable(const Variable &var) : _type(kTypeVoid) {
@@ -72,6 +98,7 @@ void Variable::setType(Type type) {
 			break;
 
 		default:
+			throw Common::Exception("Variable::setType(): Invalid type %d", type);
 			break;
 	}
 }
@@ -91,24 +118,36 @@ Variable &Variable::operator=(const Variable &var) {
 }
 
 Variable &Variable::operator=(int32 value) {
+	if (_type != kTypeInt)
+		throw Common::Exception("Can't assign an int value to a non-int variable");
+
 	_value._int = value;
 
 	return *this;
 }
 
 Variable &Variable::operator=(float value) {
+	if (_type != kTypeFloat)
+		throw Common::Exception("Can't assign a float value to a non-float variable");
+
 	_value._float = value;
 
 	return *this;
 }
 
 Variable &Variable::operator=(const Common::UString &value) {
+	if (_type != kTypeString)
+		throw Common::Exception("Can't assign a string value to a non-string variable");
+
 	*_value._string = value;
 
 	return *this;
 }
 
 Variable &Variable::operator=(Object *value) {
+	if (_type != kTypeObject)
+		throw Common::Exception("Can't assign an object value to a non-object variable");
+
 	_value._object = value;
 
 	return *this;
@@ -150,18 +189,37 @@ Type Variable::getType() const {
 }
 
 int32 Variable::getInt() const {
+	if (_type != kTypeInt)
+		throw Common::Exception("Can't get an int value from a non-int variable");
+
 	return _value._int;
 }
 
 float Variable::getFloat() const {
+	if (_type != kTypeFloat)
+		throw Common::Exception("Can't get a float value from a non-float variable");
+
 	return _value._float;
 }
 
 const Common::UString &Variable::getString() const {
+	if (_type != kTypeString)
+		throw Common::Exception("Can't get a string value from a non-string variable");
+
+	return *_value._string;
+}
+
+Common::UString &Variable::getString() {
+	if (_type != kTypeString)
+		throw Common::Exception("Can't get a string value from a non-string variable");
+
 	return *_value._string;
 }
 
 Object *Variable::getObject() const {
+	if (_type != kTypeObject)
+		throw Common::Exception("Can't get an object value from a non-object variable");
+
 	return _value._object;
 }
 

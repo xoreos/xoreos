@@ -48,6 +48,10 @@ class Object;
 class Variable {
 public:
 	Variable(Type type = kTypeVoid);
+	Variable(int32 value);
+	Variable(float value);
+	Variable(const Common::UString &value);
+	Variable(Object *value);
 	Variable(const Variable &var);
 	~Variable();
 
@@ -71,6 +75,7 @@ public:
 
 	int32 getInt() const;
 	float getFloat() const;
+	Common::UString &getString();
 	const Common::UString &getString() const;
 	Object *getObject() const;
 
