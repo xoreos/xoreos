@@ -136,6 +136,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getPCSpeaker, this, _1),
 			createSignature(1, kTypeObject));
 
+	FunctionMan.registerFunction("GetModule", 242,
+			boost::bind(&ScriptFunctions::getModule, this, _1),
+			createSignature(1, kTypeObject));
+
 	FunctionMan.registerFunction("BeginConversation", 255,
 			boost::bind(&ScriptFunctions::beginConversation, this, _1),
 			createSignature(3, kTypeVoid, kTypeString, kTypeObject));
@@ -240,6 +244,10 @@ void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 		speaker = object->getPCSpeaker();
 
 	ctx.getReturn() = (Aurora::NWScript::Object *) speaker;
+}
+
+void ScriptFunctions::getModule(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) _module;
 }
 
 void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {

@@ -79,6 +79,8 @@ private:
 
 	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
 
+	void getModule(Aurora::NWScript::FunctionContext &ctx);
+
 	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
 
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);

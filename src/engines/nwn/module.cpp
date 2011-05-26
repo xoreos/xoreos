@@ -563,7 +563,9 @@ const Object *Module::findObject(const Common::UString &tag) const {
 	return _area->findObject(tag);
 }
 
-void Module::startConversation(const Common::UString &conv, Creature &pc, Object &obj) {
+void Module::startConversation(const Common::UString &conv, Creature &pc,
+                               Engines::NWN::Object &obj) {
+
 	_ingameGUI->startConversation(conv, pc, obj);
 }
 
