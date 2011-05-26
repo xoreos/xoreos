@@ -48,7 +48,7 @@ DLGFile::DLGFile(Common::SeekableReadStream &dlg) : _ended(true) {
 	_currentEntry = _entriesNPC.end();
 }
 
-DLGFile::DLGFile(const Common::UString &dlg) {
+DLGFile::DLGFile(const Common::UString &dlg) : _ended(true) {
 	Common::SeekableReadStream *res = ResMan.getResource(dlg, kFileTypeDLG);
 	if (!res)
 		throw Common::Exception("No such DLG \"%s\"", dlg.c_str());
