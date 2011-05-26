@@ -64,6 +64,8 @@ private:
 	Creature *convertCreature(Aurora::NWScript::Object *o);
 	Creature *convertPC      (Aurora::NWScript::Object *o);
 
+	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
+
 	void getObjectIsValid(Aurora::NWScript::FunctionContext &ctx);
 
 	void getLocalInt(Aurora::NWScript::FunctionContext &ctx);

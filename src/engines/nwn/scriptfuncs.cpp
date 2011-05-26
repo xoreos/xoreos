@@ -99,6 +99,10 @@ Creature *ScriptFunctions::convertPC(Aurora::NWScript::Object *o) {
 void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Signature sig;
 
+	FunctionMan.registerFunction("ActionMoveToObject", 22,
+			boost::bind(&ScriptFunctions::actionMoveToObject, this, _1),
+			createSignature(4, kTypeVoid, kTypeObject, kTypeInt, kTypeFloat));
+
 	FunctionMan.registerFunction("GetIsObjectValid", 42,
 			boost::bind(&ScriptFunctions::getObjectIsValid, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -163,6 +167,17 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getNextPC, this, _1),
 			createSignature(1, kTypeObject));
 
+}
+
+void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getCaller());
+	Object *moveTo = convertObject(ctx.getParams()[0].getObject());
+
+	if (!object || moveTo)
+		return;
+
+	warning("TODO: ActionMoveToObject: \"%s\" to \"%s\"",
+			object->getTag().c_str(), moveTo->getTag().c_str());
 }
 
 void ScriptFunctions::getObjectIsValid(Aurora::NWScript::FunctionContext &ctx) {
