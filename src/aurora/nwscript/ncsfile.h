@@ -31,6 +31,7 @@
 #define AURORA_NWSCRIPT_NCSFILE_H
 
 #include <vector>
+#include <stack>
 
 #include "common/types.h"
 
@@ -86,7 +87,7 @@ public:
 	~NCSFile();
 
 	/** Run the current script, from start to finish. */
-	void run();
+	const Variable &run();
 
 	enum InstructionType {
 		// Unary
@@ -124,6 +125,8 @@ private:
 	int32 _savedBasePtr;
 
 	Object *_objectSelf;
+
+	std::stack<uint32> _returnOffsets;
 
 	typedef void (NCSFile::*OpcodeProc)(InstructionType type);
 	struct Opcode {

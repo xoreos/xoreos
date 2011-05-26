@@ -262,14 +262,16 @@ void NCSFile::load() {
 
 void NCSFile::reset() {
 	_stack.reset();
-	_stack.push(_script->size());
+
+	while (!_returnOffsets.empty())
+		_returnOffsets.pop();
 
 	_script->seek(13); // 8 byte header + 5 byte program size dummy op
 
 	_savedBasePtr = -4;
 }
 
-void NCSFile::run() {
+const Variable &NCSFile::run() {
 	reset();
 
 	while (!_script->eos() && !_script->err())
@@ -277,6 +279,11 @@ void NCSFile::run() {
 
 	if (_script->err())
 		throw Common::Exception(Common::kReadError);
+
+	if (_stack.empty())
+		_stack.push(kTypeVoid);
+
+	return _stack.top();
 }
 
 void NCSFile::executeStep() {
@@ -1108,13 +1115,17 @@ void NCSFile::o_jsr(InstructionType type) {
 	int32 offset = _script->readSint32BE();
 
 	// Push the current script position
-	_stack.push((int32) _script->pos());
+	_returnOffsets.push(_script->pos());
 
 	_script->seek(offset - 6, SEEK_CUR);
 }
 
 void NCSFile::o_retn(InstructionType type) {
-	int32 returnAddress = _stack.pop().getInt();
+	uint32 returnAddress = _script->size();
+	if (!_returnOffsets.empty()) {
+		returnAddress = _returnOffsets.top();
+		_returnOffsets.pop();
+	}
 
 	_script->seek(returnAddress);
 }
