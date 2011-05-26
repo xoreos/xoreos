@@ -54,6 +54,8 @@ public:
 	NCSStack();
 	~NCSStack();
 
+	void reset();
+
 	Variable &top();
 	Variable pop();
 	void push(const Variable &obj);
@@ -78,8 +80,8 @@ public:
 	NCSFile(const Common::UString &ncs);
 	~NCSFile();
 
-	void executeStep();
-	void decompile();
+	/** Run the current script, from start to finish. */
+	void run();
 
 	enum InstructionType {
 		// Unary
@@ -125,6 +127,14 @@ private:
 	void setupOpcodes();
 
 	void load();
+
+	/** Reset the script for another execution. */
+	void reset();
+
+	/** Execute one script step. */
+	void executeStep();
+
+	void decompile(); // TODO
 
 	// Opcode declarations
 	DECLARE_OPCODE(o_nop);

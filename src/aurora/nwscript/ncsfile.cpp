@@ -44,11 +44,17 @@ namespace Aurora {
 namespace NWScript {
 
 NCSStack::NCSStack() {
-	_stackPtr = -1;
-	_basePtr  = -1;
+	reset();
 }
 
 NCSStack::~NCSStack() {
+}
+
+void NCSStack::reset() {
+	clear();
+
+	_stackPtr = -1;
+	_basePtr  = -1;
 }
 
 Variable &NCSStack::top() {
@@ -204,7 +210,26 @@ void NCSFile::load() {
 		warning("TODO: NCSFile::load(): Script size %d < stream size %d", length, _script->size());
 
 	setupOpcodes();
+
+	reset();
+}
+
+void NCSFile::reset() {
+	_stack.reset();
+
+	_script->seek(13); // 8 byte header + 5 byte program size dummy op
+
 	_savedBasePtr = -4;
+}
+
+void NCSFile::run() {
+	reset();
+
+	while (!_script->eos() && !_script->err())
+		executeStep();
+
+	if (_script->err())
+		throw Common::Exception(Common::kReadError);
 }
 
 void NCSFile::executeStep() {
