@@ -99,9 +99,16 @@ Creature *ScriptFunctions::convertPC(Aurora::NWScript::Object *o) {
 void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Signature sig;
 
+	Aurora::NWScript::Variable defaultInt0(0);
+	Aurora::NWScript::Variable defaultInt1(1);
+	Aurora::NWScript::Variable defaultFloat1_0(1.0f);
+	Aurora::NWScript::Variable defaultStringEmpty("");
+	Aurora::NWScript::Variable defaultObject0((Aurora::NWScript::Object *) 0);
+
 	FunctionMan.registerFunction("ActionMoveToObject", 22,
 			boost::bind(&ScriptFunctions::actionMoveToObject, this, _1),
-			createSignature(4, kTypeVoid, kTypeObject, kTypeInt, kTypeFloat));
+			createSignature(4, kTypeVoid, kTypeObject, kTypeInt, kTypeFloat),
+			createDefaults(2, &defaultInt0, &defaultFloat1_0));
 
 	FunctionMan.registerFunction("GetIsObjectValid", 42,
 			boost::bind(&ScriptFunctions::getObjectIsValid, this, _1),
@@ -138,7 +145,8 @@ void ScriptFunctions::registerFunctions() {
 
 	FunctionMan.registerFunction("GetAbilityScore", 139,
 			boost::bind(&ScriptFunctions::getAbilityScore, this, _1),
-			createSignature(4, kTypeInt, kTypeObject, kTypeInt, kTypeInt));
+			createSignature(4, kTypeInt, kTypeObject, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt0));
 
 	FunctionMan.registerFunction("GetTag", 168,
 			boost::bind(&ScriptFunctions::getTag, this, _1),
@@ -146,7 +154,8 @@ void ScriptFunctions::registerFunctions() {
 
 	FunctionMan.registerFunction("GetNearestObjectByTag", 229,
 			boost::bind(&ScriptFunctions::getNearestObjectByTag, this, _1),
-			createSignature(4, kTypeObject, kTypeString, kTypeObject, kTypeInt));
+			createSignature(4, kTypeObject, kTypeString, kTypeObject, kTypeInt),
+			createDefaults(2, &defaultObject0, &defaultInt1));
 
 	FunctionMan.registerFunction("GetPCSpeaker", 238,
 			boost::bind(&ScriptFunctions::getPCSpeaker, this, _1),
@@ -158,7 +167,8 @@ void ScriptFunctions::registerFunctions() {
 
 	FunctionMan.registerFunction("BeginConversation", 255,
 			boost::bind(&ScriptFunctions::beginConversation, this, _1),
-			createSignature(3, kTypeVoid, kTypeString, kTypeObject));
+			createSignature(3, kTypeVoid, kTypeString, kTypeObject),
+			createDefaults(2, &defaultStringEmpty, &defaultObject0));
 
 	FunctionMan.registerFunction("SendMessageToPC", 374,
 			boost::bind(&ScriptFunctions::sendMessageToPC, this, _1),
