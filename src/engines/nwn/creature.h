@@ -39,6 +39,7 @@
 #include "graphics/aurora/types.h"
 #include "graphics/aurora/textureman.h"
 
+#include "engines/nwn/types.h"
 #include "engines/nwn/object.h"
 
 namespace Aurora {
@@ -125,6 +126,9 @@ public:
 	/** Return the creature's XP. */
 	uint32 getXP() const;
 
+	/** Return a creature's ability score. */
+	uint8 getAbility(Ability ability) const;
+
 	/** Return the current HP this creature has. */
 	int32 getCurrentHP() const;
 	/** Return the max HP this creature can have. */
@@ -187,6 +191,8 @@ private:
 	int32 _baseHP;
 	int32 _bonusHP;
 	int32 _currentHP;
+
+	uint8 _abilities[kAbilityMAX];
 
 	std::vector<Class> _classes;
 

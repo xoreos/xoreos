@@ -118,6 +118,13 @@ void Creature::clear() {
 
 	_xp = 0;
 
+	_baseHP    = 0;
+	_bonusHP   = 0;
+	_currentHP = 0;
+
+	for (int i = 0; i < kAbilityMAX; i++)
+		_abilities[i] = 0;
+
 	_classes.clear();
 
 	_deity.clear();
@@ -179,6 +186,12 @@ uint32 Creature::getAge() const {
 
 uint32 Creature::getXP() const {
 	return _xp;
+}
+
+uint8 Creature::getAbility(Ability ability) const {
+	assert((ability > 0) && (ability < kAbilityMAX));
+
+	return _abilities[ability];
 }
 
 int32 Creature::getCurrentHP() const {
@@ -466,6 +479,14 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 
 	// Experience
 	_xp = gff.getUint("Experience", _xp);
+
+	// Abilities
+	_abilities[kAbilityStrength]     = gff.getUint("STR", _abilities[kAbilityStrength]);
+	_abilities[kAbilityDexterity]    = gff.getUint("DEX", _abilities[kAbilityDexterity]);
+	_abilities[kAbilityConstitution] = gff.getUint("CON", _abilities[kAbilityConstitution]);
+	_abilities[kAbilityIntelligence] = gff.getUint("INT", _abilities[kAbilityIntelligence]);
+	_abilities[kAbilityWisdom]       = gff.getUint("WIS", _abilities[kAbilityWisdom]);
+	_abilities[kAbilityCharisma]     = gff.getUint("CHA", _abilities[kAbilityCharisma]);
 
 	// Classes
 	if (gff.hasField("ClassList")) {

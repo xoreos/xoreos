@@ -129,6 +129,16 @@ enum SFFSounds {
 	kSSFThreaten          = 48
 };
 
+enum Ability {
+	kAbilityStrength     = 0,
+	kAbilityDexterity    = 1,
+	kAbilityConstitution = 2,
+	kAbilityIntelligence = 3,
+	kAbilityWisdom       = 4,
+	kAbilityCharisma     = 5,
+	kAbilityMAX
+};
+
 } // End of namespace NWN
 
 } // End of namespace Engines
