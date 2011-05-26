@@ -44,6 +44,9 @@ static const uint32 kVersion10 = MKID_BE('V1.0');
 static const uint32 kScriptObjectSelf    = 0;
 static const uint32 kScriptObjectInvalid = 1;
 
+// 0: Nothing; 1: Opcodes; 2: Opcodes + stack
+#define DEBUG_TRACELEVEL 0
+
 namespace Aurora {
 
 namespace NWScript {
@@ -285,7 +288,9 @@ void NCSFile::reset() {
 }
 
 const Variable &NCSFile::run() {
+#if DEBUG_TRACELEVEL > 0
 	warning("=== Running script \"%s\" ===", _name.c_str());
+#endif
 
 	reset();
 
@@ -298,8 +303,10 @@ const Variable &NCSFile::run() {
 	if (_stack.empty())
 		_stack.push(kTypeVoid);
 
+#if DEBUG_TRACELEVEL > 0
 	if (_stack.top().getType() == kTypeInt)
 		warning("=> Script\"%s\" returns: %d", _name.c_str(), _stack.top().getInt());
+#endif
 
 	return _stack.top();
 }
@@ -311,7 +318,9 @@ void NCSFile::executeStep() {
 	if (opcode >= _opcodeListSize)
 		throw Common::Exception("NCSFile::executeStep(): Illegal instruction 0x%02x", opcode);
 
+#if DEBUG_TRACELEVEL > 0
 	warning("NWScript opcode %s [0x%02X]", _opcodes[opcode].desc, opcode);
+#endif
 
 	try {
 		(this->*(_opcodes[opcode].proc))(type);
@@ -319,8 +328,10 @@ void NCSFile::executeStep() {
 		throw e;
 	}
 
-	// _stack.print();
-	// warning("[RETURN: %d]", _returnOffsets.empty() ? -1 : _returnOffsets.top());
+#if DEBUG_TRACELEVEL > 1
+	_stack.print();
+	warning("[RETURN: %d]", _returnOffsets.empty() ? -1 : _returnOffsets.top());
+#endif
 }
 
 void NCSFile::decompile() {
@@ -454,7 +465,9 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 			break;
 	}
 
+#if DEBUG_TRACELEVEL > 0
 	warning("NWScript engine function %s (%d)", ctx.getName().c_str(), function);
+#endif
 }
 
 void NCSFile::o_action(InstructionType type) {
