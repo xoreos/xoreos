@@ -378,8 +378,8 @@ void NCSFile::o_const(InstructionType type) {
 void NCSFile::callEngine(uint32 function, uint8 argCount) {
 	Aurora::NWScript::FunctionContext ctx = FunctionMan.createContext(function);
 	if ((argCount < ctx.getParamMin()) || (argCount > ctx.getParamMax()))
-		throw Common::Exception("NCSFile::callEngine(): Argument count for function %d "
-		                        "mismatch (got %d, want %d - %d)", function,
+		throw Common::Exception("NCSFile::callEngine(): Argument count for function \"%s\" "
+		                        "mismatch (got %d, want %d - %d)", ctx.getName().c_str(),
 		                        argCount, ctx.getParamMin(), ctx.getParamMax());
 
 	ctx.setCaller(_objectSelf);
@@ -442,6 +442,7 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 			break;
 	}
 
+	warning("NWScript engine function %s (%d)", ctx.getName().c_str(), function);
 }
 
 void NCSFile::o_action(InstructionType type) {

@@ -32,6 +32,8 @@
 
 #include <vector>
 
+#include "common/ustring.h"
+
 #include "aurora/nwscript/types.h"
 #include "aurora/nwscript/util.h"
 #include "aurora/nwscript/variable.h"
@@ -42,11 +44,13 @@ namespace NWScript {
 
 class FunctionContext {
 public:
-	FunctionContext();
+	FunctionContext(const Common::UString &name = "");
 	FunctionContext(const FunctionContext &ctx);
 	~FunctionContext();
 
 	FunctionContext &operator=(const FunctionContext &ctx);
+
+	const Common::UString &getName() const;
 
 	void setSignature(const Signature &signature);
 	void setDefaults(const Parameters &defaults);
@@ -69,6 +73,8 @@ public:
 	const Parameters &getParams() const;
 
 private:
+	Common::UString _name;
+
 	Signature _signature; ///< The function's signature.
 
 	Object *_caller;    ///< The calling object.

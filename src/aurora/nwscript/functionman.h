@@ -68,7 +68,7 @@ private:
 		Function func;
 		FunctionContext ctx;
 
-		FunctionEntry();
+		FunctionEntry(const Common::UString &name = "");
 	};
 
 	typedef std::map<Common::UString, FunctionEntry> FunctionMap;

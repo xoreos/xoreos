@@ -38,7 +38,8 @@ namespace Aurora {
 
 namespace NWScript {
 
-FunctionManager::FunctionEntry::FunctionEntry() : empty(true) {
+FunctionManager::FunctionEntry::FunctionEntry(const Common::UString &name) :
+	empty(true), ctx(name) {
 }
 
 
@@ -66,7 +67,7 @@ void FunctionManager::registerFunction(const Common::UString &name, uint32 id,
 
 	std::pair<FunctionMap::iterator, bool> result;
 
-	result = _functionMap.insert(std::make_pair(name, FunctionEntry()));
+	result = _functionMap.insert(std::make_pair(name, FunctionEntry(name)));
 	if (!result.second)
 		throw Common::Exception("Failed to register NWScript function \"%s\"", name.c_str());
 

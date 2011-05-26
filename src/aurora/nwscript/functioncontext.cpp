@@ -33,7 +33,9 @@ namespace Aurora {
 
 namespace NWScript {
 
-FunctionContext::FunctionContext() : _caller(0), _triggerer(0), _defaultCount(0) {
+FunctionContext::FunctionContext(const Common::UString &name) : _name(name),
+	_caller(0), _triggerer(0), _defaultCount(0) {
+
 }
 
 FunctionContext::FunctionContext(const FunctionContext &ctx) {
@@ -44,6 +46,7 @@ FunctionContext::~FunctionContext() {
 }
 
 FunctionContext &FunctionContext::operator=(const FunctionContext &ctx) {
+	_name         = ctx._name;
 	_signature    = ctx._signature;
 	_caller       = ctx._caller;
 	_triggerer    = ctx._triggerer;
@@ -52,6 +55,10 @@ FunctionContext &FunctionContext::operator=(const FunctionContext &ctx) {
 	_defaultCount = ctx._defaultCount;
 
 	return *this;
+}
+
+const Common::UString &FunctionContext::getName() const {
+	return _name;
 }
 
 void FunctionContext::setSignature(const Signature &signature) {
