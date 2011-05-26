@@ -39,14 +39,15 @@ namespace Aurora {
 namespace NWScript {
 
 enum Type {
-	kTypeVoid     = 0,
-	kTypeInt         ,
-	kTypeFloat       ,
-	kTypeString      ,
-	kTypeObject      ,
-	kTypeVector      ,  // TODO
-	kTypeLocation    , // TODO
-	kTypeStruct        // TODO
+	kTypeVoid       = 0,
+	kTypeInt           ,
+	kTypeFloat         ,
+	kTypeString        ,
+	kTypeObject        ,
+	kTypeVector        , // TODO
+	kTypeLocation      , // TODO
+	kTypeStruct        , // TODO
+	kTypeEngineType      // TODO
 };
 
 // Index 0 is the return type, following indices are the arguments
