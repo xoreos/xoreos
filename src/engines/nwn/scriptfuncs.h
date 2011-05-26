@@ -79,6 +79,8 @@ private:
 
 	void intToString(Aurora::NWScript::FunctionContext &ctx);
 
+	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
+
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);

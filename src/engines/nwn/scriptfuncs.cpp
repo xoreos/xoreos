@@ -136,6 +136,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::intToString, this, _1),
 			createSignature(2, kTypeString, kTypeInt));
 
+	FunctionMan.registerFunction("GetAbilityScore", 139,
+			boost::bind(&ScriptFunctions::getAbilityScore, this, _1),
+			createSignature(4, kTypeInt, kTypeObject, kTypeInt, kTypeInt));
+
 	FunctionMan.registerFunction("GetTag", 168,
 			boost::bind(&ScriptFunctions::getTag, this, _1),
 			createSignature(2, kTypeString, kTypeObject));
@@ -250,6 +254,20 @@ void ScriptFunctions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::intToString(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = Common::UString::sprintf("%d", ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: ScriptFunctions::getAbilityScore(): nBaseAbilityScore
+
+	ctx.getReturn() = 0;
+
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Creature *creature = convertCreature(params[0].getObject());
+	Ability   ability  = (Ability) params[1].getInt();
+
+	if (creature)
+		ctx.getReturn() = (int32) creature->getAbility(ability);
 }
 
 void ScriptFunctions::getTag(Aurora::NWScript::FunctionContext &ctx) {
