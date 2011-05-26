@@ -52,6 +52,7 @@ public:
 	Variable(float value);
 	Variable(const Common::UString &value);
 	Variable(Object *value);
+	Variable(float x, float y, float z);
 	Variable(const Variable &var);
 	~Variable();
 
@@ -64,12 +65,8 @@ public:
 	Variable &operator=(const Common::UString &value);
 	Variable &operator=(Object *value);
 
-	// TODO: Arithmetic operators
-
 	bool operator==(const Variable &var) const;
 	bool operator!=(const Variable &var) const;
-
-	// TODO: Other comparison operators
 
 	Type getType() const;
 
@@ -79,6 +76,9 @@ public:
 	const Common::UString &getString() const;
 	Object *getObject() const;
 
+	void setVector(float  x, float  y, float  z);
+	void getVector(float &x, float &y, float &z);
+
 private:
 	Type _type;
 
@@ -87,6 +87,7 @@ private:
 		float _float;
 		Common::UString *_string;
 		Object *_object;
+		float _vector[3];
 	} _value;
 };
 

@@ -63,6 +63,12 @@ Variable::Variable(Object *value) : _type(kTypeVoid) {
 	*this = value;
 }
 
+Variable::Variable(float x, float y, float z) : _type(kTypeVoid) {
+	setType(kTypeVector);
+
+	setVector(x, y, z);
+}
+
 Variable::Variable(const Variable &var) : _type(kTypeVoid) {
 	*this = var;
 }
@@ -95,6 +101,12 @@ void Variable::setType(Type type) {
 
 		case kTypeObject:
 			_value._object = 0;
+			break;
+
+		case kTypeVector:
+			_value._vector[0] = 0.0;
+			_value._vector[1] = 0.0;
+			_value._vector[2] = 0.0;
 			break;
 
 		default:
@@ -173,6 +185,11 @@ bool Variable::operator==(const Variable &var) const {
 		case kTypeObject:
 			return _value._object == var._value._object;
 
+		case kTypeVector:
+			return _value._vector[0] == var._value._vector[0] &&
+			       _value._vector[1] == var._value._vector[1] &&
+			       _value._vector[2] == var._value._vector[2];
+
 		default:
 			break;
 	}
@@ -221,6 +238,18 @@ Object *Variable::getObject() const {
 		throw Common::Exception("Can't get an object value from a non-object variable");
 
 	return _value._object;
+}
+
+void Variable::setVector(float x, float y, float z) {
+	_value._vector[0] = x;
+	_value._vector[1] = y;
+	_value._vector[2] = z;
+}
+
+void Variable::getVector(float &x, float &y, float &z) {
+	x = _value._vector[0];
+	y = _value._vector[1];
+	z = _value._vector[2];
 }
 
 } // End of namespace NWScript
