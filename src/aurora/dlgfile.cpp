@@ -34,6 +34,10 @@
 #include "aurora/gfffile.h"
 #include "aurora/dlgfile.h"
 
+#include "aurora/nwscript/types.h"
+#include "aurora/nwscript/variable.h"
+#include "aurora/nwscript/ncsfile.h"
+
 static const uint32 kDLGID = MKID_BE('DLG ');
 
 namespace Aurora {
@@ -60,6 +64,7 @@ DLGFile::DLGFile(const Common::UString &dlg) {
 }
 
 DLGFile::~DLGFile() {
+	abortConversation();
 }
 
 bool DLGFile::getNoZoomIn() const {
@@ -87,7 +92,7 @@ void DLGFile::startConversation() {
 	if (evaluateEntries(_entriesStart, _currentEntry)) {
 		evaluateReplies(_currentEntry->replies, _currentReplies);
 
-		// TODO: DLGFile::start(): Run _currentEntry's script
+		runScript(_currentEntry->script);
 	}
 
 	_ended = false;
@@ -97,7 +102,7 @@ void DLGFile::abortConversation() {
 	if (_ended)
 		return;
 
-	// TODO: DLGFile::abort(): Run abort script
+	runScript(_convAbort);
 
 	_currentEntry = _entriesNPC.end();
 	_currentReplies.clear();
@@ -110,7 +115,7 @@ void DLGFile::pickReply(uint32 id) {
 		return;
 
 	if ((id == kEndLine) || ((_currentEntry == _entriesNPC.end()))) {
-		// TODO: DLGFile::pickReply(): Run end script
+		runScript(_convEnd);
 
 		_ended = true;
 		return;
@@ -124,9 +129,11 @@ void DLGFile::pickReply(uint32 id) {
 	if (evaluateEntries(_currentEntry->replies, _currentEntry)) {
 		evaluateReplies(_currentEntry->replies, _currentReplies);
 
-		// TODO: DLGFile::pickReply(): Run _currentEntry's script
-	} else
+		runScript(_currentEntry->script);
+	} else {
+		runScript(_convEnd);
 		_ended = true;
+	}
 }
 
 const DLGFile::Line *DLGFile::getCurrentEntry() const {
@@ -254,7 +261,8 @@ bool DLGFile::evaluateEntries(const std::vector<Link> &entries,
 	active = _entriesNPC.end();
 
 	for (std::vector<Link>::const_iterator e = entries.begin(); e != entries.end(); ++e) {
-		// TODO: DLGFile::evaluateEntries(): Run the link's active script
+		if (!runScript(e->active))
+			continue;
 
 		assert(e->index < _entriesNPC.size());
 
@@ -272,7 +280,8 @@ bool DLGFile::evaluateReplies(const std::vector<Link> &entries,
 
 	active.reserve(entries.size());
 	for (std::vector<Link>::const_iterator e = entries.begin(); e != entries.end(); ++e) {
-		// TODO: DLGFile::evaluateReplies(): Run the links' active script
+		if (!runScript(e->active))
+			continue;
 
 		assert(e->index < _entriesPC.size());
 
@@ -280,6 +289,30 @@ bool DLGFile::evaluateReplies(const std::vector<Link> &entries,
 	}
 
 	return !active.empty();
+}
+
+bool DLGFile::runScript(const Common::UString &script) {
+	if (script.empty())
+		return true;
+
+	try {
+		NWScript::NCSFile ncs(script);
+
+		const NWScript::Variable &retVal = ncs.run();
+		if (retVal.getType() == NWScript::kTypeInt)
+			return retVal.getInt() != 0;
+		if (retVal.getType() == NWScript::kTypeFloat)
+			return retVal.getFloat() != 0.0;
+
+		return true;
+
+	} catch (Common::Exception &e) {
+		e.add("Failed running dialog script \"%s\"", script.c_str());
+		Common::printException(e, "WARNING: ");
+		return false;
+	}
+
+	return true;
 }
 
 } // End of namespace Aurora

@@ -153,6 +153,8 @@ private:
 	                     std::vector<Entry>::iterator &active);
 	bool evaluateReplies(const std::vector<Link> &entries,
 	                     std::vector<const Line *> &active);
+
+	bool runScript(const Common::UString &script);
 };
 
 } // End of namespace Aurora
