@@ -75,9 +75,47 @@ Aurora::NWScript::Object *ScriptFunctions::getPC() {
 void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Signature sig;
 
+	FunctionMan.registerFunction("GetIsObjectValid", 42,
+			boost::bind(&ScriptFunctions::getObjectIsValid, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+
+	FunctionMan.registerFunction("IntToString", 92,
+			boost::bind(&ScriptFunctions::intToString, this, _1),
+			createSignature(2, kTypeString, kTypeInt));
+
 	FunctionMan.registerFunction("BeginConversation", 255,
 			boost::bind(&ScriptFunctions::beginConversation, this, _1),
 			createSignature(3, kTypeVoid, kTypeString, kTypeObject));
+
+	FunctionMan.registerFunction("SendMessageToPC", 374,
+			boost::bind(&ScriptFunctions::sendMessageToPC, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeString));
+
+	FunctionMan.registerFunction("GetFirstPC", 548,
+			boost::bind(&ScriptFunctions::getFirstPC, this, _1),
+			createSignature(1, kTypeObject));
+	FunctionMan.registerFunction("GetNextPC", 549,
+			boost::bind(&ScriptFunctions::getNextPC, this, _1),
+			createSignature(1, kTypeObject));
+
+}
+
+void ScriptFunctions::getObjectIsValid(Aurora::NWScript::FunctionContext &ctx) {
+	const Object *obj = dynamic_cast<const Object *>(ctx.getParams()[0].getObject());
+
+	ctx.getReturn() = (int32) (obj && obj->loaded());
+}
+
+void ScriptFunctions::intToString(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = Common::UString::sprintf("%d", ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) getPC();
+}
+
+void ScriptFunctions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 }
 
 void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {
@@ -114,6 +152,18 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 		conversation = object->getConversation();
 
 	_module->startConversation(conversation, *pc, *object);
+}
+
+void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Creature *pc = dynamic_cast<Creature *>(params[0].getObject());
+	if (!pc || !pc->isPC())
+		return;
+
+	const Common::UString &msg = params[1].getString();
+
+	warning("Send message to PC \"%s\": \"%s\"", pc->getName().c_str(), msg.c_str());
 }
 
 } // End of namespace NWN

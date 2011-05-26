@@ -57,7 +57,16 @@ private:
 
 	Aurora::NWScript::Object *getPC();
 
+	void getObjectIsValid(Aurora::NWScript::FunctionContext &ctx);
+
+	void intToString(Aurora::NWScript::FunctionContext &ctx);
+
 	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
+
+	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
+
+	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
+	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
 };
 
 } // End of namespace NWN
