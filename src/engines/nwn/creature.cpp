@@ -481,12 +481,12 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_xp = gff.getUint("Experience", _xp);
 
 	// Abilities
-	_abilities[kAbilityStrength]     = gff.getUint("STR", _abilities[kAbilityStrength]);
-	_abilities[kAbilityDexterity]    = gff.getUint("DEX", _abilities[kAbilityDexterity]);
-	_abilities[kAbilityConstitution] = gff.getUint("CON", _abilities[kAbilityConstitution]);
-	_abilities[kAbilityIntelligence] = gff.getUint("INT", _abilities[kAbilityIntelligence]);
-	_abilities[kAbilityWisdom]       = gff.getUint("WIS", _abilities[kAbilityWisdom]);
-	_abilities[kAbilityCharisma]     = gff.getUint("CHA", _abilities[kAbilityCharisma]);
+	_abilities[kAbilityStrength]     = gff.getUint("Str", _abilities[kAbilityStrength]);
+	_abilities[kAbilityDexterity]    = gff.getUint("Dex", _abilities[kAbilityDexterity]);
+	_abilities[kAbilityConstitution] = gff.getUint("Con", _abilities[kAbilityConstitution]);
+	_abilities[kAbilityIntelligence] = gff.getUint("Int", _abilities[kAbilityIntelligence]);
+	_abilities[kAbilityWisdom]       = gff.getUint("Wis", _abilities[kAbilityWisdom]);
+	_abilities[kAbilityCharisma]     = gff.getUint("Cha", _abilities[kAbilityCharisma]);
 
 	// Classes
 	if (gff.hasField("ClassList")) {

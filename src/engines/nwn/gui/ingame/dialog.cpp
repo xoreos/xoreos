@@ -552,7 +552,9 @@ void DialogBox::render(Graphics::RenderPass pass) {
 Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj, Module &module) :
 	_conv(conv), _pc(&pc), _object(&obj), _module(&module) {
 
-	_dlg = new Aurora::DLGFile(conv);
+	_object->setPCSpeaker(&pc);
+
+	_dlg = new Aurora::DLGFile(conv, _object);
 	_dlg->startConversation();
 
 	_dlgBox = new DialogBox(kDialogWidth, kDialogHeight);
@@ -564,8 +566,6 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj, Module &m
 }
 
 Dialog::~Dialog() {
-	_object->stopSound();
-
 	abort();
 
 	delete _dlg;
@@ -586,6 +586,9 @@ void Dialog::hide() {
 
 void Dialog::abort() {
 	hide();
+
+	_object->setPCSpeaker(0);
+	_object->stopSound();
 
 	_dlg->abortConversation();
 }

@@ -42,13 +42,17 @@ static const uint32 kDLGID = MKID_BE('DLG ');
 
 namespace Aurora {
 
-DLGFile::DLGFile(Common::SeekableReadStream &dlg) : _ended(true) {
+DLGFile::DLGFile(Common::SeekableReadStream &dlg, NWScript::Object *owner) :
+	_owner(owner), _ended(true) {
+
 	load(dlg);
 
 	_currentEntry = _entriesNPC.end();
 }
 
-DLGFile::DLGFile(const Common::UString &dlg) : _ended(true) {
+DLGFile::DLGFile(const Common::UString &dlg, NWScript::Object *owner) :
+	_owner(owner), _ended(true) {
+
 	Common::SeekableReadStream *res = ResMan.getResource(dlg, kFileTypeDLG);
 	if (!res)
 		throw Common::Exception("No such DLG \"%s\"", dlg.c_str());
@@ -296,7 +300,7 @@ bool DLGFile::runScript(const Common::UString &script) {
 		return true;
 
 	try {
-		NWScript::NCSFile ncs(script);
+		NWScript::NCSFile ncs(script, _owner);
 
 		const NWScript::Variable &retVal = ncs.run();
 		if (retVal.getType() == NWScript::kTypeInt)

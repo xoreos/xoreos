@@ -44,6 +44,10 @@ namespace Common {
 
 namespace Aurora {
 
+namespace NWScript {
+	class Object;
+}
+
 // TODO: KotOR:
 //       - "ConversationType", "StuntList", "Skippable", "AmbientTrack",
 //         "AnimatedCut", ...
@@ -80,8 +84,8 @@ public:
 	};
 
 
-	DLGFile(Common::SeekableReadStream &dlg);
-	DLGFile(const Common::UString &dlg);
+	DLGFile(Common::SeekableReadStream &dlg, NWScript::Object *owner = 0);
+	DLGFile(const Common::UString &dlg, NWScript::Object *owner = 0);
 	~DLGFile();
 
 	/** Does starting the conversation zoom in the camera onto the speaker or not? */
@@ -120,6 +124,8 @@ private:
 		std::vector<Link> replies; ///< Reply lines.
 	};
 
+
+	NWScript::Object *_owner;
 
 	uint32 _delayEntry; ///< Number of seconds to wait before showing each entry.
 	uint32 _delayReply; ///< Number of seconds to wait before showing each reply.

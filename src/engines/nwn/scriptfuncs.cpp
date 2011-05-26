@@ -187,7 +187,7 @@ void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx)
 	Object *object = convertObject(ctx.getCaller());
 	Object *moveTo = convertObject(ctx.getParams()[0].getObject());
 
-	if (!object || moveTo)
+	if (!object || !moveTo)
 		return;
 
 	warning("TODO: ActionMoveToObject: \"%s\" to \"%s\"",
@@ -357,9 +357,7 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 	if (conversation.empty())
 		conversation = object->getConversation();
 
-	object->setPCSpeaker(pc);
 	_module->startConversation(conversation, *pc, *object);
-	object->setPCSpeaker(0);
 }
 
 void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {

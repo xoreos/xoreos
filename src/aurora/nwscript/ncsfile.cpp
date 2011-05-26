@@ -232,6 +232,8 @@ NCSFile::NCSFile(Common::SeekableReadStream *ncs, Object *self) : _objectSelf(se
 }
 
 NCSFile::NCSFile(const Common::UString &ncs, Object *self) : _script(0), _objectSelf(self) {
+	warning("=== Running script \"%s\" ===", ncs.c_str());
+
 	_script = ResMan.getResource(ncs, kFileTypeNCS);
 	if (!_script)
 		throw Common::Exception("No such NCS \"%s\"", ncs.c_str());
@@ -309,6 +311,7 @@ void NCSFile::executeStep() {
 	}
 
 	// _stack.print();
+	// warning("[RETURN: %d]", _returnOffsets.empty() ? -1 : _returnOffsets.top());
 }
 
 void NCSFile::decompile() {
