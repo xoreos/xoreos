@@ -81,8 +81,8 @@ private:
 /** An NCS, BioWare's NWN Compile Script. */
 class NCSFile : public AuroraBase {
 public:
-	NCSFile(Common::SeekableReadStream *ncs);
-	NCSFile(const Common::UString &ncs);
+	NCSFile(Common::SeekableReadStream *ncs, Object *self = 0);
+	NCSFile(const Common::UString &ncs, Object *self = 0);
 	~NCSFile();
 
 	/** Run the current script, from start to finish. */
@@ -123,6 +123,8 @@ private:
 	Common::SeekableReadStream *_script;
 	int32 _savedBasePtr;
 
+	Object *_objectSelf;
+
 	typedef void (NCSFile::*OpcodeProc)(InstructionType type);
 	struct Opcode {
 		OpcodeProc proc;
@@ -141,6 +143,8 @@ private:
 	void executeStep();
 
 	void decompile(); // TODO
+
+	void callEngine(uint32 function, uint8 argCount);
 
 	// Opcode declarations
 	DECLARE_OPCODE(o_nop);

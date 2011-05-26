@@ -35,9 +35,13 @@
 #include "aurora/resman.h"
 
 #include "aurora/nwscript/ncsfile.h"
+#include "aurora/nwscript/functionman.h"
 
 static const uint32 kNCSTag    = MKID_BE('NCS ');
 static const uint32 kVersion10 = MKID_BE('V1.0');
+
+static const uint32 kScriptObjectSelf    = 0;
+static const uint32 kScriptObjectInvalid = 1;
 
 namespace Aurora {
 
@@ -214,13 +218,13 @@ void NCSFile::setupOpcodes() {
 
 #undef OPCODE
 
-NCSFile::NCSFile(Common::SeekableReadStream *ncs) {
+NCSFile::NCSFile(Common::SeekableReadStream *ncs, Object *self) : _objectSelf(self) {
 	_script = ncs;
 
 	load();
 }
 
-NCSFile::NCSFile(const Common::UString &ncs) : _script(0) {
+NCSFile::NCSFile(const Common::UString &ncs, Object *self) : _script(0), _objectSelf(self) {
 	_script = ResMan.getResource(ncs, kFileTypeNCS);
 	if (!_script)
 		throw Common::Exception("No such NCS \"%s\"", ncs.c_str());
@@ -290,7 +294,7 @@ void NCSFile::executeStep() {
 		throw e;
 	}
 
-	_stack.print();
+	// _stack.print();
 }
 
 void NCSFile::decompile() {
@@ -342,10 +346,13 @@ void NCSFile::o_const(InstructionType type) {
 		case kInstTypeObject: {
 			uint32 objectID = _script->readUint32BE();
 
-			if (objectID != 0)
+			if      (objectID == kScriptObjectSelf)
+				_stack.push(_objectSelf);
+			else if (objectID == kScriptObjectInvalid)
+				_stack.push((Object *) 0);
+			else
 				throw Common::Exception("NCSFile::o_const(): Illegal object ID %d", objectID);
 
-			_stack.push((Object *) 0);
 			break;
 		}
 
@@ -354,25 +361,82 @@ void NCSFile::o_const(InstructionType type) {
 	}
 }
 
+void NCSFile::callEngine(uint32 function, uint8 argCount) {
+	Aurora::NWScript::FunctionContext ctx = FunctionMan.createContext(function);
+	if (ctx.getParams().size() != argCount)
+		throw Common::Exception("NCSFile::callEngine(): Argument count mismatch (%d vs %d)",
+		                        ctx.getParams().size(), argCount);
+
+	ctx.setCaller(_objectSelf);
+
+	for (uint8 i = 0; i < argCount; i++) {
+		Variable &param = ctx.getParams()[i];
+
+		switch (param.getType()) {
+			case kTypeInt:
+			case kTypeFloat:
+			case kTypeString:
+			case kTypeObject:
+				param = _stack.pop();
+				break;
+
+			case kTypeVector: {
+				float z = _stack.pop().getFloat();
+				float y = _stack.pop().getFloat();
+				float x = _stack.pop().getFloat();
+
+				param.setVector(x, y, z);
+				break;
+			}
+
+			default:
+				throw Common::Exception("NCSFile::callEngine(): Invalid argument type %d",
+				                        param.getType());
+				break;
+		}
+
+	}
+
+	FunctionMan.call(function, ctx);
+
+	Variable &retVal = ctx.getReturn();
+	switch (retVal.getType()) {
+		case kTypeVoid:
+			break;
+
+		case kTypeInt:
+		case kTypeFloat:
+		case kTypeString:
+		case kTypeObject:
+			_stack.push(retVal);
+			break;
+
+		case kTypeVector: {
+			float x, y, z;
+			retVal.getVector(x, y, z);
+
+			_stack.push(x);
+			_stack.push(y);
+			_stack.push(z);
+			break;
+		}
+
+		default:
+			throw Common::Exception("NCSFile::callEngine(): Invalid return type %d",
+			                        retVal.getType());
+			break;
+	}
+
+}
+
 void NCSFile::o_action(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_action(): Illegal type %d", type);
 
 	uint16 routineNumber = _script->readUint16BE();
-	byte argCount = _script->readByte();
+	uint8  argCount      = _script->readByte();
 
-	warning("STUB: NCSFile::o_action(): Run routine %d with %d args", routineNumber, argCount);
-
-	// For now, pop off the args and put a 0 on the stack :P
-	// TODO: For types like vector and struct, the number of arguments != the number of
-	//       stack objects!
-
-	for (byte i = 0; i < argCount; i++)
-		_stack.pop();
-
-	// TODO: The return value pushing is done by the callee!
-
-	_stack.push(0);
+	callEngine(routineNumber, argCount);
 }
 
 void NCSFile::o_logand(InstructionType type) {
