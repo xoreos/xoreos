@@ -43,6 +43,9 @@ namespace NWN {
 
 class Module;
 
+class Object;
+class Creature;
+
 class ScriptFunctions {
 public:
 	ScriptFunctions();
@@ -57,7 +60,20 @@ private:
 
 	Aurora::NWScript::Object *getPC();
 
+	Object   *convertObject  (Aurora::NWScript::Object *o);
+	Creature *convertCreature(Aurora::NWScript::Object *o);
+	Creature *convertPC      (Aurora::NWScript::Object *o);
+
 	void getObjectIsValid(Aurora::NWScript::FunctionContext &ctx);
+
+	void getLocalInt(Aurora::NWScript::FunctionContext &ctx);
+	void getLocalFloat(Aurora::NWScript::FunctionContext &ctx);
+	void getLocalString(Aurora::NWScript::FunctionContext &ctx);
+	void getLocalObject(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalInt(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalFloat(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalString(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void intToString(Aurora::NWScript::FunctionContext &ctx);
 

@@ -72,12 +72,61 @@ Aurora::NWScript::Object *ScriptFunctions::getPC() {
 	return (Aurora::NWScript::Object *) _module->getPC();
 }
 
+Object *ScriptFunctions::convertObject(Aurora::NWScript::Object *o) {
+	Object *object = dynamic_cast<Object *>(o);
+	if (!object || !object->loaded())
+		return 0;
+
+	return object;
+}
+
+Creature *ScriptFunctions::convertCreature(Aurora::NWScript::Object *o) {
+	Creature *creature = dynamic_cast<Creature *>(o);
+	if (!creature || !creature->loaded())
+		return 0;
+
+	return creature;
+}
+
+Creature *ScriptFunctions::convertPC(Aurora::NWScript::Object *o) {
+	Creature *pc = dynamic_cast<Creature *>(o);
+	if (!pc || !pc->loaded() || !pc->isPC())
+		return 0;
+
+	return pc;
+}
+
 void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Signature sig;
 
 	FunctionMan.registerFunction("GetIsObjectValid", 42,
 			boost::bind(&ScriptFunctions::getObjectIsValid, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
+
+	FunctionMan.registerFunction("GetLocalInt", 51,
+			boost::bind(&ScriptFunctions::getLocalInt, this, _1),
+			createSignature(3, kTypeInt, kTypeObject, kTypeString));
+	FunctionMan.registerFunction("GetLocalFloat", 52,
+			boost::bind(&ScriptFunctions::getLocalFloat, this, _1),
+			createSignature(3, kTypeFloat, kTypeObject, kTypeString));
+	FunctionMan.registerFunction("GetLocalString", 53,
+			boost::bind(&ScriptFunctions::getLocalString, this, _1),
+			createSignature(3, kTypeString, kTypeObject, kTypeString));
+	FunctionMan.registerFunction("GetLocalObject", 54,
+			boost::bind(&ScriptFunctions::getLocalObject, this, _1),
+			createSignature(3, kTypeObject, kTypeObject, kTypeString));
+	FunctionMan.registerFunction("SetLocalInt", 55,
+			boost::bind(&ScriptFunctions::setLocalInt, this, _1),
+			createSignature(4, kTypeVoid, kTypeObject, kTypeString, kTypeInt));
+	FunctionMan.registerFunction("SetLocalFloat", 56,
+			boost::bind(&ScriptFunctions::setLocalFloat, this, _1),
+			createSignature(4, kTypeVoid, kTypeObject, kTypeString, kTypeFloat));
+	FunctionMan.registerFunction("SetLocalString", 57,
+			boost::bind(&ScriptFunctions::setLocalString, this, _1),
+			createSignature(4, kTypeVoid, kTypeObject, kTypeString, kTypeString));
+	FunctionMan.registerFunction("SetLocalObject", 58,
+			boost::bind(&ScriptFunctions::setLocalObject, this, _1),
+			createSignature(4, kTypeVoid, kTypeObject, kTypeString, kTypeObject));
 
 	FunctionMan.registerFunction("IntToString", 92,
 			boost::bind(&ScriptFunctions::intToString, this, _1),
@@ -105,9 +154,71 @@ void ScriptFunctions::registerFunctions() {
 }
 
 void ScriptFunctions::getObjectIsValid(Aurora::NWScript::FunctionContext &ctx) {
-	const Object *obj = dynamic_cast<const Object *>(ctx.getParams()[0].getObject());
+	ctx.getReturn() = convertObject(ctx.getParams()[0].getObject()) != 0;
+}
 
-	ctx.getReturn() = (int32) (obj && obj->loaded());
+void ScriptFunctions::getLocalInt(Aurora::NWScript::FunctionContext &ctx) {
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Object *object = convertObject(params[0].getObject());
+	if (object)
+		ctx.getReturn() = object->getVariable(params[1].getString(), kTypeInt).getInt();
+}
+
+void ScriptFunctions::getLocalFloat(Aurora::NWScript::FunctionContext &ctx) {
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Object *object = convertObject(params[0].getObject());
+	if (object)
+		ctx.getReturn() = object->getVariable(params[1].getString(), kTypeFloat).getFloat();
+}
+
+void ScriptFunctions::getLocalString(Aurora::NWScript::FunctionContext &ctx) {
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Object *object = convertObject(params[0].getObject());
+	if (object)
+		ctx.getReturn() = object->getVariable(params[1].getString(), kTypeString).getString();
+}
+
+void ScriptFunctions::getLocalObject(Aurora::NWScript::FunctionContext &ctx) {
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Object *object = convertObject(params[0].getObject());
+	if (object)
+		ctx.getReturn() = object->getVariable(params[1].getString(), kTypeObject).getObject();
+}
+
+void ScriptFunctions::setLocalInt(Aurora::NWScript::FunctionContext &ctx) {
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Object *object = convertObject(params[0].getObject());
+	if (object)
+		object->setVariable(params[1].getString(), params[2].getInt());
+}
+
+void ScriptFunctions::setLocalFloat(Aurora::NWScript::FunctionContext &ctx) {
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Object *object = convertObject(params[0].getObject());
+	if (object)
+		object->setVariable(params[1].getString(), params[2].getFloat());
+}
+
+void ScriptFunctions::setLocalString(Aurora::NWScript::FunctionContext &ctx) {
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Object *object = convertObject(params[0].getObject());
+	if (object)
+		object->setVariable(params[1].getString(), params[2].getString());
+}
+
+void ScriptFunctions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Object *object = convertObject(params[0].getObject());
+	if (object)
+		object->setVariable(params[1].getString(), params[2].getObject());
 }
 
 void ScriptFunctions::intToString(Aurora::NWScript::FunctionContext &ctx) {
@@ -124,7 +235,7 @@ void ScriptFunctions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 	Object *speaker = 0;
-	Object *object  = dynamic_cast<Object *>(ctx.getCaller());
+	Object *object  = convertObject(ctx.getCaller());
 	if (object)
 		speaker = object->getPCSpeaker();
 
@@ -146,17 +257,17 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 		obj2 = getPC();
 
 	// Try to convert them to an NWN Creature and Object
-	Creature *pc     = dynamic_cast<Creature *>(obj2);
-	Object   *object = dynamic_cast<Object *>(obj1);
+	Creature *pc     = convertPC(obj2);
+	Object   *object = convertObject(obj1);
 
 	// Try the other way round, if necessary
-	if (!pc || !pc->isPC()) {
-		pc     = dynamic_cast<Creature *>(obj1);
-		object = dynamic_cast<Object *>(obj2);
+	if (!pc || !object) {
+		pc     = convertPC(obj1);
+		object = convertObject(obj2);
 	}
 
 	// Fail
-	if (!pc || !object || !pc->isPC())
+	if (!pc || !object)
 		throw Common::Exception("ScriptFunctions::beginConversation(): "
 		                        "Need one PC and one object");
 
@@ -176,8 +287,8 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
-	Creature *pc = dynamic_cast<Creature *>(params[0].getObject());
-	if (!pc || !pc->isPC())
+	Creature *pc = convertPC(params[0].getObject());
+	if (!pc)
 		return;
 
 	const Common::UString &msg = params[1].getString();
