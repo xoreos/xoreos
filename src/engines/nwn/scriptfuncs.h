@@ -112,6 +112,10 @@ private:
 
 	void getMaster(Aurora::NWScript::FunctionContext &ctx);
 
+	void getClassByPosition(Aurora::NWScript::FunctionContext &ctx);
+	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
+	void getLevelByClass(Aurora::NWScript::FunctionContext &ctx);
+
 	void getGender(Aurora::NWScript::FunctionContext &ctx);
 
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);

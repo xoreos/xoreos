@@ -107,6 +107,11 @@ public:
 	/** Get the creature's subrace. */
 	const Common::UString &getSubRace() const;
 
+	/** Get the creature's class and level at that class slot position. */
+	void getClass(uint32 position, uint32 &classID, uint16 &level) const;
+	/** Get the creature's level for this class. */
+	uint16 getClassLevel(uint32 classID) const;
+
 	/** Return the creature's class as needed in conversations, e.g. "Barbarian". */
 	const Common::UString &getConvClass() const;
 	/** Return the creature's class as needed in conversations, e.g. "barbarian". */

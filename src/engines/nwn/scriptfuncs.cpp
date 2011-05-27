@@ -216,6 +216,19 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(2, kTypeObject, kTypeObject),
 			createDefaults(1, &defaultObject0));
 
+	FunctionMan.registerFunction("GetClassByPosition", 341,
+			boost::bind(&ScriptFunctions::getClassByPosition, this, _1),
+			createSignature(3, kTypeInt, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("GetLevelByPosition", 342,
+			boost::bind(&ScriptFunctions::getLevelByPosition, this, _1),
+			createSignature(3, kTypeInt, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("GetLevelByClass", 343,
+			boost::bind(&ScriptFunctions::getLevelByClass, this, _1),
+			createSignature(3, kTypeInt, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+
 	FunctionMan.registerFunction("GetGender", 358,
 			boost::bind(&ScriptFunctions::getGender, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -513,6 +526,55 @@ void ScriptFunctions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
 		object = convertObject(ctx.getCaller());
 
 	ctx.getReturn() = object;
+}
+
+void ScriptFunctions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) kClassInvalid;
+
+	uint32 position = (uint32) ctx.getParams()[0].getInt();
+
+	Creature *creature = convertCreature(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		creature = convertCreature(ctx.getCaller());
+
+	if (creature) {
+		uint32 classID;
+		uint16 level;
+		creature->getClass(position, classID, level);
+
+		ctx.getReturn() = (int32) classID;
+	}
+}
+
+void ScriptFunctions::getLevelByPosition(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	uint32 position = (uint32) ctx.getParams()[0].getInt();
+
+	Creature *creature = convertCreature(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		creature = convertCreature(ctx.getCaller());
+
+	if (creature) {
+		uint32 classID;
+		uint16 level;
+		creature->getClass(position, classID, level);
+
+		ctx.getReturn() = (int32) level;
+	}
+}
+
+void ScriptFunctions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	uint32 classID = (uint32) ctx.getParams()[0].getInt();
+
+	Creature *creature = convertCreature(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		creature = convertCreature(ctx.getCaller());
+
+	if (creature)
+		ctx.getReturn() = creature->getClassLevel(classID);
 }
 
 void ScriptFunctions::getGender(Aurora::NWScript::FunctionContext &ctx) {

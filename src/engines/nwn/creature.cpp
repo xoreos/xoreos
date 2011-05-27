@@ -573,6 +573,25 @@ const Common::UString &Creature::getSubRace() const {
 	return _subRace;
 }
 
+void Creature::getClass(uint32 position, uint32 &classID, uint16 &level) const {
+	if (position >= _classes.size()) {
+		classID = kClassInvalid;
+		level   = 0;
+		return;
+	}
+
+	classID = _classes[position].classID;
+	level   = _classes[position].level;
+}
+
+uint16 Creature::getClassLevel(uint32 classID) const {
+	for (std::vector<Class>::const_iterator c = _classes.begin(); c != _classes.end(); ++c)
+		if (c->classID == classID)
+			return c->level;
+
+	return 0;
+}
+
 const Common::UString &Creature::getConvClass() const {
 	const uint32 classID = _classes.front().classID;
 	const uint32 strRef  = TwoDAReg.get("classes").getRow(classID).getInt("Name");
