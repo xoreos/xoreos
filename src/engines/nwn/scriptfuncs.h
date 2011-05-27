@@ -64,6 +64,8 @@ private:
 	Creature *convertCreature(Aurora::NWScript::Object *o);
 	Creature *convertPC      (Aurora::NWScript::Object *o);
 
+	void random(Aurora::NWScript::FunctionContext &ctx);
+
 	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void getArea(Aurora::NWScript::FunctionContext &ctx);

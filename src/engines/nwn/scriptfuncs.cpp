@@ -105,6 +105,10 @@ void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Variable defaultStringEmpty("");
 	Aurora::NWScript::Variable defaultObject0((Aurora::NWScript::Object *) 0);
 
+	FunctionMan.registerFunction("Random", 0,
+			boost::bind(&ScriptFunctions::random, this, _1),
+			createSignature(2, kTypeInt, kTypeInt));
+
 	FunctionMan.registerFunction("ActionMoveToObject", 22,
 			boost::bind(&ScriptFunctions::actionMoveToObject, this, _1),
 			createSignature(4, kTypeVoid, kTypeObject, kTypeInt, kTypeFloat),
@@ -201,6 +205,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getNextPC, this, _1),
 			createSignature(1, kTypeObject));
 
+}
+
+void ScriptFunctions::random(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = std::rand() %  ctx.getParams()[0].getInt();
 }
 
 void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
