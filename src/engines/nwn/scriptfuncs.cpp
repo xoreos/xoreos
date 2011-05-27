@@ -385,9 +385,16 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 		throw Common::Exception("ScriptFunctions::beginConversation(): "
 		                        "Need one PC and one object");
 
-	if (object->getPCSpeaker())
-		throw Common::Exception("ScriptFunctions::beginConversation(): "
-		                        "Object already in conversation");
+	if (object->getPCSpeaker()) {
+		if (object->getPCSpeaker() != pc) {
+			Creature *otherPC = convertPC(object->getPCSpeaker());
+
+			warning("ScriptFunctions::beginConversation(): "
+			        "Object \"%s\" already in conversation with PC \"%s\"",
+			        object->getTag().c_str(), otherPC ? otherPC->getName().c_str() : "");
+			return;
+		}
+	}
 
 	Common::UString conversation = params[0].getString();
 	if (conversation.empty())
