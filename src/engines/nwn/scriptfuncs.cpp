@@ -102,6 +102,10 @@ Area *ScriptFunctions::convertArea(Aurora::NWScript::Object *o) {
 	return dynamic_cast<Area *>(o);
 }
 
+Module *ScriptFunctions::convertModule(Aurora::NWScript::Object *o) {
+	return dynamic_cast<Module *>(o);
+}
+
 void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Signature sig;
 
@@ -209,6 +213,11 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetModule", 242,
 			boost::bind(&ScriptFunctions::getModule, this, _1),
 			createSignature(1, kTypeObject));
+
+	FunctionMan.registerFunction("GetName", 253,
+			boost::bind(&ScriptFunctions::getName, this, _1),
+			createSignature(3, kTypeString, kTypeObject, kTypeInt),
+			createDefaults(1, &defaultInt0));
 
 	FunctionMan.registerFunction("BeginConversation", 255,
 			boost::bind(&ScriptFunctions::beginConversation, this, _1),
@@ -503,6 +512,23 @@ void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::getModule(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) _module;
+}
+
+void ScriptFunctions::getName(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: ScriptFunctions::getName(): bOriginalName
+
+	ctx.getReturn().getString().clear();
+
+	Module *module = convertModule(ctx.getParams()[0].getObject());
+	Area   *area   = convertArea  (ctx.getParams()[0].getObject());
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+
+	if      (module)
+		ctx.getReturn().getString() = module->getName();
+	else if (area)
+		ctx.getReturn().getString() = area->getName();
+	else if (object)
+		ctx.getReturn().getString() = object->getName();
 }
 
 void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {

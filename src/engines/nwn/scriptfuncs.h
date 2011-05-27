@@ -61,10 +61,11 @@ private:
 
 	Aurora::NWScript::Object *getPC();
 
+	Module   *convertModule  (Aurora::NWScript::Object *o);
+	Area     *convertArea    (Aurora::NWScript::Object *o);
 	Object   *convertObject  (Aurora::NWScript::Object *o);
 	Creature *convertCreature(Aurora::NWScript::Object *o);
 	Creature *convertPC      (Aurora::NWScript::Object *o);
-	Area     *convertArea    (Aurora::NWScript::Object *o);
 
 	void random(Aurora::NWScript::FunctionContext &ctx);
 
@@ -108,6 +109,8 @@ private:
 	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
 
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
+
+	void getName(Aurora::NWScript::FunctionContext &ctx);
 
 	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
 

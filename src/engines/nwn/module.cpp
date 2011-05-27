@@ -559,6 +559,10 @@ void Module::showMenu() {
 	loadTexturePack();
 }
 
+const Common::UString &Module::getName() const {
+	return _ifo.getName().getString();
+}
+
 Aurora::NWScript::Object *Module::findObject(const Common::UString &tag) {
 	if (!_area)
 		return 0;

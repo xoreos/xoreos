@@ -78,6 +78,8 @@ public:
 
 	void showMenu();
 
+	const Common::UString &getName() const;
+
 	Aurora::NWScript::Object *findObject(const Common::UString &tag);
 	const Aurora::NWScript::Object *findObject(const Common::UString &tag) const;
 
