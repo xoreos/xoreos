@@ -492,51 +492,6 @@ void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &c
 		ctx.getReturn() = _module->findObject(tag);
 }
 
-void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) 0;
-
-	Object *object = convertObject(ctx.getParams()[0].getObject());
-	if (ctx.getParamsSpecified() < 1)
-		object = convertObject(ctx.getCaller());
-
-	if (!object)
-		return;
-
-	warning("TODO: GetGold: \"%s\"", object->getTag().c_str());
-}
-
-void ScriptFunctions::musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx) {
-	Area *area = convertArea(ctx.getParams()[0].getObject());
-	if (area)
-		area->playAmbientMusic();
-}
-
-void ScriptFunctions::musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx) {
-	Area *area = convertArea(ctx.getParams()[0].getObject());
-	if (area)
-		area->stopAmbientMusic();
-}
-
-void ScriptFunctions::musicBackgroundChangeDay(Aurora::NWScript::FunctionContext &ctx) {
-	Area *area = convertArea(ctx.getParams()[0].getObject());
-	if (area)
-		area->setMusicDayTrack(ctx.getParams()[1].getInt());
-}
-
-void ScriptFunctions::musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ctx) {
-	Area *area = convertArea(ctx.getParams()[0].getObject());
-	if (area)
-		area->setMusicNightTrack(ctx.getParams()[1].getInt());
-}
-
-void ScriptFunctions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (Aurora::NWScript::Object *) getPC();
-}
-
-void ScriptFunctions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
-}
-
 void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *speaker = 0;
 	Object *object = convertObject(ctx.getCaller());
@@ -548,6 +503,53 @@ void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::getModule(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) _module;
+}
+
+void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {
+	if (!_module)
+		throw Common::Exception("ScriptFunctions::beginConversation(): Module needed");
+
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	// Get the script object parameters
+	Aurora::NWScript::Object *obj1 = ctx.getCaller();
+	Aurora::NWScript::Object *obj2 = params[1].getObject();
+	if (!obj2)
+		obj2 = ctx.getTriggerer();
+	if (!obj2)
+		obj2 = getPC();
+
+	// Try to convert them to an NWN Creature and Object
+	Creature *pc     = convertPC(obj2);
+	Object   *object = convertObject(obj1);
+
+	// Try the other way round, if necessary
+	if (!pc || !object) {
+		pc     = convertPC(obj1);
+		object = convertObject(obj2);
+	}
+
+	// Fail
+	if (!pc || !object)
+		throw Common::Exception("ScriptFunctions::beginConversation(): "
+		                        "Need one PC and one object");
+
+	if (object->getPCSpeaker()) {
+		if (object->getPCSpeaker() != pc) {
+			Creature *otherPC = convertPC(object->getPCSpeaker());
+
+			warning("ScriptFunctions::beginConversation(): "
+			        "Object \"%s\" already in conversation with PC \"%s\"",
+			        object->getTag().c_str(), otherPC ? otherPC->getName().c_str() : "");
+			return;
+		}
+	}
+
+	Common::UString conversation = params[0].getString();
+	if (conversation.empty())
+		conversation = object->getConversation();
+
+	_module->startConversation(conversation, *pc, *object);
 }
 
 void ScriptFunctions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
@@ -632,53 +634,6 @@ void ScriptFunctions::getGender(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = (int32) creature->getGender();
 }
 
-void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {
-	if (!_module)
-		throw Common::Exception("ScriptFunctions::beginConversation(): Module needed");
-
-	const Aurora::NWScript::Parameters &params = ctx.getParams();
-
-	// Get the script object parameters
-	Aurora::NWScript::Object *obj1 = ctx.getCaller();
-	Aurora::NWScript::Object *obj2 = params[1].getObject();
-	if (!obj2)
-		obj2 = ctx.getTriggerer();
-	if (!obj2)
-		obj2 = getPC();
-
-	// Try to convert them to an NWN Creature and Object
-	Creature *pc     = convertPC(obj2);
-	Object   *object = convertObject(obj1);
-
-	// Try the other way round, if necessary
-	if (!pc || !object) {
-		pc     = convertPC(obj1);
-		object = convertObject(obj2);
-	}
-
-	// Fail
-	if (!pc || !object)
-		throw Common::Exception("ScriptFunctions::beginConversation(): "
-		                        "Need one PC and one object");
-
-	if (object->getPCSpeaker()) {
-		if (object->getPCSpeaker() != pc) {
-			Creature *otherPC = convertPC(object->getPCSpeaker());
-
-			warning("ScriptFunctions::beginConversation(): "
-			        "Object \"%s\" already in conversation with PC \"%s\"",
-			        object->getTag().c_str(), otherPC ? otherPC->getName().c_str() : "");
-			return;
-		}
-	}
-
-	Common::UString conversation = params[0].getString();
-	if (conversation.empty())
-		conversation = object->getConversation();
-
-	_module->startConversation(conversation, *pc, *object);
-}
-
 void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
@@ -689,6 +644,51 @@ void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &msg = params[1].getString();
 
 	warning("Send message to PC \"%s\": \"%s\"", pc->getName().c_str(), msg.c_str());
+}
+
+void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (ctx.getParamsSpecified() < 1)
+		object = convertObject(ctx.getCaller());
+
+	if (!object)
+		return;
+
+	warning("TODO: GetGold: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		area->playAmbientMusic();
+}
+
+void ScriptFunctions::musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		area->stopAmbientMusic();
+}
+
+void ScriptFunctions::musicBackgroundChangeDay(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		area->setMusicDayTrack(ctx.getParams()[1].getInt());
+}
+
+void ScriptFunctions::musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		area->setMusicNightTrack(ctx.getParams()[1].getInt());
+}
+
+void ScriptFunctions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) getPC();
+}
+
+void ScriptFunctions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 }
 
 void ScriptFunctions::musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx) {
