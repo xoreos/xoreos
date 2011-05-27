@@ -549,14 +549,14 @@ void Module::showMenu() {
 	loadTexturePack();
 }
 
-Object *Module::findObject(const Common::UString &tag) {
+Aurora::NWScript::Object *Module::findObject(const Common::UString &tag) {
 	if (!_area)
 		return 0;
 
 	return _area->findObject(tag);
 }
 
-const Object *Module::findObject(const Common::UString &tag) const {
+const Aurora::NWScript::Object *Module::findObject(const Common::UString &tag) const {
 	if (!_area)
 		return 0;
 

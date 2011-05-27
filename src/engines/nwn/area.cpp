@@ -102,7 +102,7 @@ Common::UString Area::getName(const Common::UString &resRef) {
 	return "";
 }
 
-Object *Area::findObject(const Common::UString &tag) {
+Aurora::NWScript::Object *Area::findObject(const Common::UString &tag) {
 	ObjectTagMap::iterator o = _objectTagMap.find(tag);
 	if (o == _objectTagMap.end())
 		return 0;
@@ -110,7 +110,7 @@ Object *Area::findObject(const Common::UString &tag) {
 	return o->second;
 }
 
-const Object *Area::findObject(const Common::UString &tag) const {
+const Aurora::NWScript::Object *Area::findObject(const Common::UString &tag) const {
 	ObjectTagMap::const_iterator o = _objectTagMap.find(tag);
 	if (o == _objectTagMap.end())
 		return 0;
@@ -372,6 +372,7 @@ void Area::loadPlaceables(const Aurora::GFFList &list) {
 		Placeable *placeable = new Placeable;
 
 		placeable->load(**p);
+		placeable->setArea(this);
 
 		_objects.push_back(placeable);
 
@@ -391,6 +392,7 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 		Door *door = new Door;
 
 		door->load(**d);
+		door->setArea(this);
 
 		_objects.push_back(door);
 
@@ -411,6 +413,7 @@ void Area::loadCreatures(const Aurora::GFFList &list) {
 
 		creature->load(**c);
 		creature->loadModel();
+		creature->setArea(this);
 
 		_objects.push_back(creature);
 
@@ -456,7 +459,7 @@ void Area::processEventQueue() {
 		checkActive();
 }
 
-Object *Area::getObjectAt(int x, int y) {
+Engines::NWN::Object *Area::getObjectAt(int x, int y) {
 	const Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
 	if (!obj)
 		return 0;
@@ -468,7 +471,7 @@ Object *Area::getObjectAt(int x, int y) {
 	return o->second;
 }
 
-void Area::setActive(Object *object) {
+void Area::setActive(Engines::NWN::Object *object) {
 	if (object == _activeObject)
 		return;
 
@@ -499,7 +502,7 @@ void Area::click(int x, int y) {
 
 	Common::StackLock lock(_mutex);
 
-	Object *o = getObjectAt(x, y);
+	Engines::NWN::Object *o = getObjectAt(x, y);
 	if (!o)
 		return;
 

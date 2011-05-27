@@ -110,6 +110,10 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(4, kTypeVoid, kTypeObject, kTypeInt, kTypeFloat),
 			createDefaults(2, &defaultInt0, &defaultFloat1_0));
 
+	FunctionMan.registerFunction("GetArea", 24,
+			boost::bind(&ScriptFunctions::getArea, this, _1),
+			createSignature(2, kTypeObject, kTypeObject));
+
 	FunctionMan.registerFunction("GetIsObjectValid", 42,
 			boost::bind(&ScriptFunctions::getObjectIsValid, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -192,6 +196,14 @@ void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx)
 
 	warning("TODO: ActionMoveToObject: \"%s\" to \"%s\"",
 			object->getTag().c_str(), moveTo->getTag().c_str());
+}
+
+void ScriptFunctions::getArea(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (object)
+		ctx.getReturn() = object->getArea();
 }
 
 void ScriptFunctions::getObjectIsValid(Aurora::NWScript::FunctionContext &ctx) {
@@ -308,12 +320,12 @@ void ScriptFunctions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
-	Object *speaker = 0;
-	Object *object  = convertObject(ctx.getCaller());
+	Aurora::NWScript::Object *speaker = 0;
+	Object *object = convertObject(ctx.getCaller());
 	if (object)
 		speaker = object->getPCSpeaker();
 
-	ctx.getReturn() = (Aurora::NWScript::Object *) speaker;
+	ctx.getReturn() = speaker;
 }
 
 void ScriptFunctions::getModule(Aurora::NWScript::FunctionContext &ctx) {

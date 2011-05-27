@@ -50,7 +50,7 @@ namespace Engines {
 
 namespace NWN {
 
-Object::Object() : _ssf(0), _pcSpeaker(0) {
+Object::Object() : _ssf(0), _pcSpeaker(0), _area(0) {
 	clear();
 }
 
@@ -102,12 +102,20 @@ const std::list<uint32> &Object::getIDs() const {
 	return _ids;
 }
 
-Object *Object::getPCSpeaker() const {
+Aurora::NWScript::Object *Object::getPCSpeaker() const {
 	return _pcSpeaker;
 }
 
-void Object::setPCSpeaker(Object *pc) {
+void Object::setPCSpeaker(Aurora::NWScript::Object *pc) {
 	_pcSpeaker = pc;
+}
+
+Aurora::NWScript::Object *Object::getArea() const {
+	return _area;
+}
+
+void Object::setArea(Aurora::NWScript::Object *area) {
+	_area = area;
 }
 
 void Object::getPosition(float &x, float &y, float &z) const {

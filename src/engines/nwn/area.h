@@ -40,6 +40,8 @@
 
 #include "aurora/types.h"
 
+#include "aurora/nwscript/object.h"
+
 #include "sound/types.h"
 
 #include "events/types.h"
@@ -55,7 +57,7 @@ class Object;
 class Placeable;
 class Door;
 
-class Area : public Events::Notifyable {
+class Area : public Aurora::NWScript::Object, public Events::Notifyable {
 public:
 	Area(const Common::UString &resRef);
 	~Area();
@@ -72,8 +74,8 @@ public:
 
 	static Common::UString getName(const Common::UString &resRef);
 
-	Object *findObject(const Common::UString &tag);
-	const Object *findObject(const Common::UString &tag) const;
+	Aurora::NWScript::Object *findObject(const Common::UString &tag);
+	const Aurora::NWScript::Object *findObject(const Common::UString &tag) const;
 
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
@@ -110,10 +112,10 @@ private:
 		Graphics::Aurora::Model *model;
 	};
 
-	typedef std::list<Object *> ObjectList;
+	typedef std::list<Engines::NWN::Object *> ObjectList;
+	typedef std::map<uint32, Engines::NWN::Object *> ObjectMap;
 
-	typedef std::map<uint32, Object *> ObjectMap;
-	typedef std::multimap<Common::UString, Object *> ObjectTagMap;
+	typedef std::multimap<Common::UString, Aurora::NWScript::Object *> ObjectTagMap;
 
 
 	bool _loaded;
@@ -153,7 +155,7 @@ private:
 	ObjectMap _objectMap;
 	ObjectTagMap _objectTagMap;
 
-	Object *_activeObject;
+	Engines::NWN::Object *_activeObject;
 
 	bool _highlightAll;
 
@@ -187,8 +189,8 @@ private:
 
 
 	void checkActive(int x = -1, int y = -1);
-	void setActive(Object *object);
-	Object *getObjectAt(int x, int y);
+	void setActive(Engines::NWN::Object *object);
+	Engines::NWN::Object *getObjectAt(int x, int y);
 
 	void highlightAll(bool enabled);
 

@@ -66,6 +66,8 @@ private:
 
 	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
 
+	void getArea(Aurora::NWScript::FunctionContext &ctx);
+
 	void getObjectIsValid(Aurora::NWScript::FunctionContext &ctx);
 
 	void getLocalInt(Aurora::NWScript::FunctionContext &ctx);

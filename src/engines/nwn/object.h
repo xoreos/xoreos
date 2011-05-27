@@ -41,6 +41,10 @@
 
 namespace Aurora {
 	class SSFFile;
+
+	namespace NWScript {
+		class Object;
+	}
 }
 
 namespace Engines {
@@ -74,8 +78,11 @@ public:
 
 	const std::list<uint32> &getIDs() const;
 
-	Object *getPCSpeaker() const;
-	void setPCSpeaker(Object *pc);
+	Aurora::NWScript::Object *getPCSpeaker() const;
+	void setPCSpeaker(Aurora::NWScript::Object *pc);
+
+	Aurora::NWScript::Object *getArea() const;
+	void setArea(Aurora::NWScript::Object *area);
 
 	virtual void getPosition(float &x, float &y, float &z) const;
 	virtual void getOrientation(float &x, float &y, float &z) const;
@@ -114,7 +121,8 @@ protected:
 
 	std::list<uint32> _ids;
 
-	Object *_pcSpeaker;
+	Aurora::NWScript::Object *_pcSpeaker;
+	Aurora::NWScript::Object *_area;
 
 	float _position[3];
 	float _orientation[3];

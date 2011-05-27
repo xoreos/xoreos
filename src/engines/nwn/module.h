@@ -78,8 +78,8 @@ public:
 
 	void showMenu();
 
-	Engines::NWN::Object *findObject(const Common::UString &tag);
-	const Engines::NWN::Object *findObject(const Common::UString &tag) const;
+	Aurora::NWScript::Object *findObject(const Common::UString &tag);
+	const Aurora::NWScript::Object *findObject(const Common::UString &tag) const;
 
 	void startConversation(const Common::UString &conv, Creature &pc,
 	                       Engines::NWN::Object &obj);

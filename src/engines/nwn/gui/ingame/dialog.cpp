@@ -700,7 +700,7 @@ void Dialog::updateBox() {
 
 		Object *obj = _object;
 		if (!entry->speaker.empty())
-			obj = _module->findObject(entry->speaker);
+			obj = dynamic_cast<Object *>(_module->findObject(entry->speaker));
 
 		if (obj) {
 			_dlgBox->setPortrait(obj->getPortrait());
