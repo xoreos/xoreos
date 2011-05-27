@@ -88,6 +88,8 @@ private:
 
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 
+	void getHitDice(Aurora::NWScript::FunctionContext &ctx);
+
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);

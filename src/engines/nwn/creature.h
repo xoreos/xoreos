@@ -114,6 +114,9 @@ public:
 	/** Return the creature's class description. */
 	Common::UString getClassString() const;
 
+	/** Returns the number of hit dice, which is effectively the total number of levels. */
+	uint8 getHitDice() const;
+
 	/** Get the creature's deity. */
 	const Common::UString &getDeity() const;
 
@@ -195,6 +198,8 @@ private:
 	uint8 _abilities[kAbilityMAX];
 
 	std::vector<Class> _classes;
+
+	uint8 _hitDice;
 
 	Common::UString _deity;
 

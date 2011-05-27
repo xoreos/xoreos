@@ -127,6 +127,8 @@ void Creature::clear() {
 
 	_classes.clear();
 
+	_hitDice = 0;
+
 	_deity.clear();
 
 	_lastChangedGUIDisplay = 0;
@@ -491,6 +493,7 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	// Classes
 	if (gff.hasField("ClassList")) {
 		_classes.clear();
+		_hitDice = 0;
 
 		const Aurora::GFFList &cClasses = gff.getList("ClassList");
 
@@ -501,6 +504,8 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 
 			_classes.back().classID = cClass.getUint("Class");
 			_classes.back().level   = cClass.getUint("ClassLevel");
+
+			_hitDice += _classes.back().level;
 		}
 	}
 
@@ -602,6 +607,10 @@ Common::UString Creature::getClassString() const {
 	}
 
 	return classString;
+}
+
+uint8 Creature::getHitDice() const {
+	return _hitDice;
 }
 
 void Creature::enter() {

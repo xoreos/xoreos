@@ -163,6 +163,10 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(4, kTypeInt, kTypeObject, kTypeInt, kTypeInt),
 			createDefaults(1, &defaultInt0));
 
+	FunctionMan.registerFunction("GetHitDice", 166,
+			boost::bind(&ScriptFunctions::getHitDice, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+
 	FunctionMan.registerFunction("GetTag", 168,
 			boost::bind(&ScriptFunctions::getTag, this, _1),
 			createSignature(2, kTypeString, kTypeObject));
@@ -339,6 +343,14 @@ void ScriptFunctions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {
 
 	if (creature)
 		ctx.getReturn() = (int32) creature->getAbility(ability);
+}
+
+void ScriptFunctions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (creature)
+		ctx.getReturn() = creature->getHitDice();
 }
 
 void ScriptFunctions::getTag(Aurora::NWScript::FunctionContext &ctx) {
