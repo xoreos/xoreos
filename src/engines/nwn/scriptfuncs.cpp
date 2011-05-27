@@ -373,6 +373,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getAttemptedAttackTarget, this, _1),
 			createSignature(1, kTypeObject));
 
+	FunctionMan.registerFunction("GetAssociate", 364,
+			boost::bind(&ScriptFunctions::getAssociate, this, _1),
+			createSignature(4, kTypeObject, kTypeInt, kTypeObject, kTypeInt),
+			createDefaults(2, &defaultObject0, &defaultInt1));
+
 	FunctionMan.registerFunction("AddJournalQuestEntry", 367,
 			boost::bind(&ScriptFunctions::addJournalQuestEntry, this, _1),
 			createSignature(7, kTypeVoid, kTypeString, kTypeInt, kTypeObject,
@@ -960,6 +965,21 @@ void ScriptFunctions::getAttemptedAttackTarget(Aurora::NWScript::FunctionContext
 		return;
 
 	warning("TODO: GetAttemptedAttackTarget: \"%s\"", creature->getTag().c_str());
+}
+
+void ScriptFunctions::getAssociate(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Creature *creature = convertCreature(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		creature = convertCreature(ctx.getCaller());
+	if (!creature)
+		return;
+
+	int type = ctx.getParams()[0].getInt();
+	int nth  = ctx.getParams()[2].getInt();
+
+	warning("TODO: GetAssociate: %s, %d, %d", gTag(creature).c_str(), type, nth);
 }
 
 void ScriptFunctions::addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx) {
