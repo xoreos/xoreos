@@ -156,6 +156,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getTag, this, _1),
 			createSignature(2, kTypeString, kTypeObject));
 
+	FunctionMan.registerFunction("GetObjectByTag", 200,
+			boost::bind(&ScriptFunctions::getObjectByTag, this, _1),
+			createSignature(3, kTypeObject, kTypeString, kTypeInt),
+			createDefaults(1, &defaultInt0));
+
 	FunctionMan.registerFunction("GetNearestObjectByTag", 229,
 			boost::bind(&ScriptFunctions::getNearestObjectByTag, this, _1),
 			createSignature(4, kTypeObject, kTypeString, kTypeObject, kTypeInt),
@@ -298,6 +303,17 @@ void ScriptFunctions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 	Object *object = convertObject(ctx.getParams()[0].getObject());
 	if (object)
 		ctx.getReturn() = object->getTag();
+}
+
+void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: ScriptFunctions::getObjectByTag(): nNth
+
+	ctx.getReturn() = (Object *) 0;
+
+	const Common::UString &tag = ctx.getParams()[0].getString();
+
+	if (_module)
+		ctx.getReturn() = _module->findObject(tag);
 }
 
 void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {

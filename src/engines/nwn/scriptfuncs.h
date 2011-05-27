@@ -85,6 +85,8 @@ private:
 
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
+	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);
+
 	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
