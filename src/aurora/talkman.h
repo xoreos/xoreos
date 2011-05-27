@@ -60,8 +60,8 @@ public:
 	void removeMainTable();
 	void removeAltTable();
 
-	const Common::UString &getString(uint32 strRef);
-	const Common::UString &getSoundResRef(uint32 strRef);
+	const Common::UString &getString(uint32 strRef, Gender gender = (Gender) -1);
+	const Common::UString &getSoundResRef(uint32 strRef, Gender gender = (Gender) -1);
 
 private:
 	Gender _gender;
@@ -72,7 +72,7 @@ private:
 	TalkTable *_altTableM;
 	TalkTable *_altTableF;
 
-	const TalkTable::Entry *getEntry(uint32 strRef);
+	const TalkTable::Entry *getEntry(uint32 strRef, Gender gender);
 
 	void addTable(const Common::UString &name, TalkTable *&m, TalkTable *&f);
 };

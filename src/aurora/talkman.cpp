@@ -113,31 +113,37 @@ void TalkManager::removeAltTable() {
 	_altTableF = 0;
 }
 
-const Common::UString &TalkManager::getString(uint32 strRef) {
+const Common::UString &TalkManager::getString(uint32 strRef, Gender gender) {
+	if (gender == ((Gender) -1))
+		gender = _gender;
+
 	static const Common::UString kEmptyString = "";
 	if (strRef == kStrRefInvalid)
 		return kEmptyString;
 
-	const TalkTable::Entry *entry = getEntry(strRef);
+	const TalkTable::Entry *entry = getEntry(strRef, gender);
 	if (!entry)
 		return kEmptyString;
 
 	return entry->text;
 }
 
-const Common::UString &TalkManager::getSoundResRef(uint32 strRef) {
+const Common::UString &TalkManager::getSoundResRef(uint32 strRef, Gender gender) {
+	if (gender == ((Gender) -1))
+		gender = _gender;
+
 	static const Common::UString kEmptyString = "";
 	if (strRef == kStrRefInvalid)
 		return kEmptyString;
 
-	const TalkTable::Entry *entry = getEntry(strRef);
+	const TalkTable::Entry *entry = getEntry(strRef, gender);
 	if (!entry)
 		return kEmptyString;
 
 	return entry->soundResRef;
 }
 
-const TalkTable::Entry *TalkManager::getEntry(uint32 strRef) {
+const TalkTable::Entry *TalkManager::getEntry(uint32 strRef, Gender gender) {
 	if (strRef == 0xFFFFFFFF)
 		return 0;
 
@@ -147,14 +153,14 @@ const TalkTable::Entry *TalkManager::getEntry(uint32 strRef) {
 
 	const TalkTable::Entry *entry = 0;
 	if (alt) {
-		if ((_gender == kGenderFemale) && _altTableF)
+		if ((gender == kGenderFemale) && _altTableF)
 			entry = _altTableF->getEntry(strRef);
 
 		if (!entry && _altTableM)
 			entry = _altTableM->getEntry(strRef);
 	}
 
-	if (!entry && (_gender == kGenderFemale) && _mainTableF)
+	if (!entry && (gender == kGenderFemale) && _mainTableF)
 		entry = _mainTableF->getEntry(strRef);
 
 	if (!entry && _mainTableM)
