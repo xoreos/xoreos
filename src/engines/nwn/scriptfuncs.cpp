@@ -31,6 +31,7 @@
 
 #include "common/util.h"
 #include "common/error.h"
+#include "common/maths.h"
 
 #include "engines/nwn/scriptfuncs.h"
 #include "engines/nwn/object.h"
@@ -130,6 +131,9 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getItemPossessedBy, this, _1),
 			createSignature(3, kTypeObject, kTypeObject, kTypeString));
 
+	FunctionMan.registerFunction("GetDistanceToObject", 41,
+			boost::bind(&ScriptFunctions::getDistanceToObject, this, _1),
+			createSignature(2, kTypeFloat, kTypeObject));
 	FunctionMan.registerFunction("GetIsObjectValid", 42,
 			boost::bind(&ScriptFunctions::getObjectIsValid, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -326,6 +330,25 @@ void ScriptFunctions::getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx)
 	warning("TODO: GetItemPossessedBy: \"%s\" by \"%s\"",
 	        tag.c_str(), object->getTag().c_str());
 }
+
+#define SQR(x) ((x) * (x))
+void ScriptFunctions::getDistanceToObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1.0f;
+
+	Object *object1 = convertObject(ctx.getParams()[0].getObject());
+	Object *object2 = convertObject(ctx.getCaller());
+	if (!object1 || !object2)
+		return;
+
+	float x1, y1, z1;
+	object1->getPosition(x1, y1, z1);
+
+	float x2, y2, z2;
+	object2->getPosition(x2, y2, z2);
+
+	ctx.getReturn() = sqrtf(SQR(x1 - x2) + SQR(y1 - y2) + SQR(z1 - z2));
+}
+#undef SQR
 
 void ScriptFunctions::getObjectIsValid(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = convertObject(ctx.getParams()[0].getObject()) != 0;

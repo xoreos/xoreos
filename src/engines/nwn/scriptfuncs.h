@@ -75,6 +75,7 @@ private:
 	void getItemPossessor(Aurora::NWScript::FunctionContext &ctx);
 	void getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx);
 
+	void getDistanceToObject(Aurora::NWScript::FunctionContext &ctx);
 	void getObjectIsValid(Aurora::NWScript::FunctionContext &ctx);
 
 	void getLocalInt(Aurora::NWScript::FunctionContext &ctx);
