@@ -73,6 +73,10 @@ public:
 	uint32 getMusicNightTrack () const;
 	uint32 getMusicBattleTrack() const;
 
+	void setMusicDayTrack   (uint32 track);
+	void setMusicNightTrack (uint32 track);
+	void setMusicBattleTrack(uint32 track);
+
 	void stopSound();
 	void stopAmbientMusic();
 	void stopAmbientSound();

@@ -232,6 +232,13 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::musicBackgroundStop, this, _1),
 			createSignature(2, kTypeVoid, kTypeObject));
 
+	FunctionMan.registerFunction("MusicBackgroundChangeDay", 428,
+			boost::bind(&ScriptFunctions::musicBackgroundChangeDay, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeInt));
+	FunctionMan.registerFunction("MusicBackgroundChangeNight", 429,
+			boost::bind(&ScriptFunctions::musicBackgroundChangeNight, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeInt));
+
 	FunctionMan.registerFunction("GetFirstPC", 548,
 			boost::bind(&ScriptFunctions::getFirstPC, this, _1),
 			createSignature(1, kTypeObject));
@@ -455,6 +462,18 @@ void ScriptFunctions::musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx
 	Area *area = convertArea(ctx.getParams()[0].getObject());
 	if (area)
 		area->stopAmbientMusic();
+}
+
+void ScriptFunctions::musicBackgroundChangeDay(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		area->setMusicDayTrack(ctx.getParams()[1].getInt());
+}
+
+void ScriptFunctions::musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		area->setMusicNightTrack(ctx.getParams()[1].getInt());
 }
 
 void ScriptFunctions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {

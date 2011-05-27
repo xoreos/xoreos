@@ -142,6 +142,36 @@ uint32 Area::getMusicBattleTrack() const {
 	return _musicBattleTrack;
 }
 
+void Area::setMusicDayTrack(uint32 track) {
+	_musicDayTrack = track;
+	_musicDay      = TwoDAReg.get("ambientmusic").getRow(track).getString("Resource");
+}
+
+void Area::setMusicNightTrack(uint32 track) {
+	_musicNightTrack = track;
+	_musicNight      = TwoDAReg.get("ambientmusic").getRow(track).getString("Resource");
+}
+
+void Area::setMusicBattleTrack(uint32 track) {
+	_musicBattleTrack = track;
+
+	if (_musicBattleTrack != Aurora::kStrRefInvalid) {
+		const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get("ambientmusic");
+
+		_musicBattle = ambientMusic.getRow(_musicBattleTrack).getString("Resource");
+
+		// Battle stingers
+		Common::UString stinger[3];
+		stinger[0] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger1");
+		stinger[1] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger2");
+		stinger[2] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger3");
+
+		for (int i = 0; i < 3; i++)
+			if (!stinger[i].empty())
+				_musicBattleStinger.push_back(stinger[i]);
+	}
+}
+
 void Area::stopSound() {
 	stopAmbientMusic();
 	stopAmbientSound();
@@ -283,32 +313,12 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 
 	// Ambient music
 
-	const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get("ambientmusic");
-
-	_musicDayTrack   = props.getUint("MusicDay"   , Aurora::kStrRefInvalid);
-	_musicNightTrack = props.getUint("MusicNight" , Aurora::kStrRefInvalid);
-
-	_musicDay   = ambientMusic.getRow(_musicDayTrack  ).getString("Resource");
-	_musicNight = ambientMusic.getRow(_musicNightTrack).getString("Resource");
-
+	setMusicDayTrack  (props.getUint("MusicDay"   , Aurora::kStrRefInvalid));
+	setMusicNightTrack(props.getUint("MusicNight" , Aurora::kStrRefInvalid));
 
 	// Battle music
 
-	_musicBattleTrack = props.getUint("MusicBattle", Aurora::kStrRefInvalid);
-
-	if (_musicBattleTrack!= Aurora::kStrRefInvalid) {
-		_musicBattle = ambientMusic.getRow(_musicBattleTrack).getString("Resource");
-
-		// Battle stingers
-		Common::UString stinger[3];
-		stinger[0] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger1");
-		stinger[1] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger2");
-		stinger[2] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger3");
-
-		for (int i = 0; i < 3; i++)
-			if (!stinger[i].empty())
-				_musicBattleStinger.push_back(stinger[i]);
-	}
+	setMusicBattleTrack(props.getUint("MusicBattle", Aurora::kStrRefInvalid));
 }
 
 void Area::loadTiles(const Aurora::GFFList &tiles) {
