@@ -355,6 +355,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getGender, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
 
+	FunctionMan.registerFunction("GetAttemptedAttackTarget", 361,
+			boost::bind(&ScriptFunctions::getAttemptedAttackTarget, this, _1),
+			createSignature(1, kTypeObject));
+
 	FunctionMan.registerFunction("SendMessageToPC", 374,
 			boost::bind(&ScriptFunctions::sendMessageToPC, this, _1),
 			createSignature(3, kTypeVoid, kTypeObject, kTypeString));
@@ -896,6 +900,16 @@ void ScriptFunctions::getGender(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
 	if (creature)
 		ctx.getReturn() = (int32) creature->getGender();
+}
+
+void ScriptFunctions::getAttemptedAttackTarget(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Creature *creature = convertCreature(ctx.getCaller());
+	if (!creature)
+		return;
+
+	warning("TODO: GetAttemptedAttackTarget(): \"%s\"", creature->getTag().c_str());
 }
 
 void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {

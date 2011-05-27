@@ -152,6 +152,8 @@ private:
 
 	void getGender(Aurora::NWScript::FunctionContext &ctx);
 
+	void getAttemptedAttackTarget(Aurora::NWScript::FunctionContext &ctx);
+
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
 
 	void getGold(Aurora::NWScript::FunctionContext &ctx);
