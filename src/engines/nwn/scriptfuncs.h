@@ -112,6 +112,8 @@ private:
 
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
 
+	void getGold(Aurora::NWScript::FunctionContext &ctx);
+
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
 };

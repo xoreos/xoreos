@@ -215,6 +215,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::sendMessageToPC, this, _1),
 			createSignature(3, kTypeVoid, kTypeObject, kTypeString));
 
+	FunctionMan.registerFunction("GetGold", 418,
+			boost::bind(&ScriptFunctions::getGold, this, _1),
+			createSignature(2, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+
 	FunctionMan.registerFunction("GetFirstPC", 548,
 			boost::bind(&ScriptFunctions::getFirstPC, this, _1),
 			createSignature(1, kTypeObject));
@@ -406,6 +411,19 @@ void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &c
 
 	if (_module)
 		ctx.getReturn() = _module->findObject(tag);
+}
+
+void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (ctx.getParamsSpecified() < 1)
+		object = convertObject(ctx.getCaller());
+
+	if (!object)
+		return;
+
+	warning("TODO: GetGold: \"%s\"", object->getTag().c_str());
 }
 
 void ScriptFunctions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {
