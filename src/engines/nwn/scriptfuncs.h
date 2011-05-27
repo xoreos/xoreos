@@ -60,6 +60,7 @@ private:
 	void registerFunctions();
 
 	Common::UString floatToString(float f, int width = 18, int decimals = 9);
+	int32 random(int min, int max, int32 n = 1);
 
 	Aurora::NWScript::Object *getPC();
 
@@ -99,6 +100,16 @@ private:
 	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void intToString(Aurora::NWScript::FunctionContext &ctx);
+
+	void d2(Aurora::NWScript::FunctionContext &ctx);
+	void d3(Aurora::NWScript::FunctionContext &ctx);
+	void d4(Aurora::NWScript::FunctionContext &ctx);
+	void d6(Aurora::NWScript::FunctionContext &ctx);
+	void d8(Aurora::NWScript::FunctionContext &ctx);
+	void d10(Aurora::NWScript::FunctionContext &ctx);
+	void d12(Aurora::NWScript::FunctionContext &ctx);
+	void d20(Aurora::NWScript::FunctionContext &ctx);
+	void d100(Aurora::NWScript::FunctionContext &ctx);
 
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
 

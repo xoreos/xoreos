@@ -76,6 +76,18 @@ Common::UString ScriptFunctions::floatToString(float f, int width, int decimals)
 	return Common::UString::sprintf("%*.*f", width, decimals, f);
 }
 
+int32 ScriptFunctions::random(int min, int max, int32 n) {
+	if (n < 1)
+		n = 1;
+
+	int32 r = 0;
+
+	while (n-- > 0)
+		r += std::rand() % (max - min + 1) + min;
+
+	return r;
+}
+
 Aurora::NWScript::Object *ScriptFunctions::getPC() {
 	if (!_module)
 		return 0;
@@ -208,6 +220,43 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::intToString, this, _1),
 			createSignature(2, kTypeString, kTypeInt));
 
+	FunctionMan.registerFunction("d2", 95,
+			boost::bind(&ScriptFunctions::d2, this, _1),
+			createSignature(2, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+	FunctionMan.registerFunction("d3", 96,
+			boost::bind(&ScriptFunctions::d3, this, _1),
+			createSignature(2, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+	FunctionMan.registerFunction("d4", 97,
+			boost::bind(&ScriptFunctions::d4, this, _1),
+			createSignature(2, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+	FunctionMan.registerFunction("d6", 98,
+			boost::bind(&ScriptFunctions::d6, this, _1),
+			createSignature(2, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+	FunctionMan.registerFunction("d8", 99,
+			boost::bind(&ScriptFunctions::d8, this, _1),
+			createSignature(2, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+	FunctionMan.registerFunction("d10", 100,
+			boost::bind(&ScriptFunctions::d10, this, _1),
+			createSignature(2, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+	FunctionMan.registerFunction("d12", 101,
+			boost::bind(&ScriptFunctions::d12, this, _1),
+			createSignature(2, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+	FunctionMan.registerFunction("d20", 102,
+			boost::bind(&ScriptFunctions::d20, this, _1),
+			createSignature(2, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+	FunctionMan.registerFunction("d100", 103,
+			boost::bind(&ScriptFunctions::d100, this, _1),
+			createSignature(2, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+
 	FunctionMan.registerFunction("GetRacialType", 107,
 			boost::bind(&ScriptFunctions::getRacialType, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -338,7 +387,7 @@ void ScriptFunctions::registerFunctions() {
 }
 
 void ScriptFunctions::random(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = std::rand() %  ctx.getParams()[0].getInt();
+	ctx.getReturn() = random(0, ctx.getParams()[0].getInt() - 1);
 }
 
 void ScriptFunctions::printString(Aurora::NWScript::FunctionContext &ctx) {
@@ -537,6 +586,42 @@ void ScriptFunctions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::intToString(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = Common::UString::sprintf("%d", ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::d2(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = random(1, 2, ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::d3(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = random(1, 3, ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::d4(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = random(1, 4, ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::d6(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = random(1, 6, ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::d8(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = random(1, 8, ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::d10(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = random(1, 10, ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::d12(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = random(1, 12, ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::d20(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = random(1, 20, ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::d100(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = random(1, 100, ctx.getParams()[0].getInt());
 }
 
 void ScriptFunctions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
