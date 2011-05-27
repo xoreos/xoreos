@@ -109,6 +109,10 @@ void Variable::setType(Type type) {
 			_value._vector[2] = 0.0;
 			break;
 
+		case kTypeScriptState:
+			// TODO: Variable::setType(): kTypeScriptState
+			break;
+
 		default:
 			throw Common::Exception("Variable::setType(): Invalid type %d", type);
 			break;

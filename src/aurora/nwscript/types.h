@@ -47,7 +47,8 @@ enum Type {
 	kTypeVector        , // TODO
 	kTypeLocation      , // TODO
 	kTypeStruct        , // TODO
-	kTypeEngineType      // TODO
+	kTypeEngineType    , // TODO
+	kTypeScriptState     // "action"
 };
 
 // Index 0 is the return type, following indices are the arguments

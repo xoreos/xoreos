@@ -428,6 +428,10 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 				break;
 			}
 
+			case kTypeScriptState:
+				// TODO: NCSFile::callEngine(): kTypeScriptState: o_storestate() stuff
+				break;
+
 			default:
 				throw Common::Exception("NCSFile::callEngine(): Invalid argument type %d",
 				                        param.getType());
@@ -1140,7 +1144,11 @@ void NCSFile::o_div(InstructionType type) {
 }
 
 void NCSFile::o_storestateall(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_storestateall()");
+	uint8  offset = (uint8) type;
+
+	// TODO: NCSFile::o_storestateall(): See o_storestate.
+	//       Supposedly obsolete. Whether it's used anywhere remains to be seen.
+	warning("TODO: NCSFile::o_storestateall(): %d", offset);
 }
 
 void NCSFile::o_jsr(InstructionType type) {
@@ -1204,7 +1212,13 @@ void NCSFile::o_cptopbp(InstructionType type) {
 }
 
 void NCSFile::o_storestate(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_storestate()");
+	uint8  offset = (uint8) type;
+	uint32 sizeBP = _script->readUint32BE();
+	uint32 sizeSP = _script->readUint32BE();
+
+	// TODO: NCSFile::o_storestate(): Save a script offset and the stack, so that
+	//       the engine code can resume the script at that offset at its leisure.
+	warning("TODO: NCSFile::o_storestate(): %d, %d, %d", offset, sizeBP, sizeSP);
 }
 
 } // End of namespace NWScript
