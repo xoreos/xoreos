@@ -155,6 +155,7 @@ private:
 	void getAttemptedAttackTarget(Aurora::NWScript::FunctionContext &ctx);
 
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
+	void getAttemptedSpellTarget(Aurora::NWScript::FunctionContext &ctx);
 
 	void getGold(Aurora::NWScript::FunctionContext &ctx);
 

@@ -362,6 +362,9 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("SendMessageToPC", 374,
 			boost::bind(&ScriptFunctions::sendMessageToPC, this, _1),
 			createSignature(3, kTypeVoid, kTypeObject, kTypeString));
+	FunctionMan.registerFunction("GetAttemptedSpellTarget", 375,
+			boost::bind(&ScriptFunctions::getAttemptedSpellTarget, this, _1),
+			createSignature(1, kTypeObject));
 
 	FunctionMan.registerFunction("GetGold", 418,
 			boost::bind(&ScriptFunctions::getGold, this, _1),
@@ -922,6 +925,16 @@ void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &msg = params[1].getString();
 
 	warning("Send message to PC \"%s\": \"%s\"", pc->getName().c_str(), msg.c_str());
+}
+
+void ScriptFunctions::getAttemptedSpellTarget(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Creature *creature = convertCreature(ctx.getCaller());
+	if (!creature)
+		return;
+
+	warning("TODO: GetAttemptedSpellTarget(): \"%s\"", creature->getTag().c_str());
 }
 
 void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {
