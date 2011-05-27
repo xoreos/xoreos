@@ -165,6 +165,8 @@ private:
 	void musicBackgroundChangeDay(Aurora::NWScript::FunctionContext &ctx);
 	void musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ctx);
 
+	void isInConversation(Aurora::NWScript::FunctionContext &ctx);
+
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
 

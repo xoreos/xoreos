@@ -385,6 +385,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::musicBackgroundChangeNight, this, _1),
 			createSignature(3, kTypeVoid, kTypeObject, kTypeInt));
 
+	FunctionMan.registerFunction("IsInConversation", 445,
+			boost::bind(&ScriptFunctions::isInConversation, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+
 	FunctionMan.registerFunction("GetFirstPC", 548,
 			boost::bind(&ScriptFunctions::getFirstPC, this, _1),
 			createSignature(1, kTypeObject));
@@ -972,6 +976,14 @@ void ScriptFunctions::musicBackgroundChangeNight(Aurora::NWScript::FunctionConte
 	Area *area = convertArea(ctx.getParams()[0].getObject());
 	if (area)
 		area->setMusicNightTrack(ctx.getParams()[1].getInt());
+}
+
+void ScriptFunctions::isInConversation(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (object)
+		ctx.getReturn() = object->getPCSpeaker() != 0;
 }
 
 void ScriptFunctions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {
