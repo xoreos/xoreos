@@ -52,7 +52,9 @@ using Aurora::NWScript::kTypeInt;
 using Aurora::NWScript::kTypeFloat;
 using Aurora::NWScript::kTypeString;
 using Aurora::NWScript::kTypeObject;
+using Aurora::NWScript::kTypeScriptState;
 using Aurora::NWScript::createSignature;
+using Aurora::NWScript::createDefaults;
 
 namespace Engines {
 
@@ -144,7 +146,12 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("PrintObject", 5,
 			boost::bind(&ScriptFunctions::printObject, this, _1),
 			createSignature(2, kTypeVoid, kTypeObject));
-
+	FunctionMan.registerFunction("AssignCommand", 6,
+			boost::bind(&ScriptFunctions::assignCommand, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeScriptState));
+	FunctionMan.registerFunction("DelayCommand", 7,
+			boost::bind(&ScriptFunctions::delayCommand, this, _1),
+			createSignature(3, kTypeVoid, kTypeFloat, kTypeScriptState));
 	FunctionMan.registerFunction("ExecuteScript", 8,
 			boost::bind(&ScriptFunctions::executeScript, this, _1),
 			createSignature(3, kTypeVoid, kTypeString, kTypeObject));
@@ -360,6 +367,18 @@ void ScriptFunctions::printInteger(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 	status("NWN: %p", (void *) ctx.getParams()[0].getObject());
+}
+
+void ScriptFunctions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	if (!object)
+		return;
+
+	warning("TODO: AssignCommand: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
+	warning("TODO: DelayCommand: %f", ctx.getParams()[0].getFloat());
 }
 
 void ScriptFunctions::executeScript(Aurora::NWScript::FunctionContext &ctx) {

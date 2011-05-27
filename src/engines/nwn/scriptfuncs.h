@@ -75,7 +75,8 @@ private:
 	void floatToString(Aurora::NWScript::FunctionContext &ctx);
 	void printInteger(Aurora::NWScript::FunctionContext &ctx);
 	void printObject(Aurora::NWScript::FunctionContext &ctx);
-
+	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
+	void delayCommand(Aurora::NWScript::FunctionContext &ctx);
 	void executeScript(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
