@@ -440,6 +440,9 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 
 	}
 
+#if DEBUG_TRACELEVEL > 0
+	warning("NWScript engine function %s (%d)", ctx.getName().c_str(), function);
+#endif
 	FunctionMan.call(function, ctx);
 
 	Variable &retVal = ctx.getReturn();
@@ -469,10 +472,6 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 			                        retVal.getType());
 			break;
 	}
-
-#if DEBUG_TRACELEVEL > 0
-	warning("NWScript engine function %s (%d)", ctx.getName().c_str(), function);
-#endif
 }
 
 void NCSFile::o_action(InstructionType type) {
