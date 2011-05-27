@@ -355,6 +355,11 @@ void Creature::loadCharacter(Common::SeekableReadStream &stream) {
 	// All BICs should be PCs.
 	_isPC = true;
 
+	// Set the PC tag to something recognizable for now.
+	// Let's hope no script depends on it being "".
+
+	_tag = Common::UString::sprintf("[PC: %s]", _name.c_str());
+
 	_lastChangedGUIDisplay = EventMan.getTimestamp();
 	_loaded = true;
 }
