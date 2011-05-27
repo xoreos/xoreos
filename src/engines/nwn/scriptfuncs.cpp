@@ -198,6 +198,10 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(3, kTypeVoid, kTypeString, kTypeObject),
 			createDefaults(2, &defaultStringEmpty, &defaultObject0));
 
+	FunctionMan.registerFunction("GetGender", 358,
+			boost::bind(&ScriptFunctions::getGender, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+
 	FunctionMan.registerFunction("SendMessageToPC", 374,
 			boost::bind(&ScriptFunctions::sendMessageToPC, this, _1),
 			createSignature(3, kTypeVoid, kTypeObject, kTypeString));
@@ -406,6 +410,14 @@ void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::getModule(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) _module;
+}
+
+void ScriptFunctions::getGender(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (creature)
+		ctx.getReturn() = (int32) creature->getGender();
 }
 
 void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {

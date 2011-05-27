@@ -104,6 +104,8 @@ private:
 
 	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
 
+	void getGender(Aurora::NWScript::FunctionContext &ctx);
+
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
 
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
