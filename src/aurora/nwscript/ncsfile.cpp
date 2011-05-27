@@ -122,7 +122,7 @@ int32 NCSStack::getStackPtr() {
 }
 
 void NCSStack::setStackPtr(int32 pos) {
-	if ((pos > -4) || ((pos % 4) != 0))
+	if ((pos > 0) || ((pos % 4) != 0))
 		throw Common::Exception("NCSStack::setStackPtr(): Illegal position %d", pos);
 
 	_stackPtr = (pos / -4) - 1;
