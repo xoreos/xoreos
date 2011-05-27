@@ -139,6 +139,8 @@ enum Ability {
 	kAbilityMAX
 };
 
+static const uint32 kActionInvalid = 0xFFFF;
+
 static const uint32 kGenderNone   =   4;
 static const uint32 kRaceInvalid  =  28;
 static const uint32 kClassInvalid = 255;

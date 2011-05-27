@@ -389,6 +389,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::isInConversation, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
 
+	FunctionMan.registerFunction("GetCurrentAction", 522,
+			boost::bind(&ScriptFunctions::getCurrentAction, this, _1),
+			createSignature(2, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+
 	FunctionMan.registerFunction("GetFirstPC", 548,
 			boost::bind(&ScriptFunctions::getFirstPC, this, _1),
 			createSignature(1, kTypeObject));
@@ -984,6 +989,18 @@ void ScriptFunctions::isInConversation(Aurora::NWScript::FunctionContext &ctx) {
 	Object *object = convertObject(ctx.getParams()[0].getObject());
 	if (object)
 		ctx.getReturn() = object->getPCSpeaker() != 0;
+}
+
+void ScriptFunctions::getCurrentAction(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) kActionInvalid;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (ctx.getParamsSpecified() < 1)
+		object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	warning("TODO: GetCurrentAction: \"%s\"", object->getTag().c_str());
 }
 
 void ScriptFunctions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {

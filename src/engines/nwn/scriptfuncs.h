@@ -167,6 +167,8 @@ private:
 
 	void isInConversation(Aurora::NWScript::FunctionContext &ctx);
 
+	void getCurrentAction(Aurora::NWScript::FunctionContext &ctx);
+
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
 
