@@ -33,6 +33,8 @@
 #include "common/error.h"
 #include "common/maths.h"
 
+#include "aurora/talkman.h"
+
 #include "aurora/nwscript/types.h"
 #include "aurora/nwscript/util.h"
 #include "aurora/nwscript/functioncontext.h"
@@ -142,6 +144,7 @@ void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Variable defaultInt1(1);
 	Aurora::NWScript::Variable defaultInt9(9);
 	Aurora::NWScript::Variable defaultInt18(18);
+	Aurora::NWScript::Variable defaultIntMale(Aurora::kGenderMale);
 	Aurora::NWScript::Variable defaultFloat1_0(1.0f);
 	Aurora::NWScript::Variable defaultStringEmpty("");
 	Aurora::NWScript::Variable defaultObject0((Aurora::NWScript::Object *) 0);
@@ -310,6 +313,10 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetPCSpeaker", 238,
 			boost::bind(&ScriptFunctions::getPCSpeaker, this, _1),
 			createSignature(1, kTypeObject));
+	FunctionMan.registerFunction("GetStringByStrRef", 239,
+			boost::bind(&ScriptFunctions::getStringByStrRef, this, _1),
+			createSignature(3, kTypeString, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultIntMale));
 
 	FunctionMan.registerFunction("GetModule", 242,
 			boost::bind(&ScriptFunctions::getModule, this, _1),
@@ -775,6 +782,13 @@ void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = speaker;
 }
 
+void ScriptFunctions::getStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
+	const uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+	const Aurora::Gender gender = (Aurora::Gender) ctx.getParams()[1].getInt();
+
+	ctx.getReturn() = TalkMan.getString(strRef, gender);
+}
+
 void ScriptFunctions::getModule(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) _module;
 }
@@ -959,8 +973,8 @@ void ScriptFunctions::addJournalQuestEntry(Aurora::NWScript::FunctionContext &ct
 	bool allPlayers      = ctx.getParams()[4].getInt();
 	bool allowOverride   = ctx.getParams()[5].getInt();
 
-	warning("TODO: AddJournalQuestEntry: \"%s\": \"%s\" to %d (%d, %d, %d)", plot.c_str(),
-	        gTag(pc).c_str(), state, allPartyMembers, allPlayers, allowOverride);
+	warning("TODO: AddJournalQuestEntry: %s: \"%s\" to %d (%d, %d, %d)", gTag(pc).c_str(),
+	        plot.c_str(), state, allPartyMembers, allPlayers, allowOverride);
 }
 
 void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {

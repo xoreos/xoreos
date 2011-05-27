@@ -132,6 +132,7 @@ private:
 	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
+	void getStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
 
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
 
