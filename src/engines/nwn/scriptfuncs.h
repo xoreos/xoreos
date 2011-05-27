@@ -157,6 +157,11 @@ private:
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
 	void getAttemptedSpellTarget(Aurora::NWScript::FunctionContext &ctx);
 
+	void getIsDay(Aurora::NWScript::FunctionContext &ctx);
+	void getIsNight(Aurora::NWScript::FunctionContext &ctx);
+	void getIsDawn(Aurora::NWScript::FunctionContext &ctx);
+	void getIsDusk(Aurora::NWScript::FunctionContext &ctx);
+
 	void getGold(Aurora::NWScript::FunctionContext &ctx);
 
 	void musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx);

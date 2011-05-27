@@ -366,6 +366,19 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getAttemptedSpellTarget, this, _1),
 			createSignature(1, kTypeObject));
 
+	FunctionMan.registerFunction("GetIsDay", 405,
+			boost::bind(&ScriptFunctions::getIsDay, this, _1),
+			createSignature(1, kTypeInt));
+	FunctionMan.registerFunction("GetIsNight", 406,
+			boost::bind(&ScriptFunctions::getIsNight, this, _1),
+			createSignature(1, kTypeInt));
+	FunctionMan.registerFunction("GetIsDawn", 407,
+			boost::bind(&ScriptFunctions::getIsDawn, this, _1),
+			createSignature(1, kTypeInt));
+	FunctionMan.registerFunction("GetIsDusk", 408,
+			boost::bind(&ScriptFunctions::getIsDusk, this, _1),
+			createSignature(1, kTypeInt));
+
 	FunctionMan.registerFunction("GetGold", 418,
 			boost::bind(&ScriptFunctions::getGold, this, _1),
 			createSignature(2, kTypeInt, kTypeObject),
@@ -944,6 +957,30 @@ void ScriptFunctions::getAttemptedSpellTarget(Aurora::NWScript::FunctionContext 
 		return;
 
 	warning("TODO: GetAttemptedSpellTarget(): \"%s\"", creature->getTag().c_str());
+}
+
+void ScriptFunctions::getIsDay(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: ScriptFunctions::getIsDay()
+
+	ctx.getReturn() = (int32) true;
+}
+
+void ScriptFunctions::getIsNight(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: ScriptFunctions::getIsNight()
+
+	ctx.getReturn() = (int32) false;
+}
+
+void ScriptFunctions::getIsDawn(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: ScriptFunctions::getIsDawn()
+
+	ctx.getReturn() = (int32) false;
+}
+
+void ScriptFunctions::getIsDusk(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: ScriptFunctions::getIsDusk()
+
+	ctx.getReturn() = (int32) false;
 }
 
 void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {
