@@ -76,6 +76,8 @@ private:
 	void printInteger(Aurora::NWScript::FunctionContext &ctx);
 	void printObject(Aurora::NWScript::FunctionContext &ctx);
 
+	void executeScript(Aurora::NWScript::FunctionContext &ctx);
+
 	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void getArea(Aurora::NWScript::FunctionContext &ctx);

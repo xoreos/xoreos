@@ -37,6 +37,7 @@
 #include "aurora/nwscript/util.h"
 #include "aurora/nwscript/functioncontext.h"
 #include "aurora/nwscript/functionman.h"
+#include "aurora/nwscript/ncsfile.h"
 
 #include "engines/aurora/tokenman.h"
 
@@ -143,6 +144,10 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("PrintObject", 5,
 			boost::bind(&ScriptFunctions::printObject, this, _1),
 			createSignature(2, kTypeVoid, kTypeObject));
+
+	FunctionMan.registerFunction("ExecuteScript", 8,
+			boost::bind(&ScriptFunctions::executeScript, this, _1),
+			createSignature(3, kTypeVoid, kTypeString, kTypeObject));
 
 	FunctionMan.registerFunction("ActionMoveToObject", 22,
 			boost::bind(&ScriptFunctions::actionMoveToObject, this, _1),
@@ -355,6 +360,29 @@ void ScriptFunctions::printInteger(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 	status("NWN: %p", (void *) ctx.getParams()[0].getObject());
+}
+
+void ScriptFunctions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
+	Common::UString script = ctx.getParams()[0].getString();
+
+	// Max resource name length is 16, and ExecuteScript should truncate accordingly
+	script.truncate(16);
+
+	if (!ResMan.hasResource(script, Aurora::kFileTypeNCS))
+		return;
+
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+	try {
+		Aurora::NWScript::NCSFile ncs(script, object);
+
+		ncs.run();
+	} catch (Common::Exception &e) {
+		const Common::UString &oTag = object ? Common::UString::sprintf("\"%s\"", object->getTag().c_str()) : "0";
+
+		e.add("Failed ExecuteScript(\"%s\", %s)", script.c_str(), oTag.c_str());
+
+		Common::printException(e, "WARNING: ");
+	}
 }
 
 void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
