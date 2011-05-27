@@ -357,7 +357,7 @@ void ScriptFunctions::getIsObjectValid(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::getLocalInt(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
-	Object *object = convertObject(params[0].getObject());
+	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		ctx.getReturn() = object->getVariable(params[1].getString(), kTypeInt).getInt();
 }
@@ -365,7 +365,7 @@ void ScriptFunctions::getLocalInt(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::getLocalFloat(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
-	Object *object = convertObject(params[0].getObject());
+	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		ctx.getReturn() = object->getVariable(params[1].getString(), kTypeFloat).getFloat();
 }
@@ -373,7 +373,7 @@ void ScriptFunctions::getLocalFloat(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::getLocalString(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
-	Object *object = convertObject(params[0].getObject());
+	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		ctx.getReturn() = object->getVariable(params[1].getString(), kTypeString).getString();
 }
@@ -381,7 +381,7 @@ void ScriptFunctions::getLocalString(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::getLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
-	Object *object = convertObject(params[0].getObject());
+	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		ctx.getReturn() = object->getVariable(params[1].getString(), kTypeObject).getObject();
 }
@@ -389,7 +389,7 @@ void ScriptFunctions::getLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::setLocalInt(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
-	Object *object = convertObject(params[0].getObject());
+	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		object->setVariable(params[1].getString(), params[2].getInt());
 }
@@ -397,7 +397,7 @@ void ScriptFunctions::setLocalInt(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::setLocalFloat(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
-	Object *object = convertObject(params[0].getObject());
+	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		object->setVariable(params[1].getString(), params[2].getFloat());
 }
@@ -405,7 +405,7 @@ void ScriptFunctions::setLocalFloat(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::setLocalString(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
-	Object *object = convertObject(params[0].getObject());
+	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		object->setVariable(params[1].getString(), params[2].getString());
 }
@@ -413,7 +413,7 @@ void ScriptFunctions::setLocalString(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
-	Object *object = convertObject(params[0].getObject());
+	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		object->setVariable(params[1].getString(), params[2].getObject());
 }
@@ -455,7 +455,7 @@ void ScriptFunctions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn().getString().clear();
 
-	Object *object = convertObject(ctx.getParams()[0].getObject());
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 	if (object)
 		ctx.getReturn() = object->getTag();
 }
