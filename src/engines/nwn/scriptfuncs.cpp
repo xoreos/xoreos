@@ -69,6 +69,10 @@ void ScriptFunctions::setModule(Module *module) {
 	_module = module;
 }
 
+Common::UString ScriptFunctions::floatToString(float f, int width, int decimals) {
+	return Common::UString::sprintf("%*.*f", width, decimals, f);
+}
+
 Aurora::NWScript::Object *ScriptFunctions::getPC() {
 	if (!_module)
 		return 0;
@@ -113,6 +117,8 @@ void ScriptFunctions::registerFunctions() {
 
 	Aurora::NWScript::Variable defaultInt0(0);
 	Aurora::NWScript::Variable defaultInt1(1);
+	Aurora::NWScript::Variable defaultInt9(9);
+	Aurora::NWScript::Variable defaultInt18(18);
 	Aurora::NWScript::Variable defaultFloat1_0(1.0f);
 	Aurora::NWScript::Variable defaultStringEmpty("");
 	Aurora::NWScript::Variable defaultObject0((Aurora::NWScript::Object *) 0);
@@ -120,6 +126,11 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("Random", 0,
 			boost::bind(&ScriptFunctions::random, this, _1),
 			createSignature(2, kTypeInt, kTypeInt));
+
+	FunctionMan.registerFunction("FloatToString", 3,
+			boost::bind(&ScriptFunctions::floatToString, this, _1),
+			createSignature(4, kTypeString, kTypeFloat, kTypeInt, kTypeInt),
+			createDefaults(2, &defaultInt18, &defaultInt9));
 
 	FunctionMan.registerFunction("ActionMoveToObject", 22,
 			boost::bind(&ScriptFunctions::actionMoveToObject, this, _1),
@@ -226,6 +237,10 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(3, kTypeVoid, kTypeString, kTypeObject),
 			createDefaults(2, &defaultStringEmpty, &defaultObject0));
 
+	FunctionMan.registerFunction("ObjectToString", 272,
+			boost::bind(&ScriptFunctions::objectToString, this, _1),
+			createSignature(3, kTypeVoid, kTypeInt, kTypeString));
+
 	FunctionMan.registerFunction("SetCustomToken", 284,
 			boost::bind(&ScriptFunctions::setCustomToken, this, _1),
 			createSignature(3, kTypeVoid, kTypeInt, kTypeString));
@@ -300,6 +315,14 @@ void ScriptFunctions::registerFunctions() {
 
 void ScriptFunctions::random(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = std::rand() %  ctx.getParams()[0].getInt();
+}
+
+void ScriptFunctions::floatToString(Aurora::NWScript::FunctionContext &ctx) {
+	float value    = ctx.getParams()[0].getFloat();
+	int   width    = ctx.getParams()[1].getInt();
+	int   decimals = ctx.getParams()[2].getInt();
+
+	ctx.getReturn() = floatToString(value, width, decimals);
 }
 
 void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
@@ -582,6 +605,10 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 		conversation = object->getConversation();
 
 	_module->startConversation(conversation, *pc, *object);
+}
+
+void ScriptFunctions::objectToString(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = Common::UString::sprintf("%p", (void *) ctx.getParams()[0].getObject());
 }
 
 void ScriptFunctions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {

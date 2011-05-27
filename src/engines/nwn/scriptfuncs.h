@@ -59,6 +59,8 @@ private:
 
 	void registerFunctions();
 
+	Common::UString floatToString(float f, int width = 18, int decimals = 9);
+
 	Aurora::NWScript::Object *getPC();
 
 	Module   *convertModule  (Aurora::NWScript::Object *o);
@@ -68,6 +70,8 @@ private:
 	Creature *convertPC      (Aurora::NWScript::Object *o);
 
 	void random(Aurora::NWScript::FunctionContext &ctx);
+
+	void floatToString(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
 
@@ -113,6 +117,8 @@ private:
 	void getName(Aurora::NWScript::FunctionContext &ctx);
 
 	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
+
+	void objectToString(Aurora::NWScript::FunctionContext &ctx);
 
 	void setCustomToken(Aurora::NWScript::FunctionContext &ctx);
 
