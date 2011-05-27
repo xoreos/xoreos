@@ -86,6 +86,8 @@ private:
 
 	void intToString(Aurora::NWScript::FunctionContext &ctx);
 
+	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
+
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 
 	void getHitDice(Aurora::NWScript::FunctionContext &ctx);

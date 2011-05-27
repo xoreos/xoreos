@@ -94,6 +94,9 @@ public:
 	/** Is the creature female, do we need female dialogs tokens? */
 	bool isFemale() const;
 
+	/** Return the creature's race value. */
+	uint32 getRace() const;
+
 	/** Return the creature's race as needed in conversations, e.g. "Dwarven". */
 	const Common::UString &getConvRace() const;
 	/** Return the creature's lowercase race as needed in conversations, e.g. "dwarven". */

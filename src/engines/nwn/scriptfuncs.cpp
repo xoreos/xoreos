@@ -158,6 +158,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::intToString, this, _1),
 			createSignature(2, kTypeString, kTypeInt));
 
+	FunctionMan.registerFunction("GetRacialType", 107,
+			boost::bind(&ScriptFunctions::getRacialType, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+
 	FunctionMan.registerFunction("GetAbilityScore", 139,
 			boost::bind(&ScriptFunctions::getAbilityScore, this, _1),
 			createSignature(4, kTypeInt, kTypeObject, kTypeInt, kTypeInt),
@@ -340,6 +344,14 @@ void ScriptFunctions::intToString(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = Common::UString::sprintf("%d", ctx.getParams()[0].getInt());
 }
 
+void ScriptFunctions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) kRaceInvalid;
+
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (creature)
+		ctx.getReturn() = (int32) creature->getRace();
+}
+
 void ScriptFunctions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: ScriptFunctions::getAbilityScore(): nBaseAbilityScore
 
@@ -426,7 +438,7 @@ void ScriptFunctions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getGender(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = 0;
+	ctx.getReturn() = (int32) kGenderNone;
 
 	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
 	if (creature)

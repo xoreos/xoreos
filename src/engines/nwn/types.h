@@ -139,6 +139,9 @@ enum Ability {
 	kAbilityMAX
 };
 
+static const uint32 kGenderNone  =  4;
+static const uint32 kRaceInvalid = 28;
+
 } // End of namespace NWN
 
 } // End of namespace Engines

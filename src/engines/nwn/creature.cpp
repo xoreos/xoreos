@@ -106,8 +106,8 @@ void Creature::clear() {
 	_lastName.clear();
 	_description.clear();
 
-	_gender = Aurora::kFieldIDInvalid;
-	_race   = Aurora::kFieldIDInvalid;
+	_gender = kGenderNone;
+	_race   = kRaceInvalid;
 
 	_subRace.clear();
 
@@ -172,6 +172,10 @@ bool Creature::isFemale() const {
 	// count as male when it comes to tokens in text strings.
 
 	return _gender == Aurora::kGenderFemale;
+}
+
+uint32 Creature::getRace() const {
+	return _race;
 }
 
 bool Creature::isPC() const {
