@@ -161,6 +161,10 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(3, kTypeObject, kTypeString, kTypeInt),
 			createDefaults(1, &defaultInt0));
 
+	FunctionMan.registerFunction("GetIsPC", 217,
+			boost::bind(&ScriptFunctions::getIsPC, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+
 	FunctionMan.registerFunction("GetNearestObjectByTag", 229,
 			boost::bind(&ScriptFunctions::getNearestObjectByTag, this, _1),
 			createSignature(4, kTypeObject, kTypeString, kTypeObject, kTypeInt),
@@ -314,6 +318,10 @@ void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	if (_module)
 		ctx.getReturn() = _module->findObject(tag);
+}
+
+void ScriptFunctions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = convertPC(ctx.getParams()[0].getObject()) != 0;
 }
 
 void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
