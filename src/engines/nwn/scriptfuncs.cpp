@@ -114,6 +114,13 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getArea, this, _1),
 			createSignature(2, kTypeObject, kTypeObject));
 
+	FunctionMan.registerFunction("GetItemPossessor", 29,
+			boost::bind(&ScriptFunctions::getItemPossessor, this, _1),
+			createSignature(2, kTypeObject, kTypeObject));
+	FunctionMan.registerFunction("GetItemPossessedBy", 30,
+			boost::bind(&ScriptFunctions::getItemPossessedBy, this, _1),
+			createSignature(3, kTypeObject, kTypeObject, kTypeString));
+
 	FunctionMan.registerFunction("GetIsObjectValid", 42,
 			boost::bind(&ScriptFunctions::getObjectIsValid, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -213,6 +220,31 @@ void ScriptFunctions::getArea(Aurora::NWScript::FunctionContext &ctx) {
 	Object *object = convertObject(ctx.getParams()[0].getObject());
 	if (object)
 		ctx.getReturn() = object->getArea();
+}
+
+void ScriptFunctions::getItemPossessor(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	warning("TODO: GetItemPossessor: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	const Aurora::NWScript::Parameters &params = ctx.getParams();
+
+	Object *object = convertObject(params[0].getObject());
+	if (!object)
+		return;
+
+	const Common::UString &tag = params[1].getString();
+
+	warning("TODO: GetItemPossessedBy: \"%s\" by \"%s\"",
+	        tag.c_str(), object->getTag().c_str());
 }
 
 void ScriptFunctions::getObjectIsValid(Aurora::NWScript::FunctionContext &ctx) {
