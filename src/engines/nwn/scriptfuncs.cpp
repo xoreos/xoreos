@@ -135,7 +135,7 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getDistanceToObject, this, _1),
 			createSignature(2, kTypeFloat, kTypeObject));
 	FunctionMan.registerFunction("GetIsObjectValid", 42,
-			boost::bind(&ScriptFunctions::getObjectIsValid, this, _1),
+			boost::bind(&ScriptFunctions::getIsObjectValid, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
 
 	FunctionMan.registerFunction("GetLocalInt", 51,
@@ -350,7 +350,7 @@ void ScriptFunctions::getDistanceToObject(Aurora::NWScript::FunctionContext &ctx
 }
 #undef SQR
 
-void ScriptFunctions::getObjectIsValid(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getIsObjectValid(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = convertObject(ctx.getParams()[0].getObject()) != 0;
 }
 
