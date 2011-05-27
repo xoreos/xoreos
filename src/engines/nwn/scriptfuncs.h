@@ -96,6 +96,8 @@ private:
 
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
+	void getWaypointByTag(Aurora::NWScript::FunctionContext &ctx);
+
 	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);

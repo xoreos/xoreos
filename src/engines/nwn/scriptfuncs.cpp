@@ -180,6 +180,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getTag, this, _1),
 			createSignature(2, kTypeString, kTypeObject));
 
+	FunctionMan.registerFunction("GetWaypointByTag", 197,
+			boost::bind(&ScriptFunctions::getWaypointByTag, this, _1),
+			createSignature(2, kTypeObject, kTypeString));
+
 	FunctionMan.registerFunction("GetObjectByTag", 200,
 			boost::bind(&ScriptFunctions::getObjectByTag, this, _1),
 			createSignature(3, kTypeObject, kTypeString, kTypeInt),
@@ -411,6 +415,12 @@ void ScriptFunctions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 	Object *object = convertObject(ctx.getParams()[0].getObject());
 	if (object)
 		ctx.getReturn() = object->getTag();
+}
+
+void ScriptFunctions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &tag = ctx.getParams()[0].getString();
+
+	warning("TODO: GetWaypointByTag: \"%s\"", tag.c_str());
 }
 
 void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
