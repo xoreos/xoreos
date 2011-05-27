@@ -126,11 +126,23 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("Random", 0,
 			boost::bind(&ScriptFunctions::random, this, _1),
 			createSignature(2, kTypeInt, kTypeInt));
-
+	FunctionMan.registerFunction("PrintString", 1,
+			boost::bind(&ScriptFunctions::printString, this, _1),
+			createSignature(2, kTypeVoid, kTypeString));
+	FunctionMan.registerFunction("PrintFloat", 2,
+			boost::bind(&ScriptFunctions::printFloat, this, _1),
+			createSignature(4, kTypeString, kTypeFloat, kTypeInt, kTypeInt),
+			createDefaults(2, &defaultInt18, &defaultInt9));
 	FunctionMan.registerFunction("FloatToString", 3,
 			boost::bind(&ScriptFunctions::floatToString, this, _1),
 			createSignature(4, kTypeString, kTypeFloat, kTypeInt, kTypeInt),
 			createDefaults(2, &defaultInt18, &defaultInt9));
+	FunctionMan.registerFunction("PrintInteger", 4,
+			boost::bind(&ScriptFunctions::printInteger, this, _1),
+			createSignature(2, kTypeVoid, kTypeInt));
+	FunctionMan.registerFunction("PrintObject", 5,
+			boost::bind(&ScriptFunctions::printObject, this, _1),
+			createSignature(2, kTypeVoid, kTypeObject));
 
 	FunctionMan.registerFunction("ActionMoveToObject", 22,
 			boost::bind(&ScriptFunctions::actionMoveToObject, this, _1),
@@ -317,12 +329,32 @@ void ScriptFunctions::random(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = std::rand() %  ctx.getParams()[0].getInt();
 }
 
+void ScriptFunctions::printString(Aurora::NWScript::FunctionContext &ctx) {
+	status("NWN: %s", ctx.getParams()[0].getString().c_str());
+}
+
+void ScriptFunctions::printFloat(Aurora::NWScript::FunctionContext &ctx) {
+	float value    = ctx.getParams()[0].getFloat();
+	int   width    = ctx.getParams()[1].getInt();
+	int   decimals = ctx.getParams()[2].getInt();
+
+	status("NWN: %s", floatToString(value, width, decimals).c_str());
+}
+
 void ScriptFunctions::floatToString(Aurora::NWScript::FunctionContext &ctx) {
 	float value    = ctx.getParams()[0].getFloat();
 	int   width    = ctx.getParams()[1].getInt();
 	int   decimals = ctx.getParams()[2].getInt();
 
 	ctx.getReturn() = floatToString(value, width, decimals);
+}
+
+void ScriptFunctions::printInteger(Aurora::NWScript::FunctionContext &ctx) {
+	status("NWN: %d", ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::printObject(Aurora::NWScript::FunctionContext &ctx) {
+	status("NWN: %p", (void *) ctx.getParams()[0].getObject());
 }
 
 void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {

@@ -70,8 +70,11 @@ private:
 	Creature *convertPC      (Aurora::NWScript::Object *o);
 
 	void random(Aurora::NWScript::FunctionContext &ctx);
-
+	void printString(Aurora::NWScript::FunctionContext &ctx);
+	void printFloat(Aurora::NWScript::FunctionContext &ctx);
 	void floatToString(Aurora::NWScript::FunctionContext &ctx);
+	void printInteger(Aurora::NWScript::FunctionContext &ctx);
+	void printObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
 
