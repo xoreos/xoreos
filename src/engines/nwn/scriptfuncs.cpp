@@ -130,6 +130,7 @@ Module *ScriptFunctions::convertModule(Aurora::NWScript::Object *o) {
 void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Signature sig;
 
+	Aurora::NWScript::Variable defaultIntm1(-1);
 	Aurora::NWScript::Variable defaultInt0(0);
 	Aurora::NWScript::Variable defaultInt1(1);
 	Aurora::NWScript::Variable defaultInt9(9);
@@ -183,6 +184,13 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetItemPossessedBy", 30,
 			boost::bind(&ScriptFunctions::getItemPossessedBy, this, _1),
 			createSignature(3, kTypeObject, kTypeObject, kTypeString));
+
+	FunctionMan.registerFunction("GetNearestCreature", 38,
+			boost::bind(&ScriptFunctions::getNearestCreature, this, _1),
+			createSignature(9, kTypeObject, kTypeInt, kTypeInt, kTypeObject,
+			                   kTypeInt, kTypeInt, kTypeInt, kTypeInt, kTypeInt),
+			createDefaults(6, &defaultObject0, &defaultInt1, &defaultIntm1, &defaultIntm1,
+			                  &defaultIntm1, &defaultIntm1));
 
 	FunctionMan.registerFunction("GetDistanceToObject", 41,
 			boost::bind(&ScriptFunctions::getDistanceToObject, this, _1),
@@ -495,6 +503,30 @@ void ScriptFunctions::getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx)
 
 	warning("TODO: GetItemPossessedBy: \"%s\" by \"%s\"",
 	        tag.c_str(), object->getTag().c_str());
+}
+
+void ScriptFunctions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Object *object = convertObject(ctx.getParams()[2].getObject());
+	if (ctx.getParamsSpecified() < 3)
+		object = convertObject(ctx.getCaller());
+
+	if (!object)
+		return;
+
+	int nth = ctx.getParams()[3].getInt();
+
+	int crit1Type  = ctx.getParams()[0].getInt();
+	int crit1Value = ctx.getParams()[1].getInt();
+	int crit2Type  = ctx.getParams()[4].getInt();
+	int crit2Value = ctx.getParams()[5].getInt();
+	int crit3Type  = ctx.getParams()[6].getInt();
+	int crit3Value = ctx.getParams()[7].getInt();
+
+	warning("TODO: GetNearestCreature: \"%s\", %dth, %d, %d, %d, %d, %d, %d",
+	        object->getTag().c_str(), nth, crit1Type, crit1Value,
+	        crit2Type, crit2Value, crit3Type, crit3Value);
 }
 
 #define SQR(x) ((x) * (x))
