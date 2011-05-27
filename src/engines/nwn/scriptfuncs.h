@@ -114,6 +114,8 @@ private:
 
 	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
 
+	void setCustomToken(Aurora::NWScript::FunctionContext &ctx);
+
 	void getMaster(Aurora::NWScript::FunctionContext &ctx);
 
 	void setLocked(Aurora::NWScript::FunctionContext &ctx);
