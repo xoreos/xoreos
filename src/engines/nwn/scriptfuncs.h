@@ -64,6 +64,8 @@ private:
 
 	Aurora::NWScript::Object *getPC();
 
+	Common::UString gTag(const Aurora::NWScript::Object *o);
+
 	Module   *convertModule  (Aurora::NWScript::Object *o);
 	Area     *convertArea    (Aurora::NWScript::Object *o);
 	Object   *convertObject  (Aurora::NWScript::Object *o);
@@ -153,6 +155,8 @@ private:
 	void getGender(Aurora::NWScript::FunctionContext &ctx);
 
 	void getAttemptedAttackTarget(Aurora::NWScript::FunctionContext &ctx);
+
+	void addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx);
 
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
 	void getAttemptedSpellTarget(Aurora::NWScript::FunctionContext &ctx);

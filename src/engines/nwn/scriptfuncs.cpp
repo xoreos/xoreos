@@ -95,6 +95,13 @@ Aurora::NWScript::Object *ScriptFunctions::getPC() {
 	return (Aurora::NWScript::Object *) _module->getPC();
 }
 
+Common::UString ScriptFunctions::gTag(const Aurora::NWScript::Object *o) {
+	if (o)
+		return Common::UString::sprintf("\"%s\"", o->getTag().c_str());
+
+	return "0";
+}
+
 Object *ScriptFunctions::convertObject(Aurora::NWScript::Object *o) {
 	Object *object = dynamic_cast<Object *>(o);
 	if (!object || !object->loaded())
@@ -359,6 +366,12 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getAttemptedAttackTarget, this, _1),
 			createSignature(1, kTypeObject));
 
+	FunctionMan.registerFunction("AddJournalQuestEntry", 367,
+			boost::bind(&ScriptFunctions::addJournalQuestEntry, this, _1),
+			createSignature(7, kTypeVoid, kTypeString, kTypeInt, kTypeObject,
+			                   kTypeInt, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1, &defaultInt0, &defaultInt0));
+
 	FunctionMan.registerFunction("SendMessageToPC", 374,
 			boost::bind(&ScriptFunctions::sendMessageToPC, this, _1),
 			createSignature(3, kTypeVoid, kTypeObject, kTypeString));
@@ -482,9 +495,7 @@ void ScriptFunctions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
 
 		ncs.run();
 	} catch (Common::Exception &e) {
-		const Common::UString &oTag = object ? Common::UString::sprintf("\"%s\"", object->getTag().c_str()) : "0";
-
-		e.add("Failed ExecuteScript(\"%s\", %s)", script.c_str(), oTag.c_str());
+		e.add("Failed ExecuteScript(\"%s\", %s)", script.c_str(), gTag(object).c_str());
 
 		Common::printException(e, "WARNING: ");
 	}
@@ -934,7 +945,22 @@ void ScriptFunctions::getAttemptedAttackTarget(Aurora::NWScript::FunctionContext
 	if (!creature)
 		return;
 
-	warning("TODO: GetAttemptedAttackTarget(): \"%s\"", creature->getTag().c_str());
+	warning("TODO: GetAttemptedAttackTarget: \"%s\"", creature->getTag().c_str());
+}
+
+void ScriptFunctions::addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx) {
+
+	const Common::UString &plot = ctx.getParams()[0].getString();
+	int state = ctx.getParams()[1].getInt();
+
+	Creature *pc = convertPC(ctx.getParams()[2].getObject());
+
+	bool allPartyMembers = ctx.getParams()[3].getInt();
+	bool allPlayers      = ctx.getParams()[4].getInt();
+	bool allowOverride   = ctx.getParams()[5].getInt();
+
+	warning("TODO: AddJournalQuestEntry: \"%s\": \"%s\" to %d (%d, %d, %d)", plot.c_str(),
+	        gTag(pc).c_str(), state, allPartyMembers, allPlayers, allowOverride);
 }
 
 void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {
@@ -956,7 +982,7 @@ void ScriptFunctions::getAttemptedSpellTarget(Aurora::NWScript::FunctionContext 
 	if (!creature)
 		return;
 
-	warning("TODO: GetAttemptedSpellTarget(): \"%s\"", creature->getTag().c_str());
+	warning("TODO: GetAttemptedSpellTarget: \"%s\"", creature->getTag().c_str());
 }
 
 void ScriptFunctions::getIsDay(Aurora::NWScript::FunctionContext &ctx) {
