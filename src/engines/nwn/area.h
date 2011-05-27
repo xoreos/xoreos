@@ -69,6 +69,10 @@ public:
 	/** Return the area's localized display name. */
 	const Common::UString &getDisplayName();
 
+	uint32 getMusicDayTrack   () const;
+	uint32 getMusicNightTrack () const;
+	uint32 getMusicBattleTrack() const;
+
 	void show();
 	void hide();
 
@@ -127,6 +131,10 @@ private:
 
 	Common::UString _ambientDay;
 	Common::UString _ambientNight;
+
+	uint32 _musicDayTrack;
+	uint32 _musicNightTrack;
+	uint32 _musicBattleTrack;
 
 	Common::UString _musicDay;
 	Common::UString _musicNight;

@@ -36,6 +36,7 @@
 #include "engines/nwn/object.h"
 #include "engines/nwn/creature.h"
 #include "engines/nwn/module.h"
+#include "engines/nwn/area.h"
 
 #include "aurora/nwscript/types.h"
 #include "aurora/nwscript/util.h"
@@ -94,6 +95,10 @@ Creature *ScriptFunctions::convertPC(Aurora::NWScript::Object *o) {
 		return 0;
 
 	return pc;
+}
+
+Area *ScriptFunctions::convertArea(Aurora::NWScript::Object *o) {
+	return dynamic_cast<Area *>(o);
 }
 
 void ScriptFunctions::registerFunctions() {
@@ -226,6 +231,13 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetNextPC", 549,
 			boost::bind(&ScriptFunctions::getNextPC, this, _1),
 			createSignature(1, kTypeObject));
+
+	FunctionMan.registerFunction("MusicBackgroundGetDayTrack", 558,
+			boost::bind(&ScriptFunctions::musicBackgroundGetDayTrack, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+	FunctionMan.registerFunction("MusicBackgroundGetNightTrack", 559,
+			boost::bind(&ScriptFunctions::musicBackgroundGetNightTrack, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
 
 }
 
@@ -520,6 +532,22 @@ void ScriptFunctions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &msg = params[1].getString();
 
 	warning("Send message to PC \"%s\": \"%s\"", pc->getName().c_str(), msg.c_str());
+}
+
+void ScriptFunctions::musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1;
+
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		ctx.getReturn() = (int32) area->getMusicDayTrack();
+}
+
+void ScriptFunctions::musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1;
+
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		ctx.getReturn() = (int32) area->getMusicNightTrack();
 }
 
 } // End of namespace NWN

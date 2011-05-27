@@ -531,6 +531,8 @@ void Module::loadArea() {
 
 	_ingameGUI->setArea(_area->getName());
 
+	_pc.setArea(_area);
+
 	_console->printf("Entering area \"%s\"", _area->getResRef().c_str());
 }
 

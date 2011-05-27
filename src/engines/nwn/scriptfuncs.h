@@ -45,6 +45,7 @@ class Module;
 
 class Object;
 class Creature;
+class Area;
 
 class ScriptFunctions {
 public:
@@ -63,6 +64,7 @@ private:
 	Object   *convertObject  (Aurora::NWScript::Object *o);
 	Creature *convertCreature(Aurora::NWScript::Object *o);
 	Creature *convertPC      (Aurora::NWScript::Object *o);
+	Area     *convertArea    (Aurora::NWScript::Object *o);
 
 	void random(Aurora::NWScript::FunctionContext &ctx);
 
@@ -116,6 +118,9 @@ private:
 
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
+
+	void musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx);
 };
 
 } // End of namespace NWN

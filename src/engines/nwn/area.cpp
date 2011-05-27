@@ -130,6 +130,18 @@ const Common::UString &Area::getDisplayName() {
 	return _displayName;
 }
 
+uint32 Area::getMusicDayTrack() const {
+	return _musicDayTrack;
+}
+
+uint32 Area::getMusicNightTrack() const {
+	return _musicNightTrack;
+}
+
+uint32 Area::getMusicBattleTrack() const {
+	return _musicBattleTrack;
+}
+
 void Area::stopSound() {
 	stopAmbientMusic();
 	stopAmbientSound();
@@ -273,25 +285,25 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 
 	const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get("ambientmusic");
 
-	uint32 musicDay   = props.getUint("MusicDay"   , Aurora::kStrRefInvalid);
-	uint32 musicNight = props.getUint("MusicNight" , Aurora::kStrRefInvalid);
+	_musicDayTrack   = props.getUint("MusicDay"   , Aurora::kStrRefInvalid);
+	_musicNightTrack = props.getUint("MusicNight" , Aurora::kStrRefInvalid);
 
-	_musicDay   = ambientMusic.getRow(musicDay  ).getString("Resource");
-	_musicNight = ambientMusic.getRow(musicNight).getString("Resource");
+	_musicDay   = ambientMusic.getRow(_musicDayTrack  ).getString("Resource");
+	_musicNight = ambientMusic.getRow(_musicNightTrack).getString("Resource");
 
 
 	// Battle music
 
-	uint32 musicBattle = props.getUint("MusicBattle", Aurora::kStrRefInvalid);
+	_musicBattleTrack = props.getUint("MusicBattle", Aurora::kStrRefInvalid);
 
-	if (musicBattle != Aurora::kStrRefInvalid) {
-		_musicBattle = ambientMusic.getRow(musicBattle).getString("Resource");
+	if (_musicBattleTrack!= Aurora::kStrRefInvalid) {
+		_musicBattle = ambientMusic.getRow(_musicBattleTrack).getString("Resource");
 
 		// Battle stingers
 		Common::UString stinger[3];
-		stinger[0] = ambientMusic.getRow(musicBattle).getString("Stinger1");
-		stinger[1] = ambientMusic.getRow(musicBattle).getString("Stinger2");
-		stinger[2] = ambientMusic.getRow(musicBattle).getString("Stinger3");
+		stinger[0] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger1");
+		stinger[1] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger2");
+		stinger[2] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger3");
 
 		for (int i = 0; i < 3; i++)
 			if (!stinger[i].empty())
