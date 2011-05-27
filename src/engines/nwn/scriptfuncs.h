@@ -116,6 +116,9 @@ private:
 
 	void getGold(Aurora::NWScript::FunctionContext &ctx);
 
+	void musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx);
+
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
 

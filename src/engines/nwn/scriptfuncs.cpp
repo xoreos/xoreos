@@ -225,6 +225,13 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(2, kTypeInt, kTypeObject),
 			createDefaults(1, &defaultObject0));
 
+	FunctionMan.registerFunction("MusicBackgroundPlay", 425,
+			boost::bind(&ScriptFunctions::musicBackgroundPlay, this, _1),
+			createSignature(2, kTypeVoid, kTypeObject));
+	FunctionMan.registerFunction("MusicBackgroundStop", 426,
+			boost::bind(&ScriptFunctions::musicBackgroundStop, this, _1),
+			createSignature(2, kTypeVoid, kTypeObject));
+
 	FunctionMan.registerFunction("GetFirstPC", 548,
 			boost::bind(&ScriptFunctions::getFirstPC, this, _1),
 			createSignature(1, kTypeObject));
@@ -436,6 +443,18 @@ void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	warning("TODO: GetGold: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		area->playAmbientMusic();
+}
+
+void ScriptFunctions::musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = convertArea(ctx.getParams()[0].getObject());
+	if (area)
+		area->stopAmbientMusic();
 }
 
 void ScriptFunctions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {

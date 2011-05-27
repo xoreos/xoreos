@@ -73,6 +73,13 @@ public:
 	uint32 getMusicNightTrack () const;
 	uint32 getMusicBattleTrack() const;
 
+	void stopSound();
+	void stopAmbientMusic();
+	void stopAmbientSound();
+
+	void playAmbientMusic(Common::UString music = "");
+	void playAmbientSound(Common::UString sound = "");
+
 	void show();
 	void hide();
 
@@ -187,13 +194,6 @@ private:
 	void loadPlaceables(const Aurora::GFFList &list);
 	void loadDoors     (const Aurora::GFFList &list);
 	void loadCreatures (const Aurora::GFFList &list);
-
-	void stopSound();
-	void stopAmbientMusic();
-	void stopAmbientSound();
-
-	void playAmbientMusic(Common::UString music = "");
-	void playAmbientSound(Common::UString sound = "");
 
 
 	void checkActive(int x = -1, int y = -1);
