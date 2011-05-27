@@ -216,6 +216,13 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(2, kTypeObject, kTypeObject),
 			createDefaults(1, &defaultObject0));
 
+	FunctionMan.registerFunction("SetLocked", 324,
+			boost::bind(&ScriptFunctions::setLocked, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeInt));
+	FunctionMan.registerFunction("GetLocked", 325,
+			boost::bind(&ScriptFunctions::getLocked, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+
 	FunctionMan.registerFunction("GetClassByPosition", 341,
 			boost::bind(&ScriptFunctions::getClassByPosition, this, _1),
 			createSignature(3, kTypeInt, kTypeInt, kTypeObject),
@@ -526,6 +533,23 @@ void ScriptFunctions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
 		object = convertObject(ctx.getCaller());
 
 	ctx.getReturn() = object;
+}
+
+void ScriptFunctions::setLocked(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	bool locked = ctx.getParams()[1].getInt() != 0;
+	warning("TODO: SetLocked: \"%s\" to %d", object->getTag().c_str(), locked);
+}
+
+void ScriptFunctions::getLocked(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	warning("TODO: GetLocked: \"%s\"", object->getTag().c_str());
 }
 
 void ScriptFunctions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {

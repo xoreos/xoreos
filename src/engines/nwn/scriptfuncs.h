@@ -112,6 +112,9 @@ private:
 
 	void getMaster(Aurora::NWScript::FunctionContext &ctx);
 
+	void setLocked(Aurora::NWScript::FunctionContext &ctx);
+	void getLocked(Aurora::NWScript::FunctionContext &ctx);
+
 	void getClassByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByClass(Aurora::NWScript::FunctionContext &ctx);
