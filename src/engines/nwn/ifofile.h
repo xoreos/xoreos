@@ -51,6 +51,9 @@ public:
 
 	bool isSave() const; ///< Is the module a save file?
 
+	/** Return the module's tag. */
+	const Common::UString &getTag() const;
+
 	/** Return the name of the module. */
 	const Aurora::LocString &getName() const;
 	/** Return the description of the module. */
@@ -95,6 +98,8 @@ public:
 
 private:
 	byte _id[32];
+
+	Common::UString _tag;
 
 	Aurora::LocString _name;
 	Aurora::LocString _description;

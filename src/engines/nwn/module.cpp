@@ -115,6 +115,8 @@ bool Module::loadModule(const Common::UString &module) {
 
 		_ifo.loadTLK();
 
+		_tag = _ifo.getTag();
+
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
 		printException(e, "WARNING: ");
@@ -445,6 +447,8 @@ void Module::unload() {
 
 void Module::unloadModule() {
 	TwoDAReg.clear();
+
+	_tag.clear();
 
 	_ifo.unload();
 

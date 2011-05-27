@@ -257,6 +257,10 @@ void Area::hide() {
 }
 
 void Area::loadARE(const Aurora::GFFStruct &are) {
+	// Tag
+
+	_tag = are.getString("Tag");
+
 	// Name
 
 	Aurora::LocString name;

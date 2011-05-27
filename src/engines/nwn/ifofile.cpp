@@ -57,6 +57,8 @@ IFOFile::~IFOFile() {
 void IFOFile::clear() {
 	memset(_id, 0, sizeof(_id));
 
+	_tag.clear();
+
 	_name.clear();
 	_description.clear();
 
@@ -125,6 +127,9 @@ void IFOFile::load() {
 
 	// Is Save?
 	_isSave = ifoTop.getUint("Mod_IsSaveGame") == 1;
+
+	// Tag
+	_tag = ifoTop.getString("Mod_Tag");
 
 	// Name and description
 	ifoTop.getLocString("Mod_Name"       , _name);
@@ -235,6 +240,10 @@ void IFOFile::loadTLK() {
 
 bool IFOFile::isSave() const {
 	return _isSave;
+}
+
+const Common::UString &IFOFile::getTag() const {
+	return _tag;
 }
 
 const Aurora::LocString &IFOFile::getName() const {
