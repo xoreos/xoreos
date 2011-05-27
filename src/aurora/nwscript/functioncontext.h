@@ -58,6 +58,9 @@ public:
 	uint32 getParamMin() const;
 	uint32 getParamMax() const;
 
+	void setParamsSpecified(uint32 params);
+	uint32 getParamsSpecified() const;
+
 	const Signature &getSignature() const;
 
 	Object *getCaller() const;
@@ -83,7 +86,8 @@ private:
 	Variable   _return;     ///< The function's return value.
 	Parameters _parameters; ///< The function's parameters.
 
-	uint32 _defaultCount; ///< The number of default values.
+	uint32 _defaultCount;    ///< The number of default values.
+	uint32 _paramsSpecified; ///< The number of parameters specified (not defaulted).
 };
 
 } // End of namespace NWScript

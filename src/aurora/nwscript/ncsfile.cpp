@@ -407,6 +407,7 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 
 	ctx.setCaller(_objectSelf);
 
+	ctx.setParamsSpecified(argCount);
 	for (uint8 i = 0; i < argCount; i++) {
 		Variable &param = ctx.getParams()[i];
 
