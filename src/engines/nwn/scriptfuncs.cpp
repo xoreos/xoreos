@@ -1294,16 +1294,18 @@ void ScriptFunctions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = -1;
 
-	Object *object = convertObject(ctx.getParams()[1].getObject());
+	Creature *creature = convertCreature(ctx.getParams()[1].getObject());
 	if (ctx.getParamsSpecified() < 2)
-		object = convertObject(ctx.getCaller());
-	if (!object)
+		creature = convertCreature(ctx.getCaller());
+	if (!creature)
 		return;
 
-	int  skill = ctx.getParams()[0].getInt();
-	bool base  = ctx.getParams()[2].getInt() != 0;
+	int skill = ctx.getParams()[0].getInt();
 
-	warning("TODO: GetSkillRank: \"%s\", %d, %d", object->getTag().c_str(), skill, base);
+	// TODO: ScriptFunctions::getSkillRank(): base
+	// bool base  = ctx.getParams()[2].getInt() != 0;
+
+	ctx.getReturn() = creature->getSkillRank(skill);
 }
 
 void ScriptFunctions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
