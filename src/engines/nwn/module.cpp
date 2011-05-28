@@ -117,6 +117,8 @@ bool Module::loadModule(const Common::UString &module) {
 
 		_tag = _ifo.getTag();
 
+		readScripts(_ifo);
+
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
 		printException(e, "WARNING: ");
@@ -296,6 +298,10 @@ bool Module::enter() {
 		return false;
 	}
 
+	runScript(kScriptModuleLoad , this, &_pc);
+	runScript(kScriptModuleStart, this, &_pc);
+	runScript(kScriptEnter      , this, &_pc);
+
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
 		playVideo(startMovie);
@@ -448,7 +454,11 @@ void Module::unload() {
 }
 
 void Module::unloadModule() {
+	runScript(kScriptExit, this, &_pc);
+
 	TwoDAReg.clear();
+
+	clearScripts();
 
 	_tag.clear();
 
@@ -525,7 +535,11 @@ void Module::loadArea() {
 
 	_ingameGUI->stopConversation();
 
-	delete _area;
+	if (_area) {
+		_area->runScript(kScriptExit, _area, &_pc);
+		delete _area;
+	}
+
 	if (_newArea.empty()) {
 		_exit = true;
 		return;
@@ -540,6 +554,8 @@ void Module::loadArea() {
 	_ingameGUI->setArea(_area->getName());
 
 	_pc.setArea(_area);
+
+	_area->runScript(kScriptEnter, _area, &_pc);
 
 	_console->printf("Entering area \"%s\"", _area->getResRef().c_str());
 }

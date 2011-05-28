@@ -147,6 +147,8 @@ void Object::clear() {
 
 	stopSound();
 
+	clearScripts();
+
 	_tag.clear();
 	_name.clear();
 	_description.clear();

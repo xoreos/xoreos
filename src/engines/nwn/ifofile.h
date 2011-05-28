@@ -35,11 +35,13 @@
 
 #include "aurora/locstring.h"
 
+#include "engines/nwn/scriptcontainer.h"
+
 namespace Engines {
 
 namespace NWN {
 
-class IFOFile {
+class IFOFile : public ScriptContainer {
 public:
 	IFOFile();
 	~IFOFile();

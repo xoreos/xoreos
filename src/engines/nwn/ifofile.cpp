@@ -55,6 +55,8 @@ IFOFile::~IFOFile() {
 }
 
 void IFOFile::clear() {
+	clearScripts();
+
 	memset(_id, 0, sizeof(_id));
 
 	_tag.clear();
@@ -197,26 +199,8 @@ void IFOFile::load() {
 	// XP Scale
 	_xpScale = ifoTop.getUint("Mod_XPScale", 100) / 100.0;
 
-	/* TODO: Module scripts
-	ifoTop.getString("Mod_OnHeartbeat");
-	ifoTop.getString("Mod_OnModLoad");
-	ifoTop.getString("Mod_OnModStart");
-	ifoTop.getString("Mod_OnClientEntr");
-	ifoTop.getString("Mod_OnClientLeav");
-	ifoTop.getString("Mod_OnActvtItem");
-	ifoTop.getString("Mod_OnAcquirItem");
-	ifoTop.getString("Mod_OnUsrDefined");
-	ifoTop.getString("Mod_OnUnAqreItem");
-	ifoTop.getString("Mod_OnPlrDeath");
-	ifoTop.getString("Mod_OnPlrDying");
-	ifoTop.getString("Mod_OnPlrEqItm");
-	ifoTop.getString("Mod_OnPlrLvlUp");
-	ifoTop.getString("Mod_OnSpawnBtnDn");
-	ifoTop.getString("Mod_OnPlrRest");
-	ifoTop.getString("Mod_OnPlrUnEqItm");
-	ifoTop.getString("Mod_OnCutsnAbort");
-	ifoTop.getString("Mod_OnPlrChat");
-	*/
+	// Scripts
+	readScripts(ifoTop);
 }
 
 void IFOFile::parseVersion(const Common::UString &version) {

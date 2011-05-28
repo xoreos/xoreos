@@ -550,6 +550,9 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_colorHair    = gff.getUint("Color_Hair", _colorHair);
 	_colorTattoo1 = gff.getUint("Color_Tattoo1", _colorTattoo1);
 	_colorTattoo2 = gff.getUint("Color_Tattoo2", _colorTattoo2);
+
+	// Scripts
+	readScripts(gff);
 }
 
 void Creature::loadPortrait(const Aurora::GFFStruct &gff) {

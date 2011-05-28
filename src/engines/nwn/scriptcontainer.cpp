@@ -137,7 +137,7 @@ bool ScriptContainer::runScript(Script script, Aurora::NWScript::Object *owner,
 }
 
 bool ScriptContainer::runScript(const Common::UString &script,
-                                Aurora::NWScript::Object *owner
+                                Aurora::NWScript::Object *owner,
                                 Aurora::NWScript::Object *triggerer) {
 
 	if (script.empty())

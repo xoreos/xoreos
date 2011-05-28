@@ -268,6 +268,9 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 	_tiles.resize(_width * _height);
 
 	loadTiles(are.getList("Tile_List"));
+
+	// Scripts
+	readScripts(are);
 }
 
 void Area::loadGIT(const Aurora::GFFStruct &git) {

@@ -47,6 +47,7 @@
 #include "events/types.h"
 #include "events/notifyable.h"
 
+#include "engines/nwn/scriptcontainer.h"
 #include "engines/nwn/tileset.h"
 
 namespace Engines {
@@ -59,7 +60,8 @@ class Object;
 class Placeable;
 class Door;
 
-class Area : public Aurora::NWScript::Object, public Events::Notifyable {
+class Area : public Aurora::NWScript::Object, public Events::Notifyable,
+             public ScriptContainer {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();

@@ -39,6 +39,8 @@
 
 #include "sound/types.h"
 
+#include "engines/nwn/scriptcontainer.h"
+
 namespace Aurora {
 	class SSFFile;
 
@@ -52,7 +54,7 @@ namespace Engines {
 namespace NWN {
 
 /** An object within a NWN area. */
-class Object : public Aurora::NWScript::Object {
+class Object : public Aurora::NWScript::Object, public ScriptContainer {
 public:
 	Object();
 	virtual ~Object();

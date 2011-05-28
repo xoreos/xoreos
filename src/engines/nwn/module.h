@@ -41,6 +41,7 @@
 
 #include "events/types.h"
 
+#include "engines/nwn/scriptcontainer.h"
 #include "engines/nwn/ifofile.h"
 #include "engines/nwn/creature.h"
 
@@ -57,7 +58,8 @@ class Area;
 
 class IngameGUI;
 
-class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
+class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer,
+               public ScriptContainer {
 public:
 	Module(Console &console);
 	~Module();
