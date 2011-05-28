@@ -416,6 +416,11 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(3, kTypeInt, kTypeInt, kTypeObject),
 			createDefaults(1, &defaultObject0));
 
+	FunctionMan.registerFunction("GetHenchman", 354,
+			boost::bind(&ScriptFunctions::getHenchman, this, _1),
+			createSignature(3, kTypeObject, kTypeObject, kTypeInt),
+			createDefaults(2, &defaultObject0, &defaultInt1));
+
 	FunctionMan.registerFunction("GetGender", 358,
 			boost::bind(&ScriptFunctions::getGender, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -1092,6 +1097,20 @@ void ScriptFunctions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
 
 	if (creature)
 		ctx.getReturn() = creature->getClassLevel(classID);
+}
+
+void ScriptFunctions::getHenchman(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (ctx.getParamsSpecified() < 1)
+		object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	int nth  = ctx.getParams()[1].getInt();
+
+	warning("TODO: GetHenchman: \"%s\", %d", object->getTag().c_str(), nth);
 }
 
 void ScriptFunctions::getGender(Aurora::NWScript::FunctionContext &ctx) {

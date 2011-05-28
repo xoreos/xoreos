@@ -171,6 +171,8 @@ private:
 	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByClass(Aurora::NWScript::FunctionContext &ctx);
 
+	void getHenchman(Aurora::NWScript::FunctionContext &ctx);
+
 	void getGender(Aurora::NWScript::FunctionContext &ctx);
 
 	void getAttemptedAttackTarget(Aurora::NWScript::FunctionContext &ctx);
