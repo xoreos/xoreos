@@ -193,6 +193,7 @@ private:
 	void getAttemptedAttackTarget(Aurora::NWScript::FunctionContext &ctx);
 
 	void getAssociate(Aurora::NWScript::FunctionContext &ctx);
+	void addHenchman(Aurora::NWScript::FunctionContext &ctx);
 
 	void addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx);
 

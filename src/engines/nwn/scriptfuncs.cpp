@@ -495,6 +495,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getAssociate, this, _1),
 			createSignature(4, kTypeObject, kTypeInt, kTypeObject, kTypeInt),
 			createDefaults(2, &defaultObject0, &defaultInt1));
+	FunctionMan.registerFunction("AddHenchman", 365,
+			boost::bind(&ScriptFunctions::addHenchman, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeObject),
+			createDefaults(1, &defaultObject0));
 
 	FunctionMan.registerFunction("AddJournalQuestEntry", 367,
 			boost::bind(&ScriptFunctions::addJournalQuestEntry, this, _1),
@@ -1329,6 +1333,19 @@ void ScriptFunctions::getAssociate(Aurora::NWScript::FunctionContext &ctx) {
 	int nth  = ctx.getParams()[2].getInt();
 
 	warning("TODO: GetAssociate: %s, %d, %d", gTag(creature).c_str(), type, nth);
+}
+
+void ScriptFunctions::addHenchman(Aurora::NWScript::FunctionContext &ctx) {
+	Object *master   = convertObject(ctx.getParams()[0].getObject());
+	Object *henchman = convertObject(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		henchman = convertObject(ctx.getCaller());
+
+	if (!master || !henchman)
+		return;
+
+	warning("TODO: AddHenchman: \"%s\" to \"%s\"",
+	        henchman->getTag().c_str(), master->getTag().c_str());
 }
 
 void ScriptFunctions::addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx) {
