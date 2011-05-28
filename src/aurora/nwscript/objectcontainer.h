@@ -64,6 +64,14 @@ public:
 	/** Remove an object from this container. */
 	void removeObject(Object &obj);
 
+	/** Find the first object. */
+	bool findFirstObject(SearchContext &ctx) const;
+	/** Find the next object. */
+	bool findNextObject(SearchContext &ctx) const;
+
+	/** Find the first object, disregarding any other matches. */
+	Object *findFirstObject() const;
+
 	/** Find the first object with this tag. */
 	bool findFirstObject(const Common::UString &tag, SearchContext &ctx) const;
 	/** Find the next object with this tag. */

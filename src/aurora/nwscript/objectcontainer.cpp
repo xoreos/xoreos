@@ -79,6 +79,30 @@ void ObjectContainer::removeObject(Object &obj) {
 	obj._objectContainerTag = _objects.end();
 }
 
+bool ObjectContainer::findFirstObject(SearchContext &ctx) const {
+	ctx._empty  = false;
+	ctx._object = 0;
+	ctx._tag    = "";
+	ctx._range  = std::make_pair(_objects.begin(), _objects.end());
+
+	if (ctx._range.first == ctx._range.second)
+		return false;
+
+	ctx._object = ctx._range.first->second;
+	return true;
+}
+
+bool ObjectContainer::findNextObject(SearchContext &ctx) const {
+	return findNextObject(ctx._tag, ctx);
+}
+
+Object *ObjectContainer::findFirstObject() const {
+	if (_objects.empty())
+		return 0;
+
+	return _objects.begin()->second;
+}
+
 bool ObjectContainer::findFirstObject(const Common::UString &tag, SearchContext &ctx) const {
 	ctx._empty  = false;
 	ctx._object = 0;

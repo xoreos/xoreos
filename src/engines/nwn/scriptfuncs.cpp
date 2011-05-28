@@ -756,25 +756,45 @@ void ScriptFunctions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx)
 void ScriptFunctions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
-	Object *object = convertObject(ctx.getParams()[2].getObject());
+	Object *target = convertObject(ctx.getParams()[2].getObject());
 	if (ctx.getParamsSpecified() < 3)
-		object = convertObject(ctx.getCaller());
+		target = convertObject(ctx.getCaller());
 
-	if (!object)
+	if (!target)
 		return;
 
-	int nth = ctx.getParams()[3].getInt();
+	int nth = ctx.getParams()[3].getInt() - 1;
 
+	// TODO: ScriptFunctions::getNearestCreature(): Critia
+	/*
 	int crit1Type  = ctx.getParams()[0].getInt();
 	int crit1Value = ctx.getParams()[1].getInt();
 	int crit2Type  = ctx.getParams()[4].getInt();
 	int crit2Value = ctx.getParams()[5].getInt();
 	int crit3Type  = ctx.getParams()[6].getInt();
 	int crit3Value = ctx.getParams()[7].getInt();
+	*/
 
-	warning("TODO: GetNearestCreature: \"%s\", %dth, %d, %d, %d, %d, %d, %d",
-	        object->getTag().c_str(), nth, crit1Type, crit1Value,
-	        crit2Type, crit2Value, crit3Type, crit3Value);
+	std::list<Object *> objects;
+
+	Object *object = 0;
+	if (_module->findFirstObject(_objSearchContext)) {
+		if ((object = convertObject(_objSearchContext.getObject())) && (object != target))
+			objects.push_back(object);
+
+		while (_module->findNextObject(_objSearchContext))
+			if ((object = convertObject(_objSearchContext.getObject())) && (object != target))
+				objects.push_back(object);
+	}
+
+	objects.sort(ObjectDistanceSort(*target));
+
+	std::list<Object *>::iterator it = objects.begin();
+	for (int n = 0; (n < nth) && (it != objects.end()); ++n)
+		++it;
+
+	if (it != objects.end())
+		ctx.getReturn() = *it;
 }
 
 #define SQR(x) ((x) * (x))
@@ -1068,11 +1088,11 @@ void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &c
 	// TODO: ScriptFunctions::getNearestObjectByTag(): Only consider objects in the same area
 	Object *object = 0;
 	if (_module->findFirstObject(tag, _objSearchContext)) {
-		if ((object = convertObject(_objSearchContext.getObject())))
+		if ((object = convertObject(_objSearchContext.getObject())) && (object != target))
 			objects.push_back(object);
 
 		while (_module->findNextObject(tag, _objSearchContext))
-			if ((object = convertObject(_objSearchContext.getObject())))
+			if ((object = convertObject(_objSearchContext.getObject())) && (object != target))
 				objects.push_back(object);
 	}
 
