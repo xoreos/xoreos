@@ -136,6 +136,8 @@ void Creature::clear() {
 		_abilities[i] = 0;
 
 	_classes.clear();
+	_skills.clear();
+	_feats.clear();
 
 	_hitDice = 0;
 
@@ -211,12 +213,6 @@ uint32 Creature::getAge() const {
 
 uint32 Creature::getXP() const {
 	return _xp;
-}
-
-uint8 Creature::getAbility(Ability ability) const {
-	assert((ability >= 0) && (ability < kAbilityMAX));
-
-	return _abilities[ability];
 }
 
 int32 Creature::getCurrentHP() const {
@@ -573,7 +569,6 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 		_hitDice = 0;
 
 		const Aurora::GFFList &cClasses = gff.getList("ClassList");
-
 		for (Aurora::GFFList::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
 			_classes.push_back(Class());
 
@@ -583,6 +578,30 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 			_classes.back().level   = cClass.getUint("ClassLevel");
 
 			_hitDice += _classes.back().level;
+		}
+	}
+
+	// Skills
+	if (gff.hasField("SkillList")) {
+		_skills.clear();
+
+		const Aurora::GFFList &skills = gff.getList("SkillList");
+		for (Aurora::GFFList::const_iterator s = skills.begin(); s != skills.end(); ++s) {
+			const Aurora::GFFStruct &skill = **s;
+
+			_skills.push_back(skill.getSint("Rank"));
+		}
+	}
+
+	// Feats
+	if (gff.hasField("FeatList")) {
+		_feats.clear();
+
+		const Aurora::GFFList &feats = gff.getList("FeatList");
+		for (Aurora::GFFList::const_iterator f = feats.begin(); f != feats.end(); ++f) {
+			const Aurora::GFFStruct &feat = **f;
+
+			_feats.push_back(feat.getUint("Feat"));
 		}
 	}
 
@@ -724,6 +743,27 @@ Common::UString Creature::getClassString() const {
 
 uint8 Creature::getHitDice() const {
 	return _hitDice;
+}
+
+uint8 Creature::getAbility(Ability ability) const {
+	assert((ability >= 0) && (ability < kAbilityMAX));
+
+	return _abilities[ability];
+}
+
+int8 Creature::getSkillRank(uint32 skill) const {
+	if (skill >= _skills.size())
+		return -1;
+
+	return _skills[skill];
+}
+
+bool Creature::hasFeat(uint32 feat) const {
+	for (std::vector<uint32>::const_iterator f = _feats.begin(); f != _feats.end(); ++f)
+		if (*f == feat)
+			return true;
+
+	return false;
 }
 
 void Creature::enter() {

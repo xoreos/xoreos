@@ -125,6 +125,13 @@ public:
 	/** Returns the number of hit dice, which is effectively the total number of levels. */
 	uint8 getHitDice() const;
 
+	/** Return a creature's ability score. */
+	uint8 getAbility(Ability ability) const;
+	/** Return the creature's rank in this skill. */
+	 int8 getSkillRank(uint32 skill) const;
+	/** Does the creature have this feat? */
+	bool  hasFeat(uint32 feat) const;
+
 	/** Get the creature's deity. */
 	const Common::UString &getDeity() const;
 
@@ -139,9 +146,6 @@ public:
 
 	/** Return the creature's XP. */
 	uint32 getXP() const;
-
-	/** Return a creature's ability score. */
-	uint8 getAbility(Ability ability) const;
 
 	/** Return the current HP this creature has. */
 	int32 getCurrentHP() const;
@@ -223,7 +227,9 @@ private:
 
 	uint8 _abilities[kAbilityMAX];
 
-	std::vector<Class> _classes;
+	std::vector<Class>  _classes;
+	std::vector<int8>   _skills;
+	std::vector<uint32> _feats;
 
 	uint8 _hitDice;
 
