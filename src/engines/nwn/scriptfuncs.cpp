@@ -210,6 +210,12 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetArea", 24,
 			boost::bind(&ScriptFunctions::getArea, this, _1),
 			createSignature(2, kTypeObject, kTypeObject));
+	FunctionMan.registerFunction("GetEnteringObject", 25,
+			boost::bind(&ScriptFunctions::getEnteringObject, this, _1),
+			createSignature(1, kTypeObject));
+	FunctionMan.registerFunction("GetExitingObject", 26,
+			boost::bind(&ScriptFunctions::getExitingObject, this, _1),
+			createSignature(1, kTypeObject));
 
 	FunctionMan.registerFunction("GetItemPossessor", 29,
 			boost::bind(&ScriptFunctions::getItemPossessor, this, _1),
@@ -614,6 +620,14 @@ void ScriptFunctions::getArea(Aurora::NWScript::FunctionContext &ctx) {
 	Object *object = convertObject(ctx.getParams()[0].getObject());
 	if (object)
 		ctx.getReturn() = object->getArea();
+}
+
+void ScriptFunctions::getEnteringObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = ctx.getTriggerer();
+}
+
+void ScriptFunctions::getExitingObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = ctx.getTriggerer();
 }
 
 void ScriptFunctions::getItemPossessor(Aurora::NWScript::FunctionContext &ctx) {
