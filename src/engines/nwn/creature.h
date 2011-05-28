@@ -128,6 +128,9 @@ public:
 	/** Get the creature's deity. */
 	const Common::UString &getDeity() const;
 
+	uint8 getGoodEvil() const;
+	uint8 getLawChaos() const;
+
 	bool isPC() const; ///< Is the creature a player character?
 	bool isDM() const; ///< Is the creature a dungeon master?
 
@@ -210,6 +213,9 @@ private:
 	uint8 _hitDice;
 
 	Common::UString _deity;
+
+	uint8 _goodEvil;
+	uint8 _lawChaos;
 
 	uint32 _appearanceID;
 	uint32 _phenotype;

@@ -317,6 +317,13 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getRacialType, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
 
+	FunctionMan.registerFunction("GetLawChaosValue", 124,
+			boost::bind(&ScriptFunctions::getLawChaosValue, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+	FunctionMan.registerFunction("GetGoodEvilValue", 125,
+			boost::bind(&ScriptFunctions::getGoodEvilValue, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+
 	FunctionMan.registerFunction("GetAbilityScore", 139,
 			boost::bind(&ScriptFunctions::getAbilityScore, this, _1),
 			createSignature(4, kTypeInt, kTypeObject, kTypeInt, kTypeInt),
@@ -814,6 +821,22 @@ void ScriptFunctions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
 	if (creature)
 		ctx.getReturn() = (int32) creature->getRace();
+}
+
+void ScriptFunctions::getLawChaosValue(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1;
+
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (creature)
+		ctx.getReturn() = (int32) creature->getLawChaos();
+}
+
+void ScriptFunctions::getGoodEvilValue(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1;
+
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (creature)
+		ctx.getReturn() = (int32) creature->getGoodEvil();
 }
 
 void ScriptFunctions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {

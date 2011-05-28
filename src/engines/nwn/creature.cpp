@@ -131,6 +131,9 @@ void Creature::clear() {
 
 	_deity.clear();
 
+	_goodEvil = 0;
+	_lawChaos = 0;
+
 	_lastChangedGUIDisplay = 0;
 
 	_appearanceID = Aurora::kFieldIDInvalid;
@@ -518,6 +521,7 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 		}
 	}
 
+	// Deity
 	_deity = gff.getString("Deity", _deity);
 
 	// Health
@@ -526,6 +530,11 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 		_bonusHP   = gff.getSint("MaxHitPoints", _baseHP) - _baseHP;
 		_currentHP = gff.getSint("CurrentHitPoints", _baseHP);
 	}
+
+	// Alignment
+
+	_goodEvil = gff.getUint("GoodEvil", _goodEvil);
+	_lawChaos = gff.getUint("LawfulChaotic", _lawChaos);
 
 	// Appearance
 
@@ -620,6 +629,14 @@ const Common::UString &Creature::getConvClasses() const {
 
 const Common::UString &Creature::getDeity() const {
 	return _deity;
+}
+
+uint8 Creature::getGoodEvil() const {
+	return _goodEvil;
+}
+
+uint8 Creature::getLawChaos() const {
+	return _lawChaos;
 }
 
 Common::UString Creature::getClassString() const {
