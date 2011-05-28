@@ -620,6 +620,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::writeTimestampedLogEntry, this, _1),
 			createSignature(2, kTypeVoid, kTypeString));
 
+	FunctionMan.registerFunction("SpeakStringByStrRef", 691,
+			boost::bind(&ScriptFunctions::speakStringByStrRef, this, _1),
+			createSignature(3, kTypeVoid, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt0));
+
 	FunctionMan.registerFunction("Get2DAString", 710,
 			boost::bind(&ScriptFunctions::get2DAString, this, _1),
 			createSignature(4, kTypeString, kTypeString, kTypeString, kTypeInt));
@@ -1670,6 +1675,19 @@ void ScriptFunctions::writeTimestampedLogEntry(Aurora::NWScript::FunctionContext
 		(int) t.time_of_day().seconds());
 
 	status("NWN: %s: %s", tstamp.c_str(), ctx.getParams()[0].getString().c_str());
+}
+
+void ScriptFunctions::speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+
+	// TODO: ScriptFunctions::speakStringByStrRef(): Volume
+	// uint32 volume = (uint32) ctx.getParams()[0].getInt();
+
+	status("%s: \"%s\"", object->getName().c_str(), TalkMan.getString(strRef).c_str());
 }
 
 void ScriptFunctions::get2DAString(Aurora::NWScript::FunctionContext &ctx) {

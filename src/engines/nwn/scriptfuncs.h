@@ -241,6 +241,8 @@ private:
 	void musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx);
 	void writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx);
 
+	void speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
+
 	void get2DAString(Aurora::NWScript::FunctionContext &ctx);
 
 	void setMaxHenchmen(Aurora::NWScript::FunctionContext &ctx);
