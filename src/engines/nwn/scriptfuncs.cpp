@@ -257,6 +257,12 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetIsObjectValid", 42,
 			boost::bind(&ScriptFunctions::getIsObjectValid, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
+	FunctionMan.registerFunction("ActionOpenDoor", 43,
+			boost::bind(&ScriptFunctions::actionOpenDoor, this, _1),
+			createSignature(2, kTypeVoid, kTypeObject));
+	FunctionMan.registerFunction("ActionCloseDoor", 44,
+			boost::bind(&ScriptFunctions::actionCloseDoor, this, _1),
+			createSignature(2, kTypeVoid, kTypeObject));
 
 	FunctionMan.registerFunction("GetLocalInt", 51,
 			boost::bind(&ScriptFunctions::getLocalInt, this, _1),
@@ -824,6 +830,22 @@ void ScriptFunctions::getDistanceToObject(Aurora::NWScript::FunctionContext &ctx
 
 void ScriptFunctions::getIsObjectValid(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = convertObject(ctx.getParams()[0].getObject()) != 0;
+}
+
+void ScriptFunctions::actionOpenDoor(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	if (!object)
+		return;
+
+	warning("TODO: ActionOpenDoor: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	if (!object)
+		return;
+
+	warning("TODO: ActionCloseDoor: \"%s\"", object->getTag().c_str());
 }
 
 void ScriptFunctions::getLocalInt(Aurora::NWScript::FunctionContext &ctx) {

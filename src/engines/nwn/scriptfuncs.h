@@ -102,6 +102,8 @@ private:
 
 	void getDistanceToObject(Aurora::NWScript::FunctionContext &ctx);
 	void getIsObjectValid(Aurora::NWScript::FunctionContext &ctx);
+	void actionOpenDoor(Aurora::NWScript::FunctionContext &ctx);
+	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
 
 	void getLocalInt(Aurora::NWScript::FunctionContext &ctx);
 	void getLocalFloat(Aurora::NWScript::FunctionContext &ctx);
