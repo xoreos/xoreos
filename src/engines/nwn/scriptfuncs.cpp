@@ -568,6 +568,9 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(2, kTypeInt, kTypeObject),
 			createDefaults(1, &defaultObject0));
 
+	FunctionMan.registerFunction("GetIsDM", 420,
+			boost::bind(&ScriptFunctions::getIsDM, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
 	FunctionMan.registerFunction("PlayVoiceChat", 421,
 			boost::bind(&ScriptFunctions::playVoiceChat, this, _1),
 			createSignature(3, kTypeVoid, kTypeInt, kTypeObject),
@@ -1560,6 +1563,16 @@ void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	warning("TODO: GetGold: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::getIsDM(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) 0;
+
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (!creature)
+		return;
+
+	warning("TODO: GetIsDM: \"%s\"", creature->getTag().c_str());
 }
 
 void ScriptFunctions::playVoiceChat(Aurora::NWScript::FunctionContext &ctx) {

@@ -219,6 +219,7 @@ private:
 
 	void getGold(Aurora::NWScript::FunctionContext &ctx);
 
+	void getIsDM(Aurora::NWScript::FunctionContext &ctx);
 	void playVoiceChat(Aurora::NWScript::FunctionContext &ctx);
 
 	void musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx);
