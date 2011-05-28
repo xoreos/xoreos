@@ -34,6 +34,7 @@
 #include "common/util.h"
 #include "common/error.h"
 #include "common/maths.h"
+#include "common/configman.h"
 
 #include "aurora/talkman.h"
 #include "aurora/2dafile.h"
@@ -537,6 +538,10 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("IsInConversation", 445,
 			boost::bind(&ScriptFunctions::isInConversation, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
+
+	FunctionMan.registerFunction("GetGameDifficulty", 513,
+			boost::bind(&ScriptFunctions::getGameDifficulty, this, _1),
+			createSignature(1, kTypeInt));
 
 	FunctionMan.registerFunction("GetCurrentAction", 522,
 			boost::bind(&ScriptFunctions::getCurrentAction, this, _1),
@@ -1394,6 +1399,11 @@ void ScriptFunctions::isInConversation(Aurora::NWScript::FunctionContext &ctx) {
 	Object *object = convertObject(ctx.getParams()[0].getObject());
 	if (object)
 		ctx.getReturn() = object->getPCSpeaker() != 0;
+}
+
+void ScriptFunctions::getGameDifficulty(Aurora::NWScript::FunctionContext &ctx) {
+	// The scripts have another difficulty "Very Easy", which we don't recognize.
+	ctx.getReturn() = (int32) ((GameDifficulty) (ConfigMan.getInt("difficulty") + 1));
 }
 
 void ScriptFunctions::getCurrentAction(Aurora::NWScript::FunctionContext &ctx) {

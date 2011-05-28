@@ -169,6 +169,14 @@ enum SFFSounds {
 	kSSFThreaten          = 48
 };
 
+enum GameDifficulty {
+	kDifficultyVeryEasy  = 0, // Not in the options dialog?!?
+	kDifficultyEasy      = 1,
+	kDifficultyNormal    = 2,
+	kDifficultyDifficult = 3,
+	kDifficultyCoreRules = 4  // "Very difficult"
+};
+
 enum Ability {
 	kAbilityStrength     = 0,
 	kAbilityDexterity    = 1,
