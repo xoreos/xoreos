@@ -46,6 +46,7 @@
 #include "engines/aurora/model.h"
 
 #include "engines/nwn/area.h"
+#include "engines/nwn/module.h"
 #include "engines/nwn/placeable.h"
 #include "engines/nwn/door.h"
 #include "engines/nwn/creature.h"
@@ -54,7 +55,7 @@ namespace Engines {
 
 namespace NWN {
 
-Area::Area(const Common::UString &resRef) : _loaded(false),
+Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _loaded(false),
 	_resRef(resRef), _visible(false), _tileset(0),
 	_activeObject(0), _highlightAll(false) {
 
@@ -71,9 +72,13 @@ Area::Area(const Common::UString &resRef) : _loaded(false),
 	initTiles();
 
 	_loaded = true;
+
+	_module->addObject(*this);
 }
 
 Area::~Area() {
+	removeContainer();
+
 	hide();
 
 	removeFocus();
@@ -100,22 +105,6 @@ Common::UString Area::getName(const Common::UString &resRef) {
 	}
 
 	return "";
-}
-
-Aurora::NWScript::Object *Area::findObject(const Common::UString &tag) {
-	ObjectTagMap::iterator o = _objectTagMap.find(tag);
-	if (o == _objectTagMap.end())
-		return 0;
-
-	return o->second;
-}
-
-const Aurora::NWScript::Object *Area::findObject(const Common::UString &tag) const {
-	ObjectTagMap::const_iterator o = _objectTagMap.find(tag);
-	if (o == _objectTagMap.end())
-		return 0;
-
-	return o->second;
 }
 
 const Common::UString &Area::getResRef() {
@@ -405,7 +394,7 @@ void Area::loadPlaceables(const Aurora::GFFList &list) {
 		if (!placeable->isStatic()) {
 			const std::list<uint32> &ids = placeable->getIDs();
 
-			_objectTagMap.insert(std::make_pair(placeable->getTag(), placeable));
+			_module->addObject(*placeable);
 			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 				_objectMap.insert(std::make_pair(*id, placeable));
 		}
@@ -425,7 +414,7 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 		if (!door->isStatic()) {
 			const std::list<uint32> &ids = door->getIDs();
 
-			_objectTagMap.insert(std::make_pair(door->getTag(), door));
+			_module->addObject(*door);
 			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 				_objectMap.insert(std::make_pair(*id, door));
 		}
@@ -446,7 +435,7 @@ void Area::loadCreatures(const Aurora::GFFList &list) {
 		if (!creature->isStatic()) {
 			const std::list<uint32> &ids = creature->getIDs();
 
-			_objectTagMap.insert(std::make_pair(creature->getTag(), creature));
+			_module->addObject(*creature);
 			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 				_objectMap.insert(std::make_pair(*id, creature));
 		}

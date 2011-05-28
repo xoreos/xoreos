@@ -53,13 +53,15 @@ namespace Engines {
 
 namespace NWN {
 
+class Module;
+
 class Object;
 class Placeable;
 class Door;
 
 class Area : public Aurora::NWScript::Object, public Events::Notifyable {
 public:
-	Area(const Common::UString &resRef);
+	Area(Module &module, const Common::UString &resRef);
 	~Area();
 
 	/** Return the area's resref (resource ID). */
@@ -130,8 +132,8 @@ private:
 	typedef std::list<Engines::NWN::Object *> ObjectList;
 	typedef std::map<uint32, Engines::NWN::Object *> ObjectMap;
 
-	typedef std::multimap<Common::UString, Aurora::NWScript::Object *> ObjectTagMap;
 
+	Module *_module;
 
 	bool _loaded;
 
@@ -172,7 +174,6 @@ private:
 	ObjectList _objects;
 
 	ObjectMap _objectMap;
-	ObjectTagMap _objectTagMap;
 
 	Engines::NWN::Object *_activeObject;
 

@@ -242,6 +242,8 @@ bool Module::usePC(const CharacterID &c) {
 	setPCTokens();
 	TalkMan.setGender((Aurora::Gender) _pc.getGender());
 
+	addObject(_pc);
+
 	_hasPC = true;
 	return true;
 }
@@ -458,6 +460,8 @@ void Module::unloadModule() {
 }
 
 void Module::unloadPC() {
+	removeObject(_pc);
+
 	removePCTokens();
 
 	_pc.clear();
@@ -527,7 +531,7 @@ void Module::loadArea() {
 		return;
 	}
 
-	_area = new Area(_newArea);
+	_area = new Area(*this, _newArea);
 
 	_area->show();
 
@@ -561,20 +565,6 @@ void Module::showMenu() {
 
 const Common::UString &Module::getName() const {
 	return _ifo.getName().getString();
-}
-
-Aurora::NWScript::Object *Module::findObject(const Common::UString &tag) {
-	if (!_area)
-		return 0;
-
-	return _area->findObject(tag);
-}
-
-const Aurora::NWScript::Object *Module::findObject(const Common::UString &tag) const {
-	if (!_area)
-		return 0;
-
-	return _area->findObject(tag);
 }
 
 void Module::startConversation(const Common::UString &conv, Creature &pc,

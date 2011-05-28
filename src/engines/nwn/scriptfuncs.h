@@ -30,6 +30,8 @@
 #ifndef ENGINES_NWN_SCRIPTFUNCS_H
 #define ENGINES_NWN_SCRIPTFUNCS_H
 
+#include "aurora/nwscript/objectcontainer.h"
+
 namespace Aurora {
 	namespace NWScript {
 		class Object;
@@ -56,6 +58,9 @@ public:
 
 private:
 	Module *_module;
+
+	Aurora::NWScript::ObjectContainer::SearchContext _objSearchContext;
+
 
 	void registerFunctions();
 

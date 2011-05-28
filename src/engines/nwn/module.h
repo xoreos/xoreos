@@ -35,6 +35,7 @@
 #include "aurora/resman.h"
 
 #include "aurora/nwscript/object.h"
+#include "aurora/nwscript/objectcontainer.h"
 
 #include "graphics/aurora/types.h"
 
@@ -56,7 +57,7 @@ class Area;
 
 class IngameGUI;
 
-class Module : public Aurora::NWScript::Object {
+class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
 public:
 	Module(Console &console);
 	~Module();
@@ -79,9 +80,6 @@ public:
 	void showMenu();
 
 	const Common::UString &getName() const;
-
-	Aurora::NWScript::Object *findObject(const Common::UString &tag);
-	const Aurora::NWScript::Object *findObject(const Common::UString &tag) const;
 
 	void startConversation(const Common::UString &conv, Creature &pc,
 	                       Engines::NWN::Object &obj);

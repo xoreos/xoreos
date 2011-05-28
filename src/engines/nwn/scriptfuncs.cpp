@@ -49,6 +49,8 @@
 #include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
 
+using Aurora::kObjectIDInvalid;
+
 using Aurora::NWScript::kTypeVoid;
 using Aurora::NWScript::kTypeInt;
 using Aurora::NWScript::kTypeFloat;
@@ -106,7 +108,7 @@ Common::UString ScriptFunctions::gTag(const Aurora::NWScript::Object *o) {
 
 Object *ScriptFunctions::convertObject(Aurora::NWScript::Object *o) {
 	Object *object = dynamic_cast<Object *>(o);
-	if (!object || !object->loaded())
+	if (!object || !object->loaded() || (object->getID() == kObjectIDInvalid))
 		return 0;
 
 	return object;
@@ -114,7 +116,7 @@ Object *ScriptFunctions::convertObject(Aurora::NWScript::Object *o) {
 
 Creature *ScriptFunctions::convertCreature(Aurora::NWScript::Object *o) {
 	Creature *creature = dynamic_cast<Creature *>(o);
-	if (!creature || !creature->loaded())
+	if (!creature || !creature->loaded() || (creature->getID() == kObjectIDInvalid))
 		return 0;
 
 	return creature;
@@ -122,7 +124,7 @@ Creature *ScriptFunctions::convertCreature(Aurora::NWScript::Object *o) {
 
 Creature *ScriptFunctions::convertPC(Aurora::NWScript::Object *o) {
 	Creature *pc = dynamic_cast<Creature *>(o);
-	if (!pc || !pc->loaded() || !pc->isPC())
+	if (!pc || !pc->loaded() || (pc->getID() == kObjectIDInvalid) || !pc->isPC())
 		return 0;
 
 	return pc;
@@ -908,14 +910,23 @@ void ScriptFunctions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
-	// TODO: ScriptFunctions::getObjectByTag(): nNth
-
 	ctx.getReturn() = (Object *) 0;
+	if (!_module)
+		return;
 
 	const Common::UString &tag = ctx.getParams()[0].getString();
+	if (tag.empty())
+		return;
 
-	if (_module)
-		ctx.getReturn() = _module->findObject(tag);
+	int nth = ctx.getParams()[1].getInt();
+
+	if (!_module->findFirstObject(tag, _objSearchContext))
+		return;
+
+	while (nth-- > 0)
+		_module->findNextObject(tag, _objSearchContext);
+
+	ctx.getReturn() = _objSearchContext.getObject();
 }
 
 void ScriptFunctions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
@@ -926,11 +937,22 @@ void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &c
 	// TODO: ScriptFunctions::getNearestObjectByTag(): /Nearest/ Object
 
 	ctx.getReturn() = (Object *) 0;
+	if (!_module)
+		return;
 
 	const Common::UString &tag = ctx.getParams()[0].getString();
+	if (tag.empty())
+		return;
 
-	if (_module)
-		ctx.getReturn() = _module->findObject(tag);
+	int nth = ctx.getParams()[2].getInt() - 1;
+
+	if (!_module->findFirstObject(tag, _objSearchContext))
+		return;
+
+	while (nth-- > 0)
+		_module->findNextObject(tag, _objSearchContext);
+
+	ctx.getReturn() = _objSearchContext.getObject();
 }
 
 void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
