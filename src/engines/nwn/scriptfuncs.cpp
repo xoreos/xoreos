@@ -238,6 +238,40 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::setLocalObject, this, _1),
 			createSignature(4, kTypeVoid, kTypeObject, kTypeString, kTypeObject));
 
+	FunctionMan.registerFunction("fabs", 67,
+			boost::bind(&ScriptFunctions::fabs, this, _1),
+			createSignature(2, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("cos", 68,
+			boost::bind(&ScriptFunctions::cos, this, _1),
+			createSignature(2, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("sin", 69,
+			boost::bind(&ScriptFunctions::sin, this, _1),
+			createSignature(2, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("tan", 70,
+			boost::bind(&ScriptFunctions::tan, this, _1),
+			createSignature(2, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("acos", 71,
+			boost::bind(&ScriptFunctions::acos, this, _1),
+			createSignature(2, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("asin", 72,
+			boost::bind(&ScriptFunctions::asin, this, _1),
+			createSignature(2, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("atan", 73,
+			boost::bind(&ScriptFunctions::atan, this, _1),
+			createSignature(2, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("log", 74,
+			boost::bind(&ScriptFunctions::log, this, _1),
+			createSignature(2, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("pow", 75,
+			boost::bind(&ScriptFunctions::pow, this, _1),
+			createSignature(3, kTypeFloat, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("sqrt", 76,
+			boost::bind(&ScriptFunctions::sqrt, this, _1),
+			createSignature(2, kTypeFloat, kTypeFloat));
+	FunctionMan.registerFunction("abs", 77,
+			boost::bind(&ScriptFunctions::abs, this, _1),
+			createSignature(2, kTypeInt, kTypeInt));
+
 	FunctionMan.registerFunction("IntToString", 92,
 			boost::bind(&ScriptFunctions::intToString, this, _1),
 			createSignature(2, kTypeString, kTypeInt));
@@ -688,6 +722,50 @@ void ScriptFunctions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		object->setVariable(params[1].getString(), params[2].getObject());
+}
+
+void ScriptFunctions::fabs(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = ABS(ctx.getParams()[0].getFloat());
+}
+
+void ScriptFunctions::cos(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = cosf(ctx.getParams()[0].getFloat());
+}
+
+void ScriptFunctions::sin(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = sinf(ctx.getParams()[0].getFloat());
+}
+
+void ScriptFunctions::tan(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = tanf(ctx.getParams()[0].getFloat());
+}
+
+void ScriptFunctions::acos(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = acosf(ctx.getParams()[0].getFloat());
+}
+
+void ScriptFunctions::asin(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = asinf(ctx.getParams()[0].getFloat());
+}
+
+void ScriptFunctions::atan(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = atanf(ctx.getParams()[0].getFloat());
+}
+
+void ScriptFunctions::log(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = logf(ctx.getParams()[0].getFloat());
+}
+
+void ScriptFunctions::pow(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = powf(ctx.getParams()[0].getFloat(), ctx.getParams()[1].getFloat());
+}
+
+void ScriptFunctions::sqrt(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = sqrtf(ctx.getParams()[0].getFloat());
+}
+
+void ScriptFunctions::abs(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = ABS(ctx.getParams()[0].getInt());
 }
 
 void ScriptFunctions::intToString(Aurora::NWScript::FunctionContext &ctx) {

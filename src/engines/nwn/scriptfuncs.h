@@ -104,6 +104,18 @@ private:
 	void setLocalString(Aurora::NWScript::FunctionContext &ctx);
 	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
 
+	void fabs(Aurora::NWScript::FunctionContext &ctx);
+	void cos(Aurora::NWScript::FunctionContext &ctx);
+	void sin(Aurora::NWScript::FunctionContext &ctx);
+	void tan(Aurora::NWScript::FunctionContext &ctx);
+	void acos(Aurora::NWScript::FunctionContext &ctx);
+	void asin(Aurora::NWScript::FunctionContext &ctx);
+	void atan(Aurora::NWScript::FunctionContext &ctx);
+	void log(Aurora::NWScript::FunctionContext &ctx);
+	void pow(Aurora::NWScript::FunctionContext &ctx);
+	void sqrt(Aurora::NWScript::FunctionContext &ctx);
+	void abs(Aurora::NWScript::FunctionContext &ctx);
+
 	void intToString(Aurora::NWScript::FunctionContext &ctx);
 
 	void d2(Aurora::NWScript::FunctionContext &ctx);
