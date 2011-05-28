@@ -62,6 +62,7 @@ using Aurora::NWScript::kTypeInt;
 using Aurora::NWScript::kTypeFloat;
 using Aurora::NWScript::kTypeString;
 using Aurora::NWScript::kTypeObject;
+using Aurora::NWScript::kTypeVector;
 using Aurora::NWScript::kTypeScriptState;
 using Aurora::NWScript::createSignature;
 using Aurora::NWScript::createDefaults;
@@ -515,6 +516,19 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetIsDusk", 408,
 			boost::bind(&ScriptFunctions::getIsDusk, this, _1),
 			createSignature(1, kTypeInt));
+
+	FunctionMan.registerFunction("SoundObjectPlay", 413,
+			boost::bind(&ScriptFunctions::soundObjectPlay, this, _1),
+			createSignature(2, kTypeVoid, kTypeObject));
+	FunctionMan.registerFunction("SoundObjectStop", 414,
+			boost::bind(&ScriptFunctions::soundObjectStop, this, _1),
+			createSignature(2, kTypeVoid, kTypeObject));
+	FunctionMan.registerFunction("SoundObjectSetVolume", 415,
+			boost::bind(&ScriptFunctions::soundObjectSetVolume, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeInt));
+	FunctionMan.registerFunction("SoundObjectSetPosition", 416,
+			boost::bind(&ScriptFunctions::soundObjectSetPosition, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeVector));
 
 	FunctionMan.registerFunction("GetGold", 418,
 			boost::bind(&ScriptFunctions::getGold, this, _1),
@@ -1361,6 +1375,43 @@ void ScriptFunctions::getIsDusk(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: ScriptFunctions::getIsDusk()
 
 	ctx.getReturn() = (int32) false;
+}
+
+void ScriptFunctions::soundObjectPlay(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	if (!object)
+		return;
+
+	warning("TODO: SoundObjectPlay: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::soundObjectStop(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	if (!object)
+		return;
+
+	warning("TODO: SoundObjectStop: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::soundObjectSetVolume(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	if (!object)
+		return;
+
+	int volume = ctx.getParams()[1].getInt();
+	warning("TODO: SoundObjectSetVolume: \"%s\" to %d", object->getTag().c_str(), volume);
+}
+
+void ScriptFunctions::soundObjectSetPosition(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	if (!object)
+		return;
+
+	float x, y, z;
+	ctx.getParams()[1].getVector(x, y, z);
+
+	warning("TODO: SoundObjectSetPosition: \"%s\" to [%f, %f, %f]",
+	        object->getTag().c_str(), x, y, z);
 }
 
 void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {

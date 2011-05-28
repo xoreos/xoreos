@@ -202,6 +202,11 @@ private:
 	void getIsDawn(Aurora::NWScript::FunctionContext &ctx);
 	void getIsDusk(Aurora::NWScript::FunctionContext &ctx);
 
+	void soundObjectPlay(Aurora::NWScript::FunctionContext &ctx);
+	void soundObjectStop(Aurora::NWScript::FunctionContext &ctx);
+	void soundObjectSetVolume(Aurora::NWScript::FunctionContext &ctx);
+	void soundObjectSetPosition(Aurora::NWScript::FunctionContext &ctx);
+
 	void getGold(Aurora::NWScript::FunctionContext &ctx);
 
 	void musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx);
