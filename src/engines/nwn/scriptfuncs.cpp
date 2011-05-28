@@ -64,6 +64,27 @@ namespace Engines {
 
 namespace NWN {
 
+class ObjectDistanceSort {
+private:
+	float xt, yt, zt;
+
+	float getDistance(Object &a) {
+		float x, y, z;
+		a.getPosition(x, y, z);
+
+		return ABS(x - xt) + ABS(y - yt) + ABS(z - zt);
+	}
+
+public:
+	ObjectDistanceSort(const Object &target) {
+		target.getPosition(xt, yt, zt);
+	}
+
+	bool operator()(Object *a, Object *b) {
+		return getDistance(*a) < getDistance(*b);
+	}
+};
+
 ScriptFunctions::ScriptFunctions() {
 	registerFunctions();
 }
@@ -934,8 +955,6 @@ void ScriptFunctions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
-	// TODO: ScriptFunctions::getNearestObjectByTag(): /Nearest/ Object
-
 	ctx.getReturn() = (Object *) 0;
 	if (!_module)
 		return;
@@ -944,15 +963,35 @@ void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &c
 	if (tag.empty())
 		return;
 
-	int nth = ctx.getParams()[2].getInt() - 1;
-
-	if (!_module->findFirstObject(tag, _objSearchContext))
+	Object *target = convertObject(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		target = convertObject(ctx.getCaller());
+	if (!target)
 		return;
 
-	while (nth-- > 0)
-		_module->findNextObject(tag, _objSearchContext);
+	std::list<Object *> objects;
 
-	ctx.getReturn() = _objSearchContext.getObject();
+	// TODO: ScriptFunctions::getNearestObjectByTag(): Only consider objects in the same area
+	Object *object = 0;
+	if (_module->findFirstObject(tag, _objSearchContext)) {
+		if ((object = convertObject(_objSearchContext.getObject())))
+			objects.push_back(object);
+
+		while (_module->findNextObject(tag, _objSearchContext))
+			if ((object = convertObject(_objSearchContext.getObject())))
+				objects.push_back(object);
+	}
+
+	objects.sort(ObjectDistanceSort(*target));
+
+	int nth = ctx.getParams()[2].getInt() - 1;
+
+	std::list<Object *>::iterator it = objects.begin();
+	for (int n = 0; (n < nth) && (it != objects.end()); ++n)
+		++it;
+
+	if (it != objects.end())
+		ctx.getReturn() = *it;
 }
 
 void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
