@@ -55,7 +55,7 @@ void Object::removeContainer() {
 	if (!_objectContainer)
 		return;
 
-	_objectContainer->remove(*this);
+	_objectContainer->removeObject(*this);
 }
 
 } // End of namespace NWScript

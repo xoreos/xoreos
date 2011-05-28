@@ -40,28 +40,44 @@ namespace NWScript {
 
 class ObjectContainer {
 public:
+	class SearchContext {
+	public:
+		SearchContext();
+		~SearchContext();
+
+		Object *getObject() const;
+
+	private:
+		bool _empty;
+		Object *_object;
+		Common::UString _tag;
+		std::pair<ObjectTagMap::const_iterator, ObjectTagMap::const_iterator> _range;
+
+		friend class ObjectContainer;
+	};
+
 	ObjectContainer();
 	~ObjectContainer();
 
-	void add(Object &obj);
-	void remove(Object &obj);
+	/** Add an object to this container. */
+	void addObject(Object &obj);
+	/** Remove an object from this container. */
+	void removeObject(Object &obj);
 
-	Object *getObject(uint32 id) const;
-	const Object *getConstObject(uint32 id) const;
+	/** Find the first object with this tag. */
+	bool findFirstObject(const Common::UString &tag, SearchContext &ctx) const;
+	/** Find the next object with this tag. */
+	bool findNextObject(const Common::UString &tag, SearchContext &ctx) const;
 
-	uint32 findFirstObject(const Common::UString &tag);
-	uint32 findNextObject(const Common::UString &tag);
+	/** Find the first object with this tag, disregarding any other matches. */
+	Object *findFirstObject(const Common::UString &tag) const;
 
 private:
 	Common::Mutex _mutex;
 
 	uint32 _currentID;
 
-	ObjectIDMap  _objectsByID;
-	ObjectTagMap _objectsByTag;
-
-	Common::UString _currentSearchTag;
-	std::pair<ObjectTagMap::const_iterator, ObjectTagMap::const_iterator> _currentSearchRange;
+	ObjectTagMap _objects;
 };
 
 } // End of namespace NWScript

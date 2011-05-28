@@ -64,7 +64,6 @@ protected:
 
 private:
 	ObjectContainer *_objectContainer;
-	ObjectIDMap::iterator _objectContainerID;
 	ObjectTagMap::iterator _objectContainerTag;
 
 	friend class ObjectContainer;
