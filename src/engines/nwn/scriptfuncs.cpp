@@ -463,6 +463,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::setCustomToken, this, _1),
 			createSignature(3, kTypeVoid, kTypeInt, kTypeString));
 
+	FunctionMan.registerFunction("GetHasSpellEffect", 304,
+			boost::bind(&ScriptFunctions::getHasSpellEffect, this, _1),
+			createSignature(3, kTypeInt, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+
 	FunctionMan.registerFunction("GetSkillRank", 315,
 			boost::bind(&ScriptFunctions::getSkillRank, this, _1),
 			createSignature(4, kTypeInt, kTypeInt, kTypeObject, kTypeInt),
@@ -1289,6 +1294,20 @@ void ScriptFunctions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString tokenName = Common::UString::sprintf("<CUSTOM%d>", tokenNumber);
 
 	TokenMan.set(tokenName, tokenValue);
+}
+
+void ScriptFunctions::getHasSpellEffect(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Object *object = convertObject(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	int spell = ctx.getParams()[0].getInt();
+
+	warning("TODO: GetHasSpellEffect: \"%s\", %d", object->getTag().c_str(), spell);
 }
 
 void ScriptFunctions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
