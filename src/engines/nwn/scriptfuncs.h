@@ -245,6 +245,8 @@ private:
 
 	void get2DAString(Aurora::NWScript::FunctionContext &ctx);
 
+	void playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx);
+
 	void setMaxHenchmen(Aurora::NWScript::FunctionContext &ctx);
 	void getMaxHenchmen(Aurora::NWScript::FunctionContext &ctx);
 };

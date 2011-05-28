@@ -629,6 +629,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::get2DAString, this, _1),
 			createSignature(4, kTypeString, kTypeString, kTypeString, kTypeInt));
 
+	FunctionMan.registerFunction("PlaySoundByStrRef", 720,
+			boost::bind(&ScriptFunctions::playSoundByStrRef, this, _1),
+			createSignature(3, kTypeVoid, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt1));
+
 	FunctionMan.registerFunction("SetMaxHenchmen", 746,
 			boost::bind(&ScriptFunctions::setMaxHenchmen, this, _1),
 			createSignature(2, kTypeVoid, kTypeInt));
@@ -1703,6 +1708,19 @@ void ScriptFunctions::get2DAString(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get(file);
 
 	ctx.getReturn() = twoda.getRow(row).getString(col);
+}
+
+void ScriptFunctions::playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+
+	// TODO: ScriptFunctions::speakStringByStrRef(): Run as action
+	// bool runAsAction = ctx.getParams()[1].getInt() != 0;
+
+	object->playSound(TalkMan.getSoundResRef(strRef));
 }
 
 void ScriptFunctions::setMaxHenchmen(Aurora::NWScript::FunctionContext &ctx) {
