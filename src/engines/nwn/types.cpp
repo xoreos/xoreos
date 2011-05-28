@@ -86,6 +86,24 @@ void CharacterID::clear() {
 	_empty = true;
 }
 
+Alignment getAlignmentLawChaos(uint8 lawChaos) {
+	if (lawChaos >= 70)
+		return kAlignmentLawful;
+	if (lawChaos <= 30)
+		return kAlignmentChaotic;
+
+	return kAlignmentNeutral;
+}
+
+Alignment getAlignmentGoodEvil(uint8 goodEvil) {
+	if (goodEvil >= 70)
+		return kAlignmentGood;
+	if (goodEvil <= 30)
+		return kAlignmentEvil;
+
+	return kAlignmentNeutral;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

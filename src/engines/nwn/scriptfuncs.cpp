@@ -323,6 +323,12 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetGoodEvilValue", 125,
 			boost::bind(&ScriptFunctions::getGoodEvilValue, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
+	FunctionMan.registerFunction("GetAlignmentLawChaos", 126,
+			boost::bind(&ScriptFunctions::getAlignmentLawChaos, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+	FunctionMan.registerFunction("GetAlignmentGoodEvil", 127,
+			boost::bind(&ScriptFunctions::getAlignmentGoodEvil, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
 
 	FunctionMan.registerFunction("GetAbilityScore", 139,
 			boost::bind(&ScriptFunctions::getAbilityScore, this, _1),
@@ -837,6 +843,22 @@ void ScriptFunctions::getGoodEvilValue(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
 	if (creature)
 		ctx.getReturn() = (int32) creature->getGoodEvil();
+}
+
+void ScriptFunctions::getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1;
+
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (creature)
+		ctx.getReturn() = (int32) NWN::getAlignmentLawChaos(creature->getLawChaos());
+}
+
+void ScriptFunctions::getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1;
+
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (creature)
+		ctx.getReturn() = (int32) NWN::getAlignmentGoodEvil(creature->getGoodEvil());
 }
 
 void ScriptFunctions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {

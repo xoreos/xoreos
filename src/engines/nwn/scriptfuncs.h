@@ -132,6 +132,8 @@ private:
 
 	void getLawChaosValue(Aurora::NWScript::FunctionContext &ctx);
 	void getGoodEvilValue(Aurora::NWScript::FunctionContext &ctx);
+	void getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx);
+	void getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx);
 
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 

@@ -139,11 +139,23 @@ enum Ability {
 	kAbilityMAX
 };
 
+enum Alignment {
+	kAlignmentAll     = 0,
+	kAlignmentNeutral = 1,
+	kAlignmentLawful  = 2,
+	kAlignmentChaotic = 3,
+	kAlignmentGood    = 4,
+	kAlignmentEvil    = 5
+};
+
 static const uint32 kActionInvalid = 0xFFFF;
 
 static const uint32 kGenderNone   =   4;
 static const uint32 kRaceInvalid  =  28;
 static const uint32 kClassInvalid = 255;
+
+Alignment getAlignmentLawChaos(uint8 lawChaos);
+Alignment getAlignmentGoodEvil(uint8 goodEvil);
 
 } // End of namespace NWN
 
