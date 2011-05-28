@@ -291,6 +291,12 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetStringLength", 59,
 			boost::bind(&ScriptFunctions::getStringLength, this, _1),
 			createSignature(2, kTypeInt, kTypeString));
+	FunctionMan.registerFunction("GetStringUpperCase", 60,
+			boost::bind(&ScriptFunctions::getStringUpperCase, this, _1),
+			createSignature(2, kTypeString, kTypeString));
+	FunctionMan.registerFunction("GetStringLowerCase", 61,
+			boost::bind(&ScriptFunctions::getStringLowerCase, this, _1),
+			createSignature(2, kTypeString, kTypeString));
 
 	FunctionMan.registerFunction("fabs", 67,
 			boost::bind(&ScriptFunctions::fabs, this, _1),
@@ -917,6 +923,16 @@ void ScriptFunctions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::getStringLength(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) ctx.getParams()[0].getString().size();
+}
+
+void ScriptFunctions::getStringUpperCase(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = ctx.getParams()[0].getString();
+	ctx.getReturn().getString().toupper();
+}
+
+void ScriptFunctions::getStringLowerCase(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = ctx.getParams()[0].getString();
+	ctx.getReturn().getString().tolower();
 }
 
 void ScriptFunctions::fabs(Aurora::NWScript::FunctionContext &ctx) {
