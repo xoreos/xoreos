@@ -499,6 +499,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::addHenchman, this, _1),
 			createSignature(3, kTypeVoid, kTypeObject, kTypeObject),
 			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("RemoveHenchman", 366,
+			boost::bind(&ScriptFunctions::removeHenchman, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeObject),
+			createDefaults(1, &defaultObject0));
 
 	FunctionMan.registerFunction("AddJournalQuestEntry", 367,
 			boost::bind(&ScriptFunctions::addJournalQuestEntry, this, _1),
@@ -1351,6 +1355,17 @@ void ScriptFunctions::addHenchman(Aurora::NWScript::FunctionContext &ctx) {
 	master->addAssociate(*henchman, kAssociateTypeHenchman);
 }
 
+void ScriptFunctions::removeHenchman(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *master   = convertCreature(ctx.getParams()[0].getObject());
+	Creature *henchman = convertCreature(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		henchman = convertCreature(ctx.getCaller());
+
+	if (!master || !henchman)
+		return;
+
+	master->removeAssociate(*henchman);
+}
 void ScriptFunctions::addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx) {
 
 	const Common::UString &plot = ctx.getParams()[0].getString();

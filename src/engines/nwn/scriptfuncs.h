@@ -194,6 +194,7 @@ private:
 
 	void getAssociate(Aurora::NWScript::FunctionContext &ctx);
 	void addHenchman(Aurora::NWScript::FunctionContext &ctx);
+	void removeHenchman(Aurora::NWScript::FunctionContext &ctx);
 
 	void addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx);
 
