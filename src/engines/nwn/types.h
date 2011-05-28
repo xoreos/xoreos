@@ -77,6 +77,46 @@ private:
 	friend class CharacterStore;
 };
 
+enum Script {
+	kScriptAcquireItem       = 0,
+	kScriptUnacquireItem        ,
+	kScriptActivateItem         ,
+	kScriptEnter                ,
+	kScriptExit                 ,
+	kScriptCutsceneAbort        ,
+	kScriptHeartbeat            ,
+	kScriptModuleLoad           ,
+	kScriptModuleStart          ,
+	kScriptPlayerChat           ,
+	kScriptPlayerDeath          ,
+	kScriptPlayerDying          ,
+	kScriptPlayerEquipItem      ,
+	kScriptPlayerUnequipItem    ,
+	kScriptPlayerLevelUp        ,
+	kScriptPlayerRest           ,
+	kScriptPlayerRespan         ,
+	kScriptUserdefined          ,
+	kScriptClick                ,
+	kScriptOpen                 ,
+	kScriptClosed               ,
+	kScriptDamaged              ,
+	kScriptDeath                ,
+	kScriptDisarm               ,
+	kScriptLock                 ,
+	kScriptUnlock               ,
+	kScriptAttacked             ,
+	kScriptSpellCastAt          ,
+	kScriptTrapTriggered        ,
+	kScriptDialogue             ,
+	kScriptDisturbed            ,
+	kScriptEndRound             ,
+	kScriptBlocked              ,
+	kScriptNotice               ,
+	kScriptRested               ,
+	kScriptSpawn                ,
+	kScriptMAX
+};
+
 enum SFFSounds {
 	kSSFAttack            =  0,
 	kSSFBattlecry1        =  1,

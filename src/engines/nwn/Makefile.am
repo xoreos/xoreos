@@ -13,6 +13,7 @@ noinst_HEADERS = nwn.h \
                  module.h \
                  area.h \
                  tileset.h \
+                 scriptcontainer.h \
                  object.h \
                  situated.h \
                  placeable.h \
@@ -79,6 +80,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     module.cpp \
                     area.cpp \
                     tileset.cpp \
+                    scriptcontainer.cpp \
                     object.cpp \
                     situated.cpp \
                     placeable.cpp \
