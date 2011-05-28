@@ -568,6 +568,13 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("Get2DAString", 710,
 			boost::bind(&ScriptFunctions::get2DAString, this, _1),
 			createSignature(4, kTypeString, kTypeString, kTypeString, kTypeInt));
+
+	FunctionMan.registerFunction("SetMaxHenchmen", 746,
+			boost::bind(&ScriptFunctions::setMaxHenchmen, this, _1),
+			createSignature(2, kTypeVoid, kTypeInt));
+	FunctionMan.registerFunction("GetMaxHenchmen", 747,
+			boost::bind(&ScriptFunctions::getMaxHenchmen, this, _1),
+			createSignature(1, kTypeInt));
 }
 
 void ScriptFunctions::random(Aurora::NWScript::FunctionContext &ctx) {
@@ -1465,6 +1472,17 @@ void ScriptFunctions::get2DAString(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get(file);
 
 	ctx.getReturn() = twoda.getRow(row).getString(col);
+}
+
+void ScriptFunctions::setMaxHenchmen(Aurora::NWScript::FunctionContext &ctx) {
+	int n = ctx.getParams()[0].getInt();
+
+	warning("TODO: SetMaxHenchmen: %d", n);
+}
+
+void ScriptFunctions::getMaxHenchmen(Aurora::NWScript::FunctionContext &ctx) {
+	warning("TODO: GetMaxHenchmen");
+	ctx.getReturn() = 0;
 }
 
 } // End of namespace NWN

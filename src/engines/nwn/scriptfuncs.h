@@ -224,6 +224,9 @@ private:
 	void writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx);
 
 	void get2DAString(Aurora::NWScript::FunctionContext &ctx);
+
+	void setMaxHenchmen(Aurora::NWScript::FunctionContext &ctx);
+	void getMaxHenchmen(Aurora::NWScript::FunctionContext &ctx);
 };
 
 } // End of namespace NWN
