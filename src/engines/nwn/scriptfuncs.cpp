@@ -29,6 +29,8 @@
 
 #include "boost/bind.hpp"
 
+#include "boost/date_time/posix_time/posix_time.hpp"
+
 #include "common/util.h"
 #include "common/error.h"
 #include "common/maths.h"
@@ -53,6 +55,7 @@
 
 using Aurora::kObjectIDInvalid;
 
+// NWScript
 using Aurora::NWScript::kTypeVoid;
 using Aurora::NWScript::kTypeInt;
 using Aurora::NWScript::kTypeFloat;
@@ -61,6 +64,10 @@ using Aurora::NWScript::kTypeObject;
 using Aurora::NWScript::kTypeScriptState;
 using Aurora::NWScript::createSignature;
 using Aurora::NWScript::createDefaults;
+
+// boost-date_time stuff
+using boost::posix_time::ptime;
+using boost::posix_time::second_clock;
 
 namespace Engines {
 
@@ -549,6 +556,9 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("MusicBackgroundGetNightTrack", 559,
 			boost::bind(&ScriptFunctions::musicBackgroundGetNightTrack, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
+	FunctionMan.registerFunction("WriteTimestampedLogEntry", 560,
+			boost::bind(&ScriptFunctions::writeTimestampedLogEntry, this, _1),
+			createSignature(2, kTypeVoid, kTypeString));
 
 	FunctionMan.registerFunction("Get2DAString", 710,
 			boost::bind(&ScriptFunctions::get2DAString, this, _1),
@@ -1420,6 +1430,16 @@ void ScriptFunctions::musicBackgroundGetNightTrack(Aurora::NWScript::FunctionCon
 	Area *area = convertArea(ctx.getParams()[0].getObject());
 	if (area)
 		ctx.getReturn() = (int32) area->getMusicNightTrack();
+}
+
+void ScriptFunctions::writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx) {
+	ptime t(second_clock::universal_time());
+	const Common::UString tstamp = Common::UString::sprintf("%04d-%02d-%02dT%02d:%02d:%02d",
+		(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
+		(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
+		(int) t.time_of_day().seconds());
+
+	status("NWN: %s: %s", tstamp.c_str(), ctx.getParams()[0].getString().c_str());
 }
 
 void ScriptFunctions::get2DAString(Aurora::NWScript::FunctionContext &ctx) {
