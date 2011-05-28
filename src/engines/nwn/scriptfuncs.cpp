@@ -391,6 +391,18 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getNearestObjectByTag, this, _1),
 			createSignature(4, kTypeObject, kTypeString, kTypeObject, kTypeInt),
 			createDefaults(2, &defaultObject0, &defaultInt1));
+	FunctionMan.registerFunction("IntToFloat", 230,
+			boost::bind(&ScriptFunctions::intToFloat, this, _1),
+			createSignature(2, kTypeFloat, kTypeInt));
+	FunctionMan.registerFunction("FloatToInt", 231,
+			boost::bind(&ScriptFunctions::floatToInt, this, _1),
+			createSignature(2, kTypeInt, kTypeFloat));
+	FunctionMan.registerFunction("StringToInt", 232,
+			boost::bind(&ScriptFunctions::stringToInt, this, _1),
+			createSignature(2, kTypeInt, kTypeString));
+	FunctionMan.registerFunction("StringToFloat", 233,
+			boost::bind(&ScriptFunctions::stringToFloat, this, _1),
+			createSignature(2, kTypeFloat, kTypeString));
 
 	FunctionMan.registerFunction("GetPCSpeaker", 238,
 			boost::bind(&ScriptFunctions::getPCSpeaker, this, _1),
@@ -1011,6 +1023,28 @@ void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &c
 
 	if (it != objects.end())
 		ctx.getReturn() = *it;
+}
+
+void ScriptFunctions::intToFloat(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (float) ctx.getParams()[0].getInt();
+}
+
+void ScriptFunctions::floatToInt(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) ctx.getParams()[0].getFloat();
+}
+
+void ScriptFunctions::stringToInt(Aurora::NWScript::FunctionContext &ctx) {
+	int i;
+	sscanf(ctx.getParams()[0].getString().c_str(), "%d", &i);
+
+	ctx.getReturn() = (int32) i;
+}
+
+void ScriptFunctions::stringToFloat(Aurora::NWScript::FunctionContext &ctx) {
+	float f;
+	sscanf(ctx.getParams()[0].getString().c_str(), "%f", &f);
+
+	ctx.getReturn() = f;
 }
 
 void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {

@@ -155,6 +155,10 @@ private:
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 
 	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
+	void intToFloat(Aurora::NWScript::FunctionContext &ctx);
+	void floatToInt(Aurora::NWScript::FunctionContext &ctx);
+	void stringToInt(Aurora::NWScript::FunctionContext &ctx);
+	void stringToFloat(Aurora::NWScript::FunctionContext &ctx);
 
 	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
 	void getStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
