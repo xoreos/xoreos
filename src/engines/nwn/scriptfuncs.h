@@ -162,6 +162,8 @@ private:
 
 	void setCustomToken(Aurora::NWScript::FunctionContext &ctx);
 
+	void getSkillRank(Aurora::NWScript::FunctionContext &ctx);
+
 	void getMaster(Aurora::NWScript::FunctionContext &ctx);
 
 	void setLocked(Aurora::NWScript::FunctionContext &ctx);

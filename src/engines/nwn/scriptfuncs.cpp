@@ -391,6 +391,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::setCustomToken, this, _1),
 			createSignature(3, kTypeVoid, kTypeInt, kTypeString));
 
+	FunctionMan.registerFunction("GetSkillRank", 315,
+			boost::bind(&ScriptFunctions::getSkillRank, this, _1),
+			createSignature(4, kTypeInt, kTypeInt, kTypeObject, kTypeInt),
+			createDefaults(2, &defaultObject0, &defaultInt0));
+
 	FunctionMan.registerFunction("GetMaster", 319,
 			boost::bind(&ScriptFunctions::getMaster, this, _1),
 			createSignature(2, kTypeObject, kTypeObject),
@@ -1023,6 +1028,21 @@ void ScriptFunctions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString tokenName = Common::UString::sprintf("<CUSTOM%d>", tokenNumber);
 
 	TokenMan.set(tokenName, tokenValue);
+}
+
+void ScriptFunctions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1;
+
+	Object *object = convertObject(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	int  skill = ctx.getParams()[0].getInt();
+	bool base  = ctx.getParams()[2].getInt() != 0;
+
+	warning("TODO: GetSkillRank: \"%s\", %d, %d", object->getTag().c_str(), skill, base);
 }
 
 void ScriptFunctions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
