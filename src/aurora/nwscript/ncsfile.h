@@ -94,6 +94,9 @@ public:
 	/** Run the current script, from start to finish. */
 	const Variable &run();
 
+	/** After the script ends, continue with this state for these objects. */
+	void assign(const ScriptState &state, Object *owner = 0, Object *triggerer = 0);
+
 	enum InstructionType {
 		// Unary
 		kInstTypeNone      =  0,
@@ -125,15 +128,33 @@ public:
 	};
 
 private:
+	struct Assigned {
+		ScriptState state;
+
+		Object *owner;
+		Object *triggerer;
+
+		Assigned();
+		Assigned(const ScriptState &s, Object *o, Object *t);
+	};
+
 	Common::UString _name;
 
 	NCSStack _stack;
 	Common::SeekableReadStream *_script;
 
+	Variable _return;
+
 	Object *_objectOwner;
 	Object *_objectTriggerer;
 
+	Object *_currentObjectOwner;
+	Object *_currentObjectTriggerer;
+
 	std::stack<uint32> _returnOffsets;
+
+	Variable _storedState;
+	std::list<Assigned> _assigned;
 
 	typedef void (NCSFile::*OpcodeProc)(InstructionType type);
 	struct Opcode {
@@ -149,8 +170,12 @@ private:
 	/** Reset the script for another execution. */
 	void reset();
 
+	void execute();
+
 	/** Execute one script step. */
 	void executeStep();
+
+	void runAssigned();
 
 	void decompile(); // TODO
 

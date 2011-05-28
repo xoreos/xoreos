@@ -149,6 +149,14 @@ const Parameters &FunctionContext::getParams() const {
 	return _parameters;
 }
 
+void FunctionContext::setCurrentScript(NCSFile *script) {
+	_currentScript = script;
+}
+
+NCSFile *FunctionContext::getCurrentScript() const {
+	return _currentScript;
+}
+
 } // End of namespace NWScript
 
 } // End of namespace Aurora

@@ -78,8 +78,10 @@ Variable::~Variable() {
 }
 
 void Variable::setType(Type type) {
-	if (_type == kTypeString)
+	if      (_type == kTypeString)
 		delete _value._string;
+	else if (_type == kTypeScriptState)
+		delete _value._scriptState;
 
 	_type = type;
 
@@ -110,7 +112,7 @@ void Variable::setType(Type type) {
 			break;
 
 		case kTypeScriptState:
-			// TODO: Variable::setType(): kTypeScriptState
+			_value._scriptState = new ScriptState;
 			break;
 
 		default:
@@ -125,8 +127,10 @@ Variable &Variable::operator=(const Variable &var) {
 
 	setType(var._type);
 
-	if (_type == kTypeString)
+	if      (_type == kTypeString)
 		*_value._string = *var._value._string;
+	else if (_type == kTypeScriptState)
+		*_value._scriptState = *var._value._scriptState;
 	else
 		_value = var._value;
 
@@ -245,15 +249,35 @@ Object *Variable::getObject() const {
 }
 
 void Variable::setVector(float x, float y, float z) {
+	if (_type != kTypeVector)
+		throw Common::Exception("Can't assign a vector value to a non-vector variable");
+
 	_value._vector[0] = x;
 	_value._vector[1] = y;
 	_value._vector[2] = z;
 }
 
-void Variable::getVector(float &x, float &y, float &z) {
+void Variable::getVector(float &x, float &y, float &z) const {
+	if (_type != kTypeVector)
+		throw Common::Exception("Can't get a vector value from a non-vector variable");
+
 	x = _value._vector[0];
 	y = _value._vector[1];
 	z = _value._vector[2];
+}
+
+ScriptState &Variable::getScriptState() {
+	if (_type != kTypeScriptState)
+		throw Common::Exception("Can't get a script state value from a non-script-state variable");
+
+	return *_value._scriptState;
+}
+
+const ScriptState &Variable::getScriptState() const {
+	if (_type != kTypeScriptState)
+		throw Common::Exception("Can't get a script state value from a non-script-state variable");
+
+	return *_value._scriptState;
 }
 
 } // End of namespace NWScript

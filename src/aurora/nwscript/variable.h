@@ -45,6 +45,12 @@ namespace NWScript {
 
 class Object;
 
+struct ScriptState {
+	uint32 offset;
+	std::vector<class Variable> globals;
+	std::vector<class Variable> locals;
+};
+
 class Variable {
 public:
 	Variable(Type type = kTypeVoid);
@@ -77,7 +83,10 @@ public:
 	Object *getObject() const;
 
 	void setVector(float  x, float  y, float  z);
-	void getVector(float &x, float &y, float &z);
+	void getVector(float &x, float &y, float &z) const;
+
+	ScriptState &getScriptState();
+	const ScriptState &getScriptState() const;
 
 private:
 	Type _type;
@@ -88,6 +97,7 @@ private:
 		Common::UString *_string;
 		Object *_object;
 		float _vector[3];
+		ScriptState *_scriptState;
 	} _value;
 };
 

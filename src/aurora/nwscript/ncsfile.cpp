@@ -186,6 +186,15 @@ void NCSStack::print() const {
 	warning("'--- ---'");
 }
 
+
+NCSFile::Assigned::Assigned() : owner(0), triggerer(0) {
+}
+
+NCSFile::Assigned::Assigned(const ScriptState &s, Object *o, Object *t) :
+	state(s), owner(o), triggerer(t) {
+}
+
+
 #define OPCODE(x) { &NCSFile::x, #x }
 
 void NCSFile::setupOpcodes() {
@@ -308,6 +317,8 @@ void NCSFile::reset() {
 	while (!_returnOffsets.empty())
 		_returnOffsets.pop();
 
+	_storedState.setType(kTypeVoid);
+
 	_script->seek(13); // 8 byte header + 5 byte program size dummy op
 }
 
@@ -318,21 +329,60 @@ const Variable &NCSFile::run() {
 
 	reset();
 
-	while (!_script->eos() && !_script->err())
-		executeStep();
+	_return.setType(kTypeVoid);
+	_assigned.clear();
 
-	if (_script->err())
-		throw Common::Exception(Common::kReadError);
+	_currentObjectOwner     = _objectOwner;
+	_currentObjectTriggerer = _objectTriggerer;
 
-	if (_stack.empty())
-		_stack.push(kTypeVoid);
+	execute();
+
+	if (!_stack.empty())
+		_return = _stack.top();
 
 #if DEBUG_TRACELEVEL > 0
 	if (_stack.top().getType() == kTypeInt)
 		warning("=> Script\"%s\" returns: %d", _name.c_str(), _stack.top().getInt());
 #endif
 
-	return _stack.top();
+	runAssigned();
+
+	return _return;
+}
+
+void NCSFile::execute() {
+	while (!_script->eos() && !_script->err())
+		executeStep();
+
+	if (_script->err())
+		throw Common::Exception(Common::kReadError);
+}
+
+void NCSFile::runAssigned() {
+	while (!_assigned.empty()) {
+		reset();
+
+		const Assigned &assigned = _assigned.front();
+		const ScriptState &state = assigned.state;
+
+		_script->seek(state.offset);
+
+		std::vector<class Variable>::const_reverse_iterator var;
+		for (var = state.globals.rbegin(); var != state.globals.rend(); ++var)
+			_stack.push(*var);
+
+		o_savebp(kInstTypeNone);
+
+		for (var = state.locals.rbegin(); var != state.locals.rend(); ++var)
+			_stack.push(*var);
+
+		_currentObjectOwner     = assigned.owner;
+		_currentObjectTriggerer = assigned.triggerer;
+
+		execute();
+
+		_assigned.pop_front();
+	}
 }
 
 void NCSFile::executeStep() {
@@ -365,6 +415,10 @@ void NCSFile::decompile() {
 	// TODO
 
 	_script->seek(oldScriptPos);
+}
+
+void NCSFile::assign(const ScriptState &state, Object *owner, Object *triggerer) {
+	_assigned.push_back(Assigned(state, owner, triggerer));
 }
 
 // OPCODES!
@@ -408,7 +462,7 @@ void NCSFile::o_const(InstructionType type) {
 			uint32 objectID = _script->readUint32BE();
 
 			if      (objectID == kScriptObjectSelf)
-				_stack.push(_objectOwner);
+				_stack.push(_currentObjectOwner);
 			else if (objectID == kScriptObjectInvalid)
 				_stack.push((Object *) 0);
 			else
@@ -429,8 +483,9 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 		                        "mismatch (got %d, want %d - %d)", ctx.getName().c_str(),
 		                        argCount, ctx.getParamMin(), ctx.getParamMax());
 
-	ctx.setCaller(_objectOwner);
-	ctx.setTriggerer(_objectTriggerer);
+	ctx.setCurrentScript(this);
+	ctx.setCaller(_currentObjectOwner);
+	ctx.setTriggerer(_currentObjectTriggerer);
 
 	ctx.setParamsSpecified(argCount);
 	for (uint8 i = 0; i < argCount; i++) {
@@ -454,7 +509,8 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 			}
 
 			case kTypeScriptState:
-				// TODO: NCSFile::callEngine(): kTypeScriptState: o_storestate() stuff
+				param.getScriptState() = _storedState.getScriptState();
+				_storedState.setType(kTypeVoid);
 				break;
 
 			default:
@@ -1266,9 +1322,24 @@ void NCSFile::o_storestate(InstructionType type) {
 	uint32 sizeBP = _script->readUint32BE();
 	uint32 sizeSP = _script->readUint32BE();
 
-	// TODO: NCSFile::o_storestate(): Save a script offset and the stack, so that
-	//       the engine code can resume the script at that offset at its leisure.
-	warning("TODO: NCSFile::o_storestate(): %d, %d, %d", offset, sizeBP, sizeSP);
+	if ((sizeBP % 4) != 0)
+		throw Common::Exception("NCSFile::o_storestate(): Illegal BP size %d", sizeBP);
+	if ((sizeSP % 4) != 0)
+		throw Common::Exception("NCSFile::o_storestate(): Illegal SP size %d", sizeSP);
+
+	_storedState.setType(kTypeScriptState);
+	ScriptState &state = _storedState.getScriptState();
+
+	state.offset = _script->pos() - 10 + offset;
+
+	sizeBP /= 4;
+	sizeSP /= 4;
+
+	for (int32 posBP = -4; sizeBP > 0; sizeBP--, posBP -= 4)
+		state.globals.push_back(_stack.getRelBP(posBP));
+
+	for (int32 posSP = -4; sizeSP > 0; sizeSP--, posSP -= 4)
+		state.locals.push_back(_stack.getRelSP(posSP));
 }
 
 } // End of namespace NWScript

@@ -42,6 +42,8 @@ namespace Aurora {
 
 namespace NWScript {
 
+class NCSFile;
+
 class FunctionContext {
 public:
 	FunctionContext(const Common::UString &name = "");
@@ -75,6 +77,9 @@ public:
 	Parameters &getParams();
 	const Parameters &getParams() const;
 
+	void setCurrentScript(NCSFile *script = 0);
+	NCSFile *getCurrentScript() const;
+
 private:
 	Common::UString _name;
 
@@ -85,6 +90,8 @@ private:
 
 	Variable   _return;     ///< The function's return value.
 	Parameters _parameters; ///< The function's parameters.
+
+	NCSFile *_currentScript; ///< The script executing this function.
 
 	uint32 _defaultCount;    ///< The number of default values.
 	uint32 _paramsSpecified; ///< The number of parameters specified (not defaulted).

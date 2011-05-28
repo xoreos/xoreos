@@ -647,11 +647,17 @@ void ScriptFunctions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::NCSFile *script = ctx.getCurrentScript();
+	if (!script)
+		throw Common::Exception("ScriptFunctions::assignCommand(): Script needed");
+
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 	if (!object)
-		return;
+		object = ctx.getCaller();
 
-	warning("TODO: AssignCommand: \"%s\"", object->getTag().c_str());
+	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
+
+	script->assign(state, object, ctx.getTriggerer());
 }
 
 void ScriptFunctions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
