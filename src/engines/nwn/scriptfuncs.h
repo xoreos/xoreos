@@ -88,6 +88,7 @@ private:
 
 	void getItemPossessor(Aurora::NWScript::FunctionContext &ctx);
 	void getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx);
+	void createItemOnObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void getNearestCreature(Aurora::NWScript::FunctionContext &ctx);
 

@@ -194,6 +194,10 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetItemPossessedBy", 30,
 			boost::bind(&ScriptFunctions::getItemPossessedBy, this, _1),
 			createSignature(3, kTypeObject, kTypeObject, kTypeString));
+	FunctionMan.registerFunction("CreateItemOnObject", 31,
+			boost::bind(&ScriptFunctions::createItemOnObject, this, _1),
+			createSignature(5, kTypeObject, kTypeString, kTypeObject, kTypeInt, kTypeString),
+			createDefaults(3, &defaultObject0, &defaultInt1, &defaultStringEmpty));
 
 	FunctionMan.registerFunction("GetNearestCreature", 38,
 			boost::bind(&ScriptFunctions::getNearestCreature, this, _1),
@@ -555,6 +559,24 @@ void ScriptFunctions::getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx)
 
 	warning("TODO: GetItemPossessedBy: \"%s\" by \"%s\"",
 	        tag.c_str(), object->getTag().c_str());
+}
+
+void ScriptFunctions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Object *target = convertObject(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		target = convertObject(ctx.getCaller());
+	if (!target)
+		return;
+
+	const Common::UString &templ  = ctx.getParams()[0].getString();
+	const Common::UString &newTag = ctx.getParams()[3].getString();
+
+	int stackSize = ctx.getParams()[2].getInt();
+
+	warning("TODO: CreateItemOnObject: %dx \"%s\" on \"%s\" (\"%s\")", stackSize,
+	        templ.c_str(), target->getTag().c_str(), newTag.c_str());
 }
 
 void ScriptFunctions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
