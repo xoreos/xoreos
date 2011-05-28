@@ -800,20 +800,18 @@ void NCSFile::o_decsp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_decsp(): Illegal type %d", type);
 
-	int32 oldStackPtr = _stack.getStackPtr();
-	_stack.setStackPtr(oldStackPtr + _script->readSint32BE());
-	_stack.push(_stack.pop().getInt() - 1);
-	_stack.setStackPtr(oldStackPtr);
+	int32 offset = _script->readSint32BE();
+
+	_stack.set(offset, _stack.get(offset).getInt() - 1);
 }
 
 void NCSFile::o_incsp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_incsp(): Illegal type %d", type);
 
-	int32 oldStackPtr = _stack.getStackPtr();
-	_stack.setStackPtr(oldStackPtr + _script->readSint32BE());
-	_stack.push(_stack.pop().getInt() + 1);
-	_stack.setStackPtr(oldStackPtr);
+	int32 offset = _script->readSint32BE();
+
+	_stack.set(offset, _stack.get(offset).getInt() + 1);
 }
 
 void NCSFile::o_jnz(InstructionType type) {
@@ -830,20 +828,32 @@ void NCSFile::o_decbp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_decbp(): Illegal type %d", type);
 
-	int32 oldStackPtr = _stack.getStackPtr();
-	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32BE());
-	_stack.push(_stack.pop().getInt() - 1);
-	_stack.setStackPtr(oldStackPtr);
+	int32 offset = _script->readSint32BE();
+
+	int32 sp = _stack.getStackPtr();
+	int32 bp = _stack.getBasePtr();
+
+	_stack.setStackPtr(bp);
+
+	_stack.set(offset, _stack.get(offset).getInt() - 1);
+
+	_stack.setStackPtr(sp);
 }
 
 void NCSFile::o_incbp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_incbp(): Illegal type %d", type);
 
-	int32 oldStackPtr = _stack.getStackPtr();
-	_stack.setStackPtr(_stack.getBasePtr() + _script->readSint32BE());
-	_stack.push(_stack.pop().getInt() + 1);
-	_stack.setStackPtr(oldStackPtr);
+	int32 offset = _script->readSint32BE();
+
+	int32 sp = _stack.getStackPtr();
+	int32 bp = _stack.getBasePtr();
+
+	_stack.setStackPtr(bp);
+
+	_stack.set(offset, _stack.get(offset).getInt() + 1);
+
+	_stack.setStackPtr(sp);
 }
 
 void NCSFile::o_savebp(InstructionType type) {
