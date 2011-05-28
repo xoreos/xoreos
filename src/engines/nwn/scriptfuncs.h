@@ -86,6 +86,7 @@ private:
 	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
 	void delayCommand(Aurora::NWScript::FunctionContext &ctx);
 	void executeScript(Aurora::NWScript::FunctionContext &ctx);
+	void clearAllActions(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
 

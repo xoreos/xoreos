@@ -212,6 +212,10 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("ExecuteScript", 8,
 			boost::bind(&ScriptFunctions::executeScript, this, _1),
 			createSignature(3, kTypeVoid, kTypeString, kTypeObject));
+	FunctionMan.registerFunction("ClearAllActions", 9,
+			boost::bind(&ScriptFunctions::clearAllActions, this, _1),
+			createSignature(2, kTypeVoid, kTypeInt),
+			createDefaults(1, &defaultInt0));
 
 	FunctionMan.registerFunction("ActionMoveToObject", 22,
 			boost::bind(&ScriptFunctions::actionMoveToObject, this, _1),
@@ -667,6 +671,10 @@ void ScriptFunctions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
 
 		Common::printException(e, "WARNING: ");
 	}
+}
+
+void ScriptFunctions::clearAllActions(Aurora::NWScript::FunctionContext &ctx) {
+	warning("TODO: ClearAllActions");
 }
 
 void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
