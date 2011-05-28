@@ -37,6 +37,7 @@
 #include "common/configman.h"
 
 #include "aurora/talkman.h"
+#include "aurora/ssffile.h"
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
 
@@ -550,6 +551,11 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetGold", 418,
 			boost::bind(&ScriptFunctions::getGold, this, _1),
 			createSignature(2, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+
+	FunctionMan.registerFunction("PlayVoiceChat", 421,
+			boost::bind(&ScriptFunctions::playVoiceChat, this, _1),
+			createSignature(3, kTypeVoid, kTypeInt, kTypeObject),
 			createDefaults(1, &defaultObject0));
 
 	FunctionMan.registerFunction("MusicBackgroundPlay", 425,
@@ -1483,6 +1489,20 @@ void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	warning("TODO: GetGold: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::playVoiceChat(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	const Aurora::SSFFile *ssf = object->getSSF();
+	if (!ssf)
+		return;
+
+	object->playSound(ssf->getSound(ctx.getParams()[0].getInt()).fileName, true);
 }
 
 void ScriptFunctions::musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx) {

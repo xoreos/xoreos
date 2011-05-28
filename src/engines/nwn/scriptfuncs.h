@@ -214,6 +214,8 @@ private:
 
 	void getGold(Aurora::NWScript::FunctionContext &ctx);
 
+	void playVoiceChat(Aurora::NWScript::FunctionContext &ctx);
+
 	void musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx);
 	void musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx);
 
