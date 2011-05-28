@@ -214,7 +214,7 @@ uint32 Creature::getXP() const {
 }
 
 uint8 Creature::getAbility(Ability ability) const {
-	assert((ability > 0) && (ability < kAbilityMAX));
+	assert((ability >= 0) && (ability < kAbilityMAX));
 
 	return _abilities[ability];
 }
