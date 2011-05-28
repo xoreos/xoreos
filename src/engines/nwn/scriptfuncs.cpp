@@ -34,6 +34,8 @@
 #include "common/maths.h"
 
 #include "aurora/talkman.h"
+#include "aurora/2dafile.h"
+#include "aurora/2dareg.h"
 
 #include "aurora/nwscript/types.h"
 #include "aurora/nwscript/util.h"
@@ -536,6 +538,9 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::musicBackgroundGetNightTrack, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
 
+	FunctionMan.registerFunction("Get2DAString", 710,
+			boost::bind(&ScriptFunctions::get2DAString, this, _1),
+			createSignature(4, kTypeString, kTypeString, kTypeString, kTypeInt));
 }
 
 void ScriptFunctions::random(Aurora::NWScript::FunctionContext &ctx) {
@@ -1381,6 +1386,21 @@ void ScriptFunctions::musicBackgroundGetNightTrack(Aurora::NWScript::FunctionCon
 	Area *area = convertArea(ctx.getParams()[0].getObject());
 	if (area)
 		ctx.getReturn() = (int32) area->getMusicNightTrack();
+}
+
+void ScriptFunctions::get2DAString(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().getString().clear();
+
+	const Common::UString &file =          ctx.getParams()[0].getString();
+	const Common::UString &col  =          ctx.getParams()[1].getString();
+	const uint32           row  = (uint32) ctx.getParams()[2].getInt();
+
+	if (file.empty() || col.empty())
+		return;
+
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get(file);
+
+	ctx.getReturn() = twoda.getRow(row).getString(col);
 }
 
 } // End of namespace NWN

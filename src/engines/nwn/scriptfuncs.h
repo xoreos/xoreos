@@ -215,6 +215,8 @@ private:
 
 	void musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx);
 	void musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx);
+
+	void get2DAString(Aurora::NWScript::FunctionContext &ctx);
 };
 
 } // End of namespace NWN
