@@ -113,6 +113,7 @@ private:
 	void setLocalFloat(Aurora::NWScript::FunctionContext &ctx);
 	void setLocalString(Aurora::NWScript::FunctionContext &ctx);
 	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
+	void getStringLength(Aurora::NWScript::FunctionContext &ctx);
 
 	void fabs(Aurora::NWScript::FunctionContext &ctx);
 	void cos(Aurora::NWScript::FunctionContext &ctx);

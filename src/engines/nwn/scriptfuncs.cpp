@@ -288,6 +288,9 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("SetLocalObject", 58,
 			boost::bind(&ScriptFunctions::setLocalObject, this, _1),
 			createSignature(4, kTypeVoid, kTypeObject, kTypeString, kTypeObject));
+	FunctionMan.registerFunction("GetStringLength", 59,
+			boost::bind(&ScriptFunctions::getStringLength, this, _1),
+			createSignature(2, kTypeInt, kTypeString));
 
 	FunctionMan.registerFunction("fabs", 67,
 			boost::bind(&ScriptFunctions::fabs, this, _1),
@@ -910,6 +913,10 @@ void ScriptFunctions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = params[0].getObject();
 	if (object)
 		object->setVariable(params[1].getString(), params[2].getObject());
+}
+
+void ScriptFunctions::getStringLength(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) ctx.getParams()[0].getString().size();
 }
 
 void ScriptFunctions::fabs(Aurora::NWScript::FunctionContext &ctx) {
