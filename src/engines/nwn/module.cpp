@@ -73,6 +73,8 @@ static const uint32 kStrLordLady   = 4885;
 static const uint32 kStrlordlady   = 4887;
 static const uint32 kStrManWoman   = 4926;
 static const uint32 kStrmanwoman   = 4928;
+static const uint32 kStrSirMadam   = 4939;
+static const uint32 kStrsirmadam   = 4941;
 static const uint32 kStrBastard    = 1757;
 static const uint32 kStrBitch      = 1739;
 
@@ -186,6 +188,8 @@ void Module::setPCTokens() {
 	TokenMan.set("<lord/lady>"     , TalkMan.getString(kStrlordlady   + (_pc.isFemale() ? 1 : 0)));
 	TokenMan.set("<Man/Woman>"     , TalkMan.getString(kStrManWoman   + (_pc.isFemale() ? 1 : 0)));
 	TokenMan.set("<man/woman>"     , TalkMan.getString(kStrmanwoman   + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<Sir/Madam>"     , TalkMan.getString(kStrSirMadam   + (_pc.isFemale() ? 1 : 0)));
+	TokenMan.set("<sir/madam>"     , TalkMan.getString(kStrsirmadam   + (_pc.isFemale() ? 1 : 0)));
 
 	TokenMan.set("<bitch/bastard>", TalkMan.getString(_pc.isFemale() ? kStrBitch : kStrBastard));
 
