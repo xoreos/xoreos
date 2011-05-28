@@ -148,6 +148,14 @@ public:
 	/** Return the max HP this creature can have. */
 	int32 getMaxHP() const;
 
+	void addAssociate(Creature &henchman, AssociateType type);
+	void removeAssociate(Creature &henchman);
+
+	Creature *getAssociate(AssociateType type, int nth = 1) const;
+
+	void setMaster(Creature *master = 0);
+	Creature *getMaster() const;
+
 private:
 	enum BodyPartType {
 		kBodyPartHead       = 0,
@@ -175,6 +183,13 @@ private:
 	struct Class {
 		uint32 classID;
 		uint16 level;
+	};
+
+	struct Associate {
+		AssociateType type;
+		Creature *associate;
+
+		Associate(AssociateType t = kAssociateTypeNone, Creature *a = 0);
 	};
 
 	struct BodyPart {
@@ -226,6 +241,9 @@ private:
 	uint32 _colorHair;
 	uint32 _colorTattoo1;
 	uint32 _colorTattoo2;
+
+	Creature *_master;
+	std::list<Associate> _associates;
 
 	Graphics::Aurora::Model *_model;
 

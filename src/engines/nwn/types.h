@@ -177,6 +177,15 @@ enum GameDifficulty {
 	kDifficultyCoreRules = 4  // "Very difficult"
 };
 
+enum AssociateType {
+	kAssociateTypeNone            = 0,
+	kAssociateTypeHenchman        = 1,
+	kAssociateTypeAnimalCompanion = 2,
+	kAssociateTypeFamiliar        = 3,
+	kAssociateTypeSummoned        = 4,
+	kAssociateTypeDominated       = 5
+};
+
 enum Ability {
 	kAbilityStrength     = 0,
 	kAbilityDexterity    = 1,

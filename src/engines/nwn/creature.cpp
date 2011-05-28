@@ -53,14 +53,24 @@ namespace Engines {
 
 namespace NWN {
 
+Creature::Associate::Associate(AssociateType t, Creature *a) : type(t), associate(a) {
+}
+
+
 Creature::BodyPart::BodyPart() : id(Aurora::kFieldIDInvalid) {
 }
 
 
-Creature::Creature() : _model(0), _tooltip(0) {
+Creature::Creature() : _master(0), _model(0), _tooltip(0) {
 }
 
 Creature::~Creature() {
+	if (_master)
+		_master->removeAssociate(*this);
+
+	for (std::list<Associate>::iterator a = _associates.begin(); a != _associates.end(); ++a)
+		a->associate->setMaster(0);
+
 	hide();
 
 	delete _model;
@@ -147,6 +157,12 @@ void Creature::clear() {
 	_colorTattoo1 = Aurora::kFieldIDInvalid;
 	_colorTattoo2 = Aurora::kFieldIDInvalid;
 
+	if (_master)
+		_master->removeAssociate(*this);
+
+	for (std::list<Associate>::iterator a = _associates.begin(); a != _associates.end(); ++a)
+		a->associate->setMaster(0);
+
 	delete _model;
 	_model = 0;
 
@@ -209,6 +225,55 @@ int32 Creature::getCurrentHP() const {
 
 int32 Creature::getMaxHP() const {
 	return _baseHP + _bonusHP;
+}
+
+void Creature::addAssociate(Creature &henchman, AssociateType type) {
+	removeAssociate(henchman);
+
+	assert(!henchman.getMaster());
+
+	_associates.push_back(Associate(type, &henchman));
+	henchman.setMaster(this);
+}
+
+void Creature::removeAssociate(Creature &henchman) {
+	for (std::list<Associate>::iterator a = _associates.begin(); a != _associates.end(); ++a) {
+		if (a->associate == &henchman) {
+			assert(a->associate->getMaster() == this);
+
+			a->associate->setMaster(0);
+			_associates.erase(a);
+			break;
+		}
+	}
+}
+
+Creature *Creature::getAssociate(AssociateType type, int nth) const {
+	if (_associates.empty())
+		return 0;
+
+	Creature *curAssociate = 0;
+
+	std::list<Associate>::const_iterator associate = _associates.begin();
+	while (nth-- > 0) {
+		while ((associate != _associates.end()) && (associate->type != type))
+			++associate;
+
+		if (associate == _associates.end())
+			return 0;
+
+		curAssociate = associate->associate;
+	}
+
+	return curAssociate;
+}
+
+void Creature::setMaster(Creature *master) {
+	_master = master;
+}
+
+Creature *Creature::getMaster() const {
+	return _master;
 }
 
 void Creature::constructModelName(const Common::UString &type, uint32 id,

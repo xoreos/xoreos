@@ -1205,11 +1205,15 @@ void ScriptFunctions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
-	Object *object = convertObject(ctx.getParams()[0].getObject());
-	if (ctx.getParamsSpecified() < 1)
-		object = convertObject(ctx.getCaller());
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
-	ctx.getReturn() = object;
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (ctx.getParamsSpecified() < 1)
+		creature = convertCreature(ctx.getCaller());
+	if (!creature)
+		return;
+
+	ctx.getReturn() = creature->getMaster();
 }
 
 void ScriptFunctions::setLocked(Aurora::NWScript::FunctionContext &ctx) {
@@ -1291,15 +1295,15 @@ void ScriptFunctions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::getHenchman(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
-	Object *object = convertObject(ctx.getParams()[0].getObject());
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
 	if (ctx.getParamsSpecified() < 1)
-		object = convertObject(ctx.getCaller());
-	if (!object)
+		creature = convertCreature(ctx.getCaller());
+	if (!creature)
 		return;
 
 	int nth  = ctx.getParams()[1].getInt();
 
-	warning("TODO: GetHenchman: \"%s\", %d", object->getTag().c_str(), nth);
+	ctx.getReturn() = creature->getAssociate(kAssociateTypeHenchman, nth);
 }
 
 void ScriptFunctions::getGender(Aurora::NWScript::FunctionContext &ctx) {
@@ -1332,20 +1336,19 @@ void ScriptFunctions::getAssociate(Aurora::NWScript::FunctionContext &ctx) {
 	int type = ctx.getParams()[0].getInt();
 	int nth  = ctx.getParams()[2].getInt();
 
-	warning("TODO: GetAssociate: %s, %d, %d", gTag(creature).c_str(), type, nth);
+	ctx.getReturn() = creature->getAssociate((AssociateType) type, nth);
 }
 
 void ScriptFunctions::addHenchman(Aurora::NWScript::FunctionContext &ctx) {
-	Object *master   = convertObject(ctx.getParams()[0].getObject());
-	Object *henchman = convertObject(ctx.getParams()[1].getObject());
+	Creature *master   = convertCreature(ctx.getParams()[0].getObject());
+	Creature *henchman = convertCreature(ctx.getParams()[1].getObject());
 	if (ctx.getParamsSpecified() < 2)
-		henchman = convertObject(ctx.getCaller());
+		henchman = convertCreature(ctx.getCaller());
 
 	if (!master || !henchman)
 		return;
 
-	warning("TODO: AddHenchman: \"%s\" to \"%s\"",
-	        henchman->getTag().c_str(), master->getTag().c_str());
+	master->addAssociate(*henchman, kAssociateTypeHenchman);
 }
 
 void ScriptFunctions::addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx) {
