@@ -95,7 +95,7 @@ void NCSStack::push(const Variable &obj) {
 	_stackPtr++;
 }
 
-Variable &NCSStack::get(int32 pos) {
+Variable &NCSStack::getRelSP(int32 pos) {
 	if ((pos > -4) || ((pos % 4) != 0))
 		throw Common::Exception("NCSStack::get(): Illegal position %d", pos);
 
@@ -106,11 +106,33 @@ Variable &NCSStack::get(int32 pos) {
 	return at(stackPos);
 }
 
-void NCSStack::set(int32 pos, const Variable &obj) {
+void NCSStack::setRelSP(int32 pos, const Variable &obj) {
 	if ((pos > -4) || ((pos % 4) != 0))
 		throw Common::Exception("NCSStack::set(): Illegal position %d", pos);
 
 	int32 stackPos = _stackPtr - ((pos / -4) - 1);
+	if (stackPos < 0)
+		throw Common::Exception("NCSStack::set(): Position %d below the bottom", pos);
+
+	at(stackPos) = obj;
+}
+
+Variable &NCSStack::getRelBP(int32 pos) {
+	if ((pos > -4) || ((pos % 4) != 0))
+		throw Common::Exception("NCSStack::get(): Illegal position %d", pos);
+
+	int32 stackPos = _basePtr - ((pos / -4) - 1);
+	if (stackPos < 0)
+		throw Common::Exception("NCSStack::get(): Position %d below the bottom", pos);
+
+	return at(stackPos);
+}
+
+void NCSStack::setRelBP(int32 pos, const Variable &obj) {
+	if ((pos > -4) || ((pos % 4) != 0))
+		throw Common::Exception("NCSStack::set(): Illegal position %d", pos);
+
+	int32 stackPos = _basePtr - ((pos / -4) - 1);
 	if (stackPos < 0)
 		throw Common::Exception("NCSStack::set(): Position %d below the bottom", pos);
 
@@ -802,7 +824,7 @@ void NCSFile::o_decsp(InstructionType type) {
 
 	int32 offset = _script->readSint32BE();
 
-	_stack.set(offset, _stack.get(offset).getInt() - 1);
+	_stack.setRelSP(offset, _stack.getRelSP(offset).getInt() - 1);
 }
 
 void NCSFile::o_incsp(InstructionType type) {
@@ -811,7 +833,7 @@ void NCSFile::o_incsp(InstructionType type) {
 
 	int32 offset = _script->readSint32BE();
 
-	_stack.set(offset, _stack.get(offset).getInt() + 1);
+	_stack.setRelSP(offset, _stack.getRelSP(offset).getInt() + 1);
 }
 
 void NCSFile::o_jnz(InstructionType type) {
@@ -830,14 +852,7 @@ void NCSFile::o_decbp(InstructionType type) {
 
 	int32 offset = _script->readSint32BE();
 
-	int32 sp = _stack.getStackPtr();
-	int32 bp = _stack.getBasePtr();
-
-	_stack.setStackPtr(bp);
-
-	_stack.set(offset, _stack.get(offset).getInt() - 1);
-
-	_stack.setStackPtr(sp);
+	_stack.setRelBP(offset, _stack.getRelBP(offset).getInt() - 1);
 }
 
 void NCSFile::o_incbp(InstructionType type) {
@@ -846,14 +861,7 @@ void NCSFile::o_incbp(InstructionType type) {
 
 	int32 offset = _script->readSint32BE();
 
-	int32 sp = _stack.getStackPtr();
-	int32 bp = _stack.getBasePtr();
-
-	_stack.setStackPtr(bp);
-
-	_stack.set(offset, _stack.get(offset).getInt() + 1);
-
-	_stack.setStackPtr(sp);
+	_stack.setRelBP(offset, _stack.getRelBP(offset).getInt() + 1);
 }
 
 void NCSFile::o_savebp(InstructionType type) {
@@ -887,7 +895,7 @@ void NCSFile::o_cpdownsp(InstructionType type) {
 
 	int32 startPos = -size;
 	while (size > 0) {
-		_stack.set(offset, _stack.get(startPos));
+		_stack.setRelSP(offset, _stack.getRelSP(startPos));
 
 		startPos += 4;
 		offset   += 4;
@@ -906,7 +914,7 @@ void NCSFile::o_cptopsp(InstructionType type) {
 		throw Common::Exception("NCSFile::o_cptopsp(): Illegal size %d", size);
 
 	while (size > 0) {
-		_stack.push(_stack.get(offset));
+		_stack.push(_stack.getRelSP(offset));
 
 		size -= 4;
 	}
@@ -1213,11 +1221,41 @@ void NCSFile::o_destruct(InstructionType type) {
 }
 
 void NCSFile::o_cpdownbp(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_cpdownbp()");
+	if (type != kInstTypeDirect)
+		throw Common::Exception("NCSFile::o_cpdownbp(): Illegal type %d", type);
+
+	int32 offset = _script->readSint32BE() - 4;
+	int16 size   = _script->readSint16BE();
+
+	if ((size % 4) != 0)
+		throw Common::Exception("NCSFile::o_cpdownbp(): Illegal size %d", size);
+
+	int32 startPos = -size;
+	while (size > 0) {
+		_stack.setRelBP(offset, _stack.getRelSP(startPos));
+
+		startPos += 4;
+		offset   += 4;
+		size     -= 4;
+	}
 }
 
 void NCSFile::o_cptopbp(InstructionType type) {
-	throw Common::Exception("TODO: NCSFile::o_cptopbp()");
+	if (type != kInstTypeDirect)
+		throw Common::Exception("NCSFile::o_cptopbp(): Illegal type %d", type);
+
+	int32 offset = _script->readSint32BE() - 4;
+	int16 size   = _script->readSint16BE();
+
+	if ((size % 4) != 0)
+		throw Common::Exception("NCSFile::o_cptopbp(): Illegal size %d", size);
+
+	while (size > 0) {
+		_stack.push(_stack.getRelBP(offset));
+
+		size   -= 4;
+		offset += 4;
+	}
 }
 
 void NCSFile::o_storestate(InstructionType type) {

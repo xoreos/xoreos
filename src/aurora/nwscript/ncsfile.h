@@ -63,8 +63,11 @@ public:
 	Variable pop();
 	void push(const Variable &obj);
 
-	Variable &get(int32 pos);
-	void set(int32 pos, const Variable &obj);
+	Variable &getRelSP(int32 pos);
+	void setRelSP(int32 pos, const Variable &obj);
+
+	Variable &getRelBP(int32 pos);
+	void setRelBP(int32 pos, const Variable &obj);
 
 	int32 getStackPtr();
 	void  setStackPtr(int32 pos);
