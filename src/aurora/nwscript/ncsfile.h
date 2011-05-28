@@ -87,8 +87,8 @@ private:
 /** An NCS, BioWare's NWN Compile Script. */
 class NCSFile : public AuroraBase {
 public:
-	NCSFile(Common::SeekableReadStream *ncs, Object *self = 0);
-	NCSFile(const Common::UString &ncs, Object *self = 0);
+	NCSFile(Common::SeekableReadStream *ncs, Object *owner = 0, Object *triggerer = 0);
+	NCSFile(const Common::UString &ncs, Object *self = 0, Object *triggerer = 0);
 	~NCSFile();
 
 	/** Run the current script, from start to finish. */
@@ -130,7 +130,8 @@ private:
 	NCSStack _stack;
 	Common::SeekableReadStream *_script;
 
-	Object *_objectSelf;
+	Object *_objectOwner;
+	Object *_objectTriggerer;
 
 	std::stack<uint32> _returnOffsets;
 

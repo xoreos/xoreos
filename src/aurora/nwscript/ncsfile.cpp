@@ -256,14 +256,16 @@ void NCSFile::setupOpcodes() {
 
 #undef OPCODE
 
-NCSFile::NCSFile(Common::SeekableReadStream *ncs, Object *self) : _objectSelf(self) {
+NCSFile::NCSFile(Common::SeekableReadStream *ncs, Object *owner, Object *triggerer) :
+	_objectOwner(owner), _objectTriggerer(triggerer) {
+
 	_script = ncs;
 
 	load();
 }
 
-NCSFile::NCSFile(const Common::UString &ncs, Object *self) : _name(ncs),
-	_script(0), _objectSelf(self) {
+NCSFile::NCSFile(const Common::UString &ncs, Object *owner, Object *triggerer) : _name(ncs),
+	_script(0), _objectOwner(owner), _objectTriggerer(triggerer) {
 
 	_script = ResMan.getResource(ncs, kFileTypeNCS);
 	if (!_script)
@@ -406,7 +408,7 @@ void NCSFile::o_const(InstructionType type) {
 			uint32 objectID = _script->readUint32BE();
 
 			if      (objectID == kScriptObjectSelf)
-				_stack.push(_objectSelf);
+				_stack.push(_objectOwner);
 			else if (objectID == kScriptObjectInvalid)
 				_stack.push((Object *) 0);
 			else
@@ -427,7 +429,8 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 		                        "mismatch (got %d, want %d - %d)", ctx.getName().c_str(),
 		                        argCount, ctx.getParamMin(), ctx.getParamMax());
 
-	ctx.setCaller(_objectSelf);
+	ctx.setCaller(_objectOwner);
+	ctx.setTriggerer(_objectTriggerer);
 
 	ctx.setParamsSpecified(argCount);
 	for (uint8 i = 0; i < argCount; i++) {
