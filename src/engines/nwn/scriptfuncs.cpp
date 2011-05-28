@@ -460,6 +460,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getLocked, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
 
+	FunctionMan.registerFunction("SetAssociateListenPatterns", 327,
+			boost::bind(&ScriptFunctions::setAssociateListenPatterns, this, _1),
+			createSignature(2, kTypeVoid, kTypeObject),
+			createDefaults(1, &defaultObject0));
+
 	FunctionMan.registerFunction("GetClassByPosition", 341,
 			boost::bind(&ScriptFunctions::getClassByPosition, this, _1),
 			createSignature(3, kTypeInt, kTypeInt, kTypeObject),
@@ -1218,6 +1223,16 @@ void ScriptFunctions::getLocked(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	warning("TODO: GetLocked: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::setAssociateListenPatterns(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (ctx.getParamsSpecified() < 1)
+		object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	warning("TODO: SetAssociateListenPatterns: \"%s\"", object->getTag().c_str());
 }
 
 void ScriptFunctions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {

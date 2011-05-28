@@ -180,6 +180,8 @@ private:
 	void setLocked(Aurora::NWScript::FunctionContext &ctx);
 	void getLocked(Aurora::NWScript::FunctionContext &ctx);
 
+	void setAssociateListenPatterns(Aurora::NWScript::FunctionContext &ctx);
+
 	void getClassByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByClass(Aurora::NWScript::FunctionContext &ctx);
