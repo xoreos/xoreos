@@ -823,25 +823,24 @@ void ScriptFunctions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx)
 	int crit3Value = ctx.getParams()[7].getInt();
 	*/
 
-	std::list<Object *> objects;
+	if (!_module->findObjectInit(_objSearchContext))
+		return;
 
-	Object *object = 0;
-	if (_module->findFirstObject(_objSearchContext)) {
-		if ((object = convertCreature(_objSearchContext.getObject())) && (object != target))
-			objects.push_back(object);
+	std::list<Object *> creatures;
+	while (_module->findNextObject(_objSearchContext)) {
+		Creature *creature = convertCreature(_objSearchContext.getObject());
 
-		while (_module->findNextObject(_objSearchContext))
-			if ((object = convertCreature(_objSearchContext.getObject())) && (object != target))
-				objects.push_back(object);
+		if (creature && (creature != target) && (creature->getArea() == target->getArea()))
+			creatures.push_back(creature);
 	}
 
-	objects.sort(ObjectDistanceSort(*target));
+	creatures.sort(ObjectDistanceSort(*target));
 
-	std::list<Object *>::iterator it = objects.begin();
-	for (int n = 0; (n < nth) && (it != objects.end()); ++n)
+	std::list<Object *>::iterator it = creatures.begin();
+	for (int n = 0; (n < nth) && (it != creatures.end()); ++n)
 		++it;
 
-	if (it != objects.end())
+	if (it != creatures.end())
 		ctx.getReturn() = *it;
 }
 
@@ -1125,15 +1124,15 @@ void ScriptFunctions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
 	if (tag.empty())
 		return;
 
-	if (!_module->findFirstObject(tag, _objSearchContext))
-		return;
+	_module->findObjectInit(_objSearchContext, tag);
+	while (_module->findNextObject(_objSearchContext)) {
+		Waypoint *waypoint = convertWaypoint(_objSearchContext.getObject());
 
-	Waypoint *waypoint = convertWaypoint(_objSearchContext.getObject());
-
-	while (!waypoint && _module->findNextObject(tag, _objSearchContext))
-		waypoint = convertWaypoint(_objSearchContext.getObject());
-
-	ctx.getReturn() = waypoint;
+		if (waypoint) {
+			ctx.getReturn() = waypoint;
+			break;
+		}
+	}
 }
 
 void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
@@ -1147,11 +1146,11 @@ void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	int nth = ctx.getParams()[1].getInt();
 
-	if (!_module->findFirstObject(tag, _objSearchContext))
+	if (!_module->findObjectInit(_objSearchContext, tag))
 		return;
 
-	while (nth-- > 0)
-		_module->findNextObject(tag, _objSearchContext);
+	while (nth-- >= 0)
+		_module->findNextObject(_objSearchContext);
 
 	ctx.getReturn() = _objSearchContext.getObject();
 }
@@ -1175,22 +1174,20 @@ void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &c
 	if (!target)
 		return;
 
+	int nth = ctx.getParams()[2].getInt() - 1;
+
+	if (!_module->findObjectInit(_objSearchContext, tag))
+		return;
+
 	std::list<Object *> objects;
+	while (_module->findNextObject(_objSearchContext)) {
+		Object *object = convertObject(_objSearchContext.getObject());
 
-	// TODO: ScriptFunctions::getNearestObjectByTag(): Only consider objects in the same area
-	Object *object = 0;
-	if (_module->findFirstObject(tag, _objSearchContext)) {
-		if ((object = convertObject(_objSearchContext.getObject())) && (object != target))
+		if (object && (object != target) && (object->getArea() == target->getArea()))
 			objects.push_back(object);
-
-		while (_module->findNextObject(tag, _objSearchContext))
-			if ((object = convertObject(_objSearchContext.getObject())) && (object != target))
-				objects.push_back(object);
 	}
 
 	objects.sort(ObjectDistanceSort(*target));
-
-	int nth = ctx.getParams()[2].getInt() - 1;
 
 	std::list<Object *>::iterator it = objects.begin();
 	for (int n = 0; (n < nth) && (it != objects.end()); ++n)

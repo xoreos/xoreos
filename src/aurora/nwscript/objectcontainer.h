@@ -64,21 +64,18 @@ public:
 	/** Remove an object from this container. */
 	void removeObject(Object &obj);
 
-	/** Find the first object. */
-	bool findFirstObject(SearchContext &ctx) const;
+	/** Init a search context for finding all objects. */
+	bool findObjectInit(SearchContext &ctx) const;
+	/** Init a search context for finding all objects with this tag. */
+	bool findObjectInit(SearchContext &ctx, const Common::UString &tag) const;
+
 	/** Find the next object. */
-	bool findNextObject(SearchContext &ctx) const;
+	Object *findNextObject(SearchContext &ctx) const;
 
-	/** Find the first object, disregarding any other matches. */
-	Object *findFirstObject() const;
-
-	/** Find the first object with this tag. */
-	bool findFirstObject(const Common::UString &tag, SearchContext &ctx) const;
-	/** Find the next object with this tag. */
-	bool findNextObject(const Common::UString &tag, SearchContext &ctx) const;
-
-	/** Find the first object with this tag, disregarding any other matches. */
-	Object *findFirstObject(const Common::UString &tag) const;
+	/** Find the first best object, disregarding any other matches. */
+	Object *findObject() const;
+	/** Find the first best object with this tag, disregarding any other matches. */
+	Object *findObject(const Common::UString &tag) const;
 
 private:
 	Common::Mutex _mutex;

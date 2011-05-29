@@ -79,67 +79,50 @@ void ObjectContainer::removeObject(Object &obj) {
 	obj._objectContainerTag = _objects.end();
 }
 
-bool ObjectContainer::findFirstObject(SearchContext &ctx) const {
-	ctx._empty  = false;
+bool ObjectContainer::findObjectInit(SearchContext &ctx) const {
 	ctx._object = 0;
 	ctx._tag    = "";
 	ctx._range  = std::make_pair(_objects.begin(), _objects.end());
+	ctx._empty  = ctx._range.first == ctx._range.second;
 
-	if (ctx._range.first == ctx._range.second)
-		return false;
+	return !ctx._empty;
+}
+
+bool ObjectContainer::findObjectInit(SearchContext &ctx, const Common::UString &tag) const {
+	ctx._object = 0;
+	ctx._tag    = tag;
+	ctx._range  = _objects.equal_range(tag);
+	ctx._empty  = ctx._range.first == ctx._range.second;
+
+	return !ctx._empty;
+}
+
+Object *ObjectContainer::findNextObject(SearchContext &ctx) const {
+	if (ctx._empty || (ctx._range.first == ctx._range.second)) {
+		ctx._empty  = true;
+		ctx._object = 0;
+		return 0;
+	}
 
 	ctx._object = ctx._range.first->second;
-	return true;
+
+	++ctx._range.first;
+
+	return ctx._object;
 }
 
-bool ObjectContainer::findNextObject(SearchContext &ctx) const {
-	return findNextObject(ctx._tag, ctx);
-}
-
-Object *ObjectContainer::findFirstObject() const {
+Object *ObjectContainer::findObject() const {
 	if (_objects.empty())
 		return 0;
 
 	return _objects.begin()->second;
 }
 
-bool ObjectContainer::findFirstObject(const Common::UString &tag, SearchContext &ctx) const {
-	ctx._empty  = false;
-	ctx._object = 0;
-	ctx._tag    = tag;
-	ctx._range  = _objects.equal_range(tag);
-
-	if (ctx._range.first == ctx._range.second)
-		return false;
-
-	ctx._object = ctx._range.first->second;
-	return true;
-}
-
-bool ObjectContainer::findNextObject(const Common::UString &tag, SearchContext &ctx) const {
-	ctx._object = 0;
-
-	if (ctx._empty)
-		return false;
-
-	if (tag != ctx._tag)
-		throw Common::Exception("ObjectContainer::findNextObject(): Tags mismatch");
-
-	if (++ctx._range.first == ctx._range.second) {
-		ctx._empty  = true;
-		ctx._object = 0;
-		return false;
-	}
-
-	ctx._object = ctx._range.first->second;
-	return true;
-}
-
-Object *ObjectContainer::findFirstObject(const Common::UString &tag) const {
+Object *ObjectContainer::findObject(const Common::UString &tag) const {
 	SearchContext ctx;
-	findFirstObject(tag, ctx);
+	findObjectInit(ctx, tag);
 
-	return ctx._object;
+	return findNextObject(ctx);
 }
 
 } // End of namespace NWScript
