@@ -818,11 +818,11 @@ void ScriptFunctions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx)
 
 	Object *object = 0;
 	if (_module->findFirstObject(_objSearchContext)) {
-		if ((object = convertObject(_objSearchContext.getObject())) && (object != target))
+		if ((object = convertCreature(_objSearchContext.getObject())) && (object != target))
 			objects.push_back(object);
 
 		while (_module->findNextObject(_objSearchContext))
-			if ((object = convertObject(_objSearchContext.getObject())) && (object != target))
+			if ((object = convertCreature(_objSearchContext.getObject())) && (object != target))
 				objects.push_back(object);
 	}
 
