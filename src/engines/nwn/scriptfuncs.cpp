@@ -50,10 +50,11 @@
 #include "engines/aurora/tokenman.h"
 
 #include "engines/nwn/scriptfuncs.h"
-#include "engines/nwn/object.h"
-#include "engines/nwn/creature.h"
 #include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
+#include "engines/nwn/object.h"
+#include "engines/nwn/waypoint.h"
+#include "engines/nwn/creature.h"
 
 using Aurora::kObjectIDInvalid;
 
@@ -145,6 +146,14 @@ Object *ScriptFunctions::convertObject(Aurora::NWScript::Object *o) {
 		return 0;
 
 	return object;
+}
+
+Waypoint *ScriptFunctions::convertWaypoint(Aurora::NWScript::Object *o) {
+	Waypoint *waypoint = dynamic_cast<Waypoint *>(o);
+	if (!waypoint || !waypoint->loaded() || (waypoint->getID() == kObjectIDInvalid))
+		return 0;
+
+	return waypoint;
 }
 
 Creature *ScriptFunctions::convertCreature(Aurora::NWScript::Object *o) {
@@ -1108,13 +1117,27 @@ void ScriptFunctions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
-	const Common::UString &tag = ctx.getParams()[0].getString();
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+	if (!_module)
+		return;
 
-	warning("TODO: GetWaypointByTag: \"%s\"", tag.c_str());
+	const Common::UString &tag = ctx.getParams()[0].getString();
+	if (tag.empty())
+		return;
+
+	if (!_module->findFirstObject(tag, _objSearchContext))
+		return;
+
+	Waypoint *waypoint = convertWaypoint(_objSearchContext.getObject());
+
+	while (!waypoint && _module->findNextObject(tag, _objSearchContext))
+		waypoint = convertWaypoint(_objSearchContext.getObject());
+
+	ctx.getReturn() = waypoint;
 }
 
 void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (Object *) 0;
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 	if (!_module)
 		return;
 
