@@ -153,14 +153,14 @@ const Common::UString &LocString::getFirstString() const {
 }
 
 const Common::UString &LocString::getString() const {
-	// Try to look whether we have a external localized string
+	// Look whether we have an internal localized string
+	if (hasString(TalkMan.getMainLanguage()))
+		return getString(TalkMan.getMainLanguage());
+
+	// Next, try the external localized one
 	const Common::UString &refString = getStrRefString();
 	if (!refString.empty())
 		return refString;
-
-	// Next, try the internal localized one
-	if (hasString(TalkMan.getMainLanguage()))
-		return getString(TalkMan.getMainLanguage());
 
 	// If all else fails, just get the first one availabe
 	return getFirstString();
