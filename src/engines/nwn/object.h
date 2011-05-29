@@ -61,8 +61,8 @@ public:
 
 	bool loaded() const;
 
-	virtual void show() = 0;
-	virtual void hide() = 0;
+	virtual void show();
+	virtual void hide();
 
 	const Common::UString &getName() const;
 	const Common::UString &getDescription() const;
@@ -92,10 +92,10 @@ public:
 	virtual void setPosition(float x, float y, float z);
 	virtual void setOrientation(float x, float y, float z);
 
-	virtual void enter() = 0;
-	virtual void leave() = 0;
+	virtual void enter();
+	virtual void leave();
 
-	virtual void highlight(bool enabled) = 0;
+	virtual void highlight(bool enabled);
 
 	virtual void click();
 

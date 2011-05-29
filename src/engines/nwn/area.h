@@ -57,8 +57,6 @@ namespace NWN {
 class Module;
 
 class Object;
-class Placeable;
-class Door;
 
 class Area : public Aurora::NWScript::Object, public Events::Notifyable,
              public ScriptContainer {
@@ -198,6 +196,7 @@ private:
 
 	void initTiles();
 
+	void loadWaypoints (const Aurora::GFFList &list);
 	void loadPlaceables(const Aurora::GFFList &list);
 	void loadDoors     (const Aurora::GFFList &list);
 	void loadCreatures (const Aurora::GFFList &list);

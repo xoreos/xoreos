@@ -47,6 +47,7 @@
 
 #include "engines/nwn/area.h"
 #include "engines/nwn/module.h"
+#include "engines/nwn/waypoint.h"
 #include "engines/nwn/placeable.h"
 #include "engines/nwn/door.h"
 #include "engines/nwn/creature.h"
@@ -277,6 +278,9 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 	if (git.hasField("AreaProperties"))
 		loadProperties(git.getStruct("AreaProperties"));
 
+	if (git.hasField("WaypointList"))
+		loadWaypoints(git.getList("WaypointList"));
+
 	if (git.hasField("Placeable List"))
 		loadPlaceables(git.getList("Placeable List"));
 
@@ -382,6 +386,26 @@ void Area::initTiles() {
 			t.model->setPosition(tileX, tileY, tileZ);
 			t.model->setRotation(0.0, 0.0, -(((int) t.orientation) * 90.0));
 		}
+	}
+}
+
+void Area::loadWaypoints(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+		Waypoint *waypoint = new Waypoint;
+
+		waypoint->load(**d);
+		waypoint->setArea(this);
+
+		_objects.push_back(waypoint);
+
+		if (!waypoint->isStatic()) {
+			const std::list<uint32> &ids = waypoint->getIDs();
+
+			_module->addObject(*waypoint);
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, waypoint));
+		}
+
 	}
 }
 

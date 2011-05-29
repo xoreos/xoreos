@@ -1,0 +1,136 @@
+/* eos - A reimplementation of BioWare's Aurora engine
+ *
+ * eos is the legal property of its developers, whose names can be
+ * found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ *
+ * The Infinity, Aurora, Odyssey and Eclipse engines, Copyright (c) BioWare corp.
+ * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
+ */
+
+/** @file engines/nwn/waypoint.cpp
+ *  NWN waypoint.
+ */
+
+#include "common/util.h"
+#include "common/maths.h"
+
+#include "aurora/locstring.h"
+#include "aurora/resman.h"
+#include "aurora/gfffile.h"
+
+#include "engines/aurora/util.h"
+
+#include "engines/nwn/waypoint.h"
+
+namespace Engines {
+
+namespace NWN {
+
+Waypoint::Waypoint() : _hasMapNote(false) {
+}
+
+Waypoint::~Waypoint() {
+	hide();
+}
+
+void Waypoint::clear() {
+	Object::clear();
+
+	_hasMapNote = false;
+	_mapNote.clear();
+}
+
+void Waypoint::load(const Aurora::GFFStruct &waypoint) {
+	clear();
+
+	Common::UString temp = waypoint.getString("TemplateResRef");
+
+	Aurora::GFFFile *utw = 0;
+	if (!temp.empty()) {
+		try {
+			utw = loadGFF(temp, Aurora::kFileTypeUTW, MKID_BE('UTW '));
+		} catch (...) {
+		}
+	}
+
+	load(waypoint, utw ? &utw->getTopLevel() : 0);
+
+	if (!utw)
+		warning("Waypoint \"%s\" has no blueprint", _tag.c_str());
+
+	delete utw;
+
+	_loaded = true;
+}
+
+bool Waypoint::hasMapNote() const {
+	return _hasMapNote;
+}
+
+const Common::UString Waypoint::getMapNote() const {
+	return _mapNote;
+}
+
+void Waypoint::enableMapNote(bool enabled) {
+	_hasMapNote = enabled;
+}
+
+void Waypoint::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
+	// General properties
+
+	if (blueprint)
+		loadProperties(*blueprint); // Blueprint
+	loadProperties(instance);    // Instance
+
+	// Position
+
+	setPosition(instance.getDouble("XPosition"),
+	            instance.getDouble("YPosition"),
+	            instance.getDouble("ZPosition"));
+
+	// Orientation
+
+	float bearingX = instance.getDouble("XOrientation");
+	float bearingY = instance.getDouble("YOrientation");
+
+	float o[3];
+	Common::vector2orientation(bearingX, bearingY, o[0], o[1], o[2]);
+
+	setOrientation(o[0], o[1], o[2]);
+}
+
+void Waypoint::loadProperties(const Aurora::GFFStruct &gff) {
+	// Tag
+
+	_tag = gff.getString("Tag", _tag);
+
+	// Map note
+
+	_hasMapNote = gff.getBool("MapNoteEnabled", _hasMapNote);
+	if (gff.hasField("MapNote")) {
+		Aurora::LocString mapNote;
+		gff.getLocString("MapNote", mapNote);
+
+		_mapNote = mapNote.getString();
+	}
+}
+
+} // End of namespace NWN
+
+} // End of namespace Engines

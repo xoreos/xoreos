@@ -64,6 +64,12 @@ bool Object::loaded() const {
 	return _loaded;
 }
 
+void Object::show() {
+}
+
+void Object::hide() {
+}
+
 const Common::UString &Object::getName() const {
 	return _name;
 }
@@ -140,6 +146,15 @@ void Object::setOrientation(float x, float y, float z) {
 	_orientation[0] = x;
 	_orientation[1] = y;
 	_orientation[2] = z;
+}
+
+void Object::enter() {
+}
+
+void Object::leave() {
+}
+
+void Object::highlight(bool enabled) {
 }
 
 void Object::clear() {

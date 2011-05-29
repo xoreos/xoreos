@@ -15,6 +15,7 @@ noinst_HEADERS = nwn.h \
                  tileset.h \
                  scriptcontainer.h \
                  object.h \
+                 waypoint.h \
                  situated.h \
                  placeable.h \
                  door.h \
@@ -82,6 +83,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     tileset.cpp \
                     scriptcontainer.cpp \
                     object.cpp \
+                    waypoint.cpp \
                     situated.cpp \
                     placeable.cpp \
                     door.cpp \
