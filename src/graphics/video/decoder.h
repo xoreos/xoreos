@@ -77,17 +77,24 @@ public:
 	virtual bool hasTime() const = 0;
 
 protected:
-	volatile bool _started;
-	volatile bool _finished;
-	volatile bool _needCopy;
+	volatile bool _started;  ///< Has playback started?
+	volatile bool _finished; ///< Has playback finished?
+	volatile bool _needCopy; ///< Is new frame content available that needs to by copied?
 
-	uint32 _width;
-	uint32 _height;
-	uint32 _pitch;
+	uint32 _width;  ///< The video's width.
+	uint32 _height; ///< The video's height.
+	uint32 _pitch;  ///< The pitch of the video surface, in pixels.
 
-	byte *_data;
+	byte *_data; ///< The video surface's data.
 
-	/** Create a data area for a video of these dimensions. */
+	/** Create a data area for a video of these dimensions.
+	 *
+	 *  Since the data will be copied into the graphics card memory, the surface
+	 *  memory always has power-of-two dimensions. The actual surface width, in
+	 *  pixels, will be stored into _pitch.
+	 *
+	 *  The surface's pixel format is always BGRA8888.
+	 */
 	void createData(uint32 width, uint32 height);
 
 	void initSound(uint16 rate, bool stereo, bool is16);
