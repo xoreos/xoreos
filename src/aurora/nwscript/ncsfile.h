@@ -91,6 +91,8 @@ public:
 	NCSFile(const Common::UString &ncs, Object *self = 0, Object *triggerer = 0);
 	~NCSFile();
 
+	const Common::UString &getName() const;
+
 	/** Run the current script, from start to finish. */
 	const Variable &run();
 

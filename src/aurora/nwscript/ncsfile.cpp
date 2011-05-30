@@ -287,6 +287,10 @@ NCSFile::~NCSFile() {
 	delete _script;
 }
 
+const Common::UString &NCSFile::getName() const {
+	return _name;
+}
+
 void NCSFile::load() {
 	readHeader(*_script);
 
