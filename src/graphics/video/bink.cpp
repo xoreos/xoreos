@@ -238,7 +238,7 @@ void Bink::audioPacket(AudioTrack &audio) {
 
 		queueSound((const byte *) out, audio.blockSize * 2);
 
-		if (audio.bits->pos() & 0x1F) // next data block starts at a 32-bit boundary
+		if (audio.bits->pos() & 0x1F) // next data block starts at a 32-byte boundary
 			audio.bits->skip(32 - (audio.bits->pos() & 0x1F));
 	}
 }
