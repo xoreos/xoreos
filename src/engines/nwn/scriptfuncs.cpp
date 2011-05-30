@@ -744,8 +744,15 @@ void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx)
 	if (!object || !moveTo)
 		return;
 
-	warning("TODO: ActionMoveToObject: \"%s\" to \"%s\"",
-			object->getTag().c_str(), moveTo->getTag().c_str());
+	float x, y, z;
+	moveTo->getPosition(x, y, z);
+	object->setPosition(x, y, z);
+
+	bool  run   = ctx.getParams()[1].getInt() != 0;
+	float range = ctx.getParams()[2].getFloat();
+
+	warning("TODO: ActionMoveToObject: \"%s\" to \"%s\" (%d, %f)",
+			object->getTag().c_str(), moveTo->getTag().c_str(), run, range);
 }
 
 void ScriptFunctions::getArea(Aurora::NWScript::FunctionContext &ctx) {
