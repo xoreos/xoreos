@@ -133,7 +133,7 @@ void ScriptContainer::readScripts(const ScriptContainer &container) {
 
 bool ScriptContainer::runScript(Script script, Aurora::NWScript::Object *owner,
                                 Aurora::NWScript::Object *triggerer) {
-	return runScript(getScript(script), owner);
+	return runScript(getScript(script), owner, triggerer);
 }
 
 bool ScriptContainer::runScript(const Common::UString &script,
