@@ -17,7 +17,8 @@ noinst_HEADERS = types.h \
                  camera.h \
                  renderable.h \
                  object.h \
-                 guifrontelement.h
+                 guifrontelement.h \
+                 yuv_to_rgb.h
 
 libgraphics_la_SOURCES = graphics.cpp \
                          fpscounter.cpp \
@@ -30,6 +31,7 @@ libgraphics_la_SOURCES = graphics.cpp \
                          camera.cpp \
                          renderable.cpp \
                          object.cpp \
-                         guifrontelement.cpp
+                         guifrontelement.cpp \
+                         yuv_to_rgb.cpp
 
 libgraphics_la_LIBADD = images/libimages.la video/libvideo.la aurora/libaurora.la ../../glew/libglew.la

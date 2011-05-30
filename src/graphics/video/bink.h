@@ -241,9 +241,6 @@ private:
 	/** Initialize the Huffman decoders. */
 	void initHuffman();
 
-	/** Convert the YUVA420p data we get to BGRA. */
-	void yuva2bgra();
-
 	/** Decode an audio packet. */
 	void audioPacket(AudioTrack &audio);
 	/** Decode a video packet. */

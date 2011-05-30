@@ -45,6 +45,7 @@
 
 #include "graphics/util.h"
 
+#include "graphics/yuv_to_rgb.h"
 #include "graphics/video/bink.h"
 #include "graphics/video/binkdata.h"
 
@@ -216,42 +217,6 @@ void Bink::processData() {
 	_curFrame++;
 }
 
-void Bink::yuva2bgra() {
-	assert(_data && _curPlanes[0] && _curPlanes[1] && _curPlanes[2] && _curPlanes[3]);
-
-	const byte *planeY = _curPlanes[0];
-	const byte *planeU = _curPlanes[1];
-	const byte *planeV = _curPlanes[2];
-	const byte *planeA = _curPlanes[3];
-	byte *data = _data + (_height - 1) * _pitch * 4;
-	for (uint32 y = 0; y < _height; y++) {
-		byte *rowData = data;
-
-		for (uint32 x = 0; x < _width; x++, rowData += 4) {
-			const byte cY = planeY[x];
-			const byte cU = planeU[x >> 1];
-			const byte cV = planeV[x >> 1];
-
-			byte r = 0, g = 0, b = 0;
-			YUV2RGB(cY, cU, cV, r, g, b);
-
-			rowData[0] = b;
-			rowData[1] = g;
-			rowData[2] = r;
-			rowData[3] = planeA[x];
-		}
-
-		data   -= _pitch * 4;
-		planeY += _width;
-		planeA += _width;
-
-		if ((y & 1) == 1) {
-			planeU += _width >> 1;
-			planeV += _width >> 1;
-		}
-	}
-}
-
 void Bink::audioPacket(AudioTrack &audio) {
 	if (_disableAudio)
 		return;
@@ -301,7 +266,8 @@ void Bink::videoPacket(VideoFrame &video) {
 	}
 
 	// Convert the YUVA data we have to BGRA
-	yuva2bgra();
+	assert(_data && _curPlanes[0] && _curPlanes[1] && _curPlanes[2] && _curPlanes[3]);
+	convertYUVA420ToRGBA(_data, _pitch * 4, _curPlanes[0], _curPlanes[1], _curPlanes[2], _curPlanes[3], _width, _height, _width, _width >> 1);
 
 	// And swap the planes with the reference planes
 	for (int i = 0; i < 4; i++)

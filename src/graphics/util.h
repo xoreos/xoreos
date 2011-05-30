@@ -35,13 +35,6 @@
 
 namespace Graphics {
 
-/** Converting a color from YUV to RGB colorspace. */
-inline static void YUV2RGB(byte y, byte u, byte v, byte &r, byte &g, byte &b) {
-	r = CLIP<int>(y + ((1357 * (v - 128)) >> 10), 0, 255);
-	g = CLIP<int>(y - (( 691 * (v - 128)) >> 10) - ((333 * (u - 128)) >> 10), 0, 255);
-	b = CLIP<int>(y + ((1715 * (u - 128)) >> 10), 0, 255);
-}
-
 /** Flip an image horizontally. */
 inline static void flipHorizontally(byte *data, int width, int height, int bpp) {
 	int halfWidth = width / 2;
