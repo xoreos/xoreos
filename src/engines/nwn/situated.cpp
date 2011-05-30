@@ -47,7 +47,9 @@ namespace Engines {
 
 namespace NWN {
 
-Situated::Situated() : _appearanceID(Aurora::kFieldIDInvalid), _model(0) {
+Situated::Situated(ObjectType type) : Object(type),
+	_appearanceID(Aurora::kFieldIDInvalid), _model(0) {
+
 }
 
 Situated::~Situated() {

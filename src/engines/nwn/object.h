@@ -56,8 +56,10 @@ namespace NWN {
 /** An object within a NWN area. */
 class Object : public Aurora::NWScript::Object, public ScriptContainer {
 public:
-	Object();
+	Object(ObjectType type);
 	virtual ~Object();
+
+	ObjectType getType() const;
 
 	bool loaded() const;
 
@@ -105,6 +107,8 @@ public:
 
 
 protected:
+	ObjectType _type;
+
 	bool _loaded;
 
 	Common::UString _name;

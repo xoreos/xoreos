@@ -42,7 +42,7 @@ namespace Engines {
 
 namespace NWN {
 
-Waypoint::Waypoint() : _hasMapNote(false) {
+Waypoint::Waypoint() : Object(kObjectTypeWaypoint), _hasMapNote(false) {
 }
 
 Waypoint::~Waypoint() {

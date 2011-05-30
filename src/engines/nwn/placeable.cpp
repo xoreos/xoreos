@@ -45,7 +45,7 @@ namespace Engines {
 
 namespace NWN {
 
-Placeable::Placeable() : _tooltip(0) {
+Placeable::Placeable() : Situated(kObjectTypePlaceable), _tooltip(0) {
 }
 
 Placeable::~Placeable() {

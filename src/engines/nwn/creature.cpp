@@ -61,7 +61,7 @@ Creature::BodyPart::BodyPart() : id(Aurora::kFieldIDInvalid) {
 }
 
 
-Creature::Creature() : _master(0), _model(0), _tooltip(0) {
+Creature::Creature() : Object(kObjectTypeCreature), _master(0), _model(0), _tooltip(0) {
 }
 
 Creature::~Creature() {

@@ -45,7 +45,7 @@ namespace Engines {
 
 namespace NWN {
 
-Door::Door() : _genericType(Aurora::kFieldIDInvalid) {
+Door::Door() : Situated(kObjectTypeDoor), _genericType(Aurora::kFieldIDInvalid) {
 }
 
 Door::~Door() {

@@ -77,6 +77,21 @@ private:
 	friend class CharacterStore;
 };
 
+
+enum ObjectType {
+	kObjectTypeNone         = 0     ,
+	kObjectTypeCreature     = 1 << 0,
+	kObjectTypeItem         = 1 << 1,
+	kObjectTypeTrigger      = 1 << 2,
+	kObjectTypeDoor         = 1 << 3,
+	kObjectTypeAreaOfEffect = 1 << 4,
+	kObjectTypeWaypoint     = 1 << 5,
+	kObjectTypePlaceable    = 1 << 6,
+	kObjectTypeStore        = 1 << 7,
+	kObjectTypeEncounter    = 1 << 8,
+	kObjectTypeAll          = 0x7FFF
+};
+
 enum Script {
 	kScriptAcquireItem       = 0,
 	kScriptUnacquireItem        ,
@@ -205,7 +220,8 @@ enum Alignment {
 	kAlignmentEvil    = 5
 };
 
-static const uint32 kActionInvalid = 0xFFFF;
+static const uint32 kActionInvalid     = 0xFFFF;
+static const uint32 kObjectTypeInvalid = 0x7FFF;
 
 static const uint32 kGenderNone   =   4;
 static const uint32 kRaceInvalid  =  28;

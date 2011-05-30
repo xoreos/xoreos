@@ -50,7 +50,7 @@ namespace Engines {
 
 namespace NWN {
 
-Object::Object() : _ssf(0), _pcSpeaker(0), _area(0) {
+Object::Object(ObjectType type) : _type(type), _ssf(0), _pcSpeaker(0), _area(0) {
 	clear();
 }
 
@@ -58,6 +58,10 @@ Object::~Object() {
 	stopSound();
 
 	delete _ssf;
+}
+
+ObjectType Object::getType() const {
+	return _type;
 }
 
 bool Object::loaded() const {

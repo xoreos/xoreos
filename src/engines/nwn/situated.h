@@ -43,7 +43,7 @@ namespace NWN {
 /** NWN situated object. */
 class Situated : public Object {
 public:
-	Situated();
+	Situated(ObjectType type);
 	~Situated();
 
 	void load(const Aurora::GFFStruct &situated);
