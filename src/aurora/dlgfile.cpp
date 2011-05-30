@@ -130,6 +130,8 @@ void DLGFile::pickReply(uint32 id) {
 	_currentEntry = _entriesPC.begin() + id;
 	_currentReplies.clear();
 
+	runScript(_currentEntry->script);
+
 	if (evaluateEntries(_currentEntry->replies, _currentEntry)) {
 		evaluateReplies(_currentEntry->replies, _currentReplies);
 
