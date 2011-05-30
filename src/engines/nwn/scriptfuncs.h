@@ -162,6 +162,8 @@ private:
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 
+	void getNearestObject(Aurora::NWScript::FunctionContext &ctx);
+
 	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 	void intToFloat(Aurora::NWScript::FunctionContext &ctx);
 	void floatToInt(Aurora::NWScript::FunctionContext &ctx);

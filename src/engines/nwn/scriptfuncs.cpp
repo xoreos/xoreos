@@ -189,6 +189,7 @@ void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Variable defaultInt9(9);
 	Aurora::NWScript::Variable defaultInt18(18);
 	Aurora::NWScript::Variable defaultIntMale(Aurora::kGenderMale);
+	Aurora::NWScript::Variable defaultIntObjectTypeAll(kObjectTypeAll);
 	Aurora::NWScript::Variable defaultFloat1_0(1.0f);
 	Aurora::NWScript::Variable defaultStringEmpty("");
 	Aurora::NWScript::Variable defaultObject0((Aurora::NWScript::Object *) 0);
@@ -424,6 +425,11 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetIsPC", 217,
 			boost::bind(&ScriptFunctions::getIsPC, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
+
+	FunctionMan.registerFunction("GetNearestObject", 227,
+			boost::bind(&ScriptFunctions::getNearestObject, this, _1),
+			createSignature(4, kTypeObject, kTypeInt, kTypeObject, kTypeInt),
+			createDefaults(3, &defaultIntObjectTypeAll, &defaultObject0, &defaultInt1));
 
 	FunctionMan.registerFunction("GetNearestObjectByTag", 229,
 			boost::bind(&ScriptFunctions::getNearestObjectByTag, this, _1),
@@ -1157,6 +1163,41 @@ void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = convertPC(ctx.getParams()[0].getObject()) != 0;
+}
+
+void ScriptFunctions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Object *target = convertObject(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		target = convertObject(ctx.getCaller());
+
+	if (!target)
+		return;
+
+	ObjectType type = (ObjectType) ctx.getParams()[1].getInt();
+	int nth = ctx.getParams()[2].getInt() - 1;
+
+	if (!_module->findObjectInit(_objSearchContext))
+		return;
+
+	std::list<Object *> objects;
+	while (_module->findNextObject(_objSearchContext)) {
+		Object *object = convertObject(_objSearchContext.getObject());
+
+		if (object && (object != target) && (object->getType() == type) &&
+		    (object->getArea() == target->getArea()))
+			objects.push_back(object);
+	}
+
+	objects.sort(ObjectDistanceSort(*target));
+
+	std::list<Object *>::iterator it = objects.begin();
+	for (int n = 0; (n < nth) && (it != objects.end()); ++n)
+		++it;
+
+	if (it != objects.end())
+		ctx.getReturn() = *it;
 }
 
 void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
