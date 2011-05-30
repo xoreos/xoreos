@@ -80,6 +80,8 @@ public:
 	void setCurrentScript(NCSFile *script = 0);
 	NCSFile *getCurrentScript() const;
 
+	const Common::UString &getScriptName() const;
+
 private:
 	Common::UString _name;
 

@@ -28,6 +28,7 @@
  */
 
 #include "aurora/nwscript/functioncontext.h"
+#include "aurora/nwscript/ncsfile.h"
 
 namespace Aurora {
 
@@ -155,6 +156,14 @@ void FunctionContext::setCurrentScript(NCSFile *script) {
 
 NCSFile *FunctionContext::getCurrentScript() const {
 	return _currentScript;
+}
+
+static const Common::UString kStringEmpty;
+const Common::UString &FunctionContext::getScriptName() const {
+	if (!_currentScript)
+		return kStringEmpty;
+
+	return _currentScript->getName();
 }
 
 } // End of namespace NWScript
