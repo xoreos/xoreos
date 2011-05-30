@@ -245,6 +245,8 @@ bool Module::usePC(const CharacterID &c) {
 
 	_pc = *c;
 
+	_pc.clearVariables();
+
 	setPCTokens();
 	TalkMan.setGender((Aurora::Gender) _pc.getGender());
 
@@ -462,6 +464,7 @@ void Module::unloadModule() {
 
 	TwoDAReg.clear();
 
+	clearVariables();
 	clearScripts();
 
 	_tag.clear();
@@ -478,6 +481,7 @@ void Module::unloadPC() {
 
 	removePCTokens();
 
+	_pc.clearVariables();
 	_pc.clear();
 
 	_hasPC = false;
