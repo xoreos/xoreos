@@ -236,6 +236,7 @@ private:
 
 	void isInConversation(Aurora::NWScript::FunctionContext &ctx);
 
+	void doSinglePlayerAutoSave(Aurora::NWScript::FunctionContext &ctx);
 	void getGameDifficulty(Aurora::NWScript::FunctionContext &ctx);
 
 	void getCurrentAction(Aurora::NWScript::FunctionContext &ctx);

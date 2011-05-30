@@ -614,6 +614,9 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::isInConversation, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
 
+	FunctionMan.registerFunction("DoSinglePlayerAutoSave", 512,
+			boost::bind(&ScriptFunctions::doSinglePlayerAutoSave, this, _1),
+			createSignature(1, kTypeVoid));
 	FunctionMan.registerFunction("GetGameDifficulty", 513,
 			boost::bind(&ScriptFunctions::getGameDifficulty, this, _1),
 			createSignature(1, kTypeInt));
@@ -1718,6 +1721,10 @@ void ScriptFunctions::isInConversation(Aurora::NWScript::FunctionContext &ctx) {
 	Object *object = convertObject(ctx.getParams()[0].getObject());
 	if (object)
 		ctx.getReturn() = object->getPCSpeaker() != 0;
+}
+
+void ScriptFunctions::doSinglePlayerAutoSave(Aurora::NWScript::FunctionContext &ctx) {
+	warning("TODO: DoSinglePlayerAutoSave");
 }
 
 void ScriptFunctions::getGameDifficulty(Aurora::NWScript::FunctionContext &ctx) {
