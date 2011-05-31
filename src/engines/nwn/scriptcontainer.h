@@ -53,6 +53,8 @@ public:
 
 	const Common::UString &getScript(Script script) const;
 
+	bool hasScript(Script script) const;
+
 	bool runScript(Script script, Aurora::NWScript::Object *owner = 0,
 	               Aurora::NWScript::Object *triggerer = 0);
 	bool runScript(const Common::UString &script, Aurora::NWScript::Object *owner = 0,

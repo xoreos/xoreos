@@ -110,6 +110,10 @@ const Common::UString &ScriptContainer::getScript(Script script) const {
 	return _scripts[script];
 }
 
+bool ScriptContainer::hasScript(Script script) const {
+	return !getScript(script).empty();
+}
+
 void ScriptContainer::clearScripts() {
 	for (int i = 0; i < kScriptMAX; i++)
 		_scripts[i].clear();

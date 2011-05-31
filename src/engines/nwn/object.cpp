@@ -225,14 +225,30 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice, false, 1.0, pitchVariance);
 }
 
-void Object::click() {
+bool Object::click(Object *triggerer) {
+	// Try the onDialog script first
+	if (hasScript(kScriptDialogue))
+		return runScript(kScriptDialogue, this, triggerer);
+
+	// Next, look we have a generic onClick script
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
+
+	// Lastly, try to start a conversation directly
+	return beginConversation(triggerer);
+}
+
+bool Object::beginConversation(Object *triggerer) {
 	Aurora::NWScript::FunctionContext ctx = FunctionMan.createContext("BeginConversation");
 
-	ctx.setCaller((Aurora::NWScript::Object *) this);
+	ctx.setCaller(this);
+	ctx.setTriggerer(triggerer);
 
 	Aurora::NWScript::setParams(ctx.getParams(), "", (Aurora::NWScript::Object *) 0);
 
 	FunctionMan.call("BeginConversation", ctx);
+
+	return true;
 }
 
 } // End of namespace NWN

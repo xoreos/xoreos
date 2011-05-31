@@ -99,7 +99,7 @@ public:
 
 	virtual void highlight(bool enabled);
 
-	virtual void click();
+	virtual bool click(Object *triggerer = 0);
 
 
 	void stopSound();
@@ -139,6 +139,8 @@ protected:
 	void clear();
 
 	void loadSSF();
+
+	bool beginConversation(Object *triggerer);
 };
 
 } // End of namespace NWN
