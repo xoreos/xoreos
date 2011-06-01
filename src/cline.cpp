@@ -51,12 +51,18 @@ static void displayUsage(const char *name) {
 	std::printf("  -sVOL   --volume_sfx=VOL    Set SFX volume to VOL\n");
 	std::printf("  -oVOL   --volume_voice=VOL  Set voice volume to VOL\n");
 	std::printf("  -iVOL   --volume_video=VOL  Set video volume to VOL\n");
+	std::printf("  -dLVL   --debuglevel=LVL    Set the debug level to LVL\n");
+	std::printf("          --debugchannel=CHAN Set the enabled debug channel(s) to CHAN.\n");
+	std::printf("          --listdebug         List all available debug channels.\n");
 	std::printf("\n");
 	std::printf("FILE: Absolute or relative path to a file.\n");
 	std::printf("DIR:  Absolute or relative path to a directory.\n");
 	std::printf("SIZE: A positive integer.\n");
 	std::printf("BOOL: \"true\", \"yes\" and \"1\" are true, everything else is false.\n");
-	std::printf("VOL:  A double ranging from 0.0 (min) - 1.0 (max).\n\n");
+	std::printf("VOL:  A double ranging from 0.0 (min) - 1.0 (max).\n");
+	std::printf("LVL:  A positive integer.\n");
+	std::printf("CHAN: A comma-separated list of debug channels.\n");
+	std::printf("      Use \"All\" to enable all debug channels.\n\n");
 }
 
 static Common::UString convertShortToLongOption(char shortOption) {
@@ -82,6 +88,8 @@ static Common::UString convertShortToLongOption(char shortOption) {
 		return "volume_voice";
 	if (shortOption == 'i')
 		return "volume_video";
+	if (shortOption == 'd')
+		return "debuglevel";
 
 	return "";
 }
@@ -180,6 +188,11 @@ bool parseCommandline(int argc, char **argv, Common::UString &target, int &code)
 				return false;
 			}
 
+			if (key == "listdebug") {
+				setOption(key, "true");
+				key.clear();
+			}
+
 			continue;
 		}
 
@@ -192,7 +205,7 @@ bool parseCommandline(int argc, char **argv, Common::UString &target, int &code)
 		target = argv[i];
 	}
 
-	if (target.empty() && !ConfigMan.hasKey("path")) {
+	if (target.empty() && !ConfigMan.hasKey("path") && !ConfigMan.getBool("listdebug", false)) {
 		displayUsage(argv[0]);
 		code = 1;
 		return false;
