@@ -530,6 +530,11 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetModule", 242,
 			boost::bind(&ScriptFunctions::getModule, this, _1),
 			createSignature(1, kTypeObject));
+	FunctionMan.registerFunction("CreateObject", 243,
+			boost::bind(&ScriptFunctions::createObject, this, _1),
+			createSignature(6, kTypeObject, kTypeInt, kTypeString,
+			                   kTypeEngineType, kTypeInt, kTypeString),
+			createDefaults(2, &defaultInt0, &defaultStringEmpty));
 
 	FunctionMan.registerFunction("GetName", 253,
 			boost::bind(&ScriptFunctions::getName, this, _1),
@@ -1521,6 +1526,20 @@ void ScriptFunctions::destroyObject(Aurora::NWScript::FunctionContext &ctx) {
 	float delay = ctx.getParams()[1].getFloat();
 
 	warning("TODO: DestroyObject: \"%s\" (%f)", object->getTag().c_str(), delay);
+}
+
+void ScriptFunctions::createObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	ObjectType type = (ObjectType) ctx.getParams()[0].getInt();
+	const Common::UString &templ = ctx.getParams()[1].getString();
+
+	// Location *location = convertLocation(ctx.getParams()[2].getEngineType());
+	// bool useAppearAnimation = ctx.getParams()[3].getInt() != 0;
+
+	const Common::UString &newTag = ctx.getParams()[4].getString();
+
+	warning("TODO: CreateObject: %d: \"%s\" (\"%s\")", type, templ.c_str(), newTag.c_str());
 }
 
 void ScriptFunctions::getModule(Aurora::NWScript::FunctionContext &ctx) {

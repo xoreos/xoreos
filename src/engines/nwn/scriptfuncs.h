@@ -200,6 +200,7 @@ private:
 
 	void destroyObject(Aurora::NWScript::FunctionContext &ctx);
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
+	void createObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void getName(Aurora::NWScript::FunctionContext &ctx);
 	void getLastSpeaker(Aurora::NWScript::FunctionContext &ctx);
