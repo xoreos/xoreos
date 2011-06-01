@@ -156,6 +156,21 @@ void Door::highlight(bool enabled) {
 		_model->drawBound(enabled);
 }
 
+void Door::open(Object *opener) {
+	// TODO: Door::open(): Animate
+	// TODO: Door::open(): Open in direction of the opener
+
+	_state = kStateOpened1;
+	setModelState();
+}
+
+void Door::close(Object *closer) {
+	// TODO: Door::close(): Animate
+
+	_state = kStateClosed;
+	setModelState();
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

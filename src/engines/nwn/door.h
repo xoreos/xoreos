@@ -58,6 +58,11 @@ public:
 
 	void highlight(bool enabled);
 
+	/** The opener object opens this door. */
+	void open(Object *opener);
+	/** The closer object closes this door. */
+	void close(Object *closer);
+
 protected:
 	void clear();
 
