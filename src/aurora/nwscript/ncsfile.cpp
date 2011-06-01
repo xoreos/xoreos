@@ -30,6 +30,7 @@
 #include "common/util.h"
 #include "common/ustring.h"
 #include "common/stream.h"
+#include "common/debug.h"
 
 #include "aurora/error.h"
 #include "aurora/resman.h"
@@ -38,14 +39,13 @@
 #include "aurora/nwscript/object.h"
 #include "aurora/nwscript/functionman.h"
 
+using Common::kDebugScripts;
+
 static const uint32 kNCSTag    = MKID_BE('NCS ');
 static const uint32 kVersion10 = MKID_BE('V1.0');
 
 static const uint32 kScriptObjectSelf    = 0;
 static const uint32 kScriptObjectInvalid = 1;
-
-// 0: Nothing; 1: Opcodes; 2: Opcodes + stack
-#define DEBUG_TRACELEVEL 0
 
 namespace Aurora {
 
@@ -165,25 +165,28 @@ void NCSStack::setBasePtr(int32 pos) {
 }
 
 void NCSStack::print() const {
-	warning(".--- %d ---.", _stackPtr);
+	if (!DebugMan.isEnabled(2, kDebugScripts))
+		return;
+
+	debugC(2, kDebugScripts, ".--- %d ---.", _stackPtr);
 	for (int32 i = _stackPtr; i >= 0; i--) {
 		const Variable &var = at(i);
 
 		if      (var.getType() == kTypeInt)
-			warning("| %d: %d", var.getType(), var.getInt());
+			debugC(2, kDebugScripts, "| %d: %d", var.getType(), var.getInt());
 		else if (var.getType() == kTypeFloat)
-			warning("| %d: %f", var.getType(), var.getFloat());
+			debugC(2, kDebugScripts, "| %d: %f", var.getType(), var.getFloat());
 		else if (var.getType() == kTypeString)
-			warning("| %d: \"%s\"", var.getType(), var.getString().c_str());
+			debugC(2, kDebugScripts, "| %d: \"%s\"", var.getType(), var.getString().c_str());
 		else if (var.getType() == kTypeObject) {
 			if (!var.getObject())
-				warning("| %d: 0", var.getType());
+				debugC(2, kDebugScripts, "| %d: 0", var.getType());
 			else
-				warning("| %d: \"%s\"", var.getType(), var.getObject()->getTag().c_str());
+				debugC(2, kDebugScripts, "| %d: \"%s\"", var.getType(), var.getObject()->getTag().c_str());
 		} else
-			warning("| %d", var.getType());
+			debugC(2, kDebugScripts, "| %d", var.getType());
 	}
-	warning("'--- ---'");
+	debugC(2, kDebugScripts, "'--- ---'");
 }
 
 
@@ -327,9 +330,7 @@ void NCSFile::reset() {
 }
 
 const Variable &NCSFile::run() {
-#if DEBUG_TRACELEVEL > 0
-	warning("=== Running script \"%s\" ===", _name.c_str());
-#endif
+	debugC(1, kDebugScripts, "=== Running script \"%s\" ===", _name.c_str());
 
 	reset();
 
@@ -344,10 +345,9 @@ const Variable &NCSFile::run() {
 	if (!_stack.empty())
 		_return = _stack.top();
 
-#if DEBUG_TRACELEVEL > 0
-	if (_stack.top().getType() == kTypeInt)
-		warning("=> Script\"%s\" returns: %d", _name.c_str(), _stack.top().getInt());
-#endif
+	if (!_stack.empty() && (_stack.top().getType() == kTypeInt))
+		debugC(1, kDebugScripts, "=> Script\"%s\" returns: %d",
+		       _name.c_str(), _stack.top().getInt());
 
 	runAssigned();
 
@@ -396,9 +396,7 @@ void NCSFile::executeStep() {
 	if (opcode >= _opcodeListSize)
 		throw Common::Exception("NCSFile::executeStep(): Illegal instruction 0x%02x", opcode);
 
-#if DEBUG_TRACELEVEL > 0
-	warning("NWScript opcode %s [0x%02X]", _opcodes[opcode].desc, opcode);
-#endif
+	debugC(1, kDebugScripts, "NWScript opcode %s [0x%02X]", _opcodes[opcode].desc, opcode);
 
 	try {
 		(this->*(_opcodes[opcode].proc))(type);
@@ -406,10 +404,9 @@ void NCSFile::executeStep() {
 		throw e;
 	}
 
-#if DEBUG_TRACELEVEL > 1
 	_stack.print();
-	warning("[RETURN: %d]", _returnOffsets.empty() ? -1 : _returnOffsets.top());
-#endif
+	debugC(2, kDebugScripts, "[RETURN: %d]",
+	       _returnOffsets.empty() ? -1 : _returnOffsets.top());
 }
 
 void NCSFile::decompile() {
@@ -525,9 +522,8 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 
 	}
 
-#if DEBUG_TRACELEVEL > 0
-	warning("NWScript engine function %s (%d)", ctx.getName().c_str(), function);
-#endif
+	debugC(1, kDebugScripts, "NWScript engine function %s (%d)",
+	       ctx.getName().c_str(), function);
 	FunctionMan.call(function, ctx);
 
 	Variable &retVal = ctx.getReturn();
