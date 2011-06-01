@@ -56,6 +56,7 @@
 #include "engines/nwn/waypoint.h"
 #include "engines/nwn/door.h"
 #include "engines/nwn/creature.h"
+#include "engines/nwn/location.h"
 
 using Aurora::kObjectIDInvalid;
 
@@ -196,6 +197,10 @@ Area *ScriptFunctions::convertArea(Aurora::NWScript::Object *o) {
 
 Module *ScriptFunctions::convertModule(Aurora::NWScript::Object *o) {
 	return dynamic_cast<Module *>(o);
+}
+
+Location *ScriptFunctions::convertLocation(Aurora::NWScript::EngineType *e) {
+	return dynamic_cast<Location *>(e);
 }
 
 void ScriptFunctions::registerFunctions() {
@@ -718,6 +723,12 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("WriteTimestampedLogEntry", 560,
 			boost::bind(&ScriptFunctions::writeTimestampedLogEntry, this, _1),
 			createSignature(2, kTypeVoid, kTypeString));
+
+	FunctionMan.registerFunction("RetrieveCampaignObject", 603,
+			boost::bind(&ScriptFunctions::retrieveCampaignObject, this, _1),
+			createSignature(6, kTypeObject, kTypeString, kTypeString,
+			                   kTypeEngineType, kTypeObject, kTypeObject),
+			createDefaults(2, &defaultObject0, &defaultObject0));
 
 	FunctionMan.registerFunction("SpeakStringByStrRef", 691,
 			boost::bind(&ScriptFunctions::speakStringByStrRef, this, _1),
@@ -2028,6 +2039,17 @@ void ScriptFunctions::writeTimestampedLogEntry(Aurora::NWScript::FunctionContext
 		(int) t.time_of_day().seconds());
 
 	status("NWN: %s: %s", tstamp.c_str(), ctx.getParams()[0].getString().c_str());
+}
+
+void ScriptFunctions::retrieveCampaignObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	// Location *location = convertLocation(ctx.getParams()[2].getEngineType());
+
+	warning("TODO: RetrieveCampaignObject: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
 }
 
 void ScriptFunctions::speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {

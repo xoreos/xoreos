@@ -52,6 +52,8 @@ class Situated;
 class Door;
 class Creature;
 
+class Location;
+
 class ScriptFunctions {
 public:
 	ScriptFunctions();
@@ -82,6 +84,8 @@ private:
 	Door     *convertDoor    (Aurora::NWScript::Object *o);
 	Creature *convertCreature(Aurora::NWScript::Object *o);
 	Creature *convertPC      (Aurora::NWScript::Object *o);
+
+	Location *convertLocation(Aurora::NWScript::EngineType *e);
 
 	void random(Aurora::NWScript::FunctionContext &ctx);
 	void printString(Aurora::NWScript::FunctionContext &ctx);
@@ -272,6 +276,8 @@ private:
 	void musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx);
 	void musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx);
 	void writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx);
+
+	void retrieveCampaignObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
 
