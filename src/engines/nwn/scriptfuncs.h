@@ -162,6 +162,8 @@ private:
 
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
+	void getListenPatternNumber(Aurora::NWScript::FunctionContext &ctx);
+
 	void getWaypointByTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);

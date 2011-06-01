@@ -428,6 +428,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getTag, this, _1),
 			createSignature(2, kTypeString, kTypeObject));
 
+	FunctionMan.registerFunction("GetListenPatternNumber", 195,
+			boost::bind(&ScriptFunctions::getListenPatternNumber, this, _1),
+			createSignature(1, kTypeInt));
+
 	FunctionMan.registerFunction("GetWaypointByTag", 197,
 			boost::bind(&ScriptFunctions::getWaypointByTag, this, _1),
 			createSignature(2, kTypeObject, kTypeString));
@@ -1178,6 +1182,12 @@ void ScriptFunctions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 	if (object)
 		ctx.getReturn() = object->getTag();
+}
+
+void ScriptFunctions::getListenPatternNumber(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1;
+
+	warning("TODO: GetListenPatternNumber");
 }
 
 void ScriptFunctions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
