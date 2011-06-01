@@ -20,6 +20,8 @@ noinst_HEADERS = system.h \
                  error.h \
                  util.h \
                  strutil.h \
+                 debugman.h \
+                 debug.h \
                  uuid.h \
                  stream.h \
                  streamtokenizer.h \
@@ -50,6 +52,8 @@ libcommon_la_SOURCES = maths.cpp \
                        error.cpp \
                        util.cpp \
                        strutil.cpp \
+                       debugman.cpp \
+                       debug.cpp \
                        uuid.cpp \
                        stream.cpp \
                        streamtokenizer.cpp \
