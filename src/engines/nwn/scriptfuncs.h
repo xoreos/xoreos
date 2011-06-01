@@ -201,6 +201,9 @@ private:
 
 	void setCustomToken(Aurora::NWScript::FunctionContext &ctx);
 
+	void getObjectSeen(Aurora::NWScript::FunctionContext &ctx);
+	void getObjectHeard(Aurora::NWScript::FunctionContext &ctx);
+
 	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
 
 	void getHasSpellEffect(Aurora::NWScript::FunctionContext &ctx);

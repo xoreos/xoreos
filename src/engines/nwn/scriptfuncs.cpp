@@ -534,6 +534,15 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::setCustomToken, this, _1),
 			createSignature(3, kTypeVoid, kTypeInt, kTypeString));
 
+	FunctionMan.registerFunction("GetObjectSeen", 289,
+			boost::bind(&ScriptFunctions::getObjectSeen, this, _1),
+			createSignature(3, kTypeInt, kTypeObject, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("GetObjectHeard", 290,
+			boost::bind(&ScriptFunctions::getObjectHeard, this, _1),
+			createSignature(3, kTypeInt, kTypeObject, kTypeObject),
+			createDefaults(1, &defaultObject0));
+
 	FunctionMan.registerFunction("ActionDoCommand", 294,
 			boost::bind(&ScriptFunctions::actionDoCommand, this, _1),
 			createSignature(2, kTypeVoid, kTypeScriptState));
@@ -1541,6 +1550,36 @@ void ScriptFunctions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString tokenName = Common::UString::sprintf("<CUSTOM%d>", tokenNumber);
 
 	TokenMan.set(tokenName, tokenValue);
+}
+
+void ScriptFunctions::getObjectSeen(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Object *target = convertObject(ctx.getParams()[0].getObject());
+	Object *source = convertObject(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		source = convertObject(ctx.getCaller());
+
+	if (!target || !source)
+		return;
+
+	warning("TODO: GetObjectSeen: \"%s\" by \"%s\"", target->getTag().c_str(),
+			source->getTag().c_str());
+}
+
+void ScriptFunctions::getObjectHeard(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Object *target = convertObject(ctx.getParams()[0].getObject());
+	Object *source = convertObject(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		source = convertObject(ctx.getCaller());
+
+	if (!target || !source)
+		return;
+
+	warning("TODO: GetObjectHeard: \"%s\" by \"%s\"", target->getTag().c_str(),
+			source->getTag().c_str());
 }
 
 void ScriptFunctions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {
