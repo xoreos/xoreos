@@ -108,7 +108,8 @@ void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
 	if (column == Aurora::kFieldIDInvalid)
 		column = twoda.headerToColumn("Model");
 
-	_modelName = twoda.getRow(id).getString(column);
+	_modelName    = twoda.getRow(id).getString(column);
+	_soundAppType = twoda.getRow(_appearanceID).getInt("SoundAppType");
 }
 
 void Door::setModelState() {
@@ -179,6 +180,7 @@ bool Door::open(Object *opener) {
 		return true;
 
 	if (isLocked()) {
+		playSound(_soundLocked);
 		runScript(kScriptFailToOpen, this, opener);
 		return false;
 	}
@@ -186,6 +188,7 @@ bool Door::open(Object *opener) {
 	_state = kStateOpened1;
 	setModelState();
 
+	playSound(_soundOpened);
 	runScript(kScriptOpen, this, opener);
 	return true;
 }
@@ -199,6 +202,7 @@ bool Door::close(Object *closer) {
 	_state = kStateClosed;
 	setModelState();
 
+	playSound(_soundClosed);
 	runScript(kScriptClosed, this, closer);
 	return true;
 }

@@ -62,6 +62,14 @@ void Situated::clear() {
 
 	_locked = false;
 
+	_soundAppType = Aurora::kFieldIDInvalid;
+
+	_soundOpened.clear();
+	_soundClosed.clear();
+	_soundDestroyed.clear();
+	_soundUsed.clear();
+	_soundLocked.clear();
+
 	_modelName.clear();
 
 	delete _model;
@@ -130,6 +138,7 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 		throw Common::Exception("Situated object without an appearance");
 
 	loadAppearance();
+	loadSounds();
 
 
 	// Model
@@ -220,6 +229,19 @@ void Situated::loadPortrait(const Aurora::GFFStruct &gff) {
 	}
 
 	_portrait = gff.getString("Portrait", _portrait);
+}
+
+void Situated::loadSounds() {
+	if (_soundAppType == Aurora::kFieldIDInvalid)
+		return;
+
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeableobjsnds");
+
+	_soundOpened    = twoda.getRow(_soundAppType).getString("Opened");
+	_soundClosed    = twoda.getRow(_soundAppType).getString("Closed");
+	_soundDestroyed = twoda.getRow(_soundAppType).getString("Destroyed");
+	_soundUsed      = twoda.getRow(_soundAppType).getString("Used");
+	_soundLocked    = twoda.getRow(_soundAppType).getString("Locked");
 }
 
 } // End of namespace NWN

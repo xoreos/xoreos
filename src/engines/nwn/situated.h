@@ -66,6 +66,14 @@ protected:
 
 	bool _locked;
 
+	uint32 _soundAppType;
+
+	Common::UString _soundOpened;
+	Common::UString _soundClosed;
+	Common::UString _soundDestroyed;
+	Common::UString _soundUsed;
+	Common::UString _soundLocked;
+
 	Graphics::Aurora::Model *_model;
 
 
@@ -80,6 +88,7 @@ protected:
 private:
 	void loadProperties(const Aurora::GFFStruct &gff);
 	void loadPortrait(const Aurora::GFFStruct &gff);
+	void loadSounds();
 };
 
 } // End of namespace NWN
