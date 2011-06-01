@@ -775,6 +775,8 @@ void ScriptFunctions::clearAllActions(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: /Action/
+
 	Object *object = convertObject(ctx.getCaller());
 	Object *moveTo = convertObject(ctx.getParams()[0].getObject());
 
@@ -918,6 +920,8 @@ void ScriptFunctions::getIsObjectValid(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::actionOpenDoor(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: /Action/
+
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 	if (!object)
 		return;
@@ -926,6 +930,8 @@ void ScriptFunctions::actionOpenDoor(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: /Action/
+
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 	if (!object)
 		return;
