@@ -198,6 +198,8 @@ private:
 
 	void setCustomToken(Aurora::NWScript::FunctionContext &ctx);
 
+	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
+
 	void getHasSpellEffect(Aurora::NWScript::FunctionContext &ctx);
 
 	void getSkillRank(Aurora::NWScript::FunctionContext &ctx);

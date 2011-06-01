@@ -525,6 +525,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::setCustomToken, this, _1),
 			createSignature(3, kTypeVoid, kTypeInt, kTypeString));
 
+	FunctionMan.registerFunction("ActionDoCommand", 294,
+			boost::bind(&ScriptFunctions::actionDoCommand, this, _1),
+			createSignature(2, kTypeVoid, kTypeScriptState));
+
 	FunctionMan.registerFunction("GetHasSpellEffect", 304,
 			boost::bind(&ScriptFunctions::getHasSpellEffect, this, _1),
 			createSignature(3, kTypeInt, kTypeInt, kTypeObject),
@@ -1494,6 +1498,18 @@ void ScriptFunctions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString tokenName = Common::UString::sprintf("<CUSTOM%d>", tokenNumber);
 
 	TokenMan.set(tokenName, tokenValue);
+}
+
+void ScriptFunctions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: /Action/
+
+	Aurora::NWScript::NCSFile *script = ctx.getCurrentScript();
+	if (!script)
+		throw Common::Exception("ScriptFunctions::actionDoCommand(): Script needed");
+
+	const Aurora::NWScript::ScriptState &state = ctx.getParams()[0].getScriptState();
+
+	script->assign(state, ctx.getCaller(), ctx.getTriggerer());
 }
 
 void ScriptFunctions::getHasSpellEffect(Aurora::NWScript::FunctionContext &ctx) {
