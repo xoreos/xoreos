@@ -442,6 +442,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getIsDead, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
 
+	FunctionMan.registerFunction("SetFacingPoint", 143,
+			boost::bind(&ScriptFunctions::setFacingPoint, this, _1),
+			createSignature(2, kTypeVoid, kTypeVector));
+
 	FunctionMan.registerFunction("SetCommandable", 162,
 			boost::bind(&ScriptFunctions::setCommandable, this, _1),
 			createSignature(3, kTypeVoid, kTypeInt, kTypeObject),
@@ -1239,6 +1243,17 @@ void ScriptFunctions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	ctx.getReturn() = creature->getCurrentHP() <= 0;
+}
+
+void ScriptFunctions::setFacingPoint(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	float x, y, z;
+	ctx.getParams()[0].getVector(x, y, z);
+
+	warning("TODO: SetFacingPoint: \"%s\" to %f, %f, %f", object->getTag().c_str(), x, y, z);
 }
 
 void ScriptFunctions::setCommandable(Aurora::NWScript::FunctionContext &ctx) {

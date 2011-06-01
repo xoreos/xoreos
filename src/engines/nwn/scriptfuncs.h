@@ -163,6 +163,8 @@ private:
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
 
+	void setFacingPoint(Aurora::NWScript::FunctionContext &ctx);
+
 	void setCommandable(Aurora::NWScript::FunctionContext &ctx);
 	void getCommandable(Aurora::NWScript::FunctionContext &ctx);
 
