@@ -59,7 +59,8 @@ public:
 	Variable(float value);
 	Variable(const Common::UString &value);
 	Variable(Object *value);
-	Variable(EngineType *value);
+	Variable(const EngineType *value);
+	Variable(const EngineType &value);
 	Variable(float x, float y, float z);
 	Variable(const Variable &var);
 	~Variable();
@@ -72,7 +73,8 @@ public:
 	Variable &operator=(float value);
 	Variable &operator=(const Common::UString &value);
 	Variable &operator=(Object *value);
-	Variable &operator=(EngineType *value);
+	Variable &operator=(const EngineType *value);
+	Variable &operator=(const EngineType &value);
 
 	bool operator==(const Variable &var) const;
 	bool operator!=(const Variable &var) const;

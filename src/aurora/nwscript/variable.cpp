@@ -64,7 +64,13 @@ Variable::Variable(Object *value) : _type(kTypeVoid) {
 	*this = value;
 }
 
-Variable::Variable(EngineType *value) : _type(kTypeEngineType) {
+Variable::Variable(const EngineType *value) : _type(kTypeEngineType) {
+	setType(kTypeEngineType);
+
+	*this = value;
+}
+
+Variable::Variable(const EngineType &value) : _type(kTypeEngineType) {
 	setType(kTypeEngineType);
 
 	*this = value;
@@ -188,7 +194,7 @@ Variable &Variable::operator=(Object *value) {
 	return *this;
 }
 
-Variable &Variable::operator=(EngineType *value) {
+Variable &Variable::operator=(const EngineType *value) {
 	if (_type != kTypeEngineType)
 		throw Common::Exception("Can't assign an engine-type value to a non-engine-type variable");
 
@@ -197,6 +203,12 @@ Variable &Variable::operator=(EngineType *value) {
 	delete _value._engineType;
 
 	_value._engineType = engineType;
+
+	return *this;
+}
+
+Variable &Variable::operator=(const EngineType &value) {
+	*this = &value;
 
 	return *this;
 }
