@@ -472,6 +472,11 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getTag, this, _1),
 			createSignature(2, kTypeString, kTypeObject));
 
+	FunctionMan.registerFunction("EffectVisualEffect", 180,
+			boost::bind(&ScriptFunctions::effectVisualEffect, this, _1),
+			createSignature(3, kTypeEngineType, kTypeInt, kTypeInt),
+			createDefaults(1, &defaultInt0));
+
 	FunctionMan.registerFunction("GetListenPatternNumber", 195,
 			boost::bind(&ScriptFunctions::getListenPatternNumber, this, _1),
 			createSignature(1, kTypeInt));
@@ -1423,6 +1428,15 @@ void ScriptFunctions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 	if (object)
 		ctx.getReturn() = object->getTag();
+}
+
+void ScriptFunctions::effectVisualEffect(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::EngineType *) 0;
+
+	int  effectID = ctx.getParams()[0].getInt();
+	bool miss     = ctx.getParams()[1].getInt() != 0;
+
+	warning("TODO: EffectVisualEffect: %d, %d", effectID, miss);
 }
 
 void ScriptFunctions::getListenPatternNumber(Aurora::NWScript::FunctionContext &ctx) {

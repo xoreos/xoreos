@@ -177,6 +177,8 @@ private:
 
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
+	void effectVisualEffect(Aurora::NWScript::FunctionContext &ctx);
+
 	void getListenPatternNumber(Aurora::NWScript::FunctionContext &ctx);
 
 	void getWaypointByTag(Aurora::NWScript::FunctionContext &ctx);
