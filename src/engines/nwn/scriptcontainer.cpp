@@ -95,7 +95,8 @@ static const ScriptName kScriptNames[] = {
 	{kScriptBlocked          , "ScriptOnBlocked" },
 	{kScriptNotice           , "ScriptOnNotice"  },
 	{kScriptRested           , "ScriptRested"    },
-	{kScriptSpawn            , "ScriptSpawn"     }
+	{kScriptSpawn            , "ScriptSpawn"     },
+	{kScriptFailToOpen       , "OnFailToOpen"    }
 };
 
 ScriptContainer::ScriptContainer() {

@@ -178,8 +178,10 @@ bool Door::open(Object *opener) {
 	if (isOpen())
 		return true;
 
-	if (isLocked())
+	if (isLocked()) {
+		runScript(kScriptFailToOpen, this, opener);
 		return false;
+	}
 
 	_state = kStateOpened1;
 	setModelState();

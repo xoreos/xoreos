@@ -129,6 +129,7 @@ enum Script {
 	kScriptNotice               ,
 	kScriptRested               ,
 	kScriptSpawn                ,
+	kScriptFailToOpen           ,
 	kScriptMAX
 };
 
