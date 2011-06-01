@@ -500,6 +500,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getLocation, this, _1),
 			createSignature(2, kTypeEngineType, kTypeObject));
 
+	FunctionMan.registerFunction("Location", 215,
+			boost::bind(&ScriptFunctions::location, this, _1),
+			createSignature(4, kTypeEngineType, kTypeObject, kTypeVector, kTypeFloat));
+
 	FunctionMan.registerFunction("GetIsPC", 217,
 			boost::bind(&ScriptFunctions::getIsPC, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -1514,6 +1518,19 @@ void ScriptFunctions::getLocation(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = object->getLocation();
 }
 
+void ScriptFunctions::location(Aurora::NWScript::FunctionContext &ctx) {
+	Location loc;
+
+	loc.setArea  (ctx.getParams()[0].getObject());
+	loc.setFacing(ctx.getParams()[2].getFloat());
+
+	float x, y, z;
+	ctx.getParams()[1].getVector(x, y, z);
+	loc.setPosition(x, y, z);
+
+	ctx.getReturn() = loc;
+}
+
 void ScriptFunctions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = convertPC(ctx.getParams()[0].getObject()) != 0;
 }
@@ -1645,7 +1662,7 @@ void ScriptFunctions::createObject(Aurora::NWScript::FunctionContext &ctx) {
 	ObjectType type = (ObjectType) ctx.getParams()[0].getInt();
 	const Common::UString &templ = ctx.getParams()[1].getString();
 
-	// Location *location = convertLocation(ctx.getParams()[2].getEngineType());
+	// Location *loc = convertLocation(ctx.getParams()[2].getEngineType());
 	// bool useAppearAnimation = ctx.getParams()[3].getInt() != 0;
 
 	const Common::UString &newTag = ctx.getParams()[4].getString();
@@ -2281,7 +2298,7 @@ void ScriptFunctions::setCampaignLocation(Aurora::NWScript::FunctionContext &ctx
 	const Common::UString &dbName  = ctx.getParams()[0].getString();
 	const Common::UString &varName = ctx.getParams()[1].getString();
 
-	// Location *location = convertLocation(ctx.getParams()[2].getEngineType());
+	// Location *loc = convertLocation(ctx.getParams()[2].getEngineType());
 
 	warning("TODO: SetCampaignLocation: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
 }
@@ -2374,7 +2391,7 @@ void ScriptFunctions::retrieveCampaignObject(Aurora::NWScript::FunctionContext &
 	const Common::UString &dbName  = ctx.getParams()[0].getString();
 	const Common::UString &varName = ctx.getParams()[1].getString();
 
-	// Location *location = convertLocation(ctx.getParams()[2].getEngineType());
+	// Location *loc = convertLocation(ctx.getParams()[2].getEngineType());
 
 	warning("TODO: RetrieveCampaignObject: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
 }
