@@ -775,6 +775,25 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetMaxHenchmen", 747,
 			boost::bind(&ScriptFunctions::getMaxHenchmen, this, _1),
 			createSignature(1, kTypeInt));
+
+	FunctionMan.registerFunction("GetStoreGold", 759,
+			boost::bind(&ScriptFunctions::getStoreGold, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+	FunctionMan.registerFunction("SetStoreGold", 760,
+			boost::bind(&ScriptFunctions::setStoreGold, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeInt));
+	FunctionMan.registerFunction("GetStoreMaxBuyPrice", 761,
+			boost::bind(&ScriptFunctions::getStoreMaxBuyPrice, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+	FunctionMan.registerFunction("SetStoreMaxBuyPrice", 762,
+			boost::bind(&ScriptFunctions::setStoreMaxBuyPrice, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeInt));
+	FunctionMan.registerFunction("GetStoreIdentifyCost", 763,
+			boost::bind(&ScriptFunctions::getStoreIdentifyCost, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
+	FunctionMan.registerFunction("SetStoreIdentifyCost", 764,
+			boost::bind(&ScriptFunctions::setStoreIdentifyCost, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeInt));
 }
 
 void ScriptFunctions::random(Aurora::NWScript::FunctionContext &ctx) {
@@ -2184,6 +2203,66 @@ void ScriptFunctions::setMaxHenchmen(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::getMaxHenchmen(Aurora::NWScript::FunctionContext &ctx) {
 	warning("TODO: GetMaxHenchmen");
 	ctx.getReturn() = 0;
+}
+
+void ScriptFunctions::getStoreGold(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	warning("TODO: GetStoreGold: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::setStoreGold(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	int32 gold = ctx.getParams()[1].getInt();
+
+	warning("TODO: SetStoreGold: \"%s\", %d", object->getTag().c_str(), gold);
+}
+
+void ScriptFunctions::getStoreMaxBuyPrice(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	warning("TODO: GetStoreMaxBuyPrice: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::setStoreMaxBuyPrice(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	int32 gold = ctx.getParams()[1].getInt();
+
+	warning("TODO: GetStoreMaxBuyPrice: \"%s\", %d", object->getTag().c_str(), gold);
+}
+
+void ScriptFunctions::getStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	warning("TODO: GetStoreIdentifyCost: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::setStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	int32 gold = ctx.getParams()[1].getInt();
+
+	warning("TODO: SetStoreIdentifyCost: \"%s\", %d", object->getTag().c_str(), gold);
 }
 
 } // End of namespace NWN

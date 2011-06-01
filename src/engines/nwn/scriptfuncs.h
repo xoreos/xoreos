@@ -294,6 +294,13 @@ private:
 
 	void setMaxHenchmen(Aurora::NWScript::FunctionContext &ctx);
 	void getMaxHenchmen(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStoreGold(Aurora::NWScript::FunctionContext &ctx);
+	void setStoreGold(Aurora::NWScript::FunctionContext &ctx);
+	void getStoreMaxBuyPrice(Aurora::NWScript::FunctionContext &ctx);
+	void setStoreMaxBuyPrice(Aurora::NWScript::FunctionContext &ctx);
+	void getStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx);
+	void setStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx);
 };
 
 } // End of namespace NWN
