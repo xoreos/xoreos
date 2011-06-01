@@ -303,6 +303,10 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::actionCloseDoor, this, _1),
 			createSignature(2, kTypeVoid, kTypeObject));
 
+	FunctionMan.registerFunction("PlaySound", 46,
+			boost::bind(&ScriptFunctions::playSound, this, _1),
+			createSignature(2, kTypeVoid, kTypeString));
+
 	FunctionMan.registerFunction("GetLocalInt", 51,
 			boost::bind(&ScriptFunctions::getLocalInt, this, _1),
 			createSignature(3, kTypeInt, kTypeObject, kTypeString));
@@ -1129,6 +1133,14 @@ void ScriptFunctions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	door->close(convertObject(ctx.getCaller()));
+}
+
+void ScriptFunctions::playSound(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	object->playSound(ctx.getParams()[0].getString());
 }
 
 void ScriptFunctions::getLocalInt(Aurora::NWScript::FunctionContext &ctx) {

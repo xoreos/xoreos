@@ -116,6 +116,8 @@ private:
 	void actionOpenDoor(Aurora::NWScript::FunctionContext &ctx);
 	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
 
+	void playSound(Aurora::NWScript::FunctionContext &ctx);
+
 	void getLocalInt(Aurora::NWScript::FunctionContext &ctx);
 	void getLocalFloat(Aurora::NWScript::FunctionContext &ctx);
 	void getLocalString(Aurora::NWScript::FunctionContext &ctx);
