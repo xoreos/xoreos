@@ -33,9 +33,9 @@
 #include "common/ustring.h"
 #include "common/thread.h"
 
-#include "aurora/types.h"
-
 namespace Engines {
+
+class GameInstance;
 
 /** The game thread, running all game logic. */
 class GameThread : public Common::Thread {
@@ -48,9 +48,7 @@ public:
 	void run();
 
 private:
-	Common::UString _baseDir;
-	Aurora::GameID _gameID;
-	Aurora::Platform _platform;
+	GameInstance *_game;
 
 	void threadMethod();
 };

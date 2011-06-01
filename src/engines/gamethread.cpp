@@ -31,8 +31,6 @@
 #include "common/error.h"
 #include "common/configman.h"
 
-#include "../aurora/util.h"
-
 #include "engines/gamethread.h"
 #include "engines/enginemanager.h"
 
@@ -40,34 +38,33 @@
 
 namespace Engines {
 
-GameThread::GameThread() {
-	_gameID = Aurora::kGameIDUnknown;
-	_platform = Aurora::kPlatformUnknown;
+GameThread::GameThread() : _game(0) {
 }
 
 GameThread::~GameThread() {
+	delete _game;
 }
 
 void GameThread::init(const Common::UString &baseDir) {
 	// Detecting the game
 
-	_baseDir = baseDir;
+	delete _game;
+	_game = new GameInstance(baseDir);
 
-	_gameID = EngineMan.probeGameID(_baseDir, _platform);
-
-	if (_gameID == Aurora::kGameIDUnknown)
-		throw Common::Exception("Unable to detect the game ID");
+	if (!EngineMan.probeGame(*_game))
+		throw Common::Exception("Unable to detect the game");
 
 	// Get the game description from the config, or alternatively
 	// construct one from the game name and platform.
 	Common::UString description;
 	if (!ConfigMan.getKey("description", description))
-		description = EngineMan.getGameName(_gameID) + " (" +
-		              Aurora::getPlatformDescription(_platform) + ")";
+		description = EngineMan.getGameName(*_game, true);
 
 	GfxMan.setWindowTitle(Common::UString(PACKAGE_STRING " -- ") + description);
 
-	status("Detected game ID %d -- %s", _gameID, EngineMan.getGameName(_gameID).c_str());
+	status("Detected game \"%s\"", EngineMan.getGameName(*_game, false).c_str());
+
+	EngineMan.createEngine(*_game);
 }
 
 void GameThread::run() {
@@ -76,11 +73,17 @@ void GameThread::run() {
 }
 
 void GameThread::threadMethod() {
+	if (!_game)
+		return;
+
 	try {
-		EngineMan.run(_gameID, _baseDir, _platform);
+		EngineMan.run(*_game);
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 	}
+
+	delete _game;
+	_game = 0;
 }
 
 } // End of namespace Engines

@@ -32,12 +32,14 @@
 #include "common/file.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
+#include "common/debugman.h"
 #include "common/configman.h"
 
 #include "aurora/error.h"
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 #include "aurora/2dareg.h"
+#include "../aurora/util.h"
 
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/fontman.h"
@@ -66,6 +68,16 @@ DECLARE_SINGLETON(Engines::EngineManager)
 
 namespace Engines {
 
+GameInstance::GameInstance(const Common::UString &target) : _target(target),
+	_gameID(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnknown), _engine(0) {
+
+}
+
+GameInstance::~GameInstance() {
+	delete _engine;
+}
+
+
 static const EngineProbe *kProbes[] = {
 	&NWN::kNWNEngineProbe,
 	&NWN2::kNWN2EngineProbe,
@@ -80,92 +92,122 @@ static const EngineProbe *kProbes[] = {
 	&Jade::kJadeEngineProbe
 };
 
-Aurora::GameID EngineManager::probeGameID(const Common::UString &target, Aurora::Platform &platform) const {
-	if (Common::FilePath::isDirectory(target)) {
+bool EngineManager::probeGame(GameInstance &game) const {
+	game._gameID   = Aurora::kGameIDUnknown;
+	game._platform = Aurora::kPlatformUnknown;
+
+	if (Common::FilePath::isDirectory(game._target)) {
 		// Try to probe from that directory
 
 		Common::FileList rootFiles;
 
-		if (!rootFiles.addDirectory(target))
+		if (!rootFiles.addDirectory(game._target))
 			// Fatal: can't read the directory
-			return Aurora::kGameIDUnknown;
+			return false;
 
-		return probeGameID(target, rootFiles, platform);
+		return probeGame(game, rootFiles);
 	}
 
-	if (Common::FilePath::isRegularFile(target)) {
+	if (Common::FilePath::isRegularFile(game._target)) {
 		// Try to probe from that file
 
 		Common::File file;
-		if (file.open(target))
-			return probeGameID(file, platform);
+		if (file.open(game._target))
+			return probeGame(game, file);
 	}
 
-	return Aurora::kGameIDUnknown;
+	return false;
 }
 
-Aurora::GameID EngineManager::probeGameID(const Common::UString &directory, const Common::FileList &rootFiles, Aurora::Platform &platform) const {
+bool EngineManager::probeGame(GameInstance &game, const Common::FileList &rootFiles) const {
 	// Try to find the first engine able to handle the directory's data
-	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
-		if (kProbes[i]->probe(directory, rootFiles)) {
-			// Found one, return the game ID
-			platform = kProbes[i]->getPlatform();
-			return kProbes[i]->getGameID();
+	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
+
+		if (kProbes[i]->probe(game._target, rootFiles)) {
+			// Found one
+
+			game._gameID   = kProbes[i]->getGameID();
+			game._platform = kProbes[i]->getPlatform();
+
+			return true;
 		}
 
+	}
+
 	// None found
-	return Aurora::kGameIDUnknown;
+	return false;
 }
 
-Aurora::GameID EngineManager::probeGameID(Common::SeekableReadStream &stream, Aurora::Platform &platform) const {
-	// Try to find the first engine able to handle the directory's data
-	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
+bool EngineManager::probeGame(GameInstance &game, Common::SeekableReadStream &stream) const {
+	// Try to find the first engine able to handle the stream's data
+	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
+
 		if (kProbes[i]->probe(stream)) {
-			// Found one, return the game ID
-			platform = kProbes[i]->getPlatform();
-			return kProbes[i]->getGameID();
+			// Found one
+
+			game._gameID   = kProbes[i]->getGameID();
+			game._platform = kProbes[i]->getPlatform();
+
+			return true;
 		}
 
+	}
+
 	// None found
-	return Aurora::kGameIDUnknown;
+	return false;
 }
 
-static const Common::UString kEmptyString;
-const Common::UString &EngineManager::getGameName(Aurora::GameID gameID) const {
-	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
-		if (kProbes[i]->getGameID() == gameID)
-			return kProbes[i]->getGameName();
+Common::UString EngineManager::getGameName(GameInstance &game, bool platform) const {
+	Common::UString gameName;
 
-	return kEmptyString;
+	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
+		if (kProbes[i]->getGameID() == game._gameID) {
+			gameName = kProbes[i]->getGameName();
+
+			if (platform)
+				gameName += " (" + Aurora::getPlatformDescription(game._platform) + ")";
+
+			break;
+		}
+	}
+
+	return gameName;
 }
 
-void EngineManager::run(Aurora::GameID gameID, const Common::UString &target, Aurora::Platform platform) const {
-	// Try to find the first engine able to handle that game ID
-	Engine *engine = 0;
-	for (int i = 0; i < ARRAYSIZE(kProbes); i++)
-		if (kProbes[i]->getGameID() == gameID && kProbes[i]->getPlatform() == platform)
-			engine = kProbes[i]->createEngine();
+void EngineManager::createEngine(GameInstance &game) const {
+	if (game._engine)
+		return;
 
-	if (!engine)
-		// None found
-		throw Common::Exception("No engine handling GameID %d found", gameID);
+	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
+		if ((kProbes[i]->getGameID()   == game._gameID) &&
+		    (kProbes[i]->getPlatform() == game._platform)) {
 
+			game._engine = kProbes[i]->createEngine();
+			break;
+		}
+	}
+
+	if (!game._engine)
+		throw Common::Exception("Failed to create the engine for GameID %d", game._gameID);
+}
+
+void EngineManager::run(GameInstance &game) const {
 	try {
-		engine->run(target);
+		createEngine(game);
+
+		game._engine->run(game._target);
 		EventMan.requestQuit();
 
-		delete engine;
 		// Clean up after the engine
-		cleanup();
+		cleanup(game);
 
 		EventMan.doQuit();
 
 	} catch(...) {
 		EventMan.requestQuit();
 
-		delete engine;
 		// Clean up after the engine
-		cleanup();
+		cleanup(game);
 
 		EventMan.doQuit();
 
@@ -174,8 +216,13 @@ void EngineManager::run(Aurora::GameID gameID, const Common::UString &target, Au
 
 }
 
-void EngineManager::cleanup() const {
+void EngineManager::cleanup(GameInstance &game) const {
 	try {
+		delete game._engine;
+		game._engine = 0;
+
+		DebugMan.clearEngineChannels();
+
 		unregisterModelLoader();
 
 		RequestMan.sync();

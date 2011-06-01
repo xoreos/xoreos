@@ -30,40 +30,60 @@
 #ifndef ENGINES_ENGINEMANAGER_H
 #define ENGINES_ENGINEMANAGER_H
 
+#include "common/ustring.h"
 #include "common/singleton.h"
 
 #include "aurora/types.h"
 
 namespace Common {
-	class UString;
 	class SeekableReadStream;
 	class FileList;
 }
 
 namespace Engines {
 
+class Engine;
+
+class GameInstance {
+public:
+	GameInstance(const Common::UString &target);
+	~GameInstance();
+
+private:
+	Common::UString _target;
+
+	Aurora::GameID   _gameID;
+	Aurora::Platform _platform;
+
+	Engine *_engine;
+
+	friend class EngineManager;
+};
+
 /** The global engine manager. */
 class EngineManager : public Common::Singleton<EngineManager> {
 public:
-	/** Find an engine capable of running the game found in the directory or file.
+	/** Find an engine capable of running the specified game.
 	 *
-	 *  @param  target The directory or file containing game data.
-	 *  @param  platform The platform found
-	 *  @return A GameID of the game found in that directory or file, or kGameIDUnknown.
+	 *  @param game The game game containing the target file or directory.
+	 *  @return true if an engine capable of running the game was found.
 	 */
-	Aurora::GameID probeGameID(const Common::UString &target, Aurora::Platform &platform) const;
+	bool probeGame(GameInstance &game) const;
 
-	/** Return the full game name to that game ID. */
-	const Common::UString &getGameName(Aurora::GameID gameID) const;
+	/** Create and initialize the specified game's engine. */
+	void createEngine(GameInstance &game) const;
 
-	/** Run the specified game found in that directory or file. */
-	void run(Aurora::GameID gameID, const Common::UString &target, Aurora::Platform platform) const;
+	/** Run the specified game. */
+	void run(GameInstance &game) const;
+
+	/** Return the full game name to that game. */
+	Common::UString getGameName(GameInstance &game, bool platform = false) const;
 
 private:
-	Aurora::GameID probeGameID(const Common::UString &directory, const Common::FileList &rootFiles, Aurora::Platform &platform) const;
-	Aurora::GameID probeGameID(Common::SeekableReadStream &stream, Aurora::Platform &platform) const;
+	bool probeGame(GameInstance &game, const Common::FileList &rootFiles) const;
+	bool probeGame(GameInstance &game, Common::SeekableReadStream &stream) const;
 
-	void cleanup() const;
+	void cleanup(GameInstance &game) const;
 };
 
 } // End of namespace Engines
