@@ -667,6 +667,10 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(3, kTypeVoid, kTypeInt, kTypeInt),
 			createDefaults(1, &defaultInt0));
 
+	FunctionMan.registerFunction("BlackScreen", 698,
+			boost::bind(&ScriptFunctions::blackScreen, this, _1),
+			createSignature(2, kTypeVoid, kTypeObject, kTypeInt));
+
 	FunctionMan.registerFunction("Get2DAString", 710,
 			boost::bind(&ScriptFunctions::get2DAString, this, _1),
 			createSignature(4, kTypeString, kTypeString, kTypeString, kTypeInt));
@@ -1848,6 +1852,10 @@ void ScriptFunctions::speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx
 	// uint32 volume = (uint32) ctx.getParams()[0].getInt();
 
 	status("%s: \"%s\"", object->getName().c_str(), TalkMan.getString(strRef).c_str());
+}
+
+void ScriptFunctions::blackScreen(Aurora::NWScript::FunctionContext &ctx) {
+	warning("TODO: BlackScreen");
 }
 
 void ScriptFunctions::get2DAString(Aurora::NWScript::FunctionContext &ctx) {

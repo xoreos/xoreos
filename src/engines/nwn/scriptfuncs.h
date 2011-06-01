@@ -258,6 +258,8 @@ private:
 
 	void speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
 
+	void blackScreen(Aurora::NWScript::FunctionContext &ctx);
+
 	void get2DAString(Aurora::NWScript::FunctionContext &ctx);
 
 	void playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx);
