@@ -157,6 +157,7 @@ private:
 	void d20(Aurora::NWScript::FunctionContext &ctx);
 	void d100(Aurora::NWScript::FunctionContext &ctx);
 
+	void getObjectType(Aurora::NWScript::FunctionContext &ctx);
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
 
 	void getLawChaosValue(Aurora::NWScript::FunctionContext &ctx);

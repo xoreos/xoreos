@@ -422,6 +422,9 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(2, kTypeInt, kTypeInt),
 			createDefaults(1, &defaultInt1));
 
+	FunctionMan.registerFunction("GetObjectType", 106,
+			boost::bind(&ScriptFunctions::getObjectType, this, _1),
+			createSignature(2, kTypeInt, kTypeObject));
 	FunctionMan.registerFunction("GetRacialType", 107,
 			boost::bind(&ScriptFunctions::getRacialType, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -1203,6 +1206,16 @@ void ScriptFunctions::d20(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::d100(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = random(1, 100, ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::getObjectType(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) kObjectTypeNone;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	ctx.getReturn() = (int32) object->getType();
 }
 
 void ScriptFunctions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
