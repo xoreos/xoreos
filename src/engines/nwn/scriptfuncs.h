@@ -224,6 +224,8 @@ private:
 
 	void setAssociateListenPatterns(Aurora::NWScript::FunctionContext &ctx);
 
+	void getFirstItemInInventory(Aurora::NWScript::FunctionContext &ctx);
+	void getNextItemInInventory(Aurora::NWScript::FunctionContext &ctx);
 	void getClassByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByClass(Aurora::NWScript::FunctionContext &ctx);
