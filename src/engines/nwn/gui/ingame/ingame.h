@@ -81,7 +81,7 @@ public:
 	bool hasRunningConversation() const;
 
 	/** Start a conversation. */
-	void startConversation(const Common::UString &conv, Creature &pc, Object &obj);
+	bool startConversation(const Common::UString &conv, Creature &pc, Object &obj);
 	/** Stop a conversation. */
 	void stopConversation();
 

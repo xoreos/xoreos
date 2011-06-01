@@ -27,6 +27,8 @@
  *  The NWN ingame GUI elements.
  */
 
+#include "common/error.h"
+
 #include "engines/nwn/creature.h"
 
 #include "engines/nwn/gui/ingame/ingame.h"
@@ -183,15 +185,26 @@ bool IngameGUI::hasRunningConversation() const {
 	return _dialog != 0;
 }
 
-void IngameGUI::startConversation(const Common::UString &conv, Creature &pc, Object &obj) {
+bool IngameGUI::startConversation(const Common::UString &conv, Creature &pc, Object &obj) {
 	stopConversation();
 
 	if (conv.empty())
-		return;
+		return true;
 
-	_dialog = new Dialog(conv, pc, obj, *_module);
+	try {
+		_dialog = new Dialog(conv, pc, obj, *_module);
 
-	_dialog->show();
+		_dialog->show();
+	} catch (Common::Exception &e) {
+		delete _dialog;
+		_dialog = 0;
+
+		e.add("Failed starting conversation \"%s\"", conv.c_str());
+		Common::printException(e, "WARNING: ");
+		return false;
+	}
+
+	return true;
 }
 
 void IngameGUI::stopConversation() {

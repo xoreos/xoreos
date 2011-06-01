@@ -83,7 +83,7 @@ public:
 
 	const Common::UString &getName() const;
 
-	void startConversation(const Common::UString &conv, Creature &pc,
+	bool startConversation(const Common::UString &conv, Creature &pc,
 	                       Engines::NWN::Object &obj);
 
 

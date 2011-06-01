@@ -591,10 +591,10 @@ const Common::UString &Module::getName() const {
 	return _ifo.getName().getString();
 }
 
-void Module::startConversation(const Common::UString &conv, Creature &pc,
+bool Module::startConversation(const Common::UString &conv, Creature &pc,
                                Engines::NWN::Object &obj) {
 
-	_ingameGUI->startConversation(conv, pc, obj);
+	return _ingameGUI->startConversation(conv, pc, obj);
 }
 
 void Module::getModules(std::vector<Common::UString> &modules) {

@@ -497,7 +497,7 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(1, kTypeObject));
 	FunctionMan.registerFunction("BeginConversation", 255,
 			boost::bind(&ScriptFunctions::beginConversation, this, _1),
-			createSignature(3, kTypeVoid, kTypeString, kTypeObject),
+			createSignature(3, kTypeInt, kTypeString, kTypeObject),
 			createDefaults(2, &defaultStringEmpty, &defaultObject0));
 
 	FunctionMan.registerFunction("ObjectToString", 272,
@@ -1410,8 +1410,10 @@ void ScriptFunctions::getLastSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
 	if (!_module)
-		throw Common::Exception("ScriptFunctions::beginConversation(): Module needed");
+		return;
 
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
 
@@ -1435,8 +1437,7 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 
 	// Fail
 	if (!pc || !object)
-		throw Common::Exception("ScriptFunctions::beginConversation(): "
-		                        "Need one PC and one object");
+		return;
 
 	if (object->getPCSpeaker()) {
 		if (object->getPCSpeaker() != pc) {
@@ -1453,7 +1454,7 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 	if (conversation.empty())
 		conversation = object->getConversation();
 
-	_module->startConversation(conversation, *pc, *object);
+	ctx.getReturn() = _module->startConversation(conversation, *pc, *object);
 }
 
 void ScriptFunctions::objectToString(Aurora::NWScript::FunctionContext &ctx) {
