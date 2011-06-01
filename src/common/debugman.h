@@ -40,6 +40,25 @@
 
 namespace Common {
 
+/** Global, non-engine code debug channels. */
+enum DebugChannels {
+	kDebugGraphics   = 1 <<  0,
+	kDebugSound      = 1 <<  1,
+	kDebugEvents     = 1 <<  2,
+	kDebugScripts    = 1 <<  3,
+	kDebugReserved04 = 1 <<  4,
+	kDebugReserved05 = 1 <<  5,
+	kDebugReserved06 = 1 <<  6,
+	kDebugReserved07 = 1 <<  7,
+	kDebugReserved08 = 1 <<  8,
+	kDebugReserved09 = 1 <<  9,
+	kDebugReserved10 = 1 << 10,
+	kDebugReserved11 = 1 << 11,
+	kDebugReserved12 = 1 << 12,
+	kDebugReserved13 = 1 << 13,
+	kDebugReserved14 = 1 << 14
+};
+
 /** The debug manager, managing debug channels. */
 class DebugManager : public Singleton<DebugManager> {
 public:

@@ -42,6 +42,11 @@ namespace Common {
 DebugManager::DebugManager() : _debugLevel(0) {
 	for (uint32 i = 0; i < 30; i++)
 		_channels[i].enabled = false;
+
+	addDebugChannel(kDebugGraphics, "GGraphics", "Global graphics debug channel");
+	addDebugChannel(kDebugSound   , "GSound"   , "Global sound debug channel");
+	addDebugChannel(kDebugEvents  , "GEvents"  , "Global events debug channel");
+	addDebugChannel(kDebugScripts , "GScripts" , "Global scripts debug channel");
 }
 
 DebugManager::~DebugManager() {
