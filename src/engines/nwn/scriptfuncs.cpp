@@ -476,6 +476,10 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(3, kTypeObject, kTypeString, kTypeInt),
 			createDefaults(1, &defaultInt0));
 
+	FunctionMan.registerFunction("GetLocation", 213,
+			boost::bind(&ScriptFunctions::getLocation, this, _1),
+			createSignature(2, kTypeEngineType, kTypeObject));
+
 	FunctionMan.registerFunction("GetIsPC", 217,
 			boost::bind(&ScriptFunctions::getIsPC, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -1347,6 +1351,14 @@ void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 		_module->findNextObject(_objSearchContext);
 
 	ctx.getReturn() = _objSearchContext.getObject();
+}
+
+void ScriptFunctions::getLocation(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	ctx.getReturn() = object->getLocation();
 }
 
 void ScriptFunctions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {

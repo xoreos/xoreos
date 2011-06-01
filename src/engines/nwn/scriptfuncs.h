@@ -178,6 +178,8 @@ private:
 
 	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 
+	void getLocation(Aurora::NWScript::FunctionContext &ctx);
+
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 
 	void getNearestObject(Aurora::NWScript::FunctionContext &ctx);
