@@ -90,6 +90,12 @@ int main(int argc, char **argv) {
 	if (!parseCommandline(argc, argv, target, code))
 		return code;
 
+	// Open the requested log file
+	Common::UString logFile = ConfigMan.getString("logfile");
+	if (!logFile.empty())
+		DebugMan.openLogFile(logFile);
+
+	// Check the requested target
 	if (target.empty()) {
 		Common::UString path = ConfigMan.getString("path");
 		if (path.empty()) {
