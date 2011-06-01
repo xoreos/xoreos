@@ -453,7 +453,10 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("PrintVector", 141,
 			boost::bind(&ScriptFunctions::printVector, this, _1),
 			createSignature(2, kTypeVoid, kTypeVector, kTypeInt));
-
+	FunctionMan.registerFunction("Vector", 142,
+			boost::bind(&ScriptFunctions::vector, this, _1),
+			createSignature(4, kTypeVector, kTypeFloat, kTypeFloat, kTypeFloat),
+			createDefaults(3, &defaultFloat0_0, &defaultFloat0_0, &defaultFloat0_0));
 	FunctionMan.registerFunction("SetFacingPoint", 143,
 			boost::bind(&ScriptFunctions::setFacingPoint, this, _1),
 			createSignature(2, kTypeVoid, kTypeVector));
@@ -1391,6 +1394,12 @@ void ScriptFunctions::printVector(Aurora::NWScript::FunctionContext &ctx) {
 	bool prepend = ctx.getParams()[1].getInt() != 0;
 
 	status("NWN: %s%f, %f, %f", prepend ? "PRINTVECTOR:" : "", x, y, z);
+}
+
+void ScriptFunctions::vector(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().setVector(ctx.getParams()[0].getFloat(),
+	                          ctx.getParams()[1].getFloat(),
+	                          ctx.getParams()[2].getFloat());
 }
 
 void ScriptFunctions::setFacingPoint(Aurora::NWScript::FunctionContext &ctx) {
