@@ -44,8 +44,9 @@ using Common::kDebugScripts;
 static const uint32 kNCSTag    = MKID_BE('NCS ');
 static const uint32 kVersion10 = MKID_BE('V1.0');
 
-static const uint32 kScriptObjectSelf    = 0;
-static const uint32 kScriptObjectInvalid = 1;
+static const uint32 kScriptObjectSelf        = 0x00000000;
+static const uint32 kScriptObjectInvalid     = 0x00000001;
+static const uint32 kScriptObjectTypeInvalid = 0x7F000000;
 
 namespace Aurora {
 
@@ -477,6 +478,8 @@ void NCSFile::o_const(InstructionType type) {
 			if      (objectID == kScriptObjectSelf)
 				_stack.push(_currentObjectOwner);
 			else if (objectID == kScriptObjectInvalid)
+				_stack.push((Object *) 0);
+			else if (objectID == kScriptObjectTypeInvalid)
 				_stack.push((Object *) 0);
 			else
 				throw Common::Exception("NCSFile::o_const(): Illegal object ID %d", objectID);
