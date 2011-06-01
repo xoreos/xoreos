@@ -224,16 +224,7 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 }
 
 bool Object::click(Object *triggerer) {
-	// Try the onDialog script first
-	if (hasScript(kScriptDialogue))
-		return runScript(kScriptDialogue, this, triggerer);
-
-	// Next, look we have a generic onClick script
-	if (hasScript(kScriptClick))
-		return runScript(kScriptClick, this, triggerer);
-
-	// Lastly, try to start a conversation directly
-	return beginConversation(triggerer);
+	return true;
 }
 
 bool Object::beginConversation(Object *triggerer) {

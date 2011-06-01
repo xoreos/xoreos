@@ -156,29 +156,49 @@ void Door::highlight(bool enabled) {
 		_model->drawBound(enabled);
 }
 
-void Door::open(Object *opener) {
+bool Door::click(Object *triggerer) {
+	// If the door is closed, try to open it
+	if (!isOpen())
+		return open(triggerer);
+
+	// If the door is open and has a click script, call that
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
+
+	// TODO: Door::click(): LinkedTo
+
+	// If the door is open and has no script, close it
+	return close(triggerer);
+}
+
+bool Door::open(Object *opener) {
 	// TODO: Door::open(): Animate
 	// TODO: Door::open(): Open in direction of the opener
 
-	if (isOpen() || isLocked())
-		return;
+	if (isOpen())
+		return true;
+
+	if (isLocked())
+		return false;
 
 	_state = kStateOpened1;
 	setModelState();
 
 	runScript(kScriptOpen, this, opener);
+	return true;
 }
 
-void Door::close(Object *closer) {
+bool Door::close(Object *closer) {
 	// TODO: Door::close(): Animate
 
 	if (!isOpen())
-		return;
+		return true;
 
 	_state = kStateClosed;
 	setModelState();
 
 	runScript(kScriptClosed, this, closer);
+	return true;
 }
 
 bool Door::isOpen() const {

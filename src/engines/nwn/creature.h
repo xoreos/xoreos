@@ -74,6 +74,8 @@ public:
 
 	void highlight(bool enabled);
 
+	bool click(Object *triggerer);
+
 	/** Load from a character file. */
 	void loadCharacter(Common::SeekableReadStream &stream);
 	/** Load from a creature instance. */

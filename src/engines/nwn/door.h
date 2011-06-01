@@ -58,12 +58,14 @@ public:
 
 	void highlight(bool enabled);
 
+	bool click(Object *triggerer = 0);
+
 	bool isOpen() const;
 
 	/** The opener object opens this door. */
-	void open(Object *opener);
+	bool open(Object *opener);
 	/** The closer object closes this door. */
-	void close(Object *closer);
+	bool close(Object *closer);
 
 protected:
 	void clear();

@@ -793,6 +793,19 @@ void Creature::highlight(bool enabled) {
 		hideTooltip();
 }
 
+bool Creature::click(Object *triggerer) {
+	// Try the onDialog script first
+	if (hasScript(kScriptDialogue))
+		return runScript(kScriptDialogue, this, triggerer);
+
+	// Next, look we have a generic onClick script
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
+
+	// Lastly, try to start a conversation directly
+	return beginConversation(triggerer);
+}
+
 void Creature::createTooltip() {
 	if (_tooltip)
 		return;
