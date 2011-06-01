@@ -99,6 +99,7 @@ private:
 	void getArea(Aurora::NWScript::FunctionContext &ctx);
 	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
 	void getExitingObject(Aurora::NWScript::FunctionContext &ctx);
+	void getPosition(Aurora::NWScript::FunctionContext &ctx);
 
 	void getItemPossessor(Aurora::NWScript::FunctionContext &ctx);
 	void getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx);

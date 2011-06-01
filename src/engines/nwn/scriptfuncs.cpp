@@ -260,6 +260,9 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetExitingObject", 26,
 			boost::bind(&ScriptFunctions::getExitingObject, this, _1),
 			createSignature(1, kTypeObject));
+	FunctionMan.registerFunction("GetPosition", 27,
+			boost::bind(&ScriptFunctions::getPosition, this, _1),
+			createSignature(2, kTypeVector, kTypeObject));
 
 	FunctionMan.registerFunction("GetItemPossessor", 29,
 			boost::bind(&ScriptFunctions::getItemPossessor, this, _1),
@@ -832,6 +835,19 @@ void ScriptFunctions::getEnteringObject(Aurora::NWScript::FunctionContext &ctx) 
 
 void ScriptFunctions::getExitingObject(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = ctx.getTriggerer();
+}
+
+void ScriptFunctions::getPosition(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().setVector(0.0f, 0.0f, 0.0f);
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	float x, y, z;
+	object->getPosition(x, y, z);
+
+	ctx.getReturn().setVector(x, y, z);
 }
 
 void ScriptFunctions::getItemPossessor(Aurora::NWScript::FunctionContext &ctx) {
