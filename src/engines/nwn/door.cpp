@@ -160,7 +160,7 @@ void Door::open(Object *opener) {
 	// TODO: Door::open(): Animate
 	// TODO: Door::open(): Open in direction of the opener
 
-	if (_state != kStateClosed)
+	if (isOpen() || isLocked())
 		return;
 
 	_state = kStateOpened1;
@@ -172,13 +172,17 @@ void Door::open(Object *opener) {
 void Door::close(Object *closer) {
 	// TODO: Door::close(): Animate
 
-	if ((_state != kStateOpened1) && (_state != kStateOpened2))
+	if (!isOpen())
 		return;
 
 	_state = kStateClosed;
 	setModelState();
 
 	runScript(kScriptClosed, this, closer);
+}
+
+bool Door::isOpen() const {
+	return (_state == kStateOpened1) || (_state == kStateOpened2);
 }
 
 } // End of namespace NWN

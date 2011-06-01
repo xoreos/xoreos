@@ -158,6 +158,14 @@ Waypoint *ScriptFunctions::convertWaypoint(Aurora::NWScript::Object *o) {
 	return waypoint;
 }
 
+Situated *ScriptFunctions::convertSituated(Aurora::NWScript::Object *o) {
+	Situated *situated = dynamic_cast<Situated *>(o);
+	if (!situated || !situated->loaded() || (situated->getID() == kObjectIDInvalid))
+		return 0;
+
+	return situated;
+}
+
 Door *ScriptFunctions::convertDoor(Aurora::NWScript::Object *o) {
 	Door *door = dynamic_cast<Door *>(o);
 	if (!door || !door->loaded() || (door->getID() == kObjectIDInvalid))
@@ -1529,20 +1537,22 @@ void ScriptFunctions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::setLocked(Aurora::NWScript::FunctionContext &ctx) {
-	Object *object = convertObject(ctx.getParams()[0].getObject());
-	if (!object)
+	Situated *situated = convertSituated(ctx.getParams()[0].getObject());
+	if (!situated)
 		return;
 
 	bool locked = ctx.getParams()[1].getInt() != 0;
-	warning("TODO: SetLocked: \"%s\" to %d", object->getTag().c_str(), locked);
+	situated->setLocked(locked);
 }
 
 void ScriptFunctions::getLocked(Aurora::NWScript::FunctionContext &ctx) {
-	Object *object = convertObject(ctx.getParams()[0].getObject());
-	if (!object)
+	ctx.getReturn() = 0;
+
+	Situated *situated = convertSituated(ctx.getParams()[0].getObject());
+	if (!situated)
 		return;
 
-	warning("TODO: GetLocked: \"%s\"", object->getTag().c_str());
+	ctx.getReturn() = situated->isLocked();
 }
 
 void ScriptFunctions::setAssociateListenPatterns(Aurora::NWScript::FunctionContext &ctx) {

@@ -174,6 +174,10 @@ void Placeable::hideTooltip() {
 	_tooltip->hide();
 }
 
+bool Placeable::isOpen() const {
+	return _state == kStateOpen;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

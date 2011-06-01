@@ -60,6 +60,8 @@ void Situated::clear() {
 
 	_appearanceID = Aurora::kFieldIDInvalid;
 
+	_locked = false;
+
 	_modelName.clear();
 
 	delete _model;
@@ -94,6 +96,14 @@ void Situated::setOrientation(float x, float y, float z) {
 
 	if (_model)
 		_model->setRotation(x, z, -y);
+}
+
+bool Situated::isLocked() const {
+	return _locked;
+}
+
+void Situated::setLocked(bool locked) {
+	_locked = locked;
 }
 
 void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
@@ -188,6 +198,9 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 
 	// Usable
 	_usable = gff.getBool("Useable", _usable);
+
+	// Locked
+	_locked = gff.getBool("Locked", _locked);
 
 	// Scripts
 	readScripts(gff);

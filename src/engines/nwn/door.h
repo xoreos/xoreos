@@ -58,6 +58,8 @@ public:
 
 	void highlight(bool enabled);
 
+	bool isOpen() const;
+
 	/** The opener object opens this door. */
 	void open(Object *opener);
 	/** The closer object closes this door. */

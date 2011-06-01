@@ -54,10 +54,17 @@ public:
 	void setPosition(float x, float y, float z);
 	void setOrientation(float x, float y, float z);
 
+	virtual bool isOpen() const = 0;
+
+	bool isLocked() const;
+	void setLocked(bool locked);
+
 protected:
 	Common::UString _modelName;
 
 	uint32 _appearanceID;
+
+	bool _locked;
 
 	Graphics::Aurora::Model *_model;
 

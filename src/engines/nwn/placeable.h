@@ -63,6 +63,8 @@ public:
 
 	void highlight(bool enabled);
 
+	bool isOpen() const;
+
 protected:
 	void clear();
 

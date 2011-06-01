@@ -48,6 +48,7 @@ class Area;
 
 class Object;
 class Waypoint;
+class Situated;
 class Door;
 class Creature;
 
@@ -77,6 +78,7 @@ private:
 	Area     *convertArea    (Aurora::NWScript::Object *o);
 	Object   *convertObject  (Aurora::NWScript::Object *o);
 	Waypoint *convertWaypoint(Aurora::NWScript::Object *o);
+	Situated *convertSituated(Aurora::NWScript::Object *o);
 	Door     *convertDoor    (Aurora::NWScript::Object *o);
 	Creature *convertCreature(Aurora::NWScript::Object *o);
 	Creature *convertPC      (Aurora::NWScript::Object *o);
