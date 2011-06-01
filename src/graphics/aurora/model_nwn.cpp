@@ -33,6 +33,7 @@
 
 #include "common/error.h"
 #include "common/maths.h"
+#include "common/debug.h"
 #include "common/stream.h"
 #include "common/streamtokenizer.h"
 
@@ -40,6 +41,8 @@
 #include "aurora/resman.h"
 
 #include "graphics/aurora/model_nwn.h"
+
+using Common::kDebugGraphics;
 
 static const int kNodeFlagHasHeader    = 0x00000001;
 static const int kNodeFlagHasLight     = 0x00000002;
@@ -200,6 +203,8 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	_name.readFixedASCII(*ctx.mdl, 64);
+	debugC(4, kDebugGraphics, "Loading NWN binary model \"%s\": \"%s\"", _fileName.c_str(),
+	       _name.c_str());
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -281,6 +286,9 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 		if        (line[0] == "newmodel") {
 			if (!_name.empty())
 				warning("Model_NWN_ASCII::load(): More than one model definition");
+
+			debugC(4, kDebugGraphics, "Loading NWN ASCII model \"%s\": \"%s\"", _fileName.c_str(),
+			       _name.c_str());
 
 			_name = line[1];
 		} else if (line[0] == "setsupermodel") {
@@ -440,6 +448,9 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	uint32 partNumber       = ctx.mdl->readUint32LE();
 
 	_name.readFixedASCII(*ctx.mdl, 32);
+
+	debugC(5, kDebugGraphics, "Node \"%s\" in state \"%s\"", _name.c_str(),
+	       ctx.state->name.c_str());
 
 	ctx.mdl->skip(8); // Parent pointers
 
@@ -837,6 +848,9 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 	bool skipNode = false;
 
 	_name = name;
+
+	debugC(5, kDebugGraphics, "Node \"%s\" in state \"%s\"", _name.c_str(),
+	       ctx.state->name.c_str());
 
 	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin"))
 		_render = true;
