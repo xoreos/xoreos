@@ -36,6 +36,7 @@
 #include "common/error.h"
 #include "common/filepath.h"
 #include "common/threads.h"
+#include "common/debugman.h"
 #include "common/configman.h"
 
 #include "aurora/resman.h"
@@ -63,6 +64,9 @@ void initConfig();
 void init();
 void deinit();
 
+void initDebug();
+void listDebug();
+
 // *grumbles about Microsoft incompetence*
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -77,6 +81,8 @@ int __stdcall WinMain(HINSTANCE /*hInst*/, HINSTANCE /*hPrevInst*/,  LPSTR /*lpC
 static bool configFileIsBroken = false;
 
 int main(int argc, char **argv) {
+	atexit(deinit);
+
 	initConfig();
 
 	Common::UString target;
@@ -86,8 +92,14 @@ int main(int argc, char **argv) {
 
 	if (target.empty()) {
 		Common::UString path = ConfigMan.getString("path");
-		if (path.empty())
+		if (path.empty()) {
+			if (ConfigMan.getBool("listdebug", false)) {
+				listDebug();
+				return 0;
+			}
+
 			error("Neither a target, nor a path specified");
+		}
 
 		target = ConfigMan.findGame(path);
 		if (target.empty()) {
@@ -112,16 +124,26 @@ int main(int argc, char **argv) {
 	if (!Common::FilePath::isDirectory(baseDir) && !Common::FilePath::isRegularFile(baseDir))
 		error("No such file or directory \"%s\"", baseDir.c_str());
 
-	atexit(deinit);
-
 	Engines::GameThread *gameThread = new Engines::GameThread;
 	try {
+		// Initialize all necessary subsystems
 		init();
 
+		// Probe and create the game engine
 		gameThread->init(baseDir);
-		gameThread->run();
 
-		EventMan.runMainLoop();
+		// Enable requested debug channels
+		initDebug();
+
+		if (ConfigMan.getBool("listdebug", false)) {
+			// List debug channels
+			listDebug();
+		} else {
+			// Run the game
+			gameThread->run();
+			EventMan.runMainLoop();
+		}
+
 	} catch (Common::Exception &e) {
 		Common::printException(e);
 		std::exit(1);
@@ -178,6 +200,29 @@ void initConfig() {
 	}
 }
 
+void initDebug() {
+	DebugMan.setDebugLevel(ConfigMan.getInt("debuglevel", 0));
+	DebugMan.setEnabled(DebugMan.parseChannelList(ConfigMan.getString("debugchannel")));
+}
+
+void listDebug() {
+	std::vector<Common::UString> names;
+	std::vector<Common::UString> descriptions;
+	uint32 nameLength;
+
+	DebugMan.getDebugChannels(names, descriptions, nameLength);
+
+	for (uint32 i = 0; i < names.size(); i++) {
+		std::printf("%s  ", names[i].c_str());
+
+		uint32 l = nameLength - names[i].size();
+		for (uint32 s = 0; s < l; s++)
+			std::printf(" ");
+
+		std::printf("%s\n", descriptions[i].c_str());
+	}
+}
+
 void init() {
 	// Init threading system
 	Common::initThreads();
@@ -194,9 +239,11 @@ void init() {
 void deinit() {
 	// Deinit subsystems
 	try {
-		EventMan.deinit();
-		SoundMan.deinit();
-		GfxMan.deinit();
+		if (Common::initedThreads()) {
+			EventMan.deinit();
+			SoundMan.deinit();
+			GfxMan.deinit();
+		}
 	} catch (...) {
 	}
 
@@ -220,5 +267,6 @@ void deinit() {
 	Graphics::GraphicsManager::destroy();
 	Graphics::QueueManager::destroy();
 
+	Common::DebugManager::destroy();
 	Common::ConfigManager::destroy();
 }
