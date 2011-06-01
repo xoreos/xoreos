@@ -42,6 +42,15 @@ class Tooltip;
 
 class Placeable : public Situated {
 public:
+	enum State {
+		kStateDefault     = 0,
+		kStateOpen        = 1,
+		kStateClosed      = 2,
+		kStateDestroyed   = 3,
+		kStateActivated   = 4,
+		kStateDeactivated = 5
+	};
+
 	Placeable();
 	~Placeable();
 
@@ -55,15 +64,21 @@ public:
 	void highlight(bool enabled);
 
 protected:
+	void clear();
+
 	void loadObject(const Aurora::GFFStruct &gff);
 	void loadAppearance();
 
 private:
+	State _state;
+
 	Tooltip *_tooltip;
 
 	void createTooltip();
 	void showTooltip();
 	void hideTooltip();
+
+	void setModelState();
 };
 
 } // End of namespace NWN

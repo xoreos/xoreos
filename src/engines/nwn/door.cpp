@@ -45,10 +45,20 @@ namespace Engines {
 
 namespace NWN {
 
-Door::Door() : Situated(kObjectTypeDoor), _genericType(Aurora::kFieldIDInvalid) {
+Door::Door() : Situated(kObjectTypeDoor) {
+	clear();
 }
 
 Door::~Door() {
+	clear();
+}
+
+void Door::clear() {
+	Situated::clear();
+
+	_genericType = Aurora::kFieldIDInvalid;
+
+	_state = kStateClosed;
 }
 
 void Door::load(const Aurora::GFFStruct &door) {
@@ -68,10 +78,18 @@ void Door::load(const Aurora::GFFStruct &door) {
 		warning("Door \"%s\" has no blueprint", _tag.c_str());
 
 	delete utd;
+
+	setModelState();
 }
 
 void Door::loadObject(const Aurora::GFFStruct &gff) {
+	// Generic type
+
 	_genericType = gff.getUint("GenericType", _genericType);
+
+	// State
+
+	_state = (State) gff.getUint("AnimationState", (uint) _state);
 }
 
 void Door::loadAppearance() {
@@ -91,6 +109,30 @@ void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
 		column = twoda.headerToColumn("Model");
 
 	_modelName = twoda.getRow(id).getString(column);
+}
+
+void Door::setModelState() {
+	if (!_model)
+		return;
+
+	switch (_state) {
+		case kStateClosed:
+			_model->setState("closed");
+			break;
+
+		case kStateOpened1:
+			_model->setState("opened1");
+			break;
+
+		case kStateOpened2:
+			_model->setState("opened2");
+			break;
+
+		default:
+			_model->setState("");
+			break;
+	}
+
 }
 
 void Door::hide() {

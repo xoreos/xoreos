@@ -62,6 +62,8 @@ protected:
 	Graphics::Aurora::Model *_model;
 
 
+	void clear();
+
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
 
 	virtual void loadObject(const Aurora::GFFStruct &gff) = 0;

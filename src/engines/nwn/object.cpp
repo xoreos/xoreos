@@ -55,9 +55,7 @@ Object::Object(ObjectType type) : _type(type), _ssf(0), _pcSpeaker(0), _area(0) 
 }
 
 Object::~Object() {
-	stopSound();
-
-	delete _ssf;
+	clear();
 }
 
 ObjectType Object::getType() const {

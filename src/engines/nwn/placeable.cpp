@@ -46,10 +46,18 @@ namespace Engines {
 namespace NWN {
 
 Placeable::Placeable() : Situated(kObjectTypePlaceable), _tooltip(0) {
+	clear();
 }
 
 Placeable::~Placeable() {
+	clear();
+}
+
+void Placeable::clear() {
+	_state = kStateDefault;
+
 	delete _tooltip;
+	_tooltip = 0;
 }
 
 void Placeable::load(const Aurora::GFFStruct &placeable) {
@@ -71,6 +79,42 @@ void Placeable::load(const Aurora::GFFStruct &placeable) {
 	delete utp;
 }
 
+void Placeable::setModelState() {
+	if (!_model)
+		return;
+
+	switch (_state) {
+		case kStateDefault:
+			_model->setState("default");
+			break;
+
+		case kStateOpen:
+			_model->setState("open");
+			break;
+
+		case kStateClosed:
+			_model->setState("close");
+			break;
+
+		case kStateDestroyed:
+			_model->setState("dead");
+			break;
+
+		case kStateActivated:
+			_model->setState("on");
+			break;
+
+		case kStateDeactivated:
+			_model->setState("off");
+			break;
+
+		default:
+			_model->setState("");
+			break;
+	}
+
+}
+
 void Placeable::hide() {
 	leave();
 
@@ -78,6 +122,9 @@ void Placeable::hide() {
 }
 
 void Placeable::loadObject(const Aurora::GFFStruct &gff) {
+	// State
+
+	_state = (State) gff.getUint("AnimationState", (uint) _state);
 }
 
 void Placeable::loadAppearance() {

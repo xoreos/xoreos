@@ -40,6 +40,12 @@ namespace NWN {
 
 class Door : public Situated {
 public:
+	enum State {
+		kStateClosed  = 0,
+		kStateOpened1 = 1,
+		kStateOpened2 = 2
+	};
+
 	Door();
 	~Door();
 
@@ -53,13 +59,19 @@ public:
 	void highlight(bool enabled);
 
 protected:
+	void clear();
+
 	void loadObject(const Aurora::GFFStruct &gff);
 	void loadAppearance();
 
 private:
 	uint32 _genericType;
 
+	State _state;
+
 	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);
+
+	void setModelState();
 };
 
 } // End of namespace NWN

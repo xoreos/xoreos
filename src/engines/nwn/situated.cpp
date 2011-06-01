@@ -47,13 +47,23 @@ namespace Engines {
 
 namespace NWN {
 
-Situated::Situated(ObjectType type) : Object(type),
-	_appearanceID(Aurora::kFieldIDInvalid), _model(0) {
-
+Situated::Situated(ObjectType type) : Object(type), _model(0) {
+	clear();
 }
 
 Situated::~Situated() {
+	clear();
+}
+
+void Situated::clear() {
+	Object::clear();
+
+	_appearanceID = Aurora::kFieldIDInvalid;
+
+	_modelName.clear();
+
 	delete _model;
+	_model = 0;
 }
 
 void Situated::show() {
