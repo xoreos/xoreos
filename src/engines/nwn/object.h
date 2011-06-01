@@ -101,6 +101,8 @@ public:
 
 	virtual bool click(Object *triggerer = 0);
 
+	void speakString(const Common::UString &string, uint32 volume);
+	void speakOneLiner(Common::UString conv, Object *tokenTarget = 0);
 
 	void stopSound();
 	void playSound(const Common::UString &sound, bool pitchVariance = false);

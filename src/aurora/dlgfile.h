@@ -106,6 +106,9 @@ public:
 	const Line *getCurrentEntry() const;
 	const std::vector<const Line *> &getCurrentReplies() const;
 
+	/** Return the first active non-branching entry. */
+	const Line *getOneLiner() const;
+
 private:
 	/** A link to a reply. */
 	struct Link {
@@ -160,7 +163,7 @@ private:
 	bool evaluateReplies(const std::vector<Link> &entries,
 	                     std::vector<const Line *> &active);
 
-	bool runScript(const Common::UString &script);
+	bool runScript(const Common::UString &script) const;
 };
 
 } // End of namespace Aurora

@@ -153,6 +153,20 @@ const std::vector<const DLGFile::Line *> &DLGFile::getCurrentReplies() const {
 	return _currentReplies;
 }
 
+const DLGFile::Line *DLGFile::getOneLiner() const {
+	for (std::vector<Link>::const_iterator e = _entriesStart.begin();
+	     e != _entriesStart.end(); ++e) {
+
+		std::vector<Entry>::const_iterator line = _entriesNPC.begin() + e->index;
+		if (!line->replies.empty() || !runScript(e->active))
+			continue;
+
+		return &line->line;
+	}
+
+	return 0;
+}
+
 void DLGFile::load(Common::SeekableReadStream &dlg) {
 	GFFFile gff;
 
@@ -297,7 +311,7 @@ bool DLGFile::evaluateReplies(const std::vector<Link> &entries,
 	return !active.empty();
 }
 
-bool DLGFile::runScript(const Common::UString &script) {
+bool DLGFile::runScript(const Common::UString &script) const {
 	if (script.empty())
 		return true;
 

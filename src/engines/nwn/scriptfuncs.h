@@ -237,7 +237,7 @@ private:
 	void soundObjectStop(Aurora::NWScript::FunctionContext &ctx);
 	void soundObjectSetVolume(Aurora::NWScript::FunctionContext &ctx);
 	void soundObjectSetPosition(Aurora::NWScript::FunctionContext &ctx);
-
+	void speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx);
 	void getGold(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsDM(Aurora::NWScript::FunctionContext &ctx);

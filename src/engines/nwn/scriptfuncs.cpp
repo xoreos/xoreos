@@ -629,7 +629,10 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("SoundObjectSetPosition", 416,
 			boost::bind(&ScriptFunctions::soundObjectSetPosition, this, _1),
 			createSignature(3, kTypeVoid, kTypeObject, kTypeVector));
-
+	FunctionMan.registerFunction("SpeakOneLinerConversation", 417,
+			boost::bind(&ScriptFunctions::speakOneLinerConversation, this, _1),
+			createSignature(3, kTypeVoid, kTypeString, kTypeObject),
+			createDefaults(1, &defaultObject0));
 	FunctionMan.registerFunction("GetGold", 418,
 			boost::bind(&ScriptFunctions::getGold, this, _1),
 			createSignature(2, kTypeInt, kTypeObject),
@@ -1782,6 +1785,17 @@ void ScriptFunctions::soundObjectSetPosition(Aurora::NWScript::FunctionContext &
 	        object->getTag().c_str(), x, y, z);
 }
 
+void ScriptFunctions::speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	const Common::UString &dlg = ctx.getParams()[0].getString();
+	Object *tokenTarget = convertObject(ctx.getParams()[1].getObject());
+
+	object->speakOneLiner(dlg, tokenTarget);
+}
+
 void ScriptFunctions::getGold(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) 0;
 
@@ -1911,12 +1925,11 @@ void ScriptFunctions::speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx
 	if (!object)
 		return;
 
-	uint32 strRef = (uint32) ctx.getParams()[0].getInt();
-
 	// TODO: ScriptFunctions::speakStringByStrRef(): Volume
-	// uint32 volume = (uint32) ctx.getParams()[0].getInt();
+	uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+	uint32 volume = (uint32) ctx.getParams()[0].getInt();
 
-	status("%s: \"%s\"", object->getName().c_str(), TalkMan.getString(strRef).c_str());
+	object->speakString(TalkMan.getString(strRef).c_str(), volume);
 }
 
 void ScriptFunctions::blackScreen(Aurora::NWScript::FunctionContext &ctx) {
@@ -1945,7 +1958,7 @@ void ScriptFunctions::playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx) 
 
 	uint32 strRef = (uint32) ctx.getParams()[0].getInt();
 
-	// TODO: ScriptFunctions::speakStringByStrRef(): Run as action
+	// TODO: ScriptFunctions::playSoundByStrRef(): Run as action
 	// bool runAsAction = ctx.getParams()[1].getInt() != 0;
 
 	object->playSound(TalkMan.getSoundResRef(strRef));

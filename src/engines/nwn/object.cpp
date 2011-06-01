@@ -28,10 +28,12 @@
  */
 
 #include "common/util.h"
+#include "common/error.h"
 
 #include "aurora/ssffile.h"
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
+#include "aurora/dlgfile.h"
 
 #include "aurora/nwscript/types.h"
 #include "aurora/nwscript/util.h"
@@ -209,6 +211,40 @@ void Object::loadSSF() {
 		delete _ssf;
 		_ssf = 0;
 	}
+}
+
+void Object::speakString(const Common::UString &string, uint32 volume) {
+	status("<%s> \"%s\"", getName().c_str(), string.c_str());
+}
+
+void Object::speakOneLiner(Common::UString conv, Object *tokenTarget) {
+	if (conv.empty())
+		conv = _conversation;
+	if (conv.empty())
+		return;
+
+	Common::UString text;
+	Common::UString sound;
+
+
+	try {
+		Aurora::DLGFile dlg(conv, this);
+
+		const Aurora::DLGFile::Line *line = dlg.getOneLiner();
+		if (line) {
+			text  = line->text.getString();
+			sound = line->sound;
+		}
+
+	} catch (Common::Exception &e) {
+		e.add("Failed evaluating one-liner from conversation \"%s\"", conv.c_str());
+		Common::printException(e, "WARNING: ");
+	}
+
+	if (!text.empty())
+		speakString(text, 0);
+	if (!sound.empty())
+		playSound(sound);
 }
 
 void Object::stopSound() {
