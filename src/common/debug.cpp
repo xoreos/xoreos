@@ -52,7 +52,8 @@ void debugC(uint32 level, uint32 channel, const char *s, ...) {
 	std::fputs("\n", stderr);
 #endif
 
-	// TODO: Output to a log file too
+	DebugMan.logString(buf);
+	DebugMan.logString("\n");
 }
 
 void debugCN(uint32 level, uint32 channel, const char *s, ...) {
@@ -70,5 +71,5 @@ void debugCN(uint32 level, uint32 channel, const char *s, ...) {
 	std::fputs(buf, stderr);
 #endif
 
-	// TODO: Output to a log file too
+	DebugMan.logString(buf);
 }

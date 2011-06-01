@@ -28,6 +28,7 @@
  */
 
 #include "common/util.h"
+#include "common/debugman.h"
 
 #include <cstdarg>
 #include <cstdio>
@@ -47,7 +48,9 @@ void warning(const char *s, ...) {
 	std::fputs("!\n", stderr);
 #endif
 
-	// TODO: Output to a log file too
+	DebugMan.logString("WARNING: ");
+	DebugMan.logString(buf);
+	DebugMan.logString("!\n");
 }
 
 void status(const char *s, ...) {
@@ -63,7 +66,8 @@ void status(const char *s, ...) {
 	std::fputs("\n", stderr);
 #endif
 
-	// TODO: Output to a log file too
+	DebugMan.logString(buf);
+	DebugMan.logString("!\n");
 }
 
 void NORETURN_PRE error(const char *s, ...) {
@@ -80,7 +84,9 @@ void NORETURN_PRE error(const char *s, ...) {
 	std::fputs("!\n", stderr);
 #endif
 
-	// TODO: Output to a log file too
+	DebugMan.logString("ERROR: ");
+	DebugMan.logString(buf);
+	DebugMan.logString("!\n");
 
 	std::exit(1);
 }
