@@ -282,6 +282,20 @@ private:
 	void musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx);
 	void writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx);
 
+	void setCampaignFloat(Aurora::NWScript::FunctionContext &ctx);
+	void setCampaignInt(Aurora::NWScript::FunctionContext &ctx);
+	void setCampaignVector(Aurora::NWScript::FunctionContext &ctx);
+	void setCampaignLocation(Aurora::NWScript::FunctionContext &ctx);
+	void setCampaignString(Aurora::NWScript::FunctionContext &ctx);
+	void destroyCampaignDatabase(Aurora::NWScript::FunctionContext &ctx);
+	void getCampaignFloat(Aurora::NWScript::FunctionContext &ctx);
+	void getCampaignInt(Aurora::NWScript::FunctionContext &ctx);
+	void getCampaignVector(Aurora::NWScript::FunctionContext &ctx);
+	void getCampaignLocation(Aurora::NWScript::FunctionContext &ctx);
+	void getCampaignString(Aurora::NWScript::FunctionContext &ctx);
+
+	void deleteCampaignVariable(Aurora::NWScript::FunctionContext &ctx);
+	void storeCampaignObject(Aurora::NWScript::FunctionContext &ctx);
 	void retrieveCampaignObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx);

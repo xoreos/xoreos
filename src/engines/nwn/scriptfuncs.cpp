@@ -745,6 +745,58 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::writeTimestampedLogEntry, this, _1),
 			createSignature(2, kTypeVoid, kTypeString));
 
+	FunctionMan.registerFunction("SetCampaignFloat", 589,
+			boost::bind(&ScriptFunctions::setCampaignFloat, this, _1),
+			createSignature(5, kTypeVoid, kTypeString, kTypeString, kTypeFloat, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("SetCampaignInt", 590,
+			boost::bind(&ScriptFunctions::setCampaignInt, this, _1),
+			createSignature(5, kTypeVoid, kTypeString, kTypeString, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("SetCampaignVector", 591,
+			boost::bind(&ScriptFunctions::setCampaignVector, this, _1),
+			createSignature(5, kTypeVoid, kTypeString, kTypeString, kTypeVector, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("SetCampaignLocation", 592,
+			boost::bind(&ScriptFunctions::setCampaignLocation, this, _1),
+			createSignature(5, kTypeVoid, kTypeString, kTypeString, kTypeEngineType, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("SetCampaignString", 593,
+			boost::bind(&ScriptFunctions::setCampaignString, this, _1),
+			createSignature(5, kTypeVoid, kTypeString, kTypeString, kTypeString, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("DestroyCampaignDatabase", 594,
+			boost::bind(&ScriptFunctions::destroyCampaignDatabase, this, _1),
+			createSignature(2, kTypeVoid, kTypeString));
+	FunctionMan.registerFunction("GetCampaignFloat", 595,
+			boost::bind(&ScriptFunctions::getCampaignFloat, this, _1),
+			createSignature(4, kTypeFloat, kTypeString, kTypeString, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("GetCampaignInt", 596,
+			boost::bind(&ScriptFunctions::getCampaignInt, this, _1),
+			createSignature(4, kTypeInt, kTypeString, kTypeString, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("GetCampaignVector", 597,
+			boost::bind(&ScriptFunctions::getCampaignVector, this, _1),
+			createSignature(4, kTypeVector, kTypeString, kTypeString, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("GetCampaignLocation", 598,
+			boost::bind(&ScriptFunctions::getCampaignLocation, this, _1),
+			createSignature(4, kTypeEngineType, kTypeString, kTypeString, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("GetCampaignString", 599,
+			boost::bind(&ScriptFunctions::getCampaignString, this, _1),
+			createSignature(4, kTypeString, kTypeString, kTypeString, kTypeObject),
+			createDefaults(1, &defaultObject0));
+
+	FunctionMan.registerFunction("DeleteCampaignVariable", 601,
+			boost::bind(&ScriptFunctions::deleteCampaignVariable, this, _1),
+			createSignature(4, kTypeVoid, kTypeString, kTypeString, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("StoreCampaignObject", 602,
+			boost::bind(&ScriptFunctions::storeCampaignObject, this, _1),
+			createSignature(5, kTypeInt, kTypeString, kTypeString, kTypeObject, kTypeObject),
+			createDefaults(1, &defaultObject0));
 	FunctionMan.registerFunction("RetrieveCampaignObject", 603,
 			boost::bind(&ScriptFunctions::retrieveCampaignObject, this, _1),
 			createSignature(6, kTypeObject, kTypeString, kTypeString,
@@ -2137,6 +2189,128 @@ void ScriptFunctions::writeTimestampedLogEntry(Aurora::NWScript::FunctionContext
 		(int) t.time_of_day().seconds());
 
 	status("NWN: %s: %s", tstamp.c_str(), ctx.getParams()[0].getString().c_str());
+}
+
+void ScriptFunctions::setCampaignFloat(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	float value = ctx.getParams()[2].getFloat();
+
+	warning("TODO: SetCampaignFloat: \"%s\":\"%s\" to %f",
+			dbName.c_str(), varName.c_str(), value);
+}
+
+void ScriptFunctions::setCampaignInt(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	int32 value = ctx.getParams()[2].getInt();
+
+	warning("TODO: SetCampaignInt: \"%s\":\"%s\" to %d",
+			dbName.c_str(), varName.c_str(), value);
+}
+
+void ScriptFunctions::setCampaignVector(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	float x, y, z;
+	ctx.getParams()[2].getVector(x, y, z);
+
+	warning("TODO: SetCampaignVector: \"%s\":\"%s\" to %f, %f, %f",
+			dbName.c_str(), varName.c_str(), x, y, z);
+}
+
+void ScriptFunctions::setCampaignLocation(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	// Location *location = convertLocation(ctx.getParams()[2].getEngineType());
+
+	warning("TODO: SetCampaignLocation: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
+}
+
+void ScriptFunctions::setCampaignString(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	const Common::UString &value = ctx.getParams()[2].getString();
+
+	warning("TODO: SetCampaignString: \"%s\":\"%s\" to \"%s\"",
+			dbName.c_str(), varName.c_str(), value.c_str());
+}
+
+void ScriptFunctions::destroyCampaignDatabase(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &dbName = ctx.getParams()[0].getString();
+
+	warning("TODO: DestroyCampaignDatabase: \"%s\"", dbName.c_str());
+}
+
+void ScriptFunctions::getCampaignFloat(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0.0f;
+
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	warning("TODO: GetCampaignFloat: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
+}
+
+void ScriptFunctions::getCampaignInt(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	warning("TODO: GetCampaignInt: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
+}
+
+void ScriptFunctions::getCampaignVector(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().setVector(0.0f, 0.0f, 0.0f);
+
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	warning("TODO: GetCampaignVector: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
+}
+
+void ScriptFunctions::getCampaignLocation(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::EngineType *) 0;
+
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	warning("TODO: GetCampaignLocation: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
+}
+
+void ScriptFunctions::getCampaignString(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().getString().clear();
+
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	warning("TODO: GetCampaignString: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
+}
+
+void ScriptFunctions::deleteCampaignVariable(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	warning("TODO: DeleteCampaignVariable: \"%s\":\"%s\"", dbName.c_str(), varName.c_str());
+}
+
+void ScriptFunctions::storeCampaignObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	const Common::UString &dbName  = ctx.getParams()[0].getString();
+	const Common::UString &varName = ctx.getParams()[1].getString();
+
+	Object *object = convertObject(ctx.getParams()[3].getObject());
+	if (!object)
+		return;
+
+	warning("TODO: StoreCampaignObject: \"%s\":\"%s\" to \"%s\"",
+			dbName.c_str(), varName.c_str(), object->getTag().c_str());
 }
 
 void ScriptFunctions::retrieveCampaignObject(Aurora::NWScript::FunctionContext &ctx) {
