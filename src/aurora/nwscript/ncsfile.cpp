@@ -438,6 +438,18 @@ void NCSFile::o_rsadd(InstructionType type) {
 		case kInstTypeObject:
 			_stack.push(kTypeObject);
 			break;
+		case kInstTypeEffect:
+			_stack.push(kTypeEngineType);
+			break;
+		case kInstTypeEvent:
+			_stack.push(kTypeEngineType);
+			break;
+		case kInstTypeLocation:
+			_stack.push(kTypeEngineType);
+			break;
+		case kInstTypeTalent:
+			_stack.push(kTypeEngineType);
+			break;
 		default:
 			throw Common::Exception("NCSFile::o_rsadd(): Illegal type %d", type);
 	}
@@ -497,6 +509,7 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 			case kTypeFloat:
 			case kTypeString:
 			case kTypeObject:
+			case kTypeEngineType:
 				param = _stack.pop();
 				break;
 
@@ -535,6 +548,7 @@ void NCSFile::callEngine(uint32 function, uint8 argCount) {
 		case kTypeFloat:
 		case kTypeString:
 		case kTypeObject:
+		case kTypeEngineType:
 			_stack.push(retVal);
 			break;
 
