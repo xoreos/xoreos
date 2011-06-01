@@ -213,6 +213,7 @@ void ScriptFunctions::registerFunctions() {
 	Aurora::NWScript::Variable defaultInt18(18);
 	Aurora::NWScript::Variable defaultIntMale(Aurora::kGenderMale);
 	Aurora::NWScript::Variable defaultIntObjectTypeAll(kObjectTypeAll);
+	Aurora::NWScript::Variable defaultFloat0_0(0.0f);
 	Aurora::NWScript::Variable defaultFloat1_0(1.0f);
 	Aurora::NWScript::Variable defaultStringEmpty("");
 	Aurora::NWScript::Variable defaultObject0((Aurora::NWScript::Object *) 0);
@@ -522,6 +523,10 @@ void ScriptFunctions::registerFunctions() {
 			createSignature(3, kTypeString, kTypeInt, kTypeInt),
 			createDefaults(1, &defaultIntMale));
 
+	FunctionMan.registerFunction("DestroyObject", 241,
+			boost::bind(&ScriptFunctions::destroyObject, this, _1),
+			createSignature(3, kTypeVoid, kTypeObject, kTypeFloat),
+			createDefaults(1, &defaultFloat0_0));
 	FunctionMan.registerFunction("GetModule", 242,
 			boost::bind(&ScriptFunctions::getModule, this, _1),
 			createSignature(1, kTypeObject));
@@ -1506,6 +1511,16 @@ void ScriptFunctions::getStringByStrRef(Aurora::NWScript::FunctionContext &ctx) 
 	const Aurora::Gender gender = (Aurora::Gender) ctx.getParams()[1].getInt();
 
 	ctx.getReturn() = TalkMan.getString(strRef, gender);
+}
+
+void ScriptFunctions::destroyObject(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	float delay = ctx.getParams()[1].getFloat();
+
+	warning("TODO: DestroyObject: \"%s\" (%f)", object->getTag().c_str(), delay);
 }
 
 void ScriptFunctions::getModule(Aurora::NWScript::FunctionContext &ctx) {

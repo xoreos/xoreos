@@ -198,6 +198,7 @@ private:
 	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
 	void getStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
 
+	void destroyObject(Aurora::NWScript::FunctionContext &ctx);
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
 
 	void getName(Aurora::NWScript::FunctionContext &ctx);
