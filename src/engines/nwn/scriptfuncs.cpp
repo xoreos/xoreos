@@ -54,6 +54,7 @@
 #include "engines/nwn/area.h"
 #include "engines/nwn/object.h"
 #include "engines/nwn/waypoint.h"
+#include "engines/nwn/door.h"
 #include "engines/nwn/creature.h"
 
 using Aurora::kObjectIDInvalid;
@@ -155,6 +156,14 @@ Waypoint *ScriptFunctions::convertWaypoint(Aurora::NWScript::Object *o) {
 		return 0;
 
 	return waypoint;
+}
+
+Door *ScriptFunctions::convertDoor(Aurora::NWScript::Object *o) {
+	Door *door = dynamic_cast<Door *>(o);
+	if (!door || !door->loaded() || (door->getID() == kObjectIDInvalid))
+		return 0;
+
+	return door;
 }
 
 Creature *ScriptFunctions::convertCreature(Aurora::NWScript::Object *o) {
@@ -922,21 +931,21 @@ void ScriptFunctions::getIsObjectValid(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::actionOpenDoor(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: /Action/
 
-	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
-	if (!object)
+	Door *door = convertDoor(ctx.getParams()[0].getObject());
+	if (!door)
 		return;
 
-	warning("TODO: ActionOpenDoor: \"%s\"", object->getTag().c_str());
+	door->open(convertObject(ctx.getCaller()));
 }
 
 void ScriptFunctions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: /Action/
 
-	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
-	if (!object)
+	Door *door = convertDoor(ctx.getParams()[0].getObject());
+	if (!door)
 		return;
 
-	warning("TODO: ActionCloseDoor: \"%s\"", object->getTag().c_str());
+	door->close(convertObject(ctx.getCaller()));
 }
 
 void ScriptFunctions::getLocalInt(Aurora::NWScript::FunctionContext &ctx) {
