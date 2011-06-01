@@ -37,6 +37,7 @@
 #include "common/types.h"
 #include "common/ustring.h"
 #include "common/singleton.h"
+#include "common/file.h"
 
 namespace Common {
 
@@ -110,6 +111,13 @@ public:
 	/** Set the current debug level. */
 	void   setDebugLevel(uint32 level);
 
+	/** Open a log file where all debug output will be written to. */
+	bool openLogFile(const UString &file);
+	/** Close the current log file. */
+	void closeLogFile();
+	/** Log that string to the current log file. */
+	void logString(const UString &str);
+
 private:
 	/** A debug channel. */
 	struct Channel {
@@ -125,6 +133,9 @@ private:
 	ChannelMap _channelMap;   ///< Debug channels indexed by name.
 
 	uint32 _debugLevel; ///< The current debug level.
+
+	DumpFile _logFile;
+	bool _logFileStartLine;
 };
 
 } // End of namespace Common

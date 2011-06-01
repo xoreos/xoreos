@@ -31,9 +31,16 @@
 
 #include <vector>
 
+#include "boost/date_time/posix_time/posix_time.hpp"
+
 #include "common/maths.h"
 #include "common/util.h"
+#include "common/filepath.h"
 #include "common/debugman.h"
+
+// boost-date_time stuff
+using boost::posix_time::ptime;
+using boost::posix_time::second_clock;
 
 DECLARE_SINGLETON(Common::DebugManager)
 
@@ -50,6 +57,7 @@ DebugManager::DebugManager() : _debugLevel(0) {
 }
 
 DebugManager::~DebugManager() {
+	closeLogFile();
 }
 
 bool DebugManager::addDebugChannel(uint32 channel, const UString &name,
@@ -154,6 +162,35 @@ uint32 DebugManager::getDebugLevel() const {
 
 void DebugManager::setDebugLevel(uint32 level) {
 	_debugLevel = level;
+}
+
+bool DebugManager::openLogFile(const UString &file) {
+	closeLogFile();
+
+	_logFileStartLine = true;
+	return _logFile.open(FilePath::makeAbsolute(file));
+}
+
+void DebugManager::closeLogFile() {
+	_logFile.close();
+}
+
+void DebugManager::logString(const UString &str) {
+	if (!_logFile.isOpen())
+		return;
+
+	if (_logFileStartLine) {
+		ptime t(second_clock::universal_time());
+		const UString tstamp = UString::sprintf("[%04d-%02d-%02dT%02d:%02d:%02d] ",
+			(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
+			(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
+			(int) t.time_of_day().seconds());
+
+		_logFile.writeString(tstamp);
+	}
+
+	_logFile.writeString(str);
+	_logFileStartLine = !str.empty() && (*--str.end() == '\n');
 }
 
 } // End of namespace Common
