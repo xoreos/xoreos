@@ -343,6 +343,13 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::abs, this, _1),
 			createSignature(2, kTypeInt, kTypeInt));
 
+	FunctionMan.registerFunction("GetFirstEffect", 85,
+			boost::bind(&ScriptFunctions::getFirstEffect, this, _1),
+			createSignature(2, kTypeEngineType, kTypeObject));
+	FunctionMan.registerFunction("GetNextEffect", 86,
+			boost::bind(&ScriptFunctions::getNextEffect, this, _1),
+			createSignature(2, kTypeEngineType, kTypeObject));
+
 	FunctionMan.registerFunction("GetIsEffectValid", 88,
 			boost::bind(&ScriptFunctions::getIsEffectValid, this, _1),
 			createSignature(2, kTypeInt, kTypeEngineType));
@@ -1024,6 +1031,26 @@ void ScriptFunctions::sqrt(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::abs(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = ABS(ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::getFirstEffect(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::EngineType *) 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	warning("TODO: GetFirstEffect: \"%s\"", object->getTag().c_str());
+}
+
+void ScriptFunctions::getNextEffect(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::EngineType *) 0;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	warning("TODO: GetNextEffect: \"%s\"", object->getTag().c_str());
 }
 
 void ScriptFunctions::getIsEffectValid(Aurora::NWScript::FunctionContext &ctx) {

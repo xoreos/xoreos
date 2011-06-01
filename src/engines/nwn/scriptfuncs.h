@@ -131,6 +131,9 @@ private:
 	void sqrt(Aurora::NWScript::FunctionContext &ctx);
 	void abs(Aurora::NWScript::FunctionContext &ctx);
 
+	void getFirstEffect(Aurora::NWScript::FunctionContext &ctx);
+	void getNextEffect(Aurora::NWScript::FunctionContext &ctx);
+
 	void getIsEffectValid(Aurora::NWScript::FunctionContext &ctx);
 
 	void intToString(Aurora::NWScript::FunctionContext &ctx);
