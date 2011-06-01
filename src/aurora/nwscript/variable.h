@@ -44,6 +44,7 @@ namespace Aurora {
 namespace NWScript {
 
 class Object;
+class EngineType;
 
 struct ScriptState {
 	uint32 offset;
@@ -58,6 +59,7 @@ public:
 	Variable(float value);
 	Variable(const Common::UString &value);
 	Variable(Object *value);
+	Variable(EngineType *value);
 	Variable(float x, float y, float z);
 	Variable(const Variable &var);
 	~Variable();
@@ -70,6 +72,7 @@ public:
 	Variable &operator=(float value);
 	Variable &operator=(const Common::UString &value);
 	Variable &operator=(Object *value);
+	Variable &operator=(EngineType *value);
 
 	bool operator==(const Variable &var) const;
 	bool operator!=(const Variable &var) const;
@@ -81,6 +84,7 @@ public:
 	Common::UString &getString();
 	const Common::UString &getString() const;
 	Object *getObject() const;
+	EngineType *getEngineType() const;
 
 	void setVector(float  x, float  y, float  z);
 	void getVector(float &x, float &y, float &z) const;
@@ -98,6 +102,7 @@ private:
 		Object *_object;
 		float _vector[3];
 		ScriptState *_scriptState;
+		EngineType *_engineType;
 	} _value;
 };
 

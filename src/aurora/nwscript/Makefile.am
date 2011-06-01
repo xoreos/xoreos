@@ -7,6 +7,7 @@ noinst_HEADERS = types.h \
                  variable.h \
                  variablecontainer.h \
                  functioncontext.h \
+                 enginetype.h \
                  object.h \
                  objectcontainer.h \
                  functionman.h \

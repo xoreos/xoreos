@@ -23,42 +23,28 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file aurora/nwscript/types.h
- *  NWScript types.
+/** @file aurora/nwscript/enginetype.h
+ *  An NWScript engine type.
  */
 
-#ifndef AURORA_NWSCRIPT_TYPES_H
-#define AURORA_NWSCRIPT_TYPES_H
-
-#include <vector>
-
-#include "boost/function.hpp"
+#ifndef AURORA_NWSCRIPT_ENGINETYPE_H
+#define AURORA_NWSCRIPT_ENGINETYPE_H
 
 namespace Aurora {
 
 namespace NWScript {
 
-enum Type {
-	kTypeVoid       = 0,
-	kTypeInt           ,
-	kTypeFloat         ,
-	kTypeString        ,
-	kTypeObject        ,
-	kTypeVector        ,
-	kTypeStruct        , // TODO
-	kTypeEngineType    ,
-	kTypeScriptState     // "action"
+class EngineType {
+public:
+	EngineType() { }
+	virtual ~EngineType() { }
+
+	/** Clone factory method. */
+	virtual EngineType *clone() const = 0;
 };
-
-// Index 0 is the return type, following indices are the arguments
-typedef std::vector<Type> Signature;
-
-typedef std::vector<class Variable> Parameters;
-
-typedef boost::function<void (class FunctionContext &ctx)> Function;
 
 } // End of namespace NWScript
 
 } // End of namespace Aurora
 
-#endif // AURORA_NWSCRIPT_TYPES_H
+#endif // AURORA_NWSCRIPT_ENGINETYPE_H

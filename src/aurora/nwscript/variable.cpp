@@ -30,6 +30,7 @@
 #include "common/error.h"
 
 #include "aurora/nwscript/variable.h"
+#include "aurora/nwscript/enginetype.h"
 
 namespace Aurora {
 
@@ -63,6 +64,12 @@ Variable::Variable(Object *value) : _type(kTypeVoid) {
 	*this = value;
 }
 
+Variable::Variable(EngineType *value) : _type(kTypeEngineType) {
+	setType(kTypeEngineType);
+
+	*this = value;
+}
+
 Variable::Variable(float x, float y, float z) : _type(kTypeVoid) {
 	setType(kTypeVector);
 
@@ -80,6 +87,8 @@ Variable::~Variable() {
 void Variable::setType(Type type) {
 	if      (_type == kTypeString)
 		delete _value._string;
+	else if (_type == kTypeEngineType)
+		delete _value._engineType;
 	else if (_type == kTypeScriptState)
 		delete _value._scriptState;
 
@@ -111,6 +120,10 @@ void Variable::setType(Type type) {
 			_value._vector[2] = 0.0;
 			break;
 
+		case kTypeEngineType:
+			_value._engineType = 0;
+			break;
+
 		case kTypeScriptState:
 			_value._scriptState = new ScriptState;
 			break;
@@ -129,6 +142,8 @@ Variable &Variable::operator=(const Variable &var) {
 
 	if      (_type == kTypeString)
 		*_value._string = *var._value._string;
+	else if (_type == kTypeEngineType)
+		*this = var._value._engineType;
 	else if (_type == kTypeScriptState)
 		*_value._scriptState = *var._value._scriptState;
 	else
@@ -173,7 +188,23 @@ Variable &Variable::operator=(Object *value) {
 	return *this;
 }
 
+Variable &Variable::operator=(EngineType *value) {
+	if (_type != kTypeEngineType)
+		throw Common::Exception("Can't assign an engine-type value to a non-engine-type variable");
+
+	EngineType *engineType = value ? value->clone() : 0;
+
+	delete _value._engineType;
+
+	_value._engineType = engineType;
+
+	return *this;
+}
+
 bool Variable::operator==(const Variable &var) const {
+	if (this == &var)
+		return true;
+
 	if (_type != var._type)
 		return false;
 
@@ -246,6 +277,13 @@ Object *Variable::getObject() const {
 		throw Common::Exception("Can't get an object value from a non-object variable");
 
 	return _value._object;
+}
+
+EngineType *Variable::getEngineType() const {
+	if (_type != kTypeEngineType)
+		throw Common::Exception("Can't get an engine-type value from a non-engine-type variable");
+
+	return _value._engineType;
 }
 
 void Variable::setVector(float x, float y, float z) {
