@@ -61,7 +61,8 @@ Creature::BodyPart::BodyPart() : id(Aurora::kFieldIDInvalid) {
 }
 
 
-Creature::Creature() : Object(kObjectTypeCreature), _master(0), _model(0), _tooltip(0) {
+Creature::Creature() : Object(kObjectTypeCreature), _master(0), _isCommandable(true),
+	_model(0), _tooltip(0) {
 }
 
 Creature::~Creature() {
@@ -270,6 +271,14 @@ void Creature::setMaster(Creature *master) {
 
 Creature *Creature::getMaster() const {
 	return _master;
+}
+
+bool Creature::isCommandable() const {
+	return _isCommandable;
+}
+
+void Creature::setCommandable(bool commandable) {
+	_isCommandable = commandable;
 }
 
 void Creature::constructModelName(const Common::UString &type, uint32 id,

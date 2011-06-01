@@ -160,6 +160,9 @@ public:
 	void setMaster(Creature *master = 0);
 	Creature *getMaster() const;
 
+	bool isCommandable() const;
+	void setCommandable(bool commandable);
+
 private:
 	enum BodyPartType {
 		kBodyPartHead       = 0,
@@ -250,6 +253,8 @@ private:
 
 	Creature *_master;
 	std::list<Associate> _associates;
+
+	bool _isCommandable;
 
 	Graphics::Aurora::Model *_model;
 

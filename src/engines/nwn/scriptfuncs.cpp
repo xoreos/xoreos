@@ -420,6 +420,15 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getIsDead, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
 
+	FunctionMan.registerFunction("SetCommandable", 162,
+			boost::bind(&ScriptFunctions::setCommandable, this, _1),
+			createSignature(3, kTypeVoid, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+	FunctionMan.registerFunction("GetCommandable", 163,
+			boost::bind(&ScriptFunctions::getCommandable, this, _1),
+			createSignature(2, kTypeInt, kTypeObject),
+			createDefaults(1, &defaultObject0));
+
 	FunctionMan.registerFunction("GetHitDice", 166,
 			boost::bind(&ScriptFunctions::getHitDice, this, _1),
 			createSignature(2, kTypeInt, kTypeObject));
@@ -1172,6 +1181,28 @@ void ScriptFunctions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	ctx.getReturn() = creature->getCurrentHP() <= 0;
+}
+
+void ScriptFunctions::setCommandable(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = convertCreature(ctx.getParams()[1].getObject());
+	if (ctx.getParamsSpecified() < 2)
+		creature = convertCreature(ctx.getCaller());
+	if (!creature)
+		return;
+
+	creature->setCommandable(ctx.getParams()[0].getInt() != 0);
+}
+
+void ScriptFunctions::getCommandable(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Creature *creature = convertCreature(ctx.getParams()[0].getObject());
+	if (ctx.getParamsSpecified() < 1)
+		creature = convertCreature(ctx.getCaller());
+	if (!creature)
+		return;
+
+	ctx.getReturn() = creature->isCommandable();
 }
 
 void ScriptFunctions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
