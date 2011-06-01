@@ -193,6 +193,9 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 	// Appearance
 	_appearanceID = gff.getUint("Appearance", _appearanceID);
 
+	// Conversation
+	_conversation = gff.getString("Conversation", _conversation);
+
 	// Static
 	_static = gff.getBool("Static", _static);
 
