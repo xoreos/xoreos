@@ -40,6 +40,7 @@
 #include "sound/types.h"
 
 #include "engines/nwn/scriptcontainer.h"
+#include "engines/nwn/location.h"
 
 namespace Aurora {
 	class SSFFile;
@@ -87,6 +88,8 @@ public:
 
 	Aurora::NWScript::Object *getArea() const;
 	void setArea(Aurora::NWScript::Object *area);
+
+	Location getLocation() const;
 
 	virtual void getPosition(float &x, float &y, float &z) const;
 	virtual void getOrientation(float &x, float &y, float &z) const;
