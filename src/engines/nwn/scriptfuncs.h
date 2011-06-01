@@ -100,7 +100,7 @@ private:
 	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
 	void getExitingObject(Aurora::NWScript::FunctionContext &ctx);
 	void getPosition(Aurora::NWScript::FunctionContext &ctx);
-
+	void getFacing(Aurora::NWScript::FunctionContext &ctx);
 	void getItemPossessor(Aurora::NWScript::FunctionContext &ctx);
 	void getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx);
 	void createItemOnObject(Aurora::NWScript::FunctionContext &ctx);

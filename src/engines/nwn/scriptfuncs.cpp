@@ -263,7 +263,9 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("GetPosition", 27,
 			boost::bind(&ScriptFunctions::getPosition, this, _1),
 			createSignature(2, kTypeVector, kTypeObject));
-
+	FunctionMan.registerFunction("GetFacing", 28,
+			boost::bind(&ScriptFunctions::getFacing, this, _1),
+			createSignature(2, kTypeFloat, kTypeObject));
 	FunctionMan.registerFunction("GetItemPossessor", 29,
 			boost::bind(&ScriptFunctions::getItemPossessor, this, _1),
 			createSignature(2, kTypeObject, kTypeObject));
@@ -848,6 +850,16 @@ void ScriptFunctions::getPosition(Aurora::NWScript::FunctionContext &ctx) {
 	object->getPosition(x, y, z);
 
 	ctx.getReturn().setVector(x, y, z);
+}
+
+void ScriptFunctions::getFacing(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0.0f;
+
+	Object *object = convertObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	warning("TODO: GetFacing: \"%s\"", object->getTag().c_str());
 }
 
 void ScriptFunctions::getItemPossessor(Aurora::NWScript::FunctionContext &ctx) {
