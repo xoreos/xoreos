@@ -33,6 +33,7 @@
 namespace Common {
 
 void initThreads();
+bool initedThreads();
 
 bool isMainThread();
 void enforceMainThread();

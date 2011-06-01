@@ -47,6 +47,10 @@ void initThreads() {
 	threadsMainID = SDL_ThreadID();
 }
 
+bool initedThreads() {
+	return threadsInited;
+}
+
 bool isMainThread() {
 	assert(threadsInited);
 
