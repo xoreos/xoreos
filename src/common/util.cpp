@@ -33,8 +33,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-#ifndef DISABLE_TEXT_CONSOLE
-
 void warning(const char *s, ...) {
 	char buf[STRINGBUFLEN];
 	va_list va;
@@ -43,9 +41,13 @@ void warning(const char *s, ...) {
 	std::vsnprintf(buf, STRINGBUFLEN, s, va);
 	va_end(va);
 
+#ifndef DISABLE_TEXT_CONSOLE
 	std::fputs("WARNING: ", stderr);
 	std::fputs(buf, stderr);
 	std::fputs("!\n", stderr);
+#endif
+
+	// TODO: Output to a log file too
 }
 
 void status(const char *s, ...) {
@@ -56,10 +58,13 @@ void status(const char *s, ...) {
 	std::vsnprintf(buf, STRINGBUFLEN, s, va);
 	va_end(va);
 
+#ifndef DISABLE_TEXT_CONSOLE
 	std::fputs(buf, stderr);
 	std::fputs("\n", stderr);
-}
 #endif
+
+	// TODO: Output to a log file too
+}
 
 void NORETURN_PRE error(const char *s, ...) {
 	char buf[STRINGBUFLEN];
@@ -69,9 +74,13 @@ void NORETURN_PRE error(const char *s, ...) {
 	std::vsnprintf(buf, STRINGBUFLEN, s, va);
 	va_end(va);
 
+#ifndef DISABLE_TEXT_CONSOLE
 	std::fputs("ERROR: ", stderr);
 	std::fputs(buf, stderr);
 	std::fputs("!\n", stderr);
+#endif
+
+	// TODO: Output to a log file too
 
 	std::exit(1);
 }

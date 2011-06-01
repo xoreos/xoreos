@@ -107,10 +107,6 @@ template<> inline float MAX(float a, float b) { return fmaxf(a, b); }
  */
 #define ARRAYSIZE(x) ((int)(sizeof(x) / sizeof(x[0])))
 
-#ifdef DISABLE_TEXT_CONSOLE
-inline void warning(const char *s, ...) {}
-inline void status(const char *s, ...) {}
-#else
 /**
 * Print a warning message to the text console (stderr).
 * Automatically prepends the text "WARNING: " and appends
@@ -122,7 +118,6 @@ void warning(const char *s, ...) GCC_PRINTF(1, 2);
 * Automatically appends a newline.
 */
 void status(const char *s, ...) GCC_PRINTF(1, 2);
-#endif
 
 void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
 
