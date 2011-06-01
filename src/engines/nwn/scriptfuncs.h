@@ -247,6 +247,8 @@ private:
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
 	void getAttemptedSpellTarget(Aurora::NWScript::FunctionContext &ctx);
 
+	void jumpToObject(Aurora::NWScript::FunctionContext &ctx);
+
 	void getIsDay(Aurora::NWScript::FunctionContext &ctx);
 	void getIsNight(Aurora::NWScript::FunctionContext &ctx);
 	void getIsDawn(Aurora::NWScript::FunctionContext &ctx);
