@@ -64,6 +64,7 @@ using Aurora::NWScript::kTypeInt;
 using Aurora::NWScript::kTypeFloat;
 using Aurora::NWScript::kTypeString;
 using Aurora::NWScript::kTypeObject;
+using Aurora::NWScript::kTypeEngineType;
 using Aurora::NWScript::kTypeVector;
 using Aurora::NWScript::kTypeScriptState;
 using Aurora::NWScript::createSignature;
@@ -341,6 +342,10 @@ void ScriptFunctions::registerFunctions() {
 	FunctionMan.registerFunction("abs", 77,
 			boost::bind(&ScriptFunctions::abs, this, _1),
 			createSignature(2, kTypeInt, kTypeInt));
+
+	FunctionMan.registerFunction("GetIsEffectValid", 88,
+			boost::bind(&ScriptFunctions::getIsEffectValid, this, _1),
+			createSignature(2, kTypeInt, kTypeEngineType));
 
 	FunctionMan.registerFunction("IntToString", 92,
 			boost::bind(&ScriptFunctions::intToString, this, _1),
@@ -1019,6 +1024,10 @@ void ScriptFunctions::sqrt(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::abs(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = ABS(ctx.getParams()[0].getInt());
+}
+
+void ScriptFunctions::getIsEffectValid(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = ctx.getParams()[0].getEngineType() != 0;
 }
 
 void ScriptFunctions::intToString(Aurora::NWScript::FunctionContext &ctx) {
