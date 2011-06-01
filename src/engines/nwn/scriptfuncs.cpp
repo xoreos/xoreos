@@ -483,7 +483,9 @@ void ScriptFunctions::registerFunctions() {
 			boost::bind(&ScriptFunctions::getName, this, _1),
 			createSignature(3, kTypeString, kTypeObject, kTypeInt),
 			createDefaults(1, &defaultInt0));
-
+	FunctionMan.registerFunction("GetLastSpeaker", 254,
+			boost::bind(&ScriptFunctions::getLastSpeaker, this, _1),
+			createSignature(1, kTypeObject));
 	FunctionMan.registerFunction("BeginConversation", 255,
 			boost::bind(&ScriptFunctions::beginConversation, this, _1),
 			createSignature(3, kTypeVoid, kTypeString, kTypeObject),
@@ -1368,6 +1370,12 @@ void ScriptFunctions::getName(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn().getString() = area->getName();
 	else if (object)
 		ctx.getReturn().getString() = object->getName();
+}
+
+void ScriptFunctions::getLastSpeaker(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	warning("TODO: GetLastSpeaker");
 }
 
 void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {

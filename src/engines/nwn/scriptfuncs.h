@@ -184,7 +184,7 @@ private:
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
 
 	void getName(Aurora::NWScript::FunctionContext &ctx);
-
+	void getLastSpeaker(Aurora::NWScript::FunctionContext &ctx);
 	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
 
 	void objectToString(Aurora::NWScript::FunctionContext &ctx);
