@@ -59,10 +59,9 @@ void Situated::clear() {
 	Object::clear();
 
 	_appearanceID = Aurora::kFieldIDInvalid;
+	_soundAppType = Aurora::kFieldIDInvalid;
 
 	_locked = false;
-
-	_soundAppType = Aurora::kFieldIDInvalid;
 
 	_soundOpened.clear();
 	_soundClosed.clear();

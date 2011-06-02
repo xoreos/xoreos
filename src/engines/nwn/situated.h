@@ -43,45 +43,50 @@ namespace NWN {
 /** NWN situated object. */
 class Situated : public Object {
 public:
-	Situated(ObjectType type);
 	~Situated();
 
-	void load(const Aurora::GFFStruct &situated);
+	void show(); ///< Show the sitatuated object's model.
+	void hide(); ///< Hide the sitatuated object's model.
 
-	void show();
-	void hide();
-
+	/** Set the sitatuated object's position. */
 	void setPosition(float x, float y, float z);
+	/** Set the sitatuated object's orientation. */
 	void setOrientation(float x, float y, float z);
 
+	/** Is the situated object open? */
 	virtual bool isOpen() const = 0;
 
-	bool isLocked() const;
-	void setLocked(bool locked);
+	bool isLocked() const;       ///< Is the situated object locked?
+	void setLocked(bool locked); ///< Lock/Unlock the situated object.
 
 protected:
-	Common::UString _modelName;
+	Common::UString _modelName; ///< The model's resource name.
 
-	uint32 _appearanceID;
+	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
+	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
 
-	bool _locked;
+	bool _locked; ///< Is the situated object locked?
 
-	uint32 _soundAppType;
+	Common::UString _soundOpened;    ///< The sound the object makes when opened.
+	Common::UString _soundClosed;    ///< The sound the object makes when closed.
+	Common::UString _soundDestroyed; ///< The sound the object makes when destroyed.
+	Common::UString _soundUsed;      ///< The sound the object makes when used.
+	Common::UString _soundLocked;    ///< The sound the object makes when locked.
 
-	Common::UString _soundOpened;
-	Common::UString _soundClosed;
-	Common::UString _soundDestroyed;
-	Common::UString _soundUsed;
-	Common::UString _soundLocked;
-
-	Graphics::Aurora::Model *_model;
+	Graphics::Aurora::Model *_model; ///< The situated object's model.
 
 
+	Situated(ObjectType type);
+
+	/** Completely clear the situated object. */
 	void clear();
 
+	/** Load the situated object from an instance and its blueprint. */
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
 
+	/** Load object-specific properties. */
 	virtual void loadObject(const Aurora::GFFStruct &gff) = 0;
+	/** Load appearance-specific properties. */
 	virtual void loadAppearance() = 0;
 
 

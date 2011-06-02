@@ -40,26 +40,33 @@ namespace NWN {
 
 class Door : public Situated {
 public:
+	/** The state of a door. */
 	enum State {
-		kStateClosed  = 0,
-		kStateOpened1 = 1,
-		kStateOpened2 = 2
+		kStateClosed  = 0, ///< Closed.
+		kStateOpened1 = 1, ///< Opened in one direction (normally clock-wise).
+		kStateOpened2 = 2  ///< Opened in the other direction (normally counter-clock-wise).
 	};
 
 	Door();
 	~Door();
 
+	/** Load the door from an instance GFF struct. */
 	void load(const Aurora::GFFStruct &door);
 
-	void hide();
+	void hide(); ///< Hide the door's model.
 
-	void enter();
-	void leave();
 
+	void enter(); ///< The cursor entered the door.
+	void leave(); ///< The cursor left the door.
+
+	/** (Un)Highlight the door. */
 	void highlight(bool enabled);
 
+	/** The door was clicked. */
 	bool click(Object *triggerer = 0);
 
+
+	/** Is the door open? */
 	bool isOpen() const;
 
 	/** The opener object opens this door. */
@@ -68,18 +75,23 @@ public:
 	bool close(Object *closer);
 
 protected:
+	/** Completely clear this door. */
 	void clear();
 
+	/** Load door-specific properties. */
 	void loadObject(const Aurora::GFFStruct &gff);
+	/** Load appearance-specific properties. */
 	void loadAppearance();
 
 private:
-	uint32 _genericType;
+	uint32 _genericType; ///< Index into the generic door types.
 
-	State _state;
+	State _state; ///< The current state of the door.
 
+	/** Load the appearance from this 2DA row. */
 	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);
 
+	/** Sync the model's state with the door's state. */
 	void setModelState();
 };
 

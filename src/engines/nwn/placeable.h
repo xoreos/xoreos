@@ -42,44 +42,54 @@ class Tooltip;
 
 class Placeable : public Situated {
 public:
+	/** The state of a placeable. */
 	enum State {
-		kStateDefault     = 0,
-		kStateOpen        = 1,
-		kStateClosed      = 2,
-		kStateDestroyed   = 3,
-		kStateActivated   = 4,
-		kStateDeactivated = 5
+		kStateDefault     = 0, ///< Default.
+		kStateOpen        = 1, ///< Open.
+		kStateClosed      = 2, ///< Closed.
+		kStateDestroyed   = 3, ///< Destroyed.
+		kStateActivated   = 4, ///< Activated.
+		kStateDeactivated = 5  ///< Deactivated.
 	};
 
 	Placeable();
 	~Placeable();
 
+	/** Load the placeable from an instance GFF struct. */
 	void load(const Aurora::GFFStruct &placeable);
 
-	void hide();
+	void hide(); ///< Hide the placeable's model.
 
-	void enter();
-	void leave();
 
+	void enter(); ///< The cursor entered the placeable.
+	void leave(); ///< The cursor left the placeable.
+
+	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
 
+
+	/** Is the placeable open? */
 	bool isOpen() const;
 
 protected:
+	/** Completely clear this placeable. */
 	void clear();
 
+	/** Load placeable-specific properties. */
 	void loadObject(const Aurora::GFFStruct &gff);
+	/** Load appearance-specific properties. */
 	void loadAppearance();
 
 private:
-	State _state;
+	State _state; ///< The current state of the placeable.
 
-	Tooltip *_tooltip;
+	Tooltip *_tooltip; ///< The tooltip displayed over the placeable.
 
-	void createTooltip();
-	void showTooltip();
-	void hideTooltip();
+	void createTooltip(); ///< Create the tooltip.
+	void showTooltip();   ///< Show the tooltip.
+	void hideTooltip();   ///< Hide the tooltip.
 
+	/** Sync the model's state with the placeable's state. */
 	void setModelState();
 };
 

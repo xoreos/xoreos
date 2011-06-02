@@ -226,6 +226,8 @@ void Object::loadSSF() {
 }
 
 void Object::speakString(const Common::UString &string, uint32 volume) {
+	// TODO: Object::speakString(): Show the string in a speech bubble
+
 	status("<%s> \"%s\"", getName().c_str(), string.c_str());
 }
 

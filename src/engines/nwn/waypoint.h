@@ -47,8 +47,6 @@ public:
 	Waypoint();
 	~Waypoint();
 
-	void clear();
-
 	void load(const Aurora::GFFStruct &waypoint);
 
 	/** Does this waypoint have a map note? */
@@ -66,6 +64,8 @@ private:
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
 
 	void loadProperties(const Aurora::GFFStruct &gff);
+
+	void clear();
 };
 
 } // End of namespace NWN

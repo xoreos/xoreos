@@ -63,28 +63,22 @@ public:
 	/** Last time info was changed that's displayed in the GUI. */
 	uint32 lastChangedGUIDisplay() const;
 
-	void show();
-	void hide();
-
-	void setPosition(float x, float y, float z);
-	void setOrientation(float x, float y, float z);
-
-	void enter();
-	void leave();
-
-	void highlight(bool enabled);
-
-	bool click(Object *triggerer);
-
 	/** Load from a character file. */
 	void loadCharacter(Common::SeekableReadStream &stream);
 	/** Load from a creature instance. */
 	void load(const Aurora::GFFStruct &creature);
 
+	// Basic visuals
+
+	void show(); ///< Show the creature's model.
+	void hide(); ///< Hide the creature's model.
+
 	/** Load the creature's model. */
 	void loadModel();
 	/** Unload the creature's model. */
 	void unloadModel();
+
+	// Basic properties
 
 	/** Return the creature's first name. */
 	const Common::UString &getFirstName() const;
@@ -154,18 +148,47 @@ public:
 	/** Return the max HP this creature can have. */
 	int32 getMaxHP() const;
 
-	void addAssociate(Creature &henchman, AssociateType type);
-	void removeAssociate(Creature &henchman);
+	// Object/Object interactions
 
+	/** Add an associate (henchman, familiar, ...). */
+	void addAssociate(Creature &associate, AssociateType type);
+	/** Remove an associate (henchman, familiar, ...). */
+	void removeAssociate(Creature &ssociate);
+
+	/** Get this creature's nth's associate of a specific type. */
 	Creature *getAssociate(AssociateType type, int nth = 1) const;
 
-	void setMaster(Creature *master = 0);
+	/** Return the creature's master. */
 	Creature *getMaster() const;
+	/** Set the creature's master. */
+	void setMaster(Creature *master = 0);
 
+	/** Is this creature commandable (has a modifyable action queue)? */
 	bool isCommandable() const;
+	/** Set whether this creature commandable (has a modifyable action queue). */
 	void setCommandable(bool commandable);
 
+	// Positioning
+
+	/** Set the creature's position. */
+	void setPosition(float x, float y, float z);
+	/** Set the creature's orientation. */
+	void setOrientation(float x, float y, float z);
+
+	// Object/Cursor interactions
+
+	void enter(); ///< The cursor entered the creature. */
+	void leave(); ///< The cursor left the creature. */
+
+	/** (Un)Highlight the creature. */
+	virtual void highlight(bool enabled);
+
+	/** The creature was clicked. */
+	virtual bool click(Object *triggerer = 0);
+
+
 private:
+	/** Parts of a creature's body. */
 	enum BodyPartType {
 		kBodyPartHead       = 0,
 		kBodyPartNeck          ,
@@ -189,98 +212,108 @@ private:
 		kBodyPartMAX
 	};
 
+	/** A class. */
 	struct Class {
-		uint32 classID;
-		uint16 level;
+		uint32 classID; ///< Index into classes.2da.
+		uint16 level;   ///< Levels of that class.
 	};
 
+	/** An assocatiate. */
 	struct Associate {
-		AssociateType type;
-		Creature *associate;
+		AssociateType type;  ///< The associate's type.
+		Creature *associate; ///< The associate.
 
 		Associate(AssociateType t = kAssociateTypeNone, Creature *a = 0);
 	};
 
+	/** A part of a creature body. */
 	struct BodyPart {
-		uint32 id;
-		Common::UString modelName;
-		std::list<Graphics::Aurora::PLTHandle> plts;
+		uint32 id; ///< Index of the part variant.
+		Common::UString modelName; ///< Name of the model.
+		std::list<Graphics::Aurora::PLTHandle> plts; ///< Paletted textures.
 
 		BodyPart();
 	};
 
+	/** The time a GUI relevant property was changed last. */
 	uint32 _lastChangedGUIDisplay;
 
-	Common::UString _firstName;
-	Common::UString _lastName;
+	Common::UString _firstName; ///< The creature's first name.
+	Common::UString _lastName;  ///< The creature's last name.
 
-	uint32 _gender;
-	uint32 _race;
+	uint32 _gender; ///< The creature's gender.
+	uint32 _race;   ///< The creature's race.
 
-	Common::UString _subRace;
+	Common::UString _subRace; ///< The creature's subrace.
 
-	bool _isPC;
-	bool _isDM;
+	bool _isPC; ///< Is the creature a PC?
+	bool _isDM; ///< Is the creature a DM?
 
-	uint32 _age;
+	uint32 _age; ///< The creature's age.
 
-	uint32 _xp;
+	uint32 _xp; ///< The creature's experience.
 
-	int32 _baseHP;
-	int32 _bonusHP;
-	int32 _currentHP;
+	int32 _baseHP;    ///< The creature's base maximum health points.
+	int32 _bonusHP;   ///< The creature's bonus health points.
+	int32 _currentHP; ///< The creature's current health points.
 
-	uint8 _abilities[kAbilityMAX];
+	uint8 _abilities[kAbilityMAX]; ///< The creature's abilities.
 
-	std::vector<Class>  _classes;
-	std::vector<int8>   _skills;
-	std::vector<uint32> _feats;
+	std::vector<Class>  _classes; ///< The creature's classes.
+	std::vector<int8>   _skills;  ///< The creature's skills.
+	std::vector<uint32> _feats;   ///< The creature's feats.
 
-	uint8 _hitDice;
+	uint8 _hitDice; ///< The creature's hit dice.
 
-	Common::UString _deity;
+	Common::UString _deity; ///< The creature's deity.
 
-	uint8 _goodEvil;
-	uint8 _lawChaos;
+	uint8 _goodEvil; ///< The creature's good/evil value (0-100).
+	uint8 _lawChaos; ///< The creature's law/chaos value (0-100);
 
-	uint32 _appearanceID;
-	uint32 _phenotype;
+	uint32 _appearanceID; ///< The creature's general appearance.
+	uint32 _phenotype;    ///< The creature's phenotype.
 
-	std::vector<BodyPart> _bodyParts;
+	std::vector<BodyPart> _bodyParts; ///< The creature's body parts.
 
-	uint32 _colorSkin;
-	uint32 _colorHair;
-	uint32 _colorTattoo1;
-	uint32 _colorTattoo2;
+	uint32 _colorSkin;    ///< The color of the creature's skin.
+	uint32 _colorHair;    ///< The color of the creature's hair.
+	uint32 _colorTattoo1; ///< The 1. color of the creature's tattoo.
+	uint32 _colorTattoo2; ///< The 2. color of the creature's tattoo.
 
-	Creature *_master;
-	std::list<Associate> _associates;
+	Creature *_master;                ///< The creature's master.
+	std::list<Associate> _associates; ///< The creature's associates.
 
+	/** Is the creature commandable (has a modifyable action queue)? */
 	bool _isCommandable;
 
-	Graphics::Aurora::Model *_model;
+	Graphics::Aurora::Model *_model; ///< The creature's model. */
 
-	Tooltip *_tooltip;
+	Tooltip *_tooltip; ///< The tooltip displayed over the creature.
 
 
+	/** Load the creature from an instance and its blueprint. */
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
 
+	/** Load general creature properties. */
 	void loadProperties(const Aurora::GFFStruct &gff);
+	/** Load the creature's portrait. */
 	void loadPortrait(const Aurora::GFFStruct &gff);
 
+	/** Construct the resource name of a body part model. */
 	void constructModelName(const Common::UString &type, uint32 id,
 	                        const Common::UString &gender,
 	                        const Common::UString &race,
 	                        const Common::UString &phenoType,
 	                        const Common::UString &phenoTypeAlt,
 	                        Common::UString &model);
-	void getPartModels();
+	void getPartModels(); ///< Construct all body part models' resource names.
 
+	/** Finished those paletted textures. */
 	void finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts);
 
-	void createTooltip();
-	void showTooltip();
-	void hideTooltip();
+	void createTooltip(); ///< Create the tooltip.
+	void showTooltip();   ///< Show the tooltip.
+	void hideTooltip();   ///< Hide the tooltip.
 };
 
 } // End of namespace NWN

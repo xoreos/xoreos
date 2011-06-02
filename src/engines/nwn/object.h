@@ -58,94 +58,133 @@ namespace NWN {
 /** An object within a NWN area. */
 class Object : public Aurora::NWScript::Object, public ScriptContainer {
 public:
-	Object(ObjectType type);
 	virtual ~Object();
 
+	/** Return the exact type of the object. */
 	ObjectType getType() const;
 
+	/** Was the object loaded, or is it still empty? */
 	bool loaded() const;
 
-	virtual void show();
-	virtual void hide();
+	// Basic visuals
 
-	const Common::UString &getName() const;
-	const Common::UString &getDescription() const;
+	virtual void show(); ///< Show the object's model(s).
+	virtual void hide(); ///< Hide the object's model(s).
 
-	const Common::UString &getPortrait() const;
-
-	const Common::UString &getConversation() const;
-
-	const Aurora::SSFFile *getSSF();
-
-	bool isStatic() const;
-	bool isUsable() const;
-
-	bool isClickable() const;
-
+	/** Return the object's model IDs. */
 	const std::list<uint32> &getIDs() const;
 
+	// Basic properties
+
+	/** Return the object's name. */
+	const Common::UString &getName() const;
+	/** Return the object's description. */
+	const Common::UString &getDescription() const;
+	/** Return the object's portrait. */
+	const Common::UString &getPortrait() const;
+
+	/** Return the object's default conversation (DLG). */
+	const Common::UString &getConversation() const;
+
+	/** Return the object's sound set. */
+	const Aurora::SSFFile *getSSF();
+
+	// Interactive properties
+
+	bool isStatic() const; ///< Is the object static (not manipulatable at all)?
+	bool isUsable() const; ///< Can the object be used by the PC?
+
+	bool isClickable() const; ///< Can the player click the object?
+
+	// Object/Object interactions
+
+	/** Return the PC currently speaking with this object. */
 	Aurora::NWScript::Object *getPCSpeaker() const;
+	/** Set the PC currently speaking with this object. */
 	void setPCSpeaker(Aurora::NWScript::Object *pc);
 
+	/** Return the area this object is currently in. */
 	Aurora::NWScript::Object *getArea() const;
+	/** Set the area this object is currently in. */
 	void setArea(Aurora::NWScript::Object *area);
 
-	Location getLocation() const;
+	// Positioning
 
+	/** Return the object's position within its area. */
 	virtual void getPosition(float &x, float &y, float &z) const;
+	/** Return the object's orientation. */
 	virtual void getOrientation(float &x, float &y, float &z) const;
 
+	/** Set the object's position within its area. */
 	virtual void setPosition(float x, float y, float z);
+	/** Set the object's orientation. */
 	virtual void setOrientation(float x, float y, float z);
 
-	virtual void enter();
-	virtual void leave();
+	/** Create a Location out of the object's area, position and orientation. */
+	Location getLocation() const;
 
+	// Object/Cursor interactions
+
+	virtual void enter(); ///< The cursor entered the object. */
+	virtual void leave(); ///< The cursor left the object. */
+
+	/** (Un)Highlight the object. */
 	virtual void highlight(bool enabled);
 
+	/** The object was clicked. */
 	virtual bool click(Object *triggerer = 0);
 
+	// Object (text) talking
+
+	/** Speak the specified string. */
 	void speakString(const Common::UString &string, uint32 volume);
+	/** Speak an one-liner from the specified conversation file. */
 	void speakOneLiner(Common::UString conv, Object *tokenTarget = 0);
 
+	// Sound
+
+	/** Stop the current object sound. */
 	void stopSound();
+	/** Play an object sound. */
 	void playSound(const Common::UString &sound, bool pitchVariance = false);
 
 
 protected:
-	ObjectType _type;
+	ObjectType _type; ///< The object's type.
 
-	bool _loaded;
+	bool _loaded; ///< Is the object non-empty?
 
-	Common::UString _name;
-	Common::UString _description;
+	Common::UString _name;        ///< The object's display name.
+	Common::UString _description; ///< The object's description.
 
-	Common::UString _portrait;
+	Common::UString _portrait; ///< The object's portrait.
 
-	Common::UString _conversation;
+	Common::UString _conversation; ///< The object's default conversation.
 
-	uint32 _soundSet;
+	uint32 _soundSet;      ///< The object's sound set, as an index into soundset.2da.
+	Aurora::SSFFile *_ssf; ///< The object's sound set.
 
-	Aurora::SSFFile *_ssf;
+	bool _static; ///< Is the object static?
+	bool _usable; ///< Is the object usable?
 
-	bool _static;
-	bool _usable;
+	std::list<uint32> _ids; ///< The object's model IDs.
 
-	std::list<uint32> _ids;
+	Aurora::NWScript::Object *_pcSpeaker; ///< The current PC speaking with the object.
+	Aurora::NWScript::Object *_area;      ///< The area the object is currently in.
 
-	Aurora::NWScript::Object *_pcSpeaker;
-	Aurora::NWScript::Object *_area;
+	float _position[3];    ///< The object's position.
+	float _orientation[3]; ///< The object's orientation.
 
-	float _position[3];
-	float _orientation[3];
-
-	Sound::ChannelHandle _sound;
+	Sound::ChannelHandle _sound; ///< The currently playing object sound.
 
 
+	Object(ObjectType type);
+
+	/** Completely clear the object. */
 	void clear();
-
+	/** Load the object's sound set. */
 	void loadSSF();
-
+	/** Begin a conversation between the triggerer and this object. */
 	bool beginConversation(Object *triggerer);
 };
 
