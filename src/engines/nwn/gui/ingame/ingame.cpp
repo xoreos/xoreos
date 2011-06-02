@@ -167,11 +167,11 @@ void IngameGUI::setPoisoned(uint partyMember) {
 	_party[partyMember]->setHealthColor(132.0 / 255.0, 182.0 / 255.0,  74.0 / 255.0, 1.0);
 }
 
-void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature) {
+void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature, bool force) {
 	assert(partyMember < _party.size());
 
 	uint32 lastPartyMemberChange = creature.lastChangedGUIDisplay();
-	if (lastPartyMemberChange <= _lastPartyMemberChange[partyMember])
+	if (!force && (lastPartyMemberChange <= _lastPartyMemberChange[partyMember]))
 		return;
 
 	setPortrait(partyMember, creature.getPortrait());

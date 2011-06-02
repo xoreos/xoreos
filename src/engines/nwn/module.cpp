@@ -252,6 +252,8 @@ bool Module::usePC(const CharacterID &c) {
 
 	addObject(_pc);
 
+	_ingameGUI->updatePartyMember(0, _pc, true);
+
 	_hasPC = true;
 	return true;
 }

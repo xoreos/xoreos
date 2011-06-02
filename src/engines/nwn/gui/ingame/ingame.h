@@ -75,7 +75,7 @@ public:
 	void setArea(const Common::UString &area);
 
 	/** Update the party member. */
-	void updatePartyMember(uint partyMember, const Creature &creature);
+	void updatePartyMember(uint partyMember, const Creature &creature, bool force = false);
 
 	/** Do we have a currently running conversation? */
 	bool hasRunningConversation() const;
