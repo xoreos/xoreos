@@ -54,7 +54,8 @@
 #include "engines/nwn/charstore.h"
 #include "engines/nwn/console.h"
 #include "engines/nwn/module.h"
-#include "engines/nwn/scriptfuncs.h"
+
+#include "engines/nwn/script/functions.h"
 
 #include "engines/nwn/gui/legal.h"
 #include "engines/nwn/gui/main/main.h"

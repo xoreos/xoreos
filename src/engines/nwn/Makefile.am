@@ -5,7 +5,6 @@ noinst_LTLIBRARIES = libnwn.la
 noinst_HEADERS = nwn.h \
                  types.h \
                  modelloader.h \
-                 scriptfuncs.h \
                  ifofile.h \
                  creature.h \
                  charstore.h \
@@ -20,6 +19,7 @@ noinst_HEADERS = nwn.h \
                  placeable.h \
                  door.h \
                  location.h \
+                 script/functions.h \
                  gui/gui.h \
                  gui/legal.h \
                  gui/widgets/tooltip.h \
@@ -74,7 +74,6 @@ noinst_HEADERS = nwn.h \
 libnwn_la_SOURCES = nwn.cpp \
                     types.cpp \
                     modelloader.cpp \
-                    scriptfuncs.cpp \
                     ifofile.cpp \
                     creature.cpp \
                     charstore.cpp \
@@ -89,6 +88,16 @@ libnwn_la_SOURCES = nwn.cpp \
                     placeable.cpp \
                     door.cpp \
                     location.cpp \
+                    script/functions.cpp \
+                    script/functions_000.cpp \
+                    script/functions_100.cpp \
+                    script/functions_200.cpp \
+                    script/functions_300.cpp \
+                    script/functions_400.cpp \
+                    script/functions_500.cpp \
+                    script/functions_600.cpp \
+                    script/functions_700.cpp \
+                    script/functions_800.cpp \
                     gui/gui.cpp \
                     gui/legal.cpp \
                     gui/widgets/tooltip.cpp \
