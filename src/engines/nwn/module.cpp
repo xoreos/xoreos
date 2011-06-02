@@ -55,28 +55,35 @@
 
 #include "engines/nwn/gui/ingame/ingame.h"
 
-static const uint32 kStrMaleFemale =  156;
-static const uint32 kStrmalefemale = 4924;
-static const uint32 kStrBoyGirl    = 4860;
-static const uint32 kStrboygirl    = 4862;
-static const uint32 kStrBroSis     = 4864;
-static const uint32 kStrbrosis     = 4866;
-static const uint32 kStrHeShe      = 4869;
-static const uint32 kStrheshe      = 4871;
-static const uint32 kStrHimHer     = 4873;
-static const uint32 kStrhimher     = 4875;
-static const uint32 kStrHishis     = 4877;
-static const uint32 kStrHershers   = 4879;
-static const uint32 kStrLadLass    = 4881;
-static const uint32 kStrladlass    = 4883;
-static const uint32 kStrLordLady   = 4885;
-static const uint32 kStrlordlady   = 4887;
-static const uint32 kStrManWoman   = 4926;
-static const uint32 kStrmanwoman   = 4928;
-static const uint32 kStrSirMadam   = 4939;
-static const uint32 kStrsirmadam   = 4941;
-static const uint32 kStrBastard    = 1757;
-static const uint32 kStrBitch      = 1739;
+struct GenderToken {
+	const char *token;
+	uint32 male;
+	uint32 female;
+};
+
+static const GenderToken kGenderTokens[] = {
+	{"<Male/Female>"    ,  156,  157},
+	{"<male/female>"    , 4924, 4925},
+	{"<Boy/Girl>"       , 4860, 4861},
+	{"<boy/girl>"       , 4862, 4863},
+	{"<Brother/Sister>" , 4864, 4865},
+	{"<brother/sister>" , 4866, 4867},
+	{"<He/She>"         , 4869, 4870},
+	{"<he/she>"         , 4871, 4872},
+	{"<Him/Her>"        , 4873, 4874},
+	{"<him/her>"        , 4875, 4876},
+	{"<His/his>"        , 4877, 4878},
+	{"<Hers/hers>"      , 4879, 4880},
+	{"<Lad/Lass>"       , 4881, 4882},
+	{"<lad/lass>"       , 4883, 4884},
+	{"<Lord/Lady>"      , 4885, 4886},
+	{"<lord/lady>"      , 4887, 4888},
+	{"<Man/Woman>"      , 4926, 4927},
+	{"<man/woman>"      , 4928, 4929},
+	{"<Sir/Madam>"      , 4939, 4940},
+	{"<sir/madam>"      , 4941, 4942},
+	{"<bitch/bastard>"  , 1757, 1739}
+};
 
 namespace Engines {
 
@@ -170,28 +177,11 @@ void Module::setPCTokens() {
 
 	TokenMan.set("<Deity>", _pc.getDeity());
 
-	TokenMan.set("<Male/Female>"   , TalkMan.getString(kStrMaleFemale + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<male/female>"   , TalkMan.getString(kStrmalefemale + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<Boy/Girl>"      , TalkMan.getString(kStrBoyGirl    + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<boy/girl>"      , TalkMan.getString(kStrboygirl    + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<Brother/Sister>", TalkMan.getString(kStrBroSis     + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<brother/sister>", TalkMan.getString(kStrbrosis     + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<He/She>"        , TalkMan.getString(kStrHeShe      + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<he/she>"        , TalkMan.getString(kStrheshe      + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<Him/Her>"       , TalkMan.getString(kStrHimHer     + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<him/her>"       , TalkMan.getString(kStrhimher     + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<His/his>"       , TalkMan.getString(kStrHishis     + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<Hers/hers>"     , TalkMan.getString(kStrHershers   + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<Lad/Lass>"      , TalkMan.getString(kStrLadLass    + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<lad/lass>"      , TalkMan.getString(kStrladlass    + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<Lord/Lady>"     , TalkMan.getString(kStrLordLady   + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<lord/lady>"     , TalkMan.getString(kStrlordlady   + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<Man/Woman>"     , TalkMan.getString(kStrManWoman   + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<man/woman>"     , TalkMan.getString(kStrmanwoman   + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<Sir/Madam>"     , TalkMan.getString(kStrSirMadam   + (_pc.isFemale() ? 1 : 0)));
-	TokenMan.set("<sir/madam>"     , TalkMan.getString(kStrsirmadam   + (_pc.isFemale() ? 1 : 0)));
+	for (int i = 0; i < ARRAYSIZE(kGenderTokens); i++) {
+		const uint32 strRef = _pc.isFemale() ? kGenderTokens[i].female : kGenderTokens[i].male;
 
-	TokenMan.set("<bitch/bastard>", TalkMan.getString(_pc.isFemale() ? kStrBitch : kStrBastard));
+		TokenMan.set(kGenderTokens[i].token, TalkMan.getString(strRef));
+	}
 
 	// TODO: <Level>
 	// TODO: <Alignment>, <alignment>
@@ -217,24 +207,8 @@ void Module::removePCTokens() {
 
 	TokenMan.remove("<Deity>");
 
-	TokenMan.remove("<Male/Female>");
-	TokenMan.remove("<male/female>");
-	TokenMan.remove("<Boy/Girl>");
-	TokenMan.remove("<boy/girl>");
-	TokenMan.remove("<Brother/Sister>");
-	TokenMan.remove("<brother/sister>");
-	TokenMan.remove("<He/She>");
-	TokenMan.remove("<he/she>");
-	TokenMan.remove("<Him/Her>");
-	TokenMan.remove("<him/her>");
-	TokenMan.remove("<His/his>");
-	TokenMan.remove("<Hers/hers>");
-	TokenMan.remove("<Lad/Lass>");
-	TokenMan.remove("<lad/lass>");
-	TokenMan.remove("<Lord/Lady>");
-	TokenMan.remove("<lord/lady>");
-
-	TokenMan.remove("<bitch/bastard>");
+	for (int i = 0; i < ARRAYSIZE(kGenderTokens); i++)
+		TokenMan.remove(kGenderTokens[i].token);
 }
 
 bool Module::usePC(const CharacterID &c) {
