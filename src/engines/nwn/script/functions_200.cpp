@@ -31,13 +31,8 @@
 
 #include "common/util.h"
 #include "common/error.h"
-#include "common/maths.h"
-#include "common/configman.h"
 
 #include "aurora/talkman.h"
-#include "aurora/ssffile.h"
-#include "aurora/2dafile.h"
-#include "aurora/2dareg.h"
 
 #include "aurora/nwscript/types.h"
 #include "aurora/nwscript/util.h"
@@ -51,8 +46,6 @@
 #include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
 #include "engines/nwn/object.h"
-#include "engines/nwn/waypoint.h"
-#include "engines/nwn/door.h"
 #include "engines/nwn/creature.h"
 #include "engines/nwn/location.h"
 

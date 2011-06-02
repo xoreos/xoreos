@@ -27,25 +27,10 @@
  *  NWN script functions.
  */
 
-#include "boost/bind.hpp"
-
 #include "common/util.h"
-#include "common/error.h"
-#include "common/maths.h"
-#include "common/configman.h"
 
-#include "aurora/talkman.h"
-#include "aurora/ssffile.h"
-#include "aurora/2dafile.h"
-#include "aurora/2dareg.h"
-
-#include "aurora/nwscript/types.h"
-#include "aurora/nwscript/util.h"
-#include "aurora/nwscript/functioncontext.h"
+#include "aurora/nwscript/variable.h"
 #include "aurora/nwscript/functionman.h"
-#include "aurora/nwscript/ncsfile.h"
-
-#include "engines/aurora/tokenman.h"
 
 #include "engines/nwn/types.h"
 #include "engines/nwn/module.h"
@@ -59,18 +44,6 @@
 #include "engines/nwn/script/functions.h"
 
 using Aurora::kObjectIDInvalid;
-
-// NWScript
-using Aurora::NWScript::kTypeVoid;
-using Aurora::NWScript::kTypeInt;
-using Aurora::NWScript::kTypeFloat;
-using Aurora::NWScript::kTypeString;
-using Aurora::NWScript::kTypeObject;
-using Aurora::NWScript::kTypeEngineType;
-using Aurora::NWScript::kTypeVector;
-using Aurora::NWScript::kTypeScriptState;
-using Aurora::NWScript::createSignature;
-using Aurora::NWScript::createDefaults;
 
 namespace Engines {
 
@@ -139,7 +112,7 @@ ScriptFunctions::Defaults::Defaults() {
 
 	object0     = new Aurora::NWScript::Variable((Aurora::NWScript::Object *) 0);
 	stringEmpty = new Aurora::NWScript::Variable("");
-	vector0     = new Aurora::NWScript::Variable(kTypeVector);
+	vector0     = new Aurora::NWScript::Variable(Aurora::NWScript::kTypeVector);
 }
 
 ScriptFunctions::Defaults::~Defaults() {

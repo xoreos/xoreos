@@ -42,6 +42,8 @@
 
 #include "aurora/nwscript/object.h"
 
+#include "graphics/aurora/types.h"
+
 #include "sound/types.h"
 
 #include "events/types.h"
