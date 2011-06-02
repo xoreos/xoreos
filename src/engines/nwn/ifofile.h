@@ -35,7 +35,7 @@
 
 #include "aurora/locstring.h"
 
-#include "engines/nwn/scriptcontainer.h"
+#include "engines/nwn/script/container.h"
 
 namespace Engines {
 

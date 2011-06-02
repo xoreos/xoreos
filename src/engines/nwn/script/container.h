@@ -23,12 +23,12 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/nwn/scriptcontainer.h
+/** @file engines/nwn/script/container.h
  *  An object containing scripts.
  */
 
-#ifndef ENGINES_NWN_SCRIPTCONTAINER_H
-#define ENGINES_NWN_SCRIPTCONTAINER_H
+#ifndef ENGINES_NWN_SCRIPT_CONTAINER_H
+#define ENGINES_NWN_SCRIPT_CONTAINER_H
 
 #include "common/types.h"
 #include "common/ustring.h"
@@ -74,4 +74,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_SCRIPTCONTAINER_H
+#endif // ENGINES_NWN_SCRIPT_CONTAINER_H

@@ -12,13 +12,13 @@ noinst_HEADERS = nwn.h \
                  module.h \
                  area.h \
                  tileset.h \
-                 scriptcontainer.h \
                  object.h \
                  waypoint.h \
                  situated.h \
                  placeable.h \
                  door.h \
                  location.h \
+                 script/container.h \
                  script/functions.h \
                  gui/gui.h \
                  gui/legal.h \
@@ -81,13 +81,13 @@ libnwn_la_SOURCES = nwn.cpp \
                     module.cpp \
                     area.cpp \
                     tileset.cpp \
-                    scriptcontainer.cpp \
                     object.cpp \
                     waypoint.cpp \
                     situated.cpp \
                     placeable.cpp \
                     door.cpp \
                     location.cpp \
+                    script/container.cpp \
                     script/functions.cpp \
                     script/functions_000.cpp \
                     script/functions_100.cpp \

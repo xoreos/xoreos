@@ -39,8 +39,9 @@
 
 #include "sound/types.h"
 
-#include "engines/nwn/scriptcontainer.h"
 #include "engines/nwn/location.h"
+
+#include "engines/nwn/script/container.h"
 
 namespace Aurora {
 	class SSFFile;

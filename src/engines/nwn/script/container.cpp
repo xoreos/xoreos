@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/nwn/scriptcontainer.cpp
+/** @file engines/nwn/script/container.cpp
  *  An object containing scripts.
  */
 
@@ -36,7 +36,7 @@
 #include "aurora/nwscript/variable.h"
 #include "aurora/nwscript/ncsfile.h"
 
-#include "engines/nwn/scriptcontainer.h"
+#include "engines/nwn/script/container.h"
 
 namespace Engines {
 
