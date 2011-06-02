@@ -80,6 +80,10 @@ static const GenderToken kGenderTokens[] = {
 	{"<lord/lady>"      , 4887, 4888},
 	{"<Man/Woman>"      , 4926, 4927},
 	{"<man/woman>"      , 4928, 4929},
+	{"<Master/Mistress>", 4930, 4931},
+	{"<master/mistress>", 4932, 4933},
+	{"<Mister/Missus>"  , 4934, 4935},
+	{"<mister/missus>"  , 4936, 4937},
 	{"<Sir/Madam>"      , 4939, 4940},
 	{"<sir/madam>"      , 4941, 4942},
 	{"<bitch/bastard>"  , 1757, 1739}
