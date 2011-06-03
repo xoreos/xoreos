@@ -44,6 +44,7 @@ class UString;
 class File : public SeekableReadStream, public NonCopyable {
 public:
 	File();
+	File(const UString &fileName);
 	~File();
 
 	/**

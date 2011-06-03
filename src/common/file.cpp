@@ -28,11 +28,17 @@
  */
 
 #include "common/file.h"
+#include "common/error.h"
 #include "common/ustring.h"
 
 namespace Common {
 
 File::File() : _handle(0), _size(-1) {
+}
+
+File::File(const UString &fileName) : _handle(0), _size(-1) {
+	if (!open(fileName))
+		throw Exception("Can't open file \"%s\"", fileName.c_str());
 }
 
 File::~File() {
