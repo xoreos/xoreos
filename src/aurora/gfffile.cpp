@@ -194,16 +194,14 @@ void GFFFile::readLists() {
 
 }
 
+Common::SeekableReadStream &GFFFile::getStream() const {
+	return *_stream;
+}
+
 Common::SeekableReadStream &GFFFile::getFieldData() const {
 	_stream->seek(_header.fieldDataOffset);
 
 	return *_stream;
-}
-
-Common::SeekableReadStream &GFFFile::getFieldData(uint32 &size) const {
-	size = _header.fieldDataCount;
-
-	return getFieldData();
 }
 
 
@@ -227,30 +225,32 @@ GFFStruct::Field::Field(FieldType t, uint32 d) : type(t), data(d) {
 GFFStruct::GFFStruct(const GFFFile &parent, Common::SeekableReadStream &gff) :
 	_parent(&parent) {
 
-	_id = gff.readUint32LE();
-
-	uint32 index = gff.readUint32LE(); // Index of the field / field indices
-	uint32 count = gff.readUint32LE(); // Number of fields
-
-	uint32 curPos = gff.pos();
-
-	// Read the field(s)
-	if      (count == 1)
-		readField (gff, index);
-	else if (count > 1)
-		readFields(gff, index, count);
-
-	gff.seek(curPos);
+	_id         = gff.readUint32LE();
+	_fieldIndex = gff.readUint32LE();
+	_fieldCount = gff.readUint32LE();
 }
 
 GFFStruct::~GFFStruct() {
 }
 
-void GFFStruct::readField(Common::SeekableReadStream &gff, uint32 index) {
+void GFFStruct::load() const {
+	if (!_fields.empty())
+		return;
+
+	Common::SeekableReadStream &gff = _parent->getStream();
+
+	// Read the field(s)
+	if      (_fieldCount == 1)
+		readField (gff, _fieldIndex);
+	else if (_fieldCount > 1)
+		readFields(gff, _fieldIndex, _fieldCount);
+}
+
+void GFFStruct::readField(Common::SeekableReadStream &gff, uint32 index) const {
 	// Sanity check
 	if (index > _parent->_header.fieldCount)
 		throw Common::Exception("Field index out of range (%d/%d)",
-			 	index, _parent->_header.fieldCount);
+				index, _parent->_header.fieldCount);
 
 	// Seek
 	if (!gff.seek(_parent->_header.fieldOffset + index * 12))
@@ -265,7 +265,8 @@ void GFFStruct::readField(Common::SeekableReadStream &gff, uint32 index) {
 	_fields[readLabel(gff, label)] = Field((FieldType) type, data);
 }
 
-void GFFStruct::readFields(Common::SeekableReadStream &gff, uint32 index, uint32 count) {
+void GFFStruct::readFields(Common::SeekableReadStream &gff,
+                           uint32 index, uint32 count) const {
 	// Sanity check
 	if (index > _parent->_header.fieldIndicesCount)
 		throw Common::Exception("Field indices index out of range (%d/%d)",
@@ -285,13 +286,13 @@ void GFFStruct::readFields(Common::SeekableReadStream &gff, uint32 index, uint32
 }
 
 void GFFStruct::readIndices(Common::SeekableReadStream &gff,
-                               std::vector<uint32> &indices, uint32 count) {
+                            std::vector<uint32> &indices, uint32 count) const {
 	indices.reserve(count);
 	while (count-- > 0)
 		indices.push_back(gff.readUint32LE());
 }
 
-Common::UString GFFStruct::readLabel(Common::SeekableReadStream &gff, uint32 index) {
+Common::UString GFFStruct::readLabel(Common::SeekableReadStream &gff, uint32 index) const {
 	gff.seek(_parent->_header.labelOffset + index * 16);
 
 	Common::UString label;
@@ -323,10 +324,14 @@ uint GFFStruct::getFieldCount() const {
 }
 
 bool GFFStruct::hasField(const Common::UString &field) const {
+	load();
+
 	return getField(field) != 0;
 }
 
 char GFFStruct::getChar(const Common::UString &field, char def) const {
+	load();
+
 	const Field *f = getField(field);
 	if (!f)
 		return def;
@@ -337,6 +342,8 @@ char GFFStruct::getChar(const Common::UString &field, char def) const {
 }
 
 uint64 GFFStruct::getUint(const Common::UString &field, uint64 def) const {
+	load();
+
 	const Field *f = getField(field);
 	if (!f)
 		return def;
@@ -363,6 +370,8 @@ uint64 GFFStruct::getUint(const Common::UString &field, uint64 def) const {
 }
 
 int64 GFFStruct::getSint(const Common::UString &field, int64 def) const {
+	load();
+
 	const Field *f = getField(field);
 	if (!f)
 		return def;
@@ -389,10 +398,14 @@ int64 GFFStruct::getSint(const Common::UString &field, int64 def) const {
 }
 
 bool GFFStruct::getBool(const Common::UString &field, bool def) const {
+	load();
+
 	return getUint(field, def) != 0;
 }
 
 double GFFStruct::getDouble(const Common::UString &field, double def) const {
+	load();
+
 	const Field *f = getField(field);
 	if (!f)
 		return def;
@@ -407,6 +420,7 @@ double GFFStruct::getDouble(const Common::UString &field, double def) const {
 
 Common::UString GFFStruct::getString(const Common::UString &field,
                                         const Common::UString &def) const {
+	load();
 
 	const Field *f = getField(field);
 	if (!f)
@@ -472,6 +486,8 @@ Common::UString GFFStruct::getString(const Common::UString &field,
 }
 
 void GFFStruct::getLocString(const Common::UString &field, LocString &str) const {
+	load();
+
 	const Field *f = getField(field);
 	if (!f)
 		return;
@@ -488,6 +504,8 @@ void GFFStruct::getLocString(const Common::UString &field, LocString &str) const
 }
 
 Common::SeekableReadStream *GFFStruct::getData(const Common::UString &field) const {
+	load();
+
 	const Field *f = getField(field);
 	if (!f)
 		return 0;
@@ -502,7 +520,8 @@ Common::SeekableReadStream *GFFStruct::getData(const Common::UString &field) con
 }
 
 void GFFStruct::getVector(const Common::UString &field,
-		float &x, float &y, float &z) const {
+                          float &x, float &y, float &z) const {
+	load();
 
 	const Field *f = getField(field);
 	if (!f)
@@ -518,7 +537,8 @@ void GFFStruct::getVector(const Common::UString &field,
 }
 
 void GFFStruct::getOrientation(const Common::UString &field,
-		float &a, float &b, float &c, float &d) const {
+                               float &a, float &b, float &c, float &d) const {
+	load();
 
 	const Field *f = getField(field);
 	if (!f)
@@ -535,7 +555,8 @@ void GFFStruct::getOrientation(const Common::UString &field,
 }
 
 void GFFStruct::getVector(const Common::UString &field,
-		double &x, double &y, double &z) const {
+                          double &x, double &y, double &z) const {
+	load();
 
 	const Field *f = getField(field);
 	if (!f)
@@ -551,7 +572,8 @@ void GFFStruct::getVector(const Common::UString &field,
 }
 
 void GFFStruct::getOrientation(const Common::UString &field,
-		double &a, double &b, double &c, double &d) const {
+                               double &a, double &b, double &c, double &d) const {
+	load();
 
 	const Field *f = getField(field);
 	if (!f)
@@ -568,6 +590,8 @@ void GFFStruct::getOrientation(const Common::UString &field,
 }
 
 const GFFStruct &GFFStruct::getStruct(const Common::UString &field) const {
+	load();
+
 	const Field *f = getField(field);
 	if (!f)
 		throw Common::Exception("No such field");
@@ -579,6 +603,8 @@ const GFFStruct &GFFStruct::getStruct(const Common::UString &field) const {
 }
 
 const GFFList &GFFStruct::getList(const Common::UString &field, uint32 &size) const {
+	load();
+
 	const Field *f = getField(field);
 	if (!f)
 		throw Common::Exception("No such field");

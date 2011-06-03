@@ -103,10 +103,10 @@ private:
 	std::vector<uint32> _listOffsetToIndex;
 
 
-	/** Returns the GFF stream seeked to the start of the field data. */
+	/** Return the GFF stream. */
+	Common::SeekableReadStream &getStream() const;
+	/** Return the GFF stream seeked to the start of the field data. */
 	Common::SeekableReadStream &getFieldData() const;
-	/** Returns the GFF stream seeked to the start of the field data. */
-	Common::SeekableReadStream &getFieldData(uint32 &size) const;
 
 	/** Return a struct within the GFF. */
 	const GFFStruct &getStruct(uint32 i) const;
@@ -195,11 +195,16 @@ private:
 
 	const GFFFile *_parent; ///< The parent GFF.
 
-	uint32 _id; ///< The struct's ID.
-	FieldMap _fields; ///< The fields, indexed by their label.
+	uint32 _id;         ///< The struct's ID.
+	uint32 _fieldIndex; ///< Field / Field indices index.
+	uint32 _fieldCount; ///< Field count.
+
+	mutable FieldMap _fields; ///< The fields, indexed by their label.
 
 	GFFStruct(const GFFFile &parent, Common::SeekableReadStream &gff);
 	~GFFStruct();
+
+	void load() const;
 
 	/** Returns the field with this tag. */
 	const Field *getField(const Common::UString &name) const;
@@ -207,11 +212,11 @@ private:
 	Common::SeekableReadStream &getData(const Field &field) const;
 
 	// Loading helpers
-	void readField  (Common::SeekableReadStream &gff, uint32 index);
-	void readFields (Common::SeekableReadStream &gff, uint32 index, uint32 count);
+	void readField  (Common::SeekableReadStream &gff, uint32 index) const;
+	void readFields (Common::SeekableReadStream &gff, uint32 index, uint32 count) const;
 	void readIndices(Common::SeekableReadStream &gff,
-	                 std::vector<uint32> &indices, uint32 count);
-	Common::UString readLabel(Common::SeekableReadStream &gff, uint32 index);
+	                 std::vector<uint32> &indices, uint32 count) const;
+	Common::UString readLabel(Common::SeekableReadStream &gff, uint32 index) const;
 
 	friend class GFFFile;
 };
