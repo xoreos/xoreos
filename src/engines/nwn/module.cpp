@@ -515,6 +515,8 @@ void Module::loadTexturePack() {
 void Module::unloadTexturePack() {
 	for (int i = 0; i < 4; i++)
 		ResMan.undo(_resTP[i]);
+
+	_currentTexturePack = -1;
 }
 
 void Module::loadArea() {
