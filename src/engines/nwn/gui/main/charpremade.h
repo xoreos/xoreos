@@ -48,7 +48,8 @@ class Portrait;
 class WidgetListItemCharacter : public WidgetListItem {
 public:
 	WidgetListItemCharacter(::Engines::GUI &gui, const Common::UString &font,
-	                        const CharacterID &c, float spacing = 0.0);
+	                        const Common::UString &name    , const Common::UString &classes,
+	                        const Common::UString &portrait, float spacing = 0.0);
 	~WidgetListItemCharacter();
 
 	void show();
@@ -89,13 +90,27 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	struct Character {
+		Common::UString file;
+
+		Common::UString name;
+		Common::UString classes;
+		Common::UString portrait;
+
+		Common::UString displayName;
+
+		uint32 number;
+
+		bool operator<(const Character &c) const;
+	};
+
 	Module *_module;
 
 	GUI *_charGen;
 
-	std::vector<CharacterID> _characters;
+	std::vector<Character> _characters;
 
-	CharacterID getSelectedCharacter();
+	const Common::UString &getSelectedCharacter();
 
 	void initCharacterList();
 	void playCharacter();

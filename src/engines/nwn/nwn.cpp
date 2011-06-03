@@ -53,7 +53,6 @@
 
 #include "engines/nwn/nwn.h"
 #include "engines/nwn/modelloader.h"
-#include "engines/nwn/charstore.h"
 #include "engines/nwn/console.h"
 #include "engines/nwn/module.h"
 
@@ -156,11 +155,6 @@ void NWNEngine::init() {
 
 	if (EventMan.quitRequested())
 		return;
-
-	Common::UString localCharDir =
-		Common::FilePath::findSubDirectory(_baseDirectory, "localvault", true);
-
-	CharStore.addDirectory(localCharDir);
 
 	initResources();
 
@@ -360,6 +354,10 @@ void NWNEngine::initGameConfig() {
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_extraModuleDir",
 		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_localPCDir",
+		Common::FilePath::findSubDirectory(_baseDirectory, "localvault", true));
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_serverPCDir",
+		Common::FilePath::findSubDirectory(_baseDirectory, "servervault", true));
 
 	TokenMan.set("<StartCheck>"    , "<cFF0000FF>");
 	TokenMan.set("<StartAction>"   , "<c00FF00FF>");
@@ -378,8 +376,6 @@ void NWNEngine::checkConfig() {
 }
 
 void NWNEngine::deinit() {
-	CharacterStore::destroy();
-
 	delete _scriptFuncs;
 	delete _fps;
 }
@@ -481,6 +477,28 @@ void NWNEngine::getModules(std::vector<Common::UString> &modules) {
 			continue;
 
 		modules.push_back(Common::FilePath::getStem(*m));
+	}
+}
+
+void NWNEngine::getCharacters(std::vector<Common::UString> &characters, bool local) {
+	characters.clear();
+
+	Common::UString pcDir = ConfigMan.getString(local ? "NWN_localPCDir" : "NWN_serverPCDir");
+	if (pcDir.empty())
+		return;
+
+	Common::FileList pcDirList;
+	pcDirList.addDirectory(pcDir);
+
+	std::list<Common::UString> chars;
+	uint n = pcDirList.getFileNames(chars);
+
+	characters.reserve(n);
+	for (std::list<Common::UString>::const_iterator c = chars.begin(); c != chars.end(); ++c) {
+		if (!Common::FilePath::getExtension(*c).equalsIgnoreCase(".bic"))
+			continue;
+
+		characters.push_back(Common::FilePath::getStem(*c));
 	}
 }
 

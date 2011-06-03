@@ -91,7 +91,7 @@ namespace Engines {
 
 namespace NWN {
 
-Module::Module(Console &console) : _console(&console), _hasModule(false), _hasPC(false),
+Module::Module(Console &console) : _console(&console), _hasModule(false), _pc(0),
 	_currentTexturePack(-1), _exit(false), _area(0) {
 
 	_ingameGUI = new IngameGUI(*this);
@@ -163,24 +163,24 @@ void Module::checkHAKs() {
 }
 
 void Module::setPCTokens() {
-	TokenMan.set("<FullName>" , _pc.getName());
-	TokenMan.set("<FirstName>", _pc.getFirstName());
-	TokenMan.set("<LastName>" , _pc.getLastName());
+	TokenMan.set("<FullName>" , _pc->getName());
+	TokenMan.set("<FirstName>", _pc->getFirstName());
+	TokenMan.set("<LastName>" , _pc->getLastName());
 
-	TokenMan.set("<Race>" , _pc.getConvRace());
-	TokenMan.set("<race>" , _pc.getConvrace());
-	TokenMan.set("<Races>", _pc.getConvRaces());
+	TokenMan.set("<Race>" , _pc->getConvRace());
+	TokenMan.set("<race>" , _pc->getConvrace());
+	TokenMan.set("<Races>", _pc->getConvRaces());
 
-	TokenMan.set("<Subrace>", _pc.getSubRace());
+	TokenMan.set("<Subrace>", _pc->getSubRace());
 
-	TokenMan.set("<Class>"  , _pc.getConvClass());
-	TokenMan.set("<class>"  , _pc.getConvclass());
-	TokenMan.set("<Classes>", _pc.getConvClasses());
+	TokenMan.set("<Class>"  , _pc->getConvClass());
+	TokenMan.set("<class>"  , _pc->getConvclass());
+	TokenMan.set("<Classes>", _pc->getConvClasses());
 
-	TokenMan.set("<Deity>", _pc.getDeity());
+	TokenMan.set("<Deity>", _pc->getDeity());
 
 	for (int i = 0; i < ARRAYSIZE(kGenderTokens); i++) {
-		const uint32 strRef = _pc.isFemale() ? kGenderTokens[i].female : kGenderTokens[i].male;
+		const uint32 strRef = _pc->isFemale() ? kGenderTokens[i].female : kGenderTokens[i].male;
 
 		TokenMan.set(kGenderTokens[i].token, TalkMan.getString(strRef));
 	}
@@ -213,32 +213,33 @@ void Module::removePCTokens() {
 		TokenMan.remove(kGenderTokens[i].token);
 }
 
-bool Module::usePC(const CharacterID &c) {
+bool Module::usePC(const Common::UString &bic, bool local) {
 	unloadPC();
 
-	if (c.empty())
+	if (bic.empty())
 		return false;
 
-	_pc = *c;
+	_pc = new Creature;
+	try {
+		_pc->loadCharacter(bic, local);
+	} catch (Common::Exception &e) {
+		delete _pc;
+		_pc = 0;
 
-	_pc.clearVariables();
+		e.add("Can't load PC \"%s\"", bic.c_str());
+		Common::printException(e, "WARNING: ");
+	}
 
 	setPCTokens();
-	TalkMan.setGender((Aurora::Gender) _pc.getGender());
+	TalkMan.setGender((Aurora::Gender) _pc->getGender());
 
-	addObject(_pc);
+	addObject(*_pc);
 
-	_ingameGUI->updatePartyMember(0, _pc, true);
-
-	_hasPC = true;
 	return true;
 }
 
 Creature *Module::getPC() {
-	if (!_pc.loaded())
-		return 0;
-
-	return &_pc;
+	return _pc;
 }
 
 bool Module::replaceModule(const Common::UString &module) {
@@ -260,7 +261,7 @@ bool Module::enter() {
 		return false;
 	}
 
-	if (!_hasPC) {
+	if (!_pc) {
 		warning("Module::enter(): Lacking a PC?!?");
 		return false;
 	}
@@ -268,9 +269,9 @@ bool Module::enter() {
 	loadTexturePack();
 
 	_console->printf("Entering module \"%s\" with character \"%s\"",
-			_ifo.getName().getString().c_str(), _pc.getName().c_str());
+			_ifo.getName().getString().c_str(), _pc->getName().c_str());
 
-	_ingameGUI->updatePartyMember(0, _pc);
+	_ingameGUI->updatePartyMember(0, *_pc);
 
 	try {
 
@@ -282,9 +283,9 @@ bool Module::enter() {
 		return false;
 	}
 
-	runScript(kScriptModuleLoad , this, &_pc);
-	runScript(kScriptModuleStart, this, &_pc);
-	runScript(kScriptEnter      , this, &_pc);
+	runScript(kScriptModuleLoad , this, _pc);
+	runScript(kScriptModuleStart, this, _pc);
+	runScript(kScriptEnter      , this, _pc);
 
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
@@ -329,7 +330,7 @@ void Module::run() {
 
 			handleEvents();
 
-			_ingameGUI->updatePartyMember(0, _pc);
+			_ingameGUI->updatePartyMember(0, *_pc);
 
 			if (!EventMan.quitRequested() && !_exit && !_newArea.empty())
 				EventMan.delay(10);
@@ -438,7 +439,7 @@ void Module::unload() {
 }
 
 void Module::unloadModule() {
-	runScript(kScriptExit, this, &_pc);
+	runScript(kScriptExit, this, _pc);
 
 	TwoDAReg.clear();
 
@@ -455,14 +456,15 @@ void Module::unloadModule() {
 }
 
 void Module::unloadPC() {
-	removeObject(_pc);
+	if (!_pc)
+		return;
+
+	removeObject(*_pc);
 
 	removePCTokens();
 
-	_pc.clearVariables();
-	_pc.clear();
-
-	_hasPC = false;
+	delete _pc;
+	_pc = 0;
 }
 
 void Module::loadHAKs() {
@@ -522,7 +524,7 @@ void Module::loadArea() {
 	_ingameGUI->stopConversation();
 
 	if (_area) {
-		_area->runScript(kScriptExit, _area, &_pc);
+		_area->runScript(kScriptExit, _area, _pc);
 		delete _area;
 	}
 
@@ -539,9 +541,9 @@ void Module::loadArea() {
 
 	_ingameGUI->setArea(_area->getName());
 
-	_pc.setArea(_area);
+	_pc->setArea(_area);
 
-	_area->runScript(kScriptEnter, _area, &_pc);
+	_area->runScript(kScriptEnter, _area, _pc);
 
 	_console->printf("Entering area \"%s\"", _area->getResRef().c_str());
 }

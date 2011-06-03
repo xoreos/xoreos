@@ -42,10 +42,6 @@
 #include "engines/nwn/types.h"
 #include "engines/nwn/object.h"
 
-namespace Aurora {
-	class GFFStruct;
-}
-
 namespace Engines {
 
 namespace NWN {
@@ -63,6 +59,8 @@ public:
 	/** Last time info was changed that's displayed in the GUI. */
 	uint32 lastChangedGUIDisplay() const;
 
+	/** Load from a character file. */
+	void loadCharacter(const Common::UString &bic, bool local);
 	/** Load from a character file. */
 	void loadCharacter(Common::SeekableReadStream *stream);
 	/** Load from a creature instance. */
@@ -187,6 +185,11 @@ public:
 	virtual bool click(Object *triggerer = 0);
 
 
+	/** Return the information needed for a character list. */
+	static void getPCListInfo(const Common::UString &bic, bool local,
+	                          Common::UString &name, Common::UString &classes,
+	                          Common::UString &portrait);
+
 private:
 	/** Parts of a creature's body. */
 	enum BodyPartType {
@@ -296,8 +299,12 @@ private:
 
 	/** Load general creature properties. */
 	void loadProperties(const Aurora::GFFStruct &gff);
+
 	/** Load the creature's portrait. */
-	void loadPortrait(const Aurora::GFFStruct &gff);
+	static void loadPortrait(const Aurora::GFFStruct &gff, Common::UString &portrait);
+	/** Load the creature's classes. */
+	static void loadClasses (const Aurora::GFFStruct &gff,
+	                         std::vector<Class> &classes, uint8 &hitDice);
 
 	/** Construct the resource name of a body part model. */
 	void constructModelName(const Common::UString &type, uint32 id,
@@ -314,6 +321,9 @@ private:
 	void createTooltip(); ///< Create the tooltip.
 	void showTooltip();   ///< Show the tooltip.
 	void hideTooltip();   ///< Hide the tooltip.
+
+	static Aurora::GFFFile *openPC(const Common::UString &bic, bool local);
+	static void getClassString(const std::vector<Class> &classes, Common::UString &str);
 };
 
 } // End of namespace NWN

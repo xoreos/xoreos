@@ -28,6 +28,7 @@
  */
 
 #include "common/util.h"
+#include "common/error.h"
 
 #include "events/requests.h"
 
@@ -36,7 +37,8 @@
 
 #include "engines/aurora/model.h"
 
-#include "engines/nwn/charstore.h"
+#include "engines/nwn/nwn.h"
+#include "engines/nwn/creature.h"
 #include "engines/nwn/module.h"
 
 #include "engines/nwn/gui/widgets/listbox.h"
@@ -51,7 +53,8 @@ namespace Engines {
 namespace NWN {
 
 WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
-    const Common::UString &font, const CharacterID &c, float spacing) :
+		const Common::UString &font   , const Common::UString &name,
+		const Common::UString &classes, const Common::UString &portrait, float spacing) :
 	WidgetListItem(gui), _spacing(spacing) {
 
 	_button = loadModelGUI("ctl_pre_btn_char");
@@ -59,16 +62,7 @@ WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
 
 	_button->setClickable(true);
 
-	Common::UString portrait = c->getPortrait();
-
-	_portrait = new Portrait(portrait, Portrait::kSizeTiny, 1.0);
-
-	Common::UString name = c->getName();
-	if (c.getNumber() > 0)
-		name += Common::UString::sprintf(" (%d)", c.getNumber());
-
-	Common::UString classes = "(" + c->getClassString() + ")";
-
+	_portrait  = new Portrait(portrait, Portrait::kSizeTiny, 1.0);
 	_textName  = new Graphics::Aurora::Text(FontMan.get(font), name);
 	_textClass = new Graphics::Aurora::Text(FontMan.get(font), classes);
 }
@@ -143,6 +137,18 @@ bool WidgetListItemCharacter::deactivate() {
 }
 
 
+bool CharPremadeMenu::Character::operator<(const Character &c) const {
+	int cmp = name.strcmp(c.name);
+
+	if (cmp < 0)
+		return true;
+	if (cmp > 0)
+		return false;
+
+	return number < c.number;
+}
+
+
 CharPremadeMenu::CharPremadeMenu(Module &module) : _module(&module) {
 	load("pre_playmod");
 
@@ -211,8 +217,8 @@ void CharPremadeMenu::callbackActive(Widget &widget) {
 void CharPremadeMenu::initCharacterList() {
 	status("Creating character list");
 
-	std::list<CharacterID> chars;
-	uint n = CharStore.getCharacters(chars);
+	std::vector<Common::UString> characters;
+	NWNEngine::getCharacters(characters, true);
 
 	WidgetListBox &charList = *getListBox("ButtonList", true);
 
@@ -221,32 +227,60 @@ void CharPremadeMenu::initCharacterList() {
 	charList.clear();
 	charList.setMode(WidgetListBox::kModeSelectable);
 
-	_characters.reserve(n);
-	charList.reserve(n);
+	// Get the character display info
+	_characters.reserve(characters.size());
+	for (std::vector<Common::UString>::iterator c = characters.begin();
+	     c != characters.end(); ++c) {
 
-	for (std::list<CharacterID>::const_iterator c = chars.begin(); c != chars.end(); ++c) {
-		_characters.push_back(*c);
+		_characters.push_back(Character());
 
-		charList.add(new WidgetListItemCharacter(*this, "fnt_galahad14", *c, 2.0));
+		Character &ch = _characters.back();
+
+		ch.file = *c;
+
+		try {
+			Creature::getPCListInfo(ch.file, true, ch.name, ch.classes, ch.portrait);
+		} catch (Common::Exception &e) {
+			_characters.pop_back();
+
+			e.add("Can't read PC \"%s\"", c->c_str());
+			Common::printException(e, "WARNING: ");
+			continue;
+		}
+
+		if (sscanf(ch.file.c_str(), "%*[^0-9]%d", &ch.number) != 1)
+			ch.number = 0;
+
+		ch.displayName = ch.name;
+		if (ch.number > 0)
+			ch.displayName += Common::UString::sprintf(" (%d)", ch.number);
 	}
+
+	std::sort(_characters.begin(), _characters.end());
+
+	// Create the listbox items
+	charList.reserve(characters.size());
+	for (std::vector<Character>::iterator c = _characters.begin();
+	     c != _characters.end(); ++c)
+		charList.add(new WidgetListItemCharacter(*this, "fnt_galahad14",
+		                                         c->displayName, c->classes, c->portrait, 2.0));
 
 	charList.unlock();
 
 	charList.select(0);
-
-	RequestMan.sync();
 }
 
-CharacterID CharPremadeMenu::getSelectedCharacter() {
+static const Common::UString kStringEmpty;
+const Common::UString &CharPremadeMenu::getSelectedCharacter() {
 	uint n = getListBox("ButtonList", true)->getSelected();
 	if (n >= _characters.size())
-		return CharacterID();
+		return kStringEmpty;
 
-	return _characters[n];
+	return _characters[n].file;
 }
 
 void CharPremadeMenu::playCharacter() {
-	if (_module->usePC(getSelectedCharacter()))
+	if (_module->usePC(getSelectedCharacter(), true))
 		_returnCode = 2;
 }
 

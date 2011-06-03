@@ -88,6 +88,8 @@ public:
 
 	/** Return a list of all modules. */
 	static void getModules(std::vector<Common::UString> &modules);
+	/** Return a list of local player characters. */
+	static void getCharacters(std::vector<Common::UString> &characters, bool local);
 
 private:
 	Common::UString _baseDirectory;

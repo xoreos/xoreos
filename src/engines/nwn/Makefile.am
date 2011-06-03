@@ -7,7 +7,6 @@ noinst_HEADERS = nwn.h \
                  modelloader.h \
                  ifofile.h \
                  creature.h \
-                 charstore.h \
                  console.h \
                  module.h \
                  area.h \
@@ -18,8 +17,6 @@ noinst_HEADERS = nwn.h \
                  placeable.h \
                  door.h \
                  location.h \
-                 script/container.h \
-                 script/functions.h \
                  gui/gui.h \
                  gui/legal.h \
                  gui/widgets/tooltip.h \
@@ -68,7 +65,9 @@ noinst_HEADERS = nwn.h \
                  gui/ingame/compass.h \
                  gui/ingame/charinfo.h \
                  gui/ingame/partyleader.h \
-                 gui/ingame/dialog.h
+                 gui/ingame/dialog.h \
+                 script/container.h \
+                 script/functions.h
 
 
 libnwn_la_SOURCES = nwn.cpp \
@@ -76,7 +75,6 @@ libnwn_la_SOURCES = nwn.cpp \
                     modelloader.cpp \
                     ifofile.cpp \
                     creature.cpp \
-                    charstore.cpp \
                     console.cpp \
                     module.cpp \
                     area.cpp \
@@ -87,17 +85,6 @@ libnwn_la_SOURCES = nwn.cpp \
                     placeable.cpp \
                     door.cpp \
                     location.cpp \
-                    script/container.cpp \
-                    script/functions.cpp \
-                    script/functions_000.cpp \
-                    script/functions_100.cpp \
-                    script/functions_200.cpp \
-                    script/functions_300.cpp \
-                    script/functions_400.cpp \
-                    script/functions_500.cpp \
-                    script/functions_600.cpp \
-                    script/functions_700.cpp \
-                    script/functions_800.cpp \
                     gui/gui.cpp \
                     gui/legal.cpp \
                     gui/widgets/tooltip.cpp \
@@ -147,4 +134,15 @@ libnwn_la_SOURCES = nwn.cpp \
                     gui/ingame/compass.cpp \
                     gui/ingame/charinfo.cpp \
                     gui/ingame/partyleader.cpp \
-                    gui/ingame/dialog.cpp
+                    gui/ingame/dialog.cpp \
+                    script/container.cpp \
+                    script/functions.cpp \
+                    script/functions_000.cpp \
+                    script/functions_100.cpp \
+                    script/functions_200.cpp \
+                    script/functions_300.cpp \
+                    script/functions_400.cpp \
+                    script/functions_500.cpp \
+                    script/functions_600.cpp \
+                    script/functions_700.cpp \
+                    script/functions_800.cpp

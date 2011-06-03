@@ -30,53 +30,11 @@
 #ifndef ENGINES_NWN_TYPES_H
 #define ENGINES_NWN_TYPES_H
 
-#include <map>
-
 #include "common/types.h"
-#include "common/ustring.h"
 
 namespace Engines {
 
 namespace NWN {
-
-class Creature;
-
-struct CharacterKey {
-	Common::UString name;
-	uint number;
-
-	CharacterKey(const Common::UString &na = "", uint nu = 0);
-
-	bool operator<(const CharacterKey &key) const;
-};
-
-class CharacterID {
-public:
-	CharacterID();
-	~CharacterID();
-
-	bool empty() const;
-
-	uint getNumber() const;
-
-	const Creature &operator*() const;
-	const Creature *operator->() const;
-
-	void clear();
-
-private:
-	typedef std::map<CharacterKey, Creature *> CharMap;
-
-	bool _empty;
-	CharMap::iterator _char;
-
-	CharacterID(CharMap::iterator c);
-
-	void set(CharMap::iterator c);
-
-	friend class CharacterStore;
-};
-
 
 enum ObjectType {
 	kObjectTypeNone         = 0     ,

@@ -54,7 +54,6 @@ class Console;
 
 class Object;
 
-class CharacterID;
 class Area;
 
 class IngameGUI;
@@ -71,7 +70,7 @@ public:
 	/** Load a module. */
 	bool loadModule(const Common::UString &module);
 	/** Use this character as the player character. */
-	bool usePC(const CharacterID &c);
+	bool usePC(const Common::UString &bic, bool local);
 
 	Creature *getPC();
 
@@ -94,7 +93,6 @@ private:
 	Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
-	bool _hasPC;     ///< Do we have a PC?
 
 	IngameGUI *_ingameGUI; ///< The ingame GUI elements.
 
@@ -106,7 +104,7 @@ private:
 
 	IFOFile _ifo; ///< The module's IFO.
 
-	Creature _pc; ///< The player character we use.
+	Creature *_pc; ///< The player character we use.
 
 	// Texture pack
 	int _currentTexturePack;

@@ -29,6 +29,8 @@
 
 #include "common/util.h"
 #include "common/maths.h"
+#include "common/file.h"
+#include "common/configman.h"
 
 #include "aurora/types.h"
 #include "aurora/talkman.h"
@@ -48,6 +50,8 @@
 #include "engines/nwn/creature.h"
 
 #include "engines/nwn/gui/widgets/tooltip.h"
+
+static const uint32 kBICID = MKID_BE('BIC ');
 
 namespace Engines {
 
@@ -417,12 +421,17 @@ void Creature::unloadModel() {
 	_model = 0;
 }
 
-void Creature::loadCharacter(Common::SeekableReadStream *stream) {
+void Creature::loadCharacter(const Common::UString &bic, bool local) {
 	clear();
 
-	Aurora::GFFFile gff(stream, MKID_BE('BIC '));
+	Aurora::GFFFile *gff = openPC(bic, local);
 
-	load(gff.getTopLevel(), 0);
+	try {
+		load(gff->getTopLevel(), 0);
+	} catch (...) {
+		delete gff;
+		throw;
+	}
 
 	// All BICs should be PCs.
 	_isPC = true;
@@ -543,7 +552,7 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 
 	// Portrait
 
-	loadPortrait(gff);
+	loadPortrait(gff, _portrait);
 
 	// Gender
 	_gender = gff.getUint("Gender", _gender);
@@ -573,22 +582,7 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_abilities[kAbilityCharisma]     = gff.getUint("Cha", _abilities[kAbilityCharisma]);
 
 	// Classes
-	if (gff.hasField("ClassList")) {
-		_classes.clear();
-		_hitDice = 0;
-
-		const Aurora::GFFList &cClasses = gff.getList("ClassList");
-		for (Aurora::GFFList::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
-			_classes.push_back(Class());
-
-			const Aurora::GFFStruct &cClass = **c;
-
-			_classes.back().classID = cClass.getUint("Class");
-			_classes.back().level   = cClass.getUint("ClassLevel");
-
-			_hitDice += _classes.back().level;
-		}
-	}
+	loadClasses(gff, _classes, _hitDice);
 
 	// Skills
 	if (gff.hasField("SkillList")) {
@@ -648,17 +642,39 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	readScripts(gff);
 }
 
-void Creature::loadPortrait(const Aurora::GFFStruct &gff) {
+void Creature::loadPortrait(const Aurora::GFFStruct &gff, Common::UString &portrait) {
 	uint32 portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
 
-		Common::UString portrait = twoda.getRow(portraitID).getString("BaseResRef");
-		if (!portrait.empty())
-			_portrait = "po_" + portrait;
+		Common::UString portrait2DA = twoda.getRow(portraitID).getString("BaseResRef");
+		if (!portrait2DA.empty())
+			portrait = "po_" + portrait2DA;
 	}
 
-	_portrait = gff.getString("Portrait", _portrait);
+	portrait = gff.getString("Portrait", portrait);
+}
+
+void Creature::loadClasses(const Aurora::GFFStruct &gff,
+                           std::vector<Class> &classes, uint8 &hitDice) {
+
+	if (!gff.hasField("ClassList"))
+		return;
+
+	classes.clear();
+	hitDice = 0;
+
+	const Aurora::GFFList &cClasses = gff.getList("ClassList");
+	for (Aurora::GFFList::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
+		classes.push_back(Class());
+
+		const Aurora::GFFStruct &cClass = **c;
+
+		classes.back().classID = cClass.getUint("Class");
+		classes.back().level   = cClass.getUint("ClassLevel");
+
+		hitDice += classes.back().level;
+	}
 }
 
 const Common::UString &Creature::getConvRace() const {
@@ -738,14 +754,7 @@ uint8 Creature::getLawChaos() const {
 Common::UString Creature::getClassString() const {
 	Common::UString classString;
 
-	for (std::vector<Class>::const_iterator c = _classes.begin(); c != _classes.end(); ++c) {
-		if (!classString.empty())
-			classString += '/';
-
-		uint32 strRef = TwoDAReg.get("classes").getRow(c->classID).getInt("Name");
-
-		classString += TalkMan.getString(strRef);
-	}
+	getClassString(_classes, classString);
 
 	return classString;
 }
@@ -827,6 +836,85 @@ void Creature::hideTooltip() {
 		return;
 
 	_tooltip->hide();
+}
+
+void Creature::getPCListInfo(const Common::UString &bic, bool local,
+                             Common::UString &name, Common::UString &classes,
+                             Common::UString &portrait) {
+
+	Aurora::GFFFile *gff = openPC(bic, local);
+
+	try {
+		const Aurora::GFFStruct &top = gff->getTopLevel();
+
+		// Reading name
+		Aurora::LocString firstName;
+		top.getLocString("FirstName", firstName);
+
+		Aurora::LocString lastName;
+		top.getLocString("LastName", lastName);
+
+		name = firstName.getString() + " " + lastName.getString();
+
+		// Reading portrait (failure non-fatal)
+		try {
+			loadPortrait(top, portrait);
+		} catch (Common::Exception &e) {
+			portrait.clear();
+
+			e.add("Can't read portrait for PC \"%s\"", bic.c_str());
+			Common::printException(e, "WARNING: ");
+		}
+
+		// Reading classes
+		std::vector<Class> classLevels;
+		uint8 hitDice;
+
+		loadClasses(top, classLevels, hitDice);
+		getClassString(classLevels, classes);
+
+		classes = "(" + classes + ")";
+
+	} catch (...) {
+		delete gff;
+		throw;
+	}
+
+	delete gff;
+}
+
+Aurora::GFFFile *Creature::openPC(const Common::UString &bic, bool local) {
+	Common::UString pcDir  = ConfigMan.getString(local ? "NWN_localPCDir" : "NWN_serverPCDir");
+	Common::UString pcFile = pcDir + "/" + bic + ".bic";
+
+	Common::File *pc = 0;
+	try {
+		pc = new Common::File(pcFile);
+	} catch (...) {
+		delete pc;
+		throw;
+	}
+
+	Aurora::GFFFile *gff = 0;
+	try {
+		gff = new Aurora::GFFFile(pc, kBICID);
+	} catch (...) {
+		delete gff;
+		throw;
+	}
+
+	return gff;
+}
+
+void Creature::getClassString(const std::vector<Class> &classes, Common::UString &str) {
+	for (std::vector<Class>::const_iterator c = classes.begin(); c != classes.end(); ++c) {
+		if (!str.empty())
+			str += '/';
+
+		uint32 strRef = TwoDAReg.get("classes").getRow(c->classID).getInt("Name");
+
+		str += TalkMan.getString(strRef);
+	}
 }
 
 } // End of namespace NWN
