@@ -78,15 +78,11 @@ void GFFFile::Header::read(Common::SeekableReadStream &gff) {
 }
 
 
-GFFFile::GFFFile(Common::SeekableReadStream *gff, uint32 id) :
-	_stream(gff), _fieldData(0) {
-
+GFFFile::GFFFile(Common::SeekableReadStream *gff, uint32 id) : _stream(gff) {
 	load(id);
 }
 
-GFFFile::GFFFile(const Common::UString &gff, FileType type, uint32 id) :
-	_stream(0), _fieldData(0) {
-
+GFFFile::GFFFile(const Common::UString &gff, FileType type, uint32 id) : _stream(0) {
 	_stream = ResMan.getResource(gff, type);
 	if (!_stream)
 		throw Common::Exception("No such GFF \"%s\"", setFileType(gff, type).c_str());
@@ -115,7 +111,6 @@ void GFFFile::load(uint32 id) {
 
 		readStructs();
 		readLists();
-		readFieldData();
 
 		if (_stream->err())
 			throw Common::Exception(Common::kReadError);
@@ -199,22 +194,16 @@ void GFFFile::readLists() {
 
 }
 
-void GFFFile::readFieldData() {
-	_fieldData = new byte[_header.fieldDataCount];
-
+Common::SeekableReadStream &GFFFile::getFieldData() const {
 	_stream->seek(_header.fieldDataOffset);
-	if (_stream->read(_fieldData, _header.fieldDataCount) != _header.fieldDataCount)
-		throw Common::Exception(Common::kReadError);
+
+	return *_stream;
 }
 
-const byte *GFFFile::getFieldData(uint32 offset) const {
-	assert(_fieldData);
+Common::SeekableReadStream &GFFFile::getFieldData(uint32 &size) const {
+	size = _header.fieldDataCount;
 
-	if (offset >= _header.fieldDataCount)
-		throw Common::Exception("Field data offset out of range (%d/%d)",
-				offset, _header.fieldDataCount);
-
-	return _fieldData + offset;
+	return getFieldData();
 }
 
 
@@ -311,10 +300,14 @@ Common::UString GFFStruct::readLabel(Common::SeekableReadStream &gff, uint32 ind
 	return label;
 }
 
-const byte *GFFStruct::getData(const Field &field) const {
+Common::SeekableReadStream &GFFStruct::getData(const Field &field) const {
 	assert(field.extended);
 
-	return _parent->getFieldData(field.data);
+	Common::SeekableReadStream &data = _parent->getFieldData();
+
+	data.seek(field.data, SEEK_CUR);
+
+	return data;
 }
 
 const GFFStruct::Field *GFFStruct::getField(const Common::UString &name) const {
@@ -362,9 +355,9 @@ uint64 GFFStruct::getUint(const Common::UString &field, uint64 def) const {
 	if (f->type == kFieldTypeSint32)
 		return (uint64) ((int64) ((int32) ((uint32) f->data)));
 	if (f->type == kFieldTypeUint64)
-		return (uint64) READ_LE_UINT64(getData(*f));
+		return (uint64) getData(*f).readUint64LE();
 	if (f->type == kFieldTypeSint64)
-		return ( int64) READ_LE_UINT64(getData(*f));
+		return ( int64) getData(*f).readUint64LE();
 
 	throw Common::Exception("Field is not an int type");
 }
@@ -388,9 +381,9 @@ int64 GFFStruct::getSint(const Common::UString &field, int64 def) const {
 	if (f->type == kFieldTypeSint32)
 		return (int64) ((int32) ((uint32) f->data));
 	if (f->type == kFieldTypeUint64)
-		return (int64) READ_LE_UINT64(getData(*f));
+		return (int64) getData(*f).readUint64LE();
 	if (f->type == kFieldTypeSint64)
-		return (int64) READ_LE_UINT64(getData(*f));
+		return (int64) getData(*f).readUint64LE();
 
 	throw Common::Exception("Field is not an int type");
 }
@@ -407,7 +400,7 @@ double GFFStruct::getDouble(const Common::UString &field, double def) const {
 	if (f->type == kFieldTypeFloat)
 		return convertIEEEFloat(f->data);
 	if (f->type == kFieldTypeDouble)
-		return convertIEEEDouble(READ_LE_UINT64(getData(*f)));
+		return getData(*f).readIEEEDoubleLE();
 
 	throw Common::Exception("Field is not a double type");
 }
@@ -420,26 +413,22 @@ Common::UString GFFStruct::getString(const Common::UString &field,
 		return def;
 
 	if (f->type == kFieldTypeExoString) {
-		const byte *data = getData(*f);
+		Common::SeekableReadStream &data = getData(*f);
 
-		uint32 length = READ_LE_UINT32(data);
-
-		Common::MemoryReadStream gff(data + 4, length);
+		uint32 length = data.readUint32LE();
 
 		Common::UString str;
-		str.readFixedASCII(gff, length);
+		str.readFixedASCII(data, length);
 		return str;
 	}
 
 	if (f->type == kFieldTypeResRef) {
-		const byte *data = getData(*f);
+		Common::SeekableReadStream &data = getData(*f);
 
-		uint32 length = *data;
-
-		Common::MemoryReadStream gff(data + 1, length);
+		uint32 length = data.readByte();
 
 		Common::UString str;
-		str.readFixedASCII(gff, length);
+		str.readFixedASCII(data, length);
 		return str;
 	}
 
@@ -489,9 +478,11 @@ void GFFStruct::getLocString(const Common::UString &field, LocString &str) const
 	if (f->type != kFieldTypeLocString)
 		throw Common::Exception("Field is not of a localized string type");
 
-	const byte *data = getData(*f);
+	Common::SeekableReadStream &data = getData(*f);
 
-	Common::MemoryReadStream gff(data + 4, READ_LE_UINT32(data));
+	uint32 size = data.readUint32LE();
+
+	Common::SeekableSubReadStream gff(&data, data.pos(), data.pos() + size);
 
 	str.readLocString(gff);
 }
@@ -503,9 +494,11 @@ Common::SeekableReadStream *GFFStruct::getData(const Common::UString &field) con
 	if (f->type != kFieldTypeVoid)
 		throw Common::Exception("Field is not a data type");
 
-	const byte *data = getData(*f);
+	Common::SeekableReadStream &data = getData(*f);
 
-	return new Common::MemoryReadStream(data + 4, READ_LE_UINT32(data));
+	uint32 size = data.readUint32LE();
+
+	return data.readStream(size);
 }
 
 void GFFStruct::getVector(const Common::UString &field,
@@ -517,11 +510,11 @@ void GFFStruct::getVector(const Common::UString &field,
 	if (f->type != kFieldTypeVector)
 		throw Common::Exception("Field is not a vector type");
 
-	const byte *data = getData(*f);
+	Common::SeekableReadStream &data = getData(*f);
 
-	x = convertIEEEFloat(READ_LE_UINT32(data + 0));
-	y = convertIEEEFloat(READ_LE_UINT32(data + 4));
-	z = convertIEEEFloat(READ_LE_UINT32(data + 8));
+	x = data.readIEEEFloatLE();
+	y = data.readIEEEFloatLE();
+	z = data.readIEEEFloatLE();
 }
 
 void GFFStruct::getOrientation(const Common::UString &field,
@@ -533,12 +526,12 @@ void GFFStruct::getOrientation(const Common::UString &field,
 	if (f->type != kFieldTypeOrientation)
 		throw Common::Exception("Field is not an orientation type");
 
-	const byte *data = getData(*f);
+	Common::SeekableReadStream &data = getData(*f);
 
-	a = convertIEEEFloat(READ_LE_UINT32(data +  0));
-	b = convertIEEEFloat(READ_LE_UINT32(data +  4));
-	c = convertIEEEFloat(READ_LE_UINT32(data +  8));
-	d = convertIEEEFloat(READ_LE_UINT32(data + 12));
+	a = data.readIEEEFloatLE();
+	b = data.readIEEEFloatLE();
+	c = data.readIEEEFloatLE();
+	d = data.readIEEEFloatLE();
 }
 
 void GFFStruct::getVector(const Common::UString &field,
@@ -550,11 +543,11 @@ void GFFStruct::getVector(const Common::UString &field,
 	if (f->type != kFieldTypeVector)
 		throw Common::Exception("Field is not a vector type");
 
-	const byte *data = getData(*f);
+	Common::SeekableReadStream &data = getData(*f);
 
-	x = convertIEEEFloat(READ_LE_UINT32(data + 0));
-	y = convertIEEEFloat(READ_LE_UINT32(data + 4));
-	z = convertIEEEFloat(READ_LE_UINT32(data + 8));
+	x = data.readIEEEFloatLE();
+	y = data.readIEEEFloatLE();
+	z = data.readIEEEFloatLE();
 }
 
 void GFFStruct::getOrientation(const Common::UString &field,
@@ -566,12 +559,12 @@ void GFFStruct::getOrientation(const Common::UString &field,
 	if (f->type != kFieldTypeOrientation)
 		throw Common::Exception("Field is not an orientation type");
 
-	const byte *data = getData(*f);
+	Common::SeekableReadStream &data = getData(*f);
 
-	a = convertIEEEFloat(READ_LE_UINT32(data +  0));
-	b = convertIEEEFloat(READ_LE_UINT32(data +  4));
-	c = convertIEEEFloat(READ_LE_UINT32(data +  8));
-	d = convertIEEEFloat(READ_LE_UINT32(data + 12));
+	a = data.readIEEEFloatLE();
+	b = data.readIEEEFloatLE();
+	c = data.readIEEEFloatLE();
+	d = data.readIEEEFloatLE();
 }
 
 const GFFStruct &GFFStruct::getStruct(const Common::UString &field) const {

@@ -102,11 +102,11 @@ private:
 	/** To convert list offsets found in GFF to real indices. */
 	std::vector<uint32> _listOffsetToIndex;
 
-	byte *_fieldData; ///< The extended field data.
 
-
-	/** Returns the struct field data at this offset. */
-	const byte *getFieldData(uint32 offset) const;
+	/** Returns the GFF stream seeked to the start of the field data. */
+	Common::SeekableReadStream &getFieldData() const;
+	/** Returns the GFF stream seeked to the start of the field data. */
+	Common::SeekableReadStream &getFieldData(uint32 &size) const;
 
 	/** Return a struct within the GFF. */
 	const GFFStruct &getStruct(uint32 i) const;
@@ -117,7 +117,6 @@ private:
 	void load(uint32 id);
 	void readStructs();
 	void readLists();
-	void readFieldData();
 
 	friend class GFFStruct;
 };
@@ -205,7 +204,7 @@ private:
 	/** Returns the field with this tag. */
 	const Field *getField(const Common::UString &name) const;
 	/** Returns the extended field data for this field. */
-	const byte *getData(const Field &field) const;
+	Common::SeekableReadStream &getData(const Field &field) const;
 
 	// Loading helpers
 	void readField  (Common::SeekableReadStream &gff, uint32 index);
