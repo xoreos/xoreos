@@ -88,7 +88,6 @@ public:
 	                       Engines::NWN::Object &obj);
 
 
-	static void getModules(std::vector<Common::UString> &modules);
 	static Common::UString getDescription(const Common::UString &module);
 
 private:

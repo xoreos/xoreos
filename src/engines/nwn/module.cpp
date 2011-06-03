@@ -30,8 +30,6 @@
 #include "common/util.h"
 #include "common/error.h"
 #include "common/configman.h"
-#include "common/filepath.h"
-#include "common/filelist.h"
 
 #include "events/events.h"
 
@@ -575,30 +573,6 @@ bool Module::startConversation(const Common::UString &conv, Creature &pc,
                                Engines::NWN::Object &obj) {
 
 	return _ingameGUI->startConversation(conv, pc, obj);
-}
-
-void Module::getModules(std::vector<Common::UString> &modules) {
-	modules.clear();
-
-	Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
-	if (moduleDir.empty())
-		return;
-
-	Common::FileList moduleDirList;
-	moduleDirList.addDirectory(moduleDir);
-
-	std::list<Common::UString> mods;
-	uint n = moduleDirList.getFileNames(mods);
-
-	mods.sort(Common::UString::iless());
-
-	modules.reserve(n);
-	for (std::list<Common::UString>::const_iterator m = mods.begin(); m != mods.end(); ++m) {
-		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
-			continue;
-
-		modules.push_back(Common::FilePath::getStem(*m));
-	}
 }
 
 Common::UString Module::getDescription(const Common::UString &module) {

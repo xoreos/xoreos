@@ -30,6 +30,8 @@
 #ifndef ENGINES_NWN_NWN_H
 #define ENGINES_NWN_NWN_H
 
+#include <vector>
+
 #include "common/ustring.h"
 
 #include "aurora/types.h"
@@ -83,6 +85,9 @@ public:
 	~NWNEngine();
 
 	void run(const Common::UString &target);
+
+	/** Return a list of all modules. */
+	static void getModules(std::vector<Common::UString> &modules);
 
 private:
 	Common::UString _baseDirectory;

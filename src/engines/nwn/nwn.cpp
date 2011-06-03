@@ -27,6 +27,8 @@
  *  Engine class handling Neverwinter Nights.
  */
 
+#include <list>
+
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
@@ -456,6 +458,30 @@ void NWNEngine::mainMenuLoop() {
 	console.setModule();
 
 	stopMenuMusic();
+}
+
+void NWNEngine::getModules(std::vector<Common::UString> &modules) {
+	modules.clear();
+
+	Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
+	if (moduleDir.empty())
+		return;
+
+	Common::FileList moduleDirList;
+	moduleDirList.addDirectory(moduleDir);
+
+	std::list<Common::UString> mods;
+	uint n = moduleDirList.getFileNames(mods);
+
+	mods.sort(Common::UString::iless());
+
+	modules.reserve(n);
+	for (std::list<Common::UString>::const_iterator m = mods.begin(); m != mods.end(); ++m) {
+		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
+			continue;
+
+		modules.push_back(Common::FilePath::getStem(*m));
+	}
 }
 
 } // End of namespace NWN

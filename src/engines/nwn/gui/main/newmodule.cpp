@@ -39,6 +39,7 @@
 #include "engines/aurora/model.h"
 
 #include "engines/nwn/module.h"
+#include "engines/nwn/nwn.h"
 
 #include "engines/nwn/gui/main/newmodule.h"
 
@@ -148,7 +149,7 @@ void NewModuleMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) 
 void NewModuleMenu::initModuleList() {
 	status("Creating module list");
 
-	Module::getModules(_modules);
+	NWNEngine::getModules(_modules);
 
 	WidgetListBox &moduleList = *getListBox("ModuleListBox", true);
 

@@ -38,6 +38,7 @@
 #include "engines/aurora/util.h"
 
 #include "engines/nwn/console.h"
+#include "engines/nwn/nwn.h"
 #include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
 
@@ -146,7 +147,7 @@ void Console::updateModules() {
 	_modules.clear();
 
 	std::vector<Common::UString> modules;
-	Module::getModules(modules);
+	NWNEngine::getModules(modules);
 
 	for (std::vector<Common::UString>::iterator m = modules.begin(); m != modules.end(); ++m)
 		_modules.push_back(*m);
