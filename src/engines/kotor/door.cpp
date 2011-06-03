@@ -56,8 +56,9 @@ void Door::load(const Aurora::GFFStruct &door) {
 	Aurora::GFFFile *utd = 0;
 	if (!temp.empty()) {
 		try {
-			utd = loadGFF(temp, Aurora::kFileTypeUTD, MKID_BE('UTD '));
+			utd = new Aurora::GFFFile(temp, Aurora::kFileTypeUTD, MKID_BE('UTD '));
 		} catch (...) {
+			delete utd;
 		}
 	}
 

@@ -417,11 +417,10 @@ void Creature::unloadModel() {
 	_model = 0;
 }
 
-void Creature::loadCharacter(Common::SeekableReadStream &stream) {
+void Creature::loadCharacter(Common::SeekableReadStream *stream) {
 	clear();
 
-	Aurora::GFFFile gff;
-	loadGFF(gff, stream, MKID_BE('BIC '));
+	Aurora::GFFFile gff(stream, MKID_BE('BIC '));
 
 	load(gff.getTopLevel(), 0);
 
@@ -445,8 +444,9 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 	Aurora::GFFFile *utc = 0;
 	if (!temp.empty()) {
 		try {
-			utc = loadGFF(temp, Aurora::kFileTypeUTC, MKID_BE('UTC '));
+			utc = new Aurora::GFFFile(temp, Aurora::kFileTypeUTC, MKID_BE('UTC '));
 		} catch (...) {
+			delete utc;
 		}
 	}
 

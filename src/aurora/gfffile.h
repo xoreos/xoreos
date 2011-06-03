@@ -53,17 +53,9 @@ typedef std::list<GFFStruct *> GFFList;
 
 class GFFFile : public AuroraBase {
 public:
-	GFFFile();
+	GFFFile(Common::SeekableReadStream *gff, uint32 id);
+	GFFFile(const Common::UString &gff, FileType type, uint32 id);
 	~GFFFile();
-
-	/** Clear all information. */
-	void clear();
-
-	/** Load a GFF file.
-	 *
-	 *  @param gff A gff of an GFF file.
-	 */
-	void load(Common::SeekableReadStream &gff);
 
 	/** Returns the top-level struct. */
 	const GFFStruct &getTopLevel() const;
@@ -96,6 +88,9 @@ private:
 	typedef std::vector<GFFStruct *> StructArray;
 	typedef std::vector<GFFList> ListArray;
 
+
+	Common::SeekableReadStream *_stream;
+
 	Header _header; ///< The GFF's header
 
 	StructArray _structs; ///< Our structs.
@@ -109,6 +104,7 @@ private:
 
 	byte *_fieldData; ///< The extended field data.
 
+
 	/** Returns the struct field data at this offset. */
 	const byte *getFieldData(uint32 offset) const;
 
@@ -118,9 +114,10 @@ private:
 	const GFFList   &getList  (uint32 i, uint32 &size) const;
 
 	// Loading helpers
-	void readStructs(Common::SeekableReadStream &gff);
-	void readLists(Common::SeekableReadStream &gff);
-	void readFieldData(Common::SeekableReadStream &gff);
+	void load(uint32 id);
+	void readStructs();
+	void readLists();
+	void readFieldData();
 
 	friend class GFFStruct;
 };

@@ -173,9 +173,11 @@ void CharacterStore::index() {
 
 	Creature *character = 0;
 	try {
-		Common::File file;
-		if (!file.open(fileName))
+		Common::File *file = new Common::File;
+		if (!file->open(fileName)) {
+			delete file;
 			throw Common::Exception("No such file");
+		}
 
 		character = new Creature;
 		character->loadCharacter(file);

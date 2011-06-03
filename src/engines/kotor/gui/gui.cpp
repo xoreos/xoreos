@@ -75,7 +75,7 @@ void GUI::load(const Common::UString &resref, float width, float height) {
 
 	Aurora::GFFFile *gff = 0;
 	try {
-		gff = loadGFF(resref, Aurora::kFileTypeGUI, MKID_BE('GUI '));
+		gff = new Aurora::GFFFile(resref, Aurora::kFileTypeGUI, MKID_BE('GUI '));
 
 		loadWidget(gff->getTopLevel(), 0, width, height);
 

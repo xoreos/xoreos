@@ -55,8 +55,9 @@ void Placeable::load(const Aurora::GFFStruct &placeable) {
 	Aurora::GFFFile *utp = 0;
 	if (!temp.empty()) {
 		try {
-			utp = loadGFF(temp, Aurora::kFileTypeUTP, MKID_BE('UTP '));
+			utp = new Aurora::GFFFile(temp, Aurora::kFileTypeUTP, MKID_BE('UTP '));
 		} catch (...) {
+			delete utp;
 		}
 	}
 

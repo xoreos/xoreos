@@ -64,8 +64,9 @@ void Waypoint::load(const Aurora::GFFStruct &waypoint) {
 	Aurora::GFFFile *utw = 0;
 	if (!temp.empty()) {
 		try {
-			utw = loadGFF(temp, Aurora::kFileTypeUTW, MKID_BE('UTW '));
+			utw = new Aurora::GFFFile(temp, Aurora::kFileTypeUTW, MKID_BE('UTW '));
 		} catch (...) {
+			delete utw;
 		}
 	}
 

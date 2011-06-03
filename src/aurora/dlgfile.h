@@ -84,7 +84,7 @@ public:
 	};
 
 
-	DLGFile(Common::SeekableReadStream &dlg, NWScript::Object *owner = 0);
+	DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner = 0);
 	DLGFile(const Common::UString &dlg, NWScript::Object *owner = 0);
 	~DLGFile();
 
@@ -149,7 +149,6 @@ private:
 	bool _ended; ///< Has the conversation ended?
 
 
-	void load(Common::SeekableReadStream &dlg);
 	void load(const GFFStruct &dlg);
 
 	void readEntries(const GFFList &list, std::vector<Entry> &entries, bool isPC);

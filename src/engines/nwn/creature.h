@@ -64,7 +64,7 @@ public:
 	uint32 lastChangedGUIDisplay() const;
 
 	/** Load from a character file. */
-	void loadCharacter(Common::SeekableReadStream &stream);
+	void loadCharacter(Common::SeekableReadStream *stream);
 	/** Load from a creature instance. */
 	void load(const Aurora::GFFStruct &creature);
 

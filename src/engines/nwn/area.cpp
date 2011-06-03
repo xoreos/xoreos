@@ -60,12 +60,10 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 	_resRef(resRef), _visible(false), _tileset(0),
 	_activeObject(0), _highlightAll(false) {
 
-	Aurora::GFFFile are;
-	loadGFF(are, _resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
+	Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
 	loadARE(are.getTopLevel());
 
-	Aurora::GFFFile git;
-	loadGFF(git, _resRef, Aurora::kFileTypeGIT, MKID_BE('GIT '));
+	Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKID_BE('GIT '));
 	loadGIT(git.getTopLevel());
 
 	loadTileset();
@@ -95,8 +93,7 @@ Area::~Area() {
 
 Common::UString Area::getName(const Common::UString &resRef) {
 	try {
-		Aurora::GFFFile are;
-		loadGFF(are, resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
+		Aurora::GFFFile are(resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
 
 		Aurora::LocString name;
 		are.getTopLevel().getLocString("Name", name);

@@ -61,13 +61,6 @@ void checkConfigDouble(const Common::UString &key, double min, double max, doubl
 /** Wait for a "long" amount of time, returning prematurely with true in the case of a requested quit. */
 bool longDelay(uint32 ms);
 
-/** Load a GFF file. */
-void loadGFF(Aurora::GFFFile &gff, Common::SeekableReadStream &stream, uint32 id);
-/** Load a GFF file. */
-void loadGFF(Aurora::GFFFile &gff, const Common::UString &name, Aurora::FileType type, uint32 id);
-/** Load a GFF file. */
-Aurora::GFFFile *loadGFF(const Common::UString &name, Aurora::FileType type, uint32 id);
-
 /** Debug method to quickly dump the current list of resource to disk. */
 bool dumpResList(const Common::UString &name);
 

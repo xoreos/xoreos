@@ -34,7 +34,9 @@
 
 #include "aurora/gfffile.h"
 #include "aurora/error.h"
+#include "aurora/util.h"
 #include "aurora/locstring.h"
+#include "aurora/resman.h"
 
 static const uint32 kVersion32 = MKID_BE('V3.2');
 static const uint32 kVersion33 = MKID_BE('V3.3'); // Found in The Witcher, different language table
@@ -76,48 +78,46 @@ void GFFFile::Header::read(Common::SeekableReadStream &gff) {
 }
 
 
-GFFFile::GFFFile() : _fieldData(0) {
+GFFFile::GFFFile(Common::SeekableReadStream *gff, uint32 id) :
+	_stream(gff), _fieldData(0) {
+
+	load(id);
+}
+
+GFFFile::GFFFile(const Common::UString &gff, FileType type, uint32 id) :
+	_stream(0), _fieldData(0) {
+
+	_stream = ResMan.getResource(gff, type);
+	if (!_stream)
+		throw Common::Exception("No such GFF \"%s\"", setFileType(gff, type).c_str());
+
+	load(id);
 }
 
 GFFFile::~GFFFile() {
-	delete[] _fieldData;
+	delete _stream;
 
 	for (StructArray::iterator strct = _structs.begin(); strct != _structs.end(); ++strct)
 		delete *strct;
 }
 
-void GFFFile::clear() {
-	_header.clear();
+void GFFFile::load(uint32 id) {
+	readHeader(*_stream);
 
-	for (StructArray::iterator strct = _structs.begin(); strct != _structs.end(); ++strct)
-		delete *strct;
-
-	_structs.clear();
-	_lists.clear();
-
-	_listOffsetToIndex.clear();
-
-	delete _fieldData;
-	_fieldData = 0;
-}
-
-void GFFFile::load(Common::SeekableReadStream &gff) {
-	clear();
-
-	readHeader(gff);
-
+	if (_id != id)
+		throw Common::Exception("GFF has invalid ID (want 0x%08X, got 0x%08X)", id, _id);
 	if ((_version != kVersion32) && (_version != kVersion33))
 		throw Common::Exception("Unsupported GFF file version %08X", _version);
 
-	_header.read(gff);
+	_header.read(*_stream);
 
 	try {
 
-		readStructs(gff);
-		readLists(gff);
-		readFieldData(gff);
+		readStructs();
+		readLists();
+		readFieldData();
 
-		if (gff.err())
+		if (_stream->err())
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
@@ -149,21 +149,21 @@ const GFFList &GFFFile::getList(uint32 i, uint32 &size) const {
 	return _lists[i];
 }
 
-void GFFFile::readStructs(Common::SeekableReadStream &gff) {
+void GFFFile::readStructs() {
 	_structs.reserve(_header.structCount);
 	for (uint32 i = 0; i < _header.structCount; i++)
-		_structs.push_back(new GFFStruct(*this, gff));
+		_structs.push_back(new GFFStruct(*this, *_stream));
 }
 
-void GFFFile::readLists(Common::SeekableReadStream &gff) {
-	if (!gff.seek(_header.listIndicesOffset))
+void GFFFile::readLists() {
+	if (!_stream->seek(_header.listIndicesOffset))
 		throw Common::Exception(Common::kSeekError);
 
 	// Read list array
 	std::vector<uint32> rawLists;
 	rawLists.resize(_header.listIndicesCount / 4);
 	for (std::vector<uint32>::iterator it = rawLists.begin(); it != rawLists.end(); ++it)
-		*it = gff.readUint32LE();
+		*it = _stream->readUint32LE();
 
 	// Counting the actual amount of lists
 	uint32 listCount = 0;
@@ -199,11 +199,11 @@ void GFFFile::readLists(Common::SeekableReadStream &gff) {
 
 }
 
-void GFFFile::readFieldData(Common::SeekableReadStream &gff) {
+void GFFFile::readFieldData() {
 	_fieldData = new byte[_header.fieldDataCount];
 
-	gff.seek(_header.fieldDataOffset);
-	if (gff.read(_fieldData, _header.fieldDataCount) != _header.fieldDataCount)
+	_stream->seek(_header.fieldDataOffset);
+	if (_stream->read(_fieldData, _header.fieldDataCount) != _header.fieldDataCount)
 		throw Common::Exception(Common::kReadError);
 }
 

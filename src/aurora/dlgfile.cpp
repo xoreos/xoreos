@@ -42,10 +42,12 @@ static const uint32 kDLGID = MKID_BE('DLG ');
 
 namespace Aurora {
 
-DLGFile::DLGFile(Common::SeekableReadStream &dlg, NWScript::Object *owner) :
+DLGFile::DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner) :
 	_owner(owner), _ended(true) {
 
-	load(dlg);
+	GFFFile gff(dlg, kDLGID);
+
+	load(gff.getTopLevel());
 
 	_currentEntry = _entriesNPC.end();
 }
@@ -53,18 +55,9 @@ DLGFile::DLGFile(Common::SeekableReadStream &dlg, NWScript::Object *owner) :
 DLGFile::DLGFile(const Common::UString &dlg, NWScript::Object *owner) :
 	_owner(owner), _ended(true) {
 
-	Common::SeekableReadStream *res = ResMan.getResource(dlg, kFileTypeDLG);
-	if (!res)
-		throw Common::Exception("No such DLG \"%s\"", dlg.c_str());
+	GFFFile gff(dlg, kFileTypeDLG, kDLGID);
 
-	try {
-		load(*res);
-	} catch (...) {
-		delete res;
-		throw;
-	}
-
-	delete res;
+	load(gff.getTopLevel());
 }
 
 DLGFile::~DLGFile() {
@@ -165,17 +158,6 @@ const DLGFile::Line *DLGFile::getOneLiner() const {
 	}
 
 	return 0;
-}
-
-void DLGFile::load(Common::SeekableReadStream &dlg) {
-	GFFFile gff;
-
-	gff.load(dlg);
-
-	if (gff.getID() != kDLGID)
-		throw Common::Exception("DLG has invalid ID (0x%08X)", gff.getID());
-
-	load(gff.getTopLevel());
 }
 
 void DLGFile::load(const GFFStruct &dlg) {
