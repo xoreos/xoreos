@@ -659,7 +659,7 @@ void ScriptFunctions::getNextItemInInventory(Aurora::NWScript::FunctionContext &
 void ScriptFunctions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) kClassInvalid;
 
-	uint32 position = (uint32) ctx.getParams()[0].getInt();
+	uint32 position = (uint32) ctx.getParams()[0].getInt() - 1;
 
 	Creature *creature = convertCreature(ctx.getParams()[1].getObject());
 	if (ctx.getParamsSpecified() < 2)
@@ -677,7 +677,7 @@ void ScriptFunctions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx)
 void ScriptFunctions::getLevelByPosition(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = 0;
 
-	uint32 position = (uint32) ctx.getParams()[0].getInt();
+	uint32 position = (uint32) ctx.getParams()[0].getInt() - 1;
 
 	Creature *creature = convertCreature(ctx.getParams()[1].getObject());
 	if (ctx.getParamsSpecified() < 2)
