@@ -614,7 +614,7 @@ void ScriptFunctions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	if (!target)
 		return;
 
-	ObjectType type = (ObjectType) ctx.getParams()[1].getInt();
+	ObjectType type = (ObjectType) ctx.getParams()[0].getInt();
 	int nth = ctx.getParams()[2].getInt() - 1;
 
 	if (!_module->findObjectInit(_objSearchContext))
