@@ -31,6 +31,9 @@
 #define ENGINES_NWN_MODULE_H
 
 #include <list>
+#include <map>
+
+#include "common/ustring.h"
 
 #include "aurora/resman.h"
 
@@ -90,6 +93,8 @@ public:
 	static Common::UString getDescription(const Common::UString &module);
 
 private:
+	typedef std::map<Common::UString, Area *> AreaMap;
+
 	Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
@@ -112,8 +117,10 @@ private:
 
 	bool _exit; //< Should we exit the module?
 
-	Common::UString _newArea; ///< The new area to enter.
-	Area           *_area;    ///< The current area.
+	AreaMap         _areas;           ///< The areas in the current module.
+	Common::UString _newArea;         ///< The new area to enter.
+	Area           *_currentArea;     ///< The current area.
+
 
 	void unload(); ///< Unload the whole shebang.
 
@@ -121,19 +128,20 @@ private:
 	void unloadPC();          ///< Unload the PC.
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadTexturePack(); ///< Unload the texture pack.
-	void unloadArea();        ///< Unload the current area.
+	void unloadAreas();       ///< Unload the areas.
 
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadTexturePack(); ///< Load the texture pack.
-	void loadArea();        ///< Load a new area.
+	void loadAreas();       ///< Load the areas.
 
 	void setPCTokens();
 	void removePCTokens();
 
-	bool enter(); ///< Enter the currently loaded module.
+	bool enter();     ///< Enter the currently loaded module.
+	void enterArea(); ///< Enter a new area.
 
 	void handleEvents();
 	bool handleCamera(const Events::Event &e);

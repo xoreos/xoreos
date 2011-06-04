@@ -281,17 +281,17 @@ void Console::cmdListMusic(const CommandLine &cl) {
 }
 
 void Console::cmdStopMusic(const CommandLine &cl) {
-	if (!_module || !_module->_area)
+	if (!_module || !_module->_currentArea)
 		return;
 
-	_module->_area->stopAmbientMusic();
+	_module->_currentArea->stopAmbientMusic();
 }
 
 void Console::cmdPlayMusic(const CommandLine &cl) {
-	if (!_module || !_module->_area)
+	if (!_module || !_module->_currentArea)
 		return;
 
-	_module->_area->playAmbientMusic(cl.args);
+	_module->_currentArea->playAmbientMusic(cl.args);
 }
 
 } // End of namespace NWN

@@ -92,7 +92,7 @@ namespace Engines {
 namespace NWN {
 
 Module::Module(Console &console) : _console(&console), _hasModule(false), _pc(0),
-	_currentTexturePack(-1), _exit(false), _area(0) {
+	_currentTexturePack(-1), _exit(false), _currentArea(0) {
 
 	_ingameGUI = new IngameGUI(*this);
 }
@@ -244,7 +244,7 @@ Creature *Module::getPC() {
 bool Module::replaceModule(const Common::UString &module) {
 	_exit = true;
 
-	unloadArea();
+	unloadAreas();
 	unloadHAKs();
 	unloadModule();
 
@@ -275,6 +275,7 @@ bool Module::enter() {
 	try {
 
 		loadHAKs();
+		loadAreas();
 
 	} catch (Common::Exception &e) {
 		e.add("Can't initialize module \"%s\"", _ifo.getName().getString().c_str());
@@ -309,6 +310,45 @@ bool Module::enter() {
 	return true;
 }
 
+void Module::enterArea() {
+	if (_currentArea && (_currentArea->getResRef() == _newArea))
+		return;
+
+	_ingameGUI->stopConversation();
+
+	if (_currentArea) {
+		_currentArea->runScript(kScriptExit, _currentArea, _pc);
+
+		_currentArea = 0;
+	}
+
+	if (_newArea.empty()) {
+		_exit = true;
+		return;
+	}
+
+	AreaMap::iterator area = _areas.find(_newArea);
+	if (area == _areas.end() || !area->second) {
+		warning("Failed entering area \"%s\": No such area", _newArea.c_str());
+		_exit = true;
+		return;
+	}
+
+	_currentArea = area->second;
+
+	_currentArea->show();
+
+	EventMan.flushEvents();
+
+	_ingameGUI->setArea(_currentArea->getName());
+
+	_pc->setArea(_currentArea);
+
+	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
+
+	_console->printf("Entering area \"%s\"", _currentArea->getResRef().c_str());
+}
+
 void Module::run() {
 	if (!enter())
 		return;
@@ -323,7 +363,7 @@ void Module::run() {
 		EventMan.flushEvents();
 
 		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
-			loadArea();
+			enterArea();
 			if (_exit)
 				break;
 
@@ -352,7 +392,7 @@ void Module::handleEvents() {
 	while (EventMan.pollEvent(event)) {
 		// Handle console
 		if (_console->processEvent(event)) {
-			if (!_area)
+			if (!_currentArea)
 				return;
 
 			continue;
@@ -380,10 +420,10 @@ void Module::handleEvents() {
 			continue;
 
 		_ingameGUI->addEvent(event);
-		_area->addEvent(event);
+		_currentArea->addEvent(event);
 	}
 
-	_area->processEventQueue();
+	_currentArea->processEventQueue();
 	_ingameGUI->processEventQueue();
 }
 
@@ -430,7 +470,7 @@ bool Module::handleCamera(const Events::Event &e) {
 }
 
 void Module::unload() {
-	unloadArea();
+	unloadAreas();
 	unloadTexturePack();
 	unloadHAKs();
 	unloadPC();
@@ -518,46 +558,42 @@ void Module::unloadTexturePack() {
 	_currentTexturePack = -1;
 }
 
-void Module::loadArea() {
-	if (_area && (_area->getResRef() == _newArea))
-		return;
+void Module::loadAreas() {
+	status("Loading areas...");
 
-	_ingameGUI->stopConversation();
+	const std::vector<Common::UString> &areas = _ifo.getAreas();
+	for (uint32 i = 0; i < areas.size(); i++) {
+		status("Loading area \"%s\" (%d / %d)", areas[i].c_str(), i, (int) areas.size() - 1);
 
-	if (_area) {
-		_area->runScript(kScriptExit, _area, _pc);
-		delete _area;
+		std::pair<AreaMap::iterator, bool> result;
+
+		result = _areas.insert(std::make_pair(areas[i], (Area *) 0));
+		if (!result.second)
+			throw Common::Exception("Area tag collision: \"%s\"", areas[i].c_str());
+
+		try {
+			result.first->second = new Area(*this, areas[i].c_str());
+		} catch (Common::Exception &e) {
+			e.add("Can't load area \"%s\"", areas[i].c_str());
+			throw;
+		}
 	}
-
-	if (_newArea.empty()) {
-		_exit = true;
-		return;
-	}
-
-	_area = new Area(*this, _newArea);
-
-	_area->show();
-
-	EventMan.flushEvents();
-
-	_ingameGUI->setArea(_area->getName());
-
-	_pc->setArea(_area);
-
-	_area->runScript(kScriptEnter, _area, _pc);
-
-	_console->printf("Entering area \"%s\"", _area->getResRef().c_str());
 }
 
-void Module::unloadArea() {
+void Module::unloadAreas() {
 	_ingameGUI->stopConversation();
 
-	delete _area;
-	_area = 0;
+	for (AreaMap::iterator a = _areas.begin(); a != _areas.end(); ++a)
+		delete a->second;
+
+	_areas.clear();
+	_newArea.clear();
+
+	_currentArea = 0;
 }
 
 void Module::showMenu() {
-	_area->removeFocus();
+	_currentArea->removeFocus();
 
 	if (_ingameGUI->showMain() == 2) {
 		_exit = true;
