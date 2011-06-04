@@ -61,13 +61,11 @@ public:
 
 	// Basic visuals
 
+	void loadModel();   ///< Load the creature's model.
+	void unloadModel(); ///< Unload the creature's model.
+
 	void show(); ///< Show the creature's model.
 	void hide(); ///< Hide the creature's model.
-
-	/** Load the creature's model. */
-	void loadModel();
-	/** Unload the creature's model. */
-	void unloadModel();
 
 	// Basic properties
 

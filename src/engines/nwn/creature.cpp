@@ -133,8 +133,6 @@ void Creature::init() {
 }
 
 void Creature::show() {
-	loadModel();
-
 	if (_model)
 		_model->show();
 }

@@ -56,6 +56,45 @@ Situated::~Situated() {
 	delete _model;
 }
 
+void Situated::loadModel() {
+	if (_model)
+		return;
+
+	if (_modelName.empty()) {
+		warning("Situated object \"%s\" (\"%s\") has no model", _name.c_str(), _tag.c_str());
+		return;
+	}
+
+	_model = loadModelObject(_modelName);
+	if (!_model)
+		throw Common::Exception("Failed to load situated object model \"%s\"",
+		                        _modelName.c_str());
+
+	// Positioning
+
+	float x, y, z;
+
+	getPosition(x, y, z);
+	setPosition(x, y, z);
+
+	getOrientation(x, y, z);
+	setOrientation(x, y, z);
+
+	// Clickable
+
+	_model->setTag(_tag);
+	_model->setClickable(isClickable());
+
+	_ids.push_back(_model->getID());
+}
+
+void Situated::unloadModel() {
+	hide();
+
+	delete _model;
+	_model = 0;
+}
+
 void Situated::show() {
 	if (_model)
 		_model->show();
@@ -113,26 +152,6 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	loadAppearance();
 	loadSounds();
 
-
-	// Model
-
-	if (!_modelName.empty()) {
-		_model = loadModelObject(_modelName);
-
-		if (!_model)
-			throw Common::Exception("Failed to load situated object model \"%s\"",
-			                        _modelName.c_str());
-	} else
-		warning("Situated object \"%s\" (\"%s\") has no model", _name.c_str(), _tag.c_str());
-
-	if (_model) {
-		// Clickable
-		_model->setTag(_tag);
-		_model->setClickable(isClickable());
-
-		// ID
-		_ids.push_back(_model->getID());
-	}
 
 	// Position
 

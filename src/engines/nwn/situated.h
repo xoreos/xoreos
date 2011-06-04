@@ -45,12 +45,15 @@ class Situated : public Object {
 public:
 	~Situated();
 
-	void show(); ///< Show the sitatuated object's model.
-	void hide(); ///< Hide the sitatuated object's model.
+	void loadModel();   ///< Load the situated object's model.
+	void unloadModel(); ///< Unload the situated object's model.
 
-	/** Set the sitatuated object's position. */
+	void show(); ///< Show the situated object's model.
+	void hide(); ///< Hide the situated object's model.
+
+	/** Set the situated object's position. */
 	void setPosition(float x, float y, float z);
-	/** Set the sitatuated object's orientation. */
+	/** Set the situated object's orientation. */
 	void setOrientation(float x, float y, float z);
 
 	/** Is the situated object open? */

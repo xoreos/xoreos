@@ -72,6 +72,12 @@ ObjectType Object::getType() const {
 	return _type;
 }
 
+void Object::loadModel() {
+}
+
+void Object::unloadModel() {
+}
+
 void Object::show() {
 }
 
