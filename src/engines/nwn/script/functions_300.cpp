@@ -587,7 +587,7 @@ void ScriptFunctions::actionInteractObject(Aurora::NWScript::FunctionContext &ct
 }
 
 void ScriptFunctions::getLastUsedBy(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: GetLastUsedBy");
+	ctx.getReturn() = ctx.getTriggerer();
 }
 
 void ScriptFunctions::getAbilityModifier(Aurora::NWScript::FunctionContext &ctx) {
