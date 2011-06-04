@@ -213,10 +213,7 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 	}
 
 	Common::UString module = Common::UString(kCampaignModules[c->second]) + ".nwm";
-	if (!_module->replaceModule(module))
-		return;
-
-	updateCaches();
+	_module->changeModule(module);
 }
 
 void Console::cmdListModules(const CommandLine &cl) {
@@ -236,10 +233,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 
 	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
-			if (!_module->replaceModule(cl.args + ".mod"))
-				return;
-
-			updateCaches();
+			_module->changeModule(cl.args + ".mod");
 			return;
 		}
 	}

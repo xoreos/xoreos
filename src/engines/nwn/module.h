@@ -75,9 +75,6 @@ public:
 	/** Use this character as the player character. */
 	bool usePC(const Common::UString &bic, bool local);
 
-	/** Replace the currently running module. */
-	bool replaceModule(const Common::UString &module);
-
 	void run();
 
 
@@ -94,6 +91,8 @@ public:
 	void movePC(const Common::UString &area, float x, float y, float z);
 	void movePC(Area *area, float x, float y, float z);
 	void movedPC();
+
+	void changeModule(const Common::UString &module);
 
 
 	static Common::UString getDescription(const Common::UString &module);
@@ -127,6 +126,8 @@ private:
 	Common::UString _newArea;         ///< The new area to enter.
 	Area           *_currentArea;     ///< The current area.
 
+	Common::UString _newModule; ///< The module we should change to.
+
 
 	void unload(); ///< Unload the whole shebang.
 
@@ -148,6 +149,9 @@ private:
 
 	bool enter();     ///< Enter the currently loaded module.
 	void enterArea(); ///< Enter a new area.
+
+	/** Replace the currently running module. */
+	bool replaceModule();
 
 	void handleEvents();
 	bool handleCamera(const Events::Event &e);

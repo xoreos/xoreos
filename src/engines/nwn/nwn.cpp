@@ -354,6 +354,8 @@ void NWNEngine::initGameConfig() {
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_extraModuleDir",
 		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_campaignDir",
+		Common::FilePath::findSubDirectory(_baseDirectory, "nwm", true));
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_localPCDir",
 		Common::FilePath::findSubDirectory(_baseDirectory, "localvault", true));
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_serverPCDir",
@@ -478,6 +480,23 @@ void NWNEngine::getModules(std::vector<Common::UString> &modules) {
 
 		modules.push_back(Common::FilePath::getStem(*m));
 	}
+}
+
+bool NWNEngine::hasModule(Common::UString &module) {
+	const Common::UString nwmFile = module + ".nwm";
+	const Common::UString modFile = module + ".mod";
+
+	if (ResMan.hasArchive(Aurora::kArchiveERF, nwmFile)) {
+		module = nwmFile;
+		return true;
+	}
+
+	if (ResMan.hasArchive(Aurora::kArchiveERF, modFile)) {
+		module = modFile;
+		return true;
+	}
+
+	return false;
 }
 
 void NWNEngine::getCharacters(std::vector<Common::UString> &characters, bool local) {

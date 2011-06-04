@@ -138,6 +138,8 @@ bool Module::loadModule(const Common::UString &module) {
 		return false;
 	}
 
+	_newModule.clear();
+
 	_hasModule = true;
 	return true;
 }
@@ -243,14 +245,21 @@ Creature *Module::getPC() {
 	return _pc;
 }
 
-bool Module::replaceModule(const Common::UString &module) {
-	_exit = true;
+bool Module::replaceModule() {
+	if (_newModule.empty())
+		return true;
+
+	_console->hide();
+
+	Common::UString newModule = _newModule;
 
 	unloadAreas();
 	unloadHAKs();
 	unloadModule();
 
-	if (!loadModule(module))
+	_exit = true;
+
+	if (!loadModule(newModule))
 		return false;
 
 	return enter();
@@ -266,6 +275,8 @@ bool Module::enter() {
 		warning("Module::enter(): Lacking a PC?!?");
 		return false;
 	}
+
+	_pc->clearVariables();
 
 	loadTexturePack();
 
@@ -366,6 +377,7 @@ void Module::run() {
 		EventMan.flushEvents();
 
 		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
+			replaceModule();
 			enterArea();
 			if (_exit)
 				break;
@@ -494,6 +506,7 @@ void Module::unloadModule() {
 
 	ResMan.undo(_resModule);
 
+	_newModule.clear();
 	_hasModule = false;
 }
 
@@ -653,6 +666,10 @@ void Module::movedPC() {
 	_newArea.clear();
 	if (_pc->getArea())
 		_newArea = _pc->getArea()->getResRef();
+}
+
+void Module::changeModule(const Common::UString &module) {
+	_newModule = module;
 }
 
 Common::UString Module::getDescription(const Common::UString &module) {

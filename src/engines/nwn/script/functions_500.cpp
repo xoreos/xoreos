@@ -41,6 +41,8 @@
 #include "aurora/nwscript/functionman.h"
 
 #include "engines/nwn/types.h"
+#include "engines/nwn/nwn.h"
+#include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
 #include "engines/nwn/object.h"
 
@@ -436,7 +438,17 @@ void ScriptFunctions::getLastRestEventType(Aurora::NWScript::FunctionContext &ct
 }
 
 void ScriptFunctions::startNewModule(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: StartNewModule");
+	if (!_module)
+		return;
+
+	Common::UString module = ctx.getParams()[0].getString();
+
+	if (!NWNEngine::hasModule(module)) {
+		warning("Can't start module \"%s\": No such module", module.c_str());
+		return;
+	}
+
+	_module->changeModule(module);
 }
 
 void ScriptFunctions::effectSwarm(Aurora::NWScript::FunctionContext &ctx) {
