@@ -845,6 +845,7 @@ void NCSFile::o_neg(InstructionType type) {
 			} catch (Common::Exception e) {
 				throw e;
 			}
+			break;
 
 		default:
 			throw Common::Exception("NCSFile::o_neg(): Illegal type %d", type);
