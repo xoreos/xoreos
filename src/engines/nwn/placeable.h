@@ -66,6 +66,8 @@ public:
 	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
 
+	/** The placeable was clicked. */
+	bool click(Object *triggerer = 0);
 
 	/** Is the placeable open? */
 	bool isOpen() const;

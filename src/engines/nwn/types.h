@@ -69,6 +69,7 @@ enum Script {
 	kScriptPlayerRest           ,
 	kScriptPlayerRespan         ,
 	kScriptUserdefined          ,
+	kScriptUsed                 ,
 	kScriptClick                ,
 	kScriptOpen                 ,
 	kScriptClosed               ,

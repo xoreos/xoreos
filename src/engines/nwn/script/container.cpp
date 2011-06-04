@@ -74,6 +74,7 @@ static const ScriptName kScriptNames[] = {
 	{kScriptUserdefined      , "Mod_OnUsrDefined"},
 	{kScriptUserdefined      , "OnUserDefined"   },
 	{kScriptUserdefined      , "ScriptUserDefine"},
+	{kScriptUsed             , "OnUsed"          },
 	{kScriptClick            , "OnClick"         },
 	{kScriptOpen             , "OnOpen"          },
 	{kScriptClosed           , "OnClosed"        },

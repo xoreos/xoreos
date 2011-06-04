@@ -177,6 +177,14 @@ bool Placeable::isOpen() const {
 	return _state == kStateOpen;
 }
 
+bool Placeable::click(Object *triggerer) {
+	// If the door has a used script, call that
+	if (hasScript(kScriptUsed))
+		return runScript(kScriptUsed, this, triggerer);
+
+	return true;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
