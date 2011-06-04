@@ -412,9 +412,8 @@ void Area::initTiles() {
 
 void Area::loadWaypoints(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Waypoint *waypoint = new Waypoint;
+		Waypoint *waypoint = new Waypoint(**d);
 
-		waypoint->load(**d);
 		waypoint->setArea(this);
 
 		_objects.push_back(waypoint);
@@ -432,9 +431,8 @@ void Area::loadWaypoints(const Aurora::GFFList &list) {
 
 void Area::loadPlaceables(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
-		Placeable *placeable = new Placeable;
+		Placeable *placeable = new Placeable(**p);
 
-		placeable->load(**p);
 		placeable->setArea(this);
 
 		_objects.push_back(placeable);
@@ -452,9 +450,8 @@ void Area::loadPlaceables(const Aurora::GFFList &list) {
 
 void Area::loadDoors(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Door *door = new Door;
+		Door *door = new Door(**d);
 
-		door->load(**d);
 		door->setArea(this);
 
 		_objects.push_back(door);
@@ -472,9 +469,8 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 
 void Area::loadCreatures(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c) {
-		Creature *creature = new Creature;
+		Creature *creature = new Creature(**c);
 
-		creature->load(**c);
 		creature->loadModel();
 		creature->setArea(this);
 

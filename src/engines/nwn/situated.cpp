@@ -57,15 +57,11 @@ Situated::~Situated() {
 }
 
 void Situated::show() {
-	assert(_loaded);
-
 	if (_model)
 		_model->show();
 }
 
 void Situated::hide() {
-	assert(_loaded);
-
 	if (_model)
 		_model->hide();
 }
@@ -95,9 +91,6 @@ void Situated::setLocked(bool locked) {
 }
 
 void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
-	assert(!_loaded);
-
-
 	// General properties
 
 	if (blueprint)
@@ -152,8 +145,6 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	float bearing = instance.getDouble("Bearing");
 
 	setOrientation(0.0, Common::rad2deg(bearing), 0.0);
-
-	_loaded = true;
 }
 
 void Situated::loadProperties(const Aurora::GFFStruct &gff) {

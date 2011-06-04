@@ -47,11 +47,10 @@ public:
 		kStateOpened2 = 2  ///< Opened in the other direction (normally counter-clock-wise).
 	};
 
-	Door();
+	/** Load from a door instance. */
+	Door(const Aurora::GFFStruct &door);
 	~Door();
 
-	/** Load the door from an instance GFF struct. */
-	void load(const Aurora::GFFStruct &door);
 
 	void hide(); ///< Hide the door's model.
 
@@ -84,6 +83,9 @@ private:
 	uint32 _genericType; ///< Index into the generic door types.
 
 	State _state; ///< The current state of the door.
+
+	/** Load from a door instance. */
+	void load(const Aurora::GFFStruct &door);
 
 	/** Load the appearance from this 2DA row. */
 	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);

@@ -42,7 +42,10 @@ namespace Engines {
 
 namespace NWN {
 
-Waypoint::Waypoint() : Object(kObjectTypeWaypoint), _hasMapNote(false) {
+Waypoint::Waypoint(const Aurora::GFFStruct &waypoint) : Object(kObjectTypeWaypoint),
+	_hasMapNote(false) {
+
+	load(waypoint);
 }
 
 Waypoint::~Waypoint() {
@@ -50,8 +53,6 @@ Waypoint::~Waypoint() {
 }
 
 void Waypoint::load(const Aurora::GFFStruct &waypoint) {
-	assert(!_loaded);
-
 	Common::UString temp = waypoint.getString("TemplateResRef");
 
 	Aurora::GFFFile *utw = 0;
@@ -69,8 +70,6 @@ void Waypoint::load(const Aurora::GFFStruct &waypoint) {
 		warning("Waypoint \"%s\" has no blueprint", _tag.c_str());
 
 	delete utw;
-
-	_loaded = true;
 }
 
 bool Waypoint::hasMapNote() const {

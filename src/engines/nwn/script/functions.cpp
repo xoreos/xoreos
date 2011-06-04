@@ -224,7 +224,7 @@ Common::UString ScriptFunctions::gTag(const Aurora::NWScript::Object *o) {
 
 Object *ScriptFunctions::convertObject(Aurora::NWScript::Object *o) {
 	Object *object = dynamic_cast<Object *>(o);
-	if (!object || !object->loaded() || (object->getID() == kObjectIDInvalid))
+	if (!object || (object->getID() == kObjectIDInvalid))
 		return 0;
 
 	return object;
@@ -232,7 +232,7 @@ Object *ScriptFunctions::convertObject(Aurora::NWScript::Object *o) {
 
 Waypoint *ScriptFunctions::convertWaypoint(Aurora::NWScript::Object *o) {
 	Waypoint *waypoint = dynamic_cast<Waypoint *>(o);
-	if (!waypoint || !waypoint->loaded() || (waypoint->getID() == kObjectIDInvalid))
+	if (!waypoint || (waypoint->getID() == kObjectIDInvalid))
 		return 0;
 
 	return waypoint;
@@ -240,7 +240,7 @@ Waypoint *ScriptFunctions::convertWaypoint(Aurora::NWScript::Object *o) {
 
 Situated *ScriptFunctions::convertSituated(Aurora::NWScript::Object *o) {
 	Situated *situated = dynamic_cast<Situated *>(o);
-	if (!situated || !situated->loaded() || (situated->getID() == kObjectIDInvalid))
+	if (!situated || (situated->getID() == kObjectIDInvalid))
 		return 0;
 
 	return situated;
@@ -248,7 +248,7 @@ Situated *ScriptFunctions::convertSituated(Aurora::NWScript::Object *o) {
 
 Door *ScriptFunctions::convertDoor(Aurora::NWScript::Object *o) {
 	Door *door = dynamic_cast<Door *>(o);
-	if (!door || !door->loaded() || (door->getID() == kObjectIDInvalid))
+	if (!door || (door->getID() == kObjectIDInvalid))
 		return 0;
 
 	return door;
@@ -256,7 +256,7 @@ Door *ScriptFunctions::convertDoor(Aurora::NWScript::Object *o) {
 
 Creature *ScriptFunctions::convertCreature(Aurora::NWScript::Object *o) {
 	Creature *creature = dynamic_cast<Creature *>(o);
-	if (!creature || !creature->loaded() || (creature->getID() == kObjectIDInvalid))
+	if (!creature || (creature->getID() == kObjectIDInvalid))
 		return 0;
 
 	return creature;
@@ -264,7 +264,7 @@ Creature *ScriptFunctions::convertCreature(Aurora::NWScript::Object *o) {
 
 Creature *ScriptFunctions::convertPC(Aurora::NWScript::Object *o) {
 	Creature *pc = dynamic_cast<Creature *>(o);
-	if (!pc || !pc->loaded() || (pc->getID() == kObjectIDInvalid) || !pc->isPC())
+	if (!pc || (pc->getID() == kObjectIDInvalid) || !pc->isPC())
 		return 0;
 
 	return pc;

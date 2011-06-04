@@ -64,19 +64,16 @@ Creature::Associate::Associate(AssociateType t, Creature *a) : type(t), associat
 Creature::BodyPart::BodyPart() : id(Aurora::kFieldIDInvalid) {
 }
 
+Creature::Creature(const Aurora::GFFStruct &creature) : Object(kObjectTypeCreature) {
+	init();
 
-Creature::Creature() : Object(kObjectTypeCreature), _lastChangedGUIDisplay(0),
-	_gender(kGenderNone), _race(kRaceInvalid), _isPC(false), _isDM(false), _age(0), _xp(0),
-	_baseHP(0), _bonusHP(0), _currentHP(0), _hitDice(0), _goodEvil(0), _lawChaos(0),
-	_appearanceID(Aurora::kFieldIDInvalid), _phenotype(Aurora::kFieldIDInvalid),
-	_colorSkin(Aurora::kFieldIDInvalid), _colorHair(Aurora::kFieldIDInvalid),
-	_colorTattoo1(Aurora::kFieldIDInvalid), _colorTattoo2(Aurora::kFieldIDInvalid),
-	_master(0), _isCommandable(true), _model(0), _tooltip(0) {
+	load(creature);
+}
 
-	for (int i = 0; i < kAbilityMAX; i++)
-		_abilities[i] = 0;
+Creature::Creature(const Common::UString &bic, bool local) : Object(kObjectTypeCreature) {
+	init();
 
-	_bodyParts.resize(kBodyPartMAX);
+	loadCharacter(bic, local);
 }
 
 Creature::~Creature() {
@@ -92,9 +89,50 @@ Creature::~Creature() {
 	delete _tooltip;
 }
 
-void Creature::show() {
-	assert(_loaded);
+void Creature::init() {
+	_lastChangedGUIDisplay = 0;
 
+	_gender = kGenderNone;
+	_race   = kRaceInvalid;
+
+	_isPC = false;
+	_isDM = false;
+
+	_age = 0;
+
+	_xp = 0;
+
+	_baseHP    = 0;
+	_bonusHP   = 0;
+	_currentHP = 0;
+
+	_hitDice = 0;
+
+	_goodEvil = 0;
+	_lawChaos = 0;
+
+	_appearanceID = Aurora::kFieldIDInvalid;
+	_phenotype    = Aurora::kFieldIDInvalid;
+
+	_colorSkin    = Aurora::kFieldIDInvalid;
+	_colorHair    = Aurora::kFieldIDInvalid;
+	_colorTattoo1 = Aurora::kFieldIDInvalid;
+	_colorTattoo2 = Aurora::kFieldIDInvalid;
+
+	_master = 0;
+
+	_isCommandable = true;
+
+	_model   = 0;
+	_tooltip = 0;
+
+	for (int i = 0; i < kAbilityMAX; i++)
+		_abilities[i] = 0;
+
+	_bodyParts.resize(kBodyPartMAX);
+}
+
+void Creature::show() {
 	loadModel();
 
 	if (_model)
@@ -302,8 +340,6 @@ void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
 }
 
 void Creature::loadModel() {
-	assert(_loaded);
-
 	if (_model)
 		return;
 
@@ -369,8 +405,6 @@ void Creature::unloadModel() {
 }
 
 void Creature::loadCharacter(const Common::UString &bic, bool local) {
-	assert(!_loaded);
-
 	Aurora::GFFFile *gff = openPC(bic, local);
 
 	try {
@@ -389,12 +423,9 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 	_tag = Common::UString::sprintf("[PC: %s]", _name.c_str());
 
 	_lastChangedGUIDisplay = EventMan.getTimestamp();
-	_loaded = true;
 }
 
 void Creature::load(const Aurora::GFFStruct &creature) {
-	assert(!_loaded);
-
 	Common::UString temp = creature.getString("TemplateResRef");
 
 	Aurora::GFFFile *utc = 0;
@@ -414,7 +445,6 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 	delete utc;
 
 	_lastChangedGUIDisplay = EventMan.getTimestamp();
-	_loaded = true;
 }
 
 void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {

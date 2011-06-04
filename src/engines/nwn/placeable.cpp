@@ -45,9 +45,10 @@ namespace Engines {
 
 namespace NWN {
 
-Placeable::Placeable() : Situated(kObjectTypePlaceable),
+Placeable::Placeable(const Aurora::GFFStruct &placeable) : Situated(kObjectTypePlaceable),
 	_state(kStateDefault), _tooltip(0) {
 
+	load(placeable);
 }
 
 Placeable::~Placeable() {
@@ -55,8 +56,6 @@ Placeable::~Placeable() {
 }
 
 void Placeable::load(const Aurora::GFFStruct &placeable) {
-	assert(!_loaded);
-
 	Common::UString temp = placeable.getString("TemplateResRef");
 
 	Aurora::GFFFile *utp = 0;

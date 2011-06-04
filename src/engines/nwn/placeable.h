@@ -52,11 +52,10 @@ public:
 		kStateDeactivated = 5  ///< Deactivated.
 	};
 
-	Placeable();
+	/** Load from a placeable instance. */
+	Placeable(const Aurora::GFFStruct &placeable);
 	~Placeable();
 
-	/** Load the placeable from an instance GFF struct. */
-	void load(const Aurora::GFFStruct &placeable);
 
 	void hide(); ///< Hide the placeable's model.
 
@@ -81,6 +80,9 @@ private:
 	State _state; ///< The current state of the placeable.
 
 	Tooltip *_tooltip; ///< The tooltip displayed over the placeable.
+
+	/** Load from a placeable instance. */
+	void load(const Aurora::GFFStruct &placeable);
 
 	void createTooltip(); ///< Create the tooltip.
 	void showTooltip();   ///< Show the tooltip.

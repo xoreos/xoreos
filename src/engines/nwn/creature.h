@@ -50,16 +50,14 @@ class Tooltip;
 
 class Creature : public Object {
 public:
-	Creature();
+	/** Load from a creature instance. */
+	Creature(const Aurora::GFFStruct &creature);
+	/** Load from a character file. */
+	Creature(const Common::UString &bic, bool local);
 	~Creature();
 
 	/** Last time info was changed that's displayed in the GUI. */
 	uint32 lastChangedGUIDisplay() const;
-
-	/** Load from a character file. */
-	void loadCharacter(const Common::UString &bic, bool local);
-	/** Load from a creature instance. */
-	void load(const Aurora::GFFStruct &creature);
 
 	// Basic visuals
 
@@ -288,6 +286,13 @@ private:
 
 	Tooltip *_tooltip; ///< The tooltip displayed over the creature.
 
+
+	/** Init the creature. */
+	void init();
+	/** Load from a character file. */
+	void loadCharacter(const Common::UString &bic, bool local);
+	/** Load from a creature instance. */
+	void load(const Aurora::GFFStruct &creature);
 
 	/** Load the creature from an instance and its blueprint. */
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);

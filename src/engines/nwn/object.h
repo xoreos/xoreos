@@ -63,9 +63,6 @@ public:
 	/** Return the exact type of the object. */
 	ObjectType getType() const;
 
-	/** Was the object loaded, or is it still empty? */
-	bool loaded() const;
-
 	// Basic visuals
 
 	virtual void show(); ///< Show the object's model(s).
@@ -151,8 +148,6 @@ public:
 
 protected:
 	ObjectType _type; ///< The object's type.
-
-	bool _loaded; ///< Is the object non-empty?
 
 	Common::UString _name;        ///< The object's display name.
 	Common::UString _description; ///< The object's description.

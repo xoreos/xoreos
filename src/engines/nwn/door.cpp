@@ -45,17 +45,16 @@ namespace Engines {
 
 namespace NWN {
 
-Door::Door() : Situated(kObjectTypeDoor),
+Door::Door(const Aurora::GFFStruct &door) : Situated(kObjectTypeDoor),
 	_genericType(Aurora::kFieldIDInvalid), _state(kStateClosed) {
 
+	load(door);
 }
 
 Door::~Door() {
 }
 
 void Door::load(const Aurora::GFFStruct &door) {
-	assert(!_loaded);
-
 	Common::UString temp = door.getString("TemplateResRef");
 
 	Aurora::GFFFile *utd = 0;

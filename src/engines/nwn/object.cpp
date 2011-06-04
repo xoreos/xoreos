@@ -52,7 +52,7 @@ namespace Engines {
 
 namespace NWN {
 
-Object::Object(ObjectType type) : _type(type), _loaded(false),
+Object::Object(ObjectType type) : _type(type),
 	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(false), _usable(true),
 	_pcSpeaker(0), _area(0) {
 
@@ -70,10 +70,6 @@ Object::~Object() {
 
 ObjectType Object::getType() const {
 	return _type;
-}
-
-bool Object::loaded() const {
-	return _loaded;
 }
 
 void Object::show() {

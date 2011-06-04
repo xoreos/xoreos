@@ -219,9 +219,8 @@ bool Module::usePC(const Common::UString &bic, bool local) {
 	if (bic.empty())
 		return false;
 
-	_pc = new Creature;
 	try {
-		_pc->loadCharacter(bic, local);
+		_pc = new Creature(bic, local);
 	} catch (Common::Exception &e) {
 		delete _pc;
 		_pc = 0;

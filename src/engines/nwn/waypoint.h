@@ -44,10 +44,9 @@ namespace NWN {
 
 class Waypoint : public Object {
 public:
-	Waypoint();
+	/** Load from a waypoint instance. */
+	Waypoint(const Aurora::GFFStruct &waypoint);
 	~Waypoint();
-
-	void load(const Aurora::GFFStruct &waypoint);
 
 	/** Does this waypoint have a map note? */
 	bool hasMapNote() const;
@@ -61,8 +60,12 @@ private:
 	bool _hasMapNote;         ///< Does this waypoint have a map note?
 	Common::UString _mapNote; ///< The waypoint's map note text.
 
+	/** Load from a waypoint instance. */
+	void load(const Aurora::GFFStruct &waypoint);
+	/** Load the waypoint from an instance and its blueprint. */
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
 
+	/** Load general waypoint properties. */
 	void loadProperties(const Aurora::GFFStruct &gff);
 };
 
