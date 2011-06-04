@@ -43,6 +43,7 @@
 
 #include "engines/nwn/area.h"
 #include "engines/nwn/object.h"
+#include "engines/nwn/situated.h"
 #include "engines/nwn/creature.h"
 
 #include "engines/nwn/script/functions.h"
@@ -642,7 +643,13 @@ void ScriptFunctions::getItemActivatedTarget(Aurora::NWScript::FunctionContext &
 }
 
 void ScriptFunctions::getIsOpen(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: GetIsOpen");
+	ctx.getReturn() = 0;
+
+	Situated *situated = convertSituated(ctx.getParams()[0].getObject());
+	if (!situated)
+		return;
+
+	ctx.getReturn() = situated->isOpen();
 }
 
 void ScriptFunctions::takeGoldFromCreature(Aurora::NWScript::FunctionContext &ctx) {
