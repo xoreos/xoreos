@@ -565,7 +565,7 @@ void ScriptFunctions::getLocked(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getClickingObject(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: GetClickingObject");
+	ctx.getReturn() = ctx.getTriggerer();
 }
 
 void ScriptFunctions::setAssociateListenPatterns(Aurora::NWScript::FunctionContext &ctx) {
