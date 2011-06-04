@@ -993,7 +993,13 @@ void ScriptFunctions::setXP(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getXP(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: GetXP");
+	ctx.getReturn() = 0;
+
+	Creature *pc = convertPC(ctx.getParams()[0].getObject());
+	if (!pc)
+		return;
+
+	ctx.getReturn() = (int32) pc->getXP();
 }
 
 void ScriptFunctions::intToHexString(Aurora::NWScript::FunctionContext &ctx) {
