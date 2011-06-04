@@ -65,8 +65,18 @@ Creature::BodyPart::BodyPart() : id(Aurora::kFieldIDInvalid) {
 }
 
 
-Creature::Creature() : Object(kObjectTypeCreature), _master(0), _isCommandable(true),
-	_model(0), _tooltip(0) {
+Creature::Creature() : Object(kObjectTypeCreature), _lastChangedGUIDisplay(0),
+	_gender(kGenderNone), _race(kRaceInvalid), _isPC(false), _isDM(false), _age(0), _xp(0),
+	_baseHP(0), _bonusHP(0), _currentHP(0), _hitDice(0), _goodEvil(0), _lawChaos(0),
+	_appearanceID(Aurora::kFieldIDInvalid), _phenotype(Aurora::kFieldIDInvalid),
+	_colorSkin(Aurora::kFieldIDInvalid), _colorHair(Aurora::kFieldIDInvalid),
+	_colorTattoo1(Aurora::kFieldIDInvalid), _colorTattoo2(Aurora::kFieldIDInvalid),
+	_master(0), _isCommandable(true), _model(0), _tooltip(0) {
+
+	for (int i = 0; i < kAbilityMAX; i++)
+		_abilities[i] = 0;
+
+	_bodyParts.resize(kBodyPartMAX);
 }
 
 Creature::~Creature() {
@@ -112,69 +122,6 @@ void Creature::setOrientation(float x, float y, float z) {
 
 	if (_model)
 		_model->setRotation(x, z, -y);
-}
-
-void Creature::clear() {
-	Object::clear();
-
-	_firstName.clear();
-	_lastName.clear();
-	_description.clear();
-
-	_gender = kGenderNone;
-	_race   = kRaceInvalid;
-
-	_subRace.clear();
-
-	_isPC = false;
-	_isDM = false;
-
-	_age = 0;
-
-	_xp = 0;
-
-	_baseHP    = 0;
-	_bonusHP   = 0;
-	_currentHP = 0;
-
-	for (int i = 0; i < kAbilityMAX; i++)
-		_abilities[i] = 0;
-
-	_classes.clear();
-	_skills.clear();
-	_feats.clear();
-
-	_hitDice = 0;
-
-	_deity.clear();
-
-	_goodEvil = 0;
-	_lawChaos = 0;
-
-	_lastChangedGUIDisplay = 0;
-
-	_appearanceID = Aurora::kFieldIDInvalid;
-	_phenotype    = Aurora::kFieldIDInvalid;
-
-	_bodyParts.clear();
-	_bodyParts.resize(kBodyPartMAX);
-
-	_colorSkin    = Aurora::kFieldIDInvalid;
-	_colorHair    = Aurora::kFieldIDInvalid;
-	_colorTattoo1 = Aurora::kFieldIDInvalid;
-	_colorTattoo2 = Aurora::kFieldIDInvalid;
-
-	if (_master)
-		_master->removeAssociate(*this);
-
-	for (std::list<Associate>::iterator a = _associates.begin(); a != _associates.end(); ++a)
-		a->associate->setMaster(0);
-
-	delete _model;
-	_model = 0;
-
-	delete _tooltip;
-	_tooltip = 0;
 }
 
 uint32 Creature::lastChangedGUIDisplay() const {
@@ -422,7 +369,7 @@ void Creature::unloadModel() {
 }
 
 void Creature::loadCharacter(const Common::UString &bic, bool local) {
-	clear();
+	assert(!_loaded);
 
 	Aurora::GFFFile *gff = openPC(bic, local);
 
@@ -446,7 +393,7 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 }
 
 void Creature::load(const Aurora::GFFStruct &creature) {
-	clear();
+	assert(!_loaded);
 
 	Common::UString temp = creature.getString("TemplateResRef");
 

@@ -75,9 +75,6 @@ public:
 	bool close(Object *closer);
 
 protected:
-	/** Completely clear this door. */
-	void clear();
-
 	/** Load door-specific properties. */
 	void loadObject(const Aurora::GFFStruct &gff);
 	/** Load appearance-specific properties. */

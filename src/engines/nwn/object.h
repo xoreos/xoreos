@@ -180,8 +180,6 @@ protected:
 
 	Object(ObjectType type);
 
-	/** Completely clear the object. */
-	void clear();
 	/** Load the object's sound set. */
 	void loadSSF();
 	/** Begin a conversation between the triggerer and this object. */

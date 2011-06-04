@@ -49,15 +49,8 @@ Waypoint::~Waypoint() {
 	hide();
 }
 
-void Waypoint::clear() {
-	Object::clear();
-
-	_hasMapNote = false;
-	_mapNote.clear();
-}
-
 void Waypoint::load(const Aurora::GFFStruct &waypoint) {
-	clear();
+	assert(!_loaded);
 
 	Common::UString temp = waypoint.getString("TemplateResRef");
 

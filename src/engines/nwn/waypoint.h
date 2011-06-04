@@ -64,8 +64,6 @@ private:
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
 
 	void loadProperties(const Aurora::GFFStruct &gff);
-
-	void clear();
 };
 
 } // End of namespace NWN

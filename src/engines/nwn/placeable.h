@@ -72,9 +72,6 @@ public:
 	bool isOpen() const;
 
 protected:
-	/** Completely clear this placeable. */
-	void clear();
-
 	/** Load placeable-specific properties. */
 	void loadObject(const Aurora::GFFStruct &gff);
 	/** Load appearance-specific properties. */

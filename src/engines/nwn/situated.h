@@ -78,9 +78,6 @@ protected:
 
 	Situated(ObjectType type);
 
-	/** Completely clear the situated object. */
-	void clear();
-
 	/** Load the situated object from an instance and its blueprint. */
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
 

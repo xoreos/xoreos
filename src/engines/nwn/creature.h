@@ -53,16 +53,11 @@ public:
 	Creature();
 	~Creature();
 
-	/** Clear the creature information. */
-	void clear();
-
 	/** Last time info was changed that's displayed in the GUI. */
 	uint32 lastChangedGUIDisplay() const;
 
 	/** Load from a character file. */
 	void loadCharacter(const Common::UString &bic, bool local);
-	/** Load from a character file. */
-	void loadCharacter(Common::SeekableReadStream *stream);
 	/** Load from a creature instance. */
 	void load(const Aurora::GFFStruct &creature);
 

@@ -52,12 +52,20 @@ namespace Engines {
 
 namespace NWN {
 
-Object::Object(ObjectType type) : _type(type), _ssf(0), _pcSpeaker(0), _area(0) {
-	clear();
+Object::Object(ObjectType type) : _type(type), _loaded(false),
+	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(false), _usable(true),
+	_pcSpeaker(0), _area(0) {
+
+	_position   [0] = 0.0;
+	_position   [1] = 0.0;
+	_position   [2] = 0.0;
+	_orientation[0] = 0.0;
+	_orientation[1] = 0.0;
+	_orientation[2] = 0.0;
 }
 
 Object::~Object() {
-	clear();
+	delete _ssf;
 }
 
 ObjectType Object::getType() const {
@@ -171,39 +179,6 @@ void Object::leave() {
 }
 
 void Object::highlight(bool enabled) {
-}
-
-void Object::clear() {
-	_loaded = false;
-
-	stopSound();
-
-	clearScripts();
-
-	_tag.clear();
-	_name.clear();
-	_description.clear();
-
-	_portrait.clear();
-
-	_conversation.clear();
-
-	_soundSet = Aurora::kFieldIDInvalid;
-
-	delete _ssf;
-	_ssf = 0;
-
-	_static = false;
-	_usable = true;
-
-	_ids.clear();
-
-	_position   [0] = 0.0;
-	_position   [1] = 0.0;
-	_position   [2] = 0.0;
-	_orientation[0] = 0.0;
-	_orientation[1] = 0.0;
-	_orientation[2] = 0.0;
 }
 
 void Object::loadSSF() {

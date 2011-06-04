@@ -6,17 +6,17 @@ noinst_HEADERS = nwn.h \
                  types.h \
                  modelloader.h \
                  ifofile.h \
-                 creature.h \
                  console.h \
+                 location.h \
+                 tileset.h \
                  module.h \
                  area.h \
-                 tileset.h \
                  object.h \
                  waypoint.h \
                  situated.h \
                  placeable.h \
                  door.h \
-                 location.h \
+                 creature.h \
                  gui/gui.h \
                  gui/legal.h \
                  gui/widgets/tooltip.h \
