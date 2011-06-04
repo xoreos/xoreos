@@ -589,7 +589,16 @@ void ScriptFunctions::getSpellTargetLocation(Aurora::NWScript::FunctionContext &
 }
 
 void ScriptFunctions::getPositionFromLocation(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: GetPositionFromLocation");
+	ctx.getReturn().setVector(0.0f, 0.0f, 0.0f);
+
+	Location *loc = convertLocation(ctx.getParams()[0].getEngineType());
+	if (!loc)
+		return;
+
+	float x, y, z;
+	loc->getPosition(x, y, z);
+
+	ctx.getReturn().setVector(x, y, z);
 }
 
 void ScriptFunctions::getAreaFromLocation(Aurora::NWScript::FunctionContext &ctx) {
