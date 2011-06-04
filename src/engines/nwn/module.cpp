@@ -318,6 +318,7 @@ void Module::enterArea() {
 
 	if (_currentArea) {
 		_currentArea->runScript(kScriptExit, _currentArea, _pc);
+		_currentArea->hide();
 
 		_currentArea = 0;
 	}
@@ -612,6 +613,44 @@ bool Module::startConversation(const Common::UString &conv, Creature &pc,
                                Engines::NWN::Object &obj) {
 
 	return _ingameGUI->startConversation(conv, pc, obj);
+}
+
+void Module::movePC(const Common::UString &area, float x, float y, float z) {
+	if (!_pc)
+		return;
+
+	Area *pcArea = 0;
+
+	AreaMap::iterator a = _areas.find(area);
+	if (a != _areas.end())
+		pcArea = a->second;
+
+	movePC(pcArea, x, y, z);
+}
+
+void Module::movePC(Area *area, float x, float y, float z) {
+	if (!_pc)
+		return;
+
+	_pc->setArea(area);
+	_pc->setPosition(x, y, z);
+
+	movedPC();
+}
+
+void Module::movedPC() {
+	if (!_pc)
+		return;
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	// Roughly head position
+	CameraMan.setPosition(x, z + 2.0, y);
+
+	_newArea.clear();
+	if (_pc->getArea())
+		_newArea = _pc->getArea()->getResRef();
 }
 
 Common::UString Module::getDescription(const Common::UString &module) {

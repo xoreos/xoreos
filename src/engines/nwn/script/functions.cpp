@@ -292,9 +292,6 @@ void ScriptFunctions::jumpTo(Object *object, Area *area, float x, float y, float
 		return;
 	}
 
-	if (object == getPC())
-		warning("ScriptFunctions::jumpTo(): Moving the PC");
-
 	GfxMan.lockFrame();
 
 	// Are we moving between areas?
@@ -331,6 +328,9 @@ void ScriptFunctions::jumpTo(Object *object, Area *area, float x, float y, float
 	object->setPosition(x, y, z);
 
 	GfxMan.unlockFrame();
+
+	if (object == getPC() && _module)
+		_module->movedPC();
 }
 
 } // End of namespace NWN

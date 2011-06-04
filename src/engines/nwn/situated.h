@@ -59,8 +59,8 @@ public:
 	/** Is the situated object open? */
 	virtual bool isOpen() const = 0;
 
-	bool isLocked() const;       ///< Is the situated object locked?
-	void setLocked(bool locked); ///< Lock/Unlock the situated object.
+	bool isLocked() const;               ///< Is the situated object locked?
+	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
 
 protected:
 	Common::UString _modelName; ///< The model's resource name.

@@ -111,6 +111,11 @@ void Placeable::setModelState() {
 void Placeable::hide() {
 	leave();
 
+	hideTooltip();
+
+	delete _tooltip;
+	_tooltip = 0;
+
 	Situated::hide();
 }
 

@@ -140,6 +140,11 @@ void Creature::show() {
 void Creature::hide() {
 	leave();
 
+	hideTooltip();
+
+	delete _tooltip;
+	_tooltip = 0;
+
 	if (_model)
 		_model->hide();
 }

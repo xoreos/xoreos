@@ -38,6 +38,10 @@ namespace Engines {
 
 namespace NWN {
 
+class Module;
+
+class Waypoint;
+
 class Door : public Situated {
 public:
 	/** The state of a door. */
@@ -48,10 +52,11 @@ public:
 	};
 
 	/** Load from a door instance. */
-	Door(const Aurora::GFFStruct &door);
+	Door(Module &module, const Aurora::GFFStruct &door);
 	~Door();
 
 
+	void show(); ///< Show the door's model.
 	void hide(); ///< Hide the door's model.
 
 
@@ -73,6 +78,8 @@ public:
 	/** The closer object closes this door. */
 	bool close(Object *closer);
 
+	void setLocked(bool locked); ///< Lock/Unlock the door.
+
 protected:
 	/** Load door-specific properties. */
 	void loadObject(const Aurora::GFFStruct &gff);
@@ -80,11 +87,27 @@ protected:
 	void loadAppearance();
 
 private:
+	enum LinkedToFlag {
+		kLinkedToNothing  = 0, ///< This door links to nothing.
+		kLinkedToDoor     = 1, ///< This door links to another door.
+		kLinkedToWaypoint = 2  ///< This door links to a waypoint.
+	};
+
+	Module *_module; ///< The module the door is in.
+
 	bool _invisible; ///< Is the door invisible?
 
 	uint32 _genericType; ///< Index into the generic door types.
 
 	State _state; ///< The current state of the door.
+
+	LinkedToFlag _linkedToFlag; ///< Does this door link to anything?
+	Common::UString _linkedTo;  ///< The object tag this door links to.
+
+	bool _evaluatedLink;       ///< Have we already tried to evaluate our link?
+	Object   *_link;           ///< The object this door links to.
+	Door     *_linkedDoor;     ///< The door this door links to.
+	Waypoint *_linkedWaypoint; ///< The waypoint this door links to.
 
 	/** Load from a door instance. */
 	void load(const Aurora::GFFStruct &door);
@@ -94,6 +117,8 @@ private:
 
 	/** Sync the model's state with the door's state. */
 	void setModelState();
+	/** Evaluate our link. */
+	void evaluateLink();
 };
 
 } // End of namespace NWN

@@ -40,13 +40,17 @@
 #include "engines/aurora/util.h"
 
 #include "engines/nwn/door.h"
+#include "engines/nwn/waypoint.h"
+#include "engines/nwn/module.h"
 
 namespace Engines {
 
 namespace NWN {
 
-Door::Door(const Aurora::GFFStruct &door) : Situated(kObjectTypeDoor),
-	_invisible(false), _genericType(Aurora::kFieldIDInvalid), _state(kStateClosed) {
+Door::Door(Module &module, const Aurora::GFFStruct &door) : Situated(kObjectTypeDoor),
+	_module(&module), _invisible(false), _genericType(Aurora::kFieldIDInvalid),
+	_state(kStateClosed), _linkedToFlag(kLinkedToNothing), _evaluatedLink(false),
+	_link(0), _linkedDoor(0), _linkedWaypoint(0) {
 
 	load(door);
 }
@@ -81,6 +85,11 @@ void Door::loadObject(const Aurora::GFFStruct &gff) {
 	// State
 
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
+
+	// Linked to
+
+	_linkedToFlag = (LinkedToFlag) gff.getUint("LinkedToFlags", (uint) _linkedToFlag);
+	_linkedTo     = gff.getString("LinkedTo");
 }
 
 void Door::loadAppearance() {
@@ -133,6 +142,12 @@ void Door::setModelState() {
 
 }
 
+void Door::show() {
+	setModelState();
+
+	Situated::show();
+}
+
 void Door::hide() {
 	leave();
 
@@ -141,7 +156,12 @@ void Door::hide() {
 
 void Door::enter() {
 	highlight(true);
-	CursorMan.set("door", "up");
+
+	evaluateLink();
+	if (isOpen() && _link)
+		CursorMan.set("trans", "up");
+	else
+		CursorMan.set("door", "up");
 }
 
 void Door::leave() {
@@ -154,6 +174,17 @@ void Door::highlight(bool enabled) {
 		_model->drawBound(enabled);
 }
 
+void Door::setLocked(bool locked) {
+	if (isLocked() == locked)
+		return;
+
+	Situated::setLocked(locked);
+	// Also lock/unlock the linked door
+	evaluateLink();
+	if (_linkedDoor)
+		_linkedDoor->setLocked(locked);
+}
+
 bool Door::click(Object *triggerer) {
 	// If the door is closed, try to open it
 	if (!isOpen())
@@ -163,7 +194,14 @@ bool Door::click(Object *triggerer) {
 	if (hasScript(kScriptClick))
 		return runScript(kScriptClick, this, triggerer);
 
-	// TODO: Door::click(): LinkedTo
+	evaluateLink();
+	if (_link) {
+		float x, y, z;
+		_link->getPosition(x, y, z);
+
+		_module->movePC(_link->getArea(), x, y, z);
+		return true;
+	}
 
 	// If the door is open and has no script, close it
 	return close(triggerer);
@@ -187,6 +225,12 @@ bool Door::open(Object *opener) {
 
 	playSound(_soundOpened);
 	runScript(kScriptOpen, this, opener);
+
+	// Also open the linked door
+	evaluateLink();
+	if (_linkedDoor)
+		_linkedDoor->open(opener);
+
 	return true;
 }
 
@@ -204,11 +248,33 @@ bool Door::close(Object *closer) {
 
 	playSound(_soundClosed);
 	runScript(kScriptClosed, this, closer);
+
+	// Also close the linked door
+	evaluateLink();
+	if (_linkedDoor)
+		_linkedDoor->close(closer);
+
 	return true;
 }
 
 bool Door::isOpen() const {
 	return (_state == kStateOpened1) || (_state == kStateOpened2);
+}
+
+void Door::evaluateLink() {
+	if (_evaluatedLink)
+		return;
+
+	if ((_linkedToFlag != 0) && !_linkedTo.empty()) {
+		Aurora::NWScript::Object *object = _module->findObject(_linkedTo);
+
+		if      (_linkedToFlag == kLinkedToDoor)
+			_link = _linkedDoor     = dynamic_cast<Door *>(object);
+		else if (_linkedToFlag == kLinkedToWaypoint)
+			_link = _linkedWaypoint = dynamic_cast<Waypoint *>(object);
+	}
+
+	_evaluatedLink = true;
 }
 
 } // End of namespace NWN

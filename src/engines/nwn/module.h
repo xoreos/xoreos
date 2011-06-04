@@ -75,19 +75,25 @@ public:
 	/** Use this character as the player character. */
 	bool usePC(const Common::UString &bic, bool local);
 
-	Creature *getPC();
-
 	/** Replace the currently running module. */
 	bool replaceModule(const Common::UString &module);
 
 	void run();
 
+
 	void showMenu();
+
 
 	const Common::UString &getName() const;
 
+	Creature *getPC();
+
 	bool startConversation(const Common::UString &conv, Creature &pc,
 	                       Engines::NWN::Object &obj);
+
+	void movePC(const Common::UString &area, float x, float y, float z);
+	void movePC(Area *area, float x, float y, float z);
+	void movedPC();
 
 
 	static Common::UString getDescription(const Common::UString &module);
