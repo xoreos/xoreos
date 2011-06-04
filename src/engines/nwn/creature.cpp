@@ -437,9 +437,6 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 
 	load(creature, utc ? &utc->getTopLevel() : 0);
 
-	if (!utc)
-		warning("Creature \"%s\" has no blueprint", _tag.c_str());
-
 	delete utc;
 
 	_lastChangedGUIDisplay = EventMan.getTimestamp();

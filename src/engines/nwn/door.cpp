@@ -68,9 +68,6 @@ void Door::load(const Aurora::GFFStruct &door) {
 
 	Situated::load(door, utd ? &utd->getTopLevel() : 0);
 
-	if (!utd)
-		warning("Door \"%s\" has no blueprint", _tag.c_str());
-
 	delete utd;
 
 	setModelState();

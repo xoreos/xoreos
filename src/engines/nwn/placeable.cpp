@@ -69,9 +69,6 @@ void Placeable::load(const Aurora::GFFStruct &placeable) {
 
 	Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
 
-	if (!utp)
-		warning("Placeable \"%s\" has no blueprint", _tag.c_str());
-
 	delete utp;
 }
 

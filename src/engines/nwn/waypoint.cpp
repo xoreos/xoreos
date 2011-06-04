@@ -66,9 +66,6 @@ void Waypoint::load(const Aurora::GFFStruct &waypoint) {
 
 	load(waypoint, utw ? &utw->getTopLevel() : 0);
 
-	if (!utw)
-		warning("Waypoint \"%s\" has no blueprint", _tag.c_str());
-
 	delete utw;
 }
 
