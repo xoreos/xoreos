@@ -708,7 +708,18 @@ void ScriptFunctions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx)
 }
 
 void ScriptFunctions::actionSpeakString(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: ActionSpeakString");
+	// TODO: ScriptFunctions::actionSpeakString(): /Action/
+
+	Object *object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	const Common::UString &str = ctx.getParams()[0].getString();
+
+	// TODO: ScriptFunctions::speakString(): Volume
+	uint32 volume = (uint32) ctx.getParams()[1].getInt();
+
+	object->speakString(str, volume);
 }
 
 void ScriptFunctions::actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx) {

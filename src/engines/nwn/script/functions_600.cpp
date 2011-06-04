@@ -771,7 +771,7 @@ void ScriptFunctions::speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx
 
 	// TODO: ScriptFunctions::speakStringByStrRef(): Volume
 	uint32 strRef = (uint32) ctx.getParams()[0].getInt();
-	uint32 volume = (uint32) ctx.getParams()[0].getInt();
+	uint32 volume = (uint32) ctx.getParams()[1].getInt();
 
 	object->speakString(TalkMan.getString(strRef).c_str(), volume);
 }

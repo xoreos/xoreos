@@ -539,7 +539,16 @@ void ScriptFunctions::applyEffectToObject(Aurora::NWScript::FunctionContext &ctx
 }
 
 void ScriptFunctions::speakString(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: SpeakString");
+	Object *object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	const Common::UString &str = ctx.getParams()[0].getString();
+
+	// TODO: ScriptFunctions::speakString(): Volume
+	uint32 volume = (uint32) ctx.getParams()[1].getInt();
+
+	object->speakString(str, volume);
 }
 
 void ScriptFunctions::getSpellTargetLocation(Aurora::NWScript::FunctionContext &ctx) {
