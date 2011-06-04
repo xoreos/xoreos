@@ -47,6 +47,7 @@
 
 #include "engines/nwn/area.h"
 #include "engines/nwn/module.h"
+#include "engines/nwn/object.h"
 #include "engines/nwn/waypoint.h"
 #include "engines/nwn/placeable.h"
 #include "engines/nwn/door.h"
@@ -67,11 +68,6 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 
 	Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKID_BE('GIT '));
 	loadGIT(git.getTopLevel());
-
-	// Load the tiles
-
-	loadTileset();
-	initTiles();
 
 	_loaded = true;
 
@@ -208,9 +204,7 @@ void Area::show() {
 	if (_visible)
 		return;
 
-	// Play music and sound
-	playAmbientSound();
-	playAmbientMusic();
+	loadModels();
 
 	GfxMan.lockFrame();
 
@@ -223,6 +217,10 @@ void Area::show() {
 		(*o)->show();
 
 	GfxMan.unlockFrame();
+
+	// Play music and sound
+	playAmbientSound();
+	playAmbientMusic();
 
 	_visible = true;
 }
@@ -246,6 +244,8 @@ void Area::hide() {
 		t->model->hide();
 
 	GfxMan.unlockFrame();
+
+	unloadModels();
 
 	_visible = false;
 }
@@ -369,6 +369,42 @@ void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 	tile.model = 0;
 }
 
+void Area::loadModels() {
+	loadTileModels();
+
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+		Engines::NWN::Object &object = **o;
+
+		object.loadModel();
+
+		if (!object.isStatic()) {
+			const std::list<uint32> &ids = object.getIDs();
+
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, &object));
+		}
+	}
+}
+
+void Area::unloadModels() {
+	_objectMap.clear();
+
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->unloadModel();
+
+	unloadTileModels();
+}
+
+void Area::loadTileModels() {
+	loadTileset();
+	loadTiles();
+}
+
+void Area::unloadTileModels() {
+	unloadTiles();
+	unloadTileset();
+}
+
 void Area::loadTileset() {
 	if (_tilesetName.empty())
 		throw Common::Exception("Area \"%s\" has no tileset", _resRef.c_str());
@@ -383,7 +419,12 @@ void Area::loadTileset() {
 	status("Loaded tileset \"%s\" (\"%s\")", _tileset->getName().c_str(), _tilesetName.c_str());
 }
 
-void Area::initTiles() {
+void Area::unloadTileset() {
+	delete _tileset;
+	_tileset = 0;
+}
+
+void Area::loadTiles() {
 	for (uint32 y = 0; y < _height; y++) {
 		for (uint32 x = 0; x < _width; x++) {
 			uint32 n = y * _width + x;
@@ -410,23 +451,34 @@ void Area::initTiles() {
 	}
 }
 
+void Area::unloadTiles() {
+	for (uint32 y = 0; y < _height; y++) {
+		for (uint32 x = 0; x < _width; x++) {
+			uint32 n = y * _width + x;
+
+			Tile &t = _tiles[n];
+
+			t.tile = 0;
+
+			delete t.model;
+			t.model = 0;
+		}
+	}
+}
+
+void Area::loadObject(Engines::NWN::Object &object) {
+	object.setArea(this);
+
+	_objects.push_back(&object);
+	if (!object.isStatic())
+		_module->addObject(object);
+}
+
 void Area::loadWaypoints(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
 		Waypoint *waypoint = new Waypoint(**d);
 
-		waypoint->loadModel();
-		waypoint->setArea(this);
-
-		_objects.push_back(waypoint);
-
-		if (!waypoint->isStatic()) {
-			const std::list<uint32> &ids = waypoint->getIDs();
-
-			_module->addObject(*waypoint);
-			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-				_objectMap.insert(std::make_pair(*id, waypoint));
-		}
-
+		loadObject(*waypoint);
 	}
 }
 
@@ -434,19 +486,7 @@ void Area::loadPlaceables(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
 		Placeable *placeable = new Placeable(**p);
 
-		placeable->loadModel();
-		placeable->setArea(this);
-
-		_objects.push_back(placeable);
-
-		if (!placeable->isStatic()) {
-			const std::list<uint32> &ids = placeable->getIDs();
-
-			_module->addObject(*placeable);
-			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-				_objectMap.insert(std::make_pair(*id, placeable));
-		}
-
+		loadObject(*placeable);
 	}
 }
 
@@ -454,19 +494,7 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
 		Door *door = new Door(**d);
 
-		door->loadModel();
-		door->setArea(this);
-
-		_objects.push_back(door);
-
-		if (!door->isStatic()) {
-			const std::list<uint32> &ids = door->getIDs();
-
-			_module->addObject(*door);
-			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-				_objectMap.insert(std::make_pair(*id, door));
-		}
-
+		loadObject(*door);
 	}
 }
 
@@ -474,19 +502,7 @@ void Area::loadCreatures(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c) {
 		Creature *creature = new Creature(**c);
 
-		creature->loadModel();
-		creature->setArea(this);
-
-		_objects.push_back(creature);
-
-		if (!creature->isStatic()) {
-			const std::list<uint32> &ids = creature->getIDs();
-
-			_module->addObject(*creature);
-			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-				_objectMap.insert(std::make_pair(*id, creature));
-		}
-
+		loadObject(*creature);
 	}
 }
 
