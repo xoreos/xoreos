@@ -47,22 +47,29 @@ public:
 	Location();
 	~Location();
 
+	/** Clone factory method. */
 	Location *clone() const;
 
+	/** Return the location's area. */
 	Aurora::NWScript::Object *getArea() const;
+	/** Set the location's area. */
 	void setArea(Aurora::NWScript::Object *area);
 
+	/** Return the location's position. */
 	void getPosition(float &x, float &y, float &z) const;
+	/** Set the location's position. */
 	void setPosition(float  x, float  y, float  z);
 
+	/** Return the location's orientation. */
 	float getFacing() const;
+	/** Set the location's orientation. */
 	void setFacing(float facing);
 
 private:
-	Aurora::NWScript::Object *_area;
+	Aurora::NWScript::Object *_area; ///< The location's area.
 
-	float _position[3];
-	float _facing;
+	float _position[3]; ///< The location's position.
+	float _facing;      ///< The location's orientation.
 };
 
 } // End of namespace NWN

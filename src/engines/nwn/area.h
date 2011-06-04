@@ -67,6 +67,8 @@ public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();
 
+	// General properties
+
 	/** Return the area's resref (resource ID). */
 	const Common::UString &getResRef();
 	/** Return the area's localized name. */
@@ -74,62 +76,74 @@ public:
 	/** Return the area's localized display name. */
 	const Common::UString &getDisplayName();
 
-	uint32 getMusicDayTrack   () const;
-	uint32 getMusicNightTrack () const;
-	uint32 getMusicBattleTrack() const;
+	// Visibility
 
-	void setMusicDayTrack   (uint32 track);
-	void setMusicNightTrack (uint32 track);
-	void setMusicBattleTrack(uint32 track);
+	void show(); ///< Show the area.
+	void hide(); ///< Hide the area.
 
-	void stopSound();
-	void stopAmbientMusic();
-	void stopAmbientSound();
+	// Music/Sound
 
+	uint32 getMusicDayTrack   () const; ///< Return the music track ID playing by day.
+	uint32 getMusicNightTrack () const; ///< Return the music track ID playing by night.
+	uint32 getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
+
+	void setMusicDayTrack   (uint32 track); ///< Set the music track ID playing by day.
+	void setMusicNightTrack (uint32 track); ///< Set the music track ID playing by night.
+	void setMusicBattleTrack(uint32 track); ///< Set the music track ID playing in battle.
+
+	void stopSound();        ///< Stop all sounds.
+	void stopAmbientMusic(); ///< Stop the ambient music.
+	void stopAmbientSound(); ///< Stop the ambient sound.
+
+	/** Play the specified music (or the area's default) as ambient music. */
 	void playAmbientMusic(Common::UString music = "");
+	/** Play the specified sound (or the area's default) as ambient sound. */
 	void playAmbientSound(Common::UString sound = "");
 
-	void show();
-	void hide();
+	// Events
 
-	static Common::UString getName(const Common::UString &resRef);
-
-	Aurora::NWScript::Object *findObject(const Common::UString &tag);
-	const Aurora::NWScript::Object *findObject(const Common::UString &tag) const;
-
+	/** Add a single event for consideration into the area event queue. */
 	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
 	void processEventQueue();
 
+	/** Forcibly remove the focus from the currently highlighted object. */
 	void removeFocus();
 
 
+	/** Return the localized name of an area. */
+	static Common::UString getName(const Common::UString &resRef);
+
 
 protected:
+	/** Notify the area that the camera has been moved. */
 	void notifyCameraMoved();
 
 
 private:
+	/** Tile orientation. */
 	enum Orientation {
-		kOrientation0   = 0,
-		kOrientation90  = 1,
-		kOrientation180 = 2,
-		kOrientation270 = 3
+		kOrientation0   = 0, ///< Rotated by   0°.
+		kOrientation90  = 1, ///< Rotated by  90°.
+		kOrientation180 = 2, ///< Rotated by 180°.
+		kOrientation270 = 3  ///< Rotated by 270°.
 	};
 
+	/** A tile. */
 	struct Tile {
-		uint32 tileID;
+		uint32 tileID; ///< The ID of the tile within the tileset.
 
-		uint32 height;
-		Orientation orientation;
+		uint32 height; ///< The number of height transitions the tile is shifted up.
+		Orientation orientation; ///< The orientation of the tile.
 
-		uint8 mainLight[2];
-		uint8  srcLight[2];
+		uint8 mainLight[2]; ///< Overall colored lighting effects.
+		uint8  srcLight[2]; ///< Flaming light sources.
 
-		bool animLoop[3];
+		bool animLoop[3]; ///< Should the tile's AnimLoop0[123] play?
 
-		const Tileset::Tile *tile;
+		const Tileset::Tile *tile; ///< The actual tile within the tileset.
 
-		Graphics::Aurora::Model *model;
+		Graphics::Aurora::Model *model; ///< The tile's model.
 	};
 
 	typedef std::list<Engines::NWN::Object *> ObjectList;
@@ -140,52 +154,55 @@ private:
 
 	bool _loaded;
 
-	Common::UString _resRef;
-	Common::UString _name;
+	Common::UString _resRef; ///< The area's resref (resource ID).
+	Common::UString _name;   ///< The area's localized name.
 
-	Common::UString _displayName;
+	Common::UString _displayName; ///< The area's localized display name.
 
-	Common::UString _ambientDay;
-	Common::UString _ambientNight;
+	Common::UString _ambientDay;   ///< Ambient sound that plays by day.
+	Common::UString _ambientNight; ///< Ambient sound that plays by night.
 
-	uint32 _musicDayTrack;
-	uint32 _musicNightTrack;
-	uint32 _musicBattleTrack;
+	uint32 _musicDayTrack;    ///< Music track ID that plays by day.
+	uint32 _musicNightTrack;  ///< Music track ID that plays by night.
+	uint32 _musicBattleTrack; ///< Music track ID that plays in battle.
 
-	Common::UString _musicDay;
-	Common::UString _musicNight;
-	Common::UString _musicBattle;
+	Common::UString _musicDay;    ///< Music that plays by day.
+	Common::UString _musicNight;  ///< Music that plays by night.
+	Common::UString _musicBattle; ///< Music that plays in battle.
 
+	/** Battle music stingers. */
 	std::vector<Common::UString> _musicBattleStinger;
 
-	float _ambientDayVol;
-	float _ambientNightVol;
+	float _ambientDayVol;   ///< Day ambient sound volume.
+	float _ambientNightVol; ///< Night ambient sound volume.
 
-	bool _visible;
+	bool _visible; ///< Is the area currently visible?
 
-	Sound::ChannelHandle _ambientSound;
-	Sound::ChannelHandle _ambientMusic;
+	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
+	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.
 
-	uint32 _width;
-	uint32 _height;
+	uint32 _width;  ///< Width  of the area in tiles, as seen from top-down.
+	uint32 _height; ///< Height of the area in tiles, as seen from top-down.
 
-	Common::UString _tilesetName;
-	Tileset *_tileset;
+	Common::UString _tilesetName; ///< Name of the tileset.
+	Tileset *_tileset; ///< The actual tileset.
 
-	std::vector<Tile> _tiles;
+	std::vector<Tile> _tiles; ///< The area's tiles.
 
-	ObjectList _objects;
+	ObjectList _objects;   ///< List of all objects in the area.
+	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
 
-	ObjectMap _objectMap;
-
+	/** The currently active (highlighted) object. */
 	Engines::NWN::Object *_activeObject;
 
-	bool _highlightAll;
+	bool _highlightAll; ///< Are we currently highlighting all objects?
 
-	std::list<Events::Event> _eventQueue;
+	std::list<Events::Event> _eventQueue; ///< The event queue.
 
-	Common::Mutex _mutex;
+	Common::Mutex _mutex; ///< Mutex securing access to the area.
 
+
+	// Loading helpers
 
 	void loadARE(const Aurora::GFFStruct &are);
 	void loadGIT(const Aurora::GFFStruct &git);
@@ -204,6 +221,8 @@ private:
 	void loadDoors     (const Aurora::GFFList &list);
 	void loadCreatures (const Aurora::GFFList &list);
 
+
+	// Highlight / active helpers
 
 	void checkActive(int x = -1, int y = -1);
 	void setActive(Engines::NWN::Object *object);

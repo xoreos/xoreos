@@ -60,18 +60,22 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 	_resRef(resRef), _visible(false), _tileset(0),
 	_activeObject(0), _highlightAll(false) {
 
+	// Load ARE and GIT
+
 	Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
 	loadARE(are.getTopLevel());
 
 	Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKID_BE('GIT '));
 	loadGIT(git.getTopLevel());
 
-	loadTileset();
+	// Load the tiles
 
+	loadTileset();
 	initTiles();
 
 	_loaded = true;
 
+	// Tell the module that we exist
 	_module->addObject(*this);
 }
 
@@ -82,12 +86,13 @@ Area::~Area() {
 
 	removeFocus();
 
+	// Delete objects
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		delete *o;
 
+	// Delete tiles and tileset
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 		delete t->model;
-
 	delete _tileset;
 }
 
@@ -145,6 +150,7 @@ void Area::setMusicBattleTrack(uint32 track) {
 	if (_musicBattleTrack != Aurora::kStrRefInvalid) {
 		const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get("ambientmusic");
 
+		// Normal battle music
 		_musicBattle = ambientMusic.getRow(_musicBattleTrack).getString("Resource");
 
 		// Battle stingers
@@ -175,7 +181,7 @@ void Area::stopAmbientSound() {
 void Area::playAmbientMusic(Common::UString music) {
 	stopAmbientMusic();
 
-	// TODO Day/Night
+	// TODO: Area::playAmbientMusic(): Day/Night
 	if (music.empty())
 		music = _musicDay;
 
@@ -188,7 +194,7 @@ void Area::playAmbientMusic(Common::UString music) {
 void Area::playAmbientSound(Common::UString sound) {
 	stopAmbientSound();
 
-	// TODO Day/Night
+	// TODO: Area::playAmbientSound():  Day/Night
 	if (sound.empty())
 		sound = _ambientDay;
 
@@ -202,6 +208,7 @@ void Area::show() {
 	if (_visible)
 		return;
 
+	// Play music and sound
 	playAmbientSound();
 	playAmbientMusic();
 
@@ -272,18 +279,23 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 }
 
 void Area::loadGIT(const Aurora::GFFStruct &git) {
+	// Generic properties
 	if (git.hasField("AreaProperties"))
 		loadProperties(git.getStruct("AreaProperties"));
 
+	// Waypoints
 	if (git.hasField("WaypointList"))
 		loadWaypoints(git.getList("WaypointList"));
 
+	// Placeables
 	if (git.hasField("Placeable List"))
 		loadPlaceables(git.getList("Placeable List"));
 
+	// Doors
 	if (git.hasField("Door List"))
 		loadDoors(git.getList("Door List"));
 
+	// Creatures
 	if (git.hasField("Creature List"))
 		loadCreatures(git.getList("Creature List"));
 }
@@ -330,16 +342,24 @@ void Area::loadTiles(const Aurora::GFFList &tiles) {
 }
 
 void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
+	// ID
 	tile.tileID = t.getUint("Tile_ID");
+
+	// Height transition
 	tile.height = t.getUint("Tile_Height", 0);
 
+	// Orientation
 	tile.orientation = (Orientation) t.getUint("Tile_Orientation", 0);
+
+	// Lights
 
 	tile.mainLight[0] = t.getUint("Tile_MainLight1", 0);
 	tile.mainLight[1] = t.getUint("Tile_MainLight2", 0);
 
 	tile.srcLight[0] = t.getUint("Tile_SrcLight1", 0);
 	tile.srcLight[1] = t.getUint("Tile_SrcLight2", 0);
+
+	// Tile animations
 
 	tile.animLoop[0] = t.getBool("Tile_AnimLoop1", false);
 	tile.animLoop[1] = t.getBool("Tile_AnimLoop2", false);
@@ -376,8 +396,12 @@ void Area::initTiles() {
 			if (!t.model)
 				throw Common::Exception("Can't load tile model \"%s\"", t.tile->model.c_str());
 
+			// A tile is 10 units wide and deep.
+			// There's extra special 5x5 tiles at the edges.
 			const float tileX = x * 10.0 + 5.0;
 			const float tileY = y * 10.0 + 5.0;
+
+			// The actual height of a tile is dictated by the tileset.
 			const float tileZ = t.height * _tileset->getTilesHeight();
 
 			t.model->setPosition(tileX, tileY, tileZ);
@@ -476,17 +500,17 @@ void Area::processEventQueue() {
 	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
 	     e != _eventQueue.end(); ++e) {
 
-		if        (e->type == Events::kEventMouseMove) {
+		if        (e->type == Events::kEventMouseMove) { // Moving the mouse
 			hasMove = true;
-		} else if (e->type == Events::kEventMouseDown) {
+		} else if (e->type == Events::kEventMouseDown) { // Clicking
 			if (e->button.button == SDL_BUTTON_LMASK) {
 				checkActive(e->button.x, e->button.y);
 				click(e->button.x, e->button.y);
 			}
-		} else if (e->type == Events::kEventKeyDown) {
+		} else if (e->type == Events::kEventKeyDown) { // Holding down TAB
 			if (e->key.keysym.sym == SDLK_TAB)
 				highlightAll(true);
-		} else if (e->type == Events::kEventKeyUp) {
+		} else if (e->type == Events::kEventKeyUp) {   // Releasing TAB
 			if (e->key.keysym.sym == SDLK_TAB)
 				highlightAll(false);
 		}

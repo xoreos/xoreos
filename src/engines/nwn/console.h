@@ -57,15 +57,18 @@ private:
 
 	Module *_module;
 
-	std::list<Common::UString> _campaigns;
-	std::list<Common::UString> _modules;
-	std::list<Common::UString> _areas;
-	std::list<Common::UString> _music;
+	// Caches
+	std::list<Common::UString> _campaigns; ///< All known campaigns modules.
+	std::list<Common::UString> _modules;   ///< All known modules.
+	std::list<Common::UString> _areas;     ///< All known areas in the current module.
+	std::list<Common::UString> _music;     ///< All known music resources.
 
-	CampaignMap _campaignModules;
+	CampaignMap _campaignModules; ///< Mapping campaign module file -> campaign module name.
 
 	uint32 _maxSizeMusic;
 
+
+	// Updating the caches
 
 	void updateCaches();
 
@@ -74,7 +77,7 @@ private:
 	void updateAreas();
 	void updateMusic();
 
-
+	// The commands
 	void cmdQuitModule   (const CommandLine &cl);
 	void cmdListCampaigns(const CommandLine &cl);
 	void cmdLoadCampaign (const CommandLine &cl);

@@ -51,6 +51,8 @@ public:
 
 	void loadTLK(); ///< Load the module's custom TLK.
 
+	// General properties
+
 	bool isSave() const; ///< Is the module a save file?
 
 	/** Return the module's tag. */
@@ -61,11 +63,17 @@ public:
 	/** Return the description of the module. */
 	const Aurora::LocString &getDescription() const;
 
+	// General module requirements
+
 	/** Return the minimum game version the module needs to run. */
 	void getMinVersion(int &major, int &minor) const;
-
 	/** Return the list of required expansions. */
 	uint16 getExpansions() const;
+
+	/** Return the list of required HAK files. */
+	const std::vector<Common::UString> &getHAKs() const;
+
+	// Entry behaviour
 
 	/** Return the starting movie. */
 	const Common::UString &getStartMovie() const;
@@ -77,14 +85,13 @@ public:
 	/** Return the entry direction. */
 	void getEntryDirection(float &x, float &y) const;
 
-	/** Return the list of required HAK files. */
-	const std::vector<Common::UString> &getHAKs() const;
 
 	/** Return the list of areas in the module. */
 	const std::vector<Common::UString> &getAreas() const;
-
 	/** Return the list of NSS (script) files that should be cached. */
 	const std::vector<Common::UString> &getNSSCache() const;
+
+	// Time managment
 
 	/** Return the module's starting time. */
 	void getStartTime(uint8 &hour, uint8 &day, uint8 &month, uint32 &year) const;
@@ -95,50 +102,52 @@ public:
 	/** Return the number of real time minutes per game hour. */
 	uint32 getMinutesPerHour() const;
 
+
 	/** Get the number creature kill XP is multiplied by. */
 	float getXPScale() const;
 
 private:
-	byte _id[32];
+	byte _id[32]; ///< The module's unique ID.
 
-	Common::UString _tag;
+	Common::UString _tag; ///< The module's tag.
 
-	Aurora::LocString _name;
-	Aurora::LocString _description;
+	Aurora::LocString _name;        ///< The module's localized name.
+	Aurora::LocString _description; ///< The module's localized description.
 
-	int _minVersionMajor;
-	int _minVersionMinor;
+	int _minVersionMajor; ///< Minimum major game version this module needs.
+	int _minVersionMinor; ///< Minimum minor game version this module needs.
 
-	uint16 _expansions;
+	uint16 _expansions; ///< Bitfield of required expansions.
 
-	bool _isSave;
+	bool _isSave; ///< Is this module a save?
 
-	Common::UString _customTLK;
+	Common::UString _customTLK; ///< The custom TLK the module uses.
 
-	Common::UString _startMovie;
+	Common::UString _startMovie; ///< The movie the module starts with.
 
-	Common::UString _entryArea;
-	float _entryX;
-	float _entryY;
-	float _entryZ;
-	float _entryDirX;
-	float _entryDirY;
+	// Entry location
+	Common::UString _entryArea; ///< The area the PC starts in.
+	float _entryX;    ///< The X position the PC starts in.
+	float _entryY;    ///< The Y position the PC starts in.
+	float _entryZ;    ///< The Z position the PC starts in.
+	float _entryDirX; ///< The X orientation the PC starts in.
+	float _entryDirY; ///< The Y orientation the PC starts in.
 
-	std::vector<Common::UString> _haks;
-	std::vector<Common::UString> _areas;
-	std::vector<Common::UString> _nssCache;
+	std::vector<Common::UString> _haks;     ///< HAKs required by the module.
+	std::vector<Common::UString> _areas;    ///< Areas found in the module.
+	std::vector<Common::UString> _nssCache; ///< Scripts that should be cached.
 
-	uint8 _hourDawn;
-	uint8 _hourDusk;
+	uint8 _hourDawn; ///< The hour dawn starts.
+	uint8 _hourDusk; ///< The hour dusk starts.
 
-	uint8 _minutesPerHour;
+	uint8 _minutesPerHour; ///< Number of real time minutes per game hour.
 
-	uint8  _startHour;
-	uint8  _startDay;
-	uint8  _startMonth;
-	uint32 _startYear;
+	uint8  _startHour;  ///< Hour the module starts.
+	uint8  _startDay;   ///< Day the module starts.
+	uint8  _startMonth; ///< Month the module starts.
+	uint32 _startYear;  ///< Year the module starts.
 
-	float _xpScale;
+	float _xpScale; ///< The number creature kill XP is multiplied by.
 
 	void clear();
 
