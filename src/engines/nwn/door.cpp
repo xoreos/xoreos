@@ -46,7 +46,7 @@ namespace Engines {
 namespace NWN {
 
 Door::Door(const Aurora::GFFStruct &door) : Situated(kObjectTypeDoor),
-	_genericType(Aurora::kFieldIDInvalid), _state(kStateClosed) {
+	_invisible(false), _genericType(Aurora::kFieldIDInvalid), _state(kStateClosed) {
 
 	load(door);
 }
@@ -89,21 +89,27 @@ void Door::loadObject(const Aurora::GFFStruct &gff) {
 void Door::loadAppearance() {
 	if (_appearanceID == 0) {
 		if (_genericType == Aurora::kFieldIDInvalid)
-			throw Common::Exception("Door \"%s\" has no appearance ID and no generic type",
-			                        _tag.c_str());
-
-		loadAppearance(TwoDAReg.get("genericdoors"), _genericType);
+			_invisible = true;
+		else
+			loadAppearance(TwoDAReg.get("genericdoors"), _genericType);
 	} else
 		loadAppearance(TwoDAReg.get("doortypes"), _appearanceID);
+
+	// Invisible doors have no model and are always open
+	if (_invisible) {
+		_modelName.clear();
+		_state = kStateOpened1;
+	}
 }
 
 void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
-	uint32 column = twoda.headerToColumn("ModelName");
-	if (column == Aurora::kFieldIDInvalid)
-		column = twoda.headerToColumn("Model");
+	uint32 modelColumn = twoda.headerToColumn("ModelName");
+	if (modelColumn == Aurora::kFieldIDInvalid)
+		modelColumn = twoda.headerToColumn("Model");
 
-	_modelName    = twoda.getRow(id).getString(column);
-	_soundAppType = twoda.getRow(_appearanceID).getInt("SoundAppType");
+	_invisible    = twoda.getRow(id).getInt("VisibleModel") == 0;
+	_modelName    = twoda.getRow(id).getString(modelColumn);
+	_soundAppType = twoda.getRow(id).getInt("SoundAppType");
 }
 
 void Door::setModelState() {
@@ -192,6 +198,9 @@ bool Door::close(Object *closer) {
 
 	if (!isOpen())
 		return true;
+
+	if (_invisible)
+		return false;
 
 	_state = kStateClosed;
 	setModelState();

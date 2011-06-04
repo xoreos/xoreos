@@ -80,6 +80,8 @@ protected:
 	void loadAppearance();
 
 private:
+	bool _invisible; ///< Is the door invisible?
+
 	uint32 _genericType; ///< Index into the generic door types.
 
 	State _state; ///< The current state of the door.
