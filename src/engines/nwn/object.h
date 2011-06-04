@@ -55,6 +55,8 @@ namespace Engines {
 
 namespace NWN {
 
+class Area;
+
 /** An object within a NWN area. */
 class Object : public Aurora::NWScript::Object, public ScriptContainer {
 public:
@@ -104,9 +106,9 @@ public:
 	void setPCSpeaker(Aurora::NWScript::Object *pc);
 
 	/** Return the area this object is currently in. */
-	Aurora::NWScript::Object *getArea() const;
+	Area *getArea() const;
 	/** Set the area this object is currently in. */
-	void setArea(Aurora::NWScript::Object *area);
+	void setArea(Area *);
 
 	// Positioning
 
@@ -168,7 +170,8 @@ protected:
 	std::list<uint32> _ids; ///< The object's model IDs.
 
 	Aurora::NWScript::Object *_pcSpeaker; ///< The current PC speaking with the object.
-	Aurora::NWScript::Object *_area;      ///< The area the object is currently in.
+
+	Area *_area; ///< The area the object is currently in.
 
 	float _position[3];    ///< The object's position.
 	float _orientation[3]; ///< The object's orientation.

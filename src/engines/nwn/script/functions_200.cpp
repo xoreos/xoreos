@@ -497,7 +497,7 @@ void ScriptFunctions::actionJumpToLocation(Aurora::NWScript::FunctionContext &ct
 void ScriptFunctions::location(Aurora::NWScript::FunctionContext &ctx) {
 	Location loc;
 
-	loc.setArea  (ctx.getParams()[0].getObject());
+	loc.setArea  (convertArea(ctx.getParams()[0].getObject()));
 	loc.setFacing(ctx.getParams()[2].getFloat());
 
 	float x, y, z;

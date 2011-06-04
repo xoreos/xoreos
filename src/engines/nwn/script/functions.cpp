@@ -32,6 +32,8 @@
 #include "aurora/nwscript/variable.h"
 #include "aurora/nwscript/functionman.h"
 
+#include "graphics/graphics.h"
+
 #include "engines/nwn/types.h"
 #include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
@@ -280,6 +282,55 @@ Module *ScriptFunctions::convertModule(Aurora::NWScript::Object *o) {
 
 Location *ScriptFunctions::convertLocation(Aurora::NWScript::EngineType *e) {
 	return dynamic_cast<Location *>(e);
+}
+
+void ScriptFunctions::jumpTo(Object *object, Area *area, float x, float y, float z) {
+	// Sanity check
+	if (!object->getArea() || !area) {
+		warning("ScriptFunctions::jumpTo(): No area?!? (%d, %d)",
+		        object->getArea() != 0, area != 0);
+		return;
+	}
+
+	if (object == getPC())
+		warning("ScriptFunctions::jumpTo(): Moving the PC");
+
+	GfxMan.lockFrame();
+
+	// Are we moving between areas?
+	if (object->getArea() != area) {
+		const Common::UString &areaFrom = object->getArea()->getResRef();
+		const Common::UString &areaTo   = area->getResRef();
+
+		warning("TODO: ScriptFunctions::jumpTo(): Moving from \"%s\" to \"%s\"",
+		        areaFrom.c_str(), areaTo.c_str());
+
+		Object *pc = convertObject(getPC());
+		if (pc) {
+			const Common::UString &pcArea = pc->getArea()->getResRef();
+
+			if (areaFrom == pcArea) {
+				// Moving away from the currently visible area.
+
+				object->hide();
+				object->unloadModel();
+
+			} else if (areaTo == pcArea) {
+				// Moving into the currently visible area.
+
+				object->loadModel();
+				object->show();
+			}
+
+		}
+
+		object->setArea(area);
+	}
+
+	// Update position
+	object->setPosition(x, y, z);
+
+	GfxMan.unlockFrame();
 }
 
 } // End of namespace NWN

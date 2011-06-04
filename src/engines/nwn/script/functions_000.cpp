@@ -529,7 +529,8 @@ void ScriptFunctions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx)
 
 	float x, y, z;
 	moveTo->getPosition(x, y, z);
-	object->setPosition(x, y, z);
+
+	jumpTo(object, moveTo->getArea(), x, y, z);
 
 	bool  run   = ctx.getParams()[1].getInt() != 0;
 	float range = ctx.getParams()[2].getFloat();
@@ -547,7 +548,7 @@ void ScriptFunctions::getArea(Aurora::NWScript::FunctionContext &ctx) {
 
 	Object *object = convertObject(ctx.getParams()[0].getObject());
 	if (object)
-		ctx.getReturn() = object->getArea();
+		ctx.getReturn() = (Aurora::NWScript::Object *) object->getArea();
 }
 
 void ScriptFunctions::getEnteringObject(Aurora::NWScript::FunctionContext &ctx) {

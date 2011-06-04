@@ -130,11 +130,11 @@ void Object::setPCSpeaker(Aurora::NWScript::Object *pc) {
 	_pcSpeaker = pc;
 }
 
-Aurora::NWScript::Object *Object::getArea() const {
+Area *Object::getArea() const {
 	return _area;
 }
 
-void Object::setArea(Aurora::NWScript::Object *area) {
+void Object::setArea(Area *area) {
 	_area = area;
 }
 

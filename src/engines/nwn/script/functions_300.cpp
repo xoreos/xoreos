@@ -926,14 +926,15 @@ void ScriptFunctions::jumpToObject(Aurora::NWScript::FunctionContext &ctx) {
 	// bool walkStraightLineToPoint = ctx.getParams()[1].getInt() != 0;
 
 	Object *object = convertObject(ctx.getCaller());
-	Object *target = convertObject(ctx.getParams()[0].getObject());
+	Object *moveTo = convertObject(ctx.getParams()[0].getObject());
 
-	if (!object || !target)
+	if (!object || !moveTo)
 		return;
 
 	float x, y, z;
-	target->getPosition(x, y, z);
-	object->setPosition(x, y, z);
+	moveTo->getPosition(x, y, z);
+
+	jumpTo(object, moveTo->getArea(), x, y, z);
 }
 
 void ScriptFunctions::setMapPinEnabled(Aurora::NWScript::FunctionContext &ctx) {

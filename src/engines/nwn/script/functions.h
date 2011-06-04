@@ -162,6 +162,8 @@ private:
 
 	Location *convertLocation(Aurora::NWScript::EngineType *e);
 
+	void jumpTo(Object *object, Area *area, float x, float y, float z);
+
 	void random(Aurora::NWScript::FunctionContext &ctx);
 	void printString(Aurora::NWScript::FunctionContext &ctx);
 	void printFloat(Aurora::NWScript::FunctionContext &ctx);

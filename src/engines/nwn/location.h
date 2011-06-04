@@ -32,15 +32,11 @@
 
 #include "aurora/nwscript/enginetype.h"
 
-namespace Aurora {
-	namespace NWScript {
-		class Object;
-	}
-}
-
 namespace Engines {
 
 namespace NWN {
+
+class Area;
 
 class Location : public Aurora::NWScript::EngineType {
 public:
@@ -51,9 +47,9 @@ public:
 	Location *clone() const;
 
 	/** Return the location's area. */
-	Aurora::NWScript::Object *getArea() const;
+	Area *getArea() const;
 	/** Set the location's area. */
-	void setArea(Aurora::NWScript::Object *area);
+	void setArea(Area *area);
 
 	/** Return the location's position. */
 	void getPosition(float &x, float &y, float &z) const;
@@ -66,7 +62,7 @@ public:
 	void setFacing(float facing);
 
 private:
-	Aurora::NWScript::Object *_area; ///< The location's area.
+	Area *_area; ///< The location's area.
 
 	float _position[3]; ///< The location's position.
 	float _facing;      ///< The location's orientation.

@@ -46,11 +46,11 @@ Location *Location::clone() const {
 	return new Location(*this);
 }
 
-Aurora::NWScript::Object *Location::getArea() const {
+Area *Location::getArea() const {
 	return _area;
 }
 
-void Location::setArea(Aurora::NWScript::Object *area) {
+void Location::setArea(Area *area) {
 	_area = area;
 }
 
