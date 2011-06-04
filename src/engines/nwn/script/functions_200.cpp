@@ -447,7 +447,40 @@ void ScriptFunctions::setAreaTransitionBMP(Aurora::NWScript::FunctionContext &ct
 }
 
 void ScriptFunctions::actionStartConversation(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: ActionStartConversation");
+	// TODO: ScriptFunctions::actionStartConversation(): /Action/
+
+	Object *source = convertObject(ctx.getCaller());
+	Object *target = convertObject(ctx.getParams()[0].getObject());
+	if (!source || !target)
+		return;
+
+	Creature *pc = convertPC(target);
+	if (!pc) {
+		warning("TODO: ActionStartConversation: Non-PC target \"%s\"", target->getTag().c_str());
+		return;
+	}
+
+	if (source->getPCSpeaker()) {
+		if (source->getPCSpeaker() != pc) {
+			Creature *otherPC = convertPC(source->getPCSpeaker());
+
+			warning("ScriptFunctions::actionStartConversation(): "
+			        "Object \"%s\" already in conversation with PC \"%s\"",
+			        source->getTag().c_str(), otherPC ? otherPC->getName().c_str() : "");
+			return;
+		}
+	}
+
+	Common::UString conversation = ctx.getParams()[1].getString();
+	if (conversation.empty())
+		conversation = source->getConversation();
+
+	// TODO: ScriptFunctions::actionStartConversation(): privateConv
+	// bool privateConv = ctx.getParams()[2].getInt() != 0;
+
+	bool playHello = ctx.getParams()[2].getInt() != 0;
+
+	_module->startConversation(conversation, *pc, *source, playHello);
 }
 
 void ScriptFunctions::actionPauseConversation(Aurora::NWScript::FunctionContext &ctx) {

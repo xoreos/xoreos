@@ -89,7 +89,7 @@ public:
 	Creature *getPC();
 
 	bool startConversation(const Common::UString &conv, Creature &pc,
-	                       Engines::NWN::Object &obj);
+	                       Engines::NWN::Object &obj, bool playHello = true);
 
 	void movePC(const Common::UString &area, float x, float y, float z);
 	void movePC(Area *area, float x, float y, float z);

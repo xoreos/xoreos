@@ -185,14 +185,15 @@ bool IngameGUI::hasRunningConversation() const {
 	return _dialog != 0;
 }
 
-bool IngameGUI::startConversation(const Common::UString &conv, Creature &pc, Object &obj) {
+bool IngameGUI::startConversation(const Common::UString &conv,
+                                  Creature &pc, Object &obj, bool playHello) {
 	stopConversation();
 
 	if (conv.empty())
 		return true;
 
 	try {
-		_dialog = new Dialog(conv, pc, obj, *_module);
+		_dialog = new Dialog(conv, pc, obj, *_module, playHello);
 
 		_dialog->show();
 	} catch (Common::Exception &e) {

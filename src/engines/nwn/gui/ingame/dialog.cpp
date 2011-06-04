@@ -549,7 +549,8 @@ void DialogBox::render(Graphics::RenderPass pass) {
 }
 
 
-Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj, Module &module) :
+Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj,
+               Module &module, bool playHello) :
 	_conv(conv), _pc(&pc), _object(&obj), _module(&module) {
 
 	_object->setPCSpeaker(&pc);
@@ -560,7 +561,7 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj, Module &m
 	_dlgBox = new DialogBox(kDialogWidth, kDialogHeight);
 
 	updateBox();
-	playSound(true);
+	playSound(playHello);
 
 	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
 }

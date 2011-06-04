@@ -612,9 +612,9 @@ const Common::UString &Module::getName() const {
 }
 
 bool Module::startConversation(const Common::UString &conv, Creature &pc,
-                               Engines::NWN::Object &obj) {
+                               Engines::NWN::Object &obj, bool playHello) {
 
-	return _ingameGUI->startConversation(conv, pc, obj);
+	return _ingameGUI->startConversation(conv, pc, obj, playHello);
 }
 
 void Module::movePC(const Common::UString &area, float x, float y, float z) {

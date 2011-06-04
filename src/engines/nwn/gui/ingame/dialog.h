@@ -188,7 +188,8 @@ private:
 
 class Dialog : public Events::Notifyable {
 public:
-	Dialog(const Common::UString &conv, Creature &pc, Object &obj, Module &module);
+	Dialog(const Common::UString &conv, Creature &pc, Object &obj,
+	       Module &module, bool playHello = true);
 	~Dialog();
 
 	/** Has the conversation ended? */
