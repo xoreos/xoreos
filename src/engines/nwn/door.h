@@ -78,7 +78,11 @@ public:
 	/** The closer object closes this door. */
 	bool close(Object *closer);
 
-	void setLocked(bool locked); ///< Lock/Unlock the door.
+	/** Lock/Unlock the door. */
+	void setLocked(bool locked);
+
+	/** Play a door animation. */
+	void playAnimation(Animation animation);
 
 protected:
 	/** Load door-specific properties. */

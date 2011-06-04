@@ -185,6 +185,36 @@ bool Placeable::click(Object *triggerer) {
 	return true;
 }
 
+void Placeable::playAnimation(Animation animation) {
+	// TODO: Door::Placeable(): Animate
+
+	switch (animation) {
+		case kAnimationPlaceableActivate:
+			playSound(_soundUsed);
+			_state = kStateActivated;
+			break;
+
+		case kAnimationPlaceableDeactivate:
+			playSound(_soundUsed);
+			_state = kStateDeactivated;
+			break;
+
+		case kAnimationPlaceableOpen:
+			playSound(_soundOpened);
+			_state = kStateOpen;
+			break;
+
+		case kAnimationPlaceableClose:
+			playSound(_soundClosed);
+			_state = kStateClosed;
+			break;
+
+		default:
+			break;
+	}
+
+	setModelState();
+}
 } // End of namespace NWN
 
 } // End of namespace Engines

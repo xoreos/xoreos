@@ -72,6 +72,9 @@ public:
 	/** Is the placeable open? */
 	bool isOpen() const;
 
+	/** Play a placable animation. */
+	void playAnimation(Animation animation);
+
 protected:
 	/** Load placeable-specific properties. */
 	void loadObject(const Aurora::GFFStruct &gff);

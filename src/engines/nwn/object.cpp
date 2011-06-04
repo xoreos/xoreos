@@ -267,6 +267,10 @@ bool Object::beginConversation(Object *triggerer) {
 	return true;
 }
 
+void Object::playAnimation(Animation animation) {
+	warning("TODO: Object::playAnimation(%d)", (int) animation);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

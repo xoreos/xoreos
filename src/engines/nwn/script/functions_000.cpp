@@ -723,7 +723,19 @@ void ScriptFunctions::actionSpeakString(Aurora::NWScript::FunctionContext &ctx) 
 }
 
 void ScriptFunctions::actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: ActionPlayAnimation");
+	// TODO: ScriptFunctions::actionPlayAnimation(): /Action/
+
+	Object *object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	Animation animation = (Animation) ctx.getParams()[0].getInt();
+
+	// TODO: ScriptFunctions::actionPlayAnimation(): speed, second
+	// float speed   = ctx.getParams()[1].getFloat();
+	// float seconds = ctx.getParams()[2].getFloat();
+
+	object->playAnimation(animation);
 }
 
 #define SQR(x) ((x) * (x))

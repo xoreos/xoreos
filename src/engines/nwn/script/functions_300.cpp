@@ -410,7 +410,17 @@ void ScriptFunctions::registerFunctions300(const Defaults &d) {
 }
 
 void ScriptFunctions::playAnimation(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: PlayAnimation");
+	Object *object = convertObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	Animation animation = (Animation) ctx.getParams()[0].getInt();
+
+	// TODO: ScriptFunctions::playAnimation(): speed, second
+	// float speed   = ctx.getParams()[1].getFloat();
+	// float seconds = ctx.getParams()[2].getFloat();
+
+	object->playAnimation(animation);
 }
 
 void ScriptFunctions::talentSpell(Aurora::NWScript::FunctionContext &ctx) {

@@ -150,6 +150,11 @@ public:
 	/** Play an object sound. */
 	void playSound(const Common::UString &sound, bool pitchVariance = false);
 
+	// Animation
+
+	/** Play an object animation. */
+	virtual void playAnimation(Animation animation);
+
 
 protected:
 	ObjectType _type; ///< The object's type.

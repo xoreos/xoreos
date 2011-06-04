@@ -277,6 +277,36 @@ void Door::evaluateLink() {
 	_evaluatedLink = true;
 }
 
+void Door::playAnimation(Animation animation) {
+	// TODO: Door::playAnimation(): Animate
+
+	switch (animation) {
+		case kAnimationDoorClose:
+			playSound(_soundClosed);
+			_state = kStateClosed;
+			break;
+
+		case kAnimationDoorOpen1:
+			playSound(_soundOpened);
+			_state = kStateOpened1;
+			break;
+
+		case kAnimationDoorOpen2:
+			playSound(_soundOpened);
+			_state = kStateOpened1;
+			break;
+
+		case kAnimationDoorDestroy:
+			warning("TODO: Door::playAnimation(): kAnimationDoorDestroy");
+			break;
+
+		default:
+			break;
+	}
+
+	setModelState();
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
