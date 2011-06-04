@@ -873,7 +873,21 @@ void ScriptFunctions::getListenPatternNumber(Aurora::NWScript::FunctionContext &
 }
 
 void ScriptFunctions::actionJumpToObject(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: ActionJumpToObject");
+	// TODO: ScriptFunctions::actionJumpToObject(): /Action/
+
+	// TODO: ScriptFunctions::actionJumpToObject(): walkStraightLineToPoint
+	// bool walkStraightLineToPoint = ctx.getParams()[1].getInt() != 0;
+
+	Object *object = convertObject(ctx.getCaller());
+	Object *moveTo = convertObject(ctx.getParams()[0].getObject());
+
+	if (!object || !moveTo)
+		return;
+
+	float x, y, z;
+	moveTo->getPosition(x, y, z);
+
+	jumpTo(object, moveTo->getArea(), x, y, z);
 }
 
 void ScriptFunctions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {

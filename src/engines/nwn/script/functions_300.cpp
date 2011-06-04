@@ -472,7 +472,16 @@ void ScriptFunctions::getIsPlayableRacialType(Aurora::NWScript::FunctionContext 
 }
 
 void ScriptFunctions::jumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: JumpToLocation");
+	Object   *object = convertObject(ctx.getCaller());
+	Location *moveTo = convertLocation(ctx.getParams()[0].getEngineType());
+
+	if (!object || !moveTo)
+		return;
+
+	float x, y, z;
+	moveTo->getPosition(x, y, z);
+
+	jumpTo(object, moveTo->getArea(), x, y, z);
 }
 
 void ScriptFunctions::effectTemporaryHitpoints(Aurora::NWScript::FunctionContext &ctx) {
@@ -922,7 +931,7 @@ void ScriptFunctions::getJournalQuestExperience(Aurora::NWScript::FunctionContex
 }
 
 void ScriptFunctions::jumpToObject(Aurora::NWScript::FunctionContext &ctx) {
-	// TODO: ScriptFunctions::jumpToObject(); walkStraightLineToPoint
+	// TODO: ScriptFunctions::jumpToObject(): walkStraightLineToPoint
 	// bool walkStraightLineToPoint = ctx.getParams()[1].getInt() != 0;
 
 	Object *object = convertObject(ctx.getCaller());

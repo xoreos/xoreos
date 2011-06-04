@@ -491,7 +491,18 @@ void ScriptFunctions::getLocation(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: ActionJumpToLocation");
+	// TODO: ScriptFunctions::actionJumpToLocation(): /Action/
+
+	Object   *object = convertObject(ctx.getCaller());
+	Location *moveTo = convertLocation(ctx.getParams()[0].getEngineType());
+
+	if (!object || !moveTo)
+		return;
+
+	float x, y, z;
+	moveTo->getPosition(x, y, z);
+
+	jumpTo(object, moveTo->getArea(), x, y, z);
 }
 
 void ScriptFunctions::location(Aurora::NWScript::FunctionContext &ctx) {
@@ -1001,7 +1012,7 @@ void ScriptFunctions::getModuleItemLostBy(Aurora::NWScript::FunctionContext &ctx
 }
 
 void ScriptFunctions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {
-	// TODO: /Action/
+	// TODO: ScriptFunctions::actionDoCommand(): /Action/
 
 	Aurora::NWScript::NCSFile *script = ctx.getCurrentScript();
 	if (!script)
