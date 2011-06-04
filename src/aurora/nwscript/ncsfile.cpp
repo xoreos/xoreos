@@ -492,11 +492,11 @@ void NCSFile::o_const(InstructionType type) {
 	}
 }
 
-void NCSFile::callEngine(uint32 function, uint8 argCount) {
-	Aurora::NWScript::FunctionContext ctx = FunctionMan.createContext(function);
+void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
+                         uint32 function, uint8 argCount) {
+
 	if ((argCount < ctx.getParamMin()) || (argCount > ctx.getParamMax()))
-		throw Common::Exception("NCSFile::callEngine(): Argument count for function \"%s\" "
-		                        "mismatch (got %d, want %d - %d)", ctx.getName().c_str(),
+		throw Common::Exception("NCSFile::callEngine(): Argument count mismatch (%d vs %d - %d)",
 		                        argCount, ctx.getParamMin(), ctx.getParamMax());
 
 	ctx.setCurrentScript(this);
@@ -579,7 +579,15 @@ void NCSFile::o_action(InstructionType type) {
 	uint16 routineNumber = _script->readUint16BE();
 	uint8  argCount      = _script->readByte();
 
-	callEngine(routineNumber, argCount);
+	Aurora::NWScript::FunctionContext ctx = FunctionMan.createContext(routineNumber);
+
+	try {
+		callEngine(ctx, routineNumber, argCount);
+	} catch (Common::Exception &e) {
+		e.add("Failed running engine function \"%s\" (%d)",
+		      ctx.getName().c_str(), routineNumber);
+		throw;
+	}
 }
 
 void NCSFile::o_logand(InstructionType type) {

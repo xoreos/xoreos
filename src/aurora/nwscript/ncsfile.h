@@ -181,7 +181,7 @@ private:
 
 	void decompile(); // TODO
 
-	void callEngine(uint32 function, uint8 argCount);
+	void callEngine(Aurora::NWScript::FunctionContext &ctx, uint32 function, uint8 argCount);
 
 	// Opcode declarations
 	DECLARE_OPCODE(o_nop);
