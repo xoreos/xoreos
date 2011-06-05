@@ -445,7 +445,18 @@ void ScriptFunctions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: DelayCommand: %f", ctx.getParams()[0].getFloat());
+	if (!_module)
+		return;
+
+	Common::UString script = ctx.getScriptName();
+	if (script.empty())
+		throw Common::Exception("ScriptFunctions::assignCommand(): Script needed");
+
+	uint32 delay = ctx.getParams()[0].getFloat() * 1000;
+
+	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
+
+	_module->delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), delay);
 }
 
 void ScriptFunctions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
