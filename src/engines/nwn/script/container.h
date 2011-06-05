@@ -40,6 +40,7 @@
 namespace Aurora {
 	namespace NWScript {
 		class Object;
+		class ScriptState;
 	}
 }
 namespace Engines {
@@ -57,8 +58,14 @@ public:
 
 	bool runScript(Script script, Aurora::NWScript::Object *owner = 0,
 	               Aurora::NWScript::Object *triggerer = 0);
-	bool runScript(const Common::UString &script, Aurora::NWScript::Object *owner = 0,
-	               Aurora::NWScript::Object *triggerer = 0);
+
+	static bool runScript(const Common::UString &script,
+	                      Aurora::NWScript::Object *owner = 0,
+	                      Aurora::NWScript::Object *triggerer = 0);
+	static bool runScript(const Common::UString &script,
+	                      const Aurora::NWScript::ScriptState &state,
+	                      Aurora::NWScript::Object *owner = 0,
+	                      Aurora::NWScript::Object *triggerer = 0);
 
 protected:
 	void clearScripts();

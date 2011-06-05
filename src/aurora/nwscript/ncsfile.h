@@ -87,18 +87,21 @@ private:
 /** An NCS, BioWare's NWN Compile Script. */
 class NCSFile : public AuroraBase {
 public:
-	NCSFile(Common::SeekableReadStream *ncs, Object *owner = 0, Object *triggerer = 0);
-	NCSFile(const Common::UString &ncs, Object *self = 0, Object *triggerer = 0);
+	NCSFile(Common::SeekableReadStream *ncs);
+	NCSFile(const Common::UString &ncs);
 	~NCSFile();
 
 	const Common::UString &getName() const;
 
 	/** Run the current script, from start to finish. */
-	const Variable &run();
+	const Variable &run(Object *owner = 0, Object *triggerer = 0);
 
-	/** After the script ends, continue with this state for these objects. */
-	void assign(const ScriptState &state, Object *owner = 0, Object *triggerer = 0);
+	/** Run the current script, from this state to finish. */
+	const Variable &run(const ScriptState &state, Object *owner = 0, Object *triggerer = 0);
 
+	static ScriptState getEmptyState();
+
+private:
 	enum InstructionType {
 		// Unary
 		kInstTypeNone      =  0,
@@ -129,17 +132,6 @@ public:
 		kInstTypeFloatVector      = 60
 	};
 
-private:
-	struct Assigned {
-		ScriptState state;
-
-		Object *owner;
-		Object *triggerer;
-
-		Assigned();
-		Assigned(const ScriptState &s, Object *o, Object *t);
-	};
-
 	Common::UString _name;
 
 	NCSStack _stack;
@@ -147,16 +139,12 @@ private:
 
 	Variable _return;
 
-	Object *_objectOwner;
-	Object *_objectTriggerer;
-
-	Object *_currentObjectOwner;
-	Object *_currentObjectTriggerer;
+	Object *_owner;
+	Object *_triggerer;
 
 	std::stack<uint32> _returnOffsets;
 
 	Variable _storedState;
-	std::list<Assigned> _assigned;
 
 	typedef void (NCSFile::*OpcodeProc)(InstructionType type);
 	struct Opcode {
@@ -172,12 +160,10 @@ private:
 	/** Reset the script for another execution. */
 	void reset();
 
-	void execute();
+	const Variable &execute(Object *owner = 0, Object *triggerer = 0);
 
 	/** Execute one script step. */
 	void executeStep();
-
-	void runAssigned();
 
 	void decompile(); // TODO
 

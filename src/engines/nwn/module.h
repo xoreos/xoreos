@@ -31,6 +31,7 @@
 #define ENGINES_NWN_MODULE_H
 
 #include <list>
+#include <set>
 #include <map>
 
 #include "common/ustring.h"
@@ -94,10 +95,34 @@ public:
 
 	void changeModule(const Common::UString &module);
 
+	void delayScript(const Common::UString &script,
+	                 const Aurora::NWScript::ScriptState &state,
+	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
+	                 uint32 delay);
+
 
 	static Common::UString getDescription(const Common::UString &module);
 
 private:
+	enum ActionType {
+		kActionNone   = 0,
+		kActionScript = 1
+	};
+
+	struct Action {
+		ActionType type;
+
+		Common::UString script;
+
+		Aurora::NWScript::ScriptState state;
+		Aurora::NWScript::Object *owner;
+		Aurora::NWScript::Object *triggerer;
+
+		uint32 timestamp;
+
+		bool operator<(const Action &s) const;
+	};
+
 	typedef std::map<Common::UString, Area *> AreaMap;
 
 	Console *_console;
@@ -128,6 +153,8 @@ private:
 
 	Common::UString _newModule; ///< The module we should change to.
 
+	std::multiset<Action> _delayedActions;
+
 
 	void unload(); ///< Unload the whole shebang.
 
@@ -155,6 +182,8 @@ private:
 
 	void handleEvents();
 	bool handleCamera(const Events::Event &e);
+
+	void handleActions();
 
 	friend class Console;
 };

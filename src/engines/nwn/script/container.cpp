@@ -146,13 +146,20 @@ bool ScriptContainer::runScript(const Common::UString &script,
                                 Aurora::NWScript::Object *owner,
                                 Aurora::NWScript::Object *triggerer) {
 
+	return runScript(script, Aurora::NWScript::NCSFile::getEmptyState(), owner, triggerer);
+}
+
+bool ScriptContainer::runScript(const Common::UString &script,
+                                const Aurora::NWScript::ScriptState &state,
+                                Aurora::NWScript::Object *owner,
+                                Aurora::NWScript::Object *triggerer) {
 	if (script.empty())
 		return true;
 
 	try {
-		Aurora::NWScript::NCSFile ncs(script, owner, triggerer);
+		Aurora::NWScript::NCSFile ncs(script);
 
-		const Aurora::NWScript::Variable &retVal = ncs.run();
+		const Aurora::NWScript::Variable &retVal = ncs.run(state, owner, triggerer);
 		if (retVal.getType() == Aurora::NWScript::kTypeInt)
 			return retVal.getInt() != 0;
 		if (retVal.getType() == Aurora::NWScript::kTypeFloat)

@@ -1065,13 +1065,16 @@ void ScriptFunctions::getModuleItemLostBy(Aurora::NWScript::FunctionContext &ctx
 void ScriptFunctions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: ScriptFunctions::actionDoCommand(): /Action/
 
-	Aurora::NWScript::NCSFile *script = ctx.getCurrentScript();
-	if (!script)
+	if (!_module)
+		return;
+
+	Common::UString script = ctx.getScriptName();
+	if (script.empty())
 		throw Common::Exception("ScriptFunctions::actionDoCommand(): Script needed");
 
 	const Aurora::NWScript::ScriptState &state = ctx.getParams()[0].getScriptState();
 
-	script->assign(state, ctx.getCaller(), ctx.getTriggerer());
+	_module->delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), 0);
 }
 
 void ScriptFunctions::eventConversation(Aurora::NWScript::FunctionContext &ctx) {

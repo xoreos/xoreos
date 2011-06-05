@@ -298,9 +298,9 @@ bool DLGFile::runScript(const Common::UString &script) const {
 		return true;
 
 	try {
-		NWScript::NCSFile ncs(script, _owner);
+		NWScript::NCSFile ncs(script);
 
-		const NWScript::Variable &retVal = ncs.run();
+		const NWScript::Variable &retVal = ncs.run(_owner);
 		if (retVal.getType() == NWScript::kTypeInt)
 			return retVal.getInt() != 0;
 		if (retVal.getType() == NWScript::kTypeFloat)

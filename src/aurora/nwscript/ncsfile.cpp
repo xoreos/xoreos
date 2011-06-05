@@ -191,14 +191,6 @@ void NCSStack::print() const {
 }
 
 
-NCSFile::Assigned::Assigned() : owner(0), triggerer(0) {
-}
-
-NCSFile::Assigned::Assigned(const ScriptState &s, Object *o, Object *t) :
-	state(s), owner(o), triggerer(t) {
-}
-
-
 #define OPCODE(x) { &NCSFile::x, #x }
 
 void NCSFile::setupOpcodes() {
@@ -269,16 +261,14 @@ void NCSFile::setupOpcodes() {
 
 #undef OPCODE
 
-NCSFile::NCSFile(Common::SeekableReadStream *ncs, Object *owner, Object *triggerer) :
-	_objectOwner(owner), _objectTriggerer(triggerer) {
-
+NCSFile::NCSFile(Common::SeekableReadStream *ncs) : _owner(0), _triggerer(0) {
 	_script = ncs;
 
 	load();
 }
 
-NCSFile::NCSFile(const Common::UString &ncs, Object *owner, Object *triggerer) : _name(ncs),
-	_script(0), _objectOwner(owner), _objectTriggerer(triggerer) {
+NCSFile::NCSFile(const Common::UString &ncs) : _name(ncs), _script(0),
+	_owner(0), _triggerer(0) {
 
 	_script = ResMan.getResource(ncs, kFileTypeNCS);
 	if (!_script)
@@ -293,6 +283,14 @@ NCSFile::~NCSFile() {
 
 const Common::UString &NCSFile::getName() const {
 	return _name;
+}
+
+ScriptState NCSFile::getEmptyState() {
+	ScriptState state;
+
+	state.offset = 13; // 8 byte header + 5 byte program size dummy op
+
+	return state;
 }
 
 void NCSFile::load() {
@@ -326,22 +324,46 @@ void NCSFile::reset() {
 		_returnOffsets.pop();
 
 	_storedState.setType(kTypeVoid);
+	_return.setType(kTypeVoid);
 
 	_script->seek(13); // 8 byte header + 5 byte program size dummy op
 }
 
-const Variable &NCSFile::run() {
-	debugC(1, kDebugScripts, "=== Running script \"%s\" ===", _name.c_str());
+const Variable &NCSFile::run(Object *owner, Object *triggerer) {
+	return run(getEmptyState(), owner, triggerer);
+}
+
+const Variable &NCSFile::run(const ScriptState &state, Object *owner, Object *triggerer) {
+	debugC(1, kDebugScripts, "=== Running script \"%s\" (%d) ===",
+	       _name.c_str(), state.offset);
 
 	reset();
 
-	_return.setType(kTypeVoid);
-	_assigned.clear();
+	_script->seek(state.offset);
 
-	_currentObjectOwner     = _objectOwner;
-	_currentObjectTriggerer = _objectTriggerer;
+	// Push global variables
+	std::vector<class Variable>::const_reverse_iterator var;
+	for (var = state.globals.rbegin(); var != state.globals.rend(); ++var)
+		_stack.push(*var);
 
-	execute();
+	_stack.setBasePtr(_stack.getStackPtr());
+
+	// Push local variables
+	for (var = state.locals.rbegin(); var != state.locals.rend(); ++var)
+		_stack.push(*var);
+
+	return execute(owner, triggerer);
+}
+
+const Variable &NCSFile::execute(Object *owner, Object *triggerer) {
+	_owner     = owner;
+	_triggerer = triggerer;
+
+	while (!_script->eos() && !_script->err())
+		executeStep();
+
+	if (_script->err())
+		throw Common::Exception(Common::kReadError);
 
 	if (!_stack.empty())
 		_return = _stack.top();
@@ -350,44 +372,10 @@ const Variable &NCSFile::run() {
 		debugC(1, kDebugScripts, "=> Script\"%s\" returns: %d",
 		       _name.c_str(), _stack.top().getInt());
 
-	runAssigned();
+	_owner     = 0;
+	_triggerer = 0;
 
 	return _return;
-}
-
-void NCSFile::execute() {
-	while (!_script->eos() && !_script->err())
-		executeStep();
-
-	if (_script->err())
-		throw Common::Exception(Common::kReadError);
-}
-
-void NCSFile::runAssigned() {
-	while (!_assigned.empty()) {
-		reset();
-
-		const Assigned &assigned = _assigned.front();
-		const ScriptState &state = assigned.state;
-
-		_script->seek(state.offset);
-
-		std::vector<class Variable>::const_reverse_iterator var;
-		for (var = state.globals.rbegin(); var != state.globals.rend(); ++var)
-			_stack.push(*var);
-
-		o_savebp(kInstTypeNone);
-
-		for (var = state.locals.rbegin(); var != state.locals.rend(); ++var)
-			_stack.push(*var);
-
-		_currentObjectOwner     = assigned.owner;
-		_currentObjectTriggerer = assigned.triggerer;
-
-		execute();
-
-		_assigned.pop_front();
-	}
 }
 
 void NCSFile::executeStep() {
@@ -417,10 +405,6 @@ void NCSFile::decompile() {
 	// TODO
 
 	_script->seek(oldScriptPos);
-}
-
-void NCSFile::assign(const ScriptState &state, Object *owner, Object *triggerer) {
-	_assigned.push_back(Assigned(state, owner, triggerer));
 }
 
 // OPCODES!
@@ -476,7 +460,7 @@ void NCSFile::o_const(InstructionType type) {
 			uint32 objectID = _script->readUint32BE();
 
 			if      (objectID == kScriptObjectSelf)
-				_stack.push(_currentObjectOwner);
+				_stack.push(_owner);
 			else if (objectID == kScriptObjectInvalid)
 				_stack.push((Object *) 0);
 			else if (objectID == kScriptObjectTypeInvalid)
@@ -500,8 +484,8 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 		                        argCount, ctx.getParamMin(), ctx.getParamMax());
 
 	ctx.setCurrentScript(this);
-	ctx.setCaller(_currentObjectOwner);
-	ctx.setTriggerer(_currentObjectTriggerer);
+	ctx.setCaller(_owner);
+	ctx.setTriggerer(_triggerer);
 
 	ctx.setParamsSpecified(argCount);
 	for (uint8 i = 0; i < argCount; i++) {

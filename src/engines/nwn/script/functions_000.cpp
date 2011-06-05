@@ -428,8 +428,11 @@ void ScriptFunctions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
-	Aurora::NWScript::NCSFile *script = ctx.getCurrentScript();
-	if (!script)
+	if (!_module)
+		return;
+
+	Common::UString script = ctx.getScriptName();
+	if (script.empty())
 		throw Common::Exception("ScriptFunctions::assignCommand(): Script needed");
 
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
@@ -438,7 +441,7 @@ void ScriptFunctions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
 
 	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
 
-	script->assign(state, object, ctx.getTriggerer());
+	_module->delayScript(script, state, object, ctx.getTriggerer(), 0);
 }
 
 void ScriptFunctions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
@@ -456,9 +459,9 @@ void ScriptFunctions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
 
 	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
 	try {
-		Aurora::NWScript::NCSFile ncs(script, object);
+		Aurora::NWScript::NCSFile ncs(script);
 
-		ncs.run();
+		ncs.run(object);
 	} catch (Common::Exception &e) {
 		e.add("Failed ExecuteScript(\"%s\", %s)", script.c_str(), gTag(object).c_str());
 

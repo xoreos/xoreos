@@ -51,6 +51,8 @@
 #include "engines/nwn/area.h"
 #include "engines/nwn/console.h"
 
+#include "engines/nwn/script/container.h"
+
 #include "engines/nwn/gui/ingame/ingame.h"
 
 struct GenderToken {
@@ -92,6 +94,11 @@ static const GenderToken kGenderTokens[] = {
 namespace Engines {
 
 namespace NWN {
+
+bool Module::Action::operator<(const Action &s) const {
+	return timestamp < s.timestamp;
+}
+
 
 Module::Module(Console &console) : _console(&console), _hasModule(false), _pc(0),
 	_currentTexturePack(-1), _exit(false), _currentArea(0) {
@@ -383,6 +390,7 @@ void Module::run() {
 				break;
 
 			handleEvents();
+			handleActions();
 
 			_ingameGUI->updatePartyMember(0, *_pc);
 
@@ -484,6 +492,23 @@ bool Module::handleCamera(const Events::Event &e) {
 	return true;
 }
 
+void Module::handleActions() {
+	uint32 now = EventMan.getTimestamp();
+
+	while (!_delayedActions.empty()) {
+		std::multiset<Action>::iterator action = _delayedActions.begin();
+
+		if (now < action->timestamp)
+			break;
+
+		if (action->type == kActionScript)
+			ScriptContainer::runScript(action->script, action->state,
+			                           action->owner, action->triggerer);
+
+		_delayedActions.erase(action);
+	}
+}
+
 void Module::unload() {
 	unloadAreas();
 	unloadTexturePack();
@@ -494,6 +519,9 @@ void Module::unload() {
 
 void Module::unloadModule() {
 	runScript(kScriptExit, this, _pc);
+	handleActions();
+
+	_delayedActions.clear();
 
 	TwoDAReg.clear();
 
@@ -670,6 +698,22 @@ void Module::movedPC() {
 
 void Module::changeModule(const Common::UString &module) {
 	_newModule = module;
+}
+
+void Module::delayScript(const Common::UString &script,
+                         const Aurora::NWScript::ScriptState &state,
+                         Aurora::NWScript::Object *owner,
+                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+	Action action;
+
+	action.type      = kActionScript;
+	action.script    = script;
+	action.state     = state;
+	action.owner     = owner;
+	action.triggerer = triggerer;
+	action.timestamp = EventMan.getTimestamp() + delay;
+
+	_delayedActions.insert(action);
 }
 
 Common::UString Module::getDescription(const Common::UString &module) {
