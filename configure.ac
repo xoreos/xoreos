@@ -14,6 +14,7 @@ AC_ARG_VAR(SDL_CFLAGS, [C compiler flags for SDL])
 AC_ARG_VAR(SDL_LIBS, [libraries to pass to the linker for SDL])
 
 dnl libtool
+AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
 
 dnl We're C++
