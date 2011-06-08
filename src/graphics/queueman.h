@@ -27,8 +27,8 @@
  *  The graphics queue manager.
  */
 
-#ifndef QUEUEMANAGER_QUEUEMANAGER_H
-#define QUEUEMANAGER_QUEUEMANAGER_H
+#ifndef GRAPHICS_QUEUEMAN_H
+#define GRAPHICS_QUEUEMAN_H
 
 #include <list>
 
@@ -75,4 +75,4 @@ private:
 /** Shortcut for accessing the graphics queue manager. */
 #define QueueMan QueueManager::instance()
 
-#endif // QUEUEMANAGER_QUEUEMANAGER_H
+#endif // GRAPHICS_QUEUEMAN_H
