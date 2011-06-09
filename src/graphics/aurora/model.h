@@ -111,6 +111,11 @@ public:
 	/** Set the current position of the model. */
 	void setPosition(float x, float y, float z);
 
+	/** Get the model's center position. */
+	void getCenter(float &x, float &y, float &z);
+	/** Get the model's center position after translate/rotate. */
+	void getAbsoluteCenter(float &x, float &y, float &z);
+
 	/** Scale the model, relative to its current scale. */
 	void scale (float x, float y, float z);
 	/** Rotate the model, relative to its current orientation. */

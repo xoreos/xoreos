@@ -216,6 +216,22 @@ void Model::getAbsolutePosition(float &x, float &y, float &z) const {
 	z = _absolutePosition[3][2];
 }
 
+void Model::getCenter(float &x, float &y, float &z) {
+	x = _center[0] * _scale[0];
+	y = _center[1] * _scale[1];
+	z = _center[2] * _scale[2];
+}
+
+void Model::getAbsoluteCenter(float &x, float &y, float &z) {
+	glm::mat4 center = _absolutePosition;
+
+	center = glm::translate(center, glm::vec3(_center[0], _center[1], _center[2]));
+
+	x = center[3][0];
+	y = center[3][1];
+	z = center[3][2];
+}
+
 void Model::setScale(float x, float y, float z) {
 	lockFrameIfVisible();
 
