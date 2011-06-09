@@ -254,6 +254,16 @@ glm::mat4 ModelNode::getAbsolutePosition() const {
 	return absolutePosition;
 }
 
+void ModelNode::getWorldPosition(float &x, float &y, float &z) const {
+	glm::mat4 pos = _model->_absolutePosition;
+
+	pos *= _absolutePosition;
+
+	x = pos[3][0];
+	y = pos[3][1];
+	z = pos[3][2];
+}
+
 uint16 ModelNode::getNodeNumber() const {
 	return _nodeNumber;
 }
