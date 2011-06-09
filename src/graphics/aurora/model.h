@@ -131,7 +131,7 @@ public:
 
 protected:
 	typedef std::list<ModelNode *> NodeList;
-	typedef std::map<Common::UString, ModelNode *> NodeMap;
+	typedef std::map<Common::UString, ModelNode *, Common::UString::iless> NodeMap;
 
 	/** A model state. */
 	struct State {
