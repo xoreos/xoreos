@@ -93,11 +93,7 @@ TextureHandle &TextureHandle::operator=(const TextureHandle &right) {
 
 	clear();
 
-	_empty = right._empty;
-	_it    = right._it;
-
-	if (!_empty)
-		_it->second->referenceCount++;
+	TextureMan.assign(*this, right);
 
 	return *this;
 }
@@ -107,13 +103,7 @@ bool TextureHandle::empty() const {
 }
 
 void TextureHandle::clear() {
-	if (_empty)
-		return;
-
-	if (--_it->second->referenceCount == 0) {
-		TextureMan.release(_it);
-		_empty = true;
-	}
+	TextureMan.release(*this);
 }
 
 Texture &TextureHandle::getTexture() const {
@@ -144,11 +134,7 @@ PLTHandle &PLTHandle::operator=(const PLTHandle &right) {
 
 	clear();
 
-	_empty = right._empty;
-	_it    = right._it;
-
-	if (!_empty)
-		(*_it)->referenceCount++;
+	TextureMan.assign(*this, right);
 
 	return *this;
 }
@@ -158,13 +144,7 @@ bool PLTHandle::empty() const {
 }
 
 void PLTHandle::clear() {
-	if (_empty)
-		return;
-
-	if (--(*_it)->referenceCount == 0) {
-		TextureMan.release(_it);
-		_empty = true;
-	}
+	TextureMan.release(*this);
 }
 
 PLTFile &PLTHandle::getPLT() const {
@@ -249,30 +229,52 @@ TextureHandle TextureManager::get(const Common::UString &name) {
 	return TextureHandle(texture);
 }
 
-void TextureManager::release(TextureMap::iterator &i) {
+void TextureManager::assign(TextureHandle &texture, const TextureHandle &from) {
 	Common::StackLock lock(_mutex);
 
-	if (i == _textures.end())
-		return;
+	texture._empty = from._empty;
+	texture._it    = from._it;
 
-	RequestMan.sync();
-
-	delete i->second;
-	_textures.erase(i);
-	i = _textures.end();
+	if (!texture._empty)
+		texture._it->second->referenceCount++;
 }
 
-void TextureManager::release(PLTList::iterator &i) {
+void TextureManager::assign(PLTHandle &plt, const PLTHandle &from) {
 	Common::StackLock lock(_mutex);
 
-	if (i == _plts.end())
-		return;
+	plt._empty = from._empty;
+	plt._it    = from._it;
 
-	RequestMan.sync();
+	if (!plt._empty)
+		(*plt._it)->referenceCount++;
+}
 
-	delete *i;
-	_plts.erase(i);
-	i = _plts.end();
+void TextureManager::release(TextureHandle &texture) {
+	Common::StackLock lock(_mutex);
+
+	if (!texture._empty && (texture._it != _textures.end())) {
+		if (--texture._it->second->referenceCount == 0) {
+			delete texture._it->second;
+			_textures.erase(texture._it);
+		}
+	}
+
+	texture._empty = true;
+	texture._it    = _textures.end();
+}
+
+void TextureManager::release(PLTHandle &plt) {
+	Common::StackLock lock(_mutex);
+
+	if (!plt._empty && (plt._it != _plts.end())) {
+		if (--(*plt._it)->referenceCount == 0) {
+			delete *plt._it;
+			_plts.erase(plt._it);
+		}
+	}
+
+	plt._empty = true;
+	plt._it    = _plts.end();
 }
 
 void TextureManager::reloadAll() {

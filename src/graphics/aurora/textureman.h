@@ -75,7 +75,6 @@ typedef std::list<ManagedPLT *> PLTList;;
 class TextureHandle {
 public:
 	TextureHandle();
-	TextureHandle(TextureMap::iterator &i);
 	TextureHandle(const TextureHandle &right);
 	~TextureHandle();
 
@@ -91,13 +90,14 @@ private:
 	bool _empty;
 	TextureMap::iterator _it;
 
+	TextureHandle(TextureMap::iterator &i);
+
 	friend class TextureManager;
 };
 
 class PLTHandle {
 public:
 	PLTHandle();
-	PLTHandle(PLTList::iterator &i);
 	PLTHandle(const PLTHandle &right);
 	~PLTHandle();
 
@@ -112,6 +112,8 @@ public:
 private:
 	bool _empty;
 	PLTList::iterator _it;
+
+	PLTHandle(PLTList::iterator &i);
 
 	friend class TextureManager;
 };
@@ -155,6 +157,11 @@ private:
 
 	void release(TextureMap::iterator &i);
 	void release(PLTList::iterator &i);
+
+	void assign(TextureHandle &texture, const TextureHandle &from);
+	void assign(PLTHandle &plt, const PLTHandle &from);
+	void release(TextureHandle &texture);
+	void release(PLTHandle &plt);
 
 	friend class PLTHandle;
 	friend class TextureHandle;

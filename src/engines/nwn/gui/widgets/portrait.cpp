@@ -184,26 +184,24 @@ void Portrait::render(Graphics::RenderPass pass) {
 void Portrait::setPortrait(const Common::UString &name) {
 	Size curSize = _size;
 
-	Graphics::Aurora::TextureHandle newTexture;
-	while (newTexture.empty() && (curSize < kSizeMAX)) {
+	_texture.clear();
+	while (_texture.empty() && (curSize < kSizeMAX)) {
 		try {
-			newTexture = TextureMan.get(name + kSuffix[curSize]);
+			_texture = TextureMan.get(name + kSuffix[curSize]);
 		} catch (...) {
-			newTexture.clear();
+			_texture.clear();
 		}
 
 		curSize = (Size) (curSize + 1);
 	}
 
-	if (newTexture.empty()) {
+	if (_texture.empty()) {
 		try {
-			newTexture = TextureMan.get(name);
+			_texture = TextureMan.get(name);
 		} catch (...) {
-			newTexture.clear();
+			_texture.clear();
 		}
 	}
-
-	_texture = newTexture;
 }
 
 void Portrait::setSize() {
