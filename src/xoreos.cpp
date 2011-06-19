@@ -58,6 +58,7 @@
 #include "src/graphics/graphics.h"
 #include "src/graphics/camera.h"
 #include "src/graphics/windowman.h"
+#include "src/graphics/lightman.h"
 #include "src/graphics/yuv_to_rgb.h"
 
 #include "src/graphics/aurora/textureman.h"
@@ -358,6 +359,7 @@ static void deinit() {
 
 	Sound::SoundManager::destroy();
 
+	Graphics::LightManager::destroy();
 	Graphics::GraphicsManager::destroy();
 	Graphics::QueueManager::destroy();
 	Graphics::CameraManager::destroy();
