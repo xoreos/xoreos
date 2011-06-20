@@ -146,6 +146,8 @@ void ABCFont::load(const Common::UString &name) {
 		delete abc;
 		throw;
 	}
+
+	delete abc;
 }
 
 void ABCFont::readCharDesc(Char &c, Common::SeekableReadStream &abc) {
