@@ -32,6 +32,8 @@
 #include "common/ustring.h"
 #include "common/util.h"
 
+#include "graphics/aurora/fontman.h"
+
 #include "engines/kotor/console.h"
 #include "engines/kotor/module.h"
 
@@ -39,7 +41,9 @@ namespace Engines {
 
 namespace KotOR {
 
-Console::Console() : ::Engines::Console("fnt_console"), _module(0) {
+Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
+	_module(0) {
+
 	registerCommand("loadmodule", boost::bind(&Console::cmdLoadModule, this, _1),
 			"Usage: loadmodule <module>\nLoad and enter the specified module");
 }

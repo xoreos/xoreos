@@ -64,9 +64,10 @@ static const uint32 kConsoleLines       =  25;
 
 namespace Engines {
 
-ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 history) :
-	_font(FontMan.get(font)), _historySizeMax(history), _historySizeCurrent(0),
-	_historyStart(0), _cursorPosition(0), _overwrite(false),
+ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 history,
+                             int fontHeight) : _font(FontMan.get(font, fontHeight)),
+	_historySizeMax(history), _historySizeCurrent(0), _historyStart(0),
+	_cursorPosition(0), _overwrite(false),
 	_cursorBlinkState(false), _lastCursorBlink(0) {
 
 	assert(lines >= 2);
@@ -647,13 +648,13 @@ void ConsoleWindow::updateScrollbarPosition() {
 }
 
 
-Console::Console(const Common::UString &font) : _neverShown(true), _visible(false),
-	_tabCount(0), _printedCompleteWarning(false), _lastClickCount(-1),
+Console::Console(const Common::UString &font, int fontHeight) : _neverShown(true),
+	_visible(false), _tabCount(0), _printedCompleteWarning(false), _lastClickCount(-1),
 	_lastClickButton(0), _lastClickTime(0), _lastClickX(0), _lastClickY(0),
 	_maxSizeVideos(0), _maxSizeSounds(0) {
 
 	_readLine = new Common::ReadLine(kCommandHistorySize);
-	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory);
+	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory, fontHeight);
 
 	_readLine->historyIgnoreDups(true);
 

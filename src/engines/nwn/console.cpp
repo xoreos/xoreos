@@ -35,6 +35,8 @@
 
 #include "aurora/talkman.h"
 
+#include "graphics/aurora/fontman.h"
+
 #include "engines/aurora/util.h"
 
 #include "engines/nwn/console.h"
@@ -58,8 +60,8 @@ namespace Engines {
 
 namespace NWN {
 
-Console::Console() : ::Engines::Console("fnt_console"), _module(0),
-	_maxSizeMusic(0) {
+Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
+	_module(0), _maxSizeMusic(0) {
 
 	registerCommand("quitmodule"   , boost::bind(&Console::cmdQuitModule   , this, _1),
 			"Usage: quitmodule\nLeave the module, returning to the main menu");

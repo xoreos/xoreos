@@ -54,7 +54,8 @@ namespace Engines {
 
 class ConsoleWindow : public Graphics::GUIFrontElement, public Events::Notifyable {
 public:
-	ConsoleWindow(const Common::UString &font, uint32 lines, uint32 history);
+	ConsoleWindow(const Common::UString &font, uint32 lines, uint32 history,
+	              int fontHeight = 0);
 	~ConsoleWindow();
 
 
@@ -180,7 +181,7 @@ private:
 
 class Console {
 public:
-	Console(const Common::UString &font);
+	Console(const Common::UString &font, int fontHeight = 0);
 	virtual ~Console();
 
 	void show();
