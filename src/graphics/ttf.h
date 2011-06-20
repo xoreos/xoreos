@@ -39,6 +39,8 @@
 
 namespace Graphics {
 
+class Surface;
+
 class TTFRenderer {
 public:
 	/** Create a TTF renderer with this TTF in the specified line height in pixels. */
@@ -56,15 +58,8 @@ public:
 	/** Return the width of a specific character in pixels. */
 	int getCharWidth(uint32 ch) const;
 
-	/** Draw a specific character onto a BGRA surface.
-	 *
-	 *  @param ch The character to draw.
-	 *  @param dst The memory location of the surface to draw to.
-	 *  @param The pitch of the surface in pixels.
-	 *  @param The max width of the character to draw in pixels.
-	 *  @param The max height of the character to draw in pixels.
-	 */
-	void drawCharacter(uint32 ch, uint8 *dst, uint32 pitch, int maxWidth, int maxHeight);
+	/** Draw a specific character onto a BGRA surface. */
+	void drawCharacter(uint32 ch, Surface &surface, int x, int y);
 
 private:
 	FT_Library _library;

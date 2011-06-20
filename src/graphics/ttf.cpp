@@ -32,6 +32,8 @@
 
 #include "graphics/ttf.h"
 
+#include "graphics/images/surface.h"
+
 namespace Graphics {
 
 namespace {
@@ -156,9 +158,7 @@ int TTFRenderer::getCharWidth(uint32 ch) const {
 	return advance;
 }
 
-void TTFRenderer::drawCharacter(uint32 ch, uint8 *dst, uint32 pitch,
-		int maxWidth, int maxHeight) {
-
+void TTFRenderer::drawCharacter(uint32 ch, Surface &surface, int x, int y) {
 	FT_UInt slot = FT_Get_Char_Index(_face, ch);
 	if (!slot)
 		throw Common::Exception("TTFRenderer: Font does not contain glyph %x", ch);
@@ -183,25 +183,24 @@ void TTFRenderer::drawCharacter(uint32 ch, uint8 *dst, uint32 pitch,
 		srcPitch = -srcPitch;
 	}
 
-	maxWidth -= xMin;
-	dst += xMin * 4;
+	x += xMin;
+	y += yOffset;
 
-	maxHeight -= yOffset;
-	dst += yOffset * pitch;
+	const int width  = MIN(surface.getWidth () - x, bitmap.width);
+	const int height = MIN(surface.getHeight() - y, bitmap.rows );
 
-	const int width  = MIN(maxWidth , bitmap.width);
-	const int height = MIN(maxHeight, bitmap.rows );
+	byte *dst = surface.getData() + (y * surface.getWidth() + x) * 4;
 
 	switch (bitmap.pixel_mode) {
 	case FT_PIXEL_MODE_GRAY:
-		for (int y = 0; y < height; ++y) {
-			for (int x = 0; x < width; ++x, dst += 4) {
+		for (int i = 0; i < height; ++i) {
+			for (int j = 0; j < width; ++j, dst += 4) {
 				// Output BGRA
 				dst[0] = dst[1] = dst[2] = 0xFF;
-				dst[3] = src[x];
+				dst[3] = src[j];
 			}
 
-			dst += pitch - width * 4;
+			dst += (surface.getWidth() - width) * 4;
 			src += srcPitch;
 		}
 		break;
