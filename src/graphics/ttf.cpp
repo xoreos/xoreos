@@ -147,10 +147,11 @@ bool TTFRenderer::hasChar(uint32 ch) const {
 int TTFRenderer::getCharWidth(uint32 ch) const {
 	FT_UInt slot = FT_Get_Char_Index(_face, ch);
 	if (!slot)
-		throw Common::Exception("TTFRenderer: Font does not contain glyph %x", ch);
+		throw Common::Exception("TTFRenderer: Font does not contain glyph 0x%X", ch);
 
-	if (FT_Load_Glyph(_face, slot, FT_LOAD_DEFAULT))
-		throw Common::Exception("TTFRenderer: Could not load glyph %x", ch);
+	int error;
+	if ((error = FT_Load_Glyph(_face, slot, FT_LOAD_DEFAULT)))
+		throw Common::Exception("TTFRenderer: Could not load glyph 0x%X: 0x%X", ch, error);
 
 	int advance, yOffset, xMin;
 	getFaceMetrics(advance, yOffset, xMin);
@@ -161,16 +162,17 @@ int TTFRenderer::getCharWidth(uint32 ch) const {
 void TTFRenderer::drawCharacter(uint32 ch, Surface &surface, int x, int y) {
 	FT_UInt slot = FT_Get_Char_Index(_face, ch);
 	if (!slot)
-		throw Common::Exception("TTFRenderer: Font does not contain glyph %x", ch);
+		throw Common::Exception("TTFRenderer: Font does not contain glyph 0x%X", ch);
 
-	if (FT_Load_Glyph(_face, slot, FT_LOAD_DEFAULT))
-		throw Common::Exception("TTFRenderer: Could not load glyph %x", ch);
+	int error;
+	if ((error = FT_Load_Glyph(_face, slot, FT_LOAD_DEFAULT)))
+		throw Common::Exception("TTFRenderer: Could not load glyph 0x%X: 0x%X", ch, error);
 
-	if (FT_Render_Glyph(_face->glyph, FT_RENDER_MODE_NORMAL))
-		throw Common::Exception("TTFRenderer: Could not render glyph %x", ch);
+	if ((error = FT_Render_Glyph(_face->glyph, FT_RENDER_MODE_NORMAL)))
+		throw Common::Exception("TTFRenderer: Could not render glyph 0x%X: 0x%X", ch, error);
 
 	if (_face->glyph->format != FT_GLYPH_FORMAT_BITMAP)
-		throw Common::Exception("TTFRenderer: Glyph %x is no bitmap", ch);
+		throw Common::Exception("TTFRenderer: Glyph 0x%X is no bitmap", ch);
 
 	int advance, yOffset, xMin;
 	getFaceMetrics(advance, yOffset, xMin);
