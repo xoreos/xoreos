@@ -54,6 +54,7 @@ class Texture;
 
 class TTFFont : public Graphics::Font {
 public:
+	TTFFont(Common::SeekableReadStream *ttf, int height);
 	TTFFont(const Common::UString &name, int height);
 	~TTFFont();
 
@@ -103,6 +104,8 @@ private:
 
 	uint32 _height;
 
+
+	void load(Common::SeekableReadStream *ttf, int height);
 
 	void rebuildPages();
 	void addChar(uint32 c);

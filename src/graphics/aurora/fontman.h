@@ -45,6 +45,9 @@ class Font;
 
 namespace Aurora {
 
+/** Identifier used for the monospaced system font. */
+extern const char *kSystemFontMono;
+
 /** The format of a font. */
 enum FontFormat {
 	kFontFormatUnknown = 0, ///< Unknown font format.

@@ -28,6 +28,7 @@
  */
 
 #include "common/error.h"
+#include "common/systemfonts.h"
 
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/texturefont.h"
@@ -39,6 +40,8 @@ DECLARE_SINGLETON(Graphics::Aurora::FontManager)
 namespace Graphics {
 
 namespace Aurora {
+
+const char *kSystemFontMono = "_eosSystemFontMono";
 
 ManagedFont::ManagedFont(Font *f) {
 	referenceCount = 0;
@@ -177,6 +180,9 @@ void FontManager::release(FontHandle &handle) {
 
 ManagedFont *FontManager::createFont(FontFormat format,
 		const Common::UString &name, int height) {
+
+	if (name == kSystemFontMono)
+		return new ManagedFont(new TTFFont(Common::getSystemFontMono(), height));
 
 	if (format == kFontFormatUnknown)
 		throw Common::Exception("Font format unknown (%s)", name.c_str());

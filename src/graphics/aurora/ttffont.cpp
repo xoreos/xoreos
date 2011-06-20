@@ -66,13 +66,28 @@ void TTFFont::Page::rebuild() {
 }
 
 
+TTFFont::TTFFont(Common::SeekableReadStream *ttf, int height) : _ttf(0) {
+	load(ttf, height);
+}
+
 TTFFont::TTFFont(const Common::UString &name, int height) : _ttf(0) {
 	Common::SeekableReadStream *ttf = ResMan.getResource(name, ::Aurora::kFileTypeTTF);
 	if (!ttf)
 		throw Common::Exception("No such font \"%s\"", name.c_str());
 
+	load(ttf, height);
+}
+
+TTFFont::~TTFFont() {
+	for (std::vector<Page *>::iterator p = _pages.begin(); p != _pages.end(); ++p)
+		delete *p;
+
+	delete _ttf;
+}
+
+void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
 	try {
-		_ttf = new TTFRenderer(*ttf, height);
+	_ttf = new TTFRenderer(*ttf, height);
 	} catch (...) {
 		delete ttf;
 		throw;
@@ -89,13 +104,6 @@ TTFFont::TTFFont(const Common::UString &name, int height) : _ttf(0) {
 		addChar(i);
 
 	rebuildPages();
-}
-
-TTFFont::~TTFFont() {
-	for (std::vector<Page *>::iterator p = _pages.begin(); p != _pages.end(); ++p)
-		delete *p;
-
-	delete _ttf;
 }
 
 float TTFFont::getWidth(uint32 c) const {
