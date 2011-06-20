@@ -86,6 +86,13 @@ Bink
    License (LGPL) version 2.1 or later. Many thanks to Kostya Shishkov
    (<http://codecs.multimedia.cx/>) for doing the hard work.
 
+DejaVu Sans Mono Bold
+*********************
+   eos includes DejaVu Sans Mono Bold (<http://dejavu-fonts.org/>) as a
+   monospaced system font. The DejaVu font family is based on the Vera Fonts
+   (<http://gnome.org/fonts/>), distributed under the Bitstream Vera Fonts
+   license (<http://dejavu-fonts.org/wiki/License>).
+
 ScummVM code
 ************
    eos uses some ScummVM (<http://scummvm.org/>) code, most prominently the

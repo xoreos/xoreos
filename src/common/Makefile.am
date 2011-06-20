@@ -39,7 +39,8 @@ noinst_HEADERS = system.h \
                  configman.h \
                  foxpro.h \
                  zipfile.h \
-                 pe_exe.h
+                 pe_exe.h \
+                 systemfonts.h
 
 libcommon_la_SOURCES = maths.cpp \
                        fft.cpp \
@@ -71,4 +72,5 @@ libcommon_la_SOURCES = maths.cpp \
                        configman.cpp \
                        foxpro.cpp \
                        zipfile.cpp \
-                       pe_exe.cpp
+                       pe_exe.cpp \
+                       systemfonts.cpp
