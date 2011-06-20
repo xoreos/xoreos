@@ -108,8 +108,12 @@ void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
 
 float TTFFont::getWidth(uint32 c) const {
 	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
-	if (cC == _chars.end())
-		return 0.0;
+	if (cC == _chars.end()) {
+		if (c == 'm')
+			return 0.0;
+
+		return getWidth('m');
+	}
 
 	return cC->second.width;
 }
@@ -121,7 +125,7 @@ float TTFFont::getHeight() const {
 void TTFFont::drawMissing() const {
 	TextureMan.set();
 
-	float width = getWidth('m') - 1.0;
+	float width = MAX<float>(1.0, getWidth('m') - 1.0);
 
 	glBegin(GL_QUADS);
 		glVertex2f(0.0  ,     0.0);
