@@ -42,6 +42,8 @@ GameThread::GameThread() : _game(0) {
 }
 
 GameThread::~GameThread() {
+	destroyThread();
+
 	delete _game;
 }
 
