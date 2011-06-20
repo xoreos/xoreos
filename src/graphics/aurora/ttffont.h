@@ -61,8 +61,6 @@ public:
 	float getWidth (uint32 c) const;
 	float getHeight()         const;
 
-	float getLineSpacing() const;
-
 	void draw(uint32 c) const;
 
 	void buildChars(const Common::UString &str);

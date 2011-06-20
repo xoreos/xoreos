@@ -118,10 +118,6 @@ float TTFFont::getHeight() const {
 	return _height;
 }
 
-float TTFFont::getLineSpacing() const {
-	return 1.0;
-}
-
 void TTFFont::drawMissing() const {
 	TextureMan.set();
 
