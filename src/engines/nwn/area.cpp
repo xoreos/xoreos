@@ -99,7 +99,12 @@ Common::UString Area::getName(const Common::UString &resRef) {
 		Aurora::LocString name;
 		are.getTopLevel().getLocString("Name", name);
 
-		return name.getString();
+		Common::UString str = name.getString();
+		if (!str.empty() && (*--str.end() == '\n'))
+			str.erase(--str.end());
+
+		return str;
+
 	} catch (...) {
 	}
 
@@ -260,7 +265,10 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 	Aurora::LocString name;
 	are.getLocString("Name", name);
 
-	_name        = name.getString();
+	_name = name.getString();
+	if (!_name.empty() && (*--_name.end() == '\n'))
+		_name.erase(--_name.end());
+
 	_displayName = createDisplayName(_name);
 
 	// Tiles
