@@ -60,6 +60,9 @@ public:
 	/** Return the height this string would take. */
 	float getHeight(const Common::UString &text) const;
 
+	/** Build all necessary characters to display this string. */
+	virtual void buildChars(const Common::UString &str);
+
 	/** Draw this character. */
 	virtual void draw(uint32 c) const = 0;
 

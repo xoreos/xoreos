@@ -79,7 +79,7 @@ struct FontHandle {
 	void clear();
 
 	const Common::UString &getFontName() const;
-	const Font &getFont() const;
+	Font &getFont() const;
 };
 
 /** The global Aurora font manager. */

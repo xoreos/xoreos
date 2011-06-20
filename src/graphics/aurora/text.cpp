@@ -56,7 +56,9 @@ void Text::set(const Common::UString &str) {
 
 	parseColors(str, _str, _colors);
 
-	const Font &font = _font.getFont();
+	Font &font = _font.getFont();
+
+	font.buildChars(str);
 
 	_lineCount = font.getLineCount(_str);
 
