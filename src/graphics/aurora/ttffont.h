@@ -100,8 +100,10 @@ private:
 	std::vector<Page *> _pages;
 	std::map<uint32, Char> _chars;
 
-	uint32 _height;
+	std::map<uint32, Char>::const_iterator _missingChar;
+	float _missingWidth;
 
+	uint32 _height;
 
 	void load(Common::SeekableReadStream *ttf, int height);
 

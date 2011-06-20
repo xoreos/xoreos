@@ -103,17 +103,31 @@ void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
 	for (uint32 i = 0; i < 128; i++)
 		addChar(i);
 
+	// Add the Unicode "replacement character" character
+	addChar(0xFFFD);
+	_missingChar = _chars.find(0xFFFD);
+
+	// Find an appropriate width for a "missing character" character
+	if (_missingChar == _chars.end()) {
+		// This font doesn't have the Unicode "replacement character"
+
+		// Try to find the width of an m. Alternatively, take half of a line's height.
+		std::map<uint32, Char>::const_iterator m = _chars.find('m');
+		if (m != _chars.end())
+			_missingWidth = m->second.width;
+		else
+			_missingWidth = MAX<float>(2.0, _height / 2);
+
+	} else
+		_missingWidth = _missingChar->second.width;
+
 	rebuildPages();
 }
 
 float TTFFont::getWidth(uint32 c) const {
 	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
-	if (cC == _chars.end()) {
-		if (c == 'm')
-			return 0.0;
-
-		return getWidth('m');
-	}
+	if (cC == _chars.end())
+		return _missingWidth;
 
 	return cC->second.width;
 }
@@ -125,7 +139,7 @@ float TTFFont::getHeight() const {
 void TTFFont::drawMissing() const {
 	TextureMan.set();
 
-	float width = MAX<float>(1.0, getWidth('m') - 1.0);
+	const float width = _missingWidth - 1.0;
 
 	glBegin(GL_QUADS);
 		glVertex2f(0.0  ,     0.0);
@@ -140,11 +154,18 @@ void TTFFont::drawMissing() const {
 void TTFFont::draw(uint32 c) const {
 	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
 	if (cC == _chars.end()) {
-		drawMissing();
-		return;
+		cC = _missingChar;
+
+		if (cC == _chars.end()) {
+			drawMissing();
+			return;
+		}
 	}
 
-	TextureMan.set(_pages[cC->second.page]->texture);
+	uint page = cC->second.page;
+	assert(page < _pages.size());
+
+	TextureMan.set(_pages[page]->texture);
 
 	glBegin(GL_QUADS);
 	for (int i = 0; i < 4; i++) {
