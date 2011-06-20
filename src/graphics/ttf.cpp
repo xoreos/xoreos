@@ -138,6 +138,10 @@ void TTFRenderer::getFaceMetrics(int &advance, int &yOffset, int &xMin) const {
 	}
 }
 
+bool TTFRenderer::hasChar(uint32 ch) const {
+	return FT_Get_Char_Index(_face, ch) != 0;
+}
+
 int TTFRenderer::getCharWidth(uint32 ch) const {
 	FT_UInt slot = FT_Get_Char_Index(_face, ch);
 	if (!slot)

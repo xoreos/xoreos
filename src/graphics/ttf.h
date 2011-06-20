@@ -50,6 +50,9 @@ public:
 	/** Return the max width of a character in pixels. */
 	int getMaxWidth() const;
 
+	/** Does the font have the specified character? */
+	bool hasChar(uint32 ch) const;
+
 	/** Return the width of a specific character in pixels. */
 	int getCharWidth(uint32 ch) const;
 
