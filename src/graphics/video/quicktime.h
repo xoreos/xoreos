@@ -70,26 +70,71 @@ private:
 	// This is the file handle from which data is read from. It can be the actual file handle or a decompressed stream.
 	Common::SeekableReadStream *_fd;
 
-	struct MOVatom {
+	struct Atom {
 		uint32 type;
 		uint32 offset;
 		uint32 size;
 	};
 
 	struct ParseTable {
-		int (QuickTimeDecoder::*func)(MOVatom atom);
+		int (QuickTimeDecoder::*func)(Atom atom);
 		uint32 type;
 	};
 
-	struct MOVstts {
+	struct TimeToSampleEntry {
 		int count;
 		int duration;
 	};
 
-	struct MOVstsc {
+	struct SampleToChunkEntry {
 		uint32 first;
 		uint32 count;
 		uint32 id;
+	};
+
+	struct Track;
+
+	class SampleDesc {
+	public:
+		SampleDesc(Track *parentTrack, uint32 codecTag);
+		virtual ~SampleDesc() {}
+
+		uint32 getCodecTag() const { return _codecTag; }
+
+	protected:
+		Track *_parentTrack;
+		uint32 _codecTag;
+	};
+
+	class AudioSampleDesc : public SampleDesc {
+	public:
+		AudioSampleDesc(Track *parentTrack, uint32 codecTag);
+
+		bool isAudioCodecSupported() const;
+		uint32 getAudioChunkSampleCount(uint chunk) const;
+		Sound::AudioStream *createAudioStream(Common::SeekableReadStream *stream) const;
+
+		// TODO: Make private in the long run
+		uint16 _bitsPerSample;
+		uint16 _channels;
+		uint32 _sampleRate;
+		uint32 _samplesPerFrame;
+		uint32 _bytesPerFrame;
+	};
+
+	class VideoSampleDesc : public SampleDesc {
+	public:
+		VideoSampleDesc(Track *parentTrack, uint32 codecTag);
+		~VideoSampleDesc();
+
+		void initCodec();
+
+		// TODO: Make private in the long run
+		uint16 _bitsPerSample;
+		char _codecName[32];
+		uint16 _colorTableId;
+		byte *_palette;
+		Codec *_videoCodec;
 	};
 
 	struct STSDEntry {
@@ -118,86 +163,82 @@ private:
 		CODEC_TYPE_AUDIO
 	};
 
-	struct MOVStreamContext {
-		MOVStreamContext();
-		~MOVStreamContext();
+	struct Track {
+		Track();
+		~Track();
 
-		uint32 chunk_count;
-		uint32 *chunk_offsets;
-		int stts_count;
-		MOVstts *stts_data;
-		int edit_count; /* number of 'edit' (elst atom) */
-		uint32 sample_to_chunk_sz;
-		MOVstsc *sample_to_chunk;
-		uint32 sample_size;
-		uint32 sample_count;
-		uint32 *sample_sizes;
-		uint32 keyframe_count;
+		uint32 chunkCount;
+		uint32 *chunkOffsets;
+		int timeToSampleCount;
+		TimeToSampleEntry *timeToSample;
+		uint32 sampleToChunkCount;
+		SampleToChunkEntry *sampleToChunk;
+		uint32 sampleSize;
+		uint32 sampleCount;
+		uint32 *sampleSizes;
+		uint32 keyframeCount;
 		uint32 *keyframes;
-		int32 time_scale;
-		int time_rate;
+		int32 timeScale;
 
 		uint16 width;
 		uint16 height;
-		CodecType codec_type;
+		CodecType codecType;
 
-		uint32 stsdEntryCount;
-		STSDEntry *stsdEntries;
+		std::vector<SampleDesc *> sampleDescs;
 
-		Common::SeekableReadStream *extradata;
+		Common::SeekableReadStream *extraData;
 
-		uint32 nb_frames;
+		uint32 frameCount;
 		uint32 duration;
-		uint32 start_time;
+		uint32 startTime;
 
 		byte objectTypeMP4;
 	};
 
+	SampleDesc *readSampleDesc(Track *track, uint32 format);
+
 	const ParseTable *_parseTable;
 	bool _foundMOOV;
 	uint32 _timeScale;
-	uint32 _numStreams;
-	MOVStreamContext *_streams[20];
+	std::vector<Track *> _tracks;
 
-	uint32 _startTime;
 	int32 _curFrame;
+	uint32 _startTime;
 
 	void initParseTable();
-	Sound::AudioStream *createAudioStream(Common::SeekableReadStream *stream);
-	bool checkAudioCodecSupport(uint32 tag);
-	Common::SeekableReadStream *getNextFramePacket(uint32 &descId);
-	uint32 getFrameDuration();
 	void init();
 
+	bool isOldDemuxing() const;
+	void queueNextAudioChunk();
 	void updateAudioBuffer();
-	void readNextAudioChunk();
-	uint32 getAudioChunkSampleCount(uint chunk);
-	int8 _audioStreamIndex;
+	int _audioTrackIndex;
 	uint _curAudioChunk;
 
 	Codec *createCodec(uint32 codecTag, byte bitsPerPixel);
 	Codec *findDefaultVideoCodec() const;
 	uint32 _nextFrameStartTime;
-	int8 _videoStreamIndex;
+	int _videoTrackIndex;
+	Common::SeekableReadStream *getNextFramePacket(uint32 &descId);
+	uint32 getFrameDuration();
 
 	uint32 getElapsedTime() const;
 	uint32 getTimeToNextFrame() const;
 
-	int readDefault(MOVatom atom);
-	int readLeaf(MOVatom atom);
-	int readELST(MOVatom atom);
-	int readHDLR(MOVatom atom);
-	int readMDHD(MOVatom atom);
-	int readMOOV(MOVatom atom);
-	int readMVHD(MOVatom atom);
-	int readTRAK(MOVatom atom);
-	int readSTCO(MOVatom atom);
-	int readSTSC(MOVatom atom);
-	int readSTSD(MOVatom atom);
-	int readSTSS(MOVatom atom);
-	int readSTSZ(MOVatom atom);
-	int readSTTS(MOVatom atom);
-	int readESDS(MOVatom atom);
+	int readDefault(Atom atom);
+	int readLeaf(Atom atom);
+	int readELST(Atom atom);
+	int readHDLR(Atom atom);
+	int readMDHD(Atom atom);
+	int readMOOV(Atom atom);
+	int readMVHD(Atom atom);
+	int readTRAK(Atom atom);
+	int readSTCO(Atom atom);
+	int readSTSC(Atom atom);
+	int readSTSD(Atom atom);
+	int readSTSS(Atom atom);
+	int readSTSZ(Atom atom);
+	int readSTTS(Atom atom);
+	int readESDS(Atom atom);
 };
 
 } // End of namespace Video
