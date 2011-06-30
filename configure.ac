@@ -92,6 +92,16 @@ VORBIS_LIBS="-lvorbisfile"
 OGG_CFLAGS=""
 OGG_LIBS="-logg"
 
+dnl Xvid
+AC_CHECK_HEADER("xvid.h", , nolibxvid=1)
+
+if test -n "$nolibxvid"; then
+	AC_MSG_ERROR([libxvidcore is required and could not be found])
+fi
+
+XVID_CFLAGS=""
+XVID_LIBS="-lxvidcore"
+
 dnl zlib
 AC_CHECK_HEADER("zlib.h", , nozlib=1)
 
@@ -197,6 +207,9 @@ AC_SUBST(OGG_LIBS)
 
 AC_SUBST(VORBIS_CFLAGS)
 AC_SUBST(VORBIS_LIBS)
+
+AC_SUBST(XVID_CFLAGS)
+AC_SUBST(XVID_LIBS)
 
 AC_SUBST(Z_CFLAGS)
 AC_SUBST(Z_LIBS)
