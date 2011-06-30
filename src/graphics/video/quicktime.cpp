@@ -37,16 +37,19 @@
 
 #include "common/error.h"
 #include "common/stream.h"
-#include "events/events.h"
+
 #include "graphics/video/quicktime.h"
+
 #include "sound/audiostream.h"
+
+#include "events/events.h"
 
 // Audio codecs
 #include "sound/decoders/adpcm.h"
 #include "sound/decoders/pcm.h"
 
 // Video codecs
-// (None yet :P)
+#include "graphics/video/codec/h263.h"
 
 namespace Graphics {
 
@@ -122,9 +125,7 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDe
 	for (uint32 i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
 		((VideoSampleDesc *)_tracks[_videoTrackIndex]->sampleDescs[i])->initCodec();
 
-	_width = _tracks[_videoTrackIndex]->width;
-	_height = _tracks[_videoTrackIndex]->height;
-	// TODO: Pitch
+	initVideo(_tracks[_videoTrackIndex]->width, _tracks[_videoTrackIndex]->height);
 }
 
 QuickTimeDecoder::~QuickTimeDecoder() {
@@ -281,22 +282,21 @@ void QuickTimeDecoder::processData() {
 	uint32 descId;
 	Common::SeekableReadStream *frameData = getNextFramePacket(descId);
 
-	if (!frameData || !descId || descId > _tracks[_videoTrackIndex]->sampleDescs.size())
+	if (!frameData || !descId || descId > _tracks[_videoTrackIndex]->sampleDescs.size()) {
+		delete frameData;
 		return;
+	}
 
 	// Find which video description entry we want
 	VideoSampleDesc *entry = (VideoSampleDesc *)_tracks[_videoTrackIndex]->sampleDescs[descId - 1];
 
 	if (entry->_videoCodec) {
-		// TODO: Lots
-		// Like with _needCopy
-		/*
-		const Graphics::Surface *frame = entry->videoCodec->decodeImage(frameData);
-		delete frameData;
+		assert(_surface);
 
-		return frame;
-		*/
+		entry->_videoCodec->decodeFrame(*_surface, *frameData);
 	}
+
+	delete frameData;
 }
 
 uint32 QuickTimeDecoder::getElapsedTime() const {
@@ -756,7 +756,7 @@ int QuickTimeDecoder::readESDS(Atom atom) {
 
 Common::SeekableReadStream *QuickTimeDecoder::getNextFramePacket(uint32 &descId) {
 	if (_videoTrackIndex < 0)
-		return NULL;
+		return 0;
 
 	// First, we have to track down which chunk holds the sample and which sample in the chunk contains the frame we are looking for.
 	int32 totalSampleCount = 0;
@@ -785,7 +785,7 @@ Common::SeekableReadStream *QuickTimeDecoder::getNextFramePacket(uint32 &descId)
 
 	if (actualChunk < 0) {
 		warning("Could not find data for frame %d", _curFrame);
-		return NULL;
+		return 0;
 	}
 
 	// Next seek to that frame
@@ -1026,19 +1026,23 @@ QuickTimeDecoder::VideoSampleDesc::~VideoSampleDesc() {
 void QuickTimeDecoder::VideoSampleDesc::initCodec() {
 	if (_codecTag == MKID_BE('mp4v')) {
 		Common::UString videoType;
-	
+
 		// Parse the object type
 		switch (_parentTrack->objectTypeMP4) {
 		case 0x20:
 			videoType = "h.263";
+
+			_videoCodec = new H263Codec(_parentTrack->width, _parentTrack->height);
 			break;
+
 		default:
 			videoType = "Unknown";
 			break;
 		}
 
-		// TODO: MPEG-4 Video
-		warning("MPEG-4 Video (%s) not yet supported", videoType.c_str());
+		if (!_videoCodec)
+			warning("MPEG-4 Video (%s) not yet supported", videoType.c_str());
+
 	} else if (_codecTag == MKID_BE('SVQ3')) {
 		// TODO: Sorenson Video 3
 		warning("Sorenson Video 3 not yet supported");

@@ -1,0 +1,53 @@
+/* eos - A reimplementation of BioWare's Aurora engine
+ *
+ * eos is the legal property of its developers, whose names can be
+ * found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ *
+ * The Infinity, Aurora, Odyssey and Eclipse engines, Copyright (c) BioWare corp.
+ * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
+ */
+
+/** @file graphics/video/codec/h263.h
+ *  h.263 video codec.
+ */
+
+#ifndef GRAPHICS_VIDEO_H263_H
+#define GRAPHICS_VIDEO_H263_H
+
+#include "common/types.h"
+
+#include "graphics/video/codec/codec.h"
+
+namespace Graphics {
+
+class H263Codec : public Codec {
+public:
+	H263Codec(uint32 width, uint32 height);
+	~H263Codec();
+
+	void decodeFrame(Surface &surface, Common::SeekableReadStream &dataStream);
+
+private:
+	uint32 _width;
+	uint32 _height;
+};
+
+} // End of namespace Graphics
+
+#endif // GRAPHICS_VIDEO_H263_H

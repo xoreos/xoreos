@@ -8,7 +8,8 @@ noinst_HEADERS = decoder.h \
                  fader.h \
                  quicktime.h \
                  xmv.h \
-                 codec/codec.h
+                 codec/codec.h \
+                 codec/h263.h
 
 
 libvideo_la_SOURCES = decoder.cpp \
@@ -16,4 +17,5 @@ libvideo_la_SOURCES = decoder.cpp \
                       fader.cpp \
                       quicktime.cpp \
                       xmv.cpp \
-                      codec/codec.cpp
+                      codec/codec.cpp \
+                      codec/h263.cpp
