@@ -46,12 +46,7 @@ namespace Common {
 
 namespace Graphics {
 
-// This is the best class evar!!!!!
-// (Dummied until we actually support video codecs)
-class Codec {
-public:
-	Codec() {}
-};
+class Codec;
 
 /**
  * Decoder for QuickTime videos.

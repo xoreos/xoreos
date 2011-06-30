@@ -7,10 +7,13 @@ noinst_HEADERS = decoder.h \
                  binkdata.h \
                  fader.h \
                  quicktime.h \
-                 xmv.h
+                 xmv.h \
+                 codec/codec.h
+
 
 libvideo_la_SOURCES = decoder.cpp \
                       bink.cpp \
                       fader.cpp \
                       quicktime.cpp \
-                      xmv.cpp
+                      xmv.cpp \
+                      codec/codec.cpp
