@@ -44,8 +44,10 @@
 #include "common/dct.h"
 
 #include "graphics/util.h"
-
 #include "graphics/yuv_to_rgb.h"
+
+#include "graphics/images/surface.h"
+
 #include "graphics/video/bink.h"
 #include "graphics/video/binkdata.h"
 
@@ -263,8 +265,10 @@ void Bink::videoPacket(VideoFrame &video) {
 	}
 
 	// Convert the YUVA data we have to BGRA
-	assert(_data && _curPlanes[0] && _curPlanes[1] && _curPlanes[2] && _curPlanes[3]);
-	convertYUVA420ToRGBA(_data, _pitch * 4, _curPlanes[0], _curPlanes[1], _curPlanes[2], _curPlanes[3], _width, _height, _width, _width >> 1);
+	assert(_surface && _curPlanes[0] && _curPlanes[1] && _curPlanes[2] && _curPlanes[3]);
+	convertYUVA420ToRGBA(_surface->getData(), _surface->getWidth() * 4,
+			_curPlanes[0], _curPlanes[1], _curPlanes[2], _curPlanes[3],
+			_width, _height, _width, _width >> 1);
 
 	// And swap the planes with the reference planes
 	for (int i = 0; i < 4; i++)

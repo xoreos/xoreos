@@ -33,8 +33,11 @@
 #include "common/stream.h"
 #include "common/threads.h"
 
-#include "graphics/video/decoder.h"
 #include "graphics/graphics.h"
+
+#include "graphics/images/surface.h"
+
+#include "graphics/video/decoder.h"
 
 #include "sound/sound.h"
 #include "sound/audiostream.h"
@@ -43,8 +46,8 @@
 namespace Graphics {
 
 VideoDecoder::VideoDecoder() : _started(false), _finished(false), _needCopy(false),
-	_width(0), _height(0), _pitch(0), _data(0), _texture(0), _realWidth(0), _realHeight(0),
- 	_textureWidth(0.0), _textureHeight(0.0), _scale(kScaleNone),
+	_width(0), _height(0), _surface(0), _texture(0),
+	_textureWidth(0.0), _textureHeight(0.0), _scale(kScaleNone),
 	_sound(0), _soundRate(0), _soundFlags(0) {
 
 	// No data at the start, lock the mutex
@@ -60,32 +63,27 @@ VideoDecoder::~VideoDecoder() {
 	if (_texture != 0)
 		GfxMan.abandon(&_texture, 1);
 
-	delete[] _data;
+	delete _surface;
 
 	deinitSound();
 }
 
 void VideoDecoder::createData(uint32 width, uint32 height) {
-	if (_data)
-		throw Common::Exception("VideoDecoder::createData() called twice?!?");
-
 	_width  = width;
 	_height = height;
 
 	// The real texture dimensions. Have to be a power of 2
-	_realWidth  = NEXTPOWER2(width);
-	_realHeight = NEXTPOWER2(height);
+	int realWidth  = NEXTPOWER2(width);
+	int realHeight = NEXTPOWER2(height);
 
 	// Dimensions of the actual video part of texture
-	_textureWidth  = ((float) _width ) / ((float) _realWidth );
-	_textureHeight = ((float) _height) / ((float) _realHeight);
+	_textureWidth  = ((float) _width ) / ((float) realWidth );
+	_textureHeight = ((float) _height) / ((float) realHeight);
 
-	// The pitch of the data memory
-	_pitch = _realWidth;
+	delete _surface;
+	_surface = new Surface(realWidth, realHeight);
 
-	// Create and initialize the image data memory
-	_data = new byte[_realWidth * _realHeight * 4];
-	memset(_data, 0, _realWidth * _realHeight * 4);
+	_surface->fill(0, 0, 0, 0);
 
 	rebuild();
 }
@@ -149,7 +147,7 @@ uint32 VideoDecoder::getNumQueuedStreams() const {
 }
 
 void VideoDecoder::doRebuild() {
-	if (!_data)
+	if (!_surface)
 		return;
 
 	// Generate the texture ID
@@ -165,7 +163,8 @@ void VideoDecoder::doRebuild() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _realWidth, _realHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, _data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _surface->getWidth(), _surface->getHeight(),
+	             0, GL_BGRA, GL_UNSIGNED_BYTE, _surface->getData());
 }
 
 void VideoDecoder::doDestroy() {
@@ -187,14 +186,15 @@ void VideoDecoder::copyData() {
 	if (!isPlaying())
 		return;
 
-	if (!_data)
+	if (!_surface)
 		throw Common::Exception("No video data while trying to copy");
 	if (_texture == 0)
 		throw Common::Exception("No texture while trying to copy");
 
 	if (_needCopy && !_finished) {
 		glBindTexture(GL_TEXTURE_2D, _texture);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _realWidth, _realHeight, GL_BGRA, GL_UNSIGNED_BYTE, _data);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _surface->getWidth(), _surface->getHeight(),
+		                GL_BGRA, GL_UNSIGNED_BYTE, _surface->getData());
 
 		_needCopy = false;
 	}

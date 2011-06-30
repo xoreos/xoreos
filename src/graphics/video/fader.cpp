@@ -29,6 +29,8 @@
 
 #include "common/util.h"
 
+#include "graphics/images/surface.h"
+
 #include "graphics/video/fader.h"
 
 #include "events/events.h"
@@ -71,7 +73,7 @@ void Fader::processData() {
 		_c += 2;
 
 	// Fade from black to green
-	byte *data = _data;
+	byte *data = _surface->getData();
 	for (uint32 i = 0; i < _height; i++) {
 		byte *rowData = data;
 
@@ -82,21 +84,21 @@ void Fader::processData() {
 			rowData[3] = 255;
 		}
 
-		data += _pitch * 4;
+		data += _surface->getWidth() * 4;
 	}
 
 	// Keep a red square in the middle
 	int xPos = (_width  / 2) - 2;
 	int yPos = (_height / 2) - 2;
-	int dPos = (yPos * _pitch + xPos) * 4;
+	int dPos = (yPos * _surface->getWidth() + xPos) * 4;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			_data[dPos + j * 4 + 0] =   0;
-			_data[dPos + j * 4 + 1] =   0;
-			_data[dPos + j * 4 + 2] = 255;
-			_data[dPos + j * 4 + 3] = 255;
+			_surface->getData()[dPos + j * 4 + 0] =   0;
+			_surface->getData()[dPos + j * 4 + 1] =   0;
+			_surface->getData()[dPos + j * 4 + 2] = 255;
+			_surface->getData()[dPos + j * 4 + 3] = 255;
 		}
-		dPos += _pitch * 4;
+		dPos += _surface->getWidth() * 4;
 	}
 
 	_lastUpdate = curTime;

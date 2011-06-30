@@ -46,6 +46,8 @@ namespace Sound {
 
 namespace Graphics {
 
+class Surface;
+
 /** A generic interface for video decoders. */
 class VideoDecoder : public GLContainer {
 public:
@@ -83,15 +85,16 @@ protected:
 
 	uint32 _width;  ///< The video's width.
 	uint32 _height; ///< The video's height.
-	uint32 _pitch;  ///< The pitch of the video surface, in pixels.
 
-	byte *_data; ///< The video surface's data.
+	Surface *_surface; ///< The video's surface.
 
 	/** Create a data area for a video of these dimensions.
 	 *
 	 *  Since the data will be copied into the graphics card memory, the surface
-	 *  memory always has power-of-two dimensions. The actual surface width, in
-	 *  pixels, will be stored into _pitch.
+	 *  actualy dimensions will be rounded up to the next power of two values.
+	 *
+	 *  The surface's width and height will reflects that, while the video's
+	 *  width and height will be stored in _width and _height.
 	 *
 	 *  The surface's pixel format is always BGRA8888.
 	 */
@@ -114,9 +117,6 @@ protected:
 
 private:
 	TextureID _texture;
-
-	uint32 _realWidth;
-	uint32 _realHeight;
 
 	float _textureWidth;
 	float _textureHeight;
