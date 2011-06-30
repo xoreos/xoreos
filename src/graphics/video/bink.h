@@ -123,8 +123,11 @@ private:
 	struct AudioTrack {
 		uint16 flags;
 
-		uint16 sampleRate;
+		uint32 sampleRate;
 		uint8  channels;
+
+		uint32 outSampleRate;
+		uint8  outChannels;
 
 		AudioCodec codec;
 
@@ -297,10 +300,12 @@ private:
 
 	float getFloat(AudioTrack &audio);
 
+	/** Decode an audio block. */
+	void audioBlock    (AudioTrack &audio, int16 *out);
 	/** Decode a DCT'd audio block. */
-	void audioBlockDCT (AudioTrack &audio, int16 *out);
+	void audioBlockDCT (AudioTrack &audio);
 	/** Decode a RDFT'd audio block. */
-	void audioBlockRDFT(AudioTrack &audio, int16 *out);
+	void audioBlockRDFT(AudioTrack &audio);
 
 	void readAudioCoeffs(AudioTrack &audio, float *coeffs);
 

@@ -226,10 +226,7 @@ void Bink::audioPacket(AudioTrack &audio) {
 		int16 *out = new int16[outSize];
 		memset(out, 0, outSize * 2);
 
-		if      (audio.codec == kAudioCodecDCT)
-			audioBlockDCT(audio, out);
-		else if (audio.codec == kAudioCodecRDFT)
-			audioBlockRDFT(audio, out);
+		audioBlock(audio, out);
 
 		if (_disableAudio) {
 			delete[] out;
@@ -578,7 +575,7 @@ void Bink::load() {
 	if (_audioTrack < _audioTracks.size()) {
 		const AudioTrack &audio = _audioTracks[_audioTrack];
 
-		initSound(audio.sampleRate, audio.channels == 2, true);
+		initSound(audio.outSampleRate, audio.outChannels == 2, true);
 	}
 }
 
@@ -602,6 +599,20 @@ void Bink::initAudioTrack(AudioTrack &audio) {
 		frameLenBits = 11;
 
 	audio.frameLen = 1 << frameLenBits;
+
+	audio.outSampleRate = audio.sampleRate;
+	audio.outChannels   = audio.channels;
+
+	if (audio.codec  == kAudioCodecRDFT) {
+		// RDFT audio already interleaves the samples correctly
+
+		if (audio.channels == 2)
+			frameLenBits++;
+
+		audio.sampleRate *= audio.channels;
+		audio.frameLen   *= audio.channels;
+		audio.channels    = 1;
+	}
 
 	audio.overlapLen = audio.frameLen / 16;
 	audio.blockSize  = (audio.frameLen - audio.overlapLen) * audio.channels;
@@ -627,7 +638,8 @@ void Bink::initAudioTrack(AudioTrack &audio) {
 	for (uint8 i = 0; i < audio.channels; i++)
 		audio.coeffsPtr[i] = audio.coeffs + i * audio.frameLen;
 
-	audio.codec    = ((audio.flags & kAudioFlagDCT   ) != 0) ? kAudioCodecDCT : kAudioCodecRDFT;
+	audio.codec = ((audio.flags & kAudioFlagDCT) != 0) ? kAudioCodecDCT : kAudioCodecRDFT;
+
 	if      (audio.codec == kAudioCodecRDFT)
 		audio.rdft = new Common::RDFT(frameLenBits, Common::RDFT::DFT_C2R);
 	else if (audio.codec == kAudioCodecDCT)
@@ -1362,21 +1374,11 @@ float Bink::getFloat(AudioTrack &audio) {
 	return f;
 }
 
-void Bink::audioBlockDCT(AudioTrack &audio, int16 *out) {
-	audio.bits->skip(2);
-
-	for (uint8 i = 0; i < audio.channels; i++) {
-		float *coeffs = audio.coeffsPtr[i];
-
-		readAudioCoeffs(audio, coeffs);
-
-		coeffs[0] /= 0.5;
-
-		audio.dct->calc(coeffs);
-
-		for (uint32 j = 0; j < audio.frameLen; j++)
-			coeffs[j] *= (audio.frameLen / 2.0);
-	}
+void Bink::audioBlock(AudioTrack &audio, int16 *out) {
+	if      (audio.codec == kAudioCodecDCT)
+		audioBlockDCT (audio);
+	else if (audio.codec == kAudioCodecRDFT)
+		audioBlockRDFT(audio);
 
 	for (uint32 i = 0; i < audio.channels; i++)
 		for (uint32 j = 0; j < audio.frameLen; j++)
@@ -1397,12 +1399,25 @@ void Bink::audioBlockDCT(AudioTrack &audio, int16 *out) {
 	audio.first = false;
 }
 
-void Bink::audioBlockRDFT(AudioTrack &audio, int16 *out) {
-	warning("TODO: audioBlockRDFT");
-	_disableAudio = true;
+void Bink::audioBlockDCT(AudioTrack &audio) {
+	audio.bits->skip(2);
 
-	return;
+	for (uint8 i = 0; i < audio.channels; i++) {
+		float *coeffs = audio.coeffsPtr[i];
 
+		readAudioCoeffs(audio, coeffs);
+
+		coeffs[0] /= 0.5;
+
+		audio.dct->calc(coeffs);
+
+		for (uint32 j = 0; j < audio.frameLen; j++)
+			coeffs[j] *= (audio.frameLen / 2.0);
+	}
+
+}
+
+void Bink::audioBlockRDFT(AudioTrack &audio) {
 	for (uint8 i = 0; i < audio.channels; i++) {
 		float *coeffs = audio.coeffsPtr[i];
 
