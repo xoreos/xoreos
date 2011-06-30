@@ -132,26 +132,6 @@ private:
 		Codec *_videoCodec;
 	};
 
-	struct STSDEntry {
-		STSDEntry();
-		~STSDEntry();
-
-		uint32 codecTag;
-		uint16 bitsPerSample;
-
-		// Video
-		char codecName[32];
-		uint16 colorTableId;
-		byte *palette;
-		Codec *videoCodec;
-
-		// Audio
-		uint16 channels;
-		uint32 sampleRate;
-		uint32 samplesPerFrame;
-		uint32 bytesPerFrame;
-	};
-
 	enum CodecType {
 		CODEC_TYPE_MOV_OTHER,
 		CODEC_TYPE_VIDEO,
@@ -201,7 +181,6 @@ private:
 	uint32 _startTime;
 
 	void initParseTable();
-	void init();
 
 	bool isOldDemuxing() const;
 	void queueNextAudioChunk();
@@ -209,7 +188,6 @@ private:
 	int _audioTrackIndex;
 	uint _curAudioChunk;
 
-	Codec *createCodec(uint32 codecTag, byte bitsPerPixel);
 	Codec *findDefaultVideoCodec() const;
 	uint32 _nextFrameStartTime;
 	int _videoTrackIndex;
