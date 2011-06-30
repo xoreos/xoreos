@@ -169,8 +169,20 @@ uint32 QuickTimeDecoder::getFrameDuration() {
 
 Codec *QuickTimeDecoder::createCodec(uint32 codecTag, byte bitsPerPixel) {
 	if (codecTag == MKID_BE('mp4v')) {
+		Common::UString videoType;
+	
+		// Parse the object type
+		switch (_streams[_videoStreamIndex]->objectTypeMP4) {
+		case 0x20:
+			videoType = "h.263";
+			break;
+		default:
+			videoType = "Unknown";
+			break;
+		}
+
 		// TODO: MPEG-4 Video
-		warning("MPEG-4 Video not yet supported");
+		warning("MPEG-4 Video (%s) not yet supported", videoType.c_str());
 	} else if (codecTag == MKID_BE('SVQ3')) {
 		// TODO: Sorenson Video 3
 		warning("Sorenson Video 3 not yet supported");
@@ -280,6 +292,7 @@ void QuickTimeDecoder::initParseTable() {
 		{ &QuickTimeDecoder::readLeaf,    MKID_BE('udta') },
 		{ &QuickTimeDecoder::readLeaf,    MKID_BE('vmhd') },
 		{ &QuickTimeDecoder::readDefault, MKID_BE('wave') },
+		{ &QuickTimeDecoder::readESDS,    MKID_BE('esds') },
 		{ 0, 0 }
 	};
 
@@ -719,6 +732,66 @@ int QuickTimeDecoder::readSTCO(MOVatom atom) {
 	return 0;
 }
 
+enum {
+	kMP4IODescTag          = 2,
+	kMP4ESDescTag          = 3,
+	kMP4DecConfigDescTag   = 4,
+	kMP4DecSpecificDescTag = 5
+};
+
+static int readMP4DescLength(Common::SeekableReadStream *stream) {
+	int length = 0;
+	int count = 4;
+
+	while (count--) {
+		byte c = stream->readByte();
+		length = (length << 7) | (c & 0x7f);
+
+		if (!(c & 0x80))
+			break;
+	}
+
+	return length;
+}
+
+static void readMP4Desc(Common::SeekableReadStream *stream, byte &tag, int &length) {
+	tag = stream->readByte();
+	length = readMP4DescLength(stream);
+}
+
+int QuickTimeDecoder::readESDS(MOVatom atom) {
+	MOVStreamContext *st = _streams[_numStreams - 1];
+
+	_fd->readUint32BE(); // version + flags
+
+	byte tag;
+	int length;
+
+	readMP4Desc(_fd, tag, length);
+	_fd->readUint16BE(); // id
+	if (tag == kMP4ESDescTag)
+		_fd->readByte(); // priority
+
+	// Check if we've got the Config MPEG-4 header
+	readMP4Desc(_fd, tag, length);
+	if (tag != kMP4DecConfigDescTag)
+		return 0;
+
+	st->objectTypeMP4 = _fd->readByte();
+	_fd->readByte();                      // stream type
+	_fd->readUint16BE(); _fd->readByte(); // buffer size
+	_fd->readUint32BE();                  // max bitrate
+	_fd->readUint32BE();                  // avg bitrate
+
+	// Check if we've got the Specific MPEG-4 header
+	readMP4Desc(_fd, tag, length);
+	if (tag != kMP4DecSpecificDescTag)
+		return 0;
+
+	st->extradata = _fd->readStream(length);
+
+	return 0;
+}
 
 Common::SeekableReadStream *QuickTimeDecoder::getNextFramePacket(uint32 &descId) {
 	if (_videoStreamIndex < 0)
@@ -779,7 +852,21 @@ bool QuickTimeDecoder::checkAudioCodecSupport(uint32 tag) {
 	if (tag == MKID_BE('twos') || tag == MKID_BE('raw ') || tag == MKID_BE('ima4'))
 		return true;
 
-	warning("Audio Codec Not Supported: \'%s\'", tag2str(tag));
+	if (tag == MKID_BE('mp4a')) {
+		Common::UString audioType;
+
+		switch (_streams[_audioStreamIndex]->objectTypeMP4) {
+		case 0x40:
+			audioType = "AAC";
+			break;
+		default:
+			audioType = "Unknown";
+			break;
+		}
+
+		warning("No MPEG-4 audio (%s) support", audioType.c_str());
+	} else
+		warning("Audio Codec Not Supported: \'%s\'", tag2str(tag));
 
 	return false;
 }

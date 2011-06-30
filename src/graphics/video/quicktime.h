@@ -149,6 +149,8 @@ private:
 		uint32 nb_frames;
 		uint32 duration;
 		uint32 start_time;
+
+		byte objectTypeMP4;
 	};
 
 	const ParseTable *_parseTable;
@@ -195,6 +197,7 @@ private:
 	int readSTSS(MOVatom atom);
 	int readSTSZ(MOVatom atom);
 	int readSTTS(MOVatom atom);
+	int readESDS(MOVatom atom);
 };
 
 } // End of namespace Video
