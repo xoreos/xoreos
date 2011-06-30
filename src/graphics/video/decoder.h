@@ -88,17 +88,17 @@ protected:
 
 	Surface *_surface; ///< The video's surface.
 
-	/** Create a data area for a video of these dimensions.
+	/** Create a surface for video of these dimensions.
 	 *
-	 *  Since the data will be copied into the graphics card memory, the surface
-	 *  actualy dimensions will be rounded up to the next power of two values.
+	 *  Since the data will be copied into the graphics card memory, the surface's
+	 *  actual dimensions will be rounded up to the next power of two values.
 	 *
 	 *  The surface's width and height will reflects that, while the video's
 	 *  width and height will be stored in _width and _height.
 	 *
 	 *  The surface's pixel format is always BGRA8888.
 	 */
-	void createData(uint32 width, uint32 height);
+	void initVideo(uint32 width, uint32 height);
 
 	void initSound(uint16 rate, bool stereo, bool is16);
 	void deinitSound();

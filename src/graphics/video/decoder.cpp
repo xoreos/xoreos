@@ -68,7 +68,7 @@ VideoDecoder::~VideoDecoder() {
 	deinitSound();
 }
 
-void VideoDecoder::createData(uint32 width, uint32 height) {
+void VideoDecoder::initVideo(uint32 width, uint32 height) {
 	_width  = width;
 	_height = height;
 

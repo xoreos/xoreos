@@ -493,7 +493,7 @@ void Bink::load() {
 	uint32 width  = _bink->readUint32LE();
 	uint32 height = _bink->readUint32LE();
 
-	createData(width, height);
+	initVideo(width, height);
 
 	_fpsNum = _bink->readUint32LE();
 	_fpsDen = _bink->readUint32LE();
