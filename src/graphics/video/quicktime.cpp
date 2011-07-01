@@ -1035,6 +1035,8 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec(Surface &surface) {
 			videoType = "h.263";
 
 			_videoCodec = new H263Codec(_parentTrack->width, _parentTrack->height);
+			if (_parentTrack->extraData)
+				_videoCodec->decodeFrame(surface, *_parentTrack->extraData);
 			break;
 
 		default:
@@ -1051,9 +1053,6 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec(Surface &surface) {
 	} else {
 		warning("Unsupported codec \'%s\'", tag2str(_codecTag));
 	}
-
-	if (_videoCodec && _parentTrack->extraData)
-		_videoCodec->decodeFrame(surface, *_parentTrack->extraData);
 }
 
 } // End of namespace Video
