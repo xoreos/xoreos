@@ -242,4 +242,39 @@ void convertYUVA420ToRGBA(byte *dst, int dstPitch, const byte *ySrc, const byte 
 	}
 }
 
+void convertYUV420ToRGBA(byte *dst, int dstPitch, const byte *ySrc, const byte *uSrc, const byte *vSrc, int yWidth, int yHeight, int yPitch, int uvPitch) {
+	const YUVToRGBLookup *lookup = YUVToRGBMan.getLookup();
+
+	int halfHeight = yHeight >> 1;
+	int halfWidth = yWidth >> 1;
+
+	dst += dstPitch * (yHeight - 2);
+
+	for (int h = 0; h < halfHeight; h++) {
+		for (int w = 0; w < halfWidth; w++) {
+			register byte *L;
+
+			int16 cr_r  = lookup->_colorTab[*vSrc + 0 * 256];
+			int16 crb_g = lookup->_colorTab[*vSrc + 1 * 256] + lookup->_colorTab[*uSrc + 2 * 256];
+			int16 cb_b  = lookup->_colorTab[*uSrc + 3 * 256];
+			uSrc++;
+			vSrc++;
+
+			PUT_PIXEL(*ySrc, 0xFF, dst + dstPitch);
+			PUT_PIXEL(*(ySrc + yPitch), 0xFF, dst);
+			ySrc++;
+			dst += 4;
+			PUT_PIXEL(*ySrc, 0xFF, dst + dstPitch);
+			PUT_PIXEL(*(ySrc + yPitch), 0xFF, dst);
+			ySrc++;
+			dst += 4;
+		}
+
+		dst -= yWidth * 4 + dstPitch * 2;
+		ySrc += (yPitch << 1) - yWidth;
+		uSrc += uvPitch - halfWidth;
+		vSrc += uvPitch - halfWidth;
+	}
+}
+
 } // End of namespace Graphics
