@@ -27,20 +27,81 @@
  *  h.263 video codec.
  */
 
+#include <cstring>
+
+#include <xvid.h>
+
 #include "common/util.h"
+#include "common/stream.h"
+
+#include "graphics/yuv_to_rgb.h"
+
+#include "graphics/images/surface.h"
 
 #include "graphics/video/codec/h263.h"
 
 namespace Graphics {
 
 H263Codec::H263Codec(uint32 width, uint32 height) : _width(width), _height(height) {
+	xvid_gbl_init_t xvid_gbl_init;
+	memset(&xvid_gbl_init, 0, sizeof(xvid_gbl_init_t));
+	xvid_gbl_init.version = XVID_VERSION;
+	xvid_gbl_init.debug = 0;//XVID_DEBUG_ERROR | XVID_DEBUG_HEADER | XVID_DEBUG_STARTCODE;
+	xvid_global(0, XVID_GBL_INIT, &xvid_gbl_init, 0);
+
+	xvid_dec_create_t xvid_dec_create;
+	memset(&xvid_dec_create, 0, sizeof(xvid_dec_create_t));
+	xvid_dec_create.version = XVID_VERSION;
+	xvid_dec_create.width = width;
+	xvid_dec_create.height = height;
+	xvid_dec_create.num_threads = 1;
+	if (xvid_decore(0, XVID_DEC_CREATE, &xvid_dec_create, 0) != 0)
+		error("Could not initialize xvid decoder");
+
+	_decHandle = xvid_dec_create.handle;
 }
 
 H263Codec::~H263Codec() {
+	xvid_decore(_decHandle, XVID_DEC_DESTROY, 0, 0);
 }
 
 void H263Codec::decodeFrame(Surface &surface, Common::SeekableReadStream &dataStream) {
-	warning("H263Codec::decodeFrame()");
+	// NOTE: When asking libxvidcore to decode the video into BGRA, it fills the alpha
+	//       values with 0x00, rendering the output invisible (!).
+	//       Since we, surprise, actually want to see the video, we would have to pass
+	//       over the whole video data and fix-up the alpha values ourselves. Or
+	//       alternatively do the YUV->BGRA conversion ourselves. We chose the latter.
+
+	int dataSize = dataStream.size();
+	byte *data = new byte[dataSize];
+	dataStream.read(data, dataSize);
+
+	xvid_dec_frame_t xvid_dec_frame;
+	memset(&xvid_dec_frame, 0, sizeof(xvid_dec_frame_t));
+	xvid_dec_frame.version    = XVID_VERSION;
+	xvid_dec_frame.general    = XVID_DEBLOCKY | XVID_DEBLOCKUV | XVID_DERINGY | XVID_DERINGUV;
+	xvid_dec_frame.bitstream  = data;
+	xvid_dec_frame.length     = dataSize;
+	xvid_dec_frame.output.csp = XVID_CSP_INTERNAL;
+
+	xvid_dec_stats_t xvid_dec_stats;
+	memset(&xvid_dec_stats, 0, sizeof(xvid_dec_stats_t));
+	xvid_dec_stats.version = XVID_VERSION;
+
+	int c = xvid_decore(_decHandle, XVID_DEC_DECODE, &xvid_dec_frame, &xvid_dec_stats);
+	if ((dataSize - c) > 1)
+		warning("H263Codec::decodeFrame(): %d bytes left in frame", dataSize - c);
+
+	delete[] data;
+
+	if (xvid_dec_frame.output.plane[0] &&
+	    xvid_dec_frame.output.plane[1] &&
+	    xvid_dec_frame.output.plane[2])
+		convertYUV420ToRGBA(surface.getData(), surface.getWidth() * 4,
+				(const byte *) xvid_dec_frame.output.plane[0],
+				(const byte *) xvid_dec_frame.output.plane[1],
+				(const byte *) xvid_dec_frame.output.plane[2], _width, _height,
+				xvid_dec_frame.output.stride[0], xvid_dec_frame.output.stride[1]);
 }
 
 } // End of namespace Graphics

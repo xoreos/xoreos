@@ -46,6 +46,8 @@ public:
 private:
 	uint32 _width;
 	uint32 _height;
+
+	void *_decHandle;
 };
 
 } // End of namespace Graphics

@@ -37,6 +37,7 @@
 
 #include "common/error.h"
 #include "common/stream.h"
+#include "common/file.h"
 
 #include "graphics/video/quicktime.h"
 
@@ -121,11 +122,11 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDe
 	// Yeah, this wouldn't be a video if there's no video stream :P
 	assert(_videoTrackIndex >= 0);
 
-	// Initialize video, if present
-	for (uint32 i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
-		((VideoSampleDesc *)_tracks[_videoTrackIndex]->sampleDescs[i])->initCodec();
-
 	initVideo(_tracks[_videoTrackIndex]->width, _tracks[_videoTrackIndex]->height);
+
+	// Initialize video codec, if present
+	for (uint32 i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
+		((VideoSampleDesc *) _tracks[_videoTrackIndex]->sampleDescs[i])->initCodec(*_surface);
 }
 
 QuickTimeDecoder::~QuickTimeDecoder() {
@@ -294,6 +295,7 @@ void QuickTimeDecoder::processData() {
 		assert(_surface);
 
 		entry->_videoCodec->decodeFrame(*_surface, *frameData);
+		_needCopy = true;
 	}
 
 	delete frameData;
@@ -1023,7 +1025,7 @@ QuickTimeDecoder::VideoSampleDesc::~VideoSampleDesc() {
 	delete _videoCodec;
 }
 
-void QuickTimeDecoder::VideoSampleDesc::initCodec() {
+void QuickTimeDecoder::VideoSampleDesc::initCodec(Surface &surface) {
 	if (_codecTag == MKID_BE('mp4v')) {
 		Common::UString videoType;
 
@@ -1049,6 +1051,9 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec() {
 	} else {
 		warning("Unsupported codec \'%s\'", tag2str(_codecTag));
 	}
+
+	if (_videoCodec && _parentTrack->extraData)
+		_videoCodec->decodeFrame(surface, *_parentTrack->extraData);
 }
 
 } // End of namespace Video

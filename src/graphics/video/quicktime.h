@@ -46,6 +46,7 @@ namespace Common {
 
 namespace Graphics {
 
+class Surface;
 class Codec;
 
 /**
@@ -122,7 +123,7 @@ private:
 		VideoSampleDesc(Track *parentTrack, uint32 codecTag);
 		~VideoSampleDesc();
 
-		void initCodec();
+		void initCodec(Surface &surface);
 
 		// TODO: Make private in the long run
 		uint16 _bitsPerSample;
