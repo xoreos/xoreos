@@ -24,6 +24,7 @@ Dependencies
 - MAD (>= 1.15.1b)
 - libogg (>= 1.2.0)
 - libvorbisfile (>= 1.3.1)
+- libfaad (>= 2.7)
 
 - libxvidcore (>= 1.2.2)
 
