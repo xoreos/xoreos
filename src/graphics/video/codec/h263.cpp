@@ -54,7 +54,6 @@ H263Codec::H263Codec(uint32 width, uint32 height) : _width(width), _height(heigh
 	xvid_dec_create.version = XVID_VERSION;
 	xvid_dec_create.width = width;
 	xvid_dec_create.height = height;
-	xvid_dec_create.num_threads = 1;
 	if (xvid_decore(0, XVID_DEC_CREATE, &xvid_dec_create, 0) != 0)
 		error("Could not initialize xvid decoder");
 
