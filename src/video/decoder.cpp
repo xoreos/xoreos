@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/decoder.cpp
+/** @file video/decoder.cpp
  *  Generic video decoder interface.
  */
 
@@ -37,15 +37,16 @@
 
 #include "graphics/images/surface.h"
 
-#include "graphics/video/decoder.h"
+#include "video/decoder.h"
 
 #include "sound/sound.h"
 #include "sound/audiostream.h"
 #include "sound/decoders/pcm.h"
 
-namespace Graphics {
+namespace Video {
 
-VideoDecoder::VideoDecoder() : _started(false), _finished(false), _needCopy(false),
+VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
+	_started(false), _finished(false), _needCopy(false),
 	_width(0), _height(0), _surface(0), _texture(0),
 	_textureWidth(0.0), _textureHeight(0.0), _scale(kScaleNone),
 	_sound(0), _soundRate(0), _soundFlags(0) {
@@ -53,12 +54,11 @@ VideoDecoder::VideoDecoder() : _started(false), _finished(false), _needCopy(fals
 	// No data at the start, lock the mutex
 	_canCopy.lock();
 
-	addToQueue(kQueueVideo);
+	show();
 }
 
 VideoDecoder::~VideoDecoder() {
-	removeFromQueue(kQueueGLContainer);
-	removeFromQueue(kQueueVideo);
+	deinit();
 
 	if (_texture != 0)
 		GfxMan.abandon(&_texture, 1);
@@ -66,6 +66,12 @@ VideoDecoder::~VideoDecoder() {
 	delete _surface;
 
 	deinitSound();
+}
+
+void VideoDecoder::deinit() {
+	hide();
+
+	GLContainer::removeFromQueue(Graphics::kQueueGLContainer);
 }
 
 void VideoDecoder::initVideo(uint32 width, uint32 height) {
@@ -81,7 +87,7 @@ void VideoDecoder::initVideo(uint32 width, uint32 height) {
 	_textureHeight = ((float) _height) / ((float) realHeight);
 
 	delete _surface;
-	_surface = new Surface(realWidth, realHeight);
+	_surface = new Graphics::Surface(realWidth, realHeight);
 
 	_surface->fill(0, 0, 0, 0);
 
@@ -257,7 +263,13 @@ void VideoDecoder::getQuadDimensions(float &width, float &height) const {
 	width  = screenHeight * ratio;
 }
 
-void VideoDecoder::render() {
+void VideoDecoder::calculateDistance() {
+}
+
+void VideoDecoder::render(Graphics::RenderPass pass) {
+	if (pass == Graphics::kRenderPassTransparent)
+		return;
+
 	if (!isPlaying())
 		return;
 
@@ -300,7 +312,7 @@ void VideoDecoder::abort() {
 	_canUpdate.unlock();
 	_canCopy.unlock();
 
-	removeFromQueue(kQueueVideo);
+	hide();
 }
 
-} // End of namespace Graphics
+} // End of namespace Video

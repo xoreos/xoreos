@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.common
 
-SUBDIRS = images video aurora
+SUBDIRS = images aurora
 
 noinst_LTLIBRARIES = libgraphics.la
 
@@ -36,4 +36,4 @@ libgraphics_la_SOURCES = graphics.cpp \
                          yuv_to_rgb.cpp \
                          ttf.cpp
 
-libgraphics_la_LIBADD = images/libimages.la video/libvideo.la aurora/libaurora.la ../../glew/libglew.la
+libgraphics_la_LIBADD = images/libimages.la aurora/libaurora.la ../../glew/libglew.la

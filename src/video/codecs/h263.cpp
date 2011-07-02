@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/codec/h263.cpp
+/** @file video/codecs/h263.cpp
  *  h.263 video codec.
  */
 
@@ -38,9 +38,9 @@
 
 #include "graphics/images/surface.h"
 
-#include "graphics/video/codec/h263.h"
+#include "video/codecs/h263.h"
 
-namespace Graphics {
+namespace Video {
 
 H263Codec::H263Codec(uint32 width, uint32 height) : _width(width), _height(height) {
 	xvid_gbl_init_t xvid_gbl_init;
@@ -64,7 +64,7 @@ H263Codec::~H263Codec() {
 	xvid_decore(_decHandle, XVID_DEC_DESTROY, 0, 0);
 }
 
-void H263Codec::decodeFrame(Surface &surface, Common::SeekableReadStream &dataStream) {
+void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream) {
 	// NOTE: When asking libxvidcore to decode the video into BGRA, it fills the alpha
 	//       values with 0x00, rendering the output invisible (!).
 	//       Since we, surprise, actually want to see the video, we would have to pass
@@ -96,11 +96,11 @@ void H263Codec::decodeFrame(Surface &surface, Common::SeekableReadStream &dataSt
 	if (xvid_dec_frame.output.plane[0] &&
 	    xvid_dec_frame.output.plane[1] &&
 	    xvid_dec_frame.output.plane[2])
-		convertYUV420ToRGBA(surface.getData(), surface.getWidth() * 4,
+		Graphics::convertYUV420ToRGBA(surface.getData(), surface.getWidth() * 4,
 				(const byte *) xvid_dec_frame.output.plane[0],
 				(const byte *) xvid_dec_frame.output.plane[1],
 				(const byte *) xvid_dec_frame.output.plane[2], _width, _height,
 				xvid_dec_frame.output.stride[0], xvid_dec_frame.output.stride[1]);
 }
 
-} // End of namespace Graphics
+} // End of namespace Video

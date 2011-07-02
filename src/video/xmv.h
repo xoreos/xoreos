@@ -23,18 +23,46 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/codec/codec.cpp
- *  Video codec base class.
+/** @file video/xmv.h
+ *  Decoding Microsoft Xbox XMV videos.
  */
 
-#include "graphics/video/codec/codec.h"
+#ifndef VIDEO_XMV_H
+#define VIDEO_XMV_H
 
-namespace Graphics {
+#include "video/decoder.h"
 
-Codec::Codec() {
+namespace Common {
+	class SeekableReadStream;
 }
 
-Codec::~Codec() {
-}
+namespace Video {
 
-} // End of namespace Graphics
+/** A decoder for Microsoft Xbox XMV videos. */
+class XboxMediaVideo : public VideoDecoder {
+public:
+	XboxMediaVideo(Common::SeekableReadStream *xmv);
+	~XboxMediaVideo();
+
+	bool hasTime() const;
+
+protected:
+	void processData();
+
+private:
+	Common::SeekableReadStream *_xmv;
+
+	/** Load an XMV file. */
+	void load();
+
+	/** Create a new audio stream to be queued. */
+	void queueAudioStream(Common::SeekableReadStream *stream);
+
+	uint16 _audioCompression;
+	uint16 _audioChannels;
+	uint32 _audioRate;
+};
+
+} // End of namespace Video
+
+#endif // VIDEO_XMV_H

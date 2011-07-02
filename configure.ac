@@ -238,10 +238,12 @@ AC_OUTPUT(utf8cpp/Makefile \
           src/common/Makefile \
           src/graphics/Makefile \
           src/graphics/images/Makefile \
-          src/graphics/video/Makefile \
           src/graphics/aurora/Makefile \
           src/sound/Makefile \
           src/sound/decoders/Makefile \
+          src/video/Makefile \
+          src/video/codecs/Makefile \
+          src/video/aurora/Makefile \
           src/events/Makefile \
           src/aurora/Makefile \
           src/aurora/nwscript/Makefile \

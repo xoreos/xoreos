@@ -23,46 +23,33 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/xmv.h
- *  Decoding Microsoft Xbox XMV videos.
+/** @file video/codecs/h263.h
+ *  h.263 video codec.
  */
 
-#ifndef GRAPHICS_VIDEO_XMV_H
-#define GRAPHICS_VIDEO_XMV_H
+#ifndef VIDEO_CODECS_H263_H
+#define VIDEO_CODECS_H263_H
 
-#include "graphics/video/decoder.h"
+#include "common/types.h"
 
-namespace Common {
-	class SeekableReadStream;
-}
+#include "video/codecs/codec.h"
 
-namespace Graphics {
+namespace Video {
 
-/** A decoder for Microsoft Xbox XMV videos. */
-class XboxMediaVideo : public VideoDecoder {
+class H263Codec : public Codec {
 public:
-	XboxMediaVideo(Common::SeekableReadStream *xmv);
-	~XboxMediaVideo();
+	H263Codec(uint32 width, uint32 height);
+	~H263Codec();
 
-	bool hasTime() const;
-
-protected:
-	void processData();
+	void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream);
 
 private:
-	Common::SeekableReadStream *_xmv;
+	uint32 _width;
+	uint32 _height;
 
-	/** Load an XMV file. */
-	void load();
-
-	/** Create a new audio stream to be queued. */
-	void queueAudioStream(Common::SeekableReadStream *stream);
-
-	uint16 _audioCompression;
-	uint16 _audioChannels;
-	uint32 _audioRate;
+	void *_decHandle;
 };
 
-} // End of namespace Graphics
+} // End of namespace Video
 
-#endif // GRAPHICS_VIDEO_XMV_H
+#endif // VIDEO_CODECS_H263_H

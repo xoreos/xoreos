@@ -23,35 +23,31 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/fader.h
- *  Testing implementation for the VideoDecoder interface.
+/** @file video/codecs/codec.h
+ *  Video codec base class.
  */
 
-#ifndef GRAPHICS_VIDEO_FADER_H
-#define GRAPHICS_VIDEO_FADER_H
+#ifndef VIDEO_CODECS_CODEC_H
+#define VIDEO_CODECS_CODEC_H
 
-#include "graphics/video/decoder.h"
+namespace Common {
+	class SeekableReadStream;
+}
 
 namespace Graphics {
+	class Surface;
+}
 
-/** A quick test fader "video". */
-class Fader : public VideoDecoder {
+namespace Video {
+
+class Codec {
 public:
-	Fader(uint32 width, uint32 height, int n);
-	~Fader();
+	Codec();
+	virtual ~Codec();
 
-	bool hasTime() const;
-
-protected:
-	void processData();
-
-private:
-	byte _c;
-	int _n;
-
-	uint32 _lastUpdate;
+	virtual void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &data) = 0;
 };
 
-} // End of namespace Graphics
+} // End of namespace Video
 
-#endif // GRAPHICS_VIDEO_FADER_H
+#endif // VIDEO_CODECS_CODEC_H

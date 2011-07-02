@@ -23,12 +23,12 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/binkdata.h
+/** @file video/binkdata.h
  *  Static data used for decoding RAD Game Tools' Bink videos.
  */
 
-#ifndef GRAPHICS_VIDEO_BINKDATA_H
-#define GRAPHICS_VIDEO_BINKDATA_H
+#ifndef VIDEO_BINKDATA_H
+#define VIDEO_BINKDATA_H
 
 #include "common/types.h"
 
@@ -578,4 +578,4 @@ static const uint32 binkInterQuant[16][64] = {
 },
 };
 
-#endif // GRAPHICS_VIDEO_BINKDATA_H
+#endif // VIDEO_BINKDATA_H

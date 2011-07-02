@@ -73,13 +73,15 @@ enum QueueType {
 	kQueueVisibleWorldObject       , ///< A visible object in 3D space.
 	kQueueGUIFrontObject           , ///< A GUI object.
 	kQueueVisibleGUIFrontObject    , ///< A visible GUI object.
-	kQueueVideo                    , ///< A currently playing video.
+	kQueueVideo                    , ///< A video.
+	kQueueVisibleVideo             , ///< A currently playing video.
 	kQueueGLContainer              , ///< An object containing OpenGL structures.
 	kQueueMAX                        ///< For range checks.
 };
 
 enum RenderableType {
-	kRenderableTypeObject   = 0,
+	kRenderableTypeVideo    = 0,
+	kRenderableTypeObject      ,
 	kRenderableTypeGUIFront
 };
 

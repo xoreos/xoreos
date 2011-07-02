@@ -45,13 +45,12 @@
 #include "graphics/cursor.h"
 #include "graphics/fpscounter.h"
 #include "graphics/queueman.h"
+#include "graphics/glcontainer.h"
 #include "graphics/renderable.h"
 #include "graphics/camera.h"
 
 #include "graphics/images/decoder.h"
 #include "graphics/images/screenshot.h"
-
-#include "graphics/video/decoder.h"
 
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
@@ -749,7 +748,7 @@ void GraphicsManager::beginScene() {
 }
 
 bool GraphicsManager::playVideo() {
-	if (QueueMan.isQueueEmpty(kQueueVideo))
+	if (QueueMan.isQueueEmpty(kQueueVisibleVideo))
 		return false;
 
 	glMatrixMode(GL_PROJECTION);
@@ -759,16 +758,16 @@ bool GraphicsManager::playVideo() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	QueueMan.lockQueue(kQueueVideo);
-	const std::list<Queueable *> &videos = QueueMan.getQueue(kQueueVideo);
+	QueueMan.lockQueue(kQueueVisibleVideo);
+	const std::list<Queueable *> &videos = QueueMan.getQueue(kQueueVisibleVideo);
 
 	for (std::list<Queueable *>::const_iterator v = videos.begin(); v != videos.end(); ++v) {
 		glPushMatrix();
-		static_cast<VideoDecoder *>(*v)->render();
+		static_cast<Renderable *>(*v)->render(kRenderPassAll);
 		glPopMatrix();
 	}
 
-	QueueMan.unlockQueue(kQueueVideo);
+	QueueMan.unlockQueue(kQueueVisibleVideo);
 	return true;
 }
 

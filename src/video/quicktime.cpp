@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/quicktime.cpp
+/** @file video/quicktime.cpp
  *  Decoding Apple QuickTime videos.
  */
 
@@ -39,7 +39,7 @@
 #include "common/stream.h"
 #include "common/file.h"
 
-#include "graphics/video/quicktime.h"
+#include "video/quicktime.h"
 
 #include "sound/audiostream.h"
 
@@ -51,9 +51,9 @@
 #include "sound/decoders/pcm.h"
 
 // Video codecs
-#include "graphics/video/codec/h263.h"
+#include "video/codecs/h263.h"
 
-namespace Graphics {
+namespace Video {
 
 ////////////////////////////////////////////
 // QuickTimeDecoder
@@ -131,8 +131,7 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDe
 }
 
 QuickTimeDecoder::~QuickTimeDecoder() {
-	removeFromQueue(kQueueGLContainer);
-	removeFromQueue(kQueueVideo);
+	VideoDecoder::deinit();
 
 	for (uint32 i = 0; i < _tracks.size(); i++)
 		delete _tracks[i];
@@ -1035,7 +1034,7 @@ QuickTimeDecoder::VideoSampleDesc::~VideoSampleDesc() {
 	delete _videoCodec;
 }
 
-void QuickTimeDecoder::VideoSampleDesc::initCodec(Surface &surface) {
+void QuickTimeDecoder::VideoSampleDesc::initCodec(Graphics::Surface &surface) {
 	if (_codecTag == MKID_BE('mp4v')) {
 		Common::UString videoType;
 

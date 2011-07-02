@@ -37,10 +37,11 @@
 #include "../../aurora/gfffile.h"
 #include "../../aurora/2dafile.h"
 
-#include "graphics/aurora/videoplayer.h"
 #include "graphics/aurora/texture.h"
 
 #include "sound/sound.h"
+
+#include "video/aurora/videoplayer.h"
 
 #include "events/events.h"
 
@@ -58,7 +59,7 @@ void playVideo(const Common::UString &video) {
 	SoundMan.setTypeGain(Sound::kSoundTypeVoice, 0.0);
 
 	try {
-		Graphics::Aurora::VideoPlayer videoPlayer(video);
+		Video::Aurora::VideoPlayer videoPlayer(video);
 
 		videoPlayer.play();
 	} catch (Common::Exception &e) {

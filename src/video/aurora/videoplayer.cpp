@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/aurora/videoplayer.cpp
+/** @file video/aurora/videoplayer.cpp
  *  A video player.
  */
 
@@ -32,19 +32,19 @@
 #include "common/ustring.h"
 #include "common/stream.h"
 
-#include "graphics/video/decoder.h"
-#include "graphics/video/bink.h"
-#include "graphics/video/quicktime.h"
-#include "graphics/video/xmv.h"
+#include "video/decoder.h"
+#include "video/bink.h"
+#include "video/quicktime.h"
+#include "video/xmv.h"
 
-#include "graphics/aurora/videoplayer.h"
+#include "video/aurora/videoplayer.h"
 
 #include "events/events.h"
 #include "events/requests.h"
 
 #include "aurora/resman.h"
 
-namespace Graphics {
+namespace Video {
 
 namespace Aurora {
 
@@ -111,4 +111,4 @@ void VideoPlayer::play() {
 
 } // End of namespace Aurora
 
-} // End of namespace Graphics
+} // End of namespace Video

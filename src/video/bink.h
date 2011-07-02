@@ -26,18 +26,18 @@
 // Based quite heavily on the Bink decoder found in FFmpeg.
 // Many thanks to Kostya Shishkov for doing the hard work.
 
-/** @file graphics/video/bink.h
+/** @file video/bink.h
  *  Decoding RAD Game Tools' Bink videos.
  */
 
-#ifndef GRAPHICS_VIDEO_BINK_H
-#define GRAPHICS_VIDEO_BINK_H
+#ifndef VIDEO_BINK_H
+#define VIDEO_BINK_H
 
 #include <vector>
 
 #include "common/types.h"
 
-#include "graphics/video/decoder.h"
+#include "video/decoder.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -48,7 +48,7 @@ namespace Common {
 	class DCT;
 }
 
-namespace Graphics {
+namespace Video {
 
 /** A decoder for RAD Game Tools' Bink videos. */
 class Bink : public VideoDecoder {
@@ -317,6 +317,6 @@ private:
 	void IDCTAdd(DecodeContext &ctx, int16 *block);
 };
 
-} // End of namespace Graphics
+} // End of namespace Video
 
-#endif // GRAPHICS_VIDEO_BINK_H
+#endif // VIDEO_BINK_H

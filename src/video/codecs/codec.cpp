@@ -23,39 +23,18 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/aurora/videoplayer.h
- *  A video player.
+/** @file video/codecs/codec.cpp
+ *  Video codec base class.
  */
 
-#ifndef GRAPHICS_AURORA_VIDEOPLAYER_H
-#define GRAPHICS_AURORA_VIDEOPLAYER_H
+#include "video/codecs/codec.h"
 
-namespace Common {
-	class UString;
+namespace Video {
+
+Codec::Codec() {
 }
 
-namespace Graphics {
+Codec::~Codec() {
+}
 
-class VideoDecoder;
-
-namespace Aurora {
-
-/** A video player. */
-class VideoPlayer {
-public:
-	VideoPlayer(const Common::UString &video);
-	~VideoPlayer();
-
-	void play();
-
-private:
-	VideoDecoder *_video;
-
-	void load(const Common::UString &name);
-};
-
-} // End of namespace Aurora
-
-} // End of namespace Graphics
-
-#endif // GRAPHICS_AURORA_VIDEOPLAYER_H
+} // End of namespace Video

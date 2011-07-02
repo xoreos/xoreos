@@ -26,7 +26,7 @@
 // Based quite heavily on the Bink decoder found in FFmpeg.
 // Many thanks to Kostya Shishkov for doing the hard work.
 
-/** @file graphics/video/bink.cpp
+/** @file video/bink.cpp
  *  Decoding RAD Game Tools' Bink videos.
  */
 
@@ -48,8 +48,8 @@
 
 #include "graphics/images/surface.h"
 
-#include "graphics/video/bink.h"
-#include "graphics/video/binkdata.h"
+#include "video/bink.h"
+#include "video/binkdata.h"
 
 #include "events/events.h"
 
@@ -66,7 +66,7 @@ static const uint16 kAudioFlagStereo = 0x2000;
 // Number of bits used to store first DC value in bundle
 static const uint32 kDCStartBits = 11;
 
-namespace Graphics {
+namespace Video {
 
 Bink::VideoFrame::VideoFrame() : bits(0) {
 }
@@ -125,8 +125,7 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false)
 }
 
 Bink::~Bink() {
-	removeFromQueue(kQueueGLContainer);
-	removeFromQueue(kQueueVideo);
+	VideoDecoder::deinit();
 
 	for (int i = 0; i < 4; i++) {
 		delete[] _curPlanes[i];
@@ -266,7 +265,7 @@ void Bink::videoPacket(VideoFrame &video) {
 
 	// Convert the YUVA data we have to BGRA
 	assert(_surface && _curPlanes[0] && _curPlanes[1] && _curPlanes[2] && _curPlanes[3]);
-	convertYUVA420ToRGBA(_surface->getData(), _surface->getWidth() * 4,
+	Graphics::convertYUVA420ToRGBA(_surface->getData(), _surface->getWidth() * 4,
 			_curPlanes[0], _curPlanes[1], _curPlanes[2], _curPlanes[3],
 			_width, _height, _width, _width >> 1);
 
@@ -1606,4 +1605,4 @@ void Bink::IDCTPut(DecodeContext &ctx, int16 *block) {
 	}
 }
 
-} // End of namespace Graphics
+} // End of namespace Video

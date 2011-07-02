@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/quicktime.h
+/** @file video/quicktime.h
  *  Decoding Apple QuickTime videos.
  */
 
@@ -35,18 +35,21 @@
 // Seek function by Gael Chardon gael.dev@4now.net
 //
 
-#ifndef GRAPHICS_VIDEO_QUICKTIME_H
-#define GRAPHICS_VIDEO_QUICKTIME_H
+#ifndef VIDEO_QUICKTIME_H
+#define VIDEO_QUICKTIME_H
 
-#include "graphics/video/decoder.h"
+#include "video/decoder.h"
 
 namespace Common {
 	class SeekableReadStream;
 }
 
 namespace Graphics {
+	class Surface;
+}
 
-class Surface;
+namespace Video {
+
 class Codec;
 
 /**
@@ -123,7 +126,7 @@ private:
 		VideoSampleDesc(Track *parentTrack, uint32 codecTag);
 		~VideoSampleDesc();
 
-		void initCodec(Surface &surface);
+		void initCodec(Graphics::Surface &surface);
 
 		// TODO: Make private in the long run
 		uint16 _bitsPerSample;
@@ -217,4 +220,4 @@ private:
 
 } // End of namespace Video
 
-#endif
+#endif // VIDEO_QUICKTIME_H

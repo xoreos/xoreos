@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/fader.cpp
+/** @file video/fader.cpp
  *  Testing implementation for the VideoDecoder interface.
  */
 
@@ -31,19 +31,17 @@
 
 #include "graphics/images/surface.h"
 
-#include "graphics/video/fader.h"
+#include "video/fader.h"
 
 #include "events/events.h"
 
-namespace Graphics {
+namespace Video {
 
 Fader::Fader(uint32 width, uint32 height, int n) : _c(0), _n(n), _lastUpdate(0) {
 	initVideo(width, height);
 }
 
 Fader::~Fader() {
-	removeFromQueue(kQueueGLContainer);
-	removeFromQueue(kQueueVideo);
 }
 
 bool Fader::hasTime() const {
@@ -110,4 +108,4 @@ void Fader::processData() {
 	_needCopy = true;
 }
 
-} // End of namespace Graphics
+} // End of namespace Video

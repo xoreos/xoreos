@@ -23,33 +23,35 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/decoder.h
+/** @file video/decoder.h
  *  Generic video decoder interface.
  */
 
-#ifndef GRAPHICS_VIDEO_DECODER_H
-#define GRAPHICS_VIDEO_DECODER_H
+#ifndef VIDEO_DECODER_H
+#define VIDEO_DECODER_H
 
 #include "common/types.h"
 #include "common/mutex.h"
 
 #include "graphics/types.h"
 #include "graphics/glcontainer.h"
-#include "graphics/queueable.h"
+#include "graphics/renderable.h"
 
 #include "sound/types.h"
+
+namespace Graphics {
+	class Surface;
+}
 
 namespace Sound {
 	class AudioStream;
 	class QueuingAudioStream;
 }
 
-namespace Graphics {
-
-class Surface;
+namespace Video {
 
 /** A generic interface for video decoders. */
-class VideoDecoder : public GLContainer {
+class VideoDecoder : public Graphics::GLContainer, public Graphics::Renderable {
 public:
 	enum Scale {
 		kScaleNone,  ///< Don't scale the video.
@@ -69,14 +71,15 @@ public:
 	/** Update the video. */
 	void update();
 
-	/** Render the video to OpenGL. */
-	void render();
-
 	/** Abort the playing of the video. */
 	void abort();
 
 	/** Is there enough time to spare to sleep for 10ms? */
 	virtual bool hasTime() const = 0;
+
+	// Renderable
+	void calculateDistance();
+	void render(Graphics::RenderPass pass);
 
 protected:
 	volatile bool _started;  ///< Has playback started?
@@ -86,7 +89,7 @@ protected:
 	uint32 _width;  ///< The video's width.
 	uint32 _height; ///< The video's height.
 
-	Surface *_surface; ///< The video's surface.
+	Graphics::Surface *_surface; ///< The video's surface.
 
 	/** Create a surface for video of these dimensions.
 	 *
@@ -111,12 +114,14 @@ protected:
 	/** Process the video's image and sound data further. */
 	virtual void processData() = 0;
 
+	void deinit();
+
 	// GLContainer
 	void doRebuild();
 	void doDestroy();
 
 private:
-	TextureID _texture;
+	Graphics::TextureID _texture;
 
 	float _textureWidth;
 	float _textureHeight;
@@ -138,6 +143,6 @@ private:
 	void getQuadDimensions(float &width, float &height) const;
 };
 
-} // End of namespace Graphics
+} // End of namespace Video
 
-#endif // GRAPHICS_VIDEO_DECODER_H
+#endif // VIDEO_DECODER_H

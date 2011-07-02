@@ -23,33 +23,35 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/video/codec/h263.h
- *  h.263 video codec.
+/** @file video/fader.h
+ *  Testing implementation for the VideoDecoder interface.
  */
 
-#ifndef GRAPHICS_VIDEO_H263_H
-#define GRAPHICS_VIDEO_H263_H
+#ifndef VIDEO_FADER_H
+#define VIDEO_FADER_H
 
-#include "common/types.h"
+#include "video/decoder.h"
 
-#include "graphics/video/codec/codec.h"
+namespace Video {
 
-namespace Graphics {
-
-class H263Codec : public Codec {
+/** A quick test fader "video". */
+class Fader : public VideoDecoder {
 public:
-	H263Codec(uint32 width, uint32 height);
-	~H263Codec();
+	Fader(uint32 width, uint32 height, int n);
+	~Fader();
 
-	void decodeFrame(Surface &surface, Common::SeekableReadStream &dataStream);
+	bool hasTime() const;
+
+protected:
+	void processData();
 
 private:
-	uint32 _width;
-	uint32 _height;
+	byte _c;
+	int _n;
 
-	void *_decHandle;
+	uint32 _lastUpdate;
 };
 
-} // End of namespace Graphics
+} // End of namespace Video
 
-#endif // GRAPHICS_VIDEO_H263_H
+#endif // VIDEO_FADER_H

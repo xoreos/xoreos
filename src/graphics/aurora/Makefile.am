@@ -3,7 +3,6 @@ include $(top_srcdir)/Makefile.common
 noinst_LTLIBRARIES = libaurora.la
 
 noinst_HEADERS = types.h \
-                 videoplayer.h \
                  texture.h \
                  textureman.h \
                  pltfile.h \
@@ -24,8 +23,7 @@ noinst_HEADERS = types.h \
                  model_kotor.h \
                  model_witcher.h
 
-libaurora_la_SOURCES = videoplayer.cpp \
-                       texture.cpp \
+libaurora_la_SOURCES = texture.cpp \
                        textureman.cpp \
                        pltfile.cpp \
                        cursor.cpp \

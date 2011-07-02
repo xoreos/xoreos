@@ -36,7 +36,10 @@
 namespace Graphics {
 
 Renderable::Renderable(RenderableType type) : _clickable(false), _distance(0.0) {
-	if        (type == kRenderableTypeObject) {
+	if        (type == kRenderableTypeVideo) {
+		_queueExists  = kQueueVideo;
+		_queueVisible = kQueueVisibleVideo;
+	} else if (type == kRenderableTypeObject) {
 		_queueExists  = kQueueWorldObject;
 		_queueVisible = kQueueVisibleWorldObject;
 	} else if (type == kRenderableTypeGUIFront) {
