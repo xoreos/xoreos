@@ -46,6 +46,7 @@
 #include "events/events.h"
 
 // Audio codecs
+#include "sound/decoders/aac.h"
 #include "sound/decoders/adpcm.h"
 #include "sound/decoders/pcm.h"
 
@@ -962,8 +963,13 @@ bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
 
 		switch (_parentTrack->objectTypeMP4) {
 		case 0x40:
+#if 0
+			// TODO: This is disabled until AAC is working properly
+			return true;
+#else
 			audioType = "AAC";
 			break;
+#endif
 		default:
 			audioType = "Unknown";
 			break;
@@ -1005,7 +1011,11 @@ Sound::AudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStream(Common:
 		// QuickTime IMA ADPCM
 		return Sound::makeADPCMStream(stream, true, stream->size(), Sound::kADPCMApple, _sampleRate, _channels, 34);
 	} else if (_codecTag == MKID_BE('mp4a')) {
-		// TODO: MPEG-4 Audio
+		switch (_parentTrack->objectTypeMP4) {
+		case 0x40: // AAC
+			return Sound::makeAACStream(stream, true, _parentTrack->extraData, false);
+		}
+
 		throw Common::Exception("Unhandled MPEG-4 audio");
 	}
 
