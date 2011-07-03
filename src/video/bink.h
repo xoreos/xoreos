@@ -56,9 +56,10 @@ public:
 	Bink(Common::SeekableReadStream *bink);
 	~Bink();
 
-	bool hasTime() const;
+	uint32 getTimeToNextFrame() const;
 
 protected:
+	void startVideo();
 	void processData();
 
 private:

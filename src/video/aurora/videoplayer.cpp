@@ -83,23 +83,24 @@ void VideoPlayer::load(const Common::UString &name) {
 void VideoPlayer::play() {
 	RequestMan.sync();
 
+	_video->start();
+
 	bool brk = false;
 
 	try {
 		Events::Event event;
 		while (!EventMan.quitRequested()) {
-			_video->update();
 
 			while (EventMan.pollEvent(event)) {
-				if ((event.type == Events::kEventKeyDown && event.key.keysym.sym == SDLK_ESCAPE) || event.type == Events::kEventMouseUp)
+				if ((event.type == Events::kEventKeyDown && event.key.keysym.sym == SDLK_ESCAPE) ||
+				    (event.type == Events::kEventMouseUp))
 					brk = true;
 			}
 
 			if (brk || !_video->isPlaying())
 				break;
 
-			if (_video->hasTime())
-				EventMan.delay(10);
+			EventMan.delay(10);
 		}
 	} catch (...) {
 		_video->abort();

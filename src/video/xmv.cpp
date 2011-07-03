@@ -48,8 +48,11 @@ XboxMediaVideo::~XboxMediaVideo() {
 	delete _xmv;
 }
 
-bool XboxMediaVideo::hasTime() const {
-	return false;
+uint32 XboxMediaVideo::getTimeToNextFrame() const {
+	return 0;
+}
+
+void XboxMediaVideo::startVideo() {
 }
 
 void XboxMediaVideo::processData() {

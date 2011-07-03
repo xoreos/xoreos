@@ -44,9 +44,10 @@ public:
 	XboxMediaVideo(Common::SeekableReadStream *xmv);
 	~XboxMediaVideo();
 
-	bool hasTime() const;
+	uint32 getTimeToNextFrame() const;
 
 protected:
+	void startVideo();
 	void processData();
 
 private:

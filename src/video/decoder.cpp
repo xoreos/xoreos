@@ -51,10 +51,6 @@ VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
 	_textureWidth(0.0), _textureHeight(0.0), _scale(kScaleNone),
 	_sound(0), _soundRate(0), _soundFlags(0) {
 
-	// No data at the start, lock the mutex
-	_canCopy.lock();
-
-	show();
 }
 
 VideoDecoder::~VideoDecoder() {
@@ -183,13 +179,7 @@ void VideoDecoder::doDestroy() {
 }
 
 void VideoDecoder::copyData() {
-	if (!isPlaying())
-		return;
-
-	// Wait until we can copy
-	_canCopy.lock();
-
-	if (!isPlaying())
+	if (!_needCopy)
 		return;
 
 	if (!_surface)
@@ -197,16 +187,11 @@ void VideoDecoder::copyData() {
 	if (_texture == 0)
 		throw Common::Exception("No texture while trying to copy");
 
-	if (_needCopy && !_finished) {
-		glBindTexture(GL_TEXTURE_2D, _texture);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _surface->getWidth(), _surface->getHeight(),
-		                GL_BGRA, GL_UNSIGNED_BYTE, _surface->getData());
+	glBindTexture(GL_TEXTURE_2D, _texture);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _surface->getWidth(), _surface->getHeight(),
+	                GL_BGRA, GL_UNSIGNED_BYTE, _surface->getData());
 
-		_needCopy = false;
-	}
-
-	// Signal that we update the data again
-	_canUpdate.unlock();
+	_needCopy = false;
 }
 
 void VideoDecoder::setScale(Scale scale) {
@@ -218,19 +203,11 @@ bool VideoDecoder::isPlaying() const {
 }
 
 void VideoDecoder::update() {
-	if (!isPlaying())
-		return;
-
-	// Wait until we can update
-	_canUpdate.lock();
-
-	if (!isPlaying())
+	if (getTimeToNextFrame() > 0)
 		return;
 
 	processData();
-
-	// Signal that we can copy the data again
-	_canCopy.unlock();
+	copyData();
 }
 
 void VideoDecoder::getQuadDimensions(float &width, float &height) const {
@@ -270,17 +247,11 @@ void VideoDecoder::render(Graphics::RenderPass pass) {
 	if (pass == Graphics::kRenderPassTransparent)
 		return;
 
-	if (!isPlaying())
+	if (!isPlaying() || !_started || (_texture == 0))
 		return;
 
-	if (_texture == 0)
-		return;
-
-	if (!_started)
-		return;
-
-	// Copy the data to the texture, if necessary
-	copyData();
+	// Process and copy the next frame data, if necessary
+	update();
 
 	// Get the dimensions of the video surface we want, depending on the scaling requested
 	float width, height;
@@ -304,15 +275,16 @@ void VideoDecoder::render(Graphics::RenderPass pass) {
 	glEnd();
 }
 
+void VideoDecoder::start() {
+	startVideo();
+
+	show();
+}
+
 void VideoDecoder::abort() {
-	deinitSound();
+	hide();
 
 	_finished = true;
-
-	_canUpdate.unlock();
-	_canCopy.unlock();
-
-	hide();
 }
 
 } // End of namespace Video

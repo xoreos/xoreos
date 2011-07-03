@@ -31,7 +31,6 @@
 #define VIDEO_DECODER_H
 
 #include "common/types.h"
-#include "common/mutex.h"
 
 #include "graphics/types.h"
 #include "graphics/glcontainer.h"
@@ -68,23 +67,23 @@ public:
 	/** Is the video currently playing? */
 	bool isPlaying() const;
 
-	/** Update the video. */
-	void update();
+	/** Start playing the video. */
+	void start();
 
 	/** Abort the playing of the video. */
 	void abort();
 
-	/** Is there enough time to spare to sleep for 10ms? */
-	virtual bool hasTime() const = 0;
+	/** Return the time, in milliseconds, to the next frame. */
+	virtual uint32 getTimeToNextFrame() const = 0;
 
 	// Renderable
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
 
 protected:
-	volatile bool _started;  ///< Has playback started?
-	volatile bool _finished; ///< Has playback finished?
-	volatile bool _needCopy; ///< Is new frame content available that needs to by copied?
+	bool _started;  ///< Has playback started?
+	bool _finished; ///< Has playback finished?
+	bool _needCopy; ///< Is new frame content available that needs to by copied?
 
 	uint32 _width;  ///< The video's width.
 	uint32 _height; ///< The video's height.
@@ -111,6 +110,8 @@ protected:
 
 	uint32 getNumQueuedStreams() const;
 
+	/** Start the video processing. */
+	virtual void startVideo() = 0;
 	/** Process the video's image and sound data further. */
 	virtual void processData() = 0;
 
@@ -128,13 +129,14 @@ private:
 
 	Scale _scale;
 
-	Common::Mutex _canUpdate;
-	Common::Mutex _canCopy;
-
 	Sound::QueuingAudioStream *_sound;
 	Sound::ChannelHandle       _soundHandle;
 	uint16                     _soundRate;
 	byte                       _soundFlags;
+
+
+	/** Update the video, if necessary. */
+	void update();
 
 	/** Copy the video image data to the texture. */
 	void copyData();

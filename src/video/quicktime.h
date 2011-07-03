@@ -60,9 +60,10 @@ public:
 	QuickTimeDecoder(Common::SeekableReadStream *stream);
 	~QuickTimeDecoder();
 
-	bool hasTime() const;
+	uint32 getTimeToNextFrame() const;
 
 protected:
+	void startVideo();
 	void processData();
 
 private:
@@ -199,7 +200,6 @@ private:
 	uint32 getFrameDuration();
 
 	uint32 getElapsedTime() const;
-	uint32 getTimeToNextFrame() const;
 
 	int readDefault(Atom atom);
 	int readLeaf(Atom atom);

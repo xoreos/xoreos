@@ -140,26 +140,31 @@ Bink::~Bink() {
 	delete _bink;
 }
 
-bool Bink::hasTime() const {
-	uint32 curTime = EventMan.getTimestamp();
-	uint32 frameTime = ((uint64) (_curFrame * 1000 * ((uint64) _fpsDen))) / _fpsNum;
-	if ((curTime - _startTime + 11) < frameTime)
-		return true;
+uint32 Bink::getTimeToNextFrame() const {
+	if (!_started || _curFrame < 0)
+		return 0;
 
-	return false;
+	uint32 curTime   = EventMan.getTimestamp() - _startTime;
+	uint32 frameTime = ((uint64) (_curFrame * 1000 * ((uint64) _fpsDen))) / _fpsNum;
+
+	// We need the next frame now
+	if (frameTime <= curTime)
+		return 0;
+
+	// We need the next frame later
+	return frameTime - curTime;
+}
+
+void Bink::startVideo() {
+	uint32 curTime = EventMan.getTimestamp();
+
+	_startTime     = curTime;
+	_lastFrameTime = curTime;
+	_started       = true;
 }
 
 void Bink::processData() {
-	uint32 curTime = EventMan.getTimestamp();
-
-	if (!_started) {
-		_startTime     = curTime;
-		_lastFrameTime = curTime;
-		_started       = true;
-	}
-
-	uint32 frameTime = ((uint64) (_curFrame * 1000 * ((uint64) _fpsDen))) / _fpsNum;
-	if ((curTime - _startTime) < frameTime)
+	if (getTimeToNextFrame() > 0)
 		return;
 
 	if (_curFrame >= _frames.size()) {

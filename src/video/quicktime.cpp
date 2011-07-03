@@ -259,16 +259,16 @@ Codec *QuickTimeDecoder::findDefaultVideoCodec() const {
 	return ((VideoSampleDesc *)_tracks[_videoTrackIndex]->sampleDescs[0])->_videoCodec;
 }
 
+void QuickTimeDecoder::startVideo() {
+	_startTime = EventMan.getTimestamp();
+	_started   = true;
+}
+
 void QuickTimeDecoder::processData() {
 	if (_curFrame >= (int32)_tracks[_videoTrackIndex]->frameCount - 1) {
 		_finished = true;
 		return;
 	}
-
-	_started = true;
-
-	if (_startTime == 0)
-		_startTime = EventMan.getTimestamp();
 
 	if (getTimeToNextFrame() > 0)
 		return;
@@ -320,10 +320,6 @@ uint32 QuickTimeDecoder::getTimeToNextFrame() const {
 		return 0;
 
 	return nextFrameStartTime - elapsedTime;
-}
-
-bool QuickTimeDecoder::hasTime() const {
-	return getTimeToNextFrame() >= 10;
 }
 
 void QuickTimeDecoder::initParseTable() {
