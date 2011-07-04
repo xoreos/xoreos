@@ -40,6 +40,7 @@
 #include "events/requests.h"
 #include "events/notifications.h"
 #include "events/timerman.h"
+#include "events/joystick.h"
 
 #include "graphics/types.h"
 #include "graphics/graphics.h"
@@ -81,12 +82,16 @@ void EventsManager::init() {
 
 	_ready = true;
 
+	initJoysticks();
+
 	std::srand(getTimestamp());
 }
 
 void EventsManager::deinit() {
 	if (!_ready)
 		return;
+
+	deinitJoysticks();
 
 	RequestMan.deinit();
 
@@ -104,6 +109,9 @@ void EventsManager::reset() {
 
 	// Clear our event queue
 	_eventQueue.clear();
+
+	deinitJoysticks();
+	initJoysticks();
 }
 
 bool EventsManager::ready() const {
@@ -280,6 +288,48 @@ void EventsManager::runMainLoop() {
 			// Render a frame
 			GfxMan.renderScene();
 	}
+}
+
+void EventsManager::initJoysticks() {
+	deinitJoysticks();
+
+	const int joyCount = SDL_NumJoysticks();
+	if (joyCount <= 0)
+		return;
+
+	_joysticks.reserve(joyCount);
+	for (int i = 0; i < joyCount; i++)
+		_joysticks.push_back(new Joystick(i));
+
+	SDL_JoystickEventState(SDL_ENABLE);
+}
+
+void EventsManager::deinitJoysticks() {
+	SDL_JoystickEventState(SDL_DISABLE);
+
+	for (Joysticks::iterator j = _joysticks.begin(); j != _joysticks.end(); ++j)
+		delete *j;
+
+	_joysticks.clear();
+}
+
+int EventsManager::getJoystickCount() const {
+	return _joysticks.size();
+}
+
+Joystick *EventsManager::getJoystickByIndex(int index) const {
+	if ((index < 0) || (((uint) index) >= _joysticks.size()))
+		return 0;
+
+	return _joysticks[index];
+}
+
+Joystick *EventsManager::getJoystickByName(const Common::UString &name) const {
+	for (Joysticks::const_iterator j = _joysticks.begin(); j != _joysticks.end(); ++j)
+		if ((*j)->getName() == name)
+			return *j;
+
+	return 0;
 }
 
 void EventsManager::requestFullscreen(Request &request) {

@@ -8,10 +8,12 @@ noinst_HEADERS = events.h \
                  requests.h \
                  notifyable.h \
                  notifications.h \
-                 timerman.h
+                 timerman.h \
+                 joystick.h
 
 libevents_la_SOURCES = events.cpp \
                        requesttypes.cpp \
                        requests.cpp \
                        notifications.cpp \
-                       timerman.cpp
+                       timerman.cpp \
+                       joystick.cpp

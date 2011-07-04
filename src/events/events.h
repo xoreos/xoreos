@@ -30,8 +30,8 @@
 #ifndef EVENTS_EVENTS_H
 #define EVENTS_EVENTS_H
 
-#include <string>
 #include <list>
+#include <vector>
 
 #include "common/types.h"
 #include "common/singleton.h"
@@ -39,9 +39,14 @@
 
 #include "events/types.h"
 
+namespace Common {
+	class UString;
+}
+
 namespace Events {
 
 class Request;
+class Joystick;
 
 /** The events manager. */
 class EventsManager : public Common::Singleton<EventsManager> {
@@ -121,6 +126,17 @@ public:
 	uint32 getPressedCharacter(const Event &event);
 
 
+	// Joystick input
+
+	/** Return the number of avaiable joysticks. */
+	int getJoystickCount() const;
+
+	/** Return the joystick with that index. */
+	Joystick *getJoystickByIndex(int index) const;
+	/** Return the first joystick with that name. */
+	Joystick *getJoystickByName(const Common::UString &name) const;
+
+
 	/** Is the event queue full? */
 	bool isQueueFull() const;
 
@@ -129,6 +145,8 @@ public:
 
 
 private:
+	typedef std::vector<Joystick *> Joysticks;
+
 	typedef std::list<Event> EventQueue;
 	typedef void (EventsManager::*RequestHandler)(Request &);
 
@@ -140,6 +158,8 @@ private:
 	bool _quitRequested; ///< Was an engine quit requested?
 	bool _doQuit;        ///< Are we currently in the process of quitting?
 
+	Joysticks _joysticks;
+
 	EventQueue _eventQueue;
 	Common::Mutex _eventQueueMutex;
 
@@ -147,6 +167,12 @@ private:
 
 	bool _fullQueue;
 	Common::Condition _queueProcessed;
+
+
+	/** Initialize the available joysticks/gamepads. */
+	void initJoysticks();
+	/** Deinitialize the available joysticks/gamepads. */
+	void deinitJoysticks();
 
 	/** Look for quit events. */
 	bool parseEventQuit(const Event &event);

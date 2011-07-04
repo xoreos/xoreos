@@ -94,7 +94,7 @@ GraphicsManager::~GraphicsManager() {
 void GraphicsManager::init() {
 	Common::enforceMainThread();
 
-	uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO;
+	uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK;
 
 	// TODO: Is this actually needed on any systems? It seems to make MacOS X fail to
 	//       receive any events, too.
