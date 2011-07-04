@@ -48,6 +48,8 @@ class EventsManager : public Common::Singleton<EventsManager> {
 public:
 	EventsManager();
 
+	// Initialization
+
 	/** Initialize the events subsystem. */
 	void init();
 	/** Deinitialize the events subsystem. */
@@ -59,10 +61,8 @@ public:
 	/** Was the events subsystem successfully initialized? */
 	bool ready() const;
 
-	/** Sleep that number of milliseconds. */
-	void delay(uint32 ms);
-	/** Return the number of milliseconds the application is running. */
-	uint32 getTimestamp() const;
+
+	// Quitting
 
 	/** Was an engine quit requested? */
 	bool quitRequested() const;
@@ -71,6 +71,17 @@ public:
 
 	/** Initiate the actual quitting process. */
 	void doQuit();
+
+
+	// Timing
+
+	/** Sleep that number of milliseconds. */
+	void delay(uint32 ms);
+	/** Return the number of milliseconds the application is running. */
+	uint32 getTimestamp() const;
+
+
+	// Events
 
 	/** Clear the event queue, ignore all unhandled events. */
 	void flushEvents();
@@ -89,6 +100,9 @@ public:
 	 */
 	bool pushEvent(Event &event);
 
+
+	// Keyboard input
+
 	/** Enable/Disable translating unicode translation for key events. */
 	void enableUnicode(bool enable);
 
@@ -106,11 +120,13 @@ public:
 	 */
 	uint32 getPressedCharacter(const Event &event);
 
+
 	/** Is the event queue full? */
 	bool isQueueFull() const;
 
 	/** Run the main loop. */
 	void runMainLoop();
+
 
 private:
 	typedef std::list<Event> EventQueue;
