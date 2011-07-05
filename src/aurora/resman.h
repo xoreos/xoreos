@@ -200,6 +200,13 @@ public:
 	/** Undo the changes done in the specified change ID. */
 	void undo(ChangeID &change);
 
+	/** Add an alias for one file type to another.
+	 *
+	 *  @param alias The type to alias.
+	 *  @param realType The actual type a resource of the alias type is.
+	 */
+	void addTypeAlias(FileType alias, FileType realType);
+
 	/** Does a specific resource exist?
 	 *
 	 *  @param  name The name (ResRef) of the resource.
@@ -268,6 +275,8 @@ private:
 	Common::FileList _archiveFiles[kArchiveMAX]; ///< Archive files.
 
 	ArchiveList _archives; ///< List of currently used archives.
+
+	std::map<FileType, FileType> _typeAliases;
 
 	ResourceMap _resources;
 

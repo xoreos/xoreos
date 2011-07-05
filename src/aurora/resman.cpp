@@ -137,6 +137,8 @@ void ResourceManager::clear() {
 
 	_resources.clear();
 
+	_typeAliases.clear();
+
 	_changes.clear();
 }
 
@@ -422,6 +424,10 @@ void ResourceManager::undo(ChangeID &change) {
 	change._change = _changes.end();
 }
 
+void ResourceManager::addTypeAlias(FileType alias, FileType realType) {
+	_typeAliases[alias] = realType;
+}
+
 bool ResourceManager::hasResource(const Common::UString &name, FileType type) const {
 	std::vector<FileType> types;
 
@@ -559,6 +565,11 @@ void ResourceManager::addResource(Resource &resource, Common::UString name, Chan
 		resource.type = kFileTypeTXB;
 	else if (resource.type == kFileTypeCRE)
 		resource.type = kFileTypeBTC;
+
+	// Resolve the type aliases
+	std::map<FileType, FileType>::const_iterator alias = _typeAliases.find(resource.type);
+	if (alias != _typeAliases.end())
+		resource.type = alias->second;
 
 	ResourceMap::iterator resTypeMap = _resources.find(name);
 	if (resTypeMap == _resources.end()) {
