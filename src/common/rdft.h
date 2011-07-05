@@ -55,9 +55,9 @@ public:
 	void calc(float *data);
 
 private:
-	int _bits;
-	int _inverse;
-	int _signConvention;
+	int  _bits;
+	bool _inverse;
+	int  _signConvention;
 
 	const float *_tSin;
 	const float *_tCos;

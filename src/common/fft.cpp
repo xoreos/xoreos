@@ -41,7 +41,7 @@
 
 namespace Common {
 
-FFT::FFT(int bits, int inverse) : _bits(bits), _inverse(inverse) {
+FFT::FFT(int bits, bool inverse) : _bits(bits), _inverse(inverse) {
 	assert((_bits >= 2) && (_bits <= 16));
 
 	int n = 1 << bits;
@@ -83,7 +83,7 @@ void FFT::permute(Complex *z) {
 	}
 }
 
-int FFT::splitRadixPermutation(int i, int n, int inverse) {
+int FFT::splitRadixPermutation(int i, int n, bool inverse) {
 	if (n <= 2)
 		return i & 1;
 

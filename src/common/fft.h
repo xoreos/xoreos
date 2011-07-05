@@ -44,7 +44,7 @@ class Complex;
 /** (Inverse) Fast Fourier Transform. */
 class FFT {
 public:
-	FFT(int bits, int inverse);
+	FFT(int bits, bool inverse);
 	~FFT();
 
 	/** Do the permutation needed BEFORE calling calc(). */
@@ -58,8 +58,8 @@ public:
 	void calc(Complex *z);
 
 private:
-	int _bits;
-	int _inverse;
+	int  _bits;
+	bool _inverse;
 
 	uint16 *_revTab;
 
@@ -72,7 +72,7 @@ private:
 	int _splitRadix;
 	int _permutation;
 
-	static int splitRadixPermutation(int i, int n, int inverse);
+	static int splitRadixPermutation(int i, int n, bool inverse);
 };
 
 } // End of namespace Common
