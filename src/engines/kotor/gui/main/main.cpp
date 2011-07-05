@@ -80,6 +80,14 @@ void MainMenu::initWidget(Widget &widget) {
 		widget.setInvisible(true);
 		return;
 	}
+
+	// New game button. Forcibly move it to the front, for the Xbox version
+	if (widget.getTag() == "BTN_NEWGAME") {
+		float x, y, z;
+		widget.getPosition(x, y, z);
+
+		widget.setPosition(x, y, z - 10.0);
+	}
 }
 
 void MainMenu::callbackActive(Widget &widget) {

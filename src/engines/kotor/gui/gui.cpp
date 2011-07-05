@@ -106,7 +106,7 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent,
 
 	wX = wX - (width / 2.0);
 	wY = ((height - wY) - ctx.widget->getHeight()) - (height / 2.0);
-	wZ = _widgetZ;
+	wZ = _widgetZ + wZ;
 
 	ctx.widget->setPosition(wX, wY, wZ);
 
