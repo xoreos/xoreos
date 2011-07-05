@@ -202,14 +202,16 @@ void KotOREngine::initResources() {
 	}
 
 	status("Loading global auxiliary resources");
-	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenu.rim"  , 10);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenudx.rim", 11);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "legal.rim"     , 12);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "legaldx.rim"   , 13);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "global.rim"    , 14);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "globaldx.rim"  , 15);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "chargen.rim"   , 16);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "chargendx.rim" , 17);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenu.rim"    , 10);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenudx.rim"  , 11);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "legal.rim"       , 12);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "legaldx.rim"     , 13);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "global.rim"      , 14);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "subglobaldx.rim" , 15);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "miniglobaldx.rim", 16);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "globaldx.rim"    , 17);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "chargen.rim"     , 18);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "chargendx.rim"   , 19);
 
 	if (_platform == Aurora::kPlatformXbox) {
 		// The Xbox version has most of its textures in "textures.bif"
