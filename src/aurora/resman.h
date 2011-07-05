@@ -176,7 +176,8 @@ public:
 	 *
 	 *  @param  archive The type of archive to add.
 	 *  @param  file The name of the archive file to index.
-	 *  @param  priority The priority these files have over others of the same name and type.
+	 *  @param  priority The priority these files have over others of the same name
+	 *          and type. Higher number = higher priority.
 	 *  @return An ID for all collective changes done by adding the archive file.
 	 */
 	ChangeID addArchive(ArchiveType archive, const Common::UString &file, uint32 priority = 0);
@@ -189,7 +190,8 @@ public:
 	 *  @param  glob A pattern of which files to look for.
 	 *  @param  depth The number of levels to recurse into subdirectories. 0
 	 *                for ignoring subdirectories, -1 for a limitless recursion.
-	 *  @param  priority The priority these files have over others of the same name and type.
+	 *  @param  priority The priority these files have over others of the same name
+	 *          and type. Higher number = higher priority.
 	 *  @return An ID for all collective changes done by adding the directory.
 	 */
 	ChangeID addResourceDir(const Common::UString &dir, const char *glob = 0,
