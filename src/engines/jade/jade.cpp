@@ -35,8 +35,6 @@
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
-#include "engines/jade/jade.h"
-
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/fontman.h"
@@ -50,6 +48,8 @@
 #include "engines/aurora/resources.h"
 
 #include "engines/jade/gui/main/main.h"
+
+#include "engines/jade/jade.h"
 
 namespace Engines {
 

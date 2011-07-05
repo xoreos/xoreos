@@ -27,30 +27,32 @@
  *  Engine class handling The Witcher
  */
 
-#include "engines/thewitcher/thewitcher.h"
-#include "engines/thewitcher/modelloader.h"
-
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
-
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
 #include "common/stream.h"
+#include "common/configman.h"
+
+#include "aurora/resman.h"
+#include "aurora/error.h"
 
 #include "graphics/camera.h"
 
 #include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/fontman.h"
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
 
 #include "sound/sound.h"
 
 #include "events/events.h"
 
-#include "aurora/resman.h"
-#include "aurora/error.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
+#include "engines/aurora/model.h"
+
+#include "engines/thewitcher/thewitcher.h"
+#include "engines/thewitcher/modelloader.h"
 
 namespace Engines {
 
@@ -128,6 +130,14 @@ void TheWitcherEngine::run(const Common::UString &target) {
 
 	CursorMan.showCursor();
 
+	bool showFPS = ConfigMan.getBool("showfps", false);
+
+	Graphics::Aurora::FPS *fps = 0;
+	if (showFPS) {
+		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
+		fps->show();
+	}
+
 	playSound("m1_axem00020005", Sound::kSoundTypeVoice);
 
 	CameraMan.setPosition(0.0, 1.0, 0.0);
@@ -184,7 +194,9 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	}
 
 	EventMan.enableKeyRepeat(0);
+
 	delete model;
+	delete fps;
 }
 
 void TheWitcherEngine::init() {

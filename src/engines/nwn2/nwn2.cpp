@@ -27,29 +27,31 @@
  *  Engine class handling Neverwinter Nights 2
  */
 
-#include "engines/nwn2/nwn2.h"
-#include "engines/nwn2/modelloader.h"
-
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
-
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/stream.h"
+#include "common/configman.h"
+
+#include "aurora/resman.h"
+#include "aurora/error.h"
 
 #include "graphics/camera.h"
 
 #include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/fontman.h"
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
 
 #include "sound/sound.h"
 
 #include "events/events.h"
 
-#include "aurora/resman.h"
-#include "aurora/error.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
+#include "engines/aurora/model.h"
+
+#include "engines/nwn2/nwn2.h"
+#include "engines/nwn2/modelloader.h"
 
 namespace Engines {
 
@@ -123,6 +125,14 @@ void NWN2Engine::run(const Common::UString &target) {
 
 	CursorMan.showCursor();
 
+	bool showFPS = ConfigMan.getBool("showfps", false);
+
+	Graphics::Aurora::FPS *fps = 0;
+	if (showFPS) {
+		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
+		fps->show();
+	}
+
 	Sound::ChannelHandle channel;
 
 	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceMusic, "mus_mulsantir");
@@ -190,6 +200,7 @@ void NWN2Engine::run(const Common::UString &target) {
 	EventMan.enableKeyRepeat(0);
 
 	delete model;
+	delete fps;
 }
 
 void NWN2Engine::init() {

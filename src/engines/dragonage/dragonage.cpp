@@ -27,24 +27,26 @@
  *  Engine class handling Dragon Age: Origins
  */
 
-#include "engines/dragonage/dragonage.h"
-
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/filepath.h"
+#include "common/configman.h"
+
+#include "aurora/resman.h"
 
 #include "graphics/aurora/cursorman.h"
 #include "graphics/aurora/cube.h"
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
 
 #include "sound/sound.h"
 
 #include "events/events.h"
 
-#include "aurora/resman.h"
-#include "aurora/error.h"
+#include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
+
+#include "engines/dragonage/dragonage.h"
 
 namespace Engines {
 
@@ -112,8 +114,15 @@ void DragonAgeEngine::run(const Common::UString &target) {
 
 	CursorMan.showCursor();
 
-	Graphics::Aurora::Cube *cube = 0;
+	bool showFPS = ConfigMan.getBool("showfps", false);
 
+	Graphics::Aurora::FPS *fps = 0;
+	if (showFPS) {
+		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
+		fps->show();
+	}
+
+	Graphics::Aurora::Cube *cube = 0;
 	try {
 
 		cube = new Graphics::Aurora::Cube("ach_abi_accomplish_rog");
@@ -127,6 +136,7 @@ void DragonAgeEngine::run(const Common::UString &target) {
 	}
 
 	delete cube;
+	delete fps;
 }
 
 void DragonAgeEngine::init() {
