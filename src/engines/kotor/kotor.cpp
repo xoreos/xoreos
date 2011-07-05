@@ -453,7 +453,7 @@ void KotOREngine::mainMenuLoop() {
 	console.setModule(&module);
 
 	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(module);
+		GUI *mainMenu = new MainMenu(module, _platform == Aurora::kPlatformXbox);
 
 		EventMan.flushEvents();
 

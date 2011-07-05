@@ -41,8 +41,8 @@ namespace Engines {
 
 namespace KotOR {
 
-MainMenu::MainMenu(Module &module) : _module(&module) {
-	load("mainmenu16x12");
+MainMenu::MainMenu(Module &module, bool isXbox) : _module(&module), _isXbox(isXbox) {
+	load(isXbox ? "mainmenu" : "mainmenu16x12");
 
 	addBackground("back");
 }

@@ -40,7 +40,7 @@ class Module;
 
 class MainMenu : public GUI {
 public:
-	MainMenu(Module &module);
+	MainMenu(Module &module, bool isXbox);
 	~MainMenu();
 
 protected:
@@ -50,6 +50,7 @@ protected:
 
 private:
 	Module *_module;
+	bool _isXbox;
 };
 
 } // End of namespace KotOR
