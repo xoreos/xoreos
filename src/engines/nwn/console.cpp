@@ -176,7 +176,7 @@ void Console::updateMusic() {
 	_maxSizeMusic = 0;
 
 	std::list<Aurora::ResourceManager::ResourceID> music;
-	ResMan.getAvailabeResources(Aurora::kFileTypeBMU, music);
+	ResMan.getAvailableResources(Aurora::kFileTypeBMU, music);
 
 	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator m = music.begin();
 	     m != music.end(); ++m) {

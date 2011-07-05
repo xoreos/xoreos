@@ -1006,7 +1006,7 @@ void Console::updateVideos() {
 	_maxSizeVideos = 0;
 
 	std::list<Aurora::ResourceManager::ResourceID> videos;
-	ResMan.getAvailabeResources(Aurora::kFileTypeBIK, videos);
+	ResMan.getAvailableResources(Aurora::kFileTypeBIK, videos);
 
 	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator v = videos.begin();
 	     v != videos.end(); ++v) {
@@ -1024,7 +1024,7 @@ void Console::updateSounds() {
 	_maxSizeSounds = 0;
 
 	std::list<Aurora::ResourceManager::ResourceID> sounds;
-	ResMan.getAvailabeResources(Aurora::kFileTypeWAV, sounds);
+	ResMan.getAvailableResources(Aurora::kFileTypeWAV, sounds);
 
 	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator s = sounds.begin();
 	     s != sounds.end(); ++s) {
@@ -1109,7 +1109,7 @@ void Console::cmdDump2DA(const CommandLine &cl) {
 
 void Console::cmdDumpAll2DA(const CommandLine &cl) {
 	std::list<Aurora::ResourceManager::ResourceID> twoda;
-	ResMan.getAvailabeResources(Aurora::kFileType2DA, twoda);
+	ResMan.getAvailableResources(Aurora::kFileType2DA, twoda);
 
 	std::list<Aurora::ResourceManager::ResourceID>::const_iterator t;
 	for (t = twoda.begin(); t != twoda.end(); ++t) {

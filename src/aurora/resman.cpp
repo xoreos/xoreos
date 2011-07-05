@@ -517,7 +517,7 @@ Common::SeekableReadStream *ResourceManager::getResource(ResourceType resType,
 	return 0;
 }
 
-void ResourceManager::getAvailabeResources(FileType type,
+void ResourceManager::getAvailableResources(FileType type,
 		std::list<ResourceID> &list) const {
 
 	for (ResourceMap::const_iterator r = _resources.begin(); r != _resources.end(); ++r)
@@ -531,7 +531,7 @@ void ResourceManager::getAvailabeResources(FileType type,
 
 }
 
-void ResourceManager::getAvailabeResources(const std::vector<FileType> &types,
+void ResourceManager::getAvailableResources(const std::vector<FileType> &types,
 		std::list<ResourceID> &list) const {
 
 	for (ResourceMap::const_iterator r = _resources.begin(); r != _resources.end(); ++r)
@@ -545,10 +545,10 @@ void ResourceManager::getAvailabeResources(const std::vector<FileType> &types,
 				}
 }
 
-void ResourceManager::getAvailabeResources(ResourceType type,
+void ResourceManager::getAvailableResources(ResourceType type,
 		std::list<ResourceID> &list) const {
 
-	getAvailabeResources(_resourceTypeTypes[type], list);
+	getAvailableResources(_resourceTypeTypes[type], list);
 }
 
 void ResourceManager::addResource(Resource &resource, Common::UString name, ChangeID &change) {

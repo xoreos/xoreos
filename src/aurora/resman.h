@@ -255,11 +255,11 @@ public:
 			const Common::UString &name, FileType *foundType = 0) const;
 
 	/** Return a list of all available resources of the specified type. */
-	void getAvailabeResources(FileType type, std::list<ResourceID> &list) const;
+	void getAvailableResources(FileType type, std::list<ResourceID> &list) const;
 	/** Return a list of all available resources of the specified type. */
-	void getAvailabeResources(const std::vector<FileType> &types, std::list<ResourceID> &list) const;
+	void getAvailableResources(const std::vector<FileType> &types, std::list<ResourceID> &list) const;
 	/** Return a list of all available resources of the specified type. */
-	void getAvailabeResources(ResourceType type, std::list<ResourceID> &list) const;
+	void getAvailableResources(ResourceType type, std::list<ResourceID> &list) const;
 
 	/** Dump a list of all resources into a file. */
 	void dumpResourcesList(const Common::UString &fileName) const;
