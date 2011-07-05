@@ -214,6 +214,9 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		stream->seek(0);
 		return makeVorbisStream(stream, true);
 
+	} else if (tag == 0x3026B275) {
+		// WMA
+		throw Common::Exception("Unhandled WMA sound");
 	} else
 		throw Common::Exception("Unknown sound format");
 
