@@ -74,9 +74,9 @@ bool loadWAVFromStream(Common::SeekableReadStream &stream, int &size, int &rate,
 
 	// Next comes the "type" field of the fmt header. Some typical
 	// values for it:
-	// 1  -> uncompressed PCM
-	// 2  -> MS ADPCM compressed WAVE
-	// 17 -> MS IMA ADPCM compressed WAVE
+	// 1        -> uncompressed PCM
+	// 2       -> MS ADPCM compressed WAVE
+	// 17, 105 -> MS IMA ADPCM compressed WAVE
 	// See <http://www.saettler.com/RIFFNEW/RIFFNEW.htm> for a more complete
 	// list of common WAVE compression formats...
 	uint16 type = stream.readUint16LE();
@@ -106,7 +106,7 @@ bool loadWAVFromStream(Common::SeekableReadStream &stream, int &size, int &rate,
 	printf("  bitsPerSample: %d\n", bitsPerSample);
 #endif
 
-	if (type != 1 && type != 2 && type != 17) {
+	if (type != 1 && type != 2 && type != 17 && type != 105) {
 		warning("getWavInfo: only PCM, MS ADPCM or IMA ADPCM data is supported (type %d)", type);
 		return false;
 	}
@@ -120,7 +120,7 @@ bool loadWAVFromStream(Common::SeekableReadStream &stream, int &size, int &rate,
 		flags |= FLAG_UNSIGNED;
 	else if (bitsPerSample == 16)	// 16 bit data is signed little endian
 		flags |= (FLAG_16BITS | FLAG_LITTLE_ENDIAN);
-	else if (bitsPerSample == 4 && (type == 2 || type == 17))
+	else if (bitsPerSample == 4 && (type == 2 || type == 17 || type == 105))
 		flags |= FLAG_16BITS;
 	else {
 		warning("getWavInfo: unsupported bitsPerSample %d", bitsPerSample);
@@ -170,7 +170,7 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool di
 
 	Common::SeekableSubReadStream *subStream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->pos() + size, disposeAfterUse);
 
-	if (type == 17) // MS IMA ADPCM
+	if (type == 17 || type == 105) // MS IMA ADPCM
 		return makeADPCMStream(subStream, true, size, kADPCMMSIma, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
 	else if (type == 2) // MS ADPCM
 		return makeADPCMStream(subStream, true, size, kADPCMMS, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
