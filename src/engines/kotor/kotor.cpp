@@ -261,6 +261,11 @@ void KotOREngine::initResources() {
 	status("Loading main talk table");
 	TalkMan.addMainTable("dialog");
 
+	if (_hasLiveKey) {
+		status("Loading Xbox DLC talk table");
+		TalkMan.addAltTable("live1");
+	}
+
 	registerModelLoader(new KotORModelLoader);
 
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
