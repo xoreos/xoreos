@@ -59,9 +59,16 @@ private:
 	/** Create a new audio stream to be queued. */
 	void queueAudioStream(Common::SeekableReadStream *stream);
 
-	uint16 _audioCompression;
-	uint16 _audioChannels;
-	uint32 _audioRate;
+	struct AudioTrack {
+		uint16 compression;
+		uint16 channels;
+		uint32 rate;
+		uint16 bitsPerSample;
+		uint16 unk;
+	};
+
+	std::vector<AudioTrack> _audioTracks;
+	uint _audioTrack;
 };
 
 } // End of namespace Video
