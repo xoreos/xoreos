@@ -32,6 +32,7 @@
 #include "sound/decoders/mp3.h"
 #include "sound/decoders/vorbis.h"
 #include "sound/decoders/wave.h"
+#include "sound/decoders/wma.h"
 
 #include "common/stream.h"
 #include "common/util.h"
@@ -216,7 +217,8 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 
 	} else if (tag == 0x3026B275) {
 		// WMA
-		throw Common::Exception("Unhandled WMA sound");
+		stream->seek(0);
+		return makeWMAStream(stream, true);
 	} else
 		throw Common::Exception("Unknown sound format");
 

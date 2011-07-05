@@ -7,11 +7,13 @@ noinst_HEADERS = mp3.h \
                  adpcm.h \
                  wave.h \
                  pcm.h \
-                 aac.h
+                 aac.h \
+                 wma.h
 
 libdecoders_la_SOURCES = mp3.cpp \
                          vorbis.cpp \
                          adpcm.cpp \
                          wave.cpp \
                          pcm.cpp \
-                         aac.cpp
+                         aac.cpp \
+                         wma.cpp
