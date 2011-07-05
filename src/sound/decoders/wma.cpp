@@ -31,6 +31,7 @@
 
 #include "common/error.h"
 #include "common/stream.h"
+#include "common/util.h"
 
 #include "sound/audiostream.h"
 #include "sound/decoders/wma.h"
@@ -67,6 +68,7 @@ private:
 	byte id[16];
 };
 
+// GUID's that we need
 static const ASFGUID s_asfHeader       = ASFGUID(0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11, 0xA6, 0xD9, 0x00, 0xAA, 0x00, 0x62, 0xCE, 0x6C);
 static const ASFGUID s_asfFileHeader   = ASFGUID(0xA1, 0xDC, 0xAB, 0x8C, 0x47, 0xA9, 0xCF, 0x11, 0x8E, 0xE4, 0x00, 0xC0, 0x0C, 0x20, 0x53, 0x65);
 static const ASFGUID s_asfHead1        = ASFGUID(0xb5, 0x03, 0xbf, 0x5f, 0x2E, 0xA9, 0xCF, 0x11, 0x8e, 0xe3, 0x00, 0xc0, 0x0c, 0x20, 0x53, 0x65);
@@ -74,6 +76,7 @@ static const ASFGUID s_asfComment      = ASFGUID(0x33, 0x26, 0xb2, 0x75, 0x8E, 0
 static const ASFGUID s_asfStreamHeader = ASFGUID(0x91, 0x07, 0xDC, 0xB7, 0xB7, 0xA9, 0xCF, 0x11, 0x8E, 0xE6, 0x00, 0xC0, 0x0C, 0x20, 0x53, 0x65);
 static const ASFGUID s_asfCodecComment = ASFGUID(0x40, 0x52, 0xD1, 0x86, 0x1D, 0x31, 0xD0, 0x11, 0xA3, 0xA4, 0x00, 0xA0, 0xC9, 0x03, 0x48, 0xF6);
 static const ASFGUID s_asfDataHeader   = ASFGUID(0x36, 0x26, 0xb2, 0x75, 0x8E, 0x66, 0xCF, 0x11, 0xa6, 0xd9, 0x00, 0xaa, 0x00, 0x62, 0xce, 0x6c);
+static const ASFGUID s_asfAudioStream  = ASFGUID(0x40, 0x9E, 0x69, 0xF8, 0x4D, 0x5B, 0xCF, 0x11, 0xA8, 0xFD, 0x00, 0x80, 0x5F, 0x5C, 0x44, 0x2B);
 
 class WMAStream : public RewindableAudioStream {
 public:
@@ -83,16 +86,26 @@ public:
 	int readBuffer(int16 *buffer, const int numSamples) { return 0; }
 
 	bool endOfData() const		{ return true; }
-	bool isStereo() const		{ return false; }
-	int getRate() const			{ return 1; }
+	bool isStereo() const		{ return _channels == 2; }
+	int getRate() const			{ return _rate; }
 	bool rewind()               { return false; }
 
 private:
 	Common::SeekableReadStream *_stream;
 	bool _disposeAfterUse;
+
+	void parseStreamHeader();
+
+	uint16 _channels;
+	int _rate;
+	uint16 _blockAlign;
+	uint16 _bitsPerCodedSample;
+	Common::SeekableReadStream *_extraData;
 };
 
 WMAStream::WMAStream(Common::SeekableReadStream *stream, bool dispose) : _stream(stream), _disposeAfterUse(dispose) {
+	_extraData = 0;
+
 	ASFGUID guid = ASFGUID(*_stream);
 	if (guid != s_asfHeader)
 		throw Common::Exception("WMAStream: Missing asf header");
@@ -108,15 +121,22 @@ WMAStream::WMAStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 		uint64 size = _stream->readUint64LE();
 
 		if (_stream->eos())
-			break;
+			throw Common::Exception("WMAStream: Unexpected eos");
 
 		// TODO: Parse each chunk
 		if (guid == s_asfFileHeader) {
+			// TODO
 		} else if (guid == s_asfHead1) {
+			// Should be safe to ignore
 		} else if (guid == s_asfComment) {
+			// Ignored
 		} else if (guid == s_asfStreamHeader) {
+			parseStreamHeader();
 		} else if (guid == s_asfCodecComment) {
+			// TODO
 		} else if (guid == s_asfDataHeader) {
+			// Done parsing the header
+			break;
 		} else
 			warning("Found unknown ASF GUID: %s", guid.toString().c_str());
 		
@@ -129,6 +149,37 @@ WMAStream::WMAStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 WMAStream::~WMAStream() {
 	if (_disposeAfterUse)
 		delete _stream;
+}
+
+void WMAStream::parseStreamHeader() {
+	ASFGUID guid = ASFGUID(*_stream);
+
+	if (guid != s_asfAudioStream)
+		throw Common::Exception("WMAStream::parseStreamHeader(): Found non-audio stream");
+
+	_stream->skip(16); // skip a guid
+	_stream->readUint64LE(); // total size
+	uint32 typeSpecificSize = _stream->readUint32LE();
+	_stream->readUint32LE();
+	_stream->readUint16LE(); // stream id
+	_stream->readUint32LE();
+
+	// Parse the wave header
+	uint16 compression = _stream->readUint16LE();
+	_channels = _stream->readUint16LE();
+	_rate = _stream->readUint32LE();
+	_stream->readUint32LE(); // bit rate
+	_blockAlign = _stream->readUint16LE();
+	_bitsPerCodedSample = (typeSpecificSize == 14) ? 8 : _stream->readUint16LE();
+
+	if (compression != 0x161)
+		throw Common::Exception("WMAStream::parseStreamHeader(): Only WMAv2 is supported");
+
+	if (typeSpecificSize >= 18) {
+		uint32 cbSize = _stream->readUint16LE();
+		cbSize = MIN<int>(cbSize, typeSpecificSize - 18);
+		_extraData = _stream->readStream(cbSize);
+	}
 }
 
 RewindableAudioStream *makeWMAStream(
