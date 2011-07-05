@@ -166,6 +166,11 @@ void KotOR2Engine::init() {
 void KotOR2Engine::initResources() {
 	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
+
+	// In the Xbox version of KotOR, TXB textures are actually TPCs
+	if (_platform == Aurora::kPlatformXbox)
+		ResMan.addTypeAlias(Aurora::kFileTypeTXB, Aurora::kFileTypeTPC);
+
 	indexMandatoryDirectory("", 0, 0, 0);
 
 	status("Adding extra archive directories");
