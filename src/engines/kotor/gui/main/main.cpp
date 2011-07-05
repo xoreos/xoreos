@@ -64,7 +64,13 @@ void MainMenu::initWidget(Widget &widget) {
 	}
 
 	// Warp button? O_o
-	if (widget.getTag() == "BTN_WARP") {
+	if ((widget.getTag() == "BTN_WARP") || (widget.getTag() == "LBL_WARP")) {
+		widget.setInvisible(true);
+		return;
+	}
+
+	// "Y" label
+	if (widget.getTag() == "LBL_Y") {
 		widget.setInvisible(true);
 		return;
 	}
