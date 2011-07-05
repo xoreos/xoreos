@@ -138,7 +138,7 @@ void JadeEngine::run(const Common::UString &target) {
 
 	Graphics::Aurora::FPS *fps = 0;
 	if (showFPS) {
-		fps = new Graphics::Aurora::FPS(FontMan.get("asian"));
+		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
 		fps->show();
 	}
 

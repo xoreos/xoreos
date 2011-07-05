@@ -148,7 +148,7 @@ void KotOREngine::run(const Common::UString &target) {
 	CursorMan.showCursor();
 
 	if (ConfigMan.getBool("showfps", false)) {
-		_fps = new Graphics::Aurora::FPS(FontMan.get("fnt_galahad14"));
+		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
 		_fps->show();
 	}
 
