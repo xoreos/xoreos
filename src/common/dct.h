@@ -36,10 +36,10 @@
 #define COMMON_DCT_H
 
 #include "common/types.h"
-#include "common/maths.h"
-#include "common/rdft.h"
 
 namespace Common {
+
+class RDFT;
 
 /** (Inverse) Discrete Cosine Transforms. */
 class DCT {

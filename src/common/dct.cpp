@@ -32,6 +32,8 @@
  *  (Inverse) Discrete Cosine Transforms.
  */
 
+#include "common/maths.h"
+#include "common/rdft.h"
 #include "common/dct.h"
 
 namespace Common {

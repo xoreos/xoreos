@@ -32,6 +32,8 @@
 
 #include <cassert>
 
+#include "common/maths.h"
+#include "common/fft.h"
 #include "common/rdft.h"
 
 namespace Common {

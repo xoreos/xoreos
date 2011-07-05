@@ -34,10 +34,10 @@
 #define COMMON_RDFT_H
 
 #include "common/types.h"
-#include "common/maths.h"
-#include "common/fft.h"
 
 namespace Common {
+
+class FFT;
 
 /** (Inverse) Real Discrete Fourier Transform. */
 class RDFT {

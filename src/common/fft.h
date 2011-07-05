@@ -36,9 +36,10 @@
 #define COMMON_FFT_H
 
 #include "common/types.h"
-#include "common/maths.h"
 
 namespace Common {
+
+class Complex;
 
 /** (Inverse) Fast Fourier Transform. */
 class FFT {

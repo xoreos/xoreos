@@ -35,9 +35,9 @@
 #include <cassert>
 #include <cstring>
 
-#include "common/fft.h"
-#include "common/util.h"
 #include "common/maths.h"
+#include "common/util.h"
+#include "common/fft.h"
 
 namespace Common {
 
