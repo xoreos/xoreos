@@ -65,6 +65,7 @@ enum PCMFlags {
  * @param flags  Audio flags combination.
  * @see RawFlags
  * @param disposeAfterUse Whether to delete the stream after use.
+ *
  * @return The new SeekableAudioStream (or 0 on failure).
  */
 RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
@@ -73,4 +74,4 @@ RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
 
 } // End of namespace Sound
 
-#endif
+#endif // SOUND_DECODERS_RAW_H

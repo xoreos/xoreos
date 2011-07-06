@@ -53,14 +53,15 @@ enum ADPCMTypes {
  * Takes an input stream containing ADPCM compressed sound data and creates
  * an RewindableAudioStream from that.
  *
- * @param stream            the SeekableReadStream from which to read the ADPCM data
- * @param disposeAfterUse   whether to delete the stream after use
- * @param size              how many bytes to read from the stream (0 = all)
- * @param type              the compression type used
- * @param rate              the sampling rate
- * @param channels          the number of channels
- * @param blockAlign        block alignment ???
- * @return   a new RewindableAudioStream, or NULL, if an error occured
+ * @param stream            The SeekableReadStream from which to read the ADPCM data.
+ * @param disposeAfterUse   Whether to delete the stream after use.
+ * @param size              How many bytes to read from the stream (0 = all).
+ * @param type              The compression type used.
+ * @param rate              The sampling rate.
+ * @param channels          The number of channels.
+ * @param blockAlign        Block alignment ???
+ *
+ * @return A new RewindableAudioStream, or NULL, if an error occured.
  */
 RewindableAudioStream *makeADPCMStream(
 	Common::SeekableReadStream *stream,
@@ -72,4 +73,4 @@ RewindableAudioStream *makeADPCMStream(
 
 }
 
-#endif
+#endif // SOUND_DECODERS_ADPCM_H

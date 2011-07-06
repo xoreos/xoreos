@@ -36,9 +36,10 @@ namespace Sound {
  * Try to load a ASF from the given seekable stream and create a RewindableAudioStream
  * from that data.
  *
- * @param stream			the SeekableReadStream from which to read the ASF data
- * @param disposeAfterUse	whether to delete the stream after use
- * @return	a new RewindableAudioStream, or NULL, if an error occured
+ * @param stream          The SeekableReadStream from which to read the ASF data.
+ * @param disposeAfterUse Whether to delete the stream after use.
+ *
+ * @return A new RewindableAudioStream, or NULL, if an error occured.
  */
 
 RewindableAudioStream *makeASFStream(
@@ -47,4 +48,4 @@ RewindableAudioStream *makeASFStream(
 
 } // End of namespace Sound
 
-#endif
+#endif // SOUND_DECODERS_ASF_H

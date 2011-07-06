@@ -47,9 +47,10 @@ class RewindableAudioStream;
  * Create a new SeekableAudioStream from the MP3 data in the given stream.
  * Allows for seeking (which is why we require a SeekableReadStream).
  *
- * @param stream			the SeekableReadStream from which to read the MP3 data
- * @param disposeAfterUse	whether to delete the stream after use
- * @return	a new SeekableAudioStream, or NULL, if an error occured
+ * @param stream          The SeekableReadStream from which to read the MP3 data.
+ * @param disposeAfterUse Whether to delete the stream after use.
+ *
+ * @return A new SeekableAudioStream, or NULL, if an error occured.
  */
 RewindableAudioStream *makeMP3Stream(
 	Common::SeekableReadStream *stream,
@@ -57,4 +58,4 @@ RewindableAudioStream *makeMP3Stream(
 
 } // End of namespace Sound
 
-#endif
+#endif // SOUND_DECODERS_MP3_H

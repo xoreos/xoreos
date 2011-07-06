@@ -47,11 +47,13 @@ class AudioStream;
  *
  * @note This should *only* be called by our QuickTime/MPEG-4 decoder since it relies
  *       on the MPEG-4 extra data.
- * @param stream            the SeekableReadStream from which to read the AAC data
- * @param disposeStream     whether to delete the stream after use
- * @param extraData         the SeekableReadStream from which to read the AAC extra data
- * @param disposeExtraData  whether to delete the extra data stream after use
- * @return  a new AudioStream, or NULL, if an error occurred
+ *
+ * @param stream            The SeekableReadStream from which to read the AAC data.
+ * @param disposeStream     Whether to delete the stream after use.
+ * @param extraData         The SeekableReadStream from which to read the AAC extra data.
+ * @param disposeExtraData  Whether to delete the extra data stream after use.
+ *
+ * @return A new AudioStream, or NULL, if an error occurred
  */
 AudioStream *makeAACStream(
 	Common::SeekableReadStream *stream,
@@ -61,4 +63,4 @@ AudioStream *makeAACStream(
 
 } // End of namespace Sound
 
-#endif // #ifndef SOUND_AAC_H
+#endif // SOUND_AAC_H

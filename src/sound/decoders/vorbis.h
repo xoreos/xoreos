@@ -45,9 +45,10 @@ class RewindableAudioStream;
 /**
  * Create a new RewindableAudioStream from the Ogg Vorbis data in the given stream.
  *
- * @param stream			the RewindableAudioStream from which to read the Ogg Vorbis data
- * @param disposeAfterUse	whether to delete the stream after use
- * @return	a new RewindableAudioStream, or NULL, if an error occured
+ * @param stream          The RewindableAudioStream from which to read the Ogg Vorbis data.
+ * @param disposeAfterUse Whether to delete the stream after use.
+ *
+ * @return A new RewindableAudioStream, or NULL, if an error occured.
  */
 RewindableAudioStream *makeVorbisStream(
 	Common::SeekableReadStream *stream,
@@ -55,4 +56,4 @@ RewindableAudioStream *makeVorbisStream(
 
 } // End of namespace Sound
 
-#endif
+#endif // SOUND_DECODERS_VORBIS_H

@@ -43,9 +43,10 @@ class RewindableAudioStream;
  * from that data. Currently this function supports uncompressed
  * raw PCM data, MS IMA ADPCM and MS ADPCM (uses makeADPCMStream internally).
  *
- * @param stream			the SeekableReadStream from which to read the WAVE data
- * @param disposeAfterUse	whether to delete the stream after use
- * @return	a new RewindableAudioStream, or NULL, if an error occured
+ * @param stream          The SeekableReadStream from which to read the WAVE data.
+ * @param disposeAfterUse Whether to delete the stream after use.
+ *
+ * @return A new RewindableAudioStream, or NULL, if an error occured.
  */
 RewindableAudioStream *makeWAVStream(
 	Common::SeekableReadStream *stream,
@@ -53,4 +54,4 @@ RewindableAudioStream *makeWAVStream(
 
 } // End of namespace Sound
 
-#endif
+#endif // SOUND_DECODERS_WAVE_H
