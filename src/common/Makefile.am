@@ -13,6 +13,7 @@ noinst_HEADERS = system.h \
                  fft.h \
                  rdft.h \
                  dct.h \
+                 mdct.h \
                  threads.h \
                  thread.h \
                  mutex.h \
@@ -46,6 +47,7 @@ libcommon_la_SOURCES = maths.cpp \
                        fft.cpp \
                        rdft.cpp \
                        dct.cpp \
+                       mdct.cpp \
                        threads.cpp \
                        thread.cpp \
                        mutex.cpp \
