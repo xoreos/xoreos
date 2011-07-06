@@ -35,6 +35,7 @@
 
 #include "sound/audiostream.h"
 #include "sound/decoders/asf.h"
+#include "sound/decoders/wave_types.h"
 
 namespace Sound {
 
@@ -98,6 +99,7 @@ private:
 
 	void parseStreamHeader();
 
+	uint16 _compression;
 	uint16 _channels;
 	int _rate;
 	uint16 _blockAlign;
@@ -171,14 +173,14 @@ void ASFStream::parseStreamHeader() {
 	_stream->readUint32LE();
 
 	// Parse the wave header
-	uint16 compression = _stream->readUint16LE();
+	_compression = _stream->readUint16LE();
 	_channels = _stream->readUint16LE();
 	_rate = _stream->readUint32LE();
 	_stream->readUint32LE(); // bit rate
 	_blockAlign = _stream->readUint16LE();
 	_bitsPerCodedSample = (typeSpecificSize == 14) ? 8 : _stream->readUint16LE();
 
-	if (compression != 0x161)
+	if (_compression != kWaveWMAv2)
 		throw Common::Exception("ASFStream::parseStreamHeader(): Only WMAv2 is supported");
 
 	if (typeSpecificSize >= 18) {

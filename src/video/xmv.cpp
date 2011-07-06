@@ -33,6 +33,7 @@
 #include "video/xmv.h"
 
 #include "sound/decoders/adpcm.h"
+#include "sound/decoders/wave_types.h"
 
 namespace Video {
 
@@ -113,11 +114,11 @@ void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream) {
 		return;
 
 	switch (_audioTracks[_audioTrack].compression) {
-	case 1:    // PCM
+	case Sound::kWavePCM:    // PCM
 		// TODO: Where's the flags? Anyone have samples?
 		warning("XboxMediaVideo::createAudioStream(): PCM not yet handled");
 		break;
-	case 0x69: // MS IMA ADPCM
+	case Sound::kWaveMSIMAADPCM2: // MS IMA ADPCM
 		// TODO: Where's block align?
 		warning("XboxMediaVideo::createAudioStream(): ADPCM not yet handled");
 		//queueSound(new Sound::makeADPCMStream(stream, true, stream->size(), Sound::kADPCMMSIma, _audioRate, _audioChannels /* , _audioBlockAlign */));

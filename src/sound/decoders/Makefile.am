@@ -8,7 +8,8 @@ noinst_HEADERS = mp3.h \
                  wave.h \
                  pcm.h \
                  aac.h \
-                 asf.h
+                 asf.h \
+                 wave_types.h
 
 libdecoders_la_SOURCES = mp3.cpp \
                          vorbis.cpp \

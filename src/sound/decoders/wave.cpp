@@ -36,6 +36,7 @@
 #include "sound/decoders/wave.h"
 #include "sound/decoders/adpcm.h"
 #include "sound/decoders/pcm.h"
+#include "sound/decoders/wave_types.h"
 
 namespace Sound {
 
@@ -106,7 +107,7 @@ bool loadWAVFromStream(Common::SeekableReadStream &stream, int &size, int &rate,
 	printf("  bitsPerSample: %d\n", bitsPerSample);
 #endif
 
-	if (type != 1 && type != 2 && type != 17 && type != 105) {
+	if (type != kWavePCM && type != kWaveMSADPCM && type != kWaveMSIMAADPCM && type != kWaveMSIMAADPCM2) {
 		warning("getWavInfo: only PCM, MS ADPCM or IMA ADPCM data is supported (type %d)", type);
 		return false;
 	}
@@ -120,7 +121,7 @@ bool loadWAVFromStream(Common::SeekableReadStream &stream, int &size, int &rate,
 		flags |= FLAG_UNSIGNED;
 	else if (bitsPerSample == 16)	// 16 bit data is signed little endian
 		flags |= (FLAG_16BITS | FLAG_LITTLE_ENDIAN);
-	else if (bitsPerSample == 4 && (type == 2 || type == 17 || type == 105))
+	else if (bitsPerSample == 4 && (type == kWaveMSADPCM || type == kWaveMSIMAADPCM || type == kWaveMSIMAADPCM2))
 		flags |= FLAG_16BITS;
 	else {
 		warning("getWavInfo: unsupported bitsPerSample %d", bitsPerSample);
@@ -170,9 +171,9 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool di
 
 	Common::SeekableSubReadStream *subStream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->pos() + size, disposeAfterUse);
 
-	if (type == 17 || type == 105) // MS IMA ADPCM
+	if (type == kWaveMSIMAADPCM || type == kWaveMSIMAADPCM2) // MS IMA ADPCM
 		return makeADPCMStream(subStream, true, size, kADPCMMSIma, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
-	else if (type == 2) // MS ADPCM
+	else if (type == kWaveMSADPCM) // MS ADPCM
 		return makeADPCMStream(subStream, true, size, kADPCMMS, rate, (flags & FLAG_STEREO) ? 2 : 1, blockAlign);
 
 	// Raw PCM
