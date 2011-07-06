@@ -23,25 +23,25 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file sound/decoders/wma.h
- *  Decoding Windows Media Audio.
+/** @file sound/decoders/asf.h
+ *  Decoding Microsoft's Advanced Streaming Format.
  */
 
-#ifndef SOUND_DECODERS_WMA_H
-#define SOUND_DECODERS_WMA_H
+#ifndef SOUND_DECODERS_ASF_H
+#define SOUND_DECODERS_ASF_H
 
 namespace Sound {
 
 /**
- * Try to load a WMA from the given seekable stream and create a RewindableAudioStream
+ * Try to load a ASF from the given seekable stream and create a RewindableAudioStream
  * from that data.
  *
- * @param stream			the SeekableReadStream from which to read the WMA data
+ * @param stream			the SeekableReadStream from which to read the ASF data
  * @param disposeAfterUse	whether to delete the stream after use
  * @return	a new RewindableAudioStream, or NULL, if an error occured
  */
 
-RewindableAudioStream *makeWMAStream(
+RewindableAudioStream *makeASFStream(
 	Common::SeekableReadStream *stream,
 	bool disposeAfterUse = true);
 

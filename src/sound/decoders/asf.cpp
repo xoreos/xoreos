@@ -23,10 +23,10 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-// Largely based on the ASF/WMA implementation found in FFmpeg.
+// Largely based on the ASF implementation found in FFmpeg.
 
-/** @file sound/decoders/wma.cpp
- *  Decoding Windows Media Audio.
+/** @file sound/decoders/asf.cpp
+ *  Decoding Microsoft's Advanced Streaming Format.
  */
 
 #include "common/error.h"
@@ -34,7 +34,7 @@
 #include "common/util.h"
 
 #include "sound/audiostream.h"
-#include "sound/decoders/wma.h"
+#include "sound/decoders/asf.h"
 
 namespace Sound {
 
@@ -80,10 +80,10 @@ static const ASFGUID s_asfAudioStream    = ASFGUID(0x40, 0x9E, 0x69, 0xF8, 0x4D,
 static const ASFGUID s_asfExtendedHeader = ASFGUID(0x40, 0xA4, 0xD0, 0xD2, 0x07, 0xE3, 0xD2, 0x11, 0x97, 0xF0, 0x00, 0xA0, 0xC9, 0x5E, 0xA8, 0x50);
 static const ASFGUID s_asfStreamBitRate  = ASFGUID(0xce, 0x75, 0xf8, 0x7b, 0x8d, 0x46, 0xd1, 0x11, 0x8d, 0x82, 0x00, 0x60, 0x97, 0xc9, 0xa2, 0xb2);
 
-class WMAStream : public RewindableAudioStream {
+class ASFStream : public RewindableAudioStream {
 public:
-	WMAStream(Common::SeekableReadStream *stream, bool dispose);
-	~WMAStream();
+	ASFStream(Common::SeekableReadStream *stream, bool dispose);
+	~ASFStream();
 
 	int readBuffer(int16 *buffer, const int numSamples) { return 0; }
 
@@ -105,12 +105,12 @@ private:
 	Common::SeekableReadStream *_extraData;
 };
 
-WMAStream::WMAStream(Common::SeekableReadStream *stream, bool dispose) : _stream(stream), _disposeAfterUse(dispose) {
+ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream(stream), _disposeAfterUse(dispose) {
 	_extraData = 0;
 
 	ASFGUID guid = ASFGUID(*_stream);
 	if (guid != s_asfHeader)
-		throw Common::Exception("WMAStream: Missing asf header");
+		throw Common::Exception("ASFStream: Missing asf header");
 
 	_stream->readUint64LE();
 	_stream->readUint32LE();
@@ -123,7 +123,7 @@ WMAStream::WMAStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 		uint64 size = _stream->readUint64LE();
 
 		if (_stream->eos())
-			throw Common::Exception("WMAStream: Unexpected eos");
+			throw Common::Exception("ASFStream: Unexpected eos");
 
 		// TODO: Parse each chunk
 		if (guid == s_asfFileHeader) {
@@ -149,19 +149,19 @@ WMAStream::WMAStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 		_stream->seek(startPos + size);
 	}
 
-	throw Common::Exception("STUB: WMAStream");
+	throw Common::Exception("STUB: ASFStream");
 }
 
-WMAStream::~WMAStream() {
+ASFStream::~ASFStream() {
 	if (_disposeAfterUse)
 		delete _stream;
 }
 
-void WMAStream::parseStreamHeader() {
+void ASFStream::parseStreamHeader() {
 	ASFGUID guid = ASFGUID(*_stream);
 
 	if (guid != s_asfAudioStream)
-		throw Common::Exception("WMAStream::parseStreamHeader(): Found non-audio stream");
+		throw Common::Exception("ASFStream::parseStreamHeader(): Found non-audio stream");
 
 	_stream->skip(16); // skip a guid
 	_stream->readUint64LE(); // total size
@@ -179,7 +179,7 @@ void WMAStream::parseStreamHeader() {
 	_bitsPerCodedSample = (typeSpecificSize == 14) ? 8 : _stream->readUint16LE();
 
 	if (compression != 0x161)
-		throw Common::Exception("WMAStream::parseStreamHeader(): Only WMAv2 is supported");
+		throw Common::Exception("ASFStream::parseStreamHeader(): Only WMAv2 is supported");
 
 	if (typeSpecificSize >= 18) {
 		uint32 cbSize = _stream->readUint16LE();
@@ -188,10 +188,10 @@ void WMAStream::parseStreamHeader() {
 	}
 }
 
-RewindableAudioStream *makeWMAStream(
+RewindableAudioStream *makeASFStream(
 	Common::SeekableReadStream *stream,
 	bool disposeAfterUse) {
-	RewindableAudioStream *s = new WMAStream(stream, disposeAfterUse);
+	RewindableAudioStream *s = new ASFStream(stream, disposeAfterUse);
 
 	if (s && s->endOfData()) {
 		delete s;
