@@ -50,7 +50,7 @@ class RewindableAudioStream;
  * @param stream          The SeekableReadStream from which to read the MP3 data.
  * @param disposeAfterUse Whether to delete the stream after use.
  *
- * @return A new SeekableAudioStream, or NULL, if an error occured.
+ * @return A new SeekableAudioStream, or 0, if an error occured.
  */
 RewindableAudioStream *makeMP3Stream(
 	Common::SeekableReadStream *stream,

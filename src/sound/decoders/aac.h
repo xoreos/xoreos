@@ -53,7 +53,7 @@ class AudioStream;
  * @param extraData         The SeekableReadStream from which to read the AAC extra data.
  * @param disposeExtraData  Whether to delete the extra data stream after use.
  *
- * @return A new AudioStream, or NULL, if an error occurred
+ * @return A new AudioStream, or 0, if an error occurred
  */
 AudioStream *makeAACStream(
 	Common::SeekableReadStream *stream,

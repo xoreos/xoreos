@@ -73,7 +73,7 @@ void listDebug();
 #include <windows.h>
 
 int __stdcall WinMain(HINSTANCE /*hInst*/, HINSTANCE /*hPrevInst*/,  LPSTR /*lpCmdLine*/, int /*iShowCmd*/) {
-	SDL_SetModuleHandle(GetModuleHandle(NULL));
+	SDL_SetModuleHandle(GetModuleHandle(0));
 	return main(__argc, __argv);
 }
 #endif

@@ -437,15 +437,15 @@ UString ConfigManager::getDefaultConfigFile() {
 				error("Unable to access user profile directory");
 
 			strcat(configFile, "\\Application Data");
-			CreateDirectory(configFile, NULL);
+			CreateDirectory(configFile, 0);
 		}
 
 		strcat(configFile, "\\eos");
-		CreateDirectory(configFile, NULL);
+		CreateDirectory(configFile, 0);
 		strcat(configFile, "\\" DEFAULT_CONFIG_FILE);
 
-		FILE *tmp = NULL;
-		if ((tmp = fopen(configFile, "r")) == NULL) {
+		FILE *tmp = 0;
+		if ((tmp = fopen(configFile, "r")) == 0) {
 			// Check windows directory
 			char oldConfigFile[MAXPATHLEN];
 			GetWindowsDirectory(oldConfigFile, MAXPATHLEN);

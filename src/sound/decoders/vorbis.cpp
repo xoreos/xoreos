@@ -106,7 +106,7 @@ VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, bool dispose) :
 	_disposeAfterUse(dispose),
 	_bufferEnd(_buffer + ARRAYSIZE(_buffer)) {
 
-	int res = ov_open_callbacks(inStream, &_ovFile, NULL, 0, g_stream_wrap);
+	int res = ov_open_callbacks(inStream, &_ovFile, 0, 0, g_stream_wrap);
 	if (res < 0) {
 		warning("Could not create Vorbis stream (%d)", res);
 		_pos = _bufferEnd;
@@ -162,20 +162,20 @@ bool VorbisStream::refill() {
 		// in host byte order. As such, it does not take arguments to request
 		// specific signedness, byte order or bit depth as in Vorbisfile.
 		result = ov_read(&_ovFile, read_pos, len_left,
-						NULL);
+						0);
 #else
 #ifdef SCUMM_BIG_ENDIAN
 		result = ov_read(&_ovFile, read_pos, len_left,
 						1,
 						2,	// 16 bit
 						1,	// signed
-						NULL);
+						0);
 #else
 		result = ov_read(&_ovFile, read_pos, len_left,
 						0,
 						2,	// 16 bit
 						1,	// signed
-						NULL);
+						0);
 #endif
 #endif
 		if (result == OV_HOLE) {
