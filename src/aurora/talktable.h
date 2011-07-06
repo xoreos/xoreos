@@ -64,7 +64,7 @@ public:
 		uint32 flags;
 		Common::UString soundResRef;
 		uint32 volumeVariance; // Unused
-		uint32 pitchVariance; // Unused		
+		uint32 pitchVariance; // Unused
 		float soundLength; // In seconds
 
 		// V4

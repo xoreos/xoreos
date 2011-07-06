@@ -95,7 +95,7 @@ static bool writeBMP(const Common::UString &filename, const byte *data,
 	file.writeUint32LE(72);
 	file.writeUint32LE(72);
 	file.writeUint32LE(0);
-	file.writeUint32LE(0); 
+	file.writeUint32LE(0);
 
 	if (extraDataSize != 0) {
 		// Dump, making sure the pitch is correct

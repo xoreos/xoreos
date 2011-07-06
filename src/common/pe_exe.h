@@ -144,7 +144,7 @@ private:
 		uint32 offset;
 		uint32 size;
 	};
-	
+
 	typedef std::map<PEResourceID, Resource> LangMap;
 	typedef std::map<PEResourceID,  LangMap> NameMap;
 	typedef std::map<PEResourceID,  NameMap> TypeMap;

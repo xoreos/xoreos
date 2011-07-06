@@ -66,7 +66,7 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool di
 	// Skip over the rest of the fmt chunk.
 	stream->skip(fmtLength - 16);
 
-	// Skip over all chunks until we hit the data 
+	// Skip over all chunks until we hit the data
 	for (;;) {
 		if (stream->readUint32BE() == MKID_BE('data'))
 			break;

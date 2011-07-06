@@ -147,7 +147,7 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 			// Ignored
 		} else
 			warning("Found unknown ASF GUID: %s", guid.toString().c_str());
-		
+
 		_stream->seek(startPos + size);
 	}
 
