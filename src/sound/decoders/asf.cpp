@@ -91,7 +91,7 @@ public:
 	bool endOfData() const		{ return true; }
 	bool isStereo() const		{ return _channels == 2; }
 	int getRate() const			{ return _rate; }
-	bool rewind()               { return false; }
+	bool rewind();
 
 private:
 	Common::SeekableReadStream *_stream;
@@ -99,6 +99,8 @@ private:
 
 	void parseStreamHeader();
 	void parseFileHeader();
+
+	uint32 _rewindPos;
 
 	// Header object variables
 	uint64 _packetCount;
@@ -158,6 +160,13 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 		_stream->seek(startPos + size);
 	}
 
+	// Skip to the beginning of the packets
+	_stream->skip(26);
+	_rewindPos = _stream->pos();
+
+	if (_stream->readByte() != 0x82)
+		throw Common::Exception("ASFStream: Could not find start of first packet");
+
 	throw Common::Exception("STUB: ASFStream");
 }
 
@@ -214,6 +223,14 @@ void ASFStream::parseStreamHeader() {
 		cbSize = MIN<int>(cbSize, typeSpecificSize - 18);
 		_extraData = _stream->readStream(cbSize);
 	}
+}
+
+bool ASFStream::rewind() {
+	// Seek back to the start of the packets
+	_stream->seek(_rewindPos);
+
+	// TODO
+	return false;
 }
 
 RewindableAudioStream *makeASFStream(
