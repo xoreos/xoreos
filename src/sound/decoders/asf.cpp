@@ -98,7 +98,14 @@ private:
 	bool _disposeAfterUse;
 
 	void parseStreamHeader();
+	void parseFileHeader();
 
+	// Header object variables
+	uint64 _packetCount;
+	uint64 _duration;
+	uint32 _minPacketSize, _maxPacketSize;
+
+	// Stream object variables
 	uint16 _compression;
 	uint16 _channels;
 	int _rate;
@@ -129,7 +136,7 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 
 		// TODO: Parse each chunk
 		if (guid == s_asfFileHeader) {
-			// TODO
+			parseFileHeader();
 		} else if (guid == s_asfHead1) {
 			// Should be safe to ignore
 		} else if (guid == s_asfComment) {
@@ -157,6 +164,25 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 ASFStream::~ASFStream() {
 	if (_disposeAfterUse)
 		delete _stream;
+}
+
+void ASFStream::parseFileHeader() {
+	_stream->skip(16); // skip client GUID
+	/* uint64 fileSize = */ _stream->readUint64LE();
+	/* uint64 creationTime = */ _stream->readUint64LE();
+	_packetCount = _stream->readUint64LE();
+	/* uint64 endTimestamp = */ _stream->readUint64LE();
+	_duration = _stream->readUint64LE();
+	/* uint32 startTimestamp = */ _stream->readUint32LE();
+	/* uint32 unknown = */ _stream->readUint32LE();
+	/* uint32 flags = */ _stream->readUint32LE();
+	_minPacketSize = _stream->readUint32LE();
+	_maxPacketSize = _stream->readUint32LE();
+	/* uint32 uncFrameSize = */ _stream->readUint32LE();
+
+	// We only know how to support packets of one length
+	if (_minPacketSize != _maxPacketSize)
+		throw Common::Exception("ASFStream::parseFileHeader(): Mismatched packet sizes: Min = %d, Max = %d", _minPacketSize, _maxPacketSize);
 }
 
 void ASFStream::parseStreamHeader() {
