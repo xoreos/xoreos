@@ -23,8 +23,6 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-// Largely based on the Wave implementation found in ScummVM.
-
 /** @file sound/decoders/wave.h
  *  Decoding RIFF WAVE (Resource Interchange File Format Waveform).
  */
@@ -44,8 +42,6 @@ class RewindableAudioStream;
  * Try to load a WAVE from the given seekable stream and create an AudioStream
  * from that data. Currently this function supports uncompressed
  * raw PCM data, MS IMA ADPCM and MS ADPCM (uses makeADPCMStream internally).
- *
- * This function uses loadWAVFromStream() internally.
  *
  * @param stream			the SeekableReadStream from which to read the WAVE data
  * @param disposeAfterUse	whether to delete the stream after use
