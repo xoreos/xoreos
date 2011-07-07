@@ -86,11 +86,11 @@ public:
 	ASFStream(Common::SeekableReadStream *stream, bool dispose);
 	~ASFStream();
 
-	int readBuffer(int16 *buffer, const int numSamples) { return 0; }
+	int readBuffer(int16 *buffer, const int numSamples);
 
-	bool endOfData() const		{ return true; }
-	bool isStereo() const		{ return _channels == 2; }
-	int getRate() const			{ return _rate; }
+	bool endOfData() const;
+	bool isStereo() const { return _channels == 2; }
+	int getRate() const { return _rate; }
 	bool rewind();
 
 private:
@@ -121,9 +121,12 @@ private:
 	void parseStreamHeader();
 	void parseFileHeader();
 	Packet *readPacket();
+	AudioStream *createAudioStream();
 
 	uint32 _rewindPos;
+	uint64 _curPacket;
 	Packet *_lastPacket;
+	AudioStream *_curAudioStream;
 
 	// Header object variables
 	uint64 _packetCount;
@@ -131,6 +134,7 @@ private:
 	uint32 _minPacketSize, _maxPacketSize;
 
 	// Stream object variables
+	uint16 _streamID;
 	uint16 _compression;
 	uint16 _channels;
 	int _rate;
@@ -151,6 +155,8 @@ ASFStream::Packet::~Packet() {
 ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream(stream), _disposeAfterUse(dispose) {
 	_extraData = 0;
 	_lastPacket = 0;
+	_curPacket = 0;
+	_curAudioStream = 0;
 
 	ASFGUID guid = ASFGUID(*_stream);
 	if (guid != s_asfHeader)
@@ -203,6 +209,9 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 ASFStream::~ASFStream() {
 	if (_disposeAfterUse)
 		delete _stream;
+
+	delete _lastPacket;
+	delete _curAudioStream;
 }
 
 void ASFStream::parseFileHeader() {
@@ -234,7 +243,7 @@ void ASFStream::parseStreamHeader() {
 	_stream->readUint64LE(); // total size
 	uint32 typeSpecificSize = _stream->readUint32LE();
 	_stream->readUint32LE();
-	_stream->readUint16LE(); // stream id
+	_streamID = _stream->readUint16LE();
 	_stream->readUint32LE();
 
 	// Parse the wave header
@@ -259,19 +268,29 @@ bool ASFStream::rewind() {
 	// Seek back to the start of the packets
 	_stream->seek(_rewindPos);
 
+	// Reset our packet counter
+	_curPacket = 0;
+	delete _lastPacket; _lastPacket = 0;
+
+	// Delete a stream if we have one
+	delete _curAudioStream; _curAudioStream = 0;
+
 	// TODO
 	return false;
 }
 
 ASFStream::Packet *ASFStream::readPacket() {
+	if (_curPacket == _packetCount)
+		throw Common::Exception("ASFStream::readPacket(): Reading too many packets");
+
 	uint32 packetStartPos = _stream->pos();
 
 	// Read a single ASF packet
 	if (_stream->readByte() != 0x82)
-		throw Common::Exception("ASFStream::readFrame(): Missing packet header");
+		throw Common::Exception("ASFStream::readPacket(): Missing packet header");
 
 	if (_stream->readUint16LE() != 0)
-		throw Common::Exception("ASFStream::readFrame(): Unknown is not zero");
+		throw Common::Exception("ASFStream::readPacket(): Unknown is not zero");
 
 	Packet *packet = new Packet();
 	packet->flags = _stream->readByte();
@@ -339,10 +358,54 @@ ASFStream::Packet *ASFStream::readPacket() {
 	// Skip any padding
 	_stream->skip(paddingSize);
 
+	// We just read a packet
+	_curPacket++;
+
 	if ((uint32)_stream->pos() != packetStartPos + _maxPacketSize)
 		throw Common::Exception("ASFStream::readPacket(): Mismatching packet pos: %d (should be %d)", _stream->pos(), _maxPacketSize + packetStartPos);
 
 	return packet;
+}
+
+AudioStream *ASFStream::createAudioStream() {
+	// TODO: Read data from packets to assemble a stream to pass to the audio decoder
+
+	switch (_compression) {
+	case kWaveWMAv2:
+		// TODO
+		break;
+	default:
+		throw Common::Exception("ASFStream::createAudioStream(): Unknown compression 0x%04x", _compression);
+	}
+	
+	return 0;
+}
+
+int ASFStream::readBuffer(int16 *buffer, const int numSamples) {
+	int samplesDecoded = 0;
+
+	for (;;) {
+		if (_curAudioStream) {
+			samplesDecoded += _curAudioStream->readBuffer(buffer + samplesDecoded, numSamples - samplesDecoded);
+
+			if (_curAudioStream->endOfData()) {
+				delete _curAudioStream;
+				_curAudioStream = 0;
+			}
+		}
+
+		if (samplesDecoded < numSamples || endOfData())
+			break;
+
+		if (!_curAudioStream)
+			_curAudioStream = createAudioStream();		
+	}
+
+	return samplesDecoded;
+}
+
+bool ASFStream::endOfData() const {
+	return _curPacket == _packetCount && !_curAudioStream;
 }
 
 RewindableAudioStream *makeASFStream(
