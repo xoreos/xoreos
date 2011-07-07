@@ -90,7 +90,7 @@ public:
 
 	bool endOfData() const;
 	bool isStereo() const { return _channels == 2; }
-	int getRate() const { return _rate; }
+	int getRate() const { return _sampleRate; }
 	bool rewind();
 
 private:
@@ -138,7 +138,8 @@ private:
 	uint16 _streamID;
 	uint16 _compression;
 	uint16 _channels;
-	int _rate;
+	int _sampleRate;
+	uint32 _bitRate;
 	uint16 _blockAlign;
 	uint16 _bitsPerCodedSample;
 	Common::SeekableReadStream *_extraData;
@@ -249,8 +250,8 @@ void ASFStream::parseStreamHeader() {
 	// Parse the wave header
 	_compression = _stream->readUint16LE();
 	_channels = _stream->readUint16LE();
-	_rate = _stream->readUint32LE();
-	_stream->readUint32LE(); // bit rate
+	_sampleRate = _stream->readUint32LE();
+	_bitRate = _stream->readUint32LE();
 	_blockAlign = _stream->readUint16LE();
 	_bitsPerCodedSample = (typeSpecificSize == 14) ? 8 : _stream->readUint16LE();
 
@@ -396,6 +397,7 @@ AudioStream *ASFStream::createAudioStream() {
 	switch (_compression) {
 	case kWaveWMAv2:
 		// TODO
+		// return makeWMAStream(stream, false, _extraData, false, 2, _sampleRate, _channels, _bitRate, _blockAlign);
 		throw Common::Exception("ASFStream::createAudioStream(): DrMcCoy hasn't finished WMAv2 yet");
 	default:
 		throw Common::Exception("ASFStream::createAudioStream(): Unknown compression 0x%04x", _compression);
