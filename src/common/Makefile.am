@@ -9,6 +9,7 @@ noinst_HEADERS = system.h \
                  singleton.h \
                  sinetables.h \
                  cosinetables.h \
+                 sinewindows.h \
                  maths.h \
                  fft.h \
                  rdft.h \

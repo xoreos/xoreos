@@ -33,6 +33,7 @@
 
 #include "common/sinetables.h"
 #include "common/cosinetables.h"
+#include "common/sinewindows.h"
 
 namespace Common {
 
@@ -46,6 +47,12 @@ const float *getCosineTable(int bits) {
 	assert((bits >= 4) && (bits <= 16));
 
 	return cosTables[bits];
+}
+
+const float *getSineWindow(int bits) {
+	assert((bits >= 5) && (bits <= 12));
+
+	return sineWindows[bits];
 }
 
 } // End of namespace Common
