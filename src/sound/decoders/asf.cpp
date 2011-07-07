@@ -94,13 +94,36 @@ public:
 	bool rewind();
 
 private:
+	// Packet data
+	struct Packet {
+		Packet();
+		~Packet();
+
+		byte flags;
+		byte segmentType;
+		uint16 packetSize;
+		uint32 sendTime;
+		uint16 duration;
+
+		struct Segment {
+			byte streamID;
+			byte sequenceNumber;
+			bool isKeyframe;
+			std::vector<Common::SeekableReadStream *> data;
+		};
+
+		std::vector<Segment> segments;
+	};
+
 	Common::SeekableReadStream *_stream;
 	bool _disposeAfterUse;
 
 	void parseStreamHeader();
 	void parseFileHeader();
+	Packet *readPacket();
 
 	uint32 _rewindPos;
+	Packet *_lastPacket;
 
 	// Header object variables
 	uint64 _packetCount;
@@ -116,8 +139,18 @@ private:
 	Common::SeekableReadStream *_extraData;
 };
 
+ASFStream::Packet::Packet() {
+}
+
+ASFStream::Packet::~Packet() {
+	for (uint32 i = 0; i < segments.size(); i++)
+		for (uint32 j = 0; j < segments[i].data.size(); j++)
+				delete segments[i].data[j];
+}
+
 ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream(stream), _disposeAfterUse(dispose) {
 	_extraData = 0;
+	_lastPacket = 0;
 
 	ASFGUID guid = ASFGUID(*_stream);
 	if (guid != s_asfHeader)
@@ -163,9 +196,6 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 	// Skip to the beginning of the packets
 	_stream->skip(26);
 	_rewindPos = _stream->pos();
-
-	if (_stream->readByte() != 0x82)
-		throw Common::Exception("ASFStream: Could not find start of first packet");
 
 	throw Common::Exception("STUB: ASFStream");
 }
@@ -231,6 +261,88 @@ bool ASFStream::rewind() {
 
 	// TODO
 	return false;
+}
+
+ASFStream::Packet *ASFStream::readPacket() {
+	uint32 packetStartPos = _stream->pos();
+
+	// Read a single ASF packet
+	if (_stream->readByte() != 0x82)
+		throw Common::Exception("ASFStream::readFrame(): Missing packet header");
+
+	if (_stream->readUint16LE() != 0)
+		throw Common::Exception("ASFStream::readFrame(): Unknown is not zero");
+
+	Packet *packet = new Packet();
+	packet->flags = _stream->readByte();
+	packet->segmentType = _stream->readByte();
+	packet->packetSize = (packet->flags & 0x40) ? _stream->readUint16LE() : 0;
+
+	uint16 paddingSize = 0;
+	if (packet->flags & 0x10)
+		paddingSize = _stream->readUint16LE();
+	else if (packet->flags & 0x08)
+		paddingSize = _stream->readByte();
+
+	packet->sendTime = _stream->readUint32LE();
+	packet->duration = _stream->readUint16LE();
+
+	byte segmentCount = (packet->flags & 0x01) ? _stream->readByte() : 1;
+	packet->segments.resize(segmentCount & 0x3F);
+
+	for (uint32 i = 0; i < packet->segments.size(); i++) {
+		Packet::Segment &segment = packet->segments[i];
+
+		segment.streamID = _stream->readByte();
+		segment.sequenceNumber = _stream->readByte();
+		segment.isKeyframe = (segment.streamID & 0x80) != 0;
+		segment.streamID &= 0x7F;
+
+		uint32 fragmentOffset = 0;
+		if (packet->segmentType == 0x55)
+			fragmentOffset = _stream->readByte();
+		else if (packet->segmentType == 0x59)
+			fragmentOffset = _stream->readUint16LE();
+		else if (packet->segmentType == 0x5D)
+			fragmentOffset = _stream->readUint32LE();
+		else
+			throw Common::Exception("ASFStream::readPacket(): Unknown packet segment type 0x%02x", packet->segmentType);
+
+		byte flags = _stream->readByte();
+		if (flags == 1) {
+			//uint32 objectStartTime = fragmentOffset; // reused purpose
+			_stream->readByte(); // unknown
+
+			uint32 dataLength = (packet->segments.size() == 1) ? (_maxPacketSize - (_stream->pos() - packetStartPos) - paddingSize) : _stream->readUint16LE();
+			uint32 startObjectPos = _stream->pos();
+
+			while ((uint32)_stream->pos() < dataLength + startObjectPos)
+				segment.data.push_back(_stream->readStream(_stream->readByte()));
+		} else if (flags == 8) {
+			/* uint32 objectLength = */ _stream->readUint32LE();
+			/* uint32 objectStartTime = */ _stream->readUint32LE();
+
+			uint32 dataLength = 0;
+			if (packet->segments.size() == 1)
+				dataLength = _maxPacketSize - (_stream->pos() - packetStartPos) - fragmentOffset - paddingSize;
+			else if (segmentCount & 0x40)
+				dataLength = _stream->readByte();
+			else
+				dataLength = _stream->readUint16LE();
+
+			_stream->skip(fragmentOffset);
+			segment.data.push_back(_stream->readStream(dataLength));
+		} else
+			throw Common::Exception("ASFStream::readPacket(): Unknown packet flags 0x%02x", flags);
+	}
+
+	// Skip any padding
+	_stream->skip(paddingSize);
+
+	if ((uint32)_stream->pos() != packetStartPos + _maxPacketSize)
+		throw Common::Exception("ASFStream::readPacket(): Mismatching packet pos: %d (should be %d)", _stream->pos(), _maxPacketSize + packetStartPos);
+
+	return packet;
 }
 
 RewindableAudioStream *makeASFStream(
