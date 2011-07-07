@@ -127,6 +127,7 @@ private:
 	uint64 _curPacket;
 	Packet *_lastPacket;
 	AudioStream *_curAudioStream;
+	byte _curSequenceNumber;
 
 	// Header object variables
 	uint64 _packetCount;
@@ -157,6 +158,7 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 	_lastPacket = 0;
 	_curPacket = 0;
 	_curAudioStream = 0;
+	_curSequenceNumber = 1; // They always start at one
 
 	ASFGUID guid = ASFGUID(*_stream);
 	if (guid != s_asfHeader)
@@ -202,8 +204,6 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 	// Skip to the beginning of the packets
 	_stream->skip(26);
 	_rewindPos = _stream->pos();
-
-	throw Common::Exception("STUB: ASFStream");
 }
 
 ASFStream::~ASFStream() {
@@ -254,9 +254,6 @@ void ASFStream::parseStreamHeader() {
 	_blockAlign = _stream->readUint16LE();
 	_bitsPerCodedSample = (typeSpecificSize == 14) ? 8 : _stream->readUint16LE();
 
-	if (_compression != kWaveWMAv2)
-		throw Common::Exception("ASFStream::parseStreamHeader(): Only WMAv2 is supported");
-
 	if (typeSpecificSize >= 18) {
 		uint32 cbSize = _stream->readUint16LE();
 		cbSize = MIN<int>(cbSize, typeSpecificSize - 18);
@@ -275,8 +272,10 @@ bool ASFStream::rewind() {
 	// Delete a stream if we have one
 	delete _curAudioStream; _curAudioStream = 0;
 
-	// TODO
-	return false;
+	// Reset this too
+	_curSequenceNumber = 1;
+
+	return true;
 }
 
 ASFStream::Packet *ASFStream::readPacket() {
@@ -368,12 +367,36 @@ ASFStream::Packet *ASFStream::readPacket() {
 }
 
 AudioStream *ASFStream::createAudioStream() {
-	// TODO: Read data from packets to assemble a stream to pass to the audio decoder
+	delete _lastPacket;
+	_lastPacket = readPacket();
+
+	// TODO
+	if (_lastPacket->segments.size() != 1)
+		throw Common::Exception("ASFStream::createAudioStream(): Only single segment packets supported");
+
+	Packet::Segment &segment = _lastPacket->segments[0];
+
+	// We should only have one stream in a ASF audio file
+	if (segment.streamID != _streamID)
+		throw Common::Exception("ASFStream::createAudioStream(): Packet stream ID mismatch");
+
+	// TODO
+	if (segment.sequenceNumber != _curSequenceNumber)
+		throw Common::Exception("ASFStream::createAudioStream(): Only one sequence number per packet supported");
+
+	// This can overflow and needs to overflow!
+	_curSequenceNumber++;
+
+	// TODO
+	if (segment.data.size() != 1)
+		throw Common::Exception("ASFStream::createAudioStream(): Packet grouping not supported");
+
+	//Common::SeekableReadStream *stream = segment.data[0];
 
 	switch (_compression) {
 	case kWaveWMAv2:
 		// TODO
-		break;
+		throw Common::Exception("ASFStream::createAudioStream(): DrMcCoy hasn't finished WMAv2 yet");
 	default:
 		throw Common::Exception("ASFStream::createAudioStream(): Unknown compression 0x%04x", _compression);
 	}
@@ -394,11 +417,11 @@ int ASFStream::readBuffer(int16 *buffer, const int numSamples) {
 			}
 		}
 
-		if (samplesDecoded < numSamples || endOfData())
+		if (samplesDecoded == numSamples || endOfData())
 			break;
 
 		if (!_curAudioStream)
-			_curAudioStream = createAudioStream();		
+			_curAudioStream = createAudioStream();
 	}
 
 	return samplesDecoded;
