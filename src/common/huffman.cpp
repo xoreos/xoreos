@@ -41,11 +41,16 @@ Huffman::Symbol::Symbol(uint32 c, uint32 s) : code(c), symbol(s) {
 
 
 Huffman::Huffman(uint8 maxLength, uint32 codeCount, const uint32 *codes, const uint8 *lengths, const uint32 *symbols) {
-	assert(maxLength > 0);
 	assert(codeCount > 0);
 
 	assert(codes);
 	assert(lengths);
+
+	if (maxLength == 0)
+		for (uint32 i = 0; i < codeCount; i++)
+			maxLength = MAX(maxLength, lengths[i]);
+
+	assert(maxLength <= 32);
 
 	_codes.resize(maxLength);
 	_symbols.resize(codeCount);

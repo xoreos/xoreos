@@ -44,7 +44,7 @@ class Huffman {
 public:
 	/** Construct a Huffman decoder.
 	 *
-	 *  @param maxLength Maximal code length.
+	 *  @param maxLength Maximal code length. If 0, it's searched for.
 	 *  @param codeCount Number of codes.
 	 *  @param codes The actual codes.
 	 *  @param lengths Lengths of the individual codes.
