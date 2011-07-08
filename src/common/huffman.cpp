@@ -70,7 +70,7 @@ void Huffman::setSymbols(const uint32 *symbols) {
 		_symbols[i]->symbol = symbols ? *symbols++ : i;
 }
 
-uint32 Huffman::getSymbol(BitStream &bits) {
+uint32 Huffman::getSymbol(BitStream &bits) const {
 	uint32 code = 0;
 
 	for (uint32 i = 0; i < _codes.size(); i++) {

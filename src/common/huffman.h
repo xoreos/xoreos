@@ -57,7 +57,7 @@ public:
 	void setSymbols(const uint32 *symbols = 0);
 
 	/** Return the next symbol in the bitstream. */
-	uint32 getSymbol(BitStream &bits);
+	uint32 getSymbol(BitStream &bits) const;
 
 private:
 	struct Symbol {
