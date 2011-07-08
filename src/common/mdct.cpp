@@ -73,7 +73,7 @@ void MDCT::calcMDCT(float *output, const float *input) {
 	Complex *x = (Complex *) output;
 
 	const int size2 = _size >> 1;
-	const int size4 = _size >> 4;
+	const int size4 = _size >> 2;
 	const int size8 = _size >> 3;
 	const int size3 = _size * 3;
 
@@ -112,7 +112,7 @@ void MDCT::calcMDCT(float *output, const float *input) {
 
 void MDCT::calcIMDCT(float *output, const float *input) {
 	const int size2 = _size >> 1;
-	const int size4 = _size >> 4;
+	const int size4 = _size >> 2;
 
 	calcHalfIMDCT(output + size4, input);
 
@@ -126,7 +126,7 @@ void MDCT::calcHalfIMDCT(float *output, const float *input) {
 	Complex *z = (Complex *) output;
 
 	const int size2 = _size >> 1;
-	const int size4 = _size >> 4;
+	const int size4 = _size >> 2;
 	const int size8 = _size >> 3;
 
 	const uint16 *revTab = _fft->getRevTab();
