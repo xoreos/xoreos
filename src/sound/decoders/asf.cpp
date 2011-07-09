@@ -35,6 +35,7 @@
 
 #include "sound/audiostream.h"
 #include "sound/decoders/asf.h"
+#include "sound/decoders/wma.h"
 #include "sound/decoders/wave_types.h"
 
 namespace Sound {
@@ -121,11 +122,13 @@ private:
 	void parseStreamHeader();
 	void parseFileHeader();
 	Packet *readPacket();
+	Codec *createCodec();
 	AudioStream *createAudioStream();
 
 	uint32 _rewindPos;
 	uint64 _curPacket;
 	Packet *_lastPacket;
+	Codec *_codec;
 	AudioStream *_curAudioStream;
 	byte _curSequenceNumber;
 
@@ -158,6 +161,7 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 	_extraData = 0;
 	_lastPacket = 0;
 	_curPacket = 0;
+	_codec = 0;
 	_curAudioStream = 0;
 	_curSequenceNumber = 1; // They always start at one
 
@@ -213,6 +217,7 @@ ASFStream::~ASFStream() {
 
 	delete _lastPacket;
 	delete _curAudioStream;
+	delete _codec;
 }
 
 void ASFStream::parseFileHeader() {
@@ -251,7 +256,7 @@ void ASFStream::parseStreamHeader() {
 	_compression = _stream->readUint16LE();
 	_channels = _stream->readUint16LE();
 	_sampleRate = _stream->readUint32LE();
-	_bitRate = _stream->readUint32LE();
+	_bitRate = _stream->readUint32LE() * 8;
 	_blockAlign = _stream->readUint16LE();
 	_bitsPerCodedSample = (typeSpecificSize == 14) ? 8 : _stream->readUint16LE();
 
@@ -260,6 +265,8 @@ void ASFStream::parseStreamHeader() {
 		cbSize = MIN<int>(cbSize, typeSpecificSize - 18);
 		_extraData = _stream->readStream(cbSize);
 	}
+
+	_codec = createCodec();
 }
 
 bool ASFStream::rewind() {
@@ -367,6 +374,17 @@ ASFStream::Packet *ASFStream::readPacket() {
 	return packet;
 }
 
+Codec *ASFStream::createCodec() {
+	switch (_compression) {
+	case kWaveWMAv2:
+		return new WMACodec(2, _sampleRate, _channels, _bitRate, _blockAlign, _extraData);
+	default:
+		throw Common::Exception("ASFStream::createAudioStream(): Unknown compression 0x%04x", _compression);
+	}
+
+	return 0;
+}
+
 AudioStream *ASFStream::createAudioStream() {
 	delete _lastPacket;
 	_lastPacket = readPacket();
@@ -392,17 +410,10 @@ AudioStream *ASFStream::createAudioStream() {
 	if (segment.data.size() != 1)
 		throw Common::Exception("ASFStream::createAudioStream(): Packet grouping not supported");
 
-	//Common::SeekableReadStream *stream = segment.data[0];
+	Common::SeekableReadStream *stream = segment.data[0];
+	if (_codec)
+		return _codec->decodeFrame(*stream);
 
-	switch (_compression) {
-	case kWaveWMAv2:
-		// TODO
-		// return makeWMAStream(stream, false, _extraData, false, 2, _sampleRate, _channels, _bitRate, _blockAlign);
-		throw Common::Exception("ASFStream::createAudioStream(): DrMcCoy hasn't finished WMAv2 yet");
-	default:
-		throw Common::Exception("ASFStream::createAudioStream(): Unknown compression 0x%04x", _compression);
-	}
-	
 	return 0;
 }
 
@@ -422,8 +433,10 @@ int ASFStream::readBuffer(int16 *buffer, const int numSamples) {
 		if (samplesDecoded == numSamples || endOfData())
 			break;
 
-		if (!_curAudioStream)
+		if (!_curAudioStream) {
 			_curAudioStream = createAudioStream();
+		}
+
 	}
 
 	return samplesDecoded;

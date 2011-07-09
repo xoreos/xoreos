@@ -86,6 +86,12 @@ Bink
    License (LGPL) version 2.1 or later. Many thanks to Kostya Shishkov
    (<http://codecs.multimedia.cx/>) for doing the hard work.
 
+WMA
+***
+   The WMA decoder used in eos is based (heavily) on the WMA decoder in
+   FFmpeg (<http://ffmpeg.org/>), licensed under the GNU Lesser General Public
+   License (LGPL) version 2.1 or later.
+
 DejaVu Sans Mono Bold
 *********************
    eos includes DejaVu Sans Mono Bold (<http://dejavu-fonts.org/>) as a
