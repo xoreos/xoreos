@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libdecoders.la
 
-noinst_HEADERS = mp3.h \
+noinst_HEADERS = codec.h \
+                 mp3.h \
                  vorbis.h \
                  adpcm.h \
                  wave.h \
@@ -11,7 +12,8 @@ noinst_HEADERS = mp3.h \
                  asf.h \
                  wave_types.h
 
-libdecoders_la_SOURCES = mp3.cpp \
+libdecoders_la_SOURCES = codec.cpp \
+                         mp3.cpp \
                          vorbis.cpp \
                          adpcm.cpp \
                          wave.cpp \
