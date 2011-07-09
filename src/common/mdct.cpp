@@ -60,7 +60,7 @@ MDCT::MDCT(int bits, bool inverse, double scale) : _bits(bits), _fft(0) {
 }
 
 MDCT::~MDCT() {
-	delete _tCos;
+	delete[] _tCos;
 	delete _fft;
 }
 
