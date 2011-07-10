@@ -104,7 +104,7 @@ KotOREngineProbeMac::~KotOREngineProbeMac() {
 
 bool KotOREngineProbeMac::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If the "Knights of the Old Republic.app" directory exists, this should be a valid path for the Mac OS X port
-	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "Knights of the Old Republic.app");
+	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "Knights of the Old Republic.app", true);
 	return !appDirectory.empty();
 }
 
