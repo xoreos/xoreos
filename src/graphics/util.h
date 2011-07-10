@@ -32,6 +32,7 @@
 
 #include "common/types.h"
 #include "common/util.h"
+#include "common/maths.h"
 
 namespace Graphics {
 
@@ -81,6 +82,37 @@ inline static void flipVertically(byte *data, int width, int height, int bpp) {
 	}
 
 	delete[] buffer;
+}
+
+/** De-"swizzle" a texture pixel offset. */
+inline static uint32 deSwizzleOffset(uint32 x, uint32 y, uint32 width, uint32 height) {
+	width  = log2(width);
+	height = log2(height);
+
+	uint32 offset     = 0;
+	uint32 shiftCount = 0;
+
+	while (width | height) {
+		if (width) {
+			offset |= (x & 0x01) << shiftCount;
+
+			x >>= 1;
+
+			shiftCount++;
+			width--;
+		}
+
+		if (height) {
+			offset |= (y & 0x01) << shiftCount;
+
+			y >>= 1;
+
+			shiftCount++;
+			height--;
+		}
+	}
+
+	return offset;
 }
 
 } // End of namespace Graphics

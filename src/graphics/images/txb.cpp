@@ -31,6 +31,8 @@
 #include "common/error.h"
 #include "common/stream.h"
 
+#include "graphics/util.h"
+
 #include "graphics/images/txb.h"
 
 static const byte kEncodingBGRA = 0x04;
@@ -50,8 +52,10 @@ TXB::~TXB() {
 void TXB::load(Common::SeekableReadStream &txb) {
 	try {
 
-		readHeader(txb);
-		readData  (txb);
+		bool needDeSwizzle = false;
+
+		readHeader(txb, needDeSwizzle);
+		readData  (txb, needDeSwizzle);
 
 		txb.seek(_dataSize + 128);
 
@@ -73,7 +77,7 @@ Common::SeekableReadStream *TXB::getTXI() const {
 	return new Common::MemoryReadStream(_txiData, _txiDataSize);
 }
 
-void TXB::readHeader(Common::SeekableReadStream &txb) {
+void TXB::readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle) {
 	// Number of bytes for the pixel data in one full image
 	uint32 dataSize = txb.readUint32LE();
 
@@ -94,9 +98,13 @@ void TXB::readHeader(Common::SeekableReadStream &txb) {
 	txb.skip(4); // Some float
 	txb.skip(108); // Reserved
 
+	needDeSwizzle = false;
+
 	uint32 minDataSize, mipMapSize;
 	if        (encoding == kEncodingBGRA) {
 		// Raw BGRA
+
+		needDeSwizzle = true;
 
 		_compressed = false;
 		_hasAlpha   = true;
@@ -176,12 +184,43 @@ void TXB::readHeader(Common::SeekableReadStream &txb) {
 
 }
 
-void TXB::readData(Common::SeekableReadStream &txb) {
+void TXB::deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height) {
+	for (uint32 y = 0; y < height; y++) {
+		for (uint32 x = 0; x < width; x++) {
+			const uint32 offset = deSwizzleOffset(x, y, width, height) * 4;
+
+			*dst++ = src[offset + 0];
+			*dst++ = src[offset + 1];
+			*dst++ = src[offset + 2];
+			*dst++ = src[offset + 3];
+		}
+	}
+}
+
+void TXB::readData(Common::SeekableReadStream &txb, bool needDeSwizzle) {
 	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
+
+		// If the texture width is a power of two, the texture memory layout is "swizzled"
+		const bool widthPOT = ((*mipMap)->width & ((*mipMap)->width - 1)) == 0;
+		const bool swizzled = needDeSwizzle && widthPOT;
+
 		(*mipMap)->data = new byte[(*mipMap)->size];
 
-		if (txb.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
-			throw Common::Exception(Common::kReadError);
+		if (swizzled) {
+			byte *tmp = new byte[(*mipMap)->size];
+
+			if (txb.read(tmp, (*mipMap)->size) != (*mipMap)->size)
+				throw Common::Exception(Common::kReadError);
+
+			deSwizzle((*mipMap)->data, tmp, (*mipMap)->width, (*mipMap)->height);
+
+			delete[] tmp;
+
+		} else {
+			if (txb.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
+				throw Common::Exception(Common::kReadError);
+		}
+
 	}
 }
 
