@@ -42,6 +42,7 @@
 #include "video/quicktime.h"
 
 #include "sound/audiostream.h"
+#include "sound/decoders/codec.h"
 
 #include "events/events.h"
 
@@ -113,6 +114,9 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDe
 			// Make sure the bits per sample transfers to the sample size
 			if (entry->getCodecTag() == MKID_BE('raw ') || entry->getCodecTag() == MKID_BE('twos'))
 				_tracks[_audioTrackIndex]->sampleSize = (entry->_bitsPerSample / 8) * entry->_channels;
+
+			// Initialize the codec (if necessary)
+			entry->initCodec();
 
 			initSound(entry->_sampleRate, entry->_channels == 2, true);
 			updateAudioBuffer();
@@ -946,6 +950,11 @@ QuickTimeDecoder::AudioSampleDesc::AudioSampleDesc(QuickTimeDecoder::Track *pare
 	_samplesPerFrame = 0;
 	_bytesPerFrame = 0;
 	_bitsPerSample = 0;
+	_codec = 0;
+}
+
+QuickTimeDecoder::AudioSampleDesc::~AudioSampleDesc() {
+	delete _codec;
 }
 
 bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
@@ -958,13 +967,7 @@ bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
 
 		switch (_parentTrack->objectTypeMP4) {
 		case 0x40:
-#if 0
-			// TODO: This is disabled until AAC is working properly
 			return true;
-#else
-			audioType = "AAC";
-			break;
-#endif
 		default:
 			audioType = "Unknown";
 			break;
@@ -991,7 +994,12 @@ Sound::AudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStream(Common:
 	if (!stream)
 		return 0;
 
-	if (_codecTag == MKID_BE('twos') || _codecTag == MKID_BE('raw ')) {
+	if (_codec) {
+		// If we've loaded a codec, make sure we use first
+		Sound::AudioStream *audioStream = _codec->decodeFrame(*stream);
+		delete stream;
+		return audioStream;
+	} else if (_codecTag == MKID_BE('twos') || _codecTag == MKID_BE('raw ')) {
 		// Standard PCM
 		uint16 flags = 0;
 		if (_codecTag == MKID_BE('raw '))
@@ -1005,16 +1013,22 @@ Sound::AudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStream(Common:
 	} else if (_codecTag == MKID_BE('ima4')) {
 		// QuickTime IMA ADPCM
 		return Sound::makeADPCMStream(stream, true, stream->size(), Sound::kADPCMApple, _sampleRate, _channels, 34);
-	} else if (_codecTag == MKID_BE('mp4a')) {
-		switch (_parentTrack->objectTypeMP4) {
-		case 0x40: // AAC
-			return Sound::makeAACStream(stream, true, _parentTrack->extraData, false);
-		}
-
-		throw Common::Exception("Unhandled MPEG-4 audio");
 	}
 
 	return 0;
+}
+
+void QuickTimeDecoder::AudioSampleDesc::initCodec() {
+	delete _codec; _codec = 0;
+
+	switch (_codecTag) {
+	case MKID_BE('mp4a'):
+		if (_parentTrack->objectTypeMP4 == 0x40)
+			_codec = Sound::makeAACDecoder(_parentTrack->extraData);
+		break;
+	default:
+		break;
+	}
 }
 
 QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::Track *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {

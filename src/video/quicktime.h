@@ -48,6 +48,10 @@ namespace Graphics {
 	class Surface;
 }
 
+namespace Sound {
+	class Codec;
+}
+
 namespace Video {
 
 class Codec;
@@ -109,10 +113,12 @@ private:
 	class AudioSampleDesc : public SampleDesc {
 	public:
 		AudioSampleDesc(Track *parentTrack, uint32 codecTag);
+		~AudioSampleDesc();
 
 		bool isAudioCodecSupported() const;
 		uint32 getAudioChunkSampleCount(uint chunk) const;
 		Sound::AudioStream *createAudioStream(Common::SeekableReadStream *stream) const;
+		void initCodec();
 
 		// TODO: Make private in the long run
 		uint16 _bitsPerSample;
@@ -120,6 +126,8 @@ private:
 		uint32 _sampleRate;
 		uint32 _samplesPerFrame;
 		uint32 _bytesPerFrame;
+
+		Sound::Codec *_codec;
 	};
 
 	class VideoSampleDesc : public SampleDesc {
