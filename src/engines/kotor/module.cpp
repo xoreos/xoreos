@@ -123,7 +123,7 @@ void Module::load() {
 }
 
 void Module::loadResources() {
-	// Add all availabe resource files for the module.
+	// Add all available resource files for the module.
 	// Apparently, the original game prefers ERFs over RIMs. This is
 	// exploited by the KotOR 2 TSL Restored Content Mod.
 

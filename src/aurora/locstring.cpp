@@ -162,7 +162,7 @@ const Common::UString &LocString::getString() const {
 	if (!refString.empty())
 		return refString;
 
-	// If all else fails, just get the first one availabe
+	// If all else fails, just get the first one available
 	return getFirstString();
 }
 
