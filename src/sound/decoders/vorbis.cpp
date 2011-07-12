@@ -164,7 +164,7 @@ bool VorbisStream::refill() {
 		result = ov_read(&_ovFile, read_pos, len_left,
 						0);
 #else
-#ifdef SCUMM_BIG_ENDIAN
+#ifdef EOS_BIG_ENDIAN
 		result = ov_read(&_ovFile, read_pos, len_left,
 						1,
 						2,	// 16 bit
