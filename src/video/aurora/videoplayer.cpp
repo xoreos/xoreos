@@ -33,6 +33,7 @@
 #include "common/stream.h"
 
 #include "video/decoder.h"
+#include "video/actimagine.h"
 #include "video/bink.h"
 #include "video/quicktime.h"
 #include "video/xmv.h"
@@ -66,13 +67,20 @@ void VideoPlayer::load(const Common::UString &name) {
 		throw Common::Exception("No such video resource \"%s\"", name.c_str());
 
 	// Loading the different image formats
-	if      (type == ::Aurora::kFileTypeBIK)
+	switch (type) {
+	case ::Aurora::kFileTypeBIK:
 		_video = new Bink(video);
-	else if (type == ::Aurora::kFileTypeMOV)
+		break;
+	case ::Aurora::kFileTypeMOV:
 		_video = new QuickTimeDecoder(video);
-	else if (type == ::Aurora::kFileTypeXMV)
+		break;
+	case ::Aurora::kFileTypeXMV:
 		_video = new XboxMediaVideo(video);
-	else {
+		break;
+	case ::Aurora::kFileTypeVX:
+		_video = new ActimagineDecoder(video);
+		break;
+	default:
 		delete video;
 		throw Common::Exception("Unsupported video resource type %d", (int) type);
 	}
