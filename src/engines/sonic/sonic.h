@@ -78,6 +78,8 @@ private:
 	Common::UString _romFile;
 
 	void init();
+
+	void playIntroVideos();
 };
 
 } // End of namespace Sonic

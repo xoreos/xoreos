@@ -35,6 +35,7 @@
 #include "common/util.h"
 #include "common/filelist.h"
 #include "common/stream.h"
+#include "common/strutil.h"
 
 #include "graphics/graphics.h"
 
@@ -96,11 +97,23 @@ void SonicEngine::run(const Common::UString &target) {
 	init();
 
 	status("Successfully initialized the engine");
+
+	playIntroVideos();
 }
 
 void SonicEngine::init() {
 	status("Indexing the ROM file");
 	indexMandatoryArchive(Aurora::kArchiveNDS, _romFile, 0);
+}
+
+void SonicEngine::playIntroVideos() {
+	// Play the two logo videos
+	playVideo("bioware");
+	playVideo("sega");
+
+	// TODO: We need to support playing two videos at once. The two logo videos
+	// are both on the bottom screen, but (most) other videos have a top screen
+	// and bottom screen video.
 }
 
 } // End of namespace Sonic
