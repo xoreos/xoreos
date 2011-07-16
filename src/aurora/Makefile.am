@@ -27,7 +27,8 @@ noinst_HEADERS = types.h \
                  dlgfile.h \
                  lytfile.h \
                  visfile.h \
-                 pefile.h
+                 pefile.h \
+                 herffile.h
 
 libaurora_la_SOURCES = error.cpp \
                        util.cpp \
@@ -51,6 +52,7 @@ libaurora_la_SOURCES = error.cpp \
                        dlgfile.cpp \
                        lytfile.cpp \
                        visfile.cpp \
-                       pefile.cpp
+                       pefile.cpp \
+                       herffile.cpp
 
 libaurora_la_LIBADD = nwscript/libnwscript.la
