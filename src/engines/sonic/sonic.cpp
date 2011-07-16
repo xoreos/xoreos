@@ -36,11 +36,13 @@
 #include "common/filelist.h"
 #include "common/stream.h"
 #include "common/strutil.h"
+#include "common/configman.h"
 
 #include "graphics/graphics.h"
 
 #include "graphics/aurora/cube.h"
-#include "graphics/aurora/text.h"
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
 
 #include "sound/sound.h"
 
@@ -99,6 +101,30 @@ void SonicEngine::run(const Common::UString &target) {
 	status("Successfully initialized the engine");
 
 	playIntroVideos();
+
+	bool showFPS = ConfigMan.getBool("showfps", false);
+
+	Graphics::Aurora::FPS *fps = 0;
+	if (showFPS) {
+		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
+		fps->show();
+	}
+
+	Graphics::Aurora::Cube *cube = 0;
+	try {
+
+		cube = new Graphics::Aurora::Cube("nintendosplash");
+
+	} catch (Common::Exception &e) {
+		Common::printException(e);
+	}
+
+	while (!EventMan.quitRequested()) {
+		EventMan.delay(10);
+	}
+
+	delete cube;
+	delete fps;
 }
 
 void SonicEngine::init() {
