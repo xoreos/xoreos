@@ -211,14 +211,27 @@ enum FileType {
 	kFileTypeDOC            = 20020,
 	kFileTypeSCC            = 20021,
 
-	// Found in Sonic's ROM
+	// Found in Sonic Chronicles: The Dark Brotherhood
 	kFileTypePAL            = 21000,
 	kFileTypeCBGT           = 21001,
 	kFileTypeCDPTH          = 21002,
 	kFileTypeVX             = 21003, ///< Video, Actimagine.
-	kFileTypeHERF           = 21004,
+	kFileTypeHERF           = 21004, ///< Archive, hashed ERF.
 	kFileTypeSADL           = 21005,
 	kFileTypeSDAT           = 21006, ///< Nintendo Sound Data File.
+	kFileTypeSMALL          = 21007,
+	kFileTypeNSBCA          = 21008,
+	kFileTypeEMIT           = 21009,
+	kFileTypeSPL            = 21010,
+	kFileTypeNBFP           = 21011,
+	kFileTypeNBFS           = 21012,
+	kFileTypeSMP            = 21013,
+	kFileTypeITM            = 21014,
+	kFileTypeNFTR           = 21015,
+	kFileTypeRAW            = 21016,
+	kFileTypeNCLR           = 21017,
+	kFileTypeNCGR           = 21018,
+	kFileTypeDICT           = 21019, ///< HERF file name dictionary.
 
 	// Found in Dragon Age: Origins
 	kFileTypeANB            = 22000, ///< Animation blend.
@@ -346,7 +359,8 @@ enum ArchiveType {
 	kArchiveZIP,     ///< ZIP archive.
 	kArchiveEXE,     ///< EXE archive.
 	kArchiveMAX,
-	kArchiveNDS      ///< Nintendo DS ROM.
+	kArchiveNDS,     ///< Nintendo DS ROM.
+	kArchiveHERF     ///< HERF archive.
 };
 
 enum Platform {

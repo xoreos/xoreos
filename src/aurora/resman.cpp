@@ -45,6 +45,7 @@
 #include "aurora/ndsrom.h"
 #include "aurora/zipfile.h"
 #include "aurora/pefile.h"
+#include "aurora/herffile.h"
 
 // boost-string_algo
 using boost::iequals;
@@ -164,7 +165,7 @@ void ResourceManager::registerDataBaseDir(const Common::UString &path) {
 }
 
 void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &dir) {
-	if (archive == kArchiveNDS)
+	if (archive == kArchiveNDS || archive == kArchiveHERF)
 		return;
 
 	assert((archive >= 0) && (archive < kArchiveMAX));
@@ -223,6 +224,15 @@ ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
 		ChangeID change = newChangeSet();
 
 		return indexArchive(nds, priority, change);
+	}
+
+	// HERF files are only found inside NDS files
+	if (archive == kArchiveHERF) {
+		HERFFile *herf = new HERFFile(file);
+
+		ChangeID change = newChangeSet();
+
+		return indexArchive(herf, priority, change);
 	}
 
 	assert((archive >= 0) && (archive < kArchiveMAX));
