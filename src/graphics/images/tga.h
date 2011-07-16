@@ -47,8 +47,8 @@ public:
 private:
 	// Loading helpers
 	void load(Common::SeekableReadStream &tga);
-	void readHeader(Common::SeekableReadStream &tga, byte &imageType);
-	void readData(Common::SeekableReadStream &tga, byte imageType);
+	void readHeader(Common::SeekableReadStream &tga, byte &imageType, byte &pixelDepth);
+	void readData(Common::SeekableReadStream &tga, byte imageType, byte pixelDepth);
 };
 
 } // End of namespace Graphics

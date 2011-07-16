@@ -47,9 +47,9 @@ TGA::~TGA() {
 void TGA::load(Common::SeekableReadStream &tga) {
 	try {
 
-		byte imageType;
-		readHeader(tga, imageType);
-		readData  (tga, imageType);
+		byte imageType, pixelDepth;
+		readHeader(tga, imageType, pixelDepth);
+		readData  (tga, imageType, pixelDepth);
 
 		if (tga.err())
 			throw Common::Exception(Common::kReadError);
@@ -60,7 +60,7 @@ void TGA::load(Common::SeekableReadStream &tga) {
 	}
 }
 
-void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
+void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType, byte &pixelDepth) {
 	if (!tga.seek(0))
 		throw Common::Exception(Common::kSeekError);
 
@@ -86,15 +86,15 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
 	_mipMaps[0]->height = tga.readUint16LE();
 
 	// Bits per pixel
-	byte pixelDepth = tga.readByte();
+	pixelDepth = tga.readByte();
 
 	if (imageType == 2) {
-		if      (pixelDepth == 24) {
+		if (pixelDepth == 24) {
 			_hasAlpha  = false;
 			_format    = kPixelFormatBGR;
 			_formatRaw = kPixelFormatRGB8;
 			_dataType  = kPixelDataType8;
-		} else if (pixelDepth == 32) {
+		} else if (pixelDepth == 16 || pixelDepth == 32) {
 			_hasAlpha  = true;
 			_format    = kPixelFormatBGRA;
 			_formatRaw = kPixelFormatRGBA8;
@@ -118,7 +118,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType) {
 	tga.skip(idLength);
 }
 
-void TGA::readData(Common::SeekableReadStream &tga, byte imageType) {
+void TGA::readData(Common::SeekableReadStream &tga, byte imageType, byte pixelDepth) {
 	if (imageType == 2) {
 		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height;
 		if      (_format == kPixelFormatBGR)
@@ -128,8 +128,25 @@ void TGA::readData(Common::SeekableReadStream &tga, byte imageType) {
 
 		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
 
-		tga.read(_mipMaps[0]->data, _mipMaps[0]->size);
+		if (pixelDepth == 16) {
+			// Convert from 16bpp to 32bpp
+			// 16bpp TGA is ARGB1555
+			uint16 count = _mipMaps[0]->width * _mipMaps[0]->height;
+			byte *dst = _mipMaps[0]->data;
 
+			while (count--) {
+				uint16 pixel = tga.readUint16LE();
+
+				*dst++ = (pixel & 0x1F) << 3;
+				*dst++ = (pixel & 0x3E0) >> 2;
+				*dst++ = (pixel & 0x7C00) >> 7;
+				*dst++ = (pixel & 0x8000) ? 0xFF : 0x00;
+			}
+				
+		} else {
+			// Read it in raw
+			tga.read(_mipMaps[0]->data, _mipMaps[0]->size);
+		}
 	} else if (imageType == 3) {
 		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height * 4;
 		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
