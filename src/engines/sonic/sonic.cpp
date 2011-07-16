@@ -104,6 +104,8 @@ void SonicEngine::run(const Common::UString &target) {
 void SonicEngine::init() {
 	status("Indexing the ROM file");
 	indexMandatoryArchive(Aurora::kArchiveNDS, _romFile, 0);
+	status("Indexing the main HERF file");
+	indexMandatoryArchive(Aurora::kArchiveHERF, "test.herf", 1);
 }
 
 void SonicEngine::playIntroVideos() {
