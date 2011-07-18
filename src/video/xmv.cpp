@@ -30,14 +30,21 @@
 #include "common/error.h"
 #include "common/stream.h"
 
-#include "video/xmv.h"
+#include "sound/audiostream.h"
 
-#include "sound/decoders/adpcm.h"
 #include "sound/decoders/wave_types.h"
+#include "sound/decoders/pcm.h"
+#include "sound/decoders/adpcm.h"
+
+#include "events/events.h"
+
+#include "video/xmv.h"
 
 namespace Video {
 
-XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) : _xmv(xmv) {
+XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) : _xmv(xmv),
+	_nextFrameTime(0), _curPacket(0) {
+
 	assert(_xmv);
 
 	load();
@@ -50,83 +57,253 @@ XboxMediaVideo::~XboxMediaVideo() {
 }
 
 uint32 XboxMediaVideo::getTimeToNextFrame() const {
-	return 0;
+	if (!_started)
+		return 0;
+
+	uint32 curTime = EventMan.getTimestamp();
+	if (_nextFrameTime < curTime)
+		return 0;
+
+	return _nextFrameTime - curTime;
 }
 
 void XboxMediaVideo::startVideo() {
+	_started = true;
+}
+
+void XboxMediaVideo::processPackerHeader(PacketHeader &packetHeader) {
+	// Next packet size
+
+	packetHeader.nextPacketSize = _xmv->readUint32LE();
+	_thisPacketSize -= 4;
+
+	// Packet video header
+
+	_xmv->read(packetHeader.video.header, 8);
+	_thisPacketSize -= 8;
+
+	packetHeader.video.dataSize = READ_LE_UINT32(packetHeader.video.header) & 0x007FFFFF;
+
+	// Packet audio header
+
+	packetHeader.audio.resize(_audioTracks.size());
+
+	for (uint i = 0; i < packetHeader.audio.size(); i++) {
+		PacketAudioHeader &audioHeader = packetHeader.audio[i];
+
+		_xmv->read(audioHeader.header, 4);
+		_thisPacketSize -= 4;
+
+		uint32 dataSize = READ_LE_UINT32(audioHeader.header) & 0x007FFFFF;
+		if (dataSize == 0)
+			// Size is 0, take the size from last track, if available
+			audioHeader.dataSize = (i != 0)  ? packetHeader.audio[i - 1].dataSize : 0;
+		else
+			// The size includes the 4 bytes for the size
+			audioHeader.dataSize = dataSize - 4;
+	}
+}
+
+void XboxMediaVideo::processVideoData(PacketVideoHeader &videoHeader) {
+	if (videoHeader.dataSize > _thisPacketSize)
+		throw Common::Exception("XboxMediaVideo::processVideoData(): Packet data overrun");
+
+	_xmv->skip(videoHeader.dataSize);
+	_thisPacketSize -= videoHeader.dataSize;
+}
+
+void XboxMediaVideo::processAudioData(PacketAudioHeader &audioHeader,
+                                      const AudioTrack &track) {
+
+	if (audioHeader.dataSize > _thisPacketSize)
+		throw Common::Exception("XboxMediaVideo::processAudioData(): Packet data overrun");
+
+	if (!track.enabled) {
+		// Not a track we want, so we skip it
+
+		_xmv->skip(audioHeader.dataSize);
+		_thisPacketSize -= audioHeader.dataSize;
+
+		return;
+	}
+
+	Common::SeekableReadStream *stream = _xmv->readStream(audioHeader.dataSize);
+	_thisPacketSize -= audioHeader.dataSize;
+
+	queueAudioStream(stream, track);
+
+	uint32 audioLength = ((audioHeader.dataSize << 3) * 1000) / track.bitRate;
+	_audioLength = MAX(_audioLength, audioLength);
+}
+
+void XboxMediaVideo::processAudioData(std::vector<PacketAudioHeader> &audioHeader) {
+	for (uint32 t = 0; t < audioHeader.size(); t++)
+		processAudioData(audioHeader[t], _audioTracks[t]);
 }
 
 void XboxMediaVideo::processData() {
-	throw Common::Exception("STUB: XboxMediaVideo::processData()");
+	warning("Current packet: %d, size: %d", _curPacket, _nextPacketSize);
+
+	_audioLength    = 0;
+	_thisPacketSize = _nextPacketSize;
+
+	if (_thisPacketSize < (12 + _audioTracks.size() * 4)) {
+		_finished = true;
+		return;
+	}
+
+	if (_xmv->err() || _xmv->eos() || (_thisPacketSize > (_xmv->size() - _xmv->pos())))
+		throw Common::Exception(Common::kReadError);
+
+	PacketHeader packetHeader;
+	processPackerHeader(packetHeader);
+
+
+	processVideoData(packetHeader.video);
+	processAudioData(packetHeader.audio);
+
+
+	_xmv->skip(_thisPacketSize);
+
+	_nextPacketSize = packetHeader.nextPacketSize;
+
+	_nextFrameTime = _audioLength + EventMan.getTimestamp();
+	_curPacket++;
 }
 
 void XboxMediaVideo::load() {
-	_xmv->skip(8); // (???, min packet size?)
+	_xmv->skip(4); // Next packet size
 
-	uint32 packetSize = _xmv->readUint32LE();
+	uint32 thisPacketSize = _xmv->readUint32LE();
+
+	_xmv->skip(4); // Max packet size
 
 	if (_xmv->readUint32LE() != MKID_BE('Xbox'))
 		throw Common::Exception("XboxMediaVideo::load(): No 'Xbox' tag");
 
-	_xmv->skip(4); // unknown (always 4? version?)
-	uint32 width = _xmv->readUint32LE();
-	uint32 height = _xmv->readUint32LE();
-	uint32 duration = _xmv->readUint32LE();
+	uint32 version = _xmv->readUint32LE();
 
-	uint32 audioTrackCount = _xmv->readUint32LE();
+	if ((version == 0) || (version > 4))
+		throw Common::Exception("XboxMediaVideo::load(): Unsupported version %d", version);
+
+	uint32 width    = _xmv->readUint32LE();
+	uint32 height   = _xmv->readUint32LE();
+	uint32 duration = _xmv->readUint32LE(); // In ms
+
+	warning("XMV: %dx%d for %d ms", width, height, duration);
+
+	uint32 audioTrackCount = _xmv->readUint16LE();
 	_audioTracks.resize(audioTrackCount);
 
-	Common::UString exceptionString = "STUB: XboxMediaVideo::load():\n";
-	exceptionString += Common::UString::sprintf("  Packet Size: %d\n", packetSize);
-	exceptionString += Common::UString::sprintf("  Res: %dx%d\n", width, height);
-	exceptionString += Common::UString::sprintf("  Duration: %dms\n", duration);
-	exceptionString += Common::UString::sprintf("  Audio Track Count: %d\n", audioTrackCount);
+	_xmv->skip(2); // Unknown
 
 	for (uint32 i = 0; i < audioTrackCount; i++) {
-		_audioTracks[i].compression = _xmv->readUint16LE();
-		_audioTracks[i].channels = _xmv->readUint16LE();
-		_audioTracks[i].rate = _xmv->readUint32LE();
+		_audioTracks[i].compression   = _xmv->readUint16LE();
+		_audioTracks[i].channels      = _xmv->readUint16LE();
+		_audioTracks[i].rate          = _xmv->readUint32LE();
 		_audioTracks[i].bitsPerSample = _xmv->readUint16LE();
-		_audioTracks[i].unk = _xmv->readUint16LE(); // block align?
-		exceptionString += Common::UString::sprintf("    Track %d: 0x%04x %dch @%dHz, %d bits per sample, %d unk\n",
-				i, _audioTracks[i].compression, _audioTracks[i].channels, _audioTracks[i].rate, _audioTracks[i].bitsPerSample, _audioTracks[i].unk);
+		_audioTracks[i].flags         = _xmv->readUint16LE();
+
+		evalAudioTrack(_audioTracks[i]);
 	}
 
-	// Next four bytes seem to repeat the packet size?
-	// Four unknown bytes
-	// One uint32 per audio/video track? (some sort of buffer size?)
+	_nextPacketSize = thisPacketSize - _xmv->pos();
 
-	// Can only use one track atm
-	_audioTrack = 0;
+	std::vector<uint32> audioDataSize;
+	audioDataSize.resize(audioTrackCount);
 
-	// Initialize our sound stuff
-	if (audioTrackCount != 0)
-		initSound(_audioTracks[_audioTrack].rate, _audioTracks[_audioTrack].channels, true);
 
-	// TODO: Everything else
-	// Like video being WMV2 and stuff
+	// Initialize the video
+	initVideo(width, height);
 
-	throw Common::Exception(exceptionString.c_str());
+	// Initialize the sound: Find the first supported audio track for now
+	for (uint32 i = 0; i < audioTrackCount; i++) {
+		if (_audioTracks[i].supported) {
+			_audioTracks[i].enabled = true;
+			initSound(_audioTracks[i].rate, _audioTracks[i].channels, true);
+			break;
+		}
+	}
+
+	_nextFrameTime = 0;
+	_curPacket     = 0;
 }
 
-void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream) {
-	if (_audioTracks.empty())
+void XboxMediaVideo::evalAudioTrack(AudioTrack &track) {
+	track.supported = true;
+	track.enabled   = false;
+
+	track.bitRate = track.bitsPerSample * track.rate;
+
+	track.audioStreamFlags = Sound::FLAG_LITTLE_ENDIAN;
+	if (track.channels == 2)
+		track.audioStreamFlags |= Sound::FLAG_STEREO;
+
+	if ((track.channels == 0) || (track.channels > 2)) {
+		warning("XboxMediaVideo::evalAudioTrack(): Unsupported channel count %d",
+		        track.channels);
+
+		track.supported = false;
+	}
+
+	switch (track.compression) {
+		case Sound::kWavePCM:
+			if        (track.bitsPerSample == 16) {
+				track.audioStreamFlags |= Sound::FLAG_16BITS;
+			} else if (track.bitsPerSample !=  8) {
+				warning("XboxMediaVideo::evalAudioTrack(): Invalid bits per sample value for "
+				        "raw PCM audio: %d", track.bitsPerSample);
+				track.supported = false;
+			}
+
+			break;
+
+		case Sound::kWaveMSIMAADPCM2:
+			track.audioStreamFlags |= Sound::FLAG_16BITS;
+
+			if (track.bitsPerSample != 4) {
+				warning("XboxMediaVideo::evalAudioTrack(): Invalid bits per sample value for "
+				        "MS IMA ADPCM audio: %d", track.bitsPerSample);
+				track.supported = false;
+			}
+			break;
+
+		default:
+			warning("XboxMediaVideo::evalAudioTrack(): Unknown audio compression 0x%04x",
+			        track.compression);
+			track.supported = false;
+			break;
+	}
+
+}
+
+void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream,
+                                      const AudioTrack &track) {
+
+	if (!track.supported)
 		return;
 
-	switch (_audioTracks[_audioTrack].compression) {
-	case Sound::kWavePCM:    // PCM
-		// TODO: Where's the flags? Anyone have samples?
-		warning("XboxMediaVideo::createAudioStream(): PCM not yet handled");
-		break;
-	case Sound::kWaveMSIMAADPCM2: // MS IMA ADPCM
-		// TODO: Where's block align?
-		warning("XboxMediaVideo::createAudioStream(): ADPCM not yet handled");
-		//queueSound(new Sound::makeADPCMStream(stream, true, stream->size(), Sound::kADPCMMSIma, _audioRate, _audioChannels /* , _audioBlockAlign */));
-		break;
-	default:
-		warning("XboxMediaVideo::createAudioStream(): Unknown audio compression 0x%04x", _audioTracks[_audioTrack].compression);
-		break;
+	Sound::AudioStream *audioStream = 0;
+
+	switch (track.compression) {
+		case Sound::kWavePCM:
+			audioStream =
+				Sound::makePCMStream(stream, track.rate, track.audioStreamFlags, true);
+			break;
+
+		case Sound::kWaveMSIMAADPCM2:
+			warning("XboxMediaVideo::createAudioStream(): ADPCM not yet handled");
+			delete stream;
+			break;
+
+		default:
+			delete stream;
+			break;
 	}
+
+	if (audioStream)
+		queueSound(audioStream);
+
 }
 
 } // End of namespace Video

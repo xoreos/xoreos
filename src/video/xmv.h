@@ -51,24 +51,62 @@ protected:
 	void processData();
 
 private:
-	Common::SeekableReadStream *_xmv;
-
-	/** Load an XMV file. */
-	void load();
-
-	/** Create a new audio stream to be queued. */
-	void queueAudioStream(Common::SeekableReadStream *stream);
-
 	struct AudioTrack {
 		uint16 compression;
 		uint16 channels;
 		uint32 rate;
 		uint16 bitsPerSample;
-		uint16 unk;
+		uint16 flags;
+
+		bool supported;
+		bool enabled;
+
+		byte audioStreamFlags;
+		uint32 bitRate;
 	};
 
+	struct PacketVideoHeader {
+		byte header[8];
+
+		uint32 dataSize;
+	};
+
+	struct PacketAudioHeader {
+		byte header[4];
+
+		uint32 dataSize;
+	};
+
+	struct PacketHeader {
+		uint32 nextPacketSize;
+
+		PacketVideoHeader video;
+		std::vector<PacketAudioHeader> audio;
+	};
+
+	Common::SeekableReadStream *_xmv;
+
 	std::vector<AudioTrack> _audioTracks;
-	uint _audioTrack;
+
+	uint32 _thisPacketSize;
+	uint32 _nextPacketSize;
+	uint32 _nextFrameTime;
+
+	uint32 _audioLength;
+
+	uint32 _curPacket;
+
+	/** Load an XMV file. */
+	void load();
+
+	void evalAudioTrack(AudioTrack &track);
+
+	void processPackerHeader(PacketHeader &packetHeader);
+	void processVideoData(PacketVideoHeader &videoHeader);
+	void processAudioData(PacketAudioHeader &audioHeader, const AudioTrack &track);
+	void processAudioData(std::vector<PacketAudioHeader> &audioHeader);
+
+	void queueAudioStream(Common::SeekableReadStream *stream, const AudioTrack &track);
 };
 
 } // End of namespace Video
