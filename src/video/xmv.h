@@ -101,7 +101,7 @@ private:
 
 	void evalAudioTrack(AudioTrack &track);
 
-	void processPackerHeader(PacketHeader &packetHeader);
+	void processPacketHeader(PacketHeader &packetHeader);
 	void processVideoData(PacketVideoHeader &videoHeader);
 	void processAudioData(PacketAudioHeader &audioHeader, const AudioTrack &track);
 	void processAudioData(std::vector<PacketAudioHeader> &audioHeader);

@@ -71,7 +71,7 @@ void XboxMediaVideo::startVideo() {
 	_started = true;
 }
 
-void XboxMediaVideo::processPackerHeader(PacketHeader &packetHeader) {
+void XboxMediaVideo::processPacketHeader(PacketHeader &packetHeader) {
 	// Next packet size
 
 	packetHeader.nextPacketSize = _xmv->readUint32LE();
@@ -156,7 +156,7 @@ void XboxMediaVideo::processData() {
 		throw Common::Exception(Common::kReadError);
 
 	PacketHeader packetHeader;
-	processPackerHeader(packetHeader);
+	processPacketHeader(packetHeader);
 
 
 	processVideoData(packetHeader.video);
