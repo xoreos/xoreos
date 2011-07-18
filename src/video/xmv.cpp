@@ -42,9 +42,7 @@
 
 namespace Video {
 
-XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) : _xmv(xmv),
-	_nextFrameTime(0), _curPacket(0) {
-
+XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) : _xmv(xmv), _startTime(0) {
 	assert(_xmv);
 
 	load();
@@ -60,146 +58,78 @@ uint32 XboxMediaVideo::getTimeToNextFrame() const {
 	if (!_started)
 		return 0;
 
-	uint32 curTime = EventMan.getTimestamp();
-	if (_nextFrameTime < curTime)
+	uint32 curTime = EventMan.getTimestamp() - _startTime;
+	if (curTime >= _curPacket.video.currentFrameTimestamp)
 		return 0;
 
-	return _nextFrameTime - curTime;
+	return _curPacket.video.currentFrameTimestamp - curTime;
 }
 
 void XboxMediaVideo::startVideo() {
-	_started = true;
+	queueNewAudio(_curPacket);
+
+	_startTime = EventMan.getTimestamp();
+	_started   = true;
 }
 
-void XboxMediaVideo::processPacketHeader(PacketHeader &packetHeader) {
-	// Next packet size
-
-	packetHeader.nextPacketSize = _xmv->readUint32LE();
-	_thisPacketSize -= 4;
-
-	// Packet video header
-
-	_xmv->read(packetHeader.video.header, 8);
-	_thisPacketSize -= 8;
-
-	packetHeader.video.dataSize   =  READ_LE_UINT32(packetHeader.video.header) & 0x007FFFFF;
-	packetHeader.video.frameCount = (READ_LE_UINT32(packetHeader.video.header) >> 23) & 0xFF;
-
-	packetHeader.video.isKeyFrame = (packetHeader.video.header[3] & 0x80) != 0;
-
-	// Adding the audio data sizes and the video data size keeps you 4 bytes short
-	// for every audio track. But as playing around with XMV files with ADPCM audio
-	// showed, taking the extra 4 bytes from the audio data gives you either
-	// completely distorted audio or click (when skipping the remaining 68 bytes of
-	// the ADPCM block). Substracting _audioTracks.size() * 4 bytes from the video
-	// data works at least for the audio. No idea why or how, though...
-	packetHeader.video.dataSize -= _audioTracks.size() * 4;
-
-	// Packet audio header
-
-	packetHeader.audio.resize(_audioTracks.size());
-
-	for (uint i = 0; i < packetHeader.audio.size(); i++) {
-		PacketAudioHeader &audioHeader = packetHeader.audio[i];
-
-		_xmv->read(audioHeader.header, 4);
-		_thisPacketSize -= 4;
-
-		audioHeader.dataSize = READ_LE_UINT32(audioHeader.header) & 0x007FFFFF;
-		if ((audioHeader.dataSize == 0) && (i != 0))
-			// Size is 0, take the size from last track
-			audioHeader.dataSize = packetHeader.audio[i - 1].dataSize;
-	}
-}
-
-void XboxMediaVideo::processVideoData(PacketVideoHeader &videoHeader) {
-	if (videoHeader.dataSize > _thisPacketSize)
-		throw Common::Exception("XboxMediaVideo::processVideoData(): Packet data overrun");
-
-	if (videoHeader.isKeyFrame) {
-		_xmv->read(videoHeader.frameFlags, 4);
-
-		videoHeader.dataSize -= 4;
-		_thisPacketSize      -= 4;
-
-	} else
-		memset(videoHeader.frameFlags, 0, 4);
-
-	for (uint32 i = 0; i < videoHeader.frameCount; i++) {
-		uint32 data      = _xmv->readUint32LE();
-		uint32 frameSize = (data & 0x1FFFF) * 4 + 4;
-
-		if (frameSize > videoHeader.dataSize)
-			throw Common::Exception("XboxMediaVideo::processVideoData(): Frame data overrun");
-
-		_xmv->skip(frameSize);
-
-		videoHeader.dataSize -= frameSize + 4;
-		_thisPacketSize      -= frameSize + 4;
-	}
-
-	_xmv->skip(videoHeader.dataSize);
-	_thisPacketSize -= videoHeader.dataSize;
-}
-
-void XboxMediaVideo::processAudioData(PacketAudioHeader &audioHeader,
-                                      const AudioTrack &track) {
-
-	if (audioHeader.dataSize > _thisPacketSize)
-		throw Common::Exception("XboxMediaVideo::processAudioData(): Packet data overrun");
-
-	if (!track.enabled) {
-		// Not a track we want, so we skip it
-
-		_xmv->skip(audioHeader.dataSize);
-		_thisPacketSize -= audioHeader.dataSize;
-
+void XboxMediaVideo::queueNewAudio(PacketAudio &audioPacket) {
+	// New data available that we should play?
+	if (!audioPacket.newSlice || !audioPacket.track->enabled)
 		return;
-	}
 
-	Common::SeekableReadStream *stream = _xmv->readStream(audioHeader.dataSize);
-	_thisPacketSize -= audioHeader.dataSize;
+	// Seek to it
+	if (!_xmv->seek(audioPacket.dataOffset))
+		throw Common::Exception(Common::kSeekError);
 
-	queueAudioStream(stream, track);
+	// Read and queue it
+	queueAudioStream(_xmv->readStream(audioPacket.dataSize), *audioPacket.track);
 
-	uint32 audioLength = ((audioHeader.dataSize << 3) * 1000) / track.bitRate;
-	_audioLength = MAX(_audioLength, audioLength);
+	audioPacket.newSlice = false;
 }
 
-void XboxMediaVideo::processAudioData(std::vector<PacketAudioHeader> &audioHeader) {
-	for (uint32 t = 0; t < audioHeader.size(); t++)
-		processAudioData(audioHeader[t], _audioTracks[t]);
+void XboxMediaVideo::queueNewAudio(Packet &packet) {
+	// Go over all audio packets and try to queue their data.
+
+	for (std::vector<PacketAudio>::iterator audio = packet.audio.begin();
+	     audio != packet.audio.end(); ++audio)
+		queueNewAudio(*audio);
 }
 
-void XboxMediaVideo::processData() {
-	_audioLength    = 0;
-	_thisPacketSize = _nextPacketSize;
-
-	if (_thisPacketSize < (12 + _audioTracks.size() * 4)) {
-		finish();
+void XboxMediaVideo::processNextFrame(PacketVideo &videoPacket) {
+	// No frame left, nothing to do
+	if (videoPacket.frameCount == 0)
 		return;
-	}
 
-	if (_xmv->err() || _xmv->eos() || (_thisPacketSize > (_xmv->size() - _xmv->pos())))
-		throw Common::Exception(Common::kReadError);
+	// Seek
+	if (!_xmv->seek(videoPacket.dataOffset))
+		throw Common::Exception(Common::kSeekError);
 
-	PacketHeader packetHeader;
-	processPacketHeader(packetHeader);
+	// Read the frame header
 
+	uint32 frameHeader = _xmv->readUint32LE();
 
-	processVideoData(packetHeader.video);
-	processAudioData(packetHeader.audio);
+	videoPacket.currentFrameSize      = (frameHeader & 0x1FFFF) * 4 + 4;
+	videoPacket.currentFrameTimestamp = (frameHeader >> 17) + videoPacket.lastFrameTime;
 
+	if (videoPacket.currentFrameSize > videoPacket.dataSize)
+		throw Common::Exception("XboxMediaVideo::processNextFrame(): Frame data overrun");
 
-	_xmv->skip(_thisPacketSize);
+	// TODO: Process the frame data
 
-	_nextPacketSize = packetHeader.nextPacketSize;
+	// Update the frame time
+	videoPacket.lastFrameTime = videoPacket.currentFrameTimestamp;
 
-	_nextFrameTime = _audioLength + EventMan.getTimestamp();
-	_curPacket++;
+	// Advance the data
+	videoPacket.dataSize   -= videoPacket.currentFrameSize + 4;
+	videoPacket.dataOffset += videoPacket.currentFrameSize + 4;
+
+	// One less frame to worry about
+	videoPacket.frameCount--;
 }
 
 void XboxMediaVideo::load() {
+	// Read the XMV header
+
 	_xmv->skip(4); // Next packet size
 
 	uint32 thisPacketSize = _xmv->readUint32LE();
@@ -216,15 +146,15 @@ void XboxMediaVideo::load() {
 
 	uint32 width    = _xmv->readUint32LE();
 	uint32 height   = _xmv->readUint32LE();
-	uint32 duration = _xmv->readUint32LE(); // In ms
 
-	warning("XMV: %dx%d for %d ms", width, height, duration);
+	_xmv->skip(4); // Duration in ms
 
 	uint32 audioTrackCount = _xmv->readUint16LE();
 	_audioTracks.resize(audioTrackCount);
 
 	_xmv->skip(2); // Unknown
 
+	// Audio tracks
 	for (uint32 i = 0; i < audioTrackCount; i++) {
 		_audioTracks[i].compression   = _xmv->readUint16LE();
 		_audioTracks[i].channels      = _xmv->readUint16LE();
@@ -232,13 +162,8 @@ void XboxMediaVideo::load() {
 		_audioTracks[i].bitsPerSample = _xmv->readUint16LE();
 		_audioTracks[i].flags         = _xmv->readUint16LE();
 
-		evalAudioTrack(_audioTracks[i]);
+		evaluateAudioTrack(_audioTracks[i]);
 	}
-
-	_nextPacketSize = thisPacketSize - _xmv->pos();
-
-	std::vector<uint32> audioDataSize;
-	audioDataSize.resize(audioTrackCount);
 
 
 	// Initialize the video
@@ -253,33 +178,52 @@ void XboxMediaVideo::load() {
 		}
 	}
 
-	_nextFrameTime = 0;
-	_curPacket     = 0;
+
+	// Initialize the packet data
+
+	_curPacket.nextPacketOffset = _xmv->pos();
+
+	_curPacket.nextPacketSize = thisPacketSize - _curPacket.nextPacketOffset;
+	_curPacket.thisPacketSize = 0;
+
+	_curPacket.video.frameCount    = 0;
+	_curPacket.video.lastFrameTime = 0;
+
+	_curPacket.video.currentFrameTimestamp = 0;
+
+	_curPacket.audio.resize(audioTrackCount);
+	for (uint32 i = 0; i < audioTrackCount; i++)
+		_curPacket.audio[i].track = &_audioTracks[i];
+
+
+	// Fetch the first packet
+	fetchNextPacket(_curPacket);
 }
 
-void XboxMediaVideo::evalAudioTrack(AudioTrack &track) {
+void XboxMediaVideo::evaluateAudioTrack(AudioTrack &track) {
+	// Assume it's supported first
 	track.supported = true;
 	track.enabled   = false;
-
-	track.bitRate = track.channels * track.bitsPerSample * track.rate;
 
 	track.audioStreamFlags = Sound::FLAG_LITTLE_ENDIAN;
 	if (track.channels == 2)
 		track.audioStreamFlags |= Sound::FLAG_STEREO;
 
+	// Check channel count
 	if ((track.channels == 0) || (track.channels > 2)) {
-		warning("XboxMediaVideo::evalAudioTrack(): Unsupported channel count %d",
+		warning("XboxMediaVideo::evaluateAudioTrack(): Unsupported channel count %d",
 		        track.channels);
 
 		track.supported = false;
 	}
 
+	// Check compression method
 	switch (track.compression) {
 		case Sound::kWavePCM:
 			if        (track.bitsPerSample == 16) {
 				track.audioStreamFlags |= Sound::FLAG_16BITS;
 			} else if (track.bitsPerSample !=  8) {
-				warning("XboxMediaVideo::evalAudioTrack(): Invalid bits per sample value for "
+				warning("XboxMediaVideo::evaluateAudioTrack(): Invalid bits per sample value for "
 				        "raw PCM audio: %d", track.bitsPerSample);
 				track.supported = false;
 			}
@@ -290,14 +234,14 @@ void XboxMediaVideo::evalAudioTrack(AudioTrack &track) {
 			track.audioStreamFlags |= Sound::FLAG_16BITS;
 
 			if (track.bitsPerSample != 4) {
-				warning("XboxMediaVideo::evalAudioTrack(): Invalid bits per sample value for "
+				warning("XboxMediaVideo::evaluateAudioTrack(): Invalid bits per sample value for "
 				        "MS IMA ADPCM audio: %d", track.bitsPerSample);
 				track.supported = false;
 			}
 			break;
 
 		default:
-			warning("XboxMediaVideo::evalAudioTrack(): Unknown audio compression 0x%04x",
+			warning("XboxMediaVideo::evaluateAudioTrack(): Unknown audio compression 0x%04x",
 			        track.compression);
 			track.supported = false;
 			break;
@@ -305,14 +249,129 @@ void XboxMediaVideo::evalAudioTrack(AudioTrack &track) {
 
 }
 
+void XboxMediaVideo::fetchNextPacket(Packet &packet) {
+	// Seek to it
+	packet.thisPacketOffset = packet.nextPacketOffset;
+	if (!_xmv->seek(packet.thisPacketOffset))
+		throw Common::Exception(Common::kSeekError);
+
+	// Update the size
+	packet.thisPacketSize = packet.nextPacketSize;
+	if (packet.thisPacketSize < (12 + _audioTracks.size() * 4))
+		return;
+
+	// Process the header
+	processPacketHeader(packet);
+
+	// Update the offset
+	packet.nextPacketOffset = packet.thisPacketOffset + packet.thisPacketSize;
+}
+
+void XboxMediaVideo::processPacketHeader(Packet &packet) {
+	// Next packet size
+	packet.nextPacketSize = _xmv->readUint32LE();
+
+	// Packet video header
+
+	byte videoHeaderData[8];
+	_xmv->read(videoHeaderData, 8);
+
+	packet.video.dataSize   =  READ_LE_UINT32(videoHeaderData) & 0x007FFFFF;
+	packet.video.frameCount = (READ_LE_UINT32(videoHeaderData) >> 23) & 0xFF;
+
+	packet.video.hasKeyFrame = (videoHeaderData[3] & 0x80) != 0;
+
+	// Adding the audio data sizes and the video data size keeps you 4 bytes short
+	// for every audio track. But as playing around with XMV files with ADPCM audio
+	// showed, taking the extra 4 bytes from the audio data gives you either
+	// completely distorted audio or click (when skipping the remaining 68 bytes of
+	// the ADPCM block). Substracting _audioTracks.size() * 4 bytes from the video
+	// data works at least for the audio. Probably some alignment thing?
+	// The video data has (always?) lots of padding, so it should work out regardless.
+	packet.video.dataSize -= _audioTracks.size() * 4;
+
+	// Packet audio header
+
+	packet.audio.resize(_audioTracks.size());
+	for (uint i = 0; i < packet.audio.size(); i++) {
+		PacketAudio &audioHeader = packet.audio[i];
+
+		byte audioHeaderData[4];
+		_xmv->read(audioHeaderData, 4);
+
+		audioHeader.dataSize = READ_LE_UINT32(audioHeaderData) & 0x007FFFFF;
+		if ((audioHeader.dataSize == 0) && (i != 0))
+			// This happens when I create an XMV with several identical audio
+			// streams. From the size calculations, duplicating the previous
+			// stream's size works out, but the track data itself is silent.
+			// Maybe this should also redirect the offset to the previous track?
+			audioHeader.dataSize = packet.audio[i - 1].dataSize;
+
+		audioHeader.newSlice = audioHeader.dataSize > 0;
+	}
+
+	// Packet data offsets
+
+	uint32 dataOffset = _xmv->pos();
+
+	packet.video.dataOffset = dataOffset;
+	dataOffset += packet.video.dataSize;
+
+	for (uint i = 0; i < packet.audio.size(); i++) {
+		packet.audio[i].dataOffset = dataOffset;
+		dataOffset += packet.audio[i].dataSize;
+	}
+
+	// Video frames header
+
+	memset(packet.video.keyFrameFlags, 0, 4);
+
+	if (packet.video.dataSize > 0) {
+		if (packet.video.hasKeyFrame) {
+			_xmv->read(packet.video.keyFrameFlags, 4);
+
+			packet.video.dataSize   -= 4;
+			packet.video.dataOffset += 4;
+		}
+	}
+
+}
+
+void XboxMediaVideo::processData() {
+	// No frames left => we finished playing
+	if (_curPacket.video.frameCount == 0) {
+		finish();
+		return;
+	}
+
+	// Process the next frame
+	processNextFrame(_curPacket.video);
+
+	// Got all frames in the current packet?
+	if (_curPacket.video.frameCount == 0) {
+		// Fetch the next one and queue the audio
+
+		fetchNextPacket(_curPacket);
+		queueNewAudio(_curPacket);
+	}
+
+	// Check for read errors
+	if (_xmv->err() || _xmv->eos())
+		throw Common::Exception(Common::kReadError);
+}
+
 void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream,
                                       const AudioTrack &track) {
 
-	if (!track.supported)
+	// No stream or not a supported track
+	if (!stream || !track.supported) {
+		delete stream;
 		return;
+	}
 
 	Sound::AudioStream *audioStream = 0;
 
+	// Create the audio stream
 	switch (track.compression) {
 		case Sound::kWavePCM:
 			audioStream =
@@ -331,9 +390,9 @@ void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream,
 			break;
 	}
 
+	// Queue it
 	if (audioStream)
 		queueSound(audioStream);
-
 }
 
 } // End of namespace Video

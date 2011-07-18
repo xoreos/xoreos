@@ -51,66 +51,98 @@ protected:
 	void processData();
 
 private:
+	/** An audio track. */
 	struct AudioTrack {
-		uint16 compression;
-		uint16 channels;
-		uint32 rate;
-		uint16 bitsPerSample;
-		uint16 flags;
+		uint16 compression;   ///< The compression method.
+		uint16 channels;      ///< The number of channels.
+		uint32 rate;          ///< The sampling rate.
+		uint16 bitsPerSample; ///< The number of bits per encoded sample.
+		uint16 flags;         ///< Flags.
 
-		bool supported;
-		bool enabled;
+		bool supported; ///< Are these audio track parameters supported by eos?
+		bool enabled;   ///< Should this audio track be played?
 
-		byte audioStreamFlags;
-		uint32 bitRate;
+		byte audioStreamFlags; ///< Flags for the audio stream creation.
 	};
 
-	struct PacketVideoHeader {
-		byte header[8];
+	/** A video packet. */
+	struct PacketVideo {
+		uint32 dataSize;   ///< The video data size.
+		uint32 dataOffset; ///< The video data offset within the XMV stream.
 
-		uint32 dataSize;
-		uint32 frameCount;
+		uint32 frameCount; ///< Number of frames left in this packet.
 
-		bool isKeyFrame;
+		bool hasKeyFrame; ///< Does this packet contain a key frame?
 
-		byte frameFlags[4];
+		byte keyFrameFlags[4]; ///< Key frame flags.
+
+		/** The size of the current frame. */
+		uint32 currentFrameSize; ///< The size of the current frame.
+		/** The timestamp of when the current frame should be shown. */
+		uint32 currentFrameTimestamp;
+
+		/** The timestamp of when the current last frame was shown. */
+		uint32 lastFrameTime;
 	};
 
-	struct PacketAudioHeader {
-		byte header[4];
+	/** An audio packet. */
+	struct PacketAudio {
+		uint32 dataSize;   ///< The audio data size.
+		uint32 dataOffset; ///< The audio data offset within the XMV stream.
 
-		uint32 dataSize;
+		AudioTrack *track; ///< The track this packet belongs to.
+
+		bool newSlice; ///< Is a new slice that needs to be queue available?
 	};
 
-	struct PacketHeader {
-		uint32 nextPacketSize;
+	/** An XMV packet. */
+	struct Packet {
+		uint32 thisPacketSize; ///< The current packet's size.
+		uint32 nextPacketSize; ///< The next packet's size.
 
-		PacketVideoHeader video;
-		std::vector<PacketAudioHeader> audio;
+		uint32 thisPacketOffset; ///< The current packet's offset within the XMV stream.
+		uint32 nextPacketOffset; ///< The next packet's offset within the XMV stream.
+
+		/** The video part of the packet. */
+		PacketVideo video;
+
+		/** The audio part of the packet. */
+		std::vector<PacketAudio> audio;
 	};
 
 	Common::SeekableReadStream *_xmv;
 
+	/** The time the XMV was started. */
+	uint32 _startTime;
+
+	/** All audio tracks within the XMV. */
 	std::vector<AudioTrack> _audioTracks;
 
-	uint32 _thisPacketSize;
-	uint32 _nextPacketSize;
-	uint32 _nextFrameTime;
+	/** The current packet. */
+	Packet _curPacket;
 
-	uint32 _audioLength;
-
-	uint32 _curPacket;
 
 	/** Load an XMV file. */
 	void load();
 
-	void evalAudioTrack(AudioTrack &track);
+	/** Evaluate whether and how we support the format of the audio track. */
+	void evaluateAudioTrack(AudioTrack &track);
 
-	void processPacketHeader(PacketHeader &packetHeader);
-	void processVideoData(PacketVideoHeader &videoHeader);
-	void processAudioData(PacketAudioHeader &audioHeader, const AudioTrack &track);
-	void processAudioData(std::vector<PacketAudioHeader> &audioHeader);
+	/** Fetch the next packet. */
+	void fetchNextPacket(Packet &packet);
 
+	/** Process a packet's header. */
+	void processPacketHeader(Packet &packet);
+
+	/** Queue the data from this audio packet. */
+	void queueNewAudio(PacketAudio &audioPacket);
+	/** Queue the data from all audio packets in this packet. */
+	void queueNewAudio(Packet &packet);
+
+	/** Process the next frame. */
+	void processNextFrame(PacketVideo &videoPacket);
+
+	/** Queue audio stream data belonging to this track. */
 	void queueAudioStream(Common::SeekableReadStream *stream, const AudioTrack &track);
 };
 
