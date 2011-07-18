@@ -108,12 +108,16 @@ protected:
 	void queueSound(const byte *data, uint32 dataSize);
 	void queueSound(Sound::AudioStream *stream);
 
+	void finishSound();
+
 	uint32 getNumQueuedStreams() const;
 
 	/** Start the video processing. */
 	virtual void startVideo() = 0;
 	/** Process the video's image and sound data further. */
 	virtual void processData() = 0;
+
+	void finish();
 
 	void deinit();
 

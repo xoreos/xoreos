@@ -270,7 +270,7 @@ void QuickTimeDecoder::startVideo() {
 
 void QuickTimeDecoder::processData() {
 	if (_curFrame >= (int32)_tracks[_videoTrackIndex]->frameCount - 1) {
-		_finished = true;
+		finish();
 		return;
 	}
 

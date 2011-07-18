@@ -168,7 +168,7 @@ void Bink::processData() {
 		return;
 
 	if (_curFrame >= _frames.size()) {
-		_finished = true;
+		finish();
 		return;
 	}
 

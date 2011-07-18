@@ -151,7 +151,7 @@ void XboxMediaVideo::processData() {
 	_thisPacketSize = _nextPacketSize;
 
 	if (_thisPacketSize < (12 + _audioTracks.size() * 4)) {
-		_finished = true;
+		finish();
 		return;
 	}
 

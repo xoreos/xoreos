@@ -144,6 +144,11 @@ void VideoDecoder::queueSound(Sound::AudioStream *stream) {
 	SoundMan.startChannel(_soundHandle);
 }
 
+void VideoDecoder::finishSound() {
+	if (_sound)
+		_sound->finish();
+}
+
 uint32 VideoDecoder::getNumQueuedStreams() const {
 	return _sound ? _sound->numQueuedStreams() : 0;
 }
@@ -199,7 +204,7 @@ void VideoDecoder::setScale(Scale scale) {
 }
 
 bool VideoDecoder::isPlaying() const {
-	return !_finished;
+	return !_finished || SoundMan.isPlaying(_soundHandle);
 }
 
 void VideoDecoder::update() {
@@ -275,6 +280,12 @@ void VideoDecoder::render(Graphics::RenderPass pass) {
 	glEnd();
 }
 
+void VideoDecoder::finish() {
+	finishSound();
+
+	_finished = true;
+}
+
 void VideoDecoder::start() {
 	startVideo();
 
@@ -284,7 +295,7 @@ void VideoDecoder::start() {
 void VideoDecoder::abort() {
 	hide();
 
-	_finished = true;
+	finish();
 }
 
 } // End of namespace Video

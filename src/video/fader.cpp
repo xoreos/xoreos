@@ -103,7 +103,7 @@ void Fader::processData() {
 
 	if (_c == 0)
 		if (_n-- <= 0)
-			_finished = true;
+			finish();
 
 	_needCopy = true;
 }
