@@ -82,7 +82,10 @@ void XboxMediaVideo::processPacketHeader(PacketHeader &packetHeader) {
 	_xmv->read(packetHeader.video.header, 8);
 	_thisPacketSize -= 8;
 
-	packetHeader.video.dataSize = READ_LE_UINT32(packetHeader.video.header) & 0x007FFFFF;
+	packetHeader.video.dataSize   =  READ_LE_UINT32(packetHeader.video.header) & 0x007FFFFF;
+	packetHeader.video.frameCount = (READ_LE_UINT32(packetHeader.video.header) >> 23) & 0xFF;
+
+	packetHeader.video.isKeyFrame = (packetHeader.video.header[3] & 0x80) != 0;
 
 	// Adding the audio data sizes and the video data size keeps you 4 bytes short
 	// for every audio track. But as playing around with XMV files with ADPCM audio
@@ -112,6 +115,28 @@ void XboxMediaVideo::processPacketHeader(PacketHeader &packetHeader) {
 void XboxMediaVideo::processVideoData(PacketVideoHeader &videoHeader) {
 	if (videoHeader.dataSize > _thisPacketSize)
 		throw Common::Exception("XboxMediaVideo::processVideoData(): Packet data overrun");
+
+	if (videoHeader.isKeyFrame) {
+		_xmv->read(videoHeader.frameFlags, 4);
+
+		videoHeader.dataSize -= 4;
+		_thisPacketSize      -= 4;
+
+	} else
+		memset(videoHeader.frameFlags, 0, 4);
+
+	for (uint32 i = 0; i < videoHeader.frameCount; i++) {
+		uint32 data      = _xmv->readUint32LE();
+		uint32 frameSize = (data & 0x1FFFF) * 4 + 4;
+
+		if (frameSize > videoHeader.dataSize)
+			throw Common::Exception("XboxMediaVideo::processVideoData(): Frame data overrun");
+
+		_xmv->skip(frameSize);
+
+		videoHeader.dataSize -= frameSize + 4;
+		_thisPacketSize      -= frameSize + 4;
+	}
 
 	_xmv->skip(videoHeader.dataSize);
 	_thisPacketSize -= videoHeader.dataSize;

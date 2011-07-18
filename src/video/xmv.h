@@ -69,6 +69,11 @@ private:
 		byte header[8];
 
 		uint32 dataSize;
+		uint32 frameCount;
+
+		bool isKeyFrame;
+
+		byte frameFlags[4];
 	};
 
 	struct PacketAudioHeader {
