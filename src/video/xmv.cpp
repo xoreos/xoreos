@@ -298,7 +298,7 @@ void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream,
 			audioStream =
 				Sound::makeADPCMStream(stream, true, stream->size(),
 				                       Sound::kADPCMMSIma, track.rate,
-				                       track.channels, 72);
+				                       track.channels, 36 * track.channels);
 			break;
 
 		default:
