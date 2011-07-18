@@ -84,6 +84,14 @@ void XboxMediaVideo::processPacketHeader(PacketHeader &packetHeader) {
 
 	packetHeader.video.dataSize = READ_LE_UINT32(packetHeader.video.header) & 0x007FFFFF;
 
+	// Adding the audio data sizes and the video data size keeps you 4 bytes short
+	// for every audio track. But as playing around with XMV files with ADPCM audio
+	// showed, taking the extra 4 bytes from the audio data gives you either
+	// completely distorted audio or click (when skipping the remaining 68 bytes of
+	// the ADPCM block). Substracting _audioTracks.size() * 4 bytes from the video
+	// data works at least for the audio. No idea why or how, though...
+	packetHeader.video.dataSize -= _audioTracks.size() * 4;
+
 	// Packet audio header
 
 	packetHeader.audio.resize(_audioTracks.size());
@@ -94,13 +102,10 @@ void XboxMediaVideo::processPacketHeader(PacketHeader &packetHeader) {
 		_xmv->read(audioHeader.header, 4);
 		_thisPacketSize -= 4;
 
-		uint32 dataSize = READ_LE_UINT32(audioHeader.header) & 0x007FFFFF;
-		if (dataSize == 0)
-			// Size is 0, take the size from last track, if available
-			audioHeader.dataSize = (i != 0)  ? packetHeader.audio[i - 1].dataSize : 0;
-		else
-			// The size includes the 4 bytes for the size
-			audioHeader.dataSize = dataSize - 4;
+		audioHeader.dataSize = READ_LE_UINT32(audioHeader.header) & 0x007FFFFF;
+		if ((audioHeader.dataSize == 0) && (i != 0))
+			// Size is 0, take the size from last track
+			audioHeader.dataSize = packetHeader.audio[i - 1].dataSize;
 	}
 }
 
@@ -142,8 +147,6 @@ void XboxMediaVideo::processAudioData(std::vector<PacketAudioHeader> &audioHeade
 }
 
 void XboxMediaVideo::processData() {
-	warning("Current packet: %d, size: %d", _curPacket, _nextPacketSize);
-
 	_audioLength    = 0;
 	_thisPacketSize = _nextPacketSize;
 
@@ -233,7 +236,7 @@ void XboxMediaVideo::evalAudioTrack(AudioTrack &track) {
 	track.supported = true;
 	track.enabled   = false;
 
-	track.bitRate = track.bitsPerSample * track.rate;
+	track.bitRate = track.channels * track.bitsPerSample * track.rate;
 
 	track.audioStreamFlags = Sound::FLAG_LITTLE_ENDIAN;
 	if (track.channels == 2)
@@ -292,8 +295,10 @@ void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream,
 			break;
 
 		case Sound::kWaveMSIMAADPCM2:
-			warning("XboxMediaVideo::createAudioStream(): ADPCM not yet handled");
-			delete stream;
+			audioStream =
+				Sound::makeADPCMStream(stream, true, stream->size(),
+				                       Sound::kADPCMMSIma, track.rate,
+				                       track.channels, 72);
 			break;
 
 		default:
