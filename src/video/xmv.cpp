@@ -240,8 +240,6 @@ void XboxMediaVideo::evaluateAudioTrack(AudioTrack &track) {
 	track.enabled   = false;
 
 	track.audioStreamFlags = Sound::FLAG_LITTLE_ENDIAN;
-	if (track.channels == 2)
-		track.audioStreamFlags |= Sound::FLAG_STEREO;
 
 	// Check channel count
 	if ((track.channels == 0) || (track.channels > 2)) {
@@ -409,7 +407,7 @@ void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream,
 	switch (track.compression) {
 		case Sound::kWavePCM:
 			audioStream =
-				Sound::makePCMStream(stream, track.rate, track.audioStreamFlags, true);
+				Sound::makePCMStream(stream, track.rate, track.audioStreamFlags, track.channels, true);
 			break;
 
 		case Sound::kWaveMSIMAADPCM2:

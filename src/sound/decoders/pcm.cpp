@@ -53,15 +53,15 @@ template<bool is16Bit, bool isUnsigned, bool isLE>
 class PCMStream : public RewindableAudioStream {
 
 protected:
-	const int _rate;                               ///< Sample rate of stream
-	const bool _isStereo;                          ///< Whether this is an stereo stream
+	const int _rate;                     ///< Sample rate of stream
+	const int _channels;                 ///< Amount of channels
 
-	Common::SeekableReadStream *_stream;           ///< Stream to read data from
-	const bool _disposeAfterUse;  ///< Indicates whether the stream object should be deleted when this RawStream is destructed
+	Common::SeekableReadStream *_stream; ///< Stream to read data from
+	const bool _disposeAfterUse;         ///< Indicates whether the stream object should be deleted when this RawStream is destructed
 
 public:
-	PCMStream(int rate, bool stereo, bool disposeStream, Common::SeekableReadStream *stream)
-		: _rate(rate), _isStereo(stereo), _stream(stream), _disposeAfterUse(disposeStream) {
+	PCMStream(int rate, int channels, bool disposeStream, Common::SeekableReadStream *stream)
+		: _rate(rate), _channels(channels), _stream(stream), _disposeAfterUse(disposeStream) {
 
 	}
 
@@ -71,7 +71,7 @@ public:
 	}
 
 	int readBuffer(int16 *buffer, const int numSamples);
-	int getChannels() const           { return _isStereo ? 2 : 1; }
+	int getChannels() const           { return _channels; }
 	bool endOfData() const          { return _stream->pos() >= _stream->size(); }
 	int getRate() const         { return _rate; }
 	bool rewind();
@@ -106,21 +106,19 @@ bool PCMStream<is16Bit, isUnsigned, isLE>::rewind() {
  */
 
 #define MAKE_RAW_STREAM(UNSIGNED) \
-		if (is16Bit) { \
-			if (isLE) \
-				return new PCMStream<true, UNSIGNED, true>(rate, isStereo, disposeAfterUse, stream); \
-			else  \
-				return new PCMStream<true, UNSIGNED, false>(rate, isStereo, disposeAfterUse, stream); \
-		} else \
-			return new PCMStream<false, UNSIGNED, false>(rate, isStereo, disposeAfterUse, stream)
+	if (is16Bit) { \
+		if (isLE) \
+			return new PCMStream<true, UNSIGNED, true>(rate, channels, disposeAfterUse, stream); \
+		else  \
+			return new PCMStream<true, UNSIGNED, false>(rate, channels, disposeAfterUse, stream); \
+	} else \
+		return new PCMStream<false, UNSIGNED, false>(rate, channels, disposeAfterUse, stream)
 
 
 RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
-                                   int rate, byte flags,
+                                   int rate, byte flags, int channels,
                                    bool disposeAfterUse) {
 
-
-	const bool isStereo   = (flags & FLAG_STEREO) != 0;
 	const bool is16Bit    = (flags & FLAG_16BITS) != 0;
 	const bool isUnsigned = (flags & FLAG_UNSIGNED) != 0;
 	const bool isLE       = (flags & FLAG_LITTLE_ENDIAN) != 0;

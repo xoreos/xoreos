@@ -51,25 +51,23 @@ enum PCMFlags {
 	FLAG_16BITS = 1 << 1,
 
 	/** samples are little endian (default: big endian) */
-	FLAG_LITTLE_ENDIAN = 1 << 2,
-
-	/** sound is in stereo (default: mono) */
-	FLAG_STEREO = 1 << 3
+	FLAG_LITTLE_ENDIAN = 1 << 2
 };
 
 /**
  * Creates an audio stream, which plays from the given stream.
  *
- * @param stream Stream object to play from.
- * @param rate   Rate of the sound data.
- * @param flags  Audio flags combination.
+ * @param stream   Stream object to play from.
+ * @param rate     Rate of the sound data.
+ * @param flags    Audio flags combination.
+ * @param channels Number of channels
  * @see RawFlags
  * @param disposeAfterUse Whether to delete the stream after use.
  *
  * @return The new SeekableAudioStream (or 0 on failure).
  */
 RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
-                                   int rate, byte flags,
+                                   int rate, byte flags, int channels, 
                                    bool disposeAfterUse = true);
 
 } // End of namespace Sound

@@ -117,7 +117,7 @@ WMACodec::WMACodec(int version, uint32 sampleRate, uint8 channels,
 		throw Common::Exception("WMACodec::init(): Unsupported number of channels %d",
 		                        _channels);
 
-	_audioFlags = FLAG_16BITS | FLAG_LITTLE_ENDIAN | ((_channels == 2) ? FLAG_STEREO : 0);
+	_audioFlags = FLAG_16BITS | FLAG_LITTLE_ENDIAN;
 
 	init(extraData);
 }
@@ -564,7 +564,7 @@ AudioStream *WMACodec::decodeFrame(Common::SeekableReadStream &data) {
 	if (!stream)
 		return 0;
 
-	return makePCMStream(stream, _sampleRate, _audioFlags, true);
+	return makePCMStream(stream, _sampleRate, _audioFlags, _channels, true);
 }
 
 Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStream &data) {

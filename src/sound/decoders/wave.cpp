@@ -93,10 +93,7 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool di
 		else
 			throw Common::Exception("makeWAVStream(): Unsupported PCM bits per sample %d", bitsPerSample);
 
-		if (channels == 2)
-			flags |= FLAG_STEREO;
-
-		return makePCMStream(subStream, sampleRate, flags, true);
+		return makePCMStream(subStream, sampleRate, flags, channels, true);
 	}
 	case kWaveMSIMAADPCM:
 	case kWaveMSIMAADPCM2:

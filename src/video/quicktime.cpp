@@ -1004,12 +1004,10 @@ Sound::AudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStream(Common:
 		uint16 flags = 0;
 		if (_codecTag == MKID_BE('raw '))
 			flags |= Sound::FLAG_UNSIGNED;
-		if (_channels == 2)
-			flags |= Sound::FLAG_STEREO;
 		if (_bitsPerSample == 16)
 			flags |= Sound::FLAG_16BITS;
 
-		return Sound::makePCMStream(stream, _sampleRate, flags);
+		return Sound::makePCMStream(stream, _sampleRate, flags, _channels);
 	} else if (_codecTag == MKID_BE('ima4')) {
 		// QuickTime IMA ADPCM
 		return Sound::makeADPCMStream(stream, true, stream->size(), Sound::kADPCMApple, _sampleRate, _channels, 34);

@@ -108,14 +108,11 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 
 		byte flags = FLAG_16BITS;
 
-		if (_channels == 2)
-			flags |= FLAG_STEREO;
-
 #ifdef EOS_LITTLE_ENDIAN
 		flags |= FLAG_LITTLE_ENDIAN;
 #endif
 
-		audioStream->queueAudioStream(makePCMStream(new Common::MemoryReadStream(buffer, frameInfo.samples * 2), _rate, flags, true), true);
+		audioStream->queueAudioStream(makePCMStream(new Common::MemoryReadStream(buffer, frameInfo.samples * 2), _rate, flags, _channels, true), true);
 
 		inBufferPos += frameInfo.bytesconsumed;
 	}
