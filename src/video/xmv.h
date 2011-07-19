@@ -36,6 +36,10 @@ namespace Common {
 	class SeekableReadStream;
 }
 
+namespace Sound {
+	class AudioStream;
+};
+
 namespace Video {
 
 /** A decoder for Microsoft Xbox XMV videos. */
@@ -110,6 +114,15 @@ private:
 		std::vector<PacketAudio> audio;
 	};
 
+	struct ADPCM51Streams {
+		bool enabled;
+
+		std::vector<Sound::AudioStream *> streams;
+
+		ADPCM51Streams();
+		~ADPCM51Streams();
+	};
+
 	Common::SeekableReadStream *_xmv;
 
 	/** The time the XMV was started. */
@@ -117,6 +130,9 @@ private:
 
 	/** All audio tracks within the XMV. */
 	std::vector<AudioTrack> _audioTracks;
+
+	/** Streams needed for 5.1 interleaving. */
+	ADPCM51Streams _adpcm51Streams;
 
 	/** The current packet. */
 	Packet _curPacket;
