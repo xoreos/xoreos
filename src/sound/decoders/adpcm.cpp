@@ -268,14 +268,16 @@ int MSIma_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
 			_blockPos[0] = _channels * 4;
 		}
 
-		// Decode a set of samples
-		for (int i = 0; i < _channels; i++) {
-			for (int j = 0; j < 4; j++) {
-				byte data = _stream->readByte();
-				_blockPos[0]++;
-				_buffer[i][j * 2] = decodeIMA(data & 0x0f, i);
-				_buffer[i][j * 2 + 1] = decodeIMA((data >> 4) & 0x0f, i);
-				_samplesLeft[i] += 2;
+		if (_samplesLeft[0] == 0) {
+			// Decode a set of samples
+			for (int i = 0; i < _channels; i++) {
+				for (int j = 0; j < 4; j++) {
+					byte data = _stream->readByte();
+					_blockPos[0]++;
+					_buffer[i][j * 2] = decodeIMA(data & 0x0f, i);
+					_buffer[i][j * 2 + 1] = decodeIMA((data >> 4) & 0x0f, i);
+					_samplesLeft[i] += 2;
+				}
 			}
 		}
 
