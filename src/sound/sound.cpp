@@ -58,7 +58,7 @@ static const int kOpenALBufferSize = 32768;
 
 namespace Sound {
 
-SoundManager::SoundManager() : _ready(false) {
+SoundManager::SoundManager() : _ready(false), _hasMultiChannel(false), _format51(0) {
 }
 
 void SoundManager::init() {
@@ -79,6 +79,9 @@ void SoundManager::init() {
 	alcMakeContextCurrent(_ctx);
 	if (!_ctx)
 		throw Common::Exception("Could not create OpenAL context");
+
+	_hasMultiChannel = alIsExtensionPresent("AL_EXT_MCFORMATS");
+	_format51        = alGetEnumValue("AL_FORMAT_51CHN16");
 
 	if (!createThread())
 		throw Common::Exception("Failed to create sound thread: %s", SDL_GetError());
@@ -447,22 +450,35 @@ void SoundManager::setTypeGain(SoundType type, float gain) {
 	}
 }
 
-bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) {
+bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) const {
 	if (!stream)
 		throw Common::Exception("No stream");
 
 	if (stream->endOfData())
 		return false;
 
-	if (stream->getChannels() > 2) {
-		warning("SoundManager::fillBuffer(): TODO: Channels == %d", stream->getChannels());
+	ALenum format;
+
+	const int channelCount = stream->getChannels();
+	if        (channelCount == 1) {
+		format = AL_FORMAT_MONO16;
+	} else if (channelCount == 2) {
+		format = AL_FORMAT_STEREO16;
+	} else if (channelCount == 6) {
+		if (!_hasMultiChannel) {
+			warning("SoundManager::fillBuffer(): TODO: !_hasMultiChannel");
+			return false;
+		}
+
+		format = _format51;
+
+	} else {
+		warning("SoundManager::fillBuffer(): Unsupported channel count %d", channelCount);
 		return false;
 	}
 
 	// Read in the required amount of samples
 	uint32 numSamples = kOpenALBufferSize / 2;
-
-	numSamples /= stream->getChannels();
 
 	byte *buffer = new byte[kOpenALBufferSize];
 	memset(buffer, 0, kOpenALBufferSize);
@@ -470,7 +486,7 @@ bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 
 	uint32 bufferSize = numSamples * 2;
 
-	alBufferData(alBuffer, (stream->getChannels() > 1) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, bufferSize, stream->getRate());
+	alBufferData(alBuffer, format, buffer, bufferSize, stream->getRate());
 
 	delete[] buffer;
 

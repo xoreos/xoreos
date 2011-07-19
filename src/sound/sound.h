@@ -193,6 +193,9 @@ private:
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?
 
+	bool _hasMultiChannel; ///< Do we have the multi-channel extension?
+	ALenum _format51; ///< The value for the 5.1 multi-channel format.
+
 	Channel *_channels[kChannelCount]; ///< The sound channels.
 	Type     _types   [kSoundTypeMAX]; ///< The sound types.
 
@@ -240,8 +243,7 @@ private:
 	static AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
 
 	/** Fill the buffer with data from the audio stream. */
-	static bool fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream);
-
+	bool fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) const;
 };
 
 } // End of namespace Sound
