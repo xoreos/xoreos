@@ -76,7 +76,7 @@ public:
 	int readBuffer(int16 *buffer, const int numSamples);
 
 	bool endOfData() const		{ return _state == MP3_STATE_EOS; }
-	bool isStereo() const		{ return MAD_NCHANNELS(&_frame.header) == 2; }
+	int getChannels() const		{ return MAD_NCHANNELS(&_frame.header); }
 	int getRate() const			{ return _frame.header.samplerate; }
 	bool rewind();
 
@@ -113,7 +113,7 @@ MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
 	_state = MP3_STATE_INIT;
 
 	// Decode the first chunk of data. This is necessary so that _frame
-	// is setup and isStereo() and getRate() return correct results.
+	// is setup and getChannels() and getRate() return correct results.
 	decodeMP3Data();
 }
 

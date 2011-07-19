@@ -118,7 +118,7 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDe
 			// Initialize the codec (if necessary)
 			entry->initCodec();
 
-			initSound(entry->_sampleRate, entry->_channels == 2, true);
+			initSound(entry->_sampleRate, entry->_channels, true);
 			updateAudioBuffer();
 		} else
 			_audioTrackIndex = -1; // Invalidate the stream

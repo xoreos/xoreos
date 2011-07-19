@@ -583,7 +583,7 @@ void Bink::load() {
 	if (_audioTrack < _audioTracks.size()) {
 		const AudioTrack &audio = _audioTracks[_audioTrack];
 
-		initSound(audio.outSampleRate, audio.outChannels == 2, true);
+		initSound(audio.outSampleRate, audio.outChannels, true);
 	}
 }
 

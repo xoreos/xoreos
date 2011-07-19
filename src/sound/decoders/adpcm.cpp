@@ -63,7 +63,7 @@ public:
 	~ADPCMStream();
 
 	virtual bool endOfData() const { return (_stream->eos() || _stream->pos() >= _endpos); }
-	virtual bool isStereo() const	{ return _channels == 2; }
+	virtual int getChannels() const	{ return _channels; }
 	virtual int getRate() const	{ return _rate; }
 
 	virtual bool rewind();

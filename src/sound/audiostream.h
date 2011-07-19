@@ -57,11 +57,14 @@ public:
 	 * left and right are summed up. So if you request 4 samples from a stereo
 	 * stream, you will get a total of two left channel and two right channel
 	 * samples.
+	 *
+	 * The same holds true for more channels. Channel configurations recognized:
+	 * - 5.1: front left, front right, front center, low frequency rear left, rear right
 	 */
 	virtual int readBuffer(int16 *buffer, const int numSamples) = 0;
 
-	/** Is this a stereo stream? */
-	virtual bool isStereo() const = 0;
+	/** Return the number channels in this stream. */
+	virtual int getChannels() const = 0;
 
 	/** Sample rate of the stream. */
 	virtual int getRate() const = 0;
@@ -122,7 +125,7 @@ public:
 	int readBuffer(int16 *buffer, const int numSamples);
 	bool endOfData() const;
 
-	bool isStereo() const { return _parent->isStereo(); }
+	int getChannels() const { return _parent->getChannels(); }
 	int getRate() const { return _parent->getRate(); }
 
 	/** Returns number of loops the stream has played. */
@@ -178,7 +181,7 @@ public:
 /**
  * Factory function for an QueuingAudioStream.
  */
-QueuingAudioStream *makeQueuingAudioStream(int rate, bool stereo);
+QueuingAudioStream *makeQueuingAudioStream(int rate, int channels);
 
 } // End of namespace Sound
 

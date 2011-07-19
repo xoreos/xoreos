@@ -90,18 +90,18 @@ void VideoDecoder::initVideo(uint32 width, uint32 height) {
 	rebuild();
 }
 
-void VideoDecoder::initSound(uint16 rate, bool stereo, bool is16) {
+void VideoDecoder::initSound(uint16 rate, int channels, bool is16) {
 	deinitSound();
 
 	_soundRate  = rate;
 	_soundFlags = Sound::FLAG_LITTLE_ENDIAN;
 
-	if (stereo)
+	if (channels == 2)
 		_soundFlags |= Sound::FLAG_STEREO;
 	if (is16)
 		_soundFlags |= Sound::FLAG_16BITS;
 
-	_sound = Sound::makeQueuingAudioStream(_soundRate, stereo);
+	_sound = Sound::makeQueuingAudioStream(_soundRate, channels);
 
 	_soundHandle = SoundMan.playAudioStream(_sound, Sound::kSoundTypeVideo, false);
 }
@@ -124,6 +124,9 @@ void VideoDecoder::queueSound(const byte *data, uint32 dataSize) {
 		return;
 
 	assert(data && dataSize);
+
+	if (_sound->getChannels() > 2)
+		throw Common::Exception("VideoDecoder::queueSound(): TODO: Channels == %d", _sound->getChannels());
 
 	Common::MemoryReadStream *dataStream = new Common::MemoryReadStream(data, dataSize, true);
 	Sound::RewindableAudioStream *dataPCM = Sound::makePCMStream(dataStream, _soundRate, _soundFlags);

@@ -106,9 +106,9 @@ private:
 	const int _rate;
 
 	/**
-	 * Whether this audio stream is mono (=false) or stereo (=true).
+	 * The number of channels in this audio stream.
 	 */
-	const int _stereo;
+	const int _channels;
 
 	/**
 	 * This flag is set by the finish() method only. See there for more details.
@@ -127,13 +127,13 @@ private:
 	std::queue<StreamHolder> _queue;
 
 public:
-	QueuingAudioStreamImpl(int rate, bool stereo)
-	    : _rate(rate), _stereo(stereo), _finished(false) {}
+	QueuingAudioStreamImpl(int rate, int channels)
+	    : _rate(rate), _channels(channels), _finished(false) {}
 	~QueuingAudioStreamImpl();
 
 	// Implement the AudioStream API
 	virtual int readBuffer(int16 *buffer, const int numSamples);
-	virtual bool isStereo() const { return _stereo; }
+	virtual int getChannels() const { return _channels; }
 	virtual int getRate() const { return _rate; }
 	virtual bool endOfData() const {
 		//Common::StackLock lock(_mutex);
@@ -164,7 +164,7 @@ void QueuingAudioStreamImpl::queueAudioStream(AudioStream *stream, bool disposeA
 	if (_finished)
 		throw Common::Exception("QueuingAudioStreamImpl::queueAudioStream(): Trying to queue another audio stream, but the QueuingAudioStream is finished.");
 
-	if ((stream->getRate() != getRate()) || (stream->isStereo() != isStereo()))
+	if ((stream->getRate() != getRate()) || (stream->getChannels() != getChannels()))
 		throw Common::Exception("QueuingAudioStreamImpl::queueAudioStream(): stream has mismatched parameters");
 
 	Common::StackLock lock(_mutex);
@@ -190,8 +190,8 @@ int QueuingAudioStreamImpl::readBuffer(int16 *buffer, const int numSamples) {
 	return samplesDecoded;
 }
 
-QueuingAudioStream *makeQueuingAudioStream(int rate, bool stereo) {
-	return new QueuingAudioStreamImpl(rate, stereo);
+QueuingAudioStream *makeQueuingAudioStream(int rate, int channels) {
+	return new QueuingAudioStreamImpl(rate, channels);
 }
 
 } // End of namespace Sound

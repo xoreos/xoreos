@@ -90,7 +90,7 @@ public:
 	int readBuffer(int16 *buffer, const int numSamples);
 
 	bool endOfData() const;
-	bool isStereo() const { return _channels == 2; }
+	int getChannels() const { return _channels; }
 	int getRate() const { return _sampleRate; }
 	bool rewind();
 

@@ -102,7 +102,7 @@ protected:
 	 */
 	void initVideo(uint32 width, uint32 height);
 
-	void initSound(uint16 rate, bool stereo, bool is16);
+	void initSound(uint16 rate, int channels, bool is16);
 	void deinitSound();
 
 	void queueSound(const byte *data, uint32 dataSize);

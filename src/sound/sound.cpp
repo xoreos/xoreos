@@ -390,8 +390,8 @@ void SoundManager::setChannelPosition(const ChannelHandle &handle, float x, floa
 	if (!channel || !channel->stream)
 		throw Common::Exception("Invalid channel");
 
-	if (channel->stream->isStereo())
-		throw Common::Exception("Cannot set position on a stereo sound.");
+	if (channel->stream->getChannels() > 1)
+		throw Common::Exception("Cannot set position of a non-mono sound.");
 
 	alSource3f(channel->source, AL_POSITION, x, y, z);
 }
@@ -403,8 +403,8 @@ void SoundManager::getChannelPosition(const ChannelHandle &handle, float &x, flo
 	if (!channel || !channel->stream)
 		throw Common::Exception("Invalid channel");
 
-	if (channel->stream->isStereo())
-		throw Common::Exception("Cannot get position on a stereo sound.");
+	if (channel->stream->getChannels() > 1)
+		throw Common::Exception("Cannot get position of a non-mono sound.");
 
 	alGetSource3f(channel->source, AL_POSITION, &x, &y, &z);
 }
@@ -454,11 +454,15 @@ bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 	if (stream->endOfData())
 		return false;
 
+	if (stream->getChannels() > 2) {
+		warning("SoundManager::fillBuffer(): TODO: Channels == %d", stream->getChannels());
+		return false;
+	}
+
 	// Read in the required amount of samples
 	uint32 numSamples = kOpenALBufferSize / 2;
 
-	if (stream->isStereo())
-		numSamples /= 2;
+	numSamples /= stream->getChannels();
 
 	byte *buffer = new byte[kOpenALBufferSize];
 	memset(buffer, 0, kOpenALBufferSize);
@@ -466,7 +470,7 @@ bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *strea
 
 	uint32 bufferSize = numSamples * 2;
 
-	alBufferData(alBuffer, stream->isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, bufferSize, stream->getRate());
+	alBufferData(alBuffer, (stream->getChannels() > 1) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, bufferSize, stream->getRate());
 
 	delete[] buffer;
 

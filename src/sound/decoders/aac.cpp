@@ -93,7 +93,7 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	byte *inBuffer = new byte[inBufferSize];
 	stream.read(inBuffer, inBufferSize);
 
-	QueuingAudioStream *audioStream = makeQueuingAudioStream(_rate, _channels == 2);
+	QueuingAudioStream *audioStream = makeQueuingAudioStream(_rate, _channels);
 
 	// Decode until we have enough samples (or there's no more left)
 	while (inBufferPos < inBufferSize) {
