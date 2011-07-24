@@ -59,6 +59,21 @@ struct Complex {
 	float re, im;
 };
 
+
+#if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
+static inline int intLog2(uint32 v) {
+	// This is a slightly optimized implementation of log2 for natural numbers
+	// targeting gcc. It also saves some binary size over our fallback
+	// implementation, since it does not need any table.
+	if (v == 0)
+		return -1;
+	else
+		// This is really "sizeof(unsigned int) * CHAR_BIT - 1" but using 8
+		// instead of CHAR_BIT is sane enough and it saves us from including
+		// limits.h
+		return (sizeof(unsigned int) * 8 - 1) - __builtin_clz(v);
+}
+#else
 // See http://graphics.stanford.edu/~seander/bithacks.html#IntegerLogLookup
 
 extern const int8 intLog2Table256[256];
@@ -70,6 +85,7 @@ static inline int intLog2(uint32 v) {
 	else
 		return (t =  v >> 8) ?  8 + intLog2Table256[t] : intLog2Table256[v];
 }
+#endif
 
 static inline float rad2deg(float rad) {
 	return rad * 180.0 / M_PI;
