@@ -48,6 +48,8 @@
 
 #include "graphics/images/surface.h"
 
+#include "sound/decoders/util.h"
+
 #include "video/bink.h"
 #include "video/binkdata.h"
 
@@ -1408,11 +1410,8 @@ void Bink::audioBlock(AudioTrack &audio, int16 *out) {
 	else if (audio.codec == kAudioCodecRDFT)
 		audioBlockRDFT(audio);
 
-	for (uint32 i = 0; i < audio.channels; i++)
-		for (uint32 j = 0; j < audio.frameLen; j++)
-			audio.coeffsPtr[i][j] = 385.0 + audio.coeffsPtr[i][j] * (1.0 / 32767.0);
-
-	floatToInt16Interleave(out, (const float **) audio.coeffsPtr, audio.frameLen, audio.channels);
+	Sound::floatToInt16Interleave(out, (const float **) audio.coeffsPtr,
+	                              audio.frameLen, audio.channels);
 
 	if (!audio.first) {
 		int count = audio.overlapLen * audio.channels;
@@ -1523,28 +1522,6 @@ void Bink::readAudioCoeffs(AudioTrack &audio, float *coeffs) {
 
 	}
 
-}
-
-static inline int floatToInt16One(const float *src) {
-	int32 tmp = *(const int32 *) src;
-
-	if (tmp & 0xF0000)
-		tmp = (0x43C0FFFF - tmp) >> 31;
-
-	return tmp - 0x8000;
-}
-
-void Bink::floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels) {
-	if (channels == 2) {
-		for (uint32 i = 0; i < length; i++) {
-			dst[2 * i    ] = TO_LE_16(floatToInt16One(src[0] + i));
-			dst[2 * i + 1] = TO_LE_16(floatToInt16One(src[1] + i));
-		}
-	} else {
-		for(uint8 c = 0; c < channels; c++)
-			for(uint32 i = 0, j = c; i < length; i++, j += channels)
-				dst[j] = TO_LE_16(floatToInt16One(src[c] + i));
-	}
 }
 
 #define A1  2896 /* (1/sqrt(2))<<12 */

@@ -42,31 +42,12 @@
 
 #include "sound/audiostream.h"
 
+#include "sound/decoders/util.h"
 #include "sound/decoders/pcm.h"
 #include "sound/decoders/wma.h"
 #include "sound/decoders/wmadata.h"
 
 namespace Sound {
-
-// Convert one float into an int16 sample
-static inline int16 floatToInt16One(float src) {
-	return (int16) CLIP<int>((int) floorf(src + 0.5), -32768, 32767);
-}
-
-// Convert planar float samples into interleaved int16 samples
-static inline void floatToInt16Interleave(int16 *dst, const float **src,
-                                   uint32 length, uint8 channels) {
-	if (channels == 2) {
-		for (uint32 i = 0; i < length; i++) {
-			dst[2 * i    ] = TO_LE_16(floatToInt16One(src[0][i]));
-			dst[2 * i + 1] = TO_LE_16(floatToInt16One(src[1][i]));
-		}
-	} else {
-		for(uint8 c = 0; c < channels; c++)
-			for(uint32 i = 0, j = c; i < length; i++, j += channels)
-				dst[j] = TO_LE_16(floatToInt16One(src[c][i]));
-	}
-}
 
 static inline void butterflyFloats(float *v1, float *v2, int len) {
 	while (len-- > 0) {

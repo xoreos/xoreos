@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libdecoders.la
 
-noinst_HEADERS = codec.h \
+noinst_HEADERS = util.h \
+                 codec.h \
                  mp3.h \
                  vorbis.h \
                  adpcm.h \
