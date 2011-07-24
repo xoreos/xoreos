@@ -27,32 +27,8 @@
  *  Mathematical helpers.
  */
 
-#include <cassert>
-
 #include "common/maths.h"
 
-#include "common/sinetables.h"
-#include "common/cosinetables.h"
-#include "common/sinewindows.h"
-
 namespace Common {
-
-const float *getSineTable(int bits) {
-	assert((bits >= 4) && (bits <= 16));
-
-	return sinTables[bits];
-}
-
-const float *getCosineTable(int bits) {
-	assert((bits >= 4) && (bits <= 16));
-
-	return cosTables[bits];
-}
-
-const float *getSineWindow(int bits) {
-	assert((bits >= 5) && (bits <= 12));
-
-	return sineWindows[bits];
-}
 
 } // End of namespace Common

@@ -36,6 +36,7 @@
 #include <cstring>
 
 #include "common/maths.h"
+#include "common/cosinetables.h"
 #include "common/util.h"
 #include "common/fft.h"
 

@@ -33,6 +33,7 @@
 
 #include "common/util.h"
 #include "common/maths.h"
+#include "common/sinewindows.h"
 #include "common/error.h"
 #include "common/stream.h"
 #include "common/mdct.h"

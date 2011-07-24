@@ -7,10 +7,10 @@ noinst_HEADERS = system.h \
                  endianness.h \
                  noncopyable.h \
                  singleton.h \
+                 maths.h \
                  sinetables.h \
                  cosinetables.h \
                  sinewindows.h \
-                 maths.h \
                  fft.h \
                  rdft.h \
                  dct.h \
@@ -45,6 +45,9 @@ noinst_HEADERS = system.h \
                  systemfonts.h
 
 libcommon_la_SOURCES = maths.cpp \
+                       sinetables.cpp \
+                       cosinetables.cpp \
+                       sinewindows.cpp \
                        fft.cpp \
                        rdft.cpp \
                        dct.cpp \

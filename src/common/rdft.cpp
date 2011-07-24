@@ -33,6 +33,8 @@
 #include <cassert>
 
 #include "common/maths.h"
+#include "common/sinetables.h"
+#include "common/cosinetables.h"
 #include "common/fft.h"
 #include "common/rdft.h"
 
