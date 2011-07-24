@@ -1181,6 +1181,26 @@ void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSig
 	bundle.curDec = (byte *) dest;
 }
 
+/* WORKAROUND: This fixes the NWN2 WotC logo.
+ * [cf. ffmpeg 47b71eea099b3fe2c7e16644878ad9b7067974e3] */
+static inline int16 dequant(int16 in, uint32 quant, bool dc) {
+	/* Note: multiplication is unsigned but we want signed shift
+	 * otherwise clipping breaks.
+	 *
+	 * TODO: The official decoder does not use clipping at all
+	 * but instead uses the full 32-bit result.
+	 * However clipping at least gets rid of the case that a
+	 * half-black half-white intra block gets black and white swapped
+	 * and should cause at most minor differences (except for DC).
+	 */
+
+	int32 res = ((int32) (in * quant)) >> 11;
+	if (!dc)
+		res = CLIP(res, -32768, 32767);
+
+	return res;
+}
+
 /** Reads 8x8 block of DCT coefficients. */
 void Bink::readDCTCoeffs(VideoFrame &video, int16 *block, bool isIntra) {
 	int coefCount = 0;
@@ -1270,11 +1290,11 @@ void Bink::readDCTCoeffs(VideoFrame &video, int16 *block, bool isIntra) {
 
 	uint8 quantIdx = video.bits->getBits(4);
 	const uint32 *quant = isIntra ? binkIntraQuant[quantIdx] : binkInterQuant[quantIdx];
-	block[0] = (block[0] * quant[0]) >> 11;
+	block[0] = dequant(block[0], quant[0], true);
 
 	for (int i = 0; i < coefCount; i++) {
 		int idx = coefIdx[i];
-		block[binkScan[idx]] = (block[binkScan[idx]] * quant[idx]) >> 11;
+		block[binkScan[idx]] = dequant(block[binkScan[idx]], quant[idx], false);
 	}
 
 }
