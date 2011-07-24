@@ -67,7 +67,7 @@ static const char LogTable256[256] = {
 	LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7)
 };
 
-inline uint32 log2(uint32 v) {
+static inline uint32 log2(uint32 v) {
 	register uint32 t, tt;
 
 	if ((tt = v >> 16))
@@ -76,15 +76,15 @@ inline uint32 log2(uint32 v) {
 		return (t =  v >> 8) ?  8 + LogTable256[t] : LogTable256[v];
 }
 
-inline float rad2deg(float rad) {
+static inline float rad2deg(float rad) {
 	return rad * 180.0 / M_PI;
 }
 
-inline float deg2rad(float deg) {
+static inline float deg2rad(float deg) {
 	return deg * M_PI / 180.0;
 }
 
-inline void vector2orientation(float vX, float vY, float &x, float &y, float &z) {
+static inline void vector2orientation(float vX, float vY, float &x, float &y, float &z) {
 	x = 0.0;
 	y = rad2deg(acos(vY));
 	z = 0.0;

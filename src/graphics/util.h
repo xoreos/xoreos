@@ -37,7 +37,7 @@
 namespace Graphics {
 
 /** Flip an image horizontally. */
-inline static void flipHorizontally(byte *data, int width, int height, int bpp) {
+static inline void flipHorizontally(byte *data, int width, int height, int bpp) {
 	int halfWidth = width / 2;
 	int pitch     = bpp * width;
 
@@ -63,7 +63,7 @@ inline static void flipHorizontally(byte *data, int width, int height, int bpp) 
 }
 
 /** Flip an image vertically. */
-inline static void flipVertically(byte *data, int width, int height, int bpp) {
+static inline void flipVertically(byte *data, int width, int height, int bpp) {
 	int halfHeight = height / 2;
 	int pitch      = bpp * width;
 
@@ -85,7 +85,7 @@ inline static void flipVertically(byte *data, int width, int height, int bpp) {
 }
 
 /** De-"swizzle" a texture pixel offset. */
-inline static uint32 deSwizzleOffset(uint32 x, uint32 y, uint32 width, uint32 height) {
+static inline uint32 deSwizzleOffset(uint32 x, uint32 y, uint32 width, uint32 height) {
 	width  = log2(width);
 	height = log2(height);
 

@@ -59,7 +59,7 @@ template<typename T> inline T CLIP (T v, T amin, T amax)
  */
 template<typename T> inline void SWAP(T &a, T &b) { T tmp = a; a = b; b = tmp; }
 
-inline uint32 NEXTPOWER2(uint32 x) {
+static inline uint32 NEXTPOWER2(uint32 x) {
 	if (x == 0)
 		return 1;
 
@@ -70,7 +70,7 @@ inline uint32 NEXTPOWER2(uint32 x) {
 	return x + 1;
 }
 
-inline uint64 NEXTPOWER2(uint64 x) {
+static inline uint64 NEXTPOWER2(uint64 x) {
 	if (x == 0)
 		return 1;
 

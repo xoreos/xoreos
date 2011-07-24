@@ -85,7 +85,7 @@
 // generic fallback
 #else
 
-	inline uint64 SWAP_BYTES_64(uint64 a) {
+	static inline uint64 SWAP_BYTES_64(uint64 a) {
 		const uint16 lowlow   = (uint16) a;
 		const uint16 low      = (uint16) (a >> 16);
 		const uint16 high     = (uint16) (a >> 32);
@@ -97,7 +97,7 @@
 			     | (uint16)((highhigh >> 8) | (highhigh << 8));
 	}
 
-	inline uint32 SWAP_BYTES_32(uint32 a) {
+	static inline uint32 SWAP_BYTES_32(uint32 a) {
 		const uint16 low = (uint16)a, high = (uint16)(a >> 16);
 		return ((uint32)(uint16)((low >> 8) | (low << 8)) << 16)
 			   | (uint16)((high >> 8) | (high << 8));
@@ -105,7 +105,7 @@
 
 #endif
 
-inline uint16 SWAP_BYTES_16(const uint16 a) {
+static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	return (a >> 8) | (a << 8);
 }
 
@@ -200,32 +200,32 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 	#if defined(EOS_LITTLE_ENDIAN)
 
-		inline uint16 READ_UINT16(const void *ptr) {
+		static inline uint16 READ_UINT16(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
 			return (b[1] << 8) | b[0];
 		}
-		inline uint32 READ_UINT32(const void *ptr) {
+		static inline uint32 READ_UINT32(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
 			return (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | (b[0]);
 		}
-		inline uint64 READ_UINT64(const void *ptr) {
+		static inline uint64 READ_UINT64(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
 			return (b[7] << 56) | (b[6] << 48) | (b[5] << 40) | (b[4] << 32) |
 			       (b[3] << 24) | (b[2] << 16) | (b[1] <<  8) | (b[0]);
 		}
-		inline void WRITE_UINT16(void *ptr, uint16 value) {
+		static inline void WRITE_UINT16(void *ptr, uint16 value) {
 			uint8 *b = (uint8 *)ptr;
 			b[0] = (uint8)(value >> 0);
 			b[1] = (uint8)(value >> 8);
 		}
-		inline void WRITE_UINT32(void *ptr, uint32 value) {
+		static inline void WRITE_UINT32(void *ptr, uint32 value) {
 			uint8 *b = (uint8 *)ptr;
 			b[0] = (uint8)(value >>  0);
 			b[1] = (uint8)(value >>  8);
 			b[2] = (uint8)(value >> 16);
 			b[3] = (uint8)(value >> 24);
 		}
-		inline void WRITE_UINT64(void *ptr, uint64 value) {
+		static inline void WRITE_UINT64(void *ptr, uint64 value) {
 			uint8 *b = (uint8 *)ptr;
 			b[0] = (uint8)(value >>  0);
 			b[1] = (uint8)(value >>  8);
@@ -239,32 +239,32 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 	#elif defined(EOS_BIG_ENDIAN)
 
-		inline uint16 READ_UINT16(const void *ptr) {
+		static inline uint16 READ_UINT16(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
 			return (b[0] << 8) | b[1];
 		}
-		inline uint32 READ_UINT32(const void *ptr) {
+		static inline uint32 READ_UINT32(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
 			return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3]);
 		}
-		inline uint64 READ_UINT64(const void *ptr) {
+		static inline uint64 READ_UINT64(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
 			return (b[0] << 56) | (b[1] << 48) | (b[2] << 40) | (b[3] << 32) |
 			       (b[4] << 24) | (b[5] << 16) | (b[6] <<  8) | (b[7]);
 		}
-		inline void WRITE_UINT16(void *ptr, uint16 value) {
+		static inline void WRITE_UINT16(void *ptr, uint16 value) {
 			uint8 *b = (uint8 *)ptr;
 			b[0] = (uint8)(value >> 8);
 			b[1] = (uint8)(value >> 0);
 		}
-		inline void WRITE_UINT32(void *ptr, uint32 value) {
+		static inline void WRITE_UINT32(void *ptr, uint32 value) {
 			uint8 *b = (uint8 *)ptr;
 			b[0] = (uint8)(value >> 24);
 			b[1] = (uint8)(value >> 16);
 			b[2] = (uint8)(value >>  8);
 			b[3] = (uint8)(value >>  0);
 		}
-		inline void WRITE_UINT64(void *ptr, uint64 value) {
+		static inline void WRITE_UINT64(void *ptr, uint64 value) {
 			uint8 *b = (uint8 *)ptr;
 			b[0] = (uint8)(value >> 56);
 			b[1] = (uint8)(value >> 48);
@@ -318,32 +318,32 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 // if the unaligned load and the byteswap take alot instructions its better to directly read and invert
 	#if defined(EOS_NEED_ALIGNMENT) && !defined(__mips__)
 
-		inline uint16 READ_BE_UINT16(const void *ptr) {
+		static inline uint16 READ_BE_UINT16(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
 			return (b[0] << 8) | b[1];
 		}
-		inline uint32 READ_BE_UINT32(const void *ptr) {
+		static inline uint32 READ_BE_UINT32(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
 			return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3]);
 		}
-		inline uint32 READ_BE_UINT64(const void *ptr) {
+		static inline uint32 READ_BE_UINT64(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
 			return (b[0] << 56) | (b[1] << 48) | (b[2] << 40) | (b[3] << 32) |
 			       (b[4] << 24) | (b[5] << 16) | (b[6] <<  8) | (b[7]);
 		}
-		inline void WRITE_BE_UINT16(void *ptr, uint16 value) {
+		static inline void WRITE_BE_UINT16(void *ptr, uint16 value) {
 			uint8 *b = (uint8 *)ptr;
 			b[0] = (uint8)(value >> 8);
 			b[1] = (uint8)(value >> 0);
 		}
-		inline void WRITE_BE_UINT32(void *ptr, uint32 value) {
+		static inline void WRITE_BE_UINT32(void *ptr, uint32 value) {
 			uint8 *b = (uint8 *)ptr;
 			b[0] = (uint8)(value >> 24);
 			b[1] = (uint8)(value >> 16);
 			b[2] = (uint8)(value >>  8);
 			b[3] = (uint8)(value >>  0);
 		}
-		inline void WRITE_BE_UINT64(void *ptr, uint64 value) {
+		static inline void WRITE_BE_UINT64(void *ptr, uint64 value) {
 			uint8 *b = (uint8 *)ptr;
 			b[0] = (uint8)(value >> 56);
 			b[1] = (uint8)(value >> 48);
@@ -357,22 +357,22 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 	#else
 
-		inline uint16 READ_BE_UINT16(const void *ptr) {
+		static inline uint16 READ_BE_UINT16(const void *ptr) {
 			return SWAP_BYTES_16(READ_UINT16(ptr));
 		}
-		inline uint32 READ_BE_UINT32(const void *ptr) {
+		static inline uint32 READ_BE_UINT32(const void *ptr) {
 			return SWAP_BYTES_32(READ_UINT32(ptr));
 		}
-		inline uint64 READ_BE_UINT64(const void *ptr) {
+		static inline uint64 READ_BE_UINT64(const void *ptr) {
 			return SWAP_BYTES_64(READ_UINT64(ptr));
 		}
-		inline void WRITE_BE_UINT16(void *ptr, uint16 value) {
+		static inline void WRITE_BE_UINT16(void *ptr, uint16 value) {
 			WRITE_UINT16(ptr, SWAP_BYTES_16(value));
 		}
-		inline void WRITE_BE_UINT32(void *ptr, uint32 value) {
+		static inline void WRITE_BE_UINT32(void *ptr, uint32 value) {
 			WRITE_UINT32(ptr, SWAP_BYTES_32(value));
 		}
-		inline void WRITE_BE_UINT64(void *ptr, uint64 value) {
+		static inline void WRITE_BE_UINT64(void *ptr, uint64 value) {
 			WRITE_UINT64(ptr, SWAP_BYTES_64(value));
 		}
 
@@ -417,32 +417,32 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 	// if the unaligned load and the byteswap take alot instructions its better to directly read and invert
 	#if defined(EOS_NEED_ALIGNMENT) && !defined(__mips__)
 
-	inline uint16 READ_LE_UINT16(const void *ptr) {
+	static inline uint16 READ_LE_UINT16(const void *ptr) {
 		const uint8 *b = (const uint8 *)ptr;
 		return (b[1] << 8) | b[0];
 	}
-	inline uint32 READ_LE_UINT32(const void *ptr) {
+	static inline uint32 READ_LE_UINT32(const void *ptr) {
 		const uint8 *b = (const uint8 *)ptr;
 		return (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | (b[0]);
 	}
-	inline uint64 READ_LE_UINT64(const void *ptr) {
+	static inline uint64 READ_LE_UINT64(const void *ptr) {
 		const uint8 *b = (const uint8 *)ptr;
 		return (b[7] << 56) | (b[6] << 48) | (b[5] << 40) | (b[4] << 32) |
 		       (b[3] << 24) | (b[2] << 16) | (b[1] <<  8) | (b[0]);
 	}
-	inline void WRITE_LE_UINT16(void *ptr, uint16 value) {
+	static inline void WRITE_LE_UINT16(void *ptr, uint16 value) {
 		uint8 *b = (uint8 *)ptr;
 		b[0] = (uint8)(value >> 0);
 		b[1] = (uint8)(value >> 8);
 	}
-	inline void WRITE_LE_UINT32(void *ptr, uint32 value) {
+	static inline void WRITE_LE_UINT32(void *ptr, uint32 value) {
 		uint8 *b = (uint8 *)ptr;
 		b[0] = (uint8)(value >>  0);
 		b[1] = (uint8)(value >>  8);
 		b[2] = (uint8)(value >> 16);
 		b[3] = (uint8)(value >> 24);
 	}
-	inline void WRITE_LE_UINT64(void *ptr, uint64 value) {
+	static inline void WRITE_LE_UINT64(void *ptr, uint64 value) {
 		uint8 *b = (uint8 *)ptr;
 		b[0] = (uint8)(value >>  0);
 		b[1] = (uint8)(value >>  8);
@@ -456,22 +456,22 @@ inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 	#else
 
-	inline uint16 READ_LE_UINT16(const void *ptr) {
+	static inline uint16 READ_LE_UINT16(const void *ptr) {
 		return SWAP_BYTES_16(READ_UINT16(ptr));
 	}
-	inline uint32 READ_LE_UINT32(const void *ptr) {
+	static inline uint32 READ_LE_UINT32(const void *ptr) {
 		return SWAP_BYTES_32(READ_UINT32(ptr));
 	}
-	inline uint64 READ_LE_UINT64(const void *ptr) {
+	static inline uint64 READ_LE_UINT64(const void *ptr) {
 		return SWAP_BYTES_64(READ_UINT64(ptr));
 	}
-	inline void WRITE_LE_UINT16(void *ptr, uint16 value) {
+	static inline void WRITE_LE_UINT16(void *ptr, uint16 value) {
 		WRITE_UINT16(ptr, SWAP_BYTES_16(value));
 	}
-	inline void WRITE_LE_UINT32(void *ptr, uint32 value) {
+	static inline void WRITE_LE_UINT32(void *ptr, uint32 value) {
 		WRITE_UINT32(ptr, SWAP_BYTES_32(value));
 	}
-	inline void WRITE_LE_UINT64(void *ptr, uint64 value) {
+	static inline void WRITE_LE_UINT64(void *ptr, uint64 value) {
 		WRITE_UINT64(ptr, SWAP_BYTES_64(value));
 	}
 

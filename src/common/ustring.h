@@ -256,11 +256,11 @@ private:
 
 
 // Right-binding concatenation operators
-inline UString operator+(const std::string &left, const UString &right) {
+static inline UString operator+(const std::string &left, const UString &right) {
 	return UString(left) + right;
 }
 
-inline UString operator+(const char *left, const UString &right) {
+static inline UString operator+(const char *left, const UString &right) {
 	return UString(left) + right;
 }
 
