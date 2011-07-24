@@ -673,15 +673,15 @@ void Bink::initBundles() {
 	for (int i = 0; i < 2; i++) {
 		int width = MAX<uint32>(cw[i], 8);
 
-		_bundles[kSourceBlockTypes   ].countLengths[i] = Common::log2((width  >> 3)    + 511) + 1;
-		_bundles[kSourceSubBlockTypes].countLengths[i] = Common::log2((width  >> 4)    + 511) + 1;
-		_bundles[kSourceColors       ].countLengths[i] = Common::log2((width  >> 3)*64 + 511) + 1;
-		_bundles[kSourceIntraDC      ].countLengths[i] = Common::log2((width  >> 3)    + 511) + 1;
-		_bundles[kSourceInterDC      ].countLengths[i] = Common::log2((width  >> 3)    + 511) + 1;
-		_bundles[kSourceXOff         ].countLengths[i] = Common::log2((width  >> 3)    + 511) + 1;
-		_bundles[kSourceYOff         ].countLengths[i] = Common::log2((width  >> 3)    + 511) + 1;
-		_bundles[kSourcePattern      ].countLengths[i] = Common::log2((cbw[i] << 3)    + 511) + 1;
-		_bundles[kSourceRun          ].countLengths[i] = Common::log2((width  >> 3)*48 + 511) + 1;
+		_bundles[kSourceBlockTypes   ].countLengths[i] = Common::intLog2((width  >> 3)    + 511) + 1;
+		_bundles[kSourceSubBlockTypes].countLengths[i] = Common::intLog2((width  >> 4)    + 511) + 1;
+		_bundles[kSourceColors       ].countLengths[i] = Common::intLog2((width  >> 3)*64 + 511) + 1;
+		_bundles[kSourceIntraDC      ].countLengths[i] = Common::intLog2((width  >> 3)    + 511) + 1;
+		_bundles[kSourceInterDC      ].countLengths[i] = Common::intLog2((width  >> 3)    + 511) + 1;
+		_bundles[kSourceXOff         ].countLengths[i] = Common::intLog2((width  >> 3)    + 511) + 1;
+		_bundles[kSourceYOff         ].countLengths[i] = Common::intLog2((width  >> 3)    + 511) + 1;
+		_bundles[kSourcePattern      ].countLengths[i] = Common::intLog2((cbw[i] << 3)    + 511) + 1;
+		_bundles[kSourceRun          ].countLengths[i] = Common::intLog2((width  >> 3)*48 + 511) + 1;
 	}
 }
 
@@ -1415,7 +1415,7 @@ void Bink::audioBlock(AudioTrack &audio, int16 *out) {
 
 	if (!audio.first) {
 		int count = audio.overlapLen * audio.channels;
-		int shift = Common::log2(count);
+		int shift = Common::intLog2(count);
 		for (int i = 0; i < count; i++) {
 			out[i] = (audio.prevCoeffs[i] * (count - i) + out[i] * i) >> shift;
 		}

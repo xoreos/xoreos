@@ -86,8 +86,8 @@ static inline void flipVertically(byte *data, int width, int height, int bpp) {
 
 /** De-"swizzle" a texture pixel offset. */
 static inline uint32 deSwizzleOffset(uint32 x, uint32 y, uint32 width, uint32 height) {
-	width  = log2(width);
-	height = log2(height);
+	width  = Common::intLog2(width);
+	height = Common::intLog2(height);
 
 	uint32 offset     = 0;
 	uint32 shiftCount = 0;

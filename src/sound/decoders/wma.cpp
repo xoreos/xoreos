@@ -134,7 +134,7 @@ void WMACodec::init(Common::SeekableReadStream *extraData) {
 
 	float bps = ((float) _bitRate) / ((float) (_channels * _sampleRate));
 
-	_byteOffsetBits = log2((int) (bps * _frameLen / 8.0 + 0.05)) + 2;
+	_byteOffsetBits = Common::intLog2((int) (bps * _frameLen / 8.0 + 0.05)) + 2;
 
 	// Compute high frequency value and choose if noise coding should be activated
 	float highFreq;
@@ -815,7 +815,7 @@ bool WMACodec::evalBlockLength(Common::BitStream &bits) {
 	if (_useVariableBlockLen) {
 		// Variable block lengths
 
-		int n = log2(_blockSizeCount - 1) + 1;
+		int n = Common::intLog2(_blockSizeCount - 1) + 1;
 
 		if (_resetBlockLengths) {
 			// Completely new block lengths

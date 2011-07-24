@@ -91,7 +91,7 @@ void OptionsVideoAdvancedMenu::show() {
 
 	int fsaa = _oldFSAA;
 	if (fsaa > 0)
-		fsaa = log2(fsaa);
+		fsaa = MAX(0, Common::intLog2(fsaa));
 
 	getSlider("AntiAliasSlider", true)->setState(fsaa);
 
@@ -117,7 +117,7 @@ void OptionsVideoAdvancedMenu::initWidget(Widget &widget) {
 			// No antialiasing available
 			dynamic_cast<WidgetSlider &>(widget).setDisabled(true);
 		else
-			dynamic_cast<WidgetSlider &>(widget).setSteps(log2(maxFSAA));
+			dynamic_cast<WidgetSlider &>(widget).setSteps(MAX(0, Common::intLog2(maxFSAA)));
 
 		return;
 	}
