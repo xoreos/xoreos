@@ -69,7 +69,6 @@ libcommon_la_SOURCES = maths.cpp \
                        file.cpp \
                        filepath.cpp \
                        filelist.cpp \
-                       bitstream.cpp \
                        huffman.cpp \
                        matrix.cpp \
                        transmatrix.cpp \

@@ -559,7 +559,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 	if (_blockAlign)
 		size = _blockAlign;
 
-	Common::BitStreamBE bits(data, size * 8);
+	Common::BitStream8MSB bits(data);
 
 	int    outputDataSize = 0;
 	int16 *outputData     = 0;
@@ -610,7 +610,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 			}
 
 			Common::MemoryReadStream lastSuperframe(_lastSuperframe, _lastSuperframeLen);
-			Common::BitStreamBE lastBits(lastSuperframe, _lastSuperframeLen * 8);
+			Common::BitStream8MSB lastBits(lastSuperframe);
 
 			lastBits.skip(_lastBitoffset);
 

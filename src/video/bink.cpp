@@ -192,28 +192,37 @@ void Bink::processData() {
 			throw Common::Exception("Audio packet too big for the frame");
 
 		if (audioPacketLength >= 4) {
+			uint32 audioPacketStart = _bink->pos();
+			uint32 audioPacketEnd   = _bink->pos() + audioPacketLength;
+
 			if (i == _audioTrack) {
 				// Only play one audio track
 
 				//                  Number of samples in bytes
 				audio.sampleCount = _bink->readUint32LE() / (2 * audio.channels);
 
-				audio.bits = new Common::BitStream32LE(*_bink, (audioPacketLength - 4) * 8);
+				audio.bits =
+					new Common::BitStream32LELSB(new Common::SeekableSubReadStream(_bink,
+					    audioPacketStart + 4, audioPacketEnd), true);
 
 				audioPacket(audio);
 
 				delete audio.bits;
 				audio.bits = 0;
+			}
 
-			} else
-				// Skip the rest
-				_bink->skip(audioPacketLength);
+			_bink->seek(audioPacketEnd);
 
 			frameSize -= audioPacketLength;
 		}
 	}
 
-	frame.bits = new Common::BitStream32LE(*_bink, frameSize * 8);
+	uint32 videoPacketStart = _bink->pos();
+	uint32 videoPacketEnd   = _bink->pos() + frameSize;
+
+	frame.bits =
+		new Common::BitStream32LELSB(new Common::SeekableSubReadStream(_bink,
+		    videoPacketStart, videoPacketEnd), true);
 
 	videoPacket(frame);
 
@@ -861,7 +870,7 @@ void Bink::blockScaled(DecodeContext &ctx) {
 			break;
 
 		default:
-			throw Common::Exception("Invalid 16x16 block type: %d\n", blockType);
+			throw Common::Exception("Invalid 16x16 block type: %d", blockType);
 	}
 
 	ctx.blockX += 1;
