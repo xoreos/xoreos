@@ -66,7 +66,7 @@ bool BoundingBox::isEmpty() const {
 	return _empty;
 }
 
-const Common::TransformationMatrix &BoundingBox::getOrigin() const {
+const TransformationMatrix &BoundingBox::getOrigin() const {
 	return _origin;
 }
 

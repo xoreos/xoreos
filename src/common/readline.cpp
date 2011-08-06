@@ -115,7 +115,7 @@ void ReadLine::addInput(uint32 c) {
 }
 
 void ReadLine::addInput(const UString &str) {
-	for (Common::UString::iterator c = str.begin(); c != str.end(); ++c)
+	for (UString::iterator c = str.begin(); c != str.end(); ++c)
 		addInput(*c);
 }
 

@@ -136,7 +136,7 @@ public:
 		_stream(stream), _disposeAfterUse(disposeAfterUse), _value(0), _inValue(0) {
 
 		if ((valueBits != 8) && (valueBits != 16) && (valueBits != 32) && (valueBits != 64))
-			throw Common::Exception("BitStream: Invalid memory layout %d, %d, %d", valueBits, isLE, isMSB2LSB);
+			throw Exception("BitStream: Invalid memory layout %d, %d, %d", valueBits, isLE, isMSB2LSB);
 	}
 
 	/** Create a bit stream using this input data stream. */
@@ -144,7 +144,7 @@ public:
 		_stream(&stream), _disposeAfterUse(false), _value(0), _inValue(0) {
 
 		if ((valueBits != 8) && (valueBits != 16) && (valueBits != 32) && (valueBits != 64))
-			throw Common::Exception("BitStream: Invalid memory layout %d, %d, %d", valueBits, isLE, isMSB2LSB);
+			throw Exception("BitStream: Invalid memory layout %d, %d, %d", valueBits, isLE, isMSB2LSB);
 	}
 
 	~BitStreamImpl() {
