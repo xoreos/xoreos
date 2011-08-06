@@ -94,7 +94,11 @@ void VideoDecoder::initSound(uint16 rate, int channels, bool is16) {
 	deinitSound();
 
 	_soundRate  = rate;
-	_soundFlags = Sound::FLAG_LITTLE_ENDIAN;
+	_soundFlags = 0;
+
+#ifdef EOS_LITTLE_ENDIAN
+	_soundFlags |= Sound::FLAG_LITTLE_ENDIAN;
+#endif
 
 	if (is16)
 		_soundFlags |= Sound::FLAG_16BITS;

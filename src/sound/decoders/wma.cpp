@@ -99,7 +99,11 @@ WMACodec::WMACodec(int version, uint32 sampleRate, uint8 channels,
 		throw Common::Exception("WMACodec::init(): Unsupported number of channels %d",
 		                        _channels);
 
-	_audioFlags = FLAG_16BITS | FLAG_LITTLE_ENDIAN;
+	_audioFlags = FLAG_16BITS;
+
+#ifdef EOS_LITTLE_ENDIAN
+	_audioFlags |= FLAG_LITTLE_ENDIAN;
+#endif
 
 	init(extraData);
 }
