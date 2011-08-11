@@ -40,7 +40,19 @@ Huffman::Symbol::Symbol(uint32 c, uint32 s) : code(c), symbol(s) {
 }
 
 
-Huffman::Huffman(uint8 maxLength, uint32 codeCount, const uint32 *codes, const uint8 *lengths, const uint32 *symbols) {
+Huffman::Huffman(const HuffmanTable &table) {
+	init(table.maxLength, table.codeCount, table.codes, table.lengths, table.symbols);
+}
+
+Huffman::Huffman(uint8 maxLength, uint32 codeCount, const uint32 *codes,
+                 const uint8 *lengths, const uint32 *symbols) {
+
+	init(maxLength, codeCount, codes, lengths, symbols);
+}
+
+void Huffman::init(uint8 maxLength, uint32 codeCount, const uint32 *codes,
+                   const uint8 *lengths, const uint32 *symbols) {
+
 	assert(codeCount > 0);
 
 	assert(codes);
