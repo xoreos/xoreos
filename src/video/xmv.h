@@ -42,6 +42,8 @@ namespace Sound {
 
 namespace Video {
 
+class Codec;
+
 /** A decoder for Microsoft Xbox XMV videos. */
 class XboxMediaVideo : public VideoDecoder {
 public:
@@ -75,10 +77,6 @@ private:
 		uint32 dataOffset; ///< The video data offset within the XMV stream.
 
 		uint32 frameCount; ///< Number of frames left in this packet.
-
-		bool hasKeyFrame; ///< Does this packet contain a key frame?
-
-		byte keyFrameFlags[4]; ///< Key frame flags.
 
 		/** The size of the current frame. */
 		uint32 currentFrameSize; ///< The size of the current frame.
@@ -136,6 +134,9 @@ private:
 
 	/** The current packet. */
 	Packet _curPacket;
+
+	/** The video codec. */
+	Codec *_videoCodec;
 
 
 	/** Load an XMV file. */

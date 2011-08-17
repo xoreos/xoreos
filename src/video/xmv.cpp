@@ -41,6 +41,8 @@
 
 #include "video/xmv.h"
 
+#include "video/codecs/xmvwmv2.h"
+
 static const int kAudioFlagADPCM51FrontLeftRight = 1;
 static const int kAudioFlagADPCM51FrontCenterLow = 2;
 static const int kAudioFlagADPCM51RearLeftRight  = 4;
@@ -64,7 +66,9 @@ XboxMediaVideo::ADPCM51Streams::~ADPCM51Streams() {
 }
 
 
-XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) : _xmv(xmv), _startTime(0) {
+XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) :
+	_xmv(xmv), _startTime(0), _videoCodec(0) {
+
 	assert(_xmv);
 
 	load();
@@ -73,6 +77,7 @@ XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) : _xmv(xmv), _st
 XboxMediaVideo::~XboxMediaVideo() {
 	VideoDecoder::deinit();
 
+	delete _videoCodec;
 	delete _xmv;
 }
 
@@ -136,7 +141,19 @@ void XboxMediaVideo::processNextFrame(PacketVideo &videoPacket) {
 	if (videoPacket.currentFrameSize > videoPacket.dataSize)
 		throw Common::Exception("XboxMediaVideo::processNextFrame(): Frame data overrun");
 
-	// TODO: Process the frame data
+	// Decode the frame
+
+	if (videoPacket.currentFrameSize > 0) {
+		if (_videoCodec) {
+			assert(_surface);
+
+			Common::SeekableSubReadStream frameData(_xmv, _xmv->pos(), _xmv->pos() + videoPacket.currentFrameSize);
+
+			_videoCodec->decodeFrame(*_surface, frameData);
+			_needCopy = true;
+		} else
+			warning("XboxMediaVideo::processNextFrame(): Video frame without a decoder");
+	}
 
 	// Update the frame time
 	videoPacket.lastFrameTime = videoPacket.currentFrameTimestamp;
@@ -311,7 +328,7 @@ void XboxMediaVideo::processPacketHeader(Packet &packet) {
 	packet.video.dataSize   =  READ_LE_UINT32(videoHeaderData) & 0x007FFFFF;
 	packet.video.frameCount = (READ_LE_UINT32(videoHeaderData) >> 23) & 0xFF;
 
-	packet.video.hasKeyFrame = (videoHeaderData[3] & 0x80) != 0;
+	bool hasExtraData = (videoHeaderData[3] & 0x80) != 0;
 
 	// Adding the audio data sizes and the video data size keeps you 4 bytes short
 	// for every audio track. But as playing around with XMV files with ADPCM audio
@@ -354,13 +371,19 @@ void XboxMediaVideo::processPacketHeader(Packet &packet) {
 		dataOffset += packet.audio[i].dataSize;
 	}
 
-	// Video frames header
+	// If we have extra data, (re)create the video codec
 
-	memset(packet.video.keyFrameFlags, 0, 4);
+	if (hasExtraData && (packet.video.dataSize < 4))
+		warning("XboxMediaVideo::processPacketHeader(): Video extra data doesn't fit");
 
-	if (packet.video.dataSize > 0) {
-		if (packet.video.hasKeyFrame) {
-			_xmv->read(packet.video.keyFrameFlags, 4);
+	if (packet.video.dataSize >= 4) {
+		if (hasExtraData) {
+			Common::SeekableSubReadStream extraData(_xmv, _xmv->pos(), _xmv->pos() + 4);
+
+			delete _videoCodec;
+			_videoCodec = 0;
+
+			_videoCodec = new XMVWMV2Codec(_width, _height, extraData);
 
 			packet.video.dataSize   -= 4;
 			packet.video.dataOffset += 4;
