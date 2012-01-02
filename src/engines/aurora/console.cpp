@@ -1006,7 +1006,7 @@ void Console::updateVideos() {
 	_maxSizeVideos = 0;
 
 	std::list<Aurora::ResourceManager::ResourceID> videos;
-	ResMan.getAvailableResources(Aurora::kFileTypeBIK, videos);
+	ResMan.getAvailableResources(Aurora::kResourceVideo, videos);
 
 	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator v = videos.begin();
 	     v != videos.end(); ++v) {
