@@ -209,9 +209,6 @@ void KotOR2Engine::initResources() {
 		status("Indexing Windows-specific resources");
 		initCursorsRemap();
 		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor2.exe", 24);
-	} else if (_platform == Aurora::kPlatformXbox) {
-		status("Indexing Xbox-specific resources");
-		indexMandatoryDirectory("SWRC", 0, -1, 24);
 	}
 
 	status("Indexing override files");
