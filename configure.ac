@@ -2,11 +2,13 @@ AC_PREREQ([2.65])
 
 AC_INIT([eos],[0.0.1])
 
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([build-aux])
 
 AC_CANONICAL_TARGET
-AC_CONFIG_SRCDIR([config.h.in])
-AC_CONFIG_HEADERS(config.h)
+
 AM_INIT_AUTOMAKE(eos, 0.0.1)
 
 dnl SDL params to configure
