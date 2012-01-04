@@ -1,8 +1,9 @@
 AC_PREREQ([2.65])
 
+AC_INIT([eos],[0.0.1])
+
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_INIT(eos, 0.0.1)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS(config.h)
@@ -232,7 +233,8 @@ AC_SUBST(EOS_LIBS)
 
 AC_SUBST(WERROR)
 
-AC_OUTPUT(utf8cpp/Makefile \
+AC_CONFIG_FILES([
+          utf8cpp/Makefile \
           glew/Makefile \
           lua/Makefile \
           src/common/Makefile \
@@ -257,4 +259,5 @@ AC_OUTPUT(utf8cpp/Makefile \
           src/engines/dragonage/Makefile \
           src/engines/jade/Makefile \
           src/Makefile \
-          Makefile)
+          Makefile])
+AC_OUTPUT
