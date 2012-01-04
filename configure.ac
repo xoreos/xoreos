@@ -10,6 +10,10 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([1.11 -Wall no-dist-gzip dist-xz subdir-objects])
+# Support silent build rules. Disable
+# by either passing --disable-silent-rules to configure or passing V=1
+# to make
+AM_SILENT_RULES([yes])
 
 dnl SDL params to configure
 AC_ARG_VAR(SDL_CONFIG, [sdl-config utility])
