@@ -9,7 +9,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE(eos, 0.0.1)
+AM_INIT_AUTOMAKE([1.11 -Wall no-dist-gzip dist-xz subdir-objects])
 
 dnl SDL params to configure
 AC_ARG_VAR(SDL_CONFIG, [sdl-config utility])
@@ -22,6 +22,7 @@ LT_INIT([disable-shared])
 
 dnl We're C++
 AC_PROG_CXX
+AM_PROG_CC_C_O
 dnl We want a make install
 AC_PROG_INSTALL
 
