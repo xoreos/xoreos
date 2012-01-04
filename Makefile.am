@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 
 EXTRA_DIST = FAQ TODO
 
-SUBDIRS = glew lua src
+SUBDIRS = utf8cpp glew lua src
 
 doxygen:
 	doxygen
