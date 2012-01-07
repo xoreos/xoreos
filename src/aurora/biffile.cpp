@@ -112,17 +112,19 @@ void BIFFile::mergeKEY(const KEYFile &key, uint32 bifIndex) {
 		if (keyRes->bifIndex != bifIndex)
 			continue;
 
-		if (keyRes->resIndex >= _iResources.size())
-			throw Common::Exception("Resource index out of range (%d/%d)", keyRes->resIndex, _iResources.size());
+		if (keyRes->resIndex >= _iResources.size()) {
+			warning("Resource index out of range (%d/%d)", keyRes->resIndex, _iResources.size());
+			continue;
+		}
 
 		if (keyRes->type != _iResources[keyRes->resIndex].type)
-			throw Common::Exception("Type mismatch while merging KEY with BIF (%d, %d)",
-					keyRes->type, _iResources[keyRes->resIndex].type);
+			warning("KEY and BIF disagree on the type of the resource \"%s\" (%d, %d). Trusting the BIF",
+			        keyRes->name.c_str(), keyRes->type, _iResources[keyRes->resIndex].type);
 
 		Resource res;
 
 		res.name  = keyRes->name;
-		res.type  = keyRes->type;
+		res.type  = _iResources[keyRes->resIndex].type;
 		res.index = keyRes->resIndex;
 
 		_resources.push_back(res);
