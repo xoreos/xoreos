@@ -113,7 +113,7 @@ void BIFFile::mergeKEY(const KEYFile &key, uint32 bifIndex) {
 			continue;
 
 		if (keyRes->resIndex >= _iResources.size()) {
-			warning("Resource index out of range (%d/%d)", keyRes->resIndex, _iResources.size());
+			warning("Resource index out of range (%d/%d)", keyRes->resIndex, (int) _iResources.size());
 			continue;
 		}
 
