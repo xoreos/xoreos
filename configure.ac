@@ -153,6 +153,24 @@ BOOST_FUNCTION
 BOOST_BIND
 BOOST_UUID
 
+dnl Xlib
+case "$target" in
+	*darwin*)
+		dnl No need for X11 in OS X
+		X_CFLAGS=""
+		X_LIBS=""
+		;;
+	*)
+		AC_CHECK_HEADER("X11/Xlib.h", , noxlib=1)
+		AC_CHECK_LIB([X11], [XInitThreads], , noxlib=1)
+		if test -n "$noxlib"; then
+			AC_MSG_ERROR([Xlib is required and could not be found])
+		fi
+		X_CFLAGS=""
+		X_LIBS="-lX11"
+		;;
+esac;
+
 dnl OpenGL
 case "$target" in
 	*darwin*)
@@ -234,6 +252,9 @@ AC_SUBST(XVID_LIBS)
 
 AC_SUBST(Z_CFLAGS)
 AC_SUBST(Z_LIBS)
+
+AC_SUBST(X_CFLAGS)
+AC_SUBST(X_LIBS)
 
 AC_SUBST(EOS_CFLAGS)
 AC_SUBST(EOS_LIBS)

@@ -104,6 +104,10 @@ void GraphicsManager::init() {
 	sdlInitFlags |= SDL_INIT_EVENTTHREAD;
 #endif
 */
+#ifdef HAVE_LIBX11
+	if (!XInitThreads())
+		warning("Failed to initialize Xlib muti-threading support");
+#endif // HAVE_LIBX11
 
 	if (SDL_Init(sdlInitFlags) < 0)
 		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());

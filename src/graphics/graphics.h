@@ -33,6 +33,11 @@
 #include <vector>
 #include <list>
 
+#ifdef HAVE_LIBX11
+	#include <X11/Xlib.h>
+	#undef Complex // Name clash with Common::Complex
+#endif // HAVE_LIBX11
+
 #include "graphics/types.h"
 
 #include "common/types.h"
