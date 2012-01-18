@@ -57,6 +57,7 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 	&EventsManager::requestResize,
 	&EventsManager::requestChangeFSAA,
 	&EventsManager::requestChangeVSync,
+	&EventsManager::requestChangeGamma,
 	&EventsManager::requestRebuildGLContainer,
 	&EventsManager::requestDestroyGLContainer
 };
@@ -350,6 +351,10 @@ void EventsManager::requestChangeFSAA(Request &request) {
 
 void EventsManager::requestChangeVSync(Request &request) {
 	// TODO
+}
+
+void EventsManager::requestChangeGamma(Request &request) {
+	GfxMan.setGamma(request._gamma.gamma);
 }
 
 void EventsManager::requestRebuildGLContainer(Request &request) {

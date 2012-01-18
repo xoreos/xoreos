@@ -163,6 +163,14 @@ RequestID RequestManager::changeVSync(bool vsync) {
 	return rID;
 }
 
+RequestID RequestManager::changeGamma(float gamma) {
+	RequestID rID = newRequest(kITCEventChangeGamma);
+
+	(*rID)->_gamma.gamma = gamma;
+
+	return rID;
+}
+
 RequestID RequestManager::rebuild(Graphics::GLContainer &glContainer) {
 	RequestID rID = newRequest(kITCEventRebuildGLContainer);
 

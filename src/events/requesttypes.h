@@ -58,6 +58,10 @@ struct RequestDataChangeVSync {
 	bool vsync;
 };
 
+struct RequestDataChangeGamma {
+	float gamma;
+};
+
 struct RequestDataGLContainer {
 	Graphics::GLContainer *glContainer;
 };
@@ -85,6 +89,7 @@ private:
 		RequestDataResize      _resize;
 		RequestDataChangeFSAA  _fsaa;
 		RequestDataChangeVSync _vsync;
+		RequestDataChangeGamma _gamma;
 		RequestDataGLContainer _glContainer;
 	};
 

@@ -96,6 +96,8 @@ public:
 	RequestID changeFSAA(int level);
 	/** Request that the vsync settings shall be changed. */
 	RequestID changeVSync(bool vsync);
+	/** Request that the gamma settings shall be changed. */
+	RequestID changeGamma(float gamma);
 
 	/** Request that a GL container shall be rebuilt. */
 	RequestID rebuild(Graphics::GLContainer &glContainer);

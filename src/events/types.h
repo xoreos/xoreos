@@ -59,6 +59,7 @@ enum ITCEvent {
 	kITCEventResize                , ///< Request changing the display size.
 	kITCEventChangeFSAA            , ///< Request changing the FSAA level.
 	kITCEventChangeVSync           , ///< Request changing the vsync settings.
+	kITCEventChangeGamma           , ///< Request changing the gamma settings.
 	kITCEventRebuildGLContainer    , ///< Request the rebuilding of a GL container.
 	kITCEventDestroyGLContainer    , ///< Request the destruction of a GL container.
 	kITCEventMAX                     ///< For range checks.

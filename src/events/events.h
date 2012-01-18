@@ -187,6 +187,7 @@ private:
 	void requestResize(Request &request);
 	void requestChangeFSAA(Request &request);
 	void requestChangeVSync(Request &request);
+	void requestChangeGamma(Request &request);
 	void requestRebuildGLContainer(Request &request);
 	void requestDestroyGLContainer(Request &request);
 
