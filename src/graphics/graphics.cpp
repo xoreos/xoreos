@@ -329,6 +329,12 @@ float GraphicsManager::getGamma() const {
 }
 
 void GraphicsManager::setGamma(float gamma) {
+	if (!Common::isMainThread()) {
+		// Not the main thread, send a request instead
+		RequestMan.dispatchAndWait(RequestMan.changeGamma(gamma));
+		return;
+	}
+
 	_gamma = gamma;
 
 	SDL_SetGamma(gamma, gamma, gamma);
