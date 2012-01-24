@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -96,7 +96,7 @@ void VideoDecoder::initSound(uint16 rate, int channels, bool is16) {
 	_soundRate  = rate;
 	_soundFlags = 0;
 
-#ifdef EOS_LITTLE_ENDIAN
+#ifdef XOREOS_LITTLE_ENDIAN
 	_soundFlags |= Sound::FLAG_LITTLE_ENDIAN;
 #endif
 

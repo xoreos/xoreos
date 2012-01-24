@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file eos.cpp
+/** @file xoreos.cpp
  *  The project's main entry point.
  */
 

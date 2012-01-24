@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -65,7 +65,7 @@ private:
 		uint16 bitsPerSample; ///< The number of bits per encoded sample.
 		uint16 flags;         ///< Flags.
 
-		bool supported; ///< Are these audio track parameters supported by eos?
+		bool supported; ///< Are these audio track parameters supported by xoreos?
 		bool enabled;   ///< Should this audio track be played?
 
 		byte audioStreamFlags; ///< Flags for the audio stream creation.

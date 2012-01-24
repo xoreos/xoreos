@@ -1,21 +1,21 @@
-Q: Why "eos"?
+Q: Why "xoreos"?
 A: BioWare's first 3D engine (developed for Neverwinter Nights) was called
    "Aurora", the Roman goddess of dawn. "Eos" is her Greek name, so it kind
    of fits.
 
-Q: Will eos be able to play later versions of BioWare engine?
+Q: Will xoreos be able to play later versions of BioWare engine?
 A: Maybe/Probably. Both the Odyssey (Star Wars: Knights of the Old Republic
    and its sequel) and the Electron (Neverwinter Nights 2) are based heavily
    on Aurora, keeping lots of basic file formats, and only extending other.
    I don't know anything about Eclipse (Dragon Age) or Jade Empire's
    engine, though.
-   eos is meant primarily to get Star Wars: Knights of the Old Republic
+   xoreos is meant primarily to get Star Wars: Knights of the Old Republic
    working, since there are already Linux and MacOS ports of Neverwinter
    Nights. However, my knowledge is grouped around the latter, so what will
    be implemented first depends on exactly how similar Aurora and Odyssey
    are.
 
-Q: Will eos be able to play earlier versions of BioWare engine?
+Q: Will xoreos be able to play earlier versions of BioWare engine?
 A: Probably not. The Infinity engine, while also having basic file formats
    in common, is isometric "2.5D", so using a complete different graphical
    model. It might be too different to get to integrate. Also, there

@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -664,8 +664,8 @@ Console::Console(const Common::UString &font, int fontHeight) : _neverShown(true
 			"Usage: clear\nClear the console window");
 	registerCommand("exit"       , boost::bind(&Console::cmdExit       , this, _1),
 			"Usage: exit\nLeave the console window, returning to the game");
-	registerCommand("quiteos"    , boost::bind(&Console::cmdQuit       , this, _1),
-			"Usage: quiteos\nShut down eos");
+	registerCommand("quitxoreos"    , boost::bind(&Console::cmdQuit    , this, _1),
+			"Usage: quitxoreos\nShut down xoreos");
 	registerCommand("dumpreslist", boost::bind(&Console::cmdDumpResList, this, _1),
 			"Usage: dumpreslist <file>\nDump the current list of resources to file");
 	registerCommand("dumpres"    , boost::bind(&Console::cmdDumpRes    , this, _1),

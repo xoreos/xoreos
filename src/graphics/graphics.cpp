@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -313,7 +313,7 @@ void GraphicsManager::checkGLExtensions() {
 	if (!GLEW_ARB_multitexture) {
 		warning("Your graphics card does no support applying multiple textures onto "
 		        "one surface");
-		warning("Eos will only use one texture. Certain surfaces may look weird");
+		warning("Xoreos will only use one texture. Certain surfaces may look weird");
 
 		_supportMultipleTextures = false;
 	} else

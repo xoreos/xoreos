@@ -4,9 +4,9 @@ SUBDIRS = common graphics sound video events aurora engines
 
 noinst_HEADERS = cline.h
 
-bin_PROGRAMS = eos
+bin_PROGRAMS = xoreos
 
-eos_SOURCES = cline.cpp \
-              eos.cpp
+xoreos_SOURCES = cline.cpp \
+                 xoreos.cpp
 
-eos_LDADD = engines/libengines.la events/libevents.la video/libvideo.la sound/libsound.la graphics/libgraphics.la aurora/libaurora.la common/libcommon.la ../lua/liblua.la
+xoreos_LDADD = engines/libengines.la events/libevents.la video/libvideo.la sound/libsound.la graphics/libgraphics.la aurora/libaurora.la common/libcommon.la ../lua/liblua.la

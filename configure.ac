@@ -1,6 +1,6 @@
 AC_PREREQ([2.65])
 
-AC_INIT([eos],[0.0.1])
+AC_INIT([xoreos],[0.0.1])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([config.h.in])
@@ -138,7 +138,7 @@ if test "x$am_cv_func_iconv" != "xyes"; then
 fi
 
 dnl FreeType2
-AC_CHECK_FT2([11.0.5], [], [AC_MSG_ERROR([FreeType2 is required to compile eos])])
+AC_CHECK_FT2([11.0.5], [], [AC_MSG_ERROR([FreeType2 is required to compile xoreos])])
 
 dnl Boost
 BOOST_REQUIRE
@@ -196,12 +196,12 @@ esac;
 dnl Extra flags
 case "$target" in
 	*darwin*)
-		EOS_CFLAGS="-DUNIX -DMACOSX"
-		EOS_LIBS=""
+		XOREOS_CFLAGS="-DUNIX -DMACOSX"
+		XOREOS_LIBS=""
 		;;
 	*)
-		EOS_CFLAGS="-DUNIX"
-		EOS_LIBS=""
+		XOREOS_CFLAGS="-DUNIX"
+		XOREOS_LIBS=""
 		;;
 esac;
 
@@ -235,8 +235,8 @@ AC_SUBST(XVID_LIBS)
 AC_SUBST(Z_CFLAGS)
 AC_SUBST(Z_LIBS)
 
-AC_SUBST(EOS_CFLAGS)
-AC_SUBST(EOS_LIBS)
+AC_SUBST(XOREOS_CFLAGS)
+AC_SUBST(XOREOS_LIBS)
 
 AC_SUBST(WERROR)
 

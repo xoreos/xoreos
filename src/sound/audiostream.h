@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -39,7 +39,7 @@ namespace Sound {
 
 /**
  * Generic audio input stream. Subclasses of this are used to feed arbitrary
- * sampled audio data into eos' SoundManager.
+ * sampled audio data into xoreos' SoundManager.
  */
 class AudioStream {
 public:

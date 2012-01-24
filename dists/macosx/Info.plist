@@ -5,17 +5,17 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>Eos</string>
+	<string>Xoreos</string>
 	<key>CFBundleExecutable</key>
-	<string>eos</string>
+	<string>xoreos</string>
 	<key>CFBundleGetInfoString</key>
 	<string>0.0.1, Copyright 2010-2011 Sven Hesse (DrMcCoy), Matthew Hoops (clone2727)</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.eos.eos</string>
+	<string>org.xoreos.xoreos</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Eos</string>
+	<string>Xoreos</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

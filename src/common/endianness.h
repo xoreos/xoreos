@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -36,7 +36,7 @@
 #include "common/types.h"
 
 // Sanity check
-#if !defined(EOS_LITTLE_ENDIAN) && !defined(EOS_BIG_ENDIAN)
+#if !defined(XOREOS_LITTLE_ENDIAN) && !defined(XOREOS_BIG_ENDIAN)
 	#error No endianness defined
 #endif
 
@@ -135,7 +135,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 // Functions for reading/writing native Integers,
 // this transparently handles the need for alignment
 
-#if !defined(EOS_NEED_ALIGNMENT)
+#if !defined(XOREOS_NEED_ALIGNMENT)
 
 	FORCEINLINE uint16 READ_UINT16(const void *ptr) {
 		return *(const uint16 *)(ptr);
@@ -198,7 +198,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 // use software fallback by loading each byte explicitely
 #else
 
-	#if defined(EOS_LITTLE_ENDIAN)
+	#if defined(XOREOS_LITTLE_ENDIAN)
 
 		static inline uint16 READ_UINT16(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
@@ -237,7 +237,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 			b[7] = (uint8)(value >> 56);
 		}
 
-	#elif defined(EOS_BIG_ENDIAN)
+	#elif defined(XOREOS_BIG_ENDIAN)
 
 		static inline uint16 READ_UINT16(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
@@ -281,7 +281,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 #endif
 
 //  Map Funtions for reading/writing BE/LE integers depending on native endianess
-#if defined(EOS_LITTLE_ENDIAN)
+#if defined(XOREOS_LITTLE_ENDIAN)
 
 	#define READ_LE_UINT16(a) READ_UINT16(a)
 	#define READ_LE_UINT32(a) READ_UINT32(a)
@@ -316,7 +316,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#define CONSTANT_BE_64(a) SWAP_CONSTANT_64(a)
 
 // if the unaligned load and the byteswap take alot instructions its better to directly read and invert
-	#if defined(EOS_NEED_ALIGNMENT) && !defined(__mips__)
+	#if defined(XOREOS_NEED_ALIGNMENT) && !defined(__mips__)
 
 		static inline uint16 READ_BE_UINT16(const void *ptr) {
 			const uint8 *b = (const uint8 *)ptr;
@@ -376,9 +376,9 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 			WRITE_UINT64(ptr, SWAP_BYTES_64(value));
 		}
 
-	#endif // if defined(EOS_NEED_ALIGNMENT)
+	#endif // if defined(XOREOS_NEED_ALIGNMENT)
 
-#elif defined(EOS_BIG_ENDIAN)
+#elif defined(XOREOS_BIG_ENDIAN)
 
 	#define MKID_BE(a) ((uint32)(a))
 
@@ -415,7 +415,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#define CONSTANT_BE_64(a) ((uint64)(a))
 
 	// if the unaligned load and the byteswap take alot instructions its better to directly read and invert
-	#if defined(EOS_NEED_ALIGNMENT) && !defined(__mips__)
+	#if defined(XOREOS_NEED_ALIGNMENT) && !defined(__mips__)
 
 	static inline uint16 READ_LE_UINT16(const void *ptr) {
 		const uint8 *b = (const uint8 *)ptr;
@@ -475,8 +475,8 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 		WRITE_UINT64(ptr, SWAP_BYTES_64(value));
 	}
 
-	#endif // if defined(EOS_NEED_ALIGNMENT)
+	#endif // if defined(XOREOS_NEED_ALIGNMENT)
 
-#endif // if defined(EOS_LITTLE_ENDIAN)
+#endif // if defined(XOREOS_LITTLE_ENDIAN)
 
 #endif // COMMON_ENDIAN_H

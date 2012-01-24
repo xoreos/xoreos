@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -101,7 +101,7 @@ WMACodec::WMACodec(int version, uint32 sampleRate, uint8 channels,
 
 	_audioFlags = FLAG_16BITS;
 
-#ifdef EOS_LITTLE_ENDIAN
+#ifdef XOREOS_LITTLE_ENDIAN
 	_audioFlags |= FLAG_LITTLE_ENDIAN;
 #endif
 

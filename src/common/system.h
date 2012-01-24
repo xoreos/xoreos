@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -40,7 +40,7 @@
 
 	#define snprintf _snprintf
 
-	#define EOS_LITTLE_ENDIAN
+	#define XOREOS_LITTLE_ENDIAN
 
 	#define FORCEINLINE __forceinline
 	#define NORETURN_PRE __declspec(noreturn)
@@ -52,7 +52,7 @@
 
 #elif defined(__MINGW32__)
 
-	#define EOS_LITTLE_ENDIAN
+	#define XOREOS_LITTLE_ENDIAN
 
 	#define PLUGIN_EXPORT __declspec(dllexport)
 
@@ -64,9 +64,9 @@
 
 	#if defined(HAVE_CONFIG_H)
 		#if defined(WORDS_BIGENDIAN)
-			#define EOS_BIG_ENDIAN
+			#define XOREOS_BIG_ENDIAN
 		#else
-			#define EOS_LITTLE_ENDIAN
+			#define XOREOS_LITTLE_ENDIAN
 		#endif
 	#endif
 

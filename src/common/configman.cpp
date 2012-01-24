@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -38,20 +38,20 @@
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 
-	#define DEFAULT_CONFIG_FILE "eos.ini"
+	#define DEFAULT_CONFIG_FILE "xoreos.ini"
 #elif defined(MACOSX)
-	#define DEFAULT_CONFIG_FILE "Library/Preferences/eos Preferences"
+	#define DEFAULT_CONFIG_FILE "Library/Preferences/xoreos Preferences"
 #elif defined(UNIX)
-	#define DEFAULT_CONFIG_FILE ".eosrc"
+	#define DEFAULT_CONFIG_FILE ".xoreosrc"
 #else
-	#define DEFAULT_CONFIG_FILE ".eosrc"
+	#define DEFAULT_CONFIG_FILE ".xoreosrc"
 #endif
 
 DECLARE_SINGLETON(Common::ConfigManager)
 
 namespace Common {
 
-const char *ConfigManager::kDomainApp = "eos";
+const char *ConfigManager::kDomainApp = "xoreos";
 
 ConfigManager::ConfigManager() : _changed(false), _config(0), _domainApp(0), _domainGame(0) {
 	_domainDefaultApp  = new ConfigDomain("appDefault");
@@ -440,7 +440,7 @@ UString ConfigManager::getDefaultConfigFile() {
 			CreateDirectory(configFile, 0);
 		}
 
-		strcat(configFile, "\\eos");
+		strcat(configFile, "\\xoreos");
 		CreateDirectory(configFile, 0);
 		strcat(configFile, "\\" DEFAULT_CONFIG_FILE);
 

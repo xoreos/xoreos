@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -41,7 +41,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-const char *kSystemFontMono = "_eosSystemFontMono";
+const char *kSystemFontMono = "_xoreosSystemFontMono";
 
 ManagedFont::ManagedFont(Font *f) {
 	referenceCount = 0;

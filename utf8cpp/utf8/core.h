@@ -37,7 +37,7 @@ namespace utf8
     // The typedefs for 8-bit, 16-bit and 32-bit unsigned integers
     // You may need to change them to match your system.
     // These typedefs have the same names as ones from cstdint, or boost/cstdint
-    // [MODIFIED FOR EOS]
+    // [MODIFIED FOR XOREOS]
     typedef uint8  uint8_t;
     typedef uint16 uint16_t;
     typedef uint32 uint32_t;

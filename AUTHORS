@@ -1,10 +1,10 @@
-eos - A reimplementation of BioWare's Aurora engine
+xoreos - A reimplementation of BioWare's Aurora engine
 Copyright (c) 2010-2011 by the following:
 
 Sven Hesse (DrMcCoy) <drmccoy@drmccoy.de>
 Matthew Hoops (clone2727) <clone2727@gmail.com>
 
-eos is free software; you can redistribute it and/or
+xoreos is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 3
 of the License, or (at your option) any later version.
@@ -36,20 +36,20 @@ Dragon Age: Origins, Copyright (c) BioWare corp. and Electronic Arts.
 
 boost.m4
 ********
-   eos uses Benoit Sigoure's boost.m4 autoconf macros
+   xoreos uses Benoit Sigoure's boost.m4 autoconf macros
    (<http://github.com/tsuna/boost.m4>) to check for the needed Boost
    libraries. boost.m4 is licensed under version 3 or later of the GNU General
    Public License.
 
 ax_check_gl.m4 / ax_check_glu.m4
 ********************************
-   eos uses Braden McDaniel's autoconf macros
+   xoreos uses Braden McDaniel's autoconf macros
    (<https://code.google.com/p/autoconf-gl-macros/>) to check for OpenGL
    and GLU, licensed under version 2 or later of the GNU General Public License.
 
 freetype2.m4
 ************
-   eos uses Marcelo Magallon's autoconf macros to check for the FreeType 2
+   xoreos uses Marcelo Magallon's autoconf macros to check for the FreeType 2
    library. freetype2.m4 is part of the FreeType project
    (<http://freetype.org/>) and distributed under the terms of the FreeType
    project license. As a special exception, it may be distributed as part of a
@@ -58,49 +58,49 @@ freetype2.m4
 
 glew
 ****
-   eos uses glew, The OpenGL Extension Wrangler Library
+   xoreos uses glew, The OpenGL Extension Wrangler Library
    (<http://glew.sourceforge.net/>), to safely check for and use OpenGL 1.2+
    features and extensions. To minimize dependencies on "uncommon" libraries,
-   eos completely includes the glew code, one of its suggested use methods.
+   xoreos completely includes the glew code, one of its suggested use methods.
    glew is licensed under the Modified BSD License, the Mesa 3-D License
    (MIT License), and the Khronos License (MIT License).
 
 lua
 ***
-   eos uses lua, a lightweight scripting language (<http://www.lua.org/>), to
+   xoreos uses lua, a lightweight scripting language (<http://www.lua.org/>), to
    handle scripts from The Witcher. To minimize dependencies on "uncommon"
-   libraries, eos completely includes the lua 5.0.3 code. Lua is licensed under
-   the terms of the MIT license.
+   libraries, xoreos completely includes the lua 5.0.3 code. Lua is licensed
+   under the terms of the MIT license.
 
 UTF-8 CPP
 *********
-   eos uses the lightweight header-only UTF-8 CPP library
+   xoreos uses the lightweight header-only UTF-8 CPP library
    (<http://utfcpp.sourceforge.net/>) for handling UTF-8 encoded strings.
    UTF-8 CPP is licensed under a copyleft license. See utf8cpp/utf8.h for
    details.
 
 Bink
 ****
-   The Bink decoder used in eos is based (heavily) on the Bink decoder in
+   The Bink decoder used in xoreos is based (heavily) on the Bink decoder in
    FFmpeg (<http://ffmpeg.org/>), licensed under the GNU Lesser General Public
    License (LGPL) version 2.1 or later. Many thanks to Kostya Shishkov
    (<http://codecs.multimedia.cx/>) for doing the hard work.
 
 WMA
 ***
-   The WMA decoder used in eos is based (heavily) on the WMA decoder in
+   The WMA decoder used in xoreos is based (heavily) on the WMA decoder in
    FFmpeg (<http://ffmpeg.org/>), licensed under the GNU Lesser General Public
    License (LGPL) version 2.1 or later.
 
 DejaVu Sans Mono Bold
 *********************
-   eos includes DejaVu Sans Mono Bold (<http://dejavu-fonts.org/>) as a
+   xoreos includes DejaVu Sans Mono Bold (<http://dejavu-fonts.org/>) as a
    monospaced system font. The DejaVu font family is based on the Vera Fonts
    (<http://gnome.org/fonts/>), distributed under the Bitstream Vera Fonts
    license (<http://dejavu-fonts.org/wiki/License>).
 
 ScummVM code
 ************
-   eos uses some ScummVM (<http://scummvm.org/>) code, most prominently the
+   xoreos uses some ScummVM (<http://scummvm.org/>) code, most prominently the
    endian, singleton, stream and audio stream code. ScummVM is licensed under
    version 2 or later of the GNU General Public License.

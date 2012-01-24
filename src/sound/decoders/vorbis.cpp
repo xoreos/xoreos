@@ -1,6 +1,6 @@
-/* eos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
- * eos is the legal property of its developers, whose names can be
+ * xoreos is the legal property of its developers, whose names can be
  * found in the AUTHORS file distributed with this source
  * distribution.
  *
@@ -164,7 +164,7 @@ bool VorbisStream::refill() {
 		result = ov_read(&_ovFile, read_pos, len_left,
 						0);
 #else
-#ifdef EOS_BIG_ENDIAN
+#ifdef XOREOS_BIG_ENDIAN
 		result = ov_read(&_ovFile, read_pos, len_left,
 						1,
 						2,	// 16 bit

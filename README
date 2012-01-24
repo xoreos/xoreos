@@ -1,18 +1,18 @@
-eos 0.0.1
-=========
+xoreos 0.0.1
+============
 
-eos will be a reimplementation of BioWare's Aurora engine (and derivatives),
+xoreos will be a reimplementation of BioWare's Aurora engine (and derivatives),
 its direct goal being having Star Wars: Knights of the Old Republic working in
 a portable manner. Other games might follow.
 
 
 What is currently working, you might ask? Well...visibly, a bit. And quite
 a lot of the "foundation" work is there. Resource management, basic file
-formats, etc.. What you'll see when you sick eos on the installation directory
-of a recognized game is, apart from the movies (Bink playback courtesy of the
-ffmpeg project), stubby menus for NWN and KotOR, static 3D geometry and/or
-music and/or sound, loaded from the actual data files. Not really impressive
-yet, I know. :P
+formats, etc.. What you'll see when you sick ====os on the installation
+directory of a recognized game is, apart from the movies (Bink playback
+courtesy of the ffmpeg project), stubby menus for NWN and KotOR, static 3D
+geometry and/or music and/or sound, loaded from the actual data files.
+Not really impressive yet, I know. :P
 
 Will it ever be more? I don't know. This project was started out of a whim,
 basically. Like with many of my projects, I don't work on it continously,
