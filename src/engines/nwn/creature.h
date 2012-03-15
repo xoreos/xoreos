@@ -268,6 +268,7 @@ private:
 	uint32 _phenotype;    ///< The creature's phenotype.
 
 	std::vector<BodyPart> _bodyParts; ///< The creature's body parts.
+    Common::UString _partsSuperModelName; ///< The supermodel used for parts-based creatures
 
 	uint32 _colorSkin;    ///< The color of the creature's skin.
 	uint32 _colorHair;    ///< The color of the creature's hair.

@@ -321,6 +321,13 @@ void Creature::getPartModels() {
 	Common::UString phenoChar    = Common::UString("%d", _phenotype);
 	Common::UString phenoAltChar = pheno.getString("DefaultPhenoType");
 
+    // important to capture the supermodel
+    _partsSuperModelName = Common::UString::sprintf("p%s%s%s",
+	        genderChar.c_str(), raceChar.c_str(), phenoAltChar.c_str());
+	//if (!ResMan.hasResource(_partsSuperModelName, Aurora::kFileTypeMDL))
+	//	_partsSuperModelName.clear();
+
+
 	for (uint i = 0; i < kBodyPartMAX; i++)
 		constructModelName(kBodyPartModels[i], _bodyParts[i].id,
 		                   genderChar, raceChar, phenoChar, phenoAltChar,
@@ -343,6 +350,14 @@ void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
 }
 
 void Creature::loadModel() {
+    //this is where things get tricky
+    //there should be a way to determine the NPC model
+    //so we can look up supermodel
+    // pfd0 == player gender race phenotype
+    //then replace the various nodes in the generic
+    //model with the various body parts
+    //not sure why we hardcode body part names here
+    //probably this can be data driven?
 	if (_model)
 		return;
 
@@ -358,10 +373,11 @@ void Creature::loadModel() {
 
 	if (appearance.getString("MODELTYPE") == "P") {
 		getPartModels();
-
+		_model = loadModelObject(_partsSuperModelName);
+/*
 		for (uint i = 0; i < kBodyPartMAX; i++) {
-			if (i != kBodyPartHead)
-				continue;
+			//if (i != kBodyPartHead)
+				//continue;
 
 			if (_bodyParts[i].modelName.empty())
 				continue;
@@ -376,7 +392,7 @@ void Creature::loadModel() {
 
 			finishPLTs(_bodyParts[i].plts);
 		}
-
+*/
 	} else
 		_model = loadModelObject(appearance.getString("RACE"));
 
