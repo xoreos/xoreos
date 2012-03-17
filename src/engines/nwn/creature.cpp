@@ -294,34 +294,36 @@ void Creature::constructModelName(const Common::UString &type, uint32 id,
 		model.clear();
 }
 
+// Based on filenames in model2.bif
 static const char *kBodyPartModels[] = {
 	"head"  ,
 	"neck"  ,
-	"chest" , //torso??
+	"chest" ,
 	"pelvis",
 	"belt"  ,
-	"rfoot" , "lfoot" ,
-	"rshin" , "lshin" ,
-	"lthigh", "rthigh",
-	"rfarm" , "lfarm" ,
-	"rbicep", "lbicep",
-	"rshoul", "lshoul",
-	"rhand" , "lhand"
+	"footr" , "footl" ,
+	"shinr" , "shinl" ,
+	"legl"  , "legr"  ,
+	"forer" , "forel" ,
+	"bicepr", "bicepl",
+	"shor"  , "shol"  ,
+	"handr" , "handl"
 };
 
+// Node names taken from pfa0.mdl
 static const char *kBodyPartNodes[] = {
-	"head_g"  ,
-	"neck_g"  ,
-	"torso_g" , //torso??
-	"pelvis_g",
-	"belt"  ,
-	"rfoot_g" , "lfoot_g" ,
-	"rshin_g" , "lshin_g" ,
-	"lthigh_g", "rthigh_g",
+	"head_g"     ,
+	"neck_g"     ,
+	"torso_g"    ,
+	"pelvis_g"   ,
+	"belt_g"     ,
+	"rfoot_g"    , "lfoot_g"    ,
+	"rshin_g"    , "lshin_g"    ,
+	"lthigh_g"   , "rthigh_g"   ,
 	"rforearm_g" , "lforearm_g" ,
-	"Rbicep_g", "Lbicep_g",
-	"Rshoulder_g", "Lshoulder_g",
-	"rhand_g" , "lhand_g"
+	"rbicep_g"   , "lbicep_g"   ,
+	"rshoulder_g", "lshoulder_g",
+	"rhand_g"    , "lhand_g"
 };
 
 void Creature::getPartModels() {
@@ -341,7 +343,7 @@ void Creature::getPartModels() {
 	_partsSuperModelName = Common::UString::sprintf("p%s%s%s",
 	                       genderChar.c_str(), raceChar.c_str(), phenoChar.c_str());
 
-	// Fall back to the alt phenotype if required
+	// Fall back to the default phenotype if required
 	if (!ResMan.hasResource(_partsSuperModelName, Aurora::kFileTypeMDL))
 		_partsSuperModelName = Common::UString::sprintf("p%s%s%s",
 		                       genderChar.c_str(), raceChar.c_str(), phenoAltChar.c_str());
@@ -368,14 +370,6 @@ void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
 }
 
 void Creature::loadModel() {
-	// this is where things get tricky
-	// there should be a way to determine the NPC model
-	// so we can look up supermodel
-	//  pfd0 == player gender race phenotype
-	// then replace the various nodes in the generic
-	// model with the various body parts
-	// not sure why we hardcode body part names here
-	// probably this can be data driven?
 	if (_model)
 		return;
 
@@ -393,26 +387,21 @@ void Creature::loadModel() {
 		getPartModels();
 		_model = loadModelObject(_partsSuperModelName);
 
-		Graphics::Aurora::Model *part_model;
 		for (uint i = 0; i < kBodyPartMAX; i++) {
-			//if (i != kBodyPartHead)
-				//continue;
-
 			if (_bodyParts[i].modelName.empty())
 				continue;
 
 			TextureMan.clearNewPLTs();
 
-			part_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].modelName);
+			// Try to load in the corresponding part model
+			Graphics::Aurora::Model *part_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].modelName);
 			if (!part_model)
 				continue;
 
-			// TODO: Replace part modelnode with part model
+			// Add the loaded model to the appropriate part node
 			Graphics::Aurora::ModelNode *part_node = _model->getNode(kBodyPartNodes[i]);
 			if(part_node)
 				part_node->addChild(part_model);
-			else
-				status(Common::UString::sprintf("Missing node %s", kBodyPartNodes[i]).c_str());
 
 			TextureMan.getNewPLTs(_bodyParts[i].plts);
 

@@ -243,8 +243,6 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	float scale = ctx.mdl->readIEEEFloatLE();
 
 	_superModelName.readFixedASCII(*ctx.mdl, 64);
-	if(!_superModelName.empty() && _superModelName != "NULL")
-		status("Need supermodel \"%s\"", _superModelName.c_str());
 
 	newState(ctx);
 
@@ -299,10 +297,8 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 				warning("Model_NWN_ASCII::load(): setsupermodel: \"%s\" != \"%s\"",
 				        line[1].c_str(), _name.c_str());
 
-			if (!line[2].empty() && (line[2] != "NULL")) {
+			if (!line[2].empty() && (line[2] != "NULL"))
 				_superModelName = line[2];
-				status("Need ASCII supermodel \"%s\"", _superModelName.c_str());
-			}
 
 		} else if (line[0] == "beginmodelgeom") {
 			if (line[1] != _name)
