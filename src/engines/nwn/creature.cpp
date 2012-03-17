@@ -40,6 +40,7 @@
 #include "aurora/2dareg.h"
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/modelnode.h"
 #include "graphics/aurora/pltfile.h"
 
 #include "events/events.h"
@@ -296,7 +297,7 @@ void Creature::constructModelName(const Common::UString &type, uint32 id,
 static const char *kBodyPartModels[] = {
 	"head"  ,
 	"neck"  ,
-	"chest" ,
+	"chest" , //torso??
 	"pelvis",
 	"belt"  ,
 	"rfoot" , "lfoot" ,
@@ -306,6 +307,21 @@ static const char *kBodyPartModels[] = {
 	"rbicep", "lbicep",
 	"rshoul", "lshoul",
 	"rhand" , "lhand"
+};
+
+static const char *kBodyPartNodes[] = {
+	"head_g"  ,
+	"neck_g"  ,
+	"torso_g" , //torso??
+	"pelvis_g",
+	"belt"  ,
+	"rfoot_g" , "lfoot_g" ,
+	"rshin_g" , "lshin_g" ,
+	"lthigh_g", "rthigh_g",
+	"rforearm_g" , "lforearm_g" ,
+	"Rbicep_g", "Lbicep_g",
+	"Rshoulder_g", "Lshoulder_g",
+	"rhand_g" , "lhand_g"
 };
 
 void Creature::getPartModels() {
@@ -323,9 +339,11 @@ void Creature::getPartModels() {
 
     // important to capture the supermodel
     _partsSuperModelName = Common::UString::sprintf("p%s%s%s",
+	        genderChar.c_str(), raceChar.c_str(), phenoChar.c_str());
+    //fall back to the alt phenotype if required
+	if (!ResMan.hasResource(_partsSuperModelName, Aurora::kFileTypeMDL))
+        _partsSuperModelName = Common::UString::sprintf("p%s%s%s",
 	        genderChar.c_str(), raceChar.c_str(), phenoAltChar.c_str());
-	//if (!ResMan.hasResource(_partsSuperModelName, Aurora::kFileTypeMDL))
-	//	_partsSuperModelName.clear();
 
 
 	for (uint i = 0; i < kBodyPartMAX; i++)
@@ -374,7 +392,8 @@ void Creature::loadModel() {
 	if (appearance.getString("MODELTYPE") == "P") {
 		getPartModels();
 		_model = loadModelObject(_partsSuperModelName);
-/*
+
+        Graphics::Aurora::Model *part_model;
 		for (uint i = 0; i < kBodyPartMAX; i++) {
 			//if (i != kBodyPartHead)
 				//continue;
@@ -384,15 +403,20 @@ void Creature::loadModel() {
 
 			TextureMan.clearNewPLTs();
 
-			_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].modelName);
-			if (!_model)
+			part_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].modelName);
+			if (!part_model)
 				continue;
-
+//TODO: replace part modelnode with part model
+            Graphics::Aurora::ModelNode *part_node = _model->getNode(kBodyPartNodes[i]);
+            if(part_node)
+                part_node->addChild(part_model);
+            else
+                status(Common::UString::sprintf("Missing node %s", kBodyPartNodes[i]).c_str());
 			TextureMan.getNewPLTs(_bodyParts[i].plts);
 
 			finishPLTs(_bodyParts[i].plts);
 		}
-*/
+
 	} else
 		_model = loadModelObject(appearance.getString("RACE"));
 
