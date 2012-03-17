@@ -40,7 +40,7 @@ namespace Graphics {
 namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
-	_type(type), _currentState(0), _drawBound(false), _lists(0) {
+	_type(type), _supermodel(0), _currentState(0), _drawBound(false), _lists(0) {
 
 	for (int i = 0; i < kRenderPassAll; i++)
 		_needBuild[i] = true;
@@ -282,8 +282,12 @@ ModelNode *Model::getNode(const Common::UString &node) {
 		return 0;
 
 	NodeMap::iterator n = _currentState->nodeMap.find(node);
-	if (n == _currentState->nodeMap.end())
+	if (n == _currentState->nodeMap.end()) {
+		if(_supermodel)
+			return _supermodel->getNode(node);
+
 		return 0;
+	}
 
 	return n->second;
 }
@@ -293,8 +297,12 @@ const ModelNode *Model::getNode(const Common::UString &node) const {
 		return 0;
 
 	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
-	if (n == _currentState->nodeMap.end())
+	if (n == _currentState->nodeMap.end()) {
+		if(_supermodel)
+			return _supermodel->getNode(node);
+
 		return 0;
+	}
 
 	return n->second;
 }

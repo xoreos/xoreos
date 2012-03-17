@@ -231,6 +231,7 @@ void ModelNode::addChild(Model *model) {
 	for (Model::NodeList::iterator r = model->_currentState->rootNodes.begin();
 	     r != model->_currentState->rootNodes.end(); ++r) {
 
+		//TODO: Maybe we're REPLACING an existing node?
 		_children.push_back(*r);
 
 		(*r)->reparent(*this);
