@@ -153,6 +153,9 @@ protected:
 
 	Common::UString _name; ///< The model's name.
 
+	Common::UString _superModelName; ///< Name of the supermodel.
+	Model* _supermodel; ///< the actual supermodel.
+
 	StateList _stateList;   ///< All states within this model.
 	StateMap  _stateMap;    ///< All states within this model, index by name.
 	State   *_currentState; ///< The current state.
