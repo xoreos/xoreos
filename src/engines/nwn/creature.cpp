@@ -295,6 +295,7 @@ void Creature::constructModelName(const Common::UString &type, uint32 id,
 }
 
 // Based on filenames in model2.bif
+// These should be read from MDLNAME, NODENAME in capart.2da (in 2da.bif)
 static const char *kBodyPartModels[] = {
 	"head"  ,
 	"neck"  ,
