@@ -652,9 +652,6 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 		textureCount = 4;
 	}
 
-	if ((textureCount > 0) && !ctx.texture.empty())
-		textures[0] = ctx.texture;
-
 	textures.resize(textureCount);
 	loadTextures(textures);
 
