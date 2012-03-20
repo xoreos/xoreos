@@ -33,6 +33,7 @@
 #include "graphics/camera.h"
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/animation.h"
 #include "graphics/aurora/modelnode.h"
 
 namespace Graphics {

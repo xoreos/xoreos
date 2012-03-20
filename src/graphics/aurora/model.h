@@ -53,6 +53,7 @@ namespace Graphics {
 namespace Aurora {
 
 class ModelNode;
+class Animation;
 
 class Model : public GLContainer, public Renderable {
 public:
@@ -132,6 +133,7 @@ public:
 protected:
 	typedef std::list<ModelNode *> NodeList;
 	typedef std::map<Common::UString, ModelNode *, Common::UString::iless> NodeMap;
+	typedef std::map<Common::UString, Animation *, Common::UString::iless> AnimationMap;
 
 	/** A model state. */
 	struct State {
