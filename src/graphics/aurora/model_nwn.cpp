@@ -363,6 +363,27 @@ void Model_NWN::skipAnimASCII(ParserContext &ctx) {
 
 void Model_NWN::readAnimASCII(ParserContext &ctx) {
 	// TODO: Model_NWN_ASCII::readAnimASCII
+    // read in the animation name
+    // there should be a list of animations
+    // each with a bunch of animnodes
+    // each animnode targets a model node
+    // and has a list of position, orientation keyframes
+    // (at time t, position, orientation = x)
+    //
+    // at render time/playAnimation
+    // -- if there's a default animation we should always be playing that?
+    // determine time t
+    // for each animnode look up surrounding keyframes
+    // interpolate to get real position, orientation
+    // when rendering the node, apply the position, orientation
+    //
+    // models have a current and next animation
+    // next animation is set by playanimation
+    // when current animation expires, we schedule next one
+    // if next is null either loop or select a random
+    // default animation for the current
+    // when there is an active animation
+    // track time t and apply animnodes
 }
 
 void Model_NWN::addState(ParserContext &ctx) {
