@@ -54,6 +54,8 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 Model::~Model() {
 	hide();
 
+	delete _supermodel;
+
 	if (_lists != 0)
 		GfxMan.abandon(_lists, kRenderPassAll);
 

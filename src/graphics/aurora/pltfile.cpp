@@ -108,6 +108,8 @@ void PLTFile::load() {
 		throw e;
 	}
 
+	delete plt;
+
 	if (_texture.empty())
 		_texture = TextureMan.add(new Texture(0));
 }
