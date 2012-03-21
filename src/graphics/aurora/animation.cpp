@@ -53,6 +53,12 @@ const Common::UString &Animation::getName() const {
 	return _name;
 }
 
+void Animation::update(Model *model, float elapsedTime)
+{
+    //TODO: loop through animnodes and have them update modelnodes
+    //also need to fire off associated events
+}
+
 } // End of namespace Aurora
 
 } // End of namespace Graphics

@@ -82,8 +82,11 @@ protected:
 
 public:
     void setLength(float length) {_length=length;}
+    float getLength() {return _length;}
     void setTransTime(float transtime) {_transtime=transtime;}
     void setName(Common::UString& name) {_name=name;}
+
+    void update(Model *model, float elapsedTime);
 /*
 	// General loading helpers
 

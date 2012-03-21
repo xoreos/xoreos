@@ -125,6 +125,15 @@ public:
 	const ModelNode *getNode(const Common::UString &node) const;
 
 
+    // Animation
+
+	/** Get the specified node, from the current state. */
+	Animation *getAnimation(const Common::UString &anim);
+    /** play a named animation */
+    void playAnimation(const Common::UString &anim);
+    /** select the default idle animation */
+    void playDefaultAnimation();
+
 	// Renderable
 	void calculateDistance();
 	void render(RenderPass pass);
@@ -163,7 +172,10 @@ protected:
 	State   *_currentState; ///< The current state.
 
 	std::list<Common::UString> _stateNames; ///< All state names.
+
     AnimationMap _animationMap;
+    Animation *_currentAnimation;
+    Animation *_nextAnimation;
 
 	float _modelScale[3]; ///< The model's scale.
 
@@ -193,6 +205,7 @@ protected:
 private:
 	bool _needBuild[kRenderPassAll];
 	bool _drawBound;
+    long _startTime; ///< Track animation beginning
 
 	ListID _lists; ///< OpenGL display lists for the model
 
