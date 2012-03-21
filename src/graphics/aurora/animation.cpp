@@ -49,7 +49,7 @@ Animation::Animation()
 Animation::~Animation() {
 }
 
-const Common::UString &Model::getName() const {
+const Common::UString &Animation::getName() const {
 	return _name;
 }
 

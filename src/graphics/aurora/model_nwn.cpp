@@ -41,6 +41,7 @@
 #include "aurora/resman.h"
 
 #include "graphics/aurora/model_nwn.h"
+#include "graphics/aurora/animation.h"
 
 using Common::kDebugGraphics;
 
@@ -452,6 +453,28 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	rootNode->load(ctx);
+
+    //we read this in, but what do we do with it??
+    //ah, we call addState, interesting
+    //need to look at interaction with placeable states?
+    Animation* anim = new Animation();
+    anim->setName(ctx.state->name);
+    anim->setLength(animLength);
+    anim->setTransTime(transTime);
+    _animationMap.insert(std::make_pair(ctx.state->name, anim));
+    //if animation name contains "pause" or "hturn" it's a default (idle) animation
+    debugC(4, kDebugGraphics, "Loaded animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
+
+	//for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
+	//     n != ctx.nodes.end(); ++n) {
+
+//		anim->nodeList.push_back(*n);
+//		anim->nodeMap.insert(std::make_pair((*n)->getName(), *n));
+
+//		if (!(*n)->getParent())
+//			anim->rootNodes.push_back(*n);
+//	}
+
 }
 
 
