@@ -163,6 +163,7 @@ protected:
 	State   *_currentState; ///< The current state.
 
 	std::list<Common::UString> _stateNames; ///< All state names.
+    AnimationMap _animationMap;
 
 	float _modelScale[3]; ///< The model's scale.
 

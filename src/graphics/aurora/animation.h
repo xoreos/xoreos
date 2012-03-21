@@ -77,9 +77,14 @@ protected:
 	typedef std::map<Common::UString, AnimNode *, Common::UString::iless> NodeMap;
 
 	Common::UString _name; ///< The model's name.
+    float _length;
+    float _transtime;
 
-/*
 public:
+    void setLength(float length) {_length=length;}
+    void setTransTime(float transtime) {_transtime=transtime;}
+    void setName(Common::UString& name) {_name=name;}
+/*
 	// General loading helpers
 
 	static void readValue(Common::SeekableReadStream &stream, uint32 &value);
