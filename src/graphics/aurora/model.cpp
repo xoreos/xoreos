@@ -27,6 +27,8 @@
  *  A 3D model of an object.
  */
 
+#include <SDL_timer.h>
+
 #include "common/stream.h"
 
 #include "graphics/graphics.h"
@@ -41,7 +43,9 @@ namespace Graphics {
 namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
-	_type(type), _supermodel(0), _currentState(0), _drawBound(false), _lists(0) {
+	_type(type), _supermodel(0), _currentState(0),
+    _currentAnimation(0), _nextAnimation(0), _drawBound(false),
+    _lists(0) {
 
 	for (int i = 0; i < kRenderPassAll; i++)
 		_needBuild[i] = true;
@@ -127,6 +131,17 @@ float Model::getDepth() const {
 void Model::drawBound(bool enabled) {
 	_drawBound = enabled;
 	needRebuild();
+}
+
+void Model::playAnimation(const Common::UString &anim) {
+    Animation* nextanim = getAnimation(anim);
+    _nextAnimation = nextanim;
+}
+
+void Model::playDefaultAnimation() {
+    //TODO: select a default animation
+    //Animation* nextanim = getAnimation(anim);
+    //_nextAnimation = nextanim;
 }
 
 void Model::getPosition(float &x, float &y, float &z) const {
@@ -310,6 +325,19 @@ const ModelNode *Model::getNode(const Common::UString &node) const {
 	return n->second;
 }
 
+Animation *Model::getAnimation(const Common::UString &anim) {
+
+	AnimationMap::iterator n = _animationMap.find(anim);
+	if (n == _animationMap.end()) {
+		if(_supermodel)
+			return _supermodel->getAnimation(anim);
+
+		return 0;
+	}
+
+	return n->second;
+}
+
 void Model::calculateDistance() {
 	if (_type == kModelTypeGUIFront) {
 		_distance = _position[2];
@@ -388,6 +416,32 @@ void Model::render(RenderPass pass) {
 		Model::render(kRenderPassTransparent);
 		return;
 	}
+
+    if(_nextAnimation)
+    {
+        // note that this interrupts the current animation!
+        _startTime = SDL_GetTicks();
+        _currentAnimation = _nextAnimation;
+        _nextAnimation = NULL;
+    }
+
+    // if there is no current animation,
+    // select a default animation
+    if(!_currentAnimation)
+        playDefaultAnimation();
+
+    long time = SDL_GetTicks();
+    float elapsedTime = (time-_startTime) / 1000.0f;
+
+    // if the current animation has finished,
+    // fall back to a default animation
+    if(_currentAnimation && elapsedTime >= _currentAnimation->getLength())
+    {
+        //debug output
+        playDefaultAnimation();
+    }
+
+    _currentAnimation->update(this, elapsedTime);
 
 	// Render
 	buildList(pass);
