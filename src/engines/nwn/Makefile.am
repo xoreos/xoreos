@@ -17,6 +17,7 @@ noinst_HEADERS = nwn.h \
                  placeable.h \
                  door.h \
                  creature.h \
+                 item.h \
                  gui/gui.h \
                  gui/legal.h \
                  gui/widgets/tooltip.h \
@@ -84,6 +85,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     situated.cpp \
                     placeable.cpp \
                     door.cpp \
+                    item.cpp \
                     location.cpp \
                     gui/gui.cpp \
                     gui/legal.cpp \

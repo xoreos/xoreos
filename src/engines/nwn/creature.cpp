@@ -388,6 +388,9 @@ void Creature::loadModel() {
 		getPartModels();
 		_model = loadModelObject(_partsSuperModelName);
 
+		//lookup armour models from equipped items
+		//getArmourModels();
+
 		for (uint i = 0; i < kBodyPartMAX; i++) {
 			if (_bodyParts[i].modelName.empty())
 				continue;
@@ -400,6 +403,7 @@ void Creature::loadModel() {
 				continue;
 
 			// Add the loaded model to the appropriate part node
+            // add in the armour model if any, else body model
 			Graphics::Aurora::ModelNode *part_node = _model->getNode(kBodyPartNodes[i]);
 			if(part_node)
 				part_node->addChild(part_model);
@@ -647,6 +651,9 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_colorTattoo1 = gff.getUint("Color_Tattoo1", _colorTattoo1);
 	_colorTattoo2 = gff.getUint("Color_Tattoo2", _colorTattoo2);
 
+	//Equipped Items
+	loadEquippedItems(gff);
+
 	// Scripts
 	readScripts(gff);
 }
@@ -662,6 +669,31 @@ void Creature::loadPortrait(const Aurora::GFFStruct &gff, Common::UString &portr
 	}
 
 	portrait = gff.getString("Portrait", portrait);
+}
+
+void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
+	if(!gff.hasField("Equip_ItemList"))
+		return;
+
+	//_equipped.clear();
+	const Aurora::GFFList &cEquipped = gff.getList("Equip_ItemList");
+	for (Aurora::GFFList::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
+		const Aurora::GFFStruct &cItem = **e;
+		Common::UString itemref = cItem.getString("EquippedRes");
+		if (!itemref.empty()) {
+			//load the item definition
+			//look for a corresponding UTI file
+
+			//UTI def has a baseitem (index into baseitem.2da, determines equippable slots, model type)
+			//armour is 16, modeltype 3
+			//can look up armorpart_bodypart id
+			//them use that to construct model names
+		}
+		//its a resref to the item definition
+		//load the item
+		//add it to the equipped list
+		//_eqipped.push_back(item);
+    }
 }
 
 void Creature::loadClasses(const Aurora::GFFStruct &gff,

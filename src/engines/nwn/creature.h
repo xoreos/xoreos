@@ -306,6 +306,8 @@ private:
 	static void loadClasses (const Aurora::GFFStruct &gff,
 	                         std::vector<Class> &classes, uint8 &hitDice);
 
+	void loadEquippedItems(const Aurora::GFFStruct &gff);
+
 	/** Construct the resource name of a body part model. */
 	void constructModelName(const Common::UString &type, uint32 id,
 	                        const Common::UString &gender,
