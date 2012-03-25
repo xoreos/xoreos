@@ -463,6 +463,10 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
     anim->setTransTime(transTime);
     _animationMap.insert(std::make_pair(ctx.state->name, anim));
     //TODO: if animation name contains "pause" or "hturn" it's a default (idle) animation
+    if(ctx.state->name.contains("pause")) {
+        debugC(4, kDebugGraphics, "Setting animation \"%s\" as default", ctx.state->name.c_str());
+        _defaultAnimations.push_back(anim);
+    }
     debugC(4, kDebugGraphics, "Loaded animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
 
 	//for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
