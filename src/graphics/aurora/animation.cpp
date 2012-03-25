@@ -28,6 +28,7 @@
  */
 
 #include "common/stream.h"
+#include "common/debug.h"
 
 #include "graphics/graphics.h"
 #include "graphics/camera.h"
@@ -36,6 +37,8 @@
 #include "graphics/aurora/modelnode.h"
 #include "graphics/aurora/animation.h"
 #include "graphics/aurora/animnode.h"
+
+using Common::kDebugGraphics;
 
 namespace Graphics {
 
@@ -56,6 +59,7 @@ const Common::UString &Animation::getName() const {
 void Animation::update(Model *model, float elapsedTime)
 {
     //TODO: loop through animnodes and have them update modelnodes
+    //debugC(4, kDebugGraphics, "Playing animation in model \"%s\" @ time %f", model->getName().c_str(), elapsedTime);
     //also need to fire off associated events
 }
 

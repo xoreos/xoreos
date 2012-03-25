@@ -141,6 +141,7 @@ public:
 
 protected:
 	typedef std::list<ModelNode *> NodeList;
+	typedef std::vector<Animation *> AnimationList;
 	typedef std::map<Common::UString, ModelNode *, Common::UString::iless> NodeMap;
 	typedef std::map<Common::UString, Animation *, Common::UString::iless> AnimationMap;
 
@@ -174,6 +175,7 @@ protected:
 	std::list<Common::UString> _stateNames; ///< All state names.
 
     AnimationMap _animationMap;
+    AnimationList _defaultAnimations;
     Animation *_currentAnimation;
     Animation *_nextAnimation;
 
@@ -218,6 +220,7 @@ private:
 	void createAbsolutePosition();
 
 	void doDrawBound();
+	void manageAnimations();
 
 
 public:

@@ -30,6 +30,7 @@
 #include <SDL_timer.h>
 
 #include "common/stream.h"
+#include "common/debug.h"
 
 #include "graphics/graphics.h"
 #include "graphics/camera.h"
@@ -37,6 +38,8 @@
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/animation.h"
 #include "graphics/aurora/modelnode.h"
+
+using Common::kDebugGraphics;
 
 namespace Graphics {
 
@@ -134,14 +137,18 @@ void Model::drawBound(bool enabled) {
 }
 
 void Model::playAnimation(const Common::UString &anim) {
+    debugC(4, kDebugGraphics, "Playing animation \"%s\" in model \"%s\"", anim.c_str(), getName().c_str());
     Animation* nextanim = getAnimation(anim);
     _nextAnimation = nextanim;
 }
 
 void Model::playDefaultAnimation() {
     //TODO: select a default animation
-    //Animation* nextanim = getAnimation(anim);
-    //_nextAnimation = nextanim;
+    if(_defaultAnimations.empty())
+        return;
+
+    debugC(4, kDebugGraphics, "Playing default animation in model \"%s\"", getName().c_str());
+    _currentAnimation = _defaultAnimations[0];
 }
 
 void Model::getPosition(float &x, float &y, float &z) const {
@@ -407,6 +414,38 @@ bool Model::buildList(RenderPass pass) {
 	return true;
 }
 
+void Model::manageAnimations() {
+    //TODO: all this animation management needs to be refactored
+    if(_nextAnimation)
+    {
+        // note that this interrupts the current animation!
+        _currentAnimation = _nextAnimation;
+        _nextAnimation = 0;
+        _startTime = SDL_GetTicks();
+    }
+
+    // if there is no current animation,
+    // select a default animation
+    if(!_currentAnimation)
+        playDefaultAnimation();
+
+    long time = SDL_GetTicks();
+    //really the dt should be coming from outside the render function
+    //otherwise passes can end up out of sync
+    float elapsedTime = (time-_startTime) / 1000.0f;
+
+    // if the current animation has finished,
+    // start a default animation
+    if(_currentAnimation && elapsedTime >= _currentAnimation->getLength())
+    {
+        //debug output
+        playDefaultAnimation();
+        elapsedTime = 0.0f;
+    }
+
+    _currentAnimation->update(this, elapsedTime);
+}
+
 void Model::render(RenderPass pass) {
 	if (!_currentState || (pass > kRenderPassAll))
 		return;
@@ -417,31 +456,7 @@ void Model::render(RenderPass pass) {
 		return;
 	}
 
-    if(_nextAnimation)
-    {
-        // note that this interrupts the current animation!
-        _startTime = SDL_GetTicks();
-        _currentAnimation = _nextAnimation;
-        _nextAnimation = NULL;
-    }
-
-    // if there is no current animation,
-    // select a default animation
-    if(!_currentAnimation)
-        playDefaultAnimation();
-
-    long time = SDL_GetTicks();
-    float elapsedTime = (time-_startTime) / 1000.0f;
-
-    // if the current animation has finished,
-    // fall back to a default animation
-    if(_currentAnimation && elapsedTime >= _currentAnimation->getLength())
-    {
-        //debug output
-        playDefaultAnimation();
-    }
-
-    _currentAnimation->update(this, elapsedTime);
+    manageAnimations();
 
 	// Render
 	buildList(pass);
