@@ -50,6 +50,7 @@ namespace NWN {
 Item::Item() : Object(kObjectTypeItem), _appearanceID(Aurora::kFieldIDInvalid),
 	_soundAppType(Aurora::kFieldIDInvalid), _locked(false), _model(0) {
 
+	_armorParts.resize(19);
 }
 
 Item::~Item() {
@@ -105,22 +106,6 @@ void Item::hide() {
 		_model->hide();
 }
 
-void Item::setPosition(float x, float y, float z) {
-	Object::setPosition(x, y, z);
-	Object::getPosition(x, y, z);
-
-	if (_model)
-		_model->setPosition(x, y, z);
-}
-
-void Item::setOrientation(float x, float y, float z) {
-	Object::setOrientation(x, y, z);
-	Object::getOrientation(x, y, z);
-
-	if (_model)
-		_model->setRotation(x, z, -y);
-}
-
 bool Item::isLocked() const {
 	return _locked;
 }
@@ -130,6 +115,11 @@ void Item::setLocked(bool locked) {
 }
 
 void Item::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
+	//UTI def has a baseitem (index into baseitem.2da, determines equippable slots, model type)
+	//armour is 16, modeltype 3
+	//can look up armorpart_bodypart id
+	//them use that to construct model names
+	//
 	// General properties
 
 	if (blueprint)
@@ -139,31 +129,22 @@ void Item::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blue
 
 	// Specialized object properties
 
-	if (blueprint)
-		loadObject(*blueprint); // Blueprint
-	loadObject(instance);    // Instance
+//	if (blueprint)
+//		loadObject(*blueprint); // Blueprint
+//	loadObject(instance);    // Instance
 
+
+	//TODO:
+	// baseitem -- needed for inventory UI interactions
+	// stacksize -- used by inventory UI
 
 	// Appearance
 
-	if (_appearanceID == Aurora::kFieldIDInvalid)
-		throw Common::Exception("Item object without an appearance");
+	//if (_appearanceID == Aurora::kFieldIDInvalid)
+		//throw Common::Exception("Item object without an appearance");
 
-	loadAppearance();
+//	loadAppearance();
 	loadSounds();
-
-
-	// Position
-
-	setPosition(instance.getDouble("X"),
-	            instance.getDouble("Y"),
-	            instance.getDouble("Z"));
-
-	// Orientation
-
-	float bearing = instance.getDouble("Bearing");
-
-	setOrientation(0.0, Common::rad2deg(bearing), 0.0);
 }
 
 void Item::loadProperties(const Aurora::GFFStruct &gff) {
@@ -186,23 +167,11 @@ void Item::loadProperties(const Aurora::GFFStruct &gff) {
 		_description = description.getString();
 	}
 
+	// Armor parts
+	loadArmorParts(gff);
+
 	// Portrait
 	loadPortrait(gff);
-
-	// Appearance
-	_appearanceID = gff.getUint("Appearance", _appearanceID);
-
-	// Conversation
-	_conversation = gff.getString("Conversation", _conversation);
-
-	// Static
-	_static = gff.getBool("Static", _static);
-
-	// Usable
-	_usable = gff.getBool("Useable", _usable);
-
-	// Locked
-	_locked = gff.getBool("Locked", _locked);
 
 	// Scripts
 	readScripts(gff);
@@ -224,14 +193,30 @@ void Item::loadPortrait(const Aurora::GFFStruct &gff) {
 void Item::loadSounds() {
 	if (_soundAppType == Aurora::kFieldIDInvalid)
 		return;
+}
 
-	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeableobjsnds");
+static const char *kArmorPartFields[] = {
+	"Appearance_Head",  //heads appear to be a special case
+	"ArmorPart_Neck"  ,
+	"ArmorPart_Torso" ,
+	"ArmorPart_Pelvis",
+	"ArmorPart_Belt"  ,
+	"ArmorPart_RFoot", "ArmorPart_LFoot" ,
+	"ArmorPart_RShin" , "ArmorPart_LShin" ,
+	"ArmorPart_LThigh", "ArmorPart_RThigh",
+	"ArmorPart_RFArm" , "ArmorPart_LFArm" ,
+	"ArmorPart_RBicep", "ArmorPart_LBicep",
+	"ArmorPart_RShoul", "ArmorPart_LShoul",
+	"ArmorPart_RHand" , "ArmorPart_LHand"
+};
 
-	_soundOpened    = twoda.getRow(_soundAppType).getString("Opened");
-	_soundClosed    = twoda.getRow(_soundAppType).getString("Closed");
-	_soundDestroyed = twoda.getRow(_soundAppType).getString("Destroyed");
-	_soundUsed      = twoda.getRow(_soundAppType).getString("Used");
-	_soundLocked    = twoda.getRow(_soundAppType).getString("Locked");
+void Item::loadArmorParts(const Aurora::GFFStruct &gff)
+{
+	//TODO: add an kArmorPart enumeration
+	for (uint i = 0; i < 19; i++)
+		if (gff.hasField(kArmorPartFields[i])) {
+			_armorParts[i].id = gff.getUint(kArmorPartFields[i], _armorParts[i].id);
+		}
 }
 
 } // End of namespace NWN

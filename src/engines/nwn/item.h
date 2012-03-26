@@ -53,17 +53,10 @@ public:
 	void show(); ///< Show the situated object's model.
 	void hide(); ///< Hide the situated object's model.
 
-	/** Set the situated object's position. */
-	void setPosition(float x, float y, float z);
-	/** Set the situated object's orientation. */
-	void setOrientation(float x, float y, float z);
-
-	/** Is the situated object open? */
-	virtual bool isOpen() const = 0;
-
 	bool isLocked() const;               ///< Is the situated object locked?
 	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
 
+	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
 protected:
 	Common::UString _modelName; ///< The model's resource name.
 
@@ -72,27 +65,29 @@ protected:
 
 	bool _locked; ///< Is the situated object locked?
 
-	Common::UString _soundOpened;    ///< The sound the object makes when opened.
-	Common::UString _soundClosed;    ///< The sound the object makes when closed.
-	Common::UString _soundDestroyed; ///< The sound the object makes when destroyed.
-	Common::UString _soundUsed;      ///< The sound the object makes when used.
-	Common::UString _soundLocked;    ///< The sound the object makes when locked.
-
 	Graphics::Aurora::Model *_model; ///< The situated object's model.
 
 	/** Load the situated object from an instance and its blueprint. */
-	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
 
 	/** Load object-specific properties. */
-	virtual void loadObject(const Aurora::GFFStruct &gff) = 0;
+	//virtual void loadObject(const Aurora::GFFStruct &gff) = 0;
 	/** Load appearance-specific properties. */
-	virtual void loadAppearance() = 0;
+	//virtual void loadAppearance() = 0;
+	//virtual void loadArmorParts() = 0;
 
 
 private:
 	void loadProperties(const Aurora::GFFStruct &gff);
 	void loadPortrait(const Aurora::GFFStruct &gff);
+	void loadArmorParts(const Aurora::GFFStruct &gff);
 	void loadSounds();
+
+	/** index to appropriate armor part. */
+	struct ArmorPart {
+		uint32 id; ///< Index of the part variant.
+	};
+
+	std::vector<ArmorPart> _armorParts; ///< The item's armor parts.
 };
 
 } // End of namespace NWN

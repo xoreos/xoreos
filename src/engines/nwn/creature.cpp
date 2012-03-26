@@ -49,6 +49,7 @@
 #include "engines/aurora/model.h"
 
 #include "engines/nwn/creature.h"
+#include "engines/nwn/item.h"
 
 #include "engines/nwn/gui/widgets/tooltip.h"
 
@@ -680,17 +681,22 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 	for (Aurora::GFFList::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
 		const Aurora::GFFStruct &cItem = **e;
 		Common::UString itemref = cItem.getString("EquippedRes");
-		if (!itemref.empty()) {
-			//load the item definition
-			//look for a corresponding UTI file
 
-			//UTI def has a baseitem (index into baseitem.2da, determines equippable slots, model type)
-			//armour is 16, modeltype 3
-			//can look up armorpart_bodypart id
-			//them use that to construct model names
+		Aurora::GFFFile *uti = 0;
+		if (!itemref.empty()) {
+			try {
+				uti = new Aurora::GFFFile(itemref, Aurora::kFileTypeUTI, MKID_BE('UTI '));
+			} catch (...) {
+				delete uti;
+			}
 		}
-		//its a resref to the item definition
-		//load the item
+
+		if(uti) {
+			Item* item = new Item();
+			item->load(uti->getTopLevel());
+
+			delete uti;
+		}
 		//add it to the equipped list
 		//_eqipped.push_back(item);
     }
