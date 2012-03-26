@@ -47,6 +47,7 @@ namespace Engines {
 namespace NWN {
 
 class Tooltip;
+class Item;
 
 class Creature : public Object {
 public:
@@ -223,6 +224,7 @@ private:
 	/** A part of a creature body. */
 	struct BodyPart {
 		uint32 id; ///< Index of the part variant.
+		uint32 armor_id; ///< Index of the part variant when armour equipped.
 		Common::UString modelName; ///< Name of the model.
 		std::list<Graphics::Aurora::PLTHandle> plts; ///< Paletted textures.
 
@@ -268,6 +270,7 @@ private:
 	uint32 _phenotype;    ///< The creature's phenotype.
 
 	std::vector<BodyPart> _bodyParts; ///< The creature's body parts.
+	std::vector<Item> _equippedItems; ///< The creature's equipped items.
 
 	Common::UString _partsSuperModelName; ///< The supermodel used for parts-based creatures
 

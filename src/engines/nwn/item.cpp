@@ -48,7 +48,7 @@ namespace Engines {
 namespace NWN {
 
 Item::Item() : Object(kObjectTypeItem), _appearanceID(Aurora::kFieldIDInvalid),
-	_soundAppType(Aurora::kFieldIDInvalid), _locked(false), _model(0) {
+	_soundAppType(Aurora::kFieldIDInvalid), _model(0) {
 
 	_armorParts.resize(19);
 }
@@ -106,14 +106,6 @@ void Item::hide() {
 		_model->hide();
 }
 
-bool Item::isLocked() const {
-	return _locked;
-}
-
-void Item::setLocked(bool locked) {
-	_locked = locked;
-}
-
 void Item::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
 	//UTI def has a baseitem (index into baseitem.2da, determines equippable slots, model type)
 	//armour is 16, modeltype 3
@@ -166,6 +158,8 @@ void Item::loadProperties(const Aurora::GFFStruct &gff) {
 
 		_description = description.getString();
 	}
+
+	_baseitem = gff.getUint("BaseItem", _baseitem);
 
 	// Armor parts
 	loadArmorParts(gff);

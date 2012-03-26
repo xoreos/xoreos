@@ -53,9 +53,6 @@ public:
 	void show(); ///< Show the situated object's model.
 	void hide(); ///< Hide the situated object's model.
 
-	bool isLocked() const;               ///< Is the situated object locked?
-	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
-
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
 protected:
 	Common::UString _modelName; ///< The model's resource name.
@@ -63,7 +60,7 @@ protected:
 	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
 	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
 
-	bool _locked; ///< Is the situated object locked?
+	uint32 _baseitem; ///< The index within the baseitem 2DA.
 
 	Graphics::Aurora::Model *_model; ///< The situated object's model.
 

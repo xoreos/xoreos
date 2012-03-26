@@ -390,7 +390,10 @@ void Creature::loadModel() {
 		_model = loadModelObject(_partsSuperModelName);
 
 		//lookup armour models from equipped items
-		//getArmourModels();
+		//set bodyParts[i].armorID
+		//in getPartsModels use armorid if non-zero
+		//else use id
+		//getArmorModels();
 
 		for (uint i = 0; i < kBodyPartMAX; i++) {
 			if (_bodyParts[i].modelName.empty())
@@ -676,7 +679,7 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 	if(!gff.hasField("Equip_ItemList"))
 		return;
 
-	//_equipped.clear();
+	_equippedItems.clear();
 	const Aurora::GFFList &cEquipped = gff.getList("Equip_ItemList");
 	for (Aurora::GFFList::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
 		const Aurora::GFFStruct &cItem = **e;
@@ -695,10 +698,11 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 			Item* item = new Item();
 			item->load(uti->getTopLevel());
 
+			//add it to the equipped list
+			_equippedItems.push_back(*item);
+
 			delete uti;
 		}
-		//add it to the equipped list
-		//_eqipped.push_back(item);
     }
 }
 
