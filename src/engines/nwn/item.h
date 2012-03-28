@@ -75,6 +75,29 @@ protected:
 
 
 private:
+	/** Parts of an armor set. */
+	enum ArmorPartType {
+		kArmorPartHead       = 0,
+		kArmorPartNeck          ,
+		kArmorPartTorso         ,
+		kArmorPartPelvis        ,
+		kArmorPartBelt          ,
+		kArmorPartRightFoot     ,
+		kArmorPartLeftFoot      ,
+		kArmorPartRightShin     ,
+		kArmorPartLeftShin      ,
+		kArmorPartLeftThigh     ,
+		kArmorPartRightThigh    ,
+		kArmorPartRightFArm     ,
+		kArmorPartLeftFArm      ,
+		kArmorPartRightBicep    ,
+		kArmorPartLeftBicep     ,
+		kArmorPartRightShoul    ,
+		kArmorPartLeftShoul     ,
+		kArmorPartRightHand     ,
+		kArmorPartLeftHand      ,
+		kArmorPartMAX
+	};
 	void loadProperties(const Aurora::GFFStruct &gff);
 	void loadPortrait(const Aurora::GFFStruct &gff);
 	void loadArmorParts(const Aurora::GFFStruct &gff);

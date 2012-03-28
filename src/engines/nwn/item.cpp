@@ -50,7 +50,7 @@ namespace NWN {
 Item::Item() : Object(kObjectTypeItem), _appearanceID(Aurora::kFieldIDInvalid),
 	_soundAppType(Aurora::kFieldIDInvalid), _model(0) {
 
-	_armorParts.resize(19);
+	_armorParts.resize(kArmorPartMAX);
 }
 
 Item::~Item() {
@@ -206,8 +206,7 @@ static const char *kArmorPartFields[] = {
 
 void Item::loadArmorParts(const Aurora::GFFStruct &gff)
 {
-	//TODO: add an kArmorPart enumeration
-	for (uint i = 0; i < 19; i++)
+	for (uint i = 0; i < kArmorPartMAX; i++)
 		if (gff.hasField(kArmorPartFields[i])) {
 			_armorParts[i].id = gff.getUint(kArmorPartFields[i], _armorParts[i].id);
 		}
@@ -216,7 +215,8 @@ void Item::loadArmorParts(const Aurora::GFFStruct &gff)
 }
 
 bool Item::isArmor() {
-	return _armorParts[2].id > 0;
+	//TODO: this should really be based on the baseitem.2da
+	return _armorParts[kArmorPartTorso].id > 0;
 }
 
 int Item::getArmorPart(int index) {
