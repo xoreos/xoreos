@@ -319,6 +319,7 @@ private:
 	                        const Common::UString &phenoTypeAlt,
 	                        Common::UString &model);
 	void getPartModels(); ///< Construct all body part models' resource names.
+	void getArmorModels(); ///< Populate the armor info for body parts.
 
 	/** Finished those paletted textures. */
 	void finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts);

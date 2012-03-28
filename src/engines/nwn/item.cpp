@@ -210,7 +210,19 @@ void Item::loadArmorParts(const Aurora::GFFStruct &gff)
 	for (uint i = 0; i < 19; i++)
 		if (gff.hasField(kArmorPartFields[i])) {
 			_armorParts[i].id = gff.getUint(kArmorPartFields[i], _armorParts[i].id);
+			status("Item object \"%s\" sets amour for \"%s\" (%d)", _tag.c_str(), kArmorPartFields[i], _armorParts[i].id);
 		}
+		else
+			_armorParts[i].id = 0;
+}
+
+bool Item::isArmor() {
+	return _armorParts[2].id > 0;
+}
+
+int Item::getArmorPart(int index) {
+	status("Item \"%s\" sets armor for \"%s\" (%d)", _tag.c_str(), kArmorPartFields[index], _armorParts[index].id);
+	return _armorParts[index].id;
 }
 
 } // End of namespace NWN

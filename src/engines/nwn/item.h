@@ -54,6 +54,8 @@ public:
 	void hide(); ///< Hide the situated object's model.
 
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
+	bool isArmor();
+	int getArmorPart(int index);
 protected:
 	Common::UString _modelName; ///< The model's resource name.
 
@@ -70,7 +72,6 @@ protected:
 	//virtual void loadObject(const Aurora::GFFStruct &gff) = 0;
 	/** Load appearance-specific properties. */
 	//virtual void loadAppearance() = 0;
-	//virtual void loadArmorParts() = 0;
 
 
 private:

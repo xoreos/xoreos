@@ -290,7 +290,7 @@ void Creature::constructModelName(const Common::UString &type, uint32 id,
 
 	model = Common::UString::sprintf("p%s%s%s_%s%03d",
 	        gender.c_str(), race.c_str(), phenoTypeAlt.c_str(), type.c_str(), id);
-
+	status("Expecting part model %s", model.c_str());
 	if (!ResMan.hasResource(model, Aurora::kFileTypeMDL))
 		model.clear();
 }
@@ -351,9 +351,26 @@ void Creature::getPartModels() {
 		                       genderChar.c_str(), raceChar.c_str(), phenoAltChar.c_str());
 
 	for (uint i = 0; i < kBodyPartMAX; i++)
-		constructModelName(kBodyPartModels[i], _bodyParts[i].id,
+		constructModelName(kBodyPartModels[i], _bodyParts[i].armor_id > 0 ? _bodyParts[i].armor_id : _bodyParts[i].id,
 		                   genderChar, raceChar, phenoChar, phenoAltChar,
 		                   _bodyParts[i].modelName);
+}
+
+void Creature::getArmorModels() {
+    for(int j = 0; j < _equippedItems.size(); j++)
+    {
+		status("XX Checking item %s (%d of %d)", _equippedItems[j].getTag().c_str(), j, _equippedItems.size());
+    }
+	for (std::vector<Item>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
+		Item item = *e;
+		status("Checking item %s", item.getTag().c_str());
+
+		for (uint i = 0; i < kBodyPartMAX; i++) {
+			int id = item.getArmorPart(i);
+			if (id > 0)
+			_bodyParts[i].armor_id = id;
+		}
+	}
 }
 
 void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
@@ -386,6 +403,7 @@ void Creature::loadModel() {
 		_portrait = appearance.getString("PORTRAIT");
 
 	if (appearance.getString("MODELTYPE") == "P") {
+		getArmorModels();
 		getPartModels();
 		_model = loadModelObject(_partsSuperModelName);
 
@@ -393,7 +411,6 @@ void Creature::loadModel() {
 		//set bodyParts[i].armorID
 		//in getPartsModels use armorid if non-zero
 		//else use id
-		//getArmorModels();
 
 		for (uint i = 0; i < kBodyPartMAX; i++) {
 			if (_bodyParts[i].modelName.empty())
@@ -509,6 +526,7 @@ void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	Common::vector2orientation(bearingX, bearingY, o[0], o[1], o[2]);
 
 	setOrientation(o[0], o[1], o[2]);
+    status("Loaded %d items for %s", _equippedItems.size(), _tag.c_str());
 }
 
 static const char *kBodyPartFields[] = {
@@ -646,8 +664,10 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_phenotype    = gff.getUint("Phenotype"      , _phenotype);
 
 	// Body parts
-	for (uint i = 0; i < kBodyPartMAX; i++)
+	for (uint i = 0; i < kBodyPartMAX; i++) {
 		_bodyParts[i].id = gff.getUint(kBodyPartFields[i], _bodyParts[i].id);
+		_bodyParts[i].armor_id = 0;
+	}
 
 	// Colors
 	_colorSkin    = gff.getUint("Color_Skin", _colorSkin);
@@ -679,7 +699,7 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 	if(!gff.hasField("Equip_ItemList"))
 		return;
 
-	_equippedItems.clear();
+    //_equippedItems.clear();
 	const Aurora::GFFList &cEquipped = gff.getList("Equip_ItemList");
 	for (Aurora::GFFList::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
 		const Aurora::GFFStruct &cItem = **e;
@@ -703,7 +723,8 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 
 			delete uti;
 		}
-    }
+	}
+
 }
 
 void Creature::loadClasses(const Aurora::GFFStruct &gff,
