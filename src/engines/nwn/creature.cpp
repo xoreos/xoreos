@@ -290,7 +290,7 @@ void Creature::constructModelName(const Common::UString &type, uint32 id,
 
 	model = Common::UString::sprintf("p%s%s%s_%s%03d",
 	        gender.c_str(), race.c_str(), phenoTypeAlt.c_str(), type.c_str(), id);
-	status("Expecting part model %s", model.c_str());
+
 	if (!ResMan.hasResource(model, Aurora::kFileTypeMDL))
 		model.clear();
 }
@@ -357,13 +357,8 @@ void Creature::getPartModels() {
 }
 
 void Creature::getArmorModels() {
-    for(int j = 0; j < _equippedItems.size(); j++)
-    {
-		status("XX Checking item %s (%d of %d)", _equippedItems[j].getTag().c_str(), j, _equippedItems.size());
-    }
 	for (std::vector<Item>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
 		Item item = *e;
-		status("Checking item %s", item.getTag().c_str());
 
 		for (uint i = 0; i < kBodyPartMAX; i++) {
 			int id = item.getArmorPart(i);
@@ -407,11 +402,6 @@ void Creature::loadModel() {
 		getPartModels();
 		_model = loadModelObject(_partsSuperModelName);
 
-		//lookup armour models from equipped items
-		//set bodyParts[i].armorID
-		//in getPartsModels use armorid if non-zero
-		//else use id
-
 		for (uint i = 0; i < kBodyPartMAX; i++) {
 			if (_bodyParts[i].modelName.empty())
 				continue;
@@ -424,7 +414,6 @@ void Creature::loadModel() {
 				continue;
 
 			// Add the loaded model to the appropriate part node
-            // add in the armour model if any, else body model
 			Graphics::Aurora::ModelNode *part_node = _model->getNode(kBodyPartNodes[i]);
 			if(part_node)
 				part_node->addChild(part_model);
@@ -526,7 +515,6 @@ void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	Common::vector2orientation(bearingX, bearingY, o[0], o[1], o[2]);
 
 	setOrientation(o[0], o[1], o[2]);
-    status("Loaded %d items for %s", _equippedItems.size(), _tag.c_str());
 }
 
 static const char *kBodyPartFields[] = {
@@ -699,7 +687,6 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 	if(!gff.hasField("Equip_ItemList"))
 		return;
 
-    //_equippedItems.clear();
 	const Aurora::GFFList &cEquipped = gff.getList("Equip_ItemList");
 	for (Aurora::GFFList::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
 		const Aurora::GFFStruct &cItem = **e;
