@@ -56,6 +56,15 @@ public:
 	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
 	bool isArmor();
 	int getArmorPart(int index);
+
+	//TODO: use _colors array like plt file
+	uint32 _colorMetal1; ///< The 1. color of the creature's metal armor.
+	uint32 _colorMetal2; ///< The 2. color of the creature's metal armor.
+	uint32 _colorLeather1; ///< The 1. color of the creature's leather armor.
+	uint32 _colorLeather2; ///< The 2. color of the creature's leather armor.
+	uint32 _colorCloth1; ///< The 1. color of the creature's cloth armor.
+	uint32 _colorCloth2; ///< The 2. color of the creature's cloth armor.
+
 protected:
 	Common::UString _modelName; ///< The model's resource name.
 

@@ -144,9 +144,9 @@ void Item::loadProperties(const Aurora::GFFStruct &gff) {
 	_tag = gff.getString("Tag", _tag);
 
 	// Name
-	if (gff.hasField("LocName")) {
+	if (gff.hasField("LocalizedName")) {
 		Aurora::LocString name;
-		gff.getLocString("LocName", name);
+		gff.getLocString("LocalizedName", name);
 
 		_name = name.getString();
 	}
@@ -159,7 +159,16 @@ void Item::loadProperties(const Aurora::GFFStruct &gff) {
 		_description = description.getString();
 	}
 
+    //this is an index into basitem.2da which contains inventory slot info
 	_baseitem = gff.getUint("BaseItem", _baseitem);
+
+    //TODO: are these armor only?
+	_colorMetal1 = gff.getUint("Metal1Color", _colorMetal1);
+	_colorMetal2  = gff.getUint("Metal2Color", _colorMetal2);
+	_colorLeather1 = gff.getUint("Leather1Color", _colorLeather1);
+	_colorLeather2 = gff.getUint("Leather2Color", _colorLeather2);
+	_colorCloth1 = gff.getUint("Cloth1Color", _colorCloth1);
+	_colorCloth2 = gff.getUint("Cloth2Color", _colorCloth2);
 
 	// Armor parts
 	loadArmorParts(gff);

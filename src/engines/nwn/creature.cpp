@@ -121,6 +121,13 @@ void Creature::init() {
 	_colorTattoo1 = Aurora::kFieldIDInvalid;
 	_colorTattoo2 = Aurora::kFieldIDInvalid;
 
+	_colorMetal1 = Aurora::kFieldIDInvalid;
+	_colorMetal2 = Aurora::kFieldIDInvalid;
+	_colorLeather1 = Aurora::kFieldIDInvalid;
+	_colorLeather2 = Aurora::kFieldIDInvalid;
+	_colorCloth1 = Aurora::kFieldIDInvalid;
+	_colorCloth2 = Aurora::kFieldIDInvalid;
+
 	_master = 0;
 
 	_isCommandable = true;
@@ -359,12 +366,24 @@ void Creature::getPartModels() {
 void Creature::getArmorModels() {
 	for (std::vector<Item>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
 		Item item = *e;
+		if (!item.isArmor()) {
+			continue;
+		}
+		status("Equipping armour \"%s\" on model \"%s\"", item.getName().c_str(), _tag.c_str());
 
+		//set the body part models
 		for (uint i = 0; i < kBodyPartMAX; i++) {
 			int id = item.getArmorPart(i);
 			if (id > 0)
 			_bodyParts[i].armor_id = id;
 		}
+		//set the armour color channels
+		_colorMetal1 = item._colorMetal1;
+		_colorMetal2 = item._colorMetal2;
+		_colorLeather1 = item._colorLeather1;
+		_colorLeather2 = item._colorLeather2;
+		_colorCloth1 = item._colorCloth1;
+		_colorCloth2 = item._colorCloth2;
 	}
 }
 
@@ -378,6 +397,12 @@ void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
 		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerHair   , _colorHair);
 		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo1, _colorTattoo1);
 		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo2, _colorTattoo2);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal1, _colorMetal1);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal2, _colorMetal2);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather1, _colorLeather1);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather2, _colorLeather2);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth1, _colorCloth1);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth2, _colorCloth2);
 
 		plt.rebuild();
 	}

@@ -279,6 +279,13 @@ private:
 	uint32 _colorTattoo1; ///< The 1. color of the creature's tattoo.
 	uint32 _colorTattoo2; ///< The 2. color of the creature's tattoo.
 
+	uint32 _colorMetal1; ///< The 1. color of the creature's metal armor.
+	uint32 _colorMetal2; ///< The 2. color of the creature's metal armor.
+	uint32 _colorLeather1; ///< The 1. color of the creature's leather armor.
+	uint32 _colorLeather2; ///< The 2. color of the creature's leather armor.
+	uint32 _colorCloth1; ///< The 1. color of the creature's cloth armor.
+	uint32 _colorCloth2; ///< The 2. color of the creature's cloth armor.
+
 	Creature *_master;                ///< The creature's master.
 	std::list<Associate> _associates; ///< The creature's associates.
 
