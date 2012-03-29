@@ -49,6 +49,7 @@
 #include "engines/aurora/model.h"
 
 #include "engines/nwn/creature.h"
+#include "engines/nwn/item.h"
 
 #include "engines/nwn/gui/widgets/tooltip.h"
 
@@ -119,6 +120,13 @@ void Creature::init() {
 	_colorHair    = Aurora::kFieldIDInvalid;
 	_colorTattoo1 = Aurora::kFieldIDInvalid;
 	_colorTattoo2 = Aurora::kFieldIDInvalid;
+
+	_colorMetal1 = Aurora::kFieldIDInvalid;
+	_colorMetal2 = Aurora::kFieldIDInvalid;
+	_colorLeather1 = Aurora::kFieldIDInvalid;
+	_colorLeather2 = Aurora::kFieldIDInvalid;
+	_colorCloth1 = Aurora::kFieldIDInvalid;
+	_colorCloth2 = Aurora::kFieldIDInvalid;
 
 	_master = 0;
 
@@ -350,9 +358,33 @@ void Creature::getPartModels() {
 		                       genderChar.c_str(), raceChar.c_str(), phenoAltChar.c_str());
 
 	for (uint i = 0; i < kBodyPartMAX; i++)
-		constructModelName(kBodyPartModels[i], _bodyParts[i].id,
+		constructModelName(kBodyPartModels[i], _bodyParts[i].armor_id > 0 ? _bodyParts[i].armor_id : _bodyParts[i].id,
 		                   genderChar, raceChar, phenoChar, phenoAltChar,
 		                   _bodyParts[i].modelName);
+}
+
+void Creature::getArmorModels() {
+	for (std::vector<Item>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
+		Item item = *e;
+		if (!item.isArmor()) {
+			continue;
+		}
+		status("Equipping armour \"%s\" on model \"%s\"", item.getName().c_str(), _tag.c_str());
+
+		//set the body part models
+		for (uint i = 0; i < kBodyPartMAX; i++) {
+			int id = item.getArmorPart(i);
+			if (id > 0)
+			_bodyParts[i].armor_id = id;
+		}
+		//set the armour color channels
+		_colorMetal1 = item._colorMetal1;
+		_colorMetal2 = item._colorMetal2;
+		_colorLeather1 = item._colorLeather1;
+		_colorLeather2 = item._colorLeather2;
+		_colorCloth1 = item._colorCloth1;
+		_colorCloth2 = item._colorCloth2;
+	}
 }
 
 void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
@@ -365,6 +397,12 @@ void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
 		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerHair   , _colorHair);
 		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo1, _colorTattoo1);
 		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo2, _colorTattoo2);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal1, _colorMetal1);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal2, _colorMetal2);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather1, _colorLeather1);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather2, _colorLeather2);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth1, _colorCloth1);
+		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth2, _colorCloth2);
 
 		plt.rebuild();
 	}
@@ -385,6 +423,7 @@ void Creature::loadModel() {
 		_portrait = appearance.getString("PORTRAIT");
 
 	if (appearance.getString("MODELTYPE") == "P") {
+		getArmorModels();
 		getPartModels();
 		_model = loadModelObject(_partsSuperModelName);
 
@@ -638,14 +677,19 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_phenotype    = gff.getUint("Phenotype"      , _phenotype);
 
 	// Body parts
-	for (uint i = 0; i < kBodyPartMAX; i++)
+	for (uint i = 0; i < kBodyPartMAX; i++) {
 		_bodyParts[i].id = gff.getUint(kBodyPartFields[i], _bodyParts[i].id);
+		_bodyParts[i].armor_id = 0;
+	}
 
 	// Colors
 	_colorSkin    = gff.getUint("Color_Skin", _colorSkin);
 	_colorHair    = gff.getUint("Color_Hair", _colorHair);
 	_colorTattoo1 = gff.getUint("Color_Tattoo1", _colorTattoo1);
 	_colorTattoo2 = gff.getUint("Color_Tattoo2", _colorTattoo2);
+
+	//Equipped Items
+	loadEquippedItems(gff);
 
 	// Scripts
 	readScripts(gff);
@@ -662,6 +706,37 @@ void Creature::loadPortrait(const Aurora::GFFStruct &gff, Common::UString &portr
 	}
 
 	portrait = gff.getString("Portrait", portrait);
+}
+
+void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
+	if(!gff.hasField("Equip_ItemList"))
+		return;
+
+	const Aurora::GFFList &cEquipped = gff.getList("Equip_ItemList");
+	for (Aurora::GFFList::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
+		const Aurora::GFFStruct &cItem = **e;
+		Common::UString itemref = cItem.getString("EquippedRes");
+
+		Aurora::GFFFile *uti = 0;
+		if (!itemref.empty()) {
+			try {
+				uti = new Aurora::GFFFile(itemref, Aurora::kFileTypeUTI, MKID_BE('UTI '));
+			} catch (...) {
+				delete uti;
+			}
+		}
+
+		if(uti) {
+			Item* item = new Item();
+			item->load(uti->getTopLevel());
+
+			//add it to the equipped list
+			_equippedItems.push_back(*item);
+
+			delete uti;
+		}
+	}
+
 }
 
 void Creature::loadClasses(const Aurora::GFFStruct &gff,

@@ -47,6 +47,7 @@ namespace Engines {
 namespace NWN {
 
 class Tooltip;
+class Item;
 
 class Creature : public Object {
 public:
@@ -223,6 +224,7 @@ private:
 	/** A part of a creature body. */
 	struct BodyPart {
 		uint32 id; ///< Index of the part variant.
+		uint32 armor_id; ///< Index of the part variant when armour equipped.
 		Common::UString modelName; ///< Name of the model.
 		std::list<Graphics::Aurora::PLTHandle> plts; ///< Paletted textures.
 
@@ -268,6 +270,7 @@ private:
 	uint32 _phenotype;    ///< The creature's phenotype.
 
 	std::vector<BodyPart> _bodyParts; ///< The creature's body parts.
+	std::vector<Item> _equippedItems; ///< The creature's equipped items.
 
 	Common::UString _partsSuperModelName; ///< The supermodel used for parts-based creatures
 
@@ -275,6 +278,13 @@ private:
 	uint32 _colorHair;    ///< The color of the creature's hair.
 	uint32 _colorTattoo1; ///< The 1. color of the creature's tattoo.
 	uint32 _colorTattoo2; ///< The 2. color of the creature's tattoo.
+
+	uint32 _colorMetal1; ///< The 1. color of the creature's metal armor.
+	uint32 _colorMetal2; ///< The 2. color of the creature's metal armor.
+	uint32 _colorLeather1; ///< The 1. color of the creature's leather armor.
+	uint32 _colorLeather2; ///< The 2. color of the creature's leather armor.
+	uint32 _colorCloth1; ///< The 1. color of the creature's cloth armor.
+	uint32 _colorCloth2; ///< The 2. color of the creature's cloth armor.
 
 	Creature *_master;                ///< The creature's master.
 	std::list<Associate> _associates; ///< The creature's associates.
@@ -306,6 +316,8 @@ private:
 	static void loadClasses (const Aurora::GFFStruct &gff,
 	                         std::vector<Class> &classes, uint8 &hitDice);
 
+	void loadEquippedItems(const Aurora::GFFStruct &gff);
+
 	/** Construct the resource name of a body part model. */
 	void constructModelName(const Common::UString &type, uint32 id,
 	                        const Common::UString &gender,
@@ -314,6 +326,7 @@ private:
 	                        const Common::UString &phenoTypeAlt,
 	                        Common::UString &model);
 	void getPartModels(); ///< Construct all body part models' resource names.
+	void getArmorModels(); ///< Populate the armor info for body parts.
 
 	/** Finished those paletted textures. */
 	void finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts);
