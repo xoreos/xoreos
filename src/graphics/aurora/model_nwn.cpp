@@ -186,7 +186,7 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 		loadBinary(ctx);
 
 	if(!_superModelName.empty() && _superModelName != "NULL")
-		_supermodel = new Model_NWN(_superModelName, type, texture);
+		_supermodel = new Model_NWN(_superModelName, type, "");
 
 	finalize();
 }
