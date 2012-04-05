@@ -72,9 +72,13 @@ public:
 	/** Get the specified node, from the current state. */
 //	const AnimNode *getNode(const Common::UString &node) const;
 
-protected:
 	typedef std::list<AnimNode *> NodeList;
 	typedef std::map<Common::UString, AnimNode *, Common::UString::iless> NodeMap;
+		NodeList nodeList; ///< The nodes within the state.
+		NodeMap  nodeMap;  ///< The nodes within the state, indexed by name.
+
+		NodeList rootNodes; ///< The nodes in the state without a parent.
+protected:
 
 	Common::UString _name; ///< The model's name.
     float _length;

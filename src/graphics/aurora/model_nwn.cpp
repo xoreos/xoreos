@@ -42,6 +42,7 @@
 
 #include "graphics/aurora/model_nwn.h"
 #include "graphics/aurora/animation.h"
+#include "graphics/aurora/animnode.h"
 
 using Common::kDebugGraphics;
 
@@ -469,17 +470,14 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 		_defaultAnimations.push_back(anim);
 	}
 	debugC(4, kDebugGraphics, "Loaded animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
-/*
+
 	for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
 		  n != ctx.nodes.end(); ++n) {
-
-			anim->nodeList.push_back(*n);
-			anim->nodeMap.insert(std::make_pair((*n)->getName(), *n));
-
-		if (!(*n)->getParent())
-			anim->rootNodes.push_back(*n);
+			AnimNode* animnode = new AnimNode(*n);
+			anim->nodeList.push_back(animnode);
+			anim->nodeMap.insert(std::make_pair(animnode->getName(), animnode));
 	}
-*/
+
 }
 
 
