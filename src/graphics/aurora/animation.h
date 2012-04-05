@@ -86,7 +86,7 @@ public:
     void setTransTime(float transtime) {_transtime=transtime;}
     void setName(Common::UString& name) {_name=name;}
 
-    void update(Model *model, float elapsedTime);
+    void update(Model *model, float lastFrame, float nextFrame);
 /*
 	// General loading helpers
 
