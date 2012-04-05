@@ -132,12 +132,12 @@ public:
     /** play a named animation */
     void playAnimation(const Common::UString &anim);
     /** select the default idle animation */
-    void playDefaultAnimation();
+    void selectDefaultAnimation();
 
 	// Renderable
 	void calculateDistance();
 	void render(RenderPass pass);
-
+	void advanceTime(float dt);
 
 protected:
 	typedef std::list<ModelNode *> NodeList;
@@ -207,7 +207,7 @@ protected:
 private:
 	bool _needBuild[kRenderPassAll];
 	bool _drawBound;
-    long _startTime; ///< Track animation beginning
+	float _elapsedTime; ///< Track animation duration
 
 	ListID _lists; ///< OpenGL display lists for the model
 
@@ -220,7 +220,7 @@ private:
 	void createAbsolutePosition();
 
 	void doDrawBound();
-	void manageAnimations();
+	void manageAnimations(float dt);
 
 
 public:

@@ -62,6 +62,8 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 Model::~Model() {
 	hide();
 
+	//this is possibly shared with other models
+	//TODO: let the model cache delete it instead
 	delete _supermodel;
 
 	if (_lists != 0)
@@ -137,18 +139,18 @@ void Model::drawBound(bool enabled) {
 }
 
 void Model::playAnimation(const Common::UString &anim) {
-    debugC(4, kDebugGraphics, "Playing animation \"%s\" in model \"%s\"", anim.c_str(), getName().c_str());
-    Animation* nextanim = getAnimation(anim);
-    _nextAnimation = nextanim;
+	debugC(4, kDebugGraphics, "Playing animation \"%s\" in model \"%s\"", anim.c_str(), getName().c_str());
+	Animation* nextanim = getAnimation(anim);
+	_nextAnimation = nextanim;
 }
 
-void Model::playDefaultAnimation() {
-    //TODO: select a default animation
-    if(_defaultAnimations.empty())
-        return;
+void Model::selectDefaultAnimation() {
+	//TODO: select a default animation
+	if(_defaultAnimations.empty())
+		return;
 
-    debugC(4, kDebugGraphics, "Playing default animation in model \"%s\"", getName().c_str());
-    _currentAnimation = _defaultAnimations[0];
+	debugC(4, kDebugGraphics, "Playing default animation in model \"%s\"", getName().c_str());
+	_currentAnimation = _defaultAnimations[0];
 }
 
 void Model::getPosition(float &x, float &y, float &z) const {
@@ -414,36 +416,45 @@ bool Model::buildList(RenderPass pass) {
 	return true;
 }
 
-void Model::manageAnimations() {
-    //TODO: all this animation management needs to be refactored
-    if(_nextAnimation)
-    {
-        // note that this interrupts the current animation!
-        _currentAnimation = _nextAnimation;
-        _nextAnimation = 0;
-        _startTime = SDL_GetTicks();
-    }
+void Model::advanceTime(float dt)
+{
+	manageAnimations(dt);
+}
 
-    // if there is no current animation,
-    // select a default animation
-    if(!_currentAnimation)
-        playDefaultAnimation();
+void Model::manageAnimations(float dt) {
+	float lastFrame = _elapsedTime;
+	float nextFrame = _elapsedTime + dt;
+	_elapsedTime = nextFrame;
 
-    long time = SDL_GetTicks();
-    //really the dt should be coming from outside the render function
-    //otherwise passes can end up out of sync
-    float elapsedTime = (time-_startTime) / 1000.0f;
+	// start a new animation if scheduled
+	if(_nextAnimation)
+	{
+		// note that this interrupts the current animation!
+		_currentAnimation = _nextAnimation;
+		_nextAnimation = 0;
+		_elapsedTime = 0;
+		lastFrame = 0;
+		nextFrame = 0;
+	}
 
-    // if the current animation has finished,
-    // start a default animation
-    if(_currentAnimation && elapsedTime >= _currentAnimation->getLength())
-    {
-        //debug output
-        playDefaultAnimation();
-        elapsedTime = 0.0f;
-    }
+	// if there is no current animation,
+	// select a default animation
+	if(!_currentAnimation)
+		selectDefaultAnimation();
 
-    _currentAnimation->update(this, elapsedTime);
+	// if the current animation has finished,
+	// start a default animation
+	if(_currentAnimation && nextFrame >= _currentAnimation->getLength())
+	{
+		//debug output
+		selectDefaultAnimation();
+		_elapsedTime = 0.0f;
+		lastFrame = 0;
+		nextFrame = 0;
+	}
+
+	if(_currentAnimation)
+		_currentAnimation->update(this, lastFrame, nextFrame);
 }
 
 void Model::render(RenderPass pass) {
@@ -455,8 +466,6 @@ void Model::render(RenderPass pass) {
 		Model::render(kRenderPassTransparent);
 		return;
 	}
-
-    manageAnimations();
 
 	// Render
 	buildList(pass);

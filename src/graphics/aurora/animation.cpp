@@ -56,11 +56,14 @@ const Common::UString &Animation::getName() const {
 	return _name;
 }
 
-void Animation::update(Model *model, float elapsedTime)
+void Animation::update(Model *model, float lastFrame, float nextFrame)
 {
-    //TODO: loop through animnodes and have them update modelnodes
-    //debugC(4, kDebugGraphics, "Playing animation in model \"%s\" @ time %f", model->getName().c_str(), elapsedTime);
-    //also need to fire off associated events
+	//TODO: loop through animnodes and have them update modelnodes
+	debugC(4, kDebugGraphics, "Playing animation in model \"%s\" @ time %f", model->getName().c_str(), lastFrame);
+	//also need to fire off associated events
+	//for event in _events event->fire()
+	//for animnode in nodes
+	//animnode.update(model, lastframe, nextframe)
 }
 
 } // End of namespace Aurora

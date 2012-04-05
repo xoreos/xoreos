@@ -440,6 +440,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 	readArrayDef(*ctx.mdl, eventOffset, eventCount);
 
 	// Associated events
+	// TODO: save in array, then pass to animation class
 	ctx.mdl->seekTo(ctx.offModelData + eventOffset);
 	for (uint32 i = 0; i < eventCount; i++) {
 		float after = ctx.mdl->readIEEEFloatLE();
@@ -454,31 +455,31 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	rootNode->load(ctx);
 
-    //we read this in, but what do we do with it??
-    //ah, we call addState, interesting
-    //need to look at interaction with placeable states?
-    Animation* anim = new Animation();
-    anim->setName(ctx.state->name);
-    anim->setLength(animLength);
-    anim->setTransTime(transTime);
-    _animationMap.insert(std::make_pair(ctx.state->name, anim));
-    //TODO: if animation name contains "pause" or "hturn" it's a default (idle) animation
-    if(ctx.state->name.contains("pause")) {
-        debugC(4, kDebugGraphics, "Setting animation \"%s\" as default", ctx.state->name.c_str());
-        _defaultAnimations.push_back(anim);
-    }
-    debugC(4, kDebugGraphics, "Loaded animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
+	//we read this in, but what do we do with it??
+	//ah, we call addState, interesting
+	//need to look at interaction with placeable states?
+	Animation* anim = new Animation();
+	anim->setName(ctx.state->name);
+	anim->setLength(animLength);
+	anim->setTransTime(transTime);
+	_animationMap.insert(std::make_pair(ctx.state->name, anim));
+	//TODO: if animation name contains "pause" or "hturn" it's a default (idle) animation
+	if(ctx.state->name.contains("pause")) {
+		debugC(4, kDebugGraphics, "Setting animation \"%s\" as default", ctx.state->name.c_str());
+		_defaultAnimations.push_back(anim);
+	}
+	debugC(4, kDebugGraphics, "Loaded animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
+/*
+	for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
+		  n != ctx.nodes.end(); ++n) {
 
-	//for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
-	//     n != ctx.nodes.end(); ++n) {
+			anim->nodeList.push_back(*n);
+			anim->nodeMap.insert(std::make_pair((*n)->getName(), *n));
 
-//		anim->nodeList.push_back(*n);
-//		anim->nodeMap.insert(std::make_pair((*n)->getName(), *n));
-
-//		if (!(*n)->getParent())
-//			anim->rootNodes.push_back(*n);
-//	}
-
+		if (!(*n)->getParent())
+			anim->rootNodes.push_back(*n);
+	}
+*/
 }
 
 
