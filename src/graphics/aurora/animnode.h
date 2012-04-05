@@ -46,18 +46,19 @@ namespace Graphics {
 
 namespace Aurora {
 
-class Animation;
+class ModelNode;
 
 class AnimNode {
 public:
-	AnimNode(Animation &anim);
+//	AnimNode(Animation &anim);
+	AnimNode(ModelNode* modelnode);
 	~AnimNode();
 
 	/** Get the node's name. */
 	const Common::UString &getName() const;
 
 protected:
-	Animation *_animation; ///< The animation this node belongs to.
+//	Animation *_animation; ///< The animation this node belongs to.
 
 	AnimNode *_parent;               ///< The node's parent.
 	std::list<AnimNode *> _children; ///< The node's children.

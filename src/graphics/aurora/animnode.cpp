@@ -40,9 +40,11 @@ namespace Graphics {
 namespace Aurora {
 
 
-AnimNode::AnimNode(Animation &animation) :
-	_animation(&animation), _parent(0)
-	{
+AnimNode::AnimNode(ModelNode *modelnode) :
+	_parent(0) {
+	// actual data is loaded as a generic modelnode
+	if (modelnode)
+		_name = modelnode->getName();
 }
 
 AnimNode::~AnimNode() {
