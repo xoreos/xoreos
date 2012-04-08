@@ -830,31 +830,48 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 			// TODO: Controller row count = 0xFFFF
 			continue;
 
-		if        (type == kControllerTypePosition) {
+		if (type == kControllerTypePosition) {
 			if (columnCount != 3)
 				throw Common::Exception("Position controller with %d values", columnCount);
+			for(int r = 0; r < rowCount; r++) {
+				PositionKeyFrame p;
+				p.time = data[timeIndex + r];
+				p.x = data[dataIndex + (r * columnCount) + 0];
+				p.y = data[dataIndex + (r * columnCount) + 1];
+				p.z = data[dataIndex + (r * columnCount) + 2];
+				_positionFrames.push_back(p);
 
-			// Starting position
-			if (data[timeIndex + 0] == 0.0) {
-				_position[0] = data[dataIndex + 0];
-				_position[1] = data[dataIndex + 1];
-				_position[2] = data[dataIndex + 2];
-
-				ctx.hasPosition = true;
+				// Starting position
+				if (p.time == 0.0) {
+					_position[0] = p.x;
+					_position[1] = p.y;
+					_position[2] = p.z;
+					ctx.hasPosition = true;
+				}
 			}
 
 		} else if (type == kControllerTypeOrientation) {
 			if (columnCount != 4)
 				throw Common::Exception("Orientation controller with %d values", columnCount);
 
-			// Starting orientation
-			if (data[timeIndex + 0] == 0.0) {
-				_orientation[0] = data[dataIndex + 0];
-				_orientation[1] = data[dataIndex + 1];
-				_orientation[2] = data[dataIndex + 2];
-				_orientation[3] = Common::rad2deg(acos(data[dataIndex + 3]) * 2.0);
+			for(int r = 0; r < rowCount; r++) {
+				QuaternionKeyFrame q;
+				q.time = data[timeIndex + r];
+				q.x = data[dataIndex + (r * columnCount) + 0];
+				q.y = data[dataIndex + (r * columnCount) + 1];
+				q.z = data[dataIndex + (r * columnCount) + 2];
+				q.q = data[dataIndex + (r * columnCount) + 3];
+				_orientationFrames.push_back(p);
+				// Starting orientation
+				// TODO: handle animation orientation correctly
+				if (data[timeIndex + 0] == 0.0) {
+					_orientation[0] = data[dataIndex + 0];
+					_orientation[1] = data[dataIndex + 1];
+					_orientation[2] = data[dataIndex + 2];
+					_orientation[3] = Common::rad2deg(acos(data[dataIndex + 3]) * 2.0);
 
-				ctx.hasOrientation = true;
+					ctx.hasOrientation = true;
+				}
 			}
 
 		} else if (type == kControllerTypeAlpha) {
