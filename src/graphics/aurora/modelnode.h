@@ -48,6 +48,23 @@ namespace Aurora {
 
 class Model;
 
+struct PositionKeyFrame
+{
+	float time;
+	float x;
+	float y;
+	float z;
+};
+
+struct QuaternionKeyFrame
+{
+	float time;
+	float x;
+	float y;
+	float z;
+	float q;
+};
+
 class ModelNode {
 public:
 	ModelNode(Model &model);
@@ -119,6 +136,9 @@ protected:
 	float _position   [3]; ///< Position of the node.
 	float _rotation   [3]; ///< Node rotation.
 	float _orientation[4]; ///< Orientation of the node.
+
+	std::vector<PositionKeyFrame> _positionFrames; ///< Keyframes for position animation
+	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation
 
 	/** Position of the node after translate/rotate. */
 	Common::TransformationMatrix _absolutePosition;
