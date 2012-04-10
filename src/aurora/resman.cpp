@@ -197,7 +197,7 @@ Common::UString ResourceManager::findArchive(const Common::UString &file,
 
 	Common::UString realName;
 	for (DirectoryList::const_iterator dir = dirs.begin(); dir != dirs.end(); ++dir) {
-		Common::UString escapedPath = Common::FilePath::normalize(*dir) + "/" + escapedFile;
+		Common::UString escapedPath = Common::FilePath::escapeStringLiteral(Common::FilePath::normalize(*dir)) + "/" + escapedFile;
 		if (!(realName = nameMatch.findFirst(escapedPath, true)).empty())
 			return realName;
 	}
