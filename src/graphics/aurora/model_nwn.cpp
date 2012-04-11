@@ -169,7 +169,7 @@ bool Model_NWN::ParserContext::findNode(const Common::UString &name,
 
 
 Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
-                     const Common::UString &texture) :
+                     const Common::UString &texture, std::map<Common::UString, Model*, Common::UString::iless> *modelCache) :
 	Model(type) {
 
 	if (_type == kModelTypeGUIFront) {
@@ -187,8 +187,14 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 	else
 		loadBinary(ctx);
 
-	if(!_superModelName.empty() && _superModelName != "NULL")
-		_supermodel = new Model_NWN(_superModelName, type, "");
+	if(!_superModelName.empty() && _superModelName != "NULL") {
+		if((*modelCache).count(_superModelName)>0)
+			_supermodel = (*modelCache)[_superModelName];
+		else {
+			_supermodel = new Model_NWN(_superModelName, type, "", modelCache);
+			(*modelCache)[_superModelName] = _supermodel;
+		}
+	}
 
 	finalize();
 }
@@ -861,7 +867,7 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 				q.y = data[dataIndex + (r * columnCount) + 1];
 				q.z = data[dataIndex + (r * columnCount) + 2];
 				q.q = data[dataIndex + (r * columnCount) + 3];
-				_orientationFrames.push_back(p);
+				_orientationFrames.push_back(q);
 				// Starting orientation
 				// TODO: handle animation orientation correctly
 				if (data[timeIndex + 0] == 0.0) {

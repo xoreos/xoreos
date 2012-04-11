@@ -62,10 +62,6 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 Model::~Model() {
 	hide();
 
-	//this is possibly shared with other models
-	//TODO: let the model cache delete it instead
-	delete _supermodel;
-
 	if (_lists != 0)
 		GfxMan.abandon(_lists, kRenderPassAll);
 
