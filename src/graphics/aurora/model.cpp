@@ -140,8 +140,32 @@ void Model::playAnimation(const Common::UString &anim) {
 	_nextAnimation = nextanim;
 }
 
+
+static const char *kDefaultAnims[] = {
+	"pause1",
+	"pause2",
+	"pausesh",
+	"pausebrd",
+	"hturnl",
+	"hturnr",
+	"cpause1",
+	"chturnl",
+	"chturnr"
+};
+
+void Model::populateDefaultAnimations() {
+	_defaultAnimations.clear();
+	Animation *anim;
+	//TODO: there's probably a cleaner way to do this, but its late
+	for(int i = 0; i < 9; i++) {
+		anim = getAnimation(kDefaultAnims[i]);
+		if(anim)
+			_defaultAnimations.push_back(anim);
+	}
+}
+
 void Model::selectDefaultAnimation() {
-	//TODO: select a default animation
+	//TODO: select a default animation randomly instead of just the first one
 	if(_defaultAnimations.empty())
 		return;
 
