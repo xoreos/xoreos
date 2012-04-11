@@ -50,13 +50,14 @@ class ModelNode;
 
 class AnimNode {
 public:
-//	AnimNode(Animation &anim);
 	AnimNode(ModelNode* modelnode);
 	~AnimNode();
 
 	/** Get the node's name. */
 	const Common::UString &getName() const;
 
+	/** Update the model properties interpolating between frames */
+	void update(Model *model, float lastFrame, float nextFrame);
 protected:
 //	Animation *_animation; ///< The animation this node belongs to.
 
@@ -64,8 +65,7 @@ protected:
 	std::list<AnimNode *> _children; ///< The node's children.
 
 	Common::UString _name; ///< The node's name.
-
-	//void render(RenderPass pass);
+	ModelNode *_nodedata;
 
 public:
 	// General helpers

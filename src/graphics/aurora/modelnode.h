@@ -99,6 +99,8 @@ public:
 	void setPosition(float x, float y, float z);
 	/** Set the rotation of the node. */
 	void setRotation(float x, float y, float z);
+	/** Set the orientation of the node. */
+	void setOrientation(float x, float y, float z, float a);
 
 	/** Move the node, relative to its current position. */
 	void move  (float x, float y, float z);
@@ -220,6 +222,9 @@ public:
 
 	void reparent(ModelNode &parent);
 
+	//animation helpers
+	void interpolatePosition(float time, float &x, float &y, float &z) const;
+	void interpolateOrientation(float time, float &x, float &y, float &z, float& a) const;
 
 	friend class Model;
 };

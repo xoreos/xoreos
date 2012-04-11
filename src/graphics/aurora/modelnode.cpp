@@ -162,6 +162,19 @@ void ModelNode::setRotation(float x, float y, float z) {
 	GfxMan.unlockFrame();
 }
 
+void ModelNode::setOrientation(float x, float y, float z, float a) {
+	GfxMan.lockFrame();
+
+	_orientation[0] = x;
+	_orientation[1] = y;
+	_orientation[2] = z;
+	_orientation[3] = a;
+
+	_model->needRebuild();
+
+	GfxMan.unlockFrame();
+}
+
 void ModelNode::move(float x, float y, float z) {
 	float curX, curY, curZ;
 	getPosition(curX, curY, curZ);
@@ -487,6 +500,54 @@ void ModelNode::render(RenderPass pass) {
 		(*c)->render(pass);
 		glPopMatrix();
 	}
+}
+
+void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {
+	//if less than 2 keyframes, don't interpolate
+	//just return the only position
+	if(_positionFrames.size() < 2) {
+		getPosition(x, y, z);
+		return;
+	}
+
+	int lastFrame = 0;
+	for(uint32 i = 0; i < _positionFrames.size(); i++)
+	{
+		PositionKeyFrame pos = _positionFrames[i];
+		if(pos.time < time)
+			lastFrame = i;
+		else
+			break;
+	}
+	PositionKeyFrame last = _positionFrames[lastFrame];
+	x = last.x;
+	y = last.y;
+	z = last.z;
+	//TODO: also look up the following frame and actually interpolate
+}
+
+void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z, float& a) const {
+	//if less than 2 keyframes, don't interpolate
+	//just return the only position
+	if(_orientationFrames.size() < 2) {
+		getOrientation(x, y, z, a);
+		return;
+	}
+
+	int lastFrame = 0;
+	for(uint32 i = 0; i < _orientationFrames.size(); i++)
+	{
+		QuaternionKeyFrame pos = _orientationFrames[i];
+		if(pos.time < time)
+			lastFrame = i;
+		else
+			break;
+	}
+	QuaternionKeyFrame last = _orientationFrames[lastFrame];
+	x = last.x;
+	y = last.y;
+	z = last.z;
+	a = Common::rad2deg(acos(last.q) * 2.0);
 }
 
 } // End of namespace Aurora
