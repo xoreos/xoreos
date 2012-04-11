@@ -64,6 +64,10 @@ void Animation::update(Model *model, float lastFrame, float nextFrame)
 	//for event in _events event->fire()
 	//for animnode in nodes
 	//animnode.update(model, lastframe, nextframe)
+	for (NodeList::iterator n = nodeList.begin();
+		  n != nodeList.end(); ++n) {
+		(*n)->update(model, lastFrame, nextFrame);
+	}
 }
 
 } // End of namespace Aurora

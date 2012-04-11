@@ -43,6 +43,7 @@ namespace Aurora {
 AnimNode::AnimNode(ModelNode *modelnode) :
 	_parent(0) {
 	// actual data is loaded as a generic modelnode
+	_nodedata = modelnode;
 	if (modelnode)
 		_name = modelnode->getName();
 }
@@ -64,6 +65,23 @@ void AnimNode::setParent(AnimNode *parent) {
 
 const Common::UString &AnimNode::getName() const {
 	return _name;
+}
+
+void AnimNode::update(Model *model, float lastFrame, float nextFrame)
+{
+	if(!_nodedata)
+		return;
+	//determine the corresponding keyframes
+	float curX, curY, curZ;
+	_nodedata->interpolatePosition(nextFrame, curX, curY, curZ);
+	float oX, oY, oZ, oA;
+	_nodedata->interpolateOrientation(nextFrame, oX, oY, oZ, oA);
+	ModelNode *target = model->getNode(_name);
+	if(target) {
+		target->setPosition(curX, curY, curZ);
+		target->setOrientation(oX, oY, oZ, oA);
+	}
+	//update the position/orientation of corresponding modelnode
 }
 
 } // End of namespace Aurora
