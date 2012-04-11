@@ -131,6 +131,8 @@ public:
 	Animation *getAnimation(const Common::UString &anim);
     /** play a named animation */
     void playAnimation(const Common::UString &anim);
+    /** create the list of default animations */
+    void populateDefaultAnimations();
     /** select the default idle animation */
     void selectDefaultAnimation();
 
