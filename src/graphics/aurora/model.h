@@ -45,7 +45,7 @@
 #include "graphics/aurora/types.h"
 
 namespace Common {
-	class SeekableReadStream;
+class SeekableReadStream;
 }
 
 namespace Graphics {
@@ -125,16 +125,16 @@ public:
 	const ModelNode *getNode(const Common::UString &node) const;
 
 
-    // Animation
+	// Animation
 
 	/** Get the specified node, from the current state. */
 	Animation *getAnimation(const Common::UString &anim);
-    /** play a named animation */
-    void playAnimation(const Common::UString &anim);
-    /** create the list of default animations */
-    void populateDefaultAnimations();
-    /** select the default idle animation */
-    void selectDefaultAnimation();
+	/** play a named animation */
+	void playAnimation(const Common::UString &anim);
+	/** create the list of default animations */
+	void populateDefaultAnimations();
+	/** select the default idle animation */
+	void selectDefaultAnimation();
 
 	// Renderable
 	void calculateDistance();
@@ -176,10 +176,10 @@ protected:
 
 	std::list<Common::UString> _stateNames; ///< All state names.
 
-    AnimationMap _animationMap;
-    AnimationList _defaultAnimations;
-    Animation *_currentAnimation;
-    Animation *_nextAnimation;
+	AnimationMap _animationMap;
+	AnimationList _defaultAnimations;
+	Animation *_currentAnimation;
+	Animation *_nextAnimation;
 
 	float _modelScale[3]; ///< The model's scale.
 

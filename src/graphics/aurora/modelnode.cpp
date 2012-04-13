@@ -53,8 +53,12 @@ ModelNode::ModelNode(Model &model) :
 	_faceCount(0), _coords(0), _smoothGroups(0), _material(0), _isTransparent(false),
 	_render(false), _hasTransparencyHint(false) {
 
-	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
-	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
+	_position[0] = 0.0;
+	_position[1] = 0.0;
+	_position[2] = 0.0;
+	_rotation[0] = 0.0;
+	_rotation[1] = 0.0;
+	_rotation[2] = 0.0;
 
 	_orientation[0] = 0.0;
 	_orientation[1] = 0.0;
@@ -209,7 +213,7 @@ void ModelNode::inheritGeometry(ModelNode &node) const {
 		return;
 
 	memcpy(node._coords, _coords,
-			(3 * 3 * _faceCount + 2 * 3 * _faceCount * _textures.size()) * sizeof(float));
+	       (3 * 3 * _faceCount + 2 * 3 * _faceCount * _textures.size()) * sizeof(float));
 
 	memcpy(node._smoothGroups, _smoothGroups, _faceCount * sizeof(uint32));
 	memcpy(node._material    , _material    , _faceCount * sizeof(uint32));
@@ -242,7 +246,7 @@ void ModelNode::addChild(Model *model) {
 	// Take over the nodes in the model's currentstate
 
 	for (Model::NodeList::iterator r = model->_currentState->rootNodes.begin();
-	     r != model->_currentState->rootNodes.end(); ++r) {
+	        r != model->_currentState->rootNodes.end(); ++r) {
 
 		//TODO: Maybe we're REPLACING an existing node?
 		_children.push_back(*r);
@@ -253,7 +257,7 @@ void ModelNode::addChild(Model *model) {
 	// Remove the nodes from the model's current state
 
 	for (Model::StateList::iterator s = model->_stateList.begin();
-	     s != model->_stateList.end(); ++s) {
+	        s != model->_stateList.end(); ++s) {
 
 		if (*s == model->_currentState) {
 			(*s)->nodeList.clear();
@@ -263,7 +267,7 @@ void ModelNode::addChild(Model *model) {
 	}
 
 	for (Model::StateMap::iterator s = model->_stateMap.begin();
-	     s != model->_stateMap.end(); ++s) {
+	        s != model->_stateMap.end(); ++s) {
 
 		if (s->second == model->_currentState) {
 			s->second->nodeList.clear();
@@ -437,7 +441,7 @@ void ModelNode::renderGeometry() {
 
 	glBegin(GL_TRIANGLES);
 	for (uint32 f = 0; f < _faceCount; f++, vX += 3, vY += 3, vZ += 3,
-	                                   tX += 3 * textureCount, tY += 3 * textureCount) {
+	        tX += 3 * textureCount, tY += 3 * textureCount) {
 
 		// Texture vertex A
 		for (uint32 t = 0; t < textureCount; t++)
@@ -487,7 +491,7 @@ void ModelNode::render(RenderPass pass) {
 
 	bool shouldRender = _render && (_faceCount > 0);
 	if (((pass == kRenderPassOpaque)      &&  _isTransparent) ||
-			((pass == kRenderPassTransparent) && !_isTransparent))
+	        ((pass == kRenderPassTransparent) && !_isTransparent))
 		shouldRender = false;
 
 	if (shouldRender)
@@ -511,8 +515,7 @@ void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) co
 	}
 
 	int lastFrame = 0;
-	for(uint32 i = 0; i < _positionFrames.size(); i++)
-	{
+	for(uint32 i = 0; i < _positionFrames.size(); i++) {
 		PositionKeyFrame pos = _positionFrames[i];
 		if(pos.time < time)
 			lastFrame = i;
@@ -535,8 +538,7 @@ void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z,
 	}
 
 	int lastFrame = 0;
-	for(uint32 i = 0; i < _orientationFrames.size(); i++)
-	{
+	for(uint32 i = 0; i < _orientationFrames.size(); i++) {
 		QuaternionKeyFrame pos = _orientationFrames[i];
 		if(pos.time < time)
 			lastFrame = i;

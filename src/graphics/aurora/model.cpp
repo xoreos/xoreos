@@ -47,16 +47,22 @@ namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_type(type), _supermodel(0), _currentState(0),
-    _currentAnimation(0), _nextAnimation(0), _drawBound(false),
-    _lists(0) {
+	_currentAnimation(0), _nextAnimation(0), _drawBound(false),
+	_lists(0) {
 
 	for (int i = 0; i < kRenderPassAll; i++)
 		_needBuild[i] = true;
 
-	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
-	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
+	_position[0] = 0.0;
+	_position[1] = 0.0;
+	_position[2] = 0.0;
+	_rotation[0] = 0.0;
+	_rotation[1] = 0.0;
+	_rotation[2] = 0.0;
 
-	_modelScale[0] = 1.0; _modelScale[1] = 1.0; _modelScale[2] = 1.0;
+	_modelScale[0] = 1.0;
+	_modelScale[1] = 1.0;
+	_modelScale[2] = 1.0;
 }
 
 Model::~Model() {
@@ -421,7 +427,7 @@ bool Model::buildList(RenderPass pass) {
 
 	// Draw the nodes
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
-	     n != _currentState->rootNodes.end(); n++) {
+	        n != _currentState->rootNodes.end(); n++) {
 
 		glPushMatrix();
 		(*n)->render(pass);
@@ -436,8 +442,7 @@ bool Model::buildList(RenderPass pass) {
 	return true;
 }
 
-void Model::advanceTime(float dt)
-{
+void Model::advanceTime(float dt) {
 	manageAnimations(dt);
 }
 
@@ -447,8 +452,7 @@ void Model::manageAnimations(float dt) {
 	_elapsedTime = nextFrame;
 
 	// start a new animation if scheduled
-	if(_nextAnimation)
-	{
+	if(_nextAnimation) {
 		// note that this interrupts the current animation!
 		_currentAnimation = _nextAnimation;
 		_nextAnimation = 0;
@@ -464,8 +468,7 @@ void Model::manageAnimations(float dt) {
 
 	// if the current animation has finished,
 	// start a default animation
-	if(_currentAnimation && nextFrame >= _currentAnimation->getLength())
-	{
+	if(_currentAnimation && nextFrame >= _currentAnimation->getLength()) {
 		//debug output
 		selectDefaultAnimation();
 		_elapsedTime = 0.0f;
@@ -509,45 +512,45 @@ void Model::doDrawBound() {
 	object.getMax(maxX, maxY, maxZ);
 
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(minX, minY, minZ);
-		glVertex3f(maxX, minY, minZ);
-		glVertex3f(maxX, maxY, minZ);
-		glVertex3f(minX, maxY, minZ);
+	glVertex3f(minX, minY, minZ);
+	glVertex3f(maxX, minY, minZ);
+	glVertex3f(maxX, maxY, minZ);
+	glVertex3f(minX, maxY, minZ);
 	glEnd();
 
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(minX, minY, maxZ);
-		glVertex3f(maxX, minY, maxZ);
-		glVertex3f(maxX, maxY, maxZ);
-		glVertex3f(minX, maxY, maxZ);
+	glVertex3f(minX, minY, maxZ);
+	glVertex3f(maxX, minY, maxZ);
+	glVertex3f(maxX, maxY, maxZ);
+	glVertex3f(minX, maxY, maxZ);
 	glEnd();
 
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(minX, minY, minZ);
-		glVertex3f(minX, maxY, minZ);
-		glVertex3f(minX, maxY, maxZ);
-		glVertex3f(minX, minY, maxZ);
+	glVertex3f(minX, minY, minZ);
+	glVertex3f(minX, maxY, minZ);
+	glVertex3f(minX, maxY, maxZ);
+	glVertex3f(minX, minY, maxZ);
 	glEnd();
 
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(maxX, minY, minZ);
-		glVertex3f(maxX, maxY, minZ);
-		glVertex3f(maxX, maxY, maxZ);
-		glVertex3f(maxX, minY, maxZ);
+	glVertex3f(maxX, minY, minZ);
+	glVertex3f(maxX, maxY, minZ);
+	glVertex3f(maxX, maxY, maxZ);
+	glVertex3f(maxX, minY, maxZ);
 	glEnd();
 
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(minX, minY, minZ);
-		glVertex3f(maxX, minY, minZ);
-		glVertex3f(maxX, minY, maxZ);
-		glVertex3f(minX, minY, maxZ);
+	glVertex3f(minX, minY, minZ);
+	glVertex3f(maxX, minY, minZ);
+	glVertex3f(maxX, minY, maxZ);
+	glVertex3f(minX, minY, maxZ);
 	glEnd();
 
 	glBegin(GL_LINE_LOOP);
-		glVertex3f(minX, maxY, minZ);
-		glVertex3f(maxX, maxY, minZ);
-		glVertex3f(maxX, maxY, maxZ);
-		glVertex3f(minX, maxY, maxZ);
+	glVertex3f(minX, maxY, minZ);
+	glVertex3f(maxX, maxY, minZ);
+	glVertex3f(maxX, maxY, maxZ);
+	glVertex3f(minX, maxY, maxZ);
 	glEnd();
 }
 
@@ -598,7 +601,7 @@ void Model::createBound() {
 		return;
 
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
-	     n != _currentState->rootNodes.end(); ++n) {
+	        n != _currentState->rootNodes.end(); ++n) {
 
 		Common::BoundingBox position;
 

@@ -45,7 +45,7 @@
 #include "graphics/aurora/types.h"
 
 namespace Common {
-	class SeekableReadStream;
+class SeekableReadStream;
 }
 
 namespace Graphics {
@@ -74,37 +74,45 @@ public:
 
 	typedef std::list<AnimNode *> NodeList;
 	typedef std::map<Common::UString, AnimNode *, Common::UString::iless> NodeMap;
-		NodeList nodeList; ///< The nodes within the state.
-		NodeMap  nodeMap;  ///< The nodes within the state, indexed by name.
+	NodeList nodeList; ///< The nodes within the state.
+	NodeMap  nodeMap;  ///< The nodes within the state, indexed by name.
 
-		NodeList rootNodes; ///< The nodes in the state without a parent.
+	NodeList rootNodes; ///< The nodes in the state without a parent.
 protected:
 
 	Common::UString _name; ///< The model's name.
-    float _length;
-    float _transtime;
+	float _length;
+	float _transtime;
 
 public:
-    void setLength(float length) {_length=length;}
-    float getLength() {return _length;}
-    void setTransTime(float transtime) {_transtime=transtime;}
-    void setName(Common::UString& name) {_name=name;}
+	void setLength(float length) {
+		_length=length;
+	}
+	float getLength() {
+		return _length;
+	}
+	void setTransTime(float transtime) {
+		_transtime=transtime;
+	}
+	void setName(Common::UString& name) {
+		_name=name;
+	}
 
-    void update(Model *model, float lastFrame, float nextFrame);
-/*
-	// General loading helpers
+	void update(Model *model, float lastFrame, float nextFrame);
+	/*
+		// General loading helpers
 
-	static void readValue(Common::SeekableReadStream &stream, uint32 &value);
-	static void readValue(Common::SeekableReadStream &stream, float  &value);
+		static void readValue(Common::SeekableReadStream &stream, uint32 &value);
+		static void readValue(Common::SeekableReadStream &stream, float  &value);
 
-	static void readArrayDef(Common::SeekableReadStream &stream,
-	                         uint32 &offset, uint32 &count);
+		static void readArrayDef(Common::SeekableReadStream &stream,
+		                         uint32 &offset, uint32 &count);
 
-	template<typename T>
-	static void readArray(Common::SeekableReadStream &stream,
-	                      uint32 offset, uint32 count, std::vector<T> &values);
+		template<typename T>
+		static void readArray(Common::SeekableReadStream &stream,
+		                      uint32 offset, uint32 count, std::vector<T> &values);
 
-	friend class AnimNode;*/
+		friend class AnimNode;*/
 };
 
 } // End of namespace Aurora
