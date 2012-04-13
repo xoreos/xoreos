@@ -55,17 +55,35 @@ const Common::UString &Animation::getName() const {
 	return _name;
 }
 
+void Animation::setName(Common::UString &name) {
+	_name = name;
+}
+
+void Animation::setLength(float length) {
+	_length = length;
+}
+
+float Animation::getLength() const {
+	return _length;
+}
+
+void Animation::setTransTime(float transtime) {
+	_transtime = transtime;
+}
+
 void Animation::update(Model *model, float lastFrame, float nextFrame) {
-	//TODO: loop through animnodes and have them update modelnodes
-	debugC(4, kDebugGraphics, "Playing animation in model \"%s\" @ time %f", model->getName().c_str(), lastFrame);
-	//also need to fire off associated events
+	//TODO: also need to fire off associated events
 	//for event in _events event->fire()
-	//for animnode in nodes
-	//animnode.update(model, lastframe, nextframe)
+
 	for (NodeList::iterator n = nodeList.begin();
-	        n != nodeList.end(); ++n) {
+	     n != nodeList.end(); ++n) {
 		(*n)->update(model, lastFrame, nextFrame);
 	}
+}
+
+void Animation::addAnimNode(AnimNode* node) {
+	nodeList.push_back(node);
+	nodeMap.insert(std::make_pair(node->getName(), node));
 }
 
 } // End of namespace Aurora
