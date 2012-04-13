@@ -65,33 +65,41 @@ public:
 	// Nodes
 
 	/** Does the specified node exist in the current state? */
-//	bool hasNode(const Common::UString &node) const;
+	// bool hasNode(const Common::UString &node) const;
 
 	/** Get the specified node, from the current state. */
-//	AnimNode *getNode(const Common::UString &node);
+	// AnimNode *getNode(const Common::UString &node);
 	/** Get the specified node, from the current state. */
-//	const AnimNode *getNode(const Common::UString &node) const;
+	// const AnimNode *getNode(const Common::UString &node) const;
 
 	typedef std::list<AnimNode *> NodeList;
 	typedef std::map<Common::UString, AnimNode *, Common::UString::iless> NodeMap;
-		NodeList nodeList; ///< The nodes within the state.
-		NodeMap  nodeMap;  ///< The nodes within the state, indexed by name.
+	NodeList nodeList; ///< The nodes within the state.
+	NodeMap  nodeMap;  ///< The nodes within the state, indexed by name.
 
-		NodeList rootNodes; ///< The nodes in the state without a parent.
+	NodeList rootNodes; ///< The nodes in the state without a parent.
 protected:
 
 	Common::UString _name; ///< The model's name.
-    float _length;
-    float _transtime;
+	float _length;
+	float _transtime;
 
 public:
-    void setLength(float length) {_length=length;}
-    float getLength() {return _length;}
-    void setTransTime(float transtime) {_transtime=transtime;}
-    void setName(Common::UString& name) {_name=name;}
+	void setLength(float length) {
+		_length=length;
+	}
+	float getLength() {
+		return _length;
+	}
+	void setTransTime(float transtime) {
+		_transtime=transtime;
+	}
+	void setName(Common::UString& name) {
+		_name=name;
+	}
 
-    void update(Model *model, float lastFrame, float nextFrame);
-/*
+	void update(Model *model, float lastFrame, float nextFrame);
+	/*
 	// General loading helpers
 
 	static void readValue(Common::SeekableReadStream &stream, uint32 &value);
@@ -104,7 +112,8 @@ public:
 	static void readArray(Common::SeekableReadStream &stream,
 	                      uint32 offset, uint32 count, std::vector<T> &values);
 
-	friend class AnimNode;*/
+	friend class AnimNode;
+*/
 };
 
 } // End of namespace Aurora

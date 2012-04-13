@@ -67,8 +67,7 @@ const Common::UString &AnimNode::getName() const {
 	return _name;
 }
 
-void AnimNode::update(Model *model, float lastFrame, float nextFrame)
-{
+void AnimNode::update(Model *model, float lastFrame, float nextFrame) {
 	if(!_nodedata)
 		return;
 	//determine the corresponding keyframes

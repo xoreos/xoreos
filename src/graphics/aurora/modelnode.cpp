@@ -437,7 +437,7 @@ void ModelNode::renderGeometry() {
 
 	glBegin(GL_TRIANGLES);
 	for (uint32 f = 0; f < _faceCount; f++, vX += 3, vY += 3, vZ += 3,
-	                                   tX += 3 * textureCount, tY += 3 * textureCount) {
+	     tX += 3 * textureCount, tY += 3 * textureCount) {
 
 		// Texture vertex A
 		for (uint32 t = 0; t < textureCount; t++)
@@ -487,7 +487,7 @@ void ModelNode::render(RenderPass pass) {
 
 	bool shouldRender = _render && (_faceCount > 0);
 	if (((pass == kRenderPassOpaque)      &&  _isTransparent) ||
-			((pass == kRenderPassTransparent) && !_isTransparent))
+	    ((pass == kRenderPassTransparent) && !_isTransparent))
 		shouldRender = false;
 
 	if (shouldRender)
@@ -511,8 +511,7 @@ void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) co
 	}
 
 	int lastFrame = 0;
-	for(uint32 i = 0; i < _positionFrames.size(); i++)
-	{
+	for(uint32 i = 0; i < _positionFrames.size(); i++) {
 		PositionKeyFrame pos = _positionFrames[i];
 		if(pos.time < time)
 			lastFrame = i;
@@ -535,8 +534,7 @@ void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z,
 	}
 
 	int lastFrame = 0;
-	for(uint32 i = 0; i < _orientationFrames.size(); i++)
-	{
+	for(uint32 i = 0; i < _orientationFrames.size(); i++) {
 		QuaternionKeyFrame pos = _orientationFrames[i];
 		if(pos.time < time)
 			lastFrame = i;

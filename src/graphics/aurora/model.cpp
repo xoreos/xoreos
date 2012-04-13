@@ -47,8 +47,8 @@ namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_type(type), _supermodel(0), _currentState(0),
-    _currentAnimation(0), _nextAnimation(0), _drawBound(false),
-    _lists(0) {
+	_currentAnimation(0), _nextAnimation(0), _drawBound(false),
+	_lists(0) {
 
 	for (int i = 0; i < kRenderPassAll; i++)
 		_needBuild[i] = true;
@@ -436,8 +436,7 @@ bool Model::buildList(RenderPass pass) {
 	return true;
 }
 
-void Model::advanceTime(float dt)
-{
+void Model::advanceTime(float dt) {
 	manageAnimations(dt);
 }
 
@@ -447,8 +446,7 @@ void Model::manageAnimations(float dt) {
 	_elapsedTime = nextFrame;
 
 	// start a new animation if scheduled
-	if(_nextAnimation)
-	{
+	if(_nextAnimation) {
 		// note that this interrupts the current animation!
 		_currentAnimation = _nextAnimation;
 		_nextAnimation = 0;
@@ -464,8 +462,7 @@ void Model::manageAnimations(float dt) {
 
 	// if the current animation has finished,
 	// start a default animation
-	if(_currentAnimation && nextFrame >= _currentAnimation->getLength())
-	{
+	if(_currentAnimation && nextFrame >= _currentAnimation->getLength()) {
 		//debug output
 		selectDefaultAnimation();
 		_elapsedTime = 0.0f;

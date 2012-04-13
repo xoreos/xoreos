@@ -148,7 +148,7 @@ void Model_NWN::ParserContext::clear() {
 }
 
 bool Model_NWN::ParserContext::findNode(const Common::UString &name,
-		ModelNode *&node) const {
+                                        ModelNode *&node) const {
 
 	node = 0;
 
@@ -374,27 +374,27 @@ void Model_NWN::skipAnimASCII(ParserContext &ctx) {
 
 void Model_NWN::readAnimASCII(ParserContext &ctx) {
 	// TODO: Model_NWN_ASCII::readAnimASCII
-    // read in the animation name
-    // there should be a list of animations
-    // each with a bunch of animnodes
-    // each animnode targets a model node
-    // and has a list of position, orientation keyframes
-    // (at time t, position, orientation = x)
-    //
-    // at render time/playAnimation
-    // -- if there's a default animation we should always be playing that?
-    // determine time t
-    // for each animnode look up surrounding keyframes
-    // interpolate to get real position, orientation
-    // when rendering the node, apply the position, orientation
-    //
-    // models have a current and next animation
-    // next animation is set by playanimation
-    // when current animation expires, we schedule next one
-    // if next is null either loop or select a random
-    // default animation for the current
-    // when there is an active animation
-    // track time t and apply animnodes
+	// read in the animation name
+	// there should be a list of animations
+	// each with a bunch of animnodes
+	// each animnode targets a model node
+	// and has a list of position, orientation keyframes
+	// (at time t, position, orientation = x)
+	//
+	// at render time/playAnimation
+	// -- if there's a default animation we should always be playing that?
+	// determine time t
+	// for each animnode look up surrounding keyframes
+	// interpolate to get real position, orientation
+	// when rendering the node, apply the position, orientation
+	//
+	// models have a current and next animation
+	// next animation is set by playanimation
+	// when current animation expires, we schedule next one
+	// if next is null either loop or select a random
+	// default animation for the current
+	// when there is an active animation
+	// track time t and apply animnodes
 }
 
 void Model_NWN::addState(ParserContext &ctx) {
@@ -476,10 +476,10 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 	debugC(4, kDebugGraphics, "Loaded animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
 
 	for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
-		  n != ctx.nodes.end(); ++n) {
-			AnimNode* animnode = new AnimNode(*n);
-			anim->nodeList.push_back(animnode);
-			anim->nodeMap.insert(std::make_pair(animnode->getName(), animnode));
+	     n != ctx.nodes.end(); ++n) {
+		AnimNode* animnode = new AnimNode(*n);
+		anim->nodeList.push_back(animnode);
+		anim->nodeMap.insert(std::make_pair(animnode->getName(), animnode));
 	}
 
 }
@@ -816,7 +816,7 @@ void ModelNode_NWN_Binary::readAnim(Model_NWN::ParserContext &ctx) {
 }
 
 void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
-	uint32 offset, uint32 count, std::vector<float> &data) {
+		uint32 offset, uint32 count, std::vector<float> &data) {
 
 	uint32 pos = ctx.mdl->seekTo(offset);
 

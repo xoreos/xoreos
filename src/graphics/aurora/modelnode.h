@@ -48,16 +48,14 @@ namespace Aurora {
 
 class Model;
 
-struct PositionKeyFrame
-{
+struct PositionKeyFrame {
 	float time;
 	float x;
 	float y;
 	float z;
 };
 
-struct QuaternionKeyFrame
-{
+struct QuaternionKeyFrame {
 	float time;
 	float x;
 	float y;

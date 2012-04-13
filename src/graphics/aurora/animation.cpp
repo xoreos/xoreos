@@ -44,8 +44,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Animation::Animation()
-	{
+Animation::Animation() {
 
 }
 
@@ -56,8 +55,7 @@ const Common::UString &Animation::getName() const {
 	return _name;
 }
 
-void Animation::update(Model *model, float lastFrame, float nextFrame)
-{
+void Animation::update(Model *model, float lastFrame, float nextFrame) {
 	//TODO: loop through animnodes and have them update modelnodes
 	debugC(4, kDebugGraphics, "Playing animation in model \"%s\" @ time %f", model->getName().c_str(), lastFrame);
 	//also need to fire off associated events
@@ -65,7 +63,7 @@ void Animation::update(Model *model, float lastFrame, float nextFrame)
 	//for animnode in nodes
 	//animnode.update(model, lastframe, nextframe)
 	for (NodeList::iterator n = nodeList.begin();
-		  n != nodeList.end(); ++n) {
+	        n != nodeList.end(); ++n) {
 		(*n)->update(model, lastFrame, nextFrame);
 	}
 }
