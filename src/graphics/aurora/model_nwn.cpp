@@ -478,8 +478,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 	for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
 	        n != ctx.nodes.end(); ++n) {
 		AnimNode* animnode = new AnimNode(*n);
-		anim->nodeList.push_back(animnode);
-		anim->nodeMap.insert(std::make_pair(animnode->getName(), animnode));
+		anim->addAnimNode(animnode);
 	}
 
 }
