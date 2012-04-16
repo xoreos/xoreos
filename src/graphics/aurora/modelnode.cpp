@@ -519,15 +519,25 @@ void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) co
 			break;
 	}
 	PositionKeyFrame last = _positionFrames[lastFrame];
-	x = last.x;
-	y = last.y;
-	z = last.z;
-	//TODO: also look up the following frame and actually interpolate
+	if(lastFrame + 1 >= _positionFrames.size() || last.time == time) {
+		x = last.x;
+		y = last.y;
+		z = last.z;
+		return;
+	}
+
+	PositionKeyFrame next = _positionFrames[lastFrame + 1];
+	float f = (time - last.time) / (next.time - last.time);
+	x = f * next.x + (1.0f - f) * last.x;
+	y = f * next.y + (1.0f - f) * last.y;
+	z = f * next.z + (1.0f - f) * last.z;
+	// f = (t - last.t)/(next.t - last.t)
+	// v = f * next + (1-f) * last
 }
 
 void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z, float& a) const {
 	//if less than 2 keyframes, don't interpolate
-	//just return the only position
+	//just return the only orientation
 	if(_orientationFrames.size() < 2) {
 		getOrientation(x, y, z, a);
 		return;
@@ -542,10 +552,19 @@ void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z,
 			break;
 	}
 	QuaternionKeyFrame last = _orientationFrames[lastFrame];
-	x = last.x;
-	y = last.y;
-	z = last.z;
-	a = Common::rad2deg(acos(last.q) * 2.0);
+	if(lastFrame + 1 >= _orientationFrames.size() || last.time == time) {
+		x = last.x;
+		y = last.y;
+		z = last.z;
+		a = Common::rad2deg(acos(last.q) * 2.0);
+	}
+	QuaternionKeyFrame next = _orientationFrames[lastFrame + 1];
+	float f = (time - last.time) / (next.time - last.time);
+	x = f * next.x + (1.0f - f) * last.x;
+	y = f * next.y + (1.0f - f) * last.y;
+	z = f * next.z + (1.0f - f) * last.z;
+	float q = f * next.q + (1.0f - f) * last.q;
+	a = Common::rad2deg(acos(q) * 2.0);
 }
 
 } // End of namespace Aurora
