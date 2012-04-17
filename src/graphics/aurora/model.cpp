@@ -135,7 +135,6 @@ void Model::drawBound(bool enabled) {
 }
 
 void Model::playAnimation(const Common::UString &anim) {
-	debugC(4, kDebugGraphics, "Playing animation \"%s\" in model \"%s\"", anim.c_str(), getName().c_str());
 	Animation* nextanim = getAnimation(anim);
 	_nextAnimation = nextanim;
 }
@@ -166,8 +165,10 @@ void Model::populateDefaultAnimations() {
 
 void Model::selectDefaultAnimation() {
 	//TODO: select a default animation randomly instead of just the first one
-	if(_defaultAnimations.empty())
+	if(_defaultAnimations.empty()) {
+		_currentAnimation = 0;
 		return;
+	}
 
 	debugC(4, kDebugGraphics, "Playing default animation in model \"%s\"", getName().c_str());
 	_currentAnimation = _defaultAnimations[0];

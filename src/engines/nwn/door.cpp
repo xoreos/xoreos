@@ -208,7 +208,6 @@ bool Door::click(Object *triggerer) {
 }
 
 bool Door::open(Object *opener) {
-	// TODO: Door::open(): Animate
 	// TODO: Door::open(): Open in direction of the opener
 
 	if (isOpen())
@@ -221,9 +220,11 @@ bool Door::open(Object *opener) {
 	}
 
 	_state = kStateOpened1;
-	setModelState();
+	//setModelState();
 
 	playSound(_soundOpened);
+	if(_model)
+		_model->playAnimation("opening1");
 	runScript(kScriptOpen, this, opener);
 
 	// Also open the linked door
@@ -235,8 +236,6 @@ bool Door::open(Object *opener) {
 }
 
 bool Door::close(Object *closer) {
-	// TODO: Door::close(): Animate
-
 	if (!isOpen())
 		return true;
 
@@ -244,9 +243,11 @@ bool Door::close(Object *closer) {
 		return false;
 
 	_state = kStateClosed;
-	setModelState();
+	//setModelState();
 
 	playSound(_soundClosed);
+	if(_model)
+		_model->playAnimation("closing1");
 	runScript(kScriptClosed, this, closer);
 
 	// Also close the linked door
@@ -278,33 +279,40 @@ void Door::evaluateLink() {
 }
 
 void Door::playAnimation(Animation animation) {
-	// TODO: Door::playAnimation(): Animate
 
 	switch (animation) {
 		case kAnimationDoorClose:
 			playSound(_soundClosed);
+			if(_model)
+				_model->playAnimation("closing1");
 			_state = kStateClosed;
 			break;
 
 		case kAnimationDoorOpen1:
 			playSound(_soundOpened);
+			if(_model)
+				_model->playAnimation("opening1");
 			_state = kStateOpened1;
 			break;
 
 		case kAnimationDoorOpen2:
 			playSound(_soundOpened);
-			_state = kStateOpened1;
+			if(_model)
+				_model->playAnimation("opening2");
+			_state = kStateOpened2;
 			break;
 
 		case kAnimationDoorDestroy:
 			warning("TODO: Door::playAnimation(): kAnimationDoorDestroy");
+			if(_model)
+				_model->playAnimation("die");
 			break;
 
 		default:
 			break;
 	}
 
-	setModelState();
+	//setModelState();
 }
 
 } // End of namespace NWN
