@@ -715,7 +715,10 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 	const Aurora::GFFList &cEquipped = gff.getList("Equip_ItemList");
 	for (Aurora::GFFList::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
 		const Aurora::GFFStruct &cItem = **e;
+
 		Common::UString itemref = cItem.getString("EquippedRes");
+		if (itemref.empty())
+			itemref = cItem.getString("TemplateResRef");
 
 		Aurora::GFFFile *uti = 0;
 		if (!itemref.empty()) {
@@ -726,15 +729,14 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 			}
 		}
 
-		if(uti) {
-			Item* item = new Item();
-			item->load(uti->getTopLevel());
+		Item *item = new Item();
 
-			//add it to the equipped list
-			_equippedItems.push_back(*item);
+		item->load(cItem, uti ? &uti->getTopLevel() : 0);
 
-			delete uti;
-		}
+		//add it to the equipped list
+		_equippedItems.push_back(*item);
+
+		delete uti;
 	}
 
 }
