@@ -48,6 +48,9 @@ public:
 	/** Calculate the object's distance. */
 	virtual void calculateDistance() = 0;
 
+	/** Advance time (used by renderables with animations). */
+	virtual void advanceTime(float dt) {};
+
 	/** Render the object. */
 	virtual void render(RenderPass pass) = 0;
 

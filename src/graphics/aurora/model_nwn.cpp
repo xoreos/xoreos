@@ -41,6 +41,8 @@
 #include "aurora/resman.h"
 
 #include "graphics/aurora/model_nwn.h"
+#include "graphics/aurora/animation.h"
+#include "graphics/aurora/animnode.h"
 
 using Common::kDebugGraphics;
 
@@ -146,7 +148,7 @@ void Model_NWN::ParserContext::clear() {
 }
 
 bool Model_NWN::ParserContext::findNode(const Common::UString &name,
-		ModelNode *&node) const {
+                                        ModelNode *&node) const {
 
 	node = 0;
 
@@ -154,7 +156,7 @@ bool Model_NWN::ParserContext::findNode(const Common::UString &name,
 		return true;
 
 	for (std::list<ModelNode *>::const_iterator n = nodes.begin();
-	     n != nodes.end(); ++n) {
+	        n != nodes.end(); ++n) {
 
 		if ((*n)->getName() == name) {
 			node = *n;
@@ -167,7 +169,7 @@ bool Model_NWN::ParserContext::findNode(const Common::UString &name,
 
 
 Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
-                     const Common::UString &texture) :
+                     const Common::UString &texture, std::map<Common::UString, Model*, Common::UString::iless> *modelCache) :
 	Model(type) {
 
 	if (_type == kModelTypeGUIFront) {
@@ -185,8 +187,17 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 	else
 		loadBinary(ctx);
 
-	if(!_superModelName.empty() && _superModelName != "NULL")
-		_supermodel = new Model_NWN(_superModelName, type, "");
+	if(!_superModelName.empty() && _superModelName != "NULL") {
+		if((*modelCache).count(_superModelName)>0)
+			_supermodel = (*modelCache)[_superModelName];
+		else {
+			_supermodel = new Model_NWN(_superModelName, type, "", modelCache);
+			(*modelCache)[_superModelName] = _supermodel;
+		}
+	}
+
+	// these are usually inherited from a supermodel
+	populateDefaultAnimations();
 
 	finalize();
 }
@@ -363,6 +374,27 @@ void Model_NWN::skipAnimASCII(ParserContext &ctx) {
 
 void Model_NWN::readAnimASCII(ParserContext &ctx) {
 	// TODO: Model_NWN_ASCII::readAnimASCII
+	// read in the animation name
+	// there should be a list of animations
+	// each with a bunch of animnodes
+	// each animnode targets a model node
+	// and has a list of position, orientation keyframes
+	// (at time t, position, orientation = x)
+	//
+	// at render time/playAnimation
+	// -- if there's a default animation we should always be playing that?
+	// determine time t
+	// for each animnode look up surrounding keyframes
+	// interpolate to get real position, orientation
+	// when rendering the node, apply the position, orientation
+	//
+	// models have a current and next animation
+	// next animation is set by playanimation
+	// when current animation expires, we schedule next one
+	// if next is null either loop or select a random
+	// default animation for the current
+	// when there is an active animation
+	// track time t and apply animnodes
 }
 
 void Model_NWN::addState(ParserContext &ctx) {
@@ -372,7 +404,7 @@ void Model_NWN::addState(ParserContext &ctx) {
 	}
 
 	for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
-	     n != ctx.nodes.end(); ++n) {
+	        n != ctx.nodes.end(); ++n) {
 
 		ctx.state->nodeList.push_back(*n);
 		ctx.state->nodeMap.insert(std::make_pair((*n)->getName(), *n));
@@ -418,6 +450,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 	readArrayDef(*ctx.mdl, eventOffset, eventCount);
 
 	// Associated events
+	// TODO: save in array, then pass to animation class
 	ctx.mdl->seekTo(ctx.offModelData + eventOffset);
 	for (uint32 i = 0; i < eventCount; i++) {
 		float after = ctx.mdl->readIEEEFloatLE();
@@ -431,6 +464,23 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	rootNode->load(ctx);
+
+	//we read this in, but what do we do with it??
+	//ah, we call addState, interesting
+	//need to look at interaction with placeable states?
+	Animation* anim = new Animation();
+	anim->setName(ctx.state->name);
+	anim->setLength(animLength);
+	anim->setTransTime(transTime);
+	_animationMap.insert(std::make_pair(ctx.state->name, anim));
+	debugC(4, kDebugGraphics, "Loaded animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
+
+	for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
+	        n != ctx.nodes.end(); ++n) {
+		AnimNode* animnode = new AnimNode(*n);
+		anim->addAnimNode(animnode);
+	}
+
 }
 
 
@@ -765,7 +815,7 @@ void ModelNode_NWN_Binary::readAnim(Model_NWN::ParserContext &ctx) {
 }
 
 void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
-	uint32 offset, uint32 count, std::vector<float> &data) {
+        uint32 offset, uint32 count, std::vector<float> &data) {
 
 	uint32 pos = ctx.mdl->seekTo(offset);
 
@@ -783,31 +833,48 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 			// TODO: Controller row count = 0xFFFF
 			continue;
 
-		if        (type == kControllerTypePosition) {
+		if (type == kControllerTypePosition) {
 			if (columnCount != 3)
 				throw Common::Exception("Position controller with %d values", columnCount);
+			for(int r = 0; r < rowCount; r++) {
+				PositionKeyFrame p;
+				p.time = data[timeIndex + r];
+				p.x = data[dataIndex + (r * columnCount) + 0];
+				p.y = data[dataIndex + (r * columnCount) + 1];
+				p.z = data[dataIndex + (r * columnCount) + 2];
+				_positionFrames.push_back(p);
 
-			// Starting position
-			if (data[timeIndex + 0] == 0.0) {
-				_position[0] = data[dataIndex + 0];
-				_position[1] = data[dataIndex + 1];
-				_position[2] = data[dataIndex + 2];
-
-				ctx.hasPosition = true;
+				// Starting position
+				if (p.time == 0.0) {
+					_position[0] = p.x;
+					_position[1] = p.y;
+					_position[2] = p.z;
+					ctx.hasPosition = true;
+				}
 			}
 
 		} else if (type == kControllerTypeOrientation) {
 			if (columnCount != 4)
 				throw Common::Exception("Orientation controller with %d values", columnCount);
 
-			// Starting orientation
-			if (data[timeIndex + 0] == 0.0) {
-				_orientation[0] = data[dataIndex + 0];
-				_orientation[1] = data[dataIndex + 1];
-				_orientation[2] = data[dataIndex + 2];
-				_orientation[3] = Common::rad2deg(acos(data[dataIndex + 3]) * 2.0);
+			for(int r = 0; r < rowCount; r++) {
+				QuaternionKeyFrame q;
+				q.time = data[timeIndex + r];
+				q.x = data[dataIndex + (r * columnCount) + 0];
+				q.y = data[dataIndex + (r * columnCount) + 1];
+				q.z = data[dataIndex + (r * columnCount) + 2];
+				q.q = data[dataIndex + (r * columnCount) + 3];
+				_orientationFrames.push_back(q);
+				// Starting orientation
+				// TODO: handle animation orientation correctly
+				if (data[timeIndex + 0] == 0.0) {
+					_orientation[0] = data[dataIndex + 0];
+					_orientation[1] = data[dataIndex + 1];
+					_orientation[2] = data[dataIndex + 2];
+					_orientation[3] = Common::rad2deg(acos(data[dataIndex + 3]) * 2.0);
 
-				ctx.hasOrientation = true;
+					ctx.hasOrientation = true;
+				}
 			}
 
 		} else if (type == kControllerTypeAlpha) {

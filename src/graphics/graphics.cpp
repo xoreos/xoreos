@@ -83,6 +83,8 @@ GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
 	_renderableID = 0;
 
 	_hasAbandoned = false;
+
+	_lastSampled = 0;
 }
 
 GraphicsManager::~GraphicsManager() {
@@ -809,6 +811,21 @@ bool GraphicsManager::renderWorld() {
 	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
 
 	buildNewTextures();
+
+	//get the current time
+	uint32 now = EventMan.getTimestamp();
+	if(_lastSampled == 0)
+		_lastSampled = now;
+	//calc elapsed time
+	float elapsedTime = (now-_lastSampled) / 1000.0f;
+	_lastSampled = now;
+	//if game paused, skip the advanceTime loop below
+
+	// Advance time for animation queues
+	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
+	     o != objects.rend(); ++o) {
+		static_cast<Renderable *>(*o)->advanceTime(elapsedTime);
+	}
 
 	// Draw opaque objects
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();

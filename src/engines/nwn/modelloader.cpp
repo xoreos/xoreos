@@ -46,11 +46,15 @@ Graphics::Aurora::Model *NWNModelLoader::load(const Common::UString &resref,
 
 	Graphics::Aurora::Model *model = 0;
 	try {
-		model = new Graphics::Aurora::Model_NWN(resref, type, texture);
+		model = new Graphics::Aurora::Model_NWN(resref, type, texture, &modelCache);
 	} catch (...) {
 		delete model;
 		throw;
 	}
+
+	//if supermodel
+	//check model cache
+	//else load supermodel and insert into cache
 
 	return model;
 }
