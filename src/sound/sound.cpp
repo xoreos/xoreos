@@ -58,7 +58,7 @@ static const int kOpenALBufferSize = 32768;
 
 namespace Sound {
 
-SoundManager::SoundManager() : _ready(false), _hasMultiChannel(false), _format51(0) {
+SoundManager::SoundManager() : _ready(false), _hasSound(false), _hasMultiChannel(false), _format51(0) {
 }
 
 void SoundManager::init() {
@@ -72,21 +72,33 @@ void SoundManager::init() {
 	_curID      = 1;
 
 	_dev = alcOpenDevice(0);
-	if (!_dev)
-		throw Common::Exception("Could not open OpenAL device");
 
-	_ctx = alcCreateContext(_dev, 0);
-	alcMakeContextCurrent(_ctx);
-	if (!_ctx)
-		throw Common::Exception("Could not create OpenAL context");
+	_hasSound = _dev != 0;
+	if (!_hasSound)
+		warning("Failed to open OpenAL device. Disabling sound output");
 
-	_hasMultiChannel = alIsExtensionPresent("AL_EXT_MCFORMATS");
-	_format51        = alGetEnumValue("AL_FORMAT_51CHN16");
+	_ctx = 0;
+
+	_hasMultiChannel = false;
+	_format51        = 0;
+
+	if (_hasSound) {
+		_ctx = alcCreateContext(_dev, 0);
+		alcMakeContextCurrent(_ctx);
+		if (!_ctx)
+			throw Common::Exception("Could not create OpenAL context");
+
+		_hasMultiChannel = alIsExtensionPresent("AL_EXT_MCFORMATS");
+		_format51        = alGetEnumValue("AL_FORMAT_51CHN16");
+	}
 
 	if (!createThread())
 		throw Common::Exception("Failed to create sound thread: %s", SDL_GetError());
 
 	_ready = true;
+
+	if (!_hasSound)
+		return;
 
 	setListenerGain(ConfigMan.getDouble("volume", 1.0));
 
@@ -106,9 +118,11 @@ void SoundManager::deinit() {
 	for (uint16 i = 1; i < kChannelCount; i++)
 		freeChannel(i);
 
-	alcMakeContextCurrent(0);
-	alcDestroyContext(_ctx);
-	alcCloseDevice(_dev);
+	if (_hasSound) {
+		alcMakeContextCurrent(0);
+		alcDestroyContext(_ctx);
+		alcCloseDevice(_dev);
+	}
 
 	_ready = false;
 }
@@ -148,6 +162,13 @@ bool SoundManager::isPlaying(const ChannelHandle &handle) {
 bool SoundManager::isPlaying(uint16 channel) const {
 	if ((channel == 0) || !_channels[channel])
 		return false;
+
+	// TODO: This might pose a problem should we ever need to wait
+	//       for sounds to finish (for syncing, ...). We need to
+	//       add a way for audio streams to tell us how long they are
+	//       and then check if that time has elapsed.
+	if (!_hasSound)
+		return true;
 
 	ALint val;
 	alGetSourcei(_channels[channel]->source, AL_SOURCE_STATE, &val);
@@ -262,35 +283,37 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 
 		ALenum error = AL_NO_ERROR;
 
-		// Create the source
-		alGenSources(1, &channel.source);
-		if ((error = alGetError()) != AL_NO_ERROR)
-			throw Common::Exception("OpenAL error while generating sources: %X", error);
-
-		// Create all needed buffers
-		for (int i = 0; i < kOpenALBufferCount; i++) {
-			ALuint buffer;
-
-			alGenBuffers(1, &buffer);
+		if (_hasSound) {
+			// Create the source
+			alGenSources(1, &channel.source);
 			if ((error = alGetError()) != AL_NO_ERROR)
-				throw Common::Exception("OpenAL error while generating buffers: %X", error);
+				throw Common::Exception("OpenAL error while generating sources: %X", error);
 
-			if (fillBuffer(channel.source, buffer, channel.stream)) {
-				// If we could fill the buffer with data, queue it
+			// Create all needed buffers
+			for (int i = 0; i < kOpenALBufferCount; i++) {
+				ALuint buffer;
 
-				alSourceQueueBuffers(channel.source, 1, &buffer);
+				alGenBuffers(1, &buffer);
 				if ((error = alGetError()) != AL_NO_ERROR)
-					throw Common::Exception("OpenAL error while queueing buffers: %X", error);
+					throw Common::Exception("OpenAL error while generating buffers: %X", error);
 
-			} else
-				// If not, put it into our free list
-				channel.freeBuffers.push_back(buffer);
+				if (fillBuffer(channel.source, buffer, channel.stream)) {
+					// If we could fill the buffer with data, queue it
 
-			channel.buffers.push_back(buffer);
+					alSourceQueueBuffers(channel.source, 1, &buffer);
+					if ((error = alGetError()) != AL_NO_ERROR)
+						throw Common::Exception("OpenAL error while queueing buffers: %X", error);
+
+				} else
+					// If not, put it into our free list
+					channel.freeBuffers.push_back(buffer);
+
+				channel.buffers.push_back(buffer);
+			}
+
+			// Set the gain to the current sound type gain
+			alSourcef(channel.source, AL_GAIN, _types[channel.type].gain);
 		}
-
-		// Set the gain to the current sound type gain
-		alSourcef(channel.source, AL_GAIN, _types[channel.type].gain);
 
 		// Add the channel to the correct type list
 		_types[channel.type].list.push_back(&channel);
@@ -383,7 +406,8 @@ void SoundManager::setListenerGain(float gain) {
 
 	Common::StackLock lock(_mutex);
 
-	alListenerf(AL_GAIN, gain);
+	if (_hasSound)
+		alListenerf(AL_GAIN, gain);
 }
 
 void SoundManager::setChannelPosition(const ChannelHandle &handle, float x, float y, float z) {
@@ -396,7 +420,8 @@ void SoundManager::setChannelPosition(const ChannelHandle &handle, float x, floa
 	if (channel->stream->getChannels() > 1)
 		throw Common::Exception("Cannot set position of a non-mono sound.");
 
-	alSource3f(channel->source, AL_POSITION, x, y, z);
+	if (_hasSound)
+		alSource3f(channel->source, AL_POSITION, x, y, z);
 }
 
 void SoundManager::getChannelPosition(const ChannelHandle &handle, float &x, float &y, float &z) {
@@ -409,7 +434,8 @@ void SoundManager::getChannelPosition(const ChannelHandle &handle, float &x, flo
 	if (channel->stream->getChannels() > 1)
 		throw Common::Exception("Cannot get position of a non-mono sound.");
 
-	alGetSource3f(channel->source, AL_POSITION, &x, &y, &z);
+	if (_hasSound)
+		alGetSource3f(channel->source, AL_POSITION, &x, &y, &z);
 }
 
 void SoundManager::setChannelGain(const ChannelHandle &handle, float gain) {
@@ -421,7 +447,8 @@ void SoundManager::setChannelGain(const ChannelHandle &handle, float gain) {
 
 	channel->gain = gain;
 
-	alSourcef(channel->source, AL_GAIN, _types[channel->type].gain * gain);
+	if (_hasSound)
+		alSourcef(channel->source, AL_GAIN, _types[channel->type].gain * gain);
 }
 
 void SoundManager::setChannelPitch(const ChannelHandle &handle, float pitch) {
@@ -431,7 +458,8 @@ void SoundManager::setChannelPitch(const ChannelHandle &handle, float pitch) {
 	if (!channel || !channel->stream)
 		throw Common::Exception("Invalid channel");
 
-	alSourcef(channel->source, AL_PITCH, pitch);
+	if (_hasSound)
+		alSourcef(channel->source, AL_PITCH, pitch);
 }
 
 void SoundManager::setTypeGain(SoundType type, float gain) {
@@ -446,13 +474,17 @@ void SoundManager::setTypeGain(SoundType type, float gain) {
 	for (TypeList::iterator t = _types[type].list.begin(); t != _types[type].list.end(); ++t) {
 		assert(*t);
 
-		alSourcef((*t)->source, AL_GAIN, (*t)->gain * gain);
+		if (_hasSound)
+			alSourcef((*t)->source, AL_GAIN, (*t)->gain * gain);
 	}
 }
 
 bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) const {
 	if (!stream)
 		throw Common::Exception("No stream");
+
+	if (!_hasSound)
+		return true;
 
 	if (stream->endOfData())
 		return false;
@@ -508,6 +540,9 @@ void SoundManager::bufferData(uint16 channel) {
 
 void SoundManager::bufferData(Channel &channel) {
 	if (!channel.stream || channel.stream->endOfData())
+		return;
+
+	if (!_hasSound)
 		return;
 
 	// Get the number of buffers that have been processed
@@ -590,9 +625,11 @@ void SoundManager::pauseChannel(Channel *channel, bool pause) {
 
 	ALenum error = AL_NO_ERROR;
 	if (pause) {
-		alSourcePause(channel->source);
-		if ((error = alGetError()) != AL_NO_ERROR)
-			warning("OpenAL error while attempting to pause: %X", error);
+		if (_hasSound) {
+			alSourcePause(channel->source);
+			if ((error = alGetError()) != AL_NO_ERROR)
+				warning("OpenAL error while attempting to pause: %X", error);
+		}
 
 		channel->state = AL_PAUSED;
 	} else
@@ -625,13 +662,15 @@ void SoundManager::freeChannel(uint16 channel) {
 	if (c->disposeAfterUse)
 		delete c->stream;
 
-	// Delete the channel's OpenAL source
-	if (c->source)
-		alDeleteSources(1, &c->source);
+	if (_hasSound) {
+		// Delete the channel's OpenAL source
+		if (c->source)
+			alDeleteSources(1, &c->source);
 
-	// Delete the OpenAL buffers
-	for (std::list<ALuint>::iterator buffer = c->buffers.begin(); buffer != c->buffers.end(); ++buffer)
-		alDeleteBuffers(1, &*buffer);
+		// Delete the OpenAL buffers
+		for (std::list<ALuint>::iterator buffer = c->buffers.begin(); buffer != c->buffers.end(); ++buffer)
+			alDeleteBuffers(1, &*buffer);
+	}
 
 	// Remove the channel from the type list
 	if (c->typeIt != _types[c->type].list.end())
