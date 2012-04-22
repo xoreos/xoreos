@@ -282,24 +282,44 @@ void Creature::setCommandable(bool commandable) {
 	_isCommandable = commandable;
 }
 
-void Creature::constructModelName(const Common::UString &type, uint32 id,
-                                  const Common::UString &gender,
-                                  const Common::UString &race,
-                                  const Common::UString &phenoType,
-                                  const Common::UString &phenoTypeAlt,
-                                  Common::UString &model) {
+void Creature::constructPartName(const Common::UString &type, uint32 id,
+		const Common::UString &gender, const Common::UString &race,
+		const Common::UString &phenoType, Common::UString &part) {
 
-	model = Common::UString::sprintf("p%s%s%s_%s%03d",
-	        gender.c_str(), race.c_str(), phenoType.c_str(), type.c_str(), id);
+	part = Common::UString::sprintf("p%s%s%s_%s%03d",
+	       gender.c_str(), race.c_str(), phenoType.c_str(), type.c_str(), id);
+}
 
-	if (ResMan.hasResource(model, Aurora::kFileTypeMDL))
+void Creature::constructPartName(const Common::UString &type, uint32 id,
+		const Common::UString &gender, const Common::UString &race,
+		const Common::UString &phenoType, const Common::UString &phenoTypeAlt,
+		Aurora::FileType fileType, Common::UString &part) {
+
+	constructPartName(type, id, gender, race, phenoType, part);
+	if ((fileType == Aurora::kFileTypeNone) || ResMan.hasResource(part, fileType))
 		return;
 
-	model = Common::UString::sprintf("p%s%s%s_%s%03d",
-	        gender.c_str(), race.c_str(), phenoTypeAlt.c_str(), type.c_str(), id);
+	constructPartName(type, id, gender, race, phenoTypeAlt, part);
+	if (!ResMan.hasResource(part, fileType))
+		part.clear();
+}
 
-	if (!ResMan.hasResource(model, Aurora::kFileTypeMDL))
-		model.clear();
+void Creature::constructModelName(const Common::UString &type, uint32 id,
+		const Common::UString &gender, const Common::UString &race,
+		const Common::UString &phenoType, const Common::UString &phenoTypeAlt,
+		Common::UString &model, Common::UString &texture) {
+
+	constructPartName(type, id, gender, race, phenoType, phenoTypeAlt, Aurora::kFileTypeMDL, model);
+
+	constructPartName(type, id, gender, race, phenoType, phenoTypeAlt, Aurora::kFileTypePLT, texture);
+
+	// PLT texture doesn't exist, try a generic human PLT
+	if (texture.empty())
+		constructPartName(type, id, gender, "H", phenoType, phenoTypeAlt, Aurora::kFileTypePLT, texture);
+
+	// Human PLT texture doesn't exist either, assume it's a non-PLT texture
+	if (texture.empty())
+		constructPartName(type, id, gender, race, phenoType, phenoTypeAlt, Aurora::kFileTypeNone, texture);
 }
 
 // Based on filenames in model2.bif
@@ -360,7 +380,7 @@ void Creature::getPartModels() {
 	for (uint i = 0; i < kBodyPartMAX; i++)
 		constructModelName(kBodyPartModels[i], _bodyParts[i].armor_id > 0 ? _bodyParts[i].armor_id : _bodyParts[i].id,
 		                   genderChar, raceChar, phenoChar, phenoAltChar,
-		                   _bodyParts[i].modelName);
+		                   _bodyParts[i].modelName, _bodyParts[i].texture);
 }
 
 void Creature::getArmorModels() {
@@ -434,7 +454,7 @@ void Creature::loadModel() {
 			TextureMan.clearNewPLTs();
 
 			// Try to load in the corresponding part model
-			Graphics::Aurora::Model *part_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].modelName);
+			Graphics::Aurora::Model *part_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].texture);
 			if (!part_model)
 				continue;
 
