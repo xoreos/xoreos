@@ -345,7 +345,7 @@ void Creature::getPartModels() {
 
 	Common::UString genderChar   = gender.getString("GENDER");
 	Common::UString raceChar     = raceAp.getString("RACE");
-	Common::UString phenoChar    = Common::UString("%d", _phenotype);
+	Common::UString phenoChar    = Common::UString::sprintf("%d", _phenotype);
 	Common::UString phenoAltChar = pheno.getString("DefaultPhenoType");
 
 	// Important to capture the supermodel
