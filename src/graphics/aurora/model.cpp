@@ -27,20 +27,28 @@
  *  A 3D model of an object.
  */
 
+#include <SDL_timer.h>
+
 #include "common/stream.h"
+#include "common/debug.h"
 
 #include "graphics/graphics.h"
 #include "graphics/camera.h"
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/animation.h"
 #include "graphics/aurora/modelnode.h"
+
+using Common::kDebugGraphics;
 
 namespace Graphics {
 
 namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
-	_type(type), _supermodel(0), _currentState(0), _drawBound(false), _lists(0) {
+	_type(type), _supermodel(0), _currentState(0),
+	_currentAnimation(0), _nextAnimation(0), _drawBound(false),
+	_lists(0) {
 
 	for (int i = 0; i < kRenderPassAll; i++)
 		_needBuild[i] = true;
@@ -53,8 +61,6 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 
 Model::~Model() {
 	hide();
-
-	delete _supermodel;
 
 	if (_lists != 0)
 		GfxMan.abandon(_lists, kRenderPassAll);
@@ -126,6 +132,45 @@ float Model::getDepth() const {
 void Model::drawBound(bool enabled) {
 	_drawBound = enabled;
 	needRebuild();
+}
+
+void Model::playAnimation(const Common::UString &anim) {
+	debugC(4, kDebugGraphics, "Playing animation \"%s\" in model \"%s\"", anim.c_str(), getName().c_str());
+	Animation* nextanim = getAnimation(anim);
+	_nextAnimation = nextanim;
+}
+
+
+static const char *kDefaultAnims[] = {
+	"pause1",
+	"pause2",
+	"pausesh",
+	"pausebrd",
+	"hturnl",
+	"hturnr",
+	"cpause1",
+	"chturnl",
+	"chturnr"
+};
+
+void Model::populateDefaultAnimations() {
+	_defaultAnimations.clear();
+	Animation *anim;
+	//TODO: there's probably a cleaner way to do this, but its late
+	for(int i = 0; i < 9; i++) {
+		anim = getAnimation(kDefaultAnims[i]);
+		if(anim)
+			_defaultAnimations.push_back(anim);
+	}
+}
+
+void Model::selectDefaultAnimation() {
+	//TODO: select a default animation randomly instead of just the first one
+	if(_defaultAnimations.empty())
+		return;
+
+	debugC(4, kDebugGraphics, "Playing default animation in model \"%s\"", getName().c_str());
+	_currentAnimation = _defaultAnimations[0];
 }
 
 void Model::getPosition(float &x, float &y, float &z) const {
@@ -309,6 +354,19 @@ const ModelNode *Model::getNode(const Common::UString &node) const {
 	return n->second;
 }
 
+Animation *Model::getAnimation(const Common::UString &anim) {
+
+	AnimationMap::iterator n = _animationMap.find(anim);
+	if (n == _animationMap.end()) {
+		if(_supermodel)
+			return _supermodel->getAnimation(anim);
+
+		return 0;
+	}
+
+	return n->second;
+}
+
 void Model::calculateDistance() {
 	if (_type == kModelTypeGUIFront) {
 		_distance = _position[2];
@@ -376,6 +434,44 @@ bool Model::buildList(RenderPass pass) {
 
 	_needBuild[pass] = false;
 	return true;
+}
+
+void Model::advanceTime(float dt) {
+	manageAnimations(dt);
+}
+
+void Model::manageAnimations(float dt) {
+	float lastFrame = _elapsedTime;
+	float nextFrame = _elapsedTime + dt;
+	_elapsedTime = nextFrame;
+
+	// start a new animation if scheduled
+	if(_nextAnimation) {
+		// note that this interrupts the current animation!
+		_currentAnimation = _nextAnimation;
+		_nextAnimation = 0;
+		_elapsedTime = 0;
+		lastFrame = 0;
+		nextFrame = 0;
+	}
+
+	// if there is no current animation,
+	// select a default animation
+	if(!_currentAnimation)
+		selectDefaultAnimation();
+
+	// if the current animation has finished,
+	// start a default animation
+	if(_currentAnimation && nextFrame >= _currentAnimation->getLength()) {
+		//debug output
+		selectDefaultAnimation();
+		_elapsedTime = 0.0f;
+		lastFrame = 0;
+		nextFrame = 0;
+	}
+
+	if(_currentAnimation)
+		_currentAnimation->update(this, lastFrame, nextFrame);
 }
 
 void Model::render(RenderPass pass) {

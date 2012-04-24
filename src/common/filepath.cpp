@@ -49,9 +49,9 @@ using boost::equals;
 using boost::iequals;
 
 #if BOOST_FILESYSTEM_VERSION == 3
-#define stem() stem().native()
-#define extension() extension().native()
-#define filename() filename().native()
+#define stem() stem().string()
+#define extension() extension().string()
+#define filename() filename().string()
 #endif
 
 namespace Common {
@@ -142,10 +142,13 @@ bool FilePath::isAbsolute(const UString &p) {
 		return false;
 
 #if defined(BOOST_WINDOWS_API)
-	if (p.size() >= 3) {
+	if (p.size() >= 2) {
 		UString::iterator it = p.begin();
 		if (isalpha(*it))
 			if (*++it == ':') {
+				if (p.size() == 2)
+					return true;
+
 				++it;
 				if ((*it == '/') || (*it == '\\'))
 					return true;

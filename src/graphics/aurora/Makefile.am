@@ -18,6 +18,8 @@ noinst_HEADERS = types.h \
                  guiquad.h \
                  modelnode.h \
                  model.h \
+                 animnode.h \
+                 animation.h \
                  model_nwn.h \
                  model_nwn2.h \
                  model_kotor.h \
@@ -38,6 +40,8 @@ libaurora_la_SOURCES = texture.cpp \
                        guiquad.cpp \
                        modelnode.cpp \
                        model.cpp \
+                       animnode.cpp \
+                       animation.cpp \
                        model_nwn.cpp \
                        model_nwn2.cpp \
                        model_kotor.cpp \

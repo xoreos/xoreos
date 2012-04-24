@@ -53,6 +53,7 @@ namespace Graphics {
 namespace Aurora {
 
 class ModelNode;
+class Animation;
 
 class Model : public GLContainer, public Renderable {
 public:
@@ -124,14 +125,27 @@ public:
 	const ModelNode *getNode(const Common::UString &node) const;
 
 
+	// Animation
+
+	/** Get the specified node, from the current state. */
+	Animation *getAnimation(const Common::UString &anim);
+	/** play a named animation */
+	void playAnimation(const Common::UString &anim);
+	/** create the list of default animations */
+	void populateDefaultAnimations();
+	/** select the default idle animation */
+	void selectDefaultAnimation();
+
 	// Renderable
 	void calculateDistance();
 	void render(RenderPass pass);
-
+	void advanceTime(float dt);
 
 protected:
 	typedef std::list<ModelNode *> NodeList;
+	typedef std::vector<Animation *> AnimationList;
 	typedef std::map<Common::UString, ModelNode *, Common::UString::iless> NodeMap;
+	typedef std::map<Common::UString, Animation *, Common::UString::iless> AnimationMap;
 
 	/** A model state. */
 	struct State {
@@ -162,6 +176,11 @@ protected:
 
 	std::list<Common::UString> _stateNames; ///< All state names.
 
+	AnimationMap _animationMap;
+	AnimationList _defaultAnimations;
+	Animation *_currentAnimation;
+	Animation *_nextAnimation;
+
 	float _modelScale[3]; ///< The model's scale.
 
 	float _position[3]; ///< Model's position.
@@ -190,6 +209,7 @@ protected:
 private:
 	bool _needBuild[kRenderPassAll];
 	bool _drawBound;
+	float _elapsedTime; ///< Track animation duration
 
 	ListID _lists; ///< OpenGL display lists for the model
 
@@ -202,6 +222,7 @@ private:
 	void createAbsolutePosition();
 
 	void doDrawBound();
+	void manageAnimations(float dt);
 
 
 public:

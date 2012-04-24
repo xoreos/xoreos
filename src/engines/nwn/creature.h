@@ -226,6 +226,7 @@ private:
 		uint32 id; ///< Index of the part variant.
 		uint32 armor_id; ///< Index of the part variant when armour equipped.
 		Common::UString modelName; ///< Name of the model.
+		Common::UString texture;   ///< Name of the texture.
 		std::list<Graphics::Aurora::PLTHandle> plts; ///< Paletted textures.
 
 		BodyPart();
@@ -318,13 +319,31 @@ private:
 
 	void loadEquippedItems(const Aurora::GFFStruct &gff);
 
-	/** Construct the resource name of a body part model. */
+	/** Construct the resource name of a body part files. */
+	void constructPartName(const Common::UString &type, uint32 id,
+	                                 const Common::UString &gender,
+	                                 const Common::UString &race,
+	                                 const Common::UString &phenoType,
+	                                 Common::UString &part);
+
+	/** Construct the resource name of a body part files. */
+	void constructPartName(const Common::UString &type, uint32 id,
+	                                 const Common::UString &gender,
+	                                 const Common::UString &race,
+	                                 const Common::UString &phenoType,
+	                                 const Common::UString &phenoTypeAlt,
+	                                 Aurora::FileType fileType,
+	                                 Common::UString &part);
+
+	/** Construct the resource name of a body part files. */
 	void constructModelName(const Common::UString &type, uint32 id,
 	                        const Common::UString &gender,
 	                        const Common::UString &race,
 	                        const Common::UString &phenoType,
 	                        const Common::UString &phenoTypeAlt,
-	                        Common::UString &model);
+	                        Common::UString &model,
+	                        Common::UString &texture);
+
 	void getPartModels(); ///< Construct all body part models' resource names.
 	void getArmorModels(); ///< Populate the armor info for body parts.
 

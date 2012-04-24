@@ -40,6 +40,8 @@ class NWNModelLoader : public ModelLoader {
 public:
 	Graphics::Aurora::Model *load(const Common::UString &resref,
 			Graphics::Aurora::ModelType type, const Common::UString &texture);
+
+	std::map<Common::UString, Graphics::Aurora::Model*, Common::UString::iless> modelCache;
 };
 
 } // End of namespace NWN

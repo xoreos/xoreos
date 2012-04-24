@@ -193,6 +193,8 @@ private:
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?
 
+	bool _hasSound; //< Do we have working sound output?
+
 	bool _hasMultiChannel; ///< Do we have the multi-channel extension?
 	ALenum _format51; ///< The value for the 5.1 multi-channel format.
 
