@@ -251,7 +251,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	float radius = ctx.mdl->readIEEEFloatLE();
 
-	float scale = ctx.mdl->readIEEEFloatLE();
+	_animationScale = ctx.mdl->readIEEEFloatLE();
 
 	_superModelName.readFixedASCII(*ctx.mdl, 64);
 

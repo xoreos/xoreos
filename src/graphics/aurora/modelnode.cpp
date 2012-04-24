@@ -510,7 +510,7 @@ void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) co
 		return;
 	}
 
-	int lastFrame = 0;
+	uint32 lastFrame = 0;
 	for(uint32 i = 0; i < _positionFrames.size(); i++) {
 		PositionKeyFrame pos = _positionFrames[i];
 		if(pos.time < time)
@@ -531,8 +531,6 @@ void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) co
 	x = f * next.x + (1.0f - f) * last.x;
 	y = f * next.y + (1.0f - f) * last.y;
 	z = f * next.z + (1.0f - f) * last.z;
-	// f = (t - last.t)/(next.t - last.t)
-	// v = f * next + (1-f) * last
 }
 
 void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z, float& a) const {
@@ -543,7 +541,7 @@ void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z,
 		return;
 	}
 
-	int lastFrame = 0;
+	uint32 lastFrame = 0;
 	for(uint32 i = 0; i < _orientationFrames.size(); i++) {
 		QuaternionKeyFrame pos = _orientationFrames[i];
 		if(pos.time < time)

@@ -57,6 +57,8 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
 
 	_modelScale[0] = 1.0; _modelScale[1] = 1.0; _modelScale[2] = 1.0;
+	//TODO: is this the same as modelScale for non-UI?
+	_animationScale = 1.0;
 }
 
 Model::~Model() {
@@ -366,6 +368,21 @@ Animation *Model::getAnimation(const Common::UString &anim) {
 	}
 
 	return n->second;
+}
+
+float Model::getAnimationScale(const Common::UString &anim) {
+	//TODO: we can cache this for performance
+	AnimationMap::iterator n = _animationMap.find(anim);
+	if (n == _animationMap.end()) {
+		//animation scaling only applies to inherited animations
+		if(_supermodel)
+			return _animationScale * _supermodel->getAnimationScale(anim);
+		//can't find it, return sensible default
+		return 1.0f;
+	}
+
+	//we found it, don't scale further
+	return 1.0f;
 }
 
 void Model::calculateDistance() {

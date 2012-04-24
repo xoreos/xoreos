@@ -67,7 +67,7 @@ const Common::UString &AnimNode::getName() const {
 	return _name;
 }
 
-void AnimNode::update(Model *model, float lastFrame, float nextFrame) {
+void AnimNode::update(Model *model, float lastFrame, float nextFrame, float scale) {
 	if(!_nodedata)
 		return;
 	//determine the corresponding keyframes
@@ -77,7 +77,7 @@ void AnimNode::update(Model *model, float lastFrame, float nextFrame) {
 	_nodedata->interpolateOrientation(nextFrame, oX, oY, oZ, oA);
 	ModelNode *target = model->getNode(_name);
 	if(target) {
-		target->setPosition(curX, curY, curZ);
+		target->setPosition(curX * scale, curY * scale, curZ * scale);
 		target->setOrientation(oX, oY, oZ, oA);
 	}
 	//update the position/orientation of corresponding modelnode
