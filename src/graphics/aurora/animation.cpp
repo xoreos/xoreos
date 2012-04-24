@@ -75,9 +75,13 @@ void Animation::update(Model *model, float lastFrame, float nextFrame) {
 	//TODO: also need to fire off associated events
 	//for event in _events event->fire()
 
+
+	float scale = model->getAnimationScale(_name);
+	if(scale != 1.0f)
+		status("Anim %s has scale %f in model %s", _name.c_str(), scale, model->getName().c_str());
 	for (NodeList::iterator n = nodeList.begin();
 	     n != nodeList.end(); ++n) {
-		(*n)->update(model, lastFrame, nextFrame);
+		(*n)->update(model, lastFrame, nextFrame, scale);
 	}
 }
 

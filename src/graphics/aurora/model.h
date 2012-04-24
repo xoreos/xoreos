@@ -135,6 +135,8 @@ public:
 	void populateDefaultAnimations();
 	/** select the default idle animation */
 	void selectDefaultAnimation();
+	/** determine what animation scaling applies */
+	float getAnimationScale(const Common::UString &anim);
 
 	// Renderable
 	void calculateDistance();
@@ -180,6 +182,7 @@ protected:
 	AnimationList _defaultAnimations;
 	Animation *_currentAnimation;
 	Animation *_nextAnimation;
+	float _animationScale;
 
 	float _modelScale[3]; ///< The model's scale.
 

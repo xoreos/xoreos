@@ -57,7 +57,7 @@ public:
 	const Common::UString &getName() const;
 
 	/** Update the model properties interpolating between frames */
-	void update(Model *model, float lastFrame, float nextFrame);
+	void update(Model *model, float lastFrame, float nextFrame, float scale);
 protected:
 //	Animation *_animation; ///< The animation this node belongs to.
 
