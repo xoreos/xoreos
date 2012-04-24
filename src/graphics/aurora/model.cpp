@@ -59,6 +59,7 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_modelScale[0] = 1.0; _modelScale[1] = 1.0; _modelScale[2] = 1.0;
 	//TODO: is this the same as modelScale for non-UI?
 	_animationScale = 1.0;
+	_elapsedTime = 0.0;
 }
 
 Model::~Model() {
