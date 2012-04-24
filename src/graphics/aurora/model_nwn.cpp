@@ -315,6 +315,8 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 			if (line[1] != _name)
 				warning("Model_NWN_ASCII::load(): beginmodelgeom: \"%s\" != \"%s\"",
 				        line[1].c_str(), _name.c_str());
+		} else if (line[0] == "setanimationscale") {
+			line[1].parse(_animationScale);
 		} else if (line[0] == "node") {
 
 			ModelNode_NWN_ASCII *newNode = new ModelNode_NWN_ASCII(*this);
