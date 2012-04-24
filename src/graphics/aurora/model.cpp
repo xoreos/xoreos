@@ -380,7 +380,6 @@ float Model::getAnimationScale(const Common::UString &anim) {
 		//can't find it, return sensible default
 		return 1.0f;
 	}
-
 	//we found it, don't scale further
 	return 1.0f;
 }
