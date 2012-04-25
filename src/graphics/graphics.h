@@ -178,7 +178,7 @@ private:
 	SDL_Surface *_screen; ///< The OpenGL hardware surface.
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
-
+	uint32 _lastSampled; ///< Timestamp used to advance animations.
 	Common::Matrix _projection;    ///< Our projection matrix.
 	Common::Matrix _projectionInv; ///< The inverse of our projection matrix.
 

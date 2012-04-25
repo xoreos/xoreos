@@ -46,7 +46,7 @@ using boost::equals;
 using boost::iequals;
 
 #if BOOST_FILESYSTEM_VERSION == 3
-#define stem() stem().native()
+#define stem() stem().string()
 #endif
 
 namespace Common {
