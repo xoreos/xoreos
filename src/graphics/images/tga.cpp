@@ -142,7 +142,7 @@ void TGA::readData(Common::SeekableReadStream &tga, byte imageType, byte pixelDe
 				*dst++ = (pixel & 0x7C00) >> 7;
 				*dst++ = (pixel & 0x8000) ? 0xFF : 0x00;
 			}
-				
+
 		} else {
 			// Read it in raw
 			tga.read(_mipMaps[0]->data, _mipMaps[0]->size);

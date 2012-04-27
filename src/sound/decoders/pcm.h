@@ -67,7 +67,7 @@ enum PCMFlags {
  * @return The new SeekableAudioStream (or 0 on failure).
  */
 RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
-                                   int rate, byte flags, int channels, 
+                                   int rate, byte flags, int channels,
                                    bool disposeAfterUse = true);
 
 } // End of namespace Sound
