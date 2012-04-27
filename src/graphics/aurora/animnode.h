@@ -50,7 +50,7 @@ class ModelNode;
 
 class AnimNode {
 public:
-	AnimNode(ModelNode* modelnode);
+	AnimNode(ModelNode *modelnode);
 	~AnimNode();
 
 	/** Get the node's name. */
@@ -59,7 +59,7 @@ public:
 	/** Update the model properties interpolating between frames */
 	void update(Model *model, float lastFrame, float nextFrame, float scale);
 protected:
-//	Animation *_animation; ///< The animation this node belongs to.
+	// Animation *_animation; ///< The animation this node belongs to.
 
 	AnimNode *_parent;               ///< The node's parent.
 	std::list<AnimNode *> _children; ///< The node's children.
@@ -75,7 +75,7 @@ public:
 
 	void setParent(AnimNode *parent); ///< Set the node's parent.
 
-	//void reparent(AnimNode &parent);
+	// void reparent(AnimNode &parent);
 
 
 	friend class Animation;

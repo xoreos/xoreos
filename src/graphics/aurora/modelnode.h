@@ -220,9 +220,9 @@ public:
 
 	void reparent(ModelNode &parent);
 
-	//animation helpers
+	// Animation helpers
 	void interpolatePosition(float time, float &x, float &y, float &z) const;
-	void interpolateOrientation(float time, float &x, float &y, float &z, float& a) const;
+	void interpolateOrientation(float time, float &x, float &y, float &z, float &a) const;
 
 	friend class Model;
 };

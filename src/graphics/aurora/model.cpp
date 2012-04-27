@@ -57,7 +57,8 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
 
 	_modelScale[0] = 1.0; _modelScale[1] = 1.0; _modelScale[2] = 1.0;
-	//TODO: is this the same as modelScale for non-UI?
+
+	// TODO: Is this the same as modelScale for non-UI?
 	_animationScale = 1.0;
 	_elapsedTime = 0.0;
 }
@@ -138,7 +139,7 @@ void Model::drawBound(bool enabled) {
 }
 
 void Model::playAnimation(const Common::UString &anim) {
-	Animation* nextanim = getAnimation(anim);
+	Animation *nextanim = getAnimation(anim);
 	_nextAnimation = nextanim;
 }
 
@@ -157,18 +158,18 @@ static const char *kDefaultAnims[] = {
 
 void Model::populateDefaultAnimations() {
 	_defaultAnimations.clear();
-	Animation *anim;
-	//TODO: there's probably a cleaner way to do this, but its late
-	for(int i = 0; i < 9; i++) {
-		anim = getAnimation(kDefaultAnims[i]);
-		if(anim)
+
+	// TODO: There's probably a cleaner way to do this, but it's late
+	for (int i = 0; i < 9; i++) {
+		Animation *anim = getAnimation(kDefaultAnims[i]);
+		if (anim)
 			_defaultAnimations.push_back(anim);
 	}
 }
 
 void Model::selectDefaultAnimation() {
-	//TODO: select a default animation randomly instead of just the first one
-	if(_defaultAnimations.empty()) {
+	// TODO: Select a default animation randomly instead of just the first one
+	if (_defaultAnimations.empty()) {
 		_currentAnimation = 0;
 		return;
 	}
@@ -299,6 +300,7 @@ void Model::setState(const Common::UString &name) {
 	_currentState = state;
 
 	// TODO: Do we need to recreate the bounding box on a state change?
+
 	// createBound();
 
 	if (visible)
@@ -334,7 +336,7 @@ ModelNode *Model::getNode(const Common::UString &node) {
 
 	NodeMap::iterator n = _currentState->nodeMap.find(node);
 	if (n == _currentState->nodeMap.end()) {
-		if(_supermodel)
+		if (_supermodel)
 			return _supermodel->getNode(node);
 
 		return 0;
@@ -349,7 +351,7 @@ const ModelNode *Model::getNode(const Common::UString &node) const {
 
 	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
 	if (n == _currentState->nodeMap.end()) {
-		if(_supermodel)
+		if (_supermodel)
 			return _supermodel->getNode(node);
 
 		return 0;
@@ -362,7 +364,7 @@ Animation *Model::getAnimation(const Common::UString &anim) {
 
 	AnimationMap::iterator n = _animationMap.find(anim);
 	if (n == _animationMap.end()) {
-		if(_supermodel)
+		if (_supermodel)
 			return _supermodel->getAnimation(anim);
 
 		return 0;
@@ -372,16 +374,16 @@ Animation *Model::getAnimation(const Common::UString &anim) {
 }
 
 float Model::getAnimationScale(const Common::UString &anim) {
-	//TODO: we can cache this for performance
+	// TODO: We can cache this for performance
 	AnimationMap::iterator n = _animationMap.find(anim);
 	if (n == _animationMap.end()) {
-		//animation scaling only applies to inherited animations
-		if(_supermodel)
+		// Animation scaling only applies to inherited animations
+		if (_supermodel)
 			return _animationScale * _supermodel->getAnimationScale(anim);
-		//can't find it, return sensible default
+		// Can't find it, return sensible default
 		return 1.0f;
 	}
-	//we found it, don't scale further
+	// We found it, don't scale further
 	return 1.0f;
 }
 
@@ -463,9 +465,9 @@ void Model::manageAnimations(float dt) {
 	float nextFrame = _elapsedTime + dt;
 	_elapsedTime = nextFrame;
 
-	// start a new animation if scheduled
-	if(_nextAnimation) {
-		// note that this interrupts the current animation!
+	// Start a new animation if scheduled
+	if (_nextAnimation) {
+		// Note that this interrupts the current animation!
 		_currentAnimation = _nextAnimation;
 		_nextAnimation = 0;
 		_elapsedTime = 0;
@@ -473,22 +475,20 @@ void Model::manageAnimations(float dt) {
 		nextFrame = 0;
 	}
 
-	// if there is no current animation,
-	// select a default animation
-	if(!_currentAnimation)
+	// If there is no current animation, select a default animation
+	if (!_currentAnimation)
 		selectDefaultAnimation();
 
-	// if the current animation has finished,
-	// start a default animation
-	if(_currentAnimation && nextFrame >= _currentAnimation->getLength()) {
-		//debug output
+	// If the current animation has finished, start a default animation
+	if (_currentAnimation && nextFrame >= _currentAnimation->getLength()) {
+		// Debug output
 		selectDefaultAnimation();
 		_elapsedTime = 0.0f;
 		lastFrame = 0;
 		nextFrame = 0;
 	}
 
-	if(_currentAnimation)
+	if (_currentAnimation)
 		_currentAnimation->update(this, lastFrame, nextFrame);
 }
 

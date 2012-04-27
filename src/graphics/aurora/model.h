@@ -129,13 +129,13 @@ public:
 
 	/** Get the specified node, from the current state. */
 	Animation *getAnimation(const Common::UString &anim);
-	/** play a named animation */
+	/** Play a named animation */
 	void playAnimation(const Common::UString &anim);
-	/** create the list of default animations */
+	/** Create the list of default animations */
 	void populateDefaultAnimations();
-	/** select the default idle animation */
+	/** Select the default idle animation */
 	void selectDefaultAnimation();
-	/** determine what animation scaling applies */
+	/** Determine what animation scaling applies */
 	float getAnimationScale(const Common::UString &anim);
 
 	// Renderable

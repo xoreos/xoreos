@@ -244,7 +244,7 @@ void ModelNode::addChild(Model *model) {
 	for (Model::NodeList::iterator r = model->_currentState->rootNodes.begin();
 	     r != model->_currentState->rootNodes.end(); ++r) {
 
-		//TODO: Maybe we're REPLACING an existing node?
+		// TODO: Maybe we're REPLACING an existing node?
 		_children.push_back(*r);
 
 		(*r)->reparent(*this);
@@ -503,23 +503,22 @@ void ModelNode::render(RenderPass pass) {
 }
 
 void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {
-	//if less than 2 keyframes, don't interpolate
-	//just return the only position
-	if(_positionFrames.size() < 2) {
+	// If less than 2 keyframes, don't interpolate, just return the only position
+	if (_positionFrames.size() < 2) {
 		getPosition(x, y, z);
 		return;
 	}
 
 	uint32 lastFrame = 0;
-	for(uint32 i = 0; i < _positionFrames.size(); i++) {
+	for (uint32 i = 0; i < _positionFrames.size(); i++) {
 		PositionKeyFrame pos = _positionFrames[i];
-		if(pos.time < time)
+		if (pos.time < time)
 			lastFrame = i;
 		else
 			break;
 	}
 	PositionKeyFrame last = _positionFrames[lastFrame];
-	if(lastFrame + 1 >= _positionFrames.size() || last.time == time) {
+	if (lastFrame + 1 >= _positionFrames.size() || last.time == time) {
 		x = last.x;
 		y = last.y;
 		z = last.z;
@@ -533,24 +532,23 @@ void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) co
 	z = f * next.z + (1.0f - f) * last.z;
 }
 
-void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z, float& a) const {
-	//if less than 2 keyframes, don't interpolate
-	//just return the only orientation
-	if(_orientationFrames.size() < 2) {
+void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z, float &a) const {
+	// If less than 2 keyframes, don't interpolate just return the only orientation
+	if (_orientationFrames.size() < 2) {
 		getOrientation(x, y, z, a);
 		return;
 	}
 
 	uint32 lastFrame = 0;
-	for(uint32 i = 0; i < _orientationFrames.size(); i++) {
+	for (uint32 i = 0; i < _orientationFrames.size(); i++) {
 		QuaternionKeyFrame pos = _orientationFrames[i];
-		if(pos.time < time)
+		if (pos.time < time)
 			lastFrame = i;
 		else
 			break;
 	}
 	QuaternionKeyFrame last = _orientationFrames[lastFrame];
-	if(lastFrame + 1 >= _orientationFrames.size() || last.time == time) {
+	if (lastFrame + 1 >= _orientationFrames.size() || last.time == time) {
 		x = last.x;
 		y = last.y;
 		z = last.z;

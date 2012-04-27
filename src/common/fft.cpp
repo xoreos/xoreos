@@ -71,7 +71,7 @@ void FFT::permute(Complex *z) {
 	int np = 1 << _bits;
 
 	if (_tmpBuf) {
-		for(int j = 0; j < np; j++)
+		for (int j = 0; j < np; j++)
 			_tmpBuf[_revTab[j]] = z[j];
 
 		std::memcpy(z, _tmpBuf, np * sizeof(Complex));
@@ -80,7 +80,7 @@ void FFT::permute(Complex *z) {
 	}
 
 	// Reverse
-	for(int j = 0; j < np; j++) {
+	for (int j = 0; j < np; j++) {
 		int k = _revTab[j];
 
 		if (k < j)
@@ -94,12 +94,12 @@ int FFT::splitRadixPermutation(int i, int n, bool inverse) {
 
 	int m = n >> 1;
 
-	if(!(i & m))
+	if (!(i & m))
 		return splitRadixPermutation(i, m, inverse) * 2;
 
 	m >>= 1;
 
-	if(inverse == !(i & m))
+	if (inverse == !(i & m))
 		return splitRadixPermutation(i, m, inverse) * 4 + 1;
 
 	return splitRadixPermutation(i, m, inverse) * 4 - 1;
@@ -169,7 +169,7 @@ static void name(Complex *z, const float *wre, unsigned int n)\
 		wim -= 2;\
 		TRANSFORM(z[0],z[o1],z[o2],z[o3],wre[0],wim[0]);\
 		TRANSFORM(z[1],z[o1+1],z[o2+1],z[o3+1],wre[1],wim[-1]);\
-	} while(--n);\
+	} while (--n);\
 }
 
 PASS(pass)

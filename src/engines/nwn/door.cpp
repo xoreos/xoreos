@@ -220,10 +220,10 @@ bool Door::open(Object *opener) {
 	}
 
 	_state = kStateOpened1;
-	//setModelState();
+	// setModelState();
 
 	playSound(_soundOpened);
-	if(_model)
+	if (_model)
 		_model->playAnimation("opening1");
 	runScript(kScriptOpen, this, opener);
 
@@ -243,10 +243,10 @@ bool Door::close(Object *closer) {
 		return false;
 
 	_state = kStateClosed;
-	//setModelState();
+	// setModelState();
 
 	playSound(_soundClosed);
-	if(_model)
+	if (_model)
 		_model->playAnimation("closing1");
 	runScript(kScriptClosed, this, closer);
 
@@ -283,28 +283,28 @@ void Door::playAnimation(Animation animation) {
 	switch (animation) {
 		case kAnimationDoorClose:
 			playSound(_soundClosed);
-			if(_model)
+			if (_model)
 				_model->playAnimation("closing1");
 			_state = kStateClosed;
 			break;
 
 		case kAnimationDoorOpen1:
 			playSound(_soundOpened);
-			if(_model)
+			if (_model)
 				_model->playAnimation("opening1");
 			_state = kStateOpened1;
 			break;
 
 		case kAnimationDoorOpen2:
 			playSound(_soundOpened);
-			if(_model)
+			if (_model)
 				_model->playAnimation("opening2");
 			_state = kStateOpened2;
 			break;
 
 		case kAnimationDoorDestroy:
 			warning("TODO: Door::playAnimation(): kAnimationDoorDestroy");
-			if(_model)
+			if (_model)
 				_model->playAnimation("die");
 			break;
 
@@ -312,7 +312,7 @@ void Door::playAnimation(Animation animation) {
 			break;
 	}
 
-	//setModelState();
+	// setModelState();
 }
 
 } // End of namespace NWN

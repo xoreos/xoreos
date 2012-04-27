@@ -107,11 +107,11 @@ void Item::hide() {
 }
 
 void Item::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
-	//UTI def has a baseitem (index into baseitem.2da, determines equippable slots, model type)
-	//armour is 16, modeltype 3
-	//can look up armorpart_bodypart id
-	//them use that to construct model names
-	//
+	// UTI def has a baseitem (index into baseitem.2da, determines equippable slots, model type)
+	// armour is 16, modeltype 3
+	// can look up armorpart_bodypart id
+	// them use that to construct model names
+
 	// General properties
 
 	if (blueprint)
@@ -121,21 +121,20 @@ void Item::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blue
 
 	// Specialized object properties
 
-//	if (blueprint)
-//		loadObject(*blueprint); // Blueprint
-//	loadObject(instance);    // Instance
+	// if (blueprint)
+	// 	loadObject(*blueprint); // Blueprint
+	// loadObject(instance);    // Instance
 
-
-	//TODO:
-	// baseitem -- needed for inventory UI interactions
-	// stacksize -- used by inventory UI
+	// TODO:
+	//  baseitem -- needed for inventory UI interactions
+	//  stacksize -- used by inventory UI
 
 	// Appearance
 
-	//if (_appearanceID == Aurora::kFieldIDInvalid)
-		//throw Common::Exception("Item object without an appearance");
+	// if (_appearanceID == Aurora::kFieldIDInvalid)
+		// throw Common::Exception("Item object without an appearance");
 
-//	loadAppearance();
+	// loadAppearance();
 	loadSounds();
 }
 
@@ -159,10 +158,10 @@ void Item::loadProperties(const Aurora::GFFStruct &gff) {
 		_description = description.getString();
 	}
 
-    //this is an index into basitem.2da which contains inventory slot info
+	// This is an index into basitem.2da which contains inventory slot info
 	_baseitem = gff.getUint("BaseItem", _baseitem);
 
-    //TODO: are these armor only?
+	// TODO: Are these armor only?
 	_colorMetal1 = gff.getUint("Metal1Color", _colorMetal1);
 	_colorMetal2  = gff.getUint("Metal2Color", _colorMetal2);
 	_colorLeather1 = gff.getUint("Leather1Color", _colorLeather1);
@@ -199,7 +198,7 @@ void Item::loadSounds() {
 }
 
 static const char *kArmorPartFields[] = {
-	"Appearance_Head",  //heads appear to be a special case
+	"Appearance_Head",  // Heads appear to be a special case
 	"ArmorPart_Neck"  ,
 	"ArmorPart_Torso" ,
 	"ArmorPart_Pelvis",
@@ -224,7 +223,7 @@ void Item::loadArmorParts(const Aurora::GFFStruct &gff)
 }
 
 bool Item::isArmor() {
-	//TODO: this should really be based on the baseitem.2da
+	// TODO: This should really be based on the baseitem.2da
 	return _armorParts[kArmorPartTorso].id > 0;
 }
 

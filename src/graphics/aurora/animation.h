@@ -82,7 +82,7 @@ public:
 	void setTransTime(float transtime);
 
 	void update(Model *model, float lastFrame, float nextFrame);
-	void addAnimNode(AnimNode* node);
+	void addAnimNode(AnimNode *node);
 };
 
 } // End of namespace Aurora
