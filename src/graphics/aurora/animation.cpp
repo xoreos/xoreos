@@ -72,16 +72,18 @@ void Animation::setTransTime(float transtime) {
 }
 
 void Animation::update(Model *model, float lastFrame, float nextFrame) {
-	//TODO: also need to fire off associated events
-	//for event in _events event->fire()
+	// TODO: Also need to fire off associated events
+	//       for event in _events event->fire()
 
+
+	float scale = model->getAnimationScale(_name);
 	for (NodeList::iterator n = nodeList.begin();
 	     n != nodeList.end(); ++n) {
-		(*n)->update(model, lastFrame, nextFrame);
+		(*n)->update(model, lastFrame, nextFrame, scale);
 	}
 }
 
-void Animation::addAnimNode(AnimNode* node) {
+void Animation::addAnimNode(AnimNode *node) {
 	nodeList.push_back(node);
 	nodeMap.insert(std::make_pair(node->getName(), node));
 }

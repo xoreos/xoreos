@@ -812,14 +812,16 @@ bool GraphicsManager::renderWorld() {
 
 	buildNewTextures();
 
-	//get the current time
+	// Get the current time
 	uint32 now = EventMan.getTimestamp();
-	if(_lastSampled == 0)
+	if (_lastSampled == 0)
 		_lastSampled = now;
-	//calc elapsed time
-	float elapsedTime = (now-_lastSampled) / 1000.0f;
+
+	// Calc elapsed time
+	float elapsedTime = (now - _lastSampled) / 1000.0f;
 	_lastSampled = now;
-	//if game paused, skip the advanceTime loop below
+
+	// If game paused, skip the advanceTime loop below
 
 	// Advance time for animation queues
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();

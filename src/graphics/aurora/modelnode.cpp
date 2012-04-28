@@ -244,7 +244,7 @@ void ModelNode::addChild(Model *model) {
 	for (Model::NodeList::iterator r = model->_currentState->rootNodes.begin();
 	     r != model->_currentState->rootNodes.end(); ++r) {
 
-		//TODO: Maybe we're REPLACING an existing node?
+		// TODO: Maybe we're REPLACING an existing node?
 		_children.push_back(*r);
 
 		(*r)->reparent(*this);
@@ -503,49 +503,64 @@ void ModelNode::render(RenderPass pass) {
 }
 
 void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {
-	//if less than 2 keyframes, don't interpolate
-	//just return the only position
-	if(_positionFrames.size() < 2) {
+	// If less than 2 keyframes, don't interpolate, just return the only position
+	if (_positionFrames.size() < 2) {
 		getPosition(x, y, z);
 		return;
 	}
 
-	int lastFrame = 0;
-	for(uint32 i = 0; i < _positionFrames.size(); i++) {
+	uint32 lastFrame = 0;
+	for (uint32 i = 0; i < _positionFrames.size(); i++) {
 		PositionKeyFrame pos = _positionFrames[i];
-		if(pos.time < time)
+		if (pos.time < time)
 			lastFrame = i;
 		else
 			break;
 	}
 	PositionKeyFrame last = _positionFrames[lastFrame];
-	x = last.x;
-	y = last.y;
-	z = last.z;
-	//TODO: also look up the following frame and actually interpolate
+	if (lastFrame + 1 >= _positionFrames.size() || last.time == time) {
+		x = last.x;
+		y = last.y;
+		z = last.z;
+		return;
+	}
+
+	PositionKeyFrame next = _positionFrames[lastFrame + 1];
+	float f = (time - last.time) / (next.time - last.time);
+	x = f * next.x + (1.0f - f) * last.x;
+	y = f * next.y + (1.0f - f) * last.y;
+	z = f * next.z + (1.0f - f) * last.z;
 }
 
-void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z, float& a) const {
-	//if less than 2 keyframes, don't interpolate
-	//just return the only position
-	if(_orientationFrames.size() < 2) {
+void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z, float &a) const {
+	// If less than 2 keyframes, don't interpolate just return the only orientation
+	if (_orientationFrames.size() < 2) {
 		getOrientation(x, y, z, a);
 		return;
 	}
 
-	int lastFrame = 0;
-	for(uint32 i = 0; i < _orientationFrames.size(); i++) {
+	uint32 lastFrame = 0;
+	for (uint32 i = 0; i < _orientationFrames.size(); i++) {
 		QuaternionKeyFrame pos = _orientationFrames[i];
-		if(pos.time < time)
+		if (pos.time < time)
 			lastFrame = i;
 		else
 			break;
 	}
 	QuaternionKeyFrame last = _orientationFrames[lastFrame];
-	x = last.x;
-	y = last.y;
-	z = last.z;
-	a = Common::rad2deg(acos(last.q) * 2.0);
+	if (lastFrame + 1 >= _orientationFrames.size() || last.time == time) {
+		x = last.x;
+		y = last.y;
+		z = last.z;
+		a = Common::rad2deg(acos(last.q) * 2.0);
+	}
+	QuaternionKeyFrame next = _orientationFrames[lastFrame + 1];
+	float f = (time - last.time) / (next.time - last.time);
+	x = f * next.x + (1.0f - f) * last.x;
+	y = f * next.y + (1.0f - f) * last.y;
+	z = f * next.z + (1.0f - f) * last.z;
+	float q = f * next.q + (1.0f - f) * last.q;
+	a = Common::rad2deg(acos(q) * 2.0);
 }
 
 } // End of namespace Aurora

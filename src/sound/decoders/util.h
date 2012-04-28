@@ -49,8 +49,8 @@ static inline void floatToInt16Interleave(int16 *dst, const float **src,
 			dst[2 * i + 1] = floatToInt16(src[1][i]);
 		}
 	} else {
-		for(uint8 c = 0; c < channels; c++)
-			for(uint32 i = 0, j = c; i < length; i++, j += channels)
+		for (uint8 c = 0; c < channels; c++)
+			for (uint32 i = 0, j = c; i < length; i++, j += channels)
 				dst[j] = floatToInt16(src[c][i]);
 	}
 }

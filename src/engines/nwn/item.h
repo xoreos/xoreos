@@ -57,13 +57,13 @@ public:
 	bool isArmor();
 	int getArmorPart(int index);
 
-	//TODO: use _colors array like plt file
-	uint32 _colorMetal1; ///< The 1. color of the creature's metal armor.
-	uint32 _colorMetal2; ///< The 2. color of the creature's metal armor.
+	// TODO: Use _colors array like plt file
+	uint32 _colorMetal1;   ///< The 1. color of the creature's metal armor.
+	uint32 _colorMetal2;   ///< The 2. color of the creature's metal armor.
 	uint32 _colorLeather1; ///< The 1. color of the creature's leather armor.
 	uint32 _colorLeather2; ///< The 2. color of the creature's leather armor.
-	uint32 _colorCloth1; ///< The 1. color of the creature's cloth armor.
-	uint32 _colorCloth2; ///< The 2. color of the creature's cloth armor.
+	uint32 _colorCloth1;   ///< The 1. color of the creature's cloth armor.
+	uint32 _colorCloth2;   ///< The 2. color of the creature's cloth armor.
 
 protected:
 	Common::UString _modelName; ///< The model's resource name.
@@ -78,9 +78,9 @@ protected:
 	/** Load the situated object from an instance and its blueprint. */
 
 	/** Load object-specific properties. */
-	//virtual void loadObject(const Aurora::GFFStruct &gff) = 0;
+	// virtual void loadObject(const Aurora::GFFStruct &gff) = 0;
 	/** Load appearance-specific properties. */
-	//virtual void loadAppearance() = 0;
+	// virtual void loadAppearance() = 0;
 
 
 private:
@@ -112,7 +112,7 @@ private:
 	void loadArmorParts(const Aurora::GFFStruct &gff);
 	void loadSounds();
 
-	/** index to appropriate armor part. */
+	/** Index to appropriate armor part. */
 	struct ArmorPart {
 		uint32 id; ///< Index of the part variant.
 	};

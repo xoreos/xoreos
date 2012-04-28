@@ -391,13 +391,13 @@ void Creature::getArmorModels() {
 		}
 		status("Equipping armour \"%s\" on model \"%s\"", item.getName().c_str(), _tag.c_str());
 
-		//set the body part models
+		// Set the body part models
 		for (uint i = 0; i < kBodyPartMAX; i++) {
 			int id = item.getArmorPart(i);
 			if (id > 0)
 			_bodyParts[i].armor_id = id;
 		}
-		//set the armour color channels
+		// Set the armour color channels
 		_colorMetal1 = item._colorMetal1;
 		_colorMetal2 = item._colorMetal2;
 		_colorLeather1 = item._colorLeather1;
@@ -460,7 +460,7 @@ void Creature::loadModel() {
 
 			// Add the loaded model to the appropriate part node
 			Graphics::Aurora::ModelNode *part_node = _model->getNode(kBodyPartNodes[i]);
-			if(part_node)
+			if (part_node)
 				part_node->addChild(part_model);
 
 			TextureMan.getNewPLTs(_bodyParts[i].plts);
@@ -708,7 +708,7 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_colorTattoo1 = gff.getUint("Color_Tattoo1", _colorTattoo1);
 	_colorTattoo2 = gff.getUint("Color_Tattoo2", _colorTattoo2);
 
-	//Equipped Items
+	// Equipped Items
 	loadEquippedItems(gff);
 
 	// Scripts
@@ -729,7 +729,7 @@ void Creature::loadPortrait(const Aurora::GFFStruct &gff, Common::UString &portr
 }
 
 void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
-	if(!gff.hasField("Equip_ItemList"))
+	if (!gff.hasField("Equip_ItemList"))
 		return;
 
 	const Aurora::GFFList &cEquipped = gff.getList("Equip_ItemList");
@@ -753,7 +753,7 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 
 		item->load(cItem, uti ? &uti->getTopLevel() : 0);
 
-		//add it to the equipped list
+		// Add it to the equipped list
 		_equippedItems.push_back(*item);
 
 		delete uti;

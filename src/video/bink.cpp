@@ -610,9 +610,9 @@ void Bink::initAudioTrack(AudioTrack &audio) {
 
 	uint32 frameLenBits;
 	// Calculate frame length
-	if     (audio.sampleRate < 22050)
+	if      (audio.sampleRate < 22050)
 		frameLenBits =  9;
-	else if(audio.sampleRate < 44100)
+	else if (audio.sampleRate < 44100)
 		frameLenBits = 10;
 	else
 		frameLenBits = 11;

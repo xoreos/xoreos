@@ -80,7 +80,7 @@ void MDCT::calcMDCT(float *output, const float *input) {
 	const uint16 *revTab = _fft->getRevTab();
 
 	// Pre rotation
-	for(int i = 0; i < size8; i++) {
+	for (int i = 0; i < size8; i++) {
 		float re = -input[2 * i + size3] - input[size3 - 1 - 2 * i];
 		float im = -input[2 * i + size4] + input[size4 - 1 - 2 * i];
 		int    j = revTab[i];
@@ -97,7 +97,7 @@ void MDCT::calcMDCT(float *output, const float *input) {
 	_fft->calc(x);
 
 	// Post rotation
-	for(int i = 0; i < size8; i++) {
+	for (int i = 0; i < size8; i++) {
 		float r0, i0, r1, i1;
 
 		CMUL(i1, r0, x[size8-i-1].re, x[size8-i-1].im, -_tSin[size8-i-1], -_tCos[size8-i-1]);
@@ -134,7 +134,7 @@ void MDCT::calcHalfIMDCT(float *output, const float *input) {
 	// Pre rotation
 	const float *in1 = input;
 	const float *in2 = input + size2 - 1;
-	for(int k = 0; k < size4; k++) {
+	for (int k = 0; k < size4; k++) {
 		const int j = revTab[k];
 
 		CMUL(z[j].re, z[j].im, *in2, *in1, _tCos[k], _tSin[k]);
@@ -146,7 +146,7 @@ void MDCT::calcHalfIMDCT(float *output, const float *input) {
 	_fft->calc(z);
 
 	// Post rotation + reordering
-	for(int k = 0; k < size8; k++) {
+	for (int k = 0; k < size8; k++) {
 		float r0, i0, r1, i1;
 
 		CMUL(r0, i1, z[size8-k-1].im, z[size8-k-1].re, _tSin[size8-k-1], _tCos[size8-k-1]);

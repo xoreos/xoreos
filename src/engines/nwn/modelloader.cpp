@@ -52,9 +52,9 @@ Graphics::Aurora::Model *NWNModelLoader::load(const Common::UString &resref,
 		throw;
 	}
 
-	//if supermodel
-	//check model cache
-	//else load supermodel and insert into cache
+	// if supermodel
+	// check model cache
+	// else load supermodel and insert into cache
 
 	return model;
 }

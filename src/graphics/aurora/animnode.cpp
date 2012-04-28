@@ -42,7 +42,7 @@ namespace Aurora {
 
 AnimNode::AnimNode(ModelNode *modelnode) :
 	_parent(0) {
-	// actual data is loaded as a generic modelnode
+	// Actual data is loaded as a generic modelnode
 	_nodedata = modelnode;
 	if (modelnode)
 		_name = modelnode->getName();
@@ -67,20 +67,24 @@ const Common::UString &AnimNode::getName() const {
 	return _name;
 }
 
-void AnimNode::update(Model *model, float lastFrame, float nextFrame) {
-	if(!_nodedata)
+void AnimNode::update(Model *model, float lastFrame, float nextFrame, float scale) {
+	if (!_nodedata)
 		return;
-	//determine the corresponding keyframes
+
+	// Determine the corresponding keyframes
 	float curX, curY, curZ;
 	_nodedata->interpolatePosition(nextFrame, curX, curY, curZ);
+
 	float oX, oY, oZ, oA;
 	_nodedata->interpolateOrientation(nextFrame, oX, oY, oZ, oA);
+
 	ModelNode *target = model->getNode(_name);
-	if(target) {
-		target->setPosition(curX, curY, curZ);
+	if (target) {
+		target->setPosition(curX * scale, curY * scale, curZ * scale);
 		target->setOrientation(oX, oY, oZ, oA);
 	}
-	//update the position/orientation of corresponding modelnode
+
+	// Update the position/orientation of corresponding modelnode
 }
 
 } // End of namespace Aurora
