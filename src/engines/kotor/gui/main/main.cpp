@@ -36,6 +36,8 @@
 #include "engines/kotor/module.h"
 
 #include "engines/kotor/gui/main/main.h"
+#include "engines/kotor/gui/main/movies.h"
+#include "engines/kotor/gui/main/options.h"
 
 namespace Engines {
 
@@ -45,10 +47,32 @@ MainMenu::MainMenu(Module &module, bool isXbox) : _module(&module), _isXbox(isXb
 	load(isXbox ? "mainmenu" : "mainmenu16x12");
 
 	addBackground("back");
+	
+	_movies = 0;
+	_options = 0;
 }
 
 MainMenu::~MainMenu() {
 }
+
+
+void MainMenu::createMovies() {
+	if (_movies)
+		return;
+
+	//create the movies menu
+	_movies = new MoviesMenu;
+}
+
+void MainMenu::createOptions() {
+	if(_options)
+		return;
+	
+	//create the options menu
+	_options = new OptionsMenu;
+
+}
+
 
 void MainMenu::initWidget(Widget &widget) {
 	// BioWare logo, the original game doesn't display it.
@@ -91,16 +115,35 @@ void MainMenu::initWidget(Widget &widget) {
 }
 
 void MainMenu::callbackActive(Widget &widget) {
+  
+  	if (widget.getTag() == "BTN_NEWGAME") {
+		if (_module->load("lev_m40aa"))
+			_returnCode = 2;
+		return;
+	}
+	
+	if(widget.getTag() == "BTN_LOADGAME") {
+
+	}
+	
+	if(widget.getTag() == "BTN_MOVIES") {
+		  createMovies();
+		  
+		  sub(*_movies);
+		  return;
+	}
+	
+	if(widget.getTag() == "BTN_OPTIONS") {
+		  createOptions();
+		  
+		  sub(*_options);
+		  return;
+	}
+	
 	if (widget.getTag() == "BTN_EXIT") {
 		EventMan.requestQuit();
 
 		_returnCode = 1;
-		return;
-	}
-
-	if (widget.getTag() == "BTN_NEWGAME") {
-		if (_module->load("lev_m40aa"))
-			_returnCode = 2;
 		return;
 	}
 }

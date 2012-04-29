@@ -53,7 +53,7 @@ class WidgetProgressbar;
 class WidgetListBox;
 
 /** A KotOR GUI. */
-class GUI : public ::Engines::GUI {
+class GUI : public Engines::GUI {
 public:
 	GUI();
 	~GUI();
