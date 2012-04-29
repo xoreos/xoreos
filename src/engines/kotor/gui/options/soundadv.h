@@ -23,44 +23,32 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/kotor/gui/main/main.h
- *  The KotOR main menu.
+/** @file engines/kotor/gui/options/soundadv.h
+ *  The advanced sound menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#ifndef SOUNDADV_H
+#define SOUNDADV_H
 
-#include "engines/kotor/gui/gui.h"
+#include <engines/kotor/gui/gui.h>
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+class OptionsSoundAdvancedMenu: public GUI {
 
-class MainMenu : public GUI {
-public:
-	MainMenu(Module &module, bool isXbox);
-	~MainMenu();
-
+public: 
+	OptionsSoundAdvancedMenu();
+	~OptionsSoundAdvancedMenu();
+    
 protected:
-	void initWidget(Widget &widget);
-
-	void callbackActive(Widget &widget);
-
-private:
-	Module *_module;
-	bool _isXbox;
+	void callbackActive (Widget& widget);
 	
-	GUI *_movies;
-	GUI *_options;
-	
-	void createMovies();
-	void createOptions();
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#endif // SOUNDADV_H

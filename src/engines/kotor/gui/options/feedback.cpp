@@ -23,44 +23,38 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/kotor/gui/main/main.h
- *  The KotOR main menu.
+/** @file engines/kotor/gui/options/feedback.cpp
+ *  The feedback menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#include "engines/aurora/widget.h"
 
-#include "engines/kotor/gui/gui.h"
+#include "engines/kotor/gui/options/feedback.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+OptionsFeedbackMenu::OptionsFeedbackMenu() {
+	load("optfeedback");
+}
 
-class MainMenu : public GUI {
-public:
-	MainMenu(Module &module, bool isXbox);
-	~MainMenu();
-
-protected:
-	void initWidget(Widget &widget);
-
-	void callbackActive(Widget &widget);
-
-private:
-	Module *_module;
-	bool _isXbox;
+OptionsFeedbackMenu::~OptionsFeedbackMenu() {
 	
-	GUI *_movies;
-	GUI *_options;
+}
+
+void OptionsFeedbackMenu::callbackActive(Widget &widget) {
+  
+	if (widget.getTag() == "BTN_DEFAULT") {
+	  
+	}
 	
-	void createMovies();
-	void createOptions();
-};
+	if (widget.getTag() == "BTN_BACK") {
+		_returnCode = 1;
+		return;
+	}
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H
