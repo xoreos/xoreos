@@ -37,7 +37,7 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN resolution options menu. */
-class OptionsResolutionMenu: public GUI {
+class OptionsResolutionMenu : public GUI {
 public:
 	OptionsResolutionMenu(bool isMain = false);
 	~OptionsResolutionMenu();

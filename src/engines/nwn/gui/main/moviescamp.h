@@ -37,7 +37,7 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN campaign movies menu. */
-class MoviesCampMenu: public GUI {
+class MoviesCampMenu : public GUI {
 public:
 	MoviesCampMenu();
 	~MoviesCampMenu();

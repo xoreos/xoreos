@@ -37,7 +37,7 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN video options menu. */
-class OptionsVideoMenu: public GUI {
+class OptionsVideoMenu : public GUI {
 public:
 	OptionsVideoMenu(bool isMain = false);
 	~OptionsVideoMenu();

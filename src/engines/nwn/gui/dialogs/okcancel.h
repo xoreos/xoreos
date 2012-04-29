@@ -39,7 +39,7 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN okay/cancel dialog. */
-class OKCancelDialog: public GUI {
+class OKCancelDialog : public GUI {
 public:
 	OKCancelDialog(const Common::UString &msg,
 			const Common::UString &ok = "", const Common::UString &cancel = "");

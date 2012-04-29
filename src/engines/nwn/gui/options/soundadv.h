@@ -37,7 +37,7 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN advanced sound options menu. */
-class OptionsSoundAdvancedMenu: public GUI {
+class OptionsSoundAdvancedMenu : public GUI {
 public:
 	OptionsSoundAdvancedMenu(bool isMain = false);
 	~OptionsSoundAdvancedMenu();

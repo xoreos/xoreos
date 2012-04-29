@@ -39,7 +39,7 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN yes/no/cancel dialog. */
-class YesNoCancelDialog: public GUI {
+class YesNoCancelDialog : public GUI {
 public:
 	YesNoCancelDialog(const Common::UString &msg, const Common::UString &yes = "",
 			const Common::UString &no = "", const Common::UString &cancel = "");

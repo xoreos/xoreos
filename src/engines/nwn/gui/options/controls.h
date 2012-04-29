@@ -37,7 +37,7 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN controls options menu. */
-class OptionsControlsMenu: public GUI {
+class OptionsControlsMenu : public GUI {
 public:
 	OptionsControlsMenu(bool isMain = false);
 	~OptionsControlsMenu();

@@ -37,7 +37,7 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN feedback options menu. */
-class OptionsFeedbackMenu: public GUI {
+class OptionsFeedbackMenu : public GUI {
 public:
 	OptionsFeedbackMenu(bool isMain = false);
 	~OptionsFeedbackMenu();

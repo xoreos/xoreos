@@ -37,7 +37,7 @@ namespace Engines {
 namespace NWN {
 
 /** The NWN game options menu. */
-class OptionsGameMenu: public GUI {
+class OptionsGameMenu : public GUI {
 public:
 	OptionsGameMenu(bool isMain = false);
 	~OptionsGameMenu();
