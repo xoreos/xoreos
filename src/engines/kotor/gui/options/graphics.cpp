@@ -23,44 +23,47 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/kotor/gui/main/main.h
- *  The KotOR main menu.
+/** @file engines/kotor/gui/options/graphics.cpp
+ *  The graphics menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#include "engines/aurora/widget.h"
 
-#include "engines/kotor/gui/gui.h"
+#include "engines/kotor/gui/options/graphics.h"
+#include "engines/kotor/gui/options/graphicsadv.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+OptionsGraphicsMenu::OptionsGraphicsMenu() {
+	load("optgraphics");
 
-class MainMenu : public GUI {
-public:
-	MainMenu(Module &module, bool isXbox);
-	~MainMenu();
+	_advanced = new OptionsGraphicsAdvancedMenu();
+}
 
-protected:
-	void initWidget(Widget &widget);
+OptionsGraphicsMenu::~OptionsGraphicsMenu() {
+	delete _advanced;
+}
 
-	void callbackActive(Widget &widget);
+void OptionsGraphicsMenu::callbackActive(Widget &widget) {
 
-private:
-	Module *_module;
-	bool _isXbox;
+	if (widget.getTag() == "BTN_ADVANCED") {
+		sub(*_advanced);
+		return;
+	}
 
-	GUI *_movies;
-	GUI *_options;
+	if (widget.getTag() == "BTN_DEFAULT") {
 
-	void createMovies();
-	void createOptions();
-};
+	}
+
+	if (widget.getTag() == "BTN_BACK") {
+		_returnCode = 1;
+		return;
+	}
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H

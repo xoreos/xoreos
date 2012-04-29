@@ -23,44 +23,46 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/kotor/gui/main/main.h
- *  The KotOR main menu.
+/** @file engines/kotor/gui/options/keyboardconfig.cpp
+ *  The keyboard mapping menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#include "engines/aurora/widget.h"
 
-#include "engines/kotor/gui/gui.h"
+#include "engines/kotor/gui/options/keyboardconfig.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+OptionsKeyboardConfigurationMenu::OptionsKeyboardConfigurationMenu() {
+	load("optkeymapping");
+}
 
-class MainMenu : public GUI {
-public:
-	MainMenu(Module &module, bool isXbox);
-	~MainMenu();
+OptionsKeyboardConfigurationMenu::~OptionsKeyboardConfigurationMenu() {
 
-protected:
-	void initWidget(Widget &widget);
+}
 
-	void callbackActive(Widget &widget);
+void OptionsKeyboardConfigurationMenu::callbackActive(Widget &widget) {
 
-private:
-	Module *_module;
-	bool _isXbox;
+	if (widget.getTag() == "BTN_Default") {
 
-	GUI *_movies;
-	GUI *_options;
+	}
 
-	void createMovies();
-	void createOptions();
-};
+	if (widget.getTag() == "BTN_Cancel") {
+		_returnCode = 1;
+		return;
+	}
+
+	if (widget.getTag() == "BTN_Accept") {
+		_returnCode = 1;
+		return;
+	}
+
+}
+
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H

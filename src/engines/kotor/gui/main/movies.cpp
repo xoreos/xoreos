@@ -23,44 +23,33 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/kotor/gui/main/main.h
- *  The KotOR main menu.
+/** @file engines/kotor/gui/main/movies.cpp
+ *  The movies menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#include "engines/aurora/widget.h"
 
-#include "engines/kotor/gui/gui.h"
+#include "engines/kotor/gui/main/movies.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+MoviesMenu::MoviesMenu() {
+	load("titlemovie");
+}
 
-class MainMenu : public GUI {
-public:
-	MainMenu(Module &module, bool isXbox);
-	~MainMenu();
+MoviesMenu::~MoviesMenu() {
+}
 
-protected:
-	void initWidget(Widget &widget);
-
-	void callbackActive(Widget &widget);
-
-private:
-	Module *_module;
-	bool _isXbox;
-
-	GUI *_movies;
-	GUI *_options;
-
-	void createMovies();
-	void createOptions();
-};
+void MoviesMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_BACK") {
+		_returnCode = 1;
+		return;
+	}
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H
