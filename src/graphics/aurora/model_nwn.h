@@ -92,6 +92,8 @@ private:
 	void readAnimASCII(ParserContext &ctx);
 	void skipAnimASCII(ParserContext &ctx);
 
+	void populateDefaultAnimations();
+
 	friend class ModelNode_NWN_Binary;
 	friend class ModelNode_NWN_ASCII;
 };

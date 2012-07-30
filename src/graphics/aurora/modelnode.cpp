@@ -511,13 +511,14 @@ void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) co
 
 	uint32 lastFrame = 0;
 	for (uint32 i = 0; i < _positionFrames.size(); i++) {
-		PositionKeyFrame pos = _positionFrames[i];
-		if (pos.time < time)
-			lastFrame = i;
-		else
+		const PositionKeyFrame &pos = _positionFrames[i];
+		if (pos.time >= time)
 			break;
+
+		lastFrame = i;
 	}
-	PositionKeyFrame last = _positionFrames[lastFrame];
+
+	const PositionKeyFrame &last = _positionFrames[lastFrame];
 	if (lastFrame + 1 >= _positionFrames.size() || last.time == time) {
 		x = last.x;
 		y = last.y;
@@ -525,8 +526,9 @@ void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) co
 		return;
 	}
 
-	PositionKeyFrame next = _positionFrames[lastFrame + 1];
-	float f = (time - last.time) / (next.time - last.time);
+	const PositionKeyFrame &next = _positionFrames[lastFrame + 1];
+
+	const float f = (time - last.time) / (next.time - last.time);
 	x = f * next.x + (1.0f - f) * last.x;
 	y = f * next.y + (1.0f - f) * last.y;
 	z = f * next.z + (1.0f - f) * last.z;
@@ -541,25 +543,29 @@ void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z,
 
 	uint32 lastFrame = 0;
 	for (uint32 i = 0; i < _orientationFrames.size(); i++) {
-		QuaternionKeyFrame pos = _orientationFrames[i];
-		if (pos.time < time)
-			lastFrame = i;
-		else
+		const QuaternionKeyFrame &pos = _orientationFrames[i];
+		if (pos.time >= time)
 			break;
+
+		lastFrame = i;
 	}
-	QuaternionKeyFrame last = _orientationFrames[lastFrame];
+
+	const QuaternionKeyFrame &last = _orientationFrames[lastFrame];
 	if (lastFrame + 1 >= _orientationFrames.size() || last.time == time) {
 		x = last.x;
 		y = last.y;
 		z = last.z;
 		a = Common::rad2deg(acos(last.q) * 2.0);
 	}
-	QuaternionKeyFrame next = _orientationFrames[lastFrame + 1];
-	float f = (time - last.time) / (next.time - last.time);
+
+	const QuaternionKeyFrame &next = _orientationFrames[lastFrame + 1];
+
+	const float f = (time - last.time) / (next.time - last.time);
 	x = f * next.x + (1.0f - f) * last.x;
 	y = f * next.y + (1.0f - f) * last.y;
 	z = f * next.z + (1.0f - f) * last.z;
-	float q = f * next.q + (1.0f - f) * last.q;
+
+	const float q = f * next.q + (1.0f - f) * last.q;
 	a = Common::rad2deg(acos(q) * 2.0);
 }
 

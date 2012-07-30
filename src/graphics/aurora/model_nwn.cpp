@@ -470,6 +470,38 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 
 }
 
+struct DefaultAnim {
+	const char *name;
+	int probability;
+};
+
+static const DefaultAnim kDefaultAnims[] = {
+	{"pausesh" ,   5},
+	{"pausebrd",   5},
+	{"hturnl"  ,   5},
+	{"hturnr"  ,   5},
+	{"pause1"  , 100},
+	{"pause2"  , 100},
+	{"chturnl" ,   5},
+	{"chturnr" ,   5},
+	{"cpause1" , 100}
+};
+
+void Model_NWN::populateDefaultAnimations() {
+	for (int i = 0; i < ARRAYSIZE(kDefaultAnims); i++) {
+		Animation *anim = getAnimation(kDefaultAnims[i].name);
+		if (!anim)
+			continue;
+
+		DefaultAnimation defaultAnim;
+
+		defaultAnim.animation   = anim;
+		defaultAnim.probability = kDefaultAnims[i].probability;
+
+		_defaultAnimations.push_back(defaultAnim);
+	}
+}
+
 
 ModelNode_NWN_Binary::ModelNode_NWN_Binary(Model &model) : ModelNode(model) {
 	_hasTransparencyHint = true;

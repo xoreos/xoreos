@@ -127,25 +127,23 @@ public:
 
 	// Animation
 
-	/** Get the specified node, from the current state. */
-	Animation *getAnimation(const Common::UString &anim);
-	/** Play a named animation */
-	void playAnimation(const Common::UString &anim);
-	/** Create the list of default animations */
-	void populateDefaultAnimations();
-	/** Select the default idle animation */
-	void selectDefaultAnimation();
-	/** Determine what animation scaling applies */
+	/** Determine what animation scaling applies. */
 	float getAnimationScale(const Common::UString &anim);
+
+	/** Play a named animation. */
+	void playAnimation(const Common::UString &anim);
+	/** Play a default idle animation. */
+	void playDefaultAnimation();
+
 
 	// Renderable
 	void calculateDistance();
 	void render(RenderPass pass);
 	void advanceTime(float dt);
 
+
 protected:
 	typedef std::list<ModelNode *> NodeList;
-	typedef std::vector<Animation *> AnimationList;
 	typedef std::map<Common::UString, ModelNode *, Common::UString::iless> NodeMap;
 	typedef std::map<Common::UString, Animation *, Common::UString::iless> AnimationMap;
 
@@ -161,6 +159,15 @@ protected:
 
 	typedef std::list<State *> StateList;
 	typedef std::map<Common::UString, State *> StateMap;
+
+	/** A default animation. */
+	struct DefaultAnimation {
+		Animation *animation; ///< The animation.
+
+		uint8 probability; ///< The probability (in percent) this animation is selected.
+	};
+
+	typedef std::list<DefaultAnimation> DefaultAnimations;
 
 
 	ModelType _type; ///< The model's type.
@@ -178,11 +185,15 @@ protected:
 
 	std::list<Common::UString> _stateNames; ///< All state names.
 
-	AnimationMap _animationMap;
-	AnimationList _defaultAnimations;
-	Animation *_currentAnimation;
-	Animation *_nextAnimation;
-	float _animationScale;
+	AnimationMap _animationMap; ///< Map of all animations in this model.
+
+	Animation *_currentAnimation; ///< The currently playing animations.
+	Animation *_nextAnimation;    ///< The animation that's scheduled next.
+
+	float _animationScale; ///< The scale of the animation.
+
+	/** All default animations, sorted from least to most probable. */
+	DefaultAnimations _defaultAnimations;
 
 	float _modelScale[3]; ///< The model's scale.
 
@@ -196,6 +207,12 @@ protected:
 	Common::BoundingBox _boundBox;
 	/** The model's box after translate/rotate. */
 	Common::BoundingBox _absoluteBoundBox;
+
+
+	// Animation
+
+	/** Get the animation from its name. */
+	Animation *getAnimation(const Common::UString &anim);
 
 
 	/** Finalize the loading procedure. */
@@ -226,6 +243,8 @@ private:
 
 	void doDrawBound();
 	void manageAnimations(float dt);
+
+	Animation *selectDefaultAnimation() const;
 
 
 public:

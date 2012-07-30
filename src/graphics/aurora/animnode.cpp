@@ -71,20 +71,20 @@ void AnimNode::update(Model *model, float lastFrame, float nextFrame, float scal
 	if (!_nodedata)
 		return;
 
+	ModelNode *target = model->getNode(_name);
+	if (!target)
+		return;
+
 	// Determine the corresponding keyframes
-	float curX, curY, curZ;
-	_nodedata->interpolatePosition(nextFrame, curX, curY, curZ);
+	float posX, posY, posZ;
+	_nodedata->interpolatePosition(nextFrame, posX, posY, posZ);
 
 	float oX, oY, oZ, oA;
 	_nodedata->interpolateOrientation(nextFrame, oX, oY, oZ, oA);
 
-	ModelNode *target = model->getNode(_name);
-	if (target) {
-		target->setPosition(curX * scale, curY * scale, curZ * scale);
-		target->setOrientation(oX, oY, oZ, oA);
-	}
-
 	// Update the position/orientation of corresponding modelnode
+	target->setPosition(posX * scale, posY * scale, posZ * scale);
+	target->setOrientation(oX, oY, oZ, oA);
 }
 
 } // End of namespace Aurora

@@ -139,43 +139,23 @@ void Model::drawBound(bool enabled) {
 }
 
 void Model::playAnimation(const Common::UString &anim) {
-	Animation *nextanim = getAnimation(anim);
-	_nextAnimation = nextanim;
+	_nextAnimation = getAnimation(anim);
 }
 
-
-static const char *kDefaultAnims[] = {
-	"pause1",
-	"pause2",
-	"pausesh",
-	"pausebrd",
-	"hturnl",
-	"hturnr",
-	"cpause1",
-	"chturnl",
-	"chturnr"
-};
-
-void Model::populateDefaultAnimations() {
-	_defaultAnimations.clear();
-
-	// TODO: There's probably a cleaner way to do this, but it's late
-	for (int i = 0; i < 9; i++) {
-		Animation *anim = getAnimation(kDefaultAnims[i]);
-		if (anim)
-			_defaultAnimations.push_back(anim);
-	}
+void Model::playDefaultAnimation() {
+	_nextAnimation = selectDefaultAnimation();
 }
 
-void Model::selectDefaultAnimation() {
-	// TODO: Select a default animation randomly instead of just the first one
-	if (_defaultAnimations.empty()) {
-		_currentAnimation = 0;
-		return;
+Animation *Model::selectDefaultAnimation() const {
+	uint8 pick = std::rand() % 100;
+	for (DefaultAnimations::const_iterator a = _defaultAnimations.begin(); a != _defaultAnimations.end(); ++a) {
+		if (pick < a->probability)
+			return a->animation;
+
+		pick -= a->probability;
 	}
 
-	debugC(4, kDebugGraphics, "Playing default animation in model \"%s\"", getName().c_str());
-	_currentAnimation = _defaultAnimations[0];
+	return 0;
 }
 
 void Model::getPosition(float &x, float &y, float &z) const {
@@ -465,29 +445,30 @@ void Model::manageAnimations(float dt) {
 	float nextFrame = _elapsedTime + dt;
 	_elapsedTime = nextFrame;
 
-	// Start a new animation if scheduled
+	// Start a new animation if scheduled, interrupting the currently playing animation
 	if (_nextAnimation) {
-		// Note that this interrupts the current animation!
 		_currentAnimation = _nextAnimation;
-		_nextAnimation = 0;
-		_elapsedTime = 0;
-		lastFrame = 0;
-		nextFrame = 0;
-	}
+		_nextAnimation    = 0;
 
-	// If there is no current animation, select a default animation
-	if (!_currentAnimation)
-		selectDefaultAnimation();
-
-	// If the current animation has finished, start a default animation
-	if (_currentAnimation && nextFrame >= _currentAnimation->getLength()) {
-		// Debug output
-		selectDefaultAnimation();
 		_elapsedTime = 0.0f;
-		lastFrame = 0;
-		nextFrame = 0;
+		lastFrame    = 0.0f;
+		nextFrame    = 0.0f;
 	}
 
+	// Animation finished?
+	if (_currentAnimation && (nextFrame >= _currentAnimation->getLength()))
+		_currentAnimation = 0;
+
+	// No animation, select a default one
+	if (!_currentAnimation) {
+		_currentAnimation = selectDefaultAnimation();
+
+		_elapsedTime = 0.0f;
+		lastFrame    = 0.0f;
+		nextFrame    = 0.0f;
+	}
+
+	// Update the animation, if we have any
 	if (_currentAnimation)
 		_currentAnimation->update(this, lastFrame, nextFrame);
 }
@@ -592,6 +573,8 @@ void Model::finalize() {
 			(*n)->orderChildren();
 
 	needRebuild();
+
+	_currentAnimation = selectDefaultAnimation();
 }
 
 void Model::needRebuild() {
