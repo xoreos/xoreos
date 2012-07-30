@@ -224,7 +224,13 @@ private:
 
 
 	void updateBox(); ///< Update the box's contents.
+
+	Object *getSpeaker(); ///< Get the current speaker.
+
 	void playSound(bool greeting); ///< Play a conversation sound.
+
+	void playAnimation(); ///< Play a conversation animation.
+	void stopAnimation(); ///< Stop a conversation animation.
 
 	/** The mouse was moved. */
 	void mouseMove();

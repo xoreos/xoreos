@@ -153,8 +153,8 @@ public:
 	// Animation
 
 	/** Play an object animation. */
-	virtual void playAnimation(Animation animation);
-
+	virtual void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
+	void playAnimation(Animation animation);
 
 protected:
 	ObjectType _type; ///< The object's type.

@@ -151,6 +151,28 @@ enum Animation {
 	kAnimationDoorDestroy                = 207
 };
 
+enum TalkAnimation {
+	kTalkAnimationDefault        =  0,
+	kTalkAnimationTaunt          = 28,
+	kTalkAnimationGreeting       = 29,
+	kTalkAnimationListen         = 30,
+	kTalkAnimationWorship        = 33,
+	kTalkAnimationSalute         = 34,
+	kTalkAnimationBow            = 35,
+	kTalkAnimationSteal          = 37,
+	kTalkAnimationNormal         = 38,
+	kTalkAnimationPleading       = 39,
+	kTalkAnimationForceful       = 40,
+	kTalkAnimationLaugh          = 41,
+	kTalkAnimationVictoryFighter = 44,
+	kTalkAnimationVictoryMage    = 45,
+	kTalkAnimationVictoryThief   = 46,
+	kTalkAnimationLookFar        = 48,
+	kTalkAnimationDrink          = 70,
+	kTalkAnimationRead           = 71,
+	kTalkAnimationNone           = 88
+};
+
 enum SFFSounds {
 	kSSFAttack            =  0,
 	kSSFBattlecry1        =  1,

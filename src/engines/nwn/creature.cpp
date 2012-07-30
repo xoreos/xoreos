@@ -944,6 +944,18 @@ void Creature::hideTooltip() {
 	_tooltip->hide();
 }
 
+void Creature::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {
+	if (!_model)
+		return;
+
+	if (animation.empty()) {
+		_model->playDefaultAnimation();
+		return;
+	}
+
+	_model->playAnimation(animation, restart, loopCount);
+}
+
 void Creature::getPCListInfo(const Common::UString &bic, bool local,
                              Common::UString &name, Common::UString &classes,
                              Common::UString &portrait) {

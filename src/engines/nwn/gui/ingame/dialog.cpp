@@ -562,6 +562,7 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj,
 
 	updateBox();
 	playSound(playHello);
+	playAnimation();
 
 	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
 }
@@ -586,6 +587,8 @@ void Dialog::hide() {
 }
 
 void Dialog::abort() {
+	stopAnimation();
+
 	hide();
 
 	_object->setPCSpeaker(0);
@@ -671,11 +674,14 @@ void Dialog::checkPicked() {
 		return;
 
 	_dlg->pickReply(picked);
-	if (_dlg->hasEnded())
+	if (_dlg->hasEnded()) {
+		stopAnimation();
 		return;
+	}
 
 	updateBox();
 	playSound(false);
+	playAnimation();
 
 	// Update the highlighted reply
 	mouseMove();
@@ -695,17 +701,16 @@ void Dialog::updateBox() {
 
 	// Entry
 
+
 	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
 	if (entry) {
 		// Name and portrait
 
-		Object *obj = _object;
-		if (!entry->speaker.empty())
-			obj = dynamic_cast<Object *>(_module->findObject(entry->speaker));
+		Object *speaker = getSpeaker();
 
-		if (obj) {
-			_dlgBox->setPortrait(obj->getPortrait());
-			_dlgBox->setName(obj->getName());
+		if (speaker) {
+			_dlgBox->setPortrait(speaker->getPortrait());
+			_dlgBox->setName(speaker->getName());
 		} else
 			_dlgBox->setName("[INVALID NPC]");
 
@@ -734,6 +739,17 @@ void Dialog::updateBox() {
 	GfxMan.unlockFrame();
 }
 
+Object *Dialog::getSpeaker() {
+	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
+	if (!entry)
+		return 0;
+
+	if (!entry->speaker.empty())
+		return dynamic_cast<Object *>(_module->findObject(entry->speaker));
+
+	return _object;
+}
+
 void Dialog::playSound(bool greeting) {
 	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
 	if (!entry)
@@ -753,6 +769,55 @@ void Dialog::playSound(bool greeting) {
 	}
 
 	_object->playSound(sound, isSSF);
+}
+
+struct TalkAnim {
+	TalkAnimation id;
+	const char *name;
+};
+
+static const TalkAnim kTalkAnimations[] = {
+	{kTalkAnimationDefault , "tlknorm" },
+	{kTalkAnimationNormal  , "tlknorm" },
+	{kTalkAnimationPleading, "tlkplead"},
+	{kTalkAnimationForceful, "tlkforce"},
+	{kTalkAnimationLaugh   , "tlklaugh"}
+};
+
+void Dialog::playAnimation() {
+	Object *speaker = getSpeaker();
+	if (!speaker)
+		return;
+
+	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
+	if (!entry || (entry->animation == kTalkAnimationNone)) {
+		stopAnimation();
+		return;
+	}
+
+	const char *anim = 0;
+	for (int i = 0; i < ARRAYSIZE(kTalkAnimations); i++) {
+		if (entry->animation == (uint32)kTalkAnimations[i].id) {
+			anim = kTalkAnimations[i].name;
+			break;
+		}
+	}
+
+	if (!anim) {
+		warning("Dialog::playAnimation(): Animation %d", entry->animation);
+		stopAnimation();
+		return;
+	}
+
+	speaker->playAnimation(anim, false, -1);
+}
+
+void Dialog::stopAnimation() {
+	Object *speaker = getSpeaker();
+	if (!speaker)
+		return;
+
+	speaker->playAnimation();
 }
 
 } // End of namespace NWN

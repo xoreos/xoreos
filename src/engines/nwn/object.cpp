@@ -267,8 +267,13 @@ bool Object::beginConversation(Object *triggerer) {
 	return true;
 }
 
+void Object::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {
+	warning("TODO: Object::playAnimation(\"%s\")", animation.c_str());
+}
+
 void Object::playAnimation(Animation animation) {
 	warning("TODO: Object::playAnimation(%d)", (int) animation);
+	// playAnimation(kAnimations[animation]);
 }
 
 } // End of namespace NWN

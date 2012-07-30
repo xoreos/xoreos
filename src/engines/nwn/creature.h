@@ -176,6 +176,9 @@ public:
 	/** The creature was clicked. */
 	virtual bool click(Object *triggerer = 0);
 
+	// Animation
+
+	void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
 
 	/** Return the information needed for a character list. */
 	static void getPCListInfo(const Common::UString &bic, bool local,
