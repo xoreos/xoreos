@@ -130,8 +130,13 @@ public:
 	/** Determine what animation scaling applies. */
 	float getAnimationScale(const Common::UString &anim);
 
-	/** Play a named animation. */
-	void playAnimation(const Common::UString &anim);
+	/** Play a named animation.
+	 *
+	 *  @param anim      The animation to play.
+	 *  @param restart   Whether to restart the animation if it's already playing.
+	 *  @param loopCount Number of times to loop the animation. Negative for loop indefinitely.
+	 */
+	void playAnimation(const Common::UString &anim, bool restart = true, int32 loopCount = 0);
 	/** Play a default idle animation. */
 	void playDefaultAnimation();
 
@@ -189,6 +194,8 @@ protected:
 
 	Animation *_currentAnimation; ///< The currently playing animations.
 	Animation *_nextAnimation;    ///< The animation that's scheduled next.
+
+	int32 _loopAnimation; ///< Number of times to loop the current animation.
 
 	float _animationScale; ///< The scale of the animation.
 

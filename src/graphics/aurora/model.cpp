@@ -61,6 +61,8 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	// TODO: Is this the same as modelScale for non-UI?
 	_animationScale = 1.0;
 	_elapsedTime = 0.0;
+
+	_loopAnimation = 0;
 }
 
 Model::~Model() {
@@ -138,12 +140,20 @@ void Model::drawBound(bool enabled) {
 	needRebuild();
 }
 
-void Model::playAnimation(const Common::UString &anim) {
-	_nextAnimation = getAnimation(anim);
+void Model::playAnimation(const Common::UString &anim, bool restart, int32 loopCount) {
+	Animation *animation = getAnimation(anim);
+	if (!animation)
+		return;
+
+	_loopAnimation = loopCount;
+
+	if (restart || (animation != _currentAnimation))
+		_nextAnimation = animation;
 }
 
 void Model::playDefaultAnimation() {
 	_nextAnimation = selectDefaultAnimation();
+	_loopAnimation = 0;
 }
 
 Animation *Model::selectDefaultAnimation() const {
@@ -456,8 +466,19 @@ void Model::manageAnimations(float dt) {
 	}
 
 	// Animation finished?
-	if (_currentAnimation && (nextFrame >= _currentAnimation->getLength()))
-		_currentAnimation = 0;
+	if (_currentAnimation && (nextFrame >= _currentAnimation->getLength())) {
+		// Update the loop counter. If it's 0, then end the animation; otherwise, restart it
+
+		if (_loopAnimation != 0) {
+			if (_loopAnimation > 0)
+				_loopAnimation--;
+
+			_elapsedTime = 0.0f;
+			lastFrame    = 0.0f;
+			nextFrame    = 0.0f;
+		} else
+			_currentAnimation = 0;
+	}
 
 	// No animation, select a default one
 	if (!_currentAnimation) {
