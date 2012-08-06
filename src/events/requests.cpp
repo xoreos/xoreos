@@ -131,46 +131,6 @@ void RequestManager::sync() {
 	dispatchAndWait(syncID);
 }
 
-RequestID RequestManager::fullscreen(bool fs) {
-	if (fs)
-		return newRequest(kITCEventFullscreen);
-	else
-		return newRequest(kITCEventWindowed);
-}
-
-RequestID RequestManager::resize(int width, int height) {
-	RequestID rID = newRequest(kITCEventResize);
-
-	(*rID)->_resize.width  = width;
-	(*rID)->_resize.height = height;
-
-	return rID;
-}
-
-RequestID RequestManager::changeFSAA(int level) {
-	RequestID rID = newRequest(kITCEventChangeFSAA);
-
-	(*rID)->_fsaa.level = level;
-
-	return rID;
-}
-
-RequestID RequestManager::changeVSync(bool vsync) {
-	RequestID rID = newRequest(kITCEventChangeVSync);
-
-	(*rID)->_vsync.vsync = vsync;
-
-	return rID;
-}
-
-RequestID RequestManager::changeGamma(float gamma) {
-	RequestID rID = newRequest(kITCEventChangeGamma);
-
-	(*rID)->_gamma.gamma = gamma;
-
-	return rID;
-}
-
 RequestID RequestManager::rebuild(Graphics::GLContainer &glContainer) {
 	RequestID rID = newRequest(kITCEventRebuildGLContainer);
 
@@ -193,6 +153,14 @@ RequestID RequestManager::newRequest(ITCEvent type) {
 	_requests.push_back(new Request(type));
 
 	return --_requests.end();
+}
+
+void RequestManager::callInMainThread(const MainThreadCallerFunctor &caller) {
+	RequestID rID = newRequest(kITCEventCallInMainThread);
+
+	(*rID)->_callInMainThread.caller = &caller;
+
+	dispatchAndWait(rID);
 }
 
 void RequestManager::clearList() {

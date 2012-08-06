@@ -182,12 +182,7 @@ private:
 	bool parseITC(const Event &event);
 
 	// Request handler
-	void requestFullscreen(Request &request);
-	void requestWindowed(Request &request);
-	void requestResize(Request &request);
-	void requestChangeFSAA(Request &request);
-	void requestChangeVSync(Request &request);
-	void requestChangeGamma(Request &request);
+	void requestCallInMainThread(Request &request);
 	void requestRebuildGLContainer(Request &request);
 	void requestDestroyGLContainer(Request &request);
 

@@ -52,12 +52,7 @@ namespace Events {
 
 const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX] = {
 	0,
-	&EventsManager::requestFullscreen,
-	&EventsManager::requestWindowed,
-	&EventsManager::requestResize,
-	&EventsManager::requestChangeFSAA,
-	&EventsManager::requestChangeVSync,
-	&EventsManager::requestChangeGamma,
+	&EventsManager::requestCallInMainThread,
 	&EventsManager::requestRebuildGLContainer,
 	&EventsManager::requestDestroyGLContainer
 };
@@ -333,28 +328,8 @@ Joystick *EventsManager::getJoystickByName(const Common::UString &name) const {
 	return 0;
 }
 
-void EventsManager::requestFullscreen(Request &request) {
-	GfxMan.setFullScreen(true);
-}
-
-void EventsManager::requestWindowed(Request &request) {
-	GfxMan.setFullScreen(false);
-}
-
-void EventsManager::requestResize(Request &request) {
-	GfxMan.setScreenSize(request._resize.width, request._resize.height);
-}
-
-void EventsManager::requestChangeFSAA(Request &request) {
-	GfxMan.setFSAA(request._fsaa.level);
-}
-
-void EventsManager::requestChangeVSync(Request &request) {
-	// TODO
-}
-
-void EventsManager::requestChangeGamma(Request &request) {
-	GfxMan.setGamma(request._gamma.gamma);
+void EventsManager::requestCallInMainThread(Request &request) {
+	(*request._callInMainThread.caller)();
 }
 
 void EventsManager::requestRebuildGLContainer(Request &request) {

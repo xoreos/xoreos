@@ -32,6 +32,8 @@
 
 #include <list>
 
+#include <boost/bind.hpp>
+
 #include "common/types.h"
 #include "common/singleton.h"
 #include "common/thread.h"
@@ -87,17 +89,14 @@ public:
 	/** Request a sync, letting all prior requests finish. */
 	void sync();
 
-	// Screen mode
-	/** Request that the display shall be switched to fullscreen or windowed mode. */
-	RequestID fullscreen(bool fs);
-	/** Request that the display shall be resized. */
-	RequestID resize(int width, int height);
-	/** Request that the FSAA level shall be changed. */
-	RequestID changeFSAA(int level);
-	/** Request that the vsync settings shall be changed. */
-	RequestID changeVSync(bool vsync);
-	/** Request that the gamma settings shall be changed. */
-	RequestID changeGamma(float gamma);
+	/** Call this function in the main thread. */
+	template<typename T> T callInMainThread(const MainThreadFunctor<T> &f) {
+		MainThreadCallerFunctor caller(boost::bind(&MainThreadFunctor<T>::operator(), f));
+
+		callInMainThread(caller);
+
+		return f.getReturnValue();
+	}
 
 	/** Request that a GL container shall be rebuilt. */
 	RequestID rebuild(Graphics::GLContainer &glContainer);
@@ -120,6 +119,8 @@ private:
 	void collectGarbage();
 
 	void threadMethod();
+
+	void callInMainThread(const MainThreadCallerFunctor &caller);
 };
 
 } // End of namespace Events

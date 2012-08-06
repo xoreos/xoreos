@@ -45,21 +45,8 @@ namespace Events {
 
 // Data structures for specific requests
 
-struct RequestDataResize {
-	int width;
-	int height;
-};
-
-struct RequestDataChangeFSAA {
-	int level;
-};
-
-struct RequestDataChangeVSync {
-	bool vsync;
-};
-
-struct RequestDataChangeGamma {
-	float gamma;
+struct RequestCallInMainThread {
+	const MainThreadCallerFunctor *caller;
 };
 
 struct RequestDataGLContainer {
@@ -86,11 +73,8 @@ private:
 
 	/** Request data. */
 	union {
-		RequestDataResize      _resize;
-		RequestDataChangeFSAA  _fsaa;
-		RequestDataChangeVSync _vsync;
-		RequestDataChangeGamma _gamma;
-		RequestDataGLContainer _glContainer;
+		RequestCallInMainThread _callInMainThread;
+		RequestDataGLContainer  _glContainer;
 	};
 
 	/** Create the empty request frame. */

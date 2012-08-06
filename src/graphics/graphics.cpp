@@ -27,6 +27,8 @@
  *  The global graphics manager.
  */
 
+#include <boost/bind.hpp>
+
 #include "common/util.h"
 #include "common/maths.h"
 #include "common/error.h"
@@ -207,10 +209,11 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 }
 
 bool GraphicsManager::setFSAA(int level) {
+	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		// Not the main thread, send a request instead
-		RequestMan.dispatchAndWait(RequestMan.changeFSAA(level));
-		return _fsaa == level;
+		Events::MainThreadFunctor<bool> functor(boost::bind(&GraphicsManager::setFSAA, this, level));
+
+		return RequestMan.callInMainThread(functor);
 	}
 
 	if (_fsaa == level)
@@ -331,10 +334,11 @@ float GraphicsManager::getGamma() const {
 }
 
 void GraphicsManager::setGamma(float gamma) {
+	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		// Not the main thread, send a request instead
-		RequestMan.dispatchAndWait(RequestMan.changeGamma(gamma));
-		return;
+		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setGamma, this, gamma));
+
+		return RequestMan.callInMainThread(functor);
 	}
 
 	_gamma = gamma;
@@ -1045,10 +1049,11 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 		// Nothing to do
 		return;
 
+	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		// Not the main thread, send a request instead
-		RequestMan.dispatchAndWait(RequestMan.fullscreen(fullScreen));
-		return;
+		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setFullScreen, this, fullScreen));
+
+		return RequestMan.callInMainThread(functor);
 	}
 
 	destroyContext();
@@ -1085,10 +1090,11 @@ void GraphicsManager::setScreenSize(int width, int height) {
 		// No changes, nothing to do
 		return;
 
+	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		// Not the main thread, send a request instead
-		RequestMan.dispatchAndWait(RequestMan.resize(width, height));
-		return;
+		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setScreenSize, this, width, height));
+
+		return RequestMan.callInMainThread(functor);
 	}
 
 	// Save properties

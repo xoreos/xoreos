@@ -30,6 +30,9 @@
 #ifndef EVENTS_TYPES_H
 #define EVENTS_TYPES_H
 
+#include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>
+
 #include <SDL_events.h>
 
 namespace Events {
@@ -54,16 +57,38 @@ enum EventType {
 /** Specific type of the inter-thread communication. */
 enum ITCEvent {
 	kITCEventSync               = 0, ///< Request a sync, letting all prior requests finish.
-	kITCEventFullscreen            , ///< Request switching to fullscreen mode.
-	kITCEventWindowed              , ///< Request switching to windowed mode.
-	kITCEventResize                , ///< Request changing the display size.
-	kITCEventChangeFSAA            , ///< Request changing the FSAA level.
-	kITCEventChangeVSync           , ///< Request changing the vsync settings.
-	kITCEventChangeGamma           , ///< Request changing the gamma settings.
+	kITCEventCallInMainThread      , ///< Request to call a function in the main thread.
 	kITCEventRebuildGLContainer    , ///< Request the rebuilding of a GL container.
 	kITCEventDestroyGLContainer    , ///< Request the destruction of a GL container.
 	kITCEventMAX                     ///< For range checks.
 };
+
+/** A functor for a function that needs to be called in the main thread. */
+template<typename T> struct MainThreadFunctor {
+private:
+	boost::function<T ()> func;
+	boost::shared_ptr<T> retVal;
+
+public:
+	MainThreadFunctor(const boost::function<T ()> &f) : func(f), retVal(new T) { }
+	void operator()() const { *retVal = func(); }
+
+	T getReturnValue() const { return *retVal; }
+};
+
+/** Template specialization for a MainThreadFunctor returning void. */
+template<> struct MainThreadFunctor<void> {
+private:
+	boost::function<void ()> func;
+
+public:
+	MainThreadFunctor(const boost::function<void ()> &f) : func(f) { }
+	void operator()() const { func(); }
+
+	void getReturnValue() const { (void) 0; }
+};
+
+typedef boost::function<void ()> MainThreadCallerFunctor;
 
 } // End of namespace Events
 
