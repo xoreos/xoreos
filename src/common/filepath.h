@@ -30,7 +30,7 @@
 #ifndef COMMON_FILEPATH_H
 #define COMMON_FILEPATH_H
 
-#include "boost/filesystem.hpp"
+#include <boost/filesystem.hpp>
 
 #include "common/types.h"
 #include "common/ustring.h"

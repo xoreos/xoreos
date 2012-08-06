@@ -27,7 +27,7 @@
  *  Utility functions to handle files used in BioWare's Aurora engine.
  */
 
-#include "boost/algorithm/string.hpp"
+#include <boost/algorithm/string.hpp>
 
 #include "common/util.h"
 #include "common/ustring.h"

@@ -27,7 +27,7 @@
  *  NWN (debug) console.
  */
 
-#include "boost/bind.hpp"
+#include <boost/bind.hpp>
 
 #include "common/ustring.h"
 #include "common/util.h"

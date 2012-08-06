@@ -27,9 +27,9 @@
  *  NWN script functions, 500-599.
  */
 
-#include "boost/bind.hpp"
+#include <boost/bind.hpp>
 
-#include "boost/date_time/posix_time/posix_time.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "common/util.h"
 #include "common/error.h"

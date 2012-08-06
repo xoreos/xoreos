@@ -30,7 +30,7 @@
 #ifndef ENGINES_AURORA_CONSOLE_H
 #define ENGINES_AURORA_CONSOLE_H
 
-#include "boost/function.hpp"
+#include <boost/function.hpp>
 
 #include "common/types.h"
 #include "common/error.h"

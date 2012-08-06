@@ -32,7 +32,7 @@
 
 #include <vector>
 
-#include "boost/function.hpp"
+#include <boost/function.hpp>
 
 namespace Aurora {
 

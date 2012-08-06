@@ -33,7 +33,7 @@
 #include <vector>
 #include <list>
 
-#include "boost/date_time/gregorian/gregorian_types.hpp"
+#include <boost/date_time/gregorian/gregorian_types.hpp>
 
 #include "common/types.h"
 #include "common/ustring.h"

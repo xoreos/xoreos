@@ -27,7 +27,7 @@
  *  NWN script functions, 600-699.
  */
 
-#include "boost/bind.hpp"
+#include <boost/bind.hpp>
 
 #include "common/util.h"
 #include "common/error.h"

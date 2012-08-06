@@ -34,7 +34,7 @@
 #include <sstream>
 #include <vector>
 
-#include "boost/functional/hash.hpp"
+#include <boost/functional/hash.hpp>
 
 #include "common/types.h"
 

@@ -27,7 +27,7 @@
  *  A NWN widget.
  */
 
-#include "boost/bind.hpp"
+#include <boost/bind.hpp>
 
 #include "common/ustring.h"
 

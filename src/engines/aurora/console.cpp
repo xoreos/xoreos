@@ -30,7 +30,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-#include "boost/bind.hpp"
+#include <boost/bind.hpp>
 
 #include "common/util.h"
 #include "common/filepath.h"

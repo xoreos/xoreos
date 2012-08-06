@@ -27,7 +27,7 @@
  *  The global resource manager for Aurora resources.
  */
 
-#include "boost/algorithm/string.hpp"
+#include <boost/algorithm/string.hpp>
 
 #include "common/util.h"
 #include "common/stream.h"

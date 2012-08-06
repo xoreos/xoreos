@@ -30,7 +30,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "boost/date_time/posix_time/posix_time.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "common/ustring.h"
 #include "common/file.h"
