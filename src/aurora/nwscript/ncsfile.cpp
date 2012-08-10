@@ -1179,6 +1179,9 @@ void NCSFile::o_div(InstructionType type) {
 			if (op2.getInt() == 0)
 				throw Common::Exception("NCSFile::o_div(): Divide by zero");
 
+			if (op1.getInt() == INT32_MIN && op2.getInt() == -1)
+				throw Common::Exception("NCSFile::o_div: Quotient overflow");
+
 			_stack.push((int32) (op1.getInt() / op2.getInt()));
 			break;
 		}
