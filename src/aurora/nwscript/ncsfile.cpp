@@ -818,6 +818,8 @@ void NCSFile::o_mod(InstructionType type) {
 
 		if (arg1 == 0)
 			throw Common::Exception("NCSFile::o_mod(): Modulus by zero");
+		else if (arg1 < 0)
+			throw Common::Exception("NCSFile::o_mod(): Modulus by negative number (%d)", arg1);
 
 		_stack.push(arg2 % arg1);
 	} catch (Common::Exception e) {
