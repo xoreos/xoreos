@@ -187,7 +187,6 @@ void initConfig() {
 	ConfigMan.setInt   (Common::kConfigRealmDefault, "height",     600);
 	ConfigMan.setBool  (Common::kConfigRealmDefault, "fullscreen", false);
 	ConfigMan.setInt   (Common::kConfigRealmDefault, "fsaa",       0);
-	ConfigMan.setDouble(Common::kConfigRealmDefault, "gamma",    1.0);
 
 	ConfigMan.setDouble(Common::kConfigRealmDefault, "volume"      , 1.0);
 	ConfigMan.setDouble(Common::kConfigRealmDefault, "volume_music", 1.0);
