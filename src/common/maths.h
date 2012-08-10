@@ -52,6 +52,14 @@
 	#define FLT_MAX 1E+37
 #endif
 
+#ifndef INT32_MIN
+	#define INT32_MIN 0x80000000
+#endif
+
+#ifndef INT32_MAX
+	#define INT32_MAX 0x7FFFFFFF
+#endif
+
 namespace Common {
 
 /** A complex number. */
