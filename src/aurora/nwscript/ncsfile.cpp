@@ -815,6 +815,10 @@ void NCSFile::o_mod(InstructionType type) {
 	try {
 		int32 arg1 = _stack.pop().getInt();
 		int32 arg2 = _stack.pop().getInt();
+
+		if (arg1 == 0)
+			throw Common::Exception("NCSFile::o_mod(): Modulus by zero");
+
 		_stack.push(arg2 % arg1);
 	} catch (Common::Exception e) {
 		throw e;
@@ -1172,6 +1176,9 @@ void NCSFile::o_div(InstructionType type) {
 			Variable op2 = _stack.pop();
 			Variable op1 = _stack.pop();
 
+			if (op2.getInt() == 0)
+				throw Common::Exception("NCSFile::o_div(): Divide by zero");
+
 			_stack.push((int32) (op1.getInt() / op2.getInt()));
 			break;
 		}
@@ -1179,6 +1186,9 @@ void NCSFile::o_div(InstructionType type) {
 		case kInstTypeFloatFloat: {
 			Variable op2 = _stack.pop();
 			Variable op1 = _stack.pop();
+
+			if (op2.getFloat() == 0.0f)
+				throw Common::Exception("NCSFile::o_div(): Divide by zero");
 
 			_stack.push(op1.getFloat() / op2.getFloat());
 			break;
@@ -1188,6 +1198,9 @@ void NCSFile::o_div(InstructionType type) {
 			Variable op2 = _stack.pop();
 			Variable op1 = _stack.pop();
 
+			if (op2.getFloat() == 0.0f)
+				throw Common::Exception("NCSFile::o_div(): Divide by zero");
+
 			_stack.push(((float) op1.getInt()) / op2.getFloat());
 			break;
 		}
@@ -1195,6 +1208,9 @@ void NCSFile::o_div(InstructionType type) {
 		case kInstTypeFloatInt: {
 			Variable op2 = _stack.pop();
 			Variable op1 = _stack.pop();
+
+			if (op2.getInt() == 0)
+				throw Common::Exception("NCSFile::o_div(): Divide by zero");
 
 			_stack.push(op1.getFloat() / ((float) op2.getInt()));
 			break;
@@ -1205,6 +1221,9 @@ void NCSFile::o_div(InstructionType type) {
 			Variable op1z = _stack.pop();
 			Variable op1y = _stack.pop();
 			Variable op1x = _stack.pop();
+
+			if (op2.getFloat() == 0.0f)
+				throw Common::Exception("NCSFile::o_div(): Divide by zero");
 
 			_stack.push(op1z.getFloat() / op2.getFloat());
 			_stack.push(op1y.getFloat() / op2.getFloat());
@@ -1217,6 +1236,9 @@ void NCSFile::o_div(InstructionType type) {
 			Variable op2y = _stack.pop();
 			Variable op2x = _stack.pop();
 			Variable op1  = _stack.pop();
+
+			if (op2x.getFloat() == 0.0f || op2y.getFloat() == 0.0f || op2z.getFloat() == 0.0f)
+				throw Common::Exception("NCSFile::o_div(): Divide by zero");
 
 			_stack.push(op1.getFloat() / op2z.getFloat());
 			_stack.push(op1.getFloat() / op2y.getFloat());
