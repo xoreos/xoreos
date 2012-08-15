@@ -28,6 +28,7 @@
  */
 
 #include "common/util.h"
+#include "common/maths.h"
 #include "common/ustring.h"
 #include "common/stream.h"
 #include "common/debug.h"
