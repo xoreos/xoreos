@@ -53,11 +53,11 @@
 #endif
 
 #ifndef INT32_MIN
-	#define INT32_MIN 0x80000000
+	#define INT32_MIN ((int32) 0x80000000)
 #endif
 
 #ifndef INT32_MAX
-	#define INT32_MAX 0x7FFFFFFF
+	#define INT32_MAX ((int32) 0x7FFFFFFF)
 #endif
 
 namespace Common {
