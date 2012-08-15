@@ -213,24 +213,24 @@ void NWN2Engine::init() {
 
 	status("Loading main resource files");
 
-	indexMandatoryArchive(Aurora::kArchiveZIP, "2da.zip"           ,  0);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "actors.zip"        ,  1);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "animtags.zip"      ,  2);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "convo.zip"         ,  3);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "ini.zip"           ,  4);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "lod-merged.zip"    ,  5);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "music.zip"         ,  6);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "nwn2_materials.zip",  7);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "nwn2_models.zip"   ,  8);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "nwn2_vfx.zip"      ,  9);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "prefabs.zip"       , 10);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "scripts.zip"       , 11);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "sounds.zip"        , 12);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "soundsets.zip"     , 13);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "speedtree.zip"     , 14);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "templates.zip"     , 15);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "vo.zip"            , 16);
-	indexMandatoryArchive(Aurora::kArchiveZIP, "walkmesh.zip"      , 17);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "2da.zip"           ,  1);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "actors.zip"        ,  2);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "animtags.zip"      ,  3);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "convo.zip"         ,  4);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "ini.zip"           ,  5);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "lod-merged.zip"    ,  6);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "music.zip"         ,  7);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "nwn2_materials.zip",  8);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "nwn2_models.zip"   ,  9);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "nwn2_vfx.zip"      , 10);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "prefabs.zip"       , 11);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "scripts.zip"       , 12);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "sounds.zip"        , 13);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "soundsets.zip"     , 14);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "speedtree.zip"     , 15);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "templates.zip"     , 16);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "vo.zip"            , 17);
+	indexMandatoryArchive(Aurora::kArchiveZIP, "walkmesh.zip"      , 18);
 
 	status("Loading expansions resource files");
 

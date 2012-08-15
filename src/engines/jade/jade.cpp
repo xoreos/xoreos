@@ -162,7 +162,7 @@ void JadeEngine::run(const Common::UString &target) {
 void JadeEngine::init() {
 	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
-	indexMandatoryDirectory("", 0, 0, 0);
+	indexMandatoryDirectory("", 0, 0, 1);
 
 	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
@@ -223,7 +223,7 @@ void JadeEngine::init() {
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "data/j300_hench");
 
 	status("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
 
 	status("Loading global auxiliary resources");
 	indexMandatoryArchive(Aurora::kArchiveERF, "loadscreens.mod"   , 10);

@@ -211,7 +211,7 @@ void TheWitcherEngine::init() {
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "data/modules/!final");
 
 	status("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 0);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 1);
 
 	status("Loading the localized base KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "localized.key", 10);

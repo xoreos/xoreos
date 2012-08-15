@@ -174,7 +174,7 @@ void NWNEngine::init() {
 void NWNEngine::initResources() {
 	status("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
-	indexMandatoryDirectory("", 0, 0, 0);
+	indexMandatoryDirectory("", 0, 0, 1);
 
 	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
@@ -184,24 +184,24 @@ void NWNEngine::initResources() {
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
 
 	status("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
 
 	status("Loading expansions and patch KEYs");
 
 	// Base game patch
-	indexOptionalArchive(Aurora::kArchiveKEY, "patch.key", 1);
+	indexOptionalArchive(Aurora::kArchiveKEY, "patch.key", 2);
 
 	// Expansion 1: Shadows of Undrentide (SoU)
-	_hasXP1 = indexOptionalArchive(Aurora::kArchiveKEY, "xp1.key", 2);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp1patch.key", 3);
+	_hasXP1 = indexOptionalArchive(Aurora::kArchiveKEY, "xp1.key", 3);
+	indexOptionalArchive(Aurora::kArchiveKEY, "xp1patch.key", 4);
 
 	// Expansion 2: Hordes of the Underdark (HotU)
-	_hasXP2 = indexOptionalArchive(Aurora::kArchiveKEY, "xp2.key", 4);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp2patch.key", 5);
+	_hasXP2 = indexOptionalArchive(Aurora::kArchiveKEY, "xp2.key", 5);
+	indexOptionalArchive(Aurora::kArchiveKEY, "xp2patch.key", 6);
 
 	// Expansion 3: Kingmaker (resources also included in the final 1.69 patch)
-	_hasXP3 = indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key", 6);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp3patch.key", 7);
+	_hasXP3 = indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key", 7);
+	indexOptionalArchive(Aurora::kArchiveKEY, "xp3patch.key", 8);
 
 	status("Loading GUI textures");
 	indexMandatoryArchive(Aurora::kArchiveERF, "gui_32bit.erf"   , 10);

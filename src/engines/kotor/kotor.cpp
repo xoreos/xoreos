@@ -185,7 +185,7 @@ void KotOREngine::initResources() {
 	if (_platform == Aurora::kPlatformXbox)
 		ResMan.addTypeAlias(Aurora::kFileTypeTXB, Aurora::kFileTypeTPC);
 
-	indexMandatoryDirectory("", 0, 0, 0);
+	indexMandatoryDirectory("", 0, 0, 1);
 
 	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data");
@@ -199,9 +199,9 @@ void KotOREngine::initResources() {
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "modules");
 
 	status("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
 
-	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 1)) {
+	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 2)) {
 		status("Loading Xbox DLC KEY");
 		_hasLiveKey = true;
 	}

@@ -171,7 +171,7 @@ void KotOR2Engine::initResources() {
 	if (_platform == Aurora::kPlatformXbox)
 		ResMan.addTypeAlias(Aurora::kFileTypeTXB, Aurora::kFileTypeTPC);
 
-	indexMandatoryDirectory("", 0, 0, 0);
+	indexMandatoryDirectory("", 0, 0, 1);
 
 	status("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data");
@@ -188,7 +188,7 @@ void KotOR2Engine::initResources() {
 		ResMan.addArchiveDir(Aurora::kArchiveERF, "SuperModels");
 
 	status("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 0);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
 
 	if (_platform != Aurora::kPlatformXbox) {
 		status("Loading high-res texture packs");
