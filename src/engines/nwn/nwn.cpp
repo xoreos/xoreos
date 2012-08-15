@@ -227,6 +227,10 @@ void NWNEngine::initResources() {
 	if (EventMan.quitRequested())
 		return;
 
+	// Blacklist the DDS version of the galahad14 font, because in versions of NWN coming
+	// with a Cyrillic one, the DDS file is still Latin.
+	ResMan.blacklist("fnt_galahad14", Aurora::kFileTypeDDS);
+
 	status("Loading main talk table");
 	TalkMan.addMainTable("dialog");
 
