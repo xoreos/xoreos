@@ -177,10 +177,10 @@ public:
 	 *  @param  archive The type of archive to add.
 	 *  @param  file The name of the archive file to index.
 	 *  @param  priority The priority these files have over others of the same name
-	 *          and type. Higher number = higher priority.
+	 *          and type. Higher number = higher priority. 0 means blacklisted.
 	 *  @return An ID for all collective changes done by adding the archive file.
 	 */
-	ChangeID addArchive(ArchiveType archive, const Common::UString &file, uint32 priority = 0);
+	ChangeID addArchive(ArchiveType archive, const Common::UString &file, uint32 priority = 1);
 
 	/** Add a directory's contents to the resource manager.
 	 *
@@ -191,7 +191,7 @@ public:
 	 *  @param  depth The number of levels to recurse into subdirectories. 0
 	 *                for ignoring subdirectories, -1 for a limitless recursion.
 	 *  @param  priority The priority these files have over others of the same name
-	 *          and type. Higher number = higher priority.
+	 *          and type. Higher number = higher priority. 0 means blacklisted.
 	 *  @return An ID for all collective changes done by adding the directory.
 	 */
 	ChangeID addResourceDir(const Common::UString &dir, const char *glob = 0,
@@ -206,6 +206,15 @@ public:
 	 *  @param realType The actual type a resource of the alias type is.
 	 */
 	void addTypeAlias(FileType alias, FileType realType);
+
+	/** Blacklist a specific resource.
+	 *
+	 *  That resource will never be returned when asked for. The ResourceManager
+	 *  will act like it just doesn't exist.
+	 *  Useful in cases where some resources of different FileTypes in a
+	 *  ResourceType are broken and should not be preferred over the working ones.
+	 */
+	void blacklist(const Common::UString &name, FileType type);
 
 	/** Does a specific resource exist?
 	 *
@@ -298,6 +307,7 @@ private:
 	void addResources(const Common::FileList &files, ChangeID &change, uint32 priority);
 
 	const Resource *getRes(Common::UString name, const std::vector<FileType> &types) const;
+	const ResourceList *getResList(Common::UString name, const std::vector<FileType> &types) const;
 
 	Common::SeekableReadStream *getArchiveResource(const Resource &res) const;
 

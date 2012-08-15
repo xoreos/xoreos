@@ -439,6 +439,20 @@ void ResourceManager::addTypeAlias(FileType alias, FileType realType) {
 	_typeAliases[alias] = realType;
 }
 
+void ResourceManager::blacklist(const Common::UString &name, FileType type) {
+	std::vector<FileType> types(1, type);
+
+	// Get the resource list for this resource type
+	ResourceList *resList =
+		const_cast<ResourceList *>(static_cast<const ResourceManager &>(*this).getResList(name, types));
+	if (!resList)
+		return;
+
+	// Blacklist the whole list
+	for (ResourceList::iterator res = resList->begin(); res != resList->end(); ++res)
+		res->priority = 0;
+}
+
 bool ResourceManager::hasResource(const Common::UString &name, FileType type) const {
 	std::vector<FileType> types;
 
@@ -632,6 +646,18 @@ void ResourceManager::addResources(const Common::FileList &files, ChangeID &chan
 const ResourceManager::Resource *ResourceManager::getRes(Common::UString name,
 		const std::vector<FileType> &types) const {
 
+	// Get the correct resource list for the name and types, make sure it's not
+	// empty and has at least one non-blacklisted entry, and return that
+	const ResourceList *resList = getResList(name, types);
+	if (resList && !resList->empty() && (resList->back().priority != 0))
+		return &resList->back();
+
+	return 0;
+}
+
+const ResourceManager::ResourceList *ResourceManager::getResList(Common::UString name,
+		const std::vector<FileType> &types) const {
+
 	name.tolower();
 
 	// Find the resources with the same name
@@ -640,10 +666,13 @@ const ResourceManager::Resource *ResourceManager::getRes(Common::UString name,
 		return 0;
 
 	for (std::vector<FileType>::const_iterator type = types.begin(); type != types.end(); ++type) {
-		// Find the specific resource of the given type
-		ResourceTypeMap::const_iterator res = resFamily->second.find(*type);
-		if ((res != resFamily->second.end()) && !res->second.empty())
-			return &res->second.back();
+		// Find the specific resource list of the given type
+		ResourceTypeMap::const_iterator resList = resFamily->second.find(*type);
+
+		// If the list exists, and is non-empty, and has a non-blacklisted entry, return it
+		if ((resList != resFamily->second.end()) && !resList->second.empty() &&
+		    (resList->second.back().priority != 0))
+			return &resList->second;
 	}
 
 	return 0;
