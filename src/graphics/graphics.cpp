@@ -177,8 +177,8 @@ uint32 GraphicsManager::getFPS() const {
 
 void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	int bpp = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
-	if ((bpp != 24) && (bpp != 32))
-		throw Common::Exception("Need 24 or 32 bits per pixel");
+	if ((bpp != 16) && (bpp != 24) && (bpp != 32))
+		throw Common::Exception("Need 16, 24 or 32 bits per pixel");
 
 	_systemWidth  = SDL_GetVideoInfo()->current_w;
 	_systemHeight = SDL_GetVideoInfo()->current_h;
@@ -189,15 +189,25 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	if (_fullScreen)
 		flags |= SDL_FULLSCREEN;
 
-	if (!setupSDLGL(width, height, bpp, flags)) {
-		// Could not initialize OpenGL, trying a different bpp value
+	// The way we try to find an optimal color mode is a bit complex:
+	// We only want 16bpp as a fallback, but otherwise prefer the native value.
+	// So, if we're currently in 24bpp or 32bpp, we try that one first, then the
+	// other one and 16bpp only as a last resort.
+	// If we're currently in 16bpp mode, we try the higher two first as well,
+	// before being okay with native 16bpp mode.
 
-		bpp = (bpp == 32) ? 24 : 32;
+	const int colorModes[] = {bpp == 16 ? 32 : bpp, bpp == 24 ? 32 : 24, 16 };
 
-		if (!setupSDLGL(width, height, bpp, flags))
-			// Still couldn't initialize OpenGL, erroring out
-			throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
+	bool foundMode = false;
+	for (int i = 0; i < ARRAYSIZE(colorModes); i++) {
+		if (setupSDLGL(width, height, colorModes[i], flags)) {
+			foundMode = true;
+			break;
+		}
 	}
+
+	if (!foundMode)
+		throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
 
 	// Initialize glew, for the extension entry points
 	GLenum glewErr = glewInit();
