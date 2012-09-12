@@ -215,10 +215,12 @@ UString ConfigManager::createGameID(const UString &path) {
 	return "";
 }
 
-UString ConfigManager::createGame(const UString &path) {
-	UString target = createGameID(path);
-	if (target.empty())
-		return "";
+UString ConfigManager::createGame(const UString &path, UString target) {
+	if (target.empty()) {
+		target = createGameID(path);
+		if (target.empty())
+			return "";
+	}
 
 	ConfigDomain *gameDomain = _config->addDomain(target);
 	assert(gameDomain);
@@ -228,6 +230,13 @@ UString ConfigManager::createGame(const UString &path) {
 	_changed = true;
 
 	return target;
+}
+
+bool ConfigManager::hasGame(const UString &gameID) {
+	if (!_config)
+		return false;
+
+	return _config->getDomain(gameID) != 0;
 }
 
 bool ConfigManager::setGame(const UString &gameID) {

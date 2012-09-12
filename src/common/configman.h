@@ -76,8 +76,11 @@ public:
 
 	/** Find the game domain using this path. */
 	UString findGame(const UString &path);
-	/** Create the game domain with this path. */
-	UString createGame(const UString &path);
+	/** Create the game domain with this path and target. */
+	UString createGame(const UString &path, UString target = "");
+
+	/** Does the specified game domain exist? */
+	bool hasGame(const UString &gameID);
 
 	/** Set the game domain to gameID. */
 	bool setGame(const UString &gameID = "");

@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
 		DebugMan.openLogFile(logFile);
 
 	// Check the requested target
-	if (target.empty()) {
+	if (target.empty() || !ConfigMan.hasGame(target)) {
 		Common::UString path = ConfigMan.getString("path");
 		if (path.empty()) {
 			if (ConfigMan.getBool("listdebug", false)) {
@@ -104,18 +104,24 @@ int main(int argc, char **argv) {
 				return 0;
 			}
 
-			error("Neither a target, nor a path specified");
+			error("Neither an existing target, nor a path specified");
 		}
 
-		target = ConfigMan.findGame(path);
+		bool useExisting = false;
 		if (target.empty()) {
-			target = ConfigMan.createGame(path);
-			if (target.empty())
-				error("Failed creating a new config target for the game");
+			target = ConfigMan.findGame(path);
+			if (!target.empty()) {
+				warning("No target specified, but found a target with a matching path");
+				useExisting = true;
+			}
+		}
 
-			warning("No target specified. Creating a new target");
-		} else
-			warning("No target specified, but found a target with a matching path");
+		target = ConfigMan.createGame(path, target);
+		if (target.empty())
+			error("Failed creating a new config target for the game");
+
+		if (!useExisting)
+			warning("Creating a new target for this game");
 	}
 
 	status("Target \"%s\"", target.c_str());

@@ -38,7 +38,7 @@
 #include "common/configman.h"
 
 static void displayUsage(const char *name) {
-	std::printf("Usage: %s [options] <target>\n\n", name);
+	std::printf("Usage: %s [options] [target]\n\n", name);
 	std::printf("          --help              This text\n");
 	std::printf("  -cFILE  --config=FILE       Load the config from file FILE\n");
 	std::printf("  -pDIR   --path=DIR          Override the game path with DIR\n");
@@ -63,7 +63,19 @@ static void displayUsage(const char *name) {
 	std::printf("VOL:  A double ranging from 0.0 (min) - 1.0 (max).\n");
 	std::printf("LVL:  A positive integer.\n");
 	std::printf("CHAN: A comma-separated list of debug channels.\n");
-	std::printf("      Use \"All\" to enable all debug channels.\n\n");
+	std::printf("      Use \"All\" to enable all debug channels.\n");
+	std::printf("\n");
+	std::printf("Examples:\n");
+	std::printf("%s -p/path/to/nwn/\n", name);
+	std::printf("  xoreos will start the game in /path/to/nwn/. Should a target with this\n");
+	std::printf("  path not yet exist in the config file, xoreos will create one named \"nwn\".\n");
+	std::printf("%s -p/path/to/nwn/ foobar\n", name);
+	std::printf("  xoreos will start the game in /path/to/nwn/. If a target \"foobar\"\n");
+	std::printf("  does not yet exist in the config file, xoreos will create it.\n");
+	std::printf("%s nwn\n", name);
+	std::printf("  xoreos will start the game specified by target \"nwn\", which must exit\n");
+	std::printf("  in the config file already.\n");
+	std::printf("\n");
 }
 
 static Common::UString convertShortToLongOption(char shortOption) {
