@@ -1,0 +1,31 @@
+add_library(aurora STATIC
+  error.cpp
+  util.cpp
+  archive.cpp
+  aurorafile.cpp
+  keyfile.cpp
+  biffile.cpp
+  erffile.cpp
+  rimfile.cpp
+  ndsrom.cpp
+  zipfile.cpp
+  resman.cpp
+  talktable.cpp
+  talkman.cpp
+  ssffile.cpp
+  2dafile.cpp
+  2dareg.cpp
+  locstring.cpp
+  gfffile.cpp
+  gffstructs.cpp
+  dlgfile.cpp
+  lytfile.cpp
+  visfile.cpp
+  pefile.cpp
+  herffile.cpp
+)
+
+add_subdirectory(nwscript)
+target_link_libraries(aurora
+  aurora_nwscript
+)

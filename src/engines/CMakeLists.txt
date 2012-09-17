@@ -1,0 +1,33 @@
+add_library(engines STATIC
+  engine.cpp
+  enginemanager.cpp
+  gamethread.cpp
+  aurora/util.cpp
+  aurora/resources.cpp
+  aurora/tokenman.cpp
+  aurora/modelloader.cpp
+  aurora/model.cpp
+  aurora/widget.cpp
+  aurora/gui.cpp
+  aurora/console.cpp
+)
+
+add_subdirectory(nwn)
+add_subdirectory(nwn2)
+add_subdirectory(kotor)
+add_subdirectory(kotor2)
+add_subdirectory(thewitcher)
+add_subdirectory(sonic)
+add_subdirectory(dragonage)
+add_subdirectory(jade)
+target_link_libraries(engines
+  aurora
+  engines_nwn
+  engines_nwn2
+  engines_kotor
+  engines_kotor2
+  engines_thewitcher
+  engines_sonic
+  engines_dragonage
+  engines_jade
+)
