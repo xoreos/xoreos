@@ -215,7 +215,7 @@ void NWNEngine::initResources() {
 	status("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"    , 0, 0, 22);
 	status("Indexing extra image resources");
-	indexMandatoryDirectory("portraits" , 0, 0, 23);
+	indexOptionalDirectory ("portraits" , 0, 0, 23);
 	status("Indexing extra talktables");
 	indexOptionalDirectory ("tlk"       , 0, 0, 25);
 	status("Indexing databases");
