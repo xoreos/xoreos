@@ -350,7 +350,8 @@ void XMVWMV2Codec::decodeFrame(Graphics::Surface &surface,
 		decodePFrame(ctx);
 
 	// Convert the YUV data we have to BGRA
-	Graphics::convertYUV420ToRGBA(surface.getData(), surface.getWidth() * 4,
+	YUVToRGBMan.convert420(Graphics::YUVToRGBManager::kScaleITU,
+			surface.getData(), surface.getWidth() * 4,
 			_curPlanes[0], _curPlanes[1], _curPlanes[2],
 			_lumaWidth, _lumaHeight, _lumaWidth, _chromaWidth);
 

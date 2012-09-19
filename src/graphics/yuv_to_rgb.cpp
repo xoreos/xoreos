@@ -31,8 +31,8 @@
 // which is derived from SDL's YUV overlay code, which in turn appears to be
 // derived from mpeg_play. The following copyright notices have been included
 // in accordance with the original license. Please note that the term "software"
-// in this context only applies to the YUVToRGBLookup constructor and
-// convertYUVA420ToRGBA() function below.
+// in this context only applies to the YUVToRGBLookup constructor, YUVToRGBManager
+// constructor and convert420() functions below.
 
 // Copyright (c) 1995 The Regents of the University of California.
 // All rights reserved.
@@ -97,115 +97,119 @@
 
 #include "graphics/yuv_to_rgb.h"
 
+namespace Common {
+DECLARE_SINGLETON(Graphics::YUVToRGBManager);
+}
+
 namespace Graphics {
 
 class YUVToRGBLookup {
 public:
-	YUVToRGBLookup();
-	~YUVToRGBLookup();
+	YUVToRGBLookup(YUVToRGBManager::LuminanceScale scale);
 
-	int16 *_colorTab;
-	byte *_rgbToPix;
+	YUVToRGBManager::LuminanceScale getScale() const { return _scale; }
+	const byte *getRGBToPix() const { return _rgbToPix; }
+
+private:
+	YUVToRGBManager::LuminanceScale _scale;
+	byte _rgbToPix[3 * 768];
 };
 
-YUVToRGBLookup::YUVToRGBLookup() {
-	_colorTab = new int16[4 * 256]; // 2048 bytes
+YUVToRGBLookup::YUVToRGBLookup(YUVToRGBManager::LuminanceScale scale) {
+	_scale = scale;
+
+	byte *r_2_pix_alloc = &_rgbToPix[0 * 768];
+	byte *g_2_pix_alloc = &_rgbToPix[1 * 768];
+	byte *b_2_pix_alloc = &_rgbToPix[2 * 768];
+
+	if (scale == YUVToRGBManager::kScaleFull) {
+		// Set up entries 0-255 in rgb-to-pixel value tables.
+		for (int i = 0; i < 256; i++) {
+			r_2_pix_alloc[i + 256] = i;
+			g_2_pix_alloc[i + 256] = i;
+			b_2_pix_alloc[i + 256] = i;
+		}
+
+		// Spread out the values we have to the rest of the array so that we do
+		// not need to check for overflow.
+		for (int i = 0; i < 256; i++) {
+			r_2_pix_alloc[i] = r_2_pix_alloc[256];
+			r_2_pix_alloc[i + 512] = r_2_pix_alloc[511];
+			g_2_pix_alloc[i] = g_2_pix_alloc[256];
+			g_2_pix_alloc[i + 512] = g_2_pix_alloc[511];
+			b_2_pix_alloc[i] = b_2_pix_alloc[256];
+			b_2_pix_alloc[i + 512] = b_2_pix_alloc[511];
+		}
+	} else {
+		// Set up entries 0-255 in rgb-to-pixel value tables.
+		for (int i = 16; i < 236; i++) {
+			int scaledValue = (i - 16) * 255 / 219;
+			r_2_pix_alloc[i + 256] = scaledValue;
+			g_2_pix_alloc[i + 256] = scaledValue;
+			b_2_pix_alloc[i + 256] = scaledValue;
+		}
+
+		// Spread out the values we have to the rest of the array so that we do
+		// not need to check for overflow. We have to do it here in two steps.
+		for (int i = 0; i < 256 + 16; i++) {
+			r_2_pix_alloc[i] = r_2_pix_alloc[256 + 16];
+			g_2_pix_alloc[i] = g_2_pix_alloc[256 + 16];
+			b_2_pix_alloc[i] = b_2_pix_alloc[256 + 16];
+		}
+
+		for (int i = 256 + 236; i < 768; i++) {
+			r_2_pix_alloc[i] = r_2_pix_alloc[256 + 236 - 1];
+			g_2_pix_alloc[i] = g_2_pix_alloc[256 + 236 - 1];
+			b_2_pix_alloc[i] = b_2_pix_alloc[256 + 236 - 1];
+		}
+	}
+}
+
+YUVToRGBManager::YUVToRGBManager() {
+	_lookup = 0;
 
 	int16 *Cr_r_tab = &_colorTab[0 * 256];
 	int16 *Cr_g_tab = &_colorTab[1 * 256];
 	int16 *Cb_g_tab = &_colorTab[2 * 256];
 	int16 *Cb_b_tab = &_colorTab[3 * 256];
 
-	_rgbToPix = new byte[3 * 768]; // bytes
-
-	byte *r_2_pix_alloc = &_rgbToPix[0 * 768];
-	byte *g_2_pix_alloc = &_rgbToPix[1 * 768];
-	byte *b_2_pix_alloc = &_rgbToPix[2 * 768];
-
-	int16 CR, CB;
-	int i;
-
 	// Generate the tables for the display surface
 
-	for (i = 0; i < 256; i++) {
+	for (int i = 0; i < 256; i++) {
 		// Gamma correction (luminescence table) and chroma correction
 		// would be done here. See the Berkeley mpeg_play sources.
 
-		CR = CB = (i - 128);
+		int16 CR = (i - 128), CB = CR;
 		Cr_r_tab[i] = (int16) ( (0.419 / 0.299) * CR) + 0 * 768 + 256;
 		Cr_g_tab[i] = (int16) (-(0.299 / 0.419) * CR) + 1 * 768 + 256;
 		Cb_g_tab[i] = (int16) (-(0.114 / 0.331) * CB);
 		Cb_b_tab[i] = (int16) ( (0.587 / 0.331) * CB) + 2 * 768 + 256;
 	}
-
-	// Set up entries 0-255 in rgb-to-pixel value tables.
-	for (i = 0; i < 256; i++) {
-		r_2_pix_alloc[i + 256] = i;
-		g_2_pix_alloc[i + 256] = i;
-		b_2_pix_alloc[i + 256] = i;
-	}
-
-	// Spread out the values we have to the rest of the array so that we do
-	// not need to check for overflow.
-	for (i = 0; i < 256; i++) {
-		r_2_pix_alloc[i] = r_2_pix_alloc[256];
-		r_2_pix_alloc[i + 512] = r_2_pix_alloc[511];
-		g_2_pix_alloc[i] = g_2_pix_alloc[256];
-		g_2_pix_alloc[i + 512] = g_2_pix_alloc[511];
-		b_2_pix_alloc[i] = b_2_pix_alloc[256];
-		b_2_pix_alloc[i + 512] = b_2_pix_alloc[511];
-	}
-}
-
-YUVToRGBLookup::~YUVToRGBLookup() {
-	delete[] _rgbToPix;
-	delete[] _colorTab;
-}
-
-class YUVToRGBManager : public Common::Singleton<YUVToRGBManager> {
-public:
-	const YUVToRGBLookup *getLookup();
-
-private:
-	friend class Common::Singleton<SingletonBaseType>;
-	YUVToRGBManager();
-	~YUVToRGBManager();
-
-	YUVToRGBLookup *_lookup;
-};
-
-YUVToRGBManager::YUVToRGBManager() {
-	_lookup = 0;
 }
 
 YUVToRGBManager::~YUVToRGBManager() {
 	delete _lookup;
 }
 
-const YUVToRGBLookup *YUVToRGBManager::getLookup() {
-	if (!_lookup)
-		_lookup = new YUVToRGBLookup();
+const YUVToRGBLookup *YUVToRGBManager::getLookup(LuminanceScale scale) {
+	if (_lookup && _lookup->getScale() == scale)
+		return _lookup;
 
+	delete _lookup;
+	_lookup = new YUVToRGBLookup(scale);
 	return _lookup;
 }
 
-} // End of namespace Graphics
-
-DECLARE_SINGLETON(Graphics::YUVToRGBManager);
-
-#define YUVToRGBMan (Graphics::YUVToRGBManager::instance())
-
-namespace Graphics {
-
 #define PUT_PIXEL(s, a, d) \
-	L = &lookup->_rgbToPix[(s)]; \
+	L = &rgbToPix[(s)]; \
 	*((d)) = L[cb_b]; \
 	*((d) + 1) = L[crb_g]; \
 	*((d) + 2) = L[cr_r]; \
 	*((d) + 3) = (a)
 
-void convertYUVA420ToRGBA(byte *dst, int dstPitch, const byte *ySrc, const byte *uSrc, const byte *vSrc, const byte *aSrc, int yWidth, int yHeight, int yPitch, int uvPitch) {
-	const YUVToRGBLookup *lookup = YUVToRGBMan.getLookup();
+void YUVToRGBManager::convert420(LuminanceScale scale, byte *dst, int dstPitch, const byte *ySrc, const byte *uSrc, const byte *vSrc, const byte *aSrc, int yWidth, int yHeight, int yPitch, int uvPitch) {
+	const YUVToRGBLookup *lookup = YUVToRGBMan.getLookup(scale);
+	const byte *rgbToPix = lookup->getRGBToPix();
 
 	int halfHeight = yHeight >> 1;
 	int halfWidth = yWidth >> 1;
@@ -214,11 +218,11 @@ void convertYUVA420ToRGBA(byte *dst, int dstPitch, const byte *ySrc, const byte 
 
 	for (int h = 0; h < halfHeight; h++) {
 		for (int w = 0; w < halfWidth; w++) {
-			register byte *L;
+			register const byte *L;
 
-			int16 cr_r  = lookup->_colorTab[*vSrc + 0 * 256];
-			int16 crb_g = lookup->_colorTab[*vSrc + 1 * 256] + lookup->_colorTab[*uSrc + 2 * 256];
-			int16 cb_b  = lookup->_colorTab[*uSrc + 3 * 256];
+			int16 cr_r  = _colorTab[*vSrc + 0 * 256];
+			int16 crb_g = _colorTab[*vSrc + 1 * 256] + _colorTab[*uSrc + 2 * 256];
+			int16 cb_b  = _colorTab[*uSrc + 3 * 256];
 			uSrc++;
 			vSrc++;
 
@@ -242,8 +246,9 @@ void convertYUVA420ToRGBA(byte *dst, int dstPitch, const byte *ySrc, const byte 
 	}
 }
 
-void convertYUV420ToRGBA(byte *dst, int dstPitch, const byte *ySrc, const byte *uSrc, const byte *vSrc, int yWidth, int yHeight, int yPitch, int uvPitch) {
-	const YUVToRGBLookup *lookup = YUVToRGBMan.getLookup();
+void YUVToRGBManager::convert420(LuminanceScale scale, byte *dst, int dstPitch, const byte *ySrc, const byte *uSrc, const byte *vSrc, int yWidth, int yHeight, int yPitch, int uvPitch) {
+	const YUVToRGBLookup *lookup = YUVToRGBMan.getLookup(scale);
+	const byte *rgbToPix = lookup->getRGBToPix();
 
 	int halfHeight = yHeight >> 1;
 	int halfWidth = yWidth >> 1;
@@ -252,11 +257,11 @@ void convertYUV420ToRGBA(byte *dst, int dstPitch, const byte *ySrc, const byte *
 
 	for (int h = 0; h < halfHeight; h++) {
 		for (int w = 0; w < halfWidth; w++) {
-			register byte *L;
+			register const byte *L;
 
-			int16 cr_r  = lookup->_colorTab[*vSrc + 0 * 256];
-			int16 crb_g = lookup->_colorTab[*vSrc + 1 * 256] + lookup->_colorTab[*uSrc + 2 * 256];
-			int16 cb_b  = lookup->_colorTab[*uSrc + 3 * 256];
+			int16 cr_r  = _colorTab[*vSrc + 0 * 256];
+			int16 crb_g = _colorTab[*vSrc + 1 * 256] + _colorTab[*uSrc + 2 * 256];
+			int16 cb_b  = _colorTab[*uSrc + 3 * 256];
 			uSrc++;
 			vSrc++;
 

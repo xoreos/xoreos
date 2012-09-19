@@ -96,7 +96,8 @@ void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStre
 	if (xvid_dec_frame.output.plane[0] &&
 	    xvid_dec_frame.output.plane[1] &&
 	    xvid_dec_frame.output.plane[2])
-		Graphics::convertYUV420ToRGBA(surface.getData(), surface.getWidth() * 4,
+		YUVToRGBMan.convert420(Graphics::YUVToRGBManager::kScaleFull,
+				surface.getData(), surface.getWidth() * 4,
 				(const byte *) xvid_dec_frame.output.plane[0],
 				(const byte *) xvid_dec_frame.output.plane[1],
 				(const byte *) xvid_dec_frame.output.plane[2], _width, _height,

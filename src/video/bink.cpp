@@ -281,7 +281,8 @@ void Bink::videoPacket(VideoFrame &video) {
 
 	// Convert the YUVA data we have to BGRA
 	assert(_surface && _curPlanes[0] && _curPlanes[1] && _curPlanes[2] && _curPlanes[3]);
-	Graphics::convertYUVA420ToRGBA(_surface->getData(), _surface->getWidth() * 4,
+	YUVToRGBMan.convert420(Graphics::YUVToRGBManager::kScaleITU,
+			_surface->getData(), _surface->getWidth() * 4,
 			_curPlanes[0], _curPlanes[1], _curPlanes[2], _curPlanes[3],
 			_width, _height, _width, _width >> 1);
 
