@@ -167,7 +167,7 @@ public:
 	/** Does a specific archive exist?
 	 *
 	 *  @param  archive The type of archive to check.
-	 *  @param  name The name of the archive file.
+	 *  @param  file The name of the archive file.
 	 *  @return true if the archive exists, false otherwise.
 	 */
 	bool hasArchive(ArchiveType archive, const Common::UString &file);

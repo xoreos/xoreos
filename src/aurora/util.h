@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file aurora/util.h
+/** @file src/aurora/util.h
  *  Utility functions to handle files used in BioWare's Aurora engine.
  */
 

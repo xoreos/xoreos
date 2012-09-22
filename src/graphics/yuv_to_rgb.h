@@ -48,31 +48,33 @@ public:
 	/**
 	 * Convert a YUV420 image to an RGBA surface
 	 *
-	 * @param scale   the scale of the luminance values
-	 * @param dst     the destination surface
-	 * @param ySrc    the source of the y component
-	 * @param uSrc    the source of the u component
-	 * @param vSrc    the source of the v component
-	 * @param yWidth  the width of the y surface (must be divisible by 2)
-	 * @param yHeight the height of the y surface (must be divisible by 2)
-	 * @param yPitch  the pitch of the y surface
-	 * @param uvPitch the pitch of the u and v surfaces
+	 * @param scale    the scale of the luminance values
+	 * @param dst      the destination surface
+	 * @param dstPitch the pitch of the destination surface
+	 * @param ySrc     the source of the y component
+	 * @param uSrc     the source of the u component
+	 * @param vSrc     the source of the v component
+	 * @param yWidth   the width of the y surface (must be divisible by 2)
+	 * @param yHeight  the height of the y surface (must be divisible by 2)
+	 * @param yPitch   the pitch of the y surface
+	 * @param uvPitch  the pitch of the u and v surfaces
 	 */
 	void convert420(LuminanceScale scale, byte *dst, int dstPitch, const byte *ySrc, const byte *uSrc, const byte *vSrc, int yWidth, int yHeight, int yPitch, int uvPitch);
 
 	/**
 	 * Convert a YUV420 image to an RGBA surface
 	 *
-	 * @param scale   the scale of the luminance values
-	 * @param dst     the destination surface
-	 * @param ySrc    the source of the y component
-	 * @param uSrc    the source of the u component
-	 * @param vSrc    the source of the v component
-	 * @param aSrc    the source of the a component
-	 * @param yWidth  the width of the y surface (must be divisible by 2)
-	 * @param yHeight the height of the y surface (must be divisible by 2)
-	 * @param yPitch  the pitch of the y and a surfaces
-	 * @param uvPitch the pitch of the u and v surfaces
+	 * @param scale    the scale of the luminance values
+	 * @param dst      the destination surface
+	 * @param dstPitch the pitch of the destination surface
+	 * @param ySrc     the source of the y component
+	 * @param uSrc     the source of the u component
+	 * @param vSrc     the source of the v component
+	 * @param aSrc     the source of the a component
+	 * @param yWidth   the width of the y surface (must be divisible by 2)
+	 * @param yHeight  the height of the y surface (must be divisible by 2)
+	 * @param yPitch   the pitch of the y and a surfaces
+	 * @param uvPitch  the pitch of the u and v surfaces
 	 */
 	void convert420(LuminanceScale scale, byte *dst, int dstPitch, const byte *ySrc, const byte *uSrc, const byte *vSrc, const byte *aSrc, int yWidth, int yHeight, int yPitch, int uvPitch);
 
