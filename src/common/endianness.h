@@ -35,9 +35,15 @@
 #include "common/system.h"
 #include "common/types.h"
 
-// Sanity check
-#if !defined(XOREOS_LITTLE_ENDIAN) && !defined(XOREOS_BIG_ENDIAN)
-	#error No endianness defined
+#include <boost/config.hpp>
+#include <boost/detail/endian.hpp>
+
+#ifdef BOOST_BIG_ENDIAN
+# define XOREOS_BIG_ENDIAN
+#elif defined(BOOST_LITTLE_ENDIAN)
+# define XOREOS_LITTLE_ENDIAN
+#else
+# error No endianness defined
 #endif
 
 #define SWAP_CONSTANT_64(a) \
