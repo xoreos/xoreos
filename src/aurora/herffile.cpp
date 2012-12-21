@@ -77,10 +77,11 @@ void HERFFile::load() {
 }
 
 void HERFFile::readNames() {
-	// We need to find the erf.dict file inside the archive
-	// Of course, we therefore need to know the name hash first
-	// It is 0xEA828DD4
-	Common::SeekableReadStream *dict = getResource(0xEA828DD4);
+	// Since we don't actually handle hashed files in ResourceManager, we need
+	// to get the strings out of the dictionary file. While there may be some
+	// versions of Sonic that don't have the dictionary, we cannot handle them
+	// at this time.
+	Common::SeekableReadStream *dict = getResource(hashString("erf.dict"));
 
 	if (!dict)
 		throw Common::Exception("HERFFile::readNames(): No erf.dict file");
@@ -142,6 +143,16 @@ Common::SeekableReadStream *HERFFile::getResource(uint32 index) const {
 	}
 
 	return resStream;
+}
+
+// djb2 hash function by Daniel J. Bernstein
+uint32 HERFFile::hashString(const Common::UString &string) {
+	uint32 hash = 5381;
+
+	for (Common::UString::iterator it = string.begin(); it != string.end(); it++)
+		hash = ((hash << 5) + hash) + *it;
+
+	return hash;
 }
 
 } // End of namespace Aurora

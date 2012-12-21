@@ -87,6 +87,9 @@ private:
 	void readNames();
 
 	const IResource &getIResource(uint32 index) const;
+
+	/** Hash a string for indexing into the file */
+	uint32 hashString(const Common::UString &string);
 };
 
 } // End of namespace Aurora
