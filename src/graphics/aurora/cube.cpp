@@ -80,7 +80,7 @@ void CubeSide::render(RenderPass pass) {
 }
 
 
-Cube::Cube(const Common::UString &texture) : _firstTime(true), _lastRotateTime(0), _list(0) {
+Cube::Cube(const Common::UString &texture) : _firstTime(true), _lastRotateTime(0), _rotation(0.0), _list(0) {
 	_texture = TextureMan.get(texture);
 
 	for (int i = 0; i < 6; i++)
