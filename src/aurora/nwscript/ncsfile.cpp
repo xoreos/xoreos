@@ -151,7 +151,7 @@ void NCSStack::setStackPtr(int32 pos) {
 
 	_stackPtr = (pos / -4) - 1;
 
-	if (size() < (_stackPtr + 1))
+	if ((int32)size() < (_stackPtr + 1))
 		resize(_stackPtr + 1);
 }
 
