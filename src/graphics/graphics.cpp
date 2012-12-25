@@ -49,6 +49,7 @@
 #include "src/events/notifications.h"
 
 #include "src/graphics/graphics.h"
+#include "src/graphics/lightman.h"
 #include "src/graphics/icon.h"
 #include "src/graphics/cursor.h"
 #include "src/graphics/fpscounter.h"
@@ -1055,6 +1056,16 @@ bool GraphicsManager::renderWorld() {
 	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
 	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
 
+	glm::mat4 camera;
+
+	// Apply camera orientation
+	camera = glm::rotate(camera, Common::deg2rad(-cOrient[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+	camera = glm::rotate(camera, Common::deg2rad(-cOrient[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+	camera = glm::rotate(camera, Common::deg2rad(-cOrient[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	// Apply camera position
+	camera = glm::translate(camera, glm::vec3(-cPos[0], -cPos[1], -cPos[2]));
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -1086,6 +1097,9 @@ bool GraphicsManager::renderWorld() {
 
 	_animationThread.flush();
 
+	LightMan.setCamera(camera);
+	LightMan.renderLights();
+
 	// Draw opaque objects
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
@@ -1103,6 +1117,9 @@ bool GraphicsManager::renderWorld() {
 		static_cast<Renderable *>(*o)->render(kRenderPassTransparent);
 		glPopMatrix();
 	}
+
+	glDisable(GL_LIGHTING);
+	LightMan.showLights();
 
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 	return true;

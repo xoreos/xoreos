@@ -35,6 +35,7 @@
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/model.h"
 
 #include "src/sound/sound.h"
@@ -238,8 +239,10 @@ void Area::show() {
 	GfxMan.lockFrame();
 
 	// Show tiles
-	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
-		t->model->show();
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t) {
+		if (t->model)
+			t->model->show();
+	}
 
 	// Show objects
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
@@ -248,6 +251,8 @@ void Area::show() {
 	// Show walkmesh
 	_pathfinding->showWalkmesh(!_walkmeshInvisible);
 	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
+
+	LightMan.updateLighting();
 
 	GfxMan.unlockFrame();
 
@@ -274,7 +279,8 @@ void Area::hide() {
 
 	// Hide tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
-		t->model->hide();
+		if (t->model)
+			t->model->hide();
 
 	// Hide walkmesh
 	_pathfinding->showWalkmesh(false);
@@ -393,8 +399,8 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 	tile.mainLight[0] = t.getUint("Tile_MainLight1", 0);
 	tile.mainLight[1] = t.getUint("Tile_MainLight2", 0);
 
-	tile.srcLight[0] = t.getUint("Tile_SrcLight1", 0);
-	tile.srcLight[1] = t.getUint("Tile_SrcLight2", 0);
+	tile.srcLight[0] = t.getUint("Tile_SrcLight1", 0) * 2;
+	tile.srcLight[1] = t.getUint("Tile_SrcLight2", 0) * 2;
 
 	// Tile animations
 
@@ -460,9 +466,12 @@ void Area::unloadTileset() {
 	_tileset.reset();
 }
 
+static int H = 0;
 void Area::loadTiles() {
 	for (uint32 y = 0; y < _height; y++) {
 		for (uint32 x = 0; x < _width; x++) {
+			if (x == 8 && y == 8)
+				continue;
 			uint32 n = y * _width + x;
 
 			Tile &t = _tiles[n];
@@ -481,6 +490,8 @@ void Area::loadTiles() {
 			// The actual height of a tile is dictated by the tileset.
 			const float tileZ = t.height * _tileset->getTilesHeight();
 
+			H = t.height;
+
 			t.model->setPosition(tileX, tileY, tileZ);
 			t.model->setOrientation(0.0f, 0.0f, 1.0f, ((int) t.orientation) * 90.0f);
 
@@ -489,11 +500,44 @@ void Area::loadTiles() {
 				float orientation[4] = {0.0f, 0.0f, 1.0f, ((int) t.orientation) * (float) M_PI * 0.5f};
 				_pathfinding->addTile(t.tile->model, orientation, position);
 			}
+
+			createLight(t.light[0], t.model, t.mainLight[0], t.tile->model + "ml1");
+			createLight(t.light[1], t.model, t.mainLight[1], t.tile->model + "ml2");
+			createLight(t.light[2], t.model, t.srcLight [0], t.tile->model + "sl1");
+			createLight(t.light[3], t.model, t.srcLight [1], t.tile->model + "sl2");
 		}
 	}
 
 	if (!_pathfinding->loaded())
 		_pathfinding->finalize();
+}
+
+void Area::createLight(Graphics::LightHandle &light, Graphics::Aurora::Model *model,
+                       uint8 color, const Common::UString &nodeName) {
+
+	if ((color == 0) || (color > 31))
+		return;
+
+	Graphics::Aurora::ModelNode *node = model->getNode(nodeName);
+	if (!node)
+		return;
+
+	float x, y, z;
+	node->getWorldPosition(x, y, z);
+
+	light = LightMan.addLight();
+
+	const Aurora::TwoDAFile &lightColor = TwoDAReg.get2DA("lightcolor");
+
+	float r = lightColor.getRow(color).getFloat("TOOLSETRED");
+	float g = lightColor.getRow(color).getFloat("TOOLSETGREEN");
+	float b = lightColor.getRow(color).getFloat("TOOLSETBLUE");
+
+	LightMan.setAmbient (light, 0.0, 0.0, 0.0, 1.0);
+	LightMan.setDiffuse (light,   r,   g,   b, 1.0);
+	LightMan.setSpecular(light, 0.0, 0.0, 0.0, 1.0);
+	LightMan.setPosition(light,   x,   y,   z);
+	LightMan.switchOnOff(light, true);
 }
 
 void Area::unloadTiles() {
@@ -507,6 +551,9 @@ void Area::unloadTiles() {
 
 			delete t.model;
 			t.model = 0;
+
+			for (int i = 0; i < 4; i++)
+				t.light[i].clear();
 		}
 	}
 }

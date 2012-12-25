@@ -77,6 +77,8 @@ Model::Model(ModelType type) :
 	_orientation[2] = 0.0f;
 	_orientation[3] = 0.0f;
 
+	_needEvalLights = true;
+
 	_center[0] = 0.0f; _center[1] = 0.0f; _center[2] = 0.0f;
 
 	// TODO: Is this the same as modelScale for non-UI?
@@ -110,11 +112,17 @@ Model::~Model() {
 
 void Model::show() {
 	Renderable::show();
+
 	GfxMan.registerAnimatedModel(this);
+	_needEvalLights = true;
 }
 
 void Model::hide() {
+	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
+		for (NodeList::iterator n = (*s)->nodeList.begin(); n != (*s)->nodeList.end(); ++n)
+			(*n)->clearLights();
 	GfxMan.unregisterAnimatedModel(this);
+
 	Renderable::hide();
 }
 
@@ -242,6 +250,8 @@ void Model::setScale(float x, float y, float z) {
 	createAbsolutePosition();
 	calculateDistance();
 
+	_needEvalLights = true;
+
 	resort();
 
 	unlockFrameIfVisible();
@@ -258,6 +268,8 @@ void Model::setOrientation(float x, float y, float z, float angle) {
 	createAbsolutePosition();
 	calculateDistance();
 
+	_needEvalLights = true;
+
 	resort();
 
 	unlockFrameIfVisible();
@@ -272,6 +284,8 @@ void Model::setPosition(float x, float y, float z) {
 
 	createAbsolutePosition();
 	calculateDistance();
+
+	_needEvalLights = true;
 
 	resort();
 
@@ -615,6 +629,67 @@ void Model::calculateDistance() {
 	_distance = x + y + z;
 }
 
+void Model::evaluateLights() {
+	if (!_needEvalLights)
+		return;
+
+	glm::mat4 position = _absolutePosition;
+
+	for (NodeList::iterator n = _currentState->rootNodes.begin();
+	     n != _currentState->rootNodes.end(); ++n) {
+
+		(*n)->evaluateLights(position);
+	}
+
+	_needEvalLights = false;
+}
+
+/*
+bool Model::buildList(RenderPass pass) {
+		evaluateLights();
+
+	if (_lists == 0)
+		_lists = glGenLists(kRenderPassAll);
+
+	glNewList(_lists + pass, GL_COMPILE);
+
+
+	// Apply our global model transformation
+
+	glScalef(_modelScale[0], _modelScale[1], _modelScale[2]);
+
+	if (_type == kModelTypeObject)
+		// Aurora world objects have a rotated axis
+		glRotatef(90.0, -1.0, 0.0, 0.0);
+
+	glTranslatef(_position[0], _position[1], _position[2]);
+
+	glRotatef( _rotation[0], 1.0, 0.0, 0.0);
+	glRotatef( _rotation[1], 0.0, 1.0, 0.0);
+	glRotatef(-_rotation[2], 0.0, 0.0, 1.0);
+
+
+	// Draw the bounding box, if requested
+	doDrawBound();
+
+	// Draw the nodes
+	for (NodeList::iterator n = _currentState->rootNodes.begin();
+	     n != _currentState->rootNodes.end(); n++) {
+
+		glPushMatrix();
+		(*n)->render(pass);
+		glPopMatrix();
+	}
+
+
+	glEndList();
+
+
+	_needBuild[pass] = false;
+	return true;
+}
+*/
+
 void Model::advanceTime(float dt) {
 	manageAnimations(dt);
 	flushNodeBuffers();
@@ -675,6 +750,8 @@ void Model::render(RenderPass pass) {
 		Model::render(kRenderPassTransparent);
 		return;
 	}
+
+	evaluateLights();
 
 	// Apply our global model transformation
 	glTranslatef(_position[0], _position[1], _position[2]);

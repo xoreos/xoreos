@@ -653,6 +653,47 @@ void ModelNode::orderChildren() {
 		(*c)->orderChildren();
 }
 
+void ModelNode::clearLights() {
+	_lighting.clear();
+}
+
+void ModelNode::evaluateLights(glm::mat4 position) {
+	clearLights();
+
+	_lighting.push_back(LightMan.createLighting());
+
+	position = glm::translate(position, glm::vec3(_position[0], _position[1], _position[2]));
+	position = glm::rotate(position, Common::deg2rad(_orientation[3]),
+	                       glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
+
+	position = glm::rotate(position, Common::deg2rad(_rotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+	position = glm::rotate(position, Common::deg2rad(_rotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+	position = glm::rotate(position, Common::deg2rad(_rotation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	position = glm::scale(position, glm::vec3(_scale[0], _scale[1], _scale[2]));
+
+	Common::BoundingBox bound;
+
+	bound.transform(position);
+	bound.add(_boundBox);
+	bound.absolutize();
+
+	float min[3], max[3], center[3];
+
+	bound.getMin(min[0], min[1], min[2]);
+	bound.getMax(max[0], max[1], max[2]);
+
+	center[0] = min[0] + ABS(max[0] - min[0]) / 2.0f;
+	center[1] = min[1] + ABS(max[1] - min[1]) / 2.0f;
+	center[2] = min[2] + ABS(max[2] - min[2]) / 2.0f;
+
+	LightMan.evaluateLighting(_lighting[0], center[0], center[1], center[2]);
+
+	// Recurse into the children
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c)
+		(*c)->evaluateLights(position);
+}
+
 void ModelNode::renderGeometry(ModelNode::Mesh &mesh) {
 	TextureHandle *penvmap = 0;
 	EnvironmentMapMode envmapmode;
@@ -816,8 +857,12 @@ void ModelNode::render(RenderPass pass) {
 	    ((pass == kRenderPassTransparent) && !isTransparent))
 		shouldRender = false;
 
-	if (shouldRender)
+	if (shouldRender) {
+		if (!_lighting.empty())
+			LightMan.renderLights(_lighting[0]);
+
 		renderGeometry(*mesh);
+	}
 
 	if (_attachedModel) {
 		glPushMatrix();

@@ -34,6 +34,7 @@
 #include "src/common/boundingbox.h"
 
 #include "src/graphics/types.h"
+#include "src/graphics/lightman.h"
 #include "src/graphics/indexbuffer.h"
 #include "src/graphics/vertexbuffer.h"
 
@@ -272,6 +273,9 @@ protected:
 
 	std::vector<Shader::ShaderRenderable> _renderableArray;  ///< Damn you bioware.
 
+	// Vertex lighting
+	std::vector<LightingHandle> _lighting; ///< Lighting handles.
+
 	float _center     [3]; ///< The node's center.
 	float _position   [3]; ///< Position of the node.
 	float _rotation   [3]; ///< Node rotation.
@@ -367,6 +371,9 @@ private:
 	const Common::BoundingBox &getAbsoluteBound() const;
 
 	void orderChildren();
+
+	void clearLights();
+	void evaluateLights(glm::mat4 position);
 
 	void renderGeometry(Mesh &mesh);
 	void renderGeometryNormal(Mesh &mesh);

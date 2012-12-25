@@ -295,11 +295,15 @@ protected:
 	glm::mat4 _boundTransform;
 
 private:
+	bool _needEvalLights;
+
 	bool _drawBound;
 	bool _drawSkeleton;
 	bool _drawSkeletonInvisible;
 
 	std::map<Common::UString, Model *> _attachedModels;
+
+	void evaluateLights();
 
 	/** Create the list of all state names. */
 	void createStateNamesList(std::list<Common::UString> *stateNames = 0);

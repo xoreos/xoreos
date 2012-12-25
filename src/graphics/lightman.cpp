@@ -22,6 +22,8 @@
  *  The light manager.
  */
 
+#include "external/glm/gtc/type_ptr.hpp"
+
 #include "src/common/error.h"
 #include "src/common/util.h"
 
@@ -139,6 +141,7 @@ LightManager::Light::~Light() {
 
 
 LightManager::Lighting::Lighting() : referenceCount(0) {
+	position[0] = 0.0; position[1] = 0.0; position[2] = 0.0;
 }
 
 LightManager::Lighting::~Lighting() {
@@ -222,6 +225,10 @@ void drawsphere(int ndiv, float radius=1.0) {
     glEnd();
 }
 
+void LightManager::setCamera(const glm::mat4 &camera) {
+	_camera = camera;
+}
+
 void LightManager::showLights() {
 	for (LightList::const_iterator l = _lights.begin(); l != _lights.end(); ++l) {
 		const Light &light = **l;
@@ -247,6 +254,46 @@ void LightManager::renderLights() {
 
 	glEnable(GL_LIGHTING);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, _ambientIntensity);
+}
+
+void LightManager::renderLights(const LightingHandle &lighting) {
+	if (lighting.empty())
+		return;
+
+	for (int i = 0; i < 8; i++)
+		glDisable(GL_LIGHT0 + i);
+
+	glPushMatrix();
+	glLoadIdentity();
+
+	// Apply camera transformation
+	glMultMatrixf(glm::value_ptr(_camera));
+
+	uint32 lightNumber = 0;
+	const std::list<LightHandle> &lights = (*lighting._it)->lights;
+	for (std::list<LightHandle>::const_iterator l = lights.begin(); l != lights.end(); ++l) {
+		if (lightNumber >= _maxLights)
+			break;
+
+		if (l->empty())
+			continue;
+
+		const Light &light = **l->_it;
+
+		glEnable(GL_LIGHT0 + lightNumber);
+
+		glLightfv(GL_LIGHT0 + lightNumber, GL_AMBIENT , light.ambient );
+		glLightfv(GL_LIGHT0 + lightNumber, GL_DIFFUSE , light.diffuse );
+		glLightfv(GL_LIGHT0 + lightNumber, GL_SPECULAR, light.specular);
+		glLightfv(GL_LIGHT0 + lightNumber, GL_POSITION, light.position);
+
+		GLfloat AT = 0.2;
+		glLightfv(GL_LIGHT0 + lightNumber, GL_LINEAR_ATTENUATION, &AT);
+
+		lightNumber++;
+	}
+
+	glPopMatrix();
 }
 
 void LightManager::assign(LightHandle &light, const LightHandle &from) {
@@ -375,12 +422,29 @@ void LightManager::evaluateLighting(LightingHandle &lighting, float x, float y, 
 	if (lighting.empty())
 		return;
 
-	(*lighting._it)->lights.clear();
+	Lighting &l = **lighting._it;
+
+	l.position[0] = x;
+	l.position[1] = y;
+	l.position[2] = z;
+
+	evaluateLighting(l);
+}
+
+void LightManager::evaluateLighting(Lighting &lighting) {
+	lighting.lights.clear();
 
 	for (LightList::iterator l = _lights.begin(); l != _lights.end(); ++l)
-		(*lighting._it)->lights.push_back(LightHandle(l));
+		lighting.lights.push_back(LightHandle(l));
 
-	(*lighting._it)->lights.sort(LightDistanceSort(x, y, z));
+	lighting.lights.sort(LightDistanceSort(lighting.position[0],
+	                                       lighting.position[1],
+	                                       lighting.position[2]));
+}
+
+void LightManager::updateLighting() {
+	for (LightingList::iterator l = _lightings.begin(); l != _lightings.end(); ++l)
+		evaluateLighting(**l);
 }
 
 } // End of namespace Graphics
