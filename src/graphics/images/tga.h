@@ -47,15 +47,14 @@ public:
 	~TGA();
 
 private:
-	// Format-spec from:
-	//http://www.ludorg.net/amnesia/TGA_File_Format_Spec.html
+	// Format-spec from http://www.ludorg.net/amnesia/TGA_File_Format_Spec.html
 	enum ImageType {
-	    TYPE_CMAP = 1,
-	    TYPE_TRUECOLOR = 2,
-	    TYPE_BW = 3,
-	    TYPE_RLE_CMAP = 9,
-	    TYPE_RLE_TRUECOLOR = 10,
-	    TYPE_RLE_BW = 11
+		kImageTypeCMap         =  1,
+		kImageTypeTrueColor    =  2,
+		kImageTypeBW           =  3,
+		kImageTypeRLECMap      =  9,
+		kImageTypeRLETrueColor = 10,
+		kImageTypeRLEBW        = 11
 	};
 
 	// Loading helpers

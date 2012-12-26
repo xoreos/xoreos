@@ -92,7 +92,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 	// Bits per pixel
 	pixelDepth = tga.readByte();
 
-	if (imageType == TYPE_TRUECOLOR || imageType == TYPE_RLE_TRUECOLOR) {
+	if (imageType == kImageTypeTrueColor || imageType == kImageTypeRLETrueColor) {
 		if (pixelDepth == 24) {
 			_hasAlpha  = false;
 			_format    = kPixelFormatBGR;
@@ -105,7 +105,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 			_dataType  = kPixelDataType8;
 		} else
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
-	} else if (imageType == TYPE_BW) {
+	} else if (imageType == kImageTypeBW) {
 		if (pixelDepth != 8)
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
 
@@ -123,7 +123,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 }
 
 void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pixelDepth, byte imageDesc) {
-	if (imageType == TYPE_TRUECOLOR || imageType == TYPE_RLE_TRUECOLOR) {
+	if (imageType == kImageTypeTrueColor || imageType == kImageTypeRLETrueColor) {
 		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height;
 		if      (_format == kPixelFormatBGR)
 			_mipMaps[0]->size *= 3;
@@ -132,7 +132,7 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 
 		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
 
-		if (imageType == TYPE_TRUECOLOR) {
+		if (imageType == kImageTypeTrueColor) {
 			if (pixelDepth == 16) {
 				// Convert from 16bpp to 32bpp
 				// 16bpp TGA is ARGB1555
@@ -154,7 +154,7 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 		} else {
 			readRLE(tga, pixelDepth);
 		}
-	} else if (imageType == TYPE_BW) {
+	} else if (imageType == kImageTypeBW) {
 		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height * 4;
 		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
 
@@ -228,9 +228,9 @@ void TGA::readRLE(Common::SeekableReadStream &tga, byte pixelDepth) {
 bool TGA::isSupportedImageType(ImageType type) const {
 	// We currently only support a limited number of types
 	switch (type) {
-	case TYPE_TRUECOLOR:
-	case TYPE_BW:
-	case TYPE_RLE_TRUECOLOR:
+	case kImageTypeTrueColor:
+	case kImageTypeBW:
+	case kImageTypeRLETrueColor:
 		return true;
 	default:
 		break;
