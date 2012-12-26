@@ -23,6 +23,8 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
+// Partially based on the TGA implementation found in ScummVM.
+
 /** @file graphics/images/tga.cpp
  *  Decoding TGA (TarGa) images.
  */
@@ -31,6 +33,7 @@
 #include "common/stream.h"
 #include "common/error.h"
 
+#include "graphics/util.h"
 #include "graphics/images/tga.h"
 
 namespace Graphics {
@@ -47,9 +50,10 @@ TGA::~TGA() {
 void TGA::load(Common::SeekableReadStream &tga) {
 	try {
 
-		byte imageType, pixelDepth;
-		readHeader(tga, imageType, pixelDepth);
-		readData  (tga, imageType, pixelDepth);
+		ImageType imageType;
+		byte pixelDepth, imageDesc;
+		readHeader(tga, imageType, pixelDepth, imageDesc);
+		readData  (tga, imageType, pixelDepth, imageDesc);
 
 		if (tga.err())
 			throw Common::Exception(Common::kReadError);
@@ -60,7 +64,7 @@ void TGA::load(Common::SeekableReadStream &tga) {
 	}
 }
 
-void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType, byte &pixelDepth) {
+void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte &pixelDepth, byte &imageDesc) {
 	if (!tga.seek(0))
 		throw Common::Exception(Common::kSeekError);
 
@@ -72,8 +76,8 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType, byte &pix
 		throw Common::Exception("Unsupported feature: Color map");
 
 	// Image type. 2 == unmapped RGB, 3 == Grayscale
-	imageType = tga.readByte();
-	if ((imageType != 2) && (imageType != 3))
+	imageType = (ImageType)tga.readByte();
+	if (!isSupportedImageType(imageType))
 		throw Common::Exception("Unsupported image type: %d", imageType);
 
 	// Color map specifications + X + Y
@@ -88,7 +92,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType, byte &pix
 	// Bits per pixel
 	pixelDepth = tga.readByte();
 
-	if (imageType == 2) {
+	if (imageType == TYPE_TRUECOLOR || imageType == TYPE_RLE_TRUECOLOR) {
 		if (pixelDepth == 24) {
 			_hasAlpha  = false;
 			_format    = kPixelFormatBGR;
@@ -101,7 +105,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType, byte &pix
 			_dataType  = kPixelDataType8;
 		} else
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
-	} else if (imageType == 3) {
+	} else if (imageType == TYPE_BW) {
 		if (pixelDepth != 8)
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
 
@@ -112,14 +116,14 @@ void TGA::readHeader(Common::SeekableReadStream &tga, byte &imageType, byte &pix
 	}
 
 	// Image descriptor
-	tga.skip(1);
+	imageDesc = tga.readByte();
 
 	// Skip the id string
 	tga.skip(idLength);
 }
 
-void TGA::readData(Common::SeekableReadStream &tga, byte imageType, byte pixelDepth) {
-	if (imageType == 2) {
+void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pixelDepth, byte imageDesc) {
+	if (imageType == TYPE_TRUECOLOR || imageType == TYPE_RLE_TRUECOLOR) {
 		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height;
 		if      (_format == kPixelFormatBGR)
 			_mipMaps[0]->size *= 3;
@@ -128,26 +132,29 @@ void TGA::readData(Common::SeekableReadStream &tga, byte imageType, byte pixelDe
 
 		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
 
-		if (pixelDepth == 16) {
-			// Convert from 16bpp to 32bpp
-			// 16bpp TGA is ARGB1555
-			uint16 count = _mipMaps[0]->width * _mipMaps[0]->height;
-			byte *dst = _mipMaps[0]->data;
+		if (imageType == TYPE_TRUECOLOR) {
+			if (pixelDepth == 16) {
+				// Convert from 16bpp to 32bpp
+				// 16bpp TGA is ARGB1555
+				uint16 count = _mipMaps[0]->width * _mipMaps[0]->height;
+				byte *dst = _mipMaps[0]->data;
 
-			while (count--) {
-				uint16 pixel = tga.readUint16LE();
+				while (count--) {
+					uint16 pixel = tga.readUint16LE();
 
-				*dst++ = (pixel & 0x1F) << 3;
-				*dst++ = (pixel & 0x3E0) >> 2;
-				*dst++ = (pixel & 0x7C00) >> 7;
-				*dst++ = (pixel & 0x8000) ? 0xFF : 0x00;
+					*dst++ = (pixel & 0x1F) << 3;
+					*dst++ = (pixel & 0x3E0) >> 2;
+					*dst++ = (pixel & 0x7C00) >> 7;
+					*dst++ = (pixel & 0x8000) ? 0xFF : 0x00;
+				}
+			} else {
+				// Read it in raw
+				tga.read(_mipMaps[0]->data, _mipMaps[0]->size);
 			}
-
 		} else {
-			// Read it in raw
-			tga.read(_mipMaps[0]->data, _mipMaps[0]->size);
+			readRLE(tga, pixelDepth);
 		}
-	} else if (imageType == 3) {
+	} else if (imageType == TYPE_BW) {
 		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height * 4;
 		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
 
@@ -164,6 +171,72 @@ void TGA::readData(Common::SeekableReadStream &tga, byte imageType, byte pixelDe
 		}
 
 	}
+
+	// Bit 5 of imageDesc set means the origin in upper-left corner
+	if (imageDesc & 0x20)
+		flipVertically(_mipMaps[0]->data, _mipMaps[0]->width, _mipMaps[0]->height, pixelDepth / 8);
+}
+
+void TGA::readRLE(Common::SeekableReadStream &tga, byte pixelDepth) {
+	if (pixelDepth != 24 && pixelDepth != 32)
+		throw Common::Exception("Unhandled RLE depth %d", pixelDepth);
+
+	byte  *data  = _mipMaps[0]->data;
+	uint32 count = _mipMaps[0]->width * _mipMaps[0]->height;
+
+	while (count > 0) {
+		byte code = tga.readByte();
+		byte length = (code & 0x7F) + 1;
+		count -= length;
+
+		if (code & 0x80) {
+			if (pixelDepth == 32) {
+				uint32 color = tga.readUint32BE();
+
+				while (length--) {
+					WRITE_BE_UINT32(data, color);
+					data += 4;
+				}
+			} else if (pixelDepth == 24) {
+				byte b = tga.readByte();
+				byte g = tga.readByte();
+				byte r = tga.readByte();
+
+				while (length--) {
+					*data++ = b;
+					*data++ = g;
+					*data++ = r;
+				}
+			}
+		} else {
+			if (pixelDepth == 32) {
+				while (length--) {
+					WRITE_BE_UINT32(data, tga.readUint32BE());
+					data += 4;
+				}
+			} else if (pixelDepth == 24) {
+				while (length--) {
+					*data++ = tga.readByte();
+					*data++ = tga.readByte();
+					*data++ = tga.readByte();
+				}
+			}
+		}
+	}
+}
+
+bool TGA::isSupportedImageType(ImageType type) const {
+	// We currently only support a limited number of types
+	switch (type) {
+	case TYPE_TRUECOLOR:
+	case TYPE_BW:
+	case TYPE_RLE_TRUECOLOR:
+		return true;
+	default:
+		break;
+	}
+
+	return false;
 }
 
 } // End of namespace Graphics

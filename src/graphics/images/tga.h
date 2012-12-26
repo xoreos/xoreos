@@ -23,6 +23,8 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
+// Partially based on the TGA implementation found in ScummVM.
+
 /** @file graphics/images/tga.h
  *  Decoding TGA (TarGa) images.
  */
@@ -45,10 +47,24 @@ public:
 	~TGA();
 
 private:
+	// Format-spec from:
+	//http://www.ludorg.net/amnesia/TGA_File_Format_Spec.html
+	enum ImageType {
+	    TYPE_CMAP = 1,
+	    TYPE_TRUECOLOR = 2,
+	    TYPE_BW = 3,
+	    TYPE_RLE_CMAP = 9,
+	    TYPE_RLE_TRUECOLOR = 10,
+	    TYPE_RLE_BW = 11
+	};
+
 	// Loading helpers
 	void load(Common::SeekableReadStream &tga);
-	void readHeader(Common::SeekableReadStream &tga, byte &imageType, byte &pixelDepth);
-	void readData(Common::SeekableReadStream &tga, byte imageType, byte pixelDepth);
+	void readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte &pixelDepth, byte &imageDesc);
+	void readData(Common::SeekableReadStream &tga, ImageType imageType, byte pixelDepth, byte imageDesc);
+	void readRLE(Common::SeekableReadStream &tga, byte pixelDepth);
+
+	bool isSupportedImageType(ImageType type) const;
 };
 
 } // End of namespace Graphics
