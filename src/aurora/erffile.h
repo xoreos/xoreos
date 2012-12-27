@@ -81,8 +81,9 @@ private:
 
 	/** Internal resource information. */
 	struct IResource {
-		uint32 offset; ///< The offset of the resource within the BIF.
-		uint32 size;   ///< The resource's size.
+		uint32 offset;       ///< The offset of the resource within the BIF.
+		uint32 packedSize;   ///< The resource's packed size.
+		uint32 unpackedSize; ///< The resource's unpacked size.
 	};
 
 	typedef std::vector<IResource> IResourceList;
@@ -101,6 +102,10 @@ private:
 	/** The name of the ERF file. */
 	Common::UString _fileName;
 
+	uint32 _flags;
+	uint32 _moduleID;
+	Common::UString _passwordDigest;
+
 	void open(Common::File &file) const;
 
 	void load();
@@ -115,6 +120,9 @@ private:
 
 	// V2.0
 	void readV2ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+
+	// V2.2
+	void readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	const IResource &getIResource(uint32 index) const;
 };
