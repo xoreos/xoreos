@@ -39,7 +39,8 @@ namespace Common {
 enum HashAlgo {
 	kHashNone  = -1, ///< No hashing at all.
 	kHashDJB2  =  0, ///< djb2 hash function by Daniel J. Bernstein.
-	kHashFNV64 =  1, ///< 64bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo.
+	kHashFNV32 =  1, ///< 32bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo.
+	kHashFNV64 =  2, ///< 64bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo.
 	kHashMAX         ///< For range checks.
 };
 
@@ -49,6 +50,16 @@ static inline uint32 hashStringDJB2(const Common::UString &string) {
 
 	for (Common::UString::iterator it = string.begin(); it != string.end(); ++it)
 		hash = ((hash << 5) + hash) + *it;
+
+	return hash;
+}
+
+/** 32bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo. */
+static inline uint32 hashStringFNV32(const Common::UString &string) {
+	uint32 hash = 0x811C9DC5;
+
+	for (Common::UString::iterator it = string.begin(); it != string.end(); ++it)
+		hash = (hash * 16777619) ^ *it;
 
 	return hash;
 }
@@ -67,6 +78,9 @@ static inline uint64 hashString(const Common::UString &string, HashAlgo algo) {
 	switch (algo) {
 		case kHashDJB2:
 			return hashStringDJB2(string);
+
+		case kHashFNV32:
+			return hashStringFNV32(string);
 
 		case kHashFNV64:
 			return hashStringFNV64(string);
