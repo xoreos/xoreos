@@ -98,6 +98,8 @@ void SonicEngine::run(const Common::UString &target) {
 
 	init();
 
+	ResMan.declareResource("nintendosplash.tga");
+
 	status("Successfully initialized the engine");
 
 	playIntroVideos();
@@ -128,6 +130,8 @@ void SonicEngine::run(const Common::UString &target) {
 }
 
 void SonicEngine::init() {
+	ResMan.setHashAlgo(Common::kHashDJB2);
+
 	status("Indexing the ROM file");
 	indexMandatoryArchive(Aurora::kArchiveNDS, _romFile, 1);
 	status("Indexing the main HERF file");
