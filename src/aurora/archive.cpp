@@ -31,6 +31,9 @@
 
 namespace Aurora {
 
+Archive::Resource::Resource() : hash(0), type(kFileTypeNone), index(0xFFFFFFFF) {
+}
+
 Archive::Archive() {
 }
 
@@ -39,6 +42,10 @@ Archive::~Archive() {
 
 uint32 Archive::getResourceSize(uint32 index) const {
 	return 0xFFFFFFFF;
+}
+
+Common::HashAlgo Archive::getNameHashAlgo() const {
+	return Common::kHashNone;
 }
 
 } // End of namespace Aurora
