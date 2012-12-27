@@ -30,7 +30,7 @@
 #ifndef AURORA_HERFFILE_H
 #define AURORA_HERFFILE_H
 
-#include <map>
+#include <list>
 
 #include "common/types.h"
 #include "common/ustring.h"
@@ -63,6 +63,11 @@ public:
 	/** Return a stream of the resource's contents. */
 	Common::SeekableReadStream *getResource(uint32 index) const;
 
+	/** Return with which algorithm the name is hashed. */
+	Common::HashAlgo getNameHashAlgo() const;
+
+	void getDictionary(std::list<uint32> &hashes, std::list<Common::UString> &names) const;
+
 private:
 	/** Internal resource information. */
 	struct IResource {
@@ -70,26 +75,28 @@ private:
 		uint32 size;     ///< The resource's size.
 	};
 
-	typedef std::map<uint32, IResource> IResourceMap;
+	typedef std::vector<IResource> IResourceList;
 
 	/** External list of resource names and types. */
 	ResourceList _resources;
 
 	/** Internal list of resource offsets and sizes. */
-	IResourceMap _iResources;
+	IResourceList _iResources;
 
 	/** The name of the HERF file. */
 	Common::UString _fileName;
 
+	/** The index of the dict file (if available). */
+	uint32 _dictIndex;
+
 	void open(Common::File &file) const;
 
 	void load();
+	void readResList(Common::SeekableReadStream &herf);
+
 	void readNames();
 
 	const IResource &getIResource(uint32 index) const;
-
-	/** Hash a string for indexing into the file */
-	uint32 hashString(const Common::UString &string);
 };
 
 } // End of namespace Aurora

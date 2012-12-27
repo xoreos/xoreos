@@ -30,6 +30,7 @@
 #include "common/util.h"
 #include "common/file.h"
 #include "common/stream.h"
+#include "common/hash.h"
 
 #include "aurora/herffile.h"
 #include "aurora/error.h"
@@ -38,7 +39,7 @@
 
 namespace Aurora {
 
-HERFFile::HERFFile(const Common::UString &fileName) : _fileName(fileName) {
+HERFFile::HERFFile(const Common::UString &fileName) : _fileName(fileName), _dictIndex(0xFFFFFFFF) {
 	load();
 }
 
@@ -54,55 +55,71 @@ void HERFFile::load() {
 	if (!herf)
 		throw Common::Exception(Common::kOpenError);
 
-	// Read in the resource table
 	herf->skip(4);
 	uint32 resCount = herf->readUint32LE();
 
-	for (uint32 i = 0; i < resCount; i++) {
-		uint32 nameHash = herf->readUint32LE();
+	_resources.resize(resCount);
+	_iResources.resize(resCount);
 
-		IResource &iResource = _iResources[nameHash];
+	try {
 
-		iResource.size = herf->readUint32LE();
-		iResource.offset = herf->readUint32LE();
-
-		if (iResource.offset >= (uint32)herf->size())
-			throw Common::Exception("HERFFile::load(): Resource goes beyond end of file");
-	}
-
-	readNames();
+		readResList(*herf);
 
 	if (herf->err())
 		throw Common::Exception(Common::kReadError);
+
+	} catch (Common::Exception &e) {
+		delete herf;
+		e.add("Failed reading HERF file");
+		throw e;
+	}
+
+	delete herf;
 }
 
-void HERFFile::readNames() {
-	// Since we don't actually handle hashed files in ResourceManager, we need
-	// to get the strings out of the dictionary file. While there may be some
-	// versions of Sonic that don't have the dictionary, we cannot handle them
-	// at this time.
-	Common::SeekableReadStream *dict = getResource(hashString("erf.dict"));
+void HERFFile::readResList(Common::SeekableReadStream &herf) {
+	const uint32 dictHash = Common::hashStringDJB2("erf.dict");
 
-	if (!dict)
-		throw Common::Exception("HERFFile::readNames(): No erf.dict file");
+	uint32 index = 0;
+	ResourceList::iterator   res = _resources.begin();
+	IResourceList::iterator iRes = _iResources.begin();
+	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
+		res->index = index;
+
+		res->hash = herf.readUint32LE();
+
+		iRes->size   = herf.readUint32LE();
+		iRes->offset = herf.readUint32LE();
+
+		if (iRes->offset >= (uint32)herf.size())
+			throw Common::Exception("HERFFile::readResList(): Resource goes beyond end of file");
+
+		if (res->hash == dictHash)
+			_dictIndex = index;
+	}
+}
+
+void HERFFile::getDictionary(std::list<uint32> &hashes, std::list<Common::UString> &names) const {
+	hashes.clear();
+	names.clear();
+
+	if (_dictIndex == 0xFFFFFFFF)
+		return;
+
+	Common::SeekableReadStream *dict = getResource(_dictIndex);
 
 	dict->skip(8); // unknown
 
 	while (dict->pos() < dict->size()) {
-		Resource res;
-		res.index = dict->readUint32LE();
-
-		if (res.index == 0)
+		uint32 hash = dict->readUint32LE();
+		if (hash == 0)
 			break;
 
-		Common::UString name;
-		name.readFixedASCII(*dict, 128);
-		name.tolower();
+		hashes.push_back(hash);
+		names.push_back("");
 
-		res.name = setFileType(name, kFileTypeNone);
-		res.type = getFileType(name);
-
-		_resources.push_back(res);
+		names.back().readFixedASCII(*dict, 128);
+		names.back().tolower();
 	}
 
 	delete dict;
@@ -113,10 +130,10 @@ const Archive::ResourceList &HERFFile::getResources() const {
 }
 
 const HERFFile::IResource &HERFFile::getIResource(uint32 index) const {
-	if (_iResources.count(index) == 0)
-		throw Common::Exception("Resource hash not found 0x%08x", index);
+	if (index >= _iResources.size())
+		throw Common::Exception("Resource index out of range (%d/%d)", index, _iResources.size());
 
-	return _iResources.find(index)->second;
+	return _iResources[index];
 }
 
 uint32 HERFFile::getResourceSize(uint32 index) const {
@@ -132,27 +149,25 @@ Common::SeekableReadStream *HERFFile::getResource(uint32 index) const {
 	if (!herf)
 		throw Common::Exception(Common::kOpenError);
 
-	if (!herf->seek(res.offset))
+	if (!herf->seek(res.offset)) {
+		delete herf;
 		throw Common::Exception(Common::kSeekError);
+	}
 
 	Common::SeekableReadStream *resStream = herf->readStream(res.size);
 
 	if (!resStream || (((uint32) resStream->size()) != res.size)) {
+		delete herf;
 		delete resStream;
 		throw Common::Exception(Common::kReadError);
 	}
 
+	delete herf;
 	return resStream;
 }
 
-// djb2 hash function by Daniel J. Bernstein
-uint32 HERFFile::hashString(const Common::UString &string) {
-	uint32 hash = 5381;
-
-	for (Common::UString::iterator it = string.begin(); it != string.end(); it++)
-		hash = ((hash << 5) + hash) + *it;
-
-	return hash;
+Common::HashAlgo HERFFile::getNameHashAlgo() const {
+	return Common::kHashDJB2;
 }
 
 } // End of namespace Aurora
