@@ -63,6 +63,15 @@ public:
 	 */
 	static uint32 getFileSize(const UString &p);
 
+	/** Return a file name without its path.
+	 *
+	 *  Example: "/path/to/file.ext" > "file.ext"
+	 *
+	 *  @param  p The path to manipulate.
+	 *  @return The path's file name.
+	 */
+	static UString getFile(const UString &p);
+
 	/** Return a file name's stem.
 	 *
 	 *  Example: "/path/to/file.ext" -> "file"

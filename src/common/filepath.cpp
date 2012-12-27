@@ -73,6 +73,12 @@ uint32 FilePath::getFileSize(const UString &p) {
 	return size;
 }
 
+UString FilePath::getFile(const UString &p) {
+	path file(p.c_str());
+
+	return file.filename();
+}
+
 UString FilePath::getStem(const UString &p) {
 	path file(p.c_str());
 
