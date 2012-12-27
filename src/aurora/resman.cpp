@@ -47,6 +47,9 @@
 #include "aurora/pefile.h"
 #include "aurora/herffile.h"
 
+// Check for hash collisions (if possible)
+#define CHECK_HASH_COLLISION 1
+
 // boost-string_algo
 using boost::iequals;
 
@@ -61,6 +64,7 @@ namespace Aurora {
 ResourceManager::Resource::Resource() : type(kFileTypeNone), priority(0),
 		source(kSourceNone), archive(0), archiveIndex(0xFFFFFFFF) {
 }
+
 
 bool ResourceManager::Resource::operator<(const Resource &right) const {
 	return priority < right.priority;
@@ -82,7 +86,7 @@ ResourceManager::ChangeID::ChangeID(ChangeSetList::iterator c) : _empty(false), 
 }
 
 
-ResourceManager::ResourceManager() : _rimsAreERFs(false) {
+ResourceManager::ResourceManager() : _rimsAreERFs(false), _hashAlgo(Common::kHashFNV64) {
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeDDS);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTPC);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTXB);
@@ -123,7 +127,12 @@ ResourceManager::~ResourceManager() {
 
 void ResourceManager::clear() {
 	_rimsAreERFs = false;
+	_hashAlgo    = Common::kHashFNV64;
 
+	clearResources();
+}
+
+void ResourceManager::clearResources() {
 	_cursorRemap.clear();
 
 	_baseDir.clear();
@@ -148,15 +157,19 @@ void ResourceManager::setRIMsAreERFs(bool rimsAreERFs) {
 	_rimsAreERFs = rimsAreERFs;
 }
 
+void ResourceManager::setHashAlgo(Common::HashAlgo algo) {
+	if ((algo != _hashAlgo) && !_resources.empty())
+		throw Common::Exception("ResourceManager::setHashAlgo(): We already have resources!");
+
+	_hashAlgo = algo;
+}
+
 void ResourceManager::setCursorRemap(const std::vector<Common::UString> &remap) {
 	_cursorRemap = remap;
 }
 
 void ResourceManager::registerDataBaseDir(const Common::UString &path) {
-	// Clear, but keep the info on whether RIMs are ERFs
-	bool rimsAreERFs = _rimsAreERFs;
-	clear();
-	_rimsAreERFs = rimsAreERFs;
+	clearResources();
 
 	_baseDir = Common::FilePath::normalize(path);
 
@@ -345,6 +358,11 @@ ResourceManager::ChangeID ResourceManager::indexKEY(const Common::UString &file,
 }
 
 ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32 priority, ChangeID &change) {
+	const Common::HashAlgo hashAlgo = archive->getNameHashAlgo();
+	if ((hashAlgo != Common::kHashNone) && (hashAlgo != _hashAlgo))
+		throw Common::Exception("ResourceManager::indexArchive(): Archive uses a different name hashing "
+		                        "algorithm than we do (%d vs. %d)", (int) hashAlgo, (int) _hashAlgo);
+
 	_archives.push_back(archive);
 
 	// Add the information of the new archive to the change set
@@ -358,10 +376,14 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 		res.source       = kSourceArchive;
 		res.archive      = archive;
 		res.archiveIndex = resource->index;
+		res.name         = resource->name;
 		res.type         = resource->type;
 
 		// And add it to our list
-		addResource(res, resource->name, change);
+		if (hashAlgo == Common::kHashNone)
+			addResource(res, setFileType(resource->name, resource->type), change);
+		else
+			addResource(res, resource->hash, change);
 	}
 
 	archive->clear();
@@ -407,16 +429,10 @@ void ResourceManager::undo(ChangeID &change) {
 	for (std::list<ResourceChange>::iterator resChange = change._change->resources.begin();
 	     resChange != change._change->resources.end(); ++resChange) {
 
-		// Remove the resource
-		resChange->typeIt->second.erase(resChange->resIt);
-
-		// If the resource list is empty, remove that one too
-		if (resChange->typeIt->second.empty())
-			resChange->nameIt->second.erase(resChange->typeIt);
-
-		// And if the type map is empty too, remove that one as well
-		if (resChange->nameIt->second.empty())
-			_resources.erase(resChange->nameIt);
+		// Remove the resource, and the name list too if it's empty
+		resChange->hashIt->second.erase(resChange->resIt);
+		if (resChange->hashIt->second.empty())
+			_resources.erase(resChange->hashIt);
 	}
 
 	// Removing all changes in the archive list
@@ -440,17 +456,27 @@ void ResourceManager::addTypeAlias(FileType alias, FileType realType) {
 }
 
 void ResourceManager::blacklist(const Common::UString &name, FileType type) {
-	std::vector<FileType> types(1, type);
-
-	// Get the resource list for this resource type
-	ResourceList *resList =
-		const_cast<ResourceList *>(static_cast<const ResourceManager &>(*this).getResList(name, types));
-	if (!resList)
+	ResourceMap::iterator resList = _resources.find(getHash(name, type));
+	if (resList == _resources.end())
 		return;
 
-	// Blacklist the whole list
-	for (ResourceList::iterator res = resList->begin(); res != resList->end(); ++res)
+	for (ResourceList::iterator res = resList->second.begin(); res != resList->second.end(); ++res)
 		res->priority = 0;
+}
+
+void ResourceManager::declareResource(const Common::UString &name, FileType type) {
+	ResourceMap::iterator resList = _resources.find(getHash(name, type));
+	if (resList == _resources.end())
+		return;
+
+	for (ResourceList::iterator r = resList->second.begin(); r != resList->second.end(); ++r) {
+		r->name = name;
+		r->type = type;
+	}
+}
+
+void ResourceManager::declareResource(const Common::UString &name) {
+	declareResource(setFileType(name, kFileTypeNone), getFileType(name));
 }
 
 bool ResourceManager::hasResource(const Common::UString &name, FileType type) const {
@@ -459,6 +485,10 @@ bool ResourceManager::hasResource(const Common::UString &name, FileType type) co
 	types.push_back(type);
 
 	return hasResource(name, types);
+}
+
+bool ResourceManager::hasResource(const Common::UString &name) const {
+	return hasResource(setFileType(name, kFileTypeNone), getFileType(name));
 }
 
 bool ResourceManager::hasResource(const Common::UString &name, const std::vector<FileType> &types) const {
@@ -495,6 +525,10 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	types.push_back(type);
 
 	return getResource(name, types);
+}
+
+Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name) const {
+	return getResource(setFileType(name, kFileTypeNone), getFileType(name));
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name,
@@ -545,29 +579,30 @@ Common::SeekableReadStream *ResourceManager::getResource(ResourceType resType,
 void ResourceManager::getAvailableResources(FileType type,
 		std::list<ResourceID> &list) const {
 
-	for (ResourceMap::const_iterator r = _resources.begin(); r != _resources.end(); ++r)
-		for (ResourceTypeMap::const_iterator rt = r->second.begin(); rt != r->second.end(); ++rt)
-			if (rt->first == type) {
-				list.push_back(ResourceID());
+	for (ResourceMap::const_iterator r = _resources.begin(); r != _resources.end(); ++r) {
+		if (!r->second.empty() && (r->second.front().type == type)) {
+			list.push_back(ResourceID());
 
-				list.back().name = r->first;
-				list.back().type = rt->first;
-			}
-
+			list.back().name = r->second.front().name;
+			list.back().type = r->second.front().type;
+		}
+	}
 }
 
 void ResourceManager::getAvailableResources(const std::vector<FileType> &types,
 		std::list<ResourceID> &list) const {
 
-	for (ResourceMap::const_iterator r = _resources.begin(); r != _resources.end(); ++r)
-		for (ResourceTypeMap::const_iterator rt = r->second.begin(); rt != r->second.end(); ++rt)
-			for (std::vector<FileType>::const_iterator wt = types.begin(); wt != types.end(); ++wt)
-				if (rt->first == *wt) {
-					list.push_back(ResourceID());
+	for (ResourceMap::const_iterator r = _resources.begin(); r != _resources.end(); ++r) {
+		for (std::vector<FileType>::const_iterator t = types.begin(); t != types.end(); ++t) {
+			if (!r->second.empty() && (r->second.front().type == *t)) {
+				list.push_back(ResourceID());
 
-					list.back().name = r->first;
-					list.back().type = rt->first;
-				}
+				list.back().name = r->second.front().name;
+				list.back().type = r->second.front().type;
+			}
+		}
+
+	}
 }
 
 void ResourceManager::getAvailableResources(ResourceType type,
@@ -576,11 +611,7 @@ void ResourceManager::getAvailableResources(ResourceType type,
 	getAvailableResources(_resourceTypeTypes[type], list);
 }
 
-void ResourceManager::addResource(Resource &resource, Common::UString name, ChangeID &change) {
-	name.tolower();
-	if (name.empty())
-		return;
-
+void ResourceManager::normalizeType(Resource &resource) {
 	// Normalize resource type *sigh*
 	if      (resource.type == kFileTypeQST2)
 		resource.type = kFileTypeQST;
@@ -595,40 +626,73 @@ void ResourceManager::addResource(Resource &resource, Common::UString name, Chan
 	std::map<FileType, FileType>::const_iterator alias = _typeAliases.find(resource.type);
 	if (alias != _typeAliases.end())
 		resource.type = alias->second;
+}
 
-	ResourceMap::iterator resTypeMap = _resources.find(name);
-	if (resTypeMap == _resources.end()) {
-		// We don't yet have a resource with this name, create a new type map for it
+inline uint64 ResourceManager::getHash(const Common::UString &name, FileType type) const {
+	return getHash(setFileType(name, type));
+}
+
+inline uint64 ResourceManager::getHash(Common::UString name) const {
+	name.tolower();
+
+	return Common::hashString(name, _hashAlgo);
+}
+
+void ResourceManager::checkHashCollision(const Resource &resource, ResourceMap::const_iterator resList) {
+	if (resource.name.empty() || resList->second.empty())
+		return;
+
+	Common::UString newName = setFileType(resource.name, resource.type);
+	newName.tolower();
+
+	for (ResourceList::const_iterator r = resList->second.begin(); r != resList->second.end(); ++r) {
+		if (r->name.empty())
+			continue;
+
+		Common::UString oldName = setFileType(r->name, r->type);
+		oldName.tolower();
+
+		if (oldName != newName) {
+			warning("ResourceManager: Found hash collision: 0x%016llX (\"%s\" and \"%s\")",
+					getHash(oldName), oldName.c_str(), newName.c_str());
+			return;
+		}
+	}
+}
+
+void ResourceManager::addResource(Resource &resource, uint64 hash, ChangeID &change) {
+	normalizeType(resource);
+
+	ResourceMap::iterator resList = _resources.find(hash);
+	if (resList == _resources.end()) {
+		// We don't have a resource with this name yet, create a new resource list for it
 
 		std::pair<ResourceMap::iterator, bool> result;
 
-		result = _resources.insert(std::make_pair(name, ResourceTypeMap()));
-
-		resTypeMap = result.first;
-	}
-
-	ResourceTypeMap::iterator resList = resTypeMap->second.find(resource.type);
-	if (resList == resTypeMap->second.end()) {
-		// We don't yet have a resource with that name and type, create a new resource list for it
-
-		std::pair<ResourceTypeMap::iterator, bool> result;
-
-		result = resTypeMap->second.insert(std::make_pair(resource.type, ResourceList()));
+		result = _resources.insert(std::make_pair(hash, ResourceList()));
 
 		resList = result.first;
 	}
 
-	// Add the resource to the list
-	resList->second.push_back(resource);
+#ifdef CHECK_HASH_COLLISION
+	checkHashCollision(resource, resList);
+#endif
 
-	// And sort the list by priority
+	// Add the resource to the list and sort by priority
+	resList->second.push_back(resource);
 	resList->second.sort();
 
 	// Remember the resource in the change set
 	change._change->resources.push_back(ResourceChange());
-	change._change->resources.back().nameIt = resTypeMap;
-	change._change->resources.back().typeIt = resList;
+	change._change->resources.back().hashIt = resList;
 	change._change->resources.back().resIt  = --resList->second.end();
+}
+
+void ResourceManager::addResource(Resource &resource, const Common::UString &name, ChangeID &change) {
+	if (name.empty())
+		return;
+
+	addResource(resource, getHash(name), change);
 }
 
 void ResourceManager::addResources(const Common::FileList &files, ChangeID &change, uint32 priority) {
@@ -637,45 +701,37 @@ void ResourceManager::addResources(const Common::FileList &files, ChangeID &chan
 		res.priority = priority;
 		res.source   = kSourceFile;
 		res.path     = *file;
+		res.name     = Common::FilePath::getStem(*file);
 		res.type     = getFileType(*file);
 
-		addResource(res, Common::FilePath::getStem(*file), change);
+		addResource(res, Common::FilePath::getFile(*file), change);
 	}
 }
 
-const ResourceManager::Resource *ResourceManager::getRes(Common::UString name,
-		const std::vector<FileType> &types) const {
-
-	// Get the correct resource list for the name and types, make sure it's not
-	// empty and has at least one non-blacklisted entry, and return that
-	const ResourceList *resList = getResList(name, types);
-	if (resList && !resList->empty() && (resList->back().priority != 0))
-		return &resList->back();
-
-	return 0;
-}
-
-const ResourceManager::ResourceList *ResourceManager::getResList(Common::UString name,
-		const std::vector<FileType> &types) const {
-
-	name.tolower();
-
-	// Find the resources with the same name
-	ResourceMap::const_iterator resFamily = _resources.find(name);
-	if (resFamily == _resources.end())
+const ResourceManager::Resource *ResourceManager::getRes(uint64 hash) const {
+	ResourceMap::const_iterator r = _resources.find(hash);
+	if ((r == _resources.end()) || r->second.empty() || (r->second.back().priority == 0))
 		return 0;
 
-	for (std::vector<FileType>::const_iterator type = types.begin(); type != types.end(); ++type) {
-		// Find the specific resource list of the given type
-		ResourceTypeMap::const_iterator resList = resFamily->second.find(*type);
+	return &r->second.back();
+}
 
-		// If the list exists, and is non-empty, and has a non-blacklisted entry, return it
-		if ((resList != resFamily->second.end()) && !resList->second.empty() &&
-		    (resList->second.back().priority != 0))
-			return &resList->second;
+const ResourceManager::Resource *ResourceManager::getRes(const Common::UString &name,
+		const std::vector<FileType> &types) const {
+
+	for (std::vector<FileType>::const_iterator type = types.begin(); type != types.end(); ++type) {
+		const Resource *res = getRes(getHash(name, *type));
+		if (res)
+			return res;
 	}
 
 	return 0;
+}
+
+const ResourceManager::Resource *ResourceManager::getRes(const Common::UString &name, FileType type) const {
+	std::vector<FileType> types(1, type);
+
+	return getRes(name, types);
 }
 
 void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
@@ -684,25 +740,24 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 	if (!file.open(fileName))
 		throw Common::Exception(Common::kOpenError);
 
-	file.writeString("                Name                 |     Size    \n");
-	file.writeString("-------------------------------------|-------------\n");
+	file.writeString("                Name                 |        Hash        |     Size    \n");
+	file.writeString("-------------------------------------|--------------------|-------------\n");
 
-	for (ResourceMap::const_iterator itName = _resources.begin(); itName != _resources.end(); ++itName) {
-		for (ResourceTypeMap::const_iterator itType = itName->second.begin(); itType != itName->second.end(); ++itType) {
-			if (itType->second.empty())
-				continue;
+	for (ResourceMap::const_iterator r = _resources.begin(); r != _resources.end(); ++r) {
+		if (r->second.empty())
+			continue;
 
-			const Resource &resource = itType->second.back();
+		const Resource &res = r->second.back();
 
-			const Common::UString &name = itName->first;
-			const Common::UString  ext  = setFileType("", resource.type);
-			const uint32           size = getResourceSize(resource);
+		const Common::UString &name = res.name;
+		const Common::UString   ext = setFileType("", res.type);
+		const uint64           hash = r->first;
+		const uint32           size = getResourceSize(res);
 
-			const Common::UString line =
-				Common::UString::sprintf("%32s%4s | %12d\n", name.c_str(), ext.c_str(), size);
+		const Common::UString line =
+			Common::UString::sprintf("%32s%4s | 0x%016llX | %12d\n", name.c_str(), ext.c_str(), hash, size);
 
-			file.writeString(line);
-		}
+		file.writeString(line);
 	}
 
 	file.flush();

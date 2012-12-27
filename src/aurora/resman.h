@@ -39,6 +39,7 @@
 #include "common/ustring.h"
 #include "common/singleton.h"
 #include "common/filelist.h"
+#include "common/hash.h"
 
 #include "aurora/types.h"
 
@@ -73,7 +74,8 @@ private:
 
 	/** A resource. */
 	struct Resource {
-		FileType type; ///< The resource's type.
+		Common::UString name; ///< The resource's name.
+		FileType        type; ///< The resource's type.
 
 		uint32 priority; ///< The resource's priority over others with the same name and type.
 
@@ -93,16 +95,13 @@ private:
 
 	/** List of resources, sorted by priority. */
 	typedef std::list<Resource> ResourceList;
-	/** Map over resources with the same name but different type. */
-	typedef std::map<FileType, ResourceList> ResourceTypeMap;
-	/** Map over resources, indexed by name. */
-	typedef std::map<Common::UString, ResourceTypeMap> ResourceMap;
+	/** Map over resources, indexed by their hashed name. */
+	typedef std::map<uint64, ResourceList> ResourceMap;
 
 	/** A change produced by a manager operation. */
 	struct ResourceChange {
-		ResourceMap::iterator     nameIt;
-		ResourceTypeMap::iterator typeIt;
-		ResourceList::iterator    resIt;
+		ResourceMap::iterator  hashIt;
+		ResourceList::iterator resIt;
 	};
 
 	/** A set of changes produced by a manager operation. */
@@ -145,6 +144,9 @@ public:
 
 	/** Are .rim files actually ERF files? */
 	void setRIMsAreERFs(bool rimsAreERFs);
+
+	/** With which hash algo are/should the names be hashed? */
+	void setHashAlgo(Common::HashAlgo algo);
 
 	/** Set the array used to map cursor ID to cursor names. */
 	void setCursorRemap(const std::vector<Common::UString> &remap);
@@ -216,6 +218,23 @@ public:
 	 */
 	void blacklist(const Common::UString &name, FileType type);
 
+	/** Declare the name of a specific resource.
+	 *
+	 *  Useful for declaring the name and type of hashed resources.
+	 *
+	 *  @param name The name (ResRef) of the resource.
+	 *  @param type The resource's type.
+	 */
+	void declareResource(const Common::UString &name, FileType type);
+
+	/** Declare the name of a specific resource.
+	 *
+	 *  Useful for declaring the name and type of hashed resources.
+	 *
+	 *  @param name The name (with extension) of the resource.
+	 */
+	void declareResource(const Common::UString &name);
+
 	/** Does a specific resource exist?
 	 *
 	 *  @param  name The name (ResRef) of the resource.
@@ -223,6 +242,13 @@ public:
 	 *  @return true if the resource exists, false otherwise.
 	 */
 	bool hasResource(const Common::UString &name, FileType type) const;
+
+	/** Does a specific resource exist?
+	 *
+	 *  @param  name The name (with extension) of the resource.
+	 *  @return true if the resource exists, false otherwise.
+	 */
+	bool hasResource(const Common::UString &name) const;
 
 	/** Does a specific resource exist?
 	 *
@@ -239,6 +265,13 @@ public:
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
 	Common::SeekableReadStream *getResource(const Common::UString &name, FileType type) const;
+
+	/** Return a resource.
+	 *
+	 *  @param  name The name (with extension) of the resource.
+	 *  @return The resource stream or 0 if the resource doesn't exist.
+	 */
+	Common::SeekableReadStream *getResource(const Common::UString &name) const;
 
 	/** Return a resource.
 	 *
@@ -276,6 +309,8 @@ public:
 private:
 	bool _rimsAreERFs; ///< Are .rim files actually ERF files?
 
+	Common::HashAlgo _hashAlgo; ///< With which hash algo are/should the names be hashed?
+
 	std::vector<Common::UString> _cursorRemap; ///< Cursor ID -> cursor name
 
 	Common::UString _baseDir;     ///< The data base directory.
@@ -293,6 +328,9 @@ private:
 
 	FileTypeList _resourceTypeTypes[kResourceMAX]; ///< All valid resource type file types.
 
+
+	void clearResources();
+
 	Common::UString findArchive(const Common::UString &file,
 			const DirectoryList &dirs, const Common::FileList &files);
 
@@ -303,17 +341,27 @@ private:
 	void findBIFs   (const KEYFile &key, std::vector<Common::UString> &bifs);
 	void mergeKEYBIF(const KEYFile &key, std::vector<Common::UString> &bifs, std::vector<BIFFile *> &bifFiles);
 
-	void addResource(Resource &resource, Common::UString name, ChangeID &change);
+	void normalizeType(Resource &resource);
+
+	inline uint64 getHash(const Common::UString &name, FileType type) const;
+	inline uint64 getHash(Common::UString name) const;
+
+	void addResource(Resource &resource, uint64 hash, ChangeID &change);
+	void addResource(Resource &resource, const Common::UString &name, ChangeID &change);
+
 	void addResources(const Common::FileList &files, ChangeID &change, uint32 priority);
 
-	const Resource *getRes(Common::UString name, const std::vector<FileType> &types) const;
-	const ResourceList *getResList(Common::UString name, const std::vector<FileType> &types) const;
+	const Resource *getRes(uint64 hash) const;
+	const Resource *getRes(const Common::UString &name, const std::vector<FileType> &types) const;
+	const Resource *getRes(const Common::UString &name, FileType type) const;
 
 	Common::SeekableReadStream *getArchiveResource(const Resource &res) const;
 
 	uint32 getResourceSize(const Resource &res) const;
 
 	ChangeID newChangeSet();
+
+	void checkHashCollision(const Resource &resource, ResourceMap::const_iterator resList);
 };
 
 } // End of namespace Aurora
