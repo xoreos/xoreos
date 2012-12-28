@@ -654,7 +654,7 @@ void ResourceManager::checkHashCollision(const Resource &resource, ResourceMap::
 
 		if (oldName != newName) {
 			warning("ResourceManager: Found hash collision: 0x%016llX (\"%s\" and \"%s\")",
-					getHash(oldName), oldName.c_str(), newName.c_str());
+					(unsigned long long) getHash(oldName), oldName.c_str(), newName.c_str());
 			return;
 		}
 	}
@@ -755,7 +755,8 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 		const uint32           size = getResourceSize(res);
 
 		const Common::UString line =
-			Common::UString::sprintf("%32s%4s | 0x%016llX | %12d\n", name.c_str(), ext.c_str(), hash, size);
+			Common::UString::sprintf("%32s%4s | 0x%016llX | %12d\n", name.c_str(), ext.c_str(),
+                               (unsigned long long) hash, size);
 
 		file.writeString(line);
 	}
