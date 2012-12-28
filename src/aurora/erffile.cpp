@@ -42,6 +42,7 @@ static const uint32 kSAVID     = MKID_BE('SAV ');
 static const uint32 kVersion1  = MKID_BE('V1.0');
 static const uint32 kVersion2  = MKID_BE('V2.0');
 static const uint32 kVersion22 = MKID_BE('V2.2');
+static const uint32 kVersion3  = MKID_BE('V3.0');
 
 namespace Aurora {
 
@@ -67,7 +68,7 @@ void ERFFile::load() {
 	if ((_id != kERFID) && (_id != kMODID) && (_id != kHAKID) && (_id != kSAVID))
 		throw Common::Exception("Not an ERF file");
 
-	if ((_version != kVersion1) && (_version != kVersion2) && (_version != kVersion22))
+	if ((_version != kVersion1) && (_version != kVersion2) && (_version != kVersion22) && (_version != kVersion3))
 		throw Common::Exception("Unsupported ERF file version %08X", _version);
 
 	if ((_version != kVersion1) && !_utf16le)
@@ -78,10 +79,18 @@ void ERFFile::load() {
 		ERFHeader erfHeader;
 
 		readERFHeader  (erf, erfHeader);
-		readDescription(erf, erfHeader);
 
-		if (!_noResources)
-			readResources(erf, erfHeader);
+		try {
+			readDescription(erf, erfHeader);
+
+			if (!_noResources)
+				readResources(erf, erfHeader);
+		} catch (Common::Exception &e) {
+			delete[] erfHeader.stringTable;
+			throw e;
+		}
+
+		delete[] erfHeader.stringTable;
 
 		if (erf.err())
 			throw Common::Exception(Common::kReadError);
@@ -115,6 +124,9 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header) 
 		_flags    = 0; // No flags in ERF V1.0
 		_moduleID = 0; // No module ID in ERF V1.0
 
+		header.stringTableSize = 0; // No string table in ERF V1.0
+		header.stringTable     = 0; // No string table in ERF V1.0
+
 	} else if (_version == kVersion2) {
 
 		header.langCount = 0;                  // No description in ERF V2.0
@@ -123,10 +135,12 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header) 
 		erf.skip(4 + 4); // Build year and day
 		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
 
-		header.descriptionID  = 0;    // No description in ERF V2.0
-		header.offDescription = 0;    // No description in ERF V2.0
-		header.offKeyList     = 0;    // No separate key list in ERF V2.0
-		header.offResList     = 0x20; // Resource list always starts at 0x20 in ERF V2.0
+		header.descriptionID   = 0;    // No description in ERF V2.0
+		header.offDescription  = 0;    // No description in ERF V2.0
+		header.offKeyList      = 0;    // No separate key list in ERF V2.0
+		header.offResList      = 0x20; // Resource list always starts at 0x20 in ERF V2.0
+		header.stringTableSize = 0;    // No string table in ERF V2.0
+		header.stringTable     = 0;    // No string table in ERF V2.0
 
 		_flags    = 0; // No flags in ERF V2.0
 		_moduleID = 0; // No module ID in ERF V2.0
@@ -144,10 +158,34 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header) 
 
 		_passwordDigest.readFixedASCII(erf, 16);
 
-		header.descriptionID  = 0;    // No description in ERF V2.2
-		header.offDescription = 0;    // No description in ERF V2.2
-		header.offKeyList     = 0;    // No separate key list in ERF V2.2
-		header.offResList     = 0x38; // Resource list always starts at 0x38 in ERF V2.2
+		header.descriptionID   = 0;    // No description in ERF V2.2
+		header.offDescription  = 0;    // No description in ERF V2.2
+		header.offKeyList      = 0;    // No separate key list in ERF V2.2
+		header.offResList      = 0x38; // Resource list always starts at 0x38 in ERF V2.2
+		header.stringTableSize = 0;    // No string table in ERF V2.2
+		header.stringTable     = 0;    // No string table in ERF V2.2
+
+	} else if (_version == kVersion3) {
+
+		header.langCount = 0;                        // No description in ERF V3.0
+		header.stringTableSize = erf.readUint32LE();
+		resCount               = erf.readUint32LE(); // Number of resources in the ERF
+
+		_flags    = erf.readUint32LE();
+		_moduleID = erf.readUint32LE();
+
+		_passwordDigest.readFixedASCII(erf, 16);
+
+		header.stringTable = new char[header.stringTableSize];
+		if (erf.read(header.stringTable, header.stringTableSize) != header.stringTableSize) {
+			delete[] header.stringTable;
+			throw Common::Exception("Failed to read ERF string table");
+		}
+
+		header.descriptionID  = 0;                             // No description in ERF V3.0
+		header.offDescription = 0;                             // No description in ERF V3.0
+		header.offKeyList     = 0;                             // No separate key list in ERF V3.0
+		header.offResList     = 0x30 + header.stringTableSize; // Resource list always starts after the string table in ERF V3.2
 
 	}
 
@@ -183,6 +221,11 @@ void ERFFile::readResources(Common::SeekableReadStream &erf, const ERFHeader &he
 
 		// Read the resource list
 		readV22ResList(erf, header);
+
+	} else if (_version == kVersion3) {
+
+		// Read the resource list
+		readV3ResList(erf, header);
 
 	}
 
@@ -257,6 +300,38 @@ void ERFFile::readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 
 }
 
+void ERFFile::readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
+	if (!erf.seek(header.offResList))
+		throw Common::Exception(Common::kSeekError);
+
+	uint32 index = 0;
+	ResourceList::iterator   res = _resources.begin();
+	IResourceList::iterator iRes = _iResources.begin();
+	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
+		int32 nameOffset = erf.readSint32LE();
+
+		if (nameOffset >= 0) {
+			if ((uint32)nameOffset >= header.stringTableSize)
+				throw Common::Exception("Invalid ERF string table offset");
+
+			Common::UString name = header.stringTable + nameOffset;
+			res->name = setFileType(name, kFileTypeNone);
+			res->type = getFileType(name);
+		}
+
+		res->index = index;
+		res->hash  = erf.readUint64LE();
+
+		// TODO: Make use of this later
+		/* uint32 typeHash = */ erf.readUint32LE();
+
+		iRes->offset       = erf.readUint32LE();
+		iRes->packedSize   = erf.readUint32LE();
+		iRes->unpackedSize = erf.readUint32LE();
+	}
+
+}
+
 const LocString &ERFFile::getDescription() const {
 	return _description;
 }
@@ -306,6 +381,11 @@ Common::SeekableReadStream *ERFFile::getResource(uint32 index) const {
 void ERFFile::open(Common::File &file) const {
 	if (!file.open(_fileName))
 		throw Common::Exception(Common::kOpenError);
+}
+
+Common::HashAlgo ERFFile::getNameHashAlgo() const {
+	// Only V3 uses hashing
+	return (_version == kVersion3) ? Common::kHashFNV64 : Common::kHashNone;
 }
 
 } // End of namespace Aurora

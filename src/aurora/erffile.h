@@ -68,6 +68,9 @@ public:
 	/** Return the description. */
 	const LocString &getDescription() const;
 
+	/** Return with which algorithm the name is hashed. */
+	Common::HashAlgo getNameHashAlgo() const;
+
 private:
 	/** The header of an ERF file. */
 	struct ERFHeader {
@@ -77,6 +80,9 @@ private:
 		uint32 offDescription; ///< Offset to the description.
 		uint32 offKeyList;     ///< Offset to the key list.
 		uint32 offResList;     ///< Offset to the resource list.
+
+		char      *stringTable; ///< String table used for hashed ERFs.
+		uint32 stringTableSize; ///< Size of the string table.
 	};
 
 	/** Internal resource information. */
@@ -123,6 +129,9 @@ private:
 
 	// V2.2
 	void readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+
+	// V3.0
+	void readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	const IResource &getIResource(uint32 index) const;
 };
