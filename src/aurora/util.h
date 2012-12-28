@@ -31,6 +31,7 @@
 #define AURORA_UTIL_H
 
 #include "common/singleton.h"
+#include "common/hash.h"
 #include "common/ustring.h"
 
 #include "aurora/types.h"
@@ -59,6 +60,9 @@ public:
 	/** Return the file type of a file name, detected by its extension. */
 	FileType getFileType(const Common::UString &path);
 
+	/** Return the file type of a file name, detected by its hashed extension. */
+	FileType getFileType(Common::HashAlgo algo, uint64 hashedExtension);
+
 	/** Return the file name with an added extensions according to the specified file type. */
 	Common::UString addFileType(const Common::UString &path, FileType type);
 	/** Return the file name with a swapped extensions according to the specified file type. */
@@ -76,13 +80,16 @@ private:
 
 	typedef std::map<Common::UString, const Type *> ExtensionLookup;
 	typedef std::map<FileType       , const Type *> TypeLookup;
+	typedef std::map<uint64         , const Type *> HashLookup;
 
 	ExtensionLookup _extensionLookup;
 	TypeLookup      _typeLookup;
+	HashLookup      _hashLookup[Common::kHashMAX];
 
 
 	void buildExtensionLookup();
 	void buildTypeLookup();
+	void buildHashLookup(Common::HashAlgo algo);
 };
 
 } // End of namespace Aurora

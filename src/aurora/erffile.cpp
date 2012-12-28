@@ -324,8 +324,12 @@ void ERFFile::readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &he
 		res->index = index;
 		res->hash  = erf.readUint64LE();
 
-		// TODO: Make use of this later
-		/* uint32 typeHash = */ erf.readUint32LE();
+		uint32 typeHash = erf.readUint32LE();
+
+		// Look up the file type by its hash
+		FileType type = TypeMan.getFileType(Common::kHashFNV32, typeHash);
+		if (type != kFileTypeNone)
+			res->type = type;
 
 		iRes->offset       = erf.readUint32LE();
 		iRes->packedSize   = erf.readUint32LE();

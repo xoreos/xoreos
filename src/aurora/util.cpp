@@ -315,6 +315,19 @@ Common::UString FileTypeManager::setFileType(const Common::UString &path, FileTy
 	return Common::FilePath::changeExtension(path, ext);
 }
 
+FileType FileTypeManager::getFileType(Common::HashAlgo algo, uint64 hashedExtension) {
+	if ((algo < 0) || (algo >= Common::kHashMAX))
+		return kFileTypeNone;
+
+	buildHashLookup(algo);
+
+	HashLookup::const_iterator t = _hashLookup[algo].find(hashedExtension);
+	if (t != _hashLookup[algo].end())
+		return t->second->type;
+
+	return kFileTypeNone;
+}
+
 void FileTypeManager::buildExtensionLookup() {
 	if (!_extensionLookup.empty())
 		return;
@@ -329,6 +342,19 @@ void FileTypeManager::buildTypeLookup() {
 
 	for (int i = 0; i < ARRAYSIZE(types); i++)
 		_typeLookup.insert(std::make_pair(types[i].type, &types[i]));
+}
+
+void FileTypeManager::buildHashLookup(Common::HashAlgo algo) {
+	if (!_hashLookup[algo].empty())
+		return;
+
+	for (int i = 0; i < ARRAYSIZE(types); i++) {
+		const char *ext = types[i].extension;
+		if (ext[0] == '.')
+			ext++;
+
+		_hashLookup[algo].insert(std::make_pair(Common::hashString(ext, algo), &types[i]));
+	}
 }
 
 
