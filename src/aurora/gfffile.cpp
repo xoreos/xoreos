@@ -85,7 +85,7 @@ GFFFile::GFFFile(Common::SeekableReadStream *gff, uint32 id) : _stream(gff) {
 GFFFile::GFFFile(const Common::UString &gff, FileType type, uint32 id) : _stream(0) {
 	_stream = ResMan.getResource(gff, type);
 	if (!_stream)
-		throw Common::Exception("No such GFF \"%s\"", setFileType(gff, type).c_str());
+		throw Common::Exception("No such GFF \"%s\"", TypeMan.setFileType(gff, type).c_str());
 
 	load(id);
 }

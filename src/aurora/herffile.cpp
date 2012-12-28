@@ -51,7 +51,7 @@ void HERFFile::clear() {
 }
 
 void HERFFile::load() {
-	Common::SeekableReadStream *herf = ResMan.getResource(setFileType(_fileName, kFileTypeNone), kFileTypeHERF);
+	Common::SeekableReadStream *herf = ResMan.getResource(TypeMan.setFileType(_fileName, kFileTypeNone), kFileTypeHERF);
 	if (!herf)
 		throw Common::Exception(Common::kOpenError);
 
@@ -145,7 +145,7 @@ Common::SeekableReadStream *HERFFile::getResource(uint32 index) const {
 	if (res.size == 0)
 		return new Common::MemoryReadStream(0, 0);
 
-	Common::SeekableReadStream *herf = ResMan.getResource(setFileType(_fileName, kFileTypeNone), kFileTypeHERF);
+	Common::SeekableReadStream *herf = ResMan.getResource(TypeMan.setFileType(_fileName, kFileTypeNone), kFileTypeHERF);
 	if (!herf)
 		throw Common::Exception(Common::kOpenError);
 

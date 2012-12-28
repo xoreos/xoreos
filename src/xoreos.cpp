@@ -42,6 +42,7 @@
 #include "aurora/resman.h"
 #include "aurora/2dareg.h"
 #include "aurora/talkman.h"
+#include "aurora/util.h"
 
 #include "graphics/queueman.h"
 #include "graphics/graphics.h"
@@ -266,6 +267,7 @@ void deinit() {
 	Aurora::TalkManager::destroy();
 	Aurora::TwoDARegistry::destroy();
 	Aurora::ResourceManager::destroy();
+	Aurora::FileTypeManager::destroy();
 
 	Engines::EngineManager::destroy();
 

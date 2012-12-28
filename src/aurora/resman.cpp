@@ -381,7 +381,7 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 
 		// And add it to our list
 		if (hashAlgo == Common::kHashNone)
-			addResource(res, setFileType(resource->name, resource->type), change);
+			addResource(res, TypeMan.setFileType(resource->name, resource->type), change);
 		else
 			addResource(res, resource->hash, change);
 	}
@@ -476,7 +476,7 @@ void ResourceManager::declareResource(const Common::UString &name, FileType type
 }
 
 void ResourceManager::declareResource(const Common::UString &name) {
-	declareResource(setFileType(name, kFileTypeNone), getFileType(name));
+	declareResource(TypeMan.setFileType(name, kFileTypeNone), TypeMan.getFileType(name));
 }
 
 bool ResourceManager::hasResource(const Common::UString &name, FileType type) const {
@@ -488,7 +488,7 @@ bool ResourceManager::hasResource(const Common::UString &name, FileType type) co
 }
 
 bool ResourceManager::hasResource(const Common::UString &name) const {
-	return hasResource(setFileType(name, kFileTypeNone), getFileType(name));
+	return hasResource(TypeMan.setFileType(name, kFileTypeNone), TypeMan.getFileType(name));
 }
 
 bool ResourceManager::hasResource(const Common::UString &name, const std::vector<FileType> &types) const {
@@ -528,7 +528,7 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name) const {
-	return getResource(setFileType(name, kFileTypeNone), getFileType(name));
+	return getResource(TypeMan.setFileType(name, kFileTypeNone), TypeMan.getFileType(name));
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name,
@@ -629,7 +629,7 @@ void ResourceManager::normalizeType(Resource &resource) {
 }
 
 inline uint64 ResourceManager::getHash(const Common::UString &name, FileType type) const {
-	return getHash(setFileType(name, type));
+	return getHash(TypeMan.setFileType(name, type));
 }
 
 inline uint64 ResourceManager::getHash(Common::UString name) const {
@@ -642,14 +642,14 @@ void ResourceManager::checkHashCollision(const Resource &resource, ResourceMap::
 	if (resource.name.empty() || resList->second.empty())
 		return;
 
-	Common::UString newName = setFileType(resource.name, resource.type);
+	Common::UString newName = TypeMan.setFileType(resource.name, resource.type);
 	newName.tolower();
 
 	for (ResourceList::const_iterator r = resList->second.begin(); r != resList->second.end(); ++r) {
 		if (r->name.empty())
 			continue;
 
-		Common::UString oldName = setFileType(r->name, r->type);
+		Common::UString oldName = TypeMan.setFileType(r->name, r->type);
 		oldName.tolower();
 
 		if (oldName != newName) {
@@ -702,7 +702,7 @@ void ResourceManager::addResources(const Common::FileList &files, ChangeID &chan
 		res.source   = kSourceFile;
 		res.path     = *file;
 		res.name     = Common::FilePath::getStem(*file);
-		res.type     = getFileType(*file);
+		res.type     = TypeMan.getFileType(*file);
 
 		addResource(res, Common::FilePath::getFile(*file), change);
 	}
@@ -750,7 +750,7 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 		const Resource &res = r->second.back();
 
 		const Common::UString &name = res.name;
-		const Common::UString   ext = setFileType("", res.type);
+		const Common::UString   ext = TypeMan.setFileType("", res.type);
 		const uint64           hash = r->first;
 		const uint32           size = getResourceSize(res);
 

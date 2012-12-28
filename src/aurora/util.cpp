@@ -38,15 +38,11 @@
 // boost-string_algo
 using boost::iequals;
 
+DECLARE_SINGLETON(Aurora::FileTypeManager)
+
 namespace Aurora {
 
-/** File type <-> extension mapping. */
-struct FileExtension {
-	FileType type;
-	const char *extension;
-};
-
-static const FileExtension fileExtensions[] = {
+const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeNone,           ""    },
 	{kFileTypeRES,            ".res"},
 	{kFileTypeBMP,            ".bmp"},
@@ -284,31 +280,57 @@ static const FileExtension fileExtensions[] = {
 	{kFileTypePK,             ".pk" }
 };
 
-FileType getFileType(const Common::UString &path) {
-	const Common::UString ext = Common::FilePath::getExtension(path);
 
-	for (int i = 0; i < ARRAYSIZE(fileExtensions); i++)
-		if (iequals(ext.c_str(), fileExtensions[i].extension))
-			return fileExtensions[i].type;
+FileTypeManager::FileTypeManager() {
+}
+
+FileTypeManager::~FileTypeManager() {
+}
+
+FileType FileTypeManager::getFileType(const Common::UString &path) {
+	buildExtensionLookup();
+
+	Common::UString ext = Common::FilePath::getExtension(path);
+	ext.tolower();
+
+	ExtensionLookup::const_iterator t = _extensionLookup.find(ext);
+	if (t != _extensionLookup.end())
+		return t->second->type;
 
 	return kFileTypeNone;
 }
 
-Common::UString addFileType(const Common::UString &path, FileType type) {
+Common::UString FileTypeManager::addFileType(const Common::UString &path, FileType type) {
 	return setFileType(path + ".", type);
 }
 
-Common::UString setFileType(const Common::UString &path, FileType type) {
-	Common::UString ext;
+Common::UString FileTypeManager::setFileType(const Common::UString &path, FileType type) {
+	buildTypeLookup();
 
-	for (int i = 0; i < ARRAYSIZE(fileExtensions); i++)
-		if (fileExtensions[i].type == type) {
-			ext = fileExtensions[i].extension;
-			break;
-		}
+	Common::UString ext;
+	TypeLookup::const_iterator t = _typeLookup.find(type);
+	if (t != _typeLookup.end())
+		ext = t->second->extension;
 
 	return Common::FilePath::changeExtension(path, ext);
 }
+
+void FileTypeManager::buildExtensionLookup() {
+	if (!_extensionLookup.empty())
+		return;
+
+	for (int i = 0; i < ARRAYSIZE(types); i++)
+		_extensionLookup.insert(std::make_pair(Common::UString(types[i].extension), &types[i]));
+}
+
+void FileTypeManager::buildTypeLookup() {
+	if (!_typeLookup.empty())
+		return;
+
+	for (int i = 0; i < ARRAYSIZE(types); i++)
+		_typeLookup.insert(std::make_pair(types[i].type, &types[i]));
+}
+
 
 bool isMale(Language language) {
 	return !isFemale(language);

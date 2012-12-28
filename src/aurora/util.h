@@ -30,11 +30,12 @@
 #ifndef AURORA_UTIL_H
 #define AURORA_UTIL_H
 
+#include "common/singleton.h"
+#include "common/ustring.h"
+
 #include "aurora/types.h"
 
 namespace Aurora {
-
-class UString;
 
 /** Does the language ID describe a male viewpoint? */
 bool isMale(Language language);
@@ -46,17 +47,47 @@ bool isLanguageStandard(Language language);
 /** Is the language ID of the new variety found in The Witcher? */
 bool isLanguageTheWitcher(Language language);
 
-/** Return the file type of a file name, detected by its extension. */
-FileType getFileType(const Common::UString &path);
-
-/** Return the file name with an added extensions according to the specified file type. */
-Common::UString addFileType(const Common::UString &path, FileType type);
-/** Return the file name with a swapped extensions according to the specified file type. */
-Common::UString setFileType(const Common::UString &path, FileType type);
-
 /** Return the human readable string of a Platform. */
 Common::UString getPlatformDescription(Platform platform);
 
+
+class FileTypeManager : public Common::Singleton<FileTypeManager> {
+public:
+	FileTypeManager();
+	~FileTypeManager();
+
+	/** Return the file type of a file name, detected by its extension. */
+	FileType getFileType(const Common::UString &path);
+
+	/** Return the file name with an added extensions according to the specified file type. */
+	Common::UString addFileType(const Common::UString &path, FileType type);
+	/** Return the file name with a swapped extensions according to the specified file type. */
+	Common::UString setFileType(const Common::UString &path, FileType type);
+
+
+private:
+	/** File type <-> extension mapping. */
+	struct Type {
+		FileType type;
+		const char *extension;
+	};
+
+	static const Type types[];
+
+	typedef std::map<Common::UString, const Type *> ExtensionLookup;
+	typedef std::map<FileType       , const Type *> TypeLookup;
+
+	ExtensionLookup _extensionLookup;
+	TypeLookup      _typeLookup;
+
+
+	void buildExtensionLookup();
+	void buildTypeLookup();
+};
+
 } // End of namespace Aurora
+
+/** Shortcut for accessing the file type manager. */
+#define TypeMan ::Aurora::FileTypeManager::instance()
 
 #endif // AURORA_UTIL_H

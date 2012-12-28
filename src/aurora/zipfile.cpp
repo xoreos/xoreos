@@ -69,7 +69,7 @@ void ZIPFile::load() {
 		Resource res;
 
 		res.name  = Common::FilePath::getStem(file->name);
-		res.type  = getFileType(file->name);
+		res.type  = TypeMan.getFileType(file->name);
 		res.index = file->index;
 
 		_resources.push_back(res);

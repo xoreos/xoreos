@@ -174,7 +174,7 @@ bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::US
 		return false;
 
 	if (file.empty())
-		file = Aurora::setFileType(name, type);
+		file = TypeMan.setFileType(name, type);
 
 	bool success = dumpStream(*res, file);
 
@@ -184,9 +184,9 @@ bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::US
 }
 
 bool dumpResource(const Common::UString &name, const Common::UString &file) {
-	Aurora::FileType type = Aurora::getFileType(name);
+	Aurora::FileType type = TypeMan.getFileType(name);
 
-	return dumpResource(Aurora::setFileType(name, Aurora::kFileTypeNone), type, file);
+	return dumpResource(TypeMan.setFileType(name, Aurora::kFileTypeNone), type, file);
 }
 
 bool dumpTGA(const Common::UString &name) {

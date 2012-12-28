@@ -269,8 +269,8 @@ void ERFFile::readV2ResList(Common::SeekableReadStream &erf, const ERFHeader &he
 
 		name.readFixedUTF16LE(erf, 32);
 
-		res->name  = setFileType(name, kFileTypeNone);
-		res->type  = getFileType(name);
+		res->name  = TypeMan.setFileType(name, kFileTypeNone);
+		res->type  = TypeMan.getFileType(name);
 		res->index = index;
 
 		iRes->offset                          = erf.readUint32LE();
@@ -291,8 +291,8 @@ void ERFFile::readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 
 		name.readFixedUTF16LE(erf, 32);
 
-		res->name  = setFileType(name, kFileTypeNone);
-		res->type  = getFileType(name);
+		res->name  = TypeMan.setFileType(name, kFileTypeNone);
+		res->type  = TypeMan.getFileType(name);
 		res->index = index;
 
 		iRes->offset       = erf.readUint32LE();
@@ -317,8 +317,8 @@ void ERFFile::readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &he
 				throw Common::Exception("Invalid ERF string table offset");
 
 			Common::UString name = header.stringTable + nameOffset;
-			res->name = setFileType(name, kFileTypeNone);
-			res->type = getFileType(name);
+			res->name = TypeMan.setFileType(name, kFileTypeNone);
+			res->type = TypeMan.getFileType(name);
 		}
 
 		res->index = index;

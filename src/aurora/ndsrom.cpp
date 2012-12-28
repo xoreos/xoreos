@@ -96,8 +96,8 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 		name.readFixedASCII(nds, nameLength);
 		name.tolower();
 
-		res.name  = setFileType(name, kFileTypeNone);
-		res.type  = getFileType(name);
+		res.name  = TypeMan.setFileType(name, kFileTypeNone);
+		res.type  = TypeMan.getFileType(name);
 		res.index = index++;
 
 		_resources.push_back(res);
