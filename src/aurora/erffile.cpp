@@ -35,6 +35,8 @@
 #include "aurora/error.h"
 #include "aurora/util.h"
 
+#include <zlib.h>
+
 static const uint32 kERFID     = MKID_BE('ERF ');
 static const uint32 kMODID     = MKID_BE('MOD ');
 static const uint32 kHAKID     = MKID_BE('HAK ');
@@ -359,23 +361,99 @@ Common::SeekableReadStream *ERFFile::getResource(uint32 index) const {
 	if (_flags & 0xF0)
 		throw Common::Exception("Unhandled ERF encryption");
 
-	if (_flags & 0xE0000000)
-		throw Common::Exception("Unhandled ERF compression");
-
 	Common::File erf;
 	open(erf);
 
 	if (!erf.seek(res.offset))
 		throw Common::Exception(Common::kSeekError);
 
-	Common::SeekableReadStream *resStream = erf.readStream(res.unpackedSize);
+	byte *compressedData = new byte[res.packedSize];
 
-	if (!resStream || (((uint32) resStream->size()) != res.unpackedSize)) {
-		delete resStream;
+	if (erf.read(compressedData, res.packedSize) != res.packedSize) {
+		delete[] compressedData;
 		throw Common::Exception(Common::kReadError);
 	}
 
-	return resStream;
+	return decompress(compressedData, res.packedSize, res.unpackedSize);
+}
+
+uint32 ERFFile::getCompressionType() const {
+	return (_flags >> 29) & 0x7;
+}
+
+Common::SeekableReadStream *ERFFile::decompress(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const {
+	switch (getCompressionType()) {
+	case 0:
+		// No compression
+		return new Common::MemoryReadStream(compressedData, packedSize, true);
+	case 1:
+		// Bioware Zlib
+		return decompressBiowareZlib(compressedData, packedSize, unpackedSize);
+	case 2:
+	case 3:
+		// Unknown
+		delete[] compressedData;
+		throw Common::Exception("Unknown ERF compression %d", getCompressionType());
+	case 7:
+		// Headerless Zlib
+		return decompressHeaderlessZlib(compressedData, packedSize, unpackedSize);
+	default:
+		// Invalid
+		delete[] compressedData;
+		throw Common::Exception("Invalid ERF compression %d", getCompressionType());
+	}
+}
+
+Common::SeekableReadStream *ERFFile::decompressBiowareZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const {
+	try {
+		Common::SeekableReadStream *stream = decompressZlib(compressedData + 1, packedSize - 1, unpackedSize, *compressedData >> 4);
+		delete[] compressedData;
+		return stream;
+	} catch (Common::Exception &e) {
+		delete[] compressedData;
+		throw e;
+	}
+}
+
+Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const {
+	try {
+		Common::SeekableReadStream *stream = decompressZlib(compressedData, packedSize, unpackedSize, MAX_WBITS);
+		delete[] compressedData;
+		return stream;
+	} catch (Common::Exception &e) {
+		delete[] compressedData;
+		throw e;
+	}
+}
+
+Common::SeekableReadStream *ERFFile::decompressZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize, int windowBits) const {
+	// Allocate the decompressed data
+	byte *decompressedData = new byte[unpackedSize];
+
+	z_stream strm;
+	strm.zalloc   = Z_NULL;
+	strm.zfree    = Z_NULL;
+	strm.opaque   = Z_NULL;
+	strm.avail_in = packedSize;
+	strm.next_in  = compressedData;
+
+	// Negative windows bits means there is no zlib header present in the data.
+	int zResult = inflateInit2(&strm, -windowBits);
+	if (zResult != Z_OK) {
+		delete[] decompressedData;
+		throw Common::Exception("Could not initialize zlib inflate");
+	}
+
+	strm.avail_out = unpackedSize;
+	strm.next_out  = decompressedData;
+
+	zResult = inflate(&strm, Z_SYNC_FLUSH);
+	if (zResult != Z_OK && zResult != Z_STREAM_END) {
+		delete[] decompressedData;
+		throw Common::Exception("Failed to inflate: %d", zResult);
+	}
+
+	return new Common::MemoryReadStream(decompressedData, unpackedSize, true);
 }
 
 void ERFFile::open(Common::File &file) const {

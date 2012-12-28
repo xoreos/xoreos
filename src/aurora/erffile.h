@@ -133,6 +133,13 @@ private:
 	// V3.0
 	void readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
+	// Compression
+	uint32 getCompressionType() const;
+	Common::SeekableReadStream *decompress(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const;
+	Common::SeekableReadStream *decompressBiowareZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const;
+	Common::SeekableReadStream *decompressHeaderlessZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const;
+	Common::SeekableReadStream *decompressZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize, int windowBits) const;
+
 	const IResource &getIResource(uint32 index) const;
 };
 
