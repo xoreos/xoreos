@@ -59,10 +59,11 @@
 #include "engines/nwn2/nwn2.h"
 #include "engines/kotor/kotor.h"
 #include "engines/kotor2/kotor2.h"
+#include "engines/jade/jade.h"
 #include "engines/thewitcher/thewitcher.h"
 #include "engines/sonic/sonic.h"
 #include "engines/dragonage/dragonage.h"
-#include "engines/jade/jade.h"
+#include "engines/dragonage2/dragonage2.h"
 
 DECLARE_SINGLETON(Engines::EngineManager)
 
@@ -86,10 +87,11 @@ static const EngineProbe *kProbes[] = {
 	&KotOR::kKotOREngineProbeXbox,
 	&KotOR2::kKotOR2EngineProbeWin,
 	&KotOR2::kKotOR2EngineProbeXbox,
+	&Jade::kJadeEngineProbe,
 	&TheWitcher::kTheWitcherEngineProbe,
 	&Sonic::kSonicEngineProbe,
 	&DragonAge::kDragonAgeEngineProbe,
-	&Jade::kJadeEngineProbe
+	&DragonAge2::kDragonAge2EngineProbe
 };
 
 bool EngineManager::probeGame(GameInstance &game) const {

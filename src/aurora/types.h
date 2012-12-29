@@ -289,10 +289,11 @@ enum GameID {
 	kGameIDNWN2       = 2, ///< Neverwinter Nights 2.
 	kGameIDKotOR      = 3, ///< Star Wars: Knights of the Old Republic.
 	kGameIDKotOR2     = 4, ///< Star Wars: Knights of the Old Republic II - The Sith Lords.
-	kGameIDTheWitcher = 5, ///< The Witcher.
-	kGameIDSonic      = 6, ///< Sonic Chronicles: The Dark Brotherhood.
-	kGameIDDragonAge  = 7, ///< Dragon Age: Origins.
-	kGameIDJade       = 8  ///< Jade Empire.
+	kGameIDJade       = 5, ///< Jade Empire.
+	kGameIDTheWitcher = 6, ///< The Witcher.
+	kGameIDSonic      = 7, ///< Sonic Chronicles: The Dark Brotherhood.
+	kGameIDDragonAge  = 8, ///< Dragon Age: Origins.
+	kGameIDDragonAge2 = 9  ///< Dragon Age II.
 };
 
 enum Gender {

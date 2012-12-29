@@ -262,10 +262,11 @@ AC_CONFIG_FILES([
           src/engines/nwn2/Makefile \
           src/engines/kotor/Makefile \
           src/engines/kotor2/Makefile \
+          src/engines/jade/Makefile \
           src/engines/thewitcher/Makefile \
           src/engines/sonic/Makefile \
           src/engines/dragonage/Makefile \
-          src/engines/jade/Makefile \
+          src/engines/dragonage2/Makefile \
           src/Makefile \
           Makefile])
 AC_OUTPUT
