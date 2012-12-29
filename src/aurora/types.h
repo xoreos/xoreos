@@ -280,7 +280,33 @@ enum FileType {
 	kFileTypePVD            = 24005,
 	kFileTypeAMP            = 24006,
 	kFileTypePLA            = 24007,
-	kFileTypePK             = 24008
+	kFileTypePK             = 24008,
+
+	// Found in Dragon Age II
+	kFileTypeALS            = 25000,
+	kFileTypeAPL            = 25001,
+	kFileTypeAssembly       = 25002,
+	kFileTypeBAK            = 25003,
+	kFileTypeBNK            = 25004,
+	kFileTypeCL             = 25005,
+	kFileTypeCNV            = 25006,
+	kFileTypeCON            = 25007,
+	kFileTypeDAT            = 25008,
+	kFileTypeDX11           = 25009,
+	kFileTypeIDS            = 25010,
+	kFileTypeLOG            = 25011,
+	kFileTypeMAP            = 25012,
+	kFileTypeMML            = 25013,
+	kFileTypeMP3            = 25014,
+	kFileTypePCK            = 25015,
+	kFileTypeRML            = 25016,
+	kFileTypeS              = 25017,
+	kFileTypeSTA            = 25018,
+	kFileTypeSVR            = 25019,
+	kFileTypeVLM            = 25020,
+	kFileTypeWBD            = 25021,
+	kFileTypeXBX            = 25022,
+	kFileTypeXLS            = 25023
 };
 
 enum GameID {

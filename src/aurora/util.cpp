@@ -277,7 +277,32 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypePVD,            ".pvd"},
 	{kFileTypeAMP,            ".amp"},
 	{kFileTypePLA,            ".pla"},
-	{kFileTypePK,             ".pk" }
+	{kFileTypePK,             ".pk" },
+
+	{kFileTypeALS,            ".als"},
+	{kFileTypeAPL,            ".apl"},
+	{kFileTypeAssembly,       ".assembly"},
+	{kFileTypeBAK,            ".bak"},
+	{kFileTypeBNK,            ".bnk"},
+	{kFileTypeCL,             ".cl"},
+	{kFileTypeCNV,            ".cnv"},
+	{kFileTypeCON,            ".con"},
+	{kFileTypeDAT,            ".dat"},
+	{kFileTypeDX11,           ".dx11"},
+	{kFileTypeIDS,            ".ids"},
+	{kFileTypeLOG,            ".log"},
+	{kFileTypeMAP,            ".map"},
+	{kFileTypeMML,            ".mml"},
+	{kFileTypeMP3,            ".mp3"},
+	{kFileTypePCK,            ".pck"},
+	{kFileTypeRML,            ".rml"},
+	{kFileTypeS,              ".s"  },
+	{kFileTypeSTA,            ".sta"},
+	{kFileTypeSVR,            ".svr"},
+	{kFileTypeVLM,            ".vlm"},
+	{kFileTypeWBD,            ".wbd"},
+	{kFileTypeXBX,            ".xbx"},
+	{kFileTypeXLS,            ".xls"}
 };
 
 
