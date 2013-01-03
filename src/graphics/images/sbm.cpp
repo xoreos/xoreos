@@ -108,7 +108,7 @@ void SBM::readData(Common::SeekableReadStream &sbm) {
 	}
 
 	byte *dataEnd = _mipMaps[0]->data + _mipMaps[0]->size;
-	memset(data, dataEnd - data, 0);
+	memset(data, 0, dataEnd - data);
 }
 
 } // End of namespace Graphics
