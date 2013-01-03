@@ -19,6 +19,7 @@ noinst_HEADERS = system.h \
                  thread.h \
                  mutex.h \
                  ustring.h \
+                 hash.h \
                  error.h \
                  util.h \
                  strutil.h \
