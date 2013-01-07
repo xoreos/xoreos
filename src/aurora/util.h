@@ -30,6 +30,8 @@
 #ifndef AURORA_UTIL_H
 #define AURORA_UTIL_H
 
+#include <map>
+
 #include "common/singleton.h"
 #include "common/hash.h"
 #include "common/ustring.h"
