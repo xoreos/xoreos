@@ -241,9 +241,24 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		return makeVorbisStream(stream, true);
 
 	} else if (tag == 0x3026B275) {
+
 		// ASF (most probably with WMAv2)
 		stream->seek(0);
 		return makeASFStream(stream, true);
+
+	} else if (((tag & 0xFFFFFF00) | 0x20) == MKTAG('I', 'D', '3', ' ')) {
+
+		// ID3v2 tag found => Should be MP3.
+		stream->seek(0);
+		isMP3 = true;
+
+	} else if ((tag & 0xFFFA0000) == 0xFFFA0000) {
+
+		// MPEG sync + MPEG1 layer 3 bits found => Should be MP3.
+		// NOTE: To decrease the chances of false positives, we could look at more than just the first frame.
+		stream->seek(0);
+		isMP3 = true;
+
 	} else
 		throw Common::Exception("Unknown sound format");
 
