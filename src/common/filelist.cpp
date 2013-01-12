@@ -208,7 +208,7 @@ bool FileList::getSubList(const UString &glob, FileList &subList, bool caseInsen
 
 	// Iterate through the whole list, adding the matches to the sub list
 	for (std::list<FilePath>::const_iterator it = _files.begin(); it != _files.end(); ++it)
-		if (boost::regex_match(it->filePath.string(), expression)) {
+		if (boost::regex_match(it->filePath.generic_string(), expression)) {
 			subList.addPath(*it);
 			foundMatch = true;
 		}
@@ -226,8 +226,8 @@ bool FileList::getSubList(const UString &glob, std::list<UString> &list, bool ca
 
 	// Iterate through the whole list, adding the matches to the sub list
 	for (std::list<FilePath>::const_iterator it = _files.begin(); it != _files.end(); ++it)
-		if (boost::regex_match(it->filePath.string(), expression)) {
-			list.push_back(it->filePath.string());
+		if (boost::regex_match(it->filePath.generic_string(), expression)) {
+			list.push_back(it->filePath.generic_string());
 			foundMatch = true;
 		}
 
@@ -253,7 +253,7 @@ UString FileList::findFirst(const UString &glob, bool caseInsensitive) const {
 	if (!p)
 		return "";
 
-	return p->filePath.string();
+	return p->filePath.generic_string();
 }
 
 SeekableReadStream *FileList::openFile(const UString &fileName) const {
@@ -262,7 +262,7 @@ SeekableReadStream *FileList::openFile(const UString &fileName) const {
 		return 0;
 
 	File *file = new File;
-	if (!file->open(p->filePath.string())) {
+	if (!file->open(p->filePath.generic_string())) {
 		delete file;
 		return 0;
 	}
@@ -276,7 +276,7 @@ SeekableReadStream *FileList::openFile(const UString &glob, bool caseInsensitive
 		return 0;
 
 	File *file = new File;
-	if (!file->open(p->filePath.string())) {
+	if (!file->open(p->filePath.generic_string())) {
 		delete file;
 		return 0;
 	}
@@ -301,7 +301,7 @@ const FileList::FilePath *FileList::getPath(const UString &glob, bool caseInsens
 
 	// Iterate through the whole list, looking for a match
 	for (std::list<FilePath>::const_iterator it = _files.begin(); it != _files.end(); ++it)
-		if (boost::regex_match(it->filePath.string(), expression))
+		if (boost::regex_match(it->filePath.generic_string(), expression))
 			return &*it;
 
 	return 0;
