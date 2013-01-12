@@ -36,9 +36,9 @@
 #include "aurora/keyfile.h"
 #include "aurora/error.h"
 
-static const uint32 kBIFID     = MKID_BE('BIFF');
-static const uint32 kVersion1  = MKID_BE('V1  ');
-static const uint32 kVersion11 = MKID_BE('V1.1');
+static const uint32 kBIFID     = MKTAG('B', 'I', 'F', 'F');
+static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');
+static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 

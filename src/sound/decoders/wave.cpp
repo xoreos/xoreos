@@ -40,15 +40,15 @@
 namespace Sound {
 
 RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	if (stream->readUint32BE() != MKID_BE('RIFF'))
+	if (stream->readUint32BE() != MKTAG('R', 'I', 'F', 'F'))
 		throw Common::Exception("makeWAVStream(): No 'RIFF' header");
 
 	/* uint32 fileSize = */ stream->readUint32LE();
 
-	if (stream->readUint32BE() != MKID_BE('WAVE'))
+	if (stream->readUint32BE() != MKTAG('W', 'A', 'V', 'E'))
 		throw Common::Exception("makeWAVStream(): No 'WAVE' RIFF type");
 
-	if (stream->readUint32BE() != MKID_BE('fmt '))
+	if (stream->readUint32BE() != MKTAG('f', 'm', 't', ' '))
 		throw Common::Exception("makeWAVStream(): No 'fmt ' chunk");
 
 	uint32 fmtLength = stream->readUint32LE();
@@ -68,7 +68,7 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool di
 
 	// Skip over all chunks until we hit the data
 	for (;;) {
-		if (stream->readUint32BE() == MKID_BE('data'))
+		if (stream->readUint32BE() == MKTAG('d', 'a', 't', 'a'))
 			break;
 
 		if (stream->eos())

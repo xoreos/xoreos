@@ -111,26 +111,13 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 /**
  * A wrapper macro used around four character constants, like 'DATA', to
- * ensure portability. Typical usage: MKID_BE('DATA').
+ * ensure portability. Typical usage: MKTAG('D','A','T','A').
  *
  * Why is this necessary? The C/C++ standard does not define the endianess to
  * be used for character constants. Hence if one uses multi-byte character
  * constants, a potential portability problem opens up.
- *
- * Fortunately, a semi-standard has been established: On almost all systems
- * and compilers, multi-byte character constants are encoded using the big
- * endian convention (probably in analogy to the encoding of string constants).
- * Still some systems differ. This is why we provide the MKID_BE macro. If
- * you wrap your four character constants with it, the result will always be
- * BE encoded, even on systems which differ from the default BE encoding.
- *
- * For the latter systems we provide the INVERSE_MKID override.
  */
-#if defined(INVERSE_MKID)
-	#define MKID_BE(a) SWAP_CONSTANT_32(a)
-#else
-	#define MKID_BE(a) ((uint32)(a))
-#endif
+#define MKTAG(a0,a1,a2,a3) ((uint32)((a3) | ((a2) << 8) | ((a1) << 16) | ((a0) << 24)))
 
 // Functions for reading/writing native Integers,
 // this transparently handles the need for alignment
@@ -379,8 +366,6 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#endif // if defined(XOREOS_NEED_ALIGNMENT)
 
 #elif defined(XOREOS_BIG_ENDIAN)
-
-	#define MKID_BE(a) ((uint32)(a))
 
 	#define READ_BE_UINT16(a) READ_UINT16(a)
 	#define READ_BE_UINT32(a) READ_UINT32(a)

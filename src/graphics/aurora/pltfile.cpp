@@ -37,8 +37,8 @@
 #include "graphics/aurora/pltfile.h"
 #include "graphics/aurora/texture.h"
 
-static const uint32 kPLTID     = MKID_BE('PLT ');
-static const uint32 kVersion1  = MKID_BE('V1  ');
+static const uint32 kPLTID     = MKTAG('P', 'L', 'T', ' ');
+static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');
 
 namespace Graphics {
 

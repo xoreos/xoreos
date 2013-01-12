@@ -175,7 +175,7 @@ void XboxMediaVideo::load() {
 
 	_xmv->skip(4); // Max packet size
 
-	if (_xmv->readUint32LE() != MKID_BE('Xbox'))
+	if (_xmv->readUint32LE() != MKTAG('X', 'b', 'o', 'x'))
 		throw Common::Exception("XboxMediaVideo::load(): No 'Xbox' tag");
 
 	uint32 version = _xmv->readUint32LE();

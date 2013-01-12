@@ -55,10 +55,10 @@
 
 #include "events/events.h"
 
-static const uint32 kBIKfID = MKID_BE('BIKf');
-static const uint32 kBIKgID = MKID_BE('BIKg');
-static const uint32 kBIKhID = MKID_BE('BIKh');
-static const uint32 kBIKiID = MKID_BE('BIKi');
+static const uint32 kBIKfID = MKTAG('B', 'I', 'K', 'f');
+static const uint32 kBIKgID = MKTAG('B', 'I', 'K', 'g');
+static const uint32 kBIKhID = MKTAG('B', 'I', 'K', 'h');
+static const uint32 kBIKiID = MKTAG('B', 'I', 'K', 'i');
 
 static const uint32 kVideoFlagAlpha = 0x00100000;
 

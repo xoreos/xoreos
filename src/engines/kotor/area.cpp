@@ -180,10 +180,10 @@ void Area::load(const Common::UString &resRef) {
 	loadModels(); // Room models
 	loadVisibles();   // Room model visibilities
 
-	Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
+	Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 	loadARE(are.getTopLevel());
 
-	Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKID_BE('GIT '));
+	Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
 	loadGIT(git.getTopLevel());
 
 	_loaded = true;

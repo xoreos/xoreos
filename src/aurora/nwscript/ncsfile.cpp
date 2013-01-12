@@ -42,8 +42,8 @@
 
 using Common::kDebugScripts;
 
-static const uint32 kNCSTag    = MKID_BE('NCS ');
-static const uint32 kVersion10 = MKID_BE('V1.0');
+static const uint32 kNCSTag    = MKTAG('N', 'C', 'S', ' ');
+static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
 
 static const uint32 kScriptObjectSelf        = 0x00000000;
 static const uint32 kScriptObjectInvalid     = 0x00000001;

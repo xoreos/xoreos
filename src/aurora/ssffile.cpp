@@ -34,9 +34,9 @@
 #include "aurora/resman.h"
 #include "aurora/ssffile.h"
 
-static const uint32 kSSFID     = MKID_BE('SSF ');
-static const uint32 kVersion1  = MKID_BE('V1.0');
-static const uint32 kVersion11 = MKID_BE('V1.1');
+static const uint32 kSSFID     = MKTAG('S', 'S', 'F', ' ');
+static const uint32 kVersion1  = MKTAG('V', '1', '.', '0');
+static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 

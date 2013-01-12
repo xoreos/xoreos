@@ -53,7 +53,7 @@
 
 #include "engines/nwn/gui/widgets/tooltip.h"
 
-static const uint32 kBICID = MKID_BE('BIC ');
+static const uint32 kBICID = MKTAG('B', 'I', 'C', ' ');
 
 namespace Engines {
 
@@ -525,7 +525,7 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 	Aurora::GFFFile *utc = 0;
 	if (!temp.empty()) {
 		try {
-			utc = new Aurora::GFFFile(temp, Aurora::kFileTypeUTC, MKID_BE('UTC '));
+			utc = new Aurora::GFFFile(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
 		} catch (...) {
 			delete utc;
 		}
@@ -743,7 +743,7 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 		Aurora::GFFFile *uti = 0;
 		if (!itemref.empty()) {
 			try {
-				uti = new Aurora::GFFFile(itemref, Aurora::kFileTypeUTI, MKID_BE('UTI '));
+				uti = new Aurora::GFFFile(itemref, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '));
 			} catch (...) {
 				delete uti;
 			}

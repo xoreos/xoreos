@@ -63,10 +63,10 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 
 	// Load ARE and GIT
 
-	Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
+	Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 	loadARE(are.getTopLevel());
 
-	Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKID_BE('GIT '));
+	Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
 	loadGIT(git.getTopLevel());
 
 	_loaded = true;
@@ -94,7 +94,7 @@ Area::~Area() {
 
 Common::UString Area::getName(const Common::UString &resRef) {
 	try {
-		Aurora::GFFFile are(resRef, Aurora::kFileTypeARE, MKID_BE('ARE '));
+		Aurora::GFFFile are(resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 
 		Aurora::LocString name;
 		are.getTopLevel().getLocString("Name", name);

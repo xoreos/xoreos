@@ -35,9 +35,9 @@
 #include "aurora/keyfile.h"
 #include "aurora/error.h"
 
-static const uint32 kKEYID     = MKID_BE('KEY ');
-static const uint32 kVersion1  = MKID_BE('V1  ');
-static const uint32 kVersion11 = MKID_BE('V1.1');
+static const uint32 kKEYID     = MKTAG('K', 'E', 'Y', ' ');
+static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');
+static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 

@@ -33,9 +33,9 @@
 #include "aurora/talktable.h"
 #include "aurora/error.h"
 
-static const uint32 kTLKID     = MKID_BE('TLK ');
-static const uint32 kVersion3  = MKID_BE('V3.0');
-static const uint32 kVersion4  = MKID_BE('V4.0');
+static const uint32 kTLKID     = MKTAG('T', 'L', 'K', ' ');
+static const uint32 kVersion3  = MKTAG('V', '3', '.', '0');
+static const uint32 kVersion4  = MKTAG('V', '4', '.', '0');
 
 namespace Aurora {
 

@@ -33,10 +33,10 @@
 
 #include "graphics/images/dds.h"
 
-static const uint32 kDDSID  = MKID_BE('DDS ');
-static const uint32 kDXT1ID = MKID_BE('DXT1');
-static const uint32 kDXT3ID = MKID_BE('DXT3');
-static const uint32 kDXT5ID = MKID_BE('DXT5');
+static const uint32 kDDSID  = MKTAG('D', 'D', 'S', ' ');
+static const uint32 kDXT1ID = MKTAG('D', 'X', 'T', '1');
+static const uint32 kDXT3ID = MKTAG('D', 'X', 'T', '3');
+static const uint32 kDXT5ID = MKTAG('D', 'X', 'T', '5');
 
 static const uint32 kHeaderFlagsHasMipMaps = 0x00020000;
 

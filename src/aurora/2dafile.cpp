@@ -36,9 +36,9 @@
 #include "aurora/2dafile.h"
 #include "aurora/error.h"
 
-static const uint32 k2DAID     = MKID_BE('2DA ');
-static const uint32 kVersion2a = MKID_BE('V2.0');
-static const uint32 kVersion2b = MKID_BE('V2.b');
+static const uint32 k2DAID     = MKTAG('2', 'D', 'A', ' ');
+static const uint32 kVersion2a = MKTAG('V', '2', '.', '0');
+static const uint32 kVersion2b = MKTAG('V', '2', '.', 'b');
 
 namespace Aurora {
 

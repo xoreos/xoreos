@@ -39,10 +39,10 @@
 
 #include "graphics/aurora/model_nwn2.h"
 
-static const uint32 kMDBID = MKID_BE('NWN2');
+static const uint32 kMDBID = MKTAG('N', 'W', 'N', '2');
 
-static const uint32 kRigidID = MKID_BE('RIGD');
-static const uint32 kSkinID  = MKID_BE('SKIN');
+static const uint32 kRigidID = MKTAG('R', 'I', 'G', 'D');
+static const uint32 kSkinID  = MKTAG('S', 'K', 'I', 'N');
 
 namespace Graphics {
 

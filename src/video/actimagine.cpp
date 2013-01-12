@@ -58,7 +58,7 @@ void ActimagineDecoder::processData() {
 }
 
 void ActimagineDecoder::load() {
-	if (_vx->readUint32BE() != MKID_BE('VXDS'))
+	if (_vx->readUint32BE() != MKTAG('V', 'X', 'D', 'S'))
 		throw Common::Exception("Not a valid Actimagine video");
 
 	_vx->readUint32LE(); // header size?

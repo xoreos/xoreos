@@ -38,7 +38,7 @@
 #include "aurora/nwscript/variable.h"
 #include "aurora/nwscript/ncsfile.h"
 
-static const uint32 kDLGID = MKID_BE('DLG ');
+static const uint32 kDLGID = MKTAG('D', 'L', 'G', ' ');
 
 namespace Aurora {
 

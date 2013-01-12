@@ -37,14 +37,14 @@
 
 #include <zlib.h>
 
-static const uint32 kERFID     = MKID_BE('ERF ');
-static const uint32 kMODID     = MKID_BE('MOD ');
-static const uint32 kHAKID     = MKID_BE('HAK ');
-static const uint32 kSAVID     = MKID_BE('SAV ');
-static const uint32 kVersion1  = MKID_BE('V1.0');
-static const uint32 kVersion2  = MKID_BE('V2.0');
-static const uint32 kVersion22 = MKID_BE('V2.2');
-static const uint32 kVersion3  = MKID_BE('V3.0');
+static const uint32 kERFID     = MKTAG('E', 'R', 'F', ' ');
+static const uint32 kMODID     = MKTAG('M', 'O', 'D', ' ');
+static const uint32 kHAKID     = MKTAG('H', 'A', 'K', ' ');
+static const uint32 kSAVID     = MKTAG('S', 'A', 'V', ' ');
+static const uint32 kVersion1  = MKTAG('V', '1', '.', '0');
+static const uint32 kVersion2  = MKTAG('V', '2', '.', '0');
+static const uint32 kVersion22 = MKTAG('V', '2', '.', '2');
+static const uint32 kVersion3  = MKTAG('V', '3', '.', '0');
 
 namespace Aurora {
 

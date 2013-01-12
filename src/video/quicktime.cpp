@@ -112,7 +112,7 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDe
 			_curAudioChunk = 0;
 
 			// Make sure the bits per sample transfers to the sample size
-			if (entry->getCodecTag() == MKID_BE('raw ') || entry->getCodecTag() == MKID_BE('twos'))
+			if (entry->getCodecTag() == MKTAG('r', 'a', 'w', ' ') || entry->getCodecTag() == MKTAG('t', 'w', 'o', 's'))
 				_tracks[_audioTrackIndex]->sampleSize = (entry->_bitsPerSample / 8) * entry->_channels;
 
 			// Initialize the codec (if necessary)
@@ -219,7 +219,7 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uin
 
 		// Version 0 videos (such as the Riven ones) don't have this set,
 		// but we need it later on. Add it in here.
-		if (format == MKID_BE('ima4')) {
+		if (format == MKTAG('i', 'm', 'a', '4')) {
 			entry->_samplesPerFrame = 64;
 			entry->_bytesPerFrame = 34 * entry->_channels;
 		}
@@ -328,30 +328,30 @@ uint32 QuickTimeDecoder::getTimeToNextFrame() const {
 
 void QuickTimeDecoder::initParseTable() {
 	static const ParseTable p[] = {
-		{ &QuickTimeDecoder::readDefault, MKID_BE('dinf') },
-		{ &QuickTimeDecoder::readLeaf,    MKID_BE('dref') },
-		{ &QuickTimeDecoder::readDefault, MKID_BE('edts') },
-		{ &QuickTimeDecoder::readELST,    MKID_BE('elst') },
-		{ &QuickTimeDecoder::readHDLR,    MKID_BE('hdlr') },
-		{ &QuickTimeDecoder::readLeaf,    MKID_BE('mdat') },
-		{ &QuickTimeDecoder::readMDHD,    MKID_BE('mdhd') },
-		{ &QuickTimeDecoder::readDefault, MKID_BE('mdia') },
-		{ &QuickTimeDecoder::readDefault, MKID_BE('minf') },
-		{ &QuickTimeDecoder::readMOOV,    MKID_BE('moov') },
-		{ &QuickTimeDecoder::readMVHD,    MKID_BE('mvhd') },
-		{ &QuickTimeDecoder::readLeaf,    MKID_BE('smhd') },
-		{ &QuickTimeDecoder::readDefault, MKID_BE('stbl') },
-		{ &QuickTimeDecoder::readSTCO,    MKID_BE('stco') },
-		{ &QuickTimeDecoder::readSTSC,    MKID_BE('stsc') },
-		{ &QuickTimeDecoder::readSTSD,    MKID_BE('stsd') },
-		{ &QuickTimeDecoder::readSTSS,    MKID_BE('stss') },
-		{ &QuickTimeDecoder::readSTSZ,    MKID_BE('stsz') },
-		{ &QuickTimeDecoder::readSTTS,    MKID_BE('stts') },
-		{ &QuickTimeDecoder::readTRAK,    MKID_BE('trak') },
-		{ &QuickTimeDecoder::readLeaf,    MKID_BE('udta') },
-		{ &QuickTimeDecoder::readLeaf,    MKID_BE('vmhd') },
-		{ &QuickTimeDecoder::readDefault, MKID_BE('wave') },
-		{ &QuickTimeDecoder::readESDS,    MKID_BE('esds') },
+		{ &QuickTimeDecoder::readDefault, MKTAG('d', 'i', 'n', 'f') },
+		{ &QuickTimeDecoder::readLeaf,    MKTAG('d', 'r', 'e', 'f') },
+		{ &QuickTimeDecoder::readDefault, MKTAG('e', 'd', 't', 's') },
+		{ &QuickTimeDecoder::readELST,    MKTAG('e', 'l', 's', 't') },
+		{ &QuickTimeDecoder::readHDLR,    MKTAG('h', 'd', 'l', 'r') },
+		{ &QuickTimeDecoder::readLeaf,    MKTAG('m', 'd', 'a', 't') },
+		{ &QuickTimeDecoder::readMDHD,    MKTAG('m', 'd', 'h', 'd') },
+		{ &QuickTimeDecoder::readDefault, MKTAG('m', 'd', 'i', 'a') },
+		{ &QuickTimeDecoder::readDefault, MKTAG('m', 'i', 'n', 'f') },
+		{ &QuickTimeDecoder::readMOOV,    MKTAG('m', 'o', 'o', 'v') },
+		{ &QuickTimeDecoder::readMVHD,    MKTAG('m', 'v', 'h', 'd') },
+		{ &QuickTimeDecoder::readLeaf,    MKTAG('s', 'm', 'h', 'd') },
+		{ &QuickTimeDecoder::readDefault, MKTAG('s', 't', 'b', 'l') },
+		{ &QuickTimeDecoder::readSTCO,    MKTAG('s', 't', 'c', 'o') },
+		{ &QuickTimeDecoder::readSTSC,    MKTAG('s', 't', 's', 'c') },
+		{ &QuickTimeDecoder::readSTSD,    MKTAG('s', 't', 's', 'd') },
+		{ &QuickTimeDecoder::readSTSS,    MKTAG('s', 't', 's', 's') },
+		{ &QuickTimeDecoder::readSTSZ,    MKTAG('s', 't', 's', 'z') },
+		{ &QuickTimeDecoder::readSTTS,    MKTAG('s', 't', 't', 's') },
+		{ &QuickTimeDecoder::readTRAK,    MKTAG('t', 'r', 'a', 'k') },
+		{ &QuickTimeDecoder::readLeaf,    MKTAG('u', 'd', 't', 'a') },
+		{ &QuickTimeDecoder::readLeaf,    MKTAG('v', 'm', 'h', 'd') },
+		{ &QuickTimeDecoder::readDefault, MKTAG('w', 'a', 'v', 'e') },
+		{ &QuickTimeDecoder::readESDS,    MKTAG('e', 's', 'd', 's') },
 		{ 0, 0 }
 	};
 
@@ -375,7 +375,7 @@ int QuickTimeDecoder::readDefault(Atom atom) {
 
 			// Some QuickTime videos with resource forks have mdat chunks
 			// that are of size 0. Adjust it so it's the correct size.
-			if (a.type == MKID_BE('mdat') && a.size == 0)
+			if (a.type == MKTAG('m', 'd', 'a', 't') && a.size == 0)
 				a.size = _fd->size();
 		}
 
@@ -503,9 +503,9 @@ int QuickTimeDecoder::readHDLR(Atom atom) {
 	/* uint32 ctype = */ _fd->readUint32BE();
 	uint32 type = _fd->readUint32BE(); // component subtype
 
-	if (type == MKID_BE('vide'))
+	if (type == MKTAG('v', 'i', 'd', 'e'))
 		track->codecType = CODEC_TYPE_VIDEO;
-	else if (type == MKID_BE('soun'))
+	else if (type == MKTAG('s', 'o', 'u', 'n'))
 		track->codecType = CODEC_TYPE_AUDIO;
 
 	_fd->readUint32BE(); // component  manufacture
@@ -954,10 +954,12 @@ QuickTimeDecoder::AudioSampleDesc::~AudioSampleDesc() {
 
 bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
 	// Check if the codec is a supported codec
-	if (_codecTag == MKID_BE('twos') || _codecTag == MKID_BE('raw ') || _codecTag == MKID_BE('ima4'))
+	if (_codecTag == MKTAG('t', 'w', 'o', 's') ||
+	    _codecTag == MKTAG('r', 'a', 'w', ' ') ||
+	    _codecTag == MKTAG('i', 'm', 'a', '4'))
 		return true;
 
-	if (_codecTag == MKID_BE('mp4a')) {
+	if (_codecTag == MKTAG('m', 'p', '4', 'a')) {
 		Common::UString audioType;
 
 		switch (_parentTrack->objectTypeMP4) {
@@ -994,16 +996,16 @@ Sound::AudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStream(Common:
 		Sound::AudioStream *audioStream = _codec->decodeFrame(*stream);
 		delete stream;
 		return audioStream;
-	} else if (_codecTag == MKID_BE('twos') || _codecTag == MKID_BE('raw ')) {
+	} else if (_codecTag == MKTAG('t', 'w', 'o', 's') || _codecTag == MKTAG('r', 'a', 'w', ' ')) {
 		// Standard PCM
 		uint16 flags = 0;
-		if (_codecTag == MKID_BE('raw '))
+		if (_codecTag == MKTAG('r', 'a', 'w', ' '))
 			flags |= Sound::FLAG_UNSIGNED;
 		if (_bitsPerSample == 16)
 			flags |= Sound::FLAG_16BITS;
 
 		return Sound::makePCMStream(stream, _sampleRate, flags, _channels);
-	} else if (_codecTag == MKID_BE('ima4')) {
+	} else if (_codecTag == MKTAG('i', 'm', 'a', '4')) {
 		// QuickTime IMA ADPCM
 		return Sound::makeADPCMStream(stream, true, stream->size(), Sound::kADPCMApple, _sampleRate, _channels, 34);
 	}
@@ -1015,7 +1017,7 @@ void QuickTimeDecoder::AudioSampleDesc::initCodec() {
 	delete _codec; _codec = 0;
 
 	switch (_codecTag) {
-	case MKID_BE('mp4a'):
+	case MKTAG('m', 'p', '4', 'a'):
 		if (_parentTrack->objectTypeMP4 == 0x40)
 			_codec = Sound::makeAACDecoder(_parentTrack->extraData);
 		break;
@@ -1038,7 +1040,7 @@ QuickTimeDecoder::VideoSampleDesc::~VideoSampleDesc() {
 }
 
 void QuickTimeDecoder::VideoSampleDesc::initCodec(Graphics::Surface &surface) {
-	if (_codecTag == MKID_BE('mp4v')) {
+	if (_codecTag == MKTAG('m', 'p', '4', 'v')) {
 		Common::UString videoType;
 
 		// Parse the object type
@@ -1059,7 +1061,7 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec(Graphics::Surface &surface) {
 		if (!_videoCodec)
 			warning("MPEG-4 Video (%s) not yet supported", videoType.c_str());
 
-	} else if (_codecTag == MKID_BE('SVQ3')) {
+	} else if (_codecTag == MKTAG('S', 'V', 'Q', '3')) {
 		// TODO: Sorenson Video 3
 		warning("Sorenson Video 3 not yet supported");
 	} else {

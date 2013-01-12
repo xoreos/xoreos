@@ -33,8 +33,8 @@
 #include "aurora/rimfile.h"
 #include "aurora/error.h"
 
-static const uint32 kRIMID     = MKID_BE('RIM ');
-static const uint32 kVersion1  = MKID_BE('V1.0');
+static const uint32 kRIMID     = MKTAG('R', 'I', 'M', ' ');
+static const uint32 kVersion1  = MKTAG('V', '1', '.', '0');
 
 namespace Aurora {
 

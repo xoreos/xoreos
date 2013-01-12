@@ -109,7 +109,7 @@ void IFOFile::unload() {
 void IFOFile::load() {
 	unload();
 
-	Aurora::GFFFile ifo("module", Aurora::kFileTypeIFO, MKID_BE('IFO '));
+	Aurora::GFFFile ifo("module", Aurora::kFileTypeIFO, MKTAG('I', 'F', 'O', ' '));
 
 	const Aurora::GFFStruct &ifoTop = ifo.getTopLevel();
 

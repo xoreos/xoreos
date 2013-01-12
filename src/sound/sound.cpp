@@ -200,24 +200,24 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
 		stream = new Common::SeekableSubReadStream(stream, 0x1D6, stream->size(), true);
 
-	} else if (tag == MKID_BE('RIFF')) {
+	} else if (tag == MKTAG('R', 'I', 'F', 'F')) {
 		stream->seek(12);
 		tag = stream->readUint32BE();
 
-		if (tag != MKID_BE('fmt '))
+		if (tag != MKTAG('f', 'm', 't', ' '))
 			throw Common::Exception("Broken WAVE file");
 
 		// Skip fmt chunk
 		stream->skip(stream->readUint32LE());
 		tag = stream->readUint32BE();
 
-		while ((tag == MKID_BE('fact')) || (tag == MKID_BE('PAD '))) {
+		while ((tag == MKTAG('f', 'a', 'c', 't')) || (tag == MKTAG('P', 'A', 'D', ' '))) {
 			// Skip useless chunks
 			stream->skip(stream->readUint32LE());
 			tag = stream->readUint32BE();
 		}
 
-		if (tag != MKID_BE('data'))
+		if (tag != MKTAG('d', 'a', 't', 'a'))
 			throw Common::Exception("Found invalid tag in WAVE file: %x", tag);
 
 		uint32 dataSize = stream->readUint32LE();
@@ -228,13 +228,14 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 			// Just a regular WAVE
 			stream->seek(0);
 
-	} else if ((tag == MKID_BE('BMU ')) && (stream->readUint32BE() == MKID_BE('V1.0'))) {
+	} else if ((tag                    == MKTAG('B', 'M', 'U', ' ')) &&
+	           (stream->readUint32BE() == MKTAG('V', '1', '.', '0'))) {
 
 		// BMU files: MP3 with extra header
 		isMP3 = true;
 		stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), true);
 
-	} else if (tag == MKID_BE('OggS')) {
+	} else if (tag == MKTAG('O', 'g', 'g', 'S')) {
 
 		stream->seek(0);
 		return makeVorbisStream(stream, true);
