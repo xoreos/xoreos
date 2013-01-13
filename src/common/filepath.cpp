@@ -182,7 +182,7 @@ UString FilePath::makeAbsolute(const UString &p) {
 	if (isAbsolute(p))
 		absolute = p;
 	else
-		absolute = boost::filesystem::initial_path().string() + "/" + p.c_str();
+		absolute = boost::filesystem::initial_path().generic_string() + "/" + p.c_str();
 
 	return normalize(absolute);
 }
@@ -228,10 +228,10 @@ static UString findSubDirectory_internal(const UString &directory, const UString
 
 				if (caseInsensitive) {
 					if (iequals(itDir->path().filename(), subDirectory.c_str()))
-						return itDir->path().string();
+						return itDir->path().generic_string();
 				} else {
 					if (equals(itDir->path().filename(), subDirectory.c_str()))
-						return itDir->path().string();
+						return itDir->path().generic_string();
 				}
 			}
 		}
