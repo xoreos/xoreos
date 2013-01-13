@@ -39,6 +39,7 @@
 #if defined(_MSC_VER)
 
 	#define snprintf _snprintf
+	#define vsnprintf _vsnprintf
 
 	#define XOREOS_LITTLE_ENDIAN
 
