@@ -97,9 +97,7 @@
 
 #include "graphics/yuv_to_rgb.h"
 
-namespace Common {
 DECLARE_SINGLETON(Graphics::YUVToRGBManager);
-}
 
 namespace Graphics {
 
