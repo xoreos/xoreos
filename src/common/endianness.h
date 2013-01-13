@@ -74,6 +74,8 @@
 // test for MSVC 7 or newer
 #elif defined(_MSC_VER) && _MSC_VER >= 1300
 
+	#include <cstdlib>
+
 	FORCEINLINE uint64 SWAP_BYTES_64(uint64 a) {
 		return _byteswap_uint64(a);
 	}
