@@ -429,7 +429,7 @@ void WMACodec::initNoise() {
 	_noiseMult = _useExpHuffman ? 0.02 : 0.04;
 
 	uint  seed = 1;
-	float norm = (1.0 / (float)(1LL << 31)) * sqrt(3) * _noiseMult;
+	float norm = (1.0 / (float)(1LL << 31)) * sqrt(3.0f) * _noiseMult;
 
 	for (int i = 0; i < kNoiseTabSize; i++) {
 		seed = seed * 314159 + 1;
@@ -536,7 +536,7 @@ void WMACodec::initLSPToCurve() {
 		int   m = (1 << kLSPPowBits) + i;
 		float a = (float) m * (0.5 / (1 << kLSPPowBits));
 
-		a = pow(a, -0.25);
+		a = pow(a, -0.25f);
 
 		_lspPowMTable1[i] = 2 * a - b;
 		_lspPowMTable2[i] = b - a;
@@ -996,7 +996,7 @@ float WMACodec::getNormalizedMDCTLength() const {
 
 	float mdctNorm = 1.0 / (float) n4;
 	if (_version == 1)
-		mdctNorm *= sqrt(n4);
+		mdctNorm *= sqrt((float) n4);
 
 	return mdctNorm;
 }
