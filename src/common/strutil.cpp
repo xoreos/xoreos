@@ -28,6 +28,7 @@
  */
 
 #include <cstdio>
+#include <cctype>
 
 #include "common/strutil.h"
 #include "common/util.h"
