@@ -445,7 +445,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	}
 
 	// Read texture coordinates
-	assert(tVerts0Count = verticesCount);
+	assert(tVerts0Count == verticesCount);
 	ctx.mdb->seekTo(ctx.offRawData + tVerts0Offset);
 	v = (float *)vt.pointer;
 	for (uint32 i = 0; i < tVerts0Count; i++) {
