@@ -374,19 +374,6 @@ void TextureManager::activeTexture(uint32 n) {
 		glActiveTextureARB(texture[n]);
 }
 
-void TextureManager::textureCoord2f(uint32 n, float u, float v) {
-	if (n >= ARRAYSIZE(texture))
-		return;
-
-	if (n == 0) {
-		glTexCoord2f(u, v);
-		return;
-	}
-
-	if (GfxMan.supportMultipleTextures())
-		glMultiTexCoord2fARB(texture[n], u, v);
-}
-
 } // End of namespace Aurora
 
 } // End of namespace Graphics

@@ -31,6 +31,8 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
+#include <boost/unordered_set.hpp>
+
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/debug.h"
@@ -622,6 +624,30 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 }
 
+struct Normal {
+	uint16 vi;    // id of vertex this normal belongs to
+	uint16 viOld; // duplicated vertex index
+	float xyz[3]; // vertex normal
+};
+
+bool operator==(Normal const& a, Normal const& b)
+{
+	return a.vi == b.vi;
+}
+
+std::size_t hash_value(Normal const& b)
+{
+	boost::hash<uint16> hasher;
+	return hasher(b.vi);
+}
+
+bool fuzzy_normal_equal(const float na[3], const float nb[3])
+{
+	return fabs(na[0] - nb[0]) < 1E-4 &&
+		fabs(na[1] - nb[1]) < 1E-4 &&
+		fabs(na[2] - nb[2]) < 1E-4;
+}
+
 void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
@@ -640,10 +666,10 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	float radius = ctx.mdl->readIEEEFloatLE();
 
-	float pointsAverage[3];
-	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
-	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
-	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
+	float center[3];
+	center[0] = ctx.mdl->readIEEEFloatLE();
+	center[1] = ctx.mdl->readIEEEFloatLE();
+	center[2] = ctx.mdl->readIEEEFloatLE();
 
 	_ambient[0] = ctx.mdl->readIEEEFloatLE();
 	_ambient[1] = ctx.mdl->readIEEEFloatLE();
@@ -729,90 +755,153 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	uint32 endPos = ctx.mdl->pos();
 
-	// Read vertex coordinates
-	std::vector<float> vX, vY, vZ;
-	if (vertexOffset != 0xFFFFFFFF) {
-		ctx.mdl->seekTo(ctx.offRawData + vertexOffset);
 
-		vX.resize(vertexCount);
-		vY.resize(vertexCount);
-		vZ.resize(vertexCount);
+	// Read faces
 
-		for (uint32 i = 0; i < vertexCount; i++) {
-			vX[i] = ctx.mdl->readIEEEFloatLE();
-			vY[i] = ctx.mdl->readIEEEFloatLE();
-			vZ[i] = ctx.mdl->readIEEEFloatLE();
+	_faceCount = facesCount;
+	_faceSize = 3 * sizeof(uint16);
+	_faceType = GL_UNSIGNED_SHORT;
+
+	assert(!_faceData);
+	_faceData = std::malloc(_faceCount * _faceSize);
+
+	// NWN stores 3 normals per face
+	// Convert to one normal per vertex by duplicating vertex data
+	// for face verts with multiple normals
+
+	// Locate verts with multiple normals, fix face indices
+	std::vector<Normal> new_verts_norms;
+	boost::unordered_set<Normal> verts_norms;
+	typedef boost::unordered_set<Normal>::iterator norms_set_it;
+
+	Normal n[3];
+	uint16 vi[3];
+	uint16 vertexCountNew = vertexCount;
+	uint16 *f = (uint16 *)_faceData;
+	ctx.mdl->seekTo(ctx.offModelData + facesOffset);
+	for (uint32 i = 0; i < facesCount; i++) {
+		// Face normals
+		for (uint32 j = 0; j < 3; j++) {
+			n[j].xyz[0] = ctx.mdl->readIEEEFloatLE();
+			n[j].xyz[1] = ctx.mdl->readIEEEFloatLE();
+			n[j].xyz[2] = ctx.mdl->readIEEEFloatLE();
+		}
+
+		ctx.mdl->skip(    4); // Distance
+		ctx.mdl->skip(    4); // ID
+		ctx.mdl->skip(3 * 2); // Adjacent face number
+
+		// Face indices
+		for (uint32 j = 0; j < 3; j++) {
+			n[j].vi = ctx.mdl->readUint16LE();
+
+			// check if we have a normal for this vertex already
+			std::pair<norms_set_it, bool> it = verts_norms.insert(n[j]);
+			if (!it.second && !fuzzy_normal_equal(n[j].xyz, it.first->xyz)) {
+				n[j].viOld = n[j].vi;
+				n[j].vi = vertexCountNew++;
+				new_verts_norms.push_back(n[j]);
+			}
+
+			*f++ = n[j].vi;
 		}
 	}
 
+
+	// Read vertex data
+
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 3;
+	GLsizei vtsize = 2;
+	_vertSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
+	_vertCount = vertexCount;
+
+	assert(!_vertData);
+	_vertData = std::malloc(vertexCountNew * _vertSize);
+
+	// Read vertex coordinates
+
+	VertexAttrib vp;
+	vp.index = VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = 0;
+	vp.pointer = (float *)_vertData;
+	_vertDecl.push_back(vp);
+
+	assert (vertexOffset != 0xFFFFFFFF);
+	ctx.mdl->seekTo(ctx.offRawData + vertexOffset);
+
+	float *v = (float *)vp.pointer;
+	for (uint32 i = 0; i < vertexCount; i++) {
+		*v++ = ctx.mdl->readIEEEFloatLE();
+		*v++ = ctx.mdl->readIEEEFloatLE();
+		*v++ = ctx.mdl->readIEEEFloatLE();
+	}
+	// duplicate positions for unique norms
+	for (uint32 i = 0; i < new_verts_norms.size(); i++) {
+		float *vOld = (float *)vp.pointer + new_verts_norms[i].viOld * vpsize;
+		*v++ = *vOld++;
+		*v++ = *vOld++;
+		*v++ = *vOld++;
+	}
+
+	// Read vertex normals
+
+	VertexAttrib vn;
+	vn.index = VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = 0;
+	vn.pointer = (float *)_vertData + vpsize * _vertCount;
+	_vertDecl.push_back(vn);
+
+	for (norms_set_it i = verts_norms.begin(); i != verts_norms.end(); i++) {
+		v = (float *)vn.pointer + i->vi * vnsize;
+		*v++ = i->xyz[0];
+		*v++ = i->xyz[0];
+		*v++ = i->xyz[0];
+	}
+	// additional unique verts norms
+	v = (float *)vn.pointer + vnsize * _vertCount;
+	for (uint32 i = 0; i < new_verts_norms.size(); i++) {
+		*v++ = new_verts_norms[i].xyz[0];
+		*v++ = new_verts_norms[i].xyz[1];
+		*v++ = new_verts_norms[i].xyz[2];
+	}
+
 	// Read texture coordinates
-	std::vector< std::vector<float> > tX, tY;
-	tX.resize(textureCount);
-	tY.resize(textureCount);
+
 	for (uint16 t = 0; t < textureCount; t++) {
-		tX[t].resize(vertexCount);
-		tY[t].resize(vertexCount);
+		VertexAttrib vt;
+		vt.index = VTCOORD + t;
+		vt.size = vtsize;
+		vt.type = GL_FLOAT;
+		vt.stride = 0;
+		vt.pointer = (float *)_vertData + (vpsize + vtsize * t) * _vertCount;
+		_vertDecl.push_back(vt);
 
 		bool hasTexture = textureVertexOffset[t] != 0xFFFFFFFF;
 		if (hasTexture)
 			ctx.mdl->seekTo(ctx.offRawData + textureVertexOffset[t]);
 
-		for (uint32 i = 0; i < vertexCount; i++) {
-			tX[t][i] = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
-			tY[t][i] = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
+		v = (float *)vt.pointer;
+		for (uint32 i = 0; i < _vertCount; i++) {
+			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
+			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
+		}
+		// duplicate tcoords for unique norms
+		for (uint32 i = 0; i < new_verts_norms.size(); i++) {
+			float *vOld = (float *)vt.pointer + new_verts_norms[i].viOld * vtsize;
+			*v++ = *vOld++;
+			*v++ = *vOld++;
 		}
 	}
 
-	// Read faces
+	// fix vertex count
+	_vertCount = vertexCountNew;
 
-	if (!createFaces(facesCount)) {
-		ctx.mdl->seekTo(endPos);
-		return;
-	}
-
-	ctx.mdl->seekTo(ctx.offModelData + facesOffset);
-	for (uint32 i = 0; i < facesCount; i++) {
-		ctx.mdl->skip(3 * 4); // Normal
-		ctx.mdl->skip(    4); // Distance
-		ctx.mdl->skip(    4); // ID
-		ctx.mdl->skip(3 * 2); // Adjacent face number
-
-		// Vertex indices
-		const uint16 v1 = ctx.mdl->readUint16LE();
-		const uint16 v2 = ctx.mdl->readUint16LE();
-		const uint16 v3 = ctx.mdl->readUint16LE();
-
-		// Vertex coordinates
-		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
-		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
-		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
-		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
-
-		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
-		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
-		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
-		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
-
-		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
-		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
-		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
-		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
-
-		// Texture coordinates
-		for (uint32 t = 0; t < textureCount; t++) {
-			_tX[3 * textureCount * i + 3 * t + 0] = v1 < tX[t].size() ? tX[t][v1] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 0] = v1 < tY[t].size() ? tY[t][v1] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 1] = v2 < tX[t].size() ? tX[t][v2] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 1] = v2 < tY[t].size() ? tY[t][v2] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 2] = v3 < tX[t].size() ? tX[t][v3] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 2] = v3 < tY[t].size() ? tY[t][v3] : 0.0;
-		}
-
-	}
-
-	createCenter();
+	createBound();
 
 	ctx.mdl->seekTo(endPos);
 }
@@ -1162,6 +1251,7 @@ void ModelNode_NWN_ASCII::readFaces(Model_NWN::ParserContext &ctx, Mesh &mesh) {
 
 void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	loadTextures(mesh.textures);
+/*
 	if (!createFaces(mesh.faceCount))
 		return;
 
@@ -1209,6 +1299,7 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	}
 
 	createCenter();
+*/
 }
 
 } // End of namespace Aurora
