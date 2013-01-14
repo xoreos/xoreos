@@ -32,6 +32,8 @@
 
 #include "engines/kotor/gui/gui.h"
 
+#include "gui/options/gameplay.h"
+
 namespace Engines {
 
 namespace KotOR {
@@ -45,6 +47,8 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	void adoptChanges();
+
 	GUI *_gameplay;
 	GUI *_feedback;
 	GUI *_autopause;

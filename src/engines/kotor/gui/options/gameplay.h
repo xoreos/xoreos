@@ -30,7 +30,7 @@
 #ifndef OPTIONSGAMEPLAY_H
 #define OPTIONSGAMEPLAY_H
 
-#include <engines/kotor/gui/gui.h>
+#include "engines/kotor/gui/gui.h"
 
 namespace Engines {
 
@@ -41,10 +41,18 @@ public:
 	OptionsGameplayMenu();
 	~OptionsGameplayMenu();
 
+
+	void show();
+
+	void adoptChanges();
 protected:
 	void callbackActive(Widget &widget);
 
 private:
+	int _difficulty;
+
+	void updateDifficulty(int difficulty);
+
 	GUI *_mousesettings;
 	GUI *_keyboardconfiguration;
 };

@@ -61,6 +61,8 @@ public:
 	float getHeight() const;
 
 	void setFill(const Common::UString &fill);
+	void setColor(float r, float g, float b, float a);
+	void setText(const Common::UString &text);
 
 protected:
 	struct Extend {
@@ -115,9 +117,9 @@ protected:
 	Graphics::Aurora::Text    *_text;
 
 
-	Extend getExtend(const Aurora::GFFStruct &gff);
-	Border getBorder(const Aurora::GFFStruct &gff);
-	Text   getText  (const Aurora::GFFStruct &gff);
+	Extend createExtend(const Aurora::GFFStruct &gff);
+	Border createBorder(const Aurora::GFFStruct &gff);
+	Text   createText  (const Aurora::GFFStruct &gff);
 };
 
 } // End of namespace KotOR

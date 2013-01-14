@@ -30,11 +30,12 @@
 #include "engines/aurora/widget.h"
 
 #include "engines/kotor/gui/main/options.h"
-#include <engines/kotor/gui/options/gameplay.h>
-#include <engines/kotor/gui/options/feedback.h>
-#include <engines/kotor/gui/options/autopause.h>
-#include <engines/kotor/gui/options/graphics.h>
-#include <engines/kotor/gui/options/sound.h>
+#include "engines/kotor/gui/options/gameplay.h"
+#include "engines/kotor/gui/options/feedback.h"
+#include "engines/kotor/gui/options/autopause.h"
+#include "engines/kotor/gui/options/graphics.h"
+#include "engines/kotor/gui/options/sound.h"
+#include "gui/widgets/kotorwidget.h"
 
 namespace Engines {
 
@@ -48,6 +49,7 @@ OptionsMenu::OptionsMenu() {
 	_autopause = new OptionsAutoPauseMenu();
 	_graphics = new OptionsGraphicsMenu();
 	_sound = new OptionsSoundMenu();
+
 }
 
 OptionsMenu::~OptionsMenu() {
@@ -85,10 +87,16 @@ void OptionsMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
+		adoptChanges();
 		_returnCode = 1;
 		return;
 	}
 }
+
+void OptionsMenu::adoptChanges() {
+	dynamic_cast<OptionsGameplayMenu*>(_gameplay)->adoptChanges();
+}
+
 
 } // End of namespace KotOR
 
