@@ -154,14 +154,14 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 	gff.getVector("COLOR", _r, _g, _b);
 	_a = gff.getDouble("ALPHA", 1.0);
 
-	Extend extend = getExtend(gff);
+	Extend extend = createExtend(gff);
 
 	_width  = extend.w;
 	_height = extend.h;
 
 	Widget::setPosition(extend.x, extend.y, 0.0);
 
-	Border border = getBorder(gff);
+	Border border = createBorder(gff);
 
 	_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
 	_quad->setPosition(extend.x, extend.y, 0.0);
@@ -171,7 +171,7 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 	if (border.fill.empty())
 		_quad->setColor(0.0, 0.0, 0.0, 0.0);
 
-	Text text = getText(gff);
+	Text text = createText(gff);
 
 	if (!text.text.empty() && !text.font.empty()) {
 		_text = new Graphics::Aurora::Text(FontMan.get(text.font), text.text,
@@ -180,6 +180,7 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 		const float hspan = extend.w - _text->getWidth();
 		const float vspan = extend.h - _text->getHeight();
 
+		
 		const float x = extend.x + text.halign * hspan;
 		const float y = extend.y + text.valign * vspan;
 
@@ -189,7 +190,29 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 	}
 }
 
-KotORWidget::Extend KotORWidget::getExtend(const Aurora::GFFStruct &gff) {
+void KotORWidget::setColor(float r, float g, float b, float a) {
+		_quad->setColor(r, g, b, a);
+}
+
+void KotORWidget::setText(const Common::UString &text) {
+  		float extendX, extendY, extendZ, textX, textY, textZ;
+		Widget::getPosition(extendX, extendY, extendZ);
+		_text->getPosition(textX, textY, textZ);
+
+		const float halign = (textX - extendX) / (_width - _text->getWidth());
+		const float valign = (textY - extendY) / (_height - _text->getHeight());
+		 _text->set(text);
+		 
+		const float hspan = _width - _text->getWidth();
+		const float vspan = _height - _text->getHeight();
+
+		const float x = extendX + halign * hspan;
+		const float y = extendY + valign * vspan;
+
+		_text->setPosition(x, y, -1.0);
+}
+
+KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFFStruct &gff) {
 	Extend extend;
 
 	if (gff.hasField("EXTENT")) {
@@ -204,7 +227,7 @@ KotORWidget::Extend KotORWidget::getExtend(const Aurora::GFFStruct &gff) {
 	return extend;
 }
 
-KotORWidget::Border KotORWidget::getBorder(const Aurora::GFFStruct &gff) {
+KotORWidget::Border KotORWidget::createBorder(const Aurora::GFFStruct &gff) {
 	Border border;
 
 	if (gff.hasField("BORDER")) {
@@ -222,11 +245,10 @@ KotORWidget::Border KotORWidget::getBorder(const Aurora::GFFStruct &gff) {
 
 		border.pulsing = b.getBool("PULSING");
 	}
-
 	return border;
 }
 
-KotORWidget::Text KotORWidget::getText(const Aurora::GFFStruct &gff) {
+KotORWidget::Text KotORWidget::createText(const Aurora::GFFStruct &gff) {
 	Text text;
 
 	if (gff.hasField("TEXT")) {
