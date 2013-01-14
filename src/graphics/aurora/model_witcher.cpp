@@ -422,7 +422,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	vt.size = vtsize;
 	vt.type = GL_FLOAT;
 	vt.stride = 0;
-	vt.pointer = (float*)_vertData + (vpsize + vtsize) * _vertCount;
+	vt.pointer = (float*)_vertData + (vpsize + vnsize) * _vertCount;
 	_vertDecl.push_back(vt);
 
 	// Read vertex position
