@@ -59,7 +59,7 @@
 #include "engines/nwn/script/functions.h"
 
 #include "engines/nwn/gui/legal.h"
-#include "engines/nwn/gui/main/main.h"
+#include "engines/nwn/gui/main/mainmenu.h"
 
 namespace Engines {
 
