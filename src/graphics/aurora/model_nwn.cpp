@@ -665,10 +665,10 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	float radius = ctx.mdl->readIEEEFloatLE();
 
-	float center[3];
-	center[0] = ctx.mdl->readIEEEFloatLE();
-	center[1] = ctx.mdl->readIEEEFloatLE();
-	center[2] = ctx.mdl->readIEEEFloatLE();
+	float pointsAverage[3];
+	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
 	_ambient[0] = ctx.mdl->readIEEEFloatLE();
 	_ambient[1] = ctx.mdl->readIEEEFloatLE();

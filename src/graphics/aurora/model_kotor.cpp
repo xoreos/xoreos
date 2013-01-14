@@ -433,14 +433,12 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
-	_boundBox.add(boundingMin[0], boundingMin[1], boundingMin[2]);
-	_boundBox.add(boundingMax[0], boundingMax[1], boundingMax[2]);
-
 	float radius = ctx.mdl->readIEEEFloatLE();
 
-	_center[0] = ctx.mdl->readIEEEFloatLE();
-	_center[1] = ctx.mdl->readIEEEFloatLE();
-	_center[2] = ctx.mdl->readIEEEFloatLE();
+	float pointsAverage[3];
+	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
 	_diffuse[0] = ctx.mdl->readIEEEFloatLE();
 	_diffuse[1] = ctx.mdl->readIEEEFloatLE();
@@ -608,6 +606,8 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	uint16 *f = (uint16 *)_faceData;
 	for (uint32 i = 0; i < _faceCount * 3; i++)
 		f[i] = ctx.mdl->readUint16LE();
+
+	createBound();
 
 	ctx.mdl->seekTo(endPos);
 }
