@@ -401,7 +401,7 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 void ModelNode::createBound() {
 	assert(_vertDecl[0].index == VPOSITION);
 	assert(_vertDecl[0].type == GL_FLOAT);
-	uint32 stride = _vertDecl[0].stride / sizeof(float);
+	uint32 stride = std::max(uint32(_vertDecl[0].size), _vertDecl[0].stride / sizeof(float));
 	float *vX = (float *)_vertDecl[0].pointer;
 	float *vY = vX + 1;
 	float *vZ = vY + 1;
