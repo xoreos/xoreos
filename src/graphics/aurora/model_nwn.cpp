@@ -626,7 +626,6 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 struct Normal {
 	uint16 vi;    // id of vertex this normal belongs to
-	uint16 viOld; // duplicated vertex index
 	float xyz[3]; // vertex normal
 };
 
@@ -798,9 +797,8 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 			// check if we have a normal for this vertex already
 			std::pair<norms_set_it, bool> it = verts_norms.insert(n[j]);
 			if (!it.second && !fuzzy_normal_equal(n[j].xyz, it.first->xyz)) {
-				n[j].viOld = n[j].vi;
-				n[j].vi = vertexCountNew++;
 				new_verts_norms.push_back(n[j]);
+				n[j].vi = vertexCountNew++;
 			}
 
 			*f++ = n[j].vi;
@@ -833,17 +831,17 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->seekTo(ctx.offRawData + vertexOffset);
 
 	float *v = (float *)vp.pointer;
-	for (uint32 i = 0; i < vertexCount; i++) {
+	for (uint32 i = 0; i < _vertCount; i++) {
 		*v++ = ctx.mdl->readIEEEFloatLE();
 		*v++ = ctx.mdl->readIEEEFloatLE();
 		*v++ = ctx.mdl->readIEEEFloatLE();
 	}
 	// duplicate positions for unique norms
 	for (uint32 i = 0; i < new_verts_norms.size(); i++) {
-		float *vOld = (float *)vp.pointer + new_verts_norms[i].viOld * vpsize;
-		*v++ = *vOld++;
-		*v++ = *vOld++;
-		*v++ = *vOld++;
+		float *v0 = (float *)vp.pointer + new_verts_norms[i].vi * vpsize;
+		*v++ = *v0++;
+		*v++ = *v0++;
+		*v++ = *v0++;
 	}
 
 	// Read vertex normals
@@ -892,9 +890,9 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 		}
 		// duplicate tcoords for unique norms
 		for (uint32 i = 0; i < new_verts_norms.size(); i++) {
-			float *vOld = (float *)vt.pointer + new_verts_norms[i].viOld * vtsize;
-			*v++ = *vOld++;
-			*v++ = *vOld++;
+			float *v0 = (float *)vt.pointer + new_verts_norms[i].vi * vtsize;
+			*v++ = *v0++;
+			*v++ = *v0++;
 		}
 	}
 
