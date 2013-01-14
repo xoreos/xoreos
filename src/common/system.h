@@ -43,6 +43,10 @@
 
 	#define XOREOS_LITTLE_ENDIAN
 
+	#ifndef PACKAGE_STRING
+	#define PACKAGE_STRING "xoreos git"
+	#endif
+
 	#define FORCEINLINE __forceinline
 	#define NORETURN_PRE __declspec(noreturn)
 	#define PLUGIN_EXPORT __declspec(dllexport)
