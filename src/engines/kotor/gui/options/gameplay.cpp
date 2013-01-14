@@ -27,11 +27,17 @@
  *  The gameplay menu.
  */
 
-#include "engines/aurora/widget.h"
 
+#include "common/util.h"
+#include "common/configman.h"
+
+#include "aurora/talkman.h"
+
+#include "engines/aurora/widget.h"
 #include "engines/kotor/gui/options/gameplay.h"
 #include "engines/kotor/gui/options/mousesettings.h"
 #include "engines/kotor/gui/options/keyboardconfig.h"
+#include "engines/kotor/gui/widgets/button.h"
 
 namespace Engines {
 
@@ -39,9 +45,11 @@ namespace KotOR {
 
 OptionsGameplayMenu::OptionsGameplayMenu() {
 	load("optgameplay");
-
 	_mousesettings = new OptionsMouseSettingsMenu();
 	_keyboardconfiguration = new OptionsKeyboardConfigurationMenu();
+	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
+	getButton("BTN_DIFFLEFT", true)->setColor(0, 0.658824, 0.980392, 1);
+	getButton("BTN_DIFFRIGHT", true)->setColor(0, 0.658824, 0.980392, 1);
 
 }
 OptionsGameplayMenu::~OptionsGameplayMenu() {
@@ -50,27 +58,77 @@ OptionsGameplayMenu::~OptionsGameplayMenu() {
 }
 
 
+void OptionsGameplayMenu::show() {
+	GUI::show();
+	
+	_difficulty = CLIP(ConfigMan.getInt("Difficulty Level", 0), 0, 2);
+	updateDifficulty(_difficulty);
+}
+
 
 void OptionsGameplayMenu::callbackActive(Widget &widget) {
 
-	if (widget.getTag() == "BTN_MOUSE") {
+	if(widget.getTag() == "BTN_DIFFRIGHT") {
+		_difficulty++;
+		if(_difficulty > 2) {
+			_difficulty = 2;
+		}
+		updateDifficulty(_difficulty);
+		return;
+	}
+
+	if(widget.getTag() == "BTN_DIFFLEFT") {
+		_difficulty--;
+		if(_difficulty < 0) {
+			_difficulty = 0;
+		}
+		updateDifficulty(_difficulty);
+		return;
+	}
+
+	if(widget.getTag() == "BTN_MOUSE") {
 		sub(*_mousesettings);
 		return;
 	}
 
-	if (widget.getTag() == "BTN_KEYMAP") {
+	if(widget.getTag() == "BTN_KEYMAP") {
 		sub(*_keyboardconfiguration);
 		return;
 	}
 
-	if (widget.getTag() == "BTN_DEFAULT") {
-
+	if(widget.getTag() == "BTN_DEFAULT") {
+		_difficulty = 1;
+		updateDifficulty(_difficulty);
 	}
 
-	if (widget.getTag() == "BTN_BACK") {
+	if(widget.getTag() == "BTN_BACK") {
 		_returnCode = 1;
 		return;
 	}
+}
+
+void OptionsGameplayMenu::updateDifficulty(int difficulty) {
+	WidgetButton &diffButton = *getButton("BTN_DIFFICULTY", true);
+	WidgetButton &leftButton = *getButton("BTN_DIFFLEFT", true);
+	WidgetButton &rightButton = *getButton("BTN_DIFFRIGHT", true);
+
+	diffButton.setText(TalkMan.getString(42335 + difficulty));
+	
+	if(_difficulty == 0) {
+		leftButton.hide();
+	} else {
+		leftButton.show();
+	}
+	
+	if(_difficulty == 2) {
+		rightButton.hide();
+	} else {
+		rightButton.show();
+	}
+}
+
+void OptionsGameplayMenu::adoptChanges() {
+	ConfigMan.setInt("Difficulty Level", _difficulty, true);
 }
 
 } // End of namespace KotOR
