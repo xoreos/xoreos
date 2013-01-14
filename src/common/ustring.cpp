@@ -1066,7 +1066,7 @@ UString UString::sprintf(const char *s, ...) {
 	va_list va;
 
 	va_start(va, s);
-	std::vsnprintf(buf, STRINGBUFLEN, s, va);
+	vsnprintf(buf, STRINGBUFLEN, s, va);
 	va_end(va);
 
 	return UString(buf);
@@ -1147,8 +1147,8 @@ void UString::parseColorColors(std::vector<char> &data) {
 			if (*c == '>') {
 				char col[16];
 
-				std::snprintf(col, 16, "%02X%02X%02X%02X",
-				              (uint8) color[0], (uint8) color[1], (uint8) color[2], (uint8) 0xFF);
+				snprintf(col, 16, "%02X%02X%02X%02X",
+				         (uint8) color[0], (uint8) color[1], (uint8) color[2], (uint8) 0xFF);
 
 				newData.push_back('<');
 				newData.push_back('c');

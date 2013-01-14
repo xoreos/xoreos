@@ -44,7 +44,7 @@ void debugC(uint32 level, uint32 channel, const char *s, ...) {
 	va_list va;
 
 	va_start(va, s);
-	std::vsnprintf(buf, STRINGBUFLEN, s, va);
+	vsnprintf(buf, STRINGBUFLEN, s, va);
 	va_end(va);
 
 #ifndef DISABLE_TEXT_CONSOLE
@@ -64,7 +64,7 @@ void debugCN(uint32 level, uint32 channel, const char *s, ...) {
 	va_list va;
 
 	va_start(va, s);
-	std::vsnprintf(buf, STRINGBUFLEN, s, va);
+	vsnprintf(buf, STRINGBUFLEN, s, va);
 	va_end(va);
 
 #ifndef DISABLE_TEXT_CONSOLE
