@@ -1,0 +1,8 @@
+Debug/
+Release/
+ipch/
+*.suo
+*.sdf
+*.opensdf
+*~
+git-revision.h
