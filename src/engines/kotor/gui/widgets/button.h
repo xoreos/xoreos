@@ -30,6 +30,8 @@
 #ifndef ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
 #define ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
 
+#include "sound/types.h"
+
 #include "engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
@@ -44,6 +46,13 @@ public:
 	void load(const Aurora::GFFStruct &gff);
 
 	void mouseUp(uint8 state, float x, float y);
+
+	virtual void enter();
+
+	virtual void leave();
+
+private:
+	Sound::ChannelHandle _sound;
 };
 
 } // End of namespace KotOR
