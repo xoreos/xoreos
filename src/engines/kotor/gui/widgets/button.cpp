@@ -29,8 +29,12 @@
 
 #include "aurora/gfffile.h"
 
-#include "graphics/aurora/guiquad.h"
+#include "sound/sound.h"
 
+#include "graphics/aurora/guiquad.h"
+#include "graphics/aurora/text.h"
+
+#include "engines/aurora/util.h"
 #include "engines/kotor/gui/widgets/button.h"
 
 namespace Engines {
@@ -52,7 +56,16 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
+	playSound("gui_actuse", Sound::kSoundTypeSFX);
 	setActive(true);
+}
+
+void WidgetButton::enter() {
+	_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
+}
+
+void WidgetButton::leave() {
+	SoundMan.stopChannel(_sound);
 }
 
 } // End of namespace KotOR
