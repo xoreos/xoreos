@@ -47,11 +47,74 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 	return a->isInFrontOf(*b);
 }
 
+// OpenGL < 2 vertex attribute helper functions
+
+static void EnableVertexPos(const VertexAttrib & va) {
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(va.size, va.type, va.stride, va.pointer);
+}
+
+static void EnableVertexNorm(const VertexAttrib & va) {
+	assert(va.size == 3);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glNormalPointer(va.type, va.stride, va.pointer);
+}
+
+static void EnableVertexCol(const VertexAttrib & va) {
+	glEnableClientState(GL_COLOR_ARRAY);
+	glColorPointer(va.size, va.type, va.stride, va.pointer);
+}
+
+static void EnableVertexTex(const VertexAttrib & va) {
+	glClientActiveTexture(GL_TEXTURE0 + va.index - VTCOORD);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(va.size, va.type, va.stride, va.pointer);
+}
+
+static void DisableVertexPos(const VertexAttrib & va) {
+	glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+static void DisableVertexNorm(const VertexAttrib & va) {
+	glDisableClientState(GL_NORMAL_ARRAY);
+}
+
+static void DisableVertexCol(const VertexAttrib & va) {
+	glDisableClientState(GL_COLOR_ARRAY);
+}
+
+static void DisableVertexTex(const VertexAttrib & va) {
+	glClientActiveTexture(GL_TEXTURE0 + va.index - VTCOORD);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
+static void EnableVertexAttrib(const VertexAttrib & va) {
+	if (va.index == VPOSITION)
+		EnableVertexPos(va);
+	else if (va.index == VNORMAL)
+		EnableVertexNorm(va);
+	else if (va.index == VCOLOR)
+		EnableVertexCol(va);
+	else if (va.index >= VTCOORD)
+		EnableVertexTex(va);
+}
+
+static void DisableVertexAttrib(const VertexAttrib & va) {
+	if (va.index == VPOSITION)
+		DisableVertexPos(va);
+	else if (va.index == VNORMAL)
+		DisableVertexNorm(va);
+	else if (va.index == VCOLOR)
+		DisableVertexCol(va);
+	else if (va.index >= VTCOORD)
+		DisableVertexTex(va);
+}
 
 ModelNode::ModelNode(Model &model) :
 	_model(&model), _parent(0), _level(0),
-	_faceCount(0), _coords(0), _smoothGroups(0), _material(0), _isTransparent(false),
-	_render(false), _hasTransparencyHint(false) {
+	_vertCount(0), _vertSize(0), _vertData(0),
+	_faceCount(0), _faceSize(0), _faceType(0), _faceData(0),
+	_isTransparent(false), _render(false), _hasTransparencyHint(false) {
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
@@ -63,9 +126,8 @@ ModelNode::ModelNode(Model &model) :
 }
 
 ModelNode::~ModelNode() {
-	delete[] _material;
-	delete[] _smoothGroups;
-	delete[] _coords;
+	std::free(_vertData);
+	std::free(_faceData);
 }
 
 ModelNode *ModelNode::getParent() {
@@ -200,21 +262,28 @@ void ModelNode::inheritOrientation(ModelNode &node) const {
 }
 
 void ModelNode::inheritGeometry(ModelNode &node) const {
+	assert(!node._vertData);
+	assert(!node._faceData);
+
 	node._textures = _textures;
 
 	node._render        = _render;
 	node._isTransparent = _isTransparent;
 
-	if (!node.createFaces(_faceCount))
-		return;
+	node._vertDecl = _vertDecl;
+	node._vertCount = _vertCount;
+	node._vertSize = _vertSize;
+	node._vertData = std::malloc(_vertCount * _vertSize);
+	memcpy(node._vertData, _vertData, _vertCount * _vertSize);
 
-	memcpy(node._coords, _coords,
-			(3 * 3 * _faceCount + 2 * 3 * _faceCount * _textures.size()) * sizeof(float));
+	node._faceCount = _faceCount;
+	node._faceSize = _faceSize;
+	node._faceType = _faceType;
+	node._faceData = std::malloc(_faceCount * _faceSize);
+	memcpy(node._faceData, _faceData, _faceCount * _faceSize);
 
-	memcpy(node._smoothGroups, _smoothGroups, _faceCount * sizeof(uint32));
-	memcpy(node._material    , _material    , _faceCount * sizeof(uint32));
-
-	node.createBound();
+	memcpy(node._center, _center, 3 * sizeof(float));
+	node._boundBox = _boundBox;
 }
 
 void ModelNode::reparent(ModelNode &parent) {
@@ -332,35 +401,15 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 		_render = false;
 }
 
-bool ModelNode::createFaces(uint32 count) {
-	assert(!_coords);
-
-	if (count == 0)
-		return false;
-
-	const uint32 textureCount = _textures.size();
-
-	_faceCount = count;
-
-	_coords = new float[3 * 3 * _faceCount + 2 * 3 * _faceCount * textureCount];
-
-	_vX = _coords + 0 * 3 * _faceCount;
-	_vY = _coords + 1 * 3 * _faceCount;
-	_vZ = _coords + 2 * 3 * _faceCount;
-
-	_tX = _coords + 3 * 3 * _faceCount + 0 * 3 * _faceCount * textureCount;
-	_tY = _coords + 3 * 3 * _faceCount + 1 * 3 * _faceCount * textureCount;
-
-	_smoothGroups = new uint32[_faceCount];
-	_material     = new uint32[_faceCount];
-
-	return true;
-}
-
 void ModelNode::createBound() {
-	uint32 count = 3 * _faceCount;
-	for (uint32 v = 0; v < count; v++)
-		_boundBox.add(_vX[v], _vY[v], _vZ[v]);
+	assert(_vertDecl[0].index == VPOSITION);
+	assert(_vertDecl[0].type == GL_FLOAT);
+	uint32 stride = MAX<uint32>(_vertDecl[0].size, _vertDecl[0].stride / sizeof(float));
+	float *vX = (float *) _vertDecl[0].pointer;
+	float *vY = vX + 1;
+	float *vZ = vY + 1;
+	for (uint32 v = 0; v < _vertCount; v++)
+		_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
 
 	createCenter();
 }
@@ -425,45 +474,15 @@ void ModelNode::renderGeometry() {
 		TextureMan.set(_textures[t]);
 	}
 
-
 	// Render the node's faces
 
-	const uint32 textureCount = _textures.size();
-	const float *vX = _vX;
-	const float *vY = _vY;
-	const float *vZ = _vZ;
-	const float *tX = _tX;
-	const float *tY = _tY;
+	for (uint32 i = 0; i < _vertDecl.size(); i++)
+		EnableVertexAttrib(_vertDecl[i]);
 
-	glBegin(GL_TRIANGLES);
-	for (uint32 f = 0; f < _faceCount; f++, vX += 3, vY += 3, vZ += 3,
-	     tX += 3 * textureCount, tY += 3 * textureCount) {
+	glDrawElements(GL_TRIANGLES, _faceCount * 3, _faceType, _faceData);
 
-		// Texture vertex A
-		for (uint32 t = 0; t < textureCount; t++)
-			TextureMan.textureCoord2f(t, tX[3 * t + 0], tY[3 * t + 0]);
-
-		// Geometry vertex A
-		glVertex3f(vX[0], vY[0], vZ[0]);
-
-
-		// Texture vertex B
-		for (uint32 t = 0; t < textureCount; t++)
-			TextureMan.textureCoord2f(t, tX[3 * t + 1], tY[3 * t + 1]);
-
-		// Geometry vertex B
-		glVertex3f(vX[1], vY[1], vZ[1]);
-
-
-		// Texture vertex C
-		for (uint32 t = 0; t < textureCount; t++)
-			TextureMan.textureCoord2f(t, tX[3 * t + 2], tY[3 * t + 2]);
-
-		// Geometry vertex C
-		glVertex3f(vX[2], vY[2], vZ[2]);
-	}
-	glEnd();
-
+	for (uint32 i = 0; i < _vertDecl.size(); i++)
+		DisableVertexAttrib(_vertDecl[i]);
 
 	// Disable the texture units again
 	for (uint32 i = 0; i < _textures.size(); i++) {
