@@ -1359,8 +1359,9 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 		_vertDecl.push_back(vt);
 	}
 
-	float *v = (float*) _vertData;
 	for (verts_set_it i = verts.begin(); i != verts.end(); i++) {
+		float *v = (float*) _vertData + i->i * _vertSize / sizeof(float);
+
 		// Position
 		*v++ = mesh.vX[i->p];
 		*v++ = mesh.vY[i->p];
@@ -1378,15 +1379,12 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 		} else {
 			*v++ = 0.0;
 			*v++ = 0.0;
-			warning("ModelNode_NWN_ASCII::processMesh(): invalid texCoord index: %d of %d", i->t, mesh.tCount);
 		}
 		for (uint16 t = 1; t < textureCount; t++) {
 			*v++ = 0.0;
 			*v++ = 0.0;
 		}
 	}
-
-	assert((byte *) v == (byte *) _vertData + _vertCount * _vertSize);
 
 	createBound();
 }
