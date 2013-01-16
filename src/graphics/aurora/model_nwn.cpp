@@ -1272,6 +1272,9 @@ std::size_t hash_value(const FaceVert &b) {
 }
 
 void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
+	if ((mesh.vCount == 0) || (mesh.tCount == 0) || (mesh.faceCount == 0))
+		return;
+
 	loadTextures(mesh.textures);
 
 	const uint32 textureCount = mesh.textures.size();
@@ -1369,8 +1372,14 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 		*v++ = i->n[2];
 
 		// TexCoord
-		*v++ = mesh.tX[i->t];
-		*v++ = mesh.tY[i->t];
+		if (i->t < mesh.tCount) {
+			*v++ = mesh.tX[i->t];
+			*v++ = mesh.tY[i->t];
+		} else {
+			*v++ = 0.0;
+			*v++ = 0.0;
+			warning("ModelNode_NWN_ASCII::processMesh(): invalid texCoord index: %d of %d", i->t, mesh.tCount);
+		}
 		for (uint16 t = 1; t < textureCount; t++) {
 			*v++ = 0.0;
 			*v++ = 0.0;
