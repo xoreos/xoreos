@@ -1098,9 +1098,6 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 			readVCoords(ctx, mesh);
 		} else if (line[0] == "tverts") {
-			if (mesh.tCount != 0)
-				warning("ModelNode_NWN_ASCII::load(): Multiple texture coordinates!");
-
 			line[1].parse(mesh.tCount);
 
 			readTCoords(ctx, mesh);
