@@ -203,78 +203,79 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	std::vector<Common::UString> textures;
 	textures.push_back(diffuseMap);
 
-	uint32 textureCount = textures.size();
 
-	loadTextures(textures);
-	if (!createFaces(faceCount))
-		return false;
+	// Read vertices (interleaved)
 
+	assert(!_vertData);
 
-	// Read vertex coordinates
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 3;
+	GLsizei vtsize = 2;
+	_vertSize = (vpsize + vnsize + vtsize) * sizeof(float);
+	_vertCount = vertexCount;
+	_vertData = std::malloc(_vertCount * _vertSize);
 
-	std::vector<float> vX, vY, vZ;
-	vX.resize(vertexCount);
-	vY.resize(vertexCount);
-	vZ.resize(vertexCount);
+	VertexAttrib vp;
+	vp.index = VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = _vertSize;
+	vp.pointer = (float*) _vertData;
+	_vertDecl.push_back(vp);
 
-	std::vector<float> tX, tY, tZ;
-	tX.resize(vertexCount);
-	tY.resize(vertexCount);
-	tZ.resize(vertexCount);
+	VertexAttrib vn;
+	vn.index = VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = _vertSize;
+	vn.pointer = (float*) _vertData + vpsize;
+	_vertDecl.push_back(vn);
 
+	VertexAttrib vt;
+	vt.index = VTCOORD;
+	vt.size = vtsize;
+	vt.type = GL_FLOAT;
+	vt.stride = _vertSize;
+	vt.pointer = (float*) _vertData + vpsize + vnsize + vtsize;
+	_vertDecl.push_back(vt);
+
+	float *v = (float *) _vertData;
 	for (uint32 i = 0; i < vertexCount; i++) {
-		vX[i] = ctx.mdb->readIEEEFloatLE();
-		vY[i] = ctx.mdb->readIEEEFloatLE();
-		vZ[i] = ctx.mdb->readIEEEFloatLE();
+		// Position
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
 
-		ctx.mdb->skip(3 * 4); // Normals
-		ctx.mdb->skip(3 * 4); // Tangents
-		ctx.mdb->skip(3 * 4); // Binormals
+		// Normal
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
 
-		tX[i] = ctx.mdb->readIEEEFloatLE();
-		tY[i] = ctx.mdb->readIEEEFloatLE();
-		tZ[i] = ctx.mdb->readIEEEFloatLE();
+		ctx.mdb->skip(3 * 4); // Tangent
+		ctx.mdb->skip(3 * 4); // Binormal
+
+		// Texture Coords
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		//*v++ = ctx.mdb->readIEEEFloatLE();
+		ctx.mdb->skip(4); // Third tcoord component
 	}
 
 
 	// Read faces
 
-	for (uint32 i = 0; i < faceCount; i++) {
-		const uint16 v1 = ctx.mdb->readUint16LE();
-		const uint16 v2 = ctx.mdb->readUint16LE();
-		const uint16 v3 = ctx.mdb->readUint16LE();
+	assert(!_faceData);
 
-		// Vertex coordinates
-		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
-		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
-		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
-		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
+	_faceCount = faceCount;
+	_faceSize = 3 * sizeof(uint16);
+	_faceType = GL_UNSIGNED_SHORT;
+	_faceData = std::malloc(_faceCount * _faceSize);
 
-		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
-		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
-		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
-		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
+	uint16 *f = (uint16 *) _faceData;
+	for (uint32 i = 0; i < _faceCount * 3; i++)
+		f[i] = ctx.mdb->readUint16LE();
 
-		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
-		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
-		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
-		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
-
-		// Texture coordinates
-		for (uint32 t = 0; t < textureCount; t++) {
-			_tX[3 * textureCount * i + 3 * t + 0] = v1 < tX.size() ? tX[v1] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 0] = v1 < tY.size() ? tY[v1] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 1] = v2 < tX.size() ? tX[v2] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 1] = v2 < tY.size() ? tY[v2] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 2] = v3 < tX.size() ? tX[v3] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 2] = v3 < tY.size() ? tY[v3] : 0.0;
-		}
-
-	}
-
-	createCenter();
+	createBound();
 
 	_render = true;
 
@@ -322,41 +323,64 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	std::vector<Common::UString> textures;
 	textures.push_back(diffuseMap);
 
-	uint32 textureCount = textures.size();
 
-	loadTextures(textures);
-	if (!createFaces(faceCount))
-		return false;
+	// Read vertices (interleaved)
 
+	assert(!_vertData);
 
-	// Read vertex coordinates
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 3;
+	GLsizei vtsize = 2;
+	_vertSize = (vpsize + vnsize + vtsize) * sizeof(float);
+	_vertCount = vertexCount;
+	_vertData = std::malloc(_vertCount * _vertSize);
 
-	std::vector<float> vX, vY, vZ;
-	vX.resize(vertexCount);
-	vY.resize(vertexCount);
-	vZ.resize(vertexCount);
+	VertexAttrib vp;
+	vp.index = VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = _vertSize;
+	vp.pointer = (float*) _vertData;
+	_vertDecl.push_back(vp);
 
-	std::vector<float> tX, tY, tZ;
-	tX.resize(vertexCount);
-	tY.resize(vertexCount);
-	tZ.resize(vertexCount);
+	VertexAttrib vn;
+	vn.index = VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = _vertSize;
+	vn.pointer = (float*) _vertData + vpsize;
+	_vertDecl.push_back(vn);
 
-	for (uint32 i = 0; i < vertexCount; i++) {
-		vX[i] = ctx.mdb->readIEEEFloatLE();
-		vY[i] = ctx.mdb->readIEEEFloatLE();
-		vZ[i] = ctx.mdb->readIEEEFloatLE();
+	VertexAttrib vt;
+	vt.index = VTCOORD;
+	vt.size = vtsize;
+	vt.type = GL_FLOAT;
+	vt.stride = _vertSize;
+	vt.pointer = (float*) _vertData + vpsize + vnsize + vtsize;
+	_vertDecl.push_back(vt);
 
-		ctx.mdb->skip(3 * 4); // Normals
+	float *v = (float *) _vertData;
+	for (uint32 i = 0; i < _vertCount; i++) {
+		// Position
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+
+		// Normal
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
 
 		ctx.mdb->skip(4 * 4); // Bone weights
 		ctx.mdb->skip(4 * 1); // Bone indices
+		ctx.mdb->skip(3 * 4); // Tangent
+		ctx.mdb->skip(3 * 4); // Binormal
 
-		ctx.mdb->skip(3 * 4); // Tangents
-		ctx.mdb->skip(3 * 4); // Binormals
-
-		tX[i] = ctx.mdb->readIEEEFloatLE();
-		tY[i] = ctx.mdb->readIEEEFloatLE();
-		tZ[i] = ctx.mdb->readIEEEFloatLE();
+		// TexCoords
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		//*v++ = ctx.mdb->readIEEEFloatLE();
+		ctx.mdb->skip(4); // Third tcoord component
 
 		ctx.mdb->skip(4); // Bone count
 	}
@@ -364,42 +388,18 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	// Read faces
 
-	for (uint32 i = 0; i < faceCount; i++) {
-		const uint16 v1 = ctx.mdb->readUint16LE();
-		const uint16 v2 = ctx.mdb->readUint16LE();
-		const uint16 v3 = ctx.mdb->readUint16LE();
+	assert(!_faceData);
 
-		// Vertex coordinates
-		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
-		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
-		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
-		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
+	_faceCount = faceCount;
+	_faceSize = 3 * sizeof(uint16);
+	_faceType = GL_UNSIGNED_SHORT;
+	_faceData = std::malloc(_faceCount * _faceSize);
 
-		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
-		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
-		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
-		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
+	uint16 *f = (uint16 *) _faceData;
+	for (uint32 i = 0; i < _faceCount * 3; i++)
+		f[i] = ctx.mdb->readUint16LE();
 
-		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
-		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
-		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
-		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
-
-		// Texture coordinates
-		for (uint32 t = 0; t < textureCount; t++) {
-			_tX[3 * textureCount * i + 3 * t + 0] = v1 < tX.size() ? tX[v1] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 0] = v1 < tY.size() ? tY[v1] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 1] = v2 < tX.size() ? tX[v2] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 1] = v2 < tY.size() ? tY[v2] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 2] = v3 < tX.size() ? tX[v3] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 2] = v3 < tY.size() ? tY[v3] : 0.0;
-		}
-
-	}
-
-	createCenter();
+	createBound();
 
 	_render = true;
 

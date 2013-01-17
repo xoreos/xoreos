@@ -524,40 +524,66 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	loadTextures(textures);
 
 
-	// Read vertex coordinates
+	// Read vertices (interleaved)
 
-	std::vector<float> vX, vY, vZ;
+	assert(!_vertData);
 
-	vX.resize(vertexCount);
-	vY.resize(vertexCount);
-	vZ.resize(vertexCount);
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 3;
+	GLsizei vtsize = 2;
+	_vertSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
+	_vertCount = vertexCount;
+	_vertData = std::malloc(_vertCount * _vertSize);
 
-	std::vector< std::vector<float> > tX, tY;
+	VertexAttrib vp;
+	vp.index = VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = _vertSize;
+	vp.pointer = (float*) _vertData;
+	_vertDecl.push_back(vp);
 
-	tX.resize(textureCount);
-	tY.resize(textureCount);
+	VertexAttrib vn;
+	vn.index = VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = _vertSize;
+	vn.pointer = (float*) _vertData + vpsize;
+	_vertDecl.push_back(vn);
 
 	for (uint16 t = 0; t < textureCount; t++) {
-		tX[t].resize(vertexCount);
-		tY[t].resize(vertexCount);
+		VertexAttrib vt;
+		vt.index = VTCOORD + t;
+		vt.size = vtsize;
+		vt.type = GL_FLOAT;
+		vt.stride = _vertSize;
+		vt.pointer = (float*) _vertData + vpsize + vnsize + vtsize * t;
+		_vertDecl.push_back(vt);
 	}
 
-	for (int i = 0; i < vertexCount; i++) {
+	float *v = (float*) _vertData;
+	for (uint32 i = 0; i < _vertCount; i++) {
+		// Position
 		ctx.mdx->seekTo(offNodeData + i * mdxStructSize);
+		*v++ = ctx.mdx->readIEEEFloatLE();
+		*v++ = ctx.mdx->readIEEEFloatLE();
+		*v++ = ctx.mdx->readIEEEFloatLE();
 
-		vX[i] = ctx.mdx->readIEEEFloatLE();
-		vY[i] = ctx.mdx->readIEEEFloatLE();
-		vZ[i] = ctx.mdx->readIEEEFloatLE();
+		// Normal
+		//ctx.mdx->seekTo(offNodeData + i * mdxStructSize + offNormals);
+		*v++ = ctx.mdx->readIEEEFloatLE();
+		*v++ = ctx.mdx->readIEEEFloatLE();
+		*v++ = ctx.mdx->readIEEEFloatLE();
 
+		// TexCoords
 		for (uint16 t = 0; t < textureCount; t++) {
 			if (offUV[t] != 0xFFFFFFFF) {
 				ctx.mdx->seekTo(offNodeData + i * mdxStructSize + offUV[t]);
-
-				tX[t][i] = ctx.mdx->readIEEEFloatLE();
-				tY[t][i] = ctx.mdx->readIEEEFloatLE();
+				*v++ = ctx.mdx->readIEEEFloatLE();
+				*v++ = ctx.mdx->readIEEEFloatLE();
 			} else {
-				tX[t][i] = 0.0;
-				tY[t][i] = 0.0;
+				*v++ = 0.0;
+				*v++ = 0.0;
 			}
 		}
 	}
@@ -565,53 +591,23 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	// Read faces
 
-	if (!createFaces(facesCount)) {
-		ctx.mdl->seekTo(endPos);
-		return;
-	}
+	assert(!_faceData);
+
+	_faceCount = facesCount;
+	_faceSize = 3 * sizeof(uint16);
+	_faceType = GL_UNSIGNED_SHORT;
+	_faceData = std::malloc(_faceCount * _faceSize);
 
 	ctx.mdl->seekTo(ctx.offModelData + offOffVerts);
 	uint32 offVerts = ctx.mdl->readUint32LE();
 
 	ctx.mdl->seekTo(ctx.offModelData + offVerts);
 
+	uint16 *f = (uint16 *)_faceData;
+	for (uint32 i = 0; i < _faceCount * 3; i++)
+		f[i] = ctx.mdl->readUint16LE();
 
-	for (uint32 i = 0; i < facesCount; i++) {
-		// Vertex indices
-		const uint16 v1 = ctx.mdl->readUint16LE();
-		const uint16 v2 = ctx.mdl->readUint16LE();
-		const uint16 v3 = ctx.mdl->readUint16LE();
-
-		// Vertex coordinates
-		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
-		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
-		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
-		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
-
-		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
-		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
-		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
-		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
-
-		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
-		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
-		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
-		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
-
-		// Texture coordinates
-		for (uint16 t = 0 ; t < textureCount; t++) {
-			_tX[3 * textureCount * i + 3 * t + 0] = v1 < tX[t].size() ? tX[t][v1] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 0] = v1 < tY[t].size() ? tY[t][v1] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 1] = v2 < tX[t].size() ? tX[t][v2] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 1] = v2 < tY[t].size() ? tY[t][v2] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 2] = v3 < tX[t].size() ? tX[t][v3] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 2] = v3 < tY[t].size() ? tY[t][v3] : 0.0;
-		}
-	}
-
-	createCenter();
+	createBound();
 
 	ctx.mdl->seekTo(endPos);
 }
