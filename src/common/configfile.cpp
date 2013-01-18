@@ -260,7 +260,7 @@ UString ConfigDomain::fromUint(uint value) {
 }
 
 UString ConfigDomain::fromDouble(double value) {
-	return UString::sprintf("%lf", value);
+	return UString::sprintf("%f", value);
 }
 
 
