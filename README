@@ -8,7 +8,7 @@ a portable manner. Other games might follow.
 
 What is currently working, you might ask? Well...visibly, a bit. And quite
 a lot of the "foundation" work is there. Resource management, basic file
-formats, etc.. What you'll see when you sick xoreos on the installation
+formats, etc.. What you'll see when you sic xoreos on the installation
 directory of a recognized game is, apart from the movies (Bink playback
 courtesy of the ffmpeg project), stubby menus for NWN and KotOR, static 3D
 geometry and/or music and/or sound, loaded from the actual data files.
