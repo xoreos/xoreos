@@ -112,6 +112,9 @@ void GraphicsManager::init() {
 	if (SDL_Init(sdlInitFlags) < 0)
 		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
 
+	// Set the window title to our name
+	setWindowTitle(PACKAGE_STRING);
+
 	int  width  = ConfigMan.getInt ("width"     , 800);
 	int  height = ConfigMan.getInt ("height"    , 600);
 	bool fs     = ConfigMan.getBool("fullscreen", false);
@@ -128,9 +131,6 @@ void GraphicsManager::init() {
 	// Set the gamma correction to what the config specifies
 	if (ConfigMan.hasKey("gamma"))
 		setGamma(ConfigMan.getDouble("gamma", 1.0));
-
-	// Set the window title to our name
-	setWindowTitle(PACKAGE_STRING);
 
 	_ready = true;
 }
