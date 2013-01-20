@@ -32,6 +32,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/system/config.hpp>
 #include <boost/regex.hpp>
+#include <boost/version.hpp>
 
 #include "common/filepath.h"
 #include "common/util.h"
@@ -48,7 +49,9 @@ using boost::filesystem::directory_iterator;
 using boost::equals;
 using boost::iequals;
 
-#if BOOST_FILESYSTEM_VERSION == 3
+#if ((((BOOST_VERSION / 100000) == 1) && (((BOOST_VERSION / 100) % 1000) < 44)) || BOOST_FILESYSTEM_VERSION == 2)
+#define generic_string() string()
+#elif BOOST_FILESYSTEM_VERSION == 3
 #define stem() stem().string()
 #define extension() extension().string()
 #define filename() filename().string()
