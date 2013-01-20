@@ -954,7 +954,10 @@ AC_LANG_POP([C++])dnl
 # -----------------------------
 # Internal helper for _BOOST_FIND_COMPILER_TAG.
 m4_define([_BOOST_gcc_test],
-["defined __GNUC__ && __GNUC__ == $1 && __GNUC_MINOR__ == $2 && !defined __ICC @ gcc$1$2"])dnl
+["defined __GNUC__ && __GNUC__ == $1 && __GNUC_MINOR__ == $2 && !defined __ICC \
+     && (defined WIN32 || defined WINNT || defined _WIN32 || defined __WIN32 \
+         || defined __WIN32__ || defined __WINNT || defined __WINNT__) @ mgw$1$2" \
+"defined __GNUC__ && __GNUC__ == $1 && __GNUC_MINOR__ == $2 && !defined __ICC @ gcc$1$2"])dnl
 
 
 # _BOOST_FIND_COMPILER_TAG()
