@@ -241,32 +241,32 @@ AC_SUBST(XOREOS_LIBS)
 
 AC_SUBST(WERROR)
 
-AC_CONFIG_FILES([
-          utf8cpp/Makefile \
-          glew/Makefile \
-          lua/Makefile \
-          src/common/Makefile \
-          src/graphics/Makefile \
-          src/graphics/images/Makefile \
-          src/graphics/aurora/Makefile \
-          src/sound/Makefile \
-          src/sound/decoders/Makefile \
-          src/video/Makefile \
-          src/video/codecs/Makefile \
-          src/video/aurora/Makefile \
-          src/events/Makefile \
-          src/aurora/Makefile \
-          src/aurora/nwscript/Makefile \
-          src/engines/Makefile \
-          src/engines/nwn/Makefile \
-          src/engines/nwn2/Makefile \
-          src/engines/kotor/Makefile \
-          src/engines/kotor2/Makefile \
-          src/engines/jade/Makefile \
-          src/engines/thewitcher/Makefile \
-          src/engines/sonic/Makefile \
-          src/engines/dragonage/Makefile \
-          src/engines/dragonage2/Makefile \
-          src/Makefile \
-          Makefile])
+AC_CONFIG_FILES([utf8cpp/Makefile])
+AC_CONFIG_FILES([glew/Makefile])
+AC_CONFIG_FILES([lua/Makefile])
+AC_CONFIG_FILES([src/common/Makefile])
+AC_CONFIG_FILES([src/graphics/Makefile])
+AC_CONFIG_FILES([src/graphics/images/Makefile])
+AC_CONFIG_FILES([src/graphics/aurora/Makefile])
+AC_CONFIG_FILES([src/sound/Makefile])
+AC_CONFIG_FILES([src/sound/decoders/Makefile])
+AC_CONFIG_FILES([src/video/Makefile])
+AC_CONFIG_FILES([src/video/codecs/Makefile])
+AC_CONFIG_FILES([src/video/aurora/Makefile])
+AC_CONFIG_FILES([src/events/Makefile])
+AC_CONFIG_FILES([src/aurora/Makefile])
+AC_CONFIG_FILES([src/aurora/nwscript/Makefile])
+AC_CONFIG_FILES([src/engines/Makefile])
+AC_CONFIG_FILES([src/engines/nwn/Makefile])
+AC_CONFIG_FILES([src/engines/nwn2/Makefile])
+AC_CONFIG_FILES([src/engines/kotor/Makefile])
+AC_CONFIG_FILES([src/engines/kotor2/Makefile])
+AC_CONFIG_FILES([src/engines/jade/Makefile])
+AC_CONFIG_FILES([src/engines/thewitcher/Makefile])
+AC_CONFIG_FILES([src/engines/sonic/Makefile])
+AC_CONFIG_FILES([src/engines/dragonage/Makefile])
+AC_CONFIG_FILES([src/engines/dragonage2/Makefile])
+AC_CONFIG_FILES([src/Makefile])
+AC_CONFIG_FILES([Makefile])
+
 AC_OUTPUT
