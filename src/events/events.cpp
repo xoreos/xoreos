@@ -136,6 +136,14 @@ bool EventsManager::parseEventQuit(const Event &event) {
 		return true;
 	}
 
+#ifdef WIN32
+	if ((event.type == kEventKeyDown) && (event.key.keysym.mod & KMOD_ALT) &&
+			 (event.key.keysym.sym == SDLK_F4)) {
+		requestQuit();
+		return true;
+	}
+#endif
+
 	return false;
 }
 
