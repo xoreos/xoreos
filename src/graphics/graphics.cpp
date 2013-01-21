@@ -195,8 +195,14 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	// other one and 16bpp only as a last resort.
 	// If we're currently in 16bpp mode, we try the higher two first as well,
 	// before being okay with native 16bpp mode.
+	// However, for Windows, we prefer 24bpp over 32bpp since 32bpp in fullscreen
+	// forces OpenGL to start with a software renderer. Seriously.
 
-	const int colorModes[] = {bpp == 16 ? 32 : bpp, bpp == 24 ? 32 : 24, 16 };
+#ifdef WIN32
+	const int colorModes[] = { 24, 32, 16 };
+#else
+	const int colorModes[] = { bpp == 16 ? 32 : bpp, bpp == 24 ? 32 : 24, 16 };
+#endif
 
 	bool foundMode = false;
 	for (int i = 0; i < ARRAYSIZE(colorModes); i++) {
