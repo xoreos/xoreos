@@ -195,14 +195,8 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	// other one and 16bpp only as a last resort.
 	// If we're currently in 16bpp mode, we try the higher two first as well,
 	// before being okay with native 16bpp mode.
-	// However, for Windows, we prefer 24bpp over 32bpp since 32bpp in fullscreen
-	// forces OpenGL to start with a software renderer. Seriously.
 
-#ifdef WIN32
-	const int colorModes[] = { 24, 32, 16 };
-#else
 	const int colorModes[] = { bpp == 16 ? 32 : bpp, bpp == 24 ? 32 : 24, 16 };
-#endif
 
 	bool foundMode = false;
 	for (int i = 0; i < ARRAYSIZE(colorModes); i++) {
@@ -282,7 +276,7 @@ int GraphicsManager::probeFSAA(int width, int height, int bpp, uint32 flags) {
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE    ,   8);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE  ,   8);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE   ,   8);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE  , bpp);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE  ,   8);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,   1);
 
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
@@ -301,7 +295,7 @@ bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE    ,   8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE  ,   8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE   ,   8);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE  , bpp);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE  ,   8);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,   1);
 
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
