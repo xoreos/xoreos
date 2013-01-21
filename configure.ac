@@ -200,6 +200,10 @@ case "$target" in
 		XOREOS_CFLAGS="-DUNIX -DMACOSX"
 		XOREOS_LIBS=""
 		;;
+	*mingw*)
+		XOREOS_CFLAGS=""
+		XOREOS_LIBS="-static-libgcc -static-libstdc++"
+		;;
 	*)
 		XOREOS_CFLAGS="-DUNIX"
 		XOREOS_LIBS=""
