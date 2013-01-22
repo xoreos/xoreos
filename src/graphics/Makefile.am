@@ -36,7 +36,7 @@ libgraphics_la_SOURCES = graphics.cpp \
                          object.cpp \
                          guifrontelement.cpp \
                          yuv_to_rgb.cpp \
-                         ttf.cpp
+                         ttf.cpp \
                          indexbuffer.cpp \
                          vertexbuffer.cpp
 
