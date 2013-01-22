@@ -756,17 +756,11 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 
 	// Read faces
-
-	assert(!_faceData);
-
-	_faceCount = facesCount;
-	_faceSize = 3 * sizeof(uint16);
-	_faceType = GL_UNSIGNED_SHORT;
-	_faceData = std::malloc(_faceCount * _faceSize);
-
 	// NWN stores 1 normal per face
 	// Convert to one normal per vertex by duplicating vertex data
 	// for face verts with multiple normals
+
+	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
 	std::vector<Normal> new_verts_norms;
 	boost::unordered_set<Normal> verts_norms;
@@ -774,9 +768,9 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	Normal n;
 	uint16 vertexCountNew = vertexCount;
-	uint16 *f = (uint16 *)_faceData;
+	uint16 *f = (uint16 *) _indexBuffer.getData();
 	ctx.mdl->seekTo(ctx.offModelData + facesOffset);
-	for (uint32 i = 0; i < _faceCount; i++) {
+	for (uint32 i = 0; i < facesCount; i++) {
 		// Face normal
 		n.xyz[0] = ctx.mdl->readIEEEFloatLE();
 		n.xyz[1] = ctx.mdl->readIEEEFloatLE();
@@ -805,14 +799,15 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	// Read vertex data
 
-	assert(!_vertData);
 
 	GLsizei vpsize = 3;
 	GLsizei vnsize = 3;
 	GLsizei vtsize = 2;
-	_vertSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
-	_vertCount = vertexCountNew;
-	_vertData = std::malloc(_vertCount * _vertSize);
+	uint32 vertexSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
+	_vertexBuffer.setSize(vertexCountNew, vertexSize);
+
+	float *vertexData = (float *) _vertexBuffer.getData();
+	VertexDecl vertexDecl;
 
 	// Read vertex coordinates
 
@@ -821,8 +816,8 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	vp.size = vpsize;
 	vp.type = GL_FLOAT;
 	vp.stride = 0;
-	vp.pointer = (float *) _vertData;
-	_vertDecl.push_back(vp);
+	vp.pointer = vertexData;
+	vertexDecl.push_back(vp);
 
 	assert (vertexOffset != 0xFFFFFFFF);
 	ctx.mdl->seekTo(ctx.offRawData + vertexOffset);
@@ -850,8 +845,8 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	vn.size = vnsize;
 	vn.type = GL_FLOAT;
 	vn.stride = 0;
-	vn.pointer = (float *) _vertData + vpsize * _vertCount;
-	_vertDecl.push_back(vn);
+	vn.pointer = vertexData + vpsize * vertexCountNew;
+	vertexDecl.push_back(vn);
 
 	for (norms_set_it i = verts_norms.begin(); i != verts_norms.end(); i++) {
 		v = (float *) vn.pointer + i->vi * vnsize;
@@ -876,8 +871,8 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 		vt.size = vtsize;
 		vt.type = GL_FLOAT;
 		vt.stride = 0;
-		vt.pointer = (float *) _vertData + (vpsize + vnsize + vtsize * t) * _vertCount;
-		_vertDecl.push_back(vt);
+		vt.pointer = vertexData + (vpsize + vnsize + vtsize * t) * vertexCountNew;
+		vertexDecl.push_back(vt);
 
 		bool hasTexture = textureVertexOffset[t] != 0xFFFFFFFF;
 		if (hasTexture)
@@ -898,7 +893,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 		}
 	}
 
-	assert((byte *) v == (byte *) _vertData + _vertCount * _vertSize);
+	_vertexBuffer.setVertexDecl(vertexDecl);
 
 	createBound();
 
@@ -1283,19 +1278,15 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 
 	// Read faces
 
-	assert(!_faceData);
-
-	_faceCount = mesh.faceCount;
-	_faceSize = 3 * sizeof(uint32);
-	_faceType = GL_UNSIGNED_INT;
-	_faceData = std::malloc(_faceCount * _faceSize);
+	uint32 facesCount = mesh.faceCount;
+	_indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
 
 	boost::unordered_set<FaceVert> verts;
 	typedef boost::unordered_set<FaceVert>::iterator verts_set_it;
 
 	uint32 vertexCount = 0;
-	uint32 *f = (uint32 *) _faceData;
-	for (uint32 i = 0; i < _faceCount; i++) {
+	uint32 *f = (uint32 *) _indexBuffer.getData();
+	for (uint32 i = 0; i < facesCount; i++) {
 		const uint32 v[3] = {mesh.vIA[i], mesh.vIB[i], mesh.vIC[i]};
 		const uint32 t[3] = {mesh.tIA[i], mesh.tIB[i], mesh.tIC[i]};
 
@@ -1323,43 +1314,45 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 
 	// Read vertices (interleaved)
 
-	assert(!_vertData);
-
 	GLsizei vpsize = 3;
 	GLsizei vnsize = 3;
 	GLsizei vtsize = 2;
-	_vertSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
-	_vertCount = vertexCount;
-	_vertData = std::malloc(_vertCount * _vertSize);
+	uint32 vertexSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
+	_vertexBuffer.setSize(vertexCount, vertexSize);
+
+	float *vertexData = (float *) _vertexBuffer.getData();
+	VertexDecl vertexDecl;
 
 	VertexAttrib vp;
 	vp.index = VPOSITION;
 	vp.size = vpsize;
 	vp.type = GL_FLOAT;
-	vp.stride = _vertSize;
-	vp.pointer = (float*) _vertData;
-	_vertDecl.push_back(vp);
+	vp.stride = vertexSize;
+	vp.pointer = vertexData;
+	vertexDecl.push_back(vp);
 
 	VertexAttrib vn;
 	vn.index = VNORMAL;
 	vn.size = vnsize;
 	vn.type = GL_FLOAT;
-	vn.stride = _vertSize;
-	vn.pointer = (float*) _vertData + vpsize;
-	_vertDecl.push_back(vn);
+	vn.stride = vertexSize;
+	vn.pointer = vertexData + vpsize;
+	vertexDecl.push_back(vn);
 
 	for (uint16 t = 0; t < textureCount; t++) {
 		VertexAttrib vt;
 		vt.index = VTCOORD + t;
 		vt.size = vtsize;
 		vt.type = GL_FLOAT;
-		vt.stride = _vertSize;
-		vt.pointer = (float*) _vertData + vpsize + vnsize + vtsize * t;
-		_vertDecl.push_back(vt);
+		vt.stride = vertexSize;
+		vt.pointer = vertexData + vpsize + vnsize + vtsize * t;
+		vertexDecl.push_back(vt);
 	}
 
+	_vertexBuffer.setVertexDecl(vertexDecl);
+
 	for (verts_set_it i = verts.begin(); i != verts.end(); i++) {
-		float *v = (float*) _vertData + i->i * _vertSize / sizeof(float);
+		float *v = vertexData + i->i * vertexSize / sizeof(float);
 
 		// Position
 		*v++ = mesh.vX[i->p];

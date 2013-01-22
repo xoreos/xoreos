@@ -112,8 +112,6 @@ static void DisableVertexAttrib(const VertexAttrib & va) {
 
 ModelNode::ModelNode(Model &model) :
 	_model(&model), _parent(0), _level(0),
-	_vertCount(0), _vertSize(0), _vertData(0),
-	_faceCount(0), _faceSize(0), _faceType(0), _faceData(0),
 	_isTransparent(false), _render(false), _hasTransparencyHint(false) {
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
@@ -126,8 +124,7 @@ ModelNode::ModelNode(Model &model) :
 }
 
 ModelNode::~ModelNode() {
-	std::free(_vertData);
-	std::free(_faceData);
+	// dtor
 }
 
 ModelNode *ModelNode::getParent() {
@@ -262,25 +259,11 @@ void ModelNode::inheritOrientation(ModelNode &node) const {
 }
 
 void ModelNode::inheritGeometry(ModelNode &node) const {
-	assert(!node._vertData);
-	assert(!node._faceData);
-
-	node._textures = _textures;
-
+	node._textures      = _textures;
 	node._render        = _render;
 	node._isTransparent = _isTransparent;
-
-	node._vertDecl = _vertDecl;
-	node._vertCount = _vertCount;
-	node._vertSize = _vertSize;
-	node._vertData = std::malloc(_vertCount * _vertSize);
-	memcpy(node._vertData, _vertData, _vertCount * _vertSize);
-
-	node._faceCount = _faceCount;
-	node._faceSize = _faceSize;
-	node._faceType = _faceType;
-	node._faceData = std::malloc(_faceCount * _faceSize);
-	memcpy(node._faceData, _faceData, _faceCount * _faceSize);
+	node._vertexBuffer  = _vertexBuffer;
+	node._indexBuffer   = _indexBuffer;
 
 	memcpy(node._center, _center, 3 * sizeof(float));
 	node._boundBox = _boundBox;
@@ -402,13 +385,14 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 }
 
 void ModelNode::createBound() {
-	assert(_vertDecl[0].index == VPOSITION);
-	assert(_vertDecl[0].type == GL_FLOAT);
-	uint32 stride = MAX<uint32>(_vertDecl[0].size, _vertDecl[0].stride / sizeof(float));
-	float *vX = (float *) _vertDecl[0].pointer;
+	const VertexAttrib & vpos = _vertexBuffer.getVertexDecl()[0];
+	assert(vpos.index == VPOSITION);
+	assert(vpos.type == GL_FLOAT);
+	uint32 stride = MAX<uint32>(vpos.size, vpos.stride / sizeof(float));
+	float *vX = (float *) vpos.pointer;
 	float *vY = vX + 1;
 	float *vZ = vY + 1;
-	for (uint32 v = 0; v < _vertCount; v++)
+	for (uint32 v = 0; v < _vertexBuffer.getCount(); v++)
 		_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
 
 	createCenter();
@@ -476,13 +460,15 @@ void ModelNode::renderGeometry() {
 
 	// Render the node's faces
 
-	for (uint32 i = 0; i < _vertDecl.size(); i++)
-		EnableVertexAttrib(_vertDecl[i]);
+	const VertexDecl &vertexDecl = _vertexBuffer.getVertexDecl();
 
-	glDrawElements(GL_TRIANGLES, _faceCount * 3, _faceType, _faceData);
+	for (uint32 i = 0; i < vertexDecl.size(); i++)
+		EnableVertexAttrib(vertexDecl[i]);
 
-	for (uint32 i = 0; i < _vertDecl.size(); i++)
-		DisableVertexAttrib(_vertDecl[i]);
+	glDrawElements(GL_TRIANGLES, _indexBuffer.getCount(), _indexBuffer.getType(), _indexBuffer.getData());
+
+	for (uint32 i = 0; i < vertexDecl.size(); i++)
+		DisableVertexAttrib(vertexDecl[i]);
 
 	// Disable the texture units again
 	for (uint32 i = 0; i < _textures.size(); i++) {
@@ -504,7 +490,7 @@ void ModelNode::render(RenderPass pass) {
 
 	// Render the node's geometry
 
-	bool shouldRender = _render && (_faceCount > 0);
+	bool shouldRender = _render && (_indexBuffer.getCount() > 0);
 	if (((pass == kRenderPassOpaque)      &&  _isTransparent) ||
 	    ((pass == kRenderPassTransparent) && !_isTransparent))
 		shouldRender = false;

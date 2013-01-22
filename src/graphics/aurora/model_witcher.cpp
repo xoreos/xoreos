@@ -345,8 +345,8 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	ctx.mdb->skip(4);
 
-	uint32 verticesOffset, verticesCount;
-	Model::readArrayDef(*ctx.mdb, verticesOffset, verticesCount);
+	uint32 vertexOffset, vertexCount;
+	Model::readArrayDef(*ctx.mdb, vertexOffset, vertexCount);
 
 	uint32 normalsOffset, normalsCount;
 	Model::readArrayDef(*ctx.mdb, normalsOffset, normalsCount);
@@ -379,7 +379,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 		ctx.offTexData = ctx.mdb->readUint32LE();
 
 
-	if ((verticesCount == 0) || (facesCount == 0)) {
+	if ((vertexCount == 0) || (facesCount == 0)) {
 		ctx.mdb->seekTo(endPos);
 		return;
 	}
@@ -393,50 +393,52 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	// Read vertices
 
-	assert(!_vertData);
-
 	GLsizei vpsize = 3;
 	GLsizei vnsize = 3;
 	GLsizei vtsize = 2;
-	_vertSize = (vpsize + vnsize + vtsize) * sizeof(float);
-	_vertCount = verticesCount;
-	_vertData = std::malloc(_vertCount * _vertSize);
+	uint32 vertexSize = (vpsize + vnsize + vtsize) * sizeof(float);
+	_vertexBuffer.setSize(vertexCount, vertexSize);
+
+	float *vertexData = (float *) _vertexBuffer.getData();
+	VertexDecl vertexDecl;
 
 	VertexAttrib vp;
 	vp.index = VPOSITION;
 	vp.size = vpsize;
 	vp.type = GL_FLOAT;
 	vp.stride = 0;
-	vp.pointer = (float*) _vertData;
-	_vertDecl.push_back(vp);
+	vp.pointer = vertexData;
+	vertexDecl.push_back(vp);
 
 	VertexAttrib vn;
 	vn.index = VNORMAL;
 	vn.size = vnsize;
 	vn.type = GL_FLOAT;
 	vn.stride = 0;
-	vn.pointer = (float*) _vertData + vpsize * _vertCount;
-	_vertDecl.push_back(vn);
+	vn.pointer = vertexData + vpsize * vertexCount;
+	vertexDecl.push_back(vn);
 
 	VertexAttrib vt;
 	vt.index = VTCOORD;
 	vt.size = vtsize;
 	vt.type = GL_FLOAT;
 	vt.stride = 0;
-	vt.pointer = (float*) _vertData + (vpsize + vnsize) * _vertCount;
-	_vertDecl.push_back(vt);
+	vt.pointer = vertexData + (vpsize + vnsize) * vertexCount;
+	vertexDecl.push_back(vt);
+
+	_vertexBuffer.setVertexDecl(vertexDecl);
 
 	// Read vertex position
-	ctx.mdb->seekTo(ctx.offRawData + verticesOffset);
+	ctx.mdb->seekTo(ctx.offRawData + vertexOffset);
 	float *v = (float *) vp.pointer;
-	for (uint32 i = 0; i < verticesCount; i++) {
+	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
 	}
 
 	// Read vertex normals
-	assert(normalsCount == verticesCount);
+	assert(normalsCount == vertexCount);
 	ctx.mdb->seekTo(ctx.offRawData + normalsOffset);
 	v = (float *) vn.pointer;
 	for (uint32 i = 0; i < normalsCount; i++) {
@@ -446,7 +448,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	}
 
 	// Read texture coordinates
-	assert(tVerts0Count == verticesCount);
+	assert(tVerts0Count == vertexCount);
 	ctx.mdb->seekTo(ctx.offRawData + tVerts0Offset);
 	v = (float *) vt.pointer;
 	for (uint32 i = 0; i < tVerts0Count; i++) {
@@ -457,16 +459,11 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	// Read faces
 
-	assert(!_faceData);
-
-	_faceCount = facesCount;
-	_faceSize = 3 * sizeof(uint32);
-	_faceType = GL_UNSIGNED_INT;
-	_faceData = std::malloc(_faceCount * _faceSize);
+	_indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
 
 	ctx.mdb->seekTo(ctx.offRawData + facesOffset);
-	uint32 *f = (uint32 *) _faceData;
-	for (uint32 i = 0; i < _faceCount; i++) {
+	uint32 *f = (uint32 *) _indexBuffer.getData();
+	for (uint32 i = 0; i < facesCount; i++) {
 		ctx.mdb->skip(4 * 4 + 4);
 
 		if (ctx.fileVersion == 133)
