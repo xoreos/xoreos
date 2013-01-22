@@ -66,7 +66,7 @@ static void EnableVertexCol(const VertexAttrib & va) {
 }
 
 static void EnableVertexTex(const VertexAttrib & va) {
-	glClientActiveTexture(GL_TEXTURE0 + va.index - VTCOORD);
+	glClientActiveTextureARB(GL_TEXTURE0 + va.index - VTCOORD);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(va.size, va.type, va.stride, va.pointer);
 }
@@ -84,7 +84,7 @@ static void DisableVertexCol(const VertexAttrib & va) {
 }
 
 static void DisableVertexTex(const VertexAttrib & va) {
-	glClientActiveTexture(GL_TEXTURE0 + va.index - VTCOORD);
+	glClientActiveTextureARB(GL_TEXTURE0 + va.index - VTCOORD);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
