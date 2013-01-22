@@ -29,7 +29,7 @@
 
 #include <cstdlib>
 
-#include "indexbuffer.h"
+#include "graphics/indexbuffer.h"
 
 namespace Graphics {
 
