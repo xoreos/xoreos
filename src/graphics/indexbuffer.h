@@ -39,11 +39,11 @@ class IndexBuffer {
 public:
 	IndexBuffer();
 
-	IndexBuffer(const IndexBuffer & other);
+	IndexBuffer(const IndexBuffer &other);
 
 	~IndexBuffer();
 
-	IndexBuffer & operator=(const IndexBuffer & other);
+	IndexBuffer &operator=(const IndexBuffer &other);
 
 	/** Change buffer size. Will allocate memory, free previous */
 	void setSize(uint32 indexCount, uint32 indexSize, GLenum indexType);

@@ -37,7 +37,7 @@ IndexBuffer::IndexBuffer() : _count(0), _size(0), _type(GL_UNSIGNED_INT), _data(
 	//ctor
 }
 
-IndexBuffer::IndexBuffer(const IndexBuffer & other) {
+IndexBuffer::IndexBuffer(const IndexBuffer &other) {
 	*this = other;
 }
 
@@ -46,7 +46,7 @@ IndexBuffer::~IndexBuffer() {
 		std::free(_data);
 }
 
-IndexBuffer & IndexBuffer::operator=(const IndexBuffer & other) {
+IndexBuffer &IndexBuffer::operator=(const IndexBuffer &other) {
 	setSize(other._count, other._size, other._type);
 	memcpy(_data, other._data, other._count * other._size);
 	return *this;

@@ -57,16 +57,15 @@ struct VertexAttrib {
 typedef std::vector<VertexAttrib> VertexDecl;
 
 /** Buffer containing vertex data */
-class VertexBuffer
-{
+class VertexBuffer {
 public:
 	VertexBuffer();
 
-	VertexBuffer(const VertexBuffer & other);
+	VertexBuffer(const VertexBuffer &other);
 
 	~VertexBuffer();
 
-	VertexBuffer & operator=(const VertexBuffer & other);
+	VertexBuffer &operator=(const VertexBuffer &other);
 
 	/** Change buffer size. Will allocate memory, free previous */
 	void setSize(uint32 vertCount, uint32 vertSize);

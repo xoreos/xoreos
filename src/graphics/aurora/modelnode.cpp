@@ -49,46 +49,46 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 
 // OpenGL < 2 vertex attribute helper functions
 
-static void EnableVertexPos(const VertexAttrib & va) {
+static void EnableVertexPos(const VertexAttrib &va) {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(va.size, va.type, va.stride, va.pointer);
 }
 
-static void EnableVertexNorm(const VertexAttrib & va) {
+static void EnableVertexNorm(const VertexAttrib &va) {
 	assert(va.size == 3);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glNormalPointer(va.type, va.stride, va.pointer);
 }
 
-static void EnableVertexCol(const VertexAttrib & va) {
+static void EnableVertexCol(const VertexAttrib &va) {
 	glEnableClientState(GL_COLOR_ARRAY);
 	glColorPointer(va.size, va.type, va.stride, va.pointer);
 }
 
-static void EnableVertexTex(const VertexAttrib & va) {
+static void EnableVertexTex(const VertexAttrib &va) {
 	glClientActiveTextureARB(GL_TEXTURE0 + va.index - VTCOORD);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(va.size, va.type, va.stride, va.pointer);
 }
 
-static void DisableVertexPos(const VertexAttrib & va) {
+static void DisableVertexPos(const VertexAttrib &va) {
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-static void DisableVertexNorm(const VertexAttrib & va) {
+static void DisableVertexNorm(const VertexAttrib &va) {
 	glDisableClientState(GL_NORMAL_ARRAY);
 }
 
-static void DisableVertexCol(const VertexAttrib & va) {
+static void DisableVertexCol(const VertexAttrib &va) {
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 
-static void DisableVertexTex(const VertexAttrib & va) {
+static void DisableVertexTex(const VertexAttrib &va) {
 	glClientActiveTextureARB(GL_TEXTURE0 + va.index - VTCOORD);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-static void EnableVertexAttrib(const VertexAttrib & va) {
+static void EnableVertexAttrib(const VertexAttrib &va) {
 	if (va.index == VPOSITION)
 		EnableVertexPos(va);
 	else if (va.index == VNORMAL)
@@ -99,7 +99,7 @@ static void EnableVertexAttrib(const VertexAttrib & va) {
 		EnableVertexTex(va);
 }
 
-static void DisableVertexAttrib(const VertexAttrib & va) {
+static void DisableVertexAttrib(const VertexAttrib &va) {
 	if (va.index == VPOSITION)
 		DisableVertexPos(va);
 	else if (va.index == VNORMAL)
@@ -385,7 +385,7 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 }
 
 void ModelNode::createBound() {
-	const VertexAttrib & vpos = _vertexBuffer.getVertexDecl()[0];
+	const VertexAttrib &vpos = _vertexBuffer.getVertexDecl()[0];
 	assert(vpos.index == VPOSITION);
 	assert(vpos.type == GL_FLOAT);
 	uint32 stride = MAX<uint32>(vpos.size, vpos.stride / sizeof(float));

@@ -37,7 +37,7 @@ VertexBuffer::VertexBuffer() : _count(0), _size(0), _data(0) {
 	//ctor
 }
 
-VertexBuffer::VertexBuffer(const VertexBuffer & other) {
+VertexBuffer::VertexBuffer(const VertexBuffer &other) {
 	*this = other;
 }
 
@@ -46,7 +46,7 @@ VertexBuffer::~VertexBuffer() {
 		std::free(_data);
 }
 
-VertexBuffer & VertexBuffer::operator=(const VertexBuffer & other) {
+VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
 	setVertexDecl(other._decl);
 	setSize(other._count, other._size);
 	memcpy(_data, other._data, other._count * other._size);
@@ -66,7 +66,7 @@ void VertexBuffer::setSize(uint32 vertCount, uint32 vertSize) {
 		_data = NULL;
 }
 
-void VertexBuffer::setVertexDecl(const VertexDecl & decl) {
+void VertexBuffer::setVertexDecl(const VertexDecl &decl) {
 	_decl = decl;
 }
 
