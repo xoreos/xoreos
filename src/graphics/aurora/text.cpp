@@ -40,7 +40,7 @@ namespace Aurora {
 
 Text::Text(const FontHandle &font, const Common::UString &str,
 		float r, float g, float b, float a, float align) :
-	_font(font), _x(0.0), _y(0.0), _r(r), _g(g), _b(b), _a(a), _align(align) {
+	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0), _y(0.0), _align(align) {
 
 	set(str);
 

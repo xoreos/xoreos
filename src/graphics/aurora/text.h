@@ -69,6 +69,9 @@ public:
 	void render(RenderPass pass);
 	bool isIn(float x, float y) const;
 
+protected:
+	float _r, _g, _b, _a;
+
 private:
 	FontHandle _font;
 
@@ -79,8 +82,6 @@ private:
 
 	float _width;
 	float _height;
-
-	float _r, _g, _b, _a;
 
 	float _align;
 

@@ -76,6 +76,12 @@ public:
 	void calculateDistance();
 	void render(RenderPass pass);
 
+protected:
+	float _r;
+	float _g;
+	float _b;
+	float _a;
+
 private:
 	TextureHandle _texture;
 
@@ -88,11 +94,6 @@ private:
 	float _tY1;
 	float _tX2;
 	float _tY2;
-
-	float _r;
-	float _g;
-	float _b;
-	float _a;
 
 	bool _xor;
 };

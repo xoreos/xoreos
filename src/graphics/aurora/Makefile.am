@@ -13,9 +13,11 @@ noinst_HEADERS = types.h \
                  ttffont.h \
                  fontman.h \
                  text.h \
+                 highlightabletext.h \
                  fps.h \
                  cube.h \
                  guiquad.h \
+                 highlightableguiquad.h \
                  modelnode.h \
                  model.h \
                  animnode.h \
@@ -35,8 +37,10 @@ libaurora_la_SOURCES = texture.cpp \
                        ttffont.cpp \
                        fontman.cpp \
                        text.cpp \
+                       highlightabletext.cpp \
                        fps.cpp \
                        cube.cpp \
+                       highlightableguiquad.cpp \
                        guiquad.cpp \
                        modelnode.cpp \
                        model.cpp \

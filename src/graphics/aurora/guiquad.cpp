@@ -42,9 +42,10 @@ namespace Aurora {
 GUIQuad::GUIQuad(const Common::UString &texture,
                  float x1 , float y1 , float x2 , float y2,
                  float tX1, float tY1, float tX2, float tY2) :
+                 _r(1.0), _g(1.0), _b(1.0), _a(1.0),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
-	_r(1.0), _g(1.0), _b(1.0), _a(1.0), _xor(false) {
+	_xor(false) {
 
 	try {
 
