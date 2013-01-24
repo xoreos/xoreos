@@ -178,7 +178,7 @@ case "$target" in
 	*darwin*)
 		dnl TODO: Eventually add a test for OS X for OpenAL
 
-		AL_CFLAGS="-I/System/Library/Frameworks/OpenAL.framework/Headers"
+		AL_CFLAGS=""
 		AL_LIBS="-framework OpenAL"
 		;;
 	*)

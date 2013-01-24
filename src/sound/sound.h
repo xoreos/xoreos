@@ -33,8 +33,8 @@
 // Mac OS X has to have this set up separately because of the include
 // path for the OpenAL framework.
 #ifdef MACOSX
-	#include <al.h>
-	#include <alc.h>
+	#include <OpenAL/al.h>
+	#include <OpenAL/alc.h>
 #else
 	#include <AL/al.h>
 	#include <AL/alc.h>
