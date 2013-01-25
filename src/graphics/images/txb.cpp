@@ -207,14 +207,12 @@ void TXB::readData(Common::SeekableReadStream &txb, bool needDeSwizzle) {
 		(*mipMap)->data = new byte[(*mipMap)->size];
 
 		if (swizzled) {
-			byte *tmp = new byte[(*mipMap)->size];
+			std::vector<byte> tmp((*mipMap)->size);
 
-			if (txb.read(tmp, (*mipMap)->size) != (*mipMap)->size)
+			if (txb.read(&tmp[0], (*mipMap)->size) != (*mipMap)->size)
 				throw Common::Exception(Common::kReadError);
 
-			deSwizzle((*mipMap)->data, tmp, (*mipMap)->width, (*mipMap)->height);
-
-			delete[] tmp;
+			deSwizzle((*mipMap)->data, &tmp[0], (*mipMap)->width, (*mipMap)->height);
 
 		} else {
 			if (txb.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
