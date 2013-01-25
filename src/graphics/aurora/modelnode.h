@@ -38,6 +38,8 @@
 #include "common/boundingbox.h"
 
 #include "graphics/types.h"
+#include "graphics/indexbuffer.h"
+#include "graphics/vertexbuffer.h"
 
 #include "graphics/aurora/types.h"
 #include "graphics/aurora/textureman.h"
@@ -61,23 +63,6 @@ struct QuaternionKeyFrame {
 	float y;
 	float z;
 	float q;
-};
-
-/**  Vertex attribute data index enum, hardcoded for now */
-enum VertexAttribIdEnum {
-	VPOSITION = 0, ///< Vertex position
-	VNORMAL,       ///< Vertex normal
-	VCOLOR,        ///< Vertex color
-	VTCOORD        ///< Vertex texture coordinates, VTCOORDi = VTCOORD + i
-};
-
-/**  Generic vertex attribute data */
-struct VertexAttrib {
-	GLuint index;          ///< Index of the vertex attribute (see VertexAttribIdEnum)
-	GLint size;            ///< Number of components per vertex attribute, must be 1, 2, 3, 4
-	GLenum type;           ///< Data type of each attribute component in the array
-	GLsizei stride;        ///< Byte offset between consecutive vertex attributes
-	const GLvoid *pointer; ///< Offset of the first component of the first generic vertex attribute
 };
 
 class ModelNode {
@@ -133,15 +118,8 @@ protected:
 
 	Common::UString _name; ///< The node's name.
 
-	std::vector<VertexAttrib> _vertDecl; ///< Vertex declaration
-	uint32 _vertCount; ///< Number of vertices
-	uint32 _vertSize;  ///< Vertex attributes size sum in bytes (cached)
-	GLvoid *_vertData; ///< Vertex attributes data
-
-	uint32 _faceCount; ///< Number of faces
-	uint32 _faceSize;  ///< Face indices size in bytes
-	GLenum _faceType;  ///< Face indices type (GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, ...)
-	GLvoid *_faceData; ///< Face indices data
+	VertexBuffer _vertexBuffer; ///< Node geometry vertex buffer.
+	IndexBuffer _indexBuffer;   ///< Node geometry index buffer.
 
 	float _center     [3]; ///< The node's center.
 	float _position   [3]; ///< Position of the node.

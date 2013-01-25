@@ -526,43 +526,45 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	// Read vertices (interleaved)
 
-	assert(!_vertData);
-
 	GLsizei vpsize = 3;
 	GLsizei vnsize = 3;
 	GLsizei vtsize = 2;
-	_vertSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
-	_vertCount = vertexCount;
-	_vertData = std::malloc(_vertCount * _vertSize);
+	uint32 vertexSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
+	_vertexBuffer.setSize(vertexCount, vertexSize);
+
+	float *vertexData = (float *) _vertexBuffer.getData();
+	VertexDecl vertexDecl;
 
 	VertexAttrib vp;
 	vp.index = VPOSITION;
 	vp.size = vpsize;
 	vp.type = GL_FLOAT;
-	vp.stride = _vertSize;
-	vp.pointer = (float*) _vertData;
-	_vertDecl.push_back(vp);
+	vp.stride = vertexSize;
+	vp.pointer = vertexData;
+	vertexDecl.push_back(vp);
 
 	VertexAttrib vn;
 	vn.index = VNORMAL;
 	vn.size = vnsize;
 	vn.type = GL_FLOAT;
-	vn.stride = _vertSize;
-	vn.pointer = (float*) _vertData + vpsize;
-	_vertDecl.push_back(vn);
+	vn.stride = vertexSize;
+	vn.pointer = vertexData + vpsize;
+	vertexDecl.push_back(vn);
 
 	for (uint16 t = 0; t < textureCount; t++) {
 		VertexAttrib vt;
 		vt.index = VTCOORD + t;
 		vt.size = vtsize;
 		vt.type = GL_FLOAT;
-		vt.stride = _vertSize;
-		vt.pointer = (float*) _vertData + vpsize + vnsize + vtsize * t;
-		_vertDecl.push_back(vt);
+		vt.stride = vertexSize;
+		vt.pointer = vertexData + vpsize + vnsize + vtsize * t;
+		vertexDecl.push_back(vt);
 	}
 
-	float *v = (float*) _vertData;
-	for (uint32 i = 0; i < _vertCount; i++) {
+	_vertexBuffer.setVertexDecl(vertexDecl);
+
+	float *v = vertexData;
+	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		ctx.mdx->seekTo(offNodeData + i * mdxStructSize);
 		*v++ = ctx.mdx->readIEEEFloatLE();
@@ -591,20 +593,15 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	// Read faces
 
-	assert(!_faceData);
-
-	_faceCount = facesCount;
-	_faceSize = 3 * sizeof(uint16);
-	_faceType = GL_UNSIGNED_SHORT;
-	_faceData = std::malloc(_faceCount * _faceSize);
-
 	ctx.mdl->seekTo(ctx.offModelData + offOffVerts);
 	uint32 offVerts = ctx.mdl->readUint32LE();
 
 	ctx.mdl->seekTo(ctx.offModelData + offVerts);
 
-	uint16 *f = (uint16 *)_faceData;
-	for (uint32 i = 0; i < _faceCount * 3; i++)
+	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+
+	uint16 *f = (uint16 *) _indexBuffer.getData();
+	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdl->readUint16LE();
 
 	createBound();
