@@ -203,12 +203,13 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	std::vector<Common::UString> textures;
 	textures.push_back(diffuseMap);
 
+	loadTextures(textures);
 
 	// Read vertices (interleaved)
 
 	GLsizei vpsize = 3;
 	GLsizei vnsize = 3;
-	GLsizei vtsize = 2;
+	GLsizei vtsize = 3;
 	uint32 vertexSize = (vpsize + vnsize + vtsize) * sizeof(float);
 	_vertexBuffer.setSize(vertexCount, vertexSize);
 
@@ -236,7 +237,7 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	vt.size = vtsize;
 	vt.type = GL_FLOAT;
 	vt.stride = vertexSize;
-	vt.pointer = vertexData + vpsize + vnsize + vtsize;
+	vt.pointer = vertexData + vpsize + vnsize;
 	vertexDecl.push_back(vt);
 
 	_vertexBuffer.setVertexDecl(vertexDecl);
@@ -259,8 +260,7 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 		// Texture Coords
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
-		//*v++ = ctx.mdb->readIEEEFloatLE();
-		ctx.mdb->skip(4); // Third tcoord component
+		*v++ = ctx.mdb->readIEEEFloatLE();
 	}
 
 
@@ -320,12 +320,13 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	std::vector<Common::UString> textures;
 	textures.push_back(diffuseMap);
 
+	loadTextures(textures);
 
 	// Read vertices (interleaved)
 
 	GLsizei vpsize = 3;
 	GLsizei vnsize = 3;
-	GLsizei vtsize = 2;
+	GLsizei vtsize = 3;
 	uint32 vertexSize = (vpsize + vnsize + vtsize) * sizeof(float);
 	_vertexBuffer.setSize(vertexCount, vertexSize);
 
@@ -353,7 +354,7 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	vt.size = vtsize;
 	vt.type = GL_FLOAT;
 	vt.stride = vertexSize;
-	vt.pointer = vertexData + vpsize + vnsize + vtsize;
+	vt.pointer = vertexData + vpsize + vnsize;
 	vertexDecl.push_back(vt);
 
 	float *v = vertexData;
@@ -376,8 +377,7 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 		// TexCoords
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
-		//*v++ = ctx.mdb->readIEEEFloatLE();
-		ctx.mdb->skip(4); // Third tcoord component
+		*v++ = ctx.mdb->readIEEEFloatLE();
 
 		ctx.mdb->skip(4); // Bone count
 	}
