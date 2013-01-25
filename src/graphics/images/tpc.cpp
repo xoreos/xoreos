@@ -216,14 +216,12 @@ void TPC::readData(Common::SeekableReadStream &tpc, bool needDeSwizzle) {
 		(*mipMap)->data = new byte[(*mipMap)->size];
 
 		if (swizzled) {
-			byte *tmp = new byte[(*mipMap)->size];
+			std::vector<byte> tmp((*mipMap)->size);
 
-			if (tpc.read(tmp, (*mipMap)->size) != (*mipMap)->size)
+			if (tpc.read(&tmp[0], (*mipMap)->size) != (*mipMap)->size)
 				throw Common::Exception(Common::kReadError);
 
-			deSwizzle((*mipMap)->data, tmp, (*mipMap)->width, (*mipMap)->height);
-
-			delete[] tmp;
+			deSwizzle((*mipMap)->data, &tmp[0], (*mipMap)->width, (*mipMap)->height);
 
 		} else {
 			if (tpc.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
