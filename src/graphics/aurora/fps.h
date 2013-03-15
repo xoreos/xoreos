@@ -28,7 +28,7 @@
  */
 
 #ifndef GRAPHICS_AURORA_FPS_H
-#define GRAPHICS_AURORA_FPST_H
+#define GRAPHICS_AURORA_FPS_H
 
 #include "events/notifyable.h"
 
