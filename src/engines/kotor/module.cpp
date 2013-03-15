@@ -315,9 +315,16 @@ void Module::handleEvents() {
 }
 
 bool Module::handleCamera(const Events::Event &e) {
-	if (e.type != Events::kEventKeyDown)
-		return false;
 
+	if (e.type == Events::kEventKeyDown)
+		return handleCameraKeyboardInput(e);
+	else if (e.type == Events::kEventMouseMove)
+		return handleCameraMouseInput(e);
+
+	return false;
+}
+
+bool Module::handleCameraKeyboardInput(const Events::Event &e) {
 	if (e.key.keysym.sym == SDLK_UP)
 		CameraMan.move( 0.5);
 	else if (e.key.keysym.sym == SDLK_DOWN)
@@ -351,6 +358,16 @@ bool Module::handleCamera(const Events::Event &e) {
 
 		CameraMan.setOrientation(0.0, orient[1], orient[2]);
 	} else
+		return false;
+
+	return true;
+}
+
+bool Module::handleCameraMouseInput(const Events::Event &e) {
+	// Holding down the right mouse button enables free look.
+	if (e.motion.state & SDL_BUTTON(3))
+		CameraMan.turn(-0.5 * e.motion.yrel, 0.5 * e.motion.xrel, 0.0);
+	else
 		return false;
 
 	return true;
