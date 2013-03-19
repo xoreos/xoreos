@@ -32,6 +32,15 @@
 
 namespace Common {
 
+PEResourceID::PEResourceID() : _idType(kIDTypeNull) {
+}
+
+PEResourceID::PEResourceID(UString x) : _idType(kIDTypeString), _name(x) {
+}
+
+PEResourceID::PEResourceID(uint32 x) : _idType(kIDTypeNumerical), _id(x) {
+}
+
 PEResourceID &PEResourceID::operator=(UString string) {
 	_name = string;
 	_idType = kIDTypeString;

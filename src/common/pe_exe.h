@@ -42,9 +42,9 @@ class UString;
 
 class PEResourceID {
 public:
-	PEResourceID() { _idType = kIDTypeNull; }
-	PEResourceID(UString x) { _idType = kIDTypeString; _name = x; }
-	PEResourceID(uint32 x) { _idType = kIDTypeNumerical; _id = x; }
+	PEResourceID();
+	PEResourceID(UString x);
+	PEResourceID(uint32 x);
 
 	PEResourceID &operator=(UString string);
 	PEResourceID &operator=(uint32 x);
