@@ -238,7 +238,7 @@ const std::vector<PEResourceID> PEResources::getTypeList() const {
 	if (!_exe)
 		return array;
 
-	for (TypeMap::const_iterator it = _resources.begin(); it != _resources.end(); it++)
+	for (TypeMap::const_iterator it = _resources.begin(); it != _resources.end(); ++it)
 		array.push_back(it->first);
 
 	return array;
@@ -252,7 +252,7 @@ const std::vector<PEResourceID> PEResources::getNameList(const PEResourceID &typ
 
 	const NameMap &nameMap = _resources.find(type)->second;
 
-	for (NameMap::const_iterator it = nameMap.begin(); it != nameMap.end(); it++)
+	for (NameMap::const_iterator it = nameMap.begin(); it != nameMap.end(); ++it)
 		array.push_back(it->first);
 
 	return array;
@@ -271,7 +271,7 @@ const std::vector<PEResourceID> PEResources::getLangList(const PEResourceID &typ
 
 	const LangMap &langMap = nameMap.find(name)->second;
 
-	for (LangMap::const_iterator it = langMap.begin(); it != langMap.end(); it++)
+	for (LangMap::const_iterator it = langMap.begin(); it != langMap.end(); ++it)
 		array.push_back(it->first);
 
 	return array;
