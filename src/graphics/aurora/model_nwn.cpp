@@ -848,7 +848,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	vn.pointer = vertexData + vpsize * vertexCountNew;
 	vertexDecl.push_back(vn);
 
-	for (norms_set_it i = verts_norms.begin(); i != verts_norms.end(); i++) {
+	for (norms_set_it i = verts_norms.begin(); i != verts_norms.end(); ++i) {
 		v = (float *) vn.pointer + i->vi * vnsize;
 		*v++ = i->xyz[0];
 		*v++ = i->xyz[0];
@@ -1351,7 +1351,7 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 
 	_vertexBuffer.setVertexDecl(vertexDecl);
 
-	for (verts_set_it i = verts.begin(); i != verts.end(); i++) {
+	for (verts_set_it i = verts.begin(); i != verts.end(); ++i) {
 		float *v = vertexData + i->i * vertexSize / sizeof(float);
 
 		// Position
