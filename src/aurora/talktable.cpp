@@ -86,7 +86,7 @@ void TalkTable::load() {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TLK file");
-		throw e;
+		throw;
 	}
 
 }

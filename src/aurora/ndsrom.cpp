@@ -76,7 +76,7 @@ void NDSFile::load() {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading NDS file");
-		throw e;
+		throw;
 	}
 
 }

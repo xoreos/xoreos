@@ -71,7 +71,7 @@ void HERFFile::load() {
 	} catch (Common::Exception &e) {
 		delete herf;
 		e.add("Failed reading HERF file");
-		throw e;
+		throw;
 	}
 
 	delete herf;

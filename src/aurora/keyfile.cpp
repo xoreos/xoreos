@@ -90,7 +90,7 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading KEY file");
-		throw e;
+		throw;
 	}
 
 }

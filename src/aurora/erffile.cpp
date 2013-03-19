@@ -89,7 +89,7 @@ void ERFFile::load() {
 				readResources(erf, erfHeader);
 		} catch (Common::Exception &e) {
 			delete[] erfHeader.stringTable;
-			throw e;
+			throw;
 		}
 
 		delete[] erfHeader.stringTable;
@@ -99,7 +99,7 @@ void ERFFile::load() {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading ERF file");
-		throw e;
+		throw;
 	}
 
 }
@@ -415,7 +415,7 @@ Common::SeekableReadStream *ERFFile::decompressBiowareZlib(byte *compressedData,
 		return stream;
 	} catch (Common::Exception &e) {
 		delete[] compressedData;
-		throw e;
+		throw;
 	}
 }
 
@@ -426,7 +426,7 @@ Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(byte *compressedDa
 		return stream;
 	} catch (Common::Exception &e) {
 		delete[] compressedData;
-		throw e;
+		throw;
 	}
 }
 

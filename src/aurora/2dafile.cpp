@@ -157,7 +157,7 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading 2DA file");
-		throw e;
+		throw;
 	}
 
 }

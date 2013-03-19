@@ -84,7 +84,7 @@ void BIFFile::load() {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading BIF file");
-		throw e;
+		throw;
 	}
 
 }

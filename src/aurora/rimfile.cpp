@@ -80,7 +80,7 @@ void RIMFile::load() {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading RIM file");
-		throw e;
+		throw;
 	}
 
 }

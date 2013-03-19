@@ -334,7 +334,7 @@ void ResourceManager::mergeKEYBIF(const KEYFile &key, std::vector<Common::UStrin
 		delete curBIF;
 
 		e.add("Failed opening needed BIFs");
-		throw e;
+		throw;
 	}
 
 }

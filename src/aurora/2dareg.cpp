@@ -105,7 +105,7 @@ TwoDAFile *TwoDARegistry::load(const Common::UString &name) {
 		delete twoda;
 
 		e.add("Failed loading 2DA \"%s\"", name.c_str());
-		throw e;
+		throw;
 
 	} catch (...) {
 		delete twodaFile;

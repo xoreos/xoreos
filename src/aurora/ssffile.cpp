@@ -95,7 +95,7 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading SSF file");
-		throw e;
+		throw;
 	}
 
 }

@@ -117,7 +117,7 @@ void GFFFile::load(uint32 id) {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading GFF file");
-		throw e;
+		throw;
 	}
 
 }
