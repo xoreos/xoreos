@@ -118,6 +118,9 @@ GFFVariable::~GFFVariable() {
 }
 
 GFFVariable &GFFVariable::operator=(const GFFVariable &var) {
+	if (&var == this)
+		return *this;
+
 	clear();
 
 	_type  = var._type;
