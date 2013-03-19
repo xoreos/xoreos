@@ -402,7 +402,6 @@ bool isFemale(Language language) {
 
 bool isLanguageStandard(Language language) {
 	return (language == kLanguageEnglishMale)              ||
-	       (language == kLanguageEnglishMale)              ||
 	       (language == kLanguageEnglishFemale)            ||
 	       (language == kLanguageFrenchMale)               ||
 	       (language == kLanguageFrenchFemale)             ||
