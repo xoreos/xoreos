@@ -237,7 +237,7 @@ void Widget::removeChild(Widget &widget) {
 void Widget::removeGroupMember(Widget &widget) {
 	for (std::list<Widget *>::iterator i = _groupMembers.begin(); i != _groupMembers.end(); ++i) {
 		if (*i == &widget) {
-			widget._groupMembers.erase(i);
+			_groupMembers.erase(i);
 			break;
 		}
 	}
