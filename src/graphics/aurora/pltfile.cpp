@@ -105,7 +105,7 @@ void PLTFile::load() {
 		delete plt;
 
 		e.add("Failed reading PLT file \"%s\"", _name.c_str());
-		throw e;
+		throw;
 	}
 
 	delete plt;

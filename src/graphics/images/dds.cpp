@@ -65,7 +65,7 @@ void DDS::load(Common::SeekableReadStream &dds) {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading DDS file");
-		throw e;
+		throw;
 	}
 }
 

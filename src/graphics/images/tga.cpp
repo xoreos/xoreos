@@ -60,7 +60,7 @@ void TGA::load(Common::SeekableReadStream &tga) {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TGA file");
-		throw e;
+		throw;
 	}
 }
 

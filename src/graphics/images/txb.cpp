@@ -66,7 +66,7 @@ void TXB::load(Common::SeekableReadStream &txb) {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TXB file");
-		throw e;
+		throw;
 	}
 }
 

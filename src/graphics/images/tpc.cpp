@@ -64,7 +64,7 @@ void TPC::load(Common::SeekableReadStream &tpc) {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading TPC file");
-		throw e;
+		throw;
 	}
 }
 
