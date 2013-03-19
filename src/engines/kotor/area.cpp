@@ -201,7 +201,7 @@ void Area::loadLYT() {
 	} catch (Common::Exception &e) {
 		delete lyt;
 		e.add("Failed loading LYT \"%s\"", _resRef.c_str());
-		throw e;
+		throw;
 	}
 }
 
@@ -217,7 +217,7 @@ void Area::loadVIS() {
 	} catch (Common::Exception &e) {
 		delete vis;
 		e.add("Failed loading VIS \"%s\"", _resRef.c_str());
-		throw e;
+		throw;
 	}
 }
 
