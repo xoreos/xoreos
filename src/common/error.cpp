@@ -49,8 +49,7 @@ StackException::StackException(const char *s, ...) {
 	_stack.push(buf);
 }
 
-StackException::StackException(const StackException &e) {
-	_stack = e._stack;
+StackException::StackException(const StackException &e) : _stack(e._stack) {
 }
 
 StackException::~StackException() throw() {
