@@ -140,7 +140,7 @@ bool takeScreenshot() {
 	glReadPixels(0, 0, m_viewport[2], m_viewport[3], GL_BGR, GL_UNSIGNED_BYTE, screen);
 	bool success = writeBMP(filename, screen, m_viewport[2], m_viewport[3]);
 
-	delete screen;
+	delete[] screen;
 
 	if (success) {
 		status("Screenshot taken: %s", filename.c_str());
