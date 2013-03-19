@@ -86,7 +86,7 @@ void Tileset::load(const Common::ConfigFile &set) {
 	loadGeneral(*general);
 
 	const Common::ConfigDomain *tiles = set.getDomain("TILES");
-	if (!general)
+	if (!tiles)
 		throw Common::Exception("Tileset has no \"TILES\" domain");
 
 	_tiles.resize(tiles->getUint("Count"));
