@@ -426,7 +426,8 @@ void WMACodec::initNoise() {
 	if (!_useNoiseCoding)
 		return;
 
-	_noiseMult = _useExpHuffman ? 0.02 : 0.04;
+	_noiseMult  = _useExpHuffman ? 0.02 : 0.04;
+	_noiseIndex = 0;
 
 	uint  seed = 1;
 	float norm = (1.0 / (float)(1LL << 31)) * sqrt(3.0f) * _noiseMult;
