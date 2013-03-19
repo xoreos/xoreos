@@ -493,7 +493,7 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, uint32 field) const {
 	byte *dataPtr = data;
 	while (size > 0) {
 		if (block >= _memos.size()) {
-			delete data;
+			delete[] data;
 			throw Exception("Memo block #%d >= memo block count %d", block, _memos.size());
 		}
 
