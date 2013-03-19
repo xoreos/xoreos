@@ -63,12 +63,10 @@ FileList::FilePath::FilePath(const FilePath &p) :
 }
 
 
-FileList::const_iterator::const_iterator(const const_iterator &i) {
-	it = i.it;
+FileList::const_iterator::const_iterator(const const_iterator &i) : it(i.it) {
 }
 
-FileList::const_iterator::const_iterator(const std::list<FilePath>::const_iterator &i) {
-	it = i;
+FileList::const_iterator::const_iterator(const std::list<FilePath>::const_iterator &i) : it(i) {
 }
 
 FileList::const_iterator &FileList::const_iterator::operator++() {
