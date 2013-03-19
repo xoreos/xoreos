@@ -120,6 +120,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index) const {
 		byte *data = new byte[cursorStreams[i]->size() - 4];
 		cursorStreams[i]->read(data, cursorStreams[i]->size() - 4);
 		out.write(data, cursorStreams[i]->size() - 4);
+		delete[] data;
 		delete cursorStreams[i];
 	}
 
