@@ -35,7 +35,7 @@ namespace Aurora {
 namespace NWScript {
 
 FunctionContext::FunctionContext(const Common::UString &name) : _name(name),
-	_caller(0), _triggerer(0), _defaultCount(0), _paramsSpecified(0) {
+	_caller(0), _triggerer(0), _currentScript(0), _defaultCount(0), _paramsSpecified(0) {
 
 }
 
@@ -53,6 +53,7 @@ FunctionContext &FunctionContext::operator=(const FunctionContext &ctx) {
 	_triggerer       = ctx._triggerer;
 	_return          = ctx._return;
 	_parameters      = ctx._parameters;
+	_currentScript   = ctx._currentScript;
 	_defaultCount    = ctx._defaultCount;
 	_paramsSpecified = ctx._paramsSpecified;
 
