@@ -23,30 +23,59 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-#include "graphics/aurora/highlightableguiquad.h"
+#ifndef HIGHLIGHTABLE_H
+#define HIGHLIGHTABLE_H
 
 namespace Graphics {
 
 namespace Aurora {
 
-HighlightableGUIQuad::HighlightableGUIQuad (const Common::UString &texture,
-					    float x1, float y1, float x2, float y2,
-					    float tX1, float tY1, float tX2, float tY2) :
-					    GUIQuad (texture, x1, y1, x2, y2, tX1, tY1, tX2, tY2) {
-}
+class Highlightable {
 
-HighlightableGUIQuad::~HighlightableGUIQuad() {
-}
+public:
+	Highlightable();
+	virtual ~Highlightable();
 
-void HighlightableGUIQuad::render (RenderPass pass) {
-	if(isHightlighted()) {
-		  float r, g, b, a;
-		  incrementColor(_r, _g, _b, _a, r, g, b, a);
-		  setColor(r, g, b, a);
-	}
-	Graphics::Aurora::GUIQuad::render (pass);
-}
+
+	bool isHightlighted();
+	void setHighlighted(bool hightlighted);
+
+	// This is how much the quad changes per render. Positive number increment the color, negative numbers decrement it.
+	void setHighlightDelta(float r, float g, float b, float a);
+
+	//When any of the quad properties are greater than this bound, the signs of the delta floats will flip
+	void setHighlightUpperBound(float r, float g, float b, float a);
+
+	//When any of the quad properties are less than this bound, the signs of the delta floats will flip
+	void setHighlightLowerBound(float r, float g, float b, float a);
+
+protected:
+	void flipHighlightDelta();
+
+	void incrementColor(float initialR, float initialG, float initialB, float initialA, float &r, float &g, float &b, float &a);
+
+
+private:
+	bool _isHighlighted;
+
+	float _deltaR;
+	float _deltaG;
+	float _deltaB;
+	float _deltaA;
+
+	float _upperBoundR;
+	float _upperBoundG;
+	float _upperBoundB;
+	float _upperBoundA;
+
+	float _lowerBoundR;
+	float _lowerBoundG;
+	float _lowerBoundB;
+	float _lowerBoundA;
+};
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
+
+#endif // HIGHLIGHTABLE_H
