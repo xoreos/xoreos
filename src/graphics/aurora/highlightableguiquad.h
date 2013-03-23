@@ -27,12 +27,13 @@
 #define HIGHLIGHTABLE_GUI_QUAD_H
 
 #include "graphics/aurora/guiquad.h"
+#include "graphics/aurora/highlightable.h"
 
 namespace Graphics {
 
 namespace Aurora {
 
-class HighlightableGUIQuad: public GUIQuad {
+class HighlightableGUIQuad: public GUIQuad, public Highlightable {
 
 public:
 	HighlightableGUIQuad(const Common::UString &texture,
@@ -41,38 +42,6 @@ public:
 	~HighlightableGUIQuad();
 
 	void render (RenderPass pass);
-
-	bool isHightlighted();
-	void setHighlighted(bool hightlighted);
-
-	// This is how much the quad changes per render. Positive number increment the color, negative numbers decrement it.
-	void setHighlightDelta(float r, float g, float b, float a);
-
-	//When any of the quad properties are greater than this bound, the signs of the delta floats will flip
-	void setHighlightUpperBound(float r, float g, float b, float a);
-
-	//When any of the quad properties are less than this bound, the signs of the delta floats will flip
-	void setHighlightLowerBound(float r, float g, float b, float a);
-
-private:
-	void flipHighlightDelta();
-
-	bool _isHighlighted;
-
-	float _deltaR;
-	float _deltaG;
-	float _deltaB;
-	float _deltaA;
-
-	float _upperBoundR;
-	float _upperBoundG;
-	float _upperBoundB;
-	float _upperBoundA;
-
-	float _lowerBoundR;
-	float _lowerBoundG;
-	float _lowerBoundB;
-	float _lowerBoundA;
 };
 
 } // End of namespace Aurora

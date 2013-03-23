@@ -35,65 +35,17 @@ HighlightableText::HighlightableText (const FontHandle &font, const Common::UStr
 HighlightableText::~HighlightableText() {
 }
 
-bool HighlightableText::isHightlighted() {
-	return _isHighlighted;
-}
-
-void HighlightableText::setHighlighted (bool hightlighted) {
-	_isHighlighted = hightlighted;
-}
-
 void HighlightableText::render (RenderPass pass) {
 	// Text objects should always be transparent
 	if (pass == kRenderPassOpaque)
 		return;
 
-	if(_isHighlighted) {
-		_r += _deltaR;
-		_g += _deltaG;
-		_b += _deltaB;
-		_a += _deltaA;
-
-		if(_upperBoundR < _r || _upperBoundG < _g || _upperBoundB < _b || _upperBoundA < _a ||
-			_lowerBoundR > _r || _lowerBoundG > _g || _lowerBoundB > _b || _lowerBoundA > _a) {
-			flipHighlightDelta();
-
-			_r += _deltaR;
-			_g += _deltaG;
-			_b += _deltaB;
-			_a += _deltaA;
-		}
+	if(isHightlighted()) {
+		  float r, g, b, a;
+		  incrementColor(_r, _g, _b, _a, r, g, b, a);
+		  setColor(r, g, b, a);
 	}
 	Graphics::Aurora::Text::render (pass);
-}
-
-void HighlightableText::setHighlightDelta (float r, float g, float b, float a) {
-	_deltaR = r;
-	_deltaG = g;
-	_deltaB = b;
-	_deltaA = a;
-}
-
-void HighlightableText::setHighlightLowerBound (float r, float g, float b, float a) {
-	_lowerBoundR = r;
-	_lowerBoundG = g;
-	_lowerBoundB = b;
-	_lowerBoundA = a;
-}
-
-void HighlightableText::setHighlightUpperBound(float r, float g, float b, float a)
-{
-	_upperBoundR = r;
-	_upperBoundG = g;
-	_upperBoundB = b;
-	_upperBoundA = a;
-}
-
-void HighlightableText::flipHighlightDelta() {
-	_deltaR *= -1;
-	_deltaG *= -1;
-	_deltaB *= -1;
-	_deltaA *= -1;
 }
 
 } // End of namespace Aurora
