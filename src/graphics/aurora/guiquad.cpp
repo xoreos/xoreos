@@ -86,6 +86,15 @@ void GUIQuad::setPosition(float x, float y, float z) {
 	GfxMan.unlockFrame();
 }
 
+
+void GUIQuad::getColor(float& r, float& g, float& b, float& a) const {
+	r = _r;
+	g = _g;
+	b = _b;
+	a = _a;
+}
+
+
 void GUIQuad::setColor(float r, float g, float b, float a) {
 	GfxMan.lockFrame();
 

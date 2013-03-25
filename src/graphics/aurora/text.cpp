@@ -68,6 +68,13 @@ void Text::set(const Common::UString &str) {
 	GfxMan.unlockFrame();
 }
 
+void Text::getColor(float& r, float& g, float& b, float& a) const {
+	r = _r;
+	g = _g;
+	b = _b;
+	a = _a;
+}
+
 void Text::setColor(float r, float g, float b, float a) {
 	GfxMan.lockFrame();
 

@@ -40,8 +40,9 @@ HighlightableGUIQuad::~HighlightableGUIQuad() {
 
 void HighlightableGUIQuad::render (RenderPass pass) {
 	if(isHightlighted()) {
-		  float r, g, b, a;
-		  incrementColor(_r, _g, _b, _a, r, g, b, a);
+		  float initialR, initialG, initialB, initialA, r, g, b, a;
+		  getColor(initialR, initialG, initialB, initialA);
+		  incrementColor(initialR, initialG, initialB, initialA, r, g, b, a);
 		  setColor(r, g, b, a);
 	}
 	Graphics::Aurora::GUIQuad::render (pass);
