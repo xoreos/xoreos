@@ -51,6 +51,7 @@ public:
 
 	const Common::UString &get() const;
 	void getPosition(float &x, float &y, float &z) const;
+	void getColor(float &r, float &g, float &b, float &a) const;
 
 	void set(const Common::UString &str);
 	void setPosition(float x, float y, float z = -FLT_MAX);
@@ -69,10 +70,8 @@ public:
 	void render(RenderPass pass);
 	bool isIn(float x, float y) const;
 
-protected:
-	float _r, _g, _b, _a;
-
 private:
+	float _r, _g, _b, _a;
 	FontHandle _font;
 
 	float _x;

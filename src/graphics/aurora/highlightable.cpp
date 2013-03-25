@@ -29,7 +29,8 @@ namespace Graphics {
 
 namespace Aurora {
 
-Highlightable::Highlightable() {
+Highlightable::Highlightable() : _isHighlighted(false), _deltaR(0), _deltaG(0), _deltaB(0), _deltaA(0), _upperBoundR(0), _upperBoundG(0), _upperBoundB(0), _upperBoundA(0),
+	_lowerBoundR(0), _lowerBoundG(0), _lowerBoundB(0), _lowerBoundA(0) {
 
 }
 
