@@ -53,6 +53,7 @@ public:
 
 private:
 	Sound::ChannelHandle _sound;
+	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
 };
 
 } // End of namespace KotOR

@@ -29,13 +29,21 @@ namespace Graphics {
 
 namespace Aurora {
 
-Highlightable::Highlightable() : _isHighlighted(false), _deltaR(0), _deltaG(0), _deltaB(0), _deltaA(0), _upperBoundR(0), _upperBoundG(0), _upperBoundB(0), _upperBoundA(0),
+Highlightable::Highlightable() : _highlightable(false), _isHighlighted(false), _deltaR(0), _deltaG(0), _deltaB(0), _deltaA(0), _upperBoundR(0), _upperBoundG(0), _upperBoundB(0), _upperBoundA(0),
 	_lowerBoundR(0), _lowerBoundG(0), _lowerBoundB(0), _lowerBoundA(0) {
 
 }
 
 Highlightable::~Highlightable() {
 
+}
+
+bool Highlightable::isHighlightable() {
+	return _highlightable;
+}
+
+void Highlightable::setHighlightable(bool highlightable) {
+	_highlightable = highlightable;
 }
 
 bool Highlightable::isHightlighted() {
@@ -65,6 +73,13 @@ void Highlightable::setHighlightUpperBound (float r, float g, float b, float a) 
 	_upperBoundG = g;
 	_upperBoundB = b;
 	_upperBoundA = a;
+}
+
+void Highlightable::getHighlightedLowerBound(float& r, float& g, float& b, float& a) {
+	r = _lowerBoundR;
+	g = _lowerBoundG;
+	b = _lowerBoundB;
+	a = _lowerBoundA;
 }
 
 void Highlightable::flipHighlightDelta() {
