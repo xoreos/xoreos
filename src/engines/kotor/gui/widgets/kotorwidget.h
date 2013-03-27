@@ -35,6 +35,8 @@
 #include "aurora/types.h"
 
 #include "graphics/aurora/types.h"
+#include "graphics/aurora/highlightable.h"
+#include "graphics/aurora/highlightabletext.h"
 
 #include "engines/aurora/widget.h"
 
@@ -63,6 +65,8 @@ public:
 	void setFill(const Common::UString &fill);
 	void setColor(float r, float g, float b, float a);
 	void setText(const Common::UString &text);
+
+	Graphics::Aurora::Highlightable *getTextHighlightableComponent() const;
 
 protected:
 	struct Extend {
@@ -114,7 +118,7 @@ protected:
 	float _a;
 
 	Graphics::Aurora::GUIQuad *_quad;
-	Graphics::Aurora::Text    *_text;
+	Graphics::Aurora::HighlightableText *_text;
 
 
 	Extend createExtend(const Aurora::GFFStruct &gff);

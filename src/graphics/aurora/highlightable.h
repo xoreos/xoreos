@@ -36,6 +36,8 @@ public:
 	Highlightable();
 	virtual ~Highlightable();
 
+	bool isHighlightable();
+	void setHighlightable(bool highlightable);
 
 	bool isHightlighted();
 	void setHighlighted(bool hightlighted);
@@ -49,6 +51,8 @@ public:
 	//When any of the quad properties are less than this bound, the signs of the delta floats will flip
 	void setHighlightLowerBound(float r, float g, float b, float a);
 
+	void getHighlightedLowerBound(float &r, float &g, float &b, float &a);
+
 protected:
 	void flipHighlightDelta();
 
@@ -56,6 +60,7 @@ protected:
 
 
 private:
+	bool _highlightable;
 	bool _isHighlighted;
 
 	float _deltaR;

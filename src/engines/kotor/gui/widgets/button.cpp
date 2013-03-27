@@ -33,6 +33,7 @@
 
 #include "graphics/aurora/guiquad.h"
 #include "graphics/aurora/text.h"
+#include "graphics/aurora/highlightabletext.h"
 
 #include "engines/aurora/util.h"
 #include "engines/kotor/gui/widgets/button.h"
@@ -61,11 +62,18 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 }
 
 void WidgetButton::enter() {
+	float r, g, b, a;
 	_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
+	_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+	_text->getHighlightedLowerBound(r, g, b, a);
+	_text->setColor(r, g, b, a);
+	_text->setHighlighted(true);
 }
 
 void WidgetButton::leave() {
 	SoundMan.stopChannel(_sound);
+	_text->setHighlighted(false);
+	_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 }
 
 } // End of namespace KotOR
