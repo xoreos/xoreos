@@ -23,41 +23,31 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/kotor/gui/widgets/button.h
- *  A KotOR button widget.
- */
+#include "graphics/aurora/highlightableguiquad.h"
 
-#ifndef ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
-#define ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+namespace Graphics {
 
-#include "sound/types.h"
+namespace Aurora {
 
-#include "engines/kotor/gui/widgets/kotorwidget.h"
+HighlightableGUIQuad::HighlightableGUIQuad (const Common::UString &texture,
+					    float x1, float y1, float x2, float y2,
+					    float tX1, float tY1, float tX2, float tY2) :
+					    GUIQuad (texture, x1, y1, x2, y2, tX1, tY1, tX2, tY2) {
+}
 
-namespace Engines {
+HighlightableGUIQuad::~HighlightableGUIQuad() {
+}
 
-namespace KotOR {
+void HighlightableGUIQuad::render (RenderPass pass) {
+	if(isHighlightable() && isHightlighted()) {
+		  float initialR, initialG, initialB, initialA, r, g, b, a;
+		  getColor(initialR, initialG, initialB, initialA);
+		  incrementColor(initialR, initialG, initialB, initialA, r, g, b, a);
+		  setColor(r, g, b, a);
+	}
+	Graphics::Aurora::GUIQuad::render (pass);
+}
 
-class WidgetButton : public KotORWidget {
-public:
-	WidgetButton(::Engines::GUI &gui, const Common::UString &tag);
-	~WidgetButton();
+} // End of namespace Aurora
 
-	void load(const Aurora::GFFStruct &gff);
-
-	void mouseUp(uint8 state, float x, float y);
-
-	virtual void enter();
-
-	virtual void leave();
-
-private:
-	Sound::ChannelHandle _sound;
-	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
-};
-
-} // End of namespace KotOR
-
-} // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+} // End of namespace Graphics

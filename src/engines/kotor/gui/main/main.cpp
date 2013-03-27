@@ -39,6 +39,8 @@
 #include "engines/kotor/gui/main/movies.h"
 #include "engines/kotor/gui/main/options.h"
 
+#include "gui/widgets/button.h"
+
 namespace Engines {
 
 namespace KotOR {
@@ -47,6 +49,7 @@ MainMenu::MainMenu(Module &module, bool isXbox) : _module(&module), _isXbox(isXb
 	load(isXbox ? "mainmenu" : "mainmenu16x12");
 
 	addBackground("back");
+	configureText();
 
 	_movies = 0;
 	_options = 0;
@@ -72,6 +75,23 @@ void MainMenu::createOptions() {
 	_options = new OptionsMenu;
 
 }
+
+void MainMenu::configureText() {
+	setDefaultHighlighting(getButton("BTN_NEWGAME")->getTextHighlightableComponent());
+	setDefaultHighlighting(getButton("BTN_LOADGAME")->getTextHighlightableComponent());
+	setDefaultHighlighting(getButton("BTN_MOVIES")->getTextHighlightableComponent());
+	setDefaultHighlighting(getButton("BTN_OPTIONS")->getTextHighlightableComponent());
+	setDefaultHighlighting(getButton("BTN_EXIT")->getTextHighlightableComponent());
+}
+
+void MainMenu::setDefaultHighlighting(Graphics::Aurora::Highlightable* highlightable) {
+	highlightable->setHighlightable(true);
+	highlightable->setHighlightDelta(0, 0, 0, .05);
+	highlightable->setHighlightLowerBound(1, 1, 0, .2);
+	highlightable->setHighlightUpperBound(1, 1, 0, 1);
+}
+
+
 
 
 void MainMenu::initWidget(Widget &widget) {

@@ -23,41 +23,29 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/kotor/gui/widgets/button.h
- *  A KotOR button widget.
- */
+#ifndef HIGHLIGHTABLE_TEXT_H
+#define HIGHLIGHTABLE_TEXT_H
 
-#ifndef ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
-#define ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+#include "graphics/aurora/text.h"
+#include "graphics/aurora/highlightable.h"
 
-#include "sound/types.h"
+namespace Graphics {
 
-#include "engines/kotor/gui/widgets/kotorwidget.h"
+namespace Aurora {
 
-namespace Engines {
+class HighlightableText: public Text, public Highlightable {
 
-namespace KotOR {
+  public:
+	HighlightableText(const FontHandle &font, const Common::UString &str,
+	     float r = 1.0, float g = 1.0, float b = 1.0, float a = 1.0, float align = 0.0);
+	~HighlightableText();
 
-class WidgetButton : public KotORWidget {
-public:
-	WidgetButton(::Engines::GUI &gui, const Common::UString &tag);
-	~WidgetButton();
+	void render (RenderPass pass);
 
-	void load(const Aurora::GFFStruct &gff);
-
-	void mouseUp(uint8 state, float x, float y);
-
-	virtual void enter();
-
-	virtual void leave();
-
-private:
-	Sound::ChannelHandle _sound;
-	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
 };
 
-} // End of namespace KotOR
+} // End of namespace Aurora
 
-} // End of namespace Engines
+} // End of namespace Graphics
 
-#endif // ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+#endif // HIGHLIGHTABLE_TEXT_H

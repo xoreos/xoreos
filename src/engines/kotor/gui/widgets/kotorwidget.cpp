@@ -35,6 +35,7 @@
 
 #include "graphics/aurora/guiquad.h"
 #include "graphics/aurora/text.h"
+#include "graphics/aurora/highlightabletext.h"
 
 #include "engines/kotor/gui/widgets/kotorwidget.h"
 
@@ -174,7 +175,7 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 	Text text = createText(gff);
 
 	if (!text.text.empty() && !text.font.empty()) {
-		_text = new Graphics::Aurora::Text(FontMan.get(text.font), text.text,
+		_text = new Graphics::Aurora::HighlightableText(FontMan.get(text.font), text.text,
 		                                   text.r, text.g, text.b, 1.0);
 
 		const float hspan = extend.w - _text->getWidth();
@@ -279,6 +280,10 @@ KotORWidget::Text KotORWidget::createText(const Aurora::GFFStruct &gff) {
 	}
 
 	return text;
+}
+
+Graphics::Aurora::Highlightable* KotORWidget::getTextHighlightableComponent() const {
+	return static_cast<Graphics::Aurora::Highlightable*>(_text);
 }
 
 } // End of namespace KotOR

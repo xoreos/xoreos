@@ -23,41 +23,29 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/kotor/gui/widgets/button.h
- *  A KotOR button widget.
- */
+#ifndef HIGHLIGHTABLE_GUI_QUAD_H
+#define HIGHLIGHTABLE_GUI_QUAD_H
 
-#ifndef ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
-#define ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+#include "graphics/aurora/guiquad.h"
+#include "graphics/aurora/highlightable.h"
 
-#include "sound/types.h"
+namespace Graphics {
 
-#include "engines/kotor/gui/widgets/kotorwidget.h"
+namespace Aurora {
 
-namespace Engines {
+class HighlightableGUIQuad: public GUIQuad, public Highlightable {
 
-namespace KotOR {
-
-class WidgetButton : public KotORWidget {
 public:
-	WidgetButton(::Engines::GUI &gui, const Common::UString &tag);
-	~WidgetButton();
+	HighlightableGUIQuad(const Common::UString &texture,
+	        float  x1      , float  y1      , float  x2      , float  y2,
+			    float tX1 = 0.0, float tY1 = 0.0, float tX2 = 1.0, float tY2 = 1.0);
+	~HighlightableGUIQuad();
 
-	void load(const Aurora::GFFStruct &gff);
-
-	void mouseUp(uint8 state, float x, float y);
-
-	virtual void enter();
-
-	virtual void leave();
-
-private:
-	Sound::ChannelHandle _sound;
-	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
+	void render (RenderPass pass);
 };
 
-} // End of namespace KotOR
+} // End of namespace Aurora
 
-} // End of namespace Engines
+} // End of namespace Graphics
 
-#endif // ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+#endif // HIGHLIGHTABLE_GUI_QUAD_H

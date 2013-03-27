@@ -40,7 +40,7 @@ namespace Aurora {
 
 Text::Text(const FontHandle &font, const Common::UString &str,
 		float r, float g, float b, float a, float align) :
-	_font(font), _x(0.0), _y(0.0), _r(r), _g(g), _b(b), _a(a), _align(align) {
+	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0), _y(0.0), _align(align) {
 
 	set(str);
 
@@ -66,6 +66,13 @@ void Text::set(const Common::UString &str) {
 	_width  = font.getWidth (_str);
 
 	GfxMan.unlockFrame();
+}
+
+void Text::getColor(float& r, float& g, float& b, float& a) const {
+	r = _r;
+	g = _g;
+	b = _b;
+	a = _a;
 }
 
 void Text::setColor(float r, float g, float b, float a) {

@@ -51,11 +51,13 @@ public:
 			    float tX1 = 0.0, float tY1 = 0.0, float tX2 = 1.0, float tY2 = 1.0);
 	~GUIQuad();
 
-	/** Set the current position of the quad. */
+	/** Get the current position of the quad. */
 	void getPosition(float &x, float &y, float &z) const;
 	/** Set the current position of the quad. */
 	void setPosition(float x, float y, float z = -FLT_MAX);
 
+	/** Get the current color of the quad */
+	void getColor(float &r, float &g, float &b, float &a) const;
 	/** Set the current color of the quad. */
 	void setColor(float r, float g, float b, float a);
 	/** Set the current texture of the quad. */
@@ -79,6 +81,11 @@ public:
 private:
 	TextureHandle _texture;
 
+	float _r;
+	float _g;
+	float _b;
+	float _a;
+
 	float _x1;
 	float _y1;
 	float _x2;
@@ -88,11 +95,6 @@ private:
 	float _tY1;
 	float _tX2;
 	float _tY2;
-
-	float _r;
-	float _g;
-	float _b;
-	float _a;
 
 	bool _xor;
 };

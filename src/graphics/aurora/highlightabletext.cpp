@@ -23,41 +23,33 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/kotor/gui/widgets/button.h
- *  A KotOR button widget.
- */
+#include "graphics/aurora/highlightabletext.h"
 
-#ifndef ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
-#define ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+namespace Graphics {
 
-#include "sound/types.h"
+namespace Aurora {
 
-#include "engines/kotor/gui/widgets/kotorwidget.h"
+HighlightableText::HighlightableText (const FontHandle &font, const Common::UString &str, float r, float g, float b, float a, float align) :
+	Text (font, str, r, g, b, a, align) {
+}
 
-namespace Engines {
+HighlightableText::~HighlightableText() {
+}
 
-namespace KotOR {
+void HighlightableText::render (RenderPass pass) {
+	// Text objects should always be transparent
+	if (pass == kRenderPassOpaque)
+		return;
 
-class WidgetButton : public KotORWidget {
-public:
-	WidgetButton(::Engines::GUI &gui, const Common::UString &tag);
-	~WidgetButton();
+	if(isHighlightable() && isHightlighted()) {
+		  float initialR, initialG, initialB, initialA, r, g, b, a;
+		  getColor(initialR, initialG, initialB, initialA);
+		  incrementColor(initialR, initialG, initialB, initialA, r, g, b, a);
+		  setColor(r, g, b, a);
+	}
+	Graphics::Aurora::Text::render (pass);
+}
 
-	void load(const Aurora::GFFStruct &gff);
+} // End of namespace Aurora
 
-	void mouseUp(uint8 state, float x, float y);
-
-	virtual void enter();
-
-	virtual void leave();
-
-private:
-	Sound::ChannelHandle _sound;
-	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
-};
-
-} // End of namespace KotOR
-
-} // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
+} // End of namespace Graphics
