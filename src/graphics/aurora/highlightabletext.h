@@ -40,7 +40,7 @@ class HighlightableText: public Text, public Highlightable {
 	     float r = 1.0, float g = 1.0, float b = 1.0, float a = 1.0, float align = 0.0);
 	~HighlightableText();
 
-	void render (RenderPass pass);
+	void render(RenderPass pass);
 
 };
 

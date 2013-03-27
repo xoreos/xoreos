@@ -29,23 +29,23 @@ namespace Graphics {
 
 namespace Aurora {
 
-HighlightableGUIQuad::HighlightableGUIQuad (const Common::UString &texture,
-					    float x1, float y1, float x2, float y2,
-					    float tX1, float tY1, float tX2, float tY2) :
-					    GUIQuad (texture, x1, y1, x2, y2, tX1, tY1, tX2, tY2) {
+HighlightableGUIQuad::HighlightableGUIQuad(const Common::UString &texture,
+		float x1, float y1, float x2, float y2,
+		float tX1, float tY1, float tX2, float tY2) :
+	GUIQuad (texture, x1, y1, x2, y2, tX1, tY1, tX2, tY2) {
 }
 
 HighlightableGUIQuad::~HighlightableGUIQuad() {
 }
 
-void HighlightableGUIQuad::render (RenderPass pass) {
+void HighlightableGUIQuad::render(RenderPass pass) {
 	if(isHighlightable() && isHightlighted()) {
-		  float initialR, initialG, initialB, initialA, r, g, b, a;
-		  getColor(initialR, initialG, initialB, initialA);
-		  incrementColor(initialR, initialG, initialB, initialA, r, g, b, a);
-		  setColor(r, g, b, a);
+		float initialR, initialG, initialB, initialA, r, g, b, a;
+		getColor(initialR, initialG, initialB, initialA);
+		incrementColor(initialR, initialG, initialB, initialA, r, g, b, a);
+		setColor(r, g, b, a);
 	}
-	Graphics::Aurora::GUIQuad::render (pass);
+	Graphics::Aurora::GUIQuad::render(pass);
 }
 
 } // End of namespace Aurora

@@ -29,25 +29,25 @@ namespace Graphics {
 
 namespace Aurora {
 
-HighlightableText::HighlightableText (const FontHandle &font, const Common::UString &str, float r, float g, float b, float a, float align) :
-	Text (font, str, r, g, b, a, align) {
+HighlightableText::HighlightableText(const FontHandle &font, const Common::UString &str, float r, float g, float b, float a, float align) :
+	Text(font, str, r, g, b, a, align) {
 }
 
 HighlightableText::~HighlightableText() {
 }
 
-void HighlightableText::render (RenderPass pass) {
+void HighlightableText::render(RenderPass pass) {
 	// Text objects should always be transparent
 	if (pass == kRenderPassOpaque)
 		return;
 
 	if(isHighlightable() && isHightlighted()) {
-		  float initialR, initialG, initialB, initialA, r, g, b, a;
-		  getColor(initialR, initialG, initialB, initialA);
-		  incrementColor(initialR, initialG, initialB, initialA, r, g, b, a);
-		  setColor(r, g, b, a);
+		float initialR, initialG, initialB, initialA, r, g, b, a;
+		getColor(initialR, initialG, initialB, initialA);
+		incrementColor(initialR, initialG, initialB, initialA, r, g, b, a);
+		setColor(r, g, b, a);
 	}
-	Graphics::Aurora::Text::render (pass);
+	Graphics::Aurora::Text::render(pass);
 }
 
 } // End of namespace Aurora

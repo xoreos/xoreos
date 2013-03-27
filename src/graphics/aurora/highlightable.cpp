@@ -50,25 +50,25 @@ bool Highlightable::isHightlighted() {
 	return _isHighlighted;
 }
 
-void Highlightable::setHighlighted (bool hightlighted) {
+void Highlightable::setHighlighted(bool hightlighted) {
 	_isHighlighted = hightlighted;
 }
 
-void Highlightable::setHighlightDelta (float r, float g, float b, float a) {
+void Highlightable::setHighlightDelta(float r, float g, float b, float a) {
 	_deltaR = r;
 	_deltaG = g;
 	_deltaB = b;
 	_deltaA = a;
 }
 
-void Highlightable::setHighlightLowerBound (float r, float g, float b, float a) {
+void Highlightable::setHighlightLowerBound(float r, float g, float b, float a) {
 	_lowerBoundR = r;
 	_lowerBoundG = g;
 	_lowerBoundB = b;
 	_lowerBoundA = a;
 }
 
-void Highlightable::setHighlightUpperBound (float r, float g, float b, float a) {
+void Highlightable::setHighlightUpperBound(float r, float g, float b, float a) {
 	_upperBoundR = r;
 	_upperBoundG = g;
 	_upperBoundB = b;
