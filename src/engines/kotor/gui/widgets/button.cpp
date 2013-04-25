@@ -64,7 +64,7 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 void WidgetButton::enter() {
 	float r, g, b, a;
 	_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
-	if(getTextHighlightableComponent()->isHighlightable()) {
+	if(getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
 		_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 		_text->getHighlightedLowerBound(r, g, b, a);
 		_text->setColor(r, g, b, a);
@@ -74,7 +74,7 @@ void WidgetButton::enter() {
 
 void WidgetButton::leave() {
 	SoundMan.stopChannel(_sound);
-	if(getTextHighlightableComponent()->isHighlightable()) {
+	if(getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
 		_text->setHighlighted(false);
 		_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 	}
