@@ -64,16 +64,20 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 void WidgetButton::enter() {
 	float r, g, b, a;
 	_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
-	_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
-	_text->getHighlightedLowerBound(r, g, b, a);
-	_text->setColor(r, g, b, a);
-	_text->setHighlighted(true);
+	if(getTextHighlightableComponent()->isHighlightable()) {
+		_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+		_text->getHighlightedLowerBound(r, g, b, a);
+		_text->setColor(r, g, b, a);
+		_text->setHighlighted(true);
+	}
 }
 
 void WidgetButton::leave() {
 	SoundMan.stopChannel(_sound);
-	_text->setHighlighted(false);
-	_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+	if(getTextHighlightableComponent()->isHighlightable()) {
+		_text->setHighlighted(false);
+		_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+	}
 }
 
 } // End of namespace KotOR
