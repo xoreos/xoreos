@@ -32,6 +32,8 @@
 
 #include "engines/kotor/gui/gui.h"
 
+#include "graphics/aurora/highlightable.h"
+
 #include "gui/options/gameplay.h"
 
 namespace Engines {
@@ -48,6 +50,9 @@ protected:
 
 private:
 	void adoptChanges();
+
+	void configureText();
+	void setDefaultHighlighting(Graphics::Aurora::Highlightable* highlightable);
 
 	GUI *_gameplay;
 	GUI *_feedback;
