@@ -143,7 +143,7 @@ Bink::~Bink() {
 }
 
 uint32 Bink::getTimeToNextFrame() const {
-	if (!_started || _curFrame < 0)
+	if (!_started)
 		return 0;
 
 	uint32 curTime   = EventMan.getTimestamp() - _startTime;
