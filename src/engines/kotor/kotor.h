@@ -57,6 +57,7 @@ public:
 	const Common::UString &getGameName() const;
 
 	bool probe(Common::SeekableReadStream &stream) const { return false; }
+	virtual bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const = 0;
 
 	Engines::Engine *createEngine() const;
 
