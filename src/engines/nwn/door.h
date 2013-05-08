@@ -83,6 +83,7 @@ public:
 
 	/** Play a door animation. */
 	void playAnimation(Animation animation);
+	virtual void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0) { Situated::playAnimation(animation, restart, loopCount); }
 
 protected:
 	/** Load door-specific properties. */
