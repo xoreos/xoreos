@@ -33,6 +33,7 @@
 #include "aurora/types.h"
 
 #include "graphics/aurora/types.h"
+#include "graphics/aurora/highlightable.h"
 
 #include "engines/aurora/gui.h"
 
@@ -87,6 +88,8 @@ protected:
 	WidgetListBox     *getListBox    (const Common::UString &tag, bool vital = false);
 
 	void addBackground(const Common::UString &background);
+
+	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 
 private:
 	struct WidgetContext {
