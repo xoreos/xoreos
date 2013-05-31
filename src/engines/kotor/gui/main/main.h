@@ -31,7 +31,6 @@
 #define ENGINES_KOTOR_GUI_MAIN_MAIN_H
 
 #include "engines/kotor/gui/gui.h"
-#include "graphics/aurora/highlightable.h"
 
 namespace Engines {
 
@@ -58,8 +57,7 @@ private:
 
 	void createMovies();
 	void createOptions();
-	void configureText();
-	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
+	void configureHighlighting();
 };
 
 } // End of namespace KotOR

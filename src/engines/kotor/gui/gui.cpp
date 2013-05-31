@@ -271,6 +271,13 @@ void GUI::addBackground(const Common::UString &background) {
 	addWidget(backPanel);
 }
 
+void GUI::setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable) {
+	highlightable->setHighlightable(true);
+	highlightable->setHighlightDelta(0, 0, 0, .05);
+	highlightable->setHighlightLowerBound(1, 1, 0, .2);
+	highlightable->setHighlightUpperBound(1, 1, 0, 1);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
