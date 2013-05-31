@@ -40,7 +40,7 @@
 namespace Aurora {
 	namespace NWScript {
 		class Object;
-		class ScriptState;
+		struct ScriptState;
 	}
 }
 namespace Engines {

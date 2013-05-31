@@ -46,8 +46,7 @@ namespace NWScript {
 class Object;
 class EngineType;
 
-class ScriptState {
-public:
+struct ScriptState {
 	uint32 offset;
 	std::vector<class Variable> globals;
 	std::vector<class Variable> locals;

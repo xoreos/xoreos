@@ -39,7 +39,7 @@
 
 namespace Common {
 
-class Complex;
+struct Complex;
 
 /** (Inverse) Fast Fourier Transform. */
 class FFT {

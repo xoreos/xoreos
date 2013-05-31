@@ -63,8 +63,7 @@
 namespace Common {
 
 /** A complex number. */
-class Complex {
-public:
+struct Complex {
 	float re, im;
 };
 
