@@ -31,11 +31,14 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
+#include <boost/unordered_set.hpp>
+
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/debug.h"
 #include "common/stream.h"
 #include "common/streamtokenizer.h"
+#include "common/vector3.h"
 
 #include "aurora/types.h"
 #include "aurora/resman.h"
@@ -622,6 +625,26 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 }
 
+struct Normal {
+	uint16 vi;    // id of vertex this normal belongs to
+	float xyz[3]; // vertex normal
+};
+
+bool operator == (const Normal &a, const Normal &b) {
+	return a.vi == b.vi;
+}
+
+std::size_t hash_value(const Normal &b) {
+	boost::hash<uint16> hasher;
+	return hasher(b.vi);
+}
+
+bool fuzzy_equal(const float a[3], const float b[3]) {
+	return fabs(a[0] - b[0]) < 1E-4 &&
+		fabs(a[1] - b[1]) < 1E-4 &&
+		fabs(a[2] - b[2]) < 1E-4;
+}
+
 void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
@@ -684,7 +707,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	ctx.mdl->skip(8); // Unknown
 
-	byte triangleMode = ctx.mdl->readByte();
+	byte triangleMode = ctx.mdl->readByte(); // 3 - Triangle, 4 - TriStrip
 
 	ctx.mdl->skip(3 + 4); // Padding + Unknown
 
@@ -698,10 +721,12 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	textureVertexOffset[2] = ctx.mdl->readUint32LE();
 	textureVertexOffset[3] = ctx.mdl->readUint32LE();
 
-	ctx.mdl->skip(4); // Vertex normals
-	ctx.mdl->skip(4); // Vertex RGBA colors
+	uint32 normalOffset = ctx.mdl->readUint32LE(); // Vertex normals
+	uint32 colorOffset = ctx.mdl->readUint32LE(); // Vertex RGBA colors
 
-	ctx.mdl->skip(6 * 4); // Texture animation data
+	uint32 textureAnimOffset[6]; // Texture animation data
+	for (uint32 i = 0; i < 6; i++)
+		textureAnimOffset[i] = ctx.mdl->readUint32LE();
 
 	bool lightMapped = ctx.mdl->readByte() == 1;
 
@@ -729,90 +754,153 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	uint32 endPos = ctx.mdl->pos();
 
-	// Read vertex coordinates
-	std::vector<float> vX, vY, vZ;
-	if (vertexOffset != 0xFFFFFFFF) {
-		ctx.mdl->seekTo(ctx.offRawData + vertexOffset);
 
-		vX.resize(vertexCount);
-		vY.resize(vertexCount);
-		vZ.resize(vertexCount);
+	// Read faces
 
-		for (uint32 i = 0; i < vertexCount; i++) {
-			vX[i] = ctx.mdl->readIEEEFloatLE();
-			vY[i] = ctx.mdl->readIEEEFloatLE();
-			vZ[i] = ctx.mdl->readIEEEFloatLE();
+	assert(!_faceData);
+
+	_faceCount = facesCount;
+	_faceSize = 3 * sizeof(uint16);
+	_faceType = GL_UNSIGNED_SHORT;
+	_faceData = std::malloc(_faceCount * _faceSize);
+
+	// NWN stores 1 normal per face
+	// Convert to one normal per vertex by duplicating vertex data
+	// for face verts with multiple normals
+
+	std::vector<Normal> new_verts_norms;
+	boost::unordered_set<Normal> verts_norms;
+	typedef boost::unordered_set<Normal>::iterator norms_set_it;
+
+	Normal n;
+	uint16 vertexCountNew = vertexCount;
+	uint16 *f = (uint16 *)_faceData;
+	ctx.mdl->seekTo(ctx.offModelData + facesOffset);
+	for (uint32 i = 0; i < _faceCount; i++) {
+		// Face normal
+		n.xyz[0] = ctx.mdl->readIEEEFloatLE();
+		n.xyz[1] = ctx.mdl->readIEEEFloatLE();
+		n.xyz[2] = ctx.mdl->readIEEEFloatLE();
+
+		ctx.mdl->skip(    4); // Plane distance
+		ctx.mdl->skip(    4); // Surface ID / smoothing group ??
+		ctx.mdl->skip(3 * 2); // Adjacent face number or -1
+
+		// Face indices
+		for (uint32 j = 0; j < 3; j++) {
+			n.vi = ctx.mdl->readUint16LE();
+			assert(n.vi <= vertexCount);
+
+			// check if we have a normal for this vertex already
+			std::pair<norms_set_it, bool> it = verts_norms.insert(n);
+			if (!it.second && !fuzzy_equal(n.xyz, it.first->xyz)) {
+				new_verts_norms.push_back(n);
+				n.vi = vertexCountNew++;
+			}
+
+			*f++ = n.vi;
 		}
 	}
 
+
+	// Read vertex data
+
+	assert(!_vertData);
+
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 3;
+	GLsizei vtsize = 2;
+	_vertSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
+	_vertCount = vertexCountNew;
+	_vertData = std::malloc(_vertCount * _vertSize);
+
+	// Read vertex coordinates
+
+	VertexAttrib vp;
+	vp.index = VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = 0;
+	vp.pointer = (float *) _vertData;
+	_vertDecl.push_back(vp);
+
+	assert (vertexOffset != 0xFFFFFFFF);
+	ctx.mdl->seekTo(ctx.offRawData + vertexOffset);
+
+	float *v = (float *) vp.pointer;
+	for (uint32 i = 0; i < vertexCount; i++) {
+		*v++ = ctx.mdl->readIEEEFloatLE();
+		*v++ = ctx.mdl->readIEEEFloatLE();
+		*v++ = ctx.mdl->readIEEEFloatLE();
+	}
+
+	// duplicate positions for unique norms
+	for (uint32 i = 0; i < new_verts_norms.size(); i++) {
+		uint32 vi = new_verts_norms[i].vi;
+		float *v0 = (float *) vp.pointer + vi * vpsize;
+		*v++ = *v0++;
+		*v++ = *v0++;
+		*v++ = *v0++;
+	}
+
+	// Read vertex normals
+
+	VertexAttrib vn;
+	vn.index = VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = 0;
+	vn.pointer = (float *) _vertData + vpsize * _vertCount;
+	_vertDecl.push_back(vn);
+
+	for (norms_set_it i = verts_norms.begin(); i != verts_norms.end(); i++) {
+		v = (float *) vn.pointer + i->vi * vnsize;
+		*v++ = i->xyz[0];
+		*v++ = i->xyz[0];
+		*v++ = i->xyz[0];
+	}
+
+	// additional unique verts norms
+	v = (float *) vn.pointer + vnsize * vertexCount;
+	for (uint32 i = 0; i < new_verts_norms.size(); i++) {
+		*v++ = new_verts_norms[i].xyz[0];
+		*v++ = new_verts_norms[i].xyz[1];
+		*v++ = new_verts_norms[i].xyz[2];
+	}
+
 	// Read texture coordinates
-	std::vector< std::vector<float> > tX, tY;
-	tX.resize(textureCount);
-	tY.resize(textureCount);
+
 	for (uint16 t = 0; t < textureCount; t++) {
-		tX[t].resize(vertexCount);
-		tY[t].resize(vertexCount);
+		VertexAttrib vt;
+		vt.index = VTCOORD + t;
+		vt.size = vtsize;
+		vt.type = GL_FLOAT;
+		vt.stride = 0;
+		vt.pointer = (float *) _vertData + (vpsize + vnsize + vtsize * t) * _vertCount;
+		_vertDecl.push_back(vt);
 
 		bool hasTexture = textureVertexOffset[t] != 0xFFFFFFFF;
 		if (hasTexture)
 			ctx.mdl->seekTo(ctx.offRawData + textureVertexOffset[t]);
 
+		v = (float *) vt.pointer;
 		for (uint32 i = 0; i < vertexCount; i++) {
-			tX[t][i] = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
-			tY[t][i] = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
+			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
+			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
+		}
+
+		// duplicate tcoords for unique norms
+		for (uint32 i = 0; i < new_verts_norms.size(); i++) {
+			uint32 vi = new_verts_norms[i].vi;
+			float *v0 = (float *) vt.pointer + vi * vtsize;
+			*v++ = *v0++;
+			*v++ = *v0++;
 		}
 	}
 
-	// Read faces
+	assert((byte *) v == (byte *) _vertData + _vertCount * _vertSize);
 
-	if (!createFaces(facesCount)) {
-		ctx.mdl->seekTo(endPos);
-		return;
-	}
-
-	ctx.mdl->seekTo(ctx.offModelData + facesOffset);
-	for (uint32 i = 0; i < facesCount; i++) {
-		ctx.mdl->skip(3 * 4); // Normal
-		ctx.mdl->skip(    4); // Distance
-		ctx.mdl->skip(    4); // ID
-		ctx.mdl->skip(3 * 2); // Adjacent face number
-
-		// Vertex indices
-		const uint16 v1 = ctx.mdl->readUint16LE();
-		const uint16 v2 = ctx.mdl->readUint16LE();
-		const uint16 v3 = ctx.mdl->readUint16LE();
-
-		// Vertex coordinates
-		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
-		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
-		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
-		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
-
-		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
-		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
-		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
-		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
-
-		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
-		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
-		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
-		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
-
-		// Texture coordinates
-		for (uint32 t = 0; t < textureCount; t++) {
-			_tX[3 * textureCount * i + 3 * t + 0] = v1 < tX[t].size() ? tX[t][v1] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 0] = v1 < tY[t].size() ? tY[t][v1] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 1] = v2 < tX[t].size() ? tX[t][v2] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 1] = v2 < tY[t].size() ? tY[t][v2] : 0.0;
-
-			_tX[3 * textureCount * i + 3 * t + 2] = v3 < tX[t].size() ? tX[t][v3] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 2] = v3 < tY[t].size() ? tY[t][v3] : 0.0;
-		}
-
-	}
-
-	createCenter();
+	createBound();
 
 	ctx.mdl->seekTo(endPos);
 }
@@ -1160,55 +1248,144 @@ void ModelNode_NWN_ASCII::readFaces(Model_NWN::ParserContext &ctx, Mesh &mesh) {
 	}
 }
 
+typedef Common::Vector3 Vec3;
+
+struct FaceVert {
+	uint32 p, t; // position, texture coord indices
+	uint32 i;    // unique vertex id
+	Vec3 n;      // normal vector
+};
+
+bool operator == (const FaceVert &a, const FaceVert &b) {
+	return (a.p == b.p) && (a.t == b.t) && fuzzy_equal(&a.n[0], &b.n[0]);
+}
+
+std::size_t hash_value(const FaceVert &b) {
+	std::size_t seed = 0;
+	boost::hash_combine(seed, b.p);
+	boost::hash_combine(seed, b.t);
+	boost::hash_combine(seed, uint32(b.n[0] * 1E4));
+	boost::hash_combine(seed, uint32(b.n[1] * 1E4));
+	boost::hash_combine(seed, uint32(b.n[2] * 1E4));
+	return seed;
+}
+
 void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
-	loadTextures(mesh.textures);
-	if (!createFaces(mesh.faceCount))
+	if ((mesh.vCount == 0) || (mesh.tCount == 0) || (mesh.faceCount == 0))
 		return;
+
+	loadTextures(mesh.textures);
 
 	const uint32 textureCount = mesh.textures.size();
 	if (textureCount > 1)
 		warning("ModelNode_NWN_ASCII::processMesh(): textureCount == %d", textureCount);
 
-	for (uint32 i = 0; i < mesh.faceCount; i++) {
-		const uint32 v1 = mesh.vIA[i];
-		const uint32 v2 = mesh.vIB[i];
-		const uint32 v3 = mesh.vIC[i];
 
-		// Vertex coordinates
-		_vX[3 * i + 0] = v1 < mesh.vCount ? mesh.vX[v1] : 0.0;
-		_vY[3 * i + 0] = v1 < mesh.vCount ? mesh.vY[v1] : 0.0;
-		_vZ[3 * i + 0] = v1 < mesh.vCount ? mesh.vZ[v1] : 0.0;
-		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
+	// Read faces
 
-		_vX[3 * i + 1] = v2 < mesh.vCount ? mesh.vX[v2] : 0.0;
-		_vY[3 * i + 1] = v2 < mesh.vCount ? mesh.vY[v2] : 0.0;
-		_vZ[3 * i + 1] = v2 < mesh.vCount ? mesh.vZ[v2] : 0.0;
-		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
+	assert(!_faceData);
 
-		_vX[3 * i + 2] = v3 < mesh.vCount ? mesh.vX[v3] : 0.0;
-		_vY[3 * i + 2] = v3 < mesh.vCount ? mesh.vY[v3] : 0.0;
-		_vZ[3 * i + 2] = v3 < mesh.vCount ? mesh.vZ[v3] : 0.0;
-		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
+	_faceCount = mesh.faceCount;
+	_faceSize = 3 * sizeof(uint32);
+	_faceType = GL_UNSIGNED_INT;
+	_faceData = std::malloc(_faceCount * _faceSize);
 
-		const uint32 t1 = mesh.tIA[i];
-		const uint32 t2 = mesh.tIB[i];
-		const uint32 t3 = mesh.tIC[i];
+	boost::unordered_set<FaceVert> verts;
+	typedef boost::unordered_set<FaceVert>::iterator verts_set_it;
 
-		// Texture coordinates
-		for (uint32 t = 0; t < textureCount; t++) {
-			_tX[3 * textureCount * i + 3 * t + 0] = t1 < mesh.tCount ? mesh.tX[t1] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 0] = t1 < mesh.tCount ? mesh.tY[t1] : 0.0;
+	uint32 vertexCount = 0;
+	uint32 *f = (uint32 *) _faceData;
+	for (uint32 i = 0; i < _faceCount; i++) {
+		const uint32 v[3] = {mesh.vIA[i], mesh.vIB[i], mesh.vIC[i]};
+		const uint32 t[3] = {mesh.tIA[i], mesh.tIB[i], mesh.tIC[i]};
 
-			_tX[3 * textureCount * i + 3 * t + 1] = t2 < mesh.tCount ? mesh.tX[t2] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 1] = t2 < mesh.tCount ? mesh.tY[t2] : 0.0;
+		// Face normal
+		const Vec3 p1(mesh.vX[v[0]], mesh.vY[v[0]], mesh.vZ[v[0]]);
+		const Vec3 p2(mesh.vX[v[1]], mesh.vY[v[1]], mesh.vZ[v[1]]);
+		const Vec3 p3(mesh.vX[v[2]], mesh.vY[v[2]], mesh.vZ[v[2]]);
+		const Vec3 n = (p2 - p1).cross(p3 - p2).norm();
 
-			_tX[3 * textureCount * i + 3 * t + 2] = t3 < mesh.tCount ? mesh.tX[t3] : 0.0;
-			_tY[3 * textureCount * i + 3 * t + 2] = t3 < mesh.tCount ? mesh.tY[t3] : 0.0;
+		for (uint32 j = 0; j < 3; j++) {
+			FaceVert fv;
+			fv.i = vertexCount;
+			fv.p = v[j];
+			fv.t = t[j];
+			fv.n = n;
+
+			std::pair<verts_set_it, bool> it = verts.insert(fv);
+			if (it.second)
+				vertexCount++;
+
+			*f++ = it.first->i;
 		}
-
 	}
 
-	createCenter();
+
+	// Read vertices (interleaved)
+
+	assert(!_vertData);
+
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 3;
+	GLsizei vtsize = 2;
+	_vertSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
+	_vertCount = vertexCount;
+	_vertData = std::malloc(_vertCount * _vertSize);
+
+	VertexAttrib vp;
+	vp.index = VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = _vertSize;
+	vp.pointer = (float*) _vertData;
+	_vertDecl.push_back(vp);
+
+	VertexAttrib vn;
+	vn.index = VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = _vertSize;
+	vn.pointer = (float*) _vertData + vpsize;
+	_vertDecl.push_back(vn);
+
+	for (uint16 t = 0; t < textureCount; t++) {
+		VertexAttrib vt;
+		vt.index = VTCOORD + t;
+		vt.size = vtsize;
+		vt.type = GL_FLOAT;
+		vt.stride = _vertSize;
+		vt.pointer = (float*) _vertData + vpsize + vnsize + vtsize * t;
+		_vertDecl.push_back(vt);
+	}
+
+	for (verts_set_it i = verts.begin(); i != verts.end(); i++) {
+		float *v = (float*) _vertData + i->i * _vertSize / sizeof(float);
+
+		// Position
+		*v++ = mesh.vX[i->p];
+		*v++ = mesh.vY[i->p];
+		*v++ = mesh.vZ[i->p];
+
+		// Normal
+		*v++ = i->n[0];
+		*v++ = i->n[1];
+		*v++ = i->n[2];
+
+		// TexCoord
+		if (i->t < mesh.tCount) {
+			*v++ = mesh.tX[i->t];
+			*v++ = mesh.tY[i->t];
+		} else {
+			*v++ = 0.0;
+			*v++ = 0.0;
+		}
+		for (uint16 t = 1; t < textureCount; t++) {
+			*v++ = 0.0;
+			*v++ = 0.0;
+		}
+	}
+
+	createBound();
 }
 
 } // End of namespace Aurora

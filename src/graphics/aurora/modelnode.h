@@ -63,6 +63,23 @@ struct QuaternionKeyFrame {
 	float q;
 };
 
+/**  Vertex attribute data index enum, hardcoded for now */
+enum VertexAttribIdEnum {
+	VPOSITION = 0, ///< Vertex position
+	VNORMAL,       ///< Vertex normal
+	VCOLOR,        ///< Vertex color
+	VTCOORD        ///< Vertex texture coordinates, VTCOORDi = VTCOORD + i
+};
+
+/**  Generic vertex attribute data */
+struct VertexAttrib {
+	GLuint index;          ///< Index of the vertex attribute (see VertexAttribIdEnum)
+	GLint size;            ///< Number of components per vertex attribute, must be 1, 2, 3, 4
+	GLenum type;           ///< Data type of each attribute component in the array
+	GLsizei stride;        ///< Byte offset between consecutive vertex attributes
+	const GLvoid *pointer; ///< Offset of the first component of the first generic vertex attribute
+};
+
 class ModelNode {
 public:
 	ModelNode(Model &model);
@@ -116,21 +133,15 @@ protected:
 
 	Common::UString _name; ///< The node's name.
 
+	std::vector<VertexAttrib> _vertDecl; ///< Vertex declaration
+	uint32 _vertCount; ///< Number of vertices
+	uint32 _vertSize;  ///< Vertex attributes size sum in bytes (cached)
+	GLvoid *_vertData; ///< Vertex attributes data
+
 	uint32 _faceCount; ///< Number of faces
-
-	float *_coords; ///< Coordinates pool.
-
-	// Vertex coordinates
-	float *_vX; ///< Vertex coordinates, X.
-	float *_vY; ///< Vertex coordinates, Y.
-	float *_vZ; ///< Vertex coordinates, Z.
-
-	// Texture cordinates
-	float *_tX; ///< Texture cordinates, X.
-	float *_tY; ///< Texture cordinates, Y.
-
-	uint32 *_smoothGroups; ///< Face smooth groups.
-	uint32 *_material;     ///< Face materials.
+	uint32 _faceSize;  ///< Face indices size in bytes
+	GLenum _faceType;  ///< Face indices type (GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, ...)
+	GLvoid *_faceData; ///< Face indices data
 
 	float _center     [3]; ///< The node's center.
 	float _position   [3]; ///< Position of the node.
@@ -187,7 +198,6 @@ protected:
 
 	// Loading helpers
 	void loadTextures(const std::vector<Common::UString> &textures);
-	bool createFaces(uint32 count);
 	void createBound();
 	void createCenter();
 

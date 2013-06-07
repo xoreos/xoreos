@@ -426,9 +426,6 @@ UString ConfigManager::getDefaultConfigFile() {
 	UString file;
 
 #if defined(WIN32)
-#ifndef _MSC_VER
-	#warning getDefaultConfigFile WIN32 needs testing
-#endif
 	// Windows: Huge fucking mess
 
 	char configFile[MAXPATHLEN];

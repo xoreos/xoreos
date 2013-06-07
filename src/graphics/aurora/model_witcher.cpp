@@ -390,100 +390,98 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	readTextures(ctx, texture[0], textures);
 	loadTextures(textures);
 
-	uint32 textureCount = textures.size();
 
-	if (!createFaces(facesCount)) {
-		ctx.mdb->seekTo(endPos);
-		return;
-	}
+	// Read vertices
 
+	assert(!_vertData);
 
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 3;
+	GLsizei vtsize = 2;
+	_vertSize = (vpsize + vnsize + vtsize) * sizeof(float);
+	_vertCount = verticesCount;
+	_vertData = std::malloc(_vertCount * _vertSize);
 
-	// Read vertex coordinates
+	VertexAttrib vp;
+	vp.index = VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = 0;
+	vp.pointer = (float*) _vertData;
+	_vertDecl.push_back(vp);
+
+	VertexAttrib vn;
+	vn.index = VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = 0;
+	vn.pointer = (float*) _vertData + vpsize * _vertCount;
+	_vertDecl.push_back(vn);
+
+	VertexAttrib vt;
+	vt.index = VTCOORD;
+	vt.size = vtsize;
+	vt.type = GL_FLOAT;
+	vt.stride = 0;
+	vt.pointer = (float*) _vertData + (vpsize + vnsize) * _vertCount;
+	_vertDecl.push_back(vt);
+
+	// Read vertex position
 	ctx.mdb->seekTo(ctx.offRawData + verticesOffset);
-
-	std::vector<float> vX, vY, vZ;
-	vX.resize(verticesCount);
-	vY.resize(verticesCount);
-	vZ.resize(verticesCount);
-
+	float *v = (float *) vp.pointer;
 	for (uint32 i = 0; i < verticesCount; i++) {
-		vX[i] = ctx.mdb->readIEEEFloatLE();
-		vY[i] = ctx.mdb->readIEEEFloatLE();
-		vZ[i] = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
 	}
 
+	// Read vertex normals
+	assert(normalsCount == verticesCount);
+	ctx.mdb->seekTo(ctx.offRawData + normalsOffset);
+	v = (float *) vn.pointer;
+	for (uint32 i = 0; i < normalsCount; i++) {
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+	}
 
 	// Read texture coordinates
-
+	assert(tVerts0Count == verticesCount);
 	ctx.mdb->seekTo(ctx.offRawData + tVerts0Offset);
-
-	std::vector<float> tX, tY;
-	tX.resize(tVerts0Count);
-	tY.resize(tVerts0Count);
-
+	v = (float *) vt.pointer;
 	for (uint32 i = 0; i < tVerts0Count; i++) {
-		tX[i] = ctx.mdb->readIEEEFloatLE();
-		tY[i] = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
 	}
 
 
 	// Read faces
 
-	ctx.mdb->seekTo(ctx.offRawData + facesOffset);
+	assert(!_faceData);
 
-	for (uint32 i = 0; i < facesCount; i++) {
+	_faceCount = facesCount;
+	_faceSize = 3 * sizeof(uint32);
+	_faceType = GL_UNSIGNED_INT;
+	_faceData = std::malloc(_faceCount * _faceSize);
+
+	ctx.mdb->seekTo(ctx.offRawData + facesOffset);
+	uint32 *f = (uint32 *) _faceData;
+	for (uint32 i = 0; i < _faceCount; i++) {
 		ctx.mdb->skip(4 * 4 + 4);
 
 		if (ctx.fileVersion == 133)
 			ctx.mdb->skip(3 * 4);
 
 		// Vertex indices
-		const uint32 v1 = ctx.mdb->readUint32LE();
-		const uint32 v2 = ctx.mdb->readUint32LE();
-		const uint32 v3 = ctx.mdb->readUint32LE();
-
-		// Vertex coordinates
-		_vX[3 * i + 0] = v1 < vX.size() ? vX[v1] : 0.0;
-		_vY[3 * i + 0] = v1 < vY.size() ? vY[v1] : 0.0;
-		_vZ[3 * i + 0] = v1 < vZ.size() ? vZ[v1] : 0.0;
-		_boundBox.add(_vX[3 * i + 0], _vY[3 * i + 0], _vZ[3 * i + 0]);
-
-		_vX[3 * i + 1] = v2 < vX.size() ? vX[v2] : 0.0;
-		_vY[3 * i + 1] = v2 < vY.size() ? vY[v2] : 0.0;
-		_vZ[3 * i + 1] = v2 < vZ.size() ? vZ[v2] : 0.0;
-		_boundBox.add(_vX[3 * i + 1], _vY[3 * i + 1], _vZ[3 * i + 1]);
-
-		_vX[3 * i + 2] = v3 < vX.size() ? vX[v3] : 0.0;
-		_vY[3 * i + 2] = v3 < vY.size() ? vY[v3] : 0.0;
-		_vZ[3 * i + 2] = v3 < vZ.size() ? vZ[v3] : 0.0;
-		_boundBox.add(_vX[3 * i + 2], _vY[3 * i + 2], _vZ[3 * i + 2]);
-
-		const float tX1 = v1 < tX.size() ? tX[v1] : 0.0;
-		const float tY1 = v1 < tY.size() ? tY[v1] : 0.0;
-
-		const float tX2 = v2 < tX.size() ? tX[v2] : 0.0;
-		const float tY2 = v2 < tY.size() ? tY[v2] : 0.0;
-
-		const float tX3 = v3 < tX.size() ? tX[v3] : 0.0;
-		const float tY3 = v3 < tY.size() ? tY[v3] : 0.0;
-
-		for (uint32 t = 0; t < textureCount; t++) {
-			_tX[3 * textureCount * i + 3 * t + 0] = tX1;
-			_tY[3 * textureCount * i + 3 * t + 0] = tY1;
-
-			_tX[3 * textureCount * i + 3 * t + 1] = tX2;
-			_tY[3 * textureCount * i + 3 * t + 1] = tY2;
-
-			_tX[3 * textureCount * i + 3 * t + 2] = tX3;
-			_tY[3 * textureCount * i + 3 * t + 2] = tY3;
-		}
+		*f++ = ctx.mdb->readUint32LE();
+		*f++ = ctx.mdb->readUint32LE();
+		*f++ = ctx.mdb->readUint32LE();
 
 		if (ctx.fileVersion == 133)
 			ctx.mdb->skip(4);
 	}
 
-	createCenter();
+	createBound();
 
 	ctx.mdb->seekTo(endPos);
 }
