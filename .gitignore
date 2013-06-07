@@ -1,3 +1,4 @@
+# MSVC files
 Debug/
 Release/
 ipch/
@@ -6,3 +7,41 @@ ipch/
 *.opensdf
 *~
 git-revision.h
+# autotools files
+Makefile
+Makefile.in
+Doxyerror
+INSTALL
+/aclocal.m4
+/configure
+/libtool
+/m4/libtool.m4
+/m4/ltoptions.m4
+/m4/ltsugar.m4
+/m4/ltversion.m4
+/m4/lt~obsolete.m4
+/build-aux/compile
+/build-aux/config.guess
+/build-aux/config.sub
+/build-aux/depcomp
+/build-aux/install-sh
+/build-aux/ltmain.sh
+/build-aux/missing
+/config.h.in
+/autom4te.cache/
+/stamp-h1
+/config.h
+/config.log
+/config.status
+*.l[oa]
+.dirstamp
+.libs/
+.deps/
+# Doxygen files
+/doc/doxygen/html/
+/doc/doxygen/latex/
+/doc/doxygen/man/
+# Unix binary
+/src/xoreos
+# Convenience symlink
+/xoreos
