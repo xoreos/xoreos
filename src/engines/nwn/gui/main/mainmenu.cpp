@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file engines/nwn/gui/main/main.cpp
+/** @file engines/nwn/gui/main/mainmenu.cpp
  *  The main menu.
  */
 
@@ -35,7 +35,7 @@
 
 #include "engines/nwn/gui/widgets/panel.h"
 
-#include "engines/nwn/gui/main/main.h"
+#include "engines/nwn/gui/main/mainmenu.h"
 #include "engines/nwn/gui/main/newgamefog.h"
 #include "engines/nwn/gui/main/new.h"
 #include "engines/nwn/gui/main/newcamp.h"

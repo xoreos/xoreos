@@ -49,7 +49,7 @@ noinst_HEADERS = nwn.h \
                  gui/chargen/chargen.h \
                  gui/main/charpremade.h \
                  gui/main/chartype.h \
-                 gui/main/main.h \
+                 gui/main/mainmenu.h \
                  gui/main/moviesbase.h \
                  gui/main/moviescamp.h \
                  gui/main/new.h \
@@ -119,7 +119,7 @@ libnwn_la_SOURCES = nwn.cpp \
                     gui/chargen/chargen.cpp \
                     gui/main/charpremade.cpp \
                     gui/main/chartype.cpp \
-                    gui/main/main.cpp \
+                    gui/main/mainmenu.cpp \
                     gui/main/moviesbase.cpp \
                     gui/main/moviescamp.cpp \
                     gui/main/new.cpp \
