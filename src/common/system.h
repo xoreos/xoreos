@@ -54,8 +54,7 @@
 	#define NORETURN_PRE __declspec(noreturn)
 	#define PLUGIN_EXPORT __declspec(dllexport)
 
-	static FORCEINLINE int c99_vsnprintf(char* str, size_t size, const char* format, va_list ap)
-	{
+	static FORCEINLINE int c99_vsnprintf(char* str, size_t size, const char* format, va_list ap) {
 		int count = -1;
 
 		if (size != 0)
@@ -66,8 +65,7 @@
 		return count;
 	}
 
-	static FORCEINLINE int c99_snprintf(char* str, size_t size, const char* format, ...)
-	{
+	static FORCEINLINE int c99_snprintf(char* str, size_t size, const char* format, ...) {
 		int count;
 		va_list ap;
 
