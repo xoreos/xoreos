@@ -105,11 +105,8 @@ static inline float deg2rad(float deg) {
 
 static inline void vector2orientation(float vX, float vY, float &x, float &y, float &z) {
 	x = 0.0;
-	y = rad2deg(acos(vY));
+	y = rad2deg(atan2(vY, vX)) - 90.0;
 	z = 0.0;
-
-	if (vX < 0)
-		y = 360.0 - y;
 }
 
 } // End of namespace Common

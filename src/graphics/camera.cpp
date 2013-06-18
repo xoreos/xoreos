@@ -115,7 +115,7 @@ void CameraManager::setOrientation(float vX, float vY) {
 
 	Common::vector2orientation(vX, vY, x, y, z);
 
-	setOrientation(x, y, z);
+	setOrientation(x, 360.0 - y, z);
 }
 
 void CameraManager::turn(float x, float y, float z) {
