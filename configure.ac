@@ -20,6 +20,9 @@ AC_ARG_VAR(SDL_CONFIG, [sdl-config utility])
 AC_ARG_VAR(SDL_CFLAGS, [C compiler flags for SDL])
 AC_ARG_VAR(SDL_LIBS, [libraries to pass to the linker for SDL])
 
+dnl If AM_PROG_AR exists, call it, to shut up a libtool warning (and make it more portable, I guess?)
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
+
 dnl libtool
 LT_PREREQ([2.2])
 LT_INIT([disable-shared])
