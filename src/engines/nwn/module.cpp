@@ -28,6 +28,7 @@
  */
 
 #include "common/util.h"
+#include "common/maths.h"
 #include "common/error.h"
 #include "common/configman.h"
 
@@ -303,6 +304,18 @@ bool Module::enter() {
 		return false;
 	}
 
+	float entryX, entryY, entryZ, entryDirX, entryDirY;
+	_ifo.getEntryPosition(entryX, entryY, entryZ);
+	_ifo.getEntryDirection(entryDirX, entryDirY);
+
+	float orientX, orientY, orientZ;
+	Common::vector2orientation(entryDirX, entryDirY, orientX, orientY, orientZ);
+
+	_pc->setPosition(entryX, entryY, entryZ);
+	_pc->setOrientation(orientX, orientY, orientZ);
+
+	_pc->loadModel();
+
 	runScript(kScriptModuleLoad , this, _pc);
 	runScript(kScriptModuleStart, this, _pc);
 	runScript(kScriptEnter      , this, _pc);
@@ -316,15 +329,8 @@ bool Module::enter() {
 
 	CameraMan.reset();
 
-	float entryX, entryY, entryZ;
-	_ifo.getEntryPosition(entryX, entryY, entryZ);
-
 	// Roughly head position
 	CameraMan.setPosition(entryX, entryZ + 2.0, entryY);
-
-	float entryDirX, entryDirY;
-	_ifo.getEntryDirection(entryDirX, entryDirY);
-
 	CameraMan.setOrientation(entryDirX, entryDirY);
 
 	return true;
@@ -337,6 +343,8 @@ void Module::enterArea() {
 	_ingameGUI->stopConversation();
 
 	if (_currentArea) {
+		_pc->hide();
+
 		_currentArea->runScript(kScriptExit, _currentArea, _pc);
 		_currentArea->hide();
 
@@ -358,6 +366,7 @@ void Module::enterArea() {
 	_currentArea = area->second;
 
 	_currentArea->show();
+	_pc->show();
 
 	EventMan.flushEvents();
 
