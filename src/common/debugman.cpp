@@ -179,6 +179,7 @@ void DebugManager::logString(const UString &str) {
 	if (!_logFile.isOpen())
 		return;
 
+	// If we're at the start of a new line, write the timestamp
 	if (_logFileStartLine) {
 		UString tstamp;
 
@@ -196,7 +197,14 @@ void DebugManager::logString(const UString &str) {
 	}
 
 	_logFile.writeString(str);
-	_logFileStartLine = !str.empty() && (*--str.end() == '\n');
+
+	// Find out whether we just started a new line. If this fails, force one
+	try {
+		_logFileStartLine = !str.empty() && (*--str.end() == '\n');
+	} catch (...) {
+		_logFile.writeString("\n");
+		_logFileStartLine = true;
+	}
 }
 
 } // End of namespace Common
