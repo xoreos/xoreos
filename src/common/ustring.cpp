@@ -176,7 +176,7 @@ UString::UString(const char *str, int n) {
 	*this = std::string(str, n);
 }
 
-UString::UString(iterator sBegin, iterator sEnd) {
+UString::UString(iterator sBegin, iterator sEnd) : _size(0) {
 	for (; sBegin != sEnd; ++sBegin)
 		*this += *sBegin;
 }
