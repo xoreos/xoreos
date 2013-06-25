@@ -46,7 +46,7 @@ DECLARE_SINGLETON(Common::DebugManager)
 
 namespace Common {
 
-DebugManager::DebugManager() : _debugLevel(0) {
+DebugManager::DebugManager() : _debugLevel(0), _logFileStartLine(false) {
 	for (uint32 i = 0; i < kChannelCount; i++)
 		_channels[i].enabled = false;
 
