@@ -180,11 +180,17 @@ void DebugManager::logString(const UString &str) {
 		return;
 
 	if (_logFileStartLine) {
-		ptime t(second_clock::universal_time());
-		const UString tstamp = UString::sprintf("[%04d-%02d-%02dT%02d:%02d:%02d] ",
-			(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
-			(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
-			(int) t.time_of_day().seconds());
+		UString tstamp;
+
+		try {
+			ptime t(second_clock::universal_time());
+			tstamp = UString::sprintf("[%04d-%02d-%02dT%02d:%02d:%02d] ",
+				(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
+				(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
+				(int) t.time_of_day().seconds());
+		} catch (...) {
+			tstamp = "[0000-00-00T00:00:00] ";
+		}
 
 		_logFile.writeString(tstamp);
 	}
