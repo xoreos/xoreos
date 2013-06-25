@@ -68,7 +68,7 @@ struct QuaternionKeyFrame {
 class ModelNode {
 public:
 	ModelNode(Model &model);
-	~ModelNode();
+	virtual ~ModelNode();
 
 	/** Get the node's name. */
 	const Common::UString &getName() const;
