@@ -1248,7 +1248,7 @@ bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 
 		// NOTE: This offset is the same as MPEG4 AAC!
 		lastExp += code - 60;
-		if ((unsigned) lastExp + 60 > ARRAYSIZE(powTab)) {
+		if ((unsigned) lastExp + 60 >= ARRAYSIZE(powTab)) {
 			warning("WMACodec::decodeExpHuffman(): Exponent out of range: %d", lastExp);
 			return false;
 		}
