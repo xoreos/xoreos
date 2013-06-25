@@ -166,11 +166,15 @@ int main(int argc, char **argv) {
 
 	delete gameThread;
 
-	// Configs changed, we should save them
-	if (ConfigMan.changed()) {
-		// But don't clobber a broken save
-		if (!configFileIsBroken)
-			ConfigMan.save();
+	try {
+		// Configs changed, we should save them
+		if (ConfigMan.changed()) {
+			// But don't clobber a broken save
+			if (!configFileIsBroken)
+				ConfigMan.save();
+		}
+	} catch (Common::Exception &e) {
+		Common::printException(e);
 	}
 
 	return 0;
