@@ -156,9 +156,11 @@ void TXB::readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle) {
 		mipMap->width  = MAX<uint32>(width,  1);
 		mipMap->height = MAX<uint32>(height, 1);
 
-		if (((width < 4) || (height < 4)) && (width != height))
+		if (((mipMap->width < 4) || (mipMap->height < 4)) && (mipMap->width != mipMap->height)) {
 			// Invalid mipmap dimensions
+			delete mipMap;
 			break;
+		}
 
 		mipMap->size = MAX<uint32>(mipMapSize, minDataSize);
 
