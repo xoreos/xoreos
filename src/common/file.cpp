@@ -156,6 +156,7 @@ bool DumpFile::isOpen() const {
 }
 
 bool DumpFile::err() const {
+	if (!_handle)
 		return false;
 
 	return std::ferror(_handle) != 0;
