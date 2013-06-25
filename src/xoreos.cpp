@@ -133,7 +133,13 @@ int main(int argc, char **argv) {
 	if (dirArg.empty())
 		error("Target \"%s\" is missing a path", target.c_str());
 
-	Common::UString baseDir = Common::FilePath::makeAbsolute(dirArg);
+	Common::UString baseDir;
+	try {
+		baseDir = Common::FilePath::makeAbsolute(dirArg);
+	} catch (...) {
+		error("Invalid path \"%s\"", dirArg.c_str());
+	}
+
 	if (!Common::FilePath::isDirectory(baseDir) && !Common::FilePath::isRegularFile(baseDir))
 		error("No such file or directory \"%s\"", baseDir.c_str());
 
