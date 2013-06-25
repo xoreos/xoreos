@@ -749,12 +749,9 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 			}
 		}
 
-		Item *item = new Item();
-
-		item->load(cItem, uti ? &uti->getTopLevel() : 0);
-
-		// Add it to the equipped list
-		_equippedItems.push_back(*item);
+		// Load the item and add it to the equipped list
+		_equippedItems.push_back(Item());
+		_equippedItems.back().load(cItem, uti ? &uti->getTopLevel() : 0);
 
 		delete uti;
 	}
