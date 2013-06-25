@@ -611,18 +611,21 @@ bool ConfigFile::removeDomain(const UString &name) {
 		// Domain doesn't exist, can't remove
 		return false;
 
+	bool found = false;
+
 	// Find and remove the domain in the list
 	DomainList::iterator d;
 	for (d = _domainList.begin(); d != _domainList.end(); ++d) {
 		if (*d == domain->second) {
 			delete *d;
 			_domainList.erase(d);
+			found = true;
 			break;
 		}
 	}
 
-	// If that happens, something is *really* broken
-	assert(d != _domainList.end());
+	// If we couldn't find the domain in the list, something is *really* broken
+	assert(found == true);
 
 	// Remove the domain
 	_domainMap.erase(domain);
