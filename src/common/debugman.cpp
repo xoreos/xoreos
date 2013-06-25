@@ -47,7 +47,7 @@ DECLARE_SINGLETON(Common::DebugManager)
 namespace Common {
 
 DebugManager::DebugManager() : _debugLevel(0) {
-	for (uint32 i = 0; i < 30; i++)
+	for (uint32 i = 0; i < kChannelCount; i++)
 		_channels[i].enabled = false;
 
 	addDebugChannel(kDebugGraphics, "GGraphics", "Global graphics debug channel");
@@ -67,7 +67,7 @@ bool DebugManager::addDebugChannel(uint32 channel, const UString &name,
 		return false;
 
 	int index = intLog2(channel);
-	if ((index < 0) || (index > 30))
+	if ((index < 0) || ((uint)index >= kChannelCount))
 		return false;
 
 	if (!_channels[index].name.empty())
@@ -90,7 +90,7 @@ void DebugManager::getDebugChannels(std::vector<UString> &names,
 	descriptions.clear();
 	nameLength = 0;
 
-	for (uint32 i = 0; i < 30; i++) {
+	for (uint32 i = 0; i < kChannelCount; i++) {
 		const Channel &channel = _channels[i];
 		if (channel.name.empty())
 			continue;
@@ -103,7 +103,7 @@ void DebugManager::getDebugChannels(std::vector<UString> &names,
 }
 
 void DebugManager::clearEngineChannels() {
-	for (uint32 i = 15; i < 30; i++) {
+	for (uint32 i = kGlobalChannelCount; i < kChannelCount; i++) {
 		Channel &channel = _channels[i];
 
 		ChannelMap::iterator c = _channelMap.find(channel.name);
@@ -138,7 +138,7 @@ uint32 DebugManager::parseChannelList(const UString &list) const {
 }
 
 void DebugManager::setEnabled(uint32 mask) {
-	for (uint32 i = 0; i < 30; i++, mask >>= 1)
+	for (uint32 i = 0; i < kChannelCount; i++, mask >>= 1)
 		_channels[i].enabled = (mask & 1) != 0;
 }
 
@@ -150,7 +150,7 @@ bool DebugManager::isEnabled(uint32 level, uint32 channel) const {
 		return false;
 
 	int index = intLog2(channel);
-	if ((index < 0) || (index > 30))
+	if ((index < 0) || ((uint)index >= kChannelCount))
 		return false;
 
 	return _channels[index].enabled;

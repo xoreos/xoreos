@@ -119,6 +119,10 @@ public:
 	void logString(const UString &str);
 
 private:
+	static const uint kGlobalChannelCount = 15;
+	static const uint kEngineChannelCount = 15;
+	static const uint kChannelCount       = kGlobalChannelCount + kEngineChannelCount;
+
 	/** A debug channel. */
 	struct Channel {
 		UString name;        ///< The channel's name.
@@ -129,8 +133,8 @@ private:
 
 	typedef std::map<UString, uint32> ChannelMap;
 
-	Channel    _channels[30]; ///< All debug channels.
-	ChannelMap _channelMap;   ///< Debug channels indexed by name.
+	Channel    _channels[kChannelCount]; ///< All debug channels.
+	ChannelMap _channelMap;              ///< Debug channels indexed by name.
 
 	uint32 _debugLevel; ///< The current debug level.
 
