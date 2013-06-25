@@ -665,8 +665,10 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 		memset(outputData, 0, outputDataSize * 2);
 
 		// Decode the frame
-		if (!decodeFrame(bits, outputData))
+		if (!decodeFrame(bits, outputData)) {
+			delete[] outputData;
 			return 0;
+		}
 	}
 
 	// And return our PCM output data as a stream, if available
