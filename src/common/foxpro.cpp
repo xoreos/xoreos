@@ -95,7 +95,7 @@ void FoxPro::loadHeader(SeekableReadStream &dbf, uint32 &recordSize, uint32 &rec
 
 	dbf.skip(16); // Reserved
 
-	bool flags = dbf.readByte();
+	byte flags = dbf.readByte();
 
 	_hasIndex = flags & 0x01;
 	_hasMemo  = flags & 0x02;
