@@ -177,10 +177,14 @@ UString ConfigManager::findGame(const UString &path) {
 
 	UString normPath = FilePath::makeAbsolute(path);
 
-	const ConfigFile::DomainList &domains = _config->getDomains();
-	for (ConfigFile::DomainList::const_iterator d = domains.begin(); d != domains.end(); ++d)
-		if (FilePath::makeAbsolute((*d)->getString("path")) == normPath)
-			return (*d)->getName();
+	try {
+		const ConfigFile::DomainList &domains = _config->getDomains();
+		for (ConfigFile::DomainList::const_iterator d = domains.begin(); d != domains.end(); ++d)
+			if (FilePath::makeAbsolute((*d)->getString("path")) == normPath)
+				return (*d)->getName();
+	} catch (...) {
+		return "";
+	}
 
 	return "";
 }
