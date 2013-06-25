@@ -47,7 +47,7 @@ namespace Engines {
 
 namespace NWN {
 
-WidgetListItem::WidgetListItem(::Engines::GUI &gui) : NWNWidget(gui, ""), _state(false) {
+WidgetListItem::WidgetListItem(::Engines::GUI &gui) : NWNWidget(gui, ""), _itemNumber(0xFFFFFFFF), _state(false) {
 }
 
 WidgetListItem::~WidgetListItem() {
