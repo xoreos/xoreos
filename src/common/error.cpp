@@ -87,18 +87,22 @@ const Exception kWriteError("Write error");
 void printException(Exception &e, const UString &prefix) {
 	Exception::Stack &stack = e.getStack();
 
-	if (stack.empty()) {
-		status("FATAL ERROR");
-		return;
-	}
+	try {
+		if (stack.empty()) {
+			status("FATAL ERROR");
+			return;
+		}
 
-	status("%s%s", prefix.c_str(), stack.top().c_str());
+		status("%s%s", prefix.c_str(), stack.top().c_str());
 
-	stack.pop();
-
-	while (!stack.empty()) {
-		status("    Because: %s", stack.top().c_str());
 		stack.pop();
+
+		while (!stack.empty()) {
+			status("    Because: %s", stack.top().c_str());
+			stack.pop();
+		}
+	} catch (...) {
+		status("FATAL ERROR: Exception while printing exception stack");
 	}
 }
 
