@@ -460,6 +460,8 @@ void NWNEngine::mainMenuLoop() {
 	console.setModule();
 
 	stopMenuMusic();
+
+	delete legal;
 }
 
 void NWNEngine::getModules(std::vector<Common::UString> &modules) {
