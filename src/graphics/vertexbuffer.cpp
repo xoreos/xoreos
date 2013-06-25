@@ -37,7 +37,7 @@ VertexBuffer::VertexBuffer() : _count(0), _size(0), _data(0) {
 	//ctor
 }
 
-VertexBuffer::VertexBuffer(const VertexBuffer &other) {
+VertexBuffer::VertexBuffer(const VertexBuffer &other) : _data(0) {
 	*this = other;
 }
 
