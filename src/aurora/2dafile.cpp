@@ -347,7 +347,7 @@ bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
 	std::vector<uint32> colLength;
 	colLength.resize(_headers.size() + 1);
 
-	const Common::UString maxRow = Common::UString::sprintf("%d", _rows.size() - 1);
+	const Common::UString maxRow = Common::UString::sprintf("%d", (int)_rows.size() - 1);
 	colLength[0] = maxRow.size();
 
 	for (uint32 i = 0; i < _headers.size(); i++)
