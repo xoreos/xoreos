@@ -143,17 +143,20 @@ bool ConfigDomain::removeKey(const UString &key) {
 		// Key doesn't exist, can't remove
 		return false;
 
+	bool found = false;
+
 	// Find and remove the key's line
 	LineList::iterator line;
 	for (line = _lines.begin(); line != _lines.end(); ++line) {
 		if (line->key == k) {
 			_lines.erase(line);
+			found = true;
 			break;
 		}
 	}
 
-	// If that happens, something is *really* broken
-	assert(line != _lines.end());
+	// If we couldn't find the key in the list, something is *really* broken
+	assert(found == true);
 
 	// Remove the key
 	_keys.erase(k);
