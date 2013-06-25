@@ -169,7 +169,7 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 	}
 
 	// CTRL-K: Delete everything from the cursor to the end of the line
-	if ((key == SDLK_k) & (mod & KMOD_CTRL)) {
+	if ((key == SDLK_k) && (mod & KMOD_CTRL)) {
 		_currentLine.erase(getCurrentPosition(), _currentLine.end());
 		updateHistory();
 		return true;
