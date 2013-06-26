@@ -47,7 +47,7 @@ bool VariableContainer::hasVariable(const Common::UString &var) const {
 
 Variable &VariableContainer::getVariable(const Common::UString &var, Type type) {
 	VariableMap::iterator v = _variables.find(var);
-	if ((v == _variables.end()) && (type != kTypeVoid)) {
+	if (v == _variables.end()) {
 		std::pair<VariableMap::iterator, bool> result;
 
 		result = _variables.insert(std::make_pair(var, Variable(type)));
