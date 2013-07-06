@@ -69,7 +69,7 @@ static inline uint64 hashStringFNV64(const Common::UString &string) {
 	uint64 hash = 0xCBF29CE484222325LL;
 
 	for (Common::UString::iterator it = string.begin(); it != string.end(); ++it)
-		hash = (hash * 1099511628211) ^ *it;
+		hash = (hash * 1099511628211LL) ^ *it;
 
 	return hash;
 }
