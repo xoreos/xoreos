@@ -137,7 +137,7 @@ public:
 		iconv(_fromLatin9, 0, 0, 0, 0);
 
 		// Convert
-		if (iconv(_fromLatin9, (char **) &data, &inBytes, (char **) &outBuf, &outBytes) == ((size_t) -1))
+		if (iconv(_fromLatin9, (ICONV_CONST char **) &data, &inBytes, (char **) &outBuf, &outBytes) == ((size_t) -1))
 			warning("Failed completely converting a latin9 string");
 
 		// And this should be our converted string
