@@ -15,4 +15,3 @@ fi
 autoreconf --force --install --verbose
 
 cd $olddir
-test -n "$NOCONFIGURE" || "$srcdir/configure" "$@"
