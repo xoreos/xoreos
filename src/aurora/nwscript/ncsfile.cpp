@@ -1313,7 +1313,7 @@ void NCSFile::o_destruct(InstructionType type) {
 		stackSize -= 4;
 	}
 
-	for (std::vector<Variable>::const_reverse_iterator t = tmp.rbegin(); t != tmp.rend(); ++t)
+	for (std::vector<Variable>::reverse_iterator t = tmp.rbegin(); t != tmp.rend(); ++t)
 		_stack.push(*t);
 }
 
