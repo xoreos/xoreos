@@ -240,9 +240,9 @@ void Texture::doRebuild() {
 		for (uint32 i = 0; i < _image->getMipMapCount(); i++) {
 			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
 
-			xoreosCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
-			                           mipMap.width, mipMap.height, 0,
-			                           mipMap.size, mipMap.data);
+			glCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
+			                       mipMap.width, mipMap.height, 0,
+			                       mipMap.size, mipMap.data);
 		}
 
 	} else {

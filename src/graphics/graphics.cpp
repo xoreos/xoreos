@@ -58,7 +58,7 @@ DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
 
-PFNGLCOMPRESSEDTEXIMAGE2DPROC xoreosCompressedTexImage2D;
+PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
 
 GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
 	_ready = false;
@@ -90,7 +90,7 @@ GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
 
 	_lastSampled = 0;
 
-	xoreosCompressedTexImage2D = 0;
+	glCompressedTexImage2D = 0;
 }
 
 GraphicsManager::~GraphicsManager() {
@@ -321,17 +321,20 @@ void GraphicsManager::checkGLExtensions() {
 		_needManualDeS3TC = true;
 	}
 
-	if (!GLEW_ARB_texture_compression) {
-		warning("Your graphics card doesn't support the compressed texture API");
-		warning("Switching to manual S3TC DXTn decompression. "
-		        "This will be slower and will take up more video memory");
-
-		_needManualDeS3TC = true;
-	} else
+	if (!_needManualDeS3TC) {
 		// Make sure we use the right glCompressedTexImage2D function
-		xoreosCompressedTexImage2D = glCompressedTexImage2D ?
-			(PFNGLCOMPRESSEDTEXIMAGE2DPROC)glCompressedTexImage2D :
-			(PFNGLCOMPRESSEDTEXIMAGE2DPROC)glCompressedTexImage2DARB;
+		glCompressedTexImage2D = GLEW_GET_FUN(__glewCompressedTexImage2D) ?
+			(PFNGLCOMPRESSEDTEXIMAGE2DPROC)GLEW_GET_FUN(__glewCompressedTexImage2D) :
+			(PFNGLCOMPRESSEDTEXIMAGE2DPROC)GLEW_GET_FUN(__glewCompressedTexImage2DARB);
+
+		if (!GLEW_ARB_texture_compression || !glCompressedTexImage2D) {
+			warning("Your graphics card doesn't support the compressed texture API");
+			warning("Switching to manual S3TC DXTn decompression. "
+			        "This will be slower and will take up more video memory");
+
+			_needManualDeS3TC = true;
+		}
+	}
 
 	if (!GLEW_ARB_multitexture) {
 		warning("Your graphics card does no support applying multiple textures onto "
