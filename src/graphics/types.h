@@ -104,6 +104,9 @@ struct ColorPosition {
 
 typedef std::vector<ColorPosition> ColorPositions;
 
+// Aliased to either glCompressedTexImage2D or glCompressedTexImage2DARB, whichever is available
+extern PFNGLCOMPRESSEDTEXIMAGE2DPROC xoreosCompressedTexImage2D;
+
 } // End of namespace Graphics
 
 #endif // GRAPHICS_TYPES_H

@@ -34,6 +34,7 @@
 
 #include "graphics/aurora/texture.h"
 
+#include "graphics/types.h"
 #include "graphics/graphics.h"
 #include "graphics/images/txi.h"
 #include "graphics/images/decoder.h"
@@ -239,9 +240,9 @@ void Texture::doRebuild() {
 		for (uint32 i = 0; i < _image->getMipMapCount(); i++) {
 			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
 
-			glCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
-			                       mipMap.width, mipMap.height, 0,
-			                       mipMap.size, mipMap.data);
+			xoreosCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
+			                           mipMap.width, mipMap.height, 0,
+			                           mipMap.size, mipMap.data);
 		}
 
 	} else {

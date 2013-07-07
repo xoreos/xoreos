@@ -58,6 +58,8 @@ DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
 
+PFNGLCOMPRESSEDTEXIMAGE2DPROC xoreosCompressedTexImage2D;
+
 GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
 	_ready = false;
 
@@ -87,6 +89,8 @@ GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
 	_hasAbandoned = false;
 
 	_lastSampled = 0;
+
+	xoreosCompressedTexImage2D = 0;
 }
 
 GraphicsManager::~GraphicsManager() {
@@ -323,7 +327,11 @@ void GraphicsManager::checkGLExtensions() {
 		        "This will be slower and will take up more video memory");
 
 		_needManualDeS3TC = true;
-	}
+	} else
+		// Make sure we use the right glCompressedTexImage2D function
+		xoreosCompressedTexImage2D = glCompressedTexImage2D ?
+			(PFNGLCOMPRESSEDTEXIMAGE2DPROC)glCompressedTexImage2D :
+			(PFNGLCOMPRESSEDTEXIMAGE2DPROC)glCompressedTexImage2DARB;
 
 	if (!GLEW_ARB_multitexture) {
 		warning("Your graphics card does no support applying multiple textures onto "
