@@ -48,7 +48,7 @@ namespace Engines {
 
 namespace KotOR {
 
-Module::Module(Console &console) : _console(&console), _area(0),
+Module::Module(Engines::Console &console) : _console(&console), _area(0),
 	_currentTexturePack(-1), _exit(false) {
 
 }
