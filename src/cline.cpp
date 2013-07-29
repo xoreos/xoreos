@@ -34,12 +34,14 @@
 
 #include "common/ustring.h"
 #include "common/util.h"
+#include "common/version.h"
 
 #include "common/configman.h"
 
 static void displayUsage(const char *name) {
 	std::printf("Usage: %s [options] [target]\n\n", name);
 	std::printf("          --help              This text\n");
+	std::printf("          --version           Display version information and exit\n");
 	std::printf("  -cFILE  --config=FILE       Load the config from file FILE\n");
 	std::printf("  -pDIR   --path=DIR          Override the game path with DIR\n");
 	std::printf("  -wSIZE  --width=SIZE        Set the window's width to SIZE\n");
@@ -76,6 +78,10 @@ static void displayUsage(const char *name) {
 	std::printf("  xoreos will start the game specified by target \"nwn\", which must exit\n");
 	std::printf("  in the config file already.\n");
 	std::printf("\n");
+}
+
+static void displayVersion() {
+	std::printf("%s\n", XOREOS_NAMEVERSIONFULL);
 }
 
 static Common::UString convertShortToLongOption(char shortOption) {
@@ -193,6 +199,12 @@ bool parseCommandline(int argc, char **argv, Common::UString &target, int &code)
 			if (!strcmp(argv[i], "--help")) {
 				code = 0;
 				displayUsage(argv[0]);
+				return false;
+			}
+
+			if (!strcmp(argv[i], "--version")) {
+				code = 0;
+				displayVersion();
 				return false;
 			}
 
