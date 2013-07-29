@@ -62,7 +62,7 @@ static void displayUsage(const char *name) {
 	std::printf("FILE: Absolute or relative path to a file.\n");
 	std::printf("DIR:  Absolute or relative path to a directory.\n");
 	std::printf("SIZE: A positive integer.\n");
-	std::printf("BOOL: \"true\", \"yes\" and \"1\" are true, everything else is false.\n");
+	std::printf("BOOL: \"true\", \"yes\", \"y\", \"on\" and \"1\" are true, everything else is false.\n");
 	std::printf("VOL:  A double ranging from 0.0 (min) - 1.0 (max).\n");
 	std::printf("LVL:  A positive integer.\n");
 	std::printf("CHAN: A comma-separated list of debug channels.\n");

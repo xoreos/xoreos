@@ -225,9 +225,11 @@ void ConfigDomain::set(const ConfigDomain &domain, bool clobber) {
 }
 
 bool ConfigDomain::toBool(const UString &value) {
-	// Valid true values are "true", "yes" and "1"
+	// Valid true values are "true", "yes", "y", "on" and "1"
 	if (value.equalsIgnoreCase("true") ||
-	    value.equalsIgnoreCase("yes") ||
+	    value.equalsIgnoreCase("yes")  ||
+	    value.equalsIgnoreCase("y")    ||
+	    value.equalsIgnoreCase("on")   ||
 	    value == "1")
 		return true;
 
