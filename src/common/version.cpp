@@ -44,24 +44,26 @@
 #endif
 
 #ifndef XOREOS_REVDESC
-	#define XOREOS_REVDESC ""
+	#define XOREOS_REVDESC "unknown"
 #endif
 
 #ifndef XOREOS_REV
-	#define XOREOS_REV ""
+	#define XOREOS_REV "unk"
 #endif
 
 #ifndef XOREOS_BUILDDATE
-	#define XOREOS_BUILDDATE ""
+	#define XOREOS_BUILDDATE __DATE__ " " __TIME__
 #endif
 
 // If we're in full release mode, the revision is ignored
 #ifdef XOREOS_RELEASE
 	#undef XOREOS_REV
+	#define XOREOS_REV ""
 #endif
 
 // Distributions may append an extra version string
 #ifdef XOREOS_DISTRO
+	#undef XOREOS_REV
 	#define XOREOS_REV XOREOS_DISTRO
 #endif
 
