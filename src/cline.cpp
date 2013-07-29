@@ -39,6 +39,7 @@
 #include "common/configman.h"
 
 static void displayUsage(const char *name) {
+	std::printf("xoreos - A reimplementation of BioWare's Aurora engine\n");
 	std::printf("Usage: %s [options] [target]\n\n", name);
 	std::printf("          --help              Display this text and exit.\n");
 	std::printf("          --version           Display version information and exit.\n");
