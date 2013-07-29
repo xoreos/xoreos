@@ -27,6 +27,8 @@
  *  The NWN ingame main menu.
  */
 
+#include "common/version.h"
+
 #include "aurora/talkman.h"
 
 #include "engines/nwn/gui/widgets/label.h"
@@ -77,7 +79,7 @@ IngameMainMenu::~IngameMainMenu() {
 
 void IngameMainMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "BuildNumber") {
-		dynamic_cast<WidgetLabel &>(widget).setText(PACKAGE_STRING);
+		dynamic_cast<WidgetLabel &>(widget).setText(XOREOS_NAMEVERSION);
 		dynamic_cast<WidgetLabel &>(widget).setColor(0.6, 0.6, 0.6, 1.0);
 		return;
 	}

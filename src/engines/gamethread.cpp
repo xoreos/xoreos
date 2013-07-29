@@ -27,6 +27,7 @@
  *  The thread the game logic runs in.
  */
 
+#include "common/version.h"
 #include "common/util.h"
 #include "common/error.h"
 #include "common/configman.h"
@@ -62,7 +63,7 @@ void GameThread::init(const Common::UString &baseDir) {
 	if (!ConfigMan.getKey("description", description))
 		description = EngineMan.getGameName(*_game, true);
 
-	GfxMan.setWindowTitle(Common::UString(PACKAGE_STRING " -- ") + description);
+	GfxMan.setWindowTitle(Common::UString(XOREOS_NAMEVERSION) + " -- " + description);
 
 	status("Detected game \"%s\"", EngineMan.getGameName(*_game, false).c_str());
 

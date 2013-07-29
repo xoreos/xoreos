@@ -9,7 +9,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.11 -Wall no-dist-gzip dist-xz subdir-objects])
+AM_INIT_AUTOMAKE([1.11 -Wall -Wno-portability no-dist-gzip dist-xz subdir-objects])
 # Support silent build rules. Disable
 # by either passing --disable-silent-rules to configure or passing V=1
 # to make
@@ -251,6 +251,7 @@ AC_SUBST(WERROR)
 AC_CONFIG_FILES([utf8cpp/Makefile])
 AC_CONFIG_FILES([glew/Makefile])
 AC_CONFIG_FILES([lua/Makefile])
+AC_CONFIG_FILES([gitstamp/Makefile])
 AC_CONFIG_FILES([src/common/Makefile])
 AC_CONFIG_FILES([src/graphics/Makefile])
 AC_CONFIG_FILES([src/graphics/images/Makefile])

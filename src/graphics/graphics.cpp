@@ -29,6 +29,7 @@
 
 #include <boost/bind.hpp>
 
+#include "common/version.h"
 #include "common/util.h"
 #include "common/maths.h"
 #include "common/error.h"
@@ -117,7 +118,7 @@ void GraphicsManager::init() {
 		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
 
 	// Set the window title to our name
-	setWindowTitle(PACKAGE_STRING);
+	setWindowTitle(XOREOS_NAMEVERSION);
 
 	int  width  = ConfigMan.getInt ("width"     , 800);
 	int  height = ConfigMan.getInt ("height"    , 600);

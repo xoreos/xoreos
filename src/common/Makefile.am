@@ -1,10 +1,24 @@
 include $(top_srcdir)/Makefile.common
 
+# Pass the git version information to the compiler
+VER_REVDESC = $(shell cat $(top_srcdir)/gitstamp/gitstamp)
+VER_REV = $(shell cat $(top_srcdir)/gitstamp/gitstamp | cut -d '-' -f 2-)
+VER_DATE = $(shell date --utc '+%Y-%m-%dT%H:%M:%S')
+
+VERSION_FLAGS = -DXOREOS_REVDESC=\"$(VER_REVDESC)\" -DXOREOS_REV=\"$(VER_REV)\" -DXOREOS_BUILDDATE=\"$(VER_DATE)\"
+
+AM_CXXFLAGS += $(VERSION_FLAGS)
+AM_CFLAGS   += $(VERSION_FLAGS)
+
+# Rebuild the version.lo when the git version changed
+version.lo: $(top_srcdir)/gitstamp/gitstamp
+
 noinst_LTLIBRARIES = libcommon.la
 
 noinst_HEADERS = system.h \
                  types.h \
                  endianness.h \
+                 version.h \
                  noncopyable.h \
                  singleton.h \
                  maths.h \
@@ -45,7 +59,8 @@ noinst_HEADERS = system.h \
                  pe_exe.h \
                  systemfonts.h
 
-libcommon_la_SOURCES = maths.cpp \
+libcommon_la_SOURCES = version.cpp \
+                       maths.cpp \
                        sinetables.cpp \
                        cosinetables.cpp \
                        sinewindows.cpp \
