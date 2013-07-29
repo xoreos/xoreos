@@ -40,20 +40,20 @@
 
 static void displayUsage(const char *name) {
 	std::printf("Usage: %s [options] [target]\n\n", name);
-	std::printf("          --help              This text\n");
-	std::printf("          --version           Display version information and exit\n");
-	std::printf("  -cFILE  --config=FILE       Load the config from file FILE\n");
-	std::printf("  -pDIR   --path=DIR          Override the game path with DIR\n");
-	std::printf("  -wSIZE  --width=SIZE        Set the window's width to SIZE\n");
-	std::printf("  -hSIZE  --height=SIZE       Set the window's height to SIZE\n");
-	std::printf("  -fBOOL  --fullscreen=BOOL   Switch fullscreen on/off\n");
-	std::printf("  -kBOOL  --skipvideos=BOOL   Disable videos on/off\n");
-	std::printf("  -vVOL   --volume=VOL        Set global volume to VOL\n");
-	std::printf("  -mVOL   --volume_music=VOL  Set music volume to VOL\n");
-	std::printf("  -sVOL   --volume_sfx=VOL    Set SFX volume to VOL\n");
-	std::printf("  -oVOL   --volume_voice=VOL  Set voice volume to VOL\n");
-	std::printf("  -iVOL   --volume_video=VOL  Set video volume to VOL\n");
-	std::printf("  -dLVL   --debuglevel=LVL    Set the debug level to LVL\n");
+	std::printf("          --help              Display this text and exit.\n");
+	std::printf("          --version           Display version information and exit.\n");
+	std::printf("  -cFILE  --config=FILE       Load the config from file FILE.\n");
+	std::printf("  -pDIR   --path=DIR          Override the game path with DIR.\n");
+	std::printf("  -wSIZE  --width=SIZE        Set the window's width to SIZE.\n");
+	std::printf("  -hSIZE  --height=SIZE       Set the window's height to SIZE.\n");
+	std::printf("  -fBOOL  --fullscreen=BOOL   Switch fullscreen on/off.\n");
+	std::printf("  -kBOOL  --skipvideos=BOOL   Disable videos on/off.\n");
+	std::printf("  -vVOL   --volume=VOL        Set global volume to VOL.\n");
+	std::printf("  -mVOL   --volume_music=VOL  Set music volume to VOL.\n");
+	std::printf("  -sVOL   --volume_sfx=VOL    Set SFX volume to VOL.\n");
+	std::printf("  -oVOL   --volume_voice=VOL  Set voice volume to VOL.\n");
+	std::printf("  -iVOL   --volume_video=VOL  Set video volume to VOL.\n");
+	std::printf("  -dLVL   --debuglevel=LVL    Set the debug level to LVL.\n");
 	std::printf("          --debugchannel=CHAN Set the enabled debug channel(s) to CHAN.\n");
 	std::printf("          --listdebug         List all available debug channels.\n");
 	std::printf("          --logfile=FILE      Write all debug output into this file too.\n");
