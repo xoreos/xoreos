@@ -51,9 +51,6 @@ protected:
 private:
 	void adoptChanges();
 
-	void configureText();
-	void setDefaultHighlighting(Graphics::Aurora::Highlightable* highlightable);
-
 	GUI *_gameplay;
 	GUI *_feedback;
 	GUI *_autopause;

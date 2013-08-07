@@ -51,6 +51,9 @@ WidgetButton::~WidgetButton() {
 
 void WidgetButton::load(const Aurora::GFFStruct &gff) {
 	KotORWidget::load(gff);
+	if(getTextHighlightableComponent() != NULL) {
+		  setDefaultHighlighting(getTextHighlightableComponent());
+	}
 }
 
 void WidgetButton::mouseUp(uint8 state, float x, float y) {
@@ -78,6 +81,13 @@ void WidgetButton::leave() {
 		_text->setHighlighted(false);
 		_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 	}
+}
+
+void WidgetButton::setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable) {
+	highlightable->setHighlightable(true);
+	highlightable->setHighlightDelta(0, 0, 0, .05);
+	highlightable->setHighlightLowerBound(1, 1, 0, .2);
+	highlightable->setHighlightUpperBound(1, 1, 0, 1);
 }
 
 } // End of namespace KotOR

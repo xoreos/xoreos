@@ -89,8 +89,6 @@ protected:
 
 	void addBackground(const Common::UString &background);
 
-	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
-
 private:
 	struct WidgetContext {
 		const Aurora::GFFStruct *strct;

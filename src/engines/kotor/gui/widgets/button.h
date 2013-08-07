@@ -52,6 +52,8 @@ public:
 	virtual void leave();
 
 private:
+
+	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 	Sound::ChannelHandle _sound;
 	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
 };

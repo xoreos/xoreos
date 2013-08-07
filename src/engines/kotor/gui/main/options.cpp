@@ -52,8 +52,6 @@ OptionsMenu::OptionsMenu() {
 	_graphics = new OptionsGraphicsMenu();
 	_sound = new OptionsSoundMenu();
 
-	configureText();
-
 }
 
 OptionsMenu::~OptionsMenu() {
@@ -62,22 +60,6 @@ OptionsMenu::~OptionsMenu() {
 	delete _autopause;
 	delete _graphics;
 	delete _sound;
-}
-
-void OptionsMenu::configureText() {
-	setDefaultHighlighting(getButton("BTN_GAMEPLAY")->getTextHighlightableComponent());
-	setDefaultHighlighting(getButton("BTN_FEEDBACK")->getTextHighlightableComponent());
-	setDefaultHighlighting(getButton("BTN_AUTOPAUSE")->getTextHighlightableComponent());
-	setDefaultHighlighting(getButton("BTN_GRAPHICS")->getTextHighlightableComponent());
-	setDefaultHighlighting(getButton("BTN_SOUND")->getTextHighlightableComponent());
-	setDefaultHighlighting(getButton("BTN_BACK")->getTextHighlightableComponent());
-}
-
-void OptionsMenu::setDefaultHighlighting(Graphics::Aurora::Highlightable* highlightable) {
-	highlightable->setHighlightable(true);
-	highlightable->setHighlightDelta(0, 0, 0, .05);
-	highlightable->setHighlightLowerBound(1, 1, 0, .2);
-	highlightable->setHighlightUpperBound(1, 1, 0, 1);
 }
 
 void OptionsMenu::callbackActive(Widget &widget) {
