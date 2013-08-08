@@ -36,6 +36,7 @@
 #include "graphics/aurora/guiquad.h"
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/highlightabletext.h"
+#include "graphics/aurora/highlightableguiquad.h"
 
 #include "engines/kotor/gui/widgets/kotorwidget.h"
 
@@ -164,7 +165,12 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 
 	Border border = createBorder(gff);
 
-	_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
+	if(!border.fill.empty()) {
+		_quad = new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
+	} else {
+		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);	  
+	}
+
 	_quad->setPosition(extend.x, extend.y, 0.0);
 	_quad->setTag(getTag());
 	_quad->setClickable(true);
@@ -284,6 +290,10 @@ KotORWidget::Text KotORWidget::createText(const Aurora::GFFStruct &gff) {
 
 Graphics::Aurora::Highlightable* KotORWidget::getTextHighlightableComponent() const {
 	return static_cast<Graphics::Aurora::Highlightable*>(_text);
+}
+
+Graphics::Aurora::Highlightable* KotORWidget::getQuadHighlightableComponent() const {
+	return dynamic_cast<Graphics::Aurora::Highlightable*>(_quad);
 }
 
 } // End of namespace KotOR

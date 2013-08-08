@@ -66,8 +66,6 @@ public:
 	void setColor(float r, float g, float b, float a);
 	void setText(const Common::UString &text);
 
-	Graphics::Aurora::Highlightable *getTextHighlightableComponent() const;
-
 protected:
 	struct Extend {
 		float x;
@@ -108,6 +106,9 @@ protected:
 
 		Text();
 	};
+	
+	Graphics::Aurora::Highlightable *getTextHighlightableComponent() const;
+	Graphics::Aurora::Highlightable *getQuadHighlightableComponent() const;
 
 	float _width;
 	float _height;

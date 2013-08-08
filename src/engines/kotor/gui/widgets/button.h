@@ -43,7 +43,7 @@ public:
 	WidgetButton(::Engines::GUI &gui, const Common::UString &tag);
 	~WidgetButton();
 
-	void load(const Aurora::GFFStruct &gff);
+	virtual void load(const Aurora::GFFStruct &gff);
 
 	void mouseUp(uint8 state, float x, float y);
 

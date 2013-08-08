@@ -54,6 +54,9 @@ void WidgetButton::load(const Aurora::GFFStruct &gff) {
 	if(getTextHighlightableComponent() != NULL) {
 		  setDefaultHighlighting(getTextHighlightableComponent());
 	}
+	if(getQuadHighlightableComponent() != NULL) {
+		  setDefaultHighlighting(getQuadHighlightableComponent());
+	}
 }
 
 void WidgetButton::mouseUp(uint8 state, float x, float y) {
@@ -73,6 +76,14 @@ void WidgetButton::enter() {
 		_text->setColor(r, g, b, a);
 		_text->setHighlighted(true);
 	}
+	
+	if(getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+		_quad->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+		getQuadHighlightableComponent()->getHighlightedLowerBound(r, g, b, a);
+		_quad->setColor(r, g, b, a);
+		getQuadHighlightableComponent()->setHighlighted(true);
+	}
+ 
 }
 
 void WidgetButton::leave() {
@@ -80,6 +91,10 @@ void WidgetButton::leave() {
 	if(getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
 		_text->setHighlighted(false);
 		_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+	}
+	if(getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+		getQuadHighlightableComponent()->setHighlighted(false);
+		_quad->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 	}
 }
 
