@@ -51,10 +51,10 @@ WidgetButton::~WidgetButton() {
 
 void WidgetButton::load(const Aurora::GFFStruct &gff) {
 	KotORWidget::load(gff);
-	if (getTextHighlightableComponent() != NULL) {
+	if (getTextHighlightableComponent() != 0) {
 		  setDefaultHighlighting(getTextHighlightableComponent());
 	}
-	if (getQuadHighlightableComponent() != NULL) {
+	if (getQuadHighlightableComponent() != 0) {
 		  setDefaultHighlighting(getQuadHighlightableComponent());
 	}
 }

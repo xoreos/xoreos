@@ -65,7 +65,7 @@ void IndexBuffer::setSize(uint32 indexCount, uint32 indexSize, GLenum indexType)
 	if (_count * _size)
 		_data = std::malloc(_count * _size);
 	else
-		_data = NULL;
+		_data = 0;
 }
 
 GLvoid *IndexBuffer::getData() {

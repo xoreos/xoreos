@@ -65,7 +65,7 @@ void VertexBuffer::setSize(uint32 vertCount, uint32 vertSize) {
 	if (_count * _size)
 		_data = std::malloc(_count * _size);
 	else
-		_data = NULL;
+		_data = 0;
 }
 
 void VertexBuffer::setVertexDecl(const VertexDecl &decl) {
