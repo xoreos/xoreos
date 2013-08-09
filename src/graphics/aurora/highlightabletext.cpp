@@ -41,7 +41,7 @@ void HighlightableText::render(RenderPass pass) {
 	if (pass == kRenderPassOpaque)
 		return;
 
-	if(isHighlightable() && isHightlighted()) {
+	if (isHighlightable() && isHightlighted()) {
 		float initialR, initialG, initialB, initialA, r, g, b, a;
 		getColor(initialR, initialG, initialB, initialA);
 		incrementColor(initialR, initialG, initialB, initialA, r, g, b, a);

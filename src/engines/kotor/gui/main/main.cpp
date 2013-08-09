@@ -67,7 +67,7 @@ void MainMenu::createMovies() {
 }
 
 void MainMenu::createOptions() {
-	if(_options)
+	if (_options)
 		return;
 
 	// Create the options menu
@@ -123,18 +123,18 @@ void MainMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-	if(widget.getTag() == "BTN_LOADGAME") {
+	if (widget.getTag() == "BTN_LOADGAME") {
 
 	}
 
-	if(widget.getTag() == "BTN_MOVIES") {
+	if (widget.getTag() == "BTN_MOVIES") {
 		createMovies();
 
 		sub(*_movies);
 		return;
 	}
 
-	if(widget.getTag() == "BTN_OPTIONS") {
+	if (widget.getTag() == "BTN_OPTIONS") {
 		createOptions();
 
 		sub(*_options);

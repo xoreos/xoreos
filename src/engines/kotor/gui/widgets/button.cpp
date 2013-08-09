@@ -51,10 +51,10 @@ WidgetButton::~WidgetButton() {
 
 void WidgetButton::load(const Aurora::GFFStruct &gff) {
 	KotORWidget::load(gff);
-	if(getTextHighlightableComponent() != NULL) {
+	if (getTextHighlightableComponent() != NULL) {
 		  setDefaultHighlighting(getTextHighlightableComponent());
 	}
-	if(getQuadHighlightableComponent() != NULL) {
+	if (getQuadHighlightableComponent() != NULL) {
 		  setDefaultHighlighting(getQuadHighlightableComponent());
 	}
 }
@@ -70,14 +70,14 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 void WidgetButton::enter() {
 	float r, g, b, a;
 	_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
-	if(getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
+	if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
 		_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 		_text->getHighlightedLowerBound(r, g, b, a);
 		_text->setColor(r, g, b, a);
 		_text->setHighlighted(true);
 	}
 
-	if(getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+	if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
 		_quad->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 		getQuadHighlightableComponent()->getHighlightedLowerBound(r, g, b, a);
 		_quad->setColor(r, g, b, a);
@@ -88,11 +88,11 @@ void WidgetButton::enter() {
 
 void WidgetButton::leave() {
 	SoundMan.stopChannel(_sound);
-	if(getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
+	if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
 		_text->setHighlighted(false);
 		_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 	}
-	if(getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+	if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
 		getQuadHighlightableComponent()->setHighlighted(false);
 		_quad->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 	}

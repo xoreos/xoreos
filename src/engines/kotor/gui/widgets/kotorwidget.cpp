@@ -165,7 +165,7 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 
 	Border border = createBorder(gff);
 
-	if(!border.fill.empty()) {
+	if (!border.fill.empty()) {
 		_quad = new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
 	} else {
 		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);

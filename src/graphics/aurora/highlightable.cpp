@@ -95,7 +95,7 @@ void Highlightable::incrementColor(float initialR, float initialG, float initial
 	b = initialB + _deltaB;
 	a = initialA + _deltaA;
 
-	if(_upperBoundR < r || _upperBoundG < g || _upperBoundB < b || _upperBoundA < a ||
+	if (_upperBoundR < r || _upperBoundG < g || _upperBoundB < b || _upperBoundA < a ||
 		_lowerBoundR > r || _lowerBoundG > g || _lowerBoundB > b || _lowerBoundA > a) {
 		flipHighlightDelta();
 
