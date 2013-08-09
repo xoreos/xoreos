@@ -106,7 +106,7 @@ protected:
 
 		Text();
 	};
-	
+
 	Graphics::Aurora::Highlightable *getTextHighlightableComponent() const;
 	Graphics::Aurora::Highlightable *getQuadHighlightableComponent() const;
 

@@ -76,14 +76,14 @@ void WidgetButton::enter() {
 		_text->setColor(r, g, b, a);
 		_text->setHighlighted(true);
 	}
-	
+
 	if(getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
 		_quad->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 		getQuadHighlightableComponent()->getHighlightedLowerBound(r, g, b, a);
 		_quad->setColor(r, g, b, a);
 		getQuadHighlightableComponent()->setHighlighted(true);
 	}
- 
+
 }
 
 void WidgetButton::leave() {

@@ -168,7 +168,7 @@ void KotORWidget::load(const Aurora::GFFStruct &gff) {
 	if(!border.fill.empty()) {
 		_quad = new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
 	} else {
-		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);	  
+		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
 	}
 
 	_quad->setPosition(extend.x, extend.y, 0.0);
