@@ -1,4 +1,5 @@
-include $(top_srcdir)/Makefile.common
+AM_LDFLAGS =
+LIBS =
 
 # Get git version information
 .PHONY: gitstamp
