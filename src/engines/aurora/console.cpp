@@ -436,7 +436,7 @@ void ConsoleWindow::clearHighlight() {
 	updateHighlight();
 }
 
-const Common::UString ConsoleWindow::getHighlight() const {
+Common::UString ConsoleWindow::getHighlight() const {
 	if ((_highlightLength == 0) || (_highlightY >= kConsoleLines))
 		return "";
 

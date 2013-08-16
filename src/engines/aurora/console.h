@@ -103,7 +103,7 @@ public:
 	void highlightWord(int x, int y);
 	void highlightLine(int x, int y);
 
-	const Common::UString getHighlight() const;
+	Common::UString getHighlight() const;
 
 
 	// Scrolling

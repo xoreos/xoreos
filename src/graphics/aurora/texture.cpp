@@ -94,11 +94,11 @@ TextureID Texture::getID() const {
 	return _textureID;
 }
 
-const uint32 Texture::getWidth() const {
+uint32 Texture::getWidth() const {
 	return _width;
 }
 
-const uint32 Texture::getHeight() const {
+uint32 Texture::getHeight() const {
 	return _height;
 }
 
