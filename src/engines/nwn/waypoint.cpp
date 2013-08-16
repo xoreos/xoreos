@@ -73,7 +73,7 @@ bool Waypoint::hasMapNote() const {
 	return _hasMapNote;
 }
 
-const Common::UString Waypoint::getMapNote() const {
+Common::UString Waypoint::getMapNote() const {
 	return _mapNote;
 }
 

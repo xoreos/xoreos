@@ -64,7 +64,7 @@ const Common::UString &TwoDARow::getString(const Common::UString &column) const 
 	return cell;
 }
 
-const int32 TwoDARow::getInt(uint32 column) const {
+int32 TwoDARow::getInt(uint32 column) const {
 	const Common::UString &cell = getCell(column);
 	if (cell.empty() || (cell == "****"))
 		return _parent->_defaultInt;
@@ -72,7 +72,7 @@ const int32 TwoDARow::getInt(uint32 column) const {
 	return _parent->parseInt(cell);
 }
 
-const int32 TwoDARow::getInt(const Common::UString &column) const {
+int32 TwoDARow::getInt(const Common::UString &column) const {
 	const Common::UString &cell = getCell(_parent->headerToColumn(column));
 	if (cell.empty() || (cell == "****"))
 		return _parent->_defaultInt;
@@ -80,7 +80,7 @@ const int32 TwoDARow::getInt(const Common::UString &column) const {
 	return _parent->parseInt(cell);
 }
 
-const float TwoDARow::getFloat(uint32 column) const {
+float TwoDARow::getFloat(uint32 column) const {
 	const Common::UString &cell = getCell(column);
 	if (cell.empty() || (cell == "****"))
 		return _parent->_defaultFloat;
@@ -88,7 +88,7 @@ const float TwoDARow::getFloat(uint32 column) const {
 	return _parent->parseFloat(cell);
 }
 
-const float TwoDARow::getFloat(const Common::UString &column) const {
+float TwoDARow::getFloat(const Common::UString &column) const {
 	const Common::UString &cell = getCell(_parent->headerToColumn(column));
 	if (cell.empty() || (cell == "****"))
 		return _parent->_defaultFloat;

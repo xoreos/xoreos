@@ -56,14 +56,14 @@ public:
 	const Common::UString &getString(const Common::UString &column) const;
 
 	/** Return the contents of a cell as an int. */
-	const int32 getInt(uint32 column) const;
+	int32 getInt(uint32 column) const;
 	/** Return the contents of a cell as an int. */
-	const int32 getInt(const Common::UString &column) const;
+	int32 getInt(const Common::UString &column) const;
 
 	/** Return the contents of a cell as a float. */
-	const float getFloat(uint32 column) const;
+	float getFloat(uint32 column) const;
 	/** Return the contents of a cell as a float. */
-	const float getFloat(const Common::UString &column) const;
+	float getFloat(const Common::UString &column) const;
 
 private:
 	TwoDAFile *_parent; ///< The parent 2DA.

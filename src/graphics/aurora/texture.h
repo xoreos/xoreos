@@ -57,8 +57,8 @@ public:
 	Texture(ImageDecoder *image, const TXI *txi = 0);
 	~Texture();
 
-	const uint32 getWidth()  const;
-	const uint32 getHeight() const;
+	uint32 getWidth()  const;
+	uint32 getHeight() const;
 
 	bool hasAlpha() const;
 

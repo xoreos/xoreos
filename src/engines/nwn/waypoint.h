@@ -51,7 +51,7 @@ public:
 	/** Does this waypoint have a map note? */
 	bool hasMapNote() const;
 	/** Return the waypoint's map note text. */
-	const Common::UString getMapNote() const;
+	Common::UString getMapNote() const;
 
 	/** Enable/Disable the waypoint's map note. */
 	void enableMapNote(bool enabled);
