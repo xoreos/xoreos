@@ -6,7 +6,7 @@
 @author Matthew Hoops (clone2727)
 
 @section README
-@verbinclude README
+@verbinclude README.md
 
 @section Credits
 @verbinclude AUTHORS
