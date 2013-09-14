@@ -15,7 +15,7 @@
 @verbinclude INSTALL
 
 @section FAQ
-@verbinclude FAQ
+@verbinclude FAQ.md
 
 @section License
 @verbinclude COPYING
