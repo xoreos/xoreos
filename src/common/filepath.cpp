@@ -193,7 +193,7 @@ UString FilePath::makeAbsolute(const UString &p) {
 UString FilePath::makeRelative(const UString &basePath, const UString &path) {
 	UString relative = "";
 
-	if(path.beginsWith(basePath)) {
+	if (path.beginsWith(basePath)) {
 		relative = path.substr(path.getPosition(basePath.size() + 1), path.end());
 	}
 

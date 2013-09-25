@@ -148,7 +148,7 @@ public:
 	static UString makeAbsolute(const UString &p);
 
 	/** Return the path relative to the base path.
-	 * 
+	 *
 	 *  If the path does not start with the base path, an empty path will be returned;
 	 *  @param  basePath The path to make relative to.
 	 *  @param  path The path to make relative.

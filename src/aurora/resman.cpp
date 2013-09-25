@@ -199,7 +199,7 @@ void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &
 
 	_archiveDirs[archive].push_back(directory);
 
-	if(recursive) {
+	if (recursive) {
 		DirectoryList subDirectories;
 		Common::FilePath::getSubDirectories(directory, subDirectories);
 		for (std::list<Common::UString>::iterator it = subDirectories.begin(); it != subDirectories.end(); ++it) {
