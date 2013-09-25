@@ -203,7 +203,7 @@ void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &
 		DirectoryList subDirectories;
 		Common::FilePath::getSubDirectories(directory, subDirectories);
 		for (std::list<Common::UString>::iterator it = subDirectories.begin(); it != subDirectories.end(); ++it) {
-		addArchiveDir(archive, Common::FilePath::makeRelative(_baseDir, *it), true);
+			addArchiveDir(archive, Common::FilePath::makeRelative(_baseDir, *it), true);
 		}
 	}
 }
