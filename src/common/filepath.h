@@ -147,6 +147,15 @@ public:
 	 */
 	static UString makeAbsolute(const UString &p);
 
+	/** Return the path relative to the base path.
+	 * 
+	 *  If the path does not start with the base path, an empty path will be returned;
+	 *  @param  basePath The path to make relative to.
+	 *  @param  path The path to make relative.
+	 *  @return The relative path.
+	 */
+	static UString makeRelative(const UString &basePath, const UString &path);
+
 	/** Find a directory's subdirectory.
 	 *
 	 *  @param  directory The directory in which to look.
@@ -156,6 +165,8 @@ public:
 	 */
 	static UString findSubDirectory(const UString &directory, const UString &subDirectory,
 	                                bool caseInsensitive = false);
+
+	static void getSubDirectories(const UString &directory, std::list<UString> &subDirectories);
 
 	/** Escape a string literal for use in a regexp. */
 	static UString escapeStringLiteral(const UString &str);

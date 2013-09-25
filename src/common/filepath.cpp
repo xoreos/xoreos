@@ -190,6 +190,29 @@ UString FilePath::makeAbsolute(const UString &p) {
 	return normalize(absolute);
 }
 
+UString FilePath::makeRelative(const UString &basePath, const UString &path) {
+	UString relative = "";
+
+	if(path.beginsWith(basePath)) {
+		relative = path.substr(path.getPosition(basePath.size() + 1), path.end());
+	}
+
+	return relative;
+}
+
+void FilePath::getSubDirectories(const UString &directory, std::list<UString> &subDirectories) {
+
+	path dirPath(directory.c_str());
+
+	// Iterator over the directory's contents
+	directory_iterator itEnd;
+	for (directory_iterator itDir(dirPath); itDir != itEnd; ++itDir) {
+		if (is_directory(itDir->status())) {
+			subDirectories.push_back(itDir->path().generic_string());
+		}
+	}
+}
+
 static void splitDirectories(const UString &directory, std::list<UString> &dirs) {
 	UString curDir;
 

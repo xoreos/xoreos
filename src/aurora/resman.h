@@ -164,7 +164,7 @@ public:
 	 *  @param archive The type of archive to look for.
 	 *  @param dir A subdirectory of the base directory to search for archives files.
 	 */
-	void addArchiveDir(ArchiveType archive, const Common::UString &dir);
+	void addArchiveDir(ArchiveType archive, const Common::UString &dir, bool recursive =  false);
 
 	/** Does a specific archive exist?
 	 *

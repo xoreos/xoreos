@@ -177,7 +177,7 @@ void ResourceManager::registerDataBaseDir(const Common::UString &path) {
 		addArchiveDir((ArchiveType) i, "");
 }
 
-void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &dir) {
+void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &dir, bool recursive) {
 	if (archive == kArchiveNDS || archive == kArchiveHERF)
 		return;
 
@@ -198,6 +198,14 @@ void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &
 		dirFiles.getSubList(kArchiveGlob[kArchiveRIM], _archiveFiles[archive], true);
 
 	_archiveDirs[archive].push_back(directory);
+
+	if(recursive) {
+		DirectoryList subDirectories;
+		Common::FilePath::getSubDirectories(directory, subDirectories);
+		for (std::list<Common::UString>::iterator it = subDirectories.begin(); it != subDirectories.end(); ++it) {
+		addArchiveDir(archive, Common::FilePath::makeRelative(_baseDir, *it), true);
+		}
+	}
 }
 
 Common::UString ResourceManager::findArchive(const Common::UString &file,
