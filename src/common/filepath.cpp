@@ -143,6 +143,13 @@ UString FilePath::normalize(const UString &p) {
 		hasSlash = false;
 	}
 
+#if defined(BOOST_WINDOWS_API)
+	// Special case: On Windows, we want "x:/" instead of "x:", because the
+	// latter references the current directory of that drive.
+	if ((norm.size() == 2) && (*--norm.end() == ':'))
+		norm += '/';
+#endif
+
 	return norm;
 }
 
