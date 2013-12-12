@@ -172,10 +172,8 @@ private:
 	int _fsaa;    ///< Current FSAA settings.
 	int _fsaaMax; ///< Max supported FSAA level.
 
-	int _systemWidth;  ///< The system's screen width.
-	int _systemHeight; ///< The system's screen height.
-	int _width;        ///< The game's screen width.
-	int _height;       ///< The game's screen height.
+	int _width;  ///< The game's screen width.
+	int _height; ///< The game's screen height.
 
 	float _gamma; ///< The current gamma correction value.
 
