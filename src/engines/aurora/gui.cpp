@@ -132,6 +132,8 @@ int GUI::processEventQueue() {
 			mouseDown(*e);
 		else if (e->type == Events::kEventMouseUp)
 			mouseUp(*e);
+		else if (e->type == Events::kEventMouseWheel)
+			mouseWheel(*e);
 	}
 
 	_eventQueue.clear();
@@ -370,11 +372,9 @@ void GUI::mouseMove(const Events::Event &event) {
 }
 
 void GUI::mouseDown(const Events::Event &event) {
-	if ((event.button.button != SDL_BUTTON_LMASK) &&
-	    (event.button.button != SDL_BUTTON_WHEELUP) &&
-	    (event.button.button != SDL_BUTTON_WHEELDOWN))
-		// We only care about left mouse button presses, and the wheel
-		return;
+	if (event.button.button != SDL_BUTTON_LMASK)
+	        // We only care about left mouse button presses.
+	        return;
 
 	Widget *widget = getWidgetAt(event.button.x, event.button.y);
 	if (widget != _currentWidget)
@@ -399,6 +399,17 @@ void GUI::mouseUp(const Events::Event &event) {
 	checkWidgetActive(_currentWidget);
 
 	updateMouse();
+}
+
+void GUI::mouseWheel(const Events::Event &event) {
+	int x,y;
+	SDL_GetMouseState(&x, &y);
+	Widget *widget = getWidgetAt(x, y);
+
+	if (widget != _currentWidget)
+		changedWidget(widget);
+
+	mouseWheel(_currentWidget, event);
 }
 
 float GUI::toGUIX(int x) {
@@ -444,6 +455,13 @@ void GUI::mouseUp(Widget *widget, const Events::Event &event) {
 		widget->_lastClickX      = x;
 		widget->_lastClickY      = y;
 	}
+}
+
+void GUI::mouseWheel(Widget *widget, const Events::Event &event) {
+	if (widget) {
+		widget->mouseWheel(event.wheel.type, event.wheel.x, event.wheel.y);
+	}
+
 }
 
 } // End of namespace Engines

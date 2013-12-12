@@ -76,6 +76,9 @@ GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
 
 	_screen = 0;
 
+	_width = 800;
+	_height = 600;
+
 	_fpsCounter = new FPSCounter(3);
 
 	_frameLock = 0;
@@ -117,11 +120,8 @@ void GraphicsManager::init() {
 	if (SDL_Init(sdlInitFlags) < 0)
 		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
 
-	// Set the window title to our name
-	setWindowTitle(XOREOS_NAMEVERSION);
-
-	int  width  = ConfigMan.getInt ("width"     , 800);
-	int  height = ConfigMan.getInt ("height"    , 600);
+	int  width  = ConfigMan.getInt ("width"     , _width);
+	int  height = ConfigMan.getInt ("height"    , _height);
 	bool fs     = ConfigMan.getBool("fullscreen", false);
 
 	initSize(width, height, fs);
@@ -181,18 +181,15 @@ uint32 GraphicsManager::getFPS() const {
 }
 
 void GraphicsManager::initSize(int width, int height, bool fullscreen) {
-	int bpp = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
-	if ((bpp != 16) && (bpp != 24) && (bpp != 32))
-		throw Common::Exception("Need 16, 24 or 32 bits per pixel");
+// 	int bpp = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
+// 	if ((bpp != 16) && (bpp != 24) && (bpp != 32))
+// 		throw Common::Exception("Need 16, 24 or 32 bits per pixel");
 
-	_systemWidth  = SDL_GetVideoInfo()->current_w;
-	_systemHeight = SDL_GetVideoInfo()->current_h;
-
-	uint32 flags = SDL_OPENGL;
+	uint32 flags = SDL_WINDOW_OPENGL;
 
 	_fullScreen = fullscreen;
 	if (_fullScreen)
-		flags |= SDL_FULLSCREEN;
+		flags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE ;
 
 	// The way we try to find an optimal color mode is a bit complex:
 	// We only want 16bpp as a fallback, but otherwise prefer the native value.
@@ -201,17 +198,9 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 	// If we're currently in 16bpp mode, we try the higher two first as well,
 	// before being okay with native 16bpp mode.
 
-	const int colorModes[] = { bpp == 16 ? 32 : bpp, bpp == 24 ? 32 : 24, 16 };
+// 	const int colorModes[] = { bpp == 16 ? 32 : bpp, bpp == 24 ? 32 : 24, 16 };
 
-	bool foundMode = false;
-	for (int i = 0; i < ARRAYSIZE(colorModes); i++) {
-		if (setupSDLGL(width, height, colorModes[i], flags)) {
-			foundMode = true;
-			break;
-		}
-	}
-
-	if (!foundMode)
+	if (!setupSDLGL(width, height, flags))
 		throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
 
 	// Initialize glew, for the extension entry points
@@ -221,6 +210,9 @@ void GraphicsManager::initSize(int width, int height, bool fullscreen) {
 
 	// Check if we have all needed OpenGL extensions
 	checkGLExtensions();
+
+	_width = width;
+	_height = height;
 }
 
 bool GraphicsManager::setFSAA(int level) {
@@ -245,14 +237,17 @@ bool GraphicsManager::setFSAA(int level) {
 
 	destroyContext();
 
+	uint32 flags = SDL_GetWindowFlags(_screen);
+	SDL_GL_DeleteContext(_glContext);
+	SDL_DestroyWindow(_screen);
+
 	// Set the multisample level
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
 
-	uint32 flags = _screen->flags;
-
 	// Now try to change the screen
-	_screen = SDL_SetVideoMode(0, 0, 0, flags);
+
+	_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _width, _height, flags);
 
 	if (!_screen) {
 		// Failed changing, back up
@@ -262,19 +257,20 @@ bool GraphicsManager::setFSAA(int level) {
 		// Set the multisample level
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
-		_screen = SDL_SetVideoMode(0, 0, 0, flags);
+		_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _width, _height, flags);
 
 		// There's no reason how this could possibly fail, but ok...
 		if (!_screen)
 			throw Common::Exception("Failed reverting to the old FSAA settings");
 	}
 
+	_glContext = SDL_GL_CreateContext(_screen);
 	rebuildContext();
 
 	return _fsaa == level;
 }
 
-int GraphicsManager::probeFSAA(int width, int height, int bpp, uint32 flags) {
+int GraphicsManager::probeFSAA(int width, int height, uint32 flags) {
 	// Find the max supported FSAA level
 
 	for (int i = 32; i >= 2; i >>= 1) {
@@ -287,15 +283,18 @@ int GraphicsManager::probeFSAA(int width, int height, int bpp, uint32 flags) {
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, i);
 
-		if (SDL_SetVideoMode(width, height, bpp, flags))
+		SDL_Window* testScreen = SDL_CreateWindow("nrst", 0, 0, width, height, flags);
+		if (testScreen) {
+			SDL_DestroyWindow(testScreen);
 			return i;
+		}
 	}
 
 	return 0;
 }
 
-bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
-	_fsaaMax = probeFSAA(width, height, bpp, flags);
+bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
+	_fsaaMax = probeFSAA(width, height, flags);
 
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE    ,   8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE  ,   8);
@@ -306,10 +305,11 @@ bool GraphicsManager::setupSDLGL(int width, int height, int bpp, uint32 flags) {
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
-	_screen = SDL_SetVideoMode(width, height, bpp, flags);
+	_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 	if (!_screen)
 		return false;
 
+	_glContext = SDL_GL_CreateContext(_screen);
 	return true;
 }
 
@@ -348,7 +348,7 @@ void GraphicsManager::checkGLExtensions() {
 }
 
 void GraphicsManager::setWindowTitle(const Common::UString &title) {
-	SDL_WM_SetCaption(title.c_str(), 0);
+	SDL_SetWindowTitle(_screen, title.c_str());
 }
 
 float GraphicsManager::getGamma() const {
@@ -364,8 +364,11 @@ void GraphicsManager::setGamma(float gamma) {
 	}
 
 	_gamma = gamma;
+	uint16* gammaRamp = 0;
+	SDL_CalculateGammaRamp(gamma, gammaRamp);
 
-	SDL_SetGamma(gamma, gamma, gamma);
+	SDL_SetWindowGammaRamp(_screen, gammaRamp, gammaRamp, gammaRamp);
+	delete gammaRamp;
 }
 
 void GraphicsManager::setupScene() {
@@ -375,7 +378,7 @@ void GraphicsManager::setupScene() {
 	glClearColor(0, 0, 0, 0);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glViewport(0, 0, _screen->w, _screen->h);
+	glViewport(0, 0, _width, _height);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -396,7 +399,7 @@ void GraphicsManager::setupScene() {
 
 	glEnable(GL_CULL_FACE);
 
-	perspective(60.0, ((float) _screen->w) / ((float) _screen->h), 1.0, 1000.0);
+	perspective(60.0, ((float) _width) / ((float) _height), 1.0, 1000.0);
 }
 
 void GraphicsManager::perspective(float fovy, float aspect, float zNear, float zFar) {
@@ -483,8 +486,8 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 
 	view[0] = 0.0;
 	view[1] = 0.0;
-	view[2] = _screen->w;
-	view[3] = _screen->h;
+	view[2] = _width;
+	view[3] = _height;
 
 
 	sX = view[0] + view[2] * (v(0, 0) + 1.0) / 2.0;
@@ -532,8 +535,8 @@ bool GraphicsManager::unproject(float x, float y,
 
 		view[0] = 0.0;
 		view[1] = 0.0;
-		view[2] = _screen->w;
-		view[3] = _screen->h;
+		view[2] = _width;
+		view[3] = _height;
 
 		float zNear = 0.0;
 		float zFar  = 1.0;
@@ -666,6 +669,10 @@ void GraphicsManager::setCursor(Cursor *cursor) {
 	unlockFrame();
 }
 
+void GraphicsManager::setCursorPosition(int x, int y) {
+	SDL_WarpMouseInWindow(_screen, x, y);
+}
+
 void GraphicsManager::takeScreenshot() {
 	lockFrame();
 
@@ -679,8 +686,8 @@ Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
 		return 0;
 
 	// Map the screen coordinates to our OpenGL GUI screen coordinates
-	x =               x  - (_screen->w / 2.0);
-	y = (_screen->h - y) - (_screen->h / 2.0);
+	x =            x  - (_width  / 2.0);
+	y = (_height - y) - (_height / 2.0);
 
 	Renderable *object = 0;
 
@@ -711,7 +718,7 @@ Renderable *GraphicsManager::getWorldObjectAt(float x, float y) const {
 		return 0;
 
 		// Map the screen coordinates to OpenGL world screen coordinates
-	y = _screen->h - y;
+	y = _height - y;
 
 	float x1, y1, z1, x2, y2, z2;
 	if (!unproject(x, y, x1, y1, z1, x2, y2, z2))
@@ -787,7 +794,7 @@ bool GraphicsManager::playVideo() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
+	glScalef(2.0 / _width, 2.0 / _height, 0.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -885,7 +892,7 @@ bool GraphicsManager::renderGUIFront() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
+	glScalef(2.0 / _width, 2.0 / _height, 0.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -918,8 +925,8 @@ bool GraphicsManager::renderCursor() {
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0 / _screen->w, 2.0 / _screen->h, 0.0);
-	glTranslatef(- (_screen->w / 2.0), _screen->h / 2.0, 0.0);
+	glScalef(2.0 / _width, 2.0 / _height, 0.0);
+	glTranslatef(- (_width / 2.0), _height / 2.0, 0.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -930,7 +937,7 @@ bool GraphicsManager::renderCursor() {
 }
 
 void GraphicsManager::endScene() {
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(_screen);
 
 	if (_takeScreenshot) {
 		Graphics::takeScreenshot();
@@ -969,14 +976,14 @@ int GraphicsManager::getScreenWidth() const {
 	if (!_screen)
 		return 0;
 
-	return _screen->w;
+	return _width;
 }
 
 int GraphicsManager::getScreenHeight() const {
 	if (!_screen)
 		return 0;
 
-	return _screen->h;
+	return _height;
 }
 
 int GraphicsManager::getSystemWidth() const {
@@ -1080,15 +1087,13 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 
 	destroyContext();
 
-	// Save the flags
-	uint32 flags = _screen->flags;
-
+	uint32 flags = SDL_GetWindowFlags(_screen);
 	// Now try to change modes
-	_screen = SDL_SetVideoMode(0, 0, 0, flags ^ SDL_FULLSCREEN);
+	SDL_SetWindowFullscreen(_screen, SDL_WINDOW_FULLSCREEN);
 
 	// If we could not go full screen, revert back.
 	if (!_screen)
-		_screen = SDL_SetVideoMode(0, 0, 0, flags);
+		SDL_SetWindowFullscreen(_screen, 0);
 	else
 		_fullScreen = fullScreen;
 
@@ -1101,14 +1106,14 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 
 void GraphicsManager::toggleMouseGrab() {
 	// Same as ScummVM's OSystem_SDL::toggleMouseGrab()
-	if (SDL_WM_GrabInput(SDL_GRAB_QUERY) == SDL_GRAB_OFF)
-		SDL_WM_GrabInput(SDL_GRAB_ON);
+	if (SDL_GetRelativeMouseMode() == SDL_FALSE)
+		SDL_SetRelativeMouseMode(SDL_TRUE);
 	else
-		SDL_WM_GrabInput(SDL_GRAB_OFF);
+		SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
 void GraphicsManager::setScreenSize(int width, int height) {
-	if ((width == _screen->w) && (height == _screen->h))
+	if ((width == _width) && (height == _height))
 		// No changes, nothing to do
 		return;
 
@@ -1120,30 +1125,49 @@ void GraphicsManager::setScreenSize(int width, int height) {
 	}
 
 	// Save properties
-	uint32 flags     = _screen->flags;
-	int    bpp       = _screen->format->BitsPerPixel;
-	int    oldWidth  = _screen->w;
-	int    oldHeight = _screen->h;
+	uint32 flags     = SDL_GetWindowFlags(_screen);
 
 	destroyContext();
 
+	SDL_DisplayMode displayMode;
 	// Now try to change modes
-	_screen = SDL_SetVideoMode(width, height, bpp, flags);
+	if (!_fullScreen) {
+		SDL_SetWindowSize(_screen, width, height);
+	} else {
+		SDL_SetWindowFullscreen(_screen, 0);
+		displayMode.w = width;
+		displayMode.h = height;
+		displayMode.driverdata = 0;
+		displayMode.refresh_rate = 0;
+		displayMode.format = 0;
+		SDL_SetWindowDisplayMode(_screen, &displayMode);
+		SDL_SetWindowFullscreen(_screen, SDL_WINDOW_FULLSCREEN);
+	}
 
 	if (!_screen) {
 		// Could not change mode, revert back.
-		_screen = SDL_SetVideoMode(oldWidth, oldHeight, bpp, flags);
+		if (!_fullScreen)
+			SDL_SetWindowSize(_screen, _width, _height);
+		else {
+			displayMode.w = _width;
+			displayMode.h = _height;
+			SDL_SetWindowDisplayMode(_screen,  &displayMode);
+		}
+
+		// There's no reason how this could possibly fail, but ok...
+		if (!_screen)
+			throw Common::Exception("Failed changing the resolution and then failed reverting.");
+
+		return;
 	}
 
-	// There's no reason how this could possibly fail, but ok...
-	if (!_screen)
-		throw Common::Exception("Failed changing the resolution and then failed reverting.");
-
+	_width = width;
+	_height = height;
 	rebuildContext();
 
 	// Let the NotificationManager notify the Notifyables that the resolution changed
-	if ((oldWidth != _screen->w) || (oldHeight != _screen->h))
-		NotificationMan.resized(oldWidth, oldHeight, _screen->w, _screen->h);
+		NotificationMan.resized(_width, _height, width, height);
+
 }
 
 void GraphicsManager::showCursor(bool show) {

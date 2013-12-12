@@ -379,6 +379,18 @@ void WidgetScrollbar::mouseMove(uint8 state, float x, float y) {
 	setActive(true);
 }
 
+void WidgetScrollbar::mouseWheel(uint8 state, int x, int y) {
+	if (isDisabled())
+		return;
+
+	if (_full)
+		// Can't scroll when the bar is going full length
+		return;
+
+	if (_owner)
+		_owner->mouseWheel(state, x, y);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

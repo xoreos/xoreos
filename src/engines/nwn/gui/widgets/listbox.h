@@ -56,7 +56,7 @@ public:
 	~WidgetListItem();
 
 	void mouseUp  (uint8 state, float x, float y);
-	void mouseDown(uint8 state, float x, float y);
+	void mouseWheel(uint8 state, int x, int y);
 
 	void mouseDblClick(uint8 state, float x, float y);
 
@@ -149,6 +149,7 @@ public:
 	bool wasDblClicked();
 
 	void mouseDown(uint8 state, float x, float y);
+	void mouseWheel(uint8 state, int x, int y);
 
 	void subActive(Widget &widget);
 

@@ -116,6 +116,8 @@ public:
 	void showCursor(bool show);
 	/** Set the current cursor. */
 	void setCursor(Cursor *cursor = 0);
+	/** Set position to the cursor. */
+	void setCursorPosition(int x, int y);
 
 	/** Take a screenshot. */
 	void takeScreenshot();
@@ -172,10 +174,13 @@ private:
 
 	int _systemWidth;  ///< The system's screen width.
 	int _systemHeight; ///< The system's screen height.
+	int _width;        ///< The game's screen width.
+	int _height;       ///< The game's screen height.
 
 	float _gamma; ///< The current gamma correction value.
 
-	SDL_Surface *_screen; ///< The OpenGL hardware surface.
+	SDL_Window *_screen; ///< The OpenGL hardware surface.
+	SDL_GLContext _glContext;
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 	uint32 _lastSampled; ///< Timestamp used to advance animations.
@@ -205,9 +210,9 @@ private:
 	void initSize(int width, int height, bool fullscreen);
 	void setupScene();
 
-	int probeFSAA(int width, int height, int bpp, uint32 flags);
+	int probeFSAA(int width, int height, uint32 flags);
 
-	bool setupSDLGL(int width, int height, int bpp, uint32 flags);
+	bool setupSDLGL(int width, int height, uint32 flags);
 	void checkGLExtensions();
 
 	/** Set up a projection matrix. Analog to gluPerspective. */

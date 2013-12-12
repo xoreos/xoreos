@@ -121,7 +121,8 @@ private:
 
 	void mouseMove(const Events::Event &event); ///< Mouse move event triggered.
 	void mouseDown(const Events::Event &event); ///< Mouse down event triggered.
-	void mouseUp  (const Events::Event &event); ///< Mouse up event triggered.
+	void mouseUp(const Events::Event &event);   ///< Mouse up event triggered.
+	void mouseWheel(const Events::Event &event); ///< Mouse wheel event triggered.
 
 	float toGUIX(int x); // Convert an event X coordinate to a GUI X coordinate
 	float toGUIY(int y); // Convert an event Y coordinate to a GUI Y coordinate
@@ -131,8 +132,9 @@ private:
 	/** Send a mouse down event to the widget. */
 	void mouseDown(Widget *widget, const Events::Event &event);
 	/** Send a mouse up event to the widget. */
-	void mouseUp  (Widget *widget, const Events::Event &event);
-	/** Send a mouse move event to the widget. */
+	void mouseUp(Widget *widget, const Events::Event &event);
+	/** Send a mouse wheel event to the widget. */
+	void mouseWheel(Widget *widget, const Events::Event &event);
 
 	friend class Widget;
 };

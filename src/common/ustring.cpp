@@ -638,7 +638,47 @@ void UString::insert(iterator pos, uint32 c) {
 	swap(temp);
 }
 
+void UString::insert(UString::iterator pos, const char *c) {
+	if (pos == end()) {
+		*this += c;
+		return;
+	}
+
+	UString temp;
+
+	iterator it;
+	for (it = begin(); it != pos; ++it)
+		temp += *it;
+
+	temp += c;
+
+	for ( ; it != end(); ++it)
+		temp += *it;
+
+	swap(temp);
+}
+
 void UString::replace(iterator pos, uint32 c) {
+	if (pos == end()) {
+		*this += c;
+		return;
+	}
+
+	UString temp;
+
+	iterator it;
+	for (it = begin(); it != pos; ++it)
+		temp += *it;
+
+	temp += c;
+
+	for (++it; it != end(); ++it)
+		temp += *it;
+
+	swap(temp);
+}
+
+void UString::replace(UString::iterator pos, const char *c) {
 	if (pos == end()) {
 		*this += c;
 		return;

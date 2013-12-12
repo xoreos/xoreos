@@ -186,6 +186,9 @@ void Widget::mouseDown(uint8 state, float x, float y) {
 void Widget::mouseUp(uint8 state, float x, float y) {
 }
 
+void Widget::mouseWheel(uint8 state, int x, int y) {
+}
+
 void Widget::mouseDblClick(uint8 state, float x, float y) {
 }
 

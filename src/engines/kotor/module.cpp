@@ -88,7 +88,6 @@ void Module::run() {
 
 	enter();
 
-	EventMan.enableUnicode(true);
 	EventMan.enableKeyRepeat();
 
 	try {
@@ -107,7 +106,6 @@ void Module::run() {
 		printException(e, "WARNING: ");
 	}
 
-	EventMan.enableUnicode(false);
 	EventMan.enableKeyRepeat(0);
 }
 

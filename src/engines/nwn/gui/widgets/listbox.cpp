@@ -63,17 +63,6 @@ void WidgetListItem::mouseUp(uint8 state, float x, float y) {
 	activate();
 }
 
-void WidgetListItem::mouseDown(uint8 state, float x, float y) {
-	if (isDisabled())
-		return;
-
-	if ((state == SDL_BUTTON_WHEELUP) || (state == SDL_BUTTON_WHEELDOWN)) {
-		if (_owner)
-			_owner->mouseDown(state, x, y);
-		return;
-	}
-}
-
 void WidgetListItem::mouseDblClick(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
@@ -83,6 +72,17 @@ void WidgetListItem::mouseDblClick(uint8 state, float x, float y) {
 		if (ownerList)
 			ownerList->itemDblClicked();
 	}
+}
+
+void WidgetListItem::mouseWheel(uint8 state, int x, int y) {
+	if (isDisabled())
+		return;
+
+	if (y != 0)
+		if (_owner)
+			_owner->mouseWheel(state, x, y);
+
+	return;
 }
 
 void WidgetListItem::select() {
@@ -615,16 +615,6 @@ void WidgetListBox::mouseDown(uint8 state, float x, float y) {
 	if (isDisabled())
 		return;
 
-	if (state == SDL_BUTTON_WHEELUP) {
-		scrollUp(1);
-		return;
-	}
-
-	if (state == SDL_BUTTON_WHEELDOWN) {
-		scrollDown(1);
-		return;
-	}
-
 	float wX, wY, wZ;
 	getPosition(wX, wY, wZ);
 
@@ -640,6 +630,17 @@ void WidgetListBox::mouseDown(uint8 state, float x, float y) {
 		}
 	}
 }
+
+void WidgetListBox::mouseWheel(uint8 state, int x, int y) {
+	if (isDisabled())
+		return;
+
+	if (y > 0)
+		scrollUp(1);
+	else if (y < 0)
+		scrollDown(1);
+}
+
 
 } // End of namespace NWN
 
