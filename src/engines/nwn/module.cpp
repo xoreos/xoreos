@@ -383,7 +383,6 @@ void Module::run() {
 	if (!enter())
 		return;
 
-	EventMan.enableUnicode(true);
 	EventMan.enableKeyRepeat();
 
 	_ingameGUI->show();
@@ -415,7 +414,6 @@ void Module::run() {
 	_ingameGUI->stopConversation();
 	_ingameGUI->hide();
 
-	EventMan.enableUnicode(false);
 	EventMan.enableKeyRepeat(0);
 }
 

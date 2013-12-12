@@ -33,8 +33,6 @@ namespace Events {
 
 Joystick::Joystick(int index) : _index(index), _sdlJoy(0) {
 	assert(_index >= 0);
-
-	_name = SDL_JoystickName(_index);
 }
 
 Joystick::~Joystick() {
@@ -57,7 +55,13 @@ bool Joystick::enable() {
 	if (isEnabled())
 		return true;
 
-	return (_sdlJoy = SDL_JoystickOpen(_index)) != 0;
+	_sdlJoy = SDL_JoystickOpen(_index);
+	if (!_sdlJoy)
+		return false;
+
+	_name = SDL_JoystickName(_sdlJoy);
+
+	return true;
 }
 
 void Joystick::disable() {

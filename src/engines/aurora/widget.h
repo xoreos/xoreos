@@ -84,7 +84,9 @@ public:
 	/** A mouse button was pressed on the widget. */
 	virtual void mouseDown(uint8 state, float x, float y);
 	/** A mouse button was released on the widget. */
-	virtual void mouseUp  (uint8 state, float x, float y);
+	virtual void mouseUp(uint8 state, float x, float y);
+	/** A mouse wheel was used on the widget. */
+	virtual void mouseWheel(uint8 state, int x, int y);
 
 	/** A mouse button was double-clicked on the widget. */
 	virtual void mouseDblClick(uint8 state, float x, float y);

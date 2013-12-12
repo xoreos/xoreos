@@ -16,9 +16,9 @@ AM_INIT_AUTOMAKE([1.11 -Wall -Wno-portability no-dist-gzip dist-xz subdir-object
 AM_SILENT_RULES([yes])
 
 dnl SDL params to configure
-AC_ARG_VAR(SDL_CONFIG, [sdl-config utility])
-AC_ARG_VAR(SDL_CFLAGS, [C compiler flags for SDL])
-AC_ARG_VAR(SDL_LIBS, [libraries to pass to the linker for SDL])
+AC_ARG_VAR(SDL_CONFIG, [sdl2-config utility])
+AC_ARG_VAR(SDL_CFLAGS, [C compiler flags for SDL2])
+AC_ARG_VAR(SDL_LIBS, [libraries to pass to the linker for SDL2])
 
 dnl If AM_PROG_AR exists, call it, to shut up a libtool warning (and make it more portable, I guess?)
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -59,8 +59,8 @@ AC_CHECK_FUNCS([fabsf])
 AC_CHECK_FUNCS([fminf])
 AC_CHECK_FUNCS([fmaxf])
 
-dnl SDL
-AC_CHECK_PROG([SDL_CONFIG], [sdl-config], [sdl-config])
+dnl SDL2
+AC_CHECK_PROG([SDL_CONFIG], [sdl2-config], [sdl2-config])
 
 if test -n "$SDL_CONFIG"; then
 	if test -z "$SDL_CFLAGS"; then
@@ -73,7 +73,7 @@ fi
 
 save_LIBS="$LIBS"
 LIBS="$LIBS $SDL_LIBS"
-AC_CHECK_FUNC(SDL_Init, , AC_CHECK_LIB(SDL, SDL_Init, SDL_LIBS="$SDL_LIBS -lSDL", nosdl=1))
+AC_CHECK_FUNC(SDL_Init, , AC_CHECK_LIB(SDL2, SDL2_Init, SDL_LIBS="$SDL2_LIBS -lSDL2", nosdl=1))
 LIBS="$save_LIBS"
 
 if test -n "$nosdl"; then
