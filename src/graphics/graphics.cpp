@@ -181,24 +181,11 @@ uint32 GraphicsManager::getFPS() const {
 }
 
 void GraphicsManager::initSize(int width, int height, bool fullscreen) {
-// 	int bpp = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
-// 	if ((bpp != 16) && (bpp != 24) && (bpp != 32))
-// 		throw Common::Exception("Need 16, 24 or 32 bits per pixel");
-
 	uint32 flags = SDL_WINDOW_OPENGL;
 
 	_fullScreen = fullscreen;
 	if (_fullScreen)
 		flags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE ;
-
-	// The way we try to find an optimal color mode is a bit complex:
-	// We only want 16bpp as a fallback, but otherwise prefer the native value.
-	// So, if we're currently in 24bpp or 32bpp, we try that one first, then the
-	// other one and 16bpp only as a last resort.
-	// If we're currently in 16bpp mode, we try the higher two first as well,
-	// before being okay with native 16bpp mode.
-
-// 	const int colorModes[] = { bpp == 16 ? 32 : bpp, bpp == 24 ? 32 : 24, 16 };
 
 	if (!setupSDLGL(width, height, flags))
 		throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
@@ -268,7 +255,7 @@ bool GraphicsManager::setFSAA(int level) {
 
 	_glContext = SDL_GL_CreateContext(_screen);
 	rebuildContext();
-// 
+
 	return _fsaa == level;
 }
 
@@ -989,11 +976,21 @@ int GraphicsManager::getScreenHeight() const {
 }
 
 int GraphicsManager::getSystemWidth() const {
-	return _systemWidth;
+	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
+	SDL_DisplayMode maxWidth;
+	// The display mode are sorted by, in this order, greater bpp, largest width, largest height and higher refresh rate.
+	SDL_GetDisplayMode(displayIndex, 0, &maxWidth);
+
+	return maxWidth.w;
 }
 
 int GraphicsManager::getSystemHeight() const {
-	return _systemHeight;
+	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
+	SDL_DisplayMode maxHeight;
+	// The display mode are sorted by, in this order, greater bpp, largest width, largest height and higher refresh rate.
+	SDL_GetDisplayMode(displayIndex, 0, &maxHeight);
+
+	return maxHeight.h;
 }
 
 bool GraphicsManager::isFullScreen() const {
