@@ -83,6 +83,7 @@ void EventsManager::init() {
 	initJoysticks();
 
 	std::srand(getTimestamp());
+	SDL_StopTextInput();
 }
 
 void EventsManager::deinit() {

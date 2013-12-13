@@ -163,7 +163,6 @@ void ConsoleWindow::showPrompt() {
 	_input->show();
 
 	GfxMan.unlockFrame();
-	SDL_StartTextInput();
 }
 
 void ConsoleWindow::hidePrompt() {
@@ -177,7 +176,6 @@ void ConsoleWindow::hidePrompt() {
 	_input->hide();
 
 	GfxMan.unlockFrame();
-	SDL_StopTextInput();
 }
 
 bool ConsoleWindow::isIn(float x, float y) const {
@@ -714,6 +712,7 @@ void Console::show() {
 
 	updateCaches();
 	showCallback();
+	SDL_StartTextInput();
 }
 
 void Console::hide() {
@@ -722,6 +721,7 @@ void Console::hide() {
 
 	_console->hide();
 	_visible = false;
+	SDL_StopTextInput();
 }
 
 bool Console::isVisible() const {
