@@ -88,6 +88,7 @@ OptionsVideoAdvancedMenu::~OptionsVideoAdvancedMenu() {
 
 void OptionsVideoAdvancedMenu::show() {
 	_oldFSAA = MAX(GfxMan.getCurrentFSAA(), 0);
+	_fsaa = _oldFSAA;
 
 	int fsaa = _oldFSAA;
 	if (fsaa > 0)
@@ -143,6 +144,8 @@ void OptionsVideoAdvancedMenu::callbackActive(Widget &widget) {
 		_fsaa = dynamic_cast<WidgetSlider &>(widget).getState();
 
 		updateFSAALabel(_fsaa);
+		if (_fsaa > 0)
+		_fsaa = 1 << _fsaa;
 
 		return;
 	}
@@ -163,9 +166,6 @@ void OptionsVideoAdvancedMenu::updateFSAALabel(int n) {
 }
 
 void OptionsVideoAdvancedMenu::adoptChanges() {
-	if (_fsaa > 0)
-		_fsaa = 1 << _fsaa;
-
 	if (_fsaa != _oldFSAA) {
 		GfxMan.setFSAA(_fsaa);
 		ConfigMan.setInt("fsaa", _fsaa, true);
@@ -177,7 +177,6 @@ void OptionsVideoAdvancedMenu::adoptChanges() {
 }
 
 void OptionsVideoAdvancedMenu::revertChanges() {
-	_fsaa = _oldFSAA;
 	GfxMan.setFSAA(_oldFSAA);
 }
 
