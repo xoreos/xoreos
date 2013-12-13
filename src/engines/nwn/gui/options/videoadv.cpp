@@ -140,14 +140,10 @@ void OptionsVideoAdvancedMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "AntiAliasSlider") {
-		int fsaa = dynamic_cast<WidgetSlider &>(widget).getState();
+		_fsaa = dynamic_cast<WidgetSlider &>(widget).getState();
 
-		updateFSAALabel(fsaa);
+		updateFSAALabel(_fsaa);
 
-		if (fsaa > 0)
-			fsaa = 1 << fsaa;
-
-		GfxMan.setFSAA(fsaa);
 		return;
 	}
 }
@@ -167,7 +163,13 @@ void OptionsVideoAdvancedMenu::updateFSAALabel(int n) {
 }
 
 void OptionsVideoAdvancedMenu::adoptChanges() {
-	ConfigMan.setInt("fsaa", GfxMan.getCurrentFSAA(), true);
+	if (_fsaa > 0)
+		_fsaa = 1 << _fsaa;
+
+	if (_fsaa != _oldFSAA) {
+		GfxMan.setFSAA(_fsaa);
+		ConfigMan.setInt("fsaa", _fsaa, true);
+	}
 
 	WidgetCheckBox *largeFonts = getCheckBox("UseLargeFont");
 	if (largeFonts)
@@ -175,6 +177,7 @@ void OptionsVideoAdvancedMenu::adoptChanges() {
 }
 
 void OptionsVideoAdvancedMenu::revertChanges() {
+	_fsaa = _oldFSAA;
 	GfxMan.setFSAA(_oldFSAA);
 }
 
