@@ -54,32 +54,22 @@ AC_CHECK_FUNCS([fabsf])
 AC_CHECK_FUNCS([fminf])
 AC_CHECK_FUNCS([fmaxf])
 
-dnl SDL2
-AX_CHECK_SDL2(2000, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
-
-dnl faad
-AX_CHECK_FAAD(, AC_MSG_ERROR([libfaad is required and could not be found!]))
-
-dnl MAD
-AX_CHECK_MAD(0, 15, 1, , AC_MSG_ERROR([libMAD (>= 0.15.1) is required and could not be found!]))
-
-#dnl Ogg
-AX_CHECK_OGG(, AC_MSG_ERROR([libOgg is required and could not be found!]))
-
-#dnl VorbisFile
-AX_CHECK_VORBIS(, AC_MSG_ERROR([libVorbisFile is required and could not be found!]))
-
-dnl Xvid
-AX_CHECK_XVID(1, 2, 2, , AC_MSG_ERROR([libxvidcore (>= 1.2.2) is required and could not be found!]))
-
-dnl zlib
+dnl General purpose libraries
+AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found!]))
 AX_CHECK_ZLIB(1, 2, 3, 4, , AC_MSG_ERROR([zlib(>= 1.2.3.4) is required and could not be found!]))
 
-dnl iconv
-AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found]))
+dnl Graphic libraries
+AX_CHECK_SDL2(2000, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
+AX_CHECK_GL( , AC_MSG_ERROR([OpenGL is required and could not be found!]))
+AX_CHECK_FT2([11.0.5], , AC_MSG_ERROR([FreeType2 (>= 11.0.5) is required and could not be found!]))
+AX_CHECK_XVID(1, 2, 2, , AC_MSG_ERROR([libxvidcore (>= 1.2.2) is required and could not be found!]))
 
-dnl FreeType2
-AX_CHECK_FT2([11.0.5], , AC_MSG_ERROR([FreeType2 is required to compile xoreos]))
+dnl Sound libraries
+AX_CHECK_AL( , AC_MSG_ERROR([OpenAL Soft (>= 1.12) is required and could not be found!]))
+AX_CHECK_FAAD(, AC_MSG_ERROR([libfaad (>= 2.7) is required and could not be found!]))
+AX_CHECK_MAD(0, 15, 1, , AC_MSG_ERROR([libMAD (>= 0.15.1) is required and could not be found!]))
+AX_CHECK_OGG(, AC_MSG_ERROR([libOgg (>= 1.2.0) is required and could not be found!]))
+AX_CHECK_VORBIS(, AC_MSG_ERROR([libVorbisFile (>= 1.3.1) is required and could not be found!]))
 
 dnl Boost
 BOOST_REQUIRE(1.42.0)
@@ -94,12 +84,6 @@ BOOST_FUNCTION
 BOOST_BIND
 BOOST_UUID
 BOOST_SMART_PTR
-
-# OpenGL
-AX_CHECK_GL( , AC_MSG_ERROR([OpenGL is required and could not be found!]))
-
-# OpenAL
-AX_CHECK_AL( , AC_MSG_ERROR([OpenAL Soft is required and could not be found!]))
 
 dnl Extra flags
 case "$target" in
