@@ -17,12 +17,12 @@
 #
 # serial 3
 
-# AC_CHECK_FT2([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+# AX_CHECK_FT2([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 # Test for FreeType 2, and define FT2_CFLAGS and FT2_LIBS.
 # MINIMUM-VERSION is what libtool reports; the default is `7.0.1' (this is
 # FreeType 2.0.4).
 #
-AC_DEFUN([AC_CHECK_FT2],
+AC_DEFUN([AX_CHECK_FT2],
   [# Get the cflags and libraries from the freetype-config script
    #
    AC_ARG_WITH([ft-prefix],

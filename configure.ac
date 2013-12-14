@@ -79,7 +79,7 @@ dnl iconv
 AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found]))
 
 dnl FreeType2
-AC_CHECK_FT2([11.0.5], [], [AC_MSG_ERROR([FreeType2 is required to compile xoreos])])
+AX_CHECK_FT2([11.0.5], , AC_MSG_ERROR([FreeType2 is required to compile xoreos]))
 
 dnl Boost
 BOOST_REQUIRE
