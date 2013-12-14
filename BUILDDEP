@@ -18,7 +18,7 @@ Build-time library dependencies
   - Boost.Smart_Ptr
 
 - OpenGL (>= 2.1)
-- SDL (>= 1.2.14)
+- SDL2 (>= 2.0.0)
 - FreeType 2 (>= 2.4.0 (libtool number >= 11.0.5))
 
 - OpenAL Soft (>= 1.12)
