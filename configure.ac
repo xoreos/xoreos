@@ -82,7 +82,7 @@ dnl FreeType2
 AX_CHECK_FT2([11.0.5], , AC_MSG_ERROR([FreeType2 is required to compile xoreos]))
 
 dnl Boost
-BOOST_REQUIRE
+BOOST_REQUIRE(1.42.0)
 BOOST_STRING_ALGO
 BOOST_SYSTEM
 BOOST_FILESYSTEM
