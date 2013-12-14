@@ -63,18 +63,11 @@ AX_CHECK_FAAD(, AC_MSG_ERROR([libfaad is required and could not be found!]))
 dnl MAD
 AX_CHECK_MAD(0, 15, 1, , AC_MSG_ERROR([libMAD (>= 0.15.1) is required and could not be found!]))
 
-dnl libvorbisfile and libogg
-AC_CHECK_HEADER("vorbis/vorbisfile.h", , novorbis=1)
+#dnl Ogg
+AX_CHECK_OGG(, AC_MSG_ERROR([libOgg is required and could not be found!]))
 
-if test -n "$novorbis"; then
-	AC_MSG_ERROR([libOgg and libVorbis are required and could not be found])
-fi
-
-VORBIS_CFLAGS=""
-VORBIS_LIBS="-lvorbisfile"
-
-OGG_CFLAGS=""
-OGG_LIBS="-logg"
+#dnl VorbisFile
+AX_CHECK_VORBIS(, AC_MSG_ERROR([libVorbisFile is required and could not be found!]))
 
 dnl Xvid
 AC_CHECK_HEADER("xvid.h", , nolibxvid=1)
@@ -181,12 +174,6 @@ AC_SUBST(GL_LIBS)
 
 AC_SUBST(AL_CFLAGS)
 AC_SUBST(AL_LIBS)
-
-AC_SUBST(OGG_CFLAGS)
-AC_SUBST(OGG_LIBS)
-
-AC_SUBST(VORBIS_CFLAGS)
-AC_SUBST(VORBIS_LIBS)
 
 AC_SUBST(XVID_CFLAGS)
 AC_SUBST(XVID_LIBS)
