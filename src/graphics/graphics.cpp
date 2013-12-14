@@ -1084,7 +1084,7 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 
 	destroyContext();
 
-	uint32 flags = SDL_GetWindowFlags(_screen);
+	// uint32 flags = SDL_GetWindowFlags(_screen);
 	// Now try to change modes
 	SDL_SetWindowFullscreen(_screen, SDL_WINDOW_FULLSCREEN);
 
@@ -1122,7 +1122,7 @@ void GraphicsManager::setScreenSize(int width, int height) {
 	}
 
 	// Save properties
-	uint32 flags     = SDL_GetWindowFlags(_screen);
+	// uint32 flags     = SDL_GetWindowFlags(_screen);
 
 	destroyContext();
 
