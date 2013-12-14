@@ -58,14 +58,7 @@ dnl SDL2
 AX_CHECK_SDL2(2000, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
 
 dnl faad
-AC_CHECK_HEADER("neaacdec.h", , nolibfaad=1)
-
-if test -n "$nolibfaad"; then
-	AC_MSG_ERROR([libfaad is required and could not be found])
-fi
-
-FAAD_CFLAGS=""
-FAAD_LIBS="-lfaad"
+AX_CHECK_FAAD(, AC_MSG_ERROR([libfaad is required and could not be found!]))
 
 dnl MAD
 AC_CHECK_HEADER("mad.h", , nolibmad=1)
@@ -195,9 +188,6 @@ AC_SUBST(GL_LIBS)
 
 AC_SUBST(AL_CFLAGS)
 AC_SUBST(AL_LIBS)
-
-AC_SUBST(FAAD_CFLAGS)
-AC_SUBST(FAAD_LIBS)
 
 AC_SUBST(MAD_CFLAGS)
 AC_SUBST(MAD_LIBS)
