@@ -127,12 +127,12 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 	_hintCount   = 0;
 
 	// We only handle key down events
-	if (event.type != Events::kEventKeyDown)
+	if (event.type != Events::kEventKeyDown && event.type != Events::kEventTextInput)
 		return false;
 
 	// We only care about certain modifiers
-	SDLKey key = event.key.keysym.sym;
-	SDLMod mod = (SDLMod) (((int) event.key.keysym.mod) & (KMOD_CTRL | KMOD_SHIFT | KMOD_ALT));
+	SDL_Keycode key = event.key.keysym.sym;
+	SDL_Keymod mod = (SDL_Keymod) (((int) event.key.keysym.mod) & (KMOD_CTRL | KMOD_SHIFT | KMOD_ALT));
 
 
 	// Return / Enter: Execute this line
@@ -279,7 +279,7 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 	}
 
 	// Printable character: Add it to our input
-	uint32 c = EventMan.getPressedCharacter(event);
+	const char* c = EventMan.getPressedCharacter(event);
 	if (c == 0)
 		return false;
 

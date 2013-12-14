@@ -36,7 +36,7 @@
 #include "common/error.h"
 
 static bool   threadsInited = false;
-static uint32 threadsMainID;
+static SDL_threadID threadsMainID;
 
 namespace Common {
 

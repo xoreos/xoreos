@@ -108,22 +108,14 @@ public:
 
 	// Keyboard input
 
-	/** Enable/Disable translating unicode translation for key events. */
-	void enableUnicode(bool enable);
-
-	/** Enable/Disable repeated key events.
-	 *
-	 *  @param delayTime Delay between the start of repeated events in ms.
-	 *         0 disables repeating.
-	 *  @param interval Interval between repeated events in ms.
-	 */
-	void enableKeyRepeat(int delayTime = SDL_DEFAULT_REPEAT_DELAY, int interval = SDL_DEFAULT_REPEAT_INTERVAL);
+	/** Enable/Disable repeated key events. */
+	void enableKeyRepeat(bool repeat = true);
 
 	/** Return the unicode code point of the pressed key.
 	 *
 	 *  Requirements: enableUnicode must be enabled and the event must be a keydown event.
 	 */
-	uint32 getPressedCharacter(const Event &event);
+	const char *getPressedCharacter(const Event &event);
 
 
 	// Joystick input
@@ -167,6 +159,8 @@ private:
 
 	bool _fullQueue;
 	Common::Condition _queueProcessed;
+
+	bool _repeat;
 
 
 	/** Initialize the available joysticks/gamepads. */

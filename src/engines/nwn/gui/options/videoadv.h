@@ -52,6 +52,7 @@ protected:
 
 private:
 	int _oldFSAA;
+	int _fsaa;
 
 	void updateFSAALabel(int n);
 
