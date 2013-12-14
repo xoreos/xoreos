@@ -114,26 +114,8 @@ case "$target" in
 		;;
 esac;
 
-dnl OpenAL
-case "$target" in
-	*darwin*)
-		dnl TODO: Eventually add a test for OS X for OpenAL
-
-		AL_CFLAGS=""
-		AL_LIBS="-framework OpenAL"
-		;;
-	*)
-		AC_CHECK_HEADER("AL/al.h", , no_al=1)
-		AC_CHECK_HEADER("AL/alc.h", , no_al=1)
-
-		if test -n "$no_al"; then
-			AC_MSG_ERROR([OpenAL is required and could not be found!])
-		fi
-
-		AL_CFLAGS=""
-		AL_LIBS="-lopenal"
-		;;
-esac;
+# OpenAL
+AX_CHECK_AL( , AC_MSG_ERROR([OpenAL Soft is required and could not be found!]))
 
 dnl Extra flags
 case "$target" in
@@ -153,9 +135,6 @@ esac;
 
 AC_SUBST(GL_CFLAGS)
 AC_SUBST(GL_LIBS)
-
-AC_SUBST(AL_CFLAGS)
-AC_SUBST(AL_LIBS)
 
 AC_SUBST(XOREOS_CFLAGS)
 AC_SUBST(XOREOS_LIBS)
