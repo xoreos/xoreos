@@ -250,8 +250,8 @@ private:
 	 int8  _lastClickCount;
 	uint8  _lastClickButton;
 	uint32 _lastClickTime;
-	uint32 _lastClickX;
-	uint32 _lastClickY;
+	 int32 _lastClickX;
+	 int32 _lastClickY;
 
 
 	std::list<Common::UString> _videos;
