@@ -95,24 +95,8 @@ BOOST_BIND
 BOOST_UUID
 BOOST_SMART_PTR
 
-dnl OpenGL
-case "$target" in
-	*darwin*)
-		dnl Do not run the OpenGL checks on OS X, they will incorrectly find the X11
-		dnl OpenGL libraries which we do not want.
-		dnl TODO: Eventually add a test for OS X for OpenGL
-
-		GL_CFLAGS=""
-		GL_LIBS="-framework OpenGL"
-		;;
-	*)
-		AX_CHECK_GL
-
-		if test -n "$no_gl"; then
-			AC_MSG_ERROR([OpenGL is required and could not be found!])
-		fi
-		;;
-esac;
+# OpenGL
+AX_CHECK_GL( , AC_MSG_ERROR([OpenGL is required and could not be found!]))
 
 # OpenAL
 AX_CHECK_AL( , AC_MSG_ERROR([OpenAL Soft is required and could not be found!]))
@@ -132,9 +116,6 @@ case "$target" in
 		XOREOS_LIBS=""
 		;;
 esac;
-
-AC_SUBST(GL_CFLAGS)
-AC_SUBST(GL_LIBS)
 
 AC_SUBST(XOREOS_CFLAGS)
 AC_SUBST(XOREOS_LIBS)

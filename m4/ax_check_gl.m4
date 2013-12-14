@@ -34,7 +34,7 @@
 # the Macro.  You need not follow the terms of the GNU General Public
 # License when using or distributing such scripts.
 #
-AC_DEFUN([AX_CHECK_GL],
+AC_DEFUN([AX_CHECK_GL_INTERNAL],
 [AC_REQUIRE([AC_CANONICAL_HOST])dnl
 AC_REQUIRE([AC_PATH_X])dnl
 AC_REQUIRE([AC_PROG_SED])dnl
@@ -153,3 +153,49 @@ AC_LANG_POP([C])
 AC_SUBST([GL_CFLAGS])
 AC_SUBST([GL_LIBS])
 ])dnl
+
+dnl @synopsis AX_CHECK_GL(action-if, action-if-not)
+dnl
+dnl @summary check for OpenGL
+dnl
+dnl Defines GL_LIBS, GL_CFLAGS.
+AC_DEFUN([AX_CHECK_GL], [
+	AC_ARG_VAR(GL_CFLAGS, [C compiler flags for OpenGL])
+	AC_ARG_VAR(GL_LIBS, [libraries to pass to the linker for OpenGL])
+
+	case "$target" in
+		*darwin*)
+			dnl Do not run the OpenGL checks on OS X, they will incorrectly find the X11
+			dnl OpenGL libraries which we do not want.
+			dnl TODO: Eventually add a test for OS X for OpenGL
+
+			if test -z "$GL_CFLAGS"; then
+				GL_CFLAGS=""
+			fi
+			if test -z "$GL_LIBS"; then
+				GL_LIBS="-framework OpenGL"
+			fi
+
+			nogl=0
+			;;
+
+		*)
+			AX_CHECK_GL_INTERNAL
+
+			if test -n "$no_gl"; then
+				nogl=1
+			else
+				nogl=0
+			fi
+			;;
+	esac;
+
+	if test "$nogl" = "1"; then
+		ifelse([$2], , :, [$2])
+	else
+		ifelse([$1], , :, [$1])
+	fi
+
+	AC_SUBST(GL_CFLAGS)
+	AC_SUBST(GL_LIBS)
+])

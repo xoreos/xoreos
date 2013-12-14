@@ -57,7 +57,7 @@ boost.m4
 
 ax_check_gl.m4 / ax_check_glu.m4
 ********************************
-   xoreos uses Braden McDaniel's autoconf macros
+   xoreos uses (modified) Braden McDaniel's autoconf macros
    (<https://code.google.com/p/autoconf-gl-macros/>) to check for OpenGL
    and GLU, licensed under version 2 or later of the GNU General Public License.
 
