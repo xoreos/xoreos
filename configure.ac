@@ -61,14 +61,7 @@ dnl faad
 AX_CHECK_FAAD(, AC_MSG_ERROR([libfaad is required and could not be found!]))
 
 dnl MAD
-AC_CHECK_HEADER("mad.h", , nolibmad=1)
-
-if test -n "$nolibmad"; then
-	AC_MSG_ERROR([libMAD is required and could not be found])
-fi
-
-MAD_CFLAGS=""
-MAD_LIBS="-lmad"
+AX_CHECK_MAD(0, 15, 1, , AC_MSG_ERROR([libMAD (>= 0.15.1) is required and could not be found!]))
 
 dnl libvorbisfile and libogg
 AC_CHECK_HEADER("vorbis/vorbisfile.h", , novorbis=1)
@@ -188,9 +181,6 @@ AC_SUBST(GL_LIBS)
 
 AC_SUBST(AL_CFLAGS)
 AC_SUBST(AL_LIBS)
-
-AC_SUBST(MAD_CFLAGS)
-AC_SUBST(MAD_LIBS)
 
 AC_SUBST(OGG_CFLAGS)
 AC_SUBST(OGG_LIBS)
