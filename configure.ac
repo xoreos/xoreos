@@ -15,11 +15,6 @@ AM_INIT_AUTOMAKE([1.11 -Wall -Wno-portability no-dist-gzip dist-xz subdir-object
 # to make
 AM_SILENT_RULES([yes])
 
-dnl SDL params to configure
-AC_ARG_VAR(SDL_CONFIG, [sdl2-config utility])
-AC_ARG_VAR(SDL_CFLAGS, [C compiler flags for SDL2])
-AC_ARG_VAR(SDL_LIBS, [libraries to pass to the linker for SDL2])
-
 dnl If AM_PROG_AR exists, call it, to shut up a libtool warning (and make it more portable, I guess?)
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
@@ -60,25 +55,7 @@ AC_CHECK_FUNCS([fminf])
 AC_CHECK_FUNCS([fmaxf])
 
 dnl SDL2
-AC_CHECK_PROG([SDL_CONFIG], [sdl2-config], [sdl2-config])
-
-if test -n "$SDL_CONFIG"; then
-	if test -z "$SDL_CFLAGS"; then
-		SDL_CFLAGS=`$SDL_CONFIG --cflags`
-	fi
-	if test -z "$SDL_LIBS"; then
-		SDL_LIBS=`$SDL_CONFIG --libs`
-	fi
-fi
-
-save_LIBS="$LIBS"
-LIBS="$LIBS $SDL_LIBS"
-AC_CHECK_FUNC(SDL_Init, , AC_CHECK_LIB(SDL2, SDL2_Init, SDL_LIBS="$SDL2_LIBS -lSDL2", nosdl=1))
-LIBS="$save_LIBS"
-
-if test -n "$nosdl"; then
-	AC_MSG_ERROR([SDL is required and could not be found!])
-fi
+AX_CHECK_SDL2(2000, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
 
 dnl faad
 AC_CHECK_HEADER("neaacdec.h", , nolibfaad=1)
@@ -212,9 +189,6 @@ case "$target" in
 		XOREOS_LIBS=""
 		;;
 esac;
-
-AC_SUBST(SDL_LIBS)
-AC_SUBST(SDL_CFLAGS)
 
 AC_SUBST(GL_CFLAGS)
 AC_SUBST(GL_LIBS)
