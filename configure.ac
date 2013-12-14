@@ -76,11 +76,7 @@ dnl zlib
 AX_CHECK_ZLIB(1, 2, 3, 4, , AC_MSG_ERROR([zlib(>= 1.2.3.4) is required and could not be found!]))
 
 dnl iconv
-AM_ICONV
-
-if test "x$am_cv_func_iconv" != "xyes"; then
-	AC_MSG_ERROR([No useable iconv() function found])
-fi
+AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found]))
 
 dnl FreeType2
 AC_CHECK_FT2([11.0.5], [], [AC_MSG_ERROR([FreeType2 is required to compile xoreos])])
