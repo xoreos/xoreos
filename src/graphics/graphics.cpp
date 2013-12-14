@@ -225,6 +225,7 @@ bool GraphicsManager::setFSAA(int level) {
 	destroyContext();
 
 	uint32 flags = SDL_GetWindowFlags(_screen);
+	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
 	SDL_GL_DeleteContext(_glContext);
 	SDL_DestroyWindow(_screen);
 
@@ -233,10 +234,7 @@ bool GraphicsManager::setFSAA(int level) {
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
 
 	// Now try to change the screen
-	
-	_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _width, _height, flags);
-	
-	
+	_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
 
 	if (!_screen) {
 		// Failed changing, back up
@@ -246,7 +244,7 @@ bool GraphicsManager::setFSAA(int level) {
 		// Set the multisample level
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
-		_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _width, _height, flags);
+		_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
 
 		// There's no reason how this could possibly fail, but ok...
 		if (!_screen)
