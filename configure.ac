@@ -70,14 +70,7 @@ AX_CHECK_OGG(, AC_MSG_ERROR([libOgg is required and could not be found!]))
 AX_CHECK_VORBIS(, AC_MSG_ERROR([libVorbisFile is required and could not be found!]))
 
 dnl Xvid
-AC_CHECK_HEADER("xvid.h", , nolibxvid=1)
-
-if test -n "$nolibxvid"; then
-	AC_MSG_ERROR([libxvidcore is required and could not be found])
-fi
-
-XVID_CFLAGS=""
-XVID_LIBS="-lxvidcore"
+AX_CHECK_XVID(1, 2, 2, , AC_MSG_ERROR([libxvidcore (>= 1.2.2) is required and could not be found!]))
 
 dnl zlib
 AC_CHECK_HEADER("zlib.h", , nozlib=1)
@@ -174,9 +167,6 @@ AC_SUBST(GL_LIBS)
 
 AC_SUBST(AL_CFLAGS)
 AC_SUBST(AL_LIBS)
-
-AC_SUBST(XVID_CFLAGS)
-AC_SUBST(XVID_LIBS)
 
 AC_SUBST(Z_CFLAGS)
 AC_SUBST(Z_LIBS)
