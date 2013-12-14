@@ -73,14 +73,7 @@ dnl Xvid
 AX_CHECK_XVID(1, 2, 2, , AC_MSG_ERROR([libxvidcore (>= 1.2.2) is required and could not be found!]))
 
 dnl zlib
-AC_CHECK_HEADER("zlib.h", , nozlib=1)
-
-if test -n "$nozlib"; then
-	AC_MSG_ERROR([zlib is required and could not be found])
-fi
-
-Z_CFLAGS=""
-Z_LIBS="-lz"
+AX_CHECK_ZLIB(1, 2, 3, 4, , AC_MSG_ERROR([zlib(>= 1.2.3.4) is required and could not be found!]))
 
 dnl iconv
 AM_ICONV
@@ -167,9 +160,6 @@ AC_SUBST(GL_LIBS)
 
 AC_SUBST(AL_CFLAGS)
 AC_SUBST(AL_LIBS)
-
-AC_SUBST(Z_CFLAGS)
-AC_SUBST(Z_LIBS)
 
 AC_SUBST(XOREOS_CFLAGS)
 AC_SUBST(XOREOS_LIBS)
