@@ -25,6 +25,8 @@ LT_INIT([disable-shared])
 dnl We're C++
 AC_PROG_CXX
 AM_PROG_CC_C_O
+dnl Objective C++ for extra Mac OS X stuff
+AC_PROG_OBJCXX
 dnl We want a make install
 AC_PROG_INSTALL
 
@@ -96,14 +98,17 @@ case "$target" in
 	*darwin*)
 		XOREOS_CFLAGS="-DUNIX -DMACOSX"
 		XOREOS_LIBS=""
+		AM_CONDITIONAL(DARWIN, true)
 		;;
 	*mingw*)
 		XOREOS_CFLAGS=""
 		XOREOS_LIBS="-static-libgcc -static-libstdc++"
+		AM_CONDITIONAL(DARWIN, false)
 		;;
 	*)
 		XOREOS_CFLAGS="-DUNIX"
 		XOREOS_LIBS=""
+		AM_CONDITIONAL(DARWIN, false)
 		;;
 esac;
 
