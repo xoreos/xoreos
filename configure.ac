@@ -28,6 +28,9 @@ AM_PROG_CC_C_O
 dnl We want a make install
 AC_PROG_INSTALL
 
+dnl pkg-config
+PKG_PROG_PKG_CONFIG
+
 dnl --with-werror
 AC_ARG_WITH([werror], [AS_HELP_STRING([--with-werror], [Compile with -Werror @<:@default=no@:>@])], [], [with_werror=no])
 if test "x$with_werror" = "xyes"; then
@@ -61,6 +64,8 @@ AX_CHECK_ZLIB(1, 2, 3, 4, , AC_MSG_ERROR([zlib(>= 1.2.3.4) is required and could
 dnl Graphic libraries
 AX_CHECK_SDL2(2000, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
 AX_CHECK_GL( , AC_MSG_ERROR([OpenGL is required and could not be found!]))
+AX_CHECK_OGRE(1.9, , AC_MSG_ERROR([OGRE (>= 1.9) is required and could not be found!]))
+AX_CHECK_OGREOVERLAY(1.9, , AC_MSG_ERROR([OGRE-Overlay (>= 1.9) is required and could not be found!]))
 AX_CHECK_FT2([11.0.5], , AC_MSG_ERROR([FreeType2 (>= 11.0.5) is required and could not be found!]))
 AX_CHECK_XVID(1, 2, 2, , AC_MSG_ERROR([libxvidcore (>= 1.2.2) is required and could not be found!]))
 

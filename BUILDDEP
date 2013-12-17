@@ -20,6 +20,8 @@ Build-time library dependencies
 
 - OpenGL (>= 2.1)
 - SDL2 (>= 2.0.0)
+- OGRE (>= 1.9)
+  - OGRE-Overlay
 - FreeType 2 (>= 2.4.0 (libtool number >= 11.0.5))
 
 - OpenAL Soft (>= 1.12)
