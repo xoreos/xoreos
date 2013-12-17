@@ -46,11 +46,11 @@
 
 	#define XOREOS_LITTLE_ENDIAN
 
-	#define FORCEINLINE __forceinline
+	#define XOREOS_FORCEINLINE __forceinline
 	#define NORETURN_PRE __declspec(noreturn)
 	#define PLUGIN_EXPORT __declspec(dllexport)
 
-	static FORCEINLINE int c99_vsnprintf(char* str, size_t size, const char* format, va_list ap) {
+	static XOREOS_FORCEINLINE int c99_vsnprintf(char* str, size_t size, const char* format, va_list ap) {
 		int count = -1;
 
 		if (size != 0)
@@ -61,7 +61,7 @@
 		return count;
 	}
 
-	static FORCEINLINE int c99_snprintf(char* str, size_t size, const char* format, ...) {
+	static XOREOS_FORCEINLINE int c99_snprintf(char* str, size_t size, const char* format, ...) {
 		int count;
 		va_list ap;
 
@@ -108,8 +108,8 @@
 	#define PACKED_STRUCT __attribute__((__packed__))
 	#define GCC_PRINTF(x,y) __attribute__((__format__(printf, x, y)))
 
-	#if !defined(FORCEINLINE) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
-		#define FORCEINLINE inline __attribute__((__always_inline__))
+	#if !defined(XOREOS_FORCEINLINE) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+		#define XOREOS_FORCEINLINE inline __attribute__((__always_inline__))
 	#endif
 #else
 	#define PACKED_STRUCT
@@ -119,8 +119,8 @@
 //
 // Fallbacks / default values for various special macros
 //
-#ifndef FORCEINLINE
-	#define FORCEINLINE inline
+#ifndef XOREOS_FORCEINLINE
+	#define XOREOS_FORCEINLINE inline
 #endif
 
 #ifndef NORETURN_PRE

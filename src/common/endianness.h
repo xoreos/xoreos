@@ -63,11 +63,11 @@
 // Test for GCC >= 4.3.0 as this version added the bswap builtin
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
 
-	FORCEINLINE uint64 SWAP_BYTES_64(uint64 a) {
+	XOREOS_FORCEINLINE uint64 SWAP_BYTES_64(uint64 a) {
 		return __builtin_bswap64(a);
 	}
 
-	FORCEINLINE uint32 SWAP_BYTES_32(uint32 a) {
+	XOREOS_FORCEINLINE uint32 SWAP_BYTES_32(uint32 a) {
 		return __builtin_bswap32(a);
 	}
 
@@ -76,11 +76,11 @@
 
 	#include <cstdlib>
 
-	FORCEINLINE uint64 SWAP_BYTES_64(uint64 a) {
+	XOREOS_FORCEINLINE uint64 SWAP_BYTES_64(uint64 a) {
 		return _byteswap_uint64(a);
 	}
 
-	FORCEINLINE uint32 SWAP_BYTES_32(uint32 a) {
+	XOREOS_FORCEINLINE uint32 SWAP_BYTES_32(uint32 a) {
 		return _byteswap_ulong(a);
 	}
 
@@ -126,27 +126,27 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 #if !defined(XOREOS_NEED_ALIGNMENT)
 
-	FORCEINLINE uint16 READ_UINT16(const void *ptr) {
+	XOREOS_FORCEINLINE uint16 READ_UINT16(const void *ptr) {
 		return *(const uint16 *)(ptr);
 	}
 
-	FORCEINLINE uint32 READ_UINT32(const void *ptr) {
+	XOREOS_FORCEINLINE uint32 READ_UINT32(const void *ptr) {
 		return *(const uint32 *)(ptr);
 	}
 
-	FORCEINLINE uint64 READ_UINT64(const void *ptr) {
+	XOREOS_FORCEINLINE uint64 READ_UINT64(const void *ptr) {
 		return *(const uint64 *)(ptr);
 	}
 
-	FORCEINLINE void WRITE_UINT16(void *ptr, uint16 value) {
+	XOREOS_FORCEINLINE void WRITE_UINT16(void *ptr, uint16 value) {
 		*(uint16 *)(ptr) = value;
 	}
 
-	FORCEINLINE void WRITE_UINT32(void *ptr, uint32 value) {
+	XOREOS_FORCEINLINE void WRITE_UINT32(void *ptr, uint32 value) {
 		*(uint32 *)(ptr) = value;
 	}
 
-	FORCEINLINE void WRITE_UINT64(void *ptr, uint64 value) {
+	XOREOS_FORCEINLINE void WRITE_UINT64(void *ptr, uint64 value) {
 		*(uint64 *)(ptr) = value;
 	}
 
@@ -154,32 +154,32 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 // instructions for unaligned data when they are available (eg. MIPS)
 #elif defined(__GNUC__) && (__GNUC__ >= 4)
 
-	FORCEINLINE uint16 READ_UINT16(const void *ptr) {
+	XOREOS_FORCEINLINE uint16 READ_UINT16(const void *ptr) {
 		struct Unaligned16 { uint16 val; } __attribute__ ((__packed__));
 		return ((const Unaligned16 *)ptr)->val;
 	}
 
-	FORCEINLINE uint32 READ_UINT32(const void *ptr) {
+	XOREOS_FORCEINLINE uint32 READ_UINT32(const void *ptr) {
 		struct Unaligned32 { uint32 val; } __attribute__ ((__packed__));
 		return ((const Unaligned32 *)ptr)->val;
 	}
 
-	FORCEINLINE uint64 READ_UINT64(const void *ptr) {
+	XOREOS_FORCEINLINE uint64 READ_UINT64(const void *ptr) {
 		struct Unaligned64 { uint64 val; } __attribute__ ((__packed__));
 		return ((const Unaligned64 *)ptr)->val;
 	}
 
-	FORCEINLINE void WRITE_UINT16(void *ptr, uint16 value) {
+	XOREOS_FORCEINLINE void WRITE_UINT16(void *ptr, uint16 value) {
 		struct Unaligned16 { uint16 val; } __attribute__ ((__packed__));
 		((Unaligned16 *)ptr)->val = value;
 	}
 
-	FORCEINLINE void WRITE_UINT32(void *ptr, uint32 value) {
+	XOREOS_FORCEINLINE void WRITE_UINT32(void *ptr, uint32 value) {
 		struct Unaligned32 { uint32 val; } __attribute__ ((__packed__));
 		((Unaligned32 *)ptr)->val = value;
 	}
 
-	FORCEINLINE void WRITE_UINT64(void *ptr, uint64 value) {
+	XOREOS_FORCEINLINE void WRITE_UINT64(void *ptr, uint64 value) {
 		struct Unaligned64 { uint64 val; } __attribute__ ((__packed__));
 		((Unaligned64 *)ptr)->val = value;
 	}

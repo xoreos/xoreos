@@ -148,43 +148,43 @@ public:
 		write(&value, 8);
 	}
 
-	FORCEINLINE void writeSint16LE(int16 value) {
+	XOREOS_FORCEINLINE void writeSint16LE(int16 value) {
 		writeUint16LE((uint16)value);
 	}
 
-	FORCEINLINE void writeSint32LE(int32 value) {
+	XOREOS_FORCEINLINE void writeSint32LE(int32 value) {
 		writeUint32LE((uint32)value);
 	}
 
-	FORCEINLINE void writeSint64LE(int64 value) {
+	XOREOS_FORCEINLINE void writeSint64LE(int64 value) {
 		writeUint64LE((uint64)value);
 	}
 
-	FORCEINLINE void writeSint16BE(int16 value) {
+	XOREOS_FORCEINLINE void writeSint16BE(int16 value) {
 		writeUint16BE((uint16)value);
 	}
 
-	FORCEINLINE void writeSint32BE(int32 value) {
+	XOREOS_FORCEINLINE void writeSint32BE(int32 value) {
 		writeUint32BE((uint32)value);
 	}
 
-	FORCEINLINE void writeSint64BE(int64 value) {
+	XOREOS_FORCEINLINE void writeSint64BE(int64 value) {
 		writeUint64BE((uint64)value);
 	}
 
-	FORCEINLINE void writeIEEEFloatLE(float value) {
+	XOREOS_FORCEINLINE void writeIEEEFloatLE(float value) {
 		writeUint32LE((uint32)convertIEEEFloat(value));
 	}
 
-	FORCEINLINE void writeIEEEFloatBE(float value) {
+	XOREOS_FORCEINLINE void writeIEEEFloatBE(float value) {
 		writeUint32BE((uint32)convertIEEEFloat(value));
 	}
 
-	FORCEINLINE void writeIEEEDoubleLE(double value) {
+	XOREOS_FORCEINLINE void writeIEEEDoubleLE(double value) {
 		writeUint64LE((uint64)convertIEEEDouble(value));
 	}
 
-	FORCEINLINE void writeIEEEDoubleBE(double value) {
+	XOREOS_FORCEINLINE void writeIEEEDoubleBE(double value) {
 		writeUint64BE((uint64)convertIEEEDouble(value));
 	}
 
@@ -243,7 +243,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE int8 readSByte() {
+	XOREOS_FORCEINLINE int8 readSByte() {
 		return (int8)readByte();
 	}
 
@@ -332,7 +332,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE int16 readSint16LE() {
+	XOREOS_FORCEINLINE int16 readSint16LE() {
 		return (int16)readUint16LE();
 	}
 
@@ -343,7 +343,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE int32 readSint32LE() {
+	XOREOS_FORCEINLINE int32 readSint32LE() {
 		return (int32)readUint32LE();
 	}
 
@@ -354,7 +354,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE int64 readSint64LE() {
+	XOREOS_FORCEINLINE int64 readSint64LE() {
 		return (int64)readUint64LE();
 	}
 
@@ -365,7 +365,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE int16 readSint16BE() {
+	XOREOS_FORCEINLINE int16 readSint16BE() {
 		return (int16)readUint16BE();
 	}
 
@@ -376,7 +376,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE int32 readSint32BE() {
+	XOREOS_FORCEINLINE int32 readSint32BE() {
 		return (int32)readUint32BE();
 	}
 
@@ -387,7 +387,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE int64 readSint64BE() {
+	XOREOS_FORCEINLINE int64 readSint64BE() {
 		return (int64)readUint64BE();
 	}
 
@@ -398,7 +398,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE float readIEEEFloatLE() {
+	XOREOS_FORCEINLINE float readIEEEFloatLE() {
 		return convertIEEEFloat(readUint32LE());
 	}
 
@@ -409,7 +409,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE float readIEEEFloatBE() {
+	XOREOS_FORCEINLINE float readIEEEFloatBE() {
 		return convertIEEEFloat(readUint32BE());
 	}
 
@@ -420,7 +420,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE double readIEEEDoubleLE() {
+	XOREOS_FORCEINLINE double readIEEEDoubleLE() {
 		return convertIEEEDouble(readUint64LE());
 	}
 
@@ -431,7 +431,7 @@ public:
 	 * if a read error occurred (for which client code can check by
 	 * calling err() and eos() ).
 	 */
-	FORCEINLINE double readIEEEDoubleBE() {
+	XOREOS_FORCEINLINE double readIEEEDoubleBE() {
 		return convertIEEEDouble(readUint64BE());
 	}
 
@@ -591,15 +591,15 @@ public:
 		return (_bigEndian) ? TO_BE_64(val) : TO_LE_64(val);
 	}
 
-	FORCEINLINE int16 readSint16() {
+	XOREOS_FORCEINLINE int16 readSint16() {
 		return (int16)readUint16();
 	}
 
-	FORCEINLINE int32 readSint32() {
+	XOREOS_FORCEINLINE int32 readSint32() {
 		return (int32)readUint32();
 	}
 
-	FORCEINLINE int64 readSint64() {
+	XOREOS_FORCEINLINE int64 readSint64() {
 		return (int64)readUint64();
 	}
 };
@@ -725,15 +725,15 @@ public:
 		return (_bigEndian) ? TO_BE_64(val) : TO_LE_64(val);
 	}
 
-	FORCEINLINE int16 readSint16() {
+	XOREOS_FORCEINLINE int16 readSint16() {
 		return (int16)readUint16();
 	}
 
-	FORCEINLINE int32 readSint32() {
+	XOREOS_FORCEINLINE int32 readSint32() {
 		return (int32)readUint32();
 	}
 
-	FORCEINLINE int64 readSint64() {
+	XOREOS_FORCEINLINE int64 readSint64() {
 		return (int64)readUint64();
 	}
 };
