@@ -8,6 +8,7 @@ SUBDIRS = \
 noinst_LTLIBRARIES = libgraphics.la
 
 noinst_HEADERS = \
+                 macosx/macosx.h \
                  types.h \
                  util.h \
                  graphics.h \
@@ -46,6 +47,10 @@ libgraphics_la_SOURCES = \
                          indexbuffer.cpp \
                          vertexbuffer.cpp \
                          $(EMPTY)
+
+if DARWIN
+libgraphics_la_SOURCES += macosx/macosx.mm
+endif
 
 libgraphics_la_LIBADD = \
                         images/libimages.la \
