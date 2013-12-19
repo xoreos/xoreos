@@ -43,6 +43,8 @@
 #include "events/events.h"
 #include "events/notifications.h"
 
+#include "graphics/renderer.h"
+
 #include "graphics/graphics.h"
 #include "graphics/util.h"
 #include "graphics/cursor.h"
@@ -67,16 +69,19 @@ GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
 	_needManualDeS3TC        = false;
 	_supportMultipleTextures = false;
 
-	_fullScreen = false;
+	_fullscreen = false;
+
+	_vsync = false;
 
 	_fsaa    = 0;
 	_fsaaMax = 0;
 
 	_gamma = 1.0;
 
-	_screen = 0;
+	_screen   = 0;
+	_renderer = 0;
 
-	_width = 800;
+	_width  = 800;
 	_height = 600;
 
 	_fpsCounter = new FPSCounter(3);
@@ -117,25 +122,29 @@ void GraphicsManager::init() {
 #endif
 */
 
+	/* Set hints on how we want SDL to behave:
+	 *
+	 * - In general, we don't want SDL to minimize a fullscreen window when it
+	 *   loses mouse focus. But if the user really wants it, they can enable it.
+	 * - In general, we /really/ don't want SDL to use XRandR. It's broken and
+	 *   introduces all sorts of problems. But, again, the user can enable it.
+	 */
+	Common::UString minFocusLoss = ConfigMan.getString("minimize_on_focus_loss", "0");
+	Common::UString useXRandR    = ConfigMan.getString("xrandr"                , "0");
+
+	SDL_SetHintWithPriority(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, minFocusLoss.c_str(), SDL_HINT_OVERRIDE);
+	SDL_SetHintWithPriority(SDL_HINT_VIDEO_X11_XRANDR            , useXRandR.c_str()   , SDL_HINT_OVERRIDE);
+
 	if (SDL_Init(sdlInitFlags) < 0)
 		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
 
 	int  width  = ConfigMan.getInt ("width"     , _width);
 	int  height = ConfigMan.getInt ("height"    , _height);
 	bool fs     = ConfigMan.getBool("fullscreen", false);
+	bool vsync  = ConfigMan.getBool("vsync"     , false);
+	int  fsaa   = ConfigMan.getInt ("fsaa"      , 0);
 
-	initSize(width, height, fs);
-	setupScene();
-
-	// Try to change the FSAA settings to the config value
-	if (_fsaa != ConfigMan.getInt("fsaa"))
-		if (!setFSAA(ConfigMan.getInt("fsaa")))
-			// If that fails, set the config to the current level
-			ConfigMan.setInt("fsaa", _fsaa);
-
-	// Set the gamma correction to what the config specifies
-	if (ConfigMan.hasKey("gamma"))
-		setGamma(ConfigMan.getDouble("gamma", 1.0));
+	initScreen(width, height, fs, vsync, fsaa);
 
 	_ready = true;
 }
@@ -147,6 +156,9 @@ void GraphicsManager::deinit() {
 		return;
 
 	QueueMan.clearAllQueues();
+
+	delete _renderer;
+	_renderer = 0;
 
 	SDL_Quit();
 
@@ -180,85 +192,105 @@ uint32 GraphicsManager::getFPS() const {
 	return _fpsCounter->getFPS();
 }
 
-void GraphicsManager::initSize(int width, int height, bool fullscreen) {
-	uint32 flags = SDL_WINDOW_OPENGL;
+void GraphicsManager::getDefaultDisplayMode() {
+	// Create a hidden window to get the current display mode from
+	_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 16, 16, SDL_WINDOW_HIDDEN);
+	if (!_screen)
+		throw Common::Exception("Failed to create SDL window: %s", SDL_GetError());
 
-	_fullScreen = fullscreen;
-	if (_fullScreen)
-		flags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE ;
+	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
+	if (displayIndex < 0)
+		throw Common::Exception("Failed to get the display index of the SDL window: %s", SDL_GetError());
 
-	if (!setupSDLGL(width, height, flags))
-		throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
+	if (SDL_GetCurrentDisplayMode(displayIndex, &_displayMode) < 0)
+		throw Common::Exception("Failed to read the current display mode: %s", SDL_GetError());
 
-	// Initialize glew, for the extension entry points
-	GLenum glewErr = glewInit();
-	if (glewErr != GLEW_OK)
-		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
+	SDL_DestroyWindow(_screen);
+	_screen = 0;
+}
 
-	// Check if we have all needed OpenGL extensions
-	checkGLExtensions();
 
-	_width = width;
-	_height = height;
+void GraphicsManager::initScreen(int width, int height, bool fullscreen, bool vsync, int fsaa) {
+	getDefaultDisplayMode();
+
+	// TODO: Not working correctly
+	fullscreen = false;
+
+	uint32 flags = 0;
+	if (fullscreen)
+		flags |= SDL_WINDOW_FULLSCREEN;
+
+	setupSDLGL(width, height, flags, vsync, fsaa);
+
+	checkCapabilities();
+
+	_width      = width;
+	_height     = height;
+	_fullscreen = fullscreen;
+}
+
+bool GraphicsManager::getVSync() const {
+	return _vsync;
+}
+
+bool GraphicsManager::setVSync(bool vsync) {
+	if (!_renderer)
+		return false;
+
+	if (_vsync == vsync)
+		return true;
+
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<bool> functor(boost::bind(&GraphicsManager::setVSync, this, vsync));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
+	if (!_renderer->recreate(*_screen, vsync, _fsaa)) {
+		if (!_renderer->recreate(*_screen, _vsync, _fsaa))
+			throw Common::Exception("Failed setting and then reverting back to old vsync setting");
+
+		return false;
+	}
+
+	_vsync = vsync;
+
+	return true;
+}
+
+bool GraphicsManager::toggleVSync() {
+	return setVSync(!_vsync);
 }
 
 bool GraphicsManager::setFSAA(int level) {
-	// Force calling it from the main thread
+	if (!_renderer)
+		return false;
+
+	if (_fsaa == level)
+		return true;
+
 	if (!Common::isMainThread()) {
 		Events::MainThreadFunctor<bool> functor(boost::bind(&GraphicsManager::setFSAA, this, level));
 
 		return RequestMan.callInMainThread(functor);
 	}
 
-	if (_fsaa == level)
-		// Nothing to do
-		return true;
+	if (!_renderer->recreate(*_screen, _vsync, level)) {
+		if (!_renderer->recreate(*_screen, _vsync, _fsaa))
+			throw Common::Exception("Failed setting and then reverting back to old FSAA setting");
 
-	// Check if we have the support for that level
-	if (level > _fsaaMax)
 		return false;
-
-	// Backup the old level and set the new level
-	int oldFSAA = _fsaa;
-	_fsaa = level;
-
-	destroyContext();
-
-	uint32 flags = SDL_GetWindowFlags(_screen);
-	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
-	SDL_GL_DeleteContext(_glContext);
-	SDL_DestroyWindow(_screen);
-
-	// Set the multisample level
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
-
-	// Now try to change the screen
-	_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
-
-	if (!_screen) {
-		// Failed changing, back up
-
-		_fsaa = oldFSAA;
-
-		// Set the multisample level
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
-		_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
-
-		// There's no reason how this could possibly fail, but ok...
-		if (!_screen)
-			throw Common::Exception("Failed reverting to the old FSAA settings");
 	}
 
-	_glContext = SDL_GL_CreateContext(_screen);
-	rebuildContext();
+	_fsaa = level;
 
-	return _fsaa == level;
+	return true;
 }
 
 int GraphicsManager::probeFSAA(int width, int height, uint32 flags) {
 	// Find the max supported FSAA level
+
+	flags |= SDL_WINDOW_OPENGL;
 
 	for (int i = 32; i >= 2; i >>= 1) {
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE    ,   8);
@@ -280,7 +312,7 @@ int GraphicsManager::probeFSAA(int width, int height, uint32 flags) {
 	return 0;
 }
 
-bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
+void GraphicsManager::setupSDLGL(int width, int height, uint32 flags, bool vsync, int fsaa) {
 	_fsaaMax = probeFSAA(width, height, flags);
 
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE    ,   8);
@@ -289,49 +321,38 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE  ,   8);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,   1);
 
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
+	_vsync = vsync;
+	_fsaa  = CLIP(fsaa, 0, _fsaaMax);
 
 	_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 	if (!_screen)
-		return false;
+		throw Common::Exception("Failed creating an SDL window: %s", SDL_GetError());
 
-	_glContext = SDL_GL_CreateContext(_screen);
-	return true;
+	try {
+		_renderer = new Renderer(*_screen, _vsync, _fsaa);
+	} catch (...) {
+		delete _renderer;
+		_renderer = 0;
+		throw;
+	}
 }
 
-void GraphicsManager::checkGLExtensions() {
-	if (!GLEW_EXT_texture_compression_s3tc) {
+void GraphicsManager::checkCapabilities() {
+	_needManualDeS3TC        = !_renderer->hasCapability(kCapabilityS3TC);
+	_supportMultipleTextures =  _renderer->hasCapability(kCapabilityMultiTexture);
+
+	if (_needManualDeS3TC) {
 		warning("Your graphics card does not support the needed extension "
 		        "for S3TC DXT1, DXT3 and DXT5 texture decompression");
 		warning("Switching to manual S3TC DXTn decompression. "
 		        "This will be slower and will take up more video memory");
-		_needManualDeS3TC = true;
 	}
 
-	if (!_needManualDeS3TC) {
-		// Make sure we use the right glCompressedTexImage2D function
-		glCompressedTexImage2D = GLEW_GET_FUN(__glewCompressedTexImage2D) ?
-			(PFNGLCOMPRESSEDTEXIMAGE2DPROC)GLEW_GET_FUN(__glewCompressedTexImage2D) :
-			(PFNGLCOMPRESSEDTEXIMAGE2DPROC)GLEW_GET_FUN(__glewCompressedTexImage2DARB);
-
-		if (!GLEW_ARB_texture_compression || !glCompressedTexImage2D) {
-			warning("Your graphics card doesn't support the compressed texture API");
-			warning("Switching to manual S3TC DXTn decompression. "
-			        "This will be slower and will take up more video memory");
-
-			_needManualDeS3TC = true;
-		}
-	}
-
-	if (!GLEW_ARB_multitexture) {
+	if (!_supportMultipleTextures) {
 		warning("Your graphics card does no support applying multiple textures onto "
 		        "one surface");
 		warning("Xoreos will only use one texture. Certain surfaces may look weird");
-
-		_supportMultipleTextures = false;
-	} else
-		_supportMultipleTextures = true;
+	}
 }
 
 void GraphicsManager::setWindowTitle(const Common::UString &title) {
@@ -342,23 +363,24 @@ float GraphicsManager::getGamma() const {
 	return _gamma;
 }
 
-void GraphicsManager::setGamma(float gamma) {
+bool GraphicsManager::setGamma(float gamma) {
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setGamma, this, gamma));
+		Events::MainThreadFunctor<bool> functor(boost::bind(&GraphicsManager::setGamma, this, gamma));
 
 		return RequestMan.callInMainThread(functor);
 	}
 
-	_gamma = gamma;
-	uint16* gammaRamp = 0;
-	SDL_CalculateGammaRamp(gamma, gammaRamp);
+	if (SDL_SetWindowBrightness(_screen, gamma) < 0)
+		return false;
 
-	SDL_SetWindowGammaRamp(_screen, gammaRamp, gammaRamp, gammaRamp);
-	delete gammaRamp;
+	_gamma = gamma;
+
+	return true;
 }
 
 void GraphicsManager::setupScene() {
+	/*
 	if (!_screen)
 		throw Common::Exception("No screen initialized");
 
@@ -387,9 +409,11 @@ void GraphicsManager::setupScene() {
 	glEnable(GL_CULL_FACE);
 
 	perspective(60.0, ((float) _width) / ((float) _height), 1.0, 1000.0);
+	*/
 }
 
 void GraphicsManager::perspective(float fovy, float aspect, float zNear, float zFar) {
+	/*
 	const float f = 1.0 / (tanf(Common::deg2rad(fovy) / 2.0));
 
 	const float t1 = (zFar + zNear) / (zNear - zFar);
@@ -416,9 +440,13 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	_projection(3, 3) =  0.0;
 
 	_projectionInv = _projection.getInverse();
+	*/
 }
 
 bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, float &sZ) {
+	return false;
+
+	/*
 	// This is our projection matrix
 	Common::Matrix proj = _projection;
 
@@ -484,12 +512,15 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 	sX -= view[2] / 2.0;
 	sY -= view[3] / 2.0;
 	return true;
+	*/
 }
 
 bool GraphicsManager::unproject(float x, float y,
                                 float &x1, float &y1, float &z1,
                                 float &x2, float &y2, float &z2) const {
 
+	return false;
+	/*
 	try {
 		// Generate the inverse of the model matrix
 
@@ -579,6 +610,7 @@ bool GraphicsManager::unproject(float x, float y,
 	}
 
 	return true;
+	*/
 }
 
 void GraphicsManager::lockFrame() {
@@ -596,6 +628,7 @@ void GraphicsManager::unlockFrame() {
 }
 
 void GraphicsManager::recalculateObjectDistances() {
+	/*
 	// World objects
 	QueueMan.lockQueue(kQueueVisibleWorldObject);
 
@@ -615,6 +648,7 @@ void GraphicsManager::recalculateObjectDistances() {
 
 	QueueMan.sortQueue(kQueueVisibleGUIFrontObject);
 	QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
+	*/
 }
 
 uint32 GraphicsManager::createRenderableID() {
@@ -669,6 +703,9 @@ void GraphicsManager::takeScreenshot() {
 }
 
 Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
+	return 0;
+
+	/*
 	if (QueueMan.isQueueEmpty(kQueueVisibleGUIFrontObject))
 		return 0;
 
@@ -698,9 +735,13 @@ Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
 
 	QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
 	return object;
+	*/
 }
 
 Renderable *GraphicsManager::getWorldObjectAt(float x, float y) const {
+	return 0;
+
+	/*
 	if (QueueMan.isQueueEmpty(kQueueVisibleWorldObject))
 		return 0;
 
@@ -732,6 +773,7 @@ Renderable *GraphicsManager::getWorldObjectAt(float x, float y) const {
 
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 	return object;
+	*/
 }
 
 Renderable *GraphicsManager::getObjectAt(float x, float y) {
@@ -747,6 +789,7 @@ Renderable *GraphicsManager::getObjectAt(float x, float y) {
 }
 
 void GraphicsManager::buildNewTextures() {
+	/*
 	QueueMan.lockQueue(kQueueNewTexture);
 	const std::list<Queueable *> &text = QueueMan.getQueue(kQueueNewTexture);
 	if (text.empty()) {
@@ -759,9 +802,11 @@ void GraphicsManager::buildNewTextures() {
 
 	QueueMan.clearQueue(kQueueNewTexture);
 	QueueMan.unlockQueue(kQueueNewTexture);
+	*/
 }
 
 void GraphicsManager::beginScene() {
+	/*
 	// Switch cursor on/off
 	if (_cursorState != kCursorStateStay)
 		handleCursorSwitch();
@@ -773,9 +818,13 @@ void GraphicsManager::beginScene() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_TEXTURE_2D);
+	*/
 }
 
 bool GraphicsManager::playVideo() {
+	return false;
+
+	/*
 	if (QueueMan.isQueueEmpty(kQueueVisibleVideo))
 		return false;
 
@@ -797,9 +846,13 @@ bool GraphicsManager::playVideo() {
 
 	QueueMan.unlockQueue(kQueueVisibleVideo);
 	return true;
+	*/
 }
 
 bool GraphicsManager::renderWorld() {
+	return false;
+
+	/*
 	if (QueueMan.isQueueEmpty(kQueueVisibleWorldObject))
 		return false;
 
@@ -869,9 +922,13 @@ bool GraphicsManager::renderWorld() {
 
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 	return true;
+	*/
 }
 
 bool GraphicsManager::renderGUIFront() {
+	return false;
+
+	/*
 	if (QueueMan.isQueueEmpty(kQueueVisibleGUIFrontObject))
 		return false;
 
@@ -901,9 +958,13 @@ bool GraphicsManager::renderGUIFront() {
 
 	glEnable(GL_DEPTH_TEST);
 	return true;
+	*/
 }
 
 bool GraphicsManager::renderCursor() {
+	return false;
+
+	/*
 	if (!_cursor)
 		return false;
 
@@ -921,11 +982,13 @@ bool GraphicsManager::renderCursor() {
 	_cursor->render();
 	glEnable(GL_DEPTH_TEST);
 	return true;
+	*/
 }
 
 void GraphicsManager::endScene() {
 	SDL_GL_SwapWindow(_screen);
 
+	/*
 	if (_takeScreenshot) {
 		Graphics::takeScreenshot();
 		_takeScreenshot = false;
@@ -935,11 +998,13 @@ void GraphicsManager::endScene() {
 
 	if (_fsaa > 0)
 		glDisable(GL_MULTISAMPLE_ARB);
+	*/
 }
 
 void GraphicsManager::renderScene() {
 	Common::enforceMainThread();
 
+	/*
 	cleanupAbandoned();
 
 	if (_frameLock > 0)
@@ -955,6 +1020,10 @@ void GraphicsManager::renderScene() {
 	renderWorld();
 	renderGUIFront();
 	renderCursor();
+	*/
+
+	if (_renderer)
+		_renderer->render();
 
 	endScene();
 }
@@ -974,28 +1043,19 @@ int GraphicsManager::getScreenHeight() const {
 }
 
 int GraphicsManager::getSystemWidth() const {
-	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
-	SDL_DisplayMode maxWidth;
-	// The display mode are sorted by, in this order, greater bpp, largest width, largest height and higher refresh rate.
-	SDL_GetDisplayMode(displayIndex, 0, &maxWidth);
-
-	return maxWidth.w;
+	return _displayMode.w;
 }
 
 int GraphicsManager::getSystemHeight() const {
-	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
-	SDL_DisplayMode maxHeight;
-	// The display mode are sorted by, in this order, greater bpp, largest width, largest height and higher refresh rate.
-	SDL_GetDisplayMode(displayIndex, 0, &maxHeight);
-
-	return maxHeight.h;
+	return _displayMode.h;
 }
 
 bool GraphicsManager::isFullScreen() const {
-	return _fullScreen;
+	return _fullscreen;
 }
 
 void GraphicsManager::rebuildGLContainers() {
+	/*
 	QueueMan.lockQueue(kQueueGLContainer);
 
 	const std::list<Queueable *> &cont = QueueMan.getQueue(kQueueGLContainer);
@@ -1003,9 +1063,11 @@ void GraphicsManager::rebuildGLContainers() {
 		static_cast<GLContainer *>(*c)->rebuild();
 
 	QueueMan.unlockQueue(kQueueGLContainer);
+	*/
 }
 
 void GraphicsManager::destroyGLContainers() {
+	/*
 	QueueMan.lockQueue(kQueueGLContainer);
 
 	const std::list<Queueable *> &cont = QueueMan.getQueue(kQueueGLContainer);
@@ -1013,6 +1075,7 @@ void GraphicsManager::destroyGLContainers() {
 		static_cast<GLContainer *>(*c)->destroy();
 
 	QueueMan.unlockQueue(kQueueGLContainer);
+	*/
 }
 
 void GraphicsManager::destroyContext() {
@@ -1022,10 +1085,12 @@ void GraphicsManager::destroyContext() {
 }
 
 void GraphicsManager::rebuildContext() {
+	/*
 	// Reintroduce glew to the surface
 	GLenum glewErr = glewInit();
 	if (glewErr != GLEW_OK)
 		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
+	*/
 
 	// Reintroduce OpenGL to the surface
 	setupScene();
@@ -1040,18 +1105,22 @@ void GraphicsManager::rebuildContext() {
 void GraphicsManager::handleCursorSwitch() {
 	Common::StackLock lock(_cursorMutex);
 
+	SDL_ShowCursor(SDL_ENABLE);
+	/*
 	if      (_cursorState == kCursorStateSwitchOn)
 		SDL_ShowCursor(SDL_ENABLE);
 	else if (_cursorState == kCursorStateSwitchOff)
 		SDL_ShowCursor(SDL_DISABLE);
 
 	_cursorState = kCursorStateStay;
+	*/
 }
 
 void GraphicsManager::cleanupAbandoned() {
 	if (!_hasAbandoned)
 		return;
 
+	/*
 	Common::StackLock lock(_abandonMutex);
 
 	if (!_abandonTextures.empty())
@@ -1062,43 +1131,17 @@ void GraphicsManager::cleanupAbandoned() {
 
 	_abandonTextures.clear();
 	_abandonLists.clear();
+	*/
 
 	_hasAbandoned = false;
 }
 
-void GraphicsManager::toggleFullScreen() {
-	setFullScreen(!_fullScreen);
+bool GraphicsManager::toggleFullScreen() {
+	return setFullScreen(!_fullscreen);
 }
 
-void GraphicsManager::setFullScreen(bool fullScreen) {
-	if (_fullScreen == fullScreen)
-		// Nothing to do
-		return;
-
-	// Force calling it from the main thread
-	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setFullScreen, this, fullScreen));
-
-		return RequestMan.callInMainThread(functor);
-	}
-
-	destroyContext();
-
-	// uint32 flags = SDL_GetWindowFlags(_screen);
-	// Now try to change modes
-	SDL_SetWindowFullscreen(_screen, SDL_WINDOW_FULLSCREEN);
-
-	// If we could not go full screen, revert back.
-	if (!_screen)
-		SDL_SetWindowFullscreen(_screen, 0);
-	else
-		_fullScreen = fullScreen;
-
-	// There's no reason how this could possibly fail, but ok...
-	if (!_screen)
-		throw Common::Exception("Failed going to fullscreen and then failed reverting.");
-
-	rebuildContext();
+bool GraphicsManager::setFullScreen(bool fullscreen) {
+	return changeScreen(_width, _height, fullscreen);
 }
 
 void GraphicsManager::toggleMouseGrab() {
@@ -1109,62 +1152,57 @@ void GraphicsManager::toggleMouseGrab() {
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
-void GraphicsManager::setScreenSize(int width, int height) {
-	if ((width == _width) && (height == _height))
-		// No changes, nothing to do
-		return;
+bool GraphicsManager::setResolution(int width, int height, bool fullscreen) {
+	// TODO: Fullscreen is not working correctly
+	if (fullscreen)
+		return false;
+
+	SDL_SetWindowFullscreen(_screen, 0);
+
+	SDL_SetWindowSize(_screen, width, height);
+
+	if (fullscreen)
+		SDL_SetWindowFullscreen(_screen, SDL_WINDOW_FULLSCREEN);
+
+	return true;
+}
+
+bool GraphicsManager::changeScreen(int width, int height, bool fullscreen) {
+	if (!_screen || ((_width == width) && (_height == height) && (_fullscreen == fullscreen)))
+		// Nothing to do
+		return true;
 
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setScreenSize, this, width, height));
+		Events::MainThreadFunctor<bool> functor(boost::bind(&GraphicsManager::changeScreen, this, width, height, fullscreen));
 
 		return RequestMan.callInMainThread(functor);
 	}
 
-	// Save properties
-	// uint32 flags     = SDL_GetWindowFlags(_screen);
+	if (!setResolution(width, height, fullscreen)) {
+		if (!setResolution(_width, _height, _fullscreen))
+			throw Common::Exception("Failed changing the resolution and then failed reverting");
 
-	destroyContext();
-
-	SDL_DisplayMode displayMode;
-	// Now try to change modes
-	if (!_fullScreen) {
-		SDL_SetWindowSize(_screen, width, height);
-	} else {
-		SDL_SetWindowFullscreen(_screen, 0);
-		displayMode.w = width;
-		displayMode.h = height;
-		displayMode.driverdata = 0;
-		displayMode.refresh_rate = 0;
-		displayMode.format = 0;
-		SDL_SetWindowDisplayMode(_screen, &displayMode);
-		SDL_SetWindowFullscreen(_screen, SDL_WINDOW_FULLSCREEN);
+		return false;
 	}
 
-	if (!_screen) {
-		// Could not change mode, revert back.
-		if (!_fullScreen)
-			SDL_SetWindowSize(_screen, _width, _height);
-		else {
-			displayMode.w = _width;
-			displayMode.h = _height;
-			SDL_SetWindowDisplayMode(_screen,  &displayMode);
-		}
+	int oldWidth  = _width;
+	int oldHeight = _height;
 
-		// There's no reason how this could possibly fail, but ok...
-		if (!_screen)
-			throw Common::Exception("Failed changing the resolution and then failed reverting.");
+	SDL_GetWindowSize(_screen, &_width, &_height);
 
-		return;
-	}
+	_fullscreen = fullscreen;
 
-	_width = width;
-	_height = height;
-	rebuildContext();
+	_renderer->resized(_width, _height);
 
 	// Let the NotificationManager notify the Notifyables that the resolution changed
-		NotificationMan.resized(_width, _height, width, height);
+	NotificationMan.resized(oldWidth, oldHeight, _width, _height);
 
+	return true;
+}
+
+bool GraphicsManager::setScreenSize(int width, int height) {
+	return changeScreen(width, height, _fullscreen);
 }
 
 void GraphicsManager::showCursor(bool show) {

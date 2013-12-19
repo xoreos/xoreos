@@ -29,6 +29,9 @@
 
 #include <SDL_timer.h>
 
+#include <OgreRoot.h>
+#include <OgreRenderSystem.h>
+
 #include "common/thread.h"
 
 namespace Common {
@@ -38,13 +41,14 @@ Thread::Thread() {
 
 	_killThread    = false;
 	_threadRunning = false;
+	_graphics      = false;
 }
 
 Thread::~Thread() {
 	destroyThread();
 }
 
-bool Thread::createThread() {
+bool Thread::createThread(bool needsGraphics) {
 	if (_threadRunning)
 		// Already running, nothing to do
 		return true;
@@ -52,6 +56,8 @@ bool Thread::createThread() {
 	// Try to create the thread
 	if (!(_thread = SDL_CreateThread(threadHelper, 0, (void *) this)))
 		return false;
+
+	_graphics = needsGraphics;
 
 	return true;
 }
@@ -73,6 +79,7 @@ bool Thread::destroyThread() {
 
 		_killThread    = false;
 		_threadRunning = false;
+		_graphics      = false;
 
 		return true;
 	}
@@ -81,6 +88,7 @@ bool Thread::destroyThread() {
 
 	_killThread    = false;
 	_threadRunning = false;
+	_graphics      = false;
 
 	return false;
 }
@@ -91,8 +99,16 @@ int Thread::threadHelper(void *obj) {
 	// The thread is running.
 	thread->_threadRunning = true;
 
+	if (thread->_graphics)
+		if (Ogre::Root::getSingletonPtr() && Ogre::Root::getSingletonPtr()->getRenderSystem())
+			Ogre::Root::getSingletonPtr()->getRenderSystem()->registerThread();
+
 	// Run the thread
 	thread->threadMethod();
+
+	if (thread->_graphics)
+		if (Ogre::Root::getSingletonPtr() && Ogre::Root::getSingletonPtr()->getRenderSystem())
+			Ogre::Root::getSingletonPtr()->getRenderSystem()->unregisterThread();
 
 	// Thead thread is not running.
 	thread->_threadRunning = false;

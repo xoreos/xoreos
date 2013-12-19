@@ -46,6 +46,8 @@ namespace Common {
 
 namespace Graphics {
 
+class Renderer;
+
 class FPSCounter;
 class Cursor;
 class Renderable;
@@ -70,11 +72,11 @@ public:
 	bool supportMultipleTextures() const;
 
 	/** Set the screen size. */
-	void setScreenSize(int width, int height);
+	bool setScreenSize(int width, int height);
 	/** Set full screen/windowed mode. */
-	void setFullScreen(bool fullScreen);
+	bool setFullScreen(bool fullscreen);
 	/** Toggle between full screen and windowed mode. */
-	void toggleFullScreen();
+	bool toggleFullScreen();
 
 	/** Return the current screen width. */
 	int getScreenWidth() const;
@@ -88,6 +90,13 @@ public:
 
 	/** Are we currently in full screen mode? */
 	bool isFullScreen() const;
+
+	/** Is VSync currently enabled? */
+	bool getVSync() const;
+	/** Enable/Disable VSync. */
+	bool setVSync(bool vsync);
+	/** Toggle VSync on/off. */
+	bool toggleVSync();
 
 	/** Set the FSAA settings. */
 	bool setFSAA(int level);
@@ -110,7 +119,7 @@ public:
 	/** Get the overall gamma correction. */
 	float getGamma() const;
 	/** Set the overall gamma correction. */
-	void setGamma(float gamma);
+	bool setGamma(float gamma);
 
 	/** Show/Hide the cursor. */
 	void showCursor(bool show);
@@ -167,7 +176,9 @@ private:
 	bool _needManualDeS3TC;        ///< Do we need to do manual S3TC DXTn decompression?
 	bool _supportMultipleTextures; ///< Do we have support for multiple textures?
 
-	bool _fullScreen; ///< Are we currently in fullscreen mode?
+	bool _fullscreen; ///< Are we currently in fullscreen mode?
+
+	bool _vsync;  ///< Current VSync settings.
 
 	int _fsaa;    ///< Current FSAA settings.
 	int _fsaaMax; ///< Max supported FSAA level.
@@ -177,11 +188,14 @@ private:
 
 	float _gamma; ///< The current gamma correction value.
 
-	SDL_Window *_screen; ///< The OpenGL hardware surface.
-	SDL_GLContext _glContext;
+	SDL_DisplayMode  _displayMode; ///< The SDL display mode at program start.
+	SDL_Window      *_screen;      ///< The SDL screen surface.
+	Renderer        *_renderer;    ///< The OpenGL renderer.
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
+
 	uint32 _lastSampled; ///< Timestamp used to advance animations.
+
 	Common::Matrix _projection;    ///< Our projection matrix.
 	Common::Matrix _projectionInv; ///< The inverse of our projection matrix.
 
@@ -205,13 +219,18 @@ private:
 
 	Common::Mutex _abandonMutex; ///< A mutex protecting abandoned structures.
 
-	void initSize(int width, int height, bool fullscreen);
 	void setupScene();
+
+	void initScreen(int width, int height, bool fullscreen, bool vsync, int fsaa);
+	void getDefaultDisplayMode();
+
+	bool setResolution(int width, int height, bool fullscreen);
+	bool changeScreen(int width, int height, bool fullscreen);
 
 	int probeFSAA(int width, int height, uint32 flags);
 
-	bool setupSDLGL(int width, int height, uint32 flags);
-	void checkGLExtensions();
+	void setupSDLGL(int width, int height, uint32 flags, bool vsync, int fsaa);
+	void checkCapabilities();
 
 	/** Set up a projection matrix. Analog to gluPerspective. */
 	void perspective(float fovy, float aspect, float zNear, float zFar);

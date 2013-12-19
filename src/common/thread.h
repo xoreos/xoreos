@@ -42,7 +42,7 @@ public:
 	Thread();
 	virtual ~Thread();
 
-	bool createThread();
+	bool createThread(bool needsGraphics = false);
 	bool destroyThread();
 
 protected:
@@ -52,6 +52,7 @@ private:
 	SDL_Thread *_thread;
 
 	bool _threadRunning;
+	bool _graphics;
 
 	virtual void threadMethod() = 0;
 

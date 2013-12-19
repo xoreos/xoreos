@@ -12,6 +12,7 @@ noinst_HEADERS = \
                  types.h \
                  util.h \
                  graphics.h \
+                 renderer.h \
                  fpscounter.h \
                  cursor.h \
                  queueman.h \
@@ -31,6 +32,7 @@ noinst_HEADERS = \
 
 libgraphics_la_SOURCES = \
                          graphics.cpp \
+                         renderer.cpp \
                          fpscounter.cpp \
                          cursor.cpp \
                          queueman.cpp \

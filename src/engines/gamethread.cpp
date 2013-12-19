@@ -71,7 +71,7 @@ void GameThread::init(const Common::UString &baseDir) {
 }
 
 void GameThread::run() {
-	if (!createThread())
+	if (!createThread(true))
 		throw Common::Exception("Failed creating game logic thread");
 }
 
