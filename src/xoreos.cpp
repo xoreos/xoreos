@@ -82,8 +82,6 @@ int __stdcall WinMain(HINSTANCE /*hInst*/, HINSTANCE /*hPrevInst*/,  LPSTR /*lpC
 static bool configFileIsBroken = false;
 
 int main(int argc, char **argv) {
-	atexit(deinit);
-
 	initConfig();
 
 	Common::UString target;
@@ -183,6 +181,7 @@ int main(int argc, char **argv) {
 		Common::printException(e);
 	}
 
+	deinit();
 	return 0;
 }
 
