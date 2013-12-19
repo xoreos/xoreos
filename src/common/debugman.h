@@ -47,7 +47,7 @@ enum DebugChannels {
 	kDebugSound      = 1 <<  1,
 	kDebugEvents     = 1 <<  2,
 	kDebugScripts    = 1 <<  3,
-	kDebugReserved04 = 1 <<  4,
+	kDebugOgre       = 1 <<  4,
 	kDebugReserved05 = 1 <<  5,
 	kDebugReserved06 = 1 <<  6,
 	kDebugReserved07 = 1 <<  7,

@@ -54,6 +54,7 @@ DebugManager::DebugManager() : _debugLevel(0), _logFileStartLine(false) {
 	addDebugChannel(kDebugSound   , "GSound"   , "Global sound debug channel");
 	addDebugChannel(kDebugEvents  , "GEvents"  , "Global events debug channel");
 	addDebugChannel(kDebugScripts , "GScripts" , "Global scripts debug channel");
+	addDebugChannel(kDebugOgre    , "GOgre"    , "Global Ogre debug channel");
 }
 
 DebugManager::~DebugManager() {
