@@ -143,14 +143,14 @@ int main(int argc, char **argv) {
 
 	Engines::GameThread *gameThread = new Engines::GameThread;
 	try {
+		// Enable requested debug channels
+		initDebug();
+
 		// Initialize all necessary subsystems
 		init();
 
 		// Probe and create the game engine
 		gameThread->init(baseDir);
-
-		// Enable requested debug channels
-		initDebug();
 
 		if (ConfigMan.getBool("listdebug", false)) {
 			// List debug channels
