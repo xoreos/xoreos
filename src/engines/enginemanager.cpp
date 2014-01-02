@@ -41,6 +41,8 @@
 #include "aurora/2dareg.h"
 #include "../aurora/util.h"
 
+#include "graphics/textureman.h"
+
 #include "events/events.h"
 #include "events/requests.h"
 
@@ -221,6 +223,8 @@ void EngineManager::cleanup(GameInstance &game) const {
 		DebugMan.clearEngineChannels();
 
 		RequestMan.sync();
+
+		TextureMan.clear();
 
 		TokenMan.clear();
 

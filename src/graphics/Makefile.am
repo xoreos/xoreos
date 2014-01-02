@@ -14,12 +14,14 @@ noinst_HEADERS = \
                  graphics.h \
                  renderer.h \
                  yuv_to_rgb.h \
+                 textureman.h \
                  $(EMPTY)
 
 libgraphics_la_SOURCES = \
                          graphics.cpp \
                          renderer.cpp \
                          yuv_to_rgb.cpp \
+                         textureman.cpp \
                          $(EMPTY)
 
 if DARWIN
