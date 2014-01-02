@@ -87,6 +87,8 @@ ResourceManager::ChangeID::ChangeID(ChangeSetList::iterator c) : _empty(false), 
 
 
 ResourceManager::ResourceManager() : _rimsAreERFs(false), _hashAlgo(Common::kHashFNV64) {
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypeCUR);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypeCURS);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeDDS);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTPC);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTXB);
@@ -111,11 +113,6 @@ ResourceManager::ResourceManager() : _rimsAreERFs(false), _hashAlgo(Common::kHas
 	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeBMU);
 	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeOGG);
 	_resourceTypeTypes[kResourceMusic].push_back(kFileTypeWMA);
-
-	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeCUR);
-	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeCURS);
-	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeDDS);
-	_resourceTypeTypes[kResourceCursor].push_back(kFileTypeTGA);
 }
 
 ResourceManager::~ResourceManager() {

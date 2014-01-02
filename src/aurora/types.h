@@ -370,11 +370,10 @@ enum Language {
 };
 
 enum ResourceType {
-	kResourceImage,  ///< A music resource.
+	kResourceImage,  ///< An image resource.
 	kResourceVideo,  ///< A video resource.
 	kResourceSound,  ///< A sound resource.
 	kResourceMusic,  ///< A music resource.
-	kResourceCursor, ///< A cursor resource.
 	kResourceMAX
 };
 

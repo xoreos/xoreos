@@ -101,6 +101,9 @@ public:
 	/** Toggle mouse grab */
 	void toggleMouseGrab();
 
+	/** Set the mouse cursor position. */
+	void setCursorPosition(int x, int y);
+
 	/** That the window's title. */
 	void setWindowTitle(const Common::UString &title);
 

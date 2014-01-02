@@ -41,6 +41,7 @@
 #include "aurora/2dareg.h"
 #include "../aurora/util.h"
 
+#include "graphics/cursorman.h"
 #include "graphics/textureman.h"
 
 #include "events/events.h"
@@ -224,6 +225,7 @@ void EngineManager::cleanup(GameInstance &game) const {
 
 		RequestMan.sync();
 
+		CursorMan.clear();
 		TextureMan.clear();
 
 		TokenMan.clear();

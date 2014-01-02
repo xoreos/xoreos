@@ -388,6 +388,10 @@ void GraphicsManager::toggleMouseGrab() {
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
+void GraphicsManager::setCursorPosition(int x, int y) {
+	SDL_WarpMouseInWindow(_screen, x, y);
+}
+
 bool GraphicsManager::setResolution(int width, int height, bool fullscreen) {
 	// TODO: Fullscreen is not working correctly
 	if (fullscreen)

@@ -45,6 +45,7 @@
 #include "common/filepath.h"
 #include "common/configman.h"
 
+#include "graphics/cursorman.h"
 #include "graphics/renderer.h"
 
 #ifdef MACOSX
@@ -65,6 +66,7 @@ public:
 		debugC((uint32) lml, Common::kDebugOgre, "%s", message.c_str());
 	}
 };
+
 
 Renderer::Renderer(SDL_Window &screen, bool vsync, int fsaa) :
 	_logManager(0), _logger(0), _root(0), _overlaySystem(0), _dummyWindow(0),
@@ -103,6 +105,8 @@ Renderer::~Renderer() {
 }
 
 void Renderer::destroy() {
+	CursorMan.deinit();
+
 	if (_sceneManager && _overlaySystem)
 		_sceneManager->removeRenderQueueListener(_overlaySystem);
 
@@ -265,6 +269,8 @@ void Renderer::createScene() {
 	_camera->setNearClipDistance(1.0);
 	_camera->setFarClipDistance(1000.0);
 	_camera->setFOVy(Ogre::Degree(60.0));
+
+	CursorMan.init();
 }
 
 bool Renderer::recreate(SDL_Window &screen, bool vsync, int fsaa) {
@@ -298,6 +304,8 @@ void Renderer::resized(int width, int height) {
 }
 
 void Renderer::render() {
+	CursorMan.updatePosition();
+
 	_root->renderOneFrame();
 }
 

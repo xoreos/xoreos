@@ -15,6 +15,8 @@ noinst_HEADERS = \
                  renderer.h \
                  yuv_to_rgb.h \
                  textureman.h \
+                 cursor.h \
+                 cursorman.h \
                  $(EMPTY)
 
 libgraphics_la_SOURCES = \
@@ -22,6 +24,8 @@ libgraphics_la_SOURCES = \
                          renderer.cpp \
                          yuv_to_rgb.cpp \
                          textureman.cpp \
+                         cursor.cpp \
+                         cursorman.cpp \
                          $(EMPTY)
 
 if DARWIN
