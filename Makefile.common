@@ -23,7 +23,7 @@ LIBSL       = $(XOREOS_LIBS) $(ZLIB_LIBS) \
               $(LIBSL_BOOST)
 
 FLAGS_C_CXX = -I$(top_srcdir) -I$(top_srcdir)/src/ -ggdb -Wall -Wno-multichar \
-              -Wpointer-arith -Wshadow $(WERROR) -DGLEW_STATIC
+              -Wpointer-arith -Wshadow $(WERROR)
 FLAGS_C     =
 FLAGS_CXX   =
 

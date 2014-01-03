@@ -35,5 +35,4 @@ endif
 libgraphics_la_LIBADD = \
                         images/libimages.la \
                         aurora/libaurora.la \
-                        ../../glew/libglew.la \
                         $(EMPTY)

@@ -118,7 +118,6 @@ AC_SUBST(XOREOS_LIBS)
 AC_SUBST(WERROR)
 
 AC_CONFIG_FILES([utf8cpp/Makefile])
-AC_CONFIG_FILES([glew/Makefile])
 AC_CONFIG_FILES([lua/Makefile])
 AC_CONFIG_FILES([gitstamp/Makefile])
 AC_CONFIG_FILES([src/common/Makefile])

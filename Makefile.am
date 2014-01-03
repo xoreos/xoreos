@@ -4,7 +4,6 @@ EXTRA_DIST = FAQ TODO
 
 SUBDIRS = \
           utf8cpp \
-          glew \
           lua \
           gitstamp \
           src \
