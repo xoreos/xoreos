@@ -54,9 +54,7 @@ void ImageDecoder::MipMap::swap(MipMap &right) {
 }
 
 
-ImageDecoder::ImageDecoder() : _compressed(false), _hasAlpha(false),
-	_format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8), _dataType(kPixelDataType8) {
-
+ImageDecoder::ImageDecoder() : _format(kPixelFormatNone) {
 }
 
 ImageDecoder::~ImageDecoder() {
@@ -69,23 +67,15 @@ Common::SeekableReadStream *ImageDecoder::getTXI() const {
 }
 
 bool ImageDecoder::isCompressed() const {
-	return _compressed;
+	return isCompressed(_format);
 }
 
 bool ImageDecoder::hasAlpha() const {
-	return _hasAlpha;
+	return hasAlpha(_format);
 }
 
 PixelFormat ImageDecoder::getFormat() const {
 	return _format;
-}
-
-PixelFormatRaw ImageDecoder::getFormatRaw() const {
-	return _formatRaw;
-}
-
-PixelDataType ImageDecoder::getDataType() const {
-	return _dataType;
 }
 
 uint32 ImageDecoder::getMipMapCount() const {
@@ -98,7 +88,7 @@ const ImageDecoder::MipMap &ImageDecoder::getMipMap(uint32 mipMap) const {
 	return *_mipMaps[mipMap];
 }
 
-void ImageDecoder::decompress(MipMap &out, const MipMap &in, PixelFormatRaw format) {
+void ImageDecoder::decompress(MipMap &out, const MipMap &in, PixelFormat format) {
 	if ((format != kPixelFormatDXT1) &&
 	    (format != kPixelFormatDXT3) &&
 	    (format != kPixelFormatDXT5))
@@ -122,37 +112,78 @@ void ImageDecoder::decompress(MipMap &out, const MipMap &in, PixelFormatRaw form
 }
 
 void ImageDecoder::decompress() {
-	if (!_compressed)
+	if (!isCompressed())
 		return;
 
 	for (std::vector<MipMap *>::iterator m = _mipMaps.begin(); m != _mipMaps.end(); ++m) {
 		MipMap decompressed;
 
-		decompress(decompressed, **m, _formatRaw);
+		decompress(decompressed, **m, _format);
 
 		decompressed.swap(**m);
 	}
 
-	_format     = kPixelFormatRGBA;
-	_formatRaw  = kPixelFormatRGBA8;
-	_dataType   = kPixelDataType8;
-	_compressed = false;
+	_format = kPixelFormatR8G8B8A8;
 }
 
 bool ImageDecoder::dumpTGA(const Common::UString &fileName) const {
 	if (_mipMaps.size() < 1)
 		return false;
 
-	if (!_compressed) {
+	if (!isCompressed()) {
 		Graphics::dumpTGA(fileName, this);
 		return true;
 	}
 
 	MipMap mipMap;
-	decompress(mipMap, *_mipMaps[0], _formatRaw);
-	Graphics::dumpTGA(fileName, mipMap.data, mipMap.width, mipMap.height, kPixelFormatRGBA);
+	decompress(mipMap, *_mipMaps[0], _format);
+	Graphics::dumpTGA(fileName, mipMap.data, mipMap.width, mipMap.height, kPixelFormatR8G8B8A8);
 
 	return true;
+}
+
+uint32 ImageDecoder::calculateSizeInBytes(int width, int height, PixelFormat format) {
+	switch (format) {
+		case kPixelFormatR8G8B8:
+		case kPixelFormatB8G8R8:
+			return width * height * 3;
+
+		case kPixelFormatR8G8B8A8:
+		case kPixelFormatB8G8R8A8:
+			return width * height * 4;
+
+		case kPixelFormatA1R5G5B5:
+		case kPixelFormatR5G6B5:
+			return width * height * 2;
+
+		case kPixelFormatDXT1:
+			return ((width + 3) / 4) * ((height + 3) / 4)  * 8;
+
+		case kPixelFormatDXT3:
+			return ((width + 3) / 4) * ((height + 3) / 4) * 16;
+
+		case kPixelFormatDXT5:
+			return ((width + 3) / 4) * ((height + 3) / 4) * 16;
+
+		default:
+			throw Common::Exception("Can't calculate the size of an image with an invalid pixel format");
+	};
+
+	return 0;
+}
+
+bool ImageDecoder::isCompressed(PixelFormat format) {
+	return (format == kPixelFormatDXT1) ||
+	       (format == kPixelFormatDXT3) ||
+	       (format == kPixelFormatDXT5);
+}
+
+bool ImageDecoder::hasAlpha(PixelFormat format) {
+	return (kPixelFormatR8G8B8A8) ||
+	       (kPixelFormatB8G8R8A8) ||
+	       (kPixelFormatA1R5G5B5) ||
+	       (kPixelFormatDXT3) ||
+	       (kPixelFormatDXT5);
 }
 
 } // End of namespace Graphics

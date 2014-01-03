@@ -32,31 +32,24 @@
 
 #include <SDL.h>
 
-#include "glew/glew.h"
+#include <OgrePixelFormat.h>
 
 namespace Graphics {
 
 enum PixelFormat {
-	kPixelFormatRGB  = GL_RGB ,
-	kPixelFormatRGBA = GL_RGBA,
-	kPixelFormatBGR  = GL_BGR ,
-	kPixelFormatBGRA = GL_BGRA,
-};
+	kPixelFormatNone = Ogre::PF_UNKNOWN,
 
-enum PixelFormatRaw {
-	kPixelFormatRGBA8  = GL_RGBA8,
-	kPixelFormatRGB8   = GL_RGB8,
-	kPixelFormatRGB5A1 = GL_RGB5_A1,
-	kPixelFormatRGB5   = GL_RGB5,
-	kPixelFormatDXT1   = GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
-	kPixelFormatDXT3   = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
-	kPixelFormatDXT5   = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
-};
+	kPixelFormatR8G8B8   = Ogre::PF_BYTE_RGB,
+	kPixelFormatB8G8R8   = Ogre::PF_BYTE_BGR,
+	kPixelFormatR8G8B8A8 = Ogre::PF_BYTE_RGBA,
+	kPixelFormatB8G8R8A8 = Ogre::PF_BYTE_BGRA,
 
-enum PixelDataType {
-	kPixelDataType8    = GL_UNSIGNED_BYTE,
-	kPixelDataType1555 = GL_UNSIGNED_SHORT_1_5_5_5_REV,
-	kPixelDataType565  = GL_UNSIGNED_SHORT_5_6_5
+	kPixelFormatA1R5G5B5 = Ogre::PF_A1R5G5B5,
+	kPixelFormatR5G6B5   = Ogre::PF_R5G6B5,
+
+	kPixelFormatDXT1 = Ogre::PF_DXT1,
+	kPixelFormatDXT3 = Ogre::PF_DXT3,
+	kPixelFormatDXT5 = Ogre::PF_DXT5
 };
 
 } // End of namespace Graphics

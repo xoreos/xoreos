@@ -92,70 +92,56 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, bool &needDeSwizzle) {
 
 	tpc.skip(114); // Reserved
 
-	needDeSwizzle = false;
-
 	uint32 minDataSize = 0;
 	if (dataSize == 0) {
 		// Uncompressed
 
-		_compressed = false;
-
 		if        (encoding == kEncodingRGB) {
 			// RGB, no alpha channel
 
-			_hasAlpha   = false;
-			_format     = kPixelFormatRGB;
-			_formatRaw  = kPixelFormatRGB8;
-			_dataType   = kPixelDataType8;
+			_format = kPixelFormatR8G8B8;
 
-			minDataSize = 3;
-			dataSize    = width * height * 3;
+			minDataSize   = 3;
+			dataSize      = width * height * 3;
+			needDeSwizzle = false;
+
 		} else if (encoding == kEncodingRGBA) {
 			// RGBA, alpha channel
 
-			_hasAlpha   = true;
-			_format     = kPixelFormatRGBA;
-			_formatRaw  = kPixelFormatRGBA8;
-			_dataType   = kPixelDataType8;
+			_format = kPixelFormatR8G8B8A8;
 
-			minDataSize = 4;
-			dataSize    = width * height * 4;
+			minDataSize   = 4;
+			dataSize      = width * height * 4;
+			needDeSwizzle = false;
+
 		} else if (encoding == kEncodingSwizzledBGRA) {
 			// BGRA, alpha channel, texture memory layout is "swizzled"
 
+
+			_format = kPixelFormatB8G8R8A8;
+
+			minDataSize   = 4;
+			dataSize      = width * height * 4;
 			needDeSwizzle = true;
 
-			_hasAlpha   = true;
-			_format     = kPixelFormatBGRA;
-			_formatRaw  = kPixelFormatRGBA8;
-			_dataType   = kPixelDataType8;
-
-			minDataSize = 4;
-			dataSize    = width * height * 4;
 		} else
 			throw Common::Exception("Unknown TPC raw encoding: %d (%d)", encoding, dataSize);
 
 	} else if (encoding == kEncodingRGB) {
 		// S3TC DXT1
 
-		_compressed = true;
-		_hasAlpha   = false;
-		_format     = kPixelFormatBGR;
-		_formatRaw  = kPixelFormatDXT1;
-		_dataType   = kPixelDataType8;
+		_format = kPixelFormatDXT1;
 
-		minDataSize = 8;
+		minDataSize   = 8;
+		needDeSwizzle = false;
 
 	} else if (encoding == kEncodingRGBA) {
 		// S3TC DXT5
 
-		_compressed = true;
-		_hasAlpha   = true;
-		_format     = kPixelFormatBGRA;
-		_formatRaw  = kPixelFormatDXT5;
-		_dataType   = kPixelDataType8;
+		_format = kPixelFormatDXT5;
 
-		minDataSize = 16;
+		minDataSize   = 16;
+		needDeSwizzle = false;
 
 	} else
 		throw Common::Exception("Unknown TPC encoding: %d (%d)", encoding, dataSize);

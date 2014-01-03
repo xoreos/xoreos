@@ -36,11 +36,7 @@ namespace Graphics {
 Surface::Surface(int width, int height) {
 	assert((width > 0) && (height > 0));
 
-	_compressed = false;
-	_hasAlpha   = true;
-	_format     = kPixelFormatBGRA;
-	_formatRaw  = kPixelFormatRGBA8;
-	_dataType   = kPixelDataType8;
+	_format = kPixelFormatB8G8R8A8;
 
 	_mipMaps.push_back(new MipMap);
 

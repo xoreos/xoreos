@@ -98,46 +98,33 @@ void TXB::readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle) {
 	txb.skip(4); // Some float
 	txb.skip(108); // Reserved
 
-	needDeSwizzle = false;
-
 	uint32 minDataSize, mipMapSize;
 	if        (encoding == kEncodingBGRA) {
 		// Raw BGRA
 
+		_format = kPixelFormatB8G8R8A8;
+
+		minDataSize   = 4;
+		mipMapSize    = width * height * 4;
 		needDeSwizzle = true;
-
-		_compressed = false;
-		_hasAlpha   = true;
-		_format     = kPixelFormatBGRA;
-		_formatRaw  = kPixelFormatRGBA8;
-		_dataType   = kPixelDataType8;
-
-		minDataSize = 4;
-		mipMapSize  = width * height * 4;
 
 	} else if (encoding == kEncodingDXT1) {
 		// S3TC DXT1
 
-		_compressed = true;
-		_hasAlpha   = false;
-		_format     = kPixelFormatBGR;
-		_formatRaw  = kPixelFormatDXT1;
-		_dataType   = kPixelDataType8;
+		_format = kPixelFormatDXT1;
 
-		minDataSize = 8;
-		mipMapSize  = width * height / 2;
+		minDataSize   = 8;
+		mipMapSize    = width * height / 2;
+		needDeSwizzle = false;
 
 	} else if (encoding == kEncodingDXT5) {
 		// S3TC DXT5
 
-		_compressed = true;
-		_hasAlpha   = true;
-		_format     = kPixelFormatBGRA;
-		_formatRaw  = kPixelFormatDXT5;
-		_dataType   = kPixelDataType8;
+		_format = kPixelFormatDXT5;
 
-		minDataSize = 16;
-		mipMapSize  = width * height;
+		minDataSize   = 16;
+		mipMapSize    = width * height;
+		needDeSwizzle = false;
 
 	} else if (encoding == 0x09)
 		// TODO: This seems to be some compression with 8bit per pixel. No min

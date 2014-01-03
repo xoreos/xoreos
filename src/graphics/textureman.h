@@ -96,8 +96,6 @@ private:
 	Ogre::TexturePtr create(const Common::UString &name);
 	Ogre::TexturePtr create(const Common::UString &name, const ImageDecoder &image);
 
-	Ogre::PixelFormat getPixelFormat(const ImageDecoder &image);
-
 	void convert(Ogre::TexturePtr &texture, const ImageDecoder &image, int mipMaps);
 };
 

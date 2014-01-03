@@ -68,12 +68,8 @@ public:
 	/** Does the image data have alpha? .*/
 	bool hasAlpha() const;
 
-	/** Return the image data's general format. */
-	PixelFormat    getFormat() const;
-	/** Return the image data's raw format. */
-	PixelFormatRaw getFormatRaw() const;
-	/** Return the image data pixel's type. */
-	PixelDataType  getDataType() const;
+	/** Return the image data's format. */
+	PixelFormat getFormat() const;
 
 	/** Return the number of mip maps contained in the image. */
 	uint32 getMipMapCount() const;
@@ -90,17 +86,20 @@ public:
 	/** Dump the image into a TGA. */
 	bool dumpTGA(const Common::UString &fileName) const;
 
-protected:
-	bool _compressed;
-	bool _hasAlpha;
 
-	PixelFormat    _format;
-	PixelFormatRaw _formatRaw;
-	PixelDataType  _dataType;
+	/** Calculate the size in bytes of an image of the given size and pixel format. */
+	static uint32 calculateSizeInBytes(int width, int height, PixelFormat format);
+	/** Check whether a pixel format is compressed. */
+	static bool isCompressed(PixelFormat format);
+	/** Check whether a pixel format has an alpha channel. */
+	static bool hasAlpha(PixelFormat format);
+
+protected:
+	PixelFormat _format;
 
 	std::vector<MipMap *> _mipMaps;
 
-	static void decompress(MipMap &out, const MipMap &in, PixelFormatRaw format);
+	static void decompress(MipMap &out, const MipMap &in, PixelFormat format);
 };
 
 } // End of namespace Graphics

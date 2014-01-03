@@ -39,8 +39,6 @@
 namespace Graphics {
 
 TGA::TGA(Common::SeekableReadStream &tga) {
-	_compressed = false;
-
 	load(tga);
 }
 
@@ -94,25 +92,16 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 
 	if (imageType == kImageTypeTrueColor || imageType == kImageTypeRLETrueColor) {
 		if (pixelDepth == 24) {
-			_hasAlpha  = false;
-			_format    = kPixelFormatBGR;
-			_formatRaw = kPixelFormatRGB8;
-			_dataType  = kPixelDataType8;
+			_format = kPixelFormatB8G8R8;
 		} else if (pixelDepth == 16 || pixelDepth == 32) {
-			_hasAlpha  = true;
-			_format    = kPixelFormatBGRA;
-			_formatRaw = kPixelFormatRGBA8;
-			_dataType  = kPixelDataType8;
+			_format = kPixelFormatB8G8R8A8;
 		} else
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
 	} else if (imageType == kImageTypeBW) {
 		if (pixelDepth != 8)
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
 
-		_hasAlpha  = false;
-		_format    = kPixelFormatBGRA;
-		_formatRaw = kPixelFormatRGBA8;
-		_dataType  = kPixelDataType8;
+		_format = kPixelFormatB8G8R8;
 	}
 
 	// Image descriptor
@@ -123,15 +112,10 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 }
 
 void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pixelDepth, byte imageDesc) {
+	_mipMaps[0]->size = calculateSizeInBytes(_mipMaps[0]->width, _mipMaps[0]->height, _format);
+	_mipMaps[0]->data = new byte[_mipMaps[0]->size];
+
 	if (imageType == kImageTypeTrueColor || imageType == kImageTypeRLETrueColor) {
-		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height;
-		if      (_format == kPixelFormatBGR)
-			_mipMaps[0]->size *= 3;
-		else if (_format == kPixelFormatBGRA)
-			_mipMaps[0]->size *= 4;
-
-		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
-
 		if (imageType == kImageTypeTrueColor) {
 			if (pixelDepth == 16) {
 				// Convert from 16bpp to 32bpp
@@ -155,9 +139,6 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 			readRLE(tga, pixelDepth);
 		}
 	} else if (imageType == kImageTypeBW) {
-		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height * 4;
-		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
-
 		byte  *data  = _mipMaps[0]->data;
 		uint32 count = _mipMaps[0]->width * _mipMaps[0]->height;
 
@@ -165,9 +146,8 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 			byte g = tga.readByte();
 
 			memset(data, g, 3);
-			data[3] = 0xFF;
 
-			data += 4;
+			data += 3;
 		}
 
 	}

@@ -261,7 +261,7 @@ Ogre::TexturePtr TextureManager::create(const Common::UString &name, const Image
 	const int mipMaps = (image.getMipMapCount() > 1) ? image.getMipMapCount() : Ogre::MIP_UNLIMITED;
 	const int usage   = Ogre::TU_STATIC_WRITE_ONLY | ((image.getMipMapCount() > 1) ? 0 : Ogre::TU_AUTOMIPMAP);
 
-	const Ogre::PixelFormat format = getPixelFormat(image);
+	const Ogre::PixelFormat format = (Ogre::PixelFormat) image.getFormat();
 
 	Ogre::TexturePtr texture((Ogre::Texture *) 0);
 	try {
@@ -281,33 +281,6 @@ Ogre::TexturePtr TextureManager::create(const Common::UString &name, const Image
 	}
 
 	return texture;
-}
-
-Ogre::PixelFormat TextureManager::getPixelFormat(const ImageDecoder &image) {
-	// Convert our pixel format into an OGRE pixel format
-
-	const PixelFormat    format    = image.getFormat();
-	const PixelFormatRaw formatRaw = image.getFormatRaw();
-	const PixelDataType  dataType  = image.getDataType();
-
-	if ((format == kPixelFormatRGB ) && (formatRaw == kPixelFormatRGB8  ) && (dataType == kPixelDataType8   ))
-		return Ogre::PF_BYTE_RGB;
-	if ((format == kPixelFormatBGR ) && (formatRaw == kPixelFormatRGB8  ) && (dataType == kPixelDataType8   ))
-		return Ogre::PF_BYTE_BGR;
-	if ((format == kPixelFormatRGBA) && (formatRaw == kPixelFormatRGBA8 ) && (dataType == kPixelDataType8   ))
-		return Ogre::PF_BYTE_RGBA;
-	if ((format == kPixelFormatBGRA) && (formatRaw == kPixelFormatRGBA8 ) && (dataType == kPixelDataType8   ))
-		return Ogre::PF_BYTE_BGRA;
-	if ((format == kPixelFormatBGR ) && (formatRaw == kPixelFormatDXT1  ) && (dataType == kPixelDataType8   ))
-		return Ogre::PF_DXT1;
-	if ((format == kPixelFormatBGRA) && (formatRaw == kPixelFormatDXT5  ) && (dataType == kPixelDataType8   ))
-		return Ogre::PF_DXT5;
-	if ((format == kPixelFormatBGRA) && (formatRaw == kPixelFormatRGB5A1) && (dataType == kPixelDataType1555))
-		return Ogre::PF_A1R5G5B5;
-	if ((format == kPixelFormatBGR ) && (formatRaw == kPixelFormatRGB5  ) && (dataType == kPixelDataType565 ))
-		return Ogre::PF_R5G6B5;
-
-	throw Common::Exception("Unsupported pixel format %d, %d, %d", (int) format, (int) formatRaw, (int) dataType);
 }
 
 void TextureManager::convert(Ogre::TexturePtr &texture, const ImageDecoder &image, int mipMaps) {

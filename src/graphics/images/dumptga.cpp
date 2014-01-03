@@ -39,25 +39,25 @@
 namespace Graphics {
 
 static void writePixel(Common::DumpFile &file, const byte *&data, PixelFormat format) {
-	if (format == kPixelFormatRGB) {
+	if (format == kPixelFormatR8G8B8) {
 		file.writeByte(data[2]);
 		file.writeByte(data[1]);
 		file.writeByte(data[0]);
 		file.writeByte(0xFF);
 		data += 3;
-	} else if (format == kPixelFormatBGR) {
+	} else if (format == kPixelFormatB8G8R8) {
 		file.writeByte(data[0]);
 		file.writeByte(data[1]);
 		file.writeByte(data[2]);
 		file.writeByte(0xFF);
 		data += 3;
-	} else if (format == kPixelFormatRGBA) {
+	} else if (format == kPixelFormatR8G8B8A8) {
 		file.writeByte(data[2]);
 		file.writeByte(data[1]);
 		file.writeByte(data[0]);
 		file.writeByte(data[3]);
 		data += 4;
-	} else if (format == kPixelFormatBGRA) {
+	} else if (format == kPixelFormatB8G8R8A8) {
 		file.writeByte(data[0]);
 		file.writeByte(data[1]);
 		file.writeByte(data[2]);
