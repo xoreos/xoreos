@@ -35,6 +35,8 @@
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
+#include "graphics/cursorman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -113,6 +115,8 @@ void NWN2Engine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 	*/
+
+	CursorMan.set();
 
 	Sound::ChannelHandle channel;
 
@@ -227,6 +231,10 @@ void NWN2Engine::init() {
 }
 
 void NWN2Engine::initCursors() {
+	CursorMan.add("cursor0" , "default"  , "up"  );
+	CursorMan.add("cursor1" , "default"  , "down");
+
+	CursorMan.setDefault("default", "up");
 }
 
 } // End of namespace NWN2

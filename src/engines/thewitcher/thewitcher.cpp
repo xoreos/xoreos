@@ -36,6 +36,8 @@
 #include "aurora/resman.h"
 #include "aurora/error.h"
 
+#include "graphics/cursorman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -118,6 +120,8 @@ void TheWitcherEngine::run(const Common::UString &target) {
 		return;
 	*/
 
+	CursorMan.set();
+
 	playSound("m1_axem00020005", Sound::kSoundTypeVoice);
 
 	while (!EventMan.quitRequested()) {
@@ -170,6 +174,10 @@ void TheWitcherEngine::init() {
 }
 
 void TheWitcherEngine::initCursors() {
+	CursorMan.add("cursor0" , "default"  , "up"  );
+	CursorMan.add("cursor1" , "default"  , "down");
+
+	CursorMan.setDefault("default", "up");
 }
 
 } // End of namespace TheWitcher

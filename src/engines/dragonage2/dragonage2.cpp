@@ -34,6 +34,8 @@
 
 #include "aurora/resman.h"
 
+#include "graphics/cursorman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -105,6 +107,8 @@ void DragonAge2Engine::run(const Common::UString &target) {
 		return;
 	*/
 
+	CursorMan.set();
+
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
@@ -171,6 +175,80 @@ void DragonAge2Engine::init() {
 }
 
 void DragonAge2Engine::initCursors() {
+	CursorMan.add("area_transition"            , "area_transition"    , "up"      );
+	CursorMan.add("area_transition_pressed"    , "area_transition"    , "down"    );
+	CursorMan.add("attack"                     , "attack"             , "up"      );
+	CursorMan.add("attack_pressed"             , "attack"             , "down"    );
+	CursorMan.add("chest"                      , "chest"              , "up"      );
+	CursorMan.add("chest_pressed"              , "chest"              , "down"    );
+	CursorMan.add("close"                      , "close"              , "up"      );
+	CursorMan.add("close_pressed"              , "close"              , "down"    );
+	CursorMan.add("converse"                   , "converse"           , "up"      );
+	CursorMan.add("converse_pressed"           , "converse"           , "down"    );
+	CursorMan.add("destroy"                    , "destroy"            , "up"      );
+	CursorMan.add("destroy_pressed"            , "destroy"            , "down"    );
+	CursorMan.add("dialog"                     , "dialog"             , "up"      );
+	CursorMan.add("dialog_pressed"             , "dialog"             , "down"    );
+	CursorMan.add("disabled_disarm"            , "disabled_disarm"    , "up"      );
+	CursorMan.add("disabled_disarm_pressed"    , "disabled_disarm"    , "down"    );
+	CursorMan.add("disabled_unlock"            , "disabled_unlock"    , "up"      );
+	CursorMan.add("disabled_unlock_pressed"    , "disabled_unlock"    , "down"    );
+	CursorMan.add("disarm"                     , "disarm"             , "up"      );
+	CursorMan.add("disarm_pressed"             , "disarm"             , "down"    );
+	CursorMan.add("door"                       , "door"               , "up"      );
+	CursorMan.add("door_pressed"               , "door"               , "down"    );
+	CursorMan.add("dragging"                   , "dragging"           , ""        );
+	CursorMan.add("examine"                    , "examine"            , "up"      );
+	CursorMan.add("examine_pressed"            , "examine"            , "down"    );
+	CursorMan.add("flip_cover"                 , "flip_cover"         , "up"      );
+	CursorMan.add("flip_cover_pressed"         , "flip_cover"         , "down"    );
+	CursorMan.add("hand"                       , "hand"               , "up"      );
+	CursorMan.add("hand2"                      , "hand"               , "down"    );
+	CursorMan.add("hidden_cursor"              , "hidden_cursor"      , ""        );
+	CursorMan.add("ibeam"                      , "ibeam"              , "up"      );
+	CursorMan.add("ibeam_pressed"              , "ibeam"              , "down"    );
+	CursorMan.add("invalid"                    , "invalid"            , "up"      );
+	CursorMan.add("invalid_pressed"            , "invalid"            , "down"    );
+	CursorMan.add("invalid_move"               , "invalid_move"       , ""        );
+	CursorMan.add("open"                       , "open"               , "up"      );
+	CursorMan.add("open_pressed"               , "open"               , "down"    );
+	CursorMan.add("open_inventory"             , "open_inventory"     , "up"      );
+	CursorMan.add("open_inventory_pressed"     , "open_inventory"     , "down"    );
+	CursorMan.add("panning"                    , "panning"            , "down"    );
+	CursorMan.add("panning1"                   , "panning"            , "up"      );
+	CursorMan.add("panning1_h"                 , "panning_h"          , "up"      );
+	CursorMan.add("panning1_v"                 , "panning_v"          , "up"      );
+	CursorMan.add("panning_h"                  , "panning_h"          , "down"    );
+	CursorMan.add("panning_v"                  , "panning_v"          , "down"    );
+	CursorMan.add("party_member"               , "party_member"       , ""        );
+	CursorMan.add("standard"                   , "standard"           , "up"      );
+	CursorMan.add("standard_pressed"           , "standard"           , "down"    );
+	CursorMan.add("standard_targeting"         , "standard_targeting" , "up"      );
+	CursorMan.add("standard_targeting_pressed" , "standard_targeting" , "down"    );
+	CursorMan.add("target"                     , "target"             , "up"      );
+	CursorMan.add("target_pressed"             , "target"             , "down"    );
+	CursorMan.add("target_inactive"            , "target"             , "inactive");
+	CursorMan.add("target_circle"              , "target_circle"      , "up"      );
+	CursorMan.add("target_circle_pressed"      , "target_circle"      , "down"    );
+	CursorMan.add("target_circle_invalid"      , "target_circle"      , "invalid" );
+	CursorMan.add("target_cone"                , "target_cone"        , "up"      );
+	CursorMan.add("target_cone_pressed"        , "target_cone"        , "down"    );
+	CursorMan.add("target_cone_invalid"        , "target_cone"        , "invalid" );
+	CursorMan.add("target_creature"            , "target_creature"    , "up"      );
+	CursorMan.add("target_creature_pressed"    , "target_creature"    , "down"    );
+	CursorMan.add("target_creature_invalid"    , "target_creature"    , "invalid" );
+	CursorMan.add("target_creaturelock"        , "target_creaturelock", "up"      );
+	CursorMan.add("target_creaturelock_pressed", "target_creaturelock", "down"    );
+	CursorMan.add("topple"                     , "topple"             , "up"      );
+	CursorMan.add("topple_pressed"             , "topple"             , "down"    );
+	CursorMan.add("trigger_trap"               , "trigger_trap"       , "up"      );
+	CursorMan.add("trigger_trap_pressed"       , "trigger_trap"       , "down"    );
+	CursorMan.add("unlock"                     , "unlock"             , "up"      );
+	CursorMan.add("unlock_pressed"             , "unlock"             , "down"    );
+	CursorMan.add("use"                        , "use"                , "up"      );
+	CursorMan.add("use_pressed"                , "use"                , "down"    );
+
+	CursorMan.setDefault("standard", "up");
 }
 
 } // End of namespace DragonAge2

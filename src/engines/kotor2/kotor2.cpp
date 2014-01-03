@@ -36,6 +36,8 @@
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
+#include "graphics/cursorman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -116,6 +118,8 @@ void KotOR2Engine::run(const Common::UString &target) {
 	// playIntroVideos();
 	if (EventMan.quitRequested())
 		return;
+
+	CursorMan.set();
 
 	playMenuMusic();
 
@@ -307,6 +311,40 @@ void KotOR2Engine::initCursorsRemap() {
 void KotOR2Engine::initCursors() {
 	if (_platform == Aurora::kPlatformXbox)
 		return;
+
+	CursorMan.add("gui_mp_defaultd" , "default"  , "down");
+	CursorMan.add("gui_mp_defaultu" , "default"  , "up"  );
+
+	CursorMan.add("gui_mp_bashd"    , "bash"     , "down");
+	CursorMan.add("gui_mp_bashu"    , "bash"     , "up"  );
+	CursorMan.add("gui_mp_bashdp"   , "bash+"    , "down");
+	CursorMan.add("gui_mp_bashup"   , "bash+"    , "up"  );
+	CursorMan.add("gui_mp_dismined" , "dismine"  , "down");
+	CursorMan.add("gui_mp_dismineu" , "dismine"  , "up"  );
+	CursorMan.add("gui_mp_disminedp", "dismine+" , "down");
+	CursorMan.add("gui_mp_dismineup", "dismine+" , "up"  );
+	CursorMan.add("gui_mp_doord"    , "door"     , "down");
+	CursorMan.add("gui_mp_dooru"    , "door"     , "up"  );
+	CursorMan.add("gui_mp_doordp"   , "door+"    , "down");
+	CursorMan.add("gui_mp_doorup"   , "door+"    , "up"  );
+	CursorMan.add("gui_mp_invalidd" , "invalid"  , "down");
+	CursorMan.add("gui_mp_invalidu" , "invalid"  , "up"  );
+	CursorMan.add("gui_mp_killd"    , "kill"     , "down");
+	CursorMan.add("gui_mp_killu"    , "kill"     , "up"  );
+	CursorMan.add("gui_mp_recmined" , "recmine"  , "down");
+	CursorMan.add("gui_mp_recmineu" , "recmine"  , "up"  );
+	CursorMan.add("gui_mp_recminedp", "recmine+" , "down");
+	CursorMan.add("gui_mp_recmineup", "recmine+" , "up"  );
+	CursorMan.add("gui_mp_selectd"  , "select"   , "down");
+	CursorMan.add("gui_mp_selectu"  , "select"   , "up"  );
+	CursorMan.add("gui_mp_talkd"    , "talk"     , "down");
+	CursorMan.add("gui_mp_talku"    , "talk"     , "up"  );
+	CursorMan.add("gui_mp_used"     , "use"      , "down");
+	CursorMan.add("gui_mp_useu"     , "use"      , "up"  );
+	CursorMan.add("gui_mp_usedp"    , "use+"     , "down");
+	CursorMan.add("gui_mp_useup"    , "use+"     , "up"  );
+
+	CursorMan.setDefault("default", "up");
 }
 
 void KotOR2Engine::initConfig() {

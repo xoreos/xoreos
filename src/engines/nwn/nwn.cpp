@@ -38,6 +38,8 @@
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
+#include "graphics/cursorman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -114,6 +116,8 @@ void NWNEngine::run(const Common::UString &target) {
 		return;
 
 	status("Successfully initialized the engine");
+
+	CursorMan.set();
 
 	playMenuMusic();
 
@@ -210,6 +214,104 @@ void NWNEngine::initResources() {
 }
 
 void NWNEngine::initCursors() {
+	CursorMan.add("gui_mp_defaultd" , "default", "down");
+	CursorMan.add("gui_mp_defaultu" , "default", "up"  );
+
+	CursorMan.add("gui_mp_actiond"  , "action"   , "down");
+	CursorMan.add("gui_mp_actionu"  , "action"   , "up"  );
+	CursorMan.add("gui_mp_attackd"  , "attack"   , "down");
+	CursorMan.add("gui_mp_attacku"  , "attack"   , "up"  );
+	CursorMan.add("gui_mp_created"  , "create"   , "down");
+	CursorMan.add("gui_mp_createu"  , "create"   , "up"  );
+	CursorMan.add("gui_mp_disarmd"  , "disarm"   , "down");
+	CursorMan.add("gui_mp_disarmu"  , "disarm"   , "up"  );
+	CursorMan.add("gui_mp_doord"    , "door"     , "down");
+	CursorMan.add("gui_mp_dooru"    , "door"     , "up"  );
+	CursorMan.add("gui_mp_examined" , "examine"  , "down");
+	CursorMan.add("gui_mp_examineu" , "examine"  , "up"  );
+	CursorMan.add("gui_mp_followd"  , "follow"   , "down");
+	CursorMan.add("gui_mp_followu"  , "follow"   , "up"  );
+	CursorMan.add("gui_mp_heald"    , "heal"     , "down");
+	CursorMan.add("gui_mp_healu"    , "heal"     , "up"  );
+	CursorMan.add("gui_mp_killd"    , "kill"     , "down");
+	CursorMan.add("gui_mp_killu"    , "kill"     , "up"  );
+	CursorMan.add("gui_mp_lockd"    , "lock"     , "down");
+	CursorMan.add("gui_mp_locku"    , "lock"     , "up"  );
+	CursorMan.add("gui_mp_magicd"   , "magic"    , "down");
+	CursorMan.add("gui_mp_magicu"   , "magic"    , "up"  );
+	CursorMan.add("gui_mp_pickupd"  , "pickup"   , "down");
+	CursorMan.add("gui_mp_pickupu"  , "pickup"   , "up"  );
+	CursorMan.add("gui_mp_pushpind" , "pushpin"  , "down");
+	CursorMan.add("gui_mp_pushpinu" , "pushpin"  , "up"  );
+	CursorMan.add("gui_mp_talkd"    , "talk"     , "down");
+	CursorMan.add("gui_mp_talku"    , "talk"     , "up"  );
+	CursorMan.add("gui_mp_transd"   , "trans"    , "down");
+	CursorMan.add("gui_mp_transu"   , "trans"    , "up"  );
+	CursorMan.add("gui_mp_used"     , "use"      , "down");
+	CursorMan.add("gui_mp_useu"     , "use"      , "up"  );
+	CursorMan.add("gui_mp_walkd"    , "walk"     , "down");
+	CursorMan.add("gui_mp_walku"    , "walk"     , "up"  );
+
+	CursorMan.add("gui_mp_noactiond", "noaction" , "down");
+	CursorMan.add("gui_mp_noactionu", "noaction" , "up"  );
+	CursorMan.add("gui_mp_noatckd"  , "noattack" , "down");
+	CursorMan.add("gui_mp_noatcku"  , "noattack" , "up"  );
+	CursorMan.add("gui_mp_nocreatd" , "nocreate" , "down");
+	CursorMan.add("gui_mp_nocreatu" , "nocreate" , "up"  );
+	CursorMan.add("gui_mp_nodisarmd", "nodisarm" , "down");
+	CursorMan.add("gui_mp_nodisarmu", "nodisarm" , "up"  );
+	CursorMan.add("gui_mp_noexamd"  , "noexamine", "down");
+	CursorMan.add("gui_mp_noexamu"  , "noexamine", "up"  );
+	CursorMan.add("gui_mp_noheald"  , "noheal"   , "down");
+	CursorMan.add("gui_mp_nohealu"  , "noheal"   , "up"  );
+	CursorMan.add("gui_mp_nokilld"  , "nokill"   , "down");
+	CursorMan.add("gui_mp_nokillu"  , "nokill"   , "up"  );
+	CursorMan.add("gui_mp_nolockd"  , "nolock"   , "down");
+	CursorMan.add("gui_mp_nolocku"  , "nolock"   , "up"  );
+	CursorMan.add("gui_mp_nomagicd" , "nomagic"  , "down");
+	CursorMan.add("gui_mp_nomagicu" , "nomagic"  , "up"  );
+	CursorMan.add("gui_mp_notalkd"  , "notalk"   , "down");
+	CursorMan.add("gui_mp_notalku"  , "notalk"   , "up"  );
+	CursorMan.add("gui_mp_noused"   , "nouse"    , "down");
+	CursorMan.add("gui_mp_nouseu"   , "nouse"    , "up"  );
+	CursorMan.add("gui_mp_nowalkd"  , "nowalk"   , "down");
+	CursorMan.add("gui_mp_nowalku"  , "nowalk"   , "up"  );
+
+	CursorMan.add("gui_mp_arwalk00", "arrowwalk", "N");
+	CursorMan.add("gui_mp_arwalk01", "arrowwalk", "NNE");
+	CursorMan.add("gui_mp_arwalk02", "arrowwalk", "NE");
+	CursorMan.add("gui_mp_arwalk03", "arrowwalk", "ENE");
+	CursorMan.add("gui_mp_arwalk04", "arrowwalk", "E");
+	CursorMan.add("gui_mp_arwalk05", "arrowwalk", "ESE");
+	CursorMan.add("gui_mp_arwalk06", "arrowwalk", "SE");
+	CursorMan.add("gui_mp_arwalk07", "arrowwalk", "SSE");
+	CursorMan.add("gui_mp_arwalk08", "arrowwalk", "S");
+	CursorMan.add("gui_mp_arwalk09", "arrowwalk", "SSW");
+	CursorMan.add("gui_mp_arwalk10", "arrowwalk", "SW");
+	CursorMan.add("gui_mp_arwalk11", "arrowwalk", "WSW");
+	CursorMan.add("gui_mp_arwalk12", "arrowwalk", "W");
+	CursorMan.add("gui_mp_arwalk13", "arrowwalk", "WNW");
+	CursorMan.add("gui_mp_arwalk14", "arrowwalk", "NW");
+	CursorMan.add("gui_mp_arwalk15", "arrowwalk", "NNW");
+
+	CursorMan.add("gui_mp_arrun00", "arrowrun", "N");
+	CursorMan.add("gui_mp_arrun01", "arrowrun", "NNE");
+	CursorMan.add("gui_mp_arrun02", "arrowrun", "NE");
+	CursorMan.add("gui_mp_arrun03", "arrowrun", "ENE");
+	CursorMan.add("gui_mp_arrun04", "arrowrun", "E");
+	CursorMan.add("gui_mp_arrun05", "arrowrun", "ESE");
+	CursorMan.add("gui_mp_arrun06", "arrowrun", "SE");
+	CursorMan.add("gui_mp_arrun07", "arrowrun", "SSE");
+	CursorMan.add("gui_mp_arrun08", "arrowrun", "S");
+	CursorMan.add("gui_mp_arrun09", "arrowrun", "SSW");
+	CursorMan.add("gui_mp_arrun10", "arrowrun", "SW");
+	CursorMan.add("gui_mp_arrun11", "arrowrun", "WSW");
+	CursorMan.add("gui_mp_arrun12", "arrowrun", "W");
+	CursorMan.add("gui_mp_arrun13", "arrowrun", "WNW");
+	CursorMan.add("gui_mp_arrun14", "arrowrun", "NW");
+	CursorMan.add("gui_mp_arrun15", "arrowrun", "NNW");
+
+	CursorMan.setDefault("default", "up");
 }
 
 void NWNEngine::initConfig() {

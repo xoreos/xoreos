@@ -35,6 +35,8 @@
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
+#include "graphics/cursorman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -110,6 +112,8 @@ void JadeEngine::run(const Common::UString &target) {
 		return;
 	*/
 
+	CursorMan.set();
+
 	playSound("musicbank00046", Sound::kSoundTypeMusic, true);
 
 	while (!EventMan.quitRequested()) {
@@ -163,6 +167,9 @@ void JadeEngine::init() {
 }
 
 void JadeEngine::initCursors() {
+	CursorMan.add("ui_cursor32", "default", "default");
+
+	CursorMan.setDefault("default", "default");
 }
 
 } // End of namespace Jade
