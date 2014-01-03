@@ -185,7 +185,7 @@ Ogre::TexturePtr TextureManager::get(const Common::UString &name) {
 	return texture;
 }
 
-Ogre::TexturePtr TextureManager::create(const Common::UString &name) {
+ImageDecoder *TextureManager::createImage(const Common::UString &name) {
 	// Get the image resource
 	::Aurora::FileType type;
 	Common::SeekableReadStream *img = ResMan.getResource(::Aurora::kResourceImage, name, &type);
@@ -200,8 +200,6 @@ Ogre::TexturePtr TextureManager::create(const Common::UString &name) {
 
 	ImageDecoder *image  = 0;
 	WinIconImage *cursor = 0;
-
-	Ogre::TexturePtr texture((Ogre::Texture *) 0);
 
 	// Load the different image formats
 	try {
@@ -234,8 +232,6 @@ Ogre::TexturePtr TextureManager::create(const Common::UString &name) {
 		if (GfxMan.needManualDeS3TC())
 			image->decompress();
 
-		texture = create(name, *image);
-
 	} catch (...) {
 		delete img;
 		delete image;
@@ -245,9 +241,24 @@ Ogre::TexturePtr TextureManager::create(const Common::UString &name) {
 	}
 
 	delete img;
-	delete image;
 	delete cursor;
 
+	return image;
+}
+
+Ogre::TexturePtr TextureManager::create(const Common::UString &name) {
+	ImageDecoder *image = 0;
+	Ogre::TexturePtr texture((Ogre::Texture *) 0);
+
+	try {
+		image   = createImage(name);
+		texture = create(name, *image);
+	} catch (...) {
+		delete image;
+		throw;
+	}
+
+	delete image;
 	return texture;
 }
 
@@ -323,6 +334,22 @@ void TextureManager::convert(Ogre::TexturePtr &texture, const ImageDecoder &imag
 
 		buffer->unlock();
 	}
+}
+
+bool TextureManager::dumpTGA(const Common::UString &name, const Common::UString &fileName) {
+	ImageDecoder *image = 0;
+
+	try {
+		image = createImage(name);
+		image->dumpTGA(fileName);
+	} catch (Common::Exception &e) {
+		delete image;
+		printException(e, "WARNING: ");
+		return false;
+	}
+
+	delete image;
+	return true;
 }
 
 } // End of namespace Graphics

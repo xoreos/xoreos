@@ -87,6 +87,9 @@ public:
 	/** Get the properties of a texture. */
 	const TextureProperties &getProperties(const Ogre::TexturePtr &texture);
 
+	/** Dump a texture into a TGA file. */
+	bool dumpTGA(const Common::UString &name, const Common::UString &fileName);
+
 private:
 	typedef std::map<Common::UString, TextureProperties *> Properties;
 
@@ -95,6 +98,8 @@ private:
 
 	Ogre::TexturePtr create(const Common::UString &name);
 	Ogre::TexturePtr create(const Common::UString &name, const ImageDecoder &image);
+
+	ImageDecoder *createImage(const Common::UString &name);
 
 	void convert(Ogre::TexturePtr &texture, const ImageDecoder &image, int mipMaps);
 };
