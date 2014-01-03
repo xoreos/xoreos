@@ -40,20 +40,10 @@
 
 #include "events/events.h"
 
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/fps.h"
-
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
 
 #include "engines/kotor/kotor.h"
-#include "engines/kotor/modelloader.h"
-#include "engines/kotor/module.h"
-#include "engines/kotor/console.h"
-
-#include "engines/kotor/gui/main/main.h"
 
 namespace Engines {
 
@@ -123,7 +113,7 @@ bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common:
 
 
 KotOREngine::KotOREngine(Aurora::Platform platform) : _platform(platform),
-	_fps(0), _hasLiveKey(false) {
+	_hasLiveKey(false) {
 }
 
 KotOREngine::~KotOREngine() {
@@ -138,22 +128,17 @@ void KotOREngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	CursorMan.hideCursor();
-	CursorMan.set();
-
-	playIntroVideos();
+	// playIntroVideos();
 	if (EventMan.quitRequested())
 		return;
 
-	CursorMan.showCursor();
+	playMenuMusic();
 
-	if (ConfigMan.getBool("showfps", false)) {
-		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		_fps->show();
+	while (!EventMan.quitRequested()) {
+		EventMan.delay(10);
 	}
 
-	mainMenuLoop();
-
+	stopMenuMusic();
 	deinit();
 }
 
@@ -270,10 +255,6 @@ void KotOREngine::initResources() {
 		status("Loading Xbox DLC talk table");
 		TalkMan.addAltTable("live1");
 	}
-
-	registerModelLoader(new KotORModelLoader);
-
-	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }
 
 void KotOREngine::initCursorsRemap() {
@@ -378,40 +359,6 @@ void KotOREngine::initCursorsRemap() {
 void KotOREngine::initCursors() {
 	if (_platform == Aurora::kPlatformXbox)
 		return;
-
-	CursorMan.add("gui_mp_defaultd" , "default"  , "down");
-	CursorMan.add("gui_mp_defaultu" , "default"  , "up"  );
-
-	CursorMan.add("gui_mp_bashd"    , "bash"     , "down");
-	CursorMan.add("gui_mp_bashu"    , "bash"     , "up"  );
-	CursorMan.add("gui_mp_bashdp"   , "bash+"    , "down");
-	CursorMan.add("gui_mp_bashup"   , "bash+"    , "up"  );
-	CursorMan.add("gui_mp_dismined" , "dismine"  , "down");
-	CursorMan.add("gui_mp_dismineu" , "dismine"  , "up"  );
-	CursorMan.add("gui_mp_disminedp", "dismine+" , "down");
-	CursorMan.add("gui_mp_dismineup", "dismine+" , "up"  );
-	CursorMan.add("gui_mp_doord"    , "door"     , "down");
-	CursorMan.add("gui_mp_dooru"    , "door"     , "up"  );
-	CursorMan.add("gui_mp_doordp"   , "door+"    , "down");
-	CursorMan.add("gui_mp_doorup"   , "door+"    , "up"  );
-	CursorMan.add("gui_mp_invalidd" , "invalid"  , "down");
-	CursorMan.add("gui_mp_invalidu" , "invalid"  , "up"  );
-	CursorMan.add("gui_mp_killd"    , "kill"     , "down");
-	CursorMan.add("gui_mp_killu"    , "kill"     , "up"  );
-	CursorMan.add("gui_mp_recmined" , "recmine"  , "down");
-	CursorMan.add("gui_mp_recmineu" , "recmine"  , "up"  );
-	CursorMan.add("gui_mp_recminedp", "recmine+" , "down");
-	CursorMan.add("gui_mp_recmineup", "recmine+" , "up"  );
-	CursorMan.add("gui_mp_selectd"  , "select"   , "down");
-	CursorMan.add("gui_mp_selectu"  , "select"   , "up"  );
-	CursorMan.add("gui_mp_talkd"    , "talk"     , "down");
-	CursorMan.add("gui_mp_talku"    , "talk"     , "up"  );
-	CursorMan.add("gui_mp_used"     , "use"      , "down");
-	CursorMan.add("gui_mp_useu"     , "use"      , "up"  );
-	CursorMan.add("gui_mp_usedp"    , "use+"     , "down");
-	CursorMan.add("gui_mp_useup"    , "use+"     , "up"  );
-
-	CursorMan.setDefault("default", "up");
 }
 
 void KotOREngine::initConfig() {
@@ -426,7 +373,6 @@ void KotOREngine::checkConfig() {
 }
 
 void KotOREngine::deinit() {
-	delete _fps;
 }
 
 void KotOREngine::playIntroVideos() {
@@ -458,38 +404,6 @@ void KotOREngine::stopMenuMusic() {
 
 void KotOREngine::mainMenuLoop() {
 	playMenuMusic();
-
-	Console console;
-	Module module(console);
-
-	console.setModule(&module);
-
-	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(module, _platform == Aurora::kPlatformXbox);
-
-		EventMan.flushEvents();
-
-		mainMenu->show();
-		mainMenu->run();
-		mainMenu->hide();
-
-		delete mainMenu;
-
-		if (EventMan.quitRequested())
-			break;
-
-		stopMenuMusic();
-
-		module.run();
-		if (EventMan.quitRequested())
-			break;
-
-		playMenuMusic();
-		console.hide();
-		module.clear();
-	}
-
-	console.setModule();
 
 	stopMenuMusic();
 }

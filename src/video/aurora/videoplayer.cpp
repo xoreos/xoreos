@@ -89,6 +89,7 @@ void VideoPlayer::load(const Common::UString &name) {
 }
 
 void VideoPlayer::play() {
+	return;
 	RequestMan.sync();
 
 	_video->start();

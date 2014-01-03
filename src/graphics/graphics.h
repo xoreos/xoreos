@@ -30,15 +30,10 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
-#include <vector>
-#include <list>
-
 #include "graphics/types.h"
 
 #include "common/types.h"
 #include "common/singleton.h"
-#include "common/mutex.h"
-#include "common/matrix.h"
 
 namespace Common {
 	class UString;
@@ -47,10 +42,6 @@ namespace Common {
 namespace Graphics {
 
 class Renderer;
-
-class FPSCounter;
-class Cursor;
-class Renderable;
 
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager> {
@@ -110,9 +101,6 @@ public:
 	/** Toggle mouse grab */
 	void toggleMouseGrab();
 
-	/** How many frames per second to we render at the moments? */
-	uint32 getFPS() const;
-
 	/** That the window's title. */
 	void setWindowTitle(const Common::UString &title);
 
@@ -121,55 +109,11 @@ public:
 	/** Set the overall gamma correction. */
 	bool setGamma(float gamma);
 
-	/** Show/Hide the cursor. */
-	void showCursor(bool show);
-	/** Set the current cursor. */
-	void setCursor(Cursor *cursor = 0);
-	/** Set position to the cursor. */
-	void setCursorPosition(int x, int y);
-
-	/** Take a screenshot. */
-	void takeScreenshot();
-
-	/** Map the given world coordinates onto screen coordinates. */
-	bool project(float x, float y, float z, float &sX, float &sY, float &sZ);
-
-	/** Map the given screen coordinates onto a line in world space. */
-	bool unproject(float x, float y,
-	               float &x1, float &y1, float &z1,
-	               float &x2, float &y2, float &z2) const;
-
-	/** Get the object at this screen position. */
-	Renderable *getObjectAt(float x, float y);
-
-	/** Recalculate all object distances to the camera and resort the objebts. */
-	void recalculateObjectDistances();
-
-	/** Lock the frame mutex. */
-	void lockFrame();
-	/** Unlock the frame mutex. */
-	void unlockFrame();
-
-	/** Create a new unique renderable ID. */
-	uint32 createRenderableID();
-
-	/** Abandon these textures. */
-	void abandon(TextureID *ids, uint32 count);
-	/** Abandon these lists. */
-	void abandon(ListID ids, uint32 count);
-
-
 	/** Render one complete frame of the scene. */
 	void renderScene();
 
 
 private:
-	enum CursorState {
-		kCursorStateStay,
-		kCursorStateSwitchOn,
-		kCursorStateSwitchOff
-	};
-
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
 	// Extensions
@@ -192,34 +136,6 @@ private:
 	SDL_Window      *_screen;      ///< The SDL screen surface.
 	Renderer        *_renderer;    ///< The OpenGL renderer.
 
-	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
-
-	uint32 _lastSampled; ///< Timestamp used to advance animations.
-
-	Common::Matrix _projection;    ///< Our projection matrix.
-	Common::Matrix _projectionInv; ///< The inverse of our projection matrix.
-
-	uint32 _frameLock;
-
-	Common::Mutex _frameLockMutex; ///< A soft mutex locked for each frame.
-	Common::Mutex _cursorMutex;    ///< A mutex locked for the cursor.
-
-	Cursor     *_cursor;       ///< The current cursor.
-	CursorState _cursorState;  ///< What to do with the cursor.
-
-	bool _takeScreenshot; ///< Should screenshot be taken?
-
-	uint32 _renderableID;             ///< The last ID given to a renderable.
-	Common::Mutex _renderableIDMutex; ///< The mutex to govern renderable ID creation.
-
-	bool _hasAbandoned; ///< Do we have abandoned textures/lists?
-
-	std::vector<TextureID> _abandonTextures; ///< Abandoned textures.
-	std::list<ListID>      _abandonLists;    ///< Abandoned lists.
-
-	Common::Mutex _abandonMutex; ///< A mutex protecting abandoned structures.
-
-	void setupScene();
 
 	void initScreen(int width, int height, bool fullscreen, bool vsync, int fsaa);
 	void getDefaultDisplayMode();
@@ -231,31 +147,6 @@ private:
 
 	void setupSDLGL(int width, int height, uint32 flags, bool vsync, int fsaa);
 	void checkCapabilities();
-
-	/** Set up a projection matrix. Analog to gluPerspective. */
-	void perspective(float fovy, float aspect, float zNear, float zFar);
-
-	void rebuildGLContainers();
-	void destroyGLContainers();
-
-	void destroyContext();
-	void rebuildContext();
-
-	void handleCursorSwitch();
-
-	void cleanupAbandoned();
-
-	Renderable *getGUIObjectAt(float x, float y) const;
-	Renderable *getWorldObjectAt(float x, float y) const;
-
-	void buildNewTextures();
-
-	void beginScene();
-	bool playVideo();
-	bool renderWorld();
-	bool renderGUIFront();
-	bool renderCursor();
-	void endScene();
 };
 
 } // End of namespace Graphics

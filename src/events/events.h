@@ -177,8 +177,6 @@ private:
 
 	// Request handler
 	void requestCallInMainThread(Request &request);
-	void requestRebuildGLContainer(Request &request);
-	void requestDestroyGLContainer(Request &request);
 
 	void processEvents();
 

@@ -45,9 +45,9 @@
 
 namespace Video {
 
-VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
+VideoDecoder::VideoDecoder() :
 	_started(false), _finished(false), _needCopy(false),
-	_width(0), _height(0), _surface(0), _texture(0),
+	_width(0), _height(0), _surface(0),
 	_textureWidth(0.0), _textureHeight(0.0), _scale(kScaleNone),
 	_sound(0), _soundRate(0), _soundFlags(0) {
 
@@ -56,18 +56,12 @@ VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
 VideoDecoder::~VideoDecoder() {
 	deinit();
 
-	if (_texture != 0)
-		GfxMan.abandon(&_texture, 1);
-
 	delete _surface;
 
 	deinitSound();
 }
 
 void VideoDecoder::deinit() {
-	hide();
-
-	GLContainer::removeFromQueue(Graphics::kQueueGLContainer);
 }
 
 void VideoDecoder::initVideo(uint32 width, uint32 height) {
@@ -86,8 +80,6 @@ void VideoDecoder::initVideo(uint32 width, uint32 height) {
 	_surface = new Graphics::Surface(realWidth, realHeight);
 
 	_surface->fill(0, 0, 0, 0);
-
-	rebuild();
 }
 
 void VideoDecoder::initSound(uint16 rate, int channels, bool is16) {
@@ -155,48 +147,12 @@ uint32 VideoDecoder::getNumQueuedStreams() const {
 	return _sound ? _sound->numQueuedStreams() : 0;
 }
 
-void VideoDecoder::doRebuild() {
-	if (!_surface)
-		return;
-
-	// Generate the texture ID
-	glGenTextures(1, &_texture);
-
-	glBindTexture(GL_TEXTURE_2D, _texture);
-
-	// Texture clamping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	// No filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _surface->getWidth(), _surface->getHeight(),
-	             0, GL_BGRA, GL_UNSIGNED_BYTE, _surface->getData());
-}
-
-void VideoDecoder::doDestroy() {
-	if (_texture == 0)
-		return;
-
-	glDeleteTextures(1, &_texture);
-
-	_texture = 0;
-}
-
 void VideoDecoder::copyData() {
 	if (!_needCopy)
 		return;
 
 	if (!_surface)
 		throw Common::Exception("No video data while trying to copy");
-	if (_texture == 0)
-		throw Common::Exception("No texture while trying to copy");
-
-	glBindTexture(GL_TEXTURE_2D, _texture);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _surface->getWidth(), _surface->getHeight(),
-	                GL_BGRA, GL_UNSIGNED_BYTE, _surface->getData());
 
 	_needCopy = false;
 }
@@ -247,14 +203,8 @@ void VideoDecoder::getQuadDimensions(float &width, float &height) const {
 	width  = screenHeight * ratio;
 }
 
-void VideoDecoder::calculateDistance() {
-}
-
-void VideoDecoder::render(Graphics::RenderPass pass) {
-	if (pass == Graphics::kRenderPassTransparent)
-		return;
-
-	if (!isPlaying() || !_started || (_texture == 0))
+void VideoDecoder::render() {
+	if (!isPlaying() || !_started)
 		return;
 
 	// Process and copy the next frame data, if necessary
@@ -263,23 +213,6 @@ void VideoDecoder::render(Graphics::RenderPass pass) {
 	// Get the dimensions of the video surface we want, depending on the scaling requested
 	float width, height;
 	getQuadDimensions(width, height);
-
-	// Create a textured quad with those dimensions
-
-	float hWidth  = width  / 2.0;
-	float hHeight = height / 2.0;
-
-	glBindTexture(GL_TEXTURE_2D, _texture);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-hWidth, -hHeight, -1.0);
-		glTexCoord2f(_textureWidth, 0.0);
-		glVertex3f( hWidth, -hHeight, -1.0);
-		glTexCoord2f(_textureWidth, _textureHeight);
-		glVertex3f( hWidth,  hHeight, -1.0);
-		glTexCoord2f(0.0, _textureHeight);
-		glVertex3f(-hWidth,  hHeight, -1.0);
-	glEnd();
 }
 
 void VideoDecoder::finish() {
@@ -290,13 +223,9 @@ void VideoDecoder::finish() {
 
 void VideoDecoder::start() {
 	startVideo();
-
-	show();
 }
 
 void VideoDecoder::abort() {
-	hide();
-
 	finish();
 }
 

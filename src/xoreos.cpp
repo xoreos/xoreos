@@ -44,7 +44,6 @@
 #include "aurora/talkman.h"
 #include "aurora/util.h"
 
-#include "graphics/queueman.h"
 #include "graphics/graphics.h"
 
 #include "sound/sound.h"
@@ -55,10 +54,6 @@
 
 #include "engines/enginemanager.h"
 #include "engines/gamethread.h"
-
-#include "graphics/aurora/textureman.h"
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/fontman.h"
 
 void initConfig();
 
@@ -269,10 +264,6 @@ void deinit() {
 	}
 
 	// Destroy global singletons
-	Graphics::Aurora::FontManager::destroy();
-	Graphics::Aurora::CursorManager::destroy();
-	Graphics::Aurora::TextureManager::destroy();
-
 	Aurora::TalkManager::destroy();
 	Aurora::TwoDARegistry::destroy();
 	Aurora::ResourceManager::destroy();
@@ -287,7 +278,6 @@ void deinit() {
 	Sound::SoundManager::destroy();
 
 	Graphics::GraphicsManager::destroy();
-	Graphics::QueueManager::destroy();
 
 	Common::DebugManager::destroy();
 	Common::ConfigManager::destroy();

@@ -35,19 +35,12 @@
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/cube.h"
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/fps.h"
-
 #include "sound/sound.h"
 
 #include "events/events.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
-
-#include "engines/jade/gui/main/main.h"
 
 #include "engines/jade/jade.h"
 
@@ -107,9 +100,7 @@ void JadeEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	CursorMan.hideCursor();
-	CursorMan.set();
-
+	/*
 	playVideo("black");
 	playVideo("publisher");
 	playVideo("bwlogo");
@@ -117,46 +108,13 @@ void JadeEngine::run(const Common::UString &target) {
 	playVideo("attract");
 	if (EventMan.quitRequested())
 		return;
-
-	CursorMan.showCursor();
-
-
-	MainMenu *mainMenu = new MainMenu();
-
-	mainMenu->show();
-	mainMenu->run();
-
-	delete mainMenu;
-
-	if (EventMan.quitRequested())
-		return;
-
+	*/
 
 	playSound("musicbank00046", Sound::kSoundTypeMusic, true);
-
-	bool showFPS = ConfigMan.getBool("showfps", false);
-
-	Graphics::Aurora::FPS *fps = 0;
-	if (showFPS) {
-		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		fps->show();
-	}
-
-	Graphics::Aurora::Cube *cube = 0;
-	try {
-
-		cube = new Graphics::Aurora::Cube("ui_ph_silk");
-
-	} catch (Common::Exception &e) {
-		Common::printException(e);
-	}
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
-
-	delete cube;
-	delete fps;
 }
 
 void JadeEngine::init() {
@@ -202,17 +160,9 @@ void JadeEngine::init() {
 
 	status("Loading main talk table");
 	TalkMan.addMainTable("dialog");
-
-	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
-	FontMan.addAlias("sava"   , "asian");
-	FontMan.addAlias("cerigo" , "asian");
-	FontMan.addAlias("fnt_gui", "asian");
 }
 
 void JadeEngine::initCursors() {
-	CursorMan.add("ui_cursor32", "default");
-
-	CursorMan.setDefault("default");
 }
 
 } // End of namespace Jade

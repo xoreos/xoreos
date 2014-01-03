@@ -99,8 +99,6 @@ private:
 	Common::UString _baseDirectory;
 	Aurora::Platform _platform;
 
-	Graphics::Aurora::FPS *_fps;
-
 	Sound::ChannelHandle _menuMusic;
 
 

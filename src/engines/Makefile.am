@@ -22,11 +22,8 @@ noinst_HEADERS = \
                  aurora/util.h \
                  aurora/resources.h \
                  aurora/tokenman.h \
-                 aurora/modelloader.h \
-                 aurora/model.h \
                  aurora/widget.h \
                  aurora/gui.h \
-                 aurora/console.h \
                  $(EMPTY)
 
 libengines_la_SOURCES = \
@@ -36,11 +33,8 @@ libengines_la_SOURCES = \
                         aurora/util.cpp \
                         aurora/resources.cpp \
                         aurora/tokenman.cpp \
-                        aurora/modelloader.cpp \
-                        aurora/model.cpp \
                         aurora/widget.cpp \
                         aurora/gui.cpp \
-                        aurora/console.cpp \
                         $(EMPTY)
 
 libengines_la_LIBADD = \

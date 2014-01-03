@@ -30,18 +30,11 @@
 #ifndef GRAPHICS_TYPES_H
 #define GRAPHICS_TYPES_H
 
-#include <vector>
-
 #include <SDL.h>
 
 #include "glew/glew.h"
 
-#include "common/types.h"
-
 namespace Graphics {
-
-typedef GLuint TextureID;
-typedef GLuint ListID;
 
 enum PixelFormat {
 	kPixelFormatRGB  = GL_RGB ,
@@ -65,48 +58,6 @@ enum PixelDataType {
 	kPixelDataType1555 = GL_UNSIGNED_SHORT_1_5_5_5_REV,
 	kPixelDataType565  = GL_UNSIGNED_SHORT_5_6_5
 };
-
-enum QueueType {
-	kQueueTexture               = 0, ///< A texture.
-	kQueueNewTexture               , ///< A newly created texture.
-	kQueueWorldObject              , ///< An object in 3D space.
-	kQueueVisibleWorldObject       , ///< A visible object in 3D space.
-	kQueueGUIFrontObject           , ///< A GUI object.
-	kQueueVisibleGUIFrontObject    , ///< A visible GUI object.
-	kQueueVideo                    , ///< A video.
-	kQueueVisibleVideo             , ///< A currently playing video.
-	kQueueGLContainer              , ///< An object containing OpenGL structures.
-	kQueueMAX                        ///< For range checks.
-};
-
-enum RenderableType {
-	kRenderableTypeVideo    = 0,
-	kRenderableTypeObject      ,
-	kRenderableTypeGUIFront
-};
-
-enum RenderPass {
-	kRenderPassOpaque      = 0, ///< Only render opaque parts.
-	kRenderPassTransparent = 1, ///< Only render transparent parts.
-	kRenderPassAll         = 2, ///< Render all parts.
-};
-
-struct ColorPosition {
-	uint32 position;
-
-	bool defaultColor;
-
-	float r;
-	float g;
-	float b;
-	float a;
-};
-
-typedef std::vector<ColorPosition> ColorPositions;
-
-#undef glCompressedTexImage2D
-// Aliased to either glCompressedTexImage2D or glCompressedTexImage2DARB, whichever is available
-extern PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
 
 } // End of namespace Graphics
 

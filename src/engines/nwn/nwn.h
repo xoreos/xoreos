@@ -45,12 +45,6 @@ namespace Common {
 	class FileList;
 }
 
-namespace Graphics {
-	namespace Aurora {
-		class FPS;
-	}
-}
-
 namespace Engines {
 
 namespace NWN {
@@ -100,11 +94,7 @@ private:
 	bool _hasXP2; // Hordes of the Underdark (HotU)
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
 
-	Graphics::Aurora::FPS *_fps;
-
 	Sound::ChannelHandle _menuMusic;
-
-	ScriptFunctions *_scriptFuncs;
 
 
 	void init();

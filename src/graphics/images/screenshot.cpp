@@ -42,6 +42,7 @@
 
 namespace Graphics {
 
+/*
 // boost-date_time stuff
 using boost::posix_time::ptime;
 using boost::posix_time::second_clock;
@@ -120,34 +121,11 @@ static bool writeBMP(const Common::UString &filename, const byte *data,
 	file.close();
 	return true;
 }
+*/
 
 bool takeScreenshot() {
 	Common::enforceMainThread();
 
-	Common::UString filename;
-	if (!constructFilename(filename))
-		return true;
-
-	GLint m_viewport[4];
-
-	glGetIntegerv(GL_VIEWPORT, m_viewport);
-
-	if ((m_viewport[2] <= 0) || (m_viewport[3] <= 0))
-		return false;
-
-	byte *screen = new byte[3 * m_viewport[2] * m_viewport[3]];
-
-	glReadPixels(0, 0, m_viewport[2], m_viewport[3], GL_BGR, GL_UNSIGNED_BYTE, screen);
-	bool success = writeBMP(filename, screen, m_viewport[2], m_viewport[3]);
-
-	delete[] screen;
-
-	if (success) {
-		status("Screenshot taken: %s", filename.c_str());
-		return true;
-	}
-
-	warning("Failed to take screenshot");
 	return false;
 }
 

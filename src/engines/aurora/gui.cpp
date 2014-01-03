@@ -32,9 +32,6 @@
 #include "events/events.h"
 
 #include "graphics/graphics.h"
-#include "graphics/renderable.h"
-
-#include "graphics/aurora/cursorman.h"
 
 #include "engines/aurora/gui.h"
 #include "engines/aurora/widget.h"
@@ -58,8 +55,6 @@ GUI::~GUI() {
 }
 
 void GUI::show() {
-	GfxMan.lockFrame();
-
 	// Show all widgets
 	for (WidgetList::iterator w = _widgets.begin(); w != _widgets.end(); ++w) {
 		Widget &widget = **w;
@@ -67,18 +62,12 @@ void GUI::show() {
 		if (!widget._owner)
 			widget.show();
 	}
-
-	GfxMan.unlockFrame();
 }
 
 void GUI::hide() {
-	GfxMan.lockFrame();
-
 	// Hide all widgets
 	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
 		(*widget)->hide();
-
-	GfxMan.unlockFrame();
 }
 
 int GUI::run(int startCode) {
@@ -229,8 +218,6 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 }
 
 int GUI::sub(GUI &gui, int startCode, bool showSelf) {
-	GfxMan.lockFrame();
-
 	removeFocus();
 
 	// Show the sub GUI
@@ -238,12 +225,8 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 		gui.show();
 	hide();
 
-	GfxMan.unlockFrame();
-
 	// Run the sub GUI
 	int code = gui.run(startCode);
-
-	GfxMan.lockFrame();
 
 	// Hide the sub GUI
 	if (showSelf)
@@ -253,8 +236,6 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 	// Update the mouse position
 	removeFocus();
 	updateMouse();
-
-	GfxMan.unlockFrame();
 
 	return code;
 }
@@ -293,8 +274,7 @@ void GUI::removeFocus() {
 
 void GUI::updateMouse() {
 	// Fabricate a mouse move event at the current position
-	int x, y, state;
-	state = CursorMan.getPosition(x, y);
+	int x = 0, y = 0, state = 0;
 
 	Events::Event event;
 	event.motion.state = state;
@@ -306,13 +286,7 @@ void GUI::updateMouse() {
 }
 
 Widget *GUI::getWidgetAt(float x, float y) {
-	// Get the GFX object at the position
-	Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
-	if (!obj)
-		return 0;
-
-	// And return the widget with the same tag
-	return getWidget(obj->getTag());
+	return 0;
 }
 
 void GUI::changedWidget(Widget *widget) {

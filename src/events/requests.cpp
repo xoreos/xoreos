@@ -131,22 +131,6 @@ void RequestManager::sync() {
 	dispatchAndWait(syncID);
 }
 
-RequestID RequestManager::rebuild(Graphics::GLContainer &glContainer) {
-	RequestID rID = newRequest(kITCEventRebuildGLContainer);
-
-	(*rID)->_glContainer.glContainer = &glContainer;
-
-	return rID;
-}
-
-RequestID RequestManager::destroy(Graphics::GLContainer &glContainer) {
-	RequestID rID = newRequest(kITCEventDestroyGLContainer);
-
-	(*rID)->_glContainer.glContainer = &glContainer;
-
-	return rID;
-}
-
 RequestID RequestManager::newRequest(ITCEvent type) {
 	Common::StackLock lock(_mutexUse);
 

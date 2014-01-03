@@ -44,7 +44,6 @@
 
 #include "graphics/types.h"
 #include "graphics/graphics.h"
-#include "graphics/glcontainer.h"
 
 DECLARE_SINGLETON(Events::EventsManager)
 
@@ -52,9 +51,7 @@ namespace Events {
 
 const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX] = {
 	0,
-	&EventsManager::requestCallInMainThread,
-	&EventsManager::requestRebuildGLContainer,
-	&EventsManager::requestDestroyGLContainer
+	&EventsManager::requestCallInMainThread
 };
 
 
@@ -161,7 +158,7 @@ bool EventsManager::parseEventGraphics(const Event &event) {
 			GfxMan.toggleMouseGrab();
 			return true;
 		} else if ((event.key.keysym.mod & KMOD_ALT) && event.key.keysym.sym == SDLK_s) {
-			GfxMan.takeScreenshot();
+			//GfxMan.takeScreenshot();
 			return true;
 		}
 	}
@@ -341,14 +338,6 @@ Joystick *EventsManager::getJoystickByName(const Common::UString &name) const {
 
 void EventsManager::requestCallInMainThread(Request &request) {
 	(*request._callInMainThread.caller)();
-}
-
-void EventsManager::requestRebuildGLContainer(Request &request) {
-	request._glContainer.glContainer->rebuild();
-}
-
-void EventsManager::requestDestroyGLContainer(Request &request) {
-	request._glContainer.glContainer->destroy();
 }
 
 } // End of namespace Events

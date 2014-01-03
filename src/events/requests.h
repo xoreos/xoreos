@@ -42,11 +42,6 @@
 
 #include "events/requesttypes.h"
 
-namespace Graphics {
-	class Texture;
-	class ListContainer;
-}
-
 namespace Events {
 
 typedef std::list<Request *>  RequestList;
@@ -100,11 +95,6 @@ public:
 
 		return f.getReturnValue();
 	}
-
-	/** Request that a GL container shall be rebuilt. */
-	RequestID rebuild(Graphics::GLContainer &glContainer);
-	/** Request that a GL container shall be destroyed. */
-	RequestID destroy(Graphics::GLContainer &glContainer);
 
 	// Singleton
 	static void destroy();

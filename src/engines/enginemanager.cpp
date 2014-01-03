@@ -41,10 +41,6 @@
 #include "aurora/2dareg.h"
 #include "../aurora/util.h"
 
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/textureman.h"
-
 #include "events/events.h"
 #include "events/requests.h"
 
@@ -52,7 +48,6 @@
 #include "engines/engineprobe.h"
 
 #include "engines/aurora/tokenman.h"
-#include "engines/aurora/model.h"
 
 // The engines
 #include "engines/nwn/nwn.h"
@@ -225,13 +220,7 @@ void EngineManager::cleanup(GameInstance &game) const {
 
 		DebugMan.clearEngineChannels();
 
-		unregisterModelLoader();
-
 		RequestMan.sync();
-
-		FontMan.clear();
-		CursorMan.clear();
-		TextureMan.clear();
 
 		TokenMan.clear();
 

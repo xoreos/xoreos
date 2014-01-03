@@ -33,8 +33,6 @@
 #include "common/types.h"
 
 #include "graphics/types.h"
-#include "graphics/glcontainer.h"
-#include "graphics/renderable.h"
 
 #include "sound/types.h"
 
@@ -50,7 +48,7 @@ namespace Sound {
 namespace Video {
 
 /** A generic interface for video decoders. */
-class VideoDecoder : public Graphics::GLContainer, public Graphics::Renderable {
+class VideoDecoder {
 public:
 	enum Scale {
 		kScaleNone,  ///< Don't scale the video.
@@ -60,7 +58,7 @@ public:
 	};
 
 	VideoDecoder();
-	~VideoDecoder();
+	virtual ~VideoDecoder();
 
 	void setScale(Scale scale);
 
@@ -76,9 +74,7 @@ public:
 	/** Return the time, in milliseconds, to the next frame. */
 	virtual uint32 getTimeToNextFrame() const = 0;
 
-	// Renderable
-	void calculateDistance();
-	void render(Graphics::RenderPass pass);
+	void render();
 
 protected:
 	bool _started;  ///< Has playback started?
@@ -121,13 +117,7 @@ protected:
 
 	void deinit();
 
-	// GLContainer
-	void doRebuild();
-	void doDestroy();
-
 private:
-	Graphics::TextureID _texture;
-
 	float _textureWidth;
 	float _textureHeight;
 

@@ -37,20 +37,12 @@
 
 #include "graphics/types.h"
 
-namespace Graphics {
-	class GLContainer;
-}
-
 namespace Events {
 
 // Data structures for specific requests
 
 struct RequestCallInMainThread {
 	const MainThreadCallerFunctor *caller;
-};
-
-struct RequestDataGLContainer {
-	Graphics::GLContainer *glContainer;
 };
 
 /** A request, carrying inter-thread communication. */
@@ -74,7 +66,6 @@ private:
 	/** Request data. */
 	union {
 		RequestCallInMainThread _callInMainThread;
-		RequestDataGLContainer  _glContainer;
 	};
 
 	/** Create the empty request frame. */

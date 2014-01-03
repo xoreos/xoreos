@@ -63,8 +63,6 @@ enum EventType {
 enum ITCEvent {
 	kITCEventSync               = 0, ///< Request a sync, letting all prior requests finish.
 	kITCEventCallInMainThread      , ///< Request to call a function in the main thread.
-	kITCEventRebuildGLContainer    , ///< Request the rebuilding of a GL container.
-	kITCEventDestroyGLContainer    , ///< Request the destruction of a GL container.
 	kITCEventMAX                     ///< For range checks.
 };
 

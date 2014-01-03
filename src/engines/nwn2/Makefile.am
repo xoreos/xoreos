@@ -4,10 +4,8 @@ noinst_LTLIBRARIES = libnwn2.la
 
 noinst_HEADERS = \
                  nwn2.h \
-                 modelloader.h \
                  $(EMPTY)
 
 libnwn2_la_SOURCES = \
                      nwn2.cpp \
-                     modelloader.cpp \
                      $(EMPTY)

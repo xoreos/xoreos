@@ -37,8 +37,6 @@
 #include "../../aurora/gfffile.h"
 #include "../../aurora/2dafile.h"
 
-#include "graphics/aurora/texture.h"
-
 #include "sound/sound.h"
 
 #include "video/aurora/videoplayer.h"
@@ -190,15 +188,6 @@ bool dumpResource(const Common::UString &name, const Common::UString &file) {
 }
 
 bool dumpTGA(const Common::UString &name) {
-	try {
-
-		Graphics::Aurora::Texture texture(name);
-
-		return texture.dumpTGA(name + ".tga");
-
-	} catch (...) {
-	}
-
 	return false;
 }
 
