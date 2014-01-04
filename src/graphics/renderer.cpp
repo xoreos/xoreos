@@ -67,10 +67,25 @@ public:
 	}
 };
 
+class OgreAnimator : public Ogre::FrameListener {
+public:
+	bool frameStarted(const Ogre::FrameEvent &event) {
+		Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;
+		if (!scene)
+			return false;
+
+		OGRE_LOCK_MUTEX(scene->sceneGraphMutex);
+
+		for (Ogre::AnimationStateIterator anims = scene->getAnimationStateIterator(); anims.hasMoreElements(); anims.moveNext())
+			anims.current()->second->addTime(event.timeSinceLastFrame);
+
+		return true;
+	}
+};
 
 Renderer::Renderer(SDL_Window &screen, bool vsync, int fsaa) :
 	_logManager(0), _logger(0), _root(0), _overlaySystem(0), _dummyWindow(0),
-	_renderWindow(0), _sceneManager(0), _camera(0), _viewPort(0) {
+	_renderWindow(0), _sceneManager(0), _camera(0), _viewPort(0), _animator(0) {
 
 	try {
 		createLog();
@@ -107,9 +122,13 @@ Renderer::~Renderer() {
 void Renderer::destroy() {
 	CursorMan.deinit();
 
+	if (_root && _animator)
+		_root->removeFrameListener(_animator);
+
 	if (_sceneManager && _overlaySystem)
 		_sceneManager->removeRenderQueueListener(_overlaySystem);
 
+	delete _animator;
 	delete _overlaySystem;
 	delete _root;
 
@@ -129,6 +148,7 @@ void Renderer::destroy() {
 	_sceneManager  = 0;
 	_camera        = 0;
 	_viewPort      = 0;
+	_animator      = 0;
 }
 
 void Renderer::createLog() {
@@ -269,6 +289,9 @@ void Renderer::createScene() {
 	_camera->setNearClipDistance(1.0);
 	_camera->setFarClipDistance(1000.0);
 	_camera->setFOVy(Ogre::Degree(60.0));
+
+	_animator = new OgreAnimator;
+	_root->addFrameListener(_animator);
 
 	CursorMan.init();
 }

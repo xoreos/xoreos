@@ -47,6 +47,7 @@ namespace Ogre {
 namespace Graphics {
 
 class OgreLogger;
+class OgreAnimator;
 
 enum RenderCapability {
 	kCapabilityS3TC,         ///< Supports S3TC DXTn.
@@ -83,6 +84,7 @@ private:
 	Ogre::SceneManager  *_sceneManager;  ///< The OGRE scene manager.
 	Ogre::Camera        *_camera;        ///< The OGRE camera.
 	Ogre::Viewport      *_viewPort;      ///< The OGRE view port.
+	OgreAnimator        *_animator;      ///< The OGRE frame listener advancing animations.
 
 
 	void createLog();
