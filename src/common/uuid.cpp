@@ -45,4 +45,14 @@ UString generateIDRandomString() {
 	return ss.str();
 }
 
+static uint32 idNumber = 0;
+
+uint32 generateIDNumber() {
+	return idNumber++;
+}
+
+UString generateIDNumberString() {
+	return UString::sprintf("%d", idNumber++);
+}
+
 } // End of namespace Common

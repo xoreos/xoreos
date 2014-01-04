@@ -36,6 +36,9 @@ namespace Common {
 
 UString generateIDRandomString();
 
+uint32 generateIDNumber();
+UString generateIDNumberString();
+
 } // End of namespace Common
 
 #endif // COMMON_UUID_H
