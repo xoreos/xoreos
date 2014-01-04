@@ -47,6 +47,7 @@
 #include "graphics/graphics.h"
 #include "graphics/cursorman.h"
 #include "graphics/textureman.h"
+#include "graphics/materialman.h"
 
 #include "sound/sound.h"
 
@@ -268,6 +269,7 @@ void deinit() {
 	// Destroy global singletons
 	Graphics::CursorManager::destroy();
 	Graphics::TextureManager::destroy();
+	Graphics::MaterialManager::destroy();
 
 	Aurora::TalkManager::destroy();
 	Aurora::TwoDARegistry::destroy();

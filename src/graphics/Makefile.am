@@ -15,6 +15,7 @@ noinst_HEADERS = \
                  renderer.h \
                  yuv_to_rgb.h \
                  textureman.h \
+                 materialman.h \
                  cursor.h \
                  cursorman.h \
                  $(EMPTY)
@@ -24,6 +25,7 @@ libgraphics_la_SOURCES = \
                          renderer.cpp \
                          yuv_to_rgb.cpp \
                          textureman.cpp \
+                         materialman.cpp \
                          cursor.cpp \
                          cursorman.cpp \
                          $(EMPTY)
