@@ -44,6 +44,8 @@
 #include "graphics/cursorman.h"
 #include "graphics/textureman.h"
 
+#include "graphics/aurora/sceneman.h"
+
 #include "events/events.h"
 #include "events/requests.h"
 
@@ -224,6 +226,8 @@ void EngineManager::cleanup(GameInstance &game) const {
 		DebugMan.clearEngineChannels();
 
 		RequestMan.sync();
+
+		SceneMan.clear();
 
 		CursorMan.clear();
 		TextureMan.clear();

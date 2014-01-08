@@ -49,6 +49,8 @@
 #include "graphics/textureman.h"
 #include "graphics/materialman.h"
 
+#include "graphics/aurora/sceneman.h"
+
 #include "sound/sound.h"
 
 #include "events/requests.h"
@@ -267,6 +269,8 @@ void deinit() {
 	}
 
 	// Destroy global singletons
+	Graphics::Aurora::SceneManager::destroy();
+
 	Graphics::CursorManager::destroy();
 	Graphics::TextureManager::destroy();
 	Graphics::MaterialManager::destroy();
