@@ -45,85 +45,171 @@ DECLARE_SINGLETON(Graphics::MaterialManager)
 
 namespace Graphics {
 
+MaterialDeclaration::MaterialDeclaration() {
+	reset();
+}
+
+void MaterialDeclaration::reset() {
+	ambient  [0] = 1.0; ambient  [1] = 1.0; ambient  [2] = 1.0;
+	diffuse  [0] = 1.0; diffuse  [1] = 1.0; diffuse  [2] = 1.0; diffuse [3] = 1.0;
+	specular [0] = 1.0; specular [1] = 1.0; specular [2] = 1.0; specular[3] = 1.0;
+	selfIllum[0] = 0.0; selfIllum[1] = 0.0; selfIllum[2] = 0.0;
+
+	shininess = 0.0;
+
+	receiveShadows = true;
+	writeColor     = true;
+	writeDepth     = true;
+
+	textures.clear();
+}
+
+void MaterialDeclaration::trimTextures() {
+	while (!textures.empty() && textures.back().empty())
+		textures.pop_back();
+}
+
+
 MaterialManager::MaterialManager() {
 }
 
 MaterialManager::~MaterialManager() {
 }
 
-Ogre::MaterialPtr MaterialManager::get(const Common::UString &name) {
+Ogre::MaterialPtr MaterialManager::get(const Common::UString &texture) {
+	MaterialDeclaration decl;
+
+	decl.textures.push_back(texture);
+
+	return get(decl);
+}
+
+Ogre::MaterialPtr MaterialManager::get(const MaterialDeclaration &decl) {
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<Ogre::MaterialPtr> functor(boost::bind(&MaterialManager::get, this, name));
+		Ogre::MaterialPtr (MaterialManager::*f)(const MaterialDeclaration &) = &MaterialManager::get;
+
+		Events::MainThreadFunctor<Ogre::MaterialPtr> functor(boost::bind(f, this, decl));
 
 		return RequestMan.callInMainThread(functor);
 	}
+
+	Common::UString name = canonicalName(decl);
 
 	Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().getByName(name.c_str());
 	if (!material.isNull())
 		return material;
 
-	try {
-		material = create(name);
-	} catch (Common::Exception &e) {
-		e.add("Failed to load material \"%s\"", name.c_str());
-		throw;
-	}
+	material = Ogre::MaterialManager::getSingleton().create(name.c_str(), "General");
 
-	return material;
-}
-
-Ogre::MaterialPtr MaterialManager::create(const Common::UString &name) {
-	Ogre::MaterialPtr material((Ogre::Material *) 0);
-
-	try {
-		Ogre::TexturePtr texture = TextureMan.get(name);
-
-		material = Ogre::MaterialManager::getSingleton().create(name.c_str(), "General");
-
-		Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
-
-		texState->setTexture(texture);
-		texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
-
-		if (texture->hasAlpha())
-			material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
-		else
-			material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_REPLACE);
-
-	} catch (std::exception &e) {
-		throw Common::Exception("%s", e.what());
-	}
+	create(decl, material);
 
 	return material;
 }
 
 Ogre::MaterialPtr MaterialManager::getInvisible() {
-	Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().getByName("xoreos-invisible");
-	if (!material.isNull())
-		return material;
+	MaterialDeclaration decl;
 
-	material = Ogre::MaterialManager::getSingleton().create("xoreos/invisible", "General");
+	decl.receiveShadows = false;
+	decl.writeColor     = false;
+	decl.writeDepth     = false;
 
-	material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
-	material->getTechnique(0)->getPass(0)->setColourWriteEnabled(false);
-
-	return material;
+	return get(decl);
 }
 
 Ogre::MaterialPtr MaterialManager::getBlack() {
-	Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().getByName("xoreos-invisible");
-	if (!material.isNull())
-		return material;
+	MaterialDeclaration decl;
 
-	material = Ogre::MaterialManager::getSingleton().create("xoreos/invisible", "General");
+	decl.ambient  [0] = 0.0; decl.ambient  [1] = 0.0; decl.ambient  [2] = 0.0;
+	decl.diffuse  [0] = 0.0; decl.diffuse  [1] = 0.0; decl.diffuse  [2] = 0.0; decl.diffuse [3] = 1.0;
+	decl.specular [0] = 0.0; decl.specular [1] = 0.0; decl.specular [2] = 0.0; decl.specular[3] = 1.0;
+	decl.selfIllum[0] = 0.0; decl.selfIllum[1] = 0.0; decl.selfIllum[2] = 0.0;
 
-	material->getTechnique(0)->getPass(0)->setAmbient(0.0, 0.0, 0.0);
-	material->getTechnique(0)->getPass(0)->setDiffuse(0.0, 0.0, 0.0, 1.0);
-	material->getTechnique(0)->getPass(0)->setSpecular(0.0, 0.0, 0.0, 1.0);
-	material->getTechnique(0)->getPass(0)->setShininess(0.0);
-	material->getTechnique(0)->getPass(0)->setSelfIllumination(0.0, 0.0, 0.0);
+	decl.shininess = 0.0;
 
-	return material;
+	decl.receiveShadows = false;
+
+	return get(decl);
+}
+
+void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr material) {
+	material->getTechnique(0)->getPass(0)->setAmbient(decl.ambient[0], decl.ambient[1], decl.ambient[2]);
+	material->getTechnique(0)->getPass(0)->setDiffuse(decl.diffuse[0], decl.diffuse[1], decl.diffuse[2], decl.diffuse[3]);
+	material->getTechnique(0)->getPass(0)->setSpecular(decl.specular[0], decl.specular[1], decl.specular[2], decl.specular[3]);
+	material->getTechnique(0)->getPass(0)->setShininess(decl.shininess);
+	material->getTechnique(0)->getPass(0)->setSelfIllumination(decl.selfIllum[0], decl.selfIllum[1], decl.selfIllum[2]);
+
+	bool transparent = true;
+	for (std::vector<Common::UString>::const_iterator t = decl.textures.begin(); t != decl.textures.end(); ++t) {
+		Ogre::TexturePtr texture((Ogre::Texture *) 0);
+
+		try {
+			if (!t->empty())
+				texture = TextureMan.get(*t);
+		} catch (Common::Exception &e) {
+			Common::printException(e, "WARNING: ");
+		}
+
+		if (texture.isNull())
+			texture = TextureMan.getInvisible();
+
+		Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
+		if (!texture.isNull()) {
+			texState->setTexture(texture);
+			texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
+
+			if (!texture->hasAlpha())
+				transparent = false;
+
+		} else
+			texState->setBlank();
+	}
+
+	material->getTechnique(0)->getPass(0)->setSceneBlending(transparent ? Ogre::SBT_TRANSPARENT_ALPHA : Ogre::SBT_REPLACE);
+
+	material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(decl.writeDepth);
+	material->getTechnique(0)->getPass(0)->setColourWriteEnabled(decl.writeColor);
+
+	material->setReceiveShadows(decl.receiveShadows);
+}
+
+static Common::UString concat(const std::vector<Common::UString> &str) {
+	Common::UString c;
+
+	for (std::vector<Common::UString>::const_iterator t = str.begin(); t != str.end(); ++t)
+		c += *t + "#";
+
+	c += "@";
+
+	return c;
+}
+
+static Common::UString concat(const float *f, uint n) {
+	Common::UString c;
+
+	for (uint i = 0; i < n; i++)
+		c += Common::UString::sprintf("%6.3f#", f[i]);
+
+	c += "@";
+
+	return c;
+}
+
+static Common::UString concat(const bool *b, uint n) {
+	Common::UString c;
+
+	for (uint i = 0; i < n; i++)
+		c += Common::UString::sprintf("%d#", (int) b[i]);
+
+	c += "@";
+
+	return c;
+}
+
+Common::UString MaterialManager::canonicalName(const MaterialDeclaration &decl) {
+	return concat(decl.textures) +
+	       concat(decl.ambient, 3) + concat(decl.diffuse, 4) + concat(decl.specular, 4) +
+	       concat(decl.selfIllum, 3) + concat(&decl.shininess, 1) +
+	       concat(&decl.receiveShadows, 1) + concat(&decl.writeColor, 1) + concat(&decl.writeDepth, 1);
 }
 
 } // End of namespace Graphics

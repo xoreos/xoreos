@@ -34,8 +34,30 @@
 #include <OgreMaterial.h>
 
 #include "common/singleton.h"
+#include "common/ustring.h"
 
 namespace Graphics {
+
+struct MaterialDeclaration {
+	float ambient[3];
+	float diffuse[4];
+	float specular[4];
+
+	float selfIllum[3];
+
+	float shininess;
+
+	std::vector<Common::UString> textures;
+
+	bool receiveShadows;
+	bool writeColor;
+	bool writeDepth;
+
+	MaterialDeclaration();
+
+	void reset();
+	void trimTextures();
+};
 
 /** The global material manager. */
 class MaterialManager : public Common::Singleton<MaterialManager> {
@@ -44,13 +66,19 @@ public:
 	~MaterialManager();
 
 	/** Get/Load a material with a single texture. */
-	Ogre::MaterialPtr get(const Common::UString &name);
+	Ogre::MaterialPtr get(const Common::UString &texture);
+	/** Get/Load a more complex material. */
+	Ogre::MaterialPtr get(const MaterialDeclaration &decl);
 
+	/** Get a default invisible material. */
 	Ogre::MaterialPtr getInvisible();
+	/** Get a default black material. */
 	Ogre::MaterialPtr getBlack();
 
 private:
-	Ogre::MaterialPtr create(const Common::UString &name);
+	void create(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
+
+	Common::UString canonicalName(const MaterialDeclaration &decl);
 };
 
 } // End of namespace Graphics
