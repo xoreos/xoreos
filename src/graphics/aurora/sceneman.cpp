@@ -27,10 +27,14 @@
  *  A scene manager.
  */
 
+#include "common/ustring.h"
+#include "common/error.h"
 #include "common/threads.h"
 
+#include "graphics/aurora/meshutil.h"
 #include "graphics/aurora/sceneman.h"
 #include "graphics/aurora/renderable.h"
+#include "graphics/aurora/cube.h"
 
 #include "events/requests.h"
 
@@ -70,6 +74,26 @@ void SceneManager::destroy(Renderable *r) {
 	}
 
 	delete r;
+}
+
+Cube *SceneManager::createCube(const Common::UString &texture) {
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<Cube *> functor(boost::bind(&SceneManager::createCube, this, texture));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
+	Cube *cube = 0;
+	try {
+
+		cube = new Cube(texture);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed to create rotating cube with texture \"%s\"", texture.c_str());
+		throw;
+	}
+
+	return cube;
 }
 
 } // End of namespace Aurora

@@ -43,11 +43,16 @@
           main thread after the SceneManager has been locked! */
 #define LOCK_FRAME() OGRE_LOCK_MUTEX(Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second->sceneGraphMutex)
 
+namespace Common {
+	class UString;
+}
+
 namespace Graphics {
 
 namespace Aurora {
 
 class Renderable;
+class Cube;
 
 /** The global scene manager. */
 class SceneManager : public Common::Singleton<SceneManager> {
@@ -63,6 +68,9 @@ public:
 
 	/** Destroy a Renderable. */
 	void destroy(Renderable *r);
+
+	/** Create a simple cube with a rotation animation. */
+	Cube *createCube(const Common::UString &texture);
 
 	// Singleton interface
 	static void destroy();

@@ -7,10 +7,12 @@ noinst_HEADERS = \
                  meshutil.h \
                  sceneman.h \
                  renderable.h \
+                 cube.h \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
                        meshutil.cpp \
                        sceneman.cpp \
                        renderable.cpp \
+                       cube.cpp \
                        $(EMPTY)
