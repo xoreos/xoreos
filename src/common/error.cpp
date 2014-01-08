@@ -73,6 +73,10 @@ const char *StackException::what() const throw() {
 	return _stack.top().c_str();
 }
 
+bool StackException::isEmpty() const {
+	return _stack.empty();
+}
+
 StackException::Stack &StackException::getStack() {
 	return _stack;
 }

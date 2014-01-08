@@ -51,6 +51,8 @@ public:
 
 	const char *what() const throw();
 
+	bool isEmpty() const;
+
 	Stack &getStack();
 
 private:
