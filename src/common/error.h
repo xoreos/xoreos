@@ -45,9 +45,11 @@ public:
 	StackException();
 	StackException(const char *s, ...);
 	StackException(const StackException &e);
+	StackException(const std::exception &e);
 	~StackException() throw();
 
 	void add(const char *s, ...);
+	void add(const std::exception &e);
 
 	const char *what() const throw();
 
