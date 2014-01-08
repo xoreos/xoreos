@@ -94,6 +94,9 @@ public:
 		MainThreadCallerFunctor caller(boost::bind(&MainThreadFunctor<T>::operator(), f));
 
 		callInMainThread(caller);
+		if (!f.getError().isEmpty()) {
+			throw Common::Exception(f.getError());
+		}
 
 		return f.getReturnValue();
 	}

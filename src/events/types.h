@@ -30,6 +30,10 @@
 #ifndef EVENTS_TYPES_H
 #define EVENTS_TYPES_H
 
+#include <stdexcept>
+
+#include "common/error.h"
+
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -69,24 +73,48 @@ template<typename T> struct MainThreadFunctor {
 private:
 	boost::function<T ()> func;
 	boost::shared_ptr<T> retVal;
+	boost::shared_ptr<Common::Exception> error;
 
 public:
-	MainThreadFunctor(const boost::function<T ()> &f) : func(f), retVal(new T) { }
-	void operator()() const { *retVal = func(); }
+	MainThreadFunctor(const boost::function<T ()> &f) : func(f), retVal(new T), error(new Common::Exception) { }
+	void operator()() const {
+		try {
+			*retVal = func();
+		} catch (Common::Exception &e) {
+			*error = e;
+		} catch (std::exception &e) {
+			*error = Common::Exception(e);
+		} catch (...) {
+			*error = Common::Exception("Unknown exception thrown in MainThreadFunctor");
+		}
+	}
 
 	T getReturnValue() const { return *retVal; }
+	const Common::Exception &getError() const { return *error; }
 };
 
 /** Template specialization for a MainThreadFunctor returning void. */
 template<> struct MainThreadFunctor<void> {
 private:
 	boost::function<void ()> func;
+	boost::shared_ptr<Common::Exception> error;
 
 public:
-	MainThreadFunctor(const boost::function<void ()> &f) : func(f) { }
-	void operator()() const { func(); }
+	MainThreadFunctor(const boost::function<void ()> &f) : func(f), error(new Common::Exception) { }
+	void operator()() const {
+		try {
+			func();
+		} catch (Common::Exception &e) {
+			*error = e;
+		} catch (std::exception &e) {
+			*error = Common::Exception(e);
+		} catch (...) {
+			*error = Common::Exception("Unknown exception thrown in MainThreadFunctor");
+		}
+	}
 
 	void getReturnValue() const { (void) 0; }
+	const Common::Exception &getError() const { return *error; }
 };
 
 typedef boost::function<void ()> MainThreadCallerFunctor;
