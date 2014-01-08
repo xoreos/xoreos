@@ -27,7 +27,6 @@
  *  A scene manager.
  */
 
-#include "common/ustring.h"
 #include "common/error.h"
 #include "common/threads.h"
 
@@ -35,6 +34,8 @@
 #include "graphics/aurora/sceneman.h"
 #include "graphics/aurora/renderable.h"
 #include "graphics/aurora/cube.h"
+#include "graphics/aurora/model.h"
+#include "graphics/aurora/model_nwn.h"
 
 #include "events/requests.h"
 
@@ -94,6 +95,32 @@ Cube *SceneManager::createCube(const Common::UString &texture) {
 	}
 
 	return cube;
+}
+
+Model *SceneManager::createModel(const Common::UString &model, const Common::UString &texture) {
+	if (model.empty())
+		return 0;
+
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<Model *> functor(boost::bind(&SceneManager::createModel, this, model, texture));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
+	Model *modelInstance = 0;
+	try {
+
+		if (_modelType == kModelTypeNWN)
+			modelInstance = new Model_NWN(model, texture);
+		else
+			throw Common::Exception("No valid model type registered");
+
+	} catch (Common::Exception &e) {
+		e.add("Failed to create model \"%s\"", model.c_str());
+		throw;
+	}
+
+	return modelInstance;
 }
 
 } // End of namespace Aurora

@@ -60,6 +60,27 @@ void VertexDeclaration::resize() {
 	bufferIndices.resize(faces * 3);
 }
 
+void VertexDeclaration::getBounds(float &minX, float &minY, float &minZ,
+                                  float &maxX, float &maxY, float &maxZ, float &radius) const {
+
+	if (bufferVerticesNormals.size() < 6) {
+		minX = minY = minZ = maxX = maxY = maxZ = radius = 0.0f;
+		return;
+	}
+
+	minX = FLT_MAX; minY = FLT_MAX; minZ = FLT_MAX; maxX = -FLT_MAX; maxY = -FLT_MAX; maxZ = -FLT_MAX;
+	for (uint i = 0; i < bufferVerticesNormals.size(); i += 6) {
+		minX = MIN(minX, bufferVerticesNormals[i + 0]);
+		minY = MIN(minY, bufferVerticesNormals[i + 1]);
+		minZ = MIN(minZ, bufferVerticesNormals[i + 2]);
+		maxX = MAX(maxX, bufferVerticesNormals[i + 0]);
+		maxY = MAX(maxY, bufferVerticesNormals[i + 1]);
+		maxZ = MAX(maxZ, bufferVerticesNormals[i + 2]);
+	}
+
+	radius = MAX(maxX - minY, MAX(maxY - minY, maxZ - minZ)) / 2.0f;
+}
+
 
 void createMesh(Ogre::SubMesh *mesh, const VertexDeclaration &decl) {
 	if (!Common::isMainThread()) {
@@ -191,6 +212,14 @@ void createMesh(Ogre::SubMesh *mesh, uint16 vertexCount, uint16 faceCount,
 	memcpy(&vertexDecl.bufferIndices[0], indices, vertexDecl.bufferIndices.size() * sizeof(float));
 
 	createMesh(mesh, vertexDecl);
+}
+
+Ogre::SceneManager &getOgreSceneManager() {
+	return *Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;
+}
+
+Ogre::MeshManager &getOgreMeshManager() {
+	return Ogre::MeshManager::getSingleton();
 }
 
 } // End of namespace Aurora

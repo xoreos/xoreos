@@ -34,6 +34,7 @@
 #include <OgreSceneManager.h>
 #include <OgreThreadHeaders.h>
 
+#include "common/ustring.h"
 #include "common/singleton.h"
 
 #include "graphics/aurora/types.h"
@@ -43,16 +44,13 @@
           main thread after the SceneManager has been locked! */
 #define LOCK_FRAME() OGRE_LOCK_MUTEX(Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second->sceneGraphMutex)
 
-namespace Common {
-	class UString;
-}
-
 namespace Graphics {
 
 namespace Aurora {
 
 class Renderable;
 class Cube;
+class Model;
 
 /** The global scene manager. */
 class SceneManager : public Common::Singleton<SceneManager> {
@@ -71,6 +69,8 @@ public:
 
 	/** Create a simple cube with a rotation animation. */
 	Cube *createCube(const Common::UString &texture);
+	/** Create a complex Aurora model. */
+	Model *createModel(const Common::UString &model, const Common::UString &texture = "");
 
 	// Singleton interface
 	static void destroy();

@@ -8,6 +8,8 @@ noinst_HEADERS = \
                  sceneman.h \
                  renderable.h \
                  cube.h \
+                 model.h \
+                 model_nwn.h \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
@@ -15,4 +17,6 @@ libaurora_la_SOURCES = \
                        sceneman.cpp \
                        renderable.cpp \
                        cube.cpp \
+                       model.cpp \
+                       model_nwn.cpp \
                        $(EMPTY)

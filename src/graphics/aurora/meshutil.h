@@ -65,6 +65,8 @@ struct VertexDeclaration {
 	VertexDeclaration(uint16 f, uint16 v, uint16 t);
 
 	void resize();
+	void getBounds(float &minX, float &minY, float &minZ,
+	               float &maxX, float &maxY, float &maxZ, float &radius) const;
 };
 
 void createMesh(Ogre::SubMesh *mesh, const VertexDeclaration &decl);
