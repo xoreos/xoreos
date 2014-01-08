@@ -18,6 +18,7 @@ noinst_HEADERS = \
                  materialman.h \
                  cursor.h \
                  cursorman.h \
+                 cameraman.h \
                  $(EMPTY)
 
 libgraphics_la_SOURCES = \
@@ -28,6 +29,7 @@ libgraphics_la_SOURCES = \
                          materialman.cpp \
                          cursor.cpp \
                          cursorman.cpp \
+                         cameraman.cpp \
                          $(EMPTY)
 
 if DARWIN

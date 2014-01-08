@@ -48,6 +48,7 @@
 #include "graphics/cursorman.h"
 #include "graphics/textureman.h"
 #include "graphics/materialman.h"
+#include "graphics/cameraman.h"
 
 #include "graphics/aurora/sceneman.h"
 
@@ -274,6 +275,8 @@ void deinit() {
 	Graphics::CursorManager::destroy();
 	Graphics::TextureManager::destroy();
 	Graphics::MaterialManager::destroy();
+
+	Graphics::CameraManager::destroy();
 
 	Aurora::TalkManager::destroy();
 	Aurora::TwoDARegistry::destroy();

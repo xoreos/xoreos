@@ -46,6 +46,7 @@
 #include "common/configman.h"
 
 #include "graphics/cursorman.h"
+#include "graphics/cameraman.h"
 #include "graphics/renderer.h"
 
 #ifdef MACOSX
@@ -85,7 +86,7 @@ public:
 
 Renderer::Renderer(SDL_Window &screen, bool vsync, int fsaa) :
 	_logManager(0), _logger(0), _root(0), _overlaySystem(0), _dummyWindow(0),
-	_renderWindow(0), _sceneManager(0), _camera(0), _viewPort(0), _animator(0) {
+	_renderWindow(0), _sceneManager(0), _viewPort(0), _animator(0) {
 
 	try {
 		createLog();
@@ -120,7 +121,11 @@ Renderer::~Renderer() {
 }
 
 void Renderer::destroy() {
+	if (_renderWindow)
+		_renderWindow->removeAllViewports();
+
 	CursorMan.deinit();
+	CameraMan.deinit();
 
 	if (_root && _animator)
 		_root->removeFrameListener(_animator);
@@ -146,7 +151,6 @@ void Renderer::destroy() {
 	_dummyWindow   = 0;
 	_renderWindow  = 0;
 	_sceneManager  = 0;
-	_camera        = 0;
 	_viewPort      = 0;
 	_animator      = 0;
 }
@@ -281,14 +285,11 @@ void Renderer::createScene() {
 	_sceneManager = _root->createSceneManager(Ogre::ST_GENERIC);
 	_sceneManager->addRenderQueueListener(_overlaySystem);
 
-	_camera   = _sceneManager->createCamera("camera");
-	_viewPort = _renderWindow->addViewport(_camera);
+	CameraMan.init();
 
-	_camera->setAspectRatio(Ogre::Real(_viewPort->getActualWidth()) / Ogre::Real(_viewPort->getActualHeight()));
+	_viewPort = CameraMan.createViewport(_renderWindow);
 
-	_camera->setNearClipDistance(1.0);
-	_camera->setFarClipDistance(1000.0);
-	_camera->setFOVy(Ogre::Degree(60.0));
+	CameraMan.setAspectRatio(Ogre::Real(_viewPort->getActualWidth()) / Ogre::Real(_viewPort->getActualHeight()));
 
 	_animator = new OgreAnimator;
 	_root->addFrameListener(_animator);
@@ -313,8 +314,9 @@ bool Renderer::recreate(SDL_Window &screen, bool vsync, int fsaa) {
 	}
 
 	// Reattach camera
-	_viewPort = _renderWindow->addViewport(_camera);
-	_camera->setAspectRatio(Ogre::Real(_viewPort->getActualWidth()) / Ogre::Real(_viewPort->getActualHeight()));
+	_viewPort = CameraMan.createViewport(_renderWindow);
+
+	CameraMan.setAspectRatio(Ogre::Real(_viewPort->getActualWidth()) / Ogre::Real(_viewPort->getActualHeight()));
 
 	return true;
 }
@@ -323,7 +325,7 @@ void Renderer::resized(int width, int height) {
 	_renderWindow->resize(width, height);
 	_renderWindow->windowMovedOrResized();
 
-	_camera->setAspectRatio(Ogre::Real(_viewPort->getActualWidth()) / Ogre::Real(_viewPort->getActualHeight()));
+	CameraMan.setAspectRatio(Ogre::Real(_viewPort->getActualWidth()) / Ogre::Real(_viewPort->getActualHeight()));
 }
 
 void Renderer::render() {
