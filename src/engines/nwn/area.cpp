@@ -46,6 +46,10 @@
 
 #include "engines/nwn/area.h"
 #include "engines/nwn/module.h"
+#include "engines/nwn/object.h"
+#include "engines/nwn/waypoint.h"
+#include "engines/nwn/door.h"
+#include "engines/nwn/placeable.h"
 
 namespace Engines {
 
@@ -72,6 +76,10 @@ Area::~Area() {
 	removeContainer();
 
 	setVisible(false);
+
+	// Delete objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		delete *o;
 
 	// Delete tiles and tileset
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
@@ -205,6 +213,10 @@ void Area::setVisible(bool visible) {
 			// Show tiles
 			for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 				t->model->setVisible(true);
+
+			// Show objects
+			for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+				(*o)->setVisible(true);
 		}
 
 		// Play music and sound
@@ -215,6 +227,10 @@ void Area::setVisible(bool visible) {
 
 		{
 			LOCK_FRAME();
+
+			// Hide objects
+			for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+				(*o)->setVisible(false);
 
 			// Hide tiles
 			for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
@@ -259,6 +275,18 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 	// Generic properties
 	if (git.hasField("AreaProperties"))
 		loadProperties(git.getStruct("AreaProperties"));
+
+	// Waypoints
+	if (git.hasField("WaypointList"))
+		loadWaypoints(git.getList("WaypointList"));
+
+	// Placeables
+	if (git.hasField("Placeable List"))
+		loadPlaceables(git.getList("Placeable List"));
+
+	// Doors
+	if (git.hasField("Door List"))
+		loadDoors(git.getList("Door List"));
 }
 
 void Area::loadProperties(const Aurora::GFFStruct &props) {
@@ -332,9 +360,15 @@ void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 
 void Area::loadModels() {
 	loadTileModels();
+
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->loadModel();
 }
 
 void Area::unloadModels() {
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->unloadModel();
+
 	unloadTileModels();
 }
 
@@ -409,6 +443,38 @@ void Area::unloadTiles() {
 			destroyModel(t.model);
 			t.model = 0;
 		}
+	}
+}
+
+void Area::loadObject(Engines::NWN::Object &object) {
+	object.setArea(this);
+
+	_objects.push_back(&object);
+	if (!object.isStatic())
+		_module->addObject(object);
+}
+
+void Area::loadWaypoints(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+		Waypoint *waypoint = new Waypoint(**d);
+
+		loadObject(*waypoint);
+	}
+}
+
+void Area::loadPlaceables(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
+		Placeable *placeable = new Placeable(**p);
+
+		loadObject(*placeable);
+	}
+}
+
+void Area::loadDoors(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+		Door *door = new Door(*_module, **d);
+
+		loadObject(*door);
 	}
 }
 

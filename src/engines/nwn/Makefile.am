@@ -10,6 +10,12 @@ noinst_HEADERS = \
                  tileset.h \
                  area.h \
                  module.h \
+                 location.h \
+                 object.h \
+                 waypoint.h \
+                 situated.h \
+                 door.h \
+                 placeable.h \
                  $(EMPTY)
 
 libnwn_la_SOURCES = \
@@ -21,4 +27,10 @@ libnwn_la_SOURCES = \
                     ifofile.cpp \
                     area.cpp \
                     module.cpp \
+                    location.cpp \
+                    object.cpp \
+                    waypoint.cpp \
+                    situated.cpp \
+                    door.cpp \
+                    placeable.cpp \
                     $(EMPTY)

@@ -55,6 +55,7 @@ namespace Engines {
 namespace NWN {
 
 class Module;
+class Object;
 
 class Area : public Aurora::NWScript::Object, public Events::Notifyable {
 public:
@@ -136,6 +137,8 @@ private:
 		Graphics::Aurora::Model_NWN *model; ///< The tile's model.
 	};
 
+	typedef std::list<Engines::NWN::Object *> ObjectList;
+
 
 	Module *_module;
 
@@ -176,6 +179,8 @@ private:
 
 	std::vector<Tile> _tiles; ///< The area's tiles.
 
+	ObjectList _objects;   ///< List of all objects in the area.
+
 	std::list<Events::Event> _eventQueue; ///< The event queue.
 
 	Common::Mutex _mutex; ///< Mutex securing access to the area.
@@ -190,6 +195,11 @@ private:
 
 	void loadTiles(const Aurora::GFFList &tiles);
 	void loadTile(const Aurora::GFFStruct &t, Tile &tile);
+
+	void loadObject(Engines::NWN::Object &object);
+	void loadWaypoints (const Aurora::GFFList &list);
+	void loadPlaceables(const Aurora::GFFList &list);
+	void loadDoors     (const Aurora::GFFList &list);
 
 	// Model loading/unloading helpers
 
