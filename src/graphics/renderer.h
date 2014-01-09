@@ -71,6 +71,12 @@ public:
 	/** Render one frame. */
 	void render();
 
+	double getAverageFrameTime() const;
+	double getAverageFPS() const;
+
+	bool getRenderStatistics(double &averageFrameTime, double &averageFPS) const;
+
+
 private:
 	Common::UString _pluginDirectory; ///< Directory where the OGRE plugins can be found.
 

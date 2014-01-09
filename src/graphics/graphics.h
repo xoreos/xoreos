@@ -112,6 +112,11 @@ public:
 	/** Set the overall gamma correction. */
 	bool setGamma(float gamma);
 
+	double getAverageFrameTime() const;
+	double getAverageFPS() const;
+
+	bool getRenderStatistics(double &averageFrameTime, double &averageFPS) const;
+
 	/** Render one complete frame of the scene. */
 	void renderScene();
 

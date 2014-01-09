@@ -69,6 +69,11 @@ public:
 };
 
 class OgreAnimator : public Ogre::FrameListener {
+private:
+	static const uint kFrameTimeAverageCount = 5;
+
+	std::list<double> _frameTimes;
+
 public:
 	bool frameStarted(const Ogre::FrameEvent &event) {
 		Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;
@@ -77,10 +82,36 @@ public:
 
 		OGRE_LOCK_MUTEX(scene->sceneGraphMutex);
 
+		_frameTimes.push_back(event.timeSinceLastFrame);
+		if (_frameTimes.size() > kFrameTimeAverageCount)
+			_frameTimes.pop_front();
+
 		for (Ogre::AnimationStateIterator anims = scene->getAnimationStateIterator(); anims.hasMoreElements(); anims.moveNext())
 			anims.current()->second->addTime(event.timeSinceLastFrame);
 
 		return true;
+	}
+
+	double getAverageFrameTime() const {
+		Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;
+		if (!scene)
+			return 0.0;
+
+		OGRE_LOCK_MUTEX(scene->sceneGraphMutex);
+
+		double average = 0.0;
+		for (std::list<double>::const_iterator f = _frameTimes.begin(); f != _frameTimes.end(); ++f)
+			average += *f;
+
+		return average / _frameTimes.size();
+	}
+
+	double getAverageFPS() const {
+		double averageFrameTime = getAverageFrameTime();
+		if (averageFrameTime <= 0.0)
+			return 0.0;
+
+		return 1.0 / averageFrameTime;
 	}
 };
 
@@ -332,6 +363,32 @@ void Renderer::render() {
 	CursorMan.updatePosition();
 
 	_root->renderOneFrame();
+}
+
+double Renderer::getAverageFrameTime() const {
+	if (!_animator)
+		return 0.0;
+
+	return _animator->getAverageFrameTime();
+}
+
+double Renderer::getAverageFPS() const {
+	if (!_animator)
+		return 0.0;
+
+	return _animator->getAverageFPS();
+}
+
+bool Renderer::getRenderStatistics(double &averageFrameTime, double &averageFPS) const {
+	if (!_sceneManager)
+		return false;
+
+	OGRE_LOCK_MUTEX(_sceneManager->sceneGraphMutex);
+
+	averageFrameTime = getAverageFrameTime();
+	averageFPS       = getAverageFPS();
+
+	return true;
 }
 
 bool Renderer::hasCapability(RenderCapability c) const {
