@@ -27,6 +27,9 @@
  *  Generic Aurora engines utility functions.
  */
 
+#include <OgreVector2.h>
+#include <OgreMath.h>
+
 #include "common/error.h"
 #include "common/stream.h"
 #include "common/file.h"
@@ -213,6 +216,17 @@ bool dump2DA(const Common::UString &name) {
 
 	delete twoDAFile;
 	return success;
+}
+
+void convertVector2Orientation(float vX, float vY, float &radian, float &x, float &y, float &z) {
+	Ogre::Vector2 xAxisVector(0.0, 1.0);
+	Ogre::Vector2 directionVector(vX, vY);
+
+	radian = -xAxisVector.angleBetween(directionVector).valueRadians();
+
+	x = 0.0;
+	y = 1.0;
+	z = 0.0;
 }
 
 } // End of namespace Engines

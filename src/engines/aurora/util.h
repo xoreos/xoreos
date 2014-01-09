@@ -77,6 +77,8 @@ bool dumpTGA(const Common::UString &name);
 /** Debug method to quickly dump a 2DA to disk. */
 bool dump2DA(const Common::UString &name);
 
+void convertVector2Orientation(float vX, float vY, float &radian, float &x, float &y, float &z);
+
 } // End of namespace Engines
 
 #endif // ENGINES_AURORA_UTIL_H
