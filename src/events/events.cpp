@@ -205,7 +205,8 @@ void EventsManager::processEvents() {
 	while (SDL_PollEvent(&event)) {
 
 		// Check repeated event.
-		if (event.key.repeat && !_repeat)
+		if (((event.type == kEventKeyDown) || (event.type == kEventKeyUp)) &&
+				event.key.repeat && !_repeat)
 			continue;
 
 		// Check for quit events
