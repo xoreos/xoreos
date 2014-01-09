@@ -325,6 +325,8 @@ void Renderer::createScene() {
 	_animator = new OgreAnimator;
 	_root->addFrameListener(_animator);
 
+	_sceneManager->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
+
 	CursorMan.init();
 }
 
