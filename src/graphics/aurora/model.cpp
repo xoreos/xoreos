@@ -35,12 +35,21 @@
 
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/meshutil.h"
+#include "graphics/aurora/sceneman.h"
 
 namespace Graphics {
 
 namespace Aurora {
 
 Model::NodeEntity::NodeEntity() : node(0), entity(0), dontRender(false) {
+	position[0] = 0.0;
+	position[1] = 0.0;
+	position[2] = 0.0;
+
+	orientation[0] = 1.0;
+	orientation[1] = 0.0;
+	orientation[2] = 0.0;
+	orientation[3] = 0.0;
 }
 
 
@@ -76,6 +85,17 @@ Model::~Model() {
 		delete s->second;
 }
 
+bool Model::setState(const Common::UString &name) {
+	StateMap::iterator s = _states.find(name);
+	if (s == _states.end())
+		return false;
+
+	LOCK_FRAME();
+
+	setState(s->second);
+	return true;
+}
+
 void Model::setState(State *state) {
 	if (_currentState) {
 		for (NodeEntities::iterator n = _currentState->nodeEntities.begin(); n != _currentState->nodeEntities.end(); ++n)
@@ -87,9 +107,15 @@ void Model::setState(State *state) {
 
 	if (_currentState) {
 		for (NodeEntities::iterator n = _currentState->nodeEntities.begin(); n != _currentState->nodeEntities.end(); ++n)
-			if (n->second.node && n->second.entity && !n->second.dontRender) {
-				n->second.entity->setVisible(_visible);
-				n->second.node->attachObject(n->second.entity);
+			if (n->second.node) {
+				n->second.node->setPosition(n->second.position[0], n->second.position[1], n->second.position[2]);
+				n->second.node->setOrientation(n->second.orientation[0], n->second.orientation[1],
+						n->second.orientation[2], n->second.orientation[3]);
+
+				if (n->second.entity && !n->second.dontRender) {
+					n->second.entity->setVisible(_visible);
+					n->second.node->attachObject(n->second.entity);
+				}
 			}
 	}
 }

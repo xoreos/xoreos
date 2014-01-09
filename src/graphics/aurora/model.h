@@ -56,12 +56,17 @@ public:
 	Model();
 	~Model();
 
+	bool setState(const Common::UString &name);
+
 protected:
 	struct NodeEntity {
 		Ogre::SceneNode *node;
 		Ogre::Entity *entity;
 
 		bool dontRender;
+
+		float position[3];
+		float orientation[4];
 
 		NodeEntity();
 	};

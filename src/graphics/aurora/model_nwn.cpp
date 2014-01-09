@@ -163,7 +163,7 @@ static std::size_t hash_value(const FaceVert &b) {
 
 Model_NWN::ParserContext::ParserContext(const Common::UString &name,
                                         const Common::UString &t) :
-	mdl(0), texture(t), state(0), nodeEntity(0) {
+	mdl(0), texture(t), state(0), nodeEntity(0), hasPosition(false), hasOrientation(false) {
 
 	mdl = ResMan.getResource(name, ::Aurora::kFileTypeMDL);
 	if (!mdl)
@@ -189,12 +189,17 @@ Model_NWN::ParserContext::~ParserContext() {
 
 void Model_NWN::ParserContext::newState() {
 	state = 0;
+
 	newNode();
 }
 
 void Model_NWN::ParserContext::newNode() {
 	material.reset();
+
 	nodeEntity = 0;
+
+	hasPosition    = false;
+	hasOrientation = false;
 }
 
 
@@ -276,6 +281,15 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	loadBinaryNode(ctx, _rootNode);
+
+	std::vector<uint32> animOffsets;
+	readArray(*ctx.mdl, ctx.offModelData + animOffset, animCount, animOffsets);
+
+	for (std::vector<uint32>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
+		ctx.newState();
+
+		readBinaryAnim(ctx, ctx.offModelData + *offset);
+	}
 }
 
 void Model_NWN::loadASCII(ParserContext &ctx) {
@@ -336,6 +350,21 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 			; // warning("Unknown MDL command \"%s\"", line[0].c_str());
 	}
 
+	// TODO: Animations / states
+}
+
+void Model_NWN::createNode(ParserContext &ctx, const Common::UString &name, Ogre::SceneNode *parent) {
+	std::pair<NodeEntities::iterator, bool> node = ctx.state->nodeEntities.insert(std::make_pair(name, NodeEntity()));
+	ctx.nodeEntity = &node.first->second;
+
+	NodeEntities::iterator rootNodeEntity = _states[""]->nodeEntities.find(name);
+	if (rootNodeEntity != _states[""]->nodeEntities.end())
+		ctx.nodeEntity->node = rootNodeEntity->second.node;
+
+	if (!ctx.nodeEntity->node)
+		ctx.nodeEntity->node = parent->createChildSceneNode();
+
+	ctx.nodeEntity->node->setVisible(false);
 }
 
 void Model_NWN::loadBinaryNode(ParserContext &ctx, Ogre::SceneNode *parent) {
@@ -349,13 +378,7 @@ void Model_NWN::loadBinaryNode(ParserContext &ctx, Ogre::SceneNode *parent) {
 
 	debugC(5, kDebugGraphics, "Node \"%s\" in state \"%s\"", name.c_str(), ctx.state->name.c_str());
 
-	std::pair<NodeEntities::iterator, bool> node = ctx.state->nodeEntities.insert(std::make_pair(name, NodeEntity()));
-	ctx.nodeEntity = &node.first->second;
-
-	if (!ctx.nodeEntity->node)
-		ctx.nodeEntity->node = parent->createChildSceneNode();
-
-	ctx.nodeEntity->node->setVisible(false);
+	createNode(ctx, name, parent);
 
 	ctx.mdl->skip(8); // Parent pointers
 
@@ -407,7 +430,7 @@ void Model_NWN::loadBinaryNode(ParserContext &ctx, Ogre::SceneNode *parent) {
 	}
 
 	if (flags & kNodeFlagHasAnim) {
-		readBinaryAnim(ctx);
+		readBinaryNodeAnim(ctx);
 	}
 
 	if (flags & kNodeFlagHasDangly) {
@@ -420,12 +443,7 @@ void Model_NWN::loadBinaryNode(ParserContext &ctx, Ogre::SceneNode *parent) {
 		ctx.mdl->skip(0x4);
 	}
 
-	// If the node has no own geometry, inherit the geometry from the root state
-	if (!ctx.nodeEntity->entity) {
-		NodeEntities::iterator rootNodeEntity = _states[""]->nodeEntities.find(name);
-		if (rootNodeEntity != _states[""]->nodeEntities.end())
-			ctx.nodeEntity->entity = rootNodeEntity->second.entity;
-	}
+	nodeInherit(ctx, name);
 
 	Ogre::SceneNode *newParent = ctx.nodeEntity->node;
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
@@ -434,6 +452,27 @@ void Model_NWN::loadBinaryNode(ParserContext &ctx, Ogre::SceneNode *parent) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 		loadBinaryNode(ctx, newParent);
 	}
+}
+
+void Model_NWN::nodeInherit(ParserContext &ctx, const Common::UString &name) {
+	if (ctx.nodeEntity->entity && ctx.hasPosition && ctx.hasOrientation)
+		return;
+
+	NodeEntities::iterator rootNodeEntity = _states[""]->nodeEntities.find(name);
+	if (rootNodeEntity == _states[""]->nodeEntities.end())
+		return;
+
+	// If the node has no own geometry, position or orientation, inherit it from the root state
+
+	if (!ctx.nodeEntity->entity) {
+		ctx.nodeEntity->entity = rootNodeEntity->second.entity;
+		if (rootNodeEntity->second.dontRender)
+			ctx.nodeEntity->dontRender = true;
+	}
+	if (!ctx.hasPosition)
+		memcpy(ctx.nodeEntity->position, rootNodeEntity->second.position, 3 * sizeof(float));
+	if (!ctx.hasOrientation)
+		memcpy(ctx.nodeEntity->orientation, rootNodeEntity->second.orientation, 4 * sizeof(float));
 }
 
 void Model_NWN::readBinaryMesh(ParserContext &ctx) {
@@ -701,7 +740,7 @@ void Model_NWN::readBinaryMesh(ParserContext &ctx) {
 	ctx.mdl->seekTo(endPos);
 }
 
-void Model_NWN::readBinaryAnim(ParserContext &ctx) {
+void Model_NWN::readBinaryNodeAnim(ParserContext &ctx) {
 	float samplePeriod = ctx.mdl->readIEEEFloatLE();
 
 	uint32 a0S, a0C;
@@ -748,7 +787,11 @@ void Model_NWN::readBinaryNodeControllers(ParserContext &ctx, uint32 offset, uin
 
 				// Starting position
 				if (pT == 0.0) {
-					ctx.nodeEntity->node->setPosition(pX, pY, pZ);
+					ctx.hasPosition = true;
+
+					ctx.nodeEntity->position[0] = pX;
+					ctx.nodeEntity->position[1] = pY;
+					ctx.nodeEntity->position[2] = pZ;
 				}
 			}
 
@@ -764,8 +807,14 @@ void Model_NWN::readBinaryNodeControllers(ParserContext &ctx, uint32 offset, uin
 				float qQ = data[dataIndex + (r * columnCount) + 3];
 
 				// Starting orientation
-				if (qT == 0.0)
-					ctx.nodeEntity->node->setOrientation(qQ, qX, qY, qZ);
+				if (qT == 0.0) {
+					ctx.hasOrientation = true;
+
+					ctx.nodeEntity->orientation[0] = qQ;
+					ctx.nodeEntity->orientation[1] = qX;
+					ctx.nodeEntity->orientation[2] = qY;
+					ctx.nodeEntity->orientation[3] = qZ;
+				}
 			}
 
 		} else if (type == kControllerTypeAlpha) {
@@ -782,6 +831,39 @@ void Model_NWN::readBinaryNodeControllers(ParserContext &ctx, uint32 offset, uin
 
 	ctx.nodeEntity->node->setInitialState();
 	ctx.mdl->seekTo(pos);
+}
+
+void Model_NWN::readBinaryAnim(ParserContext &ctx, uint32 offset) {
+	ctx.mdl->seekTo(offset);
+
+	ctx.mdl->skip(8); // Function pointers
+
+	Common::UString name;
+	name.readFixedASCII(*ctx.mdl, 64);
+
+	_states.insert(std::make_pair(name, new State(name)));
+	ctx.state = _states[name];
+
+	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
+	uint32 nodeCount       = ctx.mdl->readUint32LE();
+
+	ctx.mdl->skip(24 + 4); // Unknown + Reference count
+
+	uint8 type = ctx.mdl->readByte();
+
+	ctx.mdl->skip(3); // Padding
+
+	float animLength = ctx.mdl->readIEEEFloatLE();
+	float transTime  = ctx.mdl->readIEEEFloatLE();
+
+	Common::UString animRoot;
+	animRoot.readFixedASCII(*ctx.mdl, 64);
+
+	uint32 eventOffset, eventCount;
+	readArrayDef(*ctx.mdl, eventOffset, eventCount);
+
+	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
+	loadBinaryNode(ctx, _rootNode);
 }
 
 void Model_NWN::skipASCIIAnim(ParserContext &ctx) {
@@ -836,7 +918,7 @@ void Model_NWN::loadASCIINode(ParserContext &ctx, Ogre::SceneNode *parent,
 	Common::UString parentName;
 
 	float position[3]     = { 0.0, 0.0, 0.0 };
-	float orientation[4]  = { 0.0, 0.0, 0.0, 0.0 };
+	float orientation[4]  = { 1.0, 0.0, 0.0, 0.0 };
 
 	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
 		std::vector<Common::UString> line;
@@ -859,11 +941,13 @@ void Model_NWN::loadASCIINode(ParserContext &ctx, Ogre::SceneNode *parent,
 		} else if (line[0] == "parent") {
 			parentName = line[1];
 		} else if (line[0] == "position") {
+			ctx.hasPosition = true;
+
 			readASCIIFloats(line, position, 3, 1);
 		} else if (line[0] == "orientation") {
-			readASCIIFloats(line, orientation, 4, 1);
+			ctx.hasOrientation = true;
 
-			//orientation[3] = Common::rad2deg(orientation[3]);
+			readASCIIFloats(line, orientation, 4, 1);
 		} else if (line[0] == "render") {
 			line[1].parse(render);
 		} else if (line[0] == "transparencyhint") {
@@ -917,21 +1001,23 @@ void Model_NWN::loadASCIINode(ParserContext &ctx, Ogre::SceneNode *parent,
 			        name.c_str(), parentName.c_str());
 	}
 
-	std::pair<NodeEntities::iterator, bool> node = ctx.state->nodeEntities.insert(std::make_pair(name, NodeEntity()));
-	ctx.nodeEntity = &node.first->second;
-
-	if (!ctx.nodeEntity->node)
-		ctx.nodeEntity->node = parent->createChildSceneNode();
-
-	ctx.nodeEntity->node->setVisible(false);
-	ctx.nodeEntity->node->setPosition(position[0], position[1], position[2]);
-
-	if ((orientation[0] != 0.0) || (orientation[1] != 0.0) || (orientation[2] != 0.0) || (orientation[3] != 0.0))
-		ctx.nodeEntity->node->setOrientation(orientation[3], orientation[0], orientation[1], orientation[2]);
+	createNode(ctx, name, parent);
 
 	ctx.nodeEntity->dontRender = !render;
 
 	processASCIIMesh(ctx, mesh);
+
+	if ((orientation[0] == 0.0) && (orientation[1] == 0.0) && (orientation[2] == 0.0) && (orientation[3] == 0.0))
+		orientation[3] = 1.0;
+
+	SWAP(orientation[3], orientation[0]);
+
+	if (ctx.hasPosition)
+		memcpy(ctx.nodeEntity->position, position, 3 * sizeof(float));
+	if (ctx.hasOrientation)
+		memcpy(ctx.nodeEntity->orientation, orientation, 4 * sizeof(float));
+
+	nodeInherit(ctx, name);
 }
 
 void Model_NWN::readASCIIConstraints(ParserContext &ctx, uint32 n) {

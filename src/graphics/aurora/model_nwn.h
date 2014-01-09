@@ -74,6 +74,9 @@ private:
 		MaterialDeclaration material;
 		NodeEntity *nodeEntity;
 
+		bool hasPosition;
+		bool hasOrientation;
+
 		ParserContext(const Common::UString &name, const Common::UString &t);
 		~ParserContext();
 
@@ -108,8 +111,9 @@ private:
 	void loadBinary(ParserContext &ctx);
 	void loadBinaryNode(ParserContext &ctx, Ogre::SceneNode *parent);
 	void readBinaryMesh(ParserContext &ctx);
-	void readBinaryAnim(ParserContext &ctx);
+	void readBinaryNodeAnim(ParserContext &ctx);
 	void readBinaryNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
+	void readBinaryAnim(ParserContext &ctx, uint32 offset);
 
 	void loadASCII(ParserContext &ctx);
 	void loadASCIINode(ParserContext &ctx, Ogre::SceneNode *parent,
@@ -122,6 +126,9 @@ private:
 	void readASCIITCoords(ParserContext &ctx, MeshASCII &mesh);
 	void readASCIIFaces(ParserContext &ctx, MeshASCII &mesh);
 	void processASCIIMesh(ParserContext &ctx, MeshASCII &mesh);
+
+	void nodeInherit(ParserContext &ctx, const Common::UString &name);
+	void createNode(ParserContext &ctx, const Common::UString &name, Ogre::SceneNode *parent);
 };
 
 } // End of namespace Aurora
