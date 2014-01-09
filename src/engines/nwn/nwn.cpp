@@ -40,6 +40,8 @@
 
 #include "graphics/cursorman.h"
 
+#include "graphics/aurora/sceneman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -211,6 +213,8 @@ void NWNEngine::initResources() {
 
 	status("Loading main talk table");
 	TalkMan.addMainTable("dialog");
+
+	SceneMan.registerModelType(Graphics::Aurora::kModelTypeNWN);
 }
 
 void NWNEngine::initCursors() {
