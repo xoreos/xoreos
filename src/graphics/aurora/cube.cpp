@@ -156,10 +156,7 @@ Cube::~Cube() {
 
 	Ogre::SceneManager &scene = getOgreSceneManager();
 
-	if (scene.hasAnimationState(_rootNode->getName()))
-		scene.destroyAnimationState(_rootNode->getName());
-	if (scene.hasAnimation(_rootNode->getName()))
-		scene.destroyAnimation(_rootNode->getName());
+	destroyAnimation(_rootNode->getName().c_str());
 
 	while (_rootNode->numAttachedObjects() > 0) {
 		Ogre::MovableObject *object = _rootNode->detachObject((unsigned short) 0);

@@ -28,9 +28,12 @@
  */
 
 #include <OgreSceneNode.h>
+#include <OgreAnimation.h>
+#include <OgreSceneManager.h>
 
 #include "graphics/aurora/renderable.h"
 #include "graphics/aurora/sceneman.h"
+#include "graphics/aurora/meshutil.h"
 
 namespace Graphics {
 
@@ -169,6 +172,20 @@ void Renderable::scale(float x, float y, float z) {
 	LOCK_FRAME();
 
 	_rootNode->scale(x, y, z);
+}
+
+void Renderable::destroyAnimation(const Common::UString &name) {
+	if (getOgreSceneManager().hasAnimationState(name.c_str()))
+		getOgreSceneManager().destroyAnimationState(name.c_str());
+	if (getOgreSceneManager().hasAnimation(name.c_str()))
+		getOgreSceneManager().destroyAnimation(name.c_str());
+}
+
+void Renderable::destroyAnimation(Ogre::Animation *anim) {
+	if (!anim)
+		return;
+
+	destroyAnimation(anim->getName().c_str());
 }
 
 } // End of namespace Aurora

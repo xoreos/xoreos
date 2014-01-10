@@ -32,6 +32,11 @@
 
 namespace Ogre {
 	class SceneNode;
+	class Animation;
+}
+
+namespace Common {
+	class UString;
 }
 
 namespace Graphics {
@@ -85,6 +90,10 @@ protected:
 	float _basePosition[3];
 	float _baseOrientation[4];
 	float _baseScale[3];
+
+
+	void destroyAnimation(const Common::UString &name);
+	void destroyAnimation(Ogre::Animation *anim);
 };
 
 } // End of namespace Aurora

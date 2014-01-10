@@ -41,6 +41,8 @@
 namespace Ogre {
 	class SceneNode;
 	class Entity;
+	class Animation;
+	class AnimationState;
 }
 
 namespace Common {
@@ -56,7 +58,15 @@ public:
 	Model();
 	~Model();
 
+	/** Set the model into a different state. */
 	bool setState(const Common::UString &name);
+
+	/** Play the animation associated with the current state. */
+	bool playAnimation(bool loop);
+	/** Set the model into a different state and play its animation. */
+	bool playAnimation(const Common::UString &name, bool loop);
+	/** Stop any currently playing animation. */
+	bool stopAnimation();
 
 protected:
 	struct NodeEntity {
@@ -68,6 +78,8 @@ protected:
 		float position[3];
 		float orientation[4];
 
+		bool inheritedPosition;
+
 		NodeEntity();
 	};
 
@@ -78,6 +90,9 @@ protected:
 		Common::UString name;
 
 		NodeEntities nodeEntities;
+
+		Ogre::Animation      *animation;
+		Ogre::AnimationState *animationState;
 
 		State(const Common::UString &n = "");
 	};

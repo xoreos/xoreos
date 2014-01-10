@@ -30,6 +30,8 @@
 #include <OgreSceneNode.h>
 #include <OgreSceneManager.h>
 #include <OgreEntity.h>
+#include <OgreAnimation.h>
+#include <OgreAnimationState.h>
 
 #include "common/stream.h"
 
@@ -41,7 +43,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model::NodeEntity::NodeEntity() : node(0), entity(0), dontRender(false) {
+Model::NodeEntity::NodeEntity() : node(0), entity(0), dontRender(false), inheritedPosition(false) {
 	position[0] = 0.0;
 	position[1] = 0.0;
 	position[2] = 0.0;
@@ -53,7 +55,7 @@ Model::NodeEntity::NodeEntity() : node(0), entity(0), dontRender(false) {
 }
 
 
-Model::State::State(const Common::UString &n) : name(n) {
+Model::State::State(const Common::UString &n) : name(n), animation(0), animationState(0) {
 }
 
 
@@ -69,10 +71,8 @@ Model::~Model() {
 
 	Ogre::SceneManager &scene = getOgreSceneManager();
 
-	if (scene.hasAnimationState(_rootNode->getName()))
-		scene.destroyAnimationState(_rootNode->getName());
-	if (scene.hasAnimation(_rootNode->getName()))
-		scene.destroyAnimation(_rootNode->getName());
+	for (StateMap::iterator s = _states.begin(); s != _states.end(); ++s)
+		destroyAnimation(s->second->animation);
 
 	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e)
 		scene.destroyMovableObject(*e);
@@ -111,6 +111,8 @@ void Model::setState(State *state) {
 				n->second.node->setPosition(n->second.position[0], n->second.position[1], n->second.position[2]);
 				n->second.node->setOrientation(n->second.orientation[0], n->second.orientation[1],
 						n->second.orientation[2], n->second.orientation[3]);
+				if (n->second.inheritedPosition)
+					n->second.node->setInitialState();
 
 				if (n->second.entity && !n->second.dontRender) {
 					n->second.entity->setVisible(_visible);
@@ -118,6 +120,36 @@ void Model::setState(State *state) {
 				}
 			}
 	}
+}
+
+bool Model::playAnimation(bool loop) {
+	if (!_currentState || !_currentState->animation || !_currentState->animationState)
+		return false;
+
+	LOCK_FRAME();
+
+	_currentState->animationState->setLoop(loop);
+	_currentState->animationState->setEnabled(true);
+	return true;
+}
+
+bool Model::playAnimation(const Common::UString &name, bool loop) {
+	LOCK_FRAME();
+
+	if (setState(name))
+		return false;
+
+	return playAnimation(loop);
+}
+
+bool Model::stopAnimation() {
+	if (!_currentState || !_currentState->animation || !_currentState->animationState)
+		return false;
+
+	LOCK_FRAME();
+
+	_currentState->animationState->setEnabled(false);
+	return true;
 }
 
 void Model::readValue(Common::SeekableReadStream &stream, uint32 &value) {

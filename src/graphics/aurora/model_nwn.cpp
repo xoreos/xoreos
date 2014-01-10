@@ -473,6 +473,8 @@ void Model_NWN::nodeInherit(ParserContext &ctx, const Common::UString &name) {
 		memcpy(ctx.nodeEntity->position, rootNodeEntity->second.position, 3 * sizeof(float));
 	if (!ctx.hasOrientation)
 		memcpy(ctx.nodeEntity->orientation, rootNodeEntity->second.orientation, 4 * sizeof(float));
+
+	ctx.nodeEntity->inheritedPosition = !ctx.hasPosition;
 }
 
 void Model_NWN::readBinaryMesh(ParserContext &ctx) {
@@ -765,6 +767,8 @@ void Model_NWN::readBinaryNodeControllers(ParserContext &ctx, uint32 offset, uin
 	// TODO: readNodeControllers: Implement this properly :P
 
 	for (uint32 i = 0; i < count; i++) {
+		Ogre::NodeAnimationTrack *track = 0;
+
 		uint32 type        = ctx.mdl->readUint32LE();
 		uint16 rowCount    = ctx.mdl->readUint16LE();
 		uint16 timeIndex   = ctx.mdl->readUint16LE();
@@ -779,11 +783,18 @@ void Model_NWN::readBinaryNodeControllers(ParserContext &ctx, uint32 offset, uin
 		if (type == kControllerTypePosition) {
 			if (columnCount != 3)
 				throw Common::Exception("Position controller with %d values", columnCount);
+
+			if (ctx.state->animation)
+				track = ctx.state->animation->createNodeTrack(ctx.state->animation->getNumNodeTracks(), ctx.nodeEntity->node);
+
 			for (int r = 0; r < rowCount; r++) {
 				float pT = data[timeIndex + r];
 				float pX = data[dataIndex + (r * columnCount) + 0];
 				float pY = data[dataIndex + (r * columnCount) + 1];
 				float pZ = data[dataIndex + (r * columnCount) + 2];
+
+				if (track)
+					track->createNodeKeyFrame(pT)->setTranslate(Ogre::Vector3(pX, pY, pZ));
 
 				// Starting position
 				if (pT == 0.0) {
@@ -799,12 +810,18 @@ void Model_NWN::readBinaryNodeControllers(ParserContext &ctx, uint32 offset, uin
 			if (columnCount != 4)
 				throw Common::Exception("Orientation controller with %d values", columnCount);
 
+			if (ctx.state->animation)
+				track = ctx.state->animation->createNodeTrack(ctx.state->animation->getNumNodeTracks(), ctx.nodeEntity->node);
+
 			for (int r = 0; r < rowCount; r++) {
 				float qT = data[timeIndex + r];
 				float qX = data[dataIndex + (r * columnCount) + 0];
 				float qY = data[dataIndex + (r * columnCount) + 1];
 				float qZ = data[dataIndex + (r * columnCount) + 2];
 				float qQ = data[dataIndex + (r * columnCount) + 3];
+
+				if (track)
+					track->createNodeKeyFrame(qT)->setRotation(Ogre::Quaternion(qQ, qX, qY, qZ));
 
 				// Starting orientation
 				if (qT == 0.0) {
@@ -856,6 +873,8 @@ void Model_NWN::readBinaryAnim(ParserContext &ctx, uint32 offset) {
 	float animLength = ctx.mdl->readIEEEFloatLE();
 	float transTime  = ctx.mdl->readIEEEFloatLE();
 
+	ctx.state->animation = getOgreSceneManager().createAnimation(Common::generateIDRandomString().c_str(), animLength);
+
 	Common::UString animRoot;
 	animRoot.readFixedASCII(*ctx.mdl, 64);
 
@@ -864,6 +883,9 @@ void Model_NWN::readBinaryAnim(ParserContext &ctx, uint32 offset) {
 
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	loadBinaryNode(ctx, _rootNode);
+
+	ctx.state->animationState = getOgreSceneManager().createAnimationState(ctx.state->animation->getName());
+	ctx.state->animationState->setEnabled(false);
 }
 
 void Model_NWN::skipASCIIAnim(ParserContext &ctx) {
