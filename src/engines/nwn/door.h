@@ -55,6 +55,9 @@ public:
 	Door(Module &module, const Aurora::GFFStruct &door);
 	~Door();
 
+	/** Show/Hide the door's model. */
+	void setVisible(bool visible);
+
 	/** Is the door open? */
 	bool isOpen() const;
 
@@ -103,6 +106,9 @@ private:
 
 	/** Evaluate our link. */
 	void evaluateLink();
+
+	/** Sync the model state with the door state. */
+	void setModelState();
 };
 
 } // End of namespace NWN

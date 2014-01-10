@@ -52,6 +52,13 @@ Placeable::Placeable(const Aurora::GFFStruct &placeable) : Situated(kObjectTypeP
 Placeable::~Placeable() {
 }
 
+void Placeable::setVisible(bool visible) {
+	if (visible)
+		setModelState();
+
+	Situated::setVisible(visible);
+}
+
 void Placeable::load(const Aurora::GFFStruct &placeable) {
 	Common::UString temp = placeable.getString("TemplateResRef");
 
@@ -84,6 +91,41 @@ void Placeable::loadAppearance() {
 
 bool Placeable::isOpen() const {
 	return _state == kStateOpen;
+}
+
+void Placeable::setModelState() {
+	if (!_model)
+		return;
+
+	switch (_state) {
+		case kStateDefault:
+			_model->setState("default");
+			break;
+
+		case kStateOpen:
+			_model->setState("open");
+			break;
+
+		case kStateClosed:
+			_model->setState("close");
+			break;
+
+		case kStateDestroyed:
+			_model->setState("dead");
+			break;
+
+		case kStateActivated:
+			_model->setState("on");
+			break;
+
+		case kStateDeactivated:
+			_model->setState("off");
+			break;
+
+		default:
+			_model->setState("");
+			break;
+	}
 }
 
 } // End of namespace NWN

@@ -54,6 +54,9 @@ public:
 	Placeable(const Aurora::GFFStruct &placeable);
 	~Placeable();
 
+	/** Show/Hide the placeable's model. */
+	void setVisible(bool visible);
+
 	/** Is the placeable open? */
 	bool isOpen() const;
 
@@ -68,6 +71,9 @@ private:
 
 	/** Load from a placeable instance. */
 	void load(const Aurora::GFFStruct &placeable);
+
+	/** Sync the model state with the placeable state. */
+	void setModelState();
 };
 
 } // End of namespace NWN

@@ -57,6 +57,13 @@ Door::Door(Module &module, const Aurora::GFFStruct &door) : Situated(kObjectType
 Door::~Door() {
 }
 
+void Door::setVisible(bool visible) {
+	if (visible)
+		setModelState();
+
+	Situated::setVisible(visible);
+}
+
 void Door::load(const Aurora::GFFStruct &door) {
 	Common::UString temp = door.getString("TemplateResRef");
 
@@ -186,6 +193,29 @@ void Door::evaluateLink() {
 	}
 
 	_evaluatedLink = true;
+}
+
+void Door::setModelState() {
+	if (!_model)
+		return;
+
+	switch (_state) {
+		case kStateClosed:
+			_model->setState("closed");
+			break;
+
+		case kStateOpened1:
+			_model->setState("opened1");
+			break;
+
+		case kStateOpened2:
+			_model->setState("opened2");
+			break;
+
+		default:
+			_model->setState("");
+			break;
+	}
 }
 
 } // End of namespace NWN
