@@ -38,6 +38,8 @@
 
 #include "graphics/cursorman.h"
 
+#include "graphics/aurora/sceneman.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -259,6 +261,8 @@ void KotOREngine::initResources() {
 		status("Loading Xbox DLC talk table");
 		TalkMan.addAltTable("live1");
 	}
+
+	SceneMan.registerModelType(Graphics::Aurora::kModelTypeKotOR);
 }
 
 void KotOREngine::initCursorsRemap() {
