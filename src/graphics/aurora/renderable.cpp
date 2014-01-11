@@ -174,6 +174,13 @@ void Renderable::scale(float x, float y, float z) {
 	_rootNode->scale(x, y, z);
 }
 
+void Renderable::showBoundingBox(bool show) {
+	if (!_rootNode)
+		return;
+
+	_rootNode->showBoundingBox(show);
+}
+
 void Renderable::destroyAnimation(const Common::UString &name) {
 	if (getOgreSceneManager().hasAnimationState(name.c_str()))
 		getOgreSceneManager().destroyAnimationState(name.c_str());

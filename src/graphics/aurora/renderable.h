@@ -82,6 +82,9 @@ public:
 	/** Scale the renderable, relative to its current scale. */
 	virtual void scale(float x, float y, float z);
 
+	/** Show/Hide the bouding box(es) of this renderable. */
+	virtual void showBoundingBox(bool show);
+
 protected:
 	Ogre::SceneNode *_rootNode;
 

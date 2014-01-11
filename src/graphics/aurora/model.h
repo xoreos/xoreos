@@ -68,6 +68,9 @@ public:
 	/** Stop any currently playing animation. */
 	bool stopAnimation();
 
+	/** Show/Hide the bouding box(es) of this model. */
+	void showBoundingBox(bool show);
+
 protected:
 	struct NodeEntity {
 		Ogre::SceneNode *node;

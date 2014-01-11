@@ -99,8 +99,11 @@ bool Model::setState(const Common::UString &name) {
 void Model::setState(State *state) {
 	if (_currentState) {
 		for (NodeEntities::iterator n = _currentState->nodeEntities.begin(); n != _currentState->nodeEntities.end(); ++n)
-			if (n->second.node && n->second.entity)
-				n->second.node->detachObject(n->second.entity);
+			if (n->second.node) {
+				n->second.node->showBoundingBox(false);
+				if (n->second.entity)
+					n->second.node->detachObject(n->second.entity);
+			}
 	}
 
 	_currentState = state;
@@ -150,6 +153,14 @@ bool Model::stopAnimation() {
 
 	_currentState->animationState->setEnabled(false);
 	return true;
+}
+
+void Model::showBoundingBox(bool show) {
+	if (_currentState) {
+		for (NodeEntities::iterator n = _currentState->nodeEntities.begin(); n != _currentState->nodeEntities.end(); ++n)
+			if (n->second.node && !n->second.dontRender)
+				n->second.node->showBoundingBox(show);
+	}
 }
 
 void Model::readValue(Common::SeekableReadStream &stream, uint32 &value) {
