@@ -30,6 +30,8 @@
 #include "common/error.h"
 #include "common/threads.h"
 
+#include "graphics/cameraman.h"
+
 #include "graphics/aurora/meshutil.h"
 #include "graphics/aurora/sceneman.h"
 #include "graphics/aurora/renderable.h"
@@ -121,6 +123,41 @@ Model *SceneManager::createModel(const Common::UString &model, const Common::USt
 	}
 
 	return modelInstance;
+}
+
+Renderable *SceneManager::getRenderableAt(int x, int y, SelectableType type, float &distance) {
+	Ogre::SceneManager &scene = getOgreSceneManager();
+
+	const Ogre::Ray mouseRay = CameraMan.castRay(x, y);
+
+	Ogre::RaySceneQuery *query = scene.createRayQuery(mouseRay, (uint32) type);
+	query->setSortByDistance(true);
+
+	Ogre::RaySceneQueryResult &results = query->execute();
+
+	Renderable *renderable = 0;
+	for (Ogre::RaySceneQueryResult::iterator result = results.begin(); result != results.end(); ++result) {
+		// Check that this result has a moveable that contains a visible renderable
+
+		if (!result->movable)
+			continue;
+
+		const Ogre::Any &movableRenderable = result->movable->getUserObjectBindings().getUserAny("renderable");
+		if (movableRenderable.isEmpty())
+			continue;
+
+		Renderable *resultRenderable = Ogre::any_cast<Renderable *>(movableRenderable);
+		if (!resultRenderable->isVisible())
+			continue;
+
+		renderable = resultRenderable;
+		distance   = result->distance;
+		break;
+	}
+
+	scene.destroyQuery(query);
+
+	return renderable;
 }
 
 } // End of namespace Aurora

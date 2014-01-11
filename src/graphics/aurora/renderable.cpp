@@ -72,6 +72,13 @@ bool Renderable::isVisible() const {
 	return _visible;
 }
 
+Common::UString Renderable::getID() const {
+	if (!_rootNode)
+		return "";
+
+	return _rootNode->getName().c_str();
+}
+
 void Renderable::setBasePosition(float x, float y, float z) {
 	_basePosition[0] = x;
 	_basePosition[1] = y;

@@ -32,6 +32,10 @@
 
 #include "graphics/aurora/renderable.h"
 
+namespace Ogre {
+	class Entity;
+}
+
 namespace Common {
 	class UString;
 }
@@ -47,6 +51,12 @@ public:
 
 	void startRotate();
 	void stopRotate();
+
+	/** Change whether the cube can be selected (picked) by the user. */
+	void setSelectable(bool selectable);
+
+private:
+	Ogre::Entity *_entity;
 };
 
 } // End of namespace Aurora

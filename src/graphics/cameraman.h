@@ -30,6 +30,8 @@
 #ifndef GRAPHICS_CAMERAMAN_H
 #define GRAPHICS_CAMERAMAN_H
 
+#include <OgreRay.h>
+
 #include "common/singleton.h"
 
 namespace Ogre {
@@ -51,20 +53,20 @@ public:
 	/** Create a viewport for the camera in that window. */
 	Ogre::Viewport *createViewport(Ogre::RenderWindow *window);
 	/** Adjust the aspect ratio of the camera. */
-	void setAspectRatio(float aspect);
+	void setScreenSize(int width, int height);
 
 	/** Reset the position and orientation of the camera. */
 	void reset();
 
 	void getPosition(float &x, float &y, float &z) const;
 	void getDirection(float &x, float &y, float &z) const;
+	void getOrientation(float &radian, float &x, float &y, float &z) const;
 
 	void setPosition(float x, float y, float z);
 	void setDirection(float x, float y, float z);
+	void setOrientation(float radian, float x, float y, float z);
 
 	void lookAt(float x, float y, float z);
-
-	void setOrientation(float radian, float x, float y, float z);
 
 	void move(float x, float y, float z);
 	void moveRelative(float x, float y, float z);
@@ -75,8 +77,14 @@ public:
 	void yaw(float radian);
 	void pitch(float radian);
 
+	/** Cast a ray from the camera through the viewport at these coordinates into the world. */
+	Ogre::Ray castRay(int x, int y) const;
+
 private:
 	Ogre::Camera *_camera; ///< The OGRE camera.
+
+	int _screenWidth;
+	int _screenHeight;
 };
 
 } // End of namespace Graphics

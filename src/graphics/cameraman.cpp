@@ -38,7 +38,7 @@ DECLARE_SINGLETON(Graphics::CameraManager)
 
 namespace Graphics {
 
-CameraManager::CameraManager() : _camera(0) {
+CameraManager::CameraManager() : _camera(0), _screenWidth(0), _screenHeight(0) {
 }
 
 CameraManager::~CameraManager() {
@@ -72,8 +72,11 @@ Ogre::Viewport *CameraManager::createViewport(Ogre::RenderWindow *window) {
 	return window->addViewport(_camera);
 }
 
-void CameraManager::setAspectRatio(float aspect) {
-	_camera->setAspectRatio(aspect);
+void CameraManager::setScreenSize(int width, int height) {
+	_screenWidth  = width;
+	_screenHeight = height;
+
+	_camera->setAspectRatio(Ogre::Real(width) / Ogre::Real(height));
 }
 
 void CameraManager::reset() {
@@ -96,6 +99,18 @@ void CameraManager::getDirection(float &x, float &y, float &z) const {
 	x = dir.x;
 	y = dir.y;
 	z = dir.z;
+}
+
+void CameraManager::getOrientation(float &radian, float &x, float &y, float &z) const {
+	Ogre::Radian  angle;
+	Ogre::Vector3 axis;
+
+	_camera->getOrientation().ToAngleAxis(angle, axis);
+
+	radian = angle.valueRadians();
+	x      = axis.x;
+	y      = axis.y;
+	z      = axis.z;
 }
 
 void CameraManager::setPosition(float x, float y, float z) {
@@ -136,6 +151,10 @@ void CameraManager::yaw(float radian) {
 
 void CameraManager::pitch(float radian) {
 	_camera->pitch(Ogre::Radian(radian));
+}
+
+Ogre::Ray CameraManager::castRay(int x, int y) const {
+	return _camera->getCameraToViewportRay(x / ((float) _screenWidth), y / ((float) _screenHeight));
 }
 
 } // End of namespace Graphics

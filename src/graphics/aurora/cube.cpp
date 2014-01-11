@@ -72,7 +72,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Cube::Cube(const Common::UString &texture) {
+Cube::Cube(const Common::UString &texture) : _entity(0) {
 	Common::UString name = Common::generateIDRandomString();
 
 	try {
@@ -104,16 +104,19 @@ Cube::Cube(const Common::UString &texture) {
 
 		// Create entity, put the requested material on it and attach it to a scene node
 
-		Ogre::Entity *entity = getOgreSceneManager().createEntity(mesh);
+		_entity = getOgreSceneManager().createEntity(mesh);
+		_entity->setQueryFlags(kSelectableNone);
+
+		_entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
 
 		Ogre::MaterialPtr material = MaterialMan.get(texture);
 
-		entity->setMaterial(material);
+		_entity->setMaterial(material);
 
 		//_rootNode = getOgreSceneManager().createSceneNode(name.c_str());
 		_rootNode = getOgreSceneManager().getRootSceneNode()->createChildSceneNode(name.c_str());
 
-		_rootNode->attachObject(entity);
+		_rootNode->attachObject(_entity);
 		_rootNode->setVisible(false);
 
 		// Create a rotating animations
@@ -175,6 +178,10 @@ void Cube::startRotate() {
 
 void Cube::stopRotate() {
 	getOgreSceneManager().getAnimationState(_rootNode->getName())->setEnabled(false);
+}
+
+void Cube::setSelectable(bool selectable) {
+	_entity->setQueryFlags(selectable ? kSelectableCube : kSelectableNone);
 }
 
 } // End of namespace Aurora

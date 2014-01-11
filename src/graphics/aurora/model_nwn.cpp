@@ -726,6 +726,9 @@ void Model_NWN::readBinaryMesh(ParserContext &ctx) {
 	mesh->load();
 
 	Ogre::Entity *entity = getOgreSceneManager().createEntity(mesh);
+	entity->setQueryFlags(kSelectableNone);
+
+	entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
 
 	// Assign a material to the entity
 
@@ -1266,6 +1269,9 @@ void Model_NWN::processASCIIMesh(ParserContext &ctx, MeshASCII &mesh) {
 	ogreMesh->load();
 
 	Ogre::Entity *entity = getOgreSceneManager().createEntity(ogreMesh);
+	entity->setQueryFlags(kSelectableNone);
+
+	entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
 
 	// Assign a material to the entity
 

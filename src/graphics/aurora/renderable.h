@@ -30,13 +30,11 @@
 #ifndef GRAPHICS_AURORA_RENDERABLE_H
 #define GRAPHICS_AURORA_RENDERABLE_H
 
+#include "common/ustring.h"
+
 namespace Ogre {
 	class SceneNode;
 	class Animation;
-}
-
-namespace Common {
-	class UString;
 }
 
 namespace Graphics {
@@ -51,6 +49,8 @@ public:
 	Ogre::SceneNode *getRootNode();
 
 	bool isVisible() const;
+
+	Common::UString getID() const;
 
 	virtual void setVisible(bool visible);
 
@@ -84,6 +84,9 @@ public:
 
 	/** Show/Hide the bouding box(es) of this renderable. */
 	virtual void showBoundingBox(bool show);
+
+	/** Change whether the renderable can be selected (picked) by the user. */
+	virtual void setSelectable(bool selectable) = 0;
 
 protected:
 	Ogre::SceneNode *_rootNode;

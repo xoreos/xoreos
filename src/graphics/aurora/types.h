@@ -43,6 +43,17 @@ enum ModelType {
 	kModelTypeTheWitcher
 };
 
+/** Type of a selectable renderable. */
+enum SelectableType {
+	kSelectableNone = 0, ///< Nothing.
+
+	kSelectableCube  = 1 << 0, ///< A cube.
+	kSelectableModel = 1 << 1, ///< A model.
+
+	/** All renderable. */
+	kSelectableRenderable = kSelectableCube | kSelectableModel
+};
+
 } // End of namespace Aurora
 
 } // End of namespace Graphics

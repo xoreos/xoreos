@@ -68,6 +68,9 @@ public:
 	/** Stop any currently playing animation. */
 	bool stopAnimation();
 
+	/** Change whether the model can be selected (picked) by the user. */
+	void setSelectable(bool selectable);
+
 	/** Show/Hide the bouding box(es) of this model. */
 	void showBoundingBox(bool show);
 

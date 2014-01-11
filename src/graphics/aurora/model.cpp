@@ -155,6 +155,11 @@ bool Model::stopAnimation() {
 	return true;
 }
 
+void Model::setSelectable(bool selectable) {
+	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e)
+		(*e)->setQueryFlags(selectable ? kSelectableModel : kSelectableNone);
+}
+
 void Model::showBoundingBox(bool show) {
 	if (_currentState) {
 		for (NodeEntities::iterator n = _currentState->nodeEntities.begin(); n != _currentState->nodeEntities.end(); ++n)

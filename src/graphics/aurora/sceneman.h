@@ -72,6 +72,9 @@ public:
 	/** Create a complex Aurora model. */
 	Model *createModel(const Common::UString &model, const Common::UString &texture = "");
 
+	/** Return the nearest renderable at these screen coordinates. */
+	Renderable *getRenderableAt(int x, int y, SelectableType type, float &distance);
+
 	// Singleton interface
 	static void destroy();
 

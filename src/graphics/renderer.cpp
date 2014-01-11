@@ -320,7 +320,7 @@ void Renderer::createScene() {
 
 	_viewPort = CameraMan.createViewport(_renderWindow);
 
-	CameraMan.setAspectRatio(Ogre::Real(_viewPort->getActualWidth()) / Ogre::Real(_viewPort->getActualHeight()));
+	CameraMan.setScreenSize(_viewPort->getActualWidth(), _viewPort->getActualHeight());
 
 	_animator = new OgreAnimator;
 	_root->addFrameListener(_animator);
@@ -349,7 +349,7 @@ bool Renderer::recreate(SDL_Window &screen, bool vsync, int fsaa) {
 	// Reattach camera
 	_viewPort = CameraMan.createViewport(_renderWindow);
 
-	CameraMan.setAspectRatio(Ogre::Real(_viewPort->getActualWidth()) / Ogre::Real(_viewPort->getActualHeight()));
+	CameraMan.setScreenSize(_viewPort->getActualWidth(), _viewPort->getActualHeight());
 
 	return true;
 }
@@ -358,7 +358,7 @@ void Renderer::resized(int width, int height) {
 	_renderWindow->resize(width, height);
 	_renderWindow->windowMovedOrResized();
 
-	CameraMan.setAspectRatio(Ogre::Real(_viewPort->getActualWidth()) / Ogre::Real(_viewPort->getActualHeight()));
+	CameraMan.setScreenSize(_viewPort->getActualWidth(), _viewPort->getActualHeight());
 }
 
 void Renderer::render() {
