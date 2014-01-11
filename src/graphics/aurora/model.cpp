@@ -29,11 +29,15 @@
 
 #include <OgreSceneNode.h>
 #include <OgreSceneManager.h>
+#include <OgreMeshManager.h>
 #include <OgreEntity.h>
 #include <OgreAnimation.h>
 #include <OgreAnimationState.h>
 
 #include "common/stream.h"
+#include "common/uuid.h"
+
+#include "graphics/materialman.h"
 
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/meshutil.h"
@@ -166,6 +170,37 @@ void Model::showBoundingBox(bool show) {
 			if (n->second.node && !n->second.dontRender)
 				n->second.node->showBoundingBox(show);
 	}
+}
+
+Ogre::Entity *Model::createEntity(const VertexDeclaration &vertexDecl, const Ogre::MaterialPtr &material) {
+	// Create a mesh according to the vertex declaration
+
+	Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual(Common::generateIDRandomString().c_str(), "General");
+	Ogre::SubMesh *subMesh = mesh->createSubMesh();
+
+	createMesh(subMesh, vertexDecl);
+
+	// Bounding box / sphere
+
+	float minX, minY, minZ, maxX, maxY, maxZ, meshRadius;
+	vertexDecl.getBounds(minX, minY, minZ, maxX, maxY, maxZ, meshRadius);
+
+	mesh->_setBounds(Ogre::AxisAlignedBox(minX, minY, minZ, maxX, maxY, maxZ));
+	mesh->_setBoundingSphereRadius(meshRadius);
+
+	// Load the mesh and create an entity for it
+
+	mesh->load();
+
+	Ogre::Entity *entity = getOgreSceneManager().createEntity(mesh);
+	entity->setQueryFlags(kSelectableNone);
+
+	entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
+
+	// Assign the material to the entity
+	entity->setMaterial(material.isNull() ? MaterialMan.getInvisible() : material);
+
+	return entity;
 }
 
 void Model::readValue(Common::SeekableReadStream &stream, uint32 &value) {

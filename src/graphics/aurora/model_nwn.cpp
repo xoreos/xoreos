@@ -36,7 +36,6 @@
 #include <OgreSceneNode.h>
 #include <OgreMesh.h>
 #include <OgreEntity.h>
-#include <OgreMeshManager.h>
 #include <OgreRoot.h>
 #include <OgreVector3.h>
 
@@ -706,36 +705,8 @@ void Model_NWN::readBinaryMesh(ParserContext &ctx) {
 		}
 	}
 
-	// Create the mesh
-
-	Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual(Common::generateIDRandomString().c_str(), "General");
-	Ogre::SubMesh *subMesh = mesh->createSubMesh();
-
-	createMesh(subMesh, vertexDecl);
-
-	// Bounding box / sphere
-
-	float minX, minY, minZ, maxX, maxY, maxZ, meshRadius;
-	vertexDecl.getBounds(minX, minY, minZ, maxX, maxY, maxZ, meshRadius);
-
-	mesh->_setBounds(Ogre::AxisAlignedBox(minX, minY, minZ, maxX, maxY, maxZ));
-	mesh->_setBoundingSphereRadius(meshRadius);
-
-	// Load the mesh and create an entity for it
-
-	mesh->load();
-
-	Ogre::Entity *entity = getOgreSceneManager().createEntity(mesh);
-	entity->setQueryFlags(kSelectableNone);
-
-	entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
-
-	// Assign a material to the entity
-
-	if (material.isNull())
-		material = MaterialMan.getInvisible();
-
-	entity->setMaterial(material);
+	// Create an entity with the mesh defined by the vertex declaration and the material
+	Ogre::Entity *entity = createEntity(vertexDecl, material);
 
 	// Add the entity to our lists
 
@@ -1251,36 +1222,8 @@ void Model_NWN::processASCIIMesh(ParserContext &ctx, MeshASCII &mesh) {
 		}
 	}
 
-	// Create the mesh
-
-	Ogre::MeshPtr ogreMesh = Ogre::MeshManager::getSingleton().createManual(Common::generateIDRandomString().c_str(), "General");
-	Ogre::SubMesh *subMesh = ogreMesh->createSubMesh();
-
-	createMesh(subMesh, vertexDecl);
-
-	// Bounding box / sphere
-
-	float minX, minY, minZ, maxX, maxY, maxZ, meshRadius;
-	vertexDecl.getBounds(minX, minY, minZ, maxX, maxY, maxZ, meshRadius);
-
-	ogreMesh->_setBounds(Ogre::AxisAlignedBox(minX, minY, minZ, maxX, maxY, maxZ));
-	ogreMesh->_setBoundingSphereRadius(meshRadius);
-
-	// Load the mesh and create an entity for it
-
-	ogreMesh->load();
-
-	Ogre::Entity *entity = getOgreSceneManager().createEntity(ogreMesh);
-	entity->setQueryFlags(kSelectableNone);
-
-	entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
-
-	// Assign a material to the entity
-
-	if (material.isNull())
-		material = MaterialMan.getInvisible();
-
-	entity->setMaterial(material);
+	// Create an entity with the mesh defined by the vertex declaration and the material
+	Ogre::Entity *entity = createEntity(vertexDecl, material);
 
 	// Add the entity to our lists
 

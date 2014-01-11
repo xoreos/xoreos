@@ -33,10 +33,13 @@
 #include <vector>
 #include <map>
 
+#include <OgrePrerequisites.h>
+
 #include "common/types.h"
 #include "common/ustring.h"
 
 #include "graphics/aurora/renderable.h"
+#include "graphics/aurora/meshutil.h"
 
 namespace Ogre {
 	class SceneNode;
@@ -116,6 +119,8 @@ protected:
 
 
 	// General loading helpers
+
+	Ogre::Entity *createEntity(const VertexDeclaration &vertexDecl, const Ogre::MaterialPtr &material);
 
 	static void readValue(Common::SeekableReadStream &stream, uint32 &value);
 	static void readValue(Common::SeekableReadStream &stream, float  &value);
