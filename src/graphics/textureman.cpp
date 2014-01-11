@@ -334,9 +334,12 @@ void TextureManager::convert(Ogre::TexturePtr &texture, const ImageDecoder &imag
 			if (Ogre::PixelUtil::isCompressed(formatFrom) != Ogre::PixelUtil::isCompressed(formatTo))
 				throw Common::Exception("Can't convert between compressed and non-compressed pixel formats");
 
+			if (Ogre::PixelUtil::isCompressed(formatFrom) && (formatFrom != formatTo))
+				throw Common::Exception("Can't convert between different compressed pixel formats");
+
 			// OGRE segfaults when using bulkPixelConversion() to copy compressed formats
 			if (Ogre::PixelUtil::isCompressed(formatFrom))
-				memcpy(dst, src, mipMap.size);
+				memcpy(dst, src, MIN<uint32>(mipMap.size, buffer->getSizeInBytes()));
 			else
 				// TODO: This is probably really slow...
 				Ogre::PixelUtil::bulkPixelConversion(src, formatFrom, dst, formatTo, pixels);
