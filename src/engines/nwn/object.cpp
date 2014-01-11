@@ -57,7 +57,7 @@ namespace Engines {
 namespace NWN {
 
 Object::Object(ObjectType type) : _type(type),
-	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(false), _usable(true), _area(0) {
+	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(false), _usable(true), _highlight(false), _area(0) {
 
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
@@ -112,6 +112,10 @@ const Aurora::SSFFile *Object::getSSF() {
 	return _ssf;
 }
 
+const std::vector<Common::UString> &Object::getModelIDs() const {
+	return _modelIDs;
+}
+
 bool Object::isStatic() const {
 	return _static;
 }
@@ -122,6 +126,14 @@ bool Object::isUsable() const {
 
 bool Object::isClickable() const {
 	return !_static && _usable;
+}
+
+bool Object::getHighlight() const {
+	return _highlight;
+}
+
+void Object::setHighlight(bool highlight) {
+	_highlight = highlight;
 }
 
 Area *Object::getArea() const {

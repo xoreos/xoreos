@@ -56,7 +56,7 @@ namespace Engines {
 namespace NWN {
 
 Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _loaded(false),
-	_resRef(resRef), _visible(false), _tileset(0) {
+	_resRef(resRef), _visible(false), _highlightAll(false), _tileset(0) {
 
 	// Load ARE and GIT
 
@@ -361,11 +361,17 @@ void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 void Area::loadModels() {
 	loadTileModels();
 
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
 		(*o)->loadModel();
+
+		if (!(*o)->isStatic())
+			for (std::vector<Common::UString>::const_iterator i = (*o)->getModelIDs().begin(); i != (*o)->getModelIDs().end(); ++i)
+				_dynamicObjects.insert(std::make_pair(*i, *o));
+	}
 }
 
 void Area::unloadModels() {
+	_dynamicObjects.clear();
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->unloadModel();
 
@@ -478,18 +484,28 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 	}
 }
 
-void Area::addEvent(const Events::Event &event) {
-	_eventQueue.push_back(event);
+Engines::NWN::Object *Area::getObjectAt(int x, int y, float &distance) const {
+	Graphics::Aurora::Renderable *r = SceneMan.getRenderableAt(x, y, Graphics::Aurora::kSelectableRenderable, distance);
+	if (!r)
+		return 0;
+
+	ObjectMap::const_iterator o = _dynamicObjects.find(r->getID());
+	if (o == _dynamicObjects.end())
+		return 0;
+
+	return o->second;
 }
 
-void Area::processEventQueue() {
-	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin(); e != _eventQueue.end(); ++e) {
-	}
-
-	_eventQueue.clear();
+bool Area::getHighlightAll() const {
+	return _highlightAll;
 }
 
-void Area::notifyCameraMoved() {
+void Area::setHighlightAll(bool highlight) {
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		if (!(*o)->isStatic())
+			(*o)->setHighlight(highlight);
+
+	_highlightAll = highlight;
 }
 
 // "Elfland: The Woods" -> "The Woods"

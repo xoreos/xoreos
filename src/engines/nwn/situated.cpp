@@ -71,6 +71,11 @@ void Situated::loadModel() {
 		throw;
 	}
 
+	_modelIDs.push_back(_model->getID());
+
+	if (!isStatic())
+		_model->setSelectable(true);
+
 	// Positioning
 	float radian, x, y, z;
 
@@ -83,6 +88,8 @@ void Situated::loadModel() {
 
 void Situated::unloadModel() {
 	setVisible(false);
+
+	_modelIDs.clear();
 
 	destroyModel(_model);
 	_model = 0;
@@ -123,6 +130,13 @@ void Situated::rotate(float radian, float x, float y, float z) {
 
 	if (_model)
 		_model->setOrientation(radian, x, z, -y);
+}
+
+void Situated::setHighlight(bool highlight) {
+	if (_model)
+		_model->showBoundingBox(highlight);
+
+	Object::setHighlight(highlight);
 }
 
 bool Situated::isLocked() const {

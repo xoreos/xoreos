@@ -52,6 +52,7 @@ namespace Engines {
 namespace NWN {
 
 class Area;
+class Object;
 
 class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
 public:
@@ -96,6 +97,8 @@ private:
 	Common::UString _newArea;         ///< The new area to enter.
 	Area           *_currentArea;     ///< The current area.
 
+	Engines::NWN::Object *_currentObject; ///< The currently selected object.
+
 	Common::UString _newModule; ///< The module we should change to.
 
 
@@ -121,6 +124,10 @@ private:
 
 	void handleEvents();
 	bool handleCamera(const Events::Event &e);
+	bool handlePicker(const Events::Event &e);
+	bool handleKeys(const Events::Event &e);
+
+	void checkCurrentObject();
 };
 
 } // End of namespace NWN

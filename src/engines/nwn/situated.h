@@ -64,6 +64,9 @@ public:
 	/** Rotate the situated object relative to its current orientation. */
 	void rotate(float radian, float x, float y, float z);
 
+	/** Highlight/Dehighlight the situtated object. */
+	void setHighlight(bool highlight);
+
 	/** Is the situated object open? */
 	virtual bool isOpen() const = 0;
 

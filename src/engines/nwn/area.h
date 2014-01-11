@@ -36,16 +36,12 @@
 
 #include "common/types.h"
 #include "common/ustring.h"
-#include "common/mutex.h"
 
 #include "aurora/types.h"
 
 #include "aurora/nwscript/object.h"
 
 #include "sound/types.h"
-
-#include "events/types.h"
-#include "events/notifyable.h"
 
 #include "engines/nwn/tileset.h"
 #include "engines/nwn/model.h"
@@ -57,7 +53,7 @@ namespace NWN {
 class Module;
 class Object;
 
-class Area : public Aurora::NWScript::Object, public Events::Notifyable {
+class Area : public Aurora::NWScript::Object {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();
@@ -94,13 +90,13 @@ public:
 	/** Play the specified sound (or the area's default) as ambient sound. */
 	void playAmbientSound(Common::UString sound = "");
 
-	// Events
+	/** Find the dynamic object that's displayed at these screen coordinates. */
+	Engines::NWN::Object *getObjectAt(int x, int y, float &distance) const;
 
-	/** Add a single event for consideration into the area event queue. */
-	void addEvent(const Events::Event &event);
-	/** Process the current event queue. */
-	void processEventQueue();
-
+	/** Are we currently highlighting all dynamic objects? */
+	bool getHighlightAll() const;
+	/** Highlight/Dehighlight all dynamic objects. */
+	void setHighlightAll(bool highlight);
 
 	/** Return the localized name of an area. */
 	static Common::UString getName(const Common::UString &resRef);
@@ -138,6 +134,7 @@ private:
 	};
 
 	typedef std::list<Engines::NWN::Object *> ObjectList;
+	typedef std::map<Common::UString, Engines::NWN::Object *> ObjectMap;
 
 
 	Module *_module;
@@ -168,6 +165,8 @@ private:
 
 	bool _visible; ///< Is the area currently visible?
 
+	bool _highlightAll; ///< Are we currently highlighting all dynamic objects?
+
 	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
 	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.
 
@@ -181,9 +180,7 @@ private:
 
 	ObjectList _objects;   ///< List of all objects in the area.
 
-	std::list<Events::Event> _eventQueue; ///< The event queue.
-
-	Common::Mutex _mutex; ///< Mutex securing access to the area.
+	ObjectMap _dynamicObjects; ///< Map of all non-static objects indexed by their IDs.
 
 
 	// Loading helpers

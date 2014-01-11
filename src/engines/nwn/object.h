@@ -90,6 +90,9 @@ public:
 
 	// Interactive properties
 
+	/** Return the IDs of the object's model(s). */
+	const std::vector<Common::UString> &getModelIDs() const;
+
 	/** Is the object static (not manipulatable at all)? */
 	bool isStatic() const;
 	/** Can the object be used by the PC? */
@@ -97,6 +100,14 @@ public:
 
 	/** Can the player click the object? */
 	bool isClickable() const;
+
+	// Mouse/Object interactions
+
+	/** Is the object currently highlighed? */
+	virtual bool getHighlight() const;
+
+	/** Highlight/Dehighlight the object. */
+	virtual void setHighlight(bool highlight);
 
 	// Object/Object interactions
 
@@ -135,6 +146,8 @@ public:
 protected:
 	ObjectType _type; ///< The object's type.
 
+	std::vector<Common::UString> _modelIDs; ///< IDs of the object's model(s).
+
 	Common::UString _name;        ///< The object's display name.
 	Common::UString _description; ///< The object's description.
 
@@ -149,6 +162,8 @@ protected:
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
+
+	bool _highlight; ///< Is the object currently highlighted?
 
 	Area *_area; ///< The area the object is currently in.
 

@@ -41,7 +41,9 @@
 #include "graphics/graphics.h"
 #include "graphics/cameraman.h"
 #include "graphics/textureman.h"
+#include "graphics/cursorman.h"
 
+#include "graphics/aurora/sceneman.h"
 #include "graphics/aurora/model_nwn.h"
 
 #include "engines/aurora/util.h"
@@ -51,12 +53,15 @@
 #include "engines/nwn/types.h"
 #include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
+#include "engines/nwn/object.h"
 
 namespace Engines {
 
 namespace NWN {
 
-Module::Module() : _hasModule(false), _currentTexturePack(-1), _exit(false), _currentArea(0) {
+Module::Module() : _hasModule(false), _currentTexturePack(-1), _exit(false),
+	_currentArea(0), _currentObject(0) {
+
 }
 
 Module::~Module() {
@@ -189,7 +194,8 @@ void Module::enterArea() {
 	if (_currentArea) {
 		_currentArea->setVisible(false);
 
-		_currentArea = 0;
+		_currentArea   = 0;
+		_currentObject = 0;
 	}
 
 	if (_newArea.empty()) {
@@ -245,14 +251,15 @@ void Module::handleEvents() {
 	Events::Event event;
 	while (EventMan.pollEvent(event)) {
 		// Camera
-		if (SDL_IsTextInputActive() == SDL_FALSE)
+		if (SDL_IsTextInputActive() == SDL_FALSE) {
 			if (handleCamera(event))
 				continue;
-
-		_currentArea->addEvent(event);
+			if (handlePicker(event))
+				continue;
+			if (handleKeys(event))
+				continue;
+		}
 	}
-
-	_currentArea->processEventQueue();
 }
 
 bool Module::handleCamera(const Events::Event &e) {
@@ -287,31 +294,82 @@ bool Module::handleCamera(const Events::Event &e) {
 		CameraMan.moveRelative(0.0, -speed, 0.0);
 	else if (e.key.keysym.sym == SDLK_PAGEUP)
 		CameraMan.pitch(Common::deg2rad(5));
-		//CameraMan.rotate(Common::deg2rad( 5), 1.0, 0.0, 0.0);
 	else if (e.key.keysym.sym == SDLK_PAGEDOWN)
 		CameraMan.pitch(Common::deg2rad(-5));
-		//CameraMan.rotate(Common::deg2rad(-5), 1.0, 0.0, 0.0);
 	else if (e.key.keysym.sym == SDLK_END) {
 		float x, y, z;
 		CameraMan.getDirection(x,   y, z);
 		CameraMan.setDirection(x, 0.0, z);
-	} else if (e.key.keysym.sym == SDLK_RETURN) {
-		GfxMan.toggleVSync();
-	} else if (e.key.keysym.scancode == SDL_SCANCODE_1) {
-		GfxMan.setFSAA(GfxMan.getCurrentFSAA() / 2);
-	} else if (e.key.keysym.scancode == SDL_SCANCODE_2) {
-		GfxMan.setFSAA((GfxMan.getCurrentFSAA() == 0) ? 2 : (GfxMan.getCurrentFSAA() * 2));
-	} else if (e.key.keysym.scancode == SDL_SCANCODE_F) {
-		double averageFrameTime, averageFPS;
-		if (GfxMan.getRenderStatistics(averageFrameTime, averageFPS))
-			warning("FPS: %lf, AverageFrameTime: %lf", averageFPS, averageFrameTime);
-		else
-			warning("NO STATS");
-
 	} else
 		return false;
 
+	checkCurrentObject();
 	return true;
+}
+
+bool Module::handlePicker(const Events::Event &e) {
+	if (e.type != Events::kEventMouseMove)
+		return false;
+
+	checkCurrentObject();
+	return true;
+}
+
+bool Module::handleKeys(const Events::Event &e) {
+	if ((e.type != Events::kEventKeyDown) && (e.type != Events::kEventKeyUp))
+		return false;
+
+	if (e.type == Events::kEventKeyDown) {
+		if        (e.key.keysym.sym == SDLK_RETURN)
+			GfxMan.toggleVSync();
+		else if (e.key.keysym.scancode == SDL_SCANCODE_1)
+			GfxMan.setFSAA(GfxMan.getCurrentFSAA() / 2);
+		else if (e.key.keysym.scancode == SDL_SCANCODE_2)
+			GfxMan.setFSAA((GfxMan.getCurrentFSAA() == 0) ? 2 : (GfxMan.getCurrentFSAA() * 2));
+		else if (e.key.keysym.sym == SDLK_TAB)
+			_currentArea->setHighlightAll(true);
+		else if (e.key.keysym.scancode == SDL_SCANCODE_F) {
+			double averageFrameTime, averageFPS;
+			if (GfxMan.getRenderStatistics(averageFrameTime, averageFPS))
+				warning("FPS: %lf, AverageFrameTime: %lf", averageFPS, averageFrameTime);
+		} else
+			return false;
+	}
+
+	if (e.type == Events::kEventKeyUp) {
+		if (e.key.keysym.sym == SDLK_TAB) {
+			_currentArea->setHighlightAll(false);
+			checkCurrentObject();
+		} else
+			return false;
+	}
+
+	return true;
+}
+
+void Module::checkCurrentObject() {
+	int x, y;
+	CursorMan.getPosition(x, y);
+
+	float distance;
+	Engines::NWN::Object *object = _currentArea->getObjectAt(x, y, distance);
+
+	// Highlight the new object
+	if (object)
+		object->setHighlight(true);
+
+	// If the highlighting changed...
+	if (_currentObject != object) {
+		// If we're not highlighting everything anyway, dehighlight the old object.
+		if (_currentObject && !_currentArea->getHighlightAll())
+				_currentObject->setHighlight(false);
+
+		_currentObject = object;
+
+		// Act on a new object
+		if (_currentObject)
+			warning("Entered object \"%s\" (\"%s\")", _currentObject->getTag().c_str(), _currentObject->getName().c_str());
+	}
 }
 
 void Module::unload() {
@@ -417,7 +475,8 @@ void Module::unloadAreas() {
 	_areas.clear();
 	_newArea.clear();
 
-	_currentArea = 0;
+	_currentArea   = 0;
+	_currentObject = 0;
 }
 
 const Common::UString &Module::getName() const {
