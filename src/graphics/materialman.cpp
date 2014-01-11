@@ -141,30 +141,28 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 	material->getTechnique(0)->getPass(0)->setSelfIllumination(decl.selfIllum[0], decl.selfIllum[1], decl.selfIllum[2]);
 
 	bool transparent = true;
-	for (std::vector<Common::UString>::const_iterator t = decl.textures.begin(); t != decl.textures.end(); ++t) {
+	for (uint t = 0; t < decl.textures.size(); t++) {
 		Ogre::TexturePtr texture((Ogre::Texture *) 0);
 
 		try {
-			if (!t->empty())
-				texture = TextureMan.get(*t);
+			if (!decl.textures[t].empty())
+				texture = TextureMan.get(decl.textures[t]);
 		} catch (Common::Exception &e) {
 			Common::printException(e, "WARNING: ");
 		}
 
 		if (texture.isNull())
-			texture = TextureMan.getInvisible();
+			continue;
 
 		Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
-		if (!texture.isNull()) {
-			texState->setTexture(texture);
-			texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
+		texState->setTextureCoordSet(t);
 
-			// DXT1 textures used in Aurora games are always opaque
-			if (!texture->hasAlpha() || ((PixelFormat)texture->getFormat() == kPixelFormatDXT1))
-				transparent = false;
+		texState->setTexture(texture);
+		texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
 
-		} else
-			texState->setBlank();
+		// DXT1 textures used in Aurora games are always opaque
+		if (!texture->hasAlpha() || ((PixelFormat)texture->getFormat() == kPixelFormatDXT1))
+			transparent = false;
 	}
 
 	// Even if the textures themselves aren't tranparent, the color might still be
