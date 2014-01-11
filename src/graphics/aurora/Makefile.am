@@ -10,6 +10,7 @@ noinst_HEADERS = \
                  cube.h \
                  model.h \
                  model_nwn.h \
+                 model_kotor.h \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
@@ -19,4 +20,5 @@ libaurora_la_SOURCES = \
                        cube.cpp \
                        model.cpp \
                        model_nwn.cpp \
+                       model_kotor.cpp \
                        $(EMPTY)
