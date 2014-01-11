@@ -36,6 +36,8 @@
 #include "common/singleton.h"
 #include "common/ustring.h"
 
+#include "graphics/types.h"
+
 namespace Graphics {
 
 struct MaterialDeclaration {
@@ -52,6 +54,8 @@ struct MaterialDeclaration {
 	bool receiveShadows;
 	bool writeColor;
 	bool writeDepth;
+
+	TransparencyHint transparency;
 
 	MaterialDeclaration();
 

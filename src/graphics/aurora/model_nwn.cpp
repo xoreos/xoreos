@@ -522,8 +522,8 @@ void Model_NWN::readBinaryMesh(ParserContext &ctx) {
 	if (!render)
 		ctx.nodeEntity->dontRender = true;
 
-	bool transparencyHint;
-	transparencyHint = ctx.mdl->readUint32LE() == 1;
+	bool transparencyHint = ctx.mdl->readUint32LE() == 1;
+	ctx.material.transparency = transparencyHint ? kTransparencyHintTransparent : kTransparencyHintOpaque;
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -978,6 +978,8 @@ void Model_NWN::loadASCIINode(ParserContext &ctx, Ogre::SceneNode *parent,
 		} else if (line[0] == "transparencyhint") {
 			bool transparencyHint;
 			line[1].parse(transparencyHint);
+
+			ctx.material.transparency = transparencyHint ? kTransparencyHintTransparent : kTransparencyHintOpaque;
 		} else if (line[0] == "danglymesh") {
 			line[1].parse(dangly);
 		} else if (line[0] == "constraints") {

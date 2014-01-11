@@ -36,6 +36,13 @@
 
 namespace Graphics {
 
+/** Hinting at a materials transparency. */
+enum TransparencyHint {
+	kTransparencyHintOpaque      = 0, ///< This material is opaque.
+	kTransparencyHintTransparent = 1, ///< This material is transparent.
+	kTransparencyHintUnknown     = 2  ///< Unknown whether the material is transparent.
+};
+
 enum PixelFormat {
 	kPixelFormatNone = Ogre::PF_UNKNOWN,
 

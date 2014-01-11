@@ -61,6 +61,8 @@ void MaterialDeclaration::reset() {
 	writeColor     = true;
 	writeDepth     = true;
 
+	transparency = kTransparencyHintUnknown;
+
 	textures.clear();
 }
 
@@ -157,16 +159,33 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 			texState->setTexture(texture);
 			texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
 
-			if (!texture->hasAlpha())
+			// DXT1 textures used in Aurora games are always opaque
+			if (!texture->hasAlpha() || ((PixelFormat)texture->getFormat() == kPixelFormatDXT1))
 				transparent = false;
 
 		} else
 			texState->setBlank();
 	}
 
-	material->getTechnique(0)->getPass(0)->setSceneBlending(transparent ? Ogre::SBT_TRANSPARENT_ALPHA : Ogre::SBT_REPLACE);
+	// Even if the textures themselves aren't tranparent, the color might still be
+	if (decl.diffuse[3] != 1.0)
+		transparent = true;
 
-	material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(decl.writeDepth);
+	// Figure out whether this material is transparent.
+	// If we don't get a hint from the declaration, try to infer
+	// it from the texture and color information gathered above.
+	TransparencyHint transparency = decl.transparency;
+	if (transparency == kTransparencyHintUnknown)
+		transparency = transparent ? kTransparencyHintTransparent : kTransparencyHintOpaque;
+
+	if (transparency == kTransparencyHintTransparent) {
+		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+	} else {
+		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_REPLACE);
+		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(decl.writeDepth);
+	}
+
 	material->getTechnique(0)->getPass(0)->setColourWriteEnabled(decl.writeColor);
 
 	material->setReceiveShadows(decl.receiveShadows);
