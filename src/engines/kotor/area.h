@@ -147,6 +147,7 @@ private:
 	void loadObject(Engines::KotOR::Object &object);
 	void loadPlaceables(const Aurora::GFFList &list);
 	void loadDoors     (const Aurora::GFFList &list);
+	void loadCreatures (const Aurora::GFFList &list);
 
 	void stopSound();
 	void stopAmbientMusic();

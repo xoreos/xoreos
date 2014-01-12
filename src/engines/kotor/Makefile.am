@@ -12,6 +12,7 @@ noinst_HEADERS = \
                  situated.h \
                  door.h \
                  placeable.h \
+                 creature.h \
                  $(EMPTY)
 
 libkotor_la_SOURCES = \
@@ -23,4 +24,5 @@ libkotor_la_SOURCES = \
                       situated.cpp \
                       door.cpp \
                       placeable.cpp \
+                      creature.cpp \
                       $(EMPTY)

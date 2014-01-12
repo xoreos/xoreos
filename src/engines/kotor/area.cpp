@@ -51,6 +51,7 @@
 #include "engines/kotor/area.h"
 #include "engines/kotor/placeable.h"
 #include "engines/kotor/door.h"
+#include "engines/kotor/creature.h"
 
 namespace Engines {
 
@@ -233,6 +234,9 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 
 	if (git.hasField("Door List"))
 		loadDoors(git.getList("Door List"));
+
+	if (git.hasField("Creature List"))
+		loadCreatures(git.getList("Creature List"));
 }
 
 void Area::loadProperties(const Aurora::GFFStruct &props) {
@@ -302,6 +306,14 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 		Door *door = new Door(**d);
 
 		loadObject(*door);
+	}
+}
+
+void Area::loadCreatures(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c) {
+		Creature *creature = new Creature(**c);
+
+		loadObject(*creature);
 	}
 }
 
