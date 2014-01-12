@@ -117,11 +117,13 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	// playIntroVideos();
-	if (EventMan.quitRequested())
-		return;
+	CursorMan.hideCursor();
+	playIntroVideos();
 
 	CursorMan.set();
+	CursorMan.showCursor();
+	if (EventMan.quitRequested())
+		return;
 
 	playMenuMusic();
 

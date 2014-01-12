@@ -104,7 +104,8 @@ void NWN2Engine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	/*
+	CursorMan.hideCursor();
+
 	playVideo("atarilogo");
 	playVideo("oeilogo");
 	playVideo("wotclogo");
@@ -112,11 +113,11 @@ void NWN2Engine::run(const Common::UString &target) {
 	playVideo("legal");
 	playVideo("intro");
 
+	CursorMan.set();
+	CursorMan.showCursor();
+
 	if (EventMan.quitRequested())
 		return;
-	*/
-
-	CursorMan.set();
 
 	Sound::ChannelHandle channel;
 

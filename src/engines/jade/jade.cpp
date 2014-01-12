@@ -102,17 +102,19 @@ void JadeEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	/*
+	CursorMan.hideCursor();
+
 	playVideo("black");
 	playVideo("publisher");
 	playVideo("bwlogo");
 	playVideo("graymatr");
 	playVideo("attract");
-	if (EventMan.quitRequested())
-		return;
-	*/
 
 	CursorMan.set();
+	CursorMan.showCursor();
+
+	if (EventMan.quitRequested())
+		return;
 
 	playSound("musicbank00046", Sound::kSoundTypeMusic, true);
 

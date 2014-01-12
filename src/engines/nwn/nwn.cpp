@@ -119,7 +119,13 @@ void NWNEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
+	CursorMan.hideCursor();
+	playIntroVideos();
+
 	CursorMan.set();
+	CursorMan.showCursor();
+	if (EventMan.quitRequested())
+		return;
 
 	playMenuMusic();
 

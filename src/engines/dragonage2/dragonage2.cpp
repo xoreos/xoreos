@@ -101,13 +101,15 @@ void DragonAge2Engine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	/*
+	CursorMan.hideCursor();
+
 	playVideo("dragon_age_ea_logo");
-	if (EventMan.quitRequested())
-		return;
-	*/
 
 	CursorMan.set();
+	CursorMan.showCursor();
+
+	if (EventMan.quitRequested())
+		return;
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);

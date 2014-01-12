@@ -110,17 +110,19 @@ void TheWitcherEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	/*
+	CursorMan.hideCursor();
+
 	playVideo("publisher");
 	playVideo("developer");
 	playVideo("engine");
 	playVideo("intro");
 	playVideo("title");
-	if (EventMan.quitRequested())
-		return;
-	*/
 
 	CursorMan.set();
+	CursorMan.showCursor();
+
+	if (EventMan.quitRequested())
+		return;
 
 	playSound("m1_axem00020005", Sound::kSoundTypeVoice);
 
