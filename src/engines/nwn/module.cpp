@@ -263,8 +263,17 @@ void Module::handleEvents() {
 }
 
 bool Module::handleCamera(const Events::Event &e) {
-	if (e.type != Events::kEventKeyDown)
+	if (e.type != Events::kEventKeyDown) {
+		if (e.type == Events::kEventMouseMove) {
+			if (e.motion.state & SDL_BUTTON(2)) {
+				CameraMan.pitch(-Common::deg2rad(0.5) * e.motion.yrel);
+				CameraMan.rotate(-Common::deg2rad(0.5) * e.motion.xrel, 0.0, 1.0, 0.0);
+				return true;
+			}
+		}
+
 		return false;
+	}
 
 	float speed = (e.key.keysym.mod & KMOD_SHIFT) ? 1.0 : 0.5;
 
