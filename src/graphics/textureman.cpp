@@ -185,20 +185,6 @@ Ogre::TexturePtr TextureManager::get(const Common::UString &name) {
 	return texture;
 }
 
-Ogre::TexturePtr TextureManager::getInvisible() {
-	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<Ogre::TexturePtr> functor(boost::bind(&TextureManager::getInvisible, this));
-
-		return RequestMan.callInMainThread(functor);
-	}
-
-	Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().getByName("xoreos/invisible");
-	if (!texture.isNull())
-		return texture;
-
-	return createInvisible();
-}
-
 ImageDecoder *TextureManager::createImage(const Common::UString &name) {
 	// Get the image resource
 	::Aurora::FileType type;
@@ -351,21 +337,6 @@ void TextureManager::convert(Ogre::TexturePtr &texture, const ImageDecoder &imag
 
 		buffer->unlock();
 	}
-}
-
-Ogre::TexturePtr TextureManager::createInvisible() {
-	Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual("xoreos/invisible", "General",
-			Ogre::TEX_TYPE_2D, 1, 1, 1, Ogre::PF_BYTE_BGRA, Ogre::TU_STATIC_WRITE_ONLY);
-
-	Ogre::HardwarePixelBufferSharedPtr buffer = texture->getBuffer(0, 0);
-	buffer->lock(Ogre::HardwareBuffer::HBL_WRITE_ONLY);
-	const Ogre::PixelBox &pb = buffer->getCurrentLock();
-
-	memset(pb.data, 0, Ogre::PixelUtil::getMemorySize(pb.getWidth(), pb.getHeight(), pb.getDepth(), pb.format));
-
-	buffer->unlock();
-
-	return texture;
 }
 
 bool TextureManager::dumpTGA(const Common::UString &name, const Common::UString &fileName) {

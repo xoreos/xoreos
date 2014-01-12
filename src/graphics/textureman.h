@@ -82,8 +82,6 @@ public:
 	/** Get/Load a texture. */
 	Ogre::TexturePtr get(const Common::UString &name);
 
-	Ogre::TexturePtr getInvisible();
-
 	/** Get the properties of a texture. */
 	const TextureProperties &getProperties(const Common::UString &name);
 	/** Get the properties of a texture. */
@@ -100,8 +98,6 @@ private:
 
 	Ogre::TexturePtr create(const Common::UString &name);
 	Ogre::TexturePtr create(const Common::UString &name, const ImageDecoder &image);
-
-	Ogre::TexturePtr createInvisible();
 
 	ImageDecoder *createImage(const Common::UString &name);
 

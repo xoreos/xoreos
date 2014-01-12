@@ -34,6 +34,7 @@
 
 #include "common/ustring.h"
 #include "common/error.h"
+#include "common/util.h"
 #include "common/threads.h"
 
 #include "graphics/textureman.h"
@@ -108,32 +109,34 @@ Ogre::MaterialPtr MaterialManager::get(const MaterialDeclaration &decl) {
 	return material;
 }
 
-Ogre::MaterialPtr MaterialManager::getInvisible() {
+Ogre::MaterialPtr MaterialManager::getSolidColor(float r, float g, float b, float a) {
 	MaterialDeclaration decl;
 
-	decl.receiveShadows = false;
-	decl.writeColor     = false;
-	decl.writeDepth     = false;
+	decl.diffuse[0] = r; decl.diffuse[1] = g; decl.diffuse[2] = b; decl.diffuse[3] = a;
 
 	return get(decl);
 }
 
-Ogre::MaterialPtr MaterialManager::getBlack() {
-	MaterialDeclaration decl;
+void MaterialManager::createSolidColor(const MaterialDeclaration &decl, Ogre::MaterialPtr material) {
+	Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
 
-	decl.ambient  [0] = 0.0; decl.ambient  [1] = 0.0; decl.ambient  [2] = 0.0;
-	decl.diffuse  [0] = 0.0; decl.diffuse  [1] = 0.0; decl.diffuse  [2] = 0.0; decl.diffuse [3] = 1.0;
-	decl.specular [0] = 0.0; decl.specular [1] = 0.0; decl.specular [2] = 0.0; decl.specular[3] = 1.0;
-	decl.selfIllum[0] = 0.0; decl.selfIllum[1] = 0.0; decl.selfIllum[2] = 0.0;
+	const Ogre::ColourValue color(decl.diffuse[0], decl.diffuse[1], decl.diffuse[2]);
+	const float alpha = decl.diffuse[3];
 
-	decl.shininess = 0.0;
-
-	decl.receiveShadows = false;
-
-	return get(decl);
+	texState->setColourOperationEx(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_MANUAL, color, color, 1.0);
+	if (alpha != 1.0) {
+		texState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_MANUAL, alpha, alpha, 1.0);
+		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+	}
 }
 
 void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr material) {
+	if (decl.textures.empty()) {
+		createSolidColor(decl, material);
+		return;
+	}
+
 	material->getTechnique(0)->getPass(0)->setAmbient(decl.ambient[0], decl.ambient[1], decl.ambient[2]);
 	material->getTechnique(0)->getPass(0)->setDiffuse(decl.diffuse[0], decl.diffuse[1], decl.diffuse[2], decl.diffuse[3]);
 	material->getTechnique(0)->getPass(0)->setSpecular(decl.specular[0], decl.specular[1], decl.specular[2], decl.specular[3]);

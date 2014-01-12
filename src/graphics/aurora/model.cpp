@@ -198,7 +198,7 @@ Ogre::Entity *Model::createEntity(const VertexDeclaration &vertexDecl, const Ogr
 	entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
 
 	// Assign the material to the entity
-	entity->setMaterial(material.isNull() ? MaterialMan.getInvisible() : material);
+	entity->setMaterial(material.isNull() ? MaterialMan.getSolidColor(0.0, 0.0, 0.0, 0.0) : material);
 
 	return entity;
 }

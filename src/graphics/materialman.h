@@ -74,13 +74,12 @@ public:
 	/** Get/Load a more complex material. */
 	Ogre::MaterialPtr get(const MaterialDeclaration &decl);
 
-	/** Get a default invisible material. */
-	Ogre::MaterialPtr getInvisible();
-	/** Get a default black material. */
-	Ogre::MaterialPtr getBlack();
+	/** Get a default material with a solid color. */
+	Ogre::MaterialPtr getSolidColor(float r, float g, float b, float a = 1.0);
 
 private:
 	void create(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
+	void createSolidColor(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
 
 	Common::UString canonicalName(const MaterialDeclaration &decl);
 };
