@@ -39,6 +39,7 @@
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/model_nwn.h"
 #include "graphics/aurora/model_kotor.h"
+#include "graphics/aurora/model_nwn2.h"
 
 #include "events/requests.h"
 
@@ -119,6 +120,8 @@ Model *SceneManager::createModel(const Common::UString &model, const Common::USt
 			modelInstance = new Model_KotOR(model, false, texture);
 		else if (_modelType == kModelTypeKotOR2)
 			modelInstance = new Model_KotOR(model, true, texture);
+		else if (_modelType == kModelTypeNWN2)
+			modelInstance = new Model_NWN2(model);
 		else
 			throw Common::Exception("No valid model type registered");
 

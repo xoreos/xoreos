@@ -23,62 +23,72 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/aurora/meshutil.h
- *  A scene manager.
+/** @file graphics/aurora/model_nwn2.h
+ *  Loading models found in Neverwinter Nights 2.
  */
 
-#ifndef GRAPHICS_AURORA_MESHUTIL_H
-#define GRAPHICS_AURORA_MESHUTIL_H
+#ifndef GRAPHICS_AURORA_MODEL_NWN2_H
+#define GRAPHICS_AURORA_MODEL_NWN2_H
 
-#include <vector>
+#include "common/ustring.h"
 
-#include <boost/functional/hash.hpp>
+#include "graphics/materialman.h"
 
-#include "common/types.h"
-#include "common/util.h"
-#include "common/maths.h"
+#include "graphics/aurora/types.h"
+#include "graphics/aurora/model.h"
+#include "graphics/aurora/meshutil.h"
 
 namespace Ogre {
-	class SubMesh;
-	class SceneManager;
-	class MeshManager;
+	class SceneNode;
+	class Entity;
 }
 
 namespace Graphics {
 
 namespace Aurora {
 
-Ogre::SceneManager &getOgreSceneManager();
-Ogre::MeshManager &getOgreMeshManager();
+class Model_NWN2 : public Model {
+public:
+	Model_NWN2(const Common::UString &name);
+	~Model_NWN2();
+
+private:
+	struct PacketKey {
+		uint32 signature;
+		uint32 offset;
+	};
+
+	struct ParserContext {
+		Common::SeekableReadStream *mdb;
+
+		uint32 offModelData;
+		uint32 offRawData;
+
+		State *state;
+
+		MaterialDeclaration material;
+		NodeEntity *nodeEntity;
+
+		ParserContext(const Common::UString &name);
+		~ParserContext();
+
+		void newState();
+		void newNode();
+	};
+
+	Common::UString _fileName;
+	Common::UString _name;
 
 
-struct VertexDeclaration {
-	bool textureUVW;
+	void load(ParserContext &ctx);
+	void loadNode(ParserContext &ctx, Ogre::SceneNode *parent, uint32 type);
 
-	uint16 faces;
-	uint16 vertices;
-	uint16 textures;
-
-	std::vector<float>  bufferVerticesNormals;
-	std::vector<float>  bufferTexCoords;
-	std::vector<uint16> bufferIndices;
-
-	VertexDeclaration();
-	VertexDeclaration(uint16 f, uint16 v, uint16 t, bool uvw = false);
-
-	void resize();
-	void getBounds(float &minX, float &minY, float &minZ,
-	               float &maxX, float &maxY, float &maxZ, float &radius) const;
+	void loadRigid(ParserContext &ctx, Ogre::SceneNode *parent);
+	void loadSkin (ParserContext &ctx, Ogre::SceneNode *parent);
 };
-
-void createMesh(Ogre::SubMesh *mesh, const VertexDeclaration &decl);
-
-void createMesh(Ogre::SubMesh *mesh, uint16 vertexCount, uint16 faceCount,
-                const float *vertices, const float *normals, const uint16 *indices,
-                const float *texCoords1 = 0, const float *texCoords2 = 0, const float *texCoords3 = 0);
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_MESHUTIL_H
+#endif // GRAPHICS_AURORA_MODEL_NWN2_H

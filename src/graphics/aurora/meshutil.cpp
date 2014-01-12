@@ -45,18 +45,18 @@ namespace Graphics {
 
 namespace Aurora {
 
-VertexDeclaration::VertexDeclaration() : faces(0), vertices(0), textures(0) {
+VertexDeclaration::VertexDeclaration() : textureUVW(false), faces(0), vertices(0), textures(0) {
 }
 
-VertexDeclaration::VertexDeclaration(uint16 f, uint16 v, uint16 t) :
-	faces(f), vertices(v), textures(t) {
+VertexDeclaration::VertexDeclaration(uint16 f, uint16 v, uint16 t, bool uvw) :
+	textureUVW(uvw), faces(f), vertices(v), textures(t) {
 
 	resize();
 }
 
 void VertexDeclaration::resize() {
 	bufferVerticesNormals.resize(vertices * 2 * 3);
-	bufferTexCoords.resize(vertices * textures * 2);
+	bufferTexCoords.resize(vertices * textures * (textureUVW ? 3 : 2));
 	bufferIndices.resize(faces * 3);
 }
 
@@ -90,7 +90,7 @@ void createMesh(Ogre::SubMesh *mesh, const VertexDeclaration &decl) {
 	}
 
 	assert (decl.bufferVerticesNormals.size() == (decl.vertices * 2 * 3));
-	assert (decl.bufferTexCoords.size() == (uint)(decl.vertices * decl.textures * 2));
+	assert (decl.bufferTexCoords.size() == (uint)(decl.vertices * decl.textures * (decl.textureUVW ? 3 : 2)));
 	assert (decl.bufferIndices.size() == (decl.faces * 3));
 
 	Ogre::VertexData *vertexData = new Ogre::VertexData();
@@ -108,7 +108,8 @@ void createMesh(Ogre::SubMesh *mesh, const VertexDeclaration &decl) {
 	vertexDecl->addElement(0, 1 * 3 * sizeof(float), Ogre::VET_FLOAT3, Ogre::VES_NORMAL);
 
 	for (uint i = 0; i < decl.textures; i++)
-		vertexDecl->addElement(1, i * 2 * sizeof(float), Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES, i);
+		vertexDecl->addElement(1, i * (decl.textureUVW ? 3 : 2) * sizeof(float),
+				decl.textureUVW ? Ogre::VET_FLOAT3 : Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES, i);
 
 	// Prepare hardware buffers
 
