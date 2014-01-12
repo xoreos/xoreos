@@ -197,6 +197,7 @@ private:
 	void loadWaypoints (const Aurora::GFFList &list);
 	void loadPlaceables(const Aurora::GFFList &list);
 	void loadDoors     (const Aurora::GFFList &list);
+	void loadCreatures (const Aurora::GFFList &list);
 
 	// Model loading/unloading helpers
 
