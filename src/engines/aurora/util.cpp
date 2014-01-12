@@ -64,7 +64,18 @@ void playVideo(const Common::UString &video) {
 	try {
 		Video::Aurora::VideoPlayer videoPlayer(video);
 
-		videoPlayer.play();
+		videoPlayer.start();
+		while (videoPlayer.isPlaying() && !EventMan.quitRequested()) {
+			Events::Event event;
+			while (EventMan.pollEvent(event)) {
+				if (((event.type == Events::kEventKeyDown) && (event.key.keysym.sym == SDLK_ESCAPE)) ||
+				     (event.type == Events::kEventMouseUp))
+					videoPlayer.abort();
+			}
+
+			EventMan.delay(10);
+		}
+
 	} catch (Common::Exception &e) {
 		Common::printException(e, "WARNING: ");
 	}

@@ -150,7 +150,6 @@ void XboxMediaVideo::processNextFrame(PacketVideo &videoPacket) {
 			Common::SeekableSubReadStream frameData(_xmv, _xmv->pos(), _xmv->pos() + videoPacket.currentFrameSize);
 
 			_videoCodec->decodeFrame(*_surface, frameData);
-			_needCopy = true;
 		} else
 			warning("XboxMediaVideo::processNextFrame(): Video frame without a decoder");
 	}

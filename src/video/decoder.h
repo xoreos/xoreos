@@ -30,7 +30,10 @@
 #ifndef VIDEO_DECODER_H
 #define VIDEO_DECODER_H
 
+#include <OgrePrerequisites.h>
+
 #include "common/types.h"
+#include "common/mutex.h"
 
 #include "graphics/types.h"
 
@@ -50,17 +53,8 @@ namespace Video {
 /** A generic interface for video decoders. */
 class VideoDecoder {
 public:
-	enum Scale {
-		kScaleNone,  ///< Don't scale the video.
-		kScaleUp,    ///< Only scale the video up, if necessary.
-		kScaleDown,  ///< Only scale the video down, if necessary.
-		kScaleUpDown ///< Scale the video up and down, if necessary.
-	};
-
 	VideoDecoder();
 	virtual ~VideoDecoder();
-
-	void setScale(Scale scale);
 
 	/** Is the video currently playing? */
 	bool isPlaying() const;
@@ -71,20 +65,36 @@ public:
 	/** Abort the playing of the video. */
 	void abort();
 
+	/** Return the size of the actual video. */
+	void getVideoSize(int &width, int &height) const;
+
+	/** Return the size of the video surface. */
+	void getSurfaceSize(int &width, int &height) const;
+
 	/** Return the time, in milliseconds, to the next frame. */
 	virtual uint32 getTimeToNextFrame() const = 0;
 
-	void render();
+	/** Render the next frame. */
+	void renderFrame();
+
+	/** Copy the current frame into texture memory. */
+	void copyIntoTexture(Ogre::TexturePtr texture);
+
 
 protected:
+	Common::Mutex _mutex;
+	Common::Mutex _surfaceMutex;
+
 	bool _started;  ///< Has playback started?
 	bool _finished; ///< Has playback finished?
-	bool _needCopy; ///< Is new frame content available that needs to by copied?
 
 	uint32 _width;  ///< The video's width.
 	uint32 _height; ///< The video's height.
 
+	Graphics::Surface *_surfaces[2];
 	Graphics::Surface *_surface; ///< The video's surface.
+
+	int _currentSurface;
 
 	/** Create a surface for video of these dimensions.
 	 *
@@ -118,11 +128,6 @@ protected:
 	void deinit();
 
 private:
-	float _textureWidth;
-	float _textureHeight;
-
-	Scale _scale;
-
 	Sound::QueuingAudioStream *_sound;
 	Sound::ChannelHandle       _soundHandle;
 	uint16                     _soundRate;

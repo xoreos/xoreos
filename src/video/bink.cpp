@@ -229,8 +229,6 @@ void Bink::processData() {
 	delete frame.bits;
 	frame.bits = 0;
 
-	_needCopy = true;
-
 	_curFrame++;
 }
 

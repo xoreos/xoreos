@@ -40,18 +40,27 @@ class VideoDecoder;
 
 namespace Aurora {
 
+class VideoFrameRenderer;
+
 /** A video player. */
 class VideoPlayer {
 public:
-	VideoPlayer(const Common::UString &video);
+	VideoPlayer(const Common::UString &video, int width = -1, int height = -1, int x = 0, int y = 0);
 	~VideoPlayer();
 
-	void play();
+	bool isPlaying() const;
+
+	void start();
+	void abort();
 
 private:
 	VideoDecoder *_video;
 
+	VideoFrameRenderer *_renderer;
+
+
 	void load(const Common::UString &name);
+	void deinit();
 };
 
 } // End of namespace Aurora

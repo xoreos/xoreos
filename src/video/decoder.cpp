@@ -27,6 +27,9 @@
  *  Generic video decoder interface.
  */
 
+#include <OgreTexture.h>
+#include <OgreHardwarePixelBuffer.h>
+
 #include <cassert>
 
 #include "common/error.h"
@@ -46,10 +49,8 @@
 namespace Video {
 
 VideoDecoder::VideoDecoder() :
-	_started(false), _finished(false), _needCopy(false),
-	_width(0), _height(0), _surface(0),
-	_textureWidth(0.0), _textureHeight(0.0), _scale(kScaleNone),
-	_sound(0), _soundRate(0), _soundFlags(0) {
+	_started(false), _finished(false), _width(0), _height(0),
+	_surface(0), _currentSurface(0), _sound(0), _soundRate(0), _soundFlags(0) {
 
 }
 
@@ -72,11 +73,8 @@ void VideoDecoder::initVideo(uint32 width, uint32 height) {
 	int realWidth  = NEXTPOWER2(width);
 	int realHeight = NEXTPOWER2(height);
 
-	// Dimensions of the actual video part of texture
-	_textureWidth  = ((float) _width ) / ((float) realWidth );
-	_textureHeight = ((float) _height) / ((float) realHeight);
-
 	delete _surface;
+
 	_surface = new Graphics::Surface(realWidth, realHeight);
 
 	_surface->fill(0, 0, 0, 0);
@@ -147,75 +145,42 @@ uint32 VideoDecoder::getNumQueuedStreams() const {
 	return _sound ? _sound->numQueuedStreams() : 0;
 }
 
-void VideoDecoder::copyData() {
-	if (!_needCopy)
-		return;
-
-	if (!_surface)
-		throw Common::Exception("No video data while trying to copy");
-
-	_needCopy = false;
-}
-
-void VideoDecoder::setScale(Scale scale) {
-	_scale = scale;
-}
-
 bool VideoDecoder::isPlaying() const {
 	return !_finished || SoundMan.isPlaying(_soundHandle);
 }
 
-void VideoDecoder::update() {
-	if (getTimeToNextFrame() > 0)
-		return;
-
-	processData();
-	copyData();
-}
-
-void VideoDecoder::getQuadDimensions(float &width, float &height) const {
-	width  = _width;
-	height = _height;
-
-	if (_scale == kScaleNone)
-		// No scaling requested
-		return;
-
-	float screenWidth  = GfxMan.getScreenWidth();
-	float screenHeight = GfxMan.getScreenHeight();
-
-	if ((_scale == kScaleUp) && (width <= screenWidth) && (height <= screenHeight))
-		// Only upscaling requested, but not necessary
-		return;
-
-	if ((_scale == kScaleDown) && (width >= screenWidth) && (height >= screenHeight))
-		// Only downscaling requested, but not necessary
-		return;
-
-	float ratio = width / height;
-
-	width  = screenWidth;
-	height = screenWidth / ratio;
-	if (height <= screenHeight)
-		return;
-
-	height = screenHeight;
-	width  = screenHeight * ratio;
-}
-
-void VideoDecoder::render() {
+void VideoDecoder::renderFrame() {
 	if (!isPlaying() || !_started)
 		return;
 
-	// Process and copy the next frame data, if necessary
-	update();
+	processData();
+}
 
-	// Get the dimensions of the video surface we want, depending on the scaling requested
-	float width, height;
-	getQuadDimensions(width, height);
+void VideoDecoder::copyIntoTexture(Ogre::TexturePtr texture) {
+	if (!isPlaying() || !_started)
+		return;
+
+	Ogre::HardwarePixelBufferSharedPtr buffer = texture->getBuffer();
+
+	buffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
+	const Ogre::PixelBox &pb = buffer->getCurrentLock();
+
+	byte *src = _surface->getData();
+	byte *dst = (byte *) pb.data;
+
+	Ogre::PixelFormat formatFrom = Ogre::PF_BYTE_BGRA;
+	Ogre::PixelFormat formatTo   = texture->getFormat();
+
+	uint32 pixels = _surface->getWidth() * _surface->getHeight();
+
+	Ogre::PixelUtil::bulkPixelConversion(src, formatFrom, dst, formatTo, pixels);
+
+	buffer->unlock();
 }
 
 void VideoDecoder::finish() {
+	_started = false;
+
 	finishSound();
 
 	_finished = true;
@@ -226,7 +191,19 @@ void VideoDecoder::start() {
 }
 
 void VideoDecoder::abort() {
+	SoundMan.stopChannel(_soundHandle);
+
 	finish();
+}
+
+void VideoDecoder::getVideoSize(int &width, int &height) const {
+	width  = _width;
+	height = _height;
+}
+
+void VideoDecoder::getSurfaceSize(int &width, int &height) const {
+	width  = _surface->getWidth();
+	height = _surface->getHeight();
 }
 
 } // End of namespace Video

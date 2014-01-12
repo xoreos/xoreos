@@ -299,7 +299,6 @@ void QuickTimeDecoder::processData() {
 		assert(_surface);
 
 		entry->_videoCodec->decodeFrame(*_surface, *frameData);
-		_needCopy = true;
 	}
 
 	delete frameData;

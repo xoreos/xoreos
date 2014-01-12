@@ -104,8 +104,6 @@ void Fader::processData() {
 	if (_c == 0)
 		if (_n-- <= 0)
 			finish();
-
-	_needCopy = true;
 }
 
 } // End of namespace Video
