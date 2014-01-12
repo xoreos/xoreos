@@ -19,7 +19,8 @@ version.lo: $(top_srcdir)/gitstamp/gitstamp
 
 noinst_LTLIBRARIES = libcommon.la
 
-noinst_HEADERS = system.h \
+noinst_HEADERS = \
+                 system.h \
                  types.h \
                  endianness.h \
                  version.h \
@@ -61,9 +62,11 @@ noinst_HEADERS = system.h \
                  foxpro.h \
                  zipfile.h \
                  pe_exe.h \
-                 systemfonts.h
+                 systemfonts.h \
+                 $(EMPTY)
 
-libcommon_la_SOURCES = version.cpp \
+libcommon_la_SOURCES = \
+                       version.cpp \
                        maths.cpp \
                        sinetables.cpp \
                        cosinetables.cpp \
@@ -98,4 +101,5 @@ libcommon_la_SOURCES = version.cpp \
                        foxpro.cpp \
                        zipfile.cpp \
                        pe_exe.cpp \
-                       systemfonts.cpp
+                       systemfonts.cpp \
+                       $(EMPTY)

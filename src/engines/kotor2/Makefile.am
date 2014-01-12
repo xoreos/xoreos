@@ -2,14 +2,18 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libkotor2.la
 
-noinst_HEADERS = kotor2.h \
+noinst_HEADERS = \
+                 kotor2.h \
                  modelloader.h \
                  module.h \
                  area.h \
-                 gui/main/main.h
+                 gui/main/main.h \
+                 $(EMPTY)
 
-libkotor2_la_SOURCES = kotor2.cpp \
+libkotor2_la_SOURCES = \
+                       kotor2.cpp \
                        modelloader.cpp \
                        module.cpp \
                        area.cpp \
-                       gui/main/main.cpp
+                       gui/main/main.cpp \
+                       $(EMPTY)

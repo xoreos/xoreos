@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = liblua.la
 
-noinst_HEADERS = lapi.h \
+noinst_HEADERS = \
+                 lapi.h \
                  lauxlib.h \
                  lcode.h \
                  ldebug.h \
@@ -23,9 +24,11 @@ noinst_HEADERS = lapi.h \
                  lualib.h \
                  lundump.h \
                  lvm.h \
-                 lzio.h
+                 lzio.h \
+                 $(EMPTY)
 
-liblua_la_SOURCES = lapi.c \
+liblua_la_SOURCES = \
+                    lapi.c \
                     lauxlib.c \
                     lbaselib.c \
                     lcode.c \
@@ -52,5 +55,6 @@ liblua_la_SOURCES = lapi.c \
                     ltm.c \
                     lundump.c \
                     lvm.c \
-                    lzio.c
+                    lzio.c \
+                    $(EMPTY)
 

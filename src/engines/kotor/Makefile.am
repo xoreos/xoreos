@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libkotor.la
 
-noinst_HEADERS = kotor.h \
+noinst_HEADERS = \
+                 kotor.h \
                  console.h \
                  modelloader.h \
                  object.h \
@@ -34,9 +35,11 @@ noinst_HEADERS = kotor.h \
                  gui/options/graphics.h \
                  gui/options/graphicsadv.h \
                  gui/options/sound.h \
-                 gui/options/soundadv.h
+                 gui/options/soundadv.h \
+                 $(EMPTY)
 
-libkotor_la_SOURCES = kotor.cpp \
+libkotor_la_SOURCES = \
+                      kotor.cpp \
                       console.cpp \
                       modelloader.cpp \
                       object.cpp \
@@ -68,4 +71,5 @@ libkotor_la_SOURCES = kotor.cpp \
                       gui/options/graphics.cpp \
                       gui/options/graphicsadv.cpp \
                       gui/options/sound.cpp \
-                      gui/options/soundadv.cpp
+                      gui/options/soundadv.cpp \
+                      $(EMPTY)

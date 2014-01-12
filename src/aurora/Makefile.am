@@ -1,10 +1,13 @@
 include $(top_srcdir)/Makefile.common
 
-SUBDIRS = nwscript
+SUBDIRS = \
+          nwscript \
+          $(EMPTY)
 
 noinst_LTLIBRARIES = libaurora.la
 
-noinst_HEADERS = types.h \
+noinst_HEADERS = \
+                 types.h \
                  error.h \
                  util.h \
                  archive.h \
@@ -28,9 +31,11 @@ noinst_HEADERS = types.h \
                  lytfile.h \
                  visfile.h \
                  pefile.h \
-                 herffile.h
+                 herffile.h \
+                 $(EMPTY)
 
-libaurora_la_SOURCES = error.cpp \
+libaurora_la_SOURCES = \
+                       error.cpp \
                        util.cpp \
                        archive.cpp \
                        aurorafile.cpp \
@@ -53,6 +58,9 @@ libaurora_la_SOURCES = error.cpp \
                        lytfile.cpp \
                        visfile.cpp \
                        pefile.cpp \
-                       herffile.cpp
+                       herffile.cpp \
+                       $(EMPTY)
 
-libaurora_la_LIBADD = nwscript/libnwscript.la
+libaurora_la_LIBADD = \
+                      nwscript/libnwscript.la \
+                      $(EMPTY)

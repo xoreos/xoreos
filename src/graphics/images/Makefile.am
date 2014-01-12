@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libimages.la
 
-noinst_HEADERS = decoder.h \
+noinst_HEADERS = \
+                 decoder.h \
                  dumptga.h \
                  screenshot.h \
                  surface.h \
@@ -14,9 +15,11 @@ noinst_HEADERS = decoder.h \
                  txi.h \
                  s3tc.h \
                  sbm.h \
-                 winiconimage.h
+                 winiconimage.h \
+                 $(EMPTY)
 
-libimages_la_SOURCES = decoder.cpp \
+libimages_la_SOURCES = \
+                       decoder.cpp \
                        dumptga.cpp \
                        screenshot.cpp \
                        surface.cpp \
@@ -28,4 +31,5 @@ libimages_la_SOURCES = decoder.cpp \
                        txi.cpp \
                        s3tc.cpp \
                        sbm.cpp \
-                       winiconimage.cpp
+                       winiconimage.cpp \
+                       $(EMPTY)

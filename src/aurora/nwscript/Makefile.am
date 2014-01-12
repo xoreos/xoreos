@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libnwscript.la
 
-noinst_HEADERS = types.h \
+noinst_HEADERS = \
+                 types.h \
                  util.h \
                  variable.h \
                  variablecontainer.h \
@@ -11,13 +12,16 @@ noinst_HEADERS = types.h \
                  object.h \
                  objectcontainer.h \
                  functionman.h \
-                 ncsfile.h
+                 ncsfile.h \
+                 $(EMPTY)
 
-libnwscript_la_SOURCES = util.cpp \
+libnwscript_la_SOURCES = \
+                         util.cpp \
                          variable.cpp \
                          variablecontainer.cpp \
                          functioncontext.cpp \
                          object.cpp \
                          objectcontainer.cpp \
                          functionman.cpp \
-                         ncsfile.cpp
+                         ncsfile.cpp \
+                         $(EMPTY)

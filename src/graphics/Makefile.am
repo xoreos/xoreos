@@ -1,10 +1,14 @@
 include $(top_srcdir)/Makefile.common
 
-SUBDIRS = images aurora
+SUBDIRS = \
+          images \
+          aurora \
+          $(EMPTY)
 
 noinst_LTLIBRARIES = libgraphics.la
 
-noinst_HEADERS = types.h \
+noinst_HEADERS = \
+                 types.h \
                  util.h \
                  graphics.h \
                  fpscounter.h \
@@ -21,9 +25,11 @@ noinst_HEADERS = types.h \
                  yuv_to_rgb.h \
                  ttf.h \
                  indexbuffer.h \
-                 vertexbuffer.h
+                 vertexbuffer.h \
+                 $(EMPTY)
 
-libgraphics_la_SOURCES = graphics.cpp \
+libgraphics_la_SOURCES = \
+                         graphics.cpp \
                          fpscounter.cpp \
                          cursor.cpp \
                          queueman.cpp \
@@ -38,6 +44,11 @@ libgraphics_la_SOURCES = graphics.cpp \
                          yuv_to_rgb.cpp \
                          ttf.cpp \
                          indexbuffer.cpp \
-                         vertexbuffer.cpp
+                         vertexbuffer.cpp \
+                         $(EMPTY)
 
-libgraphics_la_LIBADD = images/libimages.la aurora/libaurora.la ../../glew/libglew.la
+libgraphics_la_LIBADD = \
+                        images/libimages.la \
+                        aurora/libaurora.la \
+                        ../../glew/libglew.la \
+                        $(EMPTY)

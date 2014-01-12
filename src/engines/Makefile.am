@@ -1,10 +1,21 @@
 include $(top_srcdir)/Makefile.common
 
-SUBDIRS = nwn nwn2 kotor kotor2 jade thewitcher sonic dragonage dragonage2
+SUBDIRS = \
+          nwn \
+          nwn2 \
+          kotor \
+          kotor2 \
+          jade \
+          thewitcher \
+          sonic \
+          dragonage \
+          dragonage2 \
+          $(EMPTY)
 
 noinst_LTLIBRARIES = libengines.la
 
-noinst_HEADERS = engine.h \
+noinst_HEADERS = \
+                 engine.h \
                  engineprobe.h \
                  enginemanager.h \
                  gamethread.h \
@@ -15,9 +26,11 @@ noinst_HEADERS = engine.h \
                  aurora/model.h \
                  aurora/widget.h \
                  aurora/gui.h \
-                 aurora/console.h
+                 aurora/console.h \
+                 $(EMPTY)
 
-libengines_la_SOURCES = engine.cpp \
+libengines_la_SOURCES = \
+                        engine.cpp \
                         enginemanager.cpp \
                         gamethread.cpp \
                         aurora/util.cpp \
@@ -27,6 +40,17 @@ libengines_la_SOURCES = engine.cpp \
                         aurora/model.cpp \
                         aurora/widget.cpp \
                         aurora/gui.cpp \
-                        aurora/console.cpp
+                        aurora/console.cpp \
+                        $(EMPTY)
 
-libengines_la_LIBADD = nwn/libnwn.la nwn2/libnwn2.la kotor/libkotor.la kotor2/libkotor2.la jade/libjade.la thewitcher/libthewitcher.la sonic/libsonic.la dragonage/libdragonage.la dragonage2/libdragonage2.la
+libengines_la_LIBADD = \
+                       nwn/libnwn.la \
+                       nwn2/libnwn2.la \
+                       kotor/libkotor.la \
+                       kotor2/libkotor2.la \
+                       jade/libjade.la \
+                       thewitcher/libthewitcher.la \
+                       sonic/libsonic.la \
+                       dragonage/libdragonage.la \
+                       dragonage2/libdragonage2.la \
+                       $(EMPTY)

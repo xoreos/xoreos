@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libaurora.la
 
-noinst_HEADERS = types.h \
+noinst_HEADERS = \
+                 types.h \
                  texture.h \
                  textureman.h \
                  pltfile.h \
@@ -26,9 +27,11 @@ noinst_HEADERS = types.h \
                  model_nwn.h \
                  model_nwn2.h \
                  model_kotor.h \
-                 model_witcher.h
+                 model_witcher.h \
+                 $(EMPTY)
 
-libaurora_la_SOURCES = texture.cpp \
+libaurora_la_SOURCES = \
+                       texture.cpp \
                        textureman.cpp \
                        pltfile.cpp \
                        cursor.cpp \
@@ -51,4 +54,5 @@ libaurora_la_SOURCES = texture.cpp \
                        model_nwn.cpp \
                        model_nwn2.cpp \
                        model_kotor.cpp \
-                       model_witcher.cpp
+                       model_witcher.cpp \
+                       $(EMPTY)

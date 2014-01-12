@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
+EMPTY =
+
 LIBSF_C_CXX = $(XOREOS_CFLAGS) $(ZLIB_CFLAGS) \
               $(SDL2_CFLAGS) $(GL_CFLAGS) $(FT2_CFLAGS) $(XVID_CFLAGS) \
               $(AL_CFLAGS) $(FAAD_CFLAGS) $(MAD_CFLAGS) $(OGG_CFLAGS) \

@@ -2,7 +2,8 @@ include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libnwn.la
 
-noinst_HEADERS = nwn.h \
+noinst_HEADERS = \
+                 nwn.h \
                  types.h \
                  modelloader.h \
                  ifofile.h \
@@ -68,10 +69,11 @@ noinst_HEADERS = nwn.h \
                  gui/ingame/partyleader.h \
                  gui/ingame/dialog.h \
                  script/container.h \
-                 script/functions.h
+                 script/functions.h \
+                 $(EMPTY)
 
-
-libnwn_la_SOURCES = nwn.cpp \
+libnwn_la_SOURCES = \
+                    nwn.cpp \
                     types.cpp \
                     modelloader.cpp \
                     ifofile.cpp \
@@ -147,4 +149,5 @@ libnwn_la_SOURCES = nwn.cpp \
                     script/functions_500.cpp \
                     script/functions_600.cpp \
                     script/functions_700.cpp \
-                    script/functions_800.cpp
+                    script/functions_800.cpp \
+                    $(EMPTY)
