@@ -61,6 +61,12 @@ public:
 	Model();
 	~Model();
 
+	/** Return the name of every state in this model. */
+	std::vector<Common::UString> getStates() const;
+
+	/** Return the name of node in this state of the model. */
+	std::vector<Common::UString> getNodes() const;
+
 	/** Set the model into a different state. */
 	bool setState(const Common::UString &name);
 

@@ -89,6 +89,34 @@ Model::~Model() {
 		delete s->second;
 }
 
+std::vector<Common::UString> Model::getStates() const {
+	std::vector<Common::UString> names;
+
+	for (StateMap::const_iterator s = _states.begin(); s != _states.end(); ++s)
+		names.push_back(s->first);
+
+	return names;
+}
+
+std::vector<Common::UString> Model::getNodes() const {
+	std::vector<Common::UString> names;
+
+	State *state = _currentState;
+	if (!state) {
+		StateMap::const_iterator rootState = _states.find("");
+		if (rootState != _states.end())
+			state = rootState->second;
+	}
+
+	if (!state)
+		return names;
+
+	for (NodeEntities::const_iterator n = state->nodeEntities.begin(); n != state->nodeEntities.end(); ++n)
+		names.push_back(n->first);
+
+	return names;
+}
+
 bool Model::setState(const Common::UString &name) {
 	StateMap::iterator s = _states.find(name);
 	if (s == _states.end())
