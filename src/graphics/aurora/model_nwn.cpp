@@ -352,20 +352,6 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 	// TODO: Animations / states
 }
 
-void Model_NWN::createNode(ParserContext &ctx, const Common::UString &name, Ogre::SceneNode *parent) {
-	std::pair<NodeEntities::iterator, bool> node = ctx.state->nodeEntities.insert(std::make_pair(name, NodeEntity()));
-	ctx.nodeEntity = &node.first->second;
-
-	NodeEntities::iterator rootNodeEntity = _states[""]->nodeEntities.find(name);
-	if (rootNodeEntity != _states[""]->nodeEntities.end())
-		ctx.nodeEntity->node = rootNodeEntity->second.node;
-
-	if (!ctx.nodeEntity->node)
-		ctx.nodeEntity->node = parent->createChildSceneNode();
-
-	ctx.nodeEntity->node->setVisible(false);
-}
-
 void Model_NWN::loadBinaryNode(ParserContext &ctx, Ogre::SceneNode *parent) {
 	ctx.mdl->skip(24); // Function pointers
 
@@ -377,7 +363,7 @@ void Model_NWN::loadBinaryNode(ParserContext &ctx, Ogre::SceneNode *parent) {
 
 	debugC(5, kDebugGraphics, "Node \"%s\" in state \"%s\"", name.c_str(), ctx.state->name.c_str());
 
-	createNode(ctx, name, parent);
+	createNode(ctx.nodeEntity, ctx.state, name, parent);
 
 	ctx.mdl->skip(8); // Parent pointers
 
@@ -999,7 +985,7 @@ void Model_NWN::loadASCIINode(ParserContext &ctx, Ogre::SceneNode *parent,
 			        name.c_str(), parentName.c_str());
 	}
 
-	createNode(ctx, name, parent);
+	createNode(ctx.nodeEntity, ctx.state, name, parent);
 
 	ctx.nodeEntity->dontRender = !render;
 

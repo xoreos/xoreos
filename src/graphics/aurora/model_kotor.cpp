@@ -229,23 +229,6 @@ void Model_KotOR::load(ParserContext &ctx) {
 	loadNode(ctx, _rootNode);
 }
 
-void Model_KotOR::createNode(ParserContext &ctx, Common::UString name, Ogre::SceneNode *parent) {
-	if (name.empty())
-		name = Common::generateIDRandomString();
-
-	std::pair<NodeEntities::iterator, bool> node = ctx.state->nodeEntities.insert(std::make_pair(name, NodeEntity()));
-	ctx.nodeEntity = &node.first->second;
-
-	NodeEntities::iterator rootNodeEntity = _states[""]->nodeEntities.find(name);
-	if (rootNodeEntity != _states[""]->nodeEntities.end())
-		ctx.nodeEntity->node = rootNodeEntity->second.node;
-
-	if (!ctx.nodeEntity->node)
-		ctx.nodeEntity->node = parent->createChildSceneNode();
-
-	ctx.nodeEntity->node->setVisible(false);
-}
-
 void Model_KotOR::loadNode(ParserContext &ctx, Ogre::SceneNode *parent) {
 	uint16 flags      = ctx.mdl->readUint16LE();
 	uint16 superNode  = ctx.mdl->readUint16LE();
@@ -257,7 +240,7 @@ void Model_KotOR::loadNode(ParserContext &ctx, Ogre::SceneNode *parent) {
 
 	debugC(5, kDebugGraphics, "Node \"%s\" in state \"%s\"", name.c_str(), ctx.state->name.c_str());
 
-	createNode(ctx, name, parent);
+	createNode(ctx.nodeEntity, ctx.state, name, parent);
 
 	ctx.mdl->skip(6 + 4); // Unknown + parent pointer
 

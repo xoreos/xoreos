@@ -120,6 +120,7 @@ protected:
 
 	// General loading helpers
 
+	void createNode(NodeEntity *&nodeEntity, State *state, Common::UString name, Ogre::SceneNode *parent);
 	Ogre::Entity *createEntity(const VertexDeclaration &vertexDecl, const Ogre::MaterialPtr &material);
 
 	static void readValue(Common::SeekableReadStream &stream, uint32 &value);

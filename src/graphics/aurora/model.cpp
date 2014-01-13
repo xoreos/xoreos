@@ -172,6 +172,35 @@ void Model::showBoundingBox(bool show) {
 	}
 }
 
+void Model::createNode(NodeEntity *&nodeEntity, State *state, Common::UString name, Ogre::SceneNode *parent) {
+	if (name.empty())
+		name = Common::generateIDRandomString();
+
+	// Create a node entitiy in this state
+	std::pair<NodeEntities::iterator, bool> node = state->nodeEntities.insert(std::make_pair(name, NodeEntity()));
+	nodeEntity = &node.first->second;
+
+	// Copy the SceneNode from the root state if it exists
+	NodeEntities::iterator rootNodeEntity = _states[""]->nodeEntities.find(name);
+	if (rootNodeEntity != _states[""]->nodeEntities.end())
+		nodeEntity->node = rootNodeEntity->second.node;
+
+	// If we don't have a SceneNode now, create a new one
+	if (!nodeEntity->node) {
+		nodeEntity->node = parent->createChildSceneNode();
+		nodeEntity->node->setVisible(false);
+	}
+
+	// If this node doesn't exist in the root state, create it
+	if (rootNodeEntity ==_states[""]->nodeEntities.end()) {
+		std::pair<NodeEntities::iterator, bool> newRootNode;
+		newRootNode = _states[""]->nodeEntities.insert(std::make_pair(name, NodeEntity()));
+
+		newRootNode.first->second.node       = nodeEntity->node;
+		newRootNode.first->second.dontRender = true;
+	}
+}
+
 Ogre::Entity *Model::createEntity(const VertexDeclaration &vertexDecl, const Ogre::MaterialPtr &material) {
 	// Create a mesh according to the vertex declaration
 

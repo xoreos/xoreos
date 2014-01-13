@@ -88,8 +88,6 @@ private:
 	void readMesh(ParserContext &ctx);
 	void readNodeControllers(ParserContext &ctx, uint32 offset, uint32 count, std::vector<float> &data);
 
-	void createNode(ParserContext &ctx, Common::UString name, Ogre::SceneNode *parent);
-
 	static void readStrings(Common::SeekableReadStream &mdl, const std::vector<uint32> &offsets,
 			uint32 offset, std::vector<Common::UString> &strings);
 };

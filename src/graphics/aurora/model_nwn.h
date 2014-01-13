@@ -128,7 +128,6 @@ private:
 	void processASCIIMesh(ParserContext &ctx, MeshASCII &mesh);
 
 	void nodeInherit(ParserContext &ctx, const Common::UString &name);
-	void createNode(ParserContext &ctx, const Common::UString &name, Ogre::SceneNode *parent);
 };
 
 } // End of namespace Aurora
