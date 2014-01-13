@@ -77,6 +77,9 @@ public:
 	/** Stop any currently playing animation. */
 	bool stopAnimation();
 
+	/** Add another model to a node of this model. */
+	void addToNode(Model *model, const Common::UString &node);
+
 	/** Change whether the model can be selected (picked) by the user. */
 	void setSelectable(bool selectable);
 
@@ -113,10 +116,13 @@ protected:
 	};
 
 	typedef std::map<Common::UString, State *> StateMap;
+	typedef std::map<Common::UString, Model *> ModelMap;
 
 
 	StateMap   _states;
 	EntityList _entities;
+
+	ModelMap _childModels;
 
 	State *_currentState;
 

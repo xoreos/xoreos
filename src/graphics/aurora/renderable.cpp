@@ -65,7 +65,9 @@ void Renderable::setVisible(bool visible) {
 	LOCK_FRAME();
 
 	_visible = visible;
-	_rootNode->setVisible(visible);
+
+	if (_rootNode)
+		_rootNode->setVisible(visible);
 }
 
 bool Renderable::isVisible() const {

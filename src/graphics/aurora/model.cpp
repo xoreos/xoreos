@@ -34,6 +34,7 @@
 #include <OgreAnimation.h>
 #include <OgreAnimationState.h>
 
+#include "common/error.h"
 #include "common/stream.h"
 #include "common/uuid.h"
 
@@ -67,11 +68,11 @@ Model::Model() : _currentState(0) {
 }
 
 Model::~Model() {
-	if (!_rootNode)
-		return;
-
 	setVisible(false);
 	setState(0);
+
+	for (ModelMap::iterator c = _childModels.begin(); c != _childModels.end(); ++c)
+		delete c->second;
 
 	Ogre::SceneManager &scene = getOgreSceneManager();
 
@@ -81,9 +82,11 @@ Model::~Model() {
 	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e)
 		scene.destroyMovableObject(*e);
 
-	_rootNode->removeAndDestroyAllChildren();
+	if (_rootNode) {
+		_rootNode->removeAndDestroyAllChildren();
 
-	scene.destroySceneNode(_rootNode);
+		scene.destroySceneNode(_rootNode);
+	}
 
 	for (StateMap::iterator s = _states.begin(); s != _states.end(); ++s)
 		delete s->second;
@@ -187,12 +190,63 @@ bool Model::stopAnimation() {
 	return true;
 }
 
+void Model::addToNode(Model *model, const Common::UString &node) {
+	LOCK_FRAME();
+
+	if (!model)
+		throw Common::Exception("Trying to attach a non-existing model");
+
+	// Get the nodes we operate on
+	StateMap::iterator thisRootState = _states.find("");
+	if (thisRootState == _states.end())
+		throw Common::Exception("Model has no root state");
+
+	NodeEntities::iterator attachNodeEntities = thisRootState->second->nodeEntities.find(node);
+	if (attachNodeEntities == thisRootState->second->nodeEntities.end())
+		throw Common::Exception("No node \"%s\" in model", node.c_str());
+
+	Ogre::SceneNode *attachNode = attachNodeEntities->second.node;
+	if (!attachNode)
+		throw Common::Exception("Model node \"%s\" has no SceneNode", node.c_str());
+
+	Ogre::SceneNode *otherRootNode = model->_rootNode;
+	if (!otherRootNode)
+		throw Common::Exception("Child model has no root node");
+
+	Ogre::SceneNode *otherRootNodeParent = otherRootNode->getParentSceneNode();
+
+	// Detach the root node from the other model and attach it to our node
+	if (otherRootNodeParent)
+		otherRootNodeParent->removeChild(otherRootNode);
+	attachNode->addChild(otherRootNode);
+
+	model->_rootNode = 0;
+
+	// Override the properties for selecting the model
+	for (EntityList::iterator e = model->_entities.begin(); e != model->_entities.end(); ++e) {
+		(*e)->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
+		(*e)->setQueryFlags(_entities.empty() ? kSelectableNone : (*_entities.begin())->getQueryFlags());
+	}
+
+	// Assert visibility
+	setVisible(_visible);
+
+	// And register the model as a child of ours.
+	_childModels.insert(std::make_pair(model->getID(), model));
+}
+
 void Model::setSelectable(bool selectable) {
+	for (ModelMap::iterator c = _childModels.begin(); c != _childModels.end(); ++c)
+		c->second->setSelectable(selectable);
+
 	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e)
 		(*e)->setQueryFlags(selectable ? kSelectableModel : kSelectableNone);
 }
 
 void Model::showBoundingBox(bool show) {
+	for (ModelMap::iterator c = _childModels.begin(); c != _childModels.end(); ++c)
+		c->second->showBoundingBox(show);
+
 	if (_currentState) {
 		for (NodeEntities::iterator n = _currentState->nodeEntities.begin(); n != _currentState->nodeEntities.end(); ++n)
 			if (n->second.node && !n->second.dontRender)
