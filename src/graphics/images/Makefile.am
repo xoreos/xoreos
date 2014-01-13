@@ -11,8 +11,6 @@ noinst_HEADERS = \
                  dds.h \
                  tpc.h \
                  txb.h \
-                 txitypes.h \
-                 txi.h \
                  s3tc.h \
                  sbm.h \
                  winiconimage.h \
@@ -27,8 +25,6 @@ libimages_la_SOURCES = \
                        dds.cpp \
                        tpc.cpp \
                        txb.cpp \
-                       txitypes.cpp \
-                       txi.cpp \
                        s3tc.cpp \
                        sbm.cpp \
                        winiconimage.cpp \
