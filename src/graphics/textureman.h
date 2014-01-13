@@ -48,11 +48,20 @@ class ImageDecoder;
  */
 class TextureProperties {
 public:
+	/** Coordinates. */
+	struct Coords {
+		float x, y, z;
+	};
+
 	TextureProperties();
 	~TextureProperties();
 
 	Common::UString getString(const Common::UString &key, const Common::UString &def = "") const;
 	void setString(const Common::UString &key, const Common::UString &value);
+
+	bool loadFromTXI(Common::SeekableReadStream &stream);
+	bool loadFromTXI(const ImageDecoder &img);
+	bool loadFromTXI(const Common::UString &file);
 
 	bool   getBool  (const Common::UString &key, bool   def = false) const;
 	int    getInt   (const Common::UString &key, int    def = 0    ) const;
@@ -64,8 +73,14 @@ public:
 	void setUInt  (const Common::UString &key, uint   value);
 	void setDouble(const Common::UString &key, double value);
 
+	const std::vector<Coords> &getUpperLeftCoords() const;
+	const std::vector<Coords> &getLowerRightCoords() const;
+
 private:
 	Common::StringIMap _properties;
+
+	std::vector<Coords> _coordsUpperLeft;
+	std::vector<Coords> _coordsLowerRight;
 };
 
 /** The global texture manager.

@@ -63,6 +63,84 @@ TextureProperties::TextureProperties() {
 TextureProperties::~TextureProperties() {
 }
 
+bool TextureProperties::loadFromTXI(Common::SeekableReadStream &stream) {
+	std::vector<Coords> *coords = 0;
+	uint currentCoord = 0;
+
+	while (!stream.eos()) {
+		Common::UString line;
+
+		line.readLineASCII(stream);
+		if (line.empty())
+			continue;
+
+		if (coords) {
+			std::sscanf(line.c_str(), "%f %f %f",
+					&(*coords)[currentCoord].x,
+					&(*coords)[currentCoord].y,
+					&(*coords)[currentCoord].z);
+
+			if (++currentCoord >= coords->size())
+				coords = 0;
+
+			continue;
+		}
+
+		Common::UString::iterator s = line.findFirst(' ');
+		if (s == line.end())
+			continue;
+
+		Common::UString key(line.begin(), s);
+		Common::UString val(++s, line.end());
+
+		if (key.equalsIgnoreCase("upperleftcoords")) {
+			coords       = &_coordsUpperLeft;
+			currentCoord = 0;
+
+			int count = 0;
+			val.parse(count);
+
+			coords->resize(count);
+		} else if (key.equalsIgnoreCase("lowerrightcoords")) {
+			coords       = &_coordsLowerRight;
+			currentCoord = 0;
+
+			int count = 0;
+			val.parse(count);
+
+			coords->resize(count);
+		}
+
+		setString(key, val);
+	}
+
+	return true;
+}
+
+bool TextureProperties::loadFromTXI(const ImageDecoder &img) {
+	Common::SeekableReadStream *txi = img.getTXI();
+	if (!txi)
+		return false;
+
+	bool result = loadFromTXI(*txi);
+
+	delete txi;
+
+	return result;
+}
+
+bool TextureProperties::loadFromTXI(const Common::UString &file) {
+	Common::SeekableReadStream *txi = ResMan.getResource(file, ::Aurora::kFileTypeTXI);
+	if (!txi)
+		return false;
+
+	bool result = loadFromTXI(*txi);
+
+	delete txi;
+
+	return result;
+}
+
 Common::UString TextureProperties::getString(const Common::UString &key, const Common::UString &def) const {
 	Common::StringIMap::const_iterator it = _properties.find(key);
 	if (it == _properties.end())
@@ -73,6 +151,9 @@ Common::UString TextureProperties::getString(const Common::UString &key, const C
 
 void TextureProperties::setString(const Common::UString &key, const Common::UString &value) {
 	_properties[key] = value;
+
+	_properties[key].trim();
+	_properties[key].tolower();
 }
 
 bool TextureProperties::getBool(const Common::UString &key, bool def) const {
@@ -132,6 +213,14 @@ void TextureProperties::setUInt(const Common::UString &key, uint value) {
 
 void TextureProperties::setDouble(const Common::UString &key, double value) {
 	_properties[key] = Common::UString::sprintf("%lf", value);
+}
+
+const std::vector<TextureProperties::Coords> &TextureProperties::getUpperLeftCoords() const {
+	return _coordsUpperLeft;
+}
+
+const std::vector<TextureProperties::Coords> &TextureProperties::getLowerRightCoords() const {
+	return _coordsLowerRight;
 }
 
 
@@ -198,6 +287,8 @@ ImageDecoder *TextureManager::createImage(const Common::UString &name) {
 
 	p.first->second = new TextureProperties;
 
+	p.first->second->loadFromTXI(name);
+
 	ImageDecoder *image  = 0;
 	WinIconImage *cursor = 0;
 
@@ -239,6 +330,8 @@ ImageDecoder *TextureManager::createImage(const Common::UString &name) {
 
 		throw;
 	}
+
+	p.first->second->loadFromTXI(*image);
 
 	delete img;
 	delete cursor;
