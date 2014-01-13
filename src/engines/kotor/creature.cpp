@@ -214,6 +214,31 @@ void Creature::loadModel() {
 		throw;
 	}
 
+	if (!headModel.empty()) {
+		Graphics::Aurora::Model_KotOR *head = 0;
+
+		try {
+			head = createWorldModel(headModel);
+		} catch (Common::Exception &e) {
+			e.add("Failed to load head model for creature \"%s\" (\"%s\")", _tag.c_str(), _name.c_str());
+			Common::printException(e, "WARNING: ");
+		}
+
+		if (head) {
+			// Reset the head's orientation, since it'll inherit it from the headhook node on the body
+			head->setBaseOrientation(0.0, 1.0, 0.0, 0.0);
+			head->setOrientation(0.0, 1.0, 0.0, 0.0);
+
+			try {
+				_model->addToNode(head, "headhook");
+			} catch (Common::Exception &e) {
+				destroyModel(head);
+				e.add("Failed to attach head \"%s\" to creature \"%s\" (\"%s\")", headModel.c_str(), _tag.c_str(), _name.c_str());
+				Common::printException(e, "WARNING: ");
+			}
+		}
+	}
+
 	_modelIDs.push_back(_model->getID());
 
 	if (!isStatic())
