@@ -37,6 +37,10 @@
 #include "aurora/error.h"
 
 #include "graphics/cursorman.h"
+#include "graphics/cameraman.h"
+
+#include "graphics/aurora/sceneman.h"
+#include "graphics/aurora/model_witcher.h"
 
 #include "sound/sound.h"
 
@@ -46,6 +50,7 @@
 #include "engines/aurora/resources.h"
 
 #include "engines/thewitcher/thewitcher.h"
+#include "engines/thewitcher/model.h"
 
 namespace Engines {
 
@@ -124,11 +129,70 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 
-	playSound("m1_axem00020005", Sound::kSoundTypeVoice);
+	playSound("menu", Sound::kSoundTypeMusic, true);
+
+	CameraMan.setPosition(0.0, 0.5, 0.0);
+
+	Graphics::Aurora::Model_Witcher *model = createWorldModel("an_cat");
+
+	model->rotate(Common::deg2rad(225), 0.0, 0.0, 1.0);
+	model->setPosition(0.0, 0.0, -2.0);
+	model->setVisible(true);
+
+	EventMan.enableKeyRepeat();
 
 	while (!EventMan.quitRequested()) {
+		Events::Event event;
+
+		while (EventMan.pollEvent(event)) {
+			if        (event.type == Events::kEventMouseMove) {
+				if (event.motion.state & SDL_BUTTON(2)) {
+					CameraMan.pitch(-Common::deg2rad(0.5) * event.motion.yrel);
+					CameraMan.rotate(-Common::deg2rad(0.5) * event.motion.xrel, 0.0, 1.0, 0.0);
+				}
+			} else if (event.type == Events::kEventKeyDown) {
+				float speed = (event.key.keysym.mod & KMOD_SHIFT) ? 1.0 : 0.5;
+
+				if      (event.key.keysym.sym == SDLK_UP)
+					CameraMan.moveRelative(0.0, 0.0, -speed);
+				else if (event.key.keysym.sym == SDLK_DOWN)
+					CameraMan.moveRelative(0.0, 0.0,  speed);
+				else if (event.key.keysym.sym == SDLK_RIGHT)
+					CameraMan.rotate(Common::deg2rad(-5), 0.0, 1.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_LEFT)
+					CameraMan.rotate(Common::deg2rad( 5), 0.0, 1.0, 0.0);
+				else if (event.key.keysym.scancode == SDL_SCANCODE_W)
+					CameraMan.moveRelative(0.0, 0.0, -speed);
+				else if (event.key.keysym.scancode == SDL_SCANCODE_S)
+					CameraMan.moveRelative(0.0, 0.0,  speed);
+				else if (event.key.keysym.scancode == SDL_SCANCODE_D)
+					CameraMan.rotate(Common::deg2rad(-5), 0.0, 1.0, 0.0);
+				else if (event.key.keysym.scancode == SDL_SCANCODE_A)
+					CameraMan.rotate(Common::deg2rad( 5), 0.0, 1.0, 0.0);
+				else if (event.key.keysym.scancode == SDL_SCANCODE_E)
+					CameraMan.moveRelative( speed, 0.0, 0.0);
+				else if (event.key.keysym.scancode == SDL_SCANCODE_Q)
+					CameraMan.moveRelative(-speed, 0.0, 0.0);
+				else if (event.key.keysym.sym == SDLK_INSERT)
+					CameraMan.moveRelative(0.0,  speed, 0.0);
+				else if (event.key.keysym.sym == SDLK_DELETE)
+					CameraMan.moveRelative(0.0, -speed, 0.0);
+				else if (event.key.keysym.sym == SDLK_PAGEUP)
+					CameraMan.pitch(Common::deg2rad(5));
+				else if (event.key.keysym.sym == SDLK_PAGEDOWN)
+					CameraMan.pitch(Common::deg2rad(-5));
+				else if (event.key.keysym.sym == SDLK_END) {
+					float x, y, z;
+					CameraMan.getDirection(x,   y, z);
+					CameraMan.setDirection(x, 0.0, z);
+				}
+			}
+		}
+
 		EventMan.delay(10);
 	}
+
+	destroyModel(model);
 }
 
 void TheWitcherEngine::init() {
@@ -173,6 +237,8 @@ void TheWitcherEngine::init() {
 
 	status("Indexing override files");
 	indexOptionalDirectory("data/override", 0, 0, 50);
+
+	SceneMan.registerModelType(Graphics::Aurora::kModelTypeTheWitcher);
 }
 
 void TheWitcherEngine::initCursors() {
