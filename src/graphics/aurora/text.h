@@ -23,41 +23,68 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/aurora/types.h
- *  Graphics types related to the Aurora engines.
+/** @file graphics/aurora/text.h
+ *  A text object.
  */
 
-#ifndef GRAPHICS_AURORA_TYPES_H
-#define GRAPHICS_AURORA_TYPES_H
+#ifndef GRAPHICS_AURORA_TEXT_H
+#define GRAPHICS_AURORA_TEXT_H
+
+#include "common/ustring.h"
+
+#include "graphics/renderable.h"
+
+#include "graphics/aurora/fontman.h"
 
 namespace Graphics {
 
 namespace Aurora {
 
-enum ModelType {
-	kModelTypeNone       = -1,
-	kModelTypeNWN        =  0,
-	kModelTypeNWN2           ,
-	kModelTypeKotOR          ,
-	kModelTypeKotOR2         ,
-	kModelTypeTheWitcher
-};
+class Text : public Renderable {
+public:
+	Text(const FontHandle &font, const Common::UString &str, float r = 1.0, float g = 1.0, float b = 1.0, float a = 1.0);
+	~Text();
 
-/** Type of a selectable renderable. */
-enum SelectableType {
-	kSelectableNone = 0, ///< Nothing.
+	/** Return the string of this text object. */
+	const Common::UString &get() const;
 
-	kSelectableQuad  = 1 << 0, ///< A quad.
-	kSelectableCube  = 1 << 1, ///< A cube.
-	kSelectableModel = 1 << 2, ///< A model.
-	kSelectableText  = 1 << 3, ///< A text object.
+	/** Return the color of this text object. */
+	void getColor(float &r, float &g, float &b, float &a) const;
 
-	/** All renderable. */
-	kSelectableRenderable = kSelectableQuad | kSelectableCube | kSelectableModel | kSelectableText
+	/** Set the string of this text object. */
+	void set(const Common::UString &str);
+
+	/** Set the color of this text object. */
+	void setColor(float r, float g, float b, float a = 1.0);
+
+	/** Show/Hide the bouding box(es) of this text object. */
+	void showBoundingBox(bool show);
+
+	/** Change whether the text object can be selected (picked) by the user. */
+	void setSelectable(bool selectable);
+
+private:
+	FontHandle _font;
+
+	Common::UString _str;
+
+	float _r;
+	float _g;
+	float _b;
+	float _a;
+
+
+	void destroy();
+	void create();
+
+	void destroyText();
+	void createText();
+
+	void updateColor();
 };
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_TYPES_H
+#endif // GRAPHICS_AURORA_TEXT_H

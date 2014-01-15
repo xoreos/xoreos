@@ -242,6 +242,8 @@ void Model::setSelectable(bool selectable) {
 
 	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e)
 		(*e)->setQueryFlags(selectable ? kSelectableModel : kSelectableNone);
+
+	Renderable::setSelectable(selectable);
 }
 
 void Model::showBoundingBox(bool show) {

@@ -84,7 +84,7 @@ public:
 	virtual void showBoundingBox(bool show);
 
 	/** Change whether the renderable can be selected (picked) by the user. */
-	virtual void setSelectable(bool selectable) = 0;
+	virtual void setSelectable(bool selectable);
 
 protected:
 	Common::UString _scene;
@@ -92,6 +92,7 @@ protected:
 	Ogre::SceneNode *_rootNode;
 
 	bool _visible;
+	bool _selectable;
 
 	float _basePosition[3];
 	float _baseOrientation[4];

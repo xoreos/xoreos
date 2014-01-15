@@ -182,6 +182,8 @@ void Cube::stopRotate() {
 
 void Cube::setSelectable(bool selectable) {
 	_entity->setQueryFlags(selectable ? kSelectableCube : kSelectableNone);
+
+	Renderable::setSelectable(selectable);
 }
 
 } // End of namespace Aurora

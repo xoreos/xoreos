@@ -23,41 +23,69 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/aurora/types.h
- *  Graphics types related to the Aurora engines.
+/** @file graphics/aurora/texturefont.h
+ *  A texture font, as used by NWN and KotOR/KotOR2.
  */
 
-#ifndef GRAPHICS_AURORA_TYPES_H
-#define GRAPHICS_AURORA_TYPES_H
+#ifndef GRAPHICS_AURORA_TEXTUREFONT_H
+#define GRAPHICS_AURORA_TEXTUREFONT_H
+
+#include <vector>
+
+#include <OgreTexture.h>
+
+#include "common/types.h"
+
+#include "graphics/font.h"
+
+#include "graphics/textureman.h"
+
+namespace Common {
+	class UString;
+}
 
 namespace Graphics {
 
 namespace Aurora {
 
-enum ModelType {
-	kModelTypeNone       = -1,
-	kModelTypeNWN        =  0,
-	kModelTypeNWN2           ,
-	kModelTypeKotOR          ,
-	kModelTypeKotOR2         ,
-	kModelTypeTheWitcher
-};
+class Texture;
 
-/** Type of a selectable renderable. */
-enum SelectableType {
-	kSelectableNone = 0, ///< Nothing.
+/** A texture font, as used by NWN and KotOR/KotOR2. */
+class TextureFont : public Graphics::Font {
+public:
+	TextureFont(const Common::UString &name);
+	~TextureFont();
 
-	kSelectableQuad  = 1 << 0, ///< A quad.
-	kSelectableCube  = 1 << 1, ///< A cube.
-	kSelectableModel = 1 << 2, ///< A model.
-	kSelectableText  = 1 << 3, ///< A text object.
+	float getWidth (uint32 c) const;
+	float getHeight()         const;
 
-	/** All renderable. */
-	kSelectableRenderable = kSelectableQuad | kSelectableCube | kSelectableModel | kSelectableText
+	float getLineSpacing() const;
+
+	Ogre::Entity *createCharacter(uint32 c, float &width, float &height, const Common::UString &scene = "gui");
+
+private:
+	/** A font character. */
+	struct Char {
+		float width;
+
+		float coords[4];
+	};
+
+	Ogre::TexturePtr _texture;
+
+	std::vector<Char> _chars;
+
+	float _height;
+	float _spaceR;
+	float _spaceB;
+
+	void load();
+
+	Ogre::Entity *createMissing(float &width, float &height, const Common::UString &scene = "gui");
 };
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_TYPES_H
+#endif // GRAPHICS_AURORA_TEXTUREFONT_H

@@ -138,7 +138,7 @@ Ogre::Entity *createQuadEntity(float width, float height, Ogre::MaterialPtr mate
 Quad::Quad(const Common::UString &scene) : Renderable(scene),
 	_r(1.0), _g(1.0), _b(1.0), _a(1.0),
 	_topLeftU(0.0), _topLeftV(0.0), _bottomRightU(1.0), _bottomRightV(1.0),
-	_entity(0), _selectable(false), _needUpdate(true), _newTexture(true) {
+	_entity(0), _needUpdate(true), _newTexture(true) {
 
 	createRootNode();
 }
@@ -146,7 +146,7 @@ Quad::Quad(const Common::UString &scene) : Renderable(scene),
 Quad::Quad(const Common::UString &texture, const Common::UString &scene) : Renderable(scene),
 	_textureName(texture), _r(1.0), _g(1.0), _b(1.0), _a(1.0),
 	_topLeftU(0.0), _topLeftV(0.0), _bottomRightU(1.0), _bottomRightV(1.0),
-	_entity(0), _selectable(false), _needUpdate(true), _newTexture(true) {
+	_entity(0), _needUpdate(true), _newTexture(true) {
 
 	createRootNode();
 }
@@ -154,7 +154,7 @@ Quad::Quad(const Common::UString &texture, const Common::UString &scene) : Rende
 Quad::Quad(const Ogre::TexturePtr &texture, const Common::UString &scene) : Renderable(scene),
 	_texture(texture), _r(1.0), _g(1.0), _b(1.0), _a(1.0),
 	_topLeftU(0.0), _topLeftV(0.0), _bottomRightU(1.0), _bottomRightV(1.0),
-	_entity(0), _selectable(false), _needUpdate(true), _newTexture(false) {
+	_entity(0), _needUpdate(true), _newTexture(false) {
 
 	createRootNode();
 }
@@ -259,10 +259,10 @@ void Quad::setUV(float topLeftU, float topLeftV, float bottomRightU, float botto
 }
 
 void Quad::setSelectable(bool selectable) {
-	_selectable = selectable;
-
 	if (_entity)
 		_entity->setQueryFlags(selectable ? kSelectableQuad : kSelectableNone);
+
+	Renderable::setSelectable(selectable);
 }
 
 void Quad::setVisible(bool visible) {

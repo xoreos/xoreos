@@ -46,6 +46,7 @@
 #include "graphics/guiman.h"
 
 #include "graphics/aurora/sceneman.h"
+#include "graphics/aurora/fontman.h"
 
 #include "events/events.h"
 #include "events/requests.h"
@@ -231,6 +232,7 @@ void EngineManager::cleanup(GameInstance &game) const {
 		GUIMan.clear();
 		SceneMan.clear();
 
+		FontMan.clear();
 		CursorMan.clear();
 		TextureMan.clear();
 

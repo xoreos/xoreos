@@ -52,6 +52,7 @@
 #include "graphics/guiman.h"
 
 #include "graphics/aurora/sceneman.h"
+#include "graphics/aurora/fontman.h"
 
 #include "sound/sound.h"
 
@@ -274,6 +275,7 @@ void deinit() {
 	Graphics::GUIManager::destroy();
 	Graphics::Aurora::SceneManager::destroy();
 
+	Graphics::Aurora::FontManager::destroy();
 	Graphics::CursorManager::destroy();
 	Graphics::TextureManager::destroy();
 	Graphics::MaterialManager::destroy();

@@ -94,8 +94,6 @@ private:
 
 	Ogre::Entity *_entity;
 
-	bool _selectable;
-
 	bool _needUpdate;
 	bool _newTexture;
 

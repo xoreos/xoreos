@@ -36,7 +36,7 @@
 
 namespace Graphics {
 
-Renderable::Renderable(const Common::UString &scene) : _scene(scene), _rootNode(0), _visible(false) {
+Renderable::Renderable(const Common::UString &scene) : _scene(scene), _rootNode(0), _visible(false), _selectable(false) {
 	_basePosition[0] = 0.0;
 	_basePosition[1] = 0.0;
 	_basePosition[2] = 0.0;
@@ -185,6 +185,10 @@ void Renderable::showBoundingBox(bool show) {
 		return;
 
 	_rootNode->showBoundingBox(show);
+}
+
+void Renderable::setSelectable(bool selectable) {
+	_selectable = selectable;
 }
 
 void Renderable::destroyAnimation(const Common::UString &name) {
