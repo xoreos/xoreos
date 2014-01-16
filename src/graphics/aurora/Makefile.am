@@ -14,6 +14,7 @@ noinst_HEADERS = \
                  model_witcher.h \
                  texturefont.h \
                  ttffont.h \
+                 abcfont.h \
                  fontman.h \
                  text.h \
                  $(EMPTY)
@@ -29,6 +30,7 @@ libaurora_la_SOURCES = \
                        model_witcher.cpp \
                        texturefont.cpp \
                        ttffont.cpp \
+                       abcfont.cpp \
                        fontman.cpp \
                        text.cpp \
                        $(EMPTY)

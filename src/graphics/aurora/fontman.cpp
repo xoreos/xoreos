@@ -33,6 +33,7 @@
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/texturefont.h"
 #include "graphics/aurora/ttffont.h"
+#include "graphics/aurora/abcfont.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::FontManager)
 
@@ -188,6 +189,8 @@ ManagedFont *FontManager::createFont(FontFormat format,
 
 	if (format == kFontFormatTexture)
 		return new ManagedFont(new TextureFont(name));
+	if (format == kFontFormatABC)
+		return new ManagedFont(new ABCFont(name));
 	if (format == kFontFormatTTF)
 		return new ManagedFont(new TTFFont(name, height));
 
