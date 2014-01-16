@@ -21,6 +21,7 @@ noinst_HEADERS = \
                  cursorman.h \
                  cameraman.h \
                  renderable.h \
+                 ttf.h \
                  font.h \
                  guiman.h \
                  $(EMPTY)
@@ -36,6 +37,7 @@ libgraphics_la_SOURCES = \
                          cursorman.cpp \
                          cameraman.cpp \
                          renderable.cpp \
+                         ttf.cpp \
                          font.cpp \
                          guiman.cpp \
                          $(EMPTY)

@@ -13,6 +13,7 @@ noinst_HEADERS = \
                  model_kotor.h \
                  model_witcher.h \
                  texturefont.h \
+                 ttffont.h \
                  fontman.h \
                  text.h \
                  $(EMPTY)
@@ -27,6 +28,7 @@ libaurora_la_SOURCES = \
                        model_kotor.cpp \
                        model_witcher.cpp \
                        texturefont.cpp \
+                       ttffont.cpp \
                        fontman.cpp \
                        text.cpp \
                        $(EMPTY)

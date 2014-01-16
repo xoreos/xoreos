@@ -32,6 +32,7 @@
 
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/texturefont.h"
+#include "graphics/aurora/ttffont.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::FontManager)
 
@@ -179,11 +180,16 @@ void FontManager::release(FontHandle &handle) {
 ManagedFont *FontManager::createFont(FontFormat format,
 		const Common::UString &name, int height) {
 
+	if (name == kSystemFontMono)
+		return new ManagedFont(new TTFFont(Common::getSystemFontMono(), height));
+
 	if (format == kFontFormatUnknown)
 		throw Common::Exception("Font format unknown (%s)", name.c_str());
 
 	if (format == kFontFormatTexture)
 		return new ManagedFont(new TextureFont(name));
+	if (format == kFontFormatTTF)
+		return new ManagedFont(new TTFFont(name, height));
 
 	throw Common::Exception("Invalid font format %d (%s)", format, name.c_str());
 	return 0;
