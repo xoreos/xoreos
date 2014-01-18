@@ -169,7 +169,7 @@ public:
 		memset(buffer->lock(Ogre::HardwareBuffer::HBL_DISCARD), 0, buffer->getSizeInBytes());
 		buffer->unlock();
 
-		_videoMaterial = Ogre::MaterialManager::getSingleton().create(nameVideo.c_str(), "General");
+		_videoMaterial = MaterialMan.createDynamic();
 
 		Ogre::TextureUnitState *texState = _videoMaterial->getTechnique(0)->getPass(0)->createTextureUnitState();
 		texState->setTexture(_videoTexture);

@@ -39,6 +39,7 @@
 #include "common/threads.h"
 
 #include "graphics/graphics.h"
+#include "graphics/materialman.h"
 #include "graphics/cursorman.h"
 #include "graphics/cursor.h"
 
@@ -62,7 +63,7 @@ void CursorManager::init() {
 	if (_ready)
 		return;
 
-	_material = Ogre::MaterialManager::getSingleton().create("xoreos/MouseCursor", "General");
+	_material = MaterialMan.createDynamic();
 	_material->getTechnique(0)->getPass(0)->createTextureUnitState();
 
 	_container = (Ogre::OverlayContainer *) Ogre::OverlayManager::getSingletonPtr()->createOverlayElement("Panel", "xoreos/MouseCursor");
