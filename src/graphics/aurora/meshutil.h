@@ -48,9 +48,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Ogre::SceneManager &getOgreSceneManager();
 Ogre::MeshManager &getOgreMeshManager();
-
 
 struct VertexDeclaration {
 	bool textureUVW;

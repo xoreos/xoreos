@@ -45,6 +45,7 @@
 
 #include "aurora/resman.h"
 
+#include "graphics/util.h"
 #include "graphics/materialman.h"
 
 #include "graphics/aurora/model_kotor.h"

@@ -30,10 +30,19 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
+#include <OgreRoot.h>
+#include <OgreSceneManager.h>
+#include <OgreThreadHeaders.h>
+
 #include "graphics/types.h"
 
 #include "common/types.h"
 #include "common/singleton.h"
+
+/** Macro to lock the SceneManager / frame rendering for the remainder of the current scope.
+    Note: To avoid deadlocks, never use the RequestManager to force a function to run in the
+          main thread after the SceneManager has been locked! */
+#define LOCK_FRAME() OGRE_LOCK_MUTEX(Ogre::Root::getSingleton().getSceneManager("world")->sceneGraphMutex)
 
 namespace Common {
 	class UString;

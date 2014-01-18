@@ -215,10 +215,6 @@ void createMesh(Ogre::SubMesh *mesh, uint16 vertexCount, uint16 faceCount,
 	createMesh(mesh, vertexDecl);
 }
 
-Ogre::SceneManager &getOgreSceneManager() {
-	return *Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;
-}
-
 Ogre::MeshManager &getOgreMeshManager() {
 	return Ogre::MeshManager::getSingleton();
 }

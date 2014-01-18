@@ -31,9 +31,9 @@
 #include <OgreAnimation.h>
 #include <OgreSceneManager.h>
 
+#include "graphics/util.h"
+
 #include "graphics/aurora/renderable.h"
-#include "graphics/aurora/sceneman.h"
-#include "graphics/aurora/meshutil.h"
 
 namespace Graphics {
 

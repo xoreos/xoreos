@@ -38,11 +38,12 @@
 #include "common/stream.h"
 #include "common/uuid.h"
 
+#include "graphics/util.h"
 #include "graphics/materialman.h"
 
+#include "graphics/aurora/types.h"
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/meshutil.h"
-#include "graphics/aurora/sceneman.h"
 
 namespace Graphics {
 

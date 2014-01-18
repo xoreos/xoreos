@@ -30,19 +30,10 @@
 #ifndef GRAPHICS_AURORA_SCENEMAN_H
 #define GRAPHICS_AURORA_SCENEMAN_H
 
-#include <OgreRoot.h>
-#include <OgreSceneManager.h>
-#include <OgreThreadHeaders.h>
-
 #include "common/ustring.h"
 #include "common/singleton.h"
 
 #include "graphics/aurora/types.h"
-
-/** Macro to lock the SceneManager / frame rendering for the remainer of the current scope.
-    Note: To avoid deadlocks, never use the RequestManager to force a function to run in the
-          main thread after the SceneManager has been locked! */
-#define LOCK_FRAME() OGRE_LOCK_MUTEX(Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second->sceneGraphMutex)
 
 namespace Graphics {
 

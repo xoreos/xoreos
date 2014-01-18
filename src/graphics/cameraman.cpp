@@ -33,6 +33,7 @@
 #include <OgreRenderWindow.h>
 
 #include "graphics/cameraman.h"
+#include "graphics/util.h"
 
 DECLARE_SINGLETON(Graphics::CameraManager)
 
@@ -46,11 +47,7 @@ CameraManager::~CameraManager() {
 }
 
 void CameraManager::init() {
-	Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;
-	if (!scene)
-		return;
-
-	_camera = scene->createCamera("camera");
+	_camera = getOgreSceneManager().createCamera("camera");
 
 	_camera->setNearClipDistance(1.0);
 	_camera->setFarClipDistance(1000.0);
@@ -58,12 +55,8 @@ void CameraManager::init() {
 }
 
 void CameraManager::deinit() {
-	Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;
-	if (!scene)
-		return;
-
 	if (_camera)
-		scene->destroyCamera(_camera);
+		getOgreSceneManager().destroyCamera(_camera);
 
 	_camera = 0;
 }

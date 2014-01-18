@@ -45,6 +45,7 @@
 #include "common/filepath.h"
 #include "common/configman.h"
 
+#include "graphics/util.h"
 #include "graphics/cursorman.h"
 #include "graphics/cameraman.h"
 #include "graphics/renderer.h"
@@ -76,28 +77,20 @@ private:
 
 public:
 	bool frameStarted(const Ogre::FrameEvent &event) {
-		Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;
-		if (!scene)
-			return false;
-
-		OGRE_LOCK_MUTEX(scene->sceneGraphMutex);
+		LOCK_FRAME();
 
 		_frameTimes.push_back(event.timeSinceLastFrame);
 		if (_frameTimes.size() > kFrameTimeAverageCount)
 			_frameTimes.pop_front();
 
-		for (Ogre::AnimationStateIterator anims = scene->getAnimationStateIterator(); anims.hasMoreElements(); anims.moveNext())
+		for (Ogre::AnimationStateIterator anims = getOgreSceneManager().getAnimationStateIterator(); anims.hasMoreElements(); anims.moveNext())
 			anims.current()->second->addTime(event.timeSinceLastFrame);
 
 		return true;
 	}
 
 	double getAverageFrameTime() const {
-		Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManagerIterator().begin()->second;
-		if (!scene)
-			return 0.0;
-
-		OGRE_LOCK_MUTEX(scene->sceneGraphMutex);
+		LOCK_FRAME();
 
 		double average = 0.0;
 		for (std::list<double>::const_iterator f = _frameTimes.begin(); f != _frameTimes.end(); ++f)
@@ -313,7 +306,7 @@ void Renderer::stuffOgreIntoSDL(SDL_Window &screen, bool vsync, int fsaa) {
 }
 
 void Renderer::createScene() {
-	_sceneManager = _root->createSceneManager(Ogre::ST_GENERIC);
+	_sceneManager = _root->createSceneManager(Ogre::ST_GENERIC, "world");
 	_sceneManager->addRenderQueueListener(_overlaySystem);
 
 	CameraMan.init();
@@ -385,7 +378,7 @@ bool Renderer::getRenderStatistics(double &averageFrameTime, double &averageFPS)
 	if (!_sceneManager)
 		return false;
 
-	OGRE_LOCK_MUTEX(_sceneManager->sceneGraphMutex);
+	LOCK_FRAME();
 
 	averageFrameTime = getAverageFrameTime();
 	averageFPS       = getAverageFPS();

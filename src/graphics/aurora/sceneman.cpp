@@ -30,6 +30,7 @@
 #include "common/error.h"
 #include "common/threads.h"
 
+#include "graphics/util.h"
 #include "graphics/cameraman.h"
 
 #include "graphics/aurora/meshutil.h"
