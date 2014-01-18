@@ -39,8 +39,7 @@
 #include "common/ustring.h"
 
 #include "graphics/meshutil.h"
-
-#include "graphics/aurora/renderable.h"
+#include "graphics/renderable.h"
 
 namespace Ogre {
 	class SceneNode;

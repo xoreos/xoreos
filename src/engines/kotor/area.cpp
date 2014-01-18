@@ -386,7 +386,7 @@ void Area::loadObjectModels() {
 }
 
 Engines::KotOR::Object *Area::getObjectAt(int x, int y, float &distance) const {
-	Graphics::Aurora::Renderable *r = SceneMan.getRenderableAt(x, y, Graphics::Aurora::kSelectableRenderable, distance);
+	Graphics::Renderable *r = SceneMan.getRenderableAt(x, y, Graphics::Aurora::kSelectableRenderable, distance);
 	if (!r)
 		return 0;
 

@@ -23,7 +23,7 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/aurora/renderable.cpp
+/** @file graphics/renderable.cpp
  *  Base class for renderable objects.
  */
 
@@ -32,12 +32,9 @@
 #include <OgreSceneManager.h>
 
 #include "graphics/util.h"
-
-#include "graphics/aurora/renderable.h"
+#include "graphics/renderable.h"
 
 namespace Graphics {
-
-namespace Aurora {
 
 Renderable::Renderable() : _rootNode(0), _visible(false) {
 	_basePosition[0] = 0.0;
@@ -203,7 +200,5 @@ void Renderable::destroyAnimation(Ogre::Animation *anim) {
 
 	destroyAnimation(anim->getName().c_str());
 }
-
-} // End of namespace Aurora
 
 } // End of namespace Graphics

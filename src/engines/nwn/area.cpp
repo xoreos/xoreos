@@ -498,7 +498,7 @@ void Area::loadCreatures(const Aurora::GFFList &list) {
 }
 
 Engines::NWN::Object *Area::getObjectAt(int x, int y, float &distance) const {
-	Graphics::Aurora::Renderable *r = SceneMan.getRenderableAt(x, y, Graphics::Aurora::kSelectableRenderable, distance);
+	Graphics::Renderable *r = SceneMan.getRenderableAt(x, y, Graphics::Aurora::kSelectableRenderable, distance);
 	if (!r)
 		return 0;
 

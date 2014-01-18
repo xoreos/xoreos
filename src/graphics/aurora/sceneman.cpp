@@ -33,9 +33,9 @@
 #include "graphics/util.h"
 #include "graphics/meshutil.h"
 #include "graphics/cameraman.h"
+#include "graphics/renderable.h"
 
 #include "graphics/aurora/sceneman.h"
-#include "graphics/aurora/renderable.h"
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/model_nwn.h"

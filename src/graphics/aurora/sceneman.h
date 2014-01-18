@@ -37,9 +37,10 @@
 
 namespace Graphics {
 
+class Renderable;
+
 namespace Aurora {
 
-class Renderable;
 class Cube;
 class Model;
 

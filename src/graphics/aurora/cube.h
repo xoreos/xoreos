@@ -30,7 +30,7 @@
 #ifndef GRAPHICS_AURORA_CUBE_H
 #define GRAPHICS_AURORA_CUBE_H
 
-#include "graphics/aurora/renderable.h"
+#include "graphics/renderable.h"
 
 namespace Ogre {
 	class Entity;

@@ -5,7 +5,6 @@ noinst_LTLIBRARIES = libaurora.la
 noinst_HEADERS = \
                  types.h \
                  sceneman.h \
-                 renderable.h \
                  cube.h \
                  model.h \
                  model_nwn.h \
@@ -16,7 +15,6 @@ noinst_HEADERS = \
 
 libaurora_la_SOURCES = \
                        sceneman.cpp \
-                       renderable.cpp \
                        cube.cpp \
                        model.cpp \
                        model_nwn.cpp \

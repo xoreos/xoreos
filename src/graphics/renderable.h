@@ -23,12 +23,12 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/aurora/renderable.h
+/** @file graphics/renderable.h
  *  Base class for renderable objects.
  */
 
-#ifndef GRAPHICS_AURORA_RENDERABLE_H
-#define GRAPHICS_AURORA_RENDERABLE_H
+#ifndef GRAPHICS_RENDERABLE_H
+#define GRAPHICS_RENDERABLE_H
 
 #include "common/ustring.h"
 
@@ -38,8 +38,6 @@ namespace Ogre {
 }
 
 namespace Graphics {
-
-namespace Aurora {
 
 class Renderable {
 public:
@@ -102,8 +100,6 @@ protected:
 	void destroyAnimation(Ogre::Animation *anim);
 };
 
-} // End of namespace Aurora
-
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_RENDERABLE_H
+#endif // GRAPHICS_RENDERABLE_H
