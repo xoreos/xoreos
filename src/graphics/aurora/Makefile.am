@@ -4,7 +4,6 @@ noinst_LTLIBRARIES = libaurora.la
 
 noinst_HEADERS = \
                  types.h \
-                 meshutil.h \
                  sceneman.h \
                  renderable.h \
                  cube.h \
@@ -16,7 +15,6 @@ noinst_HEADERS = \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
-                       meshutil.cpp \
                        sceneman.cpp \
                        renderable.cpp \
                        cube.cpp \

@@ -39,11 +39,11 @@
 #include "common/uuid.h"
 
 #include "graphics/util.h"
+#include "graphics/meshutil.h"
 #include "graphics/materialman.h"
 
 #include "graphics/aurora/types.h"
 #include "graphics/aurora/model.h"
-#include "graphics/aurora/meshutil.h"
 
 namespace Graphics {
 

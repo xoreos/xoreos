@@ -23,12 +23,12 @@
  * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
  */
 
-/** @file graphics/aurora/meshutil.h
+/** @file graphics/meshutil.h
  *  A scene manager.
  */
 
-#ifndef GRAPHICS_AURORA_MESHUTIL_H
-#define GRAPHICS_AURORA_MESHUTIL_H
+#ifndef GRAPHICS_MESHUTIL_H
+#define GRAPHICS_MESHUTIL_H
 
 #include <vector>
 
@@ -45,8 +45,6 @@ namespace Ogre {
 }
 
 namespace Graphics {
-
-namespace Aurora {
 
 Ogre::MeshManager &getOgreMeshManager();
 
@@ -75,8 +73,6 @@ void createMesh(Ogre::SubMesh *mesh, uint16 vertexCount, uint16 faceCount,
                 const float *vertices, const float *normals, const uint16 *indices,
                 const float *texCoords1 = 0, const float *texCoords2 = 0, const float *texCoords3 = 0);
 
-} // End of namespace Aurora
-
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_MESHUTIL_H
+#endif // GRAPHICS_MESHUTIL_H

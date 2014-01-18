@@ -11,6 +11,7 @@ noinst_HEADERS = \
                  macosx/macosx.h \
                  types.h \
                  util.h \
+                 meshutil.h \
                  graphics.h \
                  renderer.h \
                  yuv_to_rgb.h \
@@ -22,6 +23,7 @@ noinst_HEADERS = \
                  $(EMPTY)
 
 libgraphics_la_SOURCES = \
+                         meshutil.cpp \
                          graphics.cpp \
                          renderer.cpp \
                          yuv_to_rgb.cpp \

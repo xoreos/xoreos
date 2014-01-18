@@ -31,9 +31,9 @@
 #include "common/threads.h"
 
 #include "graphics/util.h"
+#include "graphics/meshutil.h"
 #include "graphics/cameraman.h"
 
-#include "graphics/aurora/meshutil.h"
 #include "graphics/aurora/sceneman.h"
 #include "graphics/aurora/renderable.h"
 #include "graphics/aurora/cube.h"

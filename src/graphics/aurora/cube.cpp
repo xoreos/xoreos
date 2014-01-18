@@ -41,10 +41,10 @@
 #include "common/uuid.h"
 
 #include "graphics/util.h"
+#include "graphics/meshutil.h"
 #include "graphics/materialman.h"
 
 #include "graphics/aurora/types.h"
-#include "graphics/aurora/meshutil.h"
 #include "graphics/aurora/cube.h"
 
 static const float  kSide1Vertices[] = { -1, -1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1 };
