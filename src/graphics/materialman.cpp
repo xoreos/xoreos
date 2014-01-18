@@ -35,6 +35,7 @@
 #include "common/ustring.h"
 #include "common/error.h"
 #include "common/util.h"
+#include "common/uuid.h"
 #include "common/threads.h"
 
 #include "graphics/textureman.h"
@@ -51,6 +52,8 @@ MaterialDeclaration::MaterialDeclaration() {
 }
 
 void MaterialDeclaration::reset() {
+	dynamic = false;
+
 	ambient  [0] = 1.0; ambient  [1] = 1.0; ambient  [2] = 1.0;
 	diffuse  [0] = 1.0; diffuse  [1] = 1.0; diffuse  [2] = 1.0; diffuse [3] = 1.0;
 	specular [0] = 1.0; specular [1] = 1.0; specular [2] = 1.0; specular[3] = 1.0;
@@ -79,9 +82,10 @@ MaterialManager::MaterialManager() {
 MaterialManager::~MaterialManager() {
 }
 
-Ogre::MaterialPtr MaterialManager::get(const Common::UString &texture) {
+Ogre::MaterialPtr MaterialManager::get(const Common::UString &texture, bool dynamic) {
 	MaterialDeclaration decl;
 
+	decl.dynamic = dynamic;
 	decl.textures.push_back(texture);
 
 	return get(decl);
@@ -96,25 +100,52 @@ Ogre::MaterialPtr MaterialManager::get(const MaterialDeclaration &decl) {
 		return RequestMan.callInMainThread(functor);
 	}
 
-	Common::UString name = canonicalName(decl);
+	Common::UString name;
+	if (!decl.dynamic) {
+		name = canonicalName(decl);
 
-	Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().getByName(name.c_str());
-	if (!material.isNull())
-		return material;
+		Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().getByName(name.c_str());
+		if (!material.isNull())
+			return material;
 
-	material = Ogre::MaterialManager::getSingleton().create(name.c_str(), "General");
+	} else
+		name = dynamicName();
+
+	Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(name.c_str(), "General");
 
 	create(decl, material);
 
 	return material;
 }
 
-Ogre::MaterialPtr MaterialManager::getSolidColor(float r, float g, float b, float a) {
+Ogre::MaterialPtr MaterialManager::getSolidColor(float r, float g, float b, float a, bool dynamic) {
 	MaterialDeclaration decl;
 
+	decl.dynamic = dynamic;
 	decl.diffuse[0] = r; decl.diffuse[1] = g; decl.diffuse[2] = b; decl.diffuse[3] = a;
 
 	return get(decl);
+}
+
+Ogre::MaterialPtr MaterialManager::createDynamic() {
+	Common::UString name = dynamicName();
+
+	return Ogre::MaterialManager::getSingleton().create(name.c_str(), "General");
+}
+
+bool MaterialManager::isDynamic(const Ogre::MaterialPtr &material) {
+	assert(!material.isNull());
+
+	return !Common::UString(material->getName().c_str()).beginsWith("static/");
+}
+
+Ogre::MaterialPtr MaterialManager::makeDynamic(Ogre::MaterialPtr material) {
+	if (isDynamic(material))
+		return material;
+
+	Common::UString name = dynamicName();
+
+	return material->clone(name.c_str());
 }
 
 void MaterialManager::createSolidColor(const MaterialDeclaration &decl, Ogre::MaterialPtr material) {
@@ -226,10 +257,14 @@ static Common::UString concat(const bool *b, uint n) {
 }
 
 Common::UString MaterialManager::canonicalName(const MaterialDeclaration &decl) {
-	return concat(decl.textures) +
+	return Common::UString("static/") + concat(decl.textures) +
 	       concat(decl.ambient, 3) + concat(decl.diffuse, 4) + concat(decl.specular, 4) +
 	       concat(decl.selfIllum, 3) + concat(&decl.shininess, 1) +
 	       concat(&decl.receiveShadows, 1) + concat(&decl.writeColor, 1) + concat(&decl.writeDepth, 1);
+}
+
+Common::UString MaterialManager::dynamicName() {
+	return Common::UString("dynamic/") + Common::generateIDRandomString();
 }
 
 } // End of namespace Graphics

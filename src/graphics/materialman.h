@@ -41,6 +41,8 @@
 namespace Graphics {
 
 struct MaterialDeclaration {
+	bool dynamic;
+
 	float ambient[3];
 	float diffuse[4];
 	float specular[4];
@@ -63,25 +65,41 @@ struct MaterialDeclaration {
 	void trimTextures();
 };
 
-/** The global material manager. */
+/** The global material manager.
+ *
+ *  A material can be either static or dynamic. A static material won't change
+ *  during its lifetime, and therefore only one instance of a material with
+ *  the exact same properties will exist. A dynamic material can change; each
+ *  dynamic material is its own unique instance.
+ */
 class MaterialManager : public Common::Singleton<MaterialManager> {
 public:
 	MaterialManager();
 	~MaterialManager();
 
+	/** Is this a dynamic material? */
+	bool isDynamic(const Ogre::MaterialPtr &material);
+
 	/** Get/Load a material with a single texture. */
-	Ogre::MaterialPtr get(const Common::UString &texture);
+	Ogre::MaterialPtr get(const Common::UString &texture, bool dynamic = false);
 	/** Get/Load a more complex material. */
 	Ogre::MaterialPtr get(const MaterialDeclaration &decl);
 
+	/** Create a dynamic material. */
+	Ogre::MaterialPtr createDynamic();
+
+	/** Convert a static material into a dynamic material. */
+	Ogre::MaterialPtr makeDynamic(Ogre::MaterialPtr material);
+
 	/** Get a default material with a solid color. */
-	Ogre::MaterialPtr getSolidColor(float r, float g, float b, float a = 1.0);
+	Ogre::MaterialPtr getSolidColor(float r, float g, float b, float a = 1.0, bool dynamic = false);
 
 private:
 	void create(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
 	void createSolidColor(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
 
 	Common::UString canonicalName(const MaterialDeclaration &decl);
+	Common::UString dynamicName();
 };
 
 } // End of namespace Graphics
