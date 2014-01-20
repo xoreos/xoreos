@@ -36,7 +36,7 @@
 
 namespace Graphics {
 
-Renderable::Renderable() : _rootNode(0), _visible(false) {
+Renderable::Renderable(const Common::UString &scene) : _scene(scene), _rootNode(0), _visible(false) {
 	_basePosition[0] = 0.0;
 	_basePosition[1] = 0.0;
 	_basePosition[2] = 0.0;
@@ -188,10 +188,10 @@ void Renderable::showBoundingBox(bool show) {
 }
 
 void Renderable::destroyAnimation(const Common::UString &name) {
-	if (getOgreSceneManager().hasAnimationState(name.c_str()))
-		getOgreSceneManager().destroyAnimationState(name.c_str());
-	if (getOgreSceneManager().hasAnimation(name.c_str()))
-		getOgreSceneManager().destroyAnimation(name.c_str());
+	if (getOgreSceneManager(_scene).hasAnimationState(name.c_str()))
+		getOgreSceneManager(_scene).destroyAnimationState(name.c_str());
+	if (getOgreSceneManager(_scene).hasAnimation(name.c_str()))
+		getOgreSceneManager(_scene).destroyAnimation(name.c_str());
 }
 
 void Renderable::destroyAnimation(Ogre::Animation *anim) {

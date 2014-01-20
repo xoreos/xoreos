@@ -50,7 +50,7 @@ namespace Aurora {
 
 class Model_NWN2 : public Model {
 public:
-	Model_NWN2(const Common::UString &name);
+	Model_NWN2(const Common::UString &name, const Common::UString &scene = "world");
 	~Model_NWN2();
 
 private:

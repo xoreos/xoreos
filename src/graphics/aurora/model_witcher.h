@@ -50,7 +50,7 @@ namespace Aurora {
 
 class Model_Witcher : public Model {
 public:
-	Model_Witcher(const Common::UString &name);
+	Model_Witcher(const Common::UString &name, const Common::UString &scene = "world");
 	~Model_Witcher();
 
 private:

@@ -207,8 +207,8 @@ Model_NWN::MeshASCII::MeshASCII() : vCount(0), tCount(0), faceCount(0) {
 }
 
 
-Model_NWN::Model_NWN(const Common::UString &name, const Common::UString &texture) :
-		_fileName(name) {
+Model_NWN::Model_NWN(const Common::UString &name, const Common::UString &texture, const Common::UString &scene) :
+	Model(scene), _fileName(name) {
 
 	ParserContext ctx(name, texture);
 
@@ -273,7 +273,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	_superModelName.readFixedASCII(*ctx.mdl, 64);
 
-	_rootNode = getOgreSceneManager().getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
+	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
 	_rootNode->setVisible(false);
 
 	_states.insert(std::make_pair("", new State));
@@ -293,7 +293,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 }
 
 void Model_NWN::loadASCII(ParserContext &ctx) {
-	_rootNode = getOgreSceneManager().getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
+	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
 	_rootNode->setVisible(false);
 
 	_states.insert(std::make_pair("", new State));
@@ -834,7 +834,7 @@ void Model_NWN::readBinaryAnim(ParserContext &ctx, uint32 offset) {
 	float animLength = ctx.mdl->readIEEEFloatLE();
 	float transTime  = ctx.mdl->readIEEEFloatLE();
 
-	ctx.state->animation = getOgreSceneManager().createAnimation(Common::generateIDRandomString().c_str(), animLength);
+	ctx.state->animation = getOgreSceneManager(_scene).createAnimation(Common::generateIDRandomString().c_str(), animLength);
 
 	Common::UString animRoot;
 	animRoot.readFixedASCII(*ctx.mdl, 64);
@@ -845,7 +845,7 @@ void Model_NWN::readBinaryAnim(ParserContext &ctx, uint32 offset) {
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	loadBinaryNode(ctx, _rootNode);
 
-	ctx.state->animationState = getOgreSceneManager().createAnimationState(ctx.state->animation->getName());
+	ctx.state->animationState = getOgreSceneManager(_scene).createAnimationState(ctx.state->animation->getName());
 	ctx.state->animationState->setEnabled(false);
 }
 

@@ -60,9 +60,9 @@ public:
 	void destroy(Renderable *r);
 
 	/** Create a simple cube with a rotation animation. */
-	Cube *createCube(const Common::UString &texture);
+	Cube *createCube(const Common::UString &texture, const Common::UString &scene = "world");
 	/** Create a complex Aurora model. */
-	Model *createModel(const Common::UString &model, const Common::UString &texture = "");
+	Model *createModel(const Common::UString &model, const Common::UString &texture = "", const Common::UString &scene = "world");
 
 	/** Return the nearest renderable at these screen coordinates. */
 	Renderable *getRenderableAt(int x, int y, SelectableType type, float &distance);

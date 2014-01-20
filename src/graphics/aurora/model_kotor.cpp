@@ -144,8 +144,8 @@ void Model_KotOR::ParserContext::newNode() {
 }
 
 
-Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, const Common::UString &texture) :
-	_fileName(name) {
+Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, const Common::UString &texture, const Common::UString &scene) :
+	Model(scene), _fileName(name) {
 
 	ParserContext ctx(name, kotor2, texture);
 
@@ -220,7 +220,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	readStrings(*ctx.mdl, nameOffsets, ctx.offModelData, ctx.names);
 
-	_rootNode = getOgreSceneManager().getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
+	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
 	_rootNode->setVisible(false);
 
 	_states.insert(std::make_pair("", new State));

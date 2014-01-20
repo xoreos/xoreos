@@ -30,14 +30,12 @@
 #ifndef GRAPHICS_AURORA_CUBE_H
 #define GRAPHICS_AURORA_CUBE_H
 
+#include "common/ustring.h"
+
 #include "graphics/renderable.h"
 
 namespace Ogre {
 	class Entity;
-}
-
-namespace Common {
-	class UString;
 }
 
 namespace Graphics {
@@ -46,7 +44,7 @@ namespace Aurora {
 
 class Cube : public Renderable {
 public:
-	Cube(const Common::UString &texture);
+	Cube(const Common::UString &texture, const Common::UString &scene = "world");
 	~Cube();
 
 	void startRotate();

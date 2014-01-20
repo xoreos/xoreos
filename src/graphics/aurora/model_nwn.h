@@ -54,7 +54,7 @@ namespace Aurora {
 
 class Model_NWN : public Model {
 public:
-	Model_NWN(const Common::UString &name, const Common::UString &texture = "");
+	Model_NWN(const Common::UString &name, const Common::UString &texture = "", const Common::UString &scene = "world");
 	~Model_NWN();
 
 private:

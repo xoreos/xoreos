@@ -73,7 +73,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Cube::Cube(const Common::UString &texture) : _entity(0) {
+Cube::Cube(const Common::UString &texture, const Common::UString &scene) : Renderable(scene), _entity(0) {
 	Common::UString name = Common::generateIDRandomString();
 
 	try {
@@ -105,7 +105,7 @@ Cube::Cube(const Common::UString &texture) : _entity(0) {
 
 		// Create entity, put the requested material on it and attach it to a scene node
 
-		_entity = getOgreSceneManager().createEntity(mesh);
+		_entity = getOgreSceneManager(_scene).createEntity(mesh);
 		_entity->setQueryFlags(kSelectableNone);
 
 		_entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
@@ -114,8 +114,7 @@ Cube::Cube(const Common::UString &texture) : _entity(0) {
 
 		_entity->setMaterial(material);
 
-		//_rootNode = getOgreSceneManager().createSceneNode(name.c_str());
-		_rootNode = getOgreSceneManager().getRootSceneNode()->createChildSceneNode(name.c_str());
+		_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(name.c_str());
 
 		_rootNode->attachObject(_entity);
 		_rootNode->setVisible(false);
@@ -125,7 +124,7 @@ Cube::Cube(const Common::UString &texture) : _entity(0) {
 		float animLength = 4.0f;
 		int animSubDivisions = 4;
 
-		Ogre::Animation *anim = getOgreSceneManager().createAnimation(name.c_str(), animLength);
+		Ogre::Animation *anim = getOgreSceneManager(_scene).createAnimation(name.c_str(), animLength);
 
 		Ogre::NodeAnimationTrack *trackX = anim->createNodeTrack(0, _rootNode);
 		Ogre::NodeAnimationTrack *trackY = anim->createNodeTrack(1, _rootNode);
@@ -144,7 +143,7 @@ Cube::Cube(const Common::UString &texture) : _entity(0) {
 			trackZ->createNodeKeyFrame(i * timePerSub)->setRotation(rotZ);
 		}
 
-		Ogre::AnimationState *animState = getOgreSceneManager().createAnimationState(name.c_str());
+		Ogre::AnimationState *animState = getOgreSceneManager(_scene).createAnimationState(name.c_str());
 		animState->setEnabled(false);
 
 	} catch (std::exception &e) {
@@ -158,7 +157,7 @@ Cube::~Cube() {
 
 	setVisible(false);
 
-	Ogre::SceneManager &scene = getOgreSceneManager();
+	Ogre::SceneManager &scene = getOgreSceneManager(_scene);
 
 	destroyAnimation(_rootNode->getName().c_str());
 
@@ -174,11 +173,11 @@ Cube::~Cube() {
 
 void Cube::startRotate() {
 	_rootNode->setInitialState();
-	getOgreSceneManager().getAnimationState(_rootNode->getName())->setEnabled(true);
+	getOgreSceneManager(_scene).getAnimationState(_rootNode->getName())->setEnabled(true);
 }
 
 void Cube::stopRotate() {
-	getOgreSceneManager().getAnimationState(_rootNode->getName())->setEnabled(false);
+	getOgreSceneManager(_scene).getAnimationState(_rootNode->getName())->setEnabled(false);
 }
 
 void Cube::setSelectable(bool selectable) {

@@ -65,7 +65,7 @@ Model::State::State(const Common::UString &n) : name(n), animation(0), animation
 }
 
 
-Model::Model() : _currentState(0) {
+Model::Model(const Common::UString &scene) : Renderable(scene), _currentState(0) {
 }
 
 Model::~Model() {
@@ -75,7 +75,7 @@ Model::~Model() {
 	for (ModelMap::iterator c = _childModels.begin(); c != _childModels.end(); ++c)
 		delete c->second;
 
-	Ogre::SceneManager &scene = getOgreSceneManager();
+	Ogre::SceneManager &scene = getOgreSceneManager(_scene);
 
 	for (StateMap::iterator s = _states.begin(); s != _states.end(); ++s)
 		destroyAnimation(s->second->animation);
@@ -304,7 +304,7 @@ Ogre::Entity *Model::createEntity(const VertexDeclaration &vertexDecl, const Ogr
 
 	mesh->load();
 
-	Ogre::Entity *entity = getOgreSceneManager().createEntity(mesh);
+	Ogre::Entity *entity = getOgreSceneManager(_scene).createEntity(mesh);
 	entity->setQueryFlags(kSelectableNone);
 
 	entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));

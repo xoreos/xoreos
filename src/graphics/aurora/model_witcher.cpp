@@ -99,7 +99,7 @@ void Model_Witcher::ParserContext::newNode() {
 }
 
 
-Model_Witcher::Model_Witcher(const Common::UString &name) : _fileName(name) {
+Model_Witcher::Model_Witcher(const Common::UString &name, const Common::UString &scene) : Model(scene), _fileName(name) {
 	ParserContext ctx(name);
 
 	load(ctx);
@@ -179,7 +179,7 @@ void Model_Witcher::load(ParserContext &ctx) {
 
 	ctx.mdb->skip(16);
 
-	_rootNode = getOgreSceneManager().getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
+	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
 	_rootNode->setVisible(false);
 
 	_states.insert(std::make_pair("", new State));

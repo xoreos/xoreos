@@ -41,7 +41,7 @@ namespace Graphics {
 
 class Renderable {
 public:
-	Renderable();
+	Renderable(const Common::UString &scene = "world");
 	virtual ~Renderable();
 
 	Ogre::SceneNode *getRootNode();
@@ -87,6 +87,8 @@ public:
 	virtual void setSelectable(bool selectable) = 0;
 
 protected:
+	Common::UString _scene;
+
 	Ogre::SceneNode *_rootNode;
 
 	bool _visible;

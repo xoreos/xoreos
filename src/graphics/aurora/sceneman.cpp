@@ -83,9 +83,9 @@ void SceneManager::destroy(Renderable *r) {
 	delete r;
 }
 
-Cube *SceneManager::createCube(const Common::UString &texture) {
+Cube *SceneManager::createCube(const Common::UString &texture, const Common::UString &scene) {
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<Cube *> functor(boost::bind(&SceneManager::createCube, this, texture));
+		Events::MainThreadFunctor<Cube *> functor(boost::bind(&SceneManager::createCube, this, texture, scene));
 
 		return RequestMan.callInMainThread(functor);
 	}
@@ -93,7 +93,7 @@ Cube *SceneManager::createCube(const Common::UString &texture) {
 	Cube *cube = 0;
 	try {
 
-		cube = new Cube(texture);
+		cube = new Cube(texture, scene);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed to create rotating cube with texture \"%s\"", texture.c_str());
@@ -103,12 +103,12 @@ Cube *SceneManager::createCube(const Common::UString &texture) {
 	return cube;
 }
 
-Model *SceneManager::createModel(const Common::UString &model, const Common::UString &texture) {
+Model *SceneManager::createModel(const Common::UString &model, const Common::UString &texture, const Common::UString &scene) {
 	if (model.empty())
 		return 0;
 
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<Model *> functor(boost::bind(&SceneManager::createModel, this, model, texture));
+		Events::MainThreadFunctor<Model *> functor(boost::bind(&SceneManager::createModel, this, model, texture, scene));
 
 		return RequestMan.callInMainThread(functor);
 	}
@@ -117,15 +117,15 @@ Model *SceneManager::createModel(const Common::UString &model, const Common::USt
 	try {
 
 		if      (_modelType == kModelTypeNWN)
-			modelInstance = new Model_NWN(model, texture);
+			modelInstance = new Model_NWN(model, texture, scene);
 		else if (_modelType == kModelTypeKotOR)
-			modelInstance = new Model_KotOR(model, false, texture);
+			modelInstance = new Model_KotOR(model, false, texture, scene);
 		else if (_modelType == kModelTypeKotOR2)
-			modelInstance = new Model_KotOR(model, true, texture);
+			modelInstance = new Model_KotOR(model, true, texture, scene);
 		else if (_modelType == kModelTypeNWN2)
-			modelInstance = new Model_NWN2(model);
+			modelInstance = new Model_NWN2(model, scene);
 		else if (_modelType == kModelTypeTheWitcher)
-			modelInstance = new Model_Witcher(model);
+			modelInstance = new Model_Witcher(model, scene);
 		else
 			throw Common::Exception("No valid model type registered");
 

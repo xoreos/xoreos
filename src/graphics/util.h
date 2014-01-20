@@ -36,12 +36,13 @@
 
 #include "common/types.h"
 #include "common/util.h"
+#include "common/ustring.h"
 #include "common/maths.h"
 
 namespace Graphics {
 
-static inline Ogre::SceneManager &getOgreSceneManager() {
-	Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManager("world");
+static inline Ogre::SceneManager &getOgreSceneManager(const Common::UString &name = "world") {
+	Ogre::SceneManager *scene = Ogre::Root::getSingleton().getSceneManager(name.c_str());
 	assert(scene);
 	return *scene;
 }

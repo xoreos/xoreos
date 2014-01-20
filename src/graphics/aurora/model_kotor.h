@@ -50,7 +50,7 @@ namespace Aurora {
 
 class Model_KotOR : public Model {
 public:
-	Model_KotOR(const Common::UString &name, bool kotor2, const Common::UString &texture = "");
+	Model_KotOR(const Common::UString &name, bool kotor2, const Common::UString &texture = "", const Common::UString &scene = "world");
 	~Model_KotOR();
 
 private:

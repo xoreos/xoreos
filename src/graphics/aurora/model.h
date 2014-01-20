@@ -58,7 +58,7 @@ namespace Aurora {
 
 class Model : public Renderable {
 public:
-	Model();
+	Model(const Common::UString &scene = "world");
 	~Model();
 
 	/** Return the name of every state in this model. */
