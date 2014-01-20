@@ -39,9 +39,17 @@ namespace Engines {
 namespace NWN {
 
 Graphics::Aurora::Model_NWN *createWorldModel(const Common::UString &model, const Common::UString &texture) {
-	Graphics::Aurora::Model_NWN *modelInstance = (Graphics::Aurora::Model_NWN *) SceneMan.createModel(model, texture);
+	Graphics::Aurora::Model_NWN *modelInstance = (Graphics::Aurora::Model_NWN *) SceneMan.createModel(model, texture, "world");
 
 	modelInstance->setBaseOrientation(Common::deg2rad(-90.0), 1.0, 0.0, 0.0);
+
+	return modelInstance;
+}
+
+Graphics::Aurora::Model_NWN *createGUIModel(const Common::UString &model, const Common::UString &texture) {
+	Graphics::Aurora::Model_NWN *modelInstance = (Graphics::Aurora::Model_NWN *) SceneMan.createModel(model, texture, "gui");
+
+	modelInstance->setBaseScale(100.0, 100.0, 1.0);
 
 	return modelInstance;
 }

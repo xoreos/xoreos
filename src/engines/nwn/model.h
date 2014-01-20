@@ -41,6 +41,7 @@ namespace Engines {
 namespace NWN {
 
 Graphics::Aurora::Model_NWN *createWorldModel(const Common::UString &model, const Common::UString &texture = "");
+Graphics::Aurora::Model_NWN *createGUIModel(const Common::UString &model, const Common::UString &texture = "");
 
 void destroyModel(Graphics::Aurora::Model_NWN *model);
 
