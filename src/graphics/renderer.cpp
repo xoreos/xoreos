@@ -48,6 +48,7 @@
 #include "graphics/util.h"
 #include "graphics/cursorman.h"
 #include "graphics/cameraman.h"
+#include "graphics/guiman.h"
 #include "graphics/renderer.h"
 
 #ifdef MACOSX
@@ -148,6 +149,7 @@ void Renderer::destroy() {
 	if (_renderWindow)
 		_renderWindow->removeAllViewports();
 
+	GUIMan.deinit();
 	CursorMan.deinit();
 	CameraMan.deinit();
 
@@ -321,6 +323,7 @@ void Renderer::createScene() {
 	_sceneManager->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
 
 	CursorMan.init();
+	GUIMan.init(_viewPort->getActualWidth(), _viewPort->getActualHeight());
 }
 
 bool Renderer::recreate(SDL_Window &screen, bool vsync, int fsaa) {
@@ -352,6 +355,7 @@ void Renderer::resized(int width, int height) {
 	_renderWindow->windowMovedOrResized();
 
 	CameraMan.setScreenSize(_viewPort->getActualWidth(), _viewPort->getActualHeight());
+	GUIMan.setScreenSize(width, height);
 }
 
 void Renderer::render() {

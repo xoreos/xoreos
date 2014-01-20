@@ -59,6 +59,18 @@ enum PixelFormat {
 	kPixelFormatDXT5 = Ogre::PF_DXT5
 };
 
+enum HorizontalAlign {
+	kHorizontalAlignLeft   = 0,
+	kHorizontalAlignCenter = 1,
+	kHorizontalAlignRight  = 2
+};
+
+enum VerticalAlign {
+	kVerticalAlignTop    = 0,
+	kVerticalAlignCenter = 1,
+	kVerticalAlignBottom = 2
+};
+
 } // End of namespace Graphics
 
 #endif // GRAPHICS_TYPES_H

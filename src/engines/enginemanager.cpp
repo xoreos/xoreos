@@ -43,6 +43,7 @@
 
 #include "graphics/cursorman.h"
 #include "graphics/textureman.h"
+#include "graphics/guiman.h"
 
 #include "graphics/aurora/sceneman.h"
 
@@ -227,6 +228,7 @@ void EngineManager::cleanup(GameInstance &game) const {
 
 		RequestMan.sync();
 
+		GUIMan.clear();
 		SceneMan.clear();
 
 		CursorMan.clear();

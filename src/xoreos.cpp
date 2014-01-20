@@ -49,6 +49,7 @@
 #include "graphics/textureman.h"
 #include "graphics/materialman.h"
 #include "graphics/cameraman.h"
+#include "graphics/guiman.h"
 
 #include "graphics/aurora/sceneman.h"
 
@@ -270,6 +271,7 @@ void deinit() {
 	}
 
 	// Destroy global singletons
+	Graphics::GUIManager::destroy();
 	Graphics::Aurora::SceneManager::destroy();
 
 	Graphics::CursorManager::destroy();
