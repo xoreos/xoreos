@@ -72,17 +72,25 @@ public:
 
 class OgreAnimator : public Ogre::FrameListener {
 private:
-	static const uint kFrameTimeAverageCount = 5;
+	double _lastFPS;
 
-	std::list<double> _frameTimes;
+	double _currentFPSTime;
+	uint   _currentFPS;
 
 public:
+	OgreAnimator() : _lastFPS(0.0), _currentFPSTime(0.0), _currentFPS(0) {
+	}
+
 	bool frameRenderingQueued(const Ogre::FrameEvent &event) {
 		LOCK_FRAME();
 
-		_frameTimes.push_back(event.timeSinceLastFrame);
-		if (_frameTimes.size() > kFrameTimeAverageCount)
-			_frameTimes.pop_front();
+		_currentFPS++;
+		if ((_currentFPSTime += event.timeSinceLastFrame) >= 1.0) {
+			_lastFPS = _currentFPS / _currentFPSTime;
+
+			_currentFPSTime = 0.0;
+			_currentFPS     = 0;
+		}
 
 		for (Ogre::AnimationStateIterator anims = getOgreSceneManager().getAnimationStateIterator(); anims.hasMoreElements(); anims.moveNext())
 			anims.current()->second->addTime(event.timeSinceLastFrame);
@@ -90,22 +98,8 @@ public:
 		return true;
 	}
 
-	double getAverageFrameTime() const {
-		LOCK_FRAME();
-
-		double average = 0.0;
-		for (std::list<double>::const_iterator f = _frameTimes.begin(); f != _frameTimes.end(); ++f)
-			average += *f;
-
-		return average / _frameTimes.size();
-	}
-
-	double getAverageFPS() const {
-		double averageFrameTime = getAverageFrameTime();
-		if (averageFrameTime <= 0.0)
-			return 0.0;
-
-		return 1.0 / averageFrameTime;
+	double getFPS() const {
+		return _lastFPS;
 	}
 };
 
@@ -364,30 +358,11 @@ void Renderer::render() {
 	_root->renderOneFrame();
 }
 
-double Renderer::getAverageFrameTime() const {
+double Renderer::getFPS() const {
 	if (!_animator)
 		return 0.0;
 
-	return _animator->getAverageFrameTime();
-}
-
-double Renderer::getAverageFPS() const {
-	if (!_animator)
-		return 0.0;
-
-	return _animator->getAverageFPS();
-}
-
-bool Renderer::getRenderStatistics(double &averageFrameTime, double &averageFPS) const {
-	if (!_sceneManager)
-		return false;
-
-	LOCK_FRAME();
-
-	averageFrameTime = getAverageFrameTime();
-	averageFPS       = getAverageFPS();
-
-	return true;
+	return _animator->getFPS();
 }
 
 bool Renderer::hasCapability(RenderCapability c) const {

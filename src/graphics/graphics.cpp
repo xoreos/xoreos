@@ -337,25 +337,11 @@ bool GraphicsManager::setGamma(float gamma) {
 	return true;
 }
 
-double GraphicsManager::getAverageFrameTime() const {
+double GraphicsManager::getFPS() const {
 	if (!_renderer)
 		return 0.0;
 
-	return _renderer->getAverageFrameTime();
-}
-
-double GraphicsManager::getAverageFPS() const {
-	if (!_renderer)
-		return 0.0;
-
-	return _renderer->getAverageFPS();
-}
-
-bool GraphicsManager::getRenderStatistics(double &averageFrameTime, double &averageFPS) const {
-	if (!_renderer)
-		return false;
-
-	return _renderer->getRenderStatistics(averageFrameTime, averageFPS);
+	return _renderer->getFPS();
 }
 
 void GraphicsManager::renderScene() {

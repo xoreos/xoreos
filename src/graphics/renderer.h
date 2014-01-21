@@ -71,10 +71,8 @@ public:
 	/** Render one frame. */
 	void render();
 
-	double getAverageFrameTime() const;
-	double getAverageFPS() const;
-
-	bool getRenderStatistics(double &averageFrameTime, double &averageFPS) const;
+	/** Return the number of frames drawn in the last second. */
+	double getFPS() const;
 
 
 private:

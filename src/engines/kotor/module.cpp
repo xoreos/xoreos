@@ -367,11 +367,9 @@ bool Module::handleKeys(const Events::Event &e) {
 			GfxMan.setFSAA((GfxMan.getCurrentFSAA() == 0) ? 2 : (GfxMan.getCurrentFSAA() * 2));
 		else if (e.key.keysym.sym == SDLK_TAB)
 			_area->setHighlightAll(true);
-		else if (e.key.keysym.scancode == SDL_SCANCODE_F) {
-			double averageFrameTime, averageFPS;
-			if (GfxMan.getRenderStatistics(averageFrameTime, averageFPS))
-				warning("FPS: %lf, AverageFrameTime: %lf", averageFPS, averageFrameTime);
-		} else
+		else if (e.key.keysym.scancode == SDL_SCANCODE_F)
+			warning("FPS: %lf", GfxMan.getFPS());
+		else
 			return false;
 	}
 
