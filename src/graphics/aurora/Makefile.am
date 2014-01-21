@@ -17,6 +17,7 @@ noinst_HEADERS = \
                  abcfont.h \
                  fontman.h \
                  text.h \
+                 fps.h \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
@@ -33,4 +34,5 @@ libaurora_la_SOURCES = \
                        abcfont.cpp \
                        fontman.cpp \
                        text.cpp \
+                       fps.cpp \
                        $(EMPTY)
