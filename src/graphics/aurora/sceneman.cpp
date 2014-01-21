@@ -36,6 +36,7 @@
 #include "graphics/renderable.h"
 
 #include "graphics/aurora/sceneman.h"
+#include "graphics/aurora/quad.h"
 #include "graphics/aurora/cube.h"
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/model_nwn.h"
@@ -81,6 +82,16 @@ void SceneManager::destroy(Renderable *r) {
 	}
 
 	delete r;
+}
+
+Quad *SceneManager::createQuad(const Common::UString &texture, const Common::UString &scene) {
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<Quad *> functor(boost::bind(&SceneManager::createQuad, this, texture, scene));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
+	return new Quad(texture, scene);
 }
 
 Cube *SceneManager::createCube(const Common::UString &texture, const Common::UString &scene) {

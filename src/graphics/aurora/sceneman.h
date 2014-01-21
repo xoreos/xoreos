@@ -41,6 +41,7 @@ class Renderable;
 
 namespace Aurora {
 
+class Quad;
 class Cube;
 class Model;
 
@@ -59,6 +60,8 @@ public:
 	/** Destroy a Renderable. */
 	void destroy(Renderable *r);
 
+	/** Create a simple quad. */
+	Quad *createQuad(const Common::UString &texture, const Common::UString &scene = "world");
 	/** Create a simple cube with a rotation animation. */
 	Cube *createCube(const Common::UString &texture, const Common::UString &scene = "world");
 	/** Create a complex Aurora model. */

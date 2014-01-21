@@ -47,11 +47,12 @@ enum ModelType {
 enum SelectableType {
 	kSelectableNone = 0, ///< Nothing.
 
-	kSelectableCube  = 1 << 0, ///< A cube.
-	kSelectableModel = 1 << 1, ///< A model.
+	kSelectableQuad  = 1 << 0, ///< A quad.
+	kSelectableCube  = 1 << 1, ///< A cube.
+	kSelectableModel = 1 << 2, ///< A model.
 
 	/** All renderable. */
-	kSelectableRenderable = kSelectableCube | kSelectableModel
+	kSelectableRenderable = kSelectableQuad | kSelectableCube | kSelectableModel
 };
 
 } // End of namespace Aurora
