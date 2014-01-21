@@ -40,6 +40,8 @@
 
 #include "graphics/graphics.h"
 
+#include "graphics/aurora/fps.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -98,11 +100,17 @@ void SonicEngine::run(const Common::UString &target) {
 
 	status("Successfully initialized the engine");
 
-	// playIntroVideos();
+	playIntroVideos();
+
+	Graphics::Aurora::FPS *fps = 0;
+	if (ConfigMan.getBool("showfps", false))
+		fps = new Graphics::Aurora::FPS;
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
+
+	delete fps;
 }
 
 void SonicEngine::init() {

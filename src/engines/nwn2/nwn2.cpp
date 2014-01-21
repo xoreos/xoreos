@@ -39,6 +39,8 @@
 #include "graphics/cameraman.h"
 
 #include "graphics/aurora/sceneman.h"
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
 #include "graphics/aurora/model_nwn2.h"
 
 #include "sound/sound.h"
@@ -124,6 +126,10 @@ void NWN2Engine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 
+	Graphics::Aurora::FPS *fps = 0;
+	if (ConfigMan.getBool("showfps", false))
+		fps = new Graphics::Aurora::FPS;
+
 	Sound::ChannelHandle channel;
 
 	Common::SeekableReadStream *wav = ResMan.getResource(Aurora::kResourceMusic, "mus_mulsantir");
@@ -195,6 +201,8 @@ void NWN2Engine::run(const Common::UString &target) {
 
 		EventMan.delay(10);
 	}
+
+	delete fps;
 
 	destroyModel(model);
 }
@@ -294,6 +302,8 @@ void NWN2Engine::init() {
 	indexOptionalDirectory("override", 0, 0, 100);
 
 	SceneMan.registerModelType(Graphics::Aurora::kModelTypeNWN2);
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
 }
 
 void NWN2Engine::initCursors() {

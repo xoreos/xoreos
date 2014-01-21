@@ -40,6 +40,8 @@
 #include "graphics/cameraman.h"
 
 #include "graphics/aurora/sceneman.h"
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
 #include "graphics/aurora/model_witcher.h"
 
 #include "sound/sound.h"
@@ -129,6 +131,10 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 
+	Graphics::Aurora::FPS *fps = 0;
+	if (ConfigMan.getBool("showfps", false))
+		fps = new Graphics::Aurora::FPS;
+
 	playSound("menu", Sound::kSoundTypeMusic, true);
 
 	CameraMan.setPosition(0.0, 0.5, 0.0);
@@ -192,6 +198,8 @@ void TheWitcherEngine::run(const Common::UString &target) {
 		EventMan.delay(10);
 	}
 
+	delete fps;
+
 	destroyModel(model);
 }
 
@@ -239,6 +247,8 @@ void TheWitcherEngine::init() {
 	indexOptionalDirectory("data/override", 0, 0, 50);
 
 	SceneMan.registerModelType(Graphics::Aurora::kModelTypeTheWitcher);
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
 }
 
 void TheWitcherEngine::initCursors() {

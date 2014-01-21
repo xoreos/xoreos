@@ -41,6 +41,8 @@
 #include "graphics/cursorman.h"
 
 #include "graphics/aurora/sceneman.h"
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
 
 #include "sound/sound.h"
 
@@ -127,11 +129,17 @@ void NWNEngine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 
+	Graphics::Aurora::FPS *fps = 0;
+	if (ConfigMan.getBool("showfps", false))
+		fps = new Graphics::Aurora::FPS;
+
 	playMenuMusic();
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
+
+	delete fps;
 
 	stopMenuMusic();
 	deinit();
@@ -221,6 +229,8 @@ void NWNEngine::initResources() {
 	TalkMan.addMainTable("dialog");
 
 	SceneMan.registerModelType(Graphics::Aurora::kModelTypeNWN);
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }
 
 void NWNEngine::initCursors() {

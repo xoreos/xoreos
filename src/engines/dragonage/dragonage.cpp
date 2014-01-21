@@ -36,6 +36,8 @@
 
 #include "graphics/cursorman.h"
 
+#include "graphics/aurora/fps.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -112,9 +114,15 @@ void DragonAgeEngine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 
+	Graphics::Aurora::FPS *fps = 0;
+	if (ConfigMan.getBool("showfps", false))
+		fps = new Graphics::Aurora::FPS;
+
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
+
+	delete fps;
 }
 
 void DragonAgeEngine::init() {

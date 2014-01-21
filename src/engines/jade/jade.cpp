@@ -37,6 +37,9 @@
 
 #include "graphics/cursorman.h"
 
+#include "graphics/aurora/fontman.h"
+#include "graphics/aurora/fps.h"
+
 #include "sound/sound.h"
 
 #include "events/events.h"
@@ -116,11 +119,17 @@ void JadeEngine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 
+	Graphics::Aurora::FPS *fps = 0;
+	if (ConfigMan.getBool("showfps", false))
+		fps = new Graphics::Aurora::FPS;
+
 	playSound("musicbank00046", Sound::kSoundTypeMusic, true);
 
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
+
+	delete fps;
 }
 
 void JadeEngine::init() {
@@ -166,6 +175,11 @@ void JadeEngine::init() {
 
 	status("Loading main talk table");
 	TalkMan.addMainTable("dialog");
+
+	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
+	FontMan.addAlias("sava"   , "asian");
+	FontMan.addAlias("cerigo" , "asian");
+	FontMan.addAlias("fnt_gui", "asian");
 }
 
 void JadeEngine::initCursors() {
