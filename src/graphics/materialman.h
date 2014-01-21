@@ -94,12 +94,18 @@ public:
 	/** Get a default material with a solid color. */
 	Ogre::MaterialPtr getSolidColor(float r, float g, float b, float a = 1.0, bool dynamic = false);
 
+	/** Change the material's color modifier. */
+	void setColorModifier(const Ogre::MaterialPtr &material, float r, float g, float b, float a = 1.0);
+
 private:
 	void create(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
 	void createSolidColor(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
 
 	Common::UString canonicalName(const MaterialDeclaration &decl);
 	Common::UString dynamicName();
+
+	Ogre::TextureUnitState *getColorModifier(const Ogre::MaterialPtr &material);
+	Ogre::TextureUnitState *addColorModifier(const Ogre::MaterialPtr &material);
 };
 
 } // End of namespace Graphics

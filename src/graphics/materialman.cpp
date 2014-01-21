@@ -223,6 +223,35 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 	material->setReceiveShadows(decl.receiveShadows);
 }
 
+void MaterialManager::setColorModifier(const Ogre::MaterialPtr &material, float r, float g, float b, float a) {
+	Ogre::TextureUnitState *texState = getColorModifier(material);
+	if (!texState)
+		texState = addColorModifier(material);
+
+	const Ogre::ColourValue color(r, g, b);
+
+	texState->setColourOperationEx(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, color, color, 1.0);
+	texState->setAlphaOperation(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, a, a, 1.0);
+}
+
+Ogre::TextureUnitState *MaterialManager::getColorModifier(const Ogre::MaterialPtr &material) {
+	uint count = material->getTechnique(0)->getPass(0)->getNumTextureUnitStates();
+	for (uint i = 0; i < count; i++) {
+		Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->getTextureUnitState(i);
+		if (texState->getName() == "colormodifier")
+			return texState;
+	}
+
+	return 0;
+}
+
+Ogre::TextureUnitState *MaterialManager::addColorModifier(const Ogre::MaterialPtr &material) {
+	Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
+	texState->setName("colormodifier");
+
+	return texState;
+}
+
 static Common::UString concat(const std::vector<Common::UString> &str) {
 	Common::UString c;
 
