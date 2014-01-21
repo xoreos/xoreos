@@ -77,7 +77,7 @@ private:
 	std::list<double> _frameTimes;
 
 public:
-	bool frameStarted(const Ogre::FrameEvent &event) {
+	bool frameRenderingQueued(const Ogre::FrameEvent &event) {
 		LOCK_FRAME();
 
 		_frameTimes.push_back(event.timeSinceLastFrame);
