@@ -36,12 +36,21 @@
 
 #include "common/ustring.h"
 
+#include "graphics/controllers.h"
+
 namespace Ogre {
 	class SceneNode;
 	class Animation;
 }
 
 namespace Graphics {
+
+enum FadeDirection {
+	kFadeDirectionIn    = kAnimationFunctionIncrease        , ///< Fade in.
+	kFadeDirectionOut   = kAnimationFunctionDecrease        , ///< Fade out.
+	kFadeDirectionInOut = kAnimationFunctionIncreaseDecrease, ///< Fade in, then out again.
+	kFadeDirectionOutIn = kAnimationFunctionDecreaseIncrease  ///< Fade out, then in again.
+};
 
 class Renderable {
 public:
@@ -90,6 +99,11 @@ public:
 	/** Change whether the renderable can be selected (picked) by the user. */
 	virtual void setSelectable(bool selectable);
 
+	/** Fade the renderable. */
+	void fade(FadeDirection direction, float length, bool loop);
+	/** Stop all fading. */
+	void stopFade();
+
 protected:
 	Common::UString _scene;
 
@@ -102,12 +116,17 @@ protected:
 	float _baseOrientation[4];
 	float _baseScale[3];
 
+	Ogre::Controller<Ogre::Real> *_fader;
+
 
 	void destroyAnimation(const Common::UString &name);
 	void destroyAnimation(Ogre::Animation *anim);
 
 	/** Collect all materials used in the renderable, optionally making them dynamic and/or transparent as well. */
 	virtual void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false) = 0;
+
+private:
+	void destroy();
 };
 
 } // End of namespace Graphics

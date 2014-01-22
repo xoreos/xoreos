@@ -95,6 +95,8 @@ public:
 		for (Ogre::AnimationStateIterator anims = getOgreSceneManager().getAnimationStateIterator(); anims.hasMoreElements(); anims.moveNext())
 			anims.current()->second->addTime(event.timeSinceLastFrame);
 
+		Ogre::ControllerManager::getSingleton().updateAllControllers();
+
 		return true;
 	}
 

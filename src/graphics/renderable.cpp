@@ -30,13 +30,19 @@
 #include <OgreSceneNode.h>
 #include <OgreAnimation.h>
 #include <OgreSceneManager.h>
+#include <OgreControllerManager.h>
+
+#include "common/threads.h"
 
 #include "graphics/util.h"
 #include "graphics/renderable.h"
+#include "graphics/materialman.h"
+
+#include "events/requests.h"
 
 namespace Graphics {
 
-Renderable::Renderable(const Common::UString &scene) : _scene(scene), _rootNode(0), _visible(false), _selectable(false) {
+Renderable::Renderable(const Common::UString &scene) : _scene(scene), _rootNode(0), _visible(false), _selectable(false), _fader(0) {
 	_basePosition[0] = 0.0;
 	_basePosition[1] = 0.0;
 	_basePosition[2] = 0.0;
@@ -52,6 +58,65 @@ Renderable::Renderable(const Common::UString &scene) : _scene(scene), _rootNode(
 }
 
 Renderable::~Renderable() {
+	destroy();
+}
+
+void Renderable::destroy() {
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<void> functor(boost::bind(&Renderable::destroy, this));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
+	if (_fader)
+		Ogre::ControllerManager::getSingleton().destroyController(_fader);
+	_fader = 0;
+}
+
+void Renderable::fade(FadeDirection direction, float length, bool loop) {
+	LOCK_FRAME();
+
+	Ogre::ControllerManager &controllerMan = Ogre::ControllerManager::getSingleton();
+
+	if (_fader)
+		controllerMan.destroyController(_fader);
+	_fader = 0;
+
+	std::list<Ogre::MaterialPtr> materials;
+	collectMaterials(materials, true, true);
+
+	for (std::list<Ogre::MaterialPtr>::iterator m = materials.begin(); m != materials.end(); ++m)
+		MaterialMan.setTransparent(*m, true);
+
+	float startAlpha = 0.0f;
+	if ((direction == kFadeDirectionOut) || (direction == kFadeDirectionOutIn))
+		startAlpha = 1.0f;
+
+	for (std::list<Ogre::MaterialPtr>::iterator m = materials.begin(); m != materials.end(); ++m)
+		MaterialMan.setAlphaModifier(*m, startAlpha);
+
+	Ogre::SharedPtr< Ogre::ControllerValue   <Ogre::Real> > matVal(new MaterialAlphaControllerValue(materials));
+	Ogre::SharedPtr< Ogre::ControllerFunction<Ogre::Real> > animFunc(new AnimationControllerFunction(length, 0.0, (AnimationFunction) direction, loop));
+
+	_fader = controllerMan.createController(controllerMan.getFrameTimeSource(), matVal, animFunc);
+}
+
+void Renderable::stopFade() {
+	LOCK_FRAME();
+
+	if (_fader) {
+		Ogre::ControllerManager::getSingleton().destroyController(_fader);
+
+		std::list<Ogre::MaterialPtr> materials;
+		collectMaterials(materials);
+
+		for (std::list<Ogre::MaterialPtr>::iterator m = materials.begin(); m != materials.end(); ++m) {
+			MaterialMan.setAlphaModifier(*m, 1.0);
+			MaterialMan.resetTransparent(*m);
+		}
+	}
+
+	_fader = 0;
 }
 
 Ogre::SceneNode *Renderable::getRootNode() {
