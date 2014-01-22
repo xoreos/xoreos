@@ -24,6 +24,7 @@ noinst_HEADERS = \
                  ttf.h \
                  font.h \
                  guiman.h \
+                 controllers.h \
                  $(EMPTY)
 
 libgraphics_la_SOURCES = \
@@ -40,6 +41,7 @@ libgraphics_la_SOURCES = \
                          ttf.cpp \
                          font.cpp \
                          guiman.cpp \
+                         controllers.cpp \
                          $(EMPTY)
 
 if DARWIN
