@@ -234,6 +234,14 @@ void MaterialManager::setColorModifier(const Ogre::MaterialPtr &material, float 
 	texState->setAlphaOperation(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, a, a, 1.0);
 }
 
+void MaterialManager::setAlphaModifier(const Ogre::MaterialPtr &material, float a) {
+	Ogre::TextureUnitState *texState = getColorModifier(material);
+	if (!texState)
+		texState = addColorModifier(material);
+
+	texState->setAlphaOperation(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, a, a, 1.0);
+}
+
 Ogre::TextureUnitState *MaterialManager::getColorModifier(const Ogre::MaterialPtr &material) {
 	uint count = material->getTechnique(0)->getPass(0)->getNumTextureUnitStates();
 	for (uint i = 0; i < count; i++) {
@@ -248,6 +256,9 @@ Ogre::TextureUnitState *MaterialManager::getColorModifier(const Ogre::MaterialPt
 Ogre::TextureUnitState *MaterialManager::addColorModifier(const Ogre::MaterialPtr &material) {
 	Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
 	texState->setName("colormodifier");
+
+	texState->setColourOperationEx(Ogre::LBX_SOURCE1, Ogre::LBS_CURRENT, Ogre::LBS_CURRENT);
+	texState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_CURRENT, Ogre::LBS_CURRENT);
 
 	return texState;
 }

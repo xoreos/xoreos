@@ -96,6 +96,8 @@ public:
 
 	/** Change the material's color modifier. */
 	void setColorModifier(const Ogre::MaterialPtr &material, float r, float g, float b, float a = 1.0);
+	/** Change the material's alpha modifier. */
+	void setAlphaModifier(const Ogre::MaterialPtr &material, float a);
 
 private:
 	void create(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
