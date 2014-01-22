@@ -224,6 +224,16 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 }
 
 void MaterialManager::setTransparent(Ogre::MaterialPtr material, bool transparent) {
+	bool depthWrite = material->getTechnique(0)->getPass(0)->getDepthWriteEnabled();
+	Ogre::SceneBlendFactor sceneBlendSrc = material->getTechnique(0)->getPass(0)->getSourceBlendFactor();
+	Ogre::SceneBlendFactor sceneBlendDst = material->getTechnique(0)->getPass(0)->getDestBlendFactor();
+
+	Ogre::UserObjectBindings &user = material->getTechnique(0)->getPass(0)->getUserObjectBindings();
+
+	user.setUserAny("depthwrite", Ogre::Any(depthWrite));
+	user.setUserAny("sceneblendsource", Ogre::Any(sceneBlendSrc));
+	user.setUserAny("sceneblenddest", Ogre::Any(sceneBlendDst));
+
 	if (transparent) {
 		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
@@ -231,6 +241,20 @@ void MaterialManager::setTransparent(Ogre::MaterialPtr material, bool transparen
 		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_REPLACE);
 		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(true);
 	}
+}
+
+void MaterialManager::resetTransparent(Ogre::MaterialPtr material) {
+	Ogre::UserObjectBindings &user = material->getTechnique(0)->getPass(0)->getUserObjectBindings();
+
+	const Ogre::Any &depthWrite    = user.getUserAny("depthwrite");
+	const Ogre::Any &sceneBlendSrc = user.getUserAny("sceneblendsrc");
+	const Ogre::Any &sceneBlendDst = user.getUserAny("sceneblenddst");
+
+	if (!depthWrite.isEmpty())
+		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(Ogre::any_cast<bool>(depthWrite));
+	if (!sceneBlendSrc.isEmpty() && !sceneBlendDst.isEmpty())
+		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::any_cast<Ogre::SceneBlendFactor>(sceneBlendSrc),
+		                                                        Ogre::any_cast<Ogre::SceneBlendFactor>(sceneBlendDst));
 }
 
 void MaterialManager::setColorModifier(const Ogre::MaterialPtr &material, float r, float g, float b, float a) {

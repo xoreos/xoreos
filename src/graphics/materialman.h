@@ -101,6 +101,8 @@ public:
 
 	/** Force the material to blend like a transparent or solid material. */
 	void setTransparent(Ogre::MaterialPtr material, bool transparent);
+	/** Reset the transparency settings to what it was before the call to setTransparent(). */
+	void resetTransparent(Ogre::MaterialPtr material);
 
 private:
 	void create(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
