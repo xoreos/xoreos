@@ -98,6 +98,8 @@ public:
 	void setColorModifier(const Ogre::MaterialPtr &material, float r, float g, float b, float a = 1.0);
 	/** Change the material's alpha modifier. */
 	void setAlphaModifier(const Ogre::MaterialPtr &material, float a);
+	/** Remove a color/alpha modifier layer from a material. */
+	void removeColorModifier(const Ogre::MaterialPtr &material);
 
 	/** Force the material to blend like a transparent or solid material. */
 	void setTransparent(Ogre::MaterialPtr material, bool transparent);

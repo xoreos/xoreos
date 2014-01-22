@@ -276,6 +276,17 @@ void MaterialManager::setAlphaModifier(const Ogre::MaterialPtr &material, float 
 	texState->setAlphaOperation(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, a, a, 1.0);
 }
 
+void MaterialManager::removeColorModifier(const Ogre::MaterialPtr &material) {
+	uint count = material->getTechnique(0)->getPass(0)->getNumTextureUnitStates();
+	for (uint i = 0; i < count; i++) {
+		Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->getTextureUnitState(i);
+		if (texState->getName() == "colormodifier") {
+			material->getTechnique(0)->getPass(0)->removeTextureUnitState(i);
+			return;
+		}
+	}
+}
+
 Ogre::TextureUnitState *MaterialManager::getColorModifier(const Ogre::MaterialPtr &material) {
 	uint count = material->getTechnique(0)->getPass(0)->getNumTextureUnitStates();
 	for (uint i = 0; i < count; i++) {
