@@ -127,8 +127,10 @@ protected:
 	State *_currentState;
 
 
-	void setState(State *state);
+	/** Collect all materials used in the model, optionally making them dynamic and/or transparent as well. */
+	void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false);
 
+	void setState(State *state);
 
 	// General loading helpers
 

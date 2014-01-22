@@ -360,6 +360,16 @@ void Quad::update() {
 	_needUpdate = false;
 }
 
+void Quad::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
+	if (makeDynamic)
+		_entity->setMaterial((_material = MaterialMan.makeDynamic(_material)));
+
+	if (makeTransparent)
+		MaterialMan.setTransparent(_material, true);
+
+	materials.push_back(_material);
+}
+
 } // End of namespace Aurora
 
 } // End of namespace Graphics

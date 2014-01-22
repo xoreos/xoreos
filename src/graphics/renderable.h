@@ -30,6 +30,10 @@
 #ifndef GRAPHICS_RENDERABLE_H
 #define GRAPHICS_RENDERABLE_H
 
+#include <list>
+
+#include <OgrePrerequisites.h>
+
 #include "common/ustring.h"
 
 namespace Ogre {
@@ -101,6 +105,9 @@ protected:
 
 	void destroyAnimation(const Common::UString &name);
 	void destroyAnimation(Ogre::Animation *anim);
+
+	/** Collect all materials used in the renderable, optionally making them dynamic and/or transparent as well. */
+	virtual void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false) = 0;
 };
 
 } // End of namespace Graphics

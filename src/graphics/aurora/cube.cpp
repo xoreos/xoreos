@@ -34,6 +34,7 @@
 #include <OgreMesh.h>
 #include <OgreMeshManager.h>
 #include <OgreEntity.h>
+#include <OgreSubEntity.h>
 
 #include "common/ustring.h"
 #include "common/util.h"
@@ -184,6 +185,17 @@ void Cube::setSelectable(bool selectable) {
 	_entity->setQueryFlags(selectable ? kSelectableCube : kSelectableNone);
 
 	Renderable::setSelectable(selectable);
+}
+
+void Cube::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
+	Ogre::MaterialPtr material = _entity->getSubEntity(0)->getMaterial();
+	if (makeDynamic)
+		_entity->setMaterial((material = MaterialMan.makeDynamic(material)));
+
+	if (makeTransparent)
+		MaterialMan.setTransparent(material, true);
+
+	materials.push_back(material);
 }
 
 } // End of namespace Aurora

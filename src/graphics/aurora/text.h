@@ -63,6 +63,10 @@ public:
 	/** Change whether the text object can be selected (picked) by the user. */
 	void setSelectable(bool selectable);
 
+protected:
+	/** Collect all materials used in the text object, optionally making them dynamic and/or transparent as well. */
+	void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false);
+
 private:
 	FontHandle _font;
 

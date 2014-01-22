@@ -31,6 +31,7 @@
 #include <OgreSceneManager.h>
 #include <OgreMeshManager.h>
 #include <OgreEntity.h>
+#include <OgreSubEntity.h>
 #include <OgreAnimation.h>
 #include <OgreAnimationState.h>
 
@@ -254,6 +255,16 @@ void Model::showBoundingBox(bool show) {
 		for (NodeEntities::iterator n = _currentState->nodeEntities.begin(); n != _currentState->nodeEntities.end(); ++n)
 			if (n->second.node && !n->second.dontRender)
 				n->second.node->showBoundingBox(show);
+	}
+}
+
+void Model::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
+	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e) {
+		Ogre::MaterialPtr material = (*e)->getSubEntity(0)->getMaterial();
+		if (makeDynamic)
+			(*e)->setMaterial((material = MaterialMan.makeDynamic(material)));
+
+		materials.push_back(material);
 	}
 }
 

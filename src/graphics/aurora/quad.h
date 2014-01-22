@@ -76,6 +76,11 @@ public:
 	void setVisible(bool visible);
 
 
+protected:
+	/** Collect all materials used in the quad, optionally making them dynamic and/or transparent as well. */
+	void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false);
+
+
 private:
 	Common::UString _textureName;
 
