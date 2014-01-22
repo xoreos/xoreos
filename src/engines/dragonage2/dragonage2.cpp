@@ -35,8 +35,11 @@
 #include "aurora/resman.h"
 
 #include "graphics/cursorman.h"
+#include "graphics/cameraman.h"
 
+#include "graphics/aurora/sceneman.h"
 #include "graphics/aurora/fps.h"
+#include "graphics/aurora/cube.h"
 
 #include "sound/sound.h"
 
@@ -117,9 +120,20 @@ void DragonAge2Engine::run(const Common::UString &target) {
 	if (ConfigMan.getBool("showfps", false))
 		fps = new Graphics::Aurora::FPS;
 
+	CameraMan.setPosition(0.0, 0.0, 5.0);
+	CameraMan.lookAt(0.0, 0.0, 0.0);
+
+	Graphics::Aurora::Cube *cube = SceneMan.createCube("xx_wood");
+
+	cube->setPosition(0.0, 0.0, 0.0);
+	cube->startRotate();
+	cube->setVisible(true);
+
 	while (!EventMan.quitRequested()) {
 		EventMan.delay(10);
 	}
+
+	SceneMan.destroy(cube);
 
 	delete fps;
 }
