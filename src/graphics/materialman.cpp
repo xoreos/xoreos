@@ -223,6 +223,16 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 	material->setReceiveShadows(decl.receiveShadows);
 }
 
+void MaterialManager::setTransparent(Ogre::MaterialPtr material, bool transparent) {
+	if (transparent) {
+		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+	} else {
+		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_REPLACE);
+		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(true);
+	}
+}
+
 void MaterialManager::setColorModifier(const Ogre::MaterialPtr &material, float r, float g, float b, float a) {
 	Ogre::TextureUnitState *texState = getColorModifier(material);
 	if (!texState)

@@ -99,6 +99,9 @@ public:
 	/** Change the material's alpha modifier. */
 	void setAlphaModifier(const Ogre::MaterialPtr &material, float a);
 
+	/** Force the material to blend like a transparent or solid material. */
+	void setTransparent(Ogre::MaterialPtr material, bool transparent);
+
 private:
 	void create(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
 	void createSolidColor(const MaterialDeclaration &decl, Ogre::MaterialPtr material);
