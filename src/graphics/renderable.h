@@ -72,6 +72,9 @@ public:
 	/** Set the base scale. All scaling will be done relative to the base scale. */
 	void setBaseScale(float x, float y, float z);
 
+	/** Get the size of the renderable. */
+	void getSize(float &width, float &height, float &depth) const;
+
 	/** Get the current position of the renderable. */
 	virtual void getPosition(float &x, float &y, float &z) const;
 	/** Get the current orientation of the renderable. */
@@ -127,6 +130,8 @@ protected:
 
 private:
 	void destroy();
+
+	static void addBoundBox(Ogre::AxisAlignedBox &bound, const Ogre::SceneNode &node);
 };
 
 } // End of namespace Graphics
