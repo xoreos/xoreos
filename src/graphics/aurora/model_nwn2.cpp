@@ -85,7 +85,7 @@ void Model_NWN2::ParserContext::newNode() {
 }
 
 
-Model_NWN2::Model_NWN2(const Common::UString &name, const Common::UString &scene) : Model(scene), _fileName(name) {
+Model_NWN2::Model_NWN2(const Common::UString &name, const Common::UString &scene) : Model(name, scene) {
 	ParserContext ctx(name);
 
 	load(ctx);

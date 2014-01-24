@@ -208,7 +208,7 @@ Model_NWN::MeshASCII::MeshASCII() : vCount(0), tCount(0), faceCount(0) {
 
 
 Model_NWN::Model_NWN(const Common::UString &name, const Common::UString &texture, const Common::UString &scene) :
-	Model(scene), _fileName(name) {
+	Model(name, scene) {
 
 	ParserContext ctx(name, texture);
 

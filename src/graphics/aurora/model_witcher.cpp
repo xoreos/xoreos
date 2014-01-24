@@ -99,7 +99,7 @@ void Model_Witcher::ParserContext::newNode() {
 }
 
 
-Model_Witcher::Model_Witcher(const Common::UString &name, const Common::UString &scene) : Model(scene), _fileName(name) {
+Model_Witcher::Model_Witcher(const Common::UString &name, const Common::UString &scene) : Model(name, scene) {
 	ParserContext ctx(name);
 
 	load(ctx);

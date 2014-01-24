@@ -77,9 +77,6 @@ private:
 		void newNode();
 	};
 
-	Common::UString _fileName;
-	Common::UString _name;
-
 
 	void load(ParserContext &ctx);
 	void loadNode(ParserContext &ctx, Ogre::SceneNode *parent, uint32 type);

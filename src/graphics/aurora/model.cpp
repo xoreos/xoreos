@@ -66,7 +66,9 @@ Model::State::State(const Common::UString &n) : name(n), animation(0), animation
 }
 
 
-Model::Model(const Common::UString &scene) : Renderable(scene), _currentState(0) {
+Model::Model(const Common::UString &file, const Common::UString &scene) : Renderable(scene),
+	_fileName(file), _currentState(0) {
+
 }
 
 Model::~Model() {

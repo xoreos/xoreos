@@ -101,8 +101,6 @@ private:
 		MeshASCII();
 	};
 
-	Common::UString _fileName;
-	Common::UString _name;
 
 	Common::UString _superModelName;
 

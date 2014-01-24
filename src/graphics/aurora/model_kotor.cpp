@@ -145,7 +145,7 @@ void Model_KotOR::ParserContext::newNode() {
 
 
 Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, const Common::UString &texture, const Common::UString &scene) :
-	Model(scene), _fileName(name) {
+	Model(name, scene) {
 
 	ParserContext ctx(name, kotor2, texture);
 

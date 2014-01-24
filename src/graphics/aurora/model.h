@@ -58,7 +58,7 @@ namespace Aurora {
 
 class Model : public Renderable {
 public:
-	Model(const Common::UString &scene = "world");
+	Model(const Common::UString &file, const Common::UString &scene = "world");
 	~Model();
 
 	/** Return the name of every state in this model. */
@@ -118,6 +118,9 @@ protected:
 	typedef std::map<Common::UString, State *> StateMap;
 	typedef std::map<Common::UString, Model *> ModelMap;
 
+
+	Common::UString _fileName;
+	Common::UString _name;
 
 	StateMap   _states;
 	EntityList _entities;
