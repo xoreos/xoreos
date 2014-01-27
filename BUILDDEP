@@ -16,6 +16,7 @@ Build-time library dependencies
   - Boost.Bind
   - Boost.Uuid
   - Boost.Smart_Ptr
+  - Boost.Atomic
 
 - OpenGL (>= 2.1)
 - SDL2 (>= 2.0.0)

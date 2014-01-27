@@ -84,6 +84,7 @@ BOOST_FUNCTION
 BOOST_BIND
 BOOST_UUID
 BOOST_SMART_PTR
+BOOST_ATOMIC
 
 dnl Extra flags
 case "$target" in
