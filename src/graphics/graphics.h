@@ -30,6 +30,8 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
+#include <boost/atomic.hpp>
+
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreThreadHeaders.h>
@@ -123,6 +125,11 @@ public:
 
 	double getFPS() const;
 
+	/** Lock the frame blockingly. No further rendering will be done while the frame is locked. */
+	void lockFrame();
+	/** Unlock the frame again. */
+	void unlockFrame();
+
 	/** Render one complete frame of the scene. */
 	void renderScene();
 
@@ -150,6 +157,8 @@ private:
 	SDL_Window      *_screen;      ///< The SDL screen surface.
 	Renderer        *_renderer;    ///< The OpenGL renderer.
 
+	boost::atomic<uint32> _frameLock;
+
 
 	void initScreen(int width, int height, bool fullscreen, bool vsync, int fsaa);
 	void getDefaultDisplayMode();
@@ -161,6 +170,13 @@ private:
 
 	void setupSDLGL(int width, int height, uint32 flags, bool vsync, int fsaa);
 	void checkCapabilities();
+};
+
+/** A simple class allowing for scopingly locking/unlocking the frame. */
+class FrameLocker {
+public:
+	FrameLocker() { GraphicsManager::instance().lockFrame(); }
+	~FrameLocker() { GraphicsManager::instance().unlockFrame(); }
 };
 
 } // End of namespace Graphics

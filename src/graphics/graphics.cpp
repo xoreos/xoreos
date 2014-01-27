@@ -67,6 +67,8 @@ GraphicsManager::GraphicsManager() {
 
 	_width  = 800;
 	_height = 600;
+
+	_frameLock.store(0);
 }
 
 GraphicsManager::~GraphicsManager() {
@@ -344,11 +346,33 @@ double GraphicsManager::getFPS() const {
 	return _renderer->getFPS();
 }
 
+void GraphicsManager::lockFrame() {
+	while (true) {
+		// Mask out the render bit (so that comparison will always fail if it is set)
+		uint32 oldValue = _frameLock.load() & 0x7FFFFFFF;
+		uint32 newValue = oldValue + 1;
+
+		if (_frameLock.compare_exchange_weak(oldValue, newValue))
+			return;
+	}
+}
+
+void GraphicsManager::unlockFrame() {
+	_frameLock.fetch_sub(1);
+}
+
 void GraphicsManager::renderScene() {
 	Common::enforceMainThread();
 
+	// Make sure the frame is not lock and set the render bit, otherwise skip rendering
+	uint32 frameLock = 0;
+	if (!_frameLock.compare_exchange_weak(frameLock, 0x80000000))
+		return;
+
 	if (_renderer)
 		_renderer->render();
+
+	_frameLock.store(0);
 
 	SDL_GL_SwapWindow(_screen);
 }
