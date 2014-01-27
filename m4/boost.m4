@@ -473,6 +473,17 @@ BOOST_DEFUN([Asio],
 BOOST_FIND_HEADER([boost/asio.hpp])])
 
 
+# BOOST_ATOMIC([PREFERRED-RT-OPT])
+# -------------------------------
+# Look for Boost.Atomic.  For the documentation of PREFERRED-RT-OPT, see the
+# documentation of BOOST_FIND_LIB above.
+BOOST_DEFUN([Atomic],
+[BOOST_FIND_LIB([atomic], [$1],
+                [boost/atomic.hpp],
+                [boost::atomic<int> a;])
+])# BOOST_ATOMIC
+
+
 # BOOST_BIND()
 # ------------
 # Look for Boost.Bind
