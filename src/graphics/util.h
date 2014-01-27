@@ -39,6 +39,8 @@
 #include "common/ustring.h"
 #include "common/maths.h"
 
+#define LOCK_SCENE() OGRE_LOCK_MUTEX(Ogre::Root::getSingleton().getSceneManager("world")->sceneGraphMutex)
+
 namespace Graphics {
 
 static inline Ogre::SceneManager &getOgreSceneManager(const Common::UString &name = "world") {
@@ -127,10 +129,5 @@ static inline uint32 deSwizzleOffset(uint32 x, uint32 y, uint32 width, uint32 he
 }
 
 } // End of namespace Graphics
-
-/** Macro to lock the SceneManager / frame rendering for the remainder of the current scope.
-    Note: To avoid deadlocks, never use the RequestManager to force a function to run in the
-          main thread after the SceneManager has been locked! */
-#define LOCK_FRAME() OGRE_LOCK_MUTEX(Graphics::getOgreSceneManager().sceneGraphMutex)
 
 #endif // GRAPHICS_UTIL_H

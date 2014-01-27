@@ -34,6 +34,7 @@
 
 #include "common/threads.h"
 
+#include "graphics/graphics.h"
 #include "graphics/util.h"
 #include "graphics/renderable.h"
 #include "graphics/materialman.h"

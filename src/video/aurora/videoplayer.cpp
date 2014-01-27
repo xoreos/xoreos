@@ -135,8 +135,6 @@ public:
 	}
 
 	void createOverlay() {
-		LOCK_FRAME();
-
 		// Dimensions and coordinates
 
 		int scaledWidth, scaledHeight;
@@ -208,8 +206,6 @@ public:
 	}
 
 	bool frameRenderingQueued(const Ogre::FrameEvent &event) {
-		LOCK_FRAME();
-
 		if (!_overlay)
 			createOverlay();
 

@@ -82,8 +82,6 @@ public:
 	}
 
 	bool frameRenderingQueued(const Ogre::FrameEvent &event) {
-		LOCK_FRAME();
-
 		_currentFPS++;
 		if ((_currentFPSTime += event.timeSinceLastFrame) >= 1.0) {
 			_lastFPS = _currentFPS / _currentFPSTime;

@@ -39,6 +39,7 @@
 #include "common/stream.h"
 #include "common/uuid.h"
 
+#include "graphics/graphics.h"
 #include "graphics/util.h"
 #include "graphics/meshutil.h"
 #include "graphics/materialman.h"

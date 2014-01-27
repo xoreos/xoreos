@@ -44,7 +44,7 @@
 /** Macro to lock the SceneManager / frame rendering for the remainder of the current scope.
     Note: To avoid deadlocks, never use the RequestManager to force a function to run in the
           main thread after the SceneManager has been locked! */
-#define LOCK_FRAME() OGRE_LOCK_MUTEX(Ogre::Root::getSingleton().getSceneManager("world")->sceneGraphMutex)
+#define LOCK_FRAME() ::Graphics::FrameLocker xoreosFrameLocker;
 
 namespace Common {
 	class UString;
