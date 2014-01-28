@@ -45,6 +45,9 @@ public:
 	Widget(GUI &gui, const Common::UString &tag);
 	virtual ~Widget();
 
+	/** Return the IDs of the widget's renderable(s). */
+	const std::vector<Common::UString> &getIDs() const;
+
 	const Common::UString &getTag() const; ///< Get the widget's tag.
 
 	/** Set the widget's tag. */
@@ -55,8 +58,8 @@ public:
 	bool isDisabled () const; ///< Is the widget disabled?
 	bool isInvisible() const; ///< Is the widget invisible (never visible)?
 
-	virtual void show(); ///< Show the widget.
-	virtual void hide(); ///< Hide the widget.
+	/** Show/Hide the widget. */
+	virtual void setVisible(bool visible);
 
 	Widget *getParent();
 	const Widget *getParent() const;
@@ -106,6 +109,8 @@ public:
 
 protected:
 	GUI *_gui; ///< The GUI the widget belongs to.
+
+	std::vector<Common::UString> _ids; ///< IDs of the widgets's renderable(s).
 
 	Common::UString _tag; ///< The widget's tag.
 

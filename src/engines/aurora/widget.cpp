@@ -27,6 +27,8 @@
  *  A widget in a GUI.
  */
 
+#include "graphics/graphics.h"
+
 #include "engines/aurora/widget.h"
 #include "engines/aurora/gui.h"
 
@@ -41,6 +43,10 @@ Widget::Widget(GUI &gui, const Common::UString &tag) : _gui(&gui), _tag(tag),
 }
 
 Widget::~Widget() {
+}
+
+const std::vector<Common::UString> &Widget::getIDs() const {
+	return _ids;
 }
 
 const Common::UString &Widget::getTag() const {
@@ -69,9 +75,9 @@ bool Widget::isInvisible() const {
 	return _invisible;
 }
 
-void Widget::show() {
-	if (_visible)
-		// Already shown, nothing to do
+
+void Widget::setVisible(bool visible) {
+	if (_visible == visible)
 		return;
 
 	// Reset the double-click info
@@ -80,24 +86,13 @@ void Widget::show() {
 	_lastClickX      = 0.0;
 	_lastClickY      = 0.0;
 
-	if (!_invisible)
-		_visible = true;
+	LOCK_FRAME();
 
-	// Show children
+	// Change the children's visibility
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
-		(*it)->show();
-}
+		(*it)->setVisible(visible);
 
-void Widget::hide() {
-	if (!_visible)
-		// Already hidden, nothing to do
-		return;
-
-	_visible = false;
-
-	// Hide children
-	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
-		(*it)->hide();
+	_visible = _invisible ? false : visible;
 }
 
 Widget *Widget::getParent() {
@@ -109,6 +104,8 @@ const Widget *Widget::getParent() const {
 }
 
 void Widget::setPosition(float x, float y, float z) {
+	LOCK_FRAME();
+
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it) {
 		float sX, sY, sZ;
 		(*it)->getPosition(sX, sY, sZ);
@@ -150,6 +147,8 @@ void Widget::setDisabled(bool disabled) {
 
 	_disabled = disabled;
 
+	LOCK_FRAME();
+
 	// Disable/Enable children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
 		(*it)->setDisabled(disabled);
@@ -163,6 +162,8 @@ void Widget::setInvisible(bool invisible) {
 		return;
 
 	_invisible = invisible;
+
+	LOCK_FRAME();
 
 	// Invisible the children
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it)
@@ -247,7 +248,7 @@ void Widget::removeGroupMember(Widget &widget) {
 }
 
 void Widget::remove() {
-	hide();
+	setVisible(false);
 
 	_gui->removeWidget(this);
 }
@@ -262,6 +263,8 @@ void Widget::setActive(bool active) {
 		return;
 
 	_active = active;
+
+	LOCK_FRAME();
 
 	// Signal our group members that we're active now
 	if (_active)

@@ -47,8 +47,8 @@ public:
 	GUI();
 	virtual ~GUI();
 
-	virtual void show(); ///< Show the GUI.
-	virtual void hide(); ///< Hide the GUI.
+	/** Show/Hide the GUI. */
+	virtual void setVisible(bool visible);
 
 	int run(int startCode = 0); ///< Run the GUI.
 
@@ -59,6 +59,8 @@ public:
 
 
 protected:
+	bool _visible; ///< Is the GUI currently visible?
+
 	Widget *_currentWidget; ///< The widget the mouse is currently on.
 
 	int _startCode;  ///< The GUI's start code.
@@ -103,9 +105,11 @@ protected:
 private:
 	typedef std::list<Widget *> WidgetList;
 	typedef std::map<Common::UString, Widget *> WidgetMap;
+	typedef std::map<Common::UString, Widget *> WidgetIDMap;
 
-	WidgetList _widgets;   ///< All widgets in the GUI.
-	WidgetMap  _widgetMap; ///< All widgets in the GUI, index by their tag.
+	WidgetList  _widgets;     ///< All widgets in the GUI.
+	WidgetMap   _widgetMap;   ///< All widgets in the GUI, index by their tag.
+	WidgetIDMap _widgetIDMap; ///< Widgets mapped from ID to tag.
 
 	float _x; ///< The GUI X position.
 	float _y; ///< The GUI Y position.
@@ -124,9 +128,6 @@ private:
 	void mouseUp(const Events::Event &event);   ///< Mouse up event triggered.
 	void mouseWheel(const Events::Event &event); ///< Mouse wheel event triggered.
 
-	float toGUIX(int x); // Convert an event X coordinate to a GUI X coordinate
-	float toGUIY(int y); // Convert an event Y coordinate to a GUI Y coordinate
-
 	/** Send a mouse move event to the widget. */
 	void mouseMove(Widget *widget, const Events::Event &event);
 	/** Send a mouse down event to the widget. */
@@ -135,6 +136,8 @@ private:
 	void mouseUp(Widget *widget, const Events::Event &event);
 	/** Send a mouse wheel event to the widget. */
 	void mouseWheel(Widget *widget, const Events::Event &event);
+
+	void destroy();
 
 	friend class Widget;
 };

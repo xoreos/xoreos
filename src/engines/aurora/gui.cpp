@@ -28,10 +28,15 @@
  */
 
 #include "common/error.h"
+#include "common/threads.h"
 
 #include "events/events.h"
+#include "events/requests.h"
 
 #include "graphics/graphics.h"
+#include "graphics/renderable.h"
+#include "graphics/guiman.h"
+#include "graphics/cursorman.h"
 
 #include "engines/aurora/gui.h"
 #include "engines/aurora/widget.h"
@@ -41,10 +46,20 @@ static const uint32 kDoubleClickTime = 500;
 
 namespace Engines {
 
-GUI::GUI() : _currentWidget(0), _returnCode(0), _x(0.0), _y(0.0), _z(0.0) {
+GUI::GUI() : _visible(false), _currentWidget(0), _returnCode(0), _x(0.0), _y(0.0), _z(0.0) {
 }
 
 GUI::~GUI() {
+	destroy();
+}
+
+void GUI::destroy() {
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<void> functor(boost::bind(&GUI::destroy, this));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
 	// Delete all widgets
 	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
 		delete *widget;
@@ -54,20 +69,19 @@ GUI::~GUI() {
 	_widgets.clear();
 }
 
-void GUI::show() {
-	// Show all widgets
+void GUI::setVisible(bool visible) {
+	LOCK_FRAME();
+
 	for (WidgetList::iterator w = _widgets.begin(); w != _widgets.end(); ++w) {
 		Widget &widget = **w;
 
 		if (!widget._owner)
-			widget.show();
+			widget.setVisible(visible);
 	}
-}
 
-void GUI::hide() {
-	// Hide all widgets
-	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
-		(*widget)->hide();
+	GUIMan.update();
+
+	_visible = visible;
 }
 
 int GUI::run(int startCode) {
@@ -98,7 +112,7 @@ int GUI::run(int startCode) {
 		processEventQueue();
 
 		// Delay for a while
-		if (!EventMan.quitRequested() && (_returnCode != 0))
+		if (!EventMan.quitRequested() && (_returnCode == 0))
 			EventMan.delay(10);
 	}
 
@@ -148,13 +162,17 @@ void GUI::addWidget(Widget *widget) {
 
 	_widgets.push_back(widget);
 	_widgetMap[widget->getTag()] = widget;
+
+	const std::vector<Common::UString> ids = widget->getIDs();
+	for (std::vector<Common::UString>::const_iterator i = ids.begin(); i != ids.end(); ++i)
+		_widgetIDMap[*i] = widget;
 }
 
 void GUI::removeWidget(Widget *widget) {
 	if (!widget)
 		return;
 
-	widget->hide();
+	widget->setVisible(false);
 
 	for (WidgetList::iterator i = _widgets.begin(); i != _widgets.end(); ++i) {
 		if (*i == widget) {
@@ -166,6 +184,13 @@ void GUI::removeWidget(Widget *widget) {
 	WidgetMap::iterator w = _widgetMap.find(widget->getTag());
 	if (w != _widgetMap.end())
 		_widgetMap.erase(w);
+
+	const std::vector<Common::UString> ids = widget->getIDs();
+	for (std::vector<Common::UString>::const_iterator i = ids.begin(); i != ids.end(); ++i) {
+		WidgetIDMap::iterator wI = _widgetIDMap.find(*i);
+		if (wI != _widgetIDMap.end())
+			_widgetIDMap.erase(wI);
+	}
 
 	if (widget->_parent)
 		widget->_parent->removeChild(*widget);
@@ -220,18 +245,28 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 	removeFocus();
 
+	GfxMan.lockFrame();
+
 	// Show the sub GUI
 	if (startCode == 0)
-		gui.show();
-	hide();
+		gui.setVisible(true);
+	setVisible(false);
+
+	GUIMan.update();
+	GfxMan.unlockFrame();
 
 	// Run the sub GUI
 	int code = gui.run(startCode);
 
+	GfxMan.lockFrame();
+
 	// Hide the sub GUI
 	if (showSelf)
-		show();
-	gui.hide();
+		setVisible(true);
+	gui.setVisible(false);
+
+	GUIMan.update();
+	GfxMan.unlockFrame();
 
 	// Update the mouse position
 	removeFocus();
@@ -241,6 +276,9 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 }
 
 void GUI::setPosition(float x, float y, float z) {
+	if (_visible)
+		GfxMan.lockFrame();
+
 	for (WidgetList::iterator w = _widgets.begin(); w != _widgets.end(); ++w) {
 		Widget &widget = **w;
 
@@ -260,6 +298,11 @@ void GUI::setPosition(float x, float y, float z) {
 	_x = x;
 	_y = y;
 	_z = z;
+
+	if (_visible) {
+		GUIMan.update();
+		GfxMan.unlockFrame();
+	}
 }
 
 void GUI::getPosition(float &x, float &y, float &z) const {
@@ -274,7 +317,8 @@ void GUI::removeFocus() {
 
 void GUI::updateMouse() {
 	// Fabricate a mouse move event at the current position
-	int x = 0, y = 0, state = 0;
+	int x, y, state;
+	state = CursorMan.getPosition(x, y);
 
 	Events::Event event;
 	event.motion.state = state;
@@ -286,10 +330,21 @@ void GUI::updateMouse() {
 }
 
 Widget *GUI::getWidgetAt(float x, float y) {
-	return 0;
+	float distance;
+	Graphics::Renderable *renderable = GUIMan.getRenderableAt(x, y, distance);
+	if (!renderable)
+		return 0;
+
+	WidgetIDMap::iterator w = _widgetIDMap.find(renderable->getID());
+	if (w == _widgetIDMap.end())
+		return 0;
+
+	return w->second;
 }
 
 void GUI::changedWidget(Widget *widget) {
+	LOCK_FRAME();
+
 	// Leave the now obsolete current widget
 	if (_currentWidget)
 		_currentWidget->leave();
@@ -300,6 +355,8 @@ void GUI::changedWidget(Widget *widget) {
 	// Enter the new current widget
 	if (_currentWidget)
 		_currentWidget->enter();
+
+	GUIMan.update();
 }
 
 void GUI::checkWidgetActive(Widget *widget) {
@@ -347,8 +404,8 @@ void GUI::mouseMove(const Events::Event &event) {
 
 void GUI::mouseDown(const Events::Event &event) {
 	if (event.button.button != SDL_BUTTON_LMASK)
-	        // We only care about left mouse button presses.
-	        return;
+		// We only care about left mouse button presses.
+		return;
 
 	Widget *widget = getWidgetAt(event.button.x, event.button.y);
 	if (widget != _currentWidget)
@@ -386,56 +443,70 @@ void GUI::mouseWheel(const Events::Event &event) {
 	mouseWheel(_currentWidget, event);
 }
 
-float GUI::toGUIX(int x) {
-	float sW = GfxMan.getScreenWidth();
-
-	return (x - (sW / 2.0));
+static float screenXToGUIX(float x) {
+	return x - GfxMan.getScreenWidth() / 2.0;
 }
 
-float GUI::toGUIY(int y) {
-	float sH = GfxMan.getScreenHeight();
-
-	return ((sH - y) - (sH / 2.0));
+static float screenYToGUIY(float y) {
+	return (GfxMan.getScreenHeight() / 2.0) - y;
 }
 
 void GUI::mouseMove(Widget *widget, const Events::Event &event) {
-	if (widget)
-		widget->mouseMove(event.motion.state, toGUIX(event.motion.x), toGUIY(event.motion.y));
+	if (!widget)
+		return;
+
+	LOCK_FRAME();
+
+	widget->mouseMove(event.motion.state, screenXToGUIX(event.motion.x), screenYToGUIY(event.motion.y));
+	GUIMan.update();
 }
 
 void GUI::mouseDown(Widget *widget, const Events::Event &event) {
-	if (widget)
-		widget->mouseDown(event.button.button, toGUIX(event.button.x), toGUIY(event.button.y));
+	if (!widget)
+		return;
+
+	LOCK_FRAME();
+
+	widget->mouseDown(event.button.button, screenXToGUIX(event.button.x), screenYToGUIY(event.button.y));
+	GUIMan.update();
 }
 
 void GUI::mouseUp(Widget *widget, const Events::Event &event) {
-	if (widget) {
-		uint8 button = event.button.button;
-		float x      = toGUIX(event.button.x);
-		float y      = toGUIY(event.button.y);
+	if (!widget)
+		return;
 
-		widget->mouseUp(button, x, y);
+	LOCK_FRAME();
 
-		uint32 curTime = EventMan.getTimestamp();
-		if (((curTime - widget->_lastClickTime) < kDoubleClickTime) &&
-		    (widget->_lastClickButton == button) &&
-		    (widget->_lastClickX == x) && (widget->_lastClickY == y)) {
+	uint8 button = event.button.button;
+	float x      = event.button.x;
+	float y      = event.button.y;
 
-			widget->mouseDblClick(button, x, y);
-		}
+	widget->mouseUp(button, screenXToGUIX(x), screenYToGUIY(y));
 
-		widget->_lastClickButton = button;
-		widget->_lastClickTime   = curTime;
-		widget->_lastClickX      = x;
-		widget->_lastClickY      = y;
+	uint32 curTime = EventMan.getTimestamp();
+	if (((curTime - widget->_lastClickTime) < kDoubleClickTime) &&
+	    (widget->_lastClickButton == button) &&
+	    (widget->_lastClickX == x) && (widget->_lastClickY == y)) {
+
+		widget->mouseDblClick(button, screenXToGUIX(x), screenYToGUIY(y));
 	}
+
+	widget->_lastClickButton = button;
+	widget->_lastClickTime   = curTime;
+	widget->_lastClickX      = x;
+	widget->_lastClickY      = y;
+
+	GUIMan.update();
 }
 
 void GUI::mouseWheel(Widget *widget, const Events::Event &event) {
-	if (widget) {
-		widget->mouseWheel(event.wheel.type, event.wheel.x, event.wheel.y);
-	}
+	if (!widget)
+		return;
 
+	LOCK_FRAME();
+
+	widget->mouseWheel(event.wheel.type, event.wheel.x, event.wheel.y);
+	GUIMan.update();
 }
 
 } // End of namespace Engines

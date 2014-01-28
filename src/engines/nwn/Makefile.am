@@ -17,6 +17,43 @@ noinst_HEADERS = \
                  door.h \
                  placeable.h \
                  creature.h \
+                 gui/widgets/nwnwidget.h \
+                 gui/widgets/modelwidget.h \
+                 gui/widgets/frame.h \
+                 gui/widgets/panel.h \
+                 gui/widgets/editbox.h \
+                 gui/widgets/button.h \
+                 gui/widgets/close.h \
+                 gui/widgets/checkbox.h \
+                 gui/widgets/slider.h \
+                 gui/widgets/textwidget.h \
+                 gui/widgets/label.h \
+                 gui/widgets/listbox.h \
+                 gui/widgets/scrollbar.h \
+                 gui/widgets/quadwidget.h \
+                 gui/widgets/portrait.h \
+                 gui/gui.h \
+                 gui/main/main.h \
+                 gui/main/moviesbase.h \
+                 gui/main/moviescamp.h \
+                 gui/main/options.h \
+                 gui/main/new.h \
+                 gui/main/newcamp.h \
+                 gui/main/newxp1.h \
+                 gui/main/newxp2.h \
+                 gui/main/newmodule.h \
+                 gui/main/chartype.h \
+                 gui/main/charpremade.h \
+                 gui/options/sound.h \
+                 gui/options/soundadv.h \
+                 gui/options/game.h \
+                 gui/options/controls.h \
+                 gui/options/gorepass.h \
+                 gui/options/feedback.h \
+                 gui/options/video.h \
+                 gui/options/videoadv.h \
+                 gui/options/resolution.h \
+                 gui/chargen/chargen.h \
                  $(EMPTY)
 
 libnwn_la_SOURCES = \
@@ -35,4 +72,41 @@ libnwn_la_SOURCES = \
                     door.cpp \
                     placeable.cpp \
                     creature.cpp \
+                    gui/widgets/nwnwidget.cpp \
+                    gui/widgets/modelwidget.cpp \
+                    gui/widgets/frame.cpp \
+                    gui/widgets/panel.cpp \
+                    gui/widgets/editbox.cpp \
+                    gui/widgets/button.cpp \
+                    gui/widgets/close.cpp \
+                    gui/widgets/checkbox.cpp \
+                    gui/widgets/slider.cpp \
+                    gui/widgets/textwidget.cpp \
+                    gui/widgets/label.cpp \
+                    gui/widgets/listbox.cpp \
+                    gui/widgets/scrollbar.cpp \
+                    gui/widgets/quadwidget.cpp \
+                    gui/widgets/portrait.cpp \
+                    gui/gui.cpp \
+                    gui/main/main.cpp \
+                    gui/main/moviesbase.cpp \
+                    gui/main/moviescamp.cpp \
+                    gui/main/options.cpp \
+                    gui/main/new.cpp \
+                    gui/main/newcamp.cpp \
+                    gui/main/newxp1.cpp \
+                    gui/main/newxp2.cpp \
+                    gui/main/newmodule.cpp \
+                    gui/main/chartype.cpp \
+                    gui/main/charpremade.cpp \
+                    gui/options/sound.cpp \
+                    gui/options/soundadv.cpp \
+                    gui/options/game.cpp \
+                    gui/options/controls.cpp \
+                    gui/options/gorepass.cpp \
+                    gui/options/feedback.cpp \
+                    gui/options/video.cpp \
+                    gui/options/videoadv.cpp \
+                    gui/options/resolution.cpp \
+                    gui/chargen/chargen.cpp \
                     $(EMPTY)
