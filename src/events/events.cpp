@@ -82,6 +82,8 @@ void EventsManager::init() {
 
 	initJoysticks();
 
+	SDL_RegisterEvents(1);
+
 	std::srand(getTimestamp());
 	SDL_StopTextInput();
 }
@@ -203,7 +205,6 @@ void EventsManager::processEvents() {
 
 	Event event;
 	while (SDL_PollEvent(&event)) {
-
 		// Check repeated event.
 		if (((event.type == kEventKeyDown) || (event.type == kEventKeyUp)) &&
 				event.key.repeat && !_repeat)
