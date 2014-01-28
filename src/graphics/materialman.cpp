@@ -174,6 +174,7 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 	material->getTechnique(0)->getPass(0)->setShininess(decl.shininess);
 	material->getTechnique(0)->getPass(0)->setSelfIllumination(decl.selfIllum[0], decl.selfIllum[1], decl.selfIllum[2]);
 
+	bool decal = true;
 	bool transparent = true;
 	for (uint t = 0; t < decl.textures.size(); t++) {
 		Ogre::TexturePtr texture((Ogre::Texture *) 0);
@@ -197,6 +198,9 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 		// DXT1 textures used in Aurora games are always opaque
 		if (!texture->hasAlpha() || ((PixelFormat)texture->getFormat() == kPixelFormatDXT1))
 			transparent = false;
+
+		if (!TextureMan.getProperties(decl.textures[t]).getBool("decal"))
+			decal = false;
 	}
 
 	// Even if the textures themselves aren't tranparent, the color might still be
@@ -206,7 +210,7 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 	// Figure out whether this material is transparent.
 	// If we don't get a hint from the declaration, try to infer
 	// it from the texture and color information gathered above.
-	TransparencyHint transparency = decl.transparency;
+	TransparencyHint transparency = decal ? kTransparencyHintTransparent : decl.transparency;
 	if (transparency == kTransparencyHintUnknown)
 		transparency = transparent ? kTransparencyHintTransparent : kTransparencyHintOpaque;
 
