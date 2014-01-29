@@ -104,7 +104,7 @@ void Text::create() {
 		return RequestMan.callInMainThread(functor);
 	}
 
-	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
+	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDNumberString().c_str());
 
 	createText();
 }

@@ -109,7 +109,7 @@ Ogre::Entity *createQuadEntity(float width, float height, Ogre::MaterialPtr mate
 	vertexDecl.bufferIndices[4] = 0;
 	vertexDecl.bufferIndices[5] = 3;
 
-	Common::UString name = Common::generateIDRandomString();
+	Common::UString name = Common::generateIDNumberString();
 
 	Ogre::MeshPtr mesh = getOgreMeshManager().createManual(name.c_str(), "General");
 	Ogre::SubMesh *subMesh = mesh->createSubMesh();
@@ -164,7 +164,7 @@ Quad::~Quad() {
 }
 
 void Quad::createRootNode() {
-	Common::UString name = Common::generateIDRandomString();
+	Common::UString name = Common::generateIDNumberString();
 
 	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(name.c_str());
 }

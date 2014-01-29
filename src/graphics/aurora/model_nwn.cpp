@@ -273,7 +273,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	_superModelName.readFixedASCII(*ctx.mdl, 64);
 
-	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
+	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDNumberString().c_str());
 	_rootNode->setVisible(false);
 
 	_states.insert(std::make_pair("", new State));
@@ -293,7 +293,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 }
 
 void Model_NWN::loadASCII(ParserContext &ctx) {
-	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
+	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDNumberString().c_str());
 	_rootNode->setVisible(false);
 
 	_states.insert(std::make_pair("", new State));
@@ -834,7 +834,7 @@ void Model_NWN::readBinaryAnim(ParserContext &ctx, uint32 offset) {
 	float animLength = ctx.mdl->readIEEEFloatLE();
 	float transTime  = ctx.mdl->readIEEEFloatLE();
 
-	ctx.state->animation = getOgreSceneManager(_scene).createAnimation(Common::generateIDRandomString().c_str(), animLength);
+	ctx.state->animation = getOgreSceneManager(_scene).createAnimation(Common::generateIDNumberString().c_str(), animLength);
 
 	Common::UString animRoot;
 	animRoot.readFixedASCII(*ctx.mdl, 64);

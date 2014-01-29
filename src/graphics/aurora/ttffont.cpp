@@ -81,7 +81,7 @@ void TTFFont::Page::createTexture() {
 		return RequestMan.callInMainThread(functor);
 	}
 
-	const Common::UString name = Common::generateIDRandomString();
+	const Common::UString name = Common::generateIDNumberString();
 
 	const Ogre::TextureType texType = Ogre::TEX_TYPE_2D;
 

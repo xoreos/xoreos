@@ -117,7 +117,7 @@ void Model_NWN2::load(ParserContext &ctx) {
 		packetKey->offset    = ctx.mdb->readUint32LE();
 	}
 
-	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
+	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDNumberString().c_str());
 	_rootNode->setVisible(false);
 
 	_states.insert(std::make_pair("", new State));

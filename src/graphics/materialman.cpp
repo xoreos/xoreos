@@ -347,7 +347,7 @@ Common::UString MaterialManager::canonicalName(const MaterialDeclaration &decl) 
 }
 
 Common::UString MaterialManager::dynamicName() {
-	return Common::UString("dynamic/") + Common::generateIDRandomString();
+	return Common::UString("dynamic/") + Common::generateIDNumberString();
 }
 
 } // End of namespace Graphics

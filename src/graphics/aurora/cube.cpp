@@ -75,7 +75,7 @@ namespace Graphics {
 namespace Aurora {
 
 Cube::Cube(const Common::UString &texture, const Common::UString &scene) : Renderable(scene), _entity(0) {
-	Common::UString name = Common::generateIDRandomString();
+	Common::UString name = Common::generateIDNumberString();
 
 	try {
 		Ogre::MeshPtr mesh = getOgreMeshManager().createManual(name.c_str(), "General");

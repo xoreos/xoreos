@@ -273,7 +273,7 @@ void Model::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeD
 
 void Model::createNode(NodeEntity *&nodeEntity, State *state, Common::UString name, Ogre::SceneNode *parent) {
 	if (name.empty())
-		name = Common::generateIDRandomString();
+		name = Common::generateIDNumberString();
 
 	// Create a node entitiy in this state
 	std::pair<NodeEntities::iterator, bool> node = state->nodeEntities.insert(std::make_pair(name, NodeEntity()));
@@ -303,7 +303,7 @@ void Model::createNode(NodeEntity *&nodeEntity, State *state, Common::UString na
 Ogre::Entity *Model::createEntity(const VertexDeclaration &vertexDecl, const Ogre::MaterialPtr &material) {
 	// Create a mesh according to the vertex declaration
 
-	Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual(Common::generateIDRandomString().c_str(), "General");
+	Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual(Common::generateIDNumberString().c_str(), "General");
 	Ogre::SubMesh *subMesh = mesh->createSubMesh();
 
 	createMesh(subMesh, vertexDecl);

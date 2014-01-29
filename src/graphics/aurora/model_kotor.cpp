@@ -220,7 +220,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	readStrings(*ctx.mdl, nameOffsets, ctx.offModelData, ctx.names);
 
-	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDRandomString().c_str());
+	_rootNode = getOgreSceneManager(_scene).getRootSceneNode()->createChildSceneNode(Common::generateIDNumberString().c_str());
 	_rootNode->setVisible(false);
 
 	_states.insert(std::make_pair("", new State));
