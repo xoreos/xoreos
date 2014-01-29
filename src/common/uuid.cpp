@@ -29,6 +29,8 @@
 
 #include <sstream>
 
+#include <boost/atomic.hpp>
+
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -45,14 +47,14 @@ UString generateIDRandomString() {
 	return ss.str();
 }
 
-static uint32 idNumber = 0;
+static boost::atomic<uint32> idNumber(1);
 
 uint32 generateIDNumber() {
-	return idNumber++;
+	return idNumber.fetch_add(1);
 }
 
 UString generateIDNumberString() {
-	return UString::sprintf("%d", idNumber++);
+	return UString::sprintf("%d", idNumber.fetch_add(1));
 }
 
 } // End of namespace Common
