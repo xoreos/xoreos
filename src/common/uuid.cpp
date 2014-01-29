@@ -48,13 +48,13 @@ UString generateIDRandomString() {
 }
 
 static boost::atomic<uint32> idNumber(1);
-
 uint32 generateIDNumber() {
 	return idNumber.fetch_add(1);
 }
 
+static boost::atomic<uint64> idNumberString(1);
 UString generateIDNumberString() {
-	return UString::sprintf("%d", idNumber.fetch_add(1));
+	return UString::sprintf("%d", idNumberString.fetch_add(1));
 }
 
 } // End of namespace Common
