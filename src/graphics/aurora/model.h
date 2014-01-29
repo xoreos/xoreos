@@ -72,6 +72,8 @@ public:
 
 	/** Does this node exist in the model? */
 	bool hasNode(const Common::UString &name);
+	/** Return the SceneNode of a node in the model. */
+	Ogre::SceneNode *getNode(const Common::UString &name);
 
 	/** Play the animation associated with the current state. */
 	bool playAnimation(bool loop);

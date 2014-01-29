@@ -174,6 +174,18 @@ bool Model::hasNode(const Common::UString &name) {
 	return node != rootState->second->nodeEntities.end();
 }
 
+Ogre::SceneNode *Model::getNode(const Common::UString &name) {
+	StateMap::iterator rootState = _states.find("");
+	if (rootState == _states.end())
+		return 0;
+
+	NodeEntities::iterator node = rootState->second->nodeEntities.find(name);
+	if (node == rootState->second->nodeEntities.end())
+		return 0;
+
+	return node->second.node;
+}
+
 bool Model::playAnimation(bool loop) {
 	if (!_currentState || !_currentState->animation || !_currentState->animationState)
 		return false;
