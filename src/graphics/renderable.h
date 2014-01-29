@@ -130,9 +130,10 @@ protected:
 
 private:
 	void destroy();
-
-	static void addBoundBox(Ogre::AxisAlignedBox &bound, const Ogre::SceneNode &node);
 };
+
+/** Get the size of a SceneNode. */
+void getNodeSize(Ogre::SceneNode *node, float &width, float &height, float &depth);
 
 } // End of namespace Graphics
 

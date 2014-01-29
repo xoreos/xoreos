@@ -169,31 +169,8 @@ void Renderable::setBaseScale(float x, float y, float z) {
 	setScale(1.0, 1.0, 1.0);
 }
 
-void Renderable::addBoundBox(Ogre::AxisAlignedBox &bound, const Ogre::SceneNode &node) {
-	// Move all attached visible objects into the bounding box
-	for (Ogre::SceneNode::ConstObjectIterator o = node.getAttachedObjectIterator(); o.hasMoreElements(); o.moveNext())
-		bound.merge(o.current()->second->getWorldBoundingBox(true));
-
-	// Recurse into the child nodes
-	for (Ogre::Node::ConstChildNodeIterator c = node.getChildIterator(); c.hasMoreElements(); c.moveNext())
-		addBoundBox(bound, *((Ogre::SceneNode *) c.current()->second));
-}
-
 void Renderable::getSize(float &width, float &height, float &depth) const {
-	if (!_rootNode) {
-		width = height = depth = 0.0;
-		return;
-	}
-
-	Ogre::AxisAlignedBox bound;
-	addBoundBox(bound, *_rootNode);
-
-	const Ogre::Vector3 &min = bound.getMinimum();
-	const Ogre::Vector3 &max = bound.getMaximum();
-
-	width  = ABS(max[0] - min[0]);
-	height = ABS(max[1] - min[1]);
-	depth  = ABS(max[2] - min[2]);
+	getNodeSize(_rootNode, width, height, depth);
 }
 
 void Renderable::getPosition(float &x, float &y, float &z) const {
@@ -296,6 +273,33 @@ void Renderable::destroyAnimation(Ogre::Animation *anim) {
 		return;
 
 	destroyAnimation(anim->getName().c_str());
+}
+
+static void addBoundBox(Ogre::AxisAlignedBox &bound, const Ogre::SceneNode &node) {
+	// Move all attached visible objects into the bounding box
+	for (Ogre::SceneNode::ConstObjectIterator o = node.getAttachedObjectIterator(); o.hasMoreElements(); o.moveNext())
+		bound.merge(o.current()->second->getWorldBoundingBox(true));
+
+	// Recurse into the child nodes
+	for (Ogre::Node::ConstChildNodeIterator c = node.getChildIterator(); c.hasMoreElements(); c.moveNext())
+		addBoundBox(bound, *((Ogre::SceneNode *) c.current()->second));
+}
+
+void getNodeSize(Ogre::SceneNode *node, float &width, float &height, float &depth) {
+	if (!node) {
+		width = height = depth = 0.0;
+		return;
+	}
+
+	Ogre::AxisAlignedBox bound;
+	addBoundBox(bound, *node);
+
+	const Ogre::Vector3 &min = bound.getMinimum();
+	const Ogre::Vector3 &max = bound.getMaximum();
+
+	width  = ABS(max[0] - min[0]);
+	height = ABS(max[1] - min[1]);
+	depth  = ABS(max[2] - min[2]);
 }
 
 } // End of namespace Graphics
