@@ -340,10 +340,9 @@ void Quad::update() {
 
 	MaterialMan.setColorModifier(_material, _r, _g, _b, _a);
 
-	if (_a < 1.0) {
-		_material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+	_material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+	if (_a < 1.0)
 		_material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
-	}
 
 	_entity = createQuadEntity(1.0, 1.0, _material, _topLeftU, _topLeftV, _bottomRightU, _bottomRightV, _scene);
 

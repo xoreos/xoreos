@@ -149,6 +149,8 @@ Ogre::MaterialPtr MaterialManager::makeDynamic(Ogre::MaterialPtr material) {
 }
 
 void MaterialManager::createSolidColor(const MaterialDeclaration &decl, Ogre::MaterialPtr material) {
+	material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+
 	Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
 
 	const Ogre::ColourValue color(decl.diffuse[0], decl.diffuse[1], decl.diffuse[2]);
@@ -157,7 +159,6 @@ void MaterialManager::createSolidColor(const MaterialDeclaration &decl, Ogre::Ma
 	texState->setColourOperationEx(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_MANUAL, color, color, 1.0);
 	if (alpha != 1.0) {
 		texState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_MANUAL, alpha, alpha, 1.0);
-		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
 	}
 }
@@ -214,13 +215,11 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 	if (transparency == kTransparencyHintUnknown)
 		transparency = transparent ? kTransparencyHintTransparent : kTransparencyHintOpaque;
 
-	if (transparency == kTransparencyHintTransparent) {
-		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+	material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+	if (transparency == kTransparencyHintTransparent)
 		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
-	} else {
-		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_REPLACE);
+	else
 		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(decl.writeDepth);
-	}
 
 	material->getTechnique(0)->getPass(0)->setColourWriteEnabled(decl.writeColor);
 
@@ -238,13 +237,8 @@ void MaterialManager::setTransparent(Ogre::MaterialPtr material, bool transparen
 	user.setUserAny("sceneblendsource", Ogre::Any(sceneBlendSrc));
 	user.setUserAny("sceneblenddest", Ogre::Any(sceneBlendDst));
 
-	if (transparent) {
-		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
-		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
-	} else {
-		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_REPLACE);
-		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(true);
-	}
+	material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+	material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(!transparent);
 }
 
 void MaterialManager::resetTransparent(Ogre::MaterialPtr material) {
