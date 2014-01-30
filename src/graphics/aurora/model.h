@@ -70,6 +70,9 @@ public:
 	/** Set the model into a different state. */
 	bool setState(const Common::UString &name);
 
+	/** Does this node exist in the model? */
+	bool hasNode(const Common::UString &name);
+
 	/** Play the animation associated with the current state. */
 	bool playAnimation(bool loop);
 	/** Set the model into a different state and play its animation. */

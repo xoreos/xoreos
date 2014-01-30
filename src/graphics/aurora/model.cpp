@@ -165,6 +165,15 @@ void Model::setState(State *state) {
 	}
 }
 
+bool Model::hasNode(const Common::UString &name) {
+	StateMap::iterator rootState = _states.find("");
+	if (rootState == _states.end())
+		return false;
+
+	NodeEntities::iterator node = rootState->second->nodeEntities.find(name);
+	return node != rootState->second->nodeEntities.end();
+}
+
 bool Model::playAnimation(bool loop) {
 	if (!_currentState || !_currentState->animation || !_currentState->animationState)
 		return false;
