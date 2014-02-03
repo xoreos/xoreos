@@ -993,14 +993,18 @@ void Model_NWN::loadASCIINode(ParserContext &ctx, Ogre::SceneNode *parent,
 	processASCIIMesh(ctx, mesh);
 
 	if ((orientation[0] == 0.0) && (orientation[1] == 0.0) && (orientation[2] == 0.0) && (orientation[3] == 0.0))
-		orientation[3] = 1.0;
-
-	SWAP(orientation[3], orientation[0]);
+		orientation[0] = 1.0;
 
 	if (ctx.hasPosition)
 		memcpy(ctx.nodeEntity->position, position, 3 * sizeof(float));
-	if (ctx.hasOrientation)
-		memcpy(ctx.nodeEntity->orientation, orientation, 4 * sizeof(float));
+	if (ctx.hasOrientation) {
+		Ogre::Quaternion q(Ogre::Radian(orientation[3]), Ogre::Vector3(orientation[0], orientation[1], orientation[2]));
+
+		ctx.nodeEntity->orientation[0] = q.w;
+		ctx.nodeEntity->orientation[1] = q.x;
+		ctx.nodeEntity->orientation[2] = q.y;
+		ctx.nodeEntity->orientation[3] = q.z;
+	}
 
 	nodeInherit(ctx, name);
 }
