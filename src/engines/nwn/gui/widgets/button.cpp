@@ -42,7 +42,7 @@ WidgetButton::WidgetButton(::Engines::GUI &gui, const Common::UString &tag,
 	ModelWidget(gui, tag, model) {
 
 	_model->setSelectable(true);
-	_model->setState("up");
+	_model->setState("");
 	updateSize();
 
 	_sound = sound;
@@ -68,7 +68,7 @@ void WidgetButton::leave() {
 	if (isDisabled())
 		return;
 
-	_model->setState("up");
+	_model->setState("");
 
 	updateSize();
 }
@@ -79,7 +79,7 @@ void WidgetButton::setDisabled(bool disabled) {
 	if (isDisabled())
 		_model->setState("disabled");
 	else
-		_model->setState("up");
+		_model->setState("");
 
 	updateSize();
 }
@@ -103,7 +103,7 @@ void WidgetButton::mouseUp(uint8 state, float x, float y) {
 		return;
 
 	if (!_model->setState("hilite"))
-		_model->setState("up");
+		_model->setState("");
 
 	updateSize();
 
