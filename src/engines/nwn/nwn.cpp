@@ -53,6 +53,9 @@
 #include "engines/aurora/resources.h"
 
 #include "engines/nwn/nwn.h"
+#include "engines/nwn/module.h"
+
+#include "engines/nwn/gui/main/main.h"
 
 namespace Engines {
 
@@ -133,11 +136,7 @@ void NWNEngine::run(const Common::UString &target) {
 	if (ConfigMan.getBool("showfps", false))
 		fps = new Graphics::Aurora::FPS;
 
-	playMenuMusic();
-
-	while (!EventMan.quitRequested()) {
-		EventMan.delay(10);
-	}
+	mainMenuLoop();
 
 	delete fps;
 
@@ -404,6 +403,31 @@ void NWNEngine::mainMenuLoop() {
 
 	// Start sound
 	playSound("gui_prompt", Sound::kSoundTypeSFX);
+
+	Module module;
+
+	while (!EventMan.quitRequested()) {
+		GUI *mainMenu = new MainMenu(module);
+
+		EventMan.flushEvents();
+
+		mainMenu->setVisible(true);
+		mainMenu->run();
+		mainMenu->setVisible(false);
+
+		delete mainMenu;
+		if (EventMan.quitRequested())
+			break;
+
+		stopMenuMusic();
+
+		module.run();
+		if (EventMan.quitRequested())
+			break;
+
+		playMenuMusic();
+		module.clear();
+	}
 
 	stopMenuMusic();
 }
