@@ -55,16 +55,20 @@
 #include "engines/nwn/area.h"
 #include "engines/nwn/object.h"
 
+#include "engines/nwn/gui/ingame/main.h"
+
 namespace Engines {
 
 namespace NWN {
 
-Module::Module() : _hasModule(false), _currentTexturePack(-1), _exit(false),
+Module::Module() : _hasModule(false), _menu(0), _currentTexturePack(-1), _exit(false),
 	_currentArea(0), _currentObject(0) {
 
 }
 
 Module::~Module() {
+	delete _menu;
+
 	clear();
 }
 
@@ -339,6 +343,8 @@ bool Module::handleKeys(const Events::Event &e) {
 			_currentArea->setHighlightAll(true);
 		else if (e.key.keysym.scancode == SDL_SCANCODE_F)
 			warning("FPS: %lf", GfxMan.getFPS());
+		else if (e.key.keysym.sym == SDLK_ESCAPE)
+			showMenu();
 		else
 			return false;
 	}
@@ -352,6 +358,20 @@ bool Module::handleKeys(const Events::Event &e) {
 	}
 
 	return true;
+}
+
+void Module::showMenu() {
+	if (!_menu)
+		_menu = new IngameMainMenu;
+
+	_menu->setVisible(true);
+
+	int code = _menu->run();
+
+	_menu->setVisible(false);
+
+	if (code == 2)
+		_exit = true;
 }
 
 void Module::checkCurrentObject() {

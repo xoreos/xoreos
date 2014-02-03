@@ -42,6 +42,7 @@ YesNoCancelDialog::YesNoCancelDialog(const Common::UString &msg, const Common::U
 			const Common::UString &no, const Common::UString &cancel) :
 	_msg(msg), _yes(yes), _no(no), _cancel(cancel) {
 
+	setPosition(0.0, 0.0, -250.0);
 	load("yesnocancelpanel");
 }
 
@@ -72,17 +73,19 @@ void YesNoCancelDialog::initWidget(Widget &widget) {
 	}
 }
 
-void YesNoCancelDialog::show() {
-	// Center the message
-	WidgetLabel &msg = *getLabel("MessageLabel", true);
-	WidgetPanel &pnl = *getPanel("PNL_OK"      , true);
+void YesNoCancelDialog::setVisible(bool visible) {
+	if (visible) {
+		// Center the message
+		WidgetLabel &msg = *getLabel("MessageLabel", true);
+		WidgetPanel &pnl = *getPanel("PNL_OK"      , true);
 
-	float pX, pY, pZ;
-	pnl.getPosition(pX, pY, pZ);
+		float pX, pY, pZ;
+		pnl.getPosition(pX, pY, pZ);
 
-	msg.setPosition(pX - msg.getWidth() / 2.0, pY - msg.getHeight() / 2.0, pZ);
+		msg.setPosition(floor(pX - msg.getWidth() / 2.0f), floor(pY + msg.getHeight() / 2.0f), pZ + 1.0f);
+	}
 
-	GUI::show();
+	GUI::setVisible(visible);
 }
 
 void YesNoCancelDialog::callbackActive(Widget &widget) {

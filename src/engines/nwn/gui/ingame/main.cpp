@@ -47,7 +47,8 @@ namespace Engines {
 
 namespace NWN {
 
-IngameMainMenu::IngameMainMenu() {
+IngameMainMenu::IngameMainMenu() : _game(0), _video(0), _sound(0), _controls(0), _quitPrompt(0) {
+	setPosition(0.0, 0.0, -300.0);
 	load("options_main");
 
 	// TODO: Load game
@@ -58,14 +59,6 @@ IngameMainMenu::IngameMainMenu() {
 
 	// TODO: Save character
 	getWidget("SaveCharButton", true)->setDisabled(true);
-
-	_game     = new OptionsGameMenu(false);
-	_video    = new OptionsVideoMenu(false);
-	_sound    = new OptionsSoundMenu(false);
-	_controls = new OptionsControlsMenu(false);
-
-	_quitPrompt = new OKCancelDialog(TalkMan.getString(10308),
-	                                 TalkMan.getString(8274), TalkMan.getString(8275));
 }
 
 IngameMainMenu::~IngameMainMenu() {
@@ -98,31 +91,48 @@ void IngameMainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "ExitButton") {
+		if (!_quitPrompt)
+			_quitPrompt = new OKCancelDialog(TalkMan.getString(10308),
+			                                 TalkMan.getString(8274), TalkMan.getString(8275));
+
 		if (sub(*_quitPrompt, 0, false) == 1) {
 			_returnCode = 2;
 			return;
 		}
 
-		show();
+		setVisible(true);
 		return;
 	}
 
+
 	if (widget.getTag() == "GameButton") {
+		if (!_game)
+			_game = new OptionsGameMenu(false);
+
 		sub(*_game);
 		return;
 	}
 
 	if (widget.getTag() == "VideoOptionsButton") {
+		if (!_video)
+			_video = new OptionsVideoMenu(false);
+
 		sub(*_video);
 		return;
 	}
 
 	if (widget.getTag() == "SoundOptionsButton") {
+		if (!_sound)
+			_sound = new OptionsSoundMenu(false);
+
 		sub(*_sound);
 		return;
 	}
 
 	if (widget.getTag() == "ControlsButton") {
+		if (!_controls)
+			_controls = new OptionsControlsMenu(false);
+
 		sub(*_controls);
 		return;
 	}

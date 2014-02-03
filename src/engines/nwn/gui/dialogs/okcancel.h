@@ -45,7 +45,7 @@ public:
 			const Common::UString &ok = "", const Common::UString &cancel = "");
 	~OKCancelDialog();
 
-	void show();
+	void setVisible(bool visible);
 
 protected:
 	void initWidget(Widget &widget);

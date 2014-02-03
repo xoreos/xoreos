@@ -45,7 +45,7 @@ public:
 			const Common::UString &no = "", const Common::UString &cancel = "");
 	~YesNoCancelDialog();
 
-	void show();
+	void setVisible(bool visible);
 
 protected:
 	void initWidget(Widget &widget);

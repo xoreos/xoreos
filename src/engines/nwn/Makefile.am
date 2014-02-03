@@ -33,6 +33,8 @@ noinst_HEADERS = \
                  gui/widgets/quadwidget.h \
                  gui/widgets/portrait.h \
                  gui/gui.h \
+                 gui/dialogs/okcancel.h \
+                 gui/dialogs/yesnocancel.h \
                  gui/main/main.h \
                  gui/main/moviesbase.h \
                  gui/main/moviescamp.h \
@@ -54,6 +56,7 @@ noinst_HEADERS = \
                  gui/options/videoadv.h \
                  gui/options/resolution.h \
                  gui/chargen/chargen.h \
+                 gui/ingame/main.h \
                  $(EMPTY)
 
 libnwn_la_SOURCES = \
@@ -88,6 +91,8 @@ libnwn_la_SOURCES = \
                     gui/widgets/quadwidget.cpp \
                     gui/widgets/portrait.cpp \
                     gui/gui.cpp \
+                    gui/dialogs/okcancel.cpp \
+                    gui/dialogs/yesnocancel.cpp \
                     gui/main/main.cpp \
                     gui/main/moviesbase.cpp \
                     gui/main/moviescamp.cpp \
@@ -109,4 +114,5 @@ libnwn_la_SOURCES = \
                     gui/options/videoadv.cpp \
                     gui/options/resolution.cpp \
                     gui/chargen/chargen.cpp \
+                    gui/ingame/main.cpp \
                     $(EMPTY)

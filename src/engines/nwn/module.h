@@ -54,6 +54,8 @@ namespace NWN {
 class Area;
 class Object;
 
+class GUI;
+
 class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
 public:
 	Module();
@@ -86,6 +88,8 @@ private:
 	std::vector<Aurora::ResourceManager::ChangeID> _resHAKs;
 
 	IFOFile _ifo; ///< The module's IFO.
+
+	GUI *_menu; ///< The ingame main menu.
 
 	// Texture pack
 	int _currentTexturePack;
@@ -126,6 +130,8 @@ private:
 	bool handleCamera(const Events::Event &e);
 	bool handlePicker(const Events::Event &e);
 	bool handleKeys(const Events::Event &e);
+
+	void showMenu();
 
 	void checkCurrentObject();
 };
