@@ -54,14 +54,51 @@
 #include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
 #include "engines/nwn/object.h"
+#include "engines/nwn/creature.h"
 
 #include "engines/nwn/gui/ingame/main.h"
+
+struct GenderToken {
+	const char *token;
+	uint32 male;
+	uint32 female;
+};
+
+static const GenderToken kGenderTokens[] = {
+	{"<Male/Female>"    ,  156,  157},
+	{"<male/female>"    , 4924, 4925},
+	{"<Boy/Girl>"       , 4860, 4861},
+	{"<boy/girl>"       , 4862, 4863},
+	{"<Brother/Sister>" , 4864, 4865},
+	{"<brother/sister>" , 4866, 4867},
+	{"<He/She>"         , 4869, 4870},
+	{"<he/she>"         , 4871, 4872},
+	{"<Him/Her>"        , 4873, 4874},
+	{"<him/her>"        , 4875, 4876},
+	{"<His/Her>"        , 4877, 4874},
+	{"<his/her>"        , 4878, 4876},
+	{"<His/Hers>"       , 4877, 4879},
+	{"<his/hers>"       , 4878, 4880},
+	{"<Lad/Lass>"       , 4881, 4882},
+	{"<lad/lass>"       , 4883, 4884},
+	{"<Lord/Lady>"      , 4885, 4886},
+	{"<lord/lady>"      , 4887, 4888},
+	{"<Man/Woman>"      , 4926, 4927},
+	{"<man/woman>"      , 4928, 4929},
+	{"<Master/Mistress>", 4930, 4931},
+	{"<master/mistress>", 4932, 4933},
+	{"<Mister/Missus>"  , 4934, 4935},
+	{"<mister/missus>"  , 4936, 4937},
+	{"<Sir/Madam>"      , 4939, 4940},
+	{"<sir/madam>"      , 4941, 4942},
+	{"<bitch/bastard>"  , 1757, 1739}
+};
 
 namespace Engines {
 
 namespace NWN {
 
-Module::Module() : _hasModule(false), _menu(0), _currentTexturePack(-1), _exit(false),
+Module::Module() : _hasModule(false), _pc(0), _menu(0), _currentTexturePack(-1), _exit(false),
 	_currentArea(0), _currentObject(0) {
 
 }
@@ -131,6 +168,85 @@ void Module::checkHAKs() {
 			throw Common::Exception("Required hak \"%s\" does not exist", h->c_str());
 }
 
+void Module::setPCTokens() {
+	TokenMan.set("<FullName>" , _pc->getName());
+	TokenMan.set("<FirstName>", _pc->getFirstName());
+	TokenMan.set("<LastName>" , _pc->getLastName());
+
+	TokenMan.set("<Race>" , _pc->getConvRace());
+	TokenMan.set("<race>" , _pc->getConvrace());
+	TokenMan.set("<Races>", _pc->getConvRaces());
+
+	TokenMan.set("<Subrace>", _pc->getSubRace());
+
+	TokenMan.set("<Class>"  , _pc->getConvClass());
+	TokenMan.set("<class>"  , _pc->getConvclass());
+	TokenMan.set("<Classes>", _pc->getConvClasses());
+
+	TokenMan.set("<Deity>", _pc->getDeity());
+
+	for (int i = 0; i < ARRAYSIZE(kGenderTokens); i++) {
+		const uint32 strRef = _pc->isFemale() ? kGenderTokens[i].female : kGenderTokens[i].male;
+
+		TokenMan.set(kGenderTokens[i].token, TalkMan.getString(strRef));
+	}
+
+	// TODO: <Level>
+	// TODO: <Alignment>, <alignment>
+	// TODO: <Good/Evil>, <good/evil>
+	// TODO: <Lawful/Chaotic>, <lawful/chaotic>, <Law/Chaos>, <law/chaos>,
+	// TODO: <GameTime>. <GameYear>, <Day/Night>, <day/night>, <QuarterDay>, <quarterday>
+}
+
+void Module::removePCTokens() {
+	TokenMan.remove("<FullName>");
+	TokenMan.remove("<FirstName>");
+	TokenMan.remove("<LastName>");
+
+	TokenMan.remove("<Race>");
+	TokenMan.remove("<race>");
+	TokenMan.remove("<Races>");
+
+	TokenMan.remove("<Subrace>");
+
+	TokenMan.remove("<Class>");
+	TokenMan.remove("<class>");
+	TokenMan.remove("<Classes>");
+
+	TokenMan.remove("<Deity>");
+
+	for (int i = 0; i < ARRAYSIZE(kGenderTokens); i++)
+		TokenMan.remove(kGenderTokens[i].token);
+}
+
+bool Module::usePC(const Common::UString &bic, bool local) {
+	unloadPC();
+
+	if (bic.empty())
+		return false;
+
+	try {
+		_pc = new Creature(bic, local);
+	} catch (Common::Exception &e) {
+		delete _pc;
+		_pc = 0;
+
+		e.add("Can't load PC \"%s\"", bic.c_str());
+		Common::printException(e, "WARNING: ");
+	}
+
+	setPCTokens();
+	TalkMan.setGender((Aurora::Gender) _pc->getGender());
+
+	addObject(*_pc);
+
+	return true;
+}
+
+Creature *Module::getPC() {
+	return _pc;
+}
+
 bool Module::replaceModule() {
 	if (_newModule.empty())
 		return true;
@@ -155,6 +271,13 @@ bool Module::enter() {
 		return false;
 	}
 
+	if (!_pc) {
+		warning("Module::enter(): Lacking a PC?!?");
+		return false;
+	}
+
+	_pc->clearVariables();
+
 	loadTexturePack();
 
 	try {
@@ -167,6 +290,8 @@ bool Module::enter() {
 		printException(e, "WARNING: ");
 		return false;
 	}
+
+	warning("Entering module \"%s\" with PC \"%s\"", _ifo.getName().getString().c_str(), _pc->getName().c_str());
 
 	float entryX, entryY, entryZ, entryDirX, entryDirY;
 	_ifo.getEntryPosition(entryX, entryY, entryZ);
@@ -188,6 +313,11 @@ bool Module::enter() {
 	CameraMan.setPosition(entryX, entryZ + 2.0, -entryY);
 	CameraMan.setOrientation(oRadian, oX, oY, oZ);
 
+	_pc->setPosition(entryX, entryZ, -entryY);
+	_pc->setOrientation(oRadian, oX, oY, oZ);
+
+	_pc->loadModel();
+
 	return true;
 }
 
@@ -196,6 +326,8 @@ void Module::enterArea() {
 		return;
 
 	if (_currentArea) {
+		_pc->setVisible(false);
+
 		_currentArea->setVisible(false);
 
 		_currentArea   = 0;
@@ -217,8 +349,11 @@ void Module::enterArea() {
 	_currentArea = area->second;
 
 	_currentArea->setVisible(true);
+	_pc->setVisible(true);
 
 	EventMan.flushEvents();
+
+	_pc->setArea(_currentArea);
 }
 
 void Module::run() {
@@ -403,6 +538,7 @@ void Module::unload() {
 	unloadAreas();
 	unloadTexturePack();
 	unloadHAKs();
+	unloadPC();
 	unloadModule();
 }
 
@@ -417,6 +553,18 @@ void Module::unloadModule() {
 
 	_newModule.clear();
 	_hasModule = false;
+}
+
+void Module::unloadPC() {
+	if (!_pc)
+		return;
+
+	removeObject(*_pc);
+
+	removePCTokens();
+
+	delete _pc;
+	_pc = 0;
 }
 
 void Module::loadHAKs() {
@@ -508,6 +656,44 @@ void Module::unloadAreas() {
 
 const Common::UString &Module::getName() const {
 	return _ifo.getName().getString();
+}
+
+void Module::movePC(const Common::UString &area, float x, float y, float z) {
+	if (!_pc)
+		return;
+
+	Area *pcArea = 0;
+
+	AreaMap::iterator a = _areas.find(area);
+	if (a != _areas.end())
+		pcArea = a->second;
+
+	movePC(pcArea, x, y, z);
+}
+
+void Module::movePC(Area *area, float x, float y, float z) {
+	if (!_pc)
+		return;
+
+	_pc->setArea(area);
+	_pc->setPosition(x, y, z);
+
+	movedPC();
+}
+
+void Module::movedPC() {
+	if (!_pc)
+		return;
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	// Roughly head position
+	CameraMan.setPosition(x, z + 2.0, y);
+
+	_newArea.clear();
+	if (_pc->getArea())
+		_newArea = _pc->getArea()->getResRef();
 }
 
 void Module::changeModule(const Common::UString &module) {

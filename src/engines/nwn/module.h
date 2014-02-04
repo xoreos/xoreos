@@ -53,6 +53,7 @@ namespace NWN {
 
 class Area;
 class Object;
+class Creature;
 
 class GUI;
 
@@ -66,15 +67,22 @@ public:
 
 	/** Load a module. */
 	bool loadModule(const Common::UString &module);
+	/** Use this character as the player character. */
+	bool usePC(const Common::UString &bic, bool local);
 
 	void run();
 
 	const Common::UString &getName() const;
 
+	Creature *getPC();
+
+	void movePC(const Common::UString &area, float x, float y, float z);
+	void movePC(Area *area, float x, float y, float z);
+	void movedPC();
+
 	void changeModule(const Common::UString &module);
 
 	static Common::UString getDescription(const Common::UString &module);
-
 
 private:
 	typedef std::map<Common::UString, Area *> AreaMap;
@@ -88,6 +96,8 @@ private:
 	std::vector<Aurora::ResourceManager::ChangeID> _resHAKs;
 
 	IFOFile _ifo; ///< The module's IFO.
+
+	Creature *_pc; ///< The player character we use.
 
 	GUI *_menu; ///< The ingame main menu.
 
@@ -109,6 +119,7 @@ private:
 	void unload(); ///< Unload the whole shebang.
 
 	void unloadModule();      ///< Unload the module.
+	void unloadPC();          ///< Unload the PC.
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadTexturePack(); ///< Unload the texture pack.
 	void unloadAreas();       ///< Unload the areas.
@@ -119,6 +130,9 @@ private:
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadTexturePack(); ///< Load the texture pack.
 	void loadAreas();       ///< Load the areas.
+
+	void setPCTokens();
+	void removePCTokens();
 
 	bool enter();     ///< Enter the currently loaded module.
 	void enterArea(); ///< Enter a new area.
