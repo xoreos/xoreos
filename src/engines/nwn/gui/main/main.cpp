@@ -60,13 +60,13 @@ MainMenu::MainMenu(Module &module) : _module(&module), _charType(0), _new(0), _m
 
 	if (hasXP1) {
 		WidgetPanel *xp1 = new WidgetPanel(*this, "TextXP1", "ctl_xp1_text");
-		xp1->setPosition(124.0, 0.00, -50.0);
+		xp1->setPosition(124.0, 0.00, -250.0);
 		addWidget(xp1);
 	}
 
 	if (hasXP2) {
 		WidgetPanel *xp2 = new WidgetPanel(*this, "TextXP2", "ctl_xp2_text");
-		xp2->setPosition(124.0, -147.0, -50.0);
+		xp2->setPosition(124.0, -147.0, -250.0);
 		addWidget(xp2);
 	}
 

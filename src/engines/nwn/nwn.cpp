@@ -39,10 +39,12 @@
 #include "aurora/talkman.h"
 
 #include "graphics/cursorman.h"
+#include "graphics/guiman.h"
 
 #include "graphics/aurora/sceneman.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/fps.h"
+#include "graphics/aurora/model_nwn.h"
 
 #include "sound/sound.h"
 
@@ -53,6 +55,7 @@
 #include "engines/aurora/resources.h"
 
 #include "engines/nwn/nwn.h"
+#include "engines/nwn/model.h"
 #include "engines/nwn/module.h"
 
 #include "engines/nwn/gui/main/main.h"
@@ -398,6 +401,63 @@ void NWNEngine::stopMenuMusic() {
 	SoundMan.stopChannel(_menuMusic);
 }
 
+bool NWNEngine::legalFadeIn(Graphics::Aurora::Model_NWN *legal) {
+	if (EventMan.quitRequested() || !legal)
+		return true;
+
+	GUIMan.setAutoUpdate(true);
+
+	legal->fade(Graphics::kFadeDirectionIn, 1.0, false);
+	legal->setVisible(true);
+
+	bool aborted = false;
+	uint32 start = EventMan.getTimestamp();
+	while ((EventMan.getTimestamp() - start) < 1000) {
+		Events::Event event;
+		while (EventMan.pollEvent(event))
+			if (event.type == Events::kEventMouseDown)
+				aborted = true;
+
+		if (aborted || EventMan.quitRequested())
+			break;
+
+		EventMan.delay(10);
+	}
+
+	return aborted || EventMan.quitRequested();
+}
+
+void NWNEngine::legalShow(Graphics::Aurora::Model_NWN *legal, bool aborted) {
+	if(!legal)
+		return;
+
+	uint32 start   = EventMan.getTimestamp();
+	bool   fadeOut = false;
+	while (!EventMan.quitRequested() && !aborted) {
+		Events::Event event;
+
+		// Mouse click => abort
+		while (EventMan.pollEvent(event))
+			if (event.type == Events::kEventMouseDown)
+				aborted = true;
+		if (aborted)
+			break;
+
+		if (!fadeOut && (EventMan.getTimestamp() - start) >= 5000) {
+			legal->fade(Graphics::kFadeDirectionOut, 1.0, false);
+			fadeOut = true;
+		}
+
+		// Display and fade-out time's up
+		if ((EventMan.getTimestamp() - start) >= 6000)
+			break;
+	}
+
+	legal->setVisible(false);
+	GUIMan.setAutoUpdate(false);
+	GUIMan.update();
+}
+
 void NWNEngine::mainMenuLoop() {
 	playMenuMusic();
 
@@ -406,16 +466,31 @@ void NWNEngine::mainMenuLoop() {
 
 	Module module;
 
+	Graphics::Aurora::Model_NWN *legal = createGUIModel("load_legal");
+	legal->setPosition(0.0, 0.0, -200.0);
+	GUIMan.addRenderable(legal);
+
 	while (!EventMan.quitRequested()) {
 		GUI *mainMenu = new MainMenu(module);
 
 		EventMan.flushEvents();
 
+		// Fade in, show and fade out the legal billboard
+		bool abortLegal = legalFadeIn(legal);
 		mainMenu->setVisible(true);
+		legalShow(legal, abortLegal);
+
 		mainMenu->run();
 		mainMenu->setVisible(false);
 
 		delete mainMenu;
+
+		if (legal) {
+			GUIMan.removeRenderable(legal);
+			delete legal;
+			legal = 0;
+		}
+
 		if (EventMan.quitRequested())
 			break;
 

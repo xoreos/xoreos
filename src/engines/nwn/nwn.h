@@ -45,6 +45,12 @@ namespace Common {
 	class FileList;
 }
 
+namespace Graphics {
+	namespace Aurora {
+		class Model_NWN;
+	}
+}
+
 namespace Engines {
 
 namespace NWN {
@@ -114,6 +120,9 @@ private:
 	void stopMenuMusic();
 
 	void mainMenuLoop();
+
+	bool legalFadeIn(Graphics::Aurora::Model_NWN *legal);
+	void legalShow(Graphics::Aurora::Model_NWN *legal, bool aborted);
 };
 
 } // End of namespace NWN
