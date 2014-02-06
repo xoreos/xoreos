@@ -200,4 +200,34 @@ void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 	}
 }
 
+bool isTransparentDXT3(const byte *data, uint32 size) {
+	for ( ; size > 15; size -= 16, data += 16)
+		if ((data[0] & data[1] & data[2] & data[3] & data[4] & data[5] & data[6] & data[7]) != 0xFF)
+			return true;
+
+	return false;
+}
+
+bool isTransparentDXT5(const byte *data, uint32 size) {
+	for ( ; size > 15; size -= 16, data += 16) {
+		const byte a0 = data[0];
+		const byte a1 = data[1];
+
+		uint64 abl = READ_LE_UINT32(data + 2) | ((uint64)READ_LE_UINT16(data + 6) << 32);
+
+		for (int i = 0; i < 16; i++, abl >>= 3) {
+			const uint8 a = abl & 7;
+
+			const bool o1 = ((a == 0) && (a0 == 0xFF)) || ((a == 1) && (a1 == 0xFF));
+			const bool o2 = (a0 == a1) && (a0 == 0xFF) && (a != 6);
+			const bool o3 = (a0 < a1) && (a == 7);
+
+			if (!(o1 || o2 || o3))
+				return true;
+		}
+	}
+
+	return false;
+}
+
 } // End of namespace Graphics

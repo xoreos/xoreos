@@ -65,8 +65,11 @@ public:
 	/** Is the image data compressed? */
 	bool isCompressed() const;
 
-	/** Does the image data have alpha? .*/
+	/** Does the image data have an alpha channel? */
 	bool hasAlpha() const;
+
+	/** Does the image have transparent alpha values? */
+	bool isTransparent() const;
 
 	/** Return the image data's format. */
 	PixelFormat getFormat() const;

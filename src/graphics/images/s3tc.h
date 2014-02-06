@@ -42,6 +42,9 @@ void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch);
 void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch);
 
+bool isTransparentDXT3(const byte *data, uint32 size);
+bool isTransparentDXT5(const byte *data, uint32 size);
+
 } // End of namespace Graphics
 
 #endif // GRAPHICS_IMAGES_S3TC_H

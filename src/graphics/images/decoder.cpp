@@ -74,6 +74,49 @@ bool ImageDecoder::hasAlpha() const {
 	return hasAlpha(_format);
 }
 
+bool ImageDecoder::isTransparent() const {
+	if (_mipMaps.empty())
+		return false;
+
+	const MipMap &mipMap = *_mipMaps[0];
+
+	const int   pixels = mipMap.width * mipMap.height;
+	const byte *data   = mipMap.data;
+
+	switch (_format) {
+		case kPixelFormatR8G8B8A8:
+			for (int i = 0; i < pixels; i++, data += 4)
+				if (data[3] != 0xFF)
+					return true;
+			break;
+
+		case kPixelFormatB8G8R8A8:
+			for (int i = 0; i < pixels; i++, data += 4)
+				if (data[3] != 0xFF)
+					return true;
+			break;
+
+		case kPixelFormatA1R5G5B5:
+			for (int i = 0; i < pixels; i++, data += 2)
+				if (!(data[0] & 0x80))
+					return true;
+			break;
+
+		case kPixelFormatDXT3:
+			return isTransparentDXT3(mipMap.data, mipMap.size);
+			break;
+
+		case kPixelFormatDXT5:
+			return isTransparentDXT5(mipMap.data, mipMap.size);
+			break;
+
+		default:
+			break;
+	}
+
+	return false;
+}
+
 PixelFormat ImageDecoder::getFormat() const {
 	return _format;
 }
