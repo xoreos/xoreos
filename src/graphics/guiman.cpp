@@ -30,24 +30,15 @@
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
-#include <OgreTextureManager.h>
 #include <OgreCamera.h>
 #include <OgreViewport.h>
-#include <OgreTexture.h>
-#include <OgreTextureUnitState.h>
-#include <OgrePass.h>
-#include <OgreTechnique.h>
-#include <OgreMaterial.h>
-#include <OgreHardwarePixelBuffer.h>
+#include <OgreRenderWindow.h>
 #include <OgreOverlaySystem.h>
 
 #include "common/util.h"
-#include "common/uuid.h"
 #include "common/threads.h"
 
 #include "graphics/guiman.h"
-#include "graphics/util.h"
-#include "graphics/materialman.h"
 #include "graphics/renderable.h"
 
 #include "events/requests.h"
@@ -58,7 +49,7 @@ namespace Graphics {
 
 static const float kCameraFuzz = 1E-6;
 
-GUIManager::GUIManager() : _scene(0), _viewport(0), _camera(0), _panel(0), _overlay(0), _renderTexture(0), _autoUpdate(false) {
+GUIManager::GUIManager() : _scene(0), _viewport(0), _camera(0), _overlay(0) {
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
 			_nodes[i][j] = 0;
@@ -68,17 +59,86 @@ GUIManager::~GUIManager() {
 	deinit();
 }
 
-void GUIManager::create(int width, int height, int textureSize, float textureWidth, float textureHeight) {
-	// Create the material
+void GUIManager::init(Ogre::RenderWindow *window) {
+	deinit();
 
-	_material = MaterialMan.createDynamic();
-	_material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
-	_material->getTechnique(0)->getPass(0)->createTextureUnitState();
+	create();
+	setWindow(window);
+}
 
+void GUIManager::deinit() {
+	clear();
+
+	// Destroy the alignment scene node
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++) {
+			if (_scene && _nodes[i][j])
+				_scene->destroySceneNode(_nodes[i][j]);
+
+			_nodes[i][j] = 0;
+		}
+
+	// Remove the window from the viewport and destroy the viewport
+	removeWindow();
+
+	// Destroy the camera and scene
+
+	if (_scene) {
+		if (_camera)
+			_scene->destroyCamera(_camera);
+
+		if (_overlay)
+			_scene->removeRenderQueueListener(_overlay);
+
+		Ogre::Root::getSingleton().destroySceneManager(_scene);
+	}
+
+	delete _overlay;
+
+	_camera  = 0;
+	_scene   = 0;
+	_overlay = 0;
+}
+
+void GUIManager::clear() {
+	// Delete all renderables still in the GUI
+	for (Renderables::iterator r = _renderables.begin(); r != _renderables.end(); ++r)
+		delete r->second;
+	_renderables.clear();
+}
+
+void GUIManager::removeWindow() {
+	if (_viewport && _viewport->getTarget())
+		_viewport->getTarget()->removeViewport(_viewport->getZOrder());
+
+	_viewport = 0;
+}
+
+void GUIManager::setWindow(Ogre::RenderWindow *window) {
+	assert(_camera);
+	assert(window);
+
+	removeWindow();
+
+	_viewport = window->addViewport(_camera, 1);
+	_viewport->setClearEveryFrame(true, Ogre::FBT_DEPTH);
+	_viewport->setBackgroundColour(Ogre::ColourValue::ZERO);
+	_viewport->clear(Ogre::FBT_DEPTH, Ogre::ColourValue::ZERO);
+	_viewport->setAutoUpdated(true);
+
+	setScreenSize(_viewport->getActualWidth(), _viewport->getActualHeight());
+}
+
+void GUIManager::create() {
 	// Create the scene
 
 	_scene = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, "gui");
 	_scene->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
+
+	// Create the overlay system
+
+	_overlay = new Ogre::OverlaySystem();
+	_scene->addRenderQueueListener(_overlay);
 
 	// Create the alignment scene nodes
 
@@ -96,33 +156,9 @@ void GUIManager::create(int width, int height, int textureSize, float textureWid
 	// Create a camera
 
 	_camera = _scene->createCamera("camera");
-
-	// Create the overlay
-
-	Ogre::OverlayManager &overlayMan = *Ogre::OverlayManager::getSingletonPtr();
-
-	Common::UString nameOverlay = Common::generateIDRandomString();
-	Common::UString namePanel   = Common::generateIDRandomString();
-
-	_panel = (Ogre::PanelOverlayElement *) overlayMan.createOverlayElement("Panel", namePanel.c_str());
-	_panel->hide();
-
-	_overlay = overlayMan.create(nameOverlay.c_str());
-	_overlay->setZOrder(630);
-	_overlay->add2D(_panel);
-	_overlay->show();
 }
 
-void GUIManager::setSize(int width, int height, int textureSize, float textureWidth, float textureHeight) {
-	// Create the texture
-
-	_texture = Ogre::TextureManager::getSingleton().createManual(_material->getName(), "General",
-		Ogre::TEX_TYPE_2D, textureSize, textureSize, 1, Ogre::PF_B8G8R8A8, Ogre::TU_RENDERTARGET | Ogre::TU_AUTOMIPMAP);
-
-	Ogre::TextureUnitState *texState = _material->getTechnique(0)->getPass(0)->getTextureUnitState(0);
-	texState->setTexture(_texture);
-	texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
-
+void GUIManager::setScreenSize(int width, int height) {
 	// Position the alignment scene nodes
 
 	_nodes[kHorizontalAlignLeft  ][kVerticalAlignTop   ]->setPosition(-width / 2.0,  height / 2.0, 0.0);
@@ -143,121 +179,7 @@ void GUIManager::setSize(int width, int height, int textureSize, float textureWi
 	_camera->setOrthoWindow(width, height);
 	_camera->setPosition(0.0, 0.0, 1.0 + kCameraFuzz);
 	_camera->lookAt(0.0, 0.0, 0.0);
-
-	// Create the viewport
-
-	_renderTexture = _texture->getBuffer()->getRenderTarget();
-	_viewport = _renderTexture->addViewport(_camera, 0, 0.0, 0.0, textureWidth, textureHeight);
-	_viewport->setClearEveryFrame(true);
-	_viewport->setBackgroundColour(Ogre::ColourValue::ZERO);
-	_viewport->setOverlaysEnabled(false);
-	_viewport->clear(Ogre::FBT_COLOUR | Ogre::FBT_DEPTH, Ogre::ColourValue::ZERO);
-	_viewport->setAutoUpdated(_autoUpdate);
-
 	_camera->setAspectRatio(Ogre::Real(width) / Ogre::Real(height));
-
-	_viewport->update();
-
-	// Update the overlay panel
-
-	_panel->setMetricsMode(Ogre::GMM_PIXELS);
-	_panel->setPosition(0, 0);
-	_panel->setDimensions(width, height);
-	_panel->setMaterialName(_material->getName());
-	_panel->setUV(0.0, 0.0, textureWidth, textureHeight);
-	_panel->show();
-}
-
-void GUIManager::init(int width, int height) {
-	deinit();
-
-	// Size of the render texture
-
-	const int textureSize = NEXTPOWER2((uint32) MAX(width, height));
-
-	const float textureWidth  = (float) width  / (float) textureSize;
-	const float textureHeight = (float) height / (float) textureSize;
-
-	create(width, height, textureSize, textureWidth, textureHeight);
-	setSize(width, height, textureSize, textureWidth, textureHeight);
-}
-
-void GUIManager::deinit() {
-	clear();
-
-	// Destroy the alignment scene node
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			if (_scene && _nodes[i][j])
-				_scene->destroySceneNode(_nodes[i][j]);
-
-			_nodes[i][j] = 0;
-		}
-
-	// Destroy the overlay
-
-	if (_panel)
-		_panel->hide();
-	if (_overlay)
-		_overlay->hide();
-
-	if (_panel && _overlay)
-		_overlay->remove2D(_panel);
-
-	if (_panel)
-		Ogre::OverlayManager::getSingletonPtr()->destroyOverlayElement(_panel);
-	if (_overlay)
-		Ogre::OverlayManager::getSingletonPtr()->destroy(_overlay);
-
-	_panel   = 0;
-	_overlay = 0;
-
-	// Destroy the texture and viewport
-
-	if (_renderTexture)
-		_renderTexture->removeAllViewports();
-
-	_viewport      = 0;
-	_renderTexture = 0;
-
-	_texture.setNull();
-	_material.setNull();
-
-	// Destroy the camera and scene
-
-	if (_scene) {
-		if (_camera)
-			_scene->destroyCamera(_camera);
-
-		Ogre::Root::getSingleton().destroySceneManager(_scene);
-	}
-
-	_camera = 0;
-	_scene  = 0;
-}
-
-void GUIManager::clear() {
-	// Delete all renderables still in the GUI
-	for (Renderables::iterator r = _renderables.begin(); r != _renderables.end(); ++r)
-		delete r->second;
-	_renderables.clear();
-}
-
-void GUIManager::setScreenSize(int width, int height) {
-	// Destroy the old viewport
-	_renderTexture->removeAllViewports();
-
-	_viewport      = 0;
-	_renderTexture = 0;
-
-	// Size of the new render texture
-
-	const int textureSize = NEXTPOWER2((uint32) MAX(width, height));
-
-	const float textureWidth  = (float) width  / (float) textureSize;
-	const float textureHeight = (float) height / (float) textureSize;
-
-	setSize(width, height, textureSize, textureWidth, textureHeight);
 }
 
 void GUIManager::addRenderable(Renderable *renderable, HorizontalAlign hAlign, VerticalAlign vAlign) {
@@ -369,29 +291,13 @@ Renderable *GUIManager::getRenderableAt(int x, int y, float &distance) {
 }
 
 void GUIManager::update() {
-	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GUIManager::update, this));
-
-		return RequestMan.callInMainThread(functor);
-	}
-
-	_viewport->update();
 }
 
 bool GUIManager::getAutoUpdate() const {
-	return _autoUpdate;
+	return true;
 }
 
 void GUIManager::setAutoUpdate(bool autoUpdate) {
-	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GUIManager::setAutoUpdate, this, autoUpdate));
-
-		return RequestMan.callInMainThread(functor);
-	}
-
-	_viewport->setAutoUpdated(autoUpdate);
-
-	_autoUpdate = autoUpdate;
 }
 
 } // End of namespace Graphics

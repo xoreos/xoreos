@@ -35,7 +35,6 @@
 #undef Complex
 
 #include <Ogre.h>
-#include <OgreOverlaySystem.h>
 
 #include "common/util.h"
 #include "common/ustring.h"
@@ -104,14 +103,13 @@ public:
 };
 
 Renderer::Renderer(SDL_Window &screen, bool vsync, int fsaa) :
-	_logManager(0), _logger(0), _root(0), _overlaySystem(0), _dummyWindow(0),
+	_logManager(0), _logger(0), _root(0), _dummyWindow(0),
 	_renderWindow(0), _sceneManager(0), _animator(0) {
 
 	try {
 		createLog();
 
-		_root          = new Ogre::Root("", "", "");
-		_overlaySystem = new Ogre::OverlaySystem();
+		_root = new Ogre::Root("", "", "");
 
 		loadRenderSystem();
 
@@ -140,18 +138,14 @@ Renderer::~Renderer() {
 }
 
 void Renderer::destroy() {
-	GUIMan.deinit();
 	CursorMan.deinit();
+	GUIMan.deinit();
 	CameraMan.deinit();
 
 	if (_root && _animator)
 		_root->removeFrameListener(_animator);
 
-	if (_sceneManager && _overlaySystem)
-		_sceneManager->removeRenderQueueListener(_overlaySystem);
-
 	delete _animator;
-	delete _overlaySystem;
 	delete _root;
 
 	if (_logManager && _logger && _logManager->getDefaultLog())
@@ -164,7 +158,6 @@ void Renderer::destroy() {
 	_logger     = 0;
 
 	_root          = 0;
-	_overlaySystem = 0;
 	_dummyWindow   = 0;
 	_renderWindow  = 0;
 	_sceneManager  = 0;
@@ -299,7 +292,6 @@ void Renderer::stuffOgreIntoSDL(SDL_Window &screen, bool vsync, int fsaa) {
 
 void Renderer::createScene() {
 	_sceneManager = _root->createSceneManager(Ogre::ST_GENERIC, "world");
-	_sceneManager->addRenderQueueListener(_overlaySystem);
 
 	CameraMan.init(_renderWindow);
 
@@ -308,12 +300,13 @@ void Renderer::createScene() {
 
 	_sceneManager->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
 
+	GUIMan.init(_renderWindow);
 	CursorMan.init();
-	GUIMan.init(_renderWindow->getWidth(), _renderWindow->getHeight());
 }
 
 bool Renderer::recreate(SDL_Window &screen, bool vsync, int fsaa) {
-	// Remove the camera from the window
+	// Remove the render window from the GUI and camera manager
+	GUIMan.removeWindow();
 	CameraMan.removeWindow();
 
 	// Destroy window
@@ -329,6 +322,7 @@ bool Renderer::recreate(SDL_Window &screen, bool vsync, int fsaa) {
 
 	// Reattach camera
 	CameraMan.setWindow(_renderWindow);
+	GUIMan.setWindow(_renderWindow);
 
 	return true;
 }

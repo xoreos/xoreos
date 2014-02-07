@@ -41,7 +41,6 @@ namespace Ogre {
 	class SceneManager;
 	class Viewport;
 	class Camera;
-	class OverlaySystem;
 }
 
 namespace Graphics {
@@ -82,7 +81,6 @@ private:
 	OgreLogger         *_logger;     ///< Logger dispatching OGRE log to our DebugManager.
 
 	Ogre::Root          *_root;          ///< The OGRE root.
-	Ogre::OverlaySystem *_overlaySystem; ///< The OGRE overlay system.
 	Ogre::RenderWindow  *_dummyWindow;   ///< Fake dummy window holding the OGRE resources.
 	Ogre::RenderWindow  *_renderWindow;  ///< The OGRE render window.
 	Ogre::SceneManager  *_sceneManager;  ///< The OGRE scene manager.

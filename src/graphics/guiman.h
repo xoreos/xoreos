@@ -32,10 +32,6 @@
 
 #include <map>
 
-#include <OgrePrerequisites.h>
-#include <OgreTexture.h>
-#include <OgreMaterial.h>
-
 #include "common/singleton.h"
 #include "common/ustring.h"
 
@@ -45,9 +41,7 @@ namespace Ogre {
 	class SceneManager;
 	class Camera;
 	class Viewport;
-	class PanelOverlayElement;
-	class Overlay;
-	class RenderTexture;
+	class OverlaySystem;
 }
 
 namespace Graphics {
@@ -67,10 +61,9 @@ class Renderable;
  *  half being the top part of the screen. The Z axis is used for depth
  *  ordering: 0.0 is the front-most, -1000.0 the bottom most coordinate.
  *
- *  The whole GUI is rendered into a texture with the update() method or
- *  alternatively, when setAutoUpdate() was set to true, automatically every
- *  frame (usefull when parts of the GUI are animated). The GUI texture is then
- *  rendered onto the screen as a 2D element of the Ogre Overlay.
+ *  The whole GUI is then directly rendered into the main window using a second
+ *  viewport that is layer into the viewport containing the world, clearing
+ *  the depth buffer beforehand.
  *
  *  (*) - On every camera change, the _update() method of every overlay
  *        SceneNode needs to be called, otherwise the node positions lack
@@ -87,8 +80,11 @@ public:
 	GUIManager();
 	~GUIManager();
 
-	void init(int width, int height);
+	void init(Ogre::RenderWindow *window);
 	void deinit();
+
+	void removeWindow();
+	void setWindow(Ogre::RenderWindow *window);
 
 	/** Remove and delete all renderables still inside the GUI manager. */
 	void clear();
@@ -123,27 +119,17 @@ public:
 private:
 	typedef std::map<Common::UString, Renderable *> Renderables;
 
-	Ogre::SceneManager *_scene;    ///< The scene containing the GUI.
-	Ogre::Viewport     *_viewport; ///< The viewport depicting the GUI.
-	Ogre::Camera       *_camera;   ///< The camera recording the GUI.
-
-	Ogre::PanelOverlayElement *_panel;   ///< The panel showing the GUI.
-	Ogre::Overlay             *_overlay; ///< The overlay showing the GUI.
-
-	Ogre::TexturePtr  _texture;  ///< The texture the whole GUI is rendered on.
-	Ogre::MaterialPtr _material; ///< The material of the whole GUI.
-
-	Ogre::RenderTexture *_renderTexture; ///< The GUI render target that's the texture.
+	Ogre::SceneManager  *_scene;    ///< The scene containing the GUI.
+	Ogre::Viewport      *_viewport; ///< The viewport depicting the GUI.
+	Ogre::Camera        *_camera;   ///< The camera recording the GUI.
+	Ogre::OverlaySystem *_overlay;  ///< The OGRE overlay system.
 
 	Ogre::SceneNode *_nodes[3][3]; ///< The nodes representing the different alignment options.
 
 	Renderables _renderables; ///< All the renderables in the GUI.
 
-	bool _autoUpdate; ///< Are we currently automatically rendering the GUI every frame?
 
-
-	void create(int width, int height, int textureSize, float textureWidth, float textureHeight);
-	void setSize(int width, int height, int textureSize, float textureWidth, float textureHeight);
+	void create();
 };
 
 } // End of namespace Graphics
