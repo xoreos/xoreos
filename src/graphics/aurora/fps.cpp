@@ -82,8 +82,6 @@ void FPS::create(uint size, float r, float g, float b, float a) {
 	_text->setPosition(5.0, -5.0, -10.0);
 	_text->setVisible(true);
 
-	GUIMan.update();
-
 	Ogre::Root::getSingleton().addFrameListener(_listener);
 }
 
@@ -105,8 +103,6 @@ void FPS::destroy() {
 
 	_listener = 0;
 	_text     = 0;
-
-	GUIMan.update();
 }
 
 void FPS::set(double fps) {
@@ -114,7 +110,6 @@ void FPS::set(double fps) {
 		return;
 
 	_text->set(Common::UString::sprintf("%.2f", fps));
-	GUIMan.update();
 
 	_fps = fps;
 }

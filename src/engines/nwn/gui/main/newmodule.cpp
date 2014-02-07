@@ -213,7 +213,6 @@ void NewModuleMenu::selectedModule() {
 		description = TalkMan.getString(67741);
 
 	getListBox("ModDescEditBox", true)->setText("fnt_galahad14", description, 1.0);
-	GUIMan.update();
 }
 
 void NewModuleMenu::loadModule() {

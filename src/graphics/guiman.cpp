@@ -290,14 +290,4 @@ Renderable *GUIManager::getRenderableAt(int x, int y, float &distance) {
 	return renderable;
 }
 
-void GUIManager::update() {
-}
-
-bool GUIManager::getAutoUpdate() const {
-	return true;
-}
-
-void GUIManager::setAutoUpdate(bool autoUpdate) {
-}
-
 } // End of namespace Graphics

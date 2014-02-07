@@ -79,8 +79,6 @@ void GUI::setVisible(bool visible) {
 			widget.setVisible(visible);
 	}
 
-	GUIMan.update();
-
 	_visible = visible;
 }
 
@@ -252,7 +250,6 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 		gui.setVisible(true);
 	setVisible(false);
 
-	GUIMan.update();
 	GfxMan.unlockFrame();
 
 	// Run the sub GUI
@@ -265,7 +262,6 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 		setVisible(true);
 	gui.setVisible(false);
 
-	GUIMan.update();
 	GfxMan.unlockFrame();
 
 	// Update the mouse position
@@ -299,10 +295,8 @@ void GUI::setPosition(float x, float y, float z) {
 	_y = y;
 	_z = z;
 
-	if (_visible) {
-		GUIMan.update();
+	if (_visible)
 		GfxMan.unlockFrame();
-	}
 }
 
 void GUI::getPosition(float &x, float &y, float &z) const {
@@ -355,8 +349,6 @@ void GUI::changedWidget(Widget *widget) {
 	// Enter the new current widget
 	if (_currentWidget)
 		_currentWidget->enter();
-
-	GUIMan.update();
 }
 
 void GUI::checkWidgetActive(Widget *widget) {
@@ -458,7 +450,6 @@ void GUI::mouseMove(Widget *widget, const Events::Event &event) {
 	LOCK_FRAME();
 
 	widget->mouseMove(event.motion.state, screenXToGUIX(event.motion.x), screenYToGUIY(event.motion.y));
-	GUIMan.update();
 }
 
 void GUI::mouseDown(Widget *widget, const Events::Event &event) {
@@ -468,7 +459,6 @@ void GUI::mouseDown(Widget *widget, const Events::Event &event) {
 	LOCK_FRAME();
 
 	widget->mouseDown(event.button.button, screenXToGUIX(event.button.x), screenYToGUIY(event.button.y));
-	GUIMan.update();
 }
 
 void GUI::mouseUp(Widget *widget, const Events::Event &event) {
@@ -495,8 +485,6 @@ void GUI::mouseUp(Widget *widget, const Events::Event &event) {
 	widget->_lastClickTime   = curTime;
 	widget->_lastClickX      = x;
 	widget->_lastClickY      = y;
-
-	GUIMan.update();
 }
 
 void GUI::mouseWheel(Widget *widget, const Events::Event &event) {
@@ -506,7 +494,6 @@ void GUI::mouseWheel(Widget *widget, const Events::Event &event) {
 	LOCK_FRAME();
 
 	widget->mouseWheel(event.wheel.type, event.wheel.x, event.wheel.y);
-	GUIMan.update();
 }
 
 } // End of namespace Engines

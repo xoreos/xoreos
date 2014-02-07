@@ -107,14 +107,6 @@ public:
 	/** Return the nearest renderable at these screen coordinates. */
 	Renderable *getRenderableAt(int x, int y, float &distance);
 
-	/** Render the GUI. */
-	void update();
-
-	/** Are we currently automatically rendering the GUI every frame? */
-	bool getAutoUpdate() const;
-	/** Set whether the GUI should be rendered automatically every frame. */
-	void setAutoUpdate(bool autoUpdate);
-
 
 private:
 	typedef std::map<Common::UString, Renderable *> Renderables;

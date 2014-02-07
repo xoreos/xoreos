@@ -405,8 +405,6 @@ bool NWNEngine::legalFadeIn(Graphics::Aurora::Model_NWN *legal) {
 	if (EventMan.quitRequested() || !legal)
 		return true;
 
-	GUIMan.setAutoUpdate(true);
-
 	legal->fade(Graphics::kFadeDirectionIn, 1.0, false);
 	legal->setVisible(true);
 
@@ -454,8 +452,6 @@ void NWNEngine::legalShow(Graphics::Aurora::Model_NWN *legal, bool aborted) {
 	}
 
 	legal->setVisible(false);
-	GUIMan.setAutoUpdate(false);
-	GUIMan.update();
 }
 
 void NWNEngine::mainMenuLoop() {

@@ -524,8 +524,6 @@ void WidgetListBox::scrollUp(uint n) {
 
 	updateVisible();
 	updateScrollbarPosition();
-
-	GUIMan.update();
 }
 
 void WidgetListBox::scrollDown(uint n) {
@@ -541,8 +539,6 @@ void WidgetListBox::scrollDown(uint n) {
 
 	updateVisible();
 	updateScrollbarPosition();
-
-	GUIMan.update();
 }
 
 void WidgetListBox::select(uint item) {
