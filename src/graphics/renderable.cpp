@@ -170,6 +170,8 @@ void Renderable::setBaseScale(float x, float y, float z) {
 }
 
 void Renderable::getSize(float &width, float &height, float &depth) const {
+	_rootNode->_update(true, true);
+
 	getNodeSize(_rootNode, width, height, depth);
 }
 
@@ -278,7 +280,7 @@ void Renderable::destroyAnimation(Ogre::Animation *anim) {
 static void addBoundBox(Ogre::AxisAlignedBox &bound, const Ogre::SceneNode &node) {
 	// Move all attached visible objects into the bounding box
 	for (Ogre::SceneNode::ConstObjectIterator o = node.getAttachedObjectIterator(); o.hasMoreElements(); o.moveNext())
-		bound.merge(o.current()->second->getWorldBoundingBox(true));
+		bound.merge(o.current()->second->getWorldBoundingBox(false));
 
 	// Recurse into the child nodes
 	for (Ogre::Node::ConstChildNodeIterator c = node.getChildIterator(); c.hasMoreElements(); c.moveNext())
