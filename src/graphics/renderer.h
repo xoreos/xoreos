@@ -86,7 +86,6 @@ private:
 	Ogre::RenderWindow  *_dummyWindow;   ///< Fake dummy window holding the OGRE resources.
 	Ogre::RenderWindow  *_renderWindow;  ///< The OGRE render window.
 	Ogre::SceneManager  *_sceneManager;  ///< The OGRE scene manager.
-	Ogre::Viewport      *_viewPort;      ///< The OGRE view port.
 	OgreAnimator        *_animator;      ///< The OGRE frame listener advancing animations.
 
 

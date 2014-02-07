@@ -105,7 +105,7 @@ public:
 
 Renderer::Renderer(SDL_Window &screen, bool vsync, int fsaa) :
 	_logManager(0), _logger(0), _root(0), _overlaySystem(0), _dummyWindow(0),
-	_renderWindow(0), _sceneManager(0), _viewPort(0), _animator(0) {
+	_renderWindow(0), _sceneManager(0), _animator(0) {
 
 	try {
 		createLog();
@@ -140,9 +140,6 @@ Renderer::~Renderer() {
 }
 
 void Renderer::destroy() {
-	if (_renderWindow)
-		_renderWindow->removeAllViewports();
-
 	GUIMan.deinit();
 	CursorMan.deinit();
 	CameraMan.deinit();
@@ -171,7 +168,6 @@ void Renderer::destroy() {
 	_dummyWindow   = 0;
 	_renderWindow  = 0;
 	_sceneManager  = 0;
-	_viewPort      = 0;
 	_animator      = 0;
 }
 
@@ -305,11 +301,7 @@ void Renderer::createScene() {
 	_sceneManager = _root->createSceneManager(Ogre::ST_GENERIC, "world");
 	_sceneManager->addRenderQueueListener(_overlaySystem);
 
-	CameraMan.init();
-
-	_viewPort = CameraMan.createViewport(_renderWindow);
-
-	CameraMan.setScreenSize(_viewPort->getActualWidth(), _viewPort->getActualHeight());
+	CameraMan.init(_renderWindow);
 
 	_animator = new OgreAnimator;
 	_root->addFrameListener(_animator);
@@ -317,13 +309,12 @@ void Renderer::createScene() {
 	_sceneManager->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
 
 	CursorMan.init();
-	GUIMan.init(_viewPort->getActualWidth(), _viewPort->getActualHeight());
+	GUIMan.init(_renderWindow->getWidth(), _renderWindow->getHeight());
 }
 
 bool Renderer::recreate(SDL_Window &screen, bool vsync, int fsaa) {
-	// Remove viewport
-	_renderWindow->removeAllViewports(),
-	_viewPort = 0;
+	// Remove the camera from the window
+	CameraMan.removeWindow();
 
 	// Destroy window
 	_root->getRenderSystem()->destroyRenderWindow(XOREOS_NAME);
@@ -337,9 +328,7 @@ bool Renderer::recreate(SDL_Window &screen, bool vsync, int fsaa) {
 	}
 
 	// Reattach camera
-	_viewPort = CameraMan.createViewport(_renderWindow);
-
-	CameraMan.setScreenSize(_viewPort->getActualWidth(), _viewPort->getActualHeight());
+	CameraMan.setWindow(_renderWindow);
 
 	return true;
 }
@@ -348,7 +337,7 @@ void Renderer::resized(int width, int height) {
 	_renderWindow->resize(width, height);
 	_renderWindow->windowMovedOrResized();
 
-	CameraMan.setScreenSize(_viewPort->getActualWidth(), _viewPort->getActualHeight());
+	CameraMan.setScreenSize(width, height);
 	GUIMan.setScreenSize(width, height);
 }
 

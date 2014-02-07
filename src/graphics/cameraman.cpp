@@ -39,30 +39,49 @@ DECLARE_SINGLETON(Graphics::CameraManager)
 
 namespace Graphics {
 
-CameraManager::CameraManager() : _camera(0), _screenWidth(0), _screenHeight(0) {
+CameraManager::CameraManager() : _camera(0), _viewport(0), _screenWidth(0), _screenHeight(0) {
 }
 
 CameraManager::~CameraManager() {
 	deinit();
 }
 
-void CameraManager::init() {
-	_camera = getOgreSceneManager().createCamera("camera");
+void CameraManager::init(Ogre::RenderWindow *window) {
+	if (!_camera)
+		_camera = getOgreSceneManager().createCamera("camera");
 
 	_camera->setNearClipDistance(1.0);
 	_camera->setFarClipDistance(1000.0);
 	_camera->setFOVy(Ogre::Degree(60.0));
+
+	setWindow(window);
 }
 
 void CameraManager::deinit() {
+	removeWindow();
+
 	if (_camera)
 		getOgreSceneManager().destroyCamera(_camera);
 
 	_camera = 0;
 }
 
-Ogre::Viewport *CameraManager::createViewport(Ogre::RenderWindow *window) {
-	return window->addViewport(_camera);
+void CameraManager::removeWindow() {
+	if (_viewport && _viewport->getTarget())
+		_viewport->getTarget()->removeViewport(_viewport->getZOrder());
+
+	_viewport = 0;
+}
+
+void CameraManager::setWindow(Ogre::RenderWindow *window) {
+	removeWindow();
+
+	if (!window)
+		return;
+
+	_viewport = window->addViewport(_camera, 0);
+
+	setScreenSize(_viewport->getActualWidth(), _viewport->getActualHeight());
 }
 
 void CameraManager::setScreenSize(int width, int height) {

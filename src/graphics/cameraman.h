@@ -47,11 +47,12 @@ public:
 	CameraManager();
 	~CameraManager();
 
-	void init();
+	void init(Ogre::RenderWindow *window);
 	void deinit();
 
-	/** Create a viewport for the camera in that window. */
-	Ogre::Viewport *createViewport(Ogre::RenderWindow *window);
+	void removeWindow();
+	void setWindow(Ogre::RenderWindow *window);
+
 	/** Adjust the aspect ratio of the camera. */
 	void setScreenSize(int width, int height);
 
@@ -81,7 +82,8 @@ public:
 	Ogre::Ray castRay(int x, int y) const;
 
 private:
-	Ogre::Camera *_camera; ///< The OGRE camera.
+	Ogre::Camera   *_camera;   ///< The OGRE camera.
+	Ogre::Viewport *_viewport; ///< The OGRE viewport.
 
 	int _screenWidth;
 	int _screenHeight;
