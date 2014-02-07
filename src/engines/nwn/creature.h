@@ -52,6 +52,9 @@ public:
 	Creature(const Common::UString &bic, bool local);
 	~Creature();
 
+	/** Last time info was changed that's displayed in the GUI. */
+	uint32 lastChangedGUIDisplay() const;
+
 	// Basic visuals
 
 	void loadModel();   ///< Load the creature's model.
@@ -192,6 +195,9 @@ private:
 
 		BodyPart();
 	};
+
+	/** The time a GUI relevant property was changed last. */
+	uint32 _lastChangedGUIDisplay;
 
 	Common::UString _firstName; ///< The creature's first name.
 	Common::UString _lastName;  ///< The creature's last name.

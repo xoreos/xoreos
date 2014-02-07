@@ -76,6 +76,8 @@ Creature::~Creature() {
 }
 
 void Creature::init() {
+	_lastChangedGUIDisplay = 0;
+
 	_gender = kGenderNone;
 	_race   = kRaceInvalid;
 
@@ -143,6 +145,10 @@ void Creature::rotate(float radian, float x, float y, float z) {
 
 	if (_model)
 		_model->setOrientation(radian, x, z, -y);
+}
+
+uint32 Creature::lastChangedGUIDisplay() const {
+	return _lastChangedGUIDisplay;
 }
 
 const Common::UString &Creature::getFirstName() const {
@@ -259,6 +265,8 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 	// Let's hope no script depends on it being "".
 
 	_tag = Common::UString::sprintf("[PC: %s]", _name.c_str());
+
+	_lastChangedGUIDisplay = EventMan.getTimestamp();
 }
 
 void Creature::load(const Aurora::GFFStruct &creature) {
@@ -276,6 +284,8 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 	load(creature, utc ? &utc->getTopLevel() : 0);
 
 	delete utc;
+
+	_lastChangedGUIDisplay = EventMan.getTimestamp();
 }
 
 void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
