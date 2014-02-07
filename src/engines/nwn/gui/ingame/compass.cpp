@@ -27,7 +27,10 @@
  *  The NWN ingame compass.
  */
 
+#include <OgreSceneNode.h>
+
 #include "common/util.h"
+#include "common/maths.h"
 
 #include "graphics/graphics.h"
 #include "graphics/cameraman.h"
@@ -44,6 +47,8 @@ namespace NWN {
 
 CompassWidget::CompassWidget(::Engines::GUI &gui, const Common::UString &tag) :
 	ModelWidget(gui, tag, "ctl_compass") {
+
+	_model->setBaseScale(100.0, 100.0, 100.0);
 }
 
 CompassWidget::~CompassWidget() {
@@ -52,12 +57,11 @@ CompassWidget::~CompassWidget() {
 // TODO: The disk rotation should feel more "natural", i.e. it should
 //       be more sluggish.
 void CompassWidget::setRotation(float x, float y, float z) {
-	/*
-	_model->setRotation(-x, 0.0, 0.0);
-	Graphics::Aurora::ModelNode *pointer = _model->getNode("cmp_pointer");
+	_model->setOrientation(Common::deg2rad(-90.0) - y, 1.0, 0.0, 0.0);
+
+	Ogre::SceneNode *pointer = _model->getNode("cmp_pointer");
 	if (pointer)
-		pointer->setRotation(0.0, 0.0, y);
-	*/
+		pointer->setOrientation(Ogre::Quaternion(Ogre::Radian(z), Ogre::Vector3(0.0, 0.0, 1.0)));
 }
 
 
@@ -78,7 +82,7 @@ Compass::Compass(float position) {
 
 	_compass = new CompassWidget(*this, "Compass");
 
-	_compass->setPosition(floor(- (panelWidth / 2.0)), floor(position + (panelHeight / 2.0)), 10.0);
+	_compass->setPosition(floor(- (panelWidth / 2.0)), floor(position + (panelHeight / 2.0)), 50.0);
 
 	addWidget(_compass);
 
@@ -97,11 +101,11 @@ void Compass::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHe
 }
 
 void Compass::notifyCameraMoved() {
-	/*
-	const float *orientation = CameraMan.getOrientation();
+	float roll, pitch, yaw, x, y, z;
+	CameraMan.getOrientation(roll, pitch, yaw);
+	CameraMan.getDirection(x, y, z);
 
-	_compass->setRotation(orientation[0] + 90.0, orientation[1], orientation[2]);
-	*/
+	_compass->setRotation(x, y, yaw);
 }
 
 } // End of namespace NWN

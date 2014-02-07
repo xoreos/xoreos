@@ -35,6 +35,8 @@
 #include "graphics/cameraman.h"
 #include "graphics/util.h"
 
+#include "events/notifications.h"
+
 DECLARE_SINGLETON(Graphics::CameraManager)
 
 namespace Graphics {
@@ -125,44 +127,70 @@ void CameraManager::getOrientation(float &radian, float &x, float &y, float &z) 
 	z      = axis.z;
 }
 
+void CameraManager::getOrientation(float &cRoll, float &cPitch, float &cYaw) const {
+	cRoll  = _camera->getOrientation().getRoll().valueRadians();
+	cPitch = _camera->getOrientation().getPitch().valueRadians();
+	cYaw   = _camera->getOrientation().getYaw().valueRadians();
+}
+
 void CameraManager::setPosition(float x, float y, float z) {
 	_camera->setPosition(x, y, z);
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::setDirection(float x, float y, float z) {
 	_camera->setDirection(x, y, z);
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::lookAt(float x, float y, float z) {
 	_camera->lookAt(x, y, z);
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::setOrientation(float radian, float x, float y, float z) {
 	_camera->setOrientation(Ogre::Quaternion(Ogre::Radian(radian), Ogre::Vector3(x, y, z)));
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::move(float x, float y, float z) {
 	_camera->move(Ogre::Vector3(x, y, z));
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::moveRelative(float x, float y, float z) {
 	_camera->moveRelative(Ogre::Vector3(x, y, z));
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::rotate(float radian, float x, float y, float z) {
 	_camera->rotate(Ogre::Quaternion(Ogre::Radian(radian), Ogre::Vector3(x, y, z)));
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::roll(float radian) {
 	_camera->roll(Ogre::Radian(radian));
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::yaw(float radian) {
 	_camera->yaw(Ogre::Radian(radian));
+
+	NotificationMan.cameraMoved();
 }
 
 void CameraManager::pitch(float radian) {
 	_camera->pitch(Ogre::Radian(radian));
+
+	NotificationMan.cameraMoved();
 }
 
 Ogre::Ray CameraManager::castRay(int x, int y) const {

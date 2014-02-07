@@ -62,6 +62,7 @@ public:
 	void getPosition(float &x, float &y, float &z) const;
 	void getDirection(float &x, float &y, float &z) const;
 	void getOrientation(float &radian, float &x, float &y, float &z) const;
+	void getOrientation(float &cRoll, float &cPitch, float &cYaw) const;
 
 	void setPosition(float x, float y, float z);
 	void setDirection(float x, float y, float z);
