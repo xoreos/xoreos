@@ -42,9 +42,11 @@
 #include "graphics/cameraman.h"
 #include "graphics/textureman.h"
 #include "graphics/cursorman.h"
+#include "graphics/guiman.h"
 
 #include "graphics/aurora/sceneman.h"
 #include "graphics/aurora/model_nwn.h"
+#include "graphics/aurora/quad.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/tokenman.h"
@@ -56,7 +58,7 @@
 #include "engines/nwn/object.h"
 #include "engines/nwn/creature.h"
 
-#include "engines/nwn/gui/ingame/main.h"
+#include "engines/nwn/gui/ingame/ingame.h"
 
 struct GenderToken {
 	const char *token;
@@ -98,13 +100,14 @@ namespace Engines {
 
 namespace NWN {
 
-Module::Module() : _hasModule(false), _pc(0), _menu(0), _currentTexturePack(-1), _exit(false),
+Module::Module() : _hasModule(false), _pc(0), _ingameGUI(0), _currentTexturePack(-1), _exit(false),
 	_currentArea(0), _currentObject(0) {
 
+	_ingameGUI = new IngameGUI(*this);
 }
 
 Module::~Module() {
-	delete _menu;
+	delete _ingameGUI;
 
 	clear();
 }
@@ -280,6 +283,8 @@ bool Module::enter() {
 
 	loadTexturePack();
 
+	_ingameGUI->updatePartyMember(0, *_pc);
+
 	try {
 
 		loadHAKs();
@@ -353,6 +358,7 @@ void Module::enterArea() {
 
 	EventMan.flushEvents();
 
+	_ingameGUI->setArea(_currentArea->getName());
 	_pc->setArea(_currentArea);
 }
 
@@ -361,6 +367,8 @@ void Module::run() {
 		return;
 
 	EventMan.enableKeyRepeat();
+
+	_ingameGUI->setVisible(true);
 
 	try {
 
@@ -374,6 +382,8 @@ void Module::run() {
 
 			handleEvents();
 
+			_ingameGUI->updatePartyMember(0, *_pc);
+
 			if (!EventMan.quitRequested() && !_exit && !_newArea.empty())
 				EventMan.delay(10);
 		}
@@ -383,12 +393,16 @@ void Module::run() {
 		printException(e, "WARNING: ");
 	}
 
+	_ingameGUI->setVisible(false);
+
 	EventMan.enableKeyRepeat(0);
 }
 
 void Module::handleEvents() {
 	Events::Event event;
 	while (EventMan.pollEvent(event)) {
+		_ingameGUI->addEvent(event);
+
 		// Camera
 		if (SDL_IsTextInputActive() == SDL_FALSE) {
 			if (handleCamera(event))
@@ -399,6 +413,8 @@ void Module::handleEvents() {
 				continue;
 		}
 	}
+
+	_ingameGUI->processEventQueue();
 }
 
 bool Module::handleCamera(const Events::Event &e) {
@@ -496,17 +512,13 @@ bool Module::handleKeys(const Events::Event &e) {
 }
 
 void Module::showMenu() {
-	if (!_menu)
-		_menu = new IngameMainMenu;
-
-	_menu->setVisible(true);
-
-	int code = _menu->run();
-
-	_menu->setVisible(false);
-
-	if (code == 2)
+	if (_ingameGUI->showMain() == 2) {
 		_exit = true;
+		return;
+	}
+
+	// In case we changed the texture pack settings, reload it
+	loadTexturePack();
 }
 
 void Module::checkCurrentObject() {

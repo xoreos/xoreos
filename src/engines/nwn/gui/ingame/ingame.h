@@ -55,7 +55,7 @@ class CharacterInfo;
 class Quickbar;
 class Quickchat;
 class Compass;
-class Dialog;
+//class Dialog;
 
 /** The NWN ingame GUI elements. */
 class IngameGUI {
@@ -65,8 +65,8 @@ public:
 
 	int showMain(); ///< Show the ingame main menu.
 
-	void show(); ///< Show the ingame GUI elements.
-	void hide(); ///< Hide the ingame GUI elements.
+	/** Show/Hide the ingame GUI elements. */
+	void setVisible(bool visible);
 
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
@@ -78,13 +78,13 @@ public:
 	void updatePartyMember(uint partyMember, const Creature &creature, bool force = false);
 
 	/** Do we have a currently running conversation? */
-	bool hasRunningConversation() const;
+	//bool hasRunningConversation() const;
 
 	/** Start a conversation. */
-	bool startConversation(const Common::UString &conv,
-	                       Creature &pc, Object &obj, bool playHello = true);
+	//bool startConversation(const Common::UString &conv,
+	//                       Creature &pc, Object &obj, bool playHello = true);
 	/** Stop a conversation. */
-	void stopConversation();
+	//void stopConversation();
 
 private:
 	Module *_module;
@@ -95,7 +95,7 @@ private:
 	Quickchat *_quickchat; ///< The quick chat.
 	Compass   *_compass;   ///< The compass.
 
-	Dialog *_dialog; ///< The current dialog.
+	//Dialog *_dialog; ///< The current dialog.
 
 	/** The time the compass was changed last. */
 	uint32 _lastCompassChange;

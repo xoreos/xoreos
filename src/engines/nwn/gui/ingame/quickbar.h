@@ -34,11 +34,15 @@
 
 #include "events/notifyable.h"
 
-#include "graphics/aurora/types.h"
-
 #include "engines/nwn/gui/widgets/nwnwidget.h"
 
 #include "engines/nwn/gui/gui.h"
+
+namespace Graphics {
+	namespace Aurora {
+		class Model_NWN;
+	}
+}
 
 namespace Engines {
 
@@ -50,20 +54,24 @@ public:
 	QuickbarButton(::Engines::GUI &gui, uint n);
 	~QuickbarButton();
 
-	void show();
-	void hide();
+	void setVisible(bool visible);
 
 	void setPosition(float x, float y, float z);
 
 	float getWidth () const;
 	float getHeight() const;
 
-	void setTag(const Common::UString &tag);
-
 private:
-	Graphics::Aurora::Model *_model;
+	Graphics::Aurora::Model_NWN *_model;
 
 	uint _buttonNumber;
+
+	float _width;
+	float _height;
+	float _depth;
+
+
+	void updateSize();
 };
 
 /** The NWN ingame quickbar. */

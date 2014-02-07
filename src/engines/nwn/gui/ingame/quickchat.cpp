@@ -27,12 +27,14 @@
  *  The NWN ingame quickchat.
  */
 
+#include <OgreVector3.h>
+#include <OgreSceneNode.h>
+
 #include "aurora/talkman.h"
 
 #include "graphics/graphics.h"
 
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/model.h"
+#include "graphics/aurora/model_nwn.h"
 
 #include "engines/nwn/gui/widgets/panel.h"
 #include "engines/nwn/gui/widgets/label.h"
@@ -47,35 +49,29 @@ ChatModeButton::ChatModeButton(::Engines::GUI &gui, const Common::UString &tag,
                                const Common::UString &model, ChatMode mode) :
 	WidgetButton(gui, tag, model) {
 
-	_label = new WidgetLabel(*_gui, getTag() + "#Label", "fnt_dialog16x16", "");
-	_label->setColor(1.0, 1.0, 1.0, 0.6);
+	_label = 0;//new WidgetLabel(*_gui, getTag() + "#Label", "fnt_dialog16x16", "");
+	//_label->setColor(1.0, 1.0, 1.0, 0.6);
 
 	setMode(mode);
 
-	setPosition(0.0, 0.0, 0.0);
+	//setPosition(0.0, 0.0, 0.0);
 
-	addSub(*_label);
+	//addSub(*_label);
 }
 
 ChatModeButton::~ChatModeButton() {
 }
 
-void ChatModeButton::show() {
-	_label->show();
+void ChatModeButton::setVisible(bool visible) {
+	//_label->setVisible(visible);
 
-	WidgetButton::show();
-}
-
-void ChatModeButton::hide() {
-	_label->hide();
-
-	WidgetButton::hide();
+	WidgetButton::setVisible(visible);
 }
 
 void ChatModeButton::setMode(ChatMode mode) {
 	_mode = mode;
 
-	_label->setText(TalkMan.getString(66751 + (int) _mode) + ":");
+	//_label->setText(TalkMan.getString(66751 + (int) _mode) + ":");
 }
 
 void ChatModeButton::setPosition(float x, float y, float z) {
@@ -83,19 +79,13 @@ void ChatModeButton::setPosition(float x, float y, float z) {
 
 	getPosition(x, y, z);
 
-	Graphics::Aurora::ModelNode *node = 0;
+	Ogre::SceneNode *node = 0;
 
-	float tX = 0.0, tY = 0.0, tZ = 0.0;
+	Ogre::Vector3 textPos(0.0, 0.0, 0.0);
 	if ((node = _model->getNode("text")))
-		node->getPosition(tX, tY, tZ);
+		textPos = node->getPosition();
 
-	_label->setPosition(x + tX, y + tY - (_label->getHeight() / 2.0), z - tZ);
-}
-
-void ChatModeButton::setTag(const Common::UString &tag) {
-	WidgetButton::setTag(tag);
-
-	_label->setTag(getTag() + "#Label");
+	//_label->setPosition(x + (textPos[0] * 100.0), y + (textPos[1] * 100.0) + (_label->getHeight() / 2.0), z + textPos[2]);
 }
 
 
@@ -114,7 +104,7 @@ Quickchat::Quickchat(float position) {
 	ChatModeButton *modeButton =
 		new ChatModeButton(*this, "QCMode", "ctl_btn_chatmode", kModeTalk);
 
-	modeButton->setPosition(0.0, position, -10.0);
+	modeButton->setPosition(0.0, position, 1.0);
 
 	addWidget(modeButton);
 
@@ -137,7 +127,7 @@ void Quickchat::callbackActive(Widget &widget) {
 }
 
 void Quickchat::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(- (newWidth / 2.0), - (newHeight / 2.0), -10.0);
+	setPosition(- (newWidth / 2.0), -(newHeight / 2.0), -400.0);
 }
 
 } // End of namespace NWN

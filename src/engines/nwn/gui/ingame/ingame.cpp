@@ -29,6 +29,8 @@
 
 #include "common/error.h"
 
+#include "graphics/graphics.h"
+
 #include "engines/nwn/creature.h"
 
 #include "engines/nwn/gui/ingame/ingame.h"
@@ -37,7 +39,7 @@
 #include "engines/nwn/gui/ingame/quickchat.h"
 #include "engines/nwn/gui/ingame/compass.h"
 #include "engines/nwn/gui/ingame/partyleader.h"
-#include "engines/nwn/gui/ingame/dialog.h"
+//#include "engines/nwn/gui/ingame/dialog.h"
 
 namespace Engines {
 
@@ -56,13 +58,13 @@ IngameGUI::IngameGUI(Module &module) : _module(&module), _lastCompassChange(0) {
 	_lastPartyMemberChange.resize(1);
 	_lastPartyMemberChange[0] = 0;
 
-	_dialog = 0;
+	//_dialog = 0;
 }
 
 IngameGUI::~IngameGUI() {
-	hide();
+	setVisible(false);
 
-	delete _dialog;
+	//delete _dialog;
 
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		delete *p;
@@ -75,43 +77,35 @@ IngameGUI::~IngameGUI() {
 }
 
 int IngameGUI::showMain() {
-	_main->show();
+	_main->setVisible(true);
 	int code = _main->run();
-	_main->hide();
+	_main->setVisible(false);
 
 	return code;
 }
 
-void IngameGUI::show() {
-	_quickbar->show();
-	_quickchat->show();
-	_compass->show();
+void IngameGUI::setVisible(bool visible) {
+	LOCK_FRAME();
+
+	_quickbar->setVisible(visible);
+	_quickchat->setVisible(visible);
+	_compass->setVisible(visible);
 
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
-		(*p)->show();
+		(*p)->setVisible(visible);
 
-	if (_dialog)
-		_dialog->show();
-}
-
-void IngameGUI::hide() {
-	if (_dialog)
-		_dialog->hide();
-
-	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
-		(*p)->hide();
-
-	_compass->hide();
-	_quickchat->hide();
-	_quickbar->hide();
+	//if (_dialog)
+		//_dialog->setVisible(visible);
 }
 
 void IngameGUI::addEvent(const Events::Event &event) {
+	/*
 	// The dialog takes preference
 	if (_dialog) {
 		_dialog->addEvent(event);
 		return;
 	}
+	*/
 
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->addEvent(event);
@@ -122,6 +116,7 @@ void IngameGUI::addEvent(const Events::Event &event) {
 }
 
 void IngameGUI::processEventQueue() {
+	/*
 	// The dialog takes preference
 	if (_dialog) {
 		if (_dialog->processEventQueue() != 0)
@@ -129,6 +124,7 @@ void IngameGUI::processEventQueue() {
 
 		return;
 	}
+	*/
 
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->processEventQueue();
@@ -181,6 +177,7 @@ void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature, bo
 	_lastPartyMemberChange[partyMember] = lastPartyMemberChange;
 }
 
+/*
 bool IngameGUI::hasRunningConversation() const {
 	return _dialog != 0;
 }
@@ -218,6 +215,7 @@ void IngameGUI::stopConversation() {
 
 	_dialog = 0;
 }
+*/
 
 } // End of namespace NWN
 

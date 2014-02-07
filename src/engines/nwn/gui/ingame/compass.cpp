@@ -30,10 +30,9 @@
 #include "common/util.h"
 
 #include "graphics/graphics.h"
-#include "graphics/camera.h"
+#include "graphics/cameraman.h"
 
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/model.h"
+#include "graphics/aurora/model_nwn.h"
 
 #include "engines/nwn/gui/widgets/panel.h"
 
@@ -43,9 +42,6 @@ namespace Engines {
 
 namespace NWN {
 
-// TODO: The compass "needle" is hidden by directions disk.
-//       This seems to be a Z-order problem, should be fixed
-//       alongside the transparency problem once I've revamped models...
 CompassWidget::CompassWidget(::Engines::GUI &gui, const Common::UString &tag) :
 	ModelWidget(gui, tag, "ctl_compass") {
 }
@@ -56,10 +52,12 @@ CompassWidget::~CompassWidget() {
 // TODO: The disk rotation should feel more "natural", i.e. it should
 //       be more sluggish.
 void CompassWidget::setRotation(float x, float y, float z) {
+	/*
 	_model->setRotation(-x, 0.0, 0.0);
 	Graphics::Aurora::ModelNode *pointer = _model->getNode("cmp_pointer");
 	if (pointer)
 		pointer->setRotation(0.0, 0.0, y);
+	*/
 }
 
 
@@ -68,10 +66,10 @@ Compass::Compass(float position) {
 
 	WidgetPanel *panel = new WidgetPanel(*this, "CompassPanel", "pnl_compass");
 
-	float panelWidth  = panel->getWidth ();
-	float panelHeight = panel->getHeight();
+	float panelWidth  = floor(panel->getWidth ());
+	float panelHeight = floor(panel->getHeight());
 
-	panel->setPosition(- panelWidth, position, 0.0);
+	panel->setPosition(- panelWidth + 1.0, position - 1.0, 0.0);
 
 	addWidget(panel);
 
@@ -80,7 +78,7 @@ Compass::Compass(float position) {
 
 	_compass = new CompassWidget(*this, "Compass");
 
-	_compass->setPosition(- (panelWidth / 2.0), position + (panelHeight / 2.0), -100.0);
+	_compass->setPosition(floor(- (panelWidth / 2.0)), floor(position + (panelHeight / 2.0)), 10.0);
 
 	addWidget(_compass);
 
@@ -95,13 +93,15 @@ void Compass::callbackActive(Widget &widget) {
 }
 
 void Compass::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(newWidth / 2.0, - (newHeight / 2.0), -10.0);
+	setPosition(newWidth / 2.0, - (newHeight / 2.0), -400.0);
 }
 
 void Compass::notifyCameraMoved() {
+	/*
 	const float *orientation = CameraMan.getOrientation();
 
 	_compass->setRotation(orientation[0] + 90.0, orientation[1], orientation[2]);
+	*/
 }
 
 } // End of namespace NWN

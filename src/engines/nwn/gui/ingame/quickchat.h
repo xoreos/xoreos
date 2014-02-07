@@ -59,14 +59,11 @@ public:
 	               const Common::UString &model, ChatMode mode);
 	~ChatModeButton();
 
-	void show();
-	void hide();
+	void setVisible(bool visible);
 
 	void setMode(ChatMode mode);
 
 	void setPosition(float x, float y, float z);
-
-	void setTag(const Common::UString &tag);
 
 private:
 	ChatMode _mode;

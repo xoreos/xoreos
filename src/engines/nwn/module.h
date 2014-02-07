@@ -55,7 +55,7 @@ class Area;
 class Object;
 class Creature;
 
-class GUI;
+class IngameGUI;
 
 class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
 public:
@@ -71,6 +71,7 @@ public:
 	bool usePC(const Common::UString &bic, bool local);
 
 	void run();
+	void showMenu();
 
 	const Common::UString &getName() const;
 
@@ -99,7 +100,7 @@ private:
 
 	Creature *_pc; ///< The player character we use.
 
-	GUI *_menu; ///< The ingame main menu.
+	IngameGUI *_ingameGUI; ///< The ingame GUI elements.
 
 	// Texture pack
 	int _currentTexturePack;
@@ -144,8 +145,6 @@ private:
 	bool handleCamera(const Events::Event &e);
 	bool handlePicker(const Events::Event &e);
 	bool handleKeys(const Events::Event &e);
-
-	void showMenu();
 
 	void checkCurrentObject();
 };

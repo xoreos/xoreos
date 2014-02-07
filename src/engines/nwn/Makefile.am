@@ -56,7 +56,13 @@ noinst_HEADERS = \
                  gui/options/videoadv.h \
                  gui/options/resolution.h \
                  gui/chargen/chargen.h \
+                 gui/ingame/charinfo.h \
+                 gui/ingame/compass.h \
+                 gui/ingame/ingame.h \
                  gui/ingame/main.h \
+                 gui/ingame/partyleader.h \
+                 gui/ingame/quickbar.h \
+                 gui/ingame/quickchat.h \
                  $(EMPTY)
 
 libnwn_la_SOURCES = \
@@ -114,5 +120,11 @@ libnwn_la_SOURCES = \
                     gui/options/videoadv.cpp \
                     gui/options/resolution.cpp \
                     gui/chargen/chargen.cpp \
+                    gui/ingame/charinfo.cpp \
+                    gui/ingame/compass.cpp \
+                    gui/ingame/ingame.cpp \
                     gui/ingame/main.cpp \
+                    gui/ingame/partyleader.cpp \
+                    gui/ingame/quickbar.cpp \
+                    gui/ingame/quickchat.cpp \
                     $(EMPTY)

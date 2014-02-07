@@ -27,14 +27,16 @@
  *  The ingame quickbar.
  */
 
+#include <OgreSceneNode.h>
+
 #include "common/error.h"
 
 #include "graphics/graphics.h"
+#include "graphics/guiman.h"
 
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/model.h"
+#include "graphics/aurora/model_nwn.h"
 
-#include "engines/aurora/model.h"
+#include "engines/nwn/model.h"
 
 #include "engines/nwn/gui/widgets/panel.h"
 
@@ -45,44 +47,53 @@ namespace Engines {
 namespace NWN {
 
 QuickbarButton::QuickbarButton(::Engines::GUI &gui, uint n) : NWNWidget(gui, ""),
-	_buttonNumber(n) {
-
-	Graphics::Aurora::ModelNode *invisible = 0;
+	_model(0), _buttonNumber(n) {
 
 	if (_buttonNumber == 11) {
 
-		_model = loadModelGUI("qb_but67end");
-		if (!_model)
-			throw Common::Exception("Failed to load quickbar model");
-		invisible = _model->getNode("Plane72");
+		try {
+			_model = createGUIModel("qb_but67end");
+		} catch (Common::Exception &e) {
+			e.add("Failed to load quickbar model");
+			throw;
+		}
 
 	} else {
 
-		_model = loadModelGUI("qb_but67");
-		if (!_model)
-			throw Common::Exception("Failed to load quickbar model");
-		invisible = _model->getNode("Plane52");
+		try {
+			_model = createGUIModel("qb_but67");
+		} catch (Common::Exception &e) {
+			e.add("Failed to load quickbar model");
+			throw;
+		}
 
 	}
 
-	if (invisible)
-		invisible->setInvisible(true);
-
 	NWNWidget::setTag(Common::UString::sprintf("Quickbar%d", _buttonNumber));
-	_model->setTag(NWNWidget::getTag());
 
+	_ids.push_back(_model->getID());
+
+	updateSize();
+
+	GUIMan.addRenderable(_model);
 }
 
 QuickbarButton::~QuickbarButton() {
+	GUIMan.removeRenderable(_model);
 	delete _model;
 }
 
-void QuickbarButton::show() {
-	_model->show();
+void QuickbarButton::updateSize() {
+	_model->getSize(_width, _height, _depth);
 }
 
-void QuickbarButton::hide() {
-	_model->hide();
+void QuickbarButton::setVisible(bool visible) {
+	if (isVisible() == visible)
+		return;
+
+	_model->setVisible(visible);
+
+	NWNWidget::setVisible(visible);
 }
 
 void QuickbarButton::setPosition(float x, float y, float z) {
@@ -93,14 +104,11 @@ void QuickbarButton::setPosition(float x, float y, float z) {
 }
 
 float QuickbarButton::getWidth() const {
-	return _model->getWidth();
+	return _width;
 }
 
 float QuickbarButton::getHeight() const {
-	return _model->getHeight();
-}
-
-void QuickbarButton::setTag(const Common::UString &tag) {
+	return _height;
 }
 
 
@@ -115,7 +123,7 @@ Quickbar::Quickbar() {
 	for (int i = 0; i < 12; i++) {
 		QuickbarButton *button = new QuickbarButton(*this, i);
 
-		button->setPosition(i * _slotWidth, bottomEdge->getHeight(), 0.0);
+		button->setPosition(i * _slotWidth, bottomEdge->getHeight(), 1.0);
 		addWidget(button);
 	}
 
@@ -141,16 +149,19 @@ void Quickbar::callbackActive(Widget &widget) {
 }
 
 void Quickbar::getSlotSize() {
-	Graphics::Aurora::Model *_model = loadModelGUI("qb_but67");
+	Graphics::Aurora::Model *model = createGUIModel("qb_but67");
 
-	_slotWidth  = floorf(_model->getWidth());
-	_slotHeight = floorf(_model->getHeight());
+	float slotDepth;
+	model->getSize(_slotWidth, _slotHeight, slotDepth);
 
-	delete _model;
+	_slotWidth  = floor(_slotWidth) - 1.0;
+	_slotHeight = floor(_slotHeight);
+
+	delete model;
 }
 
 void Quickbar::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(- ((12 * _slotWidth) / 2.0), - (newHeight / 2.0), -10.0);
+	setPosition(- ((12 * _slotWidth) / 2.0), -(newHeight / 2.0), -400.0);
 }
 
 } // End of namespace NWN
