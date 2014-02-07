@@ -50,6 +50,7 @@
 #include "engines/aurora/resources.h"
 
 #include "engines/kotor2/kotor2.h"
+#include "engines/kotor2/module.h"
 
 namespace Engines {
 
@@ -133,8 +134,11 @@ void KotOR2Engine::run(const Common::UString &target) {
 
 	playMenuMusic();
 
-	while (!EventMan.quitRequested()) {
-		EventMan.delay(10);
+	{
+		Module module;
+
+		module.load("001EBO");
+		module.run();
 	}
 
 	delete fps;
