@@ -41,6 +41,8 @@ NotificationManager::~NotificationManager() {
 }
 
 void NotificationManager::init() {
+	for (int i = 0; i < kNotificationMAX; i++)
+		_notifications[i].store(false);
 }
 
 std::list<Notifyable *>::iterator NotificationManager::registerNotifyable(Notifyable &notifyable) {
@@ -57,18 +59,19 @@ void NotificationManager::unregisterNotifyable(const std::list<Notifyable *>::it
 	_notifyables.erase(it);
 }
 
-void NotificationManager::resized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	Common::StackLock lock(_mutex);
+void NotificationManager::notify(Notification notification) {
+	assert((notification >= 0) && (notification < kNotificationMAX));
 
-	for (std::list<Notifyable *>::iterator it = _notifyables.begin(); it != _notifyables.end(); ++it)
-		(*it)->notifyResized(oldWidth, oldHeight, newWidth, newHeight);
+	_notifications[notification].store(true);
 }
 
-void NotificationManager::cameraMoved() {
+void NotificationManager::handle() {
 	Common::StackLock lock(_mutex);
 
-	for (std::list<Notifyable *>::iterator it = _notifyables.begin(); it != _notifyables.end(); ++it)
-		(*it)->notifyCameraMoved();
+	for (int i = 0; i < kNotificationMAX; i++)
+		if (_notifications[i].exchange(false))
+			for (std::list<Notifyable *>::iterator it = _notifyables.begin(); it != _notifyables.end(); ++it)
+				(*it)->notify((Notification) i);
 }
 
 } // End of namespace Events

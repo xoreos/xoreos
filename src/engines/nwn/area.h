@@ -102,11 +102,6 @@ public:
 	static Common::UString getName(const Common::UString &resRef);
 
 
-protected:
-	/** Notify the area that the camera has been moved. */
-	void notifyCameraMoved();
-
-
 private:
 	/** Tile orientation. */
 	enum Orientation {

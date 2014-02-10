@@ -131,7 +131,7 @@ Quickbar::Quickbar() {
 	topEdge->setPosition(0.0, _slotHeight, 0.0);
 	addWidget(topEdge);
 
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notify(Events::kNotificationResized);
 }
 
 Quickbar::~Quickbar() {
@@ -160,8 +160,14 @@ void Quickbar::getSlotSize() {
 	delete model;
 }
 
-void Quickbar::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(- ((12 * _slotWidth) / 2.0), -(newHeight / 2.0), -400.0);
+void Quickbar::notify(Events::Notification notification) {
+	if (notification != Events::kNotificationResized)
+		return;
+
+	const float width  = GfxMan.getScreenWidth();
+	const float height = GfxMan.getScreenHeight();
+
+	setPosition(- ((12 * _slotWidth) / 2.0), -(height / 2.0), -400.0);
 }
 
 } // End of namespace NWN

@@ -564,7 +564,7 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj,
 	playSound(playHello);
 	playAnimation();
 
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notify(Events::kNotificationResized);
 }
 
 Dialog::~Dialog() {
@@ -687,9 +687,15 @@ void Dialog::checkPicked() {
 	mouseMove();
 }
 
-void Dialog::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	const float x = -(newWidth  / 2.0)                        + 10.0;
-	const float y =  (newHeight / 2.0) - _dlgBox->getHeight() - 20.0;
+void Dialog::notify(Events::Notification notification) {
+	if (notification != Events::kNotificationResized)
+		return;
+
+	const float width  = GfxMan.getScreenWidth();
+	const float height = GfxMan.getScreenHeight();
+
+	const float x = -(width  / 2.0)                        + 10.0;
+	const float y =  (height / 2.0) - _dlgBox->getHeight() - 20.0;
 
 	_dlgBox->setPosition(x, y, 0.0);
 }

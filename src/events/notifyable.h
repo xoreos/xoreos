@@ -50,9 +50,7 @@ public:
 	}
 
 private:
-	virtual void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	}
-	virtual void notifyCameraMoved() {
+	virtual void notify(Notification notification) {
 	}
 
 	friend class NotificationManager;

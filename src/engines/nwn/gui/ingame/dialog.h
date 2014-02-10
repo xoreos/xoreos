@@ -206,7 +206,7 @@ public:
 	int processEventQueue();
 
 protected:
-	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
+	void notify(Events::Notification notification);
 
 private:
 	Common::UString _conv; ///< The conversation file.

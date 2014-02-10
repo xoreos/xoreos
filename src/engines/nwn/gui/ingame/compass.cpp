@@ -87,7 +87,7 @@ Compass::Compass(float position) {
 	addWidget(_compass);
 
 
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notify(Events::kNotificationResized);
 }
 
 Compass::~Compass() {
@@ -96,16 +96,23 @@ Compass::~Compass() {
 void Compass::callbackActive(Widget &widget) {
 }
 
-void Compass::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(newWidth / 2.0, - (newHeight / 2.0), -400.0);
-}
+void Compass::notify(Events::Notification notification) {
+	if (notification == Events::kNotificationResized) {
+		const float width  = GfxMan.getScreenWidth();
+		const float height = GfxMan.getScreenHeight();
 
-void Compass::notifyCameraMoved() {
-	float roll, pitch, yaw, x, y, z;
-	CameraMan.getOrientation(roll, pitch, yaw);
-	CameraMan.getDirection(x, y, z);
+		setPosition(width / 2.0, -(height / 2.0), -400.0);
+		return;
+	}
 
-	_compass->setRotation(x, y, yaw);
+	if (notification == Events::kNotificationCameraMoved) {
+		float roll, pitch, yaw, x, y, z;
+		CameraMan.getOrientation(roll, pitch, yaw);
+		CameraMan.getDirection(x, y, z);
+
+		_compass->setRotation(x, y, yaw);
+		return;
+	}
 }
 
 } // End of namespace NWN

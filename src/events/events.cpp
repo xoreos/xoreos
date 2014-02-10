@@ -288,6 +288,9 @@ void EventsManager::runMainLoop() {
 
 		_queueProcessed.signal();
 
+		// Handle the notifications
+		NotificationMan.handle();
+
 		if (!_quitRequested)
 			// Render a frame
 			GfxMan.renderScene();

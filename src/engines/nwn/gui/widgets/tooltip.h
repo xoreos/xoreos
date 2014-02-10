@@ -75,7 +75,7 @@ public:
 
 
 protected:
-	void notifyCameraMoved();
+	void notify(Events::Notification notification);
 
 
 private:

@@ -154,7 +154,10 @@ void Tooltip::setAlign(float align) {
 	redoLayout();
 }
 
-void Tooltip::notifyCameraMoved() {
+void Tooltip::notify(Events::Notification notification) {
+	if (notification != Events::kNotificationCameraMoved)
+		return;
+
 	updatePosition();
 }
 

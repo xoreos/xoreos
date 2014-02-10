@@ -32,6 +32,8 @@
 
 #include <list>
 
+#include <boost/atomic.hpp>
+
 #include "common/types.h"
 #include "common/singleton.h"
 #include "common/mutex.h"
@@ -41,6 +43,13 @@
 namespace Events {
 
 class Notifyable;
+
+/** Types of notifications that can be sent. */
+enum Notification {
+	kNotificationResized     = 0, ///< The main window was resized.
+	kNotificationCameraMoved    , ///< The camera was moved.
+	kNotificationMAX              ///< For range checks.
+};
 
 /** The notification manager, handling all notifications.
  *
@@ -58,13 +67,13 @@ public:
 
 	void init();
 
-	/** Notify all Notifyables that the screen size changed. */
-	void resized(int oldWidth, int oldHeight, int newWidth, int newHeight);
-	/** Notify all Notifyables that the camera moved. */
-	void cameraMoved();
+	/** Notify all Notifyables of a Notification. */
+	void notify(Notification notification);
 
 private:
 	Common::Mutex _mutex;
+
+	boost::atomic<bool> _notifications[kNotificationMAX];
 
 	std::list<Notifyable *> _notifyables;
 
@@ -72,6 +81,9 @@ private:
 	void unregisterNotifyable(const std::list<Notifyable *>::iterator &it);
 
 	friend class Notifyable;
+
+public:
+	void handle(); ///< Called by the main thread.
 };
 
 } // End of namespace Events

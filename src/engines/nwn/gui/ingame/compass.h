@@ -61,8 +61,7 @@ protected:
 private:
 	CompassWidget *_compass;
 
-	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
-	void notifyCameraMoved();
+	void notify(Events::Notification notification);
 };
 
 } // End of namespace NWN

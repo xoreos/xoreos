@@ -136,61 +136,61 @@ void CameraManager::getOrientation(float &cRoll, float &cPitch, float &cYaw) con
 void CameraManager::setPosition(float x, float y, float z) {
 	_camera->setPosition(x, y, z);
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 void CameraManager::setDirection(float x, float y, float z) {
 	_camera->setDirection(x, y, z);
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 void CameraManager::lookAt(float x, float y, float z) {
 	_camera->lookAt(x, y, z);
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 void CameraManager::setOrientation(float radian, float x, float y, float z) {
 	_camera->setOrientation(Ogre::Quaternion(Ogre::Radian(radian), Ogre::Vector3(x, y, z)));
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 void CameraManager::move(float x, float y, float z) {
 	_camera->move(Ogre::Vector3(x, y, z));
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 void CameraManager::moveRelative(float x, float y, float z) {
 	_camera->moveRelative(Ogre::Vector3(x, y, z));
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 void CameraManager::rotate(float radian, float x, float y, float z) {
 	_camera->rotate(Ogre::Quaternion(Ogre::Radian(radian), Ogre::Vector3(x, y, z)));
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 void CameraManager::roll(float radian) {
 	_camera->roll(Ogre::Radian(radian));
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 void CameraManager::yaw(float radian) {
 	_camera->yaw(Ogre::Radian(radian));
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 void CameraManager::pitch(float radian) {
 	_camera->pitch(Ogre::Radian(radian));
 
-	NotificationMan.cameraMoved();
+	NotificationMan.notify(Events::kNotificationCameraMoved);
 }
 
 Ogre::Ray CameraManager::castRay(int x, int y) const {

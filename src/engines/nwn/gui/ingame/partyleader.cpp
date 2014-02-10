@@ -117,7 +117,7 @@ PartyLeader::PartyLeader(Module &module) : _module(&module),
 
 
 	updatePortraitTooltip();
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notify(Events::kNotificationResized);
 }
 
 PartyLeader::~PartyLeader() {
@@ -183,8 +183,14 @@ void PartyLeader::updatePortraitTooltip() {
 	*/
 }
 
-void PartyLeader::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	setPosition(newWidth / 2.0, newHeight / 2.0, -400.0);
+void PartyLeader::notify(Events::Notification notification) {
+	if (notification != Events::kNotificationResized)
+		return;
+
+	const float width  = GfxMan.getScreenWidth();
+	const float height = GfxMan.getScreenHeight();
+
+	setPosition(width / 2.0, height / 2.0, -400.0);
 }
 
 } // End of namespace NWN

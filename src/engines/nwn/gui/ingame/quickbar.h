@@ -94,7 +94,7 @@ private:
 
 	void getSlotSize();
 
-	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
+	void notify(Events::Notification notification);
 };
 
 } // End of namespace NWN

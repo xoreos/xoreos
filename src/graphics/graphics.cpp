@@ -467,7 +467,7 @@ bool GraphicsManager::changeScreen(int width, int height, bool fullscreen) {
 	_renderer->resized(_width, _height);
 
 	// Let the NotificationManager notify the Notifyables that the resolution changed
-	NotificationMan.resized(oldWidth, oldHeight, _width, _height);
+	NotificationMan.notify(Events::kNotificationResized);
 
 	return true;
 }
