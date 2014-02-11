@@ -91,6 +91,13 @@ public:
 	/** Show/Hide the bouding box(es) of this model. */
 	void showBoundingBox(bool show);
 
+	/** Force the handling of the whole model as a transparent or opague object. */
+	void forceTransparent(bool transparent = true);
+	/** Force the handling of this model node as a transparent or opague object. */
+	void forceTransparent(const Common::UString &node, bool transparent = true);
+	/** Force the handling of this model node as a transparent or opague object. */
+	void forceTransparent(Ogre::SceneNode *node, bool transparent = true);
+
 	/** Convert all materials used by the model into dynamic materials. */
 	void makeDynamic();
 

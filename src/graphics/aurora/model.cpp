@@ -282,6 +282,33 @@ void Model::showBoundingBox(bool show) {
 	}
 }
 
+void Model::forceTransparent(bool transparent) {
+	Renderable::forceTransparent(transparent);
+}
+
+void Model::forceTransparent(const Common::UString &node, bool transparent) {
+	forceTransparent(getNode(node), transparent);
+}
+
+void Model::forceTransparent(Ogre::SceneNode *node, bool transparent) {
+	if (!node)
+		return;
+
+	for (uint i = 0; i < node->numAttachedObjects(); i++) {
+		Ogre::MovableObject *object = node->getAttachedObject(i);
+
+		Ogre::Entity *entity = dynamic_cast<Ogre::Entity *>(object);
+		if (!entity)
+			continue;
+
+		for (uint j = 0; j < entity->getNumSubEntities(); j++) {
+			Ogre::SubEntity *subEntity = entity->getSubEntity(j);
+
+			MaterialMan.setTransparent(subEntity->getMaterial(), transparent);
+		}
+	}
+}
+
 void Model::makeDynamic() {
 	_materials.clear();
 
