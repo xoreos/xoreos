@@ -105,6 +105,9 @@ public:
 	/** Convert all materials used by the renderable into dynamic materials. */
 	virtual void makeDynamic();
 
+	/** Force the handling of this renderable as a transparent or opague object. */
+	virtual void forceTransparent(bool transparent = true);
+
 	/** Fade the renderable. */
 	void fade(FadeDirection direction, float length, bool loop);
 	/** Stop all fading. */

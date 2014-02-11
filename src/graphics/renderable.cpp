@@ -77,6 +77,11 @@ void Renderable::destroy() {
 void Renderable::makeDynamic() {
 }
 
+void Renderable::forceTransparent(bool transparent) {
+	for (std::list<Ogre::MaterialPtr>::iterator m = _materials.begin(); m != _materials.end(); ++m)
+		MaterialMan.setTransparent(*m, transparent);
+}
+
 void Renderable::fade(FadeDirection direction, float length, bool loop) {
 	LOCK_FRAME();
 
