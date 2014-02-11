@@ -283,13 +283,8 @@ void Model::showBoundingBox(bool show) {
 }
 
 void Model::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
-	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e) {
-		Ogre::MaterialPtr material = (*e)->getSubEntity(0)->getMaterial();
-		if (makeDynamic)
-			(*e)->setMaterial((material = MaterialMan.makeDynamic(material)));
-
-		materials.push_back(material);
-	}
+	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e)
+		materials.push_back((*e)->getSubEntity(0)->getMaterial());
 }
 
 void Model::createNode(NodeEntity *&nodeEntity, State *state, Common::UString name, Ogre::SceneNode *parent) {
@@ -347,7 +342,7 @@ Ogre::Entity *Model::createEntity(const VertexDeclaration &vertexDecl, const Ogr
 	entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
 
 	// Assign the material to the entity
-	entity->setMaterial(material.isNull() ? MaterialMan.getSolidColor(0.0, 0.0, 0.0, 0.0) : material);
+	entity->setMaterial(material.isNull() ? MaterialMan.create(0.0, 0.0, 0.0, 0.0) : material);
 
 	return entity;
 }

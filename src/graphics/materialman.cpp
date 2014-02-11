@@ -67,6 +67,9 @@ void MaterialDeclaration::reset() {
 
 	transparency = kTransparencyHintUnknown;
 
+	hasColorModifier = false;
+	colorModifier[0] = 1.0; colorModifier[1] = 1.0; colorModifier[2] = 1.0; colorModifier[3] = 1.0;
+
 	textures.clear();
 }
 
@@ -82,18 +85,18 @@ MaterialManager::MaterialManager() {
 MaterialManager::~MaterialManager() {
 }
 
-Ogre::MaterialPtr MaterialManager::get(const Common::UString &texture, bool dynamic) {
+Ogre::MaterialPtr MaterialManager::create(const Common::UString &texture, bool dynamic) {
 	MaterialDeclaration decl;
 
 	decl.dynamic = dynamic;
 	decl.textures.push_back(texture);
 
-	return get(decl);
+	return create(decl);
 }
 
-Ogre::MaterialPtr MaterialManager::get(const MaterialDeclaration &decl) {
+Ogre::MaterialPtr MaterialManager::create(const MaterialDeclaration &decl) {
 	if (!Common::isMainThread()) {
-		Ogre::MaterialPtr (MaterialManager::*f)(const MaterialDeclaration &) = &MaterialManager::get;
+		Ogre::MaterialPtr (MaterialManager::*f)(const MaterialDeclaration &) = &MaterialManager::create;
 
 		Events::MainThreadFunctor<Ogre::MaterialPtr> functor(boost::bind(f, this, decl));
 
@@ -118,56 +121,20 @@ Ogre::MaterialPtr MaterialManager::get(const MaterialDeclaration &decl) {
 	return material;
 }
 
-Ogre::MaterialPtr MaterialManager::getSolidColor(float r, float g, float b, float a, bool dynamic) {
+Ogre::MaterialPtr MaterialManager::create(float r, float g, float b, float a, bool dynamic) {
 	MaterialDeclaration decl;
 
 	decl.dynamic = dynamic;
-	decl.diffuse[0] = r; decl.diffuse[1] = g; decl.diffuse[2] = b; decl.diffuse[3] = a;
+	decl.hasColorModifier = true;
+	decl.colorModifier[0] = r;
+	decl.colorModifier[1] = g;
+	decl.colorModifier[2] = b;
+	decl.colorModifier[3] = a;
 
-	return get(decl);
-}
-
-Ogre::MaterialPtr MaterialManager::createDynamic() {
-	Common::UString name = dynamicName();
-
-	return Ogre::MaterialManager::getSingleton().create(name.c_str(), "General");
-}
-
-bool MaterialManager::isDynamic(const Ogre::MaterialPtr &material) {
-	assert(!material.isNull());
-
-	return !Common::UString(material->getName().c_str()).beginsWith("static/");
-}
-
-Ogre::MaterialPtr MaterialManager::makeDynamic(Ogre::MaterialPtr material) {
-	if (isDynamic(material))
-		return material;
-
-	Common::UString name = dynamicName();
-
-	return material->clone(name.c_str());
-}
-
-void MaterialManager::createSolidColor(const MaterialDeclaration &decl, Ogre::MaterialPtr material) {
-	Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
-
-	const Ogre::ColourValue color(decl.diffuse[0], decl.diffuse[1], decl.diffuse[2]);
-	const float alpha = decl.diffuse[3];
-
-	texState->setColourOperationEx(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_MANUAL, color, color, 1.0);
-	if (alpha != 1.0) {
-		texState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_MANUAL, alpha, alpha, 1.0);
-		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
-		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
-	}
+	return create(decl);
 }
 
 void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr material) {
-	if (decl.textures.empty()) {
-		createSolidColor(decl, material);
-		return;
-	}
-
 	material->getTechnique(0)->getPass(0)->setAmbient(decl.ambient[0], decl.ambient[1], decl.ambient[2]);
 	material->getTechnique(0)->getPass(0)->setDiffuse(decl.diffuse[0], decl.diffuse[1], decl.diffuse[2], decl.diffuse[3]);
 	material->getTechnique(0)->getPass(0)->setSpecular(decl.specular[0], decl.specular[1], decl.specular[2], decl.specular[3]);
@@ -203,6 +170,15 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 			decal = false;
 	}
 
+	TransparencyHint transparency = decal ? kTransparencyHintTransparent : decl.transparency;
+
+	if (decl.hasColorModifier || (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() == 0)) {
+		setColorModifier(material, decl.colorModifier[0], decl.colorModifier[1], decl.colorModifier[2], decl.colorModifier[3]);
+
+		if (transparency == kTransparencyHintUnknown)
+			transparency = (decl.colorModifier[3] < 1.0) ? kTransparencyHintTransparent : kTransparencyHintOpaque;
+	}
+
 	// Even if the textures themselves aren't tranparent, the color might still be
 	if (decl.diffuse[3] != 1.0)
 		transparent = true;
@@ -210,7 +186,6 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 	// Figure out whether this material is transparent.
 	// If we don't get a hint from the declaration, try to infer
 	// it from the texture and color information gathered above.
-	TransparencyHint transparency = decal ? kTransparencyHintTransparent : decl.transparency;
 	if (transparency == kTransparencyHintUnknown)
 		transparency = transparent ? kTransparencyHintTransparent : kTransparencyHintOpaque;
 
@@ -225,6 +200,25 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 	material->getTechnique(0)->getPass(0)->setColourWriteEnabled(decl.writeColor);
 
 	material->setReceiveShadows(decl.receiveShadows);
+}
+
+Ogre::MaterialPtr MaterialManager::create() {
+	return Ogre::MaterialManager::getSingleton().create(dynamicName().c_str(), "General");
+}
+
+bool MaterialManager::isDynamic(const Ogre::MaterialPtr &material) {
+	assert(!material.isNull());
+
+	return !Common::UString(material->getName().c_str()).beginsWith("static/");
+}
+
+Ogre::MaterialPtr MaterialManager::makeDynamic(Ogre::MaterialPtr material) {
+	if (isDynamic(material))
+		return material;
+
+	Common::UString name = dynamicName();
+
+	return material->clone(name.c_str());
 }
 
 void MaterialManager::setTransparent(Ogre::MaterialPtr material, bool transparent) {
@@ -268,8 +262,13 @@ void MaterialManager::setColorModifier(const Ogre::MaterialPtr &material, float 
 
 	const Ogre::ColourValue color(r, g, b);
 
-	texState->setColourOperationEx(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, color, color, 1.0);
-	texState->setAlphaOperation(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, a, a, 1.0);
+	if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() == 1) {
+		texState->setColourOperationEx(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_MANUAL, color, color, 1.0);
+		texState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_MANUAL, a, a, 1.0);
+	} else {
+		texState->setColourOperationEx(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, color, color, 1.0);
+		texState->setAlphaOperation(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, a, a, 1.0);
+	}
 }
 
 void MaterialManager::setAlphaModifier(const Ogre::MaterialPtr &material, float a) {
@@ -277,7 +276,10 @@ void MaterialManager::setAlphaModifier(const Ogre::MaterialPtr &material, float 
 	if (!texState)
 		texState = addColorModifier(material);
 
-	texState->setAlphaOperation(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, a, a, 1.0);
+	if (material->getTechnique(0)->getPass(0)->getNumTextureUnitStates() == 1)
+		texState->setAlphaOperation(Ogre::LBX_MODULATE, Ogre::LBS_CURRENT, Ogre::LBS_MANUAL, a, a, 1.0);
+	else
+		texState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_MANUAL, a, a, 1.0);
 }
 
 void MaterialManager::removeColorModifier(const Ogre::MaterialPtr &material) {
@@ -345,11 +347,16 @@ static Common::UString concat(const bool *b, uint n) {
 	return c;
 }
 
+static Common::UString concat(TransparencyHint transparency) {
+	return Common::UString::sprintf("%u", (uint) transparency) + "@";
+}
+
 Common::UString MaterialManager::canonicalName(const MaterialDeclaration &decl) {
 	return Common::UString("static/") + concat(decl.textures) +
 	       concat(decl.ambient, 3) + concat(decl.diffuse, 4) + concat(decl.specular, 4) +
 	       concat(decl.selfIllum, 3) + concat(&decl.shininess, 1) +
-	       concat(&decl.receiveShadows, 1) + concat(&decl.writeColor, 1) + concat(&decl.writeDepth, 1);
+	       concat(&decl.receiveShadows, 1) + concat(&decl.writeColor, 1) + concat(&decl.writeDepth, 1) +
+	       concat(&decl.hasColorModifier, 1) + concat(decl.colorModifier, 4) + concat(decl.transparency);
 }
 
 Common::UString MaterialManager::dynamicName() {

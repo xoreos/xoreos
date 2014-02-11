@@ -368,7 +368,7 @@ void Model_Witcher::readMesh(ParserContext &ctx) {
 	if (textureCount == 0)
 		ctx.nodeEntity->dontRender = true;
 
-	Ogre::MaterialPtr material = MaterialMan.get(ctx.material);
+	Ogre::MaterialPtr material = MaterialMan.create(ctx.material);
 
 
 	// Read vertices

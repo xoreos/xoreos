@@ -435,7 +435,7 @@ void Model_KotOR::readMesh(ParserContext &ctx) {
 	if (textureCount == 0)
 		ctx.nodeEntity->dontRender = true;
 
-	Ogre::MaterialPtr material = MaterialMan.get(ctx.material);
+	Ogre::MaterialPtr material = MaterialMan.create(ctx.material);
 
 	uint32 endPos = ctx.mdl->pos();
 

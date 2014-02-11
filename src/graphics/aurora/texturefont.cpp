@@ -125,7 +125,7 @@ Ogre::Entity *TextureFont::createMissing(float &width, float &height, const Comm
 	width  = getWidth('m') - _spaceR;
 	height = getHeight();
 
-	Ogre::MaterialPtr material = MaterialMan.makeDynamic(MaterialMan.getSolidColor(0.0, 0.0, 0.0, 0.0));
+	Ogre::MaterialPtr material = MaterialMan.create(0.0, 0.0, 0.0, 0.0, true);
 
 	return createQuadEntity(width, height, material, 0.0, 0.0, 0.0, 0.0, scene);
 }
@@ -139,7 +139,7 @@ Ogre::Entity *TextureFont::createCharacter(uint32 c, float &width, float &height
 	width  = cC.width + _spaceR;
 	height = getHeight();
 
-	Ogre::MaterialPtr material = MaterialMan.createDynamic();
+	Ogre::MaterialPtr material = MaterialMan.create();
 
 	Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
 

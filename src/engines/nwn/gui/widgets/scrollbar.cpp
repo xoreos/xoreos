@@ -59,7 +59,7 @@ using Graphics::Aurora::kSelectableNone;
 Scrollbar::Scrollbar(Type type) : Graphics::Renderable("gui"), _type(type),
 	_nodeCapLT(0), _nodeCapRB(0), _nodeBar(0), _entityCapLT(0), _entityCapRB(0), _entityBar(0), _length(16.0) {
 
-	_material = MaterialMan.get("gui_scrollbar");
+	_material = MaterialMan.create("gui_scrollbar");
 
 	create();
 }
@@ -233,17 +233,6 @@ void Scrollbar::setSelectable(bool selectable) {
 }
 
 void Scrollbar::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
-	if (makeDynamic) {
-		_material = MaterialMan.makeDynamic(_material);
-
-		if (_entityCapLT)
-			_entityCapLT->setMaterial(_material);
-		if (_entityCapRB)
-			_entityCapRB->setMaterial(_material);
-		if (_entityBar)
-			_entityBar->setMaterial(_material);
-	}
-
 	if (makeTransparent)
 		MaterialMan.setTransparent(_material, true);
 

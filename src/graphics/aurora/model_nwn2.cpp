@@ -187,7 +187,7 @@ void Model_NWN2::loadRigid(ParserContext &ctx, Ogre::SceneNode *parent) {
 	ctx.material.textures.push_back(diffuseMap);
 	uint32 textureCount = ctx.material.textures.size();
 
-	Ogre::MaterialPtr material = MaterialMan.get(ctx.material);
+	Ogre::MaterialPtr material = MaterialMan.create(ctx.material);
 
 
 	// Read vertices
@@ -282,7 +282,7 @@ void Model_NWN2::loadSkin(ParserContext &ctx, Ogre::SceneNode *parent) {
 	ctx.material.textures.push_back(diffuseMap);
 	uint32 textureCount = ctx.material.textures.size();
 
-	Ogre::MaterialPtr material = MaterialMan.get(ctx.material);
+	Ogre::MaterialPtr material = MaterialMan.create(ctx.material);
 
 
 	// Read vertices

@@ -63,7 +63,7 @@ void CursorManager::init() {
 	if (_ready)
 		return;
 
-	_material = MaterialMan.createDynamic();
+	_material = MaterialMan.create();
 	_material->getTechnique(0)->getPass(0)->createTextureUnitState();
 
 	_container = (Ogre::OverlayContainer *) Ogre::OverlayManager::getSingletonPtr()->createOverlayElement("Panel", "xoreos/MouseCursor");

@@ -59,6 +59,9 @@ struct MaterialDeclaration {
 
 	TransparencyHint transparency;
 
+	bool hasColorModifier;
+	float colorModifier[4];
+
 	MaterialDeclaration();
 
 	void reset();
@@ -77,22 +80,20 @@ public:
 	MaterialManager();
 	~MaterialManager();
 
+	/** Create a material with a single texture. */
+	Ogre::MaterialPtr create(const Common::UString &texture, bool dynamic = false);
+	/** Create a more complex material. */
+	Ogre::MaterialPtr create(const MaterialDeclaration &decl);
+	/** Create a material with a solid color. */
+	Ogre::MaterialPtr create(float r, float g, float b, float a = 1.0, bool dynamic = false);
+	/** Create an empty dynamic material. */
+	Ogre::MaterialPtr create();
+
 	/** Is this a dynamic material? */
 	bool isDynamic(const Ogre::MaterialPtr &material);
 
-	/** Get/Load a material with a single texture. */
-	Ogre::MaterialPtr get(const Common::UString &texture, bool dynamic = false);
-	/** Get/Load a more complex material. */
-	Ogre::MaterialPtr get(const MaterialDeclaration &decl);
-
-	/** Create a dynamic material. */
-	Ogre::MaterialPtr createDynamic();
-
 	/** Convert a static material into a dynamic material. */
 	Ogre::MaterialPtr makeDynamic(Ogre::MaterialPtr material);
-
-	/** Get a default material with a solid color. */
-	Ogre::MaterialPtr getSolidColor(float r, float g, float b, float a = 1.0, bool dynamic = false);
 
 	/** Change the material's color modifier. */
 	void setColorModifier(const Ogre::MaterialPtr &material, float r, float g, float b, float a = 1.0);

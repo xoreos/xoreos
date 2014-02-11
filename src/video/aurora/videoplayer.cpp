@@ -156,7 +156,7 @@ public:
 
 		// Get the black background material
 
-		Ogre::MaterialPtr matBack = MaterialMan.getSolidColor(0.0, 0.0, 0.0);
+		Ogre::MaterialPtr matBack = MaterialMan.create(0.0, 0.0, 0.0);
 
 		// Create the material and texture for the video content
 
@@ -167,7 +167,7 @@ public:
 		memset(buffer->lock(Ogre::HardwareBuffer::HBL_DISCARD), 0, buffer->getSizeInBytes());
 		buffer->unlock();
 
-		_videoMaterial = MaterialMan.createDynamic();
+		_videoMaterial = MaterialMan.create();
 
 		Ogre::TextureUnitState *texState = _videoMaterial->getTechnique(0)->getPass(0)->createTextureUnitState();
 		texState->setTexture(_videoTexture);

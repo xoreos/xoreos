@@ -330,7 +330,7 @@ void Quad::update() {
 		}
 	}
 
-	_material = MaterialMan.createDynamic();
+	_material = MaterialMan.create();
 
 	if (!_texture.isNull()) {
 		Ogre::TextureUnitState *texState = _material->getTechnique(0)->getPass(0)->createTextureUnitState();
@@ -361,9 +361,6 @@ void Quad::update() {
 }
 
 void Quad::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
-	if (makeDynamic)
-		_entity->setMaterial((_material = MaterialMan.makeDynamic(_material)));
-
 	if (makeTransparent)
 		MaterialMan.setTransparent(_material, true);
 

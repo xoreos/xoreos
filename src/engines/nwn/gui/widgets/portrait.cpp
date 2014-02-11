@@ -87,7 +87,7 @@ void Portrait::create(const Common::UString &name) {
 	_height = kHeight[_size];
 
 
-	_materialBorder = MaterialMan.createDynamic();
+	_materialBorder = MaterialMan.create();
 	MaterialMan.setColorModifier(_materialBorder, _bR, _bG, _bB, _bA);
 
 	setPortrait(name);
@@ -175,7 +175,7 @@ void Portrait::setPortrait(const Common::UString &name) {
 	}
 
 	if (!texture.isNull()) {
-		_materialPortrait = MaterialMan.createDynamic();
+		_materialPortrait = MaterialMan.create();
 
 		Ogre::TextureUnitState *texState = _materialPortrait->getTechnique(0)->getPass(0)->createTextureUnitState();
 
@@ -185,7 +185,7 @@ void Portrait::setPortrait(const Common::UString &name) {
 		_materialPortrait->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 		_materialPortrait->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
 	} else
-		_materialPortrait = MaterialMan.getSolidColor(0.0, 0.0, 0.0, 1.0, true);
+		_materialPortrait = MaterialMan.create(0.0, 0.0, 0.0, 1.0, true);
 
 	if (_entityPortrait)
 		_entityPortrait->setMaterial(_materialPortrait);

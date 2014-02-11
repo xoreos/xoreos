@@ -111,7 +111,7 @@ Cube::Cube(const Common::UString &texture, const Common::UString &scene) : Rende
 
 		_entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
 
-		Ogre::MaterialPtr material = MaterialMan.get(texture);
+		Ogre::MaterialPtr material = MaterialMan.create(texture, true);
 
 		_entity->setMaterial(material);
 
@@ -189,8 +189,6 @@ void Cube::setSelectable(bool selectable) {
 
 void Cube::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
 	Ogre::MaterialPtr material = _entity->getSubEntity(0)->getMaterial();
-	if (makeDynamic)
-		_entity->setMaterial((material = MaterialMan.makeDynamic(material)));
 
 	if (makeTransparent)
 		MaterialMan.setTransparent(material, true);

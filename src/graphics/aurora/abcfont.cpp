@@ -76,7 +76,7 @@ Ogre::Entity *ABCFont::createCharacter(uint32 c, float &width, float &height, co
 	width  = cC.spaceL + cC.width + cC.spaceR;
 	height = getHeight();
 
-	Ogre::MaterialPtr material = MaterialMan.createDynamic();
+	Ogre::MaterialPtr material = MaterialMan.create();
 
 	Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
 
