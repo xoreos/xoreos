@@ -28,6 +28,7 @@
  */
 
 #include <OgreEntity.h>
+#include <OgreSubEntity.h>
 #include <OgreSceneNode.h>
 #include <OgreSceneManager.h>
 #include <OgreMeshManager.h>
@@ -330,22 +331,25 @@ void Quad::update() {
 		}
 	}
 
-	_material = MaterialMan.create();
+	_materials.clear();
+
+	Ogre::MaterialPtr material = MaterialMan.create();
+	_materials.push_back(material);
 
 	if (!_texture.isNull()) {
-		Ogre::TextureUnitState *texState = _material->getTechnique(0)->getPass(0)->createTextureUnitState();
+		Ogre::TextureUnitState *texState = material->getTechnique(0)->getPass(0)->createTextureUnitState();
 
 		texState->setTexture(_texture);
 	}
 
-	MaterialMan.setColorModifier(_material, _r, _g, _b, _a);
+	MaterialMan.setColorModifier(material, _r, _g, _b, _a);
 
 	if (_a < 1.0) {
-		_material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
-		_material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+		material->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
 	}
 
-	_entity = createQuadEntity(1.0, 1.0, _material, _topLeftU, _topLeftV, _bottomRightU, _bottomRightV, _scene);
+	_entity = createQuadEntity(1.0, 1.0, material, _topLeftU, _topLeftV, _bottomRightU, _bottomRightV, _scene);
 
 	_entity->setQueryFlags(_selectable ? kSelectableQuad : kSelectableNone);
 	_entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
@@ -360,11 +364,14 @@ void Quad::update() {
 	_needUpdate = false;
 }
 
-void Quad::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
-	if (makeTransparent)
-		MaterialMan.setTransparent(_material, true);
+void Quad::makeDynamic() {
+	if (!_entity)
+		return;
 
-	materials.push_back(_material);
+	_entity->setMaterial(MaterialMan.makeDynamic(_entity->getSubEntity(0)->getMaterial()));
+
+	_materials.clear();
+	_materials.push_back(_entity->getSubEntity(0)->getMaterial());
 }
 
 } // End of namespace Aurora

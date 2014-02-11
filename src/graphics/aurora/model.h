@@ -91,6 +91,9 @@ public:
 	/** Show/Hide the bouding box(es) of this model. */
 	void showBoundingBox(bool show);
 
+	/** Convert all materials used by the model into dynamic materials. */
+	void makeDynamic();
+
 protected:
 	struct NodeEntity {
 		Ogre::SceneNode *node;
@@ -134,9 +137,6 @@ protected:
 
 	State *_currentState;
 
-
-	/** Collect all materials used in the model, optionally making them dynamic and/or transparent as well. */
-	void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false);
 
 	void setState(State *state);
 

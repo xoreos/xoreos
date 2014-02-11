@@ -74,6 +74,9 @@ void Renderable::destroy() {
 	_fader = 0;
 }
 
+void Renderable::makeDynamic() {
+}
+
 void Renderable::fade(FadeDirection direction, float length, bool loop) {
 	LOCK_FRAME();
 
@@ -83,20 +86,16 @@ void Renderable::fade(FadeDirection direction, float length, bool loop) {
 		controllerMan.destroyController(_fader);
 	_fader = 0;
 
-	std::list<Ogre::MaterialPtr> materials;
-	collectMaterials(materials, true, true);
-
-	for (std::list<Ogre::MaterialPtr>::iterator m = materials.begin(); m != materials.end(); ++m)
-		MaterialMan.setTransparent(*m, true);
-
 	float startAlpha = 0.0f;
 	if ((direction == kFadeDirectionOut) || (direction == kFadeDirectionOutIn))
 		startAlpha = 1.0f;
 
-	for (std::list<Ogre::MaterialPtr>::iterator m = materials.begin(); m != materials.end(); ++m)
+	for (std::list<Ogre::MaterialPtr>::iterator m = _materials.begin(); m != _materials.end(); ++m) {
+		MaterialMan.setTransparent(*m, true);
 		MaterialMan.setAlphaModifier(*m, startAlpha);
+	}
 
-	Ogre::SharedPtr< Ogre::ControllerValue   <Ogre::Real> > matVal(new MaterialAlphaControllerValue(materials));
+	Ogre::SharedPtr< Ogre::ControllerValue   <Ogre::Real> > matVal(new MaterialAlphaControllerValue(_materials));
 	Ogre::SharedPtr< Ogre::ControllerFunction<Ogre::Real> > animFunc(new AnimationControllerFunction(length, 0.0, (AnimationFunction) direction, loop));
 
 	_fader = controllerMan.createController(controllerMan.getFrameTimeSource(), matVal, animFunc);
@@ -108,10 +107,7 @@ void Renderable::stopFade() {
 	if (_fader) {
 		Ogre::ControllerManager::getSingleton().destroyController(_fader);
 
-		std::list<Ogre::MaterialPtr> materials;
-		collectMaterials(materials);
-
-		for (std::list<Ogre::MaterialPtr>::iterator m = materials.begin(); m != materials.end(); ++m) {
+		for (std::list<Ogre::MaterialPtr>::iterator m = _materials.begin(); m != _materials.end(); ++m) {
 			MaterialMan.setAlphaModifier(*m, 1.0);
 			MaterialMan.resetTransparent(*m);
 		}

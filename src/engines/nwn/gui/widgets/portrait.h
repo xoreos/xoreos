@@ -75,9 +75,8 @@ public:
 	/** Change whether the portrait can be selected (picked) by the user. */
 	void setSelectable(bool selectable);
 
-protected:
-	/** Collect all materials used in the portrait, optionally making them dynamic and/or transparent as well. */
-	void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false);
+	/** Convert all materials used by the portrait into dynamic materials. */
+	void makeDynamic();
 
 private:
 	Size _size;

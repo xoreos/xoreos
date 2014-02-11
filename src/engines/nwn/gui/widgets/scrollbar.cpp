@@ -59,7 +59,7 @@ using Graphics::Aurora::kSelectableNone;
 Scrollbar::Scrollbar(Type type) : Graphics::Renderable("gui"), _type(type),
 	_nodeCapLT(0), _nodeCapRB(0), _nodeBar(0), _entityCapLT(0), _entityCapRB(0), _entityBar(0), _length(16.0) {
 
-	_material = MaterialMan.create("gui_scrollbar");
+	_materials.push_back(MaterialMan.create("gui_scrollbar"));
 
 	create();
 }
@@ -98,7 +98,7 @@ void Scrollbar::create() {
 
 void Scrollbar::createEntities(float barLength, float textureLength) {
 	if (!_entityCapLT) {
-		_entityCapLT = createQuadEntity(10.0, 2.0, _material, 3.0 / 16.0, 0.0 / 16.0, 13.0 / 16.0, 2.0 / 16.0, _scene);
+		_entityCapLT = createQuadEntity(10.0, 2.0, _materials.front(), 3.0 / 16.0, 0.0 / 16.0, 13.0 / 16.0, 2.0 / 16.0, _scene);
 
 		_entityCapLT->setQueryFlags(_selectable ? kSelectableRenderable : kSelectableNone);
 		_entityCapLT->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
@@ -108,7 +108,7 @@ void Scrollbar::createEntities(float barLength, float textureLength) {
 	}
 
 	if (!_entityCapRB) {
-		_entityCapRB = createQuadEntity(10.0, 2.0, _material, 3.0 / 16.0, 14.0 / 16.0, 13.0 / 16.0, 16.0 / 16.0, _scene);
+		_entityCapRB = createQuadEntity(10.0, 2.0, _materials.front(), 3.0 / 16.0, 14.0 / 16.0, 13.0 / 16.0, 16.0 / 16.0, _scene);
 
 		_entityCapRB->setQueryFlags(_selectable ? kSelectableRenderable : kSelectableNone);
 		_entityCapRB->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
@@ -118,7 +118,7 @@ void Scrollbar::createEntities(float barLength, float textureLength) {
 	}
 
 	if (!_entityBar) {
-		_entityBar = createQuadEntity(barLength, 10.0, _material, 0.0 / 16.0, 3.0 / 16.0, textureLength, 13.0 / 16.0, _scene);
+		_entityBar = createQuadEntity(barLength, 10.0, _materials.front(), 0.0 / 16.0, 3.0 / 16.0, textureLength, 13.0 / 16.0, _scene);
 
 		_entityBar->setQueryFlags(_selectable ? kSelectableRenderable : kSelectableNone);
 		_entityBar->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
@@ -232,13 +232,22 @@ void Scrollbar::setSelectable(bool selectable) {
 	Renderable::setSelectable(selectable);
 }
 
-void Scrollbar::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
-	if (makeTransparent)
-		MaterialMan.setTransparent(_material, true);
+void Scrollbar::makeDynamic() {
+	if (_materials.empty())
+		return;
 
-	materials.push_back(_material);
+	Ogre::MaterialPtr material = MaterialMan.makeDynamic(_materials.front());
+
+	_materials.clear();
+	_materials.push_back(material);
+
+	if (_entityCapLT)
+		_entityCapLT->setMaterial(material);
+	if (_entityCapRB)
+		_entityCapRB->setMaterial(material);
+	if (_entityBar)
+		_entityBar->setMaterial(material);
 }
-
 
 WidgetScrollbar::WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag,
                                  Scrollbar::Type type, float range) :

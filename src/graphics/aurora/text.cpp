@@ -153,6 +153,9 @@ void Text::createText() {
 		float w, h;
 		Ogre::Entity *entity = _font.getFont().createCharacter(*c, w, h, _scene);
 
+		for (uint i = 0; i < entity->getNumSubEntities(); i++)
+			_materials.push_back(entity->getSubEntity(i)->getMaterial());
+
 		entity->setQueryFlags(_selectable ? kSelectableText : kSelectableNone);
 		entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
 
@@ -213,26 +216,6 @@ void Text::setSelectable(bool selectable) {
 	}
 
 	Renderable::setSelectable(selectable);
-}
-
-void Text::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
-	for (Ogre::Node::ChildNodeIterator c = _rootNode->getChildIterator(); c.hasMoreElements(); c.moveNext()) {
-		Ogre::SceneNode *node = (Ogre::SceneNode *) c.current()->second;
-
-		for (uint i = 0; i < node->numAttachedObjects(); i++) {
-			Ogre::MovableObject *object = node->getAttachedObject(i);
-
-			Ogre::Entity *entity = dynamic_cast<Ogre::Entity *>(object);
-			if (!entity)
-				continue;
-
-			for (uint j = 0; j < entity->getNumSubEntities(); j++) {
-				Ogre::SubEntity *subEntity = entity->getSubEntity(j);
-
-				materials.push_back(subEntity->getMaterial());
-			}
-		}
-	}
 }
 
 } // End of namespace Aurora

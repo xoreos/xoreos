@@ -581,6 +581,7 @@ void Model_NWN::readBinaryMesh(ParserContext &ctx) {
 		ctx.nodeEntity->dontRender = true;
 
 	Ogre::MaterialPtr material = MaterialMan.create(ctx.material);
+	_materials.push_back(material);
 
 	uint32 endPos = ctx.mdl->pos();
 
@@ -1152,6 +1153,7 @@ void Model_NWN::processASCIIMesh(ParserContext &ctx, MeshASCII &mesh) {
 		ctx.nodeEntity->dontRender = true;
 
 	Ogre::MaterialPtr material = MaterialMan.create(ctx.material);
+	_materials.push_back(material);
 
 	VertexDeclaration vertexDecl(mesh.faceCount, 0, textureCount);
 

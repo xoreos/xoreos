@@ -112,6 +112,7 @@ Cube::Cube(const Common::UString &texture, const Common::UString &scene) : Rende
 		_entity->getUserObjectBindings().setUserAny("renderable", Ogre::Any((Renderable *) this));
 
 		Ogre::MaterialPtr material = MaterialMan.create(texture, true);
+		_materials.push_back(material);
 
 		_entity->setMaterial(material);
 
@@ -185,15 +186,6 @@ void Cube::setSelectable(bool selectable) {
 	_entity->setQueryFlags(selectable ? kSelectableCube : kSelectableNone);
 
 	Renderable::setSelectable(selectable);
-}
-
-void Cube::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
-	Ogre::MaterialPtr material = _entity->getSubEntity(0)->getMaterial();
-
-	if (makeTransparent)
-		MaterialMan.setTransparent(material, true);
-
-	materials.push_back(material);
 }
 
 } // End of namespace Aurora

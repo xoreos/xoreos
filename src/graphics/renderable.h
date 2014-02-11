@@ -102,6 +102,9 @@ public:
 	/** Change whether the renderable can be selected (picked) by the user. */
 	virtual void setSelectable(bool selectable);
 
+	/** Convert all materials used by the renderable into dynamic materials. */
+	virtual void makeDynamic();
+
 	/** Fade the renderable. */
 	void fade(FadeDirection direction, float length, bool loop);
 	/** Stop all fading. */
@@ -119,14 +122,13 @@ protected:
 	float _baseOrientation[4];
 	float _baseScale[3];
 
+	std::list<Ogre::MaterialPtr> _materials;
+
 	Ogre::Controller<Ogre::Real> *_fader;
 
 
 	void destroyAnimation(const Common::UString &name);
 	void destroyAnimation(Ogre::Animation *anim);
-
-	/** Collect all materials used in the renderable, optionally making them dynamic and/or transparent as well. */
-	virtual void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false) = 0;
 
 private:
 	void destroy();

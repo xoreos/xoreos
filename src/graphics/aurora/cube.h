@@ -53,10 +53,6 @@ public:
 	/** Change whether the cube can be selected (picked) by the user. */
 	void setSelectable(bool selectable);
 
-protected:
-	/** Collect all materials used in the cube, optionally making them dynamic and/or transparent as well. */
-	void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false);
-
 private:
 	Ogre::Entity *_entity;
 };

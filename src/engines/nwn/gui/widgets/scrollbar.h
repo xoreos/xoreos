@@ -70,9 +70,8 @@ public:
 	/** Change whether the scrollbar can be selected (picked) by the user. */
 	void setSelectable(bool selectable);
 
-protected:
-	/** Collect all materials used in the scrollbar, optionally making them dynamic and/or transparent as well. */
-	void collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic = false, bool makeTransparent = false);
+	/** Convert all materials used by the scrollbar into dynamic materials. */
+	void makeDynamic();
 
 private:
 	Type _type;
@@ -86,8 +85,6 @@ private:
 	Ogre::Entity *_entityBar;
 
 	float _length;
-
-	Ogre::MaterialPtr _material;
 
 	void create();
 	void destroy();

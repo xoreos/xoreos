@@ -282,9 +282,14 @@ void Model::showBoundingBox(bool show) {
 	}
 }
 
-void Model::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
-	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e)
-		materials.push_back((*e)->getSubEntity(0)->getMaterial());
+void Model::makeDynamic() {
+	_materials.clear();
+
+	for (EntityList::iterator e = _entities.begin(); e != _entities.end(); ++e) {
+		_materials.push_back(MaterialMan.makeDynamic((*e)->getSubEntity(0)->getMaterial()));
+
+		(*e)->getSubEntity(0)->setMaterial(_materials.back());
+	}
 }
 
 void Model::createNode(NodeEntity *&nodeEntity, State *state, Common::UString name, Ogre::SceneNode *parent) {

@@ -189,6 +189,10 @@ void Portrait::setPortrait(const Common::UString &name) {
 
 	if (_entityPortrait)
 		_entityPortrait->setMaterial(_materialPortrait);
+
+	_materials.clear();
+	_materials.push_back(_materialBorder);
+	_materials.push_back(_materialPortrait);
 }
 
 void Portrait::showBoundingBox(bool show) {
@@ -209,16 +213,16 @@ void Portrait::setSelectable(bool selectable) {
 	Renderable::setSelectable(selectable);
 }
 
-void Portrait::collectMaterials(std::list<Ogre::MaterialPtr> &materials, bool makeDynamic, bool makeTransparent) {
-	if (makeTransparent) {
-		MaterialMan.setTransparent(_materialBorder, true);
-		MaterialMan.setTransparent(_materialPortrait, true);
-	}
+void Portrait::makeDynamic() {
+	if (_entityBorder)
+		_entityBorder->setMaterial(_materialBorder = MaterialMan.makeDynamic(_materialBorder));
+	if (_entityPortrait)
+		_entityPortrait->setMaterial(_materialPortrait = MaterialMan.makeDynamic(_materialPortrait));
 
-	materials.push_back(_materialBorder);
-	materials.push_back(_materialPortrait);
+	_materials.clear();
+	_materials.push_back(_materialBorder);
+	_materials.push_back(_materialPortrait);
 }
-
 
 PortraitWidget::PortraitWidget(::Engines::GUI &gui, const Common::UString &tag,
                const Common::UString &name, Portrait::Size size, float border,
