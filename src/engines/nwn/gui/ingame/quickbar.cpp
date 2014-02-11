@@ -164,7 +164,6 @@ void Quickbar::notify(Events::Notification notification) {
 	if (notification != Events::kNotificationResized)
 		return;
 
-	const float width  = GfxMan.getScreenWidth();
 	const float height = GfxMan.getScreenHeight();
 
 	setPosition(- ((12 * _slotWidth) / 2.0), -(height / 2.0), -400.0);

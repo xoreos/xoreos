@@ -457,9 +457,6 @@ bool GraphicsManager::changeScreen(int width, int height, bool fullscreen) {
 		return false;
 	}
 
-	int oldWidth  = _width;
-	int oldHeight = _height;
-
 	SDL_GetWindowSize(_screen, &_width, &_height);
 
 	_fullscreen = fullscreen;
