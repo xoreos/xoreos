@@ -64,6 +64,9 @@ public:
 	float getWidth () const;
 	float getHeight() const;
 
+	void forceTransparent(bool transparent = true);
+	void forceTransparent(const Common::UString &node, bool transparent = true);
+
 protected:
 	Graphics::Aurora::Model_NWN *_model;
 

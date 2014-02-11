@@ -89,6 +89,14 @@ float ModelWidget::getHeight() const {
 	return _height;
 }
 
+void ModelWidget::forceTransparent(bool transparent) {
+	_model->forceTransparent(transparent);
+}
+
+void ModelWidget::forceTransparent(const Common::UString &node, bool transparent) {
+	_model->forceTransparent(node, transparent);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
