@@ -105,6 +105,9 @@ public:
 	/** Dump a texture into a TGA file. */
 	bool dumpTGA(const Common::UString &name, const Common::UString &fileName);
 
+	/** Reload all textures from their image resources. */
+	void reloadAll();
+
 private:
 	typedef std::map<Common::UString, TextureProperties *> Properties;
 
@@ -117,6 +120,9 @@ private:
 	ImageDecoder *createImage(const Common::UString &name);
 
 	void convert(Ogre::TexturePtr &texture, const ImageDecoder &image, int mipMaps);
+
+	void reload(Ogre::TexturePtr &texture);
+	void reload(Ogre::TexturePtr &texture, const ImageDecoder &image);
 };
 
 } // End of namespace Graphics

@@ -31,6 +31,7 @@
 
 #include <OgreTextureManager.h>
 #include <OgreHardwarePixelBuffer.h>
+#include <OgreResourceManager.h>
 
 #include "common/error.h"
 #include "common/stream.h"
@@ -446,6 +447,76 @@ bool TextureManager::dumpTGA(const Common::UString &name, const Common::UString 
 
 	delete image;
 	return true;
+}
+
+void TextureManager::reloadAll() {
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<void> functor(boost::bind(&TextureManager::reloadAll, this));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
+	Ogre::TextureManager &texMan = Ogre::TextureManager::getSingleton();
+	for (Ogre::ResourceManager::ResourceMapIterator t = texMan.getResourceIterator(); t.hasMoreElements(); t.moveNext()) {
+		Ogre::TexturePtr texture = t.current()->second.staticCast<Ogre::Texture>();
+
+		try {
+			reload(texture);
+		} catch (Common::Exception &e) {
+			e.add("Failed to reload texture \"%s\"", texture->getName().c_str());
+			Common::printException(e, "WARNING: ");
+		}
+	}
+}
+
+void TextureManager::reload(Ogre::TexturePtr &texture) {
+	const Common::UString name = texture->getName().c_str();
+
+	ImageDecoder *image = 0;
+
+	try {
+		image = createImage(name);
+
+		reload(texture, *image);
+
+	} catch (...) {
+		delete image;
+		throw;
+	}
+
+	delete image;
+}
+
+void TextureManager::reload(Ogre::TexturePtr &texture, const ImageDecoder &image) {
+	const uint width  = image.getMipMap(0).width;
+	const uint height = image.getMipMap(0).height;
+
+	// If the image has only have one mipmap, automatically generate the smaller ones
+	const int mipMaps = (image.getMipMapCount() > 1) ? image.getMipMapCount() : Ogre::MIP_UNLIMITED;
+	const int usage   = Ogre::TU_STATIC_WRITE_ONLY | ((image.getMipMapCount() > 1) ? 0 : Ogre::TU_AUTOMIPMAP);
+
+	const Ogre::PixelFormat format = (Ogre::PixelFormat) image.getFormat();
+
+	try {
+		texture->freeInternalResources();
+		texture->setWidth(width);
+		texture->setHeight(height);
+		texture->setNumMipmaps(mipMaps);
+		texture->setUsage(usage);
+		texture->setFormat(format);
+		texture->createInternalResources();
+
+		// Make sure the image dimensions fit
+		if ((texture->getWidth() != width) || (texture->getHeight() != height))
+			throw Common::Exception("Requested texture size mismatch (%dx%d vs %dx%d)",
+					width, height, texture->getWidth(), texture->getHeight());
+
+		// Convert the image into a texture
+		convert(texture, image, (mipMaps == Ogre::MIP_UNLIMITED) ? 1 : mipMaps);
+
+	} catch (std::exception &se) {
+		throw Common::Exception("%s", se.what());
+	}
 }
 
 } // End of namespace Graphics
