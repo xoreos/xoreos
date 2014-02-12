@@ -73,6 +73,8 @@ public:
 	void run();
 	void showMenu();
 
+	void reloadTexturePack();
+
 	const Common::UString &getName() const;
 
 	Creature *getPC();

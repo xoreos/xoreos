@@ -516,9 +516,6 @@ void Module::showMenu() {
 		_exit = true;
 		return;
 	}
-
-	// In case we changed the texture pack settings, reload it
-	loadTexturePack();
 }
 
 void Module::checkCurrentObject() {
@@ -603,11 +600,17 @@ static const char *texturePacks[4][4] = {
 	{ "textures_tpa.erf", "tiles_tpa.erf", "xp1_tex_tpa.erf", "xp2_tex_tpa.erf" }  // Best
 };
 
+void Module::reloadTexturePack() {
+	loadTexturePack();
+}
+
 void Module::loadTexturePack() {
 	int level = ConfigMan.getInt("texturepack", 1);
 	if (_currentTexturePack == level)
 		// Nothing to do
 		return;
+
+	int oldTexturePack = _currentTexturePack;
 
 	unloadTexturePack();
 
@@ -617,11 +620,9 @@ void Module::loadTexturePack() {
 	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][2], 15, &_resTP[2]);
 	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][3], 16, &_resTP[3]);
 
-	/*
 	// If we already had a texture pack loaded, reload all textures
-	if (_currentTexturePack != -1)
+	if (oldTexturePack != -1)
 		TextureMan.reloadAll();
-	*/
 
 	_currentTexturePack = level;
 }

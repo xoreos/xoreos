@@ -34,6 +34,8 @@
 
 #include "graphics/graphics.h"
 
+#include "engines/nwn/module.h"
+
 #include "engines/nwn/gui/widgets/panel.h"
 #include "engines/nwn/gui/widgets/label.h"
 #include "engines/nwn/gui/widgets/slider.h"
@@ -46,7 +48,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsVideoMenu::OptionsVideoMenu(bool isMain) : _isMain(isMain), _resolution(0), _advanced(0) {
+OptionsVideoMenu::OptionsVideoMenu(bool isMain, Module *module) : _isMain(isMain), _module(module), _resolution(0), _advanced(0) {
 	setPosition(0.0, 0.0, -290.0);
 	load("options_video");
 
@@ -92,7 +94,8 @@ void OptionsVideoMenu::setVisible(bool visible) {
 
 		getSlider("GammaSlider", true)->setState(gammaValue);
 
-		_textureLevel = ConfigMan.getInt("texturepack", 1);
+		_textureLevel    = ConfigMan.getInt("texturepack", 1);
+		_textureLevelOld = _textureLevel;
 		getSlider("TextureSlider", true)->setState(_textureLevel);
 
 		updateTextureQualityLabel();
@@ -170,6 +173,10 @@ void OptionsVideoMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "ApplyButton") {
 		ConfigMan.setInt("texturepack", _textureLevel);
+
+		if (_module)
+			_module->reloadTexturePack();
+
 		return;
 	}
 
@@ -182,10 +189,18 @@ void OptionsVideoMenu::updateTextureQualityLabel() {
 void OptionsVideoMenu::adoptChanges() {
 	ConfigMan.setDouble("gamma", GfxMan.getGamma(), true);
 	ConfigMan.setInt("texturepack", _textureLevel);
+
+	if (_module)
+		_module->reloadTexturePack();
 }
 
 void OptionsVideoMenu::revertChanges() {
 	GfxMan.setGamma(_gamma);
+
+	ConfigMan.setInt("texturepack", _textureLevelOld);
+
+	if (_module)
+		_module->reloadTexturePack();
 }
 
 } // End of namespace NWN

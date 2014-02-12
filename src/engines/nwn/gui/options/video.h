@@ -36,10 +36,12 @@ namespace Engines {
 
 namespace NWN {
 
+class Module;
+
 /** The NWN video options menu. */
 class OptionsVideoMenu : public GUI {
 public:
-	OptionsVideoMenu(bool isMain = false);
+	OptionsVideoMenu(bool isMain = false, Module *module = 0);
 	~OptionsVideoMenu();
 
 	void setVisible(bool visible);
@@ -51,12 +53,15 @@ protected:
 private:
 	bool _isMain;
 
+	Module *_module;
+
 	GUI *_resolution;
 	GUI *_advanced;
 
 	float _gamma;
 
 	int _textureLevel;
+	int _textureLevelOld;
 
 	void updateTextureQualityLabel();
 

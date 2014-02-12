@@ -47,7 +47,7 @@ namespace Engines {
 
 namespace NWN {
 
-IngameMainMenu::IngameMainMenu() : _game(0), _video(0), _sound(0), _controls(0), _quitPrompt(0) {
+IngameMainMenu::IngameMainMenu(Module &module) : _module(&module), _game(0), _video(0), _sound(0), _controls(0), _quitPrompt(0) {
 	setPosition(0.0, 0.0, -300.0);
 	load("options_main");
 
@@ -115,7 +115,7 @@ void IngameMainMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "VideoOptionsButton") {
 		if (!_video)
-			_video = new OptionsVideoMenu(false);
+			_video = new OptionsVideoMenu(false, _module);
 
 		sub(*_video);
 		return;
