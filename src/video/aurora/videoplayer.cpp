@@ -160,8 +160,8 @@ public:
 
 		// Create the material and texture for the video content
 
-		_videoTexture = Ogre::TextureManager::getSingleton().createManual(nameVideo.c_str(), "General",
-				Ogre::TEX_TYPE_2D, textureWidth, textureHeight, 1, Ogre::PF_BYTE_BGRA, Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE | Ogre::TU_AUTOMIPMAP);
+		_videoTexture = TextureMan.createDynamic(Ogre::TEX_TYPE_2D, textureWidth, textureHeight, 1,
+				Ogre::PF_BYTE_BGRA, Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE | Ogre::TU_AUTOMIPMAP);
 
 		Ogre::HardwarePixelBufferSharedPtr buffer = _videoTexture->getBuffer();
 		memset(buffer->lock(Ogre::HardwareBuffer::HBL_DISCARD), 0, buffer->getSizeInBytes());

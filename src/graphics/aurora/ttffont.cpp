@@ -40,7 +40,6 @@
 #include "common/error.h"
 #include "common/ustring.h"
 #include "common/threads.h"
-#include "common/uuid.h"
 
 #include "aurora/resman.h"
 
@@ -81,21 +80,17 @@ void TTFFont::Page::createTexture() {
 		return RequestMan.callInMainThread(functor);
 	}
 
-	const Common::UString name = Common::generateIDNumberString();
-
 	const Ogre::TextureType texType = Ogre::TEX_TYPE_2D;
 
 	const uint width  = surface->getWidth();
 	const uint height = surface->getHeight();
 
-	// If the image has only have one mipmap, automatically generate the smaller ones
 	const int mipMaps = 1;
 	const int usage   = Ogre::TU_DYNAMIC_WRITE_ONLY | Ogre::TU_AUTOMIPMAP;
 
 	const Ogre::PixelFormat format = (Ogre::PixelFormat) surface->getFormat();
 
-	texture = Ogre::TextureManager::getSingleton().createManual(name.c_str(), "General",
-				texType, width, height, mipMaps, format, usage);
+	texture = TextureMan.createDynamic(texType, width, height, mipMaps, format, usage);
 }
 
 void TTFFont::Page::copyTexture() {

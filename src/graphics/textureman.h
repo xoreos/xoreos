@@ -32,6 +32,7 @@
 
 #include <OgrePrerequisites.h>
 #include <OgrePixelFormat.h>
+#include <OgreTexture.h>
 
 #include "common/singleton.h"
 #include "common/stringmap.h"
@@ -97,6 +98,10 @@ public:
 	/** Get/Load a texture. */
 	Ogre::TexturePtr get(const Common::UString &name);
 
+	/** Create a dynamic texture. */
+	Ogre::TexturePtr createDynamic(Ogre::TextureType type, uint width, uint height,
+			int mipMaps, Ogre::PixelFormat format, int usage);
+
 	/** Get the properties of a texture. */
 	const TextureProperties &getProperties(const Common::UString &name);
 	/** Get the properties of a texture. */
@@ -114,15 +119,22 @@ private:
 	Properties _properties;
 
 
-	Ogre::TexturePtr create(const Common::UString &name);
-	Ogre::TexturePtr create(const Common::UString &name, const ImageDecoder &image);
+	Ogre::TexturePtr create(const Common::UString &imageName, const Common::UString &textureName);
+	Ogre::TexturePtr create(const Common::UString &imageName, const Common::UString &textureName, const ImageDecoder &image);
 
-	ImageDecoder *createImage(const Common::UString &name);
+	ImageDecoder *createImage(const Common::UString &imageName, const Common::UString &textureName);
 
 	void convert(Ogre::TexturePtr &texture, const ImageDecoder &image, int mipMaps);
 
 	void reload(Ogre::TexturePtr &texture);
 	void reload(Ogre::TexturePtr &texture, const ImageDecoder &image);
+
+	static bool isDynamic(const Ogre::TexturePtr &texture);
+
+	static Common::UString canonicalName(const Common::UString &texture);
+	static Common::UString dynamicName();
+
+	Common::UString getImageName(const Ogre::TexturePtr &texture);
 };
 
 } // End of namespace Graphics

@@ -36,6 +36,7 @@
 #include "common/error.h"
 #include "common/stream.h"
 #include "common/threads.h"
+#include "common/uuid.h"
 
 #include "../aurora/types.h"
 #include "../aurora/resman.h"
@@ -261,12 +262,14 @@ Ogre::TexturePtr TextureManager::get(const Common::UString &name) {
 		return RequestMan.callInMainThread(functor);
 	}
 
-	Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().getByName(name.c_str());
+	const Common::UString textureName = canonicalName(name);
+
+	Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().getByName(textureName.c_str());
 	if (!texture.isNull())
 		return texture;
 
 	try {
-		texture = create(name);
+		texture = create(name, textureName);
 	} catch (Common::Exception &e) {
 		e.add("Failed to load texture \"%s\"", name.c_str());
 		throw;
@@ -275,20 +278,27 @@ Ogre::TexturePtr TextureManager::get(const Common::UString &name) {
 	return texture;
 }
 
-ImageDecoder *TextureManager::createImage(const Common::UString &name) {
+Ogre::TexturePtr TextureManager::createDynamic(Ogre::TextureType type, uint width, uint height,
+		int mipMaps, Ogre::PixelFormat format, int usage) {
+
+	return Ogre::TextureManager::getSingleton().createManual(dynamicName().c_str(), "General",
+			type, width, height, mipMaps, format, usage);
+}
+
+ImageDecoder *TextureManager::createImage(const Common::UString &imageName, const Common::UString &textureName) {
 	// Get the image resource
 	::Aurora::FileType type;
-	Common::SeekableReadStream *img = ResMan.getResource(::Aurora::kResourceImage, name, &type);
+	Common::SeekableReadStream *img = ResMan.getResource(::Aurora::kResourceImage, imageName, &type);
 	if (!img)
-		throw Common::Exception("No such image resource", name.c_str());
+		throw Common::Exception("No such image resource", imageName.c_str());
 
 	// (Re)Create properties
-	std::pair<Properties::iterator, bool> p = _properties.insert(std::make_pair(name, (TextureProperties *) 0));
+	std::pair<Properties::iterator, bool> p = _properties.insert(std::make_pair(textureName, (TextureProperties *) 0));
 	delete p.first->second;
 
 	p.first->second = new TextureProperties;
 
-	p.first->second->loadFromTXI(name);
+	p.first->second->loadFromTXI(imageName);
 
 	ImageDecoder *image  = 0;
 	WinIconImage *cursor = 0;
@@ -340,13 +350,13 @@ ImageDecoder *TextureManager::createImage(const Common::UString &name) {
 	return image;
 }
 
-Ogre::TexturePtr TextureManager::create(const Common::UString &name) {
+Ogre::TexturePtr TextureManager::create(const Common::UString &imageName, const Common::UString &textureName) {
 	ImageDecoder *image = 0;
 	Ogre::TexturePtr texture((Ogre::Texture *) 0);
 
 	try {
-		image   = createImage(name);
-		texture = create(name, *image);
+		image   = createImage(imageName, textureName);
+		texture = create(imageName, textureName, *image);
 	} catch (...) {
 		delete image;
 		throw;
@@ -356,7 +366,7 @@ Ogre::TexturePtr TextureManager::create(const Common::UString &name) {
 	return texture;
 }
 
-Ogre::TexturePtr TextureManager::create(const Common::UString &name, const ImageDecoder &image) {
+Ogre::TexturePtr TextureManager::create(const Common::UString &imageName, const Common::UString &textureName, const ImageDecoder &image) {
 	const Ogre::TextureType texType = Ogre::TEX_TYPE_2D;
 
 	const uint width  = image.getMipMap(0).width;
@@ -370,7 +380,7 @@ Ogre::TexturePtr TextureManager::create(const Common::UString &name, const Image
 
 	Ogre::TexturePtr texture((Ogre::Texture *) 0);
 	try {
-		texture = Ogre::TextureManager::getSingleton().createManual(name.c_str(), "General",
+		texture = Ogre::TextureManager::getSingleton().createManual(textureName.c_str(), "General",
 				texType, width, height, mipMaps, format, usage);
 
 		// Make sure the image dimensions fit
@@ -434,10 +444,12 @@ void TextureManager::convert(Ogre::TexturePtr &texture, const ImageDecoder &imag
 }
 
 bool TextureManager::dumpTGA(const Common::UString &name, const Common::UString &fileName) {
+	const Common::UString textureName = canonicalName(name);
+
 	ImageDecoder *image = 0;
 
 	try {
-		image = createImage(name);
+		image = createImage(name, textureName);
 		image->dumpTGA(fileName);
 	} catch (Common::Exception &e) {
 		delete image;
@@ -459,6 +471,8 @@ void TextureManager::reloadAll() {
 	Ogre::TextureManager &texMan = Ogre::TextureManager::getSingleton();
 	for (Ogre::ResourceManager::ResourceMapIterator t = texMan.getResourceIterator(); t.hasMoreElements(); t.moveNext()) {
 		Ogre::TexturePtr texture = t.current()->second.staticCast<Ogre::Texture>();
+		if (isDynamic(texture))
+			continue;
 
 		try {
 			reload(texture);
@@ -470,12 +484,16 @@ void TextureManager::reloadAll() {
 }
 
 void TextureManager::reload(Ogre::TexturePtr &texture) {
-	const Common::UString name = texture->getName().c_str();
+	const Common::UString imageName   = getImageName(texture);
+	const Common::UString textureName = texture->getName().c_str();
+
+	if (imageName.empty())
+		throw Common::Exception("Invalid name scheme");
 
 	ImageDecoder *image = 0;
 
 	try {
-		image = createImage(name);
+		image = createImage(imageName, textureName);
 
 		reload(texture, *image);
 
@@ -517,6 +535,31 @@ void TextureManager::reload(Ogre::TexturePtr &texture, const ImageDecoder &image
 	} catch (std::exception &se) {
 		throw Common::Exception("%s", se.what());
 	}
+}
+
+bool TextureManager::isDynamic(const Ogre::TexturePtr &texture) {
+	assert(!texture.isNull());
+
+	return !Common::UString(texture->getName().c_str()).beginsWith("static/");
+}
+
+Common::UString TextureManager::canonicalName(const Common::UString &texture) {
+	return Common::UString("static/" + texture);
+}
+
+Common::UString TextureManager::dynamicName() {
+	return Common::UString("dynamic/") + Common::generateIDNumberString();
+}
+
+Common::UString TextureManager::getImageName(const Ogre::TexturePtr &texture) {
+	if (TextureMan.isDynamic(texture))
+		return "";
+
+	Common::UString name = texture->getName().c_str();
+
+	name.erase(name.begin(), name.getPosition(Common::UString("static/").size()));
+
+	return name;
 }
 
 } // End of namespace Graphics

@@ -166,7 +166,7 @@ void MaterialManager::create(const MaterialDeclaration &decl, Ogre::MaterialPtr 
 		if (!texture->hasAlpha() || ((PixelFormat)texture->getFormat() == kPixelFormatDXT1))
 			transparent = false;
 
-		if (!TextureMan.getProperties(decl.textures[t]).getBool("decal"))
+		if (!TextureMan.getProperties(texture).getBool("decal"))
 			decal = false;
 	}
 
