@@ -17,4 +17,7 @@ AC_DEFUN([AX_CHECK_ICONV], [
 	else
 		ifelse([$1], , :, [$1])
 	fi
+
+	AC_SUBST(LIBICONV)
+	AC_SUBST(LTLIBICONV)
 ])
