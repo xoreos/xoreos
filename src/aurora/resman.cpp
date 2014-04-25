@@ -661,8 +661,8 @@ void ResourceManager::checkHashCollision(const Resource &resource, ResourceMap::
 		oldName.tolower();
 
 		if (oldName != newName) {
-			warning("ResourceManager: Found hash collision: 0x%016llX (\"%s\" and \"%s\")",
-					(unsigned long long) getHash(oldName), oldName.c_str(), newName.c_str());
+			warning("ResourceManager: Found hash collision: %s (\"%s\" and \"%s\")",
+					Common::formatHash(getHash(oldName)).c_str(), oldName.c_str(), newName.c_str());
 			return;
 		}
 	}
@@ -763,8 +763,8 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 		const uint32           size = getResourceSize(res);
 
 		const Common::UString line =
-			Common::UString::sprintf("%32s%4s | 0x%016llX | %12d\n", name.c_str(), ext.c_str(),
-                               (unsigned long long) hash, size);
+			Common::UString::sprintf("%32s%4s | %s | %12d\n", name.c_str(), ext.c_str(),
+                               Common::formatHash(hash).c_str(), size);
 
 		file.writeString(line);
 	}
