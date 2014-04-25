@@ -25,6 +25,6 @@ FLAGS_CXX   = -Wnon-virtual-dtor
 
 AM_CFLAGS   = $(FLAGS_C_CXX) $(FLAGS_C)   $(LIBSF_C_CXX) $(LIBSF_C)
 AM_CXXFLAGS = $(FLAGS_C_CXX) $(FLAGS_CXX) $(LIBSF_C_CXX) $(LIBSF_CXX)
-AM_LDFLAGS  = $(LIBSL)
+LDADD       = $(LIBSL)
 
 LIBS =

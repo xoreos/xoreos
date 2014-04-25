@@ -30,4 +30,5 @@ xoreos_LDADD = \
                aurora/libaurora.la \
                common/libcommon.la \
                ../lua/liblua.la \
+               $(LDADD) \
                $(EMPTY)
