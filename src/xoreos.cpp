@@ -70,16 +70,6 @@ void deinit();
 void initDebug();
 void listDebug();
 
-// *grumbles about Microsoft incompetence*
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
-int __stdcall WinMain(HINSTANCE /*hInst*/, HINSTANCE /*hPrevInst*/,  LPSTR /*lpCmdLine*/, int /*iShowCmd*/) {
-	return main(__argc, __argv);
-}
-#endif
-
 static bool configFileIsBroken = false;
 
 int main(int argc, char **argv) {
