@@ -94,7 +94,7 @@ case "$target" in
 		;;
 	*mingw*)
 		XOREOS_CFLAGS="-mconsole"
-		XOREOS_LIBS="-static-libgcc -static-libstdc++"
+		XOREOS_LIBS=""
 		;;
 	*)
 		XOREOS_CFLAGS="-DUNIX"
