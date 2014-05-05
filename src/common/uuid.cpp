@@ -52,9 +52,23 @@ uint32 generateIDNumber() {
 	return idNumber.fetch_add(1);
 }
 
+static UString uint64ToString(uint64 i) {
+	std::string str;
+	str.reserve(20);
+
+	do {
+		str += "0123456789"[i % 10];
+		i /= 10;
+	} while (i);
+
+	std::reverse(str.begin(), str.end());
+
+	return str;
+}
+
 static boost::atomic<uint64> idNumberString(1);
 UString generateIDNumberString() {
-	return UString::sprintf("%d", idNumberString.fetch_add(1));
+	return uint64ToString(idNumberString.fetch_add(1));
 }
 
 } // End of namespace Common
