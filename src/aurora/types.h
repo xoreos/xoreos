@@ -384,7 +384,6 @@ enum ResourceType {
 enum ArchiveType {
 	kArchiveKEY = 0, ///< KEY archive.
 	kArchiveBIF,     ///< BIF archive.
-	kArchiveBZF,     ///< BZF archive.
 	kArchiveERF,     ///< ERF archive.
 	kArchiveRIM,     ///< RIM archive.
 	kArchiveZIP,     ///< ZIP archive.
