@@ -14,6 +14,7 @@ noinst_HEADERS = \
                  aurorafile.h \
                  keyfile.h \
                  biffile.h \
+                 bzffile.h \
                  erffile.h \
                  rimfile.h \
                  ndsrom.h \
@@ -41,6 +42,7 @@ libaurora_la_SOURCES = \
                        aurorafile.cpp \
                        keyfile.cpp \
                        biffile.cpp \
+                       bzffile.cpp \
                        erffile.cpp \
                        rimfile.cpp \
                        ndsrom.cpp \
