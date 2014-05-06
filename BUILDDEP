@@ -3,6 +3,7 @@ Build-time library dependencies
 
 - iconv
 - zlib (>= 1.2.3.4)
+- liblzma (>= 5.0.5)
 
 - Boost (>= 1.42.0)
   - Boost.StringAlgo
