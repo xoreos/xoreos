@@ -167,14 +167,19 @@ Common::SeekableReadStream *BZFFile::getResource(uint32 index) const {
 
 	byte *compressedData = new byte[res.packedSize];
 
-	if (bzf.read(compressedData, res.packedSize) != res.packedSize) {
+	Common::SeekableReadStream *resStream = 0;
+	try {
+		if (bzf.read(compressedData, res.packedSize) != res.packedSize)
+			throw Common::Exception(Common::kReadError);
+
+		resStream = decompress(compressedData, res.packedSize, res.size);
+
+	} catch (...) {
 		delete[] compressedData;
-		throw Common::Exception(Common::kReadError);
+		throw;
 	}
 
-	Common::SeekableReadStream *resStream = decompress(compressedData, res.packedSize, res.size);
 	delete[] compressedData;
-
 	return resStream;
 }
 
