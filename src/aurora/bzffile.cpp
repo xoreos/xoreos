@@ -216,7 +216,13 @@ Common::SeekableReadStream *BZFFile::decompress(byte *compressedData, uint32 pac
 			compressedData  , &posIn , packedSize,
 			uncompressedData, &posOut, unpackedSize);
 
-	if (decodeRet != LZMA_OK) {
+	/* Ignore LZMA_DATA_ERROR and LZMA_BUF_ERROR thrown from the uncompressor.
+	 * LZMA data in BZF may or may not contain an end marker.
+	 * - If there is no end marker, LZMA_BUF_ERROR is thrown
+	 * - If there is an end marker, LZMA_DATA_ERROR is thrown because we already
+	 *   know the size of the uncompressed data
+	 */
+	if ((decodeRet != LZMA_OK) && (decodeRet != LZMA_DATA_ERROR) && (decodeRet != LZMA_BUF_ERROR)) {
 		delete[] uncompressedData;
 		throw Common::Exception("Failed to uncompress LZMA data: %d", (int) decodeRet);
 	}
