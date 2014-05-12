@@ -8,7 +8,7 @@ VERSION_FLAGS = $(shell if test x$(VER_REVDESC) != "x"; then echo "-DXOREOS_REVD
 VER_REV = $(shell cat $(top_srcdir)/gitstamp/gitstamp | cut -d '-' -f 2-)
 VERSION_FLAGS += $(shell if test x$(VER_REV) != "x"; then echo "-DXOREOS_REV=\\\"$(VER_REV)\\\""; fi)
 
-VER_DATE = $(shell date --utc '+%Y-%m-%dT%H:%M:%S')
+VER_DATE = $(shell date -u '+%Y-%m-%dT%H:%M:%S')
 VERSION_FLAGS += $(shell if test x$(VER_DATE) != "x"; then echo "-DXOREOS_BUILDDATE=\\\"$(VER_DATE)\\\""; fi)
 
 AM_CXXFLAGS += $(VERSION_FLAGS)
