@@ -19,4 +19,4 @@ libgitstamp_la_SOURCES =
 
 libgitstamp_la_DEPENDENCIES = gitstamp
 
-libgitstamp_la_LINK = /bin/true
+libgitstamp_la_LINK = true
