@@ -5,9 +5,9 @@ dnl
 dnl Defines AL_LIBS, AL_CFLAGS.
 dnl
 dnl @category InstalledPackages
-dnl @author Sven Hesse <drmccoy@drmccoy.de>
+dnl @author Sven Hesse <drmccoy@drmccoy.de>, Matthew Hoops <clone2727@gmail.com>
 dnl @version 2013-12-14
-dnl @license AllPermissive
+dnl @license Creative Commons CC0 1.0 Universal Public Domain Dedication
 
 AC_DEFUN([AX_CHECK_AL], [
 	AC_ARG_VAR(AL_CFLAGS, [C compiler flags for OpenAL Soft])

@@ -7,7 +7,7 @@ dnl
 dnl @category InstalledPackages
 dnl @author Sven Hesse <drmccoy@drmccoy.de>
 dnl @version 2013-12-14
-dnl @license AllPermissive
+dnl @license Creative Commons CC0 1.0 Universal Public Domain Dedication
 
 AC_DEFUN([AX_CHECK_XVID], [
 	AC_ARG_VAR(XVID_CFLAGS, [C compiler flags for libxvidcore])
