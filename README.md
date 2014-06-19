@@ -33,7 +33,7 @@ Some games show a working menu or even partial ingame graphics and working
 scripts, but no actual "normal" gameplay is implemented yet.
 
 For further information about the status of specific games, please visit
-[our wiki](https://xoreos.org/wiki/index.php?title=Games).
+[our wiki](https://wiki.xoreos.org/index.php?title=Games).
 
 Note: We are always looking for people to join our efforts in reimplementing
 those games. Right now, the most pressing matter is a rewrite of the graphics
@@ -114,7 +114,7 @@ Links
 -----
 
 - [xoreos website](https://xoreos.org/)
-- [xoreos wiki](https://xoreos.org/wiki/index.php?title=Main_Page)
+- [xoreos wiki](https://wiki.xoreos.org/)
 - [Screenshots](https://xoreos.org/screenshots/index.html)
 - [Source repository](https://github.com/xoreos/xoreos)
 
