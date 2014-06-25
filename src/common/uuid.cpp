@@ -27,6 +27,26 @@
  *  Utility functions for generating unique IDs.
  */
 
+
+/* WORKAROUND: boost/atomic.hpp typedefs atomic<intptr_t> and atomic<uintptr_t>,
+ *             but doesn't include stdint.h on purpose when compiling with gcc,
+ *             only unistd.h. Unfortunately, unistd.h in glibc 2.19 only
+ *             defines intptr_t and not uintptr_t, breaking compilation.
+ *
+ *             To fix this issue, we manually include both unistd.h and stdint.h
+ *             (in that order), if they're available.
+ */
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif // HAVE_CONFIG_H
+#ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+#endif // HAVE_UNISTD_H
+#ifdef HAVE_STDINT_H
+	#include <stdint.h>
+#endif // HAVE_STDINT_H
+
+
 #include <sstream>
 
 #include <boost/atomic.hpp>
