@@ -24,7 +24,7 @@ The following games are valid targets for xoreos:
 - [Dragon Age II](https://en.wikipedia.org/wiki/Dragon_Age_II)
 
 
-Status
+Status https://travis-ci.org/xoreos/xoreos.svg?branch=master
 ------
 
 Currently, the "foundation" work of managing resources, reading many basic
