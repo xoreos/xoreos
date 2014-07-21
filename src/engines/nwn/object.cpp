@@ -260,7 +260,8 @@ bool Object::beginConversation(Object *triggerer) {
 	ctx.setCaller(this);
 	ctx.setTriggerer(triggerer);
 
-	Aurora::NWScript::setParams(ctx.getParams(), "", (Aurora::NWScript::Object *) 0);
+	ctx.getParams()[0] = "";
+	ctx.getParams()[1] = (Aurora::NWScript::Object *) 0;
 
 	FunctionMan.call("BeginConversation", ctx);
 

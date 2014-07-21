@@ -55,42 +55,6 @@ Signature createSignature(int n, ...) {
 	return signature;
 }
 
-void setParams(Parameters &params, ...) {
-	va_list va;
-
-	va_start(va, params);
-
-	for (Parameters::iterator p = params.begin(); p != params.end(); ++p) {
-		switch (p->getType()) {
-			case kTypeVoid:
-				break;
-
-			case kTypeInt:
-				*p = va_arg(va, int);
-				break;
-
-			case kTypeFloat:
-				*p = (float) va_arg(va, double);
-				break;
-
-			case kTypeString:
-				*p = va_arg(va, const char *);
-				break;
-
-			case kTypeObject:
-				*p = va_arg(va, Object *);
-				break;
-
-			default:
-				error("NWScript::setParams(): Unknown type %d", p->getType());
-				break;
-		}
-	}
-
-
-	va_end(va);
-}
-
 Parameters createDefaults(int n, ...) {
 	Parameters defaults;
 
