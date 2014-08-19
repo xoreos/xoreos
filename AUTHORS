@@ -33,20 +33,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-The Infinity, Aurora, Odyssey, Eclipse and Lycium engines, Copyright (c) BioWare corp.
-The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
-
-The Bink video codec, Copyright (c) RAD Game Tools.
-
-Neverwinter Nights, Copyright (c) BioWare corp. and Atari.
-Neverwinter Nights 2, Copyright (c) Obsidian Entertainment and Atari.
-Star Wars: Knights of the Old Republic, Copyright (c) BioWare corp. and LucasArts Entertainment Company.
-Star Wars: Knights of the Old Republic II - The Sith Lords, Copyright (c) Obsidian Entertainment and LucasArts Entertainment Company
-Jade Empire, Copyright (c) BioWare corp., LTI Gray Matter, Microsoft Game Studios and 2K Games.
-The Witcher, Copyright (c) CD Projekt and Atari.
-Sonic Chronicles: The Dark Brotherhood, Copyright (c) BioWare corp. and Sega.
-Dragon Age: Origins, Copyright (c) BioWare corp. and Electronic Arts.
-Dragon Age II, Copyright (c) BioWare corp. and Electronic Arts.
+The Infinity engine, Aurora engine, Odyssey engine and Eclipse engine are
+registered trademarks of BioWare Corp., a subsidiary of Electronic Arts, Inc.
+The Electron engine and Lycium engine are trademarks of BioWare Corp., a
+subsidiary of Electronic Arts, Inc. Bink is a registered trademark of RAD Game
+Tools, Inc. Neverwinter Nights is a registered trademark of Wizards of the
+Coast, a subsidiary of Hasbro Inc. Star Wars, Knights of the Old Republic and
+The Sith Lords are registered trademarks of Lucasfilm Entertainment Company
+Ltd., a subsidiary of The Walt Disney Company. Jade Empire is a registered
+trademark of BioWare Corp., a subsidiary of Electronic Arts, Inc. Sonic the
+Hedgehog is a registered trademark of Sega Corporation. The Witcher is a
+registered trademark of CD Projekt S.A. Dragon Age is a registered trademark
+of Electronic Arts, Inc. All rights reserved.
 
 
 boost.m4
