@@ -28,13 +28,13 @@
 // "xoreos"
 extern const char *XOREOS_NAME;
 
-// "0.0.1+git-2197-g19f9c1b"
+// "0.0.1+2197.g19f9c1b"
 extern const char *XOREOS_VERSION;
 
-// "xoreos 0.0.1+git-2197-g19f9c1b"
+// "xoreos 0.0.1+2197.g19f9c1b"
 extern const char *XOREOS_NAMEVERSION;
 
-// "xoreos 0.0.1+git-2197-g19f9c1b [0.0.1+git-2197-g19f9c1b] (2013-07-28T13:32:04)"
+// "xoreos 0.0.1+2197.g19f9c1b [0.0.1+2197.g19f9c1b] (2013-07-28T13:32:04)"
 extern const char *XOREOS_NAMEVERSIONFULL;
 
 #endif // COMMON_VERSION_H
