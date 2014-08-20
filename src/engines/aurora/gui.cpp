@@ -151,6 +151,13 @@ void GUI::addWidget(Widget *widget) {
 		return;
 
 	assert(!widget->getTag().empty());
+	if (hasWidget(widget->_tag)) {
+		if (getWidget(widget->_tag) != widget) {
+			throw Common::Exception("Widget with the same tag, \"%s\", already exist", widget->_tag.c_str());
+		} else {
+			return;
+		}
+	}
 
 	_widgets.push_back(widget);
 	_widgetMap[widget->getTag()] = widget;
