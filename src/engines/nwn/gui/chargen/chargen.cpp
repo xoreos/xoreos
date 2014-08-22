@@ -35,8 +35,6 @@ namespace NWN {
 CharGenMenu::CharGenMenu(Module &module) : _module(&module) {
 	load("cg_main");
 
-	// TODO: "TitleLabel" misplaced!
-
 	// TODO: Character trait buttons
 	getWidget("GenderButton"   , true)->setDisabled(true);
 	getWidget("RaceButton"     , true)->setDisabled(true);

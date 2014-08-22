@@ -147,8 +147,6 @@ bool CharPremadeMenu::Character::operator<(const Character &c) const {
 CharPremadeMenu::CharPremadeMenu(Module &module) : _module(&module) {
 	load("pre_playmod");
 
-	// TODO: "Title" misplaced!
-	// TODO: Title bar misplaced!
 	// TODO: "SaveLabel" should wrap!
 
 	// TODO: Customize character
