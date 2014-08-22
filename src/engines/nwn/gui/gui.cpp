@@ -157,6 +157,16 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 
 			labelX -= label->getWidth () * alignH;
 			labelY -= label->getHeight() * alignV;
+
+			float labelWidth = 0;
+			if (ctx.strct->hasField("Obj_Label_Width"))
+				labelWidth = ctx.strct->getDouble("Obj_Label_Width") * 100.0;
+
+			if (alignV == 0.5)
+				labelX += labelWidth * alignH;
+
+			// TODO: Enforce label's width with "Obj_Label_Width" if "Obj_Label_Width"
+			//       is smaller than label's width.
 		}
 
 		label->movePosition(labelX, labelY, -labelZ);
