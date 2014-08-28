@@ -46,7 +46,7 @@ Text::~Text() {
 	hide();
 }
 
-void Text::set(const Common::UString &str) {
+void Text::set(const Common::UString &str, float maxWidth, float maxHeight) {
 	GfxMan.lockFrame();
 
 	parseColors(str, _str, _colors);
@@ -55,10 +55,10 @@ void Text::set(const Common::UString &str) {
 
 	font.buildChars(str);
 
-	_lineCount = font.getLineCount(_str);
+	_lineCount = font.getLineCount(_str, maxWidth, maxHeight);
 
-	_height = font.getHeight(_str);
-	_width  = font.getWidth (_str);
+	_height = font.getHeight(_str, maxWidth, maxHeight);
+	_width  = font.getWidth (_str, maxWidth);
 
 	GfxMan.unlockFrame();
 }
@@ -133,7 +133,7 @@ void Text::render(RenderPass pass) {
 
 	glTranslatef(_x, _y, 0.0);
 
-	_font.getFont().draw(_str, _colors, _r, _g, _b, _a, _align);
+	_font.getFont().draw(_str, _colors, _r, _g, _b, _a, _align, _width, _height);
 }
 
 bool Text::isIn(float x, float y) const {
