@@ -153,20 +153,30 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 			labelX -= label->getWidth () / 2;
 			labelY -= label->getHeight() / 2;
 		} else {
-			labelY -= label->getHeight();
-
-			labelX -= label->getWidth () * alignH;
-			labelY -= label->getHeight() * alignV;
-
-			float labelWidth = 0;
+			float labelWidth = 0.0;
 			if (ctx.strct->hasField("Obj_Label_Width"))
 				labelWidth = ctx.strct->getDouble("Obj_Label_Width") * 100.0;
 
-			if (alignV == 0.5)
+			float labelHeight = 0.0;
+			if (ctx.strct->hasField("Obj_Label_Height"))
+				labelHeight = ctx.strct->getDouble("Obj_Label_Height") * 100.0;
+
+			if (alignV == 0.5) {
+				bool multilines = false;
+				if (label->getWidth() > labelWidth)
+					multilines = true;
+
+				label->setText(ctx.text, alignH, labelWidth, labelHeight);
 				labelX += labelWidth * alignH;
 
-			// TODO: Enforce label's width with "Obj_Label_Width" if "Obj_Label_Width"
-			//       is smaller than label's width.
+				if (multilines)
+					labelY += label->getHeight() * alignV;
+			}
+
+			labelX -= label->getWidth () * alignH;
+
+			labelY -= label->getHeight();
+			labelY -= label->getHeight() * alignV;
 		}
 
 		label->movePosition(labelX, labelY, -labelZ);
