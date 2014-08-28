@@ -52,6 +52,7 @@ public:
 	void setPosition(float x, float y, float z = -FLT_MAX);
 	void setColor(float r, float g, float b, float a);
 	void unsetColor();
+	void setAlign(float align);
 
 	bool isEmpty();
 

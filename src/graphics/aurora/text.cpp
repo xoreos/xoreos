@@ -85,6 +85,10 @@ void Text::unsetColor() {
 	setColor(1.0, 1.0, 1.0, 1.0);
 }
 
+void Text::setAlign(float align) {
+	_align = align;
+}
+
 const Common::UString &Text::get() const {
 	return _str;
 }
