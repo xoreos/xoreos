@@ -40,22 +40,22 @@ float Font::getLineSpacing() const {
 	return 0.0;
 }
 
-uint32 Font::getLineCount(const Common::UString &text) const {
+uint32 Font::getLineCount(const Common::UString &text, float maxWidth, float maxHeight) const {
 	std::vector<Common::UString> lines;
 
-	split(text, lines);
+	split(text, lines, maxWidth, maxHeight);
 
 	return lines.size();
 }
 
-float Font::getWidth(const Common::UString &text) const {
+float Font::getWidth(const Common::UString &text, float maxWidth) const {
 	std::vector<Common::UString> lines;
 
-	return split(text, lines);
+	return split(text, lines, maxWidth);
 }
 
-float Font::getHeight(const Common::UString &text) const {
-	uint32 lines = getLineCount(text);
+float Font::getHeight(const Common::UString &text, float maxWidth, float maxHeight) const {
+	uint32 lines = getLineCount(text, maxWidth, maxHeight);
 
 	if (lines == 0)
 		return 0.0;
@@ -67,12 +67,12 @@ void Font::buildChars(const Common::UString &str) {
 }
 
 void Font::draw(Common::UString text, const ColorPositions &colors,
-                float r, float g, float b, float a, float align) const {
+		float r, float g, float b, float a, float align,  float maxWidth, float maxHeight) const {
 
 	glColor4f(r, g, b, a);
 
 	std::vector<Common::UString> lines;
-	float maxLength = split(text, lines);
+	float maxLength = split(text, lines, maxWidth, maxHeight);
 
 	// Move position to the top
 	glTranslatef(0.0, (lines.size() - 1) * (getHeight() + getLineSpacing()), 0.0);
@@ -118,7 +118,7 @@ void Font::draw(Common::UString text, const ColorPositions &colors,
 }
 
 float Font::split(const Common::UString &line, std::vector<Common::UString> &lines,
-                  float maxWidth) const {
+                  float maxWidth, float maxHeight) const {
 
 	if (line.empty())
 		// Nothing to do
@@ -126,6 +126,9 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 
 	if (maxWidth <= 0.0)
 		maxWidth = FLT_MAX;
+
+	if (maxHeight <= 0.0)
+		maxHeight = FLT_MAX;
 
 	// Wrap the line into several lines of at max maxWidth pixel length, breaking
 	// the line at font-specific word boundaries.
@@ -168,7 +171,8 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 					// Adding the word to the line would overflow
 
 					// Commit the line first
-					lines.push_back(currentLine);
+					if (!addLine(lines, currentLine, maxHeight))
+						break;
 
 					length = MAX(length, lineLength);
 
@@ -195,11 +199,14 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 				// The word itself overflows the max width
 
 				// Commit the line
-				if (!currentLine.empty())
-					lines.push_back(currentLine);
+				if (!currentLine.empty()) {
+					if (!addLine(lines, currentLine, maxHeight))
+						break;
+					}
 
 				// Commit the word fragment in a new line
-				lines.push_back(lineColor + currentWord);
+				if (!addLine(lines, lineColor + currentWord, maxHeight))
+					break;
 
 				length = MAX(length, MAX(lineLength, wordLength));
 
@@ -217,7 +224,8 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 				// Mandatory line break
 
 				// Commit the line
-				lines.push_back(currentLine);
+				if (!addLine(lines, currentLine, maxHeight))
+					break;
 
 				length = MAX(length, lineLength);
 
@@ -243,9 +251,8 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 	if (!currentWord.empty()) {
 		// We've got a dangling word fragment
 
-		if ((lineLength + wordLength) > maxWidth) {
+		if ((lineLength + wordLength) > maxWidth && addLine(lines, currentLine, maxHeight)) {
 			// The dangling word would overflow the line, commit that first
-			lines.push_back(currentLine);
 
 			length = MAX(length, lineLength);
 
@@ -261,10 +268,8 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 		lineLength  += wordLength;
 	}
 
-	if (!currentLine.empty()) {
+	if (!currentLine.empty() && addLine(lines, currentLine, maxHeight)) {
 		// We've got a dangling line, commit it
-		lines.push_back(currentLine);
-
 		length = MAX(length, lineLength);
 	}
 
@@ -275,14 +280,14 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 	return length;
 }
 
-float Font::split(Common::UString &line, float maxWidth) const {
-	return split(line, line, maxWidth);
+float Font::split(Common::UString &line, float maxWidth, float maxHeight) const {
+	return split(line, line, maxWidth, maxHeight);
 }
 
-float Font::split(const Common::UString &line, Common::UString &lines, float maxWidth) const {
+float Font::split(const Common::UString &line, Common::UString &lines, float maxWidth, float maxHeight) const {
 	std::vector<Common::UString> sLines;
 
-	float width = split(line, sLines, maxWidth);
+	float width = split(line, sLines, maxWidth, maxHeight);
 
 	lines.clear();
 	for (std::vector<Common::UString>::const_iterator l = sLines.begin(); l != sLines.end(); ++l) {
@@ -302,6 +307,15 @@ float Font::getLineWidth(const Common::UString &text) const {
 		width += getWidth(*c);
 
 	return width;
+}
+
+bool Font::addLine(std::vector<Common::UString> &lines, const Common::UString &newLine, float maxHeight) const {
+	if ((lines.size() + 1) * getHeight() <= maxHeight) {
+		lines.push_back(newLine);
+		return true;
+	} else {
+		return false;
+	}
 }
 
 } // End of namespace Graphics

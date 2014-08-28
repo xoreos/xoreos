@@ -48,7 +48,7 @@ public:
 	void getPosition(float &x, float &y, float &z) const;
 	void getColor(float &r, float &g, float &b, float &a) const;
 
-	void set(const Common::UString &str);
+	void set(const Common::UString &str, float maxWidth = 0.0, float maxHeight = 0.0);
 	void setPosition(float x, float y, float z = -FLT_MAX);
 	void setColor(float r, float g, float b, float a);
 	void unsetColor();
