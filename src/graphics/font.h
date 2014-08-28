@@ -48,12 +48,12 @@ public:
 	virtual float getLineSpacing() const;
 
 	/** Return the number of lines this text spans. */
-	uint32 getLineCount(const Common::UString &text) const;
+	uint32 getLineCount(const Common::UString &text, float maxWidth = 0.0, float maxHeight = 0.0) const;
 
 	/** Return the width this string would take. */
-	float getWidth (const Common::UString &text) const;
+	float getWidth (const Common::UString &text, float maxWidth = 0.0) const;
 	/** Return the height this string would take. */
-	float getHeight(const Common::UString &text) const;
+	float getHeight(const Common::UString &text, float maxWidth = 0.0, float maxHeight = 0.0) const;
 
 	/** Build all necessary characters to display this string. */
 	virtual void buildChars(const Common::UString &str);
@@ -62,15 +62,16 @@ public:
 	virtual void draw(uint32 c) const = 0;
 
 	void draw(Common::UString text, const ColorPositions &colors,
-	          float r, float g, float b, float a, float align = 0.0) const;
+		  float r, float g, float b, float a, float align = 0.0, float maxWidth = 0.0, float maxHeight = 0.0) const;
 
 	float split(const Common::UString &line, std::vector<Common::UString> &lines,
-	            float maxWidth = 0.0) const;
-	float split(Common::UString &line, float maxWidth) const;
-	float split(const Common::UString &line, Common::UString &lines, float maxWidth) const;
+		    float maxWidth = 0.0, float maxHeight = 0.0) const;
+	float split(Common::UString &line, float maxWidth, float maxHeight = 0.0) const;
+	float split(const Common::UString &line, Common::UString &lines, float maxWidth, float maxHeight = 0.0) const;
 
 private:
 	float getLineWidth(const Common::UString &text) const;
+	bool addLine(std::vector<Common::UString> &lines, const Common::UString &newLine, float maxHeight) const;
 };
 
 } // End of namespace Graphics

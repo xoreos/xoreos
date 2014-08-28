@@ -81,8 +81,9 @@ void TextWidget::setColor(float r, float g, float b, float a) {
 	_text->setColor(_r, _g, _b, _a);
 }
 
-void TextWidget::setText(const Common::UString &text) {
-	_text->set(text);
+void TextWidget::setText(const Common::UString &text, float align, float maxWidth, float maxHeight) {
+	_text->set(text, maxWidth, maxHeight);
+	_text->setAlign(align);
 }
 
 float TextWidget::getWidth() const {
