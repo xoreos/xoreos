@@ -166,7 +166,7 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 				if (label->getWidth() > labelWidth)
 					multilines = true;
 
-				label->setText(ctx.text, alignH, labelWidth, labelHeight);
+				label->setText(label->getText(), alignH, labelWidth, labelHeight);
 				labelX += labelWidth * alignH;
 
 				if (multilines)
