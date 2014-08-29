@@ -86,6 +86,10 @@ void TextWidget::setText(const Common::UString &text, float align, float maxWidt
 	_text->setAlign(align);
 }
 
+const Common::UString TextWidget::getText() const {
+	return _text->get();
+}
+
 float TextWidget::getWidth() const {
 	return _text->getWidth();
 }
