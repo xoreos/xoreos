@@ -147,6 +147,9 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 		float labelZ = ctx.strct->getDouble("Obj_Label_Z") * 100.0;
 
 		if (ctx.type != kWidgetTypeLabel) {
+			if (label->getWidth() > ctx.widget->getWidth() || label->getHeight() > ctx.widget->getHeight())
+				label->setText(label->getText(), alignH, ctx.widget->getWidth(), ctx.widget->getHeight());
+
 			labelX += ctx.widget->getWidth () * alignV;
 			labelY += ctx.widget->getHeight() * alignH;
 
