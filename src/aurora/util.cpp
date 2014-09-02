@@ -184,6 +184,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeCDX,            ".cdx"},
 	{kFileTypeFPT,            ".fpt"},
 
+	{kFileTypeZIP,            ".zip"},
 	{kFileTypeFXA,            ".fxa"},
 	{kFileTypeFXE,            ".fxe"},
 	{kFileTypeFXM,            ".fxm"},
@@ -207,6 +208,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeDOC,            ".doc"},
 	{kFileTypeSCC,            ".scc"},
 
+	{kFileTypeNDS,            ".nds"},
 	{kFileTypePAL,            ".pal"},
 	{kFileTypeCBGT,           ".cbgt"},
 	{kFileTypeCDPTH,          ".cdpth"},
