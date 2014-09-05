@@ -499,9 +499,35 @@ void Model::render(RenderPass pass) {
 		return;
 	}
 
+	// Apply our global model transformation
+	glScalef(_modelScale[0], _modelScale[1], _modelScale[2]);
+
+	if (_type == kModelTypeObject)
+		// Aurora world objects have a rotated axis
+		glRotatef(90.0, -1.0, 0.0, 0.0);
+
+	glTranslatef(_position[0], _position[1], _position[2]);
+
+	glRotatef( _rotation[0], 1.0, 0.0, 0.0);
+	glRotatef( _rotation[1], 0.0, 1.0, 0.0);
+	glRotatef(-_rotation[2], 0.0, 0.0, 1.0);
+
+
+	// Draw the bounding box, if requested
+	doDrawBound();
+
+	// Draw the nodes
+	for (NodeList::iterator n = _currentState->rootNodes.begin();
+	     n != _currentState->rootNodes.end(); ++n) {
+
+		glPushMatrix();
+		(*n)->render(pass);
+		glPopMatrix();
+	}
+
 	// Render
-	buildList(pass);
-	glCallList(_lists + pass);
+	//buildList(pass);
+	//glCallList(_lists + pass);
 
 	// Reset the first texture units
 	TextureMan.reset();
