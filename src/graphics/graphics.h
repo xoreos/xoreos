@@ -84,6 +84,9 @@ public:
 	/** Are we currently in full screen mode? */
 	bool isFullScreen() const;
 
+	/** Are we currently running an OpenGL 3.x context? */
+	bool isGL3() const;
+
 	/** Set the FSAA settings. */
 	bool setFSAA(int level);
 
@@ -163,6 +166,8 @@ private:
 	bool _supportMultipleTextures; ///< Do we have support for multiple textures?
 
 	bool _fullScreen; ///< Are we currently in fullscreen mode?
+
+	bool _gl3;
 
 	int _fsaa;    ///< Current FSAA settings.
 	int _fsaaMax; ///< Max supported FSAA level.

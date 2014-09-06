@@ -64,6 +64,9 @@ GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
 
 	_fullScreen = false;
 
+	// Default to GL3 true; GL3.x will be available on most modern systems.
+	_gl3 = true;
+
 	_fsaa    = 0;
 	_fsaaMax = 0;
 
@@ -246,6 +249,16 @@ bool GraphicsManager::setFSAA(int level) {
 			throw Common::Exception("Failed reverting to the old FSAA settings");
 	}
 
+	// Initial call to setupSDLGL has already identified which GL context we can use.
+	if(_gl3) {
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	} else {
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	}
 	_glContext = SDL_GL_CreateContext(_screen);
 	rebuildContext();
 
@@ -291,7 +304,34 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 	if (!_screen)
 		return false;
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+
 	_glContext = SDL_GL_CreateContext(_screen);
+
+	if(_glContext != NULL) {
+		// OpenGL 3.2 context created, continue.
+		return (_gl3 = true);
+	}
+
+	// OpenGL 3.2 context not created. Spit out an error message, and try a 2.1 context.
+	_gl3 = false;
+	warning("Could not create OpenGL 3.2 context, %s", SDL_GetError());
+	warning("Your graphics card hardware or driver does not support OpenGL 3.2. "
+	        "Attempting to create OpenGL 2.1 context instead.");
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+	_glContext = SDL_GL_CreateContext(_screen);
+
+	if(_glContext == NULL) {
+		SDL_DestroyWindow(_screen);
+		return false;
+	}
+
 	return true;
 }
 
@@ -988,6 +1028,10 @@ int GraphicsManager::getSystemHeight() const {
 
 bool GraphicsManager::isFullScreen() const {
 	return _fullScreen;
+}
+
+bool GraphicsManager::isGL3() const {
+	return _gl3;
 }
 
 void GraphicsManager::rebuildGLContainers() {
