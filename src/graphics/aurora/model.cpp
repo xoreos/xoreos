@@ -42,11 +42,7 @@ namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_type(type), _supermodel(0), _currentState(0),
-	_currentAnimation(0), _nextAnimation(0), _drawBound(false),
-	_lists(0) {
-
-	for (int i = 0; i < kRenderPassAll; i++)
-		_needBuild[i] = true;
+	_currentAnimation(0), _nextAnimation(0), _drawBound(false) {
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
@@ -62,9 +58,6 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 
 Model::~Model() {
 	hide();
-
-	if (_lists != 0)
-		GfxMan.abandon(_lists, kRenderPassAll);
 
 	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s) {
 		for (NodeList::iterator n = (*s)->nodeList.begin(); n != (*s)->nodeList.end(); ++n)
@@ -132,7 +125,6 @@ float Model::getDepth() const {
 
 void Model::drawBound(bool enabled) {
 	_drawBound = enabled;
-	needRebuild();
 }
 
 void Model::playAnimation(const Common::UString &anim, bool restart, int32 loopCount) {
@@ -190,7 +182,6 @@ void Model::setPosition(float x, float y, float z) {
 
 	createAbsolutePosition();
 	calculateDistance();
-	needRebuild();
 
 	resort();
 
@@ -206,7 +197,6 @@ void Model::setRotation(float x, float y, float z) {
 
 	createAbsolutePosition();
 	calculateDistance();
-	needRebuild();
 
 	resort();
 
@@ -290,8 +280,6 @@ void Model::setState(const Common::UString &name) {
 
 	if (visible)
 		show();
-
-	needRebuild();
 
 	GfxMan.unlockFrame();
 }
@@ -396,51 +384,6 @@ void Model::calculateDistance() {
 	_distance = x + y + z;
 }
 
-bool Model::buildList(RenderPass pass) {
-	if (!_needBuild[pass])
-		return false;
-
-	if (_lists == 0)
-		_lists = glGenLists(kRenderPassAll);
-
-	glNewList(_lists + pass, GL_COMPILE);
-
-
-	// Apply our global model transformation
-
-	glScalef(_modelScale[0], _modelScale[1], _modelScale[2]);
-
-	if (_type == kModelTypeObject)
-		// Aurora world objects have a rotated axis
-		glRotatef(90.0, -1.0, 0.0, 0.0);
-
-	glTranslatef(_position[0], _position[1], _position[2]);
-
-	glRotatef( _rotation[0], 1.0, 0.0, 0.0);
-	glRotatef( _rotation[1], 0.0, 1.0, 0.0);
-	glRotatef(-_rotation[2], 0.0, 0.0, 1.0);
-
-
-	// Draw the bounding box, if requested
-	doDrawBound();
-
-	// Draw the nodes
-	for (NodeList::iterator n = _currentState->rootNodes.begin();
-	     n != _currentState->rootNodes.end(); ++n) {
-
-		glPushMatrix();
-		(*n)->render(pass);
-		glPopMatrix();
-	}
-
-
-	glEndList();
-
-
-	_needBuild[pass] = false;
-	return true;
-}
-
 void Model::advanceTime(float dt) {
 	manageAnimations(dt);
 }
@@ -499,9 +442,31 @@ void Model::render(RenderPass pass) {
 		return;
 	}
 
-	// Render
-	buildList(pass);
-	glCallList(_lists + pass);
+	// Apply our global model transformation
+	glScalef(_modelScale[0], _modelScale[1], _modelScale[2]);
+
+	if (_type == kModelTypeObject)
+		// Aurora world objects have a rotated axis
+		glRotatef(90.0, -1.0, 0.0, 0.0);
+
+	glTranslatef(_position[0], _position[1], _position[2]);
+
+	glRotatef( _rotation[0], 1.0, 0.0, 0.0);
+	glRotatef( _rotation[1], 0.0, 1.0, 0.0);
+	glRotatef(-_rotation[2], 0.0, 0.0, 1.0);
+
+
+	// Draw the bounding box, if requested
+	doDrawBound();
+
+	// Draw the nodes
+	for (NodeList::iterator n = _currentState->rootNodes.begin();
+	     n != _currentState->rootNodes.end(); ++n) {
+
+		glPushMatrix();
+		(*n)->render(pass);
+		glPopMatrix();
+	}
 
 	// Reset the first texture units
 	TextureMan.reset();
@@ -564,15 +529,11 @@ void Model::doDrawBound() {
 }
 
 void Model::doRebuild() {
-	needRebuild();
+	// TODO: remove this and all references to it.
 }
 
 void Model::doDestroy() {
-	if (_lists == 0)
-		return;
-
-	glDeleteLists(_lists, kRenderPassAll);
-	_lists = 0;
+	// TODO: remove this and all references to it.
 }
 
 void Model::finalize() {
@@ -588,14 +549,7 @@ void Model::finalize() {
 		for (NodeList::iterator n = (*s)->rootNodes.begin(); n != (*s)->rootNodes.end(); ++n)
 			(*n)->orderChildren();
 
-	needRebuild();
-
 	_currentAnimation = selectDefaultAnimation();
-}
-
-void Model::needRebuild() {
-	for (int i = 0; i < kRenderPassAll; i++)
-		_needBuild[i] = true;
 }
 
 void Model::createStateNamesList() {

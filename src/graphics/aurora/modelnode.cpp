@@ -199,8 +199,6 @@ void ModelNode::setPosition(float x, float y, float z) {
 	if (_parent)
 		_parent->orderChildren();
 
-	_model->needRebuild();
-
 	GfxMan.unlockFrame();
 }
 
@@ -210,8 +208,6 @@ void ModelNode::setRotation(float x, float y, float z) {
 	_rotation[0] = x;
 	_rotation[1] = y;
 	_rotation[2] = z;
-
-	_model->needRebuild();
 
 	GfxMan.unlockFrame();
 }
@@ -223,8 +219,6 @@ void ModelNode::setOrientation(float x, float y, float z, float a) {
 	_orientation[1] = y;
 	_orientation[2] = z;
 	_orientation[3] = a;
-
-	_model->needRebuild();
 
 	GfxMan.unlockFrame();
 }
@@ -331,7 +325,6 @@ void ModelNode::addChild(Model *model) {
 
 void ModelNode::setInvisible(bool invisible) {
 	_render = !invisible;
-	_model->needRebuild();
 }
 
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {

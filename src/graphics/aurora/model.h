@@ -219,8 +219,6 @@ protected:
 
 	/** Finalize the loading procedure. */
 	void finalize();
-	/** Signal that the nodes changed and the OpenGL list needs to be rebuild. */
-	void needRebuild();
 
 
 	// GLContainer
@@ -229,14 +227,8 @@ protected:
 
 
 private:
-	bool _needBuild[kRenderPassAll];
 	bool _drawBound;
 	float _elapsedTime; ///< Track animation duration
-
-	ListID _lists; ///< OpenGL display lists for the model
-
-
-	bool buildList(RenderPass pass);
 
 	void createStateNamesList(); ///< Create the list of all state names.
 	void createBound();          ///< Create the model's bounding box.
