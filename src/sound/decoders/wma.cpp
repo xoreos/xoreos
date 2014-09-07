@@ -575,6 +575,11 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 		int newFrameCount = bits.getBits(4) - 1;
 		if (newFrameCount < 0) {
 			warning("WMACodec::decodeSuperFrame(): newFrameCount == %d", newFrameCount);
+
+			_resetBlockLengths = true;
+			_lastSuperframeLen = 0;
+			_lastBitoffset     = 0;
+
 			return 0;
 		}
 
