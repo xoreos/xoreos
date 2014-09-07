@@ -206,7 +206,9 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		stream->skip(stream->readUint32LE());
 		tag = stream->readUint32BE();
 
-		while ((tag == MKTAG('f', 'a', 'c', 't')) || (tag == MKTAG('P', 'A', 'D', ' '))) {
+		while ((tag == MKTAG('f', 'a', 'c', 't')) || (tag == MKTAG('P', 'A', 'D', ' ')) ||
+		       (tag == MKTAG('c', 'u', 'e', ' ')) || (tag == MKTAG('L', 'I', 'S', 'T')) ||
+		       (tag == MKTAG('s', 'm', 'p', 'l'))) {
 			// Skip useless chunks
 			stream->skip(stream->readUint32LE());
 			tag = stream->readUint32BE();
