@@ -33,6 +33,7 @@
 #include "common/configman.h"
 #include "common/threads.h"
 #include "common/transmatrix.h"
+#include "common/vector3.h"
 
 #include "events/requests.h"
 #include "events/events.h"
@@ -56,7 +57,7 @@ namespace Graphics {
 
 PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
 
-GraphicsManager::GraphicsManager() : _projection(4, 4), _projectionInv(4, 4) {
+GraphicsManager::GraphicsManager() {
 	_ready = false;
 
 	_needManualDeS3TC        = false;
@@ -455,7 +456,7 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 
 bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, float &sZ) {
 	// This is our projection matrix
-	Common::Matrix proj = _projection;
+	Common::TransformationMatrix proj(_projection);
 
 
 	// Generate the model matrix
@@ -479,28 +480,18 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 	model.translate(-cPos[0], -cPos[1], cPos[2]);
 
 
-	// Generate a matrix for the coordinates
-
-	Common::Matrix coords(4, 1);
-
-	coords(0, 0) = x;
-	coords(1, 0) = y;
-	coords(2, 0) = z;
-	coords(3, 0) = 1.0;
-
+	Common::Vector3 coords(x, y, z);
 
 	// Multiply them
-	Common::Matrix v(proj * model * coords);
-
+	Common::Vector3 v(proj * model * coords);
 
 	// Projection divide
 
-	if (v(3, 0) == 0.0)
+	if (v._w == 0.0f)
 		return false;
 
-	v(0, 0) /= v(3, 0);
-	v(1, 0) /= v(3, 0);
-	v(2, 0) /= v(3, 0);
+	float divider = 1.0f / v._w;
+	v *= divider;
 
 	// Viewport coordinates
 
@@ -512,12 +503,12 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 	view[3] = _height;
 
 
-	sX = view[0] + view[2] * (v(0, 0) + 1.0) / 2.0;
-	sY = view[1] + view[3] * (v(1, 0) + 1.0) / 2.0;
-	sZ =                     (v(2, 0) + 1.0) / 2.0;
+	sX = view[0] + view[2] * (v._x + 1.0f) / 2.0f;
+	sY = view[1] + view[3] * (v._y + 1.0f) / 2.0f;
+	sZ =                     (v._z + 1.0f) / 2.0f;
 
-	sX -= view[2] / 2.0;
-	sY -= view[3] / 2.0;
+	sX -= view[2] / 2.0f;
+	sY -= view[3] / 2.0f;
 	return true;
 }
 
@@ -566,45 +557,45 @@ bool GraphicsManager::unproject(float x, float y,
 
 		// Generate a matrix for the coordinates at the near plane
 
-		Common::Matrix coordsNear(4, 1);
+		Common::Vector3 coordsNear;
 
-		coordsNear(0, 0) = ((2 * (x - view[0])) / (view[2])) - 1.0;
-		coordsNear(1, 0) = ((2 * (y - view[1])) / (view[3])) - 1.0;
-		coordsNear(2, 0) = (2 * zNear) - 1.0;
-		coordsNear(3, 0) = 1.0;
+		coordsNear._x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
+		coordsNear._y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
+		coordsNear._z = (2 * zNear) - 1.0f;
+		coordsNear._w = 1.0f;
 
 
 
 		// Generate a matrix for the coordinates at the far plane
 
-		Common::Matrix coordsFar(4, 1);
+		Common::Vector3 coordsFar;
 
-		coordsFar(0, 0) = ((2 * (x - view[0])) / (view[2])) - 1.0;
-		coordsFar(1, 0) = ((2 * (y - view[1])) / (view[3])) - 1.0;
-		coordsFar(2, 0) = (2 * zFar) - 1.0;
-		coordsFar(3, 0) = 1.0;
+		coordsFar._x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
+		coordsFar._y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
+		coordsFar._z = (2 * zFar) - 1.0f;
+		coordsFar._w = 1.0f;
 
 
 		// Unproject
-		Common::Matrix oNear(model * coordsNear);
-		Common::Matrix oFar (model * coordsFar );
-		if ((oNear(3, 0) == 0.0) || (oNear(3, 0) == 0.0))
-			return false;
+		Common::Vector3 oNear(model * coordsNear);
+		Common::Vector3 oFar (model * coordsFar );
+		if ((oNear._w == 0.0) || (oNear._w == 0.0))
+			return false; // TODO: check for close to 0.0f, not exactly 0.0f.
 
 
 		// And return the values
 
-		oNear(3, 0) = 1.0 / oNear(3, 0);
+		oNear._w = 1.0 / oNear._w;
 
-		x1 = oNear(0, 0) * oNear(3, 0);
-		y1 = oNear(1, 0) * oNear(3, 0);
-		z1 = oNear(2, 0) * oNear(3, 0);
+		x1 = oNear._x * oNear._w;
+		y1 = oNear._y * oNear._w;
+		z1 = oNear._z * oNear._w;
 
-		oFar(3, 0) = 1.0 / oFar(3, 0);
+		oFar._w = 1.0 / oFar._w;
 
-		x2 = oFar(0, 0) * oFar(3, 0);
-		y2 = oFar(1, 0) * oFar(3, 0);
-		z2 = oFar(2, 0) * oFar(3, 0);
+		x2 = oFar._x * oFar._w;
+		y2 = oFar._y * oFar._w;
+		z2 = oFar._z * oFar._w;
 
 	} catch (Common::Exception &e) {
 		Common::printException(e, "WARNING: ");
@@ -849,7 +840,7 @@ bool GraphicsManager::renderWorld() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glMultMatrixf(_projection.get());
+	glMultMatrixf((float *)(&_projection));
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
