@@ -29,43 +29,113 @@
 
 namespace Common {
 
+/**
+ * After some considerable thought on the matter, the decision in the end
+ * was to allow Vector3 to operate interchangeably with 4x4 matrix
+ * transformations.
+ * Pros:
+ *    - Transforms (4x4 matrix) can use a Vector3 directly.
+ *    - Vector3 will be far more widely used than Vector4, so no conversion
+ *      requirements. It will just work.
+ *    - 128bit (16 byte) alignment is typically good for caching.
+ * Cons:
+ *    - Can't abuse vertex array data directly as Vector3 (alignment issues
+ *      might prevent that anyway).
+ *    - Vector3 actually has 4 components; everyone should be aware of the
+ *      actual size of the class.
+ *    - More space used. Note that moving to SSE intrinsics would require
+ *      the extra component padding anyway.
+ * Please note that _w is initialised to 1.0f. This is not a mistake.
+ */
 class Vector3 {
-	float _x, _y, _z;
-
 public:
+	float _x, _y, _z, _w;
+
 	Vector3() {
 	}
 
-	Vector3(float x, float y, float z) : _x(x), _y(y), _z(z) {
+	Vector3(float x, float y, float z, float w = 1.0f) : _x(x), _y(y), _z(z), _w(w) {
 	}
 
-	Vector3(const Vector3 &b) : _x(b._x), _y(b._y), _z(b._z) {
+	Vector3(const Vector3 &b) : _x(b._x), _y(b._y), _z(b._z), _w(b._w) {
 	}
 
-	const float &operator[] (int i) const {
+	Vector3(const float *b) : _x(b[0]), _y(b[1]), _z(b[2]), _w(1.0f) {
+	}
+
+	inline const float &operator[](int i) const {
 		return (&_x)[i];
 	}
 
-	float &operator[] (int i) {
+	inline float &operator[](int i) {
 		return (&_x)[i];
 	}
 
-	Vector3 operator - (const Vector3 &v) const {
+	inline const Vector3 &operator=(const Vector3 &v) {
+		_x = v._x; _y = v._y; _z = v._z; _w = v._w;
+		return *this;
+	}
+
+	inline const Vector3 &operator=(const float *v) {
+		_x = v[0]; _y = v[1]; _z = v[2]; // Note: _w not included here.
+		return *this;
+	}
+
+	inline const Vector3 &operator+=(const Vector3 &v) {
+		_x += v._x; _y += v._y; _z += v._z;
+		return *this;
+	}
+
+	inline const Vector3 &operator-=(const Vector3 &v) {
+		_x -= v._x; _y -= v._y; _z -= v._z;
+		return *this;
+	}
+
+	inline const Vector3 &operator*=(float value) {
+		_x *= value; _y *= value; _z *= value;
+		return *this;
+	}
+
+	inline const Vector3 &operator/=(float value) {
+		float inverse = 1.0f / value;
+		_x *= inverse; _y *= inverse; _z *= inverse;
+		return *this;
+	}
+
+	/** Component-wise multiply. */
+	inline const Vector3 &multiply(const Vector3 &v) {
+		_x *= v._x; _y *= v._y; _z *= v._z;
+		return *this;
+	}
+
+	/** Component-wise divide. */
+	inline const Vector3 &divide(const Vector3 &v) {
+		_x /= v._x; _y /= v._y; _z /= v._z;
+		return *this;
+	}
+
+	Vector3 operator-(const Vector3 &v) const {
 		return Vector3(_x - v._x, _y - v._y, _z - v._z);
 	}
 
-	Vector3 operator + (const Vector3 &v) const {
+	Vector3 operator+(const Vector3 &v) const {
 		return Vector3(_x + v._x, _y + v._y, _z + v._z);
 	}
 
-	Vector3 operator * (const float f) const {
+	Vector3 operator*(const float f) const {
 		return Vector3(_x * f, _y * f, _z * f);
+	}
+
+	Vector3 operator*(const Vector3 &v) const {
+		return Vector3(_y * v._z - _z * v._y,
+		               _z * v._x - _x * v._z,
+		               _x * v._y - _y * v._x);
 	}
 
 	Vector3 cross(const Vector3 & v) const {
 		return Vector3(_y * v._z - _z * v._y,
-					_z * v._x - _x * v._z,
-					_x * v._y - _y * v._x);
+		               _z * v._x - _x * v._z,
+		               _x * v._y - _y * v._x);
 	}
 
 	float dot(const Vector3 & v) const {
@@ -77,8 +147,12 @@ public:
 	}
 
 	Vector3 & norm() {
-		(*this) = (*this) * (1 / length());
+		(*this) = (*this) * (1.0f / length());
 		return *this;
+	}
+
+	float angle(const Vector3 &v) {
+		return acos((dot(v) / (sqrt(((_x * _x) + (_y * _y) + (_z * _z)) * ((v._x * v._x) + (v._y * v._y) + (v._z * v._z))))));
 	}
 };
 

@@ -61,7 +61,7 @@ public:
 
 	void rotate(float angle, float x, float y, float z);
 
-	void transform(const Matrix &m);
+	void transform(const TransformationMatrix &m);
 
 	/** Apply the origin transformations directly to the coordinates. */
 	void absolutize();
