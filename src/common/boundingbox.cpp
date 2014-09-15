@@ -271,7 +271,7 @@ void BoundingBox::rotate(float angle, float x, float y, float z) {
 	_absolute = false;
 }
 
-void BoundingBox::transform(const Matrix &m) {
+void BoundingBox::transform(const TransformationMatrix &m) {
 	_origin *= m;
 	_absolute = false;
 }
