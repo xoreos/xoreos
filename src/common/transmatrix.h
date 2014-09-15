@@ -36,7 +36,7 @@ public:
 	/** If set true, load identity matrix. Allows removal of redundant
 	 *  assignment of transform internal array in some cases.
 	 */
-	TransformationMatrix(bool b_identity = true);
+	TransformationMatrix(bool identity = true);
 	TransformationMatrix(const TransformationMatrix &m);
 	TransformationMatrix(const float *m);
 	~TransformationMatrix();
@@ -86,13 +86,13 @@ public:
 	/** Rotate matrix to look at the given point. */
 	void lookAt(const Vector3 &v);
 
-	void perspective(float fovy, float aspect_ratio, float znear, float zfar);
+	void perspective(float fovy, float aspectRatio, float znear, float zfar);
 	void ortho(float l, float r, float b, float t, float n, float f);
 
 	const TransformationMatrix &operator=(const TransformationMatrix &m);
 	const TransformationMatrix &operator=(const float *m);
 
-	inline float& operator[](unsigned int index);
+	inline float &operator[](unsigned int index);
 	inline float  operator[](unsigned int index) const;
 	float &operator()(int row, int column);
 	float  operator()(int row, int column) const;

@@ -840,7 +840,7 @@ bool GraphicsManager::renderWorld() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glMultMatrixf((float *)(&_projection));
+	glMultMatrixf(&_projection[0]);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

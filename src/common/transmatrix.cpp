@@ -36,8 +36,8 @@ static const float kIdentity[] = {
 
 namespace Common {
 
-TransformationMatrix::TransformationMatrix(bool b_identity) {
-	if(b_identity)
+TransformationMatrix::TransformationMatrix(bool identity) {
+	if(identity)
 		loadIdentity();
 }
 
@@ -103,11 +103,11 @@ void TransformationMatrix::translate(float x, float y, float z) {
 }
 
 void TransformationMatrix::translate(const Vector3 &v) {
-	/** As a minor optimisation, the 'w' component can be left out. This is safe
-	 *  if we assume that the matrix in question is not used for perspective
-	 *  calculations. Generally this is acceptable.
-	 *  If done, then _elements[15] should be set to 1.0f.
-	 *  It can also be safely assumed that v._w is 1.0f, for further optimisations.
+	/* As a minor optimisation, the 'w' component can be left out. This is safe
+	 * if we assume that the matrix in question is not used for perspective
+	 * calculations. Generally this is acceptable.
+	 * If done, then _elements[15] should be set to 1.0f.
+	 * It can also be safely assumed that v._w is 1.0f, for further optimisations.
 	 */
 	float x, y, z, w;
 	x = _elements[0] * v._x + _elements[4] * v._y + _elements[8]  * v._z + _elements[12] * v._w;
@@ -172,13 +172,12 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 
 	angle = deg2rad(angle);
 
-	/** Slightly optimised matrix calculation for generic rotation. Note that
-	 *  SSE implementations might end up being faster, if implemented.
+	/* Slightly optimised matrix calculation for generic rotation. Note that
+	 * SSE implementations might end up being faster, if implemented.
 	 */
 	float result[16];
 	/*
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0+i] = (_elements[i] * matrix[0]) + (_elements[i+4] * matrix[0 +1]) + (_elements[i+8] * matrix[0 +2]) + (_elements[i+12] * matrix[0 +3]);
 		result[4+i] = (_elements[i] * matrix[4]) + (_elements[i+4] * matrix[4 +1]) + (_elements[i+8] * matrix[4 +2]) + (_elements[i+12] * matrix[4 +3]);
 		result[8+i] = (_elements[i] * matrix[8]) + (_elements[i+4] * matrix[8 +1]) + (_elements[i+8] * matrix[8 +2]) + (_elements[i+12] * matrix[8 +3]);
@@ -200,8 +199,7 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 	float m9  = (y * z * mcosa) - (x * sina);
 	float m10 = (z * z * mcosa) + cosa;
 
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0  + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4  + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
 		result[8  + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
@@ -213,13 +211,12 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 void TransformationMatrix::rotateAxisLocal(const Vector3 &v, float angle) {
 	angle = deg2rad(angle);
 
-	/** Slightly optimised matrix calculation for generic rotation. Note that
-	 *  SSE implementations might end up being faster, if implemented.
+	/* Slightly optimised matrix calculation for generic rotation. Note that
+	 * SSE implementations might end up being faster, if implemented.
 	 */
 	float result[16];
 	/*
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0+i] = (_elements[i] * matrix[0]) + (_elements[i+4] * matrix[0 +1]) + (_elements[i+8] * matrix[0 +2]) + (_elements[i+12] * matrix[0 +3]);
 		result[4+i] = (_elements[i] * matrix[4]) + (_elements[i+4] * matrix[4 +1]) + (_elements[i+8] * matrix[4 +2]) + (_elements[i+12] * matrix[4 +3]);
 		result[8+i] = (_elements[i] * matrix[8]) + (_elements[i+4] * matrix[8 +1]) + (_elements[i+8] * matrix[8 +2]) + (_elements[i+12] * matrix[8 +3]);
@@ -241,8 +238,7 @@ void TransformationMatrix::rotateAxisLocal(const Vector3 &v, float angle) {
 	float m9 = (v._y * v._z * mcosa) - (v._x * sina);
 	float m10 = (v._z * v._z * mcosa) + cosa;
 
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0  + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4  + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
 		result[8  + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
@@ -254,16 +250,15 @@ void TransformationMatrix::rotateAxisLocal(const Vector3 &v, float angle) {
 void TransformationMatrix::rotateXAxisLocal(float angle) {
 	angle = deg2rad(angle);
 
-	/** x-axis is [1,0,0], hence some optimisations can be made to the
-	 *  basic arbitrary axis rotation method.
+	/* x-axis is [1,0,0], hence some optimisations can be made to the
+	 * basic arbitrary axis rotation method.
 	 */
 	float result[16];
 
 	float cosa = cos(angle);
 	float sina = sin(angle);
 	float msina = -sina;
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0 + i]  = (_elements[i]);
 		result[4 + i]  = (_elements[i + 4] * cosa)  + (_elements[i + 8] * sina);
 		result[8 + i]  = (_elements[i + 4] * msina) + (_elements[i + 8] * cosa);
@@ -275,16 +270,15 @@ void TransformationMatrix::rotateXAxisLocal(float angle) {
 void TransformationMatrix::rotateYAxisLocal(float angle) {
 	angle = deg2rad(angle);
 
-	/** y-axis is [0,1,0], hence some optimisations can be made to the
-	 *  basic arbitrary axis rotation method.
+	/* y-axis is [0,1,0], hence some optimisations can be made to the
+	 * basic arbitrary axis rotation method.
 	 */
 	float result[16];
 
 	float cosa = cos(angle);
 	float sina = sin(angle);
 	float msina = -sina;
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0 + i]  = (_elements[i] * cosa) + (_elements[i + 8] * msina);
 		result[4 + i]  = (_elements[i + 4]);
 		result[8 + i]  = (_elements[i] * sina) + (_elements[i + 8] * cosa);
@@ -296,16 +290,15 @@ void TransformationMatrix::rotateYAxisLocal(float angle) {
 void TransformationMatrix::rotateZAxisLocal(float angle) {
 	angle = deg2rad(angle);
 
-	/** y-axis is [0,1,0], hence some optimisations can be made to the
-	 *  basic arbitrary axis rotation method.
+	/* y-axis is [0,1,0], hence some optimisations can be made to the
+	 * basic arbitrary axis rotation method.
 	 */
 	float result[16];
 
 	float cosa = cos(angle);
 	float sina = sin(angle);
 	float msina = -sina;
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0 + i]  = (_elements[i] * cosa)  + (_elements[i + 4] * sina);
 		result[4 + i]  = (_elements[i] * msina) + (_elements[i + 4] * cosa);
 		result[8 + i]  = (_elements[i + 8]);
@@ -333,8 +326,7 @@ void TransformationMatrix::rotateAxisWorld(const Vector3 &v, float angle) {
 	float m8 = (v._x * v._z * mcosa) + (v._y * sina);
 	float m9 = (v._y * v._z * mcosa) - (v._x * sina);
 	float m10 = (v._z * v._z * mcosa) + cosa;
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0 + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4 + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
 		result[8 + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
@@ -362,8 +354,7 @@ void TransformationMatrix::rotateXAxisWorld(float angle) {
 	float m8  = (_elements[0] * _elements[8] * mcosa) + (_elements[4] * sina);
 	float m9  = (_elements[4] * _elements[8] * mcosa) - (_elements[0] * sina);
 	float m10 = (_elements[8] * _elements[8] * mcosa) + cosa;
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0 + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4 + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
 		result[8 + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
@@ -374,7 +365,7 @@ void TransformationMatrix::rotateXAxisWorld(float angle) {
 
 void TransformationMatrix::rotateYAxisWorld(float angle) {
 	angle = deg2rad(angle);
-	
+
 	float result[16];
 
 	float cosa  = cos(angle);
@@ -391,8 +382,7 @@ void TransformationMatrix::rotateYAxisWorld(float angle) {
 	float m8  = (_elements[1] * _elements[9] * mcosa) + (_elements[5] * sina);
 	float m9  = (_elements[5] * _elements[9] * mcosa) - (_elements[1] * sina);
 	float m10 = (_elements[9] * _elements[9] * mcosa) + cosa;
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0 + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4 + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
 		result[8 + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
@@ -406,8 +396,7 @@ void TransformationMatrix::rotateZAxisWorld(float angle) {
 
 	float result[16];
 	/*
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0+i] = (_elements[i] * matrix[0]) + (_elements[i+4] * matrix[0 +1]) + (_elements[i+8] * matrix[0 +2]) + (_elements[i+12] * matrix[0 +3]);
 		result[4+i] = (_elements[i] * matrix[4]) + (_elements[i+4] * matrix[4 +1]) + (_elements[i+8] * matrix[4 +2]) + (_elements[i+12] * matrix[4 +3]);
 		result[8+i] = (_elements[i] * matrix[8]) + (_elements[i+4] * matrix[8 +1]) + (_elements[i+8] * matrix[8 +2]) + (_elements[i+12] * matrix[8 +3]);
@@ -428,8 +417,7 @@ void TransformationMatrix::rotateZAxisWorld(float angle) {
 	float m8  = (_elements[2] * _elements[10] * mcosa) + (_elements[6] * sina);
 	float m9  = (_elements[6] * _elements[10] * mcosa) - (_elements[2] * sina);
 	float m10 = (_elements[10] * _elements[10] * mcosa) + cosa;
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		result[0 + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4 + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
 		result[8 + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
@@ -468,8 +456,7 @@ void TransformationMatrix::resetRotation() {
 
 void TransformationMatrix::transform(const TransformationMatrix &m) {
 	float result[16];
-	for(uint32_t i = 0; i < 16; i+=4)
-	{
+	for(uint32_t i = 0; i < 16; i+=4) {
 		// __m128 r, __m128 a, __m128 b
 		// a = _mm_load_ps(&_elements[0]);
 		// b = _mm_set1_ps(m[i]);
@@ -478,8 +465,7 @@ void TransformationMatrix::transform(const TransformationMatrix &m) {
 		result[i + 1] = _elements[0 + 1] * m[i];
 		result[i + 2] = _elements[0 + 2] * m[i];
 		result[i + 3] = _elements[0 + 3] * m[i];
-		for(uint32_t j= 1; j < 4; j++)
-		{
+		for(uint32_t j= 1; j < 4; j++) {
 			// a = _mm_load_ps(&_elements[j<<2]);
 			// b = _mm_set1_ps(m[i+j]);
 			// r = _mm_add_ps(a, b);
@@ -494,14 +480,12 @@ void TransformationMatrix::transform(const TransformationMatrix &m) {
 }
 
 void TransformationMatrix::transform(const TransformationMatrix &a, const TransformationMatrix &b) {
-	for(uint32_t i = 0; i < 16; i+=4)
-	{
+	for(uint32_t i = 0; i < 16; i+=4) {
 		_elements[i + 0] = a[0 + 0] * b[i];
 		_elements[i + 1] = a[0 + 1] * b[i];
 		_elements[i + 2] = a[0 + 2] * b[i];
 		_elements[i + 3] = a[0 + 3] * b[i];
-		for(uint32_t j= 1; j < 4; j++)
-		{
+		for(uint32_t j= 1; j < 4; j++) {
 			_elements[i + 0] += a[j * 4 + 0] * b[i + j];
 			_elements[i + 1] += a[j * 4 + 1] * b[i + j];
 			_elements[i + 2] += a[j * 4 + 2] * b[i + j];
@@ -565,11 +549,11 @@ TransformationMatrix TransformationMatrix::transpose() {
 }
 
 void TransformationMatrix::lookAt(const Vector3 &v) {
-	/**	[x,y,z] is the z-axis vector. Cross this with [0,1,0] to create the x-axis, and
-	 *  calculate the y-axis with (z-axis x x-axis).
-	 *  Most of this was taken from stock standard gluLookAt components, however there's
-	 *  one crucial difference. gluLookAt assumes that the world is rotated (standard
-	 *  OpenGL stuff); this assumes rotating some object.
+	/* [x,y,z] is the z-axis vector. Cross this with [0,1,0] to create the x-axis, and
+	 * calculate the y-axis with (z-axis x x-axis).
+	 * Most of this was taken from stock standard gluLookAt components, however there's
+	 * one crucial difference. gluLookAt assumes that the world is rotated (standard
+	 * OpenGL stuff); this assumes rotating some object.
 	 */
 	Vector3 z(v);
 	Vector3 y(0.0f, 1.0f, 0.0f);
@@ -593,25 +577,25 @@ void TransformationMatrix::lookAt(const Vector3 &v) {
 	_elements[8] = z._x;  _elements[9] = z._y;  _elements[10] = z._z;
 }
 
-void TransformationMatrix::perspective(float fovy, float aspect_ratio, float znear, float zfar) {
+void TransformationMatrix::perspective(float fovy, float aspectRatio, float znear, float zfar) {
 	float xmin, xmax, ymin, ymax;
-	TransformationMatrix p_matrix(false);
-	memset(&p_matrix, 0, 16 * sizeof(float));
+	TransformationMatrix pMatrix(false);
+	memset(&pMatrix, 0, 16 * sizeof(float));
 
 	ymax = znear * tan(deg2rad(0.5f * fovy));
 	ymin = -ymax;
-	xmax = ymax * aspect_ratio;
-	xmin = ymin * aspect_ratio;
+	xmax = ymax * aspectRatio;
+	xmin = ymin * aspectRatio;
 
-	p_matrix[0] = (2.0f * znear) / (xmax - xmin);
-	p_matrix[5] = (2.0f * znear) / (ymax - ymin);
-	p_matrix[8] = (xmax + xmin)  / (xmax - xmin);
-	p_matrix[9] = (ymax + ymin)  / (ymax - ymin);
-	p_matrix[10] = -((zfar + znear) / (zfar - znear));
-	p_matrix[11] = -1.0f;
-	p_matrix[14] = (-2.0f * zfar * znear) / (zfar - znear);
+	pMatrix[0] = (2.0f * znear) / (xmax - xmin);
+	pMatrix[5] = (2.0f * znear) / (ymax - ymin);
+	pMatrix[8] = (xmax + xmin)  / (xmax - xmin);
+	pMatrix[9] = (ymax + ymin)  / (ymax - ymin);
+	pMatrix[10] = -((zfar + znear) / (zfar - znear));
+	pMatrix[11] = -1.0f;
+	pMatrix[14] = (-2.0f * zfar * znear) / (zfar - znear);
 
-	this->transform(p_matrix);
+	this->transform(pMatrix);
 }
 
 void TransformationMatrix::ortho(float l, float r, float b, float t, float n, float f)
@@ -630,12 +614,12 @@ void TransformationMatrix::ortho(float l, float r, float b, float t, float n, fl
 	this->transform(p_matrix);
 }
 
-const TransformationMatrix &TransformationMatrix::operator = (const TransformationMatrix &m) {
+const TransformationMatrix &TransformationMatrix::operator=(const TransformationMatrix &m) {
 	memcpy(_elements, &m, 16 * sizeof(float));
 	return *this;
 }
 
-const TransformationMatrix &TransformationMatrix::operator = (const float *m) {
+const TransformationMatrix &TransformationMatrix::operator=(const float *m) {
 	memcpy(_elements, m, 16 * sizeof(float));
 	return *this;
 }
@@ -656,16 +640,16 @@ float  TransformationMatrix::operator()(int row, int column) const {
 	return _elements[(column << 2) + row];
 }
 
-const TransformationMatrix &TransformationMatrix::operator *= (const TransformationMatrix &m) {
+const TransformationMatrix &TransformationMatrix::operator*=(const TransformationMatrix &m) {
 	this->transform(m);
 	return *this;
 }
 
-TransformationMatrix TransformationMatrix::operator * (const TransformationMatrix &m) const {
+TransformationMatrix TransformationMatrix::operator*(const TransformationMatrix &m) const {
 	return TransformationMatrix(*this) *= m;
 }
 
-Vector3 TransformationMatrix::operator * (const Vector3 &v) const {
+Vector3 TransformationMatrix::operator*(const Vector3 &v) const {
 	return Vector3(v._x * _elements[ 0] + v._y * _elements[ 4] + v._z * _elements[ 8] + v._w * _elements[12],
 	               v._x * _elements[ 1] + v._y * _elements[ 5] + v._z * _elements[ 9] + v._w * _elements[13],
 	               v._x * _elements[ 2] + v._y * _elements[ 6] + v._z * _elements[10] + v._w * _elements[14],
