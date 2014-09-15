@@ -28,6 +28,15 @@ AM_PROG_CC_C_O
 dnl We want a make install
 AC_PROG_INSTALL
 
+dnl AC_PROG_CXX does not abort if it can't find a working C++ compiler.
+dnl Instead, it just defines CXX to "g++". Because we absolutely need
+dnl a C++ compiler, we now check that CXX actually exists in the path
+dnl and error out if it doesn't.
+AC_CHECK_PROG(havecxx, ${CXX}, [yes], [no])
+if test "$havecxx" = "no"; then
+	AC_MSG_ERROR([A C++ compiler is required and could not be found!])
+fi
+
 dnl --with-werror
 AC_ARG_WITH([werror], [AS_HELP_STRING([--with-werror], [Compile with -Werror @<:@default=no@:>@])], [], [with_werror=no])
 if test "x$with_werror" = "xyes"; then
