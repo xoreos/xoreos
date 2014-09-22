@@ -302,20 +302,26 @@ void TransformationMatrix::rotateAxisWorld(const Vector3 &v, float angle) {
 
 	float result[16];
 
+	float x, y, z;
+	x = v._x * _elements[0] + v._y * _elements[4] + v._z * _elements[8];
+	y = v._x * _elements[1] + v._y * _elements[5] + v._z * _elements[9];
+	z = v._x * _elements[2] + v._y * _elements[6] + v._z * _elements[10];
+
 	float cosa  = cos(angle);
 	float sina  = sin(angle);
 	float mcosa = 1.0f - cosa;
-	float m0 = (v._x * v._x * mcosa) + cosa;
-	float m1 = (v._x * v._y * mcosa) + (v._z * sina);
-	float m2 = (v._x * v._z * mcosa) - (v._y * sina);
+	float m0  = (x * x * mcosa) + cosa;
+	float m1  = (x * y * mcosa) + (z * sina);
+	float m2  = (x * z * mcosa) - (y * sina);
 
-	float m4 = (v._x * v._y * mcosa) - (v._z * sina);
-	float m5 = (v._y * v._y * mcosa) + cosa;
-	float m6 = (v._y * v._z * mcosa) + (v._x * sina);
+	float m4  = (x * y * mcosa) - (z * sina);
+	float m5  = (y * y * mcosa) + cosa;
+	float m6  = (y * z * mcosa) + (x * sina);
 
-	float m8 = (v._x * v._z * mcosa) + (v._y * sina);
-	float m9 = (v._y * v._z * mcosa) - (v._x * sina);
-	float m10 = (v._z * v._z * mcosa) + cosa;
+	float m8  = (x * z * mcosa) + (y * sina);
+	float m9  = (y * z * mcosa) - (x * sina);
+	float m10 = (z * z * mcosa) + cosa;
+
 	for(int i = 0; i < 4; i++) {
 		result[0 + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4 + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
