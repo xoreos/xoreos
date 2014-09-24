@@ -37,7 +37,7 @@ static const float kIdentity[] = {
 namespace Common {
 
 TransformationMatrix::TransformationMatrix(bool identity) {
-	if(identity)
+	if (identity)
 		loadIdentity();
 }
 
@@ -75,11 +75,11 @@ void TransformationMatrix::getPosition(float &x, float &y, float &z) const {
 }
 
 const float *TransformationMatrix::getPosition() const {
-	return &(_elements[0]);
+	return &(_elements[12]);
 }
 
 const float *TransformationMatrix::getXAxis() const {
-	return &(_elements[12]);
+	return &(_elements[0]);
 }
 
 const float *TransformationMatrix::getYAxis() const {
@@ -162,16 +162,18 @@ void TransformationMatrix::scale(const Vector3 &v) {
 	*/
 }
 
-void TransformationMatrix::rotate(float angle, float x, float y, float z) {
+void TransformationMatrix::rotate(float angle, float x, float y, float z, bool normalise) {
 	// Normalize the axis vector
-	float length = x * x + y * y + z * z;
-	if ((length != 1.0f) && (length != 0.0f)) {
-		// Invert length to reduce number of later divisions.
-		length = 1.0f / sqrtf(length);
+	if (normalise) {
+		float length = x * x + y * y + z * z;
+		if ((length != 1.0f) && (length != 0.0f)) {
+			// Invert length to reduce number of later divisions.
+			length = 1.0f / sqrtf(length);
 
-		x *= length;
-		y *= length;
-		z *= length;
+			x *= length;
+			y *= length;
+			z *= length;
+		}
 	}
 
 	angle = deg2rad(angle);
@@ -196,7 +198,7 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 	float m9  = (y * z * mcosa) - (x * sina);
 	float m10 = (z * z * mcosa) + cosa;
 
-	for(int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		result[0  + i] = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4  + i] = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
 		result[8  + i] = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
@@ -205,13 +207,18 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z) {
 	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
-void TransformationMatrix::rotateAxisLocal(const Vector3 &v, float angle) {
+void TransformationMatrix::rotateAxisLocal(const Vector3 &vin, float angle, bool normalise) {
 	angle = deg2rad(angle);
 
 	/* Slightly optimised matrix calculation for generic rotation. Note that
 	 * SSE implementations might end up being faster, if implemented.
 	 */
 	float result[16];
+
+	Vector3 v(vin);
+	if (normalise) {
+		v.norm();
+	}
 
 	float cosa  = cos(angle);
 	float sina  = sin(angle);
@@ -228,7 +235,7 @@ void TransformationMatrix::rotateAxisLocal(const Vector3 &v, float angle) {
 	float m9  = (v._y * v._z * mcosa) - (v._x * sina);
 	float m10 = (v._z * v._z * mcosa) + cosa;
 
-	for(int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		result[0  + i] = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4  + i] = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
 		result[8  + i] = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
@@ -237,92 +244,109 @@ void TransformationMatrix::rotateAxisLocal(const Vector3 &v, float angle) {
 	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
-void TransformationMatrix::rotateXAxisLocal(float angle) {
-	angle = deg2rad(angle);
-
+void TransformationMatrix::rotateXAxisLocal(float angle, bool normalise) {
 	/* x-axis is [1,0,0], hence some optimisations can be made to the
 	 * basic arbitrary axis rotation method.
 	 */
-	float result[16];
+	if (normalise) {
+		// Provide a normalised vector for generic local axis rotation.
+		rotateAxisLocal(Vector3(1.0f, 0.0f, 0.0f), angle, false);
+	} else {
+		// Assume (this) has the rotation matrix already normalised, so use optimised code path.
+		angle = deg2rad(angle);
+		float result[16];
 
-	float cosa = cos(angle);
-	float sina = sin(angle);
-	float msina = -sina;
-	for(int i = 0; i < 4; i++) {
-		result[0 + i]  = (_elements[i]);
-		result[4 + i]  = (_elements[i + 4] * cosa)  + (_elements[i + 8] * sina);
-		result[8 + i]  = (_elements[i + 4] * msina) + (_elements[i + 8] * cosa);
-		result[12 + i] = (_elements[i + 12]);
+		float cosa = cos(angle);
+		float sina = sin(angle);
+		float msina = -sina;
+		for (int i = 0; i < 4; i++) {
+			result[0 + i]  = (_elements[i]);
+			result[4 + i]  = (_elements[i + 4] * cosa)  + (_elements[i + 8] * sina);
+			result[8 + i]  = (_elements[i + 4] * msina) + (_elements[i + 8] * cosa);
+			result[12 + i] = (_elements[i + 12]);
+		}
+		memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 	}
-	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
-void TransformationMatrix::rotateYAxisLocal(float angle) {
-	angle = deg2rad(angle);
-
+void TransformationMatrix::rotateYAxisLocal(float angle, bool normalise) {
 	/* y-axis is [0,1,0], hence some optimisations can be made to the
 	 * basic arbitrary axis rotation method.
 	 */
-	float result[16];
+	if (normalise) {
+		// Provide a normalised vector for generic local axis rotation.
+		rotateAxisLocal(Vector3(0.0f, 1.0f, 0.0f), angle, false);
+	} else {
+		// Assume (this) has the rotation matrix already normalised, so use optimised code path.
+		angle = deg2rad(angle);
+		float result[16];
 
-	float cosa = cos(angle);
-	float sina = sin(angle);
-	float msina = -sina;
-	for(int i = 0; i < 4; i++) {
-		result[0 + i]  = (_elements[i] * cosa) + (_elements[i + 8] * msina);
-		result[4 + i]  = (_elements[i + 4]);
-		result[8 + i]  = (_elements[i] * sina) + (_elements[i + 8] * cosa);
-		result[12 + i] = (_elements[i + 12]);
+		float cosa = cos(angle);
+		float sina = sin(angle);
+		float msina = -sina;
+		for (int i = 0; i < 4; i++) {
+			result[0 + i]  = (_elements[i] * cosa) + (_elements[i + 8] * msina);
+			result[4 + i]  = (_elements[i + 4]);
+			result[8 + i]  = (_elements[i] * sina) + (_elements[i + 8] * cosa);
+			result[12 + i] = (_elements[i + 12]);
+		}
+		memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 	}
-	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
-void TransformationMatrix::rotateZAxisLocal(float angle) {
-	angle = deg2rad(angle);
-
+void TransformationMatrix::rotateZAxisLocal(float angle, bool normalise) {
 	/* y-axis is [0,1,0], hence some optimisations can be made to the
 	 * basic arbitrary axis rotation method.
 	 */
-	float result[16];
+	if (normalise) {
+		// Provide a normalised vector for generic local axis rotation.
+		rotateAxisLocal(Vector3(0.0f, 0.0f, 1.0f), angle, false);
+	} else {
+		// Assume (this) has the rotation matrix already normalised, so use optimised code path.
+		angle = deg2rad(angle);
+		float result[16];
 
-	float cosa = cos(angle);
-	float sina = sin(angle);
-	float msina = -sina;
-	for(int i = 0; i < 4; i++) {
-		result[0 + i]  = (_elements[i] * cosa)  + (_elements[i + 4] * sina);
-		result[4 + i]  = (_elements[i] * msina) + (_elements[i + 4] * cosa);
-		result[8 + i]  = (_elements[i + 8]);
-		result[12 + i] = (_elements[i + 12]);
+		float cosa = cos(angle);
+		float sina = sin(angle);
+		float msina = -sina;
+		for (int i = 0; i < 4; i++) {
+			result[0 + i]  = (_elements[i] * cosa)  + (_elements[i + 4] * sina);
+			result[4 + i]  = (_elements[i] * msina) + (_elements[i + 4] * cosa);
+			result[8 + i]  = (_elements[i + 8]);
+			result[12 + i] = (_elements[i + 12]);
+		}
+		memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 	}
-	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
-void TransformationMatrix::rotateAxisWorld(const Vector3 &v, float angle) {
+void TransformationMatrix::rotateAxisWorld(const Vector3 &vin, float angle, bool normalise) {
 	angle = deg2rad(angle);
 
 	float result[16];
 
-	float x, y, z;
-	x = v._x * _elements[0] + v._y * _elements[4] + v._z * _elements[8];
-	y = v._x * _elements[1] + v._y * _elements[5] + v._z * _elements[9];
-	z = v._x * _elements[2] + v._y * _elements[6] + v._z * _elements[10];
+	Vector3 v(vin._x * _elements[0] + vin._y * _elements[4] + vin._z * _elements[8],
+	          vin._x * _elements[1] + vin._y * _elements[5] + vin._z * _elements[9],
+	          vin._x * _elements[2] + vin._y * _elements[6] + vin._z * _elements[10]);
+	if (normalise) {
+		v.norm();
+	}
 
 	float cosa  = cos(angle);
 	float sina  = sin(angle);
 	float mcosa = 1.0f - cosa;
-	float m0  = (x * x * mcosa) + cosa;
-	float m1  = (x * y * mcosa) + (z * sina);
-	float m2  = (x * z * mcosa) - (y * sina);
+	float m0  = (v._x * v._x * mcosa) + cosa;
+	float m1  = (v._x * v._y * mcosa) + (v._z * sina);
+	float m2  = (v._x * v._z * mcosa) - (v._y * sina);
 
-	float m4  = (x * y * mcosa) - (z * sina);
-	float m5  = (y * y * mcosa) + cosa;
-	float m6  = (y * z * mcosa) + (x * sina);
+	float m4  = (v._x * v._y * mcosa) - (v._z * sina);
+	float m5  = (v._y * v._y * mcosa) + cosa;
+	float m6  = (v._y * v._z * mcosa) + (v._x * sina);
 
-	float m8  = (x * z * mcosa) + (y * sina);
-	float m9  = (y * z * mcosa) - (x * sina);
-	float m10 = (z * z * mcosa) + cosa;
+	float m8  = (v._x * v._z * mcosa) + (v._y * sina);
+	float m9  = (v._y * v._z * mcosa) - (v._x * sina);
+	float m10 = (v._z * v._z * mcosa) + cosa;
 
-	for(int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		result[0 + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
 		result[4 + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
 		result[8 + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
@@ -331,88 +355,16 @@ void TransformationMatrix::rotateAxisWorld(const Vector3 &v, float angle) {
 	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
-void TransformationMatrix::rotateXAxisWorld(float angle) {
-	angle = deg2rad(angle);
-
-	float result[16];
-
-	float cosa  = cos(angle);
-	float sina  = sin(angle);
-	float mcosa = 1.0f - cosa;
-	float m0  = (_elements[0] * _elements[0] * mcosa) + cosa;
-	float m1  = (_elements[0] * _elements[4] * mcosa) + (_elements[8] * sina);
-	float m2  = (_elements[0] * _elements[8] * mcosa) - (_elements[4] * sina);
-
-	float m4  = (_elements[0] * _elements[4] * mcosa) - (_elements[8] * sina);
-	float m5  = (_elements[4] * _elements[4] * mcosa) + cosa;
-	float m6  = (_elements[4] * _elements[8] * mcosa) + (_elements[0] * sina);
-
-	float m8  = (_elements[0] * _elements[8] * mcosa) + (_elements[4] * sina);
-	float m9  = (_elements[4] * _elements[8] * mcosa) - (_elements[0] * sina);
-	float m10 = (_elements[8] * _elements[8] * mcosa) + cosa;
-	for(int i = 0; i < 4; i++) {
-		result[0 + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
-		result[4 + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
-		result[8 + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
-		result[12 + i] = (_elements[i + 12]);
-	}
-	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
+void TransformationMatrix::rotateXAxisWorld(float angle, bool normalise) {
+	this->rotateAxisWorld(Vector3(1.0f, 0.0f, 0.0f), angle, normalise);
 }
 
-void TransformationMatrix::rotateYAxisWorld(float angle) {
-	angle = deg2rad(angle);
-
-	float result[16];
-
-	float cosa  = cos(angle);
-	float sina  = sin(angle);
-	float mcosa = 1.0f - cosa;
-	float m0  = (_elements[1] * _elements[1] * mcosa) + cosa;
-	float m1  = (_elements[1] * _elements[5] * mcosa) + (_elements[9] * sina);
-	float m2  = (_elements[1] * _elements[9] * mcosa) - (_elements[5] * sina);
-
-	float m4  = (_elements[1] * _elements[5] * mcosa) - (_elements[9] * sina);
-	float m5  = (_elements[5] * _elements[5] * mcosa) + cosa;
-	float m6  = (_elements[5] * _elements[9] * mcosa) + (_elements[1] * sina);
-
-	float m8  = (_elements[1] * _elements[9] * mcosa) + (_elements[5] * sina);
-	float m9  = (_elements[5] * _elements[9] * mcosa) - (_elements[1] * sina);
-	float m10 = (_elements[9] * _elements[9] * mcosa) + cosa;
-	for(int i = 0; i < 4; i++) {
-		result[0 + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
-		result[4 + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
-		result[8 + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
-		result[12 + i] = (_elements[i + 12]);
-	}
-	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
+void TransformationMatrix::rotateYAxisWorld(float angle, bool normalise) {
+	this->rotateAxisWorld(Vector3(0.0f, 1.0f, 0.0f), angle, normalise);
 }
 
-void TransformationMatrix::rotateZAxisWorld(float angle) {
-	angle = deg2rad(angle);
-
-	float result[16];
-
-	float cosa  = cos(angle);
-	float sina  = sin(angle);
-	float mcosa = 1.0f - cosa;
-	float m0  = (_elements[2] * _elements[2] * mcosa) + cosa;
-	float m1  = (_elements[2] * _elements[6] * mcosa) + (_elements[10] * sina);
-	float m2  = (_elements[2] * _elements[10] * mcosa) - (_elements[6] * sina);
-
-	float m4  = (_elements[2] * _elements[6] * mcosa) - (_elements[10] * sina);
-	float m5  = (_elements[6] * _elements[6] * mcosa) + cosa;
-	float m6  = (_elements[6] * _elements[10] * mcosa) + (_elements[2] * sina);
-
-	float m8  = (_elements[2] * _elements[10] * mcosa) + (_elements[6] * sina);
-	float m9  = (_elements[6] * _elements[10] * mcosa) - (_elements[2] * sina);
-	float m10 = (_elements[10] * _elements[10] * mcosa) + cosa;
-	for(int i = 0; i < 4; i++) {
-		result[0 + i]  = (_elements[i] * m0) + (_elements[i + 4] * m1) + (_elements[i + 8] * m2);
-		result[4 + i]  = (_elements[i] * m4) + (_elements[i + 4] * m5) + (_elements[i + 8] * m6);
-		result[8 + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
-		result[12 + i] = (_elements[i + 12]);
-	}
-	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
+void TransformationMatrix::rotateZAxisWorld(float angle, bool normalise) {
+	this->rotateAxisWorld(Vector3(0.0f, 0.0f, 1.0f), angle, normalise);
 }
 
 void TransformationMatrix::setRotation(const TransformationMatrix &m) {
@@ -445,7 +397,7 @@ void TransformationMatrix::resetRotation() {
 
 void TransformationMatrix::transform(const TransformationMatrix &m) {
 	float result[16];
-	for(uint32_t i = 0; i < 16; i+=4) {
+	for (uint32_t i = 0; i < 16; i+=4) {
 		// __m128 r, __m128 a, __m128 b
 		// a = _mm_load_ps(&_elements[0]);
 		// b = _mm_set1_ps(m[i]);
@@ -454,7 +406,7 @@ void TransformationMatrix::transform(const TransformationMatrix &m) {
 		result[i + 1] = _elements[0 + 1] * m[i];
 		result[i + 2] = _elements[0 + 2] * m[i];
 		result[i + 3] = _elements[0 + 3] * m[i];
-		for(uint32_t j= 1; j < 4; j++) {
+		for (uint32_t j= 1; j < 4; j++) {
 			// a = _mm_load_ps(&_elements[j<<2]);
 			// b = _mm_set1_ps(m[i+j]);
 			// r = _mm_add_ps(a, b);
@@ -469,12 +421,12 @@ void TransformationMatrix::transform(const TransformationMatrix &m) {
 }
 
 void TransformationMatrix::transform(const TransformationMatrix &a, const TransformationMatrix &b) {
-	for(uint32_t i = 0; i < 16; i+=4) {
+	for (uint32_t i = 0; i < 16; i+=4) {
 		_elements[i + 0] = a[0 + 0] * b[i];
 		_elements[i + 1] = a[0 + 1] * b[i];
 		_elements[i + 2] = a[0 + 2] * b[i];
 		_elements[i + 3] = a[0 + 3] * b[i];
-		for(uint32_t j= 1; j < 4; j++) {
+		for (uint32_t j= 1; j < 4; j++) {
 			_elements[i + 0] += a[j * 4 + 0] * b[i + j];
 			_elements[i + 1] += a[j * 4 + 1] * b[i + j];
 			_elements[i + 2] += a[j * 4 + 2] * b[i + j];
@@ -499,7 +451,7 @@ TransformationMatrix TransformationMatrix::getInverse() {
 	float B5 = (_elements[10] * _elements[15]) - (_elements[11] * _elements[14]);
 
 	float det = A0*B5 - A1*B4 + A2*B3 + A3*B2 - A4*B1 + A5*B0;
-	if(fabs(det) <= 0.00001f) {
+	if (fabs(det) <= 0.00001f) {
 		t.loadIdentity();
 		return t;
 	}
@@ -526,11 +478,10 @@ TransformationMatrix TransformationMatrix::getInverse() {
 	return t;
 }
 
-TransformationMatrix TransformationMatrix::transpose() {
+TransformationMatrix TransformationMatrix::getTranspose() {
 	TransformationMatrix t(false);
-	for(unsigned int i = 0; i < 3; i++) {
-		for(unsigned int j = i + 1; j < 4; j++) {
-			t[(j << 2) + i] = _elements[(i << 2) + j];
+	for (unsigned int i = 0; i < 4; i++) {
+		for (unsigned int j = 0; j < 4; j++) {
 			t[(i << 2) + j] = _elements[(j << 2) + i];
 		}
 	}
@@ -550,7 +501,7 @@ void TransformationMatrix::lookAt(const Vector3 &v) {
 
 	z.norm();
 
-	if(((z._x * z._x) < 0.00001f) && ((z._z * z._z) < 0.00001f)) {
+	if (((z._x * z._x) < 0.00001f) && ((z._z * z._z) < 0.00001f)) {
 		y._y = 0.0f;
 		y._x = -1.0f;
 	}

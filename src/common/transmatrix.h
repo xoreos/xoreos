@@ -62,15 +62,15 @@ public:
 	void scale    (float x, float y, float z);
 	void scale    (const Vector3 &v);
 
-	void rotate(float angle, float x, float y, float z);
-	void rotateAxisLocal(const Vector3 &v, float angle);
-	void rotateXAxisLocal(float angle);
-	void rotateYAxisLocal(float angle);
-	void rotateZAxisLocal(float angle);
-	void rotateAxisWorld(const Vector3 &v, float angle);
-	void rotateXAxisWorld(float angle);
-	void rotateYAxisWorld(float angle);
-	void rotateZAxisWorld(float angle);
+	void rotate(float angle, float x, float y, float z, bool normalise = true);
+	void rotateAxisLocal(const Vector3 &vin, float angle, bool normalise = true);
+	void rotateXAxisLocal(float angle, bool normalise = true);
+	void rotateYAxisLocal(float angle, bool normalise = true);
+	void rotateZAxisLocal(float angle, bool normalise = true);
+	void rotateAxisWorld(const Vector3 &vin, float angle, bool normalise = true);
+	void rotateXAxisWorld(float angle, bool normalise = true);
+	void rotateYAxisWorld(float angle, bool normalise = true);
+	void rotateZAxisWorld(float angle, bool normalise = true);
 	void setRotation(const TransformationMatrix &m);
 	void resetRotation();
 
@@ -84,7 +84,7 @@ public:
 	TransformationMatrix getInverse();
 
 	/** Returns a transposed matrix of this. */
-	TransformationMatrix transpose();
+	TransformationMatrix getTranspose();
 
 	/** Rotate matrix to look at the given point. */
 	void lookAt(const Vector3 &v);
