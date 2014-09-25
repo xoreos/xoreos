@@ -55,6 +55,9 @@ CharGenMenu::CharGenMenu(Module &module) : _module(&module) {
 CharGenMenu::~CharGenMenu() {
 }
 
+void CharGenMenu::reset() {
+}
+
 void CharGenMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "CancelButton") {
 		_returnCode = 1;

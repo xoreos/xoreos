@@ -18,38 +18,40 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/chargen/chargen.h
- *  The NWN character generator.
+/** @file engines/nwn/gui/chargen/chargenbase.cpp
+ *  The character generator base class.
  */
 
-#ifndef ENGINES_NWN_GUI_CHARGEN_CHARGEN_H
-#define ENGINES_NWN_GUI_CHARGEN_CHARGEN_H
+#ifndef ENGINES_NWN_GUI_CHARGEN_CHARGENBASE_H
+#define ENGINES_NWN_GUI_CHARGEN_CHARGENBASE_H
 
-#include "engines/nwn/gui/chargen/chargenbase.h"
+#include "engines/nwn/gui/gui.h"
 
 namespace Engines {
 
 namespace NWN {
 
-class Module;
+class Creature;
 
-/** The NWN character generator. */
-class CharGenMenu : public CharGenBase {
+class CharGenBase : public GUI {
 public:
-	CharGenMenu(Module &module);
-	~CharGenMenu();
-
-	void reset();
+	virtual void reset() = 0;
 
 protected:
-	void callbackActive(Widget &widget);
+	struct CharacterAbilities {
+		Creature *character;
 
-private:
-	Module *_module;
+		CharacterAbilities();
+		CharacterAbilities(Creature * charac);
+	};
+
+	void applyAbilities();
+
+	static CharacterAbilities _charChoices;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_GUI_CHARGEN_CHARGEN_H
+#endif // ENGINES_NWN_GUI_CHARGEN_CHARGENBASE_H

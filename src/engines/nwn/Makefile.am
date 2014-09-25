@@ -47,6 +47,7 @@ noinst_HEADERS = \
                  gui/options/soundadv.h \
                  gui/options/video.h \
                  gui/options/videoadv.h \
+                 gui/chargen/chargenbase.h \
                  gui/chargen/chargen.h \
                  gui/main/charpremade.h \
                  gui/main/chartype.h \
@@ -118,6 +119,7 @@ libnwn_la_SOURCES = \
                     gui/options/soundadv.cpp \
                     gui/options/video.cpp \
                     gui/options/videoadv.cpp \
+                    gui/chargen/chargenbase.cpp \
                     gui/chargen/chargen.cpp \
                     gui/main/charpremade.cpp \
                     gui/main/chartype.cpp \
