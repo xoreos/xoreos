@@ -46,6 +46,8 @@ class Item;
 
 class Creature : public Object {
 public:
+	/** Create a dummy creature instance. Not playable as it is.*/
+	Creature();
 	/** Load from a creature instance. */
 	Creature(const Aurora::GFFStruct &creature);
 	/** Load from a character file. */

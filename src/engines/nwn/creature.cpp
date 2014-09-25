@@ -61,6 +61,10 @@ Creature::Associate::Associate(AssociateType t, Creature *a) : type(t), associat
 Creature::BodyPart::BodyPart() : id(Aurora::kFieldIDInvalid) {
 }
 
+Creature::Creature() : Object(kObjectTypeCreature) {
+	init();
+}
+
 Creature::Creature(const Aurora::GFFStruct &creature) : Object(kObjectTypeCreature) {
 	init();
 
