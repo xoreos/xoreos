@@ -107,8 +107,17 @@ int main(int argc, char **argv) {
 	if (!ConfigMan.setGame(target) || !ConfigMan.isInGame())
 		error("No target \"%s\" in the config file", target.c_str());
 
-	// Open the requested log file
-	Common::UString logFile = ConfigMan.getString("logfile");
+	/* Open the log file.
+	 *
+	 * NOTE: A log is opened by default, unless the logfile config value
+	 *       is set to an empty string or nologfile is set to true.
+	 */
+	Common::UString logFile = DebugMan.getDefaultLogFile();
+	if (ConfigMan.hasKey("logfile"))
+		logFile = ConfigMan.getString("logfile");
+	if (ConfigMan.getBool("nologfile", false))
+		logFile.clear();
+
 	if (!logFile.empty())
 		DebugMan.openLogFile(logFile);
 
