@@ -163,6 +163,9 @@ public:
 
 	static void getSubDirectories(const UString &directory, std::list<UString> &subDirectories);
 
+	/** Create all directories in this path. */
+	static bool createDirectories(const UString &path);
+
 	/** Escape a string literal for use in a regexp. */
 	static UString escapeStringLiteral(const UString &str);
 };

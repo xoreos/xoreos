@@ -39,6 +39,7 @@ using boost::filesystem::is_regular_file;
 using boost::filesystem::is_directory;
 using boost::filesystem::file_size;
 using boost::filesystem::directory_iterator;
+using boost::filesystem::create_directories;
 
 // boost-string_algo
 using boost::equals;
@@ -291,6 +292,10 @@ UString FilePath::findSubDirectory(const UString &directory, const UString &subD
 			return "";
 
 	return curDir;
+}
+
+bool FilePath::createDirectories(const UString &path) {
+	return create_directories(path.c_str());
 }
 
 UString FilePath::escapeStringLiteral(const UString &str) {
