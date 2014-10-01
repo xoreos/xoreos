@@ -29,19 +29,6 @@
 #include "common/filepath.h"
 #include "common/configfile.h"
 
-#if defined(WIN32)
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-
-	#define DEFAULT_CONFIG_FILE "xoreos.ini"
-#elif defined(MACOSX)
-	#define DEFAULT_CONFIG_FILE "Library/Preferences/xoreos Preferences"
-#elif defined(UNIX)
-	#define DEFAULT_CONFIG_FILE ".xoreosrc"
-#else
-	#define DEFAULT_CONFIG_FILE ".xoreosrc"
-#endif
-
 DECLARE_SINGLETON(Common::ConfigManager)
 
 namespace Common {
@@ -417,88 +404,12 @@ UString ConfigManager::getConfigFile() const {
 	return getDefaultConfigFile();
 }
 
-// Big messy function to figure out the default config file/path,
-// depending on the OS.
-// TODO: For easier portability, stuff like that should probably
-//       be put somewhere collectively...
 UString ConfigManager::getDefaultConfigFile() {
-	UString file;
+	// Find the correct config directory and create it if necessary.
+	UString directory = FilePath::getConfigDirectory();
+	FilePath::createDirectories(directory);
 
-#if defined(WIN32)
-	// Windows: Huge fucking mess
-
-	char configFile[MAXPATHLEN];
-
-	OSVERSIONINFO win32OsVersion;
-	ZeroMemory(&win32OsVersion, sizeof(OSVERSIONINFO));
-	win32OsVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&win32OsVersion);
-	// Check for non-9X version of Windows.
-	if (win32OsVersion.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS) {
-		// Use the Application Data directory of the user profile.
-		if (win32OsVersion.dwMajorVersion >= 5) {
-			if (!GetEnvironmentVariable("APPDATA", configFile, sizeof(configFile)))
-				error("Unable to access application data directory");
-		} else {
-			if (!GetEnvironmentVariable("USERPROFILE", configFile, sizeof(configFile)))
-				error("Unable to access user profile directory");
-
-			strcat(configFile, "\\Application Data");
-			CreateDirectory(configFile, 0);
-		}
-
-		strcat(configFile, "\\xoreos");
-		CreateDirectory(configFile, 0);
-		strcat(configFile, "\\" DEFAULT_CONFIG_FILE);
-
-		FILE *tmp = 0;
-		if ((tmp = fopen(configFile, "r")) == 0) {
-			// Check windows directory
-			char oldConfigFile[MAXPATHLEN];
-			GetWindowsDirectory(oldConfigFile, MAXPATHLEN);
-			strcat(oldConfigFile, "\\" DEFAULT_CONFIG_FILE);
-			if ((tmp = fopen(oldConfigFile, "r"))) {
-				strcpy(configFile, oldConfigFile);
-
-				fclose(tmp);
-			}
-		} else {
-			fclose(tmp);
-		}
-	} else {
-		// Check windows directory
-		GetWindowsDirectory(configFile, MAXPATHLEN);
-		strcat(configFile, "\\" DEFAULT_CONFIG_FILE);
-	}
-
-	file = configFile;
-#elif defined(MACOSX)
-	// Mac OS X: Home directory
-	const char *dir = getenv("HOME");
-	if (dir) {
-		file  = dir;
-		file += "/";
-	}
-
-	file += DEFAULT_CONFIG_FILE;
-#elif defined(UNIX)
-	// Default Unixoid: XDG_CONFIG_HOME
-	const char *dir = getenv("XDG_CONFIG_HOME");
-	if (dir) {
-		file  = dir;
-		file += "/";
-	} else if ((dir = getenv("HOME"))) {
-		file  = dir;
-		file += "/.config/";
-	}
-
-	file += DEFAULT_CONFIG_FILE;
-#else
-	// Fallback: Current directory
-	file = DEFAULT_CONFIG_FILE;
-#endif
-
-	return file;
+	return directory + "/xoreos.conf";
 }
 
 bool ConfigManager::hasKey(const ConfigDomain *domain, const UString &key) const {
