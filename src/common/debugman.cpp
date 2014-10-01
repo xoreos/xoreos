@@ -202,4 +202,12 @@ void DebugManager::logString(const UString &str) {
 	}
 }
 
+UString DebugManager::getDefaultLogFile() {
+	// Find the correct user data directory and create it if necessary.
+	UString directory = FilePath::getUserDataDirectory();
+	FilePath::createDirectories(directory);
+
+	return directory + "/xoreos.log";
+}
+
 } // End of namespace Common

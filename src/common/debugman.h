@@ -113,6 +113,9 @@ public:
 	/** Log that string to the current log file. */
 	void logString(const UString &str);
 
+	/** Return the OS-specific default path of the log file. */
+	static UString getDefaultLogFile();
+
 private:
 	static const uint kGlobalChannelCount = 15;
 	static const uint kEngineChannelCount = 15;
