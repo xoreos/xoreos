@@ -75,11 +75,6 @@ int main(int argc, char **argv) {
 	if (!parseCommandline(argc, argv, target, code))
 		return code;
 
-	// Open the requested log file
-	Common::UString logFile = ConfigMan.getString("logfile");
-	if (!logFile.empty())
-		DebugMan.openLogFile(logFile);
-
 	// Check the requested target
 	if (target.empty() || !ConfigMan.hasGame(target)) {
 		Common::UString path = ConfigMan.getString("path");
@@ -109,9 +104,15 @@ int main(int argc, char **argv) {
 			warning("Creating a new target for this game");
 	}
 
-	status("Target \"%s\"", target.c_str());
 	if (!ConfigMan.setGame(target) || !ConfigMan.isInGame())
 		error("No target \"%s\" in the config file", target.c_str());
+
+	// Open the requested log file
+	Common::UString logFile = ConfigMan.getString("logfile");
+	if (!logFile.empty())
+		DebugMan.openLogFile(logFile);
+
+	status("Target \"%s\"", target.c_str());
 
 	Common::UString dirArg = ConfigMan.getString("path");
 	if (dirArg.empty())
