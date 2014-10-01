@@ -53,6 +53,7 @@ static void displayUsage(const char *name) {
 	std::printf("          --debugchannel=CHAN Set the enabled debug channel(s) to CHAN.\n");
 	std::printf("          --listdebug         List all available debug channels.\n");
 	std::printf("          --logfile=FILE      Write all debug output into this file too.\n");
+	std::printf("          --nologfile=BOOL    Don't write a log file.\n");
 	std::printf("\n");
 	std::printf("FILE: Absolute or relative path to a file.\n");
 	std::printf("DIR:  Absolute or relative path to a directory.\n");
