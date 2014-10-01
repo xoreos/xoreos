@@ -180,6 +180,16 @@ public:
 	 *    depending on the Windows version.
 	 */
 	static UString getConfigDirectory();
+
+	/** Return the OS-specific path of the user data directory.
+	 *
+	 *  This is where user data like the log or game saves are put by default.
+	 *
+	 *  - On GNU/Linux, this will evaluate to $XDG_DATA_HOME/xoreos/
+	 *  - On Mac OS X, this will evaluate to $HOME/Library/Application\ Support/xoreos/
+	 *  - On Windows, this will be the same place as getConfigDirectory()
+	 */
+	static UString getUserDataDirectory();
 };
 
 } // End of namespace Common

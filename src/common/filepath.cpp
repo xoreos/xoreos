@@ -378,4 +378,38 @@ UString FilePath::getConfigDirectory() {
 	return makeAbsolute(directory);
 }
 
+UString FilePath::getUserDataDirectory() {
+	UString directory;
+
+#if defined(WIN32)
+	// Windows: Same as getConfigDirectory()
+	directory = getConfigDirectory();
+#elif defined(MACOSX)
+	// Mac OS X: ~/Library/Application\ Support/xoreos/
+
+	const char *pathStr = getenv("HOME");
+	if (pathStr)
+		directory = UString(pathStr) + "/Library/Application Support/xoreos";
+	else
+		directory = ".";
+
+#elif defined(UNIX)
+	// Default Unixoid: $XDG_DATA_HOME/xoreos/ or ~/.local/share/xoreos/
+
+	const char *pathStr = getenv("XDG_DATA_HOME");
+	if (pathStr)
+		directory = UString(pathStr) + "/xoreos";
+	else if ((pathStr = getenv("HOME")))
+		directory = UString(pathStr) + "/.local/share/xoreos";
+	else
+		directory = ".";
+
+#else
+	// Fallback: Same as getConfigDirectory()
+	directory = getConfigDirectory();
+#endif
+
+	return makeAbsolute(directory);
+}
+
 } // End of namespace Common
