@@ -22,6 +22,14 @@
  *  Utility class for manipulating file paths.
  */
 
+// Necessary to query for APPDATA and USERPROFILE on Windows
+#if defined(WIN32)
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+#endif
+
+#include <cstdlib>
+
 #include <list>
 
 #include <boost/algorithm/string.hpp>
@@ -303,6 +311,71 @@ UString FilePath::escapeStringLiteral(const UString &str) {
 	const std::string  rep("\\\\\\1&");
 
 	return boost::regex_replace(std::string(str.c_str()), esc, rep, boost::match_default | boost::format_sed);
+}
+
+UString FilePath::getConfigDirectory() {
+	UString directory;
+
+#if defined(WIN32)
+	// Windows: $APPDATA/xoreos/ or $USERPROFILE/Application Data/xoreos/ or ./
+
+	char pathStr[MAXPATHLEN];
+
+	OSVERSIONINFO win32OsVersion;
+	ZeroMemory(&win32OsVersion, sizeof(OSVERSIONINFO));
+	win32OsVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&win32OsVersion);
+
+	if (win32OsVersion.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS) {
+		// On non-9X version of Windows, use the Application Data directory of the user profile.
+
+		if (win32OsVersion.dwMajorVersion >= 5) {
+			if (!GetEnvironmentVariable("APPDATA", pathStr, sizeof(pathStr)))
+				error("Unable to access application data directory");
+
+			directory = pathStr;
+
+		} else {
+			if (!GetEnvironmentVariable("USERPROFILE", pathStr, sizeof(pathStr)))
+				error("Unable to access user profile directory");
+
+			directory = UString(pathStr) + "\\Application Data";
+		}
+
+		directory += "\\xoreos";
+
+	} else {
+		// On older Windows versions, use the currect directory
+		directory = ".";
+	}
+
+#elif defined(MACOSX)
+	// Mac OS X: ~/Library/Preferences/xoreos/
+
+	const char *pathStr = getenv("HOME");
+	if (pathStr)
+		directory = UString(pathStr) + "/Library/Preferences/xoreos";
+	else
+		directory = ".";
+
+#elif defined(UNIX)
+	// Default Unixoid: $XDG_CONFIG_HOME/xoreos/ or ~/.config/xoreos/
+
+	const char *pathStr = getenv("XDG_CONFIG_HOME");
+	if (pathStr)
+		directory = UString(pathStr) + "/xoreos";
+	else if ((pathStr = getenv("HOME")))
+		directory = UString(pathStr) + "/.config/xoreos";
+	else
+		directory = ".";
+
+#else
+	// Fallback: Current directory
+
+	directory = ".";
+#endif
+
+	return makeAbsolute(directory);
 }
 
 } // End of namespace Common

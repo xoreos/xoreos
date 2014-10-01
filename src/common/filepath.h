@@ -168,6 +168,18 @@ public:
 
 	/** Escape a string literal for use in a regexp. */
 	static UString escapeStringLiteral(const UString &str);
+
+	/** Return the OS-specific path of the config directory.
+	 *
+	 *  This is where the xoreos.conf is put by default.
+	 *
+	 *  - On GNU/Linux, this will evaluate to $XDG_CONFIG_HOME/xoreos/
+	 *  - On Mac OS X, this will evaluate to $HOME/Library/Preferences/xoreos/
+	 *  - On Windows, this will evaluate to either $APPDATA/xoreos/,
+	 *    $USERPROFILE/Application\ Data/xoreos/ or the current directory,
+	 *    depending on the Windows version.
+	 */
+	static UString getConfigDirectory();
 };
 
 } // End of namespace Common
