@@ -163,7 +163,12 @@ bool DebugManager::openLogFile(const UString &file) {
 	closeLogFile();
 
 	_logFileStartLine = true;
-	return _logFile.open(FilePath::makeAbsolute(file));
+
+	// Create the directories in the path, if necessary
+	UString path = FilePath::makeAbsolute(file);
+	FilePath::createDirectories(FilePath::getDirectory(path));
+
+	return _logFile.open(path);
 }
 
 void DebugManager::closeLogFile() {
@@ -203,11 +208,8 @@ void DebugManager::logString(const UString &str) {
 }
 
 UString DebugManager::getDefaultLogFile() {
-	// Find the correct user data directory and create it if necessary.
-	UString directory = FilePath::getUserDataDirectory();
-	FilePath::createDirectories(directory);
-
-	return directory + "/xoreos.log";
+	// By default, put the log file into the user data directory
+	return FilePath::getUserDataDirectory() + "/xoreos.log";
 }
 
 } // End of namespace Common
