@@ -33,9 +33,7 @@
 #include <list>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/system/config.hpp>
 #include <boost/regex.hpp>
-#include <boost/version.hpp>
 
 #include "common/filepath.h"
 #include "common/util.h"
@@ -52,14 +50,6 @@ using boost::filesystem::create_directories;
 // boost-string_algo
 using boost::equals;
 using boost::iequals;
-
-#if ((((BOOST_VERSION / 100000) == 1) && (((BOOST_VERSION / 100) % 1000) < 44)) || BOOST_FILESYSTEM_VERSION == 2)
-#define generic_string() string()
-#elif BOOST_FILESYSTEM_VERSION == 3
-#define stem() stem().string()
-#define extension() extension().string()
-#define filename() filename().string()
-#endif
 
 namespace Common {
 
@@ -83,19 +73,19 @@ uint32 FilePath::getFileSize(const UString &p) {
 UString FilePath::getFile(const UString &p) {
 	path file(p.c_str());
 
-	return file.filename();
+	return file.filename().string();
 }
 
 UString FilePath::getStem(const UString &p) {
 	path file(p.c_str());
 
-	return file.stem();
+	return file.stem().string();
 }
 
 UString FilePath::getExtension(const UString &p) {
 	path file(p.c_str());
 
-	return file.extension();
+	return file.extension().string();
 }
 
 UString FilePath::changeExtension(const UString &p, const UString &ext) {
@@ -270,10 +260,10 @@ static UString findSubDirectory_internal(const UString &directory, const UString
 				// It's a directory. Check if it's the one we're looking for
 
 				if (caseInsensitive) {
-					if (iequals(itDir->path().filename(), subDirectory.c_str()))
+					if (iequals(itDir->path().filename().string(), subDirectory.c_str()))
 						return itDir->path().generic_string();
 				} else {
-					if (equals(itDir->path().filename(), subDirectory.c_str()))
+					if (equals(itDir->path().filename().string(), subDirectory.c_str()))
 						return itDir->path().generic_string();
 				}
 			}
