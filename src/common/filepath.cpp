@@ -106,6 +106,12 @@ UString FilePath::changeExtension(const UString &p, const UString &ext) {
 	return file.string();
 }
 
+UString FilePath::getDirectory(const UString &p) {
+	path file(p.c_str());
+
+	return file.parent_path().string();
+}
+
 path FilePath::normalize(const boost::filesystem::path &p) {
 	UString ustring = p.string();
 

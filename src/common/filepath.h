@@ -95,6 +95,15 @@ public:
 	 */
 	static UString changeExtension(const UString &p, const UString &ext = "");
 
+	/** Return a path's directory.
+	 *
+	 *  Example: "/path/to/file.ext" -> "/path/to/"
+	 *
+	 *  @param  p The path to manipulate.
+	 *  @return The path's directory.
+	 */
+	static UString getDirectory(const UString &p);
+
 	/** Normalize a path.
 	 *
 	 *  A normalized path contains no consecutive '/', uses '/' as a directory path separator,
