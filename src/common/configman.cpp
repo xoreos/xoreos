@@ -122,7 +122,9 @@ bool ConfigManager::save() {
 	if (!_config)
 		return true;
 
-	UString file = getConfigFile();
+	// Create the directories in the path, if necessary
+	UString file = FilePath::makeAbsolute(getConfigFile());
+	FilePath::createDirectories(FilePath::getDirectory(file));
 
 	try {
 
@@ -405,11 +407,8 @@ UString ConfigManager::getConfigFile() const {
 }
 
 UString ConfigManager::getDefaultConfigFile() {
-	// Find the correct config directory and create it if necessary.
-	UString directory = FilePath::getConfigDirectory();
-	FilePath::createDirectories(directory);
-
-	return directory + "/xoreos.conf";
+	// By default, the config file is in the config directory
+	return FilePath::getConfigDirectory() + "/xoreos.conf";
 }
 
 bool ConfigManager::hasKey(const ConfigDomain *domain, const UString &key) const {
