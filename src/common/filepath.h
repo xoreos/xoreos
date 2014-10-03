@@ -160,7 +160,14 @@ public:
 	 */
 	static bool getSubDirectories(const UString &directory, std::list<UString> &subDirectories);
 
-	/** Create all directories in this path. */
+	/** Create all directories in this path.
+	 *
+	 *  For example, if called on the path "/foo/bar/quux/", this will create
+	 *  the directories "/foo/", "/foo/bar/" and "/foo/bar/quux/" if necessary.
+	 *
+	 *  @param  path The path to create.
+	 *  @return true if at least one directory was created.
+	 */
 	static bool createDirectories(const UString &path);
 
 	/** Escape a string literal for use in a regexp. */
