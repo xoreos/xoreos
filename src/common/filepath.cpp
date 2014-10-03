@@ -376,21 +376,26 @@ UString FilePath::getConfigDirectory() {
 #elif defined(MACOSX)
 	// Mac OS X: ~/Library/Preferences/xoreos/
 
-	const char *pathStr = getenv("HOME");
-	if (pathStr)
-		directory = UString(pathStr) + "/Library/Preferences/xoreos";
-	else
+	directory = getHomeDirectory();
+	if (!directory.empty())
+		directory += "/Library/Preferences/xoreos";
+
+	if (directory.empty())
 		directory = ".";
 
 #elif defined(UNIX)
 	// Default Unixoid: $XDG_CONFIG_HOME/xoreos/ or ~/.config/xoreos/
 
 	const char *pathStr = getenv("XDG_CONFIG_HOME");
-	if (pathStr)
+	if (pathStr) {
 		directory = UString(pathStr) + "/xoreos";
-	else if ((pathStr = getenv("HOME")))
-		directory = UString(pathStr) + "/.config/xoreos";
-	else
+	} else {
+		directory = getHomeDirectory();
+		if (!directory.empty())
+			directory += "/.config/xoreos";
+	}
+
+	if (directory.empty())
 		directory = ".";
 
 #else
