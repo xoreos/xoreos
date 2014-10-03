@@ -173,6 +173,12 @@ public:
 	/** Escape a string literal for use in a regexp. */
 	static UString escapeStringLiteral(const UString &str);
 
+	/** Return the OS-specific path of the user's home directory.
+	 *
+	 *  If no home directory was accessible, an empty string is returned.
+	 */
+	static UString getHomeDirectory();
+
 	/** Return the OS-specific path of the config directory.
 	 *
 	 *  This is where the xoreos.conf is put by default.

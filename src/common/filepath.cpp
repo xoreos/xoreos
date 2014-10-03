@@ -28,6 +28,12 @@
 	#include <windows.h>
 #endif
 
+// Necessary to search the passwd file
+#if defined(UNIX)
+	#include <pwd.h>
+	#include <unistd.h>
+#endif
+
 #include <cstdlib>
 
 #include <list>
@@ -301,6 +307,34 @@ UString FilePath::escapeStringLiteral(const UString &str) {
 	const std::string  rep("\\\\\\1&");
 
 	return boost::regex_replace(std::string(str.c_str()), esc, rep, boost::match_default | boost::format_sed);
+}
+
+UString FilePath::getHomeDirectory() {
+	UString directory;
+
+#if defined(WIN32)
+	// Windows: $USERPROFILE
+
+	char pathStr[MAXPATHLEN];
+	if (GetEnvironmentVariable("USERPROFILE", pathStr, sizeof(pathStr)))
+		directory = pathStr;
+
+#elif defined(UNIX)
+	// Default Unixoid: $HOME. As a fallback, search the passwd file
+
+	const char *pathStr = getenv("HOME");
+	if (!pathStr) {
+		struct passwd *pwd = getpwuid(getuid());
+		if (pwd)
+			pathStr = pwd->pw_dir;
+	}
+
+	if (pathStr)
+		directory = pathStr;
+
+#endif
+
+	return directory;
 }
 
 UString FilePath::getConfigDirectory() {
