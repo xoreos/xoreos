@@ -148,6 +148,16 @@ public:
 	static UString findSubDirectory(const UString &directory, const UString &subDirectory,
 	                                bool caseInsensitive = false);
 
+	/** Collect all direct subdirectories of a directory in a list.
+	 *
+	 *  For example, if the specified directory contains the directories "foo" and "bar", and
+	 *  the file "quux", the list will contain the directories "foo" and "bar".
+	 *
+	 *  @param  directory The directory in which to look.
+	 *  @param  subDirectories The list to add the directories to.
+	 *  @return false if the specified path was not a directory or could not be searched;
+	 *          true otherwise.
+	 */
 	static bool getSubDirectories(const UString &directory, std::list<UString> &subDirectories);
 
 	/** Create all directories in this path. */
