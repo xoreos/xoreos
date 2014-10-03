@@ -123,7 +123,7 @@ bool ConfigManager::save() {
 		return true;
 
 	// Create the directories in the path, if necessary
-	UString file = FilePath::makeAbsolute(getConfigFile());
+	UString file = FilePath::canonicalize(getConfigFile());
 	FilePath::createDirectories(FilePath::getDirectory(file));
 
 	try {
@@ -159,12 +159,12 @@ UString ConfigManager::findGame(const UString &path) {
 	if (!_config)
 		return "";
 
-	UString normPath = FilePath::makeAbsolute(path);
+	UString canonicalPath = FilePath::canonicalize(path);
 
 	try {
 		const ConfigFile::DomainList &domains = _config->getDomains();
 		for (ConfigFile::DomainList::const_iterator d = domains.begin(); d != domains.end(); ++d)
-			if (FilePath::makeAbsolute((*d)->getString("path")) == normPath)
+			if (FilePath::canonicalize((*d)->getString("path")) == canonicalPath)
 				return (*d)->getName();
 	} catch (...) {
 		return "";
@@ -177,10 +177,10 @@ UString ConfigManager::createGameID(const UString &path) {
 	if (!_config)
 		return "";
 
-	UString normPathStem = FilePath::getStem(FilePath::makeAbsolute(path));
+	UString canonicalStem = FilePath::getStem(FilePath::canonicalize(path));
 
 	UString target;
-	for (UString::iterator s = normPathStem.begin(); s != normPathStem.end(); ++s) {
+	for (UString::iterator s = canonicalStem.begin(); s != canonicalStem.end(); ++s) {
 		uint32 c = *s;
 
 		if (UString::isAlNum(c))

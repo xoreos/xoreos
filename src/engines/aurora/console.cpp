@@ -288,7 +288,7 @@ bool ConsoleWindow::setRedirect(Common::UString redirect) {
 	if (redirect.empty())
 		return true;
 
-	redirect = Common::FilePath::makeAbsolute(redirect);
+	redirect = Common::FilePath::canonicalize(redirect);
 	if (!_redirect.open(redirect)) {
 		Common::UString error =
 			Common::UString::sprintf("Failed opening file \"%s\" for writing.", redirect.c_str());

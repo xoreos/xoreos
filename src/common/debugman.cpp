@@ -165,7 +165,7 @@ bool DebugManager::openLogFile(const UString &file) {
 	_logFileStartLine = true;
 
 	// Create the directories in the path, if necessary
-	UString path = FilePath::makeAbsolute(file);
+	UString path = FilePath::canonicalize(file);
 	FilePath::createDirectories(FilePath::getDirectory(path));
 
 	return _logFile.open(path);

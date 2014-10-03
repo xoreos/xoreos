@@ -109,67 +109,36 @@ UString FilePath::getDirectory(const UString &p) {
 	return file.parent_path().string();
 }
 
-UString FilePath::normalize(const UString &p) {
-	UString norm;
-
-	// Make sure there's a path qualifier
-	if (!isAbsolute(p)) {
-		UString::iterator it = p.begin();
-
-		if ((it == p.end()) || (*it != '.')) {
-			norm += "./";
-		} else {
-			++it;
-			if ((it == p.end()) || (*it != '/'))
-				norm += "./";
-		}
-	}
-
-	// Remove consecutive '/'
-	bool hasSlash = !norm.empty();
-	for (UString::iterator it = p.begin(); it != p.end(); ++it) {
-		if ((*it == '/') || (*it == '\\')) {
-			// Only append the '/' if the last character wasn't one as well and this
-			// is not the final character.
-
-			if (!hasSlash && (it != --p.end()))
-				norm += '/';
-
-			hasSlash = true;
-			continue;
-		}
-
-		// Append the character
-		norm += *it;
-		hasSlash = false;
-	}
-
-#if defined(BOOST_WINDOWS_API)
-	// Special case: On Windows, we want "x:/" instead of "x:", because the
-	// latter references the current directory of that drive.
-	if ((norm.size() == 2) && (*--norm.end() == ':'))
-		norm += '/';
-#endif
-
-	return norm;
-}
-
 bool FilePath::isAbsolute(const UString &p) {
 	return boost::filesystem::path(p.c_str()).is_absolute();
 }
 
-UString FilePath::makeAbsolute(const UString &p) {
-	UString absolute;
+static path convertToSlash(const path &p) {
+	const boost::regex bSlash("\\\\");
+	const std::string fSlash("/");
+	const boost::match_flag_type flags(boost::match_default | boost::format_sed);
 
-	if (isAbsolute(p))
-		absolute = p;
-	else
-		absolute = boost::filesystem::initial_path().generic_string() + "/" + p.c_str();
-
-	return normalize(absolute);
+	return path(boost::regex_replace(p.string(), bSlash, fSlash, flags));
 }
 
-UString FilePath::makeRelative(const UString &basePath, const UString &path) {
+UString FilePath::absolutize(const UString &p) {
+	path source = convertToSlash(p.c_str()).native();
+
+	// Resolve ~ as the user's home directory
+	path::iterator itr = source.begin();
+	if ((itr != source.end()) && (itr->string() == "~")) {
+		path newSource = getHomeDirectory().c_str();
+
+		for (++itr; itr != source.end(); ++itr)
+			newSource /= *itr;
+
+		source = newSource;
+	}
+
+	return convertToSlash(boost::filesystem::absolute(source)).string().c_str();
+}
+
+UString FilePath::relativize(const UString &basePath, const UString &path) {
 	UString relative = "";
 
 	if (path.beginsWith(basePath)) {
@@ -177,6 +146,76 @@ UString FilePath::makeRelative(const UString &basePath, const UString &path) {
 	}
 
 	return relative;
+}
+
+UString FilePath::normalize(const UString &p) {
+	boost::filesystem::path source = convertToSlash(p.c_str()).native();
+	boost::filesystem::path result;
+
+	// Resolve ~ as the user's home directory
+	boost::filesystem::path::iterator itr = source.begin();
+	if ((itr != source.end()) && (itr->string() == "~")) {
+		boost::filesystem::path newSource = getHomeDirectory().c_str();
+
+		for (++itr; itr != source.end(); ++itr)
+			newSource /= *itr;
+
+		source = newSource;
+	}
+
+	bool scan = true;
+	while (scan) {
+		scan = false;
+		result.clear();
+
+		for (itr = source.begin(); itr != source.end(); ++itr) {
+			// Resolve . and ..
+			if (itr->string() == ".")
+				continue;
+			if (itr->string() == "..") {
+				if (result != source.root_path())
+					result.remove_filename();
+				continue;
+			}
+
+			result /= *itr;
+
+			// Now check if this a symlink. If it is, resolve it and restart normalization
+
+			boost::system::error_code ec;
+			boost::filesystem::path link = boost::filesystem::read_symlink(result, ec);
+
+			if (!link.empty()) {
+				result.remove_filename();
+
+				if (link.is_absolute()) {
+					for (++itr; itr != source.end(); ++itr)
+						link /= *itr;
+
+					source = link;
+
+				} else {
+					boost::filesystem::path newSource = result;
+
+					newSource /= link;
+
+					for (++itr; itr != source.end(); ++itr)
+						newSource /= *itr;
+
+					source = newSource;
+				}
+
+				scan = true;
+				break;
+			}
+		}
+	}
+
+	return convertToSlash(boost::filesystem::absolute(result)).string().c_str();
+}
+
+UString FilePath::canonicalize(const UString &p) {
+	return normalize(absolutize(p));
 }
 
 bool FilePath::getSubDirectories(const UString &directory, std::list<UString> &subDirectories) {
@@ -381,7 +420,7 @@ UString FilePath::getConfigDirectory() {
 	directory = ".";
 #endif
 
-	return makeAbsolute(directory);
+	return canonicalize(directory);
 }
 
 UString FilePath::getUserDataDirectory() {
@@ -420,7 +459,7 @@ UString FilePath::getUserDataDirectory() {
 	directory = getConfigDirectory();
 #endif
 
-	return makeAbsolute(directory);
+	return canonicalize(directory);
 }
 
 } // End of namespace Common

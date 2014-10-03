@@ -102,16 +102,6 @@ public:
 	 */
 	static UString getDirectory(const UString &p);
 
-	/** Normalize a path.
-	 *
-	 *  A normalized path contains no consecutive '/', uses '/' as a directory path separator,
-	 *  starts with either "/", "[A-Za-z]:/" or "./" and does not end with a '/'.
-	 *
-	 *  @param  p The path to normalize.
-	 *  @return The normalized path.
-	 */
-	static UString normalize(const UString &p);
-
 	/** Is the given string an absolute path?
 	 *
 	 *  @param  p The path to check.
@@ -124,10 +114,13 @@ public:
 	 *  If the path is already absolute, just return that path. If not, interpret it
 	 *  as relative to the program starting path and then return an absolute path of that.
 	 *
+	 *  In addition, a path starting with a ~ directory will be changed to point to
+	 *  the user's home directory.
+	 *
 	 *  @param  p The path to absolutize.
 	 *  @return The absolutized path.
 	 */
-	static UString makeAbsolute(const UString &p);
+	static UString absolutize(const UString &p);
 
 	/** Return the path relative to the base path.
 	 *
@@ -136,7 +129,37 @@ public:
 	 *  @param  path The path to make relative.
 	 *  @return The relative path.
 	 */
-	static UString makeRelative(const UString &basePath, const UString &path);
+	static UString relativize(const UString &basePath, const UString &path);
+
+	/** Normalize a path.
+	 *
+	 *  A normalized path contains no consecutive '/', uses '/' as a directory path separator,
+	 *  starts with either "/", "[A-Za-z]:/" or "./" and does not end with a '/'.
+	 *
+	 *  In addition, "." and "..", symbolic links and ~ are resolved.
+	 *
+	 *  The effect is very similar to boost::filesystem::canonical(), except:
+	 *  - boost::filesystem::canonical() does not resolve ~ to the user's home directory
+	 *  - boost::filesystem::canonical() absolutizes a path, normalize() does not
+	 *  - boost::filesystem::canonical() fails on paths that don't exist, normalize() does not
+	 *
+	 *  @param  p The path to normalize.
+	 *  @return The normalized path.
+	 */
+	static UString normalize(const UString &p);
+
+	/** Return the canonical, absolutized and normalized path.
+	 *
+	 *  Calls absolutize() and normalize() on the path.
+	 *
+	 *  The effect is very similar to boost::filesystem::canonical(), except:
+	 *  - boost::filesystem::canonical() does not resolve ~ to the user's home directory
+	 *  - boost::filesystem::canonical() fails on paths that don't exist, normalize() does not
+	 *
+	 *  @param  p The path to canonicalize.
+	 *  @return The canonicalized path.
+	 */
+	static UString canonicalize(const UString &p);
 
 	/** Find a directory's subdirectory.
 	 *

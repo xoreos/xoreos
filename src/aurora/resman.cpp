@@ -166,7 +166,7 @@ void ResourceManager::setCursorRemap(const std::vector<Common::UString> &remap) 
 void ResourceManager::registerDataBaseDir(const Common::UString &path) {
 	clearResources();
 
-	_baseDir = Common::FilePath::normalize(path);
+	_baseDir = Common::FilePath::canonicalize(path);
 
 	for (int i = 0; i < kArchiveMAX; i++)
 		addArchiveDir((ArchiveType) i, "");
@@ -181,6 +181,8 @@ void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &
 	Common::UString directory = Common::FilePath::findSubDirectory(_baseDir, dir, true);
 	if (directory.empty())
 		throw Common::Exception("No such directory \"%s\"", dir.c_str());
+
+	directory = Common::FilePath::canonicalize(directory);
 
 	Common::FileList dirFiles;
 	if (!dirFiles.addDirectory(directory))
@@ -198,7 +200,7 @@ void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &
 		DirectoryList subDirectories;
 		Common::FilePath::getSubDirectories(directory, subDirectories);
 		for (std::list<Common::UString>::iterator it = subDirectories.begin(); it != subDirectories.end(); ++it) {
-			addArchiveDir(archive, Common::FilePath::makeRelative(_baseDir, *it), true);
+			addArchiveDir(archive, Common::FilePath::relativize(_baseDir, *it), true);
 		}
 	}
 }
@@ -213,7 +215,7 @@ Common::UString ResourceManager::findArchive(const Common::UString &file,
 
 	Common::UString realName;
 	for (DirectoryList::const_iterator dir = dirs.begin(); dir != dirs.end(); ++dir) {
-		Common::UString escapedPath = Common::FilePath::escapeStringLiteral(Common::FilePath::normalize(*dir)) + "/" + escapedFile;
+		Common::UString escapedPath = Common::FilePath::escapeStringLiteral(*dir) + "/" + escapedFile;
 		if (!(realName = nameMatch.findFirst(escapedPath, true)).empty())
 			return realName;
 	}

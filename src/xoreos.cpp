@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 
 	Common::UString baseDir;
 	try {
-		baseDir = Common::FilePath::makeAbsolute(dirArg);
+		baseDir = Common::FilePath::canonicalize(dirArg);
 	} catch (...) {
 		error("Invalid path \"%s\"", dirArg.c_str());
 	}
