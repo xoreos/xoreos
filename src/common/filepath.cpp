@@ -416,21 +416,26 @@ UString FilePath::getUserDataDirectory() {
 #elif defined(MACOSX)
 	// Mac OS X: ~/Library/Application\ Support/xoreos/
 
-	const char *pathStr = getenv("HOME");
-	if (pathStr)
-		directory = UString(pathStr) + "/Library/Application Support/xoreos";
-	else
+	directory = getHomeDirectory();
+	if (!directory.empty())
+		directory += "/Library/Application Support/xoreos";
+
+	if (directory.empty())
 		directory = ".";
 
 #elif defined(UNIX)
 	// Default Unixoid: $XDG_DATA_HOME/xoreos/ or ~/.local/share/xoreos/
 
 	const char *pathStr = getenv("XDG_DATA_HOME");
-	if (pathStr)
+	if (pathStr) {
 		directory = UString(pathStr) + "/xoreos";
-	else if ((pathStr = getenv("HOME")))
-		directory = UString(pathStr) + "/.local/share/xoreos";
-	else
+	} else {
+		directory = getHomeDirectory();
+		if (!directory.empty())
+			directory += "/.local/share/xoreos";
+	}
+
+	if (directory.empty())
 		directory = ".";
 
 #else
