@@ -148,7 +148,7 @@ public:
 	static UString findSubDirectory(const UString &directory, const UString &subDirectory,
 	                                bool caseInsensitive = false);
 
-	static void getSubDirectories(const UString &directory, std::list<UString> &subDirectories);
+	static bool getSubDirectories(const UString &directory, std::list<UString> &subDirectories);
 
 	/** Create all directories in this path. */
 	static bool createDirectories(const UString &path);

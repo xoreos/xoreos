@@ -196,17 +196,22 @@ UString FilePath::makeRelative(const UString &basePath, const UString &path) {
 	return relative;
 }
 
-void FilePath::getSubDirectories(const UString &directory, std::list<UString> &subDirectories) {
-
+bool FilePath::getSubDirectories(const UString &directory, std::list<UString> &subDirectories) {
 	path dirPath(directory.c_str());
 
-	// Iterator over the directory's contents
-	directory_iterator itEnd;
-	for (directory_iterator itDir(dirPath); itDir != itEnd; ++itDir) {
-		if (is_directory(itDir->status())) {
-			subDirectories.push_back(itDir->path().generic_string());
+	try {
+		// Iterate over the directory's contents
+		directory_iterator itEnd;
+		for (directory_iterator itDir(dirPath); itDir != itEnd; ++itDir) {
+			if (is_directory(itDir->status())) {
+				subDirectories.push_back(itDir->path().generic_string());
+			}
 		}
+	} catch (...) {
+		return false;
 	}
+
+	return true;
 }
 
 static void splitDirectories(const UString &directory, std::list<UString> &dirs) {
