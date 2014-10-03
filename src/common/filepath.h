@@ -25,8 +25,6 @@
 #ifndef COMMON_FILEPATH_H
 #define COMMON_FILEPATH_H
 
-#include <boost/filesystem.hpp>
-
 #include "common/types.h"
 #include "common/ustring.h"
 
@@ -112,16 +110,6 @@ public:
 	 *  @param  p The path to normalize.
 	 *  @return The normalized path.
 	 */
-	static boost::filesystem::path normalize(const boost::filesystem::path &p);
-
-	/** Normalize a path.
-	 *
-	 *  A normalized path contains no consecutive '/', uses '/' as a directory path separator
-	 *  and and starts either "/", "[A-Za-z]:/" or "./".
-	 *
-	 *  @param  p The path to normalize.
-	 *  @return The normalized path.
-	 */
 	static UString normalize(const UString &p);
 
 	/** Is the given string an absolute path?
@@ -130,16 +118,6 @@ public:
 	 *  @return true if the string describes an absolute path, false otherwise.
 	 */
 	static bool isAbsolute(const UString &p);
-
-	/** Return the absolute path.
-	 *
-	 *  If the path is already absolute, just return that path. If not, interpret it
-	 *  as relative to the program starting path and then return an absolute path of that.
-	 *
-	 *  @param  p The path to absolutize.
-	 *  @return The absolutized path.
-	 */
-	static boost::filesystem::path makeAbsolute(const boost::filesystem::path &p);
 
 	/** Return the absolute path.
 	 *

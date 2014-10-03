@@ -33,6 +33,7 @@
 #include <list>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
 #include "common/filepath.h"
@@ -100,12 +101,6 @@ UString FilePath::getDirectory(const UString &p) {
 	path file(p.c_str());
 
 	return file.parent_path().string();
-}
-
-path FilePath::normalize(const boost::filesystem::path &p) {
-	UString ustring = p.string();
-
-	return path(normalize(ustring).c_str());
 }
 
 UString FilePath::normalize(const UString &p) {
@@ -178,12 +173,6 @@ bool FilePath::isAbsolute(const UString &p) {
 #endif
 
 	return false;
-}
-
-boost::filesystem::path FilePath::makeAbsolute(const boost::filesystem::path &p) {
-	UString ustring = p.string();
-
-	return path(makeAbsolute(ustring).c_str());
 }
 
 UString FilePath::makeAbsolute(const UString &p) {
