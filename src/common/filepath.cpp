@@ -335,7 +335,7 @@ UString FilePath::getConfigDirectory() {
 		directory += "\\xoreos";
 
 	} else {
-		// On older Windows versions, use the currect directory
+		// On older Windows versions, use the current directory
 		directory = ".";
 	}
 
