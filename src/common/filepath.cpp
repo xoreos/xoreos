@@ -155,30 +155,7 @@ UString FilePath::normalize(const UString &p) {
 }
 
 bool FilePath::isAbsolute(const UString &p) {
-	if (p.empty())
-		return false;
-
-#if defined(BOOST_WINDOWS_API)
-	if (p.size() >= 2) {
-		UString::iterator it = p.begin();
-		if (isalpha(*it))
-			if (*++it == ':') {
-				if (p.size() == 2)
-					return true;
-
-				++it;
-				if ((*it == '/') || (*it == '\\'))
-					return true;
-			}
-	}
-#elif defined(BOOST_POSIX_API)
-	if (*p.begin() == '/')
-		return true;
-#else
-	#error Neither BOOST_WINDOWS_API nor BOOST_POSIX_API defined
-#endif
-
-	return false;
+	return boost::filesystem::path(p.c_str()).is_absolute();
 }
 
 UString FilePath::makeAbsolute(const UString &p) {
