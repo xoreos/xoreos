@@ -363,7 +363,7 @@ void GraphicsManager::checkGLExtensions() {
 	if (!GLEW_ARB_multitexture) {
 		warning("Your graphics card does no support applying multiple textures onto "
 		        "one surface");
-		warning("Xoreos will only use one texture. Certain surfaces may look weird");
+		warning("xoreos will only use one texture. Certain surfaces may look weird");
 
 		_supportMultipleTextures = false;
 	} else
