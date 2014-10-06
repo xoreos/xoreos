@@ -25,6 +25,7 @@ bundle: all
 	mkdir -p $(BUNDLE_NAME)/Contents/Resources
 	echo "APPL????" > $(BUNDLE_NAME)/Contents/PkgInfo
 	cp dists/macosx/Info.plist $(BUNDLE_NAME)/Contents/
+	cp dists/macosx/xoreos.icns $(BUNDLE_NAME)/Contents/
 	cp src/xoreos $(BUNDLE_NAME)/Contents/MacOS/xoreos
 	chmod 755 $(BUNDLE_NAME)/Contents/MacOS/xoreos
 	$(STRIP) $(BUNDLE_NAME)/Contents/MacOS/xoreos

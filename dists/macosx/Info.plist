@@ -10,6 +10,8 @@
 	<string>xoreos</string>
 	<key>CFBundleGetInfoString</key>
 	<string>0.0.1, Copyright 2010-2014 The xoreos Team</string>
+	<key>CFBundleIconFile</key>
+	<string>xoreos.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.xoreos.xoreos</string>
 	<key>CFBundleInfoDictionaryVersion</key>

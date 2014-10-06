@@ -47,6 +47,15 @@ registered trademark of CD Projekt S.A. Dragon Age is a registered trademark
 of Electronic Arts, Inc. All rights reserved.
 
 
+Logo and icon
+*************
+   The xoreos logo and icon are the word "xoreos" and the letter "x",
+   respectively, rendered in the freeware font Rezland by Fraser Davidson
+   (<http://fraserdavidson.co.uk/>). Both the xoreos logo and the xoreos icon
+   are licensed under the terms of the Creative Commons Attribution-ShareAlike
+   3.0 Unported License (<https://creativecommons.org/licenses/by-sa/3.0/>).
+   Thanks to Alex Bevilacqua for the idea and initial design of the logo.
+
 boost.m4
 ********
    xoreos uses Benoit Sigoure's boost.m4 autoconf macros
