@@ -103,7 +103,7 @@ public:
 	/** How many frames per second to we render at the moments? */
 	uint32 getFPS() const;
 
-	/** That the window's title. */
+	/** Set the window's title. */
 	void setWindowTitle(const Common::UString &title);
 
 	/** Get the overall gamma correction. */
