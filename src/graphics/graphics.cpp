@@ -40,6 +40,7 @@
 
 #include "graphics/graphics.h"
 #include "graphics/util.h"
+#include "graphics/icon.h"
 #include "graphics/cursor.h"
 #include "graphics/fpscounter.h"
 #include "graphics/queueman.h"
@@ -251,6 +252,8 @@ bool GraphicsManager::setFSAA(int level) {
 			throw Common::Exception("Failed reverting to the old FSAA settings");
 	}
 
+	setWindowIcon(*_screen);
+
 	// Initial call to setupSDLGL has already identified which GL context we can use.
 	if(_gl3) {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -305,6 +308,8 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 	_screen = SDL_CreateWindow(_windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 	if (!_screen)
 		return false;
+
+	setWindowIcon(*_screen);
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
