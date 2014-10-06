@@ -318,9 +318,9 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 
 	// OpenGL 3.2 context not created. Spit out an error message, and try a 2.1 context.
 	_gl3 = false;
-	warning("Could not create OpenGL 3.2 context, %s", SDL_GetError());
+	warning("Could not create OpenGL 3.2 context: %s", SDL_GetError());
 	warning("Your graphics card hardware or driver does not support OpenGL 3.2. "
-	        "Attempting to create OpenGL 2.1 context instead.");
+	        "Attempting to create OpenGL 2.1 context instead");
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
