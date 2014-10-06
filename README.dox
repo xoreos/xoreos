@@ -2,8 +2,7 @@
 
 @mainpage xoreos
 
-@author Sven Hesse (DrMcCoy)
-@author Matthew Hoops (clone2727)
+@author The xoreos Team
 
 @section README
 @verbinclude README.md
