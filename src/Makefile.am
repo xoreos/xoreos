@@ -1,5 +1,9 @@
 include $(top_srcdir)/Makefile.common
 
+# Windows resources
+.rc.o:
+	$(AM_V_GEN)$(RC) -DHAVE_CONFIG_H -I$(top_srcdir) -o $@ $<
+
 SUBDIRS = \
           common \
           graphics \
@@ -20,6 +24,10 @@ xoreos_SOURCES = \
                  cline.cpp \
                  xoreos.cpp \
                  $(EMPTY)
+
+if WIN32
+xoreos_SOURCES += ../dists/win32/xoreos.rc
+endif
 
 xoreos_LDADD = \
                engines/libengines.la \

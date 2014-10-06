@@ -92,14 +92,22 @@ case "$target" in
 	*darwin*)
 		XOREOS_CFLAGS="-DUNIX -DMACOSX"
 		XOREOS_LIBS=""
+		AM_CONDITIONAL(WIN32, false)
 		;;
 	*mingw*)
+		AC_CHECK_TOOL([RC], [windres], [:])
+		if test "x$RC" = "x:"; then
+			AC_MSG_ERROR([A Windows resource compiler (windres) is required and could not be found!])
+		fi
+
 		XOREOS_CFLAGS="-mconsole"
 		XOREOS_LIBS=""
+		AM_CONDITIONAL(WIN32, true)
 		;;
 	*)
 		XOREOS_CFLAGS="-DUNIX"
 		XOREOS_LIBS=""
+		AM_CONDITIONAL(WIN32, false)
 		;;
 esac;
 
