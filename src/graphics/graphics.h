@@ -35,10 +35,7 @@
 #include "common/mutex.h"
 #include "common/transmatrix.h"
 #include "common/vector3.h"
-
-namespace Common {
-	class UString;
-}
+#include "common/ustring.h"
 
 namespace Graphics {
 
@@ -104,7 +101,7 @@ public:
 	uint32 getFPS() const;
 
 	/** Set the window's title. */
-	void setWindowTitle(const Common::UString &title);
+	void setWindowTitle(const Common::UString &title = "");
 
 	/** Get the overall gamma correction. */
 	float getGamma() const;
@@ -177,6 +174,8 @@ private:
 	int _height; ///< The game's screen height.
 
 	float _gamma; ///< The current gamma correction value.
+
+	Common::UString _windowTitle; ///< The current window title.
 
 	SDL_Window *_screen; ///< The OpenGL hardware surface.
 	SDL_GLContext _glContext;

@@ -28,7 +28,6 @@
 #include "common/util.h"
 #include "common/maths.h"
 #include "common/error.h"
-#include "common/ustring.h"
 #include "common/file.h"
 #include "common/configman.h"
 #include "common/threads.h"
@@ -72,6 +71,8 @@ GraphicsManager::GraphicsManager() {
 	_fsaaMax = 0;
 
 	_gamma = 1.0;
+
+	_windowTitle = XOREOS_NAMEVERSION;
 
 	_screen = 0;
 
@@ -233,7 +234,7 @@ bool GraphicsManager::setFSAA(int level) {
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
 
 	// Now try to change the screen
-	_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
+	_screen = SDL_CreateWindow(_windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
 
 	if (!_screen) {
 		// Failed changing, back up
@@ -243,7 +244,7 @@ bool GraphicsManager::setFSAA(int level) {
 		// Set the multisample level
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
-		_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
+		_screen = SDL_CreateWindow(_windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
 
 		// There's no reason how this could possibly fail, but ok...
 		if (!_screen)
@@ -301,7 +302,7 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
-	_screen = SDL_CreateWindow(XOREOS_NAMEVERSION, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+	_screen = SDL_CreateWindow(_windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 	if (!_screen)
 		return false;
 
@@ -371,7 +372,11 @@ void GraphicsManager::checkGLExtensions() {
 }
 
 void GraphicsManager::setWindowTitle(const Common::UString &title) {
-	SDL_SetWindowTitle(_screen, title.c_str());
+	_windowTitle = title;
+	if (_windowTitle.empty())
+		_windowTitle = XOREOS_NAMEVERSION;
+
+	SDL_SetWindowTitle(_screen, _windowTitle.c_str());
 }
 
 float GraphicsManager::getGamma() const {
