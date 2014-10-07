@@ -48,10 +48,19 @@ enum EventType {
 	kEventMouseWheel= SDL_MOUSEWHEEL     , ///< Mouse wheel was used.
 	kEventTextInput = SDL_TEXTINPUT      , ///< Text was written.
 	kEventQuit      = SDL_QUIT           , ///< Application quit was requested.
-	kEventResize    = SDL_WINDOWEVENT_RESIZED, ///< Resize the window.
+	kEventWindow    = SDL_WINDOWEVENT    , ///< Resize the window.
 	kEventUserMIN   = SDL_USEREVENT - 1  , ///< For range checks.
 	kEventITC       = SDL_USEREVENT      , ///< Inter-thread communication
 	kEventUserMAX   = SDL_LASTEVENT        ///< For range checks.
+};
+
+/** Sub events for kEventWindow. */
+enum EventWindowType {
+	kEventWindowResized     = SDL_WINDOWEVENT_RESIZED     , ///< Window has been resized.
+	kEventWindowSizeChanged = SDL_WINDOWEVENT_SIZE_CHANGED, ///< Window's size was otherwise changed.
+	kEventWindowMinimized   = SDL_WINDOWEVENT_MINIMIZED   , ///< Window was minimized.
+	kEventWindowMaximized   = SDL_WINDOWEVENT_MAXIMIZED   , ///< Window was maximized.
+	kEventWindowRestored    = SDL_WINDOWEVENT_RESTORED      ///< Window was restored.
 };
 
 /** Specific type of the inter-thread communication. */

@@ -161,10 +161,8 @@ bool EventsManager::parseEventGraphics(const Event &event) {
 		}
 	}
 
-	if (event.type == kEventResize) {
-		GfxMan.setScreenSize(event.window.data1, event.window.data2);
+	if (event.type == kEventWindow)
 		return true;
-	}
 
 	return false;
 }
