@@ -75,7 +75,7 @@ private:
 	void updateScrollbarLength();
 	void updateScrollbarPosition();
 
-	/** 
+	/**
 	 * Scroll the main text if it is bigger than the editBox.
 	 *  @param n             scroll up if negative, down otherwise
 	 */
@@ -83,8 +83,8 @@ private:
 
 	Common::UString _font;
 
-	//FIXME As there is no mechanism to easily scroll text (like the render-to-texture way).
-	//      Lines are put on bare Graphics::Aurora::Text but should ideally use WidgetText.
+	// FIXME As there is no mechanism to easily scroll text (like the render-to-texture way),
+	//       lines are put on simple Graphics::Aurora::Text but should ideally use WidgetText
 	/** Show/Hide lines according to _firstLine variable. */
 	void updateLines();
 

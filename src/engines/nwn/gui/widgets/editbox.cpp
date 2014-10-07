@@ -193,7 +193,7 @@ void WidgetEditBox::setTitle(const Common::UString & title) {
 }
 
 void WidgetEditBox::subActive(Widget &widget) {
-	//TODO Add the ability to continue to scroll when the button Up and Down is still pressed
+	// TODO Add the ability to continue to scroll when the button Up and Down is still pressed
 	if (widget.getTag().endsWith("#Up")) {
 		scroll(-1);
 		return;
@@ -247,7 +247,7 @@ void WidgetEditBox::createScrollbar() {
 }
 
 void WidgetEditBox::updateScrollbarLength() {
-	///TODO Add condition to ensure a minimal length
+	// TODO Add condition to ensure a minimal length
 	if (!_scrollbar)
 		return;
 
