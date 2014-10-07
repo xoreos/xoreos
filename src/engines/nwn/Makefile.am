@@ -36,6 +36,7 @@ noinst_HEADERS = \
                  gui/widgets/scrollbar.h \
                  gui/widgets/portrait.h \
                  gui/widgets/slider.h \
+                 gui/widgets/buttonsgroup.h \
                  gui/dialogs/okcancel.h \
                  gui/dialogs/yesnocancel.h \
                  gui/options/controls.h \
@@ -108,6 +109,7 @@ libnwn_la_SOURCES = \
                     gui/widgets/scrollbar.cpp \
                     gui/widgets/portrait.cpp \
                     gui/widgets/slider.cpp \
+                    gui/widgets/buttonsgroup.cpp \
                     gui/dialogs/okcancel.cpp \
                     gui/dialogs/yesnocancel.cpp \
                     gui/options/controls.cpp \
