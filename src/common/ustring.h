@@ -57,11 +57,17 @@ public:
 		}
 	};
 
+	/** Copy constructor. */
 	UString(const UString &str);
+	/** Construct UString from an UTF-8 string. */
 	UString(const std::string &str);
+	/** Construct UString from an UTF-8 string. */
 	UString(const char *str = "");
+	/** Construct UString from the first n bytes of an UTF-8 string. */
 	UString(const char *str, int n);
+	/** Construct UString by creating n copies of Unicode codepoint c. */
 	explicit UString(uint32 c, int n = 1);
+	/** Construct UString by copying the characters between [sBegin,sEnd). */
 	UString(iterator sBegin, iterator sEnd);
 	~UString();
 
