@@ -25,6 +25,7 @@
 #include "engines/sonic/sonic.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
 
 #include "common/util.h"
@@ -93,10 +94,6 @@ void SonicEngine::run(const Common::UString &target) {
 
 	init();
 
-	ResMan.declareResource("nintendosplash.tga");
-
-	status("Successfully initialized the engine");
-
 	playIntroVideos();
 
 	bool showFPS = ConfigMan.getBool("showfps", false);
@@ -125,12 +122,18 @@ void SonicEngine::run(const Common::UString &target) {
 }
 
 void SonicEngine::init() {
+	LoadProgress progress(3);
+
 	ResMan.setHashAlgo(Common::kHashDJB2);
 
-	status("Indexing the ROM file");
+	progress.step("Indexing the ROM file");
 	indexMandatoryArchive(Aurora::kArchiveNDS, _romFile, 1);
-	status("Indexing the main HERF file");
+	progress.step("Indexing the main HERF file");
 	indexMandatoryArchive(Aurora::kArchiveHERF, "test.herf", 2);
+
+	ResMan.declareResource("nintendosplash.tga");
+
+	progress.step("Successfully initialized the engine");
 }
 
 void SonicEngine::playIntroVideos() {
