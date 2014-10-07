@@ -42,6 +42,7 @@
 #include "events/events.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
@@ -99,12 +100,8 @@ void NWN2Engine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
-
 	if (EventMan.quitRequested())
 		return;
-
-	status("Successfully initialized the engine");
 
 	CursorMan.hideCursor();
 	CursorMan.set();
@@ -199,14 +196,16 @@ void NWN2Engine::run(const Common::UString &target) {
 }
 
 void NWN2Engine::init() {
-	status("Setting base directory");
+	LoadProgress progress(15);
+
+	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
-	status("Adding extra archive directories");
+	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveZIP, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
 
-	status("Loading main resource files");
+	progress.step("Loading main resource files");
 
 	indexMandatoryArchive(Aurora::kArchiveZIP, "2da.zip"           ,  1);
 	indexMandatoryArchive(Aurora::kArchiveZIP, "actors.zip"        ,  2);
@@ -227,7 +226,7 @@ void NWN2Engine::init() {
 	indexMandatoryArchive(Aurora::kArchiveZIP, "vo.zip"            , 17);
 	indexMandatoryArchive(Aurora::kArchiveZIP, "walkmesh.zip"      , 18);
 
-	status("Loading expansions resource files");
+	progress.step("Loading expansions resource files");
 
 	// Expansion 1: Mask of the Betrayer (MotB)
 	indexOptionalArchive(Aurora::kArchiveZIP, "2da_x1.zip"           , 20);
@@ -269,32 +268,37 @@ void NWN2Engine::init() {
 	warning("TODO: Mysteries of Westgate (MoW) resource files");
 	warning("TODO: Patch resource files");
 
-	status("Indexing extra sound resources");
+	progress.step("Indexing extra sound resources");
 	indexMandatoryDirectory("ambient"   , 0,  0, 60);
 	indexOptionalDirectory ("ambient_x1", 0,  0, 61);
 	indexOptionalDirectory ("ambient_x2", 0,  0, 62);
-	status("Indexing extra music resources");
+	progress.step("Indexing extra music resources");
 	indexMandatoryDirectory("music"     , 0,  0, 63);
 	indexOptionalDirectory ("music_x1"  , 0,  0, 64);
 	indexOptionalDirectory ("music_x2"  , 0,  0, 65);
-	status("Indexing extra movie resources");
+	progress.step("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"    , 0,  0, 66);
-	status("Indexing extra effects resources");
+	progress.step("Indexing extra effects resources");
 	indexMandatoryDirectory("effects"   , 0,  0, 67);
-	status("Indexing extra character resources");
+	progress.step("Indexing extra character resources");
 	indexMandatoryDirectory("localvault", 0,  0, 68);
-	status("Indexing extra UI resources");
+	progress.step("Indexing extra UI resources");
 	indexMandatoryDirectory("ui"        , 0, -1, 69);
 
-	status("Indexing Windows-specific resources");
+	progress.step("Indexing Windows-specific resources");
 	indexMandatoryArchive(Aurora::kArchiveEXE, "nwn2main.exe", 70);
 
-	status("Indexing override files");
+	progress.step("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 100);
 
-	registerModelLoader(new NWN2ModelLoader);
+	progress.step("Loading game cursors");
+	initCursors();
 
+	progress.step("Registering file formats");
+	registerModelLoader(new NWN2ModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
+
+	progress.step("Successfully initialized the engine");
 }
 
 void NWN2Engine::initCursors() {
