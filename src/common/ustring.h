@@ -61,6 +61,7 @@ public:
 	UString(const std::string &str);
 	UString(const char *str = "");
 	UString(const char *str, int n);
+	explicit UString(uint32 c, int n = 1);
 	UString(iterator sBegin, iterator sEnd);
 	~UString();
 

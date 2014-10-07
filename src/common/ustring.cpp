@@ -171,6 +171,11 @@ UString::UString(const char *str, int n) {
 	*this = std::string(str, n);
 }
 
+UString::UString(uint32 c, int n) : _size(0) {
+	while (n-- > 0)
+		*this += c;
+}
+
 UString::UString(iterator sBegin, iterator sEnd) : _size(0) {
 	for (; sBegin != sEnd; ++sBegin)
 		*this += *sBegin;
