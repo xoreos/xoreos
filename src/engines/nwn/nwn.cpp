@@ -42,6 +42,7 @@
 #include "graphics/aurora/fps.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/loadprogress.h"
 #include "engines/aurora/tokenman.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
@@ -123,8 +124,6 @@ void NWNEngine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 
-	status("Successfully initialized the engine");
-
 	CursorMan.hideCursor();
 	CursorMan.set();
 
@@ -145,43 +144,51 @@ void NWNEngine::run(const Common::UString &target) {
 }
 
 void NWNEngine::init() {
+	LoadProgress progress(19);
+
+	progress.step("Loading user game config");
 	initConfig();
 	checkConfig();
 
 	if (EventMan.quitRequested())
 		return;
 
-	initResources();
+	initResources(progress);
 
 	if (EventMan.quitRequested())
 		return;
 
+	progress.step("Loading game cursors");
 	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
 
+	progress.step("Initializing internal game config");
 	initGameConfig();
 
+	progress.step("Starting script system");
 	_scriptFuncs = new ScriptFunctions();
+
+	progress.step("Successfully initialized the engine");
 }
 
-void NWNEngine::initResources() {
-	status("Setting base directory");
+void NWNEngine::initResources(LoadProgress &progress) {
+	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 	indexMandatoryDirectory("", 0, 0, 1);
 
-	status("Adding extra archive directories");
+	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "nwm");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "hak");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
 
-	status("Loading main KEY");
+	progress.step("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
 
-	status("Loading expansions and patch KEYs");
+	progress.step("Loading expansions and patch KEYs");
 
 	// Base game patch
 	indexOptionalArchive(Aurora::kArchiveKEY, "patch.key", 2);
@@ -198,40 +205,40 @@ void NWNEngine::initResources() {
 	_hasXP3 = indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key", 7);
 	indexOptionalArchive(Aurora::kArchiveKEY, "xp3patch.key", 8);
 
-	status("Loading GUI textures");
+	progress.step("Loading GUI textures");
 	indexMandatoryArchive(Aurora::kArchiveERF, "gui_32bit.erf"   , 10);
 	indexOptionalArchive (Aurora::kArchiveERF, "xp1_gui.erf"     , 11);
 	indexOptionalArchive (Aurora::kArchiveERF, "xp2_gui.erf"     , 12);
 
-	status("Indexing extra sound resources");
+	progress.step("Indexing extra sound resources");
 	indexMandatoryDirectory("ambient"   , 0, 0, 20);
-	status("Indexing extra music resources");
+	progress.step("Indexing extra music resources");
 	indexMandatoryDirectory("music"     , 0, 0, 21);
-	status("Indexing extra movie resources");
+	progress.step("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"    , 0, 0, 22);
-	status("Indexing extra image resources");
+	progress.step("Indexing extra image resources");
 	indexOptionalDirectory ("portraits" , 0, 0, 23);
-	status("Indexing extra talktables");
+	progress.step("Indexing extra talktables");
 	indexOptionalDirectory ("tlk"       , 0, 0, 25);
-	status("Indexing databases");
+	progress.step("Indexing databases");
 	indexOptionalDirectory ("database"  , 0, 0, 26);
 
-	status("Indexing override files");
+	progress.step("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 1000);
 
 	if (EventMan.quitRequested())
 		return;
 
+	progress.step("Loading main talk table");
+	TalkMan.addMainTable("dialog");
+
+	progress.step("Registering file formats");
+	registerModelLoader(new NWNModelLoader);
+	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
+
 	// Blacklist the DDS version of the galahad14 font, because in versions of NWN coming
 	// with a Cyrillic one, the DDS file is still Latin.
 	ResMan.blacklist("fnt_galahad14", Aurora::kFileTypeDDS);
-
-	status("Loading main talk table");
-	TalkMan.addMainTable("dialog");
-
-	registerModelLoader(new NWNModelLoader);
-
-	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }
 
 void NWNEngine::initCursors() {

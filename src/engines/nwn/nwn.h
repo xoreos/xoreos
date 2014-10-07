@@ -48,6 +48,8 @@ namespace Graphics {
 
 namespace Engines {
 
+class LoadProgress;
+
 namespace NWN {
 
 class ScriptFunctions;
@@ -105,7 +107,7 @@ private:
 	void init();
 
 	void initConfig();
-	void initResources();
+	void initResources(LoadProgress &progress);
 	void initCursors();
 	void initGameConfig();
 
