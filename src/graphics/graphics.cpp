@@ -1150,10 +1150,6 @@ void GraphicsManager::toggleMouseGrab() {
 }
 
 void GraphicsManager::setScreenSize(int width, int height) {
-	if ((width == _width) && (height == _height))
-		// No changes, nothing to do
-		return;
-
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
 		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setScreenSize, this, width, height));

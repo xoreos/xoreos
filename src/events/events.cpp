@@ -161,8 +161,13 @@ bool EventsManager::parseEventGraphics(const Event &event) {
 		}
 	}
 
-	if (event.type == kEventWindow)
+	if (event.type == kEventWindow) {
+		// If the window was restored, reassert the window size
+		if (event.window.event == kEventWindowRestored)
+			GfxMan.setScreenSize(GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+
 		return true;
+	}
 
 	return false;
 }
