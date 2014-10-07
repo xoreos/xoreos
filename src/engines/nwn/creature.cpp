@@ -189,6 +189,10 @@ uint32 Creature::getGender() const {
 	return _gender;
 }
 
+void Creature::setGender(uint32 gender) {
+	_gender = gender;
+}
+
 bool Creature::isFemale() const {
 	// Male and female are hardcoded.  Other genders (none, both, other)
 	// count as male when it comes to tokens in text strings.

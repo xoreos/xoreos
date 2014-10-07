@@ -74,6 +74,8 @@ public:
 
 	/** Get the creature's gender. */
 	uint32 getGender() const;
+	/** Set the creature's gender. */
+	void setGender(uint32 gender);
 	/** Is the creature female, do we need female dialogs tokens? */
 	bool isFemale() const;
 
