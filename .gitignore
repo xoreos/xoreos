@@ -48,5 +48,3 @@ INSTALL
 /src/xoreos
 # Window binary
 /src/xoreos.exe
-# Convenience symlink
-/xoreos
