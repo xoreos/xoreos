@@ -40,6 +40,7 @@
 #include "events/events.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
 
 #include "engines/jade/gui/main/main.h"
@@ -95,12 +96,8 @@ void JadeEngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
-
 	if (EventMan.quitRequested())
 		return;
-
-	status("Successfully initialized the engine");
 
 	CursorMan.hideCursor();
 	CursorMan.set();
@@ -155,11 +152,13 @@ void JadeEngine::run(const Common::UString &target) {
 }
 
 void JadeEngine::init() {
-	status("Setting base directory");
+	LoadProgress progress(13);
+
+	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 	indexMandatoryDirectory("", 0, 0, 1);
 
-	status("Adding extra archive directories");
+	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "data");
@@ -167,10 +166,10 @@ void JadeEngine::init() {
 
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "data", true);
 
-	status("Loading main KEY");
+	progress.step("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
 
-	status("Loading global auxiliary resources");
+	progress.step("Loading global auxiliary resources");
 	indexMandatoryArchive(Aurora::kArchiveERF, "loadscreens.mod"   , 10);
 	indexMandatoryArchive(Aurora::kArchiveERF, "players.mod"       , 11);
 	indexMandatoryArchive(Aurora::kArchiveRIM, "global-a.rim"      , 12);
@@ -180,28 +179,34 @@ void JadeEngine::init() {
 	indexMandatoryArchive(Aurora::kArchiveRIM, "miniglobal-a.rim"  , 16);
 	indexMandatoryArchive(Aurora::kArchiveRIM, "mmenu-a.rim"       , 17);
 
-	status("Indexing extra font resources");
+	progress.step("Indexing extra font resources");
 	indexMandatoryDirectory("fonts"   , 0, -1, 20);
-	status("Indexing extra sound resources");
+	progress.step("Indexing extra sound resources");
 	indexMandatoryDirectory("sound"   , 0, -1, 21);
-	status("Indexing extra movie resources");
+	progress.step("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"  , 0, -1, 22);
-	status("Indexing extra shader resources");
+	progress.step("Indexing extra shader resources");
 	indexMandatoryDirectory("shaderpc", 0, -1, 23);
 
-	status("Indexing override files");
+	progress.step("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
 
 	if (EventMan.quitRequested())
 		return;
 
-	status("Loading main talk table");
+	progress.step("Loading main talk table");
 	TalkMan.addMainTable("dialog");
 
+	progress.step("Registering file formats");
 	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
 	FontMan.addAlias("sava"   , "asian");
 	FontMan.addAlias("cerigo" , "asian");
 	FontMan.addAlias("fnt_gui", "asian");
+
+	progress.step("Loading game cursors");
+	initCursors();
+
+	progress.step("Successfully initialized the engine");
 }
 
 void JadeEngine::initCursors() {
