@@ -40,6 +40,7 @@
 #include "graphics/aurora/fps.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
@@ -117,8 +118,6 @@ void KotOR2Engine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 
-	status("Successfully initialized the engine");
-
 	CursorMan.hideCursor();
 	CursorMan.set();
 
@@ -139,27 +138,34 @@ void KotOR2Engine::run(const Common::UString &target) {
 }
 
 void KotOR2Engine::init() {
+	LoadProgress progress(16);
+
+	progress.step("Loading user game config");
 	initConfig();
 	checkConfig();
 
 	if (EventMan.quitRequested())
 		return;
 
-	initResources();
+	initResources(progress);
 
 	if (EventMan.quitRequested())
 		return;
 
+	progress.step("Loading game cursors");
 	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
 
+	progress.step("Initializing internal game config");
 	initGameConfig();
+
+	progress.step("Successfully initialized the engine");
 }
 
-void KotOR2Engine::initResources() {
-	status("Setting base directory");
+void KotOR2Engine::initResources(LoadProgress &progress) {
+	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
 	// In the Xbox version of KotOR, TXB textures are actually TPCs
@@ -168,7 +174,7 @@ void KotOR2Engine::initResources() {
 
 	indexMandatoryDirectory("", 0, 0, 1);
 
-	status("Adding extra archive directories");
+	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "lips");
 
@@ -182,41 +188,41 @@ void KotOR2Engine::initResources() {
 	if (_platform == Aurora::kPlatformXbox)
 		ResMan.addArchiveDir(Aurora::kArchiveERF, "SuperModels");
 
-	status("Loading main KEY");
+	progress.step("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
 
+	progress.step("Loading high-res texture packs");
 	if (_platform != Aurora::kPlatformXbox) {
-		status("Loading high-res texture packs");
 		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 10);
 		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 11);
 	}
 
-	status("Indexing extra sound resources");
+	progress.step("Indexing extra sound resources");
 	indexMandatoryDirectory("streamsounds", 0, -1, 20);
-	status("Indexing extra voice resources");
+	progress.step("Indexing extra voice resources");
 	indexMandatoryDirectory("streamvoice" , 0, -1, 21);
-	status("Indexing extra music resources");
+	progress.step("Indexing extra music resources");
 	indexMandatoryDirectory("streammusic" , 0, -1, 22);
-	status("Indexing extra movie resources");
+	progress.step("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"      , 0, -1, 23);
 
+	progress.step("Indexing platform-specific resources");
 	if (_platform == Aurora::kPlatformWindows) {
-		status("Indexing Windows-specific resources");
 		initCursorsRemap();
 		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor2.exe", 24);
 	}
 
-	status("Indexing override files");
+	progress.step("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 30);
 
 	if (EventMan.quitRequested())
 		return;
 
-	status("Loading main talk table");
+	progress.step("Loading main talk table");
 	TalkMan.addMainTable("dialog");
 
+	progress.step("Registering file formats");
 	registerModelLoader(new KotOR2ModelLoader);
-
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }
 
