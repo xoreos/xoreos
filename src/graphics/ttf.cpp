@@ -122,17 +122,6 @@ void TTFRenderer::getFaceMetrics(int &advance, int &yOffset, int &xMin) const {
 
 	yOffset = _ascent - ftFloor26_6(metrics.horiBearingY);
 	advance = ftCeil26_6(metrics.horiAdvance);
-
-	// In case we got a negative xMin we adjust that, this might make some
-	// characters look a bit odd, but it's the only way we can ensure no
-	// invalid memory gets written to with the current font API
-	if (xMin < 0) {
-		xMax -= xMin;
-		xMin = 0;
-
-		if (xMax > advance)
-			advance = xMax;
-	}
 }
 
 bool TTFRenderer::hasChar(uint32 ch) const {
@@ -180,11 +169,19 @@ void TTFRenderer::drawCharacter(uint32 ch, Surface &surface, int x, int y) {
 		srcPitch = -srcPitch;
 	}
 
+	int bitmapWidth = bitmap.width;
+	if (xMin < 0) {
+		bitmapWidth += xMin;
+		src         -= xMin;
+
+		xMin = 0;
+	}
+
 	x += xMin;
 	y += yOffset;
 
-	const int width  = MIN(surface.getWidth () - x, bitmap.width);
-	const int height = MIN(surface.getHeight() - y, bitmap.rows );
+	const int width  = MIN(surface.getWidth () - x, bitmapWidth);
+	const int height = MIN(surface.getHeight() - y, bitmap.rows);
 
 	byte *dst = surface.getData() + (y * surface.getWidth() + x) * 4;
 
