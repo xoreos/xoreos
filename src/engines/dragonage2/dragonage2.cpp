@@ -39,6 +39,7 @@
 #include "events/events.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
 
 #include "engines/dragonage2/dragonage2.h"
@@ -92,12 +93,8 @@ void DragonAge2Engine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
-
 	if (EventMan.quitRequested())
 		return;
-
-	status("Successfully initialized the engine");
 
 	CursorMan.hideCursor();
 	CursorMan.set();
@@ -134,19 +131,21 @@ void DragonAge2Engine::run(const Common::UString &target) {
 }
 
 void DragonAge2Engine::init() {
+	LoadProgress progress(8);
+
 	ResMan.setRIMsAreERFs(true);
 
-	status("Setting base directory");
+	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
-	status("Adding extra archive directories");
+	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/textures/medium");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/textures/high");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/audio/sound/");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/patch");
 
-	status("Loading core resource files");
+	progress.step("Loading core resource files");
 	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/2da.rim"                      ,  1);
 	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/al_char_stage.rim"            ,  2);
 	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/artfp.erf"                    ,  3);
@@ -183,14 +182,19 @@ void DragonAge2Engine::init() {
 	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/summonwardog.rim"             , 34);
 	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/tints.rim"                    , 35);
 
-	status("Loading core sound resource files");
+	progress.step("Loading core sound resource files");
 	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/audio/sound/wwisebanks_core.erf"  , 40);
 	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/audio/sound/wwisestreams_core.erf", 41);
 
-	status("Indexing extra core movie resources");
+	progress.step("Indexing extra core movie resources");
 	indexMandatoryDirectory("packages/core/data/movies" , 0, 0, 101);
-	status("Indexing extra core cursors");
+	progress.step("Indexing extra core cursors");
 	indexMandatoryDirectory("packages/core/data/cursors", 0, 0, 102);
+
+	progress.step("Loading game cursors");
+	initCursors();
+
+	progress.step("Successfully initialized the engine");
 }
 
 void DragonAge2Engine::initCursors() {
