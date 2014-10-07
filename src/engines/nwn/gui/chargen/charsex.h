@@ -18,12 +18,12 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/chargen/chargen.h
- *  The NWN character generator.
+/** @file engines/nwn/gui/chargen/charsex.cpp
+ *  The gender chooser in CharGen.
  */
 
-#ifndef ENGINES_NWN_GUI_CHARGEN_CHARGEN_H
-#define ENGINES_NWN_GUI_CHARGEN_CHARGEN_H
+#ifndef  ENGINES_NWN_GUI_CHARGEN_CHARSEX_H
+#define  ENGINES_NWN_GUI_CHARGEN_CHARSEX_H
 
 #include "engines/nwn/gui/chargen/chargenbase.h"
 
@@ -31,13 +31,12 @@ namespace Engines {
 
 namespace NWN {
 
-class Module;
+class ButtonsGroup;
 
-/** The NWN character generator. */
-class CharGenMenu : public CharGenBase {
+class CharSex : public CharGenBase {
 public:
-	CharGenMenu(Module &module);
-	~CharGenMenu();
+	CharSex();
+	~CharSex();
 
 	void reset();
 
@@ -45,15 +44,11 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	void init();
-
-	Module *_module;
-	std::vector<WidgetButton *> _charButtons;
-	std::vector<CharGenBase *> _chargenGuis;
+	ButtonsGroup * _buttons;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_GUI_CHARGEN_CHARGEN_H
+#endif //  ENGINES_NWN_GUI_CHARGEN_CHARSEX_H

@@ -25,7 +25,9 @@
 #include "engines/aurora/widget.h"
 
 #include "engines/nwn/module.h"
+#include "engines/nwn/gui/widgets/button.h"
 
+#include "engines/nwn/gui/chargen/charsex.h"
 #include "engines/nwn/gui/chargen/chargen.h"
 
 namespace Engines {
@@ -36,7 +38,6 @@ CharGenMenu::CharGenMenu(Module &module) : _module(&module) {
 	load("cg_main");
 
 	// TODO: Character trait buttons
-	getWidget("GenderButton"   , true)->setDisabled(true);
 	getWidget("RaceButton"     , true)->setDisabled(true);
 	getWidget("PortraitButton" , true)->setDisabled(true);
 	getWidget("ClassButton"    , true)->setDisabled(true);
@@ -45,25 +46,59 @@ CharGenMenu::CharGenMenu(Module &module) : _module(&module) {
 	getWidget("PackagesButton" , true)->setDisabled(true);
 	getWidget("CustomizeButton", true)->setDisabled(true);
 
-	// TODO: Reset
-	getWidget("ResetButton", true)->setDisabled(true);
-
 	// TODO: Play
 	getWidget("PlayButton" , true)->setDisabled(true);
+
+	init();
 }
 
 CharGenMenu::~CharGenMenu() {
+	for (uint it = 0; it < _chargenGuis.size(); ++it)
+		delete _chargenGuis[it];
 }
 
 void CharGenMenu::reset() {
+	delete _charChoices.character;
+	_charChoices.character = new Creature();
+
+	for (std::vector<CharGenBase *>::iterator g = _chargenGuis.begin(); g != _chargenGuis.end(); ++g)
+		(*g)->reset();
 }
 
 void CharGenMenu::callbackActive(Widget &widget) {
+	for (uint it = 0; it < _chargenGuis.size(); ++it) {
+		if (widget.getTag() == _charButtons[it]->getTag()) {
+			if (sub(*_chargenGuis[it]) == 2) {
+				if (it == _chargenGuis.size() - 1)
+					return;
+				_charButtons[it + 1]->setDisabled(false);
+				_chargenGuis[it + 1]->reset();
+				for (uint next = it + 2; next < _charButtons.size(); ++next) {
+					_charButtons[next]->setDisabled(true);
+					_chargenGuis[next]->reset();
+				}
+				return;
+			}
+		}
+	}
+
 	if (widget.getTag() == "CancelButton") {
 		_returnCode = 1;
 		return;
 	}
 
+	if (widget.getTag() == "ResetButton") {
+		reset();
+		return;
+	}
+}
+
+void CharGenMenu::init() {
+	_charButtons.push_back(getButton("GenderButton", true));
+
+	_chargenGuis.push_back(new CharSex());
+
+	_charChoices.character = new Creature();
 }
 
 } // End of namespace NWN
