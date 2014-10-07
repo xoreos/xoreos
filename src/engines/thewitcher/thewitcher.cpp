@@ -43,6 +43,7 @@
 #include "events/events.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
@@ -105,12 +106,8 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
-
 	if (EventMan.quitRequested())
 		return;
-
-	status("Successfully initialized the engine");
 
 	CursorMan.hideCursor();
 	CursorMan.set();
@@ -195,28 +192,30 @@ void TheWitcherEngine::run(const Common::UString &target) {
 }
 
 void TheWitcherEngine::init() {
-	status("Setting base directory");
+	LoadProgress progress(11);
+
+	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
-	status("Adding extra archive directories");
+	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveEXE, "system");
 	ResMan.addArchiveDir(Aurora::kArchiveKEY, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data/voices");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "data/modules/!final");
 
-	status("Loading main KEY");
+	progress.step("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 1);
 
-	status("Loading the localized base KEY");
+	progress.step("Loading the localized base KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "localized.key", 10);
 
-	status("Loading the English language KEYs");
+	progress.step("Loading the English language KEYs");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "lang_3.key", 20);
 	indexMandatoryArchive(Aurora::kArchiveKEY, "M1_3.key"  , 21);
 	indexMandatoryArchive(Aurora::kArchiveKEY, "M2_3.key"  , 22);
 
-	status("Indexing extra resources");
+	progress.step("Indexing extra resources");
 	indexOptionalDirectory("data/movies"   , 0, -1, 30);
 	indexOptionalDirectory("data/music"    , 0, -1, 31);
 	indexOptionalDirectory("data/sounds"   , 0, -1, 32);
@@ -231,15 +230,20 @@ void TheWitcherEngine::init() {
 
 	indexOptionalDirectory("data", ".*\\.bik", 0, 41);
 
-	status("Indexing Windows-specific resources");
+	progress.step("Indexing Windows-specific resources");
 	indexMandatoryArchive(Aurora::kArchiveEXE, "witcher.exe", 42);
 
-	status("Indexing override files");
+	progress.step("Indexing override files");
 	indexOptionalDirectory("data/override", 0, 0, 50);
 
-	registerModelLoader(new TheWitcherModelLoader);
+	progress.step("Loading game cursors");
+	initCursors();
 
+	progress.step("Registering file formats");
+	registerModelLoader(new TheWitcherModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
+
+	progress.step("Successfully initialized the engine");
 }
 
 void TheWitcherEngine::initCursors() {
