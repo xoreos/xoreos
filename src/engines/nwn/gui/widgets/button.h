@@ -38,6 +38,11 @@ namespace NWN {
 /** A NWN button widget. */
 class WidgetButton : public ModelWidget {
 public:
+	enum Mode {
+		kModeNormal     = 0,
+		kModeToggle,
+	};
+
 	WidgetButton(::Engines::GUI &gui, const Common::UString &tag,
 	             const Common::UString &model, const Common::UString &sound = "gui_button");
 	~WidgetButton();
@@ -45,6 +50,9 @@ public:
 	void enter();
 	void leave();
 
+	void setMode(Mode mode);
+	void setPressed(bool pushed);
+	bool isPressed() const;
 	void setDisabled(bool disabled);
 
 	void mouseDown(uint8 state, float x, float y);
@@ -52,6 +60,7 @@ public:
 
 private:
 	Common::UString _sound;
+	Mode _mode;
 };
 
 } // End of namespace NWN
