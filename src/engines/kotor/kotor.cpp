@@ -40,6 +40,7 @@
 #include "graphics/aurora/fps.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
@@ -131,8 +132,6 @@ void KotOREngine::run(const Common::UString &target) {
 	if (EventMan.quitRequested())
 		return;
 
-	status("Successfully initialized the engine");
-
 	CursorMan.hideCursor();
 	CursorMan.set();
 
@@ -153,27 +152,34 @@ void KotOREngine::run(const Common::UString &target) {
 }
 
 void KotOREngine::init() {
+	LoadProgress progress(17);
+
+	progress.step("Loading user game config");
 	initConfig();
 	checkConfig();
 
 	if (EventMan.quitRequested())
 		return;
 
-	initResources();
+	initResources(progress);
 
 	if (EventMan.quitRequested())
 		return;
 
+	progress.step("Loading game cursors");
 	initCursors();
 
 	if (EventMan.quitRequested())
 		return;
 
+	progress.step("Initializing internal game config");
 	initGameConfig();
+
+	progress.step("Successfully initialized the engine");
 }
 
-void KotOREngine::initResources() {
-	status("Setting base directory");
+void KotOREngine::initResources(LoadProgress &progress) {
+	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
 	// In the Xbox version of KotOR, TXB textures are actually TPCs
@@ -182,7 +188,7 @@ void KotOREngine::initResources() {
 
 	indexMandatoryDirectory("", 0, 0, 1);
 
-	status("Adding extra archive directories");
+	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "lips");
 
@@ -193,15 +199,13 @@ void KotOREngine::initResources() {
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, (_platform == Aurora::kPlatformXbox) ? "rimsxbox" : "rims");
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "modules");
 
-	status("Loading main KEY");
+	progress.step("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
 
-	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 2)) {
-		status("Loading Xbox DLC KEY");
+	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 2))
 		_hasLiveKey = true;
-	}
 
-	status("Loading global auxiliary resources");
+	progress.step("Loading global auxiliary resources");
 	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenu.rim"    , 10);
 	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenudx.rim"  , 11);
 	indexMandatoryArchive(Aurora::kArchiveRIM, "legal.rim"       , 12);
@@ -216,33 +220,33 @@ void KotOREngine::initResources() {
 	if (_platform == Aurora::kPlatformXbox) {
 		// The Xbox version has most of its textures in "textures.bif"
 		// Some, however, reside in "players.erf"
-		status("Loading Xbox textures");
+		progress.step("Loading Xbox textures");
 		indexMandatoryArchive(Aurora::kArchiveERF, "players.erf", 20);
 	} else {
 		// The Windows/Mac versions have the GUI textures here
-		status("Loading GUI textures");
+		progress.step("Loading GUI textures");
 		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 20);
 	}
 
-	status("Indexing extra sound resources");
+	progress.step("Indexing extra sound resources");
 	indexMandatoryDirectory("streamsounds", 0, -1, 30);
-	status("Indexing extra voice resources");
+	progress.step("Indexing extra voice resources");
 	indexMandatoryDirectory("streamwaves" , 0, -1, 31);
-	status("Indexing extra music resources");
+	progress.step("Indexing extra music resources");
 	indexMandatoryDirectory("streammusic" , 0, -1, 32);
-	status("Indexing extra movie resources");
+	progress.step("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"      , 0, -1, 33);
 
 	if (_platform == Aurora::kPlatformWindows) {
-		status("Indexing Windows-specific resources");
+		progress.step("Indexing Windows-specific resources");
 		initCursorsRemap();
 		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor.exe", 34);
 	} else if (_platform == Aurora::kPlatformMacOSX) {
-		status("Indexing Mac-specific resources");
+		progress.step("Indexing Mac-specific resources");
 		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources",         0, -1, 34);
 		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources/Cursors", 0, -1, 35);
 	} else if (_platform == Aurora::kPlatformXbox) {
-		status("Indexing Xbox-specific resources");
+		progress.step("Indexing Xbox-specific resources");
 		indexMandatoryDirectory("errortex"  , 0, -1, 34);
 		indexMandatoryDirectory("localvault", 0, -1, 35);
 		indexMandatoryDirectory("media"     , 0, -1, 36);
@@ -252,22 +256,20 @@ void KotOREngine::initResources() {
 			indexMandatoryDirectory("sound", 0, -1, 37);
 	}
 
-	status("Indexing override files");
+	progress.step("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 40);
 
 	if (EventMan.quitRequested())
 		return;
 
-	status("Loading main talk table");
+	progress.step("Loading main talk table");
 	TalkMan.addMainTable("dialog");
 
-	if (_hasLiveKey) {
-		status("Loading Xbox DLC talk table");
+	if (_hasLiveKey)
 		TalkMan.addAltTable("live1");
-	}
 
+	progress.step("Registering file formats");
 	registerModelLoader(new KotORModelLoader);
-
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }
 

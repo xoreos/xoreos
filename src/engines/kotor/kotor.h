@@ -40,6 +40,8 @@ namespace Common {
 
 namespace Engines {
 
+class LoadProgress;
+
 namespace KotOR {
 
 class KotOREngineProbe : public Engines::EngineProbe {
@@ -118,7 +120,7 @@ private:
 	void init();
 
 	void initConfig();
-	void initResources();
+	void initResources(LoadProgress &progress);
 	void initCursorsRemap();
 	void initCursors();
 	void initGameConfig();
