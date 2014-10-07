@@ -46,7 +46,7 @@ enum EventType {
 	kEventMouseDown = SDL_MOUSEBUTTONDOWN, ///< Mouse button was pressed.
 	kEventMouseUp   = SDL_MOUSEBUTTONUP  , ///< Mouse button was released.
 	kEventMouseWheel= SDL_MOUSEWHEEL     , ///< Mouse wheel was used.
-	kEventTextInput = SDL_TEXTINPUT	     , ///< Text was written.
+	kEventTextInput = SDL_TEXTINPUT      , ///< Text was written.
 	kEventQuit      = SDL_QUIT           , ///< Application quit was requested.
 	kEventResize    = SDL_WINDOWEVENT_RESIZED, ///< Resize the window.
 	kEventUserMIN   = SDL_USEREVENT - 1  , ///< For range checks.
