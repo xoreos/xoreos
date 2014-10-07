@@ -39,6 +39,7 @@
 #include "events/events.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
 
 #include "engines/dragonage/dragonage.h"
@@ -92,12 +93,8 @@ void DragonAgeEngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
-	initCursors();
-
 	if (EventMan.quitRequested())
 		return;
-
-	status("Successfully initialized the engine");
 
 	CursorMan.hideCursor();
 	CursorMan.set();
@@ -135,19 +132,21 @@ void DragonAgeEngine::run(const Common::UString &target) {
 }
 
 void DragonAgeEngine::init() {
+	LoadProgress progress(15);
+
 	ResMan.setRIMsAreERFs(true);
 
-	status("Setting base directory");
+	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
-	status("Adding extra archive directories");
+	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/data/abilities");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/textures");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/env");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/single player/data");
 
-	status("Loading core resource files");
+	progress.step("Loading core resource files");
 	indexMandatoryArchive(Aurora::kArchiveERF, "2da.erf"               ,  1);
 	indexMandatoryArchive(Aurora::kArchiveERF, "anims.erf"             ,  2);
 	indexMandatoryArchive(Aurora::kArchiveERF, "chargen.gpu.rim"       ,  3);
@@ -184,7 +183,7 @@ void DragonAgeEngine::init() {
 	indexMandatoryArchive(Aurora::kArchiveERF, "textures.erf"          , 34);
 	indexMandatoryArchive(Aurora::kArchiveERF, "tints.erf"             , 35);
 
-	status("Loading core ability resource files");
+	progress.step("Loading core ability resource files");
 	indexMandatoryArchive(Aurora::kArchiveERF, "bearform.rim"    , 40);
 	indexMandatoryArchive(Aurora::kArchiveERF, "burningform.rim" , 41);
 	indexMandatoryArchive(Aurora::kArchiveERF, "golemform.rim"   , 42);
@@ -195,27 +194,32 @@ void DragonAgeEngine::init() {
 	indexMandatoryArchive(Aurora::kArchiveERF, "summonspider.rim", 47);
 	indexMandatoryArchive(Aurora::kArchiveERF, "summonwolf.rim"  , 48);
 
-	status("Indexing extra core sound resources");
+	progress.step("Indexing extra core sound resources");
 	indexMandatoryDirectory("packages/core/audio"          , 0, -1, 100);
-	status("Indexing extra core movie resources");
+	progress.step("Indexing extra core movie resources");
 	indexMandatoryDirectory("packages/core/data/movies"    , 0,  0, 101);
-	status("Indexing extra core talktables");
+	progress.step("Indexing extra core talktables");
 	indexMandatoryDirectory("packages/core/data/talktables", 0,  0, 102);
-	status("Indexing extra core cursors");
+	progress.step("Indexing extra core cursors");
 	indexMandatoryDirectory("packages/core/data/cursors"   , 0,  0, 103);
 
-	status("Indexing extra environments");
+	progress.step("Indexing extra environments");
 	indexMandatoryDirectory("packages/core/env", 0, 0, 110);
 
-	status("Loading single-player campaign global resource files");
+	progress.step("Loading single-player campaign global resource files");
 	indexMandatoryArchive(Aurora::kArchiveERF, "moduleglobal.rim", 50);
 
-	status("Indexing extra single-player campaign movie resources");
+	progress.step("Indexing extra single-player campaign movie resources");
 	indexMandatoryDirectory("modules/single player/data"           , 0, -1, 120);
-	status("Indexing extra single-player campaign sound resources");
+	progress.step("Indexing extra single-player campaign sound resources");
 	indexMandatoryDirectory("modules/single player/data/movies"    , 0,  0, 121);
-	status("Indexing extra single-player campaign talktables");
+	progress.step("Indexing extra single-player campaign talktables");
 	indexMandatoryDirectory("modules/single player/data/talktables", 0,  0, 122);
+
+	progress.step("Loading game cursors");
+	initCursors();
+
+	progress.step("Successfully initialized the engine");
 }
 
 void DragonAgeEngine::initCursors() {
