@@ -182,7 +182,7 @@ void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &
 	if (directory.empty())
 		throw Common::Exception("No such directory \"%s\"", dir.c_str());
 
-	directory = Common::FilePath::canonicalize(directory);
+	directory = Common::FilePath::canonicalize(directory, false);
 
 	Common::FileList dirFiles;
 	if (!dirFiles.addDirectory(directory))
