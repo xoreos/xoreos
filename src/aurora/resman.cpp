@@ -208,15 +208,14 @@ void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &
 Common::UString ResourceManager::findArchive(const Common::UString &file,
 		const DirectoryList &dirs, const Common::FileList &files) {
 
-	Common::UString escapedFile = Common::FilePath::escapeStringLiteral(file);
 	Common::FileList nameMatch;
-	if (!files.getSubListGlob(".*/" + escapedFile, true, nameMatch))
+	if (!files.getSubList(Common::FilePath::normalize("/" + file, false), true, nameMatch))
 		return "";
 
 	Common::UString realName;
 	for (DirectoryList::const_iterator dir = dirs.begin(); dir != dirs.end(); ++dir) {
-		Common::UString escapedPath = Common::FilePath::escapeStringLiteral(*dir) + "/" + escapedFile;
-		if (!(realName = nameMatch.findFirstGlob(escapedPath, true)).empty())
+		Common::UString dirPath = Common::FilePath::normalize(*dir + "/" + file, false);
+		if (!(realName = nameMatch.findFirst(dirPath, true)).empty())
 			return realName;
 	}
 
