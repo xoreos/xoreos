@@ -47,7 +47,7 @@ public:
 	void clear();
 
 	/** Is the list empty? */
-	bool isEmpty() const;
+	bool empty() const;
 	/** Return the number of files in the list. */
 	uint32 size() const;
 

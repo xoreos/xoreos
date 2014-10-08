@@ -104,7 +104,7 @@ TXI::TXI(Common::SeekableReadStream &stream) : _empty(false), _mode(kModeNormal)
 TXI::~TXI() {
 }
 
-bool TXI::isEmpty() const {
+bool TXI::empty() const {
 	return _empty;
 }
 

@@ -57,7 +57,7 @@ private:
 
 		void clear();
 
-		bool isEmpty() const;
+		bool empty() const;
 		bool isSet(int block) const;
 
 		void set(int block, bool coded);

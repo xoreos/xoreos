@@ -54,7 +54,7 @@ public:
 	void unsetColor();
 	void setAlign(float align);
 
-	bool isEmpty();
+	bool empty();
 
 	uint getLineCount() const;
 

@@ -124,7 +124,7 @@ public:
 	TXI(Common::SeekableReadStream &stream);
 	~TXI();
 
-	bool isEmpty() const;
+	bool empty() const;
 
 	const Features &getFeatures() const;
 	Features &getFeatures();

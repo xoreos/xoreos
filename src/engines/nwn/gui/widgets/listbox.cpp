@@ -185,7 +185,7 @@ float WidgetListItemTextLine::getWidth() const {
 }
 
 float WidgetListItemTextLine::getHeight() const {
-	if (_text->isEmpty())
+	if (_text->empty())
 		return _fontHeight + _spacing;
 
 	return _text->getHeight() + _spacing;

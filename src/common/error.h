@@ -48,7 +48,7 @@ public:
 
 	const char *what() const throw();
 
-	bool isEmpty() const;
+	bool empty() const;
 
 	Stack &getStack();
 

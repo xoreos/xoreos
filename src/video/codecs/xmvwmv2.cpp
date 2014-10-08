@@ -59,7 +59,7 @@ void XMVWMV2Codec::CBP::clear() {
 	_cbp = 0;
 }
 
-bool XMVWMV2Codec::CBP::isEmpty() const {
+bool XMVWMV2Codec::CBP::empty() const {
 	return _cbp == 0;
 }
 
@@ -447,7 +447,7 @@ void XMVWMV2Codec::decodeIFrame(DecodeContext &ctx) {
 			ctx.hasACPrediction = ctx.bits.getBit() != 0;
 
 			// Read the AC huffman table indices for this macro block
-			if (ctx.hasACPerMacroBlock && !ctx.curCBP[0].isEmpty()) {
+			if (ctx.hasACPerMacroBlock && !ctx.curCBP[0].empty()) {
 				uint32 index = getTrit(ctx.bits);
 
 				ctx.decoderAC[0] = &_decoderAC[0][index];

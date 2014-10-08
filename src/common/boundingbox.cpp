@@ -57,7 +57,7 @@ void BoundingBox::clear() {
 	_origin.loadIdentity();
 }
 
-bool BoundingBox::isEmpty() const {
+bool BoundingBox::empty() const {
 	return _empty;
 }
 

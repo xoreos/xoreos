@@ -59,7 +59,7 @@ void FileList::clear() {
 	_files.clear();
 }
 
-bool FileList::isEmpty() const {
+bool FileList::empty() const {
 	return _files.empty();
 }
 

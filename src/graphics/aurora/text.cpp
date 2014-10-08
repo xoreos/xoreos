@@ -111,7 +111,7 @@ void Text::setPosition(float x, float y, float z) {
 	GfxMan.unlockFrame();
 }
 
-bool Text::isEmpty() {
+bool Text::empty() {
 	return _str.empty();
 }
 

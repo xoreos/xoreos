@@ -89,7 +89,7 @@ public:
 		MainThreadCallerFunctor caller(boost::bind(&MainThreadFunctor<T>::operator(), f));
 
 		callInMainThread(caller);
-		if (!f.getError().isEmpty()) {
+		if (!f.getError().empty()) {
 			throw Common::Exception(f.getError());
 		}
 

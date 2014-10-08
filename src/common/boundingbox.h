@@ -37,7 +37,7 @@ public:
 
 	void clear();
 
-	bool isEmpty() const;
+	bool empty() const;
 
 	const TransformationMatrix &getOrigin() const;
 
