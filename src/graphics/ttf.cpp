@@ -117,9 +117,7 @@ int TTFRenderer::getMaxWidth() const {
 void TTFRenderer::getFaceMetrics(int &advance, int &yOffset, int &xMin) const {
 	FT_Glyph_Metrics &metrics = _face->glyph->metrics;
 
-	    xMin = ftFloor26_6(metrics.horiBearingX);
-	int xMax = xMin + ftCeil26_6(metrics.width);
-
+	xMin    = ftFloor26_6(metrics.horiBearingX);
 	yOffset = _ascent - ftFloor26_6(metrics.horiBearingY);
 	advance = ftCeil26_6(metrics.horiAdvance);
 }
