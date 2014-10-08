@@ -31,8 +31,6 @@
 
 namespace Common {
 
-class SeekableReadStream;
-
 /** A list of files. */
 class FileList {
 public:
@@ -109,23 +107,6 @@ public:
 	 *          in the list.
 	 */
 	UString findFirst(const UString &glob, bool caseInsensitive) const;
-
-	/** Open the specified file.
-	 *
-	 *  @param  fileName The file to open.
-	 *  @return A SeekableReadStream of the file, or 0 if the file not
-	 *          in the list.
-	 */
-	SeekableReadStream *openFile(const UString &fileName) const;
-
-	/** Open the first file matching the given regex.
-	 *
-	 *  @param  glob A perl regular expression to match the file names against.
-	 *  @param  caseInsensitive Should the case of the file name be ignored?
-	 *  @return A SeekableReadStream of the file, or 0 if such a file is not
-	 *          in the list.
-	 */
-	SeekableReadStream *openFile(const UString &glob, bool caseInsensitive) const;
 
 private:
 	typedef std::list<UString> Files;

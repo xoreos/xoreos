@@ -27,8 +27,6 @@
 
 #include "common/filelist.h"
 #include "common/filepath.h"
-#include "common/file.h"
-#include "common/stream.h"
 
 // boost-filesystem stuff
 using boost::filesystem::directory_iterator;
@@ -152,34 +150,6 @@ bool FileList::contains(const UString &glob, bool caseInsensitive) const {
 
 UString FileList::findFirst(const UString &glob, bool caseInsensitive) const {
 	return getPath(glob, caseInsensitive);
-}
-
-SeekableReadStream *FileList::openFile(const UString &fileName) const {
-	UString p = getPath(fileName);
-	if (p.empty())
-		return 0;
-
-	File *file = new File;
-	if (!file->open(p)) {
-		delete file;
-		return 0;
-	}
-
-	return file;
-}
-
-SeekableReadStream *FileList::openFile(const UString &glob, bool caseInsensitive) const {
-	UString p = getPath(glob, caseInsensitive);
-	if (p.empty())
-		return 0;
-
-	File *file = new File;
-	if (!file->open(p)) {
-		delete file;
-		return 0;
-	}
-
-	return file;
 }
 
 UString FileList::getPath(const UString &fileName) const {
