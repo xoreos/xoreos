@@ -24,7 +24,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
-#include <boost/version.hpp>
 
 #include "common/filelist.h"
 #include "common/file.h"
@@ -40,12 +39,6 @@ using boost::filesystem::directory_iterator;
 using boost::to_lower_copy;
 using boost::equals;
 using boost::iequals;
-
-#if ((((BOOST_VERSION / 100000) == 1) && (((BOOST_VERSION / 100) % 1000) < 44)) || BOOST_FILESYSTEM_VERSION == 2)
-#define generic_string() string()
-#elif BOOST_FILESYSTEM_VERSION == 3
-#define stem() stem().string()
-#endif
 
 namespace Common {
 
