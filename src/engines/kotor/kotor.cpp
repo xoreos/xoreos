@@ -88,7 +88,7 @@ KotOREngineProbeWin::~KotOREngineProbeWin() {
 
 bool KotOREngineProbeWin::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If swkotor.exe exists, this should be a valid path for the Windows port
-	return rootFiles.containsGlob(".*/swkotor.exe", true);
+	return rootFiles.contains("/swkotor.exe", true);
 }
 
 
@@ -114,7 +114,7 @@ KotOREngineProbeXbox::~KotOREngineProbeXbox() {
 bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If the "dataxbox" directory exists and "players.erf" exists, this should be a valid path for the Xbox port
 	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "dataxbox");
-	return !appDirectory.empty() && rootFiles.containsGlob(".*/players.erf", true);
+	return !appDirectory.empty() && rootFiles.contains("/players.erf", true);
 }
 
 

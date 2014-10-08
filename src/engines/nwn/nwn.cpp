@@ -82,14 +82,14 @@ const Common::UString &NWNEngineProbe::getGameName() const {
 
 bool NWNEngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// Don't accidentally trigger on NWN2
-	if (rootFiles.containsGlob(".*/nwn2.ini", true))
+	if (rootFiles.contains("/nwn2.ini", true))
 		return false;
-	if (rootFiles.containsGlob(".*/nwn2main.exe", true))
+	if (rootFiles.contains("/nwn2main.exe", true))
 		return false;
 
 	// If either the ini file or a binary is found, this should be a valid path
 
-	if (rootFiles.containsGlob(".*/nwn.ini", true))
+	if (rootFiles.contains("/nwn.ini", true))
 		return true;
 
 	if (rootFiles.containsGlob(".*/(nw|nwn)main.exe", true))
