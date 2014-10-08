@@ -77,14 +77,6 @@ FileList::const_iterator FileList::end() const {
 	return _files.end();
 }
 
-uint FileList::getFileNames(std::list<UString> &list) const {
-	uint n = 0;
-	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it, ++n)
-		list.push_back(*it);
-
-	return n;
-}
-
 bool FileList::addDirectory(const UString &directory, int recurseDepth) {
 	// Not a directory? Fail.
 	if (!FilePath::isDirectory(directory))

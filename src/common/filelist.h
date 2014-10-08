@@ -58,12 +58,6 @@ public:
 	/** Return a const_iterator pointing past the end of the list. */
 	const_iterator end() const;
 
-	/** Copy the names of the files in the FileList into a list.
-	 *
-	 *  @param list The list into which to copy the file names.
-	 */
-	uint getFileNames(std::list<UString> &list) const;
-
 	/** Add a directory to the list
 	 *
 	 *  @param  directory The directory to add.

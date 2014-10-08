@@ -23,6 +23,7 @@
  */
 
 #include <list>
+#include <algorithm>
 
 #include "common/util.h"
 #include "common/filelist.h"
@@ -473,21 +474,17 @@ void NWNEngine::getModules(std::vector<Common::UString> &modules) {
 	if (moduleDir.empty())
 		return;
 
-	Common::FileList moduleDirList;
-	moduleDirList.addDirectory(moduleDir);
+	Common::FileList mods;
+	mods.addDirectory(moduleDir);
 
-	std::list<Common::UString> mods;
-	uint n = moduleDirList.getFileNames(mods);
-
-	mods.sort(Common::UString::iless());
-
-	modules.reserve(n);
-	for (std::list<Common::UString>::const_iterator m = mods.begin(); m != mods.end(); ++m) {
+	for (Common::FileList::const_iterator m = mods.begin(); m != mods.end(); ++m) {
 		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
 			continue;
 
 		modules.push_back(Common::FilePath::getStem(*m));
 	}
+
+	std::sort(modules.begin(), modules.end(), Common::UString::iless());
 }
 
 bool NWNEngine::hasModule(Common::UString &module) {
@@ -514,14 +511,10 @@ void NWNEngine::getCharacters(std::vector<Common::UString> &characters, bool loc
 	if (pcDir.empty())
 		return;
 
-	Common::FileList pcDirList;
-	pcDirList.addDirectory(pcDir);
+	Common::FileList chars;
+	chars.addDirectory(pcDir);
 
-	std::list<Common::UString> chars;
-	uint n = pcDirList.getFileNames(chars);
-
-	characters.reserve(n);
-	for (std::list<Common::UString>::const_iterator c = chars.begin(); c != chars.end(); ++c) {
+	for (Common::FileList::const_iterator c = chars.begin(); c != chars.end(); ++c) {
 		if (!Common::FilePath::getExtension(*c).equalsIgnoreCase(".bic"))
 			continue;
 
