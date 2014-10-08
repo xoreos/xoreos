@@ -104,7 +104,22 @@ bool FileList::addDirectory(const UString &directory, int recurseDepth) {
 	return true;
 }
 
-bool FileList::getSubList(const UString &glob, FileList &subList, bool caseInsensitive) const {
+bool FileList::getSubList(const UString &str, bool caseInsensitive, FileList &subList) const {
+	UString match = str.toLower();
+
+	bool foundMatch = false;
+
+	// Iterate through the whole list, adding the matches to the sub list
+	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it)
+		if (it->toLower().endsWith(match)) {
+			subList._files.push_back(*it);
+			foundMatch = true;
+		}
+
+	return foundMatch;
+}
+
+bool FileList::getSubListGlob(const UString &glob, bool caseInsensitive, FileList &subList) const {
 	boost::regex::flag_type type = boost::regex::perl;
 	if (caseInsensitive)
 		type |= boost::regex::icase;
@@ -122,54 +137,32 @@ bool FileList::getSubList(const UString &glob, FileList &subList, bool caseInsen
 	return foundMatch;
 }
 
-bool FileList::getSubList(const UString &glob, std::list<UString> &list, bool caseInsensitive) const {
-	boost::regex::flag_type type = boost::regex::perl;
-	if (caseInsensitive)
-		type |= boost::regex::icase;
-	boost::regex expression(glob.c_str(), type);
+bool FileList::contains(const UString &str, bool caseInsensitive) const {
+	return !findFirst(str, caseInsensitive).empty();
+}
 
-	bool foundMatch = false;
+bool FileList::containsGlob(const UString &glob, bool caseInsensitive) const {
+	return !findFirstGlob(glob, caseInsensitive).empty();
+}
+
+UString FileList::findFirst(const UString &str, bool caseInsensitive) const {
+	UString match = str.toLower();
 
 	// Iterate through the whole list, adding the matches to the sub list
 	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it)
-		if (boost::regex_match(it->c_str(), expression)) {
-			list.push_back(*it);
-			foundMatch = true;
-		}
-
-	return foundMatch;
-}
-
-bool FileList::contains(const UString &fileName) const {
-	return !getPath(fileName).empty();
-}
-
-bool FileList::contains(const UString &glob, bool caseInsensitive) const {
-	return !getPath(glob, caseInsensitive).empty();
-}
-
-UString FileList::findFirst(const UString &glob, bool caseInsensitive) const {
-	return getPath(glob, caseInsensitive);
-}
-
-UString FileList::getPath(const UString &fileName) const {
-	UString canonicalFile = FilePath::canonicalize(fileName, false);
-
-	// Iterate through the whole list, looking for a match
-	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it)
-		if (*it == canonicalFile)
+		if (it->toLower().endsWith(match))
 			return *it;
 
 	return "";
 }
 
-UString FileList::getPath(const UString &glob, bool caseInsensitive) const {
+UString FileList::findFirstGlob(const UString &glob, bool caseInsensitive) const {
 	boost::regex::flag_type type = boost::regex::perl;
 	if (caseInsensitive)
 		type |= boost::regex::icase;
 	boost::regex expression(glob.c_str(), type);
 
-	// Iterate through the whole list, looking for a match
+	// Iterate through the whole list, adding the matches to the sub list
 	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it)
 		if (boost::regex_match(it->c_str(), expression))
 			return *it;

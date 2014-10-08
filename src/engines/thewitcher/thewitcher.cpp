@@ -84,7 +84,7 @@ bool TheWitcherEngineProbe::probe(const Common::UString &directory, const Common
 		return false;
 
 	// If either witcher.ini or witcher.exe exists, this should be a valid path
-	return systemFiles.contains(".*/witcher.(exe|ini)", true);
+	return systemFiles.containsGlob(".*/witcher.(exe|ini)", true);
 }
 
 bool TheWitcherEngineProbe::probe(Common::SeekableReadStream &stream) const {

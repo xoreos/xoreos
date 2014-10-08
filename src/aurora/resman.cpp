@@ -188,11 +188,11 @@ void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &
 	if (!dirFiles.addDirectory(directory))
 		throw Common::Exception("Can't read directory \"%s\"", directory.c_str());
 
-	dirFiles.getSubList(kArchiveGlob[archive], _archiveFiles[archive], true);
+	dirFiles.getSubListGlob(kArchiveGlob[archive], true, _archiveFiles[archive]);
 
 	// If we're adding an ERF directory and .rim files are actually ERFs, add those too
 	if ((archive == kArchiveERF) && _rimsAreERFs)
-		dirFiles.getSubList(kArchiveGlob[kArchiveRIM], _archiveFiles[archive], true);
+		dirFiles.getSubListGlob(kArchiveGlob[kArchiveRIM], true, _archiveFiles[archive]);
 
 	_archiveDirs[archive].push_back(directory);
 
@@ -210,13 +210,13 @@ Common::UString ResourceManager::findArchive(const Common::UString &file,
 
 	Common::UString escapedFile = Common::FilePath::escapeStringLiteral(file);
 	Common::FileList nameMatch;
-	if (!files.getSubList(".*/" + escapedFile, nameMatch, true))
+	if (!files.getSubListGlob(".*/" + escapedFile, true, nameMatch))
 		return "";
 
 	Common::UString realName;
 	for (DirectoryList::const_iterator dir = dirs.begin(); dir != dirs.end(); ++dir) {
 		Common::UString escapedPath = Common::FilePath::escapeStringLiteral(*dir) + "/" + escapedFile;
-		if (!(realName = nameMatch.findFirst(escapedPath, true)).empty())
+		if (!(realName = nameMatch.findFirstGlob(escapedPath, true)).empty())
 			return realName;
 	}
 
@@ -418,7 +418,7 @@ ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString 
 
 	// Find files matching the glob pattern
 	Common::FileList globFiles;
-	files.getSubList(glob, globFiles, true);
+	files.getSubListGlob(glob, true, globFiles);
 
 	// Add the files
 	addResources(globFiles, change, priority);

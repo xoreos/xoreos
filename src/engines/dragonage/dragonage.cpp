@@ -68,7 +68,7 @@ const Common::UString &DragonAgeEngineProbe::getGameName() const {
 
 bool DragonAgeEngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If the launcher binary is found, this should be a valid path
-	if (rootFiles.contains(".*/daoriginslauncher.exe", true))
+	if (rootFiles.containsGlob(".*/daoriginslauncher.exe", true))
 		return true;
 
 	return false;

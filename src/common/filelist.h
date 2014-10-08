@@ -66,30 +66,31 @@ public:
 	 */
 	bool addDirectory(const UString &directory, int recurseDepth = 0);
 
-	/** Add the files matching the given regex into another FileList.
+	/** Add files ending with the given string into another FileList.
 	 *
-	 *  @param  glob A perl regular expression to match the file names against.
+	 *  @param  str A file ending to match file names against.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @param  subList The FileList to where to add the matching files.
-	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return true if at least one matching file was found.
 	 */
-	bool getSubList(const UString &glob, FileList &subList, bool caseInsensitive = false) const;
+	bool getSubList(const UString &str, bool caseInsensitive, FileList &subList) const;
 
-	/** Add the files matching the given regex into a list of file names.
+	/** Add files matching the given regex into another FileList.
 	 *
 	 *  @param  glob A perl regular expression to match the file names against.
-	 *  @param  list The list to where to add the matching file names.
 	 *  @param  caseInsensitive Should the case of the file name be ignored?
+	 *  @param  subList The FileList to where to add the matching files.
 	 *  @return true if at least one matching file was found.
 	 */
-	bool getSubList(const UString &glob, std::list<UString> &list, bool caseInsensitive = false) const;
+	bool getSubListGlob(const UString &glob, bool caseInsensitive, FileList &subList) const;
 
-	/** Does the list contain the specified file?
+	/** Does the list contain at least one file ending with the given string?
 	 *
-	 *  @param  fileName The file to look for.
-	 *  @return true if the file is in the list, false if not.
+	 *  @param  str A file ending to match file names against.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
+	 *  @return true if at least one matching file is found, false otherwise.
 	 */
-	bool contains(const UString &fileName) const;
+	bool contains(const UString &str, bool caseInsensitive) const;
 
 	/** Does the list contain at least one file matching the given regex?
 	 *
@@ -97,7 +98,16 @@ public:
 	 *  @param  caseInsensitive Should the case of the file name be ignored?
 	 *  @return true if at least one matching file is found, false otherwise.
 	 */
-	bool contains(const UString &glob, bool caseInsensitive) const;
+	bool containsGlob(const UString &glob, bool caseInsensitive) const;
+
+	/** Find the first file ending with the given string.
+	 *
+	 *  @param  str A file ending to match file names against.
+	 *  @param  caseInsensitive Should the case of the file name be ignored?
+	 *  @return The path of the first matching file, or "" if such a file is not
+	 *          in the list.
+	 */
+	UString findFirst(const UString &str, bool caseInsensitive) const;
 
 	/** Find the first file matching the given regex.
 	 *
@@ -106,15 +116,12 @@ public:
 	 *  @return The path of the first matching file, or "" if such a file is not
 	 *          in the list.
 	 */
-	UString findFirst(const UString &glob, bool caseInsensitive) const;
+	UString findFirstGlob(const UString &glob, bool caseInsensitive) const;
 
 private:
 	typedef std::list<UString> Files;
 
 	Files _files;
-
-	UString getPath(const UString &fileName) const;
-	UString getPath(const UString &glob, bool caseInsensitive) const;
 };
 
 } // End of namespace Common

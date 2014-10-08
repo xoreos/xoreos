@@ -88,7 +88,7 @@ KotOR2EngineProbeWin::~KotOR2EngineProbeWin() {
 
 bool KotOR2EngineProbeWin::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If "swkotor2.exe" exists, this should be a valid path for the Windows port
-	return rootFiles.contains(".*/swkotor2.exe", true);
+	return rootFiles.containsGlob(".*/swkotor2.exe", true);
 }
 
 
@@ -101,7 +101,7 @@ KotOR2EngineProbeXbox::~KotOR2EngineProbeXbox() {
 bool KotOR2EngineProbeXbox::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
 	// If the "dataxbox" directory exists and "weapons.erf" exists, this should be a valid path for the Xbox port
 	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "dataxbox");
-	return !appDirectory.empty() && rootFiles.contains(".*/weapons.erf", true);
+	return !appDirectory.empty() && rootFiles.containsGlob(".*/weapons.erf", true);
 }
 
 
