@@ -138,15 +138,20 @@ public:
 	 *
 	 *  In addition, "." and "..", symbolic links and ~ are resolved.
 	 *
+	 *  NOTE: If the resolving of symbolic links is disabled, ".." will not be resolved
+	 *        either, as ".." following a symbolic links should modify the destination
+	 *        of that symbolic link and not remove it.
+	 *
 	 *  The effect is very similar to boost::filesystem::canonical(), except:
 	 *  - boost::filesystem::canonical() does not resolve ~ to the user's home directory
 	 *  - boost::filesystem::canonical() absolutizes a path, normalize() does not
 	 *  - boost::filesystem::canonical() fails on paths that don't exist, normalize() does not
 	 *
 	 *  @param  p The path to normalize.
+	 *  @param  resolveSymLinks Should symbolic links be resolved?
 	 *  @return The normalized path.
 	 */
-	static UString normalize(const UString &p);
+	static UString normalize(const UString &p, bool resolveSymLinks = true);
 
 	/** Return the canonical, absolutized and normalized path.
 	 *
@@ -157,9 +162,10 @@ public:
 	 *  - boost::filesystem::canonical() fails on paths that don't exist, normalize() does not
 	 *
 	 *  @param  p The path to canonicalize.
+	 *  @param  resolveSymLinks Should symbolic links be resolved?
 	 *  @return The canonicalized path.
 	 */
-	static UString canonicalize(const UString &p);
+	static UString canonicalize(const UString &p, bool resolveSymLinks = true);
 
 	/** Find a directory's subdirectory.
 	 *

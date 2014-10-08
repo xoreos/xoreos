@@ -148,7 +148,7 @@ UString FilePath::relativize(const UString &basePath, const UString &path) {
 	return relative;
 }
 
-UString FilePath::normalize(const UString &p) {
+UString FilePath::normalize(const UString &p, bool resolveSymLinks) {
 	boost::filesystem::path source = convertToSlash(p.c_str()).native();
 	boost::filesystem::path result;
 
@@ -169,10 +169,12 @@ UString FilePath::normalize(const UString &p) {
 		result.clear();
 
 		for (itr = source.begin(); itr != source.end(); ++itr) {
-			// Resolve . and ..
+			// Resolve .
 			if (itr->string() == ".")
 				continue;
-			if (itr->string() == "..") {
+
+			// Resolve .., but only if symbolic links are also resolved
+			if (resolveSymLinks && (itr->string() == "..")) {
 				if (result != source.root_path())
 					result.remove_filename();
 				continue;
@@ -180,7 +182,12 @@ UString FilePath::normalize(const UString &p) {
 
 			result /= *itr;
 
-			// Now check if this a symlink. If it is, resolve it and restart normalization
+			/* If the resolving of symbolic links was requested, check if the current path
+			 * is one. If it is, resolve it and restart normalization.
+			 */
+
+			if (!resolveSymLinks)
+				continue;
 
 			boost::system::error_code ec;
 			boost::filesystem::path link = boost::filesystem::read_symlink(result, ec);
@@ -214,8 +221,8 @@ UString FilePath::normalize(const UString &p) {
 	return convertToSlash(boost::filesystem::absolute(result)).string().c_str();
 }
 
-UString FilePath::canonicalize(const UString &p) {
-	return normalize(absolutize(p));
+UString FilePath::canonicalize(const UString &p, bool resolveSymLinks) {
+	return normalize(absolutize(p), resolveSymLinks);
 }
 
 bool FilePath::getSubDirectories(const UString &directory, std::list<UString> &subDirectories) {
