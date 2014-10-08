@@ -25,13 +25,8 @@
 #ifndef COMMON_FILELIST_H
 #define COMMON_FILELIST_H
 
-#include <string>
 #include <list>
-#include <map>
 
-#include <boost/filesystem.hpp>
-
-#include "common/types.h"
 #include "common/ustring.h"
 
 namespace Common {
@@ -41,6 +36,8 @@ class SeekableReadStream;
 /** A list of files. */
 class FileList {
 public:
+	typedef std::list<UString>::const_iterator const_iterator;
+
 	FileList();
 	FileList(const FileList &list);
 	~FileList();
@@ -55,6 +52,11 @@ public:
 	bool isEmpty() const;
 	/** Return the number of files in the list. */
 	uint32 size() const;
+
+	/** Return a const_iterator pointing to the beginning of the list. */
+	const_iterator begin() const;
+	/** Return a const_iterator pointing past the end of the list. */
+	const_iterator end() const;
 
 	/** Copy the names of the files in the FileList into a list.
 	 *
@@ -132,53 +134,12 @@ public:
 	SeekableReadStream *openFile(const UString &glob, bool caseInsensitive) const;
 
 private:
-	/** A file path. */
-	struct FilePath {
-		UString baseDir;          ///< The base directory from which the path was added.
-		UString pathString;       ///< The complete path string form.
-		boost::filesystem::path filePath; ///< The complete real path.
+	typedef std::list<UString> Files;
 
-		FilePath(UString b, boost::filesystem::path p);
-		FilePath(const FilePath &p);
-	};
+	Files _files;
 
-	typedef std::multimap<UString, std::list<FilePath>::const_iterator> FileMap;
-
-	std::list<FilePath> _files; ///< The files.
-
-	/** The files mapped by extensionless, lowercase filename. */
-	FileMap _fileMap;
-
-	bool addDirectory(const UString &base, const boost::filesystem::path &directory, int recurseDepth);
-
-	void addPath(const UString &base, const boost::filesystem::path &p);
-	void addPath(const FilePath &p);
-
-	const FilePath *getPath(const UString &fileName) const;
-	const FilePath *getPath(const UString &glob, bool caseInsensitive) const;
-
-public:
-	/** Iterator over all files in a FileList. */
-	class const_iterator {
-	public:
-		const_iterator(const const_iterator &i);
-		const_iterator(const std::list<FilePath>::const_iterator &i);
-
-		const_iterator &operator++();
-		const_iterator operator++(int);
-		const_iterator &operator--();
-		const_iterator operator--(int);
-		const UString &operator*() const;
-		const UString *operator->() const;
-		bool operator==(const const_iterator &x) const;
-		bool operator!=(const const_iterator &x) const;
-
-	private:
-		std::list<FilePath>::const_iterator it;
-	};
-
-	const_iterator begin() const;
-	const_iterator end() const;
+	UString getPath(const UString &fileName) const;
+	UString getPath(const UString &glob, bool caseInsensitive) const;
 };
 
 } // End of namespace Common
