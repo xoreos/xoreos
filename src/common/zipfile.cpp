@@ -98,7 +98,7 @@ void ZipFile::load() {
 		iFile.offset = zip.readUint32LE();
 
 		file.name.readFixedASCII(zip, nameLength);
-		file.name.tolower();
+		file.name.makeLower();
 
 		zip.skip(extraLength);
 		zip.skip(commentLength);

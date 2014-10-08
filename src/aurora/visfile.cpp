@@ -69,14 +69,12 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 		if (strings.size() > 2)
 			throw Common::Exception("Malformed VIS file");
 
-		Common::UString room = strings[0];
+		Common::UString room = strings[0].toLower();
 		std::vector<Common::UString> visibilityArray;
 
 		int roomCount = 0;
 		if (strings.size() > 1)
 			roomCount = atoi(strings[1].c_str());
-
-		room.tolower();
 
 		int realRoomCount = 0;
 
@@ -116,10 +114,8 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 }
 
 static const std::vector<Common::UString> emptyRoom;
-const std::vector<Common::UString> &VISFile::getVisibilityArray(Common::UString room) const {
-	room.tolower();
-
-	std::map<Common::UString, std::vector<Common::UString> >::const_iterator vRoom = _map.find(room);
+const std::vector<Common::UString> &VISFile::getVisibilityArray(const Common::UString &room) const {
+	std::map<Common::UString, std::vector<Common::UString> >::const_iterator vRoom = _map.find(room.toLower());
 	if (vRoom == _map.end())
 		return emptyRoom;
 

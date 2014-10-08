@@ -311,8 +311,8 @@ int UString::stricmp(const UString &str) const {
 	UString::iterator it1 = begin();
 	UString::iterator it2 = str.begin();
 	for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
-		uint32 c1 = tolower(*it1);
-		uint32 c2 = tolower(*it2);
+		uint32 c1 = toLower(*it1);
+		uint32 c2 = toLower(*it2);
 
 		if (c1 < c2)
 			return -1;
@@ -554,56 +554,30 @@ void UString::replaceAll(uint32 what, uint32 with) {
 	}
 }
 
-void UString::tolower() {
-	try {
-
-		// The new string with characters replaced
-		std::string newString;
-		newString.reserve(_string.size());
-
-		// Run through the whole string
-		std::string::iterator it = _string.begin();
-		while (it != _string.end()) {
-			// Get the codepoint
-			uint32 c = utf8::next(it, _string.end());
-
-			// And append the lowercase version to the new string
-			utf8::append(UString::tolower(c), std::back_inserter(newString));
-		}
-
-		// And set the new string's contents
-		_string.swap(newString);
-
-	} catch (const std::exception &se) {
-		Exception e(se.what());
-		throw e;
-	}
+void UString::makeLower() {
+	*this = toLower();
 }
 
-void UString::toupper() {
-	try {
+void UString::makeUpper() {
+	*this = toUpper();
+}
 
-		// The new string with characters replaced
-		std::string newString;
-		newString.reserve(_string.size());
+UString UString::toLower() const {
+	UString str;
 
-		// Run through the whole string
-		std::string::iterator it = _string.begin();
-		while (it != _string.end()) {
-			// Get the codepoint
-			uint32 c = utf8::next(it, _string.end());
+	for (iterator it = begin(); it != end(); ++it)
+		str += toLower(*it);
 
-			// And append the uppercase version to the new string
-			utf8::append(UString::toupper(c), std::back_inserter(newString));
-		}
+	return str;
+}
 
-		// And set the new string's contents
-		_string.swap(newString);
+UString UString::toUpper() const {
+	UString str;
 
-	} catch (const std::exception &se) {
-		Exception e(se.what());
-		throw e;
-	}
+	for (iterator it = begin(); it != end(); ++it)
+		str += toUpper(*it);
+
+	return str;
 }
 
 UString::iterator UString::getPosition(uint32 n) const {
@@ -1231,7 +1205,7 @@ void UString::recalculateSize() {
 // NOTE: If we ever need uppercase<->lowercase mappings for non-ASCII
 //       characters: http://www.unicode.org/reports/tr21/tr21-5.html
 
-uint32 UString::tolower(uint32 c) {
+uint32 UString::toLower(uint32 c) {
 	if (!isASCII(c))
 		// We don't know how to lowercase that
 		return c;
@@ -1239,7 +1213,7 @@ uint32 UString::tolower(uint32 c) {
 	return std::tolower(c);
 }
 
-uint32 UString::toupper(uint32 c) {
+uint32 UString::toUpper(uint32 c) {
 	if (!isASCII(c))
 		// We don't know how to uppercase that
 		return c;

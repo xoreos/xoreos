@@ -637,26 +637,21 @@ inline uint64 ResourceManager::getHash(const Common::UString &name, FileType typ
 	return getHash(TypeMan.setFileType(name, type));
 }
 
-inline uint64 ResourceManager::getHash(Common::UString name) const {
-	name.tolower();
-
-	return Common::hashString(name, _hashAlgo);
+inline uint64 ResourceManager::getHash(const Common::UString &name) const {
+	return Common::hashString(name.toLower(), _hashAlgo);
 }
 
 void ResourceManager::checkHashCollision(const Resource &resource, ResourceMap::const_iterator resList) {
 	if (resource.name.empty() || resList->second.empty())
 		return;
 
-	Common::UString newName = TypeMan.setFileType(resource.name, resource.type);
-	newName.tolower();
+	Common::UString newName = TypeMan.setFileType(resource.name, resource.type).toLower();
 
 	for (ResourceList::const_iterator r = resList->second.begin(); r != resList->second.end(); ++r) {
 		if (r->name.empty())
 			continue;
 
-		Common::UString oldName = TypeMan.setFileType(r->name, r->type);
-		oldName.tolower();
-
+		Common::UString oldName = TypeMan.setFileType(r->name, r->type).toLower();
 		if (oldName != newName) {
 			warning("ResourceManager: Found hash collision: %s (\"%s\" and \"%s\")",
 					Common::formatHash(getHash(oldName)).c_str(), oldName.c_str(), newName.c_str());

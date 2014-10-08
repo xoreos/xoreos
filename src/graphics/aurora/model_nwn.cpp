@@ -291,7 +291,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
-		line[0].tolower();
+		line[0].makeLower();
 
 		if        (line[0] == "newmodel") {
 			if (!_name.empty())
@@ -360,7 +360,7 @@ void Model_NWN::skipAnimASCII(ParserContext &ctx) {
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
-		line[0].tolower();
+		line[0].makeLower();
 
 		if (line[0] == "doneanim") {
 			end = true;
@@ -1043,7 +1043,7 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
-		line[0].tolower();
+		line[0].makeLower();
 
 		if        (line[0] == "endnode") {
 			end = true;

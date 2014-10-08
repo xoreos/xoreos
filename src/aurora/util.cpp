@@ -312,8 +312,7 @@ FileTypeManager::~FileTypeManager() {
 FileType FileTypeManager::getFileType(const Common::UString &path) {
 	buildExtensionLookup();
 
-	Common::UString ext = Common::FilePath::getExtension(path);
-	ext.tolower();
+	Common::UString ext = Common::FilePath::getExtension(path).toLower();
 
 	ExtensionLookup::const_iterator t = _extensionLookup.find(ext);
 	if (t != _extensionLookup.end())

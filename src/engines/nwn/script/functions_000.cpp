@@ -887,13 +887,11 @@ void ScriptFunctions::getStringLength(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getStringUpperCase(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = ctx.getParams()[0].getString();
-	ctx.getReturn().getString().toupper();
+	ctx.getReturn() = ctx.getParams()[0].getString().toUpper();
 }
 
 void ScriptFunctions::getStringLowerCase(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = ctx.getParams()[0].getString();
-	ctx.getReturn().getString().tolower();
+	ctx.getReturn() = ctx.getParams()[0].getString().toLower();
 }
 
 void ScriptFunctions::getStringRight(Aurora::NWScript::FunctionContext &ctx) {

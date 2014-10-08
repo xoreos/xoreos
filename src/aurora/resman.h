@@ -339,7 +339,7 @@ private:
 	void normalizeType(Resource &resource);
 
 	inline uint64 getHash(const Common::UString &name, FileType type) const;
-	inline uint64 getHash(Common::UString name) const;
+	inline uint64 getHash(const Common::UString &name) const;
 
 	void addResource(Resource &resource, uint64 hash, ChangeID &change);
 	void addResource(Resource &resource, const Common::UString &name, ChangeID &change);

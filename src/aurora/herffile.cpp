@@ -114,7 +114,7 @@ void HERFFile::getDictionary(std::list<uint32> &hashes, std::list<Common::UStrin
 		names.push_back("");
 
 		names.back().readFixedASCII(*dict, 128);
-		names.back().tolower();
+		names.back().makeLower();
 	}
 
 	delete dict;

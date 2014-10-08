@@ -142,9 +142,14 @@ public:
 	void replaceAll(uint32 what, uint32 with);
 
 	/** Convert the string to lowercase. */
-	void tolower();
+	void makeLower();
 	/** Convert the string to uppercase. */
-	void toupper();
+	void makeUpper();
+
+	/** Return a lowercased copy of the string. */
+	UString toLower() const;
+	/** Return an uppercased copy of the string. */
+	UString toUpper() const;
 
 	/** Convert an iterator into a numerical position. */
 	iterator getPosition(uint32 n)    const;
@@ -228,8 +233,8 @@ public:
 
 	static void splitTextTokens(const UString &text, std::vector<UString> &tokens);
 
-	static uint32 tolower(uint32 c);
-	static uint32 toupper(uint32 c);
+	static uint32 toLower(uint32 c);
+	static uint32 toUpper(uint32 c);
 
 	static bool isASCII(uint32 c); ///< Is the character an ASCII character?
 
@@ -295,7 +300,7 @@ struct hashUStringCaseInsensitive {
 		std::size_t seed = 0;
 
 		for (UString::iterator it = str.begin(); it != str.end(); ++it)
-			boost::hash_combine<uint32>(seed, UString::tolower(*it));
+			boost::hash_combine<uint32>(seed, UString::toLower(*it));
 
 		return seed;
 	}

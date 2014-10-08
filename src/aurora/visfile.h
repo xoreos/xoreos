@@ -54,7 +54,7 @@ public:
 	 */
 	void load(Common::SeekableReadStream &vis);
 
-	const std::vector<Common::UString> &getVisibilityArray(Common::UString room) const;
+	const std::vector<Common::UString> &getVisibilityArray(const Common::UString &room) const;
 
 private:
 	std::map<Common::UString, std::vector<Common::UString> > _map;

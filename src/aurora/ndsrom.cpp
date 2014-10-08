@@ -89,7 +89,7 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 		Common::UString name;
 
 		name.readFixedASCII(nds, nameLength);
-		name.tolower();
+		name.makeLower();
 
 		res.name  = TypeMan.setFileType(name, kFileTypeNone);
 		res.type  = TypeMan.getFileType(name);
