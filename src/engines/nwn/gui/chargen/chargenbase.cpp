@@ -22,6 +22,10 @@
  *  The character generator base class.
  */
 
+
+#include "aurora/2dareg.h"
+#include "aurora/2dafile.h"
+
 #include "engines/nwn/creature.h"
 
 #include "engines/nwn/gui/chargen/chargenbase.h"
@@ -41,6 +45,25 @@ CharGenBase::CharacterAbilities::CharacterAbilities(Creature *charac) {
 }
 
 void CharGenBase::applyAbilities() {
+	_charChoices.character->setRace(_charChoices.race);
+}
+
+void CharGenBase::setCharRace(uint32 race) {
+	_charChoices.race = race;
+
+	_charChoices.racialFeats.clear();
+
+	if (race == kRaceInvalid)
+		return;
+
+	const Aurora::TwoDAFile &twodaRace = TwoDAReg.get("racialtypes");
+	const Aurora::TwoDAFile &twodaFeatRace = TwoDAReg.get(
+		twodaRace.getRow(race).getString("FeatsTable"));
+
+	for (uint8 it = 0; it < twodaFeatRace.getRowCount(); ++it) {
+		const Aurora::TwoDARow &rowFeatRace = twodaFeatRace.getRow(it);
+		_charChoices.racialFeats.push_back(rowFeatRace.getInt("FeatIndex"));
+	}
 }
 
 } // End of namespace NWN

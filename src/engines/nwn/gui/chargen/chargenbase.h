@@ -39,6 +39,10 @@ public:
 
 protected:
 	struct CharacterAbilities {
+		uint32 race;
+		std::vector<uint32> normalFeats;
+		std::vector<uint32> racialFeats;
+		std::vector<uint32> classFeats;
 		Creature *character;
 
 		CharacterAbilities();
@@ -46,6 +50,7 @@ protected:
 	};
 
 	void applyAbilities();
+	void setCharRace(uint32 race);
 
 	static CharacterAbilities _charChoices;
 };
