@@ -50,6 +50,7 @@ CharSex::CharSex() {
 }
 
 CharSex::~CharSex() {
+	delete _buttons;
 }
 
 void CharSex::reset() {
