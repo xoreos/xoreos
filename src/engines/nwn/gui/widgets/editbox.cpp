@@ -165,6 +165,7 @@ void WidgetEditBox::setText(const Common::UString & text) {
 	_firstLine = 0;
 
 	updateScrollbarLength();
+	updateScrollbarPosition();
 
 	if (this->isVisible())
 		updateLines();
