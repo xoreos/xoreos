@@ -28,6 +28,7 @@
 #include "engines/nwn/gui/widgets/button.h"
 
 #include "engines/nwn/gui/chargen/charsex.h"
+#include "engines/nwn/gui/chargen/charrace.h"
 #include "engines/nwn/gui/chargen/chargen.h"
 
 namespace Engines {
@@ -38,7 +39,6 @@ CharGenMenu::CharGenMenu(Module &module) : _module(&module) {
 	load("cg_main");
 
 	// TODO: Character trait buttons
-	getWidget("RaceButton"     , true)->setDisabled(true);
 	getWidget("PortraitButton" , true)->setDisabled(true);
 	getWidget("ClassButton"    , true)->setDisabled(true);
 	getWidget("AlignButton"    , true)->setDisabled(true);
@@ -95,8 +95,10 @@ void CharGenMenu::callbackActive(Widget &widget) {
 
 void CharGenMenu::init() {
 	_charButtons.push_back(getButton("GenderButton", true));
+	_charButtons.push_back(getButton("RaceButton", true));
 
 	_chargenGuis.push_back(new CharSex());
+	_chargenGuis.push_back(new CharRace());
 
 	_charChoices.character = new Creature();
 }

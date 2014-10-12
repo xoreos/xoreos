@@ -51,6 +51,7 @@ noinst_HEADERS = \
                  gui/chargen/chargenbase.h \
                  gui/chargen/chargen.h \
                  gui/chargen/charsex.h \
+                 gui/chargen/charrace.h \
                  gui/main/charpremade.h \
                  gui/main/chartype.h \
                  gui/main/main.h \
@@ -125,6 +126,7 @@ libnwn_la_SOURCES = \
                     gui/chargen/chargenbase.cpp \
                     gui/chargen/chargen.cpp \
                     gui/chargen/charsex.cpp \
+                    gui/chargen/charrace.cpp \
                     gui/main/charpremade.cpp \
                     gui/main/chartype.cpp \
                     gui/main/main.cpp \
