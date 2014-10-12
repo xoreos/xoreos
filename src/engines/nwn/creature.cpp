@@ -204,6 +204,13 @@ uint32 Creature::getRace() const {
 	return _race;
 }
 
+void Creature::setRace(uint32 race) {
+	if (race >= kRaceInvalid)
+		error("Unable to set race, raceID is invalid.");
+
+	_race = race;
+}
+
 bool Creature::isPC() const {
 	return _isPC;
 }

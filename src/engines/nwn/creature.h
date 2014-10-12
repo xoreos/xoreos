@@ -81,6 +81,8 @@ public:
 
 	/** Return the creature's race value. */
 	uint32 getRace() const;
+	/** Set the creature's race. */
+	void setRace(uint32 race);
 
 	/** Return the creature's race as needed in conversations, e.g. "Dwarven". */
 	const Common::UString &getConvRace() const;
