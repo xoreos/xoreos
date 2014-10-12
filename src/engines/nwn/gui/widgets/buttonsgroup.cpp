@@ -66,6 +66,7 @@ void ButtonsGroup::setActive(WidgetButton *button) {
 			(*it)->setPressed(true);
 
 			_helpBox->setText(_helpTexts[std::distance(_buttonsList.begin(), it)]);
+			_helpBox->setTitle(_helpTitles[std::distance(_buttonsList.begin(), it)]);
 			for (std::vector<WidgetButton *>::iterator jt = _buttonsList.begin(); jt != _buttonsList.end(); ++jt) {
 				if (jt == it)
 					continue;
@@ -79,6 +80,10 @@ void ButtonsGroup::setActive(WidgetButton *button) {
 }
 
 void ButtonsGroup::setActive(uint button) {
+	if (button >= _buttonsList.size())
+		error("Wrong ID buttons");
+
+
 	setActive(_buttonsList[button]);
 }
 
