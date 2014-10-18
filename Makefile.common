@@ -20,8 +20,7 @@ LIBSL       = $(XOREOS_LIBS) $(LTLIBICONV) $(ZLIB_LIBS) $(LZMA_LIBS) \
 
 FLAGS_C_CXX = -I$(top_srcdir) -I$(top_srcdir)/src/ -ggdb -Wall -Wno-multichar \
               -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits \
-              -Wuninitialized -Wunused-parameter -Wunused-but-set-parameter \
-              $(WERROR) -DGLEW_STATIC
+              -Wuninitialized -Wunused-parameter $(WERROR) -DGLEW_STATIC
 FLAGS_C     =
 FLAGS_CXX   = -Wnon-virtual-dtor
 
