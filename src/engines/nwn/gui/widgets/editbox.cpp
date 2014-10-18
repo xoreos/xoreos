@@ -22,6 +22,7 @@
  *  A NWN editbox widget.
  */
 
+#include "common/system.h"
 #include "common/error.h"
 
 #include "graphics/font.h"
@@ -87,7 +88,7 @@ void WidgetEditBox::hide() {
 	}
 }
 
-void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
+void WidgetEditBox::mouseDown(uint8 UNUSED(state), float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -108,7 +109,7 @@ void WidgetEditBox::mouseDown(uint8 state, float x, float y) {
 	}
 }
 
-void WidgetEditBox::mouseWheel(uint8 state, int x, int y) {
+void WidgetEditBox::mouseWheel(uint8 UNUSED(state), int UNUSED(x), int y) {
 	if (isDisabled())
 		return;
 

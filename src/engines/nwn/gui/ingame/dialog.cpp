@@ -682,7 +682,9 @@ void Dialog::checkPicked() {
 	mouseMove();
 }
 
-void Dialog::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+void Dialog::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
+                           int newWidth, int newHeight) {
+
 	const float x = -(newWidth  / 2.0)                        + 10.0;
 	const float y =  (newHeight / 2.0) - _dlgBox->getHeight() - 20.0;
 

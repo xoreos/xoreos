@@ -70,7 +70,7 @@ void Placeable::hide() {
 	Situated::hide();
 }
 
-void Placeable::loadObject(const Aurora::GFFStruct &gff) {
+void Placeable::loadObject(const Aurora::GFFStruct &UNUSED(gff)) {
 }
 
 void Placeable::loadAppearance() {

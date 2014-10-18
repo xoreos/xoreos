@@ -22,6 +22,8 @@
  *  A widget in a GUI.
  */
 
+#include "common/system.h"
+
 #include "engines/aurora/widget.h"
 #include "engines/aurora/gui.h"
 
@@ -172,22 +174,22 @@ void Widget::enter() {
 void Widget::leave() {
 }
 
-void Widget::mouseMove(uint8 state, float x, float y) {
+void Widget::mouseMove(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 }
 
-void Widget::mouseDown(uint8 state, float x, float y) {
+void Widget::mouseDown(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 }
 
-void Widget::mouseUp(uint8 state, float x, float y) {
+void Widget::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 }
 
-void Widget::mouseWheel(uint8 state, int x, int y) {
+void Widget::mouseWheel(uint8 UNUSED(state), int UNUSED(x), int UNUSED(y)) {
 }
 
-void Widget::mouseDblClick(uint8 state, float x, float y) {
+void Widget::mouseDblClick(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 }
 
-void Widget::subActive(Widget &widget) {
+void Widget::subActive(Widget &UNUSED(widget)) {
 }
 
 void Widget::addSub(Widget &widget) {

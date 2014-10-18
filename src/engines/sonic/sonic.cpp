@@ -70,7 +70,9 @@ const Common::UString &SonicEngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool SonicEngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+bool SonicEngineProbe::probe(const Common::UString &UNUSED(directory),
+                             const Common::FileList &UNUSED(rootFiles)) const {
+
 	return false;
 }
 

@@ -175,7 +175,7 @@ void Object::enter() {
 void Object::leave() {
 }
 
-void Object::highlight(bool enabled) {
+void Object::highlight(bool UNUSED(enabled)) {
 }
 
 void Object::loadSSF() {
@@ -197,13 +197,13 @@ void Object::loadSSF() {
 	}
 }
 
-void Object::speakString(const Common::UString &string, uint32 volume) {
+void Object::speakString(const Common::UString &string, uint32 UNUSED(volume)) {
 	// TODO: Object::speakString(): Show the string in a speech bubble
 
 	status("<%s> \"%s\"", getName().c_str(), string.c_str());
 }
 
-void Object::speakOneLiner(Common::UString conv, Object *tokenTarget) {
+void Object::speakOneLiner(Common::UString conv, Object *UNUSED(tokenTarget)) {
 	if (conv.empty())
 		conv = _conversation;
 	if (conv.empty())
@@ -245,7 +245,7 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice, false, 1.0, pitchVariance);
 }
 
-bool Object::click(Object *triggerer) {
+bool Object::click(Object *UNUSED(triggerer)) {
 	return true;
 }
 
@@ -263,7 +263,9 @@ bool Object::beginConversation(Object *triggerer) {
 	return true;
 }
 
-void Object::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {
+void Object::playAnimation(const Common::UString &animation,
+                           bool UNUSED(restart), int32 UNUSED(loopCount)) {
+
 	warning("TODO: Object::playAnimation(\"%s\")", animation.c_str());
 }
 

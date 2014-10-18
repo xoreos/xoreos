@@ -22,6 +22,7 @@
  *  The Witcher model loader.
  */
 
+#include "common/system.h"
 #include "common/error.h"
 #include "common/stream.h"
 
@@ -37,7 +38,7 @@ namespace Engines {
 namespace TheWitcher {
 
 Graphics::Aurora::Model *TheWitcherModelLoader::load(const Common::UString &resref,
-		Graphics::Aurora::ModelType type, const Common::UString &texture) {
+		Graphics::Aurora::ModelType UNUSED(type), const Common::UString &UNUSED(texture)) {
 
 	Graphics::Aurora::Model *model = 0;
 	try {

@@ -22,6 +22,7 @@
  *  A NWN close button widget.
  */
 
+#include "common/system.h"
 #include "common/ustring.h"
 
 #include "graphics/aurora/model.h"
@@ -52,7 +53,7 @@ void WidgetClose::leave() {
 	_model->setState("");
 }
 
-void WidgetClose::mouseDown(uint8 state, float x, float y) {
+void WidgetClose::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -63,7 +64,7 @@ void WidgetClose::mouseDown(uint8 state, float x, float y) {
 	playSound("gui_button", Sound::kSoundTypeSFX);
 }
 
-void WidgetClose::mouseUp(uint8 state, float x, float y) {
+void WidgetClose::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 

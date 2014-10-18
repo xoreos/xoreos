@@ -62,7 +62,7 @@ const Common::UString &AnimNode::getName() const {
 	return _name;
 }
 
-void AnimNode::update(Model *model, float lastFrame, float nextFrame, float scale) {
+void AnimNode::update(Model *model, float UNUSED(lastFrame), float nextFrame, float scale) {
 	if (!_nodedata)
 		return;
 

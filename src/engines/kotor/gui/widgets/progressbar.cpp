@@ -22,6 +22,8 @@
  *  A KotOR progressbar widget.
  */
 
+#include "common/system.h"
+
 #include "engines/kotor/gui/widgets/progressbar.h"
 
 namespace Engines {
@@ -35,7 +37,7 @@ WidgetProgressbar::WidgetProgressbar(::Engines::GUI &gui, const Common::UString 
 WidgetProgressbar::~WidgetProgressbar() {
 }
 
-void WidgetProgressbar::load(const Aurora::GFFStruct &gff) {
+void WidgetProgressbar::load(const Aurora::GFFStruct &UNUSED(gff)) {
 }
 
 } // End of namespace KotOR

@@ -72,7 +72,9 @@ const Common::UString &TheWitcherEngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool TheWitcherEngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+bool TheWitcherEngineProbe::probe(const Common::UString &directory,
+                                  const Common::FileList &UNUSED(rootFiles)) const {
+
 	// There should be a system directory
 	Common::UString systemDir = Common::FilePath::findSubDirectory(directory, "system", true);
 	if (systemDir.empty())
@@ -87,7 +89,7 @@ bool TheWitcherEngineProbe::probe(const Common::UString &directory, const Common
 	return systemFiles.containsGlob(".*/witcher.(exe|ini)", true);
 }
 
-bool TheWitcherEngineProbe::probe(Common::SeekableReadStream &stream) const {
+bool TheWitcherEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
 	return false;
 }
 

@@ -22,6 +22,8 @@
  *  A KotOR button widget.
  */
 
+#include "common/system.h"
+
 #include "aurora/gfffile.h"
 
 #include "sound/sound.h"
@@ -54,7 +56,7 @@ void WidgetButton::load(const Aurora::GFFStruct &gff) {
 	}
 }
 
-void WidgetButton::mouseUp(uint8 state, float x, float y) {
+void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 

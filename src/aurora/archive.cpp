@@ -22,6 +22,8 @@
  *  Handling various archive files.
  */
 
+#include "common/system.h"
+
 #include "aurora/archive.h"
 
 namespace Aurora {
@@ -35,7 +37,7 @@ Archive::Archive() {
 Archive::~Archive() {
 }
 
-uint32 Archive::getResourceSize(uint32 index) const {
+uint32 Archive::getResourceSize(uint32 UNUSED(index)) const {
 	return 0xFFFFFFFF;
 }
 

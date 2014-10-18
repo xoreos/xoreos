@@ -22,6 +22,8 @@
  *  A KotOR slider widget.
  */
 
+#include "common/system.h"
+
 #include "engines/kotor/gui/widgets/slider.h"
 
 namespace Engines {
@@ -35,7 +37,7 @@ WidgetSlider::WidgetSlider(::Engines::GUI &gui, const Common::UString &tag) :
 WidgetSlider::~WidgetSlider() {
 }
 
-void WidgetSlider::load(const Aurora::GFFStruct &gff) {
+void WidgetSlider::load(const Aurora::GFFStruct &UNUSED(gff)) {
 }
 
 } // End of namespace KotOR

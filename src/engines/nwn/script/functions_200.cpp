@@ -429,15 +429,15 @@ void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = _objSearchContext.getObject();
 }
 
-void ScriptFunctions::adjustAlignment(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::adjustAlignment(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: AdjustAlignment");
 }
 
-void ScriptFunctions::actionWait(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::actionWait(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: ActionWait");
 }
 
-void ScriptFunctions::setAreaTransitionBMP(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::setAreaTransitionBMP(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: SetAreaTransitionBMP");
 }
 
@@ -478,35 +478,35 @@ void ScriptFunctions::actionStartConversation(Aurora::NWScript::FunctionContext 
 	_module->startConversation(conversation, *pc, *source, playHello);
 }
 
-void ScriptFunctions::actionPauseConversation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::actionPauseConversation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: ActionPauseConversation");
 }
 
-void ScriptFunctions::actionResumeConversation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::actionResumeConversation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: ActionResumeConversation");
 }
 
-void ScriptFunctions::effectBeam(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::effectBeam(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EffectBeam");
 }
 
-void ScriptFunctions::getReputation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getReputation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetReputation");
 }
 
-void ScriptFunctions::adjustReputation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::adjustReputation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: AdjustReputation");
 }
 
-void ScriptFunctions::getSittingCreature(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getSittingCreature(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetSittingCreature");
 }
 
-void ScriptFunctions::getGoingToBeAttackedBy(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getGoingToBeAttackedBy(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetGoingToBeAttackedBy");
 }
 
-void ScriptFunctions::effectSpellResistanceIncrease(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::effectSpellResistanceIncrease(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EffectSpellResistanceIncrease");
 }
 
@@ -546,7 +546,7 @@ void ScriptFunctions::location(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = loc;
 }
 
-void ScriptFunctions::applyEffectAtLocation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::applyEffectAtLocation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: ApplyEffectAtLocation");
 }
 
@@ -554,15 +554,15 @@ void ScriptFunctions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = convertPC(ctx.getParams()[0].getObject()) != 0;
 }
 
-void ScriptFunctions::feetToMeters(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::feetToMeters(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: FeetToMeters");
 }
 
-void ScriptFunctions::yardsToMeters(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::yardsToMeters(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: YardsToMeters");
 }
 
-void ScriptFunctions::applyEffectToObject(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::applyEffectToObject(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: ApplyEffectToObject");
 }
 
@@ -579,7 +579,7 @@ void ScriptFunctions::speakString(Aurora::NWScript::FunctionContext &ctx) {
 	object->speakString(str, volume);
 }
 
-void ScriptFunctions::getSpellTargetLocation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getSpellTargetLocation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetSpellTargetLocation");
 }
 
@@ -596,15 +596,15 @@ void ScriptFunctions::getPositionFromLocation(Aurora::NWScript::FunctionContext 
 	ctx.getReturn().setVector(x, y, z);
 }
 
-void ScriptFunctions::getAreaFromLocation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getAreaFromLocation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetAreaFromLocation");
 }
 
-void ScriptFunctions::getFacingFromLocation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getFacingFromLocation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetFacingFromLocation");
 }
 
-void ScriptFunctions::getNearestCreatureToLocation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getNearestCreatureToLocation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetNearestCreatureToLocation");
 }
 
@@ -643,7 +643,7 @@ void ScriptFunctions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = *it;
 }
 
-void ScriptFunctions::getNearestObjectToLocation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getNearestObjectToLocation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetNearestObjectToLocation");
 }
 
@@ -707,19 +707,19 @@ void ScriptFunctions::stringToFloat(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = f;
 }
 
-void ScriptFunctions::actionCastSpellAtLocation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::actionCastSpellAtLocation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: ActionCastSpellAtLocation");
 }
 
-void ScriptFunctions::getIsEnemy(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getIsEnemy(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetIsEnemy");
 }
 
-void ScriptFunctions::getIsFriend(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getIsFriend(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetIsFriend");
 }
 
-void ScriptFunctions::getIsNeutral(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getIsNeutral(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetIsNeutral");
 }
 
@@ -739,7 +739,7 @@ void ScriptFunctions::getStringByStrRef(Aurora::NWScript::FunctionContext &ctx) 
 	ctx.getReturn() = TalkMan.getString(strRef, gender);
 }
 
-void ScriptFunctions::actionSpeakStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::actionSpeakStringByStrRef(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: ActionSpeakStringByStrRef");
 }
 
@@ -771,39 +771,39 @@ void ScriptFunctions::createObject(Aurora::NWScript::FunctionContext &ctx) {
 	warning("TODO: CreateObject: %d: \"%s\" (\"%s\")", type, templ.c_str(), newTag.c_str());
 }
 
-void ScriptFunctions::eventSpellCastAt(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::eventSpellCastAt(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EventSpellCastAt");
 }
 
-void ScriptFunctions::getLastSpellCaster(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getLastSpellCaster(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetLastSpellCaster");
 }
 
-void ScriptFunctions::getLastSpell(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getLastSpell(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetLastSpell");
 }
 
-void ScriptFunctions::getUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getUserDefinedEventNumber(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetUserDefinedEventNumber");
 }
 
-void ScriptFunctions::getSpellId(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getSpellId(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetSpellId");
 }
 
-void ScriptFunctions::randomName(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::randomName(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: RandomName");
 }
 
-void ScriptFunctions::effectPoison(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::effectPoison(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EffectPoison");
 }
 
-void ScriptFunctions::effectDisease(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::effectDisease(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EffectDisease");
 }
 
-void ScriptFunctions::effectSilence(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::effectSilence(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EffectSilence");
 }
 
@@ -878,67 +878,67 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 	ctx.getReturn() = _module->startConversation(conversation, *pc, *object);
 }
 
-void ScriptFunctions::getLastPerceived(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getLastPerceived(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetLastPerceived");
 }
 
-void ScriptFunctions::getLastPerceptionHeard(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getLastPerceptionHeard(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetLastPerceptionHeard");
 }
 
-void ScriptFunctions::getLastPerceptionInaudible(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getLastPerceptionInaudible(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetLastPerceptionInaudible");
 }
 
-void ScriptFunctions::getLastPerceptionSeen(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getLastPerceptionSeen(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetLastPerceptionSeen");
 }
 
-void ScriptFunctions::getLastClosedBy(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getLastClosedBy(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetLastClosedBy");
 }
 
-void ScriptFunctions::getLastPerceptionVanished(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getLastPerceptionVanished(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetLastPerceptionVanished");
 }
 
-void ScriptFunctions::getFirstInPersistentObject(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getFirstInPersistentObject(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetFirstInPersistentObject");
 }
 
-void ScriptFunctions::getNextInPersistentObject(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getNextInPersistentObject(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetNextInPersistentObject");
 }
 
-void ScriptFunctions::getAreaOfEffectCreator(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getAreaOfEffectCreator(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetAreaOfEffectCreator");
 }
 
-void ScriptFunctions::deleteLocalInt(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::deleteLocalInt(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: DeleteLocalInt");
 }
 
-void ScriptFunctions::deleteLocalFloat(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::deleteLocalFloat(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: DeleteLocalFloat");
 }
 
-void ScriptFunctions::deleteLocalString(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::deleteLocalString(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: DeleteLocalString");
 }
 
-void ScriptFunctions::deleteLocalObject(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::deleteLocalObject(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: DeleteLocalObject");
 }
 
-void ScriptFunctions::deleteLocalLocation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::deleteLocalLocation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: DeleteLocalLocation");
 }
 
-void ScriptFunctions::effectHaste(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::effectHaste(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EffectHaste");
 }
 
-void ScriptFunctions::effectSlow(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::effectSlow(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EffectSlow");
 }
 
@@ -946,47 +946,47 @@ void ScriptFunctions::objectToString(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = Common::UString::sprintf("%p", (void *) ctx.getParams()[0].getObject());
 }
 
-void ScriptFunctions::effectImmunity(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::effectImmunity(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EffectImmunity");
 }
 
-void ScriptFunctions::getIsImmune(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getIsImmune(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetIsImmune");
 }
 
-void ScriptFunctions::effectDamageImmunityIncrease(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::effectDamageImmunityIncrease(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EffectDamageImmunityIncrease");
 }
 
-void ScriptFunctions::getEncounterActive(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getEncounterActive(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetEncounterActive");
 }
 
-void ScriptFunctions::setEncounterActive(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::setEncounterActive(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: SetEncounterActive");
 }
 
-void ScriptFunctions::getEncounterSpawnsMax(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getEncounterSpawnsMax(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetEncounterSpawnsMax");
 }
 
-void ScriptFunctions::setEncounterSpawnsMax(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::setEncounterSpawnsMax(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: SetEncounterSpawnsMax");
 }
 
-void ScriptFunctions::getEncounterSpawnsCurrent(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getEncounterSpawnsCurrent(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetEncounterSpawnsCurrent");
 }
 
-void ScriptFunctions::setEncounterSpawnsCurrent(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::setEncounterSpawnsCurrent(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: SetEncounterSpawnsCurrent");
 }
 
-void ScriptFunctions::getModuleItemAcquired(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getModuleItemAcquired(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetModuleItemAcquired");
 }
 
-void ScriptFunctions::getModuleItemAcquiredFrom(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getModuleItemAcquiredFrom(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetModuleItemAcquiredFrom");
 }
 
@@ -999,19 +999,19 @@ void ScriptFunctions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
 	TokenMan.set(tokenName, tokenValue);
 }
 
-void ScriptFunctions::getHasFeat(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getHasFeat(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetHasFeat");
 }
 
-void ScriptFunctions::getHasSkill(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getHasSkill(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetHasSkill");
 }
 
-void ScriptFunctions::actionUseFeat(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::actionUseFeat(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: ActionUseFeat");
 }
 
-void ScriptFunctions::actionUseSkill(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::actionUseSkill(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: ActionUseSkill");
 }
 
@@ -1045,15 +1045,15 @@ void ScriptFunctions::getObjectHeard(Aurora::NWScript::FunctionContext &ctx) {
 			source->getTag().c_str());
 }
 
-void ScriptFunctions::getLastPlayerDied(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getLastPlayerDied(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetLastPlayerDied");
 }
 
-void ScriptFunctions::getModuleItemLost(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getModuleItemLost(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetModuleItemLost");
 }
 
-void ScriptFunctions::getModuleItemLostBy(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getModuleItemLostBy(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetModuleItemLostBy");
 }
 
@@ -1072,23 +1072,23 @@ void ScriptFunctions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {
 	_module->delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), 0);
 }
 
-void ScriptFunctions::eventConversation(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::eventConversation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: EventConversation");
 }
 
-void ScriptFunctions::setEncounterDifficulty(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::setEncounterDifficulty(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: SetEncounterDifficulty");
 }
 
-void ScriptFunctions::getEncounterDifficulty(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getEncounterDifficulty(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetEncounterDifficulty");
 }
 
-void ScriptFunctions::getDistanceBetweenLocations(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getDistanceBetweenLocations(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetDistanceBetweenLocations");
 }
 
-void ScriptFunctions::getReflexAdjustedDamage(Aurora::NWScript::FunctionContext &ctx) {
+void ScriptFunctions::getReflexAdjustedDamage(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
 	warning("TODO: GetReflexAdjustedDamage");
 }
 

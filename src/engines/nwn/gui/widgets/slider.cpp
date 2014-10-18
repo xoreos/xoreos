@@ -91,7 +91,7 @@ void WidgetSlider::mouseDown(uint8 state, float x, float y) {
 	changedValue(x, y);
 }
 
-void WidgetSlider::changedValue(float x, float y) {
+void WidgetSlider::changedValue(float x, float UNUSED(y)) {
 	float curX, curY, curZ;
 	getPosition(curX, curY, curZ);
 

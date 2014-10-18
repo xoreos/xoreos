@@ -22,6 +22,8 @@
  *  A KotOR protoitem widget.
  */
 
+#include "common/system.h"
+
 #include "engines/kotor/gui/widgets/protoitem.h"
 
 namespace Engines {
@@ -35,7 +37,7 @@ WidgetProtoItem::WidgetProtoItem(::Engines::GUI &gui, const Common::UString &tag
 WidgetProtoItem::~WidgetProtoItem() {
 }
 
-void WidgetProtoItem::load(const Aurora::GFFStruct &gff) {
+void WidgetProtoItem::load(const Aurora::GFFStruct &UNUSED(gff)) {
 }
 
 } // End of namespace KotOR

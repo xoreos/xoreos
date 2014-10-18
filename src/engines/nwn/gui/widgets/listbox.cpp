@@ -48,7 +48,7 @@ WidgetListItem::WidgetListItem(::Engines::GUI &gui) : NWNWidget(gui, ""), _itemN
 WidgetListItem::~WidgetListItem() {
 }
 
-void WidgetListItem::mouseUp(uint8 state, float x, float y) {
+void WidgetListItem::mouseUp(uint8 state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -58,7 +58,7 @@ void WidgetListItem::mouseUp(uint8 state, float x, float y) {
 	activate();
 }
 
-void WidgetListItem::mouseDblClick(uint8 state, float x, float y) {
+void WidgetListItem::mouseDblClick(uint8 state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -606,7 +606,7 @@ void WidgetListBox::subActive(Widget &widget) {
 
 }
 
-void WidgetListBox::mouseDown(uint8 state, float x, float y) {
+void WidgetListBox::mouseDown(uint8 UNUSED(state), float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -626,7 +626,7 @@ void WidgetListBox::mouseDown(uint8 state, float x, float y) {
 	}
 }
 
-void WidgetListBox::mouseWheel(uint8 state, int x, int y) {
+void WidgetListBox::mouseWheel(uint8 UNUSED(state), int UNUSED(x), int y) {
 	if (isDisabled())
 		return;
 

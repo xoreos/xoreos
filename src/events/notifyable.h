@@ -27,6 +27,7 @@
 
 #include <list>
 
+#include "common/system.h"
 #include "events/notifications.h"
 
 namespace Events {
@@ -45,7 +46,8 @@ public:
 	}
 
 private:
-	virtual void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+	virtual void notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
+                             int UNUSED(newWidth), int UNUSED(newHeight)) {
 	}
 	virtual void notifyCameraMoved() {
 	}

@@ -950,7 +950,7 @@ void NCSFile::o_restorebp(InstructionType type) {
 	_stack.setBasePtr(_stack.pop().getInt());
 }
 
-void NCSFile::o_nop(InstructionType type) {
+void NCSFile::o_nop(InstructionType UNUSED(type)) {
 	// Nothing! Yay!
 }
 
@@ -1272,7 +1272,7 @@ void NCSFile::o_jsr(InstructionType type) {
 	_script->seek(offset - 6, SEEK_CUR);
 }
 
-void NCSFile::o_retn(InstructionType type) {
+void NCSFile::o_retn(InstructionType UNUSED(type)) {
 	uint32 returnAddress = _script->size();
 	if (!_returnOffsets.empty()) {
 		returnAddress = _returnOffsets.top();
@@ -1282,7 +1282,7 @@ void NCSFile::o_retn(InstructionType type) {
 	_script->seek(returnAddress);
 }
 
-void NCSFile::o_destruct(InstructionType type) {
+void NCSFile::o_destruct(InstructionType UNUSED(type)) {
 	int16 stackSize        = _script->readSint16BE();
 	int16 dontRemoveOffset = _script->readSint16BE();
 	int16 dontRemoveSize   = _script->readSint16BE();

@@ -470,7 +470,7 @@ void XMVWMV2Codec::decodeIFrame(DecodeContext &ctx) {
 	}
 }
 
-void XMVWMV2Codec::decodeJFrame(DecodeContext &ctx) {
+void XMVWMV2Codec::decodeJFrame(DecodeContext &UNUSED(ctx)) {
 	warning("XMV: J-Frame %d", _currentFrame);
 
 	// Just copy the reference planes for now
@@ -479,7 +479,7 @@ void XMVWMV2Codec::decodeJFrame(DecodeContext &ctx) {
 	memcpy(_curPlanes[2], _oldPlanes[2], _chromaWidth * _chromaHeight);
 }
 
-void XMVWMV2Codec::decodePFrame(DecodeContext &ctx) {
+void XMVWMV2Codec::decodePFrame(DecodeContext &UNUSED(ctx)) {
 	// Just copy the reference planes for now
 	memcpy(_curPlanes[0], _oldPlanes[0], _lumaWidth   * _lumaHeight  );
 	memcpy(_curPlanes[1], _oldPlanes[1], _chromaWidth * _chromaHeight);

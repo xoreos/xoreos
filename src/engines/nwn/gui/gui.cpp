@@ -231,7 +231,7 @@ void GUI::createWidget(WidgetContext &ctx) {
 		initWidget(ctx, *widgetText);
 }
 
-void GUI::initWidget(WidgetContext &ctx, ModelWidget &widget) {
+void GUI::initWidget(WidgetContext &UNUSED(ctx), ModelWidget &UNUSED(widget)) {
 }
 
 void GUI::initWidget(WidgetContext &ctx, TextWidget &widget) {
@@ -294,10 +294,10 @@ WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) 
 	return label;
 }
 
-void GUI::fixWidgetType(const Common::UString &tag, WidgetType &type) {
+void GUI::fixWidgetType(const Common::UString &UNUSED(tag), WidgetType &UNUSED(type)) {
 }
 
-void GUI::initWidget(Widget &widget) {
+void GUI::initWidget(Widget &UNUSED(widget)) {
 }
 
 WidgetFrame *GUI::getFrame(const Common::UString &tag, bool vital) {

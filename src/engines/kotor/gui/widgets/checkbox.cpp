@@ -22,6 +22,8 @@
  *  A KotOR checkbox widget.
  */
 
+#include "common/system.h"
+
 #include "engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
@@ -35,7 +37,7 @@ WidgetCheckBox::WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag) 
 WidgetCheckBox::~WidgetCheckBox() {
 }
 
-void WidgetCheckBox::load(const Aurora::GFFStruct &gff) {
+void WidgetCheckBox::load(const Aurora::GFFStruct &UNUSED(gff)) {
 }
 
 } // End of namespace KotOR

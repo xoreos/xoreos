@@ -80,7 +80,9 @@ const Common::UString &NWNEngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool NWNEngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+bool NWNEngineProbe::probe(const Common::UString &UNUSED(directory),
+                           const Common::FileList &rootFiles) const {
+
 	// Don't accidentally trigger on NWN2
 	if (rootFiles.contains("/nwn2.ini", true))
 		return false;
@@ -101,7 +103,7 @@ bool NWNEngineProbe::probe(const Common::UString &directory, const Common::FileL
 	return false;
 }
 
-bool NWNEngineProbe::probe(Common::SeekableReadStream &stream) const {
+bool NWNEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
 	return false;
 }
 

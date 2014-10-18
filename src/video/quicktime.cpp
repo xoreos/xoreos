@@ -30,6 +30,7 @@
 // Seek function by Gael Chardon gael.dev@4now.net
 //
 
+#include "common/system.h"
 #include "common/error.h"
 #include "common/stream.h"
 #include "common/file.h"
@@ -437,7 +438,7 @@ int QuickTimeDecoder::readMOOV(Atom atom) {
 	return 1;
 }
 
-int QuickTimeDecoder::readMVHD(Atom atom) {
+int QuickTimeDecoder::readMVHD(Atom UNUSED(atom)) {
 	byte version = _fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
@@ -471,7 +472,7 @@ int QuickTimeDecoder::readTRAK(Atom atom) {
 }
 
 // edit list atom
-int QuickTimeDecoder::readELST(Atom atom) {
+int QuickTimeDecoder::readELST(Atom UNUSED(atom)) {
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 	uint32 editCount = _fd->readUint32BE();	 // entries
@@ -519,7 +520,7 @@ int QuickTimeDecoder::readHDLR(Atom atom) {
 	return 0;
 }
 
-int QuickTimeDecoder::readMDHD(Atom atom) {
+int QuickTimeDecoder::readMDHD(Atom UNUSED(atom)) {
 	Track *track = _tracks.back();
 	byte version = _fd->readByte();
 
@@ -546,7 +547,7 @@ int QuickTimeDecoder::readMDHD(Atom atom) {
 	return 0;
 }
 
-int QuickTimeDecoder::readSTSD(Atom atom) {
+int QuickTimeDecoder::readSTSD(Atom UNUSED(atom)) {
 	Track *track = _tracks.back();
 
 	_fd->readByte(); // version
@@ -583,7 +584,7 @@ int QuickTimeDecoder::readSTSD(Atom atom) {
 	return 0;
 }
 
-int QuickTimeDecoder::readSTSC(Atom atom) {
+int QuickTimeDecoder::readSTSC(Atom UNUSED(atom)) {
 	Track *track = _tracks.back();
 
 	_fd->readByte(); // version
@@ -606,7 +607,7 @@ int QuickTimeDecoder::readSTSC(Atom atom) {
 	return 0;
 }
 
-int QuickTimeDecoder::readSTSS(Atom atom) {
+int QuickTimeDecoder::readSTSS(Atom UNUSED(atom)) {
 	Track *track = _tracks.back();
 
 	_fd->readByte(); // version
@@ -624,7 +625,7 @@ int QuickTimeDecoder::readSTSS(Atom atom) {
 	return 0;
 }
 
-int QuickTimeDecoder::readSTSZ(Atom atom) {
+int QuickTimeDecoder::readSTSZ(Atom UNUSED(atom)) {
 	Track *track = _tracks.back();
 
 	_fd->readByte(); // version
@@ -647,7 +648,7 @@ int QuickTimeDecoder::readSTSZ(Atom atom) {
 	return 0;
 }
 
-int QuickTimeDecoder::readSTTS(Atom atom) {
+int QuickTimeDecoder::readSTTS(Atom UNUSED(atom)) {
 	Track *track = _tracks.back();
 	uint32 totalSampleCount = 0;
 
@@ -669,7 +670,7 @@ int QuickTimeDecoder::readSTTS(Atom atom) {
 	return 0;
 }
 
-int QuickTimeDecoder::readSTCO(Atom atom) {
+int QuickTimeDecoder::readSTCO(Atom UNUSED(atom)) {
 	Track *track = _tracks.back();
 
 	_fd->readByte(); // version
@@ -714,7 +715,7 @@ static void readMP4Desc(Common::SeekableReadStream *stream, byte &tag, int &leng
 	length = readMP4DescLength(stream);
 }
 
-int QuickTimeDecoder::readESDS(Atom atom) {
+int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 	if (_tracks.empty())
 		return 0;
 

@@ -453,7 +453,7 @@ void Tooltip::doHide() {
 	GfxMan.unlockFrame();
 }
 
-uint32 Tooltip::doShow(uint32 oldInterval) {
+uint32 Tooltip::doShow(uint32 UNUSED(oldInterval)) {
 	Common::StackLock lock(_mutex);
 	doShow();
 	return 0;

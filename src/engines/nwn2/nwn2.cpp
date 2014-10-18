@@ -71,7 +71,9 @@ const Common::UString &NWN2EngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool NWN2EngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+bool NWN2EngineProbe::probe(const Common::UString &UNUSED(directory),
+                            const Common::FileList &rootFiles) const {
+
 	// If either the ini file or the binary is found, this should be a valid path
 	if (rootFiles.contains("/nwn2.ini", true))
 		return true;
@@ -81,7 +83,7 @@ bool NWN2EngineProbe::probe(const Common::UString &directory, const Common::File
 	return false;
 }
 
-bool NWN2EngineProbe::probe(Common::SeekableReadStream &stream) const {
+bool NWN2EngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
 	return false;
 }
 

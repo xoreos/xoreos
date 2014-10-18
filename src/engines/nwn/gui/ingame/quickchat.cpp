@@ -22,6 +22,8 @@
  *  The NWN ingame quickchat.
  */
 
+#include "common/system.h"
+
 #include "aurora/talkman.h"
 
 #include "graphics/graphics.h"
@@ -128,10 +130,12 @@ float Quickchat::getHeight() const {
 	return _prompt->getHeight();
 }
 
-void Quickchat::callbackActive(Widget &widget) {
+void Quickchat::callbackActive(Widget &UNUSED(widget)) {
 }
 
-void Quickchat::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+void Quickchat::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
+                              int newWidth, int newHeight) {
+
 	setPosition(- (newWidth / 2.0), - (newHeight / 2.0), -10.0);
 }
 

@@ -169,7 +169,9 @@ void PartyLeader::updatePortraitTooltip() {
 	_portrait->setTooltip(tooltip);
 }
 
-void PartyLeader::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+void PartyLeader::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
+                                int newWidth, int newHeight) {
+
 	setPosition(newWidth / 2.0, newHeight / 2.0, -10.0);
 }
 

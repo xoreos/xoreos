@@ -182,7 +182,7 @@ bool ConsoleWindow::isIn(float x, float y) const {
 	return true;
 }
 
-bool ConsoleWindow::isIn(float x, float y, float z) const {
+bool ConsoleWindow::isIn(float x, float y, float UNUSED(z)) const {
 	return isIn(x, y);
 }
 
@@ -557,7 +557,9 @@ void ConsoleWindow::render(Graphics::RenderPass pass) {
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 }
 
-void ConsoleWindow::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+void ConsoleWindow::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
+                                  int newWidth, int newHeight) {
+
 	_width = newWidth;
 
 	_x = -(newWidth  / 2.0);
@@ -1046,15 +1048,15 @@ void Console::cmdHelp(const CommandLine &cli) {
 	printCommandHelp(cli.args);
 }
 
-void Console::cmdClear(const CommandLine &cl) {
+void Console::cmdClear(const CommandLine &UNUSED(cl)) {
 	clear();
 }
 
-void Console::cmdExit(const CommandLine &cl) {
+void Console::cmdExit(const CommandLine &UNUSED(cl)) {
 	hide();
 }
 
-void Console::cmdQuit(const CommandLine &cl) {
+void Console::cmdQuit(const CommandLine &UNUSED(cl)) {
 	print("Bye...");
 	EventMan.requestQuit();
 }
@@ -1107,7 +1109,7 @@ void Console::cmdDump2DA(const CommandLine &cl) {
 		printf("Failed dumping 2DA \"%s\"", cl.args.c_str());
 }
 
-void Console::cmdDumpAll2DA(const CommandLine &cl) {
+void Console::cmdDumpAll2DA(const CommandLine &UNUSED(cl)) {
 	std::list<Aurora::ResourceManager::ResourceID> twoda;
 	ResMan.getAvailableResources(Aurora::kFileType2DA, twoda);
 
@@ -1120,7 +1122,7 @@ void Console::cmdDumpAll2DA(const CommandLine &cl) {
 	}
 }
 
-void Console::cmdListVideos(const CommandLine &cl) {
+void Console::cmdListVideos(const CommandLine &UNUSED(cl)) {
 	updateVideos();
 	printList(_videos, _maxSizeVideos);
 }
@@ -1134,7 +1136,7 @@ void Console::cmdPlayVideo(const CommandLine &cl) {
 	playVideo(cl.args);
 }
 
-void Console::cmdListSounds(const CommandLine &cl) {
+void Console::cmdListSounds(const CommandLine &UNUSED(cl)) {
 	updateSounds();
 	printList(_sounds, _maxSizeSounds);
 }
@@ -1148,7 +1150,7 @@ void Console::cmdPlaySound(const CommandLine &cl) {
 	playSound(cl.args, Sound::kSoundTypeSFX);
 }
 
-void Console::cmdSilence(const CommandLine &cl) {
+void Console::cmdSilence(const CommandLine &UNUSED(cl)) {
 	SoundMan.stopAll();
 }
 

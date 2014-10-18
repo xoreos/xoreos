@@ -66,7 +66,9 @@ const Common::UString &DragonAge2EngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool DragonAge2EngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+bool DragonAge2EngineProbe::probe(const Common::UString &UNUSED(directory),
+                                  const Common::FileList &rootFiles) const {
+
 	// If the launcher binary is found, this should be a valid path
 	if (rootFiles.contains("/dragonage2launcher.exe", true))
 		return true;
@@ -74,7 +76,7 @@ bool DragonAge2EngineProbe::probe(const Common::UString &directory, const Common
 	return false;
 }
 
-bool DragonAge2EngineProbe::probe(Common::SeekableReadStream &stream) const {
+bool DragonAge2EngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
 	return false;
 }
 

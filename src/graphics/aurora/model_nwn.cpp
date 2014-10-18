@@ -28,6 +28,7 @@
 
 #include <boost/unordered_set.hpp>
 
+#include "common/system.h"
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/debug.h"
@@ -372,7 +373,7 @@ void Model_NWN::skipAnimASCII(ParserContext &ctx) {
 		throw Common::Exception("anim without doneanim");
 }
 
-void Model_NWN::readAnimASCII(ParserContext &ctx) {
+void Model_NWN::readAnimASCII(ParserContext &UNUSED(ctx)) {
 	// TODO: Model_NWN_ASCII::readAnimASCII
 	//       read in the animation name
 	//       there should be a list of animations

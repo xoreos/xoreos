@@ -22,6 +22,8 @@
  *  A NWN button widget.
  */
 
+#include "common/system.h"
+
 #include "graphics/aurora/model.h"
 
 #include "engines/aurora/util.h"
@@ -93,7 +95,7 @@ void WidgetButton::setDisabled(bool disabled) {
 		_model->setState("up");
 }
 
-void WidgetButton::mouseDown(uint8 state, float x, float y) {
+void WidgetButton::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -106,7 +108,7 @@ void WidgetButton::mouseDown(uint8 state, float x, float y) {
 	}
 }
 
-void WidgetButton::mouseUp(uint8 state, float x, float y) {
+void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 

@@ -52,7 +52,7 @@ static int seek_stream_wrap(void *datasource, ogg_int64_t offset, int whence) {
 	return stream->pos();
 }
 
-static int close_stream_wrap(void *datasource) {
+static int close_stream_wrap(void *UNUSED(datasource)) {
 	// Do nothing -- we leave it up to the VorbisStream to free memory as appropriate.
 	return 0;
 }

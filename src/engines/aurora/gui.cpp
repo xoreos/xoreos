@@ -22,6 +22,7 @@
  *  A GUI.
  */
 
+#include "common/system.h"
 #include "common/error.h"
 
 #include "events/events.h"
@@ -143,7 +144,7 @@ void GUI::callbackRun() {
 	_startCode = 0;
 }
 
-void GUI::callbackActive(Widget &widget) {
+void GUI::callbackActive(Widget &UNUSED(widget)) {
 }
 
 void GUI::addWidget(Widget *widget) {

@@ -22,6 +22,7 @@
  *  A text object displaying the current FPS.
  */
 
+#include "common/system.h"
 #include "common/ustring.h"
 
 #include "graphics/graphics.h"
@@ -68,7 +69,7 @@ void FPS::render(RenderPass pass) {
 	Text::render(pass);
 }
 
-void FPS::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+void FPS::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight), int newWidth, int newHeight) {
 	float posX = -(newWidth  / 2.0);
 	float posY =  (newHeight / 2.0) - getHeight();
 

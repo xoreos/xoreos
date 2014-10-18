@@ -22,6 +22,8 @@
  *  A KotOR scrollbar widget.
  */
 
+#include "common/system.h"
+
 #include "engines/kotor/gui/widgets/scrollbar.h"
 
 namespace Engines {
@@ -35,7 +37,7 @@ WidgetScrollbar::WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag
 WidgetScrollbar::~WidgetScrollbar() {
 }
 
-void WidgetScrollbar::load(const Aurora::GFFStruct &gff) {
+void WidgetScrollbar::load(const Aurora::GFFStruct &UNUSED(gff)) {
 }
 
 } // End of namespace KotOR

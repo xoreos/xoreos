@@ -37,7 +37,7 @@ MainMenu::MainMenu() {
 MainMenu::~MainMenu() {
 }
 
-void MainMenu::callbackActive(Widget &widget) {
+void MainMenu::callbackActive(Widget &UNUSED(widget)) {
 }
 
 } // End of namespace Jade

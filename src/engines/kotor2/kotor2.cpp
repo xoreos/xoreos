@@ -75,6 +75,10 @@ const Common::UString &KotOR2EngineProbe::getGameName() const {
 	return kGameName;
 }
 
+bool KotOR2EngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
+	return false;
+}
+
 Engines::Engine *KotOR2EngineProbe::createEngine() const {
 	return new KotOR2Engine(getPlatform());
 }
@@ -86,7 +90,9 @@ KotOR2EngineProbeWin::KotOR2EngineProbeWin() {
 KotOR2EngineProbeWin::~KotOR2EngineProbeWin() {
 }
 
-bool KotOR2EngineProbeWin::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+bool KotOR2EngineProbeWin::probe(const Common::UString &UNUSED(directory),
+                                 const Common::FileList &rootFiles) const {
+
 	// If "swkotor2.exe" exists, this should be a valid path for the Windows port
 	return rootFiles.contains("/swkotor2.exe", true);
 }

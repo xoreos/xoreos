@@ -66,15 +66,15 @@ static void EnableVertexTex(const VertexAttrib &va) {
 	glTexCoordPointer(va.size, va.type, va.stride, va.pointer);
 }
 
-static void DisableVertexPos(const VertexAttrib &va) {
+static void DisableVertexPos(const VertexAttrib &UNUSED(va)) {
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-static void DisableVertexNorm(const VertexAttrib &va) {
+static void DisableVertexNorm(const VertexAttrib &UNUSED(va)) {
 	glDisableClientState(GL_NORMAL_ARRAY);
 }
 
-static void DisableVertexCol(const VertexAttrib &va) {
+static void DisableVertexCol(const VertexAttrib &UNUSED(va)) {
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 

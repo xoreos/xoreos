@@ -22,6 +22,7 @@
  *  The ingame quickbar.
  */
 
+#include "common/system.h"
 #include "common/error.h"
 
 #include "graphics/graphics.h"
@@ -95,7 +96,7 @@ float QuickbarButton::getHeight() const {
 	return _model->getHeight();
 }
 
-void QuickbarButton::setTag(const Common::UString &tag) {
+void QuickbarButton::setTag(const Common::UString &UNUSED(tag)) {
 }
 
 
@@ -132,7 +133,7 @@ float Quickbar::getHeight() const {
 	return _slotHeight + 2 * _edgeHeight;
 }
 
-void Quickbar::callbackActive(Widget &widget) {
+void Quickbar::callbackActive(Widget &UNUSED(widget)) {
 }
 
 void Quickbar::getSlotSize() {
@@ -144,7 +145,9 @@ void Quickbar::getSlotSize() {
 	delete _model;
 }
 
-void Quickbar::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+void Quickbar::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
+                             int UNUSED(newWidth), int newHeight) {
+
 	setPosition(- ((12 * _slotWidth) / 2.0), - (newHeight / 2.0), -10.0);
 }
 

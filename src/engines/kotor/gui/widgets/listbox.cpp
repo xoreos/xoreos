@@ -22,6 +22,8 @@
  *  A KotOR listbox widget.
  */
 
+#include "common/system.h"
+
 #include "engines/kotor/gui/widgets/listbox.h"
 
 namespace Engines {
@@ -35,7 +37,7 @@ WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag) :
 WidgetListBox::~WidgetListBox() {
 }
 
-void WidgetListBox::load(const Aurora::GFFStruct &gff) {
+void WidgetListBox::load(const Aurora::GFFStruct &UNUSED(gff)) {
 }
 
 } // End of namespace KotOR

@@ -37,7 +37,7 @@ namespace Engines {
 namespace NWN2 {
 
 Graphics::Aurora::Model *NWN2ModelLoader::load(const Common::UString &resref,
-		Graphics::Aurora::ModelType type, const Common::UString &texture) {
+		Graphics::Aurora::ModelType UNUSED(type), const Common::UString &UNUSED(texture)) {
 
 	Graphics::Aurora::Model *model = 0;
 	try {

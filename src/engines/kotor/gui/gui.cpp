@@ -145,7 +145,7 @@ void GUI::createWidget(WidgetContext &ctx) {
 	initWidget(*ctx.widget);
 }
 
-void GUI::initWidget(Widget &widget) {
+void GUI::initWidget(Widget &UNUSED(widget)) {
 }
 
 WidgetPanel *GUI::getPanel(const Common::UString &tag, bool vital) {

@@ -22,6 +22,7 @@
  *  An object that can be displayed by the graphics manager.
  */
 
+#include "common/system.h"
 #include "common/error.h"
 
 #include "graphics/renderable.h"
@@ -58,7 +59,7 @@ bool Renderable::operator<(const Queueable &q) const {
 	return _distance < static_cast<const Renderable &>(q)._distance;
 }
 
-void Renderable::advanceTime(float dt) {
+void Renderable::advanceTime(float UNUSED(dt)) {
 }
 
 double Renderable::getDistance() const {
@@ -106,15 +107,17 @@ void Renderable::hide() {
 	removeFromQueue(_queueVisible);
 }
 
-bool Renderable::isIn(float x, float y) const {
+bool Renderable::isIn(float UNUSED(x), float UNUSED(y)) const {
 	return false;
 }
 
-bool Renderable::isIn(float x, float y, float z) const {
+bool Renderable::isIn(float UNUSED(x), float UNUSED(y), float UNUSED(z)) const {
 	return false;
 }
 
-bool Renderable::isIn(float x1, float y1, float z1, float x2, float y2, float z2) const {
+bool Renderable::isIn(float UNUSED(x1), float UNUSED(y1), float UNUSED(z1),
+                      float UNUSED(x2), float UNUSED(y2), float UNUSED(z2)) const {
+
 	return false;
 }
 

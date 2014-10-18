@@ -184,11 +184,11 @@ void Console::updateMusic() {
 	setArguments("playmusic", _music);
 }
 
-void Console::cmdQuitModule(const CommandLine &cl) {
+void Console::cmdQuitModule(const CommandLine &UNUSED(cl)) {
 	_module->_exit = true;
 }
 
-void Console::cmdListCampaigns(const CommandLine &cl) {
+void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
 	updateCampaigns();
 	for (std::list<Common::UString>::iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
 		print(*c);
@@ -213,7 +213,7 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 	_module->changeModule(module);
 }
 
-void Console::cmdListModules(const CommandLine &cl) {
+void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 	updateModules();
 	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
 		print(*m);
@@ -238,7 +238,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 	printf("No such module \"%s\"", cl.args.c_str());
 }
 
-void Console::cmdListAreas(const CommandLine &cl) {
+void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 	if (!_module)
 		return;
 
@@ -266,12 +266,12 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 	printf("Area \"%s\" does not exist", cl.args.c_str());
 }
 
-void Console::cmdListMusic(const CommandLine &cl) {
+void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
 	updateMusic();
 	printList(_music, _maxSizeMusic);
 }
 
-void Console::cmdStopMusic(const CommandLine &cl) {
+void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
 	if (!_module || !_module->_currentArea)
 		return;
 

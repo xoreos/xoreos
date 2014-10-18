@@ -69,7 +69,9 @@ const Common::UString &JadeEngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool JadeEngineProbe::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+bool JadeEngineProbe::probe(const Common::UString &UNUSED(directory),
+                            const Common::FileList &rootFiles) const {
+
 	// If the launcher binary is found, this should be a valid path
 	if (rootFiles.contains("/JadeEmpire.exe", true))
 		return true;
@@ -77,7 +79,7 @@ bool JadeEngineProbe::probe(const Common::UString &directory, const Common::File
 	return false;
 }
 
-bool JadeEngineProbe::probe(Common::SeekableReadStream &stream) const {
+bool JadeEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
 	return false;
 }
 

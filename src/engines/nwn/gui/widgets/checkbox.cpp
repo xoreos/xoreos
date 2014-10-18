@@ -22,6 +22,7 @@
  *  A NWN checkbox widget.
  */
 
+#include "common/system.h"
 #include "common/ustring.h"
 
 #include "graphics/aurora/model.h"
@@ -138,7 +139,7 @@ void WidgetCheckBox::leave() {
 	updateModel(false);
 }
 
-void WidgetCheckBox::mouseDown(uint8 state, float x, float y) {
+void WidgetCheckBox::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -151,7 +152,7 @@ void WidgetCheckBox::mouseDown(uint8 state, float x, float y) {
 	playSound("gui_check", Sound::kSoundTypeSFX);
 }
 
-void WidgetCheckBox::mouseUp(uint8 state, float x, float y) {
+void WidgetCheckBox::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 

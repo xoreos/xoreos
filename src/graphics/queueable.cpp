@@ -22,6 +22,8 @@
  *  An object that can be stored in a queue.
  */
 
+#include "common/system.h"
+
 #include "graphics/queueman.h"
 #include "graphics/queueable.h"
 
@@ -36,7 +38,7 @@ Queueable::~Queueable() {
 	removeFromAll();
 }
 
-bool Queueable::operator<(const Queueable &q) const {
+bool Queueable::operator<(const Queueable &UNUSED(q)) const {
 	return false;
 }
 

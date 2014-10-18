@@ -22,6 +22,8 @@
  *  A NWN character info panel.
  */
 
+#include "common/system.h"
+
 #include "engines/nwn/gui/ingame/charinfo.h"
 
 namespace Engines {
@@ -34,10 +36,10 @@ CharacterInfo::CharacterInfo() {
 CharacterInfo::~CharacterInfo() {
 }
 
-void CharacterInfo::setName(const Common::UString &name) {
+void CharacterInfo::setName(const Common::UString &UNUSED(name)) {
 }
 
-void CharacterInfo::setArea(const Common::UString &area) {
+void CharacterInfo::setArea(const Common::UString &UNUSED(area)) {
 }
 
 } // End of namespace NWN

@@ -50,7 +50,7 @@ CompassWidget::~CompassWidget() {
 
 // TODO: The disk rotation should feel more "natural", i.e. it should
 //       be more sluggish.
-void CompassWidget::setRotation(float x, float y, float z) {
+void CompassWidget::setRotation(float x, float y, float UNUSED(z)) {
 	_model->setRotation(-x, 0.0, 0.0);
 	Graphics::Aurora::ModelNode *pointer = _model->getNode("cmp_pointer");
 	if (pointer)
@@ -86,10 +86,12 @@ Compass::Compass(float position) {
 Compass::~Compass() {
 }
 
-void Compass::callbackActive(Widget &widget) {
+void Compass::callbackActive(Widget &UNUSED(widget)) {
 }
 
-void Compass::notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+void Compass::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
+                            int newWidth, int newHeight) {
+
 	setPosition(newWidth / 2.0, - (newHeight / 2.0), -10.0);
 }
 

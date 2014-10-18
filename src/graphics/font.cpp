@@ -63,7 +63,7 @@ float Font::getHeight(const Common::UString &text, float maxWidth, float maxHeig
 	return (lines * getHeight()) + ((lines - 1) * getLineSpacing());
 }
 
-void Font::buildChars(const Common::UString &str) {
+void Font::buildChars(const Common::UString &UNUSED(str)) {
 }
 
 void Font::draw(Common::UString text, const ColorPositions &colors,

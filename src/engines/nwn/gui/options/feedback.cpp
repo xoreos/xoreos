@@ -121,7 +121,7 @@ void OptionsFeedbackMenu::callbackActive(Widget &widget) {
 	}
 }
 
-void OptionsFeedbackMenu::updateTooltipDelay(uint32 tooltipDelay) {
+void OptionsFeedbackMenu::updateTooltipDelay(uint32 UNUSED(tooltipDelay)) {
 	WidgetLabel  &ttDelayLabel  = *getLabel ("ToolTipValue" , true);
 	WidgetSlider &ttDelaySlider = *getSlider("TooltipSlider", true);
 
