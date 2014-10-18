@@ -47,7 +47,8 @@ ManagedTexture::ManagedTexture(const Common::UString &name) : reloadable(false) 
 	texture = new Texture(name);
 }
 
-ManagedTexture::ManagedTexture(const Common::UString &name, Texture *t) : reloadable(false) {
+// TODO: Investigate why the name is not used here. Marking it as unused for now.
+ManagedTexture::ManagedTexture(const Common::UString &UNUSED(name), Texture *t) : reloadable(false) {
 	referenceCount = 0;
 	texture = t;
 }
