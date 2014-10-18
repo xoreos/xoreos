@@ -274,7 +274,7 @@ void WidgetEditBox::scroll(int n) {
 	if (_text.size() <= _linesToShow)
 		return;
 
-	if (_firstLine + n > _text.size() - _linesToShow || _firstLine + n < 0)
+	if (_firstLine + n > _text.size() - _linesToShow || (int)_firstLine + n < 0)
 		return;
 
 	_firstLine += n;
