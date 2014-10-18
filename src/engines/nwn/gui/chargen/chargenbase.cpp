@@ -36,12 +36,15 @@ namespace NWN {
 
 CharGenBase::CharacterAbilities CharGenBase::_charChoices = CharacterAbilities();
 
-CharGenBase::CharacterAbilities::CharacterAbilities() {
-	character = 0;
+CharGenBase::CharacterAbilities::CharacterAbilities() :
+	race(kRaceInvalid), character(0) {
+
 }
 
-CharGenBase::CharacterAbilities::CharacterAbilities(Creature *charac) {
-	character = charac;
+CharGenBase::CharacterAbilities::CharacterAbilities(Creature *charac) :
+	race(kRaceInvalid), character(charac) {
+
+	// TODO: Get race from creature?
 }
 
 void CharGenBase::applyAbilities() {
