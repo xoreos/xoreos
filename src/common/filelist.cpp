@@ -105,16 +105,19 @@ bool FileList::addDirectory(const UString &directory, int recurseDepth) {
 }
 
 bool FileList::getSubList(const UString &str, bool caseInsensitive, FileList &subList) const {
-	UString match = str.toLower();
+	UString match = caseInsensitive ? str.toLower() : str;
 
 	bool foundMatch = false;
 
 	// Iterate through the whole list, adding the matches to the sub list
-	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it)
-		if (it->toLower().endsWith(match)) {
+	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it) {
+		bool matching = caseInsensitive ? it->toLower().endsWith(match) : it->endsWith(match);
+
+		if (matching) {
 			subList._files.push_back(*it);
 			foundMatch = true;
 		}
+	}
 
 	return foundMatch;
 }
