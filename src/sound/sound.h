@@ -240,7 +240,7 @@ private:
 	static AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
 
 	/** Fill the buffer with data from the audio stream. */
-	bool fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) const;
+	bool fillBuffer(ALuint alBuffer, AudioStream *stream) const;
 };
 
 } // End of namespace Sound

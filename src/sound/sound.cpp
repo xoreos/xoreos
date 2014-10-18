@@ -310,7 +310,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 				if ((error = alGetError()) != AL_NO_ERROR)
 					throw Common::Exception("OpenAL error while generating buffers: %X", error);
 
-				if (fillBuffer(channel.source, buffer, channel.stream)) {
+				if (fillBuffer(buffer, channel.stream)) {
 					// If we could fill the buffer with data, queue it
 
 					alSourceQueueBuffers(channel.source, 1, &buffer);
@@ -492,7 +492,7 @@ void SoundManager::setTypeGain(SoundType type, float gain) {
 	}
 }
 
-bool SoundManager::fillBuffer(ALuint source, ALuint alBuffer, AudioStream *stream) const {
+bool SoundManager::fillBuffer(ALuint alBuffer, AudioStream *stream) const {
 	if (!stream)
 		throw Common::Exception("No stream");
 
@@ -574,7 +574,7 @@ void SoundManager::bufferData(Channel &channel) {
 	// Buffer as long as we still have data and free buffers
 	std::list<ALuint>::iterator buffer = channel.freeBuffers.begin();
 	while (buffer != channel.freeBuffers.end()) {
-		if (!fillBuffer(channel.source, *buffer, channel.stream))
+		if (!fillBuffer(*buffer, channel.stream))
 			break;
 
 		alSourceQueueBuffers(channel.source, 1, &*buffer);
