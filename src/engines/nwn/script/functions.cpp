@@ -163,7 +163,7 @@ ScriptFunctions::Defaults::~Defaults() {
 }
 
 
-ScriptFunctions::ScriptFunctions() {
+ScriptFunctions::ScriptFunctions() : _module(0) {
 	registerFunctions();
 }
 
