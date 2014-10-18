@@ -58,6 +58,9 @@ bool Renderable::operator<(const Queueable &q) const {
 	return _distance < static_cast<const Renderable &>(q)._distance;
 }
 
+void Renderable::advanceTime(float dt) {
+}
+
 double Renderable::getDistance() const {
 	return _distance;
 }
