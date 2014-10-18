@@ -149,12 +149,15 @@ bool FileList::containsGlob(const UString &glob, bool caseInsensitive) const {
 }
 
 UString FileList::findFirst(const UString &str, bool caseInsensitive) const {
-	UString match = str.toLower();
+	UString match = caseInsensitive ? str.toLower() : str;
 
 	// Iterate through the whole list, adding the matches to the sub list
-	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it)
-		if (it->toLower().endsWith(match))
+	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it) {
+		bool matching = caseInsensitive ? it->toLower().endsWith(match) : it->endsWith(match);
+
+		if (matching)
 			return *it;
+	}
 
 	return "";
 }
