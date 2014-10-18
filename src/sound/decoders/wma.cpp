@@ -635,9 +635,12 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 		_resetBlockLengths = true;
 
 		// Decode the frames
-		for (int i = 0; i < newFrameCount; i++, _curFrame++)
-			if (!decodeFrame(bits, outputData))
+		for (int i = 0; i < newFrameCount; i++, _curFrame++) {
+			if (!decodeFrame(bits, outputData)) {
+				delete[] outputData;
 				return 0;
+			}
+		}
 
 		// Check if we've got new overhang data
 		int remainingBits = bits.size() - bits.pos();
