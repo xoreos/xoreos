@@ -589,7 +589,7 @@ bool GraphicsManager::unproject(float x, float y,
 		// Unproject
 		Common::Vector3 oNear(model * coordsNear);
 		Common::Vector3 oFar (model * coordsFar );
-		if ((oNear._w == 0.0) || (oNear._w == 0.0))
+		if ((oNear._w == 0.0) || (oFar._w == 0.0))
 			return false; // TODO: check for close to 0.0f, not exactly 0.0f.
 
 
