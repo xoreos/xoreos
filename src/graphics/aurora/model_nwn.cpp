@@ -328,8 +328,9 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 			skipAnimASCII(ctx);
 		} else if (line[0] == "donemodel") {
 			break;
-		} else
-			; // warning("Unknown MDL command \"%s\"", line[0].c_str());
+		} else {
+			// warning("Unknown MDL command \"%s\"", line[0].c_str());
+		}
 	}
 
 	addState(ctx);
@@ -1099,8 +1100,9 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 			line[1].parse(mesh.faceCount);
 
 			readFaces(ctx, mesh);
-		} else
-			; // warning("Unknown MDL node command \"%s\"", line[0].c_str());
+		} else {
+			// warning("Unknown MDL node command \"%s\"", line[0].c_str());
+		}
 	}
 
 	if (!end)
