@@ -9,7 +9,7 @@ env:
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "oYIV1EmOvP2ruIxyCTPuGuqUsUzTxxu3P+IdlQZgV6aXaBxtFCuoQaLVMOlnx8xSI2V4mb5I/wK5fAtgUAomzDHQmaBNSbJc3xBTy2xgckup60ehKtFqf+ifm+AYcLQQgLtMUDmLNNcJIKUGPZ8GYwjNfWKt3VGuLHV+UFiRuQI="
    - coverity_scan_run_condition='"$CC" = gcc'
-   - coverity_scan_script_test_mode=true
+   - coverity_scan_script_test_mode=false
 
 before_script:
   - echo "yes" | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu saucy main universe restricted multiverse"
