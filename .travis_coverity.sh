@@ -90,7 +90,7 @@ echo -e "\033[33;1mTarring Coverity Scan Analysis results...\033[0m"
 RESULTS_ARCHIVE=analysis-results.tgz
 tar czf $RESULTS_ARCHIVE $RESULTS_DIR
 SHA=`git rev-parse --short HEAD`
-VERSION_GIT=$(cat gitstamp/gitstamp)
+VERSION_GIT=$(cat Makefile | grep PACKAGE_VERSION | sed -e 's/.* = //')+$SHA
 
 echo -e "\033[33;1mVersion: $VERSION_GIT...\033[0m"
 # Verify Coverity Scan script test mode
