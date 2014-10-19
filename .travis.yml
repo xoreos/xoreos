@@ -2,11 +2,34 @@ language: cpp
 compiler:
   - gcc
   - clang
-script: ./autogen.sh && ./configure && make -j4
+
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "oYIV1EmOvP2ruIxyCTPuGuqUsUzTxxu3P+IdlQZgV6aXaBxtFCuoQaLVMOlnx8xSI2V4mb5I/wK5fAtgUAomzDHQmaBNSbJc3xBTy2xgckup60ehKtFqf+ifm+AYcLQQgLtMUDmLNNcJIKUGPZ8GYwjNfWKt3VGuLHV+UFiRuQI="
+   - coverity_scan_run_condition='"$CC" = gcc'
+   - coverity_scan_script_test_mode=true
+
 before_script:
   - echo "yes" | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu saucy main universe restricted multiverse"
   - sudo apt-get update -qq
   - sudo apt-get -qq install libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libgl1-mesa-dev zlib1g-dev liblzma-dev
+
+script:
+  - if [ "$COVERITY_SCAN_BRANCH" != 1 ]; then ./autogen.sh; fi
+  - if [ "$COVERITY_SCAN_BRANCH" != 1 ]; then ./configure; fi
+  - if [ "$COVERITY_SCAN_BRANCH" != 1 ]; then make -j4; fi
+
+addons:
+  coverity_scan:
+    build_script_url: https://raw.githubusercontent.com/$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/.travis_coverity.sh
+    project:
+      name: $TRAVIS_REPO_SLUG
+    notification_email: drmccoy@drmccoy.de
+    build_command_prepend: "echo 'yes' | sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu saucy main universe restricted multiverse' && sudo apt-get update -qq && sudo apt-get -qq install libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libgl1-mesa-dev zlib1g-dev liblzma-dev && ./autogen.sh && ./configure"
+    build_command: "make -j4"
+    branch_pattern: coverity_scan
 
 notifications:
   email:
