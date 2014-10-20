@@ -1,6 +1,14 @@
 ACLOCAL_AMFLAGS = -I m4 --install
 
-EXTRA_DIST = FAQ TODO
+EXTRA_DIST = \
+             autogen.sh \
+             BUILDDEP \
+             Doxyfile \
+             README.dox \
+             README.md \
+             FAQ.md \
+             CONTRIBUTING.md \
+             $(EMPTY)
 
 SUBDIRS = \
           utf8cpp \
