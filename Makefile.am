@@ -10,6 +10,14 @@ EXTRA_DIST = \
              CONTRIBUTING.md \
              $(EMPTY)
 
+dist_doc_DATA = \
+                COPYING \
+                AUTHORS \
+                ChangeLog \
+                README.md \
+                FAQ.md \
+                $(EMPTY)
+
 SUBDIRS = \
           utf8cpp \
           glew \
