@@ -8,6 +8,12 @@ EXTRA_DIST = \
              README.md \
              FAQ.md \
              CONTRIBUTING.md \
+             dists/macosx/Info.plist \
+             dists/macosx/xoreos.icns \
+             dists/win32/xoreos.ico \
+             dists/win32/xoreos.rc \
+             glew/LICENSE.txt \
+             lua/README.xoreos \
              $(EMPTY)
 
 dist_doc_DATA = \
