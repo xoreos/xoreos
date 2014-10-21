@@ -34,7 +34,7 @@ doxygen-clean:
 	rm -rf doc/doxygen/latex/
 	rm -rf doc/doxygen/man/
 
-dnl TODO: Make a static target for this (would involve changing sdl-config to use static libs, static versions of SDL_sound and SDL_mixer, and creating a framework folder for OpenGL).
+# TODO: Make a static target for this (would involve changing sdl-config to use static libs, static versions of SDL_sound and SDL_mixer, and creating a framework folder for OpenGL).
 BUNDLE_NAME = Xoreos.app
 bundle: all
 	mkdir -p $(BUNDLE_NAME)/Contents/MacOS
