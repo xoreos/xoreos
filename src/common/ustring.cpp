@@ -565,6 +565,7 @@ void UString::makeUpper() {
 UString UString::toLower() const {
 	UString str;
 
+	str._string.reserve(_string.size());
 	for (iterator it = begin(); it != end(); ++it)
 		str += toLower(*it);
 
@@ -574,6 +575,7 @@ UString UString::toLower() const {
 UString UString::toUpper() const {
 	UString str;
 
+	str._string.reserve(_string.size());
 	for (iterator it = begin(); it != end(); ++it)
 		str += toUpper(*it);
 
