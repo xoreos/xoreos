@@ -42,6 +42,15 @@ stack. Please see [the related blog post](https://xoreos.org/blog/2013/06/07/xor
 If you'd like to help, please feel free to contact us!
 
 
+Compiling xoreos
+----------------
+
+Since we are not yet distributing binaries of xoreos, you will have to compile
+xoreos yourself. Please read the [compiling xoreos page on our
+wiki](https://wiki.xoreos.org/index.php?title=Compiling_xoreos) for information
+on how to do this on various operating systems.
+
+
 Running xoreos
 --------------
 
