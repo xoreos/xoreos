@@ -88,17 +88,19 @@ in a game target overrides the global option.
 
 For example:
 
-    [xoreos]
-    width=1024
-    height=768
-    fullscreen=false
-    
-    [nwn]
-    path=/home/drmccoy/games/nwn/
-    fullscreen=true
-    volume_music=0.500000
-    volume_sfx=0.850000
-    volume_voice=0.850000
+```ini
+[xoreos]
+width=1024
+height=768
+fullscreen=false
+
+[nwn]
+path=/home/drmccoy/games/nwn/
+fullscreen=true
+volume_music=0.500000
+volume_sfx=0.850000
+volume_voice=0.850000
+```
 
 You can then start the game with the target "nwn" with
 
