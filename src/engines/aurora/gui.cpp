@@ -308,6 +308,12 @@ void GUI::updateMouse() {
 	mouseMove(event);
 }
 
+void GUI::mouseDown() {
+}
+
+void GUI::mouseUp() {
+}
+
 Widget *GUI::getWidgetAt(float x, float y) {
 	// Get the GFX object at the position
 	Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
@@ -379,6 +385,7 @@ void GUI::mouseDown(const Events::Event &event) {
 	        // We only care about left mouse button presses.
 	        return;
 
+	mouseDown();
 	Widget *widget = getWidgetAt(event.button.x, event.button.y);
 	if (widget != _currentWidget)
 		changedWidget(widget);
@@ -391,6 +398,7 @@ void GUI::mouseUp(const Events::Event &event) {
 		// We only care about left mouse button presses
 		return;
 
+	mouseUp();
 	Widget *widget = getWidgetAt(event.button.x, event.button.y);
 	if (widget != _currentWidget) {
 		changedWidget(widget);

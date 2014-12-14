@@ -81,6 +81,10 @@ protected:
 	/** Force an update of the mouse position. */
 	void updateMouse();
 
+	/** The mouse state has changed. */
+	virtual void mouseUp();
+	virtual void mouseDown();
+
 	/** Open up a sub GUI. */
 	int sub(GUI &gui, int startCode = 0, bool showSelf = true);
 
