@@ -68,6 +68,9 @@ protected:
 		kWidgetTypeListBox     =  11
 	};
 
+	virtual void mouseUp();
+	virtual void mouseDown();
+
 	void load(const Common::UString &resref, float width = 0.0, float height = 0.0);
 
 	virtual void initWidget(Widget &widget);

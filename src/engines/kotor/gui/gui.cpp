@@ -29,6 +29,8 @@
 
 #include "engines/aurora/util.h"
 
+#include "graphics/aurora/cursorman.h"
+
 #include "engines/kotor/gui/widgets/panel.h"
 #include "engines/kotor/gui/widgets/label.h"
 #include "engines/kotor/gui/widgets/protoitem.h"
@@ -63,6 +65,14 @@ GUI::GUI() : _widgetZ(0) {
 }
 
 GUI::~GUI() {
+}
+
+void GUI::mouseDown() {
+	CursorMan.setState("down");
+}
+
+void GUI::mouseUp() {
+	CursorMan.setState("up");
 }
 
 void GUI::load(const Common::UString &resref, float width, float height) {
