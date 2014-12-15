@@ -26,6 +26,7 @@
 #include "common/ustring.h"
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/modelnode.h"
 
 #include "engines/aurora/model.h"
 
@@ -80,6 +81,10 @@ float ModelWidget::getWidth() const {
 
 float ModelWidget::getHeight() const {
 	return _model->getHeight();
+}
+
+Graphics::Aurora::ModelNode* ModelWidget::getNode(const Common::UString &nodeName ) const {
+	return _model->getNode(nodeName);
 }
 
 } // End of namespace NWN
