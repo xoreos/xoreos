@@ -327,6 +327,12 @@ void ModelNode::setInvisible(bool invisible) {
 	_render = !invisible;
 }
 
+void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
+	GfxMan.lockFrame();
+	loadTextures(textures);
+	GfxMan.unlockFrame();
+}
+
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 	bool hasTexture = false;
 
@@ -368,8 +374,7 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 
 	// If the node has no actual texture, we just assume
 	// that the geometry shouldn't be rendered.
-	if (!hasTexture)
-		_render = false;
+	_render = hasTexture;
 }
 
 void ModelNode::createBound() {

@@ -102,6 +102,8 @@ public:
 	/** Rotate the node, relative to its current rotation. */
 	void rotate(float x, float y, float z);
 
+	/** Set textures to the node. */
+	void setTextures(const std::vector<Common::UString> &textures);
 
 protected:
 	Model *_model; ///< The model this node belongs to.
