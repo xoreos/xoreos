@@ -60,6 +60,11 @@ public:
 	/** Return the contents of a cell as a float. */
 	float getFloat(const Common::UString &column) const;
 
+	/** Check if the cell is empty. */
+	bool isEmpty(uint32 column) const;
+	/** Check if the cell is empty. */
+	bool isEmpty(const Common::UString &column) const;
+
 private:
 	TwoDAFile *_parent; ///< The parent 2DA.
 

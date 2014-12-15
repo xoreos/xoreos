@@ -91,6 +91,18 @@ float TwoDARow::getFloat(const Common::UString &column) const {
 	return _parent->parseFloat(cell);
 }
 
+bool TwoDARow::isEmpty(uint32 column) const {
+	const Common::UString &cell = getCell(column);
+	if (cell.empty() || (cell == "****"))
+		return true;
+
+	return false;
+}
+
+bool TwoDARow::isEmpty(const Common::UString &column) const {
+	return isEmpty(_parent->headerToColumn(column));
+}
+
 static const Common::UString kEmpty;
 const Common::UString &TwoDARow::getCell(uint32 n) const {
 	if (n >= _data.size())
