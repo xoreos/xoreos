@@ -96,6 +96,8 @@ void Creature::init() {
 	_gender = kGenderNone;
 	_race   = kRaceInvalid;
 
+	_portrait = "gui_po_nwnlogo_";
+
 	_isPC = false;
 	_isDM = false;
 
@@ -209,6 +211,14 @@ void Creature::setRace(uint32 race) {
 		error("Unable to set race, raceID is invalid.");
 
 	_race = race;
+}
+
+void Creature::setPortrait(const Common::UString &portrait) {
+	_portrait = portrait;
+}
+
+const Common::UString &Creature::getPortrait() const {
+	return _portrait;
 }
 
 bool Creature::isPC() const {

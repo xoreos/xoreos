@@ -84,6 +84,11 @@ public:
 	/** Set the creature's race. */
 	void setRace(uint32 race);
 
+	/** Set the creature's portrait. */
+	void setPortrait(const Common::UString &portrait);
+	/** Get the creature's portrait. */
+	const Common::UString &getPortrait() const;
+
 	/** Return the creature's race as needed in conversations, e.g. "Dwarven". */
 	const Common::UString &getConvRace() const;
 	/** Return the creature's lowercase race as needed in conversations, e.g. "dwarven". */
