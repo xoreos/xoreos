@@ -30,7 +30,7 @@
 #include "engines/nwn/gui/widgets/nwnwidget.h"
 
 namespace Common {
-class UString;
+	class UString;
 }
 
 namespace Engines {
@@ -56,7 +56,7 @@ public:
 	float getWidth () const;
 	float getHeight() const;
 
-	Graphics::Aurora::ModelNode* getNode(const Common::UString &nodeName) const;
+	Graphics::Aurora::ModelNode *getNode(const Common::UString &nodeName) const;
 
 protected:
 	Graphics::Aurora::Model *_model;

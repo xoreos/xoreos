@@ -83,7 +83,7 @@ float ModelWidget::getHeight() const {
 	return _model->getHeight();
 }
 
-Graphics::Aurora::ModelNode* ModelWidget::getNode(const Common::UString &nodeName ) const {
+Graphics::Aurora::ModelNode *ModelWidget::getNode(const Common::UString &nodeName) const {
 	return _model->getNode(nodeName);
 }
 
