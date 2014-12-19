@@ -99,7 +99,7 @@ float TextWidget::getHeight() const {
 }
 
 void TextWidget::setDisabled(bool disabled) {
-	if (isDisabled())
+	if (disabled == isDisabled())
 		return;
 
 	_a = disabled ? (_a * 0.6) : (_a / 0.6);
