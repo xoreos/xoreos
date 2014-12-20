@@ -565,6 +565,10 @@ uint WidgetListBox::getSelected() const {
 	return _selectedItem;
 }
 
+WidgetListItem *WidgetListBox::getSelectedItem() const {
+	return _items[_selectedItem];
+}
+
 bool WidgetListBox::wasDblClicked() {
 	bool dblClicked = _dblClicked;
 

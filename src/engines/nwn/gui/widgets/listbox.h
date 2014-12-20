@@ -142,6 +142,7 @@ public:
 
 	void select(uint item);
 	uint getSelected() const;
+	WidgetListItem *getSelectedItem() const;
 
 	bool wasDblClicked();
 
