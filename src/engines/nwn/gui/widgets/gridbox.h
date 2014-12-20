@@ -50,7 +50,7 @@ public:
 protected:
 	void updateScrollbarLength();
 	void updateVisible();
-	
+
 	void scrollUp(uint n);
 	void scrollDown(uint n);
 
