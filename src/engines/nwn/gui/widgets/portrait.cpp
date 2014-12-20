@@ -242,6 +242,16 @@ void PortraitWidget::hide() {
 	NWNWidget::hide();
 }
 
+void PortraitWidget::mouseDown(uint8 state, float x, float y) {
+	if (_owner)
+		_owner->mouseDown(state, x, y);
+}
+
+void PortraitWidget::mouseWheel(uint8 state, int x, int y) {
+	if (_owner)
+		_owner->mouseWheel(state, x, y);
+}
+
 void PortraitWidget::setPosition(float x, float y, float z) {
 	NWNWidget::setPosition(x, y, z);
 
