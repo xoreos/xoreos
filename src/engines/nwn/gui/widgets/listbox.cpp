@@ -87,6 +87,10 @@ void WidgetListItem::select() {
 	activate();
 }
 
+const uint WidgetListItem::getItemNumber() const {
+	return _itemNumber;
+}
+
 bool WidgetListItem::getState() {
 	return _state;
 }
@@ -215,13 +219,11 @@ bool WidgetListItemTextLine::deactivate() {
 	return true;
 }
 
-
 WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag,
                              const Common::UString &model) :
-	ModelWidget(gui, tag, model),
-	_mode(kModeStatic), _contentX(0.0), _contentY(0.0), _contentZ(0.0),
-	_hasScrollbar(false), _up(0), _down(0), _scrollbar(0), _dblClicked(false),
-	_startItem(0), _selectedItem(0xFFFFFFFF), _locked(false) {
+	ModelWidget(gui, tag, model), _contentX(0.0), _contentY(0.0), _contentZ(0.0),
+	_startItem(0), _selectedItem(0xFFFFFFFF), _up(0), _down(0), _scrollbar(0), _locked(false),
+	_mode(kModeStatic), _hasScrollbar(false), _dblClicked(false) {
 
 	_model->setClickable(true);
 

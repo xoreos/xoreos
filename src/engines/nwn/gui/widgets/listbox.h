@@ -57,6 +57,8 @@ public:
 
 	void select();
 
+	const uint getItemNumber() const;
+
 protected:
 	bool getState();
 
@@ -148,8 +150,14 @@ public:
 
 	void subActive(Widget &widget);
 
-private:
-	Mode _mode;
+protected:
+	virtual void updateScrollbarLength();
+	virtual void updateScrollbarPosition();
+
+	virtual void scrollUp(uint n);
+	virtual void scrollDown(uint n);
+
+	virtual void updateVisible();
 
 	float _contentX;
 	float _contentY;
@@ -158,33 +166,25 @@ private:
 	float _contentWidth;
 	float _contentHeight;
 
-	bool _hasScrollbar;
-	WidgetButton    *_up;
-	WidgetButton    *_down;
-	WidgetScrollbar *_scrollbar;
-
-	bool _dblClicked;
-
 	std::vector<WidgetListItem *> _items;
 	std::vector<WidgetListItem *> _visibleItems;
 
 	uint _startItem;
 	uint _selectedItem;
+	WidgetButton    *_up;
+	WidgetButton    *_down;
+	WidgetScrollbar *_scrollbar;
 
 	bool _locked;
 
+private:
+	Mode _mode;
+
+	bool _hasScrollbar;
+	bool _dblClicked;
+
 	void getProperties();
-
 	void createScrollbar();
-
-	void updateScrollbarLength();
-	void updateScrollbarPosition();
-
-	void scrollUp(uint n);
-	void scrollDown(uint n);
-
-	void updateVisible();
-
 	void itemDblClicked();
 
 	friend class WidgetListItem;
