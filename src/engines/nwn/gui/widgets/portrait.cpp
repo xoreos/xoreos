@@ -199,6 +199,15 @@ void Portrait::setPortrait(const Common::UString &name) {
 	}
 }
 
+void Portrait::setBorderColor(float bR, float bG, float bB, float bA) {
+	GfxMan.lockFrame();
+	_bR = bR;
+	_bG = bG;
+	_bB = bB;
+	_bA = bA;
+	GfxMan.unlockFrame();
+}
+
 void Portrait::setSize() {
 	_qPortrait.vX[0] = 0.0                ; _qPortrait.vY[0] = 0.0                 ;
 	_qPortrait.vX[1] = 0.0 + kWidth[_size]; _qPortrait.vY[1] = 0.0                 ;
@@ -261,6 +270,10 @@ void PortraitWidget::setPosition(float x, float y, float z) {
 
 void PortraitWidget::setPortrait(const Common::UString &name) {
 	_portrait.setPortrait(name);
+}
+
+void PortraitWidget::setBorderColor(float bR, float bG, float bB, float bA) {
+	_portrait.setBorderColor(bR, bG, bB, bA);
 }
 
 float PortraitWidget::getWidth() const {

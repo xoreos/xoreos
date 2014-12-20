@@ -61,6 +61,9 @@ public:
 	/** Set the current portrait. */
 	void setPortrait(const Common::UString &name);
 
+	/** Set border color. */
+	void setBorderColor(float bR, float bG, float bB, float bA);
+
 	/** Set the current position of the portrait. */
 	void setPosition(float x, float y, float z);
 
@@ -115,6 +118,7 @@ public:
 	void setPosition(float x, float y, float z);
 
 	void setPortrait(const Common::UString &name);
+	void setBorderColor(float bR, float bG, float bB, float bA);
 
 	float getWidth () const;
 	float getHeight() const;
