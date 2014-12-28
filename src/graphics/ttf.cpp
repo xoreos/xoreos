@@ -167,7 +167,7 @@ void TTFRenderer::drawCharacter(uint32 ch, Surface &surface, int x, int y) {
 		srcPitch = -srcPitch;
 	}
 
-	int bitmapWidth = bitmap.width;
+	uint bitmapWidth = (uint) bitmap.width;
 	if (xMin < 0) {
 		bitmapWidth += xMin;
 		src         -= xMin;
@@ -178,15 +178,18 @@ void TTFRenderer::drawCharacter(uint32 ch, Surface &surface, int x, int y) {
 	x += xMin;
 	y += yOffset;
 
-	const int width  = MIN(surface.getWidth () - x, bitmapWidth);
-	const int height = MIN(surface.getHeight() - y, bitmap.rows);
+	if ((x >= surface.getWidth()) || (y >= surface.getHeight()))
+		return;
+
+	const uint width  = MIN<uint>(surface.getWidth () - x, bitmapWidth);
+	const uint height = MIN<uint>(surface.getHeight() - y, bitmap.rows);
 
 	byte *dst = surface.getData() + (y * surface.getWidth() + x) * 4;
 
 	switch (bitmap.pixel_mode) {
 	case FT_PIXEL_MODE_GRAY:
-		for (int i = 0; i < height; ++i) {
-			for (int j = 0; j < width; ++j, dst += 4) {
+		for (uint i = 0; i < height; ++i) {
+			for (uint j = 0; j < width; ++j, dst += 4) {
 				// Output BGRA
 				dst[0] = dst[1] = dst[2] = 0xFF;
 				dst[3] = src[j];
