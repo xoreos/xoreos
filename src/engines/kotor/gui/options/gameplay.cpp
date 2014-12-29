@@ -33,6 +33,7 @@
 #include "engines/kotor/gui/options/mousesettings.h"
 #include "engines/kotor/gui/options/keyboardconfig.h"
 #include "engines/kotor/gui/widgets/button.h"
+#include "engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
 
@@ -45,7 +46,11 @@ OptionsGameplayMenu::OptionsGameplayMenu() {
 	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
 	getButton("BTN_DIFFLEFT", true)->setColor(0, 0.658824, 0.980392, 1);
 	getButton("BTN_DIFFRIGHT", true)->setColor(0, 0.658824, 0.980392, 1);
-
+	getCheckBox("CB_LEVELUP", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_INVERTCAM", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_AUTOSAVE", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_REVERSE", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_DISABLEMOVE", true)->setColor(0, 0.658824, 0.980392, 1);
 }
 OptionsGameplayMenu::~OptionsGameplayMenu() {
 	delete _mousesettings;
