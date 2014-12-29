@@ -26,11 +26,14 @@
 
 #include "aurora/gfffile.h"
 
+#include "sound/sound.h"
+
 #include "graphics/aurora/guiquad.h"
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/highlightabletext.h"
 #include "graphics/aurora/highlightableguiquad.h"
 
+#include "engines/aurora/util.h"
 #include "engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
@@ -87,6 +90,59 @@ void WidgetCheckBox::load(const Aurora::GFFStruct &gff) {
 		_text->setTag(getTag());
 		_text->setClickable(true);
 	}
+
+	if (getTextHighlightableComponent() != 0) {
+		  setDefaultHighlighting(getTextHighlightableComponent());
+	}
+	if (getQuadHighlightableComponent() != 0) {
+		  setDefaultHighlighting(getQuadHighlightableComponent());
+	}
+}
+
+void WidgetCheckBox::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+	if (isDisabled())
+		return;
+
+	playSound("gui_actuse", Sound::kSoundTypeSFX);
+	setActive(true);
+}
+
+void WidgetCheckBox::enter() {
+	float r, g, b, a;
+	_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
+	if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
+		_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+		_text->getHighlightedLowerBound(r, g, b, a);
+		_text->setColor(r, g, b, a);
+		_text->setHighlighted(true);
+	}
+
+	if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+		_quad->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+		getQuadHighlightableComponent()->getHighlightedLowerBound(r, g, b, a);
+		_quad->setColor(r, g, b, a);
+		getQuadHighlightableComponent()->setHighlighted(true);
+	}
+
+}
+
+void WidgetCheckBox::leave() {
+	SoundMan.stopChannel(_sound);
+	if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
+		_text->setHighlighted(false);
+		_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+	}
+	if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+		getQuadHighlightableComponent()->setHighlighted(false);
+		_quad->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+	}
+}
+
+void WidgetCheckBox::setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable) {
+	highlightable->setHighlightable(true);
+	highlightable->setHighlightDelta(0, 0, 0, .05);
+	highlightable->setHighlightLowerBound(1, 1, 0, .2);
+	highlightable->setHighlightUpperBound(1, 1, 0, 1);
 }
 
 } // End of namespace KotOR

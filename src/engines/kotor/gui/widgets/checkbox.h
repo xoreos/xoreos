@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_GUI_WIDGETS_CHECKBOX_H
 #define ENGINES_KOTOR_GUI_WIDGETS_CHECKBOX_H
 
+#include "sound/types.h"
+
 #include "engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
@@ -37,6 +39,18 @@ public:
 	~WidgetCheckBox();
 
 	void load(const Aurora::GFFStruct &gff);
+
+	virtual void mouseUp(uint8 state, float x, float y);
+
+	virtual void enter();
+
+	virtual void leave();
+
+private:
+
+	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
+	Sound::ChannelHandle _sound;
+	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
 };
 
 } // End of namespace KotOR
