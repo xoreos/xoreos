@@ -26,12 +26,21 @@
 
 #include "engines/kotor/gui/options/autopause.h"
 
+#include "engines/kotor/gui/widgets/checkbox.h"
+
 namespace Engines {
 
 namespace KotOR {
 
 OptionsAutoPauseMenu::OptionsAutoPauseMenu() {
 	load("optautopause");
+	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
+	getCheckBox("CB_ENDROUND", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_ENEMYSIGHTED", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_MINESIGHTED", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_PARTYKILLED", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_ACTIONMENU", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_TRIGGERS", true)->setColor(0, 0.658824, 0.980392, 1);
 }
 
 OptionsAutoPauseMenu::~OptionsAutoPauseMenu() {

@@ -27,6 +27,8 @@
 #include "engines/kotor/gui/options/graphics.h"
 #include "engines/kotor/gui/options/graphicsadv.h"
 
+#include "engines/kotor/gui/widgets/checkbox.h"
+
 namespace Engines {
 
 namespace KotOR {
@@ -35,6 +37,11 @@ OptionsGraphicsMenu::OptionsGraphicsMenu() {
 	load("optgraphics");
 
 	_advanced = new OptionsGraphicsAdvancedMenu();
+
+	//Hardcoded, the gui file returns incorrect values
+	getCheckBox("CB_SHADOWS", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_GRASS", true)->setColor(0, 0.658824, 0.980392, 1);
+	
 }
 
 OptionsGraphicsMenu::~OptionsGraphicsMenu() {

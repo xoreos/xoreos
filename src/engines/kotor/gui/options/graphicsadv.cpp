@@ -26,12 +26,20 @@
 
 #include "engines/kotor/gui/options/graphicsadv.h"
 
+#include "engines/kotor/gui/widgets/checkbox.h"
+
 namespace Engines {
 
 namespace KotOR {
 
 OptionsGraphicsAdvancedMenu::OptionsGraphicsAdvancedMenu() {
 	load("optgraphicsadv");
+
+	//Hardcoded, the gui file returns incorrect values
+	getCheckBox("CB_FRAMEBUFF", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_VSYNC", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_SOFTSHADOWS", true)->setColor(0, 0.658824, 0.980392, 1);
+
 }
 
 OptionsGraphicsAdvancedMenu::~OptionsGraphicsAdvancedMenu() {

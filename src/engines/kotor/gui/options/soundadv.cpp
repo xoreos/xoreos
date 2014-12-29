@@ -26,12 +26,17 @@
 
 #include "engines/kotor/gui/options/soundadv.h"
 
+#include "engines/kotor/gui/widgets/checkbox.h"
+
 namespace Engines {
 
 namespace KotOR {
 
 OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu() {
 	load("optsoundadv");
+
+	//Hardcoded, the gui file returns incorrect values
+	getCheckBox("CB_FORCESOFTWARE", true)->setColor(0, 0.658824, 0.980392, 1);
 }
 
 OptionsSoundAdvancedMenu::~OptionsSoundAdvancedMenu() {
