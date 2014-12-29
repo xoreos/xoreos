@@ -41,7 +41,6 @@ OptionsGraphicsMenu::OptionsGraphicsMenu() {
 	//Hardcoded, the gui file returns incorrect values
 	getCheckBox("CB_SHADOWS", true)->setColor(0, 0.658824, 0.980392, 1);
 	getCheckBox("CB_GRASS", true)->setColor(0, 0.658824, 0.980392, 1);
-	
 }
 
 OptionsGraphicsMenu::~OptionsGraphicsMenu() {
