@@ -84,7 +84,7 @@ void WidgetGridBox::subActive(Widget &widget) {
 }
 
 void WidgetGridBox::mouseDown(uint8 UNUSED(state), float x, float y) {
-	if (isDisabled())
+	if (isDisabled() || _visibleItems.empty())
 		return;
 
 	float wX, wY, wZ;
