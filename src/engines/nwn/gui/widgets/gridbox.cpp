@@ -60,7 +60,7 @@ void WidgetGridBox::subActive(Widget &widget) {
 			return;
 
 		uint maxIfFilled = _items.size() + _itemsByRow - _items.size() % _itemsByRow;
-		uint maxVisible  = ceil(_visibleItems.size() / _itemsByRow) * _itemsByRow;
+		uint maxVisible  = floor(_contentHeight / _items.front()->getHeight()) * _itemsByRow;
 
 		uint startItem = floor(_scrollbar->getState() * (maxIfFilled - maxVisible)
 		                       / _itemsByRow) * _itemsByRow;
@@ -93,7 +93,7 @@ void WidgetGridBox::mouseDown(uint8 UNUSED(state), float x, float y) {
 	// Check if we clicked on the scrollbar area
 	if (_scrollbar) {
 		if (x > (wX + getWidth() - 20)) {
-			uint scroll = ceil(_visibleItems.size() / _itemsByRow);
+			uint scroll = _visibleItems.size() / _itemsByRow;
 			if (y > _scrollbar->getBarPosition())
 				scrollUp(scroll);
 			else
