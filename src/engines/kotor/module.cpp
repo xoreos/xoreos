@@ -55,7 +55,7 @@ Module::~Module() {
 void Module::clear() {
 	unload();
 	unloadTexturePack();
-};
+}
 
 bool Module::load(const Common::UString &module) {
 	unload();
