@@ -57,7 +57,7 @@ public:
 
 	void select();
 
-	const uint getItemNumber() const;
+	uint getItemNumber() const;
 
 protected:
 	bool getState();

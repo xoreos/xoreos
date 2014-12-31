@@ -87,7 +87,7 @@ void WidgetListItem::select() {
 	activate();
 }
 
-const uint WidgetListItem::getItemNumber() const {
+uint WidgetListItem::getItemNumber() const {
 	return _itemNumber;
 }
 
