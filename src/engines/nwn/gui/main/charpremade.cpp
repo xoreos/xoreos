@@ -241,12 +241,12 @@ void CharPremadeMenu::initCharacterList() {
 			continue;
 		}
 
-		if (sscanf(ch.file.c_str(), "%*[^0-9]%d", &ch.number) != 1)
+		if (sscanf(ch.file.c_str(), "%*[^0-9]%u", &ch.number) != 1)
 			ch.number = 0;
 
 		ch.displayName = ch.name;
 		if (ch.number > 0)
-			ch.displayName += Common::UString::sprintf(" (%d)", ch.number);
+			ch.displayName += Common::UString::sprintf(" (%u)", ch.number);
 	}
 
 	std::sort(_characters.begin(), _characters.end());
