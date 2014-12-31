@@ -64,7 +64,7 @@ struct ManagedPLT {
 };
 
 typedef std::map<Common::UString, ManagedTexture *> TextureMap;
-typedef std::list<ManagedPLT *> PLTList;;
+typedef std::list<ManagedPLT *> PLTList;
 
 /** A handle to a texture. */
 class TextureHandle {

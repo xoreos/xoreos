@@ -33,7 +33,7 @@ namespace Common {
 
 namespace Sound {
 	class AudioStream;
-};
+}
 
 namespace Video {
 

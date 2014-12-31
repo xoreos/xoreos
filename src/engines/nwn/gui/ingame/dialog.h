@@ -41,7 +41,7 @@ namespace Common {
 
 namespace Aurora {
 	class DLGFile;
-};
+}
 
 namespace Graphics {
 	namespace Aurora {

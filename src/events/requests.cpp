@@ -31,7 +31,7 @@
 
 #include "graphics/images/decoder.h"
 
-DECLARE_SINGLETON(Events::RequestManager);
+DECLARE_SINGLETON(Events::RequestManager)
 
 namespace Events {
 
