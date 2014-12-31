@@ -37,7 +37,8 @@ WidgetSlider::WidgetSlider(::Engines::GUI &gui, const Common::UString &tag) :
 WidgetSlider::~WidgetSlider() {
 }
 
-void WidgetSlider::load(const Aurora::GFFStruct &UNUSED(gff)) {
+void WidgetSlider::load(const Aurora::GFFStruct &gff) {
+  KotORWidget::load(gff);
 }
 
 } // End of namespace KotOR
