@@ -24,7 +24,7 @@ BEGIN
             VALUE "FileDescription", "https://xoreos.org/\0"
             VALUE "FileVersion", "0.0.1+git\0"
             VALUE "InternalName", "xoreos\0"
-            VALUE "LegalCopyright", "Copyright © 2010-2014 The xoreos Team\0"
+            VALUE "LegalCopyright", "Copyright © 2010-2015 The xoreos Team\0"
             VALUE "LegalTrademarks", "The Infinity engine, Aurora engine, Odyssey engine and Eclipse engine are registered trademarks of BioWare Corp., a subsidiary of Electronic Arts, Inc. The Electron engine and Lycium engine are trademarks of BioWare Corp., a subsidiary of Electronic Arts, Inc. Bink is a registered trademark of RAD Game Tools, Inc. Neverwinter Nights is a registered trademark of Wizards of the Coast, a subsidiary of Hasbro Inc. Star Wars, Knights of the Old Republic and The Sith Lords are registered trademarks of Lucasfilm Entertainment Company Ltd., a subsidiary of The Walt Disney Company. Jade Empire is a registered trademark of BioWare Corp., a subsidiary of Electronic Arts, Inc. Sonic the Hedgehog is a registered trademark of Sega Corporation. The Witcher is a registered trademark of CD Projekt S.A. Dragon Age is a registered trademark of Electronic Arts, Inc. All rights reserved.\0"
             VALUE "OriginalFilename", "xoreos.exe\0"
             VALUE "ProductName", "xoreos\0"
