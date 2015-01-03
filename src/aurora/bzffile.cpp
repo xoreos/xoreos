@@ -92,7 +92,7 @@ void BZFFile::readVarResTable(Common::SeekableReadStream &bzf, uint32 offset) {
 	if (!bzf.seek(offset))
 		throw Common::Exception(Common::kSeekError);
 
-	for (uint32_t i = 0; i < _iResources.size(); i++) {
+	for (uint32 i = 0; i < _iResources.size(); i++) {
 		bzf.skip(4); // ID
 
 		_iResources[i].offset = bzf.readUint32LE();
@@ -194,7 +194,7 @@ Common::SeekableReadStream *BZFFile::decompress(byte *compressedData, uint32 pac
 	if (!lzma_filter_decoder_is_supported(filters[0].id))
 		throw Common::Exception("LZMA1 compression not supported");
 
-	uint32_t propsSize;
+	uint32 propsSize;
 	if (lzma_properties_size(&propsSize, &filters[0]) != LZMA_OK)
 		throw Common::Exception("Can't get LZMA1 properties size");
 

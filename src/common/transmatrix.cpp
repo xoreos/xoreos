@@ -397,7 +397,7 @@ void TransformationMatrix::resetRotation() {
 
 void TransformationMatrix::transform(const TransformationMatrix &m) {
 	float result[16];
-	for (uint32_t i = 0; i < 16; i+=4) {
+	for (uint32 i = 0; i < 16; i+=4) {
 		// __m128 r, __m128 a, __m128 b
 		// a = _mm_load_ps(&_elements[0]);
 		// b = _mm_set1_ps(m[i]);
@@ -406,7 +406,7 @@ void TransformationMatrix::transform(const TransformationMatrix &m) {
 		result[i + 1] = _elements[0 + 1] * m[i];
 		result[i + 2] = _elements[0 + 2] * m[i];
 		result[i + 3] = _elements[0 + 3] * m[i];
-		for (uint32_t j= 1; j < 4; j++) {
+		for (uint32 j= 1; j < 4; j++) {
 			// a = _mm_load_ps(&_elements[j<<2]);
 			// b = _mm_set1_ps(m[i+j]);
 			// r = _mm_add_ps(a, b);
@@ -421,12 +421,12 @@ void TransformationMatrix::transform(const TransformationMatrix &m) {
 }
 
 void TransformationMatrix::transform(const TransformationMatrix &a, const TransformationMatrix &b) {
-	for (uint32_t i = 0; i < 16; i+=4) {
+	for (uint32 i = 0; i < 16; i+=4) {
 		_elements[i + 0] = a[0 + 0] * b[i];
 		_elements[i + 1] = a[0 + 1] * b[i];
 		_elements[i + 2] = a[0 + 2] * b[i];
 		_elements[i + 3] = a[0 + 3] * b[i];
-		for (uint32_t j= 1; j < 4; j++) {
+		for (uint32 j= 1; j < 4; j++) {
 			_elements[i + 0] += a[j * 4 + 0] * b[i + j];
 			_elements[i + 1] += a[j * 4 + 1] * b[i + j];
 			_elements[i + 2] += a[j * 4 + 2] * b[i + j];
