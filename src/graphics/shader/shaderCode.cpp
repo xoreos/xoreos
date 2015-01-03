@@ -1,0 +1,109 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names can be
+ * found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ *
+ * The Infinity, Aurora, Odyssey, Eclipse and Lycium engines, Copyright (c) BioWare corp.
+ * The Electron engine, Copyright (c) Obsidian Entertainment and BioWare corp.
+ */
+
+/** @file graphics/shader/shaderCode.cpp
+ *  The global shader manager.
+ */
+
+#include "graphics/shader/shaderCode.h"
+
+namespace Graphics
+{
+
+namespace Shader
+{
+// ---------------------------------------------------------
+const char vertexDefault3xText[] =
+"#version 330\n\
+\n\
+layout(location = 0) in vec3 inPosition;\n\
+layout(location = 3) in vec2 inTexCoord0;\n\
+\n\
+out vec2 texCoords;\n\
+\n\
+uniform mat4 objectModelviewMatrix;\n\
+\n\
+uniform mat4 projectionMatrix;\n\
+uniform mat4 modelviewMatrix;\n\
+\n\
+void main(void) {\n\
+  vec4 vertex = (modelviewMatrix * objectModelviewMatrix) * vec4(inPosition, 1.0f);\n\
+\n\
+  gl_Position = projectionMatrix * vertex;\n\
+  texCoords = inTexCoord0;\n\
+}\n\
+";
+// ---------------------------------------------------------
+const char fragmentDefault3xText[] =
+"#version 330\n\
+precision highp float;\n\
+\n\
+uniform sampler2D texture0;\n\
+\n\
+in vec2 texCoords;\n\
+\n\
+layout(location = 0) out vec4 outColour;\n\
+\n\
+void main(void) {\n\
+  outColour = texture(texture0, texCoords);\n\
+}\n\
+";
+// ---------------------------------------------------------
+
+
+// ---------------------------------------------------------
+const char vertexDefault2xText[] =
+"#version 130\n\
+\n\
+varying vec2 texCoords;\n\
+\n\
+uniform mat4 objectModelviewMatrix;\n\
+uniform mat4 projectionMatrix;\n\
+uniform mat4 modelviewMatrix;\n\
+\n\
+void main(void) {\n\
+  vec4 vertex = (modelviewMatrix * objectModelviewMatrix) * gl_Vertex;\n\
+\n\
+  gl_Position = projectionMatrix * vertex;\n\
+  texCoords = vec2(gl_MultiTexCoord0);\n\
+}\n\
+";
+// ---------------------------------------------------------
+const char fragmentDefault2xText[] =
+"#version 130\n\
+precision highp float;\n\
+\n\
+uniform sampler2D texture0;\n\
+\n\
+varying vec2 texCoords;\n\
+\n\
+void main(void) {\n\
+  gl_FragColor = texture2D(texture0, texCoords);\n\
+}\n\
+";
+// ---------------------------------------------------------
+} // namespace Shader
+
+} // namespace Graphics
