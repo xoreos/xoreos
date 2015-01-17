@@ -634,8 +634,6 @@ void ResourceManager::normalizeType(Resource &resource) {
 		resource.type = kFileTypeMDX;
 	else if (resource.type == kFileTypeTXB2)
 		resource.type = kFileTypeTXB;
-	else if (resource.type == kFileTypeCRE)
-		resource.type = kFileTypeBTC;
 }
 
 inline uint64 ResourceManager::getHash(const Common::UString &name, FileType type) const {

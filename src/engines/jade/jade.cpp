@@ -158,6 +158,10 @@ void JadeEngine::init() {
 
 	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
+
+	// In Jade Empire, CRE files are actually BTC
+	ResMan.addTypeAlias(Aurora::kFileTypeCRE, Aurora::kFileTypeBTC);
+
 	indexMandatoryDirectory("", 0, 0, 1);
 
 	progress.step("Adding extra archive directories");
