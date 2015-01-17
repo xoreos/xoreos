@@ -23,12 +23,14 @@
  */
 
 #include "common/util.h"
+#include "common/error.h"
 #include "common/file.h"
 #include "common/filepath.h"
 #include "common/filelist.h"
 
-#include "aurora/resman.h"
 #include "aurora/gfffile.h"
+
+#include "engines/aurora/resources.h"
 
 #include "engines/nwn2/campaign.h"
 
@@ -41,6 +43,7 @@ Campaign::Campaign() {
 }
 
 Campaign::~Campaign() {
+	clear();
 }
 
 const std::list<CampaignDescription> &Campaign::getCampaigns() const {
@@ -94,6 +97,62 @@ bool Campaign::readCampaign(const Common::UString &camFile, CampaignDescription 
 	delete gff;
 
 	return true;
+}
+
+void Campaign::clear() {
+	_currentCampaign.directory.clear();
+	_currentCampaign.name.clear();
+	_currentCampaign.description.clear();
+
+	_modules.clear();
+	_startModule.clear();
+
+	ResMan.undo(_resCampaign);
+}
+
+void Campaign::loadCampaign(const CampaignDescription &desc) {
+	clear();
+
+	if (desc.directory.empty())
+		throw Common::Exception("Campaign path is empty");
+
+	indexMandatoryDirectory(desc.directory, 0, -1, 1000, &_resCampaign);
+
+	Aurora::GFFFile *gff = 0;
+	try {
+		gff = new Aurora::GFFFile("campaign", Aurora::kFileTypeCAM, MKTAG('C', 'A', 'M', ' '));
+	} catch (Common::Exception &e) {
+		delete gff;
+		clear();
+
+		e.add("Failed to load campaign information file");
+		throw;
+	}
+
+	if (!gff->getTopLevel().hasField("ModNames") || !gff->getTopLevel().hasField("StartModule")) {
+		delete gff;
+		clear();
+
+		throw Common::Exception("Campaign information file is missing modules");
+	}
+
+	_startModule = gff->getTopLevel().getString("StartModule");
+
+	const Aurora::GFFList &modules = gff->getTopLevel().getList("ModNames");
+	for (Aurora::GFFList::const_iterator m = modules.begin(); m != modules.end(); ++m)
+		_modules.push_back((*m)->getString("ModuleName"));
+
+	delete gff;
+
+	_currentCampaign = desc;
+}
+
+const Common::UString &Campaign::getName() const {
+	return _currentCampaign.name.getString();
+}
+
+const Common::UString &Campaign::getDescription() const {
+	return _currentCampaign.description.getString();
 }
 
 } // End of namespace NWN2

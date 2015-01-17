@@ -30,6 +30,7 @@
 #include "common/ustring.h"
 
 #include "aurora/locstring.h"
+#include "aurora/resman.h"
 
 namespace Engines {
 
@@ -49,8 +50,28 @@ public:
 
 	const std::list<CampaignDescription> &getCampaigns() const;
 
+	/** Clear the whole context. */
+	void clear();
+
+	/** Load a campaign. */
+	void loadCampaign(const CampaignDescription &desc);
+
+	/** Return the name of the current module. */
+	const Common::UString &getName() const;
+
+	/** Return the description of the current module. */
+	const Common::UString &getDescription() const;
+
 private:
 	std::list<CampaignDescription> _campaigns;
+
+	Aurora::ResourceManager::ChangeID _resCampaign;
+
+	CampaignDescription _currentCampaign;
+
+	std::list<Common::UString> _modules;
+	Common::UString _startModule;
+
 
 	void findCampaigns();
 	bool readCampaign(const Common::UString &camFile, CampaignDescription &desc);
