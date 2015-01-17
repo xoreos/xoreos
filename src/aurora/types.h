@@ -206,6 +206,7 @@ enum FileType {
 	kFileTypeMAX            = 20020,
 	kFileTypeDOC            = 20021,
 	kFileTypeSCC            = 20022,
+	kFileTypeWMP            = 20023, ///< World map, GFF.
 
 	// Found in Sonic Chronicles: The Dark Brotherhood
 	kFileTypeNDS            = 21000,

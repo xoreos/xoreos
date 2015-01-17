@@ -207,6 +207,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeMAX,            ".max"},
 	{kFileTypeDOC,            ".doc"},
 	{kFileTypeSCC,            ".scc"},
+	{kFileTypeWMP,            ".wmp"},
 
 	{kFileTypeNDS,            ".nds"},
 	{kFileTypePAL,            ".pal"},
