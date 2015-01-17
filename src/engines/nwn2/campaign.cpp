@@ -100,6 +100,8 @@ bool Campaign::readCampaign(const Common::UString &camFile, CampaignDescription 
 }
 
 void Campaign::clear() {
+	_module.clear();
+
 	_currentCampaign.directory.clear();
 	_currentCampaign.name.clear();
 	_currentCampaign.description.clear();
@@ -136,15 +138,24 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 		throw Common::Exception("Campaign information file is missing modules");
 	}
 
-	_startModule = gff->getTopLevel().getString("StartModule");
+	_startModule = gff->getTopLevel().getString("StartModule") + ".mod";
 
 	const Aurora::GFFList &modules = gff->getTopLevel().getList("ModNames");
 	for (Aurora::GFFList::const_iterator m = modules.begin(); m != modules.end(); ++m)
-		_modules.push_back((*m)->getString("ModuleName"));
+		_modules.push_back((*m)->getString("ModuleName") + ".mod");
 
 	delete gff;
 
 	_currentCampaign = desc;
+
+	try {
+		_module.loadModule(_startModule);
+	} catch (Common::Exception &e) {
+		clear();
+
+		e.add("Failed to load campaign's starting module");
+		throw;
+	}
 }
 
 const Common::UString &Campaign::getName() const {

@@ -32,6 +32,8 @@
 #include "aurora/locstring.h"
 #include "aurora/resman.h"
 
+#include "engines/nwn2/module.h"
+
 namespace Engines {
 
 namespace NWN2 {
@@ -71,6 +73,8 @@ private:
 
 	std::list<Common::UString> _modules;
 	Common::UString _startModule;
+
+	Module _module;
 
 
 	void findCampaigns();
