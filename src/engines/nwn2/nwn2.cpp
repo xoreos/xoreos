@@ -28,6 +28,7 @@
 #include "common/configman.h"
 
 #include "aurora/resman.h"
+#include "aurora/talkman.h"
 #include "aurora/error.h"
 
 #include "graphics/camera.h"
@@ -198,10 +199,11 @@ void NWN2Engine::run(const Common::UString &target) {
 }
 
 void NWN2Engine::init() {
-	LoadProgress progress(15);
+	LoadProgress progress(16);
 
 	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
+	indexMandatoryDirectory("", 0, 0, 1);
 
 	// NWN2's new file types overlap with other engines in the 3000s block
 	ResMan.addTypeAlias((Aurora::FileType) 3000, Aurora::kFileTypeOSC);
@@ -325,6 +327,9 @@ void NWN2Engine::init() {
 
 	progress.step("Loading game cursors");
 	initCursors();
+
+	progress.step("Loading main talk table");
+	TalkMan.addMainTable("dialog");
 
 	progress.step("Registering file formats");
 	registerModelLoader(new NWN2ModelLoader);
