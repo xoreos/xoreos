@@ -203,6 +203,36 @@ void NWN2Engine::init() {
 	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
+	// NWN2's new file types overlap with other engines in the 3000s block
+	ResMan.addTypeAlias((Aurora::FileType) 3000, Aurora::kFileTypeOSC);
+	ResMan.addTypeAlias((Aurora::FileType) 3001, Aurora::kFileTypeUSC);
+	ResMan.addTypeAlias((Aurora::FileType) 3002, Aurora::kFileTypeTRN);
+	ResMan.addTypeAlias((Aurora::FileType) 3003, Aurora::kFileTypeUTR);
+	ResMan.addTypeAlias((Aurora::FileType) 3004, Aurora::kFileTypeUEN);
+	ResMan.addTypeAlias((Aurora::FileType) 3005, Aurora::kFileTypeULT);
+	ResMan.addTypeAlias((Aurora::FileType) 3006, Aurora::kFileTypeSEF);
+	ResMan.addTypeAlias((Aurora::FileType) 3007, Aurora::kFileTypePFX);
+	ResMan.addTypeAlias((Aurora::FileType) 3008, Aurora::kFileTypeCAM);
+	ResMan.addTypeAlias((Aurora::FileType) 3009, Aurora::kFileTypeLFX);
+	ResMan.addTypeAlias((Aurora::FileType) 3010, Aurora::kFileTypeBFX);
+	ResMan.addTypeAlias((Aurora::FileType) 3011, Aurora::kFileTypeUPE);
+	ResMan.addTypeAlias((Aurora::FileType) 3012, Aurora::kFileTypeROS);
+	ResMan.addTypeAlias((Aurora::FileType) 3013, Aurora::kFileTypeRST);
+	ResMan.addTypeAlias((Aurora::FileType) 3014, Aurora::kFileTypeIFX);
+	ResMan.addTypeAlias((Aurora::FileType) 3015, Aurora::kFileTypePFB);
+	ResMan.addTypeAlias((Aurora::FileType) 3016, Aurora::kFileTypeZIP);
+	ResMan.addTypeAlias((Aurora::FileType) 3017, Aurora::kFileTypeWMP);
+	ResMan.addTypeAlias((Aurora::FileType) 3018, Aurora::kFileTypeBBX);
+	ResMan.addTypeAlias((Aurora::FileType) 3019, Aurora::kFileTypeTFX);
+	ResMan.addTypeAlias((Aurora::FileType) 3020, Aurora::kFileTypeWLK);
+	ResMan.addTypeAlias((Aurora::FileType) 3021, Aurora::kFileTypeXML);
+	ResMan.addTypeAlias((Aurora::FileType) 3022, Aurora::kFileTypeSCC);
+	ResMan.addTypeAlias((Aurora::FileType) 3033, Aurora::kFileTypePTX);
+	ResMan.addTypeAlias((Aurora::FileType) 3034, Aurora::kFileTypeLTX);
+	ResMan.addTypeAlias((Aurora::FileType) 3035, Aurora::kFileTypeTRX);
+
+	indexMandatoryDirectory("", 0, 0, 1);
+
 	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveZIP, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
