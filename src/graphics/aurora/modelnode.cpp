@@ -329,7 +329,13 @@ void ModelNode::setInvisible(bool invisible) {
 
 void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 	GfxMan.lockFrame();
+
+	// Assert that this node should be rendered and try to load the textures.
+	// NOTE: loadTextures() will automatically disable rendering of the node
+	//       again when texture loading fails.
+	_render = true;
 	loadTextures(textures);
+
 	GfxMan.unlockFrame();
 }
 
@@ -374,7 +380,8 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 
 	// If the node has no actual texture, we just assume
 	// that the geometry shouldn't be rendered.
-	_render = hasTexture;
+	if (!hasTexture)
+		_render = false;
 }
 
 void ModelNode::createBound() {
