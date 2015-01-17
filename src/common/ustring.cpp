@@ -177,7 +177,7 @@ UString::UString(uint32 c, int n) : _size(0) {
 }
 
 UString::UString(iterator sBegin, iterator sEnd) : _size(0) {
-	for (; sBegin != sEnd; ++sBegin)
+	for (; (sBegin != sEnd) && *sBegin; ++sBegin)
 		*this += *sBegin;
 }
 
