@@ -300,7 +300,9 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeVLM,            ".vlm"},
 	{kFileTypeWBD,            ".wbd"},
 	{kFileTypeXBX,            ".xbx"},
-	{kFileTypeXLS,            ".xls"}
+	{kFileTypeXLS,            ".xls"},
+
+	{kFileTypeBZF,            ".bzf"}
 };
 
 
