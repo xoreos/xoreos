@@ -152,6 +152,9 @@ public:
 	 */
 	void registerDataBaseDir(const Common::UString &path);
 
+	/** Return the path of the currently registered base data directory. */
+	const Common::UString &getDataBaseDir() const;
+
 	/** Add a directory to be searched for these archives files.
 	 *
 	 *  Relative to the base directory.

@@ -172,6 +172,10 @@ void ResourceManager::registerDataBaseDir(const Common::UString &path) {
 		addArchiveDir((ArchiveType) i, "");
 }
 
+const Common::UString &ResourceManager::getDataBaseDir() const {
+	return _baseDir;
+}
+
 void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &dir, bool recursive) {
 	if (archive == kArchiveNDS || archive == kArchiveHERF)
 		return;
