@@ -119,6 +119,9 @@ private:
 	void readV1ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 	void readV1KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
+	// V1.1
+	void readV11KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
+
 	// V2.0
 	void readV2ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
