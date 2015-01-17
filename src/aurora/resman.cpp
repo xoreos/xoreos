@@ -620,6 +620,13 @@ void ResourceManager::getAvailableResources(ResourceType type,
 }
 
 void ResourceManager::normalizeType(Resource &resource) {
+	// Resolve the type aliases
+	std::map<FileType, FileType>::const_iterator alias = _typeAliases.find(resource.type);
+	if (alias != _typeAliases.end()) {
+		resource.type = alias->second;
+		return;
+	}
+
 	// Normalize resource type *sigh*
 	if      (resource.type == kFileTypeQST2)
 		resource.type = kFileTypeQST;
@@ -629,11 +636,6 @@ void ResourceManager::normalizeType(Resource &resource) {
 		resource.type = kFileTypeTXB;
 	else if (resource.type == kFileTypeCRE)
 		resource.type = kFileTypeBTC;
-
-	// Resolve the type aliases
-	std::map<FileType, FileType>::const_iterator alias = _typeAliases.find(resource.type);
-	if (alias != _typeAliases.end())
-		resource.type = alias->second;
 }
 
 inline uint64 ResourceManager::getHash(const Common::UString &name, FileType type) const {
