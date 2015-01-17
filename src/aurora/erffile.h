@@ -82,7 +82,7 @@ private:
 
 	/** Internal resource information. */
 	struct IResource {
-		uint32 offset;       ///< The offset of the resource within the BIF.
+		uint32 offset;       ///< The offset of the resource within the ERF.
 		uint32 packedSize;   ///< The resource's packed size.
 		uint32 unpackedSize; ///< The resource's unpacked size.
 	};
