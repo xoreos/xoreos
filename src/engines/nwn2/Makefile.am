@@ -7,6 +7,7 @@ noinst_HEADERS = \
                  modelloader.h \
                  ifofile.h \
                  campaign.h \
+                 module.h \
                  $(EMPTY)
 
 libnwn2_la_SOURCES = \
@@ -14,4 +15,5 @@ libnwn2_la_SOURCES = \
                      modelloader.cpp \
                      ifofile.cpp \
                      campaign.cpp \
+                     module.cpp \
                      $(EMPTY)
