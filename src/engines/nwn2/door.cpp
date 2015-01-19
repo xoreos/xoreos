@@ -60,7 +60,6 @@ void Door::load(const Aurora::GFFStruct &door) {
 		try {
 			utd = new Aurora::GFFFile(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
 		} catch (...) {
-			delete utd;
 		}
 	}
 

@@ -171,8 +171,6 @@ void Object::loadSSF() {
 		_ssf = new Aurora::SSFFile(ssfFile);
 	} catch (...) {
 		warning("Failed to load SSF \"%s\" (object \"%s\")", ssfFile.c_str(), _tag.c_str());
-		delete _ssf;
-		_ssf = 0;
 	}
 }
 

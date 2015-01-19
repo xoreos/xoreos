@@ -87,7 +87,6 @@ bool Campaign::readCampaign(const Common::UString &camFile, CampaignDescription 
 	try {
 		gff = new Aurora::GFFFile(file, MKTAG('C', 'A', 'M', ' '));
 	} catch (...) {
-		delete gff;
 		return false;
 	}
 
@@ -124,7 +123,6 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 	try {
 		gff = new Aurora::GFFFile("campaign", Aurora::kFileTypeCAM, MKTAG('C', 'A', 'M', ' '));
 	} catch (Common::Exception &e) {
-		delete gff;
 		clear();
 
 		e.add("Failed to load campaign information file");

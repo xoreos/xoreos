@@ -55,7 +55,6 @@ void Waypoint::load(const Aurora::GFFStruct &waypoint) {
 		try {
 			utw = new Aurora::GFFFile(temp, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' '));
 		} catch (...) {
-			delete utw;
 		}
 	}
 

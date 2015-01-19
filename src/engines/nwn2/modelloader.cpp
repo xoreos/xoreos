@@ -39,15 +39,7 @@ namespace NWN2 {
 Graphics::Aurora::Model *NWN2ModelLoader::load(const Common::UString &resref,
 		Graphics::Aurora::ModelType UNUSED(type), const Common::UString &UNUSED(texture)) {
 
-	Graphics::Aurora::Model *model = 0;
-	try {
-		model = new Graphics::Aurora::Model_NWN2(resref);
-	} catch (...) {
-		delete model;
-		throw;
-	}
-
-	return model;
+	return new Graphics::Aurora::Model_NWN2(resref);
 }
 
 } // End of namespace NWN2
