@@ -86,19 +86,33 @@ GFFFile::GFFFile(const Common::UString &gff, FileType type, uint32 id) : _stream
 }
 
 GFFFile::~GFFFile() {
+	clear();
+}
+
+void GFFFile::clear() {
 	delete _stream;
+	_stream = 0;
 
 	for (StructArray::iterator strct = _structs.begin(); strct != _structs.end(); ++strct)
 		delete *strct;
+
+	_structs.clear();
 }
 
 void GFFFile::load(uint32 id) {
 	readHeader(*_stream);
 
-	if (_id != id)
-		throw Common::Exception("GFF has invalid ID (want 0x%08X, got 0x%08X)", id, _id);
-	if ((_version != kVersion32) && (_version != kVersion33))
-		throw Common::Exception("Unsupported GFF file version %08X", _version);
+	try {
+
+		if (_id != id)
+			throw Common::Exception("GFF has invalid ID (want 0x%08X, got 0x%08X)", id, _id);
+		if ((_version != kVersion32) && (_version != kVersion33))
+			throw Common::Exception("Unsupported GFF file version %08X", _version);
+
+	} catch (...) {
+		clear();
+		throw;
+	}
 
 	_header.read(*_stream);
 
@@ -111,6 +125,8 @@ void GFFFile::load(uint32 id) {
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
+		clear();
+
 		e.add("Failed reading GFF file");
 		throw;
 	}
