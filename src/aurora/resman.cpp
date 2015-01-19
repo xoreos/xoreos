@@ -227,10 +227,15 @@ Common::UString ResourceManager::findArchive(const Common::UString &file,
 }
 
 bool ResourceManager::hasArchive(ArchiveType archive, const Common::UString &file) {
-	assert((archive >= 0) && (archive < kArchiveMAX));
-
+	// NDS archives are not in archive directories, they are plain files in a path
 	if (archive == kArchiveNDS)
 		return Common::File::exists(file);
+
+	// HERF archives are not in archive directories, they are inside NDS archives
+	if (archive == kArchiveHERF)
+		return hasResource(TypeMan.setFileType(file, kFileTypeNone), kFileTypeHERF);
+
+	assert((archive >= 0) && (archive < kArchiveMAX));
 
 	return !findArchive(file, _archiveDirs[archive], _archiveFiles[archive]).empty();
 }
