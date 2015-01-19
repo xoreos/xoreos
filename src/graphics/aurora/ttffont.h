@@ -105,6 +105,8 @@ private:
 	void rebuildPages();
 	void addChar(uint32 c);
 	void drawMissing() const;
+
+	void clear();
 };
 
 } // End of namespace Aurora

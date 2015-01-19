@@ -70,14 +70,25 @@ TTFFont::TTFFont(const Common::UString &name, int height) : _ttf(0) {
 	if (!ttf)
 		throw Common::Exception("No such font \"%s\"", name.c_str());
 
-	load(ttf, height);
+	try {
+		load(ttf, height);
+	} catch (...) {
+		clear();
+	}
 }
 
 TTFFont::~TTFFont() {
+	clear();
+}
+
+void TTFFont::clear() {
+	delete _ttf;
+	_ttf = 0;
+
 	for (std::vector<Page *>::iterator p = _pages.begin(); p != _pages.end(); ++p)
 		delete *p;
 
-	delete _ttf;
+	_pages.clear();
 }
 
 void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
