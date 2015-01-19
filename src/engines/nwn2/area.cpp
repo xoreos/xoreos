@@ -355,7 +355,7 @@ void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 
 	Common::UString tileSet  = tiles.getRow(tile.tileID).getString("TileSet");
 	Common::UString tileType = tiles.getRow(tile.tileID).getString("Tile_Type");
-	int             tileVar  = tiles.getRow(tile.tileID).getInt("Variations");
+	int             tileVar  = t.getUint("Variation") + 1;
 
 	tile.modelName = Common::UString::sprintf("tl_%s_%s_%02d", tileSet.c_str(), tileType.c_str(), tileVar);
 }
