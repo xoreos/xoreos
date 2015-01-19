@@ -66,14 +66,26 @@ XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) :
 
 	assert(_xmv);
 
-	load();
+	try {
+		load();
+	} catch (...) {
+		clear();
+		throw;
+	}
 }
 
 XboxMediaVideo::~XboxMediaVideo() {
+	clear();
+}
+
+void XboxMediaVideo::clear() {
 	VideoDecoder::deinit();
 
 	delete _videoCodec;
+	_videoCodec = 0;
+
 	delete _xmv;
+	_xmv = 0;
 }
 
 uint32 XboxMediaVideo::getTimeToNextFrame() const {

@@ -32,13 +32,23 @@ namespace Video {
 ActimagineDecoder::ActimagineDecoder(Common::SeekableReadStream *vx) : _vx(vx) {
 	assert(_vx);
 
-	load();
+	try {
+		load();
+	} catch (...) {
+		clear();
+		throw;
+	}
 }
 
 ActimagineDecoder::~ActimagineDecoder() {
+	clear();
+}
+
+void ActimagineDecoder::clear() {
 	VideoDecoder::deinit();
 
 	delete _vx;
+	_vx = 0;
 }
 
 uint32 ActimagineDecoder::getTimeToNextFrame() const {

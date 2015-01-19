@@ -136,6 +136,7 @@ private:
 
 	/** Load an XMV file. */
 	void load();
+	void clear();
 
 	/** Evaluate whether and how we support the format of the audio track. */
 	void evaluateAudioTrack(AudioTrack &track);

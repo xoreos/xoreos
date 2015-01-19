@@ -118,23 +118,38 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false)
 		_oldPlanes[i] = 0;
 	}
 
-	load();
+	try {
+		load();
+	} catch (...) {
+		clear();
+		throw;
+	}
 }
 
 Bink::~Bink() {
+	clear();
+}
+
+void Bink::clear() {
 	VideoDecoder::deinit();
 
 	for (int i = 0; i < 4; i++) {
 		delete[] _curPlanes[i];
+		_curPlanes[i] = 0;
+
 		delete[] _oldPlanes[i];
+		_oldPlanes[i] = 0;
 	}
 
 	deinitBundles();
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 16; i++) {
 		delete _huffman[i];
+		_huffman[i] = 0;
+	}
 
 	delete _bink;
+	_bink = 0;
 }
 
 uint32 Bink::getTimeToNextFrame() const {
@@ -691,8 +706,10 @@ void Bink::initBundles() {
 }
 
 void Bink::deinitBundles() {
-	for (int i = 0; i < kSourceMAX; i++)
+	for (int i = 0; i < kSourceMAX; i++) {
 		delete[] _bundles[i].data;
+		_bundles[i].data = 0;
+	}
 }
 
 void Bink::initHuffman() {

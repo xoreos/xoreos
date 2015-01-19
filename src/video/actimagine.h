@@ -50,6 +50,7 @@ private:
 
 	/** Load an Actimagine file. */
 	void load();
+	void clear();
 };
 
 } // End of namespace Video

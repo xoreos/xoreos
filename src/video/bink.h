@@ -231,6 +231,7 @@ private:
 
 	/** Load a Bink file. */
 	void load();
+	void clear();
 
 	/** Initialize the bundles. */
 	void initBundles();

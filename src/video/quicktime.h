@@ -219,6 +219,9 @@ private:
 	int readSTSZ(Atom atom);
 	int readSTTS(Atom atom);
 	int readESDS(Atom atom);
+
+	void load();
+	void clear();
 };
 
 } // End of namespace Video

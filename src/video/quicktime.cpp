@@ -74,6 +74,30 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDe
 	_startTime = _nextFrameStartTime = 0;
 	_curFrame = -1;
 
+	try {
+		load();
+	} catch (...) {
+		clear();
+		throw;
+	}
+}
+
+QuickTimeDecoder::~QuickTimeDecoder() {
+	clear();
+}
+
+void QuickTimeDecoder::clear() {
+	VideoDecoder::deinit();
+
+	for (uint32 i = 0; i < _tracks.size(); i++)
+		delete _tracks[i];
+	_tracks.clear();
+
+	delete _fd;
+	_fd = 0;
+}
+
+void QuickTimeDecoder::load() {
 	Atom atom = { 0, 0, 0xffffffff };
 
 	if (readDefault(atom) < 0 || !_foundMOOV)
@@ -128,15 +152,6 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDe
 	// Initialize video codec, if present
 	for (uint32 i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
 		((VideoSampleDesc *) _tracks[_videoTrackIndex]->sampleDescs[i])->initCodec(*_surface);
-}
-
-QuickTimeDecoder::~QuickTimeDecoder() {
-	VideoDecoder::deinit();
-
-	for (uint32 i = 0; i < _tracks.size(); i++)
-		delete _tracks[i];
-
-	delete _fd;
 }
 
 QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uint32 format) {
