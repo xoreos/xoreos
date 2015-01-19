@@ -55,6 +55,10 @@ WidgetEditBox::WidgetEditBox(::Engines::GUI &gui, const Common::UString &tag,
 }
 
 WidgetEditBox::~WidgetEditBox() {
+	delete _title;
+
+	for (std::vector<Graphics::Aurora::Text *>::iterator it = _text.begin(); it != _text.end(); ++it)
+		delete *it;
 }
 
 void WidgetEditBox::show() {
