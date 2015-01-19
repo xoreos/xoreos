@@ -54,7 +54,13 @@ Texture::Texture(const Common::UString &name) : _textureID(0),
 
 	_txi = new TXI();
 
-	load(name);
+	try {
+		load(name);
+	} catch (...) {
+		delete _txi;
+		delete _image;
+		throw;
+	}
 
 	addToQueue(kQueueTexture);
 	addToQueue(kQueueNewTexture);
@@ -68,7 +74,13 @@ Texture::Texture(ImageDecoder *image, const TXI *txi) : _textureID(0),
 	else
 		_txi = new TXI();
 
-	load(image);
+	try {
+		load(image);
+	} catch (...) {
+		delete _txi;
+		delete _image;
+		throw;
+	}
 
 	addToQueue(kQueueTexture);
 	addToQueue(kQueueNewTexture);
