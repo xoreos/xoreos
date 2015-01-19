@@ -327,17 +327,17 @@ bool Module::handleCameraKeyboardInput(const Events::Event &e) {
 		CameraMan.turn( 0.0,  5.0, 0.0);
 	else if (e.key.keysym.sym == SDLK_LEFT)
 		CameraMan.turn( 0.0, -5.0, 0.0);
-	else if (e.key.keysym.sym == SDL_SCANCODE_W)
+	else if (e.key.keysym.scancode == SDL_SCANCODE_W)
 		CameraMan.move( 0.5);
-	else if (e.key.keysym.sym == SDL_SCANCODE_S)
+	else if (e.key.keysym.scancode == SDL_SCANCODE_S)
 		CameraMan.move(-0.5);
-	else if (e.key.keysym.sym == SDL_SCANCODE_D)
+	else if (e.key.keysym.scancode == SDL_SCANCODE_D)
 		CameraMan.turn( 0.0,  5.0, 0.0);
-	else if (e.key.keysym.sym == SDL_SCANCODE_A)
+	else if (e.key.keysym.scancode == SDL_SCANCODE_A)
 		CameraMan.turn( 0.0, -5.0, 0.0);
-	else if (e.key.keysym.sym == SDL_SCANCODE_E)
+	else if (e.key.keysym.scancode == SDL_SCANCODE_E)
 		CameraMan.strafe( 0.5);
-	else if (e.key.keysym.sym == SDL_SCANCODE_Q)
+	else if (e.key.keysym.scancode == SDL_SCANCODE_Q)
 		CameraMan.strafe(-0.5);
 	else if (e.key.keysym.sym == SDLK_INSERT)
 		CameraMan.move(0.0,  0.5, 0.0);
