@@ -33,6 +33,7 @@
 #include "graphics/graphics.h"
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/modelnode.h"
 
 #include "sound/sound.h"
 
@@ -395,8 +396,19 @@ void Area::loadTileModels() {
 			if (!t->model)
 				throw Common::Exception("Can't load tile model \"%s\"", t->modelName.c_str());
 
+		float rotation = (((int) t->orientation) * 90.0f);
+
 		t->model->setPosition(t->position[0], t->position[1], t->position[2]);
-		t->model->setRotation(0.0, 0.0, (((int) t->orientation) * 90.0));
+		t->model->setRotation(0.0, 0.0, rotation);
+
+		// Rotate static floors back
+		const std::list<Graphics::Aurora::ModelNode *> &nodes = t->model->getNodes();
+		for (std::list<Graphics::Aurora::ModelNode *>::const_iterator n = nodes.begin(); n != nodes.end(); ++n) {
+			if (!(*n)->getName().endsWith("_F"))
+				continue;
+
+			(*n)->rotate(0.0, 0.0, -rotation);
+		}
 	}
 }
 
