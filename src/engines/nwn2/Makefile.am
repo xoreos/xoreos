@@ -9,6 +9,7 @@ noinst_HEADERS = \
                  campaign.h \
                  module.h \
                  area.h \
+                 location.h \
                  $(EMPTY)
 
 libnwn2_la_SOURCES = \
@@ -18,4 +19,5 @@ libnwn2_la_SOURCES = \
                      campaign.cpp \
                      module.cpp \
                      area.cpp \
+                     location.cpp \
                      $(EMPTY)
