@@ -58,6 +58,8 @@ public:
 	/** Load a campaign. */
 	void loadCampaign(const CampaignDescription &desc);
 
+	void run();
+
 	/** Return the name of the current module. */
 	const Common::UString &getName() const;
 

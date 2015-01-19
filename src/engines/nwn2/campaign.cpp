@@ -158,6 +158,10 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 	}
 }
 
+void Campaign::run() {
+	_module.run();
+}
+
 const Common::UString &Campaign::getName() const {
 	return _currentCampaign.name.getString();
 }
