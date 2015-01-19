@@ -15,6 +15,7 @@ noinst_HEADERS = \
                  waypoint.h \
                  situated.h \
                  door.h \
+                 placeable.h \
                  $(EMPTY)
 
 libnwn2_la_SOURCES = \
@@ -29,4 +30,5 @@ libnwn2_la_SOURCES = \
                      waypoint.cpp \
                      situated.cpp \
                      door.cpp \
+                     placeable.cpp \
                      $(EMPTY)
