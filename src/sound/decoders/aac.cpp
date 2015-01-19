@@ -70,8 +70,11 @@ AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraD
 	int err = NeAACDecInit2(_handle, extraDataBuf, extraData->size(), &_rate, &_channels);
 	delete[] extraDataBuf;
 
-	if (err < 0)
+	if (err < 0) {
+		NeAACDecClose(_handle);
+
 		throw Common::Exception("Could not initialize AAC decoder: %s", NeAACDecGetErrorMessage(err));
+	}
 
 	if (disposeExtraData)
 		delete extraData;

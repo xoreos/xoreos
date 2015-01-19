@@ -114,6 +114,9 @@ private:
 	Common::SeekableReadStream *_stream;
 	bool _disposeAfterUse;
 
+	void load();
+	void clear();
+
 	void parseStreamHeader();
 	void parseFileHeader();
 	Packet *readPacket();
@@ -160,6 +163,35 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 	_curAudioStream = 0;
 	_curSequenceNumber = 1; // They always start at one
 
+	try {
+		load();
+	} catch (...) {
+		clear();
+		throw;
+	}
+}
+
+ASFStream::~ASFStream() {
+	clear();
+}
+
+void ASFStream::clear() {
+	if (_disposeAfterUse)
+		delete _stream;
+
+	_stream = 0;
+
+	delete _lastPacket;
+	_lastPacket = 0;
+
+	delete _curAudioStream;
+	_curAudioStream = 0;
+
+	delete _codec;
+	_codec = 0;
+}
+
+void ASFStream::load() {
 	ASFGUID guid = ASFGUID(*_stream);
 	if (guid != s_asfHeader)
 		throw Common::Exception("ASFStream: Missing asf header");
@@ -204,15 +236,6 @@ ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream
 	// Skip to the beginning of the packets
 	_stream->skip(26);
 	_rewindPos = _stream->pos();
-}
-
-ASFStream::~ASFStream() {
-	if (_disposeAfterUse)
-		delete _stream;
-
-	delete _lastPacket;
-	delete _curAudioStream;
-	delete _codec;
 }
 
 void ASFStream::parseFileHeader() {
