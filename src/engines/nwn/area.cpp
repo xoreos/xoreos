@@ -56,13 +56,19 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 	_resRef(resRef), _visible(false), _tileset(0),
 	_activeObject(0), _highlightAll(false) {
 
-	// Load ARE and GIT
+	try {
+		// Load ARE and GIT
 
-	Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
-	loadARE(are.getTopLevel());
+		Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+		loadARE(are.getTopLevel());
 
-	Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
-	loadGIT(git.getTopLevel());
+		Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
+		loadGIT(git.getTopLevel());
+
+	} catch (...) {
+		clear();
+		throw;
+	}
 
 	_loaded = true;
 
@@ -77,14 +83,24 @@ Area::~Area() {
 
 	removeFocus();
 
+	clear();
+}
+
+void Area::clear() {
 	// Delete objects
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		delete *o;
 
+	_objects.clear();
+
 	// Delete tiles and tileset
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 		delete t->model;
+
+	_tiles.clear();
+
 	delete _tileset;
+	_tileset = 0;
 }
 
 Common::UString Area::getName(const Common::UString &resRef) {
