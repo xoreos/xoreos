@@ -31,11 +31,15 @@
 
 #include "aurora/resman.h"
 
+#include "events/types.h"
+
 #include "engines/nwn2/ifofile.h"
 
 namespace Engines {
 
 namespace NWN2 {
+
+class Area;
 
 class Module {
 public:
@@ -48,9 +52,13 @@ public:
 	/** Load a module. */
 	bool loadModule(const Common::UString &module);
 
+	void run();
+
 	const Common::UString &getName() const;
 
 private:
+	typedef std::map<Common::UString, Area *> AreaMap;
+
 	bool _hasModule; ///< Do we have a module?
 
 	/** Resources added by the module. */
@@ -61,15 +69,32 @@ private:
 
 	IFOFile _ifo; ///< The module's IFO.
 
+	bool _exit; //< Should we exit the module?
+
+	AreaMap         _areas;       ///< The areas in the current module.
+	Common::UString _newArea;     ///< The new area to enter.
+	Area           *_currentArea; ///< The current area.
+
+
 	void unload(); ///< Unload the whole shebang.
 
 	void unloadModule();      ///< Unload the module.
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
+	void unloadAreas();       ///< Unload the areas.
 
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
 	void loadHAKs();        ///< Load the HAKs required by the module.
+	void loadAreas();       ///< Load the areas.
+
+	bool enter();     ///< Enter the currently loaded module.
+	void enterArea(); ///< Enter a new area.
+
+	void handleEvents();
+	bool handleCamera(const Events::Event &e);
+
+	void handleActions();
 };
 
 } // End of namespace NWN2
