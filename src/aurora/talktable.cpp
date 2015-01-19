@@ -37,7 +37,12 @@ namespace Aurora {
 TalkTable::TalkTable(Common::SeekableReadStream *tlk) : _tlk(tlk), _stringsOffset(0) {
 	assert(tlk);
 
-	load();
+	try {
+		load();
+	} catch (...) {
+		delete _tlk;
+		throw;
+	}
 }
 
 TalkTable::~TalkTable() {
