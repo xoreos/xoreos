@@ -8,6 +8,7 @@ noinst_HEADERS = \
                  ifofile.h \
                  campaign.h \
                  module.h \
+                 area.h \
                  $(EMPTY)
 
 libnwn2_la_SOURCES = \
@@ -16,4 +17,5 @@ libnwn2_la_SOURCES = \
                      ifofile.cpp \
                      campaign.cpp \
                      module.cpp \
+                     area.cpp \
                      $(EMPTY)
