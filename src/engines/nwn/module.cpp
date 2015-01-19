@@ -229,9 +229,6 @@ bool Module::usePC(const Common::UString &bic, bool local) {
 	try {
 		_pc = new Creature(bic, local);
 	} catch (Common::Exception &e) {
-		delete _pc;
-		_pc = 0;
-
 		e.add("Can't load PC \"%s\"", bic.c_str());
 		Common::printException(e, "WARNING: ");
 	}

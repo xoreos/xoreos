@@ -547,7 +547,6 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 		try {
 			utc = new Aurora::GFFFile(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
 		} catch (...) {
-			delete utc;
 		}
 	}
 
@@ -765,7 +764,6 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 			try {
 				uti = new Aurora::GFFFile(itemref, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '));
 			} catch (...) {
-				delete uti;
 			}
 		}
 
@@ -1026,7 +1024,6 @@ Aurora::GFFFile *Creature::openPC(const Common::UString &bic, bool local) {
 	try {
 		pc = new Common::File(pcFile);
 	} catch (...) {
-		delete pc;
 		throw;
 	}
 
@@ -1034,7 +1031,6 @@ Aurora::GFFFile *Creature::openPC(const Common::UString &bic, bool local) {
 	try {
 		gff = new Aurora::GFFFile(pc, kBICID);
 	} catch (...) {
-		delete gff;
 		throw;
 	}
 
