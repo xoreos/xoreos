@@ -59,6 +59,9 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 Model::~Model() {
 	hide();
 
+	for (AnimationMap::iterator a = _animationMap.begin(); a != _animationMap.end(); ++a)
+		delete a->second;
+
 	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s) {
 		for (NodeList::iterator n = (*s)->nodeList.begin(); n != (*s)->nodeList.end(); ++n)
 			delete *n;

@@ -44,6 +44,8 @@ Animation::Animation() {
 }
 
 Animation::~Animation() {
+	for (NodeList::iterator n = nodeList.begin(); n != nodeList.end(); ++n)
+		delete *n;
 }
 
 const Common::UString &Animation::getName() const {
