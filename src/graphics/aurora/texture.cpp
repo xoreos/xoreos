@@ -144,6 +144,7 @@ void Texture::loadTXI(Common::SeekableReadStream *stream) {
 		return;
 
 	delete _txi;
+	_txi = 0;
 
 	try {
 		_txi = new TXI(*stream);
@@ -265,6 +266,8 @@ bool Texture::reload(ImageDecoder *image, const TXI *txi) {
 
 	if (txi) {
 		delete _txi;
+		_txi = 0;
+
 		_txi = new TXI(*txi);
 	}
 
