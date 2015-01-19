@@ -333,6 +333,14 @@ const ModelNode *Model::getNode(const Common::UString &node) const {
 	return n->second;
 }
 
+static std::list<ModelNode *> kEmptyNodeList;
+const std::list<ModelNode *> &Model::getNodes() {
+	if (!_currentState)
+		return kEmptyNodeList;
+
+	return _currentState->nodeList;
+}
+
 Animation *Model::getAnimation(const Common::UString &anim) {
 
 	AnimationMap::iterator n = _animationMap.find(anim);
