@@ -83,7 +83,6 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 		try {
 			utc = new Aurora::GFFFile(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
 		} catch (...) {
-			delete utc;
 		}
 	}
 
