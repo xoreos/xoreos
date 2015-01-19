@@ -181,9 +181,9 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 		float oW = o.getDouble("w");
 
 		// Convert quaternions to roll/pitch/yaw
-		rotY = Common::rad2deg(atan2(2 * (oX*oY + oZ*oW), 1 - 2 * (oY*oY + oZ*oZ)));
-		rotX = Common::rad2deg(asin(2 * (oX*oZ - oW*oY)));
-		rotZ = 180.0f - Common::rad2deg(atan2(2 * (oX*oW + oY*oZ), 1 - 2 * (oZ*oZ + oW*oW)));
+		rotY = 180.0f - Common::rad2deg(atan2(2 * (oX*oY + oZ*oW), 1 - 2 * (oY*oY + oZ*oZ)));
+		rotX = 180.0f - Common::rad2deg(asin(2 * (oX*oZ - oW*oY)));
+		rotZ = Common::rad2deg(atan2(2 * (oX*oW + oY*oZ), 1 - 2 * (oZ*oZ + oW*oW)));
 	}
 
 	setOrientation(rotX, rotY, rotZ);
