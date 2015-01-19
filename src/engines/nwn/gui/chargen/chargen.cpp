@@ -56,6 +56,9 @@ CharGenMenu::CharGenMenu(Module &module) : _module(&module) {
 CharGenMenu::~CharGenMenu() {
 	for (uint it = 0; it < _chargenGuis.size(); ++it)
 		delete _chargenGuis[it];
+
+	delete _charChoices.character;
+	_charChoices.character = 0;
 }
 
 void CharGenMenu::reset() {
@@ -98,6 +101,7 @@ void CharGenMenu::callbackActive(Widget &widget) {
 }
 
 void CharGenMenu::init() {
+	delete _charChoices.character;
 	_charChoices.character = new Creature();
 
 	_charButtons.push_back(getButton("GenderButton", true));
