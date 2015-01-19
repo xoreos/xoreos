@@ -50,7 +50,12 @@ PEFile::PEFile(const Common::UString &fileName, const std::vector<Common::UStrin
 		throw Common::Exception("Could not parse exe");
 	}
 
-	load(remap);
+	try {
+		load(remap);
+	} catch (...) {
+		delete _peFile;
+		throw;
+	}
 }
 
 PEFile::~PEFile() {
