@@ -4,12 +4,14 @@ noinst_LTLIBRARIES = libnwn2.la
 
 noinst_HEADERS = \
                  nwn2.h \
+                 types.h \
                  modelloader.h \
                  ifofile.h \
                  campaign.h \
                  module.h \
                  area.h \
                  location.h \
+                 object.h \
                  $(EMPTY)
 
 libnwn2_la_SOURCES = \
@@ -20,4 +22,5 @@ libnwn2_la_SOURCES = \
                      module.cpp \
                      area.cpp \
                      location.cpp \
+                     object.cpp \
                      $(EMPTY)
