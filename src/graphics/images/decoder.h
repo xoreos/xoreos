@@ -95,6 +95,8 @@ protected:
 
 	std::vector<MipMap *> _mipMaps;
 
+	void clear();
+
 	static void decompress(MipMap &out, const MipMap &in, PixelFormatRaw format);
 };
 

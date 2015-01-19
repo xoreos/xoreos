@@ -54,6 +54,8 @@ void TGA::load(Common::SeekableReadStream &tga) {
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
+		clear();
+
 		e.add("Failed reading TGA file");
 		throw;
 	}

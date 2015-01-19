@@ -41,7 +41,14 @@ TXB::TXB(Common::SeekableReadStream &txb) : _dataSize(0), _txiData(0), _txiDataS
 }
 
 TXB::~TXB() {
+	clear();
+}
+
+void TXB::clear() {
 	delete[] _txiData;
+	_txiData = 0;
+
+	ImageDecoder::clear();
 }
 
 void TXB::load(Common::SeekableReadStream &txb) {
@@ -60,6 +67,8 @@ void TXB::load(Common::SeekableReadStream &txb) {
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
+		clear();
+
 		e.add("Failed reading TXB file");
 		throw;
 	}

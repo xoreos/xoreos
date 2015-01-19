@@ -55,8 +55,14 @@ ImageDecoder::ImageDecoder() : _compressed(false), _hasAlpha(false),
 }
 
 ImageDecoder::~ImageDecoder() {
+	clear();
+}
+
+void ImageDecoder::clear() {
 	for (std::vector<MipMap *>::iterator m = _mipMaps.begin(); m != _mipMaps.end(); ++m)
 		delete *m;
+
+	_mipMaps.clear();
 }
 
 Common::SeekableReadStream *ImageDecoder::getTXI() const {

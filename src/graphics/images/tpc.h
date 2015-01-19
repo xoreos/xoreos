@@ -54,6 +54,8 @@ private:
 	void readData(Common::SeekableReadStream &tpc, bool needDeSwizzle);
 	void readTXIData(Common::SeekableReadStream &tpc);
 
+	void clear();
+
 	static void deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height);
 };
 

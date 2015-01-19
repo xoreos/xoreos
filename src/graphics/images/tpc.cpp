@@ -42,7 +42,14 @@ TPC::TPC(Common::SeekableReadStream &tpc) : _txiData(0), _txiDataSize(0) {
 }
 
 TPC::~TPC() {
-	delete[] _txiData;
+	clear();
+}
+
+void TPC::clear() {
+	delete _txiData;
+	_txiData = 0;
+
+	ImageDecoder::clear();
 }
 
 void TPC::load(Common::SeekableReadStream &tpc) {
@@ -58,6 +65,8 @@ void TPC::load(Common::SeekableReadStream &tpc) {
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
+		clear();
+
 		e.add("Failed reading TPC file");
 		throw;
 	}
