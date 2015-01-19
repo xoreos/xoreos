@@ -171,9 +171,10 @@ private:
 	void loadTile(const Aurora::GFFStruct &t, Tile &tile);
 
 	void loadObject(Engines::NWN2::Object &object);
-	void loadWaypoints (const Aurora::GFFList &list);
-	void loadPlaceables(const Aurora::GFFList &list);
-	void loadDoors     (const Aurora::GFFList &list);
+	void loadWaypoints  (const Aurora::GFFList &list);
+	void loadPlaceables (const Aurora::GFFList &list);
+	void loadEnvironment(const Aurora::GFFList &list);
+	void loadDoors      (const Aurora::GFFList &list);
 
 	// Model loading/unloading helpers
 

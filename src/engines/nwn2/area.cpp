@@ -289,6 +289,10 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 	if (git.hasField("Placeable List"))
 		loadPlaceables(git.getList("Placeable List"));
 
+	// Environmental objects
+	if (git.hasField("EnvironmentList"))
+		loadEnvironment(git.getList("EnvironmentList"));
+
 	// Doors
 	if (git.hasField("Door List"))
 		loadDoors(git.getList("Door List"));
@@ -420,6 +424,14 @@ void Area::loadWaypoints(const Aurora::GFFList &list) {
 }
 
 void Area::loadPlaceables(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
+		Placeable *placeable = new Placeable(**p);
+
+		loadObject(*placeable);
+	}
+}
+
+void Area::loadEnvironment(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
 		Placeable *placeable = new Placeable(**p);
 
