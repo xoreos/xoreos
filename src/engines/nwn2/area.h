@@ -172,6 +172,7 @@ private:
 
 	void loadObject(Engines::NWN2::Object &object);
 	void loadWaypoints(const Aurora::GFFList &list);
+	void loadDoors    (const Aurora::GFFList &list);
 
 	// Model loading/unloading helpers
 
