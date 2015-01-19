@@ -260,7 +260,11 @@ void NCSFile::setupOpcodes() {
 NCSFile::NCSFile(Common::SeekableReadStream *ncs) : _owner(0), _triggerer(0) {
 	_script = ncs;
 
-	load();
+	try {
+		load();
+	} catch (...) {
+		delete _script;
+	}
 }
 
 NCSFile::NCSFile(const Common::UString &ncs) : _name(ncs), _script(0),
