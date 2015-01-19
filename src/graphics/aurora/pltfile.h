@@ -82,6 +82,7 @@ private:
 	void readHeader(Common::SeekableReadStream &plt);
 	void readData(Common::SeekableReadStream &plt);
 
+	void clear();
 
 
 	friend class PLTImage;

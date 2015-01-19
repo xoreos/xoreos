@@ -64,8 +64,14 @@ PLTFile::PLTFile(const Common::UString &fileName) : _name(fileName),
 }
 
 PLTFile::~PLTFile() {
+	clear();
+}
+
+void PLTFile::clear() {
 	delete[] _dataImage;
 	delete[] _dataLayers;
+
+	_dataImage = _dataLayers = 0;
 }
 
 bool PLTFile::reload() {
@@ -98,6 +104,7 @@ void PLTFile::load() {
 
 	} catch (Common::Exception &e) {
 		delete plt;
+		clear();
 
 		e.add("Failed reading PLT file \"%s\"", _name.c_str());
 		throw;
