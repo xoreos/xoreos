@@ -32,6 +32,8 @@
 
 #include "aurora/types.h"
 
+#include "graphics/aurora/types.h"
+
 #include "sound/types.h"
 
 namespace Engines {
@@ -85,6 +87,30 @@ public:
 
 
 private:
+	/** Tile orientation. */
+	enum Orientation {
+		kOrientation0   = 0, ///< Rotated by   0°.
+		kOrientation90  = 1, ///< Rotated by  90°.
+		kOrientation180 = 2, ///< Rotated by 180°.
+		kOrientation270 = 3  ///< Rotated by 270°.
+	};
+
+	/** A tile. */
+	struct Tile {
+		uint32 metaTile; ///< The meta tile used, if any.
+		uint32 tileID;   ///< ID of the tile's appearance.
+
+		float position[3];       ///< The tile's position.
+		Orientation orientation; ///< The tile's orientation.
+
+		/** ResRef of the model. */
+		Common::UString modelName;
+
+		/** The tile's model. */
+		Graphics::Aurora::Model *model;
+	};
+
+
 	Module *_module;
 
 	bool _loaded;
@@ -116,8 +142,12 @@ private:
 	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
 	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.
 
+	bool _hasTerrain; ///< Does area have terrain or is it tile-based?
+
 	uint32 _width;  ///< Width  of the area in tiles, as seen from top-down.
 	uint32 _height; ///< Height of the area in tiles, as seen from top-down.
+
+	std::vector<Tile> _tiles; ///< The area's tiles.
 
 
 	// Loading helpers
@@ -126,6 +156,17 @@ private:
 	void loadGIT(const Aurora::GFFStruct &git);
 
 	void loadProperties(const Aurora::GFFStruct &props);
+
+	void loadTiles(const Aurora::GFFList &tiles);
+	void loadTile(const Aurora::GFFStruct &t, Tile &tile);
+
+	// Model loading/unloading helpers
+
+	void loadModels();
+	void unloadModels();
+
+	void loadTileModels();
+	void unloadTileModels();
 
 
 	static Common::UString createDisplayName(const Common::UString &name);

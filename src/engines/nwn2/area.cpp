@@ -30,9 +30,14 @@
 #include "aurora/2dafile.h"
 #include "aurora/2dareg.h"
 
+#include "graphics/graphics.h"
+
+#include "graphics/aurora/model.h"
+
 #include "sound/sound.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/model.h"
 
 #include "engines/nwn2/area.h"
 #include "engines/nwn2/module.h"
@@ -57,6 +62,10 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 
 Area::~Area() {
 	hide();
+
+	// Delete tiles
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
+		delete t->model;
 }
 
 Common::UString Area::getName(const Common::UString &resRef) {
@@ -176,6 +185,17 @@ void Area::show() {
 	if (_visible)
 		return;
 
+	loadModels();
+
+	GfxMan.lockFrame();
+
+	// Show tiles
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
+		if (t->model)
+			t->model->show();
+
+	GfxMan.unlockFrame();
+
 	// Play music and sound
 	playAmbientSound();
 	playAmbientMusic();
@@ -188,6 +208,17 @@ void Area::hide() {
 		return;
 
 	stopSound();
+
+	GfxMan.lockFrame();
+
+	// Hide tiles
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
+		if (t->model)
+			t->model->hide();
+
+	GfxMan.unlockFrame();
+
+	unloadModels();
 
 	_visible = false;
 }
@@ -204,10 +235,20 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 
 	_displayName = createDisplayName(_name);
 
-	// Tiles
+	// Tiles / Terrain
+
+	_hasTerrain = are.getBool("HasTerrain");
 
 	_width  = are.getUint("Width");
 	_height = are.getUint("Height");
+
+	if (are.hasField("TileList")) {
+		uint32 size;
+		const Aurora::GFFList &tiles = are.getList("TileList", size);
+
+		_tiles.resize(size);
+		loadTiles(tiles);
+	}
 }
 
 void Area::loadGIT(const Aurora::GFFStruct &git) {
@@ -244,6 +285,67 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 	// Battle music
 
 	setMusicBattleTrack(props.getUint("MusicBattle", Aurora::kStrRefInvalid));
+}
+
+void Area::loadTiles(const Aurora::GFFList &tiles) {
+	uint32 n = 0;
+	for (Aurora::GFFList::const_iterator t = tiles.begin(); t != tiles.end(); ++t, ++n)
+		loadTile(**t, _tiles[n]);
+}
+
+void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
+	// ID
+	tile.metaTile = t.getUint("MetaTile");
+	tile.tileID   = t.getUint("Appearance");
+
+	const Aurora::GFFStruct &pos = t.getStruct("Position");
+
+	// Position
+	tile.position[0] = pos.getDouble("x");
+	tile.position[1] = pos.getDouble("y");
+	tile.position[2] = pos.getDouble("z");
+
+	// Orientation
+	tile.orientation = (Orientation) t.getUint("Orientation", 0);
+
+	tile.model = 0;
+
+	const Aurora::TwoDAFile &tiles = TwoDAReg.get("tiles");
+
+	Common::UString tileSet  = tiles.getRow(tile.tileID).getString("TileSet");
+	Common::UString tileType = tiles.getRow(tile.tileID).getString("Tile_Type");
+	int             tileVar  = tiles.getRow(tile.tileID).getInt("Variations");
+
+	tile.modelName = Common::UString::sprintf("tl_%s_%s_%02d", tileSet.c_str(), tileType.c_str(), tileVar);
+}
+
+void Area::loadModels() {
+	loadTileModels();
+}
+
+void Area::unloadModels() {
+	unloadTileModels();
+}
+
+void Area::loadTileModels() {
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t) {
+		if (t->modelName.empty())
+			continue;
+
+		t->model = loadModelObject(t->modelName);
+			if (!t->model)
+				throw Common::Exception("Can't load tile model \"%s\"", t->modelName.c_str());
+
+		t->model->setPosition(t->position[0], t->position[1], t->position[2]);
+		t->model->setRotation(0.0, 0.0, (((int) t->orientation) * 90.0));
+	}
+}
+
+void Area::unloadTileModels() {
+	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t) {
+		delete t->model;
+		t->model = 0;
+	}
 }
 
 // "{0011}Farlong Downstairs" -> "Farlong Downstairs"
