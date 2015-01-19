@@ -32,6 +32,7 @@
 #include "aurora/error.h"
 
 static const uint32 k2DAID     = MKTAG('2', 'D', 'A', ' ');
+static const uint32 k2DAIDTab  = MKTAG('2', 'D', 'A', '\t');
 static const uint32 kVersion2a = MKTAG('V', '2', '.', '0');
 static const uint32 kVersion2b = MKTAG('V', '2', '.', 'b');
 
@@ -140,7 +141,7 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 
 	readHeader(twoda);
 
-	if (_id != k2DAID)
+	if ((_id != k2DAID) && (_id != k2DAIDTab))
 		throw Common::Exception("Not a 2DA file");
 
 	if ((_version != kVersion2a) && (_version != kVersion2b))
