@@ -41,6 +41,8 @@
 
 #include "engines/nwn2/area.h"
 #include "engines/nwn2/module.h"
+#include "engines/nwn2/object.h"
+#include "engines/nwn2/waypoint.h"
 
 namespace Engines {
 
@@ -67,6 +69,10 @@ Area::~Area() {
 	removeContainer();
 
 	hide();
+
+	// Delete objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		delete *o;
 
 	// Delete tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
@@ -199,6 +205,10 @@ void Area::show() {
 		if (t->model)
 			t->model->show();
 
+	// Show objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->show();
+
 	GfxMan.unlockFrame();
 
 	// Play music and sound
@@ -215,6 +225,10 @@ void Area::hide() {
 	stopSound();
 
 	GfxMan.lockFrame();
+
+	// Hide objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->hide();
 
 	// Hide tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
@@ -264,6 +278,10 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 	// Generic properties
 	if (git.hasField("AreaProperties"))
 		loadProperties(git.getStruct("AreaProperties"));
+
+	// Waypoints
+	if (git.hasField("WaypointList"))
+		loadWaypoints(git.getList("WaypointList"));
 }
 
 void Area::loadProperties(const Aurora::GFFStruct &props) {
@@ -330,9 +348,27 @@ void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 
 void Area::loadModels() {
 	loadTileModels();
+
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+		Engines::NWN2::Object &object = **o;
+
+		object.loadModel();
+
+		if (!object.isStatic()) {
+			const std::list<uint32> &ids = object.getIDs();
+
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, &object));
+		}
+	}
 }
 
 void Area::unloadModels() {
+	_objectMap.clear();
+
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->unloadModel();
+
 	unloadTileModels();
 }
 
@@ -354,6 +390,22 @@ void Area::unloadTileModels() {
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t) {
 		delete t->model;
 		t->model = 0;
+	}
+}
+
+void Area::loadObject(Engines::NWN2::Object &object) {
+	object.setArea(this);
+
+	_objects.push_back(&object);
+	if (!object.isStatic())
+		_module->addObject(object);
+}
+
+void Area::loadWaypoints(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+		Waypoint *waypoint = new Waypoint(**d);
+
+		loadObject(*waypoint);
 	}
 }
 

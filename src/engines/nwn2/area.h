@@ -44,6 +44,8 @@ namespace NWN2 {
 
 class Module;
 
+class Object;
+
 class Area : public Aurora::NWScript::Object {
 public:
 	Area(Module &module, const Common::UString &resRef);
@@ -112,6 +114,9 @@ private:
 		Graphics::Aurora::Model *model;
 	};
 
+	typedef std::list<Engines::NWN2::Object *> ObjectList;
+	typedef std::map<uint32, Engines::NWN2::Object *> ObjectMap;
+
 
 	Module *_module;
 
@@ -151,6 +156,9 @@ private:
 
 	std::vector<Tile> _tiles; ///< The area's tiles.
 
+	ObjectList _objects;   ///< List of all objects in the area.
+	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
+
 
 	// Loading helpers
 
@@ -161,6 +169,9 @@ private:
 
 	void loadTiles(const Aurora::GFFList &tiles);
 	void loadTile(const Aurora::GFFStruct &t, Tile &tile);
+
+	void loadObject(Engines::NWN2::Object &object);
+	void loadWaypoints(const Aurora::GFFList &list);
 
 	// Model loading/unloading helpers
 
