@@ -162,6 +162,8 @@ private:
 
 	// Loading helpers
 
+	void clear();
+
 	void loadARE(const Aurora::GFFStruct &are);
 	void loadGIT(const Aurora::GFFStruct &git);
 
