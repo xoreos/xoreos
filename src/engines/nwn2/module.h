@@ -31,6 +31,9 @@
 
 #include "aurora/resman.h"
 
+#include "aurora/nwscript/object.h"
+#include "aurora/nwscript/objectcontainer.h"
+
 #include "events/types.h"
 
 #include "engines/nwn2/ifofile.h"
@@ -41,7 +44,7 @@ namespace NWN2 {
 
 class Area;
 
-class Module {
+class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
 public:
 	Module();
 	~Module();

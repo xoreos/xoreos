@@ -32,6 +32,8 @@
 
 #include "aurora/types.h"
 
+#include "aurora/nwscript/object.h"
+
 #include "graphics/aurora/types.h"
 
 #include "sound/types.h"
@@ -42,7 +44,7 @@ namespace NWN2 {
 
 class Module;
 
-class Area {
+class Area : public Aurora::NWScript::Object {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();

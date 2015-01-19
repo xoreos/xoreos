@@ -58,9 +58,14 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 	loadGIT(git.getTopLevel());
 
 	_loaded = true;
+
+	// Tell the module that we exist
+	_module->addObject(*this);
 }
 
 Area::~Area() {
+	removeContainer();
+
 	hide();
 
 	// Delete tiles
@@ -224,6 +229,10 @@ void Area::hide() {
 }
 
 void Area::loadARE(const Aurora::GFFStruct &are) {
+	// Tag
+
+	_tag = are.getString("Tag");
+
 	// Name
 
 	Aurora::LocString name;
