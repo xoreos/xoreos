@@ -455,7 +455,7 @@ bool isLanguageTheWitcher(Language language) {
 
 Common::UString getPlatformDescription(Platform platform) {
 	static const char *names[] = {
-		"Windows", "Nintendo DS", "Mac OS X", "Xbox", "PlayStation 3", "Xbox 360", "Unknown"
+		"Windows", "Nintendo DS", "Mac OS X", "Xbox", "PlayStation 3", "Xbox 360", "GNU/Linux", "Unknown"
 	};
 
 	return names[platform];

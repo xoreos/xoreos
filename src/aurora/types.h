@@ -411,6 +411,7 @@ enum Platform {
 	kPlatformXbox,         ///< Microsoft Xbox
 	kPlatformPS3,          ///< Sony PlayStation 3
 	kPlatformXbox360,      ///< Microsoft Xbox 360
+	kPlatformLinux,        ///< GNU/Linux
 	kPlatformUnknown       ///< Unknown (must be last)
 };
 
