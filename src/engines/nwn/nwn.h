@@ -55,30 +55,72 @@ namespace NWN {
 class ScriptFunctions;
 
 class NWNEngineProbe : public Engines::EngineProbe {
-public:
-	NWNEngineProbe();
-	~NWNEngineProbe();
-
-	Aurora::GameID getGameID() const;
-
-	const Common::UString &getGameName() const;
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	bool probe(Common::SeekableReadStream &stream) const;
-
-	Engines::Engine *createEngine() const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
-
 private:
 	static const Common::UString kGameName;
+
+public:
+	NWNEngineProbe() {}
+	~NWNEngineProbe() {}
+
+	Aurora::GameID getGameID() const {
+		return Aurora::kGameIDNWN;
+	}
+
+	const Common::UString &getGameName() const {
+		return kGameName;
+	}
+
+	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
+		return false;
+	}
+
+	Engines::Engine *createEngine() const;
 };
 
-extern const NWNEngineProbe kNWNEngineProbe;
+class NWNEngineProbeWindows : public NWNEngineProbe {
+public:
+	NWNEngineProbeWindows() {}
+	~NWNEngineProbeWindows() {}
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
+};
+
+class NWNEngineProbeMac : public NWNEngineProbe {
+public:
+	NWNEngineProbeMac() {}
+	~NWNEngineProbeMac() {}
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformMacOSX; }
+};
+
+class NWNEngineProbeLinux: public NWNEngineProbe {
+public:
+	NWNEngineProbeLinux() {}
+	~NWNEngineProbeLinux() {}
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformLinux; }
+};
+
+class NWNEngineProbeFallback : public NWNEngineProbe {
+public:
+	NWNEngineProbeFallback() {}
+	~NWNEngineProbeFallback() {}
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformUnknown; }
+};
+
+extern const NWNEngineProbeWindows  kNWNEngineProbeWin;
+extern const NWNEngineProbeMac      kNWNEngineProbeMac;
+extern const NWNEngineProbeLinux    kNWNEngineProbeLinux;
+extern const NWNEngineProbeFallback kNWNEngineProbeFallback;
 
 class NWNEngine : public Engines::Engine {
 public:
-	NWNEngine();
+	NWNEngine(Aurora::Platform platform);
 	~NWNEngine();
 
 	void run(const Common::UString &target);
@@ -92,6 +134,7 @@ public:
 
 private:
 	Common::UString _baseDirectory;
+	Aurora::Platform _platform;
 
 	bool _hasXP1; // Shadows of Undrentide (SoU)
 	bool _hasXP2; // Hordes of the Underdark (HotU)

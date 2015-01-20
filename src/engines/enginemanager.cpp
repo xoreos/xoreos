@@ -75,7 +75,10 @@ GameInstance::~GameInstance() {
 
 
 static const EngineProbe *kProbes[] = {
-	&NWN::kNWNEngineProbe,
+	&NWN::kNWNEngineProbeLinux,
+	&NWN::kNWNEngineProbeMac,
+	&NWN::kNWNEngineProbeWin,
+	&NWN::kNWNEngineProbeFallback,
 	&NWN2::kNWN2EngineProbe,
 	&KotOR::kKotOREngineProbeWin,
 	&KotOR::kKotOREngineProbeMac,

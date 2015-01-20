@@ -62,26 +62,40 @@ namespace Engines {
 
 namespace NWN {
 
-const NWNEngineProbe kNWNEngineProbe;
+const NWNEngineProbeWindows  kNWNEngineProbeWin;
+const NWNEngineProbeMac      kNWNEngineProbeMac;
+const NWNEngineProbeLinux    kNWNEngineProbeLinux;
+const NWNEngineProbeFallback kNWNEngineProbeFallback;
 
 const Common::UString NWNEngineProbe::kGameName = "Neverwinter Nights";
 
-NWNEngineProbe::NWNEngineProbe() {
+Engines::Engine *NWNEngineProbe::createEngine() const {
+	return new NWNEngine(getPlatform());
 }
 
-NWNEngineProbe::~NWNEngineProbe() {
+bool NWNEngineProbeWindows::probe(const Common::UString &UNUSED(directory),
+                                  const Common::FileList &rootFiles) const {
+
+	// Look for the Windows binary nwmain.exe
+	return rootFiles.contains("/nwmain.exe", true);
 }
 
-Aurora::GameID NWNEngineProbe::getGameID() const {
-	return Aurora::kGameIDNWN;
+bool NWNEngineProbeMac::probe(const Common::UString &directory,
+                              const Common::FileList &UNUSED(rootFiles)) const {
+
+	// Look for the app directory containing the Mac OS X binary
+	return !Common::FilePath::findSubDirectory(directory, "Neverwinter Nights.app", true).empty();
 }
 
-const Common::UString &NWNEngineProbe::getGameName() const {
-	return kGameName;
+bool NWNEngineProbeLinux::probe(const Common::UString &UNUSED(directory),
+                                const Common::FileList &rootFiles) const {
+
+	// Look for the Linux binary nwmain
+	return rootFiles.contains("/nwmain", true);
 }
 
-bool NWNEngineProbe::probe(const Common::UString &UNUSED(directory),
-                           const Common::FileList &rootFiles) const {
+bool NWNEngineProbeFallback::probe(const Common::UString &UNUSED(directory),
+                                   const Common::FileList &rootFiles) const {
 
 	// Don't accidentally trigger on NWN2
 	if (rootFiles.contains("/nwn2.ini", true))
@@ -89,31 +103,15 @@ bool NWNEngineProbe::probe(const Common::UString &UNUSED(directory),
 	if (rootFiles.contains("/nwn2main.exe", true))
 		return false;
 
-	// If either the ini file or a binary is found, this should be a valid path
-
-	if (rootFiles.contains("/nwn.ini", true))
-		return true;
-
-	if (rootFiles.containsGlob(".*/(nw|nwn)main.exe", true))
-		return true;
-
-	if (rootFiles.containsGlob(".*/(nw|nwn)main", true))
-		return true;
-
-	return false;
-}
-
-bool NWNEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *NWNEngineProbe::createEngine() const {
-	return new NWNEngine;
+	// As a fallback, look for the nwn.ini, nwnplayer.ini or nwncdkey.ini
+	return rootFiles.contains("/nwn.ini", true) ||
+	       rootFiles.contains("/nwnplayer.ini", true) ||
+	       rootFiles.contains("/nwncdkey.ini", true);
 }
 
 
-NWNEngine::NWNEngine() : _hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0),
-	_scriptFuncs(0) {
+NWNEngine::NWNEngine(Aurora::Platform platform) : _platform(platform),
+	_hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0), _scriptFuncs(0) {
 
 }
 
