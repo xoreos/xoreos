@@ -24,6 +24,8 @@
 
 #include "common/version.h"
 
+#include "engines/nwn/version.h"
+
 #include "engines/nwn/gui/widgets/panel.h"
 #include "engines/nwn/gui/widgets/label.h"
 
@@ -38,7 +40,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsMenu::OptionsMenu() {
+OptionsMenu::OptionsMenu(const Version &gameVersion) : _gameVersion(&gameVersion) {
 	load("options_pregame");
 
 	WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
@@ -60,7 +62,9 @@ OptionsMenu::~OptionsMenu() {
 
 void OptionsMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "BuildNumber") {
-		dynamic_cast<WidgetLabel &>(widget).setText(XOREOS_NAMEVERSION);
+		Common::UString version = Common::UString(XOREOS_NAMEVERSION) + " v" + _gameVersion->getVersionString();
+
+		dynamic_cast<WidgetLabel &>(widget).setText(version);
 		dynamic_cast<WidgetLabel &>(widget).setColor(0.6, 0.6, 0.6, 1.0);
 		return;
 	}

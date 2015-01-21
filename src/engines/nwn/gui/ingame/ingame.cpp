@@ -24,6 +24,7 @@
 
 #include "common/error.h"
 
+#include "engines/nwn/module.h"
 #include "engines/nwn/creature.h"
 
 #include "engines/nwn/gui/ingame/ingame.h"
@@ -39,7 +40,7 @@ namespace Engines {
 namespace NWN {
 
 IngameGUI::IngameGUI(Module &module) : _module(&module), _lastCompassChange(0) {
-	_main = new IngameMainMenu;
+	_main = new IngameMainMenu(_module->getGameVersion());
 
 	_quickbar  = new Quickbar;
 	_quickchat = new Quickchat(_quickbar->getHeight() - 3.0);

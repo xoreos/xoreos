@@ -31,10 +31,12 @@ namespace Engines {
 
 namespace NWN {
 
+class Version;
+
 /** The NWN options menu. */
 class OptionsMenu : public GUI {
 public:
-	OptionsMenu();
+	OptionsMenu(const Version &gameVersion);
 	~OptionsMenu();
 
 protected:
@@ -42,6 +44,8 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	const Version *_gameVersion;
+
 	GUI *_game;
 	GUI *_video;
 	GUI *_sound;

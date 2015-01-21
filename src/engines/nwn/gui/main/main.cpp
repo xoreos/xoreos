@@ -109,7 +109,7 @@ void MainMenu::createOptions() {
 	if (_options)
 		return;
 
-	_options = new OptionsMenu();
+	_options = new OptionsMenu(_module->getGameVersion());
 }
 
 void MainMenu::show() {

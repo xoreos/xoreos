@@ -441,7 +441,7 @@ void NWNEngine::mainMenuLoop() {
 	Legal *legal = new Legal;
 
 	Console console;
-	Module module(console);
+	Module module(_version, console);
 
 	_scriptFuncs->setModule(&module);
 	console.setModule(&module);

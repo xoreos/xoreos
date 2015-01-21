@@ -43,6 +43,7 @@
 #include "engines/aurora/resources.h"
 
 #include "engines/nwn/types.h"
+#include "engines/nwn/version.h"
 #include "engines/nwn/module.h"
 #include "engines/nwn/area.h"
 #include "engines/nwn/console.h"
@@ -96,7 +97,8 @@ bool Module::Action::operator<(const Action &s) const {
 }
 
 
-Module::Module(Console &console) : _console(&console), _hasModule(false), _pc(0),
+Module::Module(const Version &gameVersion, Console &console) : _gameVersion(&gameVersion),
+	_console(&console), _hasModule(false), _pc(0),
 	_currentTexturePack(-1), _exit(false), _currentArea(0) {
 
 	_ingameGUI = new IngameGUI(*this);
@@ -106,6 +108,10 @@ Module::~Module() {
 	clear();
 
 	delete _ingameGUI;
+}
+
+const Version &Module::getGameVersion() const {
+	return *_gameVersion;
 }
 
 void Module::clear() {

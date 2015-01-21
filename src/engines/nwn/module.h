@@ -49,6 +49,7 @@ namespace Engines {
 
 namespace NWN {
 
+class Version;
 class Console;
 
 class Object;
@@ -60,8 +61,10 @@ class IngameGUI;
 class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer,
                public ScriptContainer {
 public:
-	Module(Console &console);
+	Module(const Version &gameVersion, Console &console);
 	~Module();
+
+	const Version &getGameVersion() const;
 
 	/** Clear the whole context. */
 	void clear();
@@ -120,6 +123,7 @@ private:
 
 	typedef std::map<Common::UString, Area *> AreaMap;
 
+	const Version *_gameVersion;
 	Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
