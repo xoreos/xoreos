@@ -110,7 +110,7 @@ bool NWNEngineProbeFallback::probe(const Common::UString &UNUSED(directory),
 }
 
 
-NWNEngine::NWNEngine(Aurora::Platform platform) : _platform(platform),
+NWNEngine::NWNEngine(Aurora::Platform platform) : _version(platform),
 	_hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0), _scriptFuncs(0) {
 
 }
@@ -145,7 +145,10 @@ void NWNEngine::run(const Common::UString &target) {
 }
 
 void NWNEngine::init() {
-	LoadProgress progress(19);
+	LoadProgress progress(20);
+
+	progress.step("Detecting game version");
+	detectVersion();
 
 	progress.step("Loading user game config");
 	initConfig();
@@ -172,6 +175,24 @@ void NWNEngine::init() {
 	_scriptFuncs = new ScriptFunctions();
 
 	progress.step("Successfully initialized the engine");
+}
+
+void NWNEngine::detectVersion() {
+	if (_version.detect(_baseDirectory)) {
+		status("This is Neverwinter Nights %s v%s",
+		       _version.getPlatformName().c_str(), _version.getVersionString().c_str());
+
+		if        (_version.isTooOld()) {
+			warning("Your version of Neverwinter Nights is too old");
+			warning("Please update to v%s for optimal support", _version.getOptimumVersionString().c_str());
+		} else if (_version.isTooNew()) {
+			warning("Your version of Neverwinter Nights is too new!?");
+			warning("Please contact us with detailed information about your version");
+		}
+
+	} else {
+		warning("Failed to detect the patch version of your Neverwinter Nights installation");
+	}
 }
 
 void NWNEngine::initResources(LoadProgress &progress) {

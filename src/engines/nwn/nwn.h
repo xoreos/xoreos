@@ -36,6 +36,8 @@
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
+#include "engines/nwn/version.h"
+
 namespace Common {
 	class FileList;
 }
@@ -134,7 +136,8 @@ public:
 
 private:
 	Common::UString _baseDirectory;
-	Aurora::Platform _platform;
+
+	Version _version;
 
 	bool _hasXP1; // Shadows of Undrentide (SoU)
 	bool _hasXP2; // Hordes of the Underdark (HotU)
@@ -148,6 +151,8 @@ private:
 
 
 	void init();
+
+	void detectVersion();
 
 	void initConfig();
 	void initResources(LoadProgress &progress);
