@@ -127,6 +127,8 @@ bool Version::isTooNew() const {
 // Hopefully, the arrangements of the string "Neverwinter Nights", the version and the
 // build number stay constant for all versions...
 bool Version::detect(const Common::UString &directory) {
+	_versionMajor = _versionMinor = _versionBuild = 0;
+
 	bool success = false;
 
 	if      (_platform == Aurora::kPlatformWindows)
@@ -163,7 +165,6 @@ bool Version::detectWindows(const Common::UString &directory) {
 		return false;
 	}
 
-	_versionMajor = _versionMinor = _versionBuild = 0;
 	bool success = false;
 
 	// Check that the field separators are there and the upper bytes of UTF-16 character are 0
@@ -242,7 +243,6 @@ bool Version::detectMacOSX(const Common::UString &directory) {
 		return false;
 	}
 
-	_versionMajor = _versionMinor = _versionBuild = 0;
 	bool success = false;
 
 	// Check that the field separators are there
@@ -300,7 +300,6 @@ bool Version::detectLinux(const Common::UString &directory) {
 		return false;
 	}
 
-	_versionMajor = _versionMinor = _versionBuild = 0;
 	bool success = false;
 
 	// Check that the field separators are there
