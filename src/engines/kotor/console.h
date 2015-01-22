@@ -43,6 +43,7 @@ public:
 private:
 	Module *_module;
 
+	void cmdExitModule(const CommandLine &cl);
 	void cmdLoadModule(const CommandLine &cl);
 };
 

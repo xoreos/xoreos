@@ -39,6 +39,8 @@ namespace KotOR {
 Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 	_module(0) {
 
+	registerCommand("exitmodule", boost::bind(&Console::cmdExitModule, this, _1),
+			"Usage: exitmodule\nExit the module, returning to the main menu");
 	registerCommand("loadmodule", boost::bind(&Console::cmdLoadModule, this, _1),
 			"Usage: loadmodule <module>\nLoad and enter the specified module");
 }
@@ -48,6 +50,10 @@ Console::~Console() {
 
 void Console::setModule(Module *module) {
 	_module = module;
+}
+
+void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
+	_module->_exit = true;
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
