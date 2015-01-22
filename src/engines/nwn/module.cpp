@@ -330,6 +330,7 @@ bool Module::enter() {
 	// Roughly head position
 	CameraMan.setPosition(entryX, entryZ + 2.0, entryY);
 	CameraMan.setOrientation(entryDirX, entryDirY);
+	CameraMan.update();
 
 	return true;
 }
@@ -452,6 +453,7 @@ void Module::handleEvents() {
 		_currentArea->addEvent(event);
 	}
 
+	CameraMan.update();
 	_currentArea->processEventQueue();
 	_ingameGUI->processEventQueue();
 }
@@ -696,6 +698,7 @@ void Module::movedPC() {
 
 	// Roughly head position
 	CameraMan.setPosition(x, z + 2.0, y);
+	CameraMan.update();
 
 	_newArea.clear();
 	if (_pc->getArea())
