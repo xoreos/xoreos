@@ -261,6 +261,7 @@ void Module::enter() {
 	_ifo.getEntryDirection(entryDirX, entryDirY);
 
 	CameraMan.setOrientation(entryDirX, entryDirY);
+	CameraMan.update();
 
 	_area->show();
 }
@@ -305,6 +306,7 @@ void Module::handleEvents() {
 		_area->addEvent(event);
 	}
 
+	CameraMan.update();
 	_area->processEventQueue();
 }
 
