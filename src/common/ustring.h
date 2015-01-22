@@ -158,12 +158,12 @@ public:
 
 	/** Insert character c in front of this position. */
 	void insert(iterator pos, uint32 c);
-	/** Insert character c in front of this position. */
-	void insert(iterator pos, const char* c);
+	/** Insert a string in front of this position. */
+	void insert(iterator pos, const UString &str);
 	/** Replace the character at this position with c. */
 	void replace(iterator pos, uint32 c);
-	/** Replace the character at this position with c. */
-	void replace(iterator pos, const char* c);
+	/** Replace the characters at this position with str. */
+	void replace(iterator pos, const UString &str);
 	/** Erase the character within this range. */
 	void erase(iterator from, iterator to);
 	/** Erase the character at this position. */

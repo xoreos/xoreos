@@ -614,9 +614,9 @@ void UString::insert(iterator pos, uint32 c) {
 	swap(temp);
 }
 
-void UString::insert(UString::iterator pos, const char *c) {
+void UString::insert(UString::iterator pos, const UString &str) {
 	if (pos == end()) {
-		*this += c;
+		*this += str;
 		return;
 	}
 
@@ -626,7 +626,7 @@ void UString::insert(UString::iterator pos, const char *c) {
 	for (it = begin(); it != pos; ++it)
 		temp += *it;
 
-	temp += c;
+	temp += str;
 
 	for ( ; it != end(); ++it)
 		temp += *it;
@@ -654,9 +654,9 @@ void UString::replace(iterator pos, uint32 c) {
 	swap(temp);
 }
 
-void UString::replace(UString::iterator pos, const char *c) {
+void UString::replace(UString::iterator pos, const UString &str) {
 	if (pos == end()) {
-		*this += c;
+		*this += str;
 		return;
 	}
 
@@ -666,9 +666,14 @@ void UString::replace(UString::iterator pos, const char *c) {
 	for (it = begin(); it != pos; ++it)
 		temp += *it;
 
-	temp += c;
+	for (iterator it2 = str.begin(); it2 != str.end(); ++it2) {
+		temp += *it2;
 
-	for (++it; it != end(); ++it)
+		if (it != end())
+			++it;
+	}
+
+	for ( ; it != end(); ++it)
 		temp += *it;
 
 	swap(temp);
