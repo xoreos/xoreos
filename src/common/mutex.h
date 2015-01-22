@@ -49,12 +49,14 @@ private:
 /** A semaphore . */
 class Semaphore {
 public:
-	Semaphore(uint value);
+	Semaphore(uint value = 0);
 	~Semaphore();
 
 	bool lock(uint32 timeout = 0);
 	bool lockTry();
 	void unlock();
+
+	uint32 getValue();
 
 private:
 	SDL_sem *_semaphore;

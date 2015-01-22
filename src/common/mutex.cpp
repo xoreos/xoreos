@@ -76,6 +76,10 @@ void Semaphore::unlock() {
 	SDL_SemPost(_semaphore);
 }
 
+uint32 Semaphore::getValue() {
+	return SDL_SemValue(_semaphore);
+}
+
 
 StackLock::StackLock(Mutex &mutex) : _mutex(&mutex), _semaphore(0) {
 	_mutex->lock();
