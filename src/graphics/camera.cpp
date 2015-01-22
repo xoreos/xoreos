@@ -35,13 +35,20 @@ DECLARE_SINGLETON(Graphics::CameraManager)
 
 namespace Graphics {
 
-CameraManager::CameraManager() : _lastChanged(0) {
+CameraManager::CameraManager() : _lastChanged(0), _needUpdate(false) {
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
 	_position   [2] = 0.0;
 	_orientation[0] = 0.0;
 	_orientation[1] = 0.0;
 	_orientation[2] = 0.0;
+
+	_positionCache   [0] = 0.0;
+	_positionCache   [1] = 0.0;
+	_positionCache   [2] = 0.0;
+	_orientationCache[0] = 0.0;
+	_orientationCache[1] = 0.0;
+	_orientationCache[2] = 0.0;
 }
 
 void CameraManager::lock() {
@@ -52,12 +59,32 @@ void CameraManager::unlock() {
 	_mutex.unlock();
 }
 
+void CameraManager::update() {
+	GfxMan.lockFrame();
+	Common::StackLock cameraLock(_mutex);
+
+	if (!_needUpdate) {
+		GfxMan.unlockFrame();
+		return;
+	}
+
+	_needUpdate = false;
+
+	memcpy(_positionCache   , _position   , sizeof(_positionCache));
+	memcpy(_orientationCache, _orientation, sizeof(_orientationCache));
+
+	GfxMan.recalculateObjectDistances();
+	NotificationMan.cameraMoved();
+
+	GfxMan.unlockFrame();
+}
+
 const float *CameraManager::getPosition() const {
-	return _position;
+	return _positionCache;
 }
 
 const float *CameraManager::getOrientation() const {
-	return _orientation;
+	return _orientationCache;
 }
 
 void CameraManager::reset() {
@@ -72,9 +99,7 @@ void CameraManager::reset() {
 
 	_lastChanged = EventMan.getTimestamp();
 
-	GfxMan.recalculateObjectDistances();
-
-	NotificationMan.cameraMoved();
+	_needUpdate = true;
 }
 
 void CameraManager::setPosition(float x, float y, float z) {
@@ -86,9 +111,9 @@ void CameraManager::setPosition(float x, float y, float z) {
 
 	_lastChanged = EventMan.getTimestamp();
 
-	GfxMan.recalculateObjectDistances();
+	_needUpdate = true;
 
-	NotificationMan.cameraMoved();
+	unlock();
 }
 
 void CameraManager::setOrientation(float x, float y, float z) {
@@ -100,9 +125,7 @@ void CameraManager::setOrientation(float x, float y, float z) {
 
 	_lastChanged = EventMan.getTimestamp();
 
-	GfxMan.recalculateObjectDistances();
-
-	NotificationMan.cameraMoved();
+	_needUpdate = true;
 }
 
 void CameraManager::setOrientation(float vX, float vY) {

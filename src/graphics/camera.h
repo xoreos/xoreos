@@ -38,8 +38,8 @@ public:
 	void lock();
 	void unlock();
 
-	const float *getPosition   () const; ///< Get the current camera position.
-	const float *getOrientation() const; ///< Get the current camera orientation.
+	const float *getPosition   () const; ///< Get the current camera position cache.
+	const float *getOrientation() const; ///< Get the current camera orientation cache.
 
 	void reset(); ///< Reset the current position and orientation.
 
@@ -58,6 +58,13 @@ public:
 
 	uint32 lastChanged() const; ///< The timestamp the camera was changed last.
 
+	/** Update the caches with the current position and orientation.
+	 *
+	 *  All changes to the camera are delayed until this method is called.
+	 *  This stops camera lagging due to too frequent changes.
+	 */
+	void update();
+
 private:
 	Common::Mutex _mutex;
 
@@ -65,6 +72,11 @@ private:
 
 	float _position[3];    ///< Current position.
 	float _orientation[3]; ///< Current orientation.
+
+	float _positionCache[3];    ///< Current position, cached.
+	float _orientationCache[3]; ///< Current orientation, cached.
+
+	bool _needUpdate;
 };
 
 } // End of namespace Graphics
