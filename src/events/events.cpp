@@ -263,11 +263,23 @@ void EventsManager::enableKeyRepeat(bool repeat) {
 	_repeat = repeat;
 }
 
-const char* EventsManager::getPressedCharacter(const Event &event) {
-	if ((event.type != kEventTextInput))
-		return 0;
+Common::UString EventsManager::getTextInput(const Event &event) {
+	// TextInput events already contain UTF-8 encoded text
+	if (event.type == kEventTextInput)
+		return event.text.text;
 
-	return event.text.text;
+	if (event.type == kEventKeyDown) {
+		uint32 sym = event.key.keysym.sym;
+
+		// Mask out control characters
+		if ((sym & SDLK_SCANCODE_MASK) || Common::UString::isCntrl(sym))
+			return "";
+
+		// Interpret this KeySym as an Unicode codepoint
+		return Common::UString(sym, 1);
+	}
+
+	return "";
 }
 
 bool EventsManager::quitRequested() const {

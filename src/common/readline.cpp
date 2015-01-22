@@ -121,10 +121,15 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 	_maxHintSize = 0;
 	_hintCount   = 0;
 
-	// We only handle key down events
-	if (event.type != Events::kEventKeyDown && event.type != Events::kEventTextInput)
-		return false;
+	if (event.type == Events::kEventKeyDown)
+		return processKeyDown(event, command);
+	if (event.type == Events::kEventTextInput)
+		return processTextInput(event, command);
 
+	return false;
+}
+
+bool ReadLine::processKeyDown(Events::Event &event, UString &command) {
 	// We only care about certain modifiers
 	SDL_Keycode key = event.key.keysym.sym;
 	SDL_Keymod mod = (SDL_Keymod) (((int) event.key.keysym.mod) & (KMOD_CTRL | KMOD_SHIFT | KMOD_ALT));
@@ -273,17 +278,20 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 		return true;
 	}
 
-	// Printable character: Add it to our input
-	const char* c = EventMan.getPressedCharacter(event);
-	if (c == 0)
+	return false;
+}
+
+bool ReadLine::processTextInput(Events::Event &event, UString &UNUSED(command)) {
+	Common::UString text = EventMan.getTextInput(event);
+	if (text.empty())
 		return false;
 
 	if (_overwrite)
-		_currentLine.replace(getCurrentPosition(), c);
+		_currentLine.replace(getCurrentPosition(), text);
 	else
-		_currentLine.insert(getCurrentPosition(), c);
+		_currentLine.insert(getCurrentPosition(), text);
 
-	_cursorPosition++;
+	_cursorPosition += text.size();
 
 	updateHistory();
 

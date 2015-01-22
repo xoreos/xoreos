@@ -143,6 +143,9 @@ private:
 	void browseTop();
 	void browseBottom();
 
+	bool processKeyDown(Events::Event &event, UString &command);
+	bool processTextInput(Events::Event &event, UString &command);
+
 	void tabComplete();
 	void tabComplete(const UString &prefix, const UString &input,
 	                 const CommandSet &commands);

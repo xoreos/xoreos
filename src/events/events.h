@@ -106,11 +106,12 @@ public:
 	/** Enable/Disable repeated key events. */
 	void enableKeyRepeat(bool repeat = true);
 
-	/** Return the unicode code point of the pressed key.
+	/** Return the text that was input with keyboard, in UTF-8 encoding.
 	 *
-	 *  Requirements: enableUnicode must be enabled and the event must be a keydown event.
+	 *  The event must be a TextInput or KeyDown event.
+	 *  For better i18n support, TextInput is preferred.
 	 */
-	const char *getPressedCharacter(const Event &event);
+	Common::UString getTextInput(const Event &event);
 
 
 	// Joystick input
