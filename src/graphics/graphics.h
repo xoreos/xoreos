@@ -190,6 +190,8 @@ private:
 	Common::Mutex _frameLockMutex; ///< A soft mutex locked for each frame.
 	Common::Mutex _cursorMutex;    ///< A mutex locked for the cursor.
 
+	Common::Semaphore _frameEndSignal;
+
 	Cursor     *_cursor;       ///< The current cursor.
 	CursorState _cursorState;  ///< What to do with the cursor.
 

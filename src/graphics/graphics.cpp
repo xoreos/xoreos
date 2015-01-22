@@ -618,9 +618,21 @@ bool GraphicsManager::unproject(float x, float y,
 }
 
 void GraphicsManager::lockFrame() {
-	Common::StackLock frameLock(_frameLockMutex);
+	if (Common::isMainThread() || EventMan.quitRequested() || (_frameLock > 0)) {
+		Common::StackLock frameLock(_frameLockMutex);
 
+		_frameLock++;
+		return;
+	}
+
+	_frameLockMutex.lock();
+
+	_frameEndSignal.unlock();
 	_frameLock++;
+
+	_frameLockMutex.unlock();
+
+	while (_frameEndSignal.getValue() > 0);
 }
 
 void GraphicsManager::unlockFrame() {
@@ -978,8 +990,11 @@ void GraphicsManager::renderScene() {
 
 	cleanupAbandoned();
 
-	if (_frameLock > 0)
+	if (_frameLock > 0) {
+		_frameEndSignal.lockTry();
+
 		return;
+	}
 
 	beginScene();
 
@@ -993,6 +1008,8 @@ void GraphicsManager::renderScene() {
 	renderCursor();
 
 	endScene();
+
+	_frameEndSignal.lockTry();
 }
 
 int GraphicsManager::getScreenWidth() const {
