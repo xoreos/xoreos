@@ -141,6 +141,7 @@ bool Module::enter() {
 	// Roughly head position
 	CameraMan.setPosition(entryX, entryZ + 2.0, entryY);
 	CameraMan.setOrientation(entryDirX, entryDirY);
+	CameraMan.update();
 
 	return true;
 }
@@ -230,6 +231,8 @@ void Module::handleEvents() {
 			if (handleCamera(event))
 				continue;
 	}
+
+	CameraMan.update();
 }
 
 bool Module::handleCamera(const Events::Event &e) {
