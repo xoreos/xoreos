@@ -298,7 +298,7 @@ void Module::handleEvents() {
 		}
 
 		// Camera
-		if (SDL_IsTextInputActive() == SDL_FALSE)
+		if (!_console->isVisible())
 			if (handleCamera(event))
 				continue;
 
