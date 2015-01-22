@@ -709,7 +709,8 @@ void Console::show() {
 
 	updateCaches();
 	showCallback();
-	SDL_StartTextInput();
+
+	EventMan.enableTextInput(true);
 }
 
 void Console::hide() {
@@ -718,7 +719,8 @@ void Console::hide() {
 
 	_console->hide();
 	_visible = false;
-	SDL_StopTextInput();
+
+	EventMan.enableTextInput(false);
 }
 
 bool Console::isVisible() const {

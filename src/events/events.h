@@ -106,6 +106,16 @@ public:
 	/** Enable/Disable repeated key events. */
 	void enableKeyRepeat(bool repeat = true);
 
+	/** Enable/Disable the text input.
+	 *
+	 *  While text input is enabled, we will receive TextInput event containing
+	 *  UTF-8 encoded strings containing text the user has entered.
+	 *  See getTextInput().
+	 *
+	 *  Enabling text input will also activate the screen keyboard on some systems.
+	 */
+	void enableTextInput(bool textInput = true);
+
 	/** Return the text that was input with keyboard, in UTF-8 encoding.
 	 *
 	 *  The event must be a TextInput or KeyDown event.

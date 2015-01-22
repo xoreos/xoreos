@@ -80,7 +80,8 @@ void EventsManager::init() {
 	SDL_RegisterEvents(1);
 
 	std::srand(getTimestamp());
-	SDL_StopTextInput();
+
+	enableTextInput(false);
 }
 
 void EventsManager::deinit() {
@@ -261,6 +262,13 @@ bool EventsManager::pushEvent(Event &event) {
 
 void EventsManager::enableKeyRepeat(bool repeat) {
 	_repeat = repeat;
+}
+
+void EventsManager::enableTextInput(bool textInput) {
+	if (textInput)
+		SDL_StartTextInput();
+	else
+		SDL_StopTextInput();
 }
 
 Common::UString EventsManager::getTextInput(const Event &event) {
