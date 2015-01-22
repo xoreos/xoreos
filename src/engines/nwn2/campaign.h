@@ -38,6 +38,8 @@ namespace Engines {
 
 namespace NWN2 {
 
+class Console;
+
 struct CampaignDescription {
 	Common::UString directory;
 
@@ -47,7 +49,7 @@ struct CampaignDescription {
 
 class Campaign {
 public:
-	Campaign();
+	Campaign(Console &console);
 	~Campaign();
 
 	const std::list<CampaignDescription> &getCampaigns() const;
@@ -68,6 +70,8 @@ public:
 
 private:
 	std::list<CampaignDescription> _campaigns;
+
+	Console *_console;
 
 	Aurora::ResourceManager::ChangeID _resCampaign;
 

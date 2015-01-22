@@ -42,11 +42,12 @@ namespace Engines {
 
 namespace NWN2 {
 
+class Console;
 class Area;
 
 class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
 public:
-	Module();
+	Module(Console &console);
 	~Module();
 
 	/** Clear the whole context. */
@@ -61,6 +62,8 @@ public:
 
 private:
 	typedef std::map<Common::UString, Area *> AreaMap;
+
+	Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
 

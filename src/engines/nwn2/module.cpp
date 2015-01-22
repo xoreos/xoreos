@@ -36,6 +36,7 @@
 #include "engines/aurora/resources.h"
 
 #include "engines/nwn2/module.h"
+#include "engines/nwn2/console.h"
 #include "engines/nwn2/area.h"
 
 
@@ -43,7 +44,9 @@ namespace Engines {
 
 namespace NWN2 {
 
-Module::Module() : _hasModule(false), _exit(false), _currentArea(0) {
+Module::Module(Console &console) : _console(&console), _hasModule(false),
+	_exit(false), _currentArea(0) {
+
 }
 
 Module::~Module() {
@@ -109,7 +112,7 @@ bool Module::enter() {
 		return false;
 	}
 
-	status("Entering module \"%s\"", _ifo.getName().getString().c_str());
+	_console->printf("Entering module \"%s\"", _ifo.getName().getString().c_str());
 
 	try {
 
@@ -170,7 +173,7 @@ void Module::enterArea() {
 
 	EventMan.flushEvents();
 
-	status("Entering area \"%s\" \(\"%s\", \"%s\")", _currentArea->getResRef().c_str(),
+	_console->printf("Entering area \"%s\" \(\"%s\", \"%s\")", _currentArea->getResRef().c_str(),
 			_currentArea->getName().c_str(), _currentArea->getDisplayName().c_str());
 }
 
@@ -206,8 +209,24 @@ void Module::run() {
 void Module::handleEvents() {
 	Events::Event event;
 	while (EventMan.pollEvent(event)) {
+		// Handle console
+		if (_console->processEvent(event)) {
+			if (!_currentArea)
+				return;
+
+			continue;
+		}
+
+		if (event.type == Events::kEventKeyDown) {
+			// Console
+			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+				_console->show();
+				continue;
+			}
+		}
+
 		// Camera
-		if (SDL_IsTextInputActive() == SDL_FALSE)
+		if (!_console->isVisible())
 			if (handleCamera(event))
 				continue;
 	}

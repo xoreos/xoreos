@@ -33,12 +33,13 @@
 #include "engines/aurora/resources.h"
 
 #include "engines/nwn2/campaign.h"
+#include "engines/nwn2/console.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
-Campaign::Campaign() {
+Campaign::Campaign(Console &console) : _console(&console), _module(console) {
 	findCampaigns();
 }
 
@@ -99,6 +100,8 @@ bool Campaign::readCampaign(const Common::UString &camFile, CampaignDescription 
 }
 
 void Campaign::clear() {
+	_console->setModule();
+
 	_module.clear();
 
 	_currentCampaign.directory.clear();
@@ -154,6 +157,8 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 		e.add("Failed to load campaign's starting module");
 		throw;
 	}
+
+	_console->setModule(&_module);
 }
 
 void Campaign::run() {
