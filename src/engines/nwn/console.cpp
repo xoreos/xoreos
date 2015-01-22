@@ -58,8 +58,8 @@ namespace NWN {
 Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 	_module(0), _maxSizeMusic(0) {
 
-	registerCommand("quitmodule"   , boost::bind(&Console::cmdQuitModule   , this, _1),
-			"Usage: quitmodule\nLeave the module, returning to the main menu");
+	registerCommand("exitmodule"   , boost::bind(&Console::cmdExitModule   , this, _1),
+			"Usage: exitmodule\nExit the module, returning to the main menu");
 	registerCommand("listcampaigns", boost::bind(&Console::cmdListCampaigns, this, _1),
 			"Usage: listcampaigns\nList all original campaign modules");
 	registerCommand("loadcampaign" , boost::bind(&Console::cmdLoadCampaign , this, _1),
@@ -184,7 +184,7 @@ void Console::updateMusic() {
 	setArguments("playmusic", _music);
 }
 
-void Console::cmdQuitModule(const CommandLine &UNUSED(cl)) {
+void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
 	_module->_exit = true;
 }
 

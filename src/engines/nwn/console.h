@@ -73,7 +73,7 @@ private:
 	void updateMusic();
 
 	// The commands
-	void cmdQuitModule   (const CommandLine &cl);
+	void cmdExitModule   (const CommandLine &cl);
 	void cmdListCampaigns(const CommandLine &cl);
 	void cmdLoadCampaign (const CommandLine &cl);
 	void cmdListModules  (const CommandLine &cl);

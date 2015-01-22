@@ -261,7 +261,7 @@ private:
 
 	void cmdHelp       (const CommandLine &cl);
 	void cmdClear      (const CommandLine &cl);
-	void cmdExit       (const CommandLine &cl);
+	void cmdClose      (const CommandLine &cl);
 	void cmdQuit       (const CommandLine &cl);
 	void cmdDumpResList(const CommandLine &cl);
 	void cmdDumpRes    (const CommandLine &cl);

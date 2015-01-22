@@ -659,10 +659,10 @@ Console::Console(const Common::UString &font, int fontHeight) : _neverShown(true
 			"Usage: help [<command>]\nPrint help text");
 	registerCommand("clear"      , boost::bind(&Console::cmdClear      , this, _1),
 			"Usage: clear\nClear the console window");
-	registerCommand("exit"       , boost::bind(&Console::cmdExit       , this, _1),
-			"Usage: exit\nLeave the console window, returning to the game");
-	registerCommand("quitxoreos"    , boost::bind(&Console::cmdQuit    , this, _1),
-			"Usage: quitxoreos\nShut down xoreos");
+	registerCommand("close"      , boost::bind(&Console::cmdClose      , this, _1),
+			"Usage: close\nClose the console window, returning to the game");
+	registerCommand("quit"       , boost::bind(&Console::cmdQuit    , this, _1),
+			"Usage: quit\nQuit xoreos entirely");
 	registerCommand("dumpreslist", boost::bind(&Console::cmdDumpResList, this, _1),
 			"Usage: dumpreslist <file>\nDump the current list of resources to file");
 	registerCommand("dumpres"    , boost::bind(&Console::cmdDumpRes    , this, _1),
@@ -701,7 +701,7 @@ void Console::show() {
 		return;
 
 	if (_neverShown)
-		_console->print("Type 'exit' to return to the game. Type 'help' for a list of commands.");
+		_console->print("Type 'close' to return to the game. Type 'help' for a list of commands.");
 
 	_console->show();
 	_visible    = true;
@@ -1054,7 +1054,7 @@ void Console::cmdClear(const CommandLine &UNUSED(cl)) {
 	clear();
 }
 
-void Console::cmdExit(const CommandLine &UNUSED(cl)) {
+void Console::cmdClose(const CommandLine &UNUSED(cl)) {
 	hide();
 }
 
