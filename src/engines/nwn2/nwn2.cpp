@@ -140,7 +140,7 @@ void NWN2Engine::run(const Common::UString &target) {
 }
 
 void NWN2Engine::init() {
-	LoadProgress progress(16);
+	LoadProgress progress(18);
 
 	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
@@ -202,7 +202,7 @@ void NWN2Engine::init() {
 	indexMandatoryArchive(Aurora::kArchiveZIP, "vo.zip"            , 17);
 	indexMandatoryArchive(Aurora::kArchiveZIP, "walkmesh.zip"      , 18);
 
-	progress.step("Loading expansions resource files");
+	progress.step("Loading expansion 1 resource files");
 
 	// Expansion 1: Mask of the Betrayer (MotB)
 	indexOptionalArchive(Aurora::kArchiveZIP, "2da_x1.zip"           , 20);
@@ -224,6 +224,8 @@ void NWN2Engine::init() {
 	indexOptionalArchive(Aurora::kArchiveZIP, "vo_x1.zip"            , 36);
 	indexOptionalArchive(Aurora::kArchiveZIP, "walkmesh_x1.zip"      , 37);
 
+	progress.step("Loading expansion 2 resource files");
+
 	// Expansion 2: Storm of Zehir (SoZ)
 	indexOptionalArchive(Aurora::kArchiveZIP, "2da_x2.zip"           , 40);
 	indexOptionalArchive(Aurora::kArchiveZIP, "actors_x2.zip"        , 41);
@@ -241,31 +243,61 @@ void NWN2Engine::init() {
 	indexOptionalArchive(Aurora::kArchiveZIP, "templates_x2.zip"     , 53);
 	indexOptionalArchive(Aurora::kArchiveZIP, "vo_x2.zip"            , 54);
 
-	warning("TODO: Mysteries of Westgate (MoW) resource files");
-	warning("TODO: Patch resource files");
+	progress.step("Loading patch resource files");
+
+	indexOptionalArchive(Aurora::kArchiveZIP, "actors_v103x1.zip"         , 60);
+	indexOptionalArchive(Aurora::kArchiveZIP, "actors_v106.zip"           , 61);
+	indexOptionalArchive(Aurora::kArchiveZIP, "lod-merged_v101.zip"       , 62);
+	indexOptionalArchive(Aurora::kArchiveZIP, "lod-merged_v107.zip"       , 63);
+	indexOptionalArchive(Aurora::kArchiveZIP, "lod-merged_v121.zip"       , 64);
+	indexOptionalArchive(Aurora::kArchiveZIP, "lod-merged_x1_v121.zip"    , 65);
+	indexOptionalArchive(Aurora::kArchiveZIP, "lod-merged_x2_v121.zip"    , 66);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_v103x1.zip" , 67);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_v104.zip"   , 68);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_v106.zip"   , 69);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_v107.zip"   , 70);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_v110.zip"   , 71);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_v112.zip"   , 72);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_v121.zip"   , 73);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_x1_v113.zip", 74);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_materials_x1_v121.zip", 75);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_v103x1.zip"    , 76);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_v104.zip"      , 77);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_v105.zip"      , 78);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_v106.zip"      , 79);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_v107.zip"      , 70);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_v112.zip"      , 81);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_v121.zip"      , 82);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_x1_v121.zip"   , 83);
+	indexOptionalArchive(Aurora::kArchiveZIP, "nwn2_models_x2_v121.zip"   , 84);
+	indexOptionalArchive(Aurora::kArchiveZIP, "templates_v112.zip"        , 85);
+	indexOptionalArchive(Aurora::kArchiveZIP, "templates_v122.zip"        , 86);
+	indexOptionalArchive(Aurora::kArchiveZIP, "templates_x1_v122.zip"     , 87);
+	indexOptionalArchive(Aurora::kArchiveZIP, "vo_103x1.zip"              , 88);
+	indexOptionalArchive(Aurora::kArchiveZIP, "vo_106.zip"                , 89);
 
 	progress.step("Indexing extra sound resources");
-	indexMandatoryDirectory("ambient"   , 0,  0, 60);
-	indexOptionalDirectory ("ambient_x1", 0,  0, 61);
-	indexOptionalDirectory ("ambient_x2", 0,  0, 62);
+	indexMandatoryDirectory("ambient"   , 0,  0, 100);
+	indexOptionalDirectory ("ambient_x1", 0,  0, 101);
+	indexOptionalDirectory ("ambient_x2", 0,  0, 102);
 	progress.step("Indexing extra music resources");
-	indexMandatoryDirectory("music"     , 0,  0, 63);
-	indexOptionalDirectory ("music_x1"  , 0,  0, 64);
-	indexOptionalDirectory ("music_x2"  , 0,  0, 65);
+	indexMandatoryDirectory("music"     , 0,  0, 103);
+	indexOptionalDirectory ("music_x1"  , 0,  0, 104);
+	indexOptionalDirectory ("music_x2"  , 0,  0, 105);
 	progress.step("Indexing extra movie resources");
-	indexMandatoryDirectory("movies"    , 0,  0, 66);
+	indexMandatoryDirectory("movies"    , 0,  0, 106);
 	progress.step("Indexing extra effects resources");
-	indexMandatoryDirectory("effects"   , 0,  0, 67);
+	indexMandatoryDirectory("effects"   , 0,  0, 107);
 	progress.step("Indexing extra character resources");
-	indexMandatoryDirectory("localvault", 0,  0, 68);
+	indexMandatoryDirectory("localvault", 0,  0, 108);
 	progress.step("Indexing extra UI resources");
-	indexMandatoryDirectory("ui"        , 0, -1, 69);
+	indexMandatoryDirectory("ui"        , 0, -1, 109);
 
 	progress.step("Indexing Windows-specific resources");
-	indexMandatoryArchive(Aurora::kArchiveEXE, "nwn2main.exe", 70);
+	indexMandatoryArchive(Aurora::kArchiveEXE, "nwn2main.exe", 110);
 
 	progress.step("Indexing override files");
-	indexOptionalDirectory("override", 0, 0, 100);
+	indexOptionalDirectory("override", 0, 0, 150);
 
 	progress.step("Loading game cursors");
 	initCursors();
