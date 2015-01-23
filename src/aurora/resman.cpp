@@ -392,11 +392,16 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 		res.name         = resource->name;
 		res.type         = resource->type;
 
+		// Get the hash or calculate if we have to
+		uint64 hash = (hashAlgo == Common::kHashNone) ? getHash(res.name, res.type) : resource->hash;
+
+		// Normalize the file types if we can and recalculate the hash
+		if ((res.name != "") && (res.type != kFileTypeNone))
+			if (normalizeType(res))
+				hash = getHash(res.name, res.type);
+
 		// And add it to our list
-		if (hashAlgo == Common::kHashNone)
-			addResource(res, TypeMan.setFileType(resource->name, resource->type), change);
-		else
-			addResource(res, resource->hash, change);
+		addResource(res, hash, change);
 	}
 
 	archive->clear();
@@ -624,12 +629,12 @@ void ResourceManager::getAvailableResources(ResourceType type,
 	getAvailableResources(_resourceTypeTypes[type], list);
 }
 
-void ResourceManager::normalizeType(Resource &resource) {
+bool ResourceManager::normalizeType(Resource &resource) {
 	// Resolve the type aliases
 	std::map<FileType, FileType>::const_iterator alias = _typeAliases.find(resource.type);
 	if (alias != _typeAliases.end()) {
 		resource.type = alias->second;
-		return;
+		return true;
 	}
 
 	// Normalize resource type *sigh*
@@ -647,6 +652,10 @@ void ResourceManager::normalizeType(Resource &resource) {
 		resource.type = kFileTypeSPT;
 	else if (resource.type == kFileTypeJPG2)
 		resource.type = kFileTypeJPG;
+	else
+		return false;
+
+	return true;
 }
 
 inline uint64 ResourceManager::getHash(const Common::UString &name, FileType type) const {
@@ -677,8 +686,6 @@ void ResourceManager::checkHashCollision(const Resource &resource, ResourceMap::
 }
 
 void ResourceManager::addResource(Resource &resource, uint64 hash, ChangeID &change) {
-	normalizeType(resource);
-
 	ResourceMap::iterator resList = _resources.find(hash);
 	if (resList == _resources.end()) {
 		// We don't have a resource with this name yet, create a new resource list for it
@@ -704,13 +711,6 @@ void ResourceManager::addResource(Resource &resource, uint64 hash, ChangeID &cha
 	change._change->resources.back().resIt  = --resList->second.end();
 }
 
-void ResourceManager::addResource(Resource &resource, const Common::UString &name, ChangeID &change) {
-	if (name.empty())
-		return;
-
-	addResource(resource, getHash(name), change);
-}
-
 void ResourceManager::addResources(const Common::FileList &files, ChangeID &change, uint32 priority) {
 	for (Common::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
 		Resource res;
@@ -720,7 +720,11 @@ void ResourceManager::addResources(const Common::FileList &files, ChangeID &chan
 		res.name     = Common::FilePath::getStem(*file);
 		res.type     = TypeMan.getFileType(*file);
 
-		addResource(res, Common::FilePath::getFile(*file), change);
+		uint64 hash = getHash(res.name, res.type);
+		if (normalizeType(res))
+			hash = getHash(res.name, res.type);
+
+		addResource(res, hash, change);
 	}
 }
 

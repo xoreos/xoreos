@@ -339,13 +339,12 @@ private:
 	void findBIFs   (const KEYFile &key, std::vector<Common::UString> &bifs);
 	void mergeKEYBIF(const KEYFile &key, std::vector<Common::UString> &bifs, std::vector<BIFFile *> &bifFiles);
 
-	void normalizeType(Resource &resource);
+	bool normalizeType(Resource &resource);
 
 	inline uint64 getHash(const Common::UString &name, FileType type) const;
 	inline uint64 getHash(const Common::UString &name) const;
 
 	void addResource(Resource &resource, uint64 hash, ChangeID &change);
-	void addResource(Resource &resource, const Common::UString &name, ChangeID &change);
 
 	void addResources(const Common::FileList &files, ChangeID &change, uint32 priority);
 
