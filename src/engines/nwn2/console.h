@@ -42,6 +42,21 @@ public:
 
 private:
 	Module *_module;
+
+	// Caches
+	std::list<Common::UString> _music; ///< All known music resources.
+
+	uint32 _maxSizeMusic;
+
+	// Updating the caches
+
+	void updateCaches();
+	void updateMusic();
+
+	// The commands
+	void cmdListMusic(const CommandLine &cl);
+	void cmdStopMusic(const CommandLine &cl);
+	void cmdPlayMusic(const CommandLine &cl);
 };
 
 } // End of namespace NWN2

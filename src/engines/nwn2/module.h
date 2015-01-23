@@ -101,6 +101,8 @@ private:
 	bool handleCamera(const Events::Event &e);
 
 	void handleActions();
+
+	friend class Console;
 };
 
 } // End of namespace NWN2

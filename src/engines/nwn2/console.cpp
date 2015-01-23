@@ -27,17 +27,28 @@
 #include "common/ustring.h"
 #include "common/util.h"
 
+#include "aurora/resman.h"
+
 #include "graphics/aurora/fontman.h"
 
 #include "engines/nwn2/console.h"
 #include "engines/nwn2/module.h"
+#include "engines/nwn2/area.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
 Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
-	_module(0) {
+	_module(0), _maxSizeMusic(0) {
+
+	registerCommand("listmusic", boost::bind(&Console::cmdListMusic, this, _1),
+			"Usage: listmusic\nList all available music resources");
+	registerCommand("stopmusic", boost::bind(&Console::cmdStopMusic, this, _1),
+			"Usage: stopmusic\nStop the currently playing music resource");
+	registerCommand("playmusic", boost::bind(&Console::cmdPlayMusic, this, _1),
+			"Usage: playmusic [<music>]\nPlay the specified music resource. "
+			"If none was specified, play the default area music.");
 }
 
 Console::~Console() {
@@ -45,6 +56,49 @@ Console::~Console() {
 
 void Console::setModule(Module *module) {
 	_module = module;
+}
+
+void Console::updateCaches() {
+	::Engines::Console::updateCaches();
+
+	updateMusic();
+}
+
+void Console::updateMusic() {
+	_music.clear();
+	_maxSizeMusic = 0;
+
+	std::list<Aurora::ResourceManager::ResourceID> music;
+	ResMan.getAvailableResources(Aurora::kFileTypeBMU, music);
+
+	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator m = music.begin();
+	     m != music.end(); ++m) {
+
+		_music.push_back(m->name);
+
+		_maxSizeMusic = MAX(_maxSizeMusic, _music.back().size());
+	}
+
+	setArguments("playmusic", _music);
+}
+
+void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
+	updateMusic();
+	printList(_music, _maxSizeMusic);
+}
+
+void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
+	if (!_module || !_module->_currentArea)
+		return;
+
+	_module->_currentArea->stopAmbientMusic();
+}
+
+void Console::cmdPlayMusic(const CommandLine &cl) {
+	if (!_module || !_module->_currentArea)
+		return;
+
+	_module->_currentArea->playAmbientMusic(cl.args);
 }
 
 } // End of namespace NWN2
