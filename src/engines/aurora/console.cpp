@@ -1204,16 +1204,34 @@ void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) 
 	if (maxSize > 0)
 		maxSize = MAX<uint32>(maxSize, 3);
 
+	// Calculate the number of items per line
 	uint32 lineSize = 1;
 	if      (maxSize >= (columns - 2))
 		maxSize  = columns;
 	else if (maxSize > 0)
 		lineSize = columns / (maxSize + 2);
 
+	// Calculate the number of number of lines that won't fit into the history
+	uint32 toPrint  = MIN<uint32>((kConsoleHistory - 1) * lineSize, list.size());
+	uint32 linesCut = list.size() - toPrint;
+
+	// Print a message when we cut items
+	if (linesCut > 0) {
+		Common::UString cutMsg = Common::UString::sprintf("(%d items cut due to history overflow)", linesCut);
+
+		print(cutMsg);
+	}
+
+	// Move past the items we're cutting
 	std::list<Common::UString>::const_iterator l = list.begin();
+	for (uint32 i = 0; i < linesCut; i++)
+		++l;
+
+	// Print the lines
 	while (l != list.end()) {
 		Common::UString line;
 
+		// Attach the items together that go onto one line
 		for (uint32 i = 0; (i < lineSize) && (l != list.end()); i++, ++l) {
 			Common::UString item = *l;
 
@@ -1234,7 +1252,6 @@ void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) 
 
 		print(line);
 	}
-
 }
 
 void Console::setArguments(const Common::UString &cmd,
