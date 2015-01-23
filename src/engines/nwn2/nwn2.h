@@ -36,6 +36,12 @@ namespace Common {
 	class FileList;
 }
 
+namespace Graphics {
+	namespace Aurora {
+		class FPS;
+	}
+}
+
 namespace Engines {
 
 namespace NWN2 {
@@ -72,12 +78,21 @@ public:
 private:
 	Common::UString _baseDirectory;
 
-	bool _hasXP1; // Shadows of Undrentide (SoU)
-	bool _hasXP2; // Hordes of the Underdark (HotU)
-	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
+	bool _hasXP1; // Mask of the Betrayer (MotB)
+	bool _hasXP2; // Storm of Zehir (SoZ)
+	bool _hasXP3; // Mysteries of Westgate (MoW)
+
+	Graphics::Aurora::FPS *_fps;
 
 	void init();
+	void initResources(LoadProgress &progress);
 	void initCursors();
+	void initGameConfig();
+
+	void deinit();
+
+	void playIntroVideos();
+	void main();
 };
 
 } // End of namespace NWN2

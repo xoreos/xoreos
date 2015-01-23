@@ -90,7 +90,7 @@ Engines::Engine *NWN2EngineProbe::createEngine() const {
 }
 
 
-NWN2Engine::NWN2Engine() : _hasXP1(false), _hasXP2(false), _hasXP3(false) {
+NWN2Engine::NWN2Engine() : _hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0) {
 }
 
 NWN2Engine::~NWN2Engine() {
@@ -106,42 +106,41 @@ void NWN2Engine::run(const Common::UString &target) {
 	CursorMan.hideCursor();
 	CursorMan.set();
 
-	playVideo("atarilogo");
-	playVideo("oeilogo");
-	playVideo("wotclogo");
-	playVideo("nvidialogo");
-	playVideo("legal");
-	playVideo("intro");
+	playIntroVideos();
 	if (EventMan.quitRequested())
 		return;
 
 	CursorMan.showCursor();
 
-	Console console;
-	Campaign campaign(console);
-
-	const std::list<CampaignDescription> &campaigns = campaign.getCampaigns();
-	if (campaigns.empty())
-		error("No campaigns found");
-
-	bool showFPS = ConfigMan.getBool("showfps", false);
-
-	Graphics::Aurora::FPS *fps = 0;
-	if (showFPS) {
-		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		fps->show();
+	if (ConfigMan.getBool("showfps", false)) {
+		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
+		_fps->show();
 	}
 
-	campaign.loadCampaign(*campaigns.begin());
+	main();
 
-	campaign.run();
-
-	delete fps;
+	deinit();
 }
 
 void NWN2Engine::init() {
-	LoadProgress progress(18);
+	LoadProgress progress(19);
 
+	initResources(progress);
+	if (EventMan.quitRequested())
+		return;
+
+	progress.step("Loading game cursors");
+	initCursors();
+	if (EventMan.quitRequested())
+		return;
+
+	progress.step("Initializing internal game config");
+	initGameConfig();
+
+	progress.step("Successfully initialized the engine");
+}
+
+void NWN2Engine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 	indexMandatoryDirectory("", 0, 0, 1);
@@ -303,17 +302,12 @@ void NWN2Engine::init() {
 	_hasXP2 = ResMan.hasArchive(Aurora::kArchiveZIP, "2da_x2.zip");
 	_hasXP3 = ResMan.hasArchive(Aurora::kArchiveERF, "westgate.hak");
 
-	progress.step("Loading game cursors");
-	initCursors();
-
 	progress.step("Loading main talk table");
 	TalkMan.addMainTable("dialog");
 
 	progress.step("Registering file formats");
 	registerModelLoader(new NWN2ModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
-
-	progress.step("Successfully initialized the engine");
 }
 
 void NWN2Engine::initCursors() {
@@ -321,6 +315,38 @@ void NWN2Engine::initCursors() {
 	CursorMan.add("cursor1" , "default"  , "down");
 
 	CursorMan.setDefault("default", "up");
+}
+
+void NWN2Engine::initGameConfig() {
+	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN2_hasXP1", _hasXP1);
+	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN2_hasXP2", _hasXP2);
+	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN2_hasXP3", _hasXP3);
+}
+
+void NWN2Engine::deinit() {
+	delete _fps;
+}
+
+void NWN2Engine::playIntroVideos() {
+	playVideo("atarilogo");
+	playVideo("oeilogo");
+	playVideo("wotclogo");
+	playVideo("nvidialogo");
+	playVideo("legal");
+	playVideo("intro");
+}
+
+void NWN2Engine::main() {
+	Console console;
+	Campaign campaign(console);
+
+	const std::list<CampaignDescription> &campaigns = campaign.getCampaigns();
+	if (campaigns.empty())
+		error("No campaigns found");
+
+	campaign.loadCampaign(*campaigns.begin());
+
+	campaign.run();
 }
 
 } // End of namespace NWN2
