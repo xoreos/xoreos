@@ -84,6 +84,8 @@ bool Module::loadModule(const Common::UString &module) {
 		return false;
 	}
 
+	_newModule.clear();
+
 	_hasModule = true;
 	return true;
 }
@@ -104,6 +106,26 @@ void Module::checkHAKs() {
 	for (std::vector<Common::UString>::const_iterator h = haks.begin(); h != haks.end(); ++h)
 		if (!ResMan.hasArchive(Aurora::kArchiveERF, *h + ".hak"))
 			throw Common::Exception("Required hak \"%s\" does not exist", h->c_str());
+}
+
+bool Module::replaceModule() {
+	if (_newModule.empty())
+		return true;
+
+	_console->hide();
+
+	Common::UString newModule = _newModule;
+
+	unloadAreas();
+	unloadHAKs();
+	unloadModule();
+
+	_exit = true;
+
+	if (!loadModule(newModule))
+		return false;
+
+	return enter();
 }
 
 bool Module::enter() {
@@ -189,6 +211,7 @@ void Module::run() {
 		EventMan.flushEvents();
 
 		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
+			replaceModule();
 			enterArea();
 			if (_exit)
 				break;
@@ -290,6 +313,7 @@ void Module::unloadModule() {
 
 	ResMan.undo(_resModule);
 
+	_newModule.clear();
 	_hasModule = false;
 }
 
@@ -340,6 +364,10 @@ void Module::unloadAreas() {
 	_newArea.clear();
 
 	_currentArea = 0;
+}
+
+void Module::changeModule(const Common::UString &module) {
+	_newModule = module;
 }
 
 const Common::UString &Module::getName() const {

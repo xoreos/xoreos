@@ -26,6 +26,8 @@
 
 #include "common/ustring.h"
 #include "common/util.h"
+#include "common/filepath.h"
+#include "common/filelist.h"
 
 #include "aurora/resman.h"
 
@@ -42,17 +44,22 @@ namespace NWN2 {
 Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 	_module(0), _maxSizeMusic(0) {
 
-	registerCommand("listmusic", boost::bind(&Console::cmdListMusic, this, _1),
+	registerCommand("listmusic"  , boost::bind(&Console::cmdListMusic  , this, _1),
 			"Usage: listmusic\nList all available music resources");
-	registerCommand("stopmusic", boost::bind(&Console::cmdStopMusic, this, _1),
+	registerCommand("stopmusic"  , boost::bind(&Console::cmdStopMusic  , this, _1),
 			"Usage: stopmusic\nStop the currently playing music resource");
-	registerCommand("playmusic", boost::bind(&Console::cmdPlayMusic, this, _1),
+	registerCommand("playmusic"  , boost::bind(&Console::cmdPlayMusic  , this, _1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
-	registerCommand("listareas", boost::bind(&Console::cmdListAreas, this, _1),
+	registerCommand("listareas"  , boost::bind(&Console::cmdListAreas  , this, _1),
 			"Usage: listareas\nList all areas in the current module");
-	registerCommand("gotoarea" , boost::bind(&Console::cmdGotoArea , this, _1),
+	registerCommand("gotoarea"   , boost::bind(&Console::cmdGotoArea   , this, _1),
 			"Usage: gotoarea <area>\nMove to a specific area");
+	registerCommand("listmodules", boost::bind(&Console::cmdListModules, this, _1),
+			"Usage: listmodules\nList all modules");
+	registerCommand("loadmodule" , boost::bind(&Console::cmdLoadModule , this, _1),
+			"Usage: loadmodule <module>\nLoads a module, "
+			"replacing the currently running one");
 }
 
 Console::~Console() {
@@ -67,6 +74,7 @@ void Console::updateCaches() {
 
 	updateMusic();
 	updateAreas();
+	updateModules();
 }
 
 void Console::updateMusic() {
@@ -99,6 +107,30 @@ void Console::updateAreas() {
 		_areas.push_back(*a);
 
 	setArguments("gotoarea", _areas);
+}
+
+void Console::updateModules() {
+	_modules.clear();
+	setArguments("loadmodule", _modules);
+
+	Common::UString baseDir   = ResMan.getDataBaseDir();
+	Common::UString moduleDir = Common::FilePath::findSubDirectory(baseDir, "modules", true);
+	if (moduleDir.empty())
+		return;
+
+	Common::FileList modules;
+	if (!modules.addDirectory(moduleDir))
+		return;
+
+	for (Common::FileList::const_iterator m = modules.begin(); m != modules.end(); ++m) {
+		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
+			continue;
+
+		_modules.push_back(Common::FilePath::getStem(*m));
+	}
+
+	_modules.sort(Common::UString::iless());
+	setArguments("loadmodule", _modules);
 }
 
 void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
@@ -146,6 +178,31 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		}
 
 	printf("Area \"%s\" does not exist", cl.args.c_str());
+}
+
+void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
+	updateModules();
+	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
+		print(*m);
+}
+
+void Console::cmdLoadModule(const CommandLine &cl) {
+	if (!_module)
+		return;
+
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
+		if (m->equalsIgnoreCase(cl.args)) {
+			_module->changeModule(cl.args + ".mod");
+			return;
+		}
+	}
+
+	printf("No such module \"%s\"", cl.args.c_str());
 }
 
 } // End of namespace NWN2

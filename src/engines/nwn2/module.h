@@ -60,6 +60,8 @@ public:
 
 	const Common::UString &getName() const;
 
+	void changeModule(const Common::UString &module);
+
 private:
 	typedef std::map<Common::UString, Area *> AreaMap;
 
@@ -81,6 +83,8 @@ private:
 	Common::UString _newArea;     ///< The new area to enter.
 	Area           *_currentArea; ///< The current area.
 
+	Common::UString _newModule; ///< The module we should change to.
+
 
 	void unload(); ///< Unload the whole shebang.
 
@@ -96,6 +100,9 @@ private:
 
 	bool enter();     ///< Enter the currently loaded module.
 	void enterArea(); ///< Enter a new area.
+
+	/** Replace the currently running module. */
+	bool replaceModule();
 
 	void handleEvents();
 	bool handleCamera(const Events::Event &e);
