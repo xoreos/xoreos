@@ -819,8 +819,9 @@ bool Console::processEvent(Events::Event &event) {
 		} else
 			_tabCount++;
 
-		// Close the console with escape
-		if (event.key.keysym.sym == SDLK_ESCAPE) {
+		// Close the console with escape or Ctrl-D
+		if ((event.key.keysym.sym == SDLK_ESCAPE) ||
+		   ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL))) {
 			hide();
 			return true;
 		}
