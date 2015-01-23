@@ -753,6 +753,7 @@ bool Console::processEvent(Events::Event &event) {
 		const uint8 pasteMask1 = SDL_BUTTON_MMASK;
 		const uint8 pasteMask2 = SDL_BUTTON_LMASK | SDL_BUTTON_RMASK;
 
+		// Pasting the current buffer with the middle (or left+right) mouse button
 		if (((button & pasteMask1) == pasteMask1) || ((button & pasteMask2) == pasteMask2)) {
 			_readLine->addInput(_console->getHighlight());
 			_console->setInput(_readLine->getCurrentLine(),
@@ -760,6 +761,7 @@ bool Console::processEvent(Events::Event &event) {
 			return true;
 		}
 
+		// Highlight while dragging the left mouse button
 		if (button & SDL_BUTTON_LMASK) {
 			_console->startHighlight(event.button.x, event.button.y);
 			return true;
@@ -768,6 +770,7 @@ bool Console::processEvent(Events::Event &event) {
 
 	if (event.type == Events::kEventMouseMove) {
 
+		// Highlight while dragging the left mouse button
 		if (event.motion.state & SDL_BUTTON_LMASK) {
 			_console->stopHighlight(event.button.x, event.button.y);
 			return true;
@@ -792,10 +795,13 @@ bool Console::processEvent(Events::Event &event) {
 
 		if (event.button.button & SDL_BUTTON_LMASK) {
 			if      (_lastClickCount == 0)
+				// Stop highlighting when release the mouse
 				_console->stopHighlight(event.button.x, event.button.y);
 			else if (_lastClickCount == 1)
+				// Click twice to highlight a word
 				_console->highlightWord(event.button.x, event.button.y);
 			else if (_lastClickCount == 2)
+				// Click thrice to highlight the whole line
 				_console->highlightLine(event.button.x, event.button.y);
 
 			return true;
@@ -806,47 +812,56 @@ bool Console::processEvent(Events::Event &event) {
 	if (event.type == Events::kEventKeyDown) {
 		_console->clearHighlight();
 
+		// Autocomplete with tab
 		if (event.key.keysym.sym != SDLK_TAB) {
 			_tabCount = 0;
 			_printedCompleteWarning = false;
 		} else
 			_tabCount++;
 
+		// Close the console with escape
 		if (event.key.keysym.sym == SDLK_ESCAPE) {
 			hide();
 			return true;
 		}
 
+		// Ctrl-L clear the console
 		if ((event.key.keysym.sym == SDLK_l) && (event.key.keysym.mod & KMOD_CTRL)) {
 			clear();
 			return true;
 		}
 
+		// Scroll up half a screen with Shift-PageUp
 		if ((event.key.keysym.sym == SDLK_PAGEUP) && (event.key.keysym.mod & KMOD_SHIFT)) {
 			_console->scrollUp(kConsoleLines / 2);
 			return true;
 		}
 
+		// Scroll down half a screen with Shift-PageUp
 		if ((event.key.keysym.sym == SDLK_PAGEDOWN) && (event.key.keysym.mod & KMOD_SHIFT)) {
 			_console->scrollDown(kConsoleLines / 2);
 			return true;
 		}
 
+		// Scroll up a line with PageUp
 		if (event.key.keysym.sym == SDLK_PAGEUP) {
 			_console->scrollUp();
 			return true;
 		}
 
+		// Scroll down a line with PageUp
 		if (event.key.keysym.sym == SDLK_PAGEDOWN) {
 			_console->scrollDown();
 			return true;
 		}
 
+		// Shift-Home scrolls to the top
 		if ((event.key.keysym.sym == SDLK_HOME) && (event.key.keysym.mod & KMOD_SHIFT)) {
 			_console->scrollTop();
 			return true;
 		}
 
+		// Shift-Home scrolls to the bottom
 		if ((event.key.keysym.sym == SDLK_END) && (event.key.keysym.mod & KMOD_SHIFT)) {
 			_console->scrollBottom();
 			return true;
@@ -854,6 +869,8 @@ bool Console::processEvent(Events::Event &event) {
 
 
 	} else if (event.type == Events::kEventMouseWheel) {
+		// Scroll up / down using the mouse wheel
+
 		if (event.wheel.y > 0) {
 			_console->scrollUp();
 			return true;
