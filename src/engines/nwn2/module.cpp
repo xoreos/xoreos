@@ -24,6 +24,7 @@
 
 #include "common/util.h"
 #include "common/error.h"
+#include "common/configman.h"
 
 #include "aurora/talkman.h"
 #include "aurora/erffile.h"
@@ -92,6 +93,10 @@ bool Module::loadModule(const Common::UString &module) {
 
 void Module::checkXPs() {
 	uint16 hasXP = 0;
+
+	hasXP |= ConfigMan.getBool("NWN2_hasXP1") ? 1 : 0;
+	hasXP |= ConfigMan.getBool("NWN2_hasXP2") ? 2 : 0;
+	hasXP |= ConfigMan.getBool("NWN2_hasXP3") ? 4 : 0;
 
 	uint16 xp = _ifo.getExpansions();
 
