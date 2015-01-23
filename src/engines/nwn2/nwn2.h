@@ -72,6 +72,10 @@ public:
 private:
 	Common::UString _baseDirectory;
 
+	bool _hasXP1; // Shadows of Undrentide (SoU)
+	bool _hasXP2; // Hordes of the Underdark (HotU)
+	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
+
 	void init();
 	void initCursors();
 };

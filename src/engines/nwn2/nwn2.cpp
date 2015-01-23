@@ -90,7 +90,7 @@ Engines::Engine *NWN2EngineProbe::createEngine() const {
 }
 
 
-NWN2Engine::NWN2Engine() {
+NWN2Engine::NWN2Engine() : _hasXP1(false), _hasXP2(false), _hasXP3(false) {
 }
 
 NWN2Engine::~NWN2Engine() {
@@ -298,6 +298,10 @@ void NWN2Engine::init() {
 
 	progress.step("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 150);
+
+	_hasXP1 = ResMan.hasArchive(Aurora::kArchiveZIP, "2da_x1.zip");
+	_hasXP2 = ResMan.hasArchive(Aurora::kArchiveZIP, "2da_x2.zip");
+	_hasXP3 = ResMan.hasArchive(Aurora::kArchiveERF, "westgate.hak");
 
 	progress.step("Loading game cursors");
 	initCursors();
