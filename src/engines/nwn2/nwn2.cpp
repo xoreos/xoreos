@@ -179,6 +179,7 @@ void NWN2Engine::init() {
 	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveZIP, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "hak");
 
 	progress.step("Loading main resource files");
 
