@@ -47,7 +47,19 @@ VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
 		setVertexDecl(other._decl);
 		setSize(other._count, other._size);
 		memcpy(_data, other._data, other._count * other._size);
+
+		// Fix up the data pointers
+
+		std::vector<VertexAttrib>::const_iterator src = other._decl.begin();
+		std::vector<VertexAttrib>::iterator dest = _decl.begin();
+		while ((src != other._decl.end()) && (dest != _decl.end())) {
+			dest->pointer = (char *)_data + ((char *)src->pointer - (char *)other._data);
+
+			++src;
+			++dest;
+		}
 	}
+
 	return *this;
 }
 
