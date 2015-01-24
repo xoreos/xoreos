@@ -87,7 +87,7 @@ private:
 	VertexDecl _decl; ///< Vertex declaration
 	uint32 _count;    ///< Number of elements in buffer
 	uint32 _size;     ///< Size of a buffer element in bytes (vertex attributes size sum)
-	GLvoid *_data;    ///< Buffer data
+	byte  *_data;     ///< Buffer data
 };
 
 }

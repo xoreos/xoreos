@@ -38,8 +38,7 @@ VertexBuffer::VertexBuffer(const VertexBuffer &other) : _data(0) {
 }
 
 VertexBuffer::~VertexBuffer() {
-	if (_data)
-		std::free(_data);
+	delete[] _data;
 }
 
 VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
@@ -53,7 +52,7 @@ VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
 		std::vector<VertexAttrib>::const_iterator src = other._decl.begin();
 		std::vector<VertexAttrib>::iterator dest = _decl.begin();
 		while ((src != other._decl.end()) && (dest != _decl.end())) {
-			dest->pointer = (char *)_data + ((char *)src->pointer - (char *)other._data);
+			dest->pointer = (byte *)_data + ((byte *)src->pointer - (byte *)other._data);
 
 			++src;
 			++dest;
@@ -67,13 +66,11 @@ void VertexBuffer::setSize(uint32 vertCount, uint32 vertSize) {
 	_count = vertCount;
 	_size = vertSize;
 
-	if (_data)
-		std::free(_data);
+	delete[] _data;
+	_data = 0;
 
-	if (_count * _size)
-		_data = std::malloc(_count * _size);
-	else
-		_data = 0;
+	if (_count && _size)
+		_data = new byte[_count * _size];
 }
 
 void VertexBuffer::setVertexDecl(const VertexDecl &decl) {
@@ -85,7 +82,7 @@ GLvoid *VertexBuffer::getData() {
 }
 
 const GLvoid *VertexBuffer::getData() const {
-	return _data;
+	return (const GLvoid *) _data;
 }
 
 const VertexDecl &VertexBuffer::getVertexDecl() const {
