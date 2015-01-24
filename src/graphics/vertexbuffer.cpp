@@ -30,7 +30,6 @@
 namespace Graphics {
 
 VertexBuffer::VertexBuffer() : _count(0), _size(0), _data(0) {
-	//ctor
 }
 
 VertexBuffer::VertexBuffer(const VertexBuffer &other) : _data(0) {
@@ -42,21 +41,22 @@ VertexBuffer::~VertexBuffer() {
 }
 
 VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
-	if (this != &other) {
-		setVertexDecl(other._decl);
-		setSize(other._count, other._size);
-		memcpy(_data, other._data, other._count * other._size);
+	if (this == &other)
+		return *this;
 
-		// Fix up the data pointers
+	setVertexDecl(other._decl);
+	setSize(other._count, other._size);
+	memcpy(_data, other._data, other._count * other._size);
 
-		std::vector<VertexAttrib>::const_iterator src = other._decl.begin();
-		std::vector<VertexAttrib>::iterator dest = _decl.begin();
-		while ((src != other._decl.end()) && (dest != _decl.end())) {
-			dest->pointer = (byte *)_data + ((byte *)src->pointer - (byte *)other._data);
+	// Fix up the data pointers
 
-			++src;
-			++dest;
-		}
+	std::vector<VertexAttrib>::const_iterator src = other._decl.begin();
+	std::vector<VertexAttrib>::iterator dest = _decl.begin();
+	while ((src != other._decl.end()) && (dest != _decl.end())) {
+		dest->pointer = (byte *)_data + ((byte *)src->pointer - (byte *)other._data);
+
+		++src;
+		++dest;
 	}
 
 	return *this;
@@ -64,7 +64,7 @@ VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
 
 void VertexBuffer::setSize(uint32 vertCount, uint32 vertSize) {
 	_count = vertCount;
-	_size = vertSize;
+	_size  = vertSize;
 
 	delete[] _data;
 	_data = 0;
