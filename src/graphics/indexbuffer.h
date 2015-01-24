@@ -59,7 +59,7 @@ private:
 	uint32 _count; ///< Number of elements in buffer
 	uint32 _size;  ///< Size of a buffer element in bytes
 	GLenum _type;  ///< Element type (GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, ...)
-	GLvoid *_data; ///< Buffer data
+	byte  *_data;  ///< Buffer data
 };
 
 }

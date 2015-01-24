@@ -38,8 +38,7 @@ IndexBuffer::IndexBuffer(const IndexBuffer &other) : _data(0) {
 }
 
 IndexBuffer::~IndexBuffer() {
-	if (_data)
-		std::free(_data);
+	delete[] _data;
 }
 
 IndexBuffer &IndexBuffer::operator=(const IndexBuffer &other) {
@@ -55,13 +54,11 @@ void IndexBuffer::setSize(uint32 indexCount, uint32 indexSize, GLenum indexType)
 	_size = indexSize;
 	_type = indexType;
 
-	if (_data)
-		std::free(_data);
+	delete[] _data;
+	_data = 0;
 
-	if (_count * _size)
-		_data = std::malloc(_count * _size);
-	else
-		_data = 0;
+	if (_count && _size)
+		_data = new byte[_count * _size];
 }
 
 GLvoid *IndexBuffer::getData() {
@@ -69,7 +66,7 @@ GLvoid *IndexBuffer::getData() {
 }
 
 const GLvoid *IndexBuffer::getData() const {
-	return _data;
+	return (const GLvoid *) _data;
 }
 
 uint32 IndexBuffer::getCount() const {
