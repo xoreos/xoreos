@@ -226,6 +226,10 @@ void Area::show() {
 		if (t->model)
 			t->model->show();
 
+	// Show terrain
+	if (_terrain)
+		_terrain->show();
+
 	// Show objects
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->show();
@@ -250,6 +254,10 @@ void Area::hide() {
 	// Hide objects
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->hide();
+
+	// Hide terrain
+	if (_terrain)
+		_terrain->hide();
 
 	// Hide tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)

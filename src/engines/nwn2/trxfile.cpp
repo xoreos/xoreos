@@ -27,13 +27,19 @@
 
 #include "aurora/resman.h"
 
+#include "graphics/graphics.h"
+#include "graphics/vertexbuffer.h"
+#include "graphics/indexbuffer.h"
+
+#include "graphics/aurora/geometryobject.h"
+
 #include "engines/nwn2/trxfile.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
-TRXFile::TRXFile(const Common::UString &resRef) {
+TRXFile::TRXFile(const Common::UString &resRef) : _visible(false) {
 	Common::SeekableReadStream *trx = 0;
 
 	try {
@@ -52,6 +58,38 @@ TRXFile::TRXFile(const Common::UString &resRef) {
 }
 
 TRXFile::~TRXFile() {
+	hide();
+
+	for (TerrainList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
+		delete *t;
+}
+
+void TRXFile::show() {
+	if (_visible)
+		return;
+
+	GfxMan.lockFrame();
+
+	for (TerrainList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
+		(*t)->show();
+
+	_visible = true;
+
+	GfxMan.unlockFrame();
+}
+
+void TRXFile::hide() {
+	if (!_visible)
+		return;
+
+	GfxMan.lockFrame();
+
+	for (TerrainList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
+		(*t)->hide();
+
+	_visible = false;
+
+	GfxMan.unlockFrame();
 }
 
 void TRXFile::load(Common::SeekableReadStream &trx) {
@@ -128,46 +166,86 @@ void TRXFile::loadTRWH(Common::SeekableReadStream &trx, Packet &packet) {
 void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	Common::SeekableSubReadStream ttrn(&trx, trx.pos(), trx.pos() + packet.size);
 
-	_terrain.push_back(Terrain());
-	Terrain &terrain = _terrain.back();
+	Common::UString name;
+	name.readFixedASCII(ttrn, 128);
 
-	terrain.name.readFixedASCII(ttrn, 128);
+	Common::UString textures[6];
 	for (int i = 0; i < 6; i++)
-		terrain.textures[i].readFixedASCII(ttrn, 32);
+		textures[i].readFixedASCII(ttrn, 32);
 
+	float textureColors[6][3];
 	for (int i = 0; i < 6; i++)
 		for (int j = 0; j < 3; j++)
-			terrain.textureColors[i][j] = ttrn.readIEEEFloatLE();
+			textureColors[i][j] = ttrn.readIEEEFloatLE();
 
 	uint32 vCount = ttrn.readUint32LE();
 	uint32 fCount = ttrn.readUint32LE();
 
-	terrain.vertices.resize(vCount);
-	for (std::vector<Vertex>::iterator v = terrain.vertices.begin(); v != terrain.vertices.end(); ++v) {
-		v->coord[0] = ttrn.readIEEEFloatLE();
-		v->coord[1] = ttrn.readIEEEFloatLE();
-		v->coord[2] = ttrn.readIEEEFloatLE();
 
-		v->normal[0] = ttrn.readIEEEFloatLE();
-		v->normal[1] = ttrn.readIEEEFloatLE();
-		v->normal[2] = ttrn.readIEEEFloatLE();
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 3;
+	GLsizei vcsize = 4;
 
-		v->color[0] = ttrn.readByte();
-		v->color[1] = ttrn.readByte();
-		v->color[2] = ttrn.readByte();
-		v->color[3] = ttrn.readByte();
+	uint32 vSize = (vpsize + vnsize + vcsize) * sizeof(float);
+
+	Graphics::VertexBuffer vBuf;
+	vBuf.setSize(vCount, vSize);
+
+	float *vertexData = (float *) vBuf.getData();
+	Graphics::VertexDecl vertexDecl;
+
+	Graphics::VertexAttrib vp;
+	vp.index = Graphics::VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = vSize;
+	vp.pointer = vertexData;
+	vertexDecl.push_back(vp);
+
+	Graphics::VertexAttrib vn;
+	vn.index = Graphics::VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = vSize;
+	vn.pointer = vertexData + vpsize;
+	vertexDecl.push_back(vn);
+
+	Graphics::VertexAttrib vc;
+	vc.index = Graphics::VCOLOR;
+	vc.size = vcsize;
+	vc.type = GL_FLOAT;
+	vc.stride = vSize;
+	vc.pointer = vertexData + vpsize + vnsize;
+	vertexDecl.push_back(vc);
+
+	vBuf.setVertexDecl(vertexDecl);
+
+	float *v = vertexData;
+	for (uint32 i = 0; i < vCount; i++) {
+		*v++ = ttrn.readIEEEFloatLE();
+		*v++ = ttrn.readIEEEFloatLE();
+		*v++ = ttrn.readIEEEFloatLE();
+
+		*v++ = ttrn.readIEEEFloatLE();
+		*v++ = ttrn.readIEEEFloatLE();
+		*v++ = ttrn.readIEEEFloatLE();
+
+		*v++ = ttrn.readByte() / 255.0f;
+		*v++ = ttrn.readByte() / 255.0f;
+		*v++ = ttrn.readByte() / 255.0f;
+		*v++ = ttrn.readByte() / 255.0f;
 
 		ttrn.skip(16); // Some texture coordinates?
 	}
 
-	terrain.faces.resize(fCount);
-	for (std::vector<Face>::iterator f = terrain.faces.begin(); f != terrain.faces.end(); ++f) {
-		f->index[0] = ttrn.readUint16LE();
-		f->index[1] = ttrn.readUint16LE();
-		f->index[2] = ttrn.readUint16LE();
+	Graphics::IndexBuffer iBuf;
+	iBuf.setSize(fCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-		if ((f->index[0] >= vCount) || ((f->index[1] >= vCount) || (f->index[2] >= vCount)))
-			throw Common::Exception("Invalid vertix indices %u, %u, %u", f->index[0], f->index[1], f->index[2]);
+	uint16 *f = (uint16 *) iBuf.getData();
+	for (uint32 i = 0; i < fCount; i++) {
+		*f++ = ttrn.readUint16LE();
+		*f++ = ttrn.readUint16LE();
+		*f++ = ttrn.readUint16LE();
 	}
 
 	/* TODO:
@@ -178,6 +256,9 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	 *   - uint32 grassCount
 	 *   - Grass  grass
 	 */
+
+	_terrain.push_back(new Graphics::Aurora::GeometryObject(vBuf, iBuf));
+	_terrain.back()->setRotation(-90.0, 0.0, 0.0);
 }
 
 void TRXFile::loadWATR(Common::SeekableReadStream &UNUSED(trx), Packet &UNUSED(packet)) {

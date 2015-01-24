@@ -25,12 +25,20 @@
 #ifndef ENGINES_NWN2_TRXFILE_H
 #define ENGINES_NWN2_TRXFILE_H
 
+#include <list>
 #include <vector>
+
 #include "common/types.h"
 #include "common/ustring.h"
 
 namespace Common {
 	class SeekableReadStream;
+}
+
+namespace Graphics {
+	namespace Aurora {
+		class GeometryObject;
+	}
 }
 
 namespace Engines {
@@ -42,6 +50,9 @@ public:
 	TRXFile(const Common::UString &resRef);
 	~TRXFile();
 
+	void show();
+	void hide();
+
 private:
 	/** A packet within a TRX file. */
 	struct Packet {
@@ -50,30 +61,15 @@ private:
 		uint32 size;   ///< Size of the packet.
 	};
 
-	struct Vertex {
-		float coord[3];
-		float normal[3];
-		uint8 color[4];
-	};
+	typedef std::list<Graphics::Aurora::GeometryObject *> TerrainList;
 
-	struct Face {
-		uint16 index[3];
-	};
 
-	struct Terrain {
-		Common::UString name;
-
-		Common::UString textures[6];
-		float textureColors[6][3];
-
-		std::vector<Vertex> vertices;
-		std::vector<Face>   faces;
-	};
+	bool _visible;
 
 	uint32 _width;
 	uint32 _height;
 
-	std::list<Terrain> _terrain;
+	TerrainList _terrain;
 
 
 	void load(Common::SeekableReadStream &trx);
