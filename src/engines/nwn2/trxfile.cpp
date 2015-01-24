@@ -231,12 +231,17 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 		*v++ = ttrn.readIEEEFloatLE();
 
 		for (int j = 0; j < 3; j++) {
-			float rgb = ttrn.readByte() / 255.0f;
+			int   vals = 1;
+			float rgb  = ttrn.readByte() / 255.0f;
 
-			for (int k = 0; k < 6; k++)
-				rgb += textureColors[k][j];
+			for (int k = 0; k < 6; k++) {
+				if (!textures[k].empty()) {
+					rgb += textureColors[k][j];
+					vals++;
+				}
+			}
 
-			rgb /= 7;
+			rgb /= vals;
 
 			*v++ = rgb;
 		}
