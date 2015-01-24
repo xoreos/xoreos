@@ -359,7 +359,11 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 }
 
 void Area::loadTerrain() {
-	_terrain = new TRXFile(_resRef);
+	try {
+		_terrain = new TRXFile(_resRef);
+	} catch (Common::Exception &e) {
+		Common::printException(e, "WARNING: ");
+	}
 }
 
 void Area::loadTiles(const Aurora::GFFList &tiles) {
