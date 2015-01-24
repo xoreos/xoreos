@@ -20,6 +20,7 @@ noinst_HEADERS = \
                  cube.h \
                  guiquad.h \
                  highlightableguiquad.h \
+                 geometryobject.h \
                  modelnode.h \
                  model.h \
                  animnode.h \
@@ -47,6 +48,7 @@ libaurora_la_SOURCES = \
                        cube.cpp \
                        highlightableguiquad.cpp \
                        guiquad.cpp \
+                       geometryobject.cpp \
                        modelnode.cpp \
                        model.cpp \
                        animnode.cpp \
