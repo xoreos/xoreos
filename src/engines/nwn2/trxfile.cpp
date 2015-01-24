@@ -230,9 +230,17 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 		*v++ = ttrn.readIEEEFloatLE();
 		*v++ = ttrn.readIEEEFloatLE();
 
-		*v++ = ttrn.readByte() / 255.0f;
-		*v++ = ttrn.readByte() / 255.0f;
-		*v++ = ttrn.readByte() / 255.0f;
+		for (int j = 0; j < 3; j++) {
+			float rgb = ttrn.readByte() / 255.0f;
+
+			for (int k = 0; k < 6; k++)
+				rgb += textureColors[k][j];
+
+			rgb /= 7;
+
+			*v++ = rgb;
+		}
+
 		*v++ = ttrn.readByte() / 255.0f;
 
 		ttrn.skip(16); // Some texture coordinates?
