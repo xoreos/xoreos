@@ -30,7 +30,6 @@
 namespace Graphics {
 
 IndexBuffer::IndexBuffer() : _count(0), _size(0), _type(GL_UNSIGNED_INT), _data(0) {
-	//ctor
 }
 
 IndexBuffer::IndexBuffer(const IndexBuffer &other) : _data(0) {
@@ -42,17 +41,17 @@ IndexBuffer::~IndexBuffer() {
 }
 
 IndexBuffer &IndexBuffer::operator=(const IndexBuffer &other) {
-	if (this != &other) {
-		setSize(other._count, other._size, other._type);
-		memcpy(_data, other._data, other._count * other._size);
-	}
+	if (this == &other)
 	return *this;
+
+	setSize(other._count, other._size, other._type);
+	memcpy(_data, other._data, other._count * other._size);
 }
 
 void IndexBuffer::setSize(uint32 indexCount, uint32 indexSize, GLenum indexType) {
 	_count = indexCount;
-	_size = indexSize;
-	_type = indexType;
+	_size  = indexSize;
+	_type  = indexType;
 
 	delete[] _data;
 	_data = 0;
