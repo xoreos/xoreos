@@ -42,6 +42,8 @@ namespace Engines {
 
 namespace NWN2 {
 
+class TRXFile;
+
 class Module;
 
 class Object;
@@ -149,12 +151,13 @@ private:
 	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
 	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.
 
-	bool _hasTerrain; ///< Does area have terrain or is it tile-based?
+	bool _hasTerrain; ///< Does area have terrain or is it purely tile-based?
 
 	uint32 _width;  ///< Width  of the area in tiles, as seen from top-down.
 	uint32 _height; ///< Height of the area in tiles, as seen from top-down.
 
-	std::vector<Tile> _tiles; ///< The area's tiles.
+	TRXFile          *_terrain; ///< The area's terrain.
+	std::vector<Tile> _tiles;   ///< The area's tiles.
 
 	ObjectList _objects;   ///< List of all objects in the area.
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
@@ -169,6 +172,7 @@ private:
 
 	void loadProperties(const Aurora::GFFStruct &props);
 
+	void loadTerrain();
 	void loadTiles(const Aurora::GFFList &tiles);
 	void loadTile(const Aurora::GFFStruct &t, Tile &tile);
 

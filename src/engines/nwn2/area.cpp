@@ -41,6 +41,7 @@
 #include "engines/aurora/model.h"
 
 #include "engines/nwn2/area.h"
+#include "engines/nwn2/trxfile.h"
 #include "engines/nwn2/module.h"
 #include "engines/nwn2/object.h"
 #include "engines/nwn2/waypoint.h"
@@ -52,7 +53,7 @@ namespace Engines {
 namespace NWN2 {
 
 Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _loaded(false),
-	_resRef(resRef), _visible(false) {
+	_resRef(resRef), _visible(false), _terrain(0) {
 
 	try {
 		// Load ARE and GIT
@@ -94,6 +95,9 @@ void Area::clear() {
 		delete t->model;
 
 	_tiles.clear();
+
+	delete _terrain;
+	_terrain = 0;
 }
 
 Common::UString Area::getName(const Common::UString &resRef) {
@@ -282,6 +286,9 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 	_width  = are.getUint("Width");
 	_height = are.getUint("Height");
 
+	if (_hasTerrain)
+		loadTerrain();
+
 	if (are.hasField("TileList")) {
 		uint32 size;
 		const Aurora::GFFList &tiles = are.getList("TileList", size);
@@ -341,6 +348,10 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 	// Battle music
 
 	setMusicBattleTrack(props.getUint("MusicBattle", Aurora::kStrRefInvalid));
+}
+
+void Area::loadTerrain() {
+	_terrain = new TRXFile(_resRef);
 }
 
 void Area::loadTiles(const Aurora::GFFList &tiles) {
