@@ -60,8 +60,10 @@ TRXFile::TRXFile(const Common::UString &resRef) : _visible(false) {
 TRXFile::~TRXFile() {
 	hide();
 
-	for (TerrainList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
+	for (ObjectList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
 		delete *t;
+	for (ObjectList::iterator w = _water.begin(); w != _water.end(); ++w)
+		delete *w;
 }
 
 void TRXFile::show() {
@@ -70,8 +72,10 @@ void TRXFile::show() {
 
 	GfxMan.lockFrame();
 
-	for (TerrainList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
+	for (ObjectList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
 		(*t)->show();
+	for (ObjectList::iterator w = _water.begin(); w != _water.end(); ++w)
+		(*w)->show();
 
 	_visible = true;
 
@@ -84,8 +88,10 @@ void TRXFile::hide() {
 
 	GfxMan.lockFrame();
 
-	for (TerrainList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
+	for (ObjectList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
 		(*t)->hide();
+	for (ObjectList::iterator w = _water.begin(); w != _water.end(); ++w)
+		(*w)->hide();
 
 	_visible = false;
 
@@ -274,7 +280,115 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	_terrain.back()->setRotation(-90.0, 0.0, 0.0);
 }
 
-void TRXFile::loadWATR(Common::SeekableReadStream &UNUSED(trx), Packet &UNUSED(packet)) {
+void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
+	Common::SeekableSubReadStream watr(&trx, trx.pos(), trx.pos() + packet.size);
+
+	Common::UString name;
+	name.readFixedASCII(watr, 128);
+
+	float color[3];
+	color[0] = watr.readIEEEFloatLE();
+	color[1] = watr.readIEEEFloatLE();
+	color[2] = watr.readIEEEFloatLE();
+
+	watr.skip(4); // float rippleX
+	watr.skip(4); // float rippleY
+	watr.skip(4); // float smoothness
+	watr.skip(4); // float refBias
+	watr.skip(4); // float refPower
+	watr.skip(4); // Unknown
+	watr.skip(4); // Unknown
+
+	Common::UString textures[3];
+	for (int i = 0; i < 3; i++) {
+		textures[i].readFixedASCII(watr, 32);
+
+		watr.skip(4); // float dirX
+		watr.skip(4); // float dirY
+		watr.skip(4); // float rate
+		watr.skip(4); // float angle
+	}
+
+	watr.skip(4); // float offsetX
+	watr.skip(4); // float offsetY
+
+	uint32 vCount = watr.readUint32LE();
+	uint32 fCount = watr.readUint32LE();
+
+
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 0;
+	GLsizei vcsize = 3;
+
+	uint32 vSize = (vpsize + vnsize + vcsize) * sizeof(float);
+
+	Graphics::VertexBuffer vBuf;
+	vBuf.setSize(vCount, vSize);
+
+	float *vertexData = (float *) vBuf.getData();
+	Graphics::VertexDecl vertexDecl;
+
+	Graphics::VertexAttrib vp;
+	vp.index = Graphics::VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = vSize;
+	vp.pointer = vertexData;
+	vertexDecl.push_back(vp);
+
+	/*
+	Graphics::VertexAttrib vn;
+	vn.index = Graphics::VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = vSize;
+	vn.pointer = vertexData + vpsize;
+	vertexDecl.push_back(vn);
+	*/
+
+	Graphics::VertexAttrib vc;
+	vc.index = Graphics::VCOLOR;
+	vc.size = vcsize;
+	vc.type = GL_FLOAT;
+	vc.stride = vSize;
+	vc.pointer = vertexData + vpsize + vnsize;
+	vertexDecl.push_back(vc);
+
+	vBuf.setVertexDecl(vertexDecl);
+
+	float *v = vertexData;
+	for (uint32 i = 0; i < vCount; i++) {
+		*v++ = watr.readIEEEFloatLE();
+		*v++ = watr.readIEEEFloatLE();
+		*v++ = watr.readIEEEFloatLE();
+
+		*v++ = color[0];
+		*v++ = color[1];
+		*v++ = color[2];
+
+		watr.skip(16); // texture coordinates?
+	}
+
+	Graphics::IndexBuffer iBuf;
+	iBuf.setSize(fCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+
+	uint16 *f = (uint16 *) iBuf.getData();
+	for (uint32 i = 0; i < fCount; i++) {
+		*f++ = watr.readUint16LE();
+		*f++ = watr.readUint16LE();
+		*f++ = watr.readUint16LE();
+	}
+
+	/* TODO:
+	 *   - uint32  ddsSize
+	 *   - byte   *dds
+	 *   - uint32  flags[vCount]
+	 *   - uint32  tileX
+	 *   - uint32  tileY
+	 */
+
+	_water.push_back(new Graphics::Aurora::GeometryObject(vBuf, iBuf));
+	_water.back()->setRotation(-90.0, 0.0, 0.0);
 }
 
 void TRXFile::loadASWM(Common::SeekableReadStream &UNUSED(trx), Packet &UNUSED(packet)) {

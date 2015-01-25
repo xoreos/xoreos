@@ -61,7 +61,7 @@ private:
 		uint32 size;   ///< Size of the packet.
 	};
 
-	typedef std::list<Graphics::Aurora::GeometryObject *> TerrainList;
+	typedef std::list<Graphics::Aurora::GeometryObject *> ObjectList;
 
 
 	bool _visible;
@@ -69,7 +69,8 @@ private:
 	uint32 _width;
 	uint32 _height;
 
-	TerrainList _terrain;
+	ObjectList _terrain;
+	ObjectList _water;
 
 
 	void load(Common::SeekableReadStream &trx);
