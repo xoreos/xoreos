@@ -1,3 +1,4 @@
+#serial 1000
 dnl @synopsis AX_CHECK_LZMA(major, minor, patch, stability, action-if, action-if-not)
 dnl
 dnl @summary check for LZMA of sufficient major, minor, patch and stability version

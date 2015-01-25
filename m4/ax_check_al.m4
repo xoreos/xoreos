@@ -1,3 +1,4 @@
+#serial 1000
 dnl @synopsis AX_CHECK_AL(action-if, action-if-not)
 dnl
 dnl @summary check for OpenAL Soft.

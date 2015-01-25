@@ -1,3 +1,4 @@
+#serial 1000
 dnl @synopsis AX_CHECK_MAD(major, minor, patch, action-if, action-if-not)
 dnl
 dnl @summary check for MAD of sufficient major, minor and patch version

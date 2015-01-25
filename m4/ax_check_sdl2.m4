@@ -1,3 +1,4 @@
+#serial 1000
 dnl @synopsis AX_CHECK_SDL2(version, action-if, action-if-not)
 dnl
 dnl @summary check for SDL2 of sufficient version (2.1.3 -> 2103)

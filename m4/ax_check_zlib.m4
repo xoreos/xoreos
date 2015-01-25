@@ -1,3 +1,4 @@
+#serial 1000
 dnl @synopsis AX_CHECK_ZLIB(major, minor, revision, subrevision, action-if, action-if-not)
 dnl
 dnl @summary check for ZLIB of sufficient major, minor, revision and subrevision version

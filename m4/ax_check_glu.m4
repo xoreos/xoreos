@@ -1,3 +1,4 @@
+#serial 1000
 # -*- mode: autoconf -*-
 #
 # AX_CHECK_GLU
