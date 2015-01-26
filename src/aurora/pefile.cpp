@@ -103,6 +103,8 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index) const {
 
 		Common::SeekableReadStream *cursor = _peFile->getResource(Common::kPECursor, id);
 		if (!cursor) {
+			delete cursorGroup;
+
 			warning("Could not get cursor resource %d", id);
 			return 0;
 		}
@@ -124,7 +126,8 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index) const {
 		delete cursorStreams[i];
 	}
 
-	return new Common::MemoryReadStream(out.getData(), out.size());
+	delete cursorGroup;
+	return new Common::MemoryReadStream(out.getData(), out.size(), true);
 }
 
 void PEFile::load(const std::vector<Common::UString> &remap) {
