@@ -32,7 +32,14 @@
 #include "aurora/types.h"
 #include "aurora/resman.h"
 
+#include "graphics/graphics.h"
+
+#include "graphics/images/decoder.h"
+#include "graphics/images/surface.h"
+
 #include "graphics/aurora/model_nwn2.h"
+#include "graphics/aurora/texture.h"
+
 
 static const uint32 kMDBID = MKTAG('N', 'W', 'N', '2');
 
@@ -76,6 +83,12 @@ Model_NWN2::Model_NWN2(const Common::UString &name, ModelType type) : Model(type
 }
 
 Model_NWN2::~Model_NWN2() {
+}
+
+void Model_NWN2::setTint(const float tint[3][4]) {
+	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
+		for (NodeList::iterator n = (*s)->nodeList.begin(); n != (*s)->nodeList.end(); ++n)
+			((ModelNode_NWN2 *) *n)->setTint(tint);
 }
 
 void Model_NWN2::load(ParserContext &ctx) {
@@ -154,7 +167,7 @@ void Model_NWN2::addState(ParserContext &ctx) {
 }
 
 
-ModelNode_NWN2::ModelNode_NWN2(Model &model) : ModelNode(model) {
+ModelNode_NWN2::ModelNode_NWN2(Model &model) : ModelNode(model), _tintedMapIndex(-1) {
 }
 
 ModelNode_NWN2::~ModelNode_NWN2() {
@@ -172,10 +185,10 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	if (_name.endsWith("_L01") || _name.endsWith("_L02"))
 		return false;
 
-	Common::UString diffuseMap, normalMap, tintMap, glowMap;
+	Common::UString diffuseMap, normalMap, glowMap;
 	diffuseMap.readFixedASCII(*ctx.mdb, 32);
 	 normalMap.readFixedASCII(*ctx.mdb, 32);
-	   tintMap.readFixedASCII(*ctx.mdb, 32);
+	  _tintMap.readFixedASCII(*ctx.mdb, 32);
 	   glowMap.readFixedASCII(*ctx.mdb, 32);
 
 	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
@@ -202,10 +215,11 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	// Read vertices (interleaved)
 
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 3;
-	GLsizei vtsize = 3;
-	uint32 vertexSize = (vpsize + vnsize + vtsize) * sizeof(float);
+	GLsizei vpsize  = 3;
+	GLsizei vnsize  = 3;
+	GLsizei vtsize  = 3;
+	GLsizei vttsize = _tintMap.empty() ? 0 : 3;
+	uint32 vertexSize = (vpsize + vnsize + vtsize + vttsize) * sizeof(float);
 	_vertexBuffer.setSize(vertexCount, vertexSize);
 
 	float *vertexData = (float *) _vertexBuffer.getData();
@@ -235,6 +249,16 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	vt.pointer = vertexData + vpsize + vnsize;
 	vertexDecl.push_back(vt);
 
+	if (vttsize > 0) {
+		VertexAttrib vtt;
+		vtt.index = VTCOORD + 1;
+		vtt.size = vttsize;
+		vtt.type = GL_FLOAT;
+		vtt.stride = vertexSize;
+		vtt.pointer = vertexData + vpsize + vnsize + vtsize;
+		vertexDecl.push_back(vtt);
+	}
+
 	_vertexBuffer.setVertexDecl(vertexDecl);
 
 	float *v = vertexData;
@@ -256,6 +280,14 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
+
+		// TintMap TexCoords
+		if (vttsize > 0) {
+			v[0] = v[-3];
+			v[1] = v[-2];
+			v[2] = v[-1];
+			v += 3;
+		}
 	}
 
 
@@ -289,10 +321,10 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	Common::UString skeletonName;
 	skeletonName.readFixedASCII(*ctx.mdb, 32);
 
-	Common::UString diffuseMap, normalMap, tintMap, glowMap;
+	Common::UString diffuseMap, normalMap, glowMap;
 	diffuseMap.readFixedASCII(*ctx.mdb, 32);
 	 normalMap.readFixedASCII(*ctx.mdb, 32);
-	   tintMap.readFixedASCII(*ctx.mdb, 32);
+	  _tintMap.readFixedASCII(*ctx.mdb, 32);
 	   glowMap.readFixedASCII(*ctx.mdb, 32);
 
 	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
@@ -319,10 +351,11 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	// Read vertices (interleaved)
 
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 3;
-	GLsizei vtsize = 3;
-	uint32 vertexSize = (vpsize + vnsize + vtsize) * sizeof(float);
+	GLsizei vpsize  = 3;
+	GLsizei vnsize  = 3;
+	GLsizei vtsize  = 3;
+	GLsizei vttsize = _tintMap.empty() ? 0 : 3;
+	uint32 vertexSize = (vpsize + vnsize + vtsize + vttsize) * sizeof(float);
 	_vertexBuffer.setSize(vertexCount, vertexSize);
 
 	float *vertexData = (float *) _vertexBuffer.getData();
@@ -352,6 +385,18 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	vt.pointer = vertexData + vpsize + vnsize;
 	vertexDecl.push_back(vt);
 
+	if (vttsize > 0) {
+		VertexAttrib vtt;
+		vtt.index = VTCOORD + 1;
+		vtt.size = vttsize;
+		vtt.type = GL_FLOAT;
+		vtt.stride = vertexSize;
+		vtt.pointer = vertexData + vpsize + vnsize + vtsize;
+		vertexDecl.push_back(vtt);
+	}
+
+	_vertexBuffer.setVertexDecl(vertexDecl);
+
 	float *v = vertexData;
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
@@ -374,6 +419,14 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
 
+		// TintMap TexCoords
+		if (vttsize > 0) {
+			v[0] = v[-3];
+			v[1] = v[-2];
+			v[2] = v[-1];
+			v += 3;
+		}
+
 		ctx.mdb->skip(4); // Bone count
 	}
 
@@ -393,6 +446,73 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	return true;
 }
 
+void ModelNode_NWN2::setTint(const float tint[3][4]) {
+	GfxMan.lockFrame();
+
+	memcpy(_tint, tint, 3 * 4 * sizeof(float));
+
+	removeTint();
+	createTint();
+
+	GfxMan.unlockFrame();
+}
+
+void ModelNode_NWN2::removeTint() {
+	if (_tintedMapIndex < 0)
+		return;
+
+	_textures.erase(_textures.begin() + _tintedMapIndex);
+
+	_tintedMapIndex = -1;
+}
+
+void ModelNode_NWN2::createTint() {
+	if (_tintMap.empty())
+		return;
+
+	ImageDecoder *tintMap   = 0;
+	Surface      *tintedMap = 0;
+	try {
+		tintMap = Texture::loadImage(_tintMap);
+
+		if (tintMap->isCompressed())
+			tintMap->decompress();
+
+		const ImageDecoder::MipMap &tintImg = tintMap->getMipMap(0);
+
+		tintedMap = new Surface(tintImg.width, tintImg.height);
+
+		ImageDecoder::MipMap &tintedImg = tintedMap->getMipMap();
+
+		for (int n = 0; n < tintImg.width * tintImg.height; n++) {
+			float srcColor[4], dstColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+			tintImg.getPixel(n, srcColor[0], srcColor[1], srcColor[2], srcColor[3]);
+
+			if (srcColor[3] != 0.0f) {
+				for (int i = 0; i < 3; i++) {
+					for (int j = 0; j < 3; j++)
+						dstColor[j] += _tint[i][j] * srcColor[i] * _tint[i][3] * srcColor[3] * _diffuse[i];
+				}
+			} else
+				for (int i = 0; i < 3; i++)
+					dstColor[i] = _diffuse[i] * _tint[i][3];
+
+			tintedImg.setPixel(n, dstColor[0], dstColor[1], dstColor[2], dstColor[3]);
+		}
+
+	} catch (...) {
+		delete tintMap;
+		delete tintedMap;
+		return;
+	}
+
+	delete tintMap;
+
+	TextureHandle tintedTexture = TextureMan.add(new Texture(tintedMap));
+
+	_textures.push_back(tintedTexture);
+	_tintedMapIndex = _textures.size() - 1;
+}
 
 } // End of namespace Aurora
 

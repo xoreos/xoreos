@@ -44,6 +44,9 @@ public:
 	Model_NWN2(const Common::UString &name, ModelType type = kModelTypeObject);
 	~Model_NWN2();
 
+	/** Tint the whole model with these tint colors. */
+	void setTint(const float tint[3][4]);
+
 private:
 	struct PacketKey {
 		uint32 signature;
@@ -82,6 +85,18 @@ public:
 
 	bool loadRigid(Model_NWN2::ParserContext &ctx);
 	bool loadSkin (Model_NWN2::ParserContext &ctx);
+
+	void setTint(const float tint[3][4]);
+
+private:
+	Common::UString _tintMap;
+
+	int _tintedMapIndex;
+
+	float _tint[3][4];
+
+	void removeTint();
+	void createTint();
 };
 
 } // End of namespace Aurora
