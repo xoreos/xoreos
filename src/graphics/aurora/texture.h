@@ -59,6 +59,8 @@ public:
 
 	/** Return the TXI. */
 	const TXI &getTXI() const;
+	/** Return the image. */
+	const ImageDecoder &getImage() const;
 
 	/** Reload the texture from this image resource. */
 	bool reload(const Common::UString &name = "");

@@ -287,6 +287,12 @@ const TXI &Texture::getTXI() const {
 	return *_txi;
 }
 
+const ImageDecoder &Texture::getImage() const {
+	assert(_image);
+
+	return *_image;
+}
+
 bool Texture::reload(ImageDecoder *image, const TXI *txi) {
 	removeFromQueue(kQueueNewTexture);
 	removeFromQueue(kQueueTexture);
