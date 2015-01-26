@@ -112,6 +112,9 @@ private:
 		/** ResRef of the model. */
 		Common::UString modelName;
 
+		float floorTint[3][4]; ///< Tint color of the floor parts.
+		float wallTint[3][4];  ///< Tint color of the wall parts.
+
 		/** The tile's model. */
 		Graphics::Aurora::Model *model;
 	};

@@ -33,6 +33,7 @@
 #include "graphics/graphics.h"
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/model_nwn2.h"
 #include "graphics/aurora/modelnode.h"
 
 #include "sound/sound.h"
@@ -41,6 +42,7 @@
 #include "engines/aurora/model.h"
 
 #include "engines/nwn2/area.h"
+#include "engines/nwn2/util.h"
 #include "engines/nwn2/trxfile.h"
 #include "engines/nwn2/module.h"
 #include "engines/nwn2/object.h"
@@ -387,6 +389,10 @@ void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 	// Orientation
 	tile.orientation = (Orientation) t.getUint("Orientation", 0);
 
+	// Tint
+	readTint(t, "FloorTint", tile.floorTint);
+	readTint(t, "WallTint" , tile.wallTint);
+
 	tile.model = 0;
 
 	const Aurora::TwoDAFile &tiles = TwoDAReg.get("tiles");
@@ -432,6 +438,10 @@ void Area::loadTileModels() {
 		t->model = loadModelObject(t->modelName);
 			if (!t->model)
 				throw Common::Exception("Can't load tile model \"%s\"", t->modelName.c_str());
+
+		// Tinting
+		((Graphics::Aurora::Model_NWN2 *) t->model)->setTintFloor(t->floorTint);
+		((Graphics::Aurora::Model_NWN2 *) t->model)->setTintWalls(t->wallTint);
 
 		float rotation = (((int) t->orientation) * 90.0f);
 
