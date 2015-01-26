@@ -116,30 +116,40 @@ bool Texture::hasAlpha() const {
 	return _image->hasAlpha();
 }
 
-void Texture::load(const Common::UString &name) {
-	Common::SeekableReadStream *img = ResMan.getResource(::Aurora::kResourceImage, name, &_type);
+ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType *type) {
+	::Aurora::FileType iType;
+	Common::SeekableReadStream *img = ResMan.getResource(::Aurora::kResourceImage, name, &iType);
 	if (!img)
 		throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
-	_name = name;
+	if (type)
+		*type = iType;
+
+	ImageDecoder *image = 0;
 
 	// Loading the different image formats
-	if      (_type == ::Aurora::kFileTypeTGA)
-		_image = new TGA(*img);
-	else if (_type == ::Aurora::kFileTypeDDS)
-		_image = new DDS(*img);
-	else if (_type == ::Aurora::kFileTypeTPC)
-		_image = new TPC(*img);
-	else if (_type == ::Aurora::kFileTypeTXB)
-		_image = new TXB(*img);
-	else if (_type == ::Aurora::kFileTypeSBM)
-		_image = new SBM(*img);
+	if      (iType == ::Aurora::kFileTypeTGA)
+		image = new TGA(*img);
+	else if (iType == ::Aurora::kFileTypeDDS)
+		image = new DDS(*img);
+	else if (iType == ::Aurora::kFileTypeTPC)
+		image = new TPC(*img);
+	else if (iType == ::Aurora::kFileTypeTXB)
+		image = new TXB(*img);
+	else if (iType == ::Aurora::kFileTypeSBM)
+		image = new SBM(*img);
 	else {
 		delete img;
-		throw Common::Exception("Unsupported image resource type %d", (int) _type);
+		throw Common::Exception("Unsupported image resource type %d", (int) iType);
 	}
 
 	delete img;
+	return image;
+}
+
+void Texture::load(const Common::UString &name) {
+	_image = loadImage(name, &_type);
+	_name  = name;
 
 	loadTXI(ResMan.getResource(name, ::Aurora::kFileTypeTXI));
 	loadImage();

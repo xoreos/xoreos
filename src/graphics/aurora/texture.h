@@ -68,6 +68,9 @@ public:
 	/** Dump the texture into a TGA. */
 	bool dumpTGA(const Common::UString &fileName) const;
 
+	/** Load a texture image resource. */
+	static ImageDecoder *loadImage(const Common::UString &name, ::Aurora::FileType *type = 0);
+
 protected:
 	// GLContainer
 	void doRebuild();
