@@ -34,7 +34,7 @@
 
 namespace Graphics {
 
-ImageDecoder::MipMap::MipMap() : width(0), height(0), size(0), data(0) {
+ImageDecoder::MipMap::MipMap(const ImageDecoder *i) : width(0), height(0), size(0), data(0), image(i) {
 }
 
 ImageDecoder::MipMap::~MipMap() {
@@ -46,6 +46,71 @@ void ImageDecoder::MipMap::swap(MipMap &right) {
 	SWAP(height, right.height);
 	SWAP(size  , right.size  );
 	SWAP(data  , right.data  );
+	SWAP(image , right.image );
+}
+
+void ImageDecoder::MipMap::getPixel(int x, int y, float &r, float &g, float &b, float &a) const {
+	getPixel(y * width + x, r, g, b, a);
+}
+
+void ImageDecoder::MipMap::getPixel(int n, float &r, float &g, float &b, float &a) const {
+	assert(n < (int)size);
+	assert(image);
+
+	if        (image->getFormat() == kPixelFormatRGB) {
+		r = data[n * 3 + 0] / 255.0f;
+		g = data[n * 3 + 1] / 255.0f;
+		b = data[n * 3 + 2] / 255.0f;
+		a = 1.0f;
+	} else if (image->getFormat() == kPixelFormatBGR) {
+		r = data[n * 3 + 2] / 255.0f;
+		g = data[n * 3 + 1] / 255.0f;
+		b = data[n * 3 + 0] / 255.0f;
+		a = 1.0f;
+	} else if (image->getFormat() == kPixelFormatRGBA) {
+		r = data[n * 4 + 0] / 255.0f;
+		g = data[n * 4 + 1] / 255.0f;
+		b = data[n * 4 + 2] / 255.0f;
+		a = data[n * 4 + 3] / 255.0f;
+	} else if (image->getFormat() == kPixelFormatBGRA) {
+		r = data[n * 4 + 2] / 255.0f;
+		g = data[n * 4 + 1] / 255.0f;
+		b = data[n * 4 + 0] / 255.0f;
+		a = data[n * 4 + 3] / 255.0f;
+	} else
+		throw Common::Exception("ImageDecoder::MipMap::getPixel(): Unsupported pixel format %d",
+		                        image->getFormat());
+}
+
+void ImageDecoder::MipMap::setPixel(int x, int y, float r, float g, float b, float a) {
+	getPixel(y * width + x, r, g, b, a);
+}
+
+void ImageDecoder::MipMap::setPixel(int n, float r, float g, float b, float a) {
+	assert(n < (int)size);
+	assert(image);
+
+	if        (image->getFormat() == kPixelFormatRGB) {
+		data[n * 3 + 0] = CLIP(r, 0.0f, 1.0f) * 255.0f;
+		data[n * 3 + 1] = CLIP(g, 0.0f, 1.0f) * 255.0f;
+		data[n * 3 + 2] = CLIP(b, 0.0f, 1.0f) * 255.0f;
+	} else if (image->getFormat() == kPixelFormatBGR) {
+		data[n * 3 + 2] = CLIP(r, 0.0f, 1.0f) * 255.0f;
+		data[n * 3 + 1] = CLIP(g, 0.0f, 1.0f) * 255.0f;
+		data[n * 3 + 0] = CLIP(b, 0.0f, 1.0f) * 255.0f;
+	} else if (image->getFormat() == kPixelFormatRGBA) {
+		data[n * 4 + 0] = CLIP(r, 0.0f, 1.0f) * 255.0f;
+		data[n * 4 + 1] = CLIP(g, 0.0f, 1.0f) * 255.0f;
+		data[n * 4 + 2] = CLIP(b, 0.0f, 1.0f) * 255.0f;
+		data[n * 4 + 3] = CLIP(a, 0.0f, 1.0f) * 255.0f;
+	} else if (image->getFormat() == kPixelFormatBGRA) {
+		data[n * 4 + 2] = CLIP(r, 0.0f, 1.0f) * 255.0f;
+		data[n * 4 + 1] = CLIP(g, 0.0f, 1.0f) * 255.0f;
+		data[n * 4 + 0] = CLIP(b, 0.0f, 1.0f) * 255.0f;
+		data[n * 4 + 3] = CLIP(a, 0.0f, 1.0f) * 255.0f;
+	} else
+		throw Common::Exception("ImageDecoder::MipMap::setPixel(): Unsupported pixel format %d",
+		                        image->getFormat());
 }
 
 
@@ -127,7 +192,7 @@ void ImageDecoder::decompress() {
 		return;
 
 	for (std::vector<MipMap *>::iterator m = _mipMaps.begin(); m != _mipMaps.end(); ++m) {
-		MipMap decompressed;
+		MipMap decompressed(this);
 
 		decompress(decompressed, **m, _formatRaw);
 
@@ -149,7 +214,7 @@ bool ImageDecoder::dumpTGA(const Common::UString &fileName) const {
 		return true;
 	}
 
-	MipMap mipMap;
+	MipMap mipMap(this);
 	decompress(mipMap, *_mipMaps[0], _formatRaw);
 	Graphics::dumpTGA(fileName, mipMap.data, mipMap.width, mipMap.height, kPixelFormatRGBA);
 

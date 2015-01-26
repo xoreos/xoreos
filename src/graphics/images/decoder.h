@@ -51,10 +51,22 @@ public:
 		uint32 size;   ///< The mip map's size in bytes.
 		byte  *data;   ///< The mip map's data.
 
-		MipMap();
+		const ImageDecoder *image; ///< The image the mip map belongs to.
+
+		MipMap(const ImageDecoder *i = 0);
 		~MipMap();
 
 		void swap(MipMap &right);
+
+		/** Get the color values of the pixel at this position. */
+		void getPixel(int x, int y, float &r, float &g, float &b, float &a) const;
+		/** Get the color values of the pixel at this index. */
+		void getPixel(int n, float &r, float &g, float &b, float &a) const;
+
+		/** Set the color values of the pixel at this position. */
+		void setPixel(int x, int y, float r, float g, float b, float a);
+		/** Set the color values of the pixel at this index. */
+		void setPixel(int n, float r, float g, float b, float a);
 	};
 
 	/** Is the image data compressed? */
