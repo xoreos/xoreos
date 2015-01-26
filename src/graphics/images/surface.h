@@ -41,6 +41,13 @@ public:
 	const byte *getData() const;
 
 	void fill(byte r, byte g, byte b, byte a);
+
+	/** Return a mip map. */
+	const MipMap &getMipMap(uint32 mipMap) const;
+	/** Return a mip map. */
+	const MipMap &getMipMap() const;
+	/** Return a mip map. */
+	MipMap &getMipMap();
 };
 
 } // End of namespace Graphics

@@ -81,4 +81,16 @@ void Surface::fill(byte r, byte g, byte b, byte a) {
 	}
 }
 
+const ImageDecoder::MipMap &Surface::getMipMap(uint32 mipMap) const {
+	return ImageDecoder::getMipMap(mipMap);
+}
+
+const ImageDecoder::MipMap &Surface::getMipMap() const {
+	return *_mipMaps[0];
+}
+
+ImageDecoder::MipMap &Surface::getMipMap() {
+	return *_mipMaps[0];
+}
+
 } // End of namespace Graphics
