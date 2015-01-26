@@ -3,6 +3,7 @@ include $(top_srcdir)/Makefile.common
 SUBDIRS = \
           images \
           aurora \
+          shader \
           $(EMPTY)
 
 noinst_LTLIBRARIES = libgraphics.la
@@ -52,5 +53,6 @@ libgraphics_la_SOURCES = \
 libgraphics_la_LIBADD = \
                         images/libimages.la \
                         aurora/libaurora.la \
+                        shader/libshader.la \
                         ../../glew/libglew.la \
                         $(EMPTY)
