@@ -91,6 +91,29 @@ void Model_NWN2::setTint(const float tint[3][4]) {
 			((ModelNode_NWN2 *) *n)->setTint(tint);
 }
 
+void Model_NWN2::setTintFloor(const float tint[3][4]) {
+	// Tileset model floor node names are of the form TL_XX_YYYY_##_F
+
+	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
+		for (NodeList::iterator n = (*s)->nodeList.begin(); n != (*s)->nodeList.end(); ++n)
+			if ((*n)->getName().beginsWith("TL_"))
+				if ((*n)->getName().endsWith("_F"))
+					((ModelNode_NWN2 *) *n)->setTint(tint);
+}
+
+void Model_NWN2::setTintWalls(const float tint[3][4]) {
+	// Tileset model wall node names are of the form TL_XX_YYYY_##.
+	// Exclude floors (TL_XX_YYYY_##_F), roof (TL_XX_YYYY_##_R),
+	// walk meshes (TL_XX_YYYY_##_W) and collision meshes (TL_XX_YYYY_##_C3)
+
+	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
+		for (NodeList::iterator n = (*s)->nodeList.begin(); n != (*s)->nodeList.end(); ++n)
+			if ((*n)->getName().beginsWith("TL_"))
+				if (!(*n)->getName().endsWith("_F") && !(*n)->getName().endsWith("_R") &&
+				    !(*n)->getName().endsWith("_W") && !(*n)->getName().endsWith("_C3"))
+					((ModelNode_NWN2 *) *n)->setTint(tint);
+}
+
 void Model_NWN2::load(ParserContext &ctx) {
 	if (ctx.mdb->readUint32BE() != kMDBID)
 		throw Common::Exception("Not a NWN2 MDB file");

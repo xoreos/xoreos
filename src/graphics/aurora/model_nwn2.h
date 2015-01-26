@@ -47,6 +47,11 @@ public:
 	/** Tint the whole model with these tint colors. */
 	void setTint(const float tint[3][4]);
 
+	/** Tint all floor nodes of the model with these tint colors. */
+	void setTintFloor(const float tint[3][4]);
+	/** Tint all wall nodes of the model with these tint colors. */
+	void setTintWalls(const float tint[3][4]);
+
 private:
 	struct PacketKey {
 		uint32 signature;
