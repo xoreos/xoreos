@@ -38,6 +38,7 @@
 #include "engines/aurora/model.h"
 
 #include "engines/nwn2/situated.h"
+#include "engines/nwn2/util.h"
 
 namespace Engines {
 
@@ -232,24 +233,7 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 	_locked = gff.getBool("Locked", _locked);
 
 	// Tint
-	if (gff.hasField("Tintable")) {
-		const Aurora::GFFStruct &tintable = gff.getStruct("Tintable");
-		if (tintable.hasField("Tint")) {
-			const Aurora::GFFStruct &tint = tintable.getStruct("Tint");
-
-			for (int i = 0; i < 3; i++) {
-				Common::UString index = Common::UString::sprintf("%d", i + 1);
-				if (tint.hasField(index)) {
-					const Aurora::GFFStruct &tintN = tint.getStruct(index);
-
-					_tint[i][0] = tintN.getUint("r", _tint[i][0] * 255) / 255.0f;
-					_tint[i][1] = tintN.getUint("g", _tint[i][1] * 255) / 255.0f;
-					_tint[i][2] = tintN.getUint("b", _tint[i][2] * 255) / 255.0f;
-					_tint[i][3] = tintN.getUint("a", _tint[i][3] * 255) / 255.0f;
-				}
-			}
-		}
-	}
+	readTint(gff, _tint);
 }
 
 void Situated::loadSounds() {
