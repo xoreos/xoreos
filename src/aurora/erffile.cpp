@@ -461,6 +461,8 @@ Common::SeekableReadStream *ERFFile::decompressZlib(byte *compressedData, uint32
 	// Negative windows bits means there is no zlib header present in the data.
 	int zResult = inflateInit2(&strm, -windowBits);
 	if (zResult != Z_OK) {
+		inflateEnd(&strm);
+
 		delete[] decompressedData;
 		throw Common::Exception("Could not initialize zlib inflate");
 	}
@@ -470,10 +472,13 @@ Common::SeekableReadStream *ERFFile::decompressZlib(byte *compressedData, uint32
 
 	zResult = inflate(&strm, Z_SYNC_FLUSH);
 	if (zResult != Z_OK && zResult != Z_STREAM_END) {
+		inflateEnd(&strm);
+
 		delete[] decompressedData;
 		throw Common::Exception("Failed to inflate: %d", zResult);
 	}
 
+	inflateEnd(&strm);
 	return new Common::MemoryReadStream(decompressedData, unpackedSize, true);
 }
 
