@@ -65,7 +65,7 @@ void SBM::readData(Common::SeekableReadStream &sbm) {
 
 	uint32 rowCount = (sbm.size() / 1024);
 
-	_mipMaps.push_back(new MipMap);
+	_mipMaps.push_back(new MipMap(this));
 
 	_mipMaps[0]->width  = 4 * 32;
 	_mipMaps[0]->height = NEXTPOWER2((uint32) rowCount * 32);

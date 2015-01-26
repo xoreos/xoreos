@@ -116,7 +116,7 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds) {
 
 	_mipMaps.reserve(mipMapCount);
 	for (uint32 i = 0; i < mipMapCount; i++) {
-		MipMap *mipMap = new MipMap;
+		MipMap *mipMap = new MipMap(this);
 
 		mipMap->width  = MAX<uint32>(width , 1);
 		mipMap->height = MAX<uint32>(height, 1);
@@ -176,7 +176,7 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 
 	// Detect how many mip maps are in the DDS
 	do {
-		MipMap *mipMap = new MipMap;
+		MipMap *mipMap = new MipMap(this);
 
 		mipMap->width  = MAX<uint32>(width,  1);
 		mipMap->height = MAX<uint32>(height, 1);
