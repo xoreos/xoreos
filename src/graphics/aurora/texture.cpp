@@ -127,20 +127,25 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 
 	ImageDecoder *image = 0;
 
-	// Loading the different image formats
-	if      (iType == ::Aurora::kFileTypeTGA)
-		image = new TGA(*img);
-	else if (iType == ::Aurora::kFileTypeDDS)
-		image = new DDS(*img);
-	else if (iType == ::Aurora::kFileTypeTPC)
-		image = new TPC(*img);
-	else if (iType == ::Aurora::kFileTypeTXB)
-		image = new TXB(*img);
-	else if (iType == ::Aurora::kFileTypeSBM)
-		image = new SBM(*img);
-	else {
+	try {
+
+		// Loading the different image formats
+		if      (iType == ::Aurora::kFileTypeTGA)
+			image = new TGA(*img);
+		else if (iType == ::Aurora::kFileTypeDDS)
+			image = new DDS(*img);
+		else if (iType == ::Aurora::kFileTypeTPC)
+			image = new TPC(*img);
+		else if (iType == ::Aurora::kFileTypeTXB)
+			image = new TXB(*img);
+		else if (iType == ::Aurora::kFileTypeSBM)
+			image = new SBM(*img);
+		else
+			throw Common::Exception("Unsupported image resource type %d", (int) iType);
+
+	} catch (...) {
 		delete img;
-		throw Common::Exception("Unsupported image resource type %d", (int) iType);
+		throw;
 	}
 
 	delete img;
