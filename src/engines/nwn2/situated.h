@@ -71,6 +71,8 @@ protected:
 	Common::UString _soundUsed;      ///< The sound the object makes when used.
 	Common::UString _soundLocked;    ///< The sound the object makes when locked.
 
+	float _tint[3][4];
+
 	Graphics::Aurora::Model *_model; ///< The situated object's model.
 
 

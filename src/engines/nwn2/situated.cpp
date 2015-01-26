@@ -32,6 +32,7 @@
 #include "aurora/2dareg.h"
 
 #include "graphics/aurora/model.h"
+#include "graphics/aurora/model_nwn2.h"
 
 #include "engines/aurora/util.h"
 #include "engines/aurora/model.h"
@@ -45,6 +46,9 @@ namespace NWN2 {
 Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
 	_soundAppType(Aurora::kFieldIDInvalid), _locked(false), _model(0) {
 
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 4; j++)
+			_tint[i][j] = 1.0f;
 }
 
 Situated::~Situated() {
@@ -64,6 +68,9 @@ void Situated::loadModel() {
 	if (!_model)
 		throw Common::Exception("Failed to load situated object model \"%s\"",
 		                        _modelName.c_str());
+
+	// Tinting
+	((Graphics::Aurora::Model_NWN2 *) _model)->setTint(_tint);
 
 	// Positioning
 
@@ -223,6 +230,26 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 
 	// Locked
 	_locked = gff.getBool("Locked", _locked);
+
+	// Tint
+	if (gff.hasField("Tintable")) {
+		const Aurora::GFFStruct &tintable = gff.getStruct("Tintable");
+		if (tintable.hasField("Tint")) {
+			const Aurora::GFFStruct &tint = tintable.getStruct("Tint");
+
+			for (int i = 0; i < 3; i++) {
+				Common::UString index = Common::UString::sprintf("%d", i + 1);
+				if (tint.hasField(index)) {
+					const Aurora::GFFStruct &tintN = tint.getStruct(index);
+
+					_tint[i][0] = tintN.getUint("r", _tint[i][0] * 255) / 255.0f;
+					_tint[i][1] = tintN.getUint("g", _tint[i][1] * 255) / 255.0f;
+					_tint[i][2] = tintN.getUint("b", _tint[i][2] * 255) / 255.0f;
+					_tint[i][3] = tintN.getUint("a", _tint[i][3] * 255) / 255.0f;
+				}
+			}
+		}
+	}
 }
 
 void Situated::loadSounds() {
