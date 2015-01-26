@@ -83,24 +83,30 @@ void Cursor::load() {
 	_hotspotX = 0;
 	_hotspotY = 0;
 
-	ImageDecoder *image;
-	// Loading the different image formats
-	if      (type == ::Aurora::kFileTypeTGA)
-		image = new TGA(*img);
-	else if (type == ::Aurora::kFileTypeDDS)
-		image = new DDS(*img);
-	else if (type == ::Aurora::kFileTypeCUR) {
-		WinIconImage *cursor = new WinIconImage(*img);
+	ImageDecoder *image = 0;
 
-		if (_hotspotX < 0)
-			_hotspotX = cursor->getHotspotX();
-		if (_hotspotY < 0)
-			_hotspotY = cursor->getHotspotY();
+	try {
 
-		image = cursor;
-	} else {
+		// Loading the different image formats
+		if      (type == ::Aurora::kFileTypeTGA)
+			image = new TGA(*img);
+		else if (type == ::Aurora::kFileTypeDDS)
+			image = new DDS(*img);
+		else if (type == ::Aurora::kFileTypeCUR) {
+			WinIconImage *cursor = new WinIconImage(*img);
+
+			if (_hotspotX < 0)
+				_hotspotX = cursor->getHotspotX();
+			if (_hotspotY < 0)
+				_hotspotY = cursor->getHotspotY();
+
+			image = cursor;
+		} else
+			throw Common::Exception("Unsupported cursor resource type %d", (int) type);
+
+	} catch (...) {
 		delete img;
-		throw Common::Exception("Unsupported cursor resource type %d", (int) type);
+		throw;
 	}
 
 	delete img;
