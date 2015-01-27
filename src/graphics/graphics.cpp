@@ -255,7 +255,7 @@ bool GraphicsManager::setFSAA(int level) {
 	setWindowIcon(*_screen);
 
 	// Initial call to setupSDLGL has already identified which GL context we can use.
-	if(_gl3) {
+	if (_gl3) {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
@@ -317,7 +317,7 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 
 	_glContext = SDL_GL_CreateContext(_screen);
 
-	if(_glContext != NULL) {
+	if (_glContext != NULL) {
 		// OpenGL 3.2 context created, continue.
 		return (_gl3 = true);
 	}
@@ -334,7 +334,7 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 
 	_glContext = SDL_GL_CreateContext(_screen);
 
-	if(_glContext == NULL) {
+	if (_glContext == NULL) {
 		SDL_DestroyWindow(_screen);
 		return false;
 	}
