@@ -22,8 +22,8 @@
  *  Static data used for decoding WMV2 videos.
  */
 
-#ifndef VIDEO_WMV2DATA_H
-#define VIDEO_WMV2DATA_H
+#ifndef VIDEO_CODECS_WMV2DATA_H
+#define VIDEO_CODECS_WMV2DATA_H
 
 #include "common/types.h"
 #include "common/huffman.h"
@@ -95,4 +95,4 @@ extern const uint8 wmv2ZigZag4x8[32];
 
 } // End of namespace Video
 
-#endif // VIDEO_WMV2DATA_H
+#endif // VIDEO_CODECS_WMV2DATA_H

@@ -55,4 +55,4 @@ private:
 
 } // End of namespace Video
 
-#endif
+#endif // VIDEO_ACTIMAGINE_H
