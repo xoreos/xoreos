@@ -24,8 +24,8 @@
  *  Decoding AAC.
  */
 
-#ifndef SOUND_AAC_H
-#define SOUND_AAC_H
+#ifndef SOUND_DECODERS_AAC_H
+#define SOUND_DECODERS_AAC_H
 
 #include "common/types.h"
 
@@ -53,4 +53,4 @@ Codec *makeAACDecoder(
 
 } // End of namespace Sound
 
-#endif // SOUND_AAC_H
+#endif // SOUND_DECODERS_AAC_H

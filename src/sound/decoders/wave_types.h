@@ -37,4 +37,4 @@ enum WaveCompressionType {
 
 } // End of namespace Sound
 
-#endif
+#endif // SOUND_DECODERS_WAVE_TYPES_H

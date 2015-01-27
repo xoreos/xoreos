@@ -180,4 +180,4 @@ QueuingAudioStream *makeQueuingAudioStream(int rate, int channels);
 
 } // End of namespace Sound
 
-#endif
+#endif // SOUND_AUDIOSTREAM_H
