@@ -22,8 +22,8 @@
  *  The advanced graphics menu.
  */
 
-#ifndef GRAPHICSADV_H
-#define GRAPHICSADV_H
+#ifndef ENGINES_KOTOR_GUI_OPTIONS_GRAPHICSADV_H
+#define ENGINES_KOTOR_GUI_OPTIONS_GRAPHICSADV_H
 
 #include <engines/kotor/gui/gui.h>
 
@@ -44,4 +44,4 @@ protected:
 
 } // End of namespace Engines
 
-#endif // GRAPHICSADV_H
+#endif // ENGINES_KOTOR_GUI_OPTIONS_GRAPHICSADV_H

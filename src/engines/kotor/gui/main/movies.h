@@ -22,8 +22,8 @@
  *  The movies menu.
  */
 
-#ifndef MOVIESMENU_H
-#define MOVIESMENU_H
+#ifndef ENGINES_KOTOR_GUI_MAIN_MOVIES_H
+#define ENGINES_KOTOR_GUI_MAIN_MOVIES_H
 
 #include "engines/kotor/gui/gui.h"
 
@@ -46,4 +46,4 @@ protected:
 } // End of namespace Engines
 
 
-#endif // MOVIESMENU_H
+#endif // ENGINES_KOTOR_GUI_MAIN_MOVIES_H

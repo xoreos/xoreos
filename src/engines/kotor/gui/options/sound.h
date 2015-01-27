@@ -22,8 +22,8 @@
  *  The sound menu.
  */
 
-#ifndef SOUND_H
-#define SOUND_H
+#ifndef ENGINES_KOTOR_GUI_OPTIONS_SOUND_H
+#define ENGINES_KOTOR_GUI_OPTIONS_SOUND_H
 
 #include <engines/kotor/gui/gui.h>
 
@@ -47,4 +47,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // SOUND_H
+#endif // ENGINES_KOTOR_GUI_OPTIONS_SOUND_H

@@ -22,8 +22,8 @@
  *  The feedback menu.
  */
 
-#ifndef FEEDBACK_H
-#define FEEDBACK_H
+#ifndef ENGINES_KOTOR_GUI_OPTIONS_FEEDBACK_H
+#define ENGINES_KOTOR_GUI_OPTIONS_FEEDBACK_H
 
 #include <engines/kotor/gui/gui.h>
 
@@ -44,4 +44,4 @@ protected:
 
 } // End of namespace Engines
 
-#endif // FEEDBACK_H
+#endif // ENGINES_KOTOR_GUI_OPTIONS_FEEDBACK_H

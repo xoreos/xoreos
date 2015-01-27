@@ -22,8 +22,8 @@
  *  The advanced sound menu.
  */
 
-#ifndef SOUNDADV_H
-#define SOUNDADV_H
+#ifndef ENGINES_KOTOR_GUI_OPTIONS_SOUNDADV_H
+#define ENGINES_KOTOR_GUI_OPTIONS_SOUNDADV_H
 
 #include <engines/kotor/gui/gui.h>
 
@@ -44,4 +44,4 @@ protected:
 
 } // End of namespace Engines
 
-#endif // SOUNDADV_H
+#endif // ENGINES_KOTOR_GUI_OPTIONS_SOUNDADV_H

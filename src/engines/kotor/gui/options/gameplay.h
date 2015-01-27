@@ -22,8 +22,8 @@
  *  The gameplay menu.
  */
 
-#ifndef OPTIONSGAMEPLAY_H
-#define OPTIONSGAMEPLAY_H
+#ifndef ENGINES_KOTOR_GUI_OPTIONS_GAMEPLAY_H
+#define ENGINES_KOTOR_GUI_OPTIONS_GAMEPLAY_H
 
 #include "engines/kotor/gui/gui.h"
 
@@ -56,4 +56,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // OPTIONSGAMEPLAY_H
+#endif // ENGINES_KOTOR_GUI_OPTIONS_GAMEPLAY_H

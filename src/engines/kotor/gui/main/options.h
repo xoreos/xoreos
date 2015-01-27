@@ -22,8 +22,8 @@
  *  The options menu.
  */
 
-#ifndef OPTIONSMENU_H
-#define OPTIONSMENU_H
+#ifndef ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
+#define ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
 
 #include "engines/kotor/gui/gui.h"
 
@@ -57,4 +57,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // OPTIONSMENU_H
+#endif // ENGINES_KOTOR_GUI_MAIN_OPTIONS_H

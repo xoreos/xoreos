@@ -22,8 +22,8 @@
  *  The auto pause menu.
  */
 
-#ifndef AUTOPAUSE_H
-#define AUTOPAUSE_H
+#ifndef ENGINES_KOTOR_GUI_OPTIONS_AUTOPAUSE_H
+#define ENGINES_KOTOR_GUI_OPTIONS_AUTOPAUSE_H
 
 #include <engines/kotor/gui/gui.h>
 
@@ -44,4 +44,4 @@ protected:
 
 } // End of namespace Engines
 
-#endif // AUTOPAUSE_H
+#endif // ENGINES_KOTOR_GUI_OPTIONS_AUTOPAUSE_H

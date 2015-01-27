@@ -22,8 +22,8 @@
  *  The mouse settings menu.
  */
 
-#ifndef MOUSESETTINGS_H
-#define MOUSESETTINGS_H
+#ifndef ENGINES_KOTOR_GUI_OPTIONS_MOUSESETTINGS_H
+#define ENGINES_KOTOR_GUI_OPTIONS_MOUSESETTINGS_H
 
 #include <engines/kotor/gui/gui.h>
 
@@ -44,4 +44,4 @@ protected:
 
 } // End of namespace Engines
 
-#endif // MOUSESETTINGS_H
+#endif // ENGINES_KOTOR_GUI_OPTIONS_MOUSESETTINGS_H

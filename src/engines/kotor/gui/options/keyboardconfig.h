@@ -22,8 +22,8 @@
  *  The keyboard mapping menu.
  */
 
-#ifndef KEYBOARDCONFIG_H
-#define KEYBOARDCONFIG_H
+#ifndef ENGINES_KOTOR_GUI_OPTIONS_KEYBOARDCONFIG_H
+#define ENGINES_KOTOR_GUI_OPTIONS_KEYBOARDCONFIG_H
 
 #include <engines/kotor/gui//gui.h>
 
@@ -45,4 +45,4 @@ protected:
 } // End of namespace Engines
 
 
-#endif // KEYBOARDCONFIG_H
+#endif // ENGINES_KOTOR_GUI_OPTIONS_KEYBOARDCONFIG_H
