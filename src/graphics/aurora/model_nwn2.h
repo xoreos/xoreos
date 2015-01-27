@@ -22,8 +22,8 @@
  *  Loading MDB files found in Neverwinter Nights 2
  */
 
-#ifndef GRAPHICS_AURORA_NEWMODEL_NWN2_H
-#define GRAPHICS_AURORA_NEWMODEL_NWN2_H
+#ifndef GRAPHICS_AURORA_MODEL_NWN2_H
+#define GRAPHICS_AURORA_MODEL_NWN2_H
 
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/modelnode.h"
@@ -108,4 +108,4 @@ private:
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_NEWMODEL_NWN2_H
+#endif // GRAPHICS_AURORA_MODEL_NWN2_H

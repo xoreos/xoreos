@@ -18,8 +18,8 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HIGHLIGHTABLE_TEXT_H
-#define HIGHLIGHTABLE_TEXT_H
+#ifndef GRAPHICS_AURORA_HIGHLIGHTABLETEXT_H
+#define GRAPHICS_AURORA_HIGHLIGHTABLETEXT_H
 
 #include "graphics/aurora/text.h"
 #include "graphics/aurora/highlightable.h"
@@ -43,4 +43,4 @@ class HighlightableText: public Text, public Highlightable {
 
 } // End of namespace Graphics
 
-#endif // HIGHLIGHTABLE_TEXT_H
+#endif // GRAPHICS_AURORA_HIGHLIGHTABLETEXT_H

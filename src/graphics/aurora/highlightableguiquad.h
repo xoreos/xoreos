@@ -18,8 +18,8 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HIGHLIGHTABLE_GUI_QUAD_H
-#define HIGHLIGHTABLE_GUI_QUAD_H
+#ifndef GRAPHICS_AURORA_HIGHLIGHTABLEGUIQUAD_H
+#define GRAPHICS_AURORA_HIGHLIGHTABLEGUIQUAD_H
 
 #include "graphics/aurora/guiquad.h"
 #include "graphics/aurora/highlightable.h"
@@ -43,4 +43,4 @@ public:
 
 } // End of namespace Graphics
 
-#endif // HIGHLIGHTABLE_GUI_QUAD_H
+#endif // GRAPHICS_AURORA_HIGHLIGHTABLEGUIQUAD_H

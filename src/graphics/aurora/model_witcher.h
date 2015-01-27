@@ -22,8 +22,8 @@
  *  Loading MDB files found in The Witcher
  */
 
-#ifndef GRAPHICS_AURORA_NEWMODEL_WITCHER_H
-#define GRAPHICS_AURORA_NEWMODEL_WITCHER_H
+#ifndef GRAPHICS_AURORA_MODEL_WITCHER_H
+#define GRAPHICS_AURORA_MODEL_WITCHER_H
 
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/modelnode.h"
@@ -101,4 +101,4 @@ private:
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_NEWMODEL_WITCHER_H
+#endif // GRAPHICS_AURORA_MODEL_WITCHER_H

@@ -22,8 +22,8 @@
  *  Loading MDL files found in Star Wars: Knights of the Old Republic.
  */
 
-#ifndef GRAPHICS_AURORA_NEWMODEL_KOTOR_H
-#define GRAPHICS_AURORA_NEWMODEL_KOTOR_H
+#ifndef GRAPHICS_AURORA_MODEL_KOTOR_H
+#define GRAPHICS_AURORA_MODEL_KOTOR_H
 
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/modelnode.h"
@@ -100,4 +100,4 @@ private:
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_NEWMODEL_KOTOR_H
+#endif // GRAPHICS_AURORA_MODEL_KOTOR_H

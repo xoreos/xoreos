@@ -22,8 +22,8 @@
  *  Loading MDL files found in Neverwinter Nights.
  */
 
-#ifndef GRAPHICS_AURORA_NEWMODEL_NWN_H
-#define GRAPHICS_AURORA_NEWMODEL_NWN_H
+#ifndef GRAPHICS_AURORA_MODEL_NWN_H
+#define GRAPHICS_AURORA_MODEL_NWN_H
 
 #include "graphics/aurora/model.h"
 #include "graphics/aurora/modelnode.h"
@@ -153,4 +153,4 @@ private:
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_NEWMODEL_NWN_BINARY_H
+#endif // GRAPHICS_AURORA_MODEL_NWN_BINARY_H

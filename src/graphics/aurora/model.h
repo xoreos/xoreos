@@ -22,8 +22,8 @@
  *  A 3D model of an object.
  */
 
-#ifndef GRAPHICS_AURORA_NEWMODEL_H
-#define GRAPHICS_AURORA_NEWMODEL_H
+#ifndef GRAPHICS_AURORA_MODEL_H
+#define GRAPHICS_AURORA_MODEL_H
 
 #include <vector>
 #include <list>
@@ -264,4 +264,4 @@ public:
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_NEWMODEL_H
+#endif // GRAPHICS_AURORA_MODEL_H

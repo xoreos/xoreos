@@ -88,4 +88,4 @@ private:
 
 #define YUVToRGBMan (::Graphics::YUVToRGBManager::instance())
 
-#endif
+#endif // GRAPHICS_YUV_TO_RGB_H

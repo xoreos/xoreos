@@ -18,8 +18,8 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HIGHLIGHTABLE_H
-#define HIGHLIGHTABLE_H
+#ifndef GRAPHICS_AURORA_HIGHLIGHTABLE_H
+#define GRAPHICS_AURORA_HIGHLIGHTABLE_H
 
 namespace Graphics {
 
@@ -78,4 +78,4 @@ private:
 
 } // End of namespace Graphics
 
-#endif // HIGHLIGHTABLE_H
+#endif // GRAPHICS_AURORA_HIGHLIGHTABLE_H
