@@ -89,7 +89,7 @@ void ButtonsGroup::setActive(uint button) {
 
 uint ButtonsGroup::getChoice() const {
 	for (std::vector<WidgetButton *>::const_iterator it = _buttonsList.begin(); it != _buttonsList.end(); ++it) {
-		if((*it)->isPressed()) {
+		if ((*it)->isPressed()) {
 			return std::distance(_buttonsList.begin(), it);
 		}
 	}
