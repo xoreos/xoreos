@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_KEYBOARDCONFIG_H
 #define ENGINES_KOTOR_GUI_OPTIONS_KEYBOARDCONFIG_H
 
-#include <engines/kotor/gui//gui.h>
+#include <engines/kotor/gui/gui.h>
 
 namespace Engines {
 
