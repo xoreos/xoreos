@@ -80,7 +80,14 @@ void Creature::init() {
 
 	_appearanceID = Aurora::kFieldIDInvalid;
 
-	_model   = 0;
+	_appearanceHead  = 0;
+	_appearanceMHair = 0;
+	_appearanceFHair = 0;
+
+	_armorVisualType = 0;
+	_armorVariations = 0;
+
+	_model = 0;
 
 	for (int i = 0; i < kAbilityMAX; i++)
 		_abilities[i] = 0;
@@ -178,6 +185,42 @@ int32 Creature::getMaxHP() const {
 void Creature::loadModel() {
 	if (_model)
 		return;
+
+	if (_appearanceID == Aurora::kFieldIDInvalid) {
+		warning("Creature \"%s\" has no appearance", _tag.c_str());
+		return;
+	}
+
+	const Aurora::TwoDARow &appearance = TwoDAReg.get("appearance").getRow(_appearanceID);
+
+	Common::UString modelBody = appearance.getString("NWN2_Model_Body");
+	if (modelBody.empty()) {
+		warning("Creature \"%s\" has no body", _tag.c_str());
+		return;
+	}
+
+	// Male/Female
+	modelBody.replaceAll('?', isFemale() ? 'F' : 'M');
+
+	// Prefix for armor model parts
+	const Aurora::TwoDARow &armorVisual = TwoDAReg.get("armorvisualdata").getRow(_armorVisualType);
+	Common::UString armorPrefix = armorVisual.getString("Prefix");
+
+	// Model for the main body part
+	modelBody = Common::UString::sprintf("%s_%s_BODY%02d", modelBody.c_str(),
+	                                     armorPrefix.c_str(), _armorVariations + 1);
+
+	_model = loadModelObject(modelBody);
+
+	// Positioning
+
+	float x, y, z;
+
+	getPosition(x, y, z);
+	setPosition(x, y, z);
+
+	getOrientation(x, y, z);
+	setOrientation(x, y, z);
 }
 
 void Creature::unloadModel() {
@@ -340,6 +383,13 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	// Appearance
 
 	_appearanceID = gff.getUint("Appearance_Type", _appearanceID);
+
+	_appearanceHead  = gff.getUint("Appearance_Head" , _appearanceHead);
+	_appearanceMHair = gff.getUint("Appearance_Hair" , _appearanceMHair);
+	_appearanceFHair = gff.getUint("Appearance_FHair", _appearanceFHair);
+
+	_armorVisualType = gff.getUint("ArmorVisualType", _armorVisualType);
+	_armorVariations = gff.getUint("Variation"      , _armorVariations);
 }
 
 void Creature::loadClasses(const Aurora::GFFStruct &gff,

@@ -161,6 +161,13 @@ private:
 
 	uint32 _appearanceID; ///< The creature's general appearance.
 
+	uint8 _armorVisualType;
+	uint8 _armorVariations;
+
+	uint8 _appearanceHead;  ///< The model variant used for the head.
+	uint8 _appearanceMHair; ///< The model variant used for male hair.
+	uint8 _appearanceFHair; ///< The model variant used for female hair.
+
 	Graphics::Aurora::Model *_model; ///< The creature's model. */
 
 
