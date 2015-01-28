@@ -50,6 +50,7 @@
 #include "engines/nwn2/waypoint.h"
 #include "engines/nwn2/placeable.h"
 #include "engines/nwn2/door.h"
+#include "engines/nwn2/creature.h"
 
 namespace Engines {
 
@@ -329,6 +330,10 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 	// Doors
 	if (git.hasField("Door List"))
 		loadDoors(git.getList("Door List"));
+
+	// Creatures
+	if (git.hasField("Creature List"))
+		loadCreatures(git.getList("Creature List"));
 }
 
 void Area::loadProperties(const Aurora::GFFStruct &props) {
@@ -506,6 +511,14 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 		Door *door = new Door(*_module, **d);
 
 		loadObject(*door);
+	}
+}
+
+void Area::loadCreatures(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c) {
+		Creature *creature = new Creature(**c);
+
+		loadObject(*creature);
 	}
 }
 
