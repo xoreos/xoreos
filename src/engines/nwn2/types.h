@@ -45,7 +45,22 @@ enum ObjectType {
 	kObjectTypeAll          = 0x7FFF
 };
 
+enum Ability {
+	kAbilityStrength     = 0,
+	kAbilityDexterity    = 1,
+	kAbilityConstitution = 2,
+	kAbilityIntelligence = 3,
+	kAbilityWisdom       = 4,
+	kAbilityCharisma     = 5,
+	kAbilityMAX
+};
+
 static const uint32 kObjectTypeInvalid = 0x7FFF;
+
+static const uint32 kGenderNone     =   4;
+static const uint32 kRaceInvalid    =  28;
+static const uint32 kSubRaceInvalid = 255;
+static const uint32 kClassInvalid   = 255;
 
 } // End of namespace NWN2
 
