@@ -192,9 +192,6 @@ private:
 
 	void loadTileModels();
 	void unloadTileModels();
-
-
-	static Common::UString createDisplayName(const Common::UString &name);
 };
 
 } // End of namespace NWN2

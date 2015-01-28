@@ -65,6 +65,28 @@ bool readTint(const Aurora::GFFStruct &gff, const Common::UString &strct, float 
 	return readTint(gff.getStruct(strct), t);
 }
 
+Common::UString createDisplayName(const Common::UString &name) {
+	bool inBrace = false;
+
+	Common::UString displayName;
+	for (Common::UString::iterator it = name.begin(); it != name.end(); ++it) {
+		if (*it == '{') {
+			inBrace = true;
+			continue;
+		}
+
+		if (*it == '}') {
+			inBrace = false;
+			continue;
+		}
+
+		if (!inBrace)
+			displayName += *it;
+	}
+
+	return displayName;
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines
