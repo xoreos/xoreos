@@ -162,13 +162,16 @@ private:
 	uint32 _appearanceID; ///< The creature's general appearance.
 
 	uint8 _armorVisualType;
-	uint8 _armorVariations;
+	uint8 _armorVariation;
+
+	uint8 _bootsVisualType;
+	uint8 _bootsVariation;
 
 	uint8 _appearanceHead;  ///< The model variant used for the head.
 	uint8 _appearanceMHair; ///< The model variant used for male hair.
 	uint8 _appearanceFHair; ///< The model variant used for female hair.
 
-	Graphics::Aurora::Model *_model; ///< The creature's model. */
+	std::list<Graphics::Aurora::Model *> _modelParts;
 
 
 	/** Init the creature. */
@@ -185,6 +188,14 @@ private:
 	/** Load the creature's classes. */
 	static void loadClasses (const Aurora::GFFStruct &gff,
 	                         std::vector<Class> &classes, uint8 &hitDice);
+
+	// Model loaders
+
+	Common::UString getBaseModel(const Common::UString &base);
+	bool loadArmorModel(const Common::UString &body, const Common::UString &armor,
+	                    uint8 visualType, uint8 variation);
+	bool loadHeadModel(uint8 appearance);
+	bool loadHairModel(uint8 appearance);
 };
 
 } // End of namespace NWN2

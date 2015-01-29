@@ -54,7 +54,8 @@ Creature::Creature(const Aurora::GFFStruct &creature) : Object(kObjectTypeCreatu
 }
 
 Creature::~Creature() {
-	delete _model;
+	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+		delete *m;
 }
 
 void Creature::init() {
@@ -85,38 +86,39 @@ void Creature::init() {
 	_appearanceFHair = 0;
 
 	_armorVisualType = 0;
-	_armorVariations = 0;
+	_armorVariation  = 0;
 
-	_model = 0;
+	_bootsVisualType = 0;
+	_bootsVariation  = 0;
 
 	for (int i = 0; i < kAbilityMAX; i++)
 		_abilities[i] = 0;
 }
 
 void Creature::show() {
-	if (_model)
-		_model->show();
+	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+		(*m)->show();
 }
 
 void Creature::hide() {
-	if (_model)
-		_model->hide();
+	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+		(*m)->hide();
 }
 
 void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
 
-	if (_model)
-		_model->setPosition(x, y, z);
+	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+		(*m)->setPosition(x, y, z);
 }
 
 void Creature::setOrientation(float x, float y, float z) {
 	Object::setOrientation(x, y, z);
 	Object::getOrientation(x, y, z);
 
-	if (_model)
-		_model->setRotation(x, z, -y);
+	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+		(*m)->setRotation(x, z, -y);
 }
 
 const Common::UString &Creature::getFirstName() const {
@@ -182,8 +184,72 @@ int32 Creature::getMaxHP() const {
 	return _baseHP + _bonusHP;
 }
 
+Common::UString Creature::getBaseModel(const Common::UString &base) {
+	const Aurora::TwoDARow &appearance = TwoDAReg.get("appearance").getRow(_appearanceID);
+
+	Common::UString baseModel = appearance.getString(base);
+
+	// Male/Female
+	baseModel.replaceAll('?', isFemale() ? 'F' : 'M');
+
+	return baseModel;
+}
+
+bool Creature::loadArmorModel(const Common::UString &body,
+		const Common::UString &armor, uint8 visualType, uint8 variation) {
+
+	const Aurora::TwoDARow &armorVisual = TwoDAReg.get("armorvisualdata").getRow(visualType);
+	Common::UString armorPrefix = armorVisual.getString("Prefix");
+
+	Common::UString modelFile;
+	modelFile = Common::UString::sprintf("%s_%s_%s%02d",
+	                                     body.c_str(), armorPrefix.c_str(), armor.c_str(), variation + 1);
+
+	Graphics::Aurora::Model *model = loadModelObject(modelFile);
+	if (model)
+		_modelParts.push_back(model);
+
+	return model != 0;
+}
+
+bool Creature::loadHeadModel(uint8 appearance) {
+	if (appearance == 0)
+		return false;
+
+	Common::UString head = getBaseModel("NWN2_Model_Head");
+	if (head.empty())
+		return false;
+
+	Common::UString modelFile;
+	modelFile = Common::UString::sprintf("%s%02d", head.c_str(), appearance);
+
+	Graphics::Aurora::Model *model = loadModelObject(modelFile);
+	if (model)
+		_modelParts.push_back(model);
+
+	return model != 0;
+}
+
+bool Creature::loadHairModel(uint8 appearance) {
+	if (appearance == 0)
+		return false;
+
+	Common::UString hair = getBaseModel("NWN2_Model_Hair");
+	if (hair.empty())
+		return false;
+
+	Common::UString modelFile;
+	modelFile = Common::UString::sprintf("%s%02d", hair.c_str(), appearance);
+
+	Graphics::Aurora::Model *model = loadModelObject(modelFile);
+	if (model)
+		_modelParts.push_back(model);
+
+	return model != 0;
+}
+
 void Creature::loadModel() {
-	if (_model)
+	if (!_modelParts.empty())
 		return;
 
 	if (_appearanceID == Aurora::kFieldIDInvalid) {
@@ -191,26 +257,27 @@ void Creature::loadModel() {
 		return;
 	}
 
-	const Aurora::TwoDARow &appearance = TwoDAReg.get("appearance").getRow(_appearanceID);
-
-	Common::UString modelBody = appearance.getString("NWN2_Model_Body");
-	if (modelBody.empty()) {
+	Common::UString body = getBaseModel("NWN2_Model_Body");
+	if (body.empty()) {
 		warning("Creature \"%s\" has no body", _tag.c_str());
 		return;
 	}
 
-	// Male/Female
-	modelBody.replaceAll('?', isFemale() ? 'F' : 'M');
+	// Main body model
+	loadArmorModel(body, "BODY", _armorVisualType, _armorVariation);
 
-	// Prefix for armor model parts
-	const Aurora::TwoDARow &armorVisual = TwoDAReg.get("armorvisualdata").getRow(_armorVisualType);
-	Common::UString armorPrefix = armorVisual.getString("Prefix");
+	const Aurora::TwoDARow &appearance = TwoDAReg.get("appearance").getRow(_appearanceID);
+	if (appearance.getInt("BodyType") == 1) {
+		// Creature with more part models than just the body
 
-	// Model for the main body part
-	modelBody = Common::UString::sprintf("%s_%s_BODY%02d", modelBody.c_str(),
-	                                     armorPrefix.c_str(), _armorVariations + 1);
+		loadHeadModel(_appearanceHead);
+		loadHairModel(_appearanceMHair);
+		loadHairModel(_appearanceFHair);
 
-	_model = loadModelObject(modelBody);
+		loadArmorModel(body, "BOOTS" , _bootsVisualType, _bootsVariation);
+		if (!loadArmorModel(body, "GLOVES", 10, 0))
+			loadArmorModel(body, "GLOVES", 0, 0);
+	}
 
 	// Positioning
 
@@ -226,8 +293,10 @@ void Creature::loadModel() {
 void Creature::unloadModel() {
 	hide();
 
-	delete _model;
-	_model = 0;
+	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+		delete *m;
+
+	_modelParts.clear();
 }
 
 void Creature::load(const Aurora::GFFStruct &creature) {
@@ -389,7 +458,14 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_appearanceFHair = gff.getUint("Appearance_FHair", _appearanceFHair);
 
 	_armorVisualType = gff.getUint("ArmorVisualType", _armorVisualType);
-	_armorVariations = gff.getUint("Variation"      , _armorVariations);
+	_armorVariation  = gff.getUint("Variation"      , _armorVariation);
+
+	if (gff.hasField("Boots")) {
+		const Aurora::GFFStruct &boots = gff.getStruct("Boots");
+
+		_bootsVisualType = boots.getUint("ArmorVisualType", _bootsVisualType);
+		_bootsVariation  = boots.getUint("Variation"      , _bootsVariation);
+	}
 }
 
 void Creature::loadClasses(const Aurora::GFFStruct &gff,
