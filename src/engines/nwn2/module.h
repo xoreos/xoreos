@@ -60,6 +60,8 @@ public:
 
 	const Common::UString &getName() const;
 
+	void movePC(float x, float y, float z);
+
 	void changeModule(const Common::UString &module);
 
 private:

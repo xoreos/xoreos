@@ -51,6 +51,8 @@ Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 	registerCommand("playmusic"  , boost::bind(&Console::cmdPlayMusic  , this, _1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
+	registerCommand("move"       , boost::bind(&Console::cmdMove       , this, _1),
+			"Usage: move <x> <y> <z>\nMove to this position in the current area");
 	registerCommand("listareas"  , boost::bind(&Console::cmdListAreas  , this, _1),
 			"Usage: listareas\nList all areas in the current module");
 	registerCommand("gotoarea"   , boost::bind(&Console::cmdGotoArea   , this, _1),
@@ -150,6 +152,26 @@ void Console::cmdPlayMusic(const CommandLine &cl) {
 		return;
 
 	_module->_currentArea->playAmbientMusic(cl.args);
+}
+
+void Console::cmdMove(const CommandLine &cl) {
+	std::vector<Common::UString> args;
+	splitArguments(cl.args, args);
+
+	float x, z, y;
+	if ((args.size() < 3) ||
+	    (sscanf(args[0].c_str(), "%f", &x) != 1) ||
+	    (sscanf(args[1].c_str(), "%f", &y) != 1) ||
+	    (sscanf(args[2].c_str(), "%f", &z) != 1)) {
+
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	if (!_module || !_module->_currentArea)
+		return;
+
+	_module->movePC(x, y, z);
 }
 
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {

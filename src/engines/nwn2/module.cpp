@@ -371,6 +371,12 @@ void Module::unloadAreas() {
 	_currentArea = 0;
 }
 
+void Module::movePC(float x, float y, float z) {
+	// Roughly head position
+	CameraMan.setPosition(x, y + 2.0, z);
+	CameraMan.update();
+}
+
 void Module::changeModule(const Common::UString &module) {
 	_newModule = module;
 }
