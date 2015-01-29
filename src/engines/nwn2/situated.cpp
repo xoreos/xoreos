@@ -25,6 +25,7 @@
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/util.h"
+#include "common/configman.h"
 
 #include "aurora/locstring.h"
 #include "aurora/gfffile.h"
@@ -71,7 +72,8 @@ void Situated::loadModel() {
 		                        _modelName.c_str());
 
 	// Tinting
-	((Graphics::Aurora::Model_NWN2 *) _model)->setTint(_tint);
+	if (ConfigMan.getBool("tint"))
+		((Graphics::Aurora::Model_NWN2 *) _model)->setTint(_tint);
 
 	// Positioning
 

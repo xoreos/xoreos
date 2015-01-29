@@ -87,6 +87,7 @@ private:
 	void init();
 	void initResources(LoadProgress &progress);
 	void initCursors();
+	void initConfig();
 	void initGameConfig();
 
 	void deinit();

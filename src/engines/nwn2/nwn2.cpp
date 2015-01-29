@@ -123,7 +123,10 @@ void NWN2Engine::run(const Common::UString &target) {
 }
 
 void NWN2Engine::init() {
-	LoadProgress progress(19);
+	LoadProgress progress(20);
+
+	progress.step("Loading user game config");
+	initConfig();
 
 	initResources(progress);
 	if (EventMan.quitRequested())
@@ -315,6 +318,11 @@ void NWN2Engine::initCursors() {
 	CursorMan.add("cursor1" , "default"  , "down");
 
 	CursorMan.setDefault("default", "up");
+}
+
+void NWN2Engine::initConfig() {
+	// Enable/Disable the Proof-of-Concept software tinting
+	ConfigMan.setBool(Common::kConfigRealmDefault, "tint", true);
 }
 
 void NWN2Engine::initGameConfig() {

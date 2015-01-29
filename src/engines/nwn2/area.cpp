@@ -24,6 +24,7 @@
 
 #include "common/util.h"
 #include "common/error.h"
+#include "common/configman.h"
 
 #include "aurora/locstring.h"
 #include "aurora/gfffile.h"
@@ -440,8 +441,10 @@ void Area::loadTileModels() {
 				throw Common::Exception("Can't load tile model \"%s\"", t->modelName.c_str());
 
 		// Tinting
-		((Graphics::Aurora::Model_NWN2 *) t->model)->setTintFloor(t->floorTint);
-		((Graphics::Aurora::Model_NWN2 *) t->model)->setTintWalls(t->wallTint);
+		if (ConfigMan.getBool("tint")) {
+			((Graphics::Aurora::Model_NWN2 *) t->model)->setTintFloor(t->floorTint);
+			((Graphics::Aurora::Model_NWN2 *) t->model)->setTintWalls(t->wallTint);
+		}
 
 		float rotation = (((int) t->orientation) * 90.0f);
 
