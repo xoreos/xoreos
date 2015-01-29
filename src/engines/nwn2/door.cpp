@@ -147,6 +147,19 @@ void Door::hide() {
 	Situated::hide();
 }
 
+void Door::enter() {
+	highlight(true);
+}
+
+void Door::leave() {
+	highlight(false);
+}
+
+void Door::highlight(bool enabled) {
+	if (_model)
+		_model->drawBound(enabled);
+}
+
 void Door::setLocked(bool locked) {
 	if (isLocked() == locked)
 		return;

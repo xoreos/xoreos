@@ -29,6 +29,7 @@
 
 #include "common/types.h"
 #include "common/ustring.h"
+#include "common/mutex.h"
 
 #include "aurora/types.h"
 
@@ -37,6 +38,9 @@
 #include "graphics/aurora/types.h"
 
 #include "sound/types.h"
+
+#include "events/types.h"
+#include "events/notifyable.h"
 
 namespace Engines {
 
@@ -48,7 +52,7 @@ class Module;
 
 class Object;
 
-class Area : public Aurora::NWScript::Object {
+class Area : public Aurora::NWScript::Object, public Events::Notifyable {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();
@@ -86,10 +90,24 @@ public:
 	/** Play the specified sound (or the area's default) as ambient sound. */
 	void playAmbientSound(Common::UString sound = "");
 
+	// Events
+
+	/** Add a single event for consideration into the area event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+
+	/** Forcibly remove the focus from the currently highlighted object. */
+	void removeFocus();
 
 
 	/** Return the localized name of an area. */
 	static Common::UString getName(const Common::UString &resRef);
+
+
+protected:
+	/** Notify the area that the camera has been moved. */
+	void notifyCameraMoved();
 
 
 private:
@@ -165,6 +183,15 @@ private:
 	ObjectList _objects;   ///< List of all objects in the area.
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
 
+	/** The currently active (highlighted) object. */
+	Engines::NWN2::Object *_activeObject;
+
+	bool _highlightAll; ///< Are we currently highlighting all objects?
+
+	std::list<Events::Event> _eventQueue; ///< The event queue.
+
+	Common::Mutex _mutex; ///< Mutex securing access to the area.
+
 
 	// Loading helpers
 
@@ -193,6 +220,16 @@ private:
 
 	void loadTileModels();
 	void unloadTileModels();
+
+	// Highlight / active helpers
+
+	void checkActive(int x = -1, int y = -1);
+	void setActive(Engines::NWN2::Object *object);
+	Engines::NWN2::Object *getObjectAt(int x, int y);
+
+	void highlightAll(bool enabled);
+
+	void click(int x, int y);
 };
 
 } // End of namespace NWN2

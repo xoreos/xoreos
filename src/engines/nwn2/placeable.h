@@ -53,6 +53,13 @@ public:
 	void hide(); ///< Hide the placeable's model.
 
 
+	void enter(); ///< The cursor entered the placeable.
+	void leave(); ///< The cursor left the placeable.
+
+	/** (Un)Highlight the placeable. */
+	void highlight(bool enabled);
+
+
 	/** Is the placeable open? */
 	bool isOpen() const;
 

@@ -48,7 +48,7 @@ namespace Engines {
 namespace NWN2 {
 
 Object::Object(ObjectType type) : _type(type),
-	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(false), _usable(true),
+	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(true), _usable(true),
 	_area(0) {
 
 	_position   [0] = 0.0;
@@ -155,6 +155,19 @@ void Object::setOrientation(float x, float y, float z) {
 	_orientation[0] = x;
 	_orientation[1] = y;
 	_orientation[2] = z;
+}
+
+void Object::enter() {
+}
+
+void Object::leave() {
+}
+
+void Object::highlight(bool UNUSED(enabled)) {
+}
+
+bool Object::click(Object *UNUSED(triggerer)) {
+	return true;
 }
 
 void Object::loadSSF() {

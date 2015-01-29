@@ -59,6 +59,9 @@ Creature::~Creature() {
 }
 
 void Creature::init() {
+	_static = false;
+	_usable = true;
+
 	_gender  = kGenderNone;
 	_race    = kRaceInvalid;
 	_subRace = kSubRaceInvalid;
@@ -119,6 +122,19 @@ void Creature::setOrientation(float x, float y, float z) {
 
 	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
 		(*m)->setRotation(x, z, -y);
+}
+
+void Creature::enter() {
+	highlight(true);
+}
+
+void Creature::leave() {
+	highlight(false);
+}
+
+void Creature::highlight(bool enabled) {
+	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+		(*m)->drawBound(enabled);
 }
 
 const Common::UString &Creature::getFirstName() const {
@@ -288,6 +304,13 @@ void Creature::loadModel() {
 
 	getOrientation(x, y, z);
 	setOrientation(x, y, z);
+
+	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m) {
+		(*m)->setTag(_tag);
+		(*m)->setClickable(isClickable());
+
+		_ids.push_back((*m)->getID());
+	}
 }
 
 void Creature::unloadModel() {

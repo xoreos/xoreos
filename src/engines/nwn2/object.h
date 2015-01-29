@@ -112,6 +112,17 @@ public:
 	/** Create a Location out of the object's area, position and orientation. */
 	Location getLocation() const;
 
+	// Object/Cursor interactions
+
+	virtual void enter(); ///< The cursor entered the object. */
+	virtual void leave(); ///< The cursor left the object. */
+
+	/** (Un)Highlight the object. */
+	virtual void highlight(bool enabled);
+
+	/** The object was clicked. */
+	virtual bool click(Object *triggerer = 0);
+
 	// Sound
 
 	/** Stop the current object sound. */

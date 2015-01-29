@@ -258,9 +258,12 @@ void Module::handleEvents() {
 		if (!_console->isVisible())
 			if (handleCamera(event))
 				continue;
+
+		_currentArea->addEvent(event);
 	}
 
 	CameraMan.update();
+	_currentArea->processEventQueue();
 }
 
 bool Module::handleCamera(const Events::Event &e) {

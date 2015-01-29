@@ -55,6 +55,13 @@ public:
 	void hide(); ///< Hide the door's model.
 
 
+	void enter(); ///< The cursor entered the door.
+	void leave(); ///< The cursor left the door.
+
+	/** (Un)Highlight the door. */
+	void highlight(bool enabled);
+
+
 	/** Is the door open? */
 	bool isOpen() const;
 

@@ -121,6 +121,14 @@ public:
 	/** Set the creature's orientation. */
 	void setOrientation(float x, float y, float z);
 
+	// Object/Cursor interactions
+
+	void enter(); ///< The cursor entered the creature. */
+	void leave(); ///< The cursor left the creature. */
+
+	/** (Un)Highlight the creature. */
+	void highlight(bool enabled);
+
 private:
 	/** A class. */
 	struct Class {

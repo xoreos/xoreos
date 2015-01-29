@@ -103,6 +103,19 @@ void Placeable::hide() {
 	Situated::hide();
 }
 
+void Placeable::enter() {
+	highlight(true);
+}
+
+void Placeable::leave() {
+	highlight(false);
+}
+
+void Placeable::highlight(bool enabled) {
+	if (_model)
+		_model->drawBound(enabled);
+}
+
 void Placeable::loadObject(const Aurora::GFFStruct &gff) {
 	// State
 
