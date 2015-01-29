@@ -219,6 +219,8 @@ protected:
 	virtual void updateCaches();
 	virtual void showCallback();
 
+	static void splitArguments(Common::UString argLine, std::vector<Common::UString> &args);
+
 
 private:
 	struct Command {

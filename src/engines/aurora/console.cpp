@@ -1254,6 +1254,32 @@ void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) 
 	}
 }
 
+void Console::splitArguments(Common::UString argLine, std::vector<Common::UString> &args) {
+	bool inQuote = false;
+
+	if (args.empty())
+		args.push_back(Common::UString());
+
+	for (Common::UString::iterator c = argLine.begin(); c != argLine.end(); ++c) {
+		if (*c == '"') {
+			inQuote = !inQuote;
+			continue;
+		}
+
+		if (*c == ' ' && !inQuote) {
+			if (!args.back().empty())
+				args.push_back(Common::UString());
+
+			continue;
+		}
+
+		args.back() += *c;
+	}
+
+	if (args.back().empty())
+		args.pop_back();
+}
+
 void Console::setArguments(const Common::UString &cmd,
 		const std::list<Common::UString> &args) {
 
