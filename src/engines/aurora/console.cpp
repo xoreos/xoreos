@@ -30,6 +30,7 @@
 #include "common/util.h"
 #include "common/filepath.h"
 #include "common/readline.h"
+#include "common/configman.h"
 
 #include "aurora/resman.h"
 
@@ -683,6 +684,10 @@ Console::Console(const Common::UString &font, int fontHeight) : _neverShown(true
 			"Usage: playsound <sound>\nPlay the specified sound");
 	registerCommand("silence"    , boost::bind(&Console::cmdSilence    , this, _1),
 			"Usage: silence\nStop all playing sounds and music");
+	registerCommand("getoption"  , boost::bind(&Console::cmdGetOption  , this, _1),
+			"Usage: getoption <option>\nPrint the value of a config options");
+	registerCommand("setoption"  , boost::bind(&Console::cmdSetOption  , this, _1),
+			"Usage: setoption <option> <value>\nSet the value of a config option for this session");
 
 	_console->setPrompt(kPrompt);
 
@@ -1172,6 +1177,32 @@ void Console::cmdPlaySound(const CommandLine &cl) {
 
 void Console::cmdSilence(const CommandLine &UNUSED(cl)) {
 	SoundMan.stopAll();
+}
+
+void Console::cmdGetOption(const CommandLine &cl) {
+	std::vector<Common::UString> args;
+	splitArguments(cl.args, args);
+
+	if (args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	printf("\"%s\" = \"%s\"", args[0].c_str(), ConfigMan.getString(args[0]).c_str());
+}
+
+void Console::cmdSetOption(const CommandLine &cl) {
+	std::vector<Common::UString> args;
+	splitArguments(cl.args, args);
+
+	if (args.size() < 2) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	ConfigMan.setCommandlineKey(args[0], args[1]);
+
+	printf("\"%s\" = \"%s\"", args[0].c_str(), ConfigMan.getString(args[0]).c_str());
 }
 
 void Console::printCommandHelp(const Common::UString &cmd) {

@@ -275,6 +275,8 @@ private:
 	void cmdListSounds (const CommandLine &cl);
 	void cmdPlaySound  (const CommandLine &cl);
 	void cmdSilence    (const CommandLine &cl);
+	void cmdGetOption  (const CommandLine &cl);
+	void cmdSetOption  (const CommandLine &cl);
 
 	void updateHelpArguments();
 
