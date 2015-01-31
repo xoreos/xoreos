@@ -387,7 +387,7 @@ void Area::loadTiles(const Aurora::GFFList &tiles) {
 
 void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 	// ID
-	tile.metaTile = t.getUint("MetaTile");
+	tile.metaTile = t.getUint("MetaTile") == 1;
 	tile.tileID   = t.getUint("Appearance");
 
 	const Aurora::GFFStruct &pos = t.getStruct("Position");
@@ -406,13 +406,27 @@ void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
 
 	tile.model = 0;
 
-	const Aurora::TwoDAFile &tiles = TwoDAReg.get("tiles");
 
-	Common::UString tileSet  = tiles.getRow(tile.tileID).getString("TileSet");
-	Common::UString tileType = tiles.getRow(tile.tileID).getString("Tile_Type");
-	int             tileVar  = t.getUint("Variation") + 1;
+	if (!tile.metaTile) {
+		// Normal tile
 
-	tile.modelName = Common::UString::sprintf("tl_%s_%s_%02d", tileSet.c_str(), tileType.c_str(), tileVar);
+		const Aurora::TwoDAFile &tiles = TwoDAReg.get("tiles");
+
+		Common::UString tileSet  = tiles.getRow(tile.tileID).getString("TileSet");
+		Common::UString tileType = tiles.getRow(tile.tileID).getString("Tile_Type");
+		int             tileVar  = t.getUint("Variation") + 1;
+
+		tile.modelName = Common::UString::sprintf("tl_%s_%s_%02d", tileSet.c_str(), tileType.c_str(), tileVar);
+	} else {
+		// "Meta tile". Spreads over the space of several normal tiles
+
+		const Aurora::TwoDAFile &metatiles = TwoDAReg.get("metatiles");
+
+		Common::UString tileSet = metatiles.getRow(tile.tileID).getString("TileSet");
+		Common::UString name    = metatiles.getRow(tile.tileID).getString("Name");
+
+		tile.modelName = Common::UString::sprintf("tl_%s_%s", tileSet.c_str(), name.c_str());
+	}
 }
 
 void Area::loadModels() {
@@ -464,7 +478,7 @@ void Area::loadTileModels() {
 		// Rotate static floors back
 		const std::list<Graphics::Aurora::ModelNode *> &nodes = t->model->getNodes();
 		for (std::list<Graphics::Aurora::ModelNode *>::const_iterator n = nodes.begin(); n != nodes.end(); ++n) {
-			if (!(*n)->getName().endsWith("_F"))
+			if (t->metaTile || !(*n)->getName().endsWith("_F"))
 				continue;
 
 			(*n)->rotate(0.0, 0.0, -rotation);

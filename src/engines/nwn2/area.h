@@ -121,8 +121,9 @@ private:
 
 	/** A tile. */
 	struct Tile {
-		uint32 metaTile; ///< The meta tile used, if any.
-		uint32 tileID;   ///< ID of the tile's appearance.
+		bool metaTile; ///< Is this tile a meta tile?
+
+		uint32 tileID; ///< ID of the tile's appearance.
 
 		float position[3];       ///< The tile's position.
 		Orientation orientation; ///< The tile's orientation.
