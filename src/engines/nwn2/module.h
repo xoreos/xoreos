@@ -55,15 +55,18 @@ public:
 	void clear();
 
 	/** Load a module. */
-	bool loadModule(const Common::UString &module);
-
+	void load(const Common::UString &module);
+	/** Run the currently loaded module. */
 	void run();
 
+	/** Is a module currently running? */
+	bool isRunning() const;
+	/** Return the name of the currently loaded module. */
 	const Common::UString &getName() const;
 
+	/** Move the player character to this position within the current area. */
 	void movePC(float x, float y, float z);
 
-	void changeModule(const Common::UString &module);
 
 private:
 	typedef std::map<Common::UString, Area *> AreaMap;
@@ -72,6 +75,7 @@ private:
 	Campaign *_campaign;
 
 	bool _hasModule; ///< Do we have a module?
+	bool _running;   ///< Are we currently running a module?
 
 	/** Resources added by the module. */
 	Aurora::ResourceManager::ChangeID _resModule;
@@ -102,11 +106,15 @@ private:
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadAreas();       ///< Load the areas.
 
-	bool enter();     ///< Enter the currently loaded module.
+	void enter();     ///< Enter the currently loaded module.
 	void enterArea(); ///< Enter a new area.
 
-	/** Replace the currently running module. */
-	bool replaceModule();
+	/** Load the actual module. */
+	void loadModule(const Common::UString &module);
+	/** Schedule a change to a new module. */
+	void changeModule(const Common::UString &module);
+	/** Actually replace the currently running module. */
+	void replaceModule();
 
 	void handleEvents();
 	bool handleCamera(const Events::Event &e);

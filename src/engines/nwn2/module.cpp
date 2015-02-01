@@ -47,7 +47,7 @@ namespace Engines {
 namespace NWN2 {
 
 Module::Module(Console &console, Campaign &campaign) : _console(&console), _campaign(&campaign),
-	_hasModule(false), _exit(false), _currentArea(0) {
+	_hasModule(false), _running(false), _exit(false), _currentArea(0) {
 
 }
 
@@ -59,11 +59,23 @@ void Module::clear() {
 	unload();
 }
 
-bool Module::loadModule(const Common::UString &module) {
-	unloadModule();
+void Module::load(const Common::UString &module) {
+	if (isRunning()) {
+		// We are currently running a module. Schedule a safe change instead
+
+		changeModule(module);
+		return;
+	}
+
+	// We are not currently running a module. Directly load the new module
+	loadModule(module);
+}
+
+void Module::loadModule(const Common::UString &module) {
+	unload();
 
 	if (module.empty())
-		return false;
+		throw Common::Exception("Tried to load an empty module");
 
 	try {
 		indexMandatoryArchive(Aurora::kArchiveERF, module, 1001, &_resModule);
@@ -82,14 +94,12 @@ bool Module::loadModule(const Common::UString &module) {
 
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
-		printException(e, "WARNING: ");
-		return false;
+		throw e;
 	}
 
 	_newModule.clear();
 
 	_hasModule = true;
-	return true;
 }
 
 void Module::checkXPs() {
@@ -114,33 +124,32 @@ void Module::checkHAKs() {
 			throw Common::Exception("Required hak \"%s\" does not exist", h->c_str());
 }
 
-bool Module::replaceModule() {
+void Module::changeModule(const Common::UString &module) {
+	_newModule = module;
+}
+
+void Module::replaceModule() {
+	// Look if a campaign replacement was scheduled
 	_campaign->replaceCampaign();
 
 	if (_newModule.empty())
-		return true;
+		return;
 
 	_console->hide();
 
 	Common::UString newModule = _newModule;
 
-	unloadAreas();
-	unloadHAKs();
-	unloadModule();
+	unload();
 
 	_exit = true;
 
-	if (!loadModule(newModule))
-		return false;
-
-	return enter();
+	loadModule(newModule);
+	enter();
 }
 
-bool Module::enter() {
-	if (!_hasModule) {
-		warning("Module::enter(): Lacking a module?!?");
-		return false;
-	}
+void Module::enter() {
+	if (!_hasModule)
+		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
 	_console->printf("Entering module \"%s\"", _ifo.getName().getString().c_str());
 
@@ -151,8 +160,7 @@ bool Module::enter() {
 
 	} catch (Common::Exception &e) {
 		e.add("Can't initialize module \"%s\"", _ifo.getName().getString().c_str());
-		printException(e, "WARNING: ");
-		return false;
+		throw e;
 	}
 
 	float entryX, entryY, entryZ, entryDirX, entryDirY;
@@ -172,8 +180,6 @@ bool Module::enter() {
 	CameraMan.setPosition(entryX, entryZ + 2.0, entryY);
 	CameraMan.setOrientation(entryDirX, entryDirY);
 	CameraMan.update();
-
-	return true;
 }
 
 void Module::enterArea() {
@@ -209,8 +215,8 @@ void Module::enterArea() {
 }
 
 void Module::run() {
-	if (!enter())
-		return;
+	enter();
+	_running = true;
 
 	EventMan.enableKeyRepeat();
 
@@ -231,11 +237,19 @@ void Module::run() {
 		}
 
 	} catch (Common::Exception &e) {
+		_running = false;
+
 		e.add("Failed running module \"%s\"", _ifo.getName().getString().c_str());
-		printException(e, "WARNING: ");
+		throw e;
 	}
 
 	EventMan.enableKeyRepeat(0);
+
+	_running = false;
+}
+
+bool Module::isRunning() const {
+	return _running;
 }
 
 void Module::handleEvents() {
@@ -381,10 +395,6 @@ void Module::movePC(float x, float y, float z) {
 	// Roughly head position
 	CameraMan.setPosition(x, y + 2.0, z);
 	CameraMan.update();
-}
-
-void Module::changeModule(const Common::UString &module) {
-	_newModule = module;
 }
 
 const Common::UString &Module::getName() const {

@@ -159,7 +159,7 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 	_currentCampaign = desc;
 
 	try {
-		_module.loadModule(_startModule);
+		_module.load(_startModule);
 	} catch (Common::Exception &e) {
 		clear();
 
@@ -187,7 +187,7 @@ void Campaign::replaceCampaign() {
 	clear();
 	loadCampaignResource(*campaign);
 
-	_module.changeModule(_startModule);
+	_module.load(_startModule);
 	_console->setModule(&_module);
 }
 

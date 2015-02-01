@@ -285,7 +285,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 
 	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
-			_module->changeModule(cl.args + ".mod");
+			_module->load(cl.args + ".mod");
 			return;
 		}
 	}
