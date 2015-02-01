@@ -58,42 +58,60 @@ public:
 	void clear();
 
 	/** Load a campaign. */
-	void loadCampaign(const CampaignDescription &desc);
-
+	void load(const CampaignDescription &desc);
+	/** Run the currently loaded campaign. */
 	void run();
 
-	void changeCampaign(const CampaignDescription &desc);
-
+	/** Is a campaign currently running? */
+	bool isRunning() const;
 	/** Return the name of the current module. */
 	const Common::UString &getName() const;
-
 	/** Return the description of the current module. */
 	const Common::UString &getDescription() const;
 
+
 private:
+	/** All campaigns we know about. */
 	std::list<CampaignDescription> _campaigns;
 
 	Console *_console;
 
+	/** Resources added by the campaign. */
 	Aurora::ResourceManager::ChangeID _resCampaign;
 
+	/** The currently loaded campaign. */
 	CampaignDescription _currentCampaign;
 
+	/** Are we currently running a module? */
+	bool _running;
+
+	/** All modules used by the current campaign. */
 	std::list<Common::UString> _modules;
+	/** The module the current campaign starts in. */
 	Common::UString _startModule;
 
+	/** The current module of the current campaign. */
 	Module _module;
 
-	const CampaignDescription *_newCampaign; ///< The campaign we should change to.
+	/** The campaign we should change to. */
+	const CampaignDescription *_newCampaign;
 
 
+	/** Load a new campaign. */
+	void loadCampaign(const CampaignDescription &desc);
+	/** Schedule a change to a new campaign. */
+	void changeCampaign(const CampaignDescription &desc);
+	/** Load the actual campaign resources. */
 	void loadCampaignResource(const CampaignDescription &desc);
-
-	/** Replace the currently running campaign. */
-	void replaceCampaign();
 
 	void findCampaigns();
 	bool readCampaign(const Common::UString &camFile, CampaignDescription &desc);
+
+
+	// Methods called by the module
+
+	/** Actually replace the currently running campaign. */
+	void replaceCampaign();
 
 	friend class Module;
 };

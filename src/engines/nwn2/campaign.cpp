@@ -39,7 +39,9 @@ namespace Engines {
 
 namespace NWN2 {
 
-Campaign::Campaign(Console &console) : _console(&console), _module(console, *this), _newCampaign(0) {
+Campaign::Campaign(Console &console) : _console(&console), _running(false), 
+	_module(console, *this), _newCampaign(0) {
+
 	findCampaigns();
 
 	_console->setCampaign(this);
@@ -120,6 +122,18 @@ void Campaign::clear() {
 	ResMan.undo(_resCampaign);
 }
 
+void Campaign::load(const CampaignDescription &desc) {
+	if (isRunning()) {
+		// We are currently running a campaign. Schedule a safe change instead
+
+		changeCampaign(desc);
+		return;
+	}
+
+	// We are not currently running a campaign. Directly load the new campaign
+	loadCampaign(desc);
+}
+
 void Campaign::loadCampaignResource(const CampaignDescription &desc) {
 	if (desc.directory.empty())
 		throw Common::Exception("Campaign path is empty");
@@ -171,7 +185,20 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 }
 
 void Campaign::run() {
-	_module.run();
+	_running = true;
+
+	try {
+		_module.run();
+	} catch (...) {
+		_running = false;
+		throw;
+	}
+
+	_running = false;
+}
+
+bool Campaign::isRunning() const {
+	return _running;
 }
 
 void Campaign::changeCampaign(const CampaignDescription &desc) {

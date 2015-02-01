@@ -352,7 +352,7 @@ void NWN2Engine::main() {
 	if (campaigns.empty())
 		error("No campaigns found");
 
-	campaign.loadCampaign(*campaigns.begin());
+	campaign.load(*campaigns.begin());
 
 	campaign.run();
 }

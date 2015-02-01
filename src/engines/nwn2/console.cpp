@@ -260,7 +260,7 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
 	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {
 		if (Common::FilePath::getStem(c->directory).equalsIgnoreCase(cl.args)) {
-			_campaign->changeCampaign(*c);
+			_campaign->load(*c);
 			return;
 		}
 	}
