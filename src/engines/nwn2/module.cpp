@@ -38,6 +38,7 @@
 
 #include "engines/nwn2/module.h"
 #include "engines/nwn2/console.h"
+#include "engines/nwn2/campaign.h"
 #include "engines/nwn2/area.h"
 
 
@@ -45,8 +46,8 @@ namespace Engines {
 
 namespace NWN2 {
 
-Module::Module(Console &console) : _console(&console), _hasModule(false),
-	_exit(false), _currentArea(0) {
+Module::Module(Console &console, Campaign &campaign) : _console(&console), _campaign(&campaign),
+	_hasModule(false), _exit(false), _currentArea(0) {
 
 }
 
@@ -114,6 +115,8 @@ void Module::checkHAKs() {
 }
 
 bool Module::replaceModule() {
+	_campaign->replaceCampaign();
+
 	if (_newModule.empty())
 		return true;
 

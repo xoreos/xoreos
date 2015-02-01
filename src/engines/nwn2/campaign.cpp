@@ -39,11 +39,15 @@ namespace Engines {
 
 namespace NWN2 {
 
-Campaign::Campaign(Console &console) : _console(&console), _module(console) {
+Campaign::Campaign(Console &console) : _console(&console), _module(console, *this), _newCampaign(0) {
 	findCampaigns();
+
+	_console->setCampaign(this);
 }
 
 Campaign::~Campaign() {
+	_console->setCampaign();
+
 	clear();
 }
 
@@ -111,12 +115,12 @@ void Campaign::clear() {
 	_modules.clear();
 	_startModule.clear();
 
+	_newCampaign = 0;
+
 	ResMan.undo(_resCampaign);
 }
 
-void Campaign::loadCampaign(const CampaignDescription &desc) {
-	clear();
-
+void Campaign::loadCampaignResource(const CampaignDescription &desc) {
 	if (desc.directory.empty())
 		throw Common::Exception("Campaign path is empty");
 
@@ -146,6 +150,11 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 		_modules.push_back((*m)->getString("ModuleName") + ".mod");
 
 	delete gff;
+}
+
+void Campaign::loadCampaign(const CampaignDescription &desc) {
+	clear();
+	loadCampaignResource(desc);
 
 	_currentCampaign = desc;
 
@@ -163,6 +172,23 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 
 void Campaign::run() {
 	_module.run();
+}
+
+void Campaign::changeCampaign(const CampaignDescription &desc) {
+	_newCampaign = &desc;
+}
+
+void Campaign::replaceCampaign() {
+	if (!_newCampaign)
+		return;
+
+	const CampaignDescription *campaign = _newCampaign;
+
+	clear();
+	loadCampaignResource(*campaign);
+
+	_module.changeModule(_startModule);
+	_console->setModule(&_module);
 }
 
 const Common::UString &Campaign::getName() const {

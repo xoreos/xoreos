@@ -31,6 +31,7 @@ namespace Engines {
 
 namespace NWN2 {
 
+class Campaign;
 class Module;
 
 class Console : public ::Engines::Console {
@@ -38,10 +39,12 @@ public:
 	Console();
 	~Console();
 
+	void setCampaign(Campaign *campaign = 0);
 	void setModule(Module *module = 0);
 
 private:
-	Module *_module;
+	Campaign *_campaign;
+	Module   *_module;
 
 	// Caches
 	std::list<Common::UString> _music;   ///< All known music resources.
@@ -55,17 +58,20 @@ private:
 	void updateCaches();
 	void updateMusic();
 	void updateAreas();
+	void updateCampaigns();
 	void updateModules();
 
 	// The commands
-	void cmdListMusic  (const CommandLine &cl);
-	void cmdStopMusic  (const CommandLine &cl);
-	void cmdPlayMusic  (const CommandLine &cl);
-	void cmdMove       (const CommandLine &cl);
-	void cmdListAreas  (const CommandLine &cl);
-	void cmdGotoArea   (const CommandLine &cl);
-	void cmdListModules(const CommandLine &cl);
-	void cmdLoadModule (const CommandLine &cl);
+	void cmdListMusic    (const CommandLine &cl);
+	void cmdStopMusic    (const CommandLine &cl);
+	void cmdPlayMusic    (const CommandLine &cl);
+	void cmdMove         (const CommandLine &cl);
+	void cmdListAreas    (const CommandLine &cl);
+	void cmdGotoArea     (const CommandLine &cl);
+	void cmdListCampaigns(const CommandLine &cl);
+	void cmdLoadCampaign (const CommandLine &cl);
+	void cmdListModules  (const CommandLine &cl);
+	void cmdLoadModule   (const CommandLine &cl);
 };
 
 } // End of namespace NWN2

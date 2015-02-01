@@ -34,6 +34,7 @@
 #include "graphics/aurora/fontman.h"
 
 #include "engines/nwn2/console.h"
+#include "engines/nwn2/campaign.h"
 #include "engines/nwn2/module.h"
 #include "engines/nwn2/area.h"
 
@@ -42,29 +43,38 @@ namespace Engines {
 namespace NWN2 {
 
 Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
-	_module(0), _maxSizeMusic(0) {
+	_campaign(0), _module(0), _maxSizeMusic(0) {
 
-	registerCommand("listmusic"  , boost::bind(&Console::cmdListMusic  , this, _1),
+	registerCommand("listmusic"    , boost::bind(&Console::cmdListMusic    , this, _1),
 			"Usage: listmusic\nList all available music resources");
-	registerCommand("stopmusic"  , boost::bind(&Console::cmdStopMusic  , this, _1),
+	registerCommand("stopmusic"    , boost::bind(&Console::cmdStopMusic    , this, _1),
 			"Usage: stopmusic\nStop the currently playing music resource");
-	registerCommand("playmusic"  , boost::bind(&Console::cmdPlayMusic  , this, _1),
+	registerCommand("playmusic"    , boost::bind(&Console::cmdPlayMusic    , this, _1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
-	registerCommand("move"       , boost::bind(&Console::cmdMove       , this, _1),
+	registerCommand("move"         , boost::bind(&Console::cmdMove         , this, _1),
 			"Usage: move <x> <y> <z>\nMove to this position in the current area");
-	registerCommand("listareas"  , boost::bind(&Console::cmdListAreas  , this, _1),
+	registerCommand("listareas"    , boost::bind(&Console::cmdListAreas    , this, _1),
 			"Usage: listareas\nList all areas in the current module");
-	registerCommand("gotoarea"   , boost::bind(&Console::cmdGotoArea   , this, _1),
+	registerCommand("gotoarea"     , boost::bind(&Console::cmdGotoArea     , this, _1),
 			"Usage: gotoarea <area>\nMove to a specific area");
-	registerCommand("listmodules", boost::bind(&Console::cmdListModules, this, _1),
+	registerCommand("listcampaigns", boost::bind(&Console::cmdListCampaigns, this, _1),
+			"Usage: listcampaigns\nList all campaigns");
+	registerCommand("loadcampaign" , boost::bind(&Console::cmdLoadCampaign , this, _1),
+			"Usage: loadcampaign <campaign>\nLoads a campaign, "
+			"replacing the currently running one");
+	registerCommand("listmodules"  , boost::bind(&Console::cmdListModules  , this, _1),
 			"Usage: listmodules\nList all modules");
-	registerCommand("loadmodule" , boost::bind(&Console::cmdLoadModule , this, _1),
+	registerCommand("loadmodule"   , boost::bind(&Console::cmdLoadModule   , this, _1),
 			"Usage: loadmodule <module>\nLoads a module, "
 			"replacing the currently running one");
 }
 
 Console::~Console() {
+}
+
+void Console::setCampaign(Campaign *campaign) {
+	_campaign = campaign;
 }
 
 void Console::setModule(Module *module) {
@@ -76,6 +86,7 @@ void Console::updateCaches() {
 
 	updateMusic();
 	updateAreas();
+	updateCampaigns();
 	updateModules();
 }
 
@@ -110,6 +121,22 @@ void Console::updateAreas() {
 
 	_areas.sort(Common::UString::iless());
 	setArguments("gotoarea", _areas);
+}
+
+void Console::updateCampaigns() {
+	setArguments("loadcampaign");
+	if (!_campaign)
+		return;
+
+	std::list<Common::UString> names;
+
+	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
+	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {
+		names.push_back(Common::FilePath::getStem(c->directory));
+	}
+
+	names.sort(Common::UString::iless());
+	setArguments("loadcampaign", names);
 }
 
 void Console::updateModules() {
@@ -201,6 +228,44 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		}
 
 	printf("Area \"%s\" does not exist", cl.args.c_str());
+}
+
+void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
+	updateCampaigns();
+	if (!_campaign)
+		return;
+
+	std::list<Common::UString> names;
+
+	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
+	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {
+		names.push_back(Common::FilePath::getStem(c->directory) + " (\"" + c->name.getString() + "\")");
+	}
+
+	names.sort(Common::UString::iless());
+
+	for (std::list<Common::UString>::iterator c = names.begin(); c != names.end(); ++c)
+		print(*c);
+}
+
+void Console::cmdLoadCampaign(const CommandLine &cl) {
+	if (!_campaign)
+		return;
+
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
+	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {
+		if (Common::FilePath::getStem(c->directory).equalsIgnoreCase(cl.args)) {
+			_campaign->changeCampaign(*c);
+			return;
+		}
+	}
+
+	printf("No such campaign \"%s\"", cl.args.c_str());
 }
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {

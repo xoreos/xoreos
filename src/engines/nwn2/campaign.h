@@ -62,6 +62,8 @@ public:
 
 	void run();
 
+	void changeCampaign(const CampaignDescription &desc);
+
 	/** Return the name of the current module. */
 	const Common::UString &getName() const;
 
@@ -82,9 +84,18 @@ private:
 
 	Module _module;
 
+	const CampaignDescription *_newCampaign; ///< The campaign we should change to.
+
+
+	void loadCampaignResource(const CampaignDescription &desc);
+
+	/** Replace the currently running campaign. */
+	void replaceCampaign();
 
 	void findCampaigns();
 	bool readCampaign(const Common::UString &camFile, CampaignDescription &desc);
+
+	friend class Module;
 };
 
 } // End of namespace NWN2
