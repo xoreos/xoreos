@@ -108,6 +108,7 @@ void Console::updateAreas() {
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		_areas.push_back(*a);
 
+	_areas.sort(Common::UString::iless());
 	setArguments("gotoarea", _areas);
 }
 
