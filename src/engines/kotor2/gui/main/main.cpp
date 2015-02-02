@@ -72,8 +72,14 @@ void MainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_NEWGAME") {
-		if (_module->load("001EBO"))
-			_returnCode = 2;
+		try {
+			_module->load("001EBO");
+		} catch (Common::Exception &e) {
+			Common::printException(e, "WARNING: ");
+			return;
+		}
+
+		_returnCode = 2;
 		return;
 	}
 }

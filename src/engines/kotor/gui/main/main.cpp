@@ -113,8 +113,14 @@ void MainMenu::initWidget(Widget &widget) {
 void MainMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_NEWGAME") {
-		if (_module->load("lev_m40aa"))
-			_returnCode = 2;
+		try {
+			_module->load("lev_m40aa");
+		} catch (Common::Exception &e) {
+			Common::printException(e, "WARNING: ");
+			return;
+		}
+
+		_returnCode = 2;
 		return;
 	}
 

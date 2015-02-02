@@ -52,36 +52,49 @@ public:
 	void clear();
 
 	/** Load a module. */
-	bool load(const Common::UString &module);
-
-	/** Replace the currently running module. */
-	bool replaceModule(const Common::UString &module);
-
+	void load(const Common::UString &module);
+	/** Run the currently loaded module. */
 	void run();
+	/** Exit the currently running module. */
+	void exit();
 
+	/** Show the ingame main menu. */
 	void showMenu();
+
+	/** Is a module currently running? */
+	bool isRunning() const;
+	/** Return the name of the currently loaded module. */
+	const Common::UString &getName() const;
+
+	/** Return the IFO of the currently loaded module. */
+	const ::Engines::NWN::IFOFile &getIFO() const;
+	/** Return the area the PC is currently in. */
+	Area *getCurrentArea();
+
 
 protected:
 	Console *_console;
 
-	/** The current module's name. */
-	Common::UString _module;
-
-	/** The current module's area. */
-	Area *_area;
+	bool _hasModule; ///< Do we have a module?
+	bool _running;   ///< Are we currently running a module?
 
 	/** Resources added by the current module. */
 	std::list<Aurora::ResourceManager::ChangeID> _resources;
+
+	/** The current module's IFO. */
+	::Engines::NWN::IFOFile _ifo;
 
 	/** The current texture pack. */
 	int _currentTexturePack;
 	/** Resources added by the current texture pack. */
 	Aurora::ResourceManager::ChangeID _textures;
 
-	/** The current module's IFO. */
-	::Engines::NWN::IFOFile _ifo;
-
 	bool _exit; //< Should we exit the module?
+
+	Common::UString _module;    ///< The current module's name.
+	Common::UString _newModule; ///< The module we should change to.
+
+	Area *_area; ///< The current module's area.
 
 
 	void load();
@@ -106,7 +119,12 @@ protected:
 
 	virtual Area *createArea() const;
 
-	friend class Console;
+	/** Load the actual module. */
+	void loadModule(const Common::UString &module);
+	/** Schedule a change to a new module. */
+	void changeModule(const Common::UString &module);
+	/** Actually replace the currently running module. */
+	void replaceModule();
 };
 
 } // End of namespace KotOR

@@ -53,7 +53,7 @@ void Console::setModule(Module *module) {
 }
 
 void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
-	_module->_exit = true;
+	_module->exit();
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
@@ -65,7 +65,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		return;
 	}
 
-	_module->replaceModule(cl.args);
+	_module->load(cl.args);
 }
 
 } // End of namespace KOTOR

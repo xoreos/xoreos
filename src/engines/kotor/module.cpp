@@ -43,8 +43,9 @@ namespace Engines {
 
 namespace KotOR {
 
-Module::Module(Engines::Console &console) : _console(&console), _area(0),
-	_currentTexturePack(-1), _exit(false) {
+Module::Module(Engines::Console &console) : _console(&console),
+	_hasModule(false), _running(false),
+	_currentTexturePack(-1), _exit(false), _area(0) {
 
 }
 
@@ -57,7 +58,19 @@ void Module::clear() {
 	unloadTexturePack();
 }
 
-bool Module::load(const Common::UString &module) {
+void Module::load(const Common::UString &module) {
+	if (isRunning()) {
+		// We are currently running a module. Schedule a safe change instead
+
+		changeModule(module);
+		return;
+	}
+
+	// We are not currently running a module. Directly load the new module
+	loadModule(module);
+}
+
+void Module::loadModule(const Common::UString &module) {
 	unload();
 
 	_module = module;
@@ -67,21 +80,18 @@ bool Module::load(const Common::UString &module) {
 		load();
 
 	} catch (Common::Exception &e) {
-		e.add("Failed loading module \"%s\"", _module.c_str());
-		printException(e);
-
 		_module.clear();
-		return false;
+
+		e.add("Failed loading module \"%s\"", _module.c_str());
+		throw e;
 	}
 
-	return true;
+	_hasModule = true;
 }
 
 void Module::run() {
-	if (_module.empty())
-		throw Common::Exception("No module");
-
 	enter();
+	_running = true;
 
 	EventMan.enableKeyRepeat();
 
@@ -90,6 +100,10 @@ void Module::run() {
 		EventMan.flushEvents();
 
 		while (!EventMan.quitRequested() && !_exit) {
+			replaceModule();
+			if (_exit)
+				break;
+
 			handleEvents();
 
 			if (!EventMan.quitRequested() && !_exit)
@@ -97,11 +111,23 @@ void Module::run() {
 		}
 
 	} catch (Common::Exception &e) {
+		_running = false;
+
 		e.add("Failed running module \"%s\"", _ifo.getName().getString().c_str());
-		printException(e, "WARNING: ");
+		throw e;
 	}
 
 	EventMan.enableKeyRepeat(0);
+
+	_running = false;
+}
+
+bool Module::isRunning() const {
+	return _running;
+}
+
+void Module::exit() {
+	_exit = true;
 }
 
 void Module::showMenu() {
@@ -202,6 +228,8 @@ void Module::unload() {
 	unloadIFO();
 	unloadResources();
 
+	_hasModule = false;
+
 	_module.clear();
 }
 
@@ -227,19 +255,29 @@ void Module::unloadTexturePack() {
 	_currentTexturePack = -1;
 }
 
-bool Module::replaceModule(const Common::UString &module) {
-	_exit = true;
+void Module::changeModule(const Common::UString &module) {
+	_newModule = module;
+}
+
+void Module::replaceModule() {
+	if (_newModule.empty())
+		return;
+
+	_console->hide();
+
+	Common::UString newModule = _newModule;
 
 	unload();
-	if (!load(module))
-		return false;
 
+	_exit = true;
+
+	loadModule(newModule);
 	enter();
-	return true;
 }
 
 void Module::enter() {
-	assert(_area);
+	if (!_hasModule || !_area)
+		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
 	_console->printf("Entering module \"%s\"", _ifo.getName().getString().c_str());
 
@@ -371,6 +409,18 @@ bool Module::handleCameraMouseInput(const Events::Event &e) {
 
 Area *Module::createArea() const {
 	return new Area;
+}
+
+const Common::UString &Module::getName() const {
+	return _module;
+}
+
+const ::Engines::NWN::IFOFile &Module::getIFO() const {
+	return _ifo;
+}
+
+Area *Module::getCurrentArea() {
+	return _area;
 }
 
 } // End of namespace KotOR
