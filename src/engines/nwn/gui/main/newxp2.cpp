@@ -86,14 +86,19 @@ void NewXP2Menu::callbackActive(Widget &widget) {
 }
 
 void NewXP2Menu::loadModule(const Common::UString &module) {
-	if (_module->loadModule(module)) {
-		if (sub(*_charType, 0, false) == 2) {
-			_returnCode = 2;
-			return;
-		}
-
-		show();
+	try {
+		_module->load(module);
+	} catch (Common::Exception &e) {
+		Common::printException(e, "WARNING: ");
+		return;
 	}
+
+	if (sub(*_charType, 0, false) == 2) {
+		_returnCode = 2;
+		return;
+	}
+
+	show();
 }
 
 } // End of namespace NWN

@@ -443,7 +443,7 @@ void ScriptFunctions::startNewModule(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 	}
 
-	_module->changeModule(module);
+	_module->load(module);
 }
 
 void ScriptFunctions::effectSwarm(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {

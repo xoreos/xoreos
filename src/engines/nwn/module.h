@@ -70,28 +70,51 @@ public:
 	void clear();
 
 	/** Load a module. */
-	bool loadModule(const Common::UString &module);
+	void load(const Common::UString &module);
 	/** Use this character as the player character. */
-	bool usePC(const Common::UString &bic, bool local);
-
+	void usePC(const Common::UString &bic, bool local);
+	/** Run the currently loaded module. */
 	void run();
+	/** Exit the currently running module. */
+	void exit();
 
-
+	/** Show the ingame main menu. */
 	void showMenu();
 
-
+	/** Is a module currently running? */
+	bool isRunning() const;
+	/** Return the name of the currently loaded module. */
 	const Common::UString &getName() const;
 
+	/** Return the IFO of the currently loaded module. */
+	const IFOFile &getIFO() const;
+	/** Return the area the PC is currently in. */
+	Area *getCurrentArea();
+	/** Return the currently playing PC. */
 	Creature *getPC();
 
+	/** Start a conversation.
+	 *
+	 *  @param  conv      The dialog ResRef to use.
+	 *  @param  pc        The PC that initiated the conversation.
+	 *  @param  obj       The object the PC is talking with.
+	 *  @param  playHello Should the obj play its "Hello" sound?
+   *
+	 *  @return true if the conversation was started successfully.
+	 */
 	bool startConversation(const Common::UString &conv, Creature &pc,
 	                       Engines::NWN::Object &obj, bool playHello = true);
 
+	/** Move the player character to this area. */
+	void movePC(const Common::UString &area);
+	/** Move the player character to this position within the current area. */
+	void movePC(float x, float y, float z);
+	/** Move the player character to this position within this area. */
 	void movePC(const Common::UString &area, float x, float y, float z);
+	/** Move the player character to this position within this area. */
 	void movePC(Area *area, float x, float y, float z);
+	/** Notify the module that the PC was moved. */
 	void movedPC();
-
-	void changeModule(const Common::UString &module);
 
 	void delayScript(const Common::UString &script,
 	                 const Aurora::NWScript::ScriptState &state,
@@ -127,6 +150,7 @@ private:
 	Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
+	bool _running;   ///< Are we currently running a module?
 
 	IngameGUI *_ingameGUI; ///< The ingame GUI elements.
 
@@ -173,18 +197,20 @@ private:
 	void setPCTokens();
 	void removePCTokens();
 
-	bool enter();     ///< Enter the currently loaded module.
+	void enter();     ///< Enter the currently loaded module.
 	void enterArea(); ///< Enter a new area.
 
-	/** Replace the currently running module. */
-	bool replaceModule();
+	/** Load the actual module. */
+	void loadModule(const Common::UString &module);
+	/** Schedule a change to a new module. */
+	void changeModule(const Common::UString &module);
+	/** Actually replace the currently running module. */
+	void replaceModule();
 
 	void handleEvents();
 	bool handleCamera(const Events::Event &e);
 
 	void handleActions();
-
-	friend class Console;
 };
 
 } // End of namespace NWN

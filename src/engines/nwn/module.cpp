@@ -98,7 +98,7 @@ bool Module::Action::operator<(const Action &s) const {
 
 
 Module::Module(const Version &gameVersion, Console &console) : _gameVersion(&gameVersion),
-	_console(&console), _hasModule(false), _pc(0),
+	_console(&console), _hasModule(false), _running(false), _pc(0),
 	_currentTexturePack(-1), _exit(false), _currentArea(0) {
 
 	_ingameGUI = new IngameGUI(*this);
@@ -118,11 +118,25 @@ void Module::clear() {
 	unload();
 }
 
-bool Module::loadModule(const Common::UString &module) {
+void Module::load(const Common::UString &module) {
+	if (isRunning()) {
+		// We are currently running a module. Schedule a safe change instead
+
+		changeModule(module);
+		return;
+	}
+
+	// We are not currently running a module. Directly load the new module
+	loadModule(module);
+}
+
+void Module::loadModule(const Common::UString &module) {
+	unloadAreas();
+	unloadHAKs();
 	unloadModule();
 
 	if (module.empty())
-		return false;
+		throw Common::Exception("Tried to load an empty module");
 
 	try {
 		indexMandatoryArchive(Aurora::kArchiveERF, module, 100, &_resModule);
@@ -143,14 +157,12 @@ bool Module::loadModule(const Common::UString &module) {
 
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
-		printException(e, "WARNING: ");
-		return false;
+		throw e;
 	}
 
 	_newModule.clear();
 
 	_hasModule = true;
-	return true;
 }
 
 void Module::checkXPs() {
@@ -226,34 +238,36 @@ void Module::removePCTokens() {
 		TokenMan.remove(kGenderTokens[i].token);
 }
 
-bool Module::usePC(const Common::UString &bic, bool local) {
+void Module::usePC(const Common::UString &bic, bool local) {
 	unloadPC();
 
 	if (bic.empty())
-		return false;
+		throw Common::Exception("Tried to load an empty PC");
 
 	try {
 		_pc = new Creature(bic, local);
 	} catch (Common::Exception &e) {
 		e.add("Can't load PC \"%s\"", bic.c_str());
-		Common::printException(e, "WARNING: ");
+		throw e;
 	}
 
 	setPCTokens();
 	TalkMan.setGender((Aurora::Gender) _pc->getGender());
 
 	addObject(*_pc);
-
-	return true;
 }
 
 Creature *Module::getPC() {
 	return _pc;
 }
 
-bool Module::replaceModule() {
+void Module::changeModule(const Common::UString &module) {
+	_newModule = module;
+}
+
+void Module::replaceModule() {
 	if (_newModule.empty())
-		return true;
+		return;
 
 	_console->hide();
 
@@ -265,22 +279,16 @@ bool Module::replaceModule() {
 
 	_exit = true;
 
-	if (!loadModule(newModule))
-		return false;
-
-	return enter();
+	loadModule(newModule);
+	enter();
 }
 
-bool Module::enter() {
-	if (!_hasModule) {
-		warning("Module::enter(): Lacking a module?!?");
-		return false;
-	}
+void Module::enter() {
+	if (!_hasModule)
+		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
-	if (!_pc) {
-		warning("Module::enter(): Lacking a PC?!?");
-		return false;
-	}
+	if (!_pc)
+		throw Common::Exception("Module::enter(): Lacking a PC?!?");
 
 	_pc->clearVariables();
 
@@ -298,8 +306,7 @@ bool Module::enter() {
 
 	} catch (Common::Exception &e) {
 		e.add("Can't initialize module \"%s\"", _ifo.getName().getString().c_str());
-		printException(e, "WARNING: ");
-		return false;
+		throw e;
 	}
 
 	float entryX, entryY, entryZ, entryDirX, entryDirY;
@@ -331,8 +338,6 @@ bool Module::enter() {
 	CameraMan.setPosition(entryX, entryZ + 2.0, entryY);
 	CameraMan.setOrientation(entryDirX, entryDirY);
 	CameraMan.update();
-
-	return true;
 }
 
 void Module::enterArea() {
@@ -378,9 +383,17 @@ void Module::enterArea() {
 	_console->printf("Entering area \"%s\"", _currentArea->getResRef().c_str());
 }
 
+void Module::exit() {
+	_exit = true;
+}
+
+bool Module::isRunning() const {
+	return _running;
+}
+
 void Module::run() {
-	if (!enter())
-		return;
+	enter();
+	_running = true;
 
 	EventMan.enableKeyRepeat();
 
@@ -406,14 +419,18 @@ void Module::run() {
 		}
 
 	} catch (Common::Exception &e) {
+		_running = false;
+
 		e.add("Failed running module \"%s\"", _ifo.getName().getString().c_str());
-		printException(e, "WARNING: ");
+		throw e;
 	}
 
 	_ingameGUI->stopConversation();
 	_ingameGUI->hide();
 
 	EventMan.enableKeyRepeat(0);
+
+	_running = false;
 }
 
 void Module::handleEvents() {
@@ -656,14 +673,27 @@ void Module::showMenu() {
 	loadTexturePack();
 }
 
-const Common::UString &Module::getName() const {
-	return _ifo.getName().getString();
-}
-
 bool Module::startConversation(const Common::UString &conv, Creature &pc,
                                Engines::NWN::Object &obj, bool playHello) {
 
 	return _ingameGUI->startConversation(conv, pc, obj, playHello);
+}
+
+void Module::movePC(const Common::UString &area) {
+	if (!_pc)
+		return;
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	movePC(area, x, y, z);
+}
+
+void Module::movePC(float x, float y, float z) {
+	if (!_pc)
+		return;
+
+	movePC(_currentArea, x, y, z);
 }
 
 void Module::movePC(const Common::UString &area, float x, float y, float z) {
@@ -705,8 +735,16 @@ void Module::movedPC() {
 		_newArea = _pc->getArea()->getResRef();
 }
 
-void Module::changeModule(const Common::UString &module) {
-	_newModule = module;
+const Common::UString &Module::getName() const {
+	return _ifo.getName().getString();
+}
+
+const IFOFile &Module::getIFO() const {
+	return _ifo;
+}
+
+Area *Module::getCurrentArea() {
+	return _currentArea;
 }
 
 void Module::delayScript(const Common::UString &script,

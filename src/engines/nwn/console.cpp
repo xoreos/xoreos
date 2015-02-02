@@ -159,7 +159,7 @@ void Console::updateAreas() {
 		return;
 	}
 
-	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
+	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		_areas.push_back(*a);
 
@@ -185,7 +185,7 @@ void Console::updateMusic() {
 }
 
 void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
-	_module->_exit = true;
+	_module->exit();
 }
 
 void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
@@ -210,7 +210,7 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 	}
 
 	Common::UString module = Common::UString(kCampaignModules[c->second]) + ".nwm";
-	_module->changeModule(module);
+	_module->load(module);
 }
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
@@ -230,7 +230,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 
 	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
-			_module->changeModule(cl.args + ".mod");
+			_module->load(cl.args + ".mod");
 			return;
 		}
 	}
@@ -256,10 +256,10 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		return;
 	}
 
-	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
+	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		if (a->equalsIgnoreCase(cl.args)) {
-			_module->_newArea = *a;
+			_module->movePC(*a);
 			return;
 		}
 
@@ -272,17 +272,19 @@ void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
-	if (!_module || !_module->_currentArea)
+	Area *area = 0;
+	if (!_module || !(area = _module->getCurrentArea()))
 		return;
 
-	_module->_currentArea->stopAmbientMusic();
+	area->stopAmbientMusic();
 }
 
 void Console::cmdPlayMusic(const CommandLine &cl) {
-	if (!_module || !_module->_currentArea)
+	Area *area = 0;
+	if (!_module || !(area = _module->getCurrentArea()))
 		return;
 
-	_module->_currentArea->playAmbientMusic(cl.args);
+	area->playAmbientMusic(cl.args);
 }
 
 } // End of namespace NWN

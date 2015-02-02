@@ -273,8 +273,14 @@ const Common::UString &CharPremadeMenu::getSelectedCharacter() {
 }
 
 void CharPremadeMenu::playCharacter() {
-	if (_module->usePC(getSelectedCharacter(), true))
-		_returnCode = 2;
+	try {
+		_module->usePC(getSelectedCharacter(), true);
+	} catch (Common::Exception &e) {
+		Common::printException(e, "WARNING: ");
+		return;
+	}
+
+	_returnCode = 2;
 }
 
 } // End of namespace NWN
