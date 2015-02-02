@@ -1232,8 +1232,12 @@ void Console::printFullHelp() {
 void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) {
 	const uint32 columns = getColumns();
 
-	if (maxSize > 0)
-		maxSize = MAX<uint32>(maxSize, 3);
+	// If no max size is given, go through the whole list to find it ourselves
+	if (maxSize == 0)
+		for (std::list<Common::UString>::const_iterator l = list.begin(); l != list.end(); ++l)
+			maxSize = MAX<uint32>(maxSize, l->size());
+
+	maxSize = MAX<uint32>(maxSize, 3);
 
 	// Calculate the number of items per line
 	uint32 lineSize = 1;
