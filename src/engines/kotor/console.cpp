@@ -26,6 +26,8 @@
 
 #include "common/ustring.h"
 #include "common/util.h"
+#include "common/filepath.h"
+#include "common/configman.h"
 
 #include "graphics/aurora/fontman.h"
 
@@ -39,9 +41,11 @@ namespace KotOR {
 Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 	_module(0) {
 
-	registerCommand("exitmodule", boost::bind(&Console::cmdExitModule, this, _1),
+	registerCommand("exitmodule" , boost::bind(&Console::cmdExitModule , this, _1),
 			"Usage: exitmodule\nExit the module, returning to the main menu");
-	registerCommand("loadmodule", boost::bind(&Console::cmdLoadModule, this, _1),
+	registerCommand("listmodules", boost::bind(&Console::cmdListModules, this, _1),
+			"Usage: listmodules\nList all modules");
+	registerCommand("loadmodule" , boost::bind(&Console::cmdLoadModule , this, _1),
 			"Usage: loadmodule <module>\nLoad and enter the specified module");
 }
 
@@ -52,8 +56,46 @@ void Console::setModule(Module *module) {
 	_module = module;
 }
 
+void Console::updateCaches() {
+	::Engines::Console::updateCaches();
+
+	updateModules();
+}
+
+void Console::updateModules() {
+	_modules.clear();
+	setArguments("loadmodule");
+
+	Common::UString moduleDir = ConfigMan.getString("KOTOR_moduleDir");
+	if (moduleDir.empty())
+		return;
+
+	Common::FileList mods;
+	mods.addDirectory(moduleDir);
+
+	for (Common::FileList::const_iterator m = mods.begin(); m != mods.end(); ++m) {
+		Common::UString file = m->toLower();
+		if (!file.endsWith("_s.rim"))
+			continue;
+
+		file = Common::FilePath::getStem(file);
+		file.truncate(file.size() - Common::UString("_s").size());
+
+		_modules.push_back(file);
+	}
+
+	_modules.sort(Common::UString::iless());
+	setArguments("loadmodule", _modules);
+}
+
 void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
 	_module->exit();
+}
+
+void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
+	updateModules();
+	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
+		print(*m);
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
@@ -65,7 +107,14 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		return;
 	}
 
-	_module->load(cl.args);
+	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
+		if (m->equalsIgnoreCase(cl.args)) {
+			_module->load(cl.args);
+			return;
+		}
+	}
+
+	printf("No such module \"%s\"", cl.args.c_str());
 }
 
 } // End of namespace KOTOR

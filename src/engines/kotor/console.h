@@ -43,8 +43,19 @@ public:
 private:
 	Module *_module;
 
-	void cmdExitModule(const CommandLine &cl);
-	void cmdLoadModule(const CommandLine &cl);
+	// Caches
+	std::list<Common::UString> _modules; ///< All known modules.
+
+	// Updating the caches
+
+	void updateCaches();
+
+	void updateModules();
+
+	// The commands
+	void cmdExitModule (const CommandLine &cl);
+	void cmdListModules(const CommandLine &cl);
+	void cmdLoadModule (const CommandLine &cl);
 };
 
 } // End of namespace KOTOR

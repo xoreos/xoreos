@@ -424,6 +424,8 @@ void KotOREngine::initConfig() {
 }
 
 void KotOREngine::initGameConfig() {
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "KOTOR_moduleDir",
+		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
 }
 
 void KotOREngine::checkConfig() {
