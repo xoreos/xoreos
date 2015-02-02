@@ -77,8 +77,8 @@ bool handleCameraKeyboardInput(const Events::Event &e) {
 }
 
 bool handleCameraMouseInput(const Events::Event &e) {
-	// Holding down the right mouse button enables free look.
-	if (e.motion.state & SDL_BUTTON(3))
+	// Holding down the middle mouse button enables free look.
+	if (e.motion.state & SDL_BUTTON(2))
 		CameraMan.turn(-0.5 * e.motion.yrel, 0.5 * e.motion.xrel, 0.0);
 	else
 		return false;
