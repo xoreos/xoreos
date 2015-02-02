@@ -86,6 +86,8 @@ void Module::loadModule(const Common::UString &module) {
 		throw e;
 	}
 
+	_newModule.clear();
+
 	_hasModule = true;
 }
 
@@ -228,6 +230,7 @@ void Module::unload() {
 	unloadIFO();
 	unloadResources();
 
+	_newModule.clear();
 	_hasModule = false;
 
 	_module.clear();
