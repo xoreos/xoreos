@@ -415,7 +415,7 @@ const Common::UString &Module::getName() const {
 	return _module;
 }
 
-const ::Engines::NWN::IFOFile &Module::getIFO() const {
+const IFOFile &Module::getIFO() const {
 	return _ifo;
 }
 

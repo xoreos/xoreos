@@ -18,8 +18,8 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn2/ifofile.cpp
- *  NWN2 module.ifo loader.
+/** @file engines/aurora/ifofile.cpp
+ *  Loader for the module.ifo file.
  */
 
 #include "common/error.h"
@@ -29,27 +29,31 @@
 #include "aurora/talkman.h"
 
 #include "engines/aurora/util.h"
-
-#include "engines/nwn2/ifofile.h"
+#include "engines/aurora/ifofile.h"
 
 namespace Engines {
 
-namespace NWN2 {
-
-IFOFile::IFOFile() {
+IFOFile::IFOFile() : _gff(0) {
 	clear();
 }
 
 IFOFile::~IFOFile() {
+	delete _gff;
 }
 
 void IFOFile::clear() {
+	delete _gff;
+	_gff = 0;
+
 	memset(_id, 0, sizeof(_id));
 
 	_tag.clear();
 
 	_name.clear();
 	_description.clear();
+
+	_minVersionMajor = 0;
+	_minVersionMinor = 0;
 
 	_expansions = 0;
 
@@ -93,15 +97,19 @@ void IFOFile::unload() {
 void IFOFile::load() {
 	unload();
 
-	Aurora::GFFFile ifo("module", Aurora::kFileTypeIFO, MKTAG('I', 'F', 'O', ' '));
+	_gff = new Aurora::GFFFile("module", Aurora::kFileTypeIFO, MKTAG('I', 'F', 'O', ' '));
 
-	const Aurora::GFFStruct &ifoTop = ifo.getTopLevel();
+	const Aurora::GFFStruct &ifoTop = _gff->getTopLevel();
 
 	// Sanity checks
 	if (ifoTop.getUint("Mod_Creator_ID") != 2)
 		throw Common::Exception("Invalid Mod_Creator_ID");
 	if (ifoTop.getUint("Mod_Version") != 3)
 		throw Common::Exception("Invalid Mod_Version");
+
+	// Version
+	Common::UString version = ifoTop.getString("Mod_MinGameVer");
+	parseVersion(version);
 
 	// Expansions
 	_expansions = ifoTop.getUint("Expansion_Pack");
@@ -179,11 +187,23 @@ void IFOFile::load() {
 	_xpScale = ifoTop.getUint("Mod_XPScale", 100) / 100.0;
 }
 
+void IFOFile::parseVersion(const Common::UString &version) {
+	if (sscanf(version.c_str(), "%d.%d", &_minVersionMajor, &_minVersionMinor) != 2)
+		_minVersionMajor = _minVersionMinor = 0;
+}
+
 void IFOFile::loadTLK() {
 	if (_customTLK.empty())
 		return;
 
 	TalkMan.addAltTable(_customTLK);
+}
+
+const Aurora::GFFStruct *IFOFile::getGFF() const {
+	if (!_gff)
+		return 0;
+
+	return &_gff->getTopLevel();
 }
 
 bool IFOFile::isSave() const {
@@ -200,6 +220,11 @@ const Aurora::LocString &IFOFile::getName() const {
 
 const Aurora::LocString &IFOFile::getDescription() const {
 	return _description;
+}
+
+void IFOFile::getMinVersion(int &major, int &minor) const {
+	major = _minVersionMajor;
+	minor = _minVersionMinor;
 }
 
 uint16 IFOFile::getExpansions() const {
@@ -259,7 +284,5 @@ uint32 IFOFile::getMinutesPerHour() const {
 float IFOFile::getXPScale() const {
 	return _xpScale;
 }
-
-} // End of namespace NWN2
 
 } // End of namespace Engines

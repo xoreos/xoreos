@@ -32,7 +32,7 @@
 
 #include "events/types.h"
 
-#include "engines/nwn/ifofile.h"
+#include "engines/aurora/ifofile.h"
 
 namespace Engines {
 
@@ -67,7 +67,7 @@ public:
 	const Common::UString &getName() const;
 
 	/** Return the IFO of the currently loaded module. */
-	const ::Engines::NWN::IFOFile &getIFO() const;
+	const IFOFile &getIFO() const;
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
 
@@ -82,7 +82,7 @@ protected:
 	std::list<Aurora::ResourceManager::ChangeID> _resources;
 
 	/** The current module's IFO. */
-	::Engines::NWN::IFOFile _ifo;
+	IFOFile _ifo;
 
 	/** The current texture pack. */
 	int _currentTexturePack;

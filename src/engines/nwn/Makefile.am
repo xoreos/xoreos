@@ -7,7 +7,6 @@ noinst_HEADERS = \
                  types.h \
                  modelloader.h \
                  version.h \
-                 ifofile.h \
                  console.h \
                  location.h \
                  tileset.h \
@@ -84,7 +83,6 @@ libnwn_la_SOURCES = \
                     types.cpp \
                     modelloader.cpp \
                     version.cpp \
-                    ifofile.cpp \
                     creature.cpp \
                     console.cpp \
                     module.cpp \

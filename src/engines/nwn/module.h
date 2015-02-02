@@ -40,7 +40,8 @@
 
 #include "events/types.h"
 
-#include "engines/nwn/ifofile.h"
+#include "engines/aurora/ifofile.h"
+
 #include "engines/nwn/creature.h"
 
 #include "engines/nwn/script/container.h"

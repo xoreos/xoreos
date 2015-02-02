@@ -7,7 +7,6 @@ noinst_HEADERS = \
                  types.h \
                  modelloader.h \
                  util.h \
-                 ifofile.h \
                  trxfile.h \
                  console.h \
                  campaign.h \
@@ -26,7 +25,6 @@ libnwn2_la_SOURCES = \
                      nwn2.cpp \
                      modelloader.cpp \
                      util.cpp \
-                     ifofile.cpp \
                      trxfile.cpp \
                      console.cpp \
                      campaign.cpp \

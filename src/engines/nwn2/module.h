@@ -36,7 +36,7 @@
 
 #include "events/types.h"
 
-#include "engines/nwn2/ifofile.h"
+#include "engines/aurora/ifofile.h"
 
 namespace Engines {
 

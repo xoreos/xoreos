@@ -18,21 +18,24 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn2/ifofile.h
- *  NWN2 module.ifo loader.
+/** @file engines/aurora/ifofile.h
+ *  Loader for the module.ifo file.
  */
 
-#ifndef ENGINES_NWN2_IFOFILE_H
-#define ENGINES_NWN2_IFOFILE_H
+#ifndef ENGINES_AURORA_IFOFILE_H
+#define ENGINES_AURORA_IFOFILE_H
 
 #include "common/types.h"
 #include "common/ustring.h"
 
 #include "aurora/locstring.h"
 
-namespace Engines {
+namespace Aurora {
+	class GFFFile;
+	class GFFStruct;
+}
 
-namespace NWN2 {
+namespace Engines {
 
 class IFOFile {
 public:
@@ -43,6 +46,9 @@ public:
 	void unload(); ///< Unload a currently loaded IFO.
 
 	void loadTLK(); ///< Load the module's custom TLK.
+
+	/** Return the IFO's GFF struct. */
+	const Aurora::GFFStruct *getGFF() const;
 
 	// General properties
 
@@ -58,6 +64,8 @@ public:
 
 	// General module requirements
 
+	/** Return the minimum game version the module needs to run. */
+	void getMinVersion(int &major, int &minor) const;
 	/** Return the list of required expansions. */
 	uint16 getExpansions() const;
 
@@ -98,12 +106,17 @@ public:
 	float getXPScale() const;
 
 private:
+	Aurora::GFFFile *_gff; ///< The module.ifo GFF.
+
 	byte _id[32]; ///< The module's unique ID.
 
 	Common::UString _tag; ///< The module's tag.
 
 	Aurora::LocString _name;        ///< The module's localized name.
 	Aurora::LocString _description; ///< The module's localized description.
+
+	int _minVersionMajor; ///< Minimum major game version this module needs.
+	int _minVersionMinor; ///< Minimum minor game version this module needs.
 
 	uint16 _expansions; ///< Bitfield of required expansions.
 
@@ -138,10 +151,10 @@ private:
 	float _xpScale; ///< The number creature kill XP is multiplied by.
 
 	void clear();
-};
 
-} // End of namespace NWN2
+	void parseVersion(const Common::UString &version);
+};
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN2_IFOFILE_H
+#endif // ENGINES_AURORA_IFOFILE_H

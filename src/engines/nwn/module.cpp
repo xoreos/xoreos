@@ -153,7 +153,7 @@ void Module::loadModule(const Common::UString &module) {
 
 		_tag = _ifo.getTag();
 
-		readScripts(_ifo);
+		readScripts(*_ifo.getGFF());
 
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
