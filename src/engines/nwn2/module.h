@@ -64,8 +64,17 @@ public:
 	/** Return the name of the currently loaded module. */
 	const Common::UString &getName() const;
 
+	/** Return the IFO of the currently loaded module. */
+	const IFOFile &getIFO() const;
+	/** Return the area the PC is currently in. */
+	Area *getCurrentArea();
+
+	/** Move the player character to this area. */
+	void movePC(const Common::UString &area);
 	/** Move the player character to this position within the current area. */
 	void movePC(float x, float y, float z);
+	/** Move the player character to this position within this area. */
+	void movePC(const Common::UString &area, float x, float y, float z);
 
 
 private:
@@ -120,8 +129,6 @@ private:
 	bool handleCamera(const Events::Event &e);
 
 	void handleActions();
-
-	friend class Console;
 };
 
 } // End of namespace NWN2

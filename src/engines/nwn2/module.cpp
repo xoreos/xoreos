@@ -391,14 +391,31 @@ void Module::unloadAreas() {
 	_currentArea = 0;
 }
 
+void Module::movePC(const Common::UString &area) {
+	_newArea = area;
+}
+
 void Module::movePC(float x, float y, float z) {
 	// Roughly head position
 	CameraMan.setPosition(x, y + 2.0, z);
 	CameraMan.update();
 }
 
+void Module::movePC(const Common::UString &area, float x, float y, float z) {
+	movePC(area);
+	movePC(x, y, z);
+}
+
 const Common::UString &Module::getName() const {
 	return _ifo.getName().getString();
+}
+
+const IFOFile &Module::getIFO() const {
+	return _ifo;
+}
+
+Area *Module::getCurrentArea() {
+	return _currentArea;
 }
 
 } // End of namespace NWN2

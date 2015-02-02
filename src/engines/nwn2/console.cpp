@@ -115,7 +115,7 @@ void Console::updateAreas() {
 		return;
 	}
 
-	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
+	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		_areas.push_back(*a);
 
@@ -169,17 +169,19 @@ void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
-	if (!_module || !_module->_currentArea)
+	Area *area = 0;
+	if (!_module || !(area = _module->getCurrentArea()))
 		return;
 
-	_module->_currentArea->stopAmbientMusic();
+	area->stopAmbientMusic();
 }
 
 void Console::cmdPlayMusic(const CommandLine &cl) {
-	if (!_module || !_module->_currentArea)
+	Area *area = 0;
+	if (!_module || !(area = _module->getCurrentArea()))
 		return;
 
-	_module->_currentArea->playAmbientMusic(cl.args);
+	area->playAmbientMusic(cl.args);
 }
 
 void Console::cmdMove(const CommandLine &cl) {
@@ -196,7 +198,7 @@ void Console::cmdMove(const CommandLine &cl) {
 		return;
 	}
 
-	if (!_module || !_module->_currentArea)
+	if (!_module)
 		return;
 
 	_module->movePC(x, y, z);
@@ -220,10 +222,10 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		return;
 	}
 
-	const std::vector<Common::UString> &areas = _module->_ifo.getAreas();
+	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		if (a->equalsIgnoreCase(cl.args)) {
-			_module->_newArea = *a;
+			_module->movePC(*a);
 			return;
 		}
 
