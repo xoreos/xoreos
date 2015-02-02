@@ -46,6 +46,7 @@
 #include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
+#include "engines/aurora/camera.h"
 
 #include "engines/thewitcher/thewitcher.h"
 #include "engines/thewitcher/modelloader.h"
@@ -146,44 +147,10 @@ void TheWitcherEngine::run(const Common::UString &target) {
 
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if (event.type == Events::kEventKeyDown) {
-				if      (event.key.keysym.sym == SDLK_UP)
-					CameraMan.move( 0.5);
-				else if (event.key.keysym.sym == SDLK_DOWN)
-					CameraMan.move(-0.5);
-				else if (event.key.keysym.sym == SDLK_RIGHT)
-					CameraMan.turn( 0.0,  5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_LEFT)
-					CameraMan.turn( 0.0, -5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_w)
-					CameraMan.move( 0.5);
-				else if (event.key.keysym.sym == SDLK_s)
-					CameraMan.move(-0.5);
-				else if (event.key.keysym.sym == SDLK_d)
-					CameraMan.turn( 0.0,  5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_a)
-					CameraMan.turn( 0.0, -5.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_e)
-					CameraMan.strafe( 0.5);
-				else if (event.key.keysym.sym == SDLK_q)
-					CameraMan.strafe(-0.5);
-				else if (event.key.keysym.sym == SDLK_INSERT)
-					CameraMan.move(0.0,  0.5, 0.0);
-				else if (event.key.keysym.sym == SDLK_DELETE)
-					CameraMan.move(0.0, -0.5, 0.0);
-				else if (event.key.keysym.sym == SDLK_PAGEUP)
-					CameraMan.turn( 5.0,  0.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_PAGEDOWN)
-					CameraMan.turn(-5.0,  0.0, 0.0);
-				else if (event.key.keysym.sym == SDLK_END) {
-					const float *orient = CameraMan.getOrientation();
+		while (EventMan.pollEvent(event))
+			handleCameraInput(event);
 
-					CameraMan.setOrientation(0.0, orient[1], orient[2]);
-				}
-			}
-		}
-
+		CameraMan.update();
 		EventMan.delay(10);
 	}
 

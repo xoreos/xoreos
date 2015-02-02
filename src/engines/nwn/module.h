@@ -209,7 +209,6 @@ private:
 	void replaceModule();
 
 	void handleEvents();
-	bool handleCamera(const Events::Event &e);
 
 	void handleActions();
 };

@@ -41,6 +41,7 @@
 #include "engines/aurora/util.h"
 #include "engines/aurora/tokenman.h"
 #include "engines/aurora/resources.h"
+#include "engines/aurora/camera.h"
 
 #include "engines/nwn/types.h"
 #include "engines/nwn/version.h"
@@ -463,7 +464,7 @@ void Module::handleEvents() {
 
 		// Camera
 		if (!_console->isVisible())
-			if (handleCamera(event))
+			if (handleCameraInput(event))
 				continue;
 
 		_ingameGUI->addEvent(event);
@@ -473,48 +474,6 @@ void Module::handleEvents() {
 	CameraMan.update();
 	_currentArea->processEventQueue();
 	_ingameGUI->processEventQueue();
-}
-
-bool Module::handleCamera(const Events::Event &e) {
-	if (e.type != Events::kEventKeyDown)
-		return false;
-
-	if (e.key.keysym.sym == SDLK_UP)
-		CameraMan.move( 0.5);
-	else if (e.key.keysym.sym == SDLK_DOWN)
-		CameraMan.move(-0.5);
-	else if (e.key.keysym.sym == SDLK_RIGHT)
-		CameraMan.turn( 0.0,  5.0, 0.0);
-	else if (e.key.keysym.sym == SDLK_LEFT)
-		CameraMan.turn( 0.0, -5.0, 0.0);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_W)
-		CameraMan.move( 0.5);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_S)
-		CameraMan.move(-0.5);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_D)
-		CameraMan.turn( 0.0,  5.0, 0.0);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_A)
-		CameraMan.turn( 0.0, -5.0, 0.0);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_E)
-		CameraMan.strafe( 0.5);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_Q)
-		CameraMan.strafe(-0.5);
-	else if (e.key.keysym.sym == SDLK_INSERT)
-		CameraMan.move(0.0,  0.5, 0.0);
-	else if (e.key.keysym.sym == SDLK_DELETE)
-		CameraMan.move(0.0, -0.5, 0.0);
-	else if (e.key.keysym.sym == SDLK_PAGEUP)
-		CameraMan.turn( 5.0,  0.0, 0.0);
-	else if (e.key.keysym.sym == SDLK_PAGEDOWN)
-		CameraMan.turn(-5.0,  0.0, 0.0);
-	else if (e.key.keysym.sym == SDLK_END) {
-		const float *orient = CameraMan.getOrientation();
-
-		CameraMan.setOrientation(0.0, orient[1], orient[2]);
-	} else
-		return false;
-
-	return true;
 }
 
 void Module::handleActions() {

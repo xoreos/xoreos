@@ -113,9 +113,6 @@ protected:
 	void leave(); ///< Leave the current module.
 
 	void handleEvents();
-	bool handleCamera(const Events::Event &e);
-	bool handleCameraKeyboardInput(const Events::Event &e);
-	bool handleCameraMouseInput(const Events::Event &e);
 
 	virtual Area *createArea() const;
 

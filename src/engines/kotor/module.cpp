@@ -35,6 +35,7 @@
 #include "engines/aurora/util.h"
 #include "engines/aurora/resources.h"
 #include "engines/aurora/console.h"
+#include "engines/aurora/camera.h"
 
 #include "engines/kotor/module.h"
 #include "engines/kotor/area.h"
@@ -341,7 +342,7 @@ void Module::handleEvents() {
 
 		// Camera
 		if (!_console->isVisible())
-			if (handleCamera(event))
+			if (handleCameraInput(event))
 				continue;
 
 		_area->addEvent(event);
@@ -349,65 +350,6 @@ void Module::handleEvents() {
 
 	CameraMan.update();
 	_area->processEventQueue();
-}
-
-bool Module::handleCamera(const Events::Event &e) {
-
-	if (e.type == Events::kEventKeyDown)
-		return handleCameraKeyboardInput(e);
-	else if (e.type == Events::kEventMouseMove)
-		return handleCameraMouseInput(e);
-
-	return false;
-}
-
-bool Module::handleCameraKeyboardInput(const Events::Event &e) {
-	if (e.key.keysym.sym == SDLK_UP)
-		CameraMan.move( 0.5);
-	else if (e.key.keysym.sym == SDLK_DOWN)
-		CameraMan.move(-0.5);
-	else if (e.key.keysym.sym == SDLK_RIGHT)
-		CameraMan.turn( 0.0,  5.0, 0.0);
-	else if (e.key.keysym.sym == SDLK_LEFT)
-		CameraMan.turn( 0.0, -5.0, 0.0);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_W)
-		CameraMan.move( 0.5);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_S)
-		CameraMan.move(-0.5);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_D)
-		CameraMan.turn( 0.0,  5.0, 0.0);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_A)
-		CameraMan.turn( 0.0, -5.0, 0.0);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_E)
-		CameraMan.strafe( 0.5);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_Q)
-		CameraMan.strafe(-0.5);
-	else if (e.key.keysym.sym == SDLK_INSERT)
-		CameraMan.move(0.0,  0.5, 0.0);
-	else if (e.key.keysym.sym == SDLK_DELETE)
-		CameraMan.move(0.0, -0.5, 0.0);
-	else if (e.key.keysym.sym == SDLK_PAGEUP)
-		CameraMan.turn( 5.0,  0.0, 0.0);
-	else if (e.key.keysym.sym == SDLK_PAGEDOWN)
-		CameraMan.turn(-5.0,  0.0, 0.0);
-	else if (e.key.keysym.sym == SDLK_END) {
-		const float *orient = CameraMan.getOrientation();
-
-		CameraMan.setOrientation(0.0, orient[1], orient[2]);
-	} else
-		return false;
-
-	return true;
-}
-
-bool Module::handleCameraMouseInput(const Events::Event &e) {
-	// Holding down the right mouse button enables free look.
-	if (e.motion.state & SDL_BUTTON(3))
-		CameraMan.turn(-0.5 * e.motion.yrel, 0.5 * e.motion.xrel, 0.0);
-	else
-		return false;
-
-	return true;
 }
 
 Area *Module::createArea() const {
