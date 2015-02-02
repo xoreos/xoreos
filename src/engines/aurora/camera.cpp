@@ -38,34 +38,38 @@ bool handleCameraInput(const Events::Event &e) {
 }
 
 bool handleCameraKeyboardInput(const Events::Event &e) {
+	float multiplier = 1.0;
+	if (e.key.keysym.mod & KMOD_SHIFT)
+		multiplier = 5.0;
+
 	if      (e.key.keysym.sym      == SDLK_UP)
-		CameraMan.move( 0.5);
+		CameraMan.move(multiplier *  0.5);
 	else if (e.key.keysym.sym      == SDLK_DOWN)
-		CameraMan.move(-0.5);
+		CameraMan.move(multiplier * -0.5);
 	else if (e.key.keysym.sym      == SDLK_RIGHT)
-		CameraMan.turn( 0.0,  5.0, 0.0);
+		CameraMan.turn( 0.0, multiplier *  5.0, 0.0);
 	else if (e.key.keysym.sym      == SDLK_LEFT)
-		CameraMan.turn( 0.0, -5.0, 0.0);
+		CameraMan.turn( 0.0, multiplier * -5.0, 0.0);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_W)
-		CameraMan.move( 0.5);
+		CameraMan.move(multiplier *  0.5);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_S)
-		CameraMan.move(-0.5);
+		CameraMan.move(multiplier * -0.5);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_D)
-		CameraMan.turn( 0.0,  5.0, 0.0);
+		CameraMan.turn( 0.0, multiplier *  5.0, 0.0);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_A)
-		CameraMan.turn( 0.0, -5.0, 0.0);
+		CameraMan.turn( 0.0, multiplier * -5.0, 0.0);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_E)
-		CameraMan.strafe( 0.5);
+		CameraMan.strafe(multiplier *  0.5);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_Q)
-		CameraMan.strafe(-0.5);
+		CameraMan.strafe(multiplier * -0.5);
 	else if (e.key.keysym.sym      == SDLK_INSERT)
-		CameraMan.move(0.0,  0.5, 0.0);
+		CameraMan.move(0.0, multiplier *  0.5, 0.0);
 	else if (e.key.keysym.sym      == SDLK_DELETE)
-		CameraMan.move(0.0, -0.5, 0.0);
+		CameraMan.move(0.0, multiplier * -0.5, 0.0);
 	else if (e.key.keysym.sym      == SDLK_PAGEUP)
-		CameraMan.turn( 5.0,  0.0, 0.0);
+		CameraMan.turn(multiplier *  5.0,  0.0, 0.0);
 	else if (e.key.keysym.sym      == SDLK_PAGEDOWN)
-		CameraMan.turn(-5.0,  0.0, 0.0);
+		CameraMan.turn(multiplier * -5.0,  0.0, 0.0);
 	else if (e.key.keysym.sym      == SDLK_END) {
 		const float *orient = CameraMan.getOrientation();
 
