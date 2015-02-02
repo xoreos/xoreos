@@ -272,8 +272,7 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 	updateModules();
-	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
-		print(*m);
+	printList(_modules);
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
