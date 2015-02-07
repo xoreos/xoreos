@@ -46,6 +46,7 @@
 #include "engines/jade/gui/main/main.h"
 
 #include "engines/jade/jade.h"
+#include "engines/jade/modelloader.h"
 
 namespace Engines {
 
@@ -208,6 +209,8 @@ void JadeEngine::init() {
 	FontMan.addAlias("sava"   , "asian");
 	FontMan.addAlias("cerigo" , "asian");
 	FontMan.addAlias("fnt_gui", "asian");
+
+	registerModelLoader(new JadeModelLoader);
 
 	progress.step("Loading game cursors");
 	initCursors();
