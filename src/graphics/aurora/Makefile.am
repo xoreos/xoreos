@@ -28,6 +28,7 @@ noinst_HEADERS = \
                  model_nwn.h \
                  model_nwn2.h \
                  model_kotor.h \
+                 model_jade.h \
                  model_witcher.h \
                  $(EMPTY)
 
@@ -56,5 +57,6 @@ libaurora_la_SOURCES = \
                        model_nwn.cpp \
                        model_nwn2.cpp \
                        model_kotor.cpp \
+                       model_jade.cpp \
                        model_witcher.cpp \
                        $(EMPTY)
