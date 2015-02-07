@@ -30,8 +30,10 @@
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
+#include "graphics/camera.h"
+
 #include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/cube.h"
+#include "graphics/aurora/model.h"
 #include "graphics/aurora/fontman.h"
 #include "graphics/aurora/fps.h"
 
@@ -42,6 +44,8 @@
 #include "engines/aurora/util.h"
 #include "engines/aurora/loadprogress.h"
 #include "engines/aurora/resources.h"
+#include "engines/aurora/model.h"
+#include "engines/aurora/camera.h"
 
 #include "engines/jade/gui/main/main.h"
 
@@ -115,18 +119,6 @@ void JadeEngine::run(const Common::UString &target) {
 
 	CursorMan.showCursor();
 
-
-	MainMenu *mainMenu = new MainMenu();
-
-	mainMenu->show();
-	mainMenu->run();
-
-	delete mainMenu;
-
-	if (EventMan.quitRequested())
-		return;
-
-
 	playSound("musicbank00046", Sound::kSoundTypeMusic, true);
 
 	bool showFPS = ConfigMan.getBool("showfps", false);
@@ -137,20 +129,29 @@ void JadeEngine::run(const Common::UString &target) {
 		fps->show();
 	}
 
-	Graphics::Aurora::Cube *cube = 0;
-	try {
+	CameraMan.setPosition(0.0, 1.0, 0.0);
 
-		cube = new Graphics::Aurora::Cube("ui_ph_silk");
+	Graphics::Aurora::Model *model = loadModelObject("n_silk_");
 
-	} catch (Common::Exception &e) {
-		Common::printException(e);
-	}
+	model->setRotation(0.0, 0.0, 180.0);
+	model->setPosition(0.0, 2.0, 0.0);
+	model->drawBound(true);
+	model->show();
+
+	EventMan.enableKeyRepeat();
 
 	while (!EventMan.quitRequested()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event))
+			handleCameraInput(event);
+
+		CameraMan.update();
 		EventMan.delay(10);
 	}
 
-	delete cube;
+	EventMan.enableKeyRepeat(0);
+
+	delete model;
 	delete fps;
 }
 
