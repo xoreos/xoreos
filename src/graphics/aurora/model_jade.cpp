@@ -105,6 +105,15 @@ void Model_Jade::ParserContext::clear() {
 
 	delete state;
 	state = 0;
+
+	newNode();
+}
+
+void Model_Jade::ParserContext::newNode() {
+	vertices.clear();
+	indices.clear();
+
+	texCoords.clear();
 }
 
 
@@ -306,9 +315,12 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 		readMesh(ctx);
 	}
 
+	createMesh(ctx);
+
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ModelNode_Jade *childNode = new ModelNode_Jade(*_model);
 		ctx.nodes.push_back(childNode);
+		ctx.newNode();
 
 		childNode->setParent(this);
 
@@ -382,10 +394,6 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	ctx.mdl->skip(4); // Unknown
 
 
-	if ((vertexCount == 0) || (indexCount == 0))
-		return;
-
-
 	// Load textures
 	// If no texture is given, we load Texture0 from the material for now
 
@@ -403,14 +411,14 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	// Read vertices
 
-	std::vector<float> vertices;
-	vertices.reserve(vertexCount * 3);
+	ctx.vertices.resize(vertexCount * 3);
 
-	std::vector<float> texCoords;
-	texCoords.reserve(vertexCount * 2);
+	ctx.texCoords.resize(textureCount);
+	for (uint32 i = 0; i < textureCount; i++)
+		ctx.texCoords[i].resize(vertexCount * 2);
 
 	uint32 mdxMinStructSize = 12 + textureCount * 8;
-	if (mdxStructSize < mdxMinStructSize) {
+	if ((vertexCount > 0) && (mdxStructSize < mdxMinStructSize)) {
 		warning("ModelNode_Jade \"%s\".\"%s\": mdxStructSize too small (%d < %d)",
 		        _model->getName().c_str(), _name.c_str(), mdxStructSize, mdxMinStructSize);
 		return;
@@ -420,9 +428,9 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	for (uint32 i = 0; i < vertexCount; i++) {
 		ctx.mdx->seek(vertexOffset + i * mdxStructSize);
 
-		vertices.push_back(ctx.mdx->readIEEEFloatLE());
-		vertices.push_back(ctx.mdx->readIEEEFloatLE());
-		vertices.push_back(ctx.mdx->readIEEEFloatLE());
+		ctx.vertices[i * 3 + 0] = ctx.mdx->readIEEEFloatLE();
+		ctx.vertices[i * 3 + 1] = ctx.mdx->readIEEEFloatLE();
+		ctx.vertices[i * 3 + 2] = ctx.mdx->readIEEEFloatLE();
 
 		// HACK!
 		if      (mdxStructSize == 24)
@@ -438,92 +446,41 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 		else if (mdxStructSize == 52)
 			ctx.mdx->skip(8);
 
-		if (textureCount > 0) {
-			texCoords.push_back(ctx.mdx->readIEEEFloatLE());
-			texCoords.push_back(ctx.mdx->readIEEEFloatLE());
+		for (uint32 t = 0; t < textureCount; t++) {
+			ctx.texCoords[t][i * 2 + 0] = ctx.mdx->readIEEEFloatLE();
+			ctx.texCoords[t][i * 2 + 1] = ctx.mdx->readIEEEFloatLE();
 		}
 	}
 
 
 	// Read face indices
 
-	std::vector<uint16> indices;
-
 	if      (faceOffsetMDL != 0)
-		readPlainIndices  (*ctx.mdl, indices, faceOffsetMDL + ctx.offModelData, indexCount);
+		readPlainIndices  (*ctx.mdl, ctx.indices, faceOffsetMDL + ctx.offModelData, indexCount);
 	else if (faceOffsetMDX != 0)
-		readChunkedIndices(*ctx.mdx, indices, faceOffsetMDX, indexCount);
+		readChunkedIndices(*ctx.mdx, ctx.indices, faceOffsetMDX, indexCount);
 
-	unfoldFaces(indices, meshType);
-	if (indices.empty())
-		return;
-
-
-	// Create the VertexBuffer / IndexBuffer
-
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 0;
-	GLsizei vtsize = 2;
-	uint32 vertexSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
-	_vertexBuffer.setSize(vertexCount, vertexSize);
-
-	float *vertexData = (float *) _vertexBuffer.getData();
-	VertexDecl vertexDecl;
-
-	VertexAttrib vp;
-	vp.index = VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = vertexSize;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
-
-	for (uint16 t = 0; t < textureCount; t++) {
-		VertexAttrib vt;
-		vt.index = VTCOORD + t;
-		vt.size = vtsize;
-		vt.type = GL_FLOAT;
-		vt.stride = vertexSize;
-		vt.pointer = vertexData + vpsize + vnsize + vtsize * t;
-		vertexDecl.push_back(vt);
-	}
-
-	_vertexBuffer.setVertexDecl(vertexDecl);
-
-	float *v = vertexData;
-	for (uint32 i = 0; i < vertexCount; i++) {
-		// Position
-		*v++ = vertices[i * 3 + 0];
-		*v++ = vertices[i * 3 + 1];
-		*v++ = vertices[i * 3 + 2];
-
-		// Texture coordinates
-		if (textureCount != 0) {
-			*v++ = texCoords[i * 2 + 0];
-			*v++ = texCoords[i * 2 + 1];
-		}
-	}
-
-	_indexBuffer.setSize(indices.size(), sizeof(uint16), GL_UNSIGNED_SHORT);
-
-	uint16 *f = (uint16 *) _indexBuffer.getData();
-	memcpy(f, &indices[0], indices.size() * sizeof(uint16));
-
-	createBound();
+	unfoldFaces(ctx.indices, meshType);
 }
 
 void ModelNode_Jade::readPlainIndices(Common::SeekableReadStream &stream, std::vector<uint16> &indices,
                                       uint32 offset, uint32 count) {
+
+	uint32 pos = stream.pos();
 
 	stream.seek(offset);
 
 	indices.resize(count);
 	for (std::vector<uint16>::iterator i = indices.begin(); i != indices.end(); ++i)
 		*i = stream.readUint16LE();
+
+	stream.seek(pos);
 }
 
 void ModelNode_Jade::readChunkedIndices(Common::SeekableReadStream &stream, std::vector<uint16> &indices,
                                         uint32 offset, uint32 count) {
+
+	uint32 pos = stream.pos();
 
 	stream.seek(offset);
 
@@ -545,6 +502,8 @@ void ModelNode_Jade::readChunkedIndices(Common::SeekableReadStream &stream, std:
 
 		count -= toRead;
 	}
+
+	stream.seek(pos);
 }
 
 /** Unfolds triangle strips / fans into triangle lists. */
@@ -613,6 +572,66 @@ void ModelNode_Jade::unfoldTriangleFan(std::vector<uint16> &indices) {
 	}
 
 	indices.swap(unfolded);
+}
+
+void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
+	const uint32 vertexCount  = ctx.vertices.size() / 3;
+	const uint32 indexCount   = ctx.indices.size();
+	const uint32 textureCount = ctx.texCoords.size();
+	if ((vertexCount == 0) || (indexCount == 0))
+		return;
+
+	// Create the VertexBuffer / IndexBuffer
+
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 0;
+	GLsizei vtsize = 2;
+	uint32 vertexSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
+	_vertexBuffer.setSize(vertexCount, vertexSize);
+
+	float *vertexData = (float *) _vertexBuffer.getData();
+	VertexDecl vertexDecl;
+
+	VertexAttrib vp;
+	vp.index = VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = vertexSize;
+	vp.pointer = vertexData;
+	vertexDecl.push_back(vp);
+
+	for (uint t = 0; t < textureCount; t++) {
+		VertexAttrib vt;
+		vt.index = VTCOORD + t;
+		vt.size = vtsize;
+		vt.type = GL_FLOAT;
+		vt.stride = vertexSize;
+		vt.pointer = vertexData + vpsize + vnsize + vtsize * t;
+		vertexDecl.push_back(vt);
+	}
+
+	_vertexBuffer.setVertexDecl(vertexDecl);
+
+	float *v = vertexData;
+	for (uint32 i = 0; i < vertexCount; i++) {
+		// Position
+		*v++ = ctx.vertices[i * 3 + 0];
+		*v++ = ctx.vertices[i * 3 + 1];
+		*v++ = ctx.vertices[i * 3 + 2];
+
+		// Texture coordinates
+		for (uint t = 0; t < textureCount; t++) {
+			*v++ = ctx.texCoords[t][i * 2 + 0];
+			*v++ = ctx.texCoords[t][i * 2 + 1];
+		}
+	}
+
+	_indexBuffer.setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
+
+	uint16 *f = (uint16 *) _indexBuffer.getData();
+	memcpy(f, &ctx.indices[0], indexCount * sizeof(uint16));
+
+	createBound();
 }
 
 /** Opens the resource for the materialID and parses it to return the first texture.

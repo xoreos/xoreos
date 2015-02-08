@@ -66,10 +66,16 @@ private:
 
 		std::vector<Common::UString> names;
 
+		std::vector<float>  vertices;
+		std::vector<uint16> indices;
+
+		std::vector<std::vector<float> > texCoords;
+
 		ParserContext(const Common::UString &name, const Common::UString &t);
 		~ParserContext();
 
 		void clear();
+		void newNode();
 	};
 
 
@@ -103,6 +109,8 @@ private:
 	void unfoldFaces        (std::vector<uint16> &indices, uint32 meshType);
 	void unfoldTriangleStrip(std::vector<uint16> &indices);
 	void unfoldTriangleFan  (std::vector<uint16> &indices);
+
+	void createMesh(Model_Jade::ParserContext &ctx);
 
 	static Common::UString readMaterialTexture(uint32 materialID);
 };
