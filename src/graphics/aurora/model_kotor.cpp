@@ -447,7 +447,10 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_specular[1] = 0;
 	_specular[2] = 0;
 
-	_shininess = ctx.mdl->readIEEEFloatLE();
+	uint32 transparencyHint = ctx.mdl->readUint32LE();
+
+	_hasTransparencyHint = true;
+	_transparencyHint    = (transparencyHint != 0);
 
 	std::vector<Common::UString> textures;
 
