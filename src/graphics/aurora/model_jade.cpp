@@ -639,7 +639,7 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
  *  TODO: Proper material support.
  */
 Common::UString ModelNode_Jade::readMaterialTexture(uint32 materialID) {
-	if (materialID == 0)
+	if (materialID == 0xFFFFFFFF)
 		return "";
 
 	Common::UString mabFile = Common::UString::sprintf("%d", materialID);
