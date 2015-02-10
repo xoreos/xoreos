@@ -367,10 +367,22 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	uint32 mdxStructSize = ctx.mdl->readUint32LE();
 
-	ctx.mdl->skip(52); // Unknown
+	ctx.mdl->skip(8); // Unknown
+
+	uint32 offNormals = ctx.mdl->readUint32LE();
+
+	ctx.mdl->skip(4); // Unknown
+
+	uint32 offUV[4];
+	offUV[0] = ctx.mdl->readUint32LE();
+	offUV[1] = ctx.mdl->readUint32LE();
+	offUV[2] = ctx.mdl->readUint32LE();
+	offUV[3] = ctx.mdl->readUint32LE();
+
+	ctx.mdl->skip(20); // Unknown
 
 	uint16 vertexCount  = ctx.mdl->readUint16LE();
-	uint16 textureCount = ctx.mdl->readUint16LE();
+	uint16 textureCount = MIN<uint16>(ctx.mdl->readUint16LE(), 4);
 
 	uint32 vertexOffset = ctx.mdl->readUint32LE();
 	ctx.mdl->skip(4); // Unknown
@@ -432,21 +444,9 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 		ctx.vertices[i * 3 + 1] = ctx.mdx->readIEEEFloatLE();
 		ctx.vertices[i * 3 + 2] = ctx.mdx->readIEEEFloatLE();
 
-		// HACK!
-		if      (mdxStructSize == 24)
-			ctx.mdx->skip(4);
-		else if (mdxStructSize == 28)
-			ctx.mdx->skip(8);
-		else if (mdxStructSize == 32)
-			ctx.mdx->skip(4);
-		else if (mdxStructSize == 36)
-			ctx.mdx->skip(8);
-		else if (mdxStructSize == 48)
-			ctx.mdx->skip(4);
-		else if (mdxStructSize == 52)
-			ctx.mdx->skip(8);
-
 		for (uint32 t = 0; t < textureCount; t++) {
+			ctx.mdx->seek(vertexOffset + i * mdxStructSize + offUV[t]);
+
 			ctx.texCoords[t][i * 2 + 0] = ctx.mdx->readIEEEFloatLE();
 			ctx.texCoords[t][i * 2 + 1] = ctx.mdx->readIEEEFloatLE();
 		}
