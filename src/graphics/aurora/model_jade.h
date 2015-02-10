@@ -112,7 +112,7 @@ private:
 
 	void createMesh(Model_Jade::ParserContext &ctx);
 
-	static Common::UString readMaterialTexture(uint32 materialID);
+	static void readMaterialTextures(uint32 materialID, std::vector<Common::UString> &textures);
 };
 
 } // End of namespace Aurora

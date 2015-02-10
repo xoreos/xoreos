@@ -407,16 +407,17 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 
 	// Load textures
-	// If no texture is given, we load Texture0 from the material for now
 
-	if (texture.empty())
-		texture = readMaterialTexture(materialID);
-
+	/* If we were given a valid materialID, load textures from that material.
+	 * Otherwise, try the texture that was given directly.
+	 */
 	std::vector<Common::UString> textures;
-
-	textureCount = texture.empty() ? 0 : 1;
-	if (textureCount > 0)
+	if (materialID != 0xFFFFFFFF)
+		readMaterialTextures(materialID, textures);
+	else if (!texture.empty())
 		textures.push_back(texture);
+
+	textureCount = textures.size();
 
 	loadTextures(textures);
 
@@ -429,13 +430,6 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	for (uint32 i = 0; i < textureCount; i++)
 		ctx.texCoords[i].resize(vertexCount * 2);
 
-	uint32 mdxMinStructSize = 12 + textureCount * 8;
-	if ((vertexCount > 0) && (mdxStructSize < mdxMinStructSize)) {
-		warning("ModelNode_Jade \"%s\".\"%s\": mdxStructSize too small (%d < %d)",
-		        _model->getName().c_str(), _name.c_str(), mdxStructSize, mdxMinStructSize);
-		return;
-	}
-
 	// TODO: Figure out the correct layout of the vertex struct
 	for (uint32 i = 0; i < vertexCount; i++) {
 		ctx.mdx->seek(vertexOffset + i * mdxStructSize);
@@ -445,10 +439,15 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 		ctx.vertices[i * 3 + 2] = ctx.mdx->readIEEEFloatLE();
 
 		for (uint32 t = 0; t < textureCount; t++) {
-			ctx.mdx->seek(vertexOffset + i * mdxStructSize + offUV[t]);
+			if ((offUV[t] != 0xFFFFFFFF) && ((offUV[t] + 8) <= mdxStructSize)) {
+				ctx.mdx->seek(vertexOffset + i * mdxStructSize + offUV[t]);
 
-			ctx.texCoords[t][i * 2 + 0] = ctx.mdx->readIEEEFloatLE();
-			ctx.texCoords[t][i * 2 + 1] = ctx.mdx->readIEEEFloatLE();
+				ctx.texCoords[t][i * 2 + 0] = ctx.mdx->readIEEEFloatLE();
+				ctx.texCoords[t][i * 2 + 1] = ctx.mdx->readIEEEFloatLE();
+			} else {
+				ctx.texCoords[t][i * 2 + 0] = 0.0;
+				ctx.texCoords[t][i * 2 + 1] = 0.0;
+			}
 		}
 	}
 
@@ -634,20 +633,24 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 	createBound();
 }
 
-/** Opens the resource for the materialID and parses it to return the first texture.
+/** Opens the resource for the materialID and parses it to return the 4 normal textures.
  *
  *  TODO: Proper material support.
  */
-Common::UString ModelNode_Jade::readMaterialTexture(uint32 materialID) {
-	if (materialID == 0xFFFFFFFF)
-		return "";
+void ModelNode_Jade::readMaterialTextures(uint32 materialID, std::vector<Common::UString> &textures) {
+	if (materialID == 0xFFFFFFFF) {
+		textures.clear();
+		return;
+	}
 
 	Common::UString mabFile = Common::UString::sprintf("%d", materialID);
 	Common::SeekableReadStream *mab = ResMan.getResource(mabFile, ::Aurora::kFileTypeMAB);
-	if (!mab)
-		return "";
+	if (!mab) {
+		textures.clear();
+		return;
+	}
 
-	Common::UString texture;
+	textures.resize(4);
 
 	try {
 		uint32 size = mab->readUint32LE();
@@ -656,21 +659,25 @@ Common::UString ModelNode_Jade::readMaterialTexture(uint32 materialID) {
 
 		mab->skip(96);
 
-		texture.readFixedASCII(*mab, 32);
+		for (int i = 0; i < 4; i++) {
+			textures[i].readFixedASCII(*mab, 32);
+
+			if (textures[i] == "NULL")
+				textures[i].clear();
+		}
 
 	} catch (Common::Exception &e) {
 		delete mab;
+		textures.clear();
 
 		Common::printException(e, "WARNING: ");
-		return "";
+		return;
 	}
 
 	delete mab;
 
-	if (texture == "NULL")
-		texture.clear();
-
-	return texture;
+	while (!textures.empty() && textures.back().empty())
+		textures.pop_back();
 }
 
 } // End of namespace Aurora
