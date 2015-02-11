@@ -39,6 +39,7 @@
 #include "sound/sound.h"
 
 #include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
 #include "engines/jade/area.h"
@@ -64,8 +65,7 @@ Area::~Area() {
 
 	removeFocus();
 
-	for (std::vector<Room *>::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		delete *r;
+	unloadRooms();
 }
 
 const Common::UString &Area::getName() {
@@ -114,7 +114,6 @@ void Area::load(const Common::UString &resRef) {
 	loadLYT(); // Room layout
 	loadVIS(); // Room visibilities
 
-	loadResources(); // Room resources
 	loadModels();    // Room models
 	loadVisibles();  // Room model visibilities
 
@@ -153,11 +152,8 @@ void Area::loadVIS() {
 	}
 }
 
-void Area::loadResources() {
-}
-
 void Area::loadModels() {
-	return;
+	int resources = 0;
 
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	_rooms.reserve(rooms.size());
@@ -167,6 +163,11 @@ void Area::loadModels() {
 		if (lytRoom.model == "****")
 			// No model for that room
 			continue;
+
+		Aurora::ResourceManager::ChangeID change;
+
+		indexOptionalArchive(Aurora::kArchiveRIM, lytRoom.model + "-a.rim", 500 + resources++, &change);
+		_resources.push_back(change);
 
 		Room *room = new Room(lytRoom);
 
@@ -214,6 +215,19 @@ void Area::loadVisibles() {
 
 	}
 
+}
+
+void Area::unloadRooms() {
+	for (std::vector<Room *>::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
+		delete *r;
+
+	_rooms.clear();
+
+	std::list<Aurora::ResourceManager::ChangeID>::reverse_iterator r;
+	for (r = _resources.rbegin(); r != _resources.rend(); ++r)
+		ResMan.undo(*r);
+
+	_resources.clear();
 }
 
 void Area::addEvent(const Events::Event &event) {

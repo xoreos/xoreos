@@ -33,6 +33,7 @@
 #include "common/mutex.h"
 
 #include "aurora/types.h"
+#include "aurora/resman.h"
 #include "aurora/lytfile.h"
 #include "aurora/visfile.h"
 
@@ -93,6 +94,8 @@ private:
 	Aurora::LYTFile _lyt;
 	Aurora::VISFile _vis;
 
+	std::list<Aurora::ResourceManager::ChangeID> _resources;
+
 	std::vector<Room *> _rooms;
 
 	std::list<Events::Event> _eventQueue;
@@ -103,9 +106,10 @@ private:
 	void loadLYT();
 	void loadVIS();
 
-	void loadResources();
 	void loadModels();
 	void loadVisibles();
+
+	void unloadRooms();
 };
 
 } // End of namespace Jade
