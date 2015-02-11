@@ -229,7 +229,8 @@ GFFStruct::Field::Field(FieldType t, uint32 d) : type(t), data(d) {
 	           (type == kFieldTypeLocString  ) ||
 	           (type == kFieldTypeVoid       ) ||
 	           (type == kFieldTypeOrientation) ||
-	           (type == kFieldTypeVector     );
+	           (type == kFieldTypeVector     ) ||
+	           (type == kFieldTypeStrRef     );
 }
 
 
@@ -376,6 +377,15 @@ uint64 GFFStruct::getUint(const Common::UString &field, uint64 def) const {
 		return (uint64) getData(*f).readUint64LE();
 	if (f->type == kFieldTypeSint64)
 		return ( int64) getData(*f).readUint64LE();
+	if (f->type == kFieldTypeStrRef) {
+		Common::SeekableReadStream &data = getData(*f);
+
+		uint32 size = data.readUint32LE();
+		if (size != 4)
+			Common::Exception("StrRef field with invalid size (%d)", size);
+
+		return (uint64) data.readUint32LE();
+	}
 
 	throw Common::Exception("Field is not an int type");
 }
@@ -404,6 +414,15 @@ int64 GFFStruct::getSint(const Common::UString &field, int64 def) const {
 		return (int64) getData(*f).readUint64LE();
 	if (f->type == kFieldTypeSint64)
 		return (int64) getData(*f).readUint64LE();
+	if (f->type == kFieldTypeStrRef) {
+		Common::SeekableReadStream &data = getData(*f);
+
+		uint32 size = data.readUint32LE();
+		if (size != 4)
+			Common::Exception("StrRef field with invalid size (%d)", size);
+
+		return (int64) ((uint64) data.readUint32LE());
+	}
 
 	throw Common::Exception("Field is not an int type");
 }
@@ -460,7 +479,8 @@ Common::UString GFFStruct::getString(const Common::UString &field,
 	if ((f->type == kFieldTypeByte  ) ||
 	    (f->type == kFieldTypeUint16) ||
 	    (f->type == kFieldTypeUint32) ||
-	    (f->type == kFieldTypeUint64)) {
+	    (f->type == kFieldTypeUint64) ||
+	    (f->type == kFieldTypeStrRef)) {
 
 		return Common::UString::sprintf("%lu", getUint(field));
 	}
