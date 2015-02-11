@@ -7,6 +7,7 @@ noinst_HEADERS = \
                  modelloader.h \
                  console.h \
                  module.h \
+                 area.h \
                  gui/main/main.h \
                  $(EMPTY)
 
@@ -15,5 +16,6 @@ libjade_la_SOURCES = \
                      modelloader.cpp \
                      console.cpp \
                      module.cpp \
+                     area.cpp \
                      gui/main/main.cpp \
                      $(EMPTY)
