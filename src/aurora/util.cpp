@@ -289,6 +289,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypePVD,            ".pvd"},
 	{kFileTypeAMP,            ".amp"},
 	{kFileTypePLA,            ".pla"},
+	{kFileTypeTRG,            ".trg"},
 	{kFileTypePK,             ".pk" },
 
 	{kFileTypeALS,            ".als"},

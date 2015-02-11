@@ -291,7 +291,8 @@ enum FileType {
 	kFileTypePVD            = 24005,
 	kFileTypeAMP            = 24006,
 	kFileTypePLA            = 24007,
-	kFileTypePK             = 24008,
+	kFileTypeTRG            = 24008, ///< Trigger, GFF.
+	kFileTypePK             = 24009,
 
 	// Found in Dragon Age II
 	kFileTypeALS            = 25000,
