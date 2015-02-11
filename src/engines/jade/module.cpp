@@ -36,12 +36,15 @@
 #include "engines/aurora/camera.h"
 
 #include "engines/jade/module.h"
+#include "engines/jade/console.h"
 
 namespace Engines {
 
 namespace Jade {
 
-Module::Module() : _hasModule(false), _running(false), _exit(false) {
+Module::Module(Console &console) : _console(&console),
+	_hasModule(false), _running(false), _exit(false) {
+
 }
 
 Module::~Module() {
@@ -209,6 +212,8 @@ void Module::replaceModule() {
 	if (_newModule.empty())
 		return;
 
+	_console->hide();
+
 	Common::UString newModule = _newModule;
 
 	unload();
@@ -222,6 +227,8 @@ void Module::replaceModule() {
 void Module::enter() {
 	if (!_hasModule)
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
+
+	_console->printf("Entering module \"%s\"", _module.c_str());
 
 	_exit = false;
 
@@ -238,9 +245,22 @@ void Module::leave() {
 void Module::handleEvents() {
 	Events::Event event;
 	while (EventMan.pollEvent(event)) {
-		// Camera
-		if (handleCameraInput(event))
+		// Handle console
+		if (_console->processEvent(event))
 			continue;
+
+		if (event.type == Events::kEventKeyDown) {
+			// Console
+			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+				_console->show();
+				continue;
+			}
+		}
+
+		// Camera
+		if (!_console->isVisible())
+			if (handleCameraInput(event))
+				continue;
 	}
 
 	CameraMan.update();
