@@ -161,7 +161,7 @@ void JadeEngine::init() {
 	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
-	// In Jade Empire, CRE files are actually BTC
+	// Some new file types with the same function as old ones re-use the type ID
 	ResMan.addTypeAlias(Aurora::kFileTypeBTC, Aurora::kFileTypeCRE);
 	ResMan.addTypeAlias(Aurora::kFileTypeBTP, Aurora::kFileTypePLA);
 	ResMan.addTypeAlias(Aurora::kFileTypeBTT, Aurora::kFileTypeTRG);
