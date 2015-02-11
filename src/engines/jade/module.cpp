@@ -1,0 +1,255 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file engines/jade/module.cpp
+ *  A module.
+ */
+
+#include "common/util.h"
+#include "common/error.h"
+#include "common/ustring.h"
+#include "common/filepath.h"
+
+#include "graphics/camera.h"
+
+#include "events/events.h"
+
+#include "engines/aurora/util.h"
+#include "engines/aurora/resources.h"
+#include "engines/aurora/camera.h"
+
+#include "engines/jade/module.h"
+
+namespace Engines {
+
+namespace Jade {
+
+Module::Module() : _hasModule(false), _running(false), _exit(false) {
+}
+
+Module::~Module() {
+	clear();
+}
+
+void Module::clear() {
+	unload();
+}
+
+void Module::load(const Common::UString &module) {
+	if (isRunning()) {
+		// We are currently running a module. Schedule a safe change instead
+
+		changeModule(module);
+		return;
+	}
+
+	// We are not currently running a module. Directly load the new module
+	loadModule(module);
+}
+
+void Module::loadModule(const Common::UString &module) {
+	unload();
+
+	_module = module;
+
+	try {
+
+		load();
+
+	} catch (Common::Exception &e) {
+		_module.clear();
+
+		e.add("Failed loading module \"%s\"", module.c_str());
+		throw e;
+	}
+
+	_newModule.clear();
+
+	_hasModule = true;
+}
+
+void Module::run() {
+	enter();
+	_running = true;
+
+	EventMan.enableKeyRepeat();
+
+	try {
+
+		EventMan.flushEvents();
+
+		while (!EventMan.quitRequested() && !_exit) {
+			replaceModule();
+			if (_exit)
+				break;
+
+			handleEvents();
+
+			if (!EventMan.quitRequested() && !_exit)
+				EventMan.delay(10);
+		}
+
+	} catch (Common::Exception &e) {
+		_running = false;
+
+		e.add("Failed running module \"%s\"", _module.c_str());
+		throw e;
+	}
+
+	EventMan.enableKeyRepeat(0);
+
+	_running = false;
+}
+
+bool Module::isRunning() const {
+	return _running;
+}
+
+void Module::exit() {
+	_exit = true;
+}
+
+void Module::load() {
+	loadResources();
+	findAreaName();
+}
+
+/** Load all RIMs in $JADE_moduleDir/$Module/ */
+void Module::loadResources() {
+	Common::UString modulesDir = ConfigMan.getString("JADE_moduleDir");
+	if (modulesDir.empty())
+		throw Common::Exception("No module directory");
+
+	Common::UString moduleDir = Common::FilePath::findSubDirectory(modulesDir, _module, true);
+	if (modulesDir.empty())
+		throw Common::Exception("No such module \"%s\"", _module.c_str());
+
+	Common::FileList files;
+	files.addDirectory(moduleDir);
+
+	int resources = 0;
+	for (Common::FileList::const_iterator f = files.begin(); f != files.end(); ++f) {
+		Common::UString file = Common::FilePath::relativize(modulesDir, *f).toLower();
+		if (!file.endsWith(".rim"))
+			continue;
+
+		Aurora::ResourceManager::ChangeID change;
+
+		indexMandatoryArchive(Aurora::kArchiveRIM, file, 100 + resources++, &change);
+		_resources.push_back(change);
+	}
+}
+
+/** Find the one non-global area definition file hopefully added by the module resources. */
+void Module::findAreaName() {
+	std::list<Aurora::ResourceManager::ResourceID> areas;
+	ResMan.getAvailableResources(Aurora::kFileTypeART, areas);
+
+	// Go through all available areas and remove the global ones
+	std::list<Aurora::ResourceManager::ResourceID>::iterator a = areas.begin();
+	while (a != areas.end()) {
+		if (a->name.toLower().beginsWith("aeg"))
+			a = areas.erase(a);
+		else
+			++a;
+	}
+
+	if (areas.empty())
+		throw Common::Exception("No area in module \"%s\"", _module.c_str());
+
+	if (areas.size() > 1)
+		throw Common::Exception("More than one area in module \"%s\"", _module.c_str());
+
+	_areaName = areas.front().name;
+}
+
+void Module::unload() {
+	leave();
+
+	unloadResources();
+
+	_newModule.clear();
+	_hasModule = false;
+
+	_module.clear();
+
+	_areaName.clear();
+}
+
+void Module::unloadResources() {
+	std::list<Aurora::ResourceManager::ChangeID>::reverse_iterator r;
+	for (r = _resources.rbegin(); r != _resources.rend(); ++r)
+		ResMan.undo(*r);
+
+	_resources.clear();
+}
+
+void Module::changeModule(const Common::UString &module) {
+	_newModule = module;
+}
+
+void Module::replaceModule() {
+	if (_newModule.empty())
+		return;
+
+	Common::UString newModule = _newModule;
+
+	unload();
+
+	_exit = true;
+
+	loadModule(newModule);
+	enter();
+}
+
+void Module::enter() {
+	if (!_hasModule)
+		throw Common::Exception("Module::enter(): Lacking a module?!?");
+
+	_exit = false;
+
+	CameraMan.reset();
+
+	// Roughly head position
+	CameraMan.setPosition(0.0, 1.8, 0.0);
+	CameraMan.update();
+}
+
+void Module::leave() {
+}
+
+void Module::handleEvents() {
+	Events::Event event;
+	while (EventMan.pollEvent(event)) {
+		// Camera
+		if (handleCameraInput(event))
+			continue;
+	}
+
+	CameraMan.update();
+}
+
+const Common::UString &Module::getName() const {
+	return _module;
+}
+
+} // End of namespace Jade
+
+} // End of namespace Engines
