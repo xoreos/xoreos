@@ -173,6 +173,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeSTO,            ".sto"},
 	{kFileTypeMDX2,           ".mdx2"},
 	{kFileTypeTXB2,           ".txb2"},
+	{kFileTypeFSM,            ".fsm"},
 	{kFileTypeART,            ".art"},
 	{kFileTypeBIP,            ".bip"},
 	{kFileTypeMDB2,           ".mdb2"},
