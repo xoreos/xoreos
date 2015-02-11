@@ -83,7 +83,7 @@ void Module::loadModule(const Common::UString &module) {
 	} catch (Common::Exception &e) {
 		_module.clear();
 
-		e.add("Failed loading module \"%s\"", _module.c_str());
+		e.add("Failed loading module \"%s\"", module.c_str());
 		throw e;
 	}
 
