@@ -38,6 +38,8 @@ namespace Jade {
 
 class Console;
 
+class Area;
+
 /** A Jade module. */
 class Module {
 public:
@@ -59,6 +61,9 @@ public:
 	/** Return the name of the currently loaded module. */
 	const Common::UString &getName() const;
 
+	/** Return the area the PC is currently in. */
+	Area *getCurrentArea();
+
 
 private:
 	Console *_console;
@@ -76,12 +81,16 @@ private:
 
 	Common::UString _areaName; ///< The name of this module's area.
 
+	Area *_area; ///< The current module's area.
+
 
 	void load();
 	void loadResources();
+	void loadArea();
 
 	void unload();
 	void unloadResources();
+	void unloadArea();
 
 	void findAreaName();
 

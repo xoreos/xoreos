@@ -37,13 +37,14 @@
 
 #include "engines/jade/module.h"
 #include "engines/jade/console.h"
+#include "engines/jade/area.h"
 
 namespace Engines {
 
 namespace Jade {
 
 Module::Module(Console &console) : _console(&console),
-	_hasModule(false), _running(false), _exit(false) {
+	_hasModule(false), _running(false), _exit(false), _area(0) {
 
 }
 
@@ -131,7 +132,9 @@ void Module::exit() {
 
 void Module::load() {
 	loadResources();
+
 	findAreaName();
+	loadArea();
 }
 
 /** Load all RIMs in $JADE_moduleDir/$Module/ */
@@ -183,9 +186,16 @@ void Module::findAreaName() {
 	_areaName = areas.front().name;
 }
 
+void Module::loadArea() {
+	_area = new Area;
+
+	_area->load(_areaName);
+}
+
 void Module::unload() {
 	leave();
 
+	unloadArea();
 	unloadResources();
 
 	_newModule.clear();
@@ -202,6 +212,11 @@ void Module::unloadResources() {
 		ResMan.undo(*r);
 
 	_resources.clear();
+}
+
+void Module::unloadArea() {
+	delete _area;
+	_area = 0;
 }
 
 void Module::changeModule(const Common::UString &module) {
@@ -225,7 +240,7 @@ void Module::replaceModule() {
 }
 
 void Module::enter() {
-	if (!_hasModule)
+	if (!_hasModule || !_area)
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
 	_console->printf("Entering module \"%s\"", _module.c_str());
@@ -237,17 +252,27 @@ void Module::enter() {
 	// Roughly head position
 	CameraMan.setPosition(0.0, 1.8, 0.0);
 	CameraMan.update();
+
+	_area->show();
 }
 
 void Module::leave() {
+	if (!_area)
+		return;
+
+	_area->hide();
 }
 
 void Module::handleEvents() {
 	Events::Event event;
 	while (EventMan.pollEvent(event)) {
 		// Handle console
-		if (_console->processEvent(event))
+		if (_console->processEvent(event)) {
+			if (!_area)
+				return;
+
 			continue;
+		}
 
 		if (event.type == Events::kEventKeyDown) {
 			// Console
@@ -261,13 +286,20 @@ void Module::handleEvents() {
 		if (!_console->isVisible())
 			if (handleCameraInput(event))
 				continue;
+
+		_area->addEvent(event);
 	}
 
 	CameraMan.update();
+	_area->processEventQueue();
 }
 
 const Common::UString &Module::getName() const {
 	return _module;
+}
+
+Area *Module::getCurrentArea() {
+	return _area;
 }
 
 } // End of namespace Jade
