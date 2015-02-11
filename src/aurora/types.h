@@ -283,14 +283,14 @@ enum FileType {
 	kFileTypePLIST          = 23004, ///< Mac property list (XML).
 
 	// Found Jade Empire
-	kFileTypeCRE            = 24000, ///< Creature template, GFF.
+	kFileTypeCRE            = 24000, ///< Creature, GFF.
 	kFileTypePSO            = 24001, ///< Shader.
 	kFileTypeVSO            = 24002, ///< Shader.
 	kFileTypeABC            = 24003, ///< Font, character descriptions.
 	kFileTypeSBM            = 24004, ///< Font, character bitmap data.
 	kFileTypePVD            = 24005,
 	kFileTypeAMP            = 24006,
-	kFileTypePLA            = 24007,
+	kFileTypePLA            = 24007, ///< Placeable, GFF.
 	kFileTypeTRG            = 24008, ///< Trigger, GFF.
 	kFileTypePK             = 24009,
 
