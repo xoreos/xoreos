@@ -72,8 +72,18 @@ public:
 private:
 	Common::UString _baseDirectory;
 
+	Graphics::Aurora::FPS *_fps;
+
 	void init();
+	void initResources(LoadProgress &progress);
 	void initCursors();
+	void initConfig();
+	void initGameConfig();
+
+	void deinit();
+
+	void playIntroVideos();
+	void main();
 };
 
 } // End of namespace Jade

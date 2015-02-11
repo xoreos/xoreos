@@ -51,6 +51,8 @@
 
 #include "engines/jade/jade.h"
 #include "engines/jade/modelloader.h"
+#include "engines/jade/console.h"
+#include "engines/jade/module.h"
 
 namespace Engines {
 
@@ -109,55 +111,44 @@ void JadeEngine::run(const Common::UString &target) {
 	CursorMan.hideCursor();
 	CursorMan.set();
 
-	playVideo("black");
-	playVideo("publisher");
-	playVideo("bwlogo");
-	playVideo("graymatr");
-	playVideo("attract");
+	playIntroVideos();
 	if (EventMan.quitRequested())
 		return;
 
 	CursorMan.showCursor();
 
-	playSound("musicbank00046", Sound::kSoundTypeMusic, true);
-
-	bool showFPS = ConfigMan.getBool("showfps", false);
-
-	Graphics::Aurora::FPS *fps = 0;
-	if (showFPS) {
-		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		fps->show();
+	if (ConfigMan.getBool("showfps", false)) {
+		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
+		_fps->show();
 	}
 
-	CameraMan.setPosition(0.0, 1.0, 0.0);
+	main();
 
-	Graphics::Aurora::Model *model = loadModelObject("n_silk_");
-
-	model->setRotation(0.0, 0.0, 180.0);
-	model->setPosition(0.0, 2.0, 0.0);
-	model->drawBound(true);
-	model->show();
-
-	EventMan.enableKeyRepeat();
-
-	while (!EventMan.quitRequested()) {
-		Events::Event event;
-		while (EventMan.pollEvent(event))
-			handleCameraInput(event);
-
-		CameraMan.update();
-		EventMan.delay(10);
-	}
-
-	EventMan.enableKeyRepeat(0);
-
-	delete model;
-	delete fps;
+	deinit();
 }
 
 void JadeEngine::init() {
-	LoadProgress progress(13);
+	LoadProgress progress(15);
 
+	progress.step("Loading user game config");
+	initConfig();
+
+	initResources(progress);
+	if (EventMan.quitRequested())
+		return;
+
+	progress.step("Loading game cursors");
+	initCursors();
+	if (EventMan.quitRequested())
+		return;
+
+	progress.step("Initializing internal game config");
+	initGameConfig();
+
+	progress.step("Successfully initialized the engine");
+}
+
+void JadeEngine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_baseDirectory);
 
@@ -208,23 +199,47 @@ void JadeEngine::init() {
 	TalkMan.addMainTable("dialog");
 
 	progress.step("Registering file formats");
+	registerModelLoader(new JadeModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
 	FontMan.addAlias("sava"   , "asian");
 	FontMan.addAlias("cerigo" , "asian");
 	FontMan.addAlias("fnt_gui", "asian");
-
-	registerModelLoader(new JadeModelLoader);
-
-	progress.step("Loading game cursors");
-	initCursors();
-
-	progress.step("Successfully initialized the engine");
 }
 
 void JadeEngine::initCursors() {
 	CursorMan.add("ui_cursor32", "default");
 
 	CursorMan.setDefault("default");
+}
+
+void JadeEngine::initConfig() {
+}
+
+void JadeEngine::initGameConfig() {
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "JADE_moduleDir",
+		Common::FilePath::findSubDirectory(_baseDirectory, "data", true));
+}
+
+void JadeEngine::deinit() {
+	delete _fps;
+}
+
+void JadeEngine::playIntroVideos() {
+	playVideo("black");
+	playVideo("publisher");
+	playVideo("bwlogo");
+	playVideo("graymatr");
+	playVideo("attract");
+}
+
+void JadeEngine::main() {
+	Console console;
+	Module module(console);
+
+	console.setModule(&module);
+
+	module.load("j01_town");
+	module.run();
 }
 
 } // End of namespace Jade
