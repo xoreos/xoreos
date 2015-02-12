@@ -36,11 +36,10 @@
 
 namespace Engines {
 
-class Console;
-
 namespace KotOR {
 
 class Area;
+class Console;
 
 /** A KotOR module. */
 class Module {
