@@ -42,6 +42,7 @@ namespace Engines {
 namespace Jade {
 
 class Room;
+class Object;
 
 /** A Jade area. */
 class Area : public Events::Notifyable {
@@ -67,7 +68,10 @@ protected:
 
 
 private:
-	typedef std::list<Room *> RoomList;
+	typedef std::list<Room *>   RoomList;
+	typedef std::list<Object *> ObjectList;
+
+	typedef std::map<uint32, Object *> ObjectMap;
 
 
 	bool _loaded;
@@ -81,6 +85,13 @@ private:
 
 	RoomList _rooms;
 
+	ObjectList _objects;
+	ObjectMap  _objectMap;
+
+	Object *_activeObject;
+
+	bool _highlightAll;
+
 	std::list<Events::Event> _eventQueue;
 
 	Common::Mutex _mutex;
@@ -90,8 +101,17 @@ private:
 	void loadVIS();
 
 	void loadRooms();
+	void loadArtPlaceables();
+
+	void loadObject(Object &object);
 
 	void unload();
+
+	void checkActive();
+	void setActive(Object *object);
+	Object *getObjectAt(int x, int y);
+
+	void highlightAll(bool enabled);
 };
 
 } // End of namespace Jade
