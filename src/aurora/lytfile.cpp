@@ -39,6 +39,7 @@ LYTFile::~LYTFile() {
 
 void LYTFile::clear() {
 	_rooms.clear();
+	_artPlaceables.clear();
 	_doorHooks.clear();
 	_fileDependency.clear();
 }
@@ -92,12 +93,17 @@ void LYTFile::load(Common::SeekableReadStream &lyt) {
 				//tokenizer.getTokens(lyt, strings);
 			}
 		} else if (strings[0] == "artplaceablecount") {
-			int obstacleCount = atoi(strings[1].c_str());
+			int artPlaceablesCount = atoi(strings[1].c_str());
+			_artPlaceables.resize(artPlaceablesCount);
 
-			// TODO! Just ignore for now
-			for (int i = 0; i < obstacleCount; i++) {
+			for (int i = 0; i < artPlaceablesCount; i++) {
 				tokenizer.nextChunk(lyt);
-				//tokenizer.getTokens(lyt, strings);
+				tokenizer.getTokens(lyt, strings);
+
+				_artPlaceables[i].model = strings[0];
+				strings[1].parse(_artPlaceables[i].x);
+				strings[2].parse(_artPlaceables[i].y);
+				strings[3].parse(_artPlaceables[i].z);
 			}
 		} else if (strings[0] == "walkmeshRooms") {
 			int obstacleCount = atoi(strings[1].c_str());
@@ -141,6 +147,10 @@ void LYTFile::load(Common::SeekableReadStream &lyt) {
 
 const LYTFile::RoomArray &LYTFile::getRooms() const {
 	return _rooms;
+}
+
+const LYTFile::ArtPlaceableArray &LYTFile::getArtPlaceables() const {
+	return _artPlaceables;
 }
 
 const LYTFile::DoorHookArray &LYTFile::getDoorHooks() const {

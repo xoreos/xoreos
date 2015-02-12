@@ -47,6 +47,12 @@ public:
 		float x, y, z;
 	};
 
+	/** A simple, non-interactive placeable. */
+	struct ArtPlaceable {
+		Common::UString model;
+		float x, y, z;
+	};
+
 	/** A place a door hooks into. */
 	struct DoorHook {
 		Common::UString name;
@@ -56,6 +62,7 @@ public:
 	};
 
 	typedef std::vector<Room> RoomArray;
+	typedef std::vector<ArtPlaceable> ArtPlaceableArray;
 	typedef std::vector<DoorHook> DoorHookArray;
 
 	LYTFile();
@@ -73,6 +80,9 @@ public:
 	/** Get all rooms in this layout. */
 	const RoomArray &getRooms() const;
 
+	/** Get art placeables in this layout. */
+	const ArtPlaceableArray &getArtPlaceables() const;
+
 	/** Get all door hooks in this layout. */
 	const DoorHookArray &getDoorHooks() const;
 
@@ -81,6 +91,7 @@ public:
 
 private:
 	RoomArray _rooms;
+	ArtPlaceableArray _artPlaceables;
 	DoorHookArray _doorHooks;
 	Common::UString _fileDependency;
 };
