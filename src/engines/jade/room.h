@@ -18,79 +18,34 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/jade/area.h
- *  An area.
+/** @file engines/jade/room.h
+ *  A room within a Jade Empire area.
  */
 
-#ifndef ENGINES_JADE_AREA_H
-#define ENGINES_JADE_AREA_H
+#ifndef ENGINES_JADE_ROOM_H
+#define ENGINES_JADE_ROOM_H
 
-#include <list>
-#include <map>
+#include "aurora/resman.h"
 
-#include "common/ustring.h"
-#include "common/mutex.h"
-
-#include "aurora/lytfile.h"
-#include "aurora/visfile.h"
-
-#include "events/types.h"
-#include "events/notifyable.h"
+#include "graphics/aurora/types.h"
 
 namespace Engines {
 
 namespace Jade {
 
-class Room;
-
-/** A Jade area. */
-class Area : public Events::Notifyable {
+class Room {
 public:
-	Area();
-	~Area();
-
-	void load(const Common::UString &resRef);
-
-	const Common::UString &getName();
+	Room(const Common::UString &resRef, uint32 id, float x, float y, float z);
+	~Room();
 
 	void show();
 	void hide();
 
-	void addEvent(const Events::Event &event);
-	void processEventQueue();
-
-	void removeFocus();
-
-
-protected:
-	void notifyCameraMoved();
-
-
 private:
-	typedef std::list<Room *> RoomList;
+	Aurora::ResourceManager::ChangeID _resources;
+	Graphics::Aurora::Model *_model;
 
-
-	bool _loaded;
-
-	Common::UString _resRef;
-
-	bool _visible;
-
-	Aurora::LYTFile _lyt;
-	Aurora::VISFile _vis;
-
-	RoomList _rooms;
-
-	std::list<Events::Event> _eventQueue;
-
-	Common::Mutex _mutex;
-
-
-	void loadLYT();
-	void loadVIS();
-
-	void loadRooms();
-
+	void load(const Common::UString &resRef, uint32 id, float x, float y, float z);
 	void unload();
 };
 
@@ -98,4 +53,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_JADE_AREA_H
+#endif // ENGINES_JADE_ROOM_H

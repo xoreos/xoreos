@@ -8,6 +8,7 @@ noinst_HEADERS = \
                  console.h \
                  module.h \
                  area.h \
+                 room.h \
                  gui/main/main.h \
                  $(EMPTY)
 
@@ -17,5 +18,6 @@ libjade_la_SOURCES = \
                      console.cpp \
                      module.cpp \
                      area.cpp \
+                     room.cpp \
                      gui/main/main.cpp \
                      $(EMPTY)
