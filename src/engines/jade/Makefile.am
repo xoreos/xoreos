@@ -10,6 +10,7 @@ noinst_HEADERS = \
                  area.h \
                  room.h \
                  object.h \
+                 artplaceable.h \
                  gui/main/main.h \
                  $(EMPTY)
 
@@ -21,5 +22,6 @@ libjade_la_SOURCES = \
                      area.cpp \
                      room.cpp \
                      object.cpp \
+                     artplaceable.cpp \
                      gui/main/main.cpp \
                      $(EMPTY)
