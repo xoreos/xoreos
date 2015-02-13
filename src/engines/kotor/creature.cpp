@@ -44,7 +44,10 @@ namespace Engines {
 
 namespace KotOR {
 
-Creature::Creature() : _appearance(Aurora::kFieldIDInvalid), _model(0) {
+Creature::Creature(const Aurora::GFFStruct &creature) :
+	_appearance(Aurora::kFieldIDInvalid), _model(0) {
+
+	load(creature);
 }
 
 Creature::~Creature() {
@@ -95,8 +98,6 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 }
 
 void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
-	assert(!_loaded);
-
 	// General properties
 
 	if (blueprint)
@@ -126,8 +127,6 @@ void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	Common::vector2orientation(bearingX, bearingY, o[0], o[1], o[2]);
 
 	setOrientation(o[0], o[1], o[2]);
-
-	_loaded = true;
 }
 
 void Creature::loadProperties(const Aurora::GFFStruct &gff) {

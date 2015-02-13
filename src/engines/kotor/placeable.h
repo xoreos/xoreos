@@ -35,10 +35,8 @@ namespace KotOR {
 
 class Placeable : public Situated {
 public:
-	Placeable();
+	Placeable(const Aurora::GFFStruct &placeable);
 	~Placeable();
-
-	void load(const Aurora::GFFStruct &placeable);
 
 	void hide();
 
@@ -48,6 +46,8 @@ public:
 	void highlight(bool enabled);
 
 protected:
+	void load(const Aurora::GFFStruct &placeable);
+
 	void loadObject(const Aurora::GFFStruct &gff);
 	void loadAppearance();
 };

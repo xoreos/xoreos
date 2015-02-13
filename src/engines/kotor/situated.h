@@ -41,8 +41,6 @@ public:
 	Situated();
 	~Situated();
 
-	void load(const Aurora::GFFStruct &situated);
-
 	void show();
 	void hide();
 

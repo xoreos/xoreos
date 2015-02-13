@@ -28,7 +28,7 @@ namespace Engines {
 
 namespace KotOR {
 
-Object::Object() : _loaded(false), _static(false), _usable(true) {
+Object::Object() : _static(false), _usable(true) {
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
 	_position   [2] = 0.0;

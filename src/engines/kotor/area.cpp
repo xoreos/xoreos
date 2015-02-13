@@ -302,9 +302,7 @@ void Area::loadObject(Object &object) {
 
 void Area::loadPlaceables(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
-		Placeable *placeable = new Placeable;
-
-		placeable->load(**p);
+		Placeable *placeable = new Placeable(**p);
 
 		loadObject(*placeable);
 	}
@@ -312,9 +310,7 @@ void Area::loadPlaceables(const Aurora::GFFList &list) {
 
 void Area::loadDoors(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Door *door = new Door;
-
-		door->load(**d);
+		Door *door = new Door(**d);
 
 		loadObject(*door);
 	}
@@ -322,9 +318,7 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 
 void Area::loadCreatures(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c) {
-		Creature *creature = new Creature;
-
-		creature->load(**c);
+		Creature *creature = new Creature(**c);
 
 		loadObject(*creature);
 	}

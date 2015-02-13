@@ -38,7 +38,8 @@ namespace Engines {
 
 namespace KotOR {
 
-Placeable::Placeable() {
+Placeable::Placeable(const Aurora::GFFStruct &placeable) {
+	load(placeable);
 }
 
 Placeable::~Placeable() {

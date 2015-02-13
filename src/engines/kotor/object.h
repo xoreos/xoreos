@@ -68,8 +68,6 @@ public:
 	virtual void highlight(bool enabled) = 0;
 
 protected:
-	bool _loaded;
-
 	Common::UString _tag;
 	Common::UString _name;
 	Common::UString _description;
