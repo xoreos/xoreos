@@ -54,7 +54,7 @@ class Object;
 class Area : public Events::Notifyable {
 public:
 	Area();
-	virtual ~Area();
+	~Area();
 
 	void load(const Common::UString &resRef);
 

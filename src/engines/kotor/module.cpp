@@ -195,7 +195,7 @@ void Module::loadIFO() {
 }
 
 void Module::loadArea() {
-	_area = createArea();
+	_area = new Area;
 
 	_area->load(_ifo.getEntryArea());
 }
@@ -350,10 +350,6 @@ void Module::handleEvents() {
 
 	CameraMan.update();
 	_area->processEventQueue();
-}
-
-Area *Module::createArea() const {
-	return new Area;
 }
 
 const Common::UString &Module::getName() const {

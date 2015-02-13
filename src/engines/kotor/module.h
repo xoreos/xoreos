@@ -45,7 +45,7 @@ class Console;
 class Module {
 public:
 	Module(Console &console);
-	virtual ~Module();
+	~Module();
 
 	/** Clear the whole context. */
 	void clear();
@@ -112,8 +112,6 @@ protected:
 	void leave(); ///< Leave the current module.
 
 	void handleEvents();
-
-	virtual Area *createArea() const;
 
 	/** Load the actual module. */
 	void loadModule(const Common::UString &module);
