@@ -41,13 +41,11 @@
 #include "events/types.h"
 #include "events/notifyable.h"
 
-#include "graphics/aurora/types.h"
-#include "graphics/aurora/model.h"
-
 namespace Engines {
 
 namespace KotOR {
 
+class Room;
 class Object;
 
 /** A KotOR area. */
@@ -75,19 +73,7 @@ protected:
 
 
 private:
-	/** A room within the area. */
-	struct Room {
-		const Aurora::LYTFile::Room *lytRoom;
-
-		Graphics::Aurora::Model *model;
-
-		bool visible;
-		std::vector<Room *> visibles;
-
-		Room(const Aurora::LYTFile::Room &lRoom);
-		~Room();
-	};
-
+	typedef std::list<Room *>   RoomList;
 	typedef std::list<Object *> ObjectList;
 
 	typedef std::map<uint32, Object *> ObjectMap;
@@ -118,11 +104,10 @@ private:
 	Aurora::LYTFile _lyt;
 	Aurora::VISFile _vis;
 
-	std::vector<Room *> _rooms;
+	RoomList _rooms;
 
 	ObjectList _objects;
-
-	ObjectMap _objectMap;
+	ObjectMap  _objectMap;
 
 	Object *_activeObject;
 
@@ -139,8 +124,7 @@ private:
 	void loadARE(const Aurora::GFFStruct &are);
 	void loadGIT(const Aurora::GFFStruct &git);
 
-	void loadModels();
-	void loadVisibles();
+	void loadRooms();
 
 	void loadProperties(const Aurora::GFFStruct &props);
 
@@ -149,6 +133,8 @@ private:
 	void loadPlaceables(const Aurora::GFFList &list);
 	void loadDoors     (const Aurora::GFFList &list);
 	void loadCreatures (const Aurora::GFFList &list);
+
+	void unload();
 
 	void stopSound();
 	void stopAmbientMusic();

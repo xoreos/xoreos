@@ -12,6 +12,7 @@ noinst_HEADERS = \
                  door.h \
                  creature.h \
                  area.h \
+                 room.h \
                  module.h \
                  gui/widgets/button.h \
                  gui/widgets/checkbox.h \
@@ -48,6 +49,7 @@ libkotor_la_SOURCES = \
                       door.cpp \
                       creature.cpp \
                       area.cpp \
+                      room.cpp \
                       module.cpp \
                       gui/widgets/button.cpp \
                       gui/widgets/checkbox.cpp \
