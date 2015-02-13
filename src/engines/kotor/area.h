@@ -144,6 +144,8 @@ private:
 
 	void loadProperties(const Aurora::GFFStruct &props);
 
+	void loadObject(Object &object);
+
 	void loadPlaceables(const Aurora::GFFList &list);
 	void loadDoors     (const Aurora::GFFList &list);
 	void loadCreatures (const Aurora::GFFList &list);

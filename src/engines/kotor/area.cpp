@@ -289,21 +289,24 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 	}
 }
 
+void Area::loadObject(Object &object) {
+	_objects.push_back(&object);
+
+	if (!object.isStatic()) {
+		const std::list<uint32> &ids = object.getIDs();
+
+		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+			_objectMap.insert(std::make_pair(*id, &object));
+	}
+}
+
 void Area::loadPlaceables(const Aurora::GFFList &list) {
 	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
 		Placeable *placeable = new Placeable;
 
 		placeable->load(**p);
 
-		_objects.push_back(placeable);
-
-		if (!placeable->isStatic()) {
-			const std::list<uint32> &ids = placeable->getIDs();
-
-			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-				_objectMap.insert(std::make_pair(*id, placeable));
-		}
-
+		loadObject(*placeable);
 	}
 }
 
@@ -313,15 +316,7 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 
 		door->load(**d);
 
-		_objects.push_back(door);
-
-		if (!door->isStatic()) {
-			const std::list<uint32> &ids = door->getIDs();
-
-			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-				_objectMap.insert(std::make_pair(*id, door));
-		}
-
+		loadObject(*door);
 	}
 }
 
@@ -331,15 +326,7 @@ void Area::loadCreatures(const Aurora::GFFList &list) {
 
 		creature->load(**c);
 
-		_objects.push_back(creature);
-
-		if (!creature->isStatic()) {
-			const std::list<uint32> &ids = creature->getIDs();
-
-			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-				_objectMap.insert(std::make_pair(*id, creature));
-		}
-
+		loadObject(*creature);
 	}
 }
 
