@@ -29,22 +29,9 @@
 
 namespace Engines {
 
-class Console;
-
-namespace KotOR {
-	class Area;
-}
-
 namespace KotOR2 {
 
-class Module : public Engines::KotOR::Module {
-public:
-	Module(Console &console);
-	~Module();
-
-protected:
-	::Engines::KotOR::Area *createArea() const;
-};
+using ::Engines::KotOR::Module;
 
 } // End of namespace KotOR2
 

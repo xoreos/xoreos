@@ -18,27 +18,23 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor2/module.cpp
- *  A module.
+/** @file engines/kotor2/console.h
+ *  KotOR2 (debug) console.
  */
 
-#include "engines/kotor2/module.h"
-#include "engines/kotor2/area.h"
+#ifndef ENGINES_KOTOR2_CONSOLE_H
+#define ENGINES_KOTOR2_CONSOLE_H
+
+#include "engines/kotor/console.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-Module::Module(Console &console) : Engines::KotOR::Module(console) {
-}
-
-Module::~Module() {
-}
-
-::Engines::KotOR::Area *Module::createArea() const {
-	return new ::Engines::KotOR2::Area;
-}
+using ::Engines::KotOR::Console;
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTOR2_CONSOLE_H

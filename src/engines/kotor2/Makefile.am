@@ -5,15 +5,19 @@ noinst_LTLIBRARIES = libkotor2.la
 noinst_HEADERS = \
                  kotor2.h \
                  modelloader.h \
+                 console.h \
                  module.h \
-                 area.h \
+                 gui/widgets/kotorwidget.h \
+                 gui/gui.h \
                  gui/main/main.h \
                  $(EMPTY)
 
 libkotor2_la_SOURCES = \
                        kotor2.cpp \
                        modelloader.cpp \
-                       module.cpp \
-                       area.cpp \
                        gui/main/main.cpp \
                        $(EMPTY)
+
+libkotor2_la_LIBADD = \
+                      ../kotor/libkotor.la \
+                      $(EMPTY)

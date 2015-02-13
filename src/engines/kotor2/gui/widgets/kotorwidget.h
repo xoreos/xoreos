@@ -18,22 +18,23 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor2/area.cpp
- *  An area.
+/** @file engines/kotor2/gui/widgets/kotorwidget.h
+ *  A KotOR2 widget.
  */
 
-#include "engines/kotor2/area.h"
+#ifndef ENGINES_KOTOR2_GUI_WIDGETS_KOTORWIDGET_H
+#define ENGINES_KOTOR2_GUI_WIDGETS_KOTORWIDGET_H
+
+#include "engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-Area::Area() {
-}
-
-Area::~Area() {
-}
+using ::Engines::KotOR::KotORWidget;
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTOR2_GUI_WIDGETS_KOTORWIDGET_H

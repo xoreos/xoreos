@@ -44,10 +44,10 @@
 #include "engines/aurora/resources.h"
 #include "engines/aurora/model.h"
 
-#include "engines/kotor/console.h"
 
 #include "engines/kotor2/kotor2.h"
 #include "engines/kotor2/modelloader.h"
+#include "engines/kotor2/console.h"
 #include "engines/kotor2/module.h"
 
 #include "engines/kotor2/gui/main/main.h"
@@ -407,7 +407,7 @@ void KotOR2Engine::stopMenuMusic() {
 void KotOR2Engine::mainMenuLoop() {
 	playMenuMusic();
 
-	::Engines::KotOR::Console console;
+	Console console;
 	Module module(console);
 
 	console.setModule(&module);

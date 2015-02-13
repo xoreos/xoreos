@@ -26,9 +26,9 @@
 
 #include "events/events.h"
 
-#include "engines/kotor/gui/widgets/kotorwidget.h"
-
 #include "engines/kotor2/module.h"
+
+#include "engines/kotor2/gui/widgets/kotorwidget.h"
 
 #include "engines/kotor2/gui/main/main.h"
 
@@ -46,7 +46,7 @@ MainMenu::~MainMenu() {
 void MainMenu::initWidget(Widget &widget) {
 	// ...BioWare...
 	if (widget.getTag() == "LBL_GAMELOGO") {
-		dynamic_cast< ::Engines::KotOR::KotORWidget & >(widget).setFill("kotor2logo");
+		dynamic_cast< KotORWidget & >(widget).setFill("kotor2logo");
 		return;
 	}
 

@@ -18,27 +18,23 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor2/area.h
- *  An area.
+/** @file engines/kotor2/gui/gui.h
+ *  A KotOR2 GUI.
  */
 
-#ifndef ENGINES_KOTOR2_AREA_H
-#define ENGINES_KOTOR2_AREA_H
+#ifndef ENGINES_KOTOR2_GUI_GUI_H
+#define ENGINES_KOTOR2_GUI_GUI_H
 
-#include "engines/kotor/area.h"
+#include "engines/kotor/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class Area : public Engines::KotOR::Area {
-public:
-	Area();
-	~Area();
-};
+using ::Engines::KotOR::GUI;
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_AREA_H
+#endif // ENGINES_KOTOR2_GUI_GUI_H
