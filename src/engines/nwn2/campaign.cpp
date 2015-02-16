@@ -39,7 +39,7 @@ namespace Engines {
 
 namespace NWN2 {
 
-Campaign::Campaign(Console &console) : _console(&console), _running(false), 
+Campaign::Campaign(Console &console) : _console(&console), _running(false),
 	_module(console, *this), _newCampaign(0) {
 
 	findCampaigns();
