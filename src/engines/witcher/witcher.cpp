@@ -45,6 +45,7 @@
 
 #include "src/engines/witcher/witcher.h"
 #include "src/engines/witcher/modelloader.h"
+#include "src/engines/witcher/campaign.h"
 
 namespace Engines {
 
@@ -244,6 +245,25 @@ void WitcherEngine::playIntroVideos() {
 }
 
 void WitcherEngine::main() {
+	Campaign campaign;
+
+	const std::list<CampaignDescription> &campaigns = campaign.getCampaigns();
+	if (campaigns.empty())
+		error("No campaigns found");
+
+	// Find the original The Witcher campaign
+	const CampaignDescription *witcherCampaign = 0;
+	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c)
+		if (c->tag == "thewitcher")
+			witcherCampaign = &*c;
+
+	// If that's not available, load the first one found
+	if (!witcherCampaign)
+		witcherCampaign = &*campaigns.begin();
+
+	campaign.load(*witcherCampaign);
+
+	campaign.run();
 }
 
 } // End of namespace Witcher
