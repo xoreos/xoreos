@@ -31,6 +31,8 @@
 
 #include "src/aurora/locstring.h"
 
+#include "src/engines/witcher/module.h"
+
 namespace Engines {
 
 namespace Witcher {
@@ -84,6 +86,9 @@ private:
 	std::list<Common::UString> _modules;
 	/** The module the current campaign starts in. */
 	Common::UString _startModule;
+
+	/** The current module of the current campaign. */
+	Module _module;
 
 	/** The campaign we should change to. */
 	const CampaignDescription *_newCampaign;

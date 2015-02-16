@@ -48,7 +48,7 @@ void CampaignDescription::clear() {
 }
 
 
-Campaign::Campaign() : _running(false) {
+Campaign::Campaign() : _running(false), _module(*this) {
 	findCampaigns();
 }
 
@@ -110,6 +110,8 @@ bool Campaign::readCampaign(const Common::UString &mmdFile, CampaignDescription 
 }
 
 void Campaign::clear() {
+	_module.clear();
+
 	_currentCampaign.clear();
 
 	_modules.clear();
@@ -170,10 +172,26 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 	loadCampaignFile(desc);
 
 	_currentCampaign = desc;
+
+	try {
+		_module.load(_currentCampaign.directory + "/" + _startModule + ".mod");
+	} catch (Common::Exception &e) {
+		clear();
+
+		e.add("Failed to load campaign's starting module");
+		throw;
+	}
 }
 
 void Campaign::run() {
 	_running = true;
+
+	try {
+		_module.run();
+	} catch (...) {
+		_running = false;
+		throw;
+	}
 
 	_running = false;
 }
