@@ -43,7 +43,7 @@ bool isFemale(Language language);
 /** Is the language ID of the standard variety? */
 bool isLanguageStandard(Language language);
 /** Is the language ID of the new variety found in The Witcher? */
-bool isLanguageTheWitcher(Language language);
+bool isLanguageWitcher(Language language);
 
 /** Return the human readable string of a Platform. */
 Common::UString getPlatformDescription(Platform platform);

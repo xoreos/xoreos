@@ -437,7 +437,7 @@ bool isLanguageStandard(Language language) {
 	       (language == kLanguageJapaneseFemale);
 }
 
-bool isLanguageTheWitcher(Language language) {
+bool isLanguageWitcher(Language language) {
 	return (language == kLanguageWitcherDefault)            ||
 	       (language == kLanguageWitcherEnglish)            ||
 	       (language == kLanguageWitcherFinalEnglish)       ||
