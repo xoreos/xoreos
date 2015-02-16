@@ -207,6 +207,12 @@ void IFOFile::load() {
 	_startMonth     = ifoTop.getUint("Mod_StartMonth", 1);
 	_startYear      = ifoTop.getUint("Mod_StartYear" , 0);
 
+	// Weather
+	_minWeatherIntensity = ifoTop.getSint("Mod_MinWeatInt",   0);
+	_maxWeatherIntensity = ifoTop.getSint("Mod_MaxWeatInt", 100);
+	_rainChance          = ifoTop.getSint("Mod_RainChance",   0);
+	_snowChance          = ifoTop.getSint("Mod_SnowChance",   0);
+
 	// XP Scale
 	_xpScale = ifoTop.getUint("Mod_XPScale", 100) / 100.0;
 }
@@ -327,6 +333,22 @@ uint8 IFOFile::getDuskHour() const {
 
 uint32 IFOFile::getMinutesPerHour() const {
 	return _minutesPerHour;
+}
+
+int32 IFOFile::getMinWeatherIntensity() const {
+	return _minWeatherIntensity;
+}
+
+int32 IFOFile::getMaxWeatherIntensity() const {
+	return _maxWeatherIntensity;
+}
+
+int32 IFOFile::getRainChance() const {
+	return _rainChance;
+}
+
+int32 IFOFile::getSnowChance() const {
+	return _snowChance;
 }
 
 float IFOFile::getXPScale() const {

@@ -114,6 +114,16 @@ public:
 	/** Return the number of real time minutes per game hour. */
 	uint32 getMinutesPerHour() const;
 
+	// Weather
+
+	/** Return the minimum weather intensity. */
+	int32 getMinWeatherIntensity() const;
+	/** Return the maximum weather intensity. */
+	int32 getMaxWeatherIntensity() const;
+	/** Return the chance that it's going to rain. */
+	int32 getRainChance() const;
+	/** Return the chance that it's going to snow. */
+	int32 getSnowChance() const;
 
 	/** Get the number creature kill XP is multiplied by. */
 	float getXPScale() const;
@@ -169,6 +179,11 @@ private:
 	uint8  _startDay;   ///< Day the module starts.
 	uint8  _startMonth; ///< Month the module starts.
 	uint32 _startYear;  ///< Year the module starts.
+
+	int32 _minWeatherIntensity; ///< Minimum weather intensity.
+	int32 _maxWeatherIntensity; ///< Maximum weather intensity.
+	int32 _rainChance;          ///< Chance for rain.
+	int32 _snowChance;          ///< Chance for snow.
 
 	float _xpScale; ///< The number creature kill XP is multiplied by.
 
