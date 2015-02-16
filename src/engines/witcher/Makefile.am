@@ -5,9 +5,11 @@ noinst_LTLIBRARIES = libwitcher.la
 noinst_HEADERS = \
                  witcher.h \
                  modelloader.h \
+                 campaign.h \
                  $(EMPTY)
 
 libwitcher_la_SOURCES = \
                         witcher.cpp \
                         modelloader.cpp \
+                        campaign.cpp \
                         $(EMPTY)
