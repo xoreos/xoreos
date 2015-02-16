@@ -321,7 +321,10 @@ enum FileType {
 	kFileTypeXLS            = 25023,
 
 	// Found in the iOS version of Knights of the Old Republic
-	kFileTypeBZF            = 26000  ///< Game resource data, LZMA-compressed BIF
+	kFileTypeBZF            = 26000, ///< Game resource data, LZMA-compressed BIF
+
+	// Found in The Witcher
+	kFileTypeADV            = 27000  ///< Extra adventure modules, ERF.
 };
 
 enum GameID {

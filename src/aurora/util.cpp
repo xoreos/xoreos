@@ -317,7 +317,9 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeXBX,            ".xbx"},
 	{kFileTypeXLS,            ".xls"},
 
-	{kFileTypeBZF,            ".bzf"}
+	{kFileTypeBZF,            ".bzf"},
+
+	{kFileTypeADV,            ".adv"}
 };
 
 
