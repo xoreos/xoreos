@@ -162,6 +162,20 @@ void IFOFile::load() {
 			_nssCache.push_back((*n)->getString("ResRef"));
 	}
 
+	// Quests
+	if (ifoTop.hasField("Quest_list")) {
+		const GFFList &quests = ifoTop.getList("Quest_list");
+
+		for (GFFList::const_iterator q = quests.begin(); q != quests.end(); ++q)
+			_quests.push_back((*q)->getString("Quest"));
+	}
+	if (ifoTop.hasField("QuestBase_list")) {
+		const GFFList &quests = ifoTop.getList("QuestBase_list");
+
+		for (GFFList::const_iterator q = quests.begin(); q != quests.end(); ++q)
+			_questDBs.push_back((*q)->getString("QuestBase"));
+	}
+
 	// Entry
 	_entryArea = ifoTop.getString("Mod_Entry_Area");
 	_entryX    = ifoTop.getDouble("Mod_Entry_X");
@@ -264,6 +278,14 @@ const std::vector<Common::UString> &IFOFile::getAreas() const {
 
 const std::vector<Common::UString> &IFOFile::getNSSCache() const {
 	return _nssCache;
+}
+
+const std::vector<Common::UString> &IFOFile::getQuests() const {
+	return _quests;
+}
+
+const std::vector<Common::UString> &IFOFile::getQuestDBs() const {
+	return _questDBs;
 }
 
 void IFOFile::getStartTime(uint8 &hour, uint8 &day, uint8 &month, uint32 &year) const {

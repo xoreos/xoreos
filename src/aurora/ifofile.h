@@ -93,6 +93,11 @@ public:
 	/** Return the list of NSS (script) files that should be cached. */
 	const std::vector<Common::UString> &getNSSCache() const;
 
+	/** Returns the list of quests used in the module. */
+	const std::vector<Common::UString> &getQuests() const;
+	/** Returns the list of quest databases used in the module. */
+	const std::vector<Common::UString> &getQuestDBs() const;
+
 	// Time managment
 
 	/** Return the module's starting time. */
@@ -143,6 +148,9 @@ private:
 	std::vector<Common::UString> _haks;     ///< HAKs required by the module.
 	std::vector<Common::UString> _areas;    ///< Areas found in the module.
 	std::vector<Common::UString> _nssCache; ///< Scripts that should be cached.
+
+	std::vector<Common::UString> _quests;   ///< List of quests used in the module.
+	std::vector<Common::UString> _questDBs; ///< List of quest databases used in the module.
 
 	uint8 _hourDawn; ///< The hour dawn starts.
 	uint8 _hourDusk; ///< The hour dusk starts.
