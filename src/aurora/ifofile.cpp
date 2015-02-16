@@ -99,13 +99,11 @@ void IFOFile::load() {
 
 	const GFFStruct &ifoTop = _gff->getTopLevel();
 
-	// Sanity checks
-	if (ifoTop.getUint("Mod_Creator_ID") != 2)
-		throw Common::Exception("Invalid Mod_Creator_ID");
-	if (ifoTop.getUint("Mod_Version") != 3)
-		throw Common::Exception("Invalid Mod_Version");
+	// IFO version
+	_version   = ifoTop.getUint("Mod_Version");
+	_creatorID = ifoTop.getUint("Mod_Creator_ID");
 
-	// Version
+	// Game version
 	Common::UString version = ifoTop.getString("Mod_MinGameVer");
 	parseVersion(version);
 
@@ -202,6 +200,14 @@ const GFFStruct *IFOFile::getGFF() const {
 		return 0;
 
 	return &_gff->getTopLevel();
+}
+
+uint32 IFOFile::getVersion() const {
+	return _version;
+}
+
+uint32 IFOFile::getCreatorID() const {
+	return _creatorID;
 }
 
 bool IFOFile::isSave() const {

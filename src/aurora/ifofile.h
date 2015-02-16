@@ -50,6 +50,11 @@ public:
 
 	// General properties
 
+	/** Return the version of this IFO file. */
+	uint32 getVersion() const;
+	/** Return the ID of the IFO file creator. */
+	uint32 getCreatorID() const;
+
 	bool isSave() const; ///< Is the module a save file?
 
 	/** Return the module's tag. */
@@ -112,6 +117,9 @@ private:
 
 	LocString _name;        ///< The module's localized name.
 	LocString _description; ///< The module's localized description.
+
+	uint32 _version;   ///< Version of this IFO file.
+	uint32 _creatorID; ///< ID of the IFO file creator.
 
 	int _minVersionMajor; ///< Minimum major game version this module needs.
 	int _minVersionMinor; ///< Minimum minor game version this module needs.
