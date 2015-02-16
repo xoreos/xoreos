@@ -44,6 +44,8 @@ namespace Graphics {
 
 namespace Engines {
 
+class LoadProgress;
+
 namespace NWN2 {
 
 class NWN2EngineProbe : public Engines::EngineProbe {
