@@ -38,6 +38,8 @@ namespace Common {
 
 namespace Engines {
 
+class LoadProgress;
+
 namespace Witcher {
 
 class WitcherEngineProbe : public Engines::EngineProbe {
@@ -70,8 +72,19 @@ public:
 	void run();
 
 private:
+	Graphics::Aurora::FPS *_fps;
+
 	void init();
+	void declareEncodings();
+	void initResources(LoadProgress &progress);
 	void initCursors();
+	void initConfig();
+	void initGameConfig();
+
+	void deinit();
+
+	void playIntroVideos();
+	void main();
 };
 
 } // End of namespace Witcher

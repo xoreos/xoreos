@@ -28,25 +28,20 @@
 #include "src/common/stream.h"
 #include "src/common/configman.h"
 
-#include "src/aurora/resman.h"
 #include "src/aurora/error.h"
-
-#include "src/graphics/camera.h"
+#include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/cursorman.h"
-#include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/fps.h"
-
-#include "src/sound/sound.h"
 
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
+#include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/model.h"
-#include "src/engines/aurora/camera.h"
 
 #include "src/engines/witcher/witcher.h"
 #include "src/engines/witcher/modelloader.h"
@@ -99,7 +94,7 @@ Engines::Engine *WitcherEngineProbe::createEngine() const {
 }
 
 
-WitcherEngine::WitcherEngine() {
+WitcherEngine::WitcherEngine() : _fps(0) {
 }
 
 WitcherEngine::~WitcherEngine() {
@@ -113,54 +108,66 @@ void WitcherEngine::run() {
 	CursorMan.hideCursor();
 	CursorMan.set();
 
-	playVideo("publisher");
-	playVideo("developer");
-	playVideo("engine");
-	playVideo("intro");
-	playVideo("title");
+	playIntroVideos();
 	if (EventMan.quitRequested())
 		return;
 
 	CursorMan.showCursor();
 
-	bool showFPS = ConfigMan.getBool("showfps", false);
-
-	Graphics::Aurora::FPS *fps = 0;
-	if (showFPS) {
-		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		fps->show();
+	if (ConfigMan.getBool("showfps", false)) {
+		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
+		_fps->show();
 	}
 
-	playSound("m1_axem00020005", Sound::kSoundTypeVoice);
+	main();
 
-	CameraMan.setPosition(0.0, 1.0, 0.0);
-
-	Graphics::Aurora::Model *model = loadModelObject("cm_naked3");
-
-	model->setRotation(0.0, 0.0, 180.0);
-	model->setPosition(0.0, 2.0, 0.0);
-	model->show();
-
-	EventMan.enableKeyRepeat();
-
-	while (!EventMan.quitRequested()) {
-		Events::Event event;
-		while (EventMan.pollEvent(event))
-			handleCameraInput(event);
-
-		CameraMan.update();
-		EventMan.delay(10);
-	}
-
-	EventMan.enableKeyRepeat(0);
-
-	delete model;
-	delete fps;
+	deinit();
 }
 
 void WitcherEngine::init() {
-	LoadProgress progress(11);
+	LoadProgress progress(14);
 
+	progress.step("Loading user game config");
+	initConfig();
+
+	progress.step("Declare string encodings");
+	declareEncodings();
+
+	initResources(progress);
+	if (EventMan.quitRequested())
+		return;
+
+	progress.step("Loading game cursors");
+	initCursors();
+	if (EventMan.quitRequested())
+		return;
+
+	progress.step("Initializing internal game config");
+	initGameConfig();
+
+	progress.step("Successfully initialized the engine");
+}
+
+void WitcherEngine::declareEncodings() {
+	static const LanguageEncoding kLanguageEncodings[] = {
+		{ Aurora::kLanguageEnglish           , Common::kEncodingUTF8 },
+		{ Aurora::kLanguagePolish            , Common::kEncodingUTF8 },
+		{ Aurora::kLanguageGerman            , Common::kEncodingUTF8 },
+		{ Aurora::kLanguageFrench            , Common::kEncodingUTF8 },
+		{ Aurora::kLanguageSpanish           , Common::kEncodingUTF8 },
+		{ Aurora::kLanguageItalian           , Common::kEncodingUTF8 },
+		{ Aurora::kLanguageRussian           , Common::kEncodingUTF8 },
+		{ Aurora::kLanguageCzech             , Common::kEncodingUTF8 },
+		{ Aurora::kLanguageHungarian         , Common::kEncodingUTF8 },
+		{ Aurora::kLanguageKorean            , Common::kEncodingUTF8 },
+		{ Aurora::kLanguageChineseTraditional, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageChineseSimplified , Common::kEncodingUTF8 }
+	};
+
+	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
+}
+
+void WitcherEngine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_target);
 
@@ -169,7 +176,8 @@ void WitcherEngine::init() {
 	ResMan.addArchiveDir(Aurora::kArchiveKEY, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
 	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data/voices");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "data/modules/!final");
+
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "data/modules", true);
 
 	progress.step("Loading main KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 1);
@@ -203,14 +211,9 @@ void WitcherEngine::init() {
 	progress.step("Indexing override files");
 	indexOptionalDirectory("data/override", 0, 0, 50);
 
-	progress.step("Loading game cursors");
-	initCursors();
-
 	progress.step("Registering file formats");
 	registerModelLoader(new WitcherModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
-
-	progress.step("Successfully initialized the engine");
 }
 
 void WitcherEngine::initCursors() {
@@ -218,6 +221,29 @@ void WitcherEngine::initCursors() {
 	CursorMan.add("cursor1" , "default"  , "down");
 
 	CursorMan.setDefault("default", "up");
+}
+
+void WitcherEngine::initConfig() {
+}
+
+void WitcherEngine::initGameConfig() {
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "WITCHER_moduleDir",
+		Common::FilePath::findSubDirectory(_target, "data/modules", true));
+}
+
+void WitcherEngine::deinit() {
+	delete _fps;
+}
+
+void WitcherEngine::playIntroVideos() {
+	playVideo("publisher");
+	playVideo("developer");
+	playVideo("engine");
+	playVideo("intro");
+	playVideo("title");
+}
+
+void WitcherEngine::main() {
 }
 
 } // End of namespace Witcher
