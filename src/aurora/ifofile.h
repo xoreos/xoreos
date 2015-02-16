@@ -98,6 +98,11 @@ public:
 	/** Returns the list of quest databases used in the module. */
 	const std::vector<Common::UString> &getQuestDBs() const;
 
+	/** Returns the list of story NPCs used in the module. */
+	const std::vector<Common::UString> &getStoryNPCs() const;
+	/** Returns the list of monster NPCs used in the module. */
+	const std::vector<Common::UString> &getMonsterNPCs() const;
+
 	// Time managment
 
 	/** Return the module's starting time. */
@@ -151,6 +156,9 @@ private:
 
 	std::vector<Common::UString> _quests;   ///< List of quests used in the module.
 	std::vector<Common::UString> _questDBs; ///< List of quest databases used in the module.
+
+	std::vector<Common::UString> _storyNPCs;   ///< List of story NPCs used in the module.
+	std::vector<Common::UString> _monsterNPCs; ///< List of monster NPCs used in the module.
 
 	uint8 _hourDawn; ///< The hour dawn starts.
 	uint8 _hourDusk; ///< The hour dusk starts.

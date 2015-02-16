@@ -176,6 +176,20 @@ void IFOFile::load() {
 			_questDBs.push_back((*q)->getString("QuestBase"));
 	}
 
+	// NPCs
+	if (ifoTop.hasField("StoryNPC_list")) {
+		const GFFList &npcs = ifoTop.getList("StoryNPC_list");
+
+		for (GFFList::const_iterator n = npcs.begin(); n != npcs.end(); ++n)
+			_storyNPCs.push_back((*n)->getString("StoryNPC"));
+	}
+	if (ifoTop.hasField("MonsterNPC_list")) {
+		const GFFList &npcs = ifoTop.getList("MonsterNPC_list");
+
+		for (GFFList::const_iterator n = npcs.begin(); n != npcs.end(); ++n)
+			_monsterNPCs.push_back((*n)->getString("MonsterNPC"));
+	}
+
 	// Entry
 	_entryArea = ifoTop.getString("Mod_Entry_Area");
 	_entryX    = ifoTop.getDouble("Mod_Entry_X");
@@ -286,6 +300,14 @@ const std::vector<Common::UString> &IFOFile::getQuests() const {
 
 const std::vector<Common::UString> &IFOFile::getQuestDBs() const {
 	return _questDBs;
+}
+
+const std::vector<Common::UString> &IFOFile::getStoryNPCs() const {
+	return _storyNPCs;
+}
+
+const std::vector<Common::UString> &IFOFile::getMonsterNPCs() const {
+	return _monsterNPCs;
 }
 
 void IFOFile::getStartTime(uint8 &hour, uint8 &day, uint8 &month, uint32 &year) const {
