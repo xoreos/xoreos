@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/thewitcher/thewitcher.cpp
+/** @file engines/witcher/witcher.cpp
  *  Engine class handling The Witcher
  */
 
@@ -48,32 +48,32 @@
 #include "engines/aurora/model.h"
 #include "engines/aurora/camera.h"
 
-#include "engines/thewitcher/thewitcher.h"
-#include "engines/thewitcher/modelloader.h"
+#include "engines/witcher/witcher.h"
+#include "engines/witcher/modelloader.h"
 
 namespace Engines {
 
-namespace TheWitcher {
+namespace Witcher {
 
-const TheWitcherEngineProbe kTheWitcherEngineProbe;
+const WitcherEngineProbe kWitcherEngineProbe;
 
-const Common::UString TheWitcherEngineProbe::kGameName = "The Witcher";
+const Common::UString WitcherEngineProbe::kGameName = "The Witcher";
 
-TheWitcherEngineProbe::TheWitcherEngineProbe() {
+WitcherEngineProbe::WitcherEngineProbe() {
 }
 
-TheWitcherEngineProbe::~TheWitcherEngineProbe() {
+WitcherEngineProbe::~WitcherEngineProbe() {
 }
 
-Aurora::GameID TheWitcherEngineProbe::getGameID() const {
-	return Aurora::kGameIDTheWitcher;
+Aurora::GameID WitcherEngineProbe::getGameID() const {
+	return Aurora::kGameIDWitcher;
 }
 
-const Common::UString &TheWitcherEngineProbe::getGameName() const {
+const Common::UString &WitcherEngineProbe::getGameName() const {
 	return kGameName;
 }
 
-bool TheWitcherEngineProbe::probe(const Common::UString &directory,
+bool WitcherEngineProbe::probe(const Common::UString &directory,
                                   const Common::FileList &UNUSED(rootFiles)) const {
 
 	// There should be a system directory
@@ -90,22 +90,22 @@ bool TheWitcherEngineProbe::probe(const Common::UString &directory,
 	return systemFiles.containsGlob(".*/witcher.(exe|ini)", true);
 }
 
-bool TheWitcherEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
+bool WitcherEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
 	return false;
 }
 
-Engines::Engine *TheWitcherEngineProbe::createEngine() const {
-	return new TheWitcherEngine;
+Engines::Engine *WitcherEngineProbe::createEngine() const {
+	return new WitcherEngine;
 }
 
 
-TheWitcherEngine::TheWitcherEngine() {
+WitcherEngine::WitcherEngine() {
 }
 
-TheWitcherEngine::~TheWitcherEngine() {
+WitcherEngine::~WitcherEngine() {
 }
 
-void TheWitcherEngine::run(const Common::UString &target) {
+void WitcherEngine::run(const Common::UString &target) {
 	_baseDirectory = target;
 
 	init();
@@ -160,7 +160,7 @@ void TheWitcherEngine::run(const Common::UString &target) {
 	delete fps;
 }
 
-void TheWitcherEngine::init() {
+void WitcherEngine::init() {
 	LoadProgress progress(11);
 
 	progress.step("Setting base directory");
@@ -209,19 +209,19 @@ void TheWitcherEngine::init() {
 	initCursors();
 
 	progress.step("Registering file formats");
-	registerModelLoader(new TheWitcherModelLoader);
+	registerModelLoader(new WitcherModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTTF);
 
 	progress.step("Successfully initialized the engine");
 }
 
-void TheWitcherEngine::initCursors() {
+void WitcherEngine::initCursors() {
 	CursorMan.add("cursor0" , "default"  , "up"  );
 	CursorMan.add("cursor1" , "default"  , "down");
 
 	CursorMan.setDefault("default", "up");
 }
 
-} // End of namespace TheWitcher
+} // End of namespace Witcher
 
 } // End of namespace Engines

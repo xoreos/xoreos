@@ -55,7 +55,7 @@
 #include "engines/kotor/kotor.h"
 #include "engines/kotor2/kotor2.h"
 #include "engines/jade/jade.h"
-#include "engines/thewitcher/thewitcher.h"
+#include "engines/witcher/witcher.h"
 #include "engines/sonic/sonic.h"
 #include "engines/dragonage/dragonage.h"
 #include "engines/dragonage2/dragonage2.h"
@@ -86,7 +86,7 @@ static const EngineProbe *kProbes[] = {
 	&KotOR2::kKotOR2EngineProbeWin,
 	&KotOR2::kKotOR2EngineProbeXbox,
 	&Jade::kJadeEngineProbe,
-	&TheWitcher::kTheWitcherEngineProbe,
+	&Witcher::kWitcherEngineProbe,
 	&Sonic::kSonicEngineProbe,
 	&DragonAge::kDragonAgeEngineProbe,
 	&DragonAge2::kDragonAge2EngineProbe

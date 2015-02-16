@@ -18,27 +18,31 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/thewitcher/modelloader.h
+/** @file engines/witcher/modelloader.cpp
  *  The Witcher model loader.
  */
 
-#ifndef ENGINES_THEWITCHER_MODELLOADER_H
-#define ENGINES_THEWITCHER_MODELLOADER_H
+#include "common/system.h"
+#include "common/error.h"
+#include "common/stream.h"
 
-#include "engines/aurora/modelloader.h"
+#include "aurora/types.h"
+#include "aurora/resman.h"
+
+#include "graphics/aurora/model_witcher.h"
+
+#include "engines/witcher/modelloader.h"
 
 namespace Engines {
 
-namespace TheWitcher {
+namespace Witcher {
 
-class TheWitcherModelLoader : public ModelLoader {
-public:
-	Graphics::Aurora::Model *load(const Common::UString &resref,
-			Graphics::Aurora::ModelType type, const Common::UString &texture);
-};
+Graphics::Aurora::Model *WitcherModelLoader::load(const Common::UString &resref,
+		Graphics::Aurora::ModelType UNUSED(type), const Common::UString &UNUSED(texture)) {
 
-} // End of namespace TheWitcher
+	return new Graphics::Aurora::Model_Witcher(resref);
+}
+
+} // End of namespace Witcher
 
 } // End of namespace Engines
-
-#endif // ENGINES_THEWITCHER_MODELLOADER_H

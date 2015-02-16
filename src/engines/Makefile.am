@@ -6,7 +6,7 @@ SUBDIRS = \
           kotor \
           kotor2 \
           jade \
-          thewitcher \
+          witcher \
           sonic \
           dragonage \
           dragonage2 \
@@ -55,7 +55,7 @@ libengines_la_LIBADD = \
                        kotor/libkotor.la \
                        kotor2/libkotor2.la \
                        jade/libjade.la \
-                       thewitcher/libthewitcher.la \
+                       witcher/libwitcher.la \
                        sonic/libsonic.la \
                        dragonage/libdragonage.la \
                        dragonage2/libdragonage2.la \

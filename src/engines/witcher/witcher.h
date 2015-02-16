@@ -18,12 +18,12 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/thewitcher/thewitcher.h
+/** @file engines/witcher/witcher.h
  *  Engine class handling The Witcher
  */
 
-#ifndef ENGINES_THEWITCHER_THEWITCHER_H
-#define ENGINES_THEWITCHER_THEWITCHER_H
+#ifndef ENGINES_WITCHER_WITCHER_H
+#define ENGINES_WITCHER_WITCHER_H
 
 #include "common/ustring.h"
 
@@ -38,12 +38,12 @@ namespace Common {
 
 namespace Engines {
 
-namespace TheWitcher {
+namespace Witcher {
 
-class TheWitcherEngineProbe : public Engines::EngineProbe {
+class WitcherEngineProbe : public Engines::EngineProbe {
 public:
-	TheWitcherEngineProbe();
-	~TheWitcherEngineProbe();
+	WitcherEngineProbe();
+	~WitcherEngineProbe();
 
 	Aurora::GameID getGameID() const;
 
@@ -60,12 +60,12 @@ private:
 	static const Common::UString kGameName;
 };
 
-extern const TheWitcherEngineProbe kTheWitcherEngineProbe;
+extern const WitcherEngineProbe kWitcherEngineProbe;
 
-class TheWitcherEngine : public Engines::Engine {
+class WitcherEngine : public Engines::Engine {
 public:
-	TheWitcherEngine();
-	~TheWitcherEngine();
+	WitcherEngine();
+	~WitcherEngine();
 
 	void run(const Common::UString &target);
 
@@ -76,8 +76,8 @@ private:
 	void initCursors();
 };
 
-} // End of namespace TheWitcher
+} // End of namespace Witcher
 
 } // End of namespace Engines
 
-#endif // ENGINES_THEWITCHER_THEWITCHER_H
+#endif // ENGINES_WITCHER_WITCHER_H
