@@ -698,7 +698,7 @@ const Common::UString &Module::getName() const {
 	return _ifo.getName().getString();
 }
 
-const IFOFile &Module::getIFO() const {
+const Aurora::IFOFile &Module::getIFO() const {
 	return _ifo;
 }
 

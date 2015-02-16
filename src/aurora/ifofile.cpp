@@ -18,20 +18,18 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/aurora/ifofile.cpp
+/** @file aurora/ifofile.cpp
  *  Loader for the module.ifo file.
  */
 
 #include "common/error.h"
 #include "common/stream.h"
 
+#include "aurora/ifofile.h"
 #include "aurora/gfffile.h"
 #include "aurora/talkman.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/ifofile.h"
-
-namespace Engines {
+namespace Aurora {
 
 IFOFile::IFOFile() : _gff(0) {
 	clear();
@@ -97,9 +95,9 @@ void IFOFile::unload() {
 void IFOFile::load() {
 	unload();
 
-	_gff = new Aurora::GFFFile("module", Aurora::kFileTypeIFO, MKTAG('I', 'F', 'O', ' '));
+	_gff = new GFFFile("module", kFileTypeIFO, MKTAG('I', 'F', 'O', ' '));
 
-	const Aurora::GFFStruct &ifoTop = _gff->getTopLevel();
+	const GFFStruct &ifoTop = _gff->getTopLevel();
 
 	// Sanity checks
 	if (ifoTop.getUint("Mod_Creator_ID") != 2)
@@ -139,9 +137,9 @@ void IFOFile::load() {
 
 	// HAK List
 	if (ifoTop.hasField("Mod_HakList")) {
-		const Aurora::GFFList &haks = ifoTop.getList("Mod_HakList");
+		const GFFList &haks = ifoTop.getList("Mod_HakList");
 
-		for (Aurora::GFFList::const_iterator h = haks.begin(); h != haks.end(); ++h)
+		for (GFFList::const_iterator h = haks.begin(); h != haks.end(); ++h)
 			_haks.insert(_haks.begin(), (*h)->getString("Mod_Hak"));
 	}
 
@@ -152,17 +150,17 @@ void IFOFile::load() {
 
 	// Areas
 	if (ifoTop.hasField("Mod_Area_list")) {
-		const Aurora::GFFList &areas = ifoTop.getList("Mod_Area_list");
+		const GFFList &areas = ifoTop.getList("Mod_Area_list");
 
-		for (Aurora::GFFList::const_iterator a = areas.begin(); a != areas.end(); ++a)
+		for (GFFList::const_iterator a = areas.begin(); a != areas.end(); ++a)
 			_areas.push_back((*a)->getString("Area_Name"));
 	}
 
 	// NSS files that should be cached
 	if (ifoTop.hasField("Mod_CacheNSSList")) {
-		const Aurora::GFFList &nss = ifoTop.getList("Mod_CacheNSSList");
+		const GFFList &nss = ifoTop.getList("Mod_CacheNSSList");
 
-		for (Aurora::GFFList::const_iterator n = nss.begin(); n != nss.end(); ++n)
+		for (GFFList::const_iterator n = nss.begin(); n != nss.end(); ++n)
 			_nssCache.push_back((*n)->getString("ResRef"));
 	}
 
@@ -199,7 +197,7 @@ void IFOFile::loadTLK() {
 	TalkMan.addAltTable(_customTLK);
 }
 
-const Aurora::GFFStruct *IFOFile::getGFF() const {
+const GFFStruct *IFOFile::getGFF() const {
 	if (!_gff)
 		return 0;
 
@@ -214,11 +212,11 @@ const Common::UString &IFOFile::getTag() const {
 	return _tag;
 }
 
-const Aurora::LocString &IFOFile::getName() const {
+const LocString &IFOFile::getName() const {
 	return _name;
 }
 
-const Aurora::LocString &IFOFile::getDescription() const {
+const LocString &IFOFile::getDescription() const {
 	return _description;
 }
 
@@ -285,4 +283,4 @@ float IFOFile::getXPScale() const {
 	return _xpScale;
 }
 
-} // End of namespace Engines
+} // End of namespace Aurora

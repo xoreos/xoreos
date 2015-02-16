@@ -29,10 +29,9 @@
 #include "common/configman.h"
 
 #include "aurora/resman.h"
+#include "aurora/ifofile.h"
 
 #include "events/types.h"
-
-#include "engines/aurora/ifofile.h"
 
 namespace Engines {
 
@@ -66,7 +65,7 @@ public:
 	const Common::UString &getName() const;
 
 	/** Return the IFO of the currently loaded module. */
-	const IFOFile &getIFO() const;
+	const Aurora::IFOFile &getIFO() const;
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
 
@@ -81,7 +80,7 @@ protected:
 	std::list<Aurora::ResourceManager::ChangeID> _resources;
 
 	/** The current module's IFO. */
-	IFOFile _ifo;
+	Aurora::IFOFile _ifo;
 
 	/** The current texture pack. */
 	int _currentTexturePack;

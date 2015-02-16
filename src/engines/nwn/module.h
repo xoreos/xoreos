@@ -32,6 +32,7 @@
 #include "common/ustring.h"
 
 #include "aurora/resman.h"
+#include "aurora/ifofile.h"
 
 #include "aurora/nwscript/object.h"
 #include "aurora/nwscript/objectcontainer.h"
@@ -39,8 +40,6 @@
 #include "graphics/aurora/types.h"
 
 #include "events/types.h"
-
-#include "engines/aurora/ifofile.h"
 
 #include "engines/nwn/creature.h"
 
@@ -88,7 +87,7 @@ public:
 	const Common::UString &getName() const;
 
 	/** Return the IFO of the currently loaded module. */
-	const IFOFile &getIFO() const;
+	const Aurora::IFOFile &getIFO() const;
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
 	/** Return the currently playing PC. */
@@ -161,7 +160,7 @@ private:
 	/** Resources added by the HAKs of the module. */
 	std::vector<Aurora::ResourceManager::ChangeID> _resHAKs;
 
-	IFOFile _ifo; ///< The module's IFO.
+	Aurora::IFOFile _ifo; ///< The module's IFO.
 
 	Creature *_pc; ///< The player character we use.
 

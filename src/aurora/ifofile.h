@@ -18,12 +18,12 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/aurora/ifofile.h
+/** @file aurora/ifofile.h
  *  Loader for the module.ifo file.
  */
 
-#ifndef ENGINES_AURORA_IFOFILE_H
-#define ENGINES_AURORA_IFOFILE_H
+#ifndef AURORA_IFOFILE_H
+#define AURORA_IFOFILE_H
 
 #include "common/types.h"
 #include "common/ustring.h"
@@ -31,11 +31,9 @@
 #include "aurora/locstring.h"
 
 namespace Aurora {
-	class GFFFile;
-	class GFFStruct;
-}
 
-namespace Engines {
+class GFFFile;
+class GFFStruct;
 
 class IFOFile {
 public:
@@ -48,7 +46,7 @@ public:
 	void loadTLK(); ///< Load the module's custom TLK.
 
 	/** Return the IFO's GFF struct. */
-	const Aurora::GFFStruct *getGFF() const;
+	const GFFStruct *getGFF() const;
 
 	// General properties
 
@@ -58,9 +56,9 @@ public:
 	const Common::UString &getTag() const;
 
 	/** Return the name of the module. */
-	const Aurora::LocString &getName() const;
+	const LocString &getName() const;
 	/** Return the description of the module. */
-	const Aurora::LocString &getDescription() const;
+	const LocString &getDescription() const;
 
 	// General module requirements
 
@@ -106,14 +104,14 @@ public:
 	float getXPScale() const;
 
 private:
-	Aurora::GFFFile *_gff; ///< The module.ifo GFF.
+	GFFFile *_gff; ///< The module.ifo GFF.
 
 	byte _id[32]; ///< The module's unique ID.
 
 	Common::UString _tag; ///< The module's tag.
 
-	Aurora::LocString _name;        ///< The module's localized name.
-	Aurora::LocString _description; ///< The module's localized description.
+	LocString _name;        ///< The module's localized name.
+	LocString _description; ///< The module's localized description.
 
 	int _minVersionMajor; ///< Minimum major game version this module needs.
 	int _minVersionMinor; ///< Minimum minor game version this module needs.
@@ -155,6 +153,6 @@ private:
 	void parseVersion(const Common::UString &version);
 };
 
-} // End of namespace Engines
+} // End of namespace Aurora
 
-#endif // ENGINES_AURORA_IFOFILE_H
+#endif // AURORA_IFOFILE_H

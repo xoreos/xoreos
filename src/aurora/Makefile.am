@@ -31,6 +31,7 @@ noinst_HEADERS = \
                  dlgfile.h \
                  lytfile.h \
                  visfile.h \
+                 ifofile.h \
                  pefile.h \
                  herffile.h \
                  $(EMPTY)
@@ -59,6 +60,7 @@ libaurora_la_SOURCES = \
                        dlgfile.cpp \
                        lytfile.cpp \
                        visfile.cpp \
+                       ifofile.cpp \
                        pefile.cpp \
                        herffile.cpp \
                        $(EMPTY)
