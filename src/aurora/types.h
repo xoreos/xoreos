@@ -331,7 +331,7 @@ enum GameID {
 	kGameIDKotOR      = 3, ///< Star Wars: Knights of the Old Republic.
 	kGameIDKotOR2     = 4, ///< Star Wars: Knights of the Old Republic II - The Sith Lords.
 	kGameIDJade       = 5, ///< Jade Empire.
-	kGameIDTheWitcher = 6, ///< The Witcher.
+	kGameIDWitcher    = 6, ///< The Witcher.
 	kGameIDSonic      = 7, ///< Sonic Chronicles: The Dark Brotherhood.
 	kGameIDDragonAge  = 8, ///< Dragon Age: Origins.
 	kGameIDDragonAge2 = 9  ///< Dragon Age II.
