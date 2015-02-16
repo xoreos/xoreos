@@ -38,6 +38,8 @@ namespace Common {
 
 namespace Engines {
 
+class LoadProgress;
+
 namespace Jade {
 
 class JadeEngineProbe : public Engines::EngineProbe {
