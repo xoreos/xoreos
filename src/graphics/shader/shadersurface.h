@@ -41,6 +41,7 @@ public:
 	uint32 _usageCount; // TODO: move this elsewhere please.
 
 	ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name = "unnamed");
+	~ShaderSurface();
 
 	const Common::UString &getName() const;
 
@@ -77,8 +78,6 @@ public:
 	void unbindGLState();
 	void restoreGLState();
 
-	~ShaderSurface();
-
 private:
 	struct ShaderSurfaceVariable {
 		void *data;
@@ -100,4 +99,4 @@ private:
 
 } // namespace Graphics
 
-#endif
+#endif // GRAPHICS_SHADER_SHADERSURFACE_H

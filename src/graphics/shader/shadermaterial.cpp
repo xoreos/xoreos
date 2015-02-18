@@ -63,6 +63,12 @@ ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::U
 	}
 }
 
+ShaderMaterial::~ShaderMaterial() {
+	for (uint32 i = 0; i < _variableData.size(); ++i) {
+		delMaterialVar(i);
+	}
+}
+
 const Common::UString &ShaderMaterial::getName() const {
 	return _name;
 }
@@ -378,12 +384,6 @@ void ShaderMaterial::delMaterialVar(uint32 index)
 	}
 
 	_variableData[index].data = 0;
-}
-
-ShaderMaterial::~ShaderMaterial() {
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
-		delMaterialVar(i);
-	}
 }
 
 } // namespace Shader

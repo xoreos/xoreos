@@ -72,6 +72,10 @@ ShaderInstance::ShaderInstance(const std::string &vertName, const std::string &f
 	}
 }
 
+ShaderInstance::~ShaderInstance() {
+	_sourceProgram->usageCount--;
+}
+
 void ShaderInstance::setVertexVariable(const std::string &name, const void *location) {
 	for (uint32 i = 0; i < _sourceProgram->vertexObject->variablesCombined.size(); ++i) {
 		if (_sourceProgram->vertexObject->variablesCombined[i].name == name) {
@@ -104,11 +108,6 @@ void ShaderInstance::rebindVertexVariable(uint32 index) {
 
 void ShaderInstance::rebindFragmentVariable(uint32 index) {
 	ShaderMan.bindShaderVariable(_sourceProgram->fragmentObject->variablesCombined[index], _sourceProgram->fragmentVariableLocations[index], _fragmentVariableData[index]);
-}
-
-
-ShaderInstance::~ShaderInstance() {
-	_sourceProgram->usageCount--;
 }
 
 } // namespace Shader
