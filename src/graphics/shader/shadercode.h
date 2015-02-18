@@ -41,4 +41,4 @@ extern const char fragmentDefault2xText[];
 
 } // namespace Graphics
 
-#endif
+#endif // GRAPHICS_SHADER_SHADERCODE_H

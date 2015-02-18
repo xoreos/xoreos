@@ -59,6 +59,9 @@
  *  be bound across multiple programs (this is where unused uniforms being ignored comes in).
  */
 
+#ifndef GRAPHICS_SHADER_SHADER_H
+#define GRAPHICS_SHADER_SHADER_H
+
 #include <vector>
 #include <list>
 #include <string>
@@ -71,10 +74,6 @@
 #include "common/mutex.h"
 #include "common/matrix.h"
 #include "common/ustring.h"
-
-
-#ifndef GRAPHICS_SHADER_SHADER_H
-#define GRAPHICS_SHADER_SHADER_H
 
 namespace Graphics {
 

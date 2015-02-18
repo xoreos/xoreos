@@ -64,6 +64,7 @@ public:
 	uint32 _usageCount; // TODO: move this elsewhere please.
 
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");
+	~ShaderMaterial();
 
 	const Common::UString &getName() const;
 
@@ -98,8 +99,6 @@ public:
 	void unbindGLState();
 	void restoreGLState();
 
-	~ShaderMaterial();
-
 private:
 	struct ShaderMaterialVariable {
 		void *data;
@@ -120,4 +119,4 @@ private:
 
 } // namespace Graphics
 
-#endif
+#endif // GRAPHICS_SHADER_SHADERMATERIAL_H

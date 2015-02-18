@@ -35,6 +35,7 @@ class ShaderInstance {
 public:
 	ShaderInstance(Shader::ShaderObject *vertShader, Shader::ShaderObject *fragShader);
 	ShaderInstance(const std::string &vertName, const std::string &fragName);
+	~ShaderInstance();
 
 	void setVertexVariable(const std::string &name, const void *location);
 	void setFragmentVariable(const std::string &name, const void *location);
@@ -44,8 +45,6 @@ public:
 
 	void rebindVertexVariable(uint32 index);
 	void rebindFragmentVariable(uint32 index);
-
-	~ShaderInstance();
 
 private:
 	std::vector<const void *> _vertexVariableData;
@@ -57,4 +56,4 @@ private:
 
 } // namespace Graphics
 
-#endif
+#endif // GRAPHICS_SHADER_SHADERINSTANCE_H

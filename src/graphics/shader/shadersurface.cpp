@@ -41,6 +41,13 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 	}
 }
 
+ShaderSurface::~ShaderSurface() {
+	for (uint32 i = 0; i < _variableData.size(); ++i) {
+		delSurfaceVar(i);
+	}
+	// The surface doesn't own UBO's in the _uboArray, and so does not delete them.
+}
+
 const Common::UString &ShaderSurface::getName() const {
 	return _name;
 }
@@ -266,14 +273,6 @@ void ShaderSurface::delSurfaceVar(uint32 index)
 	}
 
 	_variableData[index].data = 0;
-}
-
-ShaderSurface::~ShaderSurface() {
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
-		delSurfaceVar(i);
-	}
-
-	// The surface doesn't own UBO's in the _uboArray, and so does not delete them.
 }
 
 } // namespace Shader
