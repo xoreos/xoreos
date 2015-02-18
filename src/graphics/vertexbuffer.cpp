@@ -29,15 +29,16 @@
 
 namespace Graphics {
 
-VertexBuffer::VertexBuffer() : _count(0), _size(0), _data(0) {
+VertexBuffer::VertexBuffer() : _count(0), _size(0), _data(0), _vbo(0) {
 }
 
-VertexBuffer::VertexBuffer(const VertexBuffer &other) : _data(0) {
+VertexBuffer::VertexBuffer(const VertexBuffer &other) : _data(0), _vbo(0) {
 	*this = other;
 }
 
 VertexBuffer::~VertexBuffer() {
-	delete[] _data;
+	destroyGL(); // Dangerous if GL components not already freed and we're not in the GL context thread.
+	std::free(_data);
 }
 
 VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
@@ -66,11 +67,12 @@ void VertexBuffer::setSize(uint32 vertCount, uint32 vertSize) {
 	_count = vertCount;
 	_size  = vertSize;
 
-	delete[] _data;
+	std::free(_data);
 	_data = 0;
 
-	if (_count && _size)
-		_data = new byte[_count * _size];
+	if (_count && _size) {
+		_data = (byte *)(std::malloc(_count * _size));  // Ensures correct alignment.
+	}
 }
 
 void VertexBuffer::setVertexDecl(const VertexDecl &decl) {
@@ -95,6 +97,39 @@ uint32 VertexBuffer::getCount() const {
 
 uint32 VertexBuffer::getSize() const {
 	return _size;
+}
+
+void VertexBuffer::initGL(GLuint hint) {
+	if (_vbo != 0) {
+		return; // Already initialised.
+	}
+
+	_hint = hint;
+	if (_count) {
+		glGenBuffers(1, &_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+		glBufferData(GL_ARRAY_BUFFER, _count * _size, _data, _hint);
+		glBindBuffer(GL_ARRAY_BUFFER, 0); // Return to default buffer.
+	}
+}
+
+void VertexBuffer::updateGL() {
+	if (_count) {
+		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+		glBufferData(GL_ARRAY_BUFFER, _count * _size, _data, _hint);
+		glBindBuffer(GL_ARRAY_BUFFER, 0); // Return to default buffer. Maybe this isn't required.
+	}
+}
+
+void VertexBuffer::destroyGL() {
+	if (_vbo != 0) {
+		glDeleteBuffers(1, &_vbo);
+		_vbo = 0;
+	}
+}
+
+GLuint VertexBuffer::getVBO() {
+	return _vbo;
 }
 
 }

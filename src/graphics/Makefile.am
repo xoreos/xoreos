@@ -3,6 +3,7 @@ include $(top_srcdir)/Makefile.common
 SUBDIRS = \
           images \
           aurora \
+          mesh \
           shader \
           $(EMPTY)
 
@@ -54,5 +55,6 @@ libgraphics_la_LIBADD = \
                         images/libimages.la \
                         aurora/libaurora.la \
                         shader/libshader.la \
+                        mesh/libmesh.la \
                         ../../glew/libglew.la \
                         $(EMPTY)

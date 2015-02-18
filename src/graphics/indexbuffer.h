@@ -55,11 +55,25 @@ public:
 	/** Get element type */
 	GLenum getType() const;
 
+	/** Initialise internal buffer object for GL handling. */
+	void initGL(GLuint hint = GL_STATIC_DRAW);
+
+	/** Update existing GL buffer object. Try not to call while rendering. */
+	void updateGL();
+
+	/** Clear (destroy) GL resources associated with the buffer. */
+	void destroyGL();
+
+	GLuint getIBO();
+
 private:
 	uint32 _count; ///< Number of elements in buffer
 	uint32 _size;  ///< Size of a buffer element in bytes
 	GLenum _type;  ///< Element type (GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, ...)
 	byte  *_data;  ///< Buffer data
+
+	GLuint _ibo;      ///< "Index" Buffer Object.
+	GLuint _hint;     ///< GL hint for static or dynamic data.
 };
 
 }

@@ -83,11 +83,25 @@ public:
 	/** Get vertex element size in bytes */
 	uint32 getSize() const;
 
+	/** Initialise internal buffer object for GL handling. */
+	void initGL(GLuint hint = GL_STATIC_DRAW);
+
+	/** Update existing GL buffer object. Try not to call while rendering. */
+	void updateGL();
+
+	/** Clear (destroy) GL resources associated with the buffer. */
+	void destroyGL();
+
+	GLuint getVBO();
+
 private:
 	VertexDecl _decl; ///< Vertex declaration
 	uint32 _count;    ///< Number of elements in buffer
 	uint32 _size;     ///< Size of a buffer element in bytes (vertex attributes size sum)
 	byte  *_data;     ///< Buffer data
+
+	GLuint _vbo;      ///< Vertex Buffer Object.
+	GLuint _hint;     ///< GL hint for static or dynamic data.
 };
 
 }

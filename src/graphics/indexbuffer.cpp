@@ -29,15 +29,16 @@
 
 namespace Graphics {
 
-IndexBuffer::IndexBuffer() : _count(0), _size(0), _type(GL_UNSIGNED_INT), _data(0) {
+IndexBuffer::IndexBuffer() : _count(0), _size(0), _type(GL_UNSIGNED_INT), _data(0), _ibo(0), _hint(GL_STATIC_DRAW) {
 }
 
-IndexBuffer::IndexBuffer(const IndexBuffer &other) : _data(0) {
+IndexBuffer::IndexBuffer(const IndexBuffer &other) : _data(0), _ibo(0), _hint(GL_STATIC_DRAW) {
 	*this = other;
 }
 
 IndexBuffer::~IndexBuffer() {
-	delete[] _data;
+	destroyGL();
+	std::free(_data);
 }
 
 IndexBuffer &IndexBuffer::operator=(const IndexBuffer &other) {
@@ -54,11 +55,12 @@ void IndexBuffer::setSize(uint32 indexCount, uint32 indexSize, GLenum indexType)
 	_size  = indexSize;
 	_type  = indexType;
 
-	delete[] _data;
+	std::free(_data);
 	_data = 0;
 
-	if (_count && _size)
-		_data = new byte[_count * _size];
+	if (_count && _size) {
+		_data = (byte *)(std::malloc(_count * _size));  // Ensures correct alignment.
+	}
 }
 
 GLvoid *IndexBuffer::getData() {
@@ -75,6 +77,39 @@ uint32 IndexBuffer::getCount() const {
 
 GLenum IndexBuffer::getType() const {
 	return _type;
+}
+
+void IndexBuffer::initGL(GLuint hint) {
+	if (_ibo != 0) {
+		return; // Already initialised.
+	}
+
+	_hint = hint;
+	if (_count) {
+		glGenBuffers(1, &_ibo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * _size, _data, _hint);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // Return to default buffer.
+	}
+}
+
+void IndexBuffer::updateGL() {
+	if (_count) {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * _size, _data, _hint);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // Return to default buffer. Maybe this isn't required.
+	}
+}
+
+void IndexBuffer::destroyGL() {
+	if (_ibo != 0) {
+		glDeleteBuffers(1, &_ibo);
+		_ibo = 0;
+	}
+}
+
+GLuint IndexBuffer::getIBO() {
+	return _ibo;
 }
 
 }
