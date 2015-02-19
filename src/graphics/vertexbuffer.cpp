@@ -38,7 +38,7 @@ VertexBuffer::VertexBuffer(const VertexBuffer &other) : _data(0), _vbo(0) {
 
 VertexBuffer::~VertexBuffer() {
 	destroyGL(); // Dangerous if GL components not already freed and we're not in the GL context thread.
-	std::free(_data);
+	delete[] _data;
 }
 
 VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
@@ -67,11 +67,11 @@ void VertexBuffer::setSize(uint32 vertCount, uint32 vertSize) {
 	_count = vertCount;
 	_size  = vertSize;
 
-	std::free(_data);
+	delete[] _data;
 	_data = 0;
 
 	if (_count && _size) {
-		_data = (byte *)(std::malloc(_count * _size));  // Ensures correct alignment.
+		_data = new byte[_count * _size];
 	}
 }
 

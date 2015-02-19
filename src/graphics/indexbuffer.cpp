@@ -38,7 +38,7 @@ IndexBuffer::IndexBuffer(const IndexBuffer &other) : _data(0), _ibo(0), _hint(GL
 
 IndexBuffer::~IndexBuffer() {
 	destroyGL();
-	std::free(_data);
+	delete[] _data;
 }
 
 IndexBuffer &IndexBuffer::operator=(const IndexBuffer &other) {
@@ -55,11 +55,11 @@ void IndexBuffer::setSize(uint32 indexCount, uint32 indexSize, GLenum indexType)
 	_size  = indexSize;
 	_type  = indexType;
 
-	std::free(_data);
+	delete[] _data;
 	_data = 0;
 
 	if (_count && _size) {
-		_data = (byte *)(std::malloc(_count * _size));  // Ensures correct alignment.
+		_data = new byte[_count * _size];
 	}
 }
 
