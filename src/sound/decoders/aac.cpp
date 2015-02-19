@@ -110,7 +110,7 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 		flags |= FLAG_LITTLE_ENDIAN;
 #endif
 
-		audioStream->queueAudioStream(makePCMStream(new Common::MemoryReadStream(buffer, frameInfo.samples * 2), _rate, flags, _channels, true), true);
+		audioStream->queueAudioStream(makePCMStream(new Common::MemoryReadStream(buffer, frameInfo.samples * 2, true), _rate, flags, _channels, true), true);
 
 		inBufferPos += frameInfo.bytesconsumed;
 	}
