@@ -32,6 +32,7 @@ Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), 
 }
 
 Mesh::~Mesh() {
+	removeFromQueue(kQueueNewTexture); // In case the mesh is destroyed while waiting to be initialised.
 	destroyGL();
 }
 
@@ -60,9 +61,9 @@ GLuint Mesh::getType() const {
 }
 
 void Mesh::init() {
-	// TODO: This doesn't actually work (segfaults), so a generic "init queue" is required.
-	// removeFromQueue(kQueueNewTexture);
-	// addToQueue(kQueueNewTexture);
+	// Borrowing kQueueNewTexture for now as a more generic GLContainer initialiser.
+	removeFromQueue(kQueueNewTexture);
+	addToQueue(kQueueNewTexture);
 }
 
 void Mesh::initGL() {
@@ -96,6 +97,11 @@ void Mesh::initGL() {
 
 		// Finish up with the VAO, ready for use.
 		glBindVertexArray(0);
+
+		// This will eventually not be required, but definitely is when mixing with old-style OpenGL rendering calls.
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	} else {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
