@@ -734,7 +734,7 @@ void ScriptFunctions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::getStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
 	const uint32 strRef = (uint32) ctx.getParams()[0].getInt();
-	const Aurora::Gender gender = (Aurora::Gender) ctx.getParams()[1].getInt();
+	const Aurora::LanguageGender gender = (Aurora::LanguageGender) ctx.getParams()[1].getInt();
 
 	ctx.getReturn() = TalkMan.getString(strRef, gender);
 }

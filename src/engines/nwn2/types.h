@@ -55,9 +55,16 @@ enum Ability {
 	kAbilityMAX
 };
 
+enum Gender {
+	kGenderMale   = 0,
+	kGenderFemale = 1,
+	kGenderBoth   = 2,
+	kGenderOther  = 3,
+	kGenderNone   = 4
+};
+
 static const uint32 kObjectTypeInvalid = 0x7FFF;
 
-static const uint32 kGenderNone     =   4;
 static const uint32 kRaceInvalid    =  28;
 static const uint32 kSubRaceInvalid = 255;
 static const uint32 kClassInvalid   = 255;

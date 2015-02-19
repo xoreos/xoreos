@@ -58,7 +58,7 @@ void TalkTable::load() {
 	if (_version != kVersion3 && _version != kVersion4)
 		throw Common::Exception("Unsupported TLK file version %08X", _version);
 
-	_language = (Language) (_tlk->readUint32LE() * 2);
+	_language = _tlk->readUint32LE();
 
 	uint32 stringCount = _tlk->readUint32LE();
 	_entryList.resize(stringCount);
@@ -126,7 +126,7 @@ void TalkTable::readString(Entry &entry) {
 	entry.text.readFixedLatin9(*_tlk, MIN<uint32>(entry.length, _tlk->size() - _tlk->pos()));
 }
 
-Language TalkTable::getLanguage() const {
+uint32 TalkTable::getLanguageID() const {
 	return _language;
 }
 

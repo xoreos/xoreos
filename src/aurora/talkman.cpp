@@ -33,7 +33,9 @@ DECLARE_SINGLETON(Aurora::TalkManager)
 
 namespace Aurora {
 
-TalkManager::TalkManager() : _gender(kGenderMale), _mainTableM(0), _mainTableF(0), _altTableM(0), _altTableF(0) {
+TalkManager::TalkManager() : _gender(kLanguageGenderMale),
+	_mainTableM(0), _mainTableF(0), _altTableM(0), _altTableF(0) {
+
 }
 
 TalkManager::~TalkManager() {
@@ -45,17 +47,21 @@ void TalkManager::clear() {
 	removeAltTable();
 }
 
-Language TalkManager::getMainLanguage() const {
+uint32 TalkManager::getMainLanguageID() const {
 	if (_mainTableM)
-		return _mainTableM->getLanguage();
+		return _mainTableM->getLanguageID();
 	if (_mainTableF)
-		return _mainTableF->getLanguage();
+		return _mainTableF->getLanguageID();
 
-	return kLanguageInvalid;
+	return (uint32) kLanguageInvalid;
 }
 
-void TalkManager::setGender(Gender gender) {
+void TalkManager::setGender(LanguageGender gender) {
 	_gender = gender;
+}
+
+LanguageGender TalkManager::getGender() const {
+	return _gender;
 }
 
 void TalkManager::addTable(const Common::UString &name, TalkTable *&m, TalkTable *&f) {
@@ -108,8 +114,8 @@ void TalkManager::removeAltTable() {
 	_altTableF = 0;
 }
 
-const Common::UString &TalkManager::getString(uint32 strRef, Gender gender) {
-	if (gender == ((Gender) -1))
+const Common::UString &TalkManager::getString(uint32 strRef, LanguageGender gender) {
+	if (gender == ((LanguageGender) -1))
 		gender = _gender;
 
 	static const Common::UString kEmptyString = "";
@@ -123,8 +129,8 @@ const Common::UString &TalkManager::getString(uint32 strRef, Gender gender) {
 	return entry->text;
 }
 
-const Common::UString &TalkManager::getSoundResRef(uint32 strRef, Gender gender) {
-	if (gender == ((Gender) -1))
+const Common::UString &TalkManager::getSoundResRef(uint32 strRef, LanguageGender gender) {
+	if (gender == ((LanguageGender) -1))
 		gender = _gender;
 
 	static const Common::UString kEmptyString = "";
@@ -138,7 +144,7 @@ const Common::UString &TalkManager::getSoundResRef(uint32 strRef, Gender gender)
 	return entry->soundResRef;
 }
 
-const TalkTable::Entry *TalkManager::getEntry(uint32 strRef, Gender gender) {
+const TalkTable::Entry *TalkManager::getEntry(uint32 strRef, LanguageGender gender) {
 	if (strRef == 0xFFFFFFFF)
 		return 0;
 
@@ -148,14 +154,14 @@ const TalkTable::Entry *TalkManager::getEntry(uint32 strRef, Gender gender) {
 
 	const TalkTable::Entry *entry = 0;
 	if (alt) {
-		if ((gender == kGenderFemale) && _altTableF)
+		if ((gender == kLanguageGenderFemale) && _altTableF)
 			entry = _altTableF->getEntry(strRef);
 
 		if (!entry && _altTableM)
 			entry = _altTableM->getEntry(strRef);
 	}
 
-	if (!entry && (gender == kGenderFemale) && _mainTableF)
+	if (!entry && (gender == kLanguageGenderFemale) && _mainTableF)
 		entry = _mainTableF->getEntry(strRef);
 
 	if (!entry && _mainTableM)

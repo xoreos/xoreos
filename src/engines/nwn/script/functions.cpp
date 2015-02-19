@@ -24,6 +24,8 @@
 
 #include "common/util.h"
 
+#include "aurora/language.h"
+
 #include "aurora/nwscript/variable.h"
 #include "aurora/nwscript/functionman.h"
 
@@ -69,7 +71,7 @@ ScriptFunctions::Defaults::Defaults() {
 	int18            = new Aurora::NWScript::Variable(18);
 	int9             = new Aurora::NWScript::Variable(9);
 	intm1            = new Aurora::NWScript::Variable(-1);
-	intMale          = new Aurora::NWScript::Variable(Aurora::kGenderMale);
+	intMale          = new Aurora::NWScript::Variable((int) Aurora::kLanguageGenderMale);
 	intObjectTypeAll = new Aurora::NWScript::Variable(kObjectTypeAll);
 
 	intACAll            = new Aurora::NWScript::Variable(0); // TODO

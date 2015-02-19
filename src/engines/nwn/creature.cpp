@@ -199,7 +199,7 @@ bool Creature::isFemale() const {
 	// Male and female are hardcoded.  Other genders (none, both, other)
 	// count as male when it comes to tokens in text strings.
 
-	return _gender == Aurora::kGenderFemale;
+	return _gender == kGenderFemale;
 }
 
 uint32 Creature::getRace() const {

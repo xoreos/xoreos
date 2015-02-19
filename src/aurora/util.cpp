@@ -398,65 +398,6 @@ void FileTypeManager::buildHashLookup(Common::HashAlgo algo) {
 	}
 }
 
-
-bool isMale(Language language) {
-	return !isFemale(language);
-}
-
-bool isFemale(Language language) {
-	return (language == kLanguageEnglishFemale)            ||
-	       (language == kLanguageFrenchFemale)             ||
-	       (language == kLanguageGermanFemale)             ||
-	       (language == kLanguageItalianFemale)            ||
-	       (language == kLanguageSpanishFemale)            ||
-	       (language == kLanguagePolishFemale)             ||
-	       (language == kLanguageKoreanFemale)             ||
-	       (language == kLanguageChineseTraditionalFemale) ||
-	       (language == kLanguageChineseSimplifiedFemale)  ||
-	       (language == kLanguageJapaneseFemale);
-}
-
-bool isLanguageStandard(Language language) {
-	return (language == kLanguageEnglishMale)              ||
-	       (language == kLanguageEnglishFemale)            ||
-	       (language == kLanguageFrenchMale)               ||
-	       (language == kLanguageFrenchFemale)             ||
-	       (language == kLanguageGermanMale)               ||
-	       (language == kLanguageGermanFemale)             ||
-	       (language == kLanguageItalianMale)              ||
-	       (language == kLanguageItalianFemale)            ||
-	       (language == kLanguageSpanishMale)              ||
-	       (language == kLanguageSpanishFemale)            ||
-	       (language == kLanguagePolishMale)               ||
-	       (language == kLanguagePolishFemale)             ||
-	       (language == kLanguageKoreanMale)               ||
-	       (language == kLanguageKoreanFemale)             ||
-	       (language == kLanguageChineseTraditionalMale)   ||
-	       (language == kLanguageChineseTraditionalFemale) ||
-	       (language == kLanguageChineseSimplifiedMale)    ||
-	       (language == kLanguageChineseSimplifiedFemale)  ||
-	       (language == kLanguageJapaneseMale)             ||
-	       (language == kLanguageJapaneseFemale);
-}
-
-bool isLanguageWitcher(Language language) {
-	return (language == kLanguageWitcherDefault)            ||
-	       (language == kLanguageWitcherEnglish)            ||
-	       (language == kLanguageWitcherFinalEnglish)       ||
-	       (language == kLanguageWitcherFinalEnglishShort)  ||
-	       (language == kLanguageWitcherPolish)             ||
-	       (language == kLanguageWitcherGerman)             ||
-	       (language == kLanguageWitcherFrench)             ||
-	       (language == kLanguageWitcherSpanish)            ||
-	       (language == kLanguageWitcherItalian)            ||
-	       (language == kLanguageWitcherRussian)            ||
-	       (language == kLanguageWitcherCzech)              ||
-	       (language == kLanguageWitcherHungarian)          ||
-	       (language == kLanguageWitcherKorean)             ||
-	       (language == kLanguageWitcherChineseTraditional) ||
-	       (language == kLanguageWitcherChineseSimplified);
-}
-
 Common::UString getPlatformDescription(Platform platform) {
 	static const char *names[] = {
 		"Windows", "Nintendo DS", "Mac OS X", "Xbox", "PlayStation 3", "Xbox 360", "GNU/Linux", "Unknown"

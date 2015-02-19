@@ -256,10 +256,17 @@ enum Alignment {
 	kAlignmentEvil    = 5
 };
 
+enum Gender {
+	kGenderMale   = 0,
+	kGenderFemale = 1,
+	kGenderBoth   = 2,
+	kGenderOther  = 3,
+	kGenderNone   = 4
+};
+
 static const uint32 kActionInvalid     = 0xFFFF;
 static const uint32 kObjectTypeInvalid = 0x7FFF;
 
-static const uint32 kGenderNone   =   4;
 static const uint32 kRaceInvalid  =  28;
 static const uint32 kClassInvalid = 255;
 

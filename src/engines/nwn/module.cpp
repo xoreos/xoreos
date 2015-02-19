@@ -253,7 +253,7 @@ void Module::usePC(const Common::UString &bic, bool local) {
 	}
 
 	setPCTokens();
-	TalkMan.setGender((Aurora::Gender) _pc->getGender());
+	TalkMan.setGender(_pc->isFemale() ? Aurora::kLanguageGenderFemale : Aurora::kLanguageGenderMale);
 
 	addObject(*_pc);
 }

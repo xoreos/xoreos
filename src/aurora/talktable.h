@@ -30,7 +30,6 @@
 #include "common/types.h"
 #include "common/ustring.h"
 
-#include "aurora/types.h"
 #include "aurora/aurorafile.h"
 
 namespace Common {
@@ -71,8 +70,8 @@ public:
 	TalkTable(Common::SeekableReadStream *tlk);
 	~TalkTable();
 
-	/** Return the language of the talk table. */
-	Language getLanguage() const;
+	/** Return the language ID (ungendered) of the talk table. */
+	uint getLanguageID() const;
 
 	/** Get an entry.
 	 *
@@ -86,7 +85,7 @@ private:
 
 	uint32 _stringsOffset;
 
-	Language _language;
+	uint32 _language;
 
 	EntryList _entryList;
 

@@ -10,6 +10,7 @@ noinst_HEADERS = \
                  types.h \
                  error.h \
                  util.h \
+                 language.h \
                  archive.h \
                  aurorafile.h \
                  keyfile.h \
@@ -39,6 +40,7 @@ noinst_HEADERS = \
 libaurora_la_SOURCES = \
                        error.cpp \
                        util.cpp \
+                       language.cpp \
                        archive.cpp \
                        aurorafile.cpp \
                        keyfile.cpp \
