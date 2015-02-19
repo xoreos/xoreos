@@ -183,8 +183,11 @@ public:
 		writeUint64BE((uint64)convertIEEEDouble(value));
 	}
 
+	/** Copy n bytes of the given stream into the stream. */
+	uint32 writeStream(ReadStream &stream, uint32 n);
+
 	/** Copy the complete contents of the given stream. */
-	void writeStream(ReadStream &stream);
+	uint32 writeStream(ReadStream &stream);
 
 	/**
 	 *  Write the given string to the stream.

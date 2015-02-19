@@ -31,14 +31,25 @@
 
 namespace Common {
 
-void WriteStream::writeStream(ReadStream &stream) {
+uint32 WriteStream::writeStream(ReadStream &stream, uint32 n) {
+	uint32 haveRead = 0;
+
 	byte buf[4096];
+	while (!stream.eos() && (n > 0)) {
+		uint32 toRead  = MIN<uint32>(4096, n);
+		uint32 bufRead = stream.read(buf, toRead);
 
-	while (!stream.eos()) {
-		uint32 n = stream.read(buf, 4096);
+		write(buf, bufRead);
 
-		write(buf, n);
+		n        -= bufRead;
+		haveRead += bufRead;
 	}
+
+	return haveRead;
+}
+
+uint32 WriteStream::writeStream(ReadStream &stream) {
+	return writeStream(stream, 0xFFFFFFFF);
 }
 
 void WriteStream::writeString(const UString &str) {

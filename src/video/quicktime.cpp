@@ -845,10 +845,10 @@ void QuickTimeDecoder::queueNextAudioChunk() {
 			}
 
 			// Now, we read in the data for this data and output it
-			byte *data = (byte *)malloc(size);
+			byte *data = new byte[size];
 			_fd->read(data, size);
 			wStream->write(data, size);
-			free(data);
+			delete[] data;
 			sampleCount -= samples;
 		}
 	} else {
@@ -863,10 +863,10 @@ void QuickTimeDecoder::queueNextAudioChunk() {
 			uint32 size = (_tracks[_audioTrackIndex]->sampleSize != 0) ? _tracks[_audioTrackIndex]->sampleSize : _tracks[_audioTrackIndex]->sampleSizes[i + startSample];
 
 			// Now, we read in the data for this data and output it
-			byte *data = (byte *)malloc(size);
+			byte *data = new byte[size];
 			_fd->read(data, size);
 			wStream->write(data, size);
-			free(data);
+			delete[] data;
 		}
 	}
 
