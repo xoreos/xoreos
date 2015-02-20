@@ -155,6 +155,7 @@ private:
 	void detectVersion();
 
 	void initConfig();
+	void declareEncodings();
 	void initResources(LoadProgress &progress);
 	void initCursors();
 	void initGameConfig();
