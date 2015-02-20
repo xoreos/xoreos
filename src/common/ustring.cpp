@@ -799,7 +799,7 @@ UString UString::substr(iterator from, iterator to) const {
 	return sub;
 }
 
-void UString::readASCII(SeekableReadStream &stream, bool colorCodes) {
+void UString::readASCII(SeekableReadStream &stream) {
 	clear();
 
 	std::vector<char> data;
@@ -807,14 +807,11 @@ void UString::readASCII(SeekableReadStream &stream, bool colorCodes) {
 	if (data.empty())
 		return;
 
-	if (colorCodes)
-		parseColorColors(data);
-
 	_string = (const char *) &data[0];
 	recalculateSize();
 }
 
-void UString::readFixedASCII(SeekableReadStream &stream, uint32 length, bool colorCodes) {
+void UString::readFixedASCII(SeekableReadStream &stream, uint32 length) {
 	clear();
 
 	std::vector<char> data;
@@ -822,14 +819,11 @@ void UString::readFixedASCII(SeekableReadStream &stream, uint32 length, bool col
 	if (data.empty())
 		return;
 
-	if (colorCodes)
-		parseColorColors(data);
-
 	_string = (const char *) &data[0];
 	recalculateSize();
 }
 
-void UString::readLineASCII(SeekableReadStream &stream, bool colorCodes) {
+void UString::readLineASCII(SeekableReadStream &stream) {
 	clear();
 
 	std::vector<char> data;
@@ -837,14 +831,11 @@ void UString::readLineASCII(SeekableReadStream &stream, bool colorCodes) {
 	if (data.empty())
 		return;
 
-	if (colorCodes)
-		parseColorColors(data);
-
 	_string = (const char *) &data[0];
 	recalculateSize();
 }
 
-void UString::readLatin9(SeekableReadStream &stream, bool colorCodes) {
+void UString::readLatin9(SeekableReadStream &stream) {
 	clear();
 
 	std::vector<char> data;
@@ -852,14 +843,11 @@ void UString::readLatin9(SeekableReadStream &stream, bool colorCodes) {
 	if (data.empty())
 		return;
 
-	if (colorCodes)
-		parseColorColors(data);
-
 	_string = ConvMan.fromLatin9((byte *) &data[0], strlen((const char *) &data[0]));
 	recalculateSize();
 }
 
-void UString::readFixedLatin9(SeekableReadStream &stream, uint32 length, bool colorCodes) {
+void UString::readFixedLatin9(SeekableReadStream &stream, uint32 length) {
 	clear();
 
 	std::vector<char> data;
@@ -867,23 +855,17 @@ void UString::readFixedLatin9(SeekableReadStream &stream, uint32 length, bool co
 	if (data.empty())
 		return;
 
-	if (colorCodes)
-		parseColorColors(data);
-
 	_string = ConvMan.fromLatin9((byte *) &data[0], strlen((const char *) &data[0]));
 	recalculateSize();
 }
 
-void UString::readLineLatin9(SeekableReadStream &stream, bool colorCodes) {
+void UString::readLineLatin9(SeekableReadStream &stream) {
 	clear();
 
 	std::vector<char> data;
 	readLine(stream, data, &Common::readSingleByte);
 	if (data.empty())
 		return;
-
-	if (colorCodes)
-		parseColorColors(data);
 
 	_string = ConvMan.fromLatin9((byte *) &data[0], strlen((const char *) &data[0]));
 	recalculateSize();
@@ -1118,85 +1100,6 @@ uint32 UString::split(const UString &text, uint32 delim, std::vector<UString> &t
 	}
 
 	return length;
-}
-
-void UString::parseColorColors(std::vector<char> &data) {
-	std::vector<char> newData;
-	std::vector<char> collect;
-	std::vector<char> color;
-
-	newData.reserve(2 * data.size());
-	collect.reserve(6);
-	color.reserve(3);
-
-	int state = 0;
-	for (std::vector<char>::iterator c = data.begin(); c != data.end(); ++c) {
-		if (state == 0) {
-			if (*c == '<') {
-				collect.push_back(*c);
-				state = 1;
-			} else
-				newData.push_back(*c);
-
-			continue;
-		}
-
-		if (state == 1) {
-			if        (*c == 'c') {
-				collect.push_back(*c);
-				state = 2;
-			} else {
-				newData.insert(newData.end(), collect.begin(), collect.end());
-				newData.push_back(*c);
-				collect.clear();
-				color.clear();
-				state = 0;
-			}
-
-			continue;
-		}
-
-		if ((state == 2) || (state == 3) || (state == 4)) {
-			collect.push_back(*c);
-			color.push_back(*c);
-			state++;
-
-			continue;
-		}
-
-		if (state == 5) {
-			if (*c == '>') {
-				char col[16];
-
-				snprintf(col, 16, "%02X%02X%02X%02X",
-				         (uint8) color[0], (uint8) color[1], (uint8) color[2], (uint8) 0xFF);
-
-				newData.push_back('<');
-				newData.push_back('c');
-
-				for (uint i = 0; i < 8; i++)
-					newData.push_back(col[i]);
-
-				newData.push_back('>');
-
-				collect.clear();
-				color.clear();
-				state = 0;
-
-			} else {
-				newData.insert(newData.end(), collect.begin(), collect.end());
-				collect.clear();
-				color.clear();
-				state = 0;
-			}
-
-			continue;
-		}
-	}
-
-	newData.insert(newData.end(), collect.begin(), collect.end());
-
-	data.swap(newData);
 }
 
 void UString::recalculateSize() {
