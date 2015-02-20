@@ -27,6 +27,7 @@
 #include "common/filepath.h"
 #include "common/configman.h"
 
+#include "aurora/util.h"
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
@@ -133,6 +134,9 @@ void JadeEngine::init() {
 	progress.step("Loading user game config");
 	initConfig();
 
+	progress.step("Declare string encodings");
+	declareEncodings();
+
 	initResources(progress);
 	if (EventMan.quitRequested())
 		return;
@@ -146,6 +150,38 @@ void JadeEngine::init() {
 	initGameConfig();
 
 	progress.step("Successfully initialized the engine");
+}
+
+void JadeEngine::declareEncodings() {
+	uint32 langEnglish = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguageEnglish);
+	TalkMan.registerEncoding(langEnglish, Common::kEncodingCP1252);
+
+	uint32 langFrench = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguageFrench);
+	TalkMan.registerEncoding(langFrench, Common::kEncodingCP1252);
+
+	uint32 langGerman = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguageGerman);
+	TalkMan.registerEncoding(langGerman, Common::kEncodingCP1252);
+
+	uint32 langItalian = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguageItalian);
+	TalkMan.registerEncoding(langItalian, Common::kEncodingCP1252);
+
+	uint32 langSpanish = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguageSpanish);
+	TalkMan.registerEncoding(langSpanish, Common::kEncodingCP1252);
+
+	uint32 langPolish = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguagePolish);
+	TalkMan.registerEncoding(langPolish, Common::kEncodingCP1250);
+
+	uint32 langKorean = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguageKorean);
+	TalkMan.registerEncoding(langKorean, Common::kEncodingCP949);
+
+	uint32 langChineseT = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguageChineseTraditional);
+	TalkMan.registerEncoding(langChineseT, Common::kEncodingCP950);
+
+	uint32 langChineseS = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguageChineseSimplified);
+	TalkMan.registerEncoding(langChineseS, Common::kEncodingCP936);
+
+	uint32 langJapanese = Aurora::getLanguageID(Aurora::kGameIDJade, Aurora::kLanguageJapanese);
+	TalkMan.registerEncoding(langJapanese, Common::kEncodingCP932);
 }
 
 void JadeEngine::initResources(LoadProgress &progress) {

@@ -77,6 +77,7 @@ private:
 	Graphics::Aurora::FPS *_fps;
 
 	void init();
+	void declareEncodings();
 	void initResources(LoadProgress &progress);
 	void initCursors();
 	void initConfig();
