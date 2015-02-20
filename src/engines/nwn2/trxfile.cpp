@@ -24,6 +24,7 @@
 
 #include "common/error.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 
 #include "aurora/resman.h"
 
@@ -172,12 +173,11 @@ void TRXFile::loadTRWH(Common::SeekableReadStream &trx, Packet &packet) {
 void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	Common::SeekableSubReadStream ttrn(&trx, trx.pos(), trx.pos() + packet.size);
 
-	Common::UString name;
-	name.readFixedASCII(ttrn, 128);
+	Common::UString name = Common::readStringFixed(ttrn, Common::kEncodingASCII, 128);
 
 	Common::UString textures[6];
 	for (int i = 0; i < 6; i++)
-		textures[i].readFixedASCII(ttrn, 32);
+		textures[i] = Common::readStringFixed(ttrn, Common::kEncodingASCII, 32);
 
 	float textureColors[6][3];
 	for (int i = 0; i < 6; i++)
@@ -283,8 +283,7 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 	Common::SeekableSubReadStream watr(&trx, trx.pos(), trx.pos() + packet.size);
 
-	Common::UString name;
-	name.readFixedASCII(watr, 128);
+	Common::UString name = Common::readStringFixed(watr, Common::kEncodingASCII, 128);
 
 	float color[3];
 	color[0] = watr.readIEEEFloatLE();
@@ -301,7 +300,7 @@ void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 
 	Common::UString textures[3];
 	for (int i = 0; i < 3; i++) {
-		textures[i].readFixedASCII(watr, 32);
+		textures[i] = Common::readStringFixed(watr, Common::kEncodingASCII, 32);
 
 		watr.skip(4); // float dirX
 		watr.skip(4); // float dirY
