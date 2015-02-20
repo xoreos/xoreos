@@ -24,6 +24,7 @@
 
 #include "common/stream.h"
 #include "common/util.h"
+#include "common/encoding.h"
 
 #include "aurora/rimfile.h"
 #include "aurora/error.h"
@@ -88,7 +89,7 @@ void RIMFile::readResList(Common::SeekableReadStream &rim, uint32 offset) {
 	ResourceList::iterator   res = _resources.begin();
 	IResourceList::iterator iRes = _iResources.begin();
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
-		res->name.readFixedASCII(rim, 16);
+		res->name    = Common::readStringFixed(rim, Common::kEncodingASCII, 16);
 		res->type    = (FileType) rim.readUint16LE();
 		res->index   = index;
 		rim.skip(4 + 2); // Resource ID + Reserved

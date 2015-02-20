@@ -24,6 +24,7 @@
 
 #include "common/stream.h"
 #include "common/util.h"
+#include "common/encoding.h"
 
 #include "aurora/error.h"
 #include "aurora/resman.h"
@@ -122,8 +123,8 @@ void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 		if (!ssf.seek(offsets[i]))
 			throw Common::Exception(Common::kSeekError);
 
-		_sounds[i].fileName.readFixedASCII(ssf, 16);
-		_sounds[i].strRef = ssf.readUint32LE();
+		_sounds[i].fileName = Common::readStringFixed(ssf, Common::kEncodingASCII, 16);
+		_sounds[i].strRef   = ssf.readUint32LE();
 	}
 }
 

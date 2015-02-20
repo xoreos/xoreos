@@ -25,6 +25,7 @@
 #include "common/stream.h"
 #include "common/file.h"
 #include "common/util.h"
+#include "common/encoding.h"
 
 #include "aurora/erffile.h"
 #include "aurora/error.h"
@@ -156,7 +157,7 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header) 
 		_flags    = erf.readUint32LE();
 		_moduleID = erf.readUint32LE();
 
-		_passwordDigest.readFixedASCII(erf, 16);
+		_passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
 
 		header.descriptionID   = 0;    // No description in ERF V2.2
 		header.offDescription  = 0;    // No description in ERF V2.2
@@ -174,7 +175,7 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header) 
 		_flags    = erf.readUint32LE();
 		_moduleID = erf.readUint32LE();
 
-		_passwordDigest.readFixedASCII(erf, 16);
+		_passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
 
 		header.stringTable = new char[header.stringTableSize];
 		if (erf.read(header.stringTable, header.stringTableSize) != header.stringTableSize) {
@@ -242,7 +243,7 @@ void ERFFile::readV1KeyList(Common::SeekableReadStream &erf, const ERFHeader &he
 
 	uint32 index = 0;
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++index, ++res) {
-		res->name.readFixedASCII(erf, 16);
+		res->name = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
 		erf.skip(4); // Resource ID
 		res->type = (FileType) erf.readUint16LE();
 		erf.skip(2); // Reserved
@@ -256,7 +257,7 @@ void ERFFile::readV11KeyList(Common::SeekableReadStream &erf, const ERFHeader &h
 
 	uint32 index = 0;
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++index, ++res) {
-		res->name.readFixedASCII(erf, 32);
+		res->name = Common::readStringFixed(erf, Common::kEncodingASCII, 32);
 		erf.skip(4); // Resource ID
 		res->type = (FileType) erf.readUint16LE();
 		erf.skip(2); // Reserved
@@ -282,9 +283,7 @@ void ERFFile::readV2ResList(Common::SeekableReadStream &erf, const ERFHeader &he
 	ResourceList::iterator   res = _resources.begin();
 	IResourceList::iterator iRes = _iResources.begin();
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
-		Common::UString name;
-
-		name.readFixedUTF16LE(erf, 32);
+		Common::UString name = Common::readStringFixed(erf, Common::kEncodingUTF16LE, 64);
 
 		res->name  = TypeMan.setFileType(name, kFileTypeNone);
 		res->type  = TypeMan.getFileType(name);
@@ -304,9 +303,7 @@ void ERFFile::readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 	ResourceList::iterator   res = _resources.begin();
 	IResourceList::iterator iRes = _iResources.begin();
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
-		Common::UString name;
-
-		name.readFixedUTF16LE(erf, 32);
+		Common::UString name = Common::readStringFixed(erf, Common::kEncodingUTF16LE, 64);
 
 		res->name  = TypeMan.setFileType(name, kFileTypeNone);
 		res->type  = TypeMan.getFileType(name);

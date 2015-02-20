@@ -23,7 +23,7 @@
  */
 
 #include "common/util.h"
-#include "common/strutil.h"
+#include "common/encoding.h"
 #include "common/stream.h"
 #include "common/file.h"
 #include "common/streamtokenizer.h"
@@ -147,8 +147,7 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 	if ((_version != kVersion2a) && (_version != kVersion2b))
 		throw Common::Exception("Unsupported 2DA file version %08X", _version);
 
-	Common::UString lineRest;
-	lineRest.readLineASCII(twoda); // Skip the rest of the line
+	Common::UString lineRest = Common::readStringLine(twoda, Common::kEncodingASCII);
 
 	try {
 

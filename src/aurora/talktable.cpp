@@ -24,6 +24,7 @@
 
 #include "common/stream.h"
 #include "common/util.h"
+#include "common/encoding.h"
 #include "common/error.h"
 
 #include "aurora/talktable.h"
@@ -95,7 +96,7 @@ void TalkTable::load() {
 void TalkTable::readEntryTableV3() {
 	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
 		entry->flags          = _tlk->readUint32LE();
-		entry->soundResRef.readFixedASCII(*_tlk, 16);
+		entry->soundResRef    = Common::readStringFixed(*_tlk, Common::kEncodingASCII, 16);
 		entry->volumeVariance = _tlk->readUint32LE();
 		entry->pitchVariance  = _tlk->readUint32LE();
 		entry->offset         = _tlk->readUint32LE() + _stringsOffset;
@@ -130,7 +131,8 @@ void TalkTable::readString(Entry &entry) {
 	Common::MemoryReadStream *data   = _tlk->readStream(length);
 	Common::MemoryReadStream *parsed = preParseColorCodes(*data);
 
-	entry.text.readLatin9(*parsed);
+	Common::Encoding encoding = TalkMan.getEncoding(_language);
+	entry.text = Common::readString(*parsed, encoding);
 
 	delete parsed;
 	delete data;

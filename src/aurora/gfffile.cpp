@@ -25,6 +25,7 @@
 #include "common/endianness.h"
 #include "common/error.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 #include "common/ustring.h"
 
 #include "aurora/gfffile.h"
@@ -307,10 +308,7 @@ void GFFStruct::readIndices(Common::SeekableReadStream &gff,
 Common::UString GFFStruct::readLabel(Common::SeekableReadStream &gff, uint32 index) const {
 	gff.seek(_parent->_header.labelOffset + index * 16);
 
-	Common::UString label;
-	label.readFixedASCII(gff, 16);
-
-	return label;
+	return Common::readStringFixed(gff, Common::kEncodingASCII, 16);
 }
 
 Common::SeekableReadStream &GFFStruct::getData(const Field &field) const {
@@ -461,9 +459,7 @@ Common::UString GFFStruct::getString(const Common::UString &field,
 
 		uint32 length = data.readUint32LE();
 
-		Common::UString str;
-		str.readFixedASCII(data, length);
-		return str;
+		return Common::readStringFixed(data, Common::kEncodingASCII, length);
 	}
 
 	if (f->type == kFieldTypeResRef) {
@@ -471,9 +467,7 @@ Common::UString GFFStruct::getString(const Common::UString &field,
 
 		uint32 length = data.readByte();
 
-		Common::UString str;
-		str.readFixedASCII(data, length);
-		return str;
+		return Common::readStringFixed(data, Common::kEncodingASCII, length);
 	}
 
 	if ((f->type == kFieldTypeByte  ) ||

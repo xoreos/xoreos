@@ -113,7 +113,8 @@ void LocString::readString(uint32 languageID, Common::SeekableReadStream &stream
 	Common::MemoryReadStream *data   = stream.readStream(length);
 	Common::MemoryReadStream *parsed = preParseColorCodes(*data);
 
-	s.first->second.readLatin9(*parsed);
+	Common::Encoding encoding = TalkMan.getEncoding(convertLanguageIDToUngendered(languageID));
+	s.first->second = Common::readString(*parsed, encoding);
 
 	delete parsed;
 	delete data;

@@ -26,6 +26,7 @@
 #include "common/maths.h"
 #include "common/ustring.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 #include "common/debug.h"
 
 #include "aurora/error.h"
@@ -451,8 +452,7 @@ void NCSFile::o_const(InstructionType type) {
 			break;
 
 		case kInstTypeString: {
-			_stack.push(kTypeString);
-			_stack.top().getString().readFixedASCII(*_script, _script->readUint16BE());
+			_stack.push(Common::readStringFixed(*_script, Common::kEncodingASCII, _script->readUint16BE()));
 			break;
 		}
 

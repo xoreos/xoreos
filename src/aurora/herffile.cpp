@@ -25,6 +25,7 @@
 #include "common/util.h"
 #include "common/file.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 #include "common/hash.h"
 
 #include "aurora/herffile.h"
@@ -111,10 +112,7 @@ void HERFFile::getDictionary(std::list<uint32> &hashes, std::list<Common::UStrin
 			break;
 
 		hashes.push_back(hash);
-		names.push_back("");
-
-		names.back().readFixedASCII(*dict, 128);
-		names.back().makeLower();
+		names.push_back(Common::readStringFixed(*dict, Common::kEncodingASCII, 128).toLower());
 	}
 
 	delete dict;

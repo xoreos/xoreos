@@ -29,6 +29,7 @@
 #include "common/util.h"
 #include "common/file.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 
 #include "aurora/ndsrom.h"
 #include "aurora/error.h"
@@ -86,10 +87,7 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 
 		byte nameLength = nds.readByte();
 
-		Common::UString name;
-
-		name.readFixedASCII(nds, nameLength);
-		name.makeLower();
+		Common::UString name = Common::readStringFixed(nds, Common::kEncodingASCII, nameLength).toLower();
 
 		res.name  = TypeMan.setFileType(name, kFileTypeNone);
 		res.type  = TypeMan.getFileType(name);
@@ -114,8 +112,7 @@ bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
 	if (!stream.seek(0))
 		return false;
 
-	Common::UString gameName;
-	gameName.readFixedASCII(stream, 12);
+	Common::UString gameName = Common::readStringFixed(stream, Common::kEncodingASCII, 12);
 	if (gameName != "SONICCHRON") // Should be the only game we will accept.
 		return false;
 
