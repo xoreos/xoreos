@@ -27,6 +27,7 @@
 #include "common/stream.h"
 #include "common/configman.h"
 
+#include "aurora/util.h"
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 #include "aurora/error.h"
@@ -123,10 +124,13 @@ void NWN2Engine::run(const Common::UString &target) {
 }
 
 void NWN2Engine::init() {
-	LoadProgress progress(20);
+	LoadProgress progress(21);
 
 	progress.step("Loading user game config");
 	initConfig();
+
+	progress.step("Declare string encodings");
+	declareEncodings();
 
 	initResources(progress);
 	if (EventMan.quitRequested())
@@ -141,6 +145,38 @@ void NWN2Engine::init() {
 	initGameConfig();
 
 	progress.step("Successfully initialized the engine");
+}
+
+void NWN2Engine::declareEncodings() {
+	uint32 langEnglish = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguageEnglish);
+	TalkMan.registerEncoding(langEnglish, Common::kEncodingLatin9);
+
+	uint32 langFrench = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguageFrench);
+	TalkMan.registerEncoding(langFrench, Common::kEncodingLatin9);
+
+	uint32 langGerman = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguageGerman);
+	TalkMan.registerEncoding(langGerman, Common::kEncodingLatin9);
+
+	uint32 langItalian = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguageItalian);
+	TalkMan.registerEncoding(langItalian, Common::kEncodingLatin9);
+
+	uint32 langSpanish = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguageSpanish);
+	TalkMan.registerEncoding(langSpanish, Common::kEncodingLatin9);
+
+	uint32 langPolish = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguagePolish);
+	TalkMan.registerEncoding(langPolish, Common::kEncodingLatin9);
+
+	uint32 langKorean = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguageKorean);
+	TalkMan.registerEncoding(langKorean, Common::kEncodingUTF8);
+
+	uint32 langChineseT = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguageChineseTraditional);
+	TalkMan.registerEncoding(langChineseT, Common::kEncodingUTF8);
+
+	uint32 langChineseS = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguageChineseSimplified);
+	TalkMan.registerEncoding(langChineseS, Common::kEncodingUTF8);
+
+	uint32 langJapanese = Aurora::getLanguageID(Aurora::kGameIDNWN2, Aurora::kLanguageJapanese);
+	TalkMan.registerEncoding(langJapanese, Common::kEncodingUTF8);
 }
 
 void NWN2Engine::initResources(LoadProgress &progress) {
