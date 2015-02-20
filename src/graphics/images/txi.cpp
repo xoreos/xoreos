@@ -27,6 +27,7 @@
 #include "common/error.h"
 #include "common/strutil.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 
 #include "graphics/images/txi.h"
 #include "graphics/images/txitypes.h"
@@ -110,9 +111,8 @@ bool TXI::empty() const {
 
 void TXI::load(Common::SeekableReadStream &stream) {
 	while (!stream.eos()) {
-		Common::UString line;
+		Common::UString line = Common::readStringLine(stream, Common::kEncodingASCII);
 
-		line.readLineASCII(stream);
 		if (line.empty())
 			break;
 

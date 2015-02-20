@@ -29,6 +29,7 @@
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 
 #include "aurora/types.h"
 #include "aurora/resman.h"
@@ -162,7 +163,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	ctx.mdl->skip(8); // Function pointers
 
-	_name.readFixedASCII(*ctx.mdl, 32);
+	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -196,9 +197,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	float scale = ctx.mdl->readIEEEFloatLE();
 
-	Common::UString superModelName;
-
-	superModelName.readFixedASCII(*ctx.mdl, 32);
+	Common::UString superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
 	ctx.mdl->skip(4); // Root node pointer again
 
@@ -229,10 +228,11 @@ void Model_KotOR::readStrings(Common::SeekableReadStream &mdl,
 
 	uint32 pos = mdl.pos();
 
-	strings.resize(offsets.size());
-	for (uint32 i = 0; i < offsets.size(); i++) {
-		mdl.seekTo(offsets[i] + offset);
-		strings[i].readASCII(mdl);
+	strings.reserve(offsets.size());
+	for (std::vector<uint32>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
+		mdl.seekTo(offset + *o);
+
+		strings.push_back(Common::readString(mdl, Common::kEncodingASCII));
 	}
 
 	mdl.seekTo(pos);
@@ -454,9 +454,8 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	std::vector<Common::UString> textures;
 
-	textures.resize(2);
-	textures[0].readFixedASCII(*ctx.mdl, 32);
-	textures[1].readFixedASCII(*ctx.mdl, 32);
+	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32));
+	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32));
 
 	ctx.mdl->skip(24); // Unknown
 

@@ -28,6 +28,7 @@
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 
 #include "aurora/types.h"
 #include "aurora/resman.h"
@@ -202,17 +203,16 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 
-	_name.readFixedASCII(*ctx.mdb, 32);
+	_name = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
 	// Skipping lower level of detail models
 	if (_name.endsWith("_L01") || _name.endsWith("_L02"))
 		return false;
 
-	Common::UString diffuseMap, normalMap, glowMap;
-	diffuseMap.readFixedASCII(*ctx.mdb, 32);
-	 normalMap.readFixedASCII(*ctx.mdb, 32);
-	  _tintMap.readFixedASCII(*ctx.mdb, 32);
-	   glowMap.readFixedASCII(*ctx.mdb, 32);
+	Common::UString diffuseMap = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
+	Common::UString normalMap  = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
+	                _tintMap   = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
+	Common::UString glowMap    = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
 	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
 	_diffuse [1] = ctx.mdb->readIEEEFloatLE();
@@ -335,20 +335,18 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 
-	_name.readFixedASCII(*ctx.mdb, 32);
+	_name = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
 	// Skipping lower level of detail models
 	if (_name.endsWith("_L01") || _name.endsWith("_L02"))
 		return false;
 
-	Common::UString skeletonName;
-	skeletonName.readFixedASCII(*ctx.mdb, 32);
+	Common::UString skeletonName = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
-	Common::UString diffuseMap, normalMap, glowMap;
-	diffuseMap.readFixedASCII(*ctx.mdb, 32);
-	 normalMap.readFixedASCII(*ctx.mdb, 32);
-	  _tintMap.readFixedASCII(*ctx.mdb, 32);
-	   glowMap.readFixedASCII(*ctx.mdb, 32);
+	Common::UString diffuseMap = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
+	Common::UString normalMap  = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
+	                _tintMap   = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
+	Common::UString glowMap    = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
 	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
 	_diffuse [1] = ctx.mdb->readIEEEFloatLE();

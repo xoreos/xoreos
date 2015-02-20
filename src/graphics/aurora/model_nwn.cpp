@@ -33,6 +33,7 @@
 #include "common/maths.h"
 #include "common/debug.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 #include "common/streamtokenizer.h"
 #include "common/vector3.h"
 
@@ -215,7 +216,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	ctx.mdl->skip(8); // Function pointers
 
-	_name.readFixedASCII(*ctx.mdl, 64);
+	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
 	debugC(4, kDebugGraphics, "Loading NWN binary model \"%s\": \"%s\"", _fileName.c_str(),
 	       _name.c_str());
 
@@ -252,7 +253,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	_animationScale = ctx.mdl->readIEEEFloatLE();
 
-	_superModelName.readFixedASCII(*ctx.mdl, 64);
+	_superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
 
 	newState(ctx);
 
@@ -416,7 +417,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 
 	ctx.mdl->skip(8); // Function pointers
 
-	ctx.state->name.readFixedASCII(*ctx.mdl, 64);
+	ctx.state->name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -430,8 +431,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 	float animLength = ctx.mdl->readIEEEFloatLE();
 	float transTime  = ctx.mdl->readIEEEFloatLE();
 
-	Common::UString animRoot;
-	animRoot.readFixedASCII(*ctx.mdl, 64);
+	Common::UString animRoot = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
 
 	uint32 eventOffset, eventCount;
 	readArrayDef(*ctx.mdl, eventOffset, eventCount);
@@ -442,8 +442,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 	for (uint32 i = 0; i < eventCount; i++) {
 		float after = ctx.mdl->readIEEEFloatLE();
 
-		Common::UString eventName;
-		eventName.readFixedASCII(*ctx.mdl, 32);
+		Common::UString eventName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 	}
 
 	ModelNode_NWN_Binary *rootNode = new ModelNode_NWN_Binary(*this);
@@ -517,7 +516,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	uint32 inheritColorFlag = ctx.mdl->readUint32LE();
 	uint32 partNumber       = ctx.mdl->readUint32LE();
 
-	_name.readFixedASCII(*ctx.mdl, 32);
+	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
 	debugC(5, kDebugGraphics, "Node \"%s\" in state \"%s\"", _name.c_str(),
 	       ctx.state->name.c_str());
@@ -688,11 +687,10 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->skip(4); // Unknown
 
 	std::vector<Common::UString> textures;
-	textures.resize(4);
-	textures[0].readFixedASCII(*ctx.mdl, 64);
-	textures[1].readFixedASCII(*ctx.mdl, 64);
-	textures[2].readFixedASCII(*ctx.mdl, 64);
-	textures[3].readFixedASCII(*ctx.mdl, 64);
+	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64));
+	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64));
+	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64));
+	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64));
 
 	_tilefade = ctx.mdl->readUint32LE();
 

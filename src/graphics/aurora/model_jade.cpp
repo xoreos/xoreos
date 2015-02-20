@@ -29,6 +29,7 @@
 #include "common/error.h"
 #include "common/maths.h"
 #include "common/stream.h"
+#include "common/encoding.h"
 
 #include "aurora/types.h"
 #include "aurora/resman.h"
@@ -163,7 +164,7 @@ void Model_Jade::load(ParserContext &ctx) {
 
 	ctx.mdl->skip(8); // Function pointers
 
-	_name.readFixedASCII(*ctx.mdl, 32);
+	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -197,9 +198,7 @@ void Model_Jade::load(ParserContext &ctx) {
 
 	float scale = ctx.mdl->readIEEEFloatLE();
 
-	Common::UString superModelName;
-
-	superModelName.readFixedASCII(*ctx.mdl, 32);
+	Common::UString superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
 	ctx.mdl->skip( 4); // Pointer to some node
 	ctx.mdl->skip(12); // Unknown
@@ -230,10 +229,11 @@ void Model_Jade::readStrings(Common::SeekableReadStream &mdl,
 
 	uint32 pos = mdl.pos();
 
-	strings.resize(offsets.size());
-	for (uint32 i = 0; i < offsets.size(); i++) {
-		mdl.seekTo(offsets[i] + offset);
-		strings[i].readASCII(mdl);
+	strings.reserve(offsets.size());
+	for (std::vector<uint32>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
+		mdl.seekTo(offset + *o);
+
+		strings.push_back(Common::readString(mdl, Common::kEncodingASCII));
 	}
 
 	mdl.seekTo(pos);
@@ -343,8 +343,7 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	_hasTransparencyHint = true;
 	_transparencyHint    = (transparencyHint == 1);
 
-	Common::UString texture;
-	texture.readFixedASCII(*ctx.mdl, 32);
+	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
 	uint32 indexCount = ctx.mdl->readUint32LE();
 
@@ -650,7 +649,7 @@ void ModelNode_Jade::readMaterialTextures(uint32 materialID, std::vector<Common:
 		return;
 	}
 
-	textures.resize(4);
+	textures.reserve(4);
 
 	try {
 		uint32 size = mab->readUint32LE();
@@ -660,10 +659,10 @@ void ModelNode_Jade::readMaterialTextures(uint32 materialID, std::vector<Common:
 		mab->skip(96);
 
 		for (int i = 0; i < 4; i++) {
-			textures[i].readFixedASCII(*mab, 32);
+			textures.push_back(Common::readStringFixed(*mab, Common::kEncodingASCII, 32));
 
-			if (textures[i] == "NULL")
-				textures[i].clear();
+			if (textures.back() == "NULL")
+				textures.back().clear();
 		}
 
 	} catch (Common::Exception &e) {
