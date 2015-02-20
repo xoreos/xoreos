@@ -24,9 +24,10 @@
 
 #include "common/stream.h"
 #include "common/util.h"
+#include "common/error.h"
 
 #include "aurora/talktable.h"
-#include "aurora/error.h"
+#include "aurora/talkman.h"
 
 static const uint32 kTLKID     = MKTAG('T', 'L', 'K', ' ');
 static const uint32 kVersion3  = MKTAG('V', '3', '.', '0');
@@ -122,8 +123,17 @@ void TalkTable::readString(Entry &entry) {
 	if (!_tlk->seek(entry.offset))
 		throw Common::Exception(Common::kSeekError);
 
-	// TODO: Different encodings for different languages, probably
-	entry.text.readFixedLatin9(*_tlk, MIN<uint32>(entry.length, _tlk->size() - _tlk->pos()));
+	uint32 length = MIN<uint32>(entry.length, _tlk->size() - _tlk->pos());
+	if (length == 0)
+		return;
+
+	Common::MemoryReadStream *data   = _tlk->readStream(length);
+	Common::MemoryReadStream *parsed = preParseColorCodes(*data);
+
+	entry.text.readLatin9(*parsed);
+
+	delete parsed;
+	delete data;
 }
 
 uint32 TalkTable::getLanguageID() const {
