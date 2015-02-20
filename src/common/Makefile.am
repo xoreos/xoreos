@@ -42,6 +42,7 @@ noinst_HEADERS = \
                  error.h \
                  util.h \
                  strutil.h \
+                 encoding.h \
                  debugman.h \
                  debug.h \
                  uuid.h \
@@ -82,6 +83,7 @@ libcommon_la_SOURCES = \
                        error.cpp \
                        util.cpp \
                        strutil.cpp \
+                       encoding.cpp \
                        debugman.cpp \
                        debug.cpp \
                        uuid.cpp \
