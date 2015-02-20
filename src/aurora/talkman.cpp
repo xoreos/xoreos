@@ -45,6 +45,20 @@ TalkManager::~TalkManager() {
 void TalkManager::clear() {
 	removeMainTable();
 	removeAltTable();
+
+	_encodings.clear();
+}
+
+void TalkManager::registerEncoding(uint32 languageID, Common::Encoding encoding) {
+	_encodings[languageID] = encoding;
+}
+
+Common::Encoding TalkManager::getEncoding(uint32 languageID) const {
+	EncodingMap::const_iterator e = _encodings.find(languageID);
+	if (e == _encodings.end())
+		return Common::kEncodingUTF8;
+
+	return e->second;
 }
 
 uint32 TalkManager::getMainLanguageID() const {

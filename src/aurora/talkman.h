@@ -25,8 +25,11 @@
 #ifndef AURORA_TALKMAN_H
 #define AURORA_TALKMAN_H
 
+#include <map>
+
 #include "common/types.h"
 #include "common/singleton.h"
+#include "common/encoding.h"
 
 #include "aurora/language.h"
 #include "aurora/talktable.h"
@@ -44,6 +47,11 @@ public:
 	~TalkManager();
 
 	void clear();
+
+	/** Use this encoding when reading strings in this (ungendered) language ID. */
+	void registerEncoding(uint32 languageID, Common::Encoding encoding);
+	/** Return the encoding to use when reading strings in this (ungendered) language ID. */
+	Common::Encoding getEncoding(uint32 languageID) const;
 
 	/** Return the language ID (ungendered) of the main talk table. */
 	uint32 getMainLanguageID() const;
@@ -63,6 +71,9 @@ public:
 	const Common::UString &getSoundResRef(uint32 strRef, LanguageGender gender = (LanguageGender) -1);
 
 private:
+	typedef std::map<uint32, Common::Encoding> EncodingMap;
+
+
 	LanguageGender _gender;
 
 	TalkTable *_mainTableM;
@@ -70,6 +81,9 @@ private:
 
 	TalkTable *_altTableM;
 	TalkTable *_altTableF;
+
+	EncodingMap _encodings;
+
 
 	const TalkTable::Entry *getEntry(uint32 strRef, LanguageGender gender);
 
