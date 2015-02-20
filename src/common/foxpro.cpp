@@ -24,6 +24,7 @@
 
 #include "common/foxpro.h"
 #include "common/error.h"
+#include "common/encoding.h"
 #include "common/stream.h"
 
 // boost-date_time stuff
@@ -112,7 +113,7 @@ void FoxPro::loadFields(SeekableReadStream &dbf, uint32 recordSize) {
 
 		dbf.seek(-1, SEEK_CUR);
 
-		field.name.readFixedASCII(dbf, 11);
+		field.name = readStringFixed(dbf, kEncodingASCII, 11);
 
 		field.type     = (Type) dbf.readByte();
 		field.offset   = dbf.readUint32LE();
@@ -351,8 +352,7 @@ UString FoxPro::getString(const Record &record, uint32 field) const {
 
 	MemoryReadStream stream(record.fields[field], f.size);
 
-	UString str;
-	str.readFixedLatin9(stream, f.size);
+	UString str = readStringFixed(stream, kEncodingLatin9, f.size);
 
 	// xBase fields are padded with spaces...
 	str.trimRight();

@@ -27,6 +27,7 @@
 #include "common/zipfile.h"
 #include "common/error.h"
 #include "common/util.h"
+#include "common/encoding.h"
 #include "common/stream.h"
 #include "common/file.h"
 
@@ -97,8 +98,7 @@ void ZipFile::load() {
 
 		iFile.offset = zip.readUint32LE();
 
-		file.name.readFixedASCII(zip, nameLength);
-		file.name.makeLower();
+		file.name = readStringFixed(zip, kEncodingASCII, nameLength).toLower();
 
 		zip.skip(extraLength);
 		zip.skip(commentLength);

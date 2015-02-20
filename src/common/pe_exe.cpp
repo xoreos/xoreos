@@ -23,6 +23,7 @@
  */
 
 #include "common/pe_exe.h"
+#include "common/encoding.h"
 #include "common/stream.h"
 
 namespace Common {
@@ -186,9 +187,8 @@ void PEResources::parseResourceLevel(Section &section, uint32 offset, int level)
 			_exe->seek(section.offset + (value & 0x7fffffff));
 
 			// Read in the name, UTF-16LE
-			uint16 nameLength = _exe->readUint16LE();
-			UString name;
-			name.readFixedUTF16LE(*_exe, nameLength);
+			uint16  nameLength = _exe->readUint16LE() * 2;
+			UString name       = readStringFixed(*_exe, kEncodingUTF16LE, nameLength);
 
 			_exe->seek(startPos);
 

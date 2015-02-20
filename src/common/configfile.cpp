@@ -25,6 +25,7 @@
  */
 
 #include "common/error.h"
+#include "common/encoding.h"
 #include "common/stream.h"
 
 #include "common/configfile.h"
@@ -306,8 +307,7 @@ void ConfigFile::load(SeekableReadStream &stream) {
 		lineNumber++;
 
 		// Read a line
-		UString line;
-		line.readLineUTF8(stream);
+		UString line = readStringLine(stream, kEncodingUTF8);
 
 		// Parse it
 		UString domainName;
