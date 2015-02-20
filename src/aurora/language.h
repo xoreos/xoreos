@@ -29,6 +29,9 @@
 
 namespace Common {
 	class UString;
+
+	class SeekableReadStream;
+	class MemoryReadStream;
 }
 
 namespace Aurora {
@@ -104,6 +107,26 @@ LanguageGender getLanguageGender(uint32 languageID);
 
 /** Swap the gender of this gendered language ID. */
 uint32 swapLanguageGender(uint32 languageID);
+
+
+/** Pre-parse and fix color codes found in UI and dialogue strings in Aurora games.
+ *
+ *  Aurora games (or Neverwinter Nights at least) allow for color codes of the
+ *  form "<c???>" (and closing with "</c>"). The ??? are direct byte values taken
+ *  as red, green and blue values, breaking the usual text encoding.
+ *
+ *  To fix that, we pre-parse those strings, converting "<c???>" into "<cXXXXXX>",
+ *  where XXXXXX are the byte values in hexadecimal notation.
+ *
+ *  Note that this function will only work for encodings where ASCII values are
+ *  directly encoded as ASCII. Namely, ASCII, Latin9, UTF-8, Windows CP-1250,
+ *  Windows CP-1252 and many of the variable-byte Windows codepages used for
+ *  Asian languages. This function will *not* work for UTF-16 and UTF-32.
+ *
+ *  Also note that we're hoping that "<c???>" won't collide with valid characters
+ *  inside multibyte sequences. This is reasonable likely to never happen.
+ */
+Common::MemoryReadStream *preParseColorCodes(Common::SeekableReadStream &stream);
 
 } // End of namespace Aurora
 

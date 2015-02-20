@@ -23,6 +23,7 @@
  */
 
 #include "common/ustring.h"
+#include "common/stream.h"
 
 #include "aurora/language.h"
 
@@ -198,6 +199,75 @@ Common::UString getLanguageName(Language language) {
 	};
 
 	return names[language];
+}
+
+Common::MemoryReadStream *preParseColorCodes(Common::SeekableReadStream &stream) {
+	Common::MemoryWriteStreamDynamic output;
+
+	output.reserve(stream.size());
+
+	int state = 0;
+
+	std::vector<byte> collect;
+	collect.reserve(6);
+
+	byte color[3];
+
+	byte b;
+	while (stream.read(&b, 1) == 1) {
+		if (state == 0) {
+			if (b == '<') {
+				collect.push_back(b);
+				state = 1;
+			} else
+				output.writeByte(b);
+
+			continue;
+		}
+
+		if (state == 1) {
+			if (b == 'c') {
+				collect.push_back(b);
+				state = 2;
+			} else {
+				output.write(&collect[0], collect.size());
+				output.writeByte(b);
+				collect.clear();
+				state = 0;
+			}
+
+			continue;
+		}
+
+		if ((state == 2) || (state == 3) || (state == 4)) {
+			collect.push_back(b);
+			color[state - 2] = b;
+			state++;
+
+			continue;
+		}
+
+		if (state == 5) {
+			if (b == '>') {
+				Common::UString c = Common::UString::sprintf("<c%02X%02X%02X%02X>",
+				                    (uint8) color[0], (uint8) color[1], (uint8) color[2], (uint8) 0xFF);
+
+				output.writeString(c);
+				collect.clear();
+				state = 0;
+
+			} else {
+				output.write(&collect[0], collect.size());
+				output.writeByte(b);
+				collect.clear();
+				state = 0;
+			}
+
+			continue;
+		}
+	}
+
+	return new Common::MemoryReadStream(output.getData(), output.size(), true);
 }
 
 } // End of namespace Aurora
