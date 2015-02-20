@@ -107,9 +107,16 @@ void LocString::readString(uint32 languageID, Common::SeekableReadStream &stream
 	uint32 length = stream.readUint32LE();
 
 	std::pair<StringMap::iterator, bool> s = _strings.insert(std::make_pair(languageID, ""));
+	if (length == 0)
+		return;
 
-	// TODO: Different encodings for different languages, probably
-	s.first->second.readFixedLatin9(stream, length, true);
+	Common::MemoryReadStream *data   = stream.readStream(length);
+	Common::MemoryReadStream *parsed = preParseColorCodes(*data);
+
+	s.first->second.readLatin9(*parsed);
+
+	delete parsed;
+	delete data;
 }
 
 void LocString::readLocSubString(Common::SeekableReadStream &stream) {
