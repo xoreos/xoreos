@@ -28,6 +28,7 @@
 #include "common/stream.h"
 #include "common/configman.h"
 
+#include "aurora/util.h"
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
 
@@ -160,7 +161,7 @@ void KotOREngine::run(const Common::UString &target) {
 }
 
 void KotOREngine::init() {
-	LoadProgress progress(17);
+	LoadProgress progress(18);
 
 	progress.step("Loading user game config");
 	initConfig();
@@ -168,6 +169,9 @@ void KotOREngine::init() {
 
 	if (EventMan.quitRequested())
 		return;
+
+	progress.step("Declare string encodings");
+	declareEncodings();
 
 	initResources(progress);
 
@@ -184,6 +188,38 @@ void KotOREngine::init() {
 	initGameConfig();
 
 	progress.step("Successfully initialized the engine");
+}
+
+void KotOREngine::declareEncodings() {
+	uint32 langEnglish = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguageEnglish);
+	TalkMan.registerEncoding(langEnglish, Common::kEncodingCP1252);
+
+	uint32 langFrench = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguageFrench);
+	TalkMan.registerEncoding(langFrench, Common::kEncodingCP1252);
+
+	uint32 langGerman = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguageGerman);
+	TalkMan.registerEncoding(langGerman, Common::kEncodingCP1252);
+
+	uint32 langItalian = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguageItalian);
+	TalkMan.registerEncoding(langItalian, Common::kEncodingCP1252);
+
+	uint32 langSpanish = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguageSpanish);
+	TalkMan.registerEncoding(langSpanish, Common::kEncodingCP1252);
+
+	uint32 langPolish = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguagePolish);
+	TalkMan.registerEncoding(langPolish, Common::kEncodingCP1250);
+
+	uint32 langKorean = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguageKorean);
+	TalkMan.registerEncoding(langKorean, Common::kEncodingCP949);
+
+	uint32 langChineseT = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguageChineseTraditional);
+	TalkMan.registerEncoding(langChineseT, Common::kEncodingCP950);
+
+	uint32 langChineseS = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguageChineseSimplified);
+	TalkMan.registerEncoding(langChineseS, Common::kEncodingCP936);
+
+	uint32 langJapanese = Aurora::getLanguageID(Aurora::kGameIDKotOR, Aurora::kLanguageJapanese);
+	TalkMan.registerEncoding(langJapanese, Common::kEncodingCP932);
 }
 
 void KotOREngine::initResources(LoadProgress &progress) {
