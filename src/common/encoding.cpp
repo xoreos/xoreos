@@ -46,9 +46,9 @@ static const int kEncodingGrowth[kEncodingMAX] = {
 };
 
 /** A manager handling string encoding conversions. */
-class ConversionManagerNEW : public Singleton<ConversionManagerNEW> {
+class ConversionManager : public Singleton<ConversionManager> {
 public:
-	ConversionManagerNEW() {
+	ConversionManager() {
 		for (uint i = 0; i < kEncodingMAX; i++)
 			_context[i] = (iconv_t) -1;
 
@@ -57,7 +57,7 @@ public:
 				warning("Failed to initialize %s -> UTF-8 conversion: %s", kEncodingName[i], strerror(errno));
 	}
 
-	~ConversionManagerNEW() {
+	~ConversionManager() {
 		for (uint i = 0; i < kEncodingMAX; i++)
 			if (_context[i] != ((iconv_t) -1))
 				iconv_close(_context[i]);
@@ -106,9 +106,9 @@ private:
 
 }
 
-#define ConvManNEW Common::ConversionManagerNEW::instance()
+#define ConvMan Common::ConversionManager::instance()
 
-DECLARE_SINGLETON(Common::ConversionManagerNEW)
+DECLARE_SINGLETON(Common::ConversionManager)
 
 namespace Common {
 
@@ -178,7 +178,7 @@ static Common::UString createString(std::vector<byte> &output, Encoding encoding
 			return Common::UString((const char *) &output[0]);
 
 		default:
-			return ConvManNEW.convert(encoding, (byte *) &output[0], output.size());
+			return ConvMan.convert(encoding, (byte *) &output[0], output.size());
 	}
 
 	return "";
