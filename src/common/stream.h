@@ -775,13 +775,14 @@ private:
 	uint32 _pos;
 	bool _disposeMemory;
 
-	void ensureCapacity(uint32 new_len) {
-		if (new_len <= _capacity)
+public:
+	void reserve(uint32 s) {
+		if (s <= _capacity)
 			return;
 
 		byte *old_data = _data;
 
-		_capacity = new_len + 32;
+		_capacity = s + 32;
 		_data = new byte[_capacity];
 		_ptr = _data + _pos;
 
@@ -790,9 +791,18 @@ private:
 			std::memcpy(_data, old_data, _size);
 			delete[] old_data;
 		}
+	}
+
+private:
+	void ensureCapacity(uint32 new_len) {
+		if (new_len <= _capacity)
+			return;
+
+		reserve(new_len);
 
 		_size = new_len;
 	}
+
 public:
 	MemoryWriteStreamDynamic(bool disposeMemory = false) : _capacity(0), _size(0), _ptr(0), _data(0), _pos(0), _disposeMemory(disposeMemory) {}
 
