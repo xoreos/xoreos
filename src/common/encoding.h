@@ -25,15 +25,34 @@
 #ifndef COMMON_ENCODING_H
 #define COMMON_ENCODING_H
 
+#include "common/types.h"
+
 namespace Common {
 
+class UString;
+class SeekableReadStream;
+
 enum Encoding {
-	kEncodingASCII  ,
-	kEncodingLatin9 ,
-	kEncodingUTF8   ,
-	kEncodingUTF16LE,
-	kEncodingUTF16BE
+	kEncodingASCII,   ///< Plain, unextended ASCII (7bit clean).
+
+	kEncodingUTF8,    ///< UTF-8.
+
+	kEncodingUTF16LE, ///< UTF-16 LE (little endian).
+	kEncodingUTF16BE, ///< UTF-16 BE (big endian).
+
+	kEncodingLatin9,  ///< ISO-8859-15 (Latin-9).
+
+	kEncodingMAX      ///< For range checks.
 };
+
+/** Read a string with the given encoding of a stream. */
+Common::UString readString(SeekableReadStream &stream, Encoding encoding);
+
+/** Read length bytes as a string with the given encoding out of a stream. */
+Common::UString readStringFixed(SeekableReadStream &stream, Encoding encoding, uint32 length);
+
+/** Read a line with the given encoding out of a stream. */
+Common::UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 
 } // End of namespace Common
 
