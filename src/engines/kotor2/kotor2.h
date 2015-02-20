@@ -104,6 +104,7 @@ private:
 	void init();
 
 	void initConfig();
+	void declareEncodings();
 	void initResources(LoadProgress &progress);
 	void initCursorsRemap();
 	void initCursors();
