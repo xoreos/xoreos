@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/images/surface.h
+/** @file
  *  An image surface, in BGRA format.
  */
 

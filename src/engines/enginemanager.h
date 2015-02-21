@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/enginemanager.h
+/** @file
  *  The global engine manager, omniscient about all engines
  */
 

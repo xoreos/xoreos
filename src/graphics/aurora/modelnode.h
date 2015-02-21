@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/modelnode.h
+/** @file
  *  A node within a 3D model.
  */
 

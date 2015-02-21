@@ -20,7 +20,7 @@
 
 // Largely based on the WMA implementation found in FFmpeg.
 
-/** @file sound/decoders/wma.h
+/** @file
  *  Decoding Microsoft's Windows Media Audio.
  */
 

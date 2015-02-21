@@ -20,7 +20,7 @@
 
 // Mostly based on ScummVM's endian code
 
-/** @file common/endianness.h
+/** @file
  *  Low-level macros and functions to handle different endianness portably.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/sonic/sonic.cpp
+/** @file
  *  Engine class handling Sonic Chronicles: The Dark Brotherhood
  */
 

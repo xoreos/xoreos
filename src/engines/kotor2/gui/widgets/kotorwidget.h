@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor2/gui/widgets/kotorwidget.h
+/** @file
  *  A KotOR2 widget.
  */
 

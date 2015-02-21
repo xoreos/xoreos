@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/texture.h
+/** @file
  *  Virtual baseclass of a texture.
  */
 

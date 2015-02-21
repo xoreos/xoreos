@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/gui/widgets/scrollbar.h
+/** @file
  *  A KotOR scrollbar widget.
  */
 

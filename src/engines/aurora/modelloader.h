@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/aurora/modelloader.h
+/** @file
  *  An abstract Aurora model loader.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/error.h
+/** @file
  *  Basic exceptions to throw when handling files used in Bioware's Aurora engine.
  */
 

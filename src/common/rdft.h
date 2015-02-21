@@ -21,7 +21,7 @@
 // Based upon the (I)RDFT code in FFmpeg
 // Copyright (c) 2009 Alex Converse <alex dot converse at gmail dot com>
 
-/** @file common/rdft.h
+/** @file
  *  (Inverse) Real Discrete Fourier Transform.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/encoding.h
+/** @file
  *  Utility functions for working with differing string encodings.
  */
 

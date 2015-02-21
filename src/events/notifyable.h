@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file events/notifyable.h
+/** @file
  *  A class that can be notified by the NotificationManager.
  */
 

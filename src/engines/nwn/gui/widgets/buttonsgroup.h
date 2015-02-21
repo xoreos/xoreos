@@ -19,7 +19,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/widgets/buttonsgroup.h
+/** @file
  *  Utility class that handles group of WidgetButton where only
  *  one button can be toggled.
  */

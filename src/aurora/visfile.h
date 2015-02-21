@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/visfile.h
+/** @file
  *  Handling BioWare's VISs (Visibility files).
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file video/codecs/wmv2data.h
+/** @file
  *  Static data used for decoding WMV2 videos.
  */
 

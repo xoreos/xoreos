@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/widgets/portrait.cpp
+/** @file
  *  A portrait model and widget.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/fontman.h
+/** @file
  *  The Aurora font manager.
  */
 

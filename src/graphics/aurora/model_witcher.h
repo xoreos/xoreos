@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/model_witcher.h
+/** @file
  *  Loading MDB files found in The Witcher
  */
 

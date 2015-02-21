@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/zipfile.h
+/** @file
  *  ZIP file decompresssion.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/gffstructs.h
+/** @file
  *  %Common structures found in BioWare's GFF files.
  */
 

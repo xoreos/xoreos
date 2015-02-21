@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/aurora/model.h
+/** @file
  *  Generic Aurora engines model functions.
  */
 

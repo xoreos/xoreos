@@ -20,7 +20,7 @@
 
 // Inspired by ScummVM's debug channels
 
-/** @file common/debugman.cpp
+/** @file
  *  The debug manager, managing debug channels.
  */
 

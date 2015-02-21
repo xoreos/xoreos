@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/texturefont.h
+/** @file
  *  A texture font, as used by NWN and KotOR/KotOR2.
  */
 

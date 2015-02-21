@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/renderable.h
+/** @file
  *  An object that can be displayed by the graphics manager.
  */
 

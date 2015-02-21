@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/main/newxp2.h
+/** @file
  *  The new game menu, expansion 2.
  */
 

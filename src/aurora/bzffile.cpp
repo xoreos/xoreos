@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/bzffile.cpp
+/** @file
  *  Handling BioWare's BZFs (resource data files), used in the iOS version of
  *  Knights of the Old Republic.
  *

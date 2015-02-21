@@ -20,7 +20,7 @@
 
 // Partially based on FFmpeg's WMV2 decoder.
 
-/** @file video/codecs/xmvwmv2.cpp
+/** @file
  *  WMV2 video codec, XMV variant.
  */
 

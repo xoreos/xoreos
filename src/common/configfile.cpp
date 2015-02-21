@@ -20,7 +20,7 @@
 
 // Inspired by ScummVM's config file and manager code
 
-/** @file common/configfile.cpp
+/** @file
  *  A class storing a basic configuration file.
  */
 

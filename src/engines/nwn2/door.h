@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn2/door.h
+/** @file
  *  NWN2 door.
  */
 

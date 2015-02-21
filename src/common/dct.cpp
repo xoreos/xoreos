@@ -23,7 +23,7 @@
 // Copyright (c) 2010 Alex Converse <alex.converse@gmail.com>
 // Copyright (c) 2010 Vitor Sessak
 
-/** @file common/dct.cpp
+/** @file
  *  (Inverse) Discrete Cosine Transforms.
  */
 

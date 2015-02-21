@@ -20,7 +20,7 @@
 
 // Mostly copied verbatim from ScummVM's
 
-/** @file common/util.h
+/** @file
  *  Utility templates and functions.
  */
 

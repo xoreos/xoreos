@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor2/kotor2.cpp
+/** @file
  *  Engine class handling Star Wars: Knights of the Old Republic II - The Sith Lords
  */
 

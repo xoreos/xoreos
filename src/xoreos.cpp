@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file xoreos.cpp
+/** @file
  *  The project's main entry point.
  */
 

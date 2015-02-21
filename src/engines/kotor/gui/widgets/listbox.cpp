@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/gui/widgets/listbox.cpp
+/** @file
  *  A KotOR listbox widget.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file events/requesttypes.cpp
+/** @file
  *  Inter-thread request event types.
  */
 

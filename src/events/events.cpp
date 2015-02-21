@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file events/events.cpp
+/** @file
  *  The global events manager.
  */
 

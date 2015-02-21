@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file video/xmv.cpp
+/** @file
  *  Decoding Microsoft Xbox XMV videos.
  */
 

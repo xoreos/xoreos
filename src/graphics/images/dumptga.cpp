@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/images/dumptga.cpp
+/** @file
  *  A simple TGA image dumper.
  */
 

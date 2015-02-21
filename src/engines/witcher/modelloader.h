@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/witcher/modelloader.h
+/** @file
  *  The Witcher model loader.
  */
 

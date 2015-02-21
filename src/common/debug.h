@@ -20,7 +20,7 @@
 
 // Inspired by ScummVM's debug channels
 
-/** @file common/debug.h
+/** @file
  *  Utility functions for debug output.
  */
 

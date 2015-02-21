@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/shader/shaderinstance.h
+/** @file
  *  Shader instancing, allowing for easier shader resource sharing.
  */
 

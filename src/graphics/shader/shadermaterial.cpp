@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/shader/shadermaterial.cpp
+/** @file
  *  Shader material, responsible for tracking data relating to a fragment shader.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/ingame/partyleader.h
+/** @file
  *  The NWN ingame party leader panel.
  */
 

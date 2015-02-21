@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file video/fader.h
+/** @file
  *  Testing implementation for the VideoDecoder interface.
  */
 

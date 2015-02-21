@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/options/controls.cpp
+/** @file
  *  The NWN controls options menu.
  */
 

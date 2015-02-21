@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/2dafile.cpp
+/** @file
  *  Handling BioWare's 2DAs (two-dimensional array).
  */
 

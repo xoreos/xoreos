@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/widgets/close.cpp
+/** @file
  *  A NWN close button widget.
  */
 

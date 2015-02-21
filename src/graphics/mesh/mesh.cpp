@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/mesh/mesh.cpp
+/** @file
  *  Generic mesh handling class.
  */
 

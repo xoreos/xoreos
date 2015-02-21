@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/jade/artplaceable.cpp
+/** @file
  *  A simple model object within a Jade Empire area, guided by a state machine.
  */
 

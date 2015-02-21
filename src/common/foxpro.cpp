@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/foxpro.cpp
+/** @file
  *  A database in FoxPro format.
  */
 

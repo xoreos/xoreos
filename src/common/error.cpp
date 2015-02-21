@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/error.cpp
+/** @file
  *  Basic exceptions to throw.
  */
 

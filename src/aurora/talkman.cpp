@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/talkman.cpp
+/** @file
  *  The global talk manager for Aurora strings.
  */
 

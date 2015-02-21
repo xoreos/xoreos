@@ -20,7 +20,7 @@
 
 // Inspired by ScummVM's config file and manager code
 
-/** @file common/configman.cpp
+/** @file
  *  The global config manager.
  */
 

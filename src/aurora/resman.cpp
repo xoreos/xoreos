@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/resman.cpp
+/** @file
  *  The global resource manager for Aurora resources.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file events/joystick.cpp
+/** @file
  *  Joystick/Gamepad handling.
  */
 

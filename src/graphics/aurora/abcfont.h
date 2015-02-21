@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/abcfont.h
+/** @file
  *  An ABC/SBM font, as used by Jade Empire.
  */
 

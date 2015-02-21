@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file video/codecs/codec.h
+/** @file
  *  Video codec base class.
  */
 

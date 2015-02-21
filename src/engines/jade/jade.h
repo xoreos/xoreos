@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/jade/jade.h
+/** @file
  *  Engine class handling Jade Empire
  */
 

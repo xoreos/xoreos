@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/widgets/label.h
+/** @file
  *  A NWN label widget.
  */
 

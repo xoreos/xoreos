@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/ttf.h
+/** @file
  *  A simple TTF renderer outputting BGRA.
  */
 

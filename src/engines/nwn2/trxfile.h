@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn2/trxfile.h
+/** @file
  *  Loader for NWN2 baked terrain files (TRX).
  */
 

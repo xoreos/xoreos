@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/dialogs/okcancel.h
+/** @file
  *  The okay/cancel dialog.
  */
 

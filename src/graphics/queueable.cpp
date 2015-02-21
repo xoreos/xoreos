@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/queueable.cpp
+/** @file
  *  An object that can be stored in a queue.
  */
 

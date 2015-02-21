@@ -20,7 +20,7 @@
 
 // Largely based on the PCM implementation found in ScummVM.
 
-/** @file sound/decoders/pcm.h
+/** @file
  *  Decoding PCM (Pulse Code Modulation).
  */
 

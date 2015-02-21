@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/witcher/witcher.h
+/** @file
  *  Engine class handling The Witcher
  */
 

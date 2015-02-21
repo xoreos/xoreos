@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/keyfile.h
+/** @file
  *  Handling BioWare's KEYs (resource index files).
  */
 

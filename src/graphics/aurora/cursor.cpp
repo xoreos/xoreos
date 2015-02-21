@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/cursor.cpp
+/** @file
  *  A cursor as used in the Aurora engines.
  */
 

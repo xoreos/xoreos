@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/glcontainer.h
+/** @file
  *  A container of OpenGL elements.
  */
 

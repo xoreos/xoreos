@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/nwscript/object.h
+/** @file
  *  An NWScript object.
  */
 

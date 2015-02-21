@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file src/aurora/types.h
+/** @file
  *  Basic type definitions to handle files used in BioWare's Aurora engine.
  */
 

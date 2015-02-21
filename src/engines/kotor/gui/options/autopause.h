@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/gui/options/autopause.h
+/** @file
  *  The auto pause menu.
  */
 

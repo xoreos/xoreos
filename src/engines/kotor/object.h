@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/object.h
+/** @file
  *  An object within a KotOR area.
  */
 

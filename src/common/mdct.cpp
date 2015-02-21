@@ -21,7 +21,7 @@
 // Based upon the (I)MDCT code in FFmpeg
 // Copyright (c) 2002 Fabrice Bellard
 
-/** @file common/mdct.cpp
+/** @file
  *  (Inverse) Modified Discrete Cosine Transforms.
  */
 

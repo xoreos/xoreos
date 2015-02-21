@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/jade/room.cpp
+/** @file
  *  A room within a Jade Empire area.
  */
 

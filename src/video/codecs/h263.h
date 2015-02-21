@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file video/codecs/h263.h
+/** @file
  *  h.263 video codec.
  */
 

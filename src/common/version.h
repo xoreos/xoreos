@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/version.h
+/** @file
  *  Basic xoreos version information
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/cosinetables.h
+/** @file
  *  Static cosine tables.
  */
 

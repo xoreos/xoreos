@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file sound/decoders/util.h
+/** @file
  *  Sound decoding utility functions.
  */
 

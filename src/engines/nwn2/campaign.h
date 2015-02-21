@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn2/campaign.h
+/** @file
  *  The context holding an NWN2 campaign.
  */
 

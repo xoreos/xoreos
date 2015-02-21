@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file sound/decoders/wave.cpp
+/** @file
  *  Decoding RIFF WAVE (Resource Interchange File Format Waveform).
  */
 

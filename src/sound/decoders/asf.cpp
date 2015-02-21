@@ -20,7 +20,7 @@
 
 // Largely based on the ASF implementation found in FFmpeg.
 
-/** @file sound/decoders/asf.cpp
+/** @file
  *  Decoding Microsoft's Advanced Streaming Format.
  */
 

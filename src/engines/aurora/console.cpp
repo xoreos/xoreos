@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/aurora/console.cpp
+/** @file
  *  Generic Aurora engines (debug) console.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/guifrontelement.cpp
+/** @file
  *  A GUI element that is to be drawn in front of the normal objects.
  */
 

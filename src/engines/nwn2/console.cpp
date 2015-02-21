@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn2/console.cpp
+/** @file
  *  NWN2 (debug) console.
  */
 

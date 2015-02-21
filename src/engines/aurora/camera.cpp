@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/aurora/camera.cpp
+/** @file
  *  Engine utility functions for camera handling.
  */
 

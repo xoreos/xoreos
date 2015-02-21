@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor2/modelloader.h
+/** @file
  *  KotOR2 model loader.
  */
 

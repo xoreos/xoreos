@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/engine.cpp
+/** @file
  *  Generic engine interface.
  */
 

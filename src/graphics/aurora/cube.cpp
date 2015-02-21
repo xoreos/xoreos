@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/cube.cpp
+/** @file
  *  A simple cube object, for testing.
  */
 

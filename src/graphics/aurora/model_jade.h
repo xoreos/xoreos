@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/model_jade.h
+/** @file
  *  Loading MDL/MDX files found in Jade Empire
  */
 

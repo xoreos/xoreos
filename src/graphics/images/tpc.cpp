@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/images/tpc.cpp
+/** @file
  *  TPC (BioWare's own texture format) loading.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/stringmap.h
+/** @file
  *  A map to quickly match strings from a list.
  */
 

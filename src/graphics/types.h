@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/types.h
+/** @file
  *  Basic graphics types.
  */
 

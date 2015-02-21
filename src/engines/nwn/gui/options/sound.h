@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/options/sound.h
+/** @file
  *  The NWN sound options menu.
  */
 

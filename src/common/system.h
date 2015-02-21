@@ -20,7 +20,7 @@
 
 // Mostly based on ScummVM's architecture/system checks
 
-/** @file common/system.h
+/** @file
  *  Low-level detection of architecture/system properties.
  */
 

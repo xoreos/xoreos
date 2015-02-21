@@ -21,7 +21,7 @@
 // Based quite heavily on the Bink decoder found in FFmpeg.
 // Many thanks to Kostya Shishkov for doing the hard work.
 
-/** @file video/bink.h
+/** @file
  *  Decoding RAD Game Tools' Bink videos.
  */
 

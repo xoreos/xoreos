@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/uuid.h
+/** @file
  *  Utility functions for generating unique IDs.
  */
 

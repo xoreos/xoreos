@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file video/aurora/videoplayer.cpp
+/** @file
  *  A video player.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/dragonage2/dragonage2.cpp
+/** @file
  *  Engine class handling Dragon Age II
  */
 

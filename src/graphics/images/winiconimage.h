@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/images/winiconimage.h
+/** @file
  *  Decoding Windows icon and cursor files (.ICO and .CUR).
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file video/quicktime.cpp
+/** @file
  *  Decoding Apple QuickTime videos.
  */
 

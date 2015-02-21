@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/sinewindows.cpp
+/** @file
  *  Static sine windows.
  */
 

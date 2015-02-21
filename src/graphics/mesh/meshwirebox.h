@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/mesh/meshwirebox.h
+/** @file
  *  Wireframe box mesh.
  */
 

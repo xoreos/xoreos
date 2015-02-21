@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/room.h
+/** @file
  *  A room within a KotOR area.
  */
 

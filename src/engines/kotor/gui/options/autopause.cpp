@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/gui/options/autopause.cpp
+/** @file
  *  The auto pause menu.
  */
 

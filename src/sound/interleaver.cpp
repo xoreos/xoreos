@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file sound/interleaver.cpp
+/** @file
  *  An audio stream interleaving several other audio streams.
  */
 

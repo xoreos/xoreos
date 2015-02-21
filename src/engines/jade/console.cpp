@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/jade/console.cpp
+/** @file
  *  Jade (debug) console.
  */
 

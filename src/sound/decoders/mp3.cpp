@@ -20,7 +20,7 @@
 
 // Largely based on the MP3 implementation found in ScummVM.
 
-/** @file sound/decoders/mp3.cpp
+/** @file
  *  Decoding MP3 (MPEG-1 Audio Layer 3).
  */
 

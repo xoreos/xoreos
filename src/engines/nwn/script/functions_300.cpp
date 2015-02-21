@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/script/functions_300.cpp
+/** @file
  *  NWN script functions, 300-399.
  */
 

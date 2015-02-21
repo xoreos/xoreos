@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/vector3.h
+/** @file
  *  A 3d vector.
  */
 

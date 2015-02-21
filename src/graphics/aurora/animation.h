@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/animation.h
+/** @file
  *  An animation to be applied to a model.
  */
 

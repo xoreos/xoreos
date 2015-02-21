@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/model_kotor.cpp
+/** @file
  *  Loading MDL files found in Star Wars: Knights of the Old Republic.
  */
 

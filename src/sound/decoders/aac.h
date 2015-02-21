@@ -20,7 +20,7 @@
 
 // Largely based on the AAC implementation found in ScummVM.
 
-/** @file sound/decoders/aac.h
+/** @file
  *  Decoding AAC.
  */
 

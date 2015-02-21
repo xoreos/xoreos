@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/nwscript/functioncontext.h
+/** @file
  *  Context of an NWScript function.
  */
 

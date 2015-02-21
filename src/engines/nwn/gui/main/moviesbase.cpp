@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/main/moviesbase.cpp
+/** @file
  *  The base game movies menu.
  */
 

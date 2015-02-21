@@ -23,7 +23,7 @@
 // Copyright (c) 2002 Fabrice Bellard
 // Partly based on libdjbfft by D. J. Bernstein
 
-/** @file common/fft.h
+/** @file
  *  (Inverse) Fast Fourier Transform.
  */
 

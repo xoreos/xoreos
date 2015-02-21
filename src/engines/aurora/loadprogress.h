@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/aurora/loadprogress.h
+/** @file
  *  Displaying the progress in loading a game.
  */
 

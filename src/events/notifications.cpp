@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file events/notifications.cpp
+/** @file
  *  The notification manager, handling all notifications.
  */
 

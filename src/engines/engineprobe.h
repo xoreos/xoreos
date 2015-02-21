@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/engineprobe.h
+/** @file
  *  A probe that checks if an engine can handle game data found in a specific directory and
  *  creates an instance of that engine.
  */

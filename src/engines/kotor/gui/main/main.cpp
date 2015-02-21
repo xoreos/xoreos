@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/gui/main/main.cpp
+/** @file
  *  The KotOR main menu.
  */
 

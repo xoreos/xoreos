@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file sound/decoders/codec.cpp
+/** @file
  *  Audio codec base class.
  */
 

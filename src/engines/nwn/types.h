@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/types.h
+/** @file
  *  Basic NWN type definitions.
  */
 

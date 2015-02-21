@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/pefile.h
+/** @file
  *  A portable executable archive.
  */
 

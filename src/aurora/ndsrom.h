@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/ndsrom.h
+/** @file
  *  Nintendo DS ROM parsing.
  */
 

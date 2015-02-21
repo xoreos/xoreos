@@ -20,7 +20,7 @@
 
 // Largely based on the ADPCM implementation found in ScummVM.
 
-/** @file sound/decoders/adpcm.cpp
+/** @file
  *  Decoding ADPCM (Adaptive Differential Pulse Code Modulation).
  */
 

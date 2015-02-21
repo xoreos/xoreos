@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/queueman.h
+/** @file
  *  The graphics queue manager.
  */
 

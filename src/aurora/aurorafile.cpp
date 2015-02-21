@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/aurorafile.cpp
+/** @file
  *  Utility class for handling special data structures found in BioWare's Aurora files.
  */
 

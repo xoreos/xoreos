@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/2dareg.h
+/** @file
  *  The global 2DA registry.
  */
 

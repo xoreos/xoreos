@@ -20,7 +20,7 @@
 
 // Copied verbatim from ScummVM
 
-/** @file common/noncopyable.h
+/** @file
  *  Simple base class for classes that can't be copied.
  */
 

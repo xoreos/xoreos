@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file video/codecs/xmvwmv2.h
+/** @file
  *  WMV2 video codec, XMV variant.
  */
 

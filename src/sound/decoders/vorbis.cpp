@@ -20,7 +20,7 @@
 
 // Largely based on the Ogg Vorbis implementation found in ScummVM.
 
-/** @file sound/decoders/vorbis.cpp
+/** @file
  *  Decoding Ogg Vorbis.
  */
 

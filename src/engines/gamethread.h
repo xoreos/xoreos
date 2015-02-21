@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/gamethread.h
+/** @file
  *  The thread the game logic runs in.
  */
 

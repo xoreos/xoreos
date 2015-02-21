@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/object.h
+/** @file
  *  An object within a NWN area.
  */
 

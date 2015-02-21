@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/singleton.h
+/** @file
  *  Class and macro for implementing singletons.
  */
 

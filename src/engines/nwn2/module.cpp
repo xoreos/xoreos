@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn2/module.cpp
+/** @file
  *  The context needed to run a NWN2 module.
  */
 

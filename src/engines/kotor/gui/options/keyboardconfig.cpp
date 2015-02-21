@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/gui/options/keyboardconfig.cpp
+/** @file
  *  The keyboard mapping menu.
  */
 

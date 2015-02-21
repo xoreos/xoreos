@@ -20,7 +20,7 @@
 
 // Largely based on the AudioStream implementation found in ScummVM.
 
-/** @file sound/audiostream.cpp
+/** @file
  *  Streaming audio.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/strutil.cpp
+/** @file
  *  Utility templates and functions for working with strings.
  */
 

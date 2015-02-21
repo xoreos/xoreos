@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/indexbuffer.h
+/** @file
  *  A index buffer.
  */
 

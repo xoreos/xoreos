@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/kotor.h
+/** @file
  *  Engine class handling Star Wars: Knights of the Old Republic
  */
 

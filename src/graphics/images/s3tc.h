@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/images/s3tc.h
+/** @file
  *  Manual S3TC DXTn decompression methods.
  */
 

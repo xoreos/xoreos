@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file aurora/nwscript/functionman.cpp
+/** @file
  *  The NWScript function manager.
  */
 

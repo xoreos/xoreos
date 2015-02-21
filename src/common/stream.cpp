@@ -20,7 +20,7 @@
 
 // Largely based on the stream implementation found in ScummVM.
 
-/** @file common/stream.cpp
+/** @file
  *  Basic stream interfaces.
  */
 

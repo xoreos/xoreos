@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file sound/decoders/wmadata.h
+/** @file
  *  Static data used for decoding Microsoft's Windows Media Audio.
  */
 

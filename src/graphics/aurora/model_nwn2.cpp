@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/model_nwn2.cpp
+/** @file
  *  Loading MDB files found in Neverwinter Nights 2
  */
 

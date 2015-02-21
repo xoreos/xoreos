@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/guiquad.h
+/** @file
  *  A textured quad for a GUI element.
  */
 

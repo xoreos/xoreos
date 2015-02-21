@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/widgets/gridbox.cpp
+/** @file
  *  A NWN gridbox widget.
  */
 

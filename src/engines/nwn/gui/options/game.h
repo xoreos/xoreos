@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/nwn/gui/options/game.h
+/** @file
  *  The NWN game options menu.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file common/readline.h
+/** @file
  *  A class providing (limited) readline-like capabilities.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor2/console.h
+/** @file
  *  KotOR2 (debug) console.
  */
 

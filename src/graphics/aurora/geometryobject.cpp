@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file graphics/aurora/geometryobject.cpp
+/** @file
  *  A simple 3D object.
  */
 

@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/kotor/gui/widgets/label.h
+/** @file
  *  A KotOR label widget.
  */
 
