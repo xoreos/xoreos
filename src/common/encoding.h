@@ -42,6 +42,14 @@ enum Encoding {
 
 	kEncodingLatin9,  ///< ISO-8859-15 (Latin-9).
 
+	kEncodingCP1250,  ///< Windows codepage 1250 (Eastern European, Latin alphabet).
+	kEncodingCP1252,  ///< Windows codepage 1252 (Western European, Latin alphabet).
+
+	kEncodingCP932,   ///< Windows codepage 932 (Japanese, extended Shift-JIS).
+	kEncodingCP936,   ///< Windows codepage 936 (Simplified Chinese, extended GB2312 with GBK codepoints).
+	kEncodingCP949,   ///< Windows codepage 949 (Korean, similar to EUC-KR).
+	kEncodingCP950,   ///< Windows codepage 950 (Traditional Chinese, similar to Big5).
+
 	kEncodingMAX      ///< For range checks.
 };
 

@@ -38,11 +38,12 @@
 namespace Common {
 
 static const char *kEncodingName[kEncodingMAX] = {
-	"ASCII", "UTF-8", "UTF-16LE", "UTF-16BE", "ISO-8859-15",
+	"ASCII", "UTF-8", "UTF-16LE", "UTF-16BE", "ISO-8859-15", "WINDOWS-1250", "WINDOWS-1252",
+	"MS932", "MS936", "MSCP949", "CP950"
 };
 
 static const int kEncodingGrowth[kEncodingMAX] = {
-	1, 1, 2, 2, 4
+	1, 1, 2, 2, 4, 4, 4, 4, 4, 4, 4
 };
 
 /** A manager handling string encoding conversions. */
@@ -119,6 +120,12 @@ static uint32 readFakeChar(SeekableReadStream &stream, Encoding encoding) {
 		case kEncodingASCII:
 		case kEncodingLatin9:
 		case kEncodingUTF8:
+		case kEncodingCP1250:
+		case kEncodingCP1252:
+		case kEncodingCP932:
+		case kEncodingCP936:
+		case kEncodingCP949:
+		case kEncodingCP950:
 			if (stream.read(data, 1) != 1)
 				return 0;
 
@@ -150,6 +157,12 @@ static void writeFakeChar(std::vector<byte> &output, uint32 c, Encoding encoding
 		case kEncodingASCII:
 		case kEncodingLatin9:
 		case kEncodingUTF8:
+		case kEncodingCP1250:
+		case kEncodingCP1252:
+		case kEncodingCP932:
+		case kEncodingCP936:
+		case kEncodingCP949:
+		case kEncodingCP950:
 			output.push_back(c);
 			break;
 
