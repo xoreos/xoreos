@@ -95,4 +95,4 @@ private:
 
 } // End of namespace Common
 
-#endif
+#endif // COMMON_ZIPFILE_H

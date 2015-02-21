@@ -269,4 +269,4 @@ private:
 /** Shortcut for accessing the shader manager. */
 #define ShaderMan Graphics::Shader::ShaderManager::instance()
 
-#endif // SHADER_H
+#endif // GRAPHICS_SHADER_SHADER_H

@@ -149,4 +149,4 @@ private:
 
 } // End of namespace Common
 
-#endif
+#endif // COMMON_PE_EXE_H
