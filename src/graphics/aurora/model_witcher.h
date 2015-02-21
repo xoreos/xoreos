@@ -91,7 +91,6 @@ private:
 	void readMesh(Model_Witcher::ParserContext &ctx);
 
 	void readTextures(Model_Witcher::ParserContext &ctx,
-	                  const Common::UString &texture,
 	                  std::vector<Common::UString> &textures);
 	void readNodeControllers(Model_Witcher::ParserContext &ctx,
 	                         uint32 offset, uint32 count, std::vector<float> &data);

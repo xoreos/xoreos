@@ -311,10 +311,12 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	ctx.mdb->skip(20);
 
 	Common::UString texture[4];
-	texture[0] = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
-	texture[1] = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
-	texture[2] = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
-	texture[3] = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
+	for (int t = 0; t < 4; t++) {
+		texture[t] = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
+
+		if (texture[t] == "NULL")
+			texture[t].clear();
+	}
 
 	ctx.mdb->skip(20);
 
@@ -350,17 +352,9 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	uint32 biNormalsOffset, biNormalsCount;
 	Model::readArrayDef(*ctx.mdb, biNormalsOffset, biNormalsCount);
 
-	uint32 tVerts0Offset, tVerts0Count;
-	Model::readArrayDef(*ctx.mdb, tVerts0Offset, tVerts0Count);
-
-	uint32 tVerts1Offset, tVerts1Count;
-	Model::readArrayDef(*ctx.mdb, tVerts1Offset, tVerts1Count);
-
-	uint32 tVerts2Offset, tVerts2Count;
-	Model::readArrayDef(*ctx.mdb, tVerts2Offset, tVerts2Count);
-
-	uint32 tVerts3Offset, tVerts3Count;
-	Model::readArrayDef(*ctx.mdb, tVerts3Offset, tVerts3Count);
+	uint32 tVertsOffset[4], tVertsCount[4];
+	for (uint t = 0; t < 4; t++)
+		Model::readArrayDef(*ctx.mdb, tVertsOffset[t], tVertsCount[t]);
 
 	uint32 unknownOffset, unknownCount;
 	Model::readArrayDef(*ctx.mdb, unknownOffset, unknownCount);
@@ -380,16 +374,49 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	_render = true;
 
 	std::vector<Common::UString> textures;
-	readTextures(ctx, texture[0], textures);
+	readTextures(ctx, textures);
+
+	for (int t = 0; t < 4; t++) {
+		if (textures[t].empty())
+			textures[t] = texture[t];
+
+		if (tVertsCount[t] == 0)
+			textures[t].clear();
+
+		if (textures[t].empty())
+			continue;
+
+		if (ResMan.hasResource(textures[t], ::Aurora::kResourceImage))
+			continue;
+
+		// Different light situations, day/night
+		if      (ResMan.hasResource(textures[t] + "!r", ::Aurora::kResourceImage))
+			textures[t] += "!r";
+		else if (ResMan.hasResource(textures[t] + "!d", ::Aurora::kResourceImage))
+			textures[t] += "!d";
+		else if (ResMan.hasResource(textures[t] + "!n", ::Aurora::kResourceImage))
+			textures[t] += "!n";
+		else if (ResMan.hasResource(textures[t] + "!p", ::Aurora::kResourceImage))
+			textures[t] += "!p";
+		else if (ResMan.hasResource(textures[t] + "!w", ::Aurora::kResourceImage))
+			textures[t] += "!w";
+		else
+			textures[t].clear();
+	}
+
+	while (!textures.empty() && textures.back().empty())
+		textures.pop_back();
+
 	loadTextures(textures);
 
+	uint texCount = textures.size();
 
 	// Read vertices
 
 	GLsizei vpsize = 3;
 	GLsizei vnsize = 3;
 	GLsizei vtsize = 2;
-	uint32 vertexSize = (vpsize + vnsize + vtsize) * sizeof(float);
+	uint32 vertexSize = (vpsize + vnsize + vtsize * texCount) * sizeof(float);
 	_vertexBuffer.setSize(vertexCount, vertexSize);
 
 	float *vertexData = (float *) _vertexBuffer.getData();
@@ -411,13 +438,15 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	vn.pointer = vertexData + vpsize * vertexCount;
 	vertexDecl.push_back(vn);
 
-	VertexAttrib vt;
-	vt.index = VTCOORD;
-	vt.size = vtsize;
-	vt.type = GL_FLOAT;
-	vt.stride = 0;
-	vt.pointer = vertexData + (vpsize + vnsize) * vertexCount;
-	vertexDecl.push_back(vt);
+	VertexAttrib vt[4];
+	for (uint t = 0; t < texCount; t++) {
+		vt[t].index = VTCOORD + t;
+		vt[t].size = vtsize;
+		vt[t].type = GL_FLOAT;
+		vt[t].stride = 0;
+		vt[t].pointer = vertexData + (vpsize + vnsize + t * vtsize) * vertexCount;
+		vertexDecl.push_back(vt[t]);
+	}
 
 	_vertexBuffer.setVertexDecl(vertexDecl);
 
@@ -441,12 +470,19 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	}
 
 	// Read texture coordinates
-	assert(tVerts0Count == vertexCount);
-	ctx.mdb->seekTo(ctx.offRawData + tVerts0Offset);
-	v = (float *) vt.pointer;
-	for (uint32 i = 0; i < tVerts0Count; i++) {
-		*v++ = ctx.mdb->readIEEEFloatLE();
-		*v++ = ctx.mdb->readIEEEFloatLE();
+	for (uint t = 0; t < texCount; t++) {
+
+		ctx.mdb->seekTo(ctx.offRawData + tVertsOffset[t]);
+		v = (float *) vt[t].pointer;
+		for (uint32 i = 0; i < tVertsCount[t]; i++) {
+			if (i < tVertsCount[t]) {
+				*v++ = ctx.mdb->readIEEEFloatLE();
+				*v++ = ctx.mdb->readIEEEFloatLE();
+			} else {
+				*v++ = 0.0;
+				*v++ = 0.0;
+			}
+		}
 	}
 
 
@@ -477,13 +513,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 }
 
 void ModelNode_Witcher::readTextures(Model_Witcher::ParserContext &ctx,
-                                     const Common::UString &texture,
                                      std::vector<Common::UString> &textures) {
-
-	if (texture == "NULL") {
-		_render = false;
-		return;
-	}
 
 	uint32 offset;
 	if (ctx.fileVersion == 133)
@@ -505,26 +535,40 @@ void ModelNode_Witcher::readTextures(Model_Witcher::ParserContext &ctx,
 		line->trim();
 	}
 
+	textures.resize(4);
+
+	int hasShaderTex = false;
+
 	for (std::vector<Common::UString>::const_iterator line = textureLine.begin(); line != textureLine.end(); ++line) {
-		int n = -1;
-		if      (line->beginsWith("texture texture0 "))
-			n = 17;
-		else if (line->beginsWith("texture tex "))
-			n = 12;
+		int s = -1;
+		int n =  0;
 
-		if (n != -1) {
-			Common::UString::iterator it = line->begin();
-			while (n-- > 0)
-				it++;
+		if        (line->beginsWith("texture texture0 ")) {
+			s = 17;
+			n =  0 + (hasShaderTex ? 1 : 0);
+		} else if (line->beginsWith("texture texture1 ")) {
+			s = 17;
+			n =  1 + (hasShaderTex ? 1 : 0);
+		} else if (line->beginsWith("texture texture2 ")) {
+			s = 17;
+			n =  2 + (hasShaderTex ? 1 : 0);
+		} else if (line->beginsWith("texture texture3 ")) {
+			s = 17;
+			n =  3;
+		} else if (line->beginsWith("texture tex ")) {
+			s = 12;
+			n =  0 + (hasShaderTex ? 1 : 0);
+		} else if (line->beginsWith("shader ")) {
+			hasShaderTex = true;
 
-			textures.clear();
-
-			Common::UString t;
-			while (it != line->end())
-				t += *it++;
-
-			textures.push_back(t);
+			Common::UString shader = line->substr(line->getPosition(7), line->end());
+			if ((shader == "dadd_al_mul_alp") ||
+			    (shader == "corona"))
+				hasShaderTex = false;
 		}
+
+		if (s != -1)
+			textures[n] = line->substr(line->getPosition(s), line->end());
 	}
 
 }
