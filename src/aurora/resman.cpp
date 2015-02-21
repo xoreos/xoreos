@@ -505,6 +505,12 @@ bool ResourceManager::hasResource(const Common::UString &name, FileType type) co
 	return hasResource(name, types);
 }
 
+bool ResourceManager::hasResource(const Common::UString &name, ResourceType type) const {
+	assert((type >= 0) && (type < kResourceMAX));
+
+	return hasResource(name, _resourceTypeTypes[type]);
+}
+
 bool ResourceManager::hasResource(const Common::UString &name) const {
 	return hasResource(TypeMan.setFileType(name, kFileTypeNone), TypeMan.getFileType(name));
 }

@@ -243,6 +243,14 @@ public:
 
 	/** Does a specific resource exist?
 	 *
+	 *  @param  name The name (ResRef) of the resource.
+	 *  @param  type The resource's type.
+	 *  @return true if the resource exists, false otherwise.
+	 */
+	bool hasResource(const Common::UString &name, ResourceType type) const;
+
+	/** Does a specific resource exist?
+	 *
 	 *  @param  name The name (with extension) of the resource.
 	 *  @return true if the resource exists, false otherwise.
 	 */
