@@ -22,19 +22,19 @@
  *  The global sound manager, handling all sound output.
  */
 
-#include "sound/sound.h"
-#include "sound/audiostream.h"
-#include "sound/decoders/asf.h"
-#include "sound/decoders/mp3.h"
-#include "sound/decoders/vorbis.h"
-#include "sound/decoders/wave.h"
+#include "src/sound/sound.h"
+#include "src/sound/audiostream.h"
+#include "src/sound/decoders/asf.h"
+#include "src/sound/decoders/mp3.h"
+#include "src/sound/decoders/vorbis.h"
+#include "src/sound/decoders/wave.h"
 
-#include "common/stream.h"
-#include "common/util.h"
-#include "common/error.h"
-#include "common/configman.h"
+#include "src/common/stream.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/configman.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
 DECLARE_SINGLETON(Sound::SoundManager)
 

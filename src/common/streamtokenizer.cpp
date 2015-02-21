@@ -22,9 +22,9 @@
  *  Parse tokens out of a stream.
  */
 
-#include "common/streamtokenizer.h"
-#include "common/stream.h"
-#include "common/error.h"
+#include "src/common/streamtokenizer.h"
+#include "src/common/stream.h"
+#include "src/common/error.h"
 
 namespace Common {
 

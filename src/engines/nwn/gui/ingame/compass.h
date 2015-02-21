@@ -25,11 +25,11 @@
 #ifndef ENGINES_NWN_GUI_INGAME_COMPASS_H
 #define ENGINES_NWN_GUI_INGAME_COMPASS_H
 
-#include "events/notifyable.h"
+#include "src/events/notifyable.h"
 
-#include "engines/nwn/gui/widgets/modelwidget.h"
+#include "src/engines/nwn/gui/widgets/modelwidget.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
 

@@ -28,14 +28,14 @@
 #include <list>
 #include <vector>
 
-#include "common/ustring.h"
-#include "common/transmatrix.h"
-#include "common/boundingbox.h"
+#include "src/common/ustring.h"
+#include "src/common/transmatrix.h"
+#include "src/common/boundingbox.h"
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
-#include "graphics/aurora/types.h"
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/types.h"
+#include "src/graphics/aurora/textureman.h"
 
 namespace Graphics {
 

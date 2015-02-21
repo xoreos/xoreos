@@ -27,13 +27,13 @@
 
 #include <vector>
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
-#include "aurora/archive.h"
-#include "aurora/aurorafile.h"
-#include "aurora/locstring.h"
+#include "src/aurora/types.h"
+#include "src/aurora/archive.h"
+#include "src/aurora/aurorafile.h"
+#include "src/aurora/locstring.h"
 
 namespace Common {
 	class SeekableReadStream;

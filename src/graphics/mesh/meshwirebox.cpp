@@ -22,7 +22,7 @@
  *  Wireframe box mesh.
  */
 
-#include "graphics/mesh/meshwirebox.h"
+#include "src/graphics/mesh/meshwirebox.h"
 
 namespace Graphics {
 

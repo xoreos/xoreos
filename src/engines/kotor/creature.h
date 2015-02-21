@@ -27,14 +27,14 @@
 
 #include <list>
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/kotor/object.h"
+#include "src/engines/kotor/object.h"
 
 namespace Engines {
 

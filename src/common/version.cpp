@@ -22,7 +22,7 @@
  *  Basic xoreos version information
  */
 
-#include "common/version.h"
+#include "src/common/version.h"
 
 #if defined(HAVE_CONFIG_H)
 	#include "config.h"

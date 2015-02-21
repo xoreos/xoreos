@@ -22,12 +22,12 @@
  *  Handling BioWare's VISs (Visibility files).
  */
 
-#include "common/stream.h"
-#include "common/streamtokenizer.h"
-#include "common/util.h"
+#include "src/common/stream.h"
+#include "src/common/streamtokenizer.h"
+#include "src/common/util.h"
 
-#include "aurora/visfile.h"
-#include "aurora/error.h"
+#include "src/aurora/visfile.h"
+#include "src/aurora/error.h"
 
 namespace Aurora {
 

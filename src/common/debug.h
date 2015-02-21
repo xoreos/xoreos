@@ -27,9 +27,9 @@
 #ifndef COMMON_DEBUG_H
 #define COMMON_DEBUG_H
 
-#include "common/system.h"
-#include "common/types.h"
-#include "common/debugman.h"
+#include "src/common/system.h"
+#include "src/common/types.h"
+#include "src/common/debugman.h"
 
 /** Print a debug message, but only if the current debug level is at least
  *  the specified level and if the specified channel is enabled.

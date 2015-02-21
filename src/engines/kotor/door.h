@@ -25,9 +25,9 @@
 #ifndef ENGINES_KOTOR_DOOR_H
 #define ENGINES_KOTOR_DOOR_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "engines/kotor/situated.h"
+#include "src/engines/kotor/situated.h"
 
 namespace Engines {
 

@@ -22,9 +22,9 @@
  *  File classes implementing the stream interfaces.
  */
 
-#include "common/file.h"
-#include "common/error.h"
-#include "common/ustring.h"
+#include "src/common/file.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
 
 namespace Common {
 

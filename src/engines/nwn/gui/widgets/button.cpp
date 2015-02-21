@@ -22,13 +22,13 @@
  *  A NWN button widget.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/button.h"
 
 namespace Engines {
 

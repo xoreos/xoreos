@@ -22,11 +22,11 @@
  *  NWN2 utility functions
  */
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/gfffile.h"
+#include "src/aurora/gfffile.h"
 
-#include "engines/nwn2/util.h"
+#include "src/engines/nwn2/util.h"
 
 namespace Engines {
 

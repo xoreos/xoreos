@@ -24,19 +24,19 @@
 
 #include <boost/bind.hpp>
 
-#include "common/ustring.h"
-#include "common/util.h"
-#include "common/filepath.h"
-#include "common/filelist.h"
+#include "src/common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/filepath.h"
+#include "src/common/filelist.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fontman.h"
 
-#include "engines/nwn2/console.h"
-#include "engines/nwn2/campaign.h"
-#include "engines/nwn2/module.h"
-#include "engines/nwn2/area.h"
+#include "src/engines/nwn2/console.h"
+#include "src/engines/nwn2/campaign.h"
+#include "src/engines/nwn2/module.h"
+#include "src/engines/nwn2/area.h"
 
 namespace Engines {
 

@@ -25,40 +25,40 @@
 #include <list>
 #include <algorithm>
 
-#include "common/util.h"
-#include "common/filelist.h"
-#include "common/filepath.h"
-#include "common/stream.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/filelist.h"
+#include "src/common/filepath.h"
+#include "src/common/stream.h"
+#include "src/common/configman.h"
 
-#include "aurora/util.h"
-#include "aurora/resman.h"
-#include "aurora/talkman.h"
+#include "src/aurora/util.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/talkman.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/fps.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fps.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/loadprogress.h"
-#include "engines/aurora/tokenman.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/loadprogress.h"
+#include "src/engines/aurora/tokenman.h"
+#include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn/nwn.h"
-#include "engines/nwn/version.h"
-#include "engines/nwn/modelloader.h"
-#include "engines/nwn/console.h"
-#include "engines/nwn/module.h"
+#include "src/engines/nwn/nwn.h"
+#include "src/engines/nwn/version.h"
+#include "src/engines/nwn/modelloader.h"
+#include "src/engines/nwn/console.h"
+#include "src/engines/nwn/module.h"
 
-#include "engines/nwn/script/functions.h"
+#include "src/engines/nwn/script/functions.h"
 
-#include "engines/nwn/gui/legal.h"
-#include "engines/nwn/gui/main/main.h"
+#include "src/engines/nwn/gui/legal.h"
+#include "src/engines/nwn/gui/main/main.h"
 
 namespace Engines {
 

@@ -22,13 +22,13 @@
  *  A ZIP archive.
  */
 
-#include "common/ustring.h"
-#include "common/file.h"
-#include "common/zipfile.h"
-#include "common/filepath.h"
+#include "src/common/ustring.h"
+#include "src/common/file.h"
+#include "src/common/zipfile.h"
+#include "src/common/filepath.h"
 
-#include "aurora/zipfile.h"
-#include "aurora/util.h"
+#include "src/aurora/zipfile.h"
+#include "src/aurora/util.h"
 
 namespace Aurora {
 

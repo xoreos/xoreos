@@ -25,8 +25,8 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARPORTRAIT_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARPORTRAIT_H
 
-#include "engines/nwn/gui/chargen/chargenbase.h"
-#include "engines/nwn/gui/widgets/gridbox.h"
+#include "src/engines/nwn/gui/chargen/chargenbase.h"
+#include "src/engines/nwn/gui/widgets/gridbox.h"
 
 namespace Engines {
 

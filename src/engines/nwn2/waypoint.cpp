@@ -22,16 +22,16 @@
  *  NWN2 waypoint.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
 
-#include "aurora/locstring.h"
-#include "aurora/resman.h"
-#include "aurora/gfffile.h"
+#include "src/aurora/locstring.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/gfffile.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "engines/nwn2/waypoint.h"
+#include "src/engines/nwn2/waypoint.h"
 
 namespace Engines {
 

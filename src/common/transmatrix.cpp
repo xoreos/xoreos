@@ -24,8 +24,8 @@
 
 #include <cstring>
 
-#include "common/transmatrix.h"
-#include "common/maths.h"
+#include "src/common/transmatrix.h"
+#include "src/common/maths.h"
 
 static const float kIdentity[] = {
 	1.0, 0.0, 0.0, 0.0,

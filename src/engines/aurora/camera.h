@@ -25,7 +25,7 @@
 #ifndef ENGINES_AURORA_CAMERA_H
 #define ENGINES_AURORA_CAMERA_H
 
-#include "events/types.h"
+#include "src/events/types.h"
 
 namespace Engines {
 

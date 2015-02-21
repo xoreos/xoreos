@@ -22,9 +22,9 @@
  *  Static data used for decoding WMV2 videos.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "video/codecs/wmv2data.h"
+#include "src/video/codecs/wmv2data.h"
 
 namespace Video {
 

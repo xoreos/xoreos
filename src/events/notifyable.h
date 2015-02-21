@@ -27,8 +27,8 @@
 
 #include <list>
 
-#include "common/system.h"
-#include "events/notifications.h"
+#include "src/common/system.h"
+#include "src/events/notifications.h"
 
 namespace Events {
 

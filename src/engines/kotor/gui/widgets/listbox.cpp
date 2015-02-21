@@ -22,9 +22,9 @@
  *  A KotOR listbox widget.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "engines/kotor/gui/widgets/listbox.h"
+#include "src/engines/kotor/gui/widgets/listbox.h"
 
 namespace Engines {
 

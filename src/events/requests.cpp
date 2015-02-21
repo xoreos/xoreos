@@ -22,14 +22,14 @@
  *  Inter-thread request events.
  */
 
-#include "common/error.h"
-#include "common/util.h"
-#include "common/threads.h"
+#include "src/common/error.h"
+#include "src/common/util.h"
+#include "src/common/threads.h"
 
-#include "events/requests.h"
-#include "events/events.h"
+#include "src/events/requests.h"
+#include "src/events/events.h"
 
-#include "graphics/images/decoder.h"
+#include "src/graphics/images/decoder.h"
 
 DECLARE_SINGLETON(Events::RequestManager)
 

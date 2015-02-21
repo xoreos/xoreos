@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <iterator>
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace utf8
 {

@@ -22,12 +22,12 @@
  *  The global talk manager for Aurora strings.
  */
 
-#include "aurora/talkman.h"
-#include "aurora/resman.h"
+#include "src/aurora/talkman.h"
+#include "src/aurora/resman.h"
 
-#include "common/error.h"
-#include "common/ustring.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
+#include "src/common/stream.h"
 
 DECLARE_SINGLETON(Aurora::TalkManager)
 

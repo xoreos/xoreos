@@ -25,10 +25,10 @@
 #ifndef AURORA_IFOFILE_H
 #define AURORA_IFOFILE_H
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "aurora/locstring.h"
+#include "src/aurora/locstring.h"
 
 namespace Aurora {
 

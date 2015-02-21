@@ -28,9 +28,9 @@
 #include <list>
 #include <map>
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "events/types.h"
+#include "src/events/types.h"
 
 namespace Engines {
 

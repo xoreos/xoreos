@@ -22,15 +22,15 @@
  *  Displaying the progress in loading a game.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "graphics/graphics.cpp"
-#include "graphics/font.h"
+#include "src/graphics/graphics.cpp"
+#include "src/graphics/font.h"
 
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/fontman.h"
 
-#include "engines/aurora/loadprogress.h"
+#include "src/engines/aurora/loadprogress.h"
 
 namespace Engines {
 

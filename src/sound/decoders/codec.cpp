@@ -22,7 +22,7 @@
  *  Audio codec base class.
  */
 
-#include "sound/decoders/codec.h"
+#include "src/sound/decoders/codec.h"
 
 namespace Sound {
 

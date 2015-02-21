@@ -25,11 +25,11 @@
 #ifndef GRAPHICS_AURORA_CUBE_H
 #define GRAPHICS_AURORA_CUBE_H
 
-#include "graphics/types.h"
-#include "graphics/glcontainer.h"
-#include "graphics/object.h"
+#include "src/graphics/types.h"
+#include "src/graphics/glcontainer.h"
+#include "src/graphics/object.h"
 
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/textureman.h"
 
 namespace Common {
 	class UString;

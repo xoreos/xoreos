@@ -25,15 +25,15 @@
 #ifndef ENGINES_NWN_GUI_INGAME_DIALOG_H
 #define ENGINES_NWN_GUI_INGAME_DIALOG_H
 
-#include "events/types.h"
-#include "events/notifyable.h"
+#include "src/events/types.h"
+#include "src/events/notifyable.h"
 
-#include "graphics/types.h"
-#include "graphics/guifrontelement.h"
+#include "src/graphics/types.h"
+#include "src/graphics/guifrontelement.h"
 
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fontman.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Common {
 	class UString;

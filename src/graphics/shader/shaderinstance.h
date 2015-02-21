@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_SHADER_SHADERINSTANCE_H
 #define GRAPHICS_SHADER_SHADERINSTANCE_H
 
-#include "graphics/shader/shader.h"
+#include "src/graphics/shader/shader.h"
 
 namespace Graphics {
 

@@ -26,9 +26,9 @@
 #include <cstdio>
 #include <cctype>
 
-#include "common/ustring.h"
-#include "common/error.h"
-#include "common/util.h"
+#include "src/common/ustring.h"
+#include "src/common/error.h"
+#include "src/common/util.h"
 
 namespace Common {
 

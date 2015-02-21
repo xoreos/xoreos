@@ -25,11 +25,11 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_LISTBOX_H
 #define ENGINES_NWN_GUI_WIDGETS_LISTBOX_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/nwn/gui/widgets/modelwidget.h"
+#include "src/engines/nwn/gui/widgets/modelwidget.h"
 
 namespace Common {
 	class UString;

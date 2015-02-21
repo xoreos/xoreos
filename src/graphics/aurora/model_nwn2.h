@@ -25,8 +25,8 @@
 #ifndef GRAPHICS_AURORA_MODEL_NWN2_H
 #define GRAPHICS_AURORA_MODEL_NWN2_H
 
-#include "graphics/aurora/model.h"
-#include "graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/modelnode.h"
 
 namespace Common {
 	class SeekableReadStream;

@@ -25,12 +25,12 @@
 #ifndef ENGINES_NWN_SCRIPT_CONTAINER_H
 #define ENGINES_NWN_SCRIPT_CONTAINER_H
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "engines/nwn/types.h"
+#include "src/engines/nwn/types.h"
 
 namespace Aurora {
 	namespace NWScript {

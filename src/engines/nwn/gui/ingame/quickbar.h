@@ -25,15 +25,15 @@
 #ifndef ENGINES_NWN_GUI_INGAME_QUICKBAR_H
 #define ENGINES_NWN_GUI_INGAME_QUICKBAR_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "events/notifyable.h"
+#include "src/events/notifyable.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/nwn/gui/widgets/nwnwidget.h"
+#include "src/engines/nwn/gui/widgets/nwnwidget.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
 

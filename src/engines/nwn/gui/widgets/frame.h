@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_FRAME_H
 #define ENGINES_NWN_GUI_WIDGETS_FRAME_H
 
-#include "engines/nwn/gui/widgets/modelwidget.h"
+#include "src/engines/nwn/gui/widgets/modelwidget.h"
 
 namespace Common {
 	class UString;

@@ -25,9 +25,9 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_BUTTON_H
 #define ENGINES_NWN_GUI_WIDGETS_BUTTON_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "engines/nwn/gui/widgets/modelwidget.h"
+#include "src/engines/nwn/gui/widgets/modelwidget.h"
 
 namespace Engines {
 

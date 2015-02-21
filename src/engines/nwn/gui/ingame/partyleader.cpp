@@ -22,20 +22,20 @@
  *  The NWN ingame party leader panel.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "engines/nwn/gui/widgets/quadwidget.h"
-#include "engines/nwn/gui/widgets/panel.h"
-#include "engines/nwn/gui/widgets/button.h"
-#include "engines/nwn/gui/widgets/portrait.h"
+#include "src/engines/nwn/gui/widgets/quadwidget.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/portrait.h"
 
-#include "engines/nwn/gui/ingame/partyleader.h"
+#include "src/engines/nwn/gui/ingame/partyleader.h"
 
-#include "engines/nwn/module.h"
+#include "src/engines/nwn/module.h"
 
 namespace Engines {
 

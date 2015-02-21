@@ -24,14 +24,14 @@
 
 #include <algorithm>
 
-#include "common/ustring.h"
-#include "common/file.h"
-#include "common/filelist.h"
-#include "common/filepath.h"
+#include "src/common/ustring.h"
+#include "src/common/file.h"
+#include "src/common/filelist.h"
+#include "src/common/filepath.h"
 
-#include "../../aurora/util.h"
+#include "src/aurora/util.h"
 
-#include "engines/nwn/version.h"
+#include "src/engines/nwn/version.h"
 
 
 #define MAKE_NWN_VERSION(MAJOR, MINOR, BUILD) ((((uint64)(MAJOR)) << 32) + \

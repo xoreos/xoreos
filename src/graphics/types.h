@@ -31,7 +31,7 @@
 
 #include "glew/glew.h"
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Graphics {
 

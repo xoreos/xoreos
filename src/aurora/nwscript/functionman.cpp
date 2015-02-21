@@ -22,10 +22,10 @@
  *  The NWScript function manager.
  */
 
-#include "common/util.h"
-#include "common/error.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
 
-#include "aurora/nwscript/functionman.h"
+#include "src/aurora/nwscript/functionman.h"
 
 DECLARE_SINGLETON(Aurora::NWScript::FunctionManager)
 

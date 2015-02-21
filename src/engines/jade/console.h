@@ -25,7 +25,7 @@
 #ifndef ENGINES_JADE_CONSOLE_H
 #define ENGINES_JADE_CONSOLE_H
 
-#include "engines/aurora/console.h"
+#include "src/engines/aurora/console.h"
 
 namespace Engines {
 

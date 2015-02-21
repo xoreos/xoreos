@@ -22,13 +22,13 @@
  *  Testing implementation for the VideoDecoder interface.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "graphics/images/surface.h"
+#include "src/graphics/images/surface.h"
 
-#include "video/fader.h"
+#include "src/video/fader.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
 namespace Video {
 

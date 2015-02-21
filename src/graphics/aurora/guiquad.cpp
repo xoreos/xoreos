@@ -22,13 +22,13 @@
  *  A textured quad for a GUI element.
  */
 
-#include "common/util.h"
-#include "common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/ustring.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/aurora/guiquad.h"
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/texture.h"
 
 namespace Graphics {
 

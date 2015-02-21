@@ -28,8 +28,8 @@
 #include <list>
 #include <vector>
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
 namespace Common {
 

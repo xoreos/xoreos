@@ -25,8 +25,8 @@
 #ifndef ENGINES_AURORA_RESOURCES_H
 #define ENGINES_AURORA_RESOURCES_H
 
-#include "aurora/types.h"
-#include "aurora/resman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
 namespace Common {
 	class UString;

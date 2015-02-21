@@ -22,15 +22,15 @@
  *  The gender chooser in CharGen.
  */
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "engines/nwn/creature.h"
+#include "src/engines/nwn/creature.h"
 
-#include "engines/nwn/gui/widgets/button.h"
-#include "engines/nwn/gui/widgets/buttonsgroup.h"
-#include "engines/nwn/gui/widgets/editbox.h"
+#include "src/engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/buttonsgroup.h"
+#include "src/engines/nwn/gui/widgets/editbox.h"
 
-#include "engines/nwn/gui/chargen/charsex.h"
+#include "src/engines/nwn/gui/chargen/charsex.h"
 
 namespace Engines {
 

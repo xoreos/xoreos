@@ -25,11 +25,11 @@
 #ifndef ENGINES_NWN2_SITUATED_H
 #define ENGINES_NWN2_SITUATED_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/nwn2/object.h"
+#include "src/engines/nwn2/object.h"
 
 namespace Engines {
 

@@ -22,19 +22,19 @@
  *  NWN placeable.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "aurora/gfffile.h"
-#include "aurora/2dafile.h"
-#include "aurora/2dareg.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
 
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "engines/nwn/placeable.h"
+#include "src/engines/nwn/placeable.h"
 
-#include "engines/nwn/gui/widgets/tooltip.h"
+#include "src/engines/nwn/gui/widgets/tooltip.h"
 
 namespace Engines {
 

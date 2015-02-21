@@ -27,15 +27,15 @@
 
 #include <list>
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "aurora/nwscript/object.h"
+#include "src/aurora/nwscript/object.h"
 
-#include "sound/types.h"
+#include "src/sound/types.h"
 
-#include "engines/nwn2/types.h"
-#include "engines/nwn2/location.h"
+#include "src/engines/nwn2/types.h"
+#include "src/engines/nwn2/location.h"
 
 namespace Aurora {
 	class SSFFile;

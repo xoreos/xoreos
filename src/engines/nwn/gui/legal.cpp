@@ -22,21 +22,21 @@
  *  The legal billboard.
  */
 
-#include "common/maths.h"
-#include "common/ustring.h"
-#include "common/stream.h"
+#include "src/common/maths.h"
+#include "src/common/ustring.h"
+#include "src/common/stream.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/aurora/model_nwn.h"
+#include "src/graphics/aurora/model_nwn.h"
 
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn/gui/legal.h"
+#include "src/engines/nwn/gui/legal.h"
 
 namespace Engines {
 

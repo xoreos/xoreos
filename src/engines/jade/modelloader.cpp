@@ -22,15 +22,15 @@
  *  Jade Empire model loader.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/types.h"
-#include "aurora/resman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/model_jade.h"
+#include "src/graphics/aurora/model_jade.h"
 
-#include "engines/jade/modelloader.h"
+#include "src/engines/jade/modelloader.h"
 
 namespace Engines {
 

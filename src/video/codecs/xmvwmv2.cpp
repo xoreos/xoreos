@@ -27,18 +27,18 @@
 #pragma GCC diagnostic warning "-Wunused-variable"
 #pragma GCC diagnostic warning "-Wunused-but-set-variable"
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/stream.h"
-#include "common/bitstream.h"
-#include "common/huffman.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
+#include "src/common/bitstream.h"
+#include "src/common/huffman.h"
 
-#include "graphics/yuv_to_rgb.h"
+#include "src/graphics/yuv_to_rgb.h"
 
-#include "graphics/images/surface.h"
+#include "src/graphics/images/surface.h"
 
-#include "video/codecs/wmv2data.h"
-#include "video/codecs/xmvwmv2.h"
+#include "src/video/codecs/wmv2data.h"
+#include "src/video/codecs/xmvwmv2.h"
 
 namespace Video {
 

@@ -22,16 +22,16 @@
  *  The Witcher model loader.
  */
 
-#include "common/system.h"
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/system.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/types.h"
-#include "aurora/resman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/model_witcher.h"
+#include "src/graphics/aurora/model_witcher.h"
 
-#include "engines/witcher/modelloader.h"
+#include "src/engines/witcher/modelloader.h"
 
 namespace Engines {
 

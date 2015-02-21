@@ -22,13 +22,13 @@
  *  The new game menu, expansion 2.
  */
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "engines/nwn/module.h"
+#include "src/engines/nwn/module.h"
 
-#include "engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/label.h"
 
-#include "engines/nwn/gui/main/newxp2.h"
+#include "src/engines/nwn/gui/main/newxp2.h"
 
 namespace Engines {
 

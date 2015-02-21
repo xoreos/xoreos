@@ -27,7 +27,7 @@
 #ifndef SOUND_DECODERS_MP3_H
 #define SOUND_DECODERS_MP3_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Common {
 	class SeekableReadStream;

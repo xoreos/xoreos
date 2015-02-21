@@ -22,22 +22,22 @@
  *  A cursor as used in the Aurora engines.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/types.h"
-#include "aurora/resman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/images/decoder.h"
-#include "graphics/images/txi.h"
-#include "graphics/images/tga.h"
-#include "graphics/images/dds.h"
-#include "graphics/images/winiconimage.h"
+#include "src/graphics/images/decoder.h"
+#include "src/graphics/images/txi.h"
+#include "src/graphics/images/tga.h"
+#include "src/graphics/images/dds.h"
+#include "src/graphics/images/winiconimage.h"
 
-#include "graphics/aurora/cursor.h"
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/cursor.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/texture.h"
 
 namespace Graphics {
 

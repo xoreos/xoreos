@@ -22,9 +22,9 @@
  *  The global timer manager.
  */
 
-#include "common/error.h"
+#include "src/common/error.h"
 
-#include "events/timerman.h"
+#include "src/events/timerman.h"
 
 DECLARE_SINGLETON(Events::TimerManager)
 

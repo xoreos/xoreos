@@ -27,11 +27,11 @@
 
 #include <vector>
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/nwscript/types.h"
-#include "aurora/nwscript/util.h"
-#include "aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/types.h"
+#include "src/aurora/nwscript/util.h"
+#include "src/aurora/nwscript/variable.h"
 
 namespace Aurora {
 

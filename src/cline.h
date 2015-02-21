@@ -22,7 +22,7 @@
  *  Command line arguments parser.
  */
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
 namespace Common {
 	class UString;

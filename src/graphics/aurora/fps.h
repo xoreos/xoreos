@@ -25,10 +25,10 @@
 #ifndef GRAPHICS_AURORA_FPS_H
 #define GRAPHICS_AURORA_FPS_H
 
-#include "events/notifyable.h"
+#include "src/events/notifyable.h"
 
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/text.h"
+#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/text.h"
 
 namespace Graphics {
 

@@ -22,26 +22,26 @@
  *  A texture as used in the Aurora engines.
  */
 
-#include "common/types.h"
-#include "common/util.h"
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/types.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/texture.h"
 
-#include "graphics/types.h"
-#include "graphics/graphics.h"
-#include "graphics/images/txi.h"
-#include "graphics/images/decoder.h"
-#include "graphics/images/tga.h"
-#include "graphics/images/dds.h"
-#include "graphics/images/tpc.h"
-#include "graphics/images/txb.h"
-#include "graphics/images/sbm.h"
+#include "src/graphics/types.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/images/txi.h"
+#include "src/graphics/images/decoder.h"
+#include "src/graphics/images/tga.h"
+#include "src/graphics/images/dds.h"
+#include "src/graphics/images/tpc.h"
+#include "src/graphics/images/txb.h"
+#include "src/graphics/images/sbm.h"
 
-#include "events/requests.h"
+#include "src/events/requests.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
 using Events::RequestID;
 

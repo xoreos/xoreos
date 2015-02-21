@@ -22,9 +22,9 @@
  *  The NWN controls options menu.
  */
 
-#include "engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
 
-#include "engines/nwn/gui/options/controls.h"
+#include "src/engines/nwn/gui/options/controls.h"
 
 namespace Engines {
 

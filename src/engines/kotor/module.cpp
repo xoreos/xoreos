@@ -22,23 +22,23 @@
  *  A module.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
 
-#include "graphics/camera.h"
+#include "src/graphics/camera.h"
 
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/textureman.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/camera.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/camera.h"
 
-#include "engines/kotor/module.h"
-#include "engines/kotor/console.h"
-#include "engines/kotor/area.h"
+#include "src/engines/kotor/module.h"
+#include "src/engines/kotor/console.h"
+#include "src/engines/kotor/area.h"
 
 namespace Engines {
 

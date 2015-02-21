@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_SHADER_SHADERCODE_H
 #define GRAPHICS_SHADER_SHADERCODE_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Graphics {
 

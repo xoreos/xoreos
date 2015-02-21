@@ -22,13 +22,13 @@
  *  Handling BioWare's SSFs (sound set file).
  */
 
-#include "common/stream.h"
-#include "common/util.h"
-#include "common/encoding.h"
+#include "src/common/stream.h"
+#include "src/common/util.h"
+#include "src/common/encoding.h"
 
-#include "aurora/error.h"
-#include "aurora/resman.h"
-#include "aurora/ssffile.h"
+#include "src/aurora/error.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/ssffile.h"
 
 static const uint32 kSSFID     = MKTAG('S', 'S', 'F', ' ');
 static const uint32 kVersion1  = MKTAG('V', '1', '.', '0');

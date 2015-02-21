@@ -26,15 +26,15 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
-#include "common/error.h"
-#include "common/maths.h"
-#include "common/stream.h"
-#include "common/encoding.h"
+#include "src/common/error.h"
+#include "src/common/maths.h"
+#include "src/common/stream.h"
+#include "src/common/encoding.h"
 
-#include "aurora/types.h"
-#include "aurora/resman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/model_jade.h"
+#include "src/graphics/aurora/model_jade.h"
 
 enum NodeType {
 	kNodeTypeNode             = 0x00000001,

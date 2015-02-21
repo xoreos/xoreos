@@ -22,22 +22,22 @@
  *  NWN2 creature.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
 
-#include "aurora/types.h"
-#include "aurora/locstring.h"
-#include "aurora/gfffile.h"
-#include "aurora/2dafile.h"
-#include "aurora/2dareg.h"
+#include "src/aurora/types.h"
+#include "src/aurora/locstring.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
 
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn2/util.h"
-#include "engines/nwn2/creature.h"
+#include "src/engines/nwn2/util.h"
+#include "src/engines/nwn2/creature.h"
 
 namespace Engines {
 

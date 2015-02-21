@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR2_GUI_WIDGETS_KOTORWIDGET_H
 #define ENGINES_KOTOR2_GUI_WIDGETS_KOTORWIDGET_H
 
-#include "engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
 

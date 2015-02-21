@@ -27,10 +27,10 @@
 
 #include <map>
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "aurora/nwscript/variablecontainer.h"
+#include "src/aurora/nwscript/variablecontainer.h"
 
 namespace Aurora {
 

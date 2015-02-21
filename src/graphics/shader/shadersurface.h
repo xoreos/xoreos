@@ -25,8 +25,8 @@
 #ifndef GRAPHICS_SHADER_SHADERSURFACE_H
 #define GRAPHICS_SHADER_SHADERSURFACE_H
 
-#include "graphics/shader/shader.h"
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/shader/shader.h"
+#include "src/graphics/aurora/textureman.h"
 
 namespace Graphics {
 

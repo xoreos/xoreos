@@ -27,19 +27,19 @@
 
 #include <boost/function.hpp>
 
-#include "common/types.h"
-#include "common/error.h"
-#include "common/ustring.h"
-#include "common/file.h"
+#include "src/common/types.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
+#include "src/common/file.h"
 
-#include "events/types.h"
-#include "events/notifyable.h"
+#include "src/events/types.h"
+#include "src/events/notifyable.h"
 
-#include "graphics/types.h"
-#include "graphics/guifrontelement.h"
+#include "src/graphics/types.h"
+#include "src/graphics/guifrontelement.h"
 
-#include "graphics/aurora/types.h"
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/types.h"
+#include "src/graphics/aurora/fontman.h"
 
 namespace Common {
 	class ReadLine;

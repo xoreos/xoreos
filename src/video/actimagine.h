@@ -25,7 +25,7 @@
 #ifndef VIDEO_ACTIMAGINE_H
 #define VIDEO_ACTIMAGINE_H
 
-#include "video/decoder.h"
+#include "src/video/decoder.h"
 
 namespace Common {
 	class SeekableReadStream;

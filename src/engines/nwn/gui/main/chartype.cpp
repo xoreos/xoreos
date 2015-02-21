@@ -22,10 +22,10 @@
  *  The new/premade character selection menu.
  */
 
-#include "engines/nwn/gui/chargen/chargen.h"
+#include "src/engines/nwn/gui/chargen/chargen.h"
 
-#include "engines/nwn/gui/main/chartype.h"
-#include "engines/nwn/gui/main/charpremade.h"
+#include "src/engines/nwn/gui/main/chartype.h"
+#include "src/engines/nwn/gui/main/charpremade.h"
 
 namespace Engines {
 

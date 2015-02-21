@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_GLCONTAINER_H
 #define GRAPHICS_GLCONTAINER_H
 
-#include "graphics/queueable.h"
+#include "src/graphics/queueable.h"
 
 namespace Graphics {
 

@@ -25,9 +25,9 @@
 #ifndef ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
 #define ENGINES_KOTOR_GUI_WIDGETS_BUTTON_H
 
-#include "sound/types.h"
+#include "src/sound/types.h"
 
-#include "engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
 

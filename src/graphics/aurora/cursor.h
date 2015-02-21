@@ -25,11 +25,11 @@
 #ifndef GRAPHICS_AURORA_CURSOR_H
 #define GRAPHICS_AURORA_CURSOR_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "graphics/cursor.h"
+#include "src/graphics/cursor.h"
 
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/textureman.h"
 
 namespace Graphics {
 

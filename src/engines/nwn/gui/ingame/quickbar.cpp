@@ -22,19 +22,19 @@
  *  The ingame quickbar.
  */
 
-#include "common/system.h"
-#include "common/error.h"
+#include "src/common/system.h"
+#include "src/common/error.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
 
-#include "engines/nwn/gui/ingame/quickbar.h"
+#include "src/engines/nwn/gui/ingame/quickbar.h"
 
 namespace Engines {
 

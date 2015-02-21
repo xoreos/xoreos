@@ -22,7 +22,7 @@
  *  A NWN label widget.
  */
 
-#include "engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/label.h"
 
 namespace Engines {
 

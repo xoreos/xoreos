@@ -22,15 +22,15 @@
  *  BioWare's Packed Layered Texture.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/images/tga.h"
+#include "src/graphics/images/tga.h"
 
-#include "graphics/aurora/pltfile.h"
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/pltfile.h"
+#include "src/graphics/aurora/texture.h"
 
 static const uint32 kPLTID     = MKTAG('P', 'L', 'T', ' ');
 static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');

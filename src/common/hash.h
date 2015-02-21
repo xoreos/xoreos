@@ -25,8 +25,8 @@
 #ifndef COMMON_HASH_H
 #define COMMON_HASH_H
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
 namespace Common {
 

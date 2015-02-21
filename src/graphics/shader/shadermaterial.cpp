@@ -22,7 +22,7 @@
  *  Shader material, responsible for tracking data relating to a fragment shader.
  */
 
-#include "graphics/shader/shadermaterial.h"
+#include "src/graphics/shader/shadermaterial.h"
 
 namespace Graphics {
 

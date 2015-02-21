@@ -27,15 +27,15 @@
 #include <sstream>
 #include <stdlib.h>
 
-#include "common/version.h"
-#include "common/util.h"
-#include "common/file.h"
-#include "common/transmatrix.h"
+#include "src/common/version.h"
+#include "src/common/util.h"
+#include "src/common/file.h"
+#include "src/common/transmatrix.h"
 
-#include "graphics/shader/shader.h"
-#include "graphics/shader/shadercode.h"
+#include "src/graphics/shader/shader.h"
+#include "src/graphics/shader/shadercode.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
 /*--------------------------------------------------------------------*/
 

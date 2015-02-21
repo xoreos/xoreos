@@ -22,9 +22,9 @@
  *  Engine utility functions for camera handling.
  */
 
-#include "graphics/camera.h"
+#include "src/graphics/camera.h"
 
-#include "engines/aurora/camera.h"
+#include "src/engines/aurora/camera.h"
 
 namespace Engines {
 

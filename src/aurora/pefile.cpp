@@ -22,14 +22,14 @@
  *  A portable executable archive.
  */
 
-#include "common/error.h"
-#include "common/ustring.h"
-#include "common/file.h"
-#include "common/pe_exe.h"
-#include "common/filepath.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
+#include "src/common/file.h"
+#include "src/common/pe_exe.h"
+#include "src/common/filepath.h"
 
-#include "aurora/pefile.h"
-#include "aurora/util.h"
+#include "src/aurora/pefile.h"
+#include "src/aurora/util.h"
 
 namespace Aurora {
 

@@ -22,16 +22,16 @@
  *  Handling BioWare's DLGs (dialog / conversation files).
  */
 
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/resman.h"
-#include "aurora/gfffile.h"
-#include "aurora/dlgfile.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/dlgfile.h"
 
-#include "aurora/nwscript/types.h"
-#include "aurora/nwscript/variable.h"
-#include "aurora/nwscript/ncsfile.h"
+#include "src/aurora/nwscript/types.h"
+#include "src/aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/ncsfile.h"
 
 static const uint32 kDLGID = MKTAG('D', 'L', 'G', ' ');
 

@@ -28,7 +28,7 @@
 #ifndef COMMON_RDFT_H
 #define COMMON_RDFT_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Common {
 

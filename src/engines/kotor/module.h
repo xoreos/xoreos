@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR_MODULE_H
 #define ENGINES_KOTOR_MODULE_H
 
-#include "common/ustring.h"
-#include "common/configman.h"
+#include "src/common/ustring.h"
+#include "src/common/configman.h"
 
-#include "aurora/resman.h"
-#include "aurora/ifofile.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/ifofile.h"
 
-#include "events/types.h"
+#include "src/events/types.h"
 
 namespace Engines {
 

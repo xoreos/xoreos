@@ -25,9 +25,9 @@
 #ifndef ENGINES_NWN_VERSION_H
 #define ENGINES_NWN_VERSION_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
 namespace Common {
 	class UString;

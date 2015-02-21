@@ -25,7 +25,7 @@
 #ifndef SOUND_TYPES_H
 #define SOUND_TYPES_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Sound {
 

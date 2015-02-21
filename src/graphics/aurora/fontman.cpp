@@ -22,13 +22,13 @@
  *  The Aurora font manager.
  */
 
-#include "common/error.h"
-#include "common/systemfonts.h"
+#include "src/common/error.h"
+#include "src/common/systemfonts.h"
 
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/texturefont.h"
-#include "graphics/aurora/abcfont.h"
-#include "graphics/aurora/ttffont.h"
+#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/texturefont.h"
+#include "src/graphics/aurora/abcfont.h"
+#include "src/graphics/aurora/ttffont.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::FontManager)
 

@@ -22,9 +22,9 @@
  *  Handling various archive files.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "aurora/archive.h"
+#include "src/aurora/archive.h"
 
 namespace Aurora {
 

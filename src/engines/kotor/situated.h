@@ -25,11 +25,11 @@
 #ifndef ENGINES_KOTOR_SITUATED_H
 #define ENGINES_KOTOR_SITUATED_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/kotor/object.h"
+#include "src/engines/kotor/object.h"
 
 namespace Engines {
 

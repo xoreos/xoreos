@@ -31,11 +31,11 @@
 
 #include <boost/function.hpp>
 
-#include "common/types.h"
-#include "common/singleton.h"
-#include "common/mutex.h"
+#include "src/common/types.h"
+#include "src/common/singleton.h"
+#include "src/common/mutex.h"
 
-#include "events/types.h"
+#include "src/events/types.h"
 
 namespace Events {
 

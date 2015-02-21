@@ -25,9 +25,9 @@
 #ifndef ENGINES_NWN_GUI_DIALOGS_OKCANCEL_H
 #define ENGINES_NWN_GUI_DIALOGS_OKCANCEL_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
 

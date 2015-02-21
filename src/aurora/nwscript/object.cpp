@@ -22,10 +22,10 @@
  *  An NWScript object.
  */
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "aurora/nwscript/object.h"
-#include "aurora/nwscript/objectcontainer.h"
+#include "src/aurora/nwscript/object.h"
+#include "src/aurora/nwscript/objectcontainer.h"
 
 namespace Aurora {
 

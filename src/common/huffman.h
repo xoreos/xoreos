@@ -28,7 +28,7 @@
 #include <vector>
 #include <list>
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Common {
 

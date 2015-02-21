@@ -25,7 +25,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "graphics/vertexbuffer.h"
+#include "src/graphics/vertexbuffer.h"
 
 namespace Graphics {
 

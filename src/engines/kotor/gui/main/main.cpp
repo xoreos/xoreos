@@ -22,19 +22,19 @@
  *  The KotOR main menu.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/kotor/module.h"
+#include "src/engines/kotor/module.h"
 
-#include "engines/kotor/gui/main/main.h"
-#include "engines/kotor/gui/main/movies.h"
-#include "engines/kotor/gui/main/options.h"
+#include "src/engines/kotor/gui/main/main.h"
+#include "src/engines/kotor/gui/main/movies.h"
+#include "src/engines/kotor/gui/main/options.h"
 
-#include "gui/widgets/button.h"
+#include "src/engines/kotor/gui/widgets/button.h"
 
 namespace Engines {
 

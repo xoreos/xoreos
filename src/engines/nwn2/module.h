@@ -27,15 +27,15 @@
 
 #include <vector>
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/resman.h"
-#include "aurora/ifofile.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/ifofile.h"
 
-#include "aurora/nwscript/object.h"
-#include "aurora/nwscript/objectcontainer.h"
+#include "src/aurora/nwscript/object.h"
+#include "src/aurora/nwscript/objectcontainer.h"
 
-#include "events/types.h"
+#include "src/events/types.h"
 
 namespace Engines {
 

@@ -50,7 +50,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "common/uuid.h"
+#include "src/common/uuid.h"
 
 namespace Common {
 

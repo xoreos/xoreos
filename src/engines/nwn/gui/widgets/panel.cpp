@@ -22,7 +22,7 @@
  *  A NWN panel widget.
  */
 
-#include "engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
 
 namespace Engines {
 

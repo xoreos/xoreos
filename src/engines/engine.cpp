@@ -22,7 +22,7 @@
  *  Generic engine interface.
  */
 
-#include "engines/engine.h"
+#include "src/engines/engine.h"
 
 namespace Engines {
 

@@ -24,20 +24,20 @@
 
 #include <boost/bind.hpp>
 
-#include "common/ustring.h"
-#include "common/util.h"
-#include "common/configman.h"
+#include "src/common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/configman.h"
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fontman.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "engines/nwn/console.h"
-#include "engines/nwn/nwn.h"
-#include "engines/nwn/module.h"
-#include "engines/nwn/area.h"
+#include "src/engines/nwn/console.h"
+#include "src/engines/nwn/nwn.h"
+#include "src/engines/nwn/module.h"
+#include "src/engines/nwn/area.h"
 
 static const int kCampaignNames[] = {
 	10314 , 5557  , 5558  , 5559, 5560,

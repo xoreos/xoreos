@@ -22,30 +22,30 @@
  *  An area.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/resman.h"
-#include "aurora/locstring.h"
-#include "aurora/gfffile.h"
-#include "aurora/2dafile.h"
-#include "aurora/2dareg.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/locstring.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
 
-#include "graphics/graphics.h"
-#include "graphics/renderable.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/renderable.h"
 
-#include "graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/cursorman.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "engines/kotor/area.h"
-#include "engines/kotor/room.h"
-#include "engines/kotor/placeable.h"
-#include "engines/kotor/door.h"
-#include "engines/kotor/creature.h"
+#include "src/engines/kotor/area.h"
+#include "src/engines/kotor/room.h"
+#include "src/engines/kotor/placeable.h"
+#include "src/engines/kotor/door.h"
+#include "src/engines/kotor/creature.h"
 
 namespace Engines {
 

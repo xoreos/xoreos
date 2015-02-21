@@ -30,7 +30,7 @@
 #ifndef COMMON_FFT_H
 #define COMMON_FFT_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Common {
 

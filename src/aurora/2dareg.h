@@ -27,10 +27,10 @@
 
 #include <map>
 
-#include "common/ustring.h"
-#include "common/singleton.h"
+#include "src/common/ustring.h"
+#include "src/common/singleton.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
 namespace Aurora {
 

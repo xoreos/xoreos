@@ -27,14 +27,14 @@
 
 #include <lzma.h>
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/stream.h"
-#include "common/file.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
+#include "src/common/file.h"
 
-#include "aurora/bzffile.h"
-#include "aurora/keyfile.h"
-#include "aurora/error.h"
+#include "src/aurora/bzffile.h"
+#include "src/aurora/keyfile.h"
+#include "src/aurora/error.h"
 
 static const uint32 kBZFID     = MKTAG('B', 'I', 'F', 'F');
 static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');

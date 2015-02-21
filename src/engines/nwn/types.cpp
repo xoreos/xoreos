@@ -22,7 +22,7 @@
  *  Basic NWN type definitions.
  */
 
-#include "engines/nwn/types.h"
+#include "src/engines/nwn/types.h"
 
 namespace Engines {
 

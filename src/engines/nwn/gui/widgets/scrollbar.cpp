@@ -22,12 +22,12 @@
  *  The GUI scrollbar model.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "engines/nwn/gui/widgets/scrollbar.h"
+#include "src/engines/nwn/gui/widgets/scrollbar.h"
 
 namespace Engines {
 

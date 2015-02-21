@@ -25,12 +25,12 @@
 #ifndef ENGINES_DRAGONAGE2_DRAGONAGE2_H
 #define ENGINES_DRAGONAGE2_DRAGONAGE2_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "engines/engine.h"
-#include "engines/engineprobe.h"
+#include "src/engines/engine.h"
+#include "src/engines/engineprobe.h"
 
 namespace Common {
 	class FileList;

@@ -22,9 +22,9 @@
  *  An NWScript variable container.
  */
 
-#include "common/error.h"
+#include "src/common/error.h"
 
-#include "aurora/nwscript/variablecontainer.h"
+#include "src/aurora/nwscript/variablecontainer.h"
 
 namespace Aurora {
 

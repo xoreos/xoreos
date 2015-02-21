@@ -25,13 +25,13 @@
 #ifndef GRAPHICS_AURORA_TEXT_H
 #define GRAPHICS_AURORA_TEXT_H
 
-#include "common/ustring.h"
-#include "common/maths.h"
+#include "src/common/ustring.h"
+#include "src/common/maths.h"
 
-#include "graphics/types.h"
-#include "graphics/guifrontelement.h"
+#include "src/graphics/types.h"
+#include "src/graphics/guifrontelement.h"
 
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fontman.h"
 
 namespace Graphics {
 

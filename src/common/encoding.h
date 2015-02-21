@@ -25,7 +25,7 @@
 #ifndef COMMON_ENCODING_H
 #define COMMON_ENCODING_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Common {
 

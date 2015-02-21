@@ -22,17 +22,17 @@
  *  Handling BioWare's GFFs (generic file format).
  */
 
-#include "common/endianness.h"
-#include "common/error.h"
-#include "common/stream.h"
-#include "common/encoding.h"
-#include "common/ustring.h"
+#include "src/common/endianness.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
+#include "src/common/encoding.h"
+#include "src/common/ustring.h"
 
-#include "aurora/gfffile.h"
-#include "aurora/error.h"
-#include "aurora/util.h"
-#include "aurora/locstring.h"
-#include "aurora/resman.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/error.h"
+#include "src/aurora/util.h"
+#include "src/aurora/locstring.h"
+#include "src/aurora/resman.h"
 
 static const uint32 kVersion32 = MKTAG('V', '3', '.', '2');
 static const uint32 kVersion33 = MKTAG('V', '3', '.', '3'); // Found in The Witcher, different language table

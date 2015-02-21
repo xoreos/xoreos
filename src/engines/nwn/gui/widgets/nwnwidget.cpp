@@ -24,10 +24,10 @@
 
 #include <boost/bind.hpp>
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "engines/nwn/gui/widgets/nwnwidget.h"
-#include "engines/nwn/gui/widgets/tooltip.h"
+#include "src/engines/nwn/gui/widgets/nwnwidget.h"
+#include "src/engines/nwn/gui/widgets/tooltip.h"
 
 namespace Engines {
 

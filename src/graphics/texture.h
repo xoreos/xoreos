@@ -25,9 +25,9 @@
 #ifndef GRAPHICS_TEXTURE_H
 #define GRAPHICS_TEXTURE_H
 
-#include "graphics/types.h"
-#include "graphics/glcontainer.h"
-#include "graphics/queueable.h"
+#include "src/graphics/types.h"
+#include "src/graphics/glcontainer.h"
+#include "src/graphics/queueable.h"
 
 namespace Graphics {
 

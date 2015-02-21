@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
 namespace Graphics {
 

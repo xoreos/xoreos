@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_GRIDBOX_H
 #define ENGINES_NWN_GUI_WIDGETS_GRIDBOX_H
 
-#include "engines/nwn/gui/widgets/listbox.h"
+#include "src/engines/nwn/gui/widgets/listbox.h"
 
 namespace Common {
 class UString;

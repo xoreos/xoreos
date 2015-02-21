@@ -22,9 +22,9 @@
  *  The Jade Empire main menu.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "engines/jade/gui/main/main.h"
+#include "src/engines/jade/gui/main/main.h"
 
 namespace Engines {
 

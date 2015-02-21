@@ -22,17 +22,17 @@
  *  The options menu.
  */
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/kotor/gui/main/options.h"
-#include "engines/kotor/gui/options/gameplay.h"
-#include "engines/kotor/gui/options/feedback.h"
-#include "engines/kotor/gui/options/autopause.h"
-#include "engines/kotor/gui/options/graphics.h"
-#include "engines/kotor/gui/options/sound.h"
+#include "src/engines/kotor/gui/main/options.h"
+#include "src/engines/kotor/gui/options/gameplay.h"
+#include "src/engines/kotor/gui/options/feedback.h"
+#include "src/engines/kotor/gui/options/autopause.h"
+#include "src/engines/kotor/gui/options/graphics.h"
+#include "src/engines/kotor/gui/options/sound.h"
 
-#include "gui/widgets/button.h"
-#include "gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/widgets/button.h"
+#include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
 

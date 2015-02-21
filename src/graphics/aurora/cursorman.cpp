@@ -22,13 +22,13 @@
  *  The Aurora cursor manager.
  */
 
-#include "common/util.h"
-#include "common/error.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
 
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/cursor.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/cursor.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::CursorManager)
 

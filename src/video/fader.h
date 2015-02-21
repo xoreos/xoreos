@@ -25,7 +25,7 @@
 #ifndef VIDEO_FADER_H
 #define VIDEO_FADER_H
 
-#include "video/decoder.h"
+#include "src/video/decoder.h"
 
 namespace Video {
 

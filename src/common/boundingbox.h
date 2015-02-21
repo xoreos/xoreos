@@ -25,7 +25,7 @@
 #ifndef COMMON_BOUNDINGBOX_H
 #define COMMON_BOUNDINGBOX_H
 
-#include "common/transmatrix.h"
+#include "src/common/transmatrix.h"
 
 namespace Common {
 

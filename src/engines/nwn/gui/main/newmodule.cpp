@@ -22,21 +22,21 @@
  *  The new module menu.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "graphics/font.h"
+#include "src/graphics/font.h"
 
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn/module.h"
-#include "engines/nwn/nwn.h"
+#include "src/engines/nwn/module.h"
+#include "src/engines/nwn/nwn.h"
 
-#include "engines/nwn/gui/main/newmodule.h"
+#include "src/engines/nwn/gui/main/newmodule.h"
 
 namespace Engines {
 

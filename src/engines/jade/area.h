@@ -28,14 +28,14 @@
 #include <list>
 #include <map>
 
-#include "common/ustring.h"
-#include "common/mutex.h"
+#include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
-#include "aurora/lytfile.h"
-#include "aurora/visfile.h"
+#include "src/aurora/lytfile.h"
+#include "src/aurora/visfile.h"
 
-#include "events/types.h"
-#include "events/notifyable.h"
+#include "src/events/types.h"
+#include "src/events/notifyable.h"
 
 namespace Engines {
 

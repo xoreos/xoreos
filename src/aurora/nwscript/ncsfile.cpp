@@ -22,19 +22,19 @@
  *  Handling BioWare's NWN Compiled Scripts.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
-#include "common/ustring.h"
-#include "common/stream.h"
-#include "common/encoding.h"
-#include "common/debug.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
+#include "src/common/ustring.h"
+#include "src/common/stream.h"
+#include "src/common/encoding.h"
+#include "src/common/debug.h"
 
-#include "aurora/error.h"
-#include "aurora/resman.h"
+#include "src/aurora/error.h"
+#include "src/aurora/resman.h"
 
-#include "aurora/nwscript/ncsfile.h"
-#include "aurora/nwscript/object.h"
-#include "aurora/nwscript/functionman.h"
+#include "src/aurora/nwscript/ncsfile.h"
+#include "src/aurora/nwscript/object.h"
+#include "src/aurora/nwscript/functionman.h"
 
 using Common::kDebugScripts;
 

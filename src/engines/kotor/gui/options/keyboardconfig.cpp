@@ -22,9 +22,9 @@
  *  The keyboard mapping menu.
  */
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/kotor/gui/options/keyboardconfig.h"
+#include "src/engines/kotor/gui/options/keyboardconfig.h"
 
 namespace Engines {
 

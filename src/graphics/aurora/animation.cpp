@@ -22,16 +22,16 @@
  *  An animation to be applied to a model.
  */
 
-#include "common/stream.h"
-#include "common/debug.h"
+#include "src/common/stream.h"
+#include "src/common/debug.h"
 
-#include "graphics/graphics.h"
-#include "graphics/camera.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/camera.h"
 
-#include "graphics/aurora/model.h"
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/animation.h"
-#include "graphics/aurora/animnode.h"
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/animation.h"
+#include "src/graphics/aurora/animnode.h"
 
 using Common::kDebugGraphics;
 

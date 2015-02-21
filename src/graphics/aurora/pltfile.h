@@ -25,13 +25,13 @@
 #ifndef GRAPHICS_AURORA_PLTFILE_H
 #define GRAPHICS_AURORA_PLTFILE_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/aurorafile.h"
+#include "src/aurora/aurorafile.h"
 
-#include "graphics/images/decoder.h"
+#include "src/graphics/images/decoder.h"
 
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/textureman.h"
 
 namespace Graphics {
 

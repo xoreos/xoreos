@@ -30,13 +30,13 @@
 #include <vector>
 #include <map>
 
-#include "common/types.h"
-#include "common/ustring.h"
-#include "common/singleton.h"
-#include "common/filelist.h"
-#include "common/hash.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
+#include "src/common/singleton.h"
+#include "src/common/filelist.h"
+#include "src/common/hash.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
 namespace Common {
 	class SeekableReadStream;

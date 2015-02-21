@@ -22,13 +22,13 @@
  *  A simple model object within a Jade Empire area, guided by a state machine.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/jade/artplaceable.h"
+#include "src/engines/jade/artplaceable.h"
 
 namespace Engines {
 

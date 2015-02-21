@@ -25,15 +25,15 @@
 #ifndef ENGINES_NWN2_CREATURE_H
 #define ENGINES_NWN2_CREATURE_H
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/nwn2/types.h"
-#include "engines/nwn2/object.h"
+#include "src/engines/nwn2/types.h"
+#include "src/engines/nwn2/object.h"
 
 namespace Engines {
 

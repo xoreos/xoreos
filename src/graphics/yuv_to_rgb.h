@@ -25,8 +25,8 @@
 #ifndef GRAPHICS_YUV_TO_RGB_H
 #define GRAPHICS_YUV_TO_RGB_H
 
-#include "common/singleton.h"
-#include "graphics/types.h"
+#include "src/common/singleton.h"
+#include "src/graphics/types.h"
 
 namespace Graphics {
 

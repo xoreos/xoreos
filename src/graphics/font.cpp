@@ -22,11 +22,11 @@
  *  A font.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
 
-#include "graphics/types.h"
-#include "graphics/font.h"
+#include "src/graphics/types.h"
+#include "src/graphics/font.h"
 
 namespace Graphics {
 

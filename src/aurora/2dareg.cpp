@@ -22,12 +22,12 @@
  *  The global 2DA registry.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/2dareg.h"
-#include "aurora/2dafile.h"
-#include "aurora/resman.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/resman.h"
 
 DECLARE_SINGLETON(Aurora::TwoDARegistry)
 

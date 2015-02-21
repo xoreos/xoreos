@@ -30,7 +30,7 @@
 
 #include <cassert>
 
-#include "graphics/icon.h"
+#include "src/graphics/icon.h"
 
 namespace Graphics {
 

@@ -22,8 +22,8 @@
  *  A "normal" renderable game object.
  */
 
-#include "graphics/object.h"
-#include "graphics/graphics.h"
+#include "src/graphics/object.h"
+#include "src/graphics/graphics.h"
 
 namespace Graphics {
 

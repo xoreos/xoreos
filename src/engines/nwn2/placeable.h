@@ -25,9 +25,9 @@
 #ifndef ENGINES_NWN2_PLACEABLE_H
 #define ENGINES_NWN2_PLACEABLE_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "engines/nwn2/situated.h"
+#include "src/engines/nwn2/situated.h"
 
 namespace Engines {
 

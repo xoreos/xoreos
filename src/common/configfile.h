@@ -29,8 +29,8 @@
 
 #include <list>
 
-#include "common/ustring.h"
-#include "common/stringmap.h"
+#include "src/common/ustring.h"
+#include "src/common/stringmap.h"
 
 namespace Common {
 

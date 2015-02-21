@@ -25,8 +25,8 @@
 #include <cstdarg>
 #include <cstdio>
 
-#include "common/error.h"
-#include "common/util.h"
+#include "src/common/error.h"
+#include "src/common/util.h"
 
 namespace Common {
 

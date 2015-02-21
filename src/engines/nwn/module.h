@@ -29,21 +29,21 @@
 #include <set>
 #include <map>
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/resman.h"
-#include "aurora/ifofile.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/ifofile.h"
 
-#include "aurora/nwscript/object.h"
-#include "aurora/nwscript/objectcontainer.h"
+#include "src/aurora/nwscript/object.h"
+#include "src/aurora/nwscript/objectcontainer.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "events/types.h"
+#include "src/events/types.h"
 
-#include "engines/nwn/creature.h"
+#include "src/engines/nwn/creature.h"
 
-#include "engines/nwn/script/container.h"
+#include "src/engines/nwn/script/container.h"
 
 namespace Engines {
 

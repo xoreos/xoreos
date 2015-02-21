@@ -25,8 +25,8 @@
 #ifndef SOUND_DECODERS_UTIL_H
 #define SOUND_DECODERS_UTIL_H
 
-#include "common/types.h"
-#include "common/util.h"
+#include "src/common/types.h"
+#include "src/common/util.h"
 
 namespace Sound {
 

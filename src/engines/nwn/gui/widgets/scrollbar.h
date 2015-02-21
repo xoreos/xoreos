@@ -27,11 +27,11 @@
 
 #include <vector>
 
-#include "graphics/guifrontelement.h"
+#include "src/graphics/guifrontelement.h"
 
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/textureman.h"
 
-#include "engines/nwn/gui/widgets/nwnwidget.h"
+#include "src/engines/nwn/gui/widgets/nwnwidget.h"
 
 namespace Engines {
 

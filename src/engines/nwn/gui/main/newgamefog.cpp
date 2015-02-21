@@ -22,18 +22,18 @@
  *  The fog behind the new game dialogs.
  */
 
-#include "common/maths.h"
-#include "common/stream.h"
+#include "src/common/maths.h"
+#include "src/common/stream.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "graphics/aurora/model_nwn.h"
+#include "src/graphics/aurora/model_nwn.h"
 
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn/gui/main/newgamefog.h"
+#include "src/engines/nwn/gui/main/newgamefog.h"
 
 namespace Engines {
 

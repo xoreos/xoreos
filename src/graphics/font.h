@@ -27,9 +27,9 @@
 
 #include <vector>
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
 namespace Graphics {
 

@@ -22,18 +22,18 @@
  *  The context holding an NWN2 campaign.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/file.h"
-#include "common/filepath.h"
-#include "common/filelist.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/file.h"
+#include "src/common/filepath.h"
+#include "src/common/filelist.h"
 
-#include "aurora/gfffile.h"
+#include "src/aurora/gfffile.h"
 
-#include "engines/aurora/resources.h"
+#include "src/engines/aurora/resources.h"
 
-#include "engines/nwn2/campaign.h"
-#include "engines/nwn2/console.h"
+#include "src/engines/nwn2/campaign.h"
+#include "src/engines/nwn2/console.h"
 
 namespace Engines {
 

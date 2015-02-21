@@ -25,9 +25,9 @@
 #ifndef AURORA_NWSCRIPT_OBJECTCONTAINER_H
 #define AURORA_NWSCRIPT_OBJECTCONTAINER_H
 
-#include "common/mutex.h"
+#include "src/common/mutex.h"
 
-#include "aurora/nwscript/object.h"
+#include "src/aurora/nwscript/object.h"
 
 namespace Aurora {
 

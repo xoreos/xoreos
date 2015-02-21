@@ -22,9 +22,9 @@
  *  A NWN character info panel.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "engines/nwn/gui/ingame/charinfo.h"
+#include "src/engines/nwn/gui/ingame/charinfo.h"
 
 namespace Engines {
 

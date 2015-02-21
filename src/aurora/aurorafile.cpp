@@ -22,11 +22,11 @@
  *  Utility class for handling special data structures found in BioWare's Aurora files.
  */
 
-#include "common/stream.h"
-#include "common/strutil.h"
-#include "common/ustring.h"
+#include "src/common/stream.h"
+#include "src/common/strutil.h"
+#include "src/common/ustring.h"
 
-#include "aurora/aurorafile.h"
+#include "src/aurora/aurorafile.h"
 
 namespace Aurora {
 

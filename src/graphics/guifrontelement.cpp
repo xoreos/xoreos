@@ -22,8 +22,8 @@
  *  A GUI element that is to be drawn in front of the normal objects.
  */
 
-#include "graphics/guifrontelement.h"
-#include "graphics/graphics.h"
+#include "src/graphics/guifrontelement.h"
+#include "src/graphics/graphics.h"
 
 namespace Graphics {
 

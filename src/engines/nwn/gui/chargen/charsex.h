@@ -25,7 +25,7 @@
 #ifndef  ENGINES_NWN_GUI_CHARGEN_CHARSEX_H
 #define  ENGINES_NWN_GUI_CHARGEN_CHARSEX_H
 
-#include "engines/nwn/gui/chargen/chargenbase.h"
+#include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
 

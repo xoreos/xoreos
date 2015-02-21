@@ -22,15 +22,15 @@
  *  A NWN model widget.
  */
 
-#include "common/error.h"
-#include "common/ustring.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
 
-#include "graphics/aurora/model.h"
-#include "graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/modelnode.h"
 
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn/gui/widgets/modelwidget.h"
+#include "src/engines/nwn/gui/widgets/modelwidget.h"
 
 namespace Engines {
 

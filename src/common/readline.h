@@ -29,10 +29,10 @@
 #include <set>
 #include <map>
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "events/types.h"
+#include "src/events/types.h"
 
 namespace Common {
 

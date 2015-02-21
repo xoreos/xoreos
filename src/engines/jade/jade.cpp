@@ -22,38 +22,38 @@
  *  Engine class handling Jade Empire
  */
 
-#include "common/util.h"
-#include "common/filelist.h"
-#include "common/filepath.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/filelist.h"
+#include "src/common/filepath.h"
+#include "src/common/configman.h"
 
-#include "aurora/util.h"
-#include "aurora/resman.h"
-#include "aurora/talkman.h"
+#include "src/aurora/util.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/talkman.h"
 
-#include "graphics/camera.h"
+#include "src/graphics/camera.h"
 
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/model.h"
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/fps.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fps.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/loadprogress.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
-#include "engines/aurora/camera.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/loadprogress.h"
+#include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/model.h"
+#include "src/engines/aurora/camera.h"
 
-#include "engines/jade/gui/main/main.h"
+#include "src/engines/jade/gui/main/main.h"
 
-#include "engines/jade/jade.h"
-#include "engines/jade/modelloader.h"
-#include "engines/jade/console.h"
-#include "engines/jade/module.h"
+#include "src/engines/jade/jade.h"
+#include "src/engines/jade/modelloader.h"
+#include "src/engines/jade/console.h"
+#include "src/engines/jade/module.h"
 
 namespace Engines {
 

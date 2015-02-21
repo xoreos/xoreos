@@ -22,7 +22,7 @@
  *  An object within a KotOR area.
  */
 
-#include "engines/kotor/object.h"
+#include "src/engines/kotor/object.h"
 
 namespace Engines {
 

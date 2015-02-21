@@ -27,11 +27,11 @@
 
 #include <map>
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
-#include "aurora/gfffile.h"
+#include "src/aurora/types.h"
+#include "src/aurora/gfffile.h"
 
 namespace Aurora {
 

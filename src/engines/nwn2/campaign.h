@@ -27,12 +27,12 @@
 
 #include <list>
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/locstring.h"
-#include "aurora/resman.h"
+#include "src/aurora/locstring.h"
+#include "src/aurora/resman.h"
 
-#include "engines/nwn2/module.h"
+#include "src/engines/nwn2/module.h"
 
 namespace Engines {
 

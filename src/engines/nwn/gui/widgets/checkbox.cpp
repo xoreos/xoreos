@@ -22,15 +22,15 @@
  *  A NWN checkbox widget.
  */
 
-#include "common/system.h"
-#include "common/ustring.h"
+#include "src/common/system.h"
+#include "src/common/ustring.h"
 
-#include "graphics/aurora/model.h"
-#include "graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/modelnode.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "engines/nwn/gui/widgets/checkbox.h"
+#include "src/engines/nwn/gui/widgets/checkbox.h"
 
 namespace Engines {
 

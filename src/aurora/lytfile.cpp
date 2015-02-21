@@ -22,12 +22,12 @@
  *  Handling BioWare's LYTs (Layout files).
  */
 
-#include "common/stream.h"
-#include "common/streamtokenizer.h"
-#include "common/util.h"
+#include "src/common/stream.h"
+#include "src/common/streamtokenizer.h"
+#include "src/common/util.h"
 
-#include "aurora/lytfile.h"
-#include "aurora/error.h"
+#include "src/aurora/lytfile.h"
+#include "src/aurora/error.h"
 
 namespace Aurora {
 

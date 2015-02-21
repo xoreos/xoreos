@@ -22,26 +22,26 @@
  *  A KotOR GUI.
  */
 
-#include "common/error.h"
-#include "common/util.h"
+#include "src/common/error.h"
+#include "src/common/util.h"
 
-#include "aurora/gfffile.h"
+#include "src/aurora/gfffile.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/cursorman.h"
 
-#include "engines/kotor/gui/widgets/panel.h"
-#include "engines/kotor/gui/widgets/label.h"
-#include "engines/kotor/gui/widgets/protoitem.h"
-#include "engines/kotor/gui/widgets/button.h"
-#include "engines/kotor/gui/widgets/checkbox.h"
-#include "engines/kotor/gui/widgets/slider.h"
-#include "engines/kotor/gui/widgets/scrollbar.h"
-#include "engines/kotor/gui/widgets/progressbar.h"
-#include "engines/kotor/gui/widgets/listbox.h"
+#include "src/engines/kotor/gui/widgets/panel.h"
+#include "src/engines/kotor/gui/widgets/label.h"
+#include "src/engines/kotor/gui/widgets/protoitem.h"
+#include "src/engines/kotor/gui/widgets/button.h"
+#include "src/engines/kotor/gui/widgets/checkbox.h"
+#include "src/engines/kotor/gui/widgets/slider.h"
+#include "src/engines/kotor/gui/widgets/scrollbar.h"
+#include "src/engines/kotor/gui/widgets/progressbar.h"
+#include "src/engines/kotor/gui/widgets/listbox.h"
 
-#include "engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
 

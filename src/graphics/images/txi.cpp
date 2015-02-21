@@ -24,13 +24,13 @@
 
 #include <cstdio>
 
-#include "common/error.h"
-#include "common/strutil.h"
-#include "common/stream.h"
-#include "common/encoding.h"
+#include "src/common/error.h"
+#include "src/common/strutil.h"
+#include "src/common/stream.h"
+#include "src/common/encoding.h"
 
-#include "graphics/images/txi.h"
-#include "graphics/images/txitypes.h"
+#include "src/graphics/images/txi.h"
+#include "src/graphics/images/txitypes.h"
 
 static const char *kBlendings[] = { "default", "additive", "punchthrough" };
 

@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_IMAGES_TXITYPES_H
 #define GRAPHICS_IMAGES_TXITYPES_H
 
-#include "common/util.h"
+#include "src/common/util.h"
 
 namespace Common {
 	class UString;

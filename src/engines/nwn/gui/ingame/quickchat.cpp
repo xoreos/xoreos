@@ -22,19 +22,19 @@
  *  The NWN ingame quickchat.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/nwn/gui/widgets/panel.h"
-#include "engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/label.h"
 
-#include "engines/nwn/gui/ingame/quickchat.h"
+#include "src/engines/nwn/gui/ingame/quickchat.h"
 
 namespace Engines {
 

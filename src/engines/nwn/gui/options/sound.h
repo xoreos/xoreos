@@ -25,9 +25,9 @@
 #ifndef ENGINES_NWN_GUI_OPTIONS_SOUND_H
 #define ENGINES_NWN_GUI_OPTIONS_SOUND_H
 
-#include "sound/types.h"
+#include "src/sound/types.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
 

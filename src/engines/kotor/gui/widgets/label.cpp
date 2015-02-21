@@ -22,11 +22,11 @@
  *  A KotOR label widget.
  */
 
-#include "aurora/gfffile.h"
+#include "src/aurora/gfffile.h"
 
-#include "graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/guiquad.h"
 
-#include "engines/kotor/gui/widgets/label.h"
+#include "src/engines/kotor/gui/widgets/label.h"
 
 namespace Engines {
 

@@ -27,10 +27,10 @@
 
 #include <vector>
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "aurora/types.h"
-#include "aurora/archive.h"
+#include "src/aurora/types.h"
+#include "src/aurora/archive.h"
 
 namespace Common {
 	class UString;

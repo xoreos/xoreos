@@ -22,10 +22,10 @@
  *  Decoding Actimagine videos.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "video/actimagine.h"
+#include "src/video/actimagine.h"
 
 namespace Video {
 

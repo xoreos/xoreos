@@ -22,7 +22,7 @@
  *  Mathematical helpers.
  */
 
-#include "common/maths.h"
+#include "src/common/maths.h"
 
 namespace Common {
 

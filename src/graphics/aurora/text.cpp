@@ -22,12 +22,12 @@
  *  A text object.
  */
 
-#include "events/requests.h"
+#include "src/events/requests.h"
 
-#include "graphics/graphics.h"
-#include "graphics/font.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/font.h"
 
-#include "graphics/aurora/text.h"
+#include "src/graphics/aurora/text.h"
 
 namespace Graphics {
 

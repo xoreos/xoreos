@@ -22,8 +22,8 @@
  *  The graphics queue manager.
  */
 
-#include "graphics/queueman.h"
-#include "graphics/queueable.h"
+#include "src/graphics/queueman.h"
+#include "src/graphics/queueable.h"
 
 DECLARE_SINGLETON(Graphics::QueueManager)
 

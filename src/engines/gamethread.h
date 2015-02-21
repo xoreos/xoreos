@@ -25,8 +25,8 @@
 #ifndef ENGINES_GAMETHREAD_H
 #define ENGINES_GAMETHREAD_H
 
-#include "common/ustring.h"
-#include "common/thread.h"
+#include "src/common/ustring.h"
+#include "src/common/thread.h"
 
 namespace Engines {
 

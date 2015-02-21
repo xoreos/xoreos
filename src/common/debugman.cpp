@@ -28,10 +28,10 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "common/maths.h"
-#include "common/util.h"
-#include "common/filepath.h"
-#include "common/debugman.h"
+#include "src/common/maths.h"
+#include "src/common/util.h"
+#include "src/common/filepath.h"
+#include "src/common/debugman.h"
 
 // boost-date_time stuff
 using boost::posix_time::ptime;

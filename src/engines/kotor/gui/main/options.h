@@ -25,11 +25,11 @@
 #ifndef ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
 #define ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
 
-#include "engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/gui.h"
 
-#include "graphics/aurora/highlightable.h"
+#include "src/graphics/aurora/highlightable.h"
 
-#include "gui/options/gameplay.h"
+#include "src/engines/kotor/gui/options/gameplay.h"
 
 namespace Engines {
 

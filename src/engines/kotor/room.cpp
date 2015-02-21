@@ -22,14 +22,14 @@
  *  A room within a KotOR area.
  */
 
-#include "common/error.h"
-#include "common/ustring.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
 
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/kotor/room.h"
+#include "src/engines/kotor/room.h"
 
 namespace Engines {
 

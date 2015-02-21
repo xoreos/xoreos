@@ -22,7 +22,7 @@
  *  A cursor.
  */
 
-#include "graphics/cursor.h"
+#include "src/graphics/cursor.h"
 
 namespace Graphics {
 

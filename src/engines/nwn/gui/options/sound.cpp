@@ -22,16 +22,16 @@
  *  The NWN sound options menu.
  */
 
-#include "common/configman.h"
+#include "src/common/configman.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "engines/nwn/gui/widgets/panel.h"
-#include "engines/nwn/gui/widgets/label.h"
-#include "engines/nwn/gui/widgets/slider.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/slider.h"
 
-#include "engines/nwn/gui/options/sound.h"
-#include "engines/nwn/gui/options/soundadv.h"
+#include "src/engines/nwn/gui/options/sound.h"
+#include "src/engines/nwn/gui/options/soundadv.h"
 
 namespace Engines {
 

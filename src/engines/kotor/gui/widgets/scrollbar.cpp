@@ -22,9 +22,9 @@
  *  A KotOR scrollbar widget.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "engines/kotor/gui/widgets/scrollbar.h"
+#include "src/engines/kotor/gui/widgets/scrollbar.h"
 
 namespace Engines {
 

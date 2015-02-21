@@ -25,7 +25,7 @@
 #ifndef ENGINES_AURORA_LOADPROGRESS_H
 #define ENGINES_AURORA_LOADPROGRESS_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
 namespace Graphics {
 	namespace Aurora {

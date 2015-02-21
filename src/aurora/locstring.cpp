@@ -22,13 +22,13 @@
  *  Handling BioWare's localized strings.
  */
 
-#include "common/util.h"
-#include "common/stream.h"
+#include "src/common/util.h"
+#include "src/common/stream.h"
 
-#include "aurora/locstring.h"
-#include "aurora/language.h"
-#include "aurora/aurorafile.h"
-#include "aurora/talkman.h"
+#include "src/aurora/locstring.h"
+#include "src/aurora/language.h"
+#include "src/aurora/aurorafile.h"
+#include "src/aurora/talkman.h"
 
 namespace Aurora {
 

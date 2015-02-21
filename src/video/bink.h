@@ -30,9 +30,9 @@
 
 #include <vector>
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "video/decoder.h"
+#include "src/video/decoder.h"
 
 namespace Common {
 	class SeekableReadStream;

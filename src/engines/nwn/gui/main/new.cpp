@@ -22,12 +22,12 @@
  *  The new game menu.
  */
 
-#include "common/configman.h"
+#include "src/common/configman.h"
 
-#include "engines/nwn/module.h"
+#include "src/engines/nwn/module.h"
 
-#include "engines/nwn/gui/main/new.h"
-#include "engines/nwn/gui/main/newmodule.h"
+#include "src/engines/nwn/gui/main/new.h"
+#include "src/engines/nwn/gui/main/newmodule.h"
 
 namespace Engines {
 

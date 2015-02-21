@@ -22,12 +22,12 @@
  *  A simple 3D object.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/aurora/geometryobject.h"
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/geometryobject.h"
+#include "src/graphics/aurora/textureman.h"
 
 namespace Graphics {
 

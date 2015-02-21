@@ -22,15 +22,15 @@
  *  The thread the game logic runs in.
  */
 
-#include "common/version.h"
-#include "common/util.h"
-#include "common/error.h"
-#include "common/configman.h"
+#include "src/common/version.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/configman.h"
 
-#include "engines/gamethread.h"
-#include "engines/enginemanager.h"
+#include "src/engines/gamethread.h"
+#include "src/engines/enginemanager.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
 namespace Engines {
 

@@ -24,19 +24,19 @@
 
 #include <cassert>
 
-#include "common/error.h"
-#include "common/stream.h"
-#include "common/threads.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
+#include "src/common/threads.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/images/surface.h"
+#include "src/graphics/images/surface.h"
 
-#include "video/decoder.h"
+#include "src/video/decoder.h"
 
-#include "sound/sound.h"
-#include "sound/audiostream.h"
-#include "sound/decoders/pcm.h"
+#include "src/sound/sound.h"
+#include "src/sound/audiostream.h"
+#include "src/sound/decoders/pcm.h"
 
 namespace Video {
 

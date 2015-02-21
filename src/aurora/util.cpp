@@ -24,11 +24,11 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "common/util.h"
-#include "common/ustring.h"
-#include "common/filepath.h"
+#include "src/common/util.h"
+#include "src/common/ustring.h"
+#include "src/common/filepath.h"
 
-#include "aurora/util.h"
+#include "src/aurora/util.h"
 
 // boost-string_algo
 using boost::iequals;

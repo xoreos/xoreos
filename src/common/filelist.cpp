@@ -25,8 +25,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
-#include "common/filelist.h"
-#include "common/filepath.h"
+#include "src/common/filelist.h"
+#include "src/common/filepath.h"
 
 // boost-filesystem stuff
 using boost::filesystem::directory_iterator;

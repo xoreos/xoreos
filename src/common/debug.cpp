@@ -28,8 +28,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "common/debug.h"
-#include "common/debugman.h"
+#include "src/common/debug.h"
+#include "src/common/debugman.h"
 
 void debugC(uint32 level, uint32 channel, const char *s, ...) {
 	if (!DebugMan.isEnabled(level, channel))

@@ -25,7 +25,7 @@
 #ifndef SOUND_DECODERS_WAVE_H
 #define SOUND_DECODERS_WAVE_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Common { class SeekableReadStream; }
 

@@ -29,13 +29,13 @@
 
 #include <boost/bind.hpp>
 
-#include "common/types.h"
-#include "common/singleton.h"
-#include "common/thread.h"
+#include "src/common/types.h"
+#include "src/common/singleton.h"
+#include "src/common/thread.h"
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
-#include "events/requesttypes.h"
+#include "src/events/requesttypes.h"
 
 namespace Graphics {
 	class Texture;

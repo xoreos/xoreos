@@ -27,7 +27,7 @@
 #ifndef GRAPHICS_IMAGES_TGA_H
 #define GRAPHICS_IMAGES_TGA_H
 
-#include "graphics/images/decoder.h"
+#include "src/graphics/images/decoder.h"
 
 namespace Common {
 	class SeekableReadStream;

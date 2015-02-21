@@ -25,12 +25,12 @@
 #ifndef GRAPHICS_AURORA_TEXTURE_H
 #define GRAPHICS_AURORA_TEXTURE_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "graphics/types.h"
-#include "graphics/texture.h"
+#include "src/graphics/types.h"
+#include "src/graphics/texture.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
 namespace Common {
 	class SeekableReadStream;

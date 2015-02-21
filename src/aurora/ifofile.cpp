@@ -22,12 +22,12 @@
  *  Loader for the module.ifo file.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/ifofile.h"
-#include "aurora/gfffile.h"
-#include "aurora/talkman.h"
+#include "src/aurora/ifofile.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/talkman.h"
 
 namespace Aurora {
 

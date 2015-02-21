@@ -27,28 +27,28 @@
 
 #include <cmath>
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/maths.h"
-#include "common/stream.h"
-#include "common/file.h"
-#include "common/ustring.h"
-#include "common/bitstream.h"
-#include "common/huffman.h"
-#include "common/rdft.h"
-#include "common/dct.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/maths.h"
+#include "src/common/stream.h"
+#include "src/common/file.h"
+#include "src/common/ustring.h"
+#include "src/common/bitstream.h"
+#include "src/common/huffman.h"
+#include "src/common/rdft.h"
+#include "src/common/dct.h"
 
-#include "graphics/util.h"
-#include "graphics/yuv_to_rgb.h"
+#include "src/graphics/util.h"
+#include "src/graphics/yuv_to_rgb.h"
 
-#include "graphics/images/surface.h"
+#include "src/graphics/images/surface.h"
 
-#include "sound/decoders/util.h"
+#include "src/sound/decoders/util.h"
 
-#include "video/bink.h"
-#include "video/binkdata.h"
+#include "src/video/bink.h"
+#include "src/video/binkdata.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
 static const uint32 kBIKfID = MKTAG('B', 'I', 'K', 'f');
 static const uint32 kBIKgID = MKTAG('B', 'I', 'K', 'g');

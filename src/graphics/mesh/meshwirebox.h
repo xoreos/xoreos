@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_MESH_MESHWIREBOX_H
 #define GRAPHICS_MESH_MESHWIREBOX_H
 
-#include "graphics/mesh/mesh.h"
+#include "src/graphics/mesh/mesh.h"
 
 namespace Graphics {
 

@@ -22,11 +22,11 @@
  *  DDS (DirectDraw Surface) loading.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "graphics/images/dds.h"
+#include "src/graphics/images/dds.h"
 
 static const uint32 kDDSID  = MKTAG('D', 'D', 'S', ' ');
 static const uint32 kDXT1ID = MKTAG('D', 'X', 'T', '1');

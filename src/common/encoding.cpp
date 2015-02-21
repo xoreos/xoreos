@@ -29,11 +29,11 @@
 
 #include <vector>
 
-#include "common/encoding.h"
-#include "common/error.h"
-#include "common/singleton.h"
-#include "common/ustring.h"
-#include "common/stream.h"
+#include "src/common/encoding.h"
+#include "src/common/error.h"
+#include "src/common/singleton.h"
+#include "src/common/ustring.h"
+#include "src/common/stream.h"
 
 namespace Common {
 

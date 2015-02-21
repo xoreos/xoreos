@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_OBJECT_H
 #define GRAPHICS_OBJECT_H
 
-#include "graphics/renderable.h"
+#include "src/graphics/renderable.h"
 
 namespace Graphics {
 

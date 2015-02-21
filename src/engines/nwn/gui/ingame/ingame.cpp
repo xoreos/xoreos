@@ -22,18 +22,18 @@
  *  The NWN ingame GUI elements.
  */
 
-#include "common/error.h"
+#include "src/common/error.h"
 
-#include "engines/nwn/module.h"
-#include "engines/nwn/creature.h"
+#include "src/engines/nwn/module.h"
+#include "src/engines/nwn/creature.h"
 
-#include "engines/nwn/gui/ingame/ingame.h"
-#include "engines/nwn/gui/ingame/main.h"
-#include "engines/nwn/gui/ingame/quickbar.h"
-#include "engines/nwn/gui/ingame/quickchat.h"
-#include "engines/nwn/gui/ingame/compass.h"
-#include "engines/nwn/gui/ingame/partyleader.h"
-#include "engines/nwn/gui/ingame/dialog.h"
+#include "src/engines/nwn/gui/ingame/ingame.h"
+#include "src/engines/nwn/gui/ingame/main.h"
+#include "src/engines/nwn/gui/ingame/quickbar.h"
+#include "src/engines/nwn/gui/ingame/quickchat.h"
+#include "src/engines/nwn/gui/ingame/compass.h"
+#include "src/engines/nwn/gui/ingame/partyleader.h"
+#include "src/engines/nwn/gui/ingame/dialog.h"
 
 namespace Engines {
 

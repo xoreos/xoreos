@@ -27,10 +27,10 @@
  *  (Inverse) Discrete Cosine Transforms.
  */
 
-#include "common/maths.h"
-#include "common/cosinetables.h"
-#include "common/rdft.h"
-#include "common/dct.h"
+#include "src/common/maths.h"
+#include "src/common/cosinetables.h"
+#include "src/common/rdft.h"
+#include "src/common/dct.h"
 
 namespace Common {
 

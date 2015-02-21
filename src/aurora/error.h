@@ -25,7 +25,7 @@
 #ifndef AURORA_ERROR_H
 #define AURORA_ERROR_H
 
-#include "common/error.h"
+#include "src/common/error.h"
 
 namespace Aurora {
 

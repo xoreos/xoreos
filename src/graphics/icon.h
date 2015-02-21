@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_ICON_H
 #define GRAPHICS_ICON_H
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
 namespace Graphics {
 

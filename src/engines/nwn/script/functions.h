@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_SCRIPT_FUNCTIONS_H
 #define ENGINES_NWN_SCRIPT_FUNCTIONS_H
 
-#include "aurora/nwscript/objectcontainer.h"
+#include "src/aurora/nwscript/objectcontainer.h"
 
 namespace Aurora {
 	namespace NWScript {

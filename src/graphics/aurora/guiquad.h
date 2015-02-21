@@ -25,11 +25,11 @@
 #ifndef GRAPHICS_AURORA_GUIQUAD_H
 #define GRAPHICS_AURORA_GUIQUAD_H
 
-#include "common/maths.h"
+#include "src/common/maths.h"
 
-#include "graphics/guifrontelement.h"
+#include "src/graphics/guifrontelement.h"
 
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/textureman.h"
 
 namespace Common {
 	class UString;

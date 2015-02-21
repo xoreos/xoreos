@@ -22,15 +22,15 @@
  *  A texture font, as used by NWN and KotOR/KotOR2.
  */
 
-#include "common/types.h"
-#include "common/error.h"
-#include "common/ustring.h"
-#include "common/util.h"
+#include "src/common/types.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
+#include "src/common/util.h"
 
-#include "graphics/images/txi.h"
+#include "src/graphics/images/txi.h"
 
-#include "graphics/aurora/texturefont.h"
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/texturefont.h"
+#include "src/graphics/aurora/texture.h"
 
 namespace Graphics {
 

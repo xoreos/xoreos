@@ -25,12 +25,12 @@
 #ifndef EVENTS_REQUESTTYPES_H
 #define EVENTS_REQUESTTYPES_H
 
-#include "common/types.h"
-#include "common/mutex.h"
+#include "src/common/types.h"
+#include "src/common/mutex.h"
 
-#include "events/types.h"
+#include "src/events/types.h"
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
 namespace Graphics {
 	class GLContainer;

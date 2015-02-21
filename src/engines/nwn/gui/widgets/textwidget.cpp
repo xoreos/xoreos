@@ -22,14 +22,14 @@
  *  A NWN text widget.
  */
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "graphics/font.h"
+#include "src/graphics/font.h"
 
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/fontman.h"
 
-#include "engines/nwn/gui/widgets/textwidget.h"
+#include "src/engines/nwn/gui/widgets/textwidget.h"
 
 namespace Engines {
 

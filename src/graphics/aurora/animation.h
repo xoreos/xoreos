@@ -29,15 +29,15 @@
 #include <list>
 #include <map>
 
-#include "common/ustring.h"
-#include "common/transmatrix.h"
-#include "common/boundingbox.h"
+#include "src/common/ustring.h"
+#include "src/common/transmatrix.h"
+#include "src/common/boundingbox.h"
 
-#include "graphics/types.h"
-#include "graphics/glcontainer.h"
-#include "graphics/renderable.h"
+#include "src/graphics/types.h"
+#include "src/graphics/glcontainer.h"
+#include "src/graphics/renderable.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
 namespace Common {
 	class SeekableReadStream;

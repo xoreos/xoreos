@@ -22,26 +22,26 @@
  *  The premade character chooser.
  */
 
-#include "common/util.h"
-#include "common/error.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
 
-#include "events/requests.h"
+#include "src/events/requests.h"
 
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn/nwn.h"
-#include "engines/nwn/creature.h"
-#include "engines/nwn/module.h"
+#include "src/engines/nwn/nwn.h"
+#include "src/engines/nwn/creature.h"
+#include "src/engines/nwn/module.h"
 
-#include "engines/nwn/gui/widgets/listbox.h"
-#include "engines/nwn/gui/widgets/portrait.h"
+#include "src/engines/nwn/gui/widgets/listbox.h"
+#include "src/engines/nwn/gui/widgets/portrait.h"
 
-#include "engines/nwn/gui/chargen/chargen.h"
+#include "src/engines/nwn/gui/chargen/chargen.h"
 
-#include "engines/nwn/gui/main/charpremade.h"
+#include "src/engines/nwn/gui/main/charpremade.h"
 
 namespace Engines {
 

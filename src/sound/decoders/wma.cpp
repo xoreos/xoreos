@@ -26,21 +26,21 @@
 
 #include <vector>
 
-#include "common/util.h"
-#include "common/maths.h"
-#include "common/sinewindows.h"
-#include "common/error.h"
-#include "common/stream.h"
-#include "common/mdct.h"
-#include "common/bitstream.h"
-#include "common/huffman.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
+#include "src/common/sinewindows.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
+#include "src/common/mdct.h"
+#include "src/common/bitstream.h"
+#include "src/common/huffman.h"
 
-#include "sound/audiostream.h"
+#include "src/sound/audiostream.h"
 
-#include "sound/decoders/util.h"
-#include "sound/decoders/pcm.h"
-#include "sound/decoders/wma.h"
-#include "sound/decoders/wmadata.h"
+#include "src/sound/decoders/util.h"
+#include "src/sound/decoders/pcm.h"
+#include "src/sound/decoders/wma.h"
+#include "src/sound/decoders/wmadata.h"
 
 namespace Sound {
 

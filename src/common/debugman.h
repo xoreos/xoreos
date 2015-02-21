@@ -29,10 +29,10 @@
 
 #include <map>
 
-#include "common/types.h"
-#include "common/ustring.h"
-#include "common/singleton.h"
-#include "common/file.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
+#include "src/common/singleton.h"
+#include "src/common/file.h"
 
 namespace Common {
 

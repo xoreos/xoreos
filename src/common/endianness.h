@@ -27,8 +27,8 @@
 #ifndef COMMON_ENDIAN_H
 #define COMMON_ENDIAN_H
 
-#include "common/system.h"
-#include "common/types.h"
+#include "src/common/system.h"
+#include "src/common/types.h"
 
 // Sanity check
 #if !defined(XOREOS_LITTLE_ENDIAN) && !defined(XOREOS_BIG_ENDIAN)

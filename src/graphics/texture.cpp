@@ -22,12 +22,12 @@
  *  Virtual baseclass of a texture.
  */
 
-#include "common/threads.h"
+#include "src/common/threads.h"
 
-#include "events/requests.h"
+#include "src/events/requests.h"
 
-#include "graphics/texture.h"
-#include "graphics/graphics.h"
+#include "src/graphics/texture.h"
+#include "src/graphics/graphics.h"
 
 namespace Graphics {
 

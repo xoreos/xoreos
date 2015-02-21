@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_GUIFRONTELEMENT_H
 #define GRAPHICS_GUIFRONTELEMENT_H
 
-#include "graphics/renderable.h"
+#include "src/graphics/renderable.h"
 
 namespace Graphics {
 

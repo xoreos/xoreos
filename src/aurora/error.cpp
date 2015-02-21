@@ -22,7 +22,7 @@
  *  Basic exceptions to throw when handling files used in Bioware's Aurora engine.
  */
 
-#include "aurora/error.h"
+#include "src/aurora/error.h"
 
 namespace Aurora {
 

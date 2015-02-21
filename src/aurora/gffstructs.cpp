@@ -24,10 +24,10 @@
 
 #include <cstring>
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "aurora/gffstructs.h"
-#include "aurora/error.h"
+#include "src/aurora/gffstructs.h"
+#include "src/aurora/error.h"
 
 namespace Aurora {
 

@@ -22,22 +22,22 @@
  *  A module.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/ustring.h"
-#include "common/filepath.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
+#include "src/common/filepath.h"
 
-#include "graphics/camera.h"
+#include "src/graphics/camera.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/camera.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/camera.h"
 
-#include "engines/jade/module.h"
-#include "engines/jade/console.h"
-#include "engines/jade/area.h"
+#include "src/engines/jade/module.h"
+#include "src/engines/jade/console.h"
+#include "src/engines/jade/area.h"
 
 namespace Engines {
 

@@ -22,9 +22,9 @@
  *  The movies menu.
  */
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/kotor/gui/main/movies.h"
+#include "src/engines/kotor/gui/main/movies.h"
 
 namespace Engines {
 

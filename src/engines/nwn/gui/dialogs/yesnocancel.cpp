@@ -22,12 +22,12 @@
  *  The yes/no/cancel dialog.
  */
 
-#include "engines/aurora/gui.h"
+#include "src/engines/aurora/gui.h"
 
-#include "engines/nwn/gui/widgets/panel.h"
-#include "engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/label.h"
 
-#include "engines/nwn/gui/dialogs/yesnocancel.h"
+#include "src/engines/nwn/gui/dialogs/yesnocancel.h"
 
 namespace Engines {
 

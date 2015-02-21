@@ -24,23 +24,23 @@
 
 #include <boost/bind.hpp>
 
-#include "common/util.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/configman.h"
 
-#include "graphics/graphics.h"
-#include "graphics/font.h"
-#include "graphics/camera.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/font.h"
+#include "src/graphics/camera.h"
 
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/model.h"
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/guiquad.h"
 
-#include "engines/aurora/model.h"
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/model.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/nwn/gui/widgets/tooltip.h"
-#include "engines/nwn/gui/widgets/portrait.h"
+#include "src/engines/nwn/gui/widgets/tooltip.h"
+#include "src/engines/nwn/gui/widgets/portrait.h"
 
 namespace Engines {
 

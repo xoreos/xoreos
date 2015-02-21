@@ -24,9 +24,9 @@
 
 #include <cstdio>
 
-#include "common/boundingbox.h"
-#include "common/util.h"
-#include "common/maths.h"
+#include "src/common/boundingbox.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
 
 namespace Common {
 

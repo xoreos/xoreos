@@ -22,9 +22,9 @@
  *  An abstract Aurora model loader.
  */
 
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/modelloader.h"
+#include "src/engines/aurora/modelloader.h"
 
 namespace Engines {
 

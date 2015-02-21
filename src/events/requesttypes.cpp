@@ -22,13 +22,13 @@
  *  Inter-thread request event types.
  */
 
-#include "common/error.h"
-#include "common/util.h"
+#include "src/common/error.h"
+#include "src/common/util.h"
 
-#include "events/requesttypes.h"
-#include "events/events.h"
+#include "src/events/requesttypes.h"
+#include "src/events/events.h"
 
-#include "graphics/images/decoder.h"
+#include "src/graphics/images/decoder.h"
 
 namespace Events {
 

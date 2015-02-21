@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR2_MODELLOADER_H
 #define ENGINES_KOTOR2_MODELLOADER_H
 
-#include "engines/aurora/modelloader.h"
+#include "src/engines/aurora/modelloader.h"
 
 namespace Engines {
 

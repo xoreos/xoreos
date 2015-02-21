@@ -22,19 +22,19 @@
  *  The Aurora texture manager.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/uuid.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/uuid.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/textureman.h"
-#include "graphics/aurora/texture.h"
-#include "graphics/aurora/pltfile.h"
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
+#include "src/graphics/aurora/pltfile.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "events/requests.h"
+#include "src/events/requests.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::TextureManager)
 

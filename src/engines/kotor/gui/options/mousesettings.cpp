@@ -22,9 +22,9 @@
  *  The mouse settings menu.
  */
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/kotor/gui/options/mousesettings.h"
+#include "src/engines/kotor/gui/options/mousesettings.h"
 
 namespace Engines {
 

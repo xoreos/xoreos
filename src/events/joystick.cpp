@@ -22,7 +22,7 @@
  *  Joystick/Gamepad handling.
  */
 
-#include "events/joystick.h"
+#include "src/events/joystick.h"
 
 namespace Events {
 

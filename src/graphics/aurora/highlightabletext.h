@@ -21,8 +21,8 @@
 #ifndef GRAPHICS_AURORA_HIGHLIGHTABLETEXT_H
 #define GRAPHICS_AURORA_HIGHLIGHTABLETEXT_H
 
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/highlightable.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/highlightable.h"
 
 namespace Graphics {
 

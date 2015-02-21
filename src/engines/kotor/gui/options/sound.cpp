@@ -22,10 +22,10 @@
  *  The sound menu.
  */
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/kotor/gui/options/sound.h"
-#include "engines/kotor/gui/options/soundadv.h"
+#include "src/engines/kotor/gui/options/sound.h"
+#include "src/engines/kotor/gui/options/soundadv.h"
 
 namespace Engines {
 

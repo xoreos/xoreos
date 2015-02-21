@@ -25,9 +25,9 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_QUADWIDGET_H
 #define ENGINES_NWN_GUI_WIDGETS_QUADWIDGET_H
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/nwn/gui/widgets/nwnwidget.h"
+#include "src/engines/nwn/gui/widgets/nwnwidget.h"
 
 namespace Common {
 	class UString;

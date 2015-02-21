@@ -25,13 +25,13 @@
 #ifndef ENGINES_NWN_GUI_MAIN_NEWMODULE_H
 #define ENGINES_NWN_GUI_MAIN_NEWMODULE_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/nwn/gui/widgets/listbox.h"
+#include "src/engines/nwn/gui/widgets/listbox.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
 

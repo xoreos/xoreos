@@ -22,12 +22,12 @@
  *  A container of OpenGL elements.
  */
 
-#include "common/threads.h"
+#include "src/common/threads.h"
 
-#include "events/requests.h"
+#include "src/events/requests.h"
 
-#include "graphics/graphics.h"
-#include "graphics/glcontainer.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/glcontainer.h"
 
 namespace Graphics {
 

@@ -30,25 +30,25 @@
 // Seek function by Gael Chardon gael.dev@4now.net
 //
 
-#include "common/system.h"
-#include "common/error.h"
-#include "common/stream.h"
-#include "common/file.h"
+#include "src/common/system.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
+#include "src/common/file.h"
 
-#include "video/quicktime.h"
+#include "src/video/quicktime.h"
 
-#include "sound/audiostream.h"
-#include "sound/decoders/codec.h"
+#include "src/sound/audiostream.h"
+#include "src/sound/decoders/codec.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
 // Audio codecs
-#include "sound/decoders/aac.h"
-#include "sound/decoders/adpcm.h"
-#include "sound/decoders/pcm.h"
+#include "src/sound/decoders/aac.h"
+#include "src/sound/decoders/adpcm.h"
+#include "src/sound/decoders/pcm.h"
 
 // Video codecs
-#include "video/codecs/h263.h"
+#include "src/video/codecs/h263.h"
 
 namespace Video {
 

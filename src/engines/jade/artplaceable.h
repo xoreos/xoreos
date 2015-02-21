@@ -25,9 +25,9 @@
 #ifndef ENGINES_JADE_ARTPLACEABLE_H
 #define ENGINES_JADE_ARTPLACEABLE_H
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/jade/object.h"
+#include "src/engines/jade/object.h"
 
 namespace Engines {
 

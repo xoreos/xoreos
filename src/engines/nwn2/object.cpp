@@ -22,26 +22,26 @@
  *  An object within a NWN2 area.
  */
 
-#include "common/util.h"
-#include "common/error.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
 
-#include "aurora/ssffile.h"
-#include "aurora/2dafile.h"
-#include "aurora/2dareg.h"
-#include "aurora/dlgfile.h"
+#include "src/aurora/ssffile.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/dlgfile.h"
 
-#include "aurora/nwscript/types.h"
-#include "aurora/nwscript/util.h"
-#include "aurora/nwscript/functioncontext.h"
-#include "aurora/nwscript/functionman.h"
+#include "src/aurora/nwscript/types.h"
+#include "src/aurora/nwscript/util.h"
+#include "src/aurora/nwscript/functioncontext.h"
+#include "src/aurora/nwscript/functionman.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/tokenman.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/tokenman.h"
 
-#include "engines/nwn2/types.h"
-#include "engines/nwn2/object.h"
+#include "src/engines/nwn2/types.h"
+#include "src/engines/nwn2/object.h"
 
 namespace Engines {
 

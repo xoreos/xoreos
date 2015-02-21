@@ -22,15 +22,15 @@
  *  Decoding RIFF WAVE (Resource Interchange File Format Waveform).
  */
 
-#include "common/error.h"
-#include "common/util.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/util.h"
+#include "src/common/stream.h"
 
-#include "sound/audiostream.h"
-#include "sound/decoders/wave.h"
-#include "sound/decoders/adpcm.h"
-#include "sound/decoders/pcm.h"
-#include "sound/decoders/wave_types.h"
+#include "src/sound/audiostream.h"
+#include "src/sound/decoders/wave.h"
+#include "src/sound/decoders/adpcm.h"
+#include "src/sound/decoders/pcm.h"
+#include "src/sound/decoders/wave_types.h"
 
 namespace Sound {
 

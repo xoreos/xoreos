@@ -27,8 +27,8 @@
 
 #include <SDL_thread.h>
 
-#include "common/types.h"
-#include "common/error.h"
+#include "src/common/types.h"
+#include "src/common/error.h"
 
 static bool   threadsInited = false;
 static SDL_threadID threadsMainID;

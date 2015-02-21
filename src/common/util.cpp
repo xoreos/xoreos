@@ -22,8 +22,8 @@
  *  Utility templates and functions.
  */
 
-#include "common/util.h"
-#include "common/debugman.h"
+#include "src/common/util.h"
+#include "src/common/debugman.h"
 
 #include <cstdarg>
 #include <cstdio>

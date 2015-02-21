@@ -25,8 +25,8 @@
 #ifndef VIDEO_CODECS_WMV2DATA_H
 #define VIDEO_CODECS_WMV2DATA_H
 
-#include "common/types.h"
-#include "common/huffman.h"
+#include "src/common/types.h"
+#include "src/common/huffman.h"
 
 namespace Video {
 

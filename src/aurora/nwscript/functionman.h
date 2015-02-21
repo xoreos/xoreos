@@ -27,11 +27,11 @@
 
 #include <map>
 
-#include "common/ustring.h"
-#include "common/singleton.h"
+#include "src/common/ustring.h"
+#include "src/common/singleton.h"
 
-#include "aurora/nwscript/types.h"
-#include "aurora/nwscript/functioncontext.h"
+#include "src/aurora/nwscript/types.h"
+#include "src/aurora/nwscript/functioncontext.h"
 
 namespace Aurora {
 

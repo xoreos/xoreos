@@ -22,8 +22,8 @@
  *  The notification manager, handling all notifications.
  */
 
-#include "events/notifications.h"
-#include "events/notifyable.h"
+#include "src/events/notifications.h"
+#include "src/events/notifyable.h"
 
 DECLARE_SINGLETON(Events::NotificationManager)
 

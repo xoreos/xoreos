@@ -22,12 +22,12 @@
  *  Decoding Windows icon and cursor files (.ICO and .CUR).
  */
 
-#include "common/util.h"
-#include "common/stream.h"
-#include "common/error.h"
-#include "common/strutil.h"
+#include "src/common/util.h"
+#include "src/common/stream.h"
+#include "src/common/error.h"
+#include "src/common/strutil.h"
 
-#include "graphics/images/winiconimage.h"
+#include "src/graphics/images/winiconimage.h"
 
 namespace Graphics {
 

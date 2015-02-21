@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_ROOM_H
 #define ENGINES_KOTOR_ROOM_H
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
 namespace Common {
 	class UString;

@@ -22,9 +22,9 @@
  *  Built-in system fonts.
  */
 
-#include "common/types.h"
-#include "common/stream.h"
-#include "common/systemfonts.h"
+#include "src/common/types.h"
+#include "src/common/stream.h"
+#include "src/common/systemfonts.h"
 
 namespace Common {
 

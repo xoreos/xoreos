@@ -22,15 +22,15 @@
  *  The race chooser in NWN CharGen.
  */
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "engines/nwn/types.h"
+#include "src/engines/nwn/types.h"
 
-#include "engines/nwn/gui/widgets/button.h"
-#include "engines/nwn/gui/widgets/buttonsgroup.h"
-#include "engines/nwn/gui/widgets/editbox.h"
+#include "src/engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/buttonsgroup.h"
+#include "src/engines/nwn/gui/widgets/editbox.h"
 
-#include "engines/nwn/gui/chargen/charrace.h"
+#include "src/engines/nwn/gui/chargen/charrace.h"
 
 namespace Engines {
 

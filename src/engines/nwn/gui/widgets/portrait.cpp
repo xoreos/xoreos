@@ -22,15 +22,15 @@
  *  A portrait model and widget.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
-#include "common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
+#include "src/common/ustring.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/texture.h"
 
-#include "engines/nwn/gui/widgets/portrait.h"
+#include "src/engines/nwn/gui/widgets/portrait.h"
 
 static const char *kSuffix[] = {"h"  , "l"  , "m"  , "s"  , "t"  };
 static const float kWidth [] = {256.0, 128.0,  64.0,  32.0,  16.0};

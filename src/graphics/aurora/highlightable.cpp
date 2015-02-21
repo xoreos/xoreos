@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "graphics/aurora/highlightable.h"
+#include "src/graphics/aurora/highlightable.h"
 
 namespace Graphics {
 

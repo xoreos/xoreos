@@ -22,8 +22,8 @@
  *  Context of an NWScript function.
  */
 
-#include "aurora/nwscript/functioncontext.h"
-#include "aurora/nwscript/ncsfile.h"
+#include "src/aurora/nwscript/functioncontext.h"
+#include "src/aurora/nwscript/ncsfile.h"
 
 namespace Aurora {
 

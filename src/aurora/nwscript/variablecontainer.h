@@ -27,9 +27,9 @@
 
 #include <map>
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/variable.h"
 
 namespace Aurora {
 

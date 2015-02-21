@@ -22,9 +22,9 @@
  *  The NWN violence/gore password options menu.
  */
 
-#include "engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
 
-#include "engines/nwn/gui/options/gorepass.h"
+#include "src/engines/nwn/gui/options/gorepass.h"
 
 namespace Engines {
 

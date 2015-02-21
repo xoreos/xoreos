@@ -22,9 +22,9 @@
  *  The NWN advanced sound options menu.
  */
 
-#include "engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
 
-#include "engines/nwn/gui/options/soundadv.h"
+#include "src/engines/nwn/gui/options/soundadv.h"
 
 namespace Engines {
 

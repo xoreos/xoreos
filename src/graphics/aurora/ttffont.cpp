@@ -22,19 +22,19 @@
  *  A TrueType font.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/texture.h"
-#include "graphics/ttf.h"
+#include "src/graphics/texture.h"
+#include "src/graphics/ttf.h"
 
-#include "graphics/images/surface.h"
+#include "src/graphics/images/surface.h"
 
-#include "graphics/aurora/ttffont.h"
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/ttffont.h"
+#include "src/graphics/aurora/texture.h"
 
 static const uint32 kPageWidth  = 256;
 static const uint32 kPageHeight = 256;

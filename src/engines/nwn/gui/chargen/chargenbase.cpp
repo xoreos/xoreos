@@ -23,12 +23,12 @@
  */
 
 
-#include "aurora/2dareg.h"
-#include "aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
 
-#include "engines/nwn/creature.h"
+#include "src/engines/nwn/creature.h"
 
-#include "engines/nwn/gui/chargen/chargenbase.h"
+#include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
 

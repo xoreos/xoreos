@@ -22,14 +22,14 @@
  *  A room within a Jade Empire area.
  */
 
-#include "common/error.h"
+#include "src/common/error.h"
 
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/jade/room.h"
+#include "src/engines/jade/room.h"
 
 namespace Engines {
 

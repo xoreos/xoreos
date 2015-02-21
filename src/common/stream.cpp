@@ -24,10 +24,10 @@
  *  Basic stream interfaces.
  */
 
-#include "common/stream.h"
-#include "common/error.h"
-#include "common/util.h"
-#include "common/ustring.h"
+#include "src/common/stream.h"
+#include "src/common/error.h"
+#include "src/common/util.h"
+#include "src/common/ustring.h"
 
 namespace Common {
 

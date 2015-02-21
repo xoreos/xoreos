@@ -24,12 +24,12 @@
  *  Decoding TGA (TarGa) images.
  */
 
-#include "common/util.h"
-#include "common/stream.h"
-#include "common/error.h"
+#include "src/common/util.h"
+#include "src/common/stream.h"
+#include "src/common/error.h"
 
-#include "graphics/util.h"
-#include "graphics/images/tga.h"
+#include "src/graphics/util.h"
+#include "src/graphics/images/tga.h"
 
 namespace Graphics {
 

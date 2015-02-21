@@ -22,10 +22,10 @@
  *  Texture information types.
  */
 
-#include "common/stringmap.h"
-#include "common/ustring.h"
+#include "src/common/stringmap.h"
+#include "src/common/ustring.h"
 
-#include "graphics/images/txitypes.h"
+#include "src/graphics/images/txitypes.h"
 
 static const char *kTXICommands[] = {
 	"alphamean",

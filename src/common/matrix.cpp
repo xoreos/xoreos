@@ -22,8 +22,8 @@
  *  A matrix.
  */
 
-#include "common/error.h"
-#include "common/matrix.h"
+#include "src/common/error.h"
+#include "src/common/matrix.h"
 
 #include <cassert>
 #include <cstring>

@@ -27,7 +27,7 @@
 
 #include <SDL_joystick.h>
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
 namespace Events {
 

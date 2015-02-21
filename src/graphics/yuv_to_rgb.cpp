@@ -86,11 +86,11 @@
 // BASIS, AND BROWN UNIVERSITY HAS NO OBLIGATION TO PROVIDE MAINTENANCE,
 // SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
-#include "common/error.h"
-#include "common/singleton.h"
-#include "common/util.h"
+#include "src/common/error.h"
+#include "src/common/singleton.h"
+#include "src/common/util.h"
 
-#include "graphics/yuv_to_rgb.h"
+#include "src/graphics/yuv_to_rgb.h"
 
 DECLARE_SINGLETON(Graphics::YUVToRGBManager)
 

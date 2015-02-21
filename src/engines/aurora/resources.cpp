@@ -22,12 +22,12 @@
  *  Generic Aurora engines resource utility functions.
  */
 
-#include "common/error.h"
-#include "common/ustring.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/aurora/resources.h"
+#include "src/engines/aurora/resources.h"
 
 namespace Engines {
 

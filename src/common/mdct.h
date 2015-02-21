@@ -28,7 +28,7 @@
 #ifndef COMMON_MDCT_H
 #define COMMON_MDCT_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Common {
 

@@ -22,20 +22,20 @@
  *  A simple cube object, for testing.
  */
 
-#include "common/util.h"
-#include "common/ustring.h"
-#include "common/stream.h"
-#include "common/transmatrix.h"
+#include "src/common/util.h"
+#include "src/common/ustring.h"
+#include "src/common/stream.h"
+#include "src/common/transmatrix.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/images/tga.h"
+#include "src/graphics/images/tga.h"
 
-#include "graphics/aurora/cube.h"
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/cube.h"
+#include "src/graphics/aurora/texture.h"
 
-#include "events/events.h"
-#include "events/requests.h"
+#include "src/events/events.h"
+#include "src/events/requests.h"
 
 using Events::RequestID;
 

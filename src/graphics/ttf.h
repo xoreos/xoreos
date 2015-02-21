@@ -29,8 +29,8 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
-#include "common/types.h"
-#include "common/stream.h"
+#include "src/common/types.h"
+#include "src/common/stream.h"
 
 namespace Graphics {
 

@@ -26,10 +26,10 @@
 
 #include <queue>
 
-#include "common/error.h"
-#include "common/mutex.h"
+#include "src/common/error.h"
+#include "src/common/mutex.h"
 
-#include "sound/audiostream.h"
+#include "src/sound/audiostream.h"
 
 namespace Sound {
 

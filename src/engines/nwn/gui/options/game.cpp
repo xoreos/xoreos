@@ -22,19 +22,19 @@
  *  The NWN game options menu.
  */
 
-#include "common/util.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/configman.h"
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "engines/nwn/gui/widgets/panel.h"
-#include "engines/nwn/gui/widgets/slider.h"
-#include "engines/nwn/gui/widgets/label.h"
-#include "engines/nwn/gui/widgets/listbox.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/slider.h"
+#include "src/engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/listbox.h"
 
-#include "engines/nwn/gui/options/game.h"
-#include "engines/nwn/gui/options/gorepass.h"
-#include "engines/nwn/gui/options/feedback.h"
+#include "src/engines/nwn/gui/options/game.h"
+#include "src/engines/nwn/gui/options/gorepass.h"
+#include "src/engines/nwn/gui/options/feedback.h"
 
 namespace Engines {
 

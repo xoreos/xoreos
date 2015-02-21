@@ -24,12 +24,12 @@
  *  one button can be toggled.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "engines/nwn/gui/widgets/editbox.h"
-#include "engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/editbox.h"
+#include "src/engines/nwn/gui/widgets/button.h"
 
-#include "engines/nwn/gui/widgets/buttonsgroup.h"
+#include "src/engines/nwn/gui/widgets/buttonsgroup.h"
 
 namespace Engines {
 

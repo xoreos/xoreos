@@ -24,11 +24,11 @@
 
 #include <cassert>
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "graphics/fpscounter.h"
+#include "src/graphics/fpscounter.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
 namespace Graphics {
 

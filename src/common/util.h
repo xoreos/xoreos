@@ -27,7 +27,7 @@
 #ifndef COMMON_UTIL_H
 #define COMMON_UTIL_H
 
-#include "common/endianness.h"
+#include "src/common/endianness.h"
 
 #include <cmath>
 

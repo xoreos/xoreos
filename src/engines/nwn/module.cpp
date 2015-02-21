@@ -22,36 +22,36 @@
  *  The context needed to run a NWN module.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
-#include "common/error.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
+#include "src/common/error.h"
+#include "src/common/configman.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "aurora/2dareg.h"
-#include "aurora/talkman.h"
-#include "aurora/erffile.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/talkman.h"
+#include "src/aurora/erffile.h"
 
-#include "graphics/camera.h"
+#include "src/graphics/camera.h"
 
-#include "graphics/aurora/textureman.h"
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/tokenman.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/camera.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/tokenman.h"
+#include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/camera.h"
 
-#include "engines/nwn/types.h"
-#include "engines/nwn/version.h"
-#include "engines/nwn/module.h"
-#include "engines/nwn/area.h"
-#include "engines/nwn/console.h"
+#include "src/engines/nwn/types.h"
+#include "src/engines/nwn/version.h"
+#include "src/engines/nwn/module.h"
+#include "src/engines/nwn/area.h"
+#include "src/engines/nwn/console.h"
 
-#include "engines/nwn/script/container.h"
+#include "src/engines/nwn/script/container.h"
 
-#include "engines/nwn/gui/ingame/ingame.h"
+#include "src/engines/nwn/gui/ingame/ingame.h"
 
 struct GenderToken {
 	const char *token;

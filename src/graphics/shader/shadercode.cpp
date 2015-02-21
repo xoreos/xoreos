@@ -22,7 +22,7 @@
  *  Shader sources for internal shaders.
  */
 
-#include "graphics/shader/shadercode.h"
+#include "src/graphics/shader/shadercode.h"
 
 namespace Graphics {
 

@@ -22,11 +22,11 @@
  *  An NWScript object container.
  */
 
-#include "common/error.h"
+#include "src/common/error.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "aurora/nwscript/objectcontainer.h"
+#include "src/aurora/nwscript/objectcontainer.h"
 
 namespace Aurora {
 

@@ -23,17 +23,17 @@
  */
 
 
-#include "common/util.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/configman.h"
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "engines/aurora/widget.h"
-#include "engines/kotor/gui/options/gameplay.h"
-#include "engines/kotor/gui/options/mousesettings.h"
-#include "engines/kotor/gui/options/keyboardconfig.h"
-#include "engines/kotor/gui/widgets/button.h"
-#include "engines/kotor/gui/widgets/checkbox.h"
+#include "src/engines/aurora/widget.h"
+#include "src/engines/kotor/gui/options/gameplay.h"
+#include "src/engines/kotor/gui/options/mousesettings.h"
+#include "src/engines/kotor/gui/options/keyboardconfig.h"
+#include "src/engines/kotor/gui/widgets/button.h"
+#include "src/engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
 

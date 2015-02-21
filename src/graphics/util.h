@@ -25,9 +25,9 @@
 #ifndef GRAPHICS_UTIL_H
 #define GRAPHICS_UTIL_H
 
-#include "common/types.h"
-#include "common/util.h"
-#include "common/maths.h"
+#include "src/common/types.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
 
 namespace Graphics {
 

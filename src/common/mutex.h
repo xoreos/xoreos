@@ -27,7 +27,7 @@
 
 #include <SDL_thread.h>
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Common {
 

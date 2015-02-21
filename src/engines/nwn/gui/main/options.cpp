@@ -22,19 +22,19 @@
  *  The options menu.
  */
 
-#include "common/version.h"
+#include "src/common/version.h"
 
-#include "engines/nwn/version.h"
+#include "src/engines/nwn/version.h"
 
-#include "engines/nwn/gui/widgets/panel.h"
-#include "engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/label.h"
 
-#include "engines/nwn/gui/options/game.h"
-#include "engines/nwn/gui/options/video.h"
-#include "engines/nwn/gui/options/sound.h"
-#include "engines/nwn/gui/options/controls.h"
+#include "src/engines/nwn/gui/options/game.h"
+#include "src/engines/nwn/gui/options/video.h"
+#include "src/engines/nwn/gui/options/sound.h"
+#include "src/engines/nwn/gui/options/controls.h"
 
-#include "engines/nwn/gui/main/options.h"
+#include "src/engines/nwn/gui/main/options.h"
 
 namespace Engines {
 

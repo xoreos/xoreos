@@ -22,19 +22,19 @@
  *  Loader for NWN2 baked terrain files (TRX).
  */
 
-#include "common/error.h"
-#include "common/stream.h"
-#include "common/encoding.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
+#include "src/common/encoding.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/graphics.h"
-#include "graphics/vertexbuffer.h"
-#include "graphics/indexbuffer.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/vertexbuffer.h"
+#include "src/graphics/indexbuffer.h"
 
-#include "graphics/aurora/geometryobject.h"
+#include "src/graphics/aurora/geometryobject.h"
 
-#include "engines/nwn2/trxfile.h"
+#include "src/engines/nwn2/trxfile.h"
 
 namespace Engines {
 

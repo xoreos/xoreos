@@ -22,27 +22,27 @@
  *  Engine class handling Dragon Age II
  */
 
-#include "common/util.h"
-#include "common/filelist.h"
-#include "common/filepath.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/filelist.h"
+#include "src/common/filepath.h"
+#include "src/common/configman.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/cube.h"
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/fps.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/cube.h"
+#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fps.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/loadprogress.h"
-#include "engines/aurora/resources.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/loadprogress.h"
+#include "src/engines/aurora/resources.h"
 
-#include "engines/dragonage2/dragonage2.h"
+#include "src/engines/dragonage2/dragonage2.h"
 
 namespace Engines {
 

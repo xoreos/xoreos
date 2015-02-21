@@ -25,7 +25,7 @@
 #ifndef AURORA_NWSCRIPT_UTIL_H
 #define AURORA_NWSCRIPT_UTIL_H
 
-#include "aurora/nwscript/types.h"
+#include "src/aurora/nwscript/types.h"
 
 namespace Aurora {
 

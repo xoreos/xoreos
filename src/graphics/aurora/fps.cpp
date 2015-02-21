@@ -22,13 +22,13 @@
  *  A text object displaying the current FPS.
  */
 
-#include "common/system.h"
-#include "common/ustring.h"
+#include "src/common/system.h"
+#include "src/common/ustring.h"
 
-#include "graphics/graphics.h"
-#include "graphics/font.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/font.h"
 
-#include "graphics/aurora/fps.h"
+#include "src/graphics/aurora/fps.h"
 
 namespace Graphics {
 

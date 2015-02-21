@@ -25,8 +25,8 @@
 #ifndef COMMON_ZIPFILE_H
 #define COMMON_ZIPFILE_H
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
 #include <list>
 #include <vector>

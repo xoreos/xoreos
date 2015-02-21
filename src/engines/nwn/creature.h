@@ -25,17 +25,17 @@
 #ifndef ENGINES_NWN_CREATURE_H
 #define ENGINES_NWN_CREATURE_H
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
-#include "aurora/locstring.h"
+#include "src/aurora/types.h"
+#include "src/aurora/locstring.h"
 
-#include "graphics/aurora/types.h"
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/types.h"
+#include "src/graphics/aurora/textureman.h"
 
-#include "engines/nwn/types.h"
-#include "engines/nwn/object.h"
+#include "src/engines/nwn/types.h"
+#include "src/engines/nwn/object.h"
 
 namespace Engines {
 

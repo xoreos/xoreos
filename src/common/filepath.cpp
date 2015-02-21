@@ -42,8 +42,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
-#include "common/filepath.h"
-#include "common/util.h"
+#include "src/common/filepath.h"
+#include "src/common/util.h"
 
 // boost-filesystem stuff
 using boost::filesystem::path;

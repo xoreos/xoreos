@@ -25,9 +25,9 @@
 #ifndef VIDEO_CODECS_H263_H
 #define VIDEO_CODECS_H263_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "video/codecs/codec.h"
+#include "src/video/codecs/codec.h"
 
 namespace Video {
 

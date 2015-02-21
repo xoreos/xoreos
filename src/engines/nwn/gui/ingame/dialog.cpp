@@ -25,32 +25,32 @@
 // TODO: Make dialog boxes resizeable and/or repositionable?
 // TODO: Actually, in the original, the dialog boxes do resize themselves up to a point...
 
-#include "common/util.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/configman.h"
 
-#include "aurora/talkman.h"
-#include "aurora/ssffile.h"
-#include "aurora/dlgfile.h"
+#include "src/aurora/talkman.h"
+#include "src/aurora/ssffile.h"
+#include "src/aurora/dlgfile.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "graphics/graphics.h"
-#include "graphics/font.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/font.h"
 
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/textureman.h"
-#include "graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/cursorman.h"
 
-#include "engines/aurora/tokenman.h"
+#include "src/engines/aurora/tokenman.h"
 
-#include "engines/nwn/types.h"
-#include "engines/nwn/object.h"
-#include "engines/nwn/creature.h"
-#include "engines/nwn/module.h"
+#include "src/engines/nwn/types.h"
+#include "src/engines/nwn/object.h"
+#include "src/engines/nwn/creature.h"
+#include "src/engines/nwn/module.h"
 
-#include "engines/nwn/gui/widgets/portrait.h"
+#include "src/engines/nwn/gui/widgets/portrait.h"
 
-#include "engines/nwn/gui/ingame/dialog.h"
+#include "src/engines/nwn/gui/ingame/dialog.h"
 
 static const float kDialogWidth  = 350.0;
 static const float kDialogHeight = 254.0;

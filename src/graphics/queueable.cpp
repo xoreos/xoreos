@@ -22,10 +22,10 @@
  *  An object that can be stored in a queue.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "graphics/queueman.h"
-#include "graphics/queueable.h"
+#include "src/graphics/queueman.h"
+#include "src/graphics/queueable.h"
 
 namespace Graphics {
 

@@ -25,11 +25,11 @@
 #ifndef ENGINES_AURORA_MODEL_H
 #define ENGINES_AURORA_MODEL_H
 
-#include "common/ustring.h"
-#include "common/error.h"
+#include "src/common/ustring.h"
+#include "src/common/error.h"
 
-#include "engines/aurora/model.h"
-#include "engines/aurora/modelloader.h"
+#include "src/engines/aurora/model.h"
+#include "src/engines/aurora/modelloader.h"
 
 namespace Engines {
 

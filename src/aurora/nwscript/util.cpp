@@ -24,10 +24,10 @@
 
 #include <cstdarg>
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "aurora/nwscript/util.h"
-#include "aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/util.h"
+#include "src/aurora/nwscript/variable.h"
 
 namespace Aurora {
 

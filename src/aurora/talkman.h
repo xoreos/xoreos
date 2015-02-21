@@ -27,12 +27,12 @@
 
 #include <map>
 
-#include "common/types.h"
-#include "common/singleton.h"
-#include "common/encoding.h"
+#include "src/common/types.h"
+#include "src/common/singleton.h"
+#include "src/common/encoding.h"
 
-#include "aurora/language.h"
-#include "aurora/talktable.h"
+#include "src/aurora/language.h"
+#include "src/aurora/talktable.h"
 
 namespace Common {
 	class UString;

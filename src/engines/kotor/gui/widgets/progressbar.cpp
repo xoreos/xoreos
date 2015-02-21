@@ -22,9 +22,9 @@
  *  A KotOR progressbar widget.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "engines/kotor/gui/widgets/progressbar.h"
+#include "src/engines/kotor/gui/widgets/progressbar.h"
 
 namespace Engines {
 

@@ -24,8 +24,8 @@
 
 #include <cstring>
 
-#include "common/stringmap.h"
-#include "common/util.h"
+#include "src/common/stringmap.h"
+#include "src/common/util.h"
 
 namespace Common {
 

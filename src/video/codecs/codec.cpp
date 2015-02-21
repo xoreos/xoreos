@@ -22,7 +22,7 @@
  *  Video codec base class.
  */
 
-#include "video/codecs/codec.h"
+#include "src/video/codecs/codec.h"
 
 namespace Video {
 

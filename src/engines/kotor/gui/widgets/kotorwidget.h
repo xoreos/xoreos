@@ -25,15 +25,15 @@
 #ifndef ENGINES_KOTOR_GUI_WIDGETS_KOTORWIDGET_H
 #define ENGINES_KOTOR_GUI_WIDGETS_KOTORWIDGET_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "graphics/aurora/types.h"
-#include "graphics/aurora/highlightable.h"
-#include "graphics/aurora/highlightabletext.h"
+#include "src/graphics/aurora/types.h"
+#include "src/graphics/aurora/highlightable.h"
+#include "src/graphics/aurora/highlightabletext.h"
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
 namespace Engines {
 

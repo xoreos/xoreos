@@ -26,7 +26,7 @@
 #ifndef ENGINES_ENGINEPROBE_H
 #define ENGINES_ENGINEPROBE_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
 namespace Common {
 	class UString;

@@ -25,13 +25,13 @@
 #ifndef ENGINES_NWN_GUI_MAIN_CHARPREMADE_H
 #define ENGINES_NWN_GUI_MAIN_CHARPREMADE_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "engines/nwn/types.h"
+#include "src/engines/nwn/types.h"
 
-#include "engines/nwn/gui/widgets/listbox.h"
+#include "src/engines/nwn/gui/widgets/listbox.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
 

@@ -25,7 +25,7 @@
 #ifndef COMMON_UUID_H
 #define COMMON_UUID_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
 namespace Common {
 

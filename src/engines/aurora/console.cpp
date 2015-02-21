@@ -27,27 +27,27 @@
 
 #include <boost/bind.hpp>
 
-#include "common/util.h"
-#include "common/filepath.h"
-#include "common/readline.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/filepath.h"
+#include "src/common/readline.h"
+#include "src/common/configman.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/graphics.h"
-#include "graphics/font.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/font.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "graphics/aurora/textureman.h"
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/guiquad.h"
 
-#include "engines/aurora/console.h"
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/console.h"
+#include "src/engines/aurora/util.h"
 
 
 static const uint32 kDoubleClickTime = 500;

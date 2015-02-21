@@ -24,10 +24,10 @@
  *  The global config manager.
  */
 
-#include "common/configman.h"
-#include "common/file.h"
-#include "common/filepath.h"
-#include "common/configfile.h"
+#include "src/common/configman.h"
+#include "src/common/file.h"
+#include "src/common/filepath.h"
+#include "src/common/configfile.h"
 
 DECLARE_SINGLETON(Common::ConfigManager)
 

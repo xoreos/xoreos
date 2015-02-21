@@ -27,10 +27,10 @@
 #ifndef COMMON_CONFIGMAN_H
 #define COMMON_CONFIGMAN_H
 
-#include "common/types.h"
-#include "common/error.h"
-#include "common/singleton.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/error.h"
+#include "src/common/singleton.h"
+#include "src/common/ustring.h"
 
 namespace Common {
 

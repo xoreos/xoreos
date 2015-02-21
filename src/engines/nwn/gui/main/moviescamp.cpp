@@ -22,13 +22,13 @@
  *  The campaign movies menu.
  */
 
-#include "common/configman.h"
+#include "src/common/configman.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/nwn/gui/main/moviescamp.h"
-#include "engines/nwn/gui/main/moviesbase.h"
+#include "src/engines/nwn/gui/main/moviescamp.h"
+#include "src/engines/nwn/gui/main/moviesbase.h"
 
 namespace Engines {
 

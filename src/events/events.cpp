@@ -26,20 +26,20 @@
 
 #include <SDL_timer.h>
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/threads.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/threads.h"
+#include "src/common/configman.h"
 
-#include "events/events.h"
-#include "events/requests.h"
-#include "events/notifications.h"
-#include "events/timerman.h"
-#include "events/joystick.h"
+#include "src/events/events.h"
+#include "src/events/requests.h"
+#include "src/events/notifications.h"
+#include "src/events/timerman.h"
+#include "src/events/joystick.h"
 
-#include "graphics/types.h"
-#include "graphics/graphics.h"
-#include "graphics/glcontainer.h"
+#include "src/graphics/types.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/glcontainer.h"
 
 DECLARE_SINGLETON(Events::EventsManager)
 

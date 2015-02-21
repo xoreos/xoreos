@@ -22,14 +22,14 @@
  *  TPC (BioWare's own texture format) loading.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "graphics/util.h"
+#include "src/graphics/util.h"
 
-#include "graphics/images/tpc.h"
+#include "src/graphics/images/tpc.h"
 
 static const byte kEncodingRGB          = 0x02;
 static const byte kEncodingRGBA         = 0x04;

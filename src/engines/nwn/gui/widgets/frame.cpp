@@ -22,7 +22,7 @@
  *  A NWN frame widget.
  */
 
-#include "engines/nwn/gui/widgets/frame.h"
+#include "src/engines/nwn/gui/widgets/frame.h"
 
 namespace Engines {
 

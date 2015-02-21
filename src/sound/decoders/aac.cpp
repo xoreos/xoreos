@@ -24,13 +24,13 @@
  *  Decoding AAC.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "sound/audiostream.h"
-#include "sound/decoders/aac.h"
-#include "sound/decoders/codec.h"
-#include "sound/decoders/pcm.h"
+#include "src/sound/audiostream.h"
+#include "src/sound/decoders/aac.h"
+#include "src/sound/decoders/codec.h"
+#include "src/sound/decoders/pcm.h"
 
 #include <neaacdec.h>
 

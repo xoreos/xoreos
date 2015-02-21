@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_INDEXBUFFER_H
 #define GRAPHICS_INDEXBUFFER_H
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
 namespace Graphics {
 

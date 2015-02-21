@@ -22,16 +22,16 @@
  *  An object containing scripts.
  */
 
-#include "common/util.h"
-#include "common/error.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
 
-#include "aurora/gfffile.h"
+#include "src/aurora/gfffile.h"
 
-#include "aurora/nwscript/types.h"
-#include "aurora/nwscript/variable.h"
-#include "aurora/nwscript/ncsfile.h"
+#include "src/aurora/nwscript/types.h"
+#include "src/aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/ncsfile.h"
 
-#include "engines/nwn/script/container.h"
+#include "src/engines/nwn/script/container.h"
 
 namespace Engines {
 

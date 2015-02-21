@@ -25,9 +25,9 @@
 #ifndef ENGINES_NWN_DOOR_H
 #define ENGINES_NWN_DOOR_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "engines/nwn/situated.h"
+#include "src/engines/nwn/situated.h"
 
 namespace Engines {
 

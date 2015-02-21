@@ -25,7 +25,7 @@
 #ifndef VIDEO_BINKDATA_H
 #define VIDEO_BINKDATA_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 const uint16 binkCriticalFreqs[25] = {
 	  100,  200,  300,  400,  510,  630,   770,   920,

@@ -22,19 +22,19 @@
  *  A KotOR checkbox widget.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "aurora/gfffile.h"
+#include "src/aurora/gfffile.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "graphics/aurora/guiquad.h"
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/highlightabletext.h"
-#include "graphics/aurora/highlightableguiquad.h"
+#include "src/graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/highlightabletext.h"
+#include "src/graphics/aurora/highlightableguiquad.h"
 
-#include "engines/aurora/util.h"
-#include "engines/kotor/gui/widgets/checkbox.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
 

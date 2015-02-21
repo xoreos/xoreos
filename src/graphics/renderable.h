@@ -25,10 +25,10 @@
 #ifndef GRAPHICS_RENDERABLE_H
 #define GRAPHICS_RENDERABLE_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "graphics/types.h"
-#include "graphics/queueable.h"
+#include "src/graphics/types.h"
+#include "src/graphics/queueable.h"
 
 namespace Graphics {
 

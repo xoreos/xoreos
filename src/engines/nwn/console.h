@@ -28,10 +28,10 @@
 #include <list>
 #include <map>
 
-#include "common/types.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
-#include "engines/aurora/console.h"
+#include "src/engines/aurora/console.h"
 
 namespace Engines {
 

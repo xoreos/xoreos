@@ -22,25 +22,25 @@
  *  The context needed to run a NWN2 module.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/configman.h"
 
-#include "aurora/talkman.h"
-#include "aurora/erffile.h"
+#include "src/aurora/talkman.h"
+#include "src/aurora/erffile.h"
 
-#include "graphics/camera.h"
+#include "src/graphics/camera.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/camera.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/camera.h"
 
-#include "engines/nwn2/module.h"
-#include "engines/nwn2/console.h"
-#include "engines/nwn2/campaign.h"
-#include "engines/nwn2/area.h"
+#include "src/engines/nwn2/module.h"
+#include "src/engines/nwn2/console.h"
+#include "src/engines/nwn2/campaign.h"
+#include "src/engines/nwn2/area.h"
 
 
 namespace Engines {

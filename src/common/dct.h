@@ -30,7 +30,7 @@
 #ifndef COMMON_DCT_H
 #define COMMON_DCT_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Common {
 

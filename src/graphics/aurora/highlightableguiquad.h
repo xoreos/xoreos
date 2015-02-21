@@ -21,8 +21,8 @@
 #ifndef GRAPHICS_AURORA_HIGHLIGHTABLEGUIQUAD_H
 #define GRAPHICS_AURORA_HIGHLIGHTABLEGUIQUAD_H
 
-#include "graphics/aurora/guiquad.h"
-#include "graphics/aurora/highlightable.h"
+#include "src/graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/highlightable.h"
 
 namespace Graphics {
 

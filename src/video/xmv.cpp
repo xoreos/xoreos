@@ -22,21 +22,21 @@
  *  Decoding Microsoft Xbox XMV videos.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "sound/audiostream.h"
-#include "sound/interleaver.h"
+#include "src/sound/audiostream.h"
+#include "src/sound/interleaver.h"
 
-#include "sound/decoders/wave_types.h"
-#include "sound/decoders/pcm.h"
-#include "sound/decoders/adpcm.h"
+#include "src/sound/decoders/wave_types.h"
+#include "src/sound/decoders/pcm.h"
+#include "src/sound/decoders/adpcm.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "video/xmv.h"
+#include "src/video/xmv.h"
 
-#include "video/codecs/xmvwmv2.h"
+#include "src/video/codecs/xmvwmv2.h"
 
 static const int kAudioFlagADPCM51FrontLeftRight = 1;
 static const int kAudioFlagADPCM51FrontCenterLow = 2;

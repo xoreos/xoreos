@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_MAIN_MOVIESBASE_H
 #define ENGINES_NWN_GUI_MAIN_MOVIESBASE_H
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
 

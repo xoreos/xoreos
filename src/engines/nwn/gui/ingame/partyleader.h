@@ -25,11 +25,11 @@
 #ifndef ENGINES_NWN_GUI_INGAME_PARTYLEADER_H
 #define ENGINES_NWN_GUI_INGAME_PARTYLEADER_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "events/notifyable.h"
+#include "src/events/notifyable.h"
 
-#include "engines/nwn/gui/ingame/charinfo.h"
+#include "src/engines/nwn/gui/ingame/charinfo.h"
 
 namespace Engines {
 

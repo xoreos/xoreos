@@ -22,16 +22,16 @@
  *  The new character generator.
  */
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/nwn/module.h"
-#include "engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/module.h"
+#include "src/engines/nwn/gui/widgets/button.h"
 
-#include "engines/nwn/gui/chargen/charsex.h"
-#include "engines/nwn/gui/chargen/charrace.h"
-#include "engines/nwn/gui/chargen/charportrait.h"
+#include "src/engines/nwn/gui/chargen/charsex.h"
+#include "src/engines/nwn/gui/chargen/charrace.h"
+#include "src/engines/nwn/gui/chargen/charportrait.h"
 
-#include "engines/nwn/gui/chargen/chargen.h"
+#include "src/engines/nwn/gui/chargen/chargen.h"
 
 namespace Engines {
 

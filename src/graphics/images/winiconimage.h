@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_IMAGES_WINICONIMAGE_H
 #define GRAPHICS_IMAGES_WINICONIMAGE_H
 
-#include "graphics/images/decoder.h"
+#include "src/graphics/images/decoder.h"
 
 namespace Common {
 	class SeekableReadStream;

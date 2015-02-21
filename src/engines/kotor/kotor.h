@@ -25,14 +25,14 @@
 #ifndef ENGINES_KOTOR_KOTOR_H
 #define ENGINES_KOTOR_KOTOR_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "sound/types.h"
+#include "src/sound/types.h"
 
-#include "engines/engine.h"
-#include "engines/engineprobe.h"
+#include "src/engines/engine.h"
+#include "src/engines/engineprobe.h"
 
 namespace Common {
 	class FileList;

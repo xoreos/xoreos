@@ -24,7 +24,7 @@
 
 #include <cassert>
 
-#include "graphics/images/surface.h"
+#include "src/graphics/images/surface.h"
 
 namespace Graphics {
 

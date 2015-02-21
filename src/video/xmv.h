@@ -25,7 +25,7 @@
 #ifndef VIDEO_XMV_H
 #define VIDEO_XMV_H
 
-#include "video/decoder.h"
+#include "src/video/decoder.h"
 
 namespace Common {
 	class SeekableReadStream;

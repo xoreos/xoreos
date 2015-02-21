@@ -22,17 +22,17 @@
  *  The NWN ingame compass.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "graphics/graphics.h"
-#include "graphics/camera.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/camera.h"
 
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
 
-#include "engines/nwn/gui/ingame/compass.h"
+#include "src/engines/nwn/gui/ingame/compass.h"
 
 namespace Engines {
 

@@ -24,14 +24,14 @@
  *  Decoding Microsoft's Advanced Streaming Format.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
-#include "common/util.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
+#include "src/common/util.h"
 
-#include "sound/audiostream.h"
-#include "sound/decoders/asf.h"
-#include "sound/decoders/wma.h"
-#include "sound/decoders/wave_types.h"
+#include "src/sound/audiostream.h"
+#include "src/sound/decoders/asf.h"
+#include "src/sound/decoders/wma.h"
+#include "src/sound/decoders/wave_types.h"
 
 namespace Sound {
 

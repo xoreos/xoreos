@@ -25,9 +25,9 @@
 #ifndef GRAPHICS_AURORA_GEOMETRYOBJECT_H
 #define GRAPHICS_AURORA_GEOMETRYOBJECT_H
 
-#include "graphics/renderable.h"
-#include "graphics/indexbuffer.h"
-#include "graphics/vertexbuffer.h"
+#include "src/graphics/renderable.h"
+#include "src/graphics/indexbuffer.h"
+#include "src/graphics/vertexbuffer.h"
 
 namespace Graphics {
 

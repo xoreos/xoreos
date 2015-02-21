@@ -22,23 +22,23 @@
  *  A video player.
  */
 
-#include "common/error.h"
-#include "common/util.h"
-#include "common/ustring.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/util.h"
+#include "src/common/ustring.h"
+#include "src/common/stream.h"
 
-#include "video/decoder.h"
-#include "video/actimagine.h"
-#include "video/bink.h"
-#include "video/quicktime.h"
-#include "video/xmv.h"
+#include "src/video/decoder.h"
+#include "src/video/actimagine.h"
+#include "src/video/bink.h"
+#include "src/video/quicktime.h"
+#include "src/video/xmv.h"
 
-#include "video/aurora/videoplayer.h"
+#include "src/video/aurora/videoplayer.h"
 
-#include "events/events.h"
-#include "events/requests.h"
+#include "src/events/events.h"
+#include "src/events/requests.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
 namespace Video {
 

@@ -25,9 +25,9 @@
 #ifndef COMMON_BITSTREAM_H
 #define COMMON_BITSTREAM_H
 
-#include "common/types.h"
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/types.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
 namespace Common {
 

@@ -22,25 +22,25 @@
  *  NWN script functions.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "aurora/language.h"
+#include "src/aurora/language.h"
 
-#include "aurora/nwscript/variable.h"
-#include "aurora/nwscript/functionman.h"
+#include "src/aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/functionman.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "engines/nwn/types.h"
-#include "engines/nwn/module.h"
-#include "engines/nwn/area.h"
-#include "engines/nwn/object.h"
-#include "engines/nwn/waypoint.h"
-#include "engines/nwn/door.h"
-#include "engines/nwn/creature.h"
-#include "engines/nwn/location.h"
+#include "src/engines/nwn/types.h"
+#include "src/engines/nwn/module.h"
+#include "src/engines/nwn/area.h"
+#include "src/engines/nwn/object.h"
+#include "src/engines/nwn/waypoint.h"
+#include "src/engines/nwn/door.h"
+#include "src/engines/nwn/creature.h"
+#include "src/engines/nwn/location.h"
 
-#include "engines/nwn/script/functions.h"
+#include "src/engines/nwn/script/functions.h"
 
 using Aurora::kObjectIDInvalid;
 

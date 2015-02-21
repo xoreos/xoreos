@@ -26,36 +26,36 @@
 
 #include <cstdio>
 
-#include "cline.h"
+#include "src/cline.h"
 
-#include "common/ustring.h"
-#include "common/util.h"
-#include "common/error.h"
-#include "common/filepath.h"
-#include "common/threads.h"
-#include "common/debugman.h"
-#include "common/configman.h"
+#include "src/common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/filepath.h"
+#include "src/common/threads.h"
+#include "src/common/debugman.h"
+#include "src/common/configman.h"
 
-#include "aurora/resman.h"
-#include "aurora/2dareg.h"
-#include "aurora/talkman.h"
-#include "aurora/util.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/talkman.h"
+#include "src/aurora/util.h"
 
-#include "graphics/queueman.h"
-#include "graphics/graphics.h"
+#include "src/graphics/queueman.h"
+#include "src/graphics/graphics.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "events/requests.h"
-#include "events/events.h"
-#include "events/timerman.h"
+#include "src/events/requests.h"
+#include "src/events/events.h"
+#include "src/events/timerman.h"
 
-#include "engines/enginemanager.h"
-#include "engines/gamethread.h"
+#include "src/engines/enginemanager.h"
+#include "src/engines/gamethread.h"
 
-#include "graphics/aurora/textureman.h"
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/fontman.h"
 
 void initConfig();
 

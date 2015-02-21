@@ -22,31 +22,31 @@
  *  Engine class handling Sonic Chronicles: The Dark Brotherhood
  */
 
-#include "engines/sonic/sonic.h"
+#include "src/engines/sonic/sonic.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/loadprogress.h"
-#include "engines/aurora/resources.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/loadprogress.h"
+#include "src/engines/aurora/resources.h"
 
-#include "common/util.h"
-#include "common/filelist.h"
-#include "common/stream.h"
-#include "common/strutil.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/filelist.h"
+#include "src/common/stream.h"
+#include "src/common/strutil.h"
+#include "src/common/configman.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/aurora/cube.h"
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/fps.h"
+#include "src/graphics/aurora/cube.h"
+#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fps.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "aurora/resman.h"
-#include "aurora/error.h"
-#include "aurora/ndsrom.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/error.h"
+#include "src/aurora/ndsrom.h"
 
 namespace Engines {
 

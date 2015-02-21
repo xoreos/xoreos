@@ -22,17 +22,17 @@
  *  A node within a 3D model.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
 
-#include "graphics/graphics.h"
-#include "graphics/camera.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/camera.h"
 
-#include "graphics/images/txi.h"
+#include "src/graphics/images/txi.h"
 
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/model.h"
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/texture.h"
 
 namespace Graphics {
 

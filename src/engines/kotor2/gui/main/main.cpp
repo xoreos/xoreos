@@ -22,15 +22,15 @@
  *  The KotOR 2 main menu.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/kotor2/module.h"
+#include "src/engines/kotor2/module.h"
 
-#include "engines/kotor2/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor2/gui/widgets/kotorwidget.h"
 
-#include "engines/kotor2/gui/main/main.h"
+#include "src/engines/kotor2/gui/main/main.h"
 
 namespace Engines {
 

@@ -25,21 +25,21 @@
 // Disable the "unused variable" warnings while most stuff is still stubbed
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
-#include "common/error.h"
-#include "common/maths.h"
-#include "common/stream.h"
-#include "common/encoding.h"
+#include "src/common/error.h"
+#include "src/common/maths.h"
+#include "src/common/stream.h"
+#include "src/common/encoding.h"
 
-#include "aurora/types.h"
-#include "aurora/resman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/images/decoder.h"
-#include "graphics/images/surface.h"
+#include "src/graphics/images/decoder.h"
+#include "src/graphics/images/surface.h"
 
-#include "graphics/aurora/model_nwn2.h"
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/model_nwn2.h"
+#include "src/graphics/aurora/texture.h"
 
 
 static const uint32 kMDBID = MKTAG('N', 'W', 'N', '2');

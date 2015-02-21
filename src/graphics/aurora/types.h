@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_AURORA_TYPES_H
 #define GRAPHICS_AURORA_TYPES_H
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
 namespace Graphics {
 

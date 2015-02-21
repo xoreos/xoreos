@@ -22,12 +22,12 @@
  *  The graphics menu.
  */
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/kotor/gui/options/graphics.h"
-#include "engines/kotor/gui/options/graphicsadv.h"
+#include "src/engines/kotor/gui/options/graphics.h"
+#include "src/engines/kotor/gui/options/graphicsadv.h"
 
-#include "engines/kotor/gui/widgets/checkbox.h"
+#include "src/engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
 

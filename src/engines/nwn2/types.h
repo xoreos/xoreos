@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN2_TYPES_H
 #define ENGINES_NWN2_TYPES_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Engines {
 

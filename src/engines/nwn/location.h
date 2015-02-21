@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_LOCATION_H
 #define ENGINES_NWN_LOCATION_H
 
-#include "aurora/nwscript/enginetype.h"
+#include "src/aurora/nwscript/enginetype.h"
 
 namespace Engines {
 

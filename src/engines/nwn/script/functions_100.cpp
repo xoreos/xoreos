@@ -24,21 +24,21 @@
 
 #include <boost/bind.hpp>
 
-#include "common/util.h"
-#include "common/error.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
 
-#include "aurora/nwscript/types.h"
-#include "aurora/nwscript/util.h"
-#include "aurora/nwscript/functioncontext.h"
-#include "aurora/nwscript/functionman.h"
+#include "src/aurora/nwscript/types.h"
+#include "src/aurora/nwscript/util.h"
+#include "src/aurora/nwscript/functioncontext.h"
+#include "src/aurora/nwscript/functionman.h"
 
-#include "engines/nwn/types.h"
-#include "engines/nwn/module.h"
-#include "engines/nwn/object.h"
-#include "engines/nwn/waypoint.h"
-#include "engines/nwn/creature.h"
+#include "src/engines/nwn/types.h"
+#include "src/engines/nwn/module.h"
+#include "src/engines/nwn/object.h"
+#include "src/engines/nwn/waypoint.h"
+#include "src/engines/nwn/creature.h"
 
-#include "engines/nwn/script/functions.h"
+#include "src/engines/nwn/script/functions.h"
 
 using Aurora::kObjectIDInvalid;
 

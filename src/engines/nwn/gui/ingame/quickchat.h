@@ -25,11 +25,11 @@
 #ifndef ENGINES_NWN_GUI_INGAME_QUICKCHAT_H
 #define ENGINES_NWN_GUI_INGAME_QUICKCHAT_H
 
-#include "events/notifyable.h"
+#include "src/events/notifyable.h"
 
-#include "engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/button.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
 

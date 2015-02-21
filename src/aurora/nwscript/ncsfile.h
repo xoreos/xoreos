@@ -28,13 +28,13 @@
 #include <vector>
 #include <stack>
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "aurora/types.h"
-#include "aurora/aurorafile.h"
+#include "src/aurora/types.h"
+#include "src/aurora/aurorafile.h"
 
-#include "aurora/nwscript/types.h"
-#include "aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/types.h"
+#include "src/aurora/nwscript/variable.h"
 
 namespace Common {
 	class UString;

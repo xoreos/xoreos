@@ -24,12 +24,12 @@
  *  Decoding Ogg Vorbis.
  */
 
-#include "sound/decoders/vorbis.h"
+#include "src/sound/decoders/vorbis.h"
 
-#include "common/stream.h"
-#include "common/util.h"
+#include "src/common/stream.h"
+#include "src/common/util.h"
 
-#include "sound/audiostream.h"
+#include "src/sound/audiostream.h"
 
 #include <vorbis/vorbisfile.h>
 

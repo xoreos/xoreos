@@ -25,9 +25,9 @@
 #ifndef GRAPHICS_CAMERA_H
 #define GRAPHICS_CAMERA_H
 
-#include "common/types.h"
-#include "common/singleton.h"
-#include "common/mutex.h"
+#include "src/common/types.h"
+#include "src/common/singleton.h"
+#include "src/common/mutex.h"
 
 namespace Graphics {
 

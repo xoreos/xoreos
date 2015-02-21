@@ -22,30 +22,30 @@
  *  A NWN GUI.
  */
 
-#include "common/endianness.h"
-#include "common/error.h"
-#include "common/util.h"
+#include "src/common/endianness.h"
+#include "src/common/error.h"
+#include "src/common/util.h"
 
-#include "aurora/talkman.h"
-#include "aurora/gfffile.h"
+#include "src/aurora/talkman.h"
+#include "src/aurora/gfffile.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "engines/nwn/gui/widgets/modelwidget.h"
-#include "engines/nwn/gui/widgets/textwidget.h"
-#include "engines/nwn/gui/widgets/quadwidget.h"
-#include "engines/nwn/gui/widgets/button.h"
-#include "engines/nwn/gui/widgets/checkbox.h"
-#include "engines/nwn/gui/widgets/close.h"
-#include "engines/nwn/gui/widgets/editbox.h"
-#include "engines/nwn/gui/widgets/frame.h"
-#include "engines/nwn/gui/widgets/label.h"
-#include "engines/nwn/gui/widgets/listbox.h"
-#include "engines/nwn/gui/widgets/panel.h"
-#include "engines/nwn/gui/widgets/scrollbar.h"
-#include "engines/nwn/gui/widgets/slider.h"
+#include "src/engines/nwn/gui/widgets/modelwidget.h"
+#include "src/engines/nwn/gui/widgets/textwidget.h"
+#include "src/engines/nwn/gui/widgets/quadwidget.h"
+#include "src/engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/checkbox.h"
+#include "src/engines/nwn/gui/widgets/close.h"
+#include "src/engines/nwn/gui/widgets/editbox.h"
+#include "src/engines/nwn/gui/widgets/frame.h"
+#include "src/engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/listbox.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/scrollbar.h"
+#include "src/engines/nwn/gui/widgets/slider.h"
 
-#include "engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
 

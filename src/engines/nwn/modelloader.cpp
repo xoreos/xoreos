@@ -22,15 +22,15 @@
  *  NWN model loader.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/types.h"
-#include "aurora/resman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/model_nwn.h"
+#include "src/graphics/aurora/model_nwn.h"
 
-#include "engines/nwn/modelloader.h"
+#include "src/engines/nwn/modelloader.h"
 
 namespace Engines {
 

@@ -22,12 +22,12 @@
  *  A NWN quad widget.
  */
 
-#include "common/util.h"
-#include "common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/ustring.h"
 
-#include "graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/guiquad.h"
 
-#include "engines/nwn/gui/widgets/quadwidget.h"
+#include "src/engines/nwn/gui/widgets/quadwidget.h"
 
 namespace Engines {
 

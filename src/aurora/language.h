@@ -25,7 +25,7 @@
 #ifndef AURORA_LANGUAGE_H
 #define AURORA_LANGUAGE_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
 namespace Common {
 	class UString;

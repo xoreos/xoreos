@@ -22,23 +22,23 @@
  *  The NWN ingame main menu.
  */
 
-#include "common/version.h"
+#include "src/common/version.h"
 
-#include "aurora/talkman.h"
+#include "src/aurora/talkman.h"
 
-#include "engines/nwn/version.h"
+#include "src/engines/nwn/version.h"
 
-#include "engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/label.h"
 
-#include "engines/nwn/gui/dialogs/yesnocancel.h"
-#include "engines/nwn/gui/dialogs/okcancel.h"
+#include "src/engines/nwn/gui/dialogs/yesnocancel.h"
+#include "src/engines/nwn/gui/dialogs/okcancel.h"
 
-#include "engines/nwn/gui/options/game.h"
-#include "engines/nwn/gui/options/video.h"
-#include "engines/nwn/gui/options/sound.h"
-#include "engines/nwn/gui/options/controls.h"
+#include "src/engines/nwn/gui/options/game.h"
+#include "src/engines/nwn/gui/options/video.h"
+#include "src/engines/nwn/gui/options/sound.h"
+#include "src/engines/nwn/gui/options/controls.h"
 
-#include "engines/nwn/gui/ingame/main.h"
+#include "src/engines/nwn/gui/ingame/main.h"
 
 namespace Engines {
 

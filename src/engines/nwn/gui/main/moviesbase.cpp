@@ -22,10 +22,10 @@
  *  The base game movies menu.
  */
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/nwn/gui/main/moviesbase.h"
+#include "src/engines/nwn/gui/main/moviesbase.h"
 
 namespace Engines {
 

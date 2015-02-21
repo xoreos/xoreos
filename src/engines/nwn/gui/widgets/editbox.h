@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_EDITBOX_H
 #define ENGINES_NWN_GUI_WIDGETS_EDITBOX_H
 
-#include "engines/nwn/gui/widgets/modelwidget.h"
+#include "src/engines/nwn/gui/widgets/modelwidget.h"
 
 namespace Graphics {
 

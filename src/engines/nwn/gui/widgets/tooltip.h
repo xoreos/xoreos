@@ -25,14 +25,14 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_TOOLTIP_H
 #define ENGINES_NWN_GUI_WIDGETS_TOOLTIP_H
 
-#include "common/ustring.h"
-#include "common/mutex.h"
+#include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "events/notifyable.h"
+#include "src/events/notifyable.h"
 
-#include "events/timerman.h"
+#include "src/events/timerman.h"
 
 namespace Engines {
 

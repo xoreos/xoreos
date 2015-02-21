@@ -25,9 +25,9 @@
 #ifndef ENGINES_JADE_ROOM_H
 #define ENGINES_JADE_ROOM_H
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
 namespace Engines {
 

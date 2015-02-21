@@ -22,19 +22,19 @@
  *  The portrait chooser in CharGen.
  */
 
-#include "aurora/2dareg.h"
-#include "aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
 
-#include "graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/modelnode.h"
 
-#include "engines/nwn/creature.h"
+#include "src/engines/nwn/creature.h"
 
-#include "engines/nwn/gui/widgets/button.h"
-#include "engines/nwn/gui/widgets/panel.h"
-#include "engines/nwn/gui/widgets/gridbox.h"
-#include "engines/nwn/gui/widgets/portrait.h"
+#include "src/engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/gridbox.h"
+#include "src/engines/nwn/gui/widgets/portrait.h"
 
-#include "engines/nwn/gui/chargen/charportrait.h"
+#include "src/engines/nwn/gui/chargen/charportrait.h"
 
 namespace Engines {
 

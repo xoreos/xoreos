@@ -22,21 +22,21 @@
  *  An area.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/resman.h"
-#include "aurora/gfffile.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/gfffile.h"
 
-#include "graphics/graphics.h"
-#include "graphics/renderable.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/renderable.h"
 
-#include "graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/cursorman.h"
 
-#include "engines/jade/area.h"
-#include "engines/jade/room.h"
-#include "engines/jade/artplaceable.h"
+#include "src/engines/jade/area.h"
+#include "src/engines/jade/room.h"
+#include "src/engines/jade/artplaceable.h"
 
 namespace Engines {
 

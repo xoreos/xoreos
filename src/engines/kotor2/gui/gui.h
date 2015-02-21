@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR2_GUI_GUI_H
 #define ENGINES_KOTOR2_GUI_GUI_H
 
-#include "engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
 

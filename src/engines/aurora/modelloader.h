@@ -25,7 +25,7 @@
 #ifndef ENGINES_AURORA_MODELLOADER_H
 #define ENGINES_AURORA_MODELLOADER_H
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
 namespace Common {
 	class UString;

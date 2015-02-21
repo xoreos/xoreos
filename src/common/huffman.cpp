@@ -24,10 +24,10 @@
 
 #include <cassert>
 
-#include "common/huffman.h"
-#include "common/util.h"
-#include "common/error.h"
-#include "common/bitstream.h"
+#include "src/common/huffman.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/bitstream.h"
 
 namespace Common {
 

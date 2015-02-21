@@ -22,36 +22,36 @@
  *  NWN2 area.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/configman.h"
 
-#include "aurora/locstring.h"
-#include "aurora/gfffile.h"
-#include "aurora/2dafile.h"
-#include "aurora/2dareg.h"
+#include "src/aurora/locstring.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "graphics/aurora/model.h"
-#include "graphics/aurora/model_nwn2.h"
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/model_nwn2.h"
+#include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/cursorman.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn2/area.h"
-#include "engines/nwn2/util.h"
-#include "engines/nwn2/trxfile.h"
-#include "engines/nwn2/module.h"
-#include "engines/nwn2/object.h"
-#include "engines/nwn2/waypoint.h"
-#include "engines/nwn2/placeable.h"
-#include "engines/nwn2/door.h"
-#include "engines/nwn2/creature.h"
+#include "src/engines/nwn2/area.h"
+#include "src/engines/nwn2/util.h"
+#include "src/engines/nwn2/trxfile.h"
+#include "src/engines/nwn2/module.h"
+#include "src/engines/nwn2/object.h"
+#include "src/engines/nwn2/waypoint.h"
+#include "src/engines/nwn2/placeable.h"
+#include "src/engines/nwn2/door.h"
+#include "src/engines/nwn2/creature.h"
 
 namespace Engines {
 

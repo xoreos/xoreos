@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "graphics/images/decoder.h"
+#include "src/graphics/images/decoder.h"
 
 namespace Common {
 	class SeekableReadStream;

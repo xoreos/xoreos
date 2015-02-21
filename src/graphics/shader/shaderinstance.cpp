@@ -22,7 +22,7 @@
  *  Shader instancing, allowing for easier shader resource sharing.
  */
 
-#include "graphics/shader/shaderinstance.h"
+#include "src/graphics/shader/shaderinstance.h"
 
 namespace Graphics {
 

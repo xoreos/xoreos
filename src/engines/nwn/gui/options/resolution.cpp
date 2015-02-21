@@ -22,14 +22,14 @@
  *  The NWN resolution options menu.
  */
 
-#include "common/configman.h"
+#include "src/common/configman.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "engines/nwn/gui/widgets/panel.h"
-#include "engines/nwn/gui/widgets/listbox.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/listbox.h"
 
-#include "engines/nwn/gui/options/resolution.h"
+#include "src/engines/nwn/gui/options/resolution.h"
 
 namespace Engines {
 

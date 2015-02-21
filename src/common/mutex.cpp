@@ -24,7 +24,7 @@
 
 #include <cassert>
 
-#include "common/mutex.h"
+#include "src/common/mutex.h"
 
 namespace Common {
 

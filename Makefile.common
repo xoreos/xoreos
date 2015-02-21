@@ -18,7 +18,7 @@ LIBSL       = $(XOREOS_LIBS) $(LTLIBICONV) $(ZLIB_LIBS) $(LZMA_LIBS) \
               $(VORBIS_LIBS) \
               $(LIBSL_BOOST)
 
-FLAGS_C_CXX = -I$(top_srcdir) -I$(top_srcdir)/src/ -ggdb -Wall -Wno-multichar \
+FLAGS_C_CXX = -I$(top_srcdir) -ggdb -Wall -Wno-multichar \
               -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits \
               -Wuninitialized -Wunused-parameter $(WERROR) -DGLEW_STATIC
 FLAGS_C     =

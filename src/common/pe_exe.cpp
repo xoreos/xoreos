@@ -22,9 +22,9 @@
  *  Portable executable parsing.
  */
 
-#include "common/pe_exe.h"
-#include "common/encoding.h"
-#include "common/stream.h"
+#include "src/common/pe_exe.h"
+#include "src/common/encoding.h"
+#include "src/common/stream.h"
 
 namespace Common {
 

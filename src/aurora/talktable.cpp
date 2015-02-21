@@ -22,13 +22,13 @@
  *  Handling BioWare's TLKs (talk tables).
  */
 
-#include "common/stream.h"
-#include "common/util.h"
-#include "common/encoding.h"
-#include "common/error.h"
+#include "src/common/stream.h"
+#include "src/common/util.h"
+#include "src/common/encoding.h"
+#include "src/common/error.h"
 
-#include "aurora/talktable.h"
-#include "aurora/talkman.h"
+#include "src/aurora/talktable.h"
+#include "src/aurora/talkman.h"
 
 static const uint32 kTLKID     = MKTAG('T', 'L', 'K', ' ');
 static const uint32 kVersion3  = MKTAG('V', '3', '.', '0');

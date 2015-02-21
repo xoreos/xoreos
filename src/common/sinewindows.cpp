@@ -24,7 +24,7 @@
 
 #include <cassert>
 
-#include "common/sinewindows.h"
+#include "src/common/sinewindows.h"
 
 namespace Common {
 

@@ -25,11 +25,11 @@
 #ifndef ENGINES_NWN_ITEM_H
 #define ENGINES_NWN_ITEM_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/nwn/object.h"
+#include "src/engines/nwn/object.h"
 
 namespace Engines {
 

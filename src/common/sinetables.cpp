@@ -24,7 +24,7 @@
 
 #include <cassert>
 
-#include "common/sinetables.h"
+#include "src/common/sinetables.h"
 
 namespace Common {
 

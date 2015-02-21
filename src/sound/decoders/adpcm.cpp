@@ -24,10 +24,10 @@
  *  Decoding ADPCM (Adaptive Differential Pulse Code Modulation).
  */
 
-#include "common/endianness.h"
+#include "src/common/endianness.h"
 
-#include "sound/decoders/adpcm.h"
-#include "sound/audiostream.h"
+#include "src/sound/decoders/adpcm.h"
+#include "src/sound/audiostream.h"
 
 namespace Sound {
 

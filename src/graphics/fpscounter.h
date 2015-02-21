@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_FPSCOUNTER_H
 #define GRAPHICS_FPSCOUNTER_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
 namespace Graphics {
 

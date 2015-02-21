@@ -25,11 +25,11 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_PORTRAIT_H
 #define ENGINES_NWN_GUI_WIDGETS_PORTRAIT_H
 
-#include "graphics/guifrontelement.h"
+#include "src/graphics/guifrontelement.h"
 
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/textureman.h"
 
-#include "engines/nwn/gui/widgets/nwnwidget.h"
+#include "src/engines/nwn/gui/widgets/nwnwidget.h"
 
 namespace Common {
 	class UString;

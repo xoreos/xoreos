@@ -22,7 +22,7 @@
  *  Generic mesh handling class.
  */
 
-#include "graphics/mesh/mesh.h"
+#include "src/graphics/mesh/mesh.h"
 
 namespace Graphics {
 

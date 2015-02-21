@@ -25,10 +25,10 @@
  *  (Inverse) Modified Discrete Cosine Transforms.
  */
 
-#include "common/maths.h"
-#include "common/util.h"
-#include "common/fft.h"
-#include "common/mdct.h"
+#include "src/common/maths.h"
+#include "src/common/util.h"
+#include "src/common/fft.h"
+#include "src/common/mdct.h"
 
 namespace Common {
 

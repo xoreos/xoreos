@@ -22,16 +22,16 @@
  *  BioWare's HERF file parsing.
  */
 
-#include "common/util.h"
-#include "common/file.h"
-#include "common/stream.h"
-#include "common/encoding.h"
-#include "common/hash.h"
+#include "src/common/util.h"
+#include "src/common/file.h"
+#include "src/common/stream.h"
+#include "src/common/encoding.h"
+#include "src/common/hash.h"
 
-#include "aurora/herffile.h"
-#include "aurora/error.h"
-#include "aurora/util.h"
-#include "aurora/resman.h"
+#include "src/aurora/herffile.h"
+#include "src/aurora/error.h"
+#include "src/aurora/util.h"
+#include "src/aurora/resman.h"
 
 namespace Aurora {
 

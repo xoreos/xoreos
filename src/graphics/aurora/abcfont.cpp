@@ -22,14 +22,14 @@
  *  An ABC/SBM font, as used by Jade Empire.
  */
 
-#include "common/ustring.h"
-#include "common/error.h"
-#include "common/stream.h"
+#include "src/common/ustring.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
 
-#include "aurora/resman.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/texture.h"
-#include "graphics/aurora/abcfont.h"
+#include "src/graphics/aurora/texture.h"
+#include "src/graphics/aurora/abcfont.h"
 
 namespace Graphics {
 

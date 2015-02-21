@@ -22,18 +22,18 @@
  *  A KotOR widget.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "aurora/types.h"
-#include "aurora/gfffile.h"
-#include "aurora/talkman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/talkman.h"
 
-#include "graphics/aurora/guiquad.h"
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/highlightabletext.h"
-#include "graphics/aurora/highlightableguiquad.h"
+#include "src/graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/highlightabletext.h"
+#include "src/graphics/aurora/highlightableguiquad.h"
 
-#include "engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
 

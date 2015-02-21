@@ -28,21 +28,21 @@
 
 #include <boost/unordered_set.hpp>
 
-#include "common/system.h"
-#include "common/error.h"
-#include "common/maths.h"
-#include "common/debug.h"
-#include "common/stream.h"
-#include "common/encoding.h"
-#include "common/streamtokenizer.h"
-#include "common/vector3.h"
+#include "src/common/system.h"
+#include "src/common/error.h"
+#include "src/common/maths.h"
+#include "src/common/debug.h"
+#include "src/common/stream.h"
+#include "src/common/encoding.h"
+#include "src/common/streamtokenizer.h"
+#include "src/common/vector3.h"
 
-#include "aurora/types.h"
-#include "aurora/resman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
-#include "graphics/aurora/model_nwn.h"
-#include "graphics/aurora/animation.h"
-#include "graphics/aurora/animnode.h"
+#include "src/graphics/aurora/model_nwn.h"
+#include "src/graphics/aurora/animation.h"
+#include "src/graphics/aurora/animnode.h"
 
 using Common::kDebugGraphics;
 

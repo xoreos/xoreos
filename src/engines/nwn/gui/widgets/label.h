@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_LABEL_H
 #define ENGINES_NWN_GUI_WIDGETS_LABEL_H
 
-#include "engines/nwn/gui/widgets/textwidget.h"
+#include "src/engines/nwn/gui/widgets/textwidget.h"
 
 namespace Common {
 	class UString;

@@ -22,13 +22,13 @@
 	 *  The new campaign menu.
 	 */
 
-#include "common/configman.h"
+#include "src/common/configman.h"
 
-#include "engines/nwn/gui/main/newcamp.h"
-#include "engines/nwn/gui/main/new.h"
-#include "engines/nwn/gui/main/newxp1.h"
-#include "engines/nwn/gui/main/newxp2.h"
-#include "engines/nwn/gui/main/newmodule.h"
+#include "src/engines/nwn/gui/main/newcamp.h"
+#include "src/engines/nwn/gui/main/new.h"
+#include "src/engines/nwn/gui/main/newxp1.h"
+#include "src/engines/nwn/gui/main/newxp2.h"
+#include "src/engines/nwn/gui/main/newmodule.h"
 
 namespace Engines {
 

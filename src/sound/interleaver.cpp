@@ -27,10 +27,10 @@
 
 #include <vector>
 
-#include "common/error.h"
+#include "src/common/error.h"
 
-#include "sound/audiostream.h"
-#include "sound/interleaver.h"
+#include "src/sound/audiostream.h"
+#include "src/sound/interleaver.h"
 
 namespace Sound {
 

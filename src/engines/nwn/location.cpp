@@ -22,7 +22,7 @@
  *  A location within a NWN area.
  */
 
-#include "engines/nwn/location.h"
+#include "src/engines/nwn/location.h"
 
 namespace Engines {
 

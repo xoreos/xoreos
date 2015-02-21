@@ -38,12 +38,12 @@
 #include <vector>
 #include <list>
 
-#include "common/types.h"
-#include "common/singleton.h"
-#include "common/thread.h"
-#include "common/mutex.h"
+#include "src/common/types.h"
+#include "src/common/singleton.h"
+#include "src/common/thread.h"
+#include "src/common/mutex.h"
 
-#include "sound/types.h"
+#include "src/sound/types.h"
 
 namespace Common {
 	class SeekableReadStream;

@@ -24,15 +24,15 @@
 
 #include <boost/bind.hpp>
 
-#include "common/ustring.h"
-#include "common/util.h"
-#include "common/filepath.h"
-#include "common/configman.h"
+#include "src/common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/filepath.h"
+#include "src/common/configman.h"
 
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fontman.h"
 
-#include "engines/kotor/console.h"
-#include "engines/kotor/module.h"
+#include "src/engines/kotor/console.h"
+#include "src/engines/kotor/module.h"
 
 namespace Engines {
 

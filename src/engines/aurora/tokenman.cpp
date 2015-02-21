@@ -22,7 +22,7 @@
  *  Manager for tokens in Aurora engines text strings.
  */
 
-#include "engines/aurora/tokenman.h"
+#include "src/engines/aurora/tokenman.h"
 
 DECLARE_SINGLETON(Engines::TokenManager)
 

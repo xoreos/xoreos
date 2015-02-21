@@ -22,10 +22,10 @@
  *  A widget in a GUI.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "engines/aurora/widget.h"
-#include "engines/aurora/gui.h"
+#include "src/engines/aurora/widget.h"
+#include "src/engines/aurora/gui.h"
 
 namespace Engines {
 

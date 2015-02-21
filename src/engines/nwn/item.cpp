@@ -22,21 +22,21 @@
  *  NWN inventory item.
  */
 
-#include "common/error.h"
-#include "common/maths.h"
-#include "common/util.h"
+#include "src/common/error.h"
+#include "src/common/maths.h"
+#include "src/common/util.h"
 
-#include "aurora/locstring.h"
-#include "aurora/gfffile.h"
-#include "aurora/2dafile.h"
-#include "aurora/2dareg.h"
+#include "src/aurora/locstring.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
 
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/nwn/item.h"
+#include "src/engines/nwn/item.h"
 
 namespace Engines {
 

@@ -22,14 +22,14 @@
  *  Camera management.
  */
 
-#include "common/util.h"
-#include "common/maths.h"
+#include "src/common/util.h"
+#include "src/common/maths.h"
 
-#include "graphics/camera.h"
-#include "graphics/graphics.h"
+#include "src/graphics/camera.h"
+#include "src/graphics/graphics.h"
 
-#include "events/events.h"
-#include "events/notifications.h"
+#include "src/events/events.h"
+#include "src/events/notifications.h"
 
 DECLARE_SINGLETON(Graphics::CameraManager)
 

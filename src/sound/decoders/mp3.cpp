@@ -24,12 +24,12 @@
  *  Decoding MP3 (MPEG-1 Audio Layer 3).
  */
 
-#include "sound/decoders/mp3.h"
+#include "src/sound/decoders/mp3.h"
 
-#include "common/stream.h"
-#include "common/util.h"
+#include "src/common/stream.h"
+#include "src/common/util.h"
 
-#include "sound/audiostream.h"
+#include "src/sound/audiostream.h"
 
 #include <mad.h>
 

@@ -22,14 +22,14 @@
  *  Handling BioWare's 2DAs (two-dimensional array).
  */
 
-#include "common/util.h"
-#include "common/encoding.h"
-#include "common/stream.h"
-#include "common/file.h"
-#include "common/streamtokenizer.h"
+#include "src/common/util.h"
+#include "src/common/encoding.h"
+#include "src/common/stream.h"
+#include "src/common/file.h"
+#include "src/common/streamtokenizer.h"
 
-#include "aurora/2dafile.h"
-#include "aurora/error.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/error.h"
 
 static const uint32 k2DAID     = MKTAG('2', 'D', 'A', ' ');
 static const uint32 k2DAIDTab  = MKTAG('2', 'D', 'A', '\t');

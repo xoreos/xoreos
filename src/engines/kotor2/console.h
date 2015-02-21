@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR2_CONSOLE_H
 #define ENGINES_KOTOR2_CONSOLE_H
 
-#include "engines/kotor/console.h"
+#include "src/engines/kotor/console.h"
 
 namespace Engines {
 

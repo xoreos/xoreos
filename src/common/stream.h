@@ -31,9 +31,9 @@
 #include <cstring>
 #include <cstdio>
 
-#include "common/types.h"
-#include "common/endianness.h"
-#include "common/util.h"
+#include "src/common/types.h"
+#include "src/common/endianness.h"
+#include "src/common/util.h"
 
 namespace Common {
 

@@ -25,11 +25,11 @@
 #ifndef ENGINES_AURORA_UTIL_H
 #define ENGINES_AURORA_UTIL_H
 
-#include "common/ustring.h"
+#include "src/common/ustring.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "sound/types.h"
+#include "src/sound/types.h"
 
 namespace Common {
 	class SeekableReadStream;

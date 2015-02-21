@@ -24,23 +24,23 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "common/util.h"
-#include "common/stream.h"
-#include "common/filepath.h"
-#include "common/file.h"
+#include "src/common/util.h"
+#include "src/common/stream.h"
+#include "src/common/filepath.h"
+#include "src/common/file.h"
 
-#include "aurora/resman.h"
-#include "aurora/util.h"
-#include "aurora/error.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/util.h"
+#include "src/aurora/error.h"
 
-#include "aurora/keyfile.h"
-#include "aurora/biffile.h"
-#include "aurora/erffile.h"
-#include "aurora/rimfile.h"
-#include "aurora/ndsrom.h"
-#include "aurora/zipfile.h"
-#include "aurora/pefile.h"
-#include "aurora/herffile.h"
+#include "src/aurora/keyfile.h"
+#include "src/aurora/biffile.h"
+#include "src/aurora/erffile.h"
+#include "src/aurora/rimfile.h"
+#include "src/aurora/ndsrom.h"
+#include "src/aurora/zipfile.h"
+#include "src/aurora/pefile.h"
+#include "src/aurora/herffile.h"
 
 // Check for hash collisions (if possible)
 #define CHECK_HASH_COLLISION 1

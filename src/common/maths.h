@@ -28,8 +28,8 @@
 #include <cmath>
 #include <cfloat>
 
-#include "common/system.h"
-#include "common/types.h"
+#include "src/common/system.h"
+#include "src/common/types.h"
 
 #ifndef M_SQRT1_2
 	#define M_SQRT1_2 0.70710678118654752440 /* 1/sqrt(2) */

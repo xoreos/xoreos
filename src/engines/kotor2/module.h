@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR2_MODULE_H
 #define ENGINES_KOTOR2_MODULE_H
 
-#include "engines/kotor/module.h"
+#include "src/engines/kotor/module.h"
 
 namespace Engines {
 

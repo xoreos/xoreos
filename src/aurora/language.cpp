@@ -22,10 +22,10 @@
  *  Types and functions related to language.
  */
 
-#include "common/ustring.h"
-#include "common/stream.h"
+#include "src/common/ustring.h"
+#include "src/common/stream.h"
 
-#include "aurora/language.h"
+#include "src/aurora/language.h"
 
 namespace Aurora {
 

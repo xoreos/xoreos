@@ -27,7 +27,7 @@
 
 #include <SDL_thread.h>
 
-#include "common/noncopyable.h"
+#include "src/common/noncopyable.h"
 
 namespace Common {
 

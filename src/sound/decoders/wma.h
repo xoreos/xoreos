@@ -29,7 +29,7 @@
 
 #include <vector>
 
-#include "sound/decoders/codec.h"
+#include "src/sound/decoders/codec.h"
 
 namespace Common {
 	class BitStream;

@@ -25,11 +25,11 @@
 #ifndef GRAPHICS_AURORA_ABCFONT_H
 #define GRAPHICS_AURORA_ABCFONT_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "graphics/font.h"
+#include "src/graphics/font.h"
 
-#include "graphics/aurora/textureman.h"
+#include "src/graphics/aurora/textureman.h"
 
 namespace Common {
 	class UString;

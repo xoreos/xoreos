@@ -25,7 +25,7 @@
 #ifndef ENGINES_JADE_MODELLOADER_H
 #define ENGINES_JADE_MODELLOADER_H
 
-#include "engines/aurora/modelloader.h"
+#include "src/engines/aurora/modelloader.h"
 
 namespace Engines {
 

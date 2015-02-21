@@ -22,7 +22,7 @@
  *  An object within a Jade Empire area.
  */
 
-#include "engines/jade/object.h"
+#include "src/engines/jade/object.h"
 
 namespace Engines {
 

@@ -22,11 +22,11 @@
  *  The auto pause menu.
  */
 
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/widget.h"
 
-#include "engines/kotor/gui/options/autopause.h"
+#include "src/engines/kotor/gui/options/autopause.h"
 
-#include "engines/kotor/gui/widgets/checkbox.h"
+#include "src/engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
 

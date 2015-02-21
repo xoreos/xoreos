@@ -22,12 +22,12 @@
  *  An object that can be displayed by the graphics manager.
  */
 
-#include "common/system.h"
-#include "common/error.h"
+#include "src/common/system.h"
+#include "src/common/error.h"
 
-#include "graphics/renderable.h"
-#include "graphics/types.h"
-#include "graphics/graphics.h"
+#include "src/graphics/renderable.h"
+#include "src/graphics/types.h"
+#include "src/graphics/graphics.h"
 
 namespace Graphics {
 

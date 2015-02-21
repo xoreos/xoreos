@@ -22,15 +22,15 @@
  *  NWN tileset.
  */
 
-#include "common/error.h"
-#include "common/configfile.h"
-#include "common/stream.h"
+#include "src/common/error.h"
+#include "src/common/configfile.h"
+#include "src/common/stream.h"
 
-#include "aurora/types.h"
-#include "aurora/resman.h"
-#include "aurora/talkman.h"
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/talkman.h"
 
-#include "engines/nwn/tileset.h"
+#include "src/engines/nwn/tileset.h"
 
 namespace Engines {
 

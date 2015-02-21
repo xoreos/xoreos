@@ -25,7 +25,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "graphics/indexbuffer.h"
+#include "src/graphics/indexbuffer.h"
 
 namespace Graphics {
 

@@ -22,18 +22,18 @@
  *  A GUI.
  */
 
-#include "common/system.h"
-#include "common/error.h"
+#include "src/common/system.h"
+#include "src/common/error.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "graphics/graphics.h"
-#include "graphics/renderable.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/renderable.h"
 
-#include "graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/cursorman.h"
 
-#include "engines/aurora/gui.h"
-#include "engines/aurora/widget.h"
+#include "src/engines/aurora/gui.h"
+#include "src/engines/aurora/widget.h"
 
 /** Time between clicks to still be considered a double-click. */
 static const uint32 kDoubleClickTime = 500;

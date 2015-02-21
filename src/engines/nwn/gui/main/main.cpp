@@ -22,22 +22,22 @@
  *  The main menu.
  */
 
-#include "common/configman.h"
+#include "src/common/configman.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/nwn/module.h"
+#include "src/engines/nwn/module.h"
 
-#include "engines/nwn/gui/widgets/panel.h"
+#include "src/engines/nwn/gui/widgets/panel.h"
 
-#include "engines/nwn/gui/main/main.h"
-#include "engines/nwn/gui/main/newgamefog.h"
-#include "engines/nwn/gui/main/new.h"
-#include "engines/nwn/gui/main/newcamp.h"
-#include "engines/nwn/gui/main/moviesbase.h"
-#include "engines/nwn/gui/main/moviescamp.h"
-#include "engines/nwn/gui/main/options.h"
-#include "engines/nwn/gui/main/chartype.h"
+#include "src/engines/nwn/gui/main/main.h"
+#include "src/engines/nwn/gui/main/newgamefog.h"
+#include "src/engines/nwn/gui/main/new.h"
+#include "src/engines/nwn/gui/main/newcamp.h"
+#include "src/engines/nwn/gui/main/moviesbase.h"
+#include "src/engines/nwn/gui/main/moviescamp.h"
+#include "src/engines/nwn/gui/main/options.h"
+#include "src/engines/nwn/gui/main/chartype.h"
 
 namespace Engines {
 

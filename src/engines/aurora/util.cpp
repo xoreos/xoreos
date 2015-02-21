@@ -22,25 +22,25 @@
  *  Generic Aurora engines utility functions.
  */
 
-#include "common/error.h"
-#include "common/stream.h"
-#include "common/file.h"
-#include "common/configman.h"
+#include "src/common/error.h"
+#include "src/common/stream.h"
+#include "src/common/file.h"
+#include "src/common/configman.h"
 
-#include "../../aurora/util.h"
-#include "../../aurora/resman.h"
-#include "../../aurora/gfffile.h"
-#include "../../aurora/2dafile.h"
+#include "src/aurora/util.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/gfffile.h"
+#include "src/aurora/2dafile.h"
 
-#include "graphics/aurora/texture.h"
+#include "src/graphics/aurora/texture.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "video/aurora/videoplayer.h"
+#include "src/video/aurora/videoplayer.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
 namespace Engines {
 

@@ -25,11 +25,11 @@
 #ifndef ENGINES_NWN_GUI_GUI_H
 #define ENGINES_NWN_GUI_GUI_H
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "engines/aurora/gui.h"
+#include "src/engines/aurora/gui.h"
 
 namespace Engines {
 

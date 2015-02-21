@@ -25,13 +25,13 @@
 #ifndef VIDEO_DECODER_H
 #define VIDEO_DECODER_H
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "graphics/types.h"
-#include "graphics/glcontainer.h"
-#include "graphics/renderable.h"
+#include "src/graphics/types.h"
+#include "src/graphics/glcontainer.h"
+#include "src/graphics/renderable.h"
 
-#include "sound/types.h"
+#include "src/sound/types.h"
 
 namespace Graphics {
 	class Surface;

@@ -22,12 +22,12 @@
  *  A simple TTF renderer outputting BGRA.
  */
 
-#include "common/util.h"
-#include "common/error.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
 
-#include "graphics/ttf.h"
+#include "src/graphics/ttf.h"
 
-#include "graphics/images/surface.h"
+#include "src/graphics/images/surface.h"
 
 namespace Graphics {
 

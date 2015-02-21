@@ -26,14 +26,14 @@
 
 #include <xvid.h>
 
-#include "common/util.h"
-#include "common/stream.h"
+#include "src/common/util.h"
+#include "src/common/stream.h"
 
-#include "graphics/yuv_to_rgb.h"
+#include "src/graphics/yuv_to_rgb.h"
 
-#include "graphics/images/surface.h"
+#include "src/graphics/images/surface.h"
 
-#include "video/codecs/h263.h"
+#include "src/video/codecs/h263.h"
 
 namespace Video {
 

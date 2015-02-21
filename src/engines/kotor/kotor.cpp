@@ -22,35 +22,35 @@
  *  Engine class handling Star Wars: Knights of the Old Republic
  */
 
-#include "common/util.h"
-#include "common/filelist.h"
-#include "common/filepath.h"
-#include "common/stream.h"
-#include "common/configman.h"
+#include "src/common/util.h"
+#include "src/common/filelist.h"
+#include "src/common/filepath.h"
+#include "src/common/stream.h"
+#include "src/common/configman.h"
 
-#include "aurora/util.h"
-#include "aurora/resman.h"
-#include "aurora/talkman.h"
+#include "src/aurora/util.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/talkman.h"
 
-#include "sound/sound.h"
+#include "src/sound/sound.h"
 
-#include "events/events.h"
+#include "src/events/events.h"
 
-#include "graphics/aurora/cursorman.h"
-#include "graphics/aurora/fontman.h"
-#include "graphics/aurora/fps.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fps.h"
 
-#include "engines/aurora/util.h"
-#include "engines/aurora/loadprogress.h"
-#include "engines/aurora/resources.h"
-#include "engines/aurora/model.h"
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/loadprogress.h"
+#include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/model.h"
 
-#include "engines/kotor/kotor.h"
-#include "engines/kotor/modelloader.h"
-#include "engines/kotor/module.h"
-#include "engines/kotor/console.h"
+#include "src/engines/kotor/kotor.h"
+#include "src/engines/kotor/modelloader.h"
+#include "src/engines/kotor/module.h"
+#include "src/engines/kotor/console.h"
 
-#include "engines/kotor/gui/main/main.h"
+#include "src/engines/kotor/gui/main/main.h"
 
 namespace Engines {
 

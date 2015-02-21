@@ -22,10 +22,10 @@
  *  NWScript variable.
  */
 
-#include "common/error.h"
+#include "src/common/error.h"
 
-#include "aurora/nwscript/variable.h"
-#include "aurora/nwscript/enginetype.h"
+#include "src/aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/enginetype.h"
 
 namespace Aurora {
 

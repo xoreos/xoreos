@@ -27,9 +27,9 @@
 
 #include <vector>
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "events/types.h"
+#include "src/events/types.h"
 
 namespace Common {
 	class UString;

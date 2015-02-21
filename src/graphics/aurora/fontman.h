@@ -27,12 +27,12 @@
 
 #include <map>
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
-#include "common/types.h"
-#include "common/singleton.h"
-#include "common/mutex.h"
-#include "common/ustring.h"
+#include "src/common/types.h"
+#include "src/common/singleton.h"
+#include "src/common/mutex.h"
+#include "src/common/ustring.h"
 
 namespace Graphics {
 

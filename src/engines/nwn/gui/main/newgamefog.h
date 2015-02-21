@@ -27,9 +27,9 @@
 
 #include <vector>
 
-#include "common/types.h"
+#include "src/common/types.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
 namespace Engines {
 

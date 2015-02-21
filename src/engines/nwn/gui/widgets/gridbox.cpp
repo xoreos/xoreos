@@ -22,14 +22,14 @@
  *  A NWN gridbox widget.
  */
 
-#include "common/util.h"
+#include "src/common/util.h"
 
-#include "graphics/graphics.h"
+#include "src/graphics/graphics.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "engines/nwn/gui/widgets/scrollbar.h"
-#include "engines/nwn/gui/widgets/gridbox.h"
+#include "src/engines/nwn/gui/widgets/scrollbar.h"
+#include "src/engines/nwn/gui/widgets/gridbox.h"
 
 namespace Engines {
 

@@ -25,7 +25,7 @@
 #ifndef COMMON_SINGLETON_H
 #define COMMON_SINGLETON_H
 
-#include "common/noncopyable.h"
+#include "src/common/noncopyable.h"
 
 namespace Common {
 

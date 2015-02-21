@@ -27,13 +27,13 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "common/ustring.h"
-#include "common/file.h"
-#include "common/threads.h"
+#include "src/common/ustring.h"
+#include "src/common/file.h"
+#include "src/common/threads.h"
 
-#include "graphics/types.h"
+#include "src/graphics/types.h"
 
-#include "graphics/images/screenshot.h"
+#include "src/graphics/images/screenshot.h"
 
 namespace Graphics {
 

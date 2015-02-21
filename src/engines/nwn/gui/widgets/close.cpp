@@ -22,14 +22,14 @@
  *  A NWN close button widget.
  */
 
-#include "common/system.h"
-#include "common/ustring.h"
+#include "src/common/system.h"
+#include "src/common/ustring.h"
 
-#include "graphics/aurora/model.h"
+#include "src/graphics/aurora/model.h"
 
-#include "engines/aurora/util.h"
+#include "src/engines/aurora/util.h"
 
-#include "engines/nwn/gui/widgets/close.h"
+#include "src/engines/nwn/gui/widgets/close.h"
 
 namespace Engines {
 

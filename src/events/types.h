@@ -27,7 +27,7 @@
 
 #include <stdexcept>
 
-#include "common/error.h"
+#include "src/common/error.h"
 
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>

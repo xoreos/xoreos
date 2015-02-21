@@ -24,7 +24,7 @@
 
 #include <cassert>
 
-#include "common/cosinetables.h"
+#include "src/common/cosinetables.h"
 
 namespace Common {
 

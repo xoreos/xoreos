@@ -22,9 +22,9 @@
  *  A KotOR slider widget.
  */
 
-#include "common/system.h"
+#include "src/common/system.h"
 
-#include "engines/kotor/gui/widgets/slider.h"
+#include "src/engines/kotor/gui/widgets/slider.h"
 
 namespace Engines {
 

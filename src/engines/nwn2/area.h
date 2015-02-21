@@ -27,20 +27,20 @@
 
 #include <vector>
 
-#include "common/types.h"
-#include "common/ustring.h"
-#include "common/mutex.h"
+#include "src/common/types.h"
+#include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
-#include "aurora/types.h"
+#include "src/aurora/types.h"
 
-#include "aurora/nwscript/object.h"
+#include "src/aurora/nwscript/object.h"
 
-#include "graphics/aurora/types.h"
+#include "src/graphics/aurora/types.h"
 
-#include "sound/types.h"
+#include "src/sound/types.h"
 
-#include "events/types.h"
-#include "events/notifyable.h"
+#include "src/events/types.h"
+#include "src/events/notifyable.h"
 
 namespace Engines {
 

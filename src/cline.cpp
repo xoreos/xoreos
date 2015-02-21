@@ -25,13 +25,13 @@
 #include <cstdio>
 #include <cstring>
 
-#include "cline.h"
+#include "src/cline.h"
 
-#include "common/ustring.h"
-#include "common/util.h"
-#include "common/version.h"
+#include "src/common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/version.h"
 
-#include "common/configman.h"
+#include "src/common/configman.h"
 
 static void displayUsage(const char *name) {
 	std::printf("xoreos - A reimplementation of BioWare's Aurora engine\n");

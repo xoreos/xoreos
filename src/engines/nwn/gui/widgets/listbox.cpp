@@ -22,21 +22,21 @@
  *  A NWN listbox widget.
  */
 
-#include "common/util.h"
-#include "common/error.h"
-#include "common/ustring.h"
+#include "src/common/util.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
 
-#include "graphics/graphics.h"
-#include "graphics/font.h"
+#include "src/graphics/graphics.h"
+#include "src/graphics/font.h"
 
-#include "graphics/aurora/modelnode.h"
-#include "graphics/aurora/model.h"
-#include "graphics/aurora/text.h"
-#include "graphics/aurora/fontman.h"
+#include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/text.h"
+#include "src/graphics/aurora/fontman.h"
 
-#include "engines/nwn/gui/widgets/button.h"
-#include "engines/nwn/gui/widgets/scrollbar.h"
-#include "engines/nwn/gui/widgets/listbox.h"
+#include "src/engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/scrollbar.h"
+#include "src/engines/nwn/gui/widgets/listbox.h"
 
 namespace Engines {
 
