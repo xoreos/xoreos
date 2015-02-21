@@ -39,6 +39,8 @@ doxygen-clean:
 	rm -rf doc/doxygen/html/
 	rm -rf doc/doxygen/latex/
 	rm -rf doc/doxygen/man/
+	rm -rf doc/doxygen/*.tmp
+	rm -rf doc/doxygen/*.db
 
 # TODO: Make a static target for this (would involve changing sdl-config to use static libs, static versions of SDL_sound and SDL_mixer, and creating a framework folder for OpenGL).
 BUNDLE_NAME = Xoreos.app
