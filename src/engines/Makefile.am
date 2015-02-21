@@ -28,6 +28,7 @@ noinst_HEADERS = \
                  aurora/gui.h \
                  aurora/console.h \
                  aurora/loadprogress.h \
+                 aurora/language.h \
                  aurora/camera.h \
                  $(EMPTY)
 
@@ -44,6 +45,7 @@ libengines_la_SOURCES = \
                         aurora/gui.cpp \
                         aurora/console.cpp \
                         aurora/loadprogress.cpp \
+                        aurora/language.cpp \
                         aurora/camera.cpp \
                         $(EMPTY)
 
