@@ -45,6 +45,8 @@ public:
 
 	/** Get the GameID that the probe is able to detect. */
 	virtual Aurora::GameID getGameID() const = 0;
+	/** Get the Platform that the probe is able to detect. */
+	virtual Aurora::Platform getPlatform() const = 0;
 
 	/** Return a string of the full game name. */
 	virtual const Common::UString &getGameName() const = 0;
@@ -57,9 +59,6 @@ public:
 
 	/** Create the respective engine for the GameID. */
 	virtual Engine *createEngine() const = 0;
-
-	/** Get the GameID that the probe is able to detect. */
-	virtual Aurora::Platform getPlatform() const = 0;
 };
 
 } // End of namespace Engines
