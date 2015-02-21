@@ -97,9 +97,7 @@ NWN2Engine::NWN2Engine() : _hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(
 NWN2Engine::~NWN2Engine() {
 }
 
-void NWN2Engine::run(const Common::UString &target) {
-	_baseDirectory = target;
-
+void NWN2Engine::run() {
 	init();
 	if (EventMan.quitRequested())
 		return;
@@ -181,7 +179,7 @@ void NWN2Engine::declareEncodings() {
 
 void NWN2Engine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_baseDirectory);
+	ResMan.registerDataBaseDir(_target);
 	indexMandatoryDirectory("", 0, 0, 1);
 
 	// NWN2's new file types overlap with other engines in the 3000s block

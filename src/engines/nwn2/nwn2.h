@@ -75,11 +75,9 @@ public:
 	NWN2Engine();
 	~NWN2Engine();
 
-	void run(const Common::UString &target);
+	void run();
 
 private:
-	Common::UString _baseDirectory;
-
 	bool _hasXP1; // Mask of the Betrayer (MotB)
 	bool _hasXP2; // Storm of Zehir (SoZ)
 	bool _hasXP3; // Mysteries of Westgate (MoW)

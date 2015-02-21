@@ -91,9 +91,7 @@ SonicEngine::SonicEngine() {
 SonicEngine::~SonicEngine() {
 }
 
-void SonicEngine::run(const Common::UString &target) {
-	_romFile = target;
-
+void SonicEngine::run() {
 	init();
 
 	playIntroVideos();
@@ -129,7 +127,7 @@ void SonicEngine::init() {
 	ResMan.setHashAlgo(Common::kHashDJB2);
 
 	progress.step("Indexing the ROM file");
-	indexMandatoryArchive(Aurora::kArchiveNDS, _romFile, 1);
+	indexMandatoryArchive(Aurora::kArchiveNDS, _target, 1);
 	progress.step("Indexing the main HERF file");
 	indexMandatoryArchive(Aurora::kArchiveHERF, "test.herf", 2);
 

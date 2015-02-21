@@ -74,7 +74,7 @@ const Common::UString &WitcherEngineProbe::getGameName() const {
 }
 
 bool WitcherEngineProbe::probe(const Common::UString &directory,
-                                  const Common::FileList &UNUSED(rootFiles)) const {
+                               const Common::FileList &UNUSED(rootFiles)) const {
 
 	// There should be a system directory
 	Common::UString systemDir = Common::FilePath::findSubDirectory(directory, "system", true);
@@ -105,9 +105,7 @@ WitcherEngine::WitcherEngine() {
 WitcherEngine::~WitcherEngine() {
 }
 
-void WitcherEngine::run(const Common::UString &target) {
-	_baseDirectory = target;
-
+void WitcherEngine::run() {
 	init();
 	if (EventMan.quitRequested())
 		return;
@@ -164,7 +162,7 @@ void WitcherEngine::init() {
 	LoadProgress progress(11);
 
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_baseDirectory);
+	ResMan.registerDataBaseDir(_target);
 
 	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveEXE, "system");

@@ -102,9 +102,7 @@ JadeEngine::JadeEngine() {
 JadeEngine::~JadeEngine() {
 }
 
-void JadeEngine::run(const Common::UString &target) {
-	_baseDirectory = target;
-
+void JadeEngine::run() {
 	init();
 	if (EventMan.quitRequested())
 		return;
@@ -186,7 +184,7 @@ void JadeEngine::declareEncodings() {
 
 void JadeEngine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_baseDirectory);
+	ResMan.registerDataBaseDir(_target);
 
 	// Some new file types with the same function as old ones re-use the type ID
 	ResMan.addTypeAlias(Aurora::kFileTypeBTC, Aurora::kFileTypeCRE);
@@ -253,7 +251,7 @@ void JadeEngine::initConfig() {
 
 void JadeEngine::initGameConfig() {
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "JADE_moduleDir",
-		Common::FilePath::findSubDirectory(_baseDirectory, "data", true));
+		Common::FilePath::findSubDirectory(_target, "data", true));
 }
 
 void JadeEngine::deinit() {

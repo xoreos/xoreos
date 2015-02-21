@@ -91,9 +91,7 @@ DragonAge2Engine::DragonAge2Engine() {
 DragonAge2Engine::~DragonAge2Engine() {
 }
 
-void DragonAge2Engine::run(const Common::UString &target) {
-	_baseDirectory = target;
-
+void DragonAge2Engine::run() {
 	init();
 	if (EventMan.quitRequested())
 		return;
@@ -138,7 +136,7 @@ void DragonAge2Engine::init() {
 	ResMan.setRIMsAreERFs(true);
 
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_baseDirectory);
+	ResMan.registerDataBaseDir(_target);
 
 	progress.step("Adding extra archive directories");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/data");

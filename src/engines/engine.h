@@ -25,9 +25,9 @@
 #ifndef ENGINES_ENGINE_H
 #define ENGINES_ENGINE_H
 
-namespace Common {
-	class UString;
-}
+#include "common/ustring.h"
+
+#include "aurora/types.h"
 
 namespace Engines {
 
@@ -37,8 +37,15 @@ public:
 	Engine();
 	virtual ~Engine();
 
+	void start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform);
+
+protected:
+	Aurora::GameID   _game;
+	Aurora::Platform _platform;
+	Common::UString  _target;
+
 	/** Run the game. */
-	virtual void run(const Common::UString &target) = 0;
+	virtual void run() = 0;
 };
 
 } // End of namespace Engines

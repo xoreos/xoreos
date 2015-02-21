@@ -30,6 +30,7 @@
 #include "common/debugman.h"
 #include "common/configman.h"
 
+#include "aurora/types.h"
 #include "aurora/error.h"
 #include "aurora/resman.h"
 #include "aurora/talkman.h"
@@ -64,16 +65,6 @@ DECLARE_SINGLETON(Engines::EngineManager)
 
 namespace Engines {
 
-GameInstance::GameInstance(const Common::UString &target) : _target(target),
-	_gameID(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnknown), _engine(0) {
-
-}
-
-GameInstance::~GameInstance() {
-	delete _engine;
-}
-
-
 static const EngineProbe *kProbes[] = {
 	&NWN::kNWNEngineProbeLinux,
 	&NWN::kNWNEngineProbeMac,
@@ -92,110 +83,154 @@ static const EngineProbe *kProbes[] = {
 	&DragonAge2::kDragonAge2EngineProbe
 };
 
-bool EngineManager::probeGame(GameInstance &game) const {
-	game._gameID   = Aurora::kGameIDUnknown;
-	game._platform = Aurora::kPlatformUnknown;
 
-	if (Common::FilePath::isDirectory(game._target)) {
+GameInstance::GameInstance() {
+}
+
+GameInstance::~GameInstance() {
+}
+
+
+class GameInstanceEngine : public GameInstance {
+public:
+	~GameInstanceEngine();
+
+	Common::UString getGameName(bool platform) const;
+
+private:
+	Common::UString _target;
+
+	const EngineProbe *_probe;
+	Engine *_engine;
+
+	GameInstanceEngine(const Common::UString &target);
+
+	/** Find an engine capable of running the game found in the GameInstance's target. */
+	bool probe();
+	/** Reset the GameInstance to a pre-probe state. */
+	void reset();
+
+	/** Run the probed game in the GameInstance's target. */
+	void run();
+
+	bool probe(const Common::FileList &rootFiles);
+	bool probe(Common::SeekableReadStream &stream);
+
+	void createEngine();
+	void destroyEngine();
+
+	friend class EngineManager;
+};
+
+GameInstanceEngine::GameInstanceEngine(const Common::UString &target) : _target(target),
+	_probe(0), _engine(0) {
+}
+
+GameInstanceEngine::~GameInstanceEngine() {
+	delete _engine;
+}
+
+void GameInstanceEngine::reset() {
+	destroyEngine();
+	_probe = 0;
+}
+
+bool GameInstanceEngine::probe() {
+	if (Common::FilePath::isDirectory(_target)) {
 		// Try to probe from that directory
 
 		Common::FileList rootFiles;
 
-		if (!rootFiles.addDirectory(game._target))
+		if (!rootFiles.addDirectory(_target))
 			// Fatal: can't read the directory
 			return false;
 
-		return probeGame(game, rootFiles);
+		return probe(rootFiles);
 	}
 
-	if (Common::FilePath::isRegularFile(game._target)) {
+	if (Common::FilePath::isRegularFile(_target)) {
 		// Try to probe from that file
 
 		Common::File file;
-		if (file.open(game._target))
-			return probeGame(game, file);
+		if (file.open(_target))
+			return probe(file);
 	}
 
 	return false;
 }
 
-bool EngineManager::probeGame(GameInstance &game, const Common::FileList &rootFiles) const {
+bool GameInstanceEngine::probe(const Common::FileList &rootFiles) {
 	// Try to find the first engine able to handle the directory's data
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
-
-		if (kProbes[i]->probe(game._target, rootFiles)) {
-			// Found one
-
-			game._gameID   = kProbes[i]->getGameID();
-			game._platform = kProbes[i]->getPlatform();
-
+		if (kProbes[i]->probe(_target, rootFiles)) {
+			_probe = kProbes[i];
 			return true;
 		}
-
 	}
 
-	// None found
 	return false;
 }
 
-bool EngineManager::probeGame(GameInstance &game, Common::SeekableReadStream &stream) const {
+bool GameInstanceEngine::probe(Common::SeekableReadStream &stream) {
 	// Try to find the first engine able to handle the stream's data
 	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
-
 		if (kProbes[i]->probe(stream)) {
-			// Found one
-
-			game._gameID   = kProbes[i]->getGameID();
-			game._platform = kProbes[i]->getPlatform();
-
+			_probe = kProbes[i];
 			return true;
 		}
-
 	}
 
-	// None found
 	return false;
 }
 
-Common::UString EngineManager::getGameName(GameInstance &game, bool platform) const {
-	Common::UString gameName;
+Common::UString GameInstanceEngine::getGameName(bool platform) const {
+	if (!_probe)
+		return "";
 
-	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
-		if (kProbes[i]->getGameID() == game._gameID) {
-			gameName = kProbes[i]->getGameName();
-
-			if (platform)
-				gameName += " (" + Aurora::getPlatformDescription(game._platform) + ")";
-
-			break;
-		}
-	}
+	Common::UString gameName = _probe->getGameName();
+	if (platform)
+		gameName += " (" + Aurora::getPlatformDescription(_probe->getPlatform()) + ")";
 
 	return gameName;
 }
 
-void EngineManager::createEngine(GameInstance &game) const {
-	if (game._engine)
-		return;
+void GameInstanceEngine::createEngine() {
+	if (!_probe)
+		throw Common::Exception("GameInstanceEngine::createEngine(): No game probed");
 
-	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
-		if ((kProbes[i]->getGameID()   == game._gameID) &&
-		    (kProbes[i]->getPlatform() == game._platform)) {
+	destroyEngine();
+	_engine = _probe->createEngine();
+}
 
-			game._engine = kProbes[i]->createEngine();
-			break;
-		}
-	}
+void GameInstanceEngine::destroyEngine() {
+	delete _engine;
+	_engine = 0;
+}
 
-	if (!game._engine)
-		throw Common::Exception("Failed to create the engine for GameID %d", game._gameID);
+void GameInstanceEngine::run() {
+	createEngine();
+
+	_engine->start(_probe->getGameID(), _target, _probe->getPlatform());
+
+	destroyEngine();
+}
+
+
+GameInstance *EngineManager::probeGame(const Common::UString &target) const {
+	GameInstanceEngine *game = new GameInstanceEngine(target);
+	if (game->probe())
+		return game;
+
+	delete game;
+	return 0;
 }
 
 void EngineManager::run(GameInstance &game) const {
-	try {
-		createEngine(game);
+	GameInstanceEngine *gameEngine = dynamic_cast<GameInstanceEngine *>(&game);
+	assert(gameEngine);
 
-		game._engine->run(game._target);
+	try {
+		gameEngine->run();
 		EventMan.requestQuit();
 
 		// Clean up after the engine
@@ -217,9 +252,11 @@ void EngineManager::run(GameInstance &game) const {
 }
 
 void EngineManager::cleanup(GameInstance &game) const {
+	GameInstanceEngine *gameEngine = dynamic_cast<GameInstanceEngine *>(&game);
+	assert(gameEngine);
+
 	try {
-		delete game._engine;
-		game._engine = 0;
+		gameEngine->reset();
 
 		DebugMan.clearEngineChannels();
 

@@ -98,15 +98,12 @@ extern const KotOREngineProbeXbox kKotOREngineProbeXbox;
 
 class KotOREngine : public Engines::Engine {
 public:
-	KotOREngine(Aurora::Platform platform);
+	KotOREngine();
 	~KotOREngine();
 
-	void run(const Common::UString &target);
+	void run();
 
 private:
-	Common::UString _baseDirectory;
-	Aurora::Platform _platform;
-
 	Graphics::Aurora::FPS *_fps;
 
 	Sound::ChannelHandle _menuMusic;

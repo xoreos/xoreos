@@ -24,13 +24,20 @@
 
 #include "engines/engine.h"
 
-
 namespace Engines {
 
 Engine::Engine() {
 }
 
 Engine::~Engine() {
+}
+
+void Engine::start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform) {
+	_game     = game;
+	_platform = platform;
+	_target   = target;
+
+	run();
 }
 
 } // End of namespace Engine

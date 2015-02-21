@@ -67,11 +67,9 @@ public:
 	WitcherEngine();
 	~WitcherEngine();
 
-	void run(const Common::UString &target);
+	void run();
 
 private:
-	Common::UString _baseDirectory;
-
 	void init();
 	void initCursors();
 };

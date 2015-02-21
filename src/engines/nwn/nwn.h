@@ -36,8 +36,6 @@
 #include "engines/engine.h"
 #include "engines/engineprobe.h"
 
-#include "engines/nwn/version.h"
-
 namespace Common {
 	class FileList;
 }
@@ -54,6 +52,7 @@ class LoadProgress;
 
 namespace NWN {
 
+class Version;
 class ScriptFunctions;
 
 class NWNEngineProbe : public Engines::EngineProbe {
@@ -122,10 +121,10 @@ extern const NWNEngineProbeFallback kNWNEngineProbeFallback;
 
 class NWNEngine : public Engines::Engine {
 public:
-	NWNEngine(Aurora::Platform platform);
+	NWNEngine();
 	~NWNEngine();
 
-	void run(const Common::UString &target);
+	void run();
 
 	/** Return a list of all modules. */
 	static void getModules(std::vector<Common::UString> &modules);
@@ -135,9 +134,7 @@ public:
 	static void getCharacters(std::vector<Common::UString> &characters, bool local);
 
 private:
-	Common::UString _baseDirectory;
-
-	Version _version;
+	Version *_version;
 
 	bool _hasXP1; // Shadows of Undrentide (SoU)
 	bool _hasXP2; // Hordes of the Underdark (HotU)

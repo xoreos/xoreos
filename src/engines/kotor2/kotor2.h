@@ -87,15 +87,12 @@ extern const KotOR2EngineProbeXbox kKotOR2EngineProbeXbox;
 
 class KotOR2Engine : public Engines::Engine {
 public:
-	KotOR2Engine(Aurora::Platform platform);
+	KotOR2Engine();
 	~KotOR2Engine();
 
-	void run(const Common::UString &target);
+	void run();
 
 private:
-	Common::UString _baseDirectory;
-	Aurora::Platform _platform;
-
 	Graphics::Aurora::FPS *_fps;
 
 	Sound::ChannelHandle _menuMusic;

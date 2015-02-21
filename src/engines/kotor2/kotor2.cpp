@@ -81,7 +81,7 @@ bool KotOR2EngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const 
 }
 
 Engines::Engine *KotOR2EngineProbe::createEngine() const {
-	return new KotOR2Engine(getPlatform());
+	return new KotOR2Engine;
 }
 
 
@@ -112,15 +112,13 @@ bool KotOR2EngineProbeXbox::probe(const Common::UString &directory, const Common
 }
 
 
-KotOR2Engine::KotOR2Engine(Aurora::Platform platform) : _platform(platform), _fps(0) {
+KotOR2Engine::KotOR2Engine() : _fps(0) {
 }
 
 KotOR2Engine::~KotOR2Engine() {
 }
 
-void KotOR2Engine::run(const Common::UString &target) {
-	_baseDirectory = target;
-
+void KotOR2Engine::run() {
 	init();
 	if (EventMan.quitRequested())
 		return;
@@ -208,7 +206,7 @@ void KotOR2Engine::declareEncodings() {
 
 void KotOR2Engine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_baseDirectory);
+	ResMan.registerDataBaseDir(_target);
 
 	// In the Xbox version of KotOR, TXB textures are actually TPCs
 	if (_platform == Aurora::kPlatformXbox)
@@ -412,7 +410,7 @@ void KotOR2Engine::initConfig() {
 
 void KotOR2Engine::initGameConfig() {
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "KOTOR_moduleDir",
-		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
+		Common::FilePath::findSubDirectory(_target, "modules", true));
 }
 
 void KotOR2Engine::checkConfig() {

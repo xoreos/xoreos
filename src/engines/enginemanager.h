@@ -28,8 +28,6 @@
 #include "common/ustring.h"
 #include "common/singleton.h"
 
-#include "aurora/types.h"
-
 namespace Common {
 	class SeekableReadStream;
 	class FileList;
@@ -37,47 +35,24 @@ namespace Common {
 
 namespace Engines {
 
-class Engine;
-
 class GameInstance {
 public:
-	GameInstance(const Common::UString &target);
-	~GameInstance();
+	GameInstance();
+	virtual ~GameInstance();
 
-private:
-	Common::UString _target;
-
-	Aurora::GameID   _gameID;
-	Aurora::Platform _platform;
-
-	Engine *_engine;
-
-	friend class EngineManager;
+	virtual Common::UString getGameName(bool platform) const = 0;
 };
 
 /** The global engine manager. */
 class EngineManager : public Common::Singleton<EngineManager> {
 public:
-	/** Find an engine capable of running the specified game.
-	 *
-	 *  @param game The game game containing the target file or directory.
-	 *  @return true if an engine capable of running the game was found.
-	 */
-	bool probeGame(GameInstance &game) const;
+	/** Return a game instance capable of running the game in this directory. */
+	GameInstance *probeGame(const Common::UString &target) const;
 
-	/** Create and initialize the specified game's engine. */
-	void createEngine(GameInstance &game) const;
-
-	/** Run the specified game. */
+	/** Run this game instance. */
 	void run(GameInstance &game) const;
 
-	/** Return the full game name to that game. */
-	Common::UString getGameName(GameInstance &game, bool platform = false) const;
-
 private:
-	bool probeGame(GameInstance &game, const Common::FileList &rootFiles) const;
-	bool probeGame(GameInstance &game, Common::SeekableReadStream &stream) const;
-
 	void cleanup(GameInstance &game) const;
 };
 

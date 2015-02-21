@@ -67,7 +67,7 @@ public:
 	SonicEngine();
 	~SonicEngine();
 
-	void run(const Common::UString &target);
+	void run();
 
 private:
 	Common::UString _romFile;

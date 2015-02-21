@@ -50,6 +50,7 @@
 #include "engines/aurora/model.h"
 
 #include "engines/nwn/nwn.h"
+#include "engines/nwn/version.h"
 #include "engines/nwn/modelloader.h"
 #include "engines/nwn/console.h"
 #include "engines/nwn/module.h"
@@ -71,7 +72,7 @@ const NWNEngineProbeFallback kNWNEngineProbeFallback;
 const Common::UString NWNEngineProbe::kGameName = "Neverwinter Nights";
 
 Engines::Engine *NWNEngineProbe::createEngine() const {
-	return new NWNEngine(getPlatform());
+	return new NWNEngine;
 }
 
 bool NWNEngineProbeWindows::probe(const Common::UString &UNUSED(directory),
@@ -111,7 +112,7 @@ bool NWNEngineProbeFallback::probe(const Common::UString &UNUSED(directory),
 }
 
 
-NWNEngine::NWNEngine(Aurora::Platform platform) : _version(platform),
+NWNEngine::NWNEngine() : _version(0),
 	_hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0), _scriptFuncs(0) {
 
 }
@@ -119,9 +120,7 @@ NWNEngine::NWNEngine(Aurora::Platform platform) : _version(platform),
 NWNEngine::~NWNEngine() {
 }
 
-void NWNEngine::run(const Common::UString &target) {
-	_baseDirectory = target;
-
+void NWNEngine::run() {
 	init();
 	if (EventMan.quitRequested())
 		return;
@@ -182,14 +181,16 @@ void NWNEngine::init() {
 }
 
 void NWNEngine::detectVersion() {
-	if (_version.detect(_baseDirectory)) {
-		status("This is Neverwinter Nights %s v%s",
-		       _version.getPlatformName().c_str(), _version.getVersionString().c_str());
+	_version = new Version(_platform);
 
-		if        (_version.isTooOld()) {
+	if (_version->detect(_target)) {
+		status("This is Neverwinter Nights %s v%s",
+		       _version->getPlatformName().c_str(), _version->getVersionString().c_str());
+
+		if        (_version->isTooOld()) {
 			warning("Your version of Neverwinter Nights is too old");
-			warning("Please update to v%s for optimal support", _version.getOptimumVersionString().c_str());
-		} else if (_version.isTooNew()) {
+			warning("Please update to v%s for optimal support", _version->getOptimumVersionString().c_str());
+		} else if (_version->isTooNew()) {
 			warning("Your version of Neverwinter Nights is too new!?");
 			warning("Please contact us with detailed information about your version");
 		}
@@ -233,7 +234,7 @@ void NWNEngine::declareEncodings() {
 
 void NWNEngine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_baseDirectory);
+	ResMan.registerDataBaseDir(_target);
 	indexMandatoryDirectory("", 0, 0, 1);
 
 	progress.step("Adding extra archive directories");
@@ -417,13 +418,13 @@ void NWNEngine::initGameConfig() {
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN_hasXP3", _hasXP3);
 
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_extraModuleDir",
-		Common::FilePath::findSubDirectory(_baseDirectory, "modules", true));
+		Common::FilePath::findSubDirectory(_target, "modules", true));
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_campaignDir",
-		Common::FilePath::findSubDirectory(_baseDirectory, "nwm", true));
+		Common::FilePath::findSubDirectory(_target, "nwm", true));
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_localPCDir",
-		Common::FilePath::findSubDirectory(_baseDirectory, "localvault", true));
+		Common::FilePath::findSubDirectory(_target, "localvault", true));
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN_serverPCDir",
-		Common::FilePath::findSubDirectory(_baseDirectory, "servervault", true));
+		Common::FilePath::findSubDirectory(_target, "servervault", true));
 
 	TokenMan.set("<StartCheck>"    , "<cFF0000FF>");
 	TokenMan.set("<StartAction>"   , "<c00FF00FF>");
@@ -444,6 +445,7 @@ void NWNEngine::checkConfig() {
 void NWNEngine::deinit() {
 	delete _scriptFuncs;
 	delete _fps;
+	delete _version;
 }
 
 void NWNEngine::playIntroVideos() {
@@ -477,7 +479,7 @@ void NWNEngine::mainMenuLoop() {
 	Legal *legal = new Legal;
 
 	Console console;
-	Module module(_version, console);
+	Module module(*_version, console);
 
 	_scriptFuncs->setModule(&module);
 	console.setModule(&module);

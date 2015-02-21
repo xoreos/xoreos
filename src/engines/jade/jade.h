@@ -69,11 +69,9 @@ public:
 	JadeEngine();
 	~JadeEngine();
 
-	void run(const Common::UString &target);
+	void run();
 
 private:
-	Common::UString _baseDirectory;
-
 	Graphics::Aurora::FPS *_fps;
 
 	void init();

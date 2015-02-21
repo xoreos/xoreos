@@ -47,22 +47,20 @@ void GameThread::init(const Common::UString &baseDir) {
 	// Detecting the game
 
 	delete _game;
-	_game = new GameInstance(baseDir);
+	_game = 0;
 
-	if (!EngineMan.probeGame(*_game))
+	if (!(_game = EngineMan.probeGame(baseDir)))
 		throw Common::Exception("Unable to detect the game");
 
 	// Get the game description from the config, or alternatively
 	// construct one from the game name and platform.
 	Common::UString description;
 	if (!ConfigMan.getKey("description", description))
-		description = EngineMan.getGameName(*_game, true);
+		description = _game->getGameName(true);
 
 	GfxMan.setWindowTitle(Common::UString(XOREOS_NAMEVERSION) + " -- " + description);
 
-	status("Detected game \"%s\"", EngineMan.getGameName(*_game, false).c_str());
-
-	EngineMan.createEngine(*_game);
+	status("Detected game \"%s\"", _game->getGameName(false).c_str());
 }
 
 void GameThread::run() {
