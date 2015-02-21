@@ -66,6 +66,6 @@ RewindableAudioStream *makeADPCMStream(
 	int channels,
 	uint32 blockAlign = 0);
 
-}
+} // End of namespace Sound
 
 #endif // SOUND_DECODERS_ADPCM_H

@@ -52,8 +52,8 @@ private:
 	Shader::ShaderProgram *_sourceProgram;
 };
 
-} // namespace Shader
+} // End of namespace Shader
 
-} // namespace Graphics
+} // End of namespace Graphics
 
 #endif // GRAPHICS_SHADER_SHADERINSTANCE_H

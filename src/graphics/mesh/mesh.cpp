@@ -209,6 +209,6 @@ void Mesh::doDestroy() {
 	destroyGL();
 }
 
-} // namespace Mesh
+} // End of namespace Mesh
 
-} // namespace Graphics
+} // End of namespace Graphics

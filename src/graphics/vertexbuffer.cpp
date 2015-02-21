@@ -132,4 +132,4 @@ GLuint VertexBuffer::getVBO() {
 	return _vbo;
 }
 
-}
+} // End of namespace Graphics

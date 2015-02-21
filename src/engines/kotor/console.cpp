@@ -116,6 +116,6 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 	printf("No such module \"%s\"", cl.args.c_str());
 }
 
-} // End of namespace KOTOR
+} // End of namespace KotOR
 
 } // End of namespace Engines

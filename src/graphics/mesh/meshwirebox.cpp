@@ -84,6 +84,6 @@ MeshWireBox::MeshWireBox() : Mesh(GL_LINES, GL_STATIC_DRAW) {
 MeshWireBox::~MeshWireBox() {
 }
 
-} // namespace Mesh
+} // End of namespace Mesh
 
-} // namespace Graphics
+} // End of namespace Graphics

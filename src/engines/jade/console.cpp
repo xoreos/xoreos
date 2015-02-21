@@ -120,6 +120,6 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 	printf("No such module \"%s\"", cl.args.c_str());
 }
 
-} // End of namespace Jadd
+} // End of namespace Jade
 
 } // End of namespace Engines

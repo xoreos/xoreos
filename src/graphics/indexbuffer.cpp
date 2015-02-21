@@ -112,4 +112,4 @@ GLuint IndexBuffer::getIBO() {
 	return _ibo;
 }
 
-}
+} // End of namespace Graphics

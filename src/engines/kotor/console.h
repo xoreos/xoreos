@@ -58,7 +58,7 @@ private:
 	void cmdLoadModule (const CommandLine &cl);
 };
 
-} // End of namespace KOTOR
+} // End of namespace KotOR
 
 } // End of namespace Engines
 

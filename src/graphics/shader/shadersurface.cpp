@@ -275,6 +275,6 @@ void ShaderSurface::delSurfaceVar(uint32 index)
 	_variableData[index].data = 0;
 }
 
-} // namespace Shader
+} // End of namespace Shader
 
-} // namespace invictus
+} // End of namespace Graphics

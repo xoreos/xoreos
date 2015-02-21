@@ -37,8 +37,8 @@ extern const char fragmentDefault3xText[];
 extern const char vertexDefault2xText[];
 extern const char fragmentDefault2xText[];
 
-} // namespace Shader
+} // End of namespace Shader
 
-} // namespace Graphics
+} // End of namespace Graphics
 
 #endif // GRAPHICS_SHADER_SHADERCODE_H

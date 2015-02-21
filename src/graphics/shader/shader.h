@@ -262,9 +262,9 @@ private:
 	std::vector<Shader::ShaderProgram *> _shaderProgramArray;
 };
 
-}  // namespace Shader
+} // End of namespace Shader
 
-}  // namespace Graphics
+} // End of namespace Graphics
 
 /** Shortcut for accessing the shader manager. */
 #define ShaderMan Graphics::Shader::ShaderManager::instance()

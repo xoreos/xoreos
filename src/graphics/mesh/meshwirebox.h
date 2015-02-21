@@ -38,8 +38,8 @@ public:
 	~MeshWireBox();
 };
 
-} // namespace Mesh
+} // End of namespace Mesh
 
-} // namespace Graphics
+} // End of namespace Graphics
 
 #endif // GRAPHICS_MESH_MESHWIREBOX_H

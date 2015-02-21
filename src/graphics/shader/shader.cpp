@@ -590,6 +590,6 @@ ShaderVariableType ShaderManager::shaderstringToEnum(const Common::UString &stri
 	return varType;
 }
 
-} // namespace Shader
+} // End of namespace Shader
 
-} // namespace Graphics
+} // End of namespace Graphics

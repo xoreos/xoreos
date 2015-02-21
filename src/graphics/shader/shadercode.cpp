@@ -97,6 +97,6 @@ void main(void) {\n\
 }\n\
 ";
 // ---------------------------------------------------------
-} // namespace Shader
+} // End of namespace Shader
 
-} // namespace Graphics
+} // End of namespace Graphics

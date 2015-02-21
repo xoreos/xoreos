@@ -76,6 +76,6 @@ private:
 	GLuint _hint;     ///< GL hint for static or dynamic data.
 };
 
-}
+} // End of namespace Graphics
 
 #endif // GRAPHICS_INDEXBUFFER_H

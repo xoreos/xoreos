@@ -110,6 +110,6 @@ void ShaderInstance::rebindFragmentVariable(uint32 index) {
 	ShaderMan.bindShaderVariable(_sourceProgram->fragmentObject->variablesCombined[index], _sourceProgram->fragmentVariableLocations[index], _fragmentVariableData[index]);
 }
 
-} // namespace Shader
+} // End of namespace Shader
 
-} // namespace invictus
+} // End of namespace Graphics

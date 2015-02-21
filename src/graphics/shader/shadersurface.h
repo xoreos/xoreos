@@ -95,8 +95,8 @@ private:
 	void delSurfaceVar(uint32 index);
 };
 
-} // namespace Shader
+} // End of namespace Shader
 
-} // namespace Graphics
+} // End of namespace Graphics
 
 #endif // GRAPHICS_SHADER_SHADERSURFACE_H

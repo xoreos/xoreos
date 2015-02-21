@@ -156,6 +156,6 @@ public:
 	}
 };
 
-}
+} // End of namespace Common
 
 #endif // COMMON_VECTOR3_H

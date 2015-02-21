@@ -86,8 +86,8 @@ private:
 	GLuint _vao;  ///< Vertex Array Object handle. GL3.x only.
 };
 
-} // namespace Mesh
+} // End of namespace Mesh
 
-} // namespace Graphics
+} // End of namespace Graphics
 
 #endif // GRAPHICS_MESH_MESH_H

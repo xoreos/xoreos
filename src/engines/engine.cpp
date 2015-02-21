@@ -40,4 +40,4 @@ void Engine::start(Aurora::GameID game, const Common::UString &target, Aurora::P
 	run();
 }
 
-} // End of namespace Engine
+} // End of namespace Engines
