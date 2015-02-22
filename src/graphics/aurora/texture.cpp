@@ -49,7 +49,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Texture::Texture(const Common::UString &name) : _textureID(0),
+Texture::Texture(const Common::UString &name) :
 	_type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
 
 	_txi = new TXI();
@@ -66,7 +66,7 @@ Texture::Texture(const Common::UString &name) : _textureID(0),
 	addToQueue(kQueueNewTexture);
 }
 
-Texture::Texture(ImageDecoder *image, const TXI *txi) : _textureID(0),
+Texture::Texture(ImageDecoder *image, const TXI *txi) :
 	_type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
 
 	if (txi)
@@ -95,10 +95,6 @@ Texture::~Texture() {
 
 	delete _txi;
 	delete _image;
-}
-
-TextureID Texture::getID() const {
-	return _textureID;
 }
 
 uint32 Texture::getWidth() const {

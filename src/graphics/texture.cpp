@@ -31,10 +31,14 @@
 
 namespace Graphics {
 
-Texture::Texture() {
+Texture::Texture() : _textureID(0) {
 }
 
 Texture::~Texture() {
+}
+
+TextureID Texture::getID() const {
+	return _textureID;
 }
 
 } // End of namespace Graphics

@@ -81,8 +81,6 @@ protected:
 private:
 	Common::UString _name;
 
-	TextureID _textureID; ///< OpenGL texture ID.
-
 	::Aurora::FileType _type; ///< The texture's image's file type.
 
 	ImageDecoder *_image; ///< The actual image.
@@ -96,8 +94,6 @@ private:
 
 	void loadTXI(Common::SeekableReadStream *stream);
 	void loadImage();
-
-	TextureID getID() const;
 
 	friend class TextureManager;
 };

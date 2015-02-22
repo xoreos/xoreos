@@ -36,6 +36,11 @@ class Texture : public GLContainer {
 public:
 	Texture();
 	~Texture();
+
+	TextureID getID() const;
+
+protected:
+	TextureID _textureID; ///< OpenGL texture ID.
 };
 
 } // End of namespace Graphics
