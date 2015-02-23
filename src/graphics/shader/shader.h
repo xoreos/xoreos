@@ -68,6 +68,7 @@
 #include <map>
 
 #include "src/graphics/types.h"
+#include "src/graphics/texture.h"
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
@@ -179,10 +180,10 @@ struct ShaderUBO {
  *  must specify the unit to use.
  */
 struct ShaderSampler {
-	GLuint glid;
+	Texture *texture;
 	uint32 unit;
-	ShaderSampler() : glid(0), unit(0) {}
-	ShaderSampler(GLuint id, uint32 t) : glid(id), unit(t) {}
+	ShaderSampler() : texture(0), unit(0) {}
+	ShaderSampler(Texture *t, uint32 u) : texture(t), unit(u) {}
 };
 
 

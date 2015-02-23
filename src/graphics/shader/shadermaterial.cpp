@@ -165,7 +165,7 @@ void ShaderMaterial::recalcTextureUnits() {
 			case SHADER_SAMPLER3D:
 			case SHADER_SAMPLERCUBE:
 				if (!(_variableData[i].flags & SHADER_MATERIAL_VARIABLE_OWNED)) {
-					unit |= (1 << (static_cast<ShaderMaterial::ShaderMaterialSampler *>(_variableData[i].data)->sampler.unit));
+					unit |= (1 << (static_cast<Shader::ShaderSampler *>(_variableData[i].data)->unit));
 				}
 			break;
 			default: break;
@@ -188,7 +188,7 @@ void ShaderMaterial::recalcTextureUnits() {
 							break;
 						}
 					}
-					static_cast<ShaderMaterialSampler *>(_variableData[i].data)->sampler.unit = textureUnit;
+					static_cast<Shader::ShaderSampler *>(_variableData[i].data)->unit = textureUnit;
 				}
 				break;
 			default: break;
@@ -293,7 +293,7 @@ void *ShaderMaterial::genMaterialVar(uint32 index) {
 		case SHADER_SAMPLER1D:
 		case SHADER_SAMPLER2D:
 		case SHADER_SAMPLER3D:
-		case SHADER_SAMPLERCUBE: rval = new ShaderMaterial::ShaderMaterialSampler(); break;
+		case SHADER_SAMPLERCUBE: rval = new Shader::ShaderSampler(); break;
 		case SHADER_SAMPLER1DSHADOW: break;
 		case SHADER_SAMPLER2DSHADOW: break;
 		case SHADER_SAMPLER1DARRAY:  break;
@@ -358,7 +358,7 @@ void ShaderMaterial::delMaterialVar(uint32 index)
 			// todo: link in texture usage count properly here.
 			//if(static_cast<ShaderMaterial::ShaderMaterialSampler *>(data)->texture != 0)
 			//	static_cast<ShaderMaterial::ShaderMaterialSampler *>(data)->texture->_usageCount--;
-			delete (static_cast<ShaderMaterial::ShaderMaterialSampler *>(data));
+			delete (static_cast<Shader::ShaderSampler *>(data));
 		break;
 		case SHADER_SAMPLER1DSHADOW: break;
 		case SHADER_SAMPLER2DSHADOW: break;

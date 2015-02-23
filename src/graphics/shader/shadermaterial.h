@@ -26,7 +26,6 @@
 #define GRAPHICS_SHADER_SHADERMATERIAL_H
 
 #include "src/graphics/shader/shader.h"
-#include "src/graphics/aurora/textureman.h"
 
 namespace Graphics {
 
@@ -53,14 +52,6 @@ namespace Shader {
 
 class ShaderMaterial {
 public:
-
-	struct ShaderMaterialSampler {
-		Shader::ShaderSampler sampler;
-		Graphics::Aurora::Texture *texture; // Needed for proper resource management, e.g usage count.
-
-		ShaderMaterialSampler() : sampler(), texture(0) {}
-	};
-
 	uint32 _usageCount; // TODO: move this elsewhere please.
 
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");
