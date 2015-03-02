@@ -4,6 +4,7 @@ SUBDIRS = \
           images \
           aurora \
           mesh \
+          render \
           shader \
           $(EMPTY)
 
@@ -56,5 +57,6 @@ libgraphics_la_LIBADD = \
                         aurora/libaurora.la \
                         shader/libshader.la \
                         mesh/libmesh.la \
+                        render/librender.la \
                         ../../glew/libglew.la \
                         $(EMPTY)

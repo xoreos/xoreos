@@ -73,6 +73,14 @@ const Common::UString &ShaderMaterial::getName() const {
 	return _name;
 }
 
+uint32 ShaderMaterial::getFlags() const {
+	return _flags;
+}
+
+void ShaderMaterial::setFlags(uint32 flags) {
+	_flags = flags;
+}
+
 Shader::ShaderObject *ShaderMaterial::getFragmentShader() const {
 	return _fragShader;
 }
