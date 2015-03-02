@@ -30,7 +30,7 @@ namespace Shader {
 
 #define SHADER_SURFACE_VARIABLE_OWNED (0x00000001)
 
-ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name) : _usageCount(0), _variableData(), _vertShader(vertShader), _flags(0), _name(name) {
+ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name) : _usageCount(0), _variableData(), _vertShader(vertShader), _flags(0), _name(name), _objectModelviewIndex(0xFFFFFFFF) {
 	vertShader->usageCount++;
 
 	uint32 varCount = vertShader->variablesCombined.size();
@@ -38,6 +38,10 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 	for (uint32 i = 0; i < varCount; ++i) {
 		_variableData[i].flags = 0;
 		genSurfaceVar(i);
+
+		if (vertShader->variablesCombined[i].name == "objectModelviewMatrix") {
+			_objectModelviewIndex = i;
+		}
 	}
 }
 
@@ -141,6 +145,22 @@ void ShaderSurface::addUBO(uint32 index, GLuint glid) {
 void ShaderSurface::bindProgram(Shader::ShaderProgram *program) {
 	for (uint32 i = 0; i < _variableData.size(); i++) {
 		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], _variableData[i].data);
+	}
+}
+
+void ShaderSurface::bindProgram(Shader::ShaderProgram *program, const Common::TransformationMatrix *t) {
+	for (uint32 i = 0; i < _variableData.size(); i++) {
+		if (_objectModelviewIndex == i) {
+			ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], t);
+		} else {
+			ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], _variableData[i].data);
+		}
+	}
+}
+
+void ShaderSurface::bindObjectModelview(Shader::ShaderProgram *program, const Common::TransformationMatrix *t) {
+	if (_objectModelviewIndex != 0xFFFFFFFF) {
+		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_objectModelviewIndex], program->vertexVariableLocations[_objectModelviewIndex], t);
 	}
 }
 

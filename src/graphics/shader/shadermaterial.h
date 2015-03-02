@@ -59,6 +59,9 @@ public:
 
 	const Common::UString &getName() const;
 
+	uint32 getFlags() const;
+	void setFlags(uint32 flags);
+
 	Shader::ShaderObject *getFragmentShader() const;
 
 	uint32 getVariableCount() const;
