@@ -67,6 +67,11 @@ public:
 
 	void renderImmediate();
 
+	/** Follows the steps of renderImmediate, but broken into different functions. */
+	void renderBind();
+	void render();
+	void renderUnbind();
+
 protected:
 	// For each attrib, when calculating VBOs, do (attrib address) - (base data address) to find initial data offset.
 	VertexBuffer _vertexBuffer;

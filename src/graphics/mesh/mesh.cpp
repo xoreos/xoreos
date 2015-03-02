@@ -127,19 +127,14 @@ void Mesh::destroyGL() {
 }
 
 void Mesh::renderImmediate() {
+	renderBind();
+	render();
+	renderUnbind();
+}
 
+void Mesh::renderBind() {
 	if (GfxMan.isGL3()) {
 		glBindVertexArray(_vao);
-		//status("rendering vao: %u, index count: %u, vertex count: %u", _vao, _indexBuffer.count, _vertexBuffer.count);
-		//status("vbos, index: %u, vertex: %u", _indexBuffer.ibo, _vertexBuffer.vbo);
-
-		if (_indexBuffer.getCount()) {
-			glDrawElements(_type, _indexBuffer.getCount(), _indexBuffer.getType(), 0);
-		} else {
-			glDrawArrays(_type, 0, _vertexBuffer.getCount());
-		}
-		// So long as each mesh rebinds what it needs, there's actually no need to bind 0 here.
-		glBindVertexArray(0);
 	} else {
 		const VertexDecl &decl = _vertexBuffer.getVertexDecl();
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer.getVBO());
@@ -166,7 +161,17 @@ void Mesh::renderImmediate() {
 					break;
 			}
 		}
+	}
+}
 
+void Mesh::render() {
+	if (GfxMan.isGL3()) {
+		if (_indexBuffer.getCount()) {
+			glDrawElements(_type, _indexBuffer.getCount(), _indexBuffer.getType(), 0);
+		} else {
+			glDrawArrays(_type, 0, _vertexBuffer.getCount());
+		}
+	} else {
 		if (_indexBuffer.getCount()) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer.getIBO());
 			glDrawElements(_type, _indexBuffer.getCount(), _indexBuffer.getType(), 0);
@@ -174,7 +179,15 @@ void Mesh::renderImmediate() {
 		} else {
 			glDrawArrays(_type, 0, _vertexBuffer.getCount());
 		}
+	}
+}
 
+void Mesh::renderUnbind() {
+	if (GfxMan.isGL3()) {
+		// So long as each mesh rebinds what it needs, there's actually no need to bind 0 here.
+		glBindVertexArray(0);
+	} else {
+		const VertexDecl &decl = _vertexBuffer.getVertexDecl();
 		for (size_t i = 0; i < decl.size(); ++i) {
 			switch (decl[i].index) {
 				case VPOSITION:
