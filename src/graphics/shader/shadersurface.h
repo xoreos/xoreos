@@ -27,6 +27,7 @@
 
 #include "src/graphics/shader/shader.h"
 #include "src/graphics/aurora/textureman.h"
+#include "src/common/transmatrix.h"
 
 namespace Graphics {
 
@@ -73,6 +74,8 @@ public:
 	void addUBO(uint32 index, GLuint glid);
 
 	void bindProgram(Shader::ShaderProgram *program);
+	void bindProgram(Shader::ShaderProgram *program, const Common::TransformationMatrix *t);
+	void bindObjectModelview(Shader::ShaderProgram *program, const Common::TransformationMatrix *t);
 
 	void bindGLState();
 	void unbindGLState();
@@ -90,6 +93,8 @@ private:
 	uint32 _flags;
 
 	Common::UString _name;
+
+	uint32 _objectModelviewIndex;
 
 	void *genSurfaceVar(uint32 index);
 	void delSurfaceVar(uint32 index);
