@@ -45,6 +45,7 @@ noinst_HEADERS = \
                  encoding.h \
                  debugman.h \
                  debug.h \
+                 atomic.h \
                  uuid.h \
                  stream.h \
                  streamtokenizer.h \
