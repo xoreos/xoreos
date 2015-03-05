@@ -82,7 +82,7 @@ GraphicsManager::GraphicsManager() {
 
 	_fpsCounter = new FPSCounter(3);
 
-	_frameLock = 0;
+	_frameLock.store(0);
 
 	_cursor = 0;
 	_cursorState = kCursorStateStay;
@@ -618,29 +618,18 @@ bool GraphicsManager::unproject(float x, float y,
 }
 
 void GraphicsManager::lockFrame() {
-	if (Common::isMainThread() || EventMan.quitRequested() || (_frameLock > 0)) {
-		Common::StackLock frameLock(_frameLockMutex);
-
-		_frameLock++;
+	uint32 lock = _frameLock.fetch_add(1, boost::memory_order_acquire);
+	if (Common::isMainThread() || EventMan.quitRequested() || (lock > 0))
 		return;
-	}
 
-	_frameLockMutex.lock();
-
-	_frameEndSignal.unlock();
-	_frameLock++;
-
-	_frameLockMutex.unlock();
-
-	while (_frameEndSignal.getValue() > 0);
+	_frameEndSignal.store(false, boost::memory_order_release);
+	while (!_frameEndSignal.load(boost::memory_order_acquire));
 }
 
 void GraphicsManager::unlockFrame() {
-	Common::StackLock frameLock(_frameLockMutex);
+	uint32 lock = _frameLock.fetch_sub(1, boost::memory_order_release);
 
-	assert(_frameLock != 0);
-
-	_frameLock--;
+	assert(lock != 0);
 }
 
 void GraphicsManager::recalculateObjectDistances() {
@@ -990,8 +979,8 @@ void GraphicsManager::renderScene() {
 
 	cleanupAbandoned();
 
-	if (_frameLock > 0) {
-		_frameEndSignal.lockTry();
+	if (_frameLock.load(boost::memory_order_acquire) > 0) {
+		_frameEndSignal.store(true, boost::memory_order_release);
 
 		return;
 	}
@@ -1009,7 +998,7 @@ void GraphicsManager::renderScene() {
 
 	endScene();
 
-	_frameEndSignal.lockTry();
+	_frameEndSignal.store(true, boost::memory_order_release);
 }
 
 int GraphicsManager::getScreenWidth() const {

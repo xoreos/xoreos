@@ -25,6 +25,8 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
+#include "src/common/atomic.h"
+
 #include <vector>
 #include <list>
 
@@ -185,12 +187,10 @@ private:
 	Common::TransformationMatrix _projection;    ///< Our projection matrix.
 	Common::TransformationMatrix _projectionInv; ///< The inverse of our projection matrix.
 
-	uint32 _frameLock;
+	boost::atomic<uint32> _frameLock;
+	boost::atomic<bool>   _frameEndSignal;
 
-	Common::Mutex _frameLockMutex; ///< A soft mutex locked for each frame.
 	Common::Mutex _cursorMutex;    ///< A mutex locked for the cursor.
-
-	Common::Semaphore _frameEndSignal;
 
 	Cursor     *_cursor;       ///< The current cursor.
 	CursorState _cursorState;  ///< What to do with the cursor.
