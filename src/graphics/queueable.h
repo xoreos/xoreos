@@ -39,9 +39,12 @@ public:
 	virtual bool operator<(const Queueable &q) const;
 
 protected:
+	bool isInQueue(QueueType queue) const {
+		return _isInQueue[queue];
+	}
+
 	void addToQueue(QueueType queue);
 	void removeFromQueue(QueueType queue);
-	bool isInQueue(QueueType queue) const;
 
 	void lockQueue(QueueType queue);
 	void unlockQueue(QueueType queue);

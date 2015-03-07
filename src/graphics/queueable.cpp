@@ -64,10 +64,6 @@ void Queueable::removeFromQueue(QueueType queue) {
 	QueueMan.unlockQueue(queue);
 }
 
-bool Queueable::isInQueue(QueueType queue) const {
-	return _isInQueue[queue];
-}
-
 void Queueable::lockQueue(QueueType queue) {
 	QueueMan.lockQueue(queue);
 }
