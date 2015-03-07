@@ -121,4 +121,22 @@ bool Renderable::isIn(float UNUSED(x1), float UNUSED(y1), float UNUSED(z1),
 	return false;
 }
 
+void Renderable::lockFrame() {
+	GfxMan.lockFrame();
+}
+
+void Renderable::unlockFrame() {
+	GfxMan.unlockFrame();
+}
+
+void Renderable::lockFrameIfVisible() {
+	if (isVisible())
+		GfxMan.lockFrame();
+}
+
+void Renderable::unlockFrameIfVisible() {
+	if (isVisible())
+		GfxMan.unlockFrame();
+}
+
 } // End of namespace Graphics

@@ -89,6 +89,12 @@ protected:
 	double _distance; ///< The distance of the object from the viewer.
 
 	void resort();
+
+	void lockFrame();
+	void unlockFrame();
+
+	void lockFrameIfVisible();
+	void unlockFrameIfVisible();
 };
 
 } // End of namespace Graphics
