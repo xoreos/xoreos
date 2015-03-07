@@ -27,7 +27,6 @@
 #include "src/common/stream.h"
 #include "src/common/debug.h"
 
-#include "src/graphics/graphics.h"
 #include "src/graphics/camera.h"
 
 #include "src/graphics/aurora/model.h"
@@ -177,7 +176,7 @@ void Model::getAbsolutePosition(float &x, float &y, float &z) const {
 }
 
 void Model::setPosition(float x, float y, float z) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_position[0] = x / _modelScale[0];
 	_position[1] = y / _modelScale[1];
@@ -188,11 +187,11 @@ void Model::setPosition(float x, float y, float z) {
 
 	resort();
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void Model::setRotation(float x, float y, float z) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_rotation[0] = x;
 	_rotation[1] = y;
@@ -203,7 +202,7 @@ void Model::setRotation(float x, float y, float z) {
 
 	resort();
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void Model::move(float x, float y, float z) {
@@ -269,11 +268,11 @@ void Model::setState(const Common::UString &name) {
 	if (state == _currentState)
 		return;
 
-	GfxMan.lockFrame();
-
 	bool visible = isVisible();
-	if (visible)
+	if (visible) {
+		lockFrame();
 		hide();
+	}
 
 	_currentState = state;
 
@@ -281,10 +280,10 @@ void Model::setState(const Common::UString &name) {
 
 	// createBound();
 
-	if (visible)
+	if (visible) {
 		show();
-
-	GfxMan.unlockFrame();
+		unlockFrame();
+	}
 }
 
 static const Common::UString kNoState;

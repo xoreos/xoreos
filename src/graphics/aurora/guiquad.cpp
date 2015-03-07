@@ -25,8 +25,6 @@
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 
-#include "src/graphics/graphics.h"
-
 #include "src/graphics/aurora/guiquad.h"
 #include "src/graphics/aurora/texture.h"
 
@@ -67,7 +65,7 @@ void GUIQuad::getPosition(float &x, float &y, float &z) const {
 }
 
 void GUIQuad::setPosition(float x, float y, float z) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_x2 = _x2 - _x1 + x;
 	_y2 = _y2 - _y1 + y;
@@ -78,7 +76,7 @@ void GUIQuad::setPosition(float x, float y, float z) {
 	_distance = z;
 	resort();
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 
@@ -91,18 +89,18 @@ void GUIQuad::getColor(float& r, float& g, float& b, float& a) const {
 
 
 void GUIQuad::setColor(float r, float g, float b, float a) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_r = r;
 	_g = g;
 	_b = b;
 	_a = a;
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void GUIQuad::setTexture(const Common::UString &texture) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	try {
 
@@ -117,7 +115,7 @@ void GUIQuad::setTexture(const Common::UString &texture) {
 		_r = _g = _b = _a = 0.0;
 	}
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 float GUIQuad::getWidth() const {
@@ -129,27 +127,27 @@ float GUIQuad::getHeight() const {
 }
 
 void GUIQuad::setWidth(float w) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_x2 = _x1 + w;
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void GUIQuad::setHeight(float h) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_y2 = _y1 + h;
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void GUIQuad::setXOR(bool enabled) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_xor = enabled;
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 bool GUIQuad::isIn(float x, float y) const {

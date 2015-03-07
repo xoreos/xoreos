@@ -24,7 +24,6 @@
 
 #include "src/events/requests.h"
 
-#include "src/graphics/graphics.h"
 #include "src/graphics/font.h"
 
 #include "src/graphics/aurora/text.h"
@@ -47,7 +46,7 @@ Text::~Text() {
 }
 
 void Text::set(const Common::UString &str, float maxWidth, float maxHeight) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	parseColors(str, _str, _colors);
 
@@ -60,7 +59,7 @@ void Text::set(const Common::UString &str, float maxWidth, float maxHeight) {
 	_height = font.getHeight(_str, maxWidth, maxHeight);
 	_width  = font.getWidth (_str, maxWidth);
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void Text::getColor(float& r, float& g, float& b, float& a) const {
@@ -71,14 +70,14 @@ void Text::getColor(float& r, float& g, float& b, float& a) const {
 }
 
 void Text::setColor(float r, float g, float b, float a) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_r = r;
 	_g = g;
 	_b = b;
 	_a = a;
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void Text::unsetColor() {
@@ -100,7 +99,7 @@ void Text::getPosition(float &x, float &y, float &z) const {
 }
 
 void Text::setPosition(float x, float y, float z) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_x = roundf(x);
 	_y = roundf(y);
@@ -108,7 +107,7 @@ void Text::setPosition(float x, float y, float z) {
 	_distance = z;
 	resort();
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 bool Text::empty() {

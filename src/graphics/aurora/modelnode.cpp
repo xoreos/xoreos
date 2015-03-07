@@ -25,7 +25,6 @@
 #include "src/common/util.h"
 #include "src/common/maths.h"
 
-#include "src/graphics/graphics.h"
 #include "src/graphics/camera.h"
 
 #include "src/graphics/images/txi.h"
@@ -190,7 +189,7 @@ void ModelNode::getAbsolutePosition(float &x, float &y, float &z) const {
 }
 
 void ModelNode::setPosition(float x, float y, float z) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_position[0] = x / _model->_modelScale[0];
 	_position[1] = y / _model->_modelScale[1];
@@ -199,28 +198,28 @@ void ModelNode::setPosition(float x, float y, float z) {
 	if (_parent)
 		_parent->orderChildren();
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void ModelNode::setRotation(float x, float y, float z) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_rotation[0] = x;
 	_rotation[1] = y;
 	_rotation[2] = z;
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void ModelNode::setOrientation(float x, float y, float z, float a) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_orientation[0] = x;
 	_orientation[1] = y;
 	_orientation[2] = z;
 	_orientation[3] = a;
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void ModelNode::move(float x, float y, float z) {
@@ -328,7 +327,7 @@ void ModelNode::setInvisible(bool invisible) {
 }
 
 void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	// Assert that this node should be rendered and try to load the textures.
 	// NOTE: loadTextures() will automatically disable rendering of the node
@@ -336,7 +335,7 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 	_render = true;
 	loadTextures(textures);
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
@@ -505,6 +504,22 @@ void ModelNode::render(RenderPass pass) {
 		(*c)->render(pass);
 		glPopMatrix();
 	}
+}
+
+void ModelNode::lockFrame() {
+	_model->lockFrame();
+}
+
+void ModelNode::unlockFrame() {
+	_model->unlockFrame();
+}
+
+void ModelNode::lockFrameIfVisible() {
+	_model->lockFrameIfVisible();
+}
+
+void ModelNode::unlockFrameIfVisible() {
+	_model->unlockFrameIfVisible();
 }
 
 void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {

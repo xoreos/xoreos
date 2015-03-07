@@ -24,8 +24,6 @@
 
 #include "src/common/util.h"
 
-#include "src/graphics/graphics.h"
-
 #include "src/graphics/aurora/geometryobject.h"
 #include "src/graphics/aurora/textureman.h"
 
@@ -60,7 +58,7 @@ void GeometryObject::getRotation(float &x, float &y, float &z) const {
 }
 
 void GeometryObject::setPosition(float x, float y, float z) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_position[0] = x;
 	_position[1] = y;
@@ -70,11 +68,11 @@ void GeometryObject::setPosition(float x, float y, float z) {
 
 	resort();
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void GeometryObject::setRotation(float x, float y, float z) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	_rotation[0] = x;
 	_rotation[1] = y;
@@ -84,7 +82,7 @@ void GeometryObject::setRotation(float x, float y, float z) {
 
 	resort();
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void GeometryObject::move(float x, float y, float z) {

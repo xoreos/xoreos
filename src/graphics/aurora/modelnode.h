@@ -178,6 +178,12 @@ protected:
 
 	void render(RenderPass pass);
 
+	void lockFrame();
+	void unlockFrame();
+
+	void lockFrameIfVisible();
+	void unlockFrameIfVisible();
+
 
 private:
 	const Common::BoundingBox &getAbsoluteBound() const;

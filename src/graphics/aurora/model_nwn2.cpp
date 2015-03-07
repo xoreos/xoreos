@@ -33,8 +33,6 @@
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
 
-#include "src/graphics/graphics.h"
-
 #include "src/graphics/images/decoder.h"
 #include "src/graphics/images/surface.h"
 
@@ -468,14 +466,14 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 }
 
 void ModelNode_NWN2::setTint(const float tint[3][4]) {
-	GfxMan.lockFrame();
+	lockFrameIfVisible();
 
 	memcpy(_tint, tint, 3 * 4 * sizeof(float));
 
 	removeTint();
 	createTint();
 
-	GfxMan.unlockFrame();
+	unlockFrameIfVisible();
 }
 
 void ModelNode_NWN2::removeTint() {
