@@ -39,8 +39,8 @@ namespace NWN {
 CharSex::CharSex() {
 	load("cg_sex");
 
-	getEditBox("HelpBox", true)->setTitle(TalkMan.getString(203));
-	getEditBox("HelpBox", true)->setText(TalkMan.getString(447));
+	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(203));
+	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(447), 1.0);
 
 	_buttons = new ButtonsGroup(getEditBox("HelpBox", true));
 	_buttons->addButton(getButton("MaleButton", true), TalkMan.getString(203), TalkMan.getString(199));
@@ -56,8 +56,8 @@ CharSex::~CharSex() {
 void CharSex::reset() {
 	_buttons->setActive(getButton("MaleButton", true));
 
-	getEditBox("HelpBox", true)->setTitle(TalkMan.getString(203));
-	getEditBox("HelpBox", true)->setText(TalkMan.getString(447));
+	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(203));
+	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(447), 1.0);
 }
 
 void CharSex::callbackActive(Widget &widget) {

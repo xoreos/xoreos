@@ -73,8 +73,8 @@ CharRace::~CharRace() {
 void CharRace::reset() {
 	_buttons->setActive(getButton("HumanButton", true));
 
-	getEditBox("HelpBox", true)->setTitle(TalkMan.getString(481));
-	getEditBox("HelpBox", true)->setText(TalkMan.getString(485));
+	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(481));
+	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(485), 1.0);
 
 	setCharRace(kRaceInvalid);
 }

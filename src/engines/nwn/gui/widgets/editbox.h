@@ -25,15 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_EDITBOX_H
 #define ENGINES_NWN_GUI_WIDGETS_EDITBOX_H
 
-#include "src/engines/nwn/gui/widgets/modelwidget.h"
-
-namespace Graphics {
-
-namespace Aurora {
-class Text;
-}
-
-}
+#include "src/engines/nwn/gui/widgets/listbox.h"
 
 namespace Common {
 class UString;
@@ -45,61 +37,24 @@ class GUI;
 
 namespace NWN {
 
-class WidgetButton;
-class WidgetScrollbar;
-
 /** A NWN editbox widget. */
-class WidgetEditBox : public ModelWidget {
+class WidgetEditBox : public WidgetListBox {
 public:
 	WidgetEditBox(::Engines::GUI &gui, const Common::UString &tag,
-	              const Common::UString &model, const Common::UString &font);
+	              const Common::UString &model);
 	~WidgetEditBox();
 
 	void show();
 	void hide();
 
-	void mouseDown(uint8 state, float x, float y);
-	void mouseWheel(uint8 state, int x, int y);
-
-	void getProperties();
-
 	/** Set title text if available. */
-	void setTitle(const Common::UString &title);
-	/** Set main text. */
-	void setText(const Common::UString &text);
+	void setTitle(const Common::UString &font, const Common::UString &title);
 
 private:
-	void subActive(Widget &widget);
-
-	void createScrollbar();
-	void updateScrollbarLength();
-	void updateScrollbarPosition();
-
-	/**
-	 * Scroll the main text if it is bigger than the editBox.
-	 *  @param n             scroll up if negative, down otherwise
-	 */
-	void scroll(int n);
-
-	Common::UString _font;
-
 	// FIXME As there is no mechanism to easily scroll text (like the render-to-texture way),
-	//       lines are put on simple Graphics::Aurora::Text but should ideally use WidgetText
-	/** Show/Hide lines according to _firstLine variable. */
-	void updateLines();
+	//       lines are shown by WidgetListBox but should ideally use WidgetText
 
 	Graphics::Aurora::Text *_title;
-	std::vector<Graphics::Aurora::Text *> _text;
-	float pX, pY, pZ; ///< Text position.
-	uint _firstLine;
-	uint _linesToShow;
-
-	WidgetButton *_up;
-	WidgetButton *_down;
-	WidgetScrollbar *_scrollbar;
-
-	bool _hasScrollbar;
-	bool _hasTitle;
 };
 
 } // End of namespace NWN

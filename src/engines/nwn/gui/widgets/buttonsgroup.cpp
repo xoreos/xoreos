@@ -65,8 +65,8 @@ void ButtonsGroup::setActive(WidgetButton *button) {
 		if (*it == button) {
 			(*it)->setPressed(true);
 
-			_helpBox->setText(_helpTexts[std::distance(_buttonsList.begin(), it)]);
-			_helpBox->setTitle(_helpTitles[std::distance(_buttonsList.begin(), it)]);
+			_helpBox->setText("fnt_galahad14", _helpTexts[std::distance(_buttonsList.begin(), it)], 1.0);
+			_helpBox->setTitle("fnt_galahad14", _helpTitles[std::distance(_buttonsList.begin(), it)]);
 			for (std::vector<WidgetButton *>::iterator jt = _buttonsList.begin(); jt != _buttonsList.end(); ++jt) {
 				if (jt == it)
 					continue;

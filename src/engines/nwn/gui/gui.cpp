@@ -214,7 +214,7 @@ void GUI::createWidget(WidgetContext &ctx) {
 	else if (ctx.type == kWidgetTypeSlider)
 		ctx.widget = new WidgetSlider(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeEditBox)
-		ctx.widget = new WidgetEditBox(*this, ctx.tag, ctx.model, ctx.font);
+		ctx.widget = new WidgetEditBox(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeButton)
 		ctx.widget = new WidgetButton(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeListBox)
