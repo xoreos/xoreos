@@ -34,39 +34,11 @@ namespace Engines {
 
 namespace NWN {
 
-CharGenBase::CharacterAbilities CharGenBase::_charChoices = CharacterAbilities();
-
-CharGenBase::CharacterAbilities::CharacterAbilities() :
-	race(kRaceInvalid), character(0) {
-
+CharGenBase::CharGenBase() {
+	_choices = 0;
 }
 
-CharGenBase::CharacterAbilities::CharacterAbilities(Creature *charac) :
-	race(kRaceInvalid), character(charac) {
-
-	// TODO: Get race from creature?
-}
-
-void CharGenBase::applyAbilities() {
-	_charChoices.character->setRace(_charChoices.race);
-}
-
-void CharGenBase::setCharRace(uint32 race) {
-	_charChoices.race = race;
-
-	_charChoices.racialFeats.clear();
-
-	if (race == kRaceInvalid)
-		return;
-
-	const Aurora::TwoDAFile &twodaRace = TwoDAReg.get("racialtypes");
-	const Aurora::TwoDAFile &twodaFeatRace = TwoDAReg.get(
-		twodaRace.getRow(race).getString("FeatsTable"));
-
-	for (uint8 it = 0; it < twodaFeatRace.getRowCount(); ++it) {
-		const Aurora::TwoDARow &rowFeatRace = twodaFeatRace.getRow(it);
-		_charChoices.racialFeats.push_back(rowFeatRace.getInt("FeatIndex"));
-	}
+CharGenBase::~CharGenBase() {
 }
 
 } // End of namespace NWN

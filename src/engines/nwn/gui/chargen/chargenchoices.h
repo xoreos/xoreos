@@ -18,37 +18,47 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file
- *  The gender chooser in CharGen.
+ /** @file
+ *  The character choices in the character generator.
  */
 
-#ifndef  ENGINES_NWN_GUI_CHARGEN_CHARSEX_H
-#define  ENGINES_NWN_GUI_CHARGEN_CHARSEX_H
+#ifndef ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H
+#define ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H
 
-#include "src/engines/nwn/gui/chargen/chargenbase.h"
+#include <vector>
+
+#include "src/common/types.h"
+
+namespace Common {
+class UString;
+}
 
 namespace Engines {
 
 namespace NWN {
 
-class ButtonsGroup;
+class Creature;
 
-class CharSex : public CharGenBase {
+class CharGenChoices {
 public:
-	CharSex(CharGenChoices &choices);
-	~CharSex();
+	CharGenChoices();
+	~CharGenChoices();
 
 	void reset();
-
-protected:
-	void callbackActive(Widget &widget);
+	const Creature &getCharacter();
+	void setCharGender(uint32 gender);
+	void setCharRace(uint32 race);
+    void setCharPortrait(const Common::UString &portrait);
 
 private:
-	ButtonsGroup * _buttons;
+	Creature *_creature;
+	std::vector<uint32> _normalFeats;
+	std::vector<uint32> _racialFeats;
+	std::vector<uint32> _classFeats;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif //  ENGINES_NWN_GUI_CHARGEN_CHARSEX_H
+#endif // ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H

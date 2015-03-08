@@ -25,6 +25,7 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARGENBASE_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARGENBASE_H
 
+#include "src/engines/nwn/gui/chargen/chargenchoices.h"
 #include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
@@ -35,24 +36,13 @@ class Creature;
 
 class CharGenBase : public GUI {
 public:
+    CharGenBase();
+    ~CharGenBase();
+
 	virtual void reset() = 0;
 
 protected:
-	struct CharacterAbilities {
-		uint32 race;
-		std::vector<uint32> normalFeats;
-		std::vector<uint32> racialFeats;
-		std::vector<uint32> classFeats;
-		Creature *character;
-
-		CharacterAbilities();
-		CharacterAbilities(Creature * charac);
-	};
-
-	void applyAbilities();
-	void setCharRace(uint32 race);
-
-	static CharacterAbilities _charChoices;
+	CharGenChoices *_choices;
 };
 
 } // End of namespace NWN

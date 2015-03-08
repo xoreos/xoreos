@@ -50,6 +50,7 @@ noinst_HEADERS = \
                  gui/options/video.h \
                  gui/options/videoadv.h \
                  gui/chargen/chargenbase.h \
+                 gui/chargen/chargenchoices.h \
                  gui/chargen/chargen.h \
                  gui/chargen/charsex.h \
                  gui/chargen/charrace.h \
@@ -127,6 +128,7 @@ libnwn_la_SOURCES = \
                     gui/options/video.cpp \
                     gui/options/videoadv.cpp \
                     gui/chargen/chargenbase.cpp \
+                    gui/chargen/chargenchoices.cpp \
                     gui/chargen/chargen.cpp \
                     gui/chargen/charsex.cpp \
                     gui/chargen/charrace.cpp \

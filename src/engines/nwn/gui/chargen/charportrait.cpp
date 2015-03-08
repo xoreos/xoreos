@@ -87,7 +87,8 @@ bool WidgetGridItemPortrait::deactivate() {
 	return true;
 }
 
-CharPortrait::CharPortrait() : _selectedPortrait("gui_po_nwnlogo_") {
+CharPortrait::CharPortrait(CharGenChoices &choices) : _selectedPortrait("gui_po_nwnlogo_") {
+	_choices = &choices;
 	load("cg_portrait");
 
 	// Init portraits widget.
@@ -113,7 +114,7 @@ CharPortrait::~CharPortrait() {
 
 void CharPortrait::reset() {
 	// Set default portrait.
-	_charChoices.character->setPortrait("gui_po_nwnlogo_");
+	_choices->setCharPortrait("gui_po_nwnlogo_");
 	// Disable the OK button.
 	getButton("OkButton", true)->setDisabled(true);
 }
@@ -122,7 +123,7 @@ void CharPortrait::show() {
 	// Rebuild the portrait list as gender or race could have change.
 	buildPortraitBox();
 
-	setMainTexture(_charChoices.character->getPortrait());
+	setMainTexture(_choices->getCharacter().getPortrait());
 	if (_selectedPortrait == "gui_po_nwnlogo_")
 		getButton("OkButton", true)->setDisabled(true);
 
@@ -141,7 +142,7 @@ void CharPortrait::setMainTexture(const Common::UString &texture) {
 
 void CharPortrait::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_charChoices.character->setPortrait(_selectedPortrait);
+		_choices->setCharPortrait(_selectedPortrait);
 		_returnCode = 2;
 		return;
 	}
@@ -155,7 +156,7 @@ void CharPortrait::callbackActive(Widget &widget) {
 const std::vector<Common::UString> CharPortrait::initPortraitList() {
 	const Aurora::TwoDAFile &twodaPortraits = TwoDAReg.get("portraits");
 
-	uint32 race = _charChoices.race;
+	uint32 race = _choices->getCharacter().getRace();
 	// Portraits for half-elf and human are the same.
 	if (race == 4)
 		race = 6;
@@ -172,7 +173,7 @@ const std::vector<Common::UString> CharPortrait::initPortraitList() {
 		if (rowPortrait.getInt("plot"))
 			continue;
 
-		if ((uint32) rowPortrait.getInt("Sex") != _charChoices.character->getGender())
+		if ((uint32) rowPortrait.getInt("Sex") != _choices->getCharacter().getGender())
 			continue;
 
 		if (rowPortrait.empty("Race"))

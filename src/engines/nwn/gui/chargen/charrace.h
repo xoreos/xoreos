@@ -33,10 +33,9 @@ namespace NWN {
 
 class ButtonsGroup;
 
-class CharRace : public CharGenBase
-{
+class CharRace : public CharGenBase {
 public:
-	CharRace();
+	CharRace(CharGenChoices &choices);
 	~CharRace();
 
 	void reset();

@@ -54,7 +54,7 @@ private:
 
 class CharPortrait : public CharGenBase {
 public:
-	CharPortrait();
+	CharPortrait(CharGenChoices &choices);
 	~CharPortrait();
 
 	void reset();

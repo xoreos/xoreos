@@ -36,7 +36,8 @@ namespace Engines {
 
 namespace NWN {
 
-CharSex::CharSex() {
+CharSex::CharSex(CharGenChoices &choices) {
+	_choices = &choices;
 	load("cg_sex");
 
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(203));
@@ -62,14 +63,14 @@ void CharSex::reset() {
 
 void CharSex::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_charChoices.character->setGender(_buttons->getChoice());
+		_choices->setCharGender(_buttons->getChoice());
 		_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "CancelButton") {
 		// Set previous choice if any.
-		_buttons->setActive(_charChoices.character->getGender());
+		_buttons->setActive(_choices->getCharacter().getGender());
 
 		_returnCode = 1;
 		return;

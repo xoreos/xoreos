@@ -21,22 +21,24 @@
 /** @file
  *  The race chooser in NWN CharGen.
  */
-
 #include "src/aurora/talkman.h"
 
 #include "src/engines/nwn/types.h"
+#include "src/engines/nwn/creature.h"
 
 #include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/widgets/buttonsgroup.h"
 #include "src/engines/nwn/gui/widgets/editbox.h"
 
+#include "src/engines/nwn/gui/chargen/chargenchoices.h"
 #include "src/engines/nwn/gui/chargen/charrace.h"
 
 namespace Engines {
 
 namespace NWN {
 
-CharRace::CharRace() {
+CharRace::CharRace(CharGenChoices &choices) {
+	_choices = &choices;
 	load("cg_race");
 
 	// TODO Implement subrace.
@@ -76,20 +78,21 @@ void CharRace::reset() {
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(481));
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(485), 1.0);
 
-	setCharRace(kRaceInvalid);
+	// Set human as default race.
+	_choices->setCharRace(6);
 }
 
 void CharRace::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		setCharRace(_buttons->getChoice());
+		_choices->setCharRace(_buttons->getChoice());
 		_returnCode = 2;
 		return;
 	}
 
 	if (widget.getTag() == "CancelButton") {
 		// Set previous choice if any.
-		if (_charChoices.race < kRaceInvalid)
-			_buttons->setActive(_charChoices.race);
+		if (_choices->getCharacter().getRace() < kRaceInvalid)
+			_buttons->setActive(_choices->getCharacter().getRace());
 
 		_returnCode = 1;
 		return;

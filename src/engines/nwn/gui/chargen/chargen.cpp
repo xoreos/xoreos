@@ -27,6 +27,7 @@
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/gui/widgets/button.h"
 
+#include "src/engines/nwn/gui/chargen/chargenchoices.h"
 #include "src/engines/nwn/gui/chargen/charsex.h"
 #include "src/engines/nwn/gui/chargen/charrace.h"
 #include "src/engines/nwn/gui/chargen/charportrait.h"
@@ -57,13 +58,11 @@ CharGenMenu::~CharGenMenu() {
 	for (uint it = 0; it < _chargenGuis.size(); ++it)
 		delete _chargenGuis[it];
 
-	delete _charChoices.character;
-	_charChoices.character = 0;
+	delete _choices;
 }
 
 void CharGenMenu::reset() {
-	delete _charChoices.character;
-	_charChoices.character = new Creature();
+	_choices->reset();
 
 	for (std::vector<CharGenBase *>::iterator g = _chargenGuis.begin(); g != _chargenGuis.end(); ++g)
 		(*g)->reset();
@@ -101,8 +100,8 @@ void CharGenMenu::callbackActive(Widget &widget) {
 }
 
 void CharGenMenu::init() {
-	delete _charChoices.character;
-	_charChoices.character = new Creature();
+	delete _choices;
+	_choices = new CharGenChoices();
 
 	_charButtons.push_back(getButton("GenderButton", true));
 	_charButtons.push_back(getButton("RaceButton", true));
@@ -111,9 +110,10 @@ void CharGenMenu::init() {
 	for (std::vector<WidgetButton *>::iterator b = ++_charButtons.begin(); b != _charButtons.end(); ++b)
 		(*b)->setDisabled(true);
 
-	_chargenGuis.push_back(new CharSex());
-	_chargenGuis.push_back(new CharRace());
-	_chargenGuis.push_back(new CharPortrait());
+
+	_chargenGuis.push_back(new CharSex(*_choices));
+	_chargenGuis.push_back(new CharRace(*_choices));
+	_chargenGuis.push_back(new CharPortrait(*_choices));
 }
 
 } // End of namespace NWN
