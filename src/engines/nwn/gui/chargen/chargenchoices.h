@@ -48,7 +48,7 @@ public:
 	const Creature &getCharacter();
 	void setCharGender(uint32 gender);
 	void setCharRace(uint32 race);
-    void setCharPortrait(const Common::UString &portrait);
+	void setCharPortrait(const Common::UString &portrait);
 
 private:
 	Creature *_creature;

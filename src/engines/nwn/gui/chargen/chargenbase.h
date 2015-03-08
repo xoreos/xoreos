@@ -36,8 +36,8 @@ class Creature;
 
 class CharGenBase : public GUI {
 public:
-    CharGenBase();
-    ~CharGenBase();
+	CharGenBase();
+	~CharGenBase();
 
 	virtual void reset() = 0;
 
