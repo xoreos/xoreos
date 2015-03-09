@@ -29,10 +29,10 @@
 
 namespace Graphics {
 
-VertexBuffer::VertexBuffer() : _count(0), _size(0), _data(0), _vbo(0) {
+VertexBuffer::VertexBuffer() : _count(0), _size(0), _data(0), _vbo(0), _hint(GL_STATIC_DRAW) {
 }
 
-VertexBuffer::VertexBuffer(const VertexBuffer &other) : _data(0), _vbo(0) {
+VertexBuffer::VertexBuffer(const VertexBuffer &other) : _data(0), _vbo(0), _hint(GL_STATIC_DRAW) {
 	*this = other;
 }
 
