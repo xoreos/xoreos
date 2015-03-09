@@ -26,7 +26,7 @@
 
 namespace Engines {
 
-Engine::Engine() {
+Engine::Engine() : _game(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnknown) {
 }
 
 Engine::~Engine() {
