@@ -132,13 +132,13 @@ static uint32 readFakeChar(SeekableReadStream &stream, Encoding encoding) {
 			return data[0];
 
 		case kEncodingUTF16LE:
-			if (!stream.read(data, 2) != 2)
+			if (stream.read(data, 2) != 2)
 				return 0;
 
 			return READ_LE_UINT16(data);
 
 		case kEncodingUTF16BE:
-			if (!stream.read(data, 2) != 2)
+			if (stream.read(data, 2) != 2)
 				return 0;
 
 			return READ_BE_UINT16(data);
