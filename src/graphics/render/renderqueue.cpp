@@ -99,6 +99,7 @@ void RenderQueue::render() {
 	uint32 i = 0;
 	uint32 limit = _nodeArray.size();
 	while (i < limit) {
+		assert(_nodeArray[i].program);
 		if (currentProgram != _nodeArray[i].program) {
 			currentProgram = _nodeArray[i].program;
 			glUseProgram(currentProgram->glid);
@@ -110,6 +111,7 @@ void RenderQueue::render() {
 			currentSurface = 0;
 		}
 
+		assert(_nodeArray[i].material);
 		if (currentMaterial != _nodeArray[i].material) {
 			if (currentMaterial != 0) {
 				currentMaterial->unbindGLState();
@@ -119,17 +121,22 @@ void RenderQueue::render() {
 			currentMaterial->bindGLState();
 		}
 
+		assert(_nodeArray[i].surface);
+		assert(_nodeArray[i].mesh);
+
 		currentSurface = _nodeArray[i].surface;
 		currentMesh = _nodeArray[i].mesh;
 		currentMesh->renderBind();  // Binds VAO ready for rendering.
 
 		// There's at least one mesh to be rendering here.
+		assert(_nodeArray[i].transform);
 		currentSurface->bindProgram(currentProgram, _nodeArray[i].transform);
 		currentMesh->render();
 
 		++i;  // Move to next object.
 		while ((i < limit) && (_nodeArray[i].mesh == currentMesh) && (_nodeArray[i].material == currentMaterial) && (_nodeArray[i].surface == currentSurface)) {
 			// Next object is basically the same, but will have a different object modelview transform. So rebind that, and render again.
+			assert(_nodeArray[i].transform);
 			currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
 			currentMesh->render();
 			++i;
