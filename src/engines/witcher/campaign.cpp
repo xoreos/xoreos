@@ -48,7 +48,7 @@ void CampaignDescription::clear() {
 }
 
 
-Campaign::Campaign() : _running(false), _module(*this) {
+Campaign::Campaign() : _running(false), _module(*this), _newCampaign(0) {
 	findCampaigns();
 }
 
