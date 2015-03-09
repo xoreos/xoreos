@@ -97,7 +97,7 @@ Engines::Engine *JadeEngineProbe::createEngine() const {
 }
 
 
-JadeEngine::JadeEngine() {
+JadeEngine::JadeEngine() : _fps(0) {
 }
 
 JadeEngine::~JadeEngine() {
