@@ -384,9 +384,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	bool dayNightLightMaps = ctx.mdb->readByte() == 1;
 
-	Common::UString dayNightTransition = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 4);
-
-	ctx.mdb->skip(196); // Unknown
+	Common::UString dayNightTransition = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 200);
 
 	bool ignoreHitCheck  = ctx.mdb->readByte() == 1;
 	bool needsReflection = ctx.mdb->readByte() == 1;
