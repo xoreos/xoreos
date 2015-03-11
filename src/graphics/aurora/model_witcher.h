@@ -94,6 +94,10 @@ private:
 	                  std::vector<Common::UString> &textures);
 	void readNodeControllers(Model_Witcher::ParserContext &ctx,
 	                         uint32 offset, uint32 count, std::vector<float> &data);
+
+	void evaluateTextures(int n, std::vector<Common::UString> &textures,
+	                      const Common::UString *staticTextures, const uint32 *tVertsCount,
+	                      bool lightMapDayNight, const Common::UString &lightMapName);
 };
 
 } // End of namespace Aurora

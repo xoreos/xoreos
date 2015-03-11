@@ -453,36 +453,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	std::vector<Common::UString> textures;
 	readTextures(ctx, textures);
 
-	for (int t = 0; t < 4; t++) {
-		if (textures[t].empty())
-			textures[t] = texture[t];
-
-		if (tVertsCount[t] == 0)
-			textures[t].clear();
-
-		if (textures[t].empty())
-			continue;
-
-		if (ResMan.hasResource(textures[t], ::Aurora::kResourceImage))
-			continue;
-
-		// Different light situations, day/night
-		if      (ResMan.hasResource(textures[t] + "!r", ::Aurora::kResourceImage))
-			textures[t] += "!r";
-		else if (ResMan.hasResource(textures[t] + "!d", ::Aurora::kResourceImage))
-			textures[t] += "!d";
-		else if (ResMan.hasResource(textures[t] + "!n", ::Aurora::kResourceImage))
-			textures[t] += "!n";
-		else if (ResMan.hasResource(textures[t] + "!p", ::Aurora::kResourceImage))
-			textures[t] += "!p";
-		else if (ResMan.hasResource(textures[t] + "!w", ::Aurora::kResourceImage))
-			textures[t] += "!w";
-		else
-			textures[t].clear();
-	}
-
-	while (!textures.empty() && textures.back().empty())
-		textures.pop_back();
+	evaluateTextures(4, textures, texture, tVertsCount, dayNightLightMaps, lightMapName);
 
 	loadTextures(textures);
 
@@ -652,6 +623,47 @@ void ModelNode_Witcher::readTextures(Model_Witcher::ParserContext &ctx,
 			textures[n] = line->substr(line->getPosition(s), line->end());
 	}
 
+}
+
+void ModelNode_Witcher::evaluateTextures(int n, std::vector<Common::UString> &textures,
+		const Common::UString *staticTextures, const uint32 *tVertsCount,
+		bool lightMapDayNight, const Common::UString &lightMapName) {
+
+	textures.resize(n);
+
+	for (int t = 0; t < n; t++) {
+		if (textures[t].empty())
+			textures[t] = staticTextures[t];
+
+		if (tVertsCount[t] == 0)
+			textures[t].clear();
+
+		if (textures[t].empty())
+			continue;
+
+		if (lightMapDayNight && (textures[t] == lightMapName)) {
+			// Day (dzień)
+			if      (ResMan.hasResource(textures[t] + "!d", ::Aurora::kResourceImage))
+				textures[t] += "!d";
+			// Morning (rano)
+			else if (ResMan.hasResource(textures[t] + "!r", ::Aurora::kResourceImage))
+				textures[t] += "!r";
+			// Noon (południe)
+			else if (ResMan.hasResource(textures[t] + "!p", ::Aurora::kResourceImage))
+				textures[t] += "!p";
+			// Evening (wieczór)
+			else if (ResMan.hasResource(textures[t] + "!w", ::Aurora::kResourceImage))
+				textures[t] += "!w";
+			// Night (noc)
+			else if (ResMan.hasResource(textures[t] + "!n", ::Aurora::kResourceImage))
+				textures[t] += "!n";
+			else
+				textures[t].clear();
+		}
+	}
+
+	while (!textures.empty() && textures.back().empty())
+		textures.pop_back();
 }
 
 void ModelNode_Witcher::readNodeControllers(Model_Witcher::ParserContext &ctx,
