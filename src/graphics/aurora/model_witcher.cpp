@@ -640,7 +640,11 @@ void ModelNode_Witcher::readTextures(Model_Witcher::ParserContext &ctx,
 
 			Common::UString shader = line->substr(line->getPosition(7), line->end());
 			if ((shader == "dadd_al_mul_alp") ||
-			    (shader == "corona"))
+			    (shader == "corona") ||
+			    (shader == "normalmap") ||
+			    (shader == "norm_env_rim_ao") ||
+			    (shader == "transparency_2ps") ||
+			    (shader == "skin_n_rim_ao"))
 				hasShaderTex = false;
 		}
 
