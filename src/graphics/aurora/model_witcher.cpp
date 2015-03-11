@@ -211,7 +211,7 @@ ModelNode_Witcher::~ModelNode_Witcher() {
 }
 
 void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
-	ctx.mdb->skip(24);
+	ctx.mdb->skip(24); // Function pointers
 
 	uint32 inheritColor = ctx.mdb->readUint32LE();
 	uint32 nodeNumber   = ctx.mdb->readUint32LE();
@@ -239,7 +239,12 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
 	                    controllerKeyCount, controllerData);
 
-	ctx.mdb->skip(20);
+	ctx.mdb->skip(4); // Unknown
+
+	uint32 imposterGroup = ctx.mdb->readUint32LE();
+	uint32 fixedRot      = ctx.mdb->readUint32LE();
+	uint32 minLOD        = ctx.mdb->readUint32LE();
+	uint32 maxLOD        = ctx.mdb->readUint32LE();
 
 	uint32 flags = ctx.mdb->readUint32LE();
 	if ((flags & 0xFFFC0000) != 0)
