@@ -24,6 +24,7 @@
 
 // Disable the "unused variable" warnings while most stuff is still stubbed
 #pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
 #include "src/common/error.h"
 #include "src/common/maths.h"
@@ -295,25 +296,50 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 }
 
 void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
-	ctx.mdb->skip(8);
+	ctx.mdb->skip(4); // Function pointer
+	ctx.mdb->skip(4); // Unknown
 
 	uint32 offMeshArrays = ctx.mdb->readUint32LE();
 
-	ctx.mdb->skip(76);
+	ctx.mdb->skip(4); // Unknown
 
-	_ambient [0] = ctx.mdb->readIEEEFloatLE();
-	_ambient [1] = ctx.mdb->readIEEEFloatLE();
-	_ambient [2] = ctx.mdb->readIEEEFloatLE();
-	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	_diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	_diffuse [2] = ctx.mdb->readIEEEFloatLE();
-	_specular[0] = ctx.mdb->readIEEEFloatLE();
-	_specular[1] = ctx.mdb->readIEEEFloatLE();
-	_specular[2] = ctx.mdb->readIEEEFloatLE();
+	float boundingMin[3], boundingMax[3];
+
+	boundingMin[0] = ctx.mdb->readIEEEFloatLE();
+	boundingMin[1] = ctx.mdb->readIEEEFloatLE();
+	boundingMin[2] = ctx.mdb->readIEEEFloatLE();
+
+	boundingMax[0] = ctx.mdb->readIEEEFloatLE();
+	boundingMax[1] = ctx.mdb->readIEEEFloatLE();
+	boundingMax[2] = ctx.mdb->readIEEEFloatLE();
+
+	ctx.mdb->skip(28); // Unknown
+
+	float volFogScale = ctx.mdb->readIEEEFloatLE();
+
+	ctx.mdb->skip(16); // Unknown
+
+	_diffuse[0] = ctx.mdb->readIEEEFloatLE();
+	_diffuse[1] = ctx.mdb->readIEEEFloatLE();
+	_diffuse[2] = ctx.mdb->readIEEEFloatLE();
+	_ambient[0] = ctx.mdb->readIEEEFloatLE();
+	_ambient[1] = ctx.mdb->readIEEEFloatLE();
+	_ambient[2] = ctx.mdb->readIEEEFloatLE();
+
+	float textureTransRot[3];
+	textureTransRot[0] = ctx.mdb->readIEEEFloatLE();
+	textureTransRot[1] = ctx.mdb->readIEEEFloatLE();
+	textureTransRot[2] = ctx.mdb->readIEEEFloatLE();
 
 	_shininess = ctx.mdb->readIEEEFloatLE();
 
-	ctx.mdb->skip(20);
+	_shadow  = ctx.mdb->readUint32LE() == 1;
+	_beaming = ctx.mdb->readUint32LE() == 1;
+	_render  = ctx.mdb->readUint32LE() == 1;
+
+	_transparencyHint = ctx.mdb->readUint32LE() == 1;
+
+	ctx.mdb->skip(4); // Unknown
 
 	Common::UString texture[4];
 	for (int t = 0; t < 4; t++) {
@@ -323,23 +349,71 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 			texture[t].clear();
 	}
 
-	ctx.mdb->skip(20);
+	bool tileFade = ctx.mdb->readUint32LE() == 1;
+
+	bool controlFade   = ctx.mdb->readByte() == 1;
+	bool lightMapped   = ctx.mdb->readByte() == 1;
+	bool rotateTexture = ctx.mdb->readByte() == 1;
+
+	ctx.mdb->skip(1); // Unknown
+
+	float transparencyShift = ctx.mdb->readIEEEFloatLE();
+
+	uint32 defaultRenderList = ctx.mdb->readUint32LE();
+	uint32 preserveVColors   = ctx.mdb->readUint32LE();
 
 	uint32 fourCC = ctx.mdb->readUint32BE();
 
-	ctx.mdb->skip(8);
+	ctx.mdb->skip(4); // Unknown
 
-	float coronaCenterX = ctx.mdb->readIEEEFloatLE();
+	float depthOffset       = ctx.mdb->readIEEEFloatLE();
+	float coronaCenterMult  = ctx.mdb->readIEEEFloatLE();
+	float fadeStartDistance = ctx.mdb->readIEEEFloatLE();
 
-	ctx.mdb->skip(8);
+	bool distFromScreenCenterFace = ctx.mdb->readByte() == 1;
+	ctx.mdb->skip(3); // Unknown
 
 	float enlargeStartDistance = ctx.mdb->readIEEEFloatLE();
 
-	ctx.mdb->skip(308);
+	bool affectedByWind = ctx.mdb->readByte() == 1;
+	ctx.mdb->skip(3); // Unknown
+
+	float dampFactor = ctx.mdb->readIEEEFloatLE();
+
+	uint32 blendGroup = ctx.mdb->readUint32LE();
+
+	bool dayNightLightMaps = ctx.mdb->readByte() == 1;
+
+	Common::UString dayNightTransition = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 4);
+
+	ctx.mdb->skip(196); // Unknown
+
+	bool ignoreHitCheck  = ctx.mdb->readByte() == 1;
+	bool needsReflection = ctx.mdb->readByte() == 1;
+	ctx.mdb->skip(1); // Unknown
+
+	float reflectionPlaneNormal[3];
+	reflectionPlaneNormal[0] = ctx.mdb->readIEEEFloatLE();
+	reflectionPlaneNormal[1] = ctx.mdb->readIEEEFloatLE();
+	reflectionPlaneNormal[2] = ctx.mdb->readIEEEFloatLE();
+
+	float reflectionPlaneDistance = ctx.mdb->readIEEEFloatLE();
+
+	bool fadeOnCameraCollision = ctx.mdb->readByte() == 1;
+	bool noSelfShadow          = ctx.mdb->readByte() == 1;
+	bool isReflected           = ctx.mdb->readByte() == 1;
+	bool onlyReflected         = ctx.mdb->readByte() == 1;
+
+	Common::UString lightMapName = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
+
+	bool canDecal            = ctx.mdb->readByte() == 1;
+	bool multiBillBoard      = ctx.mdb->readByte() == 1;
+	bool ignoreLODReflection = ctx.mdb->readByte() == 1;
+	ctx.mdb->skip(1); // Unknown
+
+	float detailMapScape = ctx.mdb->readIEEEFloatLE();
 
 	ctx.offTextureInfo = ctx.mdb->readUint32LE();
-
-	ctx.mdb->skip(4);
 
 	uint32 endPos = ctx.mdb->seekTo(ctx.offRawData + offMeshArrays);
 
@@ -375,8 +449,6 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 		ctx.mdb->seekTo(endPos);
 		return;
 	}
-
-	_render = true;
 
 	std::vector<Common::UString> textures;
 	readTextures(ctx, textures);
