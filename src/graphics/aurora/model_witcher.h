@@ -88,6 +88,14 @@ public:
 	void load(Model_Witcher::ParserContext &ctx);
 
 private:
+	struct TexturePaintLayer {
+		bool hasTexture;
+
+		Common::UString texture;
+
+		std::vector<float> weights;
+	};
+
 	void readMesh(Model_Witcher::ParserContext &ctx);
 	void readTexturePaint(Model_Witcher::ParserContext &ctx);
 

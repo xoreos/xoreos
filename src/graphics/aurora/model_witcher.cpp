@@ -675,6 +675,31 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 		return;
 	}
 
+	std::vector<TexturePaintLayer> layers;
+	layers.resize(layersCount);
+
+	for (uint32 l = 0; l < layersCount; l++) {
+		ctx.mdb->seekTo(ctx.offRawData + layersOffset + l * 52);
+
+		layers[l].hasTexture = ctx.mdb->readByte() == 1;
+		if (!layers[l].hasTexture)
+			continue;
+
+		ctx.mdb->skip(3); // Unknown
+		ctx.mdb->skip(4); // Offset to material
+
+		layers[l].texture = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
+
+		uint32 weightsOffset, weightsCount;
+		Model::readArrayDef(*ctx.mdb, weightsOffset, weightsCount);
+
+		ctx.mdb->seekTo(ctx.offRawData + weightsOffset);
+		layers[l].weights.resize(weightsCount);
+
+		for (std::vector<float>::iterator w = layers[l].weights.begin(); w != layers[l].weights.end(); ++w)
+			*w = ctx.mdb->readIEEEFloatLE();
+	}
+
 	std::vector<Common::UString> textures;
 	textures.push_back(lightMapName);
 
