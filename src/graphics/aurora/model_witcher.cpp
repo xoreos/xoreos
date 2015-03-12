@@ -611,7 +611,7 @@ void ModelNode_Witcher::evaluateTextures(int n, std::vector<Common::UString> &te
 	textures.resize(n);
 
 	for (int t = 0; t < n; t++) {
-		if (textures[t].empty())
+		if (textures[t].empty() && staticTextures)
 			textures[t] = staticTextures[t];
 
 		if (tVertsCount[t] == 0)
