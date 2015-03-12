@@ -337,7 +337,8 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	_beaming = ctx.mdb->readUint32LE() == 1;
 	_render  = ctx.mdb->readUint32LE() == 1;
 
-	_transparencyHint = ctx.mdb->readUint32LE() == 1;
+	_hasTransparencyHint = true;
+	_transparencyHint    = ctx.mdb->readUint32LE() == 1;
 
 	ctx.mdb->skip(4); // Unknown
 
