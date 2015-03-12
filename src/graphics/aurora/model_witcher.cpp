@@ -260,6 +260,10 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 			readMesh(ctx);
 			break;
 
+		case kNodeTypeTexturePaint:
+			readTexturePaint(ctx);
+			break;
+
 		default:
 			break;
 	}
@@ -532,6 +536,228 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 		if (ctx.fileVersion == 133)
 			ctx.mdb->skip(4);
+	}
+
+	createBound();
+
+	ctx.mdb->seekTo(endPos);
+}
+
+void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
+	uint32 layersOffset, layersCount;
+	Model::readArrayDef(*ctx.mdb, layersOffset, layersCount);
+
+	ctx.mdb->skip(28); // Unknown
+
+	uint32 offMeshArrays = ctx.mdb->readUint32LE();
+
+	uint32 sectorID0 = ctx.mdb->readUint32LE();
+	uint32 sectorID1 = ctx.mdb->readUint32LE();
+	uint32 sectorID2 = ctx.mdb->readUint32LE();
+	uint32 sectorID3 = ctx.mdb->readUint32LE();
+
+	float boundingMin[3], boundingMax[3];
+
+	boundingMin[0] = ctx.mdb->readIEEEFloatLE();
+	boundingMin[1] = ctx.mdb->readIEEEFloatLE();
+	boundingMin[2] = ctx.mdb->readIEEEFloatLE();
+
+	boundingMax[0] = ctx.mdb->readIEEEFloatLE();
+	boundingMax[1] = ctx.mdb->readIEEEFloatLE();
+	boundingMax[2] = ctx.mdb->readIEEEFloatLE();
+
+	_diffuse[0] = ctx.mdb->readIEEEFloatLE();
+	_diffuse[1] = ctx.mdb->readIEEEFloatLE();
+	_diffuse[2] = ctx.mdb->readIEEEFloatLE();
+	_ambient[0] = ctx.mdb->readIEEEFloatLE();
+	_ambient[1] = ctx.mdb->readIEEEFloatLE();
+	_ambient[2] = ctx.mdb->readIEEEFloatLE();
+
+	float textureTransRot[3];
+	textureTransRot[0] = ctx.mdb->readIEEEFloatLE();
+	textureTransRot[1] = ctx.mdb->readIEEEFloatLE();
+	textureTransRot[2] = ctx.mdb->readIEEEFloatLE();
+
+	_shadow = ctx.mdb->readUint32LE() == 1;
+	_render = ctx.mdb->readUint32LE() == 1;
+
+	bool tileFade = ctx.mdb->readUint32LE() == 1;
+
+	bool controlFade   = ctx.mdb->readByte() == 1;
+	bool lightMapped   = ctx.mdb->readByte() == 1;
+	bool rotateTexture = ctx.mdb->readByte() == 1;
+	ctx.mdb->skip(1); // Unknown
+
+	float transparencyShift = ctx.mdb->readIEEEFloatLE();
+
+	uint32 defaultRenderList = ctx.mdb->readUint32LE();
+	uint32 fourCC            = ctx.mdb->readUint32BE();
+
+	ctx.mdb->skip(4); // Unknown
+
+	float depthOffset = ctx.mdb->readIEEEFloatLE();
+
+	uint32 blendGroup = ctx.mdb->readUint32LE();
+
+	bool dayNightLightMaps = ctx.mdb->readByte() == 1;
+
+	Common::UString dayNightTransition = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 200);
+
+	bool ignoreHitCheck  = ctx.mdb->readByte() == 1;
+	bool needsReflection = ctx.mdb->readByte() == 1;
+	ctx.mdb->skip(1); // Unknown
+
+	float reflectionPlaneNormal[3];
+	reflectionPlaneNormal[0] = ctx.mdb->readIEEEFloatLE();
+	reflectionPlaneNormal[1] = ctx.mdb->readIEEEFloatLE();
+	reflectionPlaneNormal[2] = ctx.mdb->readIEEEFloatLE();
+
+	float reflectionPlaneDistance = ctx.mdb->readIEEEFloatLE();
+
+	bool fadeOnCameraCollision = ctx.mdb->readByte() == 1;
+	bool noSelfShadow          = ctx.mdb->readByte() == 1;
+	bool isReflected           = ctx.mdb->readByte() == 1;
+	ctx.mdb->skip(1); // Unknown
+
+	float detailMapScape = ctx.mdb->readIEEEFloatLE();
+
+	bool onlyReflected = ctx.mdb->readByte() == 1;
+
+	Common::UString lightMapName = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
+
+	bool canDecal            = ctx.mdb->readByte() == 1;
+	bool ignoreLODReflection = ctx.mdb->readByte() == 1;
+	bool enableSpecular      = ctx.mdb->readByte() == 1;
+
+
+	uint32 endPos = ctx.mdb->seekTo(ctx.offRawData + offMeshArrays);
+
+	ctx.mdb->skip(4);
+
+	uint32 vertexOffset, vertexCount;
+	Model::readArrayDef(*ctx.mdb, vertexOffset, vertexCount);
+
+	uint32 normalsOffset, normalsCount;
+	Model::readArrayDef(*ctx.mdb, normalsOffset, normalsCount);
+
+	uint32 tangentsOffset, tangentsCount;
+	Model::readArrayDef(*ctx.mdb, tangentsOffset, tangentsCount);
+
+	uint32 biNormalsOffset, biNormalsCount;
+	Model::readArrayDef(*ctx.mdb, biNormalsOffset, biNormalsCount);
+
+	uint32 tVertsOffset[4], tVertsCount[4];
+	for (uint t = 0; t < 4; t++)
+		Model::readArrayDef(*ctx.mdb, tVertsOffset[t], tVertsCount[t]);
+
+	uint32 unknownOffset, unknownCount;
+	Model::readArrayDef(*ctx.mdb, unknownOffset, unknownCount);
+
+	uint32 facesOffset, facesCount;
+	Model::readArrayDef(*ctx.mdb, facesOffset, facesCount);
+
+	if ((vertexCount == 0) || (facesCount == 0)) {
+		ctx.mdb->seekTo(endPos);
+		return;
+	}
+
+	std::vector<Common::UString> textures;
+	textures.push_back(lightMapName);
+
+	evaluateTextures(1, textures, 0, tVertsCount, dayNightLightMaps, lightMapName);
+
+	loadTextures(textures);
+
+	uint texCount = textures.size();
+
+	// Read vertices
+
+	GLsizei vpsize = 3;
+	GLsizei vnsize = 3;
+	GLsizei vtsize = 2;
+	uint32 vertexSize = (vpsize + vnsize + vtsize * texCount) * sizeof(float);
+	_vertexBuffer.setSize(vertexCount, vertexSize);
+
+	float *vertexData = (float *) _vertexBuffer.getData();
+	VertexDecl vertexDecl;
+
+	VertexAttrib vp;
+	vp.index = VPOSITION;
+	vp.size = vpsize;
+	vp.type = GL_FLOAT;
+	vp.stride = 0;
+	vp.pointer = vertexData;
+	vertexDecl.push_back(vp);
+
+	VertexAttrib vn;
+	vn.index = VNORMAL;
+	vn.size = vnsize;
+	vn.type = GL_FLOAT;
+	vn.stride = 0;
+	vn.pointer = vertexData + vpsize * vertexCount;
+	vertexDecl.push_back(vn);
+
+	VertexAttrib vt[4];
+	for (uint t = 0; t < texCount; t++) {
+		vt[t].index = VTCOORD + t;
+		vt[t].size = vtsize;
+		vt[t].type = GL_FLOAT;
+		vt[t].stride = 0;
+		vt[t].pointer = vertexData + (vpsize + vnsize + t * vtsize) * vertexCount;
+		vertexDecl.push_back(vt[t]);
+	}
+
+	_vertexBuffer.setVertexDecl(vertexDecl);
+
+	// Read vertex position
+	ctx.mdb->seekTo(ctx.offRawData + vertexOffset);
+	float *v = (float *) vp.pointer;
+	for (uint32 i = 0; i < vertexCount; i++) {
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+	}
+
+	// Read vertex normals
+	assert(normalsCount == vertexCount);
+	ctx.mdb->seekTo(ctx.offRawData + normalsOffset);
+	v = (float *) vn.pointer;
+	for (uint32 i = 0; i < normalsCount; i++) {
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+		*v++ = ctx.mdb->readIEEEFloatLE();
+	}
+
+	// Read texture coordinates
+	for (uint t = 0; t < texCount; t++) {
+
+		ctx.mdb->seekTo(ctx.offRawData + tVertsOffset[t]);
+		v = (float *) vt[t].pointer;
+		for (uint32 i = 0; i < tVertsCount[t]; i++) {
+			if (i < tVertsCount[t]) {
+				*v++ = ctx.mdb->readIEEEFloatLE();
+				*v++ = ctx.mdb->readIEEEFloatLE();
+			} else {
+				*v++ = 0.0;
+				*v++ = 0.0;
+			}
+		}
+	}
+
+
+	// Read faces
+
+	_indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
+
+	ctx.mdb->seekTo(ctx.offRawData + facesOffset);
+	uint32 *f = (uint32 *) _indexBuffer.getData();
+	for (uint32 i = 0; i < facesCount; i++) {
+		// Vertex indices
+		*f++ = ctx.mdb->readUint32LE();
+		*f++ = ctx.mdb->readUint32LE();
+		*f++ = ctx.mdb->readUint32LE();
+
+		ctx.mdb->skip(68); // Unknown
 	}
 
 	createBound();

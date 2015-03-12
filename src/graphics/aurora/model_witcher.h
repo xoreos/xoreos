@@ -89,6 +89,7 @@ public:
 
 private:
 	void readMesh(Model_Witcher::ParserContext &ctx);
+	void readTexturePaint(Model_Witcher::ParserContext &ctx);
 
 	void readTextures(Model_Witcher::ParserContext &ctx,
 	                  std::vector<Common::UString> &textures);
