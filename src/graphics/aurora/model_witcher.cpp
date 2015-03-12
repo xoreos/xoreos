@@ -59,8 +59,17 @@ enum NodeType {
 	kNodeTypeCloth        = 0x00040001
 };
 
-static const uint32 kControllerTypePosition    = 84;
-static const uint32 kControllerTypeOrientation = 96;
+enum NodeControllerType {
+	kNodeControllerTypePosition    =  84,
+	kNodeControllerTypeOrientation =  96,
+	kNodeControllerTypeScale       = 184
+};
+
+enum NodeTrimeshControllerType {
+	kNodeTrimeshControllerTypeSelfIllumColor = 276,
+	kNodeTrimeshControllerTypeAlpha          = 292
+};
+
 
 Model_Witcher::ParserContext::ParserContext(const Common::UString &name) : mdb(0), state(0) {
 	mdb = ResMan.getResource(name, ::Aurora::kFileTypeMDB);
@@ -895,7 +904,7 @@ void ModelNode_Witcher::readNodeControllers(Model_Witcher::ParserContext &ctx,
 			// TODO: Controller row count = 0xFFFF
 			continue;
 
-		if        (type == kControllerTypePosition) {
+		if        (type == kNodeControllerTypePosition) {
 			if (columnCount != 3)
 				throw Common::Exception("Position controller with %d values", columnCount);
 
@@ -903,7 +912,7 @@ void ModelNode_Witcher::readNodeControllers(Model_Witcher::ParserContext &ctx,
 			_position[1] = data[dataIndex + 1];
 			_position[2] = data[dataIndex + 2];
 
-		} else if (type == kControllerTypeOrientation) {
+		} else if (type == kNodeControllerTypeOrientation) {
 			if (columnCount != 4)
 				throw Common::Exception("Orientation controller with %d values", columnCount);
 
