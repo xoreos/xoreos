@@ -40,23 +40,24 @@ namespace Graphics {
 
 namespace Aurora {
 
-static const int kNodeFlagHasHeader    = 0x00000001;
-static const int kNodeFlagHasLight     = 0x00000002;
-static const int kNodeFlagHasEmitter   = 0x00000004;
-static const int kNodeFlagHasReference = 0x00000010;
-static const int kNodeFlagHasMesh      = 0x00000020;
-static const int kNodeFlagHasSkin      = 0x00000040;
-static const int kNodeFlagHasAnim      = 0x00000080;
-static const int kNodeFlagHasDangly    = 0x00000100;
-static const int kNodeFlagHasAABB      = 0x00000200;
-static const int kNodeFlagHasUnknown1  = 0x00000400;
-static const int kNodeFlagHasUnknown2  = 0x00000800;
-static const int kNodeFlagHasUnknown3  = 0x00001000;
-static const int kNodeFlagHasUnknown4  = 0x00002000;
-static const int kNodeFlagHasUnknown5  = 0x00004000;
-static const int kNodeFlagHasUnknown6  = 0x00008000;
-static const int kNodeFlagHasUnknown7  = 0x00010000;
-static const int kNodeFlagHasUnknown8  = 0x00020000;
+enum NodeType {
+	kNodeTypeNode         = 0x00000001,
+	kNodeTypeLight        = 0x00000003,
+	kNodeTypeEmitter      = 0x00000005,
+	kNodeTypeCamera       = 0x00000009,
+	kNodeTypeReference    = 0x00000011,
+	kNodeTypeTrimesh      = 0x00000021,
+	kNodeTypeSkin         = 0x00000061,
+	kNodeTypeAABB         = 0x00000221,
+	kNodeTypeTrigger      = 0x00000421,
+	kNodeTypeSectorInfo   = 0x00001001,
+	kNodeTypeWalkmesh     = 0x00002001,
+	kNodeTypeDanglyNode   = 0x00004001,
+	kNodeTypeTexturePaint = 0x00008001,
+	kNodeTypeSpeedTree    = 0x00010001,
+	kNodeTypeChain        = 0x00020001,
+	kNodeTypeCloth        = 0x00040001
+};
 
 static const uint32 kControllerTypePosition    = 84;
 static const uint32 kControllerTypeOrientation = 96;
@@ -253,42 +254,15 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 	uint32 minLOD        = ctx.mdb->readUint32LE();
 	uint32 maxLOD        = ctx.mdb->readUint32LE();
 
-	uint32 flags = ctx.mdb->readUint32LE();
-	if ((flags & 0xFFFC0000) != 0)
-		throw Common::Exception("Unknown node flags %08X", flags);
+	NodeType type = (NodeType) ctx.mdb->readUint32LE();
+	switch (type) {
+		case kNodeTypeTrimesh:
+			readMesh(ctx);
+			break;
 
-	if (flags & kNodeFlagHasLight) {
-		// TODO: Light
+		default:
+			break;
 	}
-
-	if (flags & kNodeFlagHasEmitter) {
-		// TODO: Emitter
-	}
-
-	if (flags & kNodeFlagHasReference) {
-		// TODO: Reference
-	}
-
-	if (flags & kNodeFlagHasMesh) {
-		readMesh(ctx);
-	}
-
-	if (flags & kNodeFlagHasSkin) {
-		// TODO: Skin
-	}
-
-	if (flags & kNodeFlagHasAnim) {
-		// TODO: Anim
-	}
-
-	if (flags & kNodeFlagHasDangly) {
-		// TODO: Dangly
-	}
-
-	if (flags & kNodeFlagHasAABB) {
-		// TODO: AABB
-	}
-
 
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ModelNode_Witcher *childNode = new ModelNode_Witcher(*_model);
