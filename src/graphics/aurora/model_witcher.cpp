@@ -109,9 +109,15 @@ void Model_Witcher::load(ParserContext &ctx) {
 
 	ctx.mdb->seek(4);
 
-	ctx.fileVersion = ctx.mdb->readUint16LE();
+	ctx.fileVersion = ctx.mdb->readUint32LE() & 0x0FFFFFFF;
+	if ((ctx.fileVersion != 136) && (ctx.fileVersion != 133))
+		throw Common::Exception("Unknown The Witcher MDB version %d", ctx.fileVersion);
 
-	ctx.mdb->skip(10);
+	uint32 modelCount = ctx.mdb->readUint32LE();
+	if (modelCount != 1)
+		throw Common::Exception("Unsupported model count %d in The Witcher MDB", modelCount);
+
+	ctx.mdb->skip(4);
 
 	ctx.modelDataSize = ctx.mdb->readUint32LE();
 
