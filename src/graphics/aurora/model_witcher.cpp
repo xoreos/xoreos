@@ -251,8 +251,9 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 
 	uint32 imposterGroup = ctx.mdb->readUint32LE();
 	uint32 fixedRot      = ctx.mdb->readUint32LE();
-	uint32 minLOD        = ctx.mdb->readUint32LE();
-	uint32 maxLOD        = ctx.mdb->readUint32LE();
+
+	int32 minLOD = ctx.mdb->readUint32LE();
+	int32 maxLOD = ctx.mdb->readUint32LE();
 
 	NodeType type = (NodeType) ctx.mdb->readUint32LE();
 	switch (type) {
@@ -267,6 +268,10 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 		default:
 			break;
 	}
+
+	// Only render the highest LOD (0), or if the node is not LODing (-1)
+	if ((minLOD != -1) && (maxLOD != -1) && (minLOD > 0))
+		_render = false;
 
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ModelNode_Witcher *childNode = new ModelNode_Witcher(*_model);
