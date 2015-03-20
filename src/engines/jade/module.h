@@ -28,8 +28,6 @@
 #include "src/common/ustring.h"
 #include "src/common/configman.h"
 
-#include "src/aurora/resman.h"
-
 #include "src/events/types.h"
 
 namespace Engines {
@@ -71,9 +69,6 @@ private:
 	bool _hasModule; ///< Do we have a module?
 	bool _running;   ///< Are we currently running a module?
 
-	/** Resources added by the current module. */
-	std::list<Aurora::ResourceManager::ChangeID> _resources;
-
 	bool _exit; //< Should we exit the module?
 
 	Common::UString _module;    ///< The current module's name.
@@ -85,11 +80,9 @@ private:
 
 
 	void load();
-	void loadResources();
 	void loadArea();
 
 	void unload();
-	void unloadResources();
 	void unloadArea();
 
 	void findAreaName();

@@ -25,14 +25,12 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
-#include "src/common/filepath.h"
 
 #include "src/graphics/camera.h"
 
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
-#include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/camera.h"
 
 #include "src/engines/jade/module.h"
@@ -131,72 +129,19 @@ void Module::exit() {
 }
 
 void Module::load() {
-	loadResources();
-
-	findAreaName();
 	loadArea();
-}
-
-/** Load all RIMs in $JADE_moduleDir/$Module/ */
-void Module::loadResources() {
-	Common::UString modulesDir = ConfigMan.getString("JADE_moduleDir");
-	if (modulesDir.empty())
-		throw Common::Exception("No module directory");
-
-	Common::UString moduleDir = Common::FilePath::findSubDirectory(modulesDir, _module, true);
-	if (modulesDir.empty())
-		throw Common::Exception("No such module \"%s\"", _module.c_str());
-
-	Common::FileList files;
-	files.addDirectory(moduleDir);
-
-	int resources = 0;
-	for (Common::FileList::const_iterator f = files.begin(); f != files.end(); ++f) {
-		Common::UString file = Common::FilePath::relativize(modulesDir, *f).toLower();
-		if (!file.endsWith(".rim"))
-			continue;
-
-		Aurora::ResourceManager::ChangeID change;
-
-		indexMandatoryArchive(Aurora::kArchiveRIM, file, 100 + resources++, &change);
-		_resources.push_back(change);
-	}
-}
-
-/** Find the one non-global area definition file hopefully added by the module resources. */
-void Module::findAreaName() {
-	std::list<Aurora::ResourceManager::ResourceID> areas;
-	ResMan.getAvailableResources(Aurora::kFileTypeART, areas);
-
-	// Go through all available areas and remove the global ones
-	std::list<Aurora::ResourceManager::ResourceID>::iterator a = areas.begin();
-	while (a != areas.end()) {
-		if (a->name.toLower().beginsWith("aeg"))
-			a = areas.erase(a);
-		else
-			++a;
-	}
-
-	if (areas.empty())
-		throw Common::Exception("No area in module \"%s\"", _module.c_str());
-
-	if (areas.size() > 1)
-		throw Common::Exception("More than one area in module \"%s\"", _module.c_str());
-
-	_areaName = areas.front().name;
 }
 
 void Module::loadArea() {
 	_area = new Area;
 
-	_area->load(_areaName);
+	_area->load(_module);
 }
 
 void Module::unload() {
 	leave();
 
 	unloadArea();
-	unloadResources();
 
 	_newModule.clear();
 	_hasModule = false;
@@ -204,14 +149,6 @@ void Module::unload() {
 	_module.clear();
 
 	_areaName.clear();
-}
-
-void Module::unloadResources() {
-	std::list<Aurora::ResourceManager::ChangeID>::reverse_iterator r;
-	for (r = _resources.rbegin(); r != _resources.rend(); ++r)
-		ResMan.undo(*r);
-
-	_resources.clear();
 }
 
 void Module::unloadArea() {

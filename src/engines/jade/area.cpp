@@ -26,13 +26,14 @@
 #include "src/common/error.h"
 #include "src/common/stream.h"
 
-#include "src/aurora/resman.h"
 #include "src/aurora/gfffile.h"
 
 #include "src/graphics/graphics.h"
 #include "src/graphics/renderable.h"
 
 #include "src/graphics/aurora/cursorman.h"
+
+#include "src/engines/aurora/resources.h"
 
 #include "src/engines/jade/area.h"
 #include "src/engines/jade/room.h"
@@ -100,6 +101,11 @@ void Area::hide() {
 void Area::load(const Common::UString &resRef) {
 	_resRef = resRef;
 
+	Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+	loadARE(are.getTopLevel());
+
+	loadResources();
+
 	loadLYT(); // Room layout
 	loadVIS(); // Room visibilities
 
@@ -109,10 +115,26 @@ void Area::load(const Common::UString &resRef) {
 	_loaded = true;
 }
 
+void Area::loadARE(const Aurora::GFFStruct &are) {
+	_layout = are.getString("Layout");
+}
+
+void Area::loadResources() {
+	Aurora::ResourceManager::ChangeID change;
+
+	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + ".rim", 100, &change);
+	_resources.push_back(change);
+	change.clear();
+
+	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + "-a.rim", 101, &change);
+	_resources.push_back(change);
+	change.clear();
+}
+
 void Area::loadLYT() {
 	Common::SeekableReadStream *lyt = 0;
 	try {
-		if (!(lyt = ResMan.getResource(_resRef, Aurora::kFileTypeLYT)))
+		if (!(lyt = ResMan.getResource(_layout, Aurora::kFileTypeLYT)))
 			throw Common::Exception("No such LYT");
 
 		_lyt.load(*lyt);
@@ -120,7 +142,7 @@ void Area::loadLYT() {
 		delete lyt;
 	} catch (Common::Exception &e) {
 		delete lyt;
-		e.add("Failed loading LYT \"%s\"", _resRef.c_str());
+		e.add("Failed loading LYT \"%s\"", _layout.c_str());
 		throw;
 	}
 }
@@ -128,7 +150,7 @@ void Area::loadLYT() {
 void Area::loadVIS() {
 	Common::SeekableReadStream *vis = 0;
 	try {
-		if (!(vis = ResMan.getResource(_resRef, Aurora::kFileTypeVIS)))
+		if (!(vis = ResMan.getResource(_layout, Aurora::kFileTypeVIS)))
 			throw Common::Exception("No such VIS");
 
 		_vis.load(*vis);
@@ -136,7 +158,7 @@ void Area::loadVIS() {
 		delete vis;
 	} catch (Common::Exception &e) {
 		delete vis;
-		e.add("Failed loading VIS \"%s\"", _resRef.c_str());
+		e.add("Failed loading VIS \"%s\"", _layout.c_str());
 		throw;
 	}
 }
@@ -179,6 +201,12 @@ void Area::unload() {
 
 	_objects.clear();
 	_rooms.clear();
+
+	std::list<Aurora::ResourceManager::ChangeID>::reverse_iterator r;
+	for (r = _resources.rbegin(); r != _resources.rend(); ++r)
+		ResMan.undo(*r);
+
+	_resources.clear();
 
 	_loaded = false;
 }

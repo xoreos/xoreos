@@ -31,6 +31,8 @@
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 #include "src/aurora/lytfile.h"
 #include "src/aurora/visfile.h"
 
@@ -77,8 +79,11 @@ private:
 	bool _loaded;
 
 	Common::UString _resRef;
+	Common::UString _layout;
 
 	bool _visible;
+
+	std::list<Aurora::ResourceManager::ChangeID> _resources;
 
 	Aurora::LYTFile _lyt;
 	Aurora::VISFile _vis;
@@ -96,6 +101,10 @@ private:
 
 	Common::Mutex _mutex;
 
+
+	void loadARE(const Aurora::GFFStruct &are);
+
+	void loadResources();
 
 	void loadLYT();
 	void loadVIS();
