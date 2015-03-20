@@ -76,8 +76,6 @@ void Area::show() {
 }
 
 void Area::hide() {
-	assert(_loaded);
-
 	if (!_visible)
 		return;
 
