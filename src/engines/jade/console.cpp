@@ -30,6 +30,8 @@
 #include "src/common/filelist.h"
 #include "src/common/configman.h"
 
+#include "src/aurora/resman.h"
+
 #include "src/graphics/aurora/fontman.h"
 
 #include "src/engines/jade/console.h"
@@ -67,27 +69,11 @@ void Console::updateModules() {
 	_modules.clear();
 	setArguments("loadmodule");
 
-	Common::UString modulesDir = ConfigMan.getString("JADE_moduleDir");
-	if (modulesDir.empty())
-		return;
+	std::list<Aurora::ResourceManager::ResourceID> ares;
+	ResMan.getAvailableResources(Aurora::kFileTypeARE, ares);
 
-	Common::FileList files;
-	files.addDirectory(modulesDir, -1);
-
-	for (Common::FileList::const_iterator f = files.begin(); f != files.end(); ++f) {
-		Common::UString file = Common::FilePath::relativize(modulesDir, *f).toLower();
-		if (!file.endsWith(".rim"))
-			continue;
-
-		Common::UString dir = Common::FilePath::getDirectory(file).c_str();
-		if (dir.empty())
-			continue;
-
-		if (std::find(_modules.begin(), _modules.end(), dir) != _modules.end())
-			continue;
-
-		_modules.push_back(dir);
-	}
+	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator a = ares.begin(); a != ares.end(); ++a)
+		_modules.push_back(a->name);
 
 	_modules.sort(Common::UString::iless());
 	setArguments("loadmodule", _modules);
