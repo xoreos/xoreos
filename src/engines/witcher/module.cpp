@@ -39,6 +39,7 @@
 
 #include "src/engines/witcher/module.h"
 #include "src/engines/witcher/campaign.h"
+#include "src/engines/witcher/area.h"
 
 
 namespace Engines {
@@ -46,7 +47,7 @@ namespace Engines {
 namespace Witcher {
 
 Module::Module(Campaign &campaign) : _campaign(&campaign),
-	_hasModule(false), _running(false), _exit(false) {
+	_hasModule(false), _running(false), _exit(false), _currentArea(0) {
 
 }
 
@@ -141,6 +142,7 @@ void Module::enter() {
 		playVideo(startMovie);
 
 	_exit    = false;
+	_newArea = _ifo.getEntryArea();
 
 	CameraMan.reset();
 
@@ -151,6 +153,32 @@ void Module::enter() {
 }
 
 void Module::enterArea() {
+	if (_currentArea && (_currentArea->getResRef() == _newArea))
+		return;
+
+	if (_currentArea) {
+		_currentArea->hide();
+
+		_currentArea = 0;
+	}
+
+	if (_newArea.empty()) {
+		_exit = true;
+		return;
+	}
+
+	AreaMap::iterator area = _areas.find(_newArea);
+	if (area == _areas.end() || !area->second) {
+		warning("Failed entering area \"%s\": No such area", _newArea.c_str());
+		_exit = true;
+		return;
+	}
+
+	_currentArea = area->second;
+
+	_currentArea->show();
+
+	EventMan.flushEvents();
 }
 
 void Module::run() {
@@ -163,7 +191,7 @@ void Module::run() {
 
 		EventMan.flushEvents();
 
-		while (!EventMan.quitRequested() && !_exit) {
+		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
 			replaceModule();
 			enterArea();
 			if (_exit)
@@ -171,7 +199,7 @@ void Module::run() {
 
 			handleEvents();
 
-			if (!EventMan.quitRequested() && !_exit)
+			if (!EventMan.quitRequested() && !_exit && !_newArea.empty())
 				EventMan.delay(10);
 		}
 
@@ -219,9 +247,39 @@ void Module::unloadModule() {
 }
 
 void Module::loadAreas() {
+	status("Loading areas...");
+
+	const std::vector<Common::UString> &areas = _ifo.getAreas();
+	for (uint32 i = 0; i < areas.size(); i++) {
+		status("Loading area \"%s\" (%d / %d)", areas[i].c_str(), i, (int) areas.size() - 1);
+
+		std::pair<AreaMap::iterator, bool> result;
+
+		result = _areas.insert(std::make_pair(areas[i], (Area *) 0));
+		if (!result.second)
+			throw Common::Exception("Area tag collision: \"%s\"", areas[i].c_str());
+
+		try {
+			result.first->second = new Area(*this, areas[i].c_str());
+		} catch (Common::Exception &e) {
+			e.add("Can't load area \"%s\"", areas[i].c_str());
+			throw;
+		}
+	}
 }
 
 void Module::unloadAreas() {
+	for (AreaMap::iterator a = _areas.begin(); a != _areas.end(); ++a)
+		delete a->second;
+
+	_areas.clear();
+	_newArea.clear();
+
+	_currentArea = 0;
+}
+
+void Module::movePC(const Common::UString &area) {
+	_newArea = area;
 }
 
 void Module::movePC(float x, float y, float z) {
@@ -230,12 +288,21 @@ void Module::movePC(float x, float y, float z) {
 	CameraMan.update();
 }
 
+void Module::movePC(const Common::UString &area, float x, float y, float z) {
+	movePC(area);
+	movePC(x, y, z);
+}
+
 const Common::UString &Module::getName() const {
 	return _ifo.getName().getString();
 }
 
 const Aurora::IFOFile &Module::getIFO() const {
 	return _ifo;
+}
+
+Area *Module::getCurrentArea() {
+	return _currentArea;
 }
 
 } // End of namespace Witcher

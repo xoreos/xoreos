@@ -43,6 +43,8 @@ namespace Witcher {
 
 class Campaign;
 
+class Area;
+
 class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
 public:
 	Module(Campaign &campaign);
@@ -63,12 +65,21 @@ public:
 
 	/** Return the IFO of the currently loaded module. */
 	const Aurora::IFOFile &getIFO() const;
+	/** Return the area the PC is currently in. */
+	Area *getCurrentArea();
 
+	/** Move the player character to this area. */
+	void movePC(const Common::UString &area);
 	/** Move the player character to this position within the current area. */
 	void movePC(float x, float y, float z);
+	/** Move the player character to this position within this area. */
+	void movePC(const Common::UString &area, float x, float y, float z);
 
 
 private:
+	typedef std::map<Common::UString, Area *> AreaMap;
+
+
 	Campaign *_campaign;
 
 	bool _hasModule; ///< Do we have a module?
@@ -80,6 +91,10 @@ private:
 	Aurora::IFOFile _ifo; ///< The module's IFO.
 
 	bool _exit; //< Should we exit the module?
+
+	AreaMap         _areas;           ///< The areas in the current module.
+	Common::UString _newArea;         ///< The new area to enter.
+	Area           *_currentArea;     ///< The current area.
 
 	Common::UString _newModule; ///< The module we should change to.
 
