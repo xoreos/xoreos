@@ -140,8 +140,10 @@ int VorbisStream::readBuffer(int16 *buffer, const int numSamples) {
 }
 
 bool VorbisStream::rewind() {
-	ov_pcm_seek(&_ovFile, 0);
-	return true;
+	if (ov_pcm_seek(&_ovFile, 0) != 0)
+		return false;
+
+	return refill();
 }
 
 bool VorbisStream::refill() {
