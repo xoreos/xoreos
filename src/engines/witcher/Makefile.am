@@ -8,6 +8,7 @@ noinst_HEADERS = \
                  campaign.h \
                  module.h \
                  area.h \
+                 location.h \
                  $(EMPTY)
 
 libwitcher_la_SOURCES = \
@@ -16,4 +17,5 @@ libwitcher_la_SOURCES = \
                         campaign.cpp \
                         module.cpp \
                         area.cpp \
+                        location.cpp \
                         $(EMPTY)
