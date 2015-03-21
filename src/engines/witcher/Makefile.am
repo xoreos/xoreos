@@ -9,6 +9,7 @@ noinst_HEADERS = \
                  module.h \
                  area.h \
                  location.h \
+                 object.h \
                  $(EMPTY)
 
 libwitcher_la_SOURCES = \
@@ -18,4 +19,5 @@ libwitcher_la_SOURCES = \
                         module.cpp \
                         area.cpp \
                         location.cpp \
+                        object.cpp \
                         $(EMPTY)
