@@ -36,6 +36,12 @@ namespace Common {
 	class FileList;
 }
 
+namespace Graphics {
+	namespace Aurora {
+		class FPS;
+	}
+}
+
 namespace Engines {
 
 class LoadProgress;
