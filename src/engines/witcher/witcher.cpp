@@ -45,6 +45,7 @@
 
 #include "src/engines/witcher/witcher.h"
 #include "src/engines/witcher/modelloader.h"
+#include "src/engines/witcher/console.h"
 #include "src/engines/witcher/campaign.h"
 
 namespace Engines {
@@ -245,7 +246,8 @@ void WitcherEngine::playIntroVideos() {
 }
 
 void WitcherEngine::main() {
-	Campaign campaign;
+	Console console;
+	Campaign campaign(console);
 
 	const std::list<CampaignDescription> &campaigns = campaign.getCampaigns();
 	if (campaigns.empty())

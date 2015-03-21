@@ -38,6 +38,7 @@
 #include "src/engines/aurora/camera.h"
 
 #include "src/engines/witcher/module.h"
+#include "src/engines/witcher/console.h"
 #include "src/engines/witcher/campaign.h"
 #include "src/engines/witcher/area.h"
 
@@ -46,7 +47,7 @@ namespace Engines {
 
 namespace Witcher {
 
-Module::Module(Campaign &campaign) : _campaign(&campaign),
+Module::Module(Console &console, Campaign &campaign) : _console(&console), _campaign(&campaign),
 	_hasModule(false), _running(false), _exit(false), _currentArea(0) {
 
 }
@@ -110,6 +111,8 @@ void Module::replaceModule() {
 	if (_newModule.empty())
 		return;
 
+	_console->hide();
+
 	Common::UString newModule = _newModule;
 
 	unload();
@@ -123,6 +126,8 @@ void Module::replaceModule() {
 void Module::enter() {
 	if (!_hasModule)
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
+
+	_console->printf("Entering module \"%s\"", _ifo.getName().getString().c_str());
 
 	try {
 
@@ -179,6 +184,9 @@ void Module::enterArea() {
 	_currentArea->show();
 
 	EventMan.flushEvents();
+
+	_console->printf("Entering area \"%s\" \(\"%s\")", _currentArea->getResRef().c_str(),
+			_currentArea->getName().c_str());
 }
 
 void Module::run() {
@@ -222,9 +230,26 @@ bool Module::isRunning() const {
 void Module::handleEvents() {
 	Events::Event event;
 	while (EventMan.pollEvent(event)) {
-		// Camera
-		if (handleCameraInput(event))
+		// Handle console
+		if (_console->processEvent(event)) {
+			if (!_currentArea)
+				return;
+
 			continue;
+		}
+
+		if (event.type == Events::kEventKeyDown) {
+			// Console
+			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+				_console->show();
+				continue;
+			}
+		}
+
+		// Camera
+		if (!_console->isVisible())
+			if (handleCameraInput(event))
+				continue;
 	}
 
 	CameraMan.update();

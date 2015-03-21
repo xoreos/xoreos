@@ -32,6 +32,7 @@
 #include "src/aurora/gfffile.h"
 
 #include "src/engines/witcher/campaign.h"
+#include "src/engines/witcher/console.h"
 
 namespace Engines {
 
@@ -48,11 +49,17 @@ void CampaignDescription::clear() {
 }
 
 
-Campaign::Campaign() : _running(false), _module(*this), _newCampaign(0) {
+Campaign::Campaign(Console &console) : _console(&console), _running(false),
+	_module(console, *this), _newCampaign(0) {
+
 	findCampaigns();
+
+	_console->setCampaign(this);
 }
 
 Campaign::~Campaign() {
+	_console->setCampaign();
+
 	clear();
 }
 
@@ -110,6 +117,8 @@ bool Campaign::readCampaign(const Common::UString &mmdFile, CampaignDescription 
 }
 
 void Campaign::clear() {
+	_console->setModule();
+
 	_module.clear();
 
 	_currentCampaign.clear();
@@ -181,6 +190,8 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 		e.add("Failed to load campaign's starting module");
 		throw;
 	}
+
+	_console->setModule(&_module);
 }
 
 void Campaign::run() {

@@ -37,6 +37,8 @@ namespace Engines {
 
 namespace Witcher {
 
+class Console;
+
 struct CampaignDescription {
 	Common::UString tag;
 
@@ -51,7 +53,7 @@ struct CampaignDescription {
 
 class Campaign {
 public:
-	Campaign();
+	Campaign(Console &console);
 	~Campaign();
 
 	const std::list<CampaignDescription> &getCampaigns() const;
@@ -75,6 +77,8 @@ public:
 private:
 	/** All campaigns we know about. */
 	std::list<CampaignDescription> _campaigns;
+
+	Console *_console;
 
 	/** The currently loaded campaign. */
 	CampaignDescription _currentCampaign;
