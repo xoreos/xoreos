@@ -43,6 +43,7 @@
 #include "src/engines/witcher/module.h"
 #include "src/engines/witcher/object.h"
 #include "src/engines/witcher/waypoint.h"
+#include "src/engines/witcher/door.h"
 
 namespace Engines {
 
@@ -230,6 +231,10 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 	// Waypoints
 	if (git.hasField("WaypointList"))
 		loadWaypoints(git.getList("WaypointList"));
+
+	// Doors
+	if (git.hasField("Door List"))
+		loadDoors(git.getList("Door List"));
 }
 
 void Area::loadProperties(const Aurora::GFFStruct &props) {
@@ -291,6 +296,14 @@ void Area::loadWaypoints(const Aurora::GFFList &list) {
 		Waypoint *waypoint = new Waypoint(**d);
 
 		loadObject(*waypoint);
+	}
+}
+
+void Area::loadDoors(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+		Door *door = new Door(*_module, **d);
+
+		loadObject(*door);
 	}
 }
 
