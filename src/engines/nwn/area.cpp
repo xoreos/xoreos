@@ -171,6 +171,7 @@ void Area::setMusicBattleTrack(uint32 track) {
 		stinger[1] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger2");
 		stinger[2] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger3");
 
+		_musicBattleStinger.clear();
 		for (int i = 0; i < 3; i++)
 			if (!stinger[i].empty())
 				_musicBattleStinger.push_back(stinger[i]);
