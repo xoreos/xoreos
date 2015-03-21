@@ -7,6 +7,7 @@ noinst_HEADERS = \
                  modelloader.h \
                  campaign.h \
                  module.h \
+                 area.h \
                  $(EMPTY)
 
 libwitcher_la_SOURCES = \
@@ -14,4 +15,5 @@ libwitcher_la_SOURCES = \
                         modelloader.cpp \
                         campaign.cpp \
                         module.cpp \
+                        area.cpp \
                         $(EMPTY)
