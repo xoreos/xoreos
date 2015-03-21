@@ -30,6 +30,7 @@
 
 #include "src/aurora/error.h"
 #include "src/aurora/resman.h"
+#include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
@@ -127,7 +128,7 @@ void WitcherEngine::run() {
 }
 
 void WitcherEngine::init() {
-	LoadProgress progress(14);
+	LoadProgress progress(15);
 
 	progress.step("Loading user game config");
 	initConfig();
@@ -206,12 +207,16 @@ void WitcherEngine::initResources(LoadProgress &progress) {
 	indexOptionalDirectory("data/textures" , 0, -1, 40);
 
 	indexOptionalDirectory("data", ".*\\.bik", 0, 41);
+	indexOptionalDirectory("data", ".*\\.tlk", 0, 42);
 
 	progress.step("Indexing Windows-specific resources");
-	indexMandatoryArchive(Aurora::kArchiveEXE, "witcher.exe", 42);
+	indexMandatoryArchive(Aurora::kArchiveEXE, "witcher.exe", 43);
 
 	progress.step("Indexing override files");
 	indexOptionalDirectory("data/override", 0, 0, 50);
+
+	progress.step("Loading main talk table");
+	TalkMan.addMainTable("dialog_3");
 
 	progress.step("Registering file formats");
 	registerModelLoader(new WitcherModelLoader);
