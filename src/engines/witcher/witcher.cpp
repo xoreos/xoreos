@@ -29,7 +29,6 @@
 #include "src/common/configman.h"
 
 #include "src/aurora/error.h"
-#include "src/aurora/resman.h"
 #include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/cursorman.h"
@@ -128,7 +127,7 @@ void WitcherEngine::run() {
 }
 
 void WitcherEngine::init() {
-	LoadProgress progress(15);
+	LoadProgress progress(14);
 
 	progress.step("Loading user game config");
 	initConfig();
@@ -188,11 +187,6 @@ void WitcherEngine::initResources(LoadProgress &progress) {
 	progress.step("Loading the localized base KEY");
 	indexMandatoryArchive(Aurora::kArchiveKEY, "localized.key", 10);
 
-	progress.step("Loading the English language KEYs");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "lang_3.key", 20);
-	indexMandatoryArchive(Aurora::kArchiveKEY, "M1_3.key"  , 21);
-	indexMandatoryArchive(Aurora::kArchiveKEY, "M2_3.key"  , 22);
-
 	progress.step("Indexing extra resources");
 	indexOptionalDirectory("data/movies"   , 0, -1, 30);
 	indexOptionalDirectory("data/music"    , 0, -1, 31);
@@ -215,8 +209,7 @@ void WitcherEngine::initResources(LoadProgress &progress) {
 	progress.step("Indexing override files");
 	indexOptionalDirectory("data/override", 0, 0, 50);
 
-	progress.step("Loading main talk table");
-	TalkMan.addMainTable("dialog_3");
+	loadLanguageFiles(progress, Aurora::kLanguageEnglish, Aurora::kLanguageEnglish);
 
 	progress.step("Registering file formats");
 	registerModelLoader(new WitcherModelLoader);
@@ -236,6 +229,45 @@ void WitcherEngine::initConfig() {
 void WitcherEngine::initGameConfig() {
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "WITCHER_moduleDir",
 		Common::FilePath::findSubDirectory(_target, "data/modules", true));
+}
+
+void WitcherEngine::unloadLanguageFiles() {
+	TalkMan.removeMainTable();
+}
+
+void WitcherEngine::loadLanguageFiles(LoadProgress &progress,
+		Aurora::Language langText, Aurora::Language langVoice) {
+
+	progress.step(Common::UString::sprintf("Index language files (%s text + %s voices)",
+				Aurora::getLanguageName(langText).c_str(), Aurora::getLanguageName(langVoice).c_str()));
+
+	loadLanguageFiles(langText, langVoice);
+}
+
+void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Language langVoice) {
+	unloadLanguageFiles();
+
+	Common::UString archive;
+
+	Aurora::ResourceManager::ChangeID change;
+
+	archive = Common::UString::sprintf("lang_%d.key", getLanguageID(_game, langVoice));
+	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 20, &change);
+	_languageResources.push_back(change);
+	change.clear();
+
+	archive = Common::UString::sprintf("M1_%d.key", getLanguageID(_game, langVoice));
+	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 21, &change);
+	_languageResources.push_back(change);
+	change.clear();
+
+	archive = Common::UString::sprintf("M2_%d.key", getLanguageID(_game, langVoice));
+	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 22, &change);
+	_languageResources.push_back(change);
+	change.clear();
+
+	archive = Common::UString::sprintf("dialog_%d", getLanguageID(_game, langText));
+	TalkMan.addMainTable(archive);
 }
 
 void WitcherEngine::deinit() {

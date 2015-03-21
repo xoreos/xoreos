@@ -28,6 +28,8 @@
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
+#include "src/aurora/language.h"
+#include "src/aurora/resman.h"
 
 #include "src/engines/engine.h"
 #include "src/engines/engineprobe.h"
@@ -80,12 +82,18 @@ public:
 private:
 	Graphics::Aurora::FPS *_fps;
 
+	std::list<Aurora::ResourceManager::ChangeID> _languageResources;
+
 	void init();
 	void declareEncodings();
 	void initResources(LoadProgress &progress);
 	void initCursors();
 	void initConfig();
 	void initGameConfig();
+
+	void unloadLanguageFiles();
+	void loadLanguageFiles(LoadProgress &progress, Aurora::Language langText, Aurora::Language langVoice);
+	void loadLanguageFiles(Aurora::Language langText, Aurora::Language langVoice);
 
 	void deinit();
 
