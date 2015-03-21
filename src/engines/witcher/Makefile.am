@@ -10,6 +10,7 @@ noinst_HEADERS = \
                  area.h \
                  location.h \
                  object.h \
+                 waypoint.h \
                  $(EMPTY)
 
 libwitcher_la_SOURCES = \
@@ -20,4 +21,5 @@ libwitcher_la_SOURCES = \
                         area.cpp \
                         location.cpp \
                         object.cpp \
+                        waypoint.cpp \
                         $(EMPTY)
