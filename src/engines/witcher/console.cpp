@@ -55,6 +55,12 @@ Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 	registerCommand("playmusic"    , boost::bind(&Console::cmdPlayMusic    , this, _1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
+	registerCommand("move"         , boost::bind(&Console::cmdMove         , this, _1),
+			"Usage: move <x> <y> <z>\nMove to this position in the current area");
+	registerCommand("listareas"    , boost::bind(&Console::cmdListAreas    , this, _1),
+			"Usage: listareas\nList all areas in the current module");
+	registerCommand("gotoarea"     , boost::bind(&Console::cmdGotoArea     , this, _1),
+			"Usage: gotoarea <area>\nMove to a specific area");
 }
 
 Console::~Console() {
@@ -72,6 +78,7 @@ void Console::updateCaches() {
 	::Engines::Console::updateCaches();
 
 	updateMusic();
+	updateAreas();
 }
 
 void Console::updateMusic() {
@@ -102,6 +109,21 @@ void Console::updateMusic() {
 	setArguments("playmusic", _music);
 }
 
+void Console::updateAreas() {
+	_areas.clear();
+	if (!_module) {
+		setArguments("gotoarea");
+		return;
+	}
+
+	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
+	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
+		_areas.push_back(*a);
+
+	_areas.sort(Common::UString::iless());
+	setArguments("gotoarea", _areas);
+}
+
 void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
 	updateMusic();
 	printList(_music, _maxSizeMusic);
@@ -121,6 +143,54 @@ void Console::cmdPlayMusic(const CommandLine &cl) {
 		return;
 
 	area->playAmbientMusic(cl.args);
+}
+
+void Console::cmdMove(const CommandLine &cl) {
+	std::vector<Common::UString> args;
+	splitArguments(cl.args, args);
+
+	float x, z, y;
+	if ((args.size() < 3) ||
+	    (sscanf(args[0].c_str(), "%f", &x) != 1) ||
+	    (sscanf(args[1].c_str(), "%f", &y) != 1) ||
+	    (sscanf(args[2].c_str(), "%f", &z) != 1)) {
+
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	if (!_module)
+		return;
+
+	_module->movePC(x, y, z);
+}
+
+void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
+	if (!_module)
+		return;
+
+	updateAreas();
+	for (std::list<Common::UString>::iterator a = _areas.begin(); a != _areas.end(); ++a)
+		printf("%s (\"%s\")", a->c_str(), Area::getName(*a).c_str());
+}
+
+void Console::cmdGotoArea(const CommandLine &cl) {
+	if (!_module)
+		return;
+
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
+	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
+		if (a->equalsIgnoreCase(cl.args)) {
+			_module->movePC(*a);
+			return;
+		}
+
+	printf("Area \"%s\" does not exist", cl.args.c_str());
 }
 
 } // End of namespace Witcher
