@@ -42,6 +42,8 @@ namespace Witcher {
 
 class Module;
 
+class Object;
+
 class Area : public Aurora::NWScript::Object {
 public:
 	Area(Module &module, const Common::UString &resRef);
@@ -80,6 +82,10 @@ public:
 
 
 private:
+	typedef std::list<Engines::Witcher::Object *> ObjectList;
+	typedef std::map<uint32, Engines::Witcher::Object *> ObjectMap;
+
+
 	Module *_module;
 
 	bool _loaded;
@@ -102,6 +108,9 @@ private:
 	Common::UString _modelName;      ///< Name of area geometry ("tile") model.
 	Graphics::Aurora::Model *_model; ///< The actual area geometry model.
 
+	ObjectList _objects;   ///< List of all objects in the area.
+	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
+
 
 	// Loading helpers
 
@@ -111,6 +120,9 @@ private:
 	void loadGIT(const Aurora::GFFStruct &git);
 
 	void loadProperties(const Aurora::GFFStruct &props);
+
+	void loadObject(Engines::Witcher::Object &object);
+	void loadWaypoints (const Aurora::GFFList &list);
 
 	// Model loading/unloading helpers
 

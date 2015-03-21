@@ -41,6 +41,8 @@
 
 #include "src/engines/witcher/area.h"
 #include "src/engines/witcher/module.h"
+#include "src/engines/witcher/object.h"
+#include "src/engines/witcher/waypoint.h"
 
 namespace Engines {
 
@@ -78,6 +80,12 @@ Area::~Area() {
 }
 
 void Area::clear() {
+	// Delete objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		delete *o;
+
+	_objects.clear();
+
 	// Delete area geometry model
 	delete _model;
 	_model = 0;
@@ -162,6 +170,10 @@ void Area::show() {
 	if (_model)
 		_model->show();
 
+	// Show objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->show();
+
 	GfxMan.unlockFrame();
 
 	playAmbientMusic();
@@ -176,6 +188,10 @@ void Area::hide() {
 	stopAmbientMusic();
 
 	GfxMan.lockFrame();
+
+	// Hide objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->hide();
 
 	// Hide area geometry model
 	if (_model)
@@ -210,7 +226,10 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 	_modelName = are.getString("Tileset");
 }
 
-void Area::loadGIT(const Aurora::GFFStruct &UNUSED(git)) {
+void Area::loadGIT(const Aurora::GFFStruct &git) {
+	// Waypoints
+	if (git.hasField("WaypointList"))
+		loadWaypoints(git.getList("WaypointList"));
 }
 
 void Area::loadProperties(const Aurora::GFFStruct &props) {
@@ -221,9 +240,27 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 
 void Area::loadModels() {
 	loadAreaModel();
+
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+		Engines::Witcher::Object &object = **o;
+
+		object.loadModel();
+
+		if (!object.isStatic()) {
+			const std::list<uint32> &ids = object.getIDs();
+
+			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+				_objectMap.insert(std::make_pair(*id, &object));
+		}
+	}
 }
 
 void Area::unloadModels() {
+	_objectMap.clear();
+
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->unloadModel();
+
 	unloadAreaModel();
 }
 
@@ -239,6 +276,22 @@ void Area::loadAreaModel() {
 void Area::unloadAreaModel() {
 	delete _model;
 	_model = 0;
+}
+
+void Area::loadObject(Engines::Witcher::Object &object) {
+	object.setArea(this);
+
+	_objects.push_back(&object);
+	if (!object.isStatic())
+		_module->addObject(object);
+}
+
+void Area::loadWaypoints(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+		Waypoint *waypoint = new Waypoint(**d);
+
+		loadObject(*waypoint);
+	}
 }
 
 } // End of namespace Witcher
