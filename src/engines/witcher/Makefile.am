@@ -11,6 +11,7 @@ noinst_HEADERS = \
                  location.h \
                  object.h \
                  waypoint.h \
+                 situated.h \
                  $(EMPTY)
 
 libwitcher_la_SOURCES = \
@@ -22,4 +23,5 @@ libwitcher_la_SOURCES = \
                         location.cpp \
                         object.cpp \
                         waypoint.cpp \
+                        situated.cpp \
                         $(EMPTY)

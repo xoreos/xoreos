@@ -1,0 +1,92 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file
+ *  A situated object within a Witcher area.
+ */
+
+#ifndef ENGINES_WITCHER_SITUATED_H
+#define ENGINES_WITCHER_SITUATED_H
+
+#include "src/aurora/types.h"
+
+#include "src/graphics/aurora/types.h"
+
+#include "src/engines/witcher/object.h"
+
+namespace Engines {
+
+namespace Witcher {
+
+/** Witcher situated object. */
+class Situated : public Object {
+public:
+	~Situated();
+
+	void loadModel();   ///< Load the situated object's model.
+	void unloadModel(); ///< Unload the situated object's model.
+
+	void show(); ///< Show the situated object's model.
+	void hide(); ///< Hide the situated object's model.
+
+	/** Set the situated object's position. */
+	void setPosition(float x, float y, float z);
+	/** Set the situated object's orientation. */
+	void setOrientation(float x, float y, float z);
+
+	bool isLocked() const;       ///< Is the situated object locked?
+	void setLocked(bool locked); ///< Lock/Unlock the situated object.
+
+
+protected:
+	Common::UString _modelName; ///< The model's resource name.
+
+	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
+
+	bool _locked; ///< Is the situated object locked?
+
+	Common::UString _soundOpened;    ///< The sound the object makes when opened.
+	Common::UString _soundClosed;    ///< The sound the object makes when closed.
+	Common::UString _soundDestroyed; ///< The sound the object makes when destroyed.
+	Common::UString _soundUsed;      ///< The sound the object makes when used.
+	Common::UString _soundLocked;    ///< The sound the object makes when locked.
+
+	Graphics::Aurora::Model *_model; ///< The situated object's model.
+
+
+	Situated(ObjectType type);
+
+	/** Load the situated object from an instance and its blueprint. */
+	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
+
+	/** Load object-specific properties. */
+	virtual void loadObject(const Aurora::GFFStruct &gff) = 0;
+
+
+private:
+	void loadProperties(const Aurora::GFFStruct &gff);
+	void loadSounds();
+};
+
+} // End of namespace Witcher
+
+} // End of namespace Engines
+
+#endif // ENGINES_WITCHER_SITUATED_H
