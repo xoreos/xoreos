@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libwitcher.la
 noinst_HEADERS = \
                  witcher.h \
                  modelloader.h \
+                 console.h \
                  campaign.h \
                  module.h \
                  area.h \
@@ -19,6 +20,7 @@ noinst_HEADERS = \
 libwitcher_la_SOURCES = \
                         witcher.cpp \
                         modelloader.cpp \
+                        console.cpp \
                         campaign.cpp \
                         module.cpp \
                         area.cpp \
