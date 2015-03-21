@@ -43,6 +43,7 @@
 #include "src/engines/witcher/module.h"
 #include "src/engines/witcher/object.h"
 #include "src/engines/witcher/waypoint.h"
+#include "src/engines/witcher/placeable.h"
 #include "src/engines/witcher/door.h"
 
 namespace Engines {
@@ -232,6 +233,10 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 	if (git.hasField("WaypointList"))
 		loadWaypoints(git.getList("WaypointList"));
 
+	// Placeables
+	if (git.hasField("Placeable List"))
+		loadPlaceables(git.getList("Placeable List"));
+
 	// Doors
 	if (git.hasField("Door List"))
 		loadDoors(git.getList("Door List"));
@@ -296,6 +301,14 @@ void Area::loadWaypoints(const Aurora::GFFList &list) {
 		Waypoint *waypoint = new Waypoint(**d);
 
 		loadObject(*waypoint);
+	}
+}
+
+void Area::loadPlaceables(const Aurora::GFFList &list) {
+	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
+		Placeable *placeable = new Placeable(**p);
+
+		loadObject(*placeable);
 	}
 }
 
