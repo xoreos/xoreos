@@ -28,6 +28,7 @@
 #include "src/common/util.h"
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
+#include "src/common/configman.h"
 
 #include "src/aurora/resman.h"
 
@@ -61,6 +62,11 @@ Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 			"Usage: listareas\nList all areas in the current module");
 	registerCommand("gotoarea"     , boost::bind(&Console::cmdGotoArea     , this, _1),
 			"Usage: gotoarea <area>\nMove to a specific area");
+	registerCommand("listmodules"  , boost::bind(&Console::cmdListModules  , this, _1),
+			"Usage: listmodules\nList all modules");
+	registerCommand("loadmodule"   , boost::bind(&Console::cmdLoadModule   , this, _1),
+			"Usage: loadmodule <module>\nLoads a module, "
+			"replacing the currently running one");
 }
 
 Console::~Console() {
@@ -79,6 +85,7 @@ void Console::updateCaches() {
 
 	updateMusic();
 	updateAreas();
+	updateModules();
 }
 
 void Console::updateMusic() {
@@ -122,6 +129,29 @@ void Console::updateAreas() {
 
 	_areas.sort(Common::UString::iless());
 	setArguments("gotoarea", _areas);
+}
+
+void Console::updateModules() {
+	_modules.clear();
+	setArguments("loadmodule", _modules);
+
+	Common::UString moduleDir = ConfigMan.getString("WITCHER_moduleDir");
+	if (moduleDir.empty())
+		return;
+
+	Common::FileList mods;
+	if (!mods.addDirectory(moduleDir, -1))
+		return;
+
+	for (Common::FileList::const_iterator m = mods.begin(); m != mods.end(); ++m) {
+		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
+			continue;
+
+		_modules.push_back(Common::FilePath::getStem(*m));
+	}
+
+	_areas.sort(Common::UString::iless());
+	setArguments("loadmodule", _modules);
 }
 
 void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
@@ -191,6 +221,30 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		}
 
 	printf("Area \"%s\" does not exist", cl.args.c_str());
+}
+
+void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
+	updateModules();
+	printList(_modules);
+}
+
+void Console::cmdLoadModule(const CommandLine &cl) {
+	if (!_module)
+		return;
+
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
+		if (m->equalsIgnoreCase(cl.args)) {
+			_module->load(cl.args + ".mod");
+			return;
+		}
+	}
+
+	printf("No such module \"%s\"", cl.args.c_str());
 }
 
 } // End of namespace Witcher
