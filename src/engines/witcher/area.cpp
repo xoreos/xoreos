@@ -33,6 +33,7 @@
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/sound/sound.h"
 
@@ -51,7 +52,7 @@ namespace Engines {
 namespace Witcher {
 
 Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _loaded(false),
-	_resRef(resRef), _visible(false), _model(0) {
+	_resRef(resRef), _visible(false), _model(0), _activeObject(0), _highlightAll(false) {
 
 	try {
 		// Load ARE and GIT
@@ -77,6 +78,8 @@ Area::~Area() {
 	removeContainer();
 
 	hide();
+
+	removeFocus();
 
 	clear();
 }
@@ -186,6 +189,8 @@ void Area::show() {
 void Area::hide() {
 	if (!_visible)
 		return;
+
+	removeFocus();
 
 	stopAmbientMusic();
 
@@ -318,6 +323,109 @@ void Area::loadDoors(const Aurora::GFFList &list) {
 
 		loadObject(*door);
 	}
+}
+
+void Area::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+void Area::processEventQueue() {
+	bool hasMove = false;
+	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
+	     e != _eventQueue.end(); ++e) {
+
+		if        (e->type == Events::kEventMouseMove) { // Moving the mouse
+			hasMove = true;
+		} else if (e->type == Events::kEventMouseDown) { // Clicking
+			if (e->button.button == SDL_BUTTON_LMASK) {
+				checkActive(e->button.x, e->button.y);
+				click(e->button.x, e->button.y);
+			}
+		} else if (e->type == Events::kEventKeyDown) { // Holding down TAB
+			if (e->key.keysym.sym == SDLK_TAB)
+				highlightAll(true);
+		} else if (e->type == Events::kEventKeyUp) {   // Releasing TAB
+			if (e->key.keysym.sym == SDLK_TAB)
+				highlightAll(false);
+		}
+	}
+
+	_eventQueue.clear();
+
+	if (hasMove)
+		checkActive();
+}
+
+Engines::Witcher::Object *Area::getObjectAt(int x, int y) {
+	const Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
+	if (!obj)
+		return 0;
+
+	ObjectMap::iterator o = _objectMap.find(obj->getID());
+	if (o == _objectMap.end())
+		return 0;
+
+	return o->second;
+}
+
+void Area::setActive(Engines::Witcher::Object *object) {
+	if (object == _activeObject)
+		return;
+
+	if (_activeObject)
+		_activeObject->leave();
+
+	_activeObject = object;
+
+	if (_activeObject)
+		_activeObject->enter();
+}
+
+void Area::checkActive(int x, int y) {
+	if (!_loaded || _highlightAll)
+		return;
+
+	Common::StackLock lock(_mutex);
+
+	if ((x < 0) || (y < 0))
+		CursorMan.getPosition(x, y);
+
+	setActive(getObjectAt(x, y));
+}
+
+void Area::click(int x, int y) {
+	if (!_loaded)
+		return;
+
+	Common::StackLock lock(_mutex);
+
+	Engines::Witcher::Object *o = getObjectAt(x, y);
+	if (!o)
+		return;
+
+	o->click();
+}
+
+void Area::highlightAll(bool enabled) {
+	if (_highlightAll == enabled)
+		return;
+
+	_highlightAll = enabled;
+
+	for (ObjectMap::iterator o = _objectMap.begin(); o != _objectMap.end(); ++o)
+		if (o->second->isClickable())
+			o->second->highlight(enabled);
+}
+
+void Area::removeFocus() {
+	if (_activeObject)
+		_activeObject->leave();
+
+	_activeObject = 0;
+}
+
+void Area::notifyCameraMoved() {
+	checkActive();
 }
 
 } // End of namespace Witcher

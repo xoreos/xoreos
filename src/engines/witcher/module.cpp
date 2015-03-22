@@ -250,9 +250,12 @@ void Module::handleEvents() {
 		if (!_console->isVisible())
 			if (handleCameraInput(event))
 				continue;
+
+		_currentArea->addEvent(event);
 	}
 
 	CameraMan.update();
+	_currentArea->processEventQueue();
 }
 
 void Module::unload() {
