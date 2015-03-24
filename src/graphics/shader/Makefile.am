@@ -9,6 +9,7 @@ noinst_HEADERS = \
                  shadermaterial.h \
                  shaderrenderable.h \
                  shadersurface.h \
+                 materialman.h \
                  $(EMPTY)
 
 libshader_la_SOURCES = \
@@ -18,4 +19,5 @@ libshader_la_SOURCES = \
                          shadermaterial.cpp \
                          shaderrenderable.cpp \
                          shadersurface.cpp \
+                         materialman.cpp \
                          $(EMPTY)

@@ -52,7 +52,7 @@ static const GLenum ShaderMaterialBlendfuncArray[] = {
 	GL_ONE_MINUS_SRC1_ALPHA
 };
 
-ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) : _usageCount(0), _variableData(), _fragShader(fragShader), _flags(0), _name(name) {
+ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) : _variableData(), _fragShader(fragShader), _flags(0), _name(name), _usageCount(0) {
 	fragShader->usageCount++;
 
 	uint32 varCount = fragShader->variablesCombined.size();
@@ -392,6 +392,20 @@ void ShaderMaterial::delMaterialVar(uint32 index)
 	}
 
 	_variableData[index].data = 0;
+}
+
+void ShaderMaterial::useIncrement() {
+	++_usageCount;
+}
+
+void ShaderMaterial::useDecrement() {
+	if (_usageCount) {
+		--_usageCount;
+	}
+}
+
+uint32 ShaderMaterial::useCount() const {
+	return _usageCount;
 }
 
 } // End of namespace Shader

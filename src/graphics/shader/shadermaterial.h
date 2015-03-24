@@ -52,8 +52,6 @@ namespace Shader {
 
 class ShaderMaterial {
 public:
-	uint32 _usageCount; // TODO: move this elsewhere please.
-
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");
 	~ShaderMaterial();
 
@@ -93,6 +91,10 @@ public:
 	void unbindGLState();
 	void restoreGLState();
 
+	void useIncrement();
+	void useDecrement();
+	uint32 useCount() const;
+
 private:
 	struct ShaderMaterialVariable {
 		void *data;
@@ -104,6 +106,7 @@ private:
 	uint32 _flags;
 
 	Common::UString _name;
+	uint32 _usageCount;
 
 	void *genMaterialVar(uint32 index);
 	void delMaterialVar(uint32 index);
