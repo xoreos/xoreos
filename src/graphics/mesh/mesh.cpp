@@ -28,7 +28,7 @@ namespace Graphics {
 
 namespace Mesh {
 
-Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), _vao(0) {
+Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), _usageCount(0), _vao(0) {
 }
 
 Mesh::~Mesh() {
@@ -207,6 +207,20 @@ void Mesh::renderUnbind() {
 		}
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
+}
+
+void Mesh::useIncrement() {
+	++_usageCount;
+}
+
+void Mesh::useDecrement() {
+	if (_usageCount) {
+		--_usageCount;
+	}
+}
+
+uint32 Mesh::useCount() const {
+	return _usageCount;
 }
 
 void Mesh::doRebuild() {

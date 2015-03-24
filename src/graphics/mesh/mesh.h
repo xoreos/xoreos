@@ -72,6 +72,10 @@ public:
 	void render();
 	void renderUnbind();
 
+	void useIncrement();
+	void useDecrement();
+	uint32 useCount() const;
+
 protected:
 	// For each attrib, when calculating VBOs, do (attrib address) - (base data address) to find initial data offset.
 	VertexBuffer _vertexBuffer;
@@ -87,6 +91,7 @@ private:
 	GLuint _type;
 	GLuint _hint;
 	Common::UString _name;
+	uint32 _usageCount;
 
 	GLuint _vao;  ///< Vertex Array Object handle. GL3.x only.
 };
