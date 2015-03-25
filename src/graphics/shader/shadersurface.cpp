@@ -30,7 +30,7 @@ namespace Shader {
 
 #define SHADER_SURFACE_VARIABLE_OWNED (0x00000001)
 
-ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name) : _usageCount(0), _variableData(), _vertShader(vertShader), _flags(0), _name(name), _objectModelviewIndex(0xFFFFFFFF) {
+ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name) : _variableData(), _vertShader(vertShader), _flags(0), _name(name), _usageCount(0), _objectModelviewIndex(0xFFFFFFFF) {
 	vertShader->usageCount++;
 
 	uint32 varCount = vertShader->variablesCombined.size();
@@ -293,6 +293,20 @@ void ShaderSurface::delSurfaceVar(uint32 index)
 	}
 
 	_variableData[index].data = 0;
+}
+
+void ShaderSurface::useIncrement() {
+	++_usageCount;
+}
+
+void ShaderSurface::useDecrement() {
+	if (_usageCount) {
+		--_usageCount;
+	}
+}
+
+uint32 ShaderSurface::useCount() const {
+	return _usageCount;
 }
 
 } // End of namespace Shader

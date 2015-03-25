@@ -38,9 +38,6 @@ namespace Shader {
 
 class ShaderSurface {
 public:
-
-	uint32 _usageCount; // TODO: move this elsewhere please.
-
 	ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name = "unnamed");
 	~ShaderSurface();
 
@@ -81,6 +78,10 @@ public:
 	void unbindGLState();
 	void restoreGLState();
 
+	void useIncrement();
+	void useDecrement();
+	uint32 useCount() const;
+
 private:
 	struct ShaderSurfaceVariable {
 		void *data;
@@ -93,6 +94,7 @@ private:
 	uint32 _flags;
 
 	Common::UString _name;
+	uint32 _usageCount;
 
 	uint32 _objectModelviewIndex;
 
