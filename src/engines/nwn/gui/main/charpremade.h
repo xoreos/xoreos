@@ -29,7 +29,7 @@
 
 #include "src/engines/nwn/types.h"
 
-#include "src/engines/nwn/gui/widgets/listbox.h"
+#include "src/engines/nwn/gui/widgets/listitembutton.h"
 
 #include "src/engines/nwn/gui/gui.h"
 
@@ -40,7 +40,7 @@ namespace NWN {
 class Module;
 class Portrait;
 
-class WidgetListItemCharacter : public WidgetListItem {
+class WidgetListItemCharacter : public WidgetListItemBaseButton {
 public:
 	WidgetListItemCharacter(::Engines::GUI &gui, const Common::UString &font,
 	                        const Common::UString &name    , const Common::UString &classes,
@@ -52,23 +52,10 @@ public:
 
 	void setPosition(float x, float y, float z);
 
-	float getWidth () const;
-	float getHeight() const;
-
-	void setTag(const Common::UString &tag);
-
-protected:
-	bool activate();
-	bool deactivate();
-
 private:
-	Graphics::Aurora::Model *_button;
 	Graphics::Aurora::Text  *_textName;
 	Graphics::Aurora::Text  *_textClass;
-
 	Portrait *_portrait;
-
-	float _spacing;
 };
 
 /** The NWN character creator. */

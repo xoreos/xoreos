@@ -47,15 +47,12 @@ namespace Engines {
 
 namespace NWN {
 
-WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
-		const Common::UString &font   , const Common::UString &name,
-		const Common::UString &classes, const Common::UString &portrait, float spacing) :
-	WidgetListItem(gui), _spacing(spacing) {
-
-	_button = loadModelGUI("ctl_pre_btn_char");
-	assert(_button);
-
-	_button->setClickable(true);
+WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui, const Common::UString &font,
+                                                 const Common::UString &name,
+                                                 const Common::UString &classes,
+                                                 const Common::UString &portrait, float spacing) :
+                                                 WidgetListItemBaseButton(gui, "ctl_pre_btn_char",
+                                                                          spacing) {
 
 	_portrait  = new Portrait(portrait, Portrait::kSizeTiny, 1.0);
 	_textName  = new Graphics::Aurora::Text(FontMan.get(font), name);
@@ -63,74 +60,40 @@ WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui,
 }
 
 WidgetListItemCharacter::~WidgetListItemCharacter() {
-	delete _button;
 	delete _portrait;
 	delete _textName;
 	delete _textClass;
 }
 
 void WidgetListItemCharacter::show() {
-	_button->show();
+	WidgetListItemBaseButton::show();
+
 	_textName->show();
 	_textClass->show();
 	_portrait->show();
 }
 
 void WidgetListItemCharacter::hide() {
+	WidgetListItemBaseButton::hide();
+
 	_textClass->hide();
 	_textName->hide();
-	_button->hide();
 	_portrait->hide();
 }
 
 void WidgetListItemCharacter::setPosition(float x, float y, float z) {
-	NWNWidget::setPosition(x, y, z);
+	WidgetListItemBaseButton::setPosition(x, y, z);
 
 	getPosition(x, y, z);
-	_button->setPosition(x, y, z);
 
 	z -= 5.0;
-
 	_portrait->setPosition(x + 8.0, y + 7.0, z);
 
 	x += 32.0;
 
-	_textName->setPosition (x, y + _button->getHeight() -     _textName->getHeight() - 4.0, z);
-	_textClass->setPosition(x, y + _button->getHeight() - 2 * _textName->getHeight() - 4.0, z);
+	_textName->setPosition (x, y + getHeight() -     _textName->getHeight() - 4.0, z);
+	_textClass->setPosition(x, y + getHeight() - 2 * _textName->getHeight() - 4.0, z);
 }
-
-float WidgetListItemCharacter::getWidth() const {
-	return _button->getWidth();
-}
-
-float WidgetListItemCharacter::getHeight() const {
-	return _button->getHeight() + _spacing;
-}
-
-void WidgetListItemCharacter::setTag(const Common::UString &tag) {
-	WidgetListItem::setTag(tag);
-
-	_button->setTag(tag);
-}
-
-bool WidgetListItemCharacter::activate() {
-	if (!WidgetListItem::activate())
-		return false;
-
-	_button->setState("down");
-
-	return true;
-}
-
-bool WidgetListItemCharacter::deactivate() {
-	if (!WidgetListItem::deactivate())
-		return false;
-
-	_button->setState("");
-
-	return true;
-}
-
 
 bool CharPremadeMenu::Character::operator<(const Character &c) const {
 	int cmp = name.strcmp(c.name);
