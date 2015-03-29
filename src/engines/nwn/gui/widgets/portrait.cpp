@@ -32,9 +32,9 @@
 
 #include "src/engines/nwn/gui/widgets/portrait.h"
 
-static const char *kSuffix[] = {"h"  , "l"  , "m"  , "s"  , "t"  };
-static const float kWidth [] = {256.0, 128.0,  64.0,  32.0,  16.0};
-static const float kHeight[] = {400.0, 200.0, 100.0,  50.0,  25.0};
+static const char *kSuffix[] = {"h"  , "l"  , "m"  , "s"  , "t"  ,  "i" };
+static const float kWidth [] = {256.0, 128.0,  64.0,  32.0,  16.0,  32.0};
+static const float kHeight[] = {400.0, 200.0, 100.0,  50.0,  25.0,  32.0};
 
 namespace Engines {
 
@@ -214,8 +214,16 @@ void Portrait::setSize() {
 	_qPortrait.vX[2] = 0.0 + kWidth[_size]; _qPortrait.vY[2] = 0.0 + kHeight[_size];
 	_qPortrait.vX[3] = 0.0                ; _qPortrait.vY[3] = 0.0 + kHeight[_size];
 
-	_qPortrait.tX[0] = 0.0; _qPortrait.tY[0] = 112.0 / 512.0;
-	_qPortrait.tX[1] = 1.0; _qPortrait.tY[1] = 112.0 / 512.0;
+	// Part of the texture(the bottom) is cut for portraits but not for icons.
+	float portraitCutRatio;
+	if (_size != kSizeIcon) {
+		portraitCutRatio = 112.0 / 512.0;
+	} else {
+		portraitCutRatio = 0.0;
+	}
+
+	_qPortrait.tX[0] = 0.0; _qPortrait.tY[0] = portraitCutRatio;
+	_qPortrait.tX[1] = 1.0; _qPortrait.tY[1] = portraitCutRatio;
 	_qPortrait.tX[2] = 1.0; _qPortrait.tY[2] = 1.0;
 	_qPortrait.tX[3] = 0.0; _qPortrait.tY[3] = 1.0;
 }
