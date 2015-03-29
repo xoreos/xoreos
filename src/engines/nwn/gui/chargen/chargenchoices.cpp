@@ -37,6 +37,8 @@ namespace NWN {
 
 CharGenChoices::CharGenChoices() {
 	_creature = new Creature();
+
+	_classId = 0;
 }
 
 CharGenChoices::~CharGenChoices() {
@@ -82,6 +84,48 @@ void CharGenChoices::setCharRace(uint32 race) {
 
 void CharGenChoices::setCharPortrait(const Common::UString &portrait) {
 	_creature->setPortrait(portrait);
+}
+
+void CharGenChoices::setCharClass(uint32 classId) {
+	_classId = classId;
+
+	// Add granted class feats.
+	_classFeats.clear();
+	const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get("classes");
+	const Aurora::TwoDAFile &twodaClsFeat = TwoDAReg.get(twodaClasses.getRow(classId).getString("FeatsTable"));
+	for (uint it = 0; it < twodaClsFeat.getRowCount(); ++it) {
+		const Aurora::TwoDARow &rowFeat = twodaClsFeat.getRow(it);
+		if (rowFeat.getInt("List") != 3)
+			continue;
+
+		if (rowFeat.getInt("GrantedOnLevel") != _creature->getHitDice() + 1)
+			continue;
+
+		if (!hasFeat(rowFeat.getInt("FeatIndex")))
+			_classFeats.push_back(rowFeat.getInt("FeatIndex"));
+	}
+
+	//TODO Init spell slots.
+}
+
+bool CharGenChoices::hasFeat(uint32 featId) const {
+	for (std::vector<uint32>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
+		if (*f == featId)
+			return true;
+
+	for (std::vector<uint32>::const_iterator f = _racialFeats.begin(); f != _racialFeats.end(); ++f)
+		if (*f == featId)
+			return true;
+
+	for (std::vector<uint32>::const_iterator f = _classFeats.begin(); f != _classFeats.end(); ++f)
+		if (*f == featId)
+			return true;
+
+	return _creature->hasFeat(featId);
+}
+
+const uint32 CharGenChoices::getClass() {
+	return _classId;
 }
 
 } // End of namespace NWN

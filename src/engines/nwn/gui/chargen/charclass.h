@@ -18,54 +18,45 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /** @file
- *  The character choices in the character generator.
+/** @file
+ *  The class chooser in CharGen.
  */
 
-#ifndef ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H
-#define ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H
+#ifndef  ENGINES_NWN_GUI_CHARGEN_CHARCLASS_H
+#define  ENGINES_NWN_GUI_CHARGEN_CHARCLASS_H
 
-#include <vector>
+#include "src/engines/nwn/gui/widgets/button.h"
 
-#include "src/common/types.h"
-
-namespace Common {
-class UString;
-}
+#include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
 
 namespace NWN {
 
-class Creature;
-
-class CharGenChoices {
+class CharClass : public CharGenBase {
 public:
-	CharGenChoices();
-	~CharGenChoices();
+	CharClass(CharGenChoices &choices);
+	~CharClass();
 
 	void reset();
-	const Creature &getCharacter();
-	void setCharGender(uint32 gender);
-	void setCharRace(uint32 race);
-	void setCharPortrait(const Common::UString &portrait);
-	void setCharClass(uint32 classId);
 
-	bool hasFeat(uint32 featId) const;
-	const uint32 getClass();
+protected:
+	void fixWidgetType(const Common::UString &tag, WidgetType &type);
+	void createClassList();
+
+	void callbackActive(Widget &widget);
 
 private:
-	Creature *_creature;
-	std::vector<uint32> _normalFeats;
-	std::vector<uint32> _racialFeats;
-	std::vector<uint32> _classFeats;
+	WidgetListBox *_classesListBox;
+	std::vector<Common::UString> _classNames;
+	std::vector<Common::UString> _helpTexts;
+	std::vector<uint32> _classesId;
 
-	uint32 _classId;
-
+	uint _firstPrestigeClass;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H
+#endif //  ENGINES_NWN_GUI_CHARGEN_CHARCLASS_H

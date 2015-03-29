@@ -31,6 +31,7 @@
 #include "src/engines/nwn/gui/chargen/charsex.h"
 #include "src/engines/nwn/gui/chargen/charrace.h"
 #include "src/engines/nwn/gui/chargen/charportrait.h"
+#include "src/engines/nwn/gui/chargen/charclass.h"
 
 #include "src/engines/nwn/gui/chargen/chargen.h"
 
@@ -42,7 +43,6 @@ CharGenMenu::CharGenMenu(Module &module) : _module(&module) {
 	load("cg_main");
 
 	// TODO: Character trait buttons
-	getWidget("ClassButton"    , true)->setDisabled(true);
 	getWidget("AlignButton"    , true)->setDisabled(true);
 	getWidget("AbilitiesButton", true)->setDisabled(true);
 	getWidget("PackagesButton" , true)->setDisabled(true);
@@ -106,6 +106,7 @@ void CharGenMenu::init() {
 	_charButtons.push_back(getButton("GenderButton", true));
 	_charButtons.push_back(getButton("RaceButton", true));
 	_charButtons.push_back(getButton("PortraitButton", true));
+	_charButtons.push_back(getButton("ClassButton", true));
 
 	for (std::vector<WidgetButton *>::iterator b = ++_charButtons.begin(); b != _charButtons.end(); ++b)
 		(*b)->setDisabled(true);
@@ -114,6 +115,7 @@ void CharGenMenu::init() {
 	_chargenGuis.push_back(new CharSex(*_choices));
 	_chargenGuis.push_back(new CharRace(*_choices));
 	_chargenGuis.push_back(new CharPortrait(*_choices));
+	_chargenGuis.push_back(new CharClass(*_choices));
 }
 
 } // End of namespace NWN
