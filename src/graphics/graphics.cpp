@@ -51,6 +51,11 @@
 #include "src/graphics/images/decoder.h"
 #include "src/graphics/images/screenshot.h"
 
+#include "src/graphics/shader/shader.h"
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/mesh/meshman.h"
+
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
@@ -138,6 +143,11 @@ void GraphicsManager::init() {
 	if (ConfigMan.hasKey("gamma"))
 		setGamma(ConfigMan.getDouble("gamma", 1.0));
 
+	ShaderMan.init();
+	SurfaceMan.init();
+	MaterialMan.init();
+	MeshMan.init();
+
 	_ready = true;
 }
 
@@ -148,6 +158,11 @@ void GraphicsManager::deinit() {
 		return;
 
 	QueueMan.clearAllQueues();
+
+	MeshMan.deinit();
+	MaterialMan.deinit();
+	SurfaceMan.deinit();
+	ShaderMan.deinit();
 
 	SDL_Quit();
 
