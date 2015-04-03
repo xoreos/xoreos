@@ -54,6 +54,11 @@ AC_CHECK_FUNCS([fabsf])
 AC_CHECK_FUNCS([fminf])
 AC_CHECK_FUNCS([fmaxf])
 
+dnl String to integer/float conversion functions
+AC_CHECK_FUNCS([strtoll])
+AC_CHECK_FUNCS([strtoull])
+AC_CHECK_FUNCS([strtof])
+
 dnl General purpose libraries
 AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found!]))
 AX_CHECK_ZLIB(1, 2, 3, 4, , AC_MSG_ERROR([zlib(>= 1.2.3.4) is required and could not be found!]))
