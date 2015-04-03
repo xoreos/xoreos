@@ -124,6 +124,20 @@
 #endif
 
 //
+// Fallbacks for various functions
+//
+
+#ifndef HAVE_STRTOF
+	#define strtof c99_strtof
+
+	static FORCEINLINE float c99_strtof(const char *nptr, char **endptr) {
+		return (float) strtod(nptr, endptr);
+	}
+
+	#define HAVE_STRTOF 1
+#endif
+
+//
 // Fallbacks / default values for various special macros
 //
 #ifndef FORCEINLINE
