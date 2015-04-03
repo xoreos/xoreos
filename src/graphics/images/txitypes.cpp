@@ -96,12 +96,12 @@ static Common::StringListMap kTXICommandMap(kTXICommands, ARRAYSIZE(kTXICommands
 
 namespace Graphics {
 
-TXICommand parseTXICommand(const Common::UString &str, int &skip) {
+TXICommand parseTXICommand(const Common::UString &str, Common::UString &args) {
 	const char *s = str.c_str();
 
 	TXICommand command = (TXICommand) kTXICommandMap.find(s, &s);
 
-	skip = s - str.c_str();
+	args = Common::UString(s);
 
 	return command;
 }

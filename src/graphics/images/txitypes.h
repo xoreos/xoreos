@@ -100,7 +100,7 @@ enum TXICommand {
 };
 
 /** Parse a TXI command from a string. */
-TXICommand parseTXICommand(const Common::UString &str, int &skip);
+TXICommand parseTXICommand(const Common::UString &str, Common::UString &args);
 
 } // End of namespace Graphics
 
