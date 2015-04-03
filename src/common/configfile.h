@@ -78,18 +78,6 @@ public:
 	 */
 	void set(const ConfigDomain &domain, bool clobber = true);
 
-	// Conversion helpers
-	static bool   toBool  (const UString &value);
-	static int    toInt   (const UString &value);
-	static uint   toUint  (const UString &value);
-	static double toDouble(const UString &value);
-
-	// Conversion helpers
-	static UString fromBool  (bool   value);
-	static UString fromInt   (int    value);
-	static UString fromUint  (uint   value);
-	static UString fromDouble(double value);
-
 private:
 	/** A line in the config domain. */
 	struct Line {

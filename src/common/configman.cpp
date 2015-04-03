@@ -25,6 +25,7 @@
  */
 
 #include "src/common/configman.h"
+#include "src/common/strutil.h"
 #include "src/common/file.h"
 #include "src/common/filepath.h"
 #include "src/common/configfile.h"
@@ -292,7 +293,14 @@ bool ConfigManager::getBool(const UString &key, bool def) const {
 	if (!getKey(key, value))
 		return def;
 
-	return ConfigDomain::toBool(value);
+	bool x = def;
+	try {
+		parseString(value, x);
+	} catch (Exception &e) {
+		printException(e, "WARNING: ");
+	}
+
+	return x;
 }
 
 int ConfigManager::getInt(const UString &key, int def) const {
@@ -300,7 +308,14 @@ int ConfigManager::getInt(const UString &key, int def) const {
 	if (!getKey(key, value))
 		return def;
 
-	return ConfigDomain::toInt(value);
+	int x = def;
+	try {
+		parseString(value, x);
+	} catch (Exception &e) {
+		printException(e, "WARNING: ");
+	}
+
+	return x;
 }
 
 double ConfigManager::getDouble(const UString &key, double def) const {
@@ -308,7 +323,14 @@ double ConfigManager::getDouble(const UString &key, double def) const {
 	if (!getKey(key, value))
 		return def;
 
-	return ConfigDomain::toDouble(value);
+	double x = def;
+	try {
+		parseString(value, x);
+	} catch (Exception &e) {
+		printException(e, "WARNING: ");
+	}
+
+	return x;
 }
 
 void ConfigManager::setKey(const UString &key, const UString &value, bool update) {
@@ -338,15 +360,15 @@ void ConfigManager::setString(const UString &key, const UString &value, bool upd
 }
 
 void ConfigManager::setBool(const UString &key, bool value, bool update) {
-	setKey(key, ConfigDomain::fromBool(value), update);
+	setKey(key, composeString(value), update);
 }
 
 void ConfigManager::setInt(const UString &key, int value, bool update) {
-	setKey(key, ConfigDomain::fromInt(value), update);
+	setKey(key, composeString(value), update);
 }
 
 void ConfigManager::setDouble(const UString &key, double value, bool update) {
-	setKey(key, ConfigDomain::fromDouble(value), update);
+	setKey(key, composeString(value), update);
 }
 
 void ConfigManager::setKey(ConfigRealm realm, const UString &key, const UString &value) {
@@ -372,15 +394,15 @@ void ConfigManager::setString(ConfigRealm realm, const UString &key, const UStri
 }
 
 void ConfigManager::setBool(ConfigRealm realm, const UString &key, bool value) {
-	setKey(realm, key, ConfigDomain::fromBool(value));
+	setKey(realm, key, composeString(value));
 }
 
 void ConfigManager::setInt(ConfigRealm realm, const UString &key, int value) {
-	setKey(realm, key, ConfigDomain::fromInt(value));
+	setKey(realm, key, composeString(value));
 }
 
 void ConfigManager::setDouble(ConfigRealm realm, const UString &key, double value) {
-	setKey(realm, key, ConfigDomain::fromDouble(value));
+	setKey(realm, key, composeString(value));
 }
 
 void ConfigManager::setDefaults() {

@@ -27,6 +27,7 @@
 #include "src/common/error.h"
 #include "src/common/encoding.h"
 #include "src/common/stream.h"
+#include "src/common/strutil.h"
 
 #include "src/common/configfile.h"
 
@@ -68,7 +69,14 @@ bool ConfigDomain::getBool(const UString &key, bool def) const {
 	if (!getKey(key, value))
 		return def;
 
-	return toBool(value);
+	bool x = def;
+	try {
+		parseString(value, x);
+	} catch (Exception &e) {
+		printException(e, "WARNING: ");
+	}
+
+	return x;
 }
 
 int ConfigDomain::getInt(const UString &key, int def) const {
@@ -76,7 +84,14 @@ int ConfigDomain::getInt(const UString &key, int def) const {
 	if (!getKey(key, value))
 		return def;
 
-	return toInt(value);
+	int x = def;
+	try {
+		parseString(value, x);
+	} catch (Exception &e) {
+		printException(e, "WARNING: ");
+	}
+
+	return x;
 }
 
 uint ConfigDomain::getUint(const UString &key, uint def) const {
@@ -84,7 +99,14 @@ uint ConfigDomain::getUint(const UString &key, uint def) const {
 	if (!getKey(key, value))
 		return def;
 
-	return toUint(value);
+	uint x = def;
+	try {
+		parseString(value, x);
+	} catch (Exception &e) {
+		printException(e, "WARNING: ");
+	}
+
+	return x;
 }
 
 double ConfigDomain::getDouble(const UString &key, double def) const {
@@ -92,7 +114,14 @@ double ConfigDomain::getDouble(const UString &key, double def) const {
 	if (!getKey(key, value))
 		return def;
 
-	return toDouble(value);
+	double x = def;
+	try {
+		parseString(value, x);
+	} catch (Exception &e) {
+		printException(e, "WARNING: ");
+	}
+
+	return x;
 }
 
 void ConfigDomain::setKey(const UString &key, const UString &value) {
@@ -118,19 +147,19 @@ void ConfigDomain::setString(const UString &key, const UString &value) {
 }
 
 void ConfigDomain::setBool(const UString &key, bool value) {
-	setKey(key, fromBool(value));
+	setKey(key, composeString(value));
 }
 
 void ConfigDomain::setInt(const UString &key, int value) {
-	setKey(key, fromInt(value));
+	setKey(key, composeString(value));
 }
 
 void ConfigDomain::setUint(const UString &key, uint value) {
-	setKey(key, fromUint(value));
+	setKey(key, composeString(value));
 }
 
 void ConfigDomain::setDouble(const UString &key, double value) {
-	setKey(key, fromDouble(value));
+	setKey(key, composeString(value));
 }
 
 bool ConfigDomain::removeKey(const UString &key) {
@@ -218,50 +247,6 @@ void ConfigDomain::set(const ConfigDomain &domain, bool clobber) {
 			k->second = l->key->second;
 		}
 	}
-}
-
-bool ConfigDomain::toBool(const UString &value) {
-	// Valid true values are "true", "yes", "y", "on" and "1"
-	if (value.equalsIgnoreCase("true") ||
-	    value.equalsIgnoreCase("yes")  ||
-	    value.equalsIgnoreCase("y")    ||
-	    value.equalsIgnoreCase("on")   ||
-	    value == "1")
-		return true;
-
-	return false;
-}
-
-int ConfigDomain::toInt(const UString &value) {
-	return atoi(value.c_str());
-}
-
-uint ConfigDomain::toUint(const UString &value) {
-	return strtoul(value.c_str(), 0, 10);
-}
-
-double ConfigDomain::toDouble(const UString &value) {
-	double d;
-	if (sscanf(value.c_str(), "%lf", &d) != 1)
-		return 0.0;
-
-	return d;
-}
-
-UString ConfigDomain::fromBool(bool value) {
-	return value ? "true" : "false";
-}
-
-UString ConfigDomain::fromInt(int value) {
-	return UString::sprintf("%d", value);
-}
-
-UString ConfigDomain::fromUint(uint value) {
-	return UString::sprintf("%u", value);
-}
-
-UString ConfigDomain::fromDouble(double value) {
-	return UString::sprintf("%f", value);
 }
 
 
