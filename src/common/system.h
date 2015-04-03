@@ -39,6 +39,16 @@
 	#define snprintf c99_snprintf
 	#define vsnprintf c99_vsnprintf
 
+	#ifndef HAVE_STRTOLL
+		#define strtoll _strtoi64
+		#define HAVE_STRTOLL 1
+	#endif
+
+	#ifndef HAVE_STRTOULL
+		#define strtoll _strtoui64
+		#define HAVE_STRTOULL 1
+	#endif
+
 	#define XOREOS_LITTLE_ENDIAN
 
 	#define FORCEINLINE __forceinline
