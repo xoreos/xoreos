@@ -171,26 +171,6 @@ public:
 
 	UString substr(iterator from, iterator to) const;
 
-	/** Parse a string into different types. */
-	template<typename T> bool parse(T &v, int skip = 0) const {
-		std::stringstream ss(_string.c_str() + skip);
-
-		if ((ss >> v).fail())
-			return false;
-
-		return true;
-	}
-
-	/** Parse a string into a bool. */
-	template<bool &> bool parse(bool &v, int skip = 0) const {
-		int i;
-		if (!parse(i, skip))
-			return false;
-
-		v = (i == 1);
-		return true;
-	}
-
 	/** Formatted printer, works like sprintf(). */
 	static UString sprintf(const char *s, ...);
 
