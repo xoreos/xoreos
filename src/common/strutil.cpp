@@ -230,4 +230,65 @@ template void parseString<unsigned long long>(const UString &str, unsigned long 
 template void parseString<float             >(const UString &str, float              &value);
 template void parseString<double            >(const UString &str, double             &value);
 
+
+template<typename T> UString composeString(T value) {
+	char buf[64], *bufEnd = buf + sizeof(buf) - 1;
+
+	char *strStart = buf, *strEnd = buf;
+
+	// Write the sign, if negative
+	if (value < 0) {
+		*strStart = '-';
+		value = -value;
+
+		strStart++;
+		strEnd++;
+	}
+
+	// Collect all the digits (least significant ones first)
+	do {
+		*strEnd++ = (value % 10) + '0';
+	} while ((value /= 10) && (strEnd < bufEnd));
+
+	*strEnd-- = '\0';
+
+	// Reverse the digits
+	while (strStart < strEnd) {
+		SWAP(*strStart, *strEnd);
+
+		strStart++;
+		strEnd--;
+	}
+
+	return UString(buf);
+}
+
+template<> UString composeString(bool value) {
+	return value ? "true" : "false";
+}
+
+template<> UString composeString(float value) {
+	return UString::sprintf("%f", value);
+}
+
+template<> UString composeString(double value) {
+	return UString::sprintf("%lf", value);
+}
+
+template UString composeString<bool              >(bool               value);
+
+template UString composeString<  signed char     >(  signed char      value);
+template UString composeString<unsigned char     >(unsigned char      value);
+template UString composeString<  signed short    >(  signed short     value);
+template UString composeString<unsigned short    >(unsigned short     value);
+template UString composeString<  signed int      >(  signed int       value);
+template UString composeString<unsigned int      >(unsigned int       value);
+template UString composeString<  signed long     >(  signed long      value);
+template UString composeString<unsigned long     >(unsigned long      value);
+template UString composeString<  signed long long>(  signed long long value);
+template UString composeString<unsigned long long>(unsigned long long value);
+
+template UString composeString<float             >(float              value);
+template UString composeString<double            >(double             value);
+
 } // End of namespace Common
