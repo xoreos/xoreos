@@ -25,6 +25,7 @@
 #include "src/common/stream.h"
 #include "src/common/streamtokenizer.h"
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/visfile.h"
 #include "src/aurora/error.h"
@@ -74,7 +75,7 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 
 		int roomCount = 0;
 		if (strings.size() > 1)
-			roomCount = atoi(strings[1].c_str());
+			Common::parseString(strings[1], roomCount);
 
 		int realRoomCount = 0;
 

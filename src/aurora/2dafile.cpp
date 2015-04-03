@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/stream.h"
 #include "src/common/file.h"
@@ -394,9 +395,12 @@ int32 TwoDAFile::parseInt(const Common::UString &str) {
 	if (str.empty())
 		return 0;
 
-	int v;
-	if (!str.parse(v))
-		return 0;
+	int32 v = 0;
+
+	try {
+		Common::parseString(str, v);
+	} catch (...) {
+	}
 
 	return v;
 }
@@ -405,9 +409,12 @@ float TwoDAFile::parseFloat(const Common::UString &str) {
 	if (str.empty())
 		return 0;
 
-	float v;
-	if (!str.parse(v))
-		return 0.0;
+	float v = 0.0;
+
+	try {
+		Common::parseString(str, v);
+	} catch (...) {
+	}
 
 	return v;
 }
