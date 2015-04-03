@@ -33,6 +33,7 @@
 #include "src/common/maths.h"
 #include "src/common/debug.h"
 #include "src/common/stream.h"
+#include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/streamtokenizer.h"
 #include "src/common/vector3.h"
@@ -316,7 +317,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 				warning("Model_NWN_ASCII::load(): beginmodelgeom: \"%s\" != \"%s\"",
 				        line[1].c_str(), _name.c_str());
 		} else if (line[0] == "setanimationscale") {
-			line[1].parse(_animationScale);
+			Common::parseString(line[1], _animationScale);
 		} else if (line[0] == "node") {
 
 			ModelNode_NWN_ASCII *newNode = new ModelNode_NWN_ASCII(*this);
@@ -1066,36 +1067,36 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 			_orientation[3] = Common::rad2deg(_orientation[3]);
 		} else if (line[0] == "render") {
-			line[1].parse(_render);
+			Common::parseString(line[1], _render);
 		} else if (line[0] == "transparencyhint") {
-			line[1].parse(_transparencyHint);
+			Common::parseString(line[1], _transparencyHint);
 		} else if (line[0] == "danglymesh") {
-			line[1].parse(_dangly);
+			Common::parseString(line[1], _dangly);
 		} else if (line[0] == "constraints") {
 			uint32 n;
 
-			line[1].parse(n);
+			Common::parseString(line[1], n);
 			readConstraints(ctx, n);
 		} else if (line[0] == "weights") {
 			uint32 n;
 
-			line[1].parse(n);
+			Common::parseString(line[1], n);
 			readWeights(ctx, n);
 		} else if (line[0] == "bitmap") {
 			mesh.textures.push_back(line[1]);
 		} else if (line[0] == "verts") {
-			line[1].parse(mesh.vCount);
+			Common::parseString(line[1], mesh.vCount);
 
 			readVCoords(ctx, mesh);
 		} else if (line[0] == "tverts") {
 			if (mesh.tCount != 0)
 				warning("ModelNode_NWN_ASCII::load(): Multiple texture coordinates!");
 
-			line[1].parse(mesh.tCount);
+			Common::parseString(line[1], mesh.tCount);
 
 			readTCoords(ctx, mesh);
 		} else if (line[0] == "faces") {
-			line[1].parse(mesh.faceCount);
+			Common::parseString(line[1], mesh.faceCount);
 
 			readFaces(ctx, mesh);
 		} else {
@@ -1151,7 +1152,7 @@ void ModelNode_NWN_ASCII::readFloats(const std::vector<Common::UString> &strings
 		throw Common::Exception("Missing tokens");
 
 	for (uint32 i = 0; i < n; i++)
-		strings[start + i].parse(floats[i]);
+		Common::parseString(strings[start + i], floats[i]);
 }
 
 void ModelNode_NWN_ASCII::readVCoords(Model_NWN::ParserContext &ctx, Mesh &mesh) {
@@ -1170,9 +1171,9 @@ void ModelNode_NWN_ASCII::readVCoords(Model_NWN::ParserContext &ctx, Mesh &mesh)
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
-		line[0].parse(mesh.vX[i]);
-		line[1].parse(mesh.vY[i]);
-		line[2].parse(mesh.vZ[i]);
+		Common::parseString(line[0], mesh.vX[i]);
+		Common::parseString(line[1], mesh.vY[i]);
+		Common::parseString(line[2], mesh.vZ[i]);
 
 		i++;
 	}
@@ -1193,8 +1194,8 @@ void ModelNode_NWN_ASCII::readTCoords(Model_NWN::ParserContext &ctx, Mesh &mesh)
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
-		line[0].parse(mesh.tX[i]);
-		line[1].parse(mesh.tY[i]);
+		Common::parseString(line[0], mesh.tX[i]);
+		Common::parseString(line[1], mesh.tY[i]);
 
 		i++;
 	}
@@ -1223,17 +1224,17 @@ void ModelNode_NWN_ASCII::readFaces(Model_NWN::ParserContext &ctx, Mesh &mesh) {
 		if ((count == 0) || line[0].empty() || (*line[0].begin() == '#'))
 			continue;
 
-		line[0].parse(mesh.vIA[i]);
-		line[1].parse(mesh.vIB[i]);
-		line[2].parse(mesh.vIC[i]);
+		Common::parseString(line[0], mesh.vIA[i]);
+		Common::parseString(line[1], mesh.vIB[i]);
+		Common::parseString(line[2], mesh.vIC[i]);
 
-		line[3].parse(mesh.smooth[i]);
+		Common::parseString(line[3], mesh.smooth[i]);
 
-		line[4].parse(mesh.tIA[i]);
-		line[5].parse(mesh.tIB[i]);
-		line[6].parse(mesh.tIC[i]);
+		Common::parseString(line[4], mesh.tIA[i]);
+		Common::parseString(line[5], mesh.tIB[i]);
+		Common::parseString(line[6], mesh.tIC[i]);
 
-		line[7].parse(mesh.mat[i]);
+		Common::parseString(line[7], mesh.mat[i]);
 
 		i++;
 	}
