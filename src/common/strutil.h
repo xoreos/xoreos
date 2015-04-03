@@ -29,12 +29,16 @@
 
 namespace Common {
 
+class UString;
 class SeekableReadStream;
 
 /** Print a quick hex dump of the given data. */
 void printDataHex(SeekableReadStream &stream);
 /** Print a quick hex dump of the given data. */
 void printDataHex(const byte *data, uint32 size);
+
+/** Parse a string into any POD integer, float/double or bool type. */
+template<typename T> void parseString(const UString &str, T &value);
 
 } // End of namespace Common
 
