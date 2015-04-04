@@ -87,6 +87,11 @@ void ButtonsGroup::setActive(uint button) {
 	setActive(_buttonsList[button]);
 }
 
+void ButtonsGroup::setAllInactive() {
+	for (std::vector<WidgetButton *>::iterator it = _buttonsList.begin(); it != _buttonsList.end(); ++it)
+		(*it)->setPressed(false);
+}
+
 uint ButtonsGroup::getChoice() const {
 	for (std::vector<WidgetButton *>::const_iterator it = _buttonsList.begin(); it != _buttonsList.end(); ++it) {
 		if ((*it)->isPressed()) {
@@ -96,6 +101,10 @@ uint ButtonsGroup::getChoice() const {
 
 	warning("No button chosen, returning first button");
 	return 0;
+}
+
+const std::vector< WidgetButton* > &ButtonsGroup::getButtonsList() const {
+	return _buttonsList;
 }
 
 } // End of namespace NWN

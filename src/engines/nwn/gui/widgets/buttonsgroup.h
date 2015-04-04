@@ -49,7 +49,10 @@ public:
 	void setActive(WidgetButton *button);
 	void setActive(uint button);
 
+	void setAllInactive();
+
 	uint getChoice() const;
+	const std::vector<WidgetButton *> &getButtonsList() const;
 
 private:
 	std::vector<WidgetButton *> _buttonsList;
