@@ -39,6 +39,9 @@ CharGenChoices::CharGenChoices() {
 	_creature = new Creature();
 
 	_classId = 0;
+
+	_goodness = 101;
+	_loyalty = 101;
 }
 
 CharGenChoices::~CharGenChoices() {
@@ -108,6 +111,12 @@ void CharGenChoices::setCharClass(uint32 classId) {
 	//TODO Init spell slots.
 }
 
+void CharGenChoices::setCharAlign(uint32 goodness, uint32 loyalty) {
+	_goodness = goodness;
+	_loyalty  = loyalty;
+}
+
+
 bool CharGenChoices::hasFeat(uint32 featId) const {
 	for (std::vector<uint32>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
 		if (*f == featId)
@@ -126,6 +135,16 @@ bool CharGenChoices::hasFeat(uint32 featId) const {
 
 const uint32 CharGenChoices::getClass() {
 	return _classId;
+}
+
+bool CharGenChoices::getAlign(uint32& goodness, uint32& loyalty) const {
+	// Check if alignment has been previously set.
+	if (_goodness > 100)
+		return false;
+
+	goodness = _goodness;
+	loyalty  = _loyalty;
+	return true;
 }
 
 } // End of namespace NWN

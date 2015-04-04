@@ -18,58 +18,44 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /** @file
- *  The character choices in the character generator.
+  /** @file
+ *  The alignment chooser in CharGen.
  */
 
-#ifndef ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H
-#define ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H
+#ifndef ENGINES_NWN_GUI_CHARGEN_CHARALIGNMENT_H
+#define ENGINES_NWN_GUI_CHARGEN_CHARALIGNMENT_H
 
-#include <vector>
-
-#include "src/common/types.h"
-
-namespace Common {
-class UString;
-}
+#include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
 
 namespace NWN {
 
-class Creature;
+class ButtonsGroup;
 
-class CharGenChoices {
+class CharAlignment : public CharGenBase {
 public:
-	CharGenChoices();
-	~CharGenChoices();
+	CharAlignment(CharGenChoices &choices);
+	~CharAlignment();
 
 	void reset();
-	const Creature &getCharacter();
-	void setCharGender(uint32 gender);
-	void setCharRace(uint32 race);
-	void setCharPortrait(const Common::UString &portrait);
-	void setCharClass(uint32 classId);
-	void setCharAlign(uint32 goodness, uint32 loyalty);
+	void show();
 
-	bool hasFeat(uint32 featId) const;
-	const uint32 getClass();
-	bool getAlign(uint32 &goodness, uint32 &loyalty) const;
+protected:
+	void callbackActive(Widget &widget);
+	void setRestrict();
+
+	void getAlignment();
 
 private:
-	Creature *_creature;
-	std::vector<uint32> _normalFeats;
-	std::vector<uint32> _racialFeats;
-	std::vector<uint32> _classFeats;
+	ButtonsGroup *_buttons;
 
-	uint32 _classId;
 	uint32 _goodness;
 	uint32 _loyalty;
-
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H
+#endif // ENGINES_NWN_GUI_CHARGEN_CHARALIGNMENT_H
