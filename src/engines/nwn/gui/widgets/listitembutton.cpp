@@ -154,6 +154,10 @@ void WidgetListItemButton::setPosition(float x, float y, float z) {
 	} else if (_button->getNode("text")) {
 		_button->getNode("text")->getPosition(pX, pY, pZ);
 		pY -= _text->getHeight() / 2;
+	} else {
+		pX = 0.0;
+		pY = -_text->getHeight() / 2;
+		pZ = 5.0;
 	}
 
 	_text->setPosition(x + pX, y + pY, z - pZ);
