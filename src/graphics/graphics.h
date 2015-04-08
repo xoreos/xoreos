@@ -151,6 +151,16 @@ public:
 	/** Render one complete frame of the scene. */
 	void renderScene();
 
+	// Block of functions below may or may not be modified in the future.
+	/** Return the current screen projection view matrix. */
+	const Common::TransformationMatrix &getProjectionMatrix() const;
+	/** Return the inverse screen projection view matrix. */
+	const Common::TransformationMatrix &getProjectionInverseMatrix() const;
+
+	/** Return the current modelview matrix (camera view). */
+	const Common::TransformationMatrix &getModelviewMatrix() const;
+	/** Return the inverse modelview matrix (camera view). */
+	const Common::TransformationMatrix &getModelviewInverseMatrix() const;
 
 private:
 	enum CursorState {
@@ -186,6 +196,8 @@ private:
 	uint32 _lastSampled; ///< Timestamp used to advance animations.
 	Common::TransformationMatrix _projection;    ///< Our projection matrix.
 	Common::TransformationMatrix _projectionInv; ///< The inverse of our projection matrix.
+	Common::TransformationMatrix _modelview;     ///< Our base modelview matrix (i.e camera view).
+	Common::TransformationMatrix _modelviewInv;  ///< The inverse of our modelview matrix.
 
 	boost::atomic<uint32> _frameLock;
 	boost::atomic<bool>   _frameEndSignal;

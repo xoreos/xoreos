@@ -1016,6 +1016,22 @@ void GraphicsManager::renderScene() {
 	_frameEndSignal.store(true, boost::memory_order_release);
 }
 
+const Common::TransformationMatrix &GraphicsManager::getProjectionMatrix() {
+	return _projection;
+}
+
+const Common::TransformationMatrix &GraphicsManager::getProjectionInverseMatrix() {
+	return _projectionInv;
+}
+
+const Common::TransformationMatrix &GraphicsManager::getModelviewMatrix() {
+	return _modelview;
+}
+
+const Common::TransformationMatrix &GraphicsManager::getModelviewInverseMatrix() {
+	return _modelviewInv;
+}
+
 int GraphicsManager::getScreenWidth() const {
 	if (!_screen)
 		return 0;
