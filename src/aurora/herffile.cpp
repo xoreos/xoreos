@@ -24,6 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/file.h"
+#include "src/common/filepath.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
 #include "src/common/hash.h"
@@ -35,7 +36,9 @@
 
 namespace Aurora {
 
-HERFFile::HERFFile(const Common::UString &fileName) : _fileName(fileName), _dictIndex(0xFFFFFFFF) {
+HERFFile::HERFFile(const Common::UString &fileName) : _fileName(fileName),
+	_dictOffset(0xFFFFFFFF), _dictSize(0) {
+
 	load();
 }
 
@@ -59,6 +62,7 @@ void HERFFile::load() {
 
 	try {
 
+		searchDictionary(*herf, resCount);
 		readResList(*herf);
 
 	if (herf->err())
@@ -73,8 +77,52 @@ void HERFFile::load() {
 	delete herf;
 }
 
-void HERFFile::readResList(Common::SeekableReadStream &herf) {
+void HERFFile::searchDictionary(Common::SeekableReadStream &herf, uint32 resCount) {
 	const uint32 dictHash = Common::hashStringDJB2("erf.dict");
+
+	uint32 pos = herf.pos();
+
+	for (uint32 i = 0; i < resCount; i++) {
+		uint32 hash = herf.readUint32LE();
+		if (hash == dictHash) {
+			_dictSize   = herf.readUint32LE();
+			_dictOffset = herf.readUint32LE();
+			break;
+		}
+
+		herf.skip(8);
+	}
+
+	herf.seek(pos);
+}
+
+void HERFFile::readDictionary(Common::SeekableReadStream &herf, std::map<uint32, Common::UString> &dict) {
+	if (_dictOffset == 0xFFFFFFFF)
+		return;
+
+	uint32 pos = herf.pos();
+
+	if (!herf.seek(_dictOffset))
+		return;
+
+	herf.skip(4); // Unknown
+
+	uint32 hashCount = herf.readUint32LE();
+
+	for (uint32 i = 0; i < hashCount; i++) {
+		if ((uint32)herf.pos() >= (_dictOffset + _dictSize))
+			break;
+
+		uint32 hash = herf.readUint32LE();
+		dict[hash] = Common::readStringFixed(herf, Common::kEncodingASCII, 128).toLower();
+	}
+
+	herf.seek(pos);
+}
+
+void HERFFile::readResList(Common::SeekableReadStream &herf) {
+	std::map<uint32, Common::UString> dict;
+	readDictionary(herf, dict);
 
 	uint32 index = 0;
 	ResourceList::iterator   res = _resources.begin();
@@ -90,32 +138,12 @@ void HERFFile::readResList(Common::SeekableReadStream &herf) {
 		if (iRes->offset >= (uint32)herf.size())
 			throw Common::Exception("HERFFile::readResList(): Resource goes beyond end of file");
 
-		if (res->hash == dictHash)
-			_dictIndex = index;
+		std::map<uint32, Common::UString>::const_iterator name = dict.find(res->hash);
+		if (name != dict.end()) {
+			res->name = Common::FilePath::getStem(name->second);
+			res->type = TypeMan.getFileType(name->second);
+		}
 	}
-}
-
-void HERFFile::getDictionary(std::list<uint32> &hashes, std::list<Common::UString> &names) const {
-	hashes.clear();
-	names.clear();
-
-	if (_dictIndex == 0xFFFFFFFF)
-		return;
-
-	Common::SeekableReadStream *dict = getResource(_dictIndex);
-
-	dict->skip(8); // unknown
-
-	while (dict->pos() < dict->size()) {
-		uint32 hash = dict->readUint32LE();
-		if (hash == 0)
-			break;
-
-		hashes.push_back(hash);
-		names.push_back(Common::readStringFixed(*dict, Common::kEncodingASCII, 128).toLower());
-	}
-
-	delete dict;
 }
 
 const Archive::ResourceList &HERFFile::getResources() const {
