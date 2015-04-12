@@ -54,7 +54,10 @@ void HERFFile::load() {
 	if (!herf)
 		throw Common::Exception(Common::kOpenError);
 
-	herf->skip(4);
+	uint32 magic = herf->readUint32LE();
+	if (magic != 0x00F1A5C0)
+		throw Common::Exception("Invalid HERF file (0x%08X)", magic);
+
 	uint32 resCount = herf->readUint32LE();
 
 	_resources.resize(resCount);
@@ -105,7 +108,9 @@ void HERFFile::readDictionary(Common::SeekableReadStream &herf, std::map<uint32,
 	if (!herf.seek(_dictOffset))
 		return;
 
-	herf.skip(4); // Unknown
+	uint32 magic = herf.readUint32LE();
+	if (magic != 0x00F1A5C0)
+		throw Common::Exception("Invalid HERF dictionary (0x%08X)", magic);
 
 	uint32 hashCount = herf.readUint32LE();
 
