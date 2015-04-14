@@ -22,6 +22,8 @@
  *  NWN script functions, 200-299.
  */
 
+#include <cstdio>
+
 #include <boost/bind.hpp>
 
 #include "src/common/util.h"

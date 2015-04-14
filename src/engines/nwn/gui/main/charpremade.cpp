@@ -22,6 +22,8 @@
  *  The premade character chooser.
  */
 
+#include <cstdio>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 
