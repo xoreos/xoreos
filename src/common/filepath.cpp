@@ -44,6 +44,7 @@
 
 #include "src/common/filepath.h"
 #include "src/common/util.h"
+#include "src/common/encoding.h"
 
 // boost-filesystem stuff
 using boost::filesystem::path;
@@ -332,15 +333,63 @@ UString FilePath::escapeStringLiteral(const UString &str) {
 	return boost::regex_replace(std::string(str.c_str()), esc, rep, boost::match_default | boost::format_sed);
 }
 
+#if defined(WIN32)
+/** Map the Windows version mess to one simple integer,
+ *  which is hopefully enough for what we care about...
+ */
+static inline uint32 getWindowsVersion() {
+	OSVERSIONINFO win32OsVersion;
+	ZeroMemory(&win32OsVersion, sizeof(OSVERSIONINFO));
+	win32OsVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	if (!GetVersionEx(&win32OsVersion))
+		return 0;
+
+	if (win32OsVersion.dwPlatformId == VER_PLATFORM_WIN32s) {
+		// Windows 3.1
+		return 1;
+	} else if (win32OsVersion.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
+		// Windows 95 and 98
+		return (win32OsVersion.dwMinorVersion == 0) ? 2 : 3;
+	} else if (win32OsVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) {
+		// Windows NT
+		if (win32OsVersion.dwMajorVersion < 5)
+			return 4;
+
+		// Windows 2000, XP, ...
+		return win32OsVersion.dwMajorVersion;
+	} else
+		// Unknown
+		return 0;
+}
+
+static inline UString getWindowsVariable(const wchar_t *variable) {
+	DWORD length = GetEnvironmentVariableW(variable, 0, 0);
+	if (!length)
+		return "";
+
+	uint32 size = length * sizeof(wchar_t);
+	byte  *data = new byte[size];
+
+	DWORD newLength = GetEnvironmentVariableW(variable, (wchar_t *) data, length);
+	if (!newLength || (newLength > length)) {
+		delete[] data;
+		return "";
+	}
+
+	UString value = readString(data, size, kEncodingUTF16LE);
+	delete[] data;
+
+	return value;
+}
+#endif // WIN32
+
 UString FilePath::getHomeDirectory() {
 	UString directory;
 
 #if defined(WIN32)
 	// Windows: $USERPROFILE
 
-	char pathStr[MAXPATHLEN];
-	if (GetEnvironmentVariable("USERPROFILE", pathStr, sizeof(pathStr)))
-		directory = pathStr;
+	directory = getWindowsVariable(L"USERPROFILE");
 
 #elif defined(UNIX)
 	// Default Unixoid: $HOME. As a fallback, search the passwd file
@@ -366,35 +415,28 @@ UString FilePath::getConfigDirectory() {
 #if defined(WIN32)
 	// Windows: $APPDATA/xoreos/ or $USERPROFILE/Application Data/xoreos/ or ./
 
-	char pathStr[MAXPATHLEN];
+	uint32 windowsVersion = getWindowsVersion();
+	if (windowsVersion == 0)
+		// If we can't determine the version, just try everything...
+		windowsVersion = 5;
 
-	OSVERSIONINFO win32OsVersion;
-	ZeroMemory(&win32OsVersion, sizeof(OSVERSIONINFO));
-	win32OsVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&win32OsVersion);
-
-	if (win32OsVersion.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS) {
-		// On non-9X version of Windows, use the Application Data directory of the user profile.
-
-		if (win32OsVersion.dwMajorVersion >= 5) {
-			if (!GetEnvironmentVariable("APPDATA", pathStr, sizeof(pathStr)))
-				error("Unable to access application data directory");
-
-			directory = pathStr;
-
-		} else {
-			if (!GetEnvironmentVariable("USERPROFILE", pathStr, sizeof(pathStr)))
-				error("Unable to access user profile directory");
-
-			directory = UString(pathStr) + "\\Application Data";
-		}
-
-		directory += "\\xoreos";
-
-	} else {
-		// On older Windows versions, use the current directory
-		directory = ".";
+	// Try the Application Data directory
+	if (windowsVersion >= 5) {
+		directory = getWindowsVariable(L"APPDATA");
+		if (!directory.empty())
+			directory += "\\xoreos";
 	}
+
+	// Try the User Profile directory and create our own Application Data directory
+	if ((windowsVersion >= 4) && directory.empty()) {
+		directory = getWindowsVariable(L"USERPROFILE");
+		if (!directory.empty())
+			directory += "\\Application Data\\xoreos";
+	}
+
+	// If all else fails (or the Windows version is too low), use the current directory
+	if (directory.empty())
+		directory = ".";
 
 #elif defined(MACOSX)
 	// Mac OS X: ~/Library/Preferences/xoreos/
