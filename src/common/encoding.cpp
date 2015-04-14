@@ -234,4 +234,13 @@ Common::UString readStringLine(SeekableReadStream &stream, Encoding encoding) {
 	return createString(output, encoding);
 }
 
+Common::UString readString(const byte *data, uint32 size, Encoding encoding) {
+	std::vector<byte> output;
+	output.resize(size);
+
+	memcpy(&output[0], data, size);
+
+	return createString(output, encoding);
+}
+
 } // End of namespace Common

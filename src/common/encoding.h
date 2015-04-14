@@ -62,6 +62,9 @@ Common::UString readStringFixed(SeekableReadStream &stream, Encoding encoding, u
 /** Read a line with the given encoding out of a stream. */
 Common::UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 
+/** Read a string with the given encoding from the raw buffer. */
+Common::UString readString(const byte *data, uint32 size, Encoding encoding);
+
 } // End of namespace Common
 
 #endif // COMMON_ENCODING_H
