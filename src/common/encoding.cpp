@@ -39,7 +39,7 @@ namespace Common {
 
 static const char *kEncodingName[kEncodingMAX] = {
 	"ASCII", "UTF-8", "UTF-16LE", "UTF-16BE", "ISO-8859-15", "WINDOWS-1250", "WINDOWS-1252",
-	"MS932", "MS936", "MSCP949", "CP950"
+	"CP932", "CP936", "CP949", "CP950"
 };
 
 static const int kEncodingGrowth[kEncodingMAX] = {
