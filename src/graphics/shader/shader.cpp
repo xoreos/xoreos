@@ -62,16 +62,24 @@ void ShaderManager::init() {
 	nullProgram->id = 0;
 	nullProgram->usageCount = 1; // Prevent this from being automatically unloaded.
 
-	ShaderObject *defaultV;
-	ShaderObject *defaultF;
+	ShaderObject *vObj;
+	ShaderObject *fObj;
 	if (GfxMan.isGL3()) {
-		defaultV = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault3xText, SHADER_VERTEX);
-		defaultF = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault3xText, SHADER_FRAGMENT);
+		vObj = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault3xText, SHADER_VERTEX);
+		fObj = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault3xText, SHADER_FRAGMENT);
+		registerShaderProgram(vObj, fObj);
+
+		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor3xText, SHADER_FRAGMENT);
+		registerShaderProgram(vObj, fObj);
 	} else {
-		defaultV = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault2xText, SHADER_VERTEX);
-		defaultF = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault2xText, SHADER_FRAGMENT);
+		vObj = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault2xText, SHADER_VERTEX);
+		fObj = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault2xText, SHADER_FRAGMENT);
+		registerShaderProgram(vObj, fObj);
+
+		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor2xText, SHADER_FRAGMENT);
+		registerShaderProgram(vObj, fObj);
 	}
-	registerShaderProgram(defaultV, defaultF);
+
 }
 
 void ShaderManager::deinit() {
