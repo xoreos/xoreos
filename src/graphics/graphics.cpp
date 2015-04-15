@@ -879,6 +879,13 @@ bool GraphicsManager::renderWorld() {
 	// Apply camera position
 	glTranslatef(-cPos[0], -cPos[1], cPos[2]);
 
+	_modelview.loadIdentity();
+	_modelview.rotate(-cOrient[0], 1.0, 0.0, 0.0);
+	_modelview.rotate( cOrient[1], 0.0, 1.0, 0.0);
+	_modelview.rotate(-cOrient[2], 0.0, 0.0, 1.0);
+	//_modelview.translate(Common::Vector3(-cPos[0], -cPos[1], cPos[2]));
+	_modelview.translate(-cPos[0], -cPos[1], cPos[2]);
+
 	QueueMan.lockQueue(kQueueVisibleWorldObject);
 	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
 

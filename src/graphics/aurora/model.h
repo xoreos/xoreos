@@ -39,6 +39,8 @@
 
 #include "src/graphics/aurora/types.h"
 
+#include "src/graphics/shader/shaderrenderable.h"
+
 namespace Common {
 	class SeekableReadStream;
 }
@@ -228,6 +230,8 @@ protected:
 	void doRebuild();
 	void doDestroy();
 
+	// Shader renderable, containing information on rendering something.
+	Shader::ShaderRenderable *_boundRenderable;
 
 private:
 	bool _drawBound;
