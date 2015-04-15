@@ -154,11 +154,13 @@ public:
 	// Block of functions below may or may not be modified in the future.
 	/** Return the current screen projection view matrix. */
 	const Common::TransformationMatrix &getProjectionMatrix() const;
+	Common::TransformationMatrix &getProjectionMatrix();
 	/** Return the inverse screen projection view matrix. */
 	const Common::TransformationMatrix &getProjectionInverseMatrix() const;
 
 	/** Return the current modelview matrix (camera view). */
 	const Common::TransformationMatrix &getModelviewMatrix() const;
+	Common::TransformationMatrix &getModelviewMatrix();
 	/** Return the inverse modelview matrix (camera view). */
 	const Common::TransformationMatrix &getModelviewInverseMatrix() const;
 

@@ -1016,19 +1016,27 @@ void GraphicsManager::renderScene() {
 	_frameEndSignal.store(true, boost::memory_order_release);
 }
 
-const Common::TransformationMatrix &GraphicsManager::getProjectionMatrix() {
+const Common::TransformationMatrix &GraphicsManager::getProjectionMatrix() const {
 	return _projection;
 }
 
-const Common::TransformationMatrix &GraphicsManager::getProjectionInverseMatrix() {
+Common::TransformationMatrix &GraphicsManager::getProjectionMatrix() {
+	return _projection;
+}
+
+const Common::TransformationMatrix &GraphicsManager::getProjectionInverseMatrix() const {
 	return _projectionInv;
 }
 
-const Common::TransformationMatrix &GraphicsManager::getModelviewMatrix() {
+const Common::TransformationMatrix &GraphicsManager::getModelviewMatrix() const {
 	return _modelview;
 }
 
-const Common::TransformationMatrix &GraphicsManager::getModelviewInverseMatrix() {
+Common::TransformationMatrix &GraphicsManager::getModelviewMatrix() {
+	return _modelview;
+}
+
+const Common::TransformationMatrix &GraphicsManager::getModelviewInverseMatrix() const {
 	return _modelviewInv;
 }
 
