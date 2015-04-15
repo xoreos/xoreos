@@ -33,9 +33,11 @@ namespace Shader {
 
 extern const char vertexDefault3xText[];
 extern const char fragmentDefault3xText[];
+extern const char fragmentColor3xText[];
 
 extern const char vertexDefault2xText[];
 extern const char fragmentDefault2xText[];
+extern const char fragmentColor2xText[];
 
 } // End of namespace Shader
 
