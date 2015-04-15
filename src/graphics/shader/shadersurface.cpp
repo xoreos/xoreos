@@ -23,6 +23,7 @@
  */
 
 #include "src/graphics/shader/shadersurface.h"
+#include "src/graphics/graphics.h"
 
 namespace Graphics {
 
@@ -41,6 +42,10 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 
 		if (vertShader->variablesCombined[i].name == "objectModelviewMatrix") {
 			_objectModelviewIndex = i;
+		} else if (vertShader->variablesCombined[i].name == "projectionMatrix") {
+			setVariableExternal(i, GfxMan.getProjectionMatrix());
+		} else if (vertShader->variablesCombined[i].name == "modelviewMatrix") {
+			setVariableExternal(i, GfxMan.getModelviewMatrix());
 		}
 	}
 }
