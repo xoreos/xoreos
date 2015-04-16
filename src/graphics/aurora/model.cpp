@@ -33,6 +33,10 @@
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/modelnode.h"
 
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/mesh/meshman.h"
+
 using Common::kDebugGraphics;
 
 namespace Graphics {
@@ -53,6 +57,11 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_elapsedTime = 0.0;
 
 	_loopAnimation = 0;
+
+	_boundRenderable = new Shader::ShaderRenderable();
+	_boundRenderable->setSurface(SurfaceMan.getSurface("defaultSurface"));
+	_boundRenderable->setMaterial(MaterialMan.getMaterial("defaultWhite"));
+	_boundRenderable->setMesh(MeshMan.getMesh("defaultWireBox"));
 }
 
 Model::~Model() {
@@ -66,6 +75,10 @@ Model::~Model() {
 			delete *n;
 
 		delete *s;
+	}
+
+	if (_boundRenderable) {
+		delete _boundRenderable;
 	}
 }
 
@@ -494,7 +507,7 @@ void Model::doDrawBound() {
 	float minX, minY, minZ, maxX, maxY, maxZ;
 	object.getMin(minX, minY, minZ);
 	object.getMax(maxX, maxY, maxZ);
-
+	/*
 	glBegin(GL_LINE_LOOP);
 		glVertex3f(minX, minY, minZ);
 		glVertex3f(maxX, minY, minZ);
@@ -536,6 +549,26 @@ void Model::doDrawBound() {
 		glVertex3f(maxX, maxY, maxZ);
 		glVertex3f(minX, maxY, maxZ);
 	glEnd();
+	*/
+
+	Common::TransformationMatrix tform = _absolutePosition;
+	tform.translate((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f);
+	tform.scale((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f);
+
+	_boundRenderable->renderImmediate(tform);
+	/*
+	glUseProgram(_boundRenderable->getProgram()->glid);
+	_boundRenderable->getMaterial()->bindProgram(_boundRenderable->getProgram());
+	_boundRenderable->getMaterial()->bindGLState();
+	_boundRenderable->getSurface()->bindProgram(_boundRenderable->getProgram(), &tform);
+	_boundRenderable->getSurface()->bindGLState();
+
+	_boundRenderable->getMesh()->renderImmediate();
+
+	_boundRenderable->getSurface()->unbindGLState();
+	_boundRenderable->getMaterial()->unbindGLState();
+	glUseProgram(0);
+	*/
 }
 
 void Model::doRebuild() {

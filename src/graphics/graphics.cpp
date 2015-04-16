@@ -51,6 +51,11 @@
 #include "src/graphics/images/decoder.h"
 #include "src/graphics/images/screenshot.h"
 
+#include "src/graphics/shader/shader.h"
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/mesh/meshman.h"
+
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 namespace Graphics {
@@ -138,6 +143,11 @@ void GraphicsManager::init() {
 	if (ConfigMan.hasKey("gamma"))
 		setGamma(ConfigMan.getDouble("gamma", 1.0));
 
+	ShaderMan.init();
+	SurfaceMan.init();
+	MaterialMan.init();
+	MeshMan.init();
+
 	_ready = true;
 }
 
@@ -148,6 +158,11 @@ void GraphicsManager::deinit() {
 		return;
 
 	QueueMan.clearAllQueues();
+
+	MeshMan.deinit();
+	MaterialMan.deinit();
+	SurfaceMan.deinit();
+	ShaderMan.deinit();
 
 	SDL_Quit();
 
@@ -864,6 +879,13 @@ bool GraphicsManager::renderWorld() {
 	// Apply camera position
 	glTranslatef(-cPos[0], -cPos[1], cPos[2]);
 
+	_modelview.loadIdentity();
+	_modelview.rotate(-cOrient[0], 1.0, 0.0, 0.0);
+	_modelview.rotate( cOrient[1], 0.0, 1.0, 0.0);
+	_modelview.rotate(-cOrient[2], 0.0, 0.0, 1.0);
+	//_modelview.translate(Common::Vector3(-cPos[0], -cPos[1], cPos[2]));
+	_modelview.translate(-cPos[0], -cPos[1], cPos[2]);
+
 	QueueMan.lockQueue(kQueueVisibleWorldObject);
 	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
 
@@ -999,6 +1021,30 @@ void GraphicsManager::renderScene() {
 	endScene();
 
 	_frameEndSignal.store(true, boost::memory_order_release);
+}
+
+const Common::TransformationMatrix &GraphicsManager::getProjectionMatrix() const {
+	return _projection;
+}
+
+Common::TransformationMatrix &GraphicsManager::getProjectionMatrix() {
+	return _projection;
+}
+
+const Common::TransformationMatrix &GraphicsManager::getProjectionInverseMatrix() const {
+	return _projectionInv;
+}
+
+const Common::TransformationMatrix &GraphicsManager::getModelviewMatrix() const {
+	return _modelview;
+}
+
+Common::TransformationMatrix &GraphicsManager::getModelviewMatrix() {
+	return _modelview;
+}
+
+const Common::TransformationMatrix &GraphicsManager::getModelviewInverseMatrix() const {
+	return _modelviewInv;
 }
 
 int GraphicsManager::getScreenWidth() const {

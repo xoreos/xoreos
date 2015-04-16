@@ -44,6 +44,9 @@ SurfaceManager::~SurfaceManager() {
 
 void SurfaceManager::init() {
 	status("Initialising default surfaces...");
+
+	ShaderSurface *surface = new ShaderSurface(ShaderMan.getShaderObject("default/default.vert", SHADER_VERTEX), "defaultSurface");
+	_resourceMap[surface->getName()] = surface;
 }
 
 void SurfaceManager::deinit() {
