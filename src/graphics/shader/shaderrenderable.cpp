@@ -71,6 +71,20 @@ void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
 	_mesh = mesh;
 }
 
+void ShaderRenderable::renderImmediate(const Common::TransformationMatrix &tform) {
+	glUseProgram(_program->glid);
+	_material->bindProgram(_program);
+	_material->bindGLState();
+	_surface->bindProgram(_program, &tform);
+	_surface->bindGLState();
+
+	_mesh->renderImmediate();
+
+	_surface->unbindGLState();
+	_material->unbindGLState();
+	glUseProgram(0);
+}
+
 void ShaderRenderable::updateProgram() {
 	if ((_surface != 0) && (_material != 0)) {
 		_program = ShaderMan.getShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());

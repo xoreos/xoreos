@@ -555,6 +555,8 @@ void Model::doDrawBound() {
 	tform.translate((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f);
 	tform.scale((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f);
 
+	_boundRenderable->renderImmediate(tform);
+	/*
 	glUseProgram(_boundRenderable->getProgram()->glid);
 	_boundRenderable->getMaterial()->bindProgram(_boundRenderable->getProgram());
 	_boundRenderable->getMaterial()->bindGLState();
@@ -566,6 +568,7 @@ void Model::doDrawBound() {
 	_boundRenderable->getSurface()->unbindGLState();
 	_boundRenderable->getMaterial()->unbindGLState();
 	glUseProgram(0);
+	*/
 }
 
 void Model::doRebuild() {
