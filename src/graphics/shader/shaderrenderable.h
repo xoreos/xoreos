@@ -50,6 +50,8 @@ public:
 	void setMaterial(Shader::ShaderMaterial *material);
 	void setMesh(Mesh::Mesh *mesh);
 
+	void renderImmediate(const Common::TransformationMatrix &tform);
+
 private:
 	ShaderSurface *_surface;
 	ShaderMaterial *_material;
