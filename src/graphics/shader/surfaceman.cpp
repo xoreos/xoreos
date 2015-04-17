@@ -36,6 +36,8 @@ namespace Graphics {
 namespace Shader {
 
 SurfaceManager::SurfaceManager() {
+	ShaderSurface *surface = new ShaderSurface(ShaderMan.getShaderObject("default/default.vert", SHADER_VERTEX), "defaultSurface");
+	_resourceMap[surface->getName()] = surface;
 }
 
 SurfaceManager::~SurfaceManager() {
