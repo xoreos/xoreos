@@ -44,13 +44,16 @@ MaterialManager::~MaterialManager() {
 
 void MaterialManager::init() {
 	status("Initialising default materials...");
-/*
-	MeshWireBox *wirebox = new MeshWireBox();
-	wirebox->init();
-	wirebox->setName("defaultWireBox");
 
-	_resourceMap[wirebox->getName()] = wirebox;
-*/
+	ShaderMaterial *material = new ShaderMaterial(ShaderMan.getShaderObject("default/color.frag", SHADER_FRAGMENT), "defaultWhite");
+	float *color = (float *)(material->getVariableData("color"));
+	if (color) {
+		color[0] = 1.0f;
+		color[1] = 1.0f;
+		color[2] = 1.0f;
+		color[3] = 1.0f;
+	}
+	_resourceMap[material->getName()] = material;
 }
 
 void MaterialManager::deinit() {
