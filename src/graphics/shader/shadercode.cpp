@@ -64,6 +64,17 @@ void main(void) {\n\
 }\n\
 ";
 // ---------------------------------------------------------
+const char fragmentColor3xText[] =
+"#version 330\n\
+precision highp float;\n\
+\n\
+uniform vec4 color;\n\
+\n\
+void main(void) {\n\
+  gl_FragColor = color;\n\
+}\n\
+";
+// ---------------------------------------------------------
 
 
 // ---------------------------------------------------------
@@ -97,6 +108,18 @@ void main(void) {\n\
 }\n\
 ";
 // ---------------------------------------------------------
+const char fragmentColor2xText[] =
+"#version 130\n\
+precision highp float;\n\
+\n\
+uniform vec4 color;\n\
+\n\
+void main(void) {\n\
+  gl_FragColor = color;\n\
+}\n\
+";
+// ---------------------------------------------------------
+
 } // End of namespace Shader
 
 } // End of namespace Graphics
