@@ -345,9 +345,9 @@ ShaderProgram *ShaderManager::registerShaderProgram(ShaderObject *vertexObject, 
 	program->vertexObject = vertexObject;
 	program->fragmentObject = fragmentObject;
 
-	status("processing vertex variables, count: %u", (uint) vertexObject->variablesCombined.size());
+	//status("processing vertex variables, count: %u", (uint) vertexObject->variablesCombined.size());
 	for (uint32 i = 0; i < vertexObject->variablesCombined.size(); ++i) {
-		status("vertex variable found");
+		//status("vertex variable found");
 		GLint location;
 		if (vertexObject->variablesCombined[i].type != SHADER_UNIFORM_BUFFER)
 			location = glGetUniformLocation(glid, vertexObject->variablesCombined[i].name.c_str());
