@@ -292,9 +292,11 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 		for (uint32 j = 0; j < columnCount; j++) {
 			uint32 offset = dataOffset + offsets[i * columnCount + j];
 
-			if (!twoda.seek(offset)) {
+			try {
+				twoda.seek(offset);
+			} catch (...) {
 				delete[] offsets;
-				throw Common::Exception(Common::kSeekError);
+				throw;
 			}
 
 			_rows[i]->_data[j] = tokenize.getToken(twoda);
