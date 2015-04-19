@@ -439,21 +439,25 @@ public:
 	 * position indicator, or end-of-file, respectively. A successful call
 	 * to the seek() method clears the end-of-file indicator for the stream.
 	 *
-	 * @param  offset the relative offset in bytes.
-	 * @param  whence the seek reference: SEEK_SET, SEEK_CUR, or SEEK_END.
-	 * @return true on success, false in case of a failure.
+	 * On error, or when trying to seek outside the stream, a kSeekError
+	 * exception is thrown.
+	 *
+	 * @param offset the relative offset in bytes.
+	 * @param whence the seek reference: SEEK_SET, SEEK_CUR, or SEEK_END.
 	 */
-	virtual bool seek(int32 offset, int whence = SEEK_SET) = 0;
+	virtual void seek(int32 offset, int whence = SEEK_SET) = 0;
 
 	/**
 	 * Skip the specified number of bytes, adding that offset to the current
 	 * position in the stream. A successful call to the skip() method clears
 	 * the end-of-file indicator for the stream.
 	 *
-	 * @param  offset the number of bytes to skip.
-	 * @return true on success, false in case of a failure.
+	 * On error, or when trying to skip outside the stream, a kSeekError
+	 * exception is thrown.
+	 *
+	 * @param offset the number of bytes to skip.
 	 */
-	virtual bool skip(uint32 offset) { return seek(offset, SEEK_CUR); }
+	virtual void skip(uint32 offset) { return seek(offset, SEEK_CUR); }
 
 	/** Seek to the specified position, returning the previous position. */
 	virtual uint32 seekTo(uint32 offset);
@@ -513,7 +517,7 @@ public:
 	virtual int32 pos() const { return _pos - _begin; }
 	virtual int32 size() const { return _end - _begin; }
 
-	virtual bool seek(int32 offset, int whence = SEEK_SET);
+	virtual void seek(int32 offset, int whence = SEEK_SET);
 };
 
 /**
@@ -601,7 +605,7 @@ public:
 	virtual int32 pos() const { return _parentStream->pos() - (_bufSize - _pos); }
 	virtual int32 size() const { return _parentStream->size(); }
 
-	virtual bool seek(int32 offset, int whence = SEEK_SET);
+	virtual void seek(int32 offset, int whence = SEEK_SET);
 };
 
 
@@ -651,7 +655,7 @@ public:
 	int32 pos() const { return _pos; }
 	int32 size() const { return _size; }
 
-	bool seek(int32 offs, int whence = SEEK_SET);
+	void seek(int32 offs, int whence = SEEK_SET);
 };
 
 

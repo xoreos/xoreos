@@ -113,7 +113,7 @@ int32 File::size() const {
 	return _size;
 }
 
-bool File::seek(int32 offs, int whence) {
+void File::seek(int32 offs, int whence) {
 	if (!_handle)
 		throw Exception(kSeekError);
 
@@ -123,8 +123,6 @@ bool File::seek(int32 offs, int whence) {
 	long p = std::ftell(_handle);
 	if ((p < 0) || (p > _size))
 		throw Exception(kSeekError);
-
-	return true;
 }
 
 uint32 File::read(void *dataPtr, uint32 dataSize) {

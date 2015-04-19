@@ -77,7 +77,7 @@ public:
 
 	int32 pos() const;  // implement abstract SeekableReadStream method
 	int32 size() const; // implement abstract SeekableReadStream method
-	bool seek(int32 offs, int whence = SEEK_SET); // implement abstract SeekableReadStream method
+	void seek(int32 offs, int whence = SEEK_SET); // implement abstract SeekableReadStream method
 	uint32 read(void *dataPtr, uint32 dataSize);  // implement abstract SeekableReadStream method
 
 protected:
