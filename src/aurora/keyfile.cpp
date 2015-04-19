@@ -92,8 +92,7 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 }
 
 void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
-	if (!key.seek(offset))
-		throw Common::Exception(Common::kSeekError);
+	key.seek(offset);
 
 	for (BIFList::iterator bif = _bifs.begin(); bif != _bifs.end(); ++bif) {
 		key.skip(4); // File size of the bif
@@ -120,8 +119,7 @@ void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 }
 
 void KEYFile::readResList(Common::SeekableReadStream &key, uint32 offset) {
-	if (!key.seek(offset))
-		throw Common::Exception(Common::kSeekError);
+	key.seek(offset);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->name = Common::readStringFixed(key, Common::kEncodingASCII, 16);
