@@ -121,8 +121,7 @@ void TalkTable::readString(Entry &entry) {
 
 	assert(_tlk);
 
-	if (!_tlk->seek(entry.offset))
-		throw Common::Exception(Common::kSeekError);
+	_tlk->seek(entry.offset);
 
 	uint32 length = MIN<uint32>(entry.length, _tlk->size() - _tlk->pos());
 	if (length == 0)
