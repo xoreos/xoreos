@@ -112,8 +112,7 @@ void XboxMediaVideo::queueNewAudio(PacketAudio &audioPacket) {
 		return;
 
 	// Seek to it
-	if (!_xmv->seek(audioPacket.dataOffset))
-		throw Common::Exception(Common::kSeekError);
+	_xmv->seek(audioPacket.dataOffset);
 
 	// Read and queue it
 	queueAudioStream(_xmv->readStream(audioPacket.dataSize), *audioPacket.track);
@@ -135,8 +134,7 @@ void XboxMediaVideo::processNextFrame(PacketVideo &videoPacket) {
 		return;
 
 	// Seek
-	if (!_xmv->seek(videoPacket.dataOffset))
-		throw Common::Exception(Common::kSeekError);
+	_xmv->seek(videoPacket.dataOffset);
 
 	// Read the frame header
 
@@ -308,8 +306,7 @@ void XboxMediaVideo::evaluateAudioTrack(AudioTrack &track) {
 void XboxMediaVideo::fetchNextPacket(Packet &packet) {
 	// Seek to it
 	packet.thisPacketOffset = packet.nextPacketOffset;
-	if (!_xmv->seek(packet.thisPacketOffset))
-		throw Common::Exception(Common::kSeekError);
+	_xmv->seek(packet.thisPacketOffset);
 
 	// Update the size
 	packet.thisPacketSize = packet.nextPacketSize;
