@@ -38,6 +38,9 @@
 
 namespace Common {
 
+/** Return value for end-of-file. See ReadStream::readChar(). */
+static const uint32 kEOF = 0xFFFFFFFF;
+
 class MemoryReadStream;
 class ReadStream;
 class UString;
@@ -240,6 +243,21 @@ public:
 	 */
 	FORCEINLINE int8 readSByte() {
 		return (int8)readByte();
+	}
+
+	/**
+	 * Reads the next character from stream and returns it as an unsigned char
+	 * cast to an uint32, or kEOF on end of file or error. Similar to fgetc().
+	 */
+	uint32 readChar() {
+		byte b;
+		try {
+			b = readByte();
+		} catch (...) {
+			return kEOF;
+		}
+
+		return b;
 	}
 
 	/**
