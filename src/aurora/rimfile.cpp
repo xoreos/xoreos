@@ -61,8 +61,6 @@ void RIMFile::load() {
 	uint32 resCount   = rim.readUint32LE(); // Number of resources in the RIM
 	uint32 offResList = rim.readUint32LE(); // Offset to the resource list
 
-	rim.skip(116); // Reserved
-
 	_resources.resize(resCount);
 	_iResources.resize(resCount);
 
