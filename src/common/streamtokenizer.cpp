@@ -65,8 +65,8 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 	UString token;
 
 	// Run through the stream, character by character
-	while (!stream.eos()) {
-		char c = (char) stream.readByte();
+	uint32 c;
+	while ((c = stream.readChar()) != kEOF) {
 
 		if (isIn(c, _chunkEnds)) {
 			// This is a end character, seek back and break
@@ -130,8 +130,7 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 	if (!chunkEnd && (_conSepRule != kRuleHeed)) {
 		// We have to look for consecutive separators
 
-		while (!stream.eos()) {
-			uint32 c = stream.readByte();
+		while ((c = stream.readChar()) != kEOF) {
 
 			// Use the rule to determine when we should abort skipping consecutive separators
 			if (((_conSepRule == kRuleIgnoreSame) && (c != separator)) ||
@@ -178,8 +177,9 @@ void StreamTokenizer::skipToken(SeekableReadStream &stream, uint32 n) {
 void StreamTokenizer::skipChunk(SeekableReadStream &stream) {
 	assert(!_chunkEnds.empty());
 
-	while (!stream.eos() && !stream.err()) {
-		if (isIn(stream.readByte(), _chunkEnds)) {
+	uint32 c;
+	while ((c = stream.readChar()) != kEOF) {
+		if (isIn(c, _chunkEnds)) {
 			stream.seek(-1, SEEK_CUR);
 			break;
 		}
@@ -192,24 +192,20 @@ void StreamTokenizer::skipChunk(SeekableReadStream &stream) {
 void StreamTokenizer::nextChunk(SeekableReadStream &stream) {
 	skipChunk(stream);
 
-	byte c = stream.readByte();
-
-	if (stream.eos() || stream.err())
+	uint32 c = stream.readChar();
+	if (c == kEOF)
 		return;
 
 	if (!isIn(c, _chunkEnds))
 		stream.seek(-1, SEEK_CUR);
-	else
-		if (stream.pos() == stream.size())
-			// This actually the last character, read one more byte to properly set the EOS state
-			stream.readByte();
 }
 
 bool StreamTokenizer::isChunkEnd(SeekableReadStream &stream) {
-	if (stream.eos())
+	uint32 c = stream.readChar();
+	if (c == kEOF)
 		return true;
 
-	bool chunkEnd = isIn(stream.readByte(), _chunkEnds);
+	bool chunkEnd = isIn(c, _chunkEnds);
 
 	stream.seek(-1, SEEK_CUR);
 
