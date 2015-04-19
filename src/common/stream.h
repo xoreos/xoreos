@@ -34,6 +34,7 @@
 #include "src/common/types.h"
 #include "src/common/endianness.h"
 #include "src/common/util.h"
+#include "src/common/error.h"
 
 namespace Common {
 
@@ -225,21 +226,17 @@ public:
 
 	/**
 	 * Read an unsigned byte from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	byte readByte() {
-		byte b = 0; // FIXME: remove initialisation
-		read(&b, 1);
+		byte b;
+		if (read(&b, 1) != 1)
+			throw Exception(kReadError);
+
 		return b;
 	}
 
 	/**
 	 * Read a signed byte from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE int8 readSByte() {
 		return (int8)readByte();
@@ -248,87 +245,78 @@ public:
 	/**
 	 * Read an unsigned 16-bit word stored in little endian (LSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	uint16 readUint16LE() {
 		uint16 val;
-		read(&val, 2);
+		if (read(&val, 2) != 2)
+			throw Exception(kReadError);
+
 		return FROM_LE_16(val);
 	}
 
 	/**
 	 * Read an unsigned 32-bit word stored in little endian (LSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	uint32 readUint32LE() {
 		uint32 val;
-		read(&val, 4);
+		if (read(&val, 4) != 4)
+			throw Exception(kReadError);
+
 		return FROM_LE_32(val);
 	}
 
 	/**
 	 * Read an unsigned 64-bit word stored in little endian (LSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	uint64 readUint64LE() {
 		uint64 val;
-		read(&val, 8);
+		if (read(&val, 8) != 8)
+			throw Exception(kReadError);
+
 		return FROM_LE_64(val);
 	}
 
 	/**
 	 * Read an unsigned 16-bit word stored in big endian (MSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	uint16 readUint16BE() {
 		uint16 val;
-		read(&val, 2);
+		if (read(&val, 2) != 2)
+			throw Exception(kReadError);
+
 		return FROM_BE_16(val);
 	}
 
 	/**
 	 * Read an unsigned 32-bit word stored in big endian (MSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	uint32 readUint32BE() {
 		uint32 val;
-		read(&val, 4);
+		if (read(&val, 4) != 4)
+			throw Exception(kReadError);
+
 		return FROM_BE_32(val);
 	}
 
 	/**
 	 * Read an unsigned 64-bit word stored in big endian (MSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	uint64 readUint64BE() {
 		uint64 val;
-		read(&val, 8);
+		if (read(&val, 8) != 8)
+			throw Exception(kReadError);
+
 		return FROM_BE_64(val);
 	}
 
 	/**
 	 * Read a signed 16-bit word stored in little endian (LSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE int16 readSint16LE() {
 		return (int16)readUint16LE();
@@ -337,9 +325,6 @@ public:
 	/**
 	 * Read a signed 32-bit word stored in little endian (LSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE int32 readSint32LE() {
 		return (int32)readUint32LE();
@@ -348,9 +333,6 @@ public:
 	/**
 	 * Read a signed 64-bit word stored in little endian (LSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE int64 readSint64LE() {
 		return (int64)readUint64LE();
@@ -359,9 +341,6 @@ public:
 	/**
 	 * Read a signed 16-bit word stored in big endian (MSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE int16 readSint16BE() {
 		return (int16)readUint16BE();
@@ -370,9 +349,6 @@ public:
 	/**
 	 * Read a signed 32-bit word stored in big endian (MSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE int32 readSint32BE() {
 		return (int32)readUint32BE();
@@ -381,9 +357,6 @@ public:
 	/**
 	 * Read a signed 64-bit word stored in big endian (MSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE int64 readSint64BE() {
 		return (int64)readUint64BE();
@@ -392,9 +365,6 @@ public:
 	/**
 	 * Read a 32-bit IEEE float stored in little endian (LSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE float readIEEEFloatLE() {
 		return convertIEEEFloat(readUint32LE());
@@ -403,9 +373,6 @@ public:
 	/**
 	 * Read a 32-bit IEEE float stored in big endian (MSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE float readIEEEFloatBE() {
 		return convertIEEEFloat(readUint32BE());
@@ -414,9 +381,6 @@ public:
 	/**
 	 * Read a 64-bit IEEE double stored in little endian (LSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE double readIEEEDoubleLE() {
 		return convertIEEEDouble(readUint64LE());
@@ -425,9 +389,6 @@ public:
 	/**
 	 * Read a 64-bit IEEE double stored in big endian (MSB first) order
 	 * from the stream and return it.
-	 * Performs no error checking. The return value is undefined
-	 * if a read error occurred (for which client code can check by
-	 * calling err() and eos() ).
 	 */
 	FORCEINLINE double readIEEEDoubleBE() {
 		return convertIEEEDouble(readUint64BE());
