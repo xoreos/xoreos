@@ -163,8 +163,7 @@ void GFFFile::readStructs() {
 }
 
 void GFFFile::readLists() {
-	if (!_stream->seek(_header.listIndicesOffset))
-		throw Common::Exception(Common::kSeekError);
+	_stream->seek(_header.listIndicesOffset);
 
 	// Read list array
 	std::vector<uint32> rawLists;
@@ -266,8 +265,7 @@ void GFFStruct::readField(Common::SeekableReadStream &gff, uint32 index) const {
 				index, _parent->_header.fieldCount);
 
 	// Seek
-	if (!gff.seek(_parent->_header.fieldOffset + index * 12))
-		throw Common::Exception(Common::kSeekError);
+	gff.seek(_parent->_header.fieldOffset + index * 12);
 
 	// Read the field data
 	uint32 type  = gff.readUint32LE();
@@ -286,8 +284,7 @@ void GFFStruct::readFields(Common::SeekableReadStream &gff,
 		                        index , _parent->_header.fieldIndicesCount);
 
 	// Seek
-	if (!gff.seek(_parent->_header.fieldIndicesOffset + index))
-		throw Common::Exception(Common::kSeekError);
+	gff.seek(_parent->_header.fieldIndicesOffset + index);
 
 	// Read the field indices
 	std::vector<uint32> indices;
