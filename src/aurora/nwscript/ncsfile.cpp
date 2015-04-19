@@ -360,8 +360,8 @@ const Variable &NCSFile::execute(Object *owner, Object *triggerer) {
 	_owner     = owner;
 	_triggerer = triggerer;
 
-	while (!_script->eos() && !_script->err())
-		executeStep();
+	while (executeStep())
+		;
 
 	if (_script->err())
 		throw Common::Exception(Common::kReadError);
@@ -379,9 +379,15 @@ const Variable &NCSFile::execute(Object *owner, Object *triggerer) {
 	return _return;
 }
 
-void NCSFile::executeStep() {
-	byte opcode = _script->readByte();
-	InstructionType type = (InstructionType)_script->readByte();
+bool NCSFile::executeStep() {
+	byte opcode, type;
+
+	try {
+		opcode = _script->readByte();
+		type   = _script->readByte();
+	} catch (...) {
+		return false;
+	}
 
 	if (opcode >= _opcodeListSize)
 		throw Common::Exception("NCSFile::executeStep(): Illegal instruction 0x%02x", opcode);
@@ -389,7 +395,7 @@ void NCSFile::executeStep() {
 	debugC(1, kDebugScripts, "NWScript opcode %s [0x%02X]", _opcodes[opcode].desc, opcode);
 
 	try {
-		(this->*(_opcodes[opcode].proc))(type);
+		(this->*(_opcodes[opcode].proc))((InstructionType)type);
 	} catch (Common::Exception &e) {
 		throw;
 	}
@@ -397,6 +403,8 @@ void NCSFile::executeStep() {
 	_stack.print();
 	debugC(2, kDebugScripts, "[RETURN: %d]",
 	       _returnOffsets.empty() ? -1 : _returnOffsets.top());
+
+	return true;
 }
 
 void NCSFile::decompile() {

@@ -158,7 +158,7 @@ private:
 	const Variable &execute(Object *owner = 0, Object *triggerer = 0);
 
 	/** Execute one script step. */
-	void executeStep();
+	bool executeStep();
 
 	void decompile(); // TODO
 
