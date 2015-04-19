@@ -51,17 +51,8 @@ CameraManager::CameraManager() : _lastChanged(0), _needUpdate(false) {
 	_orientationCache[2] = 0.0;
 }
 
-void CameraManager::lock() {
-	_mutex.lock();
-}
-
-void CameraManager::unlock() {
-	_mutex.unlock();
-}
-
 void CameraManager::update() {
 	GfxMan.lockFrame();
-	Common::StackLock cameraLock(_mutex);
 
 	if (!_needUpdate) {
 		GfxMan.unlockFrame();
@@ -88,8 +79,6 @@ const float *CameraManager::getOrientation() const {
 }
 
 void CameraManager::reset() {
-	Common::StackLock cameraLock(_mutex);
-
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
 	_position   [2] = 0.0;
@@ -103,8 +92,6 @@ void CameraManager::reset() {
 }
 
 void CameraManager::setPosition(float x, float y, float z) {
-	Common::StackLock cameraLock(_mutex);
-
 	_position[0] = x;
 	_position[1] = y;
 	_position[2] = z;
@@ -112,13 +99,9 @@ void CameraManager::setPosition(float x, float y, float z) {
 	_lastChanged = EventMan.getTimestamp();
 
 	_needUpdate = true;
-
-	unlock();
 }
 
 void CameraManager::setOrientation(float x, float y, float z) {
-	Common::StackLock cameraLock(_mutex);
-
 	_orientation[0] = fmodf(x, 360.0);
 	_orientation[1] = fmodf(y, 360.0);
 	_orientation[2] = fmodf(z, 360.0);

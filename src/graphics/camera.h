@@ -27,16 +27,12 @@
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 
 namespace Graphics {
 
 class CameraManager : public Common::Singleton<CameraManager> {
 public:
 	CameraManager();
-
-	void lock();
-	void unlock();
 
 	const float *getPosition   () const; ///< Get the current camera position cache.
 	const float *getOrientation() const; ///< Get the current camera orientation cache.
@@ -66,8 +62,6 @@ public:
 	void update();
 
 private:
-	Common::Mutex _mutex;
-
 	uint32 _lastChanged;
 
 	float _position[3];    ///< Current position.

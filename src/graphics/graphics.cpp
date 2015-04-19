@@ -491,10 +491,8 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 	float cPos[3];
 	float cOrient[3];
 
-	CameraMan.lock();
 	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
 	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
-	CameraMan.unlock();
 
 	// Apply camera orientation
 	model.rotate(-cOrient[0], 1.0, 0.0, 0.0);
@@ -549,10 +547,8 @@ bool GraphicsManager::unproject(float x, float y,
 		float cPos[3];
 		float cOrient[3];
 
-		CameraMan.lock();
 		memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
 		memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
-		CameraMan.unlock();
 
 		// Apply camera position
 		model.translate(cPos[0], cPos[1], -cPos[2]);
@@ -858,10 +854,8 @@ bool GraphicsManager::renderWorld() {
 	float cPos[3];
 	float cOrient[3];
 
-	CameraMan.lock();
 	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
 	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
-	CameraMan.unlock();
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
