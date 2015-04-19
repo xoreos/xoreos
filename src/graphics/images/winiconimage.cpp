@@ -60,8 +60,7 @@ void WinIconImage::load(Common::SeekableReadStream &cur) {
 }
 
 void WinIconImage::readHeader(Common::SeekableReadStream &cur) {
-	if (!cur.seek(0))
-		throw Common::Exception(Common::kSeekError);
+	cur.seek(0);
 
 	if (cur.readUint16LE() != 0)
 		throw Common::Exception("Reserved bytes != 0");
