@@ -157,19 +157,23 @@ bool SeekableSubReadStream::seek(int32 offset, int whence) {
 	assert(_pos >= _begin);
 	assert(_pos <= _end);
 
+	uint32 newPos = _pos;
+
 	switch (whence) {
 	case SEEK_END:
 		offset = size() + offset;
 		// fallthrough
 	case SEEK_SET:
-		_pos = _begin + offset;
+		newPos = _begin + offset;
 		break;
 	case SEEK_CUR:
-		_pos += offset;
+		newPos += offset;
 	}
 
-	assert(_pos >= _begin);
-	assert(_pos <= _end);
+	if ((newPos < _begin) || (newPos > _end))
+		throw Exception(kSeekError);
+
+	_pos = newPos;
 
 	bool ret = _parentStream->seek(_pos);
 	if (ret) _eos = false; // reset eos on successful seek
