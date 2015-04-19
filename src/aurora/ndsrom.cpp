@@ -78,8 +78,7 @@ void NDSFile::load() {
 }
 
 void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 length) {
-	if (!nds.seek(offset + 8))
-		throw Common::Exception(Common::kSeekError);
+	nds.seek(offset + 8);
 
 	uint32 index = 0;
 	while (((uint32) nds.pos()) < (offset + length)) {
@@ -98,8 +97,7 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 }
 
 void NDSFile::readFAT(Common::SeekableReadStream &nds, uint32 offset) {
-	if (!nds.seek(offset))
-		throw Common::Exception(Common::kSeekError);
+	nds.seek(offset);
 
 	_iResources.resize(_resources.size());
 	for (IResourceList::iterator res = _iResources.begin(); res != _iResources.end(); ++res) {
@@ -109,14 +107,13 @@ void NDSFile::readFAT(Common::SeekableReadStream &nds, uint32 offset) {
 }
 
 bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
-	if (!stream.seek(0))
-		return false;
+	stream.seek(0);
 
 	Common::UString gameName = Common::readStringFixed(stream, Common::kEncodingASCII, 12);
 	if (gameName != "SONICCHRON") // Should be the only game we will accept.
 		return false;
 
-	if (!stream.seek(0x40))
+	if (stream.size() < 0x40)
 		return false;
 
 	return true;
@@ -145,8 +142,7 @@ Common::SeekableReadStream *NDSFile::getResource(uint32 index) const {
 	Common::File nds;
 	open(nds);
 
-	if (!nds.seek(res.offset))
-		throw Common::Exception(Common::kSeekError);
+	nds.seek(res.offset);
 
 	Common::SeekableReadStream *resStream = nds.readStream(res.size);
 
