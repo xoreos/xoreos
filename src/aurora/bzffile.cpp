@@ -89,8 +89,7 @@ void BZFFile::load() {
 }
 
 void BZFFile::readVarResTable(Common::SeekableReadStream &bzf, uint32 offset) {
-	if (!bzf.seek(offset))
-		throw Common::Exception(Common::kSeekError);
+	bzf.seek(offset);
 
 	for (uint32 i = 0; i < _iResources.size(); i++) {
 		bzf.skip(4); // ID
@@ -157,8 +156,7 @@ Common::SeekableReadStream *BZFFile::getResource(uint32 index) const {
 	Common::File bzf;
 	open(bzf);
 
-	if (!bzf.seek(res.offset))
-		throw Common::Exception(Common::kSeekError);
+	bzf.seek(res.offset);
 
 	byte *compressedData = new byte[res.packedSize];
 
