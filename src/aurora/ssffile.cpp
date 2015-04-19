@@ -97,8 +97,7 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 }
 
 void SSFFile::readEntries(Common::SeekableReadStream &ssf, uint32 offset) {
-	if (!ssf.seek(offset))
-		throw Common::Exception(Common::kSeekError);
+	ssf.seek(offset);
 
 	if      (_version == kVersion1)
 		readEntries1(ssf);
@@ -120,8 +119,7 @@ void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 		offsets[i] = ssf.readUint32LE();
 
 	for (uint32 i = 0; i < count; i++) {
-		if (!ssf.seek(offsets[i]))
-			throw Common::Exception(Common::kSeekError);
+		ssf.seek(offsets[i]);
 
 		_sounds[i].fileName = Common::readStringFixed(ssf, Common::kEncodingASCII, 16);
 		_sounds[i].strRef   = ssf.readUint32LE();
