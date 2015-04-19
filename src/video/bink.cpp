@@ -186,8 +186,7 @@ void Bink::processData() {
 
 	VideoFrame &frame = _frames[_curFrame];
 
-	if (!_bink->seek(frame.offset))
-		throw Common::Exception(Common::kSeekError);
+	_bink->seek(frame.offset);
 
 	uint32 frameSize = frame.size;
 
