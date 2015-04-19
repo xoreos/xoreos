@@ -219,7 +219,10 @@ UString FilePath::normalize(const UString &p, bool resolveSymLinks) {
 		}
 	}
 
-	return convertToSlash(boost::filesystem::absolute(result)).string().c_str();
+	if (!result.has_root_directory())
+		result = boost::filesystem::absolute(result);
+
+	return convertToSlash(result).string().c_str();
 }
 
 UString FilePath::canonicalize(const UString &p, bool resolveSymLinks) {
