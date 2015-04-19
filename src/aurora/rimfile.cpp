@@ -82,8 +82,7 @@ void RIMFile::load() {
 }
 
 void RIMFile::readResList(Common::SeekableReadStream &rim, uint32 offset) {
-	if (!rim.seek(offset))
-		throw Common::Exception(Common::kSeekError);
+	rim.seek(offset);
 
 	uint32 index = 0;
 	ResourceList::iterator   res = _resources.begin();
@@ -121,8 +120,7 @@ Common::SeekableReadStream *RIMFile::getResource(uint32 index) const {
 	Common::File rim;
 	open(rim);
 
-	if (!rim.seek(res.offset))
-		throw Common::Exception(Common::kSeekError);
+	rim.seek(res.offset);
 
 	Common::SeekableReadStream *resStream = rim.readStream(res.size);
 
