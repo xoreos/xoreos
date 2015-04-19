@@ -132,8 +132,7 @@ void TRXFile::loadDirectory(Common::SeekableReadStream &trx, std::vector<Packet>
 
 void TRXFile::loadPackets(Common::SeekableReadStream &trx, std::vector<Packet> &packets) {
 	for (std::vector<Packet>::iterator p = packets.begin(); p != packets.end(); ++p) {
-		if (!trx.seek(p->offset))
-			throw Common::Exception(Common::kSeekError);
+		trx.seek(p->offset);
 
 		uint32 type = trx.readUint32BE();
 		if (type != p->type)
