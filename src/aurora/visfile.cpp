@@ -85,7 +85,7 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 
 			tokenizer.nextChunk(vis);
 
-			if (((char) vis.readByte()) != ' ') {
+			if (vis.readChar() != ' ') {
 				// Not indented => new room
 
 				vis.seek(lineStart);
