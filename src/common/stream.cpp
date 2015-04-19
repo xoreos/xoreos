@@ -89,8 +89,10 @@ uint32 MemoryReadStream::read(void *dataPtr, uint32 dataSize) {
 }
 
 bool MemoryReadStream::seek(int32 offs, int whence) {
-	// Pre-Condition
 	assert(_pos <= _size);
+
+	uint32 newPos = _pos;
+
 	switch (whence) {
 	case SEEK_END:
 		// SEEK_END works just like SEEK_SET, only 'reversed',
@@ -98,21 +100,24 @@ bool MemoryReadStream::seek(int32 offs, int whence) {
 		offs = _size + offs;
 		// Fall through
 	case SEEK_SET:
-		_ptr = _ptrOrig + offs;
-		_pos = offs;
+		newPos = offs;
 		break;
 
 	case SEEK_CUR:
-		_ptr += offs;
-		_pos += offs;
+		newPos += offs;
 		break;
 	}
-	// Post-Condition
-	assert(_pos <= _size);
+
+	if (newPos > _size)
+		throw Exception(kSeekError);
+
+	_pos = newPos;
+	_ptr = _ptrOrig + newPos;
 
 	// Reset end-of-stream flag on a successful seek
 	_eos = false;
-	return true; // FIXME: STREAM REWRITE
+
+	return true;
 }
 
 
