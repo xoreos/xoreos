@@ -62,8 +62,7 @@ void TGA::load(Common::SeekableReadStream &tga) {
 }
 
 void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte &pixelDepth, byte &imageDesc) {
-	if (!tga.seek(0))
-		throw Common::Exception(Common::kSeekError);
+	tga.seek(0);
 
 	// TGAs have an optional "id" string in the header
 	uint32 idLength = tga.readByte();
