@@ -105,8 +105,7 @@ void HERFFile::readDictionary(Common::SeekableReadStream &herf, std::map<uint32,
 
 	uint32 pos = herf.pos();
 
-	if (!herf.seek(_dictOffset))
-		return;
+	herf.seek(_dictOffset);
 
 	uint32 magic = herf.readUint32LE();
 	if (magic != 0x00F1A5C0)
@@ -171,21 +170,24 @@ Common::SeekableReadStream *HERFFile::getResource(uint32 index) const {
 	if (res.size == 0)
 		return new Common::MemoryReadStream(0, 0);
 
-	Common::SeekableReadStream *herf = ResMan.getResource(TypeMan.setFileType(_fileName, kFileTypeNone), kFileTypeHERF);
-	if (!herf)
-		throw Common::Exception(Common::kOpenError);
+	Common::SeekableReadStream *herf      = 0;
+	Common::SeekableReadStream *resStream = 0;
 
-	if (!herf->seek(res.offset)) {
-		delete herf;
-		throw Common::Exception(Common::kSeekError);
-	}
+	try {
+		herf = ResMan.getResource(TypeMan.setFileType(_fileName, kFileTypeNone), kFileTypeHERF);
+		if (!herf)
+			throw Common::Exception(Common::kOpenError);
 
-	Common::SeekableReadStream *resStream = herf->readStream(res.size);
+		herf->seek(res.offset);
 
-	if (!resStream || (((uint32) resStream->size()) != res.size)) {
+		resStream = herf->readStream(res.size);
+		if (!resStream || (((uint32) resStream->size()) != res.size))
+			throw Common::Exception(Common::kReadError);
+
+	} catch (...) {
 		delete herf;
 		delete resStream;
-		throw Common::Exception(Common::kReadError);
+		throw;
 	}
 
 	delete herf;
