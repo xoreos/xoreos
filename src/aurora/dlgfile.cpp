@@ -168,28 +168,22 @@ void DLGFile::load(const GFFStruct &dlg) {
 
 	// NPC lines ("entries")
 
-	uint32 entryCount;
-	const GFFList &entries = dlg.getList("EntryList", entryCount);
-
-	_entriesNPC.reserve(entryCount);
+	const GFFList &entries = dlg.getList("EntryList");
+	_entriesNPC.reserve(entries.size());
 
 	readEntries(entries, _entriesNPC, false);
 
 	// PC lines ("replies")
 
-	uint32 replyCount;
-	const GFFList &replies = dlg.getList("ReplyList", replyCount);
-
-	_entriesPC.reserve(replyCount);
+	const GFFList &replies = dlg.getList("ReplyList");
+	_entriesPC.reserve(replies.size());
 
 	readEntries(replies, _entriesPC, true);
 
 	// Starting lines (greetings)
 
-	uint32 startCount;
-	const GFFList &starters = dlg.getList("StartingList", startCount);
-
-	_entriesStart.reserve(startCount);
+	const GFFList &starters = dlg.getList("StartingList");
+	_entriesStart.reserve(starters.size());
 
 	readLinks(starters, _entriesStart);
 }
@@ -230,16 +224,15 @@ void DLGFile::readEntry(const GFFStruct &gff, Entry &entry) {
 	entry.line.quest      = gff.getString("Quest");
 	entry.line.questEntry = gff.getUint("QuestEntry", 0xFFFFFFFF);
 
-	uint32 repliesCount = 0;
 	const GFFList *replies = 0;
 
 	if      (gff.hasField("RepliesList"))
-		replies = &gff.getList("RepliesList", repliesCount);
+		replies = &gff.getList("RepliesList");
 	else if (gff.hasField("EntriesList"))
-		replies = &gff.getList("EntriesList", repliesCount);
+		replies = &gff.getList("EntriesList");
 
 	if (replies) {
-		entry.replies.reserve(repliesCount);
+		entry.replies.reserve(replies->size());
 
 		readLinks(*replies, entry.replies);
 	}

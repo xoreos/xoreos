@@ -307,10 +307,9 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 		loadTerrain();
 
 	if (are.hasField("TileList")) {
-		uint32 size;
-		const Aurora::GFFList &tiles = are.getList("TileList", size);
+		const Aurora::GFFList &tiles = are.getList("TileList");
+		_tiles.resize(tiles.size());
 
-		_tiles.resize(size);
 		loadTiles(tiles);
 	}
 }

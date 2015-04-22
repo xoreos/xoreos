@@ -104,7 +104,7 @@ private:
 	/** Return a struct within the GFF. */
 	const GFFStruct &getStruct(uint32 i) const;
 	/** Return a list within the GFF. */
-	const GFFList   &getList  (uint32 i, uint32 &size) const;
+	const GFFList   &getList  (uint32 i) const;
 
 	// Loading helpers
 	void load(uint32 id);
@@ -149,7 +149,6 @@ public:
 
 	const GFFStruct &getStruct(const Common::UString &field) const;
 	const GFFList   &getList  (const Common::UString &field) const;
-	const GFFList   &getList  (const Common::UString &field, uint32 &size) const;
 
 private:
 	/** The type of a GFF field. */

@@ -144,14 +144,12 @@ const GFFStruct &GFFFile::getStruct(uint32 i) const {
 	return *_structs[i];
 }
 
-const GFFList &GFFFile::getList(uint32 i, uint32 &size) const {
+const GFFList &GFFFile::getList(uint32 i) const {
 	assert(i < _listOffsetToIndex.size());
 
 	i = _listOffsetToIndex[i];
 
 	assert(i < _lists.size());
-
-	size = _listSizes[i];
 
 	return _lists[i];
 }
@@ -624,7 +622,7 @@ const GFFStruct &GFFStruct::getStruct(const Common::UString &field) const {
 	return _parent->getStruct(f->data);
 }
 
-const GFFList &GFFStruct::getList(const Common::UString &field, uint32 &size) const {
+const GFFList &GFFStruct::getList(const Common::UString &field) const {
 	load();
 
 	const Field *f = getField(field);
@@ -634,13 +632,7 @@ const GFFList &GFFStruct::getList(const Common::UString &field, uint32 &size) co
 		throw Common::Exception("Field is not a list type");
 
 	// Byte offset into the list area, all 32bit values.
-	return _parent->getList(f->data / 4, size);
-}
-
-const GFFList &GFFStruct::getList(const Common::UString &field) const {
-	uint32 size;
-
-	return getList(field, size);
+	return _parent->getList(f->data / 4);
 }
 
 } // End of namespace Aurora
