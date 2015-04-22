@@ -29,7 +29,6 @@ noinst_HEADERS = \
                  locstring.h \
                  gfffile.h \
                  gff4file.h \
-                 gffstructs.h \
                  dlgfile.h \
                  lytfile.h \
                  visfile.h \
@@ -60,7 +59,6 @@ libaurora_la_SOURCES = \
                        locstring.cpp \
                        gfffile.cpp \
                        gff4file.cpp \
-                       gffstructs.cpp \
                        dlgfile.cpp \
                        lytfile.cpp \
                        visfile.cpp \
