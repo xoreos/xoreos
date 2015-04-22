@@ -89,7 +89,10 @@ static inline uint64 hashString(const Common::UString &string, HashAlgo algo) {
 
 static inline Common::UString formatHash(uint64 hash) {
 	return Common::UString::sprintf("0x%04X%04X%04X%04X",
-			(hash >> 48) & 0xFFFF, (hash >> 32) & 0xFFFF, (hash >> 16) & 0xFFFF, hash & 0xFFFF);
+			(uint) ((hash >> 48) & 0xFFFF),
+			(uint) ((hash >> 32) & 0xFFFF),
+			(uint) ((hash >> 16) & 0xFFFF),
+			(uint) ( hash        & 0xFFFF));
 }
 
 } // End of namespace Common
