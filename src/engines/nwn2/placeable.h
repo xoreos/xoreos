@@ -46,7 +46,7 @@ public:
 	};
 
 	/** Load from a placeable instance. */
-	Placeable(const Aurora::GFFStruct &placeable);
+	Placeable(const Aurora::GFF3Struct &placeable);
 	~Placeable();
 
 
@@ -65,7 +65,7 @@ public:
 
 protected:
 	/** Load placeable-specific properties. */
-	void loadObject(const Aurora::GFFStruct &gff);
+	void loadObject(const Aurora::GFF3Struct &gff);
 	/** Load appearance-specific properties. */
 	void loadAppearance();
 
@@ -73,7 +73,7 @@ private:
 	State _state; ///< The current state of the placeable.
 
 	/** Load from a placeable instance. */
-	void load(const Aurora::GFFStruct &placeable);
+	void load(const Aurora::GFF3Struct &placeable);
 
 	/** Sync the model's state with the placeable's state. */
 	void setModelState();

@@ -29,7 +29,7 @@
 
 #include "src/aurora/util.h"
 #include "src/aurora/resman.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 
 #include "src/graphics/aurora/texture.h"

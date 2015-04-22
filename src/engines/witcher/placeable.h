@@ -36,7 +36,7 @@ namespace Witcher {
 class Placeable : public Situated {
 public:
 	/** Load from a placeable instance. */
-	Placeable(const Aurora::GFFStruct &placeable);
+	Placeable(const Aurora::GFF3Struct &placeable);
 	~Placeable();
 
 	void enter(); ///< The cursor entered the placeable.
@@ -51,12 +51,12 @@ public:
 
 protected:
 	/** Load placeable-specific properties. */
-	void loadObject(const Aurora::GFFStruct &gff);
+	void loadObject(const Aurora::GFF3Struct &gff);
 
 
 private:
 	/** Load from a placeable instance. */
-	void load(const Aurora::GFFStruct &placeable);
+	void load(const Aurora::GFF3Struct &placeable);
 };
 
 } // End of namespace Witcher

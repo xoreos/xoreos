@@ -28,7 +28,7 @@
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/engines/aurora/resources.h"
 
@@ -90,9 +90,9 @@ bool Campaign::readCampaign(const Common::UString &camFile, CampaignDescription 
 		return false;
 	}
 
-	Aurora::GFFFile *gff = 0;
+	Aurora::GFF3File *gff = 0;
 	try {
-		gff = new Aurora::GFFFile(file, MKTAG('C', 'A', 'M', ' '));
+		gff = new Aurora::GFF3File(file, MKTAG('C', 'A', 'M', ' '));
 	} catch (...) {
 		return false;
 	}
@@ -140,9 +140,9 @@ void Campaign::loadCampaignResource(const CampaignDescription &desc) {
 
 	indexMandatoryDirectory(desc.directory, 0, -1, 1000, &_resCampaign);
 
-	Aurora::GFFFile *gff = 0;
+	Aurora::GFF3File *gff = 0;
 	try {
-		gff = new Aurora::GFFFile("campaign", Aurora::kFileTypeCAM, MKTAG('C', 'A', 'M', ' '));
+		gff = new Aurora::GFF3File("campaign", Aurora::kFileTypeCAM, MKTAG('C', 'A', 'M', ' '));
 	} catch (Common::Exception &e) {
 		clear();
 
@@ -159,8 +159,8 @@ void Campaign::loadCampaignResource(const CampaignDescription &desc) {
 
 	_startModule = gff->getTopLevel().getString("StartModule") + ".mod";
 
-	const Aurora::GFFList &modules = gff->getTopLevel().getList("ModNames");
-	for (Aurora::GFFList::const_iterator m = modules.begin(); m != modules.end(); ++m)
+	const Aurora::GFF3List &modules = gff->getTopLevel().getList("ModNames");
+	for (Aurora::GFF3List::const_iterator m = modules.begin(); m != modules.end(); ++m)
 		_modules.push_back((*m)->getString("ModuleName") + ".mod");
 
 	delete gff;

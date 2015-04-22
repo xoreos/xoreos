@@ -45,7 +45,7 @@ public:
 	KotORWidget(::Engines::GUI &gui, const Common::UString &tag);
 	~KotORWidget();
 
-	virtual void load(const Aurora::GFFStruct &gff);
+	virtual void load(const Aurora::GFF3Struct &gff);
 
 	void show();
 	void hide();
@@ -117,9 +117,9 @@ protected:
 	Graphics::Aurora::HighlightableText *_text;
 
 
-	Extend createExtend(const Aurora::GFFStruct &gff);
-	Border createBorder(const Aurora::GFFStruct &gff);
-	Text   createText  (const Aurora::GFFStruct &gff);
+	Extend createExtend(const Aurora::GFF3Struct &gff);
+	Border createBorder(const Aurora::GFF3Struct &gff);
+	Text   createText  (const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace KotOR

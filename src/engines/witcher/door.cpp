@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/graphics/aurora/model.h"
 
@@ -36,7 +36,7 @@ namespace Engines {
 
 namespace Witcher {
 
-Door::Door(Module &module, const Aurora::GFFStruct &door) : Situated(kObjectTypeDoor),
+Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
 	_module(&module), _link(0) {
 
 	load(door);
@@ -45,13 +45,13 @@ Door::Door(Module &module, const Aurora::GFFStruct &door) : Situated(kObjectType
 Door::~Door() {
 }
 
-void Door::load(const Aurora::GFFStruct &door) {
+void Door::load(const Aurora::GFF3Struct &door) {
 	Common::UString temp = door.getString("TemplateResRef");
 
-	Aurora::GFFFile *utd = 0;
+	Aurora::GFF3File *utd = 0;
 	if (!temp.empty()) {
 		try {
-			utd = new Aurora::GFFFile(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
+			utd = new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
 		} catch (...) {
 		}
 	}
@@ -61,7 +61,7 @@ void Door::load(const Aurora::GFFStruct &door) {
 	delete utd;
 }
 
-void Door::loadObject(const Aurora::GFFStruct &gff) {
+void Door::loadObject(const Aurora::GFF3Struct &gff) {
 	_linkTag = gff.getString("LinkedTo");
 }
 

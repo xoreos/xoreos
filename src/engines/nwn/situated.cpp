@@ -27,7 +27,7 @@
 #include "src/common/util.h"
 
 #include "src/aurora/locstring.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -124,7 +124,7 @@ void Situated::setLocked(bool locked) {
 	_locked = locked;
 }
 
-void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
+void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 
 	if (blueprint)
@@ -161,7 +161,7 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	setOrientation(0.0, Common::rad2deg(bearing), 0.0);
 }
 
-void Situated::loadProperties(const Aurora::GFFStruct &gff) {
+void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Tag
 	_tag = gff.getString("Tag", _tag);
 
@@ -203,7 +203,7 @@ void Situated::loadProperties(const Aurora::GFFStruct &gff) {
 	readScripts(gff);
 }
 
-void Situated::loadPortrait(const Aurora::GFFStruct &gff) {
+void Situated::loadPortrait(const Aurora::GFF3Struct &gff) {
 	uint32 portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");

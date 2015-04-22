@@ -31,7 +31,7 @@
 
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/locstring.h"
 
 #include "src/graphics/aurora/modelnode.h"
@@ -44,7 +44,7 @@ namespace Engines {
 
 namespace KotOR {
 
-Creature::Creature(const Aurora::GFFStruct &creature) :
+Creature::Creature(const Aurora::GFF3Struct &creature) :
 	_appearance(Aurora::kFieldIDInvalid), _model(0) {
 
 	load(creature);
@@ -78,13 +78,13 @@ void Creature::setOrientation(float x, float y, float z) {
 	_model->setRotation(x, z, -y);
 }
 
-void Creature::load(const Aurora::GFFStruct &creature) {
+void Creature::load(const Aurora::GFF3Struct &creature) {
 	Common::UString temp = creature.getString("TemplateResRef");
 
-	Aurora::GFFFile *utc = 0;
+	Aurora::GFF3File *utc = 0;
 	if (!temp.empty()) {
 		try {
-			utc = new Aurora::GFFFile(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
+			utc = new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
 		} catch (...) {
 		}
 	}
@@ -97,7 +97,7 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 	delete utc;
 }
 
-void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
+void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 
 	if (blueprint)
@@ -129,7 +129,7 @@ void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	setOrientation(o[0], o[1], o[2]);
 }
 
-void Creature::loadProperties(const Aurora::GFFStruct &gff) {
+void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Tag
 	_tag = gff.getString("Tag", _tag);
 
@@ -162,7 +162,7 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_usable = gff.getBool("Useable", _usable);
 }
 
-void Creature::loadPortrait(const Aurora::GFFStruct &gff) {
+void Creature::loadPortrait(const Aurora::GFF3Struct &gff) {
 	uint32 portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");

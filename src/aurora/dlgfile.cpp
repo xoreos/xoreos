@@ -26,7 +26,7 @@
 #include "src/common/stream.h"
 
 #include "src/aurora/resman.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/dlgfile.h"
 
 #include "src/aurora/nwscript/types.h"
@@ -40,7 +40,7 @@ namespace Aurora {
 DLGFile::DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner) :
 	_owner(owner), _ended(true) {
 
-	GFFFile gff(dlg, kDLGID);
+	GFF3File gff(dlg, kDLGID);
 
 	load(gff.getTopLevel());
 
@@ -50,7 +50,7 @@ DLGFile::DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner) :
 DLGFile::DLGFile(const Common::UString &dlg, NWScript::Object *owner) :
 	_owner(owner), _ended(true) {
 
-	GFFFile gff(dlg, kFileTypeDLG, kDLGID);
+	GFF3File gff(dlg, kFileTypeDLG, kDLGID);
 
 	load(gff.getTopLevel());
 }
@@ -155,7 +155,7 @@ const DLGFile::Line *DLGFile::getOneLiner() const {
 	return 0;
 }
 
-void DLGFile::load(const GFFStruct &dlg) {
+void DLGFile::load(const GFF3Struct &dlg) {
 	// General properties
 
 	_delayEntry = dlg.getUint("DelayEntry", 0);
@@ -168,28 +168,28 @@ void DLGFile::load(const GFFStruct &dlg) {
 
 	// NPC lines ("entries")
 
-	const GFFList &entries = dlg.getList("EntryList");
+	const GFF3List &entries = dlg.getList("EntryList");
 	_entriesNPC.reserve(entries.size());
 
 	readEntries(entries, _entriesNPC, false);
 
 	// PC lines ("replies")
 
-	const GFFList &replies = dlg.getList("ReplyList");
+	const GFF3List &replies = dlg.getList("ReplyList");
 	_entriesPC.reserve(replies.size());
 
 	readEntries(replies, _entriesPC, true);
 
 	// Starting lines (greetings)
 
-	const GFFList &starters = dlg.getList("StartingList");
+	const GFF3List &starters = dlg.getList("StartingList");
 	_entriesStart.reserve(starters.size());
 
 	readLinks(starters, _entriesStart);
 }
 
-void DLGFile::readEntries(const GFFList &list, std::vector<Entry> &entries, bool isPC) {
-	for (GFFList::const_iterator e = list.begin(); e != list.end(); ++e) {
+void DLGFile::readEntries(const GFF3List &list, std::vector<Entry> &entries, bool isPC) {
+	for (GFF3List::const_iterator e = list.begin(); e != list.end(); ++e) {
 		entries.push_back(Entry());
 
 		Entry &entry = entries.back();
@@ -202,15 +202,15 @@ void DLGFile::readEntries(const GFFList &list, std::vector<Entry> &entries, bool
 	}
 }
 
-void DLGFile::readLinks(const GFFList &list, std::vector<Link> &links) {
-	for (GFFList::const_iterator l = list.begin(); l != list.end(); ++l) {
+void DLGFile::readLinks(const GFF3List &list, std::vector<Link> &links) {
+	for (GFF3List::const_iterator l = list.begin(); l != list.end(); ++l) {
 		links.push_back(Link());
 
 		readLink(**l, links.back());
 	}
 }
 
-void DLGFile::readEntry(const GFFStruct &gff, Entry &entry) {
+void DLGFile::readEntry(const GFF3Struct &gff, Entry &entry) {
 	entry.script = gff.getString("Script");
 
 	entry.line.speaker = gff.getString("Speaker");
@@ -224,7 +224,7 @@ void DLGFile::readEntry(const GFFStruct &gff, Entry &entry) {
 	entry.line.quest      = gff.getString("Quest");
 	entry.line.questEntry = gff.getUint("QuestEntry", 0xFFFFFFFF);
 
-	const GFFList *replies = 0;
+	const GFF3List *replies = 0;
 
 	if      (gff.hasField("RepliesList"))
 		replies = &gff.getList("RepliesList");
@@ -240,7 +240,7 @@ void DLGFile::readEntry(const GFFStruct &gff, Entry &entry) {
 	entry.line.isEnd = entry.replies.empty();
 }
 
-void DLGFile::readLink(const GFFStruct &gff, Link &link) {
+void DLGFile::readLink(const GFF3Struct &gff, Link &link) {
 	link.index  = gff.getUint("Index", 0xFFFFFFFF);
 	link.active = gff.getString("Active");
 }

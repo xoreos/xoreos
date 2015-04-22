@@ -47,7 +47,7 @@ public:
 	};
 
 	/** Load from a door instance. */
-	Door(Module &module, const Aurora::GFFStruct &door);
+	Door(Module &module, const Aurora::GFF3Struct &door);
 	~Door();
 
 
@@ -82,7 +82,7 @@ public:
 
 protected:
 	/** Load door-specific properties. */
-	void loadObject(const Aurora::GFFStruct &gff);
+	void loadObject(const Aurora::GFF3Struct &gff);
 	/** Load appearance-specific properties. */
 	void loadAppearance();
 
@@ -110,7 +110,7 @@ private:
 	Waypoint *_linkedWaypoint; ///< The waypoint this door links to.
 
 	/** Load from a door instance. */
-	void load(const Aurora::GFFStruct &door);
+	void load(const Aurora::GFF3Struct &door);
 
 	/** Load the appearance from this 2DA row. */
 	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);

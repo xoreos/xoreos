@@ -22,7 +22,7 @@
  *  A KotOR label widget.
  */
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/graphics/aurora/guiquad.h"
 
@@ -39,7 +39,7 @@ WidgetLabel::WidgetLabel(::Engines::GUI &gui, const Common::UString &tag) :
 WidgetLabel::~WidgetLabel() {
 }
 
-void WidgetLabel::load(const Aurora::GFFStruct &gff) {
+void WidgetLabel::load(const Aurora::GFF3Struct &gff) {
 	KotORWidget::load(gff);
 }
 

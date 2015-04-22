@@ -24,7 +24,7 @@
 
 #include "src/common/ustring.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/engines/nwn2/util.h"
 
@@ -32,22 +32,22 @@ namespace Engines {
 
 namespace NWN2 {
 
-bool readTint(const Aurora::GFFStruct &gff, float t[3][4]) {
+bool readTint(const Aurora::GFF3Struct &gff, float t[3][4]) {
 	if (!gff.hasField("Tintable"))
 		return false;
 
-	const Aurora::GFFStruct &tintable = gff.getStruct("Tintable");
+	const Aurora::GFF3Struct &tintable = gff.getStruct("Tintable");
 	if (!tintable.hasField("Tint"))
 		return false;
 
-	const Aurora::GFFStruct &tint = tintable.getStruct("Tint");
+	const Aurora::GFF3Struct &tint = tintable.getStruct("Tint");
 
 	for (int i = 0; i < 3; i++) {
 		Common::UString index = Common::UString::sprintf("%d", i + 1);
 		if (!tint.hasField(index))
 			continue;
 
-		const Aurora::GFFStruct &tintN = tint.getStruct(index);
+		const Aurora::GFF3Struct &tintN = tint.getStruct(index);
 
 		t[i][0] = tintN.getUint("r", t[i][0] * 255) / 255.0f;
 		t[i][1] = tintN.getUint("g", t[i][1] * 255) / 255.0f;
@@ -58,7 +58,7 @@ bool readTint(const Aurora::GFFStruct &gff, float t[3][4]) {
 	return true;
 }
 
-bool readTint(const Aurora::GFFStruct &gff, const Common::UString &strct, float t[3][4]) {
+bool readTint(const Aurora::GFF3Struct &gff, const Common::UString &strct, float t[3][4]) {
 	if (!gff.hasField(strct))
 		return false;
 

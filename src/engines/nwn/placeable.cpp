@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -40,7 +40,7 @@ namespace Engines {
 
 namespace NWN {
 
-Placeable::Placeable(const Aurora::GFFStruct &placeable) : Situated(kObjectTypePlaceable),
+Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
 	_state(kStateDefault), _tooltip(0) {
 
 	load(placeable);
@@ -50,13 +50,13 @@ Placeable::~Placeable() {
 	delete _tooltip;
 }
 
-void Placeable::load(const Aurora::GFFStruct &placeable) {
+void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	Common::UString temp = placeable.getString("TemplateResRef");
 
-	Aurora::GFFFile *utp = 0;
+	Aurora::GFF3File *utp = 0;
 	if (!temp.empty()) {
 		try {
-			utp = new Aurora::GFFFile(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '));
+			utp = new Aurora::GFF3File(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '));
 		} catch (...) {
 		}
 	}
@@ -113,7 +113,7 @@ void Placeable::hide() {
 	Situated::hide();
 }
 
-void Placeable::loadObject(const Aurora::GFFStruct &gff) {
+void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 	// State
 
 	_state = (State) gff.getUint("AnimationState", (uint) _state);

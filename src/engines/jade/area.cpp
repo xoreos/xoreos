@@ -26,7 +26,7 @@
 #include "src/common/error.h"
 #include "src/common/stream.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/graphics/graphics.h"
 #include "src/graphics/renderable.h"
@@ -99,7 +99,7 @@ void Area::hide() {
 void Area::load(const Common::UString &resRef) {
 	_resRef = resRef;
 
-	Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 	loadARE(are.getTopLevel());
 
 	loadResources();
@@ -113,7 +113,7 @@ void Area::load(const Common::UString &resRef) {
 	_loaded = true;
 }
 
-void Area::loadARE(const Aurora::GFFStruct &are) {
+void Area::loadARE(const Aurora::GFF3Struct &are) {
 	_layout = are.getString("Layout");
 }
 

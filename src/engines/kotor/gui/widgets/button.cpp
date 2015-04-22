@@ -24,7 +24,7 @@
 
 #include "src/common/system.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/sound/sound.h"
 
@@ -46,7 +46,7 @@ WidgetButton::WidgetButton(::Engines::GUI &gui, const Common::UString &tag) :
 WidgetButton::~WidgetButton() {
 }
 
-void WidgetButton::load(const Aurora::GFFStruct &gff) {
+void WidgetButton::load(const Aurora::GFF3Struct &gff) {
 	KotORWidget::load(gff);
 	if (getTextHighlightableComponent() != 0) {
 		  setDefaultHighlighting(getTextHighlightableComponent());

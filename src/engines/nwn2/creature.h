@@ -44,7 +44,7 @@ public:
 	/** Create a dummy creature instance. Not playable as it is.*/
 	Creature();
 	/** Load from a creature instance. */
-	Creature(const Aurora::GFFStruct &creature);
+	Creature(const Aurora::GFF3Struct &creature);
 	~Creature();
 
 	// Basic visuals
@@ -185,16 +185,16 @@ private:
 	/** Init the creature. */
 	void init();
 	/** Load from a creature instance. */
-	void load(const Aurora::GFFStruct &creature);
+	void load(const Aurora::GFF3Struct &creature);
 
 	/** Load the creature from an instance and its blueprint. */
-	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
+	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
 
 	/** Load general creature properties. */
-	void loadProperties(const Aurora::GFFStruct &gff);
+	void loadProperties(const Aurora::GFF3Struct &gff);
 
 	/** Load the creature's classes. */
-	static void loadClasses (const Aurora::GFFStruct &gff,
+	static void loadClasses (const Aurora::GFF3Struct &gff,
 	                         std::vector<Class> &classes, uint8 &hitDice);
 
 	// Model loaders

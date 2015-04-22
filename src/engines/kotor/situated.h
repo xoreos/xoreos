@@ -55,15 +55,15 @@ protected:
 	Graphics::Aurora::Model *_model;
 
 
-	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
+	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0);
 
-	virtual void loadObject(const Aurora::GFFStruct &gff) = 0;
+	virtual void loadObject(const Aurora::GFF3Struct &gff) = 0;
 	virtual void loadAppearance() = 0;
 
 
 private:
-	void loadProperties(const Aurora::GFFStruct &gff);
-	void loadPortrait(const Aurora::GFFStruct &gff);
+	void loadProperties(const Aurora::GFF3Struct &gff);
+	void loadPortrait(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace KotOR

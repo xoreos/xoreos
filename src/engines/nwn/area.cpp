@@ -26,7 +26,7 @@
 #include "src/common/error.h"
 
 #include "src/aurora/locstring.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -59,10 +59,10 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 	try {
 		// Load ARE and GIT
 
-		Aurora::GFFFile are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+		Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 		loadARE(are.getTopLevel());
 
-		Aurora::GFFFile git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
+		Aurora::GFF3File git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
 		loadGIT(git.getTopLevel());
 
 	} catch (...) {
@@ -105,7 +105,7 @@ void Area::clear() {
 
 Common::UString Area::getName(const Common::UString &resRef) {
 	try {
-		Aurora::GFFFile are(resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+		Aurora::GFF3File are(resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 
 		Aurora::LocString name;
 		are.getTopLevel().getLocString("Name", name);
@@ -267,7 +267,7 @@ void Area::hide() {
 	_visible = false;
 }
 
-void Area::loadARE(const Aurora::GFFStruct &are) {
+void Area::loadARE(const Aurora::GFF3Struct &are) {
 	// Tag
 
 	_tag = are.getString("Tag");
@@ -298,7 +298,7 @@ void Area::loadARE(const Aurora::GFFStruct &are) {
 	readScripts(are);
 }
 
-void Area::loadGIT(const Aurora::GFFStruct &git) {
+void Area::loadGIT(const Aurora::GFF3Struct &git) {
 	// Generic properties
 	if (git.hasField("AreaProperties"))
 		loadProperties(git.getStruct("AreaProperties"));
@@ -320,7 +320,7 @@ void Area::loadGIT(const Aurora::GFFStruct &git) {
 		loadCreatures(git.getList("Creature List"));
 }
 
-void Area::loadProperties(const Aurora::GFFStruct &props) {
+void Area::loadProperties(const Aurora::GFF3Struct &props) {
 	// Ambient sound
 
 	const Aurora::TwoDAFile &ambientSound = TwoDAReg.get("ambientsound");
@@ -350,9 +350,9 @@ void Area::loadProperties(const Aurora::GFFStruct &props) {
 	setMusicBattleTrack(props.getUint("MusicBattle", Aurora::kStrRefInvalid));
 }
 
-void Area::loadTiles(const Aurora::GFFList &tiles) {
+void Area::loadTiles(const Aurora::GFF3List &tiles) {
 	uint32 n = 0;
-	for (Aurora::GFFList::const_iterator t = tiles.begin(); t != tiles.end(); ++t, ++n) {
+	for (Aurora::GFF3List::const_iterator t = tiles.begin(); t != tiles.end(); ++t, ++n) {
 		assert(n < (_width * _height));
 
 		loadTile(**t, _tiles[n]);
@@ -361,7 +361,7 @@ void Area::loadTiles(const Aurora::GFFList &tiles) {
 	assert(n == _tiles.size());
 }
 
-void Area::loadTile(const Aurora::GFFStruct &t, Tile &tile) {
+void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 	// ID
 	tile.tileID = t.getUint("Tile_ID");
 
@@ -494,32 +494,32 @@ void Area::loadObject(Engines::NWN::Object &object) {
 		_module->addObject(object);
 }
 
-void Area::loadWaypoints(const Aurora::GFFList &list) {
-	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+void Area::loadWaypoints(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator d = list.begin(); d != list.end(); ++d) {
 		Waypoint *waypoint = new Waypoint(**d);
 
 		loadObject(*waypoint);
 	}
 }
 
-void Area::loadPlaceables(const Aurora::GFFList &list) {
-	for (Aurora::GFFList::const_iterator p = list.begin(); p != list.end(); ++p) {
+void Area::loadPlaceables(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator p = list.begin(); p != list.end(); ++p) {
 		Placeable *placeable = new Placeable(**p);
 
 		loadObject(*placeable);
 	}
 }
 
-void Area::loadDoors(const Aurora::GFFList &list) {
-	for (Aurora::GFFList::const_iterator d = list.begin(); d != list.end(); ++d) {
+void Area::loadDoors(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator d = list.begin(); d != list.end(); ++d) {
 		Door *door = new Door(*_module, **d);
 
 		loadObject(*door);
 	}
 }
 
-void Area::loadCreatures(const Aurora::GFFList &list) {
-	for (Aurora::GFFList::const_iterator c = list.begin(); c != list.end(); ++c) {
+void Area::loadCreatures(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
 		Creature *creature = new Creature(**c);
 
 		loadObject(*creature);

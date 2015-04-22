@@ -30,7 +30,7 @@
 #include "src/aurora/types.h"
 #include "src/aurora/talkman.h"
 #include "src/aurora/resman.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -65,7 +65,7 @@ Creature::Creature() : Object(kObjectTypeCreature) {
 	init();
 }
 
-Creature::Creature(const Aurora::GFFStruct &creature) : Object(kObjectTypeCreature) {
+Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature) {
 	init();
 
 	load(creature);
@@ -519,7 +519,7 @@ void Creature::unloadModel() {
 }
 
 void Creature::loadCharacter(const Common::UString &bic, bool local) {
-	Aurora::GFFFile *gff = openPC(bic, local);
+	Aurora::GFF3File *gff = openPC(bic, local);
 
 	try {
 		load(gff->getTopLevel(), 0);
@@ -539,13 +539,13 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 	_lastChangedGUIDisplay = EventMan.getTimestamp();
 }
 
-void Creature::load(const Aurora::GFFStruct &creature) {
+void Creature::load(const Aurora::GFF3Struct &creature) {
 	Common::UString temp = creature.getString("TemplateResRef");
 
-	Aurora::GFFFile *utc = 0;
+	Aurora::GFF3File *utc = 0;
 	if (!temp.empty()) {
 		try {
-			utc = new Aurora::GFFFile(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
+			utc = new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
 		} catch (...) {
 		}
 	}
@@ -557,7 +557,7 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 	_lastChangedGUIDisplay = EventMan.getTimestamp();
 }
 
-void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
+void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 
 	if (blueprint)
@@ -596,7 +596,7 @@ static const char *kBodyPartFields[] = {
 	"BodyPart_RHand" , "BodyPart_LHand"
 };
 
-void Creature::loadProperties(const Aurora::GFFStruct &gff) {
+void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Tag
 
 	_tag = gff.getString("Tag", _tag);
@@ -675,9 +675,9 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	if (gff.hasField("SkillList")) {
 		_skills.clear();
 
-		const Aurora::GFFList &skills = gff.getList("SkillList");
-		for (Aurora::GFFList::const_iterator s = skills.begin(); s != skills.end(); ++s) {
-			const Aurora::GFFStruct &skill = **s;
+		const Aurora::GFF3List &skills = gff.getList("SkillList");
+		for (Aurora::GFF3List::const_iterator s = skills.begin(); s != skills.end(); ++s) {
+			const Aurora::GFF3Struct &skill = **s;
 
 			_skills.push_back(skill.getSint("Rank"));
 		}
@@ -687,9 +687,9 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	if (gff.hasField("FeatList")) {
 		_feats.clear();
 
-		const Aurora::GFFList &feats = gff.getList("FeatList");
-		for (Aurora::GFFList::const_iterator f = feats.begin(); f != feats.end(); ++f) {
-			const Aurora::GFFStruct &feat = **f;
+		const Aurora::GFF3List &feats = gff.getList("FeatList");
+		for (Aurora::GFF3List::const_iterator f = feats.begin(); f != feats.end(); ++f) {
+			const Aurora::GFF3Struct &feat = **f;
 
 			_feats.push_back(feat.getUint("Feat"));
 		}
@@ -734,7 +734,7 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	readScripts(gff);
 }
 
-void Creature::loadPortrait(const Aurora::GFFStruct &gff, Common::UString &portrait) {
+void Creature::loadPortrait(const Aurora::GFF3Struct &gff, Common::UString &portrait) {
 	uint32 portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
@@ -747,22 +747,22 @@ void Creature::loadPortrait(const Aurora::GFFStruct &gff, Common::UString &portr
 	portrait = gff.getString("Portrait", portrait);
 }
 
-void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
+void Creature::loadEquippedItems(const Aurora::GFF3Struct &gff) {
 	if (!gff.hasField("Equip_ItemList"))
 		return;
 
-	const Aurora::GFFList &cEquipped = gff.getList("Equip_ItemList");
-	for (Aurora::GFFList::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
-		const Aurora::GFFStruct &cItem = **e;
+	const Aurora::GFF3List &cEquipped = gff.getList("Equip_ItemList");
+	for (Aurora::GFF3List::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
+		const Aurora::GFF3Struct &cItem = **e;
 
 		Common::UString itemref = cItem.getString("EquippedRes");
 		if (itemref.empty())
 			itemref = cItem.getString("TemplateResRef");
 
-		Aurora::GFFFile *uti = 0;
+		Aurora::GFF3File *uti = 0;
 		if (!itemref.empty()) {
 			try {
-				uti = new Aurora::GFFFile(itemref, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '));
+				uti = new Aurora::GFF3File(itemref, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '));
 			} catch (...) {
 			}
 		}
@@ -776,7 +776,7 @@ void Creature::loadEquippedItems(const Aurora::GFFStruct &gff) {
 
 }
 
-void Creature::loadClasses(const Aurora::GFFStruct &gff,
+void Creature::loadClasses(const Aurora::GFF3Struct &gff,
                            std::vector<Class> &classes, uint8 &hitDice) {
 
 	if (!gff.hasField("ClassList"))
@@ -785,11 +785,11 @@ void Creature::loadClasses(const Aurora::GFFStruct &gff,
 	classes.clear();
 	hitDice = 0;
 
-	const Aurora::GFFList &cClasses = gff.getList("ClassList");
-	for (Aurora::GFFList::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
+	const Aurora::GFF3List &cClasses = gff.getList("ClassList");
+	for (Aurora::GFF3List::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
 		classes.push_back(Class());
 
-		const Aurora::GFFStruct &cClass = **c;
+		const Aurora::GFF3Struct &cClass = **c;
 
 		classes.back().classID = cClass.getUint("Class");
 		classes.back().level   = cClass.getUint("ClassLevel");
@@ -975,10 +975,10 @@ void Creature::getPCListInfo(const Common::UString &bic, bool local,
                              Common::UString &name, Common::UString &classes,
                              Common::UString &portrait) {
 
-	Aurora::GFFFile *gff = openPC(bic, local);
+	Aurora::GFF3File *gff = openPC(bic, local);
 
 	try {
-		const Aurora::GFFStruct &top = gff->getTopLevel();
+		const Aurora::GFF3Struct &top = gff->getTopLevel();
 
 		// Reading name
 		Aurora::LocString firstName;
@@ -1016,7 +1016,7 @@ void Creature::getPCListInfo(const Common::UString &bic, bool local,
 	delete gff;
 }
 
-Aurora::GFFFile *Creature::openPC(const Common::UString &bic, bool local) {
+Aurora::GFF3File *Creature::openPC(const Common::UString &bic, bool local) {
 	Common::UString pcDir  = ConfigMan.getString(local ? "NWN_localPCDir" : "NWN_serverPCDir");
 	Common::UString pcFile = pcDir + "/" + bic + ".bic";
 
@@ -1027,9 +1027,9 @@ Aurora::GFFFile *Creature::openPC(const Common::UString &bic, bool local) {
 		throw;
 	}
 
-	Aurora::GFFFile *gff = 0;
+	Aurora::GFF3File *gff = 0;
 	try {
-		gff = new Aurora::GFFFile(pc, kBICID);
+		gff = new Aurora::GFF3File(pc, kBICID);
 	} catch (...) {
 		throw;
 	}

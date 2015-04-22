@@ -22,7 +22,7 @@
  *  A KotOR panel widget.
  */
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/graphics/aurora/guiquad.h"
 
@@ -52,7 +52,7 @@ WidgetPanel::WidgetPanel(::Engines::GUI &gui, const Common::UString &tag,
 WidgetPanel::~WidgetPanel() {
 }
 
-void WidgetPanel::load(const Aurora::GFFStruct &gff) {
+void WidgetPanel::load(const Aurora::GFF3Struct &gff) {
 	KotORWidget::load(gff);
 }
 

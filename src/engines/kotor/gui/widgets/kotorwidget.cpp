@@ -25,7 +25,7 @@
 #include "src/common/util.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/guiquad.h"
@@ -147,7 +147,7 @@ void KotORWidget::setFill(const Common::UString &fill) {
 	_quad->setColor(1.0, 1.0, 1.0, 1.0);
 }
 
-void KotORWidget::load(const Aurora::GFFStruct &gff) {
+void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	gff.getVector("COLOR", _r, _g, _b);
 	_a = gff.getDouble("ALPHA", 1.0);
 
@@ -214,11 +214,11 @@ void KotORWidget::setText(const Common::UString &text) {
 		_text->setPosition(x, y, -1.0);
 }
 
-KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFFStruct &gff) {
+KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFF3Struct &gff) {
 	Extend extend;
 
 	if (gff.hasField("EXTENT")) {
-		const Aurora::GFFStruct &e = gff.getStruct("EXTENT");
+		const Aurora::GFF3Struct &e = gff.getStruct("EXTENT");
 
 		extend.x = (float) e.getSint("LEFT");
 		extend.y = (float) e.getSint("TOP");
@@ -229,11 +229,11 @@ KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFFStruct &gff) {
 	return extend;
 }
 
-KotORWidget::Border KotORWidget::createBorder(const Aurora::GFFStruct &gff) {
+KotORWidget::Border KotORWidget::createBorder(const Aurora::GFF3Struct &gff) {
 	Border border;
 
 	if (gff.hasField("BORDER")) {
-		const Aurora::GFFStruct &b = gff.getStruct("BORDER");
+		const Aurora::GFF3Struct &b = gff.getStruct("BORDER");
 
 		border.corner = b.getString("CORNER");
 		border.edge   = b.getString("EDGE");
@@ -250,11 +250,11 @@ KotORWidget::Border KotORWidget::createBorder(const Aurora::GFFStruct &gff) {
 	return border;
 }
 
-KotORWidget::Text KotORWidget::createText(const Aurora::GFFStruct &gff) {
+KotORWidget::Text KotORWidget::createText(const Aurora::GFF3Struct &gff) {
 	Text text;
 
 	if (gff.hasField("TEXT")) {
-		const Aurora::GFFStruct &t = gff.getStruct("TEXT");
+		const Aurora::GFF3Struct &t = gff.getStruct("TEXT");
 
 		text.font   = t.getString("FONT");
 		text.text   = t.getString("TEXT");

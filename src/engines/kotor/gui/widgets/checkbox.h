@@ -38,7 +38,7 @@ public:
 	WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag);
 	~WidgetCheckBox();
 
-	void load(const Aurora::GFFStruct &gff);
+	void load(const Aurora::GFF3Struct &gff);
 
 	virtual void mouseUp(uint8 state, float x, float y);
 

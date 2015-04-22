@@ -102,7 +102,7 @@ private:
 	Common::Mutex _mutex;
 
 
-	void loadARE(const Aurora::GFFStruct &are);
+	void loadARE(const Aurora::GFF3Struct &are);
 
 	void loadResources();
 

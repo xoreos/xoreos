@@ -25,7 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -42,7 +42,7 @@ namespace Engines {
 
 namespace NWN {
 
-Door::Door(Module &module, const Aurora::GFFStruct &door) : Situated(kObjectTypeDoor),
+Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
 	_module(&module), _invisible(false), _genericType(Aurora::kFieldIDInvalid),
 	_state(kStateClosed), _linkedToFlag(kLinkedToNothing), _evaluatedLink(false),
 	_link(0), _linkedDoor(0), _linkedWaypoint(0) {
@@ -53,13 +53,13 @@ Door::Door(Module &module, const Aurora::GFFStruct &door) : Situated(kObjectType
 Door::~Door() {
 }
 
-void Door::load(const Aurora::GFFStruct &door) {
+void Door::load(const Aurora::GFF3Struct &door) {
 	Common::UString temp = door.getString("TemplateResRef");
 
-	Aurora::GFFFile *utd = 0;
+	Aurora::GFF3File *utd = 0;
 	if (!temp.empty()) {
 		try {
-			utd = new Aurora::GFFFile(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
+			utd = new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
 		} catch (...) {
 		}
 	}
@@ -71,7 +71,7 @@ void Door::load(const Aurora::GFFStruct &door) {
 	setModelState();
 }
 
-void Door::loadObject(const Aurora::GFFStruct &gff) {
+void Door::loadObject(const Aurora::GFF3Struct &gff) {
 	// Generic type
 
 	_genericType = gff.getUint("GenericType", _genericType);

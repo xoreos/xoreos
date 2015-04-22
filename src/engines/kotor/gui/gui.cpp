@@ -25,7 +25,7 @@
 #include "src/common/error.h"
 #include "src/common/util.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -47,7 +47,7 @@ namespace Engines {
 
 namespace KotOR {
 
-GUI::WidgetContext::WidgetContext(const Aurora::GFFStruct &s, Widget *p) {
+GUI::WidgetContext::WidgetContext(const Aurora::GFF3Struct &s, Widget *p) {
 	strct = &s;
 
 	widget = 0;
@@ -78,9 +78,9 @@ void GUI::mouseUp() {
 void GUI::load(const Common::UString &resref, float width, float height) {
 	_name = resref;
 
-	Aurora::GFFFile *gff = 0;
+	Aurora::GFF3File *gff = 0;
 	try {
-		gff = new Aurora::GFFFile(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '));
+		gff = new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '));
 
 		loadWidget(gff->getTopLevel(), 0, width, height);
 
@@ -94,7 +94,7 @@ void GUI::load(const Common::UString &resref, float width, float height) {
 	delete gff;
 }
 
-void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent,
+void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent,
 		float width, float height) {
 
 	WidgetContext ctx(strct, parent);
@@ -121,9 +121,9 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent,
 
 	// Go down to the children
 	if (ctx.strct->hasField("CONTROLS")) {
-		const Aurora::GFFList &children = ctx.strct->getList("CONTROLS");
+		const Aurora::GFF3List &children = ctx.strct->getList("CONTROLS");
 
-		for (Aurora::GFFList::const_iterator c = children.begin(); c != children.end(); ++c)
+		for (Aurora::GFF3List::const_iterator c = children.begin(); c != children.end(); ++c)
 			loadWidget(**c, ctx.widget, width, height);
 	}
 }

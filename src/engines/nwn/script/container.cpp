@@ -25,7 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/aurora/nwscript/types.h"
 #include "src/aurora/nwscript/variable.h"
@@ -116,7 +116,7 @@ void ScriptContainer::clearScripts() {
 		_scripts[i].clear();
 }
 
-void ScriptContainer::readScripts(const Aurora::GFFStruct &gff) {
+void ScriptContainer::readScripts(const Aurora::GFF3Struct &gff) {
 	clearScripts();
 
 	for (int i = 0; i < ARRAYSIZE(kScriptNames); i++) {

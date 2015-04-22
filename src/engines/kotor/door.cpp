@@ -25,7 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -39,20 +39,20 @@ namespace Engines {
 
 namespace KotOR {
 
-Door::Door(const Aurora::GFFStruct &door) : _genericType(Aurora::kFieldIDInvalid) {
+Door::Door(const Aurora::GFF3Struct &door) : _genericType(Aurora::kFieldIDInvalid) {
 	load(door);
 }
 
 Door::~Door() {
 }
 
-void Door::load(const Aurora::GFFStruct &door) {
+void Door::load(const Aurora::GFF3Struct &door) {
 	Common::UString temp = door.getString("TemplateResRef");
 
-	Aurora::GFFFile *utd = 0;
+	Aurora::GFF3File *utd = 0;
 	if (!temp.empty()) {
 		try {
-			utd = new Aurora::GFFFile(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
+			utd = new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
 		} catch (...) {
 		}
 	}
@@ -65,7 +65,7 @@ void Door::load(const Aurora::GFFStruct &door) {
 	delete utd;
 }
 
-void Door::loadObject(const Aurora::GFFStruct &gff) {
+void Door::loadObject(const Aurora::GFF3Struct &gff) {
 	_genericType = gff.getUint("GenericType", _genericType);
 }
 

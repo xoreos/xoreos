@@ -35,8 +35,8 @@ namespace Engines {
 
 namespace NWN2 {
 
-bool readTint(const Aurora::GFFStruct &gff, float t[3][4]);
-bool readTint(const Aurora::GFFStruct &gff, const Common::UString &strct, float t[3][4]);
+bool readTint(const Aurora::GFF3Struct &gff, float t[3][4]);
+bool readTint(const Aurora::GFF3Struct &gff, const Common::UString &strct, float t[3][4]);
 
 /** Strip text enclosed in {} from a string. */
 Common::UString createDisplayName(const Common::UString &name);

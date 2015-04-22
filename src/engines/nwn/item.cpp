@@ -27,7 +27,7 @@
 #include "src/common/util.h"
 
 #include "src/aurora/locstring.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -101,7 +101,7 @@ void Item::hide() {
 		_model->hide();
 }
 
-void Item::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
+void Item::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// UTI def has a baseitem (index into baseitem.2da, determines equippable slots, model type)
 	// armour is 16, modeltype 3
 	// can look up armorpart_bodypart id
@@ -133,7 +133,7 @@ void Item::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blue
 	loadSounds();
 }
 
-void Item::loadProperties(const Aurora::GFFStruct &gff) {
+void Item::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Tag
 	_tag = gff.getString("Tag", _tag);
 
@@ -174,7 +174,7 @@ void Item::loadProperties(const Aurora::GFFStruct &gff) {
 	readScripts(gff);
 }
 
-void Item::loadPortrait(const Aurora::GFFStruct &gff) {
+void Item::loadPortrait(const Aurora::GFF3Struct &gff) {
 	uint32 portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
@@ -207,7 +207,7 @@ static const char *kArmorPartFields[] = {
 	"ArmorPart_RHand" , "ArmorPart_LHand"
 };
 
-void Item::loadArmorParts(const Aurora::GFFStruct &gff)
+void Item::loadArmorParts(const Aurora::GFF3Struct &gff)
 {
 	for (uint i = 0; i < kArmorPartMAX; i++)
 		if (gff.hasField(kArmorPartFields[i])) {

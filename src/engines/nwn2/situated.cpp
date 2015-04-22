@@ -28,7 +28,7 @@
 #include "src/common/configman.h"
 
 #include "src/aurora/locstring.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -134,7 +134,7 @@ void Situated::setLocked(bool locked) {
 	_locked = locked;
 }
 
-void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
+void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 
 	if (blueprint)
@@ -165,7 +165,7 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	float posZ = instance.getDouble("Z");
 
 	if (instance.hasField("Position")) {
-		const Aurora::GFFStruct &pos = instance.getStruct("Position");
+		const Aurora::GFF3Struct &pos = instance.getStruct("Position");
 
 		posX = pos.getDouble("x");
 		posY = pos.getDouble("y");
@@ -183,7 +183,7 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	float rotZ = 0.0;
 
 	if (instance.hasField("Orientation")) {
-		const Aurora::GFFStruct &o = instance.getStruct("Orientation");
+		const Aurora::GFF3Struct &o = instance.getStruct("Orientation");
 
 		float oX = o.getDouble("x");
 		float oY = o.getDouble("y");
@@ -199,7 +199,7 @@ void Situated::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	setOrientation(rotX, rotY, rotZ);
 }
 
-void Situated::loadProperties(const Aurora::GFFStruct &gff) {
+void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Tag
 	_tag = gff.getString("Tag", _tag);
 

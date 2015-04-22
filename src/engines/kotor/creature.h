@@ -43,7 +43,7 @@ namespace KotOR {
 /** A KotOR creature. */
 class Creature : public Object {
 public:
-	Creature(const Aurora::GFFStruct &creature);
+	Creature(const Aurora::GFF3Struct &creature);
 	~Creature();
 
 	void show();
@@ -71,11 +71,11 @@ private:
 
 	Graphics::Aurora::Model *_model;
 
-	void load(const Aurora::GFFStruct &creature);
-	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
+	void load(const Aurora::GFF3Struct &creature);
+	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
 
-	void loadProperties(const Aurora::GFFStruct &gff);
-	void loadPortrait(const Aurora::GFFStruct &gff);
+	void loadProperties(const Aurora::GFF3Struct &gff);
+	void loadPortrait(const Aurora::GFF3Struct &gff);
 	void loadAppearance();
 
 	void getPartModels(PartModels &parts, uint32 state = 'b');

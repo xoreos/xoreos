@@ -27,7 +27,7 @@
 
 #include "src/aurora/types.h"
 #include "src/aurora/locstring.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -47,7 +47,7 @@ Creature::Creature() : Object(kObjectTypeCreature) {
 	init();
 }
 
-Creature::Creature(const Aurora::GFFStruct &creature) : Object(kObjectTypeCreature) {
+Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature) {
 	init();
 
 	load(creature);
@@ -322,13 +322,13 @@ void Creature::unloadModel() {
 	_modelParts.clear();
 }
 
-void Creature::load(const Aurora::GFFStruct &creature) {
+void Creature::load(const Aurora::GFF3Struct &creature) {
 	Common::UString temp = creature.getString("TemplateResRef");
 
-	Aurora::GFFFile *utc = 0;
+	Aurora::GFF3File *utc = 0;
 	if (!temp.empty()) {
 		try {
-			utc = new Aurora::GFFFile(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
+			utc = new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
 		} catch (...) {
 		}
 	}
@@ -338,7 +338,7 @@ void Creature::load(const Aurora::GFFStruct &creature) {
 	delete utc;
 }
 
-void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
+void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 
 	if (blueprint)
@@ -362,7 +362,7 @@ void Creature::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	setOrientation(o[0], o[1], o[2]);
 }
 
-void Creature::loadProperties(const Aurora::GFFStruct &gff) {
+void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Tag
 
 	_tag = gff.getString("Tag", _tag);
@@ -437,9 +437,9 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	if (gff.hasField("SkillList")) {
 		_skills.clear();
 
-		const Aurora::GFFList &skills = gff.getList("SkillList");
-		for (Aurora::GFFList::const_iterator s = skills.begin(); s != skills.end(); ++s) {
-			const Aurora::GFFStruct &skill = **s;
+		const Aurora::GFF3List &skills = gff.getList("SkillList");
+		for (Aurora::GFF3List::const_iterator s = skills.begin(); s != skills.end(); ++s) {
+			const Aurora::GFF3Struct &skill = **s;
 
 			_skills.push_back(skill.getSint("Rank"));
 		}
@@ -449,9 +449,9 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	if (gff.hasField("FeatList")) {
 		_feats.clear();
 
-		const Aurora::GFFList &feats = gff.getList("FeatList");
-		for (Aurora::GFFList::const_iterator f = feats.begin(); f != feats.end(); ++f) {
-			const Aurora::GFFStruct &feat = **f;
+		const Aurora::GFF3List &feats = gff.getList("FeatList");
+		for (Aurora::GFF3List::const_iterator f = feats.begin(); f != feats.end(); ++f) {
+			const Aurora::GFF3Struct &feat = **f;
 
 			_feats.push_back(feat.getUint("Feat"));
 		}
@@ -484,14 +484,14 @@ void Creature::loadProperties(const Aurora::GFFStruct &gff) {
 	_armorVariation  = gff.getUint("Variation"      , _armorVariation);
 
 	if (gff.hasField("Boots")) {
-		const Aurora::GFFStruct &boots = gff.getStruct("Boots");
+		const Aurora::GFF3Struct &boots = gff.getStruct("Boots");
 
 		_bootsVisualType = boots.getUint("ArmorVisualType", _bootsVisualType);
 		_bootsVariation  = boots.getUint("Variation"      , _bootsVariation);
 	}
 }
 
-void Creature::loadClasses(const Aurora::GFFStruct &gff,
+void Creature::loadClasses(const Aurora::GFF3Struct &gff,
                            std::vector<Class> &classes, uint8 &hitDice) {
 
 	if (!gff.hasField("ClassList"))
@@ -500,11 +500,11 @@ void Creature::loadClasses(const Aurora::GFFStruct &gff,
 	classes.clear();
 	hitDice = 0;
 
-	const Aurora::GFFList &cClasses = gff.getList("ClassList");
-	for (Aurora::GFFList::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
+	const Aurora::GFF3List &cClasses = gff.getList("ClassList");
+	for (Aurora::GFF3List::const_iterator c = cClasses.begin(); c != cClasses.end(); ++c) {
 		classes.push_back(Class());
 
-		const Aurora::GFFStruct &cClass = **c;
+		const Aurora::GFF3Struct &cClass = **c;
 
 		classes.back().classID = cClass.getUint("Class");
 		classes.back().level   = cClass.getUint("ClassLevel");

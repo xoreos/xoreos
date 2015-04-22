@@ -27,7 +27,7 @@
 #include "src/common/util.h"
 
 #include "src/aurora/talkman.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -51,7 +51,7 @@ namespace Engines {
 
 namespace NWN {
 
-GUI::WidgetContext::WidgetContext(const Aurora::GFFStruct &s, Widget *p) {
+GUI::WidgetContext::WidgetContext(const Aurora::GFF3Struct &s, Widget *p) {
 	strct = &s;
 
 	widget = 0;
@@ -66,7 +66,7 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFFStruct &s, Widget *p) {
 	model = strct->getString("Obj_ResRef");
 
 	if (strct->hasField("Obj_Caption")) {
-		const Aurora::GFFStruct &caption = strct->getStruct("Obj_Caption");
+		const Aurora::GFF3Struct &caption = strct->getStruct("Obj_Caption");
 
 		font = caption.getString("AurString_Font");
 
@@ -91,9 +91,9 @@ GUI::~GUI() {
 void GUI::load(const Common::UString &resref) {
 	_name = resref;
 
-	Aurora::GFFFile *gff = 0;
+	Aurora::GFF3File *gff = 0;
 	try {
-		gff = new Aurora::GFFFile(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '));
+		gff = new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '));
 
 		loadWidget(gff->getTopLevel(), 0);
 
@@ -107,7 +107,7 @@ void GUI::load(const Common::UString &resref) {
 	delete gff;
 }
 
-void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
+void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent) {
 	WidgetContext ctx(strct, parent);
 
 	createWidget(ctx);
@@ -137,7 +137,7 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 	// Create a caption/label and move the label to its destined position
 	WidgetLabel *label = createCaption(ctx);
 	if (label && ctx.strct->hasField("Obj_Caption")) {
-		const Aurora::GFFStruct &caption = ctx.strct->getStruct("Obj_Caption");
+		const Aurora::GFF3Struct &caption = ctx.strct->getStruct("Obj_Caption");
 
 		float alignH = caption.getDouble("AurString_AlignH");
 		float alignV = caption.getDouble("AurString_AlignV");
@@ -190,9 +190,9 @@ void GUI::loadWidget(const Aurora::GFFStruct &strct, Widget *parent) {
 
 	// Go down to the children
 	if (ctx.strct->hasField("Obj_ChildList")) {
-		const Aurora::GFFList &children = ctx.strct->getList("Obj_ChildList");
+		const Aurora::GFF3List &children = ctx.strct->getList("Obj_ChildList");
 
-		for (Aurora::GFFList::const_iterator c = children.begin(); c != children.end(); ++c)
+		for (Aurora::GFF3List::const_iterator c = children.begin(); c != children.end(); ++c)
 			loadWidget(**c, ctx.widget);
 	}
 }
@@ -238,7 +238,7 @@ void GUI::initWidget(WidgetContext &ctx, TextWidget &widget) {
 	if (!ctx.strct->hasField("Obj_Caption"))
 		return;
 
-	const Aurora::GFFStruct &caption = ctx.strct->getStruct("Obj_Caption");
+	const Aurora::GFF3Struct &caption = ctx.strct->getStruct("Obj_Caption");
 
 	float r = caption.getDouble("AurString_ColorR", 1.0);
 	float g = caption.getDouble("AurString_ColorG", 1.0);
@@ -260,11 +260,11 @@ WidgetLabel *GUI::createCaption(WidgetContext &ctx) {
 	return createCaption(*ctx.strct, ctx.widget);
 }
 
-WidgetLabel *GUI::createCaption(const Aurora::GFFStruct &strct, Widget *parent) {
+WidgetLabel *GUI::createCaption(const Aurora::GFF3Struct &strct, Widget *parent) {
 	if (!strct.hasField("Obj_Caption"))
 		return 0;
 
-	const Aurora::GFFStruct &caption = strct.getStruct("Obj_Caption");
+	const Aurora::GFF3Struct &caption = strct.getStruct("Obj_Caption");
 
 	Common::UString font = caption.getString("AurString_Font");
 

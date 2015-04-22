@@ -38,7 +38,7 @@ public:
 	            const Common::UString &texture, float x, float y, float w, float h);
 	~WidgetPanel();
 
-	void load(const Aurora::GFFStruct &gff);
+	void load(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace KotOR

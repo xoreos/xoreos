@@ -198,21 +198,21 @@ private:
 
 	void clear();
 
-	void loadARE(const Aurora::GFFStruct &are);
-	void loadGIT(const Aurora::GFFStruct &git);
+	void loadARE(const Aurora::GFF3Struct &are);
+	void loadGIT(const Aurora::GFF3Struct &git);
 
-	void loadProperties(const Aurora::GFFStruct &props);
+	void loadProperties(const Aurora::GFF3Struct &props);
 
 	void loadTerrain();
-	void loadTiles(const Aurora::GFFList &tiles);
-	void loadTile(const Aurora::GFFStruct &t, Tile &tile);
+	void loadTiles(const Aurora::GFF3List &tiles);
+	void loadTile(const Aurora::GFF3Struct &t, Tile &tile);
 
 	void loadObject(Engines::NWN2::Object &object);
-	void loadWaypoints  (const Aurora::GFFList &list);
-	void loadPlaceables (const Aurora::GFFList &list);
-	void loadEnvironment(const Aurora::GFFList &list);
-	void loadDoors      (const Aurora::GFFList &list);
-	void loadCreatures  (const Aurora::GFFList &list);
+	void loadWaypoints  (const Aurora::GFF3List &list);
+	void loadPlaceables (const Aurora::GFF3List &list);
+	void loadEnvironment(const Aurora::GFF3List &list);
+	void loadDoors      (const Aurora::GFF3List &list);
+	void loadCreatures  (const Aurora::GFF3List &list);
 
 	// Model loading/unloading helpers
 

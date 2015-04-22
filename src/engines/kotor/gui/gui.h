@@ -89,7 +89,7 @@ protected:
 
 private:
 	struct WidgetContext {
-		const Aurora::GFFStruct *strct;
+		const Aurora::GFF3Struct *strct;
 
 		WidgetType type;
 
@@ -98,14 +98,14 @@ private:
 
 		Widget *parent;
 
-		WidgetContext(const Aurora::GFFStruct &s, Widget *p);
+		WidgetContext(const Aurora::GFF3Struct &s, Widget *p);
 	};
 
 	float _widgetZ;
 
 	Common::UString _name;
 
-	void loadWidget(const Aurora::GFFStruct &strct, Widget *parent, float width, float height);
+	void loadWidget(const Aurora::GFF3Struct &strct, Widget *parent, float width, float height);
 
 	void createWidget(WidgetContext &ctx);
 };

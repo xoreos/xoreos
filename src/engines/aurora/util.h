@@ -36,7 +36,7 @@ namespace Common {
 }
 
 namespace Aurora {
-	class GFFFile;
+	class GFF3File;
 }
 
 namespace Engines {

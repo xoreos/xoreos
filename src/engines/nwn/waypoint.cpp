@@ -27,7 +27,7 @@
 
 #include "src/aurora/locstring.h"
 #include "src/aurora/resman.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -37,7 +37,7 @@ namespace Engines {
 
 namespace NWN {
 
-Waypoint::Waypoint(const Aurora::GFFStruct &waypoint) : Object(kObjectTypeWaypoint),
+Waypoint::Waypoint(const Aurora::GFF3Struct &waypoint) : Object(kObjectTypeWaypoint),
 	_hasMapNote(false) {
 
 	load(waypoint);
@@ -47,13 +47,13 @@ Waypoint::~Waypoint() {
 	hide();
 }
 
-void Waypoint::load(const Aurora::GFFStruct &waypoint) {
+void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 	Common::UString temp = waypoint.getString("TemplateResRef");
 
-	Aurora::GFFFile *utw = 0;
+	Aurora::GFF3File *utw = 0;
 	if (!temp.empty()) {
 		try {
-			utw = new Aurora::GFFFile(temp, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' '));
+			utw = new Aurora::GFF3File(temp, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' '));
 		} catch (...) {
 		}
 	}
@@ -75,7 +75,7 @@ void Waypoint::enableMapNote(bool enabled) {
 	_hasMapNote = enabled;
 }
 
-void Waypoint::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint) {
+void Waypoint::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 
 	if (blueprint)
@@ -99,7 +99,7 @@ void Waypoint::load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *
 	setOrientation(o[0], o[1], o[2]);
 }
 
-void Waypoint::loadProperties(const Aurora::GFFStruct &gff) {
+void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Tag
 
 	_tag = gff.getString("Tag", _tag);

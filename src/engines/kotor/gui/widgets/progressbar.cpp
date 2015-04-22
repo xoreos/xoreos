@@ -37,7 +37,7 @@ WidgetProgressbar::WidgetProgressbar(::Engines::GUI &gui, const Common::UString 
 WidgetProgressbar::~WidgetProgressbar() {
 }
 
-void WidgetProgressbar::load(const Aurora::GFFStruct &UNUSED(gff)) {
+void WidgetProgressbar::load(const Aurora::GFF3Struct &UNUSED(gff)) {
 }
 
 } // End of namespace KotOR

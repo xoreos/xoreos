@@ -48,7 +48,7 @@ public:
 	void show(); ///< Show the situated object's model.
 	void hide(); ///< Hide the situated object's model.
 
-	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint = 0);
+	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0);
 	bool isArmor();
 	int getArmorPart(int index);
 
@@ -73,7 +73,7 @@ protected:
 	/** Load the situated object from an instance and its blueprint. */
 
 	/** Load object-specific properties. */
-	// virtual void loadObject(const Aurora::GFFStruct &gff) = 0;
+	// virtual void loadObject(const Aurora::GFF3Struct &gff) = 0;
 	/** Load appearance-specific properties. */
 	// virtual void loadAppearance() = 0;
 
@@ -102,9 +102,9 @@ private:
 		kArmorPartLeftHand      ,
 		kArmorPartMAX
 	};
-	void loadProperties(const Aurora::GFFStruct &gff);
-	void loadPortrait(const Aurora::GFFStruct &gff);
-	void loadArmorParts(const Aurora::GFFStruct &gff);
+	void loadProperties(const Aurora::GFF3Struct &gff);
+	void loadPortrait(const Aurora::GFF3Struct &gff);
+	void loadArmorParts(const Aurora::GFF3Struct &gff);
 	void loadSounds();
 
 	/** Index to appropriate armor part. */

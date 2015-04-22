@@ -35,7 +35,7 @@ namespace KotOR {
 
 class Door : public Situated {
 public:
-	Door(const Aurora::GFFStruct &door);
+	Door(const Aurora::GFF3Struct &door);
 	~Door();
 
 	void hide();
@@ -46,13 +46,13 @@ public:
 	void highlight(bool enabled);
 
 protected:
-	void loadObject(const Aurora::GFFStruct &gff);
+	void loadObject(const Aurora::GFF3Struct &gff);
 	void loadAppearance();
 
 private:
 	uint32 _genericType;
 
-	void load(const Aurora::GFFStruct &door);
+	void load(const Aurora::GFF3Struct &door);
 
 	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);
 };

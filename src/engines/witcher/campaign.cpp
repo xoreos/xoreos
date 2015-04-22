@@ -29,7 +29,7 @@
 #include "src/common/filelist.h"
 #include "src/common/configman.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/engines/witcher/campaign.h"
 #include "src/engines/witcher/console.h"
@@ -98,9 +98,9 @@ bool Campaign::readCampaign(const Common::UString &mmdFile, CampaignDescription 
 		return false;
 	}
 
-	Aurora::GFFFile *gff = 0;
+	Aurora::GFF3File *gff = 0;
 	try {
-		gff = new Aurora::GFFFile(file, MKTAG('M', 'M', 'D', ' '));
+		gff = new Aurora::GFF3File(file, MKTAG('M', 'M', 'D', ' '));
 	} catch (...) {
 		return false;
 	}
@@ -143,7 +143,7 @@ void Campaign::load(const CampaignDescription &desc) {
 
 void Campaign::loadCampaignFile(const CampaignDescription &desc) {
 	Common::File    *file = 0;
-	Aurora::GFFFile *gff  = 0;
+	Aurora::GFF3File *gff  = 0;
 	try {
 
 		try {
@@ -151,7 +151,7 @@ void Campaign::loadCampaignFile(const CampaignDescription &desc) {
 				throw Common::Exception("Campaign file is empty");
 
 			file = new Common::File(desc.file);
-			gff  = new Aurora::GFFFile(file, MKTAG('M', 'M', 'D', ' '));
+			gff  = new Aurora::GFF3File(file, MKTAG('M', 'M', 'D', ' '));
 		} catch (Common::Exception &e) {
 			delete file;
 			throw;
@@ -159,8 +159,8 @@ void Campaign::loadCampaignFile(const CampaignDescription &desc) {
 
 		_startModule = gff->getTopLevel().getString("StartingMod");
 
-		const Aurora::GFFList &modules = gff->getTopLevel().getList("Meta_Mod_list");
-		for (Aurora::GFFList::const_iterator m = modules.begin(); m != modules.end(); ++m)
+		const Aurora::GFF3List &modules = gff->getTopLevel().getList("Meta_Mod_list");
+		for (Aurora::GFF3List::const_iterator m = modules.begin(); m != modules.end(); ++m)
 			_modules.push_back((*m)->getString("Mod_Name"));
 
 		if (_startModule.empty())

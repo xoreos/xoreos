@@ -90,7 +90,7 @@ protected:
 
 private:
 	struct WidgetContext {
-		const Aurora::GFFStruct *strct;
+		const Aurora::GFF3Struct *strct;
 
 		WidgetType type;
 
@@ -103,12 +103,12 @@ private:
 		Common::UString font;
 		Common::UString text;
 
-		WidgetContext(const Aurora::GFFStruct &s, Widget *p);
+		WidgetContext(const Aurora::GFF3Struct &s, Widget *p);
 	};
 
 	Common::UString _name;
 
-	void loadWidget(const Aurora::GFFStruct &strct, Widget *parent);
+	void loadWidget(const Aurora::GFF3Struct &strct, Widget *parent);
 
 	void createWidget(WidgetContext &ctx);
 	void initWidget(WidgetContext &ctx, ModelWidget &widget);
@@ -116,7 +116,7 @@ private:
 	void initWidget(WidgetContext &ctx);
 
 	WidgetLabel *createCaption(WidgetContext &ctx);
-	WidgetLabel *createCaption(const Aurora::GFFStruct &strct, Widget *parent);
+	WidgetLabel *createCaption(const Aurora::GFF3Struct &strct, Widget *parent);
 };
 
 } // End of namespace NWN

@@ -121,18 +121,18 @@ private:
 	void loadLYT();
 	void loadVIS();
 
-	void loadARE(const Aurora::GFFStruct &are);
-	void loadGIT(const Aurora::GFFStruct &git);
+	void loadARE(const Aurora::GFF3Struct &are);
+	void loadGIT(const Aurora::GFF3Struct &git);
 
 	void loadRooms();
 
-	void loadProperties(const Aurora::GFFStruct &props);
+	void loadProperties(const Aurora::GFF3Struct &props);
 
 	void loadObject(Object &object);
 
-	void loadPlaceables(const Aurora::GFFList &list);
-	void loadDoors     (const Aurora::GFFList &list);
-	void loadCreatures (const Aurora::GFFList &list);
+	void loadPlaceables(const Aurora::GFF3List &list);
+	void loadDoors     (const Aurora::GFF3List &list);
+	void loadCreatures (const Aurora::GFF3List &list);
 
 	void unload();
 

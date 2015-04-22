@@ -32,8 +32,8 @@
 
 namespace Aurora {
 
-class GFFFile;
-class GFFStruct;
+class GFF3File;
+class GFF3Struct;
 
 class IFOFile {
 public:
@@ -46,7 +46,7 @@ public:
 	void loadTLK(); ///< Load the module's custom TLK.
 
 	/** Return the IFO's GFF struct. */
-	const GFFStruct *getGFF() const;
+	const GFF3Struct *getGFF() const;
 
 	// General properties
 
@@ -129,7 +129,7 @@ public:
 	float getXPScale() const;
 
 private:
-	GFFFile *_gff; ///< The module.ifo GFF.
+	GFF3File *_gff; ///< The module.ifo GFF.
 
 	byte _id[32]; ///< The module's unique ID.
 

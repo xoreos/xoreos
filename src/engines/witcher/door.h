@@ -40,7 +40,7 @@ class Waypoint;
 class Door : public Situated {
 public:
 	/** Load from a door instance. */
-	Door(Module &module, const Aurora::GFFStruct &door);
+	Door(Module &module, const Aurora::GFF3Struct &door);
 	~Door();
 
 	void enter(); ///< The cursor entered the door.
@@ -55,7 +55,7 @@ public:
 
 protected:
 	/** Load door-specific properties. */
-	void loadObject(const Aurora::GFFStruct &gff);
+	void loadObject(const Aurora::GFF3Struct &gff);
 
 
 private:
@@ -65,7 +65,7 @@ private:
 	Waypoint       *_link;    ///< The waypoint this door links to.
 
 	/** Load from a door instance. */
-	void load(const Aurora::GFFStruct &door);
+	void load(const Aurora::GFF3Struct &door);
 
 	/** Evaluate our link. */
 	void evaluateLink();

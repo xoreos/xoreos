@@ -24,7 +24,7 @@
 
 #include "src/common/system.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/sound/sound.h"
 
@@ -47,7 +47,7 @@ WidgetCheckBox::WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag) 
 WidgetCheckBox::~WidgetCheckBox() {
 }
 
-void WidgetCheckBox::load(const Aurora::GFFStruct &gff) {
+void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
 	gff.getVector("COLOR", _r, _g, _b);
 	_a = gff.getDouble("ALPHA", 1.0);
 

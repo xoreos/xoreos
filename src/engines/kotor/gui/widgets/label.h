@@ -36,7 +36,7 @@ public:
 	WidgetLabel(::Engines::GUI &gui, const Common::UString &tag);
 	~WidgetLabel();
 
-	void load(const Aurora::GFFStruct &gff);
+	void load(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace KotOR

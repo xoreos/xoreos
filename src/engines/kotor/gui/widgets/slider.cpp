@@ -37,7 +37,7 @@ WidgetSlider::WidgetSlider(::Engines::GUI &gui, const Common::UString &tag) :
 WidgetSlider::~WidgetSlider() {
 }
 
-void WidgetSlider::load(const Aurora::GFFStruct &gff) {
+void WidgetSlider::load(const Aurora::GFF3Struct &gff) {
   KotORWidget::load(gff);
 }
 

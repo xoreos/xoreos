@@ -26,7 +26,7 @@ noinst_HEADERS = \
                  2dafile.h \
                  2dareg.h \
                  locstring.h \
-                 gfffile.h \
+                 gff3file.h \
                  gff4file.h \
                  dlgfile.h \
                  lytfile.h \
@@ -55,7 +55,7 @@ libaurora_la_SOURCES = \
                        2dafile.cpp \
                        2dareg.cpp \
                        locstring.cpp \
-                       gfffile.cpp \
+                       gff3file.cpp \
                        gff4file.cpp \
                        dlgfile.cpp \
                        lytfile.cpp \

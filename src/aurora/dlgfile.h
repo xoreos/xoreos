@@ -144,13 +144,13 @@ private:
 	bool _ended; ///< Has the conversation ended?
 
 
-	void load(const GFFStruct &dlg);
+	void load(const GFF3Struct &dlg);
 
-	void readEntries(const GFFList &list, std::vector<Entry> &entries, bool isPC);
-	void readLinks(const GFFList &list, std::vector<Link> &links);
+	void readEntries(const GFF3List &list, std::vector<Entry> &entries, bool isPC);
+	void readLinks(const GFF3List &list, std::vector<Link> &links);
 
-	void readEntry(const GFFStruct &gff, Entry &entry);
-	void readLink(const GFFStruct &gff, Link &link);
+	void readEntry(const GFF3Struct &gff, Entry &entry);
+	void readLink(const GFF3Struct &gff, Link &link);
 
 	bool evaluateEntries(const std::vector<Link> &entries,
 	                     std::vector<Entry>::iterator &active);

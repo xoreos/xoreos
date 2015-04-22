@@ -37,7 +37,7 @@ WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag) :
 WidgetListBox::~WidgetListBox() {
 }
 
-void WidgetListBox::load(const Aurora::GFFStruct &UNUSED(gff)) {
+void WidgetListBox::load(const Aurora::GFF3Struct &UNUSED(gff)) {
 }
 
 } // End of namespace KotOR

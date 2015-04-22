@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/graphics/aurora/model.h"
 
@@ -34,20 +34,20 @@ namespace Engines {
 
 namespace Witcher {
 
-Placeable::Placeable(const Aurora::GFFStruct &placeable) : Situated(kObjectTypePlaceable) {
+Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable) {
 	load(placeable);
 }
 
 Placeable::~Placeable() {
 }
 
-void Placeable::load(const Aurora::GFFStruct &placeable) {
+void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	Common::UString temp = placeable.getString("TemplateResRef");
 
-	Aurora::GFFFile *utp = 0;
+	Aurora::GFF3File *utp = 0;
 	if (!temp.empty()) {
 		try {
-			utp = new Aurora::GFFFile(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '));
+			utp = new Aurora::GFF3File(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '));
 		} catch (...) {
 		}
 	}
@@ -57,7 +57,7 @@ void Placeable::load(const Aurora::GFFStruct &placeable) {
 	delete utp;
 }
 
-void Placeable::loadObject(const Aurora::GFFStruct &UNUSED(gff)) {
+void Placeable::loadObject(const Aurora::GFF3Struct &UNUSED(gff)) {
 }
 
 void Placeable::enter() {

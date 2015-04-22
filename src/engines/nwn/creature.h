@@ -49,7 +49,7 @@ public:
 	/** Create a dummy creature instance. Not playable as it is.*/
 	Creature();
 	/** Load from a creature instance. */
-	Creature(const Aurora::GFFStruct &creature);
+	Creature(const Aurora::GFF3Struct &creature);
 	/** Load from a character file. */
 	Creature(const Common::UString &bic, bool local);
 	~Creature();
@@ -312,21 +312,21 @@ private:
 	/** Load from a character file. */
 	void loadCharacter(const Common::UString &bic, bool local);
 	/** Load from a creature instance. */
-	void load(const Aurora::GFFStruct &creature);
+	void load(const Aurora::GFF3Struct &creature);
 
 	/** Load the creature from an instance and its blueprint. */
-	void load(const Aurora::GFFStruct &instance, const Aurora::GFFStruct *blueprint);
+	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
 
 	/** Load general creature properties. */
-	void loadProperties(const Aurora::GFFStruct &gff);
+	void loadProperties(const Aurora::GFF3Struct &gff);
 
 	/** Load the creature's portrait. */
-	static void loadPortrait(const Aurora::GFFStruct &gff, Common::UString &portrait);
+	static void loadPortrait(const Aurora::GFF3Struct &gff, Common::UString &portrait);
 	/** Load the creature's classes. */
-	static void loadClasses (const Aurora::GFFStruct &gff,
+	static void loadClasses (const Aurora::GFF3Struct &gff,
 	                         std::vector<Class> &classes, uint8 &hitDice);
 
-	void loadEquippedItems(const Aurora::GFFStruct &gff);
+	void loadEquippedItems(const Aurora::GFF3Struct &gff);
 
 	/** Construct the resource name of a body part files. */
 	void constructPartName(const Common::UString &type, uint32 id,
@@ -363,7 +363,7 @@ private:
 	void showTooltip();   ///< Show the tooltip.
 	void hideTooltip();   ///< Hide the tooltip.
 
-	static Aurora::GFFFile *openPC(const Common::UString &bic, bool local);
+	static Aurora::GFF3File *openPC(const Common::UString &bic, bool local);
 	static void getClassString(const std::vector<Class> &classes, Common::UString &str);
 };
 

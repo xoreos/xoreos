@@ -26,7 +26,7 @@
 #include "src/common/stream.h"
 
 #include "src/aurora/ifofile.h"
-#include "src/aurora/gfffile.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/talkman.h"
 
 namespace Aurora {
@@ -95,9 +95,9 @@ void IFOFile::unload() {
 void IFOFile::load() {
 	unload();
 
-	_gff = new GFFFile("module", kFileTypeIFO, MKTAG('I', 'F', 'O', ' '));
+	_gff = new GFF3File("module", kFileTypeIFO, MKTAG('I', 'F', 'O', ' '));
 
-	const GFFStruct &ifoTop = _gff->getTopLevel();
+	const GFF3Struct &ifoTop = _gff->getTopLevel();
 
 	// IFO version
 	_version   = ifoTop.getUint("Mod_Version");
@@ -135,9 +135,9 @@ void IFOFile::load() {
 
 	// HAK List
 	if (ifoTop.hasField("Mod_HakList")) {
-		const GFFList &haks = ifoTop.getList("Mod_HakList");
+		const GFF3List &haks = ifoTop.getList("Mod_HakList");
 
-		for (GFFList::const_iterator h = haks.begin(); h != haks.end(); ++h)
+		for (GFF3List::const_iterator h = haks.begin(); h != haks.end(); ++h)
 			_haks.insert(_haks.begin(), (*h)->getString("Mod_Hak"));
 	}
 
@@ -148,45 +148,45 @@ void IFOFile::load() {
 
 	// Areas
 	if (ifoTop.hasField("Mod_Area_list")) {
-		const GFFList &areas = ifoTop.getList("Mod_Area_list");
+		const GFF3List &areas = ifoTop.getList("Mod_Area_list");
 
-		for (GFFList::const_iterator a = areas.begin(); a != areas.end(); ++a)
+		for (GFF3List::const_iterator a = areas.begin(); a != areas.end(); ++a)
 			_areas.push_back((*a)->getString("Area_Name"));
 	}
 
 	// NSS files that should be cached
 	if (ifoTop.hasField("Mod_CacheNSSList")) {
-		const GFFList &nss = ifoTop.getList("Mod_CacheNSSList");
+		const GFF3List &nss = ifoTop.getList("Mod_CacheNSSList");
 
-		for (GFFList::const_iterator n = nss.begin(); n != nss.end(); ++n)
+		for (GFF3List::const_iterator n = nss.begin(); n != nss.end(); ++n)
 			_nssCache.push_back((*n)->getString("ResRef"));
 	}
 
 	// Quests
 	if (ifoTop.hasField("Quest_list")) {
-		const GFFList &quests = ifoTop.getList("Quest_list");
+		const GFF3List &quests = ifoTop.getList("Quest_list");
 
-		for (GFFList::const_iterator q = quests.begin(); q != quests.end(); ++q)
+		for (GFF3List::const_iterator q = quests.begin(); q != quests.end(); ++q)
 			_quests.push_back((*q)->getString("Quest"));
 	}
 	if (ifoTop.hasField("QuestBase_list")) {
-		const GFFList &quests = ifoTop.getList("QuestBase_list");
+		const GFF3List &quests = ifoTop.getList("QuestBase_list");
 
-		for (GFFList::const_iterator q = quests.begin(); q != quests.end(); ++q)
+		for (GFF3List::const_iterator q = quests.begin(); q != quests.end(); ++q)
 			_questDBs.push_back((*q)->getString("QuestBase"));
 	}
 
 	// NPCs
 	if (ifoTop.hasField("StoryNPC_list")) {
-		const GFFList &npcs = ifoTop.getList("StoryNPC_list");
+		const GFF3List &npcs = ifoTop.getList("StoryNPC_list");
 
-		for (GFFList::const_iterator n = npcs.begin(); n != npcs.end(); ++n)
+		for (GFF3List::const_iterator n = npcs.begin(); n != npcs.end(); ++n)
 			_storyNPCs.push_back((*n)->getString("StoryNPC"));
 	}
 	if (ifoTop.hasField("MonsterNPC_list")) {
-		const GFFList &npcs = ifoTop.getList("MonsterNPC_list");
+		const GFF3List &npcs = ifoTop.getList("MonsterNPC_list");
 
-		for (GFFList::const_iterator n = npcs.begin(); n != npcs.end(); ++n)
+		for (GFF3List::const_iterator n = npcs.begin(); n != npcs.end(); ++n)
 			_monsterNPCs.push_back((*n)->getString("MonsterNPC"));
 	}
 
@@ -229,7 +229,7 @@ void IFOFile::loadTLK() {
 	TalkMan.addAltTable(_customTLK);
 }
 
-const GFFStruct *IFOFile::getGFF() const {
+const GFF3Struct *IFOFile::getGFF() const {
 	if (!_gff)
 		return 0;
 

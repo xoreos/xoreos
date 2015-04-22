@@ -378,9 +378,9 @@ static const uint32 kStrRefInvalid   = 0xFFFFFFFF;
 class TwoDAFile;
 class TwoDARow;
 
-class GFFStruct;
-typedef std::vector<GFFStruct *> GFFList;
-class GFFFile;
+class GFF3Struct;
+typedef std::vector<GFF3Struct *> GFF3List;
+class GFF3File;
 
 class GFF4Struct;
 typedef std::vector<GFF4Struct *> GFF4List;
