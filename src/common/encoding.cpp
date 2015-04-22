@@ -243,4 +243,30 @@ Common::UString readString(const byte *data, uint32 size, Encoding encoding) {
 	return createString(output, encoding);
 }
 
+uint32 getBytesPerCodepoint(Encoding encoding) {
+	switch (encoding) {
+		case kEncodingASCII:
+		case kEncodingLatin9:
+		case kEncodingCP1250:
+		case kEncodingCP1252:
+			return 1;
+
+		case kEncodingUTF16LE:
+		case kEncodingUTF16BE:
+			return 2;
+
+		case kEncodingUTF8:
+		case kEncodingCP932:
+		case kEncodingCP936:
+		case kEncodingCP949:
+		case kEncodingCP950:
+			throw Exception("getBytesPerCodepoint(): Encoding with variable number of bytes per codepoint");
+
+		default:
+			break;
+	}
+
+	throw Exception("getBytesPerCodepoint(): Invalid encoding (%d)", (int)encoding);
+}
+
 } // End of namespace Common

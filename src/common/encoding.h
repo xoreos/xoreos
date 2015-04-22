@@ -65,6 +65,12 @@ Common::UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 /** Read a string with the given encoding from the raw buffer. */
 Common::UString readString(const byte *data, uint32 size, Encoding encoding);
 
+/** Return the number of bytes per codepoint in this encoding.
+ *
+ *  Note: This will throw on encodings with a variable number of bytes per codepoint.
+ */
+uint32 getBytesPerCodepoint(Encoding encoding);
+
 } // End of namespace Common
 
 #endif // COMMON_ENCODING_H
