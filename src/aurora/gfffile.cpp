@@ -186,17 +186,14 @@ void GFFFile::readLists() {
 		_listOffsetToIndex.push_back(_lists.size());
 
 		_lists.push_back(GFFList());
-		_listSizes.push_back(0);
 
 		GFFList &list = _lists.back();
-		uint32  &size = _listSizes.back();
 
 		uint32 n = *it++;
 		for (uint32 j = 0; j < n; j++, ++it) {
 			assert(it != rawLists.end());
 
 			list.push_back(_structs[*it]);
-			size++;
 			_listOffsetToIndex.push_back(0xFFFFFFFF);
 		}
 	}
