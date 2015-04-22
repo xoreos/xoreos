@@ -44,8 +44,6 @@ namespace Aurora {
 class LocString;
 class GFFStruct;
 
-typedef std::list<GFFStruct *> GFFList;
-
 class GFFFile : public AuroraBase {
 public:
 	GFFFile(Common::SeekableReadStream *gff, uint32 id);
