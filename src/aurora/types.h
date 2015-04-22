@@ -26,6 +26,7 @@
 #define AURORA_TYPES_H
 
 #include <list>
+#include <vector>
 
 #include "src/common/types.h"
 
@@ -381,6 +382,10 @@ class TwoDARow;
 class GFFStruct;
 typedef std::list<GFFStruct *> GFFList;
 class GFFFile;
+
+class GFF4Struct;
+typedef std::vector<GFF4Struct *> GFF4List;
+class GFF4File;
 
 } // End of namespace Aurora
 
