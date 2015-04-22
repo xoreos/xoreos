@@ -181,23 +181,21 @@ void GFFFile::readLists() {
 		listCount++;
 	}
 
+	_lists.resize(listCount);
+	_listOffsetToIndex.resize(rawLists.size(), 0xFFFFFFFF);
+
 	// Converting the raw list array into real, useable lists
-	for (std::vector<uint32>::iterator it = rawLists.begin(); it != rawLists.end(); ) {
-		_listOffsetToIndex.push_back(_lists.size());
+	uint32 listIndex = 0;
+	for (uint32 i = 0; i < rawLists.size(); listIndex++) {
+		_listOffsetToIndex[i] = listIndex;
 
-		_lists.push_back(GFFList());
+		uint32 n = rawLists[i++];
+		assert((i + n) <= rawLists.size());
 
-		GFFList &list = _lists.back();
-
-		uint32 n = *it++;
-		for (uint32 j = 0; j < n; j++, ++it) {
-			assert(it != rawLists.end());
-
-			list.push_back(_structs[*it]);
-			_listOffsetToIndex.push_back(0xFFFFFFFF);
-		}
+		_lists[listIndex].resize(n);
+		for (uint32 j = 0; j < n; j++, i++)
+			_lists[listIndex][j] = _structs[rawLists[i]];
 	}
-
 }
 
 Common::SeekableReadStream &GFFFile::getStream() const {
