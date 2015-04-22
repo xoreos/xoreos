@@ -34,7 +34,6 @@
 
 #include "src/aurora/bzffile.h"
 #include "src/aurora/keyfile.h"
-#include "src/aurora/error.h"
 
 static const uint32 kBZFID     = MKTAG('B', 'I', 'F', 'F');
 static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');

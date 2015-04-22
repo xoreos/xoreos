@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/file.h"
 #include "src/common/filelist.h"
@@ -32,7 +33,6 @@
 
 #include "src/aurora/types.h"
 #include "src/aurora/util.h"
-#include "src/aurora/error.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/talkman.h"
 #include "src/aurora/2dareg.h"

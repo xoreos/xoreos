@@ -29,7 +29,6 @@
 #include "src/common/file.h"
 
 #include "src/aurora/keyfile.h"
-#include "src/aurora/error.h"
 
 static const uint32 kKEYID     = MKTAG('K', 'E', 'Y', ' ');
 static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');

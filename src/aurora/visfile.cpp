@@ -25,10 +25,10 @@
 #include "src/common/stream.h"
 #include "src/common/streamtokenizer.h"
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/strutil.h"
 
 #include "src/aurora/visfile.h"
-#include "src/aurora/error.h"
 
 namespace Aurora {
 

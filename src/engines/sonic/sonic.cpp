@@ -29,6 +29,7 @@
 #include "src/engines/aurora/resources.h"
 
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/filelist.h"
 #include "src/common/stream.h"
 #include "src/common/strutil.h"
@@ -45,7 +46,6 @@
 #include "src/events/events.h"
 
 #include "src/aurora/resman.h"
-#include "src/aurora/error.h"
 #include "src/aurora/ndsrom.h"
 
 namespace Engines {

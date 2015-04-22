@@ -24,9 +24,9 @@
 
 #include "src/common/stream.h"
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/encoding.h"
 
-#include "src/aurora/error.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/ssffile.h"
 

@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/file.h"
 #include "src/common/filepath.h"
 #include "src/common/stream.h"
@@ -30,7 +31,6 @@
 #include "src/common/hash.h"
 
 #include "src/aurora/herffile.h"
-#include "src/aurora/error.h"
 #include "src/aurora/util.h"
 #include "src/aurora/resman.h"
 

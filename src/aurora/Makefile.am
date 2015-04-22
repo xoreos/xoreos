@@ -8,7 +8,6 @@ noinst_LTLIBRARIES = libaurora.la
 
 noinst_HEADERS = \
                  types.h \
-                 error.h \
                  util.h \
                  language.h \
                  archive.h \
@@ -38,7 +37,6 @@ noinst_HEADERS = \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
-                       error.cpp \
                        util.cpp \
                        language.cpp \
                        archive.cpp \
