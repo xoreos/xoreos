@@ -44,6 +44,10 @@ namespace Aurora {
 class LocString;
 class GFF3Struct;
 
+/** A GFF (generic file format) V3.2/V3.3 file, found in all Aurora games
+ *  except Sonic Chronicles: The Dark Brotherhood. Even games that have
+ *  V4.0/V4.1 GFFs additionally use V3.2/V3.3 files as well.
+ */
 class GFF3File : public AuroraBase {
 public:
 	GFF3File(Common::SeekableReadStream *gff3, uint32 id);
@@ -53,28 +57,25 @@ public:
 	/** Returns the top-level struct. */
 	const GFF3Struct &getTopLevel() const;
 
+
 private:
-	/** A GFF header. */
+	/** A GFF3 header. */
 	struct Header {
-		uint32 structOffset;
-		uint32 structCount;
-		uint32 fieldOffset;
-		uint32 fieldCount;
-		uint32 labelOffset;
-		uint32 labelCount;
-		uint32 fieldDataOffset;
-		uint32 fieldDataCount;
-		uint32 fieldIndicesOffset;
-		uint32 fieldIndicesCount;
-		uint32 listIndicesOffset;
-		uint32 listIndicesCount;
+		uint32 structOffset;       ///< Offset to the struct definitions.
+		uint32 structCount;        ///< Number of structs.
+		uint32 fieldOffset;        ///< Offset to the field definitions.
+		uint32 fieldCount;         ///< Number of fields.
+		uint32 labelOffset;        ///< Offset to the field labels.
+		uint32 labelCount;         ///< Number of labels.
+		uint32 fieldDataOffset;    ///< Offset to the field data.
+		uint32 fieldDataCount;     ///< Number of field data fields.
+		uint32 fieldIndicesOffset; ///< Offset to the field indices.
+		uint32 fieldIndicesCount;  ///< Number of field indices.
+		uint32 listIndicesOffset;  ///< Offset to the list indices.
+		uint32 listIndicesCount;   ///< Number of list indices.
 
 		Header();
 
-		/** Clear the header. */
-		void clear();
-
-		/** Read the header out of a gff3. */
 		void read(Common::SeekableReadStream &gff3);
 	};
 
@@ -93,8 +94,18 @@ private:
 	std::vector<uint32> _listOffsetToIndex;
 
 
+	// .--- Loading helpers
+	void load(uint32 id);
+	void loadHeader(uint32 id);
+	void loadStructs();
+	void loadLists();
+
+	void clear();
+	// '---
+
+	// .--- Helper methods called by GFF3Struct
 	/** Return the GFF stream. */
-	Common::SeekableReadStream &getStream() const;
+	Common::SeekableReadStream &getStream(uint32 offset) const;
 	/** Return the GFF stream seeked to the start of the field data. */
 	Common::SeekableReadStream &getFieldData() const;
 
@@ -102,13 +113,7 @@ private:
 	const GFF3Struct &getStruct(uint32 i) const;
 	/** Return a list within the GFF. */
 	const GFF3List   &getList  (uint32 i) const;
-
-	// Loading helpers
-	void load(uint32 id);
-	void readStructs();
-	void readLists();
-
-	void clear();
+	// '---
 
 	friend class GFF3Struct;
 };
@@ -116,10 +121,15 @@ private:
 /** A struct within a GFF. */
 class GFF3Struct {
 public:
-	uint getFieldCount() const;
+	/** Return the struct's ID. */
+	uint32 getID() const;
 
+	/** Return the number of fields in this struct. */
+	uint getFieldCount() const;
+	/** Does this specific field exist? */
 	bool hasField(const Common::UString &field) const;
 
+	// .--- Read field values
 	char   getChar(const Common::UString &field, char   def = '\0' ) const;
 	uint64 getUint(const Common::UString &field, uint64 def = 0    ) const;
 	 int64 getSint(const Common::UString &field,  int64 def = 0    ) const;
@@ -132,8 +142,6 @@ public:
 
 	void getLocString(const Common::UString &field, LocString &str) const;
 
-	Common::SeekableReadStream *getData(const Common::UString &field) const;
-
 	void getVector     (const Common::UString &field,
 			float &x, float &y, float &z          ) const;
 	void getOrientation(const Common::UString &field,
@@ -144,8 +152,13 @@ public:
 	void getOrientation(const Common::UString &field,
 			double &a, double &b, double &c, double &d) const;
 
+	Common::SeekableReadStream *getData(const Common::UString &field) const;
+	// '---
+
+	// .--- Structs and lists of structs
 	const GFF3Struct &getStruct(const Common::UString &field) const;
 	const GFF3List   &getList  (const Common::UString &field) const;
+	// '---
 
 private:
 	/** The type of a GFF field. */
@@ -172,7 +185,7 @@ private:
 		kFieldTypeStrRef      =  18  // TODO: New in Jade Empire
 	};
 
-	/** A GFF field. */
+	/** A field in the GFF3 struct. */
 	struct Field {
 		FieldType type;     ///< Type of the field.
 		uint32    data;     ///< Data of the field.
@@ -184,6 +197,7 @@ private:
 
 	typedef std::map<Common::UString, Field> FieldMap;
 
+
 	const GFF3File *_parent; ///< The parent GFF.
 
 	uint32 _id;         ///< The struct's ID.
@@ -192,22 +206,27 @@ private:
 
 	FieldMap _fields; ///< The fields, indexed by their label.
 
+
+	// .--- Loader
 	GFF3Struct(const GFF3File &parent, uint32 offset);
 	~GFF3Struct();
 
 	void load(uint32 offset);
 
+	void readField  (Common::SeekableReadStream &data, uint32 index);
+	void readFields (Common::SeekableReadStream &data, uint32 index, uint32 count);
+	void readIndices(Common::SeekableReadStream &data,
+	                 std::vector<uint32> &indices, uint32 count) const;
+
+	Common::UString readLabel(Common::SeekableReadStream &data, uint32 index) const;
+	// '---
+
+	// .--- Field and field data accessors
 	/** Returns the field with this tag. */
 	const Field *getField(const Common::UString &name) const;
 	/** Returns the extended field data for this field. */
 	Common::SeekableReadStream &getData(const Field &field) const;
-
-	// Loading helpers
-	void readField  (Common::SeekableReadStream &gff3, uint32 index);
-	void readFields (Common::SeekableReadStream &gff3, uint32 index, uint32 count);
-	void readIndices(Common::SeekableReadStream &gff3,
-	                 std::vector<uint32> &indices, uint32 count) const;
-	Common::UString readLabel(Common::SeekableReadStream &gff3, uint32 index) const;
+	// '---
 
 	friend class GFF3File;
 };
