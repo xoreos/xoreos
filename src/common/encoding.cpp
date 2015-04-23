@@ -42,42 +42,60 @@ static const char *kEncodingName[kEncodingMAX] = {
 	"CP932", "CP936", "CP949", "CP950"
 };
 
-static const int kEncodingGrowth[kEncodingMAX] = {
+static const uint32 kEncodingGrowthFrom[kEncodingMAX] = {
 	1, 1, 2, 2, 4, 4, 4, 4, 4, 4, 4
+};
+
+static const uint32 kEncodingGrowthTo  [kEncodingMAX] = {
+	1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1
 };
 
 /** A manager handling string encoding conversions. */
 class ConversionManager : public Singleton<ConversionManager> {
 public:
 	ConversionManager() {
-		for (uint i = 0; i < kEncodingMAX; i++)
-			_context[i] = (iconv_t) -1;
+		for (uint i = 0; i < kEncodingMAX; i++) {
+			_contextFrom[i] = (iconv_t) -1;
+			_contextTo  [i] = (iconv_t) -1;
+		}
 
 		for (uint i = 0; i < kEncodingMAX; i++)
-			if ((_context[i] = iconv_open("UTF-8", kEncodingName[i])) == ((iconv_t) -1))
+			if ((_contextFrom[i] = iconv_open("UTF-8", kEncodingName[i])) == ((iconv_t) -1))
 				warning("Failed to initialize %s -> UTF-8 conversion: %s", kEncodingName[i], strerror(errno));
+
+		for (uint i = 0; i < kEncodingMAX; i++)
+			if ((_contextTo  [i] = iconv_open(kEncodingName[i], "UTF-8")) == ((iconv_t) -1))
+				warning("Failed to initialize UTF-8 -> %s conversion: %s", kEncodingName[i], strerror(errno));
 	}
 
 	~ConversionManager() {
-		for (uint i = 0; i < kEncodingMAX; i++)
-			if (_context[i] != ((iconv_t) -1))
-				iconv_close(_context[i]);
+		for (uint i = 0; i < kEncodingMAX; i++) {
+			if (_contextFrom[i] != ((iconv_t) -1))
+				iconv_close(_contextFrom[i]);
+			if (_contextTo  [i] != ((iconv_t) -1))
+				iconv_close(_contextTo  [i]);
+		}
 	}
 
 	Common::UString convert(Encoding encoding, byte *data, uint32 n) {
 		if (((uint) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
 
-		return convert(_context[encoding], data, n, n * kEncodingGrowth[encoding]);
+		return convert(_contextFrom[encoding], data, n, kEncodingGrowthFrom[encoding]);
+	}
+
+	Common::SeekableReadStream *convert(Encoding encoding, const Common::UString &str) {
+		if (((uint) encoding) >= kEncodingMAX)
+			throw Exception("Invalid encoding %d", encoding);
+
+		return convert(_contextTo[encoding], str, kEncodingGrowthTo[encoding]);
 	}
 
 private:
-	iconv_t _context[kEncodingMAX];
+	iconv_t _contextFrom[kEncodingMAX];
+	iconv_t _contextTo  [kEncodingMAX];
 
-	Common::UString convert(iconv_t &ctx, byte *data, uint32 nIn, uint32 nOut) {
-		if (ctx == ((iconv_t) -1))
-			return "[!!!]";
-
+	const byte *convert(iconv_t &ctx, byte *data, uint32 nIn, uint32 nOut, uint32 &size) {
 		size_t inBytes  = nIn;
 		size_t outBytes = nOut;
 
@@ -93,15 +111,44 @@ private:
 			warning("iconv() failed: %s", strerror(errno));
 			delete[] convData;
 
-			return "[!?!]";
+			return 0;
 		}
 
-		convData[nOut - outBytes] = '\0';
-		Common::UString convStr((const char *) convData);
+		size = nOut - outBytes + 1;
+		convData[size - 1] = '\0';
 
-		delete[] convData;
+		return convData;
+	}
 
-		return convStr;
+	Common::UString convert(iconv_t &ctx, byte *data, uint32 n, uint32 growth) {
+		if (ctx == ((iconv_t) -1))
+			return "[!!!]";
+
+		uint32 size;
+		const byte *dataOut = convert(ctx, data, n, n * growth, size);
+		if (!dataOut)
+			return "[!?!]";
+
+		Common::UString str((const char *) dataOut);
+		delete[] dataOut;
+
+		return str;
+	}
+
+	Common::SeekableReadStream *convert(iconv_t &ctx, const Common::UString &str, uint32 growth) {
+		if (ctx == ((iconv_t) -1))
+			return 0;
+
+		byte  *dataIn = const_cast<byte *>((const byte *) str.c_str());
+		uint32 nIn    = strlen(str.c_str());
+		uint32 nOut   = nIn * growth;
+
+		uint32 size;
+		const byte *dataOut = convert(ctx, dataIn, nIn, nOut, size);
+		if (!dataOut)
+			return 0;
+
+		return new Common::MemoryReadStream(dataOut, size - 1, true);
 	}
 };
 
@@ -241,6 +288,13 @@ Common::UString readString(const byte *data, uint32 size, Encoding encoding) {
 	memcpy(&output[0], data, size);
 
 	return createString(output, encoding);
+}
+
+Common::SeekableReadStream *convertString(const Common::UString &str, Encoding encoding) {
+	if (encoding == kEncodingUTF8)
+		return new Common::MemoryReadStream((const byte *) str.c_str(), strlen(str.c_str()));
+
+	return ConvMan.convert(encoding, str);
 }
 
 uint32 getBytesPerCodepoint(Encoding encoding) {

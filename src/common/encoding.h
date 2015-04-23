@@ -65,6 +65,9 @@ Common::UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 /** Read a string with the given encoding from the raw buffer. */
 Common::UString readString(const byte *data, uint32 size, Encoding encoding);
 
+/** Convert a string into the given encoding. */
+Common::SeekableReadStream *convertString(const Common::UString &str, Encoding encoding);
+
 /** Return the number of bytes per codepoint in this encoding.
  *
  *  Note: This will throw on encodings with a variable number of bytes per codepoint.
