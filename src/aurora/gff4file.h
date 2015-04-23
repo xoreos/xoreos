@@ -35,6 +35,7 @@
 
 #include "src/aurora/types.h"
 #include "src/aurora/aurorafile.h"
+#include "src/aurora/gff4fields.h"
 
 namespace Common {
 	class SeekableReadStream;

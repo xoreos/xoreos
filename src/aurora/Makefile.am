@@ -28,6 +28,7 @@ noinst_HEADERS = \
                  locstring.h \
                  gff3file.h \
                  gff4file.h \
+                 gff4fields.h \
                  dlgfile.h \
                  lytfile.h \
                  visfile.h \
