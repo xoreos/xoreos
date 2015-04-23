@@ -24,6 +24,7 @@ noinst_HEADERS = \
                  talkman.h \
                  ssffile.h \
                  2dafile.h \
+                 gdafile.h \
                  2dareg.h \
                  locstring.h \
                  gff3file.h \
@@ -54,6 +55,7 @@ libaurora_la_SOURCES = \
                        talkman.cpp \
                        ssffile.cpp \
                        2dafile.cpp \
+                       gdafile.cpp \
                        2dareg.cpp \
                        locstring.cpp \
                        gff3file.cpp \
