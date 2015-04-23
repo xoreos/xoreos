@@ -87,12 +87,13 @@ void TwoDARegistry::remove(const Common::UString &name) {
 
 TwoDAFile *TwoDARegistry::load(const Common::UString &name) {
 	Common::SeekableReadStream *twodaFile = 0;
-	TwoDAFile *twoda = new TwoDAFile;
+	TwoDAFile *twoda = 0;
+
 	try {
 		if (!(twodaFile = ResMan.getResource(name, kFileType2DA)))
 			throw Common::Exception("No such 2DA");
 
-		twoda->load(*twodaFile);
+		twoda = new TwoDAFile(*twodaFile);
 
 		delete twodaFile;
 	} catch (Common::Exception &e) {

@@ -81,17 +81,8 @@ private:
 /** Class to hold the two-dimensional array of a 2DA file. */
 class TwoDAFile : public AuroraBase {
 public:
-	TwoDAFile();
+	TwoDAFile(Common::SeekableReadStream &twoda);
 	~TwoDAFile();
-
-	/** Clear the array. */
-	void clear();
-
-	/** Load a 2DA file.
-	 *
-	 *  @param twoda A stream of an 2DA file.
-	 */
-	void load(Common::SeekableReadStream &twoda);
 
 	/** Return the number of rows in the array. */
 	uint32 getRowCount() const;
@@ -125,8 +116,10 @@ private:
 	std::vector<TwoDARow *> _rows;
 
 	// Loading helpers
+	void load(Common::SeekableReadStream &twoda);
 	void read2a(Common::SeekableReadStream &twoda);
 	void read2b(Common::SeekableReadStream &twoda);
+	void clear();
 
 	// ASCII loading helpers
 	void readDefault2a(Common::SeekableReadStream &twoda, Common::StreamTokenizer &tokenize);

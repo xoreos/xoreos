@@ -206,9 +206,7 @@ bool dump2DA(const Common::UString &name) {
 		if (!(twoDAFile = ResMan.getResource(name, Aurora::kFileType2DA)))
 			return false;
 
-		Aurora::TwoDAFile twoda;
-
-		twoda.load(*twoDAFile);
+		Aurora::TwoDAFile twoda(*twoDAFile);
 
 		success = twoda.dumpASCII(name + ".2da");
 

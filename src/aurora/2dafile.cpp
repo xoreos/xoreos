@@ -114,7 +114,10 @@ const Common::UString &TwoDARow::getCell(uint32 n) const {
 }
 
 
-TwoDAFile::TwoDAFile() : _defaultInt(0), _defaultFloat(0.0), _emptyRow(*this) {
+TwoDAFile::TwoDAFile(Common::SeekableReadStream &twoda) :
+	_defaultInt(0), _defaultFloat(0.0), _emptyRow(*this) {
+
+	load(twoda);
 }
 
 TwoDAFile::~TwoDAFile() {
@@ -138,8 +141,6 @@ void TwoDAFile::clear() {
 }
 
 void TwoDAFile::load(Common::SeekableReadStream &twoda) {
-	clear();
-
 	readHeader(twoda);
 
 	if ((_id != k2DAID) && (_id != k2DAIDTab))
@@ -164,6 +165,8 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
+		clear();
+
 		e.add("Failed reading 2DA file");
 		throw;
 	}
