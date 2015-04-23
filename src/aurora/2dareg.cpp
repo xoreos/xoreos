@@ -27,6 +27,7 @@
 
 #include "src/aurora/2dareg.h"
 #include "src/aurora/2dafile.h"
+#include "src/aurora/gdafile.h"
 #include "src/aurora/resman.h"
 
 DECLARE_SINGLETON(Aurora::TwoDARegistry)
@@ -43,8 +44,11 @@ TwoDARegistry::~TwoDARegistry() {
 void TwoDARegistry::clear() {
 	for (TwoDAMap::iterator it = _twodas.begin(); it != _twodas.end(); ++it)
 		delete it->second;
+	for (GDAMap::iterator it = _gdas.begin(); it != _gdas.end(); ++it)
+		delete it->second;
 
 	_twodas.clear();
+	_gdas.clear();
 }
 
 const TwoDAFile &TwoDARegistry::get(const Common::UString &name) {
@@ -59,6 +63,22 @@ const TwoDAFile &TwoDARegistry::get(const Common::UString &name) {
 
 	std::pair<TwoDAMap::iterator, bool> result;
 	result = _twodas.insert(std::make_pair(name, newTwoDA));
+
+	return *result.first->second;
+}
+
+const GDAFile &TwoDARegistry::getGDA(const Common::UString &name) {
+	GDAMap::const_iterator gda = _gdas.find(name);
+	if (gda != _gdas.end())
+		// Entry exists => return
+		return *gda->second;
+
+	// Entry doesn't exist => load and add
+
+	GDAFile *newGDA = loadGDA(name);
+
+	std::pair<GDAMap::iterator, bool> result;
+	result = _gdas.insert(std::make_pair(name, newGDA));
 
 	return *result.first->second;
 }
@@ -83,6 +103,28 @@ void TwoDARegistry::remove(const Common::UString &name) {
 
 	delete twoda->second;
 	_twodas.erase(twoda);
+}
+
+void TwoDARegistry::addGDA(const Common::UString &name) {
+	GDAMap::iterator gda = _gdas.find(name);
+	if (gda != _gdas.end()) {
+		// Entry exists => remove first
+		delete gda->second;
+		_gdas.erase(gda);
+	}
+
+	// Load and add
+	_gdas[name] = loadGDA(name);
+}
+
+void TwoDARegistry::removeGDA(const Common::UString &name) {
+	GDAMap::iterator gda = _gdas.find(name);
+	if (gda == _gdas.end())
+		// Does exist, nothing to do
+		return;
+
+	delete gda->second;
+	_gdas.erase(gda);
 }
 
 TwoDAFile *TwoDARegistry::load(const Common::UString &name) {
@@ -110,6 +152,24 @@ TwoDAFile *TwoDARegistry::load(const Common::UString &name) {
 	}
 
 	return twoda;
+}
+
+GDAFile *TwoDARegistry::loadGDA(const Common::UString &name) {
+	Common::SeekableReadStream *gdaFile = 0;
+	GDAFile *gda = 0;
+
+	try {
+		if (!(gdaFile = ResMan.getResource(name, kFileTypeGDA)))
+			throw Common::Exception("No such GDA");
+
+		gda = new GDAFile(gdaFile);
+	} catch (Common::Exception &e) {
+
+		e.add("Failed loading GDA \"%s\"", name.c_str());
+		throw;
+	}
+
+	return gda;
 }
 
 } // End of namespace Aurora

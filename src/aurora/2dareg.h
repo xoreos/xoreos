@@ -35,6 +35,7 @@
 namespace Aurora {
 
 class TwoDAFile;
+class GDAFile;
 
 /** The global 2DA registry, holding all current 2DAs. */
 class TwoDARegistry : public Common::Singleton<TwoDARegistry> {
@@ -47,17 +48,28 @@ public:
 	/** Get a certain 2DA, loading it if necessary. */
 	const TwoDAFile &get(const Common::UString &name);
 
+	/** Get a certain GDA, loading it if necessary. */
+	const GDAFile &getGDA(const Common::UString &name);
+
 	/** Add a certain 2DA to the registry, reloading it if necessary. */
 	void add(const Common::UString &name);
 	/** Remove a certain 2DA from the registry. */
 	void remove(const Common::UString &name);
 
+	/** Add a certain GDA to the registry, reloading it if necessary. */
+	void addGDA(const Common::UString &name);
+	/** Remove a certain GDA from the registry. */
+	void removeGDA(const Common::UString &name);
+
 private:
 	typedef std::map<Common::UString, TwoDAFile *> TwoDAMap;
+	typedef std::map<Common::UString, GDAFile *> GDAMap;
 
 	TwoDAMap _twodas;
+	GDAMap   _gdas;
 
 	TwoDAFile *load(const Common::UString &name);
+	GDAFile   *loadGDA(const Common::UString &name);
 };
 
 } // End of namespace Aurora
