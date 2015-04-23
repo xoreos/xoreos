@@ -182,7 +182,7 @@ void Object::loadSSF() {
 	if (_ssf || (_soundSet == Aurora::kFieldIDInvalid))
 		return;
 
-	const Aurora::TwoDAFile &soundSets = TwoDAReg.get("soundset");
+	const Aurora::TwoDAFile &soundSets = TwoDAReg.get2DA("soundset");
 
 	Common::UString ssfFile = soundSets.getRow(_soundSet).getString("RESREF");
 	if (ssfFile.empty())

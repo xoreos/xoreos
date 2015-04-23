@@ -225,7 +225,7 @@ void Area::loadGIT(const Aurora::GFF3Struct &git) {
 void Area::loadProperties(const Aurora::GFF3Struct &props) {
 	// Ambient sound
 
-	const Aurora::TwoDAFile &ambientSound = TwoDAReg.get("ambientsound");
+	const Aurora::TwoDAFile &ambientSound = TwoDAReg.get2DA("ambientsound");
 
 	uint32 ambientDay   = props.getUint("AmbientSndDay"  , Aurora::kStrRefInvalid);
 	uint32 ambientNight = props.getUint("AmbientSndNight", Aurora::kStrRefInvalid);
@@ -244,7 +244,7 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 
 	// Ambient music
 
-	const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get("ambientmusic");
+	const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get2DA("ambientmusic");
 
 	uint32 musicDay   = props.getUint("MusicDay"   , Aurora::kStrRefInvalid);
 	uint32 musicNight = props.getUint("MusicNight" , Aurora::kStrRefInvalid);

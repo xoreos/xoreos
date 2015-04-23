@@ -222,7 +222,7 @@ void Situated::loadSounds() {
 	if (_soundAppType == Aurora::kFieldIDInvalid)
 		return;
 
-	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeableobjsnds");
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("placeableobjsnds");
 
 	_soundOpened    = twoda.getRow(_soundAppType).getString("Opened");
 	_soundClosed    = twoda.getRow(_soundAppType).getString("Closed");

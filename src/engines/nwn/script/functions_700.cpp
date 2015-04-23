@@ -446,7 +446,7 @@ void ScriptFunctions::get2DAString(Aurora::NWScript::FunctionContext &ctx) {
 	if (file.empty() || col.empty())
 		return;
 
-	const Aurora::TwoDAFile &twoda = TwoDAReg.get(file);
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA(file);
 
 	ctx.getReturn() = twoda.getRow(row).getString(col);
 }

@@ -75,8 +75,8 @@ void CharGenChoices::setCharRace(uint32 race) {
 
 	_racialFeats.clear();
 
-	const Aurora::TwoDAFile &twodaRace = TwoDAReg.get("racialtypes");
-	const Aurora::TwoDAFile &twodaFeatRace = TwoDAReg.get(
+	const Aurora::TwoDAFile &twodaRace = TwoDAReg.get2DA("racialtypes");
+	const Aurora::TwoDAFile &twodaFeatRace = TwoDAReg.get2DA(
 		twodaRace.getRow(race).getString("FeatsTable"));
 
 	for (uint8 it = 0; it < twodaFeatRace.getRowCount(); ++it) {
@@ -94,8 +94,8 @@ void CharGenChoices::setCharClass(uint32 classId) {
 
 	// Add granted class feats.
 	_classFeats.clear();
-	const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get("classes");
-	const Aurora::TwoDAFile &twodaClsFeat = TwoDAReg.get(twodaClasses.getRow(classId).getString("FeatsTable"));
+	const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
+	const Aurora::TwoDAFile &twodaClsFeat = TwoDAReg.get2DA(twodaClasses.getRow(classId).getString("FeatsTable"));
 	for (uint it = 0; it < twodaClsFeat.getRowCount(); ++it) {
 		const Aurora::TwoDARow &rowFeat = twodaClsFeat.getRow(it);
 		if (rowFeat.getInt("List") != 3)

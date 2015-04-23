@@ -154,7 +154,7 @@ void CharPortrait::callbackActive(Widget &widget) {
 }
 
 const std::vector<Common::UString> CharPortrait::initPortraitList() {
-	const Aurora::TwoDAFile &twodaPortraits = TwoDAReg.get("portraits");
+	const Aurora::TwoDAFile &twodaPortraits = TwoDAReg.get2DA("portraits");
 
 	uint32 race = _choices->getCharacter().getRace();
 	// Portraits for half-elf and human are the same.

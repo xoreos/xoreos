@@ -91,9 +91,9 @@ void Door::loadAppearance() {
 		if (_genericType == Aurora::kFieldIDInvalid)
 			_invisible = true;
 		else
-			loadAppearance(TwoDAReg.get("genericdoors"), _genericType);
+			loadAppearance(TwoDAReg.get2DA("genericdoors"), _genericType);
 	} else
-		loadAppearance(TwoDAReg.get("doortypes"), _appearanceID);
+		loadAppearance(TwoDAReg.get2DA("doortypes"), _appearanceID);
 
 	// Invisible doors have no model and are always open
 	if (_invisible) {

@@ -70,7 +70,7 @@ void CharClass::createClassList() {
 	_classNames.clear();
 	_helpTexts.clear();
 
-	const Aurora::TwoDAFile &twoda = TwoDAReg.get("classes");
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("classes");
 	for (uint it = 0; it < twoda.getRowCount(); ++it) {
 		const Aurora::TwoDARow &row = twoda.getRow(it);
 		if (row.getInt("PlayerClass") == 0)

@@ -165,7 +165,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 void Creature::loadPortrait(const Aurora::GFF3Struct &gff) {
 	uint32 portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
-		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
+		const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("portraits");
 
 		Common::UString portrait = twoda.getRow(portraitID).getString("BaseResRef");
 		if (!portrait.empty())
@@ -191,7 +191,7 @@ void Creature::loadAppearance() {
 }
 
 void Creature::getPartModels(PartModels &parts, uint32 state) {
-	const Aurora::TwoDARow &appearance = TwoDAReg.get("appearance").getRow(_appearance);
+	const Aurora::TwoDARow &appearance = TwoDAReg.get2DA("appearance").getRow(_appearance);
 
 	parts.type = appearance.getString("modeltype");
 
@@ -210,7 +210,7 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 		const int headNormalID = appearance.getInt("normalhead");
 		const int headBackupID = appearance.getInt("backuphead");
 
-		const Aurora::TwoDAFile &heads = TwoDAReg.get("heads");
+		const Aurora::TwoDAFile &heads = TwoDAReg.get2DA("heads");
 
 		if      (headNormalID >= 0)
 			parts.head = heads.getRow(headNormalID).getString("head");

@@ -376,12 +376,12 @@ static const char *kBodyPartNodes[] = {
 };
 
 void Creature::getPartModels() {
-	const Aurora::TwoDAFile &appearance = TwoDAReg.get("appearance");
+	const Aurora::TwoDAFile &appearance = TwoDAReg.get2DA("appearance");
 
-	const Aurora::TwoDARow &gender = TwoDAReg.get("gender").getRow(_gender);
-	const Aurora::TwoDARow &race   = TwoDAReg.get("racialtypes").getRow(_race);
+	const Aurora::TwoDARow &gender = TwoDAReg.get2DA("gender").getRow(_gender);
+	const Aurora::TwoDARow &race   = TwoDAReg.get2DA("racialtypes").getRow(_race);
 	const Aurora::TwoDARow &raceAp = appearance.getRow(race.getInt("Appearance"));
-	const Aurora::TwoDARow &pheno  = TwoDAReg.get("phenotype").getRow(_phenotype);
+	const Aurora::TwoDARow &pheno  = TwoDAReg.get2DA("phenotype").getRow(_phenotype);
 
 	Common::UString genderChar   = gender.getString("GENDER");
 	Common::UString raceChar     = raceAp.getString("RACE");
@@ -457,7 +457,7 @@ void Creature::loadModel() {
 		return;
 	}
 
-	const Aurora::TwoDARow &appearance = TwoDAReg.get("appearance").getRow(_appearanceID);
+	const Aurora::TwoDARow &appearance = TwoDAReg.get2DA("appearance").getRow(_appearanceID);
 
 	if (_portrait.empty())
 		_portrait = appearance.getString("PORTRAIT");
@@ -737,7 +737,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 void Creature::loadPortrait(const Aurora::GFF3Struct &gff, Common::UString &portrait) {
 	uint32 portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
-		const Aurora::TwoDAFile &twoda = TwoDAReg.get("portraits");
+		const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("portraits");
 
 		Common::UString portrait2DA = twoda.getRow(portraitID).getString("BaseResRef");
 		if (!portrait2DA.empty())
@@ -799,19 +799,19 @@ void Creature::loadClasses(const Aurora::GFF3Struct &gff,
 }
 
 const Common::UString &Creature::getConvRace() const {
-	const uint32 strRef = TwoDAReg.get("racialtypes").getRow(_race).getInt("ConverName");
+	const uint32 strRef = TwoDAReg.get2DA("racialtypes").getRow(_race).getInt("ConverName");
 
 	return TalkMan.getString(strRef);
 }
 
 const Common::UString &Creature::getConvrace() const {
-	const uint32 strRef = TwoDAReg.get("racialtypes").getRow(_race).getInt("ConverNameLower");
+	const uint32 strRef = TwoDAReg.get2DA("racialtypes").getRow(_race).getInt("ConverNameLower");
 
 	return TalkMan.getString(strRef);
 }
 
 const Common::UString &Creature::getConvRaces() const {
-	const uint32 strRef = TwoDAReg.get("racialtypes").getRow(_race).getInt("NamePlural");
+	const uint32 strRef = TwoDAReg.get2DA("racialtypes").getRow(_race).getInt("NamePlural");
 
 	return TalkMan.getString(strRef);
 }
@@ -841,21 +841,21 @@ uint16 Creature::getClassLevel(uint32 classID) const {
 
 const Common::UString &Creature::getConvClass() const {
 	const uint32 classID = _classes.front().classID;
-	const uint32 strRef  = TwoDAReg.get("classes").getRow(classID).getInt("Name");
+	const uint32 strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Name");
 
 	return TalkMan.getString(strRef);
 }
 
 const Common::UString &Creature::getConvclass() const {
 	const uint32 classID = _classes.front().classID;
-	const uint32 strRef  = TwoDAReg.get("classes").getRow(classID).getInt("Lower");
+	const uint32 strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Lower");
 
 	return TalkMan.getString(strRef);
 }
 
 const Common::UString &Creature::getConvClasses() const {
 	const uint32 classID = _classes.front().classID;
-	const uint32 strRef  = TwoDAReg.get("classes").getRow(classID).getInt("Plural");
+	const uint32 strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Plural");
 
 	return TalkMan.getString(strRef);
 }
@@ -1042,7 +1042,7 @@ void Creature::getClassString(const std::vector<Class> &classes, Common::UString
 		if (!str.empty())
 			str += '/';
 
-		uint32 strRef = TwoDAReg.get("classes").getRow(c->classID).getInt("Name");
+		uint32 strRef = TwoDAReg.get2DA("classes").getRow(c->classID).getInt("Name");
 
 		str += TalkMan.getString(strRef);
 	}

@@ -123,7 +123,7 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 }
 
 void Placeable::loadAppearance() {
-	const Aurora::TwoDAFile &twoda = TwoDAReg.get("placeables");
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("placeables");
 
 	if (_modelName.empty())
 		_modelName = twoda.getRow(_appearanceID).getString("ModelName");

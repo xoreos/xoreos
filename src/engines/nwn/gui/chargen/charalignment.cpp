@@ -129,7 +129,7 @@ void CharAlignment::setRestrict() {
 	if (_goodness < 101)
 		return;
 
-	const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get("classes");
+	const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
 	const Aurora::TwoDARow &row = twodaClasses.getRow(_choices->getClass());
 
 	uint alignRestrict = row.getInt("AlignRestrict");

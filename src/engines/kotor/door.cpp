@@ -75,9 +75,9 @@ void Door::loadAppearance() {
 			throw Common::Exception("Door \"%s\" has no appearance ID and no generic type",
 			                        _tag.c_str());
 
-		loadAppearance(TwoDAReg.get("genericdoors"), _genericType);
+		loadAppearance(TwoDAReg.get2DA("genericdoors"), _genericType);
 	} else
-		loadAppearance(TwoDAReg.get("doortypes"), _appearanceID);
+		loadAppearance(TwoDAReg.get2DA("doortypes"), _appearanceID);
 }
 
 void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {

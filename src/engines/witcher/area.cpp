@@ -133,17 +133,17 @@ uint32 Area::getMusicBattleTrack() const {
 
 void Area::setMusicDayTrack(uint32 track) {
 	_musicDayTrack = track;
-	_musicDay      = TwoDAReg.get("ambientmusic").getRow(track).getString("Resource");
+	_musicDay      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
 }
 
 void Area::setMusicNightTrack(uint32 track) {
 	_musicNightTrack = track;
-	_musicNight      = TwoDAReg.get("ambientmusic").getRow(track).getString("Resource");
+	_musicNight      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
 }
 
 void Area::setMusicBattleTrack(uint32 track) {
 	_musicBattleTrack = track;
-	_musicBattle      = TwoDAReg.get("ambientmusic").getRow(_musicBattleTrack).getString("Resource");
+	_musicBattle      = TwoDAReg.get2DA("ambientmusic").getRow(_musicBattleTrack).getString("Resource");
 }
 
 void Area::stopAmbientMusic() {

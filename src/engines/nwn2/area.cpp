@@ -152,19 +152,19 @@ uint32 Area::getMusicBattleTrack() const {
 
 void Area::setMusicDayTrack(uint32 track) {
 	_musicDayTrack = track;
-	_musicDay      = TwoDAReg.get("ambientmusic").getRow(track).getString("Resource");
+	_musicDay      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
 }
 
 void Area::setMusicNightTrack(uint32 track) {
 	_musicNightTrack = track;
-	_musicNight      = TwoDAReg.get("ambientmusic").getRow(track).getString("Resource");
+	_musicNight      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
 }
 
 void Area::setMusicBattleTrack(uint32 track) {
 	_musicBattleTrack = track;
 
 	if (_musicBattleTrack != Aurora::kStrRefInvalid) {
-		const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get("ambientmusic");
+		const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get2DA("ambientmusic");
 
 		// Normal battle music
 		_musicBattle = ambientMusic.getRow(_musicBattleTrack).getString("Resource");
@@ -343,7 +343,7 @@ void Area::loadGIT(const Aurora::GFF3Struct &git) {
 void Area::loadProperties(const Aurora::GFF3Struct &props) {
 	// Ambient sound
 
-	const Aurora::TwoDAFile &ambientSound = TwoDAReg.get("ambientsound");
+	const Aurora::TwoDAFile &ambientSound = TwoDAReg.get2DA("ambientsound");
 
 	uint32 ambientDay   = props.getUint("AmbientSndDay"  , Aurora::kStrRefInvalid);
 	uint32 ambientNight = props.getUint("AmbientSndNight", Aurora::kStrRefInvalid);
@@ -409,7 +409,7 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 	if (!tile.metaTile) {
 		// Normal tile
 
-		const Aurora::TwoDAFile &tiles = TwoDAReg.get("tiles");
+		const Aurora::TwoDAFile &tiles = TwoDAReg.get2DA("tiles");
 
 		Common::UString tileSet  = tiles.getRow(tile.tileID).getString("TileSet");
 		Common::UString tileType = tiles.getRow(tile.tileID).getString("Tile_Type");
@@ -419,7 +419,7 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 	} else {
 		// "Meta tile". Spreads over the space of several normal tiles
 
-		const Aurora::TwoDAFile &metatiles = TwoDAReg.get("metatiles");
+		const Aurora::TwoDAFile &metatiles = TwoDAReg.get2DA("metatiles");
 
 		Common::UString tileSet = metatiles.getRow(tile.tileID).getString("TileSet");
 		Common::UString name    = metatiles.getRow(tile.tileID).getString("Name");

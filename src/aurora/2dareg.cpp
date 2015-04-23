@@ -51,7 +51,7 @@ void TwoDARegistry::clear() {
 	_gdas.clear();
 }
 
-const TwoDAFile &TwoDARegistry::get(const Common::UString &name) {
+const TwoDAFile &TwoDARegistry::get2DA(const Common::UString &name) {
 	TwoDAMap::const_iterator twoda = _twodas.find(name);
 	if (twoda != _twodas.end())
 		// Entry exists => return
@@ -59,7 +59,7 @@ const TwoDAFile &TwoDARegistry::get(const Common::UString &name) {
 
 	// Entry doesn't exist => load and add
 
-	TwoDAFile *newTwoDA = load(name);
+	TwoDAFile *newTwoDA = load2DA(name);
 
 	std::pair<TwoDAMap::iterator, bool> result;
 	result = _twodas.insert(std::make_pair(name, newTwoDA));
@@ -83,7 +83,7 @@ const GDAFile &TwoDARegistry::getGDA(const Common::UString &name) {
 	return *result.first->second;
 }
 
-void TwoDARegistry::add(const Common::UString &name) {
+void TwoDARegistry::add2DA(const Common::UString &name) {
 	TwoDAMap::iterator twoda = _twodas.find(name);
 	if (twoda != _twodas.end()) {
 		// Entry exists => remove first
@@ -92,10 +92,10 @@ void TwoDARegistry::add(const Common::UString &name) {
 	}
 
 	// Load and add
-	_twodas[name] = load(name);
+	_twodas[name] = load2DA(name);
 }
 
-void TwoDARegistry::remove(const Common::UString &name) {
+void TwoDARegistry::remove2DA(const Common::UString &name) {
 	TwoDAMap::iterator twoda = _twodas.find(name);
 	if (twoda == _twodas.end())
 		// Does exist, nothing to do
@@ -127,7 +127,7 @@ void TwoDARegistry::removeGDA(const Common::UString &name) {
 	_gdas.erase(gda);
 }
 
-TwoDAFile *TwoDARegistry::load(const Common::UString &name) {
+TwoDAFile *TwoDARegistry::load2DA(const Common::UString &name) {
 	Common::SeekableReadStream *twodaFile = 0;
 	TwoDAFile *twoda = 0;
 
@@ -136,20 +136,18 @@ TwoDAFile *TwoDARegistry::load(const Common::UString &name) {
 			throw Common::Exception("No such 2DA");
 
 		twoda = new TwoDAFile(*twodaFile);
-
-		delete twodaFile;
 	} catch (Common::Exception &e) {
-		delete twodaFile;
 		delete twoda;
 
 		e.add("Failed loading 2DA \"%s\"", name.c_str());
 		throw;
 
 	} catch (...) {
-		delete twodaFile;
 		delete twoda;
 		throw;
 	}
+
+	delete twodaFile;
 
 	return twoda;
 }

@@ -201,7 +201,7 @@ int32 Creature::getMaxHP() const {
 }
 
 Common::UString Creature::getBaseModel(const Common::UString &base) {
-	const Aurora::TwoDARow &appearance = TwoDAReg.get("appearance").getRow(_appearanceID);
+	const Aurora::TwoDARow &appearance = TwoDAReg.get2DA("appearance").getRow(_appearanceID);
 
 	Common::UString baseModel = appearance.getString(base);
 
@@ -214,7 +214,7 @@ Common::UString Creature::getBaseModel(const Common::UString &base) {
 bool Creature::loadArmorModel(const Common::UString &body,
 		const Common::UString &armor, uint8 visualType, uint8 variation) {
 
-	const Aurora::TwoDARow &armorVisual = TwoDAReg.get("armorvisualdata").getRow(visualType);
+	const Aurora::TwoDARow &armorVisual = TwoDAReg.get2DA("armorvisualdata").getRow(visualType);
 	Common::UString armorPrefix = armorVisual.getString("Prefix");
 
 	Common::UString modelFile;
@@ -282,7 +282,7 @@ void Creature::loadModel() {
 	// Main body model
 	loadArmorModel(body, "BODY", _armorVisualType, _armorVariation);
 
-	const Aurora::TwoDARow &appearance = TwoDAReg.get("appearance").getRow(_appearanceID);
+	const Aurora::TwoDARow &appearance = TwoDAReg.get2DA("appearance").getRow(_appearanceID);
 	if (appearance.getInt("BodyType") == 1) {
 		// Creature with more part models than just the body
 
