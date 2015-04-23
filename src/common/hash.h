@@ -27,6 +27,8 @@
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
+#include "src/common/encoding.h"
+#include "src/common/stream.h"
 
 namespace Common {
 
@@ -40,35 +42,95 @@ enum HashAlgo {
 	kHashMAX         ///< For range checks.
 };
 
-/** djb2 hash function by Daniel J. Bernstein. */
+// .--- djb2 hash function by Daniel J. Bernstein ---.
+static inline uint32 hashDJB2(uint32 hash, uint32 c) {
+	return ((hash << 5) + hash) + c;
+}
+
 static inline uint32 hashStringDJB2(const UString &string) {
 	uint32 hash = 5381;
 
 	for (UString::iterator it = string.begin(); it != string.end(); ++it)
-		hash = ((hash << 5) + hash) + *it;
+		hash = hashDJB2(hash, *it);
 
 	return hash;
 }
 
-/** 32bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo. */
+static inline uint32 hashStringDJB2(const UString &string, Encoding encoding) {
+	uint32 hash = 5381;
+
+	SeekableReadStream *data = convertString(string, encoding);
+	if (data) {
+		uint32 c;
+		while ((c = data->readChar()) != kEOF)
+			hash = hashDJB2(hash, c);
+
+		delete data;
+	}
+
+	return hash;
+}
+// '--- djb2 hash function by Daniel J. Bernstein ---'
+
+// .--- 32bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---.
+static inline uint32 hashFNV32(uint32 hash, uint32 c) {
+	return (hash * 16777619) ^ c;
+}
+
 static inline uint32 hashStringFNV32(const UString &string) {
 	uint32 hash = 0x811C9DC5;
 
 	for (UString::iterator it = string.begin(); it != string.end(); ++it)
-		hash = (hash * 16777619) ^ *it;
+		hash = hashFNV32(hash, *it);
 
 	return hash;
 }
 
-/** 64bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo. */
+static inline uint32 hashStringFNV32(const UString &string, Encoding encoding) {
+	uint32 hash = 0x811C9DC5;
+
+	SeekableReadStream *data = convertString(string, encoding);
+	if (data) {
+		uint32 c;
+		while ((c = data->readChar()) != kEOF)
+			hash = hashFNV32(hash, c);
+
+		delete data;
+	}
+
+	return hash;
+}
+// '--- 32bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---'
+
+// .--- 64bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---.
+static inline uint64 hashFNV64(uint64 hash, uint32 c) {
+	return (hash * 1099511628211LL) ^ c;
+}
+
 static inline uint64 hashStringFNV64(const UString &string) {
 	uint64 hash = 0xCBF29CE484222325LL;
 
 	for (UString::iterator it = string.begin(); it != string.end(); ++it)
-		hash = (hash * 1099511628211LL) ^ *it;
+		hash = hashFNV64(hash, *it);
 
 	return hash;
 }
+
+static inline uint32 hashStringFNV64(const UString &string, Encoding encoding) {
+	uint64 hash = 0xCBF29CE484222325LL;
+
+	SeekableReadStream *data = convertString(string, encoding);
+	if (data) {
+		uint32 c;
+		while ((c = data->readChar()) != kEOF)
+			hash = hashFNV64(hash, c);
+
+		delete data;
+	}
+
+	return hash;
+}
+// '--- 64bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---'
 
 /* .--- CRC32, based on the implementation by Gary S. Brown ---.
  *
@@ -126,17 +188,36 @@ static const uint32 kCRC32Tab[] = {
 	0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D
 };
 
+static inline uint32 hashCRC32(uint32 hash, uint32 c) {
+	return kCRC32Tab[(hash ^ c) & 0xFF] ^ (hash >> 8);
+}
+
 static inline uint32 hashStringCRC32(const UString &string) {
 	uint32 hash = 0xFFFFFFFF;
 
 	for (UString::iterator it = string.begin(); it != string.end(); ++it)
-		hash = kCRC32Tab[(hash ^ *it) & 0xFF] ^ (hash >> 8);
+		hash = hashCRC32(hash, *it);
 
 	return hash ^ 0xFFFFFFFF;
 }
 
+static inline uint32 hashStringCRC32(const UString &string, Encoding encoding) {
+	uint32 hash = 0xFFFFFFFF;
+
+	SeekableReadStream *data = convertString(string, encoding);
+	if (data) {
+		uint32 c;
+		while ((c = data->readChar()) != kEOF)
+			hash = hashCRC32(hash, c);
+
+		delete data;
+	}
+
+	return hash ^ 0xFFFFFFFF;
+}
 // '--- CRC32, based on the implementation by Gary S. Brown ---'
 
+/** Hash the string with the given algorithm, as a series of UTF-8 characters. */
 static inline uint64 hashString(const UString &string, HashAlgo algo) {
 	switch (algo) {
 		case kHashDJB2:
@@ -150,6 +231,28 @@ static inline uint64 hashString(const UString &string, HashAlgo algo) {
 
 		case kHashCRC32:
 			return hashStringCRC32(string);
+
+		default:
+			break;
+	}
+
+	return 0;
+}
+
+/** Hash the string with the given algorithm, as a series of bytes in the given encoding. */
+static inline uint64 hashString(const UString &string, HashAlgo algo, Encoding encoding) {
+	switch (algo) {
+		case kHashDJB2:
+			return hashStringDJB2(string, encoding);
+
+		case kHashFNV32:
+			return hashStringFNV32(string, encoding);
+
+		case kHashFNV64:
+			return hashStringFNV64(string, encoding);
+
+		case kHashCRC32:
+			return hashStringCRC32(string, encoding);
 
 		default:
 			break;
