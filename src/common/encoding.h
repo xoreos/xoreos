@@ -54,19 +54,19 @@ enum Encoding {
 };
 
 /** Read a string with the given encoding of a stream. */
-Common::UString readString(SeekableReadStream &stream, Encoding encoding);
+UString readString(SeekableReadStream &stream, Encoding encoding);
 
 /** Read length bytes as a string with the given encoding out of a stream. */
-Common::UString readStringFixed(SeekableReadStream &stream, Encoding encoding, uint32 length);
+UString readStringFixed(SeekableReadStream &stream, Encoding encoding, uint32 length);
 
 /** Read a line with the given encoding out of a stream. */
-Common::UString readStringLine(SeekableReadStream &stream, Encoding encoding);
+UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 
 /** Read a string with the given encoding from the raw buffer. */
-Common::UString readString(const byte *data, uint32 size, Encoding encoding);
+UString readString(const byte *data, uint32 size, Encoding encoding);
 
 /** Convert a string into the given encoding. */
-Common::SeekableReadStream *convertString(const Common::UString &str, Encoding encoding);
+SeekableReadStream *convertString(const UString &str, Encoding encoding);
 
 /** Return the number of bytes per codepoint in this encoding.
  *

@@ -77,14 +77,14 @@ public:
 		}
 	}
 
-	Common::UString convert(Encoding encoding, byte *data, uint32 n) {
+	UString convert(Encoding encoding, byte *data, uint32 n) {
 		if (((uint) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
 
 		return convert(_contextFrom[encoding], data, n, kEncodingGrowthFrom[encoding]);
 	}
 
-	Common::SeekableReadStream *convert(Encoding encoding, const Common::UString &str) {
+	SeekableReadStream *convert(Encoding encoding, const UString &str) {
 		if (((uint) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
 
@@ -120,7 +120,7 @@ private:
 		return convData;
 	}
 
-	Common::UString convert(iconv_t &ctx, byte *data, uint32 n, uint32 growth) {
+	UString convert(iconv_t &ctx, byte *data, uint32 n, uint32 growth) {
 		if (ctx == ((iconv_t) -1))
 			return "[!!!]";
 
@@ -129,13 +129,13 @@ private:
 		if (!dataOut)
 			return "[!?!]";
 
-		Common::UString str((const char *) dataOut);
+		UString str((const char *) dataOut);
 		delete[] dataOut;
 
 		return str;
 	}
 
-	Common::SeekableReadStream *convert(iconv_t &ctx, const Common::UString &str, uint32 growth) {
+	SeekableReadStream *convert(iconv_t &ctx, const UString &str, uint32 growth) {
 		if (ctx == ((iconv_t) -1))
 			return 0;
 
@@ -148,7 +148,7 @@ private:
 		if (!dataOut)
 			return 0;
 
-		return new Common::MemoryReadStream(dataOut, size - 1, true);
+		return new MemoryReadStream(dataOut, size - 1, true);
 	}
 };
 
@@ -230,12 +230,12 @@ static void writeFakeChar(std::vector<byte> &output, uint32 c, Encoding encoding
 	}
 }
 
-static Common::UString createString(std::vector<byte> &output, Encoding encoding) {
+static UString createString(std::vector<byte> &output, Encoding encoding) {
 	switch (encoding) {
 		case kEncodingASCII:
 		case kEncodingUTF8:
 			output.push_back('\0');
-			return Common::UString((const char *) &output[0]);
+			return UString((const char *) &output[0]);
 
 		default:
 			return ConvMan.convert(encoding, (byte *) &output[0], output.size());
@@ -244,7 +244,7 @@ static Common::UString createString(std::vector<byte> &output, Encoding encoding
 	return "";
 }
 
-Common::UString readString(SeekableReadStream &stream, Encoding encoding) {
+UString readString(SeekableReadStream &stream, Encoding encoding) {
 	std::vector<byte> output;
 
 	uint32 c;
@@ -254,7 +254,7 @@ Common::UString readString(SeekableReadStream &stream, Encoding encoding) {
 	return createString(output, encoding);
 }
 
-Common::UString readStringFixed(SeekableReadStream &stream, Encoding encoding, uint32 length) {
+UString readStringFixed(SeekableReadStream &stream, Encoding encoding, uint32 length) {
 	std::vector<byte> output;
 	output.resize(length);
 
@@ -264,7 +264,7 @@ Common::UString readStringFixed(SeekableReadStream &stream, Encoding encoding, u
 	return createString(output, encoding);
 }
 
-Common::UString readStringLine(SeekableReadStream &stream, Encoding encoding) {
+UString readStringLine(SeekableReadStream &stream, Encoding encoding) {
 	std::vector<byte> output;
 
 	uint32 c;
@@ -281,7 +281,7 @@ Common::UString readStringLine(SeekableReadStream &stream, Encoding encoding) {
 	return createString(output, encoding);
 }
 
-Common::UString readString(const byte *data, uint32 size, Encoding encoding) {
+UString readString(const byte *data, uint32 size, Encoding encoding) {
 	std::vector<byte> output;
 	output.resize(size);
 
@@ -290,9 +290,9 @@ Common::UString readString(const byte *data, uint32 size, Encoding encoding) {
 	return createString(output, encoding);
 }
 
-Common::SeekableReadStream *convertString(const Common::UString &str, Encoding encoding) {
+SeekableReadStream *convertString(const UString &str, Encoding encoding) {
 	if (encoding == kEncodingUTF8)
-		return new Common::MemoryReadStream((const byte *) str.c_str(), strlen(str.c_str()));
+		return new MemoryReadStream((const byte *) str.c_str(), strlen(str.c_str()));
 
 	return ConvMan.convert(encoding, str);
 }
