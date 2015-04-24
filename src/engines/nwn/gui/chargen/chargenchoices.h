@@ -53,7 +53,7 @@ public:
 	void setCharAlign(uint32 goodness, uint32 loyalty);
 
 	bool hasFeat(uint32 featId) const;
-	const uint32 getClass();
+	uint32 getClass() const;
 	bool getAlign(uint32 &goodness, uint32 &loyalty) const;
 
 private:

@@ -133,7 +133,7 @@ bool CharGenChoices::hasFeat(uint32 featId) const {
 	return _creature->hasFeat(featId);
 }
 
-const uint32 CharGenChoices::getClass() {
+uint32 CharGenChoices::getClass() const {
 	return _classId;
 }
 
