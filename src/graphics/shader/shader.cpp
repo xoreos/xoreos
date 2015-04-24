@@ -324,7 +324,7 @@ ShaderProgram *ShaderManager::registerShaderProgram(ShaderObject *vertexObject, 
 		GLsizei logolength;
 		char logorama[4096];
 		glGetProgramInfoLog(glid, 4095, &logolength, logorama);
-		error(logorama);
+		error("%s", logorama);
 
 		glDeleteProgram(glid);
 		vertexObject->usageCount--;
