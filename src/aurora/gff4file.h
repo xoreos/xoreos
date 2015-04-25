@@ -265,6 +265,8 @@ private:
 		kIFieldTypeColor4f     =     15, ///< 4 IEEE floats, RGBA color.
 		kIFieldTypeMatrix4x4f  =     16, ///< 16 IEEE floats, 4x4 matrix in row-major order.
 		kIFieldTypeTlkString   =     17, ///< 2 unsigned 32bit integers, reference into the TLK table.
+		kIFieldTypeUnknown18   =     18, ///< A 32bit integer, found in Sonic.
+		kIFieldTypeASCIIString =     20, ///< ASCII string, found in Sonic.
 		kIFieldTypeStruct      =  65534, ///< A struct.
 		kIFieldTypeGeneric     =  65535  ///< A "generic" field, able to hold any other type.
 	};
