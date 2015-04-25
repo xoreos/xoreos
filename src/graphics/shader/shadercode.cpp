@@ -79,7 +79,7 @@ void main(void) {\n\
 
 // ---------------------------------------------------------
 const char vertexDefault2xText[] =
-"#version 130\n\
+"#version 120\n\
 \n\
 varying vec2 texCoords;\n\
 \n\
@@ -96,8 +96,7 @@ void main(void) {\n\
 ";
 // ---------------------------------------------------------
 const char fragmentDefault2xText[] =
-"#version 130\n\
-precision highp float;\n\
+"#version 120\n\
 \n\
 uniform sampler2D texture0;\n\
 \n\
@@ -109,8 +108,7 @@ void main(void) {\n\
 ";
 // ---------------------------------------------------------
 const char fragmentColor2xText[] =
-"#version 130\n\
-precision highp float;\n\
+"#version 120\n\
 \n\
 uniform vec4 color;\n\
 \n\
