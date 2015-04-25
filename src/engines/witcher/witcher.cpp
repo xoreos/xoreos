@@ -33,7 +33,6 @@
 
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
-#include "src/graphics/aurora/fps.h"
 
 #include "src/events/events.h"
 
@@ -96,7 +95,7 @@ Engines::Engine *WitcherEngineProbe::createEngine() const {
 }
 
 
-WitcherEngine::WitcherEngine() : _fps(0) {
+WitcherEngine::WitcherEngine() {
 }
 
 WitcherEngine::~WitcherEngine() {
@@ -115,11 +114,6 @@ void WitcherEngine::run() {
 		return;
 
 	CursorMan.showCursor();
-
-	if (ConfigMan.getBool("showfps", false)) {
-		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		_fps->show();
-	}
 
 	main();
 
@@ -271,7 +265,6 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 }
 
 void WitcherEngine::deinit() {
-	delete _fps;
 }
 
 void WitcherEngine::playIntroVideos() {

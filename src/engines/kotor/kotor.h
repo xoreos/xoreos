@@ -104,8 +104,6 @@ public:
 	void run();
 
 private:
-	Graphics::Aurora::FPS *_fps;
-
 	Sound::ChannelHandle _menuMusic;
 
 

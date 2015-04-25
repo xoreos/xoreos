@@ -29,6 +29,12 @@
 
 #include "src/aurora/types.h"
 
+namespace Graphics {
+	namespace Aurora {
+		class FPS;
+	}
+}
+
 namespace Engines {
 
 /** The base class for an engine within BioWare's Aurora family. */
@@ -39,10 +45,15 @@ public:
 
 	void start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform);
 
+	/** Evaluate the FPS display setting and show/hide the FPS display. */
+	void showFPS();
+
 protected:
 	Aurora::GameID   _game;
 	Aurora::Platform _platform;
 	Common::UString  _target;
+
+	Graphics::Aurora::FPS *_fps;
 
 	/** Run the game. */
 	virtual void run() = 0;

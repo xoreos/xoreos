@@ -34,7 +34,6 @@
 
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
-#include "src/graphics/aurora/fps.h"
 
 #include "src/events/events.h"
 
@@ -92,7 +91,7 @@ Engines::Engine *NWN2EngineProbe::createEngine() const {
 }
 
 
-NWN2Engine::NWN2Engine() : _hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0) {
+NWN2Engine::NWN2Engine() : _hasXP1(false), _hasXP2(false), _hasXP3(false) {
 }
 
 NWN2Engine::~NWN2Engine() {
@@ -111,11 +110,6 @@ void NWN2Engine::run() {
 		return;
 
 	CursorMan.showCursor();
-
-	if (ConfigMan.getBool("showfps", false)) {
-		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		_fps->show();
-	}
 
 	main();
 
@@ -352,7 +346,6 @@ void NWN2Engine::initGameConfig() {
 }
 
 void NWN2Engine::deinit() {
-	delete _fps;
 }
 
 void NWN2Engine::playIntroVideos() {

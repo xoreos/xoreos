@@ -36,12 +36,6 @@ namespace Common {
 	class FileList;
 }
 
-namespace Graphics {
-	namespace Aurora {
-		class FPS;
-	}
-}
-
 namespace Engines {
 
 class LoadProgress;
@@ -82,7 +76,6 @@ private:
 	bool _hasXP2; // Storm of Zehir (SoZ)
 	bool _hasXP3; // Mysteries of Westgate (MoW)
 
-	Graphics::Aurora::FPS *_fps;
 
 	void init();
 	void declareEncodings();

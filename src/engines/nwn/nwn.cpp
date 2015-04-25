@@ -41,7 +41,6 @@
 
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
-#include "src/graphics/aurora/fps.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/language.h"
@@ -114,7 +113,7 @@ bool NWNEngineProbeFallback::probe(const Common::UString &UNUSED(directory),
 
 
 NWNEngine::NWNEngine() : _version(0),
-	_hasXP1(false), _hasXP2(false), _hasXP3(false), _fps(0), _scriptFuncs(0) {
+	_hasXP1(false), _hasXP2(false), _hasXP3(false), _scriptFuncs(0) {
 
 }
 
@@ -134,11 +133,6 @@ void NWNEngine::run() {
 		return;
 
 	CursorMan.showCursor();
-
-	if (ConfigMan.getBool("showfps", false)) {
-		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		_fps->show();
-	}
 
 	mainMenuLoop();
 
@@ -430,7 +424,6 @@ void NWNEngine::checkConfig() {
 
 void NWNEngine::deinit() {
 	delete _scriptFuncs;
-	delete _fps;
 	delete _version;
 }
 

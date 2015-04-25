@@ -36,7 +36,6 @@
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/fontman.h"
-#include "src/graphics/aurora/fps.h"
 
 #include "src/sound/sound.h"
 
@@ -97,7 +96,7 @@ Engines::Engine *JadeEngineProbe::createEngine() const {
 }
 
 
-JadeEngine::JadeEngine() : _fps(0) {
+JadeEngine::JadeEngine() {
 }
 
 JadeEngine::~JadeEngine() {
@@ -116,11 +115,6 @@ void JadeEngine::run() {
 		return;
 
 	CursorMan.showCursor();
-
-	if (ConfigMan.getBool("showfps", false)) {
-		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		_fps->show();
-	}
 
 	main();
 
@@ -241,7 +235,6 @@ void JadeEngine::initGameConfig() {
 }
 
 void JadeEngine::deinit() {
-	delete _fps;
 }
 
 void JadeEngine::playIntroVideos() {

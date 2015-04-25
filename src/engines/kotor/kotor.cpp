@@ -38,7 +38,6 @@
 
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
-#include "src/graphics/aurora/fps.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/language.h"
@@ -128,7 +127,7 @@ bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common:
 }
 
 
-KotOREngine::KotOREngine() : _fps(0), _hasLiveKey(false) {
+KotOREngine::KotOREngine() : _hasLiveKey(false) {
 }
 
 KotOREngine::~KotOREngine() {
@@ -147,11 +146,6 @@ void KotOREngine::run() {
 		return;
 
 	CursorMan.showCursor();
-
-	if (ConfigMan.getBool("showfps", false)) {
-		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		_fps->show();
-	}
 
 	mainMenuLoop();
 
@@ -452,7 +446,6 @@ void KotOREngine::checkConfig() {
 }
 
 void KotOREngine::deinit() {
-	delete _fps;
 }
 
 void KotOREngine::playIntroVideos() {

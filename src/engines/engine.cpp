@@ -22,22 +22,46 @@
  *  Generic engine interface.
  */
 
+#include "src/common/configman.h"
+
+#include "src/graphics/aurora/fps.h"
+#include "src/graphics/aurora/fontman.h"
+
 #include "src/engines/engine.h"
 
 namespace Engines {
 
-Engine::Engine() : _game(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnknown) {
+Engine::Engine() : _game(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnknown), _fps(0) {
 }
 
 Engine::~Engine() {
+	delete _fps;
 }
 
 void Engine::start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform) {
+	showFPS();
+
 	_game     = game;
 	_platform = platform;
 	_target   = target;
 
 	run();
+}
+
+void Engine::showFPS() {
+	bool show = ConfigMan.getBool("showfps", false);
+
+	if        ( show && !_fps) {
+
+		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
+		_fps->show();
+
+	} else if (!show &&  _fps) {
+
+		delete _fps;
+		_fps = 0;
+
+	}
 }
 
 } // End of namespace Engines

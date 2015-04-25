@@ -38,12 +38,6 @@ namespace Common {
 	class FileList;
 }
 
-namespace Graphics {
-	namespace Aurora {
-		class FPS;
-	}
-}
-
 namespace Engines {
 
 class LoadProgress;
@@ -80,8 +74,6 @@ public:
 	void run();
 
 private:
-	Graphics::Aurora::FPS *_fps;
-
 	std::list<Aurora::ResourceManager::ChangeID> _languageResources;
 
 	void init();

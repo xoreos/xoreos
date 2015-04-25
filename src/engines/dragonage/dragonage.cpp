@@ -32,7 +32,6 @@
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/cube.h"
 #include "src/graphics/aurora/fontman.h"
-#include "src/graphics/aurora/fps.h"
 
 #include "src/sound/sound.h"
 
@@ -106,14 +105,6 @@ void DragonAgeEngine::run() {
 
 	CursorMan.showCursor();
 
-	bool showFPS = ConfigMan.getBool("showfps", false);
-
-	Graphics::Aurora::FPS *fps = 0;
-	if (showFPS) {
-		fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
-		fps->show();
-	}
-
 	Graphics::Aurora::Cube *cube = 0;
 	try {
 
@@ -128,7 +119,6 @@ void DragonAgeEngine::run() {
 	}
 
 	delete cube;
-	delete fps;
 }
 
 void DragonAgeEngine::init() {
