@@ -281,6 +281,7 @@ private:
 	void cmdSilence    (const CommandLine &cl);
 	void cmdGetOption  (const CommandLine &cl);
 	void cmdSetOption  (const CommandLine &cl);
+	void cmdShowFPS    (const CommandLine &cl);
 
 	void updateHelpArguments();
 

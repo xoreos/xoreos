@@ -46,6 +46,8 @@
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/guiquad.h"
 
+#include "src/engines/engine.h"
+
 #include "src/engines/aurora/console.h"
 #include "src/engines/aurora/util.h"
 
@@ -689,6 +691,8 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 			"Usage: getoption <option>\nPrint the value of a config options");
 	registerCommand("setoption"  , boost::bind(&Console::cmdSetOption  , this, _1),
 			"Usage: setoption <option> <value>\nSet the value of a config option for this session");
+	registerCommand("showfps"    , boost::bind(&Console::cmdShowFPS    , this, _1),
+			"Usage: showfps <true/false>\nShow/Hide the frames-per-second display");
 
 	_console->setPrompt(kPrompt);
 
@@ -1202,8 +1206,19 @@ void Console::cmdSetOption(const CommandLine &cl) {
 	}
 
 	ConfigMan.setCommandlineKey(args[0], args[1]);
+	_engine->showFPS();
 
 	printf("\"%s\" = \"%s\"", args[0].c_str(), ConfigMan.getString(args[0]).c_str());
+}
+
+void Console::cmdShowFPS(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	ConfigMan.setCommandlineKey("showfps", cl.args);
+	_engine->showFPS();
 }
 
 void Console::printCommandHelp(const Common::UString &cmd) {
