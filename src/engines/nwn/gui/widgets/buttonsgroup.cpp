@@ -60,14 +60,21 @@ void ButtonsGroup::removeButton(WidgetButton *button) {
 }
 
 void ButtonsGroup::setActive(WidgetButton *button) {
-	for (std::vector<WidgetButton *>::iterator it = _buttonsList.begin(); it != _buttonsList.end(); ++it) {
+	for (std::vector<WidgetButton *>::iterator it = _buttonsList.begin();
+	     it != _buttonsList.end(); ++it) {
 		// First we check if the button belongs to this group.
 		if (*it == button) {
-			(*it)->setPressed(true);
-
 			_helpBox->setText("fnt_galahad14", _helpTexts[std::distance(_buttonsList.begin(), it)], 1.0);
 			_helpBox->setTitle("fnt_galahad14", _helpTitles[std::distance(_buttonsList.begin(), it)]);
-			for (std::vector<WidgetButton *>::iterator jt = _buttonsList.begin(); jt != _buttonsList.end(); ++jt) {
+
+			if ((*it)->getMode() == WidgetButton::kModeUnchanged)
+				break;
+
+			(*it)->setPressed(true);
+
+			for (std::vector<WidgetButton *>::iterator jt = _buttonsList.begin();
+			     jt != _buttonsList.end(); ++jt) {
+
 				if (jt == it)
 					continue;
 

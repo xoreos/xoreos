@@ -70,6 +70,13 @@ void WidgetButton::leave() {
 
 void WidgetButton::setMode(WidgetButton::Mode mode) {
 	_mode = mode;
+
+	if (mode == kModeUnchanged)
+		_model->setState("disabled");
+}
+
+WidgetButton::Mode WidgetButton::getMode() const {
+	return _mode;
 }
 
 void WidgetButton::setPressed(bool pushed) {
@@ -104,6 +111,8 @@ void WidgetButton::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
 
 	if (_mode == kModeNormal) {
 		_model->setState("down");
+		playSound(_sound, Sound::kSoundTypeSFX);
+	} else if (_mode == kModeUnchanged) {
 		playSound(_sound, Sound::kSoundTypeSFX);
 	}
 }

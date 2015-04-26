@@ -41,6 +41,7 @@ public:
 	enum Mode {
 		kModeNormal     = 0,
 		kModeToggle,
+		kModeUnchanged
 	};
 
 	WidgetButton(::Engines::GUI &gui, const Common::UString &tag,
@@ -51,6 +52,7 @@ public:
 	void leave();
 
 	void setMode(Mode mode);
+	Mode getMode() const;
 	void setPressed(bool pushed);
 	bool isPressed() const;
 	void setDisabled(bool disabled);
