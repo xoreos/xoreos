@@ -32,16 +32,16 @@
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/camera.h"
+#include "src/engines/aurora/console.h"
 
 #include "src/engines/jade/module.h"
-#include "src/engines/jade/console.h"
 #include "src/engines/jade/area.h"
 
 namespace Engines {
 
 namespace Jade {
 
-Module::Module(Console &console) : _console(&console),
+Module::Module(::Engines::Console &console) : _console(&console),
 	_hasModule(false), _running(false), _exit(false), _area(0) {
 
 }

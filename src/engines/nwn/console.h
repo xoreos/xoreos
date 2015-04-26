@@ -37,20 +37,20 @@ namespace Engines {
 
 namespace NWN {
 
-class Module;
+class NWNEngine;
 
 class Console : public ::Engines::Console {
 public:
-	Console();
+	Console(NWNEngine &engine);
 	~Console();
 
-	void setModule(Module *module = 0);
 
 private:
 	typedef std::map<Common::UString, int, Common::UString::iless> CampaignMap;
 
 
-	Module *_module;
+	NWNEngine *_engine;
+
 
 	// Caches
 	std::list<Common::UString> _campaigns; ///< All known campaigns modules.
@@ -64,9 +64,7 @@ private:
 
 
 	// Updating the caches
-
 	void updateCaches();
-
 	void updateCampaigns();
 	void updateModules();
 	void updateAreas();

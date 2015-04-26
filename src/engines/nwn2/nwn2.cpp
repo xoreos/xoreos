@@ -91,10 +91,25 @@ Engines::Engine *NWN2EngineProbe::createEngine() const {
 }
 
 
-NWN2Engine::NWN2Engine() : _hasXP1(false), _hasXP2(false), _hasXP3(false) {
+NWN2Engine::NWN2Engine() : _hasXP1(false), _hasXP2(false), _hasXP3(false),
+	_campaign(0) {
+
+	_console = new Console(*this);
 }
 
 NWN2Engine::~NWN2Engine() {
+	delete _campaign;
+}
+
+Campaign *NWN2Engine::getCampaign() {
+	return _campaign;
+}
+
+Module *NWN2Engine::getModule() {
+	if (!_campaign)
+		return 0;
+
+	return _campaign->getModule();
 }
 
 void NWN2Engine::run() {
@@ -358,16 +373,17 @@ void NWN2Engine::playIntroVideos() {
 }
 
 void NWN2Engine::main() {
-	Console console;
-	Campaign campaign(console);
+	_campaign = new Campaign(*_console);
 
-	const std::list<CampaignDescription> &campaigns = campaign.getCampaigns();
+	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
 	if (campaigns.empty())
 		error("No campaigns found");
 
-	campaign.load(*campaigns.begin());
+	_campaign->load(*campaigns.begin());
+	_campaign->run();
 
-	campaign.run();
+	delete _campaign;
+	_campaign = 0;
 }
 
 } // End of namespace NWN2

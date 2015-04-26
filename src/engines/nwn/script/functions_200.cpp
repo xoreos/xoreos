@@ -40,6 +40,7 @@
 #include "src/engines/aurora/tokenman.h"
 
 #include "src/engines/nwn/types.h"
+#include "src/engines/nwn/nwn.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/area.h"
 #include "src/engines/nwn/object.h"
@@ -413,7 +414,9 @@ void ScriptFunctions::registerFunctions200(const Defaults &d) {
 
 void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
-	if (!_module)
+
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
 	const Common::UString &tag = ctx.getParams()[0].getString();
@@ -422,11 +425,11 @@ void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	int nth = ctx.getParams()[1].getInt();
 
-	if (!_module->findObjectInit(_objSearchContext, tag))
+	if (!module->findObjectInit(_objSearchContext, tag))
 		return;
 
 	while (nth-- >= 0)
-		_module->findNextObject(_objSearchContext);
+		module->findNextObject(_objSearchContext);
 
 	ctx.getReturn() = _objSearchContext.getObject();
 }
@@ -445,6 +448,10 @@ void ScriptFunctions::setAreaTransitionBMP(Aurora::NWScript::FunctionContext &UN
 
 void ScriptFunctions::actionStartConversation(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: ScriptFunctions::actionStartConversation(): /Action/
+
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
 
 	Object *source = convertObject(ctx.getCaller());
 	Object *target = convertObject(ctx.getParams()[0].getObject());
@@ -477,7 +484,7 @@ void ScriptFunctions::actionStartConversation(Aurora::NWScript::FunctionContext 
 
 	bool playHello = ctx.getParams()[2].getInt() != 0;
 
-	_module->startConversation(conversation, *pc, *source, playHello);
+	module->startConversation(conversation, *pc, *source, playHello);
 }
 
 void ScriptFunctions::actionPauseConversation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
@@ -613,6 +620,10 @@ void ScriptFunctions::getNearestCreatureToLocation(Aurora::NWScript::FunctionCon
 void ScriptFunctions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
 	Object *target = convertObject(ctx.getParams()[1].getObject());
 	if (ctx.getParamsSpecified() < 2)
 		target = convertObject(ctx.getCaller());
@@ -623,11 +634,11 @@ void ScriptFunctions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	ObjectType type = (ObjectType) ctx.getParams()[0].getInt();
 	int nth = ctx.getParams()[2].getInt() - 1;
 
-	if (!_module->findObjectInit(_objSearchContext))
+	if (!module->findObjectInit(_objSearchContext))
 		return;
 
 	std::list<Object *> objects;
-	while (_module->findNextObject(_objSearchContext)) {
+	while (module->findNextObject(_objSearchContext)) {
 		Object *object = convertObject(_objSearchContext.getObject());
 
 		if (object && (object != target) && (object->getType() == type) &&
@@ -651,7 +662,8 @@ void ScriptFunctions::getNearestObjectToLocation(Aurora::NWScript::FunctionConte
 
 void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Object *) 0;
-	if (!_module)
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
 	const Common::UString &tag = ctx.getParams()[0].getString();
@@ -666,11 +678,11 @@ void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &c
 
 	int nth = ctx.getParams()[2].getInt() - 1;
 
-	if (!_module->findObjectInit(_objSearchContext, tag))
+	if (!module->findObjectInit(_objSearchContext, tag))
 		return;
 
 	std::list<Object *> objects;
-	while (_module->findNextObject(_objSearchContext)) {
+	while (module->findNextObject(_objSearchContext)) {
 		Object *object = convertObject(_objSearchContext.getObject());
 
 		if (object && (object != target) && (object->getArea() == target->getArea()))
@@ -756,7 +768,7 @@ void ScriptFunctions::destroyObject(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::getModule(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (Aurora::NWScript::Object *) _module;
+	ctx.getReturn() = (Aurora::NWScript::Object *) _engine->getModule();
 }
 
 void ScriptFunctions::createObject(Aurora::NWScript::FunctionContext &ctx) {
@@ -835,7 +847,8 @@ void ScriptFunctions::getLastSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = 0;
 
-	if (!_module)
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
 	const Aurora::NWScript::Parameters &params = ctx.getParams();
@@ -877,7 +890,7 @@ void ScriptFunctions::beginConversation(Aurora::NWScript::FunctionContext &ctx) 
 	if (conversation.empty())
 		conversation = object->getConversation();
 
-	ctx.getReturn() = _module->startConversation(conversation, *pc, *object);
+	ctx.getReturn() = module->startConversation(conversation, *pc, *object);
 }
 
 void ScriptFunctions::getLastPerceived(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
@@ -1062,7 +1075,8 @@ void ScriptFunctions::getModuleItemLostBy(Aurora::NWScript::FunctionContext &UNU
 void ScriptFunctions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: ScriptFunctions::actionDoCommand(): /Action/
 
-	if (!_module)
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
 	Common::UString script = ctx.getScriptName();
@@ -1071,7 +1085,7 @@ void ScriptFunctions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {
 
 	const Aurora::NWScript::ScriptState &state = ctx.getParams()[0].getScriptState();
 
-	_module->delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), 0);
+	module->delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), 0);
 }
 
 void ScriptFunctions::eventConversation(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {

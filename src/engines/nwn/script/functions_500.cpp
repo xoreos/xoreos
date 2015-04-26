@@ -433,17 +433,18 @@ void ScriptFunctions::getLastRestEventType(Aurora::NWScript::FunctionContext &UN
 }
 
 void ScriptFunctions::startNewModule(Aurora::NWScript::FunctionContext &ctx) {
-	if (!_module)
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
-	Common::UString module = ctx.getParams()[0].getString();
+	Common::UString mod = ctx.getParams()[0].getString();
 
-	if (!NWNEngine::hasModule(module)) {
-		warning("Can't start module \"%s\": No such module", module.c_str());
+	if (!NWNEngine::hasModule(mod)) {
+		warning("Can't start module \"%s\": No such module", mod.c_str());
 		return;
 	}
 
-	_module->load(module);
+	module->load(mod);
 }
 
 void ScriptFunctions::effectSwarm(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {

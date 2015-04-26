@@ -47,10 +47,11 @@
 
 namespace Engines {
 
+class Console;
+
 namespace NWN {
 
 class Version;
-class Console;
 
 class Object;
 
@@ -61,7 +62,7 @@ class IngameGUI;
 class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer,
                public ScriptContainer {
 public:
-	Module(const Version &gameVersion, Console &console);
+	Module(::Engines::Console &console, const Version &gameVersion);
 	~Module();
 
 	const Version &getGameVersion() const;
@@ -124,6 +125,7 @@ public:
 
 	static Common::UString getDescription(const Common::UString &module);
 
+
 private:
 	enum ActionType {
 		kActionNone   = 0,
@@ -146,8 +148,10 @@ private:
 
 	typedef std::map<Common::UString, Area *> AreaMap;
 
+
+	::Engines::Console *_console;
+
 	const Version *_gameVersion;
-	Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
 	bool _running;   ///< Are we currently running a module?

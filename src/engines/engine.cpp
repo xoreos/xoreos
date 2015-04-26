@@ -29,12 +29,17 @@
 
 #include "src/engines/engine.h"
 
+#include "src/engines/aurora/console.h"
+
 namespace Engines {
 
-Engine::Engine() : _game(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnknown), _fps(0) {
+Engine::Engine() : _game(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnknown),
+	_console(0), _fps(0) {
+
 }
 
 Engine::~Engine() {
+	delete _console;
 	delete _fps;
 }
 

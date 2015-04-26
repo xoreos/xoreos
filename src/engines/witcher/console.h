@@ -36,20 +36,16 @@ namespace Engines {
 
 namespace Witcher {
 
-class Campaign;
-class Module;
+class WitcherEngine;
 
 class Console : public ::Engines::Console {
 public:
-	Console();
+	Console(WitcherEngine &engine);
 	~Console();
 
-	void setCampaign(Campaign *campaign = 0);
-	void setModule(Module *module = 0);
 
 private:
-	Campaign *_campaign;
-	Module   *_module;
+	WitcherEngine *_engine;
 
 	// Caches
 	std::list<Common::UString> _music;     ///< All known music resources.
@@ -60,9 +56,7 @@ private:
 
 
 	// Updating the caches
-
 	void updateCaches();
-
 	void updateMusic();
 	void updateAreas();
 	void updateModules();

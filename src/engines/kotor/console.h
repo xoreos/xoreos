@@ -31,25 +31,23 @@ namespace Engines {
 
 namespace KotOR {
 
-class Module;
+class KotOREngine;
 
 class Console : public ::Engines::Console {
 public:
-	Console();
+	Console(KotOREngine &engine);
 	~Console();
 
-	void setModule(Module *module = 0);
 
 private:
-	Module *_module;
+	KotOREngine *_engine;
 
 	// Caches
 	std::list<Common::UString> _modules; ///< All known modules.
 
+
 	// Updating the caches
-
 	void updateCaches();
-
 	void updateModules();
 
 	// The commands

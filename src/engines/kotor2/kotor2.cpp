@@ -112,10 +112,16 @@ bool KotOR2EngineProbeXbox::probe(const Common::UString &directory, const Common
 }
 
 
-KotOR2Engine::KotOR2Engine() {
+KotOR2Engine::KotOR2Engine() : _module(0) {
+	_console = new Console(*this);
 }
 
 KotOR2Engine::~KotOR2Engine() {
+	delete _module;
+}
+
+Module *KotOR2Engine::getModule() {
+	return _module;
 }
 
 void KotOR2Engine::run() {
@@ -389,7 +395,7 @@ void KotOR2Engine::initConfig() {
 }
 
 void KotOR2Engine::initGameConfig() {
-	ConfigMan.setString(Common::kConfigRealmGameTemp, "KOTOR_moduleDir",
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "KOTOR2_moduleDir",
 		Common::FilePath::findSubDirectory(_target, "modules", true));
 }
 
@@ -420,13 +426,10 @@ void KotOR2Engine::stopMenuMusic() {
 void KotOR2Engine::mainMenuLoop() {
 	playMenuMusic();
 
-	Console console;
-	Module module(console);
-
-	console.setModule(&module);
+	_module = new Module(*_console);
 
 	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(module);
+		GUI *mainMenu = new MainMenu(*_module);
 
 		EventMan.flushEvents();
 
@@ -441,16 +444,17 @@ void KotOR2Engine::mainMenuLoop() {
 
 		stopMenuMusic();
 
-		module.run();
+		_module->run();
 		if (EventMan.quitRequested())
 			break;
 
 		playMenuMusic();
-		console.hide();
-		module.clear();
+		_console->hide();
+		_module->clear();
 	}
 
-	console.setModule();
+	delete _module;
+	_module = 0;
 
 	stopMenuMusic();
 }

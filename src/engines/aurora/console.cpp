@@ -646,8 +646,9 @@ void ConsoleWindow::updateScrollbarPosition() {
 }
 
 
-Console::Console(const Common::UString &font, int fontHeight) : _neverShown(true),
-	_visible(false), _tabCount(0), _printedCompleteWarning(false), _lastClickCount(-1),
+Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
+	_engine(&engine), _neverShown(true), _visible(false), _tabCount(0),
+	_printedCompleteWarning(false), _lastClickCount(-1),
 	_lastClickButton(0), _lastClickTime(0), _lastClickX(0), _lastClickY(0),
 	_maxSizeVideos(0), _maxSizeSounds(0) {
 

@@ -44,6 +44,8 @@ class LoadProgress;
 
 namespace KotOR2 {
 
+class Module;
+
 class KotOR2EngineProbe : public Engines::EngineProbe {
 public:
 	KotOR2EngineProbe();
@@ -92,7 +94,13 @@ public:
 
 	void run();
 
+	/** Return the currently running module. */
+	Module *getModule();
+
+
 private:
+	Module *_module;
+
 	Sound::ChannelHandle _menuMusic;
 
 

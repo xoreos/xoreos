@@ -36,9 +36,9 @@
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/camera.h"
+#include "src/engines/aurora/console.h"
 
 #include "src/engines/witcher/module.h"
-#include "src/engines/witcher/console.h"
 #include "src/engines/witcher/campaign.h"
 #include "src/engines/witcher/area.h"
 
@@ -47,7 +47,8 @@ namespace Engines {
 
 namespace Witcher {
 
-Module::Module(Console &console, Campaign &campaign) : _console(&console), _campaign(&campaign),
+Module::Module(::Engines::Console &console, Campaign *campaign) :
+	_console(&console), _campaign(campaign),
 	_hasModule(false), _running(false), _exit(false), _currentArea(0) {
 
 }
@@ -106,7 +107,8 @@ void Module::changeModule(const Common::UString &module) {
 
 void Module::replaceModule() {
 	// Look if a campaign replacement was scheduled
-	_campaign->replaceCampaign();
+	if (_campaign)
+		_campaign->replaceCampaign();
 
 	if (_newModule.empty())
 		return;

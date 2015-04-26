@@ -35,6 +35,7 @@
 #include "src/aurora/nwscript/ncsfile.h"
 
 #include "src/engines/nwn/types.h"
+#include "src/engines/nwn/nwn.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/object.h"
 #include "src/engines/nwn/door.h"
@@ -423,7 +424,8 @@ void ScriptFunctions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void ScriptFunctions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
-	if (!_module)
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
 	Common::UString script = ctx.getScriptName();
@@ -436,11 +438,12 @@ void ScriptFunctions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
 
 	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
 
-	_module->delayScript(script, state, object, ctx.getTriggerer(), 0);
+	module->delayScript(script, state, object, ctx.getTriggerer(), 0);
 }
 
 void ScriptFunctions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
-	if (!_module)
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
 	Common::UString script = ctx.getScriptName();
@@ -451,7 +454,7 @@ void ScriptFunctions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
 
 	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
 
-	_module->delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), delay);
+	module->delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), delay);
 }
 
 void ScriptFunctions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
@@ -676,6 +679,10 @@ void ScriptFunctions::actionAttack(Aurora::NWScript::FunctionContext &UNUSED(ctx
 void ScriptFunctions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
 	Object *target = convertObject(ctx.getParams()[2].getObject());
 	if (ctx.getParamsSpecified() < 3)
 		target = convertObject(ctx.getCaller());
@@ -695,11 +702,11 @@ void ScriptFunctions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx)
 	int crit3Value = ctx.getParams()[7].getInt();
 	*/
 
-	if (!_module->findObjectInit(_objSearchContext))
+	if (!module->findObjectInit(_objSearchContext))
 		return;
 
 	std::list<Object *> creatures;
-	while (_module->findNextObject(_objSearchContext)) {
+	while (module->findNextObject(_objSearchContext)) {
 		Creature *creature = convertCreature(_objSearchContext.getObject());
 
 		if (creature && (creature != target) && (creature->getArea() == target->getArea()))

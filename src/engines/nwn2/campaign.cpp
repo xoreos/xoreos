@@ -31,25 +31,21 @@
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/console.h"
 
 #include "src/engines/nwn2/campaign.h"
-#include "src/engines/nwn2/console.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
-Campaign::Campaign(Console &console) : _console(&console), _running(false),
-	_module(console, *this), _newCampaign(0) {
+Campaign::Campaign(::Engines::Console &console) : _running(false),
+	_module(console, this), _newCampaign(0) {
 
 	findCampaigns();
-
-	_console->setCampaign(this);
 }
 
 Campaign::~Campaign() {
-	_console->setCampaign();
-
 	clear();
 }
 
@@ -106,8 +102,6 @@ bool Campaign::readCampaign(const Common::UString &camFile, CampaignDescription 
 }
 
 void Campaign::clear() {
-	_console->setModule();
-
 	_module.clear();
 
 	_currentCampaign.directory.clear();
@@ -180,8 +174,6 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 		e.add("Failed to load campaign's starting module");
 		throw;
 	}
-
-	_console->setModule(&_module);
 }
 
 void Campaign::run() {
@@ -215,7 +207,6 @@ void Campaign::replaceCampaign() {
 	loadCampaignResource(*campaign);
 
 	_module.load(_startModule);
-	_console->setModule(&_module);
 }
 
 const Common::UString &Campaign::getName() const {
@@ -224,6 +215,10 @@ const Common::UString &Campaign::getName() const {
 
 const Common::UString &Campaign::getDescription() const {
 	return _currentCampaign.description.getString();
+}
+
+Module *Campaign::getModule() {
+	return &_module;
 }
 
 } // End of namespace NWN2

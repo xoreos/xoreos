@@ -32,16 +32,16 @@
 
 namespace Engines {
 
-namespace Jade {
-
 class Console;
+
+namespace Jade {
 
 class Area;
 
 /** A Jade module. */
 class Module {
 public:
-	Module(Console &console);
+	Module(::Engines::Console &console);
 	~Module();
 
 	/** Clear the whole context. */
@@ -64,7 +64,7 @@ public:
 
 
 private:
-	Console *_console;
+	::Engines::Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
 	bool _running;   ///< Are we currently running a module?

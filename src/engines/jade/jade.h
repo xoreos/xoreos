@@ -42,6 +42,8 @@ class LoadProgress;
 
 namespace Jade {
 
+class Module;
+
 class JadeEngineProbe : public Engines::EngineProbe {
 public:
 	JadeEngineProbe();
@@ -71,7 +73,14 @@ public:
 
 	void run();
 
+	/** Return the currently running module. */
+	Module *getModule();
+
+
 private:
+	Module *_module;
+
+
 	void init();
 	void declareEncodings();
 	void initResources(LoadProgress &progress);

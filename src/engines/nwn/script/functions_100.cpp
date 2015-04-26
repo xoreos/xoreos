@@ -33,6 +33,7 @@
 #include "src/aurora/nwscript/functionman.h"
 
 #include "src/engines/nwn/types.h"
+#include "src/engines/nwn/nwn.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/object.h"
 #include "src/engines/nwn/waypoint.h"
@@ -887,15 +888,17 @@ void ScriptFunctions::actionJumpToObject(Aurora::NWScript::FunctionContext &ctx)
 
 void ScriptFunctions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
-	if (!_module)
+
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
 	const Common::UString &tag = ctx.getParams()[0].getString();
 	if (tag.empty())
 		return;
 
-	_module->findObjectInit(_objSearchContext, tag);
-	while (_module->findNextObject(_objSearchContext)) {
+	module->findObjectInit(_objSearchContext, tag);
+	while (module->findNextObject(_objSearchContext)) {
 		Waypoint *waypoint = convertWaypoint(_objSearchContext.getObject());
 
 		if (waypoint) {

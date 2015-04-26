@@ -31,20 +31,16 @@ namespace Engines {
 
 namespace NWN2 {
 
-class Campaign;
-class Module;
+class NWN2Engine;
 
 class Console : public ::Engines::Console {
 public:
-	Console();
+	Console(NWN2Engine &engine);
 	~Console();
 
-	void setCampaign(Campaign *campaign = 0);
-	void setModule(Module *module = 0);
 
 private:
-	Campaign *_campaign;
-	Module   *_module;
+	NWN2Engine *_engine;
 
 	// Caches
 	std::list<Common::UString> _music;   ///< All known music resources.
@@ -53,8 +49,8 @@ private:
 
 	uint32 _maxSizeMusic;
 
-	// Updating the caches
 
+	// Updating the caches
 	void updateCaches();
 	void updateMusic();
 	void updateAreas();

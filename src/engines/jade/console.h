@@ -31,25 +31,23 @@ namespace Engines {
 
 namespace Jade {
 
-class Module;
+class JadeEngine;
 
 class Console : public ::Engines::Console {
 public:
-	Console();
+	Console(JadeEngine &engine);
 	~Console();
 
-	void setModule(Module *module = 0);
 
 private:
-	Module *_module;
+	JadeEngine *_engine;
 
 	// Caches
 	std::list<Common::UString> _modules; ///< All known modules.
 
+
 	// Updating the caches
-
 	void updateCaches();
-
 	void updateModules();
 
 	// The commands

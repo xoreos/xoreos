@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR (debug) console.
+ *  KotOR2 (debug) console.
  */
 
 #include <boost/bind.hpp>
@@ -31,15 +31,15 @@
 
 #include "src/graphics/aurora/fontman.h"
 
-#include "src/engines/kotor/console.h"
-#include "src/engines/kotor/kotor.h"
-#include "src/engines/kotor/module.h"
+#include "src/engines/kotor2/console.h"
+#include "src/engines/kotor2/kotor2.h"
+#include "src/engines/kotor2/module.h"
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotOR2 {
 
-Console::Console(KotOREngine &engine) :
+Console::Console(KotOR2Engine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
 	_engine(&engine) {
 
@@ -64,7 +64,7 @@ void Console::updateModules() {
 	_modules.clear();
 	setArguments("loadmodule");
 
-	Common::UString moduleDir = ConfigMan.getString("KOTOR_moduleDir");
+	Common::UString moduleDir = ConfigMan.getString("KOTOR2_moduleDir");
 	if (moduleDir.empty())
 		return;
 
@@ -121,6 +121,6 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 	printf("No such module \"%s\"", cl.args.c_str());
 }
 
-} // End of namespace KotOR
+} // End of namespace KotOR2
 
 } // End of namespace Engines

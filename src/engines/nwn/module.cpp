@@ -42,12 +42,12 @@
 #include "src/engines/aurora/tokenman.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/camera.h"
+#include "src/engines/aurora/console.h"
 
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/version.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/area.h"
-#include "src/engines/nwn/console.h"
 
 #include "src/engines/nwn/script/container.h"
 
@@ -98,8 +98,9 @@ bool Module::Action::operator<(const Action &s) const {
 }
 
 
-Module::Module(const Version &gameVersion, Console &console) : _gameVersion(&gameVersion),
-	_console(&console), _hasModule(false), _running(false), _pc(0),
+Module::Module(::Engines::Console &console, const Version &gameVersion) :
+	_console(&console), _gameVersion(&gameVersion),
+	_hasModule(false), _running(false), _pc(0),
 	_currentTexturePack(-1), _exit(false), _currentArea(0) {
 
 	_ingameGUI = new IngameGUI(*this);

@@ -32,6 +32,7 @@
 #include "src/graphics/graphics.h"
 
 #include "src/engines/nwn/types.h"
+#include "src/engines/nwn/nwn.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/area.h"
 #include "src/engines/nwn/object.h"
@@ -165,16 +166,12 @@ ScriptFunctions::Defaults::~Defaults() {
 }
 
 
-ScriptFunctions::ScriptFunctions() : _module(0) {
+ScriptFunctions::ScriptFunctions(NWNEngine &engine) : _engine(&engine) {
 	registerFunctions();
 }
 
 ScriptFunctions::~ScriptFunctions() {
 	FunctionMan.clear();
-}
-
-void ScriptFunctions::setModule(Module *module) {
-	_module = module;
 }
 
 Common::UString ScriptFunctions::floatToString(float f, int width, int decimals) {
@@ -208,10 +205,10 @@ int32 ScriptFunctions::random(int min, int max, int32 n) {
 }
 
 Aurora::NWScript::Object *ScriptFunctions::getPC() {
-	if (!_module)
+	if (!_engine->getModule())
 		return 0;
 
-	return (Aurora::NWScript::Object *) _module->getPC();
+	return (Aurora::NWScript::Object *) _engine->getModule()->getPC();
 }
 
 Common::UString ScriptFunctions::gTag(const Aurora::NWScript::Object *o) {
@@ -326,8 +323,8 @@ void ScriptFunctions::jumpTo(Object *object, Area *area, float x, float y, float
 
 	GfxMan.unlockFrame();
 
-	if (object == getPC() && _module)
-		_module->movedPC();
+	if (object == getPC() && _engine->getModule())
+		_engine->getModule()->movedPC();
 }
 
 } // End of namespace NWN

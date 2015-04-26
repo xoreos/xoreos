@@ -35,9 +35,9 @@
 
 namespace Engines {
 
-namespace Witcher {
-
 class Console;
+
+namespace Witcher {
 
 struct CampaignDescription {
 	Common::UString tag;
@@ -53,7 +53,7 @@ struct CampaignDescription {
 
 class Campaign {
 public:
-	Campaign(Console &console);
+	Campaign(::Engines::Console &console);
 	~Campaign();
 
 	const std::list<CampaignDescription> &getCampaigns() const;
@@ -68,17 +68,20 @@ public:
 
 	/** Is a campaign currently running? */
 	bool isRunning() const;
-	/** Return the name of the current module. */
+	/** Return the name of the current campaign. */
 	const Common::UString &getName() const;
-	/** Return the description of the current module. */
+	/** Return the description of the current campaign. */
 	const Common::UString &getDescription() const;
+
+	/** Return the currently running module. */
+	Module *getModule();
 
 
 private:
 	/** All campaigns we know about. */
 	std::list<CampaignDescription> _campaigns;
 
-	Console *_console;
+	::Engines::Console *_console;
 
 	/** The currently loaded campaign. */
 	CampaignDescription _currentCampaign;

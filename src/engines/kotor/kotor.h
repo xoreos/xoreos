@@ -44,6 +44,8 @@ class LoadProgress;
 
 namespace KotOR {
 
+class Module;
+
 class KotOREngineProbe : public Engines::EngineProbe {
 public:
 	KotOREngineProbe();
@@ -103,9 +105,14 @@ public:
 
 	void run();
 
-private:
-	Sound::ChannelHandle _menuMusic;
+	/** Return the currently running module. */
+	Module *getModule();
 
+
+private:
+	Module *_module;
+
+	Sound::ChannelHandle _menuMusic;
 
 	bool _hasLiveKey;
 

@@ -15,6 +15,7 @@ noinst_HEADERS = \
 libkotor2_la_SOURCES = \
                        kotor2.cpp \
                        modelloader.cpp \
+                       console.cpp \
                        gui/main/main.cpp \
                        $(EMPTY)
 

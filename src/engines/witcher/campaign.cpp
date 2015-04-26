@@ -49,17 +49,13 @@ void CampaignDescription::clear() {
 }
 
 
-Campaign::Campaign(Console &console) : _console(&console), _running(false),
-	_module(console, *this), _newCampaign(0) {
+Campaign::Campaign(::Engines::Console &console) : _running(false),
+	_module(console, this), _newCampaign(0) {
 
 	findCampaigns();
-
-	_console->setCampaign(this);
 }
 
 Campaign::~Campaign() {
-	_console->setCampaign();
-
 	clear();
 }
 
@@ -117,8 +113,6 @@ bool Campaign::readCampaign(const Common::UString &mmdFile, CampaignDescription 
 }
 
 void Campaign::clear() {
-	_console->setModule();
-
 	_module.clear();
 
 	_currentCampaign.clear();
@@ -190,8 +184,6 @@ void Campaign::loadCampaign(const CampaignDescription &desc) {
 		e.add("Failed to load campaign's starting module");
 		throw;
 	}
-
-	_console->setModule(&_module);
 }
 
 void Campaign::run() {
@@ -230,6 +222,10 @@ const Common::UString &Campaign::getName() const {
 
 const Common::UString &Campaign::getDescription() const {
 	return _currentCampaign.description.getString();
+}
+
+Module *Campaign::getModule() {
+	return &_module;
 }
 
 } // End of namespace Witcher

@@ -25,13 +25,36 @@
 #ifndef ENGINES_KOTOR2_CONSOLE_H
 #define ENGINES_KOTOR2_CONSOLE_H
 
-#include "src/engines/kotor/console.h"
+#include "src/engines/aurora/console.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-using ::Engines::KotOR::Console;
+class KotOR2Engine;
+
+class Console : public ::Engines::Console {
+public:
+	Console(KotOR2Engine &engine);
+	~Console();
+
+
+private:
+	KotOR2Engine *_engine;
+
+	// Caches
+	std::list<Common::UString> _modules; ///< All known modules.
+
+
+	// Updating the caches
+	void updateCaches();
+	void updateModules();
+
+	// The commands
+	void cmdExitModule (const CommandLine &cl);
+	void cmdListModules(const CommandLine &cl);
+	void cmdLoadModule (const CommandLine &cl);
+};
 
 } // End of namespace KotOR2
 

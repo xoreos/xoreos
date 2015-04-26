@@ -113,11 +113,17 @@ bool NWNEngineProbeFallback::probe(const Common::UString &UNUSED(directory),
 
 
 NWNEngine::NWNEngine() : _version(0),
-	_hasXP1(false), _hasXP2(false), _hasXP3(false), _scriptFuncs(0) {
+	_hasXP1(false), _hasXP2(false), _hasXP3(false), _scriptFuncs(0), _module(0) {
 
+	_console = new Console(*this);
 }
 
 NWNEngine::~NWNEngine() {
+	delete _module;
+}
+
+Module *NWNEngine::getModule() {
+	return _module;
 }
 
 void NWNEngine::run() {
@@ -170,7 +176,7 @@ void NWNEngine::init() {
 	initGameConfig();
 
 	progress.step("Starting script system");
-	_scriptFuncs = new ScriptFunctions();
+	_scriptFuncs = new ScriptFunctions(*this);
 
 	progress.step("Successfully initialized the engine");
 }
@@ -457,14 +463,10 @@ void NWNEngine::mainMenuLoop() {
 	// Create and fade in the legal billboard
 	Legal *legal = new Legal;
 
-	Console console;
-	Module module(*_version, console);
-
-	_scriptFuncs->setModule(&module);
-	console.setModule(&module);
+	_module = new Module(*_console, *_version);
 
 	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(module);
+		GUI *mainMenu = new MainMenu(*_module);
 
 		EventMan.flushEvents();
 		if (legal) {
@@ -488,17 +490,16 @@ void NWNEngine::mainMenuLoop() {
 
 		stopMenuMusic();
 
-		module.run();
+		_module->run();
 		if (EventMan.quitRequested())
 			break;
 
 		playMenuMusic();
-		console.hide();
-		module.clear();
+		_module->clear();
 	}
 
-	_scriptFuncs->setModule(0);
-	console.setModule();
+	delete _module;
+	_module = 0;
 
 	stopMenuMusic();
 

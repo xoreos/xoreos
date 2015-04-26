@@ -37,6 +37,8 @@ namespace Graphics {
 
 namespace Engines {
 
+class Console;
+
 /** The base class for an engine within BioWare's Aurora family. */
 class Engine {
 public:
@@ -53,7 +55,10 @@ protected:
 	Aurora::Platform _platform;
 	Common::UString  _target;
 
+	Console *_console;
+
 	Graphics::Aurora::FPS *_fps;
+
 
 	/** Run the game. */
 	virtual void run() = 0;

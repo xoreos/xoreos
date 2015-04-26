@@ -96,10 +96,16 @@ Engines::Engine *JadeEngineProbe::createEngine() const {
 }
 
 
-JadeEngine::JadeEngine() {
+JadeEngine::JadeEngine() : _module(0) {
+	_console = new Console(*this);
 }
 
 JadeEngine::~JadeEngine() {
+	delete _module;
+}
+
+Module *JadeEngine::getModule() {
+	return _module;
 }
 
 void JadeEngine::run() {
@@ -246,13 +252,13 @@ void JadeEngine::playIntroVideos() {
 }
 
 void JadeEngine::main() {
-	Console console;
-	Module module(console);
+	_module = new Module(*_console);
 
-	console.setModule(&module);
+	_module->load("j01_town");
+	_module->run();
 
-	module.load("j01_town");
-	module.run();
+	delete _module;
+	_module = 0;
 }
 
 } // End of namespace Jade

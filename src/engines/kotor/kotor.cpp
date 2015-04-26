@@ -127,10 +127,16 @@ bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common:
 }
 
 
-KotOREngine::KotOREngine() : _hasLiveKey(false) {
+KotOREngine::KotOREngine() : _module(0), _hasLiveKey(false) {
+	_console = new Console(*this);
 }
 
 KotOREngine::~KotOREngine() {
+	delete _module;
+}
+
+Module *KotOREngine::getModule() {
+	return _module;
 }
 
 void KotOREngine::run() {
@@ -478,13 +484,10 @@ void KotOREngine::stopMenuMusic() {
 void KotOREngine::mainMenuLoop() {
 	playMenuMusic();
 
-	Console console;
-	Module module(console);
-
-	console.setModule(&module);
+	_module = new Module(*_console);
 
 	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(module, _platform == Aurora::kPlatformXbox);
+		GUI *mainMenu = new MainMenu(*_module, _platform == Aurora::kPlatformXbox);
 
 		EventMan.flushEvents();
 
@@ -499,16 +502,16 @@ void KotOREngine::mainMenuLoop() {
 
 		stopMenuMusic();
 
-		module.run();
+		_module->run();
 		if (EventMan.quitRequested())
 			break;
 
 		playMenuMusic();
-		console.hide();
-		module.clear();
+		_module->clear();
 	}
 
-	console.setModule();
+	delete _module;
+	_module = 0;
 
 	stopMenuMusic();
 }

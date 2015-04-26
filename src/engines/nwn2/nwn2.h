@@ -42,6 +42,9 @@ class LoadProgress;
 
 namespace NWN2 {
 
+class Campaign;
+class Module;
+
 class NWN2EngineProbe : public Engines::EngineProbe {
 public:
 	NWN2EngineProbe();
@@ -71,10 +74,18 @@ public:
 
 	void run();
 
+	/** Return the currently running campaign. */
+	Campaign *getCampaign();
+	/** Return the currently running module. */
+	Module   *getModule();
+
+
 private:
 	bool _hasXP1; // Mask of the Betrayer (MotB)
 	bool _hasXP2; // Storm of Zehir (SoZ)
 	bool _hasXP3; // Mysteries of Westgate (MoW)
+
+	Campaign *_campaign;
 
 
 	void init();

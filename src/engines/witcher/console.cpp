@@ -46,8 +46,9 @@ namespace Engines {
 
 namespace Witcher {
 
-Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
-	_campaign(0), _module(0), _maxSizeMusic(0) {
+Console::Console(WitcherEngine &engine) :
+	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
+	_engine(&engine), _maxSizeMusic(0) {
 
 	registerCommand("listmusic"    , boost::bind(&Console::cmdListMusic    , this, _1),
 			"Usage: listmusic\nList all available music resources");
@@ -70,14 +71,6 @@ Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 }
 
 Console::~Console() {
-}
-
-void Console::setCampaign(Campaign *campaign) {
-	_campaign = campaign;
-}
-
-void Console::setModule(Module *module) {
-	_module = module;
 }
 
 void Console::updateCaches() {
@@ -118,12 +111,13 @@ void Console::updateMusic() {
 
 void Console::updateAreas() {
 	_areas.clear();
-	if (!_module) {
-		setArguments("gotoarea");
-		return;
-	}
+	setArguments("gotoarea");
 
-	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	const std::vector<Common::UString> &areas = module->getIFO().getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		_areas.push_back(*a);
 
@@ -160,16 +154,24 @@ void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
-	Area *area = 0;
-	if (!_module || !(area = _module->getCurrentArea()))
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	Area *area = module->getCurrentArea();
+	if (!area)
 		return;
 
 	area->stopAmbientMusic();
 }
 
 void Console::cmdPlayMusic(const CommandLine &cl) {
-	Area *area = 0;
-	if (!_module || !(area = _module->getCurrentArea()))
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	Area *area = module->getCurrentArea();
+	if (!area)
 		return;
 
 	area->playAmbientMusic(cl.args);
@@ -189,34 +191,35 @@ void Console::cmdMove(const CommandLine &cl) {
 		return;
 	}
 
-	if (!_module)
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
-	_module->movePC(x, y, z);
+	module->movePC(x, y, z);
 }
 
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
-	if (!_module)
-		return;
-
 	updateAreas();
+
 	for (std::list<Common::UString>::iterator a = _areas.begin(); a != _areas.end(); ++a)
 		printf("%s (\"%s\")", a->c_str(), Area::getName(*a).c_str());
 }
 
 void Console::cmdGotoArea(const CommandLine &cl) {
-	if (!_module)
-		return;
-
 	if (cl.args.empty()) {
 		printCommandHelp(cl.cmd);
 		return;
 	}
 
-	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	const std::vector<Common::UString> &areas = module->getIFO().getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		if (a->equalsIgnoreCase(cl.args)) {
-			_module->movePC(*a);
+			hide();
+			module->movePC(*a);
 			return;
 		}
 
@@ -229,17 +232,19 @@ void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
-	if (!_module)
-		return;
-
 	if (cl.args.empty()) {
 		printCommandHelp(cl.cmd);
 		return;
 	}
 
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
 	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
-			_module->load(cl.args + ".mod");
+			hide();
+			module->load(cl.args + ".mod");
 			return;
 		}
 	}

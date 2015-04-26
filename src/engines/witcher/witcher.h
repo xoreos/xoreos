@@ -44,6 +44,9 @@ class LoadProgress;
 
 namespace Witcher {
 
+class Campaign;
+class Module;
+
 class WitcherEngineProbe : public Engines::EngineProbe {
 public:
 	WitcherEngineProbe();
@@ -73,8 +76,17 @@ public:
 
 	void run();
 
+	/** Return the currently running campaign. */
+	Campaign *getCampaign();
+	/** Return the currently running module. */
+	Module   *getModule();
+
+
 private:
+	Campaign *_campaign;
+
 	std::list<Aurora::ResourceManager::ChangeID> _languageResources;
+
 
 	void init();
 	void declareEncodings();

@@ -35,14 +35,16 @@
 #include "src/graphics/aurora/fontman.h"
 
 #include "src/engines/jade/console.h"
+#include "src/engines/jade/jade.h"
 #include "src/engines/jade/module.h"
 
 namespace Engines {
 
 namespace Jade {
 
-Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
-	_module(0) {
+Console::Console(JadeEngine &engine) :
+	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
+	_engine(&engine) {
 
 	registerCommand("exitmodule" , boost::bind(&Console::cmdExitModule , this, _1),
 			"Usage: exitmodule\nExit the module, returning to the main menu");
@@ -53,10 +55,6 @@ Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 }
 
 Console::~Console() {
-}
-
-void Console::setModule(Module *module) {
-	_module = module;
 }
 
 void Console::updateCaches() {
@@ -80,7 +78,12 @@ void Console::updateModules() {
 }
 
 void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
-	_module->exit();
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	hide();
+	module->exit();
 }
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
@@ -89,17 +92,19 @@ void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
-	if (!_module)
-		return;
-
 	if (cl.args.empty()) {
 		printCommandHelp(cl.cmd);
 		return;
 	}
 
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
 	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
-			_module->load(cl.args);
+			hide();
+			module->load(cl.args);
 			return;
 		}
 	}

@@ -95,10 +95,23 @@ Engines::Engine *WitcherEngineProbe::createEngine() const {
 }
 
 
-WitcherEngine::WitcherEngine() {
+WitcherEngine::WitcherEngine() : _campaign(0) {
+	_console = new Console(*this);
 }
 
 WitcherEngine::~WitcherEngine() {
+	delete _campaign;
+}
+
+Campaign *WitcherEngine::getCampaign() {
+	return _campaign;
+}
+
+Module *WitcherEngine::getModule() {
+	if (!_campaign)
+		return 0;
+
+	return _campaign->getModule();
 }
 
 void WitcherEngine::run() {
@@ -276,10 +289,9 @@ void WitcherEngine::playIntroVideos() {
 }
 
 void WitcherEngine::main() {
-	Console console;
-	Campaign campaign(console);
+	Campaign campaign(*_console);
 
-	const std::list<CampaignDescription> &campaigns = campaign.getCampaigns();
+	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
 	if (campaigns.empty())
 		error("No campaigns found");
 
@@ -293,9 +305,11 @@ void WitcherEngine::main() {
 	if (!witcherCampaign)
 		witcherCampaign = &*campaigns.begin();
 
-	campaign.load(*witcherCampaign);
+	_campaign->load(*witcherCampaign);
+	_campaign->run();
 
-	campaign.run();
+	delete _campaign;
+	_campaign = 0;
 }
 
 } // End of namespace Witcher

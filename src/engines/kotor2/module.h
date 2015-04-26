@@ -31,7 +31,11 @@ namespace Engines {
 
 namespace KotOR2 {
 
-using ::Engines::KotOR::Module;
+class Module : public ::Engines::KotOR::Module {
+public:
+	Module(::Engines::Console &console) : ::Engines::KotOR::Module(console) { }
+	~Module() { }
+};
 
 } // End of namespace KotOR2
 

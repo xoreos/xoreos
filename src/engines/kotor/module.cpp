@@ -35,16 +35,16 @@
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/camera.h"
+#include "src/engines/aurora/console.h"
 
 #include "src/engines/kotor/module.h"
-#include "src/engines/kotor/console.h"
 #include "src/engines/kotor/area.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Module::Module(Console &console) : _console(&console),
+Module::Module(::Engines::Console &console) : _console(&console),
 	_hasModule(false), _running(false),
 	_currentTexturePack(-1), _exit(false), _area(0) {
 

@@ -39,6 +39,8 @@ namespace Engines {
 
 namespace NWN {
 
+class NWNEngine;
+
 class Module;
 class Area;
 
@@ -64,10 +66,8 @@ private:
 
 class ScriptFunctions {
 public:
-	ScriptFunctions();
+	ScriptFunctions(NWNEngine &engine);
 	~ScriptFunctions();
-
-	void setModule(Module *module = 0);
 
 private:
 	struct Defaults {
@@ -123,7 +123,8 @@ private:
 		~Defaults();
 	};
 
-	Module *_module;
+
+	NWNEngine *_engine;
 
 	Aurora::NWScript::ObjectContainer::SearchContext _objSearchContext;
 

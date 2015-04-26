@@ -35,15 +35,16 @@
 
 namespace Engines {
 
+class Console;
+
 namespace KotOR {
 
 class Area;
-class Console;
 
 /** A KotOR module. */
 class Module {
 public:
-	Module(Console &console);
+	Module(::Engines::Console &console);
 	~Module();
 
 	/** Clear the whole context. */
@@ -71,7 +72,7 @@ public:
 
 
 protected:
-	Console *_console;
+	::Engines::Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
 	bool _running;   ///< Are we currently running a module?

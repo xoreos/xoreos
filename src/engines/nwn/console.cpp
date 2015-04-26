@@ -55,8 +55,9 @@ namespace Engines {
 
 namespace NWN {
 
-Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
-	_module(0), _maxSizeMusic(0) {
+Console::Console(NWNEngine &engine) :
+	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
+	_engine(&engine), _maxSizeMusic(0) {
 
 	registerCommand("exitmodule"   , boost::bind(&Console::cmdExitModule   , this, _1),
 			"Usage: exitmodule\nExit the module, returning to the main menu");
@@ -84,10 +85,6 @@ Console::Console() : ::Engines::Console(Graphics::Aurora::kSystemFontMono, 13),
 }
 
 Console::~Console() {
-}
-
-void Console::setModule(Module *module) {
-	_module = module;
 }
 
 void Console::updateCaches() {
@@ -154,12 +151,13 @@ void Console::updateModules() {
 
 void Console::updateAreas() {
 	_areas.clear();
-	if (!_module) {
-		setArguments("gotoarea");
-		return;
-	}
+	setArguments("gotoarea");
 
-	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	const std::vector<Common::UString> &areas = module->getIFO().getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		_areas.push_back(*a);
 
@@ -185,7 +183,12 @@ void Console::updateMusic() {
 }
 
 void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
-	_module->exit();
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	hide();
+	module->exit();
 }
 
 void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
@@ -195,7 +198,8 @@ void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdLoadCampaign(const CommandLine &cl) {
-	if (!_module)
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
 	if (cl.args.empty()) {
@@ -209,8 +213,10 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 		return;
 	}
 
-	Common::UString module = Common::UString(kCampaignModules[c->second]) + ".nwm";
-	_module->load(module);
+	hide();
+
+	Common::UString mod = Common::UString(kCampaignModules[c->second]) + ".nwm";
+	module->load(mod);
 }
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
@@ -219,17 +225,19 @@ void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
-	if (!_module)
-		return;
-
 	if (cl.args.empty()) {
 		printCommandHelp(cl.cmd);
 		return;
 	}
 
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
 	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
-			_module->load(cl.args + ".mod");
+			hide();
+			module->load(cl.args + ".mod");
 			return;
 		}
 	}
@@ -238,16 +246,15 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 }
 
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
-	if (!_module)
-		return;
-
 	updateAreas();
+
 	for (std::list<Common::UString>::iterator a = _areas.begin(); a != _areas.end(); ++a)
 		printf("%s (\"%s\")", a->c_str(), Area::getName(*a).c_str());
 }
 
 void Console::cmdGotoArea(const CommandLine &cl) {
-	if (!_module)
+	Module *module = _engine->getModule();
+	if (!module)
 		return;
 
 	if (cl.args.empty()) {
@@ -255,10 +262,11 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		return;
 	}
 
-	const std::vector<Common::UString> &areas = _module->getIFO().getAreas();
+	const std::vector<Common::UString> &areas = module->getIFO().getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		if (a->equalsIgnoreCase(cl.args)) {
-			_module->movePC(*a);
+			hide();
+			module->movePC(*a);
 			return;
 		}
 
@@ -271,16 +279,24 @@ void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
-	Area *area = 0;
-	if (!_module || !(area = _module->getCurrentArea()))
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	Area *area = module->getCurrentArea();
+	if (!area)
 		return;
 
 	area->stopAmbientMusic();
 }
 
 void Console::cmdPlayMusic(const CommandLine &cl) {
-	Area *area = 0;
-	if (!_module || !(area = _module->getCurrentArea()))
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	Area *area = module->getCurrentArea();
+	if (!area)
 		return;
 
 	area->playAmbientMusic(cl.args);

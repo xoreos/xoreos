@@ -47,6 +47,8 @@ namespace Common {
 
 namespace Engines {
 
+class Engine;
+
 class ConsoleWindow : public Graphics::GUIFrontElement, public Events::Notifyable {
 public:
 	ConsoleWindow(const Common::UString &font, uint32 lines, uint32 history,
@@ -176,7 +178,7 @@ private:
 
 class Console {
 public:
-	Console(const Common::UString &font, int fontHeight = 0);
+	Console(Engine &engine, const Common::UString &font, int fontHeight = 0);
 	virtual ~Console();
 
 	void show();
@@ -232,6 +234,8 @@ private:
 
 	typedef std::map<Common::UString, Command, Common::UString::iless> CommandMap;
 
+
+	Engine *_engine;
 
 	bool _neverShown;
 	bool _visible;

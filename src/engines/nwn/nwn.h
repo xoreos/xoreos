@@ -49,6 +49,8 @@ namespace NWN {
 class Version;
 class ScriptFunctions;
 
+class Module;
+
 class NWNEngineProbe : public Engines::EngineProbe {
 private:
 	static const Common::UString kGameName;
@@ -120,12 +122,16 @@ public:
 
 	void run();
 
+	/** Return the currently running module. */
+	Module *getModule();
+
 	/** Return a list of all modules. */
 	static void getModules(std::vector<Common::UString> &modules);
 	/** Does a given module exist? */
 	static bool hasModule(Common::UString &module);
 	/** Return a list of local player characters. */
 	static void getCharacters(std::vector<Common::UString> &characters, bool local);
+
 
 private:
 	Version *_version;
@@ -134,9 +140,11 @@ private:
 	bool _hasXP2; // Hordes of the Underdark (HotU)
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
 
-	Sound::ChannelHandle _menuMusic;
-
 	ScriptFunctions *_scriptFuncs;
+
+	Module *_module;
+
+	Sound::ChannelHandle _menuMusic;
 
 
 	void init();
