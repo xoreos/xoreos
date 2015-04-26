@@ -27,6 +27,7 @@
 #include "src/aurora/2dafile.h"
 
 #include "src/engines/nwn/gui/widgets/editbox.h"
+#include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 
 #include "src/engines/nwn/gui/chargen/charclass.h"

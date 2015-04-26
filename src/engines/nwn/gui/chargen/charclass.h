@@ -25,8 +25,6 @@
 #ifndef  ENGINES_NWN_GUI_CHARGEN_CHARCLASS_H
 #define  ENGINES_NWN_GUI_CHARGEN_CHARCLASS_H
 
-#include "src/engines/nwn/gui/widgets/button.h"
-
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
