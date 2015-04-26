@@ -51,16 +51,21 @@ public:
 	void setCharPortrait(const Common::UString &portrait);
 	void setCharClass(uint32 classId);
 	void setCharAlign(uint32 goodness, uint32 loyalty);
+	void setCharAbilities(std::vector<uint32> abilities, std::vector<uint32> racialAbilities);
 
 	bool hasFeat(uint32 featId) const;
 	uint32 getClass() const;
+	uint32 getRace() const;
 	bool getAlign(uint32 &goodness, uint32 &loyalty) const;
+	uint32 getAbility(uint32 ability) const;
 
 private:
 	Creature *_creature;
 	std::vector<uint32> _normalFeats;
 	std::vector<uint32> _racialFeats;
 	std::vector<uint32> _classFeats;
+	std::vector<uint32> _abilities;
+	std::vector<uint32> _racialAbilities;
 
 	uint32 _classId;
 	uint32 _goodness;

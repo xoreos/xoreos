@@ -1,0 +1,281 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+ /** @file
+ *  The attributes chooser in CharGen.
+ */
+
+#include "src/aurora/talkman.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
+
+#include "src/common/strutil.h"
+#include "src/common/util.h"
+
+#include "src/graphics/aurora/modelnode.h"
+
+#include "src/engines/nwn/gui/widgets/button.h"
+#include "src/engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/buttonsgroup.h"
+#include "src/engines/nwn/gui/widgets/editbox.h"
+
+#include "src/engines/nwn/gui/chargen/charattributes.h"
+
+namespace Engines {
+
+namespace NWN {
+
+CharAttributes::CharAttributes(CharGenChoices &choices) {
+	_choices = &choices;
+	load("cg_attributes");
+
+	getButton("OkButton", true)->setDisabled(true);
+
+	// Init attribute values.
+	_attributes.assign(6, 8);
+	_attrAdjust.assign(6, 0);
+	_pointLeft = 30;
+
+	init();
+
+	_attrButtons = 0;
+}
+
+CharAttributes::~CharAttributes() {
+	delete _attrButtons;
+}
+
+void CharAttributes::reset() {
+	getEditBox("HelpEdit", true)->setTitle("fnt_galahad14", TalkMan.getString(261));
+	getEditBox("HelpEdit", true)->setText("fnt_galahad14", TalkMan.getString(457));
+
+	_attributes.assign(6, 8);
+	_attrAdjust.assign(6, 0);
+	_pointLeft = 30;
+
+	getLabel("PointsEdit#Caption", true)->setText(Common::composeString<uint32>(_pointLeft));
+	getLabel("CostEdit#Caption", true)->setText("");
+
+	getButton("OkButton", true)->setDisabled(true);
+}
+
+void CharAttributes::callbackActive(Widget& widget) {
+	if (widget.getTag() == "OkButton") {
+		_choices->setCharAbilities(_attributes, _attrAdjust);
+		_returnCode = 2;
+		return;
+	}
+
+	if (widget.getTag() == "CancelButton") {
+		// Get previous choice.
+		uint sum = 0;
+		for (uint ab = 0; ab < 6; ++ab) {
+			_attributes[ab] = _choices->getAbility(ab);
+			sum += _attributes[ab];
+		}
+		_pointLeft = 0;
+		getLabel("PointsEdit#Caption", true)->setText("0");
+
+		// Attributes were never saved if sum equals 48.
+		if (sum == 48)
+			reset();
+
+		_returnCode = 1;
+		return;
+	}
+
+	if (widget.getTag() == "RecommendButton") {
+		setRecommend();
+		return;
+	}
+
+	const std::vector< WidgetButton* > buttonsList = _attrButtons->getButtonsList();
+
+	// Update texts when attribute buttons are clicked.
+	if (widget.getTag().endsWith("Label")) {
+		_attrButtons->setActive((WidgetButton *) &widget);
+
+		for (uint b = 0; b < 6; ++b) {
+			if (buttonsList[b] != &widget)
+				continue;
+
+			updateText(b);
+			break;
+		}
+	}
+
+	// Compute and update attributes when any Up and Down attribute buttons are triggered.
+	for (uint a = 0; a< 6; ++a) {
+		if (buttonsList[a] != widget.getParent())
+			continue;
+
+		if (widget.getTag().endsWith("UpButton")) {
+			uint cost = pointCost(_attributes[a] + 1);
+			if ((_attributes[a] == 18) || (cost > _pointLeft))
+				break;
+
+			_pointLeft -= cost;
+			_attributes[a]++;
+		} else if (widget.getTag().endsWith("DownButton")) {
+			if (_attributes[a] == 8)
+					break;
+
+				_pointLeft += pointCost(_attributes[a]);
+				_attributes[a]--;
+		}
+
+		genTextAttributes(a);
+		_attrButtons->setActive(a);
+		updateText(a);
+
+		if (_pointLeft == 0)
+				getButton("OkButton", true)->setDisabled(false);
+			else
+				getButton("OkButton", true)->setDisabled(true);
+
+		break;
+	}
+}
+
+void CharAttributes::init() {
+	// Set default text.
+	getEditBox("HelpEdit", true)->setTitle("fnt_galahad14", TalkMan.getString(261));
+	getEditBox("HelpEdit", true)->setText("fnt_galahad14", TalkMan.getString(457));
+
+	// Get WidgetLabels of the attribute values.
+	_labelAttributes.push_back(getLabel("StrEdit", true));
+	_labelAttributes.push_back(getLabel("DexEdit", true));
+	_labelAttributes.push_back(getLabel("ConEdit", true));
+	_labelAttributes.push_back(getLabel("WisEdit", true));
+	_labelAttributes.push_back(getLabel("IntEdit", true));
+	_labelAttributes.push_back(getLabel("ChaEdit", true));
+
+	// Set correct position for PointsEdit (points left) and CostEdit (next point cost).
+	getLabel("PointsEdit#Caption", true)->movePosition(-5, -7, 0);
+	getLabel("CostEdit#Caption", true)->movePosition(-7, -7, 0);
+}
+
+void CharAttributes::initButtonsGroup() {
+	//TODO Help text should implement racial bonus as well as current attribute value.
+
+	delete _attrButtons;
+	_attrButtons = new ButtonsGroup(getEditBox("HelpEdit", true));
+	_attrButtons->addButton(getButton("StrLabel", true), TalkMan.getString(473), TalkMan.getString(459));
+	_attrButtons->addButton(getButton("DexLabel", true), TalkMan.getString(474), TalkMan.getString(460));
+	_attrButtons->addButton(getButton("ConLabel", true), TalkMan.getString(475), TalkMan.getString(461));
+	_attrButtons->addButton(getButton("WisLabel", true), TalkMan.getString(476), TalkMan.getString(462));
+	_attrButtons->addButton(getButton("IntLabel", true), TalkMan.getString(477), TalkMan.getString(463));
+	_attrButtons->addButton(getButton("ChaLabel", true), TalkMan.getString(479), TalkMan.getString(478));
+
+	// Set buttons to unchanged mode.
+	const std::vector< WidgetButton* > buttonsList = _attrButtons->getButtonsList();
+	for (std::vector<WidgetButton *>::const_iterator it = buttonsList.begin(); it != buttonsList.end(); ++it)
+		(*it)->setMode(WidgetButton::kModeUnchanged);
+
+	// Adjust text position.
+	for (std::vector<WidgetButton *>::const_iterator it = buttonsList.begin(); it != buttonsList.end(); ++it) {
+		WidgetButton *b = *it;
+		WidgetLabel *l = getLabel(b->getTag() + "#Caption");
+
+		float pX, pY, pZ, bX, bY, bZ;
+		b->getNode("text")->getPosition(pX, pY, pZ);
+		b->getPosition(bX, bY, bZ);
+		l->setPosition(bX + pX, bY + pY - l->getHeight()/2, bZ - pZ);
+	}
+}
+
+void CharAttributes::show() {
+	// Check attribute adjustment from racial type.
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("racialtypes");
+	const Aurora::TwoDARow  &row   = twoda.getRow(_choices->getRace());
+	_attrAdjust.clear();
+	_attrAdjust.push_back(row.getInt(8));
+	_attrAdjust.push_back(row.getInt(9));
+	_attrAdjust.push_back(row.getInt(13));
+	_attrAdjust.push_back(row.getInt(12));
+	_attrAdjust.push_back(row.getInt(10));
+	_attrAdjust.push_back(row.getInt(11));
+
+	// Update attribute text accordingly.
+	for (uint32 it = 0; it < 6; ++it) {
+		genTextAttributes(it);
+	}
+
+	// Init attribute buttons.
+	initButtonsGroup();
+
+	Engines::GUI::show();
+}
+
+void CharAttributes::genTextAttributes(uint32 attribute) {
+	// Compute modifier.
+	uint realValue = _attributes[attribute] + _attrAdjust.at(attribute);
+	realValue -= 6;
+	int modifier = (realValue - realValue % 2) / 2;
+	modifier -= 2;
+
+	// Transform numbers into strings.
+	Common::UString sign = (modifier < 0) ? "" : "+";
+	Common::UString attr = Common::composeString<uint32>(_attributes[attribute]
+	                                                     + _attrAdjust.at(attribute));
+	Common::UString modifStr = Common::composeString<int>(modifier);
+
+	Common::UString output = attr + " (" + sign + modifStr + ")";
+
+	// Update text.
+	_labelAttributes[attribute]->setText(output);
+}
+
+uint32 CharAttributes::pointCost(uint32 attrValue) {
+	if (attrValue < 15) {
+		getLabel("CostEdit#Caption", true)->setText("1");
+		return 1;
+	}
+
+	attrValue -= 15;
+	uint cost = ((attrValue - attrValue % 2) / 2) + 2;
+
+	getLabel("CostEdit#Caption", true)->setText(Common::composeString<uint>(cost));
+
+	return cost;
+}
+
+void CharAttributes::updateText(uint32 attribute) {
+	getLabel("PointsEdit#Caption", true)->setText(Common::composeString<uint32>(_pointLeft));
+	pointCost(_attributes[attribute] + 1);
+}
+
+void CharAttributes::setRecommend() {
+	_pointLeft = 0;
+	const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
+	const Aurora::TwoDARow  &row = twodaClasses.getRow(_choices->getClass());
+	for (uint it = 0; it < 6; ++it) {
+		_attributes.at(it) = row.getInt(17 + it);
+		genTextAttributes(it);
+	}
+
+	getLabel("PointsEdit#Caption", true)->setText("0");
+
+	getButton("OkButton", true)->setDisabled(false);
+}
+
+} // End of namespace NWN
+
+} // End of namespace Engines

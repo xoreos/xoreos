@@ -58,6 +58,7 @@ noinst_HEADERS = \
                  gui/chargen/charportrait.h \
                  gui/chargen/charclass.h \
                  gui/chargen/charalignment.h \
+                 gui/chargen/charattributes.h \
                  gui/main/charpremade.h \
                  gui/main/chartype.h \
                  gui/main/main.h \
@@ -139,6 +140,7 @@ libnwn_la_SOURCES = \
                     gui/chargen/charportrait.cpp \
                     gui/chargen/charclass.cpp \
                     gui/chargen/charalignment.cpp \
+                    gui/chargen/charattributes.cpp \
                     gui/main/charpremade.cpp \
                     gui/main/chartype.cpp \
                     gui/main/main.cpp \

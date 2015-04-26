@@ -42,6 +42,9 @@ CharGenChoices::CharGenChoices() {
 
 	_goodness = 101;
 	_loyalty = 101;
+
+	_abilities.assign(6, 8);
+	_racialAbilities.assign(6, 0);
 }
 
 CharGenChoices::~CharGenChoices() {
@@ -116,6 +119,11 @@ void CharGenChoices::setCharAlign(uint32 goodness, uint32 loyalty) {
 	_loyalty  = loyalty;
 }
 
+void CharGenChoices::setCharAbilities(std::vector< uint32 > abilities,
+                                      std::vector<uint32> racialAbilities) {
+	_abilities = abilities;
+	_racialAbilities = racialAbilities;
+}
 
 bool CharGenChoices::hasFeat(uint32 featId) const {
 	for (std::vector<uint32>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
@@ -137,6 +145,10 @@ uint32 CharGenChoices::getClass() const {
 	return _classId;
 }
 
+uint32 CharGenChoices::getRace() const {
+	return _creature->getRace();
+}
+
 bool CharGenChoices::getAlign(uint32& goodness, uint32& loyalty) const {
 	// Check if alignment has been previously set.
 	if (_goodness > 100)
@@ -145,6 +157,10 @@ bool CharGenChoices::getAlign(uint32& goodness, uint32& loyalty) const {
 	goodness = _goodness;
 	loyalty  = _loyalty;
 	return true;
+}
+
+uint32 CharGenChoices::getAbility(uint32 ability) const {
+	return _abilities[ability];
 }
 
 } // End of namespace NWN
