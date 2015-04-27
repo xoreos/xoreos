@@ -71,7 +71,7 @@ public:
 	~TalkTable();
 
 	/** Return the language ID (ungendered) of the talk table. */
-	uint getLanguageID() const;
+	uint32 getLanguageID() const;
 
 	/** Get an entry.
 	 *
