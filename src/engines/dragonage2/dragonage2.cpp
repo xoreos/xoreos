@@ -42,6 +42,7 @@
 #include "src/engines/aurora/resources.h"
 
 #include "src/engines/dragonage2/dragonage2.h"
+#include "src/engines/dragonage2/console.h"
 
 namespace Engines {
 
@@ -85,6 +86,7 @@ Engines::Engine *DragonAge2EngineProbe::createEngine() const {
 
 
 DragonAge2Engine::DragonAge2Engine() {
+	_console = new Console(*this);
 }
 
 DragonAge2Engine::~DragonAge2Engine() {
@@ -114,6 +116,17 @@ void DragonAge2Engine::run() {
 	}
 
 	while (!EventMan.quitRequested()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event)) {
+			if (_console->processEvent(event))
+				continue;
+
+			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+				_console->show();
+				continue;
+			}
+		}
+
 		EventMan.delay(10);
 	}
 
