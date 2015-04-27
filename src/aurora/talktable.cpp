@@ -23,6 +23,7 @@
  */
 
 #include "src/common/stream.h"
+#include "src/common/file.h"
 #include "src/common/util.h"
 #include "src/common/encoding.h"
 #include "src/common/error.h"
@@ -151,6 +152,26 @@ const TalkTable::Entry *TalkTable::getEntry(uint32 strRef) {
 	readString(entry);
 
 	return &entry;
+}
+
+uint32 TalkTable::getLanguageID(Common::SeekableReadStream &tlk) {
+	uint32 id, version;
+	bool utf16le;
+
+	AuroraBase::readHeader(tlk, id, version, utf16le);
+
+	if ((id != kTLKID) || ((version != kVersion3) && (version != kVersion4)))
+		return 0xFFFFFFFF;
+
+	return tlk.readUint32LE();
+}
+
+uint32 TalkTable::getLanguageID(const Common::UString &file) {
+	Common::File tlk;
+	if (!tlk.open(file))
+		return 0xFFFFFFFF;
+
+	return getLanguageID(tlk);
 }
 
 } // End of namespace Aurora

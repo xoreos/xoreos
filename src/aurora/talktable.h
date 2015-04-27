@@ -80,6 +80,13 @@ public:
 	 */
 	const Entry *getEntry(uint32 strRef);
 
+
+	/** Return the (ungendered) language ID of that talk table. */
+	static uint32 getLanguageID(Common::SeekableReadStream &tlk);
+	/** Return the (ungendered) language ID of that talk table. */
+	static uint32 getLanguageID(const Common::UString &file);
+
+
 private:
 	Common::SeekableReadStream *_tlk;
 
