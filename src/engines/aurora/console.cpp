@@ -753,7 +753,7 @@ uint32 Console::getColumns() const {
 	return _console->getColumns();
 }
 
-bool Console::processEvent(Events::Event &event) {
+bool Console::processEvent(const Events::Event &event) {
 	if (!isVisible())
 		return false;
 

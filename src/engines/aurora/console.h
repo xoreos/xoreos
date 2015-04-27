@@ -191,7 +191,7 @@ public:
 	uint32 getLines  () const;
 	uint32 getColumns() const;
 
-	bool processEvent(Events::Event &event);
+	bool processEvent(const Events::Event &event);
 
 	void clear();
 	void print(const Common::UString &line);
