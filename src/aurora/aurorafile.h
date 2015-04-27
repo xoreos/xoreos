@@ -57,6 +57,12 @@ public:
 	/** Were the ID and version encoded in little-endian UTF-16 in the file? */
 	bool isUTF16LE() const;
 
+
+	/** Read the header out of a stream. */
+	static void readHeader(Common::SeekableReadStream &stream,
+	                       uint32 &id, uint32 &version, bool &utf16le);
+
+
 protected:
 	uint32 _id;      ///< The file's ID.
 	uint32 _version; ///< The file's version.
@@ -64,7 +70,7 @@ protected:
 
 	void readHeader(Common::SeekableReadStream &stream);
 
-	uint32 convertUTF16LE(uint32 x1, uint32 x2);
+	static uint32 convertUTF16LE(uint32 x1, uint32 x2);
 };
 
 } // End of namespace Aurora

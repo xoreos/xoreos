@@ -57,23 +57,29 @@ bool AuroraBase::isUTF16LE() const {
 	return _utf16le;
 }
 
-void AuroraBase::readHeader(Common::SeekableReadStream &stream) {
-	_id      = stream.readUint32BE();
-	_version = stream.readUint32BE();
+void AuroraBase::readHeader(Common::SeekableReadStream &stream,
+                            uint32 &id, uint32 &version, bool &utf16le) {
 
-	if (((_id & 0x00FF00FF) == 0) && ((_version & 0x00FF00FF) == 0)) {
+	id      = stream.readUint32BE();
+	version = stream.readUint32BE();
+
+	if (((id & 0x00FF00FF) == 0) && ((version & 0x00FF00FF) == 0)) {
 		// There's 0-bytes in the ID and version, this looks like little-endian UTF-16
 
-		_utf16le = true;
+		utf16le = true;
 
-		_id = convertUTF16LE(_id, _version);
+		id = convertUTF16LE(id, version);
 
 		uint32 version1 = stream.readUint32BE();
 		uint32 version2 = stream.readUint32BE();
 
-		_version = convertUTF16LE(version1, version2);
+		version = convertUTF16LE(version1, version2);
 	} else
-		_utf16le = false;
+		utf16le = false;
+}
+
+void AuroraBase::readHeader(Common::SeekableReadStream &stream) {
+	readHeader(stream, _id, _version, _utf16le);
 }
 
 uint32 AuroraBase::convertUTF16LE(uint32 x1, uint32 x2) {
