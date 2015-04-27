@@ -114,7 +114,7 @@ void ReadLine::addInput(const UString &str) {
 		addInput(*c);
 }
 
-bool ReadLine::processEvent(Events::Event &event, UString &command) {
+bool ReadLine::processEvent(const Events::Event &event, UString &command) {
 	command.clear();
 
 	_completeHint.clear();
@@ -129,7 +129,7 @@ bool ReadLine::processEvent(Events::Event &event, UString &command) {
 	return false;
 }
 
-bool ReadLine::processKeyDown(Events::Event &event, UString &command) {
+bool ReadLine::processKeyDown(const Events::Event &event, UString &command) {
 	// We only care about certain modifiers
 	SDL_Keycode key = event.key.keysym.sym;
 	SDL_Keymod mod = (SDL_Keymod) (((int) event.key.keysym.mod) & (KMOD_CTRL | KMOD_SHIFT | KMOD_ALT));
@@ -281,7 +281,7 @@ bool ReadLine::processKeyDown(Events::Event &event, UString &command) {
 	return false;
 }
 
-bool ReadLine::processTextInput(Events::Event &event, UString &UNUSED(command)) {
+bool ReadLine::processTextInput(const Events::Event &event, UString &UNUSED(command)) {
 	Common::UString text = EventMan.getTextInput(event);
 	if (text.empty())
 		return false;

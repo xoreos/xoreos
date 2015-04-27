@@ -85,7 +85,7 @@ public:
 	 *                 to be executed will be stored here.
 	 *  @return true if the event was handled.
 	 */
-	bool processEvent(Events::Event &event, UString &command);
+	bool processEvent(const Events::Event &event, UString &command);
 
 
 private:
@@ -143,8 +143,8 @@ private:
 	void browseTop();
 	void browseBottom();
 
-	bool processKeyDown(Events::Event &event, UString &command);
-	bool processTextInput(Events::Event &event, UString &command);
+	bool processKeyDown(const Events::Event &event, UString &command);
+	bool processTextInput(const Events::Event &event, UString &command);
 
 	void tabComplete();
 	void tabComplete(const UString &prefix, const UString &input,
