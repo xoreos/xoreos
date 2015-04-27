@@ -34,13 +34,15 @@
 
 #include "src/engines/aurora/gui.h"
 #include "src/engines/aurora/widget.h"
+#include "src/engines/aurora/console.h"
 
 /** Time between clicks to still be considered a double-click. */
 static const uint32 kDoubleClickTime = 500;
 
 namespace Engines {
 
-GUI::GUI() : _currentWidget(0), _returnCode(0), _x(0.0), _y(0.0), _z(0.0) {
+GUI::GUI(Console *console) : _console(console),
+	_currentWidget(0), _returnCode(0), _x(0.0), _y(0.0), _z(0.0) {
 }
 
 GUI::~GUI() {
@@ -121,6 +123,32 @@ int GUI::processEventQueue() {
 
 	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
 	     e != _eventQueue.end(); ++e) {
+
+		if (EventMan.quitRequested() || (_returnCode != 0)) {
+			removeFocus();
+			hasMove = false;
+			break;
+		}
+
+		// Handle debug console, if we have one
+		if (_console) {
+			if (e->type == Events::kEventKeyDown) {
+				if ((e->key.keysym.sym == SDLK_d) && (e->key.keysym.mod & KMOD_CTRL)) {
+					removeFocus();
+					_console->show();
+					continue;
+				}
+			}
+
+			if (_console->isVisible()) {
+				_console->processEvent(*e);
+
+				if (!_console->isVisible())
+					hasMove = true;
+
+				continue;
+			}
+		}
 
 		if      (e->type == Events::kEventMouseMove)
 			hasMove = true;

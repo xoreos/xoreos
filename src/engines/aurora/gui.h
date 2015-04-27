@@ -35,11 +35,12 @@
 namespace Engines {
 
 class Widget;
+class Console;
 
 /** A GUI. */
 class GUI {
 public:
-	GUI();
+	GUI(Console *console = 0);
 	virtual ~GUI();
 
 	virtual void show(); ///< Show the GUI.
@@ -54,6 +55,8 @@ public:
 
 
 protected:
+	Console *_console;
+
 	Widget *_currentWidget; ///< The widget the mouse is currently on.
 
 	int _startCode;  ///< The GUI's start code.
