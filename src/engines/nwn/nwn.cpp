@@ -276,7 +276,7 @@ void NWNEngine::initResources(LoadProgress &progress) {
 		return;
 
 	progress.step("Loading main talk table");
-	TalkMan.addMainTable("dialog");
+	TalkMan.addMainTable("dialog", "dialogf");
 
 	progress.step("Registering file formats");
 	registerModelLoader(new NWNModelLoader);

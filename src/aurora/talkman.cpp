@@ -78,34 +78,40 @@ LanguageGender TalkManager::getGender() const {
 	return _gender;
 }
 
-void TalkManager::addTable(const Common::UString &name, TalkTable *&m, TalkTable *&f) {
-	Common::SeekableReadStream *tlkM = ResMan.getResource(name, kFileTypeTLK);
-	if (!tlkM)
-		throw Common::Exception("No such talk table \"%s\"", name.c_str());
+void TalkManager::addTable(const Common::UString &nameMale, const Common::UString &nameFemale,
+                           TalkTable *&m, TalkTable *&f) {
 
-	m = new TalkTable(tlkM);
+	if (!nameMale.empty()) {
+		Common::SeekableReadStream *tlkM = ResMan.getResource(nameMale, kFileTypeTLK);
+		if (!tlkM)
+			throw Common::Exception("No such talk table \"%s\"", nameMale.c_str());
 
-	Common::SeekableReadStream *tlkF = ResMan.getResource(name + "f", kFileTypeTLK);
-	if (tlkF)
-		f = new TalkTable(tlkF);
+		m = new TalkTable(tlkM);
+	}
+
+	if (!nameFemale.empty()) {
+		Common::SeekableReadStream *tlkF = ResMan.getResource(nameFemale, kFileTypeTLK);
+		if (tlkF)
+			f = new TalkTable(tlkF);
+	}
 }
 
-void TalkManager::addMainTable(const Common::UString &name) {
+void TalkManager::addMainTable(const Common::UString &nameMale, const Common::UString &nameFemale) {
 	removeMainTable();
 
 	try {
-		addTable(name, _mainTableM, _mainTableF);
+		addTable(nameMale, nameFemale, _mainTableM, _mainTableF);
 	} catch (...) {
 		removeMainTable();
 		throw;
 	}
 }
 
-void TalkManager::addAltTable(const Common::UString &name) {
+void TalkManager::addAltTable(const Common::UString &nameMale, const Common::UString &nameFemale) {
 	removeAltTable();
 
 	try {
-		addTable(name, _altTableM, _altTableF);
+		addTable(nameMale, nameFemale, _altTableM, _altTableF);
 	} catch (...) {
 		removeAltTable();
 		throw;

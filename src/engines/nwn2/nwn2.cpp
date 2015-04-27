@@ -335,7 +335,7 @@ void NWN2Engine::initResources(LoadProgress &progress) {
 	_hasXP3 = ResMan.hasArchive(Aurora::kArchiveERF, "westgate.hak");
 
 	progress.step("Loading main talk table");
-	TalkMan.addMainTable("dialog");
+	TalkMan.addMainTable("dialog", "dialogf");
 
 	progress.step("Registering file formats");
 	registerModelLoader(new NWN2ModelLoader);

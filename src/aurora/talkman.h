@@ -61,8 +61,8 @@ public:
 	/** Set the gender modulating the current language. */
 	void setGender(LanguageGender gender);
 
-	void addMainTable(const Common::UString &name);
-	void addAltTable(const Common::UString &name);
+	void addMainTable(const Common::UString &nameMale, const Common::UString &nameFemale = "");
+	void addAltTable(const Common::UString &nameMale, const Common::UString &nameFemale = "");
 
 	void removeMainTable();
 	void removeAltTable();
@@ -87,7 +87,8 @@ private:
 
 	const TalkTable::Entry *getEntry(uint32 strRef, LanguageGender gender);
 
-	void addTable(const Common::UString &name, TalkTable *&m, TalkTable *&f);
+	void addTable(const Common::UString &nameMale, const Common::UString &nameFemale,
+	              TalkTable *&m, TalkTable *&f);
 };
 
 } // End of namespace Aurora

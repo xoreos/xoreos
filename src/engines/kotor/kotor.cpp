@@ -290,7 +290,7 @@ void KotOREngine::initResources(LoadProgress &progress) {
 		return;
 
 	progress.step("Loading main talk table");
-	TalkMan.addMainTable("dialog");
+	TalkMan.addMainTable("dialog", "dialogf");
 
 	if (_hasLiveKey)
 		TalkMan.addAltTable("live1");
