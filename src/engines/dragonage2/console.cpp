@@ -23,7 +23,7 @@
  */
 
 #include "src/engines/dragonage2/console.h"
-#include "src/engines/dragonage2/dragonage.h"
+#include "src/engines/dragonage2/dragonage2.h"
 
 namespace Engines {
 
