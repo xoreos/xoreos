@@ -454,6 +454,26 @@ void NWNEngine::stopMenuMusic() {
 	SoundMan.stopChannel(_menuMusic);
 }
 
+void NWNEngine::runMainMenu(GUI *mainMenu) {
+	_console->disableCommand("loadcampaign", "not available in the main menu");
+	_console->disableCommand("loadmodule"  , "not available in the main menu");
+	_console->disableCommand("exitmodule"  , "not available in the main menu");
+	_console->disableCommand("listareas"   , "not available in the main menu");
+	_console->disableCommand("gotoarea"    , "not available in the main menu");
+	_console->disableCommand("stopmusic"   , "not available in the main menu");
+	_console->disableCommand("playmusic"   , "not available in the main menu");
+
+	mainMenu->run();
+
+	_console->enableCommand("loadcampaign");
+	_console->enableCommand("loadmodule");
+	_console->enableCommand("exitmodule");
+	_console->enableCommand("listareas");
+	_console->enableCommand("gotoarea");
+	_console->enableCommand("stopmusic");
+	_console->enableCommand("playmusic");
+}
+
 void NWNEngine::mainMenuLoop() {
 	playMenuMusic();
 
@@ -480,9 +500,9 @@ void NWNEngine::mainMenuLoop() {
 		} else
 			mainMenu->show();
 
-		mainMenu->run();
-		mainMenu->hide();
+		runMainMenu(mainMenu);
 
+		mainMenu->hide();
 		delete mainMenu;
 
 		if (EventMan.quitRequested())

@@ -49,6 +49,7 @@ namespace NWN {
 class Version;
 class ScriptFunctions;
 
+class GUI;
 class Module;
 
 class NWNEngineProbe : public Engines::EngineProbe {
@@ -165,6 +166,8 @@ private:
 
 	void playMenuMusic();
 	void stopMenuMusic();
+
+	void runMainMenu(GUI *mainMenu);
 
 	void mainMenuLoop();
 };
