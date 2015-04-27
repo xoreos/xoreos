@@ -33,7 +33,7 @@ namespace KotOR {
 
 class OptionsFeedbackMenu : public GUI {
 public:
-	OptionsFeedbackMenu();
+	OptionsFeedbackMenu(::Engines::Console *console = 0);
 	~OptionsFeedbackMenu();
 
 protected:

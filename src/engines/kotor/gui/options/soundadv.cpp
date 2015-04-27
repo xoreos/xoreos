@@ -32,7 +32,7 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu() {
+OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(::Engines::Console *console) : GUI(console) {
 	load("optsoundadv");
 
 	//Hardcoded, the gui file returns incorrect values

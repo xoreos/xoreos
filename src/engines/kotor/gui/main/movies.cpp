@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace KotOR {
 
-MoviesMenu::MoviesMenu() {
+MoviesMenu::MoviesMenu(::Engines::Console *console) : GUI(console) {
 	load("titlemovie");
 }
 

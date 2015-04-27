@@ -31,10 +31,10 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsSoundMenu::OptionsSoundMenu() {
+OptionsSoundMenu::OptionsSoundMenu(::Engines::Console *console) : GUI(console) {
 	load("optsound");
 
-	_advanced = new OptionsSoundAdvancedMenu();
+	_advanced = new OptionsSoundAdvancedMenu(_console);
 }
 
 OptionsSoundMenu::~OptionsSoundMenu() {

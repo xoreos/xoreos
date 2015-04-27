@@ -487,13 +487,19 @@ void KotOREngine::mainMenuLoop() {
 	_module = new Module(*_console);
 
 	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(*_module, _platform == Aurora::kPlatformXbox);
+		GUI *mainMenu = new MainMenu(*_module, _platform == Aurora::kPlatformXbox, _console);
 
 		EventMan.flushEvents();
+
+		_console->disableCommand("loadmodule", "not available in the main menu");
+		_console->disableCommand("exitmodule", "not available in the main menu");
 
 		mainMenu->show();
 		mainMenu->run();
 		mainMenu->hide();
+
+		_console->enableCommand("loadmodule");
+		_console->enableCommand("exitmodule");
 
 		delete mainMenu;
 

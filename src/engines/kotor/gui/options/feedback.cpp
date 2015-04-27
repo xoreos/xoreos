@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsFeedbackMenu::OptionsFeedbackMenu() {
+OptionsFeedbackMenu::OptionsFeedbackMenu(::Engines::Console *console) : GUI(console) {
 	load("optfeedback");
 }
 

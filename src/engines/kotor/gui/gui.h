@@ -51,7 +51,7 @@ class WidgetListBox;
 /** A KotOR GUI. */
 class GUI : public Engines::GUI {
 public:
-	GUI();
+	GUI(::Engines::Console *console = 0);
 	~GUI();
 
 protected:

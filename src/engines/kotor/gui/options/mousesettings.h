@@ -33,7 +33,7 @@ namespace KotOR {
 
 class OptionsMouseSettingsMenu : public GUI {
 public:
-	OptionsMouseSettingsMenu();
+	OptionsMouseSettingsMenu(::Engines::Console *console = 0);
 	~OptionsMouseSettingsMenu();
 
 protected:

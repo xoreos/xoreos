@@ -39,10 +39,10 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsGameplayMenu::OptionsGameplayMenu() {
+OptionsGameplayMenu::OptionsGameplayMenu(::Engines::Console *console) : GUI(console) {
 	load("optgameplay");
-	_mousesettings = new OptionsMouseSettingsMenu();
-	_keyboardconfiguration = new OptionsKeyboardConfigurationMenu();
+	_mousesettings = new OptionsMouseSettingsMenu(_console);
+	_keyboardconfiguration = new OptionsKeyboardConfigurationMenu(_console);
 	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
 	getButton("BTN_DIFFLEFT", true)->setColor(0, 0.658824, 0.980392, 1);
 	getButton("BTN_DIFFRIGHT", true)->setColor(0, 0.658824, 0.980392, 1);

@@ -32,7 +32,7 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsGraphicsAdvancedMenu::OptionsGraphicsAdvancedMenu() {
+OptionsGraphicsAdvancedMenu::OptionsGraphicsAdvancedMenu(::Engines::Console *console) : GUI(console) {
 	load("optgraphicsadv");
 
 	//Hardcoded, the gui file returns incorrect values

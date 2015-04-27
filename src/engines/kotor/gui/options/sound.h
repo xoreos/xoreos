@@ -33,7 +33,7 @@ namespace KotOR {
 
 class OptionsSoundMenu : public GUI {
 public:
-	OptionsSoundMenu();
+	OptionsSoundMenu(::Engines::Console *console = 0);
 	~OptionsSoundMenu();
 
 protected:

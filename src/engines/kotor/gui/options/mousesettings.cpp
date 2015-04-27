@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsMouseSettingsMenu::OptionsMouseSettingsMenu() {
+OptionsMouseSettingsMenu::OptionsMouseSettingsMenu(::Engines::Console *console) : GUI(console) {
 	load("optmouse");
 }
 

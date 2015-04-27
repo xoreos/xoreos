@@ -33,7 +33,7 @@ namespace KotOR {
 
 class OptionsKeyboardConfigurationMenu : public GUI {
 public:
-	OptionsKeyboardConfigurationMenu();
+	OptionsKeyboardConfigurationMenu(::Engines::Console *console = 0);
 	~OptionsKeyboardConfigurationMenu();
 
 protected:

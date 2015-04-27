@@ -35,7 +35,7 @@ class Module;
 
 class MainMenu : public GUI {
 public:
-	MainMenu(Module &module, bool isXbox);
+	MainMenu(Module &module, bool isXbox, ::Engines::Console *console = 0);
 	~MainMenu();
 
 protected:

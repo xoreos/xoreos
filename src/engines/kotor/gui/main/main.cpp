@@ -40,7 +40,9 @@ namespace Engines {
 
 namespace KotOR {
 
-MainMenu::MainMenu(Module &module, bool isXbox) : _module(&module), _isXbox(isXbox) {
+MainMenu::MainMenu(Module &module, bool isXbox, ::Engines::Console *console) : GUI(console),
+	_module(&module), _isXbox(isXbox) {
+
 	load(isXbox ? "mainmenu" : "mainmenu16x12");
 
 	addBackground("back");
@@ -58,7 +60,7 @@ void MainMenu::createMovies() {
 		return;
 
 	// Create the movies menu
-	_movies = new MoviesMenu;
+	_movies = new MoviesMenu(_console);
 }
 
 void MainMenu::createOptions() {
@@ -66,7 +68,7 @@ void MainMenu::createOptions() {
 		return;
 
 	// Create the options menu
-	_options = new OptionsMenu;
+	_options = new OptionsMenu(_console);
 
 }
 

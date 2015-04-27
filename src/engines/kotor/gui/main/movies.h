@@ -34,7 +34,7 @@ namespace KotOR {
 /** The KotOR movies menu. */
 class MoviesMenu : public GUI {
 public:
-	MoviesMenu();
+	MoviesMenu(::Engines::Console *console = 0);
 	~MoviesMenu();
 
 protected:

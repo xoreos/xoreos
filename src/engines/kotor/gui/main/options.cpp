@@ -38,14 +38,14 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsMenu::OptionsMenu() {
+OptionsMenu::OptionsMenu(::Engines::Console *console) : GUI(console) {
 	load("optionsmain");
 
-	_gameplay = new OptionsGameplayMenu();
-	_feedback = new OptionsFeedbackMenu();
-	_autopause = new OptionsAutoPauseMenu();
-	_graphics = new OptionsGraphicsMenu();
-	_sound = new OptionsSoundMenu();
+	_gameplay = new OptionsGameplayMenu(_console);
+	_feedback = new OptionsFeedbackMenu(_console);
+	_autopause = new OptionsAutoPauseMenu(_console);
+	_graphics = new OptionsGraphicsMenu(_console);
+	_sound = new OptionsSoundMenu(_console);
 
 }
 

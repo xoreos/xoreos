@@ -30,7 +30,9 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsKeyboardConfigurationMenu::OptionsKeyboardConfigurationMenu() {
+OptionsKeyboardConfigurationMenu::OptionsKeyboardConfigurationMenu(::Engines::Console *console) :
+	GUI(console) {
+
 	load("optkeymapping");
 }
 

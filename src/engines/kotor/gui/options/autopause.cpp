@@ -32,7 +32,7 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsAutoPauseMenu::OptionsAutoPauseMenu() {
+OptionsAutoPauseMenu::OptionsAutoPauseMenu(::Engines::Console *console) : GUI(console) {
 	load("optautopause");
 	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
 	getCheckBox("CB_ENDROUND", true)->setColor(0, 0.658824, 0.980392, 1);

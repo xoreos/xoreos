@@ -33,10 +33,10 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsGraphicsMenu::OptionsGraphicsMenu() {
+OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : GUI(console) {
 	load("optgraphics");
 
-	_advanced = new OptionsGraphicsAdvancedMenu();
+	_advanced = new OptionsGraphicsAdvancedMenu(_console);
 
 	//Hardcoded, the gui file returns incorrect values
 	getCheckBox("CB_SHADOWS", true)->setColor(0, 0.658824, 0.980392, 1);

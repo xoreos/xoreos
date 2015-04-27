@@ -33,7 +33,7 @@ namespace KotOR {
 
 class OptionsGraphicsAdvancedMenu : public GUI {
 public:
-	OptionsGraphicsAdvancedMenu();
+	OptionsGraphicsAdvancedMenu(::Engines::Console *console = 0);
 	~OptionsGraphicsAdvancedMenu();
 
 protected:

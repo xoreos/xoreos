@@ -33,7 +33,7 @@ namespace KotOR {
 
 class OptionsAutoPauseMenu : public GUI {
 public:
-	OptionsAutoPauseMenu();
+	OptionsAutoPauseMenu(::Engines::Console *console = 0);
 	~OptionsAutoPauseMenu();
 
 protected:

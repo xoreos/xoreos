@@ -33,7 +33,7 @@ namespace KotOR {
 
 class OptionsGameplayMenu : public GUI {
 public:
-	OptionsGameplayMenu();
+	OptionsGameplayMenu(::Engines::Console *console = 0);
 	~OptionsGameplayMenu();
 
 
