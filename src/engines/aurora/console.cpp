@@ -908,6 +908,27 @@ bool Console::processEvent(const Events::Event &event) {
 	return true;
 }
 
+void Console::disableCommand(const Common::UString &cmd, const Common::UString &reason) {
+	CommandMap::iterator c = _commands.find(cmd);
+	if (c == _commands.end()) {
+		throw Common::Exception("No such command \"%s\"", cmd.c_str());
+		return;
+	}
+
+	c->second.disabled      = true;
+	c->second.disableReason = reason;
+}
+
+void Console::enableCommand(const Common::UString &cmd) {
+	CommandMap::iterator c = _commands.find(cmd);
+	if (c == _commands.end()) {
+		throw Common::Exception("No such command \"%s\"", cmd.c_str());
+		return;
+	}
+
+	c->second.disabled = false;
+}
+
 void Console::execute(const Common::UString &line) {
 	if (line.empty())
 		return;
@@ -941,6 +962,16 @@ void Console::execute(const Common::UString &line) {
 	if (cmd == _commands.end()) {
 		printf("Unknown command \"%s\". Type 'help' for a list of available commands.",
 				cl.cmd.c_str());
+		return;
+	}
+
+	if (cmd->second.disabled) {
+		if (cmd->second.disableReason.empty())
+			printf("Command \"%s\" is currently disabled.", cl.cmd.c_str());
+		else
+			printf("Command \"%s\" is currently disabled: %s.", cl.cmd.c_str(),
+					cmd->second.disableReason.c_str());
+
 		return;
 	}
 
@@ -1358,6 +1389,8 @@ bool Console::registerCommand(const Common::UString &cmd, const CommandCallback 
 	result.first->second.help = help;
 
 	result.first->second.callback = callback;
+
+	result.first->second.disabled = false;
 
 	_readLine->addCommand(cmd);
 

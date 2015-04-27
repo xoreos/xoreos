@@ -193,6 +193,9 @@ public:
 
 	bool processEvent(const Events::Event &event);
 
+	void disableCommand(const Common::UString &cmd, const Common::UString &reason = "");
+	void enableCommand (const Common::UString &cmd);
+
 	void clear();
 	void print(const Common::UString &line);
 	void printf(const char *s, ...);
@@ -230,6 +233,9 @@ private:
 		Common::UString help;
 
 		CommandCallback callback;
+
+		bool disabled;
+		Common::UString disableReason;
 	};
 
 	typedef std::map<Common::UString, Command, Common::UString::iless> CommandMap;
