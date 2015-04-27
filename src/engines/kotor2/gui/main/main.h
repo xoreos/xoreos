@@ -35,7 +35,7 @@ namespace KotOR2 {
 
 class MainMenu : public GUI {
 public:
-	MainMenu(Module &module);
+	MainMenu(Module &module, ::Engines::Console *console = 0);
 	~MainMenu();
 
 protected:

@@ -429,13 +429,19 @@ void KotOR2Engine::mainMenuLoop() {
 	_module = new Module(*_console);
 
 	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(*_module);
+		GUI *mainMenu = new MainMenu(*_module, _console);
 
 		EventMan.flushEvents();
+
+		_console->disableCommand("loadmodule", "not available in the main menu");
+		_console->disableCommand("exitmodule", "not available in the main menu");
 
 		mainMenu->show();
 		mainMenu->run();
 		mainMenu->hide();
+
+		_console->enableCommand("loadmodule");
+		_console->enableCommand("exitmodule");
 
 		delete mainMenu;
 
