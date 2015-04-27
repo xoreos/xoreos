@@ -40,18 +40,26 @@ class Console;
 /** A GUI. */
 class GUI {
 public:
+	static const uint32 kStartCodeNone   = 0;
+	static const uint32 kReturnCodeNone  = 0;
+	static const uint32 kReturnCodeAbort = 0xFFFFFFFF;
+
+
 	GUI(Console *console = 0);
 	virtual ~GUI();
 
 	virtual void show(); ///< Show the GUI.
 	virtual void hide(); ///< Hide the GUI.
 
-	int run(int startCode = 0); ///< Run the GUI.
+	/** Run the GUI. */
+	uint32 run(uint32 startCode = kStartCodeNone);
+	/** Abort the currently running GUI. */
+	virtual void abort();
 
 	/** Add a single event for consideration into the GUI event queue. */
 	void addEvent(const Events::Event &event);
 	/** Process the current event queue. */
-	int processEventQueue();
+	uint32 processEventQueue();
 
 
 protected:
@@ -59,8 +67,11 @@ protected:
 
 	Widget *_currentWidget; ///< The widget the mouse is currently on.
 
-	int _startCode;  ///< The GUI's start code.
-	int _returnCode; ///< The GUI's return code.
+	uint32 _startCode;  ///< The GUI's start code.
+	uint32 _returnCode; ///< The GUI's return code.
+
+	GUI *_sub; ///< The currently running sub GUI.
+
 
 	/** Add a widget. */
 	void addWidget(Widget *widget);
@@ -89,7 +100,7 @@ protected:
 	virtual void mouseDown();
 
 	/** Open up a sub GUI. */
-	int sub(GUI &gui, int startCode = 0, bool showSelf = true);
+	uint32 sub(GUI &gui, uint32 startCode = kStartCodeNone, bool showSelf = true);
 
 	/** Set the GUI's position. */
 	void setPosition(float x, float y, float z);

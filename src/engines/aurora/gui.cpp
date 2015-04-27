@@ -42,7 +42,7 @@ static const uint32 kDoubleClickTime = 500;
 namespace Engines {
 
 GUI::GUI(Console *console) : _console(console),
-	_currentWidget(0), _returnCode(0), _x(0.0), _y(0.0), _z(0.0) {
+	_currentWidget(0), _returnCode(kReturnCodeNone), _sub(0), _x(0.0), _y(0.0), _z(0.0) {
 }
 
 GUI::~GUI() {
@@ -79,9 +79,9 @@ void GUI::hide() {
 	GfxMan.unlockFrame();
 }
 
-int GUI::run(int startCode) {
+uint32 GUI::run(uint32 startCode) {
 	_startCode  = startCode;
-	_returnCode = 0;
+	_returnCode = kReturnCodeNone;
 
 	EventMan.flushEvents();
 
@@ -89,10 +89,10 @@ int GUI::run(int startCode) {
 	updateMouse();
 
 	// Run as long as we don't have a return code
-	while (_returnCode == 0) {
+	while (_returnCode == kReturnCodeNone) {
 		// Call the periodic run callback
 		callbackRun();
-		if (_returnCode != 0)
+		if (_returnCode != kReturnCodeNone)
 			break;
 
 		// But return immediately when an engine quit was requested
@@ -107,24 +107,31 @@ int GUI::run(int startCode) {
 		processEventQueue();
 
 		// Delay for a while
-		if (!EventMan.quitRequested() && (_returnCode != 0))
+		if (!EventMan.quitRequested() && (_returnCode != kReturnCodeNone))
 			EventMan.delay(10);
 	}
 
 	return _returnCode;
 }
 
+void GUI::abort() {
+	_returnCode = kReturnCodeAbort;
+
+	if (_sub)
+		_sub->abort();
+}
+
 void GUI::addEvent(const Events::Event &event) {
 	_eventQueue.push_back(event);
 }
 
-int GUI::processEventQueue() {
+uint32 GUI::processEventQueue() {
 	bool hasMove = false;
 
 	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
 	     e != _eventQueue.end(); ++e) {
 
-		if (EventMan.quitRequested() || (_returnCode != 0)) {
+		if (EventMan.quitRequested() || (_returnCode != kReturnCodeNone)) {
 			removeFocus();
 			hasMove = false;
 			break;
@@ -169,7 +176,7 @@ int GUI::processEventQueue() {
 }
 
 void GUI::callbackRun() {
-	_startCode = 0;
+	_startCode = kStartCodeNone;
 }
 
 void GUI::callbackActive(Widget &UNUSED(widget)) {
@@ -259,8 +266,10 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 				(*a)->addGroupMember(**b);
 }
 
-int GUI::sub(GUI &gui, int startCode, bool showSelf) {
+uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf) {
 	GfxMan.lockFrame();
+
+	_sub = &gui;
 
 	removeFocus();
 
@@ -272,7 +281,7 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 	GfxMan.unlockFrame();
 
 	// Run the sub GUI
-	int code = gui.run(startCode);
+	uint32 code = gui.run(startCode);
 
 	GfxMan.lockFrame();
 
@@ -284,6 +293,8 @@ int GUI::sub(GUI &gui, int startCode, bool showSelf) {
 	// Update the mouse position
 	removeFocus();
 	updateMouse();
+
+	_sub = 0;
 
 	GfxMan.unlockFrame();
 
