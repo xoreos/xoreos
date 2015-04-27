@@ -120,6 +120,13 @@ void MainMenu::show() {
 	getWidget("NewButton#Caption", true)->show();
 }
 
+void MainMenu::abort() {
+	// If we're aborting the main menu, quit everything
+	EventMan.requestQuit();
+
+	GUI::abort();
+}
+
 void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "ExitButton") {
 		EventMan.requestQuit();

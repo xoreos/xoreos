@@ -58,7 +58,8 @@ public:
 	IngameGUI(Module &module, ::Engines::Console *console = 0);
 	~IngameGUI();
 
-	int showMain(); ///< Show the ingame main menu.
+	uint32 showMain(); ///< Show the ingame main menu.
+	void  abortMain(); ///< Abort the ingame main menu.
 
 	void show(); ///< Show the ingame GUI elements.
 	void hide(); ///< Hide the ingame GUI elements.

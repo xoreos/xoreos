@@ -72,12 +72,16 @@ IngameGUI::~IngameGUI() {
 	delete _main;
 }
 
-int IngameGUI::showMain() {
+uint32 IngameGUI::showMain() {
 	_main->show();
-	int code = _main->run();
+	uint32 code = _main->run();
 	_main->hide();
 
 	return code;
+}
+
+void IngameGUI::abortMain() {
+	_main->abort();
 }
 
 void IngameGUI::show() {

@@ -41,6 +41,8 @@ public:
 
 	void show();
 
+	void abort();
+
 protected:
 	void callbackActive(Widget &widget);
 

@@ -124,6 +124,7 @@ void Module::load(const Common::UString &module) {
 	if (isRunning()) {
 		// We are currently running a module. Schedule a safe change instead
 
+		_ingameGUI->abortMain();
 		changeModule(module);
 		return;
 	}
@@ -386,6 +387,8 @@ void Module::enterArea() {
 }
 
 void Module::exit() {
+	_ingameGUI->abortMain();
+
 	_exit = true;
 }
 
@@ -691,8 +694,11 @@ void Module::movedPC() {
 	CameraMan.update();
 
 	_newArea.clear();
-	if (_pc->getArea())
+	if (_pc->getArea()) {
+		_ingameGUI->abortMain();
+
 		_newArea = _pc->getArea()->getResRef();
+	}
 }
 
 const Common::UString &Module::getName() const {
