@@ -22,12 +22,6 @@
  *  Engine class handling Sonic Chronicles: The Dark Brotherhood
  */
 
-#include "src/engines/sonic/sonic.h"
-
-#include "src/engines/aurora/util.h"
-#include "src/engines/aurora/loadprogress.h"
-#include "src/engines/aurora/resources.h"
-
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/filelist.h"
@@ -46,6 +40,13 @@
 
 #include "src/aurora/resman.h"
 #include "src/aurora/ndsrom.h"
+
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/loadprogress.h"
+#include "src/engines/aurora/resources.h"
+
+#include "src/engines/sonic/sonic.h"
+#include "src/engines/sonic/console.h"
 
 namespace Engines {
 
@@ -85,6 +86,7 @@ Engines::Engine *SonicEngineProbe::createEngine() const {
 
 
 SonicEngine::SonicEngine() {
+	_console = new Console(*this);
 }
 
 SonicEngine::~SonicEngine() {
@@ -105,6 +107,17 @@ void SonicEngine::run() {
 	}
 
 	while (!EventMan.quitRequested()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event)) {
+			if (_console->processEvent(event))
+				continue;
+
+			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+				_console->show();
+				continue;
+			}
+		}
+
 		EventMan.delay(10);
 	}
 
