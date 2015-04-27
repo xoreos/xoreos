@@ -54,6 +54,7 @@
 #include "src/engines/nwn/modelloader.h"
 #include "src/engines/nwn/console.h"
 #include "src/engines/nwn/module.h"
+#include "src/engines/nwn/area.h"
 
 #include "src/engines/nwn/script/functions.h"
 
@@ -441,17 +442,39 @@ void NWNEngine::playIntroVideos() {
 	playVideo("nwnintro");
 }
 
-void NWNEngine::playMenuMusic() {
-	if (SoundMan.isPlaying(_menuMusic))
-		return;
+void NWNEngine::playMenuMusic(Common::UString music) {
+	stopMenuMusic();
 
-	_menuMusic = _hasXP2 ?
-		playSound("mus_x2theme"   , Sound::kSoundTypeMusic, true) :
-		playSound("mus_theme_main", Sound::kSoundTypeMusic, true);
+	if (music.empty())
+		music = _hasXP2 ? "mus_x2theme" : "mus_theme_main";
+
+	_menuMusic = playSound(music, Sound::kSoundTypeMusic, true);
 }
 
 void NWNEngine::stopMenuMusic() {
 	SoundMan.stopChannel(_menuMusic);
+}
+
+void NWNEngine::playMusic(const Common::UString &music) {
+	if (_module && _module->isRunning()) {
+		Area *area = _module->getCurrentArea();
+		if (area)
+			area->playAmbientMusic(music);
+
+		return;
+	}
+
+	playMenuMusic(music);
+}
+
+void NWNEngine::stopMusic() {
+	stopMenuMusic();
+
+	if (_module && _module->isRunning()) {
+		Area *area = _module->getCurrentArea();
+		if (area)
+			area->stopAmbientMusic();
+	}
 }
 
 void NWNEngine::runMainMenu(GUI *mainMenu) {
@@ -460,8 +483,6 @@ void NWNEngine::runMainMenu(GUI *mainMenu) {
 	_console->disableCommand("exitmodule"  , "not available in the main menu");
 	_console->disableCommand("listareas"   , "not available in the main menu");
 	_console->disableCommand("gotoarea"    , "not available in the main menu");
-	_console->disableCommand("stopmusic"   , "not available in the main menu");
-	_console->disableCommand("playmusic"   , "not available in the main menu");
 
 	mainMenu->run();
 
@@ -470,8 +491,6 @@ void NWNEngine::runMainMenu(GUI *mainMenu) {
 	_console->enableCommand("exitmodule");
 	_console->enableCommand("listareas");
 	_console->enableCommand("gotoarea");
-	_console->enableCommand("stopmusic");
-	_console->enableCommand("playmusic");
 }
 
 void NWNEngine::mainMenuLoop() {

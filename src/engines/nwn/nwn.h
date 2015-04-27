@@ -126,6 +126,11 @@ public:
 	/** Return the currently running module. */
 	Module *getModule();
 
+	/** Overwrite all currently playing music. */
+	void playMusic(const Common::UString &music = "");
+	/** Force all currently playing music stopped. */
+	void stopMusic();
+
 	/** Return a list of all modules. */
 	static void getModules(std::vector<Common::UString> &modules);
 	/** Does a given module exist? */
@@ -164,7 +169,7 @@ private:
 
 	void playIntroVideos();
 
-	void playMenuMusic();
+	void playMenuMusic(Common::UString music = "");
 	void stopMenuMusic();
 
 	void runMainMenu(GUI *mainMenu);
