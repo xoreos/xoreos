@@ -40,7 +40,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsFeedbackMenu::OptionsFeedbackMenu(bool isMain) {
+OptionsFeedbackMenu::OptionsFeedbackMenu(bool isMain, ::Engines::Console *console) : GUI(console) {
 	load("options_feedback");
 
 	if (isMain) {

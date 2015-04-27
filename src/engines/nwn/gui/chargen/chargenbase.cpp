@@ -34,7 +34,7 @@ namespace Engines {
 
 namespace NWN {
 
-CharGenBase::CharGenBase() {
+CharGenBase::CharGenBase(::Engines::Console *console) : GUI(console) {
 	_choices = 0;
 }
 

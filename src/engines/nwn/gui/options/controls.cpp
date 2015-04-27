@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsControlsMenu::OptionsControlsMenu(bool isMain) {
+OptionsControlsMenu::OptionsControlsMenu(bool isMain, ::Engines::Console *console) : GUI(console) {
 	load("options_controls");
 
 	if (isMain) {

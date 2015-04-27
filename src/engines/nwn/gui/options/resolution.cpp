@@ -39,7 +39,7 @@ OptionsResolutionMenu::Resolution::Resolution(int w, int h) : width(w), height(h
 }
 
 
-OptionsResolutionMenu::OptionsResolutionMenu(bool isMain) {
+OptionsResolutionMenu::OptionsResolutionMenu(bool isMain, ::Engines::Console *console) : GUI(console) {
 	load("options_vidmodes");
 
 	if (isMain) {

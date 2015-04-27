@@ -34,7 +34,7 @@ namespace NWN {
 /** The NWN campaign movies menu. */
 class MoviesCampMenu : public GUI {
 public:
-	MoviesCampMenu();
+	MoviesCampMenu(::Engines::Console *console = 0);
 	~MoviesCampMenu();
 
 protected:

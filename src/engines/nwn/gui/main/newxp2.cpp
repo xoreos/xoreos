@@ -34,7 +34,9 @@ namespace Engines {
 
 namespace NWN {
 
-NewXP2Menu::NewXP2Menu(Module &module, GUI &charType) : _module(&module), _charType(&charType) {
+NewXP2Menu::NewXP2Menu(Module &module, GUI &charType, ::Engines::Console *console) : GUI(console),
+	_module(&module), _charType(&charType) {
+
 	load("pre_newgame");
 
 	getWidget("OtherButton"   , true)->setInvisible(true);

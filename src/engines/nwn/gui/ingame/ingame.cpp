@@ -39,8 +39,10 @@ namespace Engines {
 
 namespace NWN {
 
-IngameGUI::IngameGUI(Module &module) : _module(&module), _lastCompassChange(0) {
-	_main = new IngameMainMenu(_module->getGameVersion());
+IngameGUI::IngameGUI(Module &module, ::Engines::Console *console) :
+	_module(&module), _lastCompassChange(0) {
+
+	_main = new IngameMainMenu(_module->getGameVersion(), console);
 
 	_quickbar  = new Quickbar;
 	_quickchat = new Quickchat(_quickbar->getHeight() - 3.0);

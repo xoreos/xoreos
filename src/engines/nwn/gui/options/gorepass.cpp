@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsGorePasswordMenu::OptionsGorePasswordMenu(bool isMain) {
+OptionsGorePasswordMenu::OptionsGorePasswordMenu(bool isMain, ::Engines::Console *console) : GUI(console) {
 	load("options_gorepass");
 
 	if (isMain) {

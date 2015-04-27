@@ -41,7 +41,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsVideoAdvancedMenu::OptionsVideoAdvancedMenu(bool isMain) {
+OptionsVideoAdvancedMenu::OptionsVideoAdvancedMenu(bool isMain, ::Engines::Console *console) : GUI(console) {
 	load("options_adv_vid");
 
 	if (isMain) {

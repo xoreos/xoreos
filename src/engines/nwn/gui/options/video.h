@@ -34,7 +34,7 @@ namespace NWN {
 /** The NWN video options menu. */
 class OptionsVideoMenu : public GUI {
 public:
-	OptionsVideoMenu(bool isMain = false);
+	OptionsVideoMenu(bool isMain = false, ::Engines::Console *console = 0);
 	~OptionsVideoMenu();
 
 	void show();

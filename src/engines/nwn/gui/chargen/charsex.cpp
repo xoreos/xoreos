@@ -36,7 +36,7 @@ namespace Engines {
 
 namespace NWN {
 
-CharSex::CharSex(CharGenChoices &choices) {
+CharSex::CharSex(CharGenChoices &choices, ::Engines::Console *console) : CharGenBase(console) {
 	_choices = &choices;
 	load("cg_sex");
 

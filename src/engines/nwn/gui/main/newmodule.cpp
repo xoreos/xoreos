@@ -118,7 +118,7 @@ bool WidgetListItemModule::deactivate() {
 }
 
 
-NewModuleMenu::NewModuleMenu(Module &module, GUI &charType) :
+NewModuleMenu::NewModuleMenu(Module &module, GUI &charType, ::Engines::Console *console) : GUI(console),
 	_module(&module), _charType(&charType) {
 
 	load("pre_loadmod");

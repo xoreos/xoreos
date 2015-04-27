@@ -34,7 +34,7 @@ namespace NWN {
 /** The NWN violence/gore password options menu. */
 class OptionsGorePasswordMenu : public GUI {
 public:
-	OptionsGorePasswordMenu(bool isMain = false);
+	OptionsGorePasswordMenu(bool isMain = false, ::Engines::Console *console = 0);
 	~OptionsGorePasswordMenu();
 
 protected:

@@ -69,7 +69,7 @@ private:
 /** The NWN new module menu. */
 class NewModuleMenu : public GUI {
 public:
-	NewModuleMenu(Module &module, GUI &charType);
+	NewModuleMenu(Module &module, GUI &charType, ::Engines::Console *console = 0);
 	~NewModuleMenu();
 
 	void show();

@@ -42,7 +42,9 @@ namespace Engines {
 
 namespace NWN {
 
-CharAttributes::CharAttributes(CharGenChoices &choices) {
+CharAttributes::CharAttributes(CharGenChoices &choices, ::Engines::Console *console) :
+	CharGenBase(console) {
+
 	_choices = &choices;
 	load("cg_attributes");
 

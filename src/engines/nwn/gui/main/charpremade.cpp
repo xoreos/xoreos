@@ -109,7 +109,9 @@ bool CharPremadeMenu::Character::operator<(const Character &c) const {
 }
 
 
-CharPremadeMenu::CharPremadeMenu(Module &module) : _module(&module) {
+CharPremadeMenu::CharPremadeMenu(Module &module, ::Engines::Console *console) : GUI(console),
+	_module(&module) {
+
 	load("pre_playmod");
 
 	// TODO: "SaveLabel" should wrap!
@@ -125,7 +127,7 @@ CharPremadeMenu::CharPremadeMenu(Module &module) : _module(&module) {
 	// TODO: Delete character
 	getWidget("DeleteCharButton", true)->setDisabled(true);
 
-	_charGen = new CharGenMenu(*_module);
+	_charGen = new CharGenMenu(*_module, _console);
 }
 
 CharPremadeMenu::~CharPremadeMenu() {

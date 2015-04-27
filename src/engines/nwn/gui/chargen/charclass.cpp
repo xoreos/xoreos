@@ -36,7 +36,9 @@ namespace Engines {
 
 namespace NWN {
 
-CharClass::CharClass(CharGenChoices &choices) {
+CharClass::CharClass(CharGenChoices &choices, ::Engines::Console *console) :
+	CharGenBase(console) {
+
 	_choices = &choices;
 	load("cg_class");
 

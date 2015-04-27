@@ -40,17 +40,19 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsMenu::OptionsMenu(const Version &gameVersion) : _gameVersion(&gameVersion) {
+OptionsMenu::OptionsMenu(const Version &gameVersion, ::Engines::Console *console) : GUI(console),
+	_gameVersion(&gameVersion) {
+
 	load("options_pregame");
 
 	WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
 	backdrop->setPosition(0.0, 0.0, 100.0);
 	addWidget(backdrop);
 
-	_game     = new OptionsGameMenu(true);
-	_video    = new OptionsVideoMenu(true);
-	_sound    = new OptionsSoundMenu(true);
-	_controls = new OptionsControlsMenu(true);
+	_game     = new OptionsGameMenu    (true, _console);
+	_video    = new OptionsVideoMenu   (true, _console);
+	_sound    = new OptionsSoundMenu   (true, _console);
+	_controls = new OptionsControlsMenu(true, _console);
 }
 
 OptionsMenu::~OptionsMenu() {

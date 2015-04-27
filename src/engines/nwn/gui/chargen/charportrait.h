@@ -54,7 +54,7 @@ private:
 
 class CharPortrait : public CharGenBase {
 public:
-	CharPortrait(CharGenChoices &choices);
+	CharPortrait(CharGenChoices &choices, ::Engines::Console *console = 0);
 	~CharPortrait();
 
 	void reset();

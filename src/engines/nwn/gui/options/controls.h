@@ -34,7 +34,7 @@ namespace NWN {
 /** The NWN controls options menu. */
 class OptionsControlsMenu : public GUI {
 public:
-	OptionsControlsMenu(bool isMain = false);
+	OptionsControlsMenu(bool isMain = false, ::Engines::Console *console = 0);
 	~OptionsControlsMenu();
 
 protected:

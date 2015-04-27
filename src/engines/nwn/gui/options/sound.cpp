@@ -37,7 +37,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsSoundMenu::OptionsSoundMenu(bool isMain) {
+OptionsSoundMenu::OptionsSoundMenu(bool isMain, ::Engines::Console *console) : GUI(console) {
 	load("options_sound");
 
 	if (isMain) {
@@ -81,7 +81,7 @@ OptionsSoundMenu::OptionsSoundMenu(bool isMain) {
 	if (soundHeadphones)
 		soundHeadphones->setDisabled(true);
 
-	_advanced = new OptionsSoundAdvancedMenu(isMain);
+	_advanced = new OptionsSoundAdvancedMenu(isMain, _console);
 }
 
 void OptionsSoundMenu::show() {

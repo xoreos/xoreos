@@ -35,7 +35,7 @@ class ButtonsGroup;
 
 class CharSex : public CharGenBase {
 public:
-	CharSex(CharGenChoices &choices);
+	CharSex(CharGenChoices &choices, ::Engines::Console *console = 0);
 	~CharSex();
 
 	void reset();

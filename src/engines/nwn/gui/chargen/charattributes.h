@@ -35,7 +35,7 @@ class ButtonsGroup;
 
 class CharAttributes : public CharGenBase {
 public:
-	CharAttributes(CharGenChoices &choices);
+	CharAttributes(CharGenChoices &choices, ::Engines::Console *console = 0);
 	~CharAttributes();
 
 	void reset();

@@ -36,7 +36,7 @@ class Module;
 /** The NWN new campaign menu. */
 class NewCampMenu : public GUI {
 public:
-	NewCampMenu(Module &module, GUI &charType);
+	NewCampMenu(Module &module, GUI &charType, ::Engines::Console *console = 0);
 	~NewCampMenu();
 
 protected:

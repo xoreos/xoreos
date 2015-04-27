@@ -87,7 +87,9 @@ bool WidgetGridItemPortrait::deactivate() {
 	return true;
 }
 
-CharPortrait::CharPortrait(CharGenChoices &choices) : _selectedPortrait("gui_po_nwnlogo_") {
+CharPortrait::CharPortrait(CharGenChoices &choices, ::Engines::Console *console) :
+	CharGenBase(console), _selectedPortrait("gui_po_nwnlogo_") {
+
 	_choices = &choices;
 	load("cg_portrait");
 

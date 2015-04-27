@@ -41,7 +41,9 @@ namespace Engines {
 
 namespace NWN {
 
-CharGenMenu::CharGenMenu(Module &module) : _module(&module) {
+CharGenMenu::CharGenMenu(Module &module, ::Engines::Console *console) :
+	CharGenBase(console), _module(&module) {
+
 	load("cg_main");
 
 	// TODO: Character trait buttons
@@ -114,12 +116,12 @@ void CharGenMenu::init() {
 		(*b)->setDisabled(true);
 
 
-	_chargenGuis.push_back(new CharSex(*_choices));
-	_chargenGuis.push_back(new CharRace(*_choices));
-	_chargenGuis.push_back(new CharPortrait(*_choices));
-	_chargenGuis.push_back(new CharClass(*_choices));
-	_chargenGuis.push_back(new CharAlignment(*_choices));
-	_chargenGuis.push_back(new CharAttributes(*_choices));
+	_chargenGuis.push_back(new CharSex(*_choices, _console));
+	_chargenGuis.push_back(new CharRace(*_choices, _console));
+	_chargenGuis.push_back(new CharPortrait(*_choices, _console));
+	_chargenGuis.push_back(new CharClass(*_choices, _console));
+	_chargenGuis.push_back(new CharAlignment(*_choices, _console));
+	_chargenGuis.push_back(new CharAttributes(*_choices, _console));
 }
 
 } // End of namespace NWN

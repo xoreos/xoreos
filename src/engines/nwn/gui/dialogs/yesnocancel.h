@@ -37,7 +37,8 @@ namespace NWN {
 class YesNoCancelDialog : public GUI {
 public:
 	YesNoCancelDialog(const Common::UString &msg, const Common::UString &yes = "",
-			const Common::UString &no = "", const Common::UString &cancel = "");
+			const Common::UString &no = "", const Common::UString &cancel = "",
+			::Engines::Console *console = 0);
 	~YesNoCancelDialog();
 
 	void show();

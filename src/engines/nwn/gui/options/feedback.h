@@ -34,7 +34,7 @@ namespace NWN {
 /** The NWN feedback options menu. */
 class OptionsFeedbackMenu : public GUI {
 public:
-	OptionsFeedbackMenu(bool isMain = false);
+	OptionsFeedbackMenu(bool isMain = false, ::Engines::Console *console = 0);
 	~OptionsFeedbackMenu();
 
 	void show();

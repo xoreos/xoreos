@@ -34,7 +34,7 @@ namespace NWN {
 /** The NWN resolution options menu. */
 class OptionsResolutionMenu : public GUI {
 public:
-	OptionsResolutionMenu(bool isMain = false);
+	OptionsResolutionMenu(bool isMain = false, ::Engines::Console *console = 0);
 	~OptionsResolutionMenu();
 
 	void show();

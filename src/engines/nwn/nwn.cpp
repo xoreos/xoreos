@@ -466,7 +466,7 @@ void NWNEngine::mainMenuLoop() {
 	_module = new Module(*_console, *_version);
 
 	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(*_module);
+		GUI *mainMenu = new MainMenu(*_module, _console);
 
 		EventMan.flushEvents();
 		if (legal) {

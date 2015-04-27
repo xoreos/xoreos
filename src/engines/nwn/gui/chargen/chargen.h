@@ -36,7 +36,7 @@ class Module;
 /** The NWN character generator. */
 class CharGenMenu : public CharGenBase {
 public:
-	CharGenMenu(Module &module);
+	CharGenMenu(Module &module, ::Engines::Console *console = 0);
 	~CharGenMenu();
 
 	void reset();

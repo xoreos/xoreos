@@ -35,7 +35,7 @@ class ButtonsGroup;
 
 class CharAlignment : public CharGenBase {
 public:
-	CharAlignment(CharGenChoices &choices);
+	CharAlignment(CharGenChoices &choices, ::Engines::Console *console = 0);
 	~CharAlignment();
 
 	void reset();

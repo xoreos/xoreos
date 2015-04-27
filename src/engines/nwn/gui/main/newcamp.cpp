@@ -34,7 +34,7 @@ namespace Engines {
 
 namespace NWN {
 
-NewCampMenu::NewCampMenu(Module &module, GUI &charType) :
+NewCampMenu::NewCampMenu(Module &module, GUI &charType, ::Engines::Console *console) : GUI(console),
 	_module(&module), _charType(&charType) {
 
 	load("pre_campaign");
@@ -51,10 +51,10 @@ NewCampMenu::NewCampMenu(Module &module, GUI &charType) :
 	if (button)
 		button->setDisabled(true);
 
-	_base    = new NewMenu(*_module, *_charType);
-	_xp1     = new NewXP1Menu(*_module, *_charType);
-	_xp2     = new NewXP2Menu(*_module, *_charType);
-	_modules = new NewModuleMenu(*_module, *_charType);
+	_base    = new NewMenu      (*_module, *_charType, _console);
+	_xp1     = new NewXP1Menu   (*_module, *_charType, _console);
+	_xp2     = new NewXP2Menu   (*_module, *_charType, _console);
+	_modules = new NewModuleMenu(*_module, *_charType, _console);
 }
 
 NewCampMenu::~NewCampMenu() {

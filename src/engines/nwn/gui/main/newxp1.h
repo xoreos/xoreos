@@ -36,7 +36,7 @@ class Module;
 /** The NWN new game menu, expansion 1. */
 class NewXP1Menu : public GUI {
 public:
-	NewXP1Menu(Module &module, GUI &charType);
+	NewXP1Menu(Module &module, GUI &charType, ::Engines::Console *console = 0);
 	~NewXP1Menu();
 
 protected:

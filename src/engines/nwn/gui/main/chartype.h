@@ -36,7 +36,7 @@ class Module;
 /** The NWN new/premade character selection menu. */
 class CharTypeMenu : public GUI {
 public:
-	CharTypeMenu(Module &module);
+	CharTypeMenu(Module &module, ::Engines::Console *console = 0);
 	~CharTypeMenu();
 
 protected:

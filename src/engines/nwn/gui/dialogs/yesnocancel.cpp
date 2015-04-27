@@ -34,7 +34,8 @@ namespace Engines {
 namespace NWN {
 
 YesNoCancelDialog::YesNoCancelDialog(const Common::UString &msg, const Common::UString &yes,
-			const Common::UString &no, const Common::UString &cancel) :
+			const Common::UString &no, const Common::UString &cancel,
+			::Engines::Console *console) : GUI(console),
 	_msg(msg), _yes(yes), _no(no), _cancel(cancel) {
 
 	load("yesnocancelpanel");

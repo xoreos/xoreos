@@ -38,7 +38,9 @@ namespace Engines {
 
 namespace NWN {
 
-CharAlignment::CharAlignment(CharGenChoices &choices) {
+CharAlignment::CharAlignment(CharGenChoices &choices, ::Engines::Console *console) :
+	CharGenBase(console) {
+
 	_choices  = &choices;
 	_loyalty  = 101;
 	_goodness = 101;

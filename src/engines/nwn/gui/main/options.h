@@ -36,7 +36,7 @@ class Version;
 /** The NWN options menu. */
 class OptionsMenu : public GUI {
 public:
-	OptionsMenu(const Version &gameVersion);
+	OptionsMenu(const Version &gameVersion, ::Engines::Console *console = 0);
 	~OptionsMenu();
 
 protected:

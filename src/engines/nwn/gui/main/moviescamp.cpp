@@ -34,7 +34,7 @@ namespace Engines {
 
 namespace NWN {
 
-MoviesCampMenu::MoviesCampMenu() {
+MoviesCampMenu::MoviesCampMenu(::Engines::Console *console) : GUI(console) {
 	load("pre_camp_movies");
 
 	Widget *button = 0;
@@ -49,7 +49,7 @@ MoviesCampMenu::MoviesCampMenu() {
 	if (button)
 		button->setDisabled(true);
 
-	_base = new MoviesBaseMenu();
+	_base = new MoviesBaseMenu(_console);
 }
 
 MoviesCampMenu::~MoviesCampMenu() {

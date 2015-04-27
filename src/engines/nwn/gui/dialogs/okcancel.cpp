@@ -34,7 +34,8 @@ namespace Engines {
 namespace NWN {
 
 OKCancelDialog::OKCancelDialog(const Common::UString &msg,
-		const Common::UString &ok, const Common::UString &cancel) :
+		const Common::UString &ok, const Common::UString &cancel,
+		::Engines::Console *console) : GUI(console),
 	_msg(msg), _ok(ok), _cancel(cancel) {
 
 	load("okcancelpanel");

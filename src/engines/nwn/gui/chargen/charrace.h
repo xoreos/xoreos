@@ -35,7 +35,7 @@ class ButtonsGroup;
 
 class CharRace : public CharGenBase {
 public:
-	CharRace(CharGenChoices &choices);
+	CharRace(CharGenChoices &choices, ::Engines::Console *console = 0);
 	~CharRace();
 
 	void reset();

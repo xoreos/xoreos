@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(bool isMain) {
+OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(bool isMain, ::Engines::Console *console) : GUI(console) {
 	load("options_advsound");
 
 	if (isMain) {

@@ -55,7 +55,7 @@ class Dialog;
 /** The NWN ingame GUI elements. */
 class IngameGUI {
 public:
-	IngameGUI(Module &module);
+	IngameGUI(Module &module, ::Engines::Console *console = 0);
 	~IngameGUI();
 
 	int showMain(); ///< Show the ingame main menu.

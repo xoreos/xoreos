@@ -31,11 +31,13 @@ namespace Engines {
 
 namespace NWN {
 
-CharTypeMenu::CharTypeMenu(Module &module) : _module(&module) {
+CharTypeMenu::CharTypeMenu(Module &module, ::Engines::Console *console) : GUI(console),
+	_module(&module) {
+
 	load("pre_chartype");
 
-	_charGen     = new CharGenMenu(*_module);
-	_charPremade = new CharPremadeMenu(*_module);
+	_charGen     = new CharGenMenu    (*_module, _console);
+	_charPremade = new CharPremadeMenu(*_module, _console);
 }
 
 CharTypeMenu::~CharTypeMenu() {

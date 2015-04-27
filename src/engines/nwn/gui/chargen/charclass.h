@@ -33,7 +33,7 @@ namespace NWN {
 
 class CharClass : public CharGenBase {
 public:
-	CharClass(CharGenChoices &choices);
+	CharClass(CharGenChoices &choices, ::Engines::Console *console = 0);
 	~CharClass();
 
 	void reset();

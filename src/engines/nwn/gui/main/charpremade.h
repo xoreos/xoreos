@@ -61,7 +61,7 @@ private:
 /** The NWN character creator. */
 class CharPremadeMenu : public GUI {
 public:
-	CharPremadeMenu(Module &module);
+	CharPremadeMenu(Module &module, ::Engines::Console *console = 0);
 	~CharPremadeMenu();
 
 	void show();

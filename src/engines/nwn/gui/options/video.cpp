@@ -41,7 +41,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsVideoMenu::OptionsVideoMenu(bool isMain) {
+OptionsVideoMenu::OptionsVideoMenu(bool isMain, ::Engines::Console *console) : GUI(console) {
 	load("options_video");
 
 	if (isMain) {
@@ -64,8 +64,8 @@ OptionsVideoMenu::OptionsVideoMenu(bool isMain) {
 	// TODO: Creature shadows
 	getWidget("ShadowSlider", true)->setDisabled(true);
 
-	_resolution = new OptionsResolutionMenu(isMain);
-	_advanced   = new OptionsVideoAdvancedMenu(isMain);
+	_resolution = new OptionsResolutionMenu   (isMain, _console);
+	_advanced   = new OptionsVideoAdvancedMenu(isMain, _console);
 }
 
 OptionsVideoMenu::~OptionsVideoMenu() {

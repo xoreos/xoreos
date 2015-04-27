@@ -31,7 +31,7 @@ namespace Engines {
 
 namespace NWN {
 
-MoviesBaseMenu::MoviesBaseMenu() {
+MoviesBaseMenu::MoviesBaseMenu(::Engines::Console *console) : GUI(console) {
 	load("pre_movies");
 }
 

@@ -36,7 +36,7 @@ namespace NWN {
 /** The NWN sound options menu. */
 class OptionsSoundMenu : public GUI {
 public:
-	OptionsSoundMenu(bool isMain = false);
+	OptionsSoundMenu(bool isMain = false, ::Engines::Console *console = 0);
 	~OptionsSoundMenu();
 
 	void show();

@@ -36,7 +36,7 @@ class Version;
 /** The NWN ingame main menu. */
 class IngameMainMenu : public GUI {
 public:
-	IngameMainMenu(const Version &gameVersion);
+	IngameMainMenu(const Version &gameVersion, ::Engines::Console *console = 0);
 	~IngameMainMenu();
 
 protected:

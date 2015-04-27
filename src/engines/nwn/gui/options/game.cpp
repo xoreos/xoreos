@@ -40,7 +40,7 @@ namespace Engines {
 
 namespace NWN {
 
-OptionsGameMenu::OptionsGameMenu(bool isMain) {
+OptionsGameMenu::OptionsGameMenu(bool isMain, ::Engines::Console *console) : GUI(console) {
 	load("options_game");
 
 	if (isMain) {
@@ -63,8 +63,8 @@ OptionsGameMenu::OptionsGameMenu(bool isMain) {
 	// TODO: Violence level
 	getWidget("ViolenceSlider", true)->setDisabled(true);
 
-	_gorepass = new OptionsGorePasswordMenu(isMain);
-	_feedback = new OptionsFeedbackMenu(isMain);
+	_gorepass = new OptionsGorePasswordMenu(isMain, _console);
+	_feedback = new OptionsFeedbackMenu    (isMain, _console);
 }
 
 OptionsGameMenu::~OptionsGameMenu() {

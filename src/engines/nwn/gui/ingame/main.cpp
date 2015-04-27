@@ -44,7 +44,9 @@ namespace Engines {
 
 namespace NWN {
 
-IngameMainMenu::IngameMainMenu(const Version &gameVersion) : _gameVersion(&gameVersion) {
+IngameMainMenu::IngameMainMenu(const Version &gameVersion, ::Engines::Console *console) :
+	GUI(console), _gameVersion(&gameVersion) {
+
 	load("options_main");
 
 	// TODO: Load game
@@ -56,10 +58,10 @@ IngameMainMenu::IngameMainMenu(const Version &gameVersion) : _gameVersion(&gameV
 	// TODO: Save character
 	getWidget("SaveCharButton", true)->setDisabled(true);
 
-	_game     = new OptionsGameMenu(false);
-	_video    = new OptionsVideoMenu(false);
-	_sound    = new OptionsSoundMenu(false);
-	_controls = new OptionsControlsMenu(false);
+	_game     = new OptionsGameMenu    (false, _console);
+	_video    = new OptionsVideoMenu   (false, _console);
+	_sound    = new OptionsSoundMenu   (false, _console);
+	_controls = new OptionsControlsMenu(false, _console);
 
 	_quitPrompt = new OKCancelDialog(TalkMan.getString(10308),
 	                                 TalkMan.getString(8274), TalkMan.getString(8275));

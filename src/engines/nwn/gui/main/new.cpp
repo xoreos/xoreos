@@ -33,7 +33,9 @@ namespace Engines {
 
 namespace NWN {
 
-NewMenu::NewMenu(Module &module, GUI &charType) : _module(&module), _charType(&charType) {
+NewMenu::NewMenu(Module &module, GUI &charType, ::Engines::Console *console) : GUI(console),
+	_module(&module), _charType(&charType) {
+
 	load("pre_newgame");
 
 	_hasXP = ConfigMan.getBool("NWN_hasXP1") || ConfigMan.getBool("NWN_hasXP2");
@@ -45,7 +47,7 @@ NewMenu::NewMenu(Module &module, GUI &charType) : _module(&module), _charType(&c
 
 	_modules = 0;
 	if (!_hasXP)
-		_modules = new NewModuleMenu(*_module, *_charType);
+		_modules = new NewModuleMenu(*_module, *_charType, _console);
 }
 
 NewMenu::~NewMenu() {

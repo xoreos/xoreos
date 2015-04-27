@@ -36,7 +36,7 @@ class Module;
 /** The NWN new game menu. */
 class NewMenu : public GUI {
 public:
-	NewMenu(Module &module, GUI &charType);
+	NewMenu(Module &module, GUI &charType, ::Engines::Console *console = 0);
 	~NewMenu();
 
 protected:

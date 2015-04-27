@@ -103,7 +103,7 @@ Module::Module(::Engines::Console &console, const Version &gameVersion) :
 	_hasModule(false), _running(false), _pc(0),
 	_currentTexturePack(-1), _exit(false), _currentArea(0) {
 
-	_ingameGUI = new IngameGUI(*this);
+	_ingameGUI = new IngameGUI(*this, _console);
 }
 
 Module::~Module() {

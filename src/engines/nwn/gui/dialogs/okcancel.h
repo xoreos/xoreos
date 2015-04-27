@@ -37,7 +37,8 @@ namespace NWN {
 class OKCancelDialog : public GUI {
 public:
 	OKCancelDialog(const Common::UString &msg,
-			const Common::UString &ok = "", const Common::UString &cancel = "");
+			const Common::UString &ok = "", const Common::UString &cancel = "",
+			::Engines::Console *console = 0);
 	~OKCancelDialog();
 
 	void show();

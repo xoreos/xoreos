@@ -34,7 +34,7 @@ namespace NWN {
 /** The NWN base game movies menu. */
 class MoviesBaseMenu : public GUI {
 public:
-	MoviesBaseMenu();
+	MoviesBaseMenu(::Engines::Console *console = 0);
 	~MoviesBaseMenu();
 
 protected:
