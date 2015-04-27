@@ -74,12 +74,14 @@ public:
 	WitcherEngine();
 	~WitcherEngine();
 
-	void run();
-
 	/** Return the currently running campaign. */
 	Campaign *getCampaign();
 	/** Return the currently running module. */
 	Module   *getModule();
+
+
+protected:
+	void run();
 
 
 private:

@@ -67,7 +67,10 @@ public:
 	SonicEngine();
 	~SonicEngine();
 
+
+protected:
 	void run();
+
 
 private:
 	Common::UString _romFile;

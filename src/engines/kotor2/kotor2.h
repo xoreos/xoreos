@@ -92,10 +92,12 @@ public:
 	KotOR2Engine();
 	~KotOR2Engine();
 
-	void run();
-
 	/** Return the currently running module. */
 	Module *getModule();
+
+
+protected:
+	void run();
 
 
 private:

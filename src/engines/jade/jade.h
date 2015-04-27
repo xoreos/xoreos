@@ -71,10 +71,12 @@ public:
 	JadeEngine();
 	~JadeEngine();
 
-	void run();
-
 	/** Return the currently running module. */
 	Module *getModule();
+
+
+protected:
+	void run();
 
 
 private:

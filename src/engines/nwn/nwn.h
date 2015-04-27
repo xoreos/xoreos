@@ -121,8 +121,6 @@ public:
 	NWNEngine();
 	~NWNEngine();
 
-	void run();
-
 	/** Return the currently running module. */
 	Module *getModule();
 
@@ -137,6 +135,10 @@ public:
 	static bool hasModule(Common::UString &module);
 	/** Return a list of local player characters. */
 	static void getCharacters(std::vector<Common::UString> &characters, bool local);
+
+
+protected:
+	void run();
 
 
 private:

@@ -67,7 +67,10 @@ public:
 	DragonAge2Engine();
 	~DragonAge2Engine();
 
+
+protected:
 	void run();
+
 
 private:
 	void init();

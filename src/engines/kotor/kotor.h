@@ -103,10 +103,12 @@ public:
 	KotOREngine();
 	~KotOREngine();
 
-	void run();
-
 	/** Return the currently running module. */
 	Module *getModule();
+
+
+protected:
+	void run();
 
 
 private:
