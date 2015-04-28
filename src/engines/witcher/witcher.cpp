@@ -103,6 +103,39 @@ WitcherEngine::~WitcherEngine() {
 	delete _campaign;
 }
 
+bool WitcherEngine::detectLanguages(Aurora::GameID game, const Common::UString &target,
+                                    Aurora::Platform UNUSED(platform),
+                                    std::vector<Aurora::Language> &languagesText,
+                                    std::vector<Aurora::Language> &languagesVoice) const {
+	try {
+		Common::UString dataDir = Common::FilePath::findSubDirectory(target, "data", true);
+		if (dataDir.empty())
+			return true;
+
+		Common::FileList files;
+		if (!files.addDirectory(dataDir))
+			return true;
+
+		for (uint i = 0; i < Aurora::kLanguageMAX; i++) {
+			const uint32 langID = getLanguageID(game, (Aurora::Language) i);
+
+			const Common::UString v1 = Common::UString::sprintf("lang_%d.key"  , langID);
+			const Common::UString v2 = Common::UString::sprintf("M1_%d.key"    , langID);
+			const Common::UString v3 = Common::UString::sprintf("M2_%d.key"    , langID);
+			const Common::UString t  = Common::UString::sprintf("dialog_%d.tlk", langID);
+
+			if (files.contains(v1, true) && files.contains(v2, true) && files.contains(v3, true))
+				languagesVoice.push_back((Aurora::Language) i);
+			if (files.contains(t, true))
+				languagesText.push_back((Aurora::Language) i);
+		}
+
+	} catch (...) {
+	}
+
+	return true;
+}
+
 Campaign *WitcherEngine::getCampaign() {
 	return _campaign;
 }
