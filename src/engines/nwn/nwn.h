@@ -148,6 +148,8 @@ protected:
 private:
 	Version *_version;
 
+	Aurora::Language _language;
+
 	bool _hasXP1; // Shadows of Undrentide (SoU)
 	bool _hasXP2; // Hordes of the Underdark (HotU)
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
