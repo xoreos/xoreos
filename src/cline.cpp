@@ -49,6 +49,9 @@ static void displayUsage(const char *name) {
 	std::printf("  -sVOL   --volume_sfx=VOL    Set SFX volume to VOL.\n");
 	std::printf("  -oVOL   --volume_voice=VOL  Set voice volume to VOL.\n");
 	std::printf("  -iVOL   --volume_video=VOL  Set video volume to VOL.\n");
+	std::printf("  -qLANG  --lang=LANG         Set the game's language.\n");
+	std::printf("          --langtext=LANG     Set the game's text language.\n");
+	std::printf("          --langvoice=LANG    Set the game's voice language.\n");
 	std::printf("  -dLVL   --debuglevel=LVL    Set the debug level to LVL.\n");
 	std::printf("          --debugchannel=CHAN Set the enabled debug channel(s) to CHAN.\n");
 	std::printf("          --listdebug         List all available debug channels.\n");
@@ -61,6 +64,9 @@ static void displayUsage(const char *name) {
 	std::printf("SIZE: A positive integer.\n");
 	std::printf("BOOL: \"true\", \"yes\", \"y\", \"on\" and \"1\" are true, everything else is false.\n");
 	std::printf("VOL:  A double ranging from 0.0 (min) - 1.0 (max).\n");
+	std::printf("LANG: A language identifier. Full name, ISO 639-1 or ISO 639-2 language code;\n");
+	std::printf("      or IETF language tag with ISO 639-1 and ISO 3166-1 country code.\n");
+	std::printf("      Examples: en, de_de, hun, Czech, zh-tw, zh_cn, zh-cht, zh-chs.\n");
 	std::printf("LVL:  A positive integer.\n");
 	std::printf("CHAN: A comma-separated list of debug channels.\n");
 	std::printf("      Use \"All\" to enable all debug channels.\n");
@@ -107,6 +113,8 @@ static Common::UString convertShortToLongOption(char shortOption) {
 		return "volume_video";
 	if (shortOption == 'd')
 		return "debuglevel";
+	if (shortOption == 'q')
+		return "lang";
 
 	return "";
 }
