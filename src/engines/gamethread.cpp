@@ -32,6 +32,8 @@
 
 #include "src/graphics/graphics.h"
 
+#include "src/events/events.h"
+
 namespace Engines {
 
 GameThread::GameThread() : _game(0) {
@@ -64,6 +66,16 @@ void GameThread::init(const Common::UString &baseDir) {
 }
 
 void GameThread::run() {
+	if (ConfigMan.getBool("listlangs", false)) {
+		assert(_game);
+
+		EngineMan.listLanguages(*_game);
+
+		EventMan.requestQuit();
+		EventMan.doQuit();
+		return;
+	}
+
 	if (!createThread())
 		throw Common::Exception("Failed creating game logic thread");
 }

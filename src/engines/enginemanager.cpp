@@ -106,6 +106,9 @@ public:
 	/** Run the probed game in the GameInstance's target. */
 	void run();
 
+	/** List all available languages supported by this GameInstance's target. */
+	void listLanguages();
+
 private:
 	Common::UString _target;
 
@@ -204,6 +207,36 @@ void GameInstanceEngine::destroyEngine() {
 	_engine = 0;
 }
 
+void GameInstanceEngine::listLanguages() {
+	createEngine();
+
+	std::vector<Aurora::Language> langs;
+	if (_engine->detectLanguages(_probe->getGameID(), _target, _probe->getPlatform(), langs)) {
+		if (!langs.empty()) {
+			info("Available languages:");
+			for (std::vector<Aurora::Language>::iterator l = langs.begin(); l != langs.end(); ++l)
+				info("- %s", Aurora::getLanguageName(*l).c_str());
+		}
+	}
+
+	std::vector<Aurora::Language> langsT, langsV;
+	if (_engine->detectLanguages(_probe->getGameID(), _target, _probe->getPlatform(), langsT, langsV)) {
+		if (!langsT.empty()) {
+			info("Available text languages:");
+			for (std::vector<Aurora::Language>::iterator l = langsT.begin(); l != langsT.end(); ++l)
+				info("- %s", Aurora::getLanguageName(*l).c_str());
+		}
+
+		if (!langsV.empty()) {
+			info("Available voice languages:");
+			for (std::vector<Aurora::Language>::iterator l = langsV.begin(); l != langsV.end(); ++l)
+				info("- %s", Aurora::getLanguageName(*l).c_str());
+		}
+	}
+
+	destroyEngine();
+}
+
 void GameInstanceEngine::run() {
 	createEngine();
 
@@ -220,6 +253,13 @@ GameInstance *EngineManager::probeGame(const Common::UString &target) const {
 
 	delete game;
 	return 0;
+}
+
+void EngineManager::listLanguages(GameInstance &game) const {
+	GameInstanceEngine *gameEngine = dynamic_cast<GameInstanceEngine *>(&game);
+	assert(gameEngine);
+
+	gameEngine->listLanguages();
 }
 
 void EngineManager::run(GameInstance &game) const {

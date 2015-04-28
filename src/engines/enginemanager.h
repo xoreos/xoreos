@@ -54,6 +54,9 @@ public:
 	/** Run this game instance. */
 	void run(GameInstance &game) const;
 
+	/** List all available languages supported by this GameInstance's target. */
+	void listLanguages(GameInstance &game) const;
+
 private:
 	void cleanup(GameInstance &game) const;
 };

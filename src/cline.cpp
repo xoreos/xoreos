@@ -52,6 +52,7 @@ static void displayUsage(const char *name) {
 	std::printf("  -dLVL   --debuglevel=LVL    Set the debug level to LVL.\n");
 	std::printf("          --debugchannel=CHAN Set the enabled debug channel(s) to CHAN.\n");
 	std::printf("          --listdebug         List all available debug channels.\n");
+	std::printf("          --listlangs         List all available languages for this target.\n");
 	std::printf("          --logfile=FILE      Write all debug output into this file too.\n");
 	std::printf("          --nologfile=BOOL    Don't write a log file.\n");
 	std::printf("\n");
@@ -211,6 +212,11 @@ bool parseCommandline(int argc, char **argv, Common::UString &target, int &code)
 			}
 
 			if (key == "listdebug") {
+				setOption(key, "true");
+				key.clear();
+			}
+
+			if (key == "listlangs") {
 				setOption(key, "true");
 				key.clear();
 			}
