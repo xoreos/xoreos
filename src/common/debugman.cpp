@@ -32,6 +32,7 @@
 #include "src/common/util.h"
 #include "src/common/filepath.h"
 #include "src/common/debugman.h"
+#include "src/common/version.h"
 
 // boost-date_time stuff
 using boost::posix_time::ptime;
@@ -168,7 +169,13 @@ bool DebugManager::openLogFile(const UString &file) {
 	UString path = FilePath::canonicalize(file);
 	FilePath::createDirectories(FilePath::getDirectory(path));
 
-	return _logFile.open(path);
+	if (!_logFile.open(path))
+		return false;
+
+	logString(XOREOS_NAMEVERSIONFULL);
+	logString("\n");
+
+	return true;
 }
 
 void DebugManager::closeLogFile() {
