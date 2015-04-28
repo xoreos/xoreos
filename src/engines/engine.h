@@ -59,6 +59,10 @@ public:
 	                             std::vector<Aurora::Language> &languagesText,
 	                             std::vector<Aurora::Language> &languagesVoice) const;
 
+	bool detectLanguages(std::vector<Aurora::Language> &languages) const;
+	bool detectLanguages(std::vector<Aurora::Language> &languagesText,
+	                     std::vector<Aurora::Language> &languagesVoice) const;
+
 	void start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform);
 
 	/** Evaluate the FPS display setting and show/hide the FPS display. */
@@ -76,6 +80,9 @@ protected:
 
 	/** Run the game. */
 	virtual void run() = 0;
+
+	bool evaluateLanguage(bool find, Aurora::Language &language) const;
+	bool evaluateLanguage(bool find, Aurora::Language &languageVoice, Aurora::Language &languageText) const;
 };
 
 } // End of namespace Engines
