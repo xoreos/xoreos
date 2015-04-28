@@ -101,6 +101,34 @@ NWN2Engine::~NWN2Engine() {
 	delete _campaign;
 }
 
+bool NWN2Engine::detectLanguages(Aurora::GameID game, const Common::UString &target,
+                                 Aurora::Platform UNUSED(platform),
+                                 std::vector<Aurora::Language> &languages) const {
+	try {
+		Common::FileList files;
+		if (!files.addDirectory(target))
+			return true;
+
+		Common::UString tlk = files.findFirst("dialog.tlk", true);
+		if (tlk.empty())
+			return true;
+
+		uint32 languageID = Aurora::TalkTable::getLanguageID(tlk);
+		if (languageID == 0xFFFFFFFF)
+			return true;
+
+		Aurora::Language language = Aurora::getLanguage(game, languageID);
+		if (language == Aurora::kLanguageInvalid)
+			return true;
+
+		languages.push_back(language);
+
+	} catch (...) {
+	}
+
+	return true;
+}
+
 Campaign *NWN2Engine::getCampaign() {
 	return _campaign;
 }
