@@ -121,6 +121,8 @@ int main(int argc, char **argv) {
 	if (!logFile.empty())
 		DebugMan.openLogFile(logFile);
 
+	DebugMan.logCommandLine(argc, argv);
+
 	status("Target \"%s\"", target.c_str());
 
 	Common::UString dirArg = ConfigMan.getString("path");

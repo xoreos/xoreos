@@ -113,6 +113,9 @@ public:
 	/** Log that string to the current log file. */
 	void logString(const UString &str);
 
+	/** Write the whole command line to the current log file. */
+	void logCommandLine(int argc, char **argv);
+
 	/** Return the OS-specific default path of the log file. */
 	static UString getDefaultLogFile();
 

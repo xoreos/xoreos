@@ -214,6 +214,15 @@ void DebugManager::logString(const UString &str) {
 	}
 }
 
+void DebugManager::logCommandLine(int argc, char **argv) {
+	logString("Full command line:");
+	for (int i = 0; i < argc; i++) {
+		logString(" ");
+		logString(argv[i]);
+	}
+	logString("\n");
+}
+
 UString DebugManager::getDefaultLogFile() {
 	// By default, put the log file into the user data directory
 	return FilePath::getUserDataDirectory() + "/xoreos.log";
