@@ -92,6 +92,10 @@ public:
 	KotOR2Engine();
 	~KotOR2Engine();
 
+	bool detectLanguages(Aurora::GameID game, const Common::UString &target,
+	                     Aurora::Platform platform,
+	                     std::vector<Aurora::Language> &languages) const;
+
 	/** Return the currently running module. */
 	Module *getModule();
 
