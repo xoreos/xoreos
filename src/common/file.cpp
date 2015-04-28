@@ -25,6 +25,7 @@
 #include "src/common/file.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
+#include "src/common/filepath.h"
 
 namespace Common {
 
@@ -141,7 +142,13 @@ DumpFile::~DumpFile() {
 }
 
 bool DumpFile::open(const UString &fileName) {
-	if (!(_handle = std::fopen(fileName.c_str(), "wb")))
+	UString path = FilePath::normalize(fileName);
+	if (path.empty())
+		return false;
+
+	FilePath::createDirectories(FilePath::getDirectory(path));
+
+	if (!(_handle = std::fopen(path.c_str(), "wb")))
 		return false;
 
 	_size = 0;
