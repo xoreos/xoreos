@@ -189,6 +189,11 @@ void KotOREngine::run() {
 void KotOREngine::init() {
 	LoadProgress progress(18);
 
+	if (evaluateLanguage(true, _language))
+		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
+	else
+		warning("Failed to detect this game's language");
+
 	progress.step("Loading user game config");
 	initConfig();
 	checkConfig();
