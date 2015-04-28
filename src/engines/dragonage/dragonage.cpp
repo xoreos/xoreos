@@ -92,6 +92,68 @@ DragonAgeEngine::DragonAgeEngine() {
 DragonAgeEngine::~DragonAgeEngine() {
 }
 
+Common::UString DragonAgeEngine::getLanguageString(Aurora::Language language) {
+	switch (language) {
+		case Aurora::kLanguageEnglish:
+			return "en-us";
+		case Aurora::kLanguageFrench:
+			return "fr-fr";
+		case Aurora::kLanguageGerman:
+			return "de-de";
+		case Aurora::kLanguageItalian:
+			return "it-it";
+		case Aurora::kLanguageSpanish:
+			return "es-es";
+		case Aurora::kLanguagePolish:
+			return "pl-pl";
+		case Aurora::kLanguageCzech:
+			return "cz-cz";
+		case Aurora::kLanguageHungarian:
+			return "hu-hu";
+		case Aurora::kLanguageRussian:
+			return "ru-ru";
+		case Aurora::kLanguageKorean:
+			return "ko-ko";
+		case Aurora::kLanguageJapanese:
+			return "ja-ja";
+		default:
+			break;
+	}
+
+	return "";
+}
+
+bool DragonAgeEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
+                                      Aurora::Platform UNUSED(platform),
+                                      std::vector<Aurora::Language> &languages) const {
+	try {
+		Common::UString tlkDir =
+			Common::FilePath::findSubDirectory(target, "packages/core/data/talktables", true);
+
+		if (tlkDir.empty())
+			return true;
+
+		Common::FileList tlks;
+		if (!tlks.addDirectory(tlkDir))
+			return true;
+
+		for (uint i = 0; i < Aurora::kLanguageMAX; i++) {
+			Common::UString langStr = getLanguageString((Aurora::Language) i);
+			if (langStr.empty())
+				continue;
+
+			if (!tlks.contains("core_" + langStr + ".tlk", true))
+				continue;
+
+			languages.push_back((Aurora::Language) i);
+		}
+
+	} catch (...) {
+	}
+
+	return true;
+}
+
 void DragonAgeEngine::run() {
 	init();
 	if (EventMan.quitRequested())
