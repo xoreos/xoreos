@@ -87,6 +87,8 @@ protected:
 
 
 private:
+	Aurora::Language _language;
+
 	bool _hasXP1; // Mask of the Betrayer (MotB)
 	bool _hasXP2; // Storm of Zehir (SoZ)
 	bool _hasXP3; // Mysteries of Westgate (MoW)
