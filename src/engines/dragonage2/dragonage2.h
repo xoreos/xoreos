@@ -67,6 +67,10 @@ public:
 	DragonAge2Engine();
 	~DragonAge2Engine();
 
+	bool detectLanguages(Aurora::GameID game, const Common::UString &target,
+	                     Aurora::Platform platform,
+	                     std::vector<Aurora::Language> &languages) const;
+
 
 protected:
 	void run();
@@ -75,6 +79,8 @@ protected:
 private:
 	void init();
 	void initCursors();
+
+	static Common::UString getLanguageString(Aurora::Language language);
 };
 
 } // End of namespace DragonAge2
