@@ -187,7 +187,12 @@ void SonicEngine::run() {
 }
 
 void SonicEngine::init() {
-	LoadProgress progress(3);
+	LoadProgress progress(4);
+
+	if (evaluateLanguage(true, _language))
+		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
+	else
+		warning("Failed to detect this game's language");
 
 	ResMan.setHashAlgo(Common::kHashDJB2);
 
@@ -196,9 +201,30 @@ void SonicEngine::init() {
 	progress.step("Indexing the main HERF file");
 	indexMandatoryArchive(Aurora::kArchiveHERF, "test.herf", 2);
 
+	loadLanguageFiles(progress, _language);
+
 	ResMan.declareResource("nintendosplash.tga");
 
 	progress.step("Successfully initialized the engine");
+}
+
+void SonicEngine::unloadLanguageFiles() {
+	ResMan.undo(_languageHERF);
+}
+
+void SonicEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
+	progress.step(Common::UString::sprintf("Index language files (%s)",
+				Aurora::getLanguageName(language).c_str()));
+
+	loadLanguageFiles(language);
+}
+
+void SonicEngine::loadLanguageFiles(Aurora::Language language) {
+	unloadLanguageFiles();
+
+	Common::UString herf = getLanguageHERF(language) + ".herf";
+
+	indexMandatoryArchive(Aurora::kArchiveHERF, herf, 10, &_languageHERF);
 }
 
 void SonicEngine::playIntroVideos() {

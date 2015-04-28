@@ -28,6 +28,7 @@
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
 #include "src/engines/engine.h"
 #include "src/engines/engineprobe.h"
@@ -37,6 +38,8 @@ namespace Common {
 }
 
 namespace Engines {
+
+class LoadProgress;
 
 namespace Sonic {
 
@@ -77,9 +80,15 @@ protected:
 
 
 private:
-	Common::UString _romFile;
+	Aurora::Language _language;
+
+	Aurora::ResourceManager::ChangeID _languageHERF;
 
 	void init();
+
+	void unloadLanguageFiles();
+	void loadLanguageFiles(LoadProgress &progress, Aurora::Language language);
+	void loadLanguageFiles(Aurora::Language language);
 
 	void playIntroVideos();
 
