@@ -22,6 +22,7 @@
  *  Generic engine interface.
  */
 
+#include "src/common/util.h"
 #include "src/common/configman.h"
 
 #include "src/graphics/aurora/fps.h"
@@ -41,6 +42,19 @@ Engine::Engine() : _game(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnk
 Engine::~Engine() {
 	delete _console;
 	delete _fps;
+}
+
+bool Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &UNUSED(target),
+                             Aurora::Platform UNUSED(platform),
+                             std::vector<Aurora::Language> &UNUSED(languages)) const {
+	return false;
+}
+
+bool Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &UNUSED(target),
+                             Aurora::Platform UNUSED(platform),
+                             std::vector<Aurora::Language> &UNUSED(languagesText),
+                             std::vector<Aurora::Language> &UNUSED(languagesVoice)) const {
+	return false;
 }
 
 void Engine::start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform) {

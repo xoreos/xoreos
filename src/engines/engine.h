@@ -25,9 +25,12 @@
 #ifndef ENGINES_ENGINE_H
 #define ENGINES_ENGINE_H
 
+#include <vector>
+
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
+#include "src/aurora/language.h"
 
 namespace Graphics {
 	namespace Aurora {
@@ -44,6 +47,17 @@ class Engine {
 public:
 	Engine();
 	virtual ~Engine();
+
+	/** Detect which languages this game instance supports. */
+	virtual bool detectLanguages(Aurora::GameID game, const Common::UString &target,
+	                             Aurora::Platform platform,
+	                             std::vector<Aurora::Language> &languages) const;
+
+	/** Detect which languages this game instance supports. */
+	virtual bool detectLanguages(Aurora::GameID game, const Common::UString &target,
+	                             Aurora::Platform platform,
+	                             std::vector<Aurora::Language> &languagesText,
+	                             std::vector<Aurora::Language> &languagesVoice) const;
 
 	void start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform);
 
