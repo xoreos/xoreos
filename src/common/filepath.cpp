@@ -514,4 +514,11 @@ UString FilePath::getUserDataDirectory() {
 	return canonicalize(directory);
 }
 
+UString FilePath::getUserDataFile(UString file) {
+	if (!isAbsolute(file))
+		file = getUserDataDirectory() + "/" + file;
+
+	return canonicalize(file);
+}
+
 } // End of namespace Common

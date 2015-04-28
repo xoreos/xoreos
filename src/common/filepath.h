@@ -229,6 +229,13 @@ public:
 	 *  - On Windows, this will be the same place as getConfigDirectory()
 	 */
 	static UString getUserDataDirectory();
+
+	/** Return a path suitable for writing into.
+	 *
+	 *  If the file is an absolute path, return it as is.
+	 *  Otherwise, prepend the user data directory.
+	 */
+	static UString getUserDataFile(UString file);
 };
 
 } // End of namespace Common
