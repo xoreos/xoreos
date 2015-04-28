@@ -62,7 +62,7 @@ void status(const char *s, ...) {
 #endif
 
 	DebugMan.logString(buf);
-	DebugMan.logString("!\n");
+	DebugMan.logString("\n");
 }
 
 void NORETURN_PRE error(const char *s, ...) {
