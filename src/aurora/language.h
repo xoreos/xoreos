@@ -52,6 +52,7 @@ enum Language {
 	kLanguageJapanese,
 
 	kLanguageMAX,
+	kLanguageChinese = 0xFFFFFFFE, ///< Pseudo value that means either traditional or simplified Chinese.
 	kLanguageInvalid = 0xFFFFFFFF
 };
 
@@ -63,6 +64,8 @@ enum LanguageGender {
 /** Return the human readable name of a language. */
 Common::UString getLanguageName(Language language);
 
+/** Parse this string into a language. */
+Language parseLanguage(Common::UString str);
 
 // Language IDs
 

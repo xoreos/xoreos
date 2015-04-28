@@ -26,6 +26,7 @@
 #include "src/common/stream.h"
 
 #include "src/aurora/language.h"
+#include "src/aurora/language_strings.h"
 
 namespace Aurora {
 
@@ -202,15 +203,32 @@ uint32 swapLanguageGender(uint32 languageID) {
 }
 
 Common::UString getLanguageName(Language language) {
+	if (language == kLanguageChinese)
+		return "Chinese";
+
 	if (((uint32) language >= kLanguageMAX))
 		return "Invalid";
 
-	static const char *names[] = {
-		"English", "French", "German", "Italian", "Spanish", "Polish", "Czech", "Hungarian",
-		"Russian", "Korean", "Traditional Chinese", "Simplified Chinese", "Japanese"
-	};
+	return kLanguageNames[language];
+}
 
-	return names[language];
+Language parseLanguage(Common::UString str) {
+	if (str.empty())
+		return kLanguageInvalid;
+
+	str.makeLower();
+
+	for (uint i = 0; i < ARRAYSIZE(kLanguageStrings); i++) {
+		for (uint j = 0; j < ARRAYSIZE(kLanguageStrings[i].strings); j++) {
+			if (!kLanguageStrings[i].strings[j])
+				break;
+
+			if (str == kLanguageStrings[i].strings[j])
+				return kLanguageStrings[i].language;
+		}
+	}
+
+	return kLanguageInvalid;
 }
 
 Common::MemoryReadStream *preParseColorCodes(Common::SeekableReadStream &stream) {
