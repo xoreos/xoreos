@@ -90,6 +90,9 @@ protected:
 
 
 private:
+	Aurora::Language _languageVoice;
+	Aurora::Language _languageText;
+
 	Campaign *_campaign;
 
 	std::list<Aurora::ResourceManager::ChangeID> _languageResources;

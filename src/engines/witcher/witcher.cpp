@@ -169,6 +169,13 @@ void WitcherEngine::run() {
 void WitcherEngine::init() {
 	LoadProgress progress(14);
 
+	if (evaluateLanguage(true, _languageText, _languageVoice))
+		status("Setting the language to %s text + %s voices",
+				Aurora::getLanguageName(_languageText).c_str(),
+				Aurora::getLanguageName(_languageVoice).c_str());
+	else
+		throw Common::Exception("Failed to detect this game's language");
+
 	progress.step("Loading user game config");
 	initConfig();
 
@@ -249,7 +256,7 @@ void WitcherEngine::initResources(LoadProgress &progress) {
 	progress.step("Indexing override files");
 	indexOptionalDirectory("data/override", 0, 0, 50);
 
-	loadLanguageFiles(progress, Aurora::kLanguageEnglish, Aurora::kLanguageEnglish);
+	loadLanguageFiles(progress, _languageText, _languageVoice);
 
 	progress.step("Registering file formats");
 	registerModelLoader(new WitcherModelLoader);
@@ -273,6 +280,12 @@ void WitcherEngine::initGameConfig() {
 
 void WitcherEngine::unloadLanguageFiles() {
 	TalkMan.removeMainTable();
+
+	std::list<Aurora::ResourceManager::ChangeID>::iterator res;
+	for (res = _languageResources.begin(); res != _languageResources.end(); ++res)
+		ResMan.undo(*res);
+
+	_languageResources.clear();
 }
 
 void WitcherEngine::loadLanguageFiles(LoadProgress &progress,
