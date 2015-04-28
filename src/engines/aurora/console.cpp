@@ -100,6 +100,8 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 h
 	clearHighlight();
 
 	calculateDistance();
+
+	openLogFile();
 }
 
 ConsoleWindow::~ConsoleWindow() {
@@ -274,6 +276,11 @@ void ConsoleWindow::printLine(const Common::UString &line) {
 		return;
 	}
 
+	if (_logFile.isOpen()) {
+		_logFile.writeString(line);
+		_logFile.writeByte('\n');
+	}
+
 	_history.push_back(line);
 	if (_historySizeCurrent >= _historySizeMax)
 		_history.pop_front();
@@ -301,6 +308,38 @@ bool ConsoleWindow::setRedirect(Common::UString redirect) {
 	}
 
 	return true;
+}
+
+bool ConsoleWindow::openLogFile() {
+	/* Open the log file.
+	 *
+	 * NOTE: A log is opened by default, unless the consolelog config value
+	 *       is set to an empty string or noconsolelog is set to true.
+	 */
+	Common::UString logFile = Common::FilePath::getUserDataDirectory() + "/console.log";
+	if (ConfigMan.hasKey("consolelog"))
+		logFile = ConfigMan.getString("consolelog");
+	if (ConfigMan.getBool("noconsolelog", false))
+		logFile.clear();
+
+	if (logFile.empty())
+		return true;
+
+	return openLogFile(logFile);
+}
+
+bool ConsoleWindow::openLogFile(const Common::UString &file) {
+	closeLogFile();
+
+	// Create the directories in the path, if necessary
+	Common::UString path = Common::FilePath::canonicalize(file);
+	Common::FilePath::createDirectories(Common::FilePath::getDirectory(path));
+
+	return _logFile.open(path);
+}
+
+void ConsoleWindow::closeLogFile() {
+	_logFile.close();
 }
 
 void ConsoleWindow::updateHighlight() {

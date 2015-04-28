@@ -58,6 +58,8 @@ static void displayUsage(const char *name) {
 	std::printf("          --listlangs         List all available languages for this target.\n");
 	std::printf("          --logfile=FILE      Write all debug output into this file too.\n");
 	std::printf("          --nologfile=BOOL    Don't write a log file.\n");
+	std::printf("          --consolelog=FILE   Write all debug console output into this file too.\n");
+	std::printf("          --noconsolelog=BOOL Don't write a debug console log file.\n");
 	std::printf("\n");
 	std::printf("FILE: Absolute or relative path to a file.\n");
 	std::printf("DIR:  Absolute or relative path to a directory.\n");

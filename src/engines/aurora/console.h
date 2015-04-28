@@ -155,6 +155,7 @@ private:
 	uint32 _highlightY;
 	 int32 _highlightLength;
 
+	Common::DumpFile _logFile;
 	Common::DumpFile _redirect;
 
 
@@ -162,6 +163,10 @@ private:
 	void redrawLines();
 
 	void printLine(const Common::UString &line);
+
+	bool openLogFile();
+	bool openLogFile(const Common::UString &file);
+	void closeLogFile();
 
 	void updateHighlight();
 	bool getPosition(int cursorX, int cursorY, float &x, float &y);
