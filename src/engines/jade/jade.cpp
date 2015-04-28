@@ -158,6 +158,11 @@ void JadeEngine::run() {
 void JadeEngine::init() {
 	LoadProgress progress(15);
 
+	if (evaluateLanguage(true, _language))
+		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
+	else
+		warning("Failed to detect this game's language");
+
 	progress.step("Loading user game config");
 	initConfig();
 
