@@ -77,6 +77,8 @@ protected:
 
 
 private:
+	Aurora::Language _language;
+
 	void init();
 	void initCursors();
 

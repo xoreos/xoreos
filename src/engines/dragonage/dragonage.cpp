@@ -199,6 +199,11 @@ void DragonAgeEngine::run() {
 void DragonAgeEngine::init() {
 	LoadProgress progress(15);
 
+	if (evaluateLanguage(true, _language))
+		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
+	else
+		warning("Failed to detect this game's language");
+
 	ResMan.setRIMsAreERFs(true);
 
 	progress.step("Setting base directory");
