@@ -119,6 +119,16 @@ bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
 	return true;
 }
 
+bool NDSFile::hasResource(Common::UString name) const {
+	name.makeLower();
+
+	for (ResourceList::const_iterator r = _resources.begin(); r != _resources.end(); ++r)
+		if (TypeMan.setFileType(r->name, r->type) == name)
+			return true;
+
+	return false;
+}
+
 const Archive::ResourceList &NDSFile::getResources() const {
 	return _resources;
 }

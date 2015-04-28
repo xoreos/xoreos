@@ -49,6 +49,9 @@ public:
 	/** Clear the resource list. */
 	void clear();
 
+	/** Does the Nintendo DS ROM contain a certain resource? */
+	bool hasResource(Common::UString name) const;
+
 	/** Return the list of resources. */
 	const ResourceList &getResources() const;
 
