@@ -67,6 +67,10 @@ public:
 	SonicEngine();
 	~SonicEngine();
 
+	bool detectLanguages(Aurora::GameID game, const Common::UString &target,
+	                     Aurora::Platform platform,
+	                     std::vector<Aurora::Language> &languages) const;
+
 
 protected:
 	void run();
@@ -78,6 +82,9 @@ private:
 	void init();
 
 	void playIntroVideos();
+
+	static Common::UString getLanguageHERF(Aurora::Language language);
+	static Common::UString getLanguageTLK (Aurora::Language language);
 };
 
 } // End of namespace Sonic

@@ -92,6 +92,68 @@ SonicEngine::SonicEngine() {
 SonicEngine::~SonicEngine() {
 }
 
+Common::UString SonicEngine::getLanguageHERF(Aurora::Language language) {
+	switch (language) {
+		case Aurora::kLanguageEnglish:
+			return "test_e";
+		case Aurora::kLanguageFrench:
+			return "test_f";
+		case Aurora::kLanguageGerman:
+			return "test_g";
+		case Aurora::kLanguageItalian:
+			return "test_i";
+		case Aurora::kLanguageSpanish:
+			return "test_s";
+		default:
+			break;
+	}
+
+	return "";
+}
+
+Common::UString SonicEngine::getLanguageTLK(Aurora::Language language) {
+	switch (language) {
+		case Aurora::kLanguageEnglish:
+			return "strings";
+		case Aurora::kLanguageFrench:
+			return "strings_fr-fr";
+		case Aurora::kLanguageGerman:
+			return "strings_de-de";
+		case Aurora::kLanguageItalian:
+			return "strings_it-it";
+		case Aurora::kLanguageSpanish:
+			return "strings_es-es";
+		default:
+			break;
+	}
+
+	return "";
+}
+
+bool SonicEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
+                                  Aurora::Platform UNUSED(platform),
+                                  std::vector<Aurora::Language> &languages) const {
+	try {
+		Aurora::NDSFile nds(target);
+
+		for (uint i = 0; i < Aurora::kLanguageMAX; i++) {
+			Common::UString herf = getLanguageHERF((Aurora::Language) i);
+			Common::UString tlk  = getLanguageTLK ((Aurora::Language) i);
+			if (herf.empty() || tlk.empty())
+				continue;
+
+			if (!nds.hasResource(herf + ".herf") || !nds.hasResource(tlk + ".tlk"))
+				continue;
+
+			languages.push_back((Aurora::Language) i);
+		}
+
+	} catch (...) {
+	}
+
+	return true;
+}
+
 void SonicEngine::run() {
 	init();
 
