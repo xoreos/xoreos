@@ -113,6 +113,11 @@ void warning(const char *s, ...) GCC_PRINTF(1, 2);
 * Automatically appends a newline.
 */
 void status(const char *s, ...) GCC_PRINTF(1, 2);
+/**
+* Print an info message to the text console (stdout).
+* Automatically appends a newline.
+*/
+void info(const char *s, ...) GCC_PRINTF(1, 2);
 
 void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
 
