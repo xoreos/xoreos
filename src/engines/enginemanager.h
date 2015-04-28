@@ -37,10 +37,12 @@ namespace Engines {
 
 class GameInstance {
 public:
-	GameInstance();
 	virtual ~GameInstance();
 
 	virtual Common::UString getGameName(bool platform) const = 0;
+
+protected:
+	GameInstance();
 };
 
 /** The global engine manager. */

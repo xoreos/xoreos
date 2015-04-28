@@ -93,17 +93,10 @@ GameInstance::~GameInstance() {
 
 class GameInstanceEngine : public GameInstance {
 public:
+	GameInstanceEngine(const Common::UString &target);
 	~GameInstanceEngine();
 
 	Common::UString getGameName(bool platform) const;
-
-private:
-	Common::UString _target;
-
-	const EngineProbe *_probe;
-	Engine *_engine;
-
-	GameInstanceEngine(const Common::UString &target);
 
 	/** Find an engine capable of running the game found in the GameInstance's target. */
 	bool probe();
@@ -113,13 +106,17 @@ private:
 	/** Run the probed game in the GameInstance's target. */
 	void run();
 
+private:
+	Common::UString _target;
+
+	const EngineProbe *_probe;
+	Engine *_engine;
+
 	bool probe(const Common::FileList &rootFiles);
 	bool probe(Common::SeekableReadStream &stream);
 
 	void createEngine();
 	void destroyEngine();
-
-	friend class EngineManager;
 };
 
 GameInstanceEngine::GameInstanceEngine(const Common::UString &target) : _target(target),
