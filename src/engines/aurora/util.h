@@ -67,10 +67,10 @@ bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::US
 bool dumpResource(const Common::UString &name, const Common::UString &file = "");
 
 /** Debug method to quickly dump an image resource to disk. */
-bool dumpTGA(const Common::UString &name);
+bool dumpTGA(const Common::UString &name, Common::UString file = "");
 
 /** Debug method to quickly dump a 2DA to disk. */
-bool dump2DA(const Common::UString &name);
+bool dump2DA(const Common::UString &name, Common::UString file = "");
 
 } // End of namespace Engines
 

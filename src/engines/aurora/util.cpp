@@ -184,12 +184,15 @@ bool dumpResource(const Common::UString &name, const Common::UString &file) {
 	return dumpResource(TypeMan.setFileType(name, Aurora::kFileTypeNone), type, file);
 }
 
-bool dumpTGA(const Common::UString &name) {
+bool dumpTGA(const Common::UString &name, Common::UString file) {
+	if (file.empty())
+		file = name + ".tga";
+
 	try {
 
 		Graphics::Aurora::Texture texture(name);
 
-		return texture.dumpTGA(name + ".tga");
+		return texture.dumpTGA(file);
 
 	} catch (...) {
 	}
@@ -197,7 +200,10 @@ bool dumpTGA(const Common::UString &name) {
 	return false;
 }
 
-bool dump2DA(const Common::UString &name) {
+bool dump2DA(const Common::UString &name, Common::UString file) {
+	if (file.empty())
+		file = name + ".2da";
+
 	Common::SeekableReadStream *twoDAFile = 0;
 	bool success = false;
 
@@ -208,7 +214,7 @@ bool dump2DA(const Common::UString &name) {
 
 		Aurora::TwoDAFile twoda(*twoDAFile);
 
-		success = twoda.dumpASCII(name + ".2da");
+		success = twoda.dumpASCII(file);
 
 	} catch (...) {
 	}

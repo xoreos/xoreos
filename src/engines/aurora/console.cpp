@@ -291,7 +291,7 @@ bool ConsoleWindow::setRedirect(Common::UString redirect) {
 	if (redirect.empty())
 		return true;
 
-	redirect = Common::FilePath::canonicalize(redirect);
+	redirect = Common::FilePath::getUserDataFile(redirect);
 	if (!_redirect.open(redirect)) {
 		Common::UString error =
 			Common::UString::sprintf("Failed opening file \"%s\" for writing.", redirect.c_str());
@@ -1128,10 +1128,12 @@ void Console::cmdDumpResList(const CommandLine &cl) {
 		return;
 	}
 
-	if (dumpResList(cl.args))
-		printf("Dumped list of resources to file \"%s\"", cl.args.c_str());
+	Common::UString file = Common::FilePath::getUserDataFile(cl.args);
+
+	if (dumpResList(file))
+		printf("Dumped list of resources to file \"%s\"", file.c_str());
 	else
-		printf("Failed dumping list of resources to file \"%s\"", cl.args.c_str());
+		printf("Failed dumping list of resources to file \"%s\"", file.c_str());
 }
 
 void Console::cmdDumpRes(const CommandLine &cl) {
@@ -1140,8 +1142,10 @@ void Console::cmdDumpRes(const CommandLine &cl) {
 		return;
 	}
 
-	if (dumpResource(cl.args))
-		printf("Dumped resource \"%s\"", cl.args.c_str());
+	Common::UString file = Common::FilePath::getUserDataFile(cl.args);
+
+	if (dumpResource(cl.args, file))
+		printf("Dumped resource \"%s\"to \"%s\"", cl.args.c_str(), file.c_str());
 	else
 		printf("Failed dumping resource \"%s\"", cl.args.c_str());
 }
@@ -1152,8 +1156,10 @@ void Console::cmdDumpTGA(const CommandLine &cl) {
 		return;
 	}
 
-	if (dumpTGA(cl.args))
-		printf("Dumped TGA \"%s\"", cl.args.c_str());
+	Common::UString file = Common::FilePath::getUserDataFile(cl.args) + ".tga";
+
+	if (dumpTGA(cl.args, file))
+		printf("Dumped TGA \"%s\" to \"%s\"", cl.args.c_str(), file.c_str());
 	else
 		printf("Failed dumping TGA \"%s\"", cl.args.c_str());
 }
@@ -1164,8 +1170,10 @@ void Console::cmdDump2DA(const CommandLine &cl) {
 		return;
 	}
 
-	if (dump2DA(cl.args))
-		printf("Dumped 2DA \"%s\"", cl.args.c_str());
+	Common::UString file = Common::FilePath::getUserDataFile(cl.args) + ".2da";
+
+	if (dump2DA(cl.args, file))
+		printf("Dumped 2DA \"%s\" to \"%s\"", cl.args.c_str(), file.c_str());
 	else
 		printf("Failed dumping 2DA \"%s\"", cl.args.c_str());
 }
@@ -1176,8 +1184,10 @@ void Console::cmdDumpAll2DA(const CommandLine &UNUSED(cl)) {
 
 	std::list<Aurora::ResourceManager::ResourceID>::const_iterator t;
 	for (t = twoda.begin(); t != twoda.end(); ++t) {
-		if (dump2DA(t->name))
-			printf("Dumped 2DA \"%s\"", t->name.c_str());
+		Common::UString file = Common::FilePath::getUserDataFile(t->name) + ".2da";
+
+		if (dump2DA(t->name, file))
+			printf("Dumped 2DA \"%s\" to \"%s\"", t->name.c_str(), file.c_str());
 		else
 			printf("Failed dumping 2DA \"%s\"", t->name.c_str());
 	}
