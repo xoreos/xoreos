@@ -289,7 +289,7 @@ void WitcherEngine::playIntroVideos() {
 }
 
 void WitcherEngine::main() {
-	Campaign campaign(*_console);
+	_campaign = new Campaign(*_console);
 
 	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
 	if (campaigns.empty())
