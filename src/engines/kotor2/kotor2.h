@@ -105,6 +105,8 @@ protected:
 
 
 private:
+	Aurora::Language _language;
+
 	Module *_module;
 
 	Sound::ChannelHandle _menuMusic;
