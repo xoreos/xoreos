@@ -222,7 +222,6 @@ void NWN2Engine::declareEncodings() {
 void NWN2Engine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
 	ResMan.registerDataBaseDir(_target);
-	indexMandatoryDirectory("", 0, 0, 1);
 
 	// NWN2's new file types overlap with other engines in the 3000s block
 	ResMan.addTypeAlias((Aurora::FileType) 3000, Aurora::kFileTypeOSC);
