@@ -25,7 +25,6 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 
-#include "src/aurora/locstring.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -117,6 +116,13 @@ const Common::UString &Area::getResRef() {
 
 const Common::UString &Area::getName() {
 	return _name;
+}
+
+void Area::refreshLocalized() {
+	_name = _names.getString();
+
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->refreshLocalized();
 }
 
 uint32 Area::getMusicDayTrack() const {
@@ -218,10 +224,8 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 
 	// Name
 
-	Aurora::LocString name;
-	are.getLocString("Name", name);
-
-	_name = name.getString();
+	are.getLocString("Name", _names);
+	refreshLocalized();
 
 	// Generic properties
 

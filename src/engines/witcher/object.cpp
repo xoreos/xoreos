@@ -80,6 +80,11 @@ const Common::UString &Object::getConversation() const {
 	return _conversation;
 }
 
+void Object::refreshLocalized() {
+	_name        = _names.getString();
+	_description = _descriptions.getString();
+}
+
 bool Object::isStatic() const {
 	return _static;
 }

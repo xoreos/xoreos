@@ -73,6 +73,9 @@ public:
 	/** Return the description of the current campaign. */
 	const Common::UString &getDescription() const;
 
+	/** Refresh all localized strings. */
+	void refreshLocalized();
+
 	/** Return the currently running module. */
 	Module *getModule();
 

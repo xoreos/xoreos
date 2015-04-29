@@ -30,6 +30,7 @@
 #include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
+#include "src/aurora/locstring.h"
 
 #include "src/aurora/nwscript/object.h"
 
@@ -59,6 +60,9 @@ public:
 	const Common::UString &getResRef();
 	/** Return the area's localized name. */
 	const Common::UString &getName();
+
+	/** Refresh all localized strings. */
+	void refreshLocalized();
 
 	// Visibility
 
@@ -111,6 +115,8 @@ private:
 
 	Common::UString _resRef; ///< The area's resref (resource ID).
 	Common::UString _name;   ///< The area's localized name.
+
+	Aurora::LocString _names; ///< The area's localized names.
 
 	uint32 _musicDayTrack;    ///< Music track ID that plays by day.
 	uint32 _musicNightTrack;  ///< Music track ID that plays by night.

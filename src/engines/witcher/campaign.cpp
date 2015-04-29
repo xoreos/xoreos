@@ -224,6 +224,10 @@ const Common::UString &Campaign::getDescription() const {
 	return _currentCampaign.description.getString();
 }
 
+void Campaign::refreshLocalized() {
+	_module.refreshLocalized();
+}
+
 Module *Campaign::getModule() {
 	return &_module;
 }

@@ -335,6 +335,11 @@ Area *Module::getCurrentArea() {
 	return _currentArea;
 }
 
+void Module::refreshLocalized() {
+	for (AreaMap::iterator a = _areas.begin(); a != _areas.end(); ++a)
+		a->second->refreshLocalized();
+}
+
 } // End of namespace Witcher
 
 } // End of namespace Engines

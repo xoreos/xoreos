@@ -30,6 +30,8 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
+#include "src/aurora/locstring.h"
+
 #include "src/aurora/nwscript/object.h"
 
 #include "src/sound/types.h"
@@ -50,6 +52,9 @@ public:
 
 	/** Return the exact type of the object. */
 	ObjectType getType() const;
+
+	/** Refresh all localized strings. */
+	virtual void refreshLocalized();
 
 	// Basic visuals
 
@@ -129,6 +134,9 @@ protected:
 
 	Common::UString _name;        ///< The object's display name.
 	Common::UString _description; ///< The object's description.
+
+	Aurora::LocString _names;        ///< The object's localized names.
+	Aurora::LocString _descriptions; ///< The object's localized descriptions.
 
 	Common::UString _conversation; ///< The object's default conversation.
 

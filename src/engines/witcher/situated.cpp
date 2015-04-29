@@ -180,10 +180,7 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Name
 	if (gff.hasField("LocName")) {
 		try {
-			Aurora::LocString name;
-			gff.getLocString("LocName", name);
-
-			_name = name.getString();
+			gff.getLocString("LocName", _names);
 		} catch (...) {
 		}
 	}
@@ -191,13 +188,12 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Description
 	if (gff.hasField("Description")) {
 		try {
-			Aurora::LocString description;
-			gff.getLocString("Description", description);
-
-			_description = description.getString();
+			gff.getLocString("Description", _descriptions);
 		} catch (...) {
 		}
 	}
+
+	refreshLocalized();
 
 	// Appearance
 	_modelName = gff.getString("ModelName", _modelName);

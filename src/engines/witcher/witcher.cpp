@@ -166,6 +166,9 @@ bool WitcherEngine::changeLanguage() {
 
 		loadLanguageFiles(languageText, languageVoice);
 
+		if (_campaign)
+			_campaign->refreshLocalized();
+
 		_languageText  = languageText;
 		_languageVoice = languageVoice;
 

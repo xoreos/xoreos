@@ -69,6 +69,9 @@ public:
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
 
+	/** Refresh all localized strings. */
+	void refreshLocalized();
+
 	/** Move the player character to this area. */
 	void movePC(const Common::UString &area);
 	/** Move the player character to this position within the current area. */
