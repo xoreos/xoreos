@@ -274,64 +274,66 @@ void KotOREngine::initResources(LoadProgress &progress) {
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "modules");
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 10);
 
-	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 2))
+	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 11))
 		_hasLiveKey = true;
 
 	progress.step("Loading global auxiliary resources");
-	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenu.rim"    , 10);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenudx.rim"  , 11);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "legal.rim"       , 12);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "legaldx.rim"     , 13);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "global.rim"      , 14);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "subglobaldx.rim" , 15);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "miniglobaldx.rim", 16);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "globaldx.rim"    , 17);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "chargen.rim"     , 18);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "chargendx.rim"   , 19);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenu.rim"    , 50);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenudx.rim"  , 51);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "legal.rim"       , 52);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "legaldx.rim"     , 53);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "global.rim"      , 54);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "subglobaldx.rim" , 55);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "miniglobaldx.rim", 56);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "globaldx.rim"    , 57);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "chargen.rim"     , 58);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "chargendx.rim"   , 59);
 
 	if (_platform == Aurora::kPlatformXbox) {
 		// The Xbox version has most of its textures in "textures.bif"
 		// Some, however, reside in "players.erf"
 		progress.step("Loading Xbox textures");
-		indexMandatoryArchive(Aurora::kArchiveERF, "players.erf", 20);
+		indexMandatoryArchive(Aurora::kArchiveERF, "players.erf", 60);
 	} else {
 		// The Windows/Mac versions have the GUI textures here
 		progress.step("Loading GUI textures");
-		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 20);
+		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 60);
 	}
 
 	progress.step("Indexing extra sound resources");
-	indexMandatoryDirectory("streamsounds", 0, -1, 30);
+	indexMandatoryDirectory("streamsounds", 0, -1, 100);
 	progress.step("Indexing extra voice resources");
-	indexMandatoryDirectory("streamwaves" , 0, -1, 31);
+	indexMandatoryDirectory("streamwaves" , 0, -1, 101);
 	progress.step("Indexing extra music resources");
-	indexMandatoryDirectory("streammusic" , 0, -1, 32);
+	indexMandatoryDirectory("streammusic" , 0, -1, 102);
 	progress.step("Indexing extra movie resources");
-	indexMandatoryDirectory("movies"      , 0, -1, 33);
+	indexMandatoryDirectory("movies"      , 0, -1, 103);
 
 	if (_platform == Aurora::kPlatformWindows) {
 		progress.step("Indexing Windows-specific resources");
 		initCursorsRemap();
-		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor.exe", 34);
+		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor.exe", 154);
 	} else if (_platform == Aurora::kPlatformMacOSX) {
 		progress.step("Indexing Mac-specific resources");
-		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources",         0, -1, 34);
-		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources/Cursors", 0, -1, 35);
+		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources",         0, -1, 154);
+		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources/Cursors", 0, -1, 155);
 	} else if (_platform == Aurora::kPlatformXbox) {
 		progress.step("Indexing Xbox-specific resources");
-		indexMandatoryDirectory("errortex"  , 0, -1, 34);
-		indexMandatoryDirectory("localvault", 0, -1, 35);
-		indexMandatoryDirectory("media"     , 0, -1, 36);
+		indexMandatoryDirectory("errortex"  , 0, -1, 154);
+		indexMandatoryDirectory("localvault", 0, -1, 155);
+		indexMandatoryDirectory("media"     , 0, -1, 156);
 
 		// For the DLC, we need to index the "sound" directory as well
 		if (_hasLiveKey)
-			indexMandatoryDirectory("sound", 0, -1, 37);
+			indexMandatoryDirectory("sound", 0, -1, 157);
 	}
 
+	// Texture packs at 400, in module.cpp
+
 	progress.step("Indexing override files");
-	indexOptionalDirectory("override", 0, 0, 40);
+	indexOptionalDirectory("override", 0, 0, 500);
 
 	if (EventMan.quitRequested())
 		return;

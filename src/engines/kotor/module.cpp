@@ -153,38 +153,38 @@ void Module::loadResources() {
 
 	// General module resources
 
-	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + ".erf", 100, &change))
-		indexMandatoryArchive(Aurora::kArchiveRIM, _module + ".rim", 100, &change);
+	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + ".erf", 1000, &change))
+		indexMandatoryArchive(Aurora::kArchiveRIM, _module + ".rim", 1000, &change);
 
 	_resources.push_back(change);
 	change.clear();
 
 	// Scripts
 
-	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + "_s.erf", 101, &change))
-		indexMandatoryArchive(Aurora::kArchiveRIM, _module + "_s.rim", 101, &change);
+	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + "_s.erf", 1001, &change))
+		indexMandatoryArchive(Aurora::kArchiveRIM, _module + "_s.rim", 1001, &change);
 
 	_resources.push_back(change);
 	change.clear();
 
 	// Dialogs, KotOR 2 only
 
-	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + "_dlg.erf", 102, &change))
-		indexOptionalArchive(Aurora::kArchiveRIM, _module + "_dlg.rim", 102, &change);
+	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + "_dlg.erf", 1002, &change))
+		indexOptionalArchive(Aurora::kArchiveRIM, _module + "_dlg.rim", 1002, &change);
 
 	_resources.push_back(change);
 	change.clear();
 
 	// Layouts, Xbox only
 
-	indexOptionalArchive(Aurora::kArchiveRIM, _module + "_a.rim", 103, &change);
+	indexOptionalArchive(Aurora::kArchiveRIM, _module + "_a.rim", 1003, &change);
 
 	_resources.push_back(change);
 	change.clear();
 
 	// Textures, Xbox only
 
-	indexOptionalArchive(Aurora::kArchiveRIM, _module + "_adx.rim", 104, &change);
+	indexOptionalArchive(Aurora::kArchiveRIM, _module + "_adx.rim", 1004, &change);
 
 	_resources.push_back(change);
 	change.clear();
@@ -215,7 +215,7 @@ void Module::loadTexturePack() {
 	unloadTexturePack();
 
 	status("Loading texture pack %d", level);
-	indexOptionalArchive(Aurora::kArchiveERF, texturePacks[level], 25, &_textures);
+	indexOptionalArchive(Aurora::kArchiveERF, texturePacks[level], 400, &_textures);
 
 	// If we already had a texture pack loaded, reload all textures
 	if (_currentTexturePack != -1)
