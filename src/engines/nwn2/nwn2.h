@@ -76,6 +76,9 @@ public:
 	                     Aurora::Platform platform,
 	                     std::vector<Aurora::Language> &languages) const;
 
+	bool getLanguage(Aurora::Language &language) const;
+	bool changeLanguage();
+
 	/** Return the currently running campaign. */
 	Campaign *getCampaign();
 	/** Return the currently running module. */

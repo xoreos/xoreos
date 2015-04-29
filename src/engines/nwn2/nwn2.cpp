@@ -129,6 +129,19 @@ bool NWN2Engine::detectLanguages(Aurora::GameID game, const Common::UString &tar
 	return true;
 }
 
+bool NWN2Engine::getLanguage(Aurora::Language &language) const {
+	language = _language;
+	return true;
+}
+
+bool NWN2Engine::changeLanguage() {
+	Aurora::Language language;
+	if (!evaluateLanguage(false, language) || (_language != language))
+		return false;
+
+	return true;
+}
+
 Campaign *NWN2Engine::getCampaign() {
 	return _campaign;
 }
