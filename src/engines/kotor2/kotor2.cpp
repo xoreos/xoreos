@@ -262,31 +262,33 @@ void KotOR2Engine::initResources(LoadProgress &progress) {
 		ResMan.addArchiveDir(Aurora::kArchiveERF, "SuperModels");
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 10);
 
 	progress.step("Loading high-res texture packs");
 	if (_platform != Aurora::kPlatformXbox) {
-		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 10);
-		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 11);
+		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 50);
+		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 51);
 	}
 
 	progress.step("Indexing extra sound resources");
-	indexMandatoryDirectory("streamsounds", 0, -1, 20);
+	indexMandatoryDirectory("streamsounds", 0, -1, 100);
 	progress.step("Indexing extra voice resources");
-	indexMandatoryDirectory("streamvoice" , 0, -1, 21);
+	indexMandatoryDirectory("streamvoice" , 0, -1, 101);
 	progress.step("Indexing extra music resources");
-	indexMandatoryDirectory("streammusic" , 0, -1, 22);
+	indexMandatoryDirectory("streammusic" , 0, -1, 102);
 	progress.step("Indexing extra movie resources");
-	indexMandatoryDirectory("movies"      , 0, -1, 23);
+	indexMandatoryDirectory("movies"      , 0, -1, 103);
 
 	progress.step("Indexing platform-specific resources");
 	if (_platform == Aurora::kPlatformWindows) {
 		initCursorsRemap();
-		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor2.exe", 24);
+		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor2.exe", 104);
 	}
 
+	// Texture packs at 400, in module.cpp
+
 	progress.step("Indexing override files");
-	indexOptionalDirectory("override", 0, 0, 30);
+	indexOptionalDirectory("override", 0, 0, 500);
 
 	if (EventMan.quitRequested())
 		return;
