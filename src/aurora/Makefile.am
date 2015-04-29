@@ -22,6 +22,7 @@ noinst_HEADERS = \
                  zipfile.h \
                  resman.h \
                  talktable.h \
+                 talktable_tlk.h \
                  talkman.h \
                  ssffile.h \
                  2dafile.h \
@@ -53,6 +54,7 @@ libaurora_la_SOURCES = \
                        zipfile.cpp \
                        resman.cpp \
                        talktable.cpp \
+                       talktable_tlk.cpp \
                        talkman.cpp \
                        ssffile.cpp \
                        2dafile.cpp \

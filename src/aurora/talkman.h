@@ -29,6 +29,7 @@
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
+#include "src/common/ustring.h"
 #include "src/common/encoding.h"
 
 #include "src/aurora/language.h"
@@ -61,13 +62,15 @@ public:
 	/** Set the gender modulating the current language. */
 	void setGender(LanguageGender gender);
 
-	void addMainTable(const Common::UString &nameMale, const Common::UString &nameFemale = "");
-	void addAltTable(const Common::UString &nameMale, const Common::UString &nameFemale = "");
+	void addMainTable(const Common::UString &nameMale,
+	                  const Common::UString &nameFemale = "", uint32 languageID = 0xFFFFFFFF);
+	void addAltTable (const Common::UString &nameMale,
+	                  const Common::UString &nameFemale = "", uint32 languageID = 0xFFFFFFFF);
 
 	void removeMainTable();
 	void removeAltTable();
 
-	const Common::UString &getString(uint32 strRef, LanguageGender gender = (LanguageGender) -1);
+	const Common::UString &getString     (uint32 strRef, LanguageGender gender = (LanguageGender) -1);
 	const Common::UString &getSoundResRef(uint32 strRef, LanguageGender gender = (LanguageGender) -1);
 
 private:
@@ -85,10 +88,10 @@ private:
 	EncodingMap _encodings;
 
 
-	const TalkTable::Entry *getEntry(uint32 strRef, LanguageGender gender);
+	const TalkTable *getEntry(uint32 strRef, LanguageGender gender) const;
 
 	void addTable(const Common::UString &nameMale, const Common::UString &nameFemale,
-	              TalkTable *&m, TalkTable *&f);
+	              uint32 languageID, TalkTable *&m, TalkTable *&f);
 };
 
 } // End of namespace Aurora

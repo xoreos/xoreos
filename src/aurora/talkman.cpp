@@ -79,39 +79,41 @@ LanguageGender TalkManager::getGender() const {
 }
 
 void TalkManager::addTable(const Common::UString &nameMale, const Common::UString &nameFemale,
-                           TalkTable *&m, TalkTable *&f) {
+                           uint32 languageID, TalkTable *&m, TalkTable *&f) {
 
 	if (!nameMale.empty()) {
 		Common::SeekableReadStream *tlkM = ResMan.getResource(nameMale, kFileTypeTLK);
 		if (!tlkM)
 			throw Common::Exception("No such talk table \"%s\"", nameMale.c_str());
 
-		m = new TalkTable(tlkM);
+		m = TalkTable::load(tlkM, languageID);
 	}
 
 	if (!nameFemale.empty()) {
 		Common::SeekableReadStream *tlkF = ResMan.getResource(nameFemale, kFileTypeTLK);
 		if (tlkF)
-			f = new TalkTable(tlkF);
+			f = TalkTable::load(tlkF, languageID);
 	}
 }
 
-void TalkManager::addMainTable(const Common::UString &nameMale, const Common::UString &nameFemale) {
+void TalkManager::addMainTable(const Common::UString &nameMale,
+                               const Common::UString &nameFemale, uint32 languageID) {
 	removeMainTable();
 
 	try {
-		addTable(nameMale, nameFemale, _mainTableM, _mainTableF);
+		addTable(nameMale, nameFemale, languageID, _mainTableM, _mainTableF);
 	} catch (...) {
 		removeMainTable();
 		throw;
 	}
 }
 
-void TalkManager::addAltTable(const Common::UString &nameMale, const Common::UString &nameFemale) {
+void TalkManager::addAltTable(const Common::UString &nameMale,
+                              const Common::UString &nameFemale, uint32 languageID) {
 	removeAltTable();
 
 	try {
-		addTable(nameMale, nameFemale, _altTableM, _altTableF);
+		addTable(nameMale, nameFemale, languageID, _altTableM, _altTableF);
 	} catch (...) {
 		removeAltTable();
 		throw;
@@ -134,37 +136,36 @@ void TalkManager::removeAltTable() {
 	_altTableF = 0;
 }
 
+static const Common::UString kEmptyString = "";
 const Common::UString &TalkManager::getString(uint32 strRef, LanguageGender gender) {
 	if (gender == ((LanguageGender) -1))
 		gender = _gender;
 
-	static const Common::UString kEmptyString = "";
 	if (strRef == kStrRefInvalid)
 		return kEmptyString;
 
-	const TalkTable::Entry *entry = getEntry(strRef, gender);
+	const TalkTable *entry = getEntry(strRef, gender);
 	if (!entry)
 		return kEmptyString;
 
-	return entry->text;
+	return entry->getString(strRef);
 }
 
 const Common::UString &TalkManager::getSoundResRef(uint32 strRef, LanguageGender gender) {
 	if (gender == ((LanguageGender) -1))
 		gender = _gender;
 
-	static const Common::UString kEmptyString = "";
 	if (strRef == kStrRefInvalid)
 		return kEmptyString;
 
-	const TalkTable::Entry *entry = getEntry(strRef, gender);
+	const TalkTable *entry = getEntry(strRef, gender);
 	if (!entry)
 		return kEmptyString;
 
-	return entry->soundResRef;
+	return entry->getSoundResRef(strRef);
 }
 
-const TalkTable::Entry *TalkManager::getEntry(uint32 strRef, LanguageGender gender) {
+const TalkTable *TalkManager::getEntry(uint32 strRef, LanguageGender gender) const {
 	if (strRef == 0xFFFFFFFF)
 		return 0;
 
@@ -172,20 +173,20 @@ const TalkTable::Entry *TalkManager::getEntry(uint32 strRef, LanguageGender gend
 
 	strRef &= 0x00FFFFFF;
 
-	const TalkTable::Entry *entry = 0;
+	const TalkTable *entry = 0;
 	if (alt) {
-		if ((gender == kLanguageGenderFemale) && _altTableF)
-			entry = _altTableF->getEntry(strRef);
+		if (!entry && (gender == kLanguageGenderFemale) && _altTableF && _altTableF->hasEntry(strRef))
+			entry = _altTableF;
 
-		if (!entry && _altTableM)
-			entry = _altTableM->getEntry(strRef);
+		if (!entry && _altTableM && _altTableM->hasEntry(strRef))
+			entry = _altTableM;
 	}
 
-	if (!entry && (gender == kLanguageGenderFemale) && _mainTableF)
-		entry = _mainTableF->getEntry(strRef);
+	if (!entry && (gender == kLanguageGenderFemale) && _mainTableF && _mainTableF->hasEntry(strRef))
+		entry = _mainTableF;
 
-	if (!entry && _mainTableM)
-		entry = _mainTableM->getEntry(strRef);
+	if (!entry && _mainTableM && _mainTableM->hasEntry(strRef))
+		entry = _mainTableM;
 
 	return entry;
 }

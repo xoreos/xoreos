@@ -31,6 +31,7 @@
 #include "src/aurora/util.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/talkman.h"
+#include "src/aurora/talktable_tlk.h"
 
 #include "src/sound/sound.h"
 
@@ -147,7 +148,7 @@ bool KotOREngine::detectLanguages(Aurora::GameID game, const Common::UString &ta
 		if (tlk.empty())
 			return true;
 
-		uint32 languageID = Aurora::TalkTable::getLanguageID(tlk);
+		uint32 languageID = Aurora::TalkTable_TLK::getLanguageID(tlk);
 		if (languageID == 0xFFFFFFFF)
 			return true;
 

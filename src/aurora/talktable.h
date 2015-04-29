@@ -19,88 +19,39 @@
  */
 
 /** @file
- *  Handling BioWare's TLKs (talk tables).
+ *  Base class for BioWare's talk tables.
  */
 
 #ifndef AURORA_TALKTABLE_H
 #define AURORA_TALKTABLE_H
 
-#include <vector>
-
 #include "src/common/types.h"
-#include "src/common/ustring.h"
-
-#include "src/aurora/aurorafile.h"
 
 namespace Common {
+	class UString;
 	class SeekableReadStream;
 }
 
 namespace Aurora {
 
-/** Class to hold string resoures. */
-class TalkTable : public AuroraBase {
+/** Base class for BioWare's talk tables. */
+class TalkTable {
 public:
-	/** The entries' flags. */
-	enum EntryFlags {
-		kFlagTextPresent        = (1 << 0),
-		kFlagSoundPresent       = (1 << 1),
-		kFlagSoundLengthPresent = (1 << 2)
-	};
-
-	/** A talk resource entry. */
-	struct Entry {
-		Common::UString text;
-		uint32 offset;
-		uint32 length;
-
-		// V3
-		uint32 flags;
-		Common::UString soundResRef;
-		uint32 volumeVariance; // Unused
-		uint32 pitchVariance; // Unused
-		float soundLength; // In seconds
-
-		// V4
-		uint32 soundID;
-	};
-
-	typedef std::vector<Entry> EntryList;
-
-	TalkTable(Common::SeekableReadStream *tlk);
-	~TalkTable();
+	virtual ~TalkTable();
 
 	/** Return the language ID (ungendered) of the talk table. */
-	uint32 getLanguageID() const;
+	virtual uint32 getLanguageID() const = 0;
 
-	/** Get an entry.
-	 *
-	 *  @param strRef a handle to a string (index).
-	 *  @return 0 if strRef is invalid, otherwise the Entry from the list.
-	 */
-	const Entry *getEntry(uint32 strRef);
+	virtual bool hasEntry(uint32 strRef) const = 0;
 
+	virtual const Common::UString &getString     (uint32 strRef) const = 0;
+	virtual const Common::UString &getSoundResRef(uint32 strRef) const = 0;
 
-	/** Return the (ungendered) language ID of that talk table. */
-	static uint32 getLanguageID(Common::SeekableReadStream &tlk);
-	/** Return the (ungendered) language ID of that talk table. */
-	static uint32 getLanguageID(const Common::UString &file);
+	static TalkTable *load(Common::SeekableReadStream *tlk, uint32 languageID = 0xFFFFFFFF);
 
 
-private:
-	Common::SeekableReadStream *_tlk;
-
-	uint32 _stringsOffset;
-
-	uint32 _language;
-
-	EntryList _entryList;
-
-	void load();
-
-	void readEntryTableV3();
-	void readEntryTableV4();
-	void readString(Entry &entry);
+protected:
+	TalkTable();
 };
 
 } // End of namespace Aurora

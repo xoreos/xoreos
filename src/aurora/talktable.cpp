@@ -19,159 +19,48 @@
  */
 
 /** @file
- *  Handling BioWare's TLKs (talk tables).
+ *  Base class for BioWare's talk tables.
  */
 
-#include "src/common/stream.h"
-#include "src/common/file.h"
 #include "src/common/util.h"
-#include "src/common/encoding.h"
-#include "src/common/error.h"
+#include "src/common/stream.h"
 
+#include "src/aurora/aurorafile.h"
 #include "src/aurora/talktable.h"
-#include "src/aurora/talkman.h"
+#include "src/aurora/talktable_tlk.h"
 
-static const uint32 kTLKID     = MKTAG('T', 'L', 'K', ' ');
-static const uint32 kVersion3  = MKTAG('V', '3', '.', '0');
-static const uint32 kVersion4  = MKTAG('V', '4', '.', '0');
+static const uint32 kTLKID = MKTAG('T', 'L', 'K', ' ');
+static const uint32 kGFFID = MKTAG('G', 'F', 'F', ' ');
 
 namespace Aurora {
 
-TalkTable::TalkTable(Common::SeekableReadStream *tlk) : _tlk(tlk), _stringsOffset(0) {
-	assert(tlk);
-
-	try {
-		load();
-	} catch (...) {
-		delete _tlk;
-		throw;
-	}
+TalkTable::TalkTable() {
 }
 
 TalkTable::~TalkTable() {
-	delete _tlk;
 }
 
-void TalkTable::load() {
-	readHeader(*_tlk);
-
-	if (_id != kTLKID)
-		throw Common::Exception("Not a TLK file");
-
-	if (_version != kVersion3 && _version != kVersion4)
-		throw Common::Exception("Unsupported TLK file version %08X", _version);
-
-	_language = _tlk->readUint32LE();
-
-	uint32 stringCount = _tlk->readUint32LE();
-	_entryList.resize(stringCount);
-
-	// V4 added this field; it's right after the header in V3
-	uint32 tableOffset = 20;
-	if (_version == kVersion4)
-		tableOffset = _tlk->readUint32LE();
-
-	_stringsOffset = _tlk->readUint32LE();
-
-	// Go to the table
-	_tlk->seek(tableOffset);
-
-	try {
-
-		// Read in all the table data
-		if (_version == kVersion3)
-			readEntryTableV3();
-		else
-			readEntryTableV4();
-
-		if (_tlk->err())
-			throw Common::Exception(Common::kReadError);
-
-	} catch (Common::Exception &e) {
-		e.add("Failed reading TLK file");
-		throw;
-	}
-
-}
-
-void TalkTable::readEntryTableV3() {
-	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
-		entry->flags          = _tlk->readUint32LE();
-		entry->soundResRef    = Common::readStringFixed(*_tlk, Common::kEncodingASCII, 16);
-		entry->volumeVariance = _tlk->readUint32LE();
-		entry->pitchVariance  = _tlk->readUint32LE();
-		entry->offset         = _tlk->readUint32LE() + _stringsOffset;
-		entry->length         = _tlk->readUint32LE();
-		entry->soundLength    = _tlk->readIEEEFloatLE();
-	}
-}
-
-void TalkTable::readEntryTableV4() {
-	for (EntryList::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry) {
-		entry->soundID = _tlk->readUint32LE();
-		entry->offset  = _tlk->readUint32LE();
-		entry->length  = _tlk->readUint16LE();
-		entry->flags   = kFlagTextPresent;
-	}
-}
-
-void TalkTable::readString(Entry &entry) {
-	if (!entry.text.empty() || (entry.length == 0) || !(entry.flags & kFlagTextPresent))
-		// We already have the string
-		return;
-
-	assert(_tlk);
-
-	_tlk->seek(entry.offset);
-
-	uint32 length = MIN<uint32>(entry.length, _tlk->size() - _tlk->pos());
-	if (length == 0)
-		return;
-
-	Common::MemoryReadStream *data   = _tlk->readStream(length);
-	Common::MemoryReadStream *parsed = preParseColorCodes(*data);
-
-	Common::Encoding encoding = TalkMan.getEncoding(_language);
-	entry.text = Common::readString(*parsed, encoding);
-
-	delete parsed;
-	delete data;
-}
-
-uint32 TalkTable::getLanguageID() const {
-	return _language;
-}
-
-const TalkTable::Entry *TalkTable::getEntry(uint32 strRef) {
-	// If invalid or not loaded, return 0
-	if (strRef >= _entryList.size())
+TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, uint32 languageID) {
+	if (!tlk)
 		return 0;
 
-	Entry &entry = _entryList[strRef];
+	uint32 pos = tlk->pos();
 
-	readString(entry);
-
-	return &entry;
-}
-
-uint32 TalkTable::getLanguageID(Common::SeekableReadStream &tlk) {
 	uint32 id, version;
 	bool utf16le;
 
-	AuroraBase::readHeader(tlk, id, version, utf16le);
+	AuroraBase::readHeader(*tlk, id, version, utf16le);
 
-	if ((id != kTLKID) || ((version != kVersion3) && (version != kVersion4)))
-		return 0xFFFFFFFF;
+	tlk->seek(pos);
 
-	return tlk.readUint32LE();
-}
+	if (id == kTLKID)
+		return new TalkTable_TLK(tlk, languageID);
 
-uint32 TalkTable::getLanguageID(const Common::UString &file) {
-	Common::File tlk;
-	if (!tlk.open(file))
-		return 0xFFFFFFFF;
+	if (id == kGFFID)
+		return 0;//new TalkTable_GFF(tlk, languageID);
 
-	return getLanguageID(tlk);
+	delete tlk;
+	return 0;
 }
 
 } // End of namespace Aurora
