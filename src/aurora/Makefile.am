@@ -23,6 +23,7 @@ noinst_HEADERS = \
                  resman.h \
                  talktable.h \
                  talktable_tlk.h \
+                 talktable_gff.h \
                  talkman.h \
                  ssffile.h \
                  2dafile.h \
@@ -55,6 +56,7 @@ libaurora_la_SOURCES = \
                        resman.cpp \
                        talktable.cpp \
                        talktable_tlk.cpp \
+                       talktable_gff.cpp \
                        talkman.cpp \
                        ssffile.cpp \
                        2dafile.cpp \

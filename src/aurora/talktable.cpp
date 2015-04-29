@@ -28,6 +28,7 @@
 #include "src/aurora/aurorafile.h"
 #include "src/aurora/talktable.h"
 #include "src/aurora/talktable_tlk.h"
+#include "src/aurora/talktable_gff.h"
 
 static const uint32 kTLKID = MKTAG('T', 'L', 'K', ' ');
 static const uint32 kGFFID = MKTAG('G', 'F', 'F', ' ');
@@ -57,7 +58,7 @@ TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, uint32 languageID) {
 		return new TalkTable_TLK(tlk, languageID);
 
 	if (id == kGFFID)
-		return 0;//new TalkTable_GFF(tlk, languageID);
+		return new TalkTable_GFF(tlk, languageID);
 
 	delete tlk;
 	return 0;
