@@ -734,6 +734,8 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 			"Usage: showfps <true/false>\nShow/Hide the frames-per-second display");
 	registerCommand("listlangs"  , boost::bind(&Console::cmdListLangs  , this, _1),
 			"Usage: listlangs\nLists all languages supported by this game version");
+	registerCommand("getlang"    , boost::bind(&Console::cmdGetLang    , this, _1),
+			"Usage: getlang\nPrint the current language settings");
 
 	_console->setPrompt(kPrompt);
 
@@ -1327,6 +1329,17 @@ void Console::cmdListLangs(const CommandLine &UNUSED(cl)) {
 				printf("- %s", Aurora::getLanguageName(*l).c_str());
 		}
 	}
+}
+
+void Console::cmdGetLang(const CommandLine &UNUSED(cl)) {
+	Aurora::Language lang;
+	if (_engine->getLanguage(lang))
+		printf("%s", Aurora::getLanguageName(lang).c_str());
+
+	Aurora::Language langT, langV;
+	if (_engine->getLanguage(langT, langV))
+		printf("%s text + %s voices", Aurora::getLanguageName(langT).c_str(),
+				Aurora::getLanguageName(langV).c_str());
 }
 
 void Console::printCommandHelp(const Common::UString &cmd) {
