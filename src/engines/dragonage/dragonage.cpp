@@ -154,6 +154,19 @@ bool DragonAgeEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common:
 	return true;
 }
 
+bool DragonAgeEngine::getLanguage(Aurora::Language &language) const {
+	language = _language;
+	return true;
+}
+
+bool DragonAgeEngine::changeLanguage() {
+	Aurora::Language language;
+	if (!evaluateLanguage(false, language) || (_language != language))
+		return false;
+
+	return true;
+}
+
 void DragonAgeEngine::run() {
 	init();
 	if (EventMan.quitRequested())
