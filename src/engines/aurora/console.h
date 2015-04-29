@@ -293,6 +293,7 @@ private:
 	void cmdGetOption  (const CommandLine &cl);
 	void cmdSetOption  (const CommandLine &cl);
 	void cmdShowFPS    (const CommandLine &cl);
+	void cmdListLangs  (const CommandLine &cl);
 
 	void updateHelpArguments();
 

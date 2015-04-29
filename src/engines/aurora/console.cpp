@@ -732,6 +732,8 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 			"Usage: setoption <option> <value>\nSet the value of a config option for this session");
 	registerCommand("showfps"    , boost::bind(&Console::cmdShowFPS    , this, _1),
 			"Usage: showfps <true/false>\nShow/Hide the frames-per-second display");
+	registerCommand("listlangs"  , boost::bind(&Console::cmdListLangs  , this, _1),
+			"Usage: listlangs\nLists all languages supported by this game version");
 
 	_console->setPrompt(kPrompt);
 
@@ -1299,6 +1301,32 @@ void Console::cmdShowFPS(const CommandLine &cl) {
 
 	ConfigMan.setCommandlineKey("showfps", cl.args);
 	_engine->showFPS();
+}
+
+void Console::cmdListLangs(const CommandLine &UNUSED(cl)) {
+	std::vector<Aurora::Language> langs;
+	if (_engine->detectLanguages(langs)) {
+		if (!langs.empty()) {
+			printf("Available languages:");
+			for (std::vector<Aurora::Language>::iterator l = langs.begin(); l != langs.end(); ++l)
+				printf("- %s", Aurora::getLanguageName(*l).c_str());
+		}
+	}
+
+	std::vector<Aurora::Language> langsT, langsV;
+	if (_engine->detectLanguages(langsT, langsV)) {
+		if (!langsT.empty()) {
+			printf("Available text languages:");
+			for (std::vector<Aurora::Language>::iterator l = langsT.begin(); l != langsT.end(); ++l)
+				printf("- %s", Aurora::getLanguageName(*l).c_str());
+		}
+
+		if (!langsV.empty()) {
+			printf("Available voice languages:");
+			for (std::vector<Aurora::Language>::iterator l = langsV.begin(); l != langsV.end(); ++l)
+				printf("- %s", Aurora::getLanguageName(*l).c_str());
+		}
+	}
 }
 
 void Console::printCommandHelp(const Common::UString &cmd) {
