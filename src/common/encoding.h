@@ -33,6 +33,8 @@ class UString;
 class SeekableReadStream;
 
 enum Encoding {
+	kEncodingInvalid = -1,
+
 	kEncodingASCII,   ///< Plain, unextended ASCII (7bit clean).
 
 	kEncodingUTF8,    ///< UTF-8.
