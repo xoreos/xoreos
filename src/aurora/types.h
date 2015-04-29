@@ -379,11 +379,11 @@ class TwoDAFile;
 class TwoDARow;
 
 class GFF3Struct;
-typedef std::vector<GFF3Struct *> GFF3List;
+typedef std::vector<const GFF3Struct *> GFF3List;
 class GFF3File;
 
 class GFF4Struct;
-typedef std::vector<GFF4Struct *> GFF4List;
+typedef std::vector<const GFF4Struct *> GFF4List;
 class GFF4File;
 
 } // End of namespace Aurora
