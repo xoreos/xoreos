@@ -107,7 +107,7 @@ Common::UString DragonAgeEngine::getLanguageString(Aurora::Language language) {
 		case Aurora::kLanguagePolish:
 			return "pl-pl";
 		case Aurora::kLanguageCzech:
-			return "cz-cz";
+			return "cs-cz";
 		case Aurora::kLanguageHungarian:
 			return "hu-hu";
 		case Aurora::kLanguageRussian:
