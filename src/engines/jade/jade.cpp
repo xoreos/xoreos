@@ -235,29 +235,29 @@ void JadeEngine::initResources(LoadProgress &progress) {
 	ResMan.addArchiveDir(Aurora::kArchiveRIM, "data", true);
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 10);
 
 	progress.step("Loading global auxiliary resources");
-	indexMandatoryArchive(Aurora::kArchiveERF, "loadscreens.mod"   , 10);
-	indexMandatoryArchive(Aurora::kArchiveERF, "players.mod"       , 11);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "global-a.rim"      , 12);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "ingamemenu-a.rim"  , 13);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "globalunload-a.rim", 14);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "minigame-a.rim"    , 15);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "miniglobal-a.rim"  , 16);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "mmenu-a.rim"       , 17);
+	indexMandatoryArchive(Aurora::kArchiveERF, "loadscreens.mod"   , 50);
+	indexMandatoryArchive(Aurora::kArchiveERF, "players.mod"       , 51);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "global-a.rim"      , 52);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "ingamemenu-a.rim"  , 53);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "globalunload-a.rim", 54);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "minigame-a.rim"    , 55);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "miniglobal-a.rim"  , 56);
+	indexMandatoryArchive(Aurora::kArchiveRIM, "mmenu-a.rim"       , 57);
 
 	progress.step("Indexing extra font resources");
-	indexMandatoryDirectory("fonts"   , 0, -1, 20);
+	indexMandatoryDirectory("fonts"   , 0, -1, 100);
 	progress.step("Indexing extra sound resources");
-	indexMandatoryDirectory("sound"   , 0, -1, 21);
+	indexMandatoryDirectory("sound"   , 0, -1, 101);
 	progress.step("Indexing extra movie resources");
-	indexMandatoryDirectory("movies"  , 0, -1, 22);
+	indexMandatoryDirectory("movies"  , 0, -1, 102);
 	progress.step("Indexing extra shader resources");
-	indexMandatoryDirectory("shaderpc", 0, -1, 23);
+	indexMandatoryDirectory("shaderpc", 0, -1, 103);
 
 	progress.step("Indexing override files");
-	indexOptionalDirectory("override", 0, 0, 30);
+	indexOptionalDirectory("override", 0, 0, 150);
 
 	if (EventMan.quitRequested())
 		return;

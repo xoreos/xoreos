@@ -49,7 +49,7 @@ void Room::load(const Common::UString &resRef, uint32 id, float x, float y, floa
 	if (resRef == "****")
 		return;
 
-	indexOptionalArchive(Aurora::kArchiveRIM, resRef + "-a.rim", 500 + id, &_resources);
+	indexOptionalArchive(Aurora::kArchiveRIM, resRef + "-a.rim", 1100 + id, &_resources);
 
 	_model = loadModelObject(resRef);
 	if (!_model)

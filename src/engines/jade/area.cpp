@@ -120,11 +120,11 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 void Area::loadResources() {
 	Aurora::ResourceManager::ChangeID change;
 
-	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + ".rim", 100, &change);
+	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + ".rim", 1000, &change);
 	_resources.push_back(change);
 	change.clear();
 
-	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + "-a.rim", 101, &change);
+	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + "-a.rim", 1001, &change);
 	_resources.push_back(change);
 	change.clear();
 }
