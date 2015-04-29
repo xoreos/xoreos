@@ -68,6 +68,9 @@ public:
 	/** Return the game's current language. */
 	virtual bool getLanguage(Aurora::Language &languageText, Aurora::Language &languageVoice) const;
 
+	/** Change the game's current language. */
+	virtual bool changeLanguage();
+
 	void start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform);
 
 	/** Evaluate the FPS display setting and show/hide the FPS display. */

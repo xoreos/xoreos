@@ -76,6 +76,10 @@ bool Engine::getLanguage(Aurora::Language &UNUSED(languageText),
 	return false;
 }
 
+bool Engine::changeLanguage() {
+	return false;
+}
+
 void Engine::start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform) {
 	showFPS();
 
