@@ -64,6 +64,36 @@ uint32 getLanguageID(GameID game, Language language) {
 			}
 			break;
 
+		case kGameIDDragonAge:
+		case kGameIDDragonAge2:
+			switch (language) {
+				case kLanguageEnglish:
+					return   0;
+				case kLanguageFrench:
+					return   1;
+				case kLanguageGerman:
+					return   2;
+				case kLanguageItalian:
+					return   3;
+				case kLanguageSpanish:
+					return   4;
+				case kLanguagePolish:
+					return   5;
+				case kLanguageCzech:
+					return  15;
+				case kLanguageHungarian:
+					return  16;
+				case kLanguageRussian:
+					return  14;
+				case kLanguageKorean:
+					return 128;
+				case kLanguageJapanese:
+					return 131;
+				default:
+					break;
+			}
+			break;
+
 		default:
 			switch (language) {
 				case kLanguageEnglish:
@@ -133,6 +163,35 @@ Language getLanguage(GameID game, uint32 languageID) {
 			}
 			break;
 
+		case kGameIDDragonAge:
+		case kGameIDDragonAge2:
+			switch (languageID) {
+				case   0:
+					return kLanguageEnglish;
+				case   1:
+					return kLanguageFrench;
+				case   2:
+					return kLanguageGerman;
+				case   3:
+					return kLanguageItalian;
+				case   4:
+					return kLanguageSpanish;
+				case   5:
+					return kLanguagePolish;
+				case  15:
+					return kLanguageCzech;
+				case  16:
+					return kLanguageHungarian;
+				case  14:
+					return kLanguageRussian;
+				case 128:
+					return kLanguageKorean;
+				case 131:
+					return kLanguageJapanese;
+				default:
+					break;
+			}
+			break;
 		default:
 			switch (languageID) {
 				case   0:
