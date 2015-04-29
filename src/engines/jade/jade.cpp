@@ -132,6 +132,19 @@ bool JadeEngine::detectLanguages(Aurora::GameID game, const Common::UString &tar
 	return true;
 }
 
+bool JadeEngine::getLanguage(Aurora::Language &language) const {
+	language = _language;
+	return true;
+}
+
+bool JadeEngine::changeLanguage() {
+	Aurora::Language language;
+	if (!evaluateLanguage(false, language) || (_language != language))
+		return false;
+
+	return true;
+}
+
 Module *JadeEngine::getModule() {
 	return _module;
 }
