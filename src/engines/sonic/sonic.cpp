@@ -154,6 +154,35 @@ bool SonicEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::USt
 	return true;
 }
 
+bool SonicEngine::getLanguage(Aurora::Language &language) const {
+	language = _language;
+	return true;
+}
+
+bool SonicEngine::changeLanguage() {
+	Aurora::Language language;
+	if (!evaluateLanguage(false, language))
+		return false;
+
+	if (_language == language)
+		return true;
+
+	try {
+
+		loadLanguageFiles(language);
+		_language = language;
+
+	} catch (...) {
+
+		// Roll back
+		loadLanguageFiles(_language);
+		return false;
+
+	}
+
+	return true;
+}
+
 void SonicEngine::run() {
 	init();
 

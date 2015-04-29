@@ -74,6 +74,9 @@ public:
 	                     Aurora::Platform platform,
 	                     std::vector<Aurora::Language> &languages) const;
 
+	bool getLanguage(Aurora::Language &language) const;
+	bool changeLanguage();
+
 
 protected:
 	void run();
