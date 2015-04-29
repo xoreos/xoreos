@@ -736,6 +736,9 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 			"Usage: listlangs\nLists all languages supported by this game version");
 	registerCommand("getlang"    , boost::bind(&Console::cmdGetLang    , this, _1),
 			"Usage: getlang\nPrint the current language settings");
+	registerCommand("setlang"    , boost::bind(&Console::cmdSetLang    , this, _1),
+			"Usage: setlang <language>\nUsage: setlang <language_text> <language_voice>\n"
+			"Change the game's current language");
 
 	_console->setPrompt(kPrompt);
 
@@ -1340,6 +1343,35 @@ void Console::cmdGetLang(const CommandLine &UNUSED(cl)) {
 	if (_engine->getLanguage(langT, langV))
 		printf("%s text + %s voices", Aurora::getLanguageName(langT).c_str(),
 				Aurora::getLanguageName(langV).c_str());
+}
+
+void Console::cmdSetLang(const CommandLine &cl) {
+	std::vector<Common::UString> args;
+	splitArguments(cl.args, args);
+
+	if (args.size() == 1) {
+		ConfigMan.setCommandlineKey("lang"     , args[0]);
+		ConfigMan.setCommandlineKey("langtext" , args[0]);
+		ConfigMan.setCommandlineKey("langvoice", args[0]);
+	} else if (args.size() == 2) {
+		ConfigMan.setCommandlineKey("langtext" , args[0]);
+		ConfigMan.setCommandlineKey("langvoice", args[1]);
+	} else {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	if (_engine->changeLanguage()) {
+		Aurora::Language lang;
+		if (_engine->getLanguage(lang))
+			printf("Changed language to %s", Aurora::getLanguageName(lang).c_str());
+
+		Aurora::Language langT, langV;
+		if (_engine->getLanguage(langT, langV))
+			printf("Change language to %s text + %s voices", Aurora::getLanguageName(langT).c_str(),
+					Aurora::getLanguageName(langV).c_str());
+	} else
+		printf("Failed to change the language");
 }
 
 void Console::printCommandHelp(const Common::UString &cmd) {

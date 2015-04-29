@@ -295,6 +295,7 @@ private:
 	void cmdShowFPS    (const CommandLine &cl);
 	void cmdListLangs  (const CommandLine &cl);
 	void cmdGetLang    (const CommandLine &cl);
+	void cmdSetLang    (const CommandLine &cl);
 
 	void updateHelpArguments();
 
