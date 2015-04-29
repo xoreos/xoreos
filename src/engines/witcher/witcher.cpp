@@ -147,6 +147,39 @@ Module *WitcherEngine::getModule() {
 	return _campaign->getModule();
 }
 
+bool WitcherEngine::getLanguage(Aurora::Language &languageText, Aurora::Language &languageVoice) const {
+	languageText  = _languageText;
+	languageVoice = _languageVoice;
+
+	return true;
+}
+
+bool WitcherEngine::changeLanguage() {
+	Aurora::Language languageText, languageVoice;
+	if (!evaluateLanguage(false, languageText, languageVoice))
+		return false;
+
+	if ((_languageText == languageText) && (_languageVoice == languageVoice))
+		return true;
+
+	try {
+
+		loadLanguageFiles(languageText, languageVoice);
+
+		_languageText  = languageText;
+		_languageVoice = languageVoice;
+
+	} catch (...) {
+
+		// Roll back
+		loadLanguageFiles(_languageText, _languageVoice);
+		return false;
+
+	}
+
+	return true;
+}
+
 void WitcherEngine::run() {
 	init();
 	if (EventMan.quitRequested())
