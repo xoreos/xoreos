@@ -265,32 +265,34 @@ void WitcherEngine::initResources(LoadProgress &progress) {
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "data/modules", true);
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 1);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 10);
 
 	progress.step("Loading the localized base KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "localized.key", 10);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "localized.key", 50);
+
+	// Language files at 100-102
 
 	progress.step("Indexing extra resources");
-	indexOptionalDirectory("data/movies"   , 0, -1, 30);
-	indexOptionalDirectory("data/music"    , 0, -1, 31);
-	indexOptionalDirectory("data/sounds"   , 0, -1, 32);
-	indexOptionalDirectory("data/cutscenes", 0, -1, 33);
-	indexOptionalDirectory("data/dialogues", 0, -1, 34);
-	indexOptionalDirectory("data/fx"       , 0, -1, 35);
-	indexOptionalDirectory("data/meshes"   , 0, -1, 36);
-	indexOptionalDirectory("data/quests"   , 0, -1, 37);
-	indexOptionalDirectory("data/scripts"  , 0, -1, 38);
-	indexOptionalDirectory("data/templates", 0, -1, 39);
-	indexOptionalDirectory("data/textures" , 0, -1, 40);
+	indexOptionalDirectory("data/movies"   , 0, -1, 150);
+	indexOptionalDirectory("data/music"    , 0, -1, 151);
+	indexOptionalDirectory("data/sounds"   , 0, -1, 152);
+	indexOptionalDirectory("data/cutscenes", 0, -1, 153);
+	indexOptionalDirectory("data/dialogues", 0, -1, 154);
+	indexOptionalDirectory("data/fx"       , 0, -1, 155);
+	indexOptionalDirectory("data/meshes"   , 0, -1, 156);
+	indexOptionalDirectory("data/quests"   , 0, -1, 157);
+	indexOptionalDirectory("data/scripts"  , 0, -1, 158);
+	indexOptionalDirectory("data/templates", 0, -1, 159);
+	indexOptionalDirectory("data/textures" , 0, -1, 160);
 
-	indexOptionalDirectory("data", ".*\\.bik", 0, 41);
-	indexOptionalDirectory("data", ".*\\.tlk", 0, 42);
+	indexOptionalDirectory("data", ".*\\.bik", 0, 200);
+	indexOptionalDirectory("data", ".*\\.tlk", 0, 201);
 
 	progress.step("Indexing Windows-specific resources");
-	indexMandatoryArchive(Aurora::kArchiveEXE, "witcher.exe", 43);
+	indexMandatoryArchive(Aurora::kArchiveEXE, "witcher.exe", 250);
 
 	progress.step("Indexing override files");
-	indexOptionalDirectory("data/override", 0, 0, 50);
+	indexOptionalDirectory("data/override", 0, 0, 500);
 
 	loadLanguageFiles(progress, _languageText, _languageVoice);
 
@@ -327,7 +329,7 @@ void WitcherEngine::unloadLanguageFiles() {
 void WitcherEngine::loadLanguageFiles(LoadProgress &progress,
 		Aurora::Language langText, Aurora::Language langVoice) {
 
-	progress.step(Common::UString::sprintf("Index language files (%s text + %s voices)",
+	progress.step(Common::UString::sprintf("Indexing language files (%s text + %s voices)",
 				Aurora::getLanguageName(langText).c_str(), Aurora::getLanguageName(langVoice).c_str()));
 
 	loadLanguageFiles(langText, langVoice);
@@ -341,17 +343,17 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 	Aurora::ResourceManager::ChangeID change;
 
 	archive = Common::UString::sprintf("lang_%d.key", getLanguageID(_game, langVoice));
-	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 20, &change);
+	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 100, &change);
 	_languageResources.push_back(change);
 	change.clear();
 
 	archive = Common::UString::sprintf("M1_%d.key", getLanguageID(_game, langVoice));
-	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 21, &change);
+	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 101, &change);
 	_languageResources.push_back(change);
 	change.clear();
 
 	archive = Common::UString::sprintf("M2_%d.key", getLanguageID(_game, langVoice));
-	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 22, &change);
+	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 102, &change);
 	_languageResources.push_back(change);
 	change.clear();
 
