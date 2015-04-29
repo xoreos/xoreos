@@ -67,6 +67,15 @@ bool Engine::detectLanguages(std::vector<Aurora::Language> &languagesText,
 	return detectLanguages(_game, _target, _platform, languagesText, languagesVoice);
 }
 
+bool Engine::getLanguage(Aurora::Language &UNUSED(language)) const {
+	return false;
+}
+
+bool Engine::getLanguage(Aurora::Language &UNUSED(languageText),
+                         Aurora::Language &UNUSED(languageVoice)) const {
+	return false;
+}
+
 void Engine::start(Aurora::GameID game, const Common::UString &target, Aurora::Platform platform) {
 	showFPS();
 
