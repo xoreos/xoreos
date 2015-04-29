@@ -163,6 +163,19 @@ bool KotOREngine::detectLanguages(Aurora::GameID game, const Common::UString &ta
 	return true;
 }
 
+bool KotOREngine::getLanguage(Aurora::Language &language) const {
+	language = _language;
+	return true;
+}
+
+bool KotOREngine::changeLanguage() {
+	Aurora::Language language;
+	if (!evaluateLanguage(false, language) || (_language != language))
+		return false;
+
+	return true;
+}
+
 Module *KotOREngine::getModule() {
 	return _module;
 }
