@@ -56,7 +56,7 @@ void TalkManager::registerEncoding(uint32 languageID, Common::Encoding encoding)
 Common::Encoding TalkManager::getEncoding(uint32 languageID) const {
 	EncodingMap::const_iterator e = _encodings.find(languageID);
 	if (e == _encodings.end())
-		return Common::kEncodingUTF8;
+		return Common::kEncodingInvalid;
 
 	return e->second;
 }

@@ -132,7 +132,10 @@ void TalkTable_TLK::readString(Entry &entry) const {
 	Common::MemoryReadStream *parsed = preParseColorCodes(*data);
 
 	Common::Encoding encoding = TalkMan.getEncoding(_languageID);
-	entry.text = Common::readString(*parsed, encoding);
+	if (encoding != Common::kEncodingInvalid)
+		entry.text = Common::readString(*parsed, encoding);
+	else
+		entry.text = "[???]";
 
 	delete parsed;
 	delete data;
