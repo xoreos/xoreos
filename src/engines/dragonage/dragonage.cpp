@@ -38,6 +38,7 @@
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
+#include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
 
@@ -175,48 +176,65 @@ void DragonAgeEngine::run() {
 	CursorMan.hideCursor();
 	CursorMan.set();
 
-	playVideo("dragon_age_ea_logo");
-	playVideo("dragon_age_main");
+	playIntroVideos();
 	if (EventMan.quitRequested())
 		return;
 
 	CursorMan.showCursor();
 
-	Graphics::Aurora::Cube *cube = 0;
-	try {
+	main();
 
-		cube = new Graphics::Aurora::Cube("ach_abi_accomplish_rog");
-
-	} catch (Common::Exception &e) {
-		Common::printException(e);
-	}
-
-	while (!EventMan.quitRequested()) {
-		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if (_console->processEvent(event))
-				continue;
-
-			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
-				_console->show();
-				continue;
-			}
-		}
-
-		EventMan.delay(10);
-	}
-
-	delete cube;
+	deinit();
 }
 
 void DragonAgeEngine::init() {
-	LoadProgress progress(15);
+	LoadProgress progress(18);
 
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
 	else
 		warning("Failed to detect this game's language");
 
+	progress.step("Loading user game config");
+	initConfig();
+
+	progress.step("Declare string encodings");
+	declareEncodings();
+
+	initResources(progress);
+	if (EventMan.quitRequested())
+		return;
+
+	progress.step("Loading game cursors");
+	initCursors();
+	if (EventMan.quitRequested())
+		return;
+
+	progress.step("Initializing internal game config");
+	initGameConfig();
+
+	progress.step("Successfully initialized the engine");
+}
+
+void DragonAgeEngine::declareEncodings() {
+	static const LanguageEncoding kLanguageEncodings[] = {
+		{ Aurora::kLanguageEnglish           , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageFrench            , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageGerman            , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageItalian           , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageSpanish           , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguagePolish            , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageCzech             , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageHungarian         , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageRussian           , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageKorean            , Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageJapanese          , Common::kEncodingUTF16LE }
+	};
+
+	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
+}
+
+void DragonAgeEngine::initResources(LoadProgress &progress) {
 	ResMan.setRIMsAreERFs(true);
 
 	progress.step("Setting base directory");
@@ -230,79 +248,76 @@ void DragonAgeEngine::init() {
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/single player/data");
 
 	progress.step("Loading core resource files");
-	indexMandatoryArchive(Aurora::kArchiveERF, "2da.erf"               ,  1);
-	indexMandatoryArchive(Aurora::kArchiveERF, "anims.erf"             ,  2);
-	indexMandatoryArchive(Aurora::kArchiveERF, "chargen.gpu.rim"       ,  3);
-	indexMandatoryArchive(Aurora::kArchiveERF, "chargen.rim"           ,  4);
-	indexMandatoryArchive(Aurora::kArchiveERF, "consolescripts.erf"    ,  5);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerareas.erf"     ,  6);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designercreatures.erf" ,  7);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designercutscenes.erf" ,  8);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerdialogs.erf"   ,  9);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designeritems.erf"     , 10);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerplaceables.erf", 11);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerplots.erf"     , 12);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerscripts.rim"   , 13);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designertriggers.erf"  , 14);
-	indexMandatoryArchive(Aurora::kArchiveERF, "face.erf"              , 15);
-	indexMandatoryArchive(Aurora::kArchiveERF, "global.rim"            , 16);
-	indexMandatoryArchive(Aurora::kArchiveERF, "globalvfx.rim"         , 17);
-	indexMandatoryArchive(Aurora::kArchiveERF, "gui.erf"               , 18);
-	indexMandatoryArchive(Aurora::kArchiveERF, "guiexport.erf"         , 19);
-	indexMandatoryArchive(Aurora::kArchiveERF, "iterationtests.erf"    , 20);
-	indexMandatoryArchive(Aurora::kArchiveERF, "lightprobedata.erf"    , 21);
-	indexMandatoryArchive(Aurora::kArchiveERF, "materialobjects.erf"   , 22);
-	indexMandatoryArchive(Aurora::kArchiveERF, "materials.erf"         , 23);
-	indexMandatoryArchive(Aurora::kArchiveERF, "misc.erf"              , 24);
-	indexMandatoryArchive(Aurora::kArchiveERF, "modelhierarchies.erf"  , 25);
-	indexMandatoryArchive(Aurora::kArchiveERF, "modelmeshdata.erf"     , 26);
-	indexMandatoryArchive(Aurora::kArchiveERF, "pathfindingpatches.erf", 27);
-	indexMandatoryArchive(Aurora::kArchiveERF, "postprocesseffects.erf", 28);
-	indexMandatoryArchive(Aurora::kArchiveERF, "resmetrics.erf"        , 29);
-	indexMandatoryArchive(Aurora::kArchiveERF, "scripts.erf"           , 30);
-	indexMandatoryArchive(Aurora::kArchiveERF, "shaders.erf"           , 31);
-	indexMandatoryArchive(Aurora::kArchiveERF, "states.erf"            , 32);
-	indexMandatoryArchive(Aurora::kArchiveERF, "subqueuefiles.erf"     , 33);
-	indexMandatoryArchive(Aurora::kArchiveERF, "textures.erf"          , 34);
-	indexMandatoryArchive(Aurora::kArchiveERF, "tints.erf"             , 35);
+	indexMandatoryArchive(Aurora::kArchiveERF, "2da.erf"               , 10);
+	indexMandatoryArchive(Aurora::kArchiveERF, "anims.erf"             , 11);
+	indexMandatoryArchive(Aurora::kArchiveERF, "chargen.gpu.rim"       , 12);
+	indexMandatoryArchive(Aurora::kArchiveERF, "chargen.rim"           , 13);
+	indexMandatoryArchive(Aurora::kArchiveERF, "consolescripts.erf"    , 14);
+	indexMandatoryArchive(Aurora::kArchiveERF, "designerareas.erf"     , 15);
+	indexMandatoryArchive(Aurora::kArchiveERF, "designercreatures.erf" , 16);
+	indexMandatoryArchive(Aurora::kArchiveERF, "designercutscenes.erf" , 17);
+	indexMandatoryArchive(Aurora::kArchiveERF, "designerdialogs.erf"   , 18);
+	indexMandatoryArchive(Aurora::kArchiveERF, "designeritems.erf"     , 19);
+	indexMandatoryArchive(Aurora::kArchiveERF, "designerplaceables.erf", 20);
+	indexMandatoryArchive(Aurora::kArchiveERF, "designerplots.erf"     , 21);
+	indexMandatoryArchive(Aurora::kArchiveERF, "designerscripts.rim"   , 22);
+	indexMandatoryArchive(Aurora::kArchiveERF, "designertriggers.erf"  , 23);
+	indexMandatoryArchive(Aurora::kArchiveERF, "face.erf"              , 24);
+	indexMandatoryArchive(Aurora::kArchiveERF, "global.rim"            , 25);
+	indexMandatoryArchive(Aurora::kArchiveERF, "globalvfx.rim"         , 26);
+	indexMandatoryArchive(Aurora::kArchiveERF, "gui.erf"               , 27);
+	indexMandatoryArchive(Aurora::kArchiveERF, "guiexport.erf"         , 28);
+	indexMandatoryArchive(Aurora::kArchiveERF, "iterationtests.erf"    , 29);
+	indexMandatoryArchive(Aurora::kArchiveERF, "lightprobedata.erf"    , 30);
+	indexMandatoryArchive(Aurora::kArchiveERF, "materialobjects.erf"   , 31);
+	indexMandatoryArchive(Aurora::kArchiveERF, "materials.erf"         , 32);
+	indexMandatoryArchive(Aurora::kArchiveERF, "misc.erf"              , 33);
+	indexMandatoryArchive(Aurora::kArchiveERF, "modelhierarchies.erf"  , 34);
+	indexMandatoryArchive(Aurora::kArchiveERF, "modelmeshdata.erf"     , 35);
+	indexMandatoryArchive(Aurora::kArchiveERF, "pathfindingpatches.erf", 36);
+	indexMandatoryArchive(Aurora::kArchiveERF, "postprocesseffects.erf", 37);
+	indexMandatoryArchive(Aurora::kArchiveERF, "resmetrics.erf"        , 38);
+	indexMandatoryArchive(Aurora::kArchiveERF, "scripts.erf"           , 39);
+	indexMandatoryArchive(Aurora::kArchiveERF, "shaders.erf"           , 40);
+	indexMandatoryArchive(Aurora::kArchiveERF, "states.erf"            , 41);
+	indexMandatoryArchive(Aurora::kArchiveERF, "subqueuefiles.erf"     , 42);
+	indexMandatoryArchive(Aurora::kArchiveERF, "textures.erf"          , 43);
+	indexMandatoryArchive(Aurora::kArchiveERF, "tints.erf"             , 44);
 
 	progress.step("Loading core ability resource files");
-	indexMandatoryArchive(Aurora::kArchiveERF, "bearform.rim"    , 40);
-	indexMandatoryArchive(Aurora::kArchiveERF, "burningform.rim" , 41);
-	indexMandatoryArchive(Aurora::kArchiveERF, "golemform.rim"   , 42);
-	indexMandatoryArchive(Aurora::kArchiveERF, "mouseform.rim"   , 43);
-	indexMandatoryArchive(Aurora::kArchiveERF, "spiderform.rim"  , 44);
-	indexMandatoryArchive(Aurora::kArchiveERF, "spiritform.rim"  , 45);
-	indexMandatoryArchive(Aurora::kArchiveERF, "summonbear.rim"  , 46);
-	indexMandatoryArchive(Aurora::kArchiveERF, "summonspider.rim", 47);
-	indexMandatoryArchive(Aurora::kArchiveERF, "summonwolf.rim"  , 48);
+	indexMandatoryArchive(Aurora::kArchiveERF, "bearform.rim"    , 100);
+	indexMandatoryArchive(Aurora::kArchiveERF, "burningform.rim" , 101);
+	indexMandatoryArchive(Aurora::kArchiveERF, "golemform.rim"   , 102);
+	indexMandatoryArchive(Aurora::kArchiveERF, "mouseform.rim"   , 103);
+	indexMandatoryArchive(Aurora::kArchiveERF, "spiderform.rim"  , 104);
+	indexMandatoryArchive(Aurora::kArchiveERF, "spiritform.rim"  , 105);
+	indexMandatoryArchive(Aurora::kArchiveERF, "summonbear.rim"  , 106);
+	indexMandatoryArchive(Aurora::kArchiveERF, "summonspider.rim", 107);
+	indexMandatoryArchive(Aurora::kArchiveERF, "summonwolf.rim"  , 108);
 
 	progress.step("Indexing extra core sound resources");
-	indexMandatoryDirectory("packages/core/audio"          , 0, -1, 100);
+	indexMandatoryDirectory("packages/core/audio"          , 0, -1, 150);
 	progress.step("Indexing extra core movie resources");
-	indexMandatoryDirectory("packages/core/data/movies"    , 0,  0, 101);
+	indexMandatoryDirectory("packages/core/data/movies"    , 0,  0, 151);
 	progress.step("Indexing extra core talktables");
-	indexMandatoryDirectory("packages/core/data/talktables", 0,  0, 102);
+	indexMandatoryDirectory("packages/core/data/talktables", 0,  0, 152);
 	progress.step("Indexing extra core cursors");
-	indexMandatoryDirectory("packages/core/data/cursors"   , 0,  0, 103);
+	indexMandatoryDirectory("packages/core/data/cursors"   , 0,  0, 153);
 
 	progress.step("Indexing extra environments");
-	indexMandatoryDirectory("packages/core/env", 0, 0, 110);
+	indexMandatoryDirectory("packages/core/env", 0, 0, 200);
 
 	progress.step("Loading single-player campaign global resource files");
-	indexMandatoryArchive(Aurora::kArchiveERF, "moduleglobal.rim", 50);
+	indexMandatoryArchive(Aurora::kArchiveERF, "moduleglobal.rim", 250);
 
 	progress.step("Indexing extra single-player campaign movie resources");
-	indexMandatoryDirectory("modules/single player/data"           , 0, -1, 120);
+	indexMandatoryDirectory("modules/single player/data"           , 0, -1, 300);
 	progress.step("Indexing extra single-player campaign sound resources");
-	indexMandatoryDirectory("modules/single player/data/movies"    , 0,  0, 121);
+	indexMandatoryDirectory("modules/single player/data/movies"    , 0,  0, 301);
 	progress.step("Indexing extra single-player campaign talktables");
-	indexMandatoryDirectory("modules/single player/data/talktables", 0,  0, 122);
+	indexMandatoryDirectory("modules/single player/data/talktables", 0,  0, 302);
 
-	progress.step("Loading game cursors");
-	initCursors();
-
-	progress.step("Successfully initialized the engine");
+	// TODO: DLC
 }
 
 void DragonAgeEngine::initCursors() {
@@ -378,6 +393,48 @@ void DragonAgeEngine::initCursors() {
 	CursorMan.add("use_pressed"                , "use"                , "down"    );
 
 	CursorMan.setDefault("standard", "up");
+}
+
+void DragonAgeEngine::initConfig() {
+}
+
+void DragonAgeEngine::initGameConfig() {
+}
+
+void DragonAgeEngine::deinit() {
+}
+
+void DragonAgeEngine::playIntroVideos() {
+	playVideo("dragon_age_ea_logo");
+	playVideo("dragon_age_main");
+}
+
+void DragonAgeEngine::main() {
+	Graphics::Aurora::Cube *cube = 0;
+	try {
+
+		cube = new Graphics::Aurora::Cube("ach_abi_accomplish_rog");
+
+	} catch (Common::Exception &e) {
+		Common::printException(e);
+	}
+
+	while (!EventMan.quitRequested()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event)) {
+			if (_console->processEvent(event))
+				continue;
+
+			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+				_console->show();
+				continue;
+			}
+		}
+
+		EventMan.delay(10);
+	}
+
+	delete cube;
 }
 
 } // End of namespace DragonAge

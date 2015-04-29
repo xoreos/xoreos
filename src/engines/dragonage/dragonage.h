@@ -38,6 +38,8 @@ namespace Common {
 
 namespace Engines {
 
+class LoadProgress;
+
 namespace DragonAge {
 
 class DragonAgeEngineProbe : public Engines::EngineProbe {
@@ -83,7 +85,16 @@ private:
 	Aurora::Language _language;
 
 	void init();
+	void declareEncodings();
+	void initResources(LoadProgress &progress);
 	void initCursors();
+	void initConfig();
+	void initGameConfig();
+
+	void deinit();
+
+	void playIntroVideos();
+	void main();
 
 	static Common::UString getLanguageString(Aurora::Language language);
 };
