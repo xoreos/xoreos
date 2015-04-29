@@ -279,45 +279,47 @@ void NWNEngine::initResources(LoadProgress &progress) {
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 1);
+	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 10);
 
 	progress.step("Loading expansions and patch KEYs");
 
 	// Base game patch
-	indexOptionalArchive(Aurora::kArchiveKEY, "patch.key", 2);
+	indexOptionalArchive(Aurora::kArchiveKEY, "patch.key", 11);
 
 	// Expansion 1: Shadows of Undrentide (SoU)
-	_hasXP1 = indexOptionalArchive(Aurora::kArchiveKEY, "xp1.key", 3);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp1patch.key", 4);
+	_hasXP1 = indexOptionalArchive(Aurora::kArchiveKEY, "xp1.key", 12);
+	indexOptionalArchive(Aurora::kArchiveKEY, "xp1patch.key", 13);
 
 	// Expansion 2: Hordes of the Underdark (HotU)
-	_hasXP2 = indexOptionalArchive(Aurora::kArchiveKEY, "xp2.key", 5);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp2patch.key", 6);
+	_hasXP2 = indexOptionalArchive(Aurora::kArchiveKEY, "xp2.key", 14);
+	indexOptionalArchive(Aurora::kArchiveKEY, "xp2patch.key", 15);
 
 	// Expansion 3: Kingmaker (resources also included in the final 1.69 patch)
-	_hasXP3 = indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key", 7);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp3patch.key", 8);
+	_hasXP3 = indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key", 16);
+	indexOptionalArchive(Aurora::kArchiveKEY, "xp3patch.key", 17);
 
 	progress.step("Loading GUI textures");
-	indexMandatoryArchive(Aurora::kArchiveERF, "gui_32bit.erf"   , 10);
-	indexOptionalArchive (Aurora::kArchiveERF, "xp1_gui.erf"     , 11);
-	indexOptionalArchive (Aurora::kArchiveERF, "xp2_gui.erf"     , 12);
+	indexMandatoryArchive(Aurora::kArchiveERF, "gui_32bit.erf"   , 50);
+	indexOptionalArchive (Aurora::kArchiveERF, "xp1_gui.erf"     , 51);
+	indexOptionalArchive (Aurora::kArchiveERF, "xp2_gui.erf"     , 52);
 
 	progress.step("Indexing extra sound resources");
-	indexMandatoryDirectory("ambient"   , 0, 0, 20);
+	indexMandatoryDirectory("ambient"   , 0, 0, 100);
 	progress.step("Indexing extra music resources");
-	indexMandatoryDirectory("music"     , 0, 0, 21);
+	indexMandatoryDirectory("music"     , 0, 0, 101);
 	progress.step("Indexing extra movie resources");
-	indexMandatoryDirectory("movies"    , 0, 0, 22);
+	indexMandatoryDirectory("movies"    , 0, 0, 102);
 	progress.step("Indexing extra image resources");
-	indexOptionalDirectory ("portraits" , 0, 0, 23);
+	indexOptionalDirectory ("portraits" , 0, 0, 103);
 	progress.step("Indexing extra talktables");
-	indexOptionalDirectory ("tlk"       , 0, 0, 25);
+	indexOptionalDirectory ("tlk"       , 0, 0, 105);
 	progress.step("Indexing databases");
-	indexOptionalDirectory ("database"  , 0, 0, 26);
+	indexOptionalDirectory ("database"  , 0, 0, 106);
+
+	// Texture packs at 400-403, in module.cpp
 
 	progress.step("Indexing override files");
-	indexOptionalDirectory("override", 0, 0, 1000);
+	indexOptionalDirectory("override", 0, 0, 500);
 
 	if (EventMan.quitRequested())
 		return;

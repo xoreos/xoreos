@@ -142,7 +142,7 @@ void Module::loadModule(const Common::UString &module) {
 		throw Common::Exception("Tried to load an empty module");
 
 	try {
-		indexMandatoryArchive(Aurora::kArchiveERF, module, 100, &_resModule);
+		indexMandatoryArchive(Aurora::kArchiveERF, module, 1000, &_resModule);
 
 		_ifo.load();
 
@@ -544,7 +544,7 @@ void Module::loadHAKs() {
 	_resHAKs.resize(haks.size());
 
 	for (uint i = 0; i < haks.size(); i++)
-		indexMandatoryArchive(Aurora::kArchiveERF, haks[i] + ".hak", 100, &_resHAKs[i]);
+		indexMandatoryArchive(Aurora::kArchiveERF, haks[i] + ".hak", 1001 + i, &_resHAKs[i]);
 }
 
 void Module::unloadHAKs() {
@@ -571,10 +571,10 @@ void Module::loadTexturePack() {
 	unloadTexturePack();
 
 	status("Loading texture pack %d", level);
-	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][0], 13, &_resTP[0]);
-	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][1], 14, &_resTP[1]);
-	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][2], 15, &_resTP[2]);
-	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][3], 16, &_resTP[3]);
+	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][0], 400, &_resTP[0]);
+	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][1], 401, &_resTP[1]);
+	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][2], 402, &_resTP[2]);
+	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][3], 403, &_resTP[3]);
 
 	// If we already had a texture pack loaded, reload all textures
 	if (_currentTexturePack != -1)
