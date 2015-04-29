@@ -87,13 +87,22 @@ private:
 
 	Aurora::ResourceManager::ChangeID _languageHERF;
 
+
 	void init();
+	void declareEncodings();
+	void declareResources();
+	void initResources(LoadProgress &progress);
+	void initConfig();
+	void initGameConfig();
 
 	void unloadLanguageFiles();
 	void loadLanguageFiles(LoadProgress &progress, Aurora::Language language);
 	void loadLanguageFiles(Aurora::Language language);
 
+	void deinit();
+
 	void playIntroVideos();
+	void main();
 
 	static Common::UString getLanguageHERF(Aurora::Language language);
 	static Common::UString getLanguageTLK (Aurora::Language language);

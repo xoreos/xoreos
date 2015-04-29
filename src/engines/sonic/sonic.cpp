@@ -32,6 +32,7 @@
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/aurora/cube.h"
+#include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
 
 #include "src/sound/sound.h"
@@ -39,9 +40,11 @@
 #include "src/events/events.h"
 
 #include "src/aurora/resman.h"
+#include "src/aurora/talkman.h"
 #include "src/aurora/ndsrom.h"
 
 #include "src/engines/aurora/util.h"
+#include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
 
@@ -185,9 +188,116 @@ bool SonicEngine::changeLanguage() {
 
 void SonicEngine::run() {
 	init();
+	if (EventMan.quitRequested())
+		return;
+
+	CursorMan.hideCursor();
+	CursorMan.set();
 
 	playIntroVideos();
+	if (EventMan.quitRequested())
+		return;
 
+	CursorMan.showCursor();
+
+	main();
+
+	deinit();
+}
+
+void SonicEngine::init() {
+	LoadProgress progress(7);
+
+	if (evaluateLanguage(true, _language))
+		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
+	else
+		warning("Failed to detect this game's language");
+
+	progress.step("Loading user game config");
+	initConfig();
+
+	progress.step("Declare string encodings");
+	declareEncodings();
+
+	initResources(progress);
+	if (EventMan.quitRequested())
+		return;
+
+	progress.step("Initializing internal game config");
+	initGameConfig();
+
+	progress.step("Successfully initialized the engine");
+}
+
+void SonicEngine::declareEncodings() {
+	static const LanguageEncoding kLanguageEncodings[] = {
+		{ Aurora::kLanguageEnglish           , Common::kEncodingCP1252 },
+		{ Aurora::kLanguageFrench            , Common::kEncodingCP1252 },
+		{ Aurora::kLanguageGerman            , Common::kEncodingCP1252 },
+		{ Aurora::kLanguageItalian           , Common::kEncodingCP1252 },
+		{ Aurora::kLanguageSpanish           , Common::kEncodingCP1252 }
+	};
+
+	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
+}
+
+void SonicEngine::initResources(LoadProgress &progress) {
+	ResMan.setHashAlgo(Common::kHashDJB2);
+
+	progress.step("Indexing the ROM file");
+	indexMandatoryArchive(Aurora::kArchiveNDS, _target, 1);
+
+	progress.step("Indexing the main HERF file");
+	indexMandatoryArchive(Aurora::kArchiveHERF, "test.herf", 10);
+
+	loadLanguageFiles(progress, _language);
+
+	declareResources();
+}
+
+void SonicEngine::declareResources() {
+	ResMan.declareResource("nintendosplash.tga");
+}
+
+void SonicEngine::unloadLanguageFiles() {
+	ResMan.undo(_languageHERF);
+}
+
+void SonicEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
+	progress.step(Common::UString::sprintf("Indexing language files (%s)",
+				Aurora::getLanguageName(language).c_str()));
+
+	loadLanguageFiles(language);
+}
+
+void SonicEngine::loadLanguageFiles(Aurora::Language language) {
+	unloadLanguageFiles();
+
+	Common::UString herf = getLanguageHERF(language) + ".herf";
+
+	indexMandatoryArchive(Aurora::kArchiveHERF, herf, 50, &_languageHERF);
+}
+
+void SonicEngine::initConfig() {
+}
+
+void SonicEngine::initGameConfig() {
+}
+
+void SonicEngine::deinit() {
+}
+
+void SonicEngine::playIntroVideos() {
+	// Play the two logo videos
+	playVideo("bioware");
+	playVideo("sega");
+
+	// TODO: We need to support playing two videos at once. The two logo videos
+	// are both on the bottom screen, but (most) other videos have a top screen
+	// and bottom screen video.
+}
+
+void SonicEngine::main() {
 	Graphics::Aurora::Cube *cube = 0;
 	try {
 
@@ -213,57 +323,6 @@ void SonicEngine::run() {
 	}
 
 	delete cube;
-}
-
-void SonicEngine::init() {
-	LoadProgress progress(4);
-
-	if (evaluateLanguage(true, _language))
-		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
-	else
-		warning("Failed to detect this game's language");
-
-	ResMan.setHashAlgo(Common::kHashDJB2);
-
-	progress.step("Indexing the ROM file");
-	indexMandatoryArchive(Aurora::kArchiveNDS, _target, 1);
-	progress.step("Indexing the main HERF file");
-	indexMandatoryArchive(Aurora::kArchiveHERF, "test.herf", 2);
-
-	loadLanguageFiles(progress, _language);
-
-	ResMan.declareResource("nintendosplash.tga");
-
-	progress.step("Successfully initialized the engine");
-}
-
-void SonicEngine::unloadLanguageFiles() {
-	ResMan.undo(_languageHERF);
-}
-
-void SonicEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
-	progress.step(Common::UString::sprintf("Index language files (%s)",
-				Aurora::getLanguageName(language).c_str()));
-
-	loadLanguageFiles(language);
-}
-
-void SonicEngine::loadLanguageFiles(Aurora::Language language) {
-	unloadLanguageFiles();
-
-	Common::UString herf = getLanguageHERF(language) + ".herf";
-
-	indexMandatoryArchive(Aurora::kArchiveHERF, herf, 10, &_languageHERF);
-}
-
-void SonicEngine::playIntroVideos() {
-	// Play the two logo videos
-	playVideo("bioware");
-	playVideo("sega");
-
-	// TODO: We need to support playing two videos at once. The two logo videos
-	// are both on the bottom screen, but (most) other videos have a top screen
-	// and bottom screen video.
 }
 
 } // End of namespace Sonic
