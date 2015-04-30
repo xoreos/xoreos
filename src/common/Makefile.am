@@ -65,6 +65,7 @@ noinst_HEADERS = \
                  zipfile.h \
                  pe_exe.h \
                  systemfonts.h \
+                 changeid.h \
                  $(EMPTY)
 
 libcommon_la_SOURCES = \
@@ -105,4 +106,5 @@ libcommon_la_SOURCES = \
                        zipfile.cpp \
                        pe_exe.cpp \
                        systemfonts.cpp \
+                       changeid.cpp \
                        $(EMPTY)
