@@ -29,6 +29,7 @@
 #include "src/common/stream.h"
 #include "src/common/configman.h"
 
+#include "src/aurora/resman.h"
 #include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/cursorman.h"
@@ -319,9 +320,9 @@ void WitcherEngine::initGameConfig() {
 void WitcherEngine::unloadLanguageFiles() {
 	TalkMan.removeMainTable();
 
-	std::list<Aurora::ResourceManager::ChangeID>::iterator res;
+	std::list<Common::ChangeID>::iterator res;
 	for (res = _languageResources.begin(); res != _languageResources.end(); ++res)
-		ResMan.undo(*res);
+		deindexResources(*res);
 
 	_languageResources.clear();
 }
@@ -340,22 +341,19 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 
 	Common::UString archive;
 
-	Aurora::ResourceManager::ChangeID change;
+	Common::ChangeID change;
 
+	_languageResources.push_back(Common::ChangeID());
 	archive = Common::UString::sprintf("lang_%d.key", getLanguageID(_game, langVoice));
-	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 100, &change);
-	_languageResources.push_back(change);
-	change.clear();
+	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 100, &_languageResources.back());
 
+	_languageResources.push_back(Common::ChangeID());
 	archive = Common::UString::sprintf("M1_%d.key", getLanguageID(_game, langVoice));
-	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 101, &change);
-	_languageResources.push_back(change);
-	change.clear();
+	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 101, &_languageResources.back());
 
+	_languageResources.push_back(Common::ChangeID());
 	archive = Common::UString::sprintf("M2_%d.key", getLanguageID(_game, langVoice));
-	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 102, &change);
-	_languageResources.push_back(change);
-	change.clear();
+	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 102, &_languageResources.back());
 
 	archive = Common::UString::sprintf("dialog_%d", getLanguageID(_game, langText));
 	TalkMan.addMainTable(archive);

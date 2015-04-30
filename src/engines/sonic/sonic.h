@@ -26,9 +26,9 @@
 #define ENGINES_SONIC_SONIC_H
 
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/resman.h"
 
 #include "src/engines/engine.h"
 #include "src/engines/engineprobe.h"
@@ -85,7 +85,7 @@ protected:
 private:
 	Aurora::Language _language;
 
-	Aurora::ResourceManager::ChangeID _languageHERF;
+	Common::ChangeID _languageHERF;
 
 
 	void init();

@@ -35,6 +35,7 @@
 #include "src/common/singleton.h"
 #include "src/common/filelist.h"
 #include "src/common/hash.h"
+#include "src/common/changeid.h"
 
 #include "src/aurora/types.h"
 
@@ -52,83 +53,10 @@ class BIFFile;
  *  resources useable by the game.
  */
 class ResourceManager : public Common::Singleton<ResourceManager> {
-// Type definitions
-private:
-	typedef std::list<Common::UString> DirectoryList;
-	typedef std::vector<FileType> FileTypeList;
-
-	typedef std::list<Archive *> ArchiveList;
-	typedef ArchiveList::const_iterator ArchiveRef;
-
-	/** Where a resource can be found. */
-	enum Source {
-		kSourceNone   , ///< Invalid source.
-		kSourceArchive, ///< Within an archive.
-		kSourceFile     ///< A direct file.
-	};
-
-	/** A resource. */
-	struct Resource {
-		Common::UString name; ///< The resource's name.
-		FileType        type; ///< The resource's type.
-
-		uint32 priority; ///< The resource's priority over others with the same name and type.
-
-		Source source; ///< Where can the resource be found?
-
-		// For kSourceArchive
-		Archive *archive;      ///< Pointer to the archive.
-		uint32   archiveIndex; ///< Index into the archive.
-
-		// For kSourceFile
-		Common::UString path; ///< The file's path.
-
-		Resource();
-
-		bool operator<(const Resource &right) const;
-	};
-
-	/** List of resources, sorted by priority. */
-	typedef std::list<Resource> ResourceList;
-	/** Map over resources, indexed by their hashed name. */
-	typedef std::map<uint64, ResourceList> ResourceMap;
-
-	/** A change produced by a manager operation. */
-	struct ResourceChange {
-		ResourceMap::iterator  hashIt;
-		ResourceList::iterator resIt;
-	};
-
-	/** A set of changes produced by a manager operation. */
-	struct ChangeSet {
-		std::list<ArchiveList::iterator> archives;
-		std::list<ResourceChange>        resources;
-	};
-
-	typedef std::list<ChangeSet> ChangeSetList;
-
 public:
 	struct ResourceID {
 		Common::UString name;
 		FileType type;
-	};
-
-	/** ID of a set of changes produced by a manager operation. */
-	class ChangeID {
-	public:
-		ChangeID();
-
-		bool empty() const;
-
-		void clear();
-
-	private:
-		ChangeID(ChangeSetList::iterator c);
-
-		bool _empty;
-		ChangeSetList::iterator _change;
-
-		friend class ResourceManager;
 	};
 
 	ResourceManager();
@@ -162,7 +90,7 @@ public:
 	 *  @param archive The type of archive to look for.
 	 *  @param dir A subdirectory of the base directory to search for archives files.
 	 */
-	void addArchiveDir(ArchiveType archive, const Common::UString &dir, bool recursive =  false);
+	void addArchiveDir(ArchiveType archiveType, const Common::UString &dir, bool recursive =  false);
 
 	/** Does a specific archive exist?
 	 *
@@ -174,31 +102,39 @@ public:
 
 	/** Add an archive file and all its resources to the resource manager.
 	 *
-	 *  @param  archive The type of archive to add.
-	 *  @param  file The name of the archive file to index.
-	 *  @param  priority The priority these files have over others of the same name
-	 *          and type. Higher number = higher priority. 0 means blacklisted.
-	 *  @return An ID for all collective changes done by adding the archive file.
+	 *  @param archive The type of archive to add.
+	 *  @param file The name of the archive file to index.
+	 *  @param priority The priority these files have over others of the same name
+	 *                  and type. Higher number = higher priority. 0 means blacklisted.
+	 *  @param changeID If given, record the collective changes done here.
 	 */
-	ChangeID addArchive(ArchiveType archive, const Common::UString &file, uint32 priority = 1);
+	void addArchive(ArchiveType archive, const Common::UString &file,
+	                uint32 priority, Common::ChangeID *changeID = 0);
+
+	/** Does a specific directory, relative to the base directory, exist?
+	 *
+	 *  @param  dir A subdirectory of the base directory to look for.
+	 *  @return true if the directory exists, false otherwise.
+	 */
+	bool hasResourceDir(const Common::UString &dir);
 
 	/** Add a directory's contents to the resource manager.
 	 *
 	 *  Relative to the base directory.
 	 *
-	 *  @param  dir A subdirectory of the base directory to search for resource files.
-	 *  @param  glob A pattern of which files to look for.
-	 *  @param  depth The number of levels to recurse into subdirectories. 0
-	 *                for ignoring subdirectories, -1 for a limitless recursion.
-	 *  @param  priority The priority these files have over others of the same name
-	 *          and type. Higher number = higher priority. 0 means blacklisted.
-	 *  @return An ID for all collective changes done by adding the directory.
+	 *  @param dir A subdirectory of the base directory to search for resource files.
+	 *  @param glob A pattern of which files to look for.
+	 *  @param depth The number of levels to recurse into subdirectories. 0
+	 *               for ignoring subdirectories, -1 for a limitless recursion.
+	 *  @param priority The priority these files have over others of the same name
+	 *                  and type. Higher number = higher priority. 0 means blacklisted.
+	 *  @param changeID If given, record the collective changes done here.
 	 */
-	ChangeID addResourceDir(const Common::UString &dir, const char *glob = 0,
-	                        int depth = -1, uint32 priority = 100);
+	void addResourceDir(const Common::UString &dir, const char *glob, int depth,
+	                    uint32 priority, Common::ChangeID *changeID = 0);
 
 	/** Undo the changes done in the specified change ID. */
-	void undo(ChangeID &change);
+	void undo(Common::ChangeID &changeID);
 
 	/** Add an alias for one file type to another.
 	 *
@@ -312,7 +248,76 @@ public:
 	/** Dump a list of all resources into a file. */
 	void dumpResourcesList(const Common::UString &fileName) const;
 
+
 private:
+	typedef std::list<Common::UString> DirectoryList;
+	typedef std::vector<FileType> FileTypeList;
+
+	typedef std::list<Archive *> ArchiveList;
+	typedef ArchiveList::const_iterator ArchiveRef;
+
+	/** Where a resource can be found. */
+	enum Source {
+		kSourceNone   , ///< Invalid source.
+		kSourceArchive, ///< Within an archive.
+		kSourceFile     ///< A direct file.
+	};
+
+	/** A resource. */
+	struct Resource {
+		Common::UString name; ///< The resource's name.
+		FileType        type; ///< The resource's type.
+
+		uint32 priority; ///< The resource's priority over others with the same name and type.
+
+		Source source; ///< Where can the resource be found?
+
+		// For kSourceArchive
+		Archive *archive;      ///< Pointer to the archive.
+		uint32   archiveIndex; ///< Index into the archive.
+
+		// For kSourceFile
+		Common::UString path; ///< The file's path.
+
+		Resource();
+
+		bool operator<(const Resource &right) const;
+	};
+
+	/** List of resources, sorted by priority. */
+	typedef std::list<Resource> ResourceList;
+	/** Map over resources, indexed by their hashed name. */
+	typedef std::map<uint64, ResourceList> ResourceMap;
+
+	/** A change produced by a manager operation. */
+	struct ResourceChange {
+		ResourceMap::iterator  hashIt;
+		ResourceList::iterator resIt;
+	};
+
+	/** A set of changes produced by a manager operation. */
+	struct ChangeSet {
+		std::list<ArchiveList::iterator> archives;
+		std::list<ResourceChange>        resources;
+	};
+
+	typedef std::list<ChangeSet> ChangeSetList;
+
+	class Change : public Common::ChangeContent {
+	public:
+		~Change();
+
+		Common::ChangeContent *clone() const;
+
+	private:
+		Change(ChangeSetList::iterator change);
+
+		ChangeSetList::iterator _change;
+
+		friend ResourceManager;
+	};
+
+
 	bool _rimsAreERFs; ///< Are .rim files actually ERF files?
 
 	Common::HashAlgo _hashAlgo; ///< With which hash algo are/should the names be hashed?
@@ -340,8 +345,8 @@ private:
 	Common::UString findArchive(const Common::UString &file,
 			const DirectoryList &dirs, const Common::FileList &files);
 
-	ChangeID indexKEY(const Common::UString &file, uint32 priority);
-	ChangeID indexArchive(Archive *archive, uint32 priority, ChangeID &change);
+	void indexKEY(const Common::UString &file, uint32 priority, Change *change);
+	void indexArchive(Archive *archive, uint32 priority, Change *change);
 
 	// KEY/BIF loading helpers
 	void findBIFs   (const KEYFile &key, std::vector<Common::UString> &bifs);
@@ -352,9 +357,9 @@ private:
 	inline uint64 getHash(const Common::UString &name, FileType type) const;
 	inline uint64 getHash(const Common::UString &name) const;
 
-	void addResource(Resource &resource, uint64 hash, ChangeID &change);
+	void addResource(Resource &resource, uint64 hash, Change *change);
 
-	void addResources(const Common::FileList &files, ChangeID &change, uint32 priority);
+	void addResources(const Common::FileList &files, Change *change, uint32 priority);
 
 	const Resource *getRes(uint64 hash) const;
 	const Resource *getRes(const Common::UString &name, const std::vector<FileType> &types) const;
@@ -364,7 +369,7 @@ private:
 
 	uint32 getResourceSize(const Resource &res) const;
 
-	ChangeID newChangeSet();
+	Change *newChangeSet(Common::ChangeID &changeID);
 
 	void checkHashCollision(const Resource &resource, ResourceMap::const_iterator resList);
 };

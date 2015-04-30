@@ -30,8 +30,8 @@
 #include <map>
 
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
 
-#include "src/aurora/resman.h"
 #include "src/aurora/ifofile.h"
 
 #include "src/aurora/nwscript/object.h"
@@ -159,10 +159,10 @@ private:
 	IngameGUI *_ingameGUI; ///< The ingame GUI elements.
 
 	/** Resources added by the module. */
-	Aurora::ResourceManager::ChangeID _resModule;
+	Common::ChangeID _resModule;
 
 	/** Resources added by the HAKs of the module. */
-	std::vector<Aurora::ResourceManager::ChangeID> _resHAKs;
+	std::vector<Common::ChangeID> _resHAKs;
 
 	Aurora::IFOFile _ifo; ///< The module's IFO.
 
@@ -170,7 +170,7 @@ private:
 
 	// Texture pack
 	int _currentTexturePack;
-	Aurora::ResourceManager::ChangeID _resTP[4];
+	Common::ChangeID _resTP[4];
 
 	bool _exit; //< Should we exit the module?
 

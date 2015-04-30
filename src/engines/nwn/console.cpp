@@ -28,6 +28,7 @@
 #include "src/common/util.h"
 #include "src/common/configman.h"
 
+#include "src/aurora/resman.h"
 #include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/fontman.h"

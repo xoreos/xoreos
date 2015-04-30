@@ -28,6 +28,8 @@
 #include "src/common/error.h"
 #include "src/common/maths.h"
 
+#include "src/aurora/resman.h"
+
 #include "src/aurora/nwscript/types.h"
 #include "src/aurora/nwscript/util.h"
 #include "src/aurora/nwscript/functioncontext.h"

@@ -28,8 +28,8 @@
 #include <vector>
 
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
 
-#include "src/aurora/resman.h"
 #include "src/aurora/ifofile.h"
 
 #include "src/aurora/nwscript/object.h"
@@ -92,7 +92,7 @@ private:
 	bool _running;   ///< Are we currently running a module?
 
 	/** Resources added by the module. */
-	Aurora::ResourceManager::ChangeID _resModule;
+	Common::ChangeID _resModule;
 
 	Aurora::IFOFile _ifo; ///< The module's IFO.
 

@@ -29,10 +29,10 @@
 #include <map>
 
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
 #include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/resman.h"
 #include "src/aurora/lytfile.h"
 #include "src/aurora/visfile.h"
 
@@ -83,7 +83,7 @@ private:
 
 	bool _visible;
 
-	std::list<Aurora::ResourceManager::ChangeID> _resources;
+	std::list<Common::ChangeID> _resources;
 
 	Aurora::LYTFile _lyt;
 	Aurora::VISFile _vis;

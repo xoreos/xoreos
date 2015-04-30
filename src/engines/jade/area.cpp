@@ -26,6 +26,7 @@
 #include "src/common/error.h"
 #include "src/common/stream.h"
 
+#include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
 #include "src/graphics/graphics.h"
@@ -118,15 +119,13 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 }
 
 void Area::loadResources() {
-	Aurora::ResourceManager::ChangeID change;
+	Common::ChangeID change;
 
-	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + ".rim", 1000, &change);
-	_resources.push_back(change);
-	change.clear();
+	_resources.push_back(Common::ChangeID());
+	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + ".rim"  , 1000, &_resources.back());
 
-	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + "-a.rim", 1001, &change);
-	_resources.push_back(change);
-	change.clear();
+	_resources.push_back(Common::ChangeID());
+	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + "-a.rim", 1001, &_resources.back());
 }
 
 void Area::loadLYT() {
@@ -200,9 +199,9 @@ void Area::unload() {
 	_objects.clear();
 	_rooms.clear();
 
-	std::list<Aurora::ResourceManager::ChangeID>::reverse_iterator r;
+	std::list<Common::ChangeID>::reverse_iterator r;
 	for (r = _resources.rbegin(); r != _resources.rend(); ++r)
-		ResMan.undo(*r);
+		deindexResources(*r);
 
 	_resources.clear();
 

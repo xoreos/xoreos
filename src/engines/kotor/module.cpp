@@ -149,45 +149,28 @@ void Module::loadResources() {
 	// Apparently, the original game prefers ERFs over RIMs. This is
 	// exploited by the KotOR 2 TSL Restored Content Mod.
 
-	Aurora::ResourceManager::ChangeID change;
-
 	// General module resources
-
-	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + ".erf", 1000, &change))
-		indexMandatoryArchive(Aurora::kArchiveRIM, _module + ".rim", 1000, &change);
-
-	_resources.push_back(change);
-	change.clear();
+	_resources.push_back(Common::ChangeID());
+	if (!indexOptionalArchive (Aurora::kArchiveERF, _module + ".erf", 1000, &_resources.back()))
+		   indexMandatoryArchive(Aurora::kArchiveRIM, _module + ".rim", 1000, &_resources.back());
 
 	// Scripts
-
-	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + "_s.erf", 1001, &change))
-		indexMandatoryArchive(Aurora::kArchiveRIM, _module + "_s.rim", 1001, &change);
-
-	_resources.push_back(change);
-	change.clear();
+	_resources.push_back(Common::ChangeID());
+	if (!indexOptionalArchive (Aurora::kArchiveERF, _module + "_s.erf", 1001, &_resources.back()))
+		   indexMandatoryArchive(Aurora::kArchiveRIM, _module + "_s.rim", 1001, &_resources.back());
 
 	// Dialogs, KotOR 2 only
-
-	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + "_dlg.erf", 1002, &change))
-		indexOptionalArchive(Aurora::kArchiveRIM, _module + "_dlg.rim", 1002, &change);
-
-	_resources.push_back(change);
-	change.clear();
+	_resources.push_back(Common::ChangeID());
+	if (!indexOptionalArchive(Aurora::kArchiveERF, _module + "_dlg.erf", 1002, &_resources.back()))
+		   indexOptionalArchive(Aurora::kArchiveRIM, _module + "_dlg.rim", 1002, &_resources.back());
 
 	// Layouts, Xbox only
-
-	indexOptionalArchive(Aurora::kArchiveRIM, _module + "_a.rim", 1003, &change);
-
-	_resources.push_back(change);
-	change.clear();
+	_resources.push_back(Common::ChangeID());
+	indexOptionalArchive(Aurora::kArchiveRIM, _module + "_a.rim"  , 1003, &_resources.back());
 
 	// Textures, Xbox only
-
-	indexOptionalArchive(Aurora::kArchiveRIM, _module + "_adx.rim", 1004, &change);
-
-	_resources.push_back(change);
-	change.clear();
+	_resources.push_back(Common::ChangeID());
+	indexOptionalArchive(Aurora::kArchiveRIM, _module + "_adx.rim", 1004, &_resources.back());
 }
 
 void Module::loadIFO() {
@@ -238,9 +221,9 @@ void Module::unload() {
 }
 
 void Module::unloadResources() {
-	std::list<Aurora::ResourceManager::ChangeID>::reverse_iterator r;
+	std::list<Common::ChangeID>::reverse_iterator r;
 	for (r = _resources.rbegin(); r != _resources.rend(); ++r)
-		ResMan.undo(*r);
+		deindexResources(*r);
 
 	_resources.clear();
 }
@@ -255,7 +238,7 @@ void Module::unloadArea() {
 }
 
 void Module::unloadTexturePack() {
-	ResMan.undo(_textures);
+	deindexResources(_textures);
 	_currentTexturePack = -1;
 }
 

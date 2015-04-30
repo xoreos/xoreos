@@ -62,7 +62,7 @@ void Room::unload() {
 	delete _model;
 	_model = 0;
 
-	ResMan.undo(_resources);
+	deindexResources(_resources);
 }
 
 void Room::show() {

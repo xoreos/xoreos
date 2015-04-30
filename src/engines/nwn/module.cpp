@@ -32,6 +32,7 @@
 #include "src/aurora/2dareg.h"
 #include "src/aurora/talkman.h"
 #include "src/aurora/erffile.h"
+#include "src/aurora/resman.h"
 
 #include "src/graphics/camera.h"
 
@@ -520,7 +521,7 @@ void Module::unloadModule() {
 
 	_ifo.unload();
 
-	ResMan.undo(_resModule);
+	deindexResources(_resModule);
 
 	_newModule.clear();
 	_hasModule = false;
@@ -548,9 +549,9 @@ void Module::loadHAKs() {
 }
 
 void Module::unloadHAKs() {
-	std::vector<Aurora::ResourceManager::ChangeID>::iterator hak;
+	std::vector<Common::ChangeID>::iterator hak;
 	for (hak = _resHAKs.begin(); hak != _resHAKs.end(); ++hak)
-		ResMan.undo(*hak);
+		deindexResources(*hak);
 
 	_resHAKs.clear();
 }
@@ -587,7 +588,7 @@ void Module::loadTexturePack() {
 
 void Module::unloadTexturePack() {
 	for (int i = 0; i < 4; i++)
-		ResMan.undo(_resTP[i]);
+		deindexResources(_resTP[i]);
 
 	_currentTexturePack = -1;
 }

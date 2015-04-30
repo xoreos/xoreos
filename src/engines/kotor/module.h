@@ -26,9 +26,9 @@
 #define ENGINES_KOTOR_MODULE_H
 
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
 #include "src/common/configman.h"
 
-#include "src/aurora/resman.h"
 #include "src/aurora/ifofile.h"
 
 #include "src/events/types.h"
@@ -78,7 +78,7 @@ protected:
 	bool _running;   ///< Are we currently running a module?
 
 	/** Resources added by the current module. */
-	std::list<Aurora::ResourceManager::ChangeID> _resources;
+	std::list<Common::ChangeID> _resources;
 
 	/** The current module's IFO. */
 	Aurora::IFOFile _ifo;
@@ -86,7 +86,7 @@ protected:
 	/** The current texture pack. */
 	int _currentTexturePack;
 	/** Resources added by the current texture pack. */
-	Aurora::ResourceManager::ChangeID _textures;
+	Common::ChangeID _textures;
 
 	bool _exit; //< Should we exit the module?
 

@@ -29,19 +29,19 @@
 #include "src/common/strutil.h"
 #include "src/common/configman.h"
 
-#include "src/graphics/graphics.h"
-
-#include "src/graphics/aurora/cube.h"
-#include "src/graphics/aurora/cursorman.h"
-#include "src/graphics/aurora/fontman.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/talkman.h"
+#include "src/aurora/ndsrom.h"
 
 #include "src/sound/sound.h"
 
 #include "src/events/events.h"
 
-#include "src/aurora/resman.h"
-#include "src/aurora/talkman.h"
-#include "src/aurora/ndsrom.h"
+#include "src/graphics/graphics.h"
+
+#include "src/graphics/aurora/cube.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/fontman.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/language.h"
@@ -262,7 +262,7 @@ void SonicEngine::declareResources() {
 void SonicEngine::unloadLanguageFiles() {
 	TalkMan.removeMainTable();
 
-	ResMan.undo(_languageHERF);
+	deindexResources(_languageHERF);
 }
 
 void SonicEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {

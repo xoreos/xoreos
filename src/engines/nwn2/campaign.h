@@ -28,9 +28,9 @@
 #include <list>
 
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
 
 #include "src/aurora/locstring.h"
-#include "src/aurora/resman.h"
 
 #include "src/engines/nwn2/module.h"
 
@@ -80,7 +80,7 @@ private:
 	::Engines::Console *_console;
 
 	/** Resources added by the campaign. */
-	Aurora::ResourceManager::ChangeID _resCampaign;
+	Common::ChangeID _resCampaign;
 
 	/** The currently loaded campaign. */
 	CampaignDescription _currentCampaign;

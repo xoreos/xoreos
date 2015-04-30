@@ -26,10 +26,10 @@
 #define ENGINES_WITCHER_WITCHER_H
 
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/language.h"
-#include "src/aurora/resman.h"
 
 #include "src/engines/engine.h"
 #include "src/engines/engineprobe.h"
@@ -98,7 +98,7 @@ private:
 
 	Campaign *_campaign;
 
-	std::list<Aurora::ResourceManager::ChangeID> _languageResources;
+	std::list<Common::ChangeID> _languageResources;
 
 
 	void init();

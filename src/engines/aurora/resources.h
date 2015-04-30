@@ -26,30 +26,32 @@
 #define ENGINES_AURORA_RESOURCES_H
 
 #include "src/aurora/types.h"
-#include "src/aurora/resman.h"
 
 namespace Common {
+	class ChangeID;
 	class UString;
 }
 
 namespace Engines {
 
-void indexMandatoryArchive(Aurora::ArchiveType archive, const Common::UString &file,
-		uint32 priority = 10, Aurora::ResourceManager::ChangeID *change = 0);
+void indexMandatoryArchive(Aurora::ArchiveType archiveType, const Common::UString &file,
+		uint32 priority, Common::ChangeID *changeID = 0);
 
 /** Add an archive file to the resource manager, if it exists. */
-bool indexOptionalArchive(Aurora::ArchiveType archive, const Common::UString &file,
-		uint32 priority = 10, Aurora::ResourceManager::ChangeID *change = 0);
+bool indexOptionalArchive(Aurora::ArchiveType archiveType, const Common::UString &file,
+		uint32 priority, Common::ChangeID *changeID = 0);
 
 /** Add a directory to the resource manager, erroring out if it does not exist. */
 void indexMandatoryDirectory(const Common::UString &dir,
-		const char *glob = 0, int depth = -1, uint32 priority = 10,
-		Aurora::ResourceManager::ChangeID *change = 0);
+		const char *glob, int depth, uint32 priority,
+		Common::ChangeID *changeID = 0);
 
 /** Add a directory to the resource manager, if it exists. */
 bool indexOptionalDirectory(const Common::UString &dir,
-		const char *glob = 0, int depth = -1, uint32 priority = 10,
-		Aurora::ResourceManager::ChangeID *change = 0);
+		const char *glob, int depth, uint32 priority,
+		Common::ChangeID *changeID = 0);
+
+void deindexResources(Common::ChangeID &changeID);
 
 } // End of namespace Engines
 

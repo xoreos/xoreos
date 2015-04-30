@@ -51,7 +51,8 @@ using boost::iequals;
 DECLARE_SINGLETON(Aurora::ResourceManager)
 
 static const char *kArchiveGlob[Aurora::kArchiveMAX] = {
-	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak|nwm)", ".*\\.rim", ".*\\.zip", ".*\\.exe"
+	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak|nwm)", ".*\\.rim", ".*\\.zip", ".*\\.exe",
+	".*\\.nds", ".*\\.herf"
 };
 
 namespace Aurora {
@@ -60,24 +61,19 @@ ResourceManager::Resource::Resource() : type(kFileTypeNone), priority(0),
 		source(kSourceNone), archive(0), archiveIndex(0xFFFFFFFF) {
 }
 
-
 bool ResourceManager::Resource::operator<(const Resource &right) const {
 	return priority < right.priority;
 }
 
 
-ResourceManager::ChangeID::ChangeID() : _empty(true) {
+ResourceManager::Change::Change(ChangeSetList::iterator change) : _change(change) {
 }
 
-bool ResourceManager::ChangeID::empty() const {
-	return _empty;
+ResourceManager::Change::~Change() {
 }
 
-void ResourceManager::ChangeID::clear() {
-	_empty = true;
-}
-
-ResourceManager::ChangeID::ChangeID(ChangeSetList::iterator c) : _empty(false), _change(c) {
+Common::ChangeContent *ResourceManager::Change::clone() const {
+	return new Change(_change);
 }
 
 
@@ -177,10 +173,10 @@ const Common::UString &ResourceManager::getDataBaseDir() const {
 }
 
 void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &dir, bool recursive) {
+	assert((archive >= 0) && (archive < kArchiveMAX));
+
 	if (archive == kArchiveNDS || archive == kArchiveHERF)
 		return;
-
-	assert((archive >= 0) && (archive < kArchiveMAX));
 
 	Common::UString directory = Common::FilePath::findSubDirectory(_baseDir, dir, true);
 	if (directory.empty())
@@ -227,6 +223,8 @@ Common::UString ResourceManager::findArchive(const Common::UString &file,
 }
 
 bool ResourceManager::hasArchive(ArchiveType archive, const Common::UString &file) {
+	assert((archive >= 0) && (archive < kArchiveMAX));
+
 	// NDS archives are not in archive directories, they are plain files in a path
 	if (archive == kArchiveNDS)
 		return Common::File::exists(file);
@@ -235,77 +233,64 @@ bool ResourceManager::hasArchive(ArchiveType archive, const Common::UString &fil
 	if (archive == kArchiveHERF)
 		return hasResource(TypeMan.setFileType(file, kFileTypeNone), kFileTypeHERF);
 
-	assert((archive >= 0) && (archive < kArchiveMAX));
-
 	return !findArchive(file, _archiveDirs[archive], _archiveFiles[archive]).empty();
 }
 
-ResourceManager::ChangeID ResourceManager::addArchive(ArchiveType archive,
-		const Common::UString &file, uint32 priority) {
+void ResourceManager::addArchive(ArchiveType archiveType, const Common::UString &file,
+                                 uint32 priority, Common::ChangeID *changeID) {
 
-	// NDS aren't found in resource directories, they are used /instead/ of directories
-	if (archive == kArchiveNDS) {
-		NDSFile *nds = new NDSFile(file);
+	assert((archiveType >= 0) && (archiveType < kArchiveMAX));
 
-		ChangeID change = newChangeSet();
-
-		return indexArchive(nds, priority, change);
-	}
-
-	// HERF files are only found inside NDS files
-	if (archive == kArchiveHERF) {
-		HERFFile *herf = new HERFFile(file);
-
-		ChangeID change = newChangeSet();
-
-		return indexArchive(herf, priority, change);
-	}
-
-	assert((archive >= 0) && (archive < kArchiveMAX));
-
-	if (archive == kArchiveBIF)
+	if (archiveType == kArchiveBIF)
 		throw Common::Exception("Attempted to index a lone BIF");
 
-	Common::UString realName = findArchive(file, _archiveDirs[archive], _archiveFiles[archive]);
+	Change *change = 0;
+	if (changeID)
+		change = newChangeSet(*changeID);
+
+	// NDS and HERF need special handling
+	Archive *archive = 0;
+	if      (archiveType == kArchiveNDS)
+		archive = new NDSFile(file);
+	else if (archiveType == kArchiveHERF)
+		archive = new HERFFile(file);
+
+	if (archive) {
+		indexArchive(archive, priority, change);
+		return;
+	}
+
+	Common::UString realName = findArchive(file, _archiveDirs[archiveType], _archiveFiles[archiveType]);
 	if (realName.empty())
 		throw Common::Exception("No such archive file \"%s\"", file.c_str());
 
-	if (archive == kArchiveKEY)
-		return indexKEY(realName, priority);
+	switch (archiveType) {
+		case kArchiveKEY:
+			indexKEY(realName, priority, change);
+			break;
 
-	if (archive == kArchiveERF) {
-		ERFFile *erf = new ERFFile(realName);
+		case kArchiveERF:
+			archive = new ERFFile(realName);
+			break;
 
-		ChangeID change = newChangeSet();
+		case kArchiveRIM:
+			archive = new RIMFile(realName);
+			break;
 
-		return indexArchive(erf, priority, change);
+		case kArchiveZIP:
+			archive = new ZIPFile(realName);
+			break;
+
+		case kArchiveEXE:
+			archive = new PEFile(realName, _cursorRemap);
+			break;
+
+		default:
+			break;
 	}
 
-	if (archive == kArchiveRIM) {
-		RIMFile *rim = new RIMFile(realName);
-
-		ChangeID change = newChangeSet();
-
-		return indexArchive(rim, priority, change);
-	}
-
-	if (archive == kArchiveZIP) {
-		ZIPFile *zip = new ZIPFile(realName);
-
-		ChangeID change = newChangeSet();
-
-		return indexArchive(zip, priority, change);
-	}
-
-	if (archive == kArchiveEXE) {
-		PEFile *pe = new PEFile(realName, _cursorRemap);
-
-		ChangeID change = newChangeSet();
-
-		return indexArchive(pe, priority, change);
-	}
-
-	return ChangeID();
+	if (archive)
+		indexArchive(archive, priority, change);
 }
 
 void ResourceManager::findBIFs(const KEYFile &key, std::vector<Common::UString> &bifs) {
@@ -352,7 +337,7 @@ void ResourceManager::mergeKEYBIF(const KEYFile &key, std::vector<Common::UStrin
 
 }
 
-ResourceManager::ChangeID ResourceManager::indexKEY(const Common::UString &file, uint32 priority) {
+void ResourceManager::indexKEY(const Common::UString &file, uint32 priority, Change *change) {
 	KEYFile key(file);
 
 	// Search the correct BIFs
@@ -362,15 +347,11 @@ ResourceManager::ChangeID ResourceManager::indexKEY(const Common::UString &file,
 	std::vector<BIFFile *> bifFiles;
 	mergeKEYBIF(key, bifs, bifFiles);
 
-	ChangeID change = newChangeSet();
-
 	for (std::vector<BIFFile *>::iterator bifFile = bifFiles.begin(); bifFile != bifFiles.end(); ++bifFile)
 		indexArchive(*bifFile, priority, change);
-
-	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32 priority, ChangeID &change) {
+void ResourceManager::indexArchive(Archive *archive, uint32 priority, Change *change) {
 	const Common::HashAlgo hashAlgo = archive->getNameHashAlgo();
 	if ((hashAlgo != Common::kHashNone) && (hashAlgo != _hashAlgo))
 		throw Common::Exception("ResourceManager::indexArchive(): Archive uses a different name hashing "
@@ -379,7 +360,8 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 	_archives.push_back(archive);
 
 	// Add the information of the new archive to the change set
-	change._change->archives.push_back(--_archives.end());
+	if (change)
+		change->_change->archives.push_back(--_archives.end());
 
 	const Archive::ResourceList &resources = archive->getResources();
 	for (Archive::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
@@ -405,12 +387,14 @@ ResourceManager::ChangeID ResourceManager::indexArchive(Archive *archive, uint32
 	}
 
 	archive->clear();
-
-	return change;
 }
 
-ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString &dir,
-		const char *glob, int depth, uint32 priority) {
+bool ResourceManager::hasResourceDir(const Common::UString &dir) {
+	return !Common::FilePath::findSubDirectory(_baseDir, dir, true).empty();
+}
+
+void ResourceManager::addResourceDir(const Common::UString &dir, const char *glob, int depth,
+                                     uint32 priority, Common::ChangeID *changeID) {
 
 	// Find the directory
 	Common::UString directory = Common::FilePath::findSubDirectory(_baseDir, dir, true);
@@ -421,12 +405,14 @@ ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString 
 	Common::FileList files;
 	files.addDirectory(directory, depth);
 
-	ChangeID change = newChangeSet();
+	Change *change = 0;
+	if (changeID)
+		change = newChangeSet(*changeID);
 
 	if (!glob) {
 		// Add the files
 		addResources(files, change, priority);
-		return change;
+		return;
 	}
 
 	// Find files matching the glob pattern
@@ -435,17 +421,16 @@ ResourceManager::ChangeID ResourceManager::addResourceDir(const Common::UString 
 
 	// Add the files
 	addResources(globFiles, change, priority);
-	return change;
 }
 
-void ResourceManager::undo(ChangeID &change) {
-	if (change.empty() || (change._change == _changes.end()))
-		// Nothing to do
+void ResourceManager::undo(Common::ChangeID &changeID) {
+	Change *change = dynamic_cast<Change *>(changeID.getContent());
+	if (!change || (change->_change == _changes.end()))
 		return;
 
 	// Go through all changes in the resource map
-	for (std::list<ResourceChange>::iterator resChange = change._change->resources.begin();
-	     resChange != change._change->resources.end(); ++resChange) {
+	for (std::list<ResourceChange>::iterator resChange = change->_change->resources.begin();
+	     resChange != change->_change->resources.end(); ++resChange) {
 
 		// Remove the resource, and the name list too if it's empty
 		resChange->hashIt->second.erase(resChange->resIt);
@@ -454,19 +439,18 @@ void ResourceManager::undo(ChangeID &change) {
 	}
 
 	// Removing all changes in the archive list
-	for (std::list<ArchiveList::iterator>::iterator archiveChange = change._change->archives.begin();
-	     archiveChange != change._change->archives.end(); ++archiveChange) {
+	for (std::list<ArchiveList::iterator>::iterator archiveChange = change->_change->archives.begin();
+	     archiveChange != change->_change->archives.end(); ++archiveChange) {
 
 		delete **archiveChange;
 		_archives.erase(*archiveChange);
 	}
 
 	// Now we can remove the change set from our list of change sets
-	_changes.erase(change._change);
+	_changes.erase(change->_change);
 
 	// And finally set the change ID to a defined empty state
-	change._empty  = true;
-	change._change = _changes.end();
+	changeID.clear();
 }
 
 void ResourceManager::addTypeAlias(FileType alias, FileType realType) {
@@ -691,7 +675,7 @@ void ResourceManager::checkHashCollision(const Resource &resource, ResourceMap::
 	}
 }
 
-void ResourceManager::addResource(Resource &resource, uint64 hash, ChangeID &change) {
+void ResourceManager::addResource(Resource &resource, uint64 hash, Change *change) {
 	ResourceMap::iterator resList = _resources.find(hash);
 	if (resList == _resources.end()) {
 		// We don't have a resource with this name yet, create a new resource list for it
@@ -712,12 +696,14 @@ void ResourceManager::addResource(Resource &resource, uint64 hash, ChangeID &cha
 	resList->second.sort();
 
 	// Remember the resource in the change set
-	change._change->resources.push_back(ResourceChange());
-	change._change->resources.back().hashIt = resList;
-	change._change->resources.back().resIt  = --resList->second.end();
+	if (change) {
+		change->_change->resources.push_back(ResourceChange());
+		change->_change->resources.back().hashIt = resList;
+		change->_change->resources.back().resIt  = --resList->second.end();
+	}
 }
 
-void ResourceManager::addResources(const Common::FileList &files, ChangeID &change, uint32 priority) {
+void ResourceManager::addResources(const Common::FileList &files, Change *change, uint32 priority) {
 	for (Common::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
 		Resource res;
 		res.priority = priority;
@@ -795,12 +781,15 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 	file.close();
 }
 
-ResourceManager::ChangeID ResourceManager::newChangeSet() {
+ResourceManager::Change *ResourceManager::newChangeSet(Common::ChangeID &changeID) {
 	// Generate a new change set
 
 	_changes.push_back(ChangeSet());
 
-	return ChangeID(--_changes.end());
+	Change *change = new Change(--_changes.end());
+	changeID.setContent(change);
+
+	return change;
 }
 
 } // End of namespace Aurora

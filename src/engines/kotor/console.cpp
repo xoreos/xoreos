@@ -27,6 +27,7 @@
 #include "src/common/ustring.h"
 #include "src/common/util.h"
 #include "src/common/filepath.h"
+#include "src/common/filelist.h"
 #include "src/common/configman.h"
 
 #include "src/graphics/aurora/fontman.h"

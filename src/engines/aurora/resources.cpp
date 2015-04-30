@@ -24,6 +24,9 @@
 
 #include "src/common/error.h"
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
+
+#include "src/aurora/resman.h"
 
 #include "src/events/events.h"
 
@@ -31,71 +34,52 @@
 
 namespace Engines {
 
-void indexMandatoryArchive(Aurora::ArchiveType archive, const Common::UString &file,
-		uint32 priority, Aurora::ResourceManager::ChangeID *change) {
+void indexMandatoryArchive(Aurora::ArchiveType archiveType, const Common::UString &file,
+                           uint32 priority, Common::ChangeID *changeID) {
 
 	if (EventMan.quitRequested())
 		return;
 
-	Aurora::ResourceManager::ChangeID c;
-	c = ResMan.addArchive(archive, file, priority);
-
-	if (change)
-		*change = c;
+	ResMan.addArchive(archiveType, file, priority, changeID);
 }
 
-bool indexOptionalArchive(Aurora::ArchiveType archive, const Common::UString &file,
-		uint32 priority, Aurora::ResourceManager::ChangeID *change) {
+bool indexOptionalArchive(Aurora::ArchiveType archiveType, const Common::UString &file,
+                          uint32 priority, Common::ChangeID *changeID) {
 
 	if (EventMan.quitRequested())
 		return false;
 
-	try {
-		Aurora::ResourceManager::ChangeID c;
-		c = ResMan.addArchive(archive, file, priority);
-
-		if (change)
-			*change = c;
-	} catch (Common::Exception &e) {
+	if (!ResMan.hasArchive(archiveType, file))
 		return false;
-	}
 
+	ResMan.addArchive(archiveType, file, priority, changeID);
 	return true;
 }
 
-void indexMandatoryDirectory(const Common::UString &dir,
-		const char *glob, int depth, uint32 priority,
-		Aurora::ResourceManager::ChangeID *change) {
+void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
+                             uint32 priority, Common::ChangeID *changeID) {
 
 	if (EventMan.quitRequested())
 		return;
 
-	Aurora::ResourceManager::ChangeID c;
-	c = ResMan.addResourceDir(dir, glob, depth, priority);
-
-	if (change)
-		*change = c;
+	ResMan.addResourceDir(dir, glob, depth, priority, changeID);
 }
 
-bool indexOptionalDirectory(const Common::UString &dir,
-		const char *glob, int depth, uint32 priority,
-		Aurora::ResourceManager::ChangeID *change) {
+bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int depth,
+                            uint32 priority, Common::ChangeID *changeID) {
 
 	if (EventMan.quitRequested())
 		return false;
 
-	try {
-		Aurora::ResourceManager::ChangeID c;
-		c = ResMan.addResourceDir(dir, glob, depth, priority);
-
-		if (change)
-			*change = c;
-	} catch (Common::Exception &e) {
+	if (!ResMan.hasResourceDir(dir))
 		return false;
-	}
 
+	ResMan.addResourceDir(dir, glob, depth, priority, changeID);
 	return true;
 }
 
+void deindexResources(Common::ChangeID &changeID) {
+	ResMan.undo(changeID);
+}
 
 } // End of namespace Engines

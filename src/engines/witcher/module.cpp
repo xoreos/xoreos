@@ -270,7 +270,7 @@ void Module::unloadModule() {
 
 	_ifo.unload();
 
-	ResMan.undo(_resModule);
+	deindexResources(_resModule);
 
 	_newModule.clear();
 	_hasModule = false;

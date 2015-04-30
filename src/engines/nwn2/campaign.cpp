@@ -28,6 +28,7 @@
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
 
+#include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/aurora/resources.h"
@@ -113,7 +114,7 @@ void Campaign::clear() {
 
 	_newCampaign = 0;
 
-	ResMan.undo(_resCampaign);
+	deindexResources(_resCampaign);
 }
 
 void Campaign::load(const CampaignDescription &desc) {
