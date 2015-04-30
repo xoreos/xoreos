@@ -247,6 +247,9 @@ void DragonAge2Engine::initResources(LoadProgress &progress) {
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/textures/high");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/audio/sound/");
 	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/patch");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/campaign_base/data");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/campaign_base/audio/sound");
+	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/campaign_base/patch");
 
 	progress.step("Loading core resource files");
 	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/2da.rim"                      , 10);
@@ -296,13 +299,36 @@ void DragonAge2Engine::initResources(LoadProgress &progress) {
 	progress.step("Indexing extra core cursors");
 	indexMandatoryDirectory("packages/core/data/cursors"   , 0,  0, 153);
 
+	progress.step("Loading core patches");
+	indexMandatoryDirectory("packages/core/patch", 0, 0                       , 200);
+	indexOptionalArchive(Aurora::kArchiveERF, "packages/core/patch/patch.erf" , 201);
+	indexOptionalArchive(Aurora::kArchiveERF, "packages/core/patch/patch.rimp", 202);
+
+	progress.step("Indexing extra single-player campaign movie resources");
+	indexMandatoryDirectory("modules/campaign_base/data"           , 0,  0, 250);
+	progress.step("Indexing extra single-player campaign sound resources");
+	indexMandatoryDirectory("modules/campaign_base/data/movies"    , 0,  0, 251);
+	progress.step("Indexing extra single-player campaign talktables");
+	indexMandatoryDirectory("modules/campaign_base/data/talktables", 0,  0, 252);
+
+	progress.step("Loading single-player campaign global resource files");
+	indexMandatoryArchive(Aurora::kArchiveERF, "modules/campaign_base/data/global-campaign_base.rim", 300);
+
+	progress.step("Loading single-player campaign patches");
+	indexMandatoryDirectory("modules/campaign_base/patch", 0, 0                        , 400);
+	indexOptionalArchive(Aurora::kArchiveERF, "modules/campaign_base/patch/patch.erf"  , 401);
+	indexOptionalArchive(Aurora::kArchiveERF, "modules/campaign_base/patch/patch.rimp" , 402);
+
 	// TODO: DLC
 
 	loadLanguageFiles(progress, _language);
 }
 
 void DragonAge2Engine::unloadLanguageFiles() {
-	TalkMan.removeTable(_languageTLK);
+	for (std::list<Common::ChangeID>::iterator t = _languageTLK.begin(); t != _languageTLK.end(); ++t)
+		TalkMan.removeTable(*t);
+
+	_languageTLK.clear();
 }
 
 void DragonAge2Engine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
@@ -312,14 +338,24 @@ void DragonAge2Engine::loadLanguageFiles(LoadProgress &progress, Aurora::Languag
 	loadLanguageFiles(language);
 }
 
+void DragonAge2Engine::loadTalkTable(const Common::UString &tlk, const Common::UString &suffix,
+                                     Aurora::Language language, uint32 priority) {
+
+	Common::UString tlkM = tlk + getLanguageString(language) + suffix;
+	Common::UString tlkF = tlk + getLanguageString(language) + suffix + "_f";
+
+	_languageTLK.push_back(Common::ChangeID());
+	TalkMan.addTable(tlkM, tlkF, false, priority, &_languageTLK.back());
+}
+
 void DragonAge2Engine::loadLanguageFiles(Aurora::Language language) {
 	unloadLanguageFiles();
 	declareTalkLanguage(_game, language);
 
-	const Common::UString tlkM = "core_" + getLanguageString(language);
-	const Common::UString tlkF = "core_" + getLanguageString(language) + "_f";
-
-	TalkMan.addTable(tlkM, tlkF, false, 0, &_languageTLK);
+	loadTalkTable("core_"         , ""  , language, 0);
+	loadTalkTable("core_"         , "_p", language, 1);
+	loadTalkTable("campaign_base_", ""  , language, 2);
+	loadTalkTable("campaign_base_", "_p", language, 3);
 }
 
 void DragonAge2Engine::initCursors() {
