@@ -2446,6 +2446,12 @@ enum kGFF4FieldNames {
 	kGFF4TalkStringID                                    =  19002,
 	kGFF4TalkString                                      =  19003,
 
+	kGFF4HuffTalkStringID                                =  19004,
+	kGFF4HuffTalkStringBitOffset                         =  19005,
+	kGFF4HuffTalkStringList                              =  19006,
+	kGFF4HuffTalkStringHuffTree                          =  19007,
+	kGFF4HuffTalkStringBitStream                         =  19008,
+
 	kGFF4PlaceableStatesList                             =  20000,
 
 	kGFF4VFXChildList                                    =  21000,
