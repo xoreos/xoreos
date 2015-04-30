@@ -25,6 +25,8 @@
 #ifndef ENGINES_DRAGONAGE_DRAGONAGE_H
 #define ENGINES_DRAGONAGE_DRAGONAGE_H
 
+#include <list>
+
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -85,7 +87,7 @@ protected:
 private:
 	Aurora::Language _language;
 
-	Common::ChangeID _languageTLK;
+	std::list<Common::ChangeID> _languageTLK;
 
 
 	void init();
@@ -98,6 +100,7 @@ private:
 	void unloadLanguageFiles();
 	void loadLanguageFiles(LoadProgress &progress, Aurora::Language language);
 	void loadLanguageFiles(Aurora::Language language);
+	void loadTalkTable(const Common::UString &tlk, Aurora::Language language, uint32 priority);
 
 	void deinit();
 

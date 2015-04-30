@@ -312,7 +312,7 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 	indexMandatoryArchive(Aurora::kArchiveERF, "moduleglobal.rim", 250);
 
 	progress.step("Indexing extra single-player campaign movie resources");
-	indexMandatoryDirectory("modules/single player/data"           , 0, -1, 300);
+	indexMandatoryDirectory("modules/single player/data"           , 0,  0, 300);
 	progress.step("Indexing extra single-player campaign sound resources");
 	indexMandatoryDirectory("modules/single player/data/movies"    , 0,  0, 301);
 	progress.step("Indexing extra single-player campaign talktables");
@@ -324,7 +324,10 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 }
 
 void DragonAgeEngine::unloadLanguageFiles() {
-	TalkMan.removeTable(_languageTLK);
+	for (std::list<Common::ChangeID>::iterator t = _languageTLK.begin(); t != _languageTLK.end(); ++t)
+		TalkMan.removeTable(*t);
+
+	_languageTLK.clear();
 }
 
 void DragonAgeEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
@@ -334,14 +337,20 @@ void DragonAgeEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language
 	loadLanguageFiles(language);
 }
 
+void DragonAgeEngine::loadTalkTable(const Common::UString &tlk, Aurora::Language language, uint32 priority) {
+	Common::UString tlkM = tlk + getLanguageString(language);
+	Common::UString tlkF = tlk + getLanguageString(language) + "_f";
+
+	_languageTLK.push_back(Common::ChangeID());
+	TalkMan.addTable(tlkM, tlkF, false, priority, &_languageTLK.back());
+}
+
 void DragonAgeEngine::loadLanguageFiles(Aurora::Language language) {
 	unloadLanguageFiles();
 	declareTalkLanguage(_game, language);
 
-	const Common::UString tlkM = "core_" + getLanguageString(language);
-	const Common::UString tlkF = "core_" + getLanguageString(language) + "_f";
-
-	TalkMan.addTable(tlkM, tlkF, false, 0, &_languageTLK);
+	loadTalkTable("core_"        , language, 0);
+	loadTalkTable("singleplayer_", language, 1);
 }
 
 void DragonAgeEngine::initCursors() {
