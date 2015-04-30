@@ -28,11 +28,13 @@
 #include <boost/bind.hpp>
 
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/filepath.h"
 #include "src/common/readline.h"
 #include "src/common/configman.h"
 
 #include "src/aurora/resman.h"
+#include "src/aurora/talkman.h"
 
 #include "src/graphics/graphics.h"
 #include "src/graphics/font.h"
@@ -740,6 +742,8 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 	registerCommand("setlang"    , boost::bind(&Console::cmdSetLang    , this, _1),
 			"Usage: setlang <language>\nUsage: setlang <language_text> <language_voice>\n"
 			"Change the game's current language");
+	registerCommand("getstring"  , boost::bind(&Console::cmdGetString  , this, _1),
+			"Usage: getstring <strref>\nGet a string from the talk manager and print it");
 
 	_console->setPrompt(kPrompt);
 
@@ -1383,6 +1387,23 @@ void Console::printCommandHelp(const Common::UString &cmd) {
 	}
 
 	print(c->second.help);
+}
+
+void Console::cmdGetString(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	uint32 strRef;
+	try {
+		Common::parseString(cl.args, strRef);
+	} catch (...) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	printf("\"%s\"", TalkMan.getString(strRef).c_str());
 }
 
 void Console::printFullHelp() {

@@ -296,6 +296,7 @@ private:
 	void cmdListLangs  (const CommandLine &cl);
 	void cmdGetLang    (const CommandLine &cl);
 	void cmdSetLang    (const CommandLine &cl);
+	void cmdGetString  (const CommandLine &cl);
 
 	void updateHelpArguments();
 
