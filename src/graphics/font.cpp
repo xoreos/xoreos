@@ -164,6 +164,10 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 		for (Common::UString::iterator p = t->begin(); p != t->end(); ++p) {
 			uint32 c = *p;
 
+			// Ignore \r
+			if (c == '\r')
+				continue;
+
 			if (((c == '\n') || Common::UString::isSpace(c)) && !currentWord.empty()) {
 				// We can break and there's already something in the word buffer
 
