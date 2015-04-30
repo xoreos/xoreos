@@ -27,7 +27,6 @@
 #include "src/common/stream.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/model_witcher.h"
 

@@ -25,8 +25,6 @@
 #ifndef ENGINES_NWN_MODULE_H
 #define ENGINES_NWN_MODULE_H
 
-#include <list>
-#include <set>
 #include <map>
 
 #include "src/common/ustring.h"

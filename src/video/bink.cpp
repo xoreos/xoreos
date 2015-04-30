@@ -32,7 +32,6 @@
 #include "src/common/maths.h"
 #include "src/common/stream.h"
 #include "src/common/file.h"
-#include "src/common/ustring.h"
 #include "src/common/bitstream.h"
 #include "src/common/huffman.h"
 #include "src/common/rdft.h"

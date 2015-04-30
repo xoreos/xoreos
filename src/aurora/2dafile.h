@@ -30,13 +30,12 @@
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
-#include "src/common/streamtokenizer.h"
 
-#include "src/aurora/types.h"
 #include "src/aurora/aurorafile.h"
 
 namespace Common {
 	class SeekableReadStream;
+	class StreamTokenizer;
 }
 
 namespace Aurora {

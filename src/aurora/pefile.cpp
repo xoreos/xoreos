@@ -26,10 +26,8 @@
 #include "src/common/ustring.h"
 #include "src/common/file.h"
 #include "src/common/pe_exe.h"
-#include "src/common/filepath.h"
 
 #include "src/aurora/pefile.h"
-#include "src/aurora/util.h"
 
 namespace Aurora {
 

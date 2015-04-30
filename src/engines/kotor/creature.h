@@ -25,8 +25,6 @@
 #ifndef ENGINES_KOTOR_CREATURE_H
 #define ENGINES_KOTOR_CREATURE_H
 
-#include <list>
-
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 

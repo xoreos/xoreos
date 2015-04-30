@@ -22,16 +22,11 @@
  *  Utility functions to handle files used in BioWare's Aurora engine.
  */
 
-#include <boost/algorithm/string.hpp>
-
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 #include "src/common/filepath.h"
 
 #include "src/aurora/util.h"
-
-// boost-string_algo
-using boost::iequals;
 
 DECLARE_SINGLETON(Aurora::FileTypeManager)
 

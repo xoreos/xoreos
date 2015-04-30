@@ -25,7 +25,6 @@
 #ifndef GRAPHICS_SHADER_MATERIALMAN_H
 #define GRAPHICS_SHADER_MATERIALMAN_H
 
-#include <string>
 #include <map>
 
 #include "src/graphics/types.h"

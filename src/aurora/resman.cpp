@@ -22,8 +22,6 @@
  *  The global resource manager for Aurora resources.
  */
 
-#include <boost/algorithm/string.hpp>
-
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
@@ -44,9 +42,6 @@
 
 // Check for hash collisions (if possible)
 #define CHECK_HASH_COLLISION 1
-
-// boost-string_algo
-using boost::iequals;
 
 DECLARE_SINGLETON(Aurora::ResourceManager)
 

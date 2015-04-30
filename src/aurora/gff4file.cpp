@@ -25,7 +25,6 @@
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
-#include "src/common/strutil.h"
 
 #include "src/aurora/gff4file.h"
 #include "src/aurora/util.h"

@@ -25,8 +25,6 @@
 #ifndef AURORA_ZIPFILE_H
 #define AURORA_ZIPFILE_H
 
-#include <vector>
-
 #include "src/common/types.h"
 
 #include "src/aurora/types.h"

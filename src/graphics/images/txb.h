@@ -25,8 +25,6 @@
 #ifndef GRAPHICS_IMAGES_TXB_H
 #define GRAPHICS_IMAGES_TXB_H
 
-#include <vector>
-
 #include "src/graphics/images/decoder.h"
 
 namespace Common {

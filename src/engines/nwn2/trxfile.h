@@ -29,9 +29,9 @@
 #include <vector>
 
 #include "src/common/types.h"
-#include "src/common/ustring.h"
 
 namespace Common {
+	class UString;
 	class SeekableReadStream;
 }
 

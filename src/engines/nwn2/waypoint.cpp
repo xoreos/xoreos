@@ -26,7 +26,6 @@
 #include "src/common/maths.h"
 
 #include "src/aurora/locstring.h"
-#include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/aurora/util.h"

@@ -31,6 +31,7 @@
 #include "src/common/streamtokenizer.h"
 
 #include "src/aurora/2dafile.h"
+#include "src/aurora/types.h"
 
 static const uint32 k2DAID     = MKTAG('2', 'D', 'A', ' ');
 static const uint32 k2DAIDTab  = MKTAG('2', 'D', 'A', '\t');

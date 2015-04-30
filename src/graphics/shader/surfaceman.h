@@ -25,7 +25,6 @@
 #ifndef GRAPHICS_SHADER_SURFACEMAN_H
 #define GRAPHICS_SHADER_SURFACEMAN_H
 
-#include <string>
 #include <map>
 
 #include "src/graphics/types.h"

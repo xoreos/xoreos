@@ -25,9 +25,6 @@
 #ifndef GRAPHICS_MESH_MESH_H
 #define GRAPHICS_MESH_MESH_H
 
-#include <vector>
-#include <string>
-
 #include "src/graphics/graphics.h"
 #include "src/graphics/types.h"
 #include "src/graphics/glcontainer.h"

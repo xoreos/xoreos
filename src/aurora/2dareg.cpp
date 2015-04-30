@@ -26,6 +26,7 @@
 #include "src/common/stream.h"
 
 #include "src/aurora/2dareg.h"
+#include "src/aurora/types.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/gdafile.h"
 #include "src/aurora/resman.h"

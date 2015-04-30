@@ -22,8 +22,6 @@
  *  ZIP file decompresssion.
  */
 
-#include <boost/algorithm/string.hpp>
-
 #include "src/common/zipfile.h"
 #include "src/common/error.h"
 #include "src/common/util.h"

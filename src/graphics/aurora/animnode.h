@@ -26,7 +26,6 @@
 #define GRAPHICS_AURORA_ANIMNODE_H
 
 #include <list>
-#include <vector>
 
 #include "src/common/ustring.h"
 #include "src/common/transmatrix.h"

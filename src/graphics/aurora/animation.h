@@ -25,7 +25,6 @@
 #ifndef GRAPHICS_AURORA_ANIMATION_H
 #define GRAPHICS_AURORA_ANIMATION_H
 
-#include <vector>
 #include <list>
 #include <map>
 

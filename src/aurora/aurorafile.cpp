@@ -23,7 +23,6 @@
  */
 
 #include "src/common/stream.h"
-#include "src/common/strutil.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/aurorafile.h"

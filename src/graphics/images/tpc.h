@@ -25,8 +25,6 @@
 #ifndef GRAPHICS_IMAGES_TPC_H
 #define GRAPHICS_IMAGES_TPC_H
 
-#include <vector>
-
 #include "src/graphics/images/decoder.h"
 
 namespace Common {

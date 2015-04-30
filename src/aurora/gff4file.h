@@ -26,7 +26,6 @@
 #define AURORA_GFF4FILE_H
 
 #include <vector>
-#include <list>
 #include <map>
 
 #include "src/common/types.h"

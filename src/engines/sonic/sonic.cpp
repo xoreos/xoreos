@@ -26,7 +26,6 @@
 #include "src/common/error.h"
 #include "src/common/filelist.h"
 #include "src/common/stream.h"
-#include "src/common/strutil.h"
 #include "src/common/configman.h"
 
 #include "src/aurora/resman.h"

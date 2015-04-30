@@ -26,7 +26,6 @@
 #include "src/common/error.h"
 #include "src/common/configman.h"
 
-#include "src/aurora/talkman.h"
 #include "src/aurora/erffile.h"
 
 #include "src/graphics/camera.h"

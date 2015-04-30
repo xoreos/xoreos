@@ -22,7 +22,6 @@
  *  Handling version V3.2/V3.3 of BioWare's GFFs (generic file format).
  */
 
-#include "src/common/endianness.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"

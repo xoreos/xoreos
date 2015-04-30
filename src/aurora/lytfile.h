@@ -30,8 +30,6 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
-#include "src/aurora/types.h"
-
 namespace Common {
 	class SeekableReadStream;
 }

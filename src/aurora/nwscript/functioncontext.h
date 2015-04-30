@@ -25,8 +25,6 @@
 #ifndef AURORA_NWSCRIPT_FUNCTIONCONTEXT_H
 #define AURORA_NWSCRIPT_FUNCTIONCONTEXT_H
 
-#include <vector>
-
 #include "src/common/ustring.h"
 
 #include "src/aurora/nwscript/types.h"

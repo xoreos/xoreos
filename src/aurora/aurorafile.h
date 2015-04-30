@@ -25,7 +25,7 @@
 #ifndef AURORA_AURORAFILE_H
 #define AURORA_AURORAFILE_H
 
-#include <string>
+#include "src/common/types.h"
 
 namespace Common {
 	class SeekableReadStream;

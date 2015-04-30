@@ -23,6 +23,7 @@
  */
 
 #include "src/common/error.h"
+#include "src/common/ustring.h"
 
 #include "src/aurora/nwscript/variable.h"
 #include "src/aurora/nwscript/enginetype.h"

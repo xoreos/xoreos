@@ -22,8 +22,9 @@
  *  Handling BioWare's RIMs (resource archives).
  */
 
-#include "src/common/stream.h"
 #include "src/common/util.h"
+#include "src/common/stream.h"
+#include "src/common/file.h"
 #include "src/common/error.h"
 #include "src/common/encoding.h"
 

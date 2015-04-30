@@ -28,18 +28,15 @@
 #include <map>
 
 #include "src/common/types.h"
-#include "src/common/singleton.h"
 #include "src/common/ustring.h"
+#include "src/common/singleton.h"
 #include "src/common/encoding.h"
 
 #include "src/aurora/language.h"
-#include "src/aurora/talktable.h"
-
-namespace Common {
-	class UString;
-}
 
 namespace Aurora {
+
+class TalkTable;
 
 /** The global Aurora talk manager, holding the current talk tables. */
 class TalkManager : public Common::Singleton<TalkManager> {

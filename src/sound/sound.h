@@ -35,7 +35,6 @@
 	#include <AL/alc.h>
 #endif
 
-#include <vector>
 #include <list>
 
 #include "src/common/types.h"

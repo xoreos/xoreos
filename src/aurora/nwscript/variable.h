@@ -28,11 +28,14 @@
 #include <vector>
 
 #include "src/common/types.h"
-#include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
 
 #include "src/aurora/nwscript/types.h"
+
+namespace Common {
+	class UString;
+}
 
 namespace Aurora {
 

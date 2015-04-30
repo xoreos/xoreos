@@ -22,7 +22,6 @@
  *  Engine class handling Neverwinter Nights.
  */
 
-#include <list>
 #include <algorithm>
 
 #include "src/common/util.h"

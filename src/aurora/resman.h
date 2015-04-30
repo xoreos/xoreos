@@ -25,7 +25,6 @@
 #ifndef AURORA_RESMAN_H
 #define AURORA_RESMAN_H
 
-#include <stack>
 #include <list>
 #include <vector>
 #include <map>

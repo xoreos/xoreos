@@ -25,8 +25,6 @@
 #include "src/common/maths.h"
 #include "src/common/stream.h"
 
-#include "src/aurora/resman.h"
-
 #include "src/events/events.h"
 
 #include "src/graphics/aurora/model_nwn.h"

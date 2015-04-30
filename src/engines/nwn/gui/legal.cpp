@@ -26,8 +26,6 @@
 #include "src/common/ustring.h"
 #include "src/common/stream.h"
 
-#include "src/aurora/resman.h"
-
 #include "src/events/events.h"
 
 #include "src/graphics/graphics.h"

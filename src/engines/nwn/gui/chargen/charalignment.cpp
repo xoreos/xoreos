@@ -22,8 +22,6 @@
  *  The alignment chooser in CharGen.
  */
 
-#include "src/common/strutil.h"
-
 #include "src/aurora/talkman.h"
 #include "src/aurora/2dareg.h"
 #include "src/aurora/2dafile.h"

@@ -30,8 +30,6 @@
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
 
-#include "src/aurora/types.h"
-
 namespace Aurora {
 
 class TwoDAFile;

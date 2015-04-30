@@ -22,8 +22,6 @@
  *  Command line arguments parser.
  */
 
-#include "src/common/ustring.h"
-
 namespace Common {
 	class UString;
 }

@@ -63,8 +63,6 @@
 #define GRAPHICS_SHADER_SHADER_H
 
 #include <vector>
-#include <list>
-#include <string>
 #include <map>
 
 #include "src/graphics/types.h"
