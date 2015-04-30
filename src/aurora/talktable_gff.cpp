@@ -24,6 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/stream.h"
 
 #include "src/aurora/talktable_gff.h"
 #include "src/aurora/talkman.h"
@@ -92,30 +93,56 @@ void TalkTable_GFF::load(Common::SeekableReadStream *tlk) {
 }
 
 void TalkTable_GFF::load02(const GFF4Struct &top) {
-	if (top.hasField(kGFF4TalkStringList)) {
-		const GFF4List &strings = top.getList(kGFF4TalkStringList);
+	if (!top.hasField(kGFF4TalkStringList))
+		return;
 
-		for (GFF4List::const_iterator s = strings.begin(); s != strings.end(); ++s) {
-			if (!*s)
-				continue;
+	const GFF4List &strings = top.getList(kGFF4TalkStringList);
 
-			uint32 strRef = (*s)->getUint(kGFF4TalkStringID, 0xFFFFFFFF);
-			if (strRef == 0xFFFFFFFF)
-				continue;
+	for (GFF4List::const_iterator s = strings.begin(); s != strings.end(); ++s) {
+		if (!*s)
+			continue;
 
-			_entries[strRef] = new Entry(*s);
-		}
+		uint32 strRef = (*s)->getUint(kGFF4TalkStringID, 0xFFFFFFFF);
+		if (strRef == 0xFFFFFFFF)
+			continue;
+
+		_entries[strRef] = new Entry(*s);
 	}
 }
 
-void TalkTable_GFF::load05(const GFF4Struct &UNUSED(top)) {
-	throw Common::Exception("TODO: GFF4 TLK V0.5");
+void TalkTable_GFF::load05(const GFF4Struct &top) {
+	if (!top.hasField(kGFF4HuffTalkStringList) ||
+      !top.hasField(kGFF4HuffTalkStringHuffTree) ||
+	    !top.hasField(kGFF4HuffTalkStringBitStream))
+		return;
+
+	const GFF4List &strings = top.getList(kGFF4HuffTalkStringList);
+
+	for (GFF4List::const_iterator s = strings.begin(); s != strings.end(); ++s) {
+		if (!*s)
+			continue;
+
+		uint32 strRef = (*s)->getUint(kGFF4HuffTalkStringID, 0xFFFFFFFF);
+		if (strRef == 0xFFFFFFFF)
+			continue;
+
+		_entries[strRef] = new Entry(*s);
+	}
 }
 
 void TalkTable_GFF::readString(Entry &entry) const {
 	if (!entry.strct)
 		return;
 
+	if      (_gff->getTypeVersion() == kVersion02)
+		readString02(entry);
+	else if (_gff->getTypeVersion() == kVersion05)
+		readString05(entry);
+
+	entry.strct = 0;
+}
+
+void TalkTable_GFF::readString02(Entry &entry) const {
 	Common::Encoding encoding = Common::kEncodingUTF16LE;
 	if (_languageID != 0xFFFFFFFF)
 		encoding = TalkMan.getEncoding(_languageID);
@@ -124,8 +151,63 @@ void TalkTable_GFF::readString(Entry &entry) const {
 		entry.text = entry.strct->getString(kGFF4TalkString, encoding);
 	else
 		entry.text = "[???]";
+}
 
-	entry.strct = 0;
+void TalkTable_GFF::readString05(Entry &entry) const {
+	Common::SeekableReadStream *huffTree  = _gff->getTopLevel().getData(kGFF4HuffTalkStringHuffTree);
+	Common::SeekableReadStream *bitStream = _gff->getTopLevel().getData(kGFF4HuffTalkStringBitStream);
+
+	readString05(huffTree, bitStream, entry);
+
+	delete huffTree;
+	delete bitStream;
+}
+
+void TalkTable_GFF::readString05(Common::SeekableReadStream *huffTree,
+                                 Common::SeekableReadStream *bitStream, Entry &entry) const {
+	if (!huffTree || !bitStream)
+		return;
+
+	/* Read a string encoded in a Huffman'd bitstream.
+	 *
+	 * The Huffman tree itself is made up of signed 32bit nodes:
+	 *  - Positive values are internal nodes, encoding a child index
+	 *  - Negative values are leaf nodes, encoding an UTF-16 character value
+	 *
+	 * Kudos to Rick (gibbed) (<http://gib.me/>).
+	 */
+
+	std::vector<uint16> utf16Str;
+
+	const uint32 startOffset = entry.strct->getUint(kGFF4HuffTalkStringBitOffset);
+
+	uint32 index = startOffset >> 5;
+	uint32 shift = startOffset & 0x1F;
+
+	do {
+		int32 e = (huffTree->size() / 8) - 1;
+
+		while (e > 0) {
+			bitStream->seek(index * 4);
+			const uint32 offset = (bitStream->readUint32LE() >> shift) & 1;
+
+			huffTree->seek(((e * 2) + offset) * 4);
+			e = huffTree->readSint32LE();
+
+			shift++;
+			index += (shift >> 5);
+
+			shift %= 32;
+		}
+
+		utf16Str.push_back(TO_LE_16(0xFFFF - e));
+
+	} while (utf16Str.back() != 0);
+
+	const byte  *data = (const byte *) &utf16Str[0];
+	const uint32 size = utf16Str.size() * 2;
+
+	entry.text = Common::readString(data, size, Common::kEncodingUTF16LE);
 }
 
 } // End of namespace Aurora

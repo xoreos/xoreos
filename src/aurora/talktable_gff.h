@@ -73,6 +73,11 @@ private:
 	void load05(const GFF4Struct &top);
 
 	void readString(Entry &entry) const;
+	void readString02(Entry &entry) const;
+	void readString05(Entry &entry) const;
+
+	void readString05(Common::SeekableReadStream *huffTree,
+	                  Common::SeekableReadStream *bitStream, Entry &entry) const;
 };
 
 } // End of namespace Aurora
