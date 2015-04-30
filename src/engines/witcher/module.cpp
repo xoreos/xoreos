@@ -86,8 +86,6 @@ void Module::loadModule(const Common::UString &module) {
 		if (_ifo.isSave())
 			throw Common::Exception("This is a save");
 
-		_ifo.loadTLK();
-
 		_tag = _ifo.getTag();
 
 	} catch (Common::Exception &e) {

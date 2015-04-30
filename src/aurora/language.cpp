@@ -122,7 +122,7 @@ uint32 getLanguageID(GameID game, Language language) {
 		break;
 	}
 
-	return 0xFFFFFFFF;
+	return kLanguageInvalid;
 }
 
 uint32 getLanguageID(GameID game, Language language, LanguageGender gender) {
@@ -230,8 +230,8 @@ Language getLanguage(GameID game, uint32 languageID, LanguageGender &gender) {
 }
 
 uint32 convertLanguageIDToGendered(uint32 languageID, LanguageGender gender) {
-	if (languageID == 0xFFFFFFFF)
-		return 0xFFFFFFFF;
+	if (languageID == kLanguageInvalid)
+		return kLanguageInvalid;
 
 	// In gendered language use, the ID is:
 	// - ID * 2 + 0  for male
@@ -241,22 +241,22 @@ uint32 convertLanguageIDToGendered(uint32 languageID, LanguageGender gender) {
 }
 
 uint32 convertLanguageIDToUngendered(uint32 languageID) {
-	if (languageID == 0xFFFFFFFF)
-		return 0xFFFFFFFF;
+	if (languageID == kLanguageInvalid)
+		return kLanguageInvalid;
 
 	return languageID / 2;
 }
 
 LanguageGender getLanguageGender(uint32 languageID) {
-	if (languageID == 0xFFFFFFFF)
+	if (languageID == kLanguageInvalid)
 		return kLanguageGenderMale;
 
 	return (LanguageGender) (languageID % 2);
 }
 
 uint32 swapLanguageGender(uint32 languageID) {
-	if (languageID == 0xFFFFFFFF)
-		return 0xFFFFFFFF;
+	if (languageID == kLanguageInvalid)
+		return kLanguageInvalid;
 
 	return languageID ^ 1;
 }

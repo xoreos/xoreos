@@ -302,7 +302,7 @@ void DragonAge2Engine::initResources(LoadProgress &progress) {
 }
 
 void DragonAge2Engine::unloadLanguageFiles() {
-	TalkMan.removeMainTable();
+	TalkMan.removeTable(_languageTLK);
 }
 
 void DragonAge2Engine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
@@ -314,11 +314,12 @@ void DragonAge2Engine::loadLanguageFiles(LoadProgress &progress, Aurora::Languag
 
 void DragonAge2Engine::loadLanguageFiles(Aurora::Language language) {
 	unloadLanguageFiles();
+	declareTalkLanguage(_game, language);
 
 	const Common::UString tlkM = "core_" + getLanguageString(language);
 	const Common::UString tlkF = "core_" + getLanguageString(language) + "_f";
 
-	TalkMan.addMainTable(tlkM, tlkF, Aurora::getLanguageID(_game, language));
+	TalkMan.addTable(tlkM, tlkF, false, 0, &_languageTLK);
 }
 
 void DragonAge2Engine::initCursors() {

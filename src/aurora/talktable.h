@@ -26,6 +26,7 @@
 #define AURORA_TALKTABLE_H
 
 #include "src/common/types.h"
+#include "src/common/encoding.h"
 
 namespace Common {
 	class UString;
@@ -39,19 +40,18 @@ class TalkTable {
 public:
 	virtual ~TalkTable();
 
-	/** Return the language ID (ungendered) of the talk table. */
-	virtual uint32 getLanguageID() const = 0;
-
 	virtual bool hasEntry(uint32 strRef) const = 0;
 
 	virtual const Common::UString &getString     (uint32 strRef) const = 0;
 	virtual const Common::UString &getSoundResRef(uint32 strRef) const = 0;
 
-	static TalkTable *load(Common::SeekableReadStream *tlk, uint32 languageID = 0xFFFFFFFF);
+	static TalkTable *load(Common::SeekableReadStream *tlk, Common::Encoding encoding);
 
 
 protected:
-	TalkTable();
+	TalkTable(Common::Encoding encoding);
+
+	Common::Encoding _encoding;
 };
 
 } // End of namespace Aurora

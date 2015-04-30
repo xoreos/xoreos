@@ -84,7 +84,7 @@ const Common::UString &LocString::getFirstString() const {
 }
 
 const Common::UString &LocString::getString() const {
-	uint32 languageID = convertLanguageIDToGendered(TalkMan.getMainLanguageID(), TalkMan.getGender());
+	uint32 languageID = convertLanguageIDToGendered(TalkMan.getLanguageID(), TalkMan.getGender());
 
 	// Look whether we have an internal localized string
 	if (hasString(languageID))

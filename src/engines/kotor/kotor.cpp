@@ -149,7 +149,7 @@ bool KotOREngine::detectLanguages(Aurora::GameID game, const Common::UString &ta
 			return true;
 
 		uint32 languageID = Aurora::TalkTable_TLK::getLanguageID(tlk);
-		if (languageID == 0xFFFFFFFF)
+		if (languageID == Aurora::kLanguageInvalid)
 			return true;
 
 		Aurora::Language language = Aurora::getLanguage(game, languageID);
@@ -250,6 +250,7 @@ void KotOREngine::declareEncodings() {
 	};
 
 	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
+	Engines::declareTalkLanguage(_game, _language);
 }
 
 void KotOREngine::initResources(LoadProgress &progress) {
@@ -339,10 +340,10 @@ void KotOREngine::initResources(LoadProgress &progress) {
 		return;
 
 	progress.step("Loading main talk table");
-	TalkMan.addMainTable("dialog", "dialogf");
+	TalkMan.addTable("dialog", "dialogf", false, 0);
 
 	if (_hasLiveKey)
-		TalkMan.addAltTable("live1");
+		TalkMan.addTable("live1", "live1f", true, 0);
 
 	progress.step("Registering file formats");
 	registerModelLoader(new KotORModelLoader);

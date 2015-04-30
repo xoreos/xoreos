@@ -31,6 +31,7 @@
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
 #include "src/common/encoding.h"
+#include "src/common/changeid.h"
 
 #include "src/aurora/language.h"
 
@@ -51,44 +52,82 @@ public:
 	/** Return the encoding to use when reading strings in this (ungendered) language ID. */
 	Common::Encoding getEncoding(uint32 languageID) const;
 
-	/** Return the language ID (ungendered) of the main talk table. */
-	uint32 getMainLanguageID() const;
+	/** Return the current language. */
+	Language getLanguage() const;
+	/** Return the current (ungendered) language ID. */
+	uint32 getLanguageID() const;
 	/** Return the gender modulating the current language. */
 	LanguageGender getGender() const;
 
+	/** Set the current language together with its (ungendered) language ID. */
+	void setLanguage(Language language, uint32 languageID);
 	/** Set the gender modulating the current language. */
 	void setGender(LanguageGender gender);
 
-	void addMainTable(const Common::UString &nameMale,
-	                  const Common::UString &nameFemale = "", uint32 languageID = 0xFFFFFFFF);
-	void addAltTable (const Common::UString &nameMale,
-	                  const Common::UString &nameFemale = "", uint32 languageID = 0xFFFFFFFF);
+	/** Add a talk table to the talk manager.
+	 *
+	 *  @param nameMale   Resource name of the male version.
+	 *  @param nameFemale Resource name of the female version.
+	 *  @param isAlt      Is this an "alternate" talk table instead of a main one?
+	 *  @param priority   The priority this talk table has over other tables.
+	 *  @param changeID   If given, record the collective changes done here.
+	 */
+	void addTable(const Common::UString &nameMale, const Common::UString &nameFemale,
+                bool isAlt, uint32 priority, Common::ChangeID *changeID = 0);
 
-	void removeMainTable();
-	void removeAltTable();
+	/** Remove a talk table from the talk manager again. */
+	void removeTable(Common::ChangeID &changeID);
 
 	const Common::UString &getString     (uint32 strRef, LanguageGender gender = (LanguageGender) -1);
 	const Common::UString &getSoundResRef(uint32 strRef, LanguageGender gender = (LanguageGender) -1);
 
 private:
+	struct Table {
+		uint32 id;
+		uint32 priority;
+
+		TalkTable *tableMale;
+		TalkTable *tableFemale;
+
+		Table(TalkTable *tM, TalkTable *tF, uint32 p, uint32 i) :
+			id(i), priority(p), tableMale(tM), tableFemale(tF) { }
+
+		bool operator<(const Table &right) const { return priority < right.priority; }
+	};
+
+	class Change : public Common::ChangeContent {
+	private:
+		Change(uint32 id, bool isAlt) : _id(id), _isAlt(isAlt) { }
+
+		uint32 _id;
+		bool _isAlt;
+
+		friend TalkManager;
+
+	public:
+		~Change() { }
+
+		Common::ChangeContent *clone() const { return new Change(_id, _isAlt); }
+	};
+
+	typedef std::list<Table> Tables;
 	typedef std::map<uint32, Common::Encoding> EncodingMap;
 
 
-	LanguageGender _gender;
-
-	TalkTable *_mainTableM;
-	TalkTable *_mainTableF;
-
-	TalkTable *_altTableM;
-	TalkTable *_altTableF;
-
 	EncodingMap _encodings;
 
+	Language       _language;
+	uint32         _languageID;
+	LanguageGender _gender;
 
-	const TalkTable *getEntry(uint32 strRef, LanguageGender gender) const;
+	Tables _tablesMain;
+	Tables _tablesAlt;
 
-	void addTable(const Common::UString &nameMale, const Common::UString &nameFemale,
-	              uint32 languageID, TalkTable *&m, TalkTable *&f);
+
+	void deleteTable(Table &table);
+
+	const TalkTable *find(uint32 strRef, LanguageGender gender) const;
+	const TalkTable *find(const Tables &tables, uint32 strRef, LanguageGender gender) const;
 };
 
 } // End of namespace Aurora

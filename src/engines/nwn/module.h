@@ -158,6 +158,8 @@ private:
 
 	/** Resources added by the module. */
 	Common::ChangeID _resModule;
+	/** Resources added for the custom TLK. */
+	Common::ChangeID _resTLK;
 
 	/** Resources added by the HAKs of the module. */
 	std::vector<Common::ChangeID> _resHAKs;
@@ -181,10 +183,17 @@ private:
 	std::multiset<Action> _delayedActions;
 
 
-	void unload(); ///< Unload the whole shebang.
+	/** Unload the whole shebang.
+	 *
+	 *  @param completeUnload Also unload the PC and texture packs.
+	 *                        true:  completely quit the module
+	 *                        false: the PC can be transfered to a new module.
+	 */
+	void unload(bool completeUnload = true);
 
 	void unloadModule();      ///< Unload the module.
 	void unloadPC();          ///< Unload the PC.
+	void unloadTLK();         ///< Unload the TLK used by the module.
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadTexturePack(); ///< Unload the texture pack.
 	void unloadAreas();       ///< Unload the areas.
@@ -192,6 +201,7 @@ private:
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
+	void loadTLK();         ///< Load the TLK used by the module.
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadTexturePack(); ///< Load the texture pack.
 	void loadAreas();       ///< Load the areas.

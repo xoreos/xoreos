@@ -38,7 +38,7 @@ namespace Aurora {
 /** Loading BioWare's TLK talk tables. */
 class TalkTable_TLK : public AuroraBase, public TalkTable {
 public:
-	TalkTable_TLK(Common::SeekableReadStream *tlk, uint32 languageID = 0xFFFFFFFF);
+	TalkTable_TLK(Common::SeekableReadStream *tlk, Common::Encoding encoding);
 	~TalkTable_TLK();
 
 	/** Return the language ID (ungendered) of the talk table. */

@@ -25,6 +25,7 @@
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/stream.h"
+#include "src/common/uuid.h"
 
 #include "src/aurora/talkman.h"
 #include "src/aurora/resman.h"
@@ -34,8 +35,8 @@ DECLARE_SINGLETON(Aurora::TalkManager)
 
 namespace Aurora {
 
-TalkManager::TalkManager() : _gender(kLanguageGenderMale),
-	_mainTableM(0), _mainTableF(0), _altTableM(0), _altTableF(0) {
+TalkManager::TalkManager() : _language(kLanguageInvalid), _languageID(kLanguageInvalid),
+	_gender(kLanguageGenderMale) {
 
 }
 
@@ -44,10 +45,19 @@ TalkManager::~TalkManager() {
 }
 
 void TalkManager::clear() {
-	removeMainTable();
-	removeAltTable();
+	for (Tables::iterator t = _tablesMain.begin(); t != _tablesMain.end(); ++t)
+		deleteTable(*t);
+	for (Tables::iterator t = _tablesAlt.begin(); t != _tablesAlt.end(); ++t)
+		deleteTable(*t);
+
+	_tablesMain.clear();
+	_tablesAlt.clear();
 
 	_encodings.clear();
+
+	_language   = kLanguageInvalid;
+	_languageID = kLanguageInvalid;
+	_gender     = kLanguageGenderMale;
 }
 
 void TalkManager::registerEncoding(uint32 languageID, Common::Encoding encoding) {
@@ -62,79 +72,101 @@ Common::Encoding TalkManager::getEncoding(uint32 languageID) const {
 	return e->second;
 }
 
-uint32 TalkManager::getMainLanguageID() const {
-	if (_mainTableM)
-		return _mainTableM->getLanguageID();
-	if (_mainTableF)
-		return _mainTableF->getLanguageID();
-
-	return (uint32) kLanguageInvalid;
+Language TalkManager::getLanguage() const {
+	return _language;
 }
 
-void TalkManager::setGender(LanguageGender gender) {
-	_gender = gender;
+uint32 TalkManager::getLanguageID() const {
+	return _languageID;
 }
 
 LanguageGender TalkManager::getGender() const {
 	return _gender;
 }
 
+void TalkManager::setLanguage(Language language, uint32 languageID) {
+	_language   = language;
+	_languageID = languageID;
+}
+
+void TalkManager::setGender(LanguageGender gender) {
+	_gender = gender;
+}
+
+static TalkTable *loadTable(const Common::UString &name, Common::Encoding encoding) {
+	if (name.empty())
+		return 0;
+
+	Common::SeekableReadStream *tlk = ResMan.getResource(name, kFileTypeTLK);
+	if (!tlk)
+		return 0;
+
+	return TalkTable::load(tlk, encoding);
+}
+
+static void loadTables(const Common::UString &nameM, const Common::UString &nameF,
+                       TalkTable *&tableM, TalkTable *&tableF, Common::Encoding encoding) {
+
+	try {
+		tableM = loadTable(nameM, encoding);
+		tableF = loadTable(nameF, encoding);
+
+	} catch (...) {
+		delete tableM;
+		delete tableF;
+		throw;
+	}
+}
+
 void TalkManager::addTable(const Common::UString &nameMale, const Common::UString &nameFemale,
-                           uint32 languageID, TalkTable *&m, TalkTable *&f) {
+                           bool isAlt, uint32 priority, Common::ChangeID *changeID) {
 
-	if (!nameMale.empty()) {
-		Common::SeekableReadStream *tlkM = ResMan.getResource(nameMale, kFileTypeTLK);
-		if (!tlkM)
-			throw Common::Exception("No such talk table \"%s\"", nameMale.c_str());
+	TalkTable *tableMale = 0, *tableFemale = 0;
+	loadTables(nameMale, nameFemale, tableMale, tableFemale, getEncoding(_languageID));
 
-		m = TalkTable::load(tlkM, languageID);
-	}
+	if (!tableMale && !tableFemale)
+		throw Common::Exception("No such talk table \"%s\"/\"%s\"", nameMale.c_str(), nameFemale.c_str());
 
-	if (!nameFemale.empty()) {
-		Common::SeekableReadStream *tlkF = ResMan.getResource(nameFemale, kFileTypeTLK);
-		if (tlkF)
-			f = TalkTable::load(tlkF, languageID);
-	}
+	Tables *tables = &_tablesMain;
+	if (isAlt)
+		tables = &_tablesAlt;
+
+	const uint32 id = Common::generateIDNumber();
+
+	tables->push_back(Table(tableMale, tableFemale, priority, id));
+	tables->sort();
+
+	if (changeID)
+		changeID->setContent(new Change(id, isAlt));
 }
 
-void TalkManager::addMainTable(const Common::UString &nameMale,
-                               const Common::UString &nameFemale, uint32 languageID) {
-	removeMainTable();
+void TalkManager::deleteTable(Table &table) {
+	delete table.tableMale;
+	delete table.tableFemale;
 
-	try {
-		addTable(nameMale, nameFemale, languageID, _mainTableM, _mainTableF);
-	} catch (...) {
-		removeMainTable();
-		throw;
+	table.tableMale   = 0;
+	table.tableFemale = 0;
+}
+
+void TalkManager::removeTable(Common::ChangeID &changeID) {
+	Change *change = dynamic_cast<Change *>(changeID.getContent());
+	if (!change)
+		return;
+
+	Tables *tables = &_tablesMain;
+	if (change->_isAlt)
+		tables = &_tablesAlt;
+
+	for (Tables::iterator t = tables->begin(); t != tables->end(); ++t) {
+		if (t->id == change->_id) {
+			deleteTable(*t);
+
+			tables->erase(t);
+			break;
+		}
 	}
-}
 
-void TalkManager::addAltTable(const Common::UString &nameMale,
-                              const Common::UString &nameFemale, uint32 languageID) {
-	removeAltTable();
-
-	try {
-		addTable(nameMale, nameFemale, languageID, _altTableM, _altTableF);
-	} catch (...) {
-		removeAltTable();
-		throw;
-	}
-}
-
-void TalkManager::removeMainTable() {
-	delete _mainTableM;
-	delete _mainTableF;
-
-	_mainTableM = 0;
-	_mainTableF = 0;
-}
-
-void TalkManager::removeAltTable() {
-	delete _altTableM;
-	delete _altTableF;
-
-	_altTableM = 0;
-	_altTableF = 0;
+	changeID.clear();
 }
 
 static const Common::UString kEmptyString = "";
@@ -145,11 +177,11 @@ const Common::UString &TalkManager::getString(uint32 strRef, LanguageGender gend
 	if (strRef == kStrRefInvalid)
 		return kEmptyString;
 
-	const TalkTable *entry = getEntry(strRef, gender);
-	if (!entry)
+	const TalkTable *table = find(strRef, gender);
+	if (!table)
 		return kEmptyString;
 
-	return entry->getString(strRef);
+	return table->getString(strRef);
 }
 
 const Common::UString &TalkManager::getSoundResRef(uint32 strRef, LanguageGender gender) {
@@ -159,37 +191,52 @@ const Common::UString &TalkManager::getSoundResRef(uint32 strRef, LanguageGender
 	if (strRef == kStrRefInvalid)
 		return kEmptyString;
 
-	const TalkTable *entry = getEntry(strRef, gender);
-	if (!entry)
+	const TalkTable *table = find(strRef, gender);
+	if (!table)
 		return kEmptyString;
 
-	return entry->getSoundResRef(strRef);
+	return table->getSoundResRef(strRef);
 }
 
-const TalkTable *TalkManager::getEntry(uint32 strRef, LanguageGender gender) const {
-	if (strRef == 0xFFFFFFFF)
-		return 0;
+const TalkTable *TalkManager::find(const Tables &tables, uint32 strRef, LanguageGender gender) const {
+	/* Look for the strRef in decreasing priority.
+	 *
+	 * Only look through the female table if a female gendered string was requested,
+	 * but fall back on the male table in either case.
+	 */
 
-	bool alt = (strRef & 0xFF000000) != 0;
+	for (Tables::const_reverse_iterator t = tables.rbegin(); t != tables.rend(); ++t) {
+		if (gender == kLanguageGenderFemale)
+			if (t->tableFemale && t->tableFemale->hasEntry(strRef))
+				return t->tableFemale;
+
+		if (t->tableMale && t->tableMale->hasEntry(strRef))
+			return t->tableMale;
+	}
+
+	return 0;
+}
+
+const TalkTable *TalkManager::find(uint32 strRef, LanguageGender gender) const {
+	bool isAlt = (strRef & 0xFF000000) != 0;
 
 	strRef &= 0x00FFFFFF;
 
-	const TalkTable *entry = 0;
-	if (alt) {
-		if (!entry && (gender == kLanguageGenderFemale) && _altTableF && _altTableF->hasEntry(strRef))
-			entry = _altTableF;
+	const TalkTable *table = 0;
 
-		if (!entry && _altTableM && _altTableM->hasEntry(strRef))
-			entry = _altTableM;
-	}
+	/* If the flag for "use alternate tables" is set, search through those.
+	 * If the flag is not set, or the strRef was not found, search in the main tables.
+	 */
 
-	if (!entry && (gender == kLanguageGenderFemale) && _mainTableF && _mainTableF->hasEntry(strRef))
-		entry = _mainTableF;
+	if (isAlt)
+		if ((table = find(_tablesAlt, strRef & 0x00FFFFFF, gender)) != 0)
+			return table;
 
-	if (!entry && _mainTableM && _mainTableM->hasEntry(strRef))
-		entry = _mainTableM;
+	// If the flag is not set, or the strRef was not found, look in the main tables
+	if ((table = find(_tablesMain, strRef, gender)) != 0)
+		return table;
 
-	return entry;
+	return 0;
 }
 
 } // End of namespace Aurora

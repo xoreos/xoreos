@@ -90,6 +90,8 @@ private:
 
 	/** Resources added by the module. */
 	Common::ChangeID _resModule;
+	/** Resources added for the custom TLK. */
+	Common::ChangeID _resTLK;
 
 	/** Resources added by the HAKs of the module. */
 	std::vector<Common::ChangeID> _resHAKs;
@@ -108,12 +110,14 @@ private:
 	void unload(); ///< Unload the whole shebang.
 
 	void unloadModule();      ///< Unload the module.
+	void unloadTLK();         ///< Unload the TLK used by the module.
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadAreas();       ///< Unload the areas.
 
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
+	void loadTLK();         ///< Load the TLK used by the module.
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadAreas();       ///< Load the areas.
 

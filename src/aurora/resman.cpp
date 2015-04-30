@@ -61,17 +61,6 @@ bool ResourceManager::Resource::operator<(const Resource &right) const {
 }
 
 
-ResourceManager::Change::Change(ChangeSetList::iterator change) : _change(change) {
-}
-
-ResourceManager::Change::~Change() {
-}
-
-Common::ChangeContent *ResourceManager::Change::clone() const {
-	return new Change(_change);
-}
-
-
 ResourceManager::ResourceManager() : _rimsAreERFs(false), _hashAlgo(Common::kHashFNV64) {
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeDDS);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTPC);

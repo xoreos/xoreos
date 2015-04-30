@@ -86,6 +86,7 @@ private:
 	Aurora::Language _language;
 
 	Common::ChangeID _languageHERF;
+	Common::ChangeID _languageTLK;
 
 
 	void init();

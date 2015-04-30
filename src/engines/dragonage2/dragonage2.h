@@ -26,6 +26,7 @@
 #define ENGINES_DRAGONAGE2_DRAGONAGE2_H
 
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
 
 #include "src/aurora/types.h"
 
@@ -83,6 +84,9 @@ protected:
 
 private:
 	Aurora::Language _language;
+
+	Common::ChangeID _languageTLK;
+
 
 	void init();
 	void declareEncodings();

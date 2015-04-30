@@ -135,9 +135,7 @@ void Module::load(const Common::UString &module) {
 }
 
 void Module::loadModule(const Common::UString &module) {
-	unloadAreas();
-	unloadHAKs();
-	unloadModule();
+	unload(false);
 
 	if (module.empty())
 		throw Common::Exception("Tried to load an empty module");
@@ -152,8 +150,6 @@ void Module::loadModule(const Common::UString &module) {
 
 		checkXPs();
 		checkHAKs();
-
-		_ifo.loadTLK();
 
 		_tag = _ifo.getTag();
 
@@ -277,9 +273,7 @@ void Module::replaceModule() {
 
 	Common::UString newModule = _newModule;
 
-	unloadAreas();
-	unloadHAKs();
-	unloadModule();
+	unload(false);
 
 	_exit = true;
 
@@ -305,6 +299,7 @@ void Module::enter() {
 
 	try {
 
+		loadTLK();
 		loadHAKs();
 		loadAreas();
 
@@ -498,12 +493,17 @@ void Module::handleActions() {
 	}
 }
 
-void Module::unload() {
+void Module::unload(bool completeUnload) {
 	unloadAreas();
-	unloadTexturePack();
 	unloadHAKs();
-	unloadPC();
+	unloadTLK();
 	unloadModule();
+
+	if (!completeUnload)
+		return;
+
+	unloadPC();
+	unloadTexturePack();
 }
 
 void Module::unloadModule() {
@@ -537,6 +537,17 @@ void Module::unloadPC() {
 
 	delete _pc;
 	_pc = 0;
+}
+
+void Module::loadTLK() {
+	if (_ifo.getTLK().empty())
+		return;
+
+	TalkMan.addTable(_ifo.getTLK(), _ifo.getTLK() + "f", true, 0, &_resTLK);
+}
+
+void Module::unloadTLK() {
+	TalkMan.removeTable(_resTLK);
 }
 
 void Module::loadHAKs() {

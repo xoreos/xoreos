@@ -38,11 +38,8 @@ namespace Aurora {
 /** Loading BioWare's GFF'd talk tables. */
 class TalkTable_GFF : public TalkTable {
 public:
-	TalkTable_GFF(Common::SeekableReadStream *tlk, uint32 languageID = 0xFFFFFFFF);
+	TalkTable_GFF(Common::SeekableReadStream *tlk, Common::Encoding encoding);
 	~TalkTable_GFF();
-
-	/** Return the language ID (ungendered) of the talk table. */
-	uint32 getLanguageID() const;
 
 	bool hasEntry(uint32 strRef) const;
 
@@ -63,8 +60,6 @@ private:
 
 
 	GFF4File *_gff;
-
-	uint32 _languageID;
 
 	mutable Entries _entries;
 

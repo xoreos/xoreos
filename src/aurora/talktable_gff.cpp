@@ -36,18 +36,14 @@ static const uint32 kVersion05 = MKTAG('V', '0', '.', '5');
 
 namespace Aurora {
 
-TalkTable_GFF::TalkTable_GFF(Common::SeekableReadStream *tlk, uint32 languageID) :
-	_gff(0), _languageID(languageID) {
+TalkTable_GFF::TalkTable_GFF(Common::SeekableReadStream *tlk, Common::Encoding encoding) :
+	TalkTable(encoding), _gff(0) {
 
 	load(tlk);
 }
 
 TalkTable_GFF::~TalkTable_GFF() {
 	delete _gff;
-}
-
-uint32 TalkTable_GFF::getLanguageID() const {
-	return _languageID;
 }
 
 bool TalkTable_GFF::hasEntry(uint32 strRef) const {
@@ -143,12 +139,8 @@ void TalkTable_GFF::readString(Entry &entry) const {
 }
 
 void TalkTable_GFF::readString02(Entry &entry) const {
-	Common::Encoding encoding = Common::kEncodingUTF16LE;
-	if (_languageID != 0xFFFFFFFF)
-		encoding = TalkMan.getEncoding(_languageID);
-
-	if (encoding != Common::kEncodingInvalid)
-		entry.text = entry.strct->getString(kGFF4TalkString, encoding);
+	if (_encoding != Common::kEncodingInvalid)
+		entry.text = entry.strct->getString(kGFF4TalkString, _encoding);
 	else
 		entry.text = "[???]";
 }
@@ -165,6 +157,7 @@ void TalkTable_GFF::readString05(Entry &entry) const {
 
 void TalkTable_GFF::readString05(Common::SeekableReadStream *huffTree,
                                  Common::SeekableReadStream *bitStream, Entry &entry) const {
+
 	if (!huffTree || !bitStream)
 		return;
 

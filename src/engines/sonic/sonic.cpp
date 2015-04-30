@@ -259,7 +259,7 @@ void SonicEngine::declareResources() {
 }
 
 void SonicEngine::unloadLanguageFiles() {
-	TalkMan.removeMainTable();
+	TalkMan.removeTable(_languageTLK);
 
 	deindexResources(_languageHERF);
 }
@@ -273,6 +273,7 @@ void SonicEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language lan
 
 void SonicEngine::loadLanguageFiles(Aurora::Language language) {
 	unloadLanguageFiles();
+	declareTalkLanguage(_game, language);
 
 	Common::UString herf = getLanguageHERF(language) + ".herf";
 
@@ -280,7 +281,7 @@ void SonicEngine::loadLanguageFiles(Aurora::Language language) {
 
 	Common::UString tlk = getLanguageTLK(language);
 
-	TalkMan.addMainTable(tlk, "", Aurora::getLanguageID(_game, language));
+	TalkMan.addTable(tlk, "", false, 0, &_languageTLK);
 }
 
 void SonicEngine::initConfig() {

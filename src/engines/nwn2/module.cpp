@@ -27,7 +27,7 @@
 #include "src/common/configman.h"
 
 #include "src/aurora/resman.h"
-#include "src/aurora/erffile.h"
+#include "src/aurora/talkman.h"
 
 #include "src/graphics/camera.h"
 
@@ -89,8 +89,6 @@ void Module::loadModule(const Common::UString &module) {
 
 		checkXPs();
 		checkHAKs();
-
-		_ifo.loadTLK();
 
 		_tag = _ifo.getTag();
 
@@ -158,6 +156,7 @@ void Module::enter() {
 
 	try {
 
+		loadTLK();
 		loadHAKs();
 		loadAreas();
 
@@ -289,6 +288,7 @@ void Module::handleEvents() {
 void Module::unload() {
 	unloadAreas();
 	unloadHAKs();
+	unloadTLK();
 	unloadModule();
 }
 
@@ -301,6 +301,17 @@ void Module::unloadModule() {
 
 	_newModule.clear();
 	_hasModule = false;
+}
+
+void Module::loadTLK() {
+	if (_ifo.getTLK().empty())
+		return;
+
+	TalkMan.addTable(_ifo.getTLK(), _ifo.getTLK() + "f", true, 0, &_resTLK);
+}
+
+void Module::unloadTLK() {
+	TalkMan.removeTable(_resTLK);
 }
 
 void Module::loadHAKs() {

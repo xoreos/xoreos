@@ -99,6 +99,7 @@ private:
 	Campaign *_campaign;
 
 	std::list<Common::ChangeID> _languageResources;
+	Common::ChangeID _languageTLK;
 
 
 	void init();

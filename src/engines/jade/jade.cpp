@@ -118,7 +118,7 @@ bool JadeEngine::detectLanguages(Aurora::GameID game, const Common::UString &tar
 			return true;
 
 		uint32 languageID = Aurora::TalkTable_TLK::getLanguageID(tlk);
-		if (languageID == 0xFFFFFFFF)
+		if (languageID == Aurora::kLanguageInvalid)
 			return true;
 
 		Aurora::Language language = Aurora::getLanguage(game, languageID);
@@ -213,6 +213,7 @@ void JadeEngine::declareEncodings() {
 	};
 
 	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
+	Engines::declareTalkLanguage(_game, _language);
 }
 
 void JadeEngine::initResources(LoadProgress &progress) {
@@ -263,7 +264,7 @@ void JadeEngine::initResources(LoadProgress &progress) {
 		return;
 
 	progress.step("Loading main talk table");
-	TalkMan.addMainTable("dialog", "dialogf");
+	TalkMan.addTable("dialog", "dialogf", false, 0);
 
 	progress.step("Registering file formats");
 	registerModelLoader(new JadeModelLoader);

@@ -35,13 +35,13 @@ static const uint32 kGFFID = MKTAG('G', 'F', 'F', ' ');
 
 namespace Aurora {
 
-TalkTable::TalkTable() {
+TalkTable::TalkTable(Common::Encoding encoding) : _encoding(encoding) {
 }
 
 TalkTable::~TalkTable() {
 }
 
-TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, uint32 languageID) {
+TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, Common::Encoding encoding) {
 	if (!tlk)
 		return 0;
 
@@ -55,10 +55,10 @@ TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, uint32 languageID) {
 	tlk->seek(pos);
 
 	if (id == kTLKID)
-		return new TalkTable_TLK(tlk, languageID);
+		return new TalkTable_TLK(tlk, encoding);
 
 	if (id == kGFFID)
-		return new TalkTable_GFF(tlk, languageID);
+		return new TalkTable_GFF(tlk, encoding);
 
 	delete tlk;
 	return 0;

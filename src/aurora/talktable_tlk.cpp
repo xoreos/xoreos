@@ -25,7 +25,6 @@
 #include "src/common/util.h"
 #include "src/common/stream.h"
 #include "src/common/file.h"
-#include "src/common/encoding.h"
 #include "src/common/error.h"
 
 #include "src/aurora/talktable_tlk.h"
@@ -37,13 +36,10 @@ static const uint32 kVersion4 = MKTAG('V', '4', '.', '0');
 
 namespace Aurora {
 
-TalkTable_TLK::TalkTable_TLK(Common::SeekableReadStream *tlk, uint32 languageID) :
-	_tlk(tlk), _stringsOffset(0) {
+TalkTable_TLK::TalkTable_TLK(Common::SeekableReadStream *tlk, Common::Encoding encoding) :
+	TalkTable(encoding), _tlk(tlk) {
 
 	load();
-
-	if (languageID != 0xFFFFFFFF)
-		_languageID = languageID;
 }
 
 TalkTable_TLK::~TalkTable_TLK() {
@@ -131,9 +127,8 @@ void TalkTable_TLK::readString(Entry &entry) const {
 	Common::MemoryReadStream *data   = _tlk->readStream(length);
 	Common::MemoryReadStream *parsed = preParseColorCodes(*data);
 
-	Common::Encoding encoding = TalkMan.getEncoding(_languageID);
-	if (encoding != Common::kEncodingInvalid)
-		entry.text = Common::readString(*parsed, encoding);
+	if (_encoding != Common::kEncodingInvalid)
+		entry.text = Common::readString(*parsed, _encoding);
 	else
 		entry.text = "[???]";
 
@@ -173,7 +168,7 @@ uint32 TalkTable_TLK::getLanguageID(Common::SeekableReadStream &tlk) {
 	AuroraBase::readHeader(tlk, id, version, utf16le);
 
 	if ((id != kTLKID) || ((version != kVersion3) && (version != kVersion4)))
-		return 0xFFFFFFFF;
+		return kLanguageInvalid;
 
 	return tlk.readUint32LE();
 }
@@ -181,7 +176,7 @@ uint32 TalkTable_TLK::getLanguageID(Common::SeekableReadStream &tlk) {
 uint32 TalkTable_TLK::getLanguageID(const Common::UString &file) {
 	Common::File tlk;
 	if (!tlk.open(file))
-		return 0xFFFFFFFF;
+		return kLanguageInvalid;
 
 	return getLanguageID(tlk);
 }

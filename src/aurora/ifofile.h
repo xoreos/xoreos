@@ -43,8 +43,6 @@ public:
 	void load();   ///< Load the currently available module.ifo.
 	void unload(); ///< Unload a currently loaded IFO.
 
-	void loadTLK(); ///< Load the module's custom TLK.
-
 	/** Return the IFO's GFF struct. */
 	const GFF3Struct *getGFF() const;
 
@@ -64,6 +62,9 @@ public:
 	const LocString &getName() const;
 	/** Return the description of the module. */
 	const LocString &getDescription() const;
+
+	/** Return the custom TLK table this module uses. */
+	const Common::UString &getTLK() const;
 
 	// General module requirements
 
@@ -148,7 +149,7 @@ private:
 
 	bool _isSave; ///< Is this module a save?
 
-	Common::UString _customTLK; ///< The custom TLK the module uses.
+	Common::UString  _customTLK; ///< The custom TLK the module uses.
 
 	Common::UString _startMovie; ///< The movie the module starts with.
 

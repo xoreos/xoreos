@@ -303,17 +303,17 @@ private:
 	typedef std::list<ChangeSet> ChangeSetList;
 
 	class Change : public Common::ChangeContent {
-	public:
-		~Change();
-
-		Common::ChangeContent *clone() const;
-
 	private:
-		Change(ChangeSetList::iterator change);
+		Change(ChangeSetList::iterator change) : _change(change) { }
 
 		ChangeSetList::iterator _change;
 
 		friend ResourceManager;
+
+	public:
+		~Change() { }
+
+		Common::ChangeContent *clone() const { return new Change(_change); }
 	};
 
 

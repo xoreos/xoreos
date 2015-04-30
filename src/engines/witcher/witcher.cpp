@@ -318,7 +318,7 @@ void WitcherEngine::initGameConfig() {
 }
 
 void WitcherEngine::unloadLanguageFiles() {
-	TalkMan.removeMainTable();
+	TalkMan.removeTable(_languageTLK);
 
 	std::list<Common::ChangeID>::iterator res;
 	for (res = _languageResources.begin(); res != _languageResources.end(); ++res)
@@ -338,6 +338,7 @@ void WitcherEngine::loadLanguageFiles(LoadProgress &progress,
 
 void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Language langVoice) {
 	unloadLanguageFiles();
+	declareTalkLanguage(_game, langText);
 
 	Common::UString archive;
 
@@ -356,7 +357,7 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 102, &_languageResources.back());
 
 	archive = Common::UString::sprintf("dialog_%d", getLanguageID(_game, langText));
-	TalkMan.addMainTable(archive);
+	TalkMan.addTable(archive, "", false, 0, &_languageTLK);
 }
 
 void WitcherEngine::deinit() {

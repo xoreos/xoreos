@@ -33,4 +33,8 @@ void declareEncodings(Aurora::GameID game, const LanguageEncoding *enc, uint32 c
 		TalkMan.registerEncoding(Aurora::getLanguageID(game, enc[i].language), enc[i].encoding);
 }
 
+void declareTalkLanguage(Aurora::GameID game, Aurora::Language language) {
+	TalkMan.setLanguage(language, Aurora::getLanguageID(game, language));
+}
+
 } // End of namespace Engines

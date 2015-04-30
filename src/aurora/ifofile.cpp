@@ -27,7 +27,6 @@
 
 #include "src/aurora/ifofile.h"
 #include "src/aurora/gff3file.h"
-#include "src/aurora/talkman.h"
 
 namespace Aurora {
 
@@ -87,8 +86,6 @@ void IFOFile::clear() {
 }
 
 void IFOFile::unload() {
-	TalkMan.removeAltTable();
-
 	clear();
 }
 
@@ -222,13 +219,6 @@ void IFOFile::parseVersion(const Common::UString &version) {
 		_minVersionMajor = _minVersionMinor = 0;
 }
 
-void IFOFile::loadTLK() {
-	if (_customTLK.empty())
-		return;
-
-	TalkMan.addAltTable(_customTLK);
-}
-
 const GFF3Struct *IFOFile::getGFF() const {
 	if (!_gff)
 		return 0;
@@ -258,6 +248,10 @@ const LocString &IFOFile::getName() const {
 
 const LocString &IFOFile::getDescription() const {
 	return _description;
+}
+
+const Common::UString &IFOFile::getTLK() const {
+	return _customTLK;
 }
 
 void IFOFile::getMinVersion(int &major, int &minor) const {

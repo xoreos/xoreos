@@ -38,6 +38,7 @@ struct LanguageEncoding {
 };
 
 void declareEncodings(Aurora::GameID game, const LanguageEncoding *enc, uint32 count);
+void declareTalkLanguage(Aurora::GameID game, Aurora::Language language);
 
 } // End of namespace Engines
 
