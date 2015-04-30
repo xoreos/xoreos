@@ -568,6 +568,8 @@ void Module::loadTexturePack() {
 		// Nothing to do
 		return;
 
+	const int oldTexturePack = _currentTexturePack;
+
 	unloadTexturePack();
 
 	status("Loading texture pack %d", level);
@@ -577,7 +579,7 @@ void Module::loadTexturePack() {
 	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][3], 403, &_resTP[3]);
 
 	// If we already had a texture pack loaded, reload all textures
-	if (_currentTexturePack != -1)
+	if (oldTexturePack != -1)
 		TextureMan.reloadAll();
 
 	_currentTexturePack = level;
