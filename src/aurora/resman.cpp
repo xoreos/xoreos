@@ -46,7 +46,7 @@
 DECLARE_SINGLETON(Aurora::ResourceManager)
 
 static const char *kArchiveGlob[Aurora::kArchiveMAX] = {
-	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak|nwm)", ".*\\.(rim|rimp)", ".*\\.zip", ".*\\.exe",
+	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak|nwm|crf)", ".*\\.(rim|rimp)", ".*\\.zip", ".*\\.exe",
 	".*\\.nds", ".*\\.herf"
 };
 
