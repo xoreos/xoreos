@@ -279,6 +279,7 @@ void ConsoleWindow::printLine(const Common::UString &line) {
 	if (_logFile.isOpen()) {
 		_logFile.writeString(line);
 		_logFile.writeByte('\n');
+		_logFile.flush();
 	}
 
 	_history.push_back(line);
