@@ -212,6 +212,9 @@ void DebugManager::logString(const UString &str) {
 		_logFile.writeString("\n");
 		_logFileStartLine = true;
 	}
+
+	if (_logFileStartLine)
+		_logFile.flush();
 }
 
 void DebugManager::logCommandLine(int argc, char **argv) {
