@@ -28,6 +28,7 @@
 #include "src/common/configman.h"
 
 #include "src/aurora/resman.h"
+#include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/cube.h"
@@ -188,7 +189,7 @@ void DragonAge2Engine::run() {
 }
 
 void DragonAge2Engine::init() {
-	LoadProgress progress(11);
+	LoadProgress progress(13);
 
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
@@ -289,11 +290,35 @@ void DragonAge2Engine::initResources(LoadProgress &progress) {
 	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/audio/sound/wwisestreams_core.erf", 101);
 
 	progress.step("Indexing extra core movie resources");
-	indexMandatoryDirectory("packages/core/data/movies" , 0, 0, 151);
+	indexMandatoryDirectory("packages/core/data/movies"    , 0,  0, 151);
+	progress.step("Indexing extra core talktables");
+	indexMandatoryDirectory("packages/core/data/talktables", 0,  0, 152);
 	progress.step("Indexing extra core cursors");
-	indexMandatoryDirectory("packages/core/data/cursors", 0, 0, 152);
+	indexMandatoryDirectory("packages/core/data/cursors"   , 0,  0, 153);
 
 	// TODO: DLC
+
+	loadLanguageFiles(progress, _language);
+}
+
+void DragonAge2Engine::unloadLanguageFiles() {
+	TalkMan.removeMainTable();
+}
+
+void DragonAge2Engine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
+	progress.step(Common::UString::sprintf("Indexing language files (%s)",
+				Aurora::getLanguageName(language).c_str()));
+
+	loadLanguageFiles(language);
+}
+
+void DragonAge2Engine::loadLanguageFiles(Aurora::Language language) {
+	unloadLanguageFiles();
+
+	const Common::UString tlkM = "core_" + getLanguageString(language);
+	const Common::UString tlkF = "core_" + getLanguageString(language) + "_f";
+
+	TalkMan.addMainTable(tlkM, tlkF, Aurora::getLanguageID(_game, language));
 }
 
 void DragonAge2Engine::initCursors() {

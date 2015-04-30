@@ -91,6 +91,10 @@ private:
 	void initConfig();
 	void initGameConfig();
 
+	void unloadLanguageFiles();
+	void loadLanguageFiles(LoadProgress &progress, Aurora::Language language);
+	void loadLanguageFiles(Aurora::Language language);
+
 	void deinit();
 
 	void playIntroVideos();
