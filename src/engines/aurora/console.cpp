@@ -56,7 +56,7 @@
 
 static const uint32 kDoubleClickTime = 500;
 
-static const char *kPrompt = " >";
+static const char *kPrompt = "> ";
 
 static const uint32 kCommandHistorySize = 100;
 static const uint32 kConsoleHistory     = 500;
@@ -82,6 +82,9 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 h
 	_prompt = new Graphics::Aurora::Text(_font, "");
 	_input  = new Graphics::Aurora::Text(_font, "");
 
+	_prompt->disableColorTokens(true);
+	_input->disableColorTokens(true);
+
 	const float cursorHeight = _font.getFont().getHeight();
 	_cursor = new Graphics::Aurora::GUIQuad("", 0.0, 1.0, 0.0, cursorHeight);
 	_cursor->setXOR(true);
@@ -91,8 +94,10 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 h
 	_highlight->setXOR(true);
 
 	_lines.reserve(lines - 1);
-	for (uint32 i = 0; i < (lines - 1); i++)
+	for (uint32 i = 0; i < (lines - 1); i++) {
 		_lines.push_back(new Graphics::Aurora::Text(_font, ""));
+		_lines.back()->disableColorTokens(true);
+	}
 
 	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
 
@@ -266,7 +271,7 @@ void ConsoleWindow::clear() {
 void ConsoleWindow::print(const Common::UString &line) {
 	std::vector<Common::UString> lines;
 
-	_font.getFont().split(line, lines, _width - 15.0);
+	_font.getFont().split(line, lines, _width - 15.0, 0.0, false);
 	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l)
 		printLine(*l);
 }
@@ -740,7 +745,7 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 	registerCommand("getlang"    , boost::bind(&Console::cmdGetLang    , this, _1),
 			"Usage: getlang\nPrint the current language settings");
 	registerCommand("setlang"    , boost::bind(&Console::cmdSetLang    , this, _1),
-			"Usage: setlang <language>\nUsage: setlang <language_text> <language_voice>\n"
+			"Usage: setlang <language>\n       setlang <language_text> <language_voice>\n"
 			"Change the game's current language");
 	registerCommand("getstring"  , boost::bind(&Console::cmdGetString  , this, _1),
 			"Usage: getstring <strref>\nGet a string from the talk manager and print it");
@@ -985,7 +990,7 @@ void Console::execute(const Common::UString &line) {
 		return;
 
 	// Add the line to console
-	_console->print(Common::UString(kPrompt) + " " + line);
+	_console->print(Common::UString(kPrompt) + line);
 
 
 	// Split command from redirect target
