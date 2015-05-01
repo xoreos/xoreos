@@ -65,7 +65,7 @@ public:
 		  float r, float g, float b, float a, float align = 0.0, float maxWidth = 0.0, float maxHeight = 0.0) const;
 
 	float split(const Common::UString &line, std::vector<Common::UString> &lines,
-		    float maxWidth = 0.0, float maxHeight = 0.0) const;
+	            float maxWidth = 0.0, float maxHeight = 0.0, bool trim = true) const;
 	float split(Common::UString &line, float maxWidth, float maxHeight = 0.0) const;
 	float split(const Common::UString &line, Common::UString &lines, float maxWidth, float maxHeight = 0.0) const;
 

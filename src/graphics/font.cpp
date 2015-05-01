@@ -72,7 +72,7 @@ void Font::draw(Common::UString text, const ColorPositions &colors,
 	glColor4f(r, g, b, a);
 
 	std::vector<Common::UString> lines;
-	float maxLength = split(text, lines, maxWidth, maxHeight);
+	float maxLength = split(text, lines, maxWidth, maxHeight, false);
 
 	// Move position to the top
 	glTranslatef(0.0, (lines.size() - 1) * (getHeight() + getLineSpacing()), 0.0);
@@ -118,7 +118,7 @@ void Font::draw(Common::UString text, const ColorPositions &colors,
 }
 
 float Font::split(const Common::UString &line, std::vector<Common::UString> &lines,
-                  float maxWidth, float maxHeight) const {
+                  float maxWidth, float maxHeight, bool trim) const {
 
 	if (line.empty())
 		// Nothing to do
@@ -278,8 +278,9 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 	}
 
 	// Trim the lines
-	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l)
-		l->trim();
+	if (trim)
+		for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l)
+			l->trim();
 
 	return length;
 }
