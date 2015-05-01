@@ -77,8 +77,6 @@ private:
 	/** All campaigns we know about. */
 	std::list<CampaignDescription> _campaigns;
 
-	::Engines::Console *_console;
-
 	/** Resources added by the campaign. */
 	Common::ChangeID _resCampaign;
 
