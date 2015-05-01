@@ -102,7 +102,7 @@ private:
 		uint32 _id;
 		bool _isAlt;
 
-		friend TalkManager;
+		friend class TalkManager;
 
 	public:
 		~Change() { }

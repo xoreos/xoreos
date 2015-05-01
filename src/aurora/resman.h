@@ -308,7 +308,7 @@ private:
 
 		ChangeSetList::iterator _change;
 
-		friend ResourceManager;
+		friend class ResourceManager;
 
 	public:
 		~Change() { }
