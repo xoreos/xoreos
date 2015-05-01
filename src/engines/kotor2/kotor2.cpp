@@ -113,7 +113,9 @@ bool KotOR2EngineProbeXbox::probe(const Common::UString &directory, const Common
 }
 
 
-KotOR2Engine::KotOR2Engine() : _module(0) {
+KotOR2Engine::KotOR2Engine() : _language(Aurora::kLanguageInvalid),
+	_module(0) {
+
 	_console = new Console(*this);
 }
 

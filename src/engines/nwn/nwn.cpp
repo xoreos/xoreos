@@ -113,7 +113,7 @@ bool NWNEngineProbeFallback::probe(const Common::UString &UNUSED(directory),
 }
 
 
-NWNEngine::NWNEngine() : _version(0),
+NWNEngine::NWNEngine() : _version(0), _language(Aurora::kLanguageInvalid),
 	_hasXP1(false), _hasXP2(false), _hasXP3(false), _scriptFuncs(0), _module(0) {
 
 	_console = new Console(*this);

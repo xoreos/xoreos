@@ -93,8 +93,8 @@ protected:
 
 
 private:
-	Aurora::Language _languageVoice;
 	Aurora::Language _languageText;
+	Aurora::Language _languageVoice;
 
 	Campaign *_campaign;
 

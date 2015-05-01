@@ -97,7 +97,9 @@ Engines::Engine *JadeEngineProbe::createEngine() const {
 }
 
 
-JadeEngine::JadeEngine() : _module(0) {
+JadeEngine::JadeEngine() : _language(Aurora::kLanguageInvalid),
+	_module(0) {
+
 	_console = new Console(*this);
 }
 

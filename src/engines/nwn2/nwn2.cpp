@@ -92,8 +92,8 @@ Engines::Engine *NWN2EngineProbe::createEngine() const {
 }
 
 
-NWN2Engine::NWN2Engine() : _hasXP1(false), _hasXP2(false), _hasXP3(false),
-	_campaign(0) {
+NWN2Engine::NWN2Engine() : _language(Aurora::kLanguageInvalid),
+	_hasXP1(false), _hasXP2(false), _hasXP3(false), _campaign(0) {
 
 	_console = new Console(*this);
 }

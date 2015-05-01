@@ -96,7 +96,10 @@ Engines::Engine *WitcherEngineProbe::createEngine() const {
 }
 
 
-WitcherEngine::WitcherEngine() : _campaign(0) {
+WitcherEngine::WitcherEngine() :
+	_languageText(Aurora::kLanguageInvalid), _languageVoice(Aurora::kLanguageInvalid),
+	_campaign(0) {
+
 	_console = new Console(*this);
 }
 

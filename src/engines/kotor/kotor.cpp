@@ -128,7 +128,9 @@ bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common:
 }
 
 
-KotOREngine::KotOREngine() : _module(0), _hasLiveKey(false) {
+KotOREngine::KotOREngine() : _language(Aurora::kLanguageInvalid),
+	_module(0), _hasLiveKey(false) {
+
 	_console = new Console(*this);
 }
 

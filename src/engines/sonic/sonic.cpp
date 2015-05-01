@@ -87,7 +87,7 @@ Engines::Engine *SonicEngineProbe::createEngine() const {
 }
 
 
-SonicEngine::SonicEngine() {
+SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid) {
 	_console = new Console(*this);
 }
 
