@@ -84,8 +84,6 @@ private:
 	/** All campaigns we know about. */
 	std::list<CampaignDescription> _campaigns;
 
-	::Engines::Console *_console;
-
 	/** The currently loaded campaign. */
 	CampaignDescription _currentCampaign;
 
