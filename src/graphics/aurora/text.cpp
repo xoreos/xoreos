@@ -34,7 +34,8 @@ namespace Aurora {
 
 Text::Text(const FontHandle &font, const Common::UString &str,
 		float r, float g, float b, float a, float align) :
-	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0), _y(0.0), _align(align) {
+	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0), _y(0.0), _align(align),
+	_disableColorTokens(false) {
 
 	set(str);
 
@@ -45,10 +46,17 @@ Text::~Text() {
 	hide();
 }
 
+void Text::disableColorTokens(bool disabled) {
+	_disableColorTokens = disabled;
+}
+
 void Text::set(const Common::UString &str, float maxWidth, float maxHeight) {
 	lockFrameIfVisible();
 
-	parseColors(str, _str, _colors);
+	if (!_disableColorTokens)
+		parseColors(str, _str, _colors);
+	else
+		_str = str;
 
 	Font &font = _font.getFont();
 

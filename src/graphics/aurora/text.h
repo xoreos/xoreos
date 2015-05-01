@@ -54,6 +54,9 @@ public:
 	void unsetColor();
 	void setAlign(float align);
 
+	/** Disable parsing <c color tokens into actual coloring. */
+	void disableColorTokens(bool disabled);
+
 	bool empty();
 
 	uint getLineCount() const;
@@ -83,6 +86,7 @@ private:
 	Common::UString _str;
 	ColorPositions  _colors;
 
+	bool _disableColorTokens;
 
 	void parseColors(const Common::UString &str, Common::UString &parsed,
 	                 ColorPositions &colors);
