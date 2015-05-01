@@ -30,7 +30,8 @@ namespace Engines {
 namespace Sonic {
 
 Console::Console(SonicEngine &engine) :
-	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13) {
+	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
+	_engine(&engine) {
 
 }
 
