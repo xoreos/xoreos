@@ -1400,7 +1400,7 @@ void Console::cmdGetString(const CommandLine &cl) {
 		return;
 	}
 
-	uint32 strRef;
+	uint32 strRef = 0xFFFFFFFF;
 	try {
 		Common::parseString(cl.args, strRef);
 	} catch (...) {
