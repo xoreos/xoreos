@@ -212,7 +212,7 @@ void Module::enterArea() {
 
 	EventMan.flushEvents();
 
-	_console->printf("Entering area \"%s\" \(\"%s\", \"%s\")", _currentArea->getResRef().c_str(),
+	_console->printf("Entering area \"%s\" (\"%s\", \"%s\")", _currentArea->getResRef().c_str(),
 			_currentArea->getName().c_str(), _currentArea->getDisplayName().c_str());
 }
 
