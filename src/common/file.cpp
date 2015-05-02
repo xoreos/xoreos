@@ -137,6 +137,11 @@ uint32 File::read(void *dataPtr, uint32 dataSize) {
 DumpFile::DumpFile() : _handle(0), _size(-1) {
 }
 
+DumpFile::DumpFile(const UString &fileName) : _handle(0), _size(-1) {
+	if (!open(fileName))
+		throw Exception("Can't open file \"%s\" for writing", fileName.c_str());
+}
+
 DumpFile::~DumpFile() {
 	close();
 }

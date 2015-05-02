@@ -92,6 +92,7 @@ protected:
 class DumpFile : public WriteStream, public NonCopyable {
 public:
 	DumpFile();
+	DumpFile(const UString &fileName);
 	~DumpFile();
 
 	/**
