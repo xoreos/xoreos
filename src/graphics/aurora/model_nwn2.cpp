@@ -22,8 +22,10 @@
  *  Loading MDB files found in Neverwinter Nights 2
  */
 
+#ifndef _MSC_VER
 // Disable the "unused variable" warnings while most stuff is still stubbed
 #pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 
 #include "src/common/error.h"
 #include "src/common/maths.h"

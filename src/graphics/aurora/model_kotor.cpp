@@ -22,9 +22,11 @@
  *  Loading MDL files found in Star Wars: Knights of the Old Republic.
  */
 
+#ifndef _MSC_VER
 // Disable the "unused variable" warnings while most stuff is still stubbed
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
 
 #include "src/common/error.h"
 #include "src/common/maths.h"

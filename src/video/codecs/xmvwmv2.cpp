@@ -24,8 +24,10 @@
  *  WMV2 video codec, XMV variant.
  */
 
+#ifndef _MSC_VER
 #pragma GCC diagnostic warning "-Wunused-variable"
 #pragma GCC diagnostic warning "-Wunused-but-set-variable"
+#endif
 
 #include "src/common/util.h"
 #include "src/common/error.h"
