@@ -26,6 +26,7 @@
 #define AURORA_TALKMAN_H
 
 #include <map>
+#include <list>
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"

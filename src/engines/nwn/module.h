@@ -26,6 +26,7 @@
 #define ENGINES_NWN_MODULE_H
 
 #include <map>
+#include <set>
 
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"

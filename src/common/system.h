@@ -35,6 +35,7 @@
 
 	#include <cstdarg>
 	#include <cstdio>
+	#include <stdlib.h>
 
 	#define snprintf c99_snprintf
 	#define vsnprintf c99_vsnprintf
@@ -45,7 +46,7 @@
 	#endif
 
 	#ifndef HAVE_STRTOULL
-		#define strtoll _strtoui64
+		#define strtoull _strtoui64
 		#define HAVE_STRTOULL 1
 	#endif
 
