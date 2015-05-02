@@ -50,7 +50,9 @@
 		#define HAVE_STRTOULL 1
 	#endif
 
-	#define XOREOS_LITTLE_ENDIAN
+	#ifndef XOREOS_LITTLE_ENDIAN
+		#define XOREOS_LITTLE_ENDIAN 1
+	#endif
 
 	#define FORCEINLINE __forceinline
 	#define NORETURN_PRE __declspec(noreturn)
