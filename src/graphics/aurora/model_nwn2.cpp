@@ -22,9 +22,6 @@
  *  Loading MDB files found in Neverwinter Nights 2
  */
 
-// Disable the "unused variable" warnings while most stuff is still stubbed
-#pragma GCC diagnostic ignored "-Wunused-variable"
-
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/stream.h"
@@ -38,6 +35,9 @@
 
 #include "src/graphics/aurora/model_nwn2.h"
 #include "src/graphics/aurora/texture.h"
+
+// Disable the "unused variable" warnings while most stuff is still stubbed
+IGNORE_UNUSED_VARIABLES
 
 
 static const uint32 kMDBID = MKTAG('N', 'W', 'N', '2');

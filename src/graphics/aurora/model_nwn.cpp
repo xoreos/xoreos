@@ -22,10 +22,6 @@
  *  Loading MDL files found in Neverwinter Nights.
  */
 
-// Disable the "unused variable" warnings while most stuff is still stubbed
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-
 #include <boost/unordered_set.hpp>
 
 #include "src/common/system.h"
@@ -44,6 +40,9 @@
 #include "src/graphics/aurora/model_nwn.h"
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/animnode.h"
+
+// Disable the "unused variable" warnings while most stuff is still stubbed
+IGNORE_UNUSED_VARIABLES
 
 using Common::kDebugGraphics;
 

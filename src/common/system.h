@@ -114,13 +114,26 @@
 	#define GCC_PRINTF(x,y) __attribute__((__format__(printf, x, y)))
 	#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
 
+	#if (__GNUC__ >= 3)
+		// Macro to ignore several "unused variable" warnings produced by GCC
+		#define IGNORE_UNUSED_VARIABLES _Pragma("GCC diagnostic ignored \"-Wunused-variable\"") \
+		                                _Pragma("GCC diagnostic ignored \"-Wunused-but-set-variable\"")
+	#endif
+
 	#if !defined(FORCEINLINE) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
 		#define FORCEINLINE inline __attribute__((__always_inline__))
 	#endif
+
 #else
 	#define PACKED_STRUCT
 	#define GCC_PRINTF(x,y)
 	#define UNUSED(x) UNUSED_ ## x
+#endif
+
+#if defined(__clang__)
+	// clang does not know the "unused-but-set-variable" (but claims to be GCC)
+	#undef IGNORE_UNUSED_VARIABLES
+	#define IGNORE_UNUSED_VARIABLES _Pragma("GCC diagnostic ignored \"-Wunused-variable\"")
 #endif
 
 //
@@ -364,6 +377,10 @@
 
 #ifndef MAXPATHLEN
 	#define MAXPATHLEN 256
+#endif
+
+#ifndef IGNORE_UNUSED_VARIABLES
+	#define IGNORE_UNUSED_VARIABLES
 #endif
 
 #endif // COMMON_SYSTEM_H

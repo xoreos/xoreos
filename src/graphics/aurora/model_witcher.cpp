@@ -22,10 +22,6 @@
  *  Loading MDB files found in The Witcher
  */
 
-// Disable the "unused variable" warnings while most stuff is still stubbed
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/stream.h"
@@ -35,6 +31,9 @@
 #include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/model_witcher.h"
+
+// Disable the "unused variable" warnings while most stuff is still stubbed
+IGNORE_UNUSED_VARIABLES
 
 namespace Graphics {
 

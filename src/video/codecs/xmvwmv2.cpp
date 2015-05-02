@@ -24,9 +24,6 @@
  *  WMV2 video codec, XMV variant.
  */
 
-#pragma GCC diagnostic warning "-Wunused-variable"
-#pragma GCC diagnostic warning "-Wunused-but-set-variable"
-
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
@@ -39,6 +36,9 @@
 
 #include "src/video/codecs/wmv2data.h"
 #include "src/video/codecs/xmvwmv2.h"
+
+// Disable the "unused variable" warnings while most stuff is still stubbed
+IGNORE_UNUSED_VARIABLES
 
 namespace Video {
 
