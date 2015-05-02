@@ -221,27 +221,33 @@ enum FileType {
 	kFileTypeTRX            = 20028,
 
 	// Found in Sonic Chronicles: The Dark Brotherhood
-	kFileTypeNDS            = 21000,
-	kFileTypePAL            = 21001,
-	kFileTypeCBGT           = 21002,
-	kFileTypeCDPTH          = 21003,
-	kFileTypeVX             = 21004, ///< Video, Actimagine.
-	kFileTypeHERF           = 21005, ///< Archive, hashed ERF.
-	kFileTypeSADL           = 21006,
-	kFileTypeSDAT           = 21007, ///< Nintendo Sound Data File.
-	kFileTypeSMALL          = 21008,
-	kFileTypeNSBCA          = 21009,
-	kFileTypeEMIT           = 21010,
-	kFileTypeSPL            = 21011,
-	kFileTypeNBFP           = 21012,
-	kFileTypeNBFS           = 21013,
-	kFileTypeSMP            = 21014,
-	kFileTypeITM            = 21015,
-	kFileTypeNFTR           = 21016,
-	kFileTypeRAW            = 21017,
-	kFileTypeNCLR           = 21018,
-	kFileTypeNCGR           = 21019,
-	kFileTypeDICT           = 21020, ///< HERF file name dictionary.
+	kFileTypeNDS            = 21000, ///< Archive, Nintendo DS ROM file.
+	kFileTypeHERF           = 21001, ///< Archive, hashed ERF.
+	kFileTypeDICT           = 21002, ///< HERF file name -> hashes dictionary.
+	kFileTypeSMALL          = 21023, ///< Compressed file, Nintendo LZSS.
+	kFileTypeCBGT           = 21004,
+	kFileTypeCDPTH          = 21005,
+	kFileTypeEMIT           = 21006,
+	kFileTypeITM            = 21007, ///< Items, 2DA.
+	kFileTypeNANR           = 21008, ///< Animation, Nitro ANimation Resource.
+	kFileTypeNBFP           = 21009, ///< Palette, Nitro Basic File Palette.
+	kFileTypeNBFS           = 21010, ///< Image, Map, Nitro Basic File Screen.
+	kFileTypeNCER           = 21011, ///< Image, Nitro CEll Resource.
+	kFileTypeNCGR           = 21012, ///< Image, Nitro Character Graphic Resource.
+	kFileTypeNCLR           = 21013, ///< Palette, Nitro CoLouR.
+	kFileTypeNFTR           = 21014, ///< Font.
+	kFileTypeNSBCA          = 21015, ///< Model Animation.
+	kFileTypeNSBMD          = 21016, ///< Model.
+	kFileTypeNSBTA          = 21017, ///< Texture animation.
+	kFileTypeNSBTP          = 21018, ///< Texture part.
+	kFileTypeNSBTX          = 21019, ///< Texture.
+	kFileTypePAL            = 21020, ///< Palette.
+	kFileTypeRAW            = 21021, ///< Image, raw.
+	kFileTypeSADL           = 21022,
+	kFileTypeSDAT           = 21023, ///< Audio, Sound DATa.
+	kFileTypeSMP            = 21024,
+	kFileTypeSPL            = 21025, ///< Spells, 2DA.
+	kFileTypeVX             = 21026, ///< Video, Actimagine.
 
 	// Found in Dragon Age: Origins
 	kFileTypeANB            = 22000, ///< Animation blend.
