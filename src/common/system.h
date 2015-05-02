@@ -46,7 +46,7 @@
 	#endif
 
 	#ifndef HAVE_STRTOULL
-		#define strtoll _strtoui64
+		#define strtoull _strtoui64
 		#define HAVE_STRTOULL 1
 	#endif
 
