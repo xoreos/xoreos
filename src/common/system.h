@@ -35,6 +35,7 @@
 
 	#include <cstdarg>
 	#include <cstdio>
+	#include <cstdlib>
 
 	#define snprintf c99_snprintf
 	#define vsnprintf c99_vsnprintf

@@ -25,6 +25,8 @@
 #ifndef COMMON_FILEPATH_H
 #define COMMON_FILEPATH_H
 
+#include <list>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
