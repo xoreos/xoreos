@@ -39,6 +39,7 @@ public:
 	~CharRace();
 
 	void reset();
+	void hide();
 
 private:
 	void callbackActive(Widget &widget);

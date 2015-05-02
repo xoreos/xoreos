@@ -40,6 +40,7 @@ public:
 
 	void reset();
 	void show();
+	void hide();
 
 	void genTextAttributes(uint32 attribute);
 	uint32 pointCost(uint32 attrValue);

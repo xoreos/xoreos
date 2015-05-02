@@ -37,6 +37,7 @@ public:
 	~CharClass();
 
 	void reset();
+	void hide();
 
 protected:
 	void fixWidgetType(const Common::UString &tag, WidgetType &type);
