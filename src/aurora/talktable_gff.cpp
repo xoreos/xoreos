@@ -27,7 +27,6 @@
 #include "src/common/stream.h"
 
 #include "src/aurora/talktable_gff.h"
-#include "src/aurora/talkman.h"
 #include "src/aurora/gff4file.h"
 
 static const uint32 kTLKID     = MKTAG('T', 'L', 'K', ' ');

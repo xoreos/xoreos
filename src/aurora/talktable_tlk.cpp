@@ -28,7 +28,7 @@
 #include "src/common/error.h"
 
 #include "src/aurora/talktable_tlk.h"
-#include "src/aurora/talkman.h"
+#include "src/aurora/language.h"
 
 static const uint32 kTLKID    = MKTAG('T', 'L', 'K', ' ');
 static const uint32 kVersion3 = MKTAG('V', '3', '.', '0');
