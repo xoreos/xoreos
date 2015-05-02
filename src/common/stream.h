@@ -787,7 +787,10 @@ private:
 	}
 
 public:
-	MemoryWriteStreamDynamic(bool disposeMemory = false) : _capacity(0), _size(0), _ptr(0), _data(0), _pos(0), _disposeMemory(disposeMemory) {}
+	MemoryWriteStreamDynamic(bool disposeMemory = false, uint32 capacity = 0) : _capacity(0), _size(0), _ptr(0), _data(0), _pos(0), _disposeMemory(disposeMemory) {
+
+		reserve(capacity);
+	}
 
 	~MemoryWriteStreamDynamic() {
 		if (_disposeMemory)
