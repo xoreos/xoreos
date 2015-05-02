@@ -807,6 +807,16 @@ public:
 		return dataSize;
 	}
 
+	void dispose() {
+		delete[] _data;
+
+		_data     = 0;
+		_ptr      = 0;
+		_pos      = 0;
+		_size     = 0;
+		_capacity = 0;
+	}
+
 	uint32 pos() const { return _pos; }
 	uint32 size() const { return _size; }
 
