@@ -52,7 +52,9 @@ static void decompress10(Common::SeekableReadStream &small, Common::WriteStream 
 	uint32 bufferPos = 0;
 
 	uint16 flags = 0xFF00;
-	while (size > 0) {
+
+	int32 outSize = 0;
+	while (outSize < size) {
 		// Only our canaries left => Read flags for the next 8 blocks
 		if (flags == 0xFF00)
 			flags = (small.readByte() << 8) | 0x00FF;
@@ -68,14 +70,17 @@ static void decompress10(Common::SeekableReadStream &small, Common::WriteStream 
 			const uint16 offset = (((data1 & 0x0F) << 8) | data2) + 1;
 
 			// Direct offset. Add size of the buffer once, to protect from overroll
-			const uint32 copyOffset = bufferPos + sizeof(buffer) - offset;
+			uint32 copyOffset = bufferPos + sizeof(buffer) - offset;
 
 			// Copy length bytes (and store each back into the buffer)
-			for (uint8 i = 0; i < length; i++) {
-				const byte data = buffer[(copyOffset + i) % sizeof(buffer)];
+			for (uint8 i = 0; i < length; i++, copyOffset++) {
+				if ((copyOffset % sizeof(buffer)) > (uint32)outSize)
+					throw Common::Exception("Tried to copy past the buffer");
+
+				const byte data = buffer[copyOffset % sizeof(buffer)];
 
 				out.writeByte(data);
-				size--;
+				outSize++;
 
 				buffer[bufferPos] = data;
 				bufferPos = (bufferPos + 1) % sizeof(buffer);
@@ -87,7 +92,7 @@ static void decompress10(Common::SeekableReadStream &small, Common::WriteStream 
 			const byte data = small.readByte();
 
 			out.writeByte(data);
-			size--;
+			outSize++;
 
 			buffer[bufferPos] = data;
 			bufferPos = (bufferPos + 1) % sizeof(buffer);
@@ -96,7 +101,7 @@ static void decompress10(Common::SeekableReadStream &small, Common::WriteStream 
 		flags <<= 1;
 	}
 
-	if (size != 0)
+	if (outSize != size)
 		throw Common::Exception("Invalid \"small\" data");
 }
 
