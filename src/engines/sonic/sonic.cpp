@@ -241,6 +241,7 @@ void SonicEngine::declareEncodings() {
 }
 
 void SonicEngine::initResources(LoadProgress &progress) {
+	ResMan.setHasSmall(true);
 	ResMan.setHashAlgo(Common::kHashDJB2);
 
 	progress.step("Indexing the ROM file");
