@@ -84,6 +84,8 @@
 		#define WIN32
 	#endif
 
+	#define IGNORE_UNUSED_VARIABLES __pragma(warning(disable : 4101))
+
 #elif defined(__MINGW32__)
 
 	#define XOREOS_LITTLE_ENDIAN
