@@ -67,6 +67,9 @@ public:
 	/** Are .rim files actually ERF files? */
 	void setRIMsAreERFs(bool rimsAreERFs);
 
+	/** Do we have "small" files (compressed with Nintendo DS's LZSS algorithm)? */
+	void setHasSmall(bool hasSmall);
+
 	/** With which hash algo are/should the names be hashed? */
 	void setHashAlgo(Common::HashAlgo algo);
 
@@ -278,6 +281,8 @@ private:
 		// For kSourceFile
 		Common::UString path; ///< The file's path.
 
+		bool isSmall; ///< Is this a "small" (compressed Nintendo DS) file?
+
 		Resource();
 
 		bool operator<(const Resource &right) const;
@@ -318,6 +323,7 @@ private:
 
 
 	bool _rimsAreERFs; ///< Are .rim files actually ERF files?
+	bool _hasSmall;    ///< Do we have "small" files?
 
 	Common::HashAlgo _hashAlgo; ///< With which hash algo are/should the names be hashed?
 

@@ -39,6 +39,7 @@
 #include "src/aurora/zipfile.h"
 #include "src/aurora/pefile.h"
 #include "src/aurora/herffile.h"
+#include "src/aurora/smallfile.h"
 
 // Check for hash collisions (if possible)
 #define CHECK_HASH_COLLISION 1
@@ -53,7 +54,7 @@ static const char *kArchiveGlob[Aurora::kArchiveMAX] = {
 namespace Aurora {
 
 ResourceManager::Resource::Resource() : type(kFileTypeNone), priority(0),
-		source(kSourceNone), archive(0), archiveIndex(0xFFFFFFFF) {
+		source(kSourceNone), archive(0), archiveIndex(0xFFFFFFFF), isSmall(false) {
 }
 
 bool ResourceManager::Resource::operator<(const Resource &right) const {
@@ -61,7 +62,9 @@ bool ResourceManager::Resource::operator<(const Resource &right) const {
 }
 
 
-ResourceManager::ResourceManager() : _rimsAreERFs(false), _hashAlgo(Common::kHashFNV64) {
+ResourceManager::ResourceManager() : _rimsAreERFs(false), _hasSmall(false),
+	_hashAlgo(Common::kHashFNV64) {
+
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeDDS);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTPC);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTXB);
@@ -102,6 +105,7 @@ ResourceManager::~ResourceManager() {
 
 void ResourceManager::clear() {
 	_rimsAreERFs = false;
+	_hasSmall    = false;
 	_hashAlgo    = Common::kHashFNV64;
 
 	clearResources();
@@ -130,6 +134,10 @@ void ResourceManager::clearResources() {
 
 void ResourceManager::setRIMsAreERFs(bool rimsAreERFs) {
 	_rimsAreERFs = rimsAreERFs;
+}
+
+void ResourceManager::setHasSmall(bool hasSmall) {
+	_hasSmall = hasSmall;
 }
 
 void ResourceManager::setHashAlgo(Common::HashAlgo algo) {
@@ -366,6 +374,14 @@ void ResourceManager::indexArchive(Archive *archive, uint32 priority, Change *ch
 			if (normalizeType(res))
 				hash = getHash(res.name, res.type);
 
+		// Handle "small" files
+		if (_hasSmall && (res.type == kFileTypeSMALL)) {
+			res.isSmall = true;
+
+			res.name = Common::FilePath::getStem(resource->name);
+			res.type = TypeMan.getFileType(resource->name);
+		}
+
 		// And add it to our list
 		addResource(res, hash, change);
 	}
@@ -451,13 +467,25 @@ void ResourceManager::blacklist(const Common::UString &name, FileType type) {
 }
 
 void ResourceManager::declareResource(const Common::UString &name, FileType type) {
+	bool isSmall = false;
+
 	ResourceMap::iterator resList = _resources.find(getHash(name, type));
-	if (resList == _resources.end())
-		return;
+	if (resList == _resources.end()) {
+		if (_hasSmall) {
+			Common::UString smallName = TypeMan.addFileType(TypeMan.setFileType(name, type), kFileTypeSMALL);
+
+			resList = _resources.find(getHash(smallName));
+			isSmall = true;
+		}
+
+		if (resList == _resources.end())
+			return;
+	}
 
 	for (ResourceList::iterator r = resList->second.begin(); r != resList->second.end(); ++r) {
-		r->name = name;
-		r->type = type;
+		r->name    = name;
+		r->type    = type;
+		r->isSmall = isSmall;
 	}
 }
 
@@ -534,24 +562,27 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	if (foundType)
 		*foundType = res->type;
 
+	Common::SeekableReadStream *stream = 0;
+
 	if        (res->source == kSourceNone) {
 		throw Common::Exception("Invalid resource source");
 	} else if (res->source == kSourceArchive) {
-		return getArchiveResource(*res);
+		stream = getArchiveResource(*res);
 	} else if (res->source == kSourceFile) {
-		// Open the file and return it
-
-		Common::File *file = new Common::File;
-
-		if (!file->open(res->path)) {
-			delete file;
-			return 0;
-		}
-
-		return file;
+		stream = new Common::File(res->path);
 	}
 
-	return 0;
+	// Transparently decompress "small" files
+	if (stream && res->isSmall) {
+		try {
+			stream = Small::decompress(stream);
+		} catch (...) {
+			delete stream;
+			throw;
+		}
+	}
+
+	return stream;
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(ResourceType resType,
@@ -719,6 +750,14 @@ const ResourceManager::Resource *ResourceManager::getRes(const Common::UString &
 		const Resource *res = getRes(getHash(name, *type));
 		if (res)
 			return res;
+
+		if (_hasSmall) {
+			Common::UString smallName = TypeMan.addFileType(TypeMan.setFileType(name, *type), kFileTypeSMALL);
+
+			res = getRes(getHash(smallName));
+			if (res)
+				return res;
+		}
 	}
 
 	return 0;
