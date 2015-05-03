@@ -86,7 +86,7 @@ void ERFFile::load() {
 
 			if (!_noResources)
 				readResources(erf, erfHeader);
-		} catch (Common::Exception &e) {
+		} catch (Common::Exception &UNUSED(e)) {
 			delete[] erfHeader.stringTable;
 			throw;
 		}
@@ -419,7 +419,7 @@ Common::SeekableReadStream *ERFFile::decompressBiowareZlib(byte *compressedData,
 		Common::SeekableReadStream *stream = decompressZlib(compressedData + 1, packedSize - 1, unpackedSize, *compressedData >> 4);
 		delete[] compressedData;
 		return stream;
-	} catch (Common::Exception &e) {
+	} catch (Common::Exception &UNUSED(e)) {
 		delete[] compressedData;
 		throw;
 	}
@@ -430,7 +430,7 @@ Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(byte *compressedDa
 		Common::SeekableReadStream *stream = decompressZlib(compressedData, packedSize, unpackedSize, MAX_WBITS);
 		delete[] compressedData;
 		return stream;
-	} catch (Common::Exception &e) {
+	} catch (Common::Exception &UNUSED(e)) {
 		delete[] compressedData;
 		throw;
 	}
