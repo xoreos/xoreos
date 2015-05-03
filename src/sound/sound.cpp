@@ -83,7 +83,7 @@ void SoundManager::init() {
 		if (!_ctx)
 			throw Common::Exception("Could not create OpenAL context");
 
-		_hasMultiChannel = alIsExtensionPresent("AL_EXT_MCFORMATS");
+		_hasMultiChannel = alIsExtensionPresent("AL_EXT_MCFORMATS") != 0;
 		_format51        = alGetEnumValue("AL_FORMAT_51CHN16");
 	}
 

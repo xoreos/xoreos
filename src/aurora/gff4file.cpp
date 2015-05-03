@@ -256,11 +256,11 @@ GFF4Struct::Field::Field() : label(0), type(kIFieldTypeNone), offset(0xFFFFFFFF)
 }
 
 GFF4Struct::Field::Field(uint32 l, uint16 t, uint16 f, uint32 o) : label(l), offset(o) {
-	isList      = f & 0x8000;
-	isReference = f & 0x2000;
+	isList      = (f & 0x8000) != 0;
+	isReference = (f & 0x2000) != 0;
 
 	// Map the struct flag to the struct type and index, if necessary
-	const bool isStruct = f & 0x4000;
+	const bool isStruct = (f & 0x4000) != 0;
 	if (isStruct) {
 		type        = kIFieldTypeStruct;
 		structIndex = t;

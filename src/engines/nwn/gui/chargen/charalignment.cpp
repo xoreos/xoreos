@@ -139,7 +139,7 @@ void CharAlignment::setRestrict() {
 	const Aurora::TwoDARow &row = twodaClasses.getRow(_choices->getClass());
 
 	uint alignRestrict = row.getInt("AlignRestrict");
-	bool invertRestrict = row.getInt("InvertRestrict");
+	bool invertRestrict = row.getInt("InvertRestrict") != 0;
 
 	// Build restriction axis.
 	uint axisRestrict[5] = { 0x01, 0x02, 0x04, 0x08, 0x10 };
