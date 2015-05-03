@@ -94,7 +94,7 @@ void FoxPro::loadHeader(SeekableReadStream &dbf, uint32 &recordSize, uint32 &rec
 	byte flags = dbf.readByte();
 
 	_hasIndex = flags & 0x01;
-	_hasMemo  = flags & 0x02;
+	_hasMemo  = (flags & 0x02) != 0;
 
 	if (flags & 0x04)
 		throw Exception("DBC unsupported");

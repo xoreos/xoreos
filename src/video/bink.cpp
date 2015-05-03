@@ -571,7 +571,7 @@ void Bink::load() {
 
 	_frames[frameCount - 1].size = _bink->size() - _frames[frameCount - 1].offset;
 
-	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
+	_hasAlpha   = (_videoFlags & kVideoFlagAlpha) != 0;
 	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID); // BIKh and BIKi swap the chroma planes
 
 	// Give the planes a bit extra space

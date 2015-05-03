@@ -845,9 +845,9 @@ void ScriptFunctions::addJournalQuestEntry(Aurora::NWScript::FunctionContext &ct
 
 	Creature *pc = convertPC(ctx.getParams()[2].getObject());
 
-	bool allPartyMembers = ctx.getParams()[3].getInt();
-	bool allPlayers      = ctx.getParams()[4].getInt();
-	bool allowOverride   = ctx.getParams()[5].getInt();
+	bool allPartyMembers = ctx.getParams()[3].getInt() != 0;
+	bool allPlayers      = ctx.getParams()[4].getInt() != 0;
+	bool allowOverride   = ctx.getParams()[5].getInt() != 0;
 
 	warning("TODO: AddJournalQuestEntry: %s: \"%s\" to %d (%d, %d, %d)", gTag(pc).c_str(),
 	        plot.c_str(), state, allPartyMembers, allPlayers, allowOverride);

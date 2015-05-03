@@ -334,10 +334,10 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	uint32 transparencyHint = ctx.mdl->readUint32LE();
 	uint16 flags            = ctx.mdl->readUint16LE();
 
-	_shadow = ctx.mdl->readUint16LE();
+	_shadow = ctx.mdl->readUint16LE() != 0;
 
-	_render  = flags & kNodeFlagsRender;
-	_beaming = flags & kNodeFlagsBeaming;
+	_render  = (flags & kNodeFlagsRender) != 0;
+	_beaming = (flags & kNodeFlagsBeaming) != 0;
 
 	_hasTransparencyHint = true;
 	_transparencyHint    = (transparencyHint == 1);

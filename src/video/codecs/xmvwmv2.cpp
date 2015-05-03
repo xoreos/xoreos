@@ -66,7 +66,7 @@ bool XMVWMV2Codec::CBP::empty() const {
 bool XMVWMV2Codec::CBP::isSet(int block) const {
 	assert((block >= 0) && (block < 6));
 
-	return _cbp & (1 << (5 - block));
+	return (_cbp & (1 << (5 - block))) != 0;
 }
 
 void XMVWMV2Codec::CBP::set(int block, bool coded) {
@@ -634,7 +634,7 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 			} else {
 				// Escape + 00: run and level directly encoded
 
-				done = ctx.bits.getBit();
+				done = ctx.bits.getBit() != 0;
 
 				if (ctx.acRLERunLength == 0) {
 
