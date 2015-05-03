@@ -48,6 +48,7 @@
 #include "src/engines/aurora/resources.h"
 
 #include "src/engines/sonic/sonic.h"
+#include "src/engines/sonic/files.h"
 #include "src/engines/sonic/console.h"
 
 namespace Engines {
@@ -256,7 +257,8 @@ void SonicEngine::initResources(LoadProgress &progress) {
 }
 
 void SonicEngine::declareResources() {
-	ResMan.declareResource("nintendosplash.tga");
+	for (uint i = 0; i < ARRAYSIZE(kFiles); i++)
+		ResMan.declareResource(kFiles[i]);
 }
 
 void SonicEngine::unloadLanguageFiles() {

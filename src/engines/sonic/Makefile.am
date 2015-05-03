@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libsonic.la
 
 noinst_HEADERS = \
                  sonic.h \
+                 files.h \
                  console.h \
                  $(EMPTY)
 
