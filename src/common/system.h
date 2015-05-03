@@ -117,7 +117,6 @@
 	#define NORETURN_POST __attribute__((__noreturn__))
 	#define PACKED_STRUCT __attribute__((__packed__))
 	#define GCC_PRINTF(x,y) __attribute__((__format__(printf, x, y)))
-	#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
 
 	#if (__GNUC__ >= 3)
 		// Macro to ignore several "unused variable" warnings produced by GCC
@@ -132,7 +131,16 @@
 #else
 	#define PACKED_STRUCT
 	#define GCC_PRINTF(x,y)
-	#define UNUSED(x) UNUSED_ ## x
+#endif
+
+#if defined(__cplusplus)
+	#define UNUSED(x)
+#else
+	#if defined(__GNUC__)
+		#define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+	#else
+		#define UNUSED(x) UNUSED_ ## x
+	#endif
 #endif
 
 #if defined(__clang__)
