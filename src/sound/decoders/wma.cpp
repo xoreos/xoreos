@@ -730,7 +730,7 @@ int WMACodec::decodeBlock(Common::BitStream &bits) {
 
 	bool msStereo = false;
 	if (_channels == 2)
-		msStereo = bits.getBit();
+		msStereo = bits.getBit() != 0;
 
 	// Which channels are encoded?
 
@@ -740,7 +740,7 @@ int WMACodec::decodeBlock(Common::BitStream &bits) {
 		hasChannel[i] = false;
 
 	for (int i = 0; i < _channels; i++) {
-		hasChannel[i] = bits.getBit();
+		hasChannel[i] = bits.getBit() != 0;
 		if (hasChannel[i])
 			hasChannels = true;
 	}
