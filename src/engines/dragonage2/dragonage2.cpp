@@ -189,7 +189,7 @@ void DragonAge2Engine::run() {
 }
 
 void DragonAge2Engine::init() {
-	LoadProgress progress(13);
+	LoadProgress progress(19);
 
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
