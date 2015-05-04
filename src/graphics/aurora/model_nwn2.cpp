@@ -26,6 +26,7 @@
 #include "src/common/maths.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
@@ -114,8 +115,9 @@ void Model_NWN2::setTintWalls(const float tint[3][4]) {
 }
 
 void Model_NWN2::load(ParserContext &ctx) {
-	if (ctx.mdb->readUint32BE() != kMDBID)
-		throw Common::Exception("Not a NWN2 MDB file");
+	uint32 tag = ctx.mdb->readUint32BE();
+	if (tag != kMDBID)
+		throw Common::Exception("Not a NWN2 MDB file (%s)", Common::debugTag(tag).c_str());
 
 	uint16 verMajor = ctx.mdb->readUint16LE();
 	uint16 verMinor = ctx.mdb->readUint16LE();
@@ -196,8 +198,9 @@ ModelNode_NWN2::~ModelNode_NWN2() {
 }
 
 bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
-	if (ctx.mdb->readUint32BE() != kRigidID)
-		throw Common::Exception("Packet signatures do not match");
+	uint32 tag = ctx.mdb->readUint32BE();
+	if (tag != kRigidID)
+		throw Common::Exception("Invalid rigid packet signature (%s)", Common::debugTag(tag).c_str());
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 
@@ -328,8 +331,9 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 }
 
 bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
-	if (ctx.mdb->readUint32BE() != kSkinID)
-		throw Common::Exception("Packet signatures do not match");
+	uint32 tag = ctx.mdb->readUint32BE();
+	if (tag != kSkinID)
+		throw Common::Exception("Invalid skin packet signature (%s)", Common::debugTag(tag).c_str());
 
 	uint32 packetSize = ctx.mdb->readUint32LE();
 

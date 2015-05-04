@@ -24,6 +24,7 @@
 
 #include "src/common/error.h"
 #include "src/common/stream.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/resman.h"
 
@@ -120,9 +121,9 @@ void PLTFile::readHeader(Common::SeekableReadStream &plt) {
 	AuroraBase::readHeader(plt);
 
 	if (_id != kPLTID)
-		throw Common::Exception("Not a PLT file");
+		throw Common::Exception("Not a PLT file (%s)", Common::debugTag(_id).c_str());
 	if (_version != kVersion1)
-		throw Common::Exception("Unsupported PLT file version %08X", _version);
+		throw Common::Exception("Unsupported PLT file version %s", Common::debugTag(_version).c_str());
 
 	uint32 layers = plt.readUint32LE();
 	if (layers > kLayerMAX)
