@@ -24,6 +24,7 @@
 
 #include "src/common/stream.h"
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/encoding.h"
 
@@ -66,10 +67,10 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 	readHeader(ssf);
 
 	if (_id != kSSFID)
-		throw Common::Exception("Not a SSF file");
+		throw Common::Exception("Not a SSF file (%s)", Common::debugTag(_id).c_str());
 
 	if ((_version != kVersion1) && (_version != kVersion11))
-		throw Common::Exception("Unsupported SSF file version %08X", _version);
+		throw Common::Exception("Unsupported SSF file version %s", Common::debugTag(_version).c_str());
 
 	uint32 entryCount = 0;
 	if (_version == kVersion1)

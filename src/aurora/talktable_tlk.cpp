@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/stream.h"
 #include "src/common/file.h"
 #include "src/common/error.h"
@@ -53,10 +54,10 @@ void TalkTable_TLK::load() {
 		readHeader(*_tlk);
 
 		if (_id != kTLKID)
-			throw Common::Exception("Not a TLK file");
+			throw Common::Exception("Not a TLK file (%s)", Common::debugTag(_id).c_str());
 
 		if (_version != kVersion3 && _version != kVersion4)
-			throw Common::Exception("Unsupported TLK file version %08X", _version);
+			throw Common::Exception("Unsupported TLK file version %s", Common::debugTag(_version).c_str());
 
 		_languageID = _tlk->readUint32LE();
 

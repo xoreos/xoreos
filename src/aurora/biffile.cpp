@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/file.h"
@@ -54,10 +55,10 @@ void BIFFile::load() {
 	readHeader(bif);
 
 	if (_id != kBIFID)
-		throw Common::Exception("Not a BIF file");
+		throw Common::Exception("Not a BIF file (%s)", Common::debugTag(_id).c_str());
 
 	if ((_version != kVersion1) && (_version != kVersion11))
-		throw Common::Exception("Unsupported BIF file version %08X", _version);
+		throw Common::Exception("Unsupported BIF file version %s", Common::debugTag(_version).c_str());
 
 	uint32 varResCount = bif.readUint32LE();
 	uint32 fixResCount = bif.readUint32LE();

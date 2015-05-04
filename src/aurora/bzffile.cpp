@@ -28,6 +28,7 @@
 #include <lzma.h>
 
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/file.h"
@@ -58,10 +59,10 @@ void BZFFile::load() {
 	readHeader(bzf);
 
 	if (_id != kBZFID)
-		throw Common::Exception("Not a BZF file");
+		throw Common::Exception("Not a BZF file (%s)", Common::debugTag(_id).c_str());
 
 	if (_version != kVersion1)
-		throw Common::Exception("Unsupported BZF file version %08X", _version);
+		throw Common::Exception("Unsupported BZF file version %s", Common::debugTag(_version).c_str());
 
 	uint32 varResCount = bzf.readUint32LE();
 	uint32 fixResCount = bzf.readUint32LE();

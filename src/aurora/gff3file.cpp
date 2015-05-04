@@ -26,6 +26,7 @@
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
 #include "src/common/ustring.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/util.h"
@@ -110,10 +111,11 @@ void GFF3File::loadHeader(uint32 id) {
 	readHeader(*_stream);
 
 	if (_id != id)
-		throw Common::Exception("GFF3 has invalid ID (want 0x%08X, got 0x%08X)", id, _id);
+		throw Common::Exception("GFF3 has invalid ID (want %s, got %s)",
+				Common::debugTag(id).c_str(), Common::debugTag(_id).c_str());
 
 	if ((_version != kVersion32) && (_version != kVersion33))
-		throw Common::Exception("Unsupported GFF3 file version %08X", _version);
+		throw Common::Exception("Unsupported GFF3 file version %s", Common::debugTag(_version).c_str());
 
 	_header.read(*_stream);
 }

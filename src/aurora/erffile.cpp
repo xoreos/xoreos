@@ -25,6 +25,7 @@
 #include "src/common/stream.h"
 #include "src/common/file.h"
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/encoding.h"
 
@@ -65,12 +66,12 @@ void ERFFile::load() {
 	readHeader(erf);
 
 	if ((_id != kERFID) && (_id != kMODID) && (_id != kHAKID) && (_id != kSAVID))
-		throw Common::Exception("Not an ERF file");
+		throw Common::Exception("Not an ERF file (%s)", Common::debugTag(_id).c_str());
 
 	if ((_version != kVersion1) && (_version != kVersion11) &&
 	    (_version != kVersion2) && (_version != kVersion22) &&
 	    (_version != kVersion3))
-		throw Common::Exception("Unsupported ERF file version %08X", _version);
+		throw Common::Exception("Unsupported ERF file version %s", Common::debugTag(_version).c_str());
 
 	if ((_version != kVersion1) && (_version != kVersion11) && !_utf16le)
 		throw Common::Exception("ERF file version 2.0+, but not UTF-16LE");

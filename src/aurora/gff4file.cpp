@@ -25,6 +25,7 @@
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/gff4file.h"
 #include "src/aurora/util.h"
@@ -131,12 +132,13 @@ void GFF4File::loadHeader(uint32 type) {
 		throw Common::Exception("Not a GFF4 file");
 
 	if ((_version != kVersion40) && (_version != kVersion41))
-		throw Common::Exception("Unsupported GFF4 file version %08X", _version);
+		throw Common::Exception("Unsupported GFF4 file version %s", Common::debugTag(_version).c_str());
 
 	_header.read(*_stream, _version);
 
 	if (_header.type != type)
-		throw Common::Exception("GFF4 has invalid type (want 0x%08X, got 0x%08X)", type, _header.type);
+		throw Common::Exception("GFF4 has invalid type (want %s, got %s)",
+				Common::debugTag(type).c_str(), Common::debugTag(_header.type).c_str());
 }
 
 void GFF4File::loadStructs() {

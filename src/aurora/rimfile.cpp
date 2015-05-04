@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/stream.h"
 #include "src/common/file.h"
 #include "src/common/error.h"
@@ -53,10 +54,10 @@ void RIMFile::load() {
 	readHeader(rim);
 
 	if (_id != kRIMID)
-		throw Common::Exception("Not a RIM file");
+		throw Common::Exception("Not a RIM file (%s)", Common::debugTag(_id).c_str());
 
 	if (_version != kVersion1)
-		throw Common::Exception("Unsupported RIM file version %08X", _version);
+		throw Common::Exception("Unsupported RIM file version %s", Common::debugTag(_version).c_str());
 
 	rim.skip(4);                            // Reserved
 	uint32 resCount   = rim.readUint32LE(); // Number of resources in the RIM

@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
@@ -51,10 +52,10 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 	readHeader(key);
 
 	if (_id != kKEYID)
-		throw Common::Exception("Not a KEY file");
+		throw Common::Exception("Not a KEY file (%s)", Common::debugTag(_id).c_str());
 
 	if ((_version != kVersion1) && (_version != kVersion11))
-		throw Common::Exception("Unsupported KEY file version %08X", _version);
+		throw Common::Exception("Unsupported KEY file version %s", Common::debugTag(_version).c_str());
 
 	uint32 bifCount = key.readUint32LE();
 	uint32 resCount = key.readUint32LE();
