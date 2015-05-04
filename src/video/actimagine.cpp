@@ -24,6 +24,7 @@
 
 #include "src/common/error.h"
 #include "src/common/stream.h"
+#include "src/common/strutil.h"
 
 #include "src/video/actimagine.h"
 
@@ -63,8 +64,9 @@ void ActimagineDecoder::processData() {
 }
 
 void ActimagineDecoder::load() {
-	if (_vx->readUint32BE() != MKTAG('V', 'X', 'D', 'S'))
-		throw Common::Exception("Not a valid Actimagine video");
+	uint32 tag = _vx->readUint32BE();
+	if (tag != MKTAG('V', 'X', 'D', 'S'))
+		throw Common::Exception("Not a valid Actimagine video (%s)", Common::debugTag(tag).c_str());
 
 	_vx->readUint32LE(); // header size?
 	_vx->readUint32LE(); // version? (0x100)
