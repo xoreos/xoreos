@@ -26,6 +26,7 @@
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
 #include "src/common/ustring.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/resman.h"
 
@@ -103,7 +104,7 @@ void TRXFile::hide() {
 void TRXFile::load(Common::SeekableReadStream &trx) {
 	uint32 magic = trx.readUint32BE();
 	if (magic != MKTAG('N', 'W', 'N', '2'))
-		throw Common::Exception("Invalid magic 0x%08X", magic);
+		throw Common::Exception("Invalid magic %s", Common::debugTag(magic).c_str());
 
 	uint16 versionMajor = trx.readUint16LE();
 	uint16 versionMinor = trx.readUint16LE();
@@ -157,7 +158,7 @@ void TRXFile::loadPacket(Common::SeekableReadStream &trx, Packet &packet) {
 	else if (packet.type == MKTAG('A', 'S', 'W', 'M'))
 		loadASWM(trx, packet);
 	else
-		throw Common::Exception("Unknown packet type 0x%08X", packet.type);
+		throw Common::Exception("Unknown packet type %s", Common::debugTag(packet.type).c_str());
 }
 
 void TRXFile::loadTRWH(Common::SeekableReadStream &trx, Packet &packet) {
