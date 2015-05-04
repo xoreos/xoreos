@@ -37,6 +37,15 @@ void printDataHex(SeekableReadStream &stream);
 /** Print a quick hex dump of the given data. */
 void printDataHex(const byte *data, uint32 size);
 
+/** Create an elaborate string from an integer tag, for debugging purposes.
+ *
+ *  If all 4 bytes of the integer are printable characters, return
+ *  "0xXXXX ('cccc')"
+ *  Otherwise, return
+ *  "0xXXXX"
+ */
+UString debugTag(uint32 tag, bool trim = false);
+
 /** Parse a string into any POD integer, float/double or bool type. */
 template<typename T> void parseString(const UString &str, T &value);
 
