@@ -24,6 +24,7 @@
 
 #include "src/common/error.h"
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/stream.h"
 
 #include "src/sound/audiostream.h"
@@ -35,16 +36,19 @@
 namespace Sound {
 
 RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	if (stream->readUint32BE() != MKTAG('R', 'I', 'F', 'F'))
-		throw Common::Exception("makeWAVStream(): No 'RIFF' header");
+	uint32 riffTag = stream->readUint32BE();
+	if (riffTag != MKTAG('R', 'I', 'F', 'F'))
+		throw Common::Exception("makeWAVStream(): No 'RIFF' header (%s)", Common::debugTag(riffTag).c_str());
 
 	/* uint32 fileSize = */ stream->readUint32LE();
 
-	if (stream->readUint32BE() != MKTAG('W', 'A', 'V', 'E'))
-		throw Common::Exception("makeWAVStream(): No 'WAVE' RIFF type");
+	uint32 waveTag = stream->readUint32BE();
+	if (waveTag != MKTAG('W', 'A', 'V', 'E'))
+		throw Common::Exception("makeWAVStream(): No 'WAVE' RIFF type (%s)", Common::debugTag(waveTag).c_str());
 
-	if (stream->readUint32BE() != MKTAG('f', 'm', 't', ' '))
-		throw Common::Exception("makeWAVStream(): No 'fmt ' chunk");
+	uint32 fmtTag = stream->readUint32BE();
+	if (fmtTag != MKTAG('f', 'm', 't', ' '))
+		throw Common::Exception("makeWAVStream(): No 'fmt ' chunk (%s)", Common::debugTag(fmtTag).c_str());
 
 	uint32 fmtLength = stream->readUint32LE();
 	if (fmtLength < 16) // A valid fmt chunk always contains at least 16 bytes
