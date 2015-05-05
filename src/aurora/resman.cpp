@@ -197,6 +197,20 @@ void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &
 	}
 }
 
+Common::UString ResourceManager::findArchive(const Common::UString &file, ArchiveType archiveType) {
+	assert((archiveType >= 0) && (archiveType < kArchiveMAX));
+
+	// NDS archives are not in archive directories, they are plain files in a path
+	if (archiveType == kArchiveNDS) {
+		if (Common::File::exists(file))
+			return file;
+
+		return "";
+	}
+
+	return findArchive(file, _archiveDirs[archiveType], _archiveFiles[archiveType]);
+}
+
 Common::UString ResourceManager::findArchive(const Common::UString &file,
 		const DirectoryList &dirs, const Common::FileList &files) {
 
@@ -217,15 +231,11 @@ Common::UString ResourceManager::findArchive(const Common::UString &file,
 bool ResourceManager::hasArchive(ArchiveType archive, const Common::UString &file) {
 	assert((archive >= 0) && (archive < kArchiveMAX));
 
-	// NDS archives are not in archive directories, they are plain files in a path
-	if (archive == kArchiveNDS)
-		return Common::File::exists(file);
-
 	// HERF archives are not in archive directories, they are inside NDS archives
 	if (archive == kArchiveHERF)
 		return hasResource(TypeMan.setFileType(file, kFileTypeNone), kFileTypeHERF);
 
-	return !findArchive(file, _archiveDirs[archive], _archiveFiles[archive]).empty();
+	return !findArchive(file, archive).empty();
 }
 
 void ResourceManager::addArchive(ArchiveType archiveType, const Common::UString &file,
@@ -240,25 +250,26 @@ void ResourceManager::addArchive(ArchiveType archiveType, const Common::UString 
 	if (changeID)
 		change = newChangeSet(*changeID);
 
-	// NDS and HERF need special handling
-	Archive *archive = 0;
-	if      (archiveType == kArchiveNDS)
-		archive = new NDSFile(file);
-	else if (archiveType == kArchiveHERF)
-		archive = new HERFFile(file);
+	// HERF needs special handling
+	if (archiveType == kArchiveHERF) {
+		HERFFile *herf = new HERFFile(file);
 
-	if (archive) {
-		indexArchive(archive, priority, change);
+		indexArchive(herf, priority, change);
 		return;
 	}
 
-	Common::UString realName = findArchive(file, _archiveDirs[archiveType], _archiveFiles[archiveType]);
+	Common::UString realName = findArchive(file, archiveType);
 	if (realName.empty())
 		throw Common::Exception("No such archive file \"%s\"", file.c_str());
 
+	Archive *archive = 0;
 	switch (archiveType) {
 		case kArchiveKEY:
 			indexKEY(realName, priority, change);
+			break;
+
+		case kArchiveNDS:
+			archive = new NDSFile(realName);
 			break;
 
 		case kArchiveERF:

@@ -347,6 +347,7 @@ private:
 
 	void clearResources();
 
+	Common::UString findArchive(const Common::UString &file, ArchiveType archiveType);
 	Common::UString findArchive(const Common::UString &file,
 			const DirectoryList &dirs, const Common::FileList &files);
 
