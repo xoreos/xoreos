@@ -60,8 +60,15 @@ void WriteStream::writeString(const UString &str) {
 MemoryReadStream *ReadStream::readStream(uint32 dataSize) {
 	byte *buf = new byte[dataSize];
 
-	dataSize = read(buf, dataSize);
-	assert(dataSize > 0);
+	try {
+
+		if (read(buf, dataSize) != dataSize)
+			throw Exception(kReadError);
+
+	} catch (...) {
+		delete[] buf;
+		throw;
+	}
 
 	return new MemoryReadStream(buf, dataSize, true);
 }

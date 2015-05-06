@@ -415,10 +415,8 @@ public:
 	/**
 	 * Read the specified amount of data into a new[]'ed buffer
 	 * which then is wrapped into a MemoryReadStream.
-	 * The returned stream might contain less data than requested,
-	 * if reading more failed, because of an I/O error or because
-	 * the end of the stream was reached. Which can be determined by
-	 * calling err() and eos().
+	 *
+	 * When reading fails, a kReadError exception is thrown.
 	 */
 	MemoryReadStream *readStream(uint32 dataSize);
 
