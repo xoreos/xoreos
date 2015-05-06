@@ -672,6 +672,8 @@ public:
 	int32 size() const { return _size; }
 
 	void seek(int32 offs, int whence = SEEK_SET);
+
+	const byte *getData() const { return _ptrOrig; }
 };
 
 
