@@ -306,6 +306,7 @@ void JadeEngine::main() {
 
 	_module->load("j01_town");
 	_module->run();
+	_module->clear();
 
 	delete _module;
 	_module = 0;
