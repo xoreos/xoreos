@@ -428,6 +428,7 @@ void NWN2Engine::main() {
 
 	_campaign->load(*campaigns.begin());
 	_campaign->run();
+	_campaign->clear();
 
 	delete _campaign;
 	_campaign = 0;

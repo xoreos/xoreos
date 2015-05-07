@@ -47,7 +47,10 @@ Campaign::Campaign(::Engines::Console &console) : _running(false),
 }
 
 Campaign::~Campaign() {
-	clear();
+	try {
+		clear();
+	} catch (...) {
+	}
 }
 
 const std::list<CampaignDescription> &Campaign::getCampaigns() const {
