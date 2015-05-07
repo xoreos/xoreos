@@ -58,7 +58,7 @@ public:
 	void listLanguages(GameInstance &game) const;
 
 private:
-	void cleanup(GameInstance &game) const;
+	void cleanup() const;
 };
 
 } // End of namespace Engines

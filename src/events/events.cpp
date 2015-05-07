@@ -53,13 +53,9 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 };
 
 
-EventsManager::EventsManager() {
-	_ready = false;
+EventsManager::EventsManager() : _ready(false), _quitRequested(false), _doQuit(false),
+	_fatalError(false), _queueSize(0), _fullQueue(false), _repeat(false) {
 
-	_quitRequested = false;
-	_doQuit        = false;
-
-	_repeat = false;
 }
 
 void EventsManager::init() {
@@ -300,6 +296,16 @@ void EventsManager::requestQuit() {
 
 void EventsManager::doQuit() {
 	_doQuit = true;
+}
+
+bool EventsManager::fatalErrorRaised() const {
+	return _fatalError;
+}
+
+void EventsManager::raiseFatalError() {
+	_fatalError    = true;
+	_quitRequested = true;
+	_doQuit        = true;
 }
 
 void EventsManager::runMainLoop() {
