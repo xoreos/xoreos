@@ -108,7 +108,10 @@ Module::Module(::Engines::Console &console, const Version &gameVersion) :
 }
 
 Module::~Module() {
-	clear();
+	try {
+		clear();
+	} catch (...) {
+	}
 
 	delete _ingameGUI;
 }
