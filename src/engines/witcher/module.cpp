@@ -53,7 +53,10 @@ Module::Module(::Engines::Console &console, Campaign *campaign) :
 }
 
 Module::~Module() {
-	clear();
+	try {
+		clear();
+	} catch (...) {
+	}
 }
 
 void Module::clear() {

@@ -393,6 +393,7 @@ void WitcherEngine::main() {
 
 	_campaign->load(*witcherCampaign);
 	_campaign->run();
+	_campaign->clear();
 
 	delete _campaign;
 	_campaign = 0;
