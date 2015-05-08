@@ -97,14 +97,8 @@ enum PEResourceType {
  */
 class PEResources {
 public:
-	PEResources();
+	PEResources(Common::SeekableReadStream *exe);
 	~PEResources();
-
-	/** Clear all information. */
-	void clear();
-
-	/** Load from a stream. */
-	bool loadFromEXE(SeekableReadStream *stream);
 
 	/** Return a list of resource types. */
 	const std::vector<PEResourceID> getTypeList() const;
@@ -119,7 +113,8 @@ public:
 	SeekableReadStream *getResource(const PEResourceID &type, const PEResourceID &name);
 
 	/** Return a stream to the specified resource (or 0 if non-existent). */
-	SeekableReadStream *getResource(const PEResourceID &type, const PEResourceID &name, const PEResourceID &lang);
+	SeekableReadStream *getResource(const PEResourceID &type, const PEResourceID &name,
+	                                const PEResourceID &lang);
 
 private:
 	struct Section {
@@ -127,13 +122,6 @@ private:
 		uint32 size;
 		uint32 offset;
 	};
-
-	std::map<UString, Section> _sections;
-
-	SeekableReadStream *_exe;
-
-	void parseResourceLevel(Section &section, uint32 offset, int level);
-	PEResourceID _curType, _curName, _curLang;
 
 	struct Resource {
 		uint32 offset;
@@ -144,7 +132,21 @@ private:
 	typedef std::map<PEResourceID,  LangMap> NameMap;
 	typedef std::map<PEResourceID,  NameMap> TypeMap;
 
+	std::map<UString, Section> _sections;
+
+
+	SeekableReadStream *_exe;
+
+	PEResourceID _curType;
+	PEResourceID _curName;
+	PEResourceID _curLang;
+
 	TypeMap _resources;
+
+
+	bool loadFromEXE(SeekableReadStream &exe);
+
+	void parseResourceLevel(Common::SeekableReadStream &exe, Section &section, uint32 offset, int level);
 };
 
 } // End of namespace Common

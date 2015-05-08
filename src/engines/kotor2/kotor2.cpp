@@ -241,37 +241,34 @@ void KotOR2Engine::declareEncodings() {
 }
 
 void KotOR2Engine::initResources(LoadProgress &progress) {
-	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_target);
-
-	// In the Xbox version of KotOR, TXB textures are actually TPCs
+	// In the Xbox version of KotOR2, TXB textures are actually TPCs
 	if (_platform == Aurora::kPlatformXbox)
 		ResMan.addTypeAlias(Aurora::kFileTypeTXB, Aurora::kFileTypeTPC);
 
-	indexMandatoryDirectory("", 0, 0, 1);
+	progress.step("Setting base directory");
+	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "lips");
+	const Common::UString dataDir = (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data";
+	const Common::UString rimsDir = (_platform == Aurora::kPlatformXbox) ? "rimsxbox" : "rims";
+
+	indexMandatoryDirectory( dataDir , 0, 0, 2);
+	indexMandatoryDirectory("lips"   , 0, 0, 3);
+	indexMandatoryDirectory("modules", 0, 0, 4);
+	indexMandatoryDirectory( rimsDir , 0, 0, 5);
 
 	if (_platform != Aurora::kPlatformXbox)
-		ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
-
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
-	ResMan.addArchiveDir(Aurora::kArchiveRIM, (_platform == Aurora::kPlatformXbox) ? "rimsxbox" : "rims");
-	ResMan.addArchiveDir(Aurora::kArchiveRIM, "modules");
+		indexMandatoryDirectory("texturepacks", 0, 0, 6);
 
 	if (_platform == Aurora::kPlatformXbox)
-		ResMan.addArchiveDir(Aurora::kArchiveERF, "SuperModels");
+		indexMandatoryDirectory("supermodels" , 0, 0, 7);
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 10);
+	indexMandatoryArchive("chitin.key", 10);
 
 	progress.step("Loading high-res texture packs");
-	if (_platform != Aurora::kPlatformXbox) {
-		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 50);
-		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_tpa.erf", 51);
-	}
+	if (_platform != Aurora::kPlatformXbox)
+		indexMandatoryArchive("swpc_tex_gui.erf", 50);
 
 	progress.step("Indexing extra sound resources");
 	indexMandatoryDirectory("streamsounds", 0, -1, 100);
@@ -285,7 +282,7 @@ void KotOR2Engine::initResources(LoadProgress &progress) {
 	progress.step("Indexing platform-specific resources");
 	if (_platform == Aurora::kPlatformWindows) {
 		initCursorsRemap();
-		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor2.exe", 104);
+		indexMandatoryArchive("swkotor2.exe", 104);
 	}
 
 	// Texture packs at 400, in module.cpp

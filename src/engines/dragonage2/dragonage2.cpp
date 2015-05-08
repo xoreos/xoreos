@@ -189,7 +189,7 @@ void DragonAge2Engine::run() {
 }
 
 void DragonAge2Engine::init() {
-	LoadProgress progress(19);
+	LoadProgress progress(20);
 
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
@@ -239,58 +239,53 @@ void DragonAge2Engine::initResources(LoadProgress &progress) {
 	ResMan.setRIMsAreERFs(true);
 
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_target);
+	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/data");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/textures/medium");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/textures/high");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/audio/sound/");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/patch");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/campaign_base/data");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/campaign_base/audio/sound");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/campaign_base/patch");
+	indexMandatoryDirectory("packages/core/data"     , 0,  0, 2);
+	indexMandatoryDirectory("packages/core/textures/", 0, -1, 3);
 
 	progress.step("Loading core resource files");
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/2da.rim"                      , 10);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/al_char_stage.rim"            , 11);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/artfp.erf"                    , 12);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/artfpwin32.erf"               , 13);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/chargen.gpu.rim"              , 14);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/chargen.rim"                  , 15);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/designerresources.rim"        , 16);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/designerscripts.rim"          , 17);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/face.erf"                     , 18);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/fonts.erf"                    , 19);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/global-uncompressed.rim"      , 20);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/global.rim"                   , 21);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/globalani-core.rim"           , 22);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/globalchargen-core.rim"       , 23);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/globalchargendds-core.gpu.rim", 24);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/globaldds-core.gpu.rim"       , 25);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/globalmao-core.rim"           , 26);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/globalvfx-core.rim"           , 27);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/gui.erf"                      , 28);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/guiexport.erf"                , 29);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/layouts.erf"                  , 30);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/lightprobedata.erf"           , 31);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/maoinit.erf"                  , 32);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/materialdefinitions.erf"      , 33);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/materialobjects.rim"          , 34);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/misc.erf"                     , 35);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/models.erf"                   , 36);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/pathfindingpatches.rim"       , 37);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/resmetrics.erf"               , 38);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/scripts.erf"                  , 39);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/shaders.erf"                  , 40);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/subqueuefiles.erf"            , 41);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/summonwardog.gpu.rim"         , 42);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/summonwardog.rim"             , 43);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/data/tints.rim"                    , 44);
+	indexMandatoryArchive("packages/core/data/2da.rim"                      , 10);
+	indexMandatoryArchive("packages/core/data/al_char_stage.rim"            , 11);
+	indexMandatoryArchive("packages/core/data/artfp.erf"                    , 12);
+	indexMandatoryArchive("packages/core/data/artfpwin32.erf"               , 13);
+	indexMandatoryArchive("packages/core/data/chargen.gpu.rim"              , 14);
+	indexMandatoryArchive("packages/core/data/chargen.rim"                  , 15);
+	indexMandatoryArchive("packages/core/data/designerresources.rim"        , 16);
+	indexMandatoryArchive("packages/core/data/designerscripts.rim"          , 17);
+	indexMandatoryArchive("packages/core/data/face.erf"                     , 18);
+	indexMandatoryArchive("packages/core/data/fonts.erf"                    , 19);
+	indexMandatoryArchive("packages/core/data/global-uncompressed.rim"      , 20);
+	indexMandatoryArchive("packages/core/data/global.rim"                   , 21);
+	indexMandatoryArchive("packages/core/data/globalani-core.rim"           , 22);
+	indexMandatoryArchive("packages/core/data/globalchargen-core.rim"       , 23);
+	indexMandatoryArchive("packages/core/data/globalchargendds-core.gpu.rim", 24);
+	indexMandatoryArchive("packages/core/data/globaldds-core.gpu.rim"       , 25);
+	indexMandatoryArchive("packages/core/data/globalmao-core.rim"           , 26);
+	indexMandatoryArchive("packages/core/data/globalvfx-core.rim"           , 27);
+	indexMandatoryArchive("packages/core/data/gui.erf"                      , 28);
+	indexMandatoryArchive("packages/core/data/guiexport.erf"                , 29);
+	indexMandatoryArchive("packages/core/data/layouts.erf"                  , 30);
+	indexMandatoryArchive("packages/core/data/lightprobedata.erf"           , 31);
+	indexMandatoryArchive("packages/core/data/maoinit.erf"                  , 32);
+	indexMandatoryArchive("packages/core/data/materialdefinitions.erf"      , 33);
+	indexMandatoryArchive("packages/core/data/materialobjects.rim"          , 34);
+	indexMandatoryArchive("packages/core/data/misc.erf"                     , 35);
+	indexMandatoryArchive("packages/core/data/models.erf"                   , 36);
+	indexMandatoryArchive("packages/core/data/pathfindingpatches.rim"       , 37);
+	indexMandatoryArchive("packages/core/data/resmetrics.erf"               , 38);
+	indexMandatoryArchive("packages/core/data/scripts.erf"                  , 39);
+	indexMandatoryArchive("packages/core/data/shaders.erf"                  , 40);
+	indexMandatoryArchive("packages/core/data/subqueuefiles.erf"            , 41);
+	indexMandatoryArchive("packages/core/data/summonwardog.gpu.rim"         , 42);
+	indexMandatoryArchive("packages/core/data/summonwardog.rim"             , 43);
+	indexMandatoryArchive("packages/core/data/tints.rim"                    , 44);
 
 	progress.step("Loading core sound resource files");
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/audio/sound/wwisebanks_core.erf"  , 100);
-	indexMandatoryArchive(Aurora::kArchiveERF, "packages/core/audio/sound/wwisestreams_core.erf", 101);
+	indexMandatoryDirectory("packages/core/audio/sound/"                     , 0, 0, 100);
+	indexMandatoryArchive  ("packages/core/audio/sound/wwisebanks_core.erf"        , 101);
+	indexMandatoryArchive  ("packages/core/audio/sound/wwisestreams_core.erf"      , 102);
 
 	progress.step("Indexing extra core movie resources");
 	indexMandatoryDirectory("packages/core/data/movies"    , 0,  0, 151);
@@ -300,24 +295,26 @@ void DragonAge2Engine::initResources(LoadProgress &progress) {
 	indexMandatoryDirectory("packages/core/data/cursors"   , 0,  0, 153);
 
 	progress.step("Loading core patches");
-	indexMandatoryDirectory("packages/core/patch", 0, 0                       , 200);
-	indexOptionalArchive(Aurora::kArchiveERF, "packages/core/patch/patch.erf" , 201);
-	indexOptionalArchive(Aurora::kArchiveERF, "packages/core/patch/patch.rimp", 202);
+	indexMandatoryDirectory("packages/core/patch",           0, 0, 200);
+	indexOptionalArchive   ("packages/core/patch/patch.erf"      , 201);
+	indexOptionalArchive   ("packages/core/patch/patch.rimp"     , 202);
 
-	progress.step("Indexing extra single-player campaign movie resources");
+	progress.step("Indexing extra single-player campaign resources");
 	indexMandatoryDirectory("modules/campaign_base/data"           , 0,  0, 250);
-	progress.step("Indexing extra single-player campaign sound resources");
+	progress.step("Indexing extra single-player campaign movie resources");
 	indexMandatoryDirectory("modules/campaign_base/data/movies"    , 0,  0, 251);
+	progress.step("Indexing extra single-player campaign sound resources");
+	indexMandatoryDirectory("modules/campaign_base/audio/sound"    , 0,  0, 252);
 	progress.step("Indexing extra single-player campaign talktables");
-	indexMandatoryDirectory("modules/campaign_base/data/talktables", 0,  0, 252);
+	indexMandatoryDirectory("modules/campaign_base/data/talktables", 0,  0, 253);
 
 	progress.step("Loading single-player campaign global resource files");
-	indexMandatoryArchive(Aurora::kArchiveERF, "modules/campaign_base/data/global-campaign_base.rim", 300);
+	indexMandatoryArchive("modules/campaign_base/data/global-campaign_base.rim", 300);
 
 	progress.step("Loading single-player campaign patches");
-	indexMandatoryDirectory("modules/campaign_base/patch", 0, 0                        , 400);
-	indexOptionalArchive(Aurora::kArchiveERF, "modules/campaign_base/patch/patch.erf"  , 401);
-	indexOptionalArchive(Aurora::kArchiveERF, "modules/campaign_base/patch/patch.rimp" , 402);
+	indexMandatoryDirectory("modules/campaign_base/patch"           , 0, 0, 400);
+	indexOptionalArchive   ("modules/campaign_base/patch/patch.erf"       , 401);
+	indexOptionalArchive   ("modules/campaign_base/patch/patch.rimp"      , 402);
 
 	// TODO: DLC
 

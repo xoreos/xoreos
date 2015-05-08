@@ -258,21 +258,20 @@ void WitcherEngine::declareEncodings() {
 
 void WitcherEngine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_target);
+	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveEXE, "system");
-	ResMan.addArchiveDir(Aurora::kArchiveKEY, "data");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data/voices");
+	indexMandatoryDirectory("system"      , 0,  0, 2);
+	indexMandatoryDirectory("data"        , 0,  0, 3);
+	indexMandatoryDirectory("data/voices" , 0,  0, 4);
 
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "data/modules", true);
+	indexMandatoryDirectory("data/modules", 0, -1, 5);
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "main.key", 10);
+	indexMandatoryArchive("main.key", 10);
 
 	progress.step("Loading the localized base KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "localized.key", 50);
+	indexMandatoryArchive("localized.key", 50);
 
 	// Language files at 100-102
 
@@ -289,11 +288,8 @@ void WitcherEngine::initResources(LoadProgress &progress) {
 	indexOptionalDirectory("data/templates", 0, -1, 159);
 	indexOptionalDirectory("data/textures" , 0, -1, 160);
 
-	indexOptionalDirectory("data", ".*\\.bik", 0, 200);
-	indexOptionalDirectory("data", ".*\\.tlk", 0, 201);
-
 	progress.step("Indexing Windows-specific resources");
-	indexMandatoryArchive(Aurora::kArchiveEXE, "witcher.exe", 250);
+	indexMandatoryArchive("witcher.exe", 250);
 
 	progress.step("Indexing override files");
 	indexOptionalDirectory("data/override", 0, 0, 500);
@@ -349,15 +345,15 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 
 	_languageResources.push_back(Common::ChangeID());
 	archive = Common::UString::sprintf("lang_%d.key", getLanguageID(_game, langVoice));
-	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 100, &_languageResources.back());
+	indexMandatoryArchive(archive, 100, &_languageResources.back());
 
 	_languageResources.push_back(Common::ChangeID());
 	archive = Common::UString::sprintf("M1_%d.key", getLanguageID(_game, langVoice));
-	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 101, &_languageResources.back());
+	indexMandatoryArchive(archive, 101, &_languageResources.back());
 
 	_languageResources.push_back(Common::ChangeID());
 	archive = Common::UString::sprintf("M2_%d.key", getLanguageID(_game, langVoice));
-	indexMandatoryArchive(Aurora::kArchiveKEY, archive, 102, &_languageResources.back());
+	indexMandatoryArchive(archive, 102, &_languageResources.back());
 
 	archive = Common::UString::sprintf("dialog_%d", getLanguageID(_game, langText));
 	TalkMan.addTable(archive, "", false, 0, &_languageTLK);

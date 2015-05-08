@@ -33,21 +33,22 @@
 
 namespace Common {
 
-ZipFile::ZipFile(const UString &fileName) : _fileName(fileName) {
-	load();
+ZipFile::ZipFile(Common::SeekableReadStream *zip) : _zip(zip) {
+	assert(_zip);
+
+	try {
+		load(*_zip);
+	} catch (...) {
+		delete _zip;
+		throw;
+	}
 }
 
 ZipFile::~ZipFile() {
+	delete _zip;
 }
 
-void ZipFile::clear() {
-	_files.clear();
-}
-
-void ZipFile::load() {
-	Common::File zip;
-	open(zip);
-
+void ZipFile::load(Common::SeekableReadStream &zip) {
 	uint32 endPos = findCentralDirectoryEnd(zip);
 	if (endPos == 0)
 		throw Exception("End of central directory record not found");
@@ -163,38 +164,22 @@ void ZipFile::getFileProperties(Common::SeekableReadStream &zip, const IFile &fi
 }
 
 uint32 ZipFile::getFileSize(uint32 index) const {
-	const IFile &file = getIFile(index);
+	return getIFile(index).size;
+}
 
-	Common::File zip;
-	open(zip);
+SeekableReadStream *ZipFile::getFile(uint32 index, bool tryNoCopy) const {
+	const IFile &file = getIFile(index);
 
 	uint16 compMethod;
 	uint32 compSize;
 	uint32 realSize;
 
-	getFileProperties(zip, file, compMethod, compSize, realSize);
+	getFileProperties(*_zip, file, compMethod, compSize, realSize);
 
-	return realSize;
-}
+	if (tryNoCopy && (compMethod == 0))
+		return new SeekableSubReadStream(_zip, _zip->pos(), _zip->pos() + compSize);
 
-SeekableReadStream *ZipFile::getFile(uint32 index) const {
-	const IFile &file = getIFile(index);
-
-	Common::File zip;
-	open(zip);
-
-	uint16 compMethod;
-	uint32 compSize;
-	uint32 realSize;
-
-	getFileProperties(zip, file, compMethod, compSize, realSize);
-
-	return decompressFile(zip, compMethod, compSize, realSize);
-}
-
-void ZipFile::open(Common::File &file) const {
-	if (!file.open(_fileName))
-		throw Exception(kOpenError);
+	return decompressFile(*_zip, compMethod, compSize, realSize);
 }
 
 SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 method,

@@ -256,53 +256,52 @@ void KotOREngine::declareEncodings() {
 }
 
 void KotOREngine::initResources(LoadProgress &progress) {
-	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_target);
-
 	// In the Xbox version of KotOR, TXB textures are actually TPCs
 	if (_platform == Aurora::kPlatformXbox)
 		ResMan.addTypeAlias(Aurora::kFileTypeTXB, Aurora::kFileTypeTPC);
 
-	indexMandatoryDirectory("", 0, 0, 1);
+	progress.step("Setting base directory");
+	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "lips");
+	const Common::UString dataDir = (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data";
+	const Common::UString rimsDir = (_platform == Aurora::kPlatformXbox) ? "rimsxbox" : "rims";
+
+	indexMandatoryDirectory( dataDir , 0, 0, 2);
+	indexMandatoryDirectory("lips"   , 0, 0, 3);
+	indexMandatoryDirectory("modules", 0, 0, 4);
+	indexMandatoryDirectory( rimsDir , 0, 0, 5);
 
 	if (_platform != Aurora::kPlatformXbox)
-		ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
-
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
-	ResMan.addArchiveDir(Aurora::kArchiveRIM, (_platform == Aurora::kPlatformXbox) ? "rimsxbox" : "rims");
-	ResMan.addArchiveDir(Aurora::kArchiveRIM, "modules");
+		indexMandatoryDirectory("texturepacks", 0, 0, 6);
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 10);
+	indexMandatoryArchive("chitin.key", 10);
 
-	if (indexOptionalArchive(Aurora::kArchiveKEY, "live1.key", 11))
+	if (indexOptionalArchive("live1.key", 11))
 		_hasLiveKey = true;
 
 	progress.step("Loading global auxiliary resources");
-	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenu.rim"    , 50);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "mainmenudx.rim"  , 51);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "legal.rim"       , 52);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "legaldx.rim"     , 53);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "global.rim"      , 54);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "subglobaldx.rim" , 55);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "miniglobaldx.rim", 56);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "globaldx.rim"    , 57);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "chargen.rim"     , 58);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "chargendx.rim"   , 59);
+	indexMandatoryArchive("mainmenu.rim"    , 50);
+	indexMandatoryArchive("mainmenudx.rim"  , 51);
+	indexMandatoryArchive("legal.rim"       , 52);
+	indexMandatoryArchive("legaldx.rim"     , 53);
+	indexMandatoryArchive("global.rim"      , 54);
+	indexMandatoryArchive("subglobaldx.rim" , 55);
+	indexMandatoryArchive("miniglobaldx.rim", 56);
+	indexMandatoryArchive("globaldx.rim"    , 57);
+	indexMandatoryArchive("chargen.rim"     , 58);
+	indexMandatoryArchive("chargendx.rim"   , 59);
 
 	if (_platform == Aurora::kPlatformXbox) {
 		// The Xbox version has most of its textures in "textures.bif"
 		// Some, however, reside in "players.erf"
 		progress.step("Loading Xbox textures");
-		indexMandatoryArchive(Aurora::kArchiveERF, "players.erf", 60);
+		indexMandatoryArchive("players.erf", 60);
 	} else {
 		// The Windows/Mac versions have the GUI textures here
 		progress.step("Loading GUI textures");
-		indexMandatoryArchive(Aurora::kArchiveERF, "swpc_tex_gui.erf", 60);
+		indexMandatoryArchive("swpc_tex_gui.erf", 60);
 	}
 
 	progress.step("Indexing extra sound resources");
@@ -317,7 +316,7 @@ void KotOREngine::initResources(LoadProgress &progress) {
 	if (_platform == Aurora::kPlatformWindows) {
 		progress.step("Indexing Windows-specific resources");
 		initCursorsRemap();
-		indexMandatoryArchive(Aurora::kArchiveEXE, "swkotor.exe", 154);
+		indexMandatoryArchive("swkotor.exe", 154);
 	} else if (_platform == Aurora::kPlatformMacOSX) {
 		progress.step("Indexing Mac-specific resources");
 		indexMandatoryDirectory("Knights of the Old Republic.app/Contents/Resources",         0, -1, 154);

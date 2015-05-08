@@ -35,7 +35,6 @@
 
 namespace Common {
 	class SeekableReadStream;
-	class File;
 }
 
 namespace Aurora {
@@ -43,11 +42,8 @@ namespace Aurora {
 /** A class encapsulating Nintendo DS ROM access. */
 class HERFFile : public Archive {
 public:
-	HERFFile(const Common::UString &fileName);
+	HERFFile(Common::SeekableReadStream *herf);
 	~HERFFile();
-
-	/** Clear the resource list. */
-	void clear();
 
 	/** Return the list of resources. */
 	const ResourceList &getResources() const;
@@ -56,7 +52,7 @@ public:
 	uint32 getResourceSize(uint32 index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index) const;
+	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
 	/** Return with which algorithm the name is hashed. */
 	Common::HashAlgo getNameHashAlgo() const;
@@ -70,21 +66,18 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
+	Common::SeekableReadStream *_herf;
+
 	/** External list of resource names and types. */
 	ResourceList _resources;
 
 	/** Internal list of resource offsets and sizes. */
 	IResourceList _iResources;
 
-	/** The name of the HERF file. */
-	Common::UString _fileName;
-
 	uint32 _dictOffset; ///< The offset of the dict file (if available).
 	uint32 _dictSize;   ///< The size of the dict file (if available).
 
-	void open(Common::File &file) const;
-
-	void load();
+	void load(Common::SeekableReadStream &herf);
 	void searchDictionary(Common::SeekableReadStream &herf, uint32 resCount);
 	void readDictionary(Common::SeekableReadStream &herf, std::map<uint32, Common::UString> &dict);
 	void readResList(Common::SeekableReadStream &herf);

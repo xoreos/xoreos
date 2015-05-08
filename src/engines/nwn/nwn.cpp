@@ -268,40 +268,42 @@ void NWNEngine::declareEncodings() {
 
 void NWNEngine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_target);
-	indexMandatoryDirectory("", 0, 0, 1);
+	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "nwm");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "hak");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
+	indexMandatoryDirectory("data"        , 0, 0, 2);
+	indexMandatoryDirectory("nwm"         , 0, 0, 3);
+	indexMandatoryDirectory("modules"     , 0, 0, 4);
+	indexMandatoryDirectory("hak"         , 0, 0, 5);
+	indexMandatoryDirectory("texturepacks", 0, 0, 6);
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 10);
+	indexMandatoryArchive("chitin.key", 10);
 
 	progress.step("Loading expansions and patch KEYs");
 
 	// Base game patch
-	indexOptionalArchive(Aurora::kArchiveKEY, "patch.key", 11);
+	indexOptionalArchive("patch.key", 11);
 
 	// Expansion 1: Shadows of Undrentide (SoU)
-	_hasXP1 = indexOptionalArchive(Aurora::kArchiveKEY, "xp1.key", 12);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp1patch.key", 13);
+	_hasXP1 = ResMan.hasArchive("xp1.key");
+	indexOptionalArchive("xp1.key"     , 12);
+	indexOptionalArchive("xp1patch.key", 13);
 
 	// Expansion 2: Hordes of the Underdark (HotU)
-	_hasXP2 = indexOptionalArchive(Aurora::kArchiveKEY, "xp2.key", 14);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp2patch.key", 15);
+	_hasXP3 = ResMan.hasArchive("xp2.key");
+	indexOptionalArchive("xp2.key"     , 14);
+	indexOptionalArchive("xp2patch.key", 15);
 
 	// Expansion 3: Kingmaker (resources also included in the final 1.69 patch)
-	_hasXP3 = indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key", 16);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp3patch.key", 17);
+	_hasXP3 = ResMan.hasArchive("xp3.key");
+	indexOptionalArchive("xp3.key"     , 16);
+	indexOptionalArchive("xp3patch.key", 17);
 
 	progress.step("Loading GUI textures");
-	indexMandatoryArchive(Aurora::kArchiveERF, "gui_32bit.erf"   , 50);
-	indexOptionalArchive (Aurora::kArchiveERF, "xp1_gui.erf"     , 51);
-	indexOptionalArchive (Aurora::kArchiveERF, "xp2_gui.erf"     , 52);
+	indexMandatoryArchive("gui_32bit.erf", 50);
+	indexOptionalArchive ("xp1_gui.erf"  , 51);
+	indexOptionalArchive ("xp2_gui.erf"  , 52);
 
 	progress.step("Indexing extra sound resources");
 	indexMandatoryDirectory("ambient"   , 0, 0, 100);
@@ -618,12 +620,12 @@ bool NWNEngine::hasModule(Common::UString &module) {
 	const Common::UString nwmFile = module + ".nwm";
 	const Common::UString modFile = module + ".mod";
 
-	if (ResMan.hasArchive(Aurora::kArchiveERF, nwmFile)) {
+	if (ResMan.hasArchive(nwmFile)) {
 		module = nwmFile;
 		return true;
 	}
 
-	if (ResMan.hasArchive(Aurora::kArchiveERF, modFile)) {
+	if (ResMan.hasArchive(modFile)) {
 		module = modFile;
 		return true;
 	}

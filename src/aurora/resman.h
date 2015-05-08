@@ -64,7 +64,8 @@ public:
 	/** Clear all resource information. */
 	void clear();
 
-	/** Are .rim files actually ERF files? */
+	// .--- Global resource properties
+	/** Are .rim/.rimp files actually ERF files? */
 	void setRIMsAreERFs(bool rimsAreERFs);
 
 	/** Do we have "small" files (compressed with Nintendo DS's LZSS algorithm)? */
@@ -76,49 +77,70 @@ public:
 	/** Set the array used to map cursor ID to cursor names. */
 	void setCursorRemap(const std::vector<Common::UString> &remap);
 
-	/** Register a path to be the base data directory.
+	/** Add an alias for one file type to another.
 	 *
-	 *  @param path The path to a base data directory.
+	 *  @param alias The type to alias.
+	 *  @param realType The actual type a resource of the alias type is.
 	 */
-	void registerDataBaseDir(const Common::UString &path);
+	void addTypeAlias(FileType alias, FileType realType);
+	// '---
 
-	/** Return the path of the currently registered base data directory. */
-	const Common::UString &getDataBaseDir() const;
-
-	/** Add a directory to be searched for these archives files.
+	// .--- Data base
+	/** Register a path to be the data base.
 	 *
-	 *  Relative to the base directory.
+	 *  If this is a directory, it will be indexed, non-recursively.
+	 *  If this is a file, it will be indexed as an archive.
 	 *
-	 *  @param archive The type of archive to look for.
-	 *  @param dir A subdirectory of the base directory to search for archives files.
+	 *  The priority of files within the data base is always 1, the
+	 *  lowest priority.
+	 *
+	 *  All further games files and archives are assumed to be inside
+	 *  this directory or archive.
+	 *
+	 *  @param path The path to a base data directory or archive.
 	 */
-	void addArchiveDir(ArchiveType archiveType, const Common::UString &dir, bool recursive =  false);
+	void registerDataBase(const Common::UString &path);
 
+	/** Return the path of the currently registered base data directory or archive. */
+	const Common::UString &getDataBase() const;
+	// '---
+
+	// .--- Archives
 	/** Does a specific archive exist?
 	 *
-	 *  @param  archive The type of archive to check.
 	 *  @param  file The name of the archive file.
 	 *  @return true if the archive exists, false otherwise.
 	 */
-	bool hasArchive(ArchiveType archive, const Common::UString &file);
+	bool hasArchive(const Common::UString &file);
 
-	/** Add an archive file and all its resources to the resource manager.
+	/** Add all the resources of an archive to the resource manager.
 	 *
-	 *  @param archive The type of archive to add.
 	 *  @param file The name of the archive file to index.
 	 *  @param priority The priority these files have over others of the same name
 	 *                  and type. Higher number = higher priority. 0 means blacklisted.
 	 *  @param changeID If given, record the collective changes done here.
 	 */
-	void addArchive(ArchiveType archive, const Common::UString &file,
-	                uint32 priority, Common::ChangeID *changeID = 0);
+	void indexArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
+	// '---
 
+	// .--- Directories and files
 	/** Does a specific directory, relative to the base directory, exist?
 	 *
 	 *  @param  dir A subdirectory of the base directory to look for.
 	 *  @return true if the directory exists, false otherwise.
 	 */
 	bool hasResourceDir(const Common::UString &dir);
+
+	/** Add a single file to the resource manager.
+	 *
+	 *  Relative to the base directory.
+	 *
+	 *  @param file The file to add.
+	 *  @param priority The priority these files have over others of the same name
+	 *                  and type. Higher number = higher priority. 0 means blacklisted.
+	 *  @param changeID If given, record the collective changes done here.
+	 */
+	void indexResourceFile(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
 
 	/** Add a directory's contents to the resource manager.
 	 *
@@ -132,18 +154,13 @@ public:
 	 *                  and type. Higher number = higher priority. 0 means blacklisted.
 	 *  @param changeID If given, record the collective changes done here.
 	 */
-	void addResourceDir(const Common::UString &dir, const char *glob, int depth,
-	                    uint32 priority, Common::ChangeID *changeID = 0);
+	void indexResourceDir(const Common::UString &dir, const char *glob, int depth,
+	                      uint32 priority, Common::ChangeID *changeID = 0);
+	// '---
 
+	// .--- Utility methods
 	/** Undo the changes done in the specified change ID. */
 	void undo(Common::ChangeID &changeID);
-
-	/** Add an alias for one file type to another.
-	 *
-	 *  @param alias The type to alias.
-	 *  @param realType The actual type a resource of the alias type is.
-	 */
-	void addTypeAlias(FileType alias, FileType realType);
 
 	/** Blacklist a specific resource.
 	 *
@@ -170,7 +187,9 @@ public:
 	 *  @param name The name (with extension) of the resource.
 	 */
 	void declareResource(const Common::UString &name);
+	// '---
 
+	// .--- Resources
 	/** Does a specific resource exist?
 	 *
 	 *  @param  name The name (ResRef) of the resource.
@@ -246,23 +265,62 @@ public:
 	void getAvailableResources(const std::vector<FileType> &types, std::list<ResourceID> &list) const;
 	/** Return a list of all available resources of the specified type. */
 	void getAvailableResources(ResourceType type, std::list<ResourceID> &list) const;
+	// '---
 
 	/** Dump a list of all resources into a file. */
 	void dumpResourcesList(const Common::UString &fileName) const;
 
 
 private:
-	typedef std::list<Common::UString> DirectoryList;
 	typedef std::vector<FileType> FileTypeList;
+	typedef std::set<FileType> FileTypeSet;
 
-	typedef std::list<Archive *> ArchiveList;
-	typedef ArchiveList::const_iterator ArchiveRef;
+	struct Resource;
+	struct OpenedArchive;
 
+	// .--- Archives
+	struct KnownArchive {
+		Common::UString name; ///< The archive's name.
+		ArchiveType     type; ///< The archive's type.
+
+		/** The resource this archive is. */
+		Resource *resource;
+
+		/** The opened archive, if it was. */
+		OpenedArchive *opened;
+
+		KnownArchive();
+		KnownArchive(ArchiveType t, const Common::UString &n, Resource &r);
+	};
+
+	struct OpenedArchive {
+		/** The actual archive. */
+		Archive *archive;
+
+		/** The information we know about this archive. */
+		KnownArchive *known;
+
+		/** Is this archive is found in another archive, this is the "parent" archive. */
+		OpenedArchive *parent;
+		/** If this archive contains other archives, these are the opened "children" archives. */
+		std::list<OpenedArchive *> children;
+
+		OpenedArchive();
+		OpenedArchive(KnownArchive &kA, Archive &a);
+	};
+
+	/** List of all known archive files. */
+	typedef std::list<KnownArchive> KnownArchives;
+	/** List of all opened archive files. */
+	typedef std::list<OpenedArchive> OpenedArchives;
+	// '---
+
+	// .--- Resources
 	/** Where a resource can be found. */
 	enum Source {
 		kSourceNone   , ///< Invalid source.
-		kSourceArchive, ///< Within an archive.
-		kSourceFile     ///< A direct file.
+		kSourceFile   , ///< A direct file.
+		kSourceArchive  ///< Within an archive.
 	};
 
 	/** A resource. */
@@ -270,18 +328,24 @@ private:
 		Common::UString name; ///< The resource's name.
 		FileType        type; ///< The resource's type.
 
-		uint32 priority; ///< The resource's priority over others with the same name and type.
+		/** Is this a "small" (compressed Nintendo DS) file? */
+		bool isSmall;
 
-		Source source; ///< Where can the resource be found?
+		/** The resource's priority over others with the same name and type. */
+		uint32 priority;
 
-		// For kSourceArchive
-		Archive *archive;      ///< Pointer to the archive.
-		uint32   archiveIndex; ///< Index into the archive.
+		/** The archive this resource itself is. */
+		KnownArchive *selfArchive;
+
+		/** Where can the resource be found? */
+		Source source;
 
 		// For kSourceFile
 		Common::UString path; ///< The file's path.
 
-		bool isSmall; ///< Is this a "small" (compressed Nintendo DS) file?
+		// For kSourceArchive
+		OpenedArchive *archive;      ///< Pointer to the opened archive.
+		uint32         archiveIndex; ///< Index into the archive.
 
 		Resource();
 
@@ -292,17 +356,28 @@ private:
 	typedef std::list<Resource> ResourceList;
 	/** Map over resources, indexed by their hashed name. */
 	typedef std::map<uint64, ResourceList> ResourceMap;
+	// '---
 
-	/** A change produced by a manager operation. */
+	// .--- Changes
+	/** A change produced by adding an archive. */
+	typedef std::pair<KnownArchives *, KnownArchives::iterator> KnownArchiveChange;
+	/** A change produced by indexing/opening an archive. */
+	typedef OpenedArchives::iterator OpenedArchiveChange;
+	/** A change produced by indexing archive resources. */
 	struct ResourceChange {
 		ResourceMap::iterator  hashIt;
 		ResourceList::iterator resIt;
 	};
 
+	typedef std::list<KnownArchiveChange>  KnownArchiveChanges;
+	typedef std::list<OpenedArchiveChange> OpenedArchiveChanges;
+	typedef std::list<ResourceChange>      ResourceChanges;
+
 	/** A set of changes produced by a manager operation. */
 	struct ChangeSet {
-		std::list<ArchiveList::iterator> archives;
-		std::list<ResourceChange>        resources;
+		KnownArchiveChanges  knownArchives;
+		OpenedArchiveChanges openedArchives;
+		ResourceChanges      resources;
 	};
 
 	typedef std::list<ChangeSet> ChangeSetList;
@@ -320,64 +395,90 @@ private:
 
 		Common::ChangeContent *clone() const { return new Change(_change); }
 	};
+	// '---
 
 
-	bool _rimsAreERFs; ///< Are .rim files actually ERF files?
-	bool _hasSmall;    ///< Do we have "small" files?
+	/** Do we have "small" files? */
+	bool _hasSmall;
 
-	Common::HashAlgo _hashAlgo; ///< With which hash algo are/should the names be hashed?
+	/** With which hash algo are/should the names be hashed? */
+	Common::HashAlgo _hashAlgo;
 
-	std::vector<Common::UString> _cursorRemap; ///< Cursor ID -> cursor name
+	/** Cursor ID -> cursor name. */
+	std::vector<Common::UString> _cursorRemap;
 
-	Common::UString _baseDir;     ///< The data base directory.
+	/** The data base directory (if any), the directory the current game is in. */
+	Common::UString _baseDir;
+	/** The data base archive (if any), the archive the current game is in. */
+	Common::UString _baseArchive;
 
-	DirectoryList    _archiveDirs [kArchiveMAX]; ///< Archive directories.
-	Common::FileList _archiveFiles[kArchiveMAX]; ///< Archive files.
+	KnownArchives  _knownArchives[kArchiveMAX]; ///< List of all known archives.
+	OpenedArchives _openedArchives;             ///< List of currently used archives.
 
-	ArchiveList _archives; ///< List of currently used archives.
-
+	/** The current type aliases, changing one type to another. */
 	std::map<FileType, FileType> _typeAliases;
 
-	ResourceMap _resources;
+	ResourceMap   _resources; ///< All currently known resources.
+	ChangeSetList _changes;   ///< Changes produced by indexing the currently known resources.
 
-	ChangeSetList _changes;
-
+	FileTypeSet  _archiveTypeTypes [kArchiveMAX];  ///< All valid archive types file types.
 	FileTypeList _resourceTypeTypes[kResourceMAX]; ///< All valid resource type file types.
 
 
 	void clearResources();
 
-	Common::UString findArchive(const Common::UString &file, ArchiveType archiveType);
-	Common::UString findArchive(const Common::UString &file,
-			const DirectoryList &dirs, const Common::FileList &files);
+	// .--- Searching for archives
+	KnownArchive *findArchive(const Common::UString &file);
+	KnownArchive *findArchive(Common::UString file, KnownArchives &archives);
+	// '---
 
-	void indexKEY(const Common::UString &file, uint32 priority, Change *change);
-	void indexArchive(Archive *archive, uint32 priority, Change *change);
+	// .--- Indexing archives
+	void indexKEY(Common::SeekableReadStream *stream, uint32 priority, Change *change);
+	uint32 openKEYBIFs(Common::SeekableReadStream *keyStream,
+	                   std::vector<KnownArchive *> &archives, std::vector<BIFFile *> &bifs);
 
-	// KEY/BIF loading helpers
-	void findBIFs   (const KEYFile &key, std::vector<Common::UString> &bifs);
-	void mergeKEYBIF(const KEYFile &key, std::vector<Common::UString> &bifs, std::vector<BIFFile *> &bifFiles);
+	void indexArchive(KnownArchive &knownArchive, Archive *archive,
+	                  uint32 priority, Change *change);
 
-	bool normalizeType(Resource &resource);
+	Common::SeekableReadStream *openArchiveStream(const KnownArchive &archive) const;
+	// '---
 
-	inline uint64 getHash(const Common::UString &name, FileType type) const;
-	inline uint64 getHash(const Common::UString &name) const;
+	// .--- Adding resources
+
+	void checkResourceIsArchive(Resource &resource, Change *change);
 
 	void addResource(Resource &resource, uint64 hash, Change *change);
+	void addResource(const Common::UString &path, Change *change, uint32 priority);
 
 	void addResources(const Common::FileList &files, Change *change, uint32 priority);
+	// '---
 
+	// .--- Finding and getting resources
 	const Resource *getRes(uint64 hash) const;
 	const Resource *getRes(const Common::UString &name, const std::vector<FileType> &types) const;
 	const Resource *getRes(const Common::UString &name, FileType type) const;
 
-	Common::SeekableReadStream *getArchiveResource(const Resource &res) const;
+	Common::SeekableReadStream *getResource(const Resource &res, bool tryNoCopy = false) const;
+
+	Common::SeekableReadStream *getArchiveResource(const Resource &res, bool tryNoCopy = false) const;
 
 	uint32 getResourceSize(const Resource &res) const;
+	// '---
 
-	Change *newChangeSet(Common::ChangeID &changeID);
+	// .--- Resource utility methods
+	bool normalizeType(Resource &resource);
+
+	ArchiveType getArchiveType(FileType type) const;
+	ArchiveType getArchiveType(const Common::UString &name) const;
+
+	inline uint64 getHash(const Common::UString &name, FileType type) const;
+	inline uint64 getHash(const Common::UString &name) const;
 
 	void checkHashCollision(const Resource &resource, ResourceMap::const_iterator resList);
+
+	Change *newChangeSet(Common::ChangeID &changeID);
+	// '---
+
 };
 
 } // End of namespace Aurora

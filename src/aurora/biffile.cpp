@@ -26,7 +26,6 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
-#include "src/common/file.h"
 
 #include "src/aurora/biffile.h"
 #include "src/aurora/keyfile.h"
@@ -37,21 +36,22 @@ static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 
-BIFFile::BIFFile(const Common::UString &fileName) : _fileName(fileName) {
-	load();
+BIFFile::BIFFile(Common::SeekableReadStream *bif) : _bif(bif) {
+	assert(_bif);
+
+	try {
+		load(*_bif);
+	} catch (...) {
+		delete _bif;
+		throw;
+	}
 }
 
 BIFFile::~BIFFile() {
+	delete _bif;
 }
 
-void BIFFile::clear() {
-	_resources.clear();
-}
-
-void BIFFile::load() {
-	Common::File bif;
-	open(bif);
-
+void BIFFile::load(Common::SeekableReadStream &bif) {
 	readHeader(bif);
 
 	if (_id != kBIFID)
@@ -141,29 +141,15 @@ uint32 BIFFile::getResourceSize(uint32 index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *BIFFile::getResource(uint32 index) const {
+Common::SeekableReadStream *BIFFile::getResource(uint32 index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
-	if (res.size == 0)
-		return new Common::MemoryReadStream(0, 0);
 
-	Common::File bif;
-	open(bif);
+	if (tryNoCopy)
+		return new Common::SeekableSubReadStream(_bif, res.offset, res.offset + res.size);
 
-	bif.seek(res.offset);
+	_bif->seek(res.offset);
 
-	Common::SeekableReadStream *resStream = bif.readStream(res.size);
-
-	if (!resStream || (((uint32) resStream->size()) != res.size)) {
-		delete resStream;
-		throw Common::Exception(Common::kReadError);
-	}
-
-	return resStream;
-}
-
-void BIFFile::open(Common::File &file) const {
-	if (!file.open(_fileName))
-		throw Common::Exception(Common::kOpenError);
+	return _bif->readStream(res.size);
 }
 
 } // End of namespace Aurora

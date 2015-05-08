@@ -98,107 +98,102 @@ UString PEResourceID::toString() const {
 	return "";
 }
 
-PEResources::PEResources() {
-	_exe = 0;
+PEResources::PEResources(Common::SeekableReadStream *exe) : _exe(exe) {
+	assert(_exe);
+
+	try {
+		if (!loadFromEXE(*_exe))
+			throw Common::Exception("Failed to parse exe");
+
+	} catch (...) {
+		delete _exe;
+		throw;
+	}
 }
 
 PEResources::~PEResources() {
-	clear();
+	delete _exe;
 }
 
-void PEResources::clear() {
-	_sections.clear();
-	_resources.clear();
-	delete _exe; _exe = 0;
-}
-
-bool PEResources::loadFromEXE(SeekableReadStream *stream) {
-	clear();
-
-	if (!stream)
+bool PEResources::loadFromEXE(SeekableReadStream &exe) {
+	if (exe.readUint16BE() != 'MZ')
 		return false;
 
-	if (stream->readUint16BE() != 'MZ')
+	exe.skip(58);
+
+	uint32 peOffset = exe.readUint32LE();
+
+	if (!peOffset || peOffset >= (uint32)exe.size())
 		return false;
 
-	stream->skip(58);
+	exe.seek(peOffset);
 
-	uint32 peOffset = stream->readUint32LE();
-
-	if (!peOffset || peOffset >= (uint32)stream->size())
+	if (exe.readUint32BE() != MKTAG('P', 'E', '\0', '\0'))
 		return false;
 
-	stream->seek(peOffset);
-
-	if (stream->readUint32BE() != MKTAG('P', 'E', '\0', '\0'))
-		return false;
-
-	stream->skip(2);
-	uint16 sectionCount = stream->readUint16LE();
-	stream->skip(12);
-	uint16 optionalHeaderSize = stream->readUint16LE();
-	stream->skip(optionalHeaderSize + 2);
+	exe.skip(2);
+	uint16 sectionCount = exe.readUint16LE();
+	exe.skip(12);
+	uint16 optionalHeaderSize = exe.readUint16LE();
+	exe.skip(optionalHeaderSize + 2);
 
 	// Read in all the sections
 	for (uint16 i = 0; i < sectionCount; i++) {
 		char sectionName[9];
-		stream->read(sectionName, 8);
+		exe.read(sectionName, 8);
 		sectionName[8] = 0;
 
 		Section section;
-		stream->skip(4);
-		section.virtualAddress = stream->readUint32LE();
-		section.size = stream->readUint32LE();
-		section.offset = stream->readUint32LE();
-		stream->skip(16);
+		exe.skip(4);
+		section.virtualAddress = exe.readUint32LE();
+		section.size = exe.readUint32LE();
+		section.offset = exe.readUint32LE();
+		exe.skip(16);
 
 		_sections[sectionName] = section;
 	}
 
 	// Currently, we require loading a resource section
-	if (_sections.find(".rsrc") == _sections.end()) {
-		clear();
+	if (_sections.find(".rsrc") == _sections.end())
 		return false;
-	}
-
-	_exe = stream;
 
 	Section &resSection = _sections[".rsrc"];
-	parseResourceLevel(resSection, resSection.offset, 0);
+	parseResourceLevel(exe, resSection, resSection.offset, 0);
 
 	return true;
 }
 
-void PEResources::parseResourceLevel(Section &section, uint32 offset, int level) {
-	_exe->seek(offset + 12);
+void PEResources::parseResourceLevel(Common::SeekableReadStream &exe,
+                                     Section &section, uint32 offset, int level) {
+	exe.seek(offset + 12);
 
-	uint16 entryCount = _exe->readUint16LE(); // named entry count
-	entryCount += _exe->readUint16LE();       // id entry count
+	uint16 entryCount = exe.readUint16LE(); // named entry count
+	entryCount += exe.readUint16LE();       // id entry count
 
 	for (uint32 i = 0; i < entryCount; i++) {
-		uint32 value = _exe->readUint32LE();
+		uint32 value = exe.readUint32LE();
 
 		PEResourceID id;
 
 		if (value & 0x80000000) {
 			value &= 0x7fffffff;
 
-			uint32 startPos = _exe->pos();
-			_exe->seek(section.offset + (value & 0x7fffffff));
+			uint32 startPos = exe.pos();
+			exe.seek(section.offset + (value & 0x7fffffff));
 
 			// Read in the name, UTF-16LE
-			uint16  nameLength = _exe->readUint16LE() * 2;
-			UString name       = readStringFixed(*_exe, kEncodingUTF16LE, nameLength);
+			uint16  nameLength = exe.readUint16LE() * 2;
+			UString name       = readStringFixed(exe, kEncodingUTF16LE, nameLength);
 
-			_exe->seek(startPos);
+			exe.seek(startPos);
 
 			id = name;
 		} else {
 			id = value;
 		}
 
-		uint32 nextOffset = _exe->readUint32LE();
-		uint32 lastOffset = _exe->pos();
+		uint32 nextOffset = exe.readUint32LE();
+		uint32 lastOffset = exe.pos();
 
 		if (level == 0)
 			_curType = id;
@@ -209,13 +204,13 @@ void PEResources::parseResourceLevel(Section &section, uint32 offset, int level)
 
 		if (level < 2) {
 			// Time to dive down further
-			parseResourceLevel(section, section.offset + (nextOffset & 0x7fffffff), level + 1);
+			parseResourceLevel(exe, section, section.offset + (nextOffset & 0x7fffffff), level + 1);
 		} else {
-			_exe->seek(section.offset + nextOffset);
+			exe.seek(section.offset + nextOffset);
 
 			Resource resource;
-			resource.offset = _exe->readUint32LE() + section.offset - section.virtualAddress;
-			resource.size = _exe->readUint32LE();
+			resource.offset = exe.readUint32LE() + section.offset - section.virtualAddress;
+			resource.size = exe.readUint32LE();
 
 			//status("Found resource '%s' '%s' '%s' at %d of size %d", _curType.toString().c_str(),
 			//		_curName.toString().c_str(), _curLang.toString().c_str(), resource.offset, resource.size);
@@ -223,15 +218,12 @@ void PEResources::parseResourceLevel(Section &section, uint32 offset, int level)
 			_resources[_curType][_curName][_curLang] = resource;
 		}
 
-		_exe->seek(lastOffset);
+		exe.seek(lastOffset);
 	}
 }
 
 const std::vector<PEResourceID> PEResources::getTypeList() const {
 	std::vector<PEResourceID> array;
-
-	if (!_exe)
-		return array;
 
 	for (TypeMap::const_iterator it = _resources.begin(); it != _resources.end(); ++it)
 		array.push_back(it->first);
@@ -242,7 +234,7 @@ const std::vector<PEResourceID> PEResources::getTypeList() const {
 const std::vector<PEResourceID> PEResources::getNameList(const PEResourceID &type) const {
 	std::vector<PEResourceID> array;
 
-	if (!_exe || _resources.find(type) == _resources.end())
+	if (_resources.find(type) == _resources.end())
 		return array;
 
 	const NameMap &nameMap = _resources.find(type)->second;
@@ -256,7 +248,7 @@ const std::vector<PEResourceID> PEResources::getNameList(const PEResourceID &typ
 const std::vector<PEResourceID> PEResources::getLangList(const PEResourceID &type, const PEResourceID &name) const {
 	std::vector<PEResourceID> array;
 
-	if (!_exe || _resources.find(type) == _resources.end())
+	if (_resources.find(type) == _resources.end())
 		return array;
 
 	const NameMap &nameMap = _resources.find(type)->second;
@@ -283,8 +275,10 @@ SeekableReadStream *PEResources::getResource(const PEResourceID &type, const PER
 	return _exe->readStream(resource.size);
 }
 
-SeekableReadStream *PEResources::getResource(const PEResourceID &type, const PEResourceID &name, const PEResourceID &lang) {
-	if (!_exe || _resources.find(type) == _resources.end())
+SeekableReadStream *PEResources::getResource(const PEResourceID &type, const PEResourceID &name,
+                                             const PEResourceID &lang) {
+
+	if (_resources.find(type) == _resources.end())
 		return 0;
 
 	const NameMap &nameMap = _resources.find(type)->second;

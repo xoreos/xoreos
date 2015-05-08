@@ -24,7 +24,6 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/file.h"
 #include "src/common/filepath.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
@@ -32,52 +31,46 @@
 
 #include "src/aurora/herffile.h"
 #include "src/aurora/util.h"
-#include "src/aurora/resman.h"
 
 namespace Aurora {
 
-HERFFile::HERFFile(const Common::UString &fileName) : _fileName(fileName),
-	_dictOffset(0xFFFFFFFF), _dictSize(0) {
+HERFFile::HERFFile(Common::SeekableReadStream *herf) : _herf(herf), _dictOffset(0xFFFFFFFF), _dictSize(0) {
+	assert(_herf);
 
-	load();
+	try {
+		load(*_herf);
+	} catch (...) {
+		delete _herf;
+		throw;
+	}
 }
 
 HERFFile::~HERFFile() {
+	delete _herf;
 }
 
-void HERFFile::clear() {
-	_resources.clear();
-}
-
-void HERFFile::load() {
-	Common::SeekableReadStream *herf = ResMan.getResource(TypeMan.setFileType(_fileName, kFileTypeNone), kFileTypeHERF);
-	if (!herf)
-		throw Common::Exception(Common::kOpenError);
-
-	uint32 magic = herf->readUint32LE();
+void HERFFile::load(Common::SeekableReadStream &herf) {
+	uint32 magic = herf.readUint32LE();
 	if (magic != 0x00F1A5C0)
 		throw Common::Exception("Invalid HERF file (0x%08X)", magic);
 
-	uint32 resCount = herf->readUint32LE();
+	uint32 resCount = herf.readUint32LE();
 
 	_resources.resize(resCount);
 	_iResources.resize(resCount);
 
 	try {
 
-		searchDictionary(*herf, resCount);
-		readResList(*herf);
+		searchDictionary(herf, resCount);
+		readResList(herf);
 
-	if (herf->err())
-		throw Common::Exception(Common::kReadError);
+		if (herf.err())
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
-		delete herf;
 		e.add("Failed reading HERF file");
 		throw;
 	}
-
-	delete herf;
 }
 
 void HERFFile::searchDictionary(Common::SeekableReadStream &herf, uint32 resCount) {
@@ -165,33 +158,15 @@ uint32 HERFFile::getResourceSize(uint32 index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *HERFFile::getResource(uint32 index) const {
+Common::SeekableReadStream *HERFFile::getResource(uint32 index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
-	if (res.size == 0)
-		return new Common::MemoryReadStream(0, 0);
 
-	Common::SeekableReadStream *herf      = 0;
-	Common::SeekableReadStream *resStream = 0;
+	if (tryNoCopy)
+		return new Common::SeekableSubReadStream(_herf, res.offset, res.offset + res.size);
 
-	try {
-		herf = ResMan.getResource(TypeMan.setFileType(_fileName, kFileTypeNone), kFileTypeHERF);
-		if (!herf)
-			throw Common::Exception(Common::kOpenError);
+	_herf->seek(res.offset);
 
-		herf->seek(res.offset);
-
-		resStream = herf->readStream(res.size);
-		if (!resStream || (((uint32) resStream->size()) != res.size))
-			throw Common::Exception(Common::kReadError);
-
-	} catch (...) {
-		delete herf;
-		delete resStream;
-		throw;
-	}
-
-	delete herf;
-	return resStream;
+	return _herf->readStream(res.size);
 }
 
 Common::HashAlgo HERFFile::getNameHashAlgo() const {

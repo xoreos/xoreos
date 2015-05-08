@@ -31,9 +31,7 @@
 #include "src/aurora/archive.h"
 
 namespace Common {
-	class UString;
 	class SeekableReadStream;
-	class File;
 	class ZipFile;
 }
 
@@ -42,11 +40,8 @@ namespace Aurora {
 /** A class encapsulating ZIP files for resource archive access. */
 class ZIPFile : public Archive {
 public:
-	ZIPFile(const Common::UString &fileName);
+	ZIPFile(Common::SeekableReadStream *zip);
 	~ZIPFile();
-
-	/** Clear the resource list. */
-	void clear();
 
 	/** Return the list of resources. */
 	const ResourceList &getResources() const;
@@ -55,7 +50,7 @@ public:
 	uint32 getResourceSize(uint32 index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index) const;
+	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
 private:
 	/** The actual zip file. */

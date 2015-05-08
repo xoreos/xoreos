@@ -23,30 +23,14 @@
  */
 
 #include "src/common/error.h"
-#include "src/common/ustring.h"
-#include "src/common/file.h"
 #include "src/common/pe_exe.h"
 
 #include "src/aurora/pefile.h"
 
 namespace Aurora {
 
-PEFile::PEFile(const Common::UString &fileName, const std::vector<Common::UString> &remap) :
-	_peFile(0) {
-
-	Common::File *file = new Common::File();
-	if (!file->open(fileName)) {
-		delete file;
-		throw Common::Exception("Could not open exe");
-	}
-
-	_peFile = new Common::PEResources();
-
-	if (!_peFile->loadFromEXE(file)) {
-		delete file;
-		delete _peFile;
-		throw Common::Exception("Could not parse exe");
-	}
+PEFile::PEFile(Common::SeekableReadStream *exe, const std::vector<Common::UString> &remap) : _peFile(0) {
+	_peFile = new Common::PEResources(exe);
 
 	try {
 		load(remap);
@@ -60,15 +44,11 @@ PEFile::~PEFile() {
 	delete _peFile;
 }
 
-void PEFile::clear() {
-	_resources.clear();
-}
-
 const Archive::ResourceList &PEFile::getResources() const {
 	return _resources;
 }
 
-Common::SeekableReadStream *PEFile::getResource(uint32 index) const {
+Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoCopy)) const {
 	// Convert from the PE cursor group/cursor format to the standalone
 	// cursor format.
 
@@ -76,7 +56,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index) const {
 	Common::SeekableReadStream *cursorGroup = _peFile->getResource(Common::kPEGroupCursor, index);
 
 	if (!cursorGroup)
-		return 0;
+		throw Common::Exception("No such PE resource %u", index);
 
 	// Cursor Group Header
 	out.writeUint16LE(cursorGroup->readUint16LE());
@@ -103,8 +83,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index) const {
 		if (!cursor) {
 			delete cursorGroup;
 
-			warning("Could not get cursor resource %d", id);
-			return 0;
+			throw Common::Exception("Could not get cursor resource %d", id);
 		}
 
 		out.writeUint16LE(cursor->readUint16LE());      // hotspot X

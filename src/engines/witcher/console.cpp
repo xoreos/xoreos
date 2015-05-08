@@ -87,7 +87,7 @@ void Console::updateMusic() {
 
 	setArguments("playmusic", _music);
 
-	Common::UString musicDir = Common::FilePath::findSubDirectory(ResMan.getDataBaseDir(), "data/music", true);
+	Common::UString musicDir = Common::FilePath::findSubDirectory(ResMan.getDataBase(), "data/music", true);
 	if (musicDir.empty())
 		return;
 

@@ -172,7 +172,7 @@ void JadeEngine::run() {
 }
 
 void JadeEngine::init() {
-	LoadProgress progress(15);
+	LoadProgress progress(16);
 
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
@@ -219,36 +219,29 @@ void JadeEngine::declareEncodings() {
 }
 
 void JadeEngine::initResources(LoadProgress &progress) {
-	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_target);
-
 	// Some new file types with the same function as old ones re-use the type ID
 	ResMan.addTypeAlias(Aurora::kFileTypeBTC, Aurora::kFileTypeCRE);
 	ResMan.addTypeAlias(Aurora::kFileTypeBTP, Aurora::kFileTypePLA);
 	ResMan.addTypeAlias(Aurora::kFileTypeBTT, Aurora::kFileTypeTRG);
 
-	indexMandatoryDirectory("", 0, 0, 1);
+	progress.step("Setting base directory");
+	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
-	ResMan.addArchiveDir(Aurora::kArchiveRIM, "data");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "data");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "data/bips");
-
-	ResMan.addArchiveDir(Aurora::kArchiveRIM, "data", true);
+	indexMandatoryDirectory("data", 0, -1, 2);
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 10);
+	indexMandatoryArchive("chitin.key", 10);
 
 	progress.step("Loading global auxiliary resources");
-	indexMandatoryArchive(Aurora::kArchiveERF, "loadscreens.mod"   , 50);
-	indexMandatoryArchive(Aurora::kArchiveERF, "players.mod"       , 51);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "global-a.rim"      , 52);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "ingamemenu-a.rim"  , 53);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "globalunload-a.rim", 54);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "minigame-a.rim"    , 55);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "miniglobal-a.rim"  , 56);
-	indexMandatoryArchive(Aurora::kArchiveRIM, "mmenu-a.rim"       , 57);
+	indexMandatoryArchive("loadscreens.mod"   , 50);
+	indexMandatoryArchive("players.mod"       , 51);
+	indexMandatoryArchive("global-a.rim"      , 52);
+	indexMandatoryArchive("ingamemenu-a.rim"  , 53);
+	indexMandatoryArchive("globalunload-a.rim", 54);
+	indexMandatoryArchive("minigame-a.rim"    , 55);
+	indexMandatoryArchive("miniglobal-a.rim"  , 56);
+	indexMandatoryArchive("mmenu-a.rim"       , 57);
 
 	progress.step("Indexing extra font resources");
 	indexMandatoryDirectory("fonts"   , 0, -1, 100);

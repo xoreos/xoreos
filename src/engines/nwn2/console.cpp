@@ -140,7 +140,7 @@ void Console::updateModules() {
 	_modules.clear();
 	setArguments("loadmodule", _modules);
 
-	Common::UString baseDir   = ResMan.getDataBaseDir();
+	Common::UString baseDir   = ResMan.getDataBase();
 	Common::UString moduleDir = Common::FilePath::findSubDirectory(baseDir, "modules", true);
 	if (moduleDir.empty())
 		return;

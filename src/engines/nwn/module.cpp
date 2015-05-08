@@ -144,7 +144,7 @@ void Module::loadModule(const Common::UString &module) {
 		throw Common::Exception("Tried to load an empty module");
 
 	try {
-		indexMandatoryArchive(Aurora::kArchiveERF, module, 1000, &_resModule);
+		indexMandatoryArchive(module, 1000, &_resModule);
 
 		_ifo.load();
 
@@ -186,7 +186,7 @@ void Module::checkHAKs() {
 	const std::vector<Common::UString> &haks = _ifo.getHAKs();
 
 	for (std::vector<Common::UString>::const_iterator h = haks.begin(); h != haks.end(); ++h)
-		if (!ResMan.hasArchive(Aurora::kArchiveERF, *h + ".hak"))
+		if (!ResMan.hasArchive(*h + ".hak"))
 			throw Common::Exception("Required hak \"%s\" does not exist", h->c_str());
 }
 
@@ -559,7 +559,7 @@ void Module::loadHAKs() {
 	_resHAKs.resize(haks.size());
 
 	for (uint i = 0; i < haks.size(); i++)
-		indexMandatoryArchive(Aurora::kArchiveERF, haks[i] + ".hak", 1001 + i, &_resHAKs[i]);
+		indexMandatoryArchive(haks[i] + ".hak", 1001 + i, &_resHAKs[i]);
 }
 
 void Module::unloadHAKs() {
@@ -588,10 +588,10 @@ void Module::loadTexturePack() {
 	unloadTexturePack();
 
 	status("Loading texture pack %d", level);
-	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][0], 400, &_resTP[0]);
-	indexMandatoryArchive(Aurora::kArchiveERF, texturePacks[level][1], 401, &_resTP[1]);
-	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][2], 402, &_resTP[2]);
-	indexOptionalArchive (Aurora::kArchiveERF, texturePacks[level][3], 403, &_resTP[3]);
+	indexMandatoryArchive(texturePacks[level][0], 400, &_resTP[0]);
+	indexMandatoryArchive(texturePacks[level][1], 401, &_resTP[1]);
+	indexOptionalArchive (texturePacks[level][2], 402, &_resTP[2]);
+	indexOptionalArchive (texturePacks[level][3], 403, &_resTP[3]);
 
 	// If we already had a texture pack loaded, reload all textures
 	if (oldTexturePack != -1)
@@ -751,9 +751,7 @@ Common::UString Module::getDescription(const Common::UString &module) {
 		Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
 		Common::UString modFile   = module;
 
-		Aurora::ERFFile mod(moduleDir + "/" + modFile + ".mod", true);
-
-		return mod.getDescription().getString();
+		return Aurora::ERFFile::getDescription(moduleDir + "/" + modFile + ".mod").getString();
 	} catch (...) {
 	}
 

@@ -41,21 +41,22 @@ static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');
 
 namespace Aurora {
 
-BZFFile::BZFFile(const Common::UString &fileName) : _fileName(fileName) {
-	load();
+BZFFile::BZFFile(Common::SeekableReadStream *bzf) : _bzf(bzf) {
+	assert(_bzf);
+
+	try {
+		load(*_bzf);
+	} catch (...) {
+		delete _bzf;
+		throw;
+	}
 }
 
 BZFFile::~BZFFile() {
+	delete _bzf;
 }
 
-void BZFFile::clear() {
-	_resources.clear();
-}
-
-void BZFFile::load() {
-	Common::File bzf;
-	open(bzf);
-
+void BZFFile::load(Common::SeekableReadStream &bzf) {
 	readHeader(bzf);
 
 	if (_id != kBZFID)
@@ -148,46 +149,35 @@ uint32 BZFFile::getResourceSize(uint32 index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *BZFFile::getResource(uint32 index) const {
+Common::SeekableReadStream *BZFFile::getResource(uint32 index, bool UNUSED(tryNoCopy)) const {
 	const IResource &res = getIResource(index);
-	if ((res.packedSize == 0) || (res.size == 0))
-		return new Common::MemoryReadStream(0, 0);
 
-	Common::File bzf;
-	open(bzf);
+	_bzf->seek(res.offset);
 
-	bzf.seek(res.offset);
+	Common::MemoryReadStream   *packedStream = _bzf->readStream(res.packedSize);
+	Common::SeekableReadStream *resStream    = 0;
 
-	byte *compressedData = new byte[res.packedSize];
-
-	Common::SeekableReadStream *resStream = 0;
 	try {
-		if (bzf.read(compressedData, res.packedSize) != res.packedSize)
-			throw Common::Exception(Common::kReadError);
-
-		resStream = decompress(compressedData, res.packedSize, res.size);
-
+		resStream = decompress(*packedStream, res.size);
 	} catch (...) {
-		delete[] compressedData;
+		delete packedStream;
 		throw;
 	}
 
-	delete[] compressedData;
+	delete packedStream;
 	return resStream;
 }
 
-void BZFFile::open(Common::File &file) const {
-	if (!file.open(_fileName))
-		throw Common::Exception(Common::kOpenError);
-}
-
-Common::SeekableReadStream *BZFFile::decompress(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const {
-
+Common::SeekableReadStream *BZFFile::decompress(Common::MemoryReadStream &packedStream,
+                                                uint32 unpackedSize) const {
 	lzma_filter filters[2];
 	filters[0].id      = LZMA_FILTER_LZMA1;
 	filters[0].options = 0;
 	filters[1].id      = LZMA_VLI_UNKNOWN;
 	filters[1].options = 0;
+
+	const byte *compressedData = packedStream.getData();
+	uint32 packedSize = packedStream.size();
 
 	if (!lzma_filter_decoder_is_supported(filters[0].id))
 		throw Common::Exception("LZMA1 compression not supported");

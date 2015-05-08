@@ -25,9 +25,10 @@
 // Based on http://dsibrew.org/wiki/NDS_Format
 
 #include "src/common/util.h"
+#include "src/common/ustring.h"
 #include "src/common/error.h"
-#include "src/common/file.h"
 #include "src/common/stream.h"
+#include "src/common/file.h"
 #include "src/common/encoding.h"
 
 #include "src/aurora/ndsrom.h"
@@ -35,21 +36,33 @@
 
 namespace Aurora {
 
-NDSFile::NDSFile(const Common::UString &fileName) : _fileName(fileName) {
-	load();
+	NDSFile::NDSFile(const Common::UString &fileName) : _nds(0) {
+	_nds = new Common::File(fileName);
+
+	try {
+		load(*_nds);
+	} catch (...) {
+		delete _nds;
+		throw;
+	}
+}
+
+NDSFile::NDSFile(Common::SeekableReadStream *nds) : _nds(nds) {
+	assert(_nds);
+
+	try {
+		load(*_nds);
+	} catch (...) {
+		delete _nds;
+		throw;
+	}
 }
 
 NDSFile::~NDSFile() {
+	delete _nds;
 }
 
-void NDSFile::clear() {
-	_resources.clear();
-}
-
-void NDSFile::load() {
-	Common::File nds;
-	open(nds);
-
+void NDSFile::load(Common::SeekableReadStream &nds) {
 	if (!isNDS(nds))
 		throw Common::Exception("Not a support NDS ROM file");
 
@@ -142,29 +155,17 @@ uint32 NDSFile::getResourceSize(uint32 index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *NDSFile::getResource(uint32 index) const {
+Common::SeekableReadStream *NDSFile::getResource(uint32 index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
-	if (res.size == 0)
-		return new Common::MemoryReadStream(0, 0);
 
-	Common::File nds;
-	open(nds);
+	_nds->seek(res.offset);
 
-	nds.seek(res.offset);
+	if (tryNoCopy)
+		return new Common::SeekableSubReadStream(_nds, res.offset, res.offset + res.size);
 
-	Common::SeekableReadStream *resStream = nds.readStream(res.size);
+	_nds->seek(res.offset);
 
-	if (!resStream || (((uint32) resStream->size()) != res.size)) {
-		delete resStream;
-		throw Common::Exception(Common::kReadError);
-	}
-
-	return resStream;
-}
-
-void NDSFile::open(Common::File &file) const {
-	if (!file.open(_fileName))
-		throw Common::Exception(Common::kOpenError);
+	return _nds->readStream(res.size);
 }
 
 } // End of namespace Aurora

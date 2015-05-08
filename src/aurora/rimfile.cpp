@@ -25,7 +25,6 @@
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/stream.h"
-#include "src/common/file.h"
 #include "src/common/error.h"
 #include "src/common/encoding.h"
 
@@ -36,21 +35,22 @@ static const uint32 kVersion1  = MKTAG('V', '1', '.', '0');
 
 namespace Aurora {
 
-RIMFile::RIMFile(const Common::UString &fileName) : _fileName(fileName) {
-	load();
+RIMFile::RIMFile(Common::SeekableReadStream *rim) : _rim(rim) {
+	assert(_rim);
+
+	try {
+		load(*_rim);
+	} catch (...) {
+		delete _rim;
+		throw;
+	}
 }
 
 RIMFile::~RIMFile() {
+	delete _rim;
 }
 
-void RIMFile::clear() {
-	_resources.clear();
-}
-
-void RIMFile::load() {
-	Common::File rim;
-	open(rim);
-
+void RIMFile::load(Common::SeekableReadStream &rim) {
 	readHeader(rim);
 
 	if (_id != kRIMID)
@@ -112,29 +112,15 @@ uint32 RIMFile::getResourceSize(uint32 index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *RIMFile::getResource(uint32 index) const {
+Common::SeekableReadStream *RIMFile::getResource(uint32 index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
-	if (res.size == 0)
-		return new Common::MemoryReadStream(0, 0);
 
-	Common::File rim;
-	open(rim);
+	if (tryNoCopy)
+		return new Common::SeekableSubReadStream(_rim, res.offset, res.offset + res.size);
 
-	rim.seek(res.offset);
+	_rim->seek(res.offset);
 
-	Common::SeekableReadStream *resStream = rim.readStream(res.size);
-
-	if (!resStream || (((uint32) resStream->size()) != res.size)) {
-		delete resStream;
-		throw Common::Exception(Common::kReadError);
-	}
-
-	return resStream;
-}
-
-void RIMFile::open(Common::File &file) const {
-	if (!file.open(_fileName))
-		throw Common::Exception(Common::kOpenError);
+	return _rim->readStream(res.size);
 }
 
 } // End of namespace Aurora

@@ -246,10 +246,10 @@ void SonicEngine::initResources(LoadProgress &progress) {
 	ResMan.setHashAlgo(Common::kHashDJB2);
 
 	progress.step("Indexing the ROM file");
-	indexMandatoryArchive(Aurora::kArchiveNDS, _target, 1);
+	ResMan.registerDataBase(_target);
 
 	progress.step("Indexing the main HERF file");
-	indexMandatoryArchive(Aurora::kArchiveHERF, "test.herf", 10);
+	indexMandatoryArchive("test.herf", 10);
 
 	loadLanguageFiles(progress, _language);
 
@@ -280,7 +280,7 @@ void SonicEngine::loadLanguageFiles(Aurora::Language language) {
 
 	Common::UString herf = getLanguageHERF(language) + ".herf";
 
-	indexMandatoryArchive(Aurora::kArchiveHERF, herf, 50, &_languageHERF);
+	indexMandatoryArchive(herf, 50, &_languageHERF);
 
 	Common::UString tlk = getLanguageTLK(language);
 

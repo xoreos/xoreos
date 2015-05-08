@@ -34,23 +34,21 @@ namespace Common {
 
 namespace Engines {
 
-void indexMandatoryArchive(Aurora::ArchiveType archiveType, const Common::UString &file,
-		uint32 priority, Common::ChangeID *changeID = 0);
+/** Add an archive file to the resource manager, erroring out if it does not exist. */
+void indexMandatoryArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
 
 /** Add an archive file to the resource manager, if it exists. */
-bool indexOptionalArchive(Aurora::ArchiveType archiveType, const Common::UString &file,
-		uint32 priority, Common::ChangeID *changeID = 0);
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
 
 /** Add a directory to the resource manager, erroring out if it does not exist. */
-void indexMandatoryDirectory(const Common::UString &dir,
-		const char *glob, int depth, uint32 priority,
-		Common::ChangeID *changeID = 0);
+void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
+                             uint32 priority, Common::ChangeID *changeID = 0);
 
 /** Add a directory to the resource manager, if it exists. */
-bool indexOptionalDirectory(const Common::UString &dir,
-		const char *glob, int depth, uint32 priority,
-		Common::ChangeID *changeID = 0);
+bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int depth,
+                            uint32 priority, Common::ChangeID *changeID = 0);
 
+/** Remove previously added resources from the ResourceManager. */
 void deindexResources(Common::ChangeID &changeID);
 
 } // End of namespace Engines
