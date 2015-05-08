@@ -29,11 +29,6 @@
 
 namespace Aurora {
 
-void AuroraFile::cleanupPath(Common::UString &path) {
-	path.replaceAll('\\', '/');
-}
-
-
 AuroraBase::AuroraBase() {
 	clear();
 }

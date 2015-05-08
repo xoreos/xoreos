@@ -114,7 +114,7 @@ void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 
 		key.seekTo(curPos);
 
-		AuroraFile::cleanupPath(*bif);
+		bif->replaceAll('\\', '/');
 	}
 }
 
