@@ -261,6 +261,22 @@ UString::iterator UString::findFirst(uint32 c) const {
 	return end();
 }
 
+UString::iterator UString::findLast(uint32 c) const {
+	if (empty())
+		return end();
+
+	iterator it = end();
+	do {
+		--it;
+
+		if (*it == c)
+			return it;
+
+	} while (it != begin());
+
+	return end();
+}
+
 bool UString::beginsWith(const UString &with) const {
 	if (with.empty())
 		return true;
