@@ -323,7 +323,9 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 
 	{kFileTypeBZF,            ".bzf"},
 
-	{kFileTypeADV,            ".adv"}
+	{kFileTypeADV,            ".adv"},
+
+	{kFileTypeXEOSITEX,       ".xoreositex"}
 };
 
 

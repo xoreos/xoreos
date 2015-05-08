@@ -332,7 +332,10 @@ enum FileType {
 	kFileTypeBZF            = 26000, ///< Game resource data, LZMA-compressed BIF
 
 	// Found in The Witcher
-	kFileTypeADV            = 27000  ///< Extra adventure modules, ERF.
+	kFileTypeADV            = 27000, ///< Extra adventure modules, ERF.
+
+	// Our own types
+	kFileTypeXEOSITEX       = 40000  ///< Intermediate texture.
 };
 
 enum GameID {
