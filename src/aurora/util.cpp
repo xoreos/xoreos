@@ -184,6 +184,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeBIF,            ".bif"},
 	{kFileTypeKEY,            ".key"},
 
+	{kFileTypeEXE,            ".exe"},
 	{kFileTypeDBF,            ".dbf"},
 	{kFileTypeCDX,            ".cdx"},
 	{kFileTypeFPT,            ".fpt"},
@@ -275,6 +276,8 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeFEV,            ".fev"},
 	{kFileTypeFSB,            ".fsb"},
 	{kFileTypeOPF,            ".opf"},
+	{kFileTypeCRF,            ".crf"},
+	{kFileTypeRIMP,           ".rimp"},
 
 	{kFileTypeMOV,            ".mov"},
 	{kFileTypeCURS,           ".curs"},

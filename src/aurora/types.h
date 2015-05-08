@@ -185,9 +185,10 @@ enum FileType {
 	kFileTypeKEY            =  9999, ///< Game resource index.
 
 	// Found in NWN
-	kFileTypeDBF            = 19000, ///< xBase database.
-	kFileTypeCDX            = 19001, ///< FoxPro database index.
-	kFileTypeFPT            = 19002, ///< FoxPro database memo file.
+	kFileTypeEXE            = 19000, ///< Windows PE EXE file.
+	kFileTypeDBF            = 19001, ///< xBase database.
+	kFileTypeCDX            = 19002, ///< FoxPro database index.
+	kFileTypeFPT            = 19003, ///< FoxPro database memo file.
 
 	// Found in NWN2's ZIP files
 	kFileTypeZIP            = 20000, ///< Face bone definitions, FaceFX Actor.
@@ -279,6 +280,8 @@ enum FileType {
 	kFileTypeFEV            = 22026, ///< FMOD Event.
 	kFileTypeFSB            = 22027, ///< Audio, FMOD sound bank.
 	kFileTypeOPF            = 22028,
+	kFileTypeCRF            = 22029,
+	kFileTypeRIMP           = 22030,
 
 	// Found in KotOR Mac
 	kFileTypeMOV            = 23000, ///< Video, QuickTime/MPEG-4.
