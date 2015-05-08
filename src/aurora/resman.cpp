@@ -78,10 +78,9 @@ ResourceManager::OpenedArchive::OpenedArchive(KnownArchive &kA, Archive &a) :
 
 	assert(known->resource);
 	if (known->resource->source == kSourceArchive) {
-		assert(known->resource->selfArchive);
-		assert(known->resource->selfArchive->opened);
+		assert(known->resource->archive);
 
-		parent = known->resource->selfArchive->opened;
+		parent = known->resource->archive;
 		parent->children.push_back(this);
 	}
 }
