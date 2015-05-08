@@ -38,6 +38,7 @@
 #include "src/graphics/images/tpc.h"
 #include "src/graphics/images/txb.h"
 #include "src/graphics/images/sbm.h"
+#include "src/graphics/images/xoreositex.h"
 
 #include "src/events/requests.h"
 
@@ -136,6 +137,8 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 			image = new TXB(*img);
 		else if (iType == ::Aurora::kFileTypeSBM)
 			image = new SBM(*img);
+		else if (iType == ::Aurora::kFileTypeXEOSITEX)
+			image = new XEOSITEX(*img);
 		else
 			throw Common::Exception("Unsupported image resource type %d", (int) iType);
 
