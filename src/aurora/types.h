@@ -369,6 +369,7 @@ enum ArchiveType {
 	kArchiveEXE,     ///< EXE archive.
 	kArchiveNDS,     ///< Nintendo DS ROM.
 	kArchiveHERF,    ///< HERF archive.
+	kArchiveNSBTX,   ///< NSBTX texture archives.
 	kArchiveMAX
 };
 

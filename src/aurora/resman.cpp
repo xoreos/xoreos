@@ -39,6 +39,7 @@
 #include "src/aurora/zipfile.h"
 #include "src/aurora/pefile.h"
 #include "src/aurora/herffile.h"
+#include "src/aurora/nsbtxfile.h"
 #include "src/aurora/smallfile.h"
 
 // Check for hash collisions (if possible)
@@ -120,6 +121,8 @@ ResourceManager::ResourceManager() : _hasSmall(false),
 	_archiveTypeTypes[kArchiveNDS].insert(kFileTypeNDS);
 
 	_archiveTypeTypes[kArchiveHERF].insert(kFileTypeHERF);
+
+	_archiveTypeTypes[kArchiveNSBTX].insert(kFileTypeNSBTX);
 
 	// These files types are specific resource types
 
@@ -322,6 +325,10 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
 
 			case kArchiveEXE:
 				archive = new PEFile(archiveStream, _cursorRemap);
+				break;
+
+			case kArchiveNSBTX:
+				archive = new NSBTXFile(archiveStream);
 				break;
 
 			default:
