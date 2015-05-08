@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  BioWare's HERF file parsing.
+ *  BioWare's HERF (hashed ERF) file parsing.
  */
 
 #ifndef AURORA_HERFFILE_H
@@ -39,7 +39,7 @@ namespace Common {
 
 namespace Aurora {
 
-/** A class encapsulating Nintendo DS ROM access. */
+/** Class to hold resource data of an HERF file. */
 class HERFFile : public Archive {
 public:
 	HERFFile(Common::SeekableReadStream *herf);
@@ -89,4 +89,4 @@ private:
 
 } // End of namespace Aurora
 
-#endif // AURORA_NDSROM_H
+#endif // AURORA_HERFFILE_H

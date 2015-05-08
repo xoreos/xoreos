@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  BioWare's HERF file parsing.
+ *  BioWare's HERF (hashed ERF) file parsing.
  */
 
 #include "src/common/util.h"
