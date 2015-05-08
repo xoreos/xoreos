@@ -63,7 +63,7 @@ NDSFile::~NDSFile() {
 }
 
 void NDSFile::load(Common::SeekableReadStream &nds) {
-	if (!isNDS(nds))
+	if (!isNDS(nds, _title, _code, _maker))
 		throw Common::Exception("Not a support NDS ROM file");
 
 	nds.seek(0x40);
@@ -117,15 +117,33 @@ void NDSFile::readFAT(Common::SeekableReadStream &nds, uint32 offset) {
 	}
 }
 
-bool NDSFile::isNDS(Common::SeekableReadStream &stream) {
-	stream.seek(0);
+const Common::UString &NDSFile::getTitle() const {
+	return _title;
+}
 
-	Common::UString gameName = Common::readStringFixed(stream, Common::kEncodingASCII, 12);
-	if (gameName != "SONICCHRON") // Should be the only game we will accept.
-		return false;
+const Common::UString &NDSFile::getCode() const {
+	return _code;
+}
+
+const Common::UString &NDSFile::getMaker() const {
+	return _maker;
+}
+
+bool NDSFile::isNDS(Common::SeekableReadStream &stream,
+                    Common::UString &title, Common::UString &code, Common::UString &maker) {
 
 	if (stream.size() < 0x40)
 		return false;
+
+	try {
+		stream.seek(0);
+
+		title = Common::readStringFixed(stream, Common::kEncodingASCII, 12);
+		code  = Common::readStringFixed(stream, Common::kEncodingASCII,  4);
+		maker = Common::readStringFixed(stream, Common::kEncodingASCII,  2);
+	} catch (...) {
+		return false;
+	}
 
 	return true;
 }

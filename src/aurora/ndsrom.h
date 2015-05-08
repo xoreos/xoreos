@@ -59,8 +59,16 @@ public:
 	/** Return a stream of the resource's contents. */
 	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
-	/** Check if a stream is a valid Nintendo DS ROM. */
-	static bool isNDS(Common::SeekableReadStream &stream);
+	/** Return the game title string stored in the NDS header. */
+	const Common::UString &getTitle() const;
+	/** Return the game code string stored in the NDS header. */
+	const Common::UString &getCode() const;
+	/** Return the maker code string stored in the NDS header. */
+	const Common::UString &getMaker() const;
+
+	/** Check if a stream is a valid Nintendo DS ROM and read its title, code and maker strings. */
+	static bool isNDS(Common::SeekableReadStream &stream,
+	                  Common::UString &title, Common::UString &code, Common::UString &maker);
 
 private:
 	/** Internal resource information. */
@@ -72,6 +80,10 @@ private:
 	typedef std::vector<IResource> IResourceList;
 
 	Common::SeekableReadStream *_nds;
+
+	Common::UString _title;
+	Common::UString _code;
+	Common::UString _maker;
 
 	/** External list of resource names and types. */
 	ResourceList _resources;

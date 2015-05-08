@@ -80,7 +80,11 @@ bool SonicEngineProbe::probe(const Common::UString &UNUSED(directory),
 }
 
 bool SonicEngineProbe::probe(Common::SeekableReadStream &stream) const {
-	return Aurora::NDSFile::isNDS(stream);
+	Common::UString title, code, maker;
+	if (!Aurora::NDSFile::isNDS(stream, title, code, maker))
+		return false;
+
+	return title == "SONICCHRON";
 }
 
 Engines::Engine *SonicEngineProbe::createEngine() const {
