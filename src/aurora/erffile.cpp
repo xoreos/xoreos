@@ -110,6 +110,8 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 }
 
 void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version) {
+	header.buildYear       = 0;
+	header.buildDay        = 0;
 	header.stringTableSize = 0;
 	header.stringTable     = 0;
 
@@ -123,7 +125,8 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.offKeyList     = erf.readUint32LE();
 		header.offResList     = erf.readUint32LE();
 
-		erf.skip(4 + 4); // Build year and day
+		header.buildYear = erf.readUint32LE() + 1900;
+		header.buildDay  = erf.readUint32LE();
 
 		header.descriptionID = erf.readUint32LE();
 
@@ -137,7 +140,9 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.langCount = 0;                  // No description in ERF V2.0
 		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
-		erf.skip(4 + 4); // Build year and day
+		header.buildYear = erf.readUint32LE() + 1900;
+		header.buildDay  = erf.readUint32LE();
+
 		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
 
 		header.descriptionID   = 0;    // No description in ERF V2.0
@@ -153,7 +158,9 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.langCount = 0;                  // No description in ERF V2.2
 		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
-		erf.skip(4 + 4); // Build year and day
+		header.buildYear = erf.readUint32LE() + 1900;
+		header.buildDay  = erf.readUint32LE();
+
 		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
 
 		header.flags    = erf.readUint32LE();
@@ -340,6 +347,14 @@ void ERFFile::readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &he
 		iRes->unpackedSize = erf.readUint32LE();
 	}
 
+}
+
+uint32 ERFFile::getBuildYear() const {
+	return _header.buildYear;
+}
+
+uint32 ERFFile::getBuildDay() const {
+	return _header.buildDay;
 }
 
 const LocString &ERFFile::getDescription() const {

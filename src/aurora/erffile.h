@@ -56,6 +56,11 @@ public:
 	/** Return a stream of the resource's contents. */
 	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
+	/** Return the year the ERF was built. */
+	uint32 getBuildYear() const;
+	/** Return the day of year the ERF was built. */
+	uint32 getBuildDay() const;
+
 	/** Return the description. */
 	const LocString &getDescription() const;
 
@@ -76,6 +81,9 @@ private:
 		uint32 offDescription;  ///< Offset to the description.
 		uint32 offKeyList;      ///< Offset to the key list.
 		uint32 offResList;      ///< Offset to the resource list.
+
+		uint32 buildYear;       ///< The year the ERF was built.
+		uint32 buildDay;        ///< The day of year the ERF was built.
 
 		char  *stringTable;     ///< String table used for hashed ERFs.
 		uint32 stringTableSize; ///< Size of the string table.
