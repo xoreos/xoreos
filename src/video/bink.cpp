@@ -536,20 +536,18 @@ void Bink::load() {
 	}
 
 	if (audioTrackCount > 0) {
-		_audioTracks.reserve(audioTrackCount);
+		_audioTracks.resize(audioTrackCount);
 
 		_bink->skip(4 * audioTrackCount);
 
 		// Reading audio track properties
 		for (uint32 i = 0; i < audioTrackCount; i++) {
-			AudioTrack track;
+			AudioTrack &track = _audioTracks[i];
 
 			track.sampleRate = _bink->readUint16LE();
 			track.flags      = _bink->readUint16LE();
 
-			_audioTracks.push_back(track);
-
-			initAudioTrack(_audioTracks[i]);
+			initAudioTrack(track);
 		}
 
 		_bink->skip(4 * audioTrackCount);
