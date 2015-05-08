@@ -71,8 +71,8 @@ void RIMFile::load(Common::SeekableReadStream &rim) {
 		// Read the resource list
 		readResList(rim, offResList);
 
-	if (rim.err())
-		throw Common::Exception(Common::kReadError);
+		if (rim.err())
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading RIM file");

@@ -36,7 +36,7 @@
 
 namespace Aurora {
 
-	NDSFile::NDSFile(const Common::UString &fileName) : _nds(0) {
+NDSFile::NDSFile(const Common::UString &fileName) : _nds(0) {
 	_nds = new Common::File(fileName);
 
 	try {
@@ -78,8 +78,8 @@ void NDSFile::load(Common::SeekableReadStream &nds) {
 		readNames(nds, fileNameTableOffset, fileNameTableLength);
 		readFAT(nds, fatOffset);
 
-	if (nds.err())
-		throw Common::Exception(Common::kReadError);
+		if (nds.err())
+			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading NDS file");
