@@ -306,7 +306,8 @@ private:
 		std::list<OpenedArchive *> children;
 
 		OpenedArchive();
-		OpenedArchive(KnownArchive &kA, Archive &a);
+
+		void set(KnownArchive &kA, Archive &a);
 	};
 
 	/** List of all known archive files. */
@@ -335,7 +336,7 @@ private:
 		uint32 priority;
 
 		/** The archive this resource itself is. */
-		KnownArchive *selfArchive;
+		std::pair<KnownArchives *, KnownArchives::iterator> selfArchive;
 
 		/** Where can the resource be found? */
 		Source source;
@@ -445,7 +446,7 @@ private:
 
 	// .--- Adding resources
 
-	void checkResourceIsArchive(Resource &resource, Change *change);
+	bool checkResourceIsArchive(Resource &resource, Change *change);
 
 	void addResource(Resource &resource, uint64 hash, Change *change);
 	void addResource(const Common::UString &path, Change *change, uint32 priority);
@@ -468,8 +469,9 @@ private:
 	// .--- Resource utility methods
 	bool normalizeType(Resource &resource);
 
-	ArchiveType getArchiveType(FileType type) const;
-	ArchiveType getArchiveType(const Common::UString &name) const;
+	ArchiveType     getArchiveType(FileType type) const;
+	ArchiveType     getArchiveType(const Common::UString &name) const;
+	Common::UString getArchiveName(const Resource &resource) const;
 
 	inline uint64 getHash(const Common::UString &name, FileType type) const;
 	inline uint64 getHash(const Common::UString &name) const;

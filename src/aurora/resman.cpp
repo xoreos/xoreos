@@ -63,8 +63,9 @@ ResourceManager::KnownArchive::KnownArchive(ArchiveType t, const Common::UString
 ResourceManager::OpenedArchive::OpenedArchive() : archive(0), known(0), parent(0) {
 }
 
-ResourceManager::OpenedArchive::OpenedArchive(KnownArchive &kA, Archive &a) :
-	archive(&a), known(&kA), parent(0) {
+void ResourceManager::OpenedArchive::set(KnownArchive &kA, Archive &a) {
+	archive = &a;
+	known   = &kA;
 
 	if (known->opened)
 		throw Common::Exception("Archive \"%s\" already opened", known->name.c_str());
@@ -87,7 +88,9 @@ ResourceManager::OpenedArchive::OpenedArchive(KnownArchive &kA, Archive &a) :
 
 
 ResourceManager::Resource::Resource() : type(kFileTypeNone), isSmall(false), priority(0),
-		selfArchive(0), source(kSourceNone), archive(0), archiveIndex(0xFFFFFFFF) {
+		source(kSourceNone), archive(0), archiveIndex(0xFFFFFFFF) {
+
+	selfArchive.first = 0;
 }
 
 bool ResourceManager::Resource::operator<(const Resource &right) const {
@@ -396,7 +399,8 @@ void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
 		throw Common::Exception("ResourceManager::indexArchive(): Archive uses a different name hashing "
 		                        "algorithm than we do (%d vs. %d)", (int) hashAlgo, (int) _hashAlgo);
 
-	_openedArchives.push_back(OpenedArchive(knownArchive, *archive));
+	_openedArchives.push_back(OpenedArchive());
+	_openedArchives.back().set(knownArchive, *archive);
 
 	// Add the information of the new archive to the change set
 	if (change)
@@ -495,16 +499,6 @@ void ResourceManager::undo(Common::ChangeID &changeID) {
 	if (!change || (change->_change == _changes.end()))
 		return;
 
-	// Go through all changes in the resource map
-	for (ResourceChanges::iterator resChange = change->_change->resources.begin();
-	     resChange != change->_change->resources.end(); ++resChange) {
-
-		// Remove the resource, and the name list too if it's empty
-		resChange->hashIt->second.erase(resChange->resIt);
-		if (resChange->hashIt->second.empty())
-			_resources.erase(resChange->hashIt);
-	}
-
 	// Removing all changes in the opened archives list
 	for (OpenedArchiveChanges::iterator oaChange = change->_change->openedArchives.begin();
 	     oaChange != change->_change->openedArchives.end(); ++oaChange) {
@@ -521,12 +515,17 @@ void ResourceManager::undo(Common::ChangeID &changeID) {
 		if ((*oaChange)->parent) {
 			std::list<OpenedArchive *> &pChildren = (*oaChange)->parent->children;
 
+			bool found = false;
 			for (std::list<OpenedArchive *>::iterator c = pChildren.begin(); c != pChildren.end(); ++c) {
 				if (*c == &**oaChange) {
+					found = true;
 					pChildren.erase(c);
 					break;
 				}
 			}
+
+			if (!found)
+				throw Common::Exception("Couldn't find archive in the parent's children list");
 		}
 
 		delete (*oaChange)->archive;
@@ -540,7 +539,31 @@ void ResourceManager::undo(Common::ChangeID &changeID) {
 		if (kaChange->second->opened)
 			throw Common::Exception("Attempted to deindex an archive that's still opened");
 
+		// Remove us from the resource
+		assert(kaChange->second->resource);
+		kaChange->second->resource->selfArchive.first = 0;
+
 		kaChange->first->erase(kaChange->second);
+	}
+
+	// Go through all changes in the resource map
+	for (ResourceChanges::iterator resChange = change->_change->resources.begin();
+	     resChange != change->_change->resources.end(); ++resChange) {
+
+		// If the resource still has an archive attached, it was added by a
+		// declareResources() call and needs to be removed manually
+		if (resChange->resIt->selfArchive.first) {
+			if (resChange->resIt->selfArchive.second->opened)
+				throw Common::Exception("Attempted to deindex an archive resource that's still opened");
+
+			resChange->resIt->selfArchive.first->erase(resChange->resIt->selfArchive.second);
+		}
+
+		// Remove the resource, and the name list too if it's empty
+		resChange->hashIt->second.erase(resChange->resIt);
+
+		if (resChange->hashIt->second.empty())
+			_resources.erase(resChange->hashIt);
 	}
 
 	// Now we can remove the change set from our list of change sets
@@ -583,6 +606,8 @@ void ResourceManager::declareResource(const Common::UString &name, FileType type
 		r->name    = name;
 		r->type    = type;
 		r->isSmall = isSmall;
+
+		checkResourceIsArchive(*r, 0);
 	}
 }
 
@@ -753,6 +778,23 @@ ArchiveType ResourceManager::getArchiveType(const Common::UString &name) const {
 	return getArchiveType(TypeMan.getFileType(name));
 }
 
+Common::UString ResourceManager::getArchiveName(const Resource &resource) const {
+	switch (resource.source) {
+		case kSourceFile:
+			return resource.path;
+
+		case kSourceArchive:
+			return "/" + TypeMan.addFileType(resource.name, resource.type);
+
+		default:
+			break;
+	}
+
+	throw Common::Exception("Invalid source for resource \"%s\": (%d)",
+	                        TypeMan.addFileType(resource.name, resource.type).c_str(),
+	                        resource.source);
+}
+
 bool ResourceManager::normalizeType(Resource &resource) {
 	// Resolve the type aliases
 	std::map<FileType, FileType>::const_iterator alias = _typeAliases.find(resource.type);
@@ -809,41 +851,35 @@ void ResourceManager::checkHashCollision(const Resource &resource, ResourceMap::
 	}
 }
 
-void ResourceManager::checkResourceIsArchive(Resource &resource, Change *change) {
+bool ResourceManager::checkResourceIsArchive(Resource &resource, Change *change) {
 	if ((resource.source == kSourceNone) || resource.name.empty())
-		return;
+		return false;
 
-	for (int i = 0; i < kArchiveMAX; i++) {
-		// Look if the resource's type is a valid archive type
-		if (_archiveTypeTypes[i].find(resource.type) == _archiveTypeTypes[i].end())
-			continue;
+	ArchiveType type = getArchiveType(resource.type);
+	if (type == kArchiveMAX)
+		return false;
 
-		const ArchiveType type = (ArchiveType) i;
+	Common::UString name = getArchiveName(resource);
+	if (name.empty())
+		return false;
 
-		Common::UString name;
-		switch (resource.source) {
-			case kSourceFile:
-				name = resource.path;
-				break;
+	if (resource.selfArchive.first) {
+		if ((resource.selfArchive.second->type != type) || (resource.selfArchive.second->name != name))
+			throw Common::Exception("Tried to reclassify a resource archive (\"%s\")", name.c_str());
 
-			case kSourceArchive:
-				name = "/" + TypeMan.addFileType(resource.name, resource.type);
-				break;
-
-			default:
-				throw Common::Exception("Invalid source for resource \"%s\": (%d)",
-				                        TypeMan.addFileType(resource.name, resource.type).c_str(),
-				                        resource.source);
-		}
-
-
-		_knownArchives[type].push_back(KnownArchive(type, name, resource));
-
-		if (change)
-			change->_change->knownArchives.push_back(std::make_pair(&_knownArchives[type], --_knownArchives[type].end()));
-
-		resource.selfArchive = &_knownArchives[type].back();
+		return false;
 	}
+
+	KnownArchives &archives = _knownArchives[type];
+
+	archives.push_back(KnownArchive(type, name, resource));
+
+	resource.selfArchive = std::make_pair(&archives, --archives.end());
+
+	if (change)
+		change->_change->knownArchives.push_back(resource.selfArchive);
+
+	return true;
 }
 
 void ResourceManager::addResource(Resource &resource, uint64 hash, Change *change) {
