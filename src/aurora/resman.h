@@ -28,6 +28,7 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <set>
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
