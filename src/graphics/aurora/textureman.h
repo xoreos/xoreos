@@ -76,6 +76,7 @@ public:
 	TextureHandle &operator=(const TextureHandle &right);
 
 	bool empty() const;
+	const Common::UString &getName() const;
 
 	void clear();
 

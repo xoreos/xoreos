@@ -98,6 +98,14 @@ bool TextureHandle::empty() const {
 	return _empty;
 }
 
+const Common::UString kEmptyString;
+const Common::UString &TextureHandle::getName() const {
+	if (_empty)
+		return kEmptyString;
+
+	return _it->first;
+}
+
 void TextureHandle::clear() {
 	TextureMan.release(*this);
 }
