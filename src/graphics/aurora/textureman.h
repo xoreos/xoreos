@@ -120,27 +120,35 @@ public:
 	TextureManager();
 	~TextureManager();
 
+	// .--- Texture management
+	/** Remove and delete all managed textures. */
 	void clear();
 
-
+	/** Add this texture to the TextureManager. If name is empty, generate a random one. */
 	TextureHandle add(Texture *texture, Common::UString name = "");
+	/** Retrieve this named texture, loading it if it's not yet managed. */
 	TextureHandle get(const Common::UString &name);
 
-
+	/** Reload and rebuild all managed textures, if possible. */
 	void reloadAll();
 
-
+	/** Return all newly created PLT textures. */
 	void getNewPLTs(std::list<PLTHandle> &plts);
+	/** Return the list of newly created PLT textures. */
 	void clearNewPLTs();
+	// '---
 
-
-	void reset();
-	void set();
+	// .--- Texture rendering
+	/** Bind this texture to the current texture unit. */
 	void set(const TextureHandle &handle);
+	/** Reset the current texture unit to an empty texture. */
+	void set();
+	/** Completely reset the texture rendering. */
+	void reset();
 
-
+	/** Set this texture unit as the current one. */
 	void activeTexture(uint32 n);
-
+	// '---
 
 private:
 	TextureMap _textures;
