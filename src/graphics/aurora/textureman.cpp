@@ -239,6 +239,14 @@ TextureHandle TextureManager::get(const Common::UString &name) {
 	return TextureHandle(texture);
 }
 
+TextureHandle TextureManager::getIfExist(const Common::UString &name) {
+	TextureMap::iterator texture = _textures.find(name);
+	if (texture != _textures.end())
+		return TextureHandle(texture);
+
+	return TextureHandle();
+}
+
 void TextureManager::assign(TextureHandle &texture, const TextureHandle &from) {
 	Common::StackLock lock(_mutex);
 
