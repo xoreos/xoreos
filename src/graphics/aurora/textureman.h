@@ -124,6 +124,9 @@ public:
 	/** Remove and delete all managed textures. */
 	void clear();
 
+	/** Does this named managed texture exist? */
+	bool hasTexture(const Common::UString &name) const;
+
 	/** Add this texture to the TextureManager. If name is empty, generate a random one. */
 	TextureHandle add(Texture *texture, Common::UString name = "");
 	/** Retrieve this named texture, loading it if it's not yet managed. */

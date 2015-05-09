@@ -179,6 +179,12 @@ void TextureManager::clear() {
 	_textures.clear();
 }
 
+bool TextureManager::hasTexture(const Common::UString &name) const {
+	TextureMap::const_iterator texture = _textures.find(name);
+
+	return texture != _textures.end();
+}
+
 TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
 	Common::StackLock lock(_mutex);
 
