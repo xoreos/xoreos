@@ -125,7 +125,7 @@ public:
 	void clear();
 
 	/** Does this named managed texture exist? */
-	bool hasTexture(const Common::UString &name) const;
+	bool hasTexture(const Common::UString &name);
 
 	/** Add this texture to the TextureManager. If name is empty, generate a random one. */
 	TextureHandle add(Texture *texture, Common::UString name = "");
