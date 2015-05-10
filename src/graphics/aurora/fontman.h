@@ -46,7 +46,7 @@ extern const char *kSystemFontMono;
 /** The format of a font. */
 enum FontFormat {
 	kFontFormatUnknown = 0, ///< Unknown font format.
-	kFontFormatTexture    , ///< Textured font, used by NWN and KotOR/KotOR2
+	kFontFormatTexture    , ///< Fontd font, used by NWN and KotOR/KotOR2
 	kFontFormatABC        , ///< ABC/SBM font, used by Jade Empire.
 	kFontFormatTTF          ///< TTF font, used by NWN2.
 };
@@ -63,21 +63,28 @@ struct ManagedFont {
 typedef std::map<Common::UString, ManagedFont *> FontMap;
 
 /** A handle to a font. */
-struct FontHandle {
-	bool empty;
-	FontMap::iterator it;
-
+class FontHandle {
+public:
 	FontHandle();
-	FontHandle(FontMap::iterator &i);
 	FontHandle(const FontHandle &right);
 	~FontHandle();
 
 	FontHandle &operator=(const FontHandle &right);
 
+	bool empty() const;
+	const Common::UString &getName() const;
+
 	void clear();
 
-	const Common::UString &getFontName() const;
 	Font &getFont() const;
+
+private:
+	bool _empty;
+	FontMap::iterator _it;
+
+	FontHandle(FontMap::iterator &i);
+
+	friend class FontManager;
 };
 
 /** The global Aurora font manager. */
@@ -86,17 +93,26 @@ public:
 	FontManager();
 	~FontManager();
 
-	void clear();
-
+	/** Load fonts in this format by default. */
 	void setFormat(FontFormat format);
 
 	/** Add an alias for a specific font name. */
 	void addAlias(const Common::UString &alias, const Common::UString &realName);
 
-	FontHandle get(FontFormat format, Common::UString name, int height = 0);
-	FontHandle get(Common::UString name, int height = 0);
+	/** Remove and delete all managed fonts. */
+	void clear();
 
-	void release(FontHandle &handle);
+	/** Does this named managed font exist? */
+	bool hasFont(const Common::UString &name, int height = 0);
+
+	/** Add this font to the FontManager. */
+	FontHandle add(Font *font, const Common::UString &name);
+	/** Retrieve this named font in this format, loading it if it's not yet managed. */
+	FontHandle get(FontFormat format, const Common::UString &name, int height = 0);
+	/** Retrieve this named font in the default format, loading it if it's not yet managed. */
+	FontHandle get(const Common::UString &name, int height = 0);
+	/** Retrieve this named font, returning an empty handle if it's not managed. */
+	FontHandle getIfExist(const Common::UString &name, int height = 0);
 
 private:
 	FontFormat _format;
@@ -107,8 +123,14 @@ private:
 
 	Common::Mutex _mutex;
 
-	static ManagedFont *createFont(FontFormat format,
-			const Common::UString &name, int height);
+	Common::UString getIndexName(Common::UString name, int height);
+
+	void assign(FontHandle &font, const FontHandle &from);
+	void release(FontHandle &handle);
+
+	static ManagedFont *createFont(FontFormat format, const Common::UString &name, int height);
+
+	friend class FontHandle;
 };
 
 } // End of namespace Aurora
