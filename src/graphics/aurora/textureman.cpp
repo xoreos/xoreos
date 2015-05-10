@@ -42,15 +42,14 @@ namespace Graphics {
 
 namespace Aurora {
 
-ManagedTexture::ManagedTexture(const Common::UString &name) : reloadable(false) {
-	referenceCount = 0;
-	texture = new Texture(name);
+ManagedTexture::ManagedTexture(const Common::UString &name) : texture(new Texture(name)),
+	referenceCount(0), reloadable(false) {
+
 }
 
-// TODO: Investigate why the name is not used here. Marking it as unused for now.
-ManagedTexture::ManagedTexture(const Common::UString &UNUSED(name), Texture *t) : reloadable(false) {
-	referenceCount = 0;
-	texture = t;
+ManagedTexture::ManagedTexture(Texture *t) : texture(t),
+	referenceCount(0), reloadable(false) {
+
 }
 
 ManagedTexture::~ManagedTexture() {
@@ -188,28 +187,34 @@ bool TextureManager::hasTexture(const Common::UString &name) const {
 TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
 	Common::StackLock lock(_mutex);
 
-	bool reloadable = true;
-	if (name.empty()) {
-		reloadable = false;
+	ManagedTexture *managedTexture = 0;
+	TextureMap::iterator textureIterator = _textures.end();
 
-		name = Common::generateIDRandomString();
+	try {
+		bool reloadable = true;
+		if (name.empty()) {
+			reloadable = false;
+
+			name = Common::generateIDRandomString();
+		}
+
+		managedTexture = new ManagedTexture(texture);
+
+		std::pair<TextureMap::iterator, bool> result;
+
+		result = _textures.insert(std::make_pair(name, managedTexture));
+		if (!result.second)
+			throw Common::Exception("Texture \"%s\" already exists", name.c_str());
+
+		textureIterator = result.first;
+		textureIterator->second->reloadable = reloadable;
+
+	} catch (...) {
+		delete managedTexture;
+		throw;
 	}
 
-	TextureMap::iterator text = _textures.find(name);
-	if (text != _textures.end())
-		throw Common::Exception("Texture \"%s\" already exists", name.c_str());
-
-	std::pair<TextureMap::iterator, bool> result;
-
-	ManagedTexture *t = new ManagedTexture(name, texture);
-
-	result = _textures.insert(std::make_pair(name, t));
-
-	text = result.first;
-
-	text->second->reloadable = reloadable;
-
-	return TextureHandle(text);
+	return TextureHandle(textureIterator);
 }
 
 TextureHandle TextureManager::get(const Common::UString &name) {

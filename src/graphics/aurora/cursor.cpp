@@ -117,22 +117,7 @@ void Cursor::load() {
 	TXI txi;
 	txi.getFeatures().filter = false;
 
-	try {
-		Texture *texture = new Texture(image, &txi);
-
-		image = 0;
-
-		try {
-			_texture = TextureMan.add(texture, _name);
-		} catch(...) {
-			delete texture;
-			throw;
-		}
-
-	} catch (...) {
-		delete image;
-		throw;
-	}
+	_texture = TextureMan.add(new Texture(image, &txi), _name);
 
 	_hotspotX = CLIP(_hotspotX, 0, _width  - 1);
 	_hotspotY = CLIP(_hotspotY, 0, _height - 1);

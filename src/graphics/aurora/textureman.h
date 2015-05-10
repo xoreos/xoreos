@@ -50,7 +50,7 @@ struct ManagedTexture {
 	bool reloadable;
 
 	ManagedTexture(const Common::UString &name);
-	ManagedTexture(const Common::UString &name, Texture *t);
+	ManagedTexture(Texture *t);
 	~ManagedTexture();
 };
 
