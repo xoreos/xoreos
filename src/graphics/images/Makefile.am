@@ -17,6 +17,7 @@ noinst_HEADERS = \
                  sbm.h \
                  winiconimage.h \
                  xoreositex.h \
+                 nbfs.h \
                  $(EMPTY)
 
 libimages_la_SOURCES = \
@@ -34,4 +35,5 @@ libimages_la_SOURCES = \
                        sbm.cpp \
                        winiconimage.cpp \
                        xoreositex.cpp \
+                       nbfs.cpp \
                        $(EMPTY)
