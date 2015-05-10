@@ -234,9 +234,9 @@ TextureHandle TextureManager::get(const Common::UString &name) {
 	if (texture == _textures.end()) {
 		std::pair<TextureMap::iterator, bool> result;
 
-		ManagedTexture *t = new ManagedTexture(name);
+		ManagedTexture *managedTexture = new ManagedTexture(name);
 
-		result = _textures.insert(std::make_pair(name, t));
+		result = _textures.insert(std::make_pair(name, managedTexture));
 
 		texture = result.first;
 

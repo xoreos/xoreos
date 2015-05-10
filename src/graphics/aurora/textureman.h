@@ -163,9 +163,6 @@ private:
 
 	Common::Mutex _mutex;
 
-	void release(TextureMap::iterator &i);
-	void release(PLTList::iterator &i);
-
 	void assign(TextureHandle &texture, const TextureHandle &from);
 	void assign(PLTHandle &plt, const PLTHandle &from);
 	void release(TextureHandle &texture);
