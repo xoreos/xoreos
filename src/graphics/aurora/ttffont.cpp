@@ -49,7 +49,7 @@ TTFFont::Page::Page() : needRebuild(false),
 	surface = new Surface(kPageWidth, kPageHeight);
 	surface->fill(0x00, 0x00, 0x00, 0x00);
 
-	texture = TextureMan.add(new Texture(surface));
+	texture = TextureMan.add(Texture::create(surface));
 }
 
 void TTFFont::Page::rebuild() {

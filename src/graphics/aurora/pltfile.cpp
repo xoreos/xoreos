@@ -22,16 +22,40 @@
  *  BioWare's Packed Layered Texture.
  */
 
+/* A PLT file consist of up to 10 layers that can be tinted independently,
+ * that are all flattened into one texture for display. The tinting is
+ * dynamic, though, meaning the colors can be changed on-the-fly from the
+ * engine code, even for PLTs that are currently displayed.
+ *
+ * For each pixel, the PLT specifies two values: to which layer it belongs
+ * to, and its coloring intensity. As such, each pixel only ever belongs
+ * to a single layer.
+ *
+ * For the actual colors involved, each layer in turn requires a palette
+ * image, usually a TGA in BGRA. The coloring value given by the engine
+ * code specifies the Y coordinate from where to pick the color from
+ * the palette image, and the PLT-supplied intensity specifies the X
+ * coordinate.
+ *
+ * So, this is the algorithm to build the final texture:
+ *
+ * for each pixel p in image {
+ *   int layerIndex = read layer index value from the PLT file
+ *   int intensity  = read intensity value from the PLT file
+ *   int colorIndex = get color index value from the engine code
+ *
+ *   p = layerImages[layerIndex].getPixel(intensity, colorIndex)
+ * }
+ */
+
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/strutil.h"
 
-#include "src/aurora/resman.h"
-
-#include "src/graphics/images/tga.h"
+#include "src/graphics/images/decoder.h"
+#include "src/graphics/images/surface.h"
 
 #include "src/graphics/aurora/pltfile.h"
-#include "src/graphics/aurora/texture.h"
 
 static const uint32 kPLTID     = MKTAG('P', 'L', 'T', ' ');
 static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');
@@ -40,6 +64,110 @@ namespace Graphics {
 
 namespace Aurora {
 
+PLTFile::PLTFile(const Common::UString &name, Common::SeekableReadStream &plt) :
+	_name(name), _surface(0), _dataImage(0), _dataLayers(0) {
+
+	for (uint i = 0; i < kLayerMAX; i++)
+		_colors[i] = 0;
+
+	load(plt);
+}
+
+PLTFile::~PLTFile() {
+	delete[] _dataImage;
+	delete[] _dataLayers;
+}
+
+bool PLTFile::isDynamic() const {
+	return true;
+}
+
+bool PLTFile::reload() {
+	// We can't reload PLT files
+	return false;
+}
+
+void PLTFile::setLayerColor(Layer layer, uint8 color) {
+	assert((layer >= 0) && (layer < kLayerMAX));
+
+	_colors[layer] = color;
+}
+
+void PLTFile::rebuild() {
+	build();
+	refresh();
+}
+
+void PLTFile::load(Common::SeekableReadStream &plt) {
+	// --- PLT header ---
+	AuroraBase::readHeader(plt);
+
+	if (_id != kPLTID)
+		throw Common::Exception("Not a PLT file (%s)", Common::debugTag(_id).c_str());
+	if (_version != kVersion1)
+		throw Common::Exception("Unsupported PLT file version %s", Common::debugTag(_version).c_str());
+
+	const uint32 layers = plt.readUint32LE();
+	if (layers > kLayerMAX)
+		throw Common::Exception("Too many layers (%d)", layers);
+
+	plt.skip(4); // Unknown
+
+	const uint32 width  = plt.readUint32LE();
+	const uint32 height = plt.readUint32LE();
+
+	if ((plt.size() - plt.pos()) < (int32) (2 * width * height))
+		throw Common::Exception("Not enough data");
+
+	// --- PLT layer data ---
+
+	uint32 size = width * height;
+
+	_dataImage  = new uint8[size];
+	_dataLayers = new uint8[size];
+
+	uint8 *image = _dataImage;
+	uint8 *layer = _dataLayers;
+	while (size-- > 0) {
+		*image++ = plt.readByte();
+		*layer++ = MIN<uint8>(plt.readByte(), kLayerMAX - 1);
+	}
+
+	// --- Create the actual texture surface ---
+
+	_surface = new Surface(width, height);
+
+	const uint32 pixels  = width * height;
+	      byte  *data    = _surface->getData();
+
+	// Initialize it to pink, for high debug visibility
+	static const byte kPinkPixel[4] = { 0xFF, 0x00, 0xFF, 0xFF };
+	for (uint32 i = 0; i < pixels; i++, data += 4)
+		memcpy(data, kPinkPixel, sizeof(kPinkPixel));
+
+	set(_name, _surface, ::Aurora::kFileTypePLT, 0);
+	addToQueues();
+}
+
+void PLTFile::build() {
+	/* For all layers, copy one whole row of pixels into the row buffer.
+	 * The row picked for each layer corresponds to the color index we want.
+	 * We don't care about the other rows, as they belong to other color indices. */
+	byte rows[4 * 256 * kLayerMAX];
+	getColorRows(rows, _colors);
+
+	const uint32 pixels = _width * _height;
+	const uint8 *image  = _dataImage;
+	const uint8 *layer  = _dataLayers;
+	      byte  *dst    = _surface->getData();
+
+	/* Now terate over all pixels, each time copying the correct BGRA values
+	 * for the pixel's intensity into the final image. */
+	for (uint32 i = 0; i < pixels; i++, image++, layer++, dst += 4)
+		memcpy(dst, rows + (*layer * 4 * 256) + (*image * 4), 4);
+}
+
+/** The palette image resource names for all layers. */
 static const char *kPalettes[PLTFile::kLayerMAX] = {
 	"pal_skin01",
 	"pal_hair01",
@@ -53,189 +181,62 @@ static const char *kPalettes[PLTFile::kLayerMAX] = {
 	"pal_tattoo01"
 };
 
-PLTFile::PLTFile(const Common::UString &fileName) : _name(fileName),
-	_dataImage(0), _dataLayers(0) {
+/** Load a specific layer palette image and perform some sanity checks. */
+ImageDecoder *PLTFile::getLayerPalette(uint32 layer, uint8 row) {
+	assert(layer < kLayerMAX);
 
-	assert(!_name.empty());
-
-	for (uint i = 0; i < kLayerMAX; i++)
-		_colors[i] = 0;
-
-	load();
-}
-
-PLTFile::~PLTFile() {
-	clear();
-}
-
-void PLTFile::clear() {
-	delete[] _dataImage;
-	delete[] _dataLayers;
-
-	_dataImage = _dataLayers = 0;
-}
-
-bool PLTFile::reload() {
-	delete _dataImage;
-	delete _dataLayers;
-
-	_dataImage  = 0;
-	_dataLayers = 0;
-
-	load();
-	rebuild();
-
-	return true;
-}
-
-void PLTFile::load() {
-	Common::SeekableReadStream *plt = 0;
-
+	// TODO: We may want to cache these somehow...
+	ImageDecoder *palette = loadImage(kPalettes[layer]);
 	try {
+		if (palette->getFormat() != kPixelFormatBGRA)
+			throw Common::Exception("Invalid format (%d)", palette->getFormat());
 
-		plt = ResMan.getResource(_name, ::Aurora::kFileTypePLT);
-		if (!plt)
-			throw Common::Exception("No such PLT");
+		if (palette->getMipMapCount() < 1)
+			throw Common::Exception("No mip maps");
 
-		readHeader(*plt);
-		readData  (*plt);
+		const ImageDecoder::MipMap &mipMap = palette->getMipMap(0);
 
-		if (plt->err())
-			throw Common::Exception(Common::kReadError);
+		if (mipMap.width != 256)
+			throw Common::Exception("Invalid width (%d)", mipMap.width);
 
-	} catch (Common::Exception &e) {
-		delete plt;
-		clear();
+		if (row >= mipMap.height)
+			throw Common::Exception("Invalid height (%d >= %d)", row, mipMap.height);
 
-		e.add("Failed reading PLT file \"%s\"", _name.c_str());
+	} catch (...) {
+		delete palette;
 		throw;
 	}
 
-	delete plt;
-
-	if (_texture.empty())
-		_texture = TextureMan.add(new Texture(0));
+	return palette;
 }
 
-void PLTFile::readHeader(Common::SeekableReadStream &plt) {
-	AuroraBase::readHeader(plt);
-
-	if (_id != kPLTID)
-		throw Common::Exception("Not a PLT file (%s)", Common::debugTag(_id).c_str());
-	if (_version != kVersion1)
-		throw Common::Exception("Unsupported PLT file version %s", Common::debugTag(_version).c_str());
-
-	uint32 layers = plt.readUint32LE();
-	if (layers > kLayerMAX)
-		throw Common::Exception("Too many layers (%d)", layers);
-
-	plt.skip(4); // Unknown
-
-	_width  = plt.readUint32LE();
-	_height = plt.readUint32LE();
-
-	if ((plt.size() - plt.pos()) < (int32) (2 * _width * _height))
-		throw Common::Exception("Not enough data");
-}
-
-void PLTFile::readData(Common::SeekableReadStream &plt) {
-	uint32 size = _width * _height;
-
-	_dataImage  = new uint8[size];
-	_dataLayers = new uint8[size];
-
-	uint8 *image = _dataImage;
-	uint8 *layer = _dataLayers;
-	while (size-- > 0) {
-		*image++ = plt.readByte();
-		*layer++ = MIN<uint8>(plt.readByte(), kLayerMAX - 1);
-	}
-}
-
-void PLTFile::setLayerColor(Layer layer, uint8 color) {
-	assert((layer >= 0) && (layer < kLayerMAX));
-
-	_colors[layer] = color;
-}
-
-void PLTFile::rebuild() {
-	if (_texture.empty())
-		return;
-
-	PLTImage *t = new PLTImage(*this);
-
-	_texture.getTexture().reload(t);
-}
-
-TextureHandle PLTFile::getTexture() const {
-	return _texture;
-}
-
-
-PLTImage::PLTImage(const PLTFile &parent) {
-	_compressed = false;
-	_hasAlpha   = true;
-
-	_format    = kPixelFormatBGRA;
-	_formatRaw = kPixelFormatRGBA8;
-	_dataType  = kPixelDataType8;
-
-	create(parent);
-}
-
-PLTImage::~PLTImage() {
-}
-
-void PLTImage::create(const PLTFile &parent) {
-	_mipMaps.push_back(new MipMap);
-
-	_mipMaps[0]->width  = parent._width;
-	_mipMaps[0]->height = parent._height;
-	_mipMaps[0]->size   = _mipMaps[0]->width * _mipMaps[0]->height * 4;
-	_mipMaps[0]->data   = new byte[_mipMaps[0]->size];
-
-	byte rows[4 * 256 * PLTFile::kLayerMAX];
-	getColorRows(parent, rows);
-
-	uint32 pixels = parent._width * parent._height;
-	const byte *image = parent._dataImage;
-	const byte *layer = parent._dataLayers;
-	      byte *dst   = _mipMaps[0]->data;
-
-	for (uint32 i = 0; i < pixels; i++, image++, layer++, dst += 4)
-		memcpy(dst, rows + (*layer * 4 * 256) + (*image * 4), 4);
-}
-
-void PLTImage::getColorRows(const PLTFile &parent, byte *rows) {
-	for (uint i = 0; i < PLTFile::kLayerMAX; i++, rows += 4 * 256) {
-		Common::SeekableReadStream *tgaFile = 0;
+void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kLayerMAX]) {
+	for (uint i = 0; i < kLayerMAX; i++, rows += 4 * 256) {
+		ImageDecoder *palette = 0;
 
 		try {
-			tgaFile = ResMan.getResource(kPalettes[i], ::Aurora::kFileTypeTGA);
-			if (!tgaFile)
-				throw std::exception();
+			palette = getLayerPalette(i, colors[i]);
 
-			TGA tga(*tgaFile);
-			if (tga.getFormat() != kPixelFormatBGRA)
-				throw std::exception();
+			// The images have their origin at the bottom left, so we flip the color row
+			const uint8 row = palette->getMipMap(0).height - 1 - colors[i];
 
-			const MipMap &mipMap = tga.getMipMap(0);
-			if (mipMap.width != 256)
-				throw std::exception();
+			// Copy the whole row into the buffer
+			memcpy(rows, palette->getMipMap(0).data + (row * 4 * 256), 4 * 256);
 
-			uint8 row = parent._colors[i];
-			if (row >= mipMap.height)
-				throw std::exception();
+		} catch (Common::Exception &e) {
+			// On error set to pink (while honoring intensity), for high debug visibility
+			for (uint32 p = 0; p < 256; p++) {
+				rows[p * 4 + 0] = p;
+				rows[p * 4 + 1] = 0x00;
+				rows[p * 4 + 2] = p;
+				rows[p * 4 + 3] = 0xFF;
+			}
 
-			row = mipMap.height - 1 - row;
-
-			memcpy(rows, mipMap.data + (row * 4 * 256), 4 * 256);
-
-		} catch (...) {
-			memset(rows, 0, 4 * 256);
+			e.add("Failed to load palette \"%s\"", kPalettes[i]);
+			Common::printException(e, "WARNING: ");
 		}
 
-		delete tgaFile;
+		delete palette;
 	}
 }
 

@@ -40,31 +40,17 @@ namespace Graphics {
 namespace Aurora {
 
 class Texture;
-class PLTFile;
 
 /** A managed texture, storing how often it's referenced. */
 struct ManagedTexture {
 	Texture *texture;
 	uint32 referenceCount;
 
-	bool reloadable;
-
-	ManagedTexture(const Common::UString &name);
 	ManagedTexture(Texture *t);
 	~ManagedTexture();
 };
 
-/** A managed PLT, storing how often it's referenced. */
-struct ManagedPLT {
-	PLTFile *plt;
-	uint32 referenceCount;
-
-	ManagedPLT(const Common::UString &name);
-	~ManagedPLT();
-};
-
 typedef std::map<Common::UString, ManagedTexture *> TextureMap;
-typedef std::list<ManagedPLT *> PLTList;
 
 /** A handle to a texture. */
 class TextureHandle {
@@ -91,29 +77,6 @@ private:
 	friend class TextureManager;
 };
 
-class PLTHandle {
-public:
-	PLTHandle();
-	PLTHandle(const PLTHandle &right);
-	~PLTHandle();
-
-	PLTHandle &operator=(const PLTHandle &right);
-
-	bool empty() const;
-
-	void clear();
-
-	PLTFile &getPLT() const;
-
-private:
-	bool _empty;
-	PLTList::iterator _it;
-
-	PLTHandle(PLTList::iterator &i);
-
-	friend class TextureManager;
-};
-
 /** The global Aurora texture manager. */
 class TextureManager : public Common::Singleton<TextureManager> {
 public:
@@ -130,17 +93,17 @@ public:
 	/** Add this texture to the TextureManager. If name is empty, generate a random one. */
 	TextureHandle add(Texture *texture, Common::UString name = "");
 	/** Retrieve this named texture, loading it if it's not yet managed. */
-	TextureHandle get(const Common::UString &name);
+	TextureHandle get(Common::UString name);
 	/** Retrieve this named texture, returning an empty handle if it's not managed. */
 	TextureHandle getIfExist(const Common::UString &name);
 
+	/** Start recording all names of newly created textures. */
+	void startRecordNewTextures();
+	/** Stop the recording of texture names, and return a list of previously recorded names. */
+	void stopRecordNewTextures(std::list<Common::UString> &newTextures);
+
 	/** Reload and rebuild all managed textures, if possible. */
 	void reloadAll();
-
-	/** Return all newly created PLT textures. */
-	void getNewPLTs(std::list<PLTHandle> &plts);
-	/** Return the list of newly created PLT textures. */
-	void clearNewPLTs();
 	// '---
 
 	// .--- Texture rendering
@@ -157,18 +120,15 @@ public:
 
 private:
 	TextureMap _textures;
-	PLTList    _plts;
-
-	std::list<PLTHandle> _newPLTs;
 
 	Common::Mutex _mutex;
 
-	void assign(TextureHandle &texture, const TextureHandle &from);
-	void assign(PLTHandle &plt, const PLTHandle &from);
-	void release(TextureHandle &texture);
-	void release(PLTHandle &plt);
+	bool _recordNewTextures;
+	std::list<Common::UString> _newTextureNames;
 
-	friend class PLTHandle;
+	void assign(TextureHandle &texture, const TextureHandle &from);
+	void release(TextureHandle &texture);
+
 	friend class TextureHandle;
 };
 

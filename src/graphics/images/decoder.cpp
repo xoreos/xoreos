@@ -130,8 +130,8 @@ void ImageDecoder::clear() {
 	_mipMaps.clear();
 }
 
-Common::SeekableReadStream *ImageDecoder::getTXI() const {
-	return 0;
+const TXI &ImageDecoder::getTXI() const {
+	return _txi;
 }
 
 bool ImageDecoder::isCompressed() const {

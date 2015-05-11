@@ -136,6 +136,7 @@ ResourceManager::ResourceManager() : _hasSmall(false),
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeBMP);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeJPG);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeSBM);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypePLT);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeXEOSITEX);
 
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeBIK);

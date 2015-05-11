@@ -545,7 +545,7 @@ void ModelNode_NWN2::createTint() {
 	delete tintMap;
 
 	// And add the new texture to the TextureManager
-	TextureHandle tintedTexture = TextureMan.add(new Texture(tintedMap));
+	TextureHandle tintedTexture = TextureMan.add(Texture::create(tintedMap));
 
 	_textures.push_back(tintedTexture);
 	_tintedMapIndex = _textures.size() - 1;

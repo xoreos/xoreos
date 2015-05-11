@@ -24,6 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/maths.h"
+#include "src/common/error.h"
 
 #include "src/graphics/camera.h"
 
@@ -363,8 +364,8 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 					isDecal = false;
 			}
 
-		} catch (...) {
-			warning("Failed loading texture \"%s\"", textures[t].c_str());
+		} catch (Common::Exception &e) {
+			Common::printException(e, "WARNING: ");
 		}
 
 	}

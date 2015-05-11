@@ -31,6 +31,8 @@
 
 #include "src/graphics/types.h"
 
+#include "src/graphics/images/txi.h"
+
 namespace Common {
 	class SeekableReadStream;
 	class UString;
@@ -91,8 +93,8 @@ public:
 	/** Manually decompress the texture image data. */
 	void decompress();
 
-	/** Return TXI data, if embedded in the image. */
-	virtual Common::SeekableReadStream *getTXI() const;
+	/** Return the texture information TXI, which may be embedded in the image. */
+	const TXI &getTXI() const;
 
 	/** Dump the image into a TGA. */
 	bool dumpTGA(const Common::UString &fileName) const;
@@ -106,6 +108,8 @@ protected:
 	PixelDataType  _dataType;
 
 	std::vector<MipMap *> _mipMaps;
+
+	TXI _txi;
 
 	void clear();
 

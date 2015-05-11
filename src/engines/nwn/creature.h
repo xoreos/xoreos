@@ -232,11 +232,14 @@ private:
 
 	/** A part of a creature body. */
 	struct BodyPart {
-		uint32 id; ///< Index of the part variant.
+		uint32 id;       ///< Index of the part variant.
 		uint32 armor_id; ///< Index of the part variant when armour equipped.
-		Common::UString modelName; ///< Name of the model.
-		Common::UString texture;   ///< Name of the texture.
-		std::list<Graphics::Aurora::PLTHandle> plts; ///< Paletted textures.
+
+		Common::UString modelName;   ///< Name of the model.
+		Common::UString textureName; ///< Name of the texture.
+
+		/** Actual textures loaded by the part's model. */
+		std::list<Graphics::Aurora::TextureHandle> textures;
 
 		BodyPart();
 	};
@@ -357,7 +360,7 @@ private:
 	void getArmorModels(); ///< Populate the armor info for body parts.
 
 	/** Finished those paletted textures. */
-	void finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts);
+	void finishPLTs(const std::list<Graphics::Aurora::TextureHandle> &plts);
 
 	void createTooltip(); ///< Create the tooltip.
 	void showTooltip();   ///< Show the tooltip.

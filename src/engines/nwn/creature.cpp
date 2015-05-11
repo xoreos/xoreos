@@ -400,7 +400,7 @@ void Creature::getPartModels() {
 	for (uint i = 0; i < kBodyPartMAX; i++)
 		constructModelName(kBodyPartModels[i], _bodyParts[i].armor_id > 0 ? _bodyParts[i].armor_id : _bodyParts[i].id,
 		                   genderChar, raceChar, phenoChar, phenoAltChar,
-		                   _bodyParts[i].modelName, _bodyParts[i].texture);
+		                   _bodyParts[i].modelName, _bodyParts[i].textureName);
 }
 
 void Creature::getArmorModels() {
@@ -427,24 +427,24 @@ void Creature::getArmorModels() {
 	}
 }
 
-void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
-	for (std::list<Graphics::Aurora::PLTHandle>::iterator p = plts.begin();
-	     p != plts.end(); ++p) {
+void Creature::finishPLTs(const std::list<Graphics::Aurora::TextureHandle> &plts) {
+	for (std::list<Graphics::Aurora::TextureHandle>::const_iterator p = plts.begin(); p != plts.end(); ++p) {
+		Graphics::Aurora::PLTFile *plt = dynamic_cast<Graphics::Aurora::PLTFile *>(&p->getTexture());
+		if (!plt)
+			continue;
 
-		Graphics::Aurora::PLTFile &plt = p->getPLT();
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerSkin    , _colorSkin);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerHair    , _colorHair);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo1 , _colorTattoo1);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo2 , _colorTattoo2);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal1  , _colorMetal1);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal2  , _colorMetal2);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather1, _colorLeather1);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather2, _colorLeather2);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth1  , _colorCloth1);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth2  , _colorCloth2);
 
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerSkin   , _colorSkin);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerHair   , _colorHair);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo1, _colorTattoo1);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo2, _colorTattoo2);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal1, _colorMetal1);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal2, _colorMetal2);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather1, _colorLeather1);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather2, _colorLeather2);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth1, _colorCloth1);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth2, _colorCloth2);
-
-		plt.rebuild();
+		plt->rebuild();
 	}
 }
 
@@ -471,10 +471,10 @@ void Creature::loadModel() {
 			if (_bodyParts[i].modelName.empty())
 				continue;
 
-			TextureMan.clearNewPLTs();
+			TextureMan.startRecordNewTextures();
 
 			// Try to load in the corresponding part model
-			Graphics::Aurora::Model *part_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].texture);
+			Graphics::Aurora::Model *part_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].textureName);
 			if (!part_model)
 				continue;
 
@@ -483,9 +483,18 @@ void Creature::loadModel() {
 			if (part_node)
 				part_node->addChild(part_model);
 
-			TextureMan.getNewPLTs(_bodyParts[i].plts);
+			std::list<Common::UString> newTextures;
+			TextureMan.stopRecordNewTextures(newTextures);
 
-			finishPLTs(_bodyParts[i].plts);
+			for (std::list<Common::UString>::const_iterator t = newTextures.begin(); t != newTextures.end(); ++t) {
+				Graphics::Aurora::TextureHandle texture = TextureMan.getIfExist(*t);
+				if (texture.empty())
+					continue;
+
+				_bodyParts[i].textures.push_back(texture);
+			}
+
+			finishPLTs(_bodyParts[i].textures);
 		}
 
 	} else

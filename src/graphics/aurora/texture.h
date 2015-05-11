@@ -46,42 +46,42 @@ namespace Aurora {
 /** A texture. */
 class Texture : public Graphics::Texture {
 public:
-	/** Create a texture from this image resource. */
-	Texture(const Common::UString &name);
-	/** Take over the image and create a texture from it. */
-	Texture(ImageDecoder *image, const TXI *txi = 0);
-	~Texture();
+	virtual ~Texture();
 
 	uint32 getWidth()  const;
 	uint32 getHeight() const;
 
 	bool hasAlpha() const;
 
+	/** Is this a dynamic texture, or a shared static one? */
+	virtual bool isDynamic() const;
+
 	/** Return the TXI. */
 	const TXI &getTXI() const;
 	/** Return the image. */
 	const ImageDecoder &getImage() const;
 
-	/** Reload the texture from this image resource. */
-	bool reload(const Common::UString &name = "");
-	/** Reload the texture from this image. */
-	bool reload(ImageDecoder *image, const TXI *txi = 0);
+	/** Try to reload the texture. */
+	virtual bool reload();
 
 	/** Dump the texture into a TGA. */
 	bool dumpTGA(const Common::UString &fileName) const;
 
-	/** Load a texture image resource. */
-	static ImageDecoder *loadImage(const Common::UString &name, ::Aurora::FileType *type = 0);
+
+	/** Load an image in any of the common texture formats. */
+	static ImageDecoder *loadImage(const Common::UString &name);
+	/** Load an image in any of the common texture formats. */
+	static ImageDecoder *loadImage(const Common::UString &name, ::Aurora::FileType &type);
+
+	/** Create a texture from this image resource. */
+	static Texture *create(const Common::UString &name);
+	/** Take over the image and create a texture from it. */
+	static Texture *create(ImageDecoder *image, ::Aurora::FileType type = ::Aurora::kFileTypeNone, TXI *txi = 0);
+
 
 protected:
-	// GLContainer
-	void doRebuild();
-	void doDestroy();
-
-private:
-	Common::UString _name;
-
-	::Aurora::FileType _type; ///< The texture's image's file type.
+	Common::UString    _name; ///< The name of the texture's image's file.
+	::Aurora::FileType _type; ///< The type of the texture's image's file.
 
 	ImageDecoder *_image; ///< The actual image.
 	TXI *_txi;            ///< The TXI.
@@ -89,13 +89,26 @@ private:
 	uint32 _width;
 	uint32 _height;
 
-	void load(const Common::UString &name);
-	void load(ImageDecoder *image);
 
-	void loadTXI(Common::SeekableReadStream *stream);
-	void loadImage();
+	Texture();
+	Texture(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi = 0);
 
-	friend class TextureManager;
+	void set(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi);
+
+	void addToQueues();
+	void removeFromQueues();
+	void refresh();
+
+
+	// GLContainer
+	void doRebuild();
+	void doDestroy();
+
+
+	static ImageDecoder *loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type);
+	static TXI *loadTXI(const Common::UString &name);
+
+	static Texture *createPLT(const Common::UString &name, Common::SeekableReadStream *imageStream);
 };
 
 } // End of namespace Aurora

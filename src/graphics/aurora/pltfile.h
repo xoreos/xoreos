@@ -25,20 +25,17 @@
 #ifndef GRAPHICS_AURORA_PLTFILE_H
 #define GRAPHICS_AURORA_PLTFILE_H
 
-#include "src/common/ustring.h"
-
 #include "src/aurora/aurorafile.h"
 
-#include "src/graphics/images/decoder.h"
-
-#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
 
 namespace Graphics {
 
+class Surface;
+
 namespace Aurora {
 
-/** Packed Layered Texture. */
-class PLTFile : public ::Aurora::AuroraBase {
+class PLTFile : public ::Aurora::AuroraBase, public Texture {
 public:
 	enum Layer {
 		kLayerSkin     = 0,
@@ -54,52 +51,37 @@ public:
 		kLayerMAX
 	};
 
-	PLTFile(const Common::UString &fileName);
 	~PLTFile();
 
+	/** Set the color of one layer within this layer texture. */
+	void setLayerColor(Layer layer, uint8 color);
+	/** Rebuild the combined texture image. */
+	void rebuild();
+
+	bool isDynamic() const;
 	bool reload();
 
-	void setLayerColor(Layer layer, uint8 color);
-	void rebuild();
 
 private:
 	Common::UString _name;
 
-	uint32 _width;
-	uint32 _height;
+	Surface *_surface;
 
 	uint8 *_dataImage;
 	uint8 *_dataLayers;
 
 	uint8 _colors[kLayerMAX];
 
-	TextureHandle _texture;
 
+	PLTFile(const Common::UString &name, Common::SeekableReadStream &plt);
 
-	TextureHandle getTexture() const;
+	void load(Common::SeekableReadStream &plt);
+	void build();
 
-	void load();
-	void readHeader(Common::SeekableReadStream &plt);
-	void readData(Common::SeekableReadStream &plt);
+	static ImageDecoder *getLayerPalette(uint32 layer, uint8 row);
+	static void getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kLayerMAX]);
 
-	void clear();
-
-
-	friend class PLTImage;
-	friend class TextureManager;
-};
-
-class PLTImage : public ImageDecoder {
-public:
-	~PLTImage();
-
-private:
-	PLTImage(const PLTFile &parent);
-
-	void create(const PLTFile &parent);
-	void getColorRows(const PLTFile &parent, byte *rows);
-
-	friend class PLTFile;
+	friend class Texture;
 };
 
 } // End of namespace Aurora

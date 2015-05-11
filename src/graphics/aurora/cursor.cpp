@@ -114,10 +114,10 @@ void Cursor::load() {
 	_width  = image->getMipMap(0).width;
 	_height = image->getMipMap(0).height;
 
-	TXI txi;
-	txi.getFeatures().filter = false;
+	TXI *txi = new TXI();
+	txi->getFeatures().filter = false;
 
-	_texture = TextureMan.add(new Texture(image, &txi), _name);
+	_texture = TextureMan.add(Texture::create(image, type, txi), _name);
 
 	_hotspotX = CLIP(_hotspotX, 0, _width  - 1);
 	_hotspotY = CLIP(_hotspotY, 0, _height - 1);

@@ -110,6 +110,8 @@ bool TXI::empty() const {
 }
 
 void TXI::load(Common::SeekableReadStream &stream) {
+	_empty = false;
+
 	while (!stream.eos()) {
 		Common::UString line = Common::readStringLine(stream, Common::kEncodingASCII);
 

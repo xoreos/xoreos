@@ -30,7 +30,6 @@
 
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
-#include "src/graphics/aurora/pltfile.h"
 
 #include "src/graphics/graphics.h"
 
@@ -42,28 +41,11 @@ namespace Graphics {
 
 namespace Aurora {
 
-ManagedTexture::ManagedTexture(const Common::UString &name) : texture(new Texture(name)),
-	referenceCount(0), reloadable(false) {
-
-}
-
-ManagedTexture::ManagedTexture(Texture *t) : texture(t),
-	referenceCount(0), reloadable(false) {
-
+ManagedTexture::ManagedTexture(Texture *t) : texture(t), referenceCount(0) {
 }
 
 ManagedTexture::~ManagedTexture() {
 	delete texture;
-}
-
-
-ManagedPLT::ManagedPLT(const Common::UString &name) {
-	referenceCount = 0;
-	plt = new PLTFile(name);
-}
-
-ManagedPLT::~ManagedPLT() {
-	delete plt;
 }
 
 
@@ -116,48 +98,7 @@ Texture &TextureHandle::getTexture() const {
 }
 
 
-PLTHandle::PLTHandle() : _empty(true) {
-}
-
-PLTHandle::PLTHandle(PLTList::iterator &i) : _empty(false), _it(i) {
-	(*_it)->referenceCount++;
-}
-
-PLTHandle::PLTHandle(const PLTHandle &right) : _empty(true) {
-	*this = right;
-}
-
-PLTHandle::~PLTHandle() {
-	clear();
-}
-
-PLTHandle &PLTHandle::operator=(const PLTHandle &right) {
-	if (this == &right)
-		return *this;
-
-	clear();
-
-	TextureMan.assign(*this, right);
-
-	return *this;
-}
-
-bool PLTHandle::empty() const {
-	return _empty;
-}
-
-void PLTHandle::clear() {
-	TextureMan.release(*this);
-}
-
-PLTFile &PLTHandle::getPLT() const {
-	assert(!_empty);
-
-	return *(*_it)->plt;
-}
-
-
-TextureManager::TextureManager() {
+TextureManager::TextureManager() : _recordNewTextures(false) {
 }
 
 TextureManager::~TextureManager() {
@@ -167,15 +108,12 @@ TextureManager::~TextureManager() {
 void TextureManager::clear() {
 	Common::StackLock lock(_mutex);
 
-	_newPLTs.clear();
-
-	for (PLTList::iterator p = _plts.begin(); p != _plts.end(); ++p)
-		delete *p;
-	_plts.clear();
-
 	for (TextureMap::iterator t = _textures.begin(); t != _textures.end(); ++t)
 		delete t->second;
 	_textures.clear();
+
+	_recordNewTextures = false;
+	_newTextureNames.clear();
 }
 
 bool TextureManager::hasTexture(const Common::UString &name) {
@@ -192,14 +130,10 @@ TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
 	ManagedTexture *managedTexture = 0;
 	TextureMap::iterator textureIterator = _textures.end();
 
+	if (name.empty())
+		name = Common::generateIDRandomString();
+
 	try {
-		bool reloadable = true;
-		if (name.empty()) {
-			reloadable = false;
-
-			name = Common::generateIDRandomString();
-		}
-
 		managedTexture = new ManagedTexture(texture);
 
 		std::pair<TextureMap::iterator, bool> result;
@@ -209,39 +143,37 @@ TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
 			throw Common::Exception("Texture \"%s\" already exists", name.c_str());
 
 		textureIterator = result.first;
-		textureIterator->second->reloadable = reloadable;
 
 	} catch (...) {
 		delete managedTexture;
 		throw;
 	}
 
+	if (_recordNewTextures)
+		_newTextureNames.push_back(name);
+
 	return TextureHandle(textureIterator);
 }
 
-TextureHandle TextureManager::get(const Common::UString &name) {
+TextureHandle TextureManager::get(Common::UString name) {
 	Common::StackLock lock(_mutex);
-
-	if (ResMan.hasResource(name, ::Aurora::kFileTypePLT)) {
-		_plts.push_back(new ManagedPLT(name));
-
-		_newPLTs.push_back(PLTHandle(--_plts.end()));
-
-		return _newPLTs.back().getPLT().getTexture();
-	}
 
 	TextureMap::iterator texture = _textures.find(name);
 	if (texture == _textures.end()) {
 		std::pair<TextureMap::iterator, bool> result;
 
-		ManagedTexture *managedTexture = new ManagedTexture(name);
+		ManagedTexture *managedTexture = new ManagedTexture(Texture::create(name));
+
+		if (managedTexture->texture->isDynamic())
+			name = name + "#" + Common::generateIDRandomString();
 
 		result = _textures.insert(std::make_pair(name, managedTexture));
 
 		texture = result.first;
-
-		texture->second->reloadable = true;
 	}
+
+	if (_recordNewTextures)
+		_newTextureNames.push_back(name);
 
 	return TextureHandle(texture);
 }
@@ -256,6 +188,22 @@ TextureHandle TextureManager::getIfExist(const Common::UString &name) {
 	return TextureHandle();
 }
 
+void TextureManager::startRecordNewTextures() {
+	Common::StackLock lock(_mutex);
+
+	_newTextureNames.clear();
+	_recordNewTextures = true;
+}
+
+void TextureManager::stopRecordNewTextures(std::list<Common::UString> &newTextures) {
+	Common::StackLock lock(_mutex);
+
+	_newTextureNames.swap(newTextures);
+
+	_newTextureNames.clear();
+	_recordNewTextures = false;
+}
+
 void TextureManager::assign(TextureHandle &texture, const TextureHandle &from) {
 	Common::StackLock lock(_mutex);
 
@@ -264,16 +212,6 @@ void TextureManager::assign(TextureHandle &texture, const TextureHandle &from) {
 
 	if (!texture._empty)
 		texture._it->second->referenceCount++;
-}
-
-void TextureManager::assign(PLTHandle &plt, const PLTHandle &from) {
-	Common::StackLock lock(_mutex);
-
-	plt._empty = from._empty;
-	plt._it    = from._it;
-
-	if (!plt._empty)
-		(*plt._it)->referenceCount++;
 }
 
 void TextureManager::release(TextureHandle &texture) {
@@ -290,49 +228,22 @@ void TextureManager::release(TextureHandle &texture) {
 	texture._it    = _textures.end();
 }
 
-void TextureManager::release(PLTHandle &plt) {
-	Common::StackLock lock(_mutex);
-
-	if (!plt._empty && (plt._it != _plts.end())) {
-		if (--(*plt._it)->referenceCount == 0) {
-			delete *plt._it;
-			_plts.erase(plt._it);
-		}
-	}
-
-	plt._empty = true;
-	plt._it    = _plts.end();
-}
-
 void TextureManager::reloadAll() {
 	Common::StackLock lock(_mutex);
 
 	GfxMan.lockFrame();
 
-	TextureMap::iterator texture;
-	try {
-
-		for (texture = _textures.begin(); texture != _textures.end(); ++texture)
-			if (texture->second->reloadable)
-				texture->second->texture->reload(texture->first);
-
-	} catch (Common::Exception &e) {
-		e.add("Failed reloading texture \"%s\"", texture->first.c_str());
-		throw;
+	for (TextureMap::iterator texture = _textures.begin(); texture != _textures.end(); ++texture) {
+		try {
+			texture->second->texture->reload();
+		} catch (Common::Exception &e) {
+			e.add("Failed reloading texture \"%s\"", texture->first.c_str());
+			Common::printException(e, "WARNING: ");
+		}
 	}
 
 	RequestMan.sync();
 	GfxMan.unlockFrame();
-}
-
-void TextureManager::getNewPLTs(std::list<PLTHandle> &plts) {
-	for (std::list<PLTHandle>::const_iterator p = _newPLTs.begin(); p != _newPLTs.end(); ++p)
-		plts.push_back(*p);
-	_newPLTs.clear();
-}
-
-void TextureManager::clearNewPLTs() {
-	_newPLTs.clear();
 }
 
 void TextureManager::reset() {

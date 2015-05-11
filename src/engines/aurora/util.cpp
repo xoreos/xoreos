@@ -32,6 +32,8 @@
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 
+#include "src/graphics/images/decoder.h"
+
 #include "src/graphics/aurora/texture.h"
 
 #include "src/sound/sound.h"
@@ -188,16 +190,17 @@ bool dumpTGA(const Common::UString &name, Common::UString file) {
 	if (file.empty())
 		file = name + ".tga";
 
+	bool success = false;
+	Graphics::ImageDecoder *image = 0;
 	try {
+		image = Graphics::Aurora::Texture::loadImage(name);
 
-		Graphics::Aurora::Texture texture(name);
-
-		return texture.dumpTGA(file);
-
+		success = image->dumpTGA(file);
 	} catch (...) {
 	}
 
-	return false;
+	delete image;
+	return success;
 }
 
 bool dump2DA(const Common::UString &name, Common::UString file) {

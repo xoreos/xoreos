@@ -28,6 +28,7 @@
 #include "src/common/stream.h"
 
 #include "src/graphics/aurora/texture.h"
+#include "src/graphics/aurora/pltfile.h"
 
 #include "src/graphics/types.h"
 #include "src/graphics/graphics.h"
@@ -50,46 +51,18 @@ namespace Graphics {
 
 namespace Aurora {
 
-Texture::Texture(const Common::UString &name) :
-	_type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
-
-	_txi = new TXI();
-
-	try {
-		load(name);
-	} catch (...) {
-		delete _txi;
-		delete _image;
-		throw;
-	}
-
-	addToQueue(kQueueTexture);
-	addToQueue(kQueueNewTexture);
+Texture::Texture() : _type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
 }
 
-Texture::Texture(ImageDecoder *image, const TXI *txi) :
-	_type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
+Texture::Texture(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi) :
+	_name(name), _type(type), _image(0), _txi(0), _width(0), _height(0) {
 
-	if (txi)
-		_txi = new TXI(*txi);
-	else
-		_txi = new TXI();
-
-	try {
-		load(image);
-	} catch (...) {
-		delete _txi;
-		delete _image;
-		throw;
-	}
-
-	addToQueue(kQueueTexture);
-	addToQueue(kQueueNewTexture);
+	set(name, image, type, txi);
+	addToQueues();
 }
 
 Texture::~Texture() {
-	removeFromQueue(kQueueNewTexture);
-	removeFromQueue(kQueueTexture);
+	removeFromQueues();
 
 	if (_textureID != 0)
 		GfxMan.abandon(&_textureID, 1);
@@ -113,97 +86,57 @@ bool Texture::hasAlpha() const {
 	return _image->hasAlpha();
 }
 
-ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType *type) {
-	::Aurora::FileType iType;
-	Common::SeekableReadStream *img = ResMan.getResource(::Aurora::kResourceImage, name, &iType);
-	if (!img)
-		throw Common::Exception("No such image resource \"%s\"", name.c_str());
+bool Texture::isDynamic() const {
+	return false;
+}
 
-	if (type)
-		*type = iType;
+static const TXI kEmptyTXI;
+const TXI &Texture::getTXI() const {
+	if (_txi)
+		return *_txi;
 
+	if (_image)
+		return _image->getTXI();
+
+	return kEmptyTXI;
+}
+
+const ImageDecoder &Texture::getImage() const {
+	assert(_image);
+
+	return *_image;
+}
+
+bool Texture::reload() {
+	if (_name.empty())
+		return false;
+
+	::Aurora::FileType type = ::Aurora::kFileTypeNone;
 	ImageDecoder *image = 0;
+	TXI *txi = 0;
 
 	try {
 
-		// Loading the different image formats
-		if      (iType == ::Aurora::kFileTypeTGA)
-			image = new TGA(*img);
-		else if (iType == ::Aurora::kFileTypeDDS)
-			image = new DDS(*img);
-		else if (iType == ::Aurora::kFileTypeTPC)
-			image = new TPC(*img);
-		else if (iType == ::Aurora::kFileTypeTXB)
-			image = new TXB(*img);
-		else if (iType == ::Aurora::kFileTypeSBM)
-			image = new SBM(*img);
-		else if (iType == ::Aurora::kFileTypeXEOSITEX)
-			image = new XEOSITEX(*img);
-		else
-			throw Common::Exception("Unsupported image resource type %d", (int) iType);
+		image = loadImage(_name, type);
+		txi   = loadTXI  (_name);
 
-	} catch (...) {
-		delete img;
+	} catch (Common::Exception &e) {
+		e.add("Failed to reload texture \"%s\" (%d)", _name.c_str(), type);
 		throw;
 	}
 
-	delete img;
-	return image;
+	removeFromQueues();
+	set(_name, image, type, txi);
+	addToQueues();
+
+	return true;
 }
 
-void Texture::load(const Common::UString &name) {
-	_image = loadImage(name, &_type);
-	_name  = name;
+bool Texture::dumpTGA(const Common::UString &fileName) const {
+	if (!_image)
+		return false;
 
-	loadTXI(ResMan.getResource(name, ::Aurora::kFileTypeTXI));
-	loadImage();
-}
-
-void Texture::load(ImageDecoder *image) {
-	_image = image;
-
-	loadImage();
-}
-
-void Texture::loadTXI(Common::SeekableReadStream *stream) {
-	if (!stream)
-		return;
-
-	delete _txi;
-	_txi = 0;
-
-	try {
-		_txi = new TXI(*stream);
-	} catch (Common::Exception &e) {
-		e.add("Failed loading TXI");
-		Common::printException(e);
-
-		_txi = new TXI();
-	}
-
-	delete stream;
-}
-
-void Texture::loadImage() {
-	if (!_image) {
-		_width  = 0;
-		_height = 0;
-		return;
-	}
-
-	if (_image->getMipMapCount() < 1)
-		throw Common::Exception("Texture has no images");
-
-	// Decompress
-	if (GfxMan.needManualDeS3TC())
-		_image->decompress();
-
-	// Set dimensions
-	_width  = _image->getMipMap(0).width;
-	_height = _image->getMipMap(0).height;
-
-	// If we've still got no TXI, look if the image provides TXI data
-	loadTXI(_image->getTXI());
+	return _image->dumpTGA(fileName);
 }
 
 void Texture::doDestroy() {
@@ -232,7 +165,7 @@ void Texture::doRebuild() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	// Filter?
-	const TXI::Features &features = _txi->getFeatures();
+	const TXI::Features &features = getTXI().getFeatures();
 	if (features.filter) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -282,66 +215,148 @@ void Texture::doRebuild() {
 
 }
 
-const TXI &Texture::getTXI() const {
-	return *_txi;
-}
-
-const ImageDecoder &Texture::getImage() const {
-	assert(_image);
-
-	return *_image;
-}
-
-bool Texture::reload(ImageDecoder *image, const TXI *txi) {
-	removeFromQueue(kQueueNewTexture);
-	removeFromQueue(kQueueTexture);
-
-	if (txi) {
-		delete _txi;
-		_txi = 0;
-
-		_txi = new TXI(*txi);
+Texture *Texture::createPLT(const Common::UString &name, Common::SeekableReadStream *imageStream) {
+	Texture *texture = 0;
+	try {
+		texture = new PLTFile(name, *imageStream);
+	} catch (...) {
+		delete imageStream;
+		throw;
 	}
 
-	delete _image;
-
-	load(image);
-
-	addToQueue(kQueueTexture);
-	addToQueue(kQueueNewTexture);
-
-	return true;
+	delete imageStream;
+	return texture;
 }
 
-bool Texture::reload(const Common::UString &name) {
-	if (!name.empty())
-		_name = name;
+Texture *Texture::create(const Common::UString &name) {
+	::Aurora::FileType type = ::Aurora::kFileTypeNone;
+	ImageDecoder *image = 0;
+	TXI *txi = 0;
 
-	if (_name.empty())
-		// Yeah, we don't know the resource name, so we can't reload the texture
-		return false;
+	try {
+		Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
+		if (!imageStream)
+			throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
+		// PLT needs extra handling, since they're their own Texture class
+		if (type == ::Aurora::kFileTypePLT)
+			return createPLT(name, imageStream);
+
+		image = loadImage(imageStream, type);
+		txi   = loadTXI(name);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed to create texture \"%s\" (%d)", name.c_str(), type);
+		throw;
+	}
+
+	return new Texture(name, image, type, txi);
+}
+
+Texture *Texture::create(ImageDecoder *image, ::Aurora::FileType type, TXI *txi) {
+	if (!image)
+		throw Common::Exception("Can't create a texture from an empty image");
+
+	if (image->getMipMapCount() < 1)
+		throw Common::Exception("Texture has no images");
+
+	return new Texture("", image, type, txi);
+}
+
+void Texture::set(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi) {
+	delete _image;
+	delete _txi;
+
+	_name   = name;
+	_image  = image;
+	_type   = type;
+	_txi    = txi;
+
+	_width  = _image->getMipMap(0).width;
+	_height = _image->getMipMap(0).height;
+}
+
+ImageDecoder *Texture::loadImage(const Common::UString &name) {
+	::Aurora::FileType type;
+
+	return loadImage(name, type);
+}
+
+void Texture::addToQueues() {
+	addToQueue(kQueueTexture);
+	addToQueue(kQueueNewTexture);
+}
+
+void Texture::removeFromQueues() {
 	removeFromQueue(kQueueNewTexture);
 	removeFromQueue(kQueueTexture);
-
-	delete _txi;
-	delete _image;
-
-	_txi = new TXI();
-
-	load(_name);
-
-	addToQueue(kQueueTexture);
-	addToQueue(kQueueNewTexture);
-
-	return true;
 }
 
-bool Texture::dumpTGA(const Common::UString &fileName) const {
-	if (!_image)
-		return false;
+void Texture::refresh() {
+	removeFromQueues();
+	addToQueues();
+}
 
-	return _image->dumpTGA(fileName);
+ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType &type) {
+	Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
+	if (!imageStream)
+		throw Common::Exception("No such image resource \"%s\"", name.c_str());
+
+	return loadImage(imageStream, type);
+}
+
+ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type) {
+	ImageDecoder *image = 0;
+	try {
+		// Loading the different image formats
+		if      (type == ::Aurora::kFileTypeTGA)
+			image = new TGA(*imageStream);
+		else if (type == ::Aurora::kFileTypeDDS)
+			image = new DDS(*imageStream);
+		else if (type == ::Aurora::kFileTypeTPC)
+			image = new TPC(*imageStream);
+		else if (type == ::Aurora::kFileTypeTXB)
+			image = new TXB(*imageStream);
+		else if (type == ::Aurora::kFileTypeSBM)
+			image = new SBM(*imageStream);
+		else if (type == ::Aurora::kFileTypeXEOSITEX)
+			image = new XEOSITEX(*imageStream);
+		else
+			throw Common::Exception("Unsupported image resource type %d", (int) type);
+
+		if (image->getMipMapCount() < 1)
+			throw Common::Exception("Texture has no images");
+
+		// Decompress
+		if (GfxMan.needManualDeS3TC())
+			image->decompress();
+
+	} catch (...) {
+		delete image;
+		delete imageStream;
+
+		throw;
+	}
+
+	delete imageStream;
+	return image;
+}
+
+TXI *Texture::loadTXI(const Common::UString &name) {
+	Common::SeekableReadStream *txiStream = ResMan.getResource(name, ::Aurora::kFileTypeTXI);
+	if (!txiStream)
+		return 0;
+
+	TXI *txi = 0;
+	try {
+		txi = new TXI(*txiStream);
+	} catch (Common::Exception &e) {
+		e.add("Failed loading TXI \"%s\"", name.c_str());
+		Common::printException(e, "WARNING: ");
+	}
+
+	delete txiStream;
+	return txi;
 }
 
 } // End of namespace Aurora
