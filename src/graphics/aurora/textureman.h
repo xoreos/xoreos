@@ -25,57 +25,18 @@
 #ifndef GRAPHICS_AURORA_TEXTUREMAN_H
 #define GRAPHICS_AURORA_TEXTUREMAN_H
 
-#include <map>
 #include <list>
-
-#include "src/graphics/types.h"
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
 #include "src/common/ustring.h"
 
+#include "src/graphics/aurora/texturehandle.h"
+
 namespace Graphics {
 
 namespace Aurora {
-
-class Texture;
-
-/** A managed texture, storing how often it's referenced. */
-struct ManagedTexture {
-	Texture *texture;
-	uint32 referenceCount;
-
-	ManagedTexture(Texture *t);
-	~ManagedTexture();
-};
-
-typedef std::map<Common::UString, ManagedTexture *> TextureMap;
-
-/** A handle to a texture. */
-class TextureHandle {
-public:
-	TextureHandle();
-	TextureHandle(const TextureHandle &right);
-	~TextureHandle();
-
-	TextureHandle &operator=(const TextureHandle &right);
-
-	bool empty() const;
-	const Common::UString &getName() const;
-
-	void clear();
-
-	Texture &getTexture() const;
-
-private:
-	bool _empty;
-	TextureMap::iterator _it;
-
-	TextureHandle(TextureMap::iterator &i);
-
-	friend class TextureManager;
-};
 
 /** The global Aurora texture manager. */
 class TextureManager : public Common::Singleton<TextureManager> {

@@ -26,8 +26,6 @@
 #include "src/common/error.h"
 #include "src/common/uuid.h"
 
-#include "src/aurora/resman.h"
-
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
@@ -40,63 +38,6 @@ DECLARE_SINGLETON(Graphics::Aurora::TextureManager)
 namespace Graphics {
 
 namespace Aurora {
-
-ManagedTexture::ManagedTexture(Texture *t) : texture(t), referenceCount(0) {
-}
-
-ManagedTexture::~ManagedTexture() {
-	delete texture;
-}
-
-
-TextureHandle::TextureHandle() : _empty(true) {
-}
-
-TextureHandle::TextureHandle(TextureMap::iterator &i) : _empty(false), _it(i) {
-	_it->second->referenceCount++;
-}
-
-TextureHandle::TextureHandle(const TextureHandle &right) : _empty(true) {
-	*this = right;
-}
-
-TextureHandle::~TextureHandle() {
-	clear();
-}
-
-TextureHandle &TextureHandle::operator=(const TextureHandle &right) {
-	if (this == &right)
-		return *this;
-
-	clear();
-
-	TextureMan.assign(*this, right);
-
-	return *this;
-}
-
-bool TextureHandle::empty() const {
-	return _empty;
-}
-
-const Common::UString kEmptyString;
-const Common::UString &TextureHandle::getName() const {
-	if (_empty)
-		return kEmptyString;
-
-	return _it->first;
-}
-
-void TextureHandle::clear() {
-	TextureMan.release(*this);
-}
-
-Texture &TextureHandle::getTexture() const {
-	assert(!_empty);
-
-	return *_it->second->texture;
-}
-
 
 TextureManager::TextureManager() : _recordNewTextures(false) {
 }

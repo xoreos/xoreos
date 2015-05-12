@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libaurora.la
 noinst_HEADERS = \
                  types.h \
                  texture.h \
+                 texturehandle.h \
                  textureman.h \
                  pltfile.h \
                  cursor.h \
@@ -34,6 +35,7 @@ noinst_HEADERS = \
 
 libaurora_la_SOURCES = \
                        texture.cpp \
+                       texturehandle.cpp \
                        textureman.cpp \
                        pltfile.cpp \
                        cursor.cpp \
