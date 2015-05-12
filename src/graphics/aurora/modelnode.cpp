@@ -354,6 +354,9 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 
 			if (!textures[t].empty() && (textures[t] != "NULL")) {
 				_textures[t] = TextureMan.get(textures[t]);
+				if (_textures[t].empty())
+					continue;
+
 				hasTexture = true;
 
 				if (!_textures[t].getTexture().hasAlpha())
