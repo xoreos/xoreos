@@ -22,6 +22,8 @@
  *  Dragon Age 2 (debug) console.
  */
 
+#include "src/graphics/aurora/types.h"
+
 #include "src/engines/dragonage2/console.h"
 #include "src/engines/dragonage2/dragonage2.h"
 

@@ -22,6 +22,7 @@
  *  Button items used in WidgetListBox.
  */
 
+#include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/text.h"

@@ -31,7 +31,7 @@
 
 #include "src/aurora/resman.h"
 
-#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/types.h"
 
 #include "src/engines/nwn2/console.h"
 #include "src/engines/nwn2/nwn2.h"

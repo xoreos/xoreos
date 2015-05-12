@@ -30,7 +30,7 @@
 #include "src/common/filelist.h"
 #include "src/common/configman.h"
 
-#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/types.h"
 
 #include "src/engines/kotor2/console.h"
 #include "src/engines/kotor2/kotor2.h"

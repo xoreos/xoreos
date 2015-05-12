@@ -22,6 +22,8 @@
  *  Sonic (debug) console.
  */
 
+#include "src/graphics/aurora/types.h"
+
 #include "src/engines/sonic/console.h"
 #include "src/engines/sonic/sonic.h"
 

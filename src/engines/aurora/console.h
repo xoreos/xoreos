@@ -39,7 +39,7 @@
 #include "src/graphics/guifrontelement.h"
 
 #include "src/graphics/aurora/types.h"
-#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/fonthandle.h"
 
 namespace Common {
 	class ReadLine;

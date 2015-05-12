@@ -32,7 +32,7 @@
 
 #include "src/aurora/resman.h"
 
-#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/types.h"
 
 #include "src/engines/jade/console.h"
 #include "src/engines/jade/jade.h"
