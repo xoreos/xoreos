@@ -36,6 +36,7 @@
 
 #include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/pltfile.h"
 
 #include "src/events/events.h"

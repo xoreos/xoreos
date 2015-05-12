@@ -32,7 +32,7 @@
 #include "src/aurora/locstring.h"
 
 #include "src/graphics/aurora/types.h"
-#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texturehandle.h"
 
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/object.h"

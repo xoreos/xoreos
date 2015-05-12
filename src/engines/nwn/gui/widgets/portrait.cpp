@@ -28,6 +28,7 @@
 
 #include "src/graphics/graphics.h"
 
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
 #include "src/engines/nwn/gui/widgets/portrait.h"
