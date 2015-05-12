@@ -39,7 +39,6 @@ namespace NWN {
 class Item : public Object {
 public:
 	Item();
-
 	~Item();
 
 	void loadModel();   ///< Load the situated object's model.
@@ -49,8 +48,9 @@ public:
 	void hide(); ///< Hide the situated object's model.
 
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0);
-	bool isArmor();
-	int getArmorPart(int index);
+
+	bool isArmor() const;
+	int getArmorPart(int index) const;
 
 	// TODO: Use _colors array like plt file
 	uint32 _colorMetal1;   ///< The 1. color of the creature's metal armor.

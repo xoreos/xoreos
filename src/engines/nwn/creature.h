@@ -232,8 +232,8 @@ private:
 
 	/** A part of a creature body. */
 	struct BodyPart {
-		uint32 id;       ///< Index of the part variant.
-		uint32 armor_id; ///< Index of the part variant when armour equipped.
+		uint32 id;      ///< Index of the part variant.
+		uint32 idArmor; ///< Index of the part variant when armour equipped.
 
 		Common::UString modelName;   ///< Name of the model.
 		Common::UString textureName; ///< Name of the texture.
