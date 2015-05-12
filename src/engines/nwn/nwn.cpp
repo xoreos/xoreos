@@ -39,6 +39,7 @@
 
 #include "src/events/events.h"
 
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
 
@@ -336,6 +337,43 @@ void NWNEngine::initResources(LoadProgress &progress) {
 	// Blacklist the DDS version of the galahad14 font, because in versions of NWN coming
 	// with a Cyrillic one, the DDS file is still Latin.
 	ResMan.blacklist("fnt_galahad14", Aurora::kFileTypeDDS);
+
+	declareBogusTextures();
+}
+
+void NWNEngine::declareBogusTextures() {
+	static const char *kBogusTextures[] = {
+		"belt_g",
+		"FB1_g",
+		"head_g",
+		"Lbicep_g",
+		"lbicep_g",
+		"lfoot_g",
+		"lforearm_g",
+		"lhand_g",
+		"lshin_g",
+		"Lshoulder_g",
+		"lshoulder_g",
+		"lthigh_g",
+		"Material",
+		"neck_g",
+		"pelvis_g",
+		"pmh0_head001g",
+		"Rbicep_g",
+		"rbicep_g",
+		"rfoot_g",
+		"rforearm_g",
+		"rhand_g",
+		"rshin_g",
+		"Rshoulder_g",
+		"rshoulder_g",
+		"rthigh_g",
+		"TF3_g",
+		"torso_g"
+	};
+
+	for (uint i = 0; i < ARRAYSIZE(kBogusTextures); i++)
+		TextureMan.addBogusTexture(kBogusTextures[i]);
 }
 
 void NWNEngine::initCursors() {
