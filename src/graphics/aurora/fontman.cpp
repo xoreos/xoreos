@@ -38,65 +38,6 @@ namespace Aurora {
 
 const char *kSystemFontMono = "_xoreosSystemFontMono";
 
-ManagedFont::ManagedFont(Font *f) {
-	referenceCount = 0;
-	font = f;
-}
-
-ManagedFont::~ManagedFont() {
-	delete font;
-}
-
-
-FontHandle::FontHandle() : _empty(true) {
-}
-
-FontHandle::FontHandle(FontMap::iterator &i) : _empty(false), _it(i) {
-	_it->second->referenceCount++;
-}
-
-FontHandle::FontHandle(const FontHandle &right) : _empty(true) {
-	*this = right;
-}
-
-FontHandle::~FontHandle() {
-	clear();
-}
-
-FontHandle &FontHandle::operator=(const FontHandle &right) {
-	if (this == &right)
-		return *this;
-
-	clear();
-
-	FontMan.assign(*this, right);
-
-	return *this;
-}
-
-bool FontHandle::empty() const {
-	return _empty;
-}
-
-const Common::UString kEmptyString;
-const Common::UString &FontHandle::getName() const {
-	if (_empty)
-		return kEmptyString;
-
-	return _it->first;
-}
-
-void FontHandle::clear() {
-	FontMan.release(*this);
-}
-
-Font &FontHandle::getFont() const {
-	assert(!_empty);
-
-	return *_it->second->font;
-}
-
-
 FontManager::FontManager() : _format(kFontFormatUnknown) {
 }
 

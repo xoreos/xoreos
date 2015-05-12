@@ -27,16 +27,14 @@
 
 #include <map>
 
-#include "src/graphics/types.h"
-
 #include "src/common/types.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
 #include "src/common/ustring.h"
 
-namespace Graphics {
+#include "src/graphics/aurora/fonthandle.h"
 
-class Font;
+namespace Graphics {
 
 namespace Aurora {
 
@@ -49,42 +47,6 @@ enum FontFormat {
 	kFontFormatTexture    , ///< Textured font, used by NWN and KotOR/KotOR2
 	kFontFormatABC        , ///< ABC/SBM font, used by Jade Empire.
 	kFontFormatTTF          ///< TTF font, used by NWN2.
-};
-
-/** A managed font, storing how often it's referenced. */
-struct ManagedFont {
-	Font *font;
-	uint32 referenceCount;
-
-	ManagedFont(Font *f);
-	~ManagedFont();
-};
-
-typedef std::map<Common::UString, ManagedFont *> FontMap;
-
-/** A handle to a font. */
-class FontHandle {
-public:
-	FontHandle();
-	FontHandle(const FontHandle &right);
-	~FontHandle();
-
-	FontHandle &operator=(const FontHandle &right);
-
-	bool empty() const;
-	const Common::UString &getName() const;
-
-	void clear();
-
-	Font &getFont() const;
-
-private:
-	bool _empty;
-	FontMap::iterator _it;
-
-	FontHandle(FontMap::iterator &i);
-
-	friend class FontManager;
 };
 
 /** The global Aurora font manager. */

@@ -19,34 +19,61 @@
  */
 
 /** @file
- *  Basic Aurora graphics types.
+ *  A handle to an Aurora font.
  */
 
-#ifndef GRAPHICS_AURORA_TYPES_H
-#define GRAPHICS_AURORA_TYPES_H
+#ifndef GRAPHICS_AURORA_FONTHANDLE_H
+#define GRAPHICS_AURORA_FONTHANDLE_H
 
-#include "src/graphics/types.h"
+#include <map>
+
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
 namespace Graphics {
 
+class Font;
+
 namespace Aurora {
 
-/** Identifier used for the monospaced system font. */
-extern const char *kSystemFontMono;
+/** A managed font, storing how often it's referenced. */
+struct ManagedFont {
+	Font *font;
+	uint32 referenceCount;
 
-/** The display type of a model. */
-enum ModelType {
-	kModelTypeObject   = kRenderableTypeObject,  ///< A real object in the game world.
-	kModelTypeGUIFront = kRenderableTypeGUIFront ///< An element of the front GUI.
+	ManagedFont(Font *f);
+	~ManagedFont();
 };
 
-class Model;
-class ModelNode;
-class Text;
-class GUIQuad;
+typedef std::map<Common::UString, ManagedFont *> FontMap;
+
+/** A handle to a font. */
+class FontHandle {
+public:
+	FontHandle();
+	FontHandle(const FontHandle &right);
+	~FontHandle();
+
+	FontHandle &operator=(const FontHandle &right);
+
+	bool empty() const;
+	const Common::UString &getName() const;
+
+	void clear();
+
+	Font &getFont() const;
+
+private:
+	bool _empty;
+	FontMap::iterator _it;
+
+	FontHandle(FontMap::iterator &i);
+
+	friend class FontManager;
+};
 
 } // End of namespace Aurora
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_AURORA_TYPES_H
+#endif // GRAPHICS_AURORA_FONTHANDLE_H
