@@ -31,8 +31,9 @@
 #include "src/graphics/images/txi.h"
 
 #include "src/graphics/aurora/modelnode.h"
-#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
+#include "src/graphics/aurora/model.h"
 
 namespace Graphics {
 

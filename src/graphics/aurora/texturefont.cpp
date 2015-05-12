@@ -30,6 +30,7 @@
 #include "src/graphics/images/txi.h"
 
 #include "src/graphics/aurora/texturefont.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
 namespace Graphics {

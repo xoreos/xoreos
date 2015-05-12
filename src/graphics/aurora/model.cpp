@@ -30,6 +30,7 @@
 #include "src/graphics/camera.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/modelnode.h"
 

@@ -29,7 +29,7 @@
 
 #include "src/graphics/guifrontelement.h"
 
-#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texturehandle.h"
 
 namespace Common {
 	class UString;

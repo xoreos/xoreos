@@ -34,6 +34,7 @@
 #include "src/graphics/images/surface.h"
 
 #include "src/graphics/aurora/ttffont.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
 static const uint32 kPageWidth  = 256;

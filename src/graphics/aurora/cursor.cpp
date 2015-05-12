@@ -36,8 +36,9 @@
 #include "src/graphics/images/winiconimage.h"
 
 #include "src/graphics/aurora/cursor.h"
-#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
+#include "src/graphics/aurora/cursorman.h"
 
 namespace Graphics {
 

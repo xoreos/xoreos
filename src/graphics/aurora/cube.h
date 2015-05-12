@@ -29,7 +29,7 @@
 #include "src/graphics/glcontainer.h"
 #include "src/graphics/object.h"
 
-#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texturehandle.h"
 
 namespace Common {
 	class UString;
@@ -40,8 +40,6 @@ namespace Common {
 namespace Graphics {
 
 namespace Aurora {
-
-class Texture;
 
 class Cube;
 

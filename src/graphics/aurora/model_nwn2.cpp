@@ -35,6 +35,7 @@
 #include "src/graphics/images/surface.h"
 
 #include "src/graphics/aurora/model_nwn2.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
 // Disable the "unused variable" warnings while most stuff is still stubbed

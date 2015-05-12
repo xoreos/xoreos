@@ -34,13 +34,10 @@
 #include "src/graphics/types.h"
 
 #include "src/graphics/aurora/types.h"
-#include "src/graphics/aurora/textureman.h"
 
 namespace Graphics {
 
 namespace Aurora {
-
-class ModelNode;
 
 class AnimNode {
 public:
