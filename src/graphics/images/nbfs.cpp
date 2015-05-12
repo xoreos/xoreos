@@ -54,13 +54,13 @@ void NBFS::load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nb
 		readImage(nbfs, palette, width, height);
 
 	} catch (Common::Exception &e) {
-		delete palette;
+		delete[] palette;
 
 		e.add("Failed reading NBFS file");
 		throw;
 	}
 
-	delete palette;
+	delete[] palette;
 }
 
 const byte *NBFS::readPalette(Common::SeekableReadStream &nbfp) {
@@ -79,7 +79,7 @@ const byte *NBFS::readPalette(Common::SeekableReadStream &nbfp) {
 		}
 
 	} catch (...) {
-		delete palette;
+		delete[] palette;
 		throw;
 	}
 
