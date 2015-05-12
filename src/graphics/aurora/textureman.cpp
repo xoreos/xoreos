@@ -49,6 +49,8 @@ TextureManager::~TextureManager() {
 void TextureManager::clear() {
 	Common::StackLock lock(_mutex);
 
+	_bogusTextures.clear();
+
 	for (TextureMap::iterator t = _textures.begin(); t != _textures.end(); ++t)
 		delete t->second;
 	_textures.clear();
@@ -57,16 +59,30 @@ void TextureManager::clear() {
 	_newTextureNames.clear();
 }
 
+void TextureManager::addBogusTexture(const Common::UString &name) {
+	Common::StackLock lock(_mutex);
+
+	_bogusTextures.insert(name);
+}
+
 bool TextureManager::hasTexture(const Common::UString &name) {
 	Common::StackLock lock(_mutex);
 
-	TextureMap::const_iterator texture = _textures.find(name);
+	if (_bogusTextures.find(name) != _bogusTextures.end())
+		return true;
+	if (_textures.find(name) != _textures.end())
+		return true;
 
-	return texture != _textures.end();
+	return false;
 }
 
 TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
 	Common::StackLock lock(_mutex);
+
+	if (_bogusTextures.find(name) != _bogusTextures.end()) {
+		delete texture;
+		return TextureHandle();
+	}
 
 	ManagedTexture *managedTexture = 0;
 	TextureMap::iterator textureIterator = _textures.end();
@@ -99,6 +115,9 @@ TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
 TextureHandle TextureManager::get(Common::UString name) {
 	Common::StackLock lock(_mutex);
 
+	if (_bogusTextures.find(name) != _bogusTextures.end())
+		return TextureHandle();
+
 	TextureMap::iterator texture = _textures.find(name);
 	if (texture == _textures.end()) {
 		std::pair<TextureMap::iterator, bool> result;
@@ -121,6 +140,9 @@ TextureHandle TextureManager::get(Common::UString name) {
 
 TextureHandle TextureManager::getIfExist(const Common::UString &name) {
 	Common::StackLock lock(_mutex);
+
+	if (_bogusTextures.find(name) != _bogusTextures.end())
+		return TextureHandle();
 
 	TextureMap::iterator texture = _textures.find(name);
 	if (texture != _textures.end())

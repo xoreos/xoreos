@@ -25,6 +25,7 @@
 #ifndef GRAPHICS_AURORA_TEXTUREMAN_H
 #define GRAPHICS_AURORA_TEXTUREMAN_H
 
+#include <set>
 #include <list>
 
 #include "src/common/types.h"
@@ -47,6 +48,12 @@ public:
 	// .--- Texture management
 	/** Remove and delete all managed textures. */
 	void clear();
+
+	/** Add the name of a texture that doesn't really exist.
+	 *
+	 *  An empty TextureHandle is returned when this texture is requested.
+	 */
+	void addBogusTexture(const Common::UString &name);
 
 	/** Does this named managed texture exist? */
 	bool hasTexture(const Common::UString &name);
@@ -81,6 +88,8 @@ public:
 
 private:
 	TextureMap _textures;
+
+	std::set<Common::UString> _bogusTextures;
 
 	Common::Mutex _mutex;
 
