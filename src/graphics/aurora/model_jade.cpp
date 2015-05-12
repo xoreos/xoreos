@@ -329,7 +329,24 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 }
 
 void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
-	ctx.mdl->skip(52); // Unknown
+	ctx.mdl->skip(12); // Unknown
+
+	float boundingMin[3], boundingMax[3];
+
+	boundingMin[0] = ctx.mdl->readIEEEFloatLE();
+	boundingMin[1] = ctx.mdl->readIEEEFloatLE();
+	boundingMin[2] = ctx.mdl->readIEEEFloatLE();
+
+	boundingMax[0] = ctx.mdl->readIEEEFloatLE();
+	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
+	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
+
+	float radius = ctx.mdl->readIEEEFloatLE();
+
+	float pointsAverage[3];
+	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
 	uint32 transparencyHint = ctx.mdl->readUint32LE();
 	uint16 flags            = ctx.mdl->readUint16LE();
