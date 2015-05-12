@@ -27,7 +27,6 @@
 
 #include "src/events/notifyable.h"
 
-#include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/text.h"
 
 namespace Graphics {
