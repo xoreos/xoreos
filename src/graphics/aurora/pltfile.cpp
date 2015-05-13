@@ -135,15 +135,9 @@ void PLTFile::load(Common::SeekableReadStream &plt) {
 
 	// --- Create the actual texture surface ---
 
-	_surface = new Surface(width, height);
-
-	const uint32 pixels  = width * height;
-	      byte  *data    = _surface->getData();
-
 	// Initialize it to pink, for high debug visibility
-	static const byte kPinkPixel[4] = { 0xFF, 0x00, 0xFF, 0xFF };
-	for (uint32 i = 0; i < pixels; i++, data += 4)
-		memcpy(data, kPinkPixel, sizeof(kPinkPixel));
+	_surface = new Surface(width, height);
+	_surface->fill(0xFF, 0x00, 0xFF, 0xFF);
 
 	set(_name, _surface, ::Aurora::kFileTypePLT, 0);
 	addToQueues();
