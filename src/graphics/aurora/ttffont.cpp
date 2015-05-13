@@ -63,7 +63,12 @@ void TTFFont::Page::rebuild() {
 
 
 TTFFont::TTFFont(Common::SeekableReadStream *ttf, int height) : _ttf(0) {
-	load(ttf, height);
+	try {
+		load(ttf, height);
+	} catch (...) {
+		clear();
+		throw;
+	}
 }
 
 TTFFont::TTFFont(const Common::UString &name, int height) : _ttf(0) {
@@ -75,6 +80,7 @@ TTFFont::TTFFont(const Common::UString &name, int height) : _ttf(0) {
 		load(ttf, height);
 	} catch (...) {
 		clear();
+		throw;
 	}
 }
 
