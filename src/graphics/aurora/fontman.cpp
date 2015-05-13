@@ -175,20 +175,27 @@ void FontManager::release(FontHandle &font) {
 ManagedFont *FontManager::createFont(FontFormat format,
 		const Common::UString &name, int height) {
 
-	if (name == kSystemFontMono)
-		return new ManagedFont(new TTFFont(Common::getSystemFontMono(), height));
+	try {
+		if (name == kSystemFontMono)
+			return new ManagedFont(new TTFFont(Common::getSystemFontMono(), height));
 
-	if (format == kFontFormatUnknown)
-		throw Common::Exception("Font format unknown (%s)", name.c_str());
+		if (format == kFontFormatUnknown)
+			throw Common::Exception("Font format unknown");
 
-	if (format == kFontFormatTexture)
-		return new ManagedFont(new TextureFont(name));
-	if (format == kFontFormatABC)
-		return new ManagedFont(new ABCFont(name));
-	if (format == kFontFormatTTF)
-		return new ManagedFont(new TTFFont(name, height));
+		if (format == kFontFormatTexture)
+			return new ManagedFont(new TextureFont(name));
+		if (format == kFontFormatABC)
+			return new ManagedFont(new ABCFont(name));
+		if (format == kFontFormatTTF)
+			return new ManagedFont(new TTFFont(name, height));
 
-	throw Common::Exception("Invalid font format %d (%s)", format, name.c_str());
+		throw Common::Exception("Invalid font format %d", format);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed to create font \"%s\" (%d)", name.c_str(), format);
+		throw;
+	}
+
 	return 0;
 }
 
