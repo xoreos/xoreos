@@ -111,6 +111,8 @@ Common::UString SonicEngine::getLanguageHERF(Aurora::Language language) {
 			return "test_i";
 		case Aurora::kLanguageSpanish:
 			return "test_s";
+		case Aurora::kLanguageJapanese:
+			return "test_j";
 		default:
 			break;
 	}
@@ -130,6 +132,8 @@ Common::UString SonicEngine::getLanguageTLK(Aurora::Language language) {
 			return "strings_it-it";
 		case Aurora::kLanguageSpanish:
 			return "strings_es-es";
+		case Aurora::kLanguageJapanese:
+			return "strings_ja-jp";
 		default:
 			break;
 	}
@@ -239,7 +243,8 @@ void SonicEngine::declareEncodings() {
 		{ Aurora::kLanguageFrench            , Common::kEncodingCP1252 },
 		{ Aurora::kLanguageGerman            , Common::kEncodingCP1252 },
 		{ Aurora::kLanguageItalian           , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageSpanish           , Common::kEncodingCP1252 }
+		{ Aurora::kLanguageSpanish           , Common::kEncodingCP1252 },
+		{ Aurora::kLanguageJapanese          , Common::kEncodingUTF8   }
 	};
 
 	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
