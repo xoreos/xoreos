@@ -355,11 +355,11 @@ Common::SeekableSubReadStreamEndian *NSBTXFile::open(Common::SeekableReadStream 
 	try {
 		const uint32 tag = nsbtx->readUint32BE();
 		if (tag != kBTX0ID)
-			throw Common::Exception("Invalid NSBTX file (0x%08X)", tag);
+			throw Common::Exception("Invalid NSBTX file (%s)", Common::debugTag(tag).c_str());
 
 		const uint16 bom = nsbtx->readUint16BE();
 		if ((bom != 0xFFFE) && (bom != 0xFEFF))
-			throw Common::Exception("Invalid BOM: %u", (uint) bom);
+			throw Common::Exception("Invalid BOM: 0x%04X", (uint) bom);
 
 		bigEndian = bom == 0xFEFF;
 
@@ -383,7 +383,7 @@ void NSBTXFile::readFileHeader(Common::SeekableSubReadStreamEndian &nsbtx) {
 
 	const uint16 bom = nsbtx.readUint16();
 	if (bom != 0xFEFF)
-		throw Common::Exception("Invalid BOM: %u", bom);
+		throw Common::Exception("Invalid BOM: 0x%04X", (uint) bom);
 
 	const uint16 version = nsbtx.readUint16();
 	if (version != 1)
