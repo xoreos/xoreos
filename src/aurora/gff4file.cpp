@@ -684,10 +684,14 @@ double GFF4Struct::getDouble(Common::SeekableReadStream &data, IFieldType type) 
 }
 
 Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::Encoding encoding) const {
+	/* When the string is encoded in UTF-8, then length field specifies the length in bytes.
+	 * Otherwise, it's the length in characters. */
+	const uint32 lengthMult = encoding == Common::kEncodingUTF8 ? 1 : Common::getBytesPerCodepoint(encoding);
+
 	const uint32 offset = data.pos();
 
 	const uint32 length = data.readUint32LE();
-	const uint32 size   = length * Common::getBytesPerCodepoint(encoding);
+	const uint32 size   = length * lengthMult;
 
 	try {
 		return readStringFixed(data, encoding, size);
