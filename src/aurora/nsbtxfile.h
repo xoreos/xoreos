@@ -112,7 +112,6 @@ private:
 	typedef std::vector<Palette> Palettes;
 
 
-	/** The name of the NSBTX file. */
 	Common::SeekableSubReadStreamEndian *_nsbtx;
 
 	/** External list of resource names and types. */
