@@ -216,8 +216,10 @@ void TTFFont::addChar(uint32 c) {
 		if (cWidth > kPageWidth)
 			return;
 
-		if (_pages.empty())
+		if (_pages.empty()) {
 			_pages.push_back(new Page);
+			_pages.back()->heightLeft -= _height;
+		}
 
 		if (_pages.back()->widthLeft < cWidth) {
 			// The current character doesn't fit into the current line
