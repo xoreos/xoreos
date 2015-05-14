@@ -214,7 +214,7 @@ void SonicEngine::run() {
 }
 
 void SonicEngine::init() {
-	LoadProgress progress(7);
+	LoadProgress progress(8);
 
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
@@ -262,7 +262,9 @@ void SonicEngine::initResources(LoadProgress &progress) {
 
 	loadLanguageFiles(progress, _language);
 
+	progress.step("Registering files and formats");
 	declareResources();
+	FontMan.setFormat(Graphics::Aurora::kFontFormatNFTR);
 }
 
 void SonicEngine::declareResources() {
