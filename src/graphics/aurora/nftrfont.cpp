@@ -22,6 +22,15 @@
  *  Nintendo's NFTR font, found in Sonic.
  */
 
+/* Based heavily on the NFTR reader found in the NDS file viewer and
+ * and editor Tinke by pleoNeX (<https://github.com/pleonex/tinke>),
+ * which is licensed under the terms of the GPLv3.
+ *
+ * Tinke in turn is based on the NFTR documentation by CUE and
+ * Lyan53 in the Spanish romxhack forums
+ * (<http://romxhack.esforos.com/fuentes-nftr-de-nds-t67>).
+ */
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/ustring.h"
