@@ -13,6 +13,7 @@ noinst_HEADERS = \
                  texturefont.h \
                  abcfont.h \
                  ttffont.h \
+                 nftrfont.h \
                  fonthandle.h \
                  fontman.h \
                  highlightable.h \
@@ -44,6 +45,7 @@ libaurora_la_SOURCES = \
                        texturefont.cpp \
                        abcfont.cpp \
                        ttffont.cpp \
+                       nftrfont.cpp \
                        fonthandle.cpp \
                        fontman.cpp \
                        highlightable.cpp \
