@@ -85,6 +85,7 @@ private:
 
 	Common::Mutex _mutex;
 
+	Common::UString getAliasName(const Common::UString &name);
 	Common::UString getIndexName(Common::UString name, int height);
 
 	void assign(FontHandle &font, const FontHandle &from);

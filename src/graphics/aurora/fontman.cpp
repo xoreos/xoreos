@@ -109,13 +109,14 @@ FontHandle FontManager::get(const Common::UString &name, int height) {
 FontHandle FontManager::get(FontFormat format, const Common::UString &name, int height) {
 	Common::StackLock lock(_mutex);
 
+	Common::UString aliasName = getAliasName(name);
 	Common::UString indexName = getIndexName(name, height);
 
 	FontMap::iterator font = _fonts.find(indexName);
 	if (font == _fonts.end()) {
 		std::pair<FontMap::iterator, bool> result;
 
-		ManagedFont *f = createFont(format, name, height);
+		ManagedFont *f = createFont(format, aliasName, height);
 
 		result = _fonts.insert(std::make_pair(indexName, f));
 
@@ -135,11 +136,17 @@ FontHandle FontManager::getIfExist(const Common::UString &name, int height) {
 	return FontHandle();
 }
 
-Common::UString FontManager::getIndexName(Common::UString name, int height) {
-	// Lock up the name in our alias map first
+Common::UString FontManager::getAliasName(const Common::UString &name) {
 	std::map<Common::UString, Common::UString>::iterator realName = _aliases.find(name);
 	if (realName != _aliases.end())
-		name = realName->second;
+		return realName->second;
+
+	return name;
+}
+
+Common::UString FontManager::getIndexName(Common::UString name, int height) {
+	// Lock up the name in our alias map first
+	name = getAliasName(name);
 
 	if (height <= 0)
 		return name;
