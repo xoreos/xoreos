@@ -46,7 +46,8 @@ enum FontFormat {
 	kFontFormatUnknown = 0, ///< Unknown font format.
 	kFontFormatTexture    , ///< Textured font, used by NWN and KotOR/KotOR2
 	kFontFormatABC        , ///< ABC/SBM font, used by Jade Empire.
-	kFontFormatTTF          ///< TTF font, used by NWN2.
+	kFontFormatTTF        , ///< TTF font, used by NWN2.
+	kFontFormatNFTR         ///< NFTR font, used by Sonic.
 };
 
 /** The global Aurora font manager. */
