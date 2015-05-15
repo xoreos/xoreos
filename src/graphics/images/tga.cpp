@@ -99,6 +99,13 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 			_format    = kPixelFormatBGRA;
 			_formatRaw = kPixelFormatRGBA8;
 			_dataType  = kPixelDataType8;
+		} else if (pixelDepth == 8) {
+			imageType = kImageTypeBW;
+
+			_hasAlpha  = false;
+			_format    = kPixelFormatBGRA;
+			_formatRaw = kPixelFormatRGBA8;
+			_dataType  = kPixelDataType8;
 		} else
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
 	} else if (imageType == kImageTypeBW) {
