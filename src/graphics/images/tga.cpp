@@ -182,7 +182,8 @@ void TGA::readRLE(Common::SeekableReadStream &tga, byte pixelDepth) {
 
 	while (count > 0) {
 		byte code = tga.readByte();
-		byte length = (code & 0x7F) + 1;
+		byte length = MIN<uint32>((code & 0x7F) + 1, count);
+
 		count -= length;
 
 		if (code & 0x80) {
