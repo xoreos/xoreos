@@ -350,27 +350,6 @@ void NSBTXFile::load(Common::SeekableSubReadStreamEndian &nsbtx) {
 	}
 }
 
-Common::SeekableSubReadStreamEndian *NSBTXFile::open(Common::SeekableReadStream *nsbtx) const {
-	bool bigEndian = false;
-	try {
-		const uint32 tag = nsbtx->readUint32BE();
-		if (tag != kBTX0ID)
-			throw Common::Exception("Invalid NSBTX file (%s)", Common::debugTag(tag).c_str());
-
-		const uint16 bom = nsbtx->readUint16BE();
-		if ((bom != 0xFFFE) && (bom != 0xFEFF))
-			throw Common::Exception("Invalid BOM: 0x%04X", (uint) bom);
-
-		bigEndian = bom == 0xFEFF;
-
-	} catch (...) {
-		delete nsbtx;
-		throw;
-	}
-
-	return new Common::SeekableSubReadStreamEndian(nsbtx, 0, nsbtx->size(), bigEndian, true);
-}
-
 void NSBTXFile::readHeader(Common::SeekableSubReadStreamEndian &nsbtx) {
 	readFileHeader(nsbtx);
 	readInfoHeader(nsbtx);

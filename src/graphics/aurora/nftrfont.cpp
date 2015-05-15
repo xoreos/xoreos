@@ -353,33 +353,6 @@ void NFTRFont::readCharMaps(Common::SeekableSubReadStreamEndian &nftr, Header &h
 	}
 }
 
-Common::SeekableSubReadStreamEndian *NFTRFont::open(Common::SeekableReadStream *nftr) const {
-	/* NFTR files (like most Nintendo formats) store a BOM signaling their endianness,
-	 * so we interpret that and return an appropriate SeekableSubReadStreamEndian. */
-
-	bool bigEndian = false;
-	try {
-		uint32 tag = nftr->readUint32BE();
-
-		const uint16 bom = nftr->readUint16BE();
-		if ((bom != 0xFFFE) && (bom != 0xFEFF))
-			throw Common::Exception("Invalid BOM: 0x%04X", (uint) bom);
-
-		bigEndian = bom == 0xFEFF;
-		if (!bigEndian)
-			tag = SWAP_BYTES_32(tag);
-
-		if (tag != kNFTRID)
-			throw Common::Exception("Invalid NFTR file (%s)", Common::debugTag(tag).c_str());
-
-	} catch (...) {
-		delete nftr;
-		throw;
-	}
-
-	return new Common::SeekableSubReadStreamEndian(nftr, 0, nftr->size(), bigEndian, true);
-}
-
 float NFTRFont::getWidth(uint32 c) const {
 	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
 	if (cC == _chars.end())

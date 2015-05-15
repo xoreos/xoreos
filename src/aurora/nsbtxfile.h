@@ -31,17 +31,15 @@
 
 #include "src/aurora/types.h"
 #include "src/aurora/archive.h"
+#include "src/aurora/nitrofile.h"
 
 namespace Common {
-	class SeekableReadStream;
-	class SeekableSubReadStreamEndian;
 	class WriteStream;
 }
 
 namespace Aurora {
 
-/** Class to hold resource data of an HERF file. */
-class NSBTXFile : public Archive {
+class NSBTXFile : public Archive, public NitroFile {
 public:
 	NSBTXFile(Common::SeekableReadStream *nsbtx);
 	~NSBTXFile();
@@ -138,8 +136,6 @@ private:
 	void readPalettes  (Common::SeekableSubReadStreamEndian &nsbtx);
 
 	void createResourceList();
-
-	Common::SeekableSubReadStreamEndian *open(Common::SeekableReadStream *nsbtx) const;
 
 	const Palette *findPalette(const Texture &texture) const;
 	void getPalette(ReadContext &ctx) const;

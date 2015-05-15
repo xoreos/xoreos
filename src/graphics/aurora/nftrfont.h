@@ -30,14 +30,11 @@
 
 #include "src/common/types.h"
 
+#include "src/aurora/nitrofile.h"
+
 #include "src/graphics/font.h"
 
 #include "src/graphics/aurora/texturehandle.h"
-
-namespace Common {
-	class SeekableReadStream;
-	class SeekableSubReadStreamEndian;
-}
 
 namespace Graphics {
 
@@ -45,7 +42,7 @@ class Surface;
 
 namespace Aurora {
 
-class NFTRFont : public Graphics::Font {
+class NFTRFont : public Graphics::Font, public ::Aurora::NitroFile {
 public:
 	NFTRFont(Common::SeekableReadStream *nftr, bool invertPalette = false);
 	NFTRFont(const Common::UString &name, bool invertPalette = false);
@@ -108,8 +105,6 @@ private:
 
 
 	void load(Common::SeekableSubReadStreamEndian &nftr);
-
-	Common::SeekableSubReadStreamEndian *open(Common::SeekableReadStream *nftr) const;
 
 	void readHeader  (Common::SeekableSubReadStreamEndian &nftr, Header &header);
 	void readInfo    (Common::SeekableSubReadStreamEndian &nftr, Header &header);
