@@ -130,17 +130,19 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 
 		if (imageType == kImageTypeTrueColor) {
 			if (pixelDepth == 16) {
-				// Convert from 16bpp to 32bpp
-				// 16bpp TGA is ARGB1555
+				// Convert from 16bpp to 32bpp.
+				// 16bpp TGA is usually ARGB1555, but Sonic's are AGBR1555.
+				// Hopefully Sonic is the only game that needs 16bpp TGAs.
+
 				uint16 count = _mipMaps[0]->width * _mipMaps[0]->height;
 				byte *dst = _mipMaps[0]->data;
 
 				while (count--) {
 					uint16 pixel = tga.readUint16LE();
 
-					*dst++ = (pixel & 0x1F) << 3;
-					*dst++ = (pixel & 0x3E0) >> 2;
 					*dst++ = (pixel & 0x7C00) >> 7;
+					*dst++ = (pixel & 0x03E0) >> 2;
+					*dst++ = (pixel & 0x001F) << 3;
 					*dst++ = (pixel & 0x8000) ? 0xFF : 0x00;
 				}
 			} else {
