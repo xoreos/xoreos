@@ -78,6 +78,8 @@ NFTRFont::NFTRFont(Common::SeekableReadStream *nftr, bool invertPalette) :
 		delete nftrEndian;
 		throw;
 	}
+
+	delete nftrEndian;
 }
 
 NFTRFont::NFTRFont(const Common::UString &name, bool invertPalette) :
@@ -95,6 +97,8 @@ NFTRFont::NFTRFont(const Common::UString &name, bool invertPalette) :
 		delete nftrEndian;
 		throw;
 	}
+
+	delete nftrEndian;
 }
 
 NFTRFont::~NFTRFont() {
