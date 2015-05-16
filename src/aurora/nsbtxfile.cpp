@@ -23,7 +23,7 @@
  *  archive of intermediate textures.
  */
 
-/* Based heavily on the BTX0 reader found in the NDS file viewer and
+/* Based heavily on the BTX0 reader found in the NDS file viewer
  * and editor Tinke by pleoNeX (<https://github.com/pleonex/tinke>),
  * which is licensed under the terms of the GPLv3.
  *
