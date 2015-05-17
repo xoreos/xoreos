@@ -364,9 +364,10 @@ void NSBTXFile::readFileHeader(Common::SeekableSubReadStreamEndian &nsbtx) {
 	if (bom != 0xFEFF)
 		throw Common::Exception("Invalid BOM: 0x%04X", (uint) bom);
 
-	const uint16 version = nsbtx.readUint16();
-	if (version != 1)
-		throw Common::Exception("Unsupported version %u", version);
+	const uint8 versionMajor = nsbtx.readByte();
+	const uint8 versionMinor = nsbtx.readByte();
+	if ((versionMajor != 1) || (versionMinor != 0))
+		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
 	const uint32 fileSize = nsbtx.readUint32();
 	if (fileSize > (uint32)nsbtx.size())
