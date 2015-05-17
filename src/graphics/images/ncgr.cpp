@@ -127,9 +127,10 @@ void NCGR::readHeader(NCGRFile &ctx) {
 	if (bom != 0xFEFF)
 		throw Common::Exception("Invalid BOM: %u", bom);
 
-	const uint16 version = ctx.ncgr->readUint16();
-	if (version != 257)
-		throw Common::Exception("Unsupported version %u", version);
+	const uint8 versionMinor = ctx.ncgr->readByte();
+	const uint8 versionMajor = ctx.ncgr->readByte();
+	if ((versionMajor != 1) || (versionMinor != 1))
+		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
 	const uint32 fileSize = ctx.ncgr->readUint32();
 	if (fileSize > (uint32)ctx.ncgr->size())

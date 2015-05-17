@@ -78,9 +78,10 @@ void NCLR::readHeader(Common::SeekableSubReadStreamEndian &nclr) {
 	if (bom != 0xFEFF)
 		throw Common::Exception("Invalid BOM: %u", bom);
 
-	const uint16 version = nclr.readUint16();
-	if (version != 256)
-		throw Common::Exception("Unsupported version %u", version);
+	const uint8 versionMinor = nclr.readByte();
+	const uint8 versionMajor = nclr.readByte();
+	if ((versionMajor != 1) || (versionMinor != 0))
+		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
 	const uint32 fileSize = nclr.readUint32();
 	if (fileSize > (uint32)nclr.size())

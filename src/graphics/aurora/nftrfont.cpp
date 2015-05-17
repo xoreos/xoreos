@@ -131,9 +131,10 @@ void NFTRFont::readHeader(Common::SeekableSubReadStreamEndian &nftr, Header &hea
 	if (bom != 0xFEFF)
 		throw Common::Exception("Invalid BOM: 0x%04X", (uint) bom);
 
-	const uint16 version = nftr.readUint16();
-	if ((version != 0x0100) && (version != 0x0101))
-		throw Common::Exception("Unsupported version 0x%04X", (uint) version);
+	const uint8 versionMinor = nftr.readByte();
+	const uint8 versionMajor = nftr.readByte();
+	if ((versionMajor != 1) || ((versionMinor != 0) && (versionMinor != 1)))
+		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
 	const uint32 fileSize = nftr.readUint32();
 	if (fileSize > (uint32)nftr.size())
