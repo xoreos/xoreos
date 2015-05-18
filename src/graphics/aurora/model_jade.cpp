@@ -22,6 +22,10 @@
  *  Loading MDL/MDX files found in Jade Empire
  */
 
+/* Based in parts on cchargin's KotOR model specs
+ * (<https://home.comcast.net/~cchargin/kotor/mdl_info.html>).
+ */
+
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/stream.h"
