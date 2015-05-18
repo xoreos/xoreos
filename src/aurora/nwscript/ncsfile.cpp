@@ -22,6 +22,12 @@
  *  Handling BioWare's NWN Compiled Scripts.
  */
 
+/* Based on the NCS specs by Torlack.
+ *
+ * Torlack's own site is down, but our docs repository hosts a
+ * a mirror (<https://github.com/xoreos/xoreos-docs>).
+ */
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
