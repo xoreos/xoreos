@@ -22,6 +22,12 @@
  *  Loading MDB files found in The Witcher
  */
 
+/* Based in parts on the binary MDL specs by Torlack
+ * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/torlack>)
+ * and the code of Michael_DarkAngel's twMax importer script
+ * (<http://www.tbotr.net/modules.php?mod=Downloads&op=download&sid=3&ssid=3&dlid=19>).
+ */
+
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/stream.h"
