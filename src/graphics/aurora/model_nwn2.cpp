@@ -22,6 +22,10 @@
  *  Loading MDB files found in Neverwinter Nights 2
  */
 
+/* Based on Tazpn's MDB specs found in the NWN2Wiki
+ * (<http://nwn2.wikia.com/wiki/MDB_Format>).
+ */
+
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/stream.h"
