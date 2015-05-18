@@ -22,6 +22,10 @@
  *  Handling version V3.2/V3.3 of BioWare's GFFs (generic file format).
  */
 
+/* See BioWare's own specs released for Neverwinter Nights modding
+ * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
+ */
+
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"

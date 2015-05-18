@@ -22,6 +22,10 @@
  *  Handling BioWare's SSFs (sound set file).
  */
 
+/* See BioWare's own specs released for Neverwinter Nights modding
+ * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
+ */
+
 #include "src/common/stream.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
