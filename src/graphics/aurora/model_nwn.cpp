@@ -22,6 +22,12 @@
  *  Loading MDL files found in Neverwinter Nights.
  */
 
+/* Based on the binary MDL specs by Torlack.
+ *
+ * Torlack's own site is down, but our docs repository hosts a
+ * a mirror (<https://github.com/xoreos/xoreos-docs>).
+ */
+
 #include <boost/unordered_set.hpp>
 
 #include "src/common/system.h"
