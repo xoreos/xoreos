@@ -22,6 +22,10 @@
  *  Handling BioWare's GFF'd talk tables.
  */
 
+/* See the TLK description on the Dragon Age toolset wiki
+ * (<http://social.bioware.com/wiki/datoolset/index.php/TLK>).
+ */
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"

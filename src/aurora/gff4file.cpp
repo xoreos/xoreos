@@ -22,6 +22,10 @@
  *  Handling version V4.0/V4.1 of BioWare's GFFs (generic file format).
  */
 
+/* See the GFF description on the Dragon Age toolset wiki
+ * (<http://social.bioware.com/wiki/datoolset/index.php/GFF>).
+ */
+
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
