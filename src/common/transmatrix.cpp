@@ -169,6 +169,12 @@ void TransformationMatrix::getAxisAngle(float &angle, float &x, float &y, float 
 	z /= r;
 }
 
+void TransformationMatrix::getScale(float &x, float &y, float &z) const {
+	x = sqrtf(_elements[0] * _elements[0] + _elements[4] * _elements[4] + _elements[ 8] * _elements[ 8]);
+	y = sqrtf(_elements[1] * _elements[1] + _elements[5] * _elements[5] + _elements[ 9] * _elements[ 9]);
+	z = sqrtf(_elements[2] * _elements[2] + _elements[6] * _elements[6] + _elements[10] * _elements[10]);
+}
+
 void TransformationMatrix::loadIdentity() {
 	memcpy(_elements, kIdentity, 16 * sizeof(float));
 }

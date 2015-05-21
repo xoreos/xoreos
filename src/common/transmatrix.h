@@ -56,6 +56,7 @@ public:
 	const float *getZAxis() const;
 
 	void getAxisAngle(float &angle, float &x, float &y, float &z) const;
+	void getScale(float &x, float &y, float &z) const;
 
 	void loadIdentity();
 
