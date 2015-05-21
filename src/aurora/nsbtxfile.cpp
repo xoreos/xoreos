@@ -44,7 +44,7 @@
 static const uint32 kXEOSID = MKTAG('X', 'E', 'O', 'S');
 static const uint32 kITEXID = MKTAG('I', 'T', 'E', 'X');
 
-static const uint32 kXEOSITEXHeaderSize       = 4 + 4 + 4 + 4 + 4 + 1 + 1 + 1 + 1 + 1;
+static const uint32 kXEOSITEXHeaderSize       = 4 + 4 + 4 + 4 + 4 + 1 + 1 + 1 + 1 + 1 + 1;
 static const uint32 kXEOSITEXMipMapHeaderSize = 4 + 4 + 4;
 
 static const uint32 kBTX0ID = MKTAG('B', 'T', 'X', '0');
@@ -104,6 +104,8 @@ void NSBTXFile::writeITEXHeader(const ReadContext &ctx) {
 	ctx.stream->writeByte((uint8) ctx.texture->flipX);
 	ctx.stream->writeByte((uint8) ctx.texture->flipY);
 	ctx.stream->writeByte((uint8) ctx.texture->coordTransform);
+
+	ctx.stream->writeByte(0x00); // Don't filter the texture
 
 	ctx.stream->writeUint32LE(1); // Number of mip maps
 

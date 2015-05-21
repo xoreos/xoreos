@@ -89,6 +89,8 @@ void XEOSITEX::readHeader(Common::SeekableReadStream &xeositex) {
 
 	_coordTransform = xeositex.readByte();
 
+	_txi.getFeatures().filter = xeositex.readByte() != 0;
+
 	const uint32 mipMaps = xeositex.readUint32LE();
 	_mipMaps.resize(mipMaps, 0);
 }
