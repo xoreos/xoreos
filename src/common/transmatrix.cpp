@@ -90,6 +90,85 @@ const float *TransformationMatrix::getZAxis() const {
 	return &(_elements[8]);
 }
 
+void TransformationMatrix::getAxisAngle(float &angle, float &x, float &y, float &z) const {
+	const float epsilon1 = 0.001f, epsilon2 = 0.01f, epsilon3 = 0.1f;
+
+		// Look for symmetry to avoid singularities near 0°/180°
+	if ((fabs(_elements[4] - _elements[1]) < epsilon2) &&
+	    (fabs(_elements[8] - _elements[2]) < epsilon2) &&
+	    (fabs(_elements[9] - _elements[6]) < epsilon2)) {
+
+		if ((fabs(_elements[4] + _elements[1]                    ) < epsilon3) &&
+		    (fabs(_elements[8] + _elements[2]                    ) < epsilon3) &&
+		    (fabs(_elements[9] + _elements[6]                    ) < epsilon3) &&
+		    (fabs(_elements[0] + _elements[5] + _elements[10] - 3) < epsilon3)) {
+
+			// A rotation of 0°
+			angle = 0.0f; x = 1.0f; y = 0.0f; z = 0.0f;
+			return;
+		}
+
+		// A rotation of 180.0°
+
+		angle = 180.0f;
+
+		float xx = (_elements[ 0] + 1           ) / 2;
+		float yy = (_elements[ 5] + 1           ) / 2;
+		float zz = (_elements[10] + 1           ) / 2;
+		float xy = (_elements[ 4] + _elements[1]) / 4;
+		float xz = (_elements[ 8] + _elements[2]) / 4;
+		float yz = (_elements[ 9] + _elements[6]) / 4;
+
+		if ((xx > yy) && (xx > zz)) {
+			if (xx < epsilon2) {
+				x = 0.0f;
+				y = 0.7071f;
+				z = 0.7071f;
+			} else {
+				x = sqrtf(xx);
+				y = xy / x;
+				z = xz / x;
+			}
+		} else if (yy > zz) {
+			if (yy < epsilon2) {
+				x = 0.7071f;
+				y = 0.0f;
+				z = 0.7071f;
+			} else {
+				y = sqrtf(yy);
+				x = xy / y;
+				z = yz / y;
+			}
+		} else {
+			if (zz < epsilon2) {
+				x = 0.7071f;
+				y = 0.7071f;
+				z = 0.0f;
+			} else {
+				z = sqrtf(zz);
+				x = xz / z;
+				y = yz / z;
+			}
+		}
+
+		return;
+	}
+
+	angle = Common::rad2deg(acos((_elements[0] + _elements[5] + _elements[10] - 1) / 2));
+
+	x = _elements[6] - _elements[9];
+	y = _elements[8] - _elements[2];
+	z = _elements[1] - _elements[4];
+
+	float r = sqrtf((x * x) + (y * y) + (z * z));
+	if (fabs(r) < epsilon1)
+		r = 1.0f;
+
+	x /= r;
+	y /= r;
+	z /= r;
+}
+
 void TransformationMatrix::loadIdentity() {
 	memcpy(_elements, kIdentity, 16 * sizeof(float));
 }
