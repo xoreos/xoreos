@@ -265,6 +265,8 @@ void SonicEngine::initResources(LoadProgress &progress) {
 	progress.step("Registering files and formats");
 	declareResources();
 	FontMan.setFormat(Graphics::Aurora::kFontFormatNFTR);
+
+	GfxMan.setCullFace(false);
 }
 
 void SonicEngine::declareResources() {
