@@ -216,6 +216,10 @@ protected:
 	Common::BoundingBox _absoluteBoundBox;
 
 
+	// Rendering
+
+	void doDrawBound();
+
 	// Animation
 
 	/** Get the animation from its name. */
@@ -242,7 +246,6 @@ private:
 
 	void createAbsolutePosition();
 
-	void doDrawBound();
 	void manageAnimations(float dt);
 
 	Animation *selectDefaultAnimation() const;
