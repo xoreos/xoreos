@@ -50,10 +50,16 @@ struct VertexAttrib {
 	VertexAttrib() { }
 	VertexAttrib(GLuint i, GLint s, GLenum t, GLsizei st = 0, const GLvoid *p = 0) :
 		index(i), size(s), type(t), stride(st), pointer(p) { }
+
+	// Render methods
+	void enable() const;
+	void disable() const;
 };
 
 /** Vertex data layout */
 typedef std::vector<VertexAttrib> VertexDecl;
+
+class IndexBuffer;
 
 /** Buffer containing vertex data */
 class VertexBuffer {
@@ -108,6 +114,11 @@ public:
 	void destroyGL();
 
 	GLuint getVBO();
+
+	// Render method
+
+	/** Draw this IndexBuffer/VertexBuffer combination. */
+	void draw(GLenum mode, const IndexBuffer &indexBuffer) const;
 
 private:
 	VertexDecl _decl; ///< Vertex declaration

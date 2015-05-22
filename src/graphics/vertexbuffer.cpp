@@ -24,10 +24,62 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <cassert>
 
 #include "src/graphics/vertexbuffer.h"
+#include "src/graphics/indexbuffer.h"
 
 namespace Graphics {
+
+void VertexAttrib::enable() const {
+	switch (index) {
+		case VPOSITION:
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(size, type, stride, pointer);
+			break;
+
+		case VNORMAL:
+			assert(size == 3);
+			glEnableClientState(GL_NORMAL_ARRAY);
+			glNormalPointer(type, stride, pointer);
+			break;
+
+		case VCOLOR:
+			glEnableClientState(GL_COLOR_ARRAY);
+			glColorPointer(size, type, stride, pointer);
+			break;
+
+		default:
+			assert(index >= VTCOORD);
+			glClientActiveTextureARB(GL_TEXTURE0 + index - VTCOORD);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glTexCoordPointer(size, type, stride, pointer);
+			break;
+	}
+}
+
+void VertexAttrib::disable() const {
+	switch (index) {
+		case VPOSITION:
+			glDisableClientState(GL_VERTEX_ARRAY);
+			break;
+
+		case VNORMAL:
+			glDisableClientState(GL_NORMAL_ARRAY);
+			break;
+
+		case VCOLOR:
+			glDisableClientState(GL_COLOR_ARRAY);
+			break;
+
+		default:
+			assert(index >= VTCOORD);
+			glClientActiveTextureARB(GL_TEXTURE0 + index - VTCOORD);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			break;
+	}
+}
+
 
 VertexBuffer::VertexBuffer() : _count(0), _size(0), _data(0), _vbo(0), _hint(GL_STATIC_DRAW) {
 }
@@ -192,6 +244,19 @@ void VertexBuffer::destroyGL() {
 
 GLuint VertexBuffer::getVBO() {
 	return _vbo;
+}
+
+void VertexBuffer::draw(GLenum mode, const IndexBuffer &indexBuffer) const {
+	if ((getCount() == 0) || (indexBuffer.getCount() == 0))
+		return;
+
+	for (VertexDecl::const_iterator d = _decl.begin(); d != _decl.end(); ++d)
+		d->enable();
+
+	glDrawElements(mode, indexBuffer.getCount(), indexBuffer.getType(), indexBuffer.getData());
+
+	for (VertexDecl::const_iterator d = _decl.begin(); d != _decl.end(); ++d)
+		d->disable();
 }
 
 } // End of namespace Graphics
