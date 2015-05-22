@@ -125,6 +125,7 @@ protected:
 	float _position   [3]; ///< Position of the node.
 	float _rotation   [3]; ///< Node rotation.
 	float _orientation[4]; ///< Orientation of the node.
+	float _scale      [3]; ///< Scale of the node.
 
 	std::vector<PositionKeyFrame> _positionFrames; ///< Keyframes for position animation
 	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation
@@ -155,8 +156,6 @@ protected:
 	std::vector<float> _constraints;
 
 	int _tilefade;
-
-	float _scale;
 
 	bool _render; ///< Render the node?
 	bool _shadow; ///< Does the node have a shadow?
