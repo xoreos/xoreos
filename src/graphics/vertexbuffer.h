@@ -46,6 +46,10 @@ struct VertexAttrib {
 	GLenum type;           ///< Data type of each attribute component in the array
 	GLsizei stride;        ///< Byte offset between consecutive vertex attributes
 	const GLvoid *pointer; ///< Offset of the first component of the first generic vertex attribute
+
+	VertexAttrib() { }
+	VertexAttrib(GLuint i, GLint s, GLenum t, GLsizei st = 0, const GLvoid *p = 0) :
+		index(i), size(s), type(t), stride(st), pointer(p) { }
 };
 
 /** Vertex data layout */
@@ -67,6 +71,17 @@ public:
 
 	/** Set vertex declaration for this buffer */
 	void setVertexDecl(const VertexDecl &decl);
+
+	/** Set the linear vertex declaration for this buffer.
+	 *  Will allocate memory to fit vertCount vertices into this buffer and
+	 *  modify the declaration's pointers and strides to fit a linear layout.
+	 */
+	void setVertexDeclLinear(uint32 vertCount, VertexDecl &decl);
+	/** Set the interleaved vertex declaration for this buffer.
+	 *  Will allocate memory to fit vertCount vertices into this buffer and
+	 *  modify the declaration's pointers and strides to fit an interleaved layout.
+	 */
+	void setVertexDeclInterleave(uint32 vertCount, VertexDecl &decl);
 
 	/** Access buffer data */
 	GLvoid *getData();
@@ -102,6 +117,8 @@ private:
 
 	GLuint _vbo;      ///< Vertex Buffer Object.
 	GLuint _hint;     ///< GL hint for static or dynamic data.
+
+	static uint32 getTypeSize(GLenum type);
 };
 
 } // End of namespace Graphics
