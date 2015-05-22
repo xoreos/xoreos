@@ -81,6 +81,10 @@ GraphicsManager::GraphicsManager() {
 	_cullFaceEnabled = true;
 	_cullFaceMode    = GL_BACK;
 
+	_viewAngle = 60.0f;
+	_clipNear  = 1.0f;
+	_clipFar   = 1000.0f;
+
 	_windowTitle = XOREOS_NAMEVERSION;
 
 	_screen = 0;
@@ -450,7 +454,7 @@ void GraphicsManager::setupScene() {
 
 	setCullFace(_cullFaceEnabled, _cullFaceMode);
 
-	perspective(60.0, ((float) _width) / ((float) _height), 1.0, 1000.0);
+	perspective(_viewAngle, ((float) _width) / ((float) _height), _clipNear, _clipFar);
 }
 
 void GraphicsManager::setCullFace(bool enabled, GLenum mode) {
@@ -472,7 +476,28 @@ void GraphicsManager::setCullFace(bool enabled, GLenum mode) {
 	_cullFaceMode    = mode;
 }
 
+void GraphicsManager::setPerspective(float viewAngle, float clipNear, float clipFar) {
+	// Force calling it from the main thread
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setPerspective, this, viewAngle, clipNear, clipFar));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
+	perspective(viewAngle, ((float) _width) / ((float) _height), clipNear, clipFar);
+
+	_viewAngle = viewAngle;
+	_clipNear  = clipNear;
+	_clipFar   = clipFar;
+}
+
 void GraphicsManager::perspective(float fovy, float aspect, float zNear, float zFar) {
+	assert(fabs(fovy) > 0.001);
+	assert(zNear > 0);
+	assert(zFar > 0);
+	assert(zFar > zNear);
+	assert((zFar - zNear) > 0.001);
+
 	const float f = 1.0 / (tanf(Common::deg2rad(fovy) / 2.0));
 
 	const float t1 = (zFar + zNear) / (zNear - zFar);
