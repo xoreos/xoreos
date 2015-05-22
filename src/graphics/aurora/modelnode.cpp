@@ -530,6 +530,38 @@ void ModelNode::render(RenderPass pass) {
 	}
 }
 
+void ModelNode::drawSkeleton(const Common::TransformationMatrix &parent, bool showInvisible) {
+	Common::TransformationMatrix mine = parent;
+
+	mine.translate(_position[0], _position[1], _position[2]);
+	mine.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+	mine.scale(_scale[0], _scale[1], _scale[2]);
+
+	if (_render || showInvisible) {
+		glPointSize(5);
+
+		if (_render)
+			glColor4f(0.0, 1.0, 0.0, 1.0);
+		else
+			glColor4f(1.0, 0.0, 0.0, 1.0);
+
+		glBegin(GL_POINTS);
+			glVertex3f(mine.getX(), mine.getY(), mine.getZ());
+		glEnd();
+
+		glLineWidth(2);
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+
+		glBegin(GL_LINES);
+			glVertex3f(parent.getX(), parent.getY(), parent.getZ());
+			glVertex3f(mine.getX(), mine.getY(), mine.getZ());
+		glEnd();
+	}
+
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c)
+		(*c)->drawSkeleton(mine, showInvisible);
+}
+
 void ModelNode::lockFrame() {
 	_model->lockFrame();
 }

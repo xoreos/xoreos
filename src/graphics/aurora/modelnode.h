@@ -182,6 +182,7 @@ protected:
 	void createAbsoluteBound(Common::BoundingBox parentPosition);
 
 	void render(RenderPass pass);
+	void drawSkeleton(const Common::TransformationMatrix &parent, bool showInvisible);
 
 	void lockFrame();
 	void unlockFrame();

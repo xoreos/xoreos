@@ -46,7 +46,8 @@ namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_type(type), _supermodel(0), _currentState(0),
-	_currentAnimation(0), _nextAnimation(0), _drawBound(false) {
+	_currentAnimation(0), _nextAnimation(0), _drawBound(false),
+	_drawSkeleton(false), _drawSkeletonInvisible(false) {
 
 	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
 	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
@@ -139,6 +140,11 @@ float Model::getDepth() const {
 
 void Model::drawBound(bool enabled) {
 	_drawBound = enabled;
+}
+
+void Model::drawSkeleton(bool enabled, bool showInvisible) {
+	_drawSkeleton = enabled;
+	_drawSkeletonInvisible = showInvisible;
 }
 
 void Model::playAnimation(const Common::UString &anim, bool restart, int32 loopCount) {
@@ -492,6 +498,9 @@ void Model::render(RenderPass pass) {
 
 	// Reset the first texture units
 	TextureMan.reset();
+
+	// Draw the skeleton, if requested
+	doDrawSkeleton();
 }
 
 void Model::doDrawBound() {
@@ -555,6 +564,26 @@ void Model::doDrawBound() {
 	tform.translate((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f);
 	tform.scale((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f);
 	_boundRenderable->renderImmediate(tform);
+}
+
+void Model::doDrawSkeleton() {
+	if (!_drawSkeleton)
+		return;
+
+	Common::TransformationMatrix tform;
+
+	if (_type == kModelTypeObject)
+		glDisable(GL_DEPTH_TEST);
+
+	for (NodeList::iterator n = _currentState->rootNodes.begin(); n != _currentState->rootNodes.end(); ++n)
+		(*n)->drawSkeleton(tform, _drawSkeletonInvisible);
+
+	if (_type == kModelTypeObject)
+		glEnable(GL_DEPTH_TEST);
+
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glLineWidth(1);
+	glPointSize(1);
 }
 
 void Model::doRebuild() {
