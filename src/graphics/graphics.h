@@ -110,6 +110,9 @@ public:
 	/** Set the overall gamma correction. */
 	void setGamma(float gamma);
 
+	/** Enable/Disable face culling. */
+	void setCullFace(bool enabled, GLenum mode = GL_BACK);
+
 	/** Show/Hide the cursor. */
 	void showCursor(bool show);
 	/** Set the current cursor. */
@@ -188,6 +191,9 @@ private:
 	int _height; ///< The game's screen height.
 
 	float _gamma; ///< The current gamma correction value.
+
+	bool   _cullFaceEnabled;
+	GLenum _cullFaceMode;
 
 	Common::UString _windowTitle; ///< The current window title.
 

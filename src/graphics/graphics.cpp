@@ -78,6 +78,9 @@ GraphicsManager::GraphicsManager() {
 
 	_gamma = 1.0;
 
+	_cullFaceEnabled = true;
+	_cullFaceMode    = GL_BACK;
+
 	_windowTitle = XOREOS_NAMEVERSION;
 
 	_screen = 0;
@@ -445,9 +448,28 @@ void GraphicsManager::setupScene() {
 	glAlphaFunc(GL_GREATER, 0.1);
 	glEnable(GL_ALPHA_TEST);
 
-	glEnable(GL_CULL_FACE);
+	setCullFace(_cullFaceEnabled, _cullFaceMode);
 
 	perspective(60.0, ((float) _width) / ((float) _height), 1.0, 1000.0);
+}
+
+void GraphicsManager::setCullFace(bool enabled, GLenum mode) {
+	// Force calling it from the main thread
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setCullFace, this, enabled, mode));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
+	if (enabled)
+		glEnable(GL_CULL_FACE);
+	else
+		glDisable(GL_CULL_FACE);
+
+	glCullFace(mode);
+
+	_cullFaceEnabled = enabled;
+	_cullFaceMode    = mode;
 }
 
 void GraphicsManager::perspective(float fovy, float aspect, float zNear, float zFar) {
