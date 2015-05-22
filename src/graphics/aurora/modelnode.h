@@ -90,6 +90,9 @@ public:
 	/** Get the position of the node after translate/rotate. */
 	void getAbsolutePosition(float &x, float &y, float &z) const;
 
+	/** Get the position of the node after translate/rotate. */
+	Common::TransformationMatrix getAsolutePosition() const;
+
 	/** Set the position of the node. */
 	void setPosition(float x, float y, float z);
 	/** Set the rotation of the node. */
@@ -176,6 +179,9 @@ protected:
 	void createBound();
 	void createCenter();
 
+	void createAbsoluteBound();
+	void createAbsoluteBound(Common::BoundingBox parentPosition);
+
 	void render(RenderPass pass);
 
 	void lockFrame();
@@ -187,7 +193,6 @@ protected:
 
 private:
 	const Common::BoundingBox &getAbsoluteBound() const;
-	void createAbsoluteBound(Common::BoundingBox parentPosition);
 
 	void orderChildren();
 

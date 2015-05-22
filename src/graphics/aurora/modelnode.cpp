@@ -190,6 +190,13 @@ void ModelNode::getAbsolutePosition(float &x, float &y, float &z) const {
 	z = _absolutePosition.getZ() * _model->_modelScale[2];
 }
 
+Common::TransformationMatrix ModelNode::getAsolutePosition() const {
+	Common::TransformationMatrix absolutePosition = _absolutePosition;
+	absolutePosition.scale(_model->_modelScale[0], _model->_modelScale[1], _model->_modelScale[2]);
+
+	return absolutePosition;
+}
+
 void ModelNode::setPosition(float x, float y, float z) {
 	lockFrameIfVisible();
 
@@ -415,6 +422,12 @@ void ModelNode::createCenter() {
 
 const Common::BoundingBox &ModelNode::getAbsoluteBound() const {
 	return _absoluteBoundBox;
+}
+
+void ModelNode::createAbsoluteBound() {
+	Common::BoundingBox bound;
+
+	createAbsoluteBound(bound);
 }
 
 void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
