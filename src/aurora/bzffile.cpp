@@ -25,6 +25,10 @@
  *  Essentially, they are BIF files with LZMA-compressed data.
  */
 
+#ifdef _MSC_VER
+	#include <stdint.h> /* stop lzma.h from defining UINT32_C, etc, macros */
+#endif
+
 #include <lzma.h>
 
 #include "src/common/util.h"
