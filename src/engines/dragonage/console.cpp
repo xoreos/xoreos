@@ -22,6 +22,8 @@
  *  Dragon Age (debug) console.
  */
 
+#include "src/graphics/aurora/types.h"
+
 #include "src/engines/dragonage/console.h"
 #include "src/engines/dragonage/dragonage.h"
 
@@ -30,7 +32,8 @@ namespace Engines {
 namespace DragonAge {
 
 Console::Console(DragonAgeEngine &engine) :
-	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13) {
+	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
+	_engine(&engine) {
 
 }
 

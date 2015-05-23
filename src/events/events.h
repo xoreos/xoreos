@@ -72,6 +72,13 @@ public:
 	/** Initiate the actual quitting process. */
 	void doQuit();
 
+	// For the game thread to signal the main thread that the engine code threw
+
+	/** Was a fatal engine error raised? */
+	bool fatalErrorRaised() const;
+	/** Raise a fatal engine error. */
+	void raiseFatalError();
+
 
 	// Timing
 
@@ -155,6 +162,8 @@ private:
 
 	bool _quitRequested; ///< Was an engine quit requested?
 	bool _doQuit;        ///< Are we currently in the process of quitting?
+
+	bool _fatalError;
 
 	Joysticks _joysticks;
 

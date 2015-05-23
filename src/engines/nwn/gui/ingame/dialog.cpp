@@ -37,9 +37,10 @@
 #include "src/graphics/graphics.h"
 #include "src/graphics/font.h"
 
-#include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/text.h"
 
 #include "src/engines/aurora/tokenman.h"
 

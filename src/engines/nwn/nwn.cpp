@@ -39,6 +39,7 @@
 
 #include "src/events/events.h"
 
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
 
@@ -113,7 +114,7 @@ bool NWNEngineProbeFallback::probe(const Common::UString &UNUSED(directory),
 }
 
 
-NWNEngine::NWNEngine() : _version(0),
+NWNEngine::NWNEngine() : _version(0), _language(Aurora::kLanguageInvalid),
 	_hasXP1(false), _hasXP2(false), _hasXP3(false), _scriptFuncs(0), _module(0) {
 
 	_console = new Console(*this);
@@ -268,40 +269,42 @@ void NWNEngine::declareEncodings() {
 
 void NWNEngine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_target);
-	indexMandatoryDirectory("", 0, 0, 1);
+	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveBIF, "data");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "nwm");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "hak");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "texturepacks");
+	indexMandatoryDirectory("data"        , 0, 0, 2);
+	indexMandatoryDirectory("nwm"         , 0, 0, 3);
+	indexMandatoryDirectory("modules"     , 0, 0, 4);
+	indexMandatoryDirectory("hak"         , 0, 0, 5);
+	indexMandatoryDirectory("texturepacks", 0, 0, 6);
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive(Aurora::kArchiveKEY, "chitin.key", 10);
+	indexMandatoryArchive("chitin.key", 10);
 
 	progress.step("Loading expansions and patch KEYs");
 
 	// Base game patch
-	indexOptionalArchive(Aurora::kArchiveKEY, "patch.key", 11);
+	indexOptionalArchive("patch.key", 11);
 
 	// Expansion 1: Shadows of Undrentide (SoU)
-	_hasXP1 = indexOptionalArchive(Aurora::kArchiveKEY, "xp1.key", 12);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp1patch.key", 13);
+	_hasXP1 = ResMan.hasArchive("xp1.key");
+	indexOptionalArchive("xp1.key"     , 12);
+	indexOptionalArchive("xp1patch.key", 13);
 
 	// Expansion 2: Hordes of the Underdark (HotU)
-	_hasXP2 = indexOptionalArchive(Aurora::kArchiveKEY, "xp2.key", 14);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp2patch.key", 15);
+	_hasXP3 = ResMan.hasArchive("xp2.key");
+	indexOptionalArchive("xp2.key"     , 14);
+	indexOptionalArchive("xp2patch.key", 15);
 
 	// Expansion 3: Kingmaker (resources also included in the final 1.69 patch)
-	_hasXP3 = indexOptionalArchive(Aurora::kArchiveKEY, "xp3.key", 16);
-	indexOptionalArchive(Aurora::kArchiveKEY, "xp3patch.key", 17);
+	_hasXP3 = ResMan.hasArchive("xp3.key");
+	indexOptionalArchive("xp3.key"     , 16);
+	indexOptionalArchive("xp3patch.key", 17);
 
 	progress.step("Loading GUI textures");
-	indexMandatoryArchive(Aurora::kArchiveERF, "gui_32bit.erf"   , 50);
-	indexOptionalArchive (Aurora::kArchiveERF, "xp1_gui.erf"     , 51);
-	indexOptionalArchive (Aurora::kArchiveERF, "xp2_gui.erf"     , 52);
+	indexMandatoryArchive("gui_32bit.erf", 50);
+	indexOptionalArchive ("xp1_gui.erf"  , 51);
+	indexOptionalArchive ("xp2_gui.erf"  , 52);
 
 	progress.step("Indexing extra sound resources");
 	indexMandatoryDirectory("ambient"   , 0, 0, 100);
@@ -334,6 +337,43 @@ void NWNEngine::initResources(LoadProgress &progress) {
 	// Blacklist the DDS version of the galahad14 font, because in versions of NWN coming
 	// with a Cyrillic one, the DDS file is still Latin.
 	ResMan.blacklist("fnt_galahad14", Aurora::kFileTypeDDS);
+
+	declareBogusTextures();
+}
+
+void NWNEngine::declareBogusTextures() {
+	static const char *kBogusTextures[] = {
+		"belt_g",
+		"FB1_g",
+		"head_g",
+		"Lbicep_g",
+		"lbicep_g",
+		"lfoot_g",
+		"lforearm_g",
+		"lhand_g",
+		"lshin_g",
+		"Lshoulder_g",
+		"lshoulder_g",
+		"lthigh_g",
+		"Material",
+		"neck_g",
+		"pelvis_g",
+		"pmh0_head001g",
+		"Rbicep_g",
+		"rbicep_g",
+		"rfoot_g",
+		"rforearm_g",
+		"rhand_g",
+		"rshin_g",
+		"Rshoulder_g",
+		"rshoulder_g",
+		"rthigh_g",
+		"TF3_g",
+		"torso_g"
+	};
+
+	for (uint i = 0; i < ARRAYSIZE(kBogusTextures); i++)
+		TextureMan.addBogusTexture(kBogusTextures[i]);
 }
 
 void NWNEngine::initCursors() {
@@ -618,12 +658,12 @@ bool NWNEngine::hasModule(Common::UString &module) {
 	const Common::UString nwmFile = module + ".nwm";
 	const Common::UString modFile = module + ".mod";
 
-	if (ResMan.hasArchive(Aurora::kArchiveERF, nwmFile)) {
+	if (ResMan.hasArchive(nwmFile)) {
 		module = nwmFile;
 		return true;
 	}
 
-	if (ResMan.hasArchive(Aurora::kArchiveERF, modFile)) {
+	if (ResMan.hasArchive(modFile)) {
 		module = modFile;
 		return true;
 	}

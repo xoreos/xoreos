@@ -82,17 +82,17 @@ void GameThread::run() {
 }
 
 void GameThread::threadMethod() {
-	if (!_game)
-		return;
+	assert(_game);
 
 	try {
 		EngineMan.run(*_game);
 	} catch (Common::Exception &e) {
+		EventMan.raiseFatalError();
+
 		Common::printException(e);
 	}
 
-	delete _game;
-	_game = 0;
+	EventMan.doQuit();
 }
 
 } // End of namespace Engines

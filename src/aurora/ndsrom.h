@@ -34,8 +34,8 @@
 #include "src/aurora/archive.h"
 
 namespace Common {
+	class UString;
 	class SeekableReadStream;
-	class File;
 }
 
 namespace Aurora {
@@ -44,10 +44,8 @@ namespace Aurora {
 class NDSFile : public Archive {
 public:
 	NDSFile(const Common::UString &fileName);
+	NDSFile(Common::SeekableReadStream *nds);
 	~NDSFile();
-
-	/** Clear the resource list. */
-	void clear();
 
 	/** Does the Nintendo DS ROM contain a certain resource? */
 	bool hasResource(Common::UString name) const;
@@ -59,10 +57,18 @@ public:
 	uint32 getResourceSize(uint32 index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index) const;
+	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
-	/** Check if a stream is a valid Nintendo DS ROM. */
-	static bool isNDS(Common::SeekableReadStream &stream);
+	/** Return the game title string stored in the NDS header. */
+	const Common::UString &getTitle() const;
+	/** Return the game code string stored in the NDS header. */
+	const Common::UString &getCode() const;
+	/** Return the maker code string stored in the NDS header. */
+	const Common::UString &getMaker() const;
+
+	/** Check if a stream is a valid Nintendo DS ROM and read its title, code and maker strings. */
+	static bool isNDS(Common::SeekableReadStream &stream,
+	                  Common::UString &title, Common::UString &code, Common::UString &maker);
 
 private:
 	/** Internal resource information. */
@@ -73,18 +79,19 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
+	Common::SeekableReadStream *_nds;
+
+	Common::UString _title;
+	Common::UString _code;
+	Common::UString _maker;
+
 	/** External list of resource names and types. */
 	ResourceList _resources;
 
 	/** Internal list of resource offsets and sizes. */
 	IResourceList _iResources;
 
-	/** The name of the NDS file. */
-	Common::UString _fileName;
-
-	void open(Common::File &file) const;
-
-	void load();
+	void load(Common::SeekableReadStream &nds);
 	void readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 length);
 	void readFAT(Common::SeekableReadStream &nds, uint32 offset);
 

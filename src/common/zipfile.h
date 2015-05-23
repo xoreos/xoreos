@@ -34,7 +34,6 @@
 namespace Common {
 
 class SeekableReadStream;
-class File;
 
 /** A class encapsulating ZIP file access. */
 class ZipFile {
@@ -47,11 +46,8 @@ public:
 
 	typedef std::list<File> FileList;
 
-	ZipFile(const UString &fileName);
+	ZipFile(Common::SeekableReadStream *zip);
 	~ZipFile();
-
-	/** Clear the file list. */
-	void clear();
 
 	/** Return the list of files. */
 	const FileList &getFiles() const;
@@ -60,7 +56,7 @@ public:
 	uint32 getFileSize(uint32 index) const;
 
 	/** Return a stream of the files's contents. */
-	SeekableReadStream *getFile(uint32 index) const;
+	SeekableReadStream *getFile(uint32 index, bool tryNoCopy = false) const;
 
 private:
 	/** Internal file information. */
@@ -71,18 +67,15 @@ private:
 
 	typedef std::vector<IFile> IFileList;
 
+	Common::SeekableReadStream *_zip;
+
 	/** External list of file names and types. */
 	FileList _files;
 
 	/** Internal list of file offsets and sizes. */
 	IFileList _iFiles;
 
-	/** The name of the ZIP file. */
-	UString _fileName;
-
-	void open(Common::File &file) const;
-
-	void load();
+	void load(Common::SeekableReadStream &zip);
 	uint32 findCentralDirectoryEnd(SeekableReadStream &zip);
 
 	static SeekableReadStream *decompressFile(SeekableReadStream &zip, uint32 method,

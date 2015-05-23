@@ -68,6 +68,8 @@ public:
 
 	/** Should a bounding box be drawn around this model? */
 	void drawBound(bool enabled);
+	/** Should a skeleton showing the nodes and their relation be drawn inside the model? */
+	void drawSkeleton(bool enabled, bool showInvisible);
 
 
 	/** Is that point within the model's bounding box? */
@@ -216,6 +218,11 @@ protected:
 	Common::BoundingBox _absoluteBoundBox;
 
 
+	// Rendering
+
+	void doDrawBound();
+	void doDrawSkeleton();
+
 	// Animation
 
 	/** Get the animation from its name. */
@@ -235,6 +242,9 @@ protected:
 
 private:
 	bool _drawBound;
+	bool _drawSkeleton;
+	bool _drawSkeletonInvisible;
+
 	float _elapsedTime; ///< Track animation duration
 
 	void createStateNamesList(); ///< Create the list of all state names.
@@ -242,7 +252,6 @@ private:
 
 	void createAbsolutePosition();
 
-	void doDrawBound();
 	void manageAnimations(float dt);
 
 	Animation *selectDefaultAnimation() const;

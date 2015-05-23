@@ -54,7 +54,10 @@ Module::Module(::Engines::Console &console, Campaign *campaign) :
 }
 
 Module::~Module() {
-	clear();
+	try {
+		clear();
+	} catch (...) {
+	}
 }
 
 void Module::clear() {
@@ -80,7 +83,7 @@ void Module::loadModule(const Common::UString &module) {
 		throw Common::Exception("Tried to load an empty module");
 
 	try {
-		indexMandatoryArchive(Aurora::kArchiveERF, module, 1001, &_resModule);
+		indexMandatoryArchive(module, 1001, &_resModule);
 
 		_ifo.load();
 
@@ -120,7 +123,7 @@ void Module::checkHAKs() {
 	const std::vector<Common::UString> &haks = _ifo.getHAKs();
 
 	for (std::vector<Common::UString>::const_iterator h = haks.begin(); h != haks.end(); ++h)
-		if (!ResMan.hasArchive(Aurora::kArchiveERF, *h + ".hak"))
+		if (!ResMan.hasArchive(*h + ".hak"))
 			throw Common::Exception("Required hak \"%s\" does not exist", h->c_str());
 }
 
@@ -212,7 +215,7 @@ void Module::enterArea() {
 
 	EventMan.flushEvents();
 
-	_console->printf("Entering area \"%s\" \(\"%s\", \"%s\")", _currentArea->getResRef().c_str(),
+	_console->printf("Entering area \"%s\" (\"%s\", \"%s\")", _currentArea->getResRef().c_str(),
 			_currentArea->getName().c_str(), _currentArea->getDisplayName().c_str());
 }
 
@@ -320,7 +323,7 @@ void Module::loadHAKs() {
 	_resHAKs.resize(haks.size());
 
 	for (uint i = 0; i < haks.size(); i++)
-		indexMandatoryArchive(Aurora::kArchiveERF, haks[i] + ".hak", 1002 + i, &_resHAKs[i]);
+		indexMandatoryArchive(haks[i] + ".hak", 1002 + i, &_resHAKs[i]);
 }
 
 void Module::unloadHAKs() {

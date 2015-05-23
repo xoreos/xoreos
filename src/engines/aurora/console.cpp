@@ -45,6 +45,7 @@
 
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/guiquad.h"
 
@@ -1400,7 +1401,7 @@ void Console::cmdGetString(const CommandLine &cl) {
 		return;
 	}
 
-	uint32 strRef;
+	uint32 strRef = 0xFFFFFFFF;
 	try {
 		Common::parseString(cl.args, strRef);
 	} catch (...) {

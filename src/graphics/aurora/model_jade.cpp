@@ -22,11 +22,10 @@
  *  Loading MDL/MDX files found in Jade Empire
  */
 
-#ifndef _MSC_VER
-// Disable the "unused variable" warnings while most stuff is still stubbed
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-#endif
+/* Based in parts on cchargin's KotOR model specs
+ * (<https://home.comcast.net/~cchargin/kotor/mdl_info.html>).
+ */
+
 
 #include "src/common/error.h"
 #include "src/common/maths.h"
@@ -37,6 +36,9 @@
 #include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/model_jade.h"
+
+// Disable the "unused variable" warnings while most stuff is still stubbed
+IGNORE_UNUSED_VARIABLES
 
 enum NodeType {
 	kNodeTypeNode             = 0x00000001,
@@ -332,15 +334,32 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 }
 
 void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
-	ctx.mdl->skip(52); // Unknown
+	ctx.mdl->skip(12); // Unknown
+
+	float boundingMin[3], boundingMax[3];
+
+	boundingMin[0] = ctx.mdl->readIEEEFloatLE();
+	boundingMin[1] = ctx.mdl->readIEEEFloatLE();
+	boundingMin[2] = ctx.mdl->readIEEEFloatLE();
+
+	boundingMax[0] = ctx.mdl->readIEEEFloatLE();
+	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
+	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
+
+	float radius = ctx.mdl->readIEEEFloatLE();
+
+	float pointsAverage[3];
+	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
+	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
 	uint32 transparencyHint = ctx.mdl->readUint32LE();
 	uint16 flags            = ctx.mdl->readUint16LE();
 
-	_shadow = ctx.mdl->readUint16LE();
+	_shadow = ctx.mdl->readUint16LE() != 0;
 
-	_render  = flags & kNodeFlagsRender;
-	_beaming = flags & kNodeFlagsBeaming;
+	_render  = (flags & kNodeFlagsRender) != 0;
+	_beaming = (flags & kNodeFlagsBeaming) != 0;
 
 	_hasTransparencyHint = true;
 	_transparencyHint    = (transparencyHint == 1);

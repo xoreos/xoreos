@@ -82,6 +82,16 @@ void CharRace::reset() {
 	_choices->setCharRace(6);
 }
 
+void CharRace::hide() {
+	Engines::GUI::hide();
+
+	if (_returnCode == 1) {
+		// Set previous choice if any.
+		if (_choices->getCharacter().getRace() < kRaceInvalid)
+			_buttons->setActive(_choices->getCharacter().getRace());
+	}
+}
+
 void CharRace::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
 		_choices->setCharRace(_buttons->getChoice());
@@ -90,10 +100,6 @@ void CharRace::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "CancelButton") {
-		// Set previous choice if any.
-		if (_choices->getCharacter().getRace() < kRaceInvalid)
-			_buttons->setActive(_choices->getCharacter().getRace());
-
 		_returnCode = 1;
 		return;
 	}

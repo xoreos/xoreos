@@ -57,17 +57,19 @@ public:
 	Archive();
 	virtual ~Archive();
 
-	/** Clear the resource list. */
-	virtual void clear() = 0;
-
 	/** Return the list of resources. */
 	virtual const ResourceList &getResources() const = 0;
 
 	/** Return the size of a resource. */
 	virtual uint32 getResourceSize(uint32 index) const;
 
-	/** Return a stream of the resource's contents. */
-	virtual Common::SeekableReadStream *getResource(uint32 index) const = 0;
+	/** Return a stream of the resource's contents.
+	 *
+	 *  @param  index The index of the resource we want.
+	 *  @param  tryNoCopy Try to return a SeekableSubReadStream of the archive instead of copying.
+	 *  @return A (sub)stream of the resource's contents.
+	 */
+	virtual Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const = 0;
 
 	/** Return with which algorithm the name is hashed. */
 	virtual Common::HashAlgo getNameHashAlgo() const;

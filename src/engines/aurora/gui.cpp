@@ -42,7 +42,9 @@ static const uint32 kDoubleClickTime = 500;
 namespace Engines {
 
 GUI::GUI(Console *console) : _console(console),
-	_currentWidget(0), _returnCode(kReturnCodeNone), _sub(0), _x(0.0), _y(0.0), _z(0.0) {
+	_currentWidget(0), _startCode(kStartCodeNone), _returnCode(kReturnCodeNone),
+	_sub(0), _x(0.0), _y(0.0), _z(0.0) {
+
 }
 
 GUI::~GUI() {

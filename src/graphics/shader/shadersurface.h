@@ -26,7 +26,6 @@
 #define GRAPHICS_SHADER_SHADERSURFACE_H
 
 #include "src/graphics/shader/shader.h"
-#include "src/graphics/aurora/textureman.h"
 #include "src/common/transmatrix.h"
 
 namespace Graphics {

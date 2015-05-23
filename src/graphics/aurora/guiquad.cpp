@@ -26,6 +26,7 @@
 #include "src/common/ustring.h"
 
 #include "src/graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
 namespace Graphics {

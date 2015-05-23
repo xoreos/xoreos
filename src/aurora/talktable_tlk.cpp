@@ -22,13 +22,18 @@
  *  Handling BioWare's TLK talk tables.
  */
 
+/* See BioWare's own specs released for Neverwinter Nights modding
+ * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
+ */
+
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/stream.h"
 #include "src/common/file.h"
 #include "src/common/error.h"
 
 #include "src/aurora/talktable_tlk.h"
-#include "src/aurora/talkman.h"
+#include "src/aurora/language.h"
 
 static const uint32 kTLKID    = MKTAG('T', 'L', 'K', ' ');
 static const uint32 kVersion3 = MKTAG('V', '3', '.', '0');
@@ -53,10 +58,10 @@ void TalkTable_TLK::load() {
 		readHeader(*_tlk);
 
 		if (_id != kTLKID)
-			throw Common::Exception("Not a TLK file");
+			throw Common::Exception("Not a TLK file (%s)", Common::debugTag(_id).c_str());
 
 		if (_version != kVersion3 && _version != kVersion4)
-			throw Common::Exception("Unsupported TLK file version %08X", _version);
+			throw Common::Exception("Unsupported TLK file version %s", Common::debugTag(_version).c_str());
 
 		_languageID = _tlk->readUint32LE();
 

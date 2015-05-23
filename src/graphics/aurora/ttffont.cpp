@@ -34,6 +34,7 @@
 #include "src/graphics/images/surface.h"
 
 #include "src/graphics/aurora/ttffont.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
 static const uint32 kPageWidth  = 256;
@@ -49,7 +50,7 @@ TTFFont::Page::Page() : needRebuild(false),
 	surface = new Surface(kPageWidth, kPageHeight);
 	surface->fill(0x00, 0x00, 0x00, 0x00);
 
-	texture = TextureMan.add(new Texture(surface));
+	texture = TextureMan.add(Texture::create(surface));
 }
 
 void TTFFont::Page::rebuild() {
@@ -62,7 +63,12 @@ void TTFFont::Page::rebuild() {
 
 
 TTFFont::TTFFont(Common::SeekableReadStream *ttf, int height) : _ttf(0) {
-	load(ttf, height);
+	try {
+		load(ttf, height);
+	} catch (...) {
+		clear();
+		throw;
+	}
 }
 
 TTFFont::TTFFont(const Common::UString &name, int height) : _ttf(0) {
@@ -74,6 +80,7 @@ TTFFont::TTFFont(const Common::UString &name, int height) : _ttf(0) {
 		load(ttf, height);
 	} catch (...) {
 		clear();
+		throw;
 	}
 }
 
@@ -209,8 +216,10 @@ void TTFFont::addChar(uint32 c) {
 		if (cWidth > kPageWidth)
 			return;
 
-		if (_pages.empty())
+		if (_pages.empty()) {
 			_pages.push_back(new Page);
+			_pages.back()->heightLeft -= _height;
+		}
 
 		if (_pages.back()->widthLeft < cWidth) {
 			// The current character doesn't fit into the current line

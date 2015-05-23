@@ -86,19 +86,6 @@ void CharAttributes::callbackActive(Widget& widget) {
 	}
 
 	if (widget.getTag() == "CancelButton") {
-		// Get previous choice.
-		uint sum = 0;
-		for (uint ab = 0; ab < 6; ++ab) {
-			_attributes[ab] = _choices->getAbility(ab);
-			sum += _attributes[ab];
-		}
-		_pointLeft = 0;
-		getLabel("PointsEdit#Caption", true)->setText("0");
-
-		// Attributes were never saved if sum equals 48.
-		if (sum == 48)
-			reset();
-
 		_returnCode = 1;
 		return;
 	}
@@ -224,6 +211,25 @@ void CharAttributes::show() {
 	initButtonsGroup();
 
 	Engines::GUI::show();
+}
+
+void CharAttributes::hide() {
+	Engines::GUI::hide();
+
+	if (_returnCode == 1) {
+		// Get previous choice.
+		uint sum = 0;
+		for (uint ab = 0; ab < 6; ++ab) {
+			_attributes[ab] = _choices->getAbility(ab);
+			sum += _attributes[ab];
+		}
+		_pointLeft = 0;
+		getLabel("PointsEdit#Caption", true)->setText("0");
+
+		// Attributes were never saved if sum equals 48.
+		if (sum == 48)
+			reset();
+	}
 }
 
 void CharAttributes::genTextAttributes(uint32 attribute) {

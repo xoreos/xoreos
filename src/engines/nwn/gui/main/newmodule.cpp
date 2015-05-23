@@ -28,6 +28,7 @@
 
 #include "src/graphics/font.h"
 
+#include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/model.h"
 

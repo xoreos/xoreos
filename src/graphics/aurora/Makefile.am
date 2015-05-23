@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libaurora.la
 noinst_HEADERS = \
                  types.h \
                  texture.h \
+                 texturehandle.h \
                  textureman.h \
                  pltfile.h \
                  cursor.h \
@@ -12,6 +13,8 @@ noinst_HEADERS = \
                  texturefont.h \
                  abcfont.h \
                  ttffont.h \
+                 nftrfont.h \
+                 fonthandle.h \
                  fontman.h \
                  highlightable.h \
                  text.h \
@@ -30,10 +33,12 @@ noinst_HEADERS = \
                  model_kotor.h \
                  model_jade.h \
                  model_witcher.h \
+                 model_sonic.h \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
                        texture.cpp \
+                       texturehandle.cpp \
                        textureman.cpp \
                        pltfile.cpp \
                        cursor.cpp \
@@ -41,6 +46,8 @@ libaurora_la_SOURCES = \
                        texturefont.cpp \
                        abcfont.cpp \
                        ttffont.cpp \
+                       nftrfont.cpp \
+                       fonthandle.cpp \
                        fontman.cpp \
                        highlightable.cpp \
                        text.cpp \
@@ -59,4 +66,5 @@ libaurora_la_SOURCES = \
                        model_kotor.cpp \
                        model_jade.cpp \
                        model_witcher.cpp \
+                       model_sonic.cpp \
                        $(EMPTY)

@@ -40,6 +40,7 @@ public:
 
 	void reset();
 	void show();
+	void hide();
 
 protected:
 	void callbackActive(Widget &widget);

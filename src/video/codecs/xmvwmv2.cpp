@@ -24,11 +24,6 @@
  *  WMV2 video codec, XMV variant.
  */
 
-#ifndef _MSC_VER
-#pragma GCC diagnostic warning "-Wunused-variable"
-#pragma GCC diagnostic warning "-Wunused-but-set-variable"
-#endif
-
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
@@ -41,6 +36,9 @@
 
 #include "src/video/codecs/wmv2data.h"
 #include "src/video/codecs/xmvwmv2.h"
+
+// Disable the "unused variable" warnings while most stuff is still stubbed
+IGNORE_UNUSED_VARIABLES
 
 namespace Video {
 
@@ -68,7 +66,7 @@ bool XMVWMV2Codec::CBP::empty() const {
 bool XMVWMV2Codec::CBP::isSet(int block) const {
 	assert((block >= 0) && (block < 6));
 
-	return _cbp & (1 << (5 - block));
+	return (_cbp & (1 << (5 - block))) != 0;
 }
 
 void XMVWMV2Codec::CBP::set(int block, bool coded) {
@@ -636,7 +634,7 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 			} else {
 				// Escape + 00: run and level directly encoded
 
-				done = ctx.bits.getBit();
+				done = ctx.bits.getBit() != 0;
 
 				if (ctx.acRLERunLength == 0) {
 

@@ -36,32 +36,25 @@ static const byte kEncodingDXT5 = 0x0C;
 
 namespace Graphics {
 
-TXB::TXB(Common::SeekableReadStream &txb) : _dataSize(0), _txiData(0), _txiDataSize(0) {
+TXB::TXB(Common::SeekableReadStream &txb) {
 	load(txb);
 }
 
 TXB::~TXB() {
-	clear();
-}
-
-void TXB::clear() {
-	delete[] _txiData;
-	_txiData = 0;
-
-	ImageDecoder::clear();
 }
 
 void TXB::load(Common::SeekableReadStream &txb) {
 	try {
 
-		bool needDeSwizzle = false;
+		uint32 dataSize;
+		bool   needDeSwizzle = false;
 
-		readHeader(txb, needDeSwizzle);
+		readHeader(txb, needDeSwizzle, dataSize);
 		readData  (txb, needDeSwizzle);
 
-		txb.seek(_dataSize + 128);
+		txb.seek(dataSize + 128);
 
-		readTXIData(txb);
+		readTXI(txb);
 
 		if (txb.err())
 			throw Common::Exception(Common::kReadError);
@@ -74,18 +67,9 @@ void TXB::load(Common::SeekableReadStream &txb) {
 	}
 }
 
-Common::SeekableReadStream *TXB::getTXI() const {
-	if (!_txiData || (_txiDataSize == 0))
-		return 0;
-
-	return new Common::MemoryReadStream(_txiData, _txiDataSize);
-}
-
-void TXB::readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle) {
+void TXB::readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle, uint32 &dataSize) {
 	// Number of bytes for the pixel data in one full image
-	uint32 dataSize = txb.readUint32LE();
-
-	_dataSize = dataSize;
+	dataSize = txb.readUint32LE();
 
 	txb.skip(4); // Some float
 
@@ -228,17 +212,19 @@ void TXB::readData(Common::SeekableReadStream &txb, bool needDeSwizzle) {
 	}
 }
 
-void TXB::readTXIData(Common::SeekableReadStream &txb) {
-	// TXI data for the rest of the TXB
-	_txiDataSize = txb.size() - txb.pos();
-
-	if (_txiDataSize == 0)
+void TXB::readTXI(Common::SeekableReadStream &txb) {
+	const uint32 txiDataSize = txb.size() - txb.pos();
+	if (txiDataSize == 0)
 		return;
 
-	_txiData = new byte[_txiDataSize];
+	Common::SeekableReadStream *txiData = txb.readStream(txiDataSize);
 
-	if (txb.read(_txiData, _txiDataSize) != _txiDataSize)
-		throw Common::Exception(Common::kReadError);
+	try {
+		_txi.load(*txiData);
+	} catch (...) {
+	}
+
+	delete txiData;
 }
 
 } // End of namespace Graphics

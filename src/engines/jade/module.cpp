@@ -47,7 +47,10 @@ Module::Module(::Engines::Console &console) : _console(&console),
 }
 
 Module::~Module() {
-	clear();
+	try {
+		clear();
+	} catch (...) {
+	}
 }
 
 void Module::clear() {

@@ -53,7 +53,7 @@ public:
 	}
 
 	bool operator!=(const ASFGUID &g) const {
-		return memcmp(g.id, id, 16);
+		return memcmp(g.id, id, 16) != 0;
 	}
 
 	Common::UString toString() const {

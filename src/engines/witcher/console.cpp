@@ -32,7 +32,7 @@
 
 #include "src/aurora/resman.h"
 
-#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/types.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -87,7 +87,7 @@ void Console::updateMusic() {
 
 	setArguments("playmusic", _music);
 
-	Common::UString musicDir = Common::FilePath::findSubDirectory(ResMan.getDataBaseDir(), "data/music", true);
+	Common::UString musicDir = Common::FilePath::findSubDirectory(ResMan.getDataBase(), "data/music", true);
 	if (musicDir.empty())
 		return;
 

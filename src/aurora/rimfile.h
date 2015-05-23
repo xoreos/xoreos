@@ -28,7 +28,6 @@
 #include <vector>
 
 #include "src/common/types.h"
-#include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/archive.h"
@@ -36,7 +35,6 @@
 
 namespace Common {
 	class SeekableReadStream;
-	class File;
 }
 
 namespace Aurora {
@@ -44,11 +42,8 @@ namespace Aurora {
 /** Class to hold resource data of a RIM file. */
 class RIMFile : public Archive, public AuroraBase {
 public:
-	RIMFile(const Common::UString &fileName);
+	RIMFile(Common::SeekableReadStream *rim);
 	~RIMFile();
-
-	/** Clear the resource list. */
-	void clear();
 
 	/** Return the list of resources. */
 	const ResourceList &getResources() const;
@@ -57,7 +52,7 @@ public:
 	uint32 getResourceSize(uint32 index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index) const;
+	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
 private:
 	/** Internal resource information. */
@@ -68,18 +63,15 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
+	Common::SeekableReadStream *_rim;
+
 	/** External list of resource names and types. */
 	ResourceList _resources;
 
 	/** Internal list of resource offsets and sizes. */
 	IResourceList _iResources;
 
-	/** The name of the RIM file. */
-	Common::UString _fileName;
-
-	void open(Common::File &file) const;
-
-	void load();
+	void load(Common::SeekableReadStream &rim);
 	void readResList(Common::SeekableReadStream &rim, uint32 offset);
 
 	const IResource &getIResource(uint32 index) const;

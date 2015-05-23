@@ -28,6 +28,7 @@
 
 #include "src/sound/sound.h"
 
+#include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/guiquad.h"
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/highlightabletext.h"

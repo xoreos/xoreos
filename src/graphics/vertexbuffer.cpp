@@ -24,10 +24,62 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <cassert>
 
 #include "src/graphics/vertexbuffer.h"
+#include "src/graphics/indexbuffer.h"
 
 namespace Graphics {
+
+void VertexAttrib::enable() const {
+	switch (index) {
+		case VPOSITION:
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(size, type, stride, pointer);
+			break;
+
+		case VNORMAL:
+			assert(size == 3);
+			glEnableClientState(GL_NORMAL_ARRAY);
+			glNormalPointer(type, stride, pointer);
+			break;
+
+		case VCOLOR:
+			glEnableClientState(GL_COLOR_ARRAY);
+			glColorPointer(size, type, stride, pointer);
+			break;
+
+		default:
+			assert(index >= VTCOORD);
+			glClientActiveTextureARB(GL_TEXTURE0 + index - VTCOORD);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glTexCoordPointer(size, type, stride, pointer);
+			break;
+	}
+}
+
+void VertexAttrib::disable() const {
+	switch (index) {
+		case VPOSITION:
+			glDisableClientState(GL_VERTEX_ARRAY);
+			break;
+
+		case VNORMAL:
+			glDisableClientState(GL_NORMAL_ARRAY);
+			break;
+
+		case VCOLOR:
+			glDisableClientState(GL_COLOR_ARRAY);
+			break;
+
+		default:
+			assert(index >= VTCOORD);
+			glClientActiveTextureARB(GL_TEXTURE0 + index - VTCOORD);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			break;
+	}
+}
+
 
 VertexBuffer::VertexBuffer() : _count(0), _size(0), _data(0), _vbo(0), _hint(GL_STATIC_DRAW) {
 }
@@ -76,6 +128,68 @@ void VertexBuffer::setSize(uint32 vertCount, uint32 vertSize) {
 }
 
 void VertexBuffer::setVertexDecl(const VertexDecl &decl) {
+	_decl = decl;
+}
+
+uint32 VertexBuffer::getTypeSize(GLenum type) {
+	switch (type) {
+		case GL_UNSIGNED_BYTE:
+			return 1;
+		case GL_SHORT:
+		case GL_UNSIGNED_SHORT:
+		case GL_2_BYTES:
+			return 2;
+		case GL_3_BYTES:
+			return 3;
+		case GL_INT:
+		case GL_UNSIGNED_INT:
+		case GL_FLOAT:
+		case GL_4_BYTES:
+			return 4;
+			return 4;
+			return 4;
+		case GL_DOUBLE:
+			return 8;
+		default:
+			break;
+	}
+
+	return 0;
+}
+
+void VertexBuffer::setVertexDeclLinear(uint32 vertCount, VertexDecl &decl) {
+	uint32 vertSize = 0;
+	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a)
+		vertSize += a->size * getTypeSize(a->type);
+
+	setSize(vertCount, vertSize);
+
+	byte *data = _data;
+	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a) {
+		a->stride  = 0;
+		a->pointer = data;
+
+		data += vertCount * a->size * getTypeSize(a->type);
+	}
+
+	_decl = decl;
+}
+
+void VertexBuffer::setVertexDeclInterleave(uint32 vertCount, VertexDecl &decl) {
+	uint32 vertSize = 0;
+	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a)
+		vertSize += a->size * getTypeSize(a->type);
+
+	setSize(vertCount, vertSize);
+
+	uint32 offset = 0;
+	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a) {
+		a->stride  = vertSize;
+		a->pointer = _data + offset;
+
+		offset += a->size * getTypeSize(a->type);
+	}
+
 	_decl = decl;
 }
 
@@ -130,6 +244,19 @@ void VertexBuffer::destroyGL() {
 
 GLuint VertexBuffer::getVBO() {
 	return _vbo;
+}
+
+void VertexBuffer::draw(GLenum mode, const IndexBuffer &indexBuffer) const {
+	if ((getCount() == 0) || (indexBuffer.getCount() == 0))
+		return;
+
+	for (VertexDecl::const_iterator d = _decl.begin(); d != _decl.end(); ++d)
+		d->enable();
+
+	glDrawElements(mode, indexBuffer.getCount(), indexBuffer.getType(), indexBuffer.getData());
+
+	for (VertexDecl::const_iterator d = _decl.begin(); d != _decl.end(); ++d)
+		d->disable();
 }
 
 } // End of namespace Graphics

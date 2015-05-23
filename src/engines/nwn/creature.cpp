@@ -36,6 +36,7 @@
 
 #include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/pltfile.h"
 
 #include "src/events/events.h"
@@ -398,53 +399,55 @@ void Creature::getPartModels() {
 		                       genderChar.c_str(), raceChar.c_str(), phenoAltChar.c_str());
 
 	for (uint i = 0; i < kBodyPartMAX; i++)
-		constructModelName(kBodyPartModels[i], _bodyParts[i].armor_id > 0 ? _bodyParts[i].armor_id : _bodyParts[i].id,
+		constructModelName(kBodyPartModels[i],
+		                   _bodyParts[i].idArmor > 0 ? _bodyParts[i].idArmor : _bodyParts[i].id,
 		                   genderChar, raceChar, phenoChar, phenoAltChar,
-		                   _bodyParts[i].modelName, _bodyParts[i].texture);
+		                   _bodyParts[i].modelName, _bodyParts[i].textureName);
 }
 
 void Creature::getArmorModels() {
 	for (std::vector<Item>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
-		Item item = *e;
-		if (!item.isArmor()) {
+		const Item &item = *e;
+		if (!item.isArmor())
 			continue;
-		}
+
 		status("Equipping armour \"%s\" on model \"%s\"", item.getName().c_str(), _tag.c_str());
 
 		// Set the body part models
 		for (uint i = 0; i < kBodyPartMAX; i++) {
 			int id = item.getArmorPart(i);
 			if (id > 0)
-			_bodyParts[i].armor_id = id;
+				_bodyParts[i].idArmor = id;
 		}
+
 		// Set the armour color channels
-		_colorMetal1 = item._colorMetal1;
-		_colorMetal2 = item._colorMetal2;
+		_colorMetal1   = item._colorMetal1;
+		_colorMetal2   = item._colorMetal2;
 		_colorLeather1 = item._colorLeather1;
 		_colorLeather2 = item._colorLeather2;
-		_colorCloth1 = item._colorCloth1;
-		_colorCloth2 = item._colorCloth2;
+		_colorCloth1   = item._colorCloth1;
+		_colorCloth2   = item._colorCloth2;
 	}
 }
 
-void Creature::finishPLTs(std::list<Graphics::Aurora::PLTHandle> &plts) {
-	for (std::list<Graphics::Aurora::PLTHandle>::iterator p = plts.begin();
-	     p != plts.end(); ++p) {
+void Creature::finishPLTs(const std::list<Graphics::Aurora::TextureHandle> &plts) {
+	for (std::list<Graphics::Aurora::TextureHandle>::const_iterator p = plts.begin(); p != plts.end(); ++p) {
+		Graphics::Aurora::PLTFile *plt = dynamic_cast<Graphics::Aurora::PLTFile *>(&p->getTexture());
+		if (!plt)
+			continue;
 
-		Graphics::Aurora::PLTFile &plt = p->getPLT();
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerSkin    , _colorSkin);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerHair    , _colorHair);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo1 , _colorTattoo1);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo2 , _colorTattoo2);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal1  , _colorMetal1);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal2  , _colorMetal2);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather1, _colorLeather1);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather2, _colorLeather2);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth1  , _colorCloth1);
+		plt->setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth2  , _colorCloth2);
 
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerSkin   , _colorSkin);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerHair   , _colorHair);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo1, _colorTattoo1);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerTattoo2, _colorTattoo2);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal1, _colorMetal1);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerMetal2, _colorMetal2);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather1, _colorLeather1);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerLeather2, _colorLeather2);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth1, _colorCloth1);
-		plt.setLayerColor(Graphics::Aurora::PLTFile::kLayerCloth2, _colorCloth2);
-
-		plt.rebuild();
+		plt->rebuild();
 	}
 }
 
@@ -471,21 +474,30 @@ void Creature::loadModel() {
 			if (_bodyParts[i].modelName.empty())
 				continue;
 
-			TextureMan.clearNewPLTs();
+			TextureMan.startRecordNewTextures();
 
 			// Try to load in the corresponding part model
-			Graphics::Aurora::Model *part_model = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].texture);
-			if (!part_model)
+			Graphics::Aurora::Model *partModel = loadModelObject(_bodyParts[i].modelName, _bodyParts[i].textureName);
+			if (!partModel)
 				continue;
 
 			// Add the loaded model to the appropriate part node
-			Graphics::Aurora::ModelNode *part_node = _model->getNode(kBodyPartNodes[i]);
-			if (part_node)
-				part_node->addChild(part_model);
+			Graphics::Aurora::ModelNode *partNode = _model->getNode(kBodyPartNodes[i]);
+			if (partNode)
+				partNode->addChild(partModel);
 
-			TextureMan.getNewPLTs(_bodyParts[i].plts);
+			std::list<Common::UString> newTextures;
+			TextureMan.stopRecordNewTextures(newTextures);
 
-			finishPLTs(_bodyParts[i].plts);
+			for (std::list<Common::UString>::const_iterator t = newTextures.begin(); t != newTextures.end(); ++t) {
+				Graphics::Aurora::TextureHandle texture = TextureMan.getIfExist(*t);
+				if (texture.empty())
+					continue;
+
+				_bodyParts[i].textures.push_back(texture);
+			}
+
+			finishPLTs(_bodyParts[i].textures);
 		}
 
 	} else
@@ -717,8 +729,8 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Body parts
 	for (uint i = 0; i < kBodyPartMAX; i++) {
-		_bodyParts[i].id = gff.getUint(kBodyPartFields[i], _bodyParts[i].id);
-		_bodyParts[i].armor_id = 0;
+		_bodyParts[i].id      = gff.getUint(kBodyPartFields[i], _bodyParts[i].id);
+		_bodyParts[i].idArmor = 0;
 	}
 
 	// Colors
@@ -755,14 +767,14 @@ void Creature::loadEquippedItems(const Aurora::GFF3Struct &gff) {
 	for (Aurora::GFF3List::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
 		const Aurora::GFF3Struct &cItem = **e;
 
-		Common::UString itemref = cItem.getString("EquippedRes");
-		if (itemref.empty())
-			itemref = cItem.getString("TemplateResRef");
+		Common::UString itemRef = cItem.getString("EquippedRes");
+		if (itemRef.empty())
+			itemRef = cItem.getString("TemplateResRef");
 
 		Aurora::GFF3File *uti = 0;
-		if (!itemref.empty()) {
+		if (!itemRef.empty()) {
 			try {
-				uti = new Aurora::GFF3File(itemref, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '));
+				uti = new Aurora::GFF3File(itemRef, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '));
 			} catch (...) {
 			}
 		}

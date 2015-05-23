@@ -16,6 +16,10 @@ noinst_HEADERS = \
                  s3tc.h \
                  sbm.h \
                  winiconimage.h \
+                 xoreositex.h \
+                 nbfs.h \
+                 nclr.h \
+                 ncgr.h \
                  $(EMPTY)
 
 libimages_la_SOURCES = \
@@ -32,4 +36,8 @@ libimages_la_SOURCES = \
                        s3tc.cpp \
                        sbm.cpp \
                        winiconimage.cpp \
+                       xoreositex.cpp \
+                       nbfs.cpp \
+                       nclr.cpp \
+                       ncgr.cpp \
                        $(EMPTY)

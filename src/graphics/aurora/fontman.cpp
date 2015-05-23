@@ -29,6 +29,7 @@
 #include "src/graphics/aurora/texturefont.h"
 #include "src/graphics/aurora/abcfont.h"
 #include "src/graphics/aurora/ttffont.h"
+#include "src/graphics/aurora/nftrfont.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::FontManager)
 
@@ -37,62 +38,6 @@ namespace Graphics {
 namespace Aurora {
 
 const char *kSystemFontMono = "_xoreosSystemFontMono";
-
-ManagedFont::ManagedFont(Font *f) {
-	referenceCount = 0;
-	font = f;
-}
-
-ManagedFont::~ManagedFont() {
-	delete font;
-}
-
-
-FontHandle::FontHandle() : empty(true) {
-}
-
-FontHandle::FontHandle(FontMap::iterator &i) : empty(false), it(i) {
-}
-
-FontHandle::FontHandle(const FontHandle &right) : empty(true) {
-	*this = right;
-}
-
-FontHandle::~FontHandle() {
-	FontMan.release(*this);
-}
-
-FontHandle &FontHandle::operator=(const FontHandle &right) {
-	if (this == &right)
-		return *this;
-
-	FontMan.release(*this);
-
-	empty = right.empty;
-	it    = right.it;
-
-	if (!empty)
-		it->second->referenceCount++;
-
-	return *this;
-}
-
-void FontHandle::clear() {
-	empty = true;
-}
-
-const Common::UString &FontHandle::getFontName() const {
-	assert(!empty);
-
-	return it->first;
-}
-
-Font &FontHandle::getFont() const {
-	assert(!empty);
-
-	return *it->second->font;
-}
-
 
 FontManager::FontManager() : _format(kFontFormatUnknown) {
 }
@@ -114,82 +59,153 @@ void FontManager::clear() {
 }
 
 void FontManager::setFormat(FontFormat format) {
+	Common::StackLock lock(_mutex);
+
 	_format = format;
 }
 
 void FontManager::addAlias(const Common::UString &alias, const Common::UString &realName) {
+	Common::StackLock lock(_mutex);
+
 	_aliases[alias] = realName;
 }
 
-FontHandle FontManager::get(Common::UString name, int height) {
-	return get(_format, name, height);
-}
-
-FontHandle FontManager::get(FontFormat format, Common::UString name, int height) {
+bool FontManager::hasFont(const Common::UString &name, int height) {
 	Common::StackLock lock(_mutex);
 
-	// Lock up the name in our alias map first
-	std::map<Common::UString, Common::UString>::iterator realName = _aliases.find(name);
-	if (realName != _aliases.end())
-		name = realName->second;
+	FontMap::const_iterator font = _fonts.find(getIndexName(name, height));
 
-	Common::UString indexName = name;
+	return font != _fonts.end();
+}
 
-	// If we have been given a size, index the font under that size
-	if (height > 0)
-		indexName = Common::UString::sprintf("%s-%d", name.c_str(), height);
+FontHandle FontManager::add(Font *font, const Common::UString &name) {
+	Common::StackLock lock(_mutex);
 
-	// Look up the name in our font map
-	FontMap::iterator font = _fonts.find(indexName);
-	if (font == _fonts.end()) {
-		// If not found, load and add that font
+	ManagedFont *managedFont = 0;
+	FontMap::iterator fontIterator = _fonts.end();
+
+	try {
+		managedFont = new ManagedFont(font);
 
 		std::pair<FontMap::iterator, bool> result;
 
-		ManagedFont *t = createFont(format, name, height);
+		result = _fonts.insert(std::make_pair(name, managedFont));
+		if (!result.second)
+			throw Common::Exception("Font \"%s\" already exists", name.c_str());
 
-		result = _fonts.insert(std::make_pair(indexName, t));
+		fontIterator = result.first;
+
+	} catch (...) {
+		delete managedFont;
+		throw;
+	}
+
+	return FontHandle(fontIterator);
+}
+
+FontHandle FontManager::get(const Common::UString &name, int height) {
+	return get(_format, name, height);
+}
+
+FontHandle FontManager::get(FontFormat format, const Common::UString &name, int height) {
+	Common::StackLock lock(_mutex);
+
+	Common::UString aliasName = getAliasName(name);
+	Common::UString indexName = getIndexName(name, height);
+
+	FontMap::iterator font = _fonts.find(indexName);
+	if (font == _fonts.end()) {
+		std::pair<FontMap::iterator, bool> result;
+
+		ManagedFont *f = createFont(format, aliasName, height);
+
+		result = _fonts.insert(std::make_pair(indexName, f));
 
 		font = result.first;
 	}
 
-	// Increase the reference count and return the font
-	font->second->referenceCount++;
-
 	return FontHandle(font);
 }
 
-void FontManager::release(FontHandle &handle) {
+FontHandle FontManager::getIfExist(const Common::UString &name, int height) {
 	Common::StackLock lock(_mutex);
 
-	if (handle.empty)
-		return;
+	FontMap::iterator font = _fonts.find(getIndexName(name, height));
+	if (font != _fonts.end())
+		return FontHandle(font);
 
-	if (--handle.it->second->referenceCount == 0) {
-		delete handle.it->second;
-		_fonts.erase(handle.it);
+	return FontHandle();
+}
+
+Common::UString FontManager::getAliasName(const Common::UString &name) {
+	std::map<Common::UString, Common::UString>::iterator realName = _aliases.find(name);
+	if (realName != _aliases.end())
+		return realName->second;
+
+	return name;
+}
+
+Common::UString FontManager::getIndexName(Common::UString name, int height) {
+	// Lock up the name in our alias map first
+	name = getAliasName(name);
+
+	if (height <= 0)
+		return name;
+
+	// If we have been given a height, the font is indexed with the height
+	return Common::UString::sprintf("%s-%d", name.c_str(), height);
+}
+
+void FontManager::assign(FontHandle &font, const FontHandle &from) {
+	Common::StackLock lock(_mutex);
+
+	font._empty = from._empty;
+	font._it    = from._it;
+
+	if (!font._empty)
+		font._it->second->referenceCount++;
+}
+
+void FontManager::release(FontHandle &font) {
+	Common::StackLock lock(_mutex);
+
+	if (!font._empty && (font._it != _fonts.end())) {
+		if (--font._it->second->referenceCount == 0) {
+			delete font._it->second;
+			_fonts.erase(font._it);
+		}
 	}
 
-	handle.clear();
+	font._empty = true;
+	font._it    = _fonts.end();
 }
 
 ManagedFont *FontManager::createFont(FontFormat format,
 		const Common::UString &name, int height) {
 
-	if (name == kSystemFontMono)
-		return new ManagedFont(new TTFFont(Common::getSystemFontMono(), height));
+	try {
+		if (name == kSystemFontMono)
+			return new ManagedFont(new TTFFont(Common::getSystemFontMono(), height));
 
-	if (format == kFontFormatUnknown)
-		throw Common::Exception("Font format unknown (%s)", name.c_str());
+		if (format == kFontFormatUnknown)
+			throw Common::Exception("Font format unknown");
 
-	if (format == kFontFormatTexture)
-		return new ManagedFont(new TextureFont(name));
-	if (format == kFontFormatABC)
-		return new ManagedFont(new ABCFont(name));
-	if (format == kFontFormatTTF)
-		return new ManagedFont(new TTFFont(name, height));
+		if (format == kFontFormatTexture)
+			return new ManagedFont(new TextureFont(name));
+		if (format == kFontFormatABC)
+			return new ManagedFont(new ABCFont(name));
+		if (format == kFontFormatTTF)
+			return new ManagedFont(new TTFFont(name, height));
+		if (format == kFontFormatNFTR)
+			return new ManagedFont(new NFTRFont(name));
 
-	throw Common::Exception("Invalid font format %d (%s)", format, name.c_str());
+		throw Common::Exception("Invalid font format %d", format);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed to create font \"%s\" (%d)", name.c_str(), format);
+		throw;
+	}
+
 	return 0;
 }
 

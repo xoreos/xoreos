@@ -22,9 +22,14 @@
  *  Handling BioWare's ERFs (encapsulated resource file).
  */
 
+/* See BioWare's own specs released for Neverwinter Nights modding
+ * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
+ */
+
 #include "src/common/stream.h"
 #include "src/common/file.h"
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/encoding.h"
 
@@ -45,53 +50,58 @@ static const uint32 kVersion3  = MKTAG('V', '3', '.', '0');
 
 namespace Aurora {
 
-ERFFile::ERFFile(const Common::UString &fileName, bool noResources) :
-	_noResources(noResources), _fileName(fileName) {
+ERFFile::ERFFile(Common::SeekableReadStream *erf) : _erf(erf) {
+	assert(_erf);
 
-	load();
+	try {
+		load(*_erf);
+	} catch (...) {
+		delete _erf;
+		throw;
+	}
 }
 
 ERFFile::~ERFFile() {
+	delete _erf;
 }
 
-void ERFFile::clear() {
-	_resources.clear();
+void ERFFile::verifyVersion(uint32 id, uint32 version, bool utf16le) {
+	if ((id != kERFID) && (id != kMODID) && (id != kHAKID) && (id != kSAVID))
+		throw Common::Exception("Not an ERF file (%s)", Common::debugTag(id).c_str());
+
+	if ((version != kVersion1) && (version != kVersion11) &&
+	    (version != kVersion2) && (version != kVersion22) &&
+	    (version != kVersion3))
+		throw Common::Exception("Unsupported ERF file version %s", Common::debugTag(version).c_str());
+
+	if ((version != kVersion1) && (version != kVersion11) && !utf16le)
+		throw Common::Exception("ERF file version 2.0+, but not UTF-16LE");
 }
 
-void ERFFile::load() {
-	Common::File erf;
-	open(erf);
-
+void ERFFile::load(Common::SeekableReadStream &erf) {
 	readHeader(erf);
 
-	if ((_id != kERFID) && (_id != kMODID) && (_id != kHAKID) && (_id != kSAVID))
-		throw Common::Exception("Not an ERF file");
-
-	if ((_version != kVersion1) && (_version != kVersion11) &&
-	    (_version != kVersion2) && (_version != kVersion22) &&
-	    (_version != kVersion3))
-		throw Common::Exception("Unsupported ERF file version %08X", _version);
-
-	if ((_version != kVersion1) && (_version != kVersion11) && !_utf16le)
-		throw Common::Exception("ERF file version 2.0+, but not UTF-16LE");
+	verifyVersion(_id, _version, _utf16le);
 
 	try {
 
-		ERFHeader erfHeader;
+		readERFHeader(erf, _header, _version);
 
-		readERFHeader(erf, erfHeader);
+		if (_header.flags & 0xF0)
+			throw Common::Exception("Unhandled ERF encryption");
 
 		try {
-			readDescription(erf, erfHeader);
 
-			if (!_noResources)
-				readResources(erf, erfHeader);
-		} catch (Common::Exception &e) {
-			delete[] erfHeader.stringTable;
+			readDescription(_description, erf, _header, _version);
+			readResources(erf, _header);
+
+		} catch (Common::Exception &UNUSED(e)) {
+			delete[] _header.stringTable;
 			throw;
 		}
 
-		delete[] erfHeader.stringTable;
+		delete[] _header.stringTable;
+		_header.stringTable = 0;
 
 		if (erf.err())
 			throw Common::Exception(Common::kReadError);
@@ -103,79 +113,80 @@ void ERFFile::load() {
 
 }
 
-void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header) {
-	uint32 resCount = 0;
+void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version) {
+	header.buildYear       = 0;
+	header.buildDay        = 0;
+	header.stringTableSize = 0;
+	header.stringTable     = 0;
 
-	if        ((_version == kVersion1) || (_version == kVersion11)) {
+	if        ((version == kVersion1) || (version == kVersion11)) {
 
 		header.langCount = erf.readUint32LE(); // Number of languages for the description
 		erf.skip(4);                           // Number of bytes in the description
-		resCount         = erf.readUint32LE(); // Number of resources in the ERF
+		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
 		header.offDescription = erf.readUint32LE();
 		header.offKeyList     = erf.readUint32LE();
 		header.offResList     = erf.readUint32LE();
 
-		erf.skip(4 + 4); // Build year and day
+		header.buildYear = erf.readUint32LE() + 1900;
+		header.buildDay  = erf.readUint32LE();
 
 		header.descriptionID = erf.readUint32LE();
 
 		erf.skip(116); // Reserved
 
-		_flags    = 0; // No flags in ERF V1.0 / V1.1
-		_moduleID = 0; // No module ID in ERF V1.0 / V1.1
+		header.flags    = 0; // No flags in ERF V1.0 / V1.1
+		header.moduleID = 0; // No module ID in ERF V1.0 / V1.1
 
-		header.stringTableSize = 0; // No string table in ERF V1.0 / V1.1
-		header.stringTable     = 0; // No string table in ERF V1.0 / V1.1
-
-	} else if (_version == kVersion2) {
+	} else if (version == kVersion2) {
 
 		header.langCount = 0;                  // No description in ERF V2.0
-		resCount         = erf.readUint32LE(); // Number of resources in the ERF
+		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
-		erf.skip(4 + 4); // Build year and day
+		header.buildYear = erf.readUint32LE() + 1900;
+		header.buildDay  = erf.readUint32LE();
+
 		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
 
 		header.descriptionID   = 0;    // No description in ERF V2.0
 		header.offDescription  = 0;    // No description in ERF V2.0
 		header.offKeyList      = 0;    // No separate key list in ERF V2.0
 		header.offResList      = 0x20; // Resource list always starts at 0x20 in ERF V2.0
-		header.stringTableSize = 0;    // No string table in ERF V2.0
-		header.stringTable     = 0;    // No string table in ERF V2.0
 
-		_flags    = 0; // No flags in ERF V2.0
-		_moduleID = 0; // No module ID in ERF V2.0
+		header.flags    = 0; // No flags in ERF V2.0
+		header.moduleID = 0; // No module ID in ERF V2.0
 
-	} else if (_version == kVersion22) {
+	} else if (version == kVersion22) {
 
 		header.langCount = 0;                  // No description in ERF V2.2
-		resCount         = erf.readUint32LE(); // Number of resources in the ERF
+		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
-		erf.skip(4 + 4); // Build year and day
+		header.buildYear = erf.readUint32LE() + 1900;
+		header.buildDay  = erf.readUint32LE();
+
 		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
 
-		_flags    = erf.readUint32LE();
-		_moduleID = erf.readUint32LE();
+		header.flags    = erf.readUint32LE();
+		header.moduleID = erf.readUint32LE();
 
-		_passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
+		header.passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
 
 		header.descriptionID   = 0;    // No description in ERF V2.2
 		header.offDescription  = 0;    // No description in ERF V2.2
 		header.offKeyList      = 0;    // No separate key list in ERF V2.2
 		header.offResList      = 0x38; // Resource list always starts at 0x38 in ERF V2.2
-		header.stringTableSize = 0;    // No string table in ERF V2.2
-		header.stringTable     = 0;    // No string table in ERF V2.2
 
-	} else if (_version == kVersion3) {
+	} else if (version == kVersion3) {
 
 		header.langCount = 0;                        // No description in ERF V3.0
 		header.stringTableSize = erf.readUint32LE();
-		resCount               = erf.readUint32LE(); // Number of resources in the ERF
+		header.resCount        = erf.readUint32LE(); // Number of resources in the ERF
 
-		_flags    = erf.readUint32LE();
-		_moduleID = erf.readUint32LE();
+		header.flags    = erf.readUint32LE();
+		header.moduleID = erf.readUint32LE();
 
-		_passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
+		header.passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
 
 		header.stringTable = new char[header.stringTableSize];
 		if (erf.read(header.stringTable, header.stringTableSize) != header.stringTableSize) {
@@ -189,23 +200,20 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header) 
 		header.offResList     = 0x30 + header.stringTableSize; // Resource list always starts after the string table in ERF V3.2
 
 	}
-
-	if (!_noResources) {
-		_resources.resize(resCount);
-		_iResources.resize(resCount);
-	}
 }
 
-void ERFFile::readDescription(Common::SeekableReadStream &erf, const ERFHeader &header) {
-	if (_version == kVersion1) {
-		erf.seek(header.offDescription);
+void ERFFile::readDescription(LocString &description, Common::SeekableReadStream &erf,
+                              const ERFHeader &header, uint32 version) {
+	if (version != kVersion1)
+		return;
 
-		_description.readLocString(erf, header.descriptionID, header.langCount);
-	}
+	erf.seek(header.offDescription);
+	description.readLocString(erf, header.descriptionID, header.langCount);
 }
 
 void ERFFile::readResources(Common::SeekableReadStream &erf, const ERFHeader &header) {
-	assert(!_noResources);
+	_resources.resize(header.resCount);
+	_iResources.resize(header.resCount);
 
 	if        (_version == kVersion1) {
 
@@ -345,6 +353,14 @@ void ERFFile::readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &he
 
 }
 
+uint32 ERFFile::getBuildYear() const {
+	return _header.buildYear;
+}
+
+uint32 ERFFile::getBuildDay() const {
+	return _header.buildDay;
+}
+
 const LocString &ERFFile::getDescription() const {
 	return _description;
 }
@@ -364,79 +380,91 @@ uint32 ERFFile::getResourceSize(uint32 index) const {
 	return getIResource(index).unpackedSize;
 }
 
-Common::SeekableReadStream *ERFFile::getResource(uint32 index) const {
+Common::SeekableReadStream *ERFFile::getResource(uint32 index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
-	if (res.unpackedSize == 0)
-		return new Common::MemoryReadStream(0, 0);
 
-	if (_flags & 0xF0)
-		throw Common::Exception("Unhandled ERF encryption");
+	if (tryNoCopy && (getCompressionType() == 0))
+		return new Common::SeekableSubReadStream(_erf, res.offset, res.offset + res.packedSize);
 
-	Common::File erf;
-	open(erf);
+	_erf->seek(res.offset);
 
-	erf.seek(res.offset);
-
-	byte *compressedData = new byte[res.packedSize];
-
-	if (erf.read(compressedData, res.packedSize) != res.packedSize) {
-		delete[] compressedData;
-		throw Common::Exception(Common::kReadError);
-	}
-
-	return decompress(compressedData, res.packedSize, res.unpackedSize);
+	return decompress(_erf->readStream(res.packedSize), res.unpackedSize);
 }
 
 uint32 ERFFile::getCompressionType() const {
-	return (_flags >> 29) & 0x7;
+	return (_header.flags >> 29) & 0x7;
 }
 
-Common::SeekableReadStream *ERFFile::decompress(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const {
+Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packedStream,
+                                                uint32 unpackedSize) const {
 	switch (getCompressionType()) {
 	case 0:
 		// No compression
-		return new Common::MemoryReadStream(compressedData, packedSize, true);
+		return packedStream;
 	case 1:
 		// Bioware Zlib
-		return decompressBiowareZlib(compressedData, packedSize, unpackedSize);
+		return decompressBiowareZlib(packedStream, unpackedSize);
 	case 2:
 	case 3:
 		// Unknown
-		delete[] compressedData;
+		delete packedStream;
 		throw Common::Exception("Unknown ERF compression %d", getCompressionType());
 	case 7:
 		// Headerless Zlib
-		return decompressHeaderlessZlib(compressedData, packedSize, unpackedSize);
+		return decompressHeaderlessZlib(packedStream, unpackedSize);
 	default:
 		// Invalid
-		delete[] compressedData;
+		delete packedStream;
 		throw Common::Exception("Invalid ERF compression %d", getCompressionType());
 	}
 }
 
-Common::SeekableReadStream *ERFFile::decompressBiowareZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const {
+Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStream *packedStream,
+                                                           uint32 unpackedSize) const {
+
+	// This ugly const cast is necessary because the zlib API wants a non-const
+	// next_in pointer by default. Unless we define ZLIB_CONST, but that only
+	// appeared in zlib 1.2.5.3. Not really worth bumping our required zlib
+	// version for, IMHO.
+	byte *compressedData = const_cast<byte *>(packedStream->getData());
+	uint32 packedSize = packedStream->size();
+
+	Common::SeekableReadStream *stream = 0;
 	try {
-		Common::SeekableReadStream *stream = decompressZlib(compressedData + 1, packedSize - 1, unpackedSize, *compressedData >> 4);
-		delete[] compressedData;
-		return stream;
-	} catch (Common::Exception &e) {
-		delete[] compressedData;
+		stream = decompressZlib(compressedData + 1, packedSize - 1, unpackedSize, *compressedData >> 4);
+	} catch (...) {
+		delete packedStream;
 		throw;
 	}
+
+	delete packedStream;
+	return stream;
 }
 
-Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize) const {
+Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
+                                                              uint32 unpackedSize) const {
+
+	// This ugly const cast is necessary because the zlib API wants a non-const
+	// next_in pointer by default. Unless we define ZLIB_CONST, but that only
+	// appeared in zlib 1.2.5.3. Not really worth bumping our required zlib
+	// version for, IMHO.
+	byte *compressedData = const_cast<byte *>(packedStream->getData());
+	uint32 packedSize = packedStream->size();
+
+	Common::SeekableReadStream *stream = 0;
 	try {
-		Common::SeekableReadStream *stream = decompressZlib(compressedData, packedSize, unpackedSize, MAX_WBITS);
-		delete[] compressedData;
-		return stream;
-	} catch (Common::Exception &e) {
-		delete[] compressedData;
+		stream = decompressZlib(compressedData, packedSize, unpackedSize, MAX_WBITS);
+	} catch (...) {
+		delete packedStream;
 		throw;
 	}
+
+	delete packedStream;
+	return stream;
 }
 
-Common::SeekableReadStream *ERFFile::decompressZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize, int windowBits) const {
+Common::SeekableReadStream *ERFFile::decompressZlib(byte *compressedData, uint32 packedSize,
+                                                    uint32 unpackedSize, int windowBits) const {
 	// Allocate the decompressed data
 	byte *decompressedData = new byte[unpackedSize];
 
@@ -471,14 +499,38 @@ Common::SeekableReadStream *ERFFile::decompressZlib(byte *compressedData, uint32
 	return new Common::MemoryReadStream(decompressedData, unpackedSize, true);
 }
 
-void ERFFile::open(Common::File &file) const {
-	if (!file.open(_fileName))
-		throw Common::Exception(Common::kOpenError);
-}
-
 Common::HashAlgo ERFFile::getNameHashAlgo() const {
 	// Only V3 uses hashing
 	return (_version == kVersion3) ? Common::kHashFNV64 : Common::kHashNone;
+}
+
+LocString ERFFile::getDescription(Common::SeekableReadStream &erf) {
+	uint32 id, version;
+	bool ut16le;
+
+	readHeader(erf, id, version, ut16le);
+	verifyVersion(id, version, ut16le);
+
+	ERFHeader header;
+	LocString description;
+
+	try {
+		readERFHeader(erf, header, version);
+		readDescription(description, erf, header, version);
+	} catch (...) {
+		delete[] header.stringTable;
+		throw;
+	}
+
+	delete[] header.stringTable;
+
+	return description;
+}
+
+LocString ERFFile::getDescription(const Common::UString &fileName) {
+	Common::File erf(fileName);
+
+	return getDescription(erf);
 }
 
 } // End of namespace Aurora

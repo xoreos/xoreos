@@ -45,6 +45,8 @@ CharGenChoices::CharGenChoices() {
 
 	_abilities.assign(6, 8);
 	_racialAbilities.assign(6, 0);
+
+	_package = 10000;
 }
 
 CharGenChoices::~CharGenChoices() {
@@ -125,6 +127,10 @@ void CharGenChoices::setCharAbilities(std::vector< uint32 > abilities,
 	_racialAbilities = racialAbilities;
 }
 
+void CharGenChoices::setCharPackage(uint32 package) {
+	_package = package;
+}
+
 bool CharGenChoices::hasFeat(uint32 featId) const {
 	for (std::vector<uint32>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
 		if (*f == featId)
@@ -161,6 +167,10 @@ bool CharGenChoices::getAlign(uint32& goodness, uint32& loyalty) const {
 
 uint32 CharGenChoices::getAbility(uint32 ability) const {
 	return _abilities[ability];
+}
+
+uint32 CharGenChoices::getPackage() const {
+	return _package;
 }
 
 } // End of namespace NWN

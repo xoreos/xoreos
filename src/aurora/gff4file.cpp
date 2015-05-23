@@ -22,9 +22,14 @@
  *  Handling version V4.0/V4.1 of BioWare's GFFs (generic file format).
  */
 
+/* See the GFF description on the Dragon Age toolset wiki
+ * (<http://social.bioware.com/wiki/datoolset/index.php/GFF>).
+ */
+
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/gff4file.h"
 #include "src/aurora/util.h"
@@ -131,12 +136,13 @@ void GFF4File::loadHeader(uint32 type) {
 		throw Common::Exception("Not a GFF4 file");
 
 	if ((_version != kVersion40) && (_version != kVersion41))
-		throw Common::Exception("Unsupported GFF4 file version %08X", _version);
+		throw Common::Exception("Unsupported GFF4 file version %s", Common::debugTag(_version).c_str());
 
 	_header.read(*_stream, _version);
 
 	if (_header.type != type)
-		throw Common::Exception("GFF4 has invalid type (want 0x%08X, got 0x%08X)", type, _header.type);
+		throw Common::Exception("GFF4 has invalid type (want %s, got %s)",
+				Common::debugTag(type).c_str(), Common::debugTag(_header.type).c_str());
 }
 
 void GFF4File::loadStructs() {
@@ -256,11 +262,11 @@ GFF4Struct::Field::Field() : label(0), type(kIFieldTypeNone), offset(0xFFFFFFFF)
 }
 
 GFF4Struct::Field::Field(uint32 l, uint16 t, uint16 f, uint32 o) : label(l), offset(o) {
-	isList      = f & 0x8000;
-	isReference = f & 0x2000;
+	isList      = (f & 0x8000) != 0;
+	isReference = (f & 0x2000) != 0;
 
 	// Map the struct flag to the struct type and index, if necessary
-	const bool isStruct = f & 0x4000;
+	const bool isStruct = (f & 0x4000) != 0;
 	if (isStruct) {
 		type        = kIFieldTypeStruct;
 		structIndex = t;
@@ -682,10 +688,14 @@ double GFF4Struct::getDouble(Common::SeekableReadStream &data, IFieldType type) 
 }
 
 Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::Encoding encoding) const {
+	/* When the string is encoded in UTF-8, then length field specifies the length in bytes.
+	 * Otherwise, it's the length in characters. */
+	const uint32 lengthMult = encoding == Common::kEncodingUTF8 ? 1 : Common::getBytesPerCodepoint(encoding);
+
 	const uint32 offset = data.pos();
 
 	const uint32 length = data.readUint32LE();
-	const uint32 size   = length * Common::getBytesPerCodepoint(encoding);
+	const uint32 size   = length * lengthMult;
 
 	try {
 		return readStringFixed(data, encoding, size);

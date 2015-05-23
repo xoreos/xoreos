@@ -37,6 +37,8 @@
 #include "src/aurora/talkman.h"
 #include "src/aurora/2dareg.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/textureman.h"
@@ -266,35 +268,17 @@ void EngineManager::run(GameInstance &game) const {
 	GameInstanceEngine *gameEngine = dynamic_cast<GameInstanceEngine *>(&game);
 	assert(gameEngine);
 
-	try {
-		gameEngine->run();
-		EventMan.requestQuit();
+	gameEngine->run();
 
-		// Clean up after the engine
-		cleanup(game);
+	GfxMan.lockFrame();
+	EventMan.requestQuit();
+	GfxMan.unlockFrame();
 
-		EventMan.doQuit();
-
-	} catch(...) {
-		EventMan.requestQuit();
-
-		// Clean up after the engine
-		cleanup(game);
-
-		EventMan.doQuit();
-
-		throw;
-	}
-
+	cleanup();
 }
 
-void EngineManager::cleanup(GameInstance &game) const {
-	GameInstanceEngine *gameEngine = dynamic_cast<GameInstanceEngine *>(&game);
-	assert(gameEngine);
-
+void EngineManager::cleanup() const {
 	try {
-		gameEngine->reset();
-
 		DebugMan.clearEngineChannels();
 
 		unregisterModelLoader();

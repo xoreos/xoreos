@@ -31,6 +31,9 @@ namespace Graphics {
 
 namespace Aurora {
 
+/** Identifier used for the monospaced system font. */
+extern const char *kSystemFontMono;
+
 /** The display type of a model. */
 enum ModelType {
 	kModelTypeObject   = kRenderableTypeObject,  ///< A real object in the game world.

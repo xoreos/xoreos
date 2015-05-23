@@ -39,6 +39,7 @@ public:
 	~CharSex();
 
 	void reset();
+	void hide();
 
 protected:
 	void callbackActive(Widget &widget);

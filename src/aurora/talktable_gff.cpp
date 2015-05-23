@@ -22,12 +22,15 @@
  *  Handling BioWare's GFF'd talk tables.
  */
 
+/* See the TLK description on the Dragon Age toolset wiki
+ * (<http://social.bioware.com/wiki/datoolset/index.php/TLK>).
+ */
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
 
 #include "src/aurora/talktable_gff.h"
-#include "src/aurora/talkman.h"
 #include "src/aurora/gff4file.h"
 
 static const uint32 kTLKID     = MKTAG('T', 'L', 'K', ' ');
@@ -180,7 +183,7 @@ void TalkTable_GFF::readString05(Common::SeekableReadStream *huffTree,
 	do {
 		int32 e = (huffTree->size() / 8) - 1;
 
-		while (e > 0) {
+		while (e >= 0) {
 			bitStream->seek(index * 4);
 			const uint32 offset = (bitStream->readUint32LE() >> shift) & 1;
 

@@ -55,7 +55,7 @@ public:
 	typedef std::vector<Resource> ResourceList;
 	typedef std::vector<Common::UString> BIFList;
 
-	KEYFile(const Common::UString &fileName);
+	KEYFile(Common::SeekableReadStream &key);
 	~KEYFile();
 
 	/** Return a list of all managed bifs. */

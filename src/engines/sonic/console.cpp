@@ -22,6 +22,8 @@
  *  Sonic (debug) console.
  */
 
+#include "src/graphics/aurora/types.h"
+
 #include "src/engines/sonic/console.h"
 #include "src/engines/sonic/sonic.h"
 
@@ -30,7 +32,8 @@ namespace Engines {
 namespace Sonic {
 
 Console::Console(SonicEngine &engine) :
-	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13) {
+	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
+	_engine(&engine) {
 
 }
 

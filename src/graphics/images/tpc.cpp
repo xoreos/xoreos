@@ -37,19 +37,11 @@ static const byte kEncodingSwizzledBGRA = 0x0C;
 
 namespace Graphics {
 
-TPC::TPC(Common::SeekableReadStream &tpc) : _txiData(0), _txiDataSize(0) {
+TPC::TPC(Common::SeekableReadStream &tpc) {
 	load(tpc);
 }
 
 TPC::~TPC() {
-	clear();
-}
-
-void TPC::clear() {
-	delete _txiData;
-	_txiData = 0;
-
-	ImageDecoder::clear();
 }
 
 void TPC::load(Common::SeekableReadStream &tpc) {
@@ -57,9 +49,9 @@ void TPC::load(Common::SeekableReadStream &tpc) {
 
 		bool needDeSwizzle = false;
 
-		readHeader (tpc, needDeSwizzle);
-		readData   (tpc, needDeSwizzle);
-		readTXIData(tpc);
+		readHeader(tpc, needDeSwizzle);
+		readData  (tpc, needDeSwizzle);
+		readTXI   (tpc);
 
 		if (tpc.err())
 			throw Common::Exception(Common::kReadError);
@@ -70,13 +62,6 @@ void TPC::load(Common::SeekableReadStream &tpc) {
 		e.add("Failed reading TPC file");
 		throw;
 	}
-}
-
-Common::SeekableReadStream *TPC::getTXI() const {
-	if (!_txiData || (_txiDataSize == 0))
-		return 0;
-
-	return new Common::MemoryReadStream(_txiData, _txiDataSize);
 }
 
 void TPC::readHeader(Common::SeekableReadStream &tpc, bool &needDeSwizzle) {
@@ -235,17 +220,19 @@ void TPC::readData(Common::SeekableReadStream &tpc, bool needDeSwizzle) {
 	}
 }
 
-void TPC::readTXIData(Common::SeekableReadStream &tpc) {
-	// TXI data for the rest of the TPC
-	_txiDataSize = tpc.size() - tpc.pos();
-
-	if (_txiDataSize == 0)
+void TPC::readTXI(Common::SeekableReadStream &tpc) {
+	const uint32 txiDataSize = tpc.size() - tpc.pos();
+	if (txiDataSize == 0)
 		return;
 
-	_txiData = new byte[_txiDataSize];
+	Common::SeekableReadStream *txiData = tpc.readStream(txiDataSize);
 
-	if (tpc.read(_txiData, _txiDataSize) != _txiDataSize)
-		throw Common::Exception(Common::kReadError);
+	try {
+		_txi.load(*txiData);
+	} catch (...) {
+	}
+
+	delete txiData;
 }
 
 } // End of namespace Graphics

@@ -35,7 +35,6 @@
 
 namespace Common {
 	class SeekableReadStream;
-	class File;
 }
 
 namespace Aurora {
@@ -45,11 +44,8 @@ class KEYFile;
 /** Class to hold resource data information of a bif file. */
 class BIFFile : public Archive, public AuroraBase {
 public:
-	BIFFile(const Common::UString &fileName);
+	BIFFile(Common::SeekableReadStream *bif);
 	~BIFFile();
-
-	/** Clear the resource list. */
-	void clear();
 
 	/** Return the list of resources. */
 	const ResourceList &getResources() const;
@@ -58,7 +54,7 @@ public:
 	uint32 getResourceSize(uint32 index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index) const;
+	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
 	/** Merge information from the KEY into the BIF. */
 	void mergeKEY(const KEYFile &key, uint32 bifIndex);
@@ -74,18 +70,15 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
+	Common::SeekableReadStream *_bif;
+
 	/** External list of resource names and types. */
 	ResourceList _resources;
 
 	/** Internal list of resource offsets and sizes. */
 	IResourceList _iResources;
 
-	/** The name of the BIF file. */
-	Common::UString _fileName;
-
-	void open(Common::File &file) const;
-
-	void load();
+	void load(Common::SeekableReadStream &bif);
 	void readVarResTable(Common::SeekableReadStream &bif, uint32 offset);
 
 	const IResource &getIResource(uint32 index) const;

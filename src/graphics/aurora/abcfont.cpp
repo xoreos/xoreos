@@ -28,6 +28,7 @@
 
 #include "src/aurora/resman.h"
 
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 #include "src/graphics/aurora/abcfont.h"
 

@@ -1,0 +1,151 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file
+ *  Loading Nitro CoLouR palette files.
+ */
+
+/* Based heavily on the NCLR reader found in the NDS file viewer
+ * and editor Tinke by pleoNeX (<https://github.com/pleonex/tinke>),
+ * which is licensed under the terms of the GPLv3.
+ *
+ * Tinke in turn is based on the NCLR documentation by lowlines
+ * (<http://llref.emutalk.net/docs/?file=xml/nclr.xml>).
+ */
+
+#include <cstring>
+
+#include "src/common/util.h"
+#include "src/common/strutil.h"
+#include "src/common/stream.h"
+#include "src/common/error.h"
+
+#include "src/graphics/images/nclr.h"
+
+static const uint32 kNCLRID = MKTAG('N', 'C', 'L', 'R');
+static const uint32 kPLTTID = MKTAG('P', 'L', 'T', 'T');
+
+namespace Graphics {
+
+const byte *NCLR::load(Common::SeekableReadStream &nclr) {
+	Common::SeekableSubReadStreamEndian *nclrEndian = 0;
+
+	const byte *palette = 0;
+	try {
+		nclrEndian = open(nclr);
+		palette = loadNCLR(*nclrEndian);
+
+	} catch (Common::Exception &e) {
+		delete nclrEndian;
+
+		e.add("Failed reading NCLR file");
+		throw;
+	}
+
+	delete nclrEndian;
+	return palette;
+}
+
+const byte *NCLR::loadNCLR(Common::SeekableSubReadStreamEndian &nclr) {
+	readHeader(nclr);
+
+	return readPalette(nclr);
+}
+
+void NCLR::readHeader(Common::SeekableSubReadStreamEndian &nclr) {
+	const uint32 tag = nclr.readUint32();
+	if (tag != kNCLRID)
+		throw Common::Exception("Invalid NCLR file (%s)", Common::debugTag(tag).c_str());
+
+	const uint16 bom = nclr.readUint16();
+	if (bom != 0xFEFF)
+		throw Common::Exception("Invalid BOM: %u", bom);
+
+	const uint8 versionMinor = nclr.readByte();
+	const uint8 versionMajor = nclr.readByte();
+	if ((versionMajor != 1) || (versionMinor != 0))
+		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
+
+	const uint32 fileSize = nclr.readUint32();
+	if (fileSize > (uint32)nclr.size())
+		throw Common::Exception("Size too large (%u > %u)", fileSize, nclr.size());
+
+	const uint16 headerSize = nclr.readUint16();
+	if (headerSize != 16)
+		throw Common::Exception("Invalid header size (%u)", headerSize);
+
+	const uint16 sectionCount = nclr.readUint16();
+	if ((sectionCount != 1) && (sectionCount != 2))
+		throw Common::Exception("Invalid number of sections (%u)", sectionCount);
+}
+
+const byte *NCLR::readPalette(Common::SeekableSubReadStreamEndian &nclr) {
+	const uint32 tag = nclr.readUint32();
+	if (tag != kPLTTID)
+		throw Common::Exception("Invalid PLTT section (%s)", Common::debugTag(tag).c_str());
+
+	const uint32 size  = nclr.readUint32();
+
+	const uint16 depthValue = nclr.readUint16();
+	if ((depthValue != 3) && (depthValue != 4))
+		throw Common::Exception("Invalid palette depth %u", depthValue);
+
+	const uint8 depth = (depthValue == 3) ? 4 : 8;
+
+	nclr.skip(6); // Unknown
+
+	// Palette size. If not given or too big, calculate it from the section size
+	uint32 palSize = nclr.readUint32();
+	if ((palSize == 0) || (palSize > size))
+		palSize = size - 24;
+
+	const uint32 startOffset = nclr.readUint32() + 24;
+
+	// Clamp the number of colors to the actual palette size
+	const uint32 colorCount = MIN<uint32>(1 << depth, palSize / 2) * 3;
+
+	nclr.seek(startOffset);
+
+	byte *palette = new byte[colorCount * 3];
+
+	try {
+
+		for (uint32 i = 0; i < colorCount; i += 3) {
+			const uint16 color = nclr.readUint16();
+
+			palette[i + 0] = ((color >> 10) & 0x1F) << 3;
+			palette[i + 1] = ((color >>  5) & 0x1F) << 3;
+			palette[i + 2] = ( color        & 0x1F) << 3;
+		}
+
+	} catch (...) {
+		delete[] palette;
+		throw;
+	}
+
+	// Make the rest of the palette pink, for high debug visibility
+	static const byte kPink[3] = { 0xFF, 0x00, 0xFF };
+	for (uint32 i = colorCount; i < 768; i += sizeof(kPink))
+		memcpy(palette + i, kPink, sizeof(kPink));
+
+	return palette;
+}
+
+} // End of namespace Graphics

@@ -22,7 +22,12 @@
  *  Handling BioWare's KEYs (resource index files).
  */
 
+/* See BioWare's own specs released for Neverwinter Nights modding
+ * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
+ */
+
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/encoding.h"
@@ -36,11 +41,7 @@ static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 
-KEYFile::KEYFile(const Common::UString &fileName) {
-	Common::File key;
-	if (!key.open(fileName))
-		throw Common::Exception(Common::kOpenError);
-
+KEYFile::KEYFile(Common::SeekableReadStream &key) {
 	load(key);
 }
 
@@ -51,10 +52,10 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 	readHeader(key);
 
 	if (_id != kKEYID)
-		throw Common::Exception("Not a KEY file");
+		throw Common::Exception("Not a KEY file (%s)", Common::debugTag(_id).c_str());
 
 	if ((_version != kVersion1) && (_version != kVersion11))
-		throw Common::Exception("Unsupported KEY file version %08X", _version);
+		throw Common::Exception("Unsupported KEY file version %s", Common::debugTag(_version).c_str());
 
 	uint32 bifCount = key.readUint32LE();
 	uint32 resCount = key.readUint32LE();
@@ -113,7 +114,9 @@ void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 
 		key.seekTo(curPos);
 
-		AuroraFile::cleanupPath(*bif);
+		bif->replaceAll('\\', '/');
+		if (bif->beginsWith("/"))
+			bif->erase(bif->begin());
 	}
 }
 

@@ -29,7 +29,7 @@
 
 #include "src/graphics/cursor.h"
 
-#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texturehandle.h"
 
 namespace Graphics {
 

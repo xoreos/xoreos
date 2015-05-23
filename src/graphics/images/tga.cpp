@@ -99,6 +99,13 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 			_format    = kPixelFormatBGRA;
 			_formatRaw = kPixelFormatRGBA8;
 			_dataType  = kPixelDataType8;
+		} else if (pixelDepth == 8) {
+			imageType = kImageTypeBW;
+
+			_hasAlpha  = false;
+			_format    = kPixelFormatBGRA;
+			_formatRaw = kPixelFormatRGBA8;
+			_dataType  = kPixelDataType8;
 		} else
 			throw Common::Exception("Unsupported pixel depth: %d, %d", imageType, pixelDepth);
 	} else if (imageType == kImageTypeBW) {
@@ -130,17 +137,19 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 
 		if (imageType == kImageTypeTrueColor) {
 			if (pixelDepth == 16) {
-				// Convert from 16bpp to 32bpp
-				// 16bpp TGA is ARGB1555
+				// Convert from 16bpp to 32bpp.
+				// 16bpp TGA is usually ARGB1555, but Sonic's are AGBR1555.
+				// Hopefully Sonic is the only game that needs 16bpp TGAs.
+
 				uint16 count = _mipMaps[0]->width * _mipMaps[0]->height;
 				byte *dst = _mipMaps[0]->data;
 
 				while (count--) {
 					uint16 pixel = tga.readUint16LE();
 
-					*dst++ = (pixel & 0x1F) << 3;
-					*dst++ = (pixel & 0x3E0) >> 2;
 					*dst++ = (pixel & 0x7C00) >> 7;
+					*dst++ = (pixel & 0x03E0) >> 2;
+					*dst++ = (pixel & 0x001F) << 3;
 					*dst++ = (pixel & 0x8000) ? 0xFF : 0x00;
 				}
 			} else {
@@ -182,7 +191,8 @@ void TGA::readRLE(Common::SeekableReadStream &tga, byte pixelDepth) {
 
 	while (count > 0) {
 		byte code = tga.readByte();
-		byte length = (code & 0x7F) + 1;
+		byte length = MIN<uint32>((code & 0x7F) + 1, count);
+
 		count -= length;
 
 		if (code & 0x80) {

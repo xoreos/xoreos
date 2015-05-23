@@ -22,11 +22,11 @@
  *  Loading MDL files found in Neverwinter Nights.
  */
 
-#ifndef _MSC_VER
-// Disable the "unused variable" warnings while most stuff is still stubbed
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-#endif
+/* Based on the binary MDL specs by Torlack.
+ *
+ * Torlack's own site is down, but our docs repository hosts a
+ * a mirror (<https://github.com/xoreos/xoreos-docs>).
+ */
 
 #include <boost/unordered_set.hpp>
 
@@ -46,6 +46,9 @@
 #include "src/graphics/aurora/model_nwn.h"
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/animnode.h"
+
+// Disable the "unused variable" warnings while most stuff is still stubbed
+IGNORE_UNUSED_VARIABLES
 
 using Common::kDebugGraphics;
 

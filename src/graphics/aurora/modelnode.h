@@ -37,7 +37,7 @@
 #include "src/graphics/vertexbuffer.h"
 
 #include "src/graphics/aurora/types.h"
-#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texturehandle.h"
 
 namespace Graphics {
 
@@ -90,6 +90,9 @@ public:
 	/** Get the position of the node after translate/rotate. */
 	void getAbsolutePosition(float &x, float &y, float &z) const;
 
+	/** Get the position of the node after translate/rotate. */
+	Common::TransformationMatrix getAsolutePosition() const;
+
 	/** Set the position of the node. */
 	void setPosition(float x, float y, float z);
 	/** Set the rotation of the node. */
@@ -122,6 +125,7 @@ protected:
 	float _position   [3]; ///< Position of the node.
 	float _rotation   [3]; ///< Node rotation.
 	float _orientation[4]; ///< Orientation of the node.
+	float _scale      [3]; ///< Scale of the node.
 
 	std::vector<PositionKeyFrame> _positionFrames; ///< Keyframes for position animation
 	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation
@@ -153,8 +157,6 @@ protected:
 
 	int _tilefade;
 
-	float _scale;
-
 	bool _render; ///< Render the node?
 	bool _shadow; ///< Does the node have a shadow?
 
@@ -176,7 +178,11 @@ protected:
 	void createBound();
 	void createCenter();
 
+	void createAbsoluteBound();
+	void createAbsoluteBound(Common::BoundingBox parentPosition);
+
 	void render(RenderPass pass);
+	void drawSkeleton(const Common::TransformationMatrix &parent, bool showInvisible);
 
 	void lockFrame();
 	void unlockFrame();
@@ -187,7 +193,6 @@ protected:
 
 private:
 	const Common::BoundingBox &getAbsoluteBound() const;
-	void createAbsoluteBound(Common::BoundingBox parentPosition);
 
 	void orderChildren();
 

@@ -31,7 +31,7 @@
 
 #include "src/aurora/resman.h"
 
-#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/types.h"
 
 #include "src/engines/nwn2/console.h"
 #include "src/engines/nwn2/nwn2.h"
@@ -140,7 +140,7 @@ void Console::updateModules() {
 	_modules.clear();
 	setArguments("loadmodule", _modules);
 
-	Common::UString baseDir   = ResMan.getDataBaseDir();
+	Common::UString baseDir   = ResMan.getDataBase();
 	Common::UString moduleDir = Common::FilePath::findSubDirectory(baseDir, "modules", true);
 	if (moduleDir.empty())
 		return;

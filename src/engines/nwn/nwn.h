@@ -171,6 +171,7 @@ private:
 	void initConfig();
 	void declareEncodings();
 	void initResources(LoadProgress &progress);
+	void declareBogusTextures();
 	void initCursors();
 	void initGameConfig();
 

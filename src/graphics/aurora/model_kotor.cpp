@@ -22,11 +22,9 @@
  *  Loading MDL files found in Star Wars: Knights of the Old Republic.
  */
 
-#ifndef _MSC_VER
-// Disable the "unused variable" warnings while most stuff is still stubbed
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-#endif
+/* Based on cchargin's KotOR model specs
+ * (<https://home.comcast.net/~cchargin/kotor/mdl_info.html>).
+ */
 
 #include "src/common/error.h"
 #include "src/common/maths.h"
@@ -37,6 +35,9 @@
 #include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/model_kotor.h"
+
+// Disable the "unused variable" warnings while most stuff is still stubbed
+IGNORE_UNUSED_VARIABLES
 
 static const int kNodeFlagHasHeader    = 0x0001;
 static const int kNodeFlagHasLight     = 0x0002;

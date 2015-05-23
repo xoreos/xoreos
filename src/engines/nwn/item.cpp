@@ -217,12 +217,12 @@ void Item::loadArmorParts(const Aurora::GFF3Struct &gff)
 			_armorParts[i].id = 0;
 }
 
-bool Item::isArmor() {
+bool Item::isArmor() const {
 	// TODO: This should really be based on the baseitem.2da
 	return _armorParts[kArmorPartTorso].id > 0;
 }
 
-int Item::getArmorPart(int index) {
+int Item::getArmorPart(int index) const {
 	return _armorParts[index].id;
 }
 

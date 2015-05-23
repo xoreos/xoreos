@@ -123,6 +123,7 @@ public:
 	iterator end() const;
 
 	iterator findFirst(uint32 c) const;
+	iterator findLast(uint32 c) const;
 
 	bool beginsWith(const UString &with) const;
 	bool endsWith(const UString &with) const;

@@ -89,14 +89,10 @@ void CharAlignment::show() {
 	setRestrict();
 }
 
-void CharAlignment::callbackActive(Widget& widget) {
-	if (widget.getTag() == "OkButton") {
-		_choices->setCharAlign(_goodness, _loyalty);
-		_returnCode = 2;
-		return;
-	}
+void CharAlignment::hide() {
+	Engines::GUI::hide();
 
-	if (widget.getTag() == "CancelButton") {
+	if (_returnCode == 1) {
 		// If alignment has been previously select, set it back.
 		if (_choices->getAlign(_goodness, _loyalty)) {
 			float point[3] = { 0, 100, 50 };
@@ -114,7 +110,17 @@ void CharAlignment::callbackActive(Widget& widget) {
 		} else {
 			reset();
 		}
+	}
+}
 
+void CharAlignment::callbackActive(Widget& widget) {
+	if (widget.getTag() == "OkButton") {
+		_choices->setCharAlign(_goodness, _loyalty);
+		_returnCode = 2;
+		return;
+	}
+
+	if (widget.getTag() == "CancelButton") {
 		_returnCode = 1;
 		return;
 	}
@@ -133,7 +139,7 @@ void CharAlignment::setRestrict() {
 	const Aurora::TwoDARow &row = twodaClasses.getRow(_choices->getClass());
 
 	uint alignRestrict = row.getInt("AlignRestrict");
-	bool invertRestrict = row.getInt("InvertRestrict");
+	bool invertRestrict = row.getInt("InvertRestrict") != 0;
 
 	// Build restriction axis.
 	uint axisRestrict[5] = { 0x01, 0x02, 0x04, 0x08, 0x10 };

@@ -25,93 +25,19 @@
 #ifndef GRAPHICS_AURORA_TEXTUREMAN_H
 #define GRAPHICS_AURORA_TEXTUREMAN_H
 
-#include <map>
+#include <set>
 #include <list>
-
-#include "src/graphics/types.h"
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
 #include "src/common/ustring.h"
 
+#include "src/graphics/aurora/texturehandle.h"
+
 namespace Graphics {
 
 namespace Aurora {
-
-class Texture;
-class PLTFile;
-
-/** A managed texture, storing how often it's referenced. */
-struct ManagedTexture {
-	Texture *texture;
-	uint32 referenceCount;
-
-	bool reloadable;
-
-	ManagedTexture(const Common::UString &name);
-	ManagedTexture(const Common::UString &name, Texture *t);
-	~ManagedTexture();
-};
-
-/** A managed PLT, storing how often it's referenced. */
-struct ManagedPLT {
-	PLTFile *plt;
-	uint32 referenceCount;
-
-	ManagedPLT(const Common::UString &name);
-	~ManagedPLT();
-};
-
-typedef std::map<Common::UString, ManagedTexture *> TextureMap;
-typedef std::list<ManagedPLT *> PLTList;
-
-/** A handle to a texture. */
-class TextureHandle {
-public:
-	TextureHandle();
-	TextureHandle(const TextureHandle &right);
-	~TextureHandle();
-
-	TextureHandle &operator=(const TextureHandle &right);
-
-	bool empty() const;
-
-	void clear();
-
-	Texture &getTexture() const;
-
-private:
-	bool _empty;
-	TextureMap::iterator _it;
-
-	TextureHandle(TextureMap::iterator &i);
-
-	friend class TextureManager;
-};
-
-class PLTHandle {
-public:
-	PLTHandle();
-	PLTHandle(const PLTHandle &right);
-	~PLTHandle();
-
-	PLTHandle &operator=(const PLTHandle &right);
-
-	bool empty() const;
-
-	void clear();
-
-	PLTFile &getPLT() const;
-
-private:
-	bool _empty;
-	PLTList::iterator _it;
-
-	PLTHandle(PLTList::iterator &i);
-
-	friend class TextureManager;
-};
 
 /** The global Aurora texture manager. */
 class TextureManager : public Common::Singleton<TextureManager> {
@@ -119,45 +45,60 @@ public:
 	TextureManager();
 	~TextureManager();
 
+	// .--- Texture management
+	/** Remove and delete all managed textures. */
 	void clear();
 
+	/** Add the name of a texture that doesn't really exist.
+	 *
+	 *  An empty TextureHandle is returned when this texture is requested.
+	 */
+	void addBogusTexture(const Common::UString &name);
 
+	/** Does this named managed texture exist? */
+	bool hasTexture(const Common::UString &name);
+
+	/** Add this texture to the TextureManager. If name is empty, generate a random one. */
 	TextureHandle add(Texture *texture, Common::UString name = "");
-	TextureHandle get(const Common::UString &name);
+	/** Retrieve this named texture, loading it if it's not yet managed. */
+	TextureHandle get(Common::UString name);
+	/** Retrieve this named texture, returning an empty handle if it's not managed. */
+	TextureHandle getIfExist(const Common::UString &name);
 
+	/** Start recording all names of newly created textures. */
+	void startRecordNewTextures();
+	/** Stop the recording of texture names, and return a list of previously recorded names. */
+	void stopRecordNewTextures(std::list<Common::UString> &newTextures);
 
+	/** Reload and rebuild all managed textures, if possible. */
 	void reloadAll();
+	// '---
 
-
-	void getNewPLTs(std::list<PLTHandle> &plts);
-	void clearNewPLTs();
-
-
-	void reset();
-	void set();
+	// .--- Texture rendering
+	/** Bind this texture to the current texture unit. */
 	void set(const TextureHandle &handle);
+	/** Reset the current texture unit to an empty texture. */
+	void set();
+	/** Completely reset the texture rendering. */
+	void reset();
 
-
+	/** Set this texture unit as the current one. */
 	void activeTexture(uint32 n);
-
+	// '---
 
 private:
 	TextureMap _textures;
-	PLTList    _plts;
 
-	std::list<PLTHandle> _newPLTs;
+	std::set<Common::UString> _bogusTextures;
 
 	Common::Mutex _mutex;
 
-	void release(TextureMap::iterator &i);
-	void release(PLTList::iterator &i);
+	bool _recordNewTextures;
+	std::list<Common::UString> _newTextureNames;
 
 	void assign(TextureHandle &texture, const TextureHandle &from);
-	void assign(PLTHandle &plt, const PLTHandle &from);
 	void release(TextureHandle &texture);
-	void release(PLTHandle &plt);
 
-	friend class PLTHandle;
 	friend class TextureHandle;
 };
 

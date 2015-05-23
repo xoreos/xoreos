@@ -24,14 +24,16 @@
 
 #include "src/common/util.h"
 #include "src/common/maths.h"
+#include "src/common/error.h"
 
 #include "src/graphics/camera.h"
 
 #include "src/graphics/images/txi.h"
 
 #include "src/graphics/aurora/modelnode.h"
-#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
+#include "src/graphics/aurora/model.h"
 
 namespace Graphics {
 
@@ -115,6 +117,10 @@ ModelNode::ModelNode(Model &model) :
 	_orientation[1] = 0.0;
 	_orientation[2] = 0.0;
 	_orientation[3] = 0.0;
+
+	_scale[0] = 1.0;
+	_scale[1] = 1.0;
+	_scale[2] = 1.0;
 }
 
 ModelNode::~ModelNode() {
@@ -186,6 +192,13 @@ void ModelNode::getAbsolutePosition(float &x, float &y, float &z) const {
 	x = _absolutePosition.getX() * _model->_modelScale[0];
 	y = _absolutePosition.getY() * _model->_modelScale[1];
 	z = _absolutePosition.getZ() * _model->_modelScale[2];
+}
+
+Common::TransformationMatrix ModelNode::getAsolutePosition() const {
+	Common::TransformationMatrix absolutePosition = _absolutePosition;
+	absolutePosition.scale(_model->_modelScale[0], _model->_modelScale[1], _model->_modelScale[2]);
+
+	return absolutePosition;
 }
 
 void ModelNode::setPosition(float x, float y, float z) {
@@ -352,6 +365,9 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 
 			if (!textures[t].empty() && (textures[t] != "NULL")) {
 				_textures[t] = TextureMan.get(textures[t]);
+				if (_textures[t].empty())
+					continue;
+
 				hasTexture = true;
 
 				if (!_textures[t].getTexture().hasAlpha())
@@ -363,8 +379,8 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 					isDecal = false;
 			}
 
-		} catch (...) {
-			warning("Failed loading texture \"%s\"", textures[t].c_str());
+		} catch (Common::Exception &e) {
+			Common::printException(e, "WARNING: ");
 		}
 
 	}
@@ -412,10 +428,17 @@ const Common::BoundingBox &ModelNode::getAbsoluteBound() const {
 	return _absoluteBoundBox;
 }
 
+void ModelNode::createAbsoluteBound() {
+	Common::BoundingBox bound;
+
+	createAbsoluteBound(bound);
+}
+
 void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 	// Transform by our position/orientation/rotation
 	parentPosition.translate(_position[0], _position[1], _position[2]);
 	parentPosition.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+	parentPosition.scale(_scale[0], _scale[1], _scale[2]);
 
 	parentPosition.rotate(_rotation[0], 1.0, 0.0, 0.0);
 	parentPosition.rotate(_rotation[1], 0.0, 1.0, 0.0);
@@ -481,6 +504,7 @@ void ModelNode::render(RenderPass pass) {
 
 	glTranslatef(_position[0], _position[1], _position[2]);
 	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+	glScalef(_scale[0], _scale[1], _scale[2]);
 
 	glRotatef(_rotation[0], 1.0, 0.0, 0.0);
 	glRotatef(_rotation[1], 0.0, 1.0, 0.0);
@@ -504,6 +528,38 @@ void ModelNode::render(RenderPass pass) {
 		(*c)->render(pass);
 		glPopMatrix();
 	}
+}
+
+void ModelNode::drawSkeleton(const Common::TransformationMatrix &parent, bool showInvisible) {
+	Common::TransformationMatrix mine = parent;
+
+	mine.translate(_position[0], _position[1], _position[2]);
+	mine.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+	mine.scale(_scale[0], _scale[1], _scale[2]);
+
+	if (_render || showInvisible) {
+		glPointSize(5);
+
+		if (_render)
+			glColor4f(0.0, 1.0, 0.0, 1.0);
+		else
+			glColor4f(1.0, 0.0, 0.0, 1.0);
+
+		glBegin(GL_POINTS);
+			glVertex3f(mine.getX(), mine.getY(), mine.getZ());
+		glEnd();
+
+		glLineWidth(2);
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+
+		glBegin(GL_LINES);
+			glVertex3f(parent.getX(), parent.getY(), parent.getZ());
+			glVertex3f(mine.getX(), mine.getY(), mine.getZ());
+		glEnd();
+	}
+
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c)
+		(*c)->drawSkeleton(mine, showInvisible);
 }
 
 void ModelNode::lockFrame() {

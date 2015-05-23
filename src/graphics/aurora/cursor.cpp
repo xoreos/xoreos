@@ -36,8 +36,9 @@
 #include "src/graphics/images/winiconimage.h"
 
 #include "src/graphics/aurora/cursor.h"
-#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
+#include "src/graphics/aurora/cursorman.h"
 
 namespace Graphics {
 
@@ -114,25 +115,10 @@ void Cursor::load() {
 	_width  = image->getMipMap(0).width;
 	_height = image->getMipMap(0).height;
 
-	TXI txi;
-	txi.getFeatures().filter = false;
+	TXI *txi = new TXI();
+	txi->getFeatures().filter = false;
 
-	try {
-		Texture *texture = new Texture(image, &txi);
-
-		image = 0;
-
-		try {
-			_texture = TextureMan.add(texture, _name);
-		} catch(...) {
-			delete texture;
-			throw;
-		}
-
-	} catch (...) {
-		delete image;
-		throw;
-	}
+	_texture = TextureMan.add(Texture::create(image, type, txi), _name);
 
 	_hotspotX = CLIP(_hotspotX, 0, _width  - 1);
 	_hotspotY = CLIP(_hotspotY, 0, _height - 1);

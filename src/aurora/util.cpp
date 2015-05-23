@@ -184,6 +184,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeBIF,            ".bif"},
 	{kFileTypeKEY,            ".key"},
 
+	{kFileTypeEXE,            ".exe"},
 	{kFileTypeDBF,            ".dbf"},
 	{kFileTypeCDX,            ".cdx"},
 	{kFileTypeFPT,            ".fpt"},
@@ -219,26 +220,32 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeTRX,            ".trx"},
 
 	{kFileTypeNDS,            ".nds"},
-	{kFileTypePAL,            ".pal"},
+	{kFileTypeHERF,           ".herf"},
+	{kFileTypeDICT,           ".dict"},
+	{kFileTypeSMALL,          ".small"},
 	{kFileTypeCBGT,           ".cbgt"},
 	{kFileTypeCDPTH,          ".cdpth"},
-	{kFileTypeVX ,            ".vx" },
-	{kFileTypeHERF,           ".herf"},
-	{kFileTypeSADL,           ".sadl"},
-	{kFileTypeSDAT,           ".sdat"},
-	{kFileTypeSMALL,          ".small"},
-	{kFileTypeNSBCA,          ".nsbca"},
 	{kFileTypeEMIT,           ".emit"},
-	{kFileTypeSPL,            ".spl"},
+	{kFileTypeITM,            ".itm"},
+	{kFileTypeNANR,           ".nanr"},
 	{kFileTypeNBFP,           ".nbfp"},
 	{kFileTypeNBFS,           ".nbfs"},
-	{kFileTypeSMP,            ".smp"},
-	{kFileTypeITM,            ".itm"},
-	{kFileTypeNFTR,           ".nftr"},
-	{kFileTypeRAW,            ".raw"},
-	{kFileTypeNCLR,           ".nclr"},
+	{kFileTypeNCER,           ".ncer"},
 	{kFileTypeNCGR,           ".ncgr"},
-	{kFileTypeDICT,           ".dict"},
+	{kFileTypeNCLR,           ".nclr"},
+	{kFileTypeNFTR,           ".nftr"},
+	{kFileTypeNSBCA,          ".nsbca"},
+	{kFileTypeNSBMD,          ".nsbmd"},
+	{kFileTypeNSBTA,          ".nsbta"},
+	{kFileTypeNSBTP,          ".nsbtp"},
+	{kFileTypeNSBTX,          ".nsbtx"},
+	{kFileTypePAL,            ".pal"},
+	{kFileTypeRAW,            ".raw"},
+	{kFileTypeSADL,           ".sadl"},
+	{kFileTypeSDAT,           ".sdat"},
+	{kFileTypeSMP,            ".smp"},
+	{kFileTypeSPL,            ".spl"},
+	{kFileTypeVX,             ".vx"},
 
 	{kFileTypeANB,            ".anb"},
 	{kFileTypeANI,            ".ani"},
@@ -269,6 +276,8 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeFEV,            ".fev"},
 	{kFileTypeFSB,            ".fsb"},
 	{kFileTypeOPF,            ".opf"},
+	{kFileTypeCRF,            ".crf"},
+	{kFileTypeRIMP,           ".rimp"},
 
 	{kFileTypeMOV,            ".mov"},
 	{kFileTypeCURS,           ".curs"},
@@ -314,7 +323,9 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 
 	{kFileTypeBZF,            ".bzf"},
 
-	{kFileTypeADV,            ".adv"}
+	{kFileTypeADV,            ".adv"},
+
+	{kFileTypeXEOSITEX,       ".xoreositex"}
 };
 
 

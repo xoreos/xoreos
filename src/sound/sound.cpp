@@ -31,6 +31,7 @@
 
 #include "src/common/stream.h"
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
 
@@ -83,7 +84,7 @@ void SoundManager::init() {
 		if (!_ctx)
 			throw Common::Exception("Could not create OpenAL context");
 
-		_hasMultiChannel = alIsExtensionPresent("AL_EXT_MCFORMATS");
+		_hasMultiChannel = alIsExtensionPresent("AL_EXT_MCFORMATS") != 0;
 		_format51        = alGetEnumValue("AL_FORMAT_51CHN16");
 	}
 
@@ -200,7 +201,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		tag = stream->readUint32BE();
 
 		if (tag != MKTAG('f', 'm', 't', ' '))
-			throw Common::Exception("Broken WAVE file");
+			throw Common::Exception("Broken WAVE file (%s)", Common::debugTag(tag).c_str());
 
 		// Skip fmt chunk
 		stream->skip(stream->readUint32LE());
@@ -215,7 +216,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		}
 
 		if (tag != MKTAG('d', 'a', 't', 'a'))
-			throw Common::Exception("Found invalid tag in WAVE file: %x", tag);
+			throw Common::Exception("Found invalid tag in WAVE file: %s", Common::debugTag(tag).c_str());
 
 		uint32 dataSize = stream->readUint32LE();
 		if (dataSize == 0) {
@@ -257,7 +258,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		isMP3 = true;
 
 	} else
-		throw Common::Exception("Unknown sound format");
+		throw Common::Exception("Unknown sound format %s", Common::debugTag(tag).c_str());
 
 	if (isMP3)
 		return makeMP3Stream(stream, true);

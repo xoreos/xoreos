@@ -124,6 +124,8 @@ public:
 	TXI(Common::SeekableReadStream &stream);
 	~TXI();
 
+	void load(Common::SeekableReadStream &stream);
+
 	bool empty() const;
 
 	const Features &getFeatures() const;
@@ -143,8 +145,6 @@ private:
 	Features _features;
 
 	uint32 _curCoords;
-
-	void load(Common::SeekableReadStream &stream);
 
 	Blending parseBlending(const char *str);
 };

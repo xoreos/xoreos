@@ -39,6 +39,9 @@ noinst_HEADERS = \
                  ifofile.h \
                  pefile.h \
                  herffile.h \
+                 smallfile.h \
+                 nitrofile.h \
+                 nsbtxfile.h \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
@@ -71,6 +74,9 @@ libaurora_la_SOURCES = \
                        ifofile.cpp \
                        pefile.cpp \
                        herffile.cpp \
+                       smallfile.cpp \
+                       nitrofile.cpp \
+                       nsbtxfile.cpp \
                        $(EMPTY)
 
 libaurora_la_LIBADD = \

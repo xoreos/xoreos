@@ -22,6 +22,10 @@
  *  Handling BioWare's GDAs (2DAs, two-dimensional array, within V4.0 GFFs).
  */
 
+/* See the GDA description on the Dragon Age toolset wiki
+ * (<http://social.bioware.com/wiki/datoolset/index.php/GDA>).
+ */
+
 #include "src/common/error.h"
 #include "src/common/stream.h"
 #include "src/common/hash.h"

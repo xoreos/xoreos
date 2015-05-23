@@ -160,13 +160,20 @@ int main(int argc, char **argv) {
 		}
 
 	} catch (Common::Exception &e) {
+		EventMan.raiseFatalError();
+
 		Common::printException(e);
-		std::exit(1);
 	}
+
+	if (EventMan.fatalErrorRaised())
+		std::exit(1);
 
 	status("Shutting down");
 
-	delete gameThread;
+	try {
+		delete gameThread;
+	} catch (...) {
+	}
 
 	try {
 		// Configs changed, we should save them

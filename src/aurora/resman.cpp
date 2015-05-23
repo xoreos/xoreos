@@ -39,21 +39,58 @@
 #include "src/aurora/zipfile.h"
 #include "src/aurora/pefile.h"
 #include "src/aurora/herffile.h"
+#include "src/aurora/nsbtxfile.h"
+#include "src/aurora/smallfile.h"
 
 // Check for hash collisions (if possible)
 #define CHECK_HASH_COLLISION 1
 
 DECLARE_SINGLETON(Aurora::ResourceManager)
 
-static const char *kArchiveGlob[Aurora::kArchiveMAX] = {
-	".*\\.key", ".*\\.bif", ".*\\.(erf|mod|hak|nwm|crf)", ".*\\.(rim|rimp)", ".*\\.zip", ".*\\.exe",
-	".*\\.nds", ".*\\.herf"
-};
-
 namespace Aurora {
 
-ResourceManager::Resource::Resource() : type(kFileTypeNone), priority(0),
+ResourceManager::KnownArchive::KnownArchive() :
+	type(kArchiveMAX), resource(0), opened(0) {
+
+}
+
+ResourceManager::KnownArchive::KnownArchive(ArchiveType t, const Common::UString &n, Resource &r) :
+	name(n), type(t), resource(&r), opened(0) {
+
+}
+
+
+ResourceManager::OpenedArchive::OpenedArchive() : archive(0), known(0), parent(0) {
+}
+
+void ResourceManager::OpenedArchive::set(KnownArchive &kA, Archive &a) {
+	archive = &a;
+	known   = &kA;
+
+	if (known->opened)
+		throw Common::Exception("Archive \"%s\" already opened", known->name.c_str());
+
+	known->opened = this;
+
+	/* If the resource ifself is found in an archive, double-link these two
+	 * archives, so that we can catch attempts of closing archives with
+	 * child-archives still open.
+	 */
+
+	assert(known->resource);
+	if (known->resource->source == kSourceArchive) {
+		assert(known->resource->archive);
+
+		parent = known->resource->archive;
+		parent->children.push_back(this);
+	}
+}
+
+
+ResourceManager::Resource::Resource() : type(kFileTypeNone), isSmall(false), priority(0),
 		source(kSourceNone), archive(0), archiveIndex(0xFFFFFFFF) {
+
+	selfArchive.first = 0;
 }
 
 bool ResourceManager::Resource::operator<(const Resource &right) const {
@@ -61,7 +98,36 @@ bool ResourceManager::Resource::operator<(const Resource &right) const {
 }
 
 
-ResourceManager::ResourceManager() : _rimsAreERFs(false), _hashAlgo(Common::kHashFNV64) {
+ResourceManager::ResourceManager() : _hasSmall(false),
+	_hashAlgo(Common::kHashFNV64) {
+
+	// These file types are archives
+
+	_archiveTypeTypes[kArchiveKEY].insert(kFileTypeKEY);
+
+	_archiveTypeTypes[kArchiveBIF].insert(kFileTypeBIF);
+
+	_archiveTypeTypes[kArchiveERF].insert(kFileTypeERF);
+	_archiveTypeTypes[kArchiveERF].insert(kFileTypeMOD);
+	_archiveTypeTypes[kArchiveERF].insert(kFileTypeHAK);
+	_archiveTypeTypes[kArchiveERF].insert(kFileTypeNWM);
+	_archiveTypeTypes[kArchiveERF].insert(kFileTypeCRF);
+
+	_archiveTypeTypes[kArchiveRIM].insert(kFileTypeRIM);
+	_archiveTypeTypes[kArchiveRIM].insert(kFileTypeRIMP);
+
+	_archiveTypeTypes[kArchiveZIP].insert(kFileTypeZIP);
+
+	_archiveTypeTypes[kArchiveEXE].insert(kFileTypeEXE);
+
+	_archiveTypeTypes[kArchiveNDS].insert(kFileTypeNDS);
+
+	_archiveTypeTypes[kArchiveHERF].insert(kFileTypeHERF);
+
+	_archiveTypeTypes[kArchiveNSBTX].insert(kFileTypeNSBTX);
+
+	// These files types are specific resource types
+
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeDDS);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTPC);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeTXB);
@@ -70,6 +136,8 @@ ResourceManager::ResourceManager() : _rimsAreERFs(false), _hashAlgo(Common::kHas
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeBMP);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeJPG);
 	_resourceTypeTypes[kResourceImage].push_back(kFileTypeSBM);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypePLT);
+	_resourceTypeTypes[kResourceImage].push_back(kFileTypeXEOSITEX);
 
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeBIK);
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeMPG);
@@ -94,16 +162,16 @@ ResourceManager::ResourceManager() : _rimsAreERFs(false), _hashAlgo(Common::kHas
 }
 
 ResourceManager::~ResourceManager() {
-	clear();
-
-	for (int i = 0; i < kResourceMAX; i++)
-		_resourceTypeTypes[i].clear();
+	clearResources();
 }
 
 void ResourceManager::clear() {
-	_rimsAreERFs = false;
-	_hashAlgo    = Common::kHashFNV64;
+	_typeAliases.clear();
 
+	_hasSmall = false;
+	_hashAlgo = Common::kHashFNV64;
+
+	setRIMsAreERFs(false);
 	clearResources();
 }
 
@@ -111,25 +179,39 @@ void ResourceManager::clearResources() {
 	_cursorRemap.clear();
 
 	_baseDir.clear();
+	_baseArchive.clear();
 
-	for (int i = 0; i < kArchiveMAX; i++) {
-		_archiveDirs[i].clear();
-		_archiveFiles[i].clear();
-	}
+	for (int i = 0; i < kArchiveMAX; i++)
+		_knownArchives[i].clear();
 
-	for (ArchiveList::iterator archive = _archives.begin(); archive != _archives.end(); ++archive)
-		delete *archive;
-	_archives.clear();
+	for (OpenedArchives::iterator a = _openedArchives.begin(); a != _openedArchives.end(); ++a)
+		delete a->archive;
+	_openedArchives.clear();
 
 	_resources.clear();
-
-	_typeAliases.clear();
 
 	_changes.clear();
 }
 
 void ResourceManager::setRIMsAreERFs(bool rimsAreERFs) {
-	_rimsAreERFs = rimsAreERFs;
+	// Treat RIM and RIMP as either RIM or ERF
+
+	_archiveTypeTypes[kArchiveRIM].erase(kFileTypeRIM);
+	_archiveTypeTypes[kArchiveRIM].erase(kFileTypeRIMP);
+	_archiveTypeTypes[kArchiveERF].erase(kFileTypeRIM);
+	_archiveTypeTypes[kArchiveERF].erase(kFileTypeRIMP);
+
+	if (rimsAreERFs) {
+		_archiveTypeTypes[kArchiveERF].insert(kFileTypeRIM);
+		_archiveTypeTypes[kArchiveERF].insert(kFileTypeRIMP);
+	} else {
+		_archiveTypeTypes[kArchiveRIM].insert(kFileTypeRIM);
+		_archiveTypeTypes[kArchiveRIM].insert(kFileTypeRIMP);
+	}
+}
+
+void ResourceManager::setHasSmall(bool hasSmall) {
+	_hasSmall = hasSmall;
 }
 
 void ResourceManager::setHashAlgo(Common::HashAlgo algo) {
@@ -143,209 +225,187 @@ void ResourceManager::setCursorRemap(const std::vector<Common::UString> &remap) 
 	_cursorRemap = remap;
 }
 
-void ResourceManager::registerDataBaseDir(const Common::UString &path) {
+void ResourceManager::registerDataBase(const Common::UString &path) {
 	clearResources();
 
-	_baseDir = Common::FilePath::canonicalize(path);
+	Common::UString base = Common::FilePath::canonicalize(path);
 
-	for (int i = 0; i < kArchiveMAX; i++)
-		addArchiveDir((ArchiveType) i, "");
+	if        (Common::FilePath::isDirectory(base)) {
+
+		_baseDir = base;
+
+		indexResourceDir("", 0, 0, 1);
+
+	} else if (Common::FilePath::isRegularFile(base)) {
+
+		_baseArchive = base;
+
+		indexResourceFile(_baseArchive, 1);
+		indexArchive     (_baseArchive, 1);
+
+	} else
+		throw Common::Exception("No such file or directory \"%s\"", path.c_str());
+
 }
 
-const Common::UString &ResourceManager::getDataBaseDir() const {
+const Common::UString &ResourceManager::getDataBase() const {
+	if (!_baseArchive.empty())
+		return _baseArchive;
+
 	return _baseDir;
 }
 
-void ResourceManager::addArchiveDir(ArchiveType archive, const Common::UString &dir, bool recursive) {
-	assert((archive >= 0) && (archive < kArchiveMAX));
+ResourceManager::KnownArchive *ResourceManager::findArchive(const Common::UString &file) {
+	ArchiveType archiveType = getArchiveType(file);
+	if (((uint) archiveType) >= kArchiveMAX)
+		return 0;
 
-	if (archive == kArchiveNDS || archive == kArchiveHERF)
-		return;
-
-	Common::UString directory = Common::FilePath::findSubDirectory(_baseDir, dir, true);
-	if (directory.empty())
-		throw Common::Exception("No such directory \"%s\"", dir.c_str());
-
-	directory = Common::FilePath::canonicalize(directory, false);
-
-	Common::FileList dirFiles;
-	if (!dirFiles.addDirectory(directory))
-		throw Common::Exception("Can't read directory \"%s\"", directory.c_str());
-
-	dirFiles.getSubListGlob(kArchiveGlob[archive], true, _archiveFiles[archive]);
-
-	// If we're adding an ERF directory and .rim files are actually ERFs, add those too
-	if ((archive == kArchiveERF) && _rimsAreERFs)
-		dirFiles.getSubListGlob(kArchiveGlob[kArchiveRIM], true, _archiveFiles[archive]);
-
-	_archiveDirs[archive].push_back(directory);
-
-	if (recursive) {
-		DirectoryList subDirectories;
-		Common::FilePath::getSubDirectories(directory, subDirectories);
-		for (std::list<Common::UString>::iterator it = subDirectories.begin(); it != subDirectories.end(); ++it) {
-			addArchiveDir(archive, Common::FilePath::relativize(_baseDir, *it), true);
-		}
-	}
+	return findArchive(file, _knownArchives[archiveType]);
 }
 
-Common::UString ResourceManager::findArchive(const Common::UString &file,
-		const DirectoryList &dirs, const Common::FileList &files) {
+ResourceManager::KnownArchive *ResourceManager::findArchive(Common::UString file, KnownArchives &archives) {
+	file = (Common::FilePath::isAbsolute(file) ? "" : "/") + file;
+	file = Common::FilePath::normalize(file, false).toLower();
 
-	Common::FileList nameMatch;
-	if (!files.getSubList(Common::FilePath::normalize("/" + file, false), true, nameMatch))
-		return "";
+	for (KnownArchives::iterator a = archives.begin(); a != archives.end(); ++a)
+		if (a->name.toLower().endsWith(file))
+			return &*a;
 
-	Common::UString realName;
-	for (DirectoryList::const_iterator dir = dirs.begin(); dir != dirs.end(); ++dir) {
-		Common::UString dirPath = Common::FilePath::normalize(*dir + "/" + file, false);
-		if (!(realName = nameMatch.findFirst(dirPath, true)).empty())
-			return realName;
-	}
-
-	return "";
+	return 0;
 }
 
-bool ResourceManager::hasArchive(ArchiveType archive, const Common::UString &file) {
-	assert((archive >= 0) && (archive < kArchiveMAX));
-
-	// NDS archives are not in archive directories, they are plain files in a path
-	if (archive == kArchiveNDS)
-		return Common::File::exists(file);
-
-	// HERF archives are not in archive directories, they are inside NDS archives
-	if (archive == kArchiveHERF)
-		return hasResource(TypeMan.setFileType(file, kFileTypeNone), kFileTypeHERF);
-
-	return !findArchive(file, _archiveDirs[archive], _archiveFiles[archive]).empty();
+bool ResourceManager::hasArchive(const Common::UString &file) {
+	return findArchive(file) != 0;
 }
 
-void ResourceManager::addArchive(ArchiveType archiveType, const Common::UString &file,
-                                 uint32 priority, Common::ChangeID *changeID) {
+Common::SeekableReadStream *ResourceManager::openArchiveStream(const KnownArchive &archive) const {
+	if (!archive.resource)
+		throw Common::Exception("Archive without resource reference");
 
-	assert((archiveType >= 0) && (archiveType < kArchiveMAX));
+	return getResource(*archive.resource, true);
+}
 
-	if (archiveType == kArchiveBIF)
+void ResourceManager::indexArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+	KnownArchive *knownArchive = findArchive(file);
+	if (!knownArchive)
+		throw Common::Exception("No such archive file \"%s\"", file.c_str());
+
+	if (knownArchive->type == kArchiveBIF)
 		throw Common::Exception("Attempted to index a lone BIF");
 
 	Change *change = 0;
 	if (changeID)
 		change = newChangeSet(*changeID);
 
-	// NDS and HERF need special handling
 	Archive *archive = 0;
-	if      (archiveType == kArchiveNDS)
-		archive = new NDSFile(file);
-	else if (archiveType == kArchiveHERF)
-		archive = new HERFFile(file);
-
-	if (archive) {
-		indexArchive(archive, priority, change);
-		return;
-	}
-
-	Common::UString realName = findArchive(file, _archiveDirs[archiveType], _archiveFiles[archiveType]);
-	if (realName.empty())
-		throw Common::Exception("No such archive file \"%s\"", file.c_str());
-
-	switch (archiveType) {
-		case kArchiveKEY:
-			indexKEY(realName, priority, change);
-			break;
-
-		case kArchiveERF:
-			archive = new ERFFile(realName);
-			break;
-
-		case kArchiveRIM:
-			archive = new RIMFile(realName);
-			break;
-
-		case kArchiveZIP:
-			archive = new ZIPFile(realName);
-			break;
-
-		case kArchiveEXE:
-			archive = new PEFile(realName, _cursorRemap);
-			break;
-
-		default:
-			break;
-	}
-
-	if (archive)
-		indexArchive(archive, priority, change);
-}
-
-void ResourceManager::findBIFs(const KEYFile &key, std::vector<Common::UString> &bifs) {
-	const KEYFile::BIFList &keyBIFs = key.getBIFs();
-
-	bifs.resize(keyBIFs.size());
-
-	KEYFile::BIFList::const_iterator       keyBIF = keyBIFs.begin();
-	std::vector<Common::UString>::iterator bif    = bifs.begin();
-	for (; (keyBIF != keyBIFs.end()) && (bif != bifs.end()); ++keyBIF, ++bif) {
-
-		*bif = findArchive(*keyBIF, _archiveDirs[kArchiveBIF], _archiveFiles[kArchiveBIF]);
-		if (bif->empty())
-			throw Common::Exception("BIF \"%s\" not found", keyBIF->c_str());
-
-	}
-}
-
-void ResourceManager::mergeKEYBIF(const KEYFile &key, std::vector<Common::UString> &bifs,
-		std::vector<BIFFile *> &bifFiles) {
-
-	bifFiles.reserve(bifs.size());
-
-	BIFFile *curBIF = 0;
-
-	// Try to load all needed BIF files
 	try {
+		Common::SeekableReadStream *archiveStream = openArchiveStream(*knownArchive);
 
-		uint32 index = 0;
-		for (std::vector<Common::UString>::const_iterator bif = bifs.begin(); bif != bifs.end(); ++index, ++bif) {
-			curBIF = new BIFFile(*bif);
+		switch (knownArchive->type) {
+			case kArchiveKEY:
+				indexKEY(archiveStream, priority, change);
+				break;
 
-			curBIF->mergeKEY(key, index);
+			case kArchiveNDS:
+				archive = new NDSFile(archiveStream);
+				break;
 
-			bifFiles.push_back(curBIF);
+			case kArchiveHERF:
+				archive = new HERFFile(archiveStream);
+				break;
+
+			case kArchiveERF:
+				archive = new ERFFile(archiveStream);
+				break;
+
+			case kArchiveRIM:
+				archive = new RIMFile(archiveStream);
+				break;
+
+			case kArchiveZIP:
+				archive = new ZIPFile(archiveStream);
+				break;
+
+			case kArchiveEXE:
+				archive = new PEFile(archiveStream, _cursorRemap);
+				break;
+
+			case kArchiveNSBTX:
+				archive = new NSBTXFile(archiveStream);
+				break;
+
+			default:
+				throw Common::Exception("Invalid archive type %d", knownArchive->type);
 		}
 
-	} catch (Common::Exception &e) {
-		delete curBIF;
+		if (archive)
+			indexArchive(*knownArchive, archive, priority, change);
 
-		e.add("Failed opening needed BIFs");
+	} catch (...) {
+		delete archive;
+		throw;
+	}
+}
+
+uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
+                                    std::vector<KnownArchive *> &archives,
+                                    std::vector<BIFFile *> &bifs) {
+	try {
+
+		KEYFile key(*keyStream);
+
+		const KEYFile::BIFList &keyBIFs = key.getBIFs();
+		archives.resize(keyBIFs.size(), 0);
+		bifs.resize(keyBIFs.size(), 0);
+
+		for (uint32 i = 0; i < keyBIFs.size(); i++) {
+			archives[i] = findArchive(keyBIFs[i], _knownArchives[kArchiveBIF]);
+			if (!archives[i])
+				throw Common::Exception("BIF \"%s\" not found", keyBIFs[i].c_str());
+
+			bifs[i] = new BIFFile(openArchiveStream(*archives[i]));
+			bifs[i]->mergeKEY(key, i);
+		}
+
+	} catch (...) {
+		delete keyStream;
+
+		for (std::vector<BIFFile *>::iterator b = bifs.begin(); b != bifs.end(); ++b)
+			delete *b;
+
+		bifs.clear();
+		archives.clear();
 		throw;
 	}
 
+	delete keyStream;
+	return archives.size();
 }
 
-void ResourceManager::indexKEY(const Common::UString &file, uint32 priority, Change *change) {
-	KEYFile key(file);
+void ResourceManager::indexKEY(Common::SeekableReadStream *stream, uint32 priority, Change *change) {
+	std::vector<KnownArchive *> archives;
+	std::vector<BIFFile *> bifs;
 
-	// Search the correct BIFs
-	std::vector<Common::UString> bifs;
-	findBIFs(key, bifs);
+	const uint32 count = openKEYBIFs(stream, archives, bifs);
 
-	std::vector<BIFFile *> bifFiles;
-	mergeKEYBIF(key, bifs, bifFiles);
-
-	for (std::vector<BIFFile *>::iterator bifFile = bifFiles.begin(); bifFile != bifFiles.end(); ++bifFile)
-		indexArchive(*bifFile, priority, change);
+	for (uint32 i = 0; i < count; i++)
+		indexArchive(*archives[i], bifs[i], priority, change);
 }
 
-void ResourceManager::indexArchive(Archive *archive, uint32 priority, Change *change) {
+void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
+                                   uint32 priority, Change *change) {
+
 	const Common::HashAlgo hashAlgo = archive->getNameHashAlgo();
 	if ((hashAlgo != Common::kHashNone) && (hashAlgo != _hashAlgo))
 		throw Common::Exception("ResourceManager::indexArchive(): Archive uses a different name hashing "
 		                        "algorithm than we do (%d vs. %d)", (int) hashAlgo, (int) _hashAlgo);
 
-	_archives.push_back(archive);
+	_openedArchives.push_back(OpenedArchive());
+	_openedArchives.back().set(knownArchive, *archive);
 
 	// Add the information of the new archive to the change set
 	if (change)
-		change->_change->archives.push_back(--_archives.end());
+		change->_change->openedArchives.push_back(--_openedArchives.end());
 
 	const Archive::ResourceList &resources = archive->getResources();
 	for (Archive::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
@@ -353,7 +413,7 @@ void ResourceManager::indexArchive(Archive *archive, uint32 priority, Change *ch
 		Resource res;
 		res.priority     = priority;
 		res.source       = kSourceArchive;
-		res.archive      = archive;
+		res.archive      = &_openedArchives.back();
 		res.archiveIndex = resource->index;
 		res.name         = resource->name;
 		res.type         = resource->type;
@@ -366,19 +426,47 @@ void ResourceManager::indexArchive(Archive *archive, uint32 priority, Change *ch
 			if (normalizeType(res))
 				hash = getHash(res.name, res.type);
 
+		// Handle "small" files
+		if (_hasSmall && (res.type == kFileTypeSMALL)) {
+			res.isSmall = true;
+
+			res.name = Common::FilePath::getStem(resource->name);
+			res.type = TypeMan.getFileType(resource->name);
+		}
+
 		// And add it to our list
 		addResource(res, hash, change);
 	}
-
-	archive->clear();
 }
 
 bool ResourceManager::hasResourceDir(const Common::UString &dir) {
+	if (_baseDir.empty())
+		return false;
+
 	return !Common::FilePath::findSubDirectory(_baseDir, dir, true).empty();
 }
 
-void ResourceManager::addResourceDir(const Common::UString &dir, const char *glob, int depth,
-                                     uint32 priority, Common::ChangeID *changeID) {
+void ResourceManager::indexResourceFile(const Common::UString &file, uint32 priority,
+                                        Common::ChangeID *changeID) {
+
+	Common::UString path;
+	path = _baseDir.empty() ? file : (_baseDir + "/" + file);
+	path = Common::FilePath::normalize(path, false);
+
+	if (!Common::FilePath::isRegularFile(path))
+		throw Common::Exception("No such file \"%s\"", file.c_str());
+
+	Change *change = 0;
+	if (changeID)
+		change = newChangeSet(*changeID);
+
+	addResource(path, change, priority);
+}
+
+void ResourceManager::indexResourceDir(const Common::UString &dir, const char *glob, int depth,
+                                       uint32 priority, Common::ChangeID *changeID) {
+	if (_baseDir.empty())
+		throw Common::Exception("No base data directory set");
 
 	// Find the directory
 	Common::UString directory = Common::FilePath::findSubDirectory(_baseDir, dir, true);
@@ -412,22 +500,71 @@ void ResourceManager::undo(Common::ChangeID &changeID) {
 	if (!change || (change->_change == _changes.end()))
 		return;
 
+	// Removing all changes in the opened archives list
+	for (OpenedArchiveChanges::iterator oaChange = change->_change->openedArchives.begin();
+	     oaChange != change->_change->openedArchives.end(); ++oaChange) {
+
+		if (!(*oaChange)->children.empty())
+			throw Common::Exception("Attempted to deindex an archive that has opened children archives");
+
+		assert((*oaChange)->known);
+
+		// Remove us from the KnownArchive
+		(*oaChange)->known->opened = 0;
+
+		// Remove us from a parent's children list
+		if ((*oaChange)->parent) {
+			std::list<OpenedArchive *> &pChildren = (*oaChange)->parent->children;
+
+			bool found = false;
+			for (std::list<OpenedArchive *>::iterator c = pChildren.begin(); c != pChildren.end(); ++c) {
+				if (*c == &**oaChange) {
+					found = true;
+					pChildren.erase(c);
+					break;
+				}
+			}
+
+			if (!found)
+				throw Common::Exception("Couldn't find archive in the parent's children list");
+		}
+
+		delete (*oaChange)->archive;
+		_openedArchives.erase(*oaChange);
+	}
+
+	// Removing all changes in the known archives list
+	for (KnownArchiveChanges::iterator kaChange = change->_change->knownArchives.begin();
+	     kaChange != change->_change->knownArchives.end(); ++kaChange) {
+
+		if (kaChange->second->opened)
+			throw Common::Exception("Attempted to deindex an archive that's still opened");
+
+		// Remove us from the resource
+		assert(kaChange->second->resource);
+		kaChange->second->resource->selfArchive.first = 0;
+
+		kaChange->first->erase(kaChange->second);
+	}
+
 	// Go through all changes in the resource map
-	for (std::list<ResourceChange>::iterator resChange = change->_change->resources.begin();
+	for (ResourceChanges::iterator resChange = change->_change->resources.begin();
 	     resChange != change->_change->resources.end(); ++resChange) {
+
+		// If the resource still has an archive attached, it was added by a
+		// declareResources() call and needs to be removed manually
+		if (resChange->resIt->selfArchive.first) {
+			if (resChange->resIt->selfArchive.second->opened)
+				throw Common::Exception("Attempted to deindex an archive resource that's still opened");
+
+			resChange->resIt->selfArchive.first->erase(resChange->resIt->selfArchive.second);
+		}
 
 		// Remove the resource, and the name list too if it's empty
 		resChange->hashIt->second.erase(resChange->resIt);
+
 		if (resChange->hashIt->second.empty())
 			_resources.erase(resChange->hashIt);
-	}
-
-	// Removing all changes in the archive list
-	for (std::list<ArchiveList::iterator>::iterator archiveChange = change->_change->archives.begin();
-	     archiveChange != change->_change->archives.end(); ++archiveChange) {
-
-		delete **archiveChange;
-		_archives.erase(*archiveChange);
 	}
 
 	// Now we can remove the change set from our list of change sets
@@ -451,13 +588,27 @@ void ResourceManager::blacklist(const Common::UString &name, FileType type) {
 }
 
 void ResourceManager::declareResource(const Common::UString &name, FileType type) {
+	bool isSmall = false;
+
 	ResourceMap::iterator resList = _resources.find(getHash(name, type));
-	if (resList == _resources.end())
-		return;
+	if (resList == _resources.end()) {
+		if (_hasSmall) {
+			Common::UString smallName = TypeMan.addFileType(TypeMan.setFileType(name, type), kFileTypeSMALL);
+
+			resList = _resources.find(getHash(smallName));
+			isSmall = true;
+		}
+
+		if (resList == _resources.end())
+			return;
+	}
 
 	for (ResourceList::iterator r = resList->second.begin(); r != resList->second.end(); ++r) {
-		r->name = name;
-		r->type = type;
+		r->name    = name;
+		r->type    = type;
+		r->isSmall = isSmall;
+
+		checkResourceIsArchive(*r, 0);
 	}
 }
 
@@ -492,10 +643,10 @@ bool ResourceManager::hasResource(const Common::UString &name, const std::vector
 
 uint32 ResourceManager::getResourceSize(const Resource &res) const {
 	if (res.source == kSourceArchive) {
-		if ((res.archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
+		if ((res.archive == 0) || (res.archive->archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
 			return 0xFFFFFFFF;
 
-		return res.archive->getResourceSize(res.archiveIndex);
+		return res.archive->archive->getResourceSize(res.archiveIndex);
 	}
 
 	if (res.source == kSourceFile)
@@ -504,11 +655,11 @@ uint32 ResourceManager::getResourceSize(const Resource &res) const {
 	return 0xFFFFFFFF;
 }
 
-Common::SeekableReadStream *ResourceManager::getArchiveResource(const Resource &res) const {
-	if ((res.archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
+Common::SeekableReadStream *ResourceManager::getArchiveResource(const Resource &res, bool tryNoCopy) const {
+	if ((res.archive == 0) || (res.archive->archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
 		throw Common::Exception("Archive resource has no archive");
 
-	return res.archive->getResource(res.archiveIndex);
+	return res.archive->archive->getResource(res.archiveIndex, tryNoCopy);
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name, FileType type) const {
@@ -534,24 +685,37 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	if (foundType)
 		*foundType = res->type;
 
-	if        (res->source == kSourceNone) {
-		throw Common::Exception("Invalid resource source");
-	} else if (res->source == kSourceArchive) {
-		return getArchiveResource(*res);
-	} else if (res->source == kSourceFile) {
-		// Open the file and return it
+	return getResource(*res);
+}
 
-		Common::File *file = new Common::File;
+Common::SeekableReadStream *ResourceManager::getResource(const Resource &res, bool tryNoCopy) const {
+	Common::SeekableReadStream *stream = 0;
 
-		if (!file->open(res->path)) {
-			delete file;
-			return 0;
-		}
+	switch (res.source) {
+		case kSourceFile:
+			stream = new Common::File(res.path);
+			break;
 
-		return file;
+		case kSourceArchive:
+			stream = getArchiveResource(res, tryNoCopy);
+			break;
+
+		default:
+			throw Common::Exception("Invalid source for resource \"%s\": (%d)",
+			                        TypeMan.setFileType(res.name, res.type).c_str(), res.source);
 	}
 
-	return 0;
+	// Transparently decompress "small" files
+	if (res.isSmall) {
+		try {
+			stream = Small::decompress(stream);
+		} catch (...) {
+			delete stream;
+			throw;
+		}
+	}
+
+	return stream;
 }
 
 Common::SeekableReadStream *ResourceManager::getResource(ResourceType resType,
@@ -601,6 +765,35 @@ void ResourceManager::getAvailableResources(ResourceType type,
 		std::list<ResourceID> &list) const {
 
 	getAvailableResources(_resourceTypeTypes[type], list);
+}
+
+ArchiveType ResourceManager::getArchiveType(FileType type) const {
+	for (int i = 0; i < kArchiveMAX; i++)
+		if (_archiveTypeTypes[i].find(type) != _archiveTypeTypes[i].end())
+			return (ArchiveType) i;
+
+	return kArchiveMAX;
+}
+
+ArchiveType ResourceManager::getArchiveType(const Common::UString &name) const {
+	return getArchiveType(TypeMan.getFileType(name));
+}
+
+Common::UString ResourceManager::getArchiveName(const Resource &resource) const {
+	switch (resource.source) {
+		case kSourceFile:
+			return resource.path;
+
+		case kSourceArchive:
+			return "/" + TypeMan.addFileType(resource.name, resource.type);
+
+		default:
+			break;
+	}
+
+	throw Common::Exception("Invalid source for resource \"%s\": (%d)",
+	                        TypeMan.addFileType(resource.name, resource.type).c_str(),
+	                        resource.source);
 }
 
 bool ResourceManager::normalizeType(Resource &resource) {
@@ -659,6 +852,37 @@ void ResourceManager::checkHashCollision(const Resource &resource, ResourceMap::
 	}
 }
 
+bool ResourceManager::checkResourceIsArchive(Resource &resource, Change *change) {
+	if ((resource.source == kSourceNone) || resource.name.empty())
+		return false;
+
+	ArchiveType type = getArchiveType(resource.type);
+	if (type == kArchiveMAX)
+		return false;
+
+	Common::UString name = getArchiveName(resource);
+	if (name.empty())
+		return false;
+
+	if (resource.selfArchive.first) {
+		if ((resource.selfArchive.second->type != type) || (resource.selfArchive.second->name != name))
+			throw Common::Exception("Tried to reclassify a resource archive (\"%s\")", name.c_str());
+
+		return false;
+	}
+
+	KnownArchives &archives = _knownArchives[type];
+
+	archives.push_back(KnownArchive(type, name, resource));
+
+	resource.selfArchive = std::make_pair(&archives, --archives.end());
+
+	if (change)
+		change->_change->knownArchives.push_back(resource.selfArchive);
+
+	return true;
+}
+
 void ResourceManager::addResource(Resource &resource, uint64 hash, Change *change) {
 	ResourceMap::iterator resList = _resources.find(hash);
 	if (resList == _resources.end()) {
@@ -677,7 +901,11 @@ void ResourceManager::addResource(Resource &resource, uint64 hash, Change *chang
 
 	// Add the resource to the list and sort by priority
 	resList->second.push_back(resource);
+	Resource *res = &resList->second.back();
+
 	resList->second.sort();
+
+	checkResourceIsArchive(*res, change);
 
 	// Remember the resource in the change set
 	if (change) {
@@ -687,21 +915,34 @@ void ResourceManager::addResource(Resource &resource, uint64 hash, Change *chang
 	}
 }
 
-void ResourceManager::addResources(const Common::FileList &files, Change *change, uint32 priority) {
-	for (Common::FileList::const_iterator file = files.begin(); file != files.end(); ++file) {
-		Resource res;
-		res.priority = priority;
-		res.source   = kSourceFile;
-		res.path     = *file;
-		res.name     = Common::FilePath::getStem(*file);
-		res.type     = TypeMan.getFileType(*file);
+void ResourceManager::addResource(const Common::UString &path, Change *change, uint32 priority) {
+	Resource res;
+	res.priority = priority;
+	res.source   = kSourceFile;
+	res.path     = path;
+	res.name     = Common::FilePath::getStem(path);
+	res.type     = TypeMan.getFileType(path);
 
-		uint64 hash = getHash(res.name, res.type);
-		if (normalizeType(res))
-			hash = getHash(res.name, res.type);
+	// Handle "small" files
+	if (_hasSmall && (res.type == kFileTypeSMALL)) {
+		const Common::UString name = res.name;
 
-		addResource(res, hash, change);
+		res.isSmall = true;
+
+		res.name = Common::FilePath::getStem(name);
+		res.type = TypeMan.getFileType(name);
 	}
+
+	uint64 hash = getHash(res.name, res.type);
+	if (normalizeType(res))
+		hash = getHash(res.name, res.type);
+
+	addResource(res, hash, change);
+}
+
+void ResourceManager::addResources(const Common::FileList &files, Change *change, uint32 priority) {
+	for (Common::FileList::const_iterator file = files.begin(); file != files.end(); ++file)
+		addResource(*file, change, priority);
 }
 
 const ResourceManager::Resource *ResourceManager::getRes(uint64 hash) const {
@@ -719,6 +960,14 @@ const ResourceManager::Resource *ResourceManager::getRes(const Common::UString &
 		const Resource *res = getRes(getHash(name, *type));
 		if (res)
 			return res;
+
+		if (_hasSmall) {
+			Common::UString smallName = TypeMan.addFileType(TypeMan.setFileType(name, *type), kFileTypeSMALL);
+
+			res = getRes(getHash(smallName));
+			if (res)
+				return res;
+		}
 	}
 
 	return 0;
@@ -766,11 +1015,16 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 }
 
 ResourceManager::Change *ResourceManager::newChangeSet(Common::ChangeID &changeID) {
-	// Generate a new change set
+	// Does this change ID already have a change set attached? If so, use that
+	Change *change = dynamic_cast<Change *>(changeID.getContent());
+	if (change && (change->_change != _changes.end()))
+		return change;
+
+	// Otherwise, generate a new one
 
 	_changes.push_back(ChangeSet());
 
-	Change *change = new Change(--_changes.end());
+	change = new Change(--_changes.end());
 	changeID.setContent(change);
 
 	return change;

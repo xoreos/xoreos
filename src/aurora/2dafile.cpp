@@ -22,6 +22,10 @@
  *  Handling BioWare's 2DAs (two-dimensional array).
  */
 
+/* See BioWare's own specs released for Neverwinter Nights modding
+ * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
+ */
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/strutil.h"
@@ -145,10 +149,10 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 	readHeader(twoda);
 
 	if ((_id != k2DAID) && (_id != k2DAIDTab))
-		throw Common::Exception("Not a 2DA file");
+		throw Common::Exception("Not a 2DA file (%s)", Common::debugTag(_id).c_str());
 
 	if ((_version != kVersion2a) && (_version != kVersion2b))
-		throw Common::Exception("Unsupported 2DA file version %08X", _version);
+		throw Common::Exception("Unsupported 2DA file version %s", Common::debugTag(_version).c_str());
 
 	Common::UString lineRest = Common::readStringLine(twoda, Common::kEncodingASCII);
 

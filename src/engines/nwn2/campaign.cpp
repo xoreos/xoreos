@@ -47,7 +47,10 @@ Campaign::Campaign(::Engines::Console &console) : _running(false),
 }
 
 Campaign::~Campaign() {
-	clear();
+	try {
+		clear();
+	} catch (...) {
+	}
 }
 
 const std::list<CampaignDescription> &Campaign::getCampaigns() const {
@@ -55,7 +58,7 @@ const std::list<CampaignDescription> &Campaign::getCampaigns() const {
 }
 
 void Campaign::findCampaigns() {
-	Common::UString baseDir = ResMan.getDataBaseDir();
+	Common::UString baseDir = ResMan.getDataBase();
 
 	Common::UString campaignBaseDir = Common::FilePath::findSubDirectory(baseDir, "campaigns", true);
 	if (campaignBaseDir.empty())

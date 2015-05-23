@@ -122,10 +122,10 @@ void Area::loadResources() {
 	Common::ChangeID change;
 
 	_resources.push_back(Common::ChangeID());
-	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + ".rim"  , 1000, &_resources.back());
+	indexMandatoryArchive(_resRef + "/" + _layout + ".rim"  , 1000, &_resources.back());
 
 	_resources.push_back(Common::ChangeID());
-	indexMandatoryArchive(Aurora::kArchiveRIM, _resRef + "/" + _layout + "-a.rim", 1001, &_resources.back());
+	indexMandatoryArchive(_resRef + "/" + _layout + "-a.rim", 1001, &_resources.back());
 }
 
 void Area::loadLYT() {

@@ -87,7 +87,7 @@ Engines::Engine *DragonAgeEngineProbe::createEngine() const {
 }
 
 
-DragonAgeEngine::DragonAgeEngine() {
+DragonAgeEngine::DragonAgeEngine() : _language(Aurora::kLanguageInvalid) {
 	_console = new Console(*this);
 }
 
@@ -239,62 +239,61 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 	ResMan.setRIMsAreERFs(true);
 
 	progress.step("Setting base directory");
-	ResMan.registerDataBaseDir(_target);
+	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/data");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/data/abilities");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/textures");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "packages/core/env");
-	ResMan.addArchiveDir(Aurora::kArchiveERF, "modules/single player/data");
+	indexMandatoryDirectory("packages/core/data"          , 0,  0, 2);
+	indexMandatoryDirectory("packages/core/data/abilities", 0,  0, 3);
+	indexMandatoryDirectory("packages/core/textures"      , 0, -1, 4);
+	indexMandatoryDirectory("modules/single player/data"  , 0,  0, 5);
 
 	progress.step("Loading core resource files");
-	indexMandatoryArchive(Aurora::kArchiveERF, "2da.erf"               , 10);
-	indexMandatoryArchive(Aurora::kArchiveERF, "anims.erf"             , 11);
-	indexMandatoryArchive(Aurora::kArchiveERF, "chargen.gpu.rim"       , 12);
-	indexMandatoryArchive(Aurora::kArchiveERF, "chargen.rim"           , 13);
-	indexMandatoryArchive(Aurora::kArchiveERF, "consolescripts.erf"    , 14);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerareas.erf"     , 15);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designercreatures.erf" , 16);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designercutscenes.erf" , 17);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerdialogs.erf"   , 18);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designeritems.erf"     , 19);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerplaceables.erf", 20);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerplots.erf"     , 21);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designerscripts.rim"   , 22);
-	indexMandatoryArchive(Aurora::kArchiveERF, "designertriggers.erf"  , 23);
-	indexMandatoryArchive(Aurora::kArchiveERF, "face.erf"              , 24);
-	indexMandatoryArchive(Aurora::kArchiveERF, "global.rim"            , 25);
-	indexMandatoryArchive(Aurora::kArchiveERF, "globalvfx.rim"         , 26);
-	indexMandatoryArchive(Aurora::kArchiveERF, "gui.erf"               , 27);
-	indexMandatoryArchive(Aurora::kArchiveERF, "guiexport.erf"         , 28);
-	indexMandatoryArchive(Aurora::kArchiveERF, "iterationtests.erf"    , 29);
-	indexMandatoryArchive(Aurora::kArchiveERF, "lightprobedata.erf"    , 30);
-	indexMandatoryArchive(Aurora::kArchiveERF, "materialobjects.erf"   , 31);
-	indexMandatoryArchive(Aurora::kArchiveERF, "materials.erf"         , 32);
-	indexMandatoryArchive(Aurora::kArchiveERF, "misc.erf"              , 33);
-	indexMandatoryArchive(Aurora::kArchiveERF, "modelhierarchies.erf"  , 34);
-	indexMandatoryArchive(Aurora::kArchiveERF, "modelmeshdata.erf"     , 35);
-	indexMandatoryArchive(Aurora::kArchiveERF, "pathfindingpatches.erf", 36);
-	indexMandatoryArchive(Aurora::kArchiveERF, "postprocesseffects.erf", 37);
-	indexMandatoryArchive(Aurora::kArchiveERF, "resmetrics.erf"        , 38);
-	indexMandatoryArchive(Aurora::kArchiveERF, "scripts.erf"           , 39);
-	indexMandatoryArchive(Aurora::kArchiveERF, "shaders.erf"           , 40);
-	indexMandatoryArchive(Aurora::kArchiveERF, "states.erf"            , 41);
-	indexMandatoryArchive(Aurora::kArchiveERF, "subqueuefiles.erf"     , 42);
-	indexMandatoryArchive(Aurora::kArchiveERF, "textures.erf"          , 43);
-	indexMandatoryArchive(Aurora::kArchiveERF, "tints.erf"             , 44);
+	indexMandatoryArchive("2da.erf"               , 10);
+	indexMandatoryArchive("anims.erf"             , 11);
+	indexMandatoryArchive("chargen.gpu.rim"       , 12);
+	indexMandatoryArchive("chargen.rim"           , 13);
+	indexMandatoryArchive("consolescripts.erf"    , 14);
+	indexMandatoryArchive("designerareas.erf"     , 15);
+	indexMandatoryArchive("designercreatures.erf" , 16);
+	indexMandatoryArchive("designercutscenes.erf" , 17);
+	indexMandatoryArchive("designerdialogs.erf"   , 18);
+	indexMandatoryArchive("designeritems.erf"     , 19);
+	indexMandatoryArchive("designerplaceables.erf", 20);
+	indexMandatoryArchive("designerplots.erf"     , 21);
+	indexMandatoryArchive("designerscripts.rim"   , 22);
+	indexMandatoryArchive("designertriggers.erf"  , 23);
+	indexMandatoryArchive("face.erf"              , 24);
+	indexMandatoryArchive("global.rim"            , 25);
+	indexMandatoryArchive("globalvfx.rim"         , 26);
+	indexMandatoryArchive("gui.erf"               , 27);
+	indexMandatoryArchive("guiexport.erf"         , 28);
+	indexMandatoryArchive("iterationtests.erf"    , 29);
+	indexMandatoryArchive("lightprobedata.erf"    , 30);
+	indexMandatoryArchive("materialobjects.erf"   , 31);
+	indexMandatoryArchive("materials.erf"         , 32);
+	indexMandatoryArchive("misc.erf"              , 33);
+	indexMandatoryArchive("modelhierarchies.erf"  , 34);
+	indexMandatoryArchive("modelmeshdata.erf"     , 35);
+	indexMandatoryArchive("pathfindingpatches.erf", 36);
+	indexMandatoryArchive("postprocesseffects.erf", 37);
+	indexMandatoryArchive("resmetrics.erf"        , 38);
+	indexMandatoryArchive("scripts.erf"           , 39);
+	indexMandatoryArchive("shaders.erf"           , 40);
+	indexMandatoryArchive("states.erf"            , 41);
+	indexMandatoryArchive("subqueuefiles.erf"     , 42);
+	indexMandatoryArchive("textures.erf"          , 43);
+	indexMandatoryArchive("tints.erf"             , 44);
 
 	progress.step("Loading core ability resource files");
-	indexMandatoryArchive(Aurora::kArchiveERF, "bearform.rim"    , 100);
-	indexMandatoryArchive(Aurora::kArchiveERF, "burningform.rim" , 101);
-	indexMandatoryArchive(Aurora::kArchiveERF, "golemform.rim"   , 102);
-	indexMandatoryArchive(Aurora::kArchiveERF, "mouseform.rim"   , 103);
-	indexMandatoryArchive(Aurora::kArchiveERF, "spiderform.rim"  , 104);
-	indexMandatoryArchive(Aurora::kArchiveERF, "spiritform.rim"  , 105);
-	indexMandatoryArchive(Aurora::kArchiveERF, "summonbear.rim"  , 106);
-	indexMandatoryArchive(Aurora::kArchiveERF, "summonspider.rim", 107);
-	indexMandatoryArchive(Aurora::kArchiveERF, "summonwolf.rim"  , 108);
+	indexMandatoryArchive("bearform.rim"    , 100);
+	indexMandatoryArchive("burningform.rim" , 101);
+	indexMandatoryArchive("golemform.rim"   , 102);
+	indexMandatoryArchive("mouseform.rim"   , 103);
+	indexMandatoryArchive("spiderform.rim"  , 104);
+	indexMandatoryArchive("spiritform.rim"  , 105);
+	indexMandatoryArchive("summonbear.rim"  , 106);
+	indexMandatoryArchive("summonspider.rim", 107);
+	indexMandatoryArchive("summonwolf.rim"  , 108);
 
 	progress.step("Indexing extra core sound resources");
 	indexMandatoryDirectory("packages/core/audio"          , 0, -1, 150);
@@ -306,10 +305,10 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 	indexMandatoryDirectory("packages/core/data/cursors"   , 0,  0, 153);
 
 	progress.step("Indexing extra environments");
-	indexMandatoryDirectory("packages/core/env", 0, 0, 200);
+	indexMandatoryDirectory("packages/core/env", 0, -1, 200);
 
 	progress.step("Loading single-player campaign global resource files");
-	indexMandatoryArchive(Aurora::kArchiveERF, "moduleglobal.rim", 250);
+	indexMandatoryArchive("moduleglobal.rim", 250);
 
 	progress.step("Indexing extra single-player campaign movie resources");
 	indexMandatoryDirectory("modules/single player/data"           , 0,  0, 300);

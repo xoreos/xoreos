@@ -146,7 +146,7 @@ void Campaign::loadCampaignFile(const CampaignDescription &desc) {
 
 			file = new Common::File(desc.file);
 			gff  = new Aurora::GFF3File(file, MKTAG('M', 'M', 'D', ' '));
-		} catch (Common::Exception &e) {
+		} catch (Common::Exception &UNUSED(e)) {
 			delete file;
 			throw;
 		}

@@ -31,7 +31,7 @@
 #include "src/aurora/resman.h"
 #include "src/aurora/talkman.h"
 
-#include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/types.h"
 
 #include "src/engines/aurora/util.h"
 

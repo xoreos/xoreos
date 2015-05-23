@@ -27,6 +27,8 @@
 
 #include "src/graphics/graphics.h"
 
+#include "src/graphics/aurora/textureman.h"
+
 #include "src/engines/nwn/gui/widgets/scrollbar.h"
 
 namespace Engines {

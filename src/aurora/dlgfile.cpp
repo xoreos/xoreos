@@ -22,6 +22,10 @@
  *  Handling BioWare's DLGs (dialog / conversation files).
  */
 
+/* See BioWare's own specs released for Neverwinter Nights modding
+ * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
+ */
+
 #include "src/common/error.h"
 #include "src/common/stream.h"
 

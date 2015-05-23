@@ -53,7 +53,10 @@ Module::Module(::Engines::Console &console, Campaign *campaign) :
 }
 
 Module::~Module() {
-	clear();
+	try {
+		clear();
+	} catch (...) {
+	}
 }
 
 void Module::clear() {
@@ -79,7 +82,7 @@ void Module::loadModule(const Common::UString &module) {
 		throw Common::Exception("Tried to load an empty module");
 
 	try {
-		indexMandatoryArchive(Aurora::kArchiveERF, module, 1001, &_resModule);
+		indexMandatoryArchive(module, 1001, &_resModule);
 
 		_ifo.load();
 
@@ -184,7 +187,7 @@ void Module::enterArea() {
 
 	EventMan.flushEvents();
 
-	_console->printf("Entering area \"%s\" \(\"%s\")", _currentArea->getResRef().c_str(),
+	_console->printf("Entering area \"%s\" (\"%s\")", _currentArea->getResRef().c_str(),
 			_currentArea->getName().c_str());
 }
 

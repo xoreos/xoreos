@@ -61,6 +61,20 @@ void CharSex::reset() {
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(447), 1.0);
 }
 
+void CharSex::hide() {
+	Engines::GUI::hide();
+
+	if (_returnCode == 1) {
+		// Set previous choice if any.
+		uint32 previousGender = _choices->getCharacter().getGender();
+
+		if (previousGender != kGenderNone)
+			_buttons->setActive(previousGender);
+		else
+			reset();
+	}
+}
+
 void CharSex::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
 		_choices->setCharGender(_buttons->getChoice());
@@ -69,9 +83,6 @@ void CharSex::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "CancelButton") {
-		// Set previous choice if any.
-		_buttons->setActive(_choices->getCharacter().getGender());
-
 		_returnCode = 1;
 		return;
 	}

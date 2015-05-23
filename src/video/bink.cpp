@@ -536,20 +536,18 @@ void Bink::load() {
 	}
 
 	if (audioTrackCount > 0) {
-		_audioTracks.reserve(audioTrackCount);
+		_audioTracks.resize(audioTrackCount);
 
 		_bink->skip(4 * audioTrackCount);
 
 		// Reading audio track properties
 		for (uint32 i = 0; i < audioTrackCount; i++) {
-			AudioTrack track;
+			AudioTrack &track = _audioTracks[i];
 
 			track.sampleRate = _bink->readUint16LE();
 			track.flags      = _bink->readUint16LE();
 
-			_audioTracks.push_back(track);
-
-			initAudioTrack(_audioTracks[i]);
+			initAudioTrack(track);
 		}
 
 		_bink->skip(4 * audioTrackCount);
@@ -571,7 +569,7 @@ void Bink::load() {
 
 	_frames[frameCount - 1].size = _bink->size() - _frames[frameCount - 1].offset;
 
-	_hasAlpha   = _videoFlags & kVideoFlagAlpha;
+	_hasAlpha   = (_videoFlags & kVideoFlagAlpha) != 0;
 	_swapPlanes = (_id == kBIKhID) || (_id == kBIKiID); // BIKh and BIKi swap the chroma planes
 
 	// Give the planes a bit extra space

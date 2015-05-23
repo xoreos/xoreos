@@ -39,22 +39,12 @@ public:
 	TXB(Common::SeekableReadStream &txb);
 	~TXB();
 
-	/** Return the enclosed TXI data. */
-	Common::SeekableReadStream *getTXI() const;
-
 private:
-	uint32 _dataSize;
-
-	byte  *_txiData;
-	uint32 _txiDataSize;
-
 	// Loading helpers
 	void load(Common::SeekableReadStream &txb);
-	void readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle);
+	void readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle, uint32 &dataSize);
 	void readData(Common::SeekableReadStream &txb, bool needDeSwizzle);
-	void readTXIData(Common::SeekableReadStream &txb);
-
-	void clear();
+	void readTXI(Common::SeekableReadStream &txb);
 
 	static void deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height);
 };

@@ -32,6 +32,7 @@
 #include "src/graphics/images/tga.h"
 
 #include "src/graphics/aurora/cube.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
 #include "src/events/events.h"

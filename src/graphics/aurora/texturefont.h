@@ -31,7 +31,7 @@
 
 #include "src/graphics/font.h"
 
-#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texturehandle.h"
 
 namespace Common {
 	class UString;

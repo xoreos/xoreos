@@ -24,6 +24,7 @@
 
 #include "src/common/error.h"
 #include "src/common/stream.h"
+#include "src/common/strutil.h"
 
 #include "src/sound/audiostream.h"
 #include "src/sound/interleaver.h"
@@ -180,8 +181,9 @@ void XboxMediaVideo::load() {
 
 	_xmv->skip(4); // Max packet size
 
-	if (_xmv->readUint32LE() != MKTAG('X', 'b', 'o', 'x'))
-		throw Common::Exception("XboxMediaVideo::load(): No 'Xbox' tag");
+	uint32 tag = _xmv->readUint32LE();
+	if (tag != MKTAG('X', 'b', 'o', 'x'))
+		throw Common::Exception("XboxMediaVideo::load(): No 'Xbox' tag (%s)", Common::debugTag(tag).c_str());
 
 	uint32 version = _xmv->readUint32LE();
 

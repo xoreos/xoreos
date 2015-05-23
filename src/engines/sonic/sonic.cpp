@@ -46,8 +46,11 @@
 #include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/model.h"
 
 #include "src/engines/sonic/sonic.h"
+#include "src/engines/sonic/files.h"
+#include "src/engines/sonic/modelloader.h"
 #include "src/engines/sonic/console.h"
 
 namespace Engines {
@@ -79,7 +82,11 @@ bool SonicEngineProbe::probe(const Common::UString &UNUSED(directory),
 }
 
 bool SonicEngineProbe::probe(Common::SeekableReadStream &stream) const {
-	return Aurora::NDSFile::isNDS(stream);
+	Common::UString title, code, maker;
+	if (!Aurora::NDSFile::isNDS(stream, title, code, maker))
+		return false;
+
+	return title == "SONICCHRON";
 }
 
 Engines::Engine *SonicEngineProbe::createEngine() const {
@@ -87,7 +94,7 @@ Engines::Engine *SonicEngineProbe::createEngine() const {
 }
 
 
-SonicEngine::SonicEngine() {
+SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid) {
 	_console = new Console(*this);
 }
 
@@ -106,6 +113,8 @@ Common::UString SonicEngine::getLanguageHERF(Aurora::Language language) {
 			return "test_i";
 		case Aurora::kLanguageSpanish:
 			return "test_s";
+		case Aurora::kLanguageJapanese:
+			return "test_j";
 		default:
 			break;
 	}
@@ -125,6 +134,8 @@ Common::UString SonicEngine::getLanguageTLK(Aurora::Language language) {
 			return "strings_it-it";
 		case Aurora::kLanguageSpanish:
 			return "strings_es-es";
+		case Aurora::kLanguageJapanese:
+			return "strings_ja-jp";
 		default:
 			break;
 	}
@@ -205,7 +216,7 @@ void SonicEngine::run() {
 }
 
 void SonicEngine::init() {
-	LoadProgress progress(7);
+	LoadProgress progress(8);
 
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
@@ -234,28 +245,36 @@ void SonicEngine::declareEncodings() {
 		{ Aurora::kLanguageFrench            , Common::kEncodingCP1252 },
 		{ Aurora::kLanguageGerman            , Common::kEncodingCP1252 },
 		{ Aurora::kLanguageItalian           , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageSpanish           , Common::kEncodingCP1252 }
+		{ Aurora::kLanguageSpanish           , Common::kEncodingCP1252 },
+		{ Aurora::kLanguageJapanese          , Common::kEncodingUTF8   }
 	};
 
 	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
 }
 
 void SonicEngine::initResources(LoadProgress &progress) {
+	ResMan.setHasSmall(true);
 	ResMan.setHashAlgo(Common::kHashDJB2);
 
 	progress.step("Indexing the ROM file");
-	indexMandatoryArchive(Aurora::kArchiveNDS, _target, 1);
+	ResMan.registerDataBase(_target);
 
 	progress.step("Indexing the main HERF file");
-	indexMandatoryArchive(Aurora::kArchiveHERF, "test.herf", 10);
+	indexMandatoryArchive("test.herf", 10);
 
 	loadLanguageFiles(progress, _language);
 
+	progress.step("Registering files and formats");
 	declareResources();
+	registerModelLoader(new SonicModelLoader);
+	FontMan.setFormat(Graphics::Aurora::kFontFormatNFTR);
+
+	GfxMan.setCullFace(false);
 }
 
 void SonicEngine::declareResources() {
-	ResMan.declareResource("nintendosplash.tga");
+	for (uint i = 0; i < ARRAYSIZE(kFiles); i++)
+		ResMan.declareResource(kFiles[i]);
 }
 
 void SonicEngine::unloadLanguageFiles() {
@@ -277,7 +296,7 @@ void SonicEngine::loadLanguageFiles(Aurora::Language language) {
 
 	Common::UString herf = getLanguageHERF(language) + ".herf";
 
-	indexMandatoryArchive(Aurora::kArchiveHERF, herf, 50, &_languageHERF);
+	indexMandatoryArchive(herf, 50, &_languageHERF);
 
 	Common::UString tlk = getLanguageTLK(language);
 

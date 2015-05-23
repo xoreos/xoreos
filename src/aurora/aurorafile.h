@@ -34,13 +34,6 @@ namespace Common {
 
 namespace Aurora {
 
-/** Utility class for handling data found in Aurora files. */
-class AuroraFile {
-public:
-	/** Clean up a path string for portable use. */
-	static void cleanupPath(Common::UString &path);
-};
-
 /** Base class for most files found in games using BioWare's Aurora engine. */
 class AuroraBase {
 public:

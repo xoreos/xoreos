@@ -34,25 +34,21 @@
 
 namespace Engines {
 
-void indexMandatoryArchive(Aurora::ArchiveType archiveType, const Common::UString &file,
-                           uint32 priority, Common::ChangeID *changeID) {
-
+void indexMandatoryArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
 	if (EventMan.quitRequested())
 		return;
 
-	ResMan.addArchive(archiveType, file, priority, changeID);
+	ResMan.indexArchive(file, priority, changeID);
 }
 
-bool indexOptionalArchive(Aurora::ArchiveType archiveType, const Common::UString &file,
-                          uint32 priority, Common::ChangeID *changeID) {
-
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
 	if (EventMan.quitRequested())
 		return false;
 
-	if (!ResMan.hasArchive(archiveType, file))
+	if (!ResMan.hasArchive(file))
 		return false;
 
-	ResMan.addArchive(archiveType, file, priority, changeID);
+	ResMan.indexArchive(file, priority, changeID);
 	return true;
 }
 
@@ -62,7 +58,7 @@ void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int d
 	if (EventMan.quitRequested())
 		return;
 
-	ResMan.addResourceDir(dir, glob, depth, priority, changeID);
+	ResMan.indexResourceDir(dir, glob, depth, priority, changeID);
 }
 
 bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int depth,
@@ -74,7 +70,7 @@ bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int de
 	if (!ResMan.hasResourceDir(dir))
 		return false;
 
-	ResMan.addResourceDir(dir, glob, depth, priority, changeID);
+	ResMan.indexResourceDir(dir, glob, depth, priority, changeID);
 	return true;
 }
 

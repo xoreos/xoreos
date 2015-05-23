@@ -415,10 +415,8 @@ public:
 	/**
 	 * Read the specified amount of data into a new[]'ed buffer
 	 * which then is wrapped into a MemoryReadStream.
-	 * The returned stream might contain less data than requested,
-	 * if reading more failed, because of an I/O error or because
-	 * the end of the stream was reached. Which can be determined by
-	 * calling err() and eos().
+	 *
+	 * When reading fails, a kReadError exception is thrown.
 	 */
 	MemoryReadStream *readStream(uint32 dataSize);
 
@@ -674,6 +672,8 @@ public:
 	int32 size() const { return _size; }
 
 	void seek(int32 offs, int whence = SEEK_SET);
+
+	const byte *getData() const { return _ptrOrig; }
 };
 
 
@@ -787,7 +787,10 @@ private:
 	}
 
 public:
-	MemoryWriteStreamDynamic(bool disposeMemory = false) : _capacity(0), _size(0), _ptr(0), _data(0), _pos(0), _disposeMemory(disposeMemory) {}
+	MemoryWriteStreamDynamic(bool disposeMemory = false, uint32 capacity = 0) : _capacity(0), _size(0), _ptr(0), _data(0), _pos(0), _disposeMemory(disposeMemory) {
+
+		reserve(capacity);
+	}
 
 	~MemoryWriteStreamDynamic() {
 		if (_disposeMemory)
@@ -802,6 +805,16 @@ public:
 		if (_pos > _size)
 			_size = _pos;
 		return dataSize;
+	}
+
+	void dispose() {
+		delete[] _data;
+
+		_data     = 0;
+		_ptr      = 0;
+		_pos      = 0;
+		_size     = 0;
+		_capacity = 0;
 	}
 
 	uint32 pos() const { return _pos; }

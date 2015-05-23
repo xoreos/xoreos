@@ -22,8 +22,6 @@
  *  A ZIP archive.
  */
 
-#include "src/common/ustring.h"
-#include "src/common/file.h"
 #include "src/common/zipfile.h"
 #include "src/common/filepath.h"
 
@@ -32,18 +30,14 @@
 
 namespace Aurora {
 
-ZIPFile::ZIPFile(const Common::UString &fileName) : _zipFile(0) {
-	_zipFile = new Common::ZipFile(fileName);
+ZIPFile::ZIPFile(Common::SeekableReadStream *zip) : _zipFile(0) {
+	_zipFile = new Common::ZipFile(zip);
 
 	load();
 }
 
 ZIPFile::~ZIPFile() {
 	delete _zipFile;
-}
-
-void ZIPFile::clear() {
-	_resources.clear();
 }
 
 const Archive::ResourceList &ZIPFile::getResources() const {
@@ -54,8 +48,8 @@ uint32 ZIPFile::getResourceSize(uint32 index) const {
 	return _zipFile->getFileSize(index);
 }
 
-Common::SeekableReadStream *ZIPFile::getResource(uint32 index) const {
-	return _zipFile->getFile(index);
+Common::SeekableReadStream *ZIPFile::getResource(uint32 index, bool tryNoCopy) const {
+	return _zipFile->getFile(index, tryNoCopy);
 }
 
 void ZIPFile::load() {
@@ -69,8 +63,6 @@ void ZIPFile::load() {
 
 		_resources.push_back(res);
 	}
-
-	_zipFile->clear();
 }
 
 } // End of namespace Aurora

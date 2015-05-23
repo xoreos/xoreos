@@ -64,6 +64,28 @@ void CharClass::reset() {
 	_classesListBox->select(0);
 }
 
+void CharClass::hide() {
+	Engines::GUI::hide();
+
+	if (_returnCode == 1) {
+	// Set previous choice if any.
+
+		// Get previous choice.
+		uint previousChoice = 0;
+		for (uint it = 0; it < _classesId.size(); ++it) {
+			if (_classesId[it] == _choices->getClass()) {
+					previousChoice = it;
+					break;
+				}
+		}
+
+		// Setting previous choice.
+		_classesListBox->select(previousChoice);
+		getEditBox("HelpBox", true)->setText("fnt_galahad14", _helpTexts[previousChoice]);
+		getEditBox("HelpBox", true)->setTitle("fnt_galahad14", _classNames[previousChoice]);
+	}
+}
+
 void CharClass::createClassList() {
 	_classesListBox->lock();
 
@@ -106,22 +128,6 @@ void CharClass::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "CancelButton") {
-		// Set previous choice if any.
-
-		// Get previous choice.
-		uint previousChoice = 0;
-		for (uint it = 0; it < _classesId.size(); ++it) {
-			if (_classesId[it] == _choices->getClass()) {
-					previousChoice = it;
-					break;
-				}
-		}
-
-		// Setting previous choice.
-		_classesListBox->select(previousChoice);
-		getEditBox("HelpBox", true)->setText("fnt_galahad14", _helpTexts[previousChoice]);
-		getEditBox("HelpBox", true)->setTitle("fnt_galahad14", _classNames[previousChoice]);
-
 		_returnCode = 1;
 		return;
 	}

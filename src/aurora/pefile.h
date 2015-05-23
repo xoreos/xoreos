@@ -28,14 +28,13 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/archive.h"
 
 namespace Common {
-	class UString;
 	class SeekableReadStream;
-	class File;
 	class PEResources;
 }
 
@@ -44,17 +43,14 @@ namespace Aurora {
 /** A class encapsulating PE exe's for resource archive access. */
 class PEFile : public Archive {
 public:
-	PEFile(const Common::UString &fileName, const std::vector<Common::UString> &remap);
+	PEFile(Common::SeekableReadStream *exe, const std::vector<Common::UString> &remap);
 	~PEFile();
-
-	/** Clear the resource list. */
-	void clear();
 
 	/** Return the list of resources. */
 	const ResourceList &getResources() const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index) const;
+	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
 private:
 	/** The actual exe. */

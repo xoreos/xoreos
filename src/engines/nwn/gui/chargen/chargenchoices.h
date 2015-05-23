@@ -52,12 +52,14 @@ public:
 	void setCharClass(uint32 classId);
 	void setCharAlign(uint32 goodness, uint32 loyalty);
 	void setCharAbilities(std::vector<uint32> abilities, std::vector<uint32> racialAbilities);
+	void setCharPackage(uint32 package);
 
 	bool hasFeat(uint32 featId) const;
 	uint32 getClass() const;
 	uint32 getRace() const;
 	bool getAlign(uint32 &goodness, uint32 &loyalty) const;
 	uint32 getAbility(uint32 ability) const;
+	uint32 getPackage() const;
 
 private:
 	Creature *_creature;
@@ -70,6 +72,7 @@ private:
 	uint32 _classId;
 	uint32 _goodness;
 	uint32 _loyalty;
+	uint32 _package;
 
 };
 
