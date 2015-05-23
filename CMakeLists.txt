@@ -30,7 +30,7 @@ elseif(CMAKE_HOST_UNIX)
   string(REPLACE "<LINK_LIBRARIES>" "-Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_C_CREATE_SHARED_MODULE "${CMAKE_C_CREATE_SHARED_MODULE}")
   string(REPLACE "<LINK_LIBRARIES>" "-Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_CXX_CREATE_SHARED_MODULE "${CMAKE_CXX_CREATE_SHARED_MODULE}")
 elseif(CMAKE_HOST_WIN32)
-  if (MSVC)
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
   endif()
@@ -45,11 +45,11 @@ if(CMAKE_HOST_WIN32)
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
   endif()
-  if (MSVC)
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     set(WARNINGS_DISABLE
       # ignore
       4250 # 'class1' : inherits 'class2::member' via dominance
-      4101 # 'identifier' : unreferenced local variable
+      #4101 # 'identifier' : unreferenced local variable
       4100 # 'identifier' : unreferenced formal parameter
       4127 # conditional expression is constant (template parameter already evaluated)
       4189 # 'identifier' : local variable is initialized but not referenced
@@ -58,7 +58,7 @@ if(CMAKE_HOST_WIN32)
       4510 # 'class' : default constructor could not be generated
       4512 # 'class' : assignment operator could not be generated
       4610 # object 'class' can never be instantiated - user-defined constructor required
-      4702 # unreachable code
+      #4702 # unreachable code
       4706 # assignment within conditional expression
       4710 # 'function' : function not inlined
       4714 # function 'function' marked as __forceinline not inlined
@@ -67,12 +67,11 @@ if(CMAKE_HOST_WIN32)
       4305 # 'identifier' : truncation from 'type1' to 'type2'
       4244 # 'argument' : conversion from 'type1' to 'type2', possible loss of data
       4267 # 'var' : conversion from 'size_t' to 'type', possible loss of data
+      4996 # 'function': was declared deprecated
 
-      # investigate now
       #4005 # 'identifier' : macro redefinition
       #4800 # 'type' : forcing value to bool 'true' or 'false' (performance warning)
       #4146 # unary minus operator applied to unsigned type, result still unsigned
-      #4996 # 'function': was declared deprecated
       )
 
     foreach(d ${WARNINGS_DISABLE})
@@ -140,10 +139,6 @@ find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${ZLIB_LIBRARIES})
 
-if(BOOST_STATIC)
-    set(Boost_USE_STATIC_LIBS   ON)
-endif()
-
 find_package(Boost COMPONENTS system filesystem regex date_time atomic REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${Boost_LIBRARIES})
@@ -185,7 +180,7 @@ find_package(LibLZMA REQUIRED)
 include_directories(${LIBLZMA_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${LIBLZMA_LIBRARIES})
 
-if(WIN32)
+if(CMAKE_HOST_WIN32)
 find_package(Ogg REQUIRED)
 include_directories(${OGG_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${OGG_LIBRARIES})
@@ -193,7 +188,7 @@ list(APPEND XOREOS_LIBRARIES ${OGG_LIBRARIES})
 find_package(Iconv REQUIRED)
 include_directories(${ICONV_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${ICONV_LIBRARIES})
-endif(WIN32)
+endif()
 
 find_package(GLEW)
 if(NOT GLEW_FOUND)
@@ -230,7 +225,7 @@ set_property(SOURCE src/common/version.cpp APPEND PROPERTY COMPILE_DEFINITIONS X
 
 find_package(Git)
 if(GIT_FOUND)
-    execute_process(COMMAND ${GIT_EXECUTABLE} -C ${CMAKE_SOURCE_DIR} describe --long --match desc/* OUTPUT_VARIABLE XOREOS_REVDESC OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND "${GIT_EXECUTABLE}" -C "${CMAKE_CURRENT_SOURCE_DIR}" describe --long --match desc/* OUTPUT_VARIABLE XOREOS_REVDESC OUTPUT_STRIP_TRAILING_WHITESPACE)
   string(REGEX REPLACE "desc/(.*)-([^-]*)-([^-]*)" "\\1+\\2.\\3" XOREOS_REVDESC "${XOREOS_REVDESC}")
 
   execute_process(
