@@ -33,6 +33,7 @@ noinst_HEADERS = \
                  model_kotor.h \
                  model_jade.h \
                  model_witcher.h \
+                 model_sonic.h \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
@@ -65,4 +66,5 @@ libaurora_la_SOURCES = \
                        model_kotor.cpp \
                        model_jade.cpp \
                        model_witcher.cpp \
+                       model_sonic.cpp \
                        $(EMPTY)
