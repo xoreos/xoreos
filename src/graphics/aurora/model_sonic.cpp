@@ -49,9 +49,6 @@
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
-// Disable the "unused variable" warnings while most stuff is still stubbed
-IGNORE_UNUSED_VARIABLES
-
 static const uint32 kBMD0ID = MKTAG('B', 'M', 'D', '0');
 static const uint32 kMDL0ID = MKTAG('M', 'D', 'L', '0');
 
@@ -142,21 +139,10 @@ void Model_Sonic::readModel(ParserContext &ctx) {
 
 	ctx.defaultScale = getFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
 
-	const float boundScale = getFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
-
-	ctx.nsbmd->skip(8); // Unknown
-
-	float boundingMin[3], boundingMax[3];
-
-	boundingMin[0] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-	boundingMin[1] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-	boundingMin[2] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-
-	boundingMax[0] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-	boundingMax[1] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-	boundingMax[2] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-
-	ctx.nsbmd->skip(8); // Unknown
+	ctx.nsbmd->skip( 4); // Bound box scaling
+	ctx.nsbmd->skip( 8); // Unknown
+	ctx.nsbmd->skip(12); // Bounding box. We calculate our own
+	ctx.nsbmd->skip( 8); // Unknown
 
 	ctx.offsetBones = ctx.nsbmd->pos();
 
