@@ -46,9 +46,11 @@
 #include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/model.h"
 
 #include "src/engines/sonic/sonic.h"
 #include "src/engines/sonic/files.h"
+#include "src/engines/sonic/modelloader.h"
 #include "src/engines/sonic/console.h"
 
 namespace Engines {
@@ -264,6 +266,7 @@ void SonicEngine::initResources(LoadProgress &progress) {
 
 	progress.step("Registering files and formats");
 	declareResources();
+	registerModelLoader(new SonicModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatNFTR);
 
 	GfxMan.setCullFace(false);
