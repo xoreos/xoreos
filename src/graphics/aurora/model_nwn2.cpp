@@ -244,53 +244,18 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	// Read vertices (interleaved)
 
-	GLsizei vpsize  = 3;
-	GLsizei vnsize  = 3;
-	GLsizei vtsize  = 3;
-	GLsizei vttsize = _tintMap.empty() ? 0 : 3;
-	uint32 vertexSize = (vpsize + vnsize + vtsize + vttsize) * sizeof(float);
-	_vertexBuffer.setSize(vertexCount, vertexSize);
-
-	float *vertexData = (float *) _vertexBuffer.getData();
 	VertexDecl vertexDecl;
 
-	VertexAttrib vp;
-	vp.index = VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = vertexSize;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
+	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
+	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
+	vertexDecl.push_back(VertexAttrib(VTCOORD  , 3, GL_FLOAT));
 
-	VertexAttrib vn;
-	vn.index = VNORMAL;
-	vn.size = vnsize;
-	vn.type = GL_FLOAT;
-	vn.stride = vertexSize;
-	vn.pointer = vertexData + vpsize;
-	vertexDecl.push_back(vn);
+	if (!_tintMap.empty())
+		vertexDecl.push_back(VertexAttrib(VTCOORD + 1, 3, GL_FLOAT));
 
-	VertexAttrib vt;
-	vt.index = VTCOORD;
-	vt.size = vtsize;
-	vt.type = GL_FLOAT;
-	vt.stride = vertexSize;
-	vt.pointer = vertexData + vpsize + vnsize;
-	vertexDecl.push_back(vt);
+	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	if (vttsize > 0) {
-		VertexAttrib vtt;
-		vtt.index = VTCOORD + 1;
-		vtt.size = vttsize;
-		vtt.type = GL_FLOAT;
-		vtt.stride = vertexSize;
-		vtt.pointer = vertexData + vpsize + vnsize + vtsize;
-		vertexDecl.push_back(vtt);
-	}
-
-	_vertexBuffer.setVertexDecl(vertexDecl);
-
-	float *v = vertexData;
+	float *v = (float *) _vertexBuffer.getData();
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -311,7 +276,7 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 
 		// TintMap TexCoords
-		if (vttsize > 0) {
+		if (!_tintMap.empty()) {
 			v[0] = v[-3];
 			v[1] = v[-2];
 			v[2] = v[-1];
@@ -379,53 +344,18 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	// Read vertices (interleaved)
 
-	GLsizei vpsize  = 3;
-	GLsizei vnsize  = 3;
-	GLsizei vtsize  = 3;
-	GLsizei vttsize = _tintMap.empty() ? 0 : 3;
-	uint32 vertexSize = (vpsize + vnsize + vtsize + vttsize) * sizeof(float);
-	_vertexBuffer.setSize(vertexCount, vertexSize);
-
-	float *vertexData = (float *) _vertexBuffer.getData();
 	VertexDecl vertexDecl;
 
-	VertexAttrib vp;
-	vp.index = VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = vertexSize;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
+	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
+	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
+	vertexDecl.push_back(VertexAttrib(VTCOORD  , 3, GL_FLOAT));
 
-	VertexAttrib vn;
-	vn.index = VNORMAL;
-	vn.size = vnsize;
-	vn.type = GL_FLOAT;
-	vn.stride = vertexSize;
-	vn.pointer = vertexData + vpsize;
-	vertexDecl.push_back(vn);
+	if (!_tintMap.empty())
+		vertexDecl.push_back(VertexAttrib(VTCOORD + 1, 3, GL_FLOAT));
 
-	VertexAttrib vt;
-	vt.index = VTCOORD;
-	vt.size = vtsize;
-	vt.type = GL_FLOAT;
-	vt.stride = vertexSize;
-	vt.pointer = vertexData + vpsize + vnsize;
-	vertexDecl.push_back(vt);
+	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	if (vttsize > 0) {
-		VertexAttrib vtt;
-		vtt.index = VTCOORD + 1;
-		vtt.size = vttsize;
-		vtt.type = GL_FLOAT;
-		vtt.stride = vertexSize;
-		vtt.pointer = vertexData + vpsize + vnsize + vtsize;
-		vertexDecl.push_back(vtt);
-	}
-
-	_vertexBuffer.setVertexDecl(vertexDecl);
-
-	float *v = vertexData;
+	float *v = (float *) _vertexBuffer.getData();
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -448,7 +378,7 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 
 		// TintMap TexCoords
-		if (vttsize > 0) {
+		if (!_tintMap.empty()) {
 			v[0] = v[-3];
 			v[1] = v[-2];
 			v[2] = v[-1];
