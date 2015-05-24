@@ -37,6 +37,7 @@ public:
 	static void decompress(Common::SeekableReadStream &small, Common::WriteStream &out);
 
 	static Common::SeekableReadStream *decompress(Common::SeekableReadStream *small);
+	static Common::SeekableReadStream *decompress(Common::SeekableReadStream &small);
 };
 
 } // End of namespace Aurora

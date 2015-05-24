@@ -152,4 +152,22 @@ Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small)
 	return new Common::MemoryReadStream(out.getData(), out.size(), true);
 }
 
+Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream &small) {
+	uint32 type, size;
+	readSmallHeader(small, type, size);
+
+	Common::MemoryWriteStreamDynamic out(false, size);
+
+	try {
+		::Aurora::decompress(small, out, type, size);
+	} catch (Common::Exception &e) {
+		out.dispose();
+
+		e.add("Failed to decompress \"small\" file");
+		throw e;
+	}
+
+	return new Common::MemoryReadStream(out.getData(), out.size(), true);
+}
+
 } // End of namespace Aurora
