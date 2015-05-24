@@ -1132,13 +1132,9 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 	vertexDecl.push_back(VertexAttrib(VCOLOR   , 4, GL_FLOAT));
 	vertexDecl.push_back(VertexAttrib(VTCOORD  , 2, GL_FLOAT));
 
-	primitive.vertexBuffer.setVertexDeclLinear(primitive.vertices.size(), vertexDecl);
+	primitive.vertexBuffer.setVertexDeclInterleave(primitive.vertices.size(), vertexDecl);
 
-	float  *vPos    = (float *) vertexDecl[0].pointer;
-	float  *vNormal = (float *) vertexDecl[1].pointer;
-	float  *vColor  = (float *) vertexDecl[2].pointer;
-	float  *vTCoord = (float *) vertexDecl[3].pointer;
-
+	float *vData = (float *) primitive.vertexBuffer.getData();
 	for (PrimitiveVertices::const_iterator v = primitive.vertices.begin(); v != primitive.vertices.end(); ++v) {
 		/* To get the absolute position of the vertex, transform it by the absolute
 		 * position of its base node. Use an identity matrix as a fallback. */
@@ -1150,21 +1146,21 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 
 		const Common::Vector3 pos = matrix * v->vertex;
 
-		*vPos++ = pos[0];
-		*vPos++ = pos[1];
-		*vPos++ = pos[2];
+		*vData++ = pos[0];
+		*vData++ = pos[1];
+		*vData++ = pos[2];
 
-		*vNormal++ = v->normal[0];
-		*vNormal++ = v->normal[1];
-		*vNormal++ = v->normal[2];
+		*vData++ = v->normal[0];
+		*vData++ = v->normal[1];
+		*vData++ = v->normal[2];
 
-		*vColor++ = v->color[0];
-		*vColor++ = v->color[1];
-		*vColor++ = v->color[2];
-		*vColor++ = v->color[3];
+		*vData++ = v->color[0];
+		*vData++ = v->color[1];
+		*vData++ = v->color[2];
+		*vData++ = v->color[3];
 
-		*vTCoord++ = v->texCoord[0];
-		*vTCoord++ = v->texCoord[1];
+		*vData++ = v->texCoord[0];
+		*vData++ = v->texCoord[1];
 	}
 
 }
