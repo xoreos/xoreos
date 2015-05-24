@@ -463,46 +463,18 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	// Read vertices
 
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 3;
-	GLsizei vtsize = 2;
-	uint32 vertexSize = (vpsize + vnsize + vtsize * texCount) * sizeof(float);
-	_vertexBuffer.setSize(vertexCount, vertexSize);
-
-	float *vertexData = (float *) _vertexBuffer.getData();
 	VertexDecl vertexDecl;
 
-	VertexAttrib vp;
-	vp.index = VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = 0;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
+	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
+	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
+	for (uint t = 0; t < texCount; t++)
+		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	VertexAttrib vn;
-	vn.index = VNORMAL;
-	vn.size = vnsize;
-	vn.type = GL_FLOAT;
-	vn.stride = 0;
-	vn.pointer = vertexData + vpsize * vertexCount;
-	vertexDecl.push_back(vn);
-
-	VertexAttrib vt[4];
-	for (uint t = 0; t < texCount; t++) {
-		vt[t].index = VTCOORD + t;
-		vt[t].size = vtsize;
-		vt[t].type = GL_FLOAT;
-		vt[t].stride = 0;
-		vt[t].pointer = vertexData + (vpsize + vnsize + t * vtsize) * vertexCount;
-		vertexDecl.push_back(vt[t]);
-	}
-
-	_vertexBuffer.setVertexDecl(vertexDecl);
+	_vertexBuffer.setVertexDeclLinear(vertexCount, vertexDecl);
 
 	// Read vertex position
 	ctx.mdb->seekTo(ctx.offRawData + vertexOffset);
-	float *v = (float *) vp.pointer;
+	float *v = (float *) vertexDecl[0].pointer;
 	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -512,7 +484,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	// Read vertex normals
 	assert(normalsCount == vertexCount);
 	ctx.mdb->seekTo(ctx.offRawData + normalsOffset);
-	v = (float *) vn.pointer;
+	v = (float *) vertexDecl[1].pointer;
 	for (uint32 i = 0; i < normalsCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -523,7 +495,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	for (uint t = 0; t < texCount; t++) {
 
 		ctx.mdb->seekTo(ctx.offRawData + tVertsOffset[t]);
-		v = (float *) vt[t].pointer;
+		v = (float *) vertexDecl[2 + t].pointer;
 		for (uint32 i = 0; i < tVertsCount[t]; i++) {
 			if (i < tVertsCount[t]) {
 				*v++ = ctx.mdb->readIEEEFloatLE();
@@ -716,46 +688,18 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 
 	// Read vertices
 
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 3;
-	GLsizei vtsize = 2;
-	uint32 vertexSize = (vpsize + vnsize + vtsize * texCount) * sizeof(float);
-	_vertexBuffer.setSize(vertexCount, vertexSize);
-
-	float *vertexData = (float *) _vertexBuffer.getData();
 	VertexDecl vertexDecl;
 
-	VertexAttrib vp;
-	vp.index = VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = 0;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
+	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
+	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
+	for (uint t = 0; t < texCount; t++)
+		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	VertexAttrib vn;
-	vn.index = VNORMAL;
-	vn.size = vnsize;
-	vn.type = GL_FLOAT;
-	vn.stride = 0;
-	vn.pointer = vertexData + vpsize * vertexCount;
-	vertexDecl.push_back(vn);
-
-	VertexAttrib vt[4];
-	for (uint t = 0; t < texCount; t++) {
-		vt[t].index = VTCOORD + t;
-		vt[t].size = vtsize;
-		vt[t].type = GL_FLOAT;
-		vt[t].stride = 0;
-		vt[t].pointer = vertexData + (vpsize + vnsize + t * vtsize) * vertexCount;
-		vertexDecl.push_back(vt[t]);
-	}
-
-	_vertexBuffer.setVertexDecl(vertexDecl);
+	_vertexBuffer.setVertexDeclLinear(vertexCount, vertexDecl);
 
 	// Read vertex position
 	ctx.mdb->seekTo(ctx.offRawData + vertexOffset);
-	float *v = (float *) vp.pointer;
+	float *v = (float *) vertexDecl[0].pointer;
 	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -765,7 +709,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	// Read vertex normals
 	assert(normalsCount == vertexCount);
 	ctx.mdb->seekTo(ctx.offRawData + normalsOffset);
-	v = (float *) vn.pointer;
+	v = (float *) vertexDecl[1].pointer;
 	for (uint32 i = 0; i < normalsCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -776,7 +720,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	for (uint t = 0; t < texCount; t++) {
 
 		ctx.mdb->seekTo(ctx.offRawData + tVertsOffset[t]);
-		v = (float *) vt[t].pointer;
+		v = (float *) vertexDecl[2 + t].pointer;
 		for (uint32 i = 0; i < tVertsCount[t]; i++) {
 			if (i < tVertsCount[t]) {
 				*v++ = ctx.mdb->readIEEEFloatLE();
