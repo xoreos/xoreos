@@ -1120,8 +1120,7 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 	primitive.indexBuffer.setSize(primitive.indices.size(), sizeof(uint16), GL_UNSIGNED_SHORT);
 
 	uint16 *indices = (uint16 *) primitive.indexBuffer.getData();
-	for (PrimitiveIndices::const_iterator i = primitive.indices.begin(); i != primitive.indices.end(); ++i)
-		*indices++ = *i;
+	memcpy(indices, &primitive.indices[0], primitive.indices.size() * sizeof(uint16));
 
 	// Create vertex buffer
 
