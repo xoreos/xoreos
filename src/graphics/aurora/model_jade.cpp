@@ -601,36 +601,15 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 
 	// Create the VertexBuffer / IndexBuffer
 
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 0;
-	GLsizei vtsize = 2;
-	uint32 vertexSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
-	_vertexBuffer.setSize(vertexCount, vertexSize);
-
-	float *vertexData = (float *) _vertexBuffer.getData();
 	VertexDecl vertexDecl;
 
-	VertexAttrib vp;
-	vp.index = VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = vertexSize;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
+	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
+	for (uint t = 0; t < textureCount; t++)
+		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	for (uint t = 0; t < textureCount; t++) {
-		VertexAttrib vt;
-		vt.index = VTCOORD + t;
-		vt.size = vtsize;
-		vt.type = GL_FLOAT;
-		vt.stride = vertexSize;
-		vt.pointer = vertexData + vpsize + vnsize + vtsize * t;
-		vertexDecl.push_back(vt);
-	}
+	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	_vertexBuffer.setVertexDecl(vertexDecl);
-
-	float *v = vertexData;
+	float *v = (float *) _vertexBuffer.getData();
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.vertices[i * 3 + 0];
