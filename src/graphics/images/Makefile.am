@@ -20,6 +20,7 @@ noinst_HEADERS = \
                  nbfs.h \
                  nclr.h \
                  ncgr.h \
+                 cbgt.h \
                  $(EMPTY)
 
 libimages_la_SOURCES = \
@@ -40,4 +41,5 @@ libimages_la_SOURCES = \
                        nbfs.cpp \
                        nclr.cpp \
                        ncgr.cpp \
+                       cbgt.cpp \
                        $(EMPTY)
