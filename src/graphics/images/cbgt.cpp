@@ -262,6 +262,8 @@ void CBGT::drawImage(ReadContext &ctx) {
 	byte *data = _mipMaps.back()->data;
 	for (size_t i = 0; i < ctx.cells.size(); i++) {
 		Common::SeekableReadStream *cell = ctx.cells[i];
+		if (!cell)
+			continue;
 
 		const uint32 xC = i % cellsX;
 		const uint32 yC = i / cellsX;
