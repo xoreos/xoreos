@@ -42,6 +42,7 @@ noinst_HEADERS = \
                  smallfile.h \
                  nitrofile.h \
                  nsbtxfile.h \
+                 cdpth.h \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
@@ -77,6 +78,7 @@ libaurora_la_SOURCES = \
                        smallfile.cpp \
                        nitrofile.cpp \
                        nsbtxfile.cpp \
+                       cdpth.cpp \
                        $(EMPTY)
 
 libaurora_la_LIBADD = \
