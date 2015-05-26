@@ -619,7 +619,6 @@ uint64 GFF4Struct::getUint(Common::SeekableReadStream &data, IFieldType type) co
 			return (uint64) ((int64) data.readSint16LE());
 
 		case kIFieldTypeUint32:
-		case kIFieldTypeUnknown18:
 			return (uint64) data.readUint32LE();
 
 		case kIFieldTypeSint32:
@@ -653,7 +652,6 @@ int64 GFF4Struct::getSint(Common::SeekableReadStream &data, IFieldType type) con
 			return (int64) data.readSint16LE();
 
 		case kIFieldTypeUint32:
-		case kIFieldTypeUnknown18:
 			return (int64) ((uint64) data.readUint32LE());
 
 		case kIFieldTypeSint32:
@@ -679,6 +677,9 @@ double GFF4Struct::getDouble(Common::SeekableReadStream &data, IFieldType type) 
 
 		case kIFieldTypeFloat64:
 			return (double) data.readIEEEDoubleLE();
+
+		case kIFieldTypeNDSFixed:
+			return readNintendoFixedPoint(data.readUint32LE(), true, 19, 12);
 
 		default:
 			break;
