@@ -137,7 +137,7 @@ void Model_Sonic::readModel(ParserContext &ctx) {
 	ctx.nsbmd->skip(4); // End of the polygons section
 	ctx.nsbmd->skip(8); // Unknown
 
-	ctx.defaultScale = getFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
+	ctx.defaultScale = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
 
 	ctx.nsbmd->skip( 4); // Bound box scaling
 	ctx.nsbmd->skip( 8); // Unknown
@@ -286,7 +286,7 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 
 	const uint16 flags = ctx.nsbmd->readUint16();
 
-	const double rotate0 = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+	const double rotate0 = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
 	const bool hasTranslate =  (flags & 0x01) == 0;
 	const bool hasRotate    = ((flags & 0x02) == 0) && !((flags & 0x08) != 0);
@@ -299,16 +299,16 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 	// TRS: translate, rotate/pivot, scale
 
 	if (hasTranslate) {
-		const float x = getFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
-		const float y = getFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
-		const float z = getFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
+		const float x = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
+		const float y = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
+		const float z = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
 
 		bone.transform.translate(x, y, z);
 	}
 
 	if (hasPivot) {
-		const float pivotA = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		const float pivotB = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		const float pivotA = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		const float pivotB = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
 		const Common::TransformationMatrix pivot = createPivot(pivotA, pivotB, pivotSelect, pivotNegate);
 
@@ -319,24 +319,24 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 		Common::TransformationMatrix rotate;
 
 		rotate[ 0] = rotate0;
-		rotate[ 1] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[ 2] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotate[ 1] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotate[ 2] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
-		rotate[ 4] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[ 5] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[ 6] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotate[ 4] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotate[ 5] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotate[ 6] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
-		rotate[ 8] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[ 9] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[10] = getFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotate[ 8] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotate[ 9] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotate[10] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
 		bone.transform *= rotate;
 	}
 
 	if (hasScale) {
-		const float x = getFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
-		const float y = getFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
-		const float z = getFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
+		const float x = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
+		const float y = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
+		const float z = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
 
 		bone.transform.scale(x, y, z);
 	}
@@ -809,58 +809,58 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 
 			case kPolygonTexCoord:
 				// One unit ^= one texel!
-				vertex.texCoord[0] = getFixedPoint( c->parameters[0]        & 0xFFFF, true, 11, 4) / tWidth;
-				vertex.texCoord[1] = getFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 11, 4) / tHeight;
+				vertex.texCoord[0] = readNintendoFixedPoint( c->parameters[0]        & 0xFFFF, true, 11, 4) / tWidth;
+				vertex.texCoord[1] = readNintendoFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 11, 4) / tHeight;
 				break;
 
 			case kPolygonNormal:
-				vertex.normal[0] = getFixedPoint( c->parameters[0]        & 0x03FF, true, 0, 9);
-				vertex.normal[1] = getFixedPoint((c->parameters[0] >> 10) & 0x03FF, true, 0, 9);
-				vertex.normal[2] = getFixedPoint((c->parameters[0] >> 20) & 0x03FF, true, 0, 9);
+				vertex.normal[0] = readNintendoFixedPoint( c->parameters[0]        & 0x03FF, true, 0, 9);
+				vertex.normal[1] = readNintendoFixedPoint((c->parameters[0] >> 10) & 0x03FF, true, 0, 9);
+				vertex.normal[2] = readNintendoFixedPoint((c->parameters[0] >> 20) & 0x03FF, true, 0, 9);
 				break;
 
 
 			case kPolygonVertex16:
-				vertex.vertex[0] = getFixedPoint( c->parameters[0]        & 0xFFFF, true, 3, 12);
-				vertex.vertex[1] = getFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 3, 12);
-				vertex.vertex[2] = getFixedPoint( c->parameters[1]        & 0xFFFF, true, 3, 12);
+				vertex.vertex[0] = readNintendoFixedPoint( c->parameters[0]        & 0xFFFF, true, 3, 12);
+				vertex.vertex[1] = readNintendoFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 3, 12);
+				vertex.vertex[2] = readNintendoFixedPoint( c->parameters[1]        & 0xFFFF, true, 3, 12);
 
 				hasVertex = true;
 				break;
 
 			case kPolygonVertex10:
-				vertex.vertex[0] = getFixedPoint( c->parameters[0]        & 0x03FF, true, 3, 6);
-				vertex.vertex[1] = getFixedPoint((c->parameters[0] >> 10) & 0x03FF, true, 3, 6);
-				vertex.vertex[2] = getFixedPoint((c->parameters[0] >> 20) & 0x03FF, true, 3, 6);
+				vertex.vertex[0] = readNintendoFixedPoint( c->parameters[0]        & 0x03FF, true, 3, 6);
+				vertex.vertex[1] = readNintendoFixedPoint((c->parameters[0] >> 10) & 0x03FF, true, 3, 6);
+				vertex.vertex[2] = readNintendoFixedPoint((c->parameters[0] >> 20) & 0x03FF, true, 3, 6);
 
 				hasVertex = true;
 				break;
 
 			case kPolygonVertexXY:
-				vertex.vertex[0] = getFixedPoint( c->parameters[0]        & 0xFFFF, true, 3, 12);
-				vertex.vertex[1] = getFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 3, 12);
+				vertex.vertex[0] = readNintendoFixedPoint( c->parameters[0]        & 0xFFFF, true, 3, 12);
+				vertex.vertex[1] = readNintendoFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 3, 12);
 
 				hasVertex = true;
 				break;
 
 			case kPolygonVertexXZ:
-				vertex.vertex[0] = getFixedPoint( c->parameters[0]        & 0xFFFF, true, 3, 12);
-				vertex.vertex[2] = getFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 3, 12);
+				vertex.vertex[0] = readNintendoFixedPoint( c->parameters[0]        & 0xFFFF, true, 3, 12);
+				vertex.vertex[2] = readNintendoFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 3, 12);
 
 				hasVertex = true;
 				break;
 
 			case kPolygonVertexYZ:
-				vertex.vertex[1] = getFixedPoint( c->parameters[0]        & 0xFFFF, true, 3, 12);
-				vertex.vertex[2] = getFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 3, 12);
+				vertex.vertex[1] = readNintendoFixedPoint( c->parameters[0]        & 0xFFFF, true, 3, 12);
+				vertex.vertex[2] = readNintendoFixedPoint((c->parameters[0] >> 16) & 0xFFFF, true, 3, 12);
 
 				hasVertex = true;
 				break;
 
 			case kPolygonVertexDiff:
-				vertex.vertex[0] += getFixedPoint( c->parameters[0]        & 0x03FF, true, 0, 9) / 8;
-				vertex.vertex[1] += getFixedPoint((c->parameters[0] >> 10) & 0x03FF, true, 0, 9) / 8;
-				vertex.vertex[2] += getFixedPoint((c->parameters[0] >> 20) & 0x03FF, true, 0, 9) / 8;
+				vertex.vertex[0] += readNintendoFixedPoint( c->parameters[0]        & 0x03FF, true, 0, 9) / 8;
+				vertex.vertex[1] += readNintendoFixedPoint((c->parameters[0] >> 10) & 0x03FF, true, 0, 9) / 8;
+				vertex.vertex[2] += readNintendoFixedPoint((c->parameters[0] >> 20) & 0x03FF, true, 0, 9) / 8;
 
 				hasVertex = true;
 				break;
@@ -889,9 +889,9 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 
 			case kPolygonMatrixScale:
 				// The NDS probably directly scales the current matrix?
-				scale[0] *= getFixedPoint(c->parameters[0], true, 19, 12);
-				scale[1] *= getFixedPoint(c->parameters[1], true, 19, 12);
-				scale[2] *= getFixedPoint(c->parameters[2], true, 19, 12);
+				scale[0] *= readNintendoFixedPoint(c->parameters[0], true, 19, 12);
+				scale[1] *= readNintendoFixedPoint(c->parameters[1], true, 19, 12);
+				scale[2] *= readNintendoFixedPoint(c->parameters[2], true, 19, 12);
 				break;
 
 			// Commands we hopefully won't need
@@ -1165,29 +1165,6 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 }
 
 // --- Utility methods ---
-
-double Model_Sonic::getFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits) {
-	/* The Nintendo DS uses fixed point values of various formats. This method can
-	 * convert them all into a usual floating point double. */
-
-	// Masks for the integer, fractional and sign parts
-	const uint32 fMask =  (1 <<          fBits)  - 1;
-	const uint32 iMask = ((1 << (iBits + fBits)) - 1) - fMask;
-	const uint32 sMask =   1 << (iBits + fBits);
-
-	// Step of a fractional unit
-	const uint32 fDiv  =  (1 <<          fBits);
-
-	// The fractional and integer parts themselves
-	int32 fPart =  value & fMask;
-	int32 iPart = (value & iMask) >> fBits;
-
-	// If this is a negative value, negate the integer part (which is a two's complement)
-	if (sign && ((value & sMask) != 0))
-		iPart = -((int32) ((~iPart & (iMask >> fBits)) + 1));
-
-	return (double)iPart + ((double) fPart) / ((double) fDiv);
-}
 
 uint8 Model_Sonic::getBoneParameterCount(BoneCommandID cmd, uint8 count) {
 	switch (cmd) {

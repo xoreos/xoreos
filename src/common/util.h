@@ -127,4 +127,14 @@ double convertIEEEDouble(uint64 data);
 uint32 convertIEEEFloat(float value);
 uint64 convertIEEEDouble(double value);
 
+/** Read a fixed-point value, in a format used by the Nintendo DS.
+ *
+ *  @param  value The integer representing the fixed-point value.
+ *  @param  sign Is this a signed fixed-point value?
+ *  @param  iBits Number of bits in the integer part.
+ *  @param  fBits Number of bits in the fractional part.
+ *  @return A floating-point representation of the fixed-point value.
+ */
+double readNintendoFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits);
+
 #endif // COMMON_UTIL_H

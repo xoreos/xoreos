@@ -154,3 +154,26 @@ uint64 convertIEEEDouble(double value) {
 
 	return conv.dInt;
 }
+
+double readNintendoFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits) {
+	/* The Nintendo DS uses fixed point values of various formats. This method can
+	 * convert them all into a usual floating point double. */
+
+	// Masks for the integer, fractional and sign parts
+	const uint32 fMask =  (1 <<          fBits)  - 1;
+	const uint32 iMask = ((1 << (iBits + fBits)) - 1) - fMask;
+	const uint32 sMask =   1 << (iBits + fBits);
+
+	// Step of a fractional unit
+	const uint32 fDiv  =  (1 <<          fBits);
+
+	// The fractional and integer parts themselves
+	int32 fPart =  value & fMask;
+	int32 iPart = (value & iMask) >> fBits;
+
+	// If this is a negative value, negate the integer part (which is a two's complement)
+	if (sign && ((value & sMask) != 0))
+		iPart = -((int32) ((~iPart & (iMask >> fBits)) + 1));
+
+	return (double)iPart + ((double) fPart) / ((double) fDiv);
+}
