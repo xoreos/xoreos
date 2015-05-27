@@ -214,31 +214,20 @@ void NCGR::calculateGrid(ReadContext &ctx, uint32 &imageWidth, uint32 &imageHeig
 	// Go through the whole image and get the max height of a row of NCGR
 	for (uint32 y = 0; y < ctx.height; y++) {
 		uint32 rowHeight = 0;
+		uint32 rowWidth  = 0;
 
 		for (uint32 x = 0; x < ctx.width; x++) {
 			NCGRFile &ncgr = ctx.ncgrs[y * ctx.width + x];
+			ncgr.offsetX = rowWidth;
 			ncgr.offsetY = imageHeight;
 
 			rowHeight = MAX(rowHeight, ncgr.height);
+			rowWidth += ncgr.width;
 		}
 
 		imageHeight += rowHeight;
+		imageWidth   = MAX(imageWidth, rowWidth);
 	}
-
-	// Go through the whole image and get the max width of a column of NCGR
-	for (uint32 x = 0; x < ctx.width; x++) {
-		uint32 colWidth = 0;
-
-		for (uint32 y = 0; y < ctx.height; y++) {
-			NCGRFile &ncgr = ctx.ncgrs[y * ctx.width + x];
-			ncgr.offsetX = imageWidth;
-
-			colWidth = MAX(colWidth, ncgr.width);
-		}
-
-		imageWidth += colWidth;
-	}
-
 }
 
 void NCGR::draw(ReadContext &ctx) {
