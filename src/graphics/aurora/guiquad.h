@@ -44,6 +44,9 @@ public:
 	GUIQuad(const Common::UString &texture,
 	        float  x1      , float  y1      , float  x2      , float  y2,
 	        float tX1 = 0.0, float tY1 = 0.0, float tX2 = 1.0, float tY2 = 1.0);
+	GUIQuad(TextureHandle texture,
+	        float  x1      , float  y1      , float  x2      , float  y2,
+	        float tX1 = 0.0, float tY1 = 0.0, float tX2 = 1.0, float tY2 = 1.0);
 	~GUIQuad();
 
 	/** Get the current position of the quad. */
@@ -57,6 +60,8 @@ public:
 	void setColor(float r, float g, float b, float a);
 	/** Set the current texture of the quad. */
 	void setTexture(const Common::UString &texture);
+	/** Set the current texture of the quad. */
+	void setTexture(TextureHandle texture);
 
 	float getWidth () const; ///< Return the quad's width.
 	float getHeight() const; ///< Return the quad's height.

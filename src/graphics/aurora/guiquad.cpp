@@ -55,6 +55,17 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 	_distance = -FLT_MAX;
 }
 
+GUIQuad::GUIQuad(TextureHandle texture,
+                 float x1 , float y1 , float x2 , float y2,
+                 float tX1, float tY1, float tX2, float tY2) :
+	_texture(texture), _r(1.0), _g(1.0), _b(1.0), _a(1.0),
+	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
+	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
+	_xor(false) {
+
+	_distance = -FLT_MAX;
+}
+
 GUIQuad::~GUIQuad() {
 	hide();
 }
@@ -115,6 +126,14 @@ void GUIQuad::setTexture(const Common::UString &texture) {
 
 		_r = _g = _b = _a = 0.0;
 	}
+
+	unlockFrameIfVisible();
+}
+
+void GUIQuad::setTexture(TextureHandle texture) {
+	lockFrameIfVisible();
+
+	_texture = texture;
 
 	unlockFrameIfVisible();
 }
