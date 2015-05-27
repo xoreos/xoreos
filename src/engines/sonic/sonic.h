@@ -30,6 +30,8 @@
 
 #include "src/aurora/types.h"
 
+#include "src/graphics/aurora/fonthandle.h"
+
 #include "src/engines/engine.h"
 #include "src/engines/engineprobe.h"
 
@@ -88,6 +90,9 @@ private:
 	Common::ChangeID _languageHERF;
 	Common::ChangeID _languageTLK;
 
+	Graphics::Aurora::FontHandle _guiFont;
+	Graphics::Aurora::FontHandle _quoteFont;
+
 
 	void init();
 	void declareEncodings();
@@ -102,8 +107,16 @@ private:
 
 	void deinit();
 
-	void playIntroVideos();
 	void main();
+
+	bool waitClick();
+
+	bool showLicenseSplash();
+	bool showTitle();
+	bool showMainMenu();
+	bool showQuote();
+	bool showChapter1();
+
 
 	static Common::UString getLanguageHERF(Aurora::Language language);
 	static Common::UString getLanguageTLK (Aurora::Language language);
