@@ -285,14 +285,14 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 	return length;
 }
 
-float Font::split(Common::UString &line, float maxWidth, float maxHeight) const {
-	return split(line, line, maxWidth, maxHeight);
+float Font::split(Common::UString &line, float maxWidth, float maxHeight, bool trim) const {
+	return split(line, line, maxWidth, maxHeight, trim);
 }
 
-float Font::split(const Common::UString &line, Common::UString &lines, float maxWidth, float maxHeight) const {
+float Font::split(const Common::UString &line, Common::UString &lines, float maxWidth, float maxHeight, bool trim) const {
 	std::vector<Common::UString> sLines;
 
-	float width = split(line, sLines, maxWidth, maxHeight);
+	float width = split(line, sLines, maxWidth, maxHeight, trim);
 
 	lines.clear();
 	for (std::vector<Common::UString>::const_iterator l = sLines.begin(); l != sLines.end(); ++l) {
