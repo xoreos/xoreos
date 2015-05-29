@@ -365,7 +365,7 @@ bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
 	// Calculate column lengths
 
 	std::vector<uint32> colLength;
-	colLength.resize(_headers.size() + 1);
+	colLength.resize(_headers.size() + 1, 0);
 
 	const Common::UString maxRow = Common::UString::sprintf("%d", (int)_rows.size() - 1);
 	colLength[0] = maxRow.size();
@@ -373,9 +373,14 @@ bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
 	for (uint32 i = 0; i < _headers.size(); i++)
 		colLength[i + 1] = _headers[i].size();
 
-	for (uint32 i = 0; i < _rows.size(); i++)
-		for (uint32 j = 0; j < _rows[i]->_data.size(); j++)
-			colLength[j + 1] = MAX<uint32>(colLength[j + 1], _rows[i]->_data[j].size());
+	for (uint32 i = 0; i < _rows.size(); i++) {
+		for (uint32 j = 0; j < _rows[i]->_data.size(); j++) {
+			const bool   needQuote = _rows[i]->_data[j].contains(' ');
+			const uint32 length    = needQuote ? _rows[i]->_data[j].size() + 2 : _rows[i]->_data[j].size();
+
+			colLength[j + 1] = MAX<uint32>(colLength[j + 1], length);
+		}
+	}
 
 	// Write column headers
 
@@ -391,8 +396,18 @@ bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
 	for (uint32 i = 0; i < _rows.size(); i++) {
 		file.writeString(Common::UString::sprintf("%*d", colLength[0], i));
 
-		for (uint32 j = 0; j < _rows[i]->_data.size(); j++)
-			file.writeString(Common::UString::sprintf(" %-*s", colLength[j + 1], _rows[i]->_data[j].c_str()));
+		for (uint32 j = 0; j < _rows[i]->_data.size(); j++) {
+			const bool needQuote = _rows[i]->_data[j].contains(' ');
+
+			Common::UString cellString;
+			if (needQuote)
+				cellString = Common::UString::sprintf("\"%s\"", _rows[i]->_data[j].c_str());
+			else
+				cellString = _rows[i]->_data[j];
+
+			file.writeString(Common::UString::sprintf(" %-*s", colLength[j + 1], cellString.c_str()));
+
+		}
 
 		file.writeByte('\n');
 	}
