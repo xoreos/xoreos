@@ -358,7 +358,9 @@ bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
 	// Write header
 
 	file.writeString("2DA V2.0\n");
-	file.writeString(_defaultString); file.writeByte('\n');
+	if (!_defaultString.empty())
+		file.writeString(Common::UString::sprintf("DEFAULT: %s", _defaultString.c_str()));
+	file.writeByte('\n');
 
 	// Calculate column lengths
 
