@@ -129,6 +129,7 @@ public:
 	bool endsWith(const UString &with) const;
 
 	bool contains(const UString &what) const;
+	bool contains(uint32 c) const;
 
 	void truncate(const iterator &it);
 	void truncate(uint32 n);

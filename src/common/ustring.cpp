@@ -321,6 +321,10 @@ bool UString::contains(const UString &what) const {
 	return _string.find(what._string) != std::string::npos;
 }
 
+bool UString::contains(uint32 c) const {
+	return findFirst(c) != end();
+}
+
 void UString::truncate(const iterator &it) {
 	UString temp;
 
