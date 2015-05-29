@@ -54,6 +54,10 @@ public:
 	/** Read the header out of a stream. */
 	static void readHeader(Common::SeekableReadStream &stream,
 	                       uint32 &id, uint32 &version, bool &utf16le);
+	/** Read the ID and version out of a stream. */
+	static void readHeader(Common::SeekableReadStream &stream, uint32 &id, uint32 &version);
+	/** Read the ID out of a stream. */
+	static uint32 readHeaderID(Common::SeekableReadStream &stream);
 
 
 protected:
