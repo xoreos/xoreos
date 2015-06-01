@@ -26,6 +26,7 @@
 #define GRAPHICS_CAMERA_H
 
 #include "src/common/types.h"
+#include "src/common/maths.h"
 #include "src/common/singleton.h"
 
 namespace Graphics {
@@ -38,6 +39,10 @@ public:
 	const float *getOrientation() const; ///< Get the current camera orientation cache.
 
 	void reset(); ///< Reset the current position and orientation.
+
+	/** Set limits on the camera position. */
+	void limit(float minX = -FLT_MAX, float minY = -FLT_MAX, float minZ = -FLT_MAX,
+	           float maxX =  FLT_MAX, float maxY =  FLT_MAX, float maxZ =  FLT_MAX);
 
 	void setPosition   (float x, float y, float z); ///< Set the camera position.
 	void setOrientation(float x, float y, float z); ///< Set the camera orientation.
@@ -63,6 +68,9 @@ public:
 
 private:
 	uint32 _lastChanged;
+
+	float _minPosition[3];
+	float _maxPosition[3];
 
 	float _position[3];    ///< Current position.
 	float _orientation[3]; ///< Current orientation.

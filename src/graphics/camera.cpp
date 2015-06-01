@@ -36,6 +36,13 @@ DECLARE_SINGLETON(Graphics::CameraManager)
 namespace Graphics {
 
 CameraManager::CameraManager() : _lastChanged(0), _needUpdate(false) {
+	_minPosition[0] = -FLT_MAX;
+	_minPosition[1] = -FLT_MAX;
+	_minPosition[2] = -FLT_MAX;
+	_maxPosition[0] =  FLT_MAX;
+	_maxPosition[1] =  FLT_MAX;
+	_maxPosition[2] =  FLT_MAX;
+
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
 	_position   [2] = 0.0;
@@ -79,6 +86,13 @@ const float *CameraManager::getOrientation() const {
 }
 
 void CameraManager::reset() {
+	_minPosition[0] = -FLT_MAX;
+	_minPosition[1] = -FLT_MAX;
+	_minPosition[2] = -FLT_MAX;
+	_maxPosition[0] =  FLT_MAX;
+	_maxPosition[1] =  FLT_MAX;
+	_maxPosition[2] =  FLT_MAX;
+
 	_position   [0] = 0.0;
 	_position   [1] = 0.0;
 	_position   [2] = 0.0;
@@ -91,10 +105,19 @@ void CameraManager::reset() {
 	_needUpdate = true;
 }
 
+void CameraManager::limit(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+	_minPosition[0] = minX;
+	_minPosition[1] = minY;
+	_minPosition[2] = minZ;
+	_maxPosition[0] = maxX;
+	_maxPosition[1] = maxY;
+	_maxPosition[2] = maxZ;
+}
+
 void CameraManager::setPosition(float x, float y, float z) {
-	_position[0] = x;
-	_position[1] = y;
-	_position[2] = z;
+	_position[0] = CLIP(x, _minPosition[0], _maxPosition[0]);
+	_position[1] = CLIP(y, _minPosition[1], _maxPosition[1]);
+	_position[2] = CLIP(z, _minPosition[2], _maxPosition[2]);
 
 	_lastChanged = EventMan.getTimestamp();
 
