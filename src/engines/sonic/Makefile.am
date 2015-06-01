@@ -10,6 +10,7 @@ noinst_HEADERS = \
                  util.h \
                  areabackground.h \
                  area.h \
+                 module.h \
                  $(EMPTY)
 
 libsonic_la_SOURCES = \
@@ -19,4 +20,5 @@ libsonic_la_SOURCES = \
                       util.cpp \
                       areabackground.cpp \
                       area.cpp \
+                      module.cpp \
                       $(EMPTY)
