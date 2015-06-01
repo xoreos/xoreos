@@ -37,6 +37,7 @@ namespace Engines {
 namespace Sonic {
 
 class AreaBackground;
+class AreaMiniMap;
 
 class Area {
 public:
@@ -92,11 +93,13 @@ private:
 	std::list<Events::Event> _eventQueue;
 
 	AreaBackground *_bgPanel;
+	AreaMiniMap    *_mmPanel;
 
 
 	void load();
 	void loadDefinition();
 	void loadBackground();
+	void loadMiniMap();
 	void loadLayout();
 };
 

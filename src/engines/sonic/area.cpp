@@ -32,6 +32,7 @@
 
 #include "src/engines/sonic/area.h"
 #include "src/engines/sonic/areabackground.h"
+#include "src/engines/sonic/areaminimap.h"
 
 static const uint32 kAREID = MKTAG('A', 'R', 'E', ' ');
 
@@ -41,12 +42,15 @@ namespace Sonic {
 
 Area::Area(int32 id) : _id(id), _width(0), _height(0), _startPosX(0.0f), _startPosY(0.0f),
 	_miniMapWidth(0), _miniMapHeight(0), _soundMapBank(-1), _sound(-1), _soundType(-1), _soundBank(-1),
-	_numberRings(0), _numberChaoEggs(0), _bgPanel(0) {
+	_numberRings(0), _numberChaoEggs(0), _bgPanel(0), _mmPanel(0) {
 
 	load();
 }
 
 Area::~Area() {
+	hide();
+
+	delete _mmPanel;
 	delete _bgPanel;
 }
 
@@ -75,11 +79,17 @@ float Area::getStartY() const {
 }
 
 void Area::show() {
-	_bgPanel->show();
+	if (_mmPanel)
+		_mmPanel->show();
+	if (_bgPanel)
+		_bgPanel->show();
 }
 
 void Area::hide() {
-	_bgPanel->hide();
+	if (_mmPanel)
+		_mmPanel->hide();
+	if (_bgPanel)
+		_bgPanel->hide();
 }
 
 void Area::addEvent(const Events::Event &event) {
@@ -93,6 +103,7 @@ void Area::processEventQueue() {
 void Area::load() {
 	loadDefinition();
 	loadBackground();
+	loadMiniMap();
 	loadLayout();
 }
 
@@ -149,6 +160,10 @@ void Area::loadBackground() {
 	if ((_bgPanel->getImageWidth() != _width) || (_bgPanel->getImageHeight() != _height))
 		throw Common::Exception("Background and area dimensions don't match (%ux%u vs. %ux%u)",
 		                        _bgPanel->getImageWidth(), _bgPanel->getImageHeight(), _width, _height);
+}
+
+void Area::loadMiniMap() {
+	_mmPanel = new AreaMiniMap(_miniMap);
 }
 
 void Area::loadLayout() {
