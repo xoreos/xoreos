@@ -8,6 +8,7 @@ noinst_HEADERS = \
                  modelloader.h \
                  console.h \
                  util.h \
+                 areabackground.h \
                  $(EMPTY)
 
 libsonic_la_SOURCES = \
@@ -15,4 +16,5 @@ libsonic_la_SOURCES = \
                       modelloader.cpp \
                       console.cpp \
                       util.cpp \
+                      areabackground.cpp \
                       $(EMPTY)
