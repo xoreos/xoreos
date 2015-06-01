@@ -9,6 +9,7 @@ noinst_HEADERS = \
                  console.h \
                  util.h \
                  areabackground.h \
+                 area.h \
                  $(EMPTY)
 
 libsonic_la_SOURCES = \
@@ -17,4 +18,5 @@ libsonic_la_SOURCES = \
                       console.cpp \
                       util.cpp \
                       areabackground.cpp \
+                      area.cpp \
                       $(EMPTY)
