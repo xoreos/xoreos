@@ -55,6 +55,7 @@
 #include "src/engines/sonic/modelloader.h"
 #include "src/engines/sonic/console.h"
 #include "src/engines/sonic/util.h"
+#include "src/engines/sonic/module.h"
 
 namespace Engines {
 
@@ -498,6 +499,9 @@ void SonicEngine::main() {
 		return;
 	if (!showChapter1())
 		return;
+
+	Module module(*_console);
+	module.run();
 }
 
 } // End of namespace Sonic
