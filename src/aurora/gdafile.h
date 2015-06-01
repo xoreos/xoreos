@@ -49,6 +49,9 @@ public:
 	/** Return the number of rows in the array. */
 	uint32 getRowCount() const;
 
+	/** Does this row exist in the GDA? */
+	bool hasRow(uint32 row) const;
+
 	/** Get a row as a GFF4 struct. */
 	const GFF4Struct *getRow(uint32 row) const;
 
@@ -56,6 +59,16 @@ public:
 	uint32 findColumn(const Common::UString &name) const;
 	/** Find a column by its hash. */
 	uint32 findColumn(uint32 hash) const;
+
+	Common::UString getString(uint32 row, uint32 columnHash, const Common::UString &def = "") const;
+	Common::UString getString(uint32 row, const Common::UString &columnName,
+	                          const Common::UString &def = "") const;
+
+	int32 getInt(uint32 row, uint32 columnHash, int32 def = 0) const;
+	int32 getInt(uint32 row, const Common::UString &columnName, int32 def = 0) const;
+
+	float getFloat(uint32 row, uint32 columnHash, float def = 0.0f) const;
+	float getFloat(uint32 row, const Common::UString &columnName, float def = 0.0f) const;
 
 
 private:
@@ -74,6 +87,9 @@ private:
 
 	void load(Common::SeekableReadStream *gda);
 	void clear();
+
+	const GFF4Struct *getRowColumn(uint32 row, uint32 hash, uint32 &column) const;
+	const GFF4Struct *getRowColumn(uint32 row, const Common::UString &name, uint32 &column) const;
 };
 
 } // End of namespace Aurora
