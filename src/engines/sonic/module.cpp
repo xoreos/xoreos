@@ -153,8 +153,10 @@ void Module::handleEvents() {
 	Events::Event event;
 	while (EventMan.pollEvent(event)) {
 		// Handle console
-		if (_console->processEvent(event))
+		if (_console->isVisible()) {
+			_console->processEvent(event);
 			continue;
+		}
 
 		// Console
 		if (event.type == Events::kEventKeyDown) {
