@@ -54,6 +54,9 @@ public:
 	float getStartX() const;
 	float getStartY() const;
 
+	void enter();
+	void leave();
+
 	void show();
 	void hide();
 

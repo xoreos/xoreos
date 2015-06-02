@@ -30,11 +30,16 @@
 #include "src/aurora/gff4file.h"
 #include "src/aurora/talkman.h"
 
+#include "src/graphics/camera.h"
+
 #include "src/engines/sonic/area.h"
 #include "src/engines/sonic/areabackground.h"
 #include "src/engines/sonic/areaminimap.h"
 
 static const uint32 kAREID = MKTAG('A', 'R', 'E', ' ');
+
+static const float kCameraHeight =  500.0f;
+static const float kCameraAngle  = - 45.0f;
 
 namespace Engines {
 
@@ -90,6 +95,27 @@ void Area::hide() {
 		_mmPanel->hide();
 	if (_bgPanel)
 		_bgPanel->hide();
+}
+
+void Area::enter() {
+	CameraMan.reset();
+
+	if (_bgPanel) {
+		float x, y, z, minX, minY, minZ, maxX, maxY, maxZ;
+		_bgPanel->getCameraLimits(kCameraHeight, minX, minY, minZ, maxX, maxY, maxZ);
+		_bgPanel->getCameraPosition(_startPosX, _startPosY, kCameraHeight, x, y, z);
+
+		CameraMan.setOrientation(kCameraAngle, 0.0f, 0.0f);
+		CameraMan.setPosition(x, y, z);
+		CameraMan.limit(minX, minY, minZ, maxX, maxY, maxZ);
+	}
+
+	CameraMan.update();
+}
+
+void Area::leave() {
+	CameraMan.reset();
+	CameraMan.update();
 }
 
 void Area::addEvent(const Events::Event &event) {

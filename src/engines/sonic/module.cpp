@@ -108,38 +108,15 @@ void Module::loadArea() {
 
 	_area = new Area(_newArea);
 
-	const float startZ = 500.f;
-	const float startX = _area->getStartX();
-	const float startY = _area->getStartY() - startZ;
-
-	CameraMan.reset();
-
-	static const float kPanelWidth  = 256.0f;
-	static const float kPanelHeight = 192.0f;
-
-	const float areaWidth  = _area->getWidth();
-	const float areaHeight = _area->getHeight();
-
-	const float minX = kPanelWidth  / 2.0f;
-	const float minY = -(areaHeight - kPanelHeight / 2.0f + startZ);
-	const float minZ = -FLT_MAX;
-
-	const float maxX = areaWidth  - kPanelWidth  / 2.0f;
-	const float maxY = -(kPanelHeight / 2.0f + startZ);
-	const float maxZ = FLT_MAX;
-
-	CameraMan.limit(minX, minZ, minY, maxX, maxZ, maxY);
-
-	CameraMan.setPosition(startX, startZ, startY);
-	CameraMan.setOrientation(-45.0f, 0.0f, 0.0f);
-	CameraMan.update();
-
+	_area->enter();
 	_area->show();
 }
 
 void Module::unloadArea() {
-	if (_area)
+	if (_area) {
+		_area->leave();
 		_area->hide();
+	}
 
 	delete _area;
 	_area = 0;

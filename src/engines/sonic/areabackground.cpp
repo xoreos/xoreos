@@ -125,6 +125,28 @@ void AreaBackground::loadTexture(const Common::UString &name) {
 	delete twoda;
 }
 
+void AreaBackground::getCameraLimits(float z, float &minX, float &minY, float &minZ,
+                                              float &maxX, float &maxY, float &maxZ) const {
+
+	const float tWidth  = _texture.getTexture().getWidth();
+	const float tHeight = _texture.getTexture().getHeight();
+
+	minX = kWidth / 2.0f;
+	minY = z;
+	minZ = -(tHeight - kHeight / 2.0f + z);
+
+	maxX = tWidth - kWidth / 2.0f;
+	maxY = z;
+	maxZ = -(kHeight/ 2.0f + z);
+}
+
+void AreaBackground::getCameraPosition(float x, float y, float z,
+                                       float &cameraX, float &cameraY, float &cameraZ) const {
+	cameraX = x;
+	cameraY = z;
+	cameraZ = y - z;
+}
+
 void AreaBackground::setPosition(float x, float y, float z) {
 	const float tWidth  = _texture.getTexture().getWidth();
 	const float tHeight = _texture.getTexture().getHeight();
