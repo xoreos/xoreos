@@ -45,6 +45,8 @@ class LoadProgress;
 
 namespace Sonic {
 
+class Module;
+
 class SonicEngineProbe : public Engines::EngineProbe {
 public:
 	SonicEngineProbe();
@@ -79,6 +81,8 @@ public:
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
 
+	Module *getModule();
+
 
 protected:
 	void run();
@@ -92,6 +96,8 @@ private:
 
 	Graphics::Aurora::FontHandle _guiFont;
 	Graphics::Aurora::FontHandle _quoteFont;
+
+	Module *_module;
 
 
 	void init();

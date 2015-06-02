@@ -98,11 +98,12 @@ Engines::Engine *SonicEngineProbe::createEngine() const {
 }
 
 
-SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid) {
+SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid), _module(0) {
 	_console = new Console(*this);
 }
 
 SonicEngine::~SonicEngine() {
+	delete _module;
 }
 
 Common::UString SonicEngine::getLanguageHERF(Aurora::Language language) {
@@ -198,6 +199,10 @@ bool SonicEngine::changeLanguage() {
 	}
 
 	return true;
+}
+
+Module *SonicEngine::getModule() {
+	return _module;
 }
 
 void SonicEngine::run() {
@@ -500,8 +505,12 @@ void SonicEngine::main() {
 	if (!showChapter1())
 		return;
 
-	Module module(*_console);
-	module.run();
+	_module = new Module(*_console);
+
+	_module->run();
+
+	delete _module;
+	_module = 0;
 }
 
 } // End of namespace Sonic
