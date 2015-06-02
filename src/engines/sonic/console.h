@@ -56,6 +56,7 @@ private:
 
 	// The commands
 	void cmdListAreas(const CommandLine &cl);
+	void cmdGotoArea (const CommandLine &cl);
 };
 
 } // End of namespace Sonic

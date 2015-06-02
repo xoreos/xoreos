@@ -25,6 +25,7 @@
 #include <boost/bind.hpp>
 
 #include "src/common/ustring.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/gdafile.h"
 #include "src/aurora/2dareg.h"
@@ -35,6 +36,7 @@
 
 #include "src/engines/sonic/console.h"
 #include "src/engines/sonic/sonic.h"
+#include "src/engines/sonic/module.h"
 
 namespace Engines {
 
@@ -46,6 +48,8 @@ Console::Console(SonicEngine &engine) :
 
 	registerCommand("listareas", boost::bind(&Console::cmdListAreas, this, _1),
 			"Usage: listareas\nList all areas");
+	registerCommand("gotoarea" , boost::bind(&Console::cmdGotoArea , this, _1),
+			"Usage: gotoarea <area>\nMove to a specific area");
 }
 
 Console::~Console() {
@@ -82,6 +86,33 @@ void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 
 	for (std::set<int32>::const_iterator a = _areas.begin(); a != _areas.end(); ++a)
 		printf("%d (\"%s\")", *a, TalkMan.getString(areas.getInt(*a, "Name")).c_str());
+}
+
+void Console::cmdGotoArea(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	Module *module = _engine->getModule();
+	if (!module)
+		return;
+
+	int32 areaID = -1;
+	try {
+		Common::parseString(cl.args, areaID);
+	} catch (...) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	std::set<int32>::const_iterator area = _areas.find(areaID);
+	if (area == _areas.end()) {
+		printf("No such area %d", areaID);
+		return;
+	}
+
+	module->movePC(areaID);
 }
 
 } // End of namespace Sonic
