@@ -130,7 +130,7 @@ void AreaBackground::setPosition(float x, float y, float z) {
 	const float tHeight = _texture.getTexture().getHeight();
 
 	x = CLIP<float>(x     - kWidth  / 2.0f, 0.0f, tWidth  - kWidth);
-	y = CLIP<float>(y + z - kHeight / 2.0f, 0.0f, tHeight - kHeight);
+	y = CLIP<float>(y - z - kHeight / 2.0f, 0.0f, tHeight - kHeight);
 
 	_textureX1 =  x            / tWidth;
 	_textureY1 = (y + kHeight) / tHeight;
@@ -141,7 +141,7 @@ void AreaBackground::setPosition(float x, float y, float z) {
 void AreaBackground::notifyCameraMoved() {
 	const float *pos = CameraMan.getPosition();
 
-	setPosition(pos[0], pos[2], pos[1]);
+	setPosition(pos[0], -pos[2], pos[1]);
 }
 
 } // End of namespace Sonic

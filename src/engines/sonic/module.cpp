@@ -108,7 +108,7 @@ void Module::loadArea() {
 
 	_area = new Area(_newArea);
 
-	const float startZ = 100.f;
+	const float startZ = 500.f;
 	const float startX = _area->getStartX();
 	const float startY = _area->getStartY() - startZ;
 
@@ -121,11 +121,11 @@ void Module::loadArea() {
 	const float areaHeight = _area->getHeight();
 
 	const float minX = kPanelWidth  / 2.0f;
-	const float minY = kPanelHeight / 2.0f - startZ;
+	const float minY = -(areaHeight - kPanelHeight / 2.0f + startZ);
 	const float minZ = -FLT_MAX;
 
 	const float maxX = areaWidth  - kPanelWidth  / 2.0f;
-	const float maxY = areaHeight - kPanelHeight / 2.0f - startZ;
+	const float maxY = -(kPanelHeight / 2.0f + startZ);
 	const float maxZ = FLT_MAX;
 
 	CameraMan.limit(minX, minZ, minY, maxX, maxZ, maxY);
@@ -182,17 +182,17 @@ bool Module::handleCameraEvents(const Events::Event &event) {
 
 	if (event.type == Events::kEventKeyDown) {
 		if      (event.key.keysym.sym      == SDLK_UP)
-			CameraMan.move(0.0, 0.0, multiplier * -5.0);
-		else if (event.key.keysym.sym      == SDLK_DOWN)
 			CameraMan.move(0.0, 0.0, multiplier *  5.0);
+		else if (event.key.keysym.sym      == SDLK_DOWN)
+			CameraMan.move(0.0, 0.0, multiplier * -5.0);
 		else if (event.key.keysym.sym      == SDLK_LEFT)
 			CameraMan.move(multiplier * -5.0, 0.0, 0.0);
 		else if (event.key.keysym.sym      == SDLK_RIGHT)
 			CameraMan.move(multiplier *  5.0, 0.0, 0.0);
 		else if (event.key.keysym.scancode == SDL_SCANCODE_W)
-			CameraMan.move(0.0, 0.0, multiplier * -5.0);
-		else if (event.key.keysym.scancode == SDL_SCANCODE_S)
 			CameraMan.move(0.0, 0.0, multiplier *  5.0);
+		else if (event.key.keysym.scancode == SDL_SCANCODE_S)
+			CameraMan.move(0.0, 0.0, multiplier * -5.0);
 		else if (event.key.keysym.scancode == SDL_SCANCODE_A)
 			CameraMan.move(multiplier * -5.0, 0.0, 0.0);
 		else if (event.key.keysym.scancode == SDL_SCANCODE_D)
