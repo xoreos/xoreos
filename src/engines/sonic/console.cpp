@@ -22,6 +22,15 @@
  *  Sonic (debug) console.
  */
 
+#include <boost/bind.hpp>
+
+#include "src/common/ustring.h"
+
+#include "src/aurora/gdafile.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/gff4file.h"
+#include "src/aurora/talkman.h"
+
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/sonic/console.h"
@@ -35,9 +44,44 @@ Console::Console(SonicEngine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 10),
 	_engine(&engine) {
 
+	registerCommand("listareas", boost::bind(&Console::cmdListAreas, this, _1),
+			"Usage: listareas\nList all areas");
 }
 
 Console::~Console() {
+}
+
+void Console::updateCaches() {
+	::Engines::Console::updateCaches();
+
+	updateAreas();
+}
+
+void Console::updateAreas() {
+	_areas.clear();
+	setArguments("gotoarea");
+
+	const Aurora::GDAFile &areas = TwoDAReg.getGDA("areas");
+
+	std::list<Common::UString> areaIDs;
+	for (uint32 i = 0; i < areas.getRowCount(); i++) {
+		if (areas.getInt(i, "Name") > 0) {
+			_areas.insert(i);
+
+			areaIDs.push_back(Common::UString::sprintf("%u", i));
+		}
+	}
+
+	setArguments("gotoarea", areaIDs);
+}
+
+void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
+	updateAreas();
+
+	const Aurora::GDAFile &areas = TwoDAReg.getGDA("areas");
+
+	for (std::set<int32>::const_iterator a = _areas.begin(); a != _areas.end(); ++a)
+		printf("%d (\"%s\")", *a, TalkMan.getString(areas.getInt(*a, "Name")).c_str());
 }
 
 } // End of namespace Sonic

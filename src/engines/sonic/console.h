@@ -25,6 +25,10 @@
 #ifndef ENGINES_SONIC_CONSOLE_H
 #define ENGINES_SONIC_CONSOLE_H
 
+#include <set>
+
+#include "src/common/types.h"
+
 #include "src/engines/aurora/console.h"
 
 namespace Engines {
@@ -41,6 +45,17 @@ public:
 
 private:
 	SonicEngine *_engine;
+
+	// Caches
+	std::set<int32> _areas; ///< All known areas.
+
+
+	// Updating the caches
+	void updateCaches();
+	void updateAreas();
+
+	// The commands
+	void cmdListAreas(const CommandLine &cl);
 };
 
 } // End of namespace Sonic
