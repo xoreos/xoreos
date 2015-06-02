@@ -211,6 +211,10 @@ Area *Module::getCurrentArea() {
 	return _area;
 }
 
+void Module::movePC(int32 area) {
+	_newArea = area;
+}
+
 } // End of namespace Sonic
 
 } // End of namespace Engines

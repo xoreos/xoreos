@@ -57,6 +57,9 @@ public:
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
 
+	/** Move the player character to this area. */
+	void movePC(int32 area);
+
 
 protected:
 	::Engines::Console *_console;
