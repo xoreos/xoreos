@@ -163,7 +163,8 @@ void Area::loadBackground() {
 }
 
 void Area::loadMiniMap() {
-	_mmPanel = new AreaMiniMap(_miniMap);
+	if (!_miniMap.empty())
+		_mmPanel = new AreaMiniMap(_miniMap);
 }
 
 void Area::loadLayout() {
