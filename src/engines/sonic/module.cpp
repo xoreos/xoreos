@@ -151,7 +151,9 @@ void Module::handleEvents() {
 	}
 
 	CameraMan.update();
-	_area->processEventQueue();
+
+	if (_area)
+		_area->processEventQueue();
 }
 
 bool Module::handleCameraEvents(const Events::Event &event) {
