@@ -58,31 +58,31 @@ static long getInitialSize(std::FILE *handle) {
 	if (std::fseek(handle, 0, SEEK_END) != 0)
 		return -1;
 
-	long size = std::ftell(handle);
+	long fileSize = std::ftell(handle);
 
 	if (std::fseek(handle, 0, SEEK_SET) != 0)
 		return -1;
 
-	return size;
+	return fileSize;
 }
 
 bool File::open(const UString &fileName) {
-	long size = -1;
-	if (!(_handle = std::fopen(fileName.c_str(), "rb")) ||
-	    ((size    = getInitialSize(_handle)) < 0)) {
+	long fileSize = -1;
+	if (!(_handle  = std::fopen(fileName.c_str(), "rb")) ||
+	    ((fileSize = getInitialSize(_handle)) < 0)) {
 
 		close();
 		return false;
 	}
 
-	if ((int64)size > (int64)0x7FFFFFFF) {
+	if ((int64)fileSize > (int64)0x7FFFFFFF) {
 		warning("File \"%s\" is too big", fileName.c_str());
 
 		close();
 		return false;
 	}
 
-	_size = (int32)size;
+	_size = (int32)fileSize;
 
 	return true;
 }
