@@ -316,21 +316,21 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 	}
 
 	if (hasRotate) {
-		Common::TransformationMatrix rotate;
+		Common::TransformationMatrix rotateMatrix;
 
-		rotate[ 0] = rotate0;
-		rotate[ 1] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[ 2] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[ 0] = rotate0;
+		rotateMatrix[ 1] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[ 2] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
-		rotate[ 4] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[ 5] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[ 6] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[ 4] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[ 5] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[ 6] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
-		rotate[ 8] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[ 9] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotate[10] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[ 8] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[ 9] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[10] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
-		bone.transform *= rotate;
+		bone.transform *= rotateMatrix;
 	}
 
 	if (hasScale) {
