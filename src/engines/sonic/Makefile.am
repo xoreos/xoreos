@@ -13,6 +13,7 @@ noinst_HEADERS = \
                  area.h \
                  module.h \
                  object.h \
+                 placeable.h \
                  $(EMPTY)
 
 libsonic_la_SOURCES = \
@@ -25,4 +26,5 @@ libsonic_la_SOURCES = \
                       area.cpp \
                       module.cpp \
                       object.cpp \
+                      placeable.cpp \
                       $(EMPTY)
