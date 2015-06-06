@@ -25,7 +25,7 @@
 #ifndef ENGINES_SONIC_AREABACKGROUND_H
 #define ENGINES_SONIC_AREABACKGROUND_H
 
-#include "src/graphics/guifrontelement.h"
+#include "src/graphics/guibackelement.h"
 
 #include "src/graphics/aurora/texturehandle.h"
 
@@ -39,7 +39,7 @@ namespace Engines {
 
 namespace Sonic {
 
-class AreaBackground : public Graphics::GUIFrontElement, public Events::Notifyable {
+class AreaBackground : public Graphics::GUIBackElement, public Events::Notifyable {
 public:
 	AreaBackground(const Common::UString &name);
 	~AreaBackground();
