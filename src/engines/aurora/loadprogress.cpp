@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 
-#include "src/graphics/graphics.cpp"
+#include "src/graphics/graphics.h"
 #include "src/graphics/font.h"
 
 #include "src/graphics/aurora/text.h"
