@@ -45,7 +45,6 @@ libgraphics_la_SOURCES = \
                          camera.cpp \
                          renderable.cpp \
                          object.cpp \
-                         guifrontelement.cpp \
                          yuv_to_rgb.cpp \
                          ttf.cpp \
                          indexbuffer.cpp \

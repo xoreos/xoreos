@@ -32,8 +32,8 @@ namespace Graphics {
 /** An element of the front GUI. */
 class GUIFrontElement : public Renderable {
 public:
-	GUIFrontElement();
-	~GUIFrontElement();
+	GUIFrontElement() : Renderable(kRenderableTypeGUIFront) { }
+	~GUIFrontElement() { }
 };
 
 } // End of namespace Graphics
