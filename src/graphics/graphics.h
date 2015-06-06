@@ -115,6 +115,8 @@ public:
 
 	/** Change the perspective projection matrix. */
 	void setPerspective(float viewAngle, float clipNear, float clipFar);
+	/** Change the projection matrix to be orthogonal. */
+	void setOrthogonal(float clipNear, float clipFar);
 
 	/** Show/Hide the cursor. */
 	void showCursor(bool show);
@@ -177,6 +179,11 @@ private:
 		kCursorStateSwitchOff
 	};
 
+	enum ProjectType {
+		kProjectTypePerspective,
+		kProjectTypeOrthogonal
+	};
+
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
 	// Extensions
@@ -197,6 +204,8 @@ private:
 
 	bool   _cullFaceEnabled;
 	GLenum _cullFaceMode;
+
+	ProjectType _projectType;
 
 	float _viewAngle;
 	float _clipNear;
@@ -244,6 +253,8 @@ private:
 
 	/** Set up a projection matrix. Analog to gluPerspective. */
 	void perspective(float fovy, float aspect, float zNear, float zFar);
+	/** Set up an orthogonal projection matrix. Analog to glOrtho. */
+	void ortho(float left, float right, float bottom, float top, float zNear, float zFar);
 
 	void rebuildGLContainers();
 	void destroyGLContainers();

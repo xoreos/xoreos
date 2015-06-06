@@ -81,6 +81,8 @@ GraphicsManager::GraphicsManager() {
 	_cullFaceEnabled = true;
 	_cullFaceMode    = GL_BACK;
 
+	_projectType = kProjectTypePerspective;
+
 	_viewAngle = 60.0f;
 	_clipNear  = 1.0f;
 	_clipFar   = 1000.0f;
@@ -454,7 +456,19 @@ void GraphicsManager::setupScene() {
 
 	setCullFace(_cullFaceEnabled, _cullFaceMode);
 
-	perspective(_viewAngle, ((float) _width) / ((float) _height), _clipNear, _clipFar);
+	switch (_projectType) {
+		case kProjectTypePerspective:
+			perspective(_viewAngle, ((float) _width) / ((float) _height), _clipNear, _clipFar);
+			break;
+
+		case kProjectTypeOrthogonal:
+			ortho(0.0, _width, 0.0, _height, _clipNear, _clipFar);
+			break;
+
+		default:
+			assert(false);
+			break;
+	}
 }
 
 void GraphicsManager::setCullFace(bool enabled, GLenum mode) {
@@ -485,6 +499,8 @@ void GraphicsManager::setPerspective(float viewAngle, float clipNear, float clip
 	}
 
 	perspective(viewAngle, ((float) _width) / ((float) _height), clipNear, clipFar);
+
+	_projectType = kProjectTypePerspective;
 
 	_viewAngle = viewAngle;
 	_clipNear  = clipNear;
@@ -522,6 +538,49 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	_projection(3, 1) =  0.0;
 	_projection(3, 2) = -1.0;
 	_projection(3, 3) =  0.0;
+
+	_projectionInv = _projection.getInverse();
+}
+
+void GraphicsManager::setOrthogonal(float clipNear, float clipFar) {
+	// Force calling it from the main thread
+	if (!Common::isMainThread()) {
+		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setOrthogonal, this, clipNear, clipFar));
+
+		return RequestMan.callInMainThread(functor);
+	}
+
+	ortho(0.0, _width, 0.0, _height, clipNear, clipFar);
+
+	_projectType = kProjectTypeOrthogonal;
+
+	_clipNear  = clipNear;
+	_clipFar   = clipFar;
+}
+
+void GraphicsManager::ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
+	assert(zFar > zNear);
+	assert((zFar - zNear) > 0.001);
+
+	_projection(0, 0) = 2.0 / (right - left);
+	_projection(0, 1) = 0.0;
+	_projection(0, 2) = 0.0;
+	_projection(0, 3) = - ((right + left) / (right - left));
+
+	_projection(1, 0) = 0.0;
+	_projection(1, 1) = 2.0 / (top - bottom);
+	_projection(1, 2) = 0.0;
+	_projection(1, 3) = - ((top + bottom) / (top - bottom));
+
+	_projection(2, 0) = 0.0;
+	_projection(2, 1) = 0.0;
+	_projection(2, 2) = - (2.0 / (zFar - zNear));
+	_projection(2, 3) = - ((zFar + zNear) / (zFar - zNear));
+
+	_projection(3, 0) =  0.0;
+	_projection(3, 1) =  0.0;
+	_projection(3, 2) =  0.0;
+	_projection(3, 3) =  1.0;
 
 	_projectionInv = _projection.getInverse();
 }
