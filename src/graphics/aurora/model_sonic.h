@@ -391,6 +391,7 @@ private:
 	void createIndicesQuadStrip(Primitive &primitive);
 
 	void createBound();
+	void createAbsolutePosition();
 
 	uint8 readInfoOffset(ParserContext &ctx, Infos &infos, uint32 offset);
 	uint8 readInfoOffsetCount(ParserContext &ctx, Infos &infos, uint32 offset);

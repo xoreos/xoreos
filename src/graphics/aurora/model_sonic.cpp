@@ -1070,6 +1070,22 @@ void Model_Sonic::createBound() {
 	_absoluteBoundBox.absolutize();
 }
 
+void Model_Sonic::createAbsolutePosition() {
+	_absolutePosition.loadIdentity();
+
+	_absolutePosition.scale(_modelScale[0], _modelScale[1], _modelScale[2]);
+
+	_absolutePosition.translate(_position[0], _position[1], _position[2]);
+
+	_absolutePosition.rotate( _rotation[0], 1.0, 0.0, 0.0);
+	_absolutePosition.rotate( _rotation[1], 0.0, 1.0, 0.0);
+	_absolutePosition.rotate(-_rotation[2], 0.0, 0.0, 1.0);
+
+	_absoluteBoundBox = _boundBox;
+	_absoluteBoundBox.transform(_absolutePosition);
+	_absoluteBoundBox.absolutize();
+}
+
 void Model_Sonic::newState(ParserContext &ctx) {
 	ctx.clear();
 
