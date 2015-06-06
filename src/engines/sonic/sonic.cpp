@@ -276,6 +276,7 @@ void SonicEngine::initResources(LoadProgress &progress) {
 	registerModelLoader(new SonicModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatNFTR);
 
+	GfxMan.setOrthogonal(0.0, 1000.0);
 	GfxMan.setCullFace(false);
 
 	progress.step("Load essential fonts");
