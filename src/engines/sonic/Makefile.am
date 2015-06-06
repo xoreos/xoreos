@@ -12,6 +12,7 @@ noinst_HEADERS = \
                  areaminimap.h \
                  area.h \
                  module.h \
+                 object.h \
                  $(EMPTY)
 
 libsonic_la_SOURCES = \
@@ -23,4 +24,5 @@ libsonic_la_SOURCES = \
                       areaminimap.cpp \
                       area.cpp \
                       module.cpp \
+                      object.cpp \
                       $(EMPTY)
