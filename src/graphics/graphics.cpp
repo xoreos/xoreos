@@ -669,39 +669,43 @@ bool GraphicsManager::unproject(float x, float y,
 		model *= _projectionInv;
 
 
-		// Viewport coordinates
+		// Coordinates at the near and far clipping planes
+		Common::Vector3 coordsNear, coordsFar;
 
-		float view[4];
+		if (_projectType == kProjectTypePerspective) {
+			/* With a perspective projection, the viewport runs from -1.0 to 0.0
+			 * on the x and y axes, and the clipping planes are at 0.0 and 1.0. */
 
-		view[0] = 0.0;
-		view[1] = 0.0;
-		view[2] = _width;
-		view[3] = _height;
+			const float view[4] = { 0.0f, 0.0f, (float) _width, (float) _height };
+			const float zNear   = 0.0;
+			const float zFar    = 1.0;
 
-		float zNear = 0.0;
-		float zFar  = 1.0;
+			coordsNear._x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
+			coordsNear._y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
+			coordsNear._z = (2 * zNear) - 1.0f;
+			coordsNear._w = 1.0f;
 
+			coordsFar._x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
+			coordsFar._y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
+			coordsFar._z = (2 * zFar) - 1.0f;
+			coordsFar._w = 1.0f;
 
-		// Generate a matrix for the coordinates at the near plane
+		} else if (_projectType == kProjectTypeOrthogonal) {
+			/* With an orthogonal projection, the viewport runs from 0.0 to width
+			 * on the x axis and from 0.0 to height on the y axis (which already
+			 * matches the coordinates we were given), and the clipping planes are
+			 * at -clipNear and -clipFar. */
 
-		Common::Vector3 coordsNear;
+			coordsNear._x = x;
+			coordsNear._y = y;
+			coordsNear._z = -_clipNear;
+			coordsNear._w = 1.0f;
 
-		coordsNear._x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
-		coordsNear._y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
-		coordsNear._z = (2 * zNear) - 1.0f;
-		coordsNear._w = 1.0f;
-
-
-
-		// Generate a matrix for the coordinates at the far plane
-
-		Common::Vector3 coordsFar;
-
-		coordsFar._x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
-		coordsFar._y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
-		coordsFar._z = (2 * zFar) - 1.0f;
-		coordsFar._w = 1.0f;
-
+			coordsFar._x = x;
+			coordsFar._y = y;
+			coordsFar._z = -_clipFar;
+			coordsFar._w = 1.0f;
+		}
 
 		// Unproject
 		Common::Vector3 oNear(model * coordsNear);
