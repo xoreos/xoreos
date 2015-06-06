@@ -79,6 +79,8 @@ void Placeable::hide() {
 }
 
 void Placeable::enter() {
+	warning("Placeable %u: \"%s\"", _id, _tag.c_str());
+
 	highlight(true);
 }
 
@@ -140,8 +142,13 @@ void Placeable::load(const Aurora::GFF4Struct &placeable) {
 		}
 
 		_model = loadModelGUI(_modelName);
-		if (_model)
+
+		if (_model) {
 			_model->setScale(_scale, _scale, _scale);
+
+			_model->setClickable(true);
+			_modelID = _model->getID();
+		}
 	}
 
 	if (placeable.hasField(Aurora::kGFF4Position)) {

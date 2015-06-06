@@ -26,13 +26,16 @@
 #define ENGINES_SONIC_AREA_H
 
 #include <list>
+#include <map>
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
 
 #include "src/events/types.h"
+#include "src/events/notifyable.h"
 
 namespace Engines {
 
@@ -43,7 +46,7 @@ class AreaMiniMap;
 
 class Object;
 
-class Area {
+class Area : public Events::Notifyable {
 public:
 	Area(int32 id);
 	~Area();
@@ -67,12 +70,19 @@ public:
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
 
+	void removeFocus();
+
 	static void getCameraPosition(float x, float y, float &cameraX, float &cameraY, float &cameraZ);
 	static void getWorldPosition(float x, float y, float z, float &worldX, float &worldY, float &worldZ);
 
 
+protected:
+	void notifyCameraMoved();
+
+
 private:
 	typedef std::list<Object *> ObjectList;
+	typedef std::map<uint32, Object *> ObjectMap;
 
 	int32 _id;
 
@@ -108,6 +118,13 @@ private:
 	AreaMiniMap    *_mmPanel;
 
 	ObjectList _objects;
+	ObjectMap  _objectMap;
+
+	Object *_activeObject;
+
+	bool _highlightAll;
+
+	Common::Mutex _mutex;
 
 
 	void load();
@@ -122,6 +139,12 @@ private:
 
 	void getCameraLimits(float &minX, float &minY, float &minZ,
 	                     float &maxX, float &maxY, float &maxZ) const;
+
+	void checkActive();
+	void setActive(Object *object);
+	Object *getObjectAt(int x, int y);
+
+	void highlightAll(bool enabled);
 };
 
 } // End of namespace Sonic
