@@ -44,7 +44,6 @@ libgraphics_la_SOURCES = \
                          font.cpp \
                          camera.cpp \
                          renderable.cpp \
-                         object.cpp \
                          yuv_to_rgb.cpp \
                          ttf.cpp \
                          indexbuffer.cpp \

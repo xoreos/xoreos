@@ -32,8 +32,8 @@ namespace Graphics {
 /** A renderable game object. */
 class Object : public Renderable {
 public:
-	Object();
-	~Object();
+	Object() : Renderable(kRenderableTypeObject) { }
+	~Object() { }
 };
 
 } // End of namespace Graphics
