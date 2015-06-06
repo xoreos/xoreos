@@ -66,8 +66,10 @@ enum QueueType {
 	kQueueNewTexture               , ///< A newly created texture.
 	kQueueWorldObject              , ///< An object in 3D space.
 	kQueueVisibleWorldObject       , ///< A visible object in 3D space.
-	kQueueGUIFrontObject           , ///< A GUI object.
-	kQueueVisibleGUIFrontObject    , ///< A visible GUI object.
+	kQueueGUIFrontObject           , ///< A GUI object, in front of the world objects.
+	kQueueGUIBackObject            , ///< A GUI object, behind the world objects.
+	kQueueVisibleGUIFrontObject    , ///< A visible GUI object, in front of the world objects.
+	kQueueVisibleGUIBackObject     , ///< A visible GUI object, behind the world objects.
 	kQueueVideo                    , ///< A video.
 	kQueueVisibleVideo             , ///< A currently playing video.
 	kQueueGLContainer              , ///< An object containing OpenGL structures.
@@ -77,7 +79,8 @@ enum QueueType {
 enum RenderableType {
 	kRenderableTypeVideo    = 0,
 	kRenderableTypeObject      ,
-	kRenderableTypeGUIFront
+	kRenderableTypeGUIFront    ,
+	kRenderableTypeGUIBack
 };
 
 enum RenderPass {

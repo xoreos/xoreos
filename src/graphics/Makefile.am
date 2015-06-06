@@ -26,6 +26,7 @@ noinst_HEADERS = \
                  renderable.h \
                  object.h \
                  guifrontelement.h \
+                 guibackelement.h \
                  yuv_to_rgb.h \
                  ttf.h \
                  indexbuffer.h \

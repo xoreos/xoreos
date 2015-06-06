@@ -275,6 +275,7 @@ private:
 	bool playVideo();
 	bool renderWorld();
 	bool renderGUIFront();
+	bool renderGUIBack();
 	bool renderCursor();
 	void endScene();
 };

@@ -763,12 +763,22 @@ void GraphicsManager::recalculateObjectDistances() {
 	// GUI front objects
 	QueueMan.lockQueue(kQueueVisibleGUIFrontObject);
 
-	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
-	for (std::list<Queueable *>::const_iterator g = gui.begin(); g != gui.end(); ++g)
+	const std::list<Queueable *> &guiFront = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
+	for (std::list<Queueable *>::const_iterator g = guiFront.begin(); g != guiFront.end(); ++g)
 		static_cast<Renderable *>(*g)->calculateDistance();
 
 	QueueMan.sortQueue(kQueueVisibleGUIFrontObject);
 	QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
+
+	// GUI back objects
+	QueueMan.lockQueue(kQueueVisibleGUIBackObject);
+
+	const std::list<Queueable *> &guiBack = QueueMan.getQueue(kQueueVisibleGUIBackObject);
+	for (std::list<Queueable *>::const_iterator g = guiBack.begin(); g != guiBack.end(); ++g)
+		static_cast<Renderable *>(*g)->calculateDistance();
+
+	QueueMan.sortQueue(kQueueVisibleGUIBackObject);
+	QueueMan.unlockQueue(kQueueVisibleGUIBackObject);
 }
 
 uint32 GraphicsManager::createRenderableID() {
@@ -1061,6 +1071,40 @@ bool GraphicsManager::renderGUIFront() {
 	return true;
 }
 
+bool GraphicsManager::renderGUIBack() {
+	if (QueueMan.isQueueEmpty(kQueueVisibleGUIBackObject))
+		return false;
+
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(false);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glScalef(2.0 / _width, 2.0 / _height, 0.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	QueueMan.lockQueue(kQueueVisibleGUIBackObject);
+	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIBackObject);
+
+	buildNewTextures();
+
+	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
+	     g != gui.rend(); ++g) {
+
+		glPushMatrix();
+		static_cast<Renderable *>(*g)->render(kRenderPassAll);
+		glPopMatrix();
+	}
+
+	QueueMan.unlockQueue(kQueueVisibleGUIBackObject);
+
+	glDepthMask(true);
+	glEnable(GL_DEPTH_TEST);
+	return true;
+}
+
 bool GraphicsManager::renderCursor() {
 	if (!_cursor)
 		return false;
@@ -1113,6 +1157,7 @@ void GraphicsManager::renderScene() {
 		return;
 	}
 
+	renderGUIBack();
 	renderWorld();
 	renderGUIFront();
 	renderCursor();

@@ -32,17 +32,30 @@
 namespace Graphics {
 
 Renderable::Renderable(RenderableType type) : _clickable(false), _distance(0.0) {
-	if        (type == kRenderableTypeVideo) {
-		_queueExists  = kQueueVideo;
-		_queueVisible = kQueueVisibleVideo;
-	} else if (type == kRenderableTypeObject) {
-		_queueExists  = kQueueWorldObject;
-		_queueVisible = kQueueVisibleWorldObject;
-	} else if (type == kRenderableTypeGUIFront) {
-		_queueExists  = kQueueGUIFrontObject;
-		_queueVisible = kQueueVisibleGUIFrontObject;
-	} else
-		throw Common::Exception("Unknown Renderable type %d", type);
+	switch (type) {
+		case kRenderableTypeVideo:
+			_queueExists  = kQueueVideo;
+			_queueVisible = kQueueVisibleVideo;
+			break;
+
+		case kRenderableTypeObject:
+			_queueExists  = kQueueWorldObject;
+			_queueVisible = kQueueVisibleWorldObject;
+			break;
+
+		case kRenderableTypeGUIFront:
+			_queueExists  = kQueueGUIFrontObject;
+			_queueVisible = kQueueVisibleGUIFrontObject;
+			break;
+
+		case kRenderableTypeGUIBack:
+			_queueExists  = kQueueGUIBackObject;
+			_queueVisible = kQueueVisibleGUIBackObject;
+			break;
+
+		default:
+			throw Common::Exception("Unknown Renderable type %d", type);
+	}
 
 	addToQueue(_queueExists);
 
