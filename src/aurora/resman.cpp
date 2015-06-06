@@ -401,7 +401,13 @@ void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
 		                        "algorithm than we do (%d vs. %d)", (int) hashAlgo, (int) _hashAlgo);
 
 	_openedArchives.push_back(OpenedArchive());
-	_openedArchives.back().set(knownArchive, *archive);
+
+	try {
+		_openedArchives.back().set(knownArchive, *archive);
+	} catch (...) {
+		_openedArchives.pop_back();
+		throw;
+	}
 
 	// Add the information of the new archive to the change set
 	if (change)
