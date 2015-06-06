@@ -35,6 +35,7 @@
 #include "src/graphics/aurora/texture.h"
 
 #include "src/engines/sonic/areaminimap.h"
+#include "src/engines/sonic/types.h"
 
 namespace Engines {
 
@@ -71,7 +72,7 @@ void AreaMiniMap::loadMiniMap(const Common::UString &name) {
 		if (!(nbfp = ResMan.getResource(name, Aurora::kFileTypeNBFP)))
 			throw Common::Exception("No such NBFP");
 
-		image   = new Graphics::NBFS(*nbfs, *nbfp, 256, 192);
+		image   = new Graphics::NBFS(*nbfs, *nbfp, kScreenWidth, kScreenHeight);
 		texture = TextureMan.add(Graphics::Aurora::Texture::create(image, Aurora::kFileTypeNBFS), name);
 
 	} catch (Common::Exception &e) {
@@ -86,8 +87,8 @@ void AreaMiniMap::loadMiniMap(const Common::UString &name) {
 	delete nbfs;
 	delete nbfp;
 
-	_miniMap = new Graphics::Aurora::GUIQuad(texture, 0.0, 0.0, 256.0, 192.0, 0.0, 1.0, 1.0, 0.0);
-	_miniMap->setPosition(-128.0, 0.0, 0.0);
+	_miniMap = new Graphics::Aurora::GUIQuad(texture, 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
+	_miniMap->setPosition(kTopScreenX, kTopScreenY, 0.0);
 }
 
 } // End of namespace Sonic

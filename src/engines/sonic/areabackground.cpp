@@ -38,18 +38,16 @@
 #include "src/graphics/aurora/texture.h"
 
 #include "src/engines/sonic/areabackground.h"
-
-static const float kWidth  = 256.0f;
-static const float kHeight = 192.0f;
-
-static const float kVertexX1 = -128.0f;
-static const float kVertexY1 = -192.0f;
-static const float kVertexX2 = kVertexX1 + kWidth;
-static const float kVertexY2 = kVertexY1 + kHeight;
+#include "src/engines/sonic/types.h"
 
 namespace Engines {
 
 namespace Sonic {
+
+static const float kVertexX1 = kBottomScreenX;
+static const float kVertexY1 = kBottomScreenY;
+static const float kVertexX2 = kVertexX1 + kScreenWidth;
+static const float kVertexY2 = kVertexY1 + kScreenHeight;
 
 AreaBackground::AreaBackground(const Common::UString &name) {
 	_distance = FLT_MAX;
@@ -123,18 +121,18 @@ void AreaBackground::loadTexture(const Common::UString &name) {
 }
 
 void AreaBackground::setPosition(float x, float y) {
-	const float tWidth  = _texture.getTexture().getWidth();
-	const float tHeight = _texture.getTexture().getHeight();
+	const float textureWidth  = _texture.getTexture().getWidth();
+	const float textureHeight = _texture.getTexture().getHeight();
 
-	y = floor(y * sin(Common::deg2rad(45.0)));
+	y = floor(y * sin(Common::deg2rad(kCameraAngle)));
 
-	x = CLIP<float>(x - kWidth  / 2.0f, 0.0f, tWidth  - kWidth);
-	y = CLIP<float>(y - kHeight / 2.0f, 0.0f, tHeight - kHeight);
+	x = CLIP<float>(x - kScreenWidth  / 2.0f, 0.0f, textureWidth  - kScreenWidth);
+	y = CLIP<float>(y - kScreenHeight / 2.0f, 0.0f, textureHeight - kScreenHeight);
 
-	_textureX1 =  x            / tWidth;
-	_textureY1 = (y + kHeight) / tHeight;
-	_textureX2 = (x + kWidth ) / tWidth;
-	_textureY2 =  y            / tHeight;
+	_textureX1 =  x                  / textureWidth;
+	_textureY1 = (y + kScreenHeight) / textureHeight;
+	_textureX2 = (x + kScreenWidth ) / textureWidth;
+	_textureY2 =  y                  / textureHeight;
 }
 
 void AreaBackground::notifyCameraMoved() {

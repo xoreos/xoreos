@@ -34,17 +34,12 @@
 #include "src/graphics/camera.h"
 
 #include "src/engines/sonic/area.h"
+#include "src/engines/sonic/types.h"
 #include "src/engines/sonic/areabackground.h"
 #include "src/engines/sonic/areaminimap.h"
 #include "src/engines/sonic/placeable.h"
 
 static const uint32 kAREID = MKTAG('A', 'R', 'E', ' ');
-
-static const float kScreenWidth  = 256.0f;
-static const float kScreenHeight = 192.0f;
-
-static const float kCameraHeight = 50.0f;
-static const float kCameraAngle  = 45.0f;
 
 namespace Engines {
 
@@ -100,7 +95,7 @@ void Area::getCameraPosition(float x, float y, float &cameraX, float &cameraY, f
 void Area::getWorldPosition(float x, float y, float z, float &worldX, float &worldY, float &worldZ) {
 	worldX = x + kScreenWidth / 2.0f;
 	worldY = z;
-	worldZ = (y - 192.0f + kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle)) - kCameraHeight;
+	worldZ = (y - kScreenHeight + kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle)) - kCameraHeight;
 }
 
 void Area::getCameraLimits(float &minX, float &minY, float &minZ,

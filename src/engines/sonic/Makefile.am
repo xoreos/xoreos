@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libsonic.la
 
 noinst_HEADERS = \
                  sonic.h \
+                 types.h \
                  files.h \
                  modelloader.h \
                  console.h \

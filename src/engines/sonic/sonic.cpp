@@ -51,6 +51,7 @@
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/sonic/sonic.h"
+#include "src/engines/sonic/types.h"
 #include "src/engines/sonic/files.h"
 #include "src/engines/sonic/modelloader.h"
 #include "src/engines/sonic/console.h"
@@ -221,7 +222,7 @@ void SonicEngine::run() {
 
 void SonicEngine::init() {
 	// Force to the screen size of the Nintendo DS (2 screens of 256x192)
-	GfxMan.setScreenSize(256, 384);
+	GfxMan.setScreenSize(kScreenWidth, 2 * kScreenHeight);
 
 	LoadProgress progress(9);
 
@@ -347,11 +348,11 @@ bool SonicEngine::waitClick() {
 }
 
 bool SonicEngine::showLicenseSplash() {
-	Graphics::Aurora::GUIQuad top("nintendosplash"  , 0.0, 0.0, 256.0, 192.0, 0.0, 1.0, 1.0, 0.0);
-	Graphics::Aurora::GUIQuad bot("actimaginesplash", 0.0, 0.0, 256.0, 192.0, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad top("nintendosplash"  , 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad bot("actimaginesplash", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
 
-	top.setPosition(-128.0,    0.0, 0.0);
-	bot.setPosition(-128.0, -192.0, 0.0);
+	top.setPosition(kTopScreenX   , kTopScreenY);
+	bot.setPosition(kBottomScreenX, kBottomScreenY);
 
 	GfxMan.lockFrame();
 	top.show();
@@ -369,11 +370,11 @@ bool SonicEngine::showLicenseSplash() {
 }
 
 bool SonicEngine::showTitle() {
-	Graphics::Aurora::GUIQuad top("introscr_top", 0.0, 0.0, 256.0, 192.0, 0.0, 1.0, 1.0, 0.0);
-	Graphics::Aurora::GUIQuad bot("introscr_bot", 0.0, 0.0, 256.0, 192.0, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad top("introscr_top", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad bot("introscr_bot", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
 
-	top.setPosition(-128.0,    0.0, 0.0);
-	bot.setPosition(-128.0, -192.0, 0.0);
+	top.setPosition(kTopScreenX   , kTopScreenY);
+	bot.setPosition(kBottomScreenX, kBottomScreenY);
 
 	top.show();
 	bot.show();
@@ -390,11 +391,11 @@ bool SonicEngine::showTitle() {
 }
 
 bool SonicEngine::showMainMenu() {
-	Graphics::Aurora::GUIQuad top("introscr_top" , 0.0, 0.0, 256.0, 192.0, 0.0, 1.0, 1.0, 0.0);
-	Graphics::Aurora::GUIQuad bot("startupscrbot", 0.0, 0.0, 256.0, 192.0, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad top("introscr_top" , 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad bot("startupscrbot", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
 
-	top.setPosition(-128.0,    0.0, 0.0);
-	bot.setPosition(-128.0, -192.0, 0.0);
+	top.setPosition(kTopScreenX   , kTopScreenY   , 0.0);
+	bot.setPosition(kBottomScreenX, kBottomScreenY, 0.0);
 
 	top.show();
 	bot.show();
@@ -424,8 +425,8 @@ bool SonicEngine::showMainMenu() {
 
 	Graphics::Aurora::Text helpText(_guiFont, TalkMan.getString(18707));
 
-	const float helpTextX = -128.0 + ((256.0 - helpText.getWidth()) / 2.0);
-	const float helpTextY = -192.0;
+	const float helpTextX = kBottomScreenX + ((kScreenWidth - helpText.getWidth()) / 2.0);
+	const float helpTextY = kBottomScreenY;
 
 	helpText.setPosition(helpTextX, helpTextY, -2.0);
 	helpText.show();
@@ -455,8 +456,8 @@ bool SonicEngine::showQuote() {
 
 	Graphics::Aurora::Text quoteText(_quoteFont, quote, 1.0, 1.0, 1.0, 1.0, align);
 
-	const float quoteTextX = -128.0 + ((256.0 - quoteText.getWidth())  / 2.0);
-	const float quoteTextY =    0.0 + ((192.0 - quoteText.getHeight()) / 2.0);
+	const float quoteTextX = kTopScreenX + ((kScreenWidth  - quoteText.getWidth())  / 2.0);
+	const float quoteTextY = kTopScreenY + ((kScreenHeight - quoteText.getHeight()) / 2.0);
 
 	quoteText.setPosition(quoteTextX, quoteTextY, 0.0);
 	quoteText.show();
@@ -473,11 +474,11 @@ bool SonicEngine::showQuote() {
 }
 
 bool SonicEngine::showChapter1() {
-	Graphics::Aurora::GUIQuad top("chap1scr_top", 0.0, 0.0, 256.0, 192.0, 0.0, 1.0, 1.0, 0.0);
-	Graphics::Aurora::GUIQuad bot("chap1scr_bot", 0.0, 0.0, 256.0, 192.0, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad top("chap1scr_top", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad bot("chap1scr_bot", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
 
-	top.setPosition(-128.0,    0.0, 0.0);
-	bot.setPosition(-128.0, -192.0, 0.0);
+	top.setPosition(kTopScreenX   , kTopScreenY);
+	bot.setPosition(kBottomScreenX, kBottomScreenY);
 
 	top.show();
 	bot.show();
