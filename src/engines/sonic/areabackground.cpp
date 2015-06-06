@@ -47,9 +47,6 @@ static const float kVertexY1 = -192.0f;
 static const float kVertexX2 = kVertexX1 + kWidth;
 static const float kVertexY2 = kVertexY1 + kHeight;
 
-static const float kX = 1115.0f;
-static const float kY =   30.0f;
-
 namespace Engines {
 
 namespace Sonic {
