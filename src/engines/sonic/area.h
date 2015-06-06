@@ -30,6 +30,8 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
+#include "src/aurora/types.h"
+
 #include "src/events/types.h"
 
 namespace Engines {
@@ -38,6 +40,8 @@ namespace Sonic {
 
 class AreaBackground;
 class AreaMiniMap;
+
+class Object;
 
 class Area {
 public:
@@ -63,8 +67,13 @@ public:
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
 
+	static void getCameraPosition(float x, float y, float &cameraX, float &cameraY, float &cameraZ);
+	static void getWorldPosition(float x, float y, float z, float &worldX, float &worldY, float &worldZ);
+
 
 private:
+	typedef std::list<Object *> ObjectList;
+
 	int32 _id;
 
 	Common::UString _tag;
@@ -98,12 +107,21 @@ private:
 	AreaBackground *_bgPanel;
 	AreaMiniMap    *_mmPanel;
 
+	ObjectList _objects;
+
 
 	void load();
 	void loadDefinition();
 	void loadBackground();
 	void loadMiniMap();
 	void loadLayout();
+
+	void loadObject(Object &object);
+
+	void loadPlaceables(const Aurora::GFF4List &list);
+
+	void getCameraLimits(float &minX, float &minY, float &minZ,
+	                     float &maxX, float &maxY, float &maxZ) const;
 };
 
 } // End of namespace Sonic

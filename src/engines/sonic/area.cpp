@@ -30,16 +30,21 @@
 #include "src/aurora/gff4file.h"
 #include "src/aurora/talkman.h"
 
+#include "src/graphics/graphics.h"
 #include "src/graphics/camera.h"
 
 #include "src/engines/sonic/area.h"
 #include "src/engines/sonic/areabackground.h"
 #include "src/engines/sonic/areaminimap.h"
+#include "src/engines/sonic/placeable.h"
 
 static const uint32 kAREID = MKTAG('A', 'R', 'E', ' ');
 
-static const float kCameraHeight =  500.0f;
-static const float kCameraAngle  = - 45.0f;
+static const float kScreenWidth  = 256.0f;
+static const float kScreenHeight = 192.0f;
+
+static const float kCameraHeight = 50.0f;
+static const float kCameraAngle  = 45.0f;
 
 namespace Engines {
 
@@ -57,6 +62,9 @@ Area::~Area() {
 
 	delete _mmPanel;
 	delete _bgPanel;
+
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		delete *o;
 }
 
 int32 Area::getID() const {
@@ -83,18 +91,57 @@ float Area::getStartY() const {
 	return _startPosY;
 }
 
+void Area::getCameraPosition(float x, float y, float &cameraX, float &cameraY, float &cameraZ) {
+	cameraX = x - kScreenWidth / 2.0f;
+	cameraY = kCameraHeight;
+	cameraZ = (y - kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle));
+}
+
+void Area::getWorldPosition(float x, float y, float z, float &worldX, float &worldY, float &worldZ) {
+	worldX = x + kScreenWidth / 2.0f;
+	worldY = z;
+	worldZ = (y - 192.0f + kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle)) - kCameraHeight;
+}
+
+void Area::getCameraLimits(float &minX, float &minY, float &minZ,
+                           float &maxX, float &maxY, float &maxZ) const {
+
+	minX = kScreenWidth / 2.0f;
+	minY = -FLT_MAX;
+	minZ = -(_height - kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle));
+	maxX = _width - kScreenWidth / 2.0f;
+	maxY =  FLT_MAX;
+	maxZ = -(kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle));
+}
+
 void Area::show() {
+	GfxMan.lockFrame();
+
 	if (_mmPanel)
 		_mmPanel->show();
 	if (_bgPanel)
 		_bgPanel->show();
+
+	// Show objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->show();
+
+	GfxMan.unlockFrame();
 }
 
 void Area::hide() {
+	GfxMan.lockFrame();
+
+	// Hide objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->hide();
+
 	if (_mmPanel)
 		_mmPanel->hide();
 	if (_bgPanel)
 		_bgPanel->hide();
+
+	GfxMan.unlockFrame();
 }
 
 void Area::enter() {
@@ -102,12 +149,13 @@ void Area::enter() {
 
 	if (_bgPanel) {
 		float x, y, z, minX, minY, minZ, maxX, maxY, maxZ;
-		_bgPanel->getCameraLimits(kCameraHeight, minX, minY, minZ, maxX, maxY, maxZ);
-		_bgPanel->getCameraPosition(_startPosX, _startPosY, kCameraHeight, x, y, z);
 
-		CameraMan.setOrientation(kCameraAngle, 0.0f, 0.0f);
-		CameraMan.setPosition(x, y, z);
+		getCameraLimits(minX, minY, minZ, maxX, maxY, maxZ);
+		getCameraPosition(_startPosX, _startPosY, x, y, z);
+
 		CameraMan.limit(minX, minY, minZ, maxX, maxY, maxZ);
+		CameraMan.setOrientation(-kCameraAngle, 0.0f, 0.0f);
+		CameraMan.setPosition(x, y, z);
 	}
 
 	CameraMan.update();
@@ -198,6 +246,21 @@ void Area::loadLayout() {
 	const Aurora::GFF4Struct &areTop = are.getTopLevel();
 
 	_tag = areTop.getString(40000);
+
+	if (areTop.hasField(40001))
+		loadPlaceables(areTop.getList(40001));
+}
+
+void Area::loadObject(Object &object) {
+	_objects.push_back(&object);
+}
+
+void Area::loadPlaceables(const Aurora::GFF4List &list) {
+	for (Aurora::GFF4List::const_iterator p = list.begin(); p != list.end(); ++p) {
+		Placeable *placeable = new Placeable(**p);
+
+		loadObject(*placeable);
+	}
 }
 
 } // End of namespace Sonic

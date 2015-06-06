@@ -47,11 +47,6 @@ public:
 	uint32 getImageWidth()  const;
 	uint32 getImageHeight() const;
 
-	void getCameraLimits(float z, float &minX, float &minY, float &minZ,
-	                              float &maxX, float &maxY, float &maxZ) const;
-	void getCameraPosition(float x, float y, float z,
-	                       float &cameraX, float &cameraY, float &cameraZ) const;
-
 	// Renderable
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
@@ -65,7 +60,7 @@ private:
 	float _textureY2;
 
 	void loadTexture(const Common::UString &name);
-	void setPosition(float x, float y, float z);
+	void setPosition(float x, float y);
 
 	void notifyCameraMoved();
 };

@@ -95,8 +95,11 @@ void Placeable::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
 
-	if (_model)
+	if (_model) {
+		Area::getWorldPosition(x, y, z, x, y, z);
+
 		_model->setPosition(x, y, z);
+	}
 }
 
 void Placeable::setOrientation(float x, float y, float z) {

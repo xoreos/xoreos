@@ -56,7 +56,7 @@ AreaBackground::AreaBackground(const Common::UString &name) {
 
 	loadTexture(name);
 
-	setPosition(0.0f, 0.0f, 0.0f);
+	setPosition(0.0f, 0.0f);
 }
 
 AreaBackground::~AreaBackground() {
@@ -122,34 +122,14 @@ void AreaBackground::loadTexture(const Common::UString &name) {
 	delete twoda;
 }
 
-void AreaBackground::getCameraLimits(float z, float &minX, float &minY, float &minZ,
-                                              float &maxX, float &maxY, float &maxZ) const {
-
+void AreaBackground::setPosition(float x, float y) {
 	const float tWidth  = _texture.getTexture().getWidth();
 	const float tHeight = _texture.getTexture().getHeight();
 
-	minX = kWidth / 2.0f;
-	minY = z;
-	minZ = -(tHeight - kHeight / 2.0f + z);
+	y = floor(y * sin(Common::deg2rad(45.0)));
 
-	maxX = tWidth - kWidth / 2.0f;
-	maxY = z;
-	maxZ = -(kHeight/ 2.0f + z);
-}
-
-void AreaBackground::getCameraPosition(float x, float y, float z,
-                                       float &cameraX, float &cameraY, float &cameraZ) const {
-	cameraX = x;
-	cameraY = z;
-	cameraZ = y - z;
-}
-
-void AreaBackground::setPosition(float x, float y, float z) {
-	const float tWidth  = _texture.getTexture().getWidth();
-	const float tHeight = _texture.getTexture().getHeight();
-
-	x = CLIP<float>(x     - kWidth  / 2.0f, 0.0f, tWidth  - kWidth);
-	y = CLIP<float>(y - z - kHeight / 2.0f, 0.0f, tHeight - kHeight);
+	x = CLIP<float>(x - kWidth  / 2.0f, 0.0f, tWidth  - kWidth);
+	y = CLIP<float>(y - kHeight / 2.0f, 0.0f, tHeight - kHeight);
 
 	_textureX1 =  x            / tWidth;
 	_textureY1 = (y + kHeight) / tHeight;
@@ -160,7 +140,7 @@ void AreaBackground::setPosition(float x, float y, float z) {
 void AreaBackground::notifyCameraMoved() {
 	const float *pos = CameraMan.getPosition();
 
-	setPosition(pos[0], -pos[2], pos[1]);
+	setPosition(pos[0], -pos[2]);
 }
 
 } // End of namespace Sonic
