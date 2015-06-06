@@ -223,6 +223,21 @@ void Model::setRotation(float x, float y, float z) {
 	unlockFrameIfVisible();
 }
 
+void Model::setScale(float x, float y, float z) {
+	lockFrameIfVisible();
+
+	_modelScale[0] = x;
+	_modelScale[1] = y;
+	_modelScale[2] = z;
+
+	createAbsolutePosition();
+	calculateDistance();
+
+	resort();
+
+	unlockFrameIfVisible();
+}
+
 void Model::move(float x, float y, float z) {
 	x /= _modelScale[0];
 	y /= _modelScale[1];
