@@ -141,7 +141,7 @@ void Placeable::load(const Aurora::GFF4Struct &placeable) {
 		} catch (...) {
 		}
 
-		_model = loadModelGUI(_modelName);
+		_model = loadModelObject(_modelName);
 
 		if (_model) {
 			_model->setScale(_scale, _scale, _scale);
