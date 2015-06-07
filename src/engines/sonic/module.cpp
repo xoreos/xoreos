@@ -157,11 +157,11 @@ void Module::handleEvents() {
 }
 
 bool Module::handleCameraEvents(const Events::Event &event) {
-	float multiplier = 1.0;
-	if (event.key.keysym.mod & KMOD_SHIFT)
-		multiplier = 5.0;
-
 	if (event.type == Events::kEventKeyDown) {
+		float multiplier = 1.0;
+		if (event.key.keysym.mod & KMOD_SHIFT)
+			multiplier = 5.0;
+
 		if      (event.key.keysym.sym      == SDLK_UP)
 			CameraMan.move(0.0, 0.0, multiplier *  5.0);
 		else if (event.key.keysym.sym      == SDLK_DOWN)
@@ -178,6 +178,11 @@ bool Module::handleCameraEvents(const Events::Event &event) {
 			CameraMan.move(multiplier * -5.0, 0.0, 0.0);
 		else if (event.key.keysym.scancode == SDL_SCANCODE_D)
 			CameraMan.move(multiplier *  5.0, 0.0, 0.0);
+		else
+			return false;
+	} else if (event.type == Events::kEventMouseMove) {
+		if (event.motion.state & SDL_BUTTON(2))
+			CameraMan.move(-1.0 * event.motion.xrel, 0.0, 1.0 * event.motion.yrel);
 		else
 			return false;
 	} else
