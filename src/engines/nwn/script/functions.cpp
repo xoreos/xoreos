@@ -175,7 +175,7 @@ ScriptFunctions::~ScriptFunctions() {
 }
 
 Common::UString ScriptFunctions::floatToString(float f, int width, int decimals) {
-	return Common::UString::sprintf("%*.*f", width, decimals, f);
+	return Common::UString::format("%*.*f", width, decimals, f);
 }
 
 void ScriptFunctions::registerFunctions() {
@@ -213,7 +213,7 @@ Aurora::NWScript::Object *ScriptFunctions::getPC() {
 
 Common::UString ScriptFunctions::gTag(const Aurora::NWScript::Object *o) {
 	if (o)
-		return Common::UString::sprintf("\"%s\"", o->getTag().c_str());
+		return Common::UString::format("\"%s\"", o->getTag().c_str());
 
 	return "0";
 }

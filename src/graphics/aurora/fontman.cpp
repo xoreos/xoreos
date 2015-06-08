@@ -153,7 +153,7 @@ Common::UString FontManager::getIndexName(Common::UString name, int height) {
 		return name;
 
 	// If we have been given a height, the font is indexed with the height
-	return Common::UString::sprintf("%s-%d", name.c_str(), height);
+	return Common::UString::format("%s-%d", name.c_str(), height);
 }
 
 void FontManager::assign(FontHandle &font, const FontHandle &from) {

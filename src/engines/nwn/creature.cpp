@@ -307,7 +307,7 @@ void Creature::constructPartName(const Common::UString &type, uint32 id,
 		const Common::UString &gender, const Common::UString &race,
 		const Common::UString &phenoType, Common::UString &part) {
 
-	part = Common::UString::sprintf("p%s%s%s_%s%03d",
+	part = Common::UString::format("p%s%s%s_%s%03d",
 	       gender.c_str(), race.c_str(), phenoType.c_str(), type.c_str(), id);
 }
 
@@ -386,16 +386,16 @@ void Creature::getPartModels() {
 
 	Common::UString genderChar   = gender.getString("GENDER");
 	Common::UString raceChar     = raceAp.getString("RACE");
-	Common::UString phenoChar    = Common::UString::sprintf("%d", _phenotype);
+	Common::UString phenoChar    = Common::UString::format("%d", _phenotype);
 	Common::UString phenoAltChar = pheno.getString("DefaultPhenoType");
 
 	// Important to capture the supermodel
-	_partsSuperModelName = Common::UString::sprintf("p%s%s%s",
+	_partsSuperModelName = Common::UString::format("p%s%s%s",
 	                       genderChar.c_str(), raceChar.c_str(), phenoChar.c_str());
 
 	// Fall back to the default phenotype if required
 	if (!ResMan.hasResource(_partsSuperModelName, Aurora::kFileTypeMDL))
-		_partsSuperModelName = Common::UString::sprintf("p%s%s%s",
+		_partsSuperModelName = Common::UString::format("p%s%s%s",
 		                       genderChar.c_str(), raceChar.c_str(), phenoAltChar.c_str());
 
 	for (uint i = 0; i < kBodyPartMAX; i++)
@@ -546,7 +546,7 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 	// Set the PC tag to something recognizable for now.
 	// Let's hope no script depends on it being "".
 
-	_tag = Common::UString::sprintf("[PC: %s]", _name.c_str());
+	_tag = Common::UString::format("[PC: %s]", _name.c_str());
 
 	_lastChangedGUIDisplay = EventMan.getTimestamp();
 }

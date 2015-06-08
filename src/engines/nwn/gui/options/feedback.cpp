@@ -129,7 +129,7 @@ void OptionsFeedbackMenu::updateTooltipDelay(uint32 UNUSED(tooltipDelay)) {
 
 	const Common::UString secString   = TalkMan.getString(kStringSec);
 	const Common::UString ttDelayText =
-		Common::UString::sprintf("%3.1f %s", ttDelay, secString.c_str());
+		Common::UString::format("%3.1f %s", ttDelay, secString.c_str());
 
 	ttDelayLabel.setText(ttDelayText);
 }

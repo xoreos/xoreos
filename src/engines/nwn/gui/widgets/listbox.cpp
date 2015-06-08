@@ -407,7 +407,7 @@ void WidgetListBox::add(WidgetListItem *item) {
 
 	item->_itemNumber = _items.size();
 
-	item->setTag(Common::UString::sprintf("%s#Item%d", getTag().c_str(), (int)_items.size()));
+	item->setTag(Common::UString::format("%s#Item%d", getTag().c_str(), (int)_items.size()));
 
 	for (std::vector<WidgetListItem *>::iterator i = _items.begin(); i != _items.end(); ++i) {
 		(*i)->addGroupMember(*item);

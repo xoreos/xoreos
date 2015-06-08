@@ -64,7 +64,7 @@ QuickbarButton::QuickbarButton(::Engines::GUI &gui, uint n) : NWNWidget(gui, "")
 	if (invisible)
 		invisible->setInvisible(true);
 
-	NWNWidget::setTag(Common::UString::sprintf("Quickbar%d", _buttonNumber));
+	NWNWidget::setTag(Common::UString::format("Quickbar%d", _buttonNumber));
 	_model->setTag(NWNWidget::getTag());
 
 }

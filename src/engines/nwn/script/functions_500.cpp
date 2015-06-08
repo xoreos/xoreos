@@ -666,7 +666,7 @@ void ScriptFunctions::musicBackgroundGetNightTrack(Aurora::NWScript::FunctionCon
 
 void ScriptFunctions::writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx) {
 	ptime t(second_clock::universal_time());
-	const Common::UString tstamp = Common::UString::sprintf("%04d-%02d-%02dT%02d:%02d:%02d",
+	const Common::UString tstamp = Common::UString::format("%04d-%02d-%02dT%02d:%02d:%02d",
 		(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
 		(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
 		(int) t.time_of_day().seconds());

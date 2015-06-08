@@ -696,7 +696,7 @@ UString UString::substr(iterator from, iterator to) const {
 	return sub;
 }
 
-UString UString::sprintf(const char *s, ...) {
+UString UString::format(const char *s, ...) {
 	char buf[STRINGBUFLEN];
 	va_list va;
 

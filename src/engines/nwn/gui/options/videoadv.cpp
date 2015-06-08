@@ -155,7 +155,7 @@ void OptionsVideoAdvancedMenu::updateFSAALabel(int n) {
 	else if (n == 2)
 		text = TalkMan.getString(67542);
 	else
-		text = Common::UString::sprintf("%dx %s", 1 << n, TalkMan.getString(67538).c_str());
+		text = Common::UString::format("%dx %s", 1 << n, TalkMan.getString(67538).c_str());
 
 	getLabel("AntialiasLabel", true)->setText(text);
 }

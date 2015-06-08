@@ -63,7 +63,7 @@ void FPS::render(RenderPass pass) {
 	if (fps != _fps) {
 		_fps = fps;
 
-		set(Common::UString::sprintf("%d fps", _fps));
+		set(Common::UString::format("%d fps", _fps));
 	}
 
 	Text::render(pass);

@@ -338,7 +338,7 @@ Common::MemoryReadStream *preParseColorCodes(Common::SeekableReadStream &stream)
 
 		if (state == 5) {
 			if (b == '>') {
-				Common::UString c = Common::UString::sprintf("<c%02X%02X%02X%02X>",
+				Common::UString c = Common::UString::format("<c%02X%02X%02X%02X>",
 				                    (uint8) color[0], (uint8) color[1], (uint8) color[2], (uint8) 0xFF);
 
 				output.writeString(c);

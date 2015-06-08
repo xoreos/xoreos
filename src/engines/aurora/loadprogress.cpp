@@ -85,7 +85,7 @@ void LoadProgress::step(const Common::UString &description) {
 	// Update the text
 	{
 		// Create string representing the percentage of done-ness and progress bar
-		const Common::UString percentStr = Common::UString::sprintf("%d%%", percentage);
+		const Common::UString percentStr = Common::UString::format("%d%%", percentage);
 		const Common::UString barStr     = createProgressbar(kBarLength, _currentAmount);
 
 		float x, y, z;

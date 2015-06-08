@@ -173,8 +173,8 @@ public:
 
 	UString substr(iterator from, iterator to) const;
 
-	/** Formatted printer, works like sprintf(). */
-	static UString sprintf(const char *s, ...);
+	/** Print formatted data into an UString object, similar to sprintf(). */
+	static UString format(const char *s, ...);
 
 	static uint32 split(const UString &text, uint32 delim, std::vector<UString> &texts);
 

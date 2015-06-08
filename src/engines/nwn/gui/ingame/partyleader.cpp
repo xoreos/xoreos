@@ -163,7 +163,7 @@ void PartyLeader::callbackActive(Widget &widget) {
 
 void PartyLeader::updatePortraitTooltip() {
 	Common::UString tooltip =
-		Common::UString::sprintf("%s %d/%d\n%s",
+		Common::UString::format("%s %d/%d\n%s",
 				_name.c_str(), _currentHP, _maxHP, _area.c_str());
 
 	_portrait->setTooltip(tooltip);

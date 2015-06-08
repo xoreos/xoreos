@@ -703,7 +703,7 @@ Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::
 	} catch (...) {
 	}
 
-	return Common::UString::sprintf("GFF4: Invalid string encoding (0x%08X)", offset);
+	return Common::UString::format("GFF4: Invalid string encoding (0x%08X)", offset);
 }
 
 Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::Encoding encoding,

@@ -123,10 +123,10 @@ bool WitcherEngine::detectLanguages(Aurora::GameID game, const Common::UString &
 		for (uint i = 0; i < Aurora::kLanguageMAX; i++) {
 			const uint32 langID = getLanguageID(game, (Aurora::Language) i);
 
-			const Common::UString v1 = Common::UString::sprintf("lang_%d.key"  , langID);
-			const Common::UString v2 = Common::UString::sprintf("M1_%d.key"    , langID);
-			const Common::UString v3 = Common::UString::sprintf("M2_%d.key"    , langID);
-			const Common::UString t  = Common::UString::sprintf("dialog_%d.tlk", langID);
+			const Common::UString v1 = Common::UString::format("lang_%d.key"  , langID);
+			const Common::UString v2 = Common::UString::format("M1_%d.key"    , langID);
+			const Common::UString v3 = Common::UString::format("M2_%d.key"    , langID);
+			const Common::UString t  = Common::UString::format("dialog_%d.tlk", langID);
 
 			if (files.contains(v1, true) && files.contains(v2, true) && files.contains(v3, true))
 				languagesVoice.push_back((Aurora::Language) i);
@@ -329,7 +329,7 @@ void WitcherEngine::unloadLanguageFiles() {
 void WitcherEngine::loadLanguageFiles(LoadProgress &progress,
 		Aurora::Language langText, Aurora::Language langVoice) {
 
-	progress.step(Common::UString::sprintf("Indexing language files (%s text + %s voices)",
+	progress.step(Common::UString::format("Indexing language files (%s text + %s voices)",
 				Aurora::getLanguageName(langText).c_str(), Aurora::getLanguageName(langVoice).c_str()));
 
 	loadLanguageFiles(langText, langVoice);
@@ -344,18 +344,18 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 	Common::ChangeID change;
 
 	_languageResources.push_back(Common::ChangeID());
-	archive = Common::UString::sprintf("lang_%d.key", getLanguageID(_game, langVoice));
+	archive = Common::UString::format("lang_%d.key", getLanguageID(_game, langVoice));
 	indexMandatoryArchive(archive, 100, &_languageResources.back());
 
 	_languageResources.push_back(Common::ChangeID());
-	archive = Common::UString::sprintf("M1_%d.key", getLanguageID(_game, langVoice));
+	archive = Common::UString::format("M1_%d.key", getLanguageID(_game, langVoice));
 	indexMandatoryArchive(archive, 101, &_languageResources.back());
 
 	_languageResources.push_back(Common::ChangeID());
-	archive = Common::UString::sprintf("M2_%d.key", getLanguageID(_game, langVoice));
+	archive = Common::UString::format("M2_%d.key", getLanguageID(_game, langVoice));
 	indexMandatoryArchive(archive, 102, &_languageResources.back());
 
-	archive = Common::UString::sprintf("dialog_%d", getLanguageID(_game, langText));
+	archive = Common::UString::format("dialog_%d", getLanguageID(_game, langText));
 	TalkMan.addTable(archive, "", false, 0, &_languageTLK);
 }
 

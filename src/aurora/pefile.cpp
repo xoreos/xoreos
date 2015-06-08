@@ -118,7 +118,7 @@ void PEFile::load(const std::vector<Common::UString> &remap) {
 
 		uint32 id = it->getID() - 1;
 		if (id >= remap.size())
-			res.name = Common::UString::sprintf("cursor%d", id);
+			res.name = Common::UString::format("cursor%d", id);
 		else
 			res.name = remap[id];
 

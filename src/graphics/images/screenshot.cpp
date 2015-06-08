@@ -45,7 +45,7 @@ using boost::posix_time::second_clock;
 static bool constructFilename(Common::UString &filename) {
 	// Construct a file name from the current time
 	ptime t(second_clock::universal_time());
-	filename = Common::UString::sprintf("%04d%02d%02dT%02d%02d%02d.bmp",
+	filename = Common::UString::format("%04d%02d%02dT%02d%02d%02d.bmp",
 		(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
 		(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
 		(int) t.time_of_day().seconds());

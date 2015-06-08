@@ -104,7 +104,7 @@ static bool tagToString(uint32 tag, bool trim, Common::UString &str) {
 	if (!std::isprint(tS[0]) || !std::isprint(tS[1]) || !std::isprint(tS[2]) || !std::isprint(tS[3]))
 		return false;
 
-	str = UString::sprintf("%c%c%c%c", tS[0], tS[1], tS[2], tS[3]);
+	str = UString::format("%c%c%c%c", tS[0], tS[1], tS[2], tS[3]);
 	if (trim)
 		str.trim();
 
@@ -114,9 +114,9 @@ static bool tagToString(uint32 tag, bool trim, Common::UString &str) {
 UString debugTag(uint32 tag, bool trim) {
 	Common::UString str;
 	if (tagToString(tag, trim, str))
-		return UString::sprintf("0x%08X ('%s')", FROM_BE_32(tag), str.c_str());
+		return UString::format("0x%08X ('%s')", FROM_BE_32(tag), str.c_str());
 
-	return UString::sprintf("0x%08X", FROM_BE_32(tag));
+	return UString::format("0x%08X", FROM_BE_32(tag));
 }
 
 // Helper functions for parseString()
@@ -289,11 +289,11 @@ template<> UString composeString(bool value) {
 }
 
 template<> UString composeString(float value) {
-	return UString::sprintf("%f", value);
+	return UString::format("%f", value);
 }
 
 template<> UString composeString(double value) {
-	return UString::sprintf("%lf", value);
+	return UString::format("%lf", value);
 }
 
 template UString composeString<bool              >(bool               value);

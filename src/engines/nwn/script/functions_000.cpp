@@ -1036,7 +1036,7 @@ void ScriptFunctions::getEffectCreator(Aurora::NWScript::FunctionContext &UNUSED
 }
 
 void ScriptFunctions::intToString(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = Common::UString::sprintf("%d", ctx.getParams()[0].getInt());
+	ctx.getReturn() = Common::UString::format("%d", ctx.getParams()[0].getInt());
 }
 
 void ScriptFunctions::getFirstObjectInArea(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {

@@ -958,7 +958,7 @@ void ScriptFunctions::effectSlow(Aurora::NWScript::FunctionContext &UNUSED(ctx))
 }
 
 void ScriptFunctions::objectToString(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = Common::UString::sprintf("%p", (void *) ctx.getParams()[0].getObject());
+	ctx.getReturn() = Common::UString::format("%p", (void *) ctx.getParams()[0].getObject());
 }
 
 void ScriptFunctions::effectImmunity(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
@@ -1009,7 +1009,7 @@ void ScriptFunctions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
 	int32 tokenNumber = ctx.getParams()[0].getInt();
 	const Common::UString &tokenValue = ctx.getParams()[1].getString();
 
-	const Common::UString tokenName = Common::UString::sprintf("<CUSTOM%d>", tokenNumber);
+	const Common::UString tokenName = Common::UString::format("<CUSTOM%d>", tokenNumber);
 
 	TokenMan.set(tokenName, tokenValue);
 }

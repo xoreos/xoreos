@@ -195,7 +195,7 @@ UString ConfigManager::createGameID(const UString &path) {
 		return target;
 
 	for (uint32 i = 0; i < 65536; i++) {
-		UString targetNumbered = UString::sprintf("%s_%d", target.c_str(), i);
+		UString targetNumbered = UString::format("%s_%d", target.c_str(), i);
 
 		if (!_config->hasDomain(targetNumbered))
 			return targetNumbered;

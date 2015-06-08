@@ -511,7 +511,7 @@ Common::UString Tooltip::getBubbleModel(uint32 lines, float width) {
 	} else
 		modelWidth = 300;
 
-	return Common::UString::sprintf("pnl_bubble%d_%d", modelLines, modelWidth);
+	return Common::UString::format("pnl_bubble%d_%d", modelLines, modelWidth);
 }
 
 } // End of namespace NWN

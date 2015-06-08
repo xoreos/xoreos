@@ -415,7 +415,7 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 		Common::UString tileType = tiles.getRow(tile.tileID).getString("Tile_Type");
 		int             tileVar  = t.getUint("Variation") + 1;
 
-		tile.modelName = Common::UString::sprintf("tl_%s_%s_%02d", tileSet.c_str(), tileType.c_str(), tileVar);
+		tile.modelName = Common::UString::format("tl_%s_%s_%02d", tileSet.c_str(), tileType.c_str(), tileVar);
 	} else {
 		// "Meta tile". Spreads over the space of several normal tiles
 
@@ -424,7 +424,7 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 		Common::UString tileSet = metatiles.getRow(tile.tileID).getString("TileSet");
 		Common::UString name    = metatiles.getRow(tile.tileID).getString("Name");
 
-		tile.modelName = Common::UString::sprintf("tl_%s_%s", tileSet.c_str(), name.c_str());
+		tile.modelName = Common::UString::format("tl_%s_%s", tileSet.c_str(), name.c_str());
 	}
 }
 

@@ -329,7 +329,7 @@ void DragonAge2Engine::unloadLanguageFiles() {
 }
 
 void DragonAge2Engine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
-	progress.step(Common::UString::sprintf("Indexing language files (%s)",
+	progress.step(Common::UString::format("Indexing language files (%s)",
 				Aurora::getLanguageName(language).c_str()));
 
 	loadLanguageFiles(language);

@@ -169,7 +169,7 @@ void OptionsSoundMenu::updateVolume(double volume, Sound::SoundType type,
 	SoundMan.setTypeGain(type, volume);
 
 	if (!label.empty())
-		getLabel(label, true)->setText(Common::UString::sprintf("%.0f%%", volume * 100.0));
+		getLabel(label, true)->setText(Common::UString::format("%.0f%%", volume * 100.0));
 }
 
 void OptionsSoundMenu::adoptChanges() {

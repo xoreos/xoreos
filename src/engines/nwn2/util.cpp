@@ -43,7 +43,7 @@ bool readTint(const Aurora::GFF3Struct &gff, float t[3][4]) {
 	const Aurora::GFF3Struct &tint = tintable.getStruct("Tint");
 
 	for (int i = 0; i < 3; i++) {
-		Common::UString index = Common::UString::sprintf("%d", i + 1);
+		Common::UString index = Common::UString::format("%d", i + 1);
 		if (!tint.hasField(index))
 			continue;
 

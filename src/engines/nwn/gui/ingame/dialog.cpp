@@ -356,7 +356,7 @@ void DialogBox::finishReplies() {
 		_replyLines.push_back(ReplyLine(r));
 
 		_replyLines.back().count =
-			new Graphics::Aurora::Text(_font, Common::UString::sprintf("%d. ", ++_replyCount),
+			new Graphics::Aurora::Text(_font, Common::UString::format("%d. ", ++_replyCount),
 			                           kLightBlueR, kLightBlueG, kLightBlueB);
 
 		_replyCountWidth = MAX(_replyCountWidth, _replyLines.back().count->getWidth());

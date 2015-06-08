@@ -214,7 +214,7 @@ void CharPremadeMenu::initCharacterList() {
 
 		ch.displayName = ch.name;
 		if (ch.number > 0)
-			ch.displayName += Common::UString::sprintf(" (%u)", ch.number);
+			ch.displayName += Common::UString::format(" (%u)", ch.number);
 	}
 
 	std::sort(_characters.begin(), _characters.end());

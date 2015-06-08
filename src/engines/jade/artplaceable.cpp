@@ -45,7 +45,7 @@ ArtPlaceable::~ArtPlaceable() {
 }
 
 void ArtPlaceable::load(const Common::UString &resRef, uint32 id, float x, float y, float z) {
-	_tag  = Common::UString::sprintf("%s#%u", resRef.c_str(), id);
+	_tag  = Common::UString::format("%s#%u", resRef.c_str(), id);
 	_name = resRef;
 
 	_model = loadModelObject(resRef);

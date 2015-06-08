@@ -218,7 +218,7 @@ bool Creature::loadArmorModel(const Common::UString &body,
 	Common::UString armorPrefix = armorVisual.getString("Prefix");
 
 	Common::UString modelFile;
-	modelFile = Common::UString::sprintf("%s_%s_%s%02d",
+	modelFile = Common::UString::format("%s_%s_%s%02d",
 	                                     body.c_str(), armorPrefix.c_str(), armor.c_str(), variation + 1);
 
 	Graphics::Aurora::Model *model = loadModelObject(modelFile);
@@ -237,7 +237,7 @@ bool Creature::loadHeadModel(uint8 appearance) {
 		return false;
 
 	Common::UString modelFile;
-	modelFile = Common::UString::sprintf("%s%02d", head.c_str(), appearance);
+	modelFile = Common::UString::format("%s%02d", head.c_str(), appearance);
 
 	Graphics::Aurora::Model *model = loadModelObject(modelFile);
 	if (model)
@@ -255,7 +255,7 @@ bool Creature::loadHairModel(uint8 appearance) {
 		return false;
 
 	Common::UString modelFile;
-	modelFile = Common::UString::sprintf("%s%02d", hair.c_str(), appearance);
+	modelFile = Common::UString::format("%s%02d", hair.c_str(), appearance);
 
 	Graphics::Aurora::Model *model = loadModelObject(modelFile);
 	if (model)
