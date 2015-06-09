@@ -278,6 +278,10 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeOPF,            ".opf"},
 	{kFileTypeCRF,            ".crf"},
 	{kFileTypeRIMP,           ".rimp"},
+	{kFileTypeMET,            ".met"},
+	{kFileTypeMETA,           ".meta"},
+	{kFileTypeFXR,            ".fxr"},
+	{kFileTypeFXT,            ".fxt"},
 
 	{kFileTypeMOV,            ".mov"},
 	{kFileTypeCURS,           ".curs"},

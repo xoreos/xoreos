@@ -282,6 +282,10 @@ enum FileType {
 	kFileTypeOPF            = 22028,
 	kFileTypeCRF            = 22029,
 	kFileTypeRIMP           = 22030,
+	kFileTypeMET            = 22031, ///< Resource meta information.
+	kFileTypeMETA           = 22032, ///< Resource meta information.
+	kFileTypeFXR            = 22033, ///< Face metadata, FaceFX.
+	kFileTypeFXT            = 22033, ///< Face metadata, FaceFX.
 
 	// Found in KotOR Mac
 	kFileTypeMOV            = 23000, ///< Video, QuickTime/MPEG-4.
