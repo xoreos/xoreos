@@ -14,7 +14,7 @@ env:
 before_script:
   - echo "yes" | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu trusty main universe restricted multiverse"
   - sudo apt-get update -qq
-  - sudo apt-get -qq install libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libgl1-mesa-dev zlib1g-dev liblzma-dev
+  - sudo apt-get -qq install libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libgl1-mesa-dev zlib1g-dev liblzma-dev libxml2-dev
 
 script:
   - if [ "$COVERITY_SCAN_BRANCH" != 1 ]; then ./autogen.sh; fi
