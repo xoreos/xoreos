@@ -27,7 +27,9 @@
 
 namespace Aurora {
 
-enum kGFF4FieldNames {
+namespace GFF4FieldNamesEnum {
+
+enum GFF4FieldNames {
 	kGFF4Tag                                             =      1,
 	kGFF4Name                                            =      2,
 	kGFF4TemplateResRef                                  =      3,
@@ -2779,6 +2781,10 @@ enum kGFF4FieldNames {
 	kGFF4SaveprofileFileVersion                          =  26110,
 	kGFF4SaveprofileAddinTokenList                       =  26111
 };
+
+} // End of namespace GFF4FieldNamesEnum
+
+using namespace GFF4FieldNamesEnum;
 
 } // End of namespace Aurora
 
