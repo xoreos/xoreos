@@ -137,4 +137,7 @@ uint64 convertIEEEDouble(double value);
  */
 double readNintendoFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits);
 
+/** Read a half-precision 16-bit IEEE float, converting it into a 32-bit iEEE float. */
+float readIEEEFloat16(uint16 value);
+
 #endif // COMMON_UTIL_H

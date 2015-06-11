@@ -177,3 +177,73 @@ double readNintendoFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits)
 
 	return (double)iPart + ((double) fPart) / ((double) fDiv);
 }
+
+/* .--- Convert IEEE float16 to IEEE float32, based on code by James Tursa ---.
+ *
+ * This function extends a 16-bit (half-precision) IEEE 754 floating-point
+ * number into a 32-bit (full-precision) IEEE 754 float-point number.
+ *
+ * The special cases of -Inf, Inf and NaN are handled correctly.
+ * Denormalized float16 numbers are adjusted to normalized float32 numbers.
+ *
+ * This code is heavily based on the halfp2singles() function found in
+ * ieeehalfprecision.c by James Tursa, released under the terms of the
+ * 2-Clause BSD license as part of the "IEEE 754r Half Precision floating
+ * point converter" MATLAB package.
+ * (<https://www.mathworks.com/matlabcentral/fileexchange/23173-ieee-754r-half-precision-floating-point-converter>)
+ */
+float readIEEEFloat16(uint16 value) {
+	// Check for 0.0 / -0.0
+	if ((value & 0x7FFF) == 0)
+		return convertIEEEFloat(((uint32) value) << 16);
+
+	uint16 vS = value & 0x8000; // float16 sign
+	uint16 vE = value & 0x7C00; // float16 exponent
+	uint16 vM = value & 0x03FF; // float16 mantissa
+
+	const uint32 fS = ((uint32) vS) << 16; // float32 sign
+
+	// Check for (-)Inf and NaN
+	if (vE == 0x7C00) {
+		// All exponent bits are set and the mantissa is 0: Inf / -Inf
+		if (vM == 0)
+			return convertIEEEFloat(0x7F800000 | fS);
+
+		// All exponent bits are set and the mantissa is != 0: NaN
+		return convertIEEEFloat(0xFFC00000);
+	}
+
+	// Not zero, infinity or NaN: this is a regular number
+
+	// Unbias the float16 exponent, and bias the float32 exponent accordingly
+	int32 fER = ((int32) (vE >> 10)) - 15 + 127;
+
+	// Is this float normalized? If so, we can directly extend it
+	if (vE != 0) {
+		const uint32 fE = ((uint32) fER) << 23; // float32 exponent, rebiased
+		const uint32 fM = ((uint32) vM ) << 13; // float32 mantissa
+
+		// Combine sign, exponent and mantissa
+		return convertIEEEFloat(fS | fE | fM);
+	}
+
+	// Denormalized float, we need to normalize it first
+
+	// Shift the mantissa until it overflows, to find out the exponent adjustment
+	int aE = -1;
+	do {
+		aE++;
+		vM <<= 1;
+	} while((vM & 0x0400) == 0);
+
+	// Adjust the exponent, and clip the shifted mantissa to valid range again
+	fER -= aE;
+	vM  &= 0x03FF;
+
+	const uint32 fE = ((uint32) fER) << 23; // float32 exponent, rebiased and normalized
+	const uint32 fM = ((uint32) vM ) << 13; // float32 mantissa, normalized
+
+	// Combine sign, exponent and mantissa
+	return convertIEEEFloat(fS | fE | fM);
+}
+// '--- Convert IEEE float16 to IEEE float32, based on code by James Tursa ---'
