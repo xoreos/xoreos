@@ -2767,6 +2767,18 @@ enum GFF4FieldNames {
 	kGFF4SaveprofileFileVersion                          =  26110,
 	kGFF4SaveprofileAddinTokenList                       =  26111,
 
+	kGFF4MAOFloatName                                    =  33002,
+	kGFF4MAOFloatValue                                   =  33003,
+	kGFF4MAOVectorName                                   =  33004,
+	kGFF4MAOVectorValue                                  =  33005,
+	kGFF4MAOTextureName                                  =  33010,
+	kGFF4MAOTextureResource                              =  33011,
+	kGFF4MAOMaterial                                     =  33012,
+	kGFF4MAODefaultSemantic                              =  33013,
+	kGFF4MAOFloats                                       =  33016,
+	kGFF4MAOVectors                                      =  33017,
+	kGFF4MAOTextures                                     =  33020,
+
 	kGFF4CharMOP                                         = 250100,
 	kGFF4CharApp                                         = 250101,
 	kGFF4CharGender                                      = 250102,
