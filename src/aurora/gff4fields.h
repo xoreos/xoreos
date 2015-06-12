@@ -2741,20 +2741,6 @@ enum GFF4FieldNames {
 	kGFF4DepResRef                                       =  25001,
 	kGFF4DepDependencyList                               =  25002,
 
-	kGFF4CharMOP                                         = 250100,
-	kGFF4CharApp                                         = 250101,
-	kGFF4CharGender                                      = 250102,
-	kGFF4CharRace                                        = 250103,
-	kGFF4CharClass                                       = 250104,
-	kGFF4CharBack                                        = 250105,
-	kGFF4CharAttributes                                  = 250106,
-	kGFF4CharAbilities                                   = 250107,
-	kGFF4CharName                                        = 250108,
-	kGFF4CharHeadName                                    = 250109,
-	kGFF4CharAttributeID                                 = 250110,
-	kGFF4CharAttributePoints                             = 250111,
-	kGFF4CharPortrait                                    = 250112,
-
 	kGFF4SaveprofileBuildNumber                          =  26000,
 	kGFF4SaveprofileInitialBuildNumber                   =  26001,
 	kGFF4SaveprofileLastUsedProfile                      =  26002,
@@ -2779,7 +2765,21 @@ enum GFF4FieldNames {
 	kGFF4SaveprofileFileName                             =  26108,
 	kGFF4SaveprofileFileData                             =  26109,
 	kGFF4SaveprofileFileVersion                          =  26110,
-	kGFF4SaveprofileAddinTokenList                       =  26111
+	kGFF4SaveprofileAddinTokenList                       =  26111,
+
+	kGFF4CharMOP                                         = 250100,
+	kGFF4CharApp                                         = 250101,
+	kGFF4CharGender                                      = 250102,
+	kGFF4CharRace                                        = 250103,
+	kGFF4CharClass                                       = 250104,
+	kGFF4CharBack                                        = 250105,
+	kGFF4CharAttributes                                  = 250106,
+	kGFF4CharAbilities                                   = 250107,
+	kGFF4CharName                                        = 250108,
+	kGFF4CharHeadName                                    = 250109,
+	kGFF4CharAttributeID                                 = 250110,
+	kGFF4CharAttributePoints                             = 250111,
+	kGFF4CharPortrait                                    = 250112
 };
 
 } // End of namespace GFF4FieldNamesEnum
