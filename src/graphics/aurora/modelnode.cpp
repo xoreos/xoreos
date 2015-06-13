@@ -400,15 +400,22 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 }
 
 void ModelNode::createBound() {
-	const VertexAttrib &vpos = _vertexBuffer.getVertexDecl()[0];
-	assert(vpos.index == VPOSITION);
-	assert(vpos.type == GL_FLOAT);
-	uint32 stride = MAX<uint32>(vpos.size, vpos.stride / sizeof(float));
-	float *vX = (float *) vpos.pointer;
-	float *vY = vX + 1;
-	float *vZ = vY + 1;
-	for (uint32 v = 0; v < _vertexBuffer.getCount(); v++)
-		_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
+	_boundBox.clear();
+
+	const VertexDecl vertexDecl = _vertexBuffer.getVertexDecl();
+	for (VertexDecl::const_iterator vA = vertexDecl.begin(); vA != vertexDecl.end(); ++vA) {
+		if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
+			continue;
+
+		const uint32 stride = MAX<uint32>(vA->size, vA->stride / sizeof(float));
+
+		float *vX = ((float *) vA->pointer) + 0;
+		float *vY = ((float *) vA->pointer) + 1;
+		float *vZ = ((float *) vA->pointer) + 2;
+
+		for (uint32 v = 0; v < _vertexBuffer.getCount(); v++)
+			_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
+	}
 
 	createCenter();
 }
