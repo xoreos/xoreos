@@ -641,10 +641,11 @@ bool ResourceManager::hasResource(const Common::UString &name) const {
 }
 
 bool ResourceManager::hasResource(const Common::UString &name, const std::vector<FileType> &types) const {
-	if (getRes(name, types))
-		return true;
+	return getRes(name, types) != 0;
+}
 
-	return false;
+bool ResourceManager::hasResource(uint64 hash) const {
+	return getRes(hash) != 0;
 }
 
 uint32 ResourceManager::getResourceSize(const Resource &res) const {
@@ -690,6 +691,18 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	// Return the actually found type
 	if (foundType)
 		*foundType = res->type;
+
+	return getResource(*res);
+}
+
+Common::SeekableReadStream *ResourceManager::getResource(uint64 hash, FileType *type) const {
+	const Resource *res = getRes(hash);
+	if (!res)
+		return 0;
+
+	// Return the actually found type
+	if (type)
+		*type = res->type;
 
 	return getResource(*res);
 }

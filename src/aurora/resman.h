@@ -194,6 +194,13 @@ public:
 	// .--- Resources
 	/** Does a specific resource exist?
 	 *
+	 *  @param  hash The hash of the name and extension of the resource.
+	 *  @return true if the resource exists, false otherwise.
+	 */
+	bool hasResource(uint64 hash) const;
+
+	/** Does a specific resource exist?
+	 *
 	 *  @param  name The name (ResRef) of the resource.
 	 *  @param  type The resource's type.
 	 *  @return true if the resource exists, false otherwise.
@@ -222,6 +229,14 @@ public:
 	 *  @return true if the resource exists, false otherwise.
 	 */
 	bool hasResource(const Common::UString &name, const std::vector<FileType> &types) const;
+
+	/** Return a resource.
+	 *
+	 *  @param  hash The hash of the name and extension of the resource.
+	 *  @param  type If != 0, that's where the type of the resource is stored.
+	 *  @return The resource stream or 0 if the resource doesn't exist.
+	 */
+	Common::SeekableReadStream *getResource(uint64 hash, FileType *type = 0) const;
 
 	/** Return a resource.
 	 *
