@@ -66,6 +66,7 @@ noinst_HEADERS = \
                  pe_exe.h \
                  systemfonts.h \
                  changeid.h \
+                 xml.h \
                  $(EMPTY)
 
 libcommon_la_SOURCES = \
@@ -107,4 +108,5 @@ libcommon_la_SOURCES = \
                        pe_exe.cpp \
                        systemfonts.cpp \
                        changeid.cpp \
+                       xml.cpp \
                        $(EMPTY)
