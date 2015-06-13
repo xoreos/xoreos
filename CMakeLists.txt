@@ -142,6 +142,10 @@ find_package(LibLZMA REQUIRED)
 include_directories(${LIBLZMA_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${LIBLZMA_LIBRARIES})
 
+find_package(LibXml2 REQUIRED)
+include_directories(${LIBXML2_INCLUDE_DIR})
+list(APPEND XOREOS_LIBRARIES ${LIBXML2_LIBRARIES})
+
 
 find_package(GLEW)
 if(NOT GLEW_FOUND)
