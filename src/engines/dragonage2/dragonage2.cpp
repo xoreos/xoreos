@@ -42,8 +42,10 @@
 #include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/model.h"
 
 #include "src/engines/dragonage2/dragonage2.h"
+#include "src/engines/dragonage2/modelloader.h"
 #include "src/engines/dragonage2/console.h"
 
 namespace Engines {
@@ -189,7 +191,7 @@ void DragonAge2Engine::run() {
 }
 
 void DragonAge2Engine::init() {
-	LoadProgress progress(20);
+	LoadProgress progress(21);
 
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
@@ -319,6 +321,9 @@ void DragonAge2Engine::initResources(LoadProgress &progress) {
 	// TODO: DLC
 
 	loadLanguageFiles(progress, _language);
+
+	progress.step("Registering file formats");
+	registerModelLoader(new DragonAge2ModelLoader);
 }
 
 void DragonAge2Engine::unloadLanguageFiles() {
