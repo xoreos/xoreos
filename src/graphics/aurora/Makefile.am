@@ -34,6 +34,7 @@ noinst_HEADERS = \
                  model_jade.h \
                  model_witcher.h \
                  model_sonic.h \
+                 model_dragonage.h \
                  $(EMPTY)
 
 libaurora_la_SOURCES = \
@@ -67,4 +68,5 @@ libaurora_la_SOURCES = \
                        model_jade.cpp \
                        model_witcher.cpp \
                        model_sonic.cpp \
+                       model_dragonage.cpp \
                        $(EMPTY)
