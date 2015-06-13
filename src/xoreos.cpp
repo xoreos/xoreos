@@ -35,6 +35,7 @@
 #include "src/common/threads.h"
 #include "src/common/debugman.h"
 #include "src/common/configman.h"
+#include "src/common/xml.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/2dareg.h"
@@ -253,6 +254,9 @@ void init() {
 	// Init threading system
 	Common::initThreads();
 
+	// Init libxml2
+	Common::initXML();
+
 	// Init subsystems
 	GfxMan.init();
 	status("Graphics subsystem initialized");
@@ -272,6 +276,9 @@ void deinit() {
 		}
 	} catch (...) {
 	}
+
+	// Deinit libxml2
+	Common::deinitXML();
 
 	// Destroy global singletons
 	Graphics::Aurora::FontManager::destroy();
