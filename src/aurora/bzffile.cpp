@@ -25,6 +25,8 @@
  *  Essentially, they are BIF files with LZMA-compressed data.
  */
 
+#include "src/common/types.h"
+
 #include <lzma.h>
 
 #include "src/common/util.h"
