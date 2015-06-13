@@ -25,7 +25,12 @@
 #ifndef COMMON_XML_H
 #define COMMON_XML_H
 
-#include <libxml/parser.h>
+#include <list>
+#include <map>
+
+#include "src/common/ustring.h"
+
+struct _xmlNode;
 
 namespace Common {
 
@@ -36,24 +41,65 @@ void initXML();
 /** Deinitialize the XML subsystem. Needs to be called from the main thread. */
 void deinitXML();
 
-/** Class to parse a SeekableReadStream into an libxml2 xmlDoc tree.
- *
- *  This is just a thin wrapper around libxml2, taking care of creation and
- *  cleanup. Code using it still has to operate on native libxml2 structures
- *  (xmlNode, xmlAttrib, ...) to parse the actual meaning out of the XML.
- */
+class XMLNode;
+
+/** Class to parse a SeekableReadStream into a simple XML tree. */
 class XMLParser {
 public:
-	XMLParser(SeekableReadStream &stream);
+	XMLParser(SeekableReadStream &stream, bool makeLower = false);
 	~XMLParser();
 
-	/** Return the XML root element as an libxml2 xmlNode. */
-	const xmlNode &getRoot() const;
+	/** Return the XML root node. */
+	const XMLNode &getRoot() const;
 
 private:
-	xmlDoc *_xml;
+	XMLNode *_rootNode;
+};
 
-	xmlNode *_rootNode;
+class XMLNode {
+public:
+	typedef std::map<UString, UString> Properties;
+	typedef std::list<XMLNode *> Children;
+
+	const UString &getName() const;
+	const UString &getContent() const;
+
+	/** Return the parent node, or 0 if this is the root node. */
+	const XMLNode *getParent() const;
+
+	/** Return a list of children. */
+	const Children &getChildren() const;
+
+	/** Find a child node by name. */
+	const XMLNode *findChild(const UString &name) const;
+
+	/** Return all the properties on this node. */
+	const Properties &getProperties() const;
+	/** Return a certain property on this node. */
+	const UString &getProperty(const UString &name, const UString &def = "") const;
+
+
+private:
+	typedef std::map<UString, XMLNode *, UString::iless> ChildMap;
+
+	UString _name;
+	UString _content;
+
+	XMLNode *_parent;
+
+	Children _children;
+	ChildMap _childMap;
+
+	Properties _properties;
+
+
+	XMLNode(_xmlNode &node, bool makeLower = false, XMLNode *parent = 0);
+	~XMLNode();
+
+	void load(_xmlNode &node, bool makeLower);
+	void clean();
+
+	friend class XMLParser;
 };
 
 } // End of namespace Common

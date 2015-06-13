@@ -51,6 +51,9 @@ namespace Graphics {
 
 namespace Aurora {
 
+using Common::XMLParser;
+using Common::XMLNode;
+
 // .--- GFF4 helpers
 static const uint32 kMMHID     = MKTAG('M', 'M', 'H', ' ');
 static const uint32 kMSHID     = MKTAG('M', 'E', 'S', 'H');
@@ -729,76 +732,40 @@ void ModelNode_DragonAge::readMAOGFF(Common::SeekableReadStream *maoStream, Mate
 void ModelNode_DragonAge::readMAOXML(Common::SeekableReadStream *maoStream, MaterialObject &material) {
 	try {
 
-		Common::XMLParser mao(*maoStream);
-		const xmlNode &maoRoot = mao.getRoot();
+		XMLParser mao(*maoStream, true);
+		const XMLNode &maoRoot = mao.getRoot();
 
-		if (!Common::UString((const char *) maoRoot.name).equalsIgnoreCase("MaterialObject"))
-			throw Common::Exception("Invalid XML MAO root element (\"%s\")", maoRoot.name);
+		if (maoRoot.getName() != "materialobject")
+			throw Common::Exception("Invalid XML MAO root element (\"%s\")", maoRoot.getName().c_str());
 
-		for (xmlNode *child = maoRoot.children; child; child = child->next) {
-			const Common::UString name = (const char *) child->name;
+		const XMLNode::Children &maoNodes = maoRoot.getChildren();
+		for (XMLNode::Children::const_iterator n = maoNodes.begin(); n != maoNodes.end(); ++n) {
+			if        ((*n)->getName() == "material") {
 
-			if (name.equalsIgnoreCase("Material")) {
+				material.material = (*n)->getProperty("name");
 
-				for (xmlAttr *attrib = child->properties; attrib; attrib = attrib->next)
-					if (Common::UString((const char *) attrib->name).equalsIgnoreCase("Name") && attrib->children)
-						material.material = (const char *) attrib->children->content;
+			} else if ((*n)->getName() == "defaultsemantic") {
 
-			} else if (name.equalsIgnoreCase("DefaultSemantic")) {
+				material.defaultSemantic = (*n)->getProperty("name");
 
-				for (xmlAttr *attrib = child->properties; attrib; attrib = attrib->next)
-					if (Common::UString((const char *) attrib->name).equalsIgnoreCase("Name") && attrib->children)
-						material.defaultSemantic = (const char *) attrib->children->content;
+			} else if ((*n)->getName() == "float") {
 
-			} else if (name.equalsIgnoreCase("Float")) {
-
-				Common::UString fName;
 				float value = 0.0f;
+				sscanf((*n)->getProperty("value").c_str(), "%f", &value);
 
-				for (xmlAttr *attrib = child->properties; attrib; attrib = attrib->next) {
-					if (!attrib->children)
-						continue;
+				material.floats[(*n)->getProperty("name")] = value;
 
-					if      (Common::UString((const char *) attrib->name).equalsIgnoreCase("Name"))
-						fName = (const char *) attrib->children->content;
-					else if (Common::UString((const char *) attrib->name).equalsIgnoreCase("Value"))
-						sscanf((const char *) attrib->children->content, "%f", &value);
-				}
+			} else if ((*n)->getName() == "vector4f") {
 
-				material.floats[fName] = value;
-
-			} else if (name.equalsIgnoreCase("Vector4f")) {
-
-				Common::UString vName;
 				float v1 = 0.0f, v2 = 0.0f, v3 = 0.0f, v4 = 0.0f;
+				sscanf((*n)->getProperty("value").c_str(), "%f %f %f %f", &v1, &v2, &v3, &v4);
 
-				for (xmlAttr *attrib = child->properties; attrib; attrib = attrib->next) {
-					if (!attrib->children)
-						continue;
+				material.vectors[(*n)->getProperty("name")] = Common::Vector3(v1, v2, v3, v4);
 
-					if      (Common::UString((const char *) attrib->name).equalsIgnoreCase("Name"))
-						vName = (const char *) attrib->children->content;
-					else if (Common::UString((const char *) attrib->name).equalsIgnoreCase("Value"))
-						sscanf((const char *) attrib->children->content, "%f %f %f %f", &v1, &v2, &v3, &v4);
-				}
+			} else if ((*n)->getName() == "texture") {
 
-				material.vectors[vName] = Common::Vector3(v1, v2, v3, v4);
+				material.textures[(*n)->getProperty("name")] = (*n)->getProperty("resname");
 
-			} else if (name.equalsIgnoreCase("Texture")) {
-
-				Common::UString tName, value;
-
-				for (xmlAttr *attrib = child->properties; attrib; attrib = attrib->next) {
-					if (!attrib->children)
-						continue;
-
-					if      (Common::UString((const char *) attrib->name).equalsIgnoreCase("Name"))
-						tName = (const char *) attrib->children->content;
-					else if (Common::UString((const char *) attrib->name).equalsIgnoreCase("ResName"))
-						value = (const char *) attrib->children->content;
-				}
-
-				material.textures[tName] = value;
 			}
 		}
 
