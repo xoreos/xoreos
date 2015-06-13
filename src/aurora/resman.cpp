@@ -747,6 +747,7 @@ void ResourceManager::getAvailableResources(FileType type,
 
 			list.back().name = r->second.front().name;
 			list.back().type = r->second.front().type;
+			list.back().hash = r->first;
 		}
 	}
 }
@@ -761,6 +762,7 @@ void ResourceManager::getAvailableResources(const std::vector<FileType> &types,
 
 				list.back().name = r->second.front().name;
 				list.back().type = r->second.front().type;
+				list.back().hash = r->first;
 			}
 		}
 

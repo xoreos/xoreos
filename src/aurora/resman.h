@@ -57,6 +57,7 @@ public:
 	struct ResourceID {
 		Common::UString name;
 		FileType type;
+		uint64 hash;
 	};
 
 	ResourceManager();
