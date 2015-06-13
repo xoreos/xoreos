@@ -239,6 +239,7 @@ void DragonAge2Engine::declareEncodings() {
 
 void DragonAge2Engine::initResources(LoadProgress &progress) {
 	ResMan.setRIMsAreERFs(true);
+	ResMan.setHashAlgo(Common::kHashFNV64);
 
 	progress.step("Setting base directory");
 	ResMan.registerDataBase(_target);
