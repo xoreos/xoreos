@@ -257,11 +257,13 @@ Common::UString GFF4File::getSharedString(uint32 i) const {
 
 
 GFF4Struct::Field::Field() : label(0), type(kIFieldTypeNone), offset(0xFFFFFFFF),
-	isList(false), isReference(false), structIndex(0) {
+	isList(false), isReference(false), isGeneric(false), structIndex(0) {
 
 }
 
-GFF4Struct::Field::Field(uint32 l, uint16 t, uint16 f, uint32 o) : label(l), offset(o) {
+GFF4Struct::Field::Field(uint32 l, uint16 t, uint16 f, uint32 o, bool g) :
+	label(l), offset(o), isGeneric(g) {
+
 	isList      = (f & 0x8000) != 0;
 	isReference = (f & 0x2000) != 0;
 
@@ -401,7 +403,7 @@ void GFF4Struct::load(GFF4File &parent, const Field &genericParent) {
 			continue;
 
 		// Load the field and its struct(s), if any
-		Field &f = _fields[i] = Field(i, fieldType, fieldFlags, fieldOffset);
+		Field &f = _fields[i] = Field(i, fieldType, fieldFlags, fieldOffset, true);
 		if (f.type == kIFieldTypeStruct)
 			loadStructs(parent, f);
 	}
@@ -728,18 +730,23 @@ Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::
 	return str;
 }
 
-Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, IFieldType type,
+Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, const Field &field,
                                       Common::Encoding encoding) const {
 
-	if (type == kIFieldTypeString) {
-		const uint32 offset = data.readUint32LE();
-		if (offset == 0xFFFFFFFF)
-			return "";
+	if (field.type == kIFieldTypeString) {
+		uint32 offset = data.pos();
+		if (!field.isGeneric) {
+			offset = data.readUint32LE();
+			if (offset == 0xFFFFFFFF)
+				return "";
 
-		return getString(data, encoding, _parent->getDataOffset() + offset);
+			offset += _parent->getDataOffset();
+		}
+
+		return getString(data, encoding, offset);
 	}
 
-	if (type == kIFieldTypeASCIIString)
+	if (field.type == kIFieldTypeASCIIString)
 		return getString(data, Common::kEncodingASCII, data.pos());
 
 	throw Common::Exception("GFF4: Field is not a string type");
@@ -798,7 +805,7 @@ Common::UString GFF4Struct::getString(uint32 field, Common::Encoding encoding,
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	return getString(*data, f->type, encoding);
+	return getString(*data, *f, encoding);
 }
 
 Common::UString GFF4Struct::getString(uint32 field, const Common::UString &def) const {
@@ -984,7 +991,7 @@ bool GFF4Struct::getString(uint32 field, Common::Encoding encoding,
 
 	list.resize(count);
 	for (uint32 i = 0; i < count; i++)
-		list[i] = getString(*data, f->type, encoding);
+		list[i] = getString(*data, *f, encoding);
 
 	return true;
 }
