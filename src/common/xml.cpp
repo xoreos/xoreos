@@ -155,7 +155,7 @@ const XMLNode::Properties &XMLNode::getProperties() const {
 	return _properties;
 }
 
-const UString &XMLNode::getProperty(const UString &name, const UString &def) const {
+UString XMLNode::getProperty(const UString &name, const UString &def) const {
 	Properties::const_iterator property = _properties.find(name);
 	if (property != _properties.end())
 		return property->second;

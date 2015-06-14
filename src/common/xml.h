@@ -76,7 +76,7 @@ public:
 	/** Return all the properties on this node. */
 	const Properties &getProperties() const;
 	/** Return a certain property on this node. */
-	const UString &getProperty(const UString &name, const UString &def = "") const;
+	UString getProperty(const UString &name, const UString &def = "") const;
 
 
 private:
