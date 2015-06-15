@@ -25,13 +25,11 @@
 #ifndef AURORA_TALKMAN_H
 #define AURORA_TALKMAN_H
 
-#include <map>
 #include <list>
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
-#include "src/common/encoding.h"
 #include "src/common/changeid.h"
 
 #include "src/aurora/language.h"
@@ -47,23 +45,6 @@ public:
 	~TalkManager();
 
 	void clear();
-
-	/** Use this encoding when reading strings in this (ungendered) language ID. */
-	void registerEncoding(uint32 languageID, Common::Encoding encoding);
-	/** Return the encoding to use when reading strings in this (ungendered) language ID. */
-	Common::Encoding getEncoding(uint32 languageID) const;
-
-	/** Return the current language. */
-	Language getLanguage() const;
-	/** Return the current (ungendered) language ID. */
-	uint32 getLanguageID() const;
-	/** Return the gender modulating the current language. */
-	LanguageGender getGender() const;
-
-	/** Set the current language together with its (ungendered) language ID. */
-	void setLanguage(Language language, uint32 languageID);
-	/** Set the gender modulating the current language. */
-	void setGender(LanguageGender gender);
 
 	/** Add a talk table to the talk manager.
 	 *
@@ -112,14 +93,7 @@ private:
 	};
 
 	typedef std::list<Table> Tables;
-	typedef std::map<uint32, Common::Encoding> EncodingMap;
 
-
-	EncodingMap _encodings;
-
-	Language       _language;
-	uint32         _languageID;
-	LanguageGender _gender;
 
 	Tables _tablesMain;
 	Tables _tablesAlt;
