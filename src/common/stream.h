@@ -110,41 +110,49 @@ public:
 	// need not (and should not) overload them.
 
 	void writeByte(byte value) {
-		write(&value, 1);
+		if (write(&value, 1) != 1)
+			throw Exception(kWriteError);
 	}
 
 	void writeSByte(int8 value) {
-		write(&value, 1);
+		if (write(&value, 1) != 1)
+			throw Exception(kWriteError);
 	}
 
 	void writeUint16LE(uint16 value) {
 		value = TO_LE_16(value);
-		write(&value, 2);
+		if (write(&value, 2) != 2)
+			throw Exception(kWriteError);
 	}
 
 	void writeUint32LE(uint32 value) {
 		value = TO_LE_32(value);
-		write(&value, 4);
+		if (write(&value, 4) != 4)
+			throw Exception(kWriteError);
 	}
 
 	void writeUint64LE(uint64 value) {
 		value = TO_LE_64(value);
-		write(&value, 8);
+		if (write(&value, 8) != 8)
+			throw Exception(kWriteError);
 	}
 
 	void writeUint16BE(uint16 value) {
 		value = TO_BE_16(value);
-		write(&value, 2);
+		if (write(&value, 2) != 2)
+			throw Exception(kWriteError);
 	}
 
 	void writeUint32BE(uint32 value) {
 		value = TO_BE_32(value);
-		write(&value, 4);
+		if (write(&value, 4) != 4)
+			throw Exception(kWriteError);
 	}
 
 	void writeUint64BE(uint64 value) {
 		value = TO_BE_64(value);
-		write(&value, 8);
+		if (write(&value, 8) != 8)
+			throw Exception(kWriteError);
 	}
 
 	FORCEINLINE void writeSint16LE(int16 value) {
