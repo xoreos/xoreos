@@ -101,7 +101,7 @@ private:
 
 
 	void init();
-	void declareEncodings();
+	void declareLanguages();
 	void declareResources();
 	void initResources(LoadProgress &progress);
 	void initConfig();

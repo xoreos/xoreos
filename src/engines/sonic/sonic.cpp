@@ -29,6 +29,7 @@
 #include "src/common/configman.h"
 
 #include "src/aurora/resman.h"
+#include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
 #include "src/aurora/ndsrom.h"
 
@@ -45,7 +46,6 @@
 #include "src/graphics/aurora/text.h"
 
 #include "src/engines/aurora/util.h"
-#include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/model.h"
@@ -227,7 +227,7 @@ void SonicEngine::init() {
 	LoadProgress progress(9);
 
 	if (evaluateLanguage(true, _language))
-		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
+		status("Setting the language to %s", LangMan.getLanguageName(_language).c_str());
 	else
 		warning("Failed to detect this game's language");
 
@@ -235,7 +235,7 @@ void SonicEngine::init() {
 	initConfig();
 
 	progress.step("Declare string encodings");
-	declareEncodings();
+	declareLanguages();
 
 	initResources(progress);
 	if (EventMan.quitRequested())
@@ -247,17 +247,17 @@ void SonicEngine::init() {
 	progress.step("Successfully initialized the engine");
 }
 
-void SonicEngine::declareEncodings() {
-	static const LanguageEncoding kLanguageEncodings[] = {
-		{ Aurora::kLanguageEnglish           , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageFrench            , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageGerman            , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageItalian           , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageSpanish           , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageJapanese          , Common::kEncodingUTF8   }
+void SonicEngine::declareLanguages() {
+	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
+		{ Aurora::kLanguageEnglish , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageFrench  , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageGerman  , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageItalian , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageSpanish , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageJapanese, Aurora::kLanguageInvalid, Common::kEncodingUTF8   }
 	};
 
-	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
+	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
 }
 
 void SonicEngine::initResources(LoadProgress &progress) {
@@ -303,14 +303,14 @@ void SonicEngine::unloadLanguageFiles() {
 
 void SonicEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
 	progress.step(Common::UString::format("Indexing language files (%s)",
-				Aurora::getLanguageName(language).c_str()));
+				LangMan.getLanguageName(language).c_str()));
 
 	loadLanguageFiles(language);
 }
 
 void SonicEngine::loadLanguageFiles(Aurora::Language language) {
 	unloadLanguageFiles();
-	declareTalkLanguage(_game, language);
+	LangMan.setCurrentLanguage(language);
 
 	Common::UString herf = getLanguageHERF(language) + ".herf";
 
