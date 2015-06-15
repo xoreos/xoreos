@@ -118,7 +118,7 @@ private:
 	void init();
 
 	void initConfig();
-	void declareEncodings();
+	void declareLanguages();
 	void initResources(LoadProgress &progress);
 	void initCursorsRemap();
 	void initCursors();
