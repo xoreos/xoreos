@@ -30,6 +30,7 @@
 #include "src/events/events.h"
 
 #include "src/aurora/2dareg.h"
+#include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
 #include "src/aurora/erffile.h"
 #include "src/aurora/resman.h"
@@ -255,7 +256,7 @@ void Module::usePC(const Common::UString &bic, bool local) {
 	}
 
 	setPCTokens();
-	TalkMan.setGender(_pc->isFemale() ? Aurora::kLanguageGenderFemale : Aurora::kLanguageGenderMale);
+	LangMan.setCurrentGender(_pc->isFemale() ? Aurora::kLanguageGenderFemale : Aurora::kLanguageGenderMale);
 
 	addObject(*_pc);
 }

@@ -169,7 +169,7 @@ private:
 	void detectVersion();
 
 	void initConfig();
-	void declareEncodings();
+	void declareLanguages();
 	void initResources(LoadProgress &progress);
 	void declareBogusTextures();
 	void initCursors();
