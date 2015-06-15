@@ -592,49 +592,6 @@ public:
 };
 
 /**
- * Wrapper class which adds buffering to any given ReadStream.
- * Users can specify how big the buffer should be, and whether the
- * wrapped stream should be disposed when the wrapper is disposed.
- */
-class BufferedReadStream : virtual public ReadStream {
-protected:
-	ReadStream *_parentStream;
-	bool _disposeParentStream;
-	byte *_buf;
-	uint32 _pos;
-	uint32 _bufSize;
-	uint32 _realBufSize;
-
-public:
-	BufferedReadStream(ReadStream *parentStream, uint32 bufSize, bool disposeParentStream = false);
-	~BufferedReadStream();
-
-	virtual bool eos() const { return (_pos == _bufSize) && _parentStream->eos(); }
-	virtual bool err() const { return _parentStream->err(); }
-	virtual void clearErr() { _parentStream->clearErr(); }
-
-	virtual uint32 read(void *dataPtr, uint32 dataSize);
-};
-
-/**
- * Wrapper class which adds buffering to any given SeekableReadStream.
- * @see BufferedReadStream
- */
-class BufferedSeekableReadStream : public BufferedReadStream, public SeekableReadStream {
-protected:
-	SeekableReadStream *_parentStream;
-public:
-	BufferedSeekableReadStream(SeekableReadStream *parentStream, uint32 bufSize, bool disposeParentStream = false);
-
-	virtual int32 pos() const { return _parentStream->pos() - (_bufSize - _pos); }
-	virtual int32 size() const { return _parentStream->size(); }
-
-	virtual void seek(int32 offset, int whence = SEEK_SET);
-};
-
-
-
-/**
  * Simple memory based 'stream', which implements the ReadStream interface for
  * a plain memory block.
  */
