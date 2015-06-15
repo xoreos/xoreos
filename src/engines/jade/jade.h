@@ -93,7 +93,7 @@ private:
 
 
 	void init();
-	void declareEncodings();
+	void declareLanguages();
 	void initResources(LoadProgress &progress);
 	void initCursors();
 	void initConfig();

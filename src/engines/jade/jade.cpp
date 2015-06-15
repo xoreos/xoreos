@@ -29,6 +29,7 @@
 
 #include "src/aurora/util.h"
 #include "src/aurora/resman.h"
+#include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
 #include "src/aurora/talktable_tlk.h"
 
@@ -43,7 +44,6 @@
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
-#include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/model.h"
@@ -107,7 +107,7 @@ JadeEngine::~JadeEngine() {
 	delete _module;
 }
 
-bool JadeEngine::detectLanguages(Aurora::GameID game, const Common::UString &target,
+bool JadeEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
                                  Aurora::Platform UNUSED(platform),
                                  std::vector<Aurora::Language> &languages) const {
 	try {
@@ -123,7 +123,7 @@ bool JadeEngine::detectLanguages(Aurora::GameID game, const Common::UString &tar
 		if (languageID == Aurora::kLanguageInvalid)
 			return true;
 
-		Aurora::Language language = Aurora::getLanguage(game, languageID);
+		Aurora::Language language = LangMan.getLanguage(languageID);
 		if (language == Aurora::kLanguageInvalid)
 			return true;
 
@@ -175,7 +175,7 @@ void JadeEngine::init() {
 	LoadProgress progress(16);
 
 	if (evaluateLanguage(true, _language))
-		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
+		status("Setting the language to %s", LangMan.getLanguageName(_language).c_str());
 	else
 		warning("Failed to detect this game's language");
 
@@ -183,7 +183,7 @@ void JadeEngine::init() {
 	initConfig();
 
 	progress.step("Declare string encodings");
-	declareEncodings();
+	declareLanguages();
 
 	initResources(progress);
 	if (EventMan.quitRequested())
@@ -200,22 +200,22 @@ void JadeEngine::init() {
 	progress.step("Successfully initialized the engine");
 }
 
-void JadeEngine::declareEncodings() {
-	static const LanguageEncoding kLanguageEncodings[] = {
-		{ Aurora::kLanguageEnglish           , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageFrench            , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageGerman            , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageItalian           , Common::kEncodingCP1252 },
-		{ Aurora::kLanguageSpanish           , Common::kEncodingCP1252 },
-		{ Aurora::kLanguagePolish            , Common::kEncodingCP1250 },
-		{ Aurora::kLanguageKorean            , Common::kEncodingCP949  },
-		{ Aurora::kLanguageChineseTraditional, Common::kEncodingCP950  },
-		{ Aurora::kLanguageChineseSimplified , Common::kEncodingCP936  },
-		{ Aurora::kLanguageJapanese          , Common::kEncodingCP932  }
+void JadeEngine::declareLanguages() {
+	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
+		{ Aurora::kLanguageEnglish           ,   0, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageFrench            ,   1, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageGerman            ,   2, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageItalian           ,   3, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageSpanish           ,   4, Common::kEncodingCP1252 },
+		{ Aurora::kLanguagePolish            ,   5, Common::kEncodingCP1250 },
+		{ Aurora::kLanguageKorean            , 128, Common::kEncodingCP949  },
+		{ Aurora::kLanguageChineseTraditional, 129, Common::kEncodingCP950  },
+		{ Aurora::kLanguageChineseSimplified , 130, Common::kEncodingCP936  },
+		{ Aurora::kLanguageJapanese          , 131, Common::kEncodingCP932  }
 	};
 
-	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
-	Engines::declareTalkLanguage(_game, _language);
+	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.setCurrentLanguage(_language);
 }
 
 void JadeEngine::initResources(LoadProgress &progress) {
