@@ -30,6 +30,7 @@
 #include "src/common/configman.h"
 
 #include "src/aurora/resman.h"
+#include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/cursorman.h"
@@ -38,7 +39,6 @@
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
-#include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/model.h"
@@ -107,7 +107,7 @@ WitcherEngine::~WitcherEngine() {
 	delete _campaign;
 }
 
-bool WitcherEngine::detectLanguages(Aurora::GameID game, const Common::UString &target,
+bool WitcherEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
                                     Aurora::Platform UNUSED(platform),
                                     std::vector<Aurora::Language> &languagesText,
                                     std::vector<Aurora::Language> &languagesVoice) const {
@@ -121,7 +121,7 @@ bool WitcherEngine::detectLanguages(Aurora::GameID game, const Common::UString &
 			return true;
 
 		for (uint i = 0; i < Aurora::kLanguageMAX; i++) {
-			const uint32 langID = getLanguageID(game, (Aurora::Language) i);
+			const uint32 langID = LangMan.getLanguageID((Aurora::Language) i);
 
 			const Common::UString v1 = Common::UString::format("lang_%d.key"  , langID);
 			const Common::UString v2 = Common::UString::format("M1_%d.key"    , langID);
@@ -211,8 +211,8 @@ void WitcherEngine::init() {
 
 	if (evaluateLanguage(true, _languageText, _languageVoice))
 		status("Setting the language to %s text + %s voices",
-				Aurora::getLanguageName(_languageText).c_str(),
-				Aurora::getLanguageName(_languageVoice).c_str());
+				LangMan.getLanguageName(_languageText).c_str(),
+				LangMan.getLanguageName(_languageVoice).c_str());
 	else
 		throw Common::Exception("Failed to detect this game's language");
 
@@ -220,7 +220,7 @@ void WitcherEngine::init() {
 	initConfig();
 
 	progress.step("Declare string encodings");
-	declareEncodings();
+	declareLanguages();
 
 	initResources(progress);
 	if (EventMan.quitRequested())
@@ -237,23 +237,23 @@ void WitcherEngine::init() {
 	progress.step("Successfully initialized the engine");
 }
 
-void WitcherEngine::declareEncodings() {
-	static const LanguageEncoding kLanguageEncodings[] = {
-		{ Aurora::kLanguageEnglish           , Common::kEncodingUTF8 },
-		{ Aurora::kLanguagePolish            , Common::kEncodingUTF8 },
-		{ Aurora::kLanguageGerman            , Common::kEncodingUTF8 },
-		{ Aurora::kLanguageFrench            , Common::kEncodingUTF8 },
-		{ Aurora::kLanguageSpanish           , Common::kEncodingUTF8 },
-		{ Aurora::kLanguageItalian           , Common::kEncodingUTF8 },
-		{ Aurora::kLanguageRussian           , Common::kEncodingUTF8 },
-		{ Aurora::kLanguageCzech             , Common::kEncodingUTF8 },
-		{ Aurora::kLanguageHungarian         , Common::kEncodingUTF8 },
-		{ Aurora::kLanguageKorean            , Common::kEncodingUTF8 },
-		{ Aurora::kLanguageChineseTraditional, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageChineseSimplified , Common::kEncodingUTF8 }
+void WitcherEngine::declareLanguages() {
+	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
+		{ Aurora::kLanguageEnglish           ,  3, Common::kEncodingUTF8 },
+		{ Aurora::kLanguagePolish            ,  5, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageGerman            , 10, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageFrench            , 11, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageSpanish           , 12, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageItalian           , 13, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageRussian           , 14, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageCzech             , 15, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageHungarian         , 16, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageKorean            , 20, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageChineseTraditional, 21, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageChineseSimplified , 22, Common::kEncodingUTF8 }
 	};
 
-	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
+	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
 }
 
 void WitcherEngine::initResources(LoadProgress &progress) {
@@ -330,32 +330,32 @@ void WitcherEngine::loadLanguageFiles(LoadProgress &progress,
 		Aurora::Language langText, Aurora::Language langVoice) {
 
 	progress.step(Common::UString::format("Indexing language files (%s text + %s voices)",
-				Aurora::getLanguageName(langText).c_str(), Aurora::getLanguageName(langVoice).c_str()));
+				LangMan.getLanguageName(langText).c_str(), LangMan.getLanguageName(langVoice).c_str()));
 
 	loadLanguageFiles(langText, langVoice);
 }
 
 void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Language langVoice) {
 	unloadLanguageFiles();
-	declareTalkLanguage(_game, langText);
+	LangMan.setCurrentLanguage(langText, langVoice);
 
 	Common::UString archive;
 
 	Common::ChangeID change;
 
 	_languageResources.push_back(Common::ChangeID());
-	archive = Common::UString::format("lang_%d.key", getLanguageID(_game, langVoice));
+	archive = Common::UString::format("lang_%d.key", LangMan.getLanguageID(langVoice));
 	indexMandatoryArchive(archive, 100, &_languageResources.back());
 
 	_languageResources.push_back(Common::ChangeID());
-	archive = Common::UString::format("M1_%d.key", getLanguageID(_game, langVoice));
+	archive = Common::UString::format("M1_%d.key", LangMan.getLanguageID(langVoice));
 	indexMandatoryArchive(archive, 101, &_languageResources.back());
 
 	_languageResources.push_back(Common::ChangeID());
-	archive = Common::UString::format("M2_%d.key", getLanguageID(_game, langVoice));
+	archive = Common::UString::format("M2_%d.key", LangMan.getLanguageID(langVoice));
 	indexMandatoryArchive(archive, 102, &_languageResources.back());
 
-	archive = Common::UString::format("dialog_%d", getLanguageID(_game, langText));
+	archive = Common::UString::format("dialog_%d", LangMan.getLanguageID(langText));
 	TalkMan.addTable(archive, "", false, 0, &_languageTLK);
 }
 
